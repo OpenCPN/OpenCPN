@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"POT-Creation-Date: 2012-08-14 09:34-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -162,7 +162,8 @@ msgstr " %H Saat  %M Dakika"
 msgid " (Ctrl-Space)"
 msgstr ""
 #
-msgid " (Last Known):  "
+#, fuzzy
+msgid " (Last Known)"
 msgstr "(Son bilinen) :"
 #
 #
@@ -171,6 +172,9 @@ msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Taşınabilir(-p) ...den gerçekleştiriliyor"
+#
+msgid " </b>in<b> "
+msgstr ""
 #
 #, c-format
 msgid " COG: %03d Deg."
@@ -407,6 +411,10 @@ msgstr "-"
 msgid "--"
 msgstr "--"
 #
+#, fuzzy
+msgid "---"
+msgstr "--"
+#
 #
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< Dikkat :  Haritanın kalibrasyonu zayıf. >>>---"
@@ -417,6 +425,9 @@ msgstr "---<<< Dikkat : Haritanın kalibrasyonu tam doğru olmayabilir. >>>---"
 #
 msgid "..."
 msgstr "..."
+#
+msgid "0&deg;"
+msgstr ""
 #
 msgid "1 pixel"
 msgstr "1 pixel"
@@ -456,18 +467,6 @@ msgstr "8 pixel"
 #
 msgid "9 pixels"
 msgstr "9 pixel"
-#
-msgid ":               "
-msgstr ":               "
-#
-msgid ""
-":               Unavailable\n"
-"\n"
-"\n"
-msgstr ""
-":               Ulaşılamıyor\n"
-"\n"
-"\n"
 #
 msgid "<--Remove"
 msgstr "<-- Kaldır"
@@ -692,13 +691,6 @@ msgstr "Şamandıra (Sancak Geçişli)"
 msgid "Bearing"
 msgstr "Kerteriz"
 #
-#, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Kerteriz   : %03d   Deg.\n"
-#
-msgid "Bearing:                Unavailable\n"
-msgstr "Kerteriz  : Indisponible\n"
-#
 msgid "Black"
 msgstr "Siyah"
 #
@@ -759,14 +751,6 @@ msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA Alarmları"
 #
 #
-msgid "CPA:       \n"
-msgstr "CPA  : \n"
-#
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA  :               %6.1f NM\n"
-#
-#
 msgid "Call"
 msgstr "Çağrı"
 #
@@ -780,10 +764,6 @@ msgstr ""
 " GPSd kullanımda mı?\n"
 "\n"
 "GPS hizmet sunucusu : "
-#
-#
-msgid "CallSign:             "
-msgstr "Çağrıİşareti: "
 #
 #
 msgid "Cancel"
@@ -898,8 +878,9 @@ msgid "Class"
 msgstr "Sınıfı"
 #
 #
-msgid "Class:                "
-msgstr "Sınıfı: "
+#, fuzzy
+msgid "Clear"
+msgstr "Tümünü kaldır"
 #
 #
 msgid "Clear All"
@@ -959,6 +940,11 @@ msgid "Could not resolve TCP/IP host '"
 msgstr "TCP/IP servis sağlayıcısı bulunamadı"
 #
 #
+#, fuzzy
+msgid "Course"
+msgstr "Gidiş yönü YUKARI olacak şekilde göster"
+#
+#
 msgid "Course UP Mode"
 msgstr "Gidiş yönü YUKARI olacak şekilde göster"
 #
@@ -969,16 +955,6 @@ msgstr "Gidiş yönü YUKARI olacak şekilde göster"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr "Yukarı Yön Durumu için güncelleme süresi ( ) dakika"
-#
-#, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "COG                 : %03d   Deg.\n"
-#
-msgid "Course:                 000 Deg.\n"
-msgstr "COG                 : 000   Deg.\n"
-#
-msgid "Course:                 Unavailable\n"
-msgstr "COG                 : Sağlanamıyor\n"
 #
 #
 msgid "Create Route"
@@ -1121,10 +1097,6 @@ msgid "Destination"
 msgstr "Varış"
 #
 #
-msgid "Destination:          "
-msgstr "Varış :"
-#
-#
 msgid "Disable"
 msgstr "Kaldır"
 #
@@ -1182,12 +1154,6 @@ msgstr "(ETA) Hesaplanan Varış Zamanı :"
 #
 msgid "ETA          "
 msgstr "Hesaplanan Varış Zamanı                                          "
-#
-msgid "ETA:"
-msgstr "Yaklaşık Varış Zamanı:"
-#
-msgid "ETA:                  "
-msgstr "Yaklaşık Varış Zamanı:"
 #
 msgid "ETE"
 msgstr "ETE"
@@ -1380,9 +1346,8 @@ msgstr "HSC"
 msgid "HW"
 msgstr "HW"
 #
-#, c-format
-msgid "Heading:                %03d Deg.\n"
-msgstr "Pruva   : %03d   Deg.\n"
+msgid "Heading"
+msgstr ""
 #
 #
 msgid "Help"
@@ -1420,12 +1385,9 @@ msgstr "Hydrofoil"
 msgid "I&mport GPX..."
 msgstr "&GPX dosyası aç"
 #
-msgid "IMO:\n"
+#, fuzzy
+msgid "IMO"
 msgstr "IMO:\n"
-#
-#, c-format
-msgid "IMO:                 %8d\n"
-msgstr "IMO:                 %8d\n"
 #
 #
 msgid "Icon"
@@ -1434,10 +1396,8 @@ msgstr "Simge"
 msgid "Import GPX file"
 msgstr "GPX dosyası aç"
 #
-msgid "Inland Blue Flag        Clear\n"
-msgstr "Karasal Mavi Bayrak         Temiz\n"
-#
-msgid "Inland Blue Flag        Set\n"
+#, fuzzy
+msgid "Inland Blue Flag"
 msgstr "Karasal Mavi Bayrak     Etkin\n"
 #
 # Menu contextuel : Route
@@ -1480,9 +1440,6 @@ msgstr "LW"
 msgid "Language"
 msgstr "Dil"
 #
-msgid "Last Position Report Time:  "
-msgstr "Son mevki rapor zamanı   : "
-#
 #
 msgid "Latitude"
 msgstr "Enlem"
@@ -1510,6 +1467,9 @@ msgstr "Yönlendirici ışık (ön)"
 #
 msgid "Leading Light Rear"
 msgstr "Yönlendirici ışık (arka)"
+#
+msgid "Left"
+msgstr ""
 #
 #
 msgid "Leg"
@@ -1773,10 +1733,6 @@ msgid "Name"
 msgstr "Adı"
 #
 #
-msgid "Name:  "
-msgstr "Adı : "
-#
-#
 msgid "Nav Status"
 msgstr "Seyir durumu"
 #
@@ -1786,10 +1742,6 @@ msgstr ""
 #
 msgid "Navigation Data"
 msgstr "Seyir verisi"
-#
-#
-msgid "Navigational Status:  "
-msgstr "Seyir durumu: "
 #
 msgid "New Group..."
 msgstr "Yeni grup..."
@@ -2065,12 +2017,6 @@ msgstr "Pozisyon"
 msgid "Position Report"
 msgstr "Mevki durumu"
 #
-#, c-format
-msgid ""
-"Position Report Age:       %3d Sec.\n"
-"\n"
-msgstr "Mevki rapor ömrü     : %3d Sec.\n"
-#
 msgid "Pref. Chnl"
 msgstr "Tercih edilen kanal"
 #
@@ -2200,39 +2146,8 @@ msgid "Range"
 msgstr "Menzil"
 #
 #
-msgid "Range:                  Unavailable\n"
-msgstr "Menzil            : Indisponible\n"
-#
-#
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Menzil           :%5.1f  NM\n"
-#
-#
 msgid "Raster"
 msgstr "Raster"
-#
-#
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Dönüş hızı : %3d Deg./Min. Gauche\n"
-#
-#
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Dönüş hızı: %3d Deg./Min. Droite\n"
-#
-#
-msgid "Rate Of Turn            0\n"
-msgstr "Dönüş hızı : 0\n"
-#
-#
-msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-msgstr "Dönüş hızı : >5d Deg./Min. Gauche\n"
-#
-#
-msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-msgstr "Dönüş hızı :  >5d Deg./Min. Droite\n"
 #
 # AIS
 msgid "Real"
@@ -2301,8 +2216,11 @@ msgstr "Seyirnoktasını yeniden mi adlandıracaksınız ?"
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr "HPGL çevrimi: '%ler' yönergesi uygulanmadı."
 #
-#, c-format
-msgid "Report as of: %d:%d UTC "
+msgid "Report Age"
+msgstr ""
+#
+#, fuzzy
+msgid "Report as of"
 msgstr "Raporlandığı durum : %d:%d UTC"
 #
 # AIS
@@ -2335,6 +2253,11 @@ msgstr "Windows kaydından başlangıç dilini alınıyor."
 #, fuzzy
 msgid "Reverse"
 msgstr "&Tersine Çevir"
+#
+#
+#, fuzzy
+msgid "Right"
+msgstr "Işık"
 #
 msgid "Rollover"
 msgstr "Uzatmalar"
@@ -2395,9 +2318,8 @@ msgstr "SOG / COG "
 msgid "Safe Water"
 msgstr "Emin su"
 #
-msgid ""
-"Safety Broadcast Message:\n"
-"  "
+#, fuzzy
+msgid "Safety Broadcast Message"
 msgstr ""
 "Güvenli yayın mesajı :\n"
 "  "
@@ -2459,6 +2381,9 @@ msgstr "GPS'e Gönder"
 #
 msgid "Service vessel, police patrol, port service"
 msgstr "Servis teknesi, polis devriyesi, liman servisi"
+#
+msgid "Set"
+msgstr ""
 #
 #
 msgid "Set Anchor Watch"
@@ -2602,67 +2527,6 @@ msgstr "Harfin önizlemesini gösterir"
 msgid "Simplified"
 msgstr "Basitleştirilmiş"
 #
-#, c-format
-msgid ""
-"Size:                 %dm x %dm\n"
-"\n"
-msgstr ""
-"Büyüklük               : %dm x %dm \n"
-"\n"
-#
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Büyüklük             : %dm x %dm x %4.1fm\n"
-"\n"
-#
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Büyüklük           : %dm x %dm x ---m\n"
-"\n"
-#
-#
-#, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Büyüklük              : ---m x ---m x %4.1fm\n"
-"\n"
-#
-#
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Büyüklük             : ---m x ---m x ---m\n"
-"\n"
-#
-#
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Büyüklük           : %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-#
-#
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr ""
-"Büyüklük           : %5.1fm x %4.1fm x ---m\n"
-"\n"
-#
 msgid "SoG"
 msgstr "SOG"
 #
@@ -2681,17 +2545,13 @@ msgid "Special Mark"
 msgstr "Özel işaret"
 #
 #
+#, fuzzy
+msgid "Speed"
+msgstr "Hızı hesapla"
+#
+#
 msgid "Speed (Kts)"
 msgstr "Hız (Kts)"
-#
-#
-msgid "Speed:                  Unavailable\n"
-msgstr "Hız            : Indisponible\n"
-#
-#
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Hız            : %5.2f noeuds.\n"
 #
 msgid "Split Route"
 msgstr "Rotayı böl"
@@ -2745,15 +2605,6 @@ msgstr "TCP/IP, Wifi Veri sağlayıcısı "
 #, fuzzy
 msgid "TCPA"
 msgstr "TCPA :\n"
-#
-#
-msgid "TCPA:  \n"
-msgstr "TCPA :\n"
-#
-#
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA :  %02d:%02d Hr:Min\n"
 #
 msgid "Tankbarge"
 msgstr "TankerBarjı"
@@ -2839,6 +2690,11 @@ msgstr "Yazı büyüklüğü"
 msgid "The necessary configuration files were not found. "
 msgstr ""
 #
+msgid ""
+"The waypoint you want to delete is used in a route, do you really want to "
+"delete it?"
+msgstr ""
+#
 #
 msgid "There"
 msgstr "Oraya"
@@ -2847,6 +2703,12 @@ msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
+msgstr ""
+#
+msgid ""
+"There are some waypoints used in routes or anchor alarms. Do you want to "
+"delete them as well? This will change the routes and disable the anchor "
+"alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 #
 msgid ""
@@ -3005,16 +2867,11 @@ msgstr "Römork, yalnız"
 msgid "Tug, tanker"
 msgstr "Römork, tanker"
 #
+msgid "Turn Rate"
+msgstr ""
+#
 msgid "Type"
 msgstr "Tipi"
-#
-#
-msgid "Type:                 "
-msgstr "Tip:"
-#
-#
-msgid "UN Ship Type:         "
-msgstr "UN gemi tipi: "
 #
 msgid "URL"
 msgstr "URL"
@@ -3034,6 +2891,10 @@ msgstr ""
 #
 msgid "Unable to load libgps"
 msgstr " libGPS yüklenemiyor"
+#
+#, fuzzy
+msgid "Unavailable"
+msgstr " COG : Indisponible"
 #
 # AIS
 msgid "Undefined"
@@ -3291,9 +3152,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "  Harita projeksionu bilinemediği için, merkator olarak kabul edildi."
+#
 #
 #
 #
@@ -3308,6 +3171,21 @@ msgstr "wxFB veb sayfası"
 #~ msgstr "(m)"
 #
 #
+#~ msgid ":               "
+#~ msgstr ":               "
+#
+#
+#~ msgid ""
+#~ ":               Unavailable\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ ":               Ulaşılamıyor\n"
+#~ "\n"
+#~ "\n"
+#
+#
+#
 #
 #
 #
@@ -3318,6 +3196,46 @@ msgstr "wxFB veb sayfası"
 # Menu contextuel : Route
 #~ msgid "Activate Route"
 #~ msgstr "Rotayı etkinleştir"
+#
+#
+#~ msgid "Bearing:                %03d Deg.\n"
+#~ msgstr "Kerteriz   : %03d   Deg.\n"
+#
+#
+#~ msgid "Bearing:                Unavailable\n"
+#~ msgstr "Kerteriz  : Indisponible\n"
+#
+#
+#
+#~ msgid "CPA:       \n"
+#~ msgstr "CPA  : \n"
+#
+#
+#~ msgid "CPA:                 %6.1f NM\n"
+#~ msgstr "CPA  :               %6.1f NM\n"
+#
+#
+#
+#~ msgid "CallSign:             "
+#~ msgstr "Çağrıİşareti: "
+#
+#
+#
+#~ msgid "Class:                "
+#~ msgstr "Sınıfı: "
+#
+#
+#~ msgid "Course:                 %03d Deg.\n"
+#~ msgstr "COG                 : %03d   Deg.\n"
+#
+#
+#~ msgid "Course:                 000 Deg.\n"
+#~ msgstr "COG                 : 000   Deg.\n"
+#
+#
+#~ msgid "Course:                 Unavailable\n"
+#~ msgstr "COG                 : Sağlanamıyor\n"
+#
 #
 #
 #
@@ -3342,6 +3260,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Varsayılan veri bileşeni"
@@ -3354,8 +3273,23 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "İşareti sil"
+#
+#
+#
+#~ msgid "Destination:          "
+#~ msgstr "Varış :"
+#
+#
+#~ msgid "ETA:"
+#~ msgstr "Yaklaşık Varış Zamanı:"
+#
+#
+#~ msgid "ETA:                  "
+#~ msgstr "Yaklaşık Varış Zamanı:"
+#
 #
 #
 #
@@ -3379,8 +3313,22 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Kullanılacak uyumlu veri bileşeni:"
+#
+#
+#~ msgid "Heading:                %03d Deg.\n"
+#~ msgstr "Pruva   : %03d   Deg.\n"
+#
+#
+#~ msgid "IMO:                 %8d\n"
+#~ msgstr "IMO:                 %8d\n"
+#
+#
+#~ msgid "Inland Blue Flag        Clear\n"
+#~ msgstr "Karasal Mavi Bayrak         Temiz\n"
+#
 #
 #
 #
@@ -3406,8 +3354,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Dil/Yazı Türü"
+#
+#
+#~ msgid "Last Position Report Time:  "
+#~ msgstr "Son mevki rapor zamanı   : "
+#
 #
 #
 #
@@ -3431,9 +3385,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Waypoint
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Seyirnoktası/İşaret özellikleri"
+#
 #
 #
 #
@@ -3455,8 +3411,26 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
+#
+#
+#~ msgid "Name:  "
+#~ msgstr "Adı : "
+#
+#
+#
+#~ msgid "Navigational Status:  "
+#~ msgstr "Seyir durumu: "
+#
+#
+#~ msgid ""
+#~ "Position Report Age:       %3d Sec.\n"
+#~ "\n"
+#~ msgstr "Mevki rapor ömrü     : %3d Sec.\n"
+#
 #
 #
 #
@@ -3493,8 +3467,45 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Yazılıyor"
+#
+#
+#
+#~ msgid "Range:                  Unavailable\n"
+#~ msgstr "Menzil            : Indisponible\n"
+#
+#
+#
+#~ msgid "Range:                %5.1f NM\n"
+#~ msgstr "Menzil           :%5.1f  NM\n"
+#
+#
+#
+#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+#~ msgstr "Dönüş hızı : %3d Deg./Min. Gauche\n"
+#
+#
+#
+#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+#~ msgstr "Dönüş hızı: %3d Deg./Min. Droite\n"
+#
+#
+#
+#~ msgid "Rate Of Turn            0\n"
+#~ msgstr "Dönüş hızı : 0\n"
+#
+#
+#
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+#~ msgstr "Dönüş hızı : >5d Deg./Min. Gauche\n"
+#
+#
+#
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+#~ msgstr "Dönüş hızı :  >5d Deg./Min. Droite\n"
+#
 #
 #
 #
@@ -3517,6 +3528,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rota mesafesi"
 #
@@ -3528,8 +3540,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Yön yukarı olacak şekilde kullan"
+#
 #
 #
 #
@@ -3557,8 +3571,102 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Seyirizi simgesini göster"
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Büyüklük               : %dm x %dm \n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Büyüklük             : %dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Büyüklük           : %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Büyüklük              : ---m x ---m x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Büyüklük             : ---m x ---m x ---m\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Büyüklük           : %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Büyüklük           : %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#
+#
+#
+#~ msgid "Speed:                  Unavailable\n"
+#~ msgstr "Hız            : Indisponible\n"
+#
+#
+#
+#~ msgid "Speed:                %5.2f Kts.\n"
+#~ msgstr "Hız            : %5.2f noeuds.\n"
+#
+#
+#
+#~ msgid "TCPA:  \n"
+#~ msgstr "TCPA :\n"
+#
+#
+#
+#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
+#~ msgstr "TCPA :  %02d:%02d Hr:Min\n"
+#
+#
+#
+#~ msgid "Type:                 "
+#~ msgstr "Tip:"
+#
+#
+#
+#~ msgid "UN Ship Type:         "
+#~ msgstr "UN gemi tipi: "
+#
 #
 #
 #

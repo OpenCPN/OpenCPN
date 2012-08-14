@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"POT-Creation-Date: 2012-08-14 09:34-0400\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -177,8 +177,7 @@ msgstr " %H Hores  %M Minuts"
 msgid " (Ctrl-Space)"
 msgstr ""
 #
-# 
-msgid " (Last Known):  "
+msgid " (Last Known)"
 msgstr ""
 #
 # 
@@ -186,6 +185,9 @@ msgid " - "
 msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
+msgstr ""
+#
+msgid " </b>in<b> "
 msgstr ""
 #
 # 
@@ -439,6 +441,11 @@ msgid "--"
 msgstr "--"
 #
 # 
+#, fuzzy
+msgid "---"
+msgstr "--"
+#
+# 
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< Avís:  Escassa precisió del georef de la carta. >>>---"
 #
@@ -447,6 +454,9 @@ msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< Avís:  La precisió georef de la carta pot ser escassa. >>>---"
 #
 msgid "..."
+msgstr ""
+#
+msgid "0&deg;"
 msgstr ""
 #
 msgid "1 pixel"
@@ -490,19 +500,6 @@ msgstr ""
 #
 msgid "9 pixels"
 msgstr ""
-#
-# 
-#, fuzzy
-msgid ":               "
-msgstr "Classe:               "
-#
-# 
-#, fuzzy
-msgid ""
-":               Unavailable\n"
-"\n"
-"\n"
-msgstr "Rumb:                   No Disponible\n"
 #
 msgid "<--Remove"
 msgstr ""
@@ -759,15 +756,6 @@ msgid "Bearing"
 msgstr "Demora"
 #
 # 
-#, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Demora:                 %03d Graus.\n"
-#
-# 
-msgid "Bearing:                Unavailable\n"
-msgstr "Demora:                 No Disponible\n"
-#
-# 
 msgid "Black"
 msgstr ""
 #
@@ -836,15 +824,6 @@ msgid "CPA/TCPA Alerts"
 msgstr "Alertes de CPA/TCPA"
 #
 # 
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-#
-# 
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                %6.1f  MN\n"
-#
-# 
 msgid "Call"
 msgstr "ID Trucada"
 #
@@ -859,10 +838,6 @@ msgstr ""
 "Està funcionant el gpsd?\n"
 "\n"
 "el host gpsd és: "
-#
-# 
-msgid "CallSign:             "
-msgstr "ID Trucada(CallSign): "
 #
 # 
 msgid "Cancel"
@@ -998,8 +973,9 @@ msgid "Class"
 msgstr "Classe"
 #
 # 
-msgid "Class:                "
-msgstr "Classe:               "
+#, fuzzy
+msgid "Clear"
+msgstr "Desmarca-ho tot"
 #
 # 
 msgid "Clear All"
@@ -1065,6 +1041,11 @@ msgid "Could not resolve TCP/IP host '"
 msgstr "No s'ha pogut resoldre la TCP / IP del host"
 #
 # 
+#, fuzzy
+msgid "Course"
+msgstr "Mode Rumb Amunt"
+#
+# 
 msgid "Course UP Mode"
 msgstr "Mode Rumb Amunt"
 #
@@ -1076,20 +1057,6 @@ msgstr "Mode Rumb Amunt"
 # 
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr ""
-#
-# 
-#, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "Rumb:                   %03d º.\n"
-#
-# 
-#, fuzzy
-msgid "Course:                 000 Deg.\n"
-msgstr "Rumb:                   %03d º.\n"
-#
-# 
-msgid "Course:                 Unavailable\n"
-msgstr "Rumb:                   No Disponible\n"
 #
 # 
 msgid "Create Route"
@@ -1259,10 +1226,6 @@ msgid "Destination"
 msgstr "Destinació"
 #
 # 
-msgid "Destination:          "
-msgstr "Destí:"
-#
-# 
 msgid "Disable"
 msgstr "Blocat"
 #
@@ -1329,14 +1292,6 @@ msgstr "ETA:"
 # 
 msgid "ETA          "
 msgstr "ETA"
-#
-# 
-msgid "ETA:"
-msgstr "ETA:"
-#
-# 
-msgid "ETA:                  "
-msgstr "ETA:                  "
 #
 # 
 msgid "ETE"
@@ -1566,10 +1521,8 @@ msgstr "HSC"
 msgid "HW"
 msgstr "M.Alta"
 #
-# 
-#, fuzzy, c-format
-msgid "Heading:                %03d Deg.\n"
-msgstr "Demora:                 %03d Graus.\n"
+msgid "Heading"
+msgstr ""
 #
 # 
 msgid "Help"
@@ -1608,14 +1561,8 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "I&mportar GPX..."
 #
-# 
-msgid "IMO:\n"
+msgid "IMO"
 msgstr ""
-#
-# 
-#, fuzzy, c-format
-msgid "IMO:                 %8d\n"
-msgstr "Tipus:                "
 #
 # 
 msgid "Icon"
@@ -1626,11 +1573,8 @@ msgid "Import GPX file"
 msgstr "Importar arxius GPX"
 #
 # 
-msgid "Inland Blue Flag        Clear\n"
-msgstr "Bandera Blava            Esborrada\n"
-#
-# 
-msgid "Inland Blue Flag        Set\n"
+#, fuzzy
+msgid "Inland Blue Flag"
 msgstr "Bandera Blava         Ajust\n"
 #
 # 
@@ -1681,11 +1625,6 @@ msgid "Language"
 msgstr "Idioma"
 #
 # 
-#, fuzzy
-msgid "Last Position Report Time:  "
-msgstr "Hora del Darrer Informe:"
-#
-# 
 msgid "Latitude"
 msgstr "Latitud"
 #
@@ -1716,6 +1655,9 @@ msgstr "Llum Frontal Principal "
 # 
 msgid "Leading Light Rear"
 msgstr "Llum Trassera Principal"
+#
+msgid "Left"
+msgstr ""
 #
 # 
 msgid "Leg"
@@ -2020,10 +1962,6 @@ msgid "Name"
 msgstr "Nom"
 #
 # 
-msgid "Name:  "
-msgstr "Nom:   "
-#
-# 
 msgid "Nav Status"
 msgstr "Estat Nav."
 #
@@ -2033,10 +1971,6 @@ msgstr ""
 # 
 msgid "Navigation Data"
 msgstr "Dades de Navegació"
-#
-# 
-msgid "Navigational Status:  "
-msgstr "Estat de Navegació:   "
 #
 msgid "New Group..."
 msgstr ""
@@ -2343,13 +2277,6 @@ msgid "Position Report"
 msgstr "Hora del Darrer Informe:"
 #
 # 
-#, fuzzy, c-format
-msgid ""
-"Position Report Age:       %3d Sec.\n"
-"\n"
-msgstr "Temps del Informe:   %3d Seg.\n"
-#
-# 
 msgid "Pref. Chnl"
 msgstr "Canal Pref."
 #
@@ -2494,39 +2421,8 @@ msgid "Range"
 msgstr "Llunyania"
 #
 # 
-msgid "Range:                  Unavailable\n"
-msgstr "Distància:              No Disponible\n"
-#
-# 
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Distància:             %5.1f MN\n"
-#
-# 
 msgid "Raster"
 msgstr "Escanejades"
-#
-# 
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Maniobra de Gir:        %3d Graus/Min. Esquerra\n"
-#
-# 
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Maniobra de Gir:        %3d Graus/Min. Dreta\n"
-#
-# 
-msgid "Rate Of Turn            0\n"
-msgstr "Maniobra de Gir:        0\n"
-#
-# 
-msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-msgstr "Maniobra de Gir:    >5º /30seg. Esquerra\n"
-#
-# 
-msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-msgstr "Maniobra de Gir:    >5º /30seg. Dreta\n"
 #
 # 
 msgid "Real"
@@ -2602,8 +2498,10 @@ msgstr "Reanomenar Waypoints?"
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr ""
 #
-#, c-format
-msgid "Report as of: %d:%d UTC "
+msgid "Report Age"
+msgstr ""
+#
+msgid "Report as of"
 msgstr ""
 #
 # 
@@ -2638,6 +2536,11 @@ msgstr "Recuperació de la llengua inicial del Registre de Windows "
 #, fuzzy
 msgid "Reverse"
 msgstr "Inve&rsió"
+#
+# 
+#, fuzzy
+msgid "Right"
+msgstr "Far"
 #
 # 
 msgid "Rollover"
@@ -2711,9 +2614,7 @@ msgstr "SOG COG"
 msgid "Safe Water"
 msgstr "Aigües Segures"
 #
-msgid ""
-"Safety Broadcast Message:\n"
-"  "
+msgid "Safety Broadcast Message"
 msgstr ""
 #
 # 
@@ -2776,6 +2677,9 @@ msgstr "Enviament al GPS..."
 #
 # 
 msgid "Service vessel, police patrol, port service"
+msgstr ""
+#
+msgid "Set"
 msgstr ""
 #
 # 
@@ -2933,68 +2837,6 @@ msgid "Simplified"
 msgstr "Simplificat"
 #
 # 
-#, fuzzy, c-format
-msgid ""
-"Size:                 %dm x %dm\n"
-"\n"
-msgstr ""
-"Mida:                 %dm x %dm x ---m\n"
-"\n"
-#
-# 
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Mida:                 %dm x %dm x %4.1fm\n"
-"\n"
-#
-# 
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Mida:                 %dm x %dm x ---m\n"
-"\n"
-#
-# 
-#, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Mida:                 ---m x ---m x %4.1fm\n"
-"\n"
-#
-# 
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Mida:                 ---m x ---m x ---m\n"
-"\n"
-#
-# 
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Mida:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-#
-# 
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr ""
-"Mida:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-#
-# 
 msgid "SoG"
 msgstr "SoG"
 #
@@ -3016,17 +2858,13 @@ msgid "Special Mark"
 msgstr "Marca Especial"
 #
 # 
+#, fuzzy
+msgid "Speed"
+msgstr "Velocitat de la Ruta"
+#
+# 
 msgid "Speed (Kts)"
 msgstr "Velocitat (nusos)"
-#
-# 
-msgid "Speed:                  Unavailable\n"
-msgstr "Velocitat:             No Disponible\n"
-#
-# 
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Velocitat:             %5.2f Kts.\n"
 #
 # 
 msgid "Split Route"
@@ -3087,15 +2925,6 @@ msgstr "Servidor de Dades WiFi TCP/IP"
 #, fuzzy
 msgid "TCPA"
 msgstr "CPA TCPA"
-#
-# 
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-#
-# 
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA:                 %02d:%02d Hr:Min\n"
 #
 # 
 #, fuzzy
@@ -3194,6 +3023,11 @@ msgstr "El griux de les lletres"
 msgid "The necessary configuration files were not found. "
 msgstr ""
 #
+msgid ""
+"The waypoint you want to delete is used in a route, do you really want to "
+"delete it?"
+msgstr ""
+#
 # 
 msgid "There"
 msgstr "Allà"
@@ -3202,6 +3036,12 @@ msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
+msgstr ""
+#
+msgid ""
+"There are some waypoints used in routes or anchor alarms. Do you want to "
+"delete them as well? This will change the routes and disable the anchor "
+"alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 #
 msgid ""
@@ -3377,17 +3217,12 @@ msgstr ""
 msgid "Tug, tanker"
 msgstr "Vaixell Cisterna"
 #
+msgid "Turn Rate"
+msgstr ""
+#
 # 
 msgid "Type"
 msgstr "Tipus"
-#
-# 
-msgid "Type:                 "
-msgstr "Tipus:                "
-#
-# 
-msgid "UN Ship Type:         "
-msgstr "Tipus ONU de Vaixell: "
 #
 msgid "URL"
 msgstr ""
@@ -3410,6 +3245,11 @@ msgstr ""
 #, fuzzy
 msgid "Unable to load libgps"
 msgstr "No es pot carregar libgps.so"
+#
+# 
+#, fuzzy
+msgid "Unavailable"
+msgstr "Cap Carta Disponible"
 #
 # 
 msgid "Undefined"
@@ -3694,6 +3534,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -3719,9 +3560,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Projecció de la carta DESCONEGUDA, s'assumeix Mercator: "
+#
 #
 #
 #
@@ -3760,12 +3603,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol creat_pi: "
+#
 #
 #
 #
@@ -3804,12 +3649,29 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "Commu&tar la Carta"
+#
+#
+# 
+#, fuzzy
+#~ msgid ":               "
+#~ msgstr "Classe:               "
+#
+#
+# 
+#, fuzzy
+#~ msgid ""
+#~ ":               Unavailable\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr "Rumb:                   No Disponible\n"
+#
 #
 #
 #
@@ -3828,6 +3690,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Alerta d'AIS"
+#
 #
 #
 #
@@ -3856,9 +3719,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informació addicional"
+#
 #
 #
 #
@@ -3897,12 +3762,39 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "NomHabitual per ClasseBàsica"
+#
+#
+# 
+#~ msgid "Bearing:                %03d Deg.\n"
+#~ msgstr "Demora:                 %03d Graus.\n"
+#
+#
+# 
+#~ msgid "Bearing:                Unavailable\n"
+#~ msgstr "Demora:                 No Disponible\n"
+#
+#
+# 
+#~ msgid "CPA:       \n"
+#~ msgstr "CPA:       \n"
+#
+#
+# 
+#~ msgid "CPA:                 %6.1f NM\n"
+#~ msgstr "CPA:                %6.1f  MN\n"
+#
+#
+# 
+#~ msgid "CallSign:             "
+#~ msgstr "ID Trucada(CallSign): "
+#
 #
 #
 #
@@ -3923,6 +3815,28 @@ msgstr ""
 #~ msgstr "Carta"
 #
 #
+# 
+#~ msgid "Class:                "
+#~ msgstr "Classe:               "
+#
+#
+# 
+#~ msgid "Course:                 %03d Deg.\n"
+#~ msgstr "Rumb:                   %03d º.\n"
+#
+#
+# 
+#, fuzzy
+#~ msgid "Course:                 000 Deg.\n"
+#~ msgstr "Rumb:                   %03d º.\n"
+#
+#
+# 
+#~ msgid "Course:                 Unavailable\n"
+#~ msgstr "Rumb:                   No Disponible\n"
+#
+#
+#
 #
 #
 #
@@ -3933,6 +3847,7 @@ msgstr ""
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "Desactivació de la Ruta"
+#
 #
 #
 #
@@ -3958,9 +3873,26 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Esborrar la Marca"
+#
+#
+# 
+#~ msgid "Destination:          "
+#~ msgstr "Destí:"
+#
+#
+# 
+#~ msgid "ETA:"
+#~ msgstr "ETA:"
+#
+#
+# 
+#~ msgid "ETA:                  "
+#~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -3999,12 +3931,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Fracàs en carregar libgps.so"
+#
 #
 #
 #
@@ -4036,9 +3970,23 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Cap a la Marca/Wpt"
+#
+#
+# 
+#, fuzzy
+#~ msgid "Heading:                %03d Deg.\n"
+#~ msgstr "Demora:                 %03d Graus.\n"
+#
+#
+# 
+#, fuzzy
+#~ msgid "IMO:                 %8d\n"
+#~ msgstr "Tipus:                "
+#
 #
 #
 #
@@ -4061,6 +4009,12 @@ msgstr ""
 # 
 #~ msgid "Import new layer"
 #~ msgstr "Importar noves capes"
+#
+#
+# 
+#~ msgid "Inland Blue Flag        Clear\n"
+#~ msgstr "Bandera Blava            Esborrada\n"
+#
 #
 #
 #
@@ -4086,9 +4040,17 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Lletres"
+#
+#
+# 
+#, fuzzy
+#~ msgid "Last Position Report Time:  "
+#~ msgstr "Hora del Darrer Informe:"
+#
 #
 #
 #
@@ -4125,9 +4087,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona de la Marca"
+#
 #
 #
 #
@@ -4156,6 +4120,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
@@ -4169,9 +4134,21 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Measure....."
 #~ msgstr "Mesurar....."
+#
+#
+# 
+#~ msgid "Name:  "
+#~ msgstr "Nom:   "
+#
+#
+# 
+#~ msgid "Navigational Status:  "
+#~ msgstr "Estat de Navegació:   "
+#
 #
 #
 #
@@ -4210,12 +4187,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
+#
 #
 #
 #
@@ -4258,12 +4237,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
+#
 #
 #
 #
@@ -4302,12 +4283,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
+#
 #
 #
 #
@@ -4346,12 +4329,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Carrega el Mòdul: "
+#
 #
 #
 #
@@ -4390,6 +4375,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4397,6 +4383,15 @@ msgstr ""
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr ""
 #~ "Gestor de Mòduls: Es descarrega Mòdul amb una versió d'API invàlida %d.%d: "
+#
+#
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Position Report Age:       %3d Sec.\n"
+#~ "\n"
+#~ msgstr "Temps del Informe:   %3d Seg.\n"
+#
 #
 #
 #
@@ -4419,6 +4414,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Posició:                "
+#
 #
 #
 #
@@ -4457,9 +4453,46 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Printing"
 #~ msgstr "Impressió"
+#
+#
+# 
+#~ msgid "Range:                  Unavailable\n"
+#~ msgstr "Distància:              No Disponible\n"
+#
+#
+# 
+#~ msgid "Range:                %5.1f NM\n"
+#~ msgstr "Distància:             %5.1f MN\n"
+#
+#
+# 
+#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+#~ msgstr "Maniobra de Gir:        %3d Graus/Min. Esquerra\n"
+#
+#
+# 
+#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+#~ msgstr "Maniobra de Gir:        %3d Graus/Min. Dreta\n"
+#
+#
+# 
+#~ msgid "Rate Of Turn            0\n"
+#~ msgstr "Maniobra de Gir:        0\n"
+#
+#
+# 
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+#~ msgstr "Maniobra de Gir:    >5º /30seg. Esquerra\n"
+#
+#
+# 
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+#~ msgstr "Maniobra de Gir:    >5º /30seg. Dreta\n"
+#
 #
 #
 #
@@ -4495,9 +4528,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Inverció de la Ruta"
+#
 #
 #
 #
@@ -4521,10 +4556,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Mode Rumb Amunt"
+#
 #
 #
 #
@@ -4552,9 +4589,95 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar la icona de derrota"
+#
+#
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Mida:                 %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+# 
+#~ msgid ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Mida:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+#~ msgid ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Mida:                 %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+# 
+#~ msgid ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Mida:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+#~ msgid ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Mida:                 ---m x ---m x ---m\n"
+#~ "\n"
+#
+#
+# 
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Mida:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Mida:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#
+#
+# 
+#~ msgid "Speed:                  Unavailable\n"
+#~ msgstr "Velocitat:             No Disponible\n"
+#
+#
+# 
+#~ msgid "Speed:                %5.2f Kts.\n"
+#~ msgstr "Velocitat:             %5.2f Kts.\n"
+#
+#
+# 
+#~ msgid "TCPA:  \n"
+#~ msgstr "TCPA:  \n"
+#
+#
+# 
+#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
+#~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -4593,12 +4716,24 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Bescanvia Noms"
+#
+#
+# 
+#~ msgid "Type:                 "
+#~ msgstr "Tipus:                "
+#
+#
+# 
+#~ msgid "UN Ship Type:         "
+#~ msgstr "Tipus ONU de Vaixell: "
+#
 #
 #
 #

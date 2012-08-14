@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.4.720\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"POT-Creation-Date: 2012-08-14 09:34-0400\n"
 "PO-Revision-Date: 2011-07-21 11:02+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -191,8 +191,7 @@ msgstr " %H 小時  %M 分鐘"
 msgid " (Ctrl-Space)"
 msgstr ""
 #
-# 
-msgid " (Last Known):  "
+msgid " (Last Known)"
 msgstr ""
 #
 # 
@@ -201,6 +200,9 @@ msgid " - "
 msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
+msgstr ""
+#
+msgid " </b>in<b> "
 msgstr ""
 #
 # 
@@ -506,6 +508,12 @@ msgstr "--"
 #
 # 
 # 
+#, fuzzy
+msgid "---"
+msgstr "--"
+#
+# 
+# 
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< 警告:  海圖參考座標正確性不佳. >>>---"
 #
@@ -515,6 +523,9 @@ msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< 警告:  海圖參考座標正確性可能不佳. >>>---"
 #
 msgid "..."
+msgstr ""
+#
+msgid "0&deg;"
 msgstr ""
 #
 msgid "1 pixel"
@@ -561,21 +572,6 @@ msgstr ""
 #
 msgid "9 pixels"
 msgstr ""
-#
-# 
-# 
-#, fuzzy
-msgid ":               "
-msgstr "船級:                  "
-#
-# 
-# 
-#, fuzzy
-msgid ""
-":               Unavailable\n"
-"\n"
-"\n"
-msgstr "方位:                無法取得\n"
 #
 msgid "<--Remove"
 msgstr ""
@@ -887,17 +883,6 @@ msgid "Bearing"
 msgstr "方位"
 #
 # 
-# 
-#, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "方位:                %03d Deg.\n"
-#
-# 
-# 
-msgid "Bearing:                Unavailable\n"
-msgstr "方位:                無法取得\n"
-#
-# 
 msgid "Black"
 msgstr "黑"
 #
@@ -981,17 +966,6 @@ msgstr "CPA/TCPA 警示"
 #
 # 
 # 
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-#
-# 
-# 
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                 %6.1f NM\n"
-#
-# 
-# 
 msgid "Call"
 msgstr "呼號"
 #
@@ -1007,11 +981,6 @@ msgstr ""
 "gpsd 是否執行中?\n"
 "\n"
 "gpsd host is: "
-#
-# 
-# 
-msgid "CallSign:             "
-msgstr "呼號:              "
 #
 # 
 # 
@@ -1178,8 +1147,9 @@ msgstr "船級"
 #
 # 
 # 
-msgid "Class:                "
-msgstr "船級:                  "
+#, fuzzy
+msgid "Clear"
+msgstr "清除全部"
 #
 # 
 # 
@@ -1257,6 +1227,12 @@ msgstr "無法解析 TCP/IP 主機 '"
 #
 # 
 # 
+#, fuzzy
+msgid "Course"
+msgstr "航向朝上模式"
+#
+# 
+# 
 msgid "Course UP Mode"
 msgstr "航向朝上模式"
 #
@@ -1269,22 +1245,6 @@ msgstr "航向朝上模式"
 # 
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr "航向朝上顯示模式更新週期 (秒)"
-#
-# 
-# 
-#, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "航向:                 %03d 度.\n"
-#
-# 
-# 
-msgid "Course:                 000 Deg.\n"
-msgstr "航向:                 000 度.\n"
-#
-# 
-# 
-msgid "Course:                 Unavailable\n"
-msgstr "航向:                 無法取得\n"
 #
 # 
 # 
@@ -1482,11 +1442,6 @@ msgstr "目的地"
 #
 # 
 # 
-msgid "Destination:          "
-msgstr "目的地:          "
-#
-# 
-# 
 msgid "Disable"
 msgstr "取消"
 #
@@ -1566,16 +1521,6 @@ msgstr "ETA"
 # 
 msgid "ETA          "
 msgstr "ETA          "
-#
-# 
-# 
-msgid "ETA:"
-msgstr "ETA:"
-#
-# 
-# 
-msgid "ETA:                  "
-msgstr "ETA:                  "
 #
 # 
 msgid "ETE"
@@ -1848,11 +1793,8 @@ msgstr "高速船"
 msgid "HW"
 msgstr "HW"
 #
-# 
-# 
-#, c-format
-msgid "Heading:                %03d Deg.\n"
-msgstr "方位:                %03d 度.\n"
+msgid "Heading"
+msgstr ""
 #
 # 
 # 
@@ -1902,14 +1844,9 @@ msgid "I&mport GPX..."
 msgstr "匯入(&m)..."
 #
 # 
-msgid "IMO:\n"
+#, fuzzy
+msgid "IMO"
 msgstr "IMO:\n"
-#
-# 
-# 
-#, c-format
-msgid "IMO:                 %8d\n"
-msgstr "IMO:                 %8d\n"
 #
 # 
 # 
@@ -1923,12 +1860,8 @@ msgstr "匯入 GPX 檔案"
 #
 # 
 # 
-msgid "Inland Blue Flag        Clear\n"
-msgstr "內陸藍旗        清除\n"
-#
-# 
-# 
-msgid "Inland Blue Flag        Set\n"
+#, fuzzy
+msgid "Inland Blue Flag"
 msgstr "內陸藍旗        設定\n"
 #
 # 
@@ -1990,11 +1923,6 @@ msgstr "語系"
 #
 # 
 # 
-msgid "Last Position Report Time:  "
-msgstr "最近位置發報時間:  "
-#
-# 
-# 
 msgid "Latitude"
 msgstr "緯度"
 #
@@ -2032,6 +1960,9 @@ msgstr "前引導燈"
 # 
 msgid "Leading Light Rear"
 msgstr "後引導燈"
+#
+msgid "Left"
+msgstr ""
 #
 # 
 # 
@@ -2402,11 +2333,6 @@ msgstr "名稱"
 #
 # 
 # 
-msgid "Name:  "
-msgstr "名稱:  "
-#
-# 
-# 
 msgid "Nav Status"
 msgstr "航行狀態"
 #
@@ -2417,11 +2343,6 @@ msgstr ""
 # 
 msgid "Navigation Data"
 msgstr "導航資料"
-#
-# 
-# 
-msgid "Navigational Status:  "
-msgstr "導航狀態:  "
 #
 msgid "New Group..."
 msgstr ""
@@ -2798,16 +2719,6 @@ msgstr "最近位置發報時間:  "
 #
 # 
 # 
-#, c-format
-msgid ""
-"Position Report Age:       %3d Sec.\n"
-"\n"
-msgstr ""
-"位置發報經過時間:       %3d Sec.\n"
-"\n"
-#
-# 
-# 
 msgid "Pref. Chnl"
 msgstr "偏好航道"
 #
@@ -2987,46 +2898,8 @@ msgstr "範圍"
 #
 # 
 # 
-msgid "Range:                  Unavailable\n"
-msgstr "範圍:                  無法取得\n"
-#
-# 
-# 
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "範圍:                %5.1f NM\n"
-#
-# 
-# 
 msgid "Raster"
 msgstr "影像掃描式海圖"
-#
-# 
-# 
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "迴轉率            %3d Deg./Min. 向左\n"
-#
-# 
-# 
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "迴轉率            %3d Deg./Min. 向右\n"
-#
-# 
-# 
-msgid "Rate Of Turn            0\n"
-msgstr "迴轉率            %3d Deg./Min.\n"
-#
-# 
-# 
-msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-msgstr "迴轉率            %3d Deg./Min. 向左\n"
-#
-# 
-# 
-msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-msgstr "迴轉率            %3d Deg./Min. 向右\n"
 #
 # 
 # 
@@ -3114,8 +2987,10 @@ msgstr "重新命名轉向點?"
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr ""
 #
-#, c-format
-msgid "Report as of: %d:%d UTC "
+msgid "Report Age"
+msgstr ""
+#
+msgid "Report as of"
 msgstr ""
 #
 # 
@@ -3158,6 +3033,12 @@ msgstr "從Windows Registry取得啟始語言"
 #, fuzzy
 msgid "Reverse"
 msgstr "反向(&R)"
+#
+# 
+# 
+#, fuzzy
+msgid "Right"
+msgstr "寬度(&W):"
 #
 # 
 # 
@@ -3248,9 +3129,7 @@ msgstr "SOG COG"
 msgid "Safe Water"
 msgstr "安全水域"
 #
-msgid ""
-"Safety Broadcast Message:\n"
-"  "
+msgid "Safety Broadcast Message"
 msgstr ""
 #
 # 
@@ -3327,6 +3206,9 @@ msgstr "傳送至GPS.."
 # 
 msgid "Service vessel, police patrol, port service"
 msgstr "服務船舶, 水警巡邏, 港勤服務"
+#
+msgid "Set"
+msgstr ""
 #
 # 
 # 
@@ -3516,75 +3398,6 @@ msgstr "簡化"
 #
 # 
 # 
-#, c-format
-msgid ""
-"Size:                 %dm x %dm\n"
-"\n"
-msgstr ""
-"尺寸:                 %dm x %dm\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-#
-# 
-# 
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-#
-# 
-# 
 msgid "SoG"
 msgstr "SoG"
 #
@@ -3611,19 +3424,14 @@ msgstr "特別標記"
 #
 # 
 # 
+#, fuzzy
+msgid "Speed"
+msgstr "計畫航速"
+#
+# 
+# 
 msgid "Speed (Kts)"
 msgstr "速度, 節"
-#
-# 
-# 
-msgid "Speed:                  Unavailable\n"
-msgstr "速度:                  無法取得\n"
-#
-# 
-# 
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "速度:                %5.2f 節.\n"
 #
 # 
 # 
@@ -3697,17 +3505,6 @@ msgstr "TCP/IP WiFi 資料伺服器"
 #, fuzzy
 msgid "TCPA"
 msgstr "CPA TCPA"
-#
-# 
-# 
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-#
-# 
-# 
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA:                 %02d:%02d Hr:Min\n"
 #
 # 
 # 
@@ -3823,6 +3620,11 @@ msgstr "字體寬度"
 msgid "The necessary configuration files were not found. "
 msgstr ""
 #
+msgid ""
+"The waypoint you want to delete is used in a route, do you really want to "
+"delete it?"
+msgstr ""
+#
 # 
 # 
 msgid "There"
@@ -3832,6 +3634,12 @@ msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
+msgstr ""
+#
+msgid ""
+"There are some waypoints used in routes or anchor alarms. Do you want to "
+"delete them as well? This will change the routes and disable the anchor "
+"alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 #
 msgid ""
@@ -4041,20 +3849,13 @@ msgstr "拖船, 單一艘"
 msgid "Tug, tanker"
 msgstr "拖船, 油輪"
 #
+msgid "Turn Rate"
+msgstr ""
+#
 # 
 # 
 msgid "Type"
 msgstr "型式"
-#
-# 
-# 
-msgid "Type:                 "
-msgstr "ETA:                  "
-#
-# 
-# 
-msgid "UN Ship Type:         "
-msgstr "UN Ship Type:         "
 #
 msgid "URL"
 msgstr ""
@@ -4079,6 +3880,12 @@ msgstr ""
 # 
 msgid "Unable to load libgps"
 msgstr "無法載入 libgps"
+#
+# 
+# 
+#, fuzzy
+msgid "Unavailable"
+msgstr " COG: 無法取得"
 #
 # 
 # 
@@ -4414,6 +4221,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4441,10 +4249,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
+#
 #
 #
 #
@@ -4486,6 +4296,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4511,6 +4322,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4520,6 +4332,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
+#
 #
 #
 #
@@ -4571,6 +4384,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4590,6 +4404,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 #
@@ -4641,6 +4456,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4659,6 +4475,7 @@ msgstr ""
 # 
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
+#
 #
 #
 #
@@ -4696,6 +4513,24 @@ msgstr ""
 #~ msgstr "(使用中航跡)"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid ":               "
+#~ msgstr "船級:                  "
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ ":               Unavailable\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr "方位:                無法取得\n"
+#
+#
+#
 #
 #
 #
@@ -4713,6 +4548,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS 警告"
+#
 #
 #
 #
@@ -4742,10 +4578,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
+#
 #
 #
 #
@@ -4790,6 +4628,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4799,6 +4638,19 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+# 
+# 
+#~ msgid "Bearing:                %03d Deg.\n"
+#~ msgstr "方位:                %03d Deg.\n"
+#
+#
+# 
+# 
+#~ msgid "Bearing:                Unavailable\n"
+#~ msgstr "方位:                無法取得\n"
+#
 #
 #
 #
@@ -4850,6 +4702,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4869,6 +4722,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -4920,6 +4774,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4939,6 +4794,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -4976,6 +4832,19 @@ msgstr ""
 #~ msgstr "CM93 Offsets On"
 #
 #
+# 
+# 
+#~ msgid "CPA:       \n"
+#~ msgstr "CPA:       \n"
+#
+#
+# 
+# 
+#~ msgid "CPA:                 %6.1f NM\n"
+#~ msgstr "CPA:                 %6.1f NM\n"
+#
+#
+#
 #
 #
 #
@@ -5009,6 +4878,13 @@ msgstr ""
 # 
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
+#
+#
+# 
+# 
+#~ msgid "CallSign:             "
+#~ msgstr "呼號:              "
+#
 #
 #
 #
@@ -5061,6 +4937,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5096,10 +4973,36 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "海圖"
+#
+#
+# 
+# 
+#~ msgid "Class:                "
+#~ msgstr "船級:                  "
+#
+#
+# 
+# 
+#~ msgid "Course:                 %03d Deg.\n"
+#~ msgstr "航向:                 %03d 度.\n"
+#
+#
+# 
+# 
+#~ msgid "Course:                 000 Deg.\n"
+#~ msgstr "航向:                 000 度.\n"
+#
+#
+# 
+# 
+#~ msgid "Course:                 Unavailable\n"
+#~ msgstr "航向:                 無法取得\n"
+#
 #
 #
 #
@@ -5113,6 +5016,7 @@ msgstr ""
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "取消導航"
+#
 #
 #
 #
@@ -5139,10 +5043,30 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "刪除標記"
+#
+#
+# 
+# 
+#~ msgid "Destination:          "
+#~ msgstr "目的地:          "
+#
+#
+# 
+# 
+#~ msgid "ETA:"
+#~ msgstr "ETA:"
+#
+#
+# 
+# 
+#~ msgid "ETA:                  "
+#~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -5177,10 +5101,30 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "前往標記/轉向點"
+#
+#
+# 
+# 
+#~ msgid "Heading:                %03d Deg.\n"
+#~ msgstr "方位:                %03d 度.\n"
+#
+#
+# 
+# 
+#~ msgid "IMO:                 %8d\n"
+#~ msgstr "IMO:                 %8d\n"
+#
+#
+# 
+# 
+#~ msgid "Inland Blue Flag        Clear\n"
+#~ msgstr "內陸藍旗        清除\n"
+#
 #
 #
 #
@@ -5207,10 +5151,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "語系/字型"
+#
+#
+# 
+# 
+#~ msgid "Last Position Report Time:  "
+#~ msgstr "最近位置發報時間:  "
+#
 #
 #
 #
@@ -5247,10 +5199,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "標記圖示"
+#
 #
 #
 #
@@ -5280,6 +5234,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5294,10 +5249,24 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Measure....."
 #~ msgstr "測量....."
+#
+#
+# 
+# 
+#~ msgid "Name:  "
+#~ msgstr "名稱:  "
+#
+#
+# 
+# 
+#~ msgid "Navigational Status:  "
+#~ msgstr "導航狀態:  "
+#
 #
 #
 #
@@ -5337,6 +5306,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5346,6 +5316,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
+#
 #
 #
 #
@@ -5391,6 +5362,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5400,6 +5372,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
+#
 #
 #
 #
@@ -5441,6 +5414,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5450,6 +5424,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
+#
 #
 #
 #
@@ -5491,6 +5466,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5516,6 +5492,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5525,6 +5502,17 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "插件管理員: 卸載插件 with invalid API version %d.%d: "
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Position Report Age:       %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "位置發報經過時間:       %3d Sec.\n"
+#~ "\n"
+#
 #
 #
 #
@@ -5562,6 +5550,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -5586,10 +5575,54 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "列印"
+#
+#
+# 
+# 
+#~ msgid "Range:                  Unavailable\n"
+#~ msgstr "範圍:                  無法取得\n"
+#
+#
+# 
+# 
+#~ msgid "Range:                %5.1f NM\n"
+#~ msgstr "範圍:                %5.1f NM\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+#~ msgstr "迴轉率            %3d Deg./Min. 向左\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+#~ msgstr "迴轉率            %3d Deg./Min. 向右\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn            0\n"
+#~ msgstr "迴轉率            %3d Deg./Min.\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+#~ msgstr "迴轉率            %3d Deg./Min. 向左\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+#~ msgstr "迴轉率            %3d Deg./Min. 向右\n"
+#
 #
 #
 #
@@ -5603,6 +5636,7 @@ msgstr ""
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "反向航路"
+#
 #
 #
 #
@@ -5627,10 +5661,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Set Course Up Mode"
 #~ msgstr "設定航向朝上模式"
+#
 #
 #
 #
@@ -5659,10 +5695,118 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "顯示航跡圖示"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 %dm x %dm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "尺寸:                 %dm x %dm\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid "Speed:                  Unavailable\n"
+#~ msgstr "速度:                  無法取得\n"
+#
+#
+# 
+# 
+#~ msgid "Speed:                %5.2f Kts.\n"
+#~ msgstr "速度:                %5.2f 節.\n"
+#
+#
+# 
+# 
+#~ msgid "TCPA:  \n"
+#~ msgstr "TCPA:  \n"
+#
+#
+# 
+# 
+#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
+#~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
+#
+# 
+# 
+#~ msgid "Type:                 "
+#~ msgstr "ETA:                  "
+#
+#
+# 
+# 
+#~ msgid "UN Ship Type:         "
+#~ msgstr "UN Ship Type:         "
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"POT-Creation-Date: 2012-08-14 09:34-0400\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -198,8 +198,7 @@ msgstr " %H Ώρες   %M Λεπτά"
 msgid " (Ctrl-Space)"
 msgstr ""
 #
-# 
-msgid " (Last Known):  "
+msgid " (Last Known)"
 msgstr ""
 #
 # 
@@ -208,6 +207,9 @@ msgid " - "
 msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
+msgstr ""
+#
+msgid " </b>in<b> "
 msgstr ""
 #
 # 
@@ -515,6 +517,12 @@ msgstr "--"
 #
 # 
 # 
+#, fuzzy
+msgid "---"
+msgstr "--"
+#
+# 
+# 
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr ""
 "---<<< Προειδοποίηση:  Η ακρίβεια των συντεταγμένων είναι χαμηλή. >>>---"
@@ -527,6 +535,9 @@ msgstr ""
 "ανακριβής. >>>---"
 #
 msgid "..."
+msgstr ""
+#
+msgid "0&deg;"
 msgstr ""
 #
 msgid "1 pixel"
@@ -573,21 +584,6 @@ msgstr ""
 #
 msgid "9 pixels"
 msgstr ""
-#
-# 
-# 
-#, fuzzy
-msgid ":               "
-msgstr "Κατηγορία:"
-#
-# 
-# 
-#, fuzzy
-msgid ""
-":               Unavailable\n"
-"\n"
-"\n"
-msgstr "Διόπτευση:            μη διαθέσιμη\n"
 #
 msgid "<--Remove"
 msgstr ""
@@ -903,17 +899,6 @@ msgid "Bearing"
 msgstr "Διόπτευση"
 #
 # 
-# 
-#, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Διόπτευση:            %03d μοίρες.\n"
-#
-# 
-# 
-msgid "Bearing:                Unavailable\n"
-msgstr "Διόπτευση:            μη διαθέσιμη\n"
-#
-# 
 msgid "Black"
 msgstr ""
 #
@@ -997,17 +982,6 @@ msgstr "Συναγερμοί CPA-/ TCPA"
 #
 # 
 # 
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-#
-# 
-# 
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                 %6.1f ΝΜ\n"
-#
-# 
-# 
 msgid "Call"
 msgstr "Κλήση"
 #
@@ -1023,11 +997,6 @@ msgstr ""
 "Τρέχει το gpsd;\n"
 "\n"
 "gpsd Host είναι: "
-#
-# 
-# 
-msgid "CallSign:             "
-msgstr "Κωδικός Κλήσης:"
 #
 # 
 # 
@@ -1195,8 +1164,9 @@ msgstr "Κατηγορία"
 #
 # 
 # 
-msgid "Class:                "
-msgstr "Κατηγορία:"
+#, fuzzy
+msgid "Clear"
+msgstr "Απομάκρυνση όλων"
 #
 # 
 # 
@@ -1275,6 +1245,12 @@ msgstr "Δεν μπορώ να αποφανθώ για το TCP/IP host '"
 #
 # 
 # 
+#, fuzzy
+msgid "Course"
+msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
+#
+# 
+# 
 msgid "Course UP Mode"
 msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
 #
@@ -1287,23 +1263,6 @@ msgstr "Χάρτης με κατεύθυνση ιδια με της Πορεία
 # 
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr ""
-#
-# 
-# 
-#, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "Πορεία:                 %03d Μοίρες\n"
-#
-# 
-# 
-#, fuzzy
-msgid "Course:                 000 Deg.\n"
-msgstr "Πορεία:                 %03d Μοίρες\n"
-#
-# 
-# 
-msgid "Course:                 Unavailable\n"
-msgstr "Πορεία:                  μη διαθέσιμη\n"
 #
 # 
 # 
@@ -1500,11 +1459,6 @@ msgstr "Προορισμός"
 #
 # 
 # 
-msgid "Destination:          "
-msgstr "Προορισμός:                    "
-#
-# 
-# 
 msgid "Disable"
 msgstr "Ακύρωσε"
 #
@@ -1586,16 +1540,6 @@ msgstr "ΕΤΑ:"
 # 
 msgid "ETA          "
 msgstr "ETA          "
-#
-# 
-# 
-msgid "ETA:"
-msgstr "ΕΤΑ:"
-#
-# 
-# 
-msgid "ETA:                  "
-msgstr "ΕΤΑ:                  "
 #
 # 
 msgid "ETE"
@@ -1872,11 +1816,8 @@ msgstr ""
 msgid "HW"
 msgstr ""
 #
-# 
-# 
-#, fuzzy, c-format
-msgid "Heading:                %03d Deg.\n"
-msgstr "Διόπτευση:            %03d μοίρες.\n"
+msgid "Heading"
+msgstr ""
 #
 # 
 # 
@@ -1926,15 +1867,8 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "Ε&ισαγωγή"
 #
-# 
-msgid "IMO:\n"
+msgid "IMO"
 msgstr ""
-#
-# 
-# 
-#, fuzzy, c-format
-msgid "IMO:                 %8d\n"
-msgstr "ΕΤΑ:                  "
 #
 # 
 # 
@@ -1948,12 +1882,8 @@ msgstr "Εισαγωγή Αρχείου GPX"
 #
 # 
 # 
-msgid "Inland Blue Flag        Clear\n"
-msgstr "Inland Blue Flag        Clear\n"
-#
-# 
-# 
-msgid "Inland Blue Flag        Set\n"
+#, fuzzy
+msgid "Inland Blue Flag"
 msgstr "Inland Blue Flag        Set\n"
 #
 # 
@@ -2016,12 +1946,6 @@ msgstr "Γλώσσα"
 #
 # 
 # 
-#, fuzzy
-msgid "Last Position Report Time:  "
-msgstr "Χρόνος τελευταίας αναφοράς: "
-#
-# 
-# 
 msgid "Latitude"
 msgstr "Γεωγραφικό Πλάτος"
 #
@@ -2059,6 +1983,9 @@ msgstr ""
 # 
 # 
 msgid "Leading Light Rear"
+msgstr ""
+#
+msgid "Left"
 msgstr ""
 #
 # 
@@ -2435,12 +2362,6 @@ msgstr "Όνομα"
 #
 # 
 # 
-#, fuzzy
-msgid "Name:  "
-msgstr "Όνομα:  "
-#
-# 
-# 
 msgid "Nav Status"
 msgstr "Κατάσταση Πλοήγησης"
 #
@@ -2451,11 +2372,6 @@ msgstr ""
 # 
 msgid "Navigation Data"
 msgstr "Στοιχεία Πλοήγησης"
-#
-# 
-# 
-msgid "Navigational Status:  "
-msgstr "Κατάσταση Πλοήγησης:  "
 #
 msgid "New Group..."
 msgstr ""
@@ -2837,14 +2753,6 @@ msgstr "Χρόνος τελευταίας αναφοράς: "
 #
 # 
 # 
-#, fuzzy, c-format
-msgid ""
-"Position Report Age:       %3d Sec.\n"
-"\n"
-msgstr "Επικαιρότητα αναφοράς:       %3d δευτ..\n"
-#
-# 
-# 
 msgid "Pref. Chnl"
 msgstr ""
 #
@@ -3025,49 +2933,8 @@ msgstr "Απόσταση"
 #
 # 
 # 
-msgid "Range:                  Unavailable\n"
-msgstr "Απόσταση:            μη διαθέσιμη\n"
-#
-# 
-# 
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Απόσταση:           %5.1f ΝΜ.\n"
-#
-# 
-# 
 msgid "Raster"
 msgstr "Χάρτες κουκίδας (Raster )"
-#
-# 
-# 
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Αριστερά\n"
-#
-# 
-# 
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Δεξιά\n"
-#
-# 
-# 
-#, fuzzy
-msgid "Rate Of Turn            0\n"
-msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά\n"
-#
-# 
-# 
-#, fuzzy
-msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Αριστερά\n"
-#
-# 
-# 
-#, fuzzy
-msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Δεξιά\n"
 #
 # 
 # 
@@ -3161,8 +3028,10 @@ msgstr "Μετονομασία σημείου Πορείας (WP);"
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr ""
 #
-#, c-format
-msgid "Report as of: %d:%d UTC "
+msgid "Report Age"
+msgstr ""
+#
+msgid "Report as of"
 msgstr ""
 #
 # 
@@ -3203,6 +3072,12 @@ msgstr "Ανάκτηση της τοπικής γλώσσας από την Wind
 #, fuzzy
 msgid "Reverse"
 msgstr "&Αναστροφή"
+#
+# 
+# 
+#, fuzzy
+msgid "Right"
+msgstr "&Πάχος:"
 #
 # 
 # 
@@ -3290,9 +3165,7 @@ msgstr "SOG COG"
 msgid "Safe Water"
 msgstr ""
 #
-msgid ""
-"Safety Broadcast Message:\n"
-"  "
+msgid "Safety Broadcast Message"
 msgstr ""
 #
 # 
@@ -3368,6 +3241,9 @@ msgstr "Στείλε στο GPS..."
 # 
 # 
 msgid "Service vessel, police patrol, port service"
+msgstr ""
+#
+msgid "Set"
 msgstr ""
 #
 # 
@@ -3566,73 +3442,6 @@ msgstr "Απλοποιημένο"
 #
 # 
 # 
-#, fuzzy, c-format
-msgid ""
-"Size:                 %dm x %dm\n"
-"\n"
-msgstr ""
-"Μέγεθος:          %dm x %dm x ---m\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Μέγεθος:          %dm x %dm x %4.1fm\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Μέγεθος:          %dm x %dm x ---m\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Μέγεθος:          ---m x ---m x %4.1fm\n"
-"\n"
-#
-# 
-# 
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Μέγεθος:          ---m x ---m x ---m\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Μέγεθος:        %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr "Μέγεθος:        %5.1fm x %4.1fm x ---m\n"
-#
-# 
-# 
 msgid "SoG"
 msgstr "Ταχύτητα (SoG)"
 #
@@ -3661,19 +3470,14 @@ msgstr "Σβήσε σημάδια"
 #
 # 
 # 
+#, fuzzy
+msgid "Speed"
+msgstr "Προσχεδιασμένη Ταχύτητα"
+#
+# 
+# 
 msgid "Speed (Kts)"
 msgstr "Ταχύτητα (Kts)"
-#
-# 
-# 
-msgid "Speed:                  Unavailable\n"
-msgstr "Ταχύτητα:             μη διαθέσιμη\n"
-#
-# 
-# 
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Ταχύτητα:           %5.2f ΚΝ\n"
 #
 # 
 # 
@@ -3749,17 +3553,6 @@ msgstr "Διακομιστής TCP/IP WLAN"
 #, fuzzy
 msgid "TCPA"
 msgstr "CPA TCPA"
-#
-# 
-# 
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-#
-# 
-# 
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA:                 %02d:%02d Ω:Λεπτά\n"
 #
 # 
 # 
@@ -3878,6 +3671,11 @@ msgstr "Το Πάχος γραμματοσειράς."
 msgid "The necessary configuration files were not found. "
 msgstr ""
 #
+msgid ""
+"The waypoint you want to delete is used in a route, do you really want to "
+"delete it?"
+msgstr ""
+#
 # 
 # 
 msgid "There"
@@ -3887,6 +3685,12 @@ msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
+msgstr ""
+#
+msgid ""
+"There are some waypoints used in routes or anchor alarms. Do you want to "
+"delete them as well? This will change the routes and disable the anchor "
+"alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 #
 msgid ""
@@ -4095,22 +3899,13 @@ msgstr ""
 msgid "Tug, tanker"
 msgstr ""
 #
+msgid "Turn Rate"
+msgstr ""
+#
 # 
 # 
 msgid "Type"
 msgstr "Τύπος"
-#
-# 
-# 
-#, fuzzy
-msgid "Type:                 "
-msgstr "ΕΤΑ:                  "
-#
-# 
-# 
-#, fuzzy
-msgid "UN Ship Type:         "
-msgstr "Τύπος Σκάφους:         "
 #
 msgid "URL"
 msgstr ""
@@ -4136,6 +3931,12 @@ msgstr ""
 #, fuzzy
 msgid "Unable to load libgps"
 msgstr "Αδύνατο να τρέξει το libgps.so"
+#
+# 
+# 
+#, fuzzy
+msgid "Unavailable"
+msgstr "Μη διαθέσιμος Χάρτης"
 #
 # 
 # 
@@ -4480,6 +4281,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4507,10 +4309,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Προβολή Χάρτη ΑΓΝΩΣΤΗ, λαμβάνω την Μερκατορική"
+#
 #
 #
 #
@@ -4552,6 +4356,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4561,6 +4366,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
+#
 #
 #
 #
@@ -4588,6 +4394,24 @@ msgstr ""
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο destroy_pi: "
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid ":               "
+#~ msgstr "Κατηγορία:"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ ":               Unavailable\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr "Διόπτευση:            μη διαθέσιμη\n"
+#
+#
+#
 #
 #
 #
@@ -4605,6 +4429,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Συναγερμός AIS"
+#
 #
 #
 #
@@ -4634,10 +4459,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Πρόσθετες Πληροφορίες"
+#
 #
 #
 #
@@ -4682,6 +4509,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4691,6 +4519,19 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
+#
+#
+# 
+# 
+#~ msgid "Bearing:                %03d Deg.\n"
+#~ msgstr "Διόπτευση:            %03d μοίρες.\n"
+#
+#
+# 
+# 
+#~ msgid "Bearing:                Unavailable\n"
+#~ msgstr "Διόπτευση:            μη διαθέσιμη\n"
+#
 #
 #
 #
@@ -4749,6 +4590,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4775,6 +4617,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
+#
 #
 #
 #
@@ -4833,6 +4676,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4875,6 +4719,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4901,6 +4746,25 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Αντιμετάθεση CM93 ενεργή"
+#
+#
+# 
+# 
+#~ msgid "CPA:       \n"
+#~ msgstr "CPA:       \n"
+#
+#
+# 
+# 
+#~ msgid "CPA:                 %6.1f NM\n"
+#~ msgstr "CPA:                 %6.1f ΝΜ\n"
+#
+#
+# 
+# 
+#~ msgid "CallSign:             "
+#~ msgstr "Κωδικός Κλήσης:"
+#
 #
 #
 #
@@ -4958,6 +4822,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4998,10 +4863,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Χάρτης"
+#
 #
 #
 #
@@ -5046,6 +4913,32 @@ msgstr ""
 #~ msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"
 #
 #
+# 
+# 
+#~ msgid "Class:                "
+#~ msgstr "Κατηγορία:"
+#
+#
+# 
+# 
+#~ msgid "Course:                 %03d Deg.\n"
+#~ msgstr "Πορεία:                 %03d Μοίρες\n"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Course:                 000 Deg.\n"
+#~ msgstr "Πορεία:                 %03d Μοίρες\n"
+#
+#
+# 
+# 
+#~ msgid "Course:                 Unavailable\n"
+#~ msgstr "Πορεία:                  μη διαθέσιμη\n"
+#
+#
+#
 #
 #
 #
@@ -5057,6 +4950,7 @@ msgstr ""
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "Απενεργοποίησε Ταξίδι (Route)"
+#
 #
 #
 #
@@ -5083,10 +4977,30 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Σβήσε σημάδια"
+#
+#
+# 
+# 
+#~ msgid "Destination:          "
+#~ msgstr "Προορισμός:                    "
+#
+#
+# 
+# 
+#~ msgid "ETA:"
+#~ msgstr "ΕΤΑ:"
+#
+#
+# 
+# 
+#~ msgid "ETA:                  "
+#~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 #
@@ -5112,6 +5026,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ σφραγίδα χρόνου"
+#
 #
 #
 #
@@ -5166,6 +5081,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5178,6 +5094,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Αποτυχία στη φόρτωση του libgps.so"
+#
 #
 #
 #
@@ -5215,10 +5132,26 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Μετάβαση στο Σημάδι/WP"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Heading:                %03d Deg.\n"
+#~ msgstr "Διόπτευση:            %03d μοίρες.\n"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "IMO:                 %8d\n"
+#~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 #
@@ -5256,6 +5189,13 @@ msgstr ""
 #~ msgstr "Εισαγωγή Αρχείου GPX"
 #
 #
+# 
+# 
+#~ msgid "Inland Blue Flag        Clear\n"
+#~ msgstr "Inland Blue Flag        Clear\n"
+#
+#
+#
 #
 #
 #
@@ -5280,10 +5220,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Γλώσσα/Γραμματοσειρές"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Last Position Report Time:  "
+#~ msgstr "Χρόνος τελευταίας αναφοράς: "
+#
 #
 #
 #
@@ -5305,6 +5254,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 #
@@ -5361,10 +5311,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Εικόνα Σημαδιού"
+#
 #
 #
 #
@@ -5394,6 +5346,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5408,10 +5361,25 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Measure....."
 #~ msgstr "Μέτρηση....."
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Name:  "
+#~ msgstr "Όνομα:  "
+#
+#
+# 
+# 
+#~ msgid "Navigational Status:  "
+#~ msgstr "Κατάσταση Πλοήγησης:  "
+#
 #
 #
 #
@@ -5435,6 +5403,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Νέο Σημάδι"
+#
 #
 #
 #
@@ -5476,6 +5445,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5489,6 +5459,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN PlugIn Βασική Κλάση\n"
 #~ "Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
+#
 #
 #
 #
@@ -5540,6 +5511,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5549,6 +5521,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
+#
 #
 #
 #
@@ -5590,6 +5563,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5599,6 +5573,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
+#
 #
 #
 #
@@ -5640,6 +5615,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5649,6 +5625,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
+#
 #
 #
 #
@@ -5677,6 +5654,16 @@ msgstr ""
 #~ "Διαχειριστής PlugIn: Ακύρωση του PlugIn με την άκυρη έκδοση της ΑΡΙ %d.%d:"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Position Report Age:       %3d Sec.\n"
+#~ "\n"
+#~ msgstr "Επικαιρότητα αναφοράς:       %3d δευτ..\n"
+#
+#
+#
 #
 #
 #
@@ -5699,6 +5686,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Θέση:"
+#
 #
 #
 #
@@ -5738,10 +5726,57 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Εκτύπωση"
+#
+#
+# 
+# 
+#~ msgid "Range:                  Unavailable\n"
+#~ msgstr "Απόσταση:            μη διαθέσιμη\n"
+#
+#
+# 
+# 
+#~ msgid "Range:                %5.1f NM\n"
+#~ msgstr "Απόσταση:           %5.1f ΝΜ.\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+#~ msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Αριστερά\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+#~ msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Δεξιά\n"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Rate Of Turn            0\n"
+#~ msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά\n"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+#~ msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Αριστερά\n"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+#~ msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Δεξιά\n"
+#
 #
 #
 #
@@ -5790,10 +5825,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Αντιστροφή Ταξιδίου(Route)"
+#
 #
 #
 #
@@ -5818,11 +5855,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
+#
 #
 #
 #
@@ -5875,6 +5914,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Printing Icon"
@@ -5891,10 +5931,23 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Δείξε εικόνα ίχνους"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Μέγεθος:          %dm x %dm x ---m\n"
+#~ "\n"
+#
 #
 #
 #
@@ -5930,6 +5983,89 @@ msgstr ""
 #~ msgstr ""
 #~ "Μέγεθος:          %dm x %dm x ---m\n"
 #~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Μέγεθος:          %dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Μέγεθος:          %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Μέγεθος:          ---m x ---m x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Μέγεθος:          ---m x ---m x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Μέγεθος:        %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#~ msgstr "Μέγεθος:        %5.1fm x %4.1fm x ---m\n"
+#
+#
+# 
+# 
+#~ msgid "Speed:                  Unavailable\n"
+#~ msgstr "Ταχύτητα:             μη διαθέσιμη\n"
+#
+#
+# 
+# 
+#~ msgid "Speed:                %5.2f Kts.\n"
+#~ msgstr "Ταχύτητα:           %5.2f ΚΝ\n"
+#
+#
+# 
+# 
+#~ msgid "TCPA:  \n"
+#~ msgstr "TCPA:  \n"
+#
+#
+# 
+# 
+#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
+#~ msgstr "TCPA:                 %02d:%02d Ω:Λεπτά\n"
+#
 #
 #
 #
@@ -5981,6 +6117,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6000,6 +6137,21 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Όνομα Ταξιδίου"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Type:                 "
+#~ msgstr "ΕΤΑ:                  "
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "UN Ship Type:         "
+#~ msgstr "Τύπος Σκάφους:         "
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6 (Pt01)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"POT-Creation-Date: 2012-08-14 09:34-0400\n"
 "PO-Revision-Date: 2010-02-05 16:06+0100\n"
 "Last-Translator: as <as400big@gmail.com>\n"
 "Language-Team: Minhota <zemaria@zemaria.biz>\n"
@@ -252,8 +252,7 @@ msgstr " %H Horas  %M Minutos"
 msgid " (Ctrl-Space)"
 msgstr ""
 #
-# 
-msgid " (Last Known):  "
+msgid " (Last Known)"
 msgstr ""
 #
 # 
@@ -265,6 +264,9 @@ msgid " - "
 msgstr ""
 #
 msgid " -- [Portable(-p) executing from "
+msgstr ""
+#
+msgid " </b>in<b> "
 msgstr ""
 #
 # 
@@ -740,6 +742,9 @@ msgstr ""
 msgid "--"
 msgstr ""
 #
+msgid "---"
+msgstr ""
+#
 # 
 # 
 # 
@@ -756,6 +761,9 @@ msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr ""
 #
 msgid "..."
+msgstr ""
+#
+msgid "0&deg;"
 msgstr ""
 #
 msgid "1 pixel"
@@ -808,27 +816,6 @@ msgstr ""
 #
 msgid "9 pixels"
 msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid ":               "
-msgstr "(ETA) Hora de Chegada Estimada:                  "
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid ""
-":               Unavailable\n"
-"\n"
-"\n"
-msgstr "Tipo de Embarcação:            "
 #
 msgid "<--Remove"
 msgstr ""
@@ -1298,24 +1285,6 @@ msgid "Bearing"
 msgstr "Azimute"
 #
 # 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Proa:              %5.0f Deg.\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Bearing:                Unavailable\n"
-msgstr "Tipo de Embarcação:            "
-#
-# 
 msgid "Black"
 msgstr ""
 #
@@ -1427,23 +1396,6 @@ msgstr "Alarmes CPA/TCPA"
 # 
 # 
 # 
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-#
-# 
-# 
-# 
-# 
-# 
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                 %6.1f NM\n"
-#
-# 
-# 
-# 
-# 
-# 
 #, fuzzy
 msgid "Call"
 msgstr "Apagar Tudo"
@@ -1458,15 +1410,6 @@ msgid ""
 "\n"
 "gpsd host is: "
 msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "CallSign:             "
-msgstr "Posição:              "
 #
 # 
 # 
@@ -1681,8 +1624,8 @@ msgstr "Fechar"
 # 
 # 
 #, fuzzy
-msgid "Class:                "
-msgstr "(ETA) Hora de Chegada Estimada:                  "
+msgid "Clear"
+msgstr "Apagar Tudo"
 #
 # 
 # 
@@ -1794,6 +1737,15 @@ msgstr "Não encontrou anfitrião TCP/IP"
 # 
 # 
 # 
+#, fuzzy
+msgid "Course"
+msgstr "Actualização Cartas OpenCPN"
+#
+# 
+# 
+# 
+# 
+# 
 msgid "Course UP Mode"
 msgstr ""
 #
@@ -1809,33 +1761,6 @@ msgstr "Actualização Cartas OpenCPN"
 # 
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "Rumo:               %5.0f Deg.\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Course:                 000 Deg.\n"
-msgstr "Rumo:               %5.0f Deg.\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Course:                 Unavailable\n"
-msgstr "Tipo de Embarcação:            "
 #
 # 
 # 
@@ -2112,14 +2037,6 @@ msgstr "Destino a:"
 # 
 # 
 # 
-msgid "Destination:          "
-msgstr "Destino:          "
-#
-# 
-# 
-# 
-# 
-# 
 #, fuzzy
 msgid "Disable"
 msgstr "Distancia"
@@ -2259,31 +2176,6 @@ msgstr "ETE"
 # 
 msgid "ETA          "
 msgstr "ETA          "
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "ETA:"
-msgstr "ETE"
-#
-# 
-# 
-# 
-# 
-# 
-msgid "ETA:                  "
-msgstr "(ETA) Hora de Chegada Estimada:                  "
 #
 # 
 # 
@@ -2720,14 +2612,8 @@ msgstr ""
 msgid "HW"
 msgstr ""
 #
-# 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid "Heading:                %03d Deg.\n"
-msgstr "Proa:              %5.0f Deg.\n"
+msgid "Heading"
+msgstr ""
 #
 # 
 # 
@@ -2793,18 +2679,8 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "Exportar...."
 #
-# 
-msgid "IMO:\n"
+msgid "IMO"
 msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid "IMO:                 %8d\n"
-msgstr "(ETA) Hora de Chegada Estimada:                  "
 #
 # 
 # 
@@ -2822,18 +2698,7 @@ msgstr "Ícone"
 msgid "Import GPX file"
 msgstr "Importar Fichero GPX"
 #
-# 
-# 
-# 
-# 
-msgid "Inland Blue Flag        Clear\n"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-msgid "Inland Blue Flag        Set\n"
+msgid "Inland Blue Flag"
 msgstr ""
 #
 # 
@@ -2915,15 +2780,6 @@ msgstr "Idioma"
 # 
 # 
 # 
-#, fuzzy
-msgid "Last Position Report Time:  "
-msgstr "Hora Última Aquisição:       "
-#
-# 
-# 
-# 
-# 
-# 
 msgid "Latitude"
 msgstr "Latitude"
 #
@@ -2964,6 +2820,9 @@ msgstr ""
 # 
 # 
 msgid "Leading Light Rear"
+msgstr ""
+#
+msgid "Left"
 msgstr ""
 #
 # 
@@ -3469,15 +3328,6 @@ msgstr "Nome"
 # 
 # 
 #, fuzzy
-msgid "Name:  "
-msgstr "Nome da Embarcação:"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Nav Status"
 msgstr "Condição de Navegação:  "
 #
@@ -3491,14 +3341,6 @@ msgstr ""
 # 
 msgid "Navigation Data"
 msgstr "Dados de Navegação"
-#
-# 
-# 
-# 
-# 
-# 
-msgid "Navigational Status:  "
-msgstr "Condição de Navegação:  "
 #
 msgid "New Group..."
 msgstr ""
@@ -4033,17 +3875,6 @@ msgstr "Hora Última Aquisição:       "
 #
 # 
 # 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid ""
-"Position Report Age:       %3d Sec.\n"
-"\n"
-msgstr "última aquisição tem:               %3d Sec.\n"
-#
-# 
-# 
 msgid "Pref. Chnl"
 msgstr ""
 #
@@ -4267,71 +4098,8 @@ msgstr "Idioma"
 # 
 # 
 #, fuzzy
-msgid "Range:                  Unavailable\n"
-msgstr "Tipo de Embarcação:            "
-#
-# 
-# 
-# 
-# 
-# 
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Alcance:                %5.1f NM\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Raster"
 msgstr "Base"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "última aquisição tem:               %3d Sec.\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "última aquisição tem:               %3d Sec.\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Rate Of Turn            0\n"
-msgstr "última aquisição tem:               %3d Sec.\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-msgstr "última aquisição tem:               %3d Sec.\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-msgstr "última aquisição tem:               %3d Sec.\n"
 #
 # 
 # 
@@ -4458,8 +4226,10 @@ msgstr "Waypoints"
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr ""
 #
-#, c-format
-msgid "Report as of: %d:%d UTC "
+msgid "Report Age"
+msgstr ""
+#
+msgid "Report as of"
 msgstr ""
 #
 # 
@@ -4507,6 +4277,15 @@ msgstr ""
 #, fuzzy
 msgid "Reverse"
 msgstr "Rota Inversa"
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Right"
+msgstr "&Largura:"
 #
 # 
 # 
@@ -4628,9 +4407,7 @@ msgstr ""
 msgid "Safe Water"
 msgstr ""
 #
-msgid ""
-"Safety Broadcast Message:\n"
-"  "
+msgid "Safety Broadcast Message"
 msgstr ""
 #
 # 
@@ -4738,6 +4515,9 @@ msgstr "Enviar para GPS..."
 # 
 # 
 msgid "Service vessel, police patrol, port service"
+msgstr ""
+#
+msgid "Set"
 msgstr ""
 #
 # 
@@ -5041,97 +4821,6 @@ msgstr "Simplificados"
 # 
 # 
 # 
-# 
-#, fuzzy, c-format
-msgid ""
-"Size:                 %dm x %dm\n"
-"\n"
-msgstr ""
-"Dimensões:                %5dm x %dm x ---m\n"
-"\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Dimensões:                %5dm x %dm x %4.1fm\n"
-"\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Dimensões:                %5dm x %dm x ---m\n"
-"\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Dimensões:                ---m x ---m x %4.1fm\n"
-"\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Dimensões:                ---m x ---m x ---m\n"
-"\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Dimensões:                %5dm x %dm x %4.1fm\n"
-"\n"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr ""
-"Dimensões:                %5dm x %dm x ---m\n"
-"\n"
-#
-# 
-# 
-# 
-# 
 msgid "SoG"
 msgstr ""
 #
@@ -5173,8 +4862,8 @@ msgstr "Eliminar Marca"
 # 
 # 
 #, fuzzy
-msgid "Speed (Kts)"
-msgstr "Velocidade Vento, Kts."
+msgid "Speed"
+msgstr "Velocidade Prevista"
 #
 # 
 # 
@@ -5182,17 +4871,8 @@ msgstr "Velocidade Vento, Kts."
 # 
 # 
 #, fuzzy
-msgid "Speed:                  Unavailable\n"
-msgstr "Tipo de Embarcação:            "
-#
-# 
-# 
-# 
-# 
-# 
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Velocidade:                %5.2f Kts.\n"
+msgid "Speed (Kts)"
+msgstr "Velocidade Vento, Kts."
 #
 # 
 # 
@@ -5301,23 +4981,6 @@ msgstr "Servidor Dados TCP/IP WiFi"
 #, fuzzy
 msgid "TCPA"
 msgstr "Alarmes CPA/TCPA"
-#
-# 
-# 
-# 
-# 
-# 
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-#
-# 
-# 
-# 
-# 
-# 
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA:                 %02d:%02d Hr:Min\n"
 #
 # 
 # 
@@ -5466,6 +5129,11 @@ msgstr "Largura da Letra."
 msgid "The necessary configuration files were not found. "
 msgstr ""
 #
+msgid ""
+"The waypoint you want to delete is used in a route, do you really want to "
+"delete it?"
+msgstr ""
+#
 # 
 # 
 # 
@@ -5479,6 +5147,12 @@ msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
+msgstr ""
+#
+msgid ""
+"There are some waypoints used in routes or anchor alarms. Do you want to "
+"delete them as well? This will change the routes and disable the anchor "
+"alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 #
 msgid ""
@@ -5754,30 +5428,15 @@ msgstr ""
 msgid "Tug, tanker"
 msgstr ""
 #
-# 
-# 
-# 
-# 
-msgid "Type"
+msgid "Turn Rate"
 msgstr ""
 #
 # 
 # 
 # 
 # 
-# 
-#, fuzzy
-msgid "Type:                 "
-msgstr "(ETA) Hora de Chegada Estimada:                  "
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "UN Ship Type:         "
-msgstr "Tipo de Embarcação:            "
+msgid "Type"
+msgstr ""
 #
 msgid "URL"
 msgstr ""
@@ -5803,6 +5462,15 @@ msgstr ""
 # 
 msgid "Unable to load libgps"
 msgstr ""
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Unavailable"
+msgstr "Não há Carta Disponível"
 #
 # 
 # 
@@ -6222,6 +5890,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6256,6 +5925,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 #
@@ -6327,6 +5997,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6366,6 +6037,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Apagar todas as Rotas..."
+#
 #
 #
 #
@@ -6423,6 +6095,30 @@ msgstr ""
 #~ msgstr "Apagar Rastro"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ":               "
+#~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ ":               Unavailable\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr "Tipo de Embarcação:            "
+#
+#
+#
 #
 #
 #
@@ -6443,6 +6139,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Alerta AIS"
+#
 #
 #
 #
@@ -6475,6 +6172,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6482,6 +6180,45 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informação Adicional"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Bearing:                %03d Deg.\n"
+#~ msgstr "Proa:              %5.0f Deg.\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Bearing:                Unavailable\n"
+#~ msgstr "Tipo de Embarcação:            "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "CPA:       \n"
+#~ msgstr "CPA:       \n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "CPA:                 %6.1f NM\n"
+#~ msgstr "CPA:                 %6.1f NM\n"
+#
 #
 #
 #
@@ -6535,6 +6272,17 @@ msgstr ""
 #~ msgstr "Indicativo Estação VHF:  "
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "CallSign:             "
+#~ msgstr "Posição:              "
+#
+#
+#
 #
 #
 #
@@ -6555,6 +6303,7 @@ msgstr ""
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
 #
 #
 #
@@ -6616,6 +6365,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6654,6 +6404,17 @@ msgstr ""
 #~ msgstr ""
 #~ "Classe:     A\n"
 #~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Class:                "
+#~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
 #
 #
 #
@@ -6714,6 +6475,37 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Course:                 %03d Deg.\n"
+#~ msgstr "Rumo:               %5.0f Deg.\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Course:                 000 Deg.\n"
+#~ msgstr "Rumo:               %5.0f Deg.\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Course:                 Unavailable\n"
+#~ msgstr "Tipo de Embarcação:            "
+#
+#
+#
 #
 #
 #
@@ -6740,6 +6532,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6748,6 +6541,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Cor da Letra."
+#
 #
 #
 #
@@ -6819,6 +6613,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6826,6 +6621,43 @@ msgstr ""
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Eliminar Marca"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Destination:          "
+#~ msgstr "Destino:          "
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "ETA:"
+#~ msgstr "ETE"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "ETA:                  "
+#~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
 #
 #
 #
@@ -6893,6 +6725,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6918,6 +6751,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Sair do OpenCPN"
+#
 #
 #
 #
@@ -6996,6 +6830,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7027,6 +6862,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -7092,6 +6928,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7125,6 +6962,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controlo Visualização GRIB"
+#
 #
 #
 #
@@ -7183,6 +7021,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7191,6 +7030,27 @@ msgstr ""
 #, fuzzy
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Mover Barco Para Aqui"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Heading:                %03d Deg.\n"
+#~ msgstr "Proa:              %5.0f Deg.\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "IMO:                 %8d\n"
+#~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
 #
 #
 #
@@ -7211,6 +7071,17 @@ msgstr ""
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Fontes"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Last Position Report Time:  "
+#~ msgstr "Hora Última Aquisição:       "
+#
 #
 #
 #
@@ -7235,6 +7106,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
 #
 #
 #
@@ -7294,6 +7166,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7301,6 +7174,7 @@ msgstr ""
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Ícone"
+#
 #
 #
 #
@@ -7333,6 +7207,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7350,6 +7225,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7357,6 +7233,26 @@ msgstr ""
 # 
 #~ msgid "Measure....."
 #~ msgstr "Medição....."
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Name:  "
+#~ msgstr "Nome da Embarcação:"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Navigational Status:  "
+#~ msgstr "Condição de Navegação:  "
+#
 #
 #
 #
@@ -7383,6 +7279,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nova Marca"
+#
 #
 #
 #
@@ -7448,6 +7345,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7481,6 +7379,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
+#
 #
 #
 #
@@ -7547,6 +7446,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7583,6 +7483,19 @@ msgstr ""
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Position Report Age:       %3d Sec.\n"
+#~ "\n"
+#~ msgstr "última aquisição tem:               %3d Sec.\n"
+#
+#
+#
 #
 #
 #
@@ -7609,6 +7522,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Posição:              "
+#
 #
 #
 #
@@ -7670,6 +7584,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7677,6 +7592,76 @@ msgstr ""
 # 
 #~ msgid "Printing"
 #~ msgstr "Impressão"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Range:                  Unavailable\n"
+#~ msgstr "Tipo de Embarcação:            "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Range:                %5.1f NM\n"
+#~ msgstr "Alcance:                %5.1f NM\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+#~ msgstr "última aquisição tem:               %3d Sec.\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+#~ msgstr "última aquisição tem:               %3d Sec.\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Rate Of Turn            0\n"
+#~ msgstr "última aquisição tem:               %3d Sec.\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+#~ msgstr "última aquisição tem:               %3d Sec.\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+#~ msgstr "última aquisição tem:               %3d Sec.\n"
+#
 #
 #
 #
@@ -7729,6 +7714,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7736,6 +7722,7 @@ msgstr ""
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Rota Inversa"
+#
 #
 #
 #
@@ -7754,6 +7741,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Route Distance: "
 #~ msgstr "Distancia Total"
+#
 #
 #
 #
@@ -7804,6 +7792,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Pasta de Ficheiros GRIB"
+#
 #
 #
 #
@@ -7875,6 +7864,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7902,6 +7892,7 @@ msgstr ""
 # 
 #~ msgid "ShipName:  "
 #~ msgstr "Nome da Embarcação:"
+#
 #
 #
 #
@@ -7972,6 +7963,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8010,6 +8002,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Mostrar Janela GRIB"
+#
 #
 #
 #
@@ -8069,6 +8062,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8088,6 +8082,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8095,6 +8090,7 @@ msgstr ""
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar Ícone Rastro"
+#
 #
 #
 #
@@ -8146,6 +8142,21 @@ msgstr ""
 #~ msgstr "Altura de Vaga Significativa, m"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Dimensões:                %5dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
 #
 #
 #
@@ -8182,6 +8193,128 @@ msgstr ""
 #~ msgstr ""
 #~ "Dimensões:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Dimensões:                %5dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Dimensões:                %5dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Dimensões:                ---m x ---m x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Dimensões:                ---m x ---m x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Dimensões:                %5dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Dimensões:                %5dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Speed:                  Unavailable\n"
+#~ msgstr "Tipo de Embarcação:            "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Speed:                %5.2f Kts.\n"
+#~ msgstr "Velocidade:                %5.2f Kts.\n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "TCPA:  \n"
+#~ msgstr "TCPA:  \n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
+#~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -8236,6 +8369,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8258,6 +8392,27 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Rota"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Type:                 "
+#~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "UN Ship Type:         "
+#~ msgstr "Tipo de Embarcação:            "
+#
 #
 #
 #
@@ -8305,6 +8460,7 @@ msgstr ""
 # 
 #~ msgid "Use High Definition Graphics"
 #~ msgstr "Usar Gráficos Alta Definição"
+#
 #
 #
 #
@@ -8370,6 +8526,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8403,6 +8560,7 @@ msgstr ""
 # 
 #~ msgid "Wind Direction"
 #~ msgstr "Direcção Vento"
+#
 #
 #
 #

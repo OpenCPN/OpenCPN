@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.6.1705\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"POT-Creation-Date: 2012-08-14 09:34-0400\n"
 "PO-Revision-Date: 2012-05-07 00:48+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -176,7 +176,8 @@ msgid " (Ctrl-Space)"
 msgstr ""
 #
 #
-msgid " (Last Known):  "
+#, fuzzy
+msgid " (Last Known)"
 msgstr " (Sist sett):  "
 #
 #
@@ -185,6 +186,9 @@ msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Bærbar(-p) startes fra "
+#
+msgid " </b>in<b> "
+msgstr ""
 #
 #
 #, c-format
@@ -433,6 +437,11 @@ msgid "--"
 msgstr "--"
 #
 #
+#, fuzzy
+msgid "---"
+msgstr "--"
+#
+#
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< Advarsel:  Georeferanse nøyaktighet for kart er dårlig. >>>---"
 #
@@ -442,6 +451,9 @@ msgstr "---<<< Advarsel:  Georeferanse for kart kan være dårlig. >>>---"
 #
 msgid "..."
 msgstr "..."
+#
+msgid "0&deg;"
+msgstr ""
 #
 msgid "1 pixel"
 msgstr "1 piksel"
@@ -484,20 +496,6 @@ msgstr "8 piksler"
 #
 msgid "9 pixels"
 msgstr "9 piksler"
-#
-#
-msgid ":               "
-msgstr ":               "
-#
-#
-msgid ""
-":               Unavailable\n"
-"\n"
-"\n"
-msgstr ""
-":                Utilgjengelig\n"
-"\n"
-"\n"
 #
 msgid "<--Remove"
 msgstr "<--Fjern"
@@ -750,15 +748,6 @@ msgid "Bearing"
 msgstr "Kurs"
 #
 #
-#, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Kurs:                %03d Gra.\n"
-#
-#
-msgid "Bearing:                Unavailable\n"
-msgstr "Kurs:                Utilgjengelig\n"
-#
-#
 msgid "Black"
 msgstr "Sort"
 #
@@ -827,15 +816,6 @@ msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA Varsler"
 #
 #
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-#
-#
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                 %6.1f Nm\n"
-#
-#
 msgid "Call"
 msgstr "Kallesignal"
 #
@@ -850,10 +830,6 @@ msgstr ""
 "Er gpsd startet?\n"
 "\n"
 "gpsd vert er: "
-#
-#
-msgid "CallSign:             "
-msgstr "Kallesignal:             "
 #
 #
 msgid "Cancel"
@@ -987,8 +963,9 @@ msgid "Class"
 msgstr "Klasse"
 #
 #
-msgid "Class:                "
-msgstr "Klasse:                "
+#, fuzzy
+msgid "Clear"
+msgstr "Tøm alt"
 #
 #
 msgid "Clear All"
@@ -1052,6 +1029,11 @@ msgid "Could not resolve TCP/IP host '"
 msgstr "Kunne ikke løse TCP/IP vert '"
 #
 #
+#, fuzzy
+msgid "Course"
+msgstr "Kurs opp"
+#
+#
 msgid "Course UP Mode"
 msgstr "Kurs opp"
 #
@@ -1063,19 +1045,6 @@ msgstr "Kurs opp"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr "Oppdateringstid for kurs opp visning (sek.)"
-#
-#
-#, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "Kurs:                 %03d Gra.\n"
-#
-#
-msgid "Course:                 000 Deg.\n"
-msgstr "Kurs:                 000 Grad.\n"
-#
-#
-msgid "Course:                 Unavailable\n"
-msgstr "Kurs:                 Utilgjengelig\n"
 #
 #
 msgid "Create Route"
@@ -1237,10 +1206,6 @@ msgid "Destination"
 msgstr "Destinasjon"
 #
 #
-msgid "Destination:          "
-msgstr "Destinasjon:          "
-#
-#
 msgid "Disable"
 msgstr "Deaktiver"
 #
@@ -1305,14 +1270,6 @@ msgstr "ETA"
 #
 msgid "ETA          "
 msgstr "ETA"
-#
-#
-msgid "ETA:"
-msgstr "ETA:"
-#
-#
-msgid "ETA:                  "
-msgstr "ETA:                  "
 #
 #
 msgid "ETE"
@@ -1538,10 +1495,8 @@ msgstr "HSC"
 msgid "HW"
 msgstr "HW"
 #
-#
-#, c-format
-msgid "Heading:                %03d Deg.\n"
-msgstr "Kurs:                %03d Gra.\n"
+msgid "Heading"
+msgstr ""
 #
 #
 msgid "Help"
@@ -1581,13 +1536,9 @@ msgid "I&mport GPX..."
 msgstr "I&mporter GPX..."
 #
 #
-msgid "IMO:\n"
+#, fuzzy
+msgid "IMO"
 msgstr "IMO:\n"
-#
-#
-#, c-format
-msgid "IMO:                 %8d\n"
-msgstr "IMO:                 %8d\n"
 #
 #
 msgid "Icon"
@@ -1598,11 +1549,8 @@ msgid "Import GPX file"
 msgstr "Importer GPX fil"
 #
 #
-msgid "Inland Blue Flag        Clear\n"
-msgstr "Innenlands Blått Flagg        Fjern\n"
-#
-#
-msgid "Inland Blue Flag        Set\n"
+#, fuzzy
+msgid "Inland Blue Flag"
 msgstr "Innenlands Blått Flagg        Sett\n"
 #
 #
@@ -1653,10 +1601,6 @@ msgid "Language"
 msgstr "Språk"
 #
 #
-msgid "Last Position Report Time:  "
-msgstr "Tid for siste posisjonsrapport:  "
-#
-#
 msgid "Latitude"
 msgstr "Breddegrad"
 #
@@ -1687,6 +1631,9 @@ msgstr "Ledelys foran"
 #
 msgid "Leading Light Rear"
 msgstr "Ledelys bak"
+#
+msgid "Left"
+msgstr ""
 #
 #
 msgid "Leg"
@@ -1985,10 +1932,6 @@ msgid "Name"
 msgstr "Navn"
 #
 #
-msgid "Name:  "
-msgstr "Navn:  "
-#
-#
 msgid "Nav Status"
 msgstr "Nav Status"
 #
@@ -1998,10 +1941,6 @@ msgstr ""
 #
 msgid "Navigation Data"
 msgstr "Navigasjonsdata"
-#
-#
-msgid "Navigational Status:  "
-msgstr "Navigasjons status:  "
 #
 msgid "New Group..."
 msgstr "Ny gruppe..."
@@ -2305,15 +2244,6 @@ msgid "Position Report"
 msgstr "Posisjons rapport"
 #
 #
-#, c-format
-msgid ""
-"Position Report Age:       %3d Sec.\n"
-"\n"
-msgstr ""
-"Alder for posisjonsrapport:       %3d sek.\n"
-"\n"
-#
-#
 msgid "Pref. Chnl"
 msgstr "Foret.Kanal"
 #
@@ -2458,39 +2388,8 @@ msgid "Range"
 msgstr "Avstand"
 #
 #
-msgid "Range:                  Unavailable\n"
-msgstr "Avstand:                  Unavailable\n"
-#
-#
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Avstand:                %5.1f NM\n"
-#
-#
 msgid "Raster"
 msgstr "Raster"
-#
-#
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Svinghastighet            %3d Gra./Min. Venstre\n"
-#
-#
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Svinghastighet            %3d Gra./Min. Høyre\n"
-#
-#
-msgid "Rate Of Turn            0\n"
-msgstr "Svinghastighet            0\n"
-#
-#
-msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-msgstr "Svinghastighet:       > 5 Grad./30 s. Venstre\n"
-#
-#
-msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-msgstr "Svinghastighet:       > 5 Grad./30 s. Høyre\n"
 #
 #
 msgid "Real"
@@ -2565,8 +2464,11 @@ msgstr "Bytte navn på veipunkter?"
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr "RenderHPGL: '%s' instruksen er ikke implementert."
 #
-#, c-format
-msgid "Report as of: %d:%d UTC "
+msgid "Report Age"
+msgstr ""
+#
+#, fuzzy
+msgid "Report as of"
 msgstr "Rapport fra %d:%d UTC "
 #
 #
@@ -2601,6 +2503,11 @@ msgstr "Innhenter grunnleggende språkvalg fra Windows registeret"
 #, fuzzy
 msgid "Reverse"
 msgstr "&Reverser"
+#
+#
+#, fuzzy
+msgid "Right"
+msgstr "Lys"
 #
 #
 msgid "Rollover"
@@ -2672,9 +2579,8 @@ msgstr "SOG COG"
 msgid "Safe Water"
 msgstr "Trygt farvann"
 #
-msgid ""
-"Safety Broadcast Message:\n"
-"  "
+#, fuzzy
+msgid "Safety Broadcast Message"
 msgstr ""
 "Melding i sikkerhets sending:\n"
 "  "
@@ -2740,6 +2646,9 @@ msgstr "Send til GPS..."
 #
 msgid "Service vessel, police patrol, port service"
 msgstr "Servicefartøy, politipatrulje, havneservice"
+#
+msgid "Set"
+msgstr ""
 #
 #
 msgid "Set Anchor Watch"
@@ -2891,68 +2800,6 @@ msgid "Simplified"
 msgstr "ENC standard"
 #
 #
-#, c-format
-msgid ""
-"Size:                 %dm x %dm\n"
-"\n"
-msgstr ""
-"Størrelse:                 %dm x %dm\n"
-"\n"
-#
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Størrelse:                 %dm x %dm x %4.1fm\n"
-"\n"
-#
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Størrelse:                 %dm x %dm x ---m\n"
-"\n"
-#
-#
-#, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Størrelse:                 ---m x ---m x %4.1fm\n"
-"\n"
-#
-#
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Størrelse:                 ---m x ---m x ---m\n"
-"\n"
-#
-#
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Størrelse:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-#
-#
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr ""
-"Størrelse:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-#
-#
 msgid "SoG"
 msgstr "SOG"
 #
@@ -2973,17 +2820,13 @@ msgid "Special Mark"
 msgstr "Spesialmerke"
 #
 #
+#, fuzzy
+msgid "Speed"
+msgstr "Planlagt fart"
+#
+#
 msgid "Speed (Kts)"
 msgstr "Fart (Knop)"
-#
-#
-msgid "Speed:                  Unavailable\n"
-msgstr "Fart:                  Unavailable\n"
-#
-#
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Fart:                %5.2f Kts.\n"
 #
 #
 msgid "Split Route"
@@ -3042,15 +2885,6 @@ msgstr "TCP/IP WiFi data server"
 #, fuzzy
 msgid "TCPA"
 msgstr "CPA TCPA"
-#
-#
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-#
-#
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA:                 %02d:%02d Tim:Min\n"
 #
 #
 msgid "Tankbarge"
@@ -3145,6 +2979,11 @@ msgstr "Font vekt."
 msgid "The necessary configuration files were not found. "
 msgstr ""
 #
+msgid ""
+"The waypoint you want to delete is used in a route, do you really want to "
+"delete it?"
+msgstr ""
+#
 #
 msgid "There"
 msgstr "Der"
@@ -3153,6 +2992,12 @@ msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
+msgstr ""
+#
+msgid ""
+"There are some waypoints used in routes or anchor alarms. Do you want to "
+"delete them as well? This will change the routes and disable the anchor "
+"alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 #
 msgid ""
@@ -3325,17 +3170,12 @@ msgstr "Slepebåt, enkel"
 msgid "Tug, tanker"
 msgstr "Slepebåt, tankbåt"
 #
+msgid "Turn Rate"
+msgstr ""
+#
 #
 msgid "Type"
 msgstr "Type"
-#
-#
-msgid "Type:                 "
-msgstr "Type:                 "
-#
-#
-msgid "UN Ship Type:         "
-msgstr "UN Skipstype:            "
 #
 msgid "URL"
 msgstr "URL"
@@ -3357,6 +3197,11 @@ msgstr ""
 #
 msgid "Unable to load libgps"
 msgstr "Kunne ikke laste libgps"
+#
+#
+#, fuzzy
+msgid "Unavailable"
+msgstr " COG: Utilgjengelig"
 #
 #
 msgid "Undefined"
@@ -3638,6 +3483,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartprojisering er UKJENT, antar Mercator: "
 #
@@ -3650,8 +3496,26 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
+#
+#
+#~ msgid ":               "
+#~ msgstr ":               "
+#
+#
+#
+#~ msgid ""
+#~ ":               Unavailable\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ ":                Utilgjengelig\n"
+#~ "\n"
+#~ "\n"
+#
 #
 #
 #
@@ -3678,8 +3542,55 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Aktiver ruten"
+#
+#
+#
+#~ msgid "Bearing:                %03d Deg.\n"
+#~ msgstr "Kurs:                %03d Gra.\n"
+#
+#
+#
+#~ msgid "Bearing:                Unavailable\n"
+#~ msgstr "Kurs:                Utilgjengelig\n"
+#
+#
+#
+#~ msgid "CPA:       \n"
+#~ msgstr "CPA:       \n"
+#
+#
+#
+#~ msgid "CPA:                 %6.1f NM\n"
+#~ msgstr "CPA:                 %6.1f Nm\n"
+#
+#
+#
+#~ msgid "CallSign:             "
+#~ msgstr "Kallesignal:             "
+#
+#
+#
+#~ msgid "Class:                "
+#~ msgstr "Klasse:                "
+#
+#
+#
+#~ msgid "Course:                 %03d Deg.\n"
+#~ msgstr "Kurs:                 %03d Gra.\n"
+#
+#
+#
+#~ msgid "Course:                 000 Deg.\n"
+#~ msgstr "Kurs:                 000 Grad.\n"
+#
+#
+#
+#~ msgid "Course:                 Unavailable\n"
+#~ msgstr "Kurs:                 Utilgjengelig\n"
+#
 #
 #
 #
@@ -3705,6 +3616,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Standard datasett"
 #
@@ -3717,8 +3629,25 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Slett merke"
+#
+#
+#
+#~ msgid "Destination:          "
+#~ msgstr "Destinasjon:          "
+#
+#
+#
+#~ msgid "ETA:"
+#~ msgstr "ETA:"
+#
+#
+#
+#~ msgid "ETA:                  "
+#~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -3743,8 +3672,25 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Tidevannstabell i bruk:"
+#
+#
+#
+#~ msgid "Heading:                %03d Deg.\n"
+#~ msgstr "Kurs:                %03d Gra.\n"
+#
+#
+#
+#~ msgid "IMO:                 %8d\n"
+#~ msgstr "IMO:                 %8d\n"
+#
+#
+#
+#~ msgid "Inland Blue Flag        Clear\n"
+#~ msgstr "Innenlands Blått Flagg        Fjern\n"
+#
 #
 #
 #
@@ -3771,8 +3717,15 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Språk og Skrift"
+#
+#
+#
+#~ msgid "Last Position Report Time:  "
+#~ msgstr "Tid for siste posisjonsrapport:  "
+#
 #
 #
 #
@@ -3795,6 +3748,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Avstandsmåling..."
 #
@@ -3807,8 +3761,29 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "Nm"
+#
+#
+#
+#~ msgid "Name:  "
+#~ msgstr "Navn:  "
+#
+#
+#
+#~ msgid "Navigational Status:  "
+#~ msgstr "Navigasjons status:  "
+#
+#
+#
+#~ msgid ""
+#~ "Position Report Age:       %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Alder for posisjonsrapport:       %3d sek.\n"
+#~ "\n"
+#
 #
 #
 #
@@ -3846,8 +3821,45 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Utskrift"
+#
+#
+#
+#~ msgid "Range:                  Unavailable\n"
+#~ msgstr "Avstand:                  Unavailable\n"
+#
+#
+#
+#~ msgid "Range:                %5.1f NM\n"
+#~ msgstr "Avstand:                %5.1f NM\n"
+#
+#
+#
+#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+#~ msgstr "Svinghastighet            %3d Gra./Min. Venstre\n"
+#
+#
+#
+#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+#~ msgstr "Svinghastighet            %3d Gra./Min. Høyre\n"
+#
+#
+#
+#~ msgid "Rate Of Turn            0\n"
+#~ msgstr "Svinghastighet            0\n"
+#
+#
+#
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+#~ msgstr "Svinghastighet:       > 5 Grad./30 s. Venstre\n"
+#
+#
+#
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+#~ msgstr "Svinghastighet:       > 5 Grad./30 s. Høyre\n"
+#
 #
 #
 #
@@ -3871,6 +3883,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rutedistanse"
 #
@@ -3883,8 +3896,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Sett kurs opp"
+#
 #
 #
 #
@@ -3913,8 +3928,103 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Vis slepestrek ikon"
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Størrelse:                 %dm x %dm\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Størrelse:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Størrelse:                 %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Størrelse:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Størrelse:                 ---m x ---m x ---m\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Størrelse:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Størrelse:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#
+#
+#
+#~ msgid "Speed:                  Unavailable\n"
+#~ msgstr "Fart:                  Unavailable\n"
+#
+#
+#
+#~ msgid "Speed:                %5.2f Kts.\n"
+#~ msgstr "Fart:                %5.2f Kts.\n"
+#
+#
+#
+#~ msgid "TCPA:  \n"
+#~ msgstr "TCPA:  \n"
+#
+#
+#
+#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
+#~ msgstr "TCPA:                 %02d:%02d Tim:Min\n"
+#
+#
+#
+#~ msgid "Type:                 "
+#~ msgstr "Type:                 "
+#
+#
+#
+#~ msgid "UN Ship Type:         "
+#~ msgstr "UN Skipstype:            "
+#
 #
 #
 #

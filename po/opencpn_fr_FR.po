@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"POT-Creation-Date: 2012-08-14 09:34-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
 "Language-Team: \n"
@@ -172,7 +172,8 @@ msgstr " %H heures  %M minutes"
 msgid " (Ctrl-Space)"
 msgstr ""
 #
-msgid " (Last Known):  "
+#, fuzzy
+msgid " (Last Known)"
 msgstr "(Dernier connu) :"
 #
 #
@@ -181,6 +182,9 @@ msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Portable(-p) execution depuis"
+#
+msgid " </b>in<b> "
+msgstr ""
 #
 #, c-format
 msgid " COG: %03d Deg."
@@ -433,6 +437,10 @@ msgstr "-"
 msgid "--"
 msgstr "--"
 #
+#, fuzzy
+msgid "---"
+msgstr "--"
+#
 #
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr ""
@@ -447,6 +455,9 @@ msgstr ""
 #
 msgid "..."
 msgstr "..."
+#
+msgid "0&deg;"
+msgstr ""
 #
 msgid "1 pixel"
 msgstr "1 pixel"
@@ -486,18 +497,6 @@ msgstr "8 pixels"
 #
 msgid "9 pixels"
 msgstr "9 pixels"
-#
-msgid ":               "
-msgstr ":               "
-#
-msgid ""
-":               Unavailable\n"
-"\n"
-"\n"
-msgstr ""
-":               Indisponible\n"
-"\n"
-"\n"
 #
 msgid "<--Remove"
 msgstr "<-- Retirer"
@@ -721,13 +720,6 @@ msgstr "Balise tribord"
 msgid "Bearing"
 msgstr "Relèvement"
 #
-#, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Cible relevée au : %03d   Deg.\n"
-#
-msgid "Bearing:                Unavailable\n"
-msgstr "Cible relevée au : Indisponible\n"
-#
 msgid "Black"
 msgstr "Noir"
 #
@@ -788,14 +780,6 @@ msgid "CPA/TCPA Alerts"
 msgstr "Alarmes CPA/TCPA ( TCPA = Temps pour le CPA)."
 #
 #
-msgid "CPA:       \n"
-msgstr "CPA  : \n"
-#
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA   :               %6.1f NM\n"
-#
-#
 msgid "Call"
 msgstr "Indicatif"
 #
@@ -809,9 +793,6 @@ msgstr ""
 "gpsd est il en service ?\n"
 "\n"
 "L'hôte gpsd est : "
-#
-msgid "CallSign:             "
-msgstr "Indicatif d'appel  : "
 #
 #
 msgid "Cancel"
@@ -925,8 +906,10 @@ msgstr "Choisir un fichier"
 msgid "Class"
 msgstr "Classe"
 #
-msgid "Class:                "
-msgstr "Classe               : "
+#
+#, fuzzy
+msgid "Clear"
+msgstr "Ne rien sélectionner"
 #
 #
 msgid "Clear All"
@@ -986,6 +969,11 @@ msgid "Could not resolve TCP/IP host '"
 msgstr "Résolution hôte TCP/IP impossible '"
 #
 #
+#, fuzzy
+msgid "Course"
+msgstr "Cap vers le haut : Activer"
+#
+#
 msgid "Course UP Mode"
 msgstr "Cap vers le haut : Activer"
 #
@@ -996,16 +984,6 @@ msgstr "Cap vers le haut : Activer"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr "Course vers le haut : Mise à jour de la période (Sec.)"
-#
-#, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "COG                 : %03d   Deg.\n"
-#
-msgid "Course:                 000 Deg.\n"
-msgstr "COG                 : 000   Deg.\n"
-#
-msgid "Course:                 Unavailable\n"
-msgstr "COG                 : Indisponible\n"
 #
 #
 msgid "Create Route"
@@ -1148,10 +1126,6 @@ msgid "Destination"
 msgstr "Destination"
 #
 #
-msgid "Destination:          "
-msgstr "Destination         :"
-#
-#
 msgid "Disable"
 msgstr "Désactiver"
 #
@@ -1209,12 +1183,6 @@ msgstr "Date est. d'arrivée :"
 #
 msgid "ETA          "
 msgstr "Arrivée à :                                           "
-#
-msgid "ETA:"
-msgstr "Date est. d'arrivée :"
-#
-msgid "ETA:                  "
-msgstr "Date est. d'arrivée :"
 #
 msgid "ETE"
 msgstr "ETE"
@@ -1409,9 +1377,8 @@ msgstr "grd. vit."
 msgid "HW"
 msgstr "PM"
 #
-#, c-format
-msgid "Heading:                %03d Deg.\n"
-msgstr "Cap compas suivi    : %03d   Deg.\n"
+msgid "Heading"
+msgstr ""
 #
 #
 msgid "Help"
@@ -1448,12 +1415,9 @@ msgstr "Hydroglisseur"
 msgid "I&mport GPX..."
 msgstr "I&mporter GPX ......"
 #
-msgid "IMO:\n"
+#, fuzzy
+msgid "IMO"
 msgstr "IMO:\n"
-#
-#, c-format
-msgid "IMO:                 %8d\n"
-msgstr "IMO:                 %8d\n"
 #
 #
 msgid "Icon"
@@ -1462,10 +1426,8 @@ msgstr "Icône"
 msgid "Import GPX file"
 msgstr "GPX : Importer un fichier"
 #
-msgid "Inland Blue Flag        Clear\n"
-msgstr "Pavillon bleu, eaux int. :            Effacé\n"
-#
-msgid "Inland Blue Flag        Set\n"
+#, fuzzy
+msgid "Inland Blue Flag"
 msgstr "Pavillon bleu, eaux int. :            Activé\n"
 #
 # Menu contextuel : Route
@@ -1508,9 +1470,6 @@ msgstr "BM"
 msgid "Language"
 msgstr "Langue"
 #
-msgid "Last Position Report Time:  "
-msgstr "Heure du dernier rapport   : "
-#
 #
 msgid "Latitude"
 msgstr "Latitude"
@@ -1538,6 +1497,9 @@ msgstr "Feu avant"
 #
 msgid "Leading Light Rear"
 msgstr "Feu arrière"
+#
+msgid "Left"
+msgstr ""
 #
 #
 msgid "Leg"
@@ -1803,10 +1765,6 @@ msgid "Name"
 msgstr "Nom"
 #
 #
-msgid "Name:  "
-msgstr "Nom  : "
-#
-#
 msgid "Nav Status"
 msgstr "Statut de nav."
 #
@@ -1816,10 +1774,6 @@ msgstr ""
 #
 msgid "Navigation Data"
 msgstr "Données de navigation"
-#
-#
-msgid "Navigational Status:  "
-msgstr "Statut de navigation: "
 #
 msgid "New Group..."
 msgstr "Nouveau groupe"
@@ -2092,12 +2046,6 @@ msgstr "Position"
 msgid "Position Report"
 msgstr "Rapport de position"
 #
-#, c-format
-msgid ""
-"Position Report Age:       %3d Sec.\n"
-"\n"
-msgstr "Age du dernier rapport      : %3d Sec.\n"
-#
 msgid "Pref. Chnl"
 msgstr "Chnl préf."
 #
@@ -2218,38 +2166,9 @@ msgstr "Cercle radars"
 msgid "Range"
 msgstr "Distance"
 #
-msgid "Range:                  Unavailable\n"
-msgstr "Distance           : Indisponible\n"
-#
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Distance           :%5.1f  NM\n"
-#
 #
 msgid "Raster"
 msgstr "Raster"
-#
-#
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Vitesse de rotation : %3d Deg./Min. Gauche\n"
-#
-#
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Vitesse de rotation : %3d Deg./Min. Droite\n"
-#
-#
-msgid "Rate Of Turn            0\n"
-msgstr "Vitesse de rotation : 0\n"
-#
-#
-msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-msgstr "Vitesse de rotation : >5d Deg./Min. Gauche\n"
-#
-#
-msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-msgstr "Vitesse de rotation :  >5d Deg./Min. Droite\n"
 #
 # AIS
 msgid "Real"
@@ -2320,8 +2239,11 @@ msgstr "Renommer les waypoint ?"
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr "RenderHPGL: Le '%s' instruction n'est pas implémenté."
 #
-#, c-format
-msgid "Report as of: %d:%d UTC "
+msgid "Report Age"
+msgstr ""
+#
+#, fuzzy
+msgid "Report as of"
 msgstr "Report de : %d:%d UTC"
 #
 # AIS
@@ -2358,6 +2280,11 @@ msgstr ""
 #, fuzzy
 msgid "Reverse"
 msgstr "Inve&rser"
+#
+#
+#, fuzzy
+msgid "Right"
+msgstr "Feu"
 #
 msgid "Rollover"
 msgstr "Info par survol d'une cible."
@@ -2418,9 +2345,8 @@ msgstr "SOG / COG  (vitesse/cap fond )"
 msgid "Safe Water"
 msgstr "Eau libre"
 #
-msgid ""
-"Safety Broadcast Message:\n"
-"  "
+#, fuzzy
+msgid "Safety Broadcast Message"
 msgstr ""
 "Diffuser un message de sécurité :\n"
 "  "
@@ -2482,6 +2408,9 @@ msgstr "Envoyer au GPS ..."
 #
 msgid "Service vessel, police patrol, port service"
 msgstr "Bateau de service, police fluviale, service du port"
+#
+msgid "Set"
+msgstr ""
 #
 #
 msgid "Set Anchor Watch"
@@ -2625,61 +2554,6 @@ msgstr "Afficher la pré-visualisation de police"
 msgid "Simplified"
 msgstr "Simplifiés"
 #
-#, c-format
-msgid ""
-"Size:                 %dm x %dm\n"
-"\n"
-msgstr ""
-"Taille                : %dm x %dm \n"
-"\n"
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Taille                : %dm x %dm x %4.1fm\n"
-"\n"
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Taille                : %dm x %dm x ---m\n"
-"\n"
-#
-#, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Taille                : ---m x ---m x %4.1fm\n"
-"\n"
-#
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Taille                : ---m x ---m x ---m\n"
-"\n"
-#
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Taille                : %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-#
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr ""
-"Taille                : %5.1fm x %4.1fm x ---m\n"
-"\n"
-#
 msgid "SoG"
 msgstr "SOG"
 #
@@ -2698,17 +2572,13 @@ msgid "Special Mark"
 msgstr "Marque spéciale"
 #
 #
+#, fuzzy
+msgid "Speed"
+msgstr "Vitesse prévue"
+#
+#
 msgid "Speed (Kts)"
 msgstr "Vitesse, Noeuds "
-#
-#
-msgid "Speed:                  Unavailable\n"
-msgstr "Vitesse             : Indisponible\n"
-#
-#
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Vitesse             : %5.2f noeuds.\n"
 #
 msgid "Split Route"
 msgstr "Route : Dédoubler"
@@ -2762,15 +2632,6 @@ msgstr "Serveur de données Wifi TCP/IP "
 #, fuzzy
 msgid "TCPA"
 msgstr "TCPA :\n"
-#
-#
-msgid "TCPA:  \n"
-msgstr "TCPA :\n"
-#
-#
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA :  %02d:%02d Hr:Min\n"
 #
 msgid "Tankbarge"
 msgstr "Chaland-citerne"
@@ -2856,6 +2717,11 @@ msgstr "Police: normal/gras."
 msgid "The necessary configuration files were not found. "
 msgstr ""
 #
+msgid ""
+"The waypoint you want to delete is used in a route, do you really want to "
+"delete it?"
+msgstr ""
+#
 #
 msgid "There"
 msgstr "Là"
@@ -2864,6 +2730,12 @@ msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
+msgstr ""
+#
+msgid ""
+"There are some waypoints used in routes or anchor alarms. Do you want to "
+"delete them as well? This will change the routes and disable the anchor "
+"alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 #
 msgid ""
@@ -3022,16 +2894,11 @@ msgstr "Remorqueur, seul"
 msgid "Tug, tanker"
 msgstr "Bateau-citerne remorqueur"
 #
+msgid "Turn Rate"
+msgstr ""
+#
 msgid "Type"
 msgstr "Type"
-#
-#
-msgid "Type:                 "
-msgstr "Type :"
-#
-#
-msgid "UN Ship Type:         "
-msgstr "Type de bateau UN : "
 #
 msgid "URL"
 msgstr "URL"
@@ -3051,6 +2918,10 @@ msgstr ""
 #
 msgid "Unable to load libgps"
 msgstr "Impossible de charger le module libgps"
+#
+#, fuzzy
+msgid "Unavailable"
+msgstr " COG : Indisponible"
 #
 # AIS
 msgid "Undefined"
@@ -3307,9 +3178,11 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "    Projection cartographique inconnue. Mercator sera utilisée par défaut"
+#
 #
 #
 #
@@ -3324,6 +3197,21 @@ msgstr "Site web wxFB"
 #~ msgstr "(m)"
 #
 #
+#~ msgid ":               "
+#~ msgstr ":               "
+#
+#
+#~ msgid ""
+#~ ":               Unavailable\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ ":               Indisponible\n"
+#~ "\n"
+#~ "\n"
+#
+#
+#
 #
 #
 #
@@ -3334,6 +3222,44 @@ msgstr "Site web wxFB"
 # Menu contextuel : Route
 #~ msgid "Activate Route"
 #~ msgstr "Route : Activer"
+#
+#
+#~ msgid "Bearing:                %03d Deg.\n"
+#~ msgstr "Cible relevée au : %03d   Deg.\n"
+#
+#
+#~ msgid "Bearing:                Unavailable\n"
+#~ msgstr "Cible relevée au : Indisponible\n"
+#
+#
+#
+#~ msgid "CPA:       \n"
+#~ msgstr "CPA  : \n"
+#
+#
+#~ msgid "CPA:                 %6.1f NM\n"
+#~ msgstr "CPA   :               %6.1f NM\n"
+#
+#
+#~ msgid "CallSign:             "
+#~ msgstr "Indicatif d'appel  : "
+#
+#
+#~ msgid "Class:                "
+#~ msgstr "Classe               : "
+#
+#
+#~ msgid "Course:                 %03d Deg.\n"
+#~ msgstr "COG                 : %03d   Deg.\n"
+#
+#
+#~ msgid "Course:                 000 Deg.\n"
+#~ msgstr "COG                 : 000   Deg.\n"
+#
+#
+#~ msgid "Course:                 Unavailable\n"
+#~ msgstr "COG                 : Indisponible\n"
+#
 #
 #
 #
@@ -3358,6 +3284,7 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Données par défaut"
@@ -3370,8 +3297,23 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Waypoint/marque : Effacer"
+#
+#
+#
+#~ msgid "Destination:          "
+#~ msgstr "Destination         :"
+#
+#
+#~ msgid "ETA:"
+#~ msgstr "Date est. d'arrivée :"
+#
+#
+#~ msgid "ETA:                  "
+#~ msgstr "Date est. d'arrivée :"
+#
 #
 #
 #
@@ -3395,8 +3337,22 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Données à utiliser :"
+#
+#
+#~ msgid "Heading:                %03d Deg.\n"
+#~ msgstr "Cap compas suivi    : %03d   Deg.\n"
+#
+#
+#~ msgid "IMO:                 %8d\n"
+#~ msgstr "IMO:                 %8d\n"
+#
+#
+#~ msgid "Inland Blue Flag        Clear\n"
+#~ msgstr "Pavillon bleu, eaux int. :            Effacé\n"
+#
 #
 #
 #
@@ -3422,8 +3378,14 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Langues / polices"
+#
+#
+#~ msgid "Last Position Report Time:  "
+#~ msgstr "Heure du dernier rapport   : "
+#
 #
 #
 #
@@ -3447,9 +3409,11 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 # Menu contextuel : Waypoint
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Waypoint/Marque : Propriétés ..."
+#
 #
 #
 #
@@ -3471,8 +3435,26 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "NMi"
+#
+#
+#
+#~ msgid "Name:  "
+#~ msgstr "Nom  : "
+#
+#
+#
+#~ msgid "Navigational Status:  "
+#~ msgstr "Statut de navigation: "
+#
+#
+#~ msgid ""
+#~ "Position Report Age:       %3d Sec.\n"
+#~ "\n"
+#~ msgstr "Age du dernier rapport      : %3d Sec.\n"
+#
 #
 #
 #
@@ -3509,8 +3491,43 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Impression"
+#
+#
+#~ msgid "Range:                  Unavailable\n"
+#~ msgstr "Distance           : Indisponible\n"
+#
+#
+#~ msgid "Range:                %5.1f NM\n"
+#~ msgstr "Distance           :%5.1f  NM\n"
+#
+#
+#
+#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+#~ msgstr "Vitesse de rotation : %3d Deg./Min. Gauche\n"
+#
+#
+#
+#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+#~ msgstr "Vitesse de rotation : %3d Deg./Min. Droite\n"
+#
+#
+#
+#~ msgid "Rate Of Turn            0\n"
+#~ msgstr "Vitesse de rotation : 0\n"
+#
+#
+#
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+#~ msgstr "Vitesse de rotation : >5d Deg./Min. Gauche\n"
+#
+#
+#
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+#~ msgstr "Vitesse de rotation :  >5d Deg./Min. Droite\n"
+#
 #
 #
 #
@@ -3533,6 +3550,7 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Route : Longeur"
 #
@@ -3544,8 +3562,10 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Cap vers le haut : Activer"
+#
 #
 #
 #
@@ -3573,8 +3593,96 @@ msgstr "Site web wxFB"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Trace : Afficher l'icône"
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Taille                : %dm x %dm \n"
+#~ "\n"
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Taille                : %dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Taille                : %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#~ msgid ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Taille                : ---m x ---m x %4.1fm\n"
+#~ "\n"
+#
+#
+#~ msgid ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Taille                : ---m x ---m x ---m\n"
+#~ "\n"
+#
+#
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Taille                : %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#
+#
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Taille                : %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#
+#
+#
+#~ msgid "Speed:                  Unavailable\n"
+#~ msgstr "Vitesse             : Indisponible\n"
+#
+#
+#
+#~ msgid "Speed:                %5.2f Kts.\n"
+#~ msgstr "Vitesse             : %5.2f noeuds.\n"
+#
+#
+#
+#~ msgid "TCPA:  \n"
+#~ msgstr "TCPA :\n"
+#
+#
+#
+#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
+#~ msgstr "TCPA :  %02d:%02d Hr:Min\n"
+#
+#
+#
+#~ msgid "Type:                 "
+#~ msgstr "Type :"
+#
+#
+#
+#~ msgid "UN Ship Type:         "
+#~ msgstr "Type de bateau UN : "
+#
 #
 #
 #

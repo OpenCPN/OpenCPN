@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"POT-Creation-Date: 2012-08-14 09:34-0400\n"
 "PO-Revision-Date: 2011-06-01 12:24+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -192,8 +192,7 @@ msgstr " %H godzin  %M minut"
 msgid " (Ctrl-Space)"
 msgstr ""
 #
-# 
-msgid " (Last Known):  "
+msgid " (Last Known)"
 msgstr ""
 #
 # 
@@ -202,6 +201,9 @@ msgid " - "
 msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
+msgstr ""
+#
+msgid " </b>in<b> "
 msgstr ""
 #
 # 
@@ -508,6 +510,12 @@ msgstr "--"
 #
 # 
 # 
+#, fuzzy
+msgid "---"
+msgstr "--"
+#
+# 
+# 
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 #
@@ -517,6 +525,9 @@ msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 #
 msgid "..."
+msgstr ""
+#
+msgid "0&deg;"
 msgstr ""
 #
 msgid "1 pixel"
@@ -563,21 +574,6 @@ msgstr ""
 #
 msgid "9 pixels"
 msgstr ""
-#
-# 
-# 
-#, fuzzy
-msgid ":               "
-msgstr "Klasa:                "
-#
-# 
-# 
-#, fuzzy
-msgid ""
-":               Unavailable\n"
-"\n"
-"\n"
-msgstr "Namiar:                b.d.\n"
 #
 msgid "<--Remove"
 msgstr ""
@@ -889,17 +885,6 @@ msgid "Bearing"
 msgstr "Kierunek"
 #
 # 
-# 
-#, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Namiar:                 %03d Deg.\n"
-#
-# 
-# 
-msgid "Bearing:                Unavailable\n"
-msgstr "Namiar:                b.d.\n"
-#
-# 
 msgid "Black"
 msgstr ""
 #
@@ -983,17 +968,6 @@ msgstr "Ostrzeżenia CPA/TCPA"
 #
 # 
 # 
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-#
-# 
-# 
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                 %6.1f Mm\n"
-#
-# 
-# 
 msgid "Call"
 msgstr "Wyw."
 #
@@ -1009,11 +983,6 @@ msgstr ""
 "Czy działa gpsd ?\n"
 "\n"
 "węzeł gpsd:"
-#
-# 
-# 
-msgid "CallSign:             "
-msgstr "Sygn. wyw.:           "
 #
 # 
 # 
@@ -1180,8 +1149,9 @@ msgstr "Klasa"
 #
 # 
 # 
-msgid "Class:                "
-msgstr "Klasa:                "
+#, fuzzy
+msgid "Clear"
+msgstr "Skasuj wszystko"
 #
 # 
 # 
@@ -1259,6 +1229,12 @@ msgstr "Nie można rozwiązać adresu węzła TCP/IP"
 #
 # 
 # 
+#, fuzzy
+msgid "Course"
+msgstr "Obracaj wg kursu do góry"
+#
+# 
+# 
 msgid "Course UP Mode"
 msgstr "Obracaj wg kursu do góry"
 #
@@ -1271,22 +1247,6 @@ msgstr "Obracaj wg kursu do góry"
 # 
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr ""
-#
-# 
-# 
-#, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "Kurs:                 %03d Deg.\n"
-#
-# 
-# 
-msgid "Course:                 000 Deg.\n"
-msgstr "Kurs:                 000 Deg.\n"
-#
-# 
-# 
-msgid "Course:                 Unavailable\n"
-msgstr "Kurs:                 b.d.\n"
 #
 # 
 # 
@@ -1481,11 +1441,6 @@ msgstr "Punkt docelowy"
 #
 # 
 # 
-msgid "Destination:          "
-msgstr "Port przeznaczenia: "
-#
-# 
-# 
 msgid "Disable"
 msgstr "Wyłącz"
 #
@@ -1566,16 +1521,6 @@ msgstr "ETA:"
 # 
 msgid "ETA          "
 msgstr "ETA                  "
-#
-# 
-# 
-msgid "ETA:"
-msgstr "ETA:"
-#
-# 
-# 
-msgid "ETA:                  "
-msgstr "ETA:         "
 #
 # 
 msgid "ETE"
@@ -1848,11 +1793,8 @@ msgstr ""
 msgid "HW"
 msgstr ""
 #
-# 
-# 
-#, fuzzy, c-format
-msgid "Heading:                %03d Deg.\n"
-msgstr "Namiar:                 %03d Deg.\n"
+msgid "Heading"
+msgstr ""
 #
 # 
 # 
@@ -1901,15 +1843,8 @@ msgstr ""
 msgid "I&mport GPX..."
 msgstr "I&mportuj GPX..."
 #
-# 
-msgid "IMO:\n"
+msgid "IMO"
 msgstr ""
-#
-# 
-# 
-#, fuzzy, c-format
-msgid "IMO:                 %8d\n"
-msgstr "ETA:         "
 #
 # 
 # 
@@ -1923,12 +1858,8 @@ msgstr "Importuj plik GPX"
 #
 # 
 # 
-msgid "Inland Blue Flag        Clear\n"
-msgstr "Błekitny znacznik (śródląd.)     Kasuj \n"
-#
-# 
-# 
-msgid "Inland Blue Flag        Set\n"
+#, fuzzy
+msgid "Inland Blue Flag"
 msgstr "Błekitny znacznik (śródląd.)     Ustaw \n"
 #
 # 
@@ -1990,11 +1921,6 @@ msgstr "Język"
 #
 # 
 # 
-msgid "Last Position Report Time:  "
-msgstr "Czas ostatniego raportu:"
-#
-# 
-# 
 msgid "Latitude"
 msgstr "Szerokość geogr."
 #
@@ -2031,6 +1957,9 @@ msgstr ""
 # 
 # 
 msgid "Leading Light Rear"
+msgstr ""
+#
+msgid "Left"
 msgstr ""
 #
 # 
@@ -2404,11 +2333,6 @@ msgstr "Nazwa"
 #
 # 
 # 
-msgid "Name:  "
-msgstr "Nazwa: "
-#
-# 
-# 
 msgid "Nav Status"
 msgstr "Status nawigacyjny"
 #
@@ -2419,11 +2343,6 @@ msgstr ""
 # 
 msgid "Navigation Data"
 msgstr "Dane nawigacyjne"
-#
-# 
-# 
-msgid "Navigational Status:  "
-msgstr "Status nawigacyjny:   "
 #
 msgid "New Group..."
 msgstr ""
@@ -2800,14 +2719,6 @@ msgstr "Czas ostatniego raportu:"
 #
 # 
 # 
-#, c-format
-msgid ""
-"Position Report Age:       %3d Sec.\n"
-"\n"
-msgstr "Wiek raportu:                  %3d sek.\n"
-#
-# 
-# 
 msgid "Pref. Chnl"
 msgstr ""
 #
@@ -2986,46 +2897,8 @@ msgstr "Odległość"
 #
 # 
 # 
-msgid "Range:                  Unavailable\n"
-msgstr "Odległość:            b.d.\n"
-#
-# 
-# 
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Odległość:           %5.1f Mm\n"
-#
-# 
-# 
 msgid "Raster"
 msgstr "Rastrowe"
-#
-# 
-# 
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Skręt:          %3d°/min.na bakburt\n"
-#
-# 
-# 
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Skręt:          %3d°/min.na sterburt\n"
-#
-# 
-# 
-msgid "Rate Of Turn            0\n"
-msgstr "Skręt:           0\n"
-#
-# 
-# 
-msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-msgstr "Skręt:          > 5°/30 sek. na bakburt\n"
-#
-# 
-# 
-msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-msgstr "Skręt:          > 5°/30sek na sterburt\n"
 #
 # 
 # 
@@ -3113,8 +2986,10 @@ msgstr "Przemianować punkty drogi?"
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr ""
 #
-#, c-format
-msgid "Report as of: %d:%d UTC "
+msgid "Report Age"
+msgstr ""
+#
+msgid "Report as of"
 msgstr ""
 #
 # 
@@ -3155,6 +3030,12 @@ msgstr "Wstępny wybór języka na podstawie Rejestru Windows"
 #, fuzzy
 msgid "Reverse"
 msgstr "Odw&róć drogę"
+#
+# 
+# 
+#, fuzzy
+msgid "Right"
+msgstr "&Waga:"
 #
 # 
 # 
@@ -3242,9 +3123,7 @@ msgstr "SOG COG"
 msgid "Safe Water"
 msgstr ""
 #
-msgid ""
-"Safety Broadcast Message:\n"
-"  "
+msgid "Safety Broadcast Message"
 msgstr ""
 #
 # 
@@ -3320,6 +3199,9 @@ msgstr "Wyślij do GPS..."
 # 
 # 
 msgid "Service vessel, police patrol, port service"
+msgstr ""
+#
+msgid "Set"
 msgstr ""
 #
 # 
@@ -3512,75 +3394,6 @@ msgstr "Uproszczone"
 #
 # 
 # 
-#, fuzzy, c-format
-msgid ""
-"Size:                 %dm x %dm\n"
-"\n"
-msgstr ""
-"Wymiary:        %dm x %dm \n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Wymiary:        %5dm x %dm x %4.1fm\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Wymiary:        %5dm x %dm x ---m\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Wymiary:         ---m x ---m x %4.1fm\n"
-"\n"
-#
-# 
-# 
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Wymiary:         ---m x ---m x ---m\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Wymiary:       %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-#
-# 
-# 
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr ""
-"Wymiary:         %5.1fm x %4.1fm x ---m\n"
-"\n"
-#
-# 
-# 
 msgid "SoG"
 msgstr "SOG"
 #
@@ -3607,19 +3420,14 @@ msgstr ""
 #
 # 
 # 
+#, fuzzy
+msgid "Speed"
+msgstr "Planowana prędkość"
+#
+# 
+# 
 msgid "Speed (Kts)"
 msgstr "Prędkość, w."
-#
-# 
-# 
-msgid "Speed:                  Unavailable\n"
-msgstr "Prędkość:                b.d.\n"
-#
-# 
-# 
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Prędkość:            %5.2f w.\n"
 #
 # 
 # 
@@ -3694,17 +3502,6 @@ msgstr "Serwer danych TCP/IP WiFi"
 #, fuzzy
 msgid "TCPA"
 msgstr "CPA/TCPA"
-#
-# 
-# 
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-#
-# 
-# 
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA:                 %02d:%02d godz.:min\n"
 #
 # 
 # 
@@ -3822,6 +3619,11 @@ msgstr "Waga czcionki."
 msgid "The necessary configuration files were not found. "
 msgstr ""
 #
+msgid ""
+"The waypoint you want to delete is used in a route, do you really want to "
+"delete it?"
+msgstr ""
+#
 # 
 # 
 msgid "There"
@@ -3831,6 +3633,12 @@ msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
+msgstr ""
+#
+msgid ""
+"There are some waypoints used in routes or anchor alarms. Do you want to "
+"delete them as well? This will change the routes and disable the anchor "
+"alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 #
 msgid ""
@@ -4038,20 +3846,13 @@ msgstr ""
 msgid "Tug, tanker"
 msgstr ""
 #
+msgid "Turn Rate"
+msgstr ""
+#
 # 
 # 
 msgid "Type"
 msgstr "Typ"
-#
-# 
-# 
-msgid "Type:                 "
-msgstr "Typ:                  "
-#
-# 
-# 
-msgid "UN Ship Type:         "
-msgstr "Typ statku UN:            "
 #
 msgid "URL"
 msgstr ""
@@ -4077,6 +3878,12 @@ msgstr ""
 #, fuzzy
 msgid "Unable to load libgps"
 msgstr "Nie można załadować libgps.so"
+#
+# 
+# 
+#, fuzzy
+msgid "Unavailable"
+msgstr "Brak dostępnej mapy"
 #
 # 
 # 
@@ -4412,6 +4219,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4439,10 +4247,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Chart projection is UNKNOWN, assuming Mercator: "
+#
 #
 #
 #
@@ -4484,6 +4294,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4493,6 +4304,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "  Wtyczki: nie można załadować symbolu create_pi"
+#
 #
 #
 #
@@ -4534,6 +4346,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4554,6 +4367,24 @@ msgstr ""
 #~ msgstr "Wł./Wył. na mapie"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid ":               "
+#~ msgstr "Klasa:                "
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ ":               Unavailable\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr "Namiar:                b.d.\n"
+#
+#
+#
 #
 #
 #
@@ -4571,6 +4402,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Ostrzeżenie AIS"
+#
 #
 #
 #
@@ -4600,10 +4432,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informacje dodatkowe"
+#
 #
 #
 #
@@ -4648,6 +4482,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4657,6 +4492,19 @@ msgstr ""
 # 
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+# 
+# 
+#~ msgid "Bearing:                %03d Deg.\n"
+#~ msgstr "Namiar:                 %03d Deg.\n"
+#
+#
+# 
+# 
+#~ msgid "Bearing:                Unavailable\n"
+#~ msgstr "Namiar:                b.d.\n"
+#
 #
 #
 #
@@ -4715,6 +4563,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4741,6 +4590,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Przesunięcie CM93 włączone"
+#
 #
 #
 #
@@ -4799,6 +4649,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4841,6 +4692,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4867,6 +4719,25 @@ msgstr ""
 # 
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Włącz przesunięcia CM93"
+#
+#
+# 
+# 
+#~ msgid "CPA:       \n"
+#~ msgstr "CPA:       \n"
+#
+#
+# 
+# 
+#~ msgid "CPA:                 %6.1f NM\n"
+#~ msgstr "CPA:                 %6.1f Mm\n"
+#
+#
+# 
+# 
+#~ msgid "CallSign:             "
+#~ msgstr "Sygn. wyw.:           "
+#
 #
 #
 #
@@ -4924,6 +4795,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4964,10 +4836,36 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Mapa"
+#
+#
+# 
+# 
+#~ msgid "Class:                "
+#~ msgstr "Klasa:                "
+#
+#
+# 
+# 
+#~ msgid "Course:                 %03d Deg.\n"
+#~ msgstr "Kurs:                 %03d Deg.\n"
+#
+#
+# 
+# 
+#~ msgid "Course:                 000 Deg.\n"
+#~ msgstr "Kurs:                 000 Deg.\n"
+#
+#
+# 
+# 
+#~ msgid "Course:                 Unavailable\n"
+#~ msgstr "Kurs:                 b.d.\n"
+#
 #
 #
 #
@@ -4981,6 +4879,7 @@ msgstr ""
 # 
 #~ msgid "Deactivate Route"
 #~ msgstr "Dezaktywuj drogę"
+#
 #
 #
 #
@@ -5007,10 +4906,30 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Usuń znak"
+#
+#
+# 
+# 
+#~ msgid "Destination:          "
+#~ msgstr "Port przeznaczenia: "
+#
+#
+# 
+# 
+#~ msgid "ETA:"
+#~ msgstr "ETA:"
+#
+#
+# 
+# 
+#~ msgid "ETA:                  "
+#~ msgstr "ETA:         "
+#
 #
 #
 #
@@ -5036,6 +4955,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Znacznik czasu"
+#
 #
 #
 #
@@ -5080,6 +5000,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5101,10 +5022,26 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Płyń do znaku/punktu drogi"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Heading:                %03d Deg.\n"
+#~ msgstr "Namiar:                 %03d Deg.\n"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "IMO:                 %8d\n"
+#~ msgstr "ETA:         "
+#
 #
 #
 #
@@ -5141,6 +5078,13 @@ msgstr ""
 #~ msgstr "Importuj nową warstwę"
 #
 #
+# 
+# 
+#~ msgid "Inland Blue Flag        Clear\n"
+#~ msgstr "Błekitny znacznik (śródląd.)     Kasuj \n"
+#
+#
+#
 #
 #
 #
@@ -5165,10 +5109,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Język/Czcionki"
+#
+#
+# 
+# 
+#~ msgid "Last Position Report Time:  "
+#~ msgstr "Czas ostatniego raportu:"
+#
 #
 #
 #
@@ -5206,10 +5158,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Ikona znaku"
+#
 #
 #
 #
@@ -5239,6 +5193,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5253,10 +5208,24 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Measure....."
 #~ msgstr "Mierz..."
+#
+#
+# 
+# 
+#~ msgid "Name:  "
+#~ msgstr "Nazwa: "
+#
+#
+# 
+# 
+#~ msgid "Navigational Status:  "
+#~ msgstr "Status nawigacyjny:   "
+#
 #
 #
 #
@@ -5296,6 +5265,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5305,6 +5275,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Bazowa klasa wtyczki OpenCPN"
+#
 #
 #
 #
@@ -5350,6 +5321,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5359,6 +5331,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Wtyczkii: szukanie wtyczek w "
+#
 #
 #
 #
@@ -5400,6 +5373,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5409,6 +5383,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Wtyczki: inicjalizacja "
+#
 #
 #
 #
@@ -5450,6 +5425,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5475,6 +5451,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5484,6 +5461,15 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Wtyczki: odstawiona wtyczka o błędnym numerze wersji API %d.%d:"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Position Report Age:       %3d Sec.\n"
+#~ "\n"
+#~ msgstr "Wiek raportu:                  %3d sek.\n"
+#
 #
 #
 #
@@ -5521,6 +5507,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -5545,10 +5532,54 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Drukowanie"
+#
+#
+# 
+# 
+#~ msgid "Range:                  Unavailable\n"
+#~ msgstr "Odległość:            b.d.\n"
+#
+#
+# 
+# 
+#~ msgid "Range:                %5.1f NM\n"
+#~ msgstr "Odległość:           %5.1f Mm\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+#~ msgstr "Skręt:          %3d°/min.na bakburt\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+#~ msgstr "Skręt:          %3d°/min.na sterburt\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn            0\n"
+#~ msgstr "Skręt:           0\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+#~ msgstr "Skręt:          > 5°/30 sek. na bakburt\n"
+#
+#
+# 
+# 
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+#~ msgstr "Skręt:          > 5°/30sek na sterburt\n"
+#
 #
 #
 #
@@ -5562,6 +5593,7 @@ msgstr ""
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Odwróć drogę"
+#
 #
 #
 #
@@ -5586,10 +5618,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Obracaj wg kursu do góry"
+#
 #
 #
 #
@@ -5618,10 +5652,23 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Pokaż ikonę Ślad"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid ""
+#~ "Size:                 %dm x %dm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Wymiary:        %dm x %dm \n"
+#~ "\n"
+#
 #
 #
 #
@@ -5656,6 +5703,91 @@ msgstr ""
 #~ msgstr ""
 #~ "Wymiary:        %dm x %dm \n"
 #~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Wymiary:        %5dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Wymiary:        %5dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Wymiary:         ---m x ---m x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Wymiary:         ---m x ---m x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Wymiary:       %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Wymiary:         %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#
+#
+# 
+# 
+#~ msgid "Speed:                  Unavailable\n"
+#~ msgstr "Prędkość:                b.d.\n"
+#
+#
+# 
+# 
+#~ msgid "Speed:                %5.2f Kts.\n"
+#~ msgstr "Prędkość:            %5.2f w.\n"
+#
+#
+# 
+# 
+#~ msgid "TCPA:  \n"
+#~ msgstr "TCPA:  \n"
+#
+#
+# 
+# 
+#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
+#~ msgstr "TCPA:                 %02d:%02d godz.:min\n"
+#
 #
 #
 #
@@ -5706,6 +5838,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5724,6 +5857,19 @@ msgstr ""
 # 
 #~ msgid "Toggle Names"
 #~ msgstr "Włącz/wyłącz nazwy"
+#
+#
+# 
+# 
+#~ msgid "Type:                 "
+#~ msgstr "Typ:                  "
+#
+#
+# 
+# 
+#~ msgid "UN Ship Type:         "
+#~ msgstr "Typ statku UN:            "
+#
 #
 #
 #

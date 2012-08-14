@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"POT-Creation-Date: 2012-08-14 09:34-0400\n"
 "PO-Revision-Date: 2012-05-23 06:58+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -243,7 +243,8 @@ msgid " (Ctrl-Space)"
 msgstr ""
 #
 #
-msgid " (Last Known):  "
+#, fuzzy
+msgid " (Last Known)"
 msgstr " (Poslední známý):  "
 #
 #
@@ -255,6 +256,9 @@ msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Portable (-p) spuštění z "
+#
+msgid " </b>in<b> "
+msgstr ""
 #
 #
 #, c-format
@@ -657,6 +661,13 @@ msgstr "--"
 #
 #
 #
+#, fuzzy
+msgid "---"
+msgstr "--"
+#
+#
+#
+#
 #
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< Varování:  Přesnost georeferencování mapy je špatná. >>>---"
@@ -669,6 +680,9 @@ msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< Varování:  Přesnost georeferencování mapy je špatná. >>>---"
 #
 msgid "..."
+msgstr ""
+#
+msgid "0&deg;"
 msgstr ""
 #
 msgid "1 pixel"
@@ -719,23 +733,6 @@ msgstr "8 pixelů"
 #
 msgid "9 pixels"
 msgstr "9 pixelů"
-#
-#
-#
-#
-#
-msgid ":               "
-msgstr ":                  "
-#
-#
-#
-#
-#
-msgid ""
-":               Unavailable\n"
-"\n"
-"\n"
-msgstr ":            Nedostupný\n"
 #
 msgid "<--Remove"
 msgstr "<--Odstranit"
@@ -1121,21 +1118,6 @@ msgid "Bearing"
 msgstr "Kurs"
 #
 #
-#
-#
-#
-#, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Kurs:              %03d St.\n"
-#
-#
-#
-#
-#
-msgid "Bearing:                Unavailable\n"
-msgstr "Kurs:            Nedostupný\n"
-#
-#
 msgid "Black"
 msgstr "Černá"
 #
@@ -1238,21 +1220,6 @@ msgstr "CPA/TCPA výstrahy"
 #
 #
 #
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                 %6.1f nm\n"
-#
-#
-#
-#
-#
 msgid "Call"
 msgstr "Volání"
 #
@@ -1269,13 +1236,6 @@ msgstr ""
 "Je gpsd spuštěno?\n"
 "\n"
 "gpsd hostitel je: "
-#
-#
-#
-#
-#
-msgid "CallSign:             "
-msgstr "Volací znak:              "
 #
 #
 #
@@ -1470,8 +1430,9 @@ msgstr "Třída"
 #
 #
 #
-msgid "Class:                "
-msgstr "Třída:                  "
+#, fuzzy
+msgid "Clear"
+msgstr "Vyčistit vše"
 #
 #
 #
@@ -1570,6 +1531,14 @@ msgstr "Nemohu rozpoznat TCP/IP hostitele '"
 #
 #
 #
+#, fuzzy
+msgid "Course"
+msgstr "Mód kurs nahoru"
+#
+#
+#
+#
+#
 msgid "Course UP Mode"
 msgstr "Mód kurs nahoru"
 #
@@ -1584,28 +1553,6 @@ msgstr "Mód kurs nahoru"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr "Perioda aktualizace módu kurs nahoru (sek)"
-#
-#
-#
-#
-#
-#, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "Kurs:               %03d Deg.\n"
-#
-#
-#
-#
-#
-msgid "Course:                 000 Deg.\n"
-msgstr "Kurs:                     000 Deg.\n"
-#
-#
-#
-#
-#
-msgid "Course:                 Unavailable\n"
-msgstr "Kurs:            Nedostupný\n"
 #
 #
 #
@@ -1844,13 +1791,6 @@ msgstr "Cíl"
 #
 #
 #
-msgid "Destination:          "
-msgstr "Cíl:"
-#
-#
-#
-#
-#
 msgid "Disable"
 msgstr "Deaktivovat"
 #
@@ -1952,19 +1892,6 @@ msgstr "ETA"
 #
 msgid "ETA          "
 msgstr "ETA"
-#
-#
-#
-#
-msgid "ETA:"
-msgstr "ETA:"
-#
-#
-#
-#
-#
-msgid "ETA:                  "
-msgstr "ETA:                  "
 #
 #
 msgid "ETE"
@@ -2282,13 +2209,8 @@ msgstr ""
 msgid "HW"
 msgstr "HW"
 #
-#
-#
-#
-#
-#, c-format
-msgid "Heading:                %03d Deg.\n"
-msgstr "Kurs:                     %03d St.\n"
+msgid "Heading"
+msgstr ""
 #
 #
 #
@@ -2346,17 +2268,8 @@ msgstr "Křídlová loď"
 msgid "I&mport GPX..."
 msgstr "I&mport GPX..."
 #
-#
-msgid "IMO:\n"
+msgid "IMO"
 msgstr ""
-#
-#
-#
-#
-#
-#, c-format
-msgid "IMO:                 %8d\n"
-msgstr "IMO:                 %8d\n"
 #
 #
 #
@@ -2375,13 +2288,8 @@ msgstr "Importuj GPX soubor"
 #
 #
 #
-msgid "Inland Blue Flag        Clear\n"
-msgstr "Pozemní modrá vlajka Smaž\n"
-#
-#
-#
-#
-msgid "Inland Blue Flag        Set\n"
+#, fuzzy
+msgid "Inland Blue Flag"
 msgstr "Pozemní modrá vlajka Nastav\n"
 #
 #
@@ -2457,13 +2365,6 @@ msgstr "Jazyk"
 #
 #
 #
-msgid "Last Position Report Time:  "
-msgstr "Čas posledního hlášení polohy:      "
-#
-#
-#
-#
-#
 msgid "Latitude"
 msgstr "Zem. šířka"
 #
@@ -2503,6 +2404,9 @@ msgstr "Přední naváděcí světlo"
 #
 msgid "Leading Light Rear"
 msgstr "Zadní naváděcí světlo"
+#
+msgid "Left"
+msgstr ""
 #
 #
 #
@@ -2951,13 +2855,6 @@ msgstr "Jméno"
 #
 #
 #
-msgid "Name:  "
-msgstr "Jméno:"
-#
-#
-#
-#
-#
 msgid "Nav Status"
 msgstr "Nav status"
 #
@@ -2970,13 +2867,6 @@ msgstr ""
 #
 msgid "Navigation Data"
 msgstr "Navigační data"
-#
-#
-#
-#
-#
-msgid "Navigational Status:  "
-msgstr "Navigační status"
 #
 msgid "New Group..."
 msgstr "Nová skupina"
@@ -3446,16 +3336,6 @@ msgstr "Report pozice      "
 #
 #
 #
-#
-#
-#, c-format
-msgid ""
-"Position Report Age:       %3d Sec.\n"
-"\n"
-msgstr "Stáří reportu polohy:       %3d Sek.\n"
-#
-#
-#
 msgid "Pref. Chnl"
 msgstr "Hlav. kanál"
 #
@@ -3658,60 +3538,8 @@ msgstr "Rozsah"
 #
 #
 #
-msgid "Range:                  Unavailable\n"
-msgstr "Vzdálenost:            Nedostupná\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Vzdálenost:                %5.1f NM\n"
-#
-#
-#
-#
-#
 msgid "Raster"
 msgstr "Rastr"
-#
-#
-#
-#
-#
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Tempo obratu:           %3d St./Min. Vlevo\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Tempo obratu:           %3d St./Min.Vpravo\n"
-#
-#
-#
-#
-#
-msgid "Rate Of Turn            0\n"
-msgstr "Tempo obratu:           0\n"
-#
-#
-#
-#
-#
-msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-msgstr "Tempo obratu:       > 5 Deg./30 s. Vlevo\n"
-#
-#
-#
-#
-#
-msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-msgstr "Tempo obratu:       > 5 Deg./30 s. Vpravo\n"
 #
 #
 #
@@ -3820,8 +3648,11 @@ msgstr "Přejmenovat trasové body"
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr "RenderHPGL: Instrukce  '%s' není implementována."
 #
-#, c-format
-msgid "Report as of: %d:%d UTC "
+msgid "Report Age"
+msgstr ""
+#
+#, fuzzy
+msgid "Report as of"
 msgstr "Report z: %d:%d UTC "
 #
 #
@@ -3868,6 +3699,14 @@ msgstr "Získávám úvodní nastavení jazyka z registru Windows"
 #, fuzzy
 msgid "Reverse"
 msgstr "&Otočit"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Right"
+msgstr "Světlo"
 #
 #
 #
@@ -3973,9 +3812,8 @@ msgstr "SOG COG"
 msgid "Safe Water"
 msgstr "Bezpečná voda"
 #
-msgid ""
-"Safety Broadcast Message:\n"
-"  "
+#, fuzzy
+msgid "Safety Broadcast Message"
 msgstr ""
 "Bezpečnostní hlášení:\n"
 "  "
@@ -4073,6 +3911,9 @@ msgstr "Odeslat do GPS..."
 #
 #
 msgid "Service vessel, police patrol, port service"
+msgstr ""
+#
+msgid "Set"
 msgstr ""
 #
 #
@@ -4329,89 +4170,6 @@ msgstr "Zjednodušený"
 #
 #
 #
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm\n"
-"\n"
-msgstr ""
-"Velikost:           %dm x %dm\n"
-"\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Velikost:                %dm x %dm x %4.1fm\n"
-"\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Velikost:                %dm x %dm x ---m\n"
-"\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Velikost:            ---m x ---m x %4.1fm\n"
-"\n"
-#
-#
-#
-#
-#
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Velikost:           ---m x ---m x ---m\n"
-"\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Velikost:          %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr ""
-"Velikost:          %5.1fm x %4.1fm x ---m\n"
-"\n"
-#
-#
-#
-#
 msgid "SoG"
 msgstr "SoG"
 #
@@ -4445,23 +4203,16 @@ msgstr "Speciální značka"
 #
 #
 #
+#, fuzzy
+msgid "Speed"
+msgstr "Plánovaná rychlost"
+#
+#
+#
+#
+#
 msgid "Speed (Kts)"
 msgstr "Rychlost (Kts)"
-#
-#
-#
-#
-#
-msgid "Speed:                  Unavailable\n"
-msgstr "Rychlost:            Nedostupná\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Rychlost:                %5.2f Kts.\n"
 #
 #
 #
@@ -4556,21 +4307,6 @@ msgstr "TCP/IP WiFi Data Server"
 #, fuzzy
 msgid "TCPA"
 msgstr "TCPA:  \n"
-#
-#
-#
-#
-#
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA:                 %02d:%02d Hod:Min\n"
 #
 #
 #
@@ -4708,6 +4444,11 @@ msgstr "Váha fontu."
 msgid "The necessary configuration files were not found. "
 msgstr ""
 #
+msgid ""
+"The waypoint you want to delete is used in a route, do you really want to "
+"delete it?"
+msgstr ""
+#
 #
 #
 #
@@ -4719,6 +4460,12 @@ msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
+msgstr ""
+#
+msgid ""
+"There are some waypoints used in routes or anchor alarms. Do you want to "
+"delete them as well? This will change the routes and disable the anchor "
+"alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 #
 msgid ""
@@ -4976,25 +4723,14 @@ msgstr ""
 msgid "Tug, tanker"
 msgstr ""
 #
+msgid "Turn Rate"
+msgstr ""
+#
 #
 #
 #
 msgid "Type"
 msgstr "Typ"
-#
-#
-#
-#
-#
-msgid "Type:                 "
-msgstr "Typ:"
-#
-#
-#
-#
-#
-msgid "UN Ship Type:         "
-msgstr "OSN typ lodě:"
 #
 msgid "URL"
 msgstr ""
@@ -5023,6 +4759,14 @@ msgstr ""
 #
 msgid "Unable to load libgps"
 msgstr "Nemohu nahrát libgps"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Unavailable"
+msgstr "COG: Není k dispozici"
 #
 #
 #
@@ -5421,6 +5165,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5445,8 +5190,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Mapová projekce je NEZNÁMÁ, předpokládáme Mercator:"
+#
 #
 #
 #
@@ -5497,8 +5244,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
+#
 #
 #
 #
@@ -5554,8 +5303,29 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Přepnou&t mapu"
+#
+#
+#
+#
+#
+#
+#~ msgid ":               "
+#~ msgstr ":                  "
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ ":               Unavailable\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ":            Nedostupný\n"
+#
 #
 #
 #
@@ -5577,6 +5347,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Výstraha AIS "
+#
 #
 #
 #
@@ -5612,8 +5383,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Další informace"
+#
 #
 #
 #
@@ -5667,8 +5440,26 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
+#
+#
+#
+#~ msgid "Bearing:                %03d Deg.\n"
+#~ msgstr "Kurs:              %03d St.\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Bearing:                Unavailable\n"
+#~ msgstr "Kurs:            Nedostupný\n"
+#
 #
 #
 #
@@ -5743,8 +5534,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 #
 #
@@ -5819,6 +5612,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
 #
@@ -5857,8 +5651,34 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "Posun CM93 zapnut"
+#
+#
+#
+#
+#
+#
+#~ msgid "CPA:       \n"
+#~ msgstr "CPA:       \n"
+#
+#
+#
+#
+#
+#
+#~ msgid "CPA:                 %6.1f NM\n"
+#~ msgstr "CPA:                 %6.1f nm\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "CallSign:             "
+#~ msgstr "Volací znak:              "
+#
 #
 #
 #
@@ -5930,9 +5750,43 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
+#
+#
+#
+#
+#
+#
+#~ msgid "Class:                "
+#~ msgstr "Třída:                  "
+#
+#
+#
+#
+#
+#
+#~ msgid "Course:                 %03d Deg.\n"
+#~ msgstr "Kurs:               %03d Deg.\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Course:                 000 Deg.\n"
+#~ msgstr "Kurs:                     000 Deg.\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Course:                 Unavailable\n"
+#~ msgstr "Kurs:            Nedostupný\n"
+#
 #
 #
 #
@@ -5964,6 +5818,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Standardní dataset"
 #
@@ -5979,8 +5834,33 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Smazat značku"
+#
+#
+#
+#
+#
+#
+#~ msgid "Destination:          "
+#~ msgstr "Cíl:"
+#
+#
+#
+#
+#
+#~ msgid "ETA:"
+#~ msgstr "ETA:"
+#
+#
+#
+#
+#
+#
+#~ msgid "ETA:                  "
+#~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -6008,8 +5888,33 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Použít harmonicou databázi:"
+#
+#
+#
+#
+#
+#
+#~ msgid "Heading:                %03d Deg.\n"
+#~ msgstr "Kurs:                     %03d St.\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "IMO:                 %8d\n"
+#~ msgstr "IMO:                 %8d\n"
+#
+#
+#
+#
+#
+#~ msgid "Inland Blue Flag        Clear\n"
+#~ msgstr "Pozemní modrá vlajka Smaž\n"
+#
 #
 #
 #
@@ -6040,8 +5945,18 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Jazyk/fonty"
+#
+#
+#
+#
+#
+#
+#~ msgid "Last Position Report Time:  "
+#~ msgstr "Čas posledního hlášení polohy:      "
+#
 #
 #
 #
@@ -6070,8 +5985,36 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Měřit....."
+#
+#
+#
+#
+#
+#
+#~ msgid "Name:  "
+#~ msgstr "Jméno:"
+#
+#
+#
+#
+#
+#
+#~ msgid "Navigational Status:  "
+#~ msgstr "Navigační status"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Position Report Age:       %3d Sec.\n"
+#~ "\n"
+#~ msgstr "Stáří reportu polohy:       %3d Sek.\n"
+#
 #
 #
 #
@@ -6114,8 +6057,66 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Tisk"
+#
+#
+#
+#
+#
+#
+#~ msgid "Range:                  Unavailable\n"
+#~ msgstr "Vzdálenost:            Nedostupná\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Range:                %5.1f NM\n"
+#~ msgstr "Vzdálenost:                %5.1f NM\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+#~ msgstr "Tempo obratu:           %3d St./Min. Vlevo\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+#~ msgstr "Tempo obratu:           %3d St./Min.Vpravo\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Rate Of Turn            0\n"
+#~ msgstr "Tempo obratu:           0\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+#~ msgstr "Tempo obratu:       > 5 Deg./30 s. Vlevo\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+#~ msgstr "Tempo obratu:       > 5 Deg./30 s. Vpravo\n"
+#
 #
 #
 #
@@ -6145,6 +6146,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Délka trasy"
 #
@@ -6160,8 +6162,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Mód kurs nahoru"
+#
 #
 #
 #
@@ -6196,8 +6200,142 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Zobrazit ikonu stopy"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Velikost:           %dm x %dm\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Velikost:                %dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Velikost:                %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Velikost:            ---m x ---m x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Velikost:           ---m x ---m x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Velikost:          %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Velikost:          %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Speed:                  Unavailable\n"
+#~ msgstr "Rychlost:            Nedostupná\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Speed:                %5.2f Kts.\n"
+#~ msgstr "Rychlost:                %5.2f Kts.\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "TCPA:  \n"
+#~ msgstr "TCPA:  \n"
+#
+#
+#
+#
+#
+#
+#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
+#~ msgstr "TCPA:                 %02d:%02d Hod:Min\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Type:                 "
+#~ msgstr "Typ:"
+#
+#
+#
+#
+#
+#
+#~ msgid "UN Ship Type:         "
+#~ msgstr "OSN typ lodě:"
+#
 #
 #
 #

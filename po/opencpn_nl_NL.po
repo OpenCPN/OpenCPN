@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.1.714 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-09 22:14+0200\n"
+"POT-Creation-Date: 2012-08-14 09:34-0400\n"
 "PO-Revision-Date: 2012-07-21 12:21+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -254,7 +254,8 @@ msgstr ""
 #
 #
 #
-msgid " (Last Known):  "
+#, fuzzy
+msgid " (Last Known)"
 msgstr " (Laatst bekende):  "
 #
 #
@@ -267,6 +268,9 @@ msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Portable(-p) uitvoeren vanaf "
+#
+msgid " </b>in<b> "
+msgstr ""
 #
 #
 #
@@ -675,6 +679,14 @@ msgstr "--"
 #
 #
 #
+#, fuzzy
+msgid "---"
+msgstr "--"
+#
+#
+#
+#
+#
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr ""
 "---<<< Waarschuwing: nauwkeurigheid georeferentie van kaart is slecht. >>>---"
@@ -691,6 +703,9 @@ msgstr ""
 #
 msgid "..."
 msgstr "..."
+#
+msgid "0&deg;"
+msgstr ""
 #
 #
 msgid "1 pixel"
@@ -750,26 +765,6 @@ msgstr "8 pixels"
 #
 msgid "9 pixels"
 msgstr "9 pixels"
-#
-#
-#
-#
-#
-msgid ":               "
-msgstr ":       "
-#
-#
-#
-#
-#
-msgid ""
-":               Unavailable\n"
-"\n"
-"\n"
-msgstr ""
-":                  niet beschikbaar\n"
-"\n"
-"\n"
 #
 #
 msgid "<--Remove"
@@ -1165,21 +1160,6 @@ msgstr "Koers"
 #
 #
 #
-#
-#
-#, c-format
-msgid "Bearing:                %03d Deg.\n"
-msgstr "Peiling:                  %03d°\n"
-#
-#
-#
-#
-#
-msgid "Bearing:                Unavailable\n"
-msgstr "Peiling:                  niet beschikbaar\n"
-#
-#
-#
 msgid "Black"
 msgstr "zwart"
 #
@@ -1285,21 +1265,6 @@ msgstr "CPA/TCPA Waarschuwingen"
 #
 #
 #
-msgid "CPA:       \n"
-msgstr "CPA:       \n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "CPA:                 %6.1f NM\n"
-msgstr "CPA:                 %6.1f NM\n"
-#
-#
-#
-#
-#
 msgid "Call"
 msgstr "C/S"
 #
@@ -1317,13 +1282,6 @@ msgstr ""
 "Staat gpsd aan?\n"
 "\n"
 "gpsd host is: "
-#
-#
-#
-#
-#
-msgid "CallSign:             "
-msgstr "Roepnaam:         "
 #
 #
 #
@@ -1521,8 +1479,9 @@ msgstr "Klasse"
 #
 #
 #
-msgid "Class:                "
-msgstr "Klasse:       "
+#, fuzzy
+msgid "Clear"
+msgstr "Wis alles"
 #
 #
 #
@@ -1625,6 +1584,14 @@ msgstr "Kan TCP/IP host niet vinden"
 #
 #
 #
+#, fuzzy
+msgid "Course"
+msgstr "Koers-Boven presentatie"
+#
+#
+#
+#
+#
 msgid "Course UP Mode"
 msgstr "Koers-Boven presentatie"
 #
@@ -1640,28 +1607,6 @@ msgstr "Koers-Boven presentatie"
 #
 msgid "Course-Up Mode Display Update Period (Sec.)"
 msgstr "    Schermverversing bij Koers-Boven presentatie elke (seconden)"
-#
-#
-#
-#
-#
-#, c-format
-msgid "Course:                 %03d Deg.\n"
-msgstr "Koers:               %03d°\n"
-#
-#
-#
-#
-#
-msgid "Course:                 000 Deg.\n"
-msgstr "Koers:               000°\n"
-#
-#
-#
-#
-#
-msgid "Course:                 Unavailable\n"
-msgstr "Koers:                    niet beschikbaar\n"
 #
 #
 #
@@ -1912,13 +1857,6 @@ msgstr "Bestemming"
 #
 #
 #
-msgid "Destination:          "
-msgstr "Bestemming:          "
-#
-#
-#
-#
-#
 msgid "Disable"
 msgstr "Deactiveer"
 #
@@ -2023,20 +1961,6 @@ msgstr "ETA"
 #
 msgid "ETA          "
 msgstr "ETA          "
-#
-#
-#
-#
-#
-msgid "ETA:"
-msgstr "ETA:"
-#
-#
-#
-#
-#
-msgid "ETA:                  "
-msgstr "ETA:                 "
 #
 #
 #
@@ -2370,13 +2294,8 @@ msgstr "HSV"
 msgid "HW"
 msgstr "HW"
 #
-#
-#
-#
-#
-#, c-format
-msgid "Heading:                %03d Deg.\n"
-msgstr "Peiling:                  %03d°\n"
+msgid "Heading"
+msgstr ""
 #
 #
 #
@@ -2435,16 +2354,9 @@ msgstr "I&mporteer GPX-bestand ..."
 #
 #
 #
-msgid "IMO:\n"
+#, fuzzy
+msgid "IMO"
 msgstr "IMO:\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "IMO:                 %8d\n"
-msgstr "IMO:                 %8d\n"
 #
 #
 #
@@ -2464,14 +2376,8 @@ msgstr "Importeer GPX-bestand"
 #
 #
 #
-msgid "Inland Blue Flag        Clear\n"
-msgstr "Blauwe Bord binnenwateren     Verwijder\n"
-#
-#
-#
-#
-#
-msgid "Inland Blue Flag        Set\n"
+#, fuzzy
+msgid "Inland Blue Flag"
 msgstr "Blauwe Bord binnenwateren     Toon\n"
 #
 #
@@ -2547,13 +2453,6 @@ msgstr "Taal"
 #
 #
 #
-msgid "Last Position Report Time:  "
-msgstr "Laatste rapportagetijdstip: "
-#
-#
-#
-#
-#
 msgid "Latitude"
 msgstr "Breedte"
 #
@@ -2593,6 +2492,9 @@ msgstr "geleidelicht/laag"
 #
 msgid "Leading Light Rear"
 msgstr "geleidelicht/hoog"
+#
+msgid "Left"
+msgstr ""
 #
 #
 #
@@ -3049,13 +2951,6 @@ msgstr "Naam"
 #
 #
 #
-msgid "Name:  "
-msgstr " Naam: "
-#
-#
-#
-#
-#
 msgid "Nav Status"
 msgstr "Nav. status"
 #
@@ -3068,13 +2963,6 @@ msgstr ""
 #
 msgid "Navigation Data"
 msgstr "Weergaveoptie Navigatiegegevens"
-#
-#
-#
-#
-#
-msgid "Navigational Status:  "
-msgstr "Navigatiestatus: "
 #
 #
 msgid "New Group..."
@@ -3544,18 +3432,6 @@ msgstr "Positierapport"
 #
 #
 #
-#
-#
-#, c-format
-msgid ""
-"Position Report Age:       %3d Sec.\n"
-"\n"
-msgstr ""
-"Ouderdom rapportage:           %3d sec\n"
-"\n"
-#
-#
-#
 msgid "Pref. Chnl"
 msgstr "aanb.vrwr"
 #
@@ -3764,60 +3640,8 @@ msgstr "Afstand"
 #
 #
 #
-msgid "Range:                  Unavailable\n"
-msgstr "Afstand:                niet beschikbaar\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "Range:                %5.1f NM\n"
-msgstr "Afstand:                %5.1f NM\n"
-#
-#
-#
-#
-#
 msgid "Raster"
 msgstr "Raster"
-#
-#
-#
-#
-#
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-msgstr "Draaisnelheid:             %3d°/min. BB\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-msgstr "Draaisnelheid:             %3d°/min. SB\n"
-#
-#
-#
-#
-#
-msgid "Rate Of Turn            0\n"
-msgstr "Draaisnelheid:              0\n"
-#
-#
-#
-#
-#
-msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-msgstr "Draaisnelheid:             > 5°/30 sec. BB\n"
-#
-#
-#
-#
-#
-msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-msgstr "Draaisnelheid:             > 5°/30 sec. SB\n"
 #
 #
 #
@@ -3929,9 +3753,12 @@ msgstr "Hernoem routepunten?"
 msgid "RenderHPGL: The '%s' instruction is not implemented."
 msgstr "RenderHPGL: de '%s' instructie is niet uitgevoerd."
 #
+msgid "Report Age"
+msgstr ""
 #
-#, c-format
-msgid "Report as of: %d:%d UTC "
+#
+#, fuzzy
+msgid "Report as of"
 msgstr "Rapporteer vanaf: %d:%d UTC "
 #
 #
@@ -3980,6 +3807,14 @@ msgstr "Haal de initiele taalselectie op uit het Windows register"
 #, fuzzy
 msgid "Reverse"
 msgstr "&Omdraaien"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Right"
+msgstr "licht"
 #
 #
 #
@@ -4092,9 +3927,8 @@ msgid "Safe Water"
 msgstr "veilig vaarwater"
 #
 #
-msgid ""
-"Safety Broadcast Message:\n"
-"  "
+#, fuzzy
+msgid "Safety Broadcast Message"
 msgstr ""
 "Veiligheidsbericht:\n"
 "  "
@@ -4194,6 +4028,9 @@ msgstr "Zend naar GPS ..."
 #
 msgid "Service vessel, police patrol, port service"
 msgstr "dienstvaartuig"
+#
+msgid "Set"
+msgstr ""
 #
 #
 #
@@ -4452,89 +4289,6 @@ msgstr "vereenvoudigd"
 #
 #
 #
-#, c-format
-msgid ""
-"Size:                 %dm x %dm\n"
-"\n"
-msgstr ""
-"Grootte:                %dm x %dm \n"
-"\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x %4.1fm\n"
-"\n"
-msgstr ""
-"Grootte:                %dm x %dm x %4.1fm\n"
-"\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid ""
-"Size:                 %dm x %dm x ---m\n"
-"\n"
-msgstr ""
-"Grootte:                %dm x %dm x ---m\n"
-"\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid ""
-"Size:                 ---m x ---m x %4.1fm\n"
-"\n"
-msgstr ""
-"Grootte:                ---m x ---m x %4.1fm\n"
-"\n"
-#
-#
-#
-#
-#
-msgid ""
-"Size:                 ---m x ---m x ---m\n"
-"\n"
-msgstr ""
-"Grootte:                ---m x ---m x ---m\n"
-"\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-msgstr ""
-"Grootte:                %5.1fm x %4.1fm x %4.1fm\n"
-"\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid ""
-"Size:               %5.1fm x %4.1fm x ---m\n"
-"\n"
-msgstr ""
-"Grootte:                %5.1fm x %4.1fm x ---m\n"
-"\n"
-#
-#
-#
-#
-#
 msgid "SoG"
 msgstr "SOG"
 #
@@ -4568,23 +4322,16 @@ msgstr "markering bijzondere betekenis"
 #
 #
 #
+#, fuzzy
+msgid "Speed"
+msgstr "Verwachte vaart"
+#
+#
+#
+#
+#
 msgid "Speed (Kts)"
 msgstr "Vaart"
-#
-#
-#
-#
-#
-msgid "Speed:                  Unavailable\n"
-msgstr "Vaart:            niet beschikbaar\n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "Speed:                %5.2f Kts.\n"
-msgstr "Vaart:                %5.2f knopen\n"
 #
 #
 #
@@ -4677,21 +4424,6 @@ msgstr "TCP/IP WiFi dataserver"
 #
 msgid "TCPA"
 msgstr "TCPA"
-#
-#
-#
-#
-#
-msgid "TCPA:  \n"
-msgstr "TCPA:  \n"
-#
-#
-#
-#
-#
-#, c-format
-msgid "TCPA:                 %02d:%02d Hr:Min\n"
-msgstr "TCPA:                 %02d:%02d uur:min\n"
 #
 #
 #
@@ -4833,6 +4565,11 @@ msgstr "Dikte lettertype "
 msgid "The necessary configuration files were not found. "
 msgstr "De noodzakelijke configuratiebestanden zijn niet gevonden."
 #
+msgid ""
+"The waypoint you want to delete is used in a route, do you really want to "
+"delete it?"
+msgstr ""
+#
 #
 #
 #
@@ -4844,6 +4581,12 @@ msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
+msgstr ""
+#
+msgid ""
+"There are some waypoints used in routes or anchor alarms. Do you want to "
+"delete them as well? This will change the routes and disable the anchor "
+"alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 #
 msgid ""
@@ -5101,26 +4844,15 @@ msgstr "sleepboot, losvarend"
 msgid "Tug, tanker"
 msgstr "sleep-tankschip"
 #
+msgid "Turn Rate"
+msgstr ""
+#
 #
 #
 #
 #
 msgid "Type"
 msgstr "Type"
-#
-#
-#
-#
-#
-msgid "Type:                 "
-msgstr "Type:               "
-#
-#
-#
-#
-#
-msgid "UN Ship Type:         "
-msgstr "VN scheepstype: "
 #
 #
 msgid "URL"
@@ -5152,6 +4884,14 @@ msgstr ""
 #
 msgid "Unable to load libgps"
 msgstr "Kan libgps niet laden."
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Unavailable"
+msgstr "COG: niet beschikbaar"
 #
 #
 #
@@ -5559,6 +5299,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5582,8 +5323,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr " Onbekende kaartprojectie (aanname is Mercator): "
+#
 #
 #
 #
@@ -5632,8 +5375,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
+#
 #
 #
 #
@@ -5670,8 +5415,32 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
+#
+#
+#
+#
+#
+#~ msgid ":               "
+#~ msgstr ":       "
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ ":               Unavailable\n"
+#~ "\n"
+#~ "\n"
+#~ msgstr ""
+#~ ":                  niet beschikbaar\n"
+#~ "\n"
+#~ "\n"
+#
 #
 #
 #
@@ -5704,8 +5473,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Activeer route"
+#
 #
 #
 #
@@ -5749,8 +5520,50 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
+#
+#
+#
+#
+#
+#
+#~ msgid "Bearing:                %03d Deg.\n"
+#~ msgstr "Peiling:                  %03d°\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Bearing:                Unavailable\n"
+#~ msgstr "Peiling:                  niet beschikbaar\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "CPA:       \n"
+#~ msgstr "CPA:       \n"
+#
+#
+#
+#
+#
+#
+#~ msgid "CPA:                 %6.1f NM\n"
+#~ msgstr "CPA:                 %6.1f NM\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "CallSign:             "
+#~ msgstr "Roepnaam:         "
+#
 #
 #
 #
@@ -5770,6 +5583,39 @@ msgstr "wxFB website"
 #
 #~ msgid "Chart"
 #~ msgstr "Kaart"
+#
+#
+#
+#
+#
+#
+#~ msgid "Class:                "
+#~ msgstr "Klasse:       "
+#
+#
+#
+#
+#
+#
+#~ msgid "Course:                 %03d Deg.\n"
+#~ msgstr "Koers:               %03d°\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Course:                 000 Deg.\n"
+#~ msgstr "Koers:               000°\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Course:                 Unavailable\n"
+#~ msgstr "Koers:                    niet beschikbaar\n"
+#
 #
 #
 #
@@ -5800,6 +5646,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "standaard gegevens "
 #
@@ -5815,8 +5662,34 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Markeringspunt verwijderen"
+#
+#
+#
+#
+#
+#
+#~ msgid "Destination:          "
+#~ msgstr "Bestemming:          "
+#
+#
+#
+#
+#
+#
+#~ msgid "ETA:"
+#~ msgstr "ETA:"
+#
+#
+#
+#
+#
+#
+#~ msgid "ETA:                  "
+#~ msgstr "ETA:                 "
+#
 #
 #
 #
@@ -5855,6 +5728,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Ga naar markeringspunt/routepunt"
 #
@@ -5869,8 +5743,34 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Te gebruiken harmonische gegevens:"
+#
+#
+#
+#
+#
+#
+#~ msgid "Heading:                %03d Deg.\n"
+#~ msgstr "Peiling:                  %03d°\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "IMO:                 %8d\n"
+#~ msgstr "IMO:                 %8d\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Inland Blue Flag        Clear\n"
+#~ msgstr "Blauwe Bord binnenwateren     Verwijder\n"
+#
 #
 #
 #
@@ -5899,8 +5799,18 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Taal/Lettertype"
+#
+#
+#
+#
+#
+#
+#~ msgid "Last Position Report Time:  "
+#~ msgstr "Laatste rapportagetijdstip: "
+#
 #
 #
 #
@@ -5939,8 +5849,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Markeringspunt-icoon"
+#
 #
 #
 #
@@ -5974,8 +5886,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Markeringspunt-/Routepunt-eigenschappen ..."
+#
 #
 #
 #
@@ -6002,8 +5916,26 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "NMi"
 #~ msgstr "NM"
+#
+#
+#
+#
+#
+#
+#~ msgid "Name:  "
+#~ msgstr " Naam: "
+#
+#
+#
+#
+#
+#
+#~ msgid "Navigational Status:  "
+#~ msgstr "Navigatiestatus: "
+#
 #
 #
 #
@@ -6050,8 +5982,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN PlugIn Basis Klasse"
+#
 #
 #
 #
@@ -6103,8 +6037,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 #
 #
@@ -6153,8 +6089,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 #
 #
@@ -6203,8 +6141,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
+#
 #
 #
 #
@@ -6236,6 +6176,19 @@ msgstr "wxFB website"
 #
 #
 #
+#~ msgid ""
+#~ "Position Report Age:       %3d Sec.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Ouderdom rapportage:           %3d sec\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -6254,6 +6207,7 @@ msgstr "wxFB website"
 #
 #~ msgid "Position:               "
 #~ msgstr "Positie:"
+#
 #
 #
 #
@@ -6294,8 +6248,66 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Weergaveoptie Afdrukken"
+#
+#
+#
+#
+#
+#
+#~ msgid "Range:                  Unavailable\n"
+#~ msgstr "Afstand:                niet beschikbaar\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Range:                %5.1f NM\n"
+#~ msgstr "Afstand:                %5.1f NM\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
+#~ msgstr "Draaisnelheid:             %3d°/min. BB\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
+#~ msgstr "Draaisnelheid:             %3d°/min. SB\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Rate Of Turn            0\n"
+#~ msgstr "Draaisnelheid:              0\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
+#~ msgstr "Draaisnelheid:             > 5°/30 sec. BB\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
+#~ msgstr "Draaisnelheid:             > 5°/30 sec. SB\n"
+#
 #
 #
 #
@@ -6325,6 +6337,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Totale verheid (NM):"
 #
@@ -6340,8 +6353,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Koers-Boven presentatie"
+#
 #
 #
 #
@@ -6374,8 +6389,142 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Toon track-icoon"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Grootte:                %dm x %dm \n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Grootte:                %dm x %dm x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 %dm x %dm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Grootte:                %dm x %dm x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 ---m x ---m x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Grootte:                ---m x ---m x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:                 ---m x ---m x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Grootte:                ---m x ---m x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Grootte:                %5.1fm x %4.1fm x %4.1fm\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Size:               %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#~ msgstr ""
+#~ "Grootte:                %5.1fm x %4.1fm x ---m\n"
+#~ "\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Speed:                  Unavailable\n"
+#~ msgstr "Vaart:            niet beschikbaar\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Speed:                %5.2f Kts.\n"
+#~ msgstr "Vaart:                %5.2f knopen\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "TCPA:  \n"
+#~ msgstr "TCPA:  \n"
+#
+#
+#
+#
+#
+#
+#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
+#~ msgstr "TCPA:                 %02d:%02d uur:min\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "Type:                 "
+#~ msgstr "Type:               "
+#
+#
+#
+#
+#
+#
+#~ msgid "UN Ship Type:         "
+#~ msgstr "VN scheepstype: "
+#
 #
 #
 #
