@@ -8197,7 +8197,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         if( seltype & SELTYPE_AISTARGET ) {
             subMenuAIS->Append( ID_DEF_MENU_AIS_QUERY, _( "AIS Target Query..." ) );
             AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
-            if( myptarget && myptarget->bCPA_Valid ) {
+            if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alarm_state != AIS_ALARM_SET) ) {
                 if( myptarget->b_show_AIS_CPA )
                     subMenuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Hide AIS Target CPA" ) );
                 else
