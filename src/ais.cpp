@@ -683,12 +683,6 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             << vertSpacer;
 
     wxString navStatStr;
-    if( ClassStr.Length() ) html << _T("<td align=right><b>") << ClassStr << _T("</b></td>");
-    if( IMOstr.Length() ) html << _T("<td align=right><b>") << IMOstr << _T("</b></td>");
-    html << _T("</tr>\n");
-    html << vertSpacer;
-
-    wxString navStatStr;
     if( ( Class != AIS_BASE ) && ( Class != AIS_CLASS_B ) && ( Class != AIS_SART ) ) {
         if( ( NavStatus <= 21  ) && ( NavStatus >= 0 ) )
             navStatStr = wxGetTranslation( ais_status[NavStatus] );
