@@ -612,7 +612,7 @@ wxString FormatTimeAdaptive( int seconds ) {
         return wxString::Format( _T("%2dmin %02ds"), m, s );
     }
     int h = seconds / 3600;
-    m -= h* 3600;
+    m -= h* 60;
     return wxString::Format( _T("%2dh %02dmin"), h, m );
 }
 
