@@ -799,19 +799,6 @@ wxString AIS_Target_Data::BuildQueryResult( void )
              << rowStartH << _T("<b>") << toSDMM( 2, Lon ) << rowEnd;
     }
 
-    wxString tcpaStr;
-    if( bCPA_Valid ) tcpaStr << _(" </b>in<b> ") << FormatTimeAdaptive( (int)(TCPA*60.) );
-
-    if( bCPA_Valid ) {
-        html<< vertSpacer << rowStart << _("CPA") << rowEnd
-            << rowStartH << _T("<b>") << cc1->FormatDistanceAdaptive( CPA )
-            << tcpaStr << rowEnd;
-    }
-
-    //wxDateTime rt( PositionReportTicks );
-    //html << rowStart << _("Report Time")
-    //        << rowSeparator << rt.FormatISOTime() << _(" UTC") << rowEnd;
-
     wxString courseStr, sogStr, hdgStr, rotStr, rngStr, brgStr, destStr, etaStr;
 
     if( Class == AIS_GPSG_BUDDY ) {
@@ -893,6 +880,15 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         << brgStr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
         << rotStr << rowEnd << _T("</table></td></tr>")
         << vertSpacer;
+
+    wxString tcpaStr;
+    if( bCPA_Valid ) tcpaStr << _(" </b>in<b> ") << FormatTimeAdaptive( (int)(TCPA*60.) );
+
+    if( bCPA_Valid ) {
+        html<< vertSpacer << rowStart << _("CPA") << rowEnd
+            << rowStartH << _T("<b>") << cc1->FormatDistanceAdaptive( CPA )
+            << tcpaStr << rowEnd;
+    }
 
     if( Class != AIS_BASE ) {
         if( blue_paddle == 1 ) {
