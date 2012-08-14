@@ -4615,7 +4615,7 @@ bool ChartCanvas::DoZoomCanvasOut( double zoom_factor )
             double max_allowed_scale = 4.0 * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
             proposed_scale_onscreen = wxMin( proposed_scale_onscreen, max_allowed_scale );
         }
-        
+
      } else {
         int new_db_index = m_pQuilt->AdjustRefOnZoomOut( proposed_scale_onscreen );
         if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
@@ -12338,7 +12338,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
             if( !clear_test_region.IsEmpty() )
                 glClear( GL_COLOR_BUFFER_BIT );
         }
-        
+
         //  Now render the quilt
         ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
 
@@ -12470,27 +12470,27 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
 void glChartCanvas::ComputeRenderQuiltViewGLRegion( ViewPort &vp, wxRegion Region )
 {
     m_gl_rendered_region.Clear();
-    
+
     if( cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy() ) {
             ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
-            
+
             while( chart ) {
                 if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
                     chart = cc1->m_pQuilt->GetNextChart();
                     continue;
                 }
-                
+
                 QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
                 if( pqp->b_Valid ) {
                     wxRegion get_region = pqp->ActiveRegion;
                     get_region.Intersect( Region );
-                    
+
                     //  Todo  If chart is cm93, and it happens not to render, then calculation will be wrong
                     //  need a "test render" method for cm93
-                        
+
                     m_gl_rendered_region.Union(get_region);
                 }
-                
+
                 chart = cc1->m_pQuilt->GetNextChart();
             }
      }
@@ -12515,7 +12515,7 @@ void glChartCanvas::render()
     ViewPort svp = VPoint;
     svp.pix_width = svp.rv_rect.width;
     svp.pix_height = svp.rv_rect.height;
-    
+
     wxRegion ru = GetUpdateRegion();
 
     //  Is this viewpoint the same as the previously painted one?
@@ -12743,7 +12743,7 @@ void glChartCanvas::render()
                             //      Render the chart(s) in update region
                             RenderQuiltViewGL( VPoint, update_region, false );          // no clear wanted here
                             ComputeRenderQuiltViewGLRegion( VPoint, chart_get_region );
-                            
+
                         } else {
                             //    No sensible (dx, dy) change in the view, so use the cached member bitmap
                         }
@@ -14575,16 +14575,21 @@ void AISTargetQueryDialog::UpdateText()
             m_pQueryTextCtl->SetPage( html );
 
             // Try to create a min size that works across font sizes.
+            wxSize sz;
             if( ! IsShown() ) {
-                wxSize sz = m_pQueryTextCtl->GetVirtualSize();
+                sz = m_pQueryTextCtl->GetVirtualSize();
                 sz.x = 300;
                 m_pQueryTextCtl->SetSize( sz );
-                m_pQueryTextCtl->Layout();
-                sz.x = m_pQueryTextCtl->GetInternalRepresentation()->GetWidth();
-                sz.y = 100 + m_pQueryTextCtl->GetInternalRepresentation()->GetHeight();
-                SetMinSize( sz );
-                Fit();
             }
+            m_pQueryTextCtl->Layout();
+            wxSize ir(m_pQueryTextCtl->GetInternalRepresentation()->GetWidth(),
+                    m_pQueryTextCtl->GetInternalRepresentation()->GetHeight() );
+            sz.x = wxMax( m_pQueryTextCtl->GetSize().x, ir.x );
+            sz.y = wxMax( m_pQueryTextCtl->GetSize().y, ir.y );
+            m_pQueryTextCtl->SetMinSize( sz );
+            Fit();
+            sz -= wxSize( 200, 200 );
+            m_pQueryTextCtl->SetMinSize( sz );
         }
     }
 }

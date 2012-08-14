@@ -605,11 +605,11 @@ wxString FormatTimeAdaptive( int seconds ) {
     int s = seconds % 60;
     int m = seconds / 60;
     if( seconds < 100 )
-        return wxString::Format( _T("%3ds"), seconds );
+        return wxString::Format( _T("%3d s"), seconds );
     else if( seconds < 3600 ) {
         int m = seconds / 60;
         int s = seconds % 60;
-        return wxString::Format( _T("%2dmin %02ds"), m, s );
+        return wxString::Format( _T("%2d min %02d s"), m, s );
     }
     int h = seconds / 3600;
     m -= h* 60;
@@ -629,11 +629,11 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     wxString rowSeparatorH = _T("</td><td></td><td>");
     wxString colSeparator = _T("<td></td>");
     wxString rowEnd = _T("</b></td></tr>\n");
-    wxString vertSpacer = _T("<tr><td><font size=-2>&nbsp;</font></td></tr>\n\n");
+    wxString vertSpacer = _T("<tr><td></td></tr><tr><td></td></tr><tr><td></td></tr>\n\n");
 
     wxString IMOstr, MMSIstr, ClassStr;
 
-    html << tableStart << rowStartH;
+    html << tableStart << _T("<tr><td nowrap colspan=2>");
     if( ( Class != AIS_BASE ) && ( Class != AIS_SART ) ) {
         if( b_nameValid ) {
             wxString uret = trimAISField( ShipName );
@@ -653,7 +653,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         html << trimAISField( CallSign ) << _T("</b>") << rowEnd;
 
         if( Class != AIS_CLASS_B ) {
-            if( IMO > 0 ) IMOstr == wxString::Format( _T("%08d"), abs( IMO ) );
+            if( IMO > 0 ) IMOstr = wxString::Format( _T("%08d"), abs( IMO ) );
         }
     }
     else html << _T("</b>") << rowEnd;
@@ -665,13 +665,24 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     }
     ClassStr = wxGetTranslation( Get_class_string( false ) );
 
-    html << _T("<tr>");
-    if( MMSIstr.Length() ) html << _T("<td><font size=-2>") << _T("MMSI") << _T("</font></td>");
-    if( ClassStr.Length() ) html << _T("<td align=right><font size=-2>") << _("Class") << _T("</font></td>");
-    if( IMOstr.Length() ) html << _T("<td align=right><font size=-2>") << _T("IMO") << _T("</font></td>");
-    html << _T("</tr>\n<tr>");
+    if( IMOstr.Length() )
+        html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
+            << rowStart <<_("MMSI") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
+            << _("Class") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
+            << _("IMO") << _T("</font></td></tr>")
+            << rowStartH << _T("<b>") << MMSIstr << _T("</b></td><td>&nbsp;</td><td><b>")
+            << ClassStr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
+            << IMOstr << rowEnd << _T("</table></td></tr>")
+            << vertSpacer;
+    else
+        html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
+            << rowStart <<_("MMSI") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
+            << _("Class") << _T("</font></td></tr>")
+            << rowStartH << _T("<b>") << MMSIstr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
+            << ClassStr << rowEnd << _T("</table></td></tr>")
+            << vertSpacer;
 
-    if( MMSIstr.Length() ) html << _T("<td><b>") << MMSIstr << _T("</b></td>");
+    wxString navStatStr;
     if( ClassStr.Length() ) html << _T("<td align=right><b>") << ClassStr << _T("</b></td>");
     if( IMOstr.Length() ) html << _T("<td align=right><b>") << IMOstr << _T("</b></td>");
     html << _T("</tr>\n");
@@ -787,7 +798,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
         html << vertSpacer
              << rowStart << _("Position") << posTypeStr << _T("</font></td><td align=right><font size=-2>")
-             << _("Report Age") << _T("</font>") << rowEnd
+             << _("Report Age") << _T("</font></td></tr>")
 
              << rowStartH << _T("<b>") << toSDMM( 1, Lat ) << _T("</b></td><td align=right><b>")
              << FormatTimeAdaptive( target_age ) << rowEnd
@@ -819,7 +830,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                  << _T("</font></td><td align=right><font size=-2>")
                  << _("ETA") << _T("</font></td></tr>\n")
                  << rowStartH << _T("<b>") << trimAISField( Destination )
-                 << _T("</b></td><td><nobr><b>");
+                 << _T("</b></td><td><b>");
 
             if( ( ETA_Mo ) && ( ETA_Hr < 24 ) ) {
                 wxDateTime eta( ETA_Day, wxDateTime::Month( ETA_Mo - 1 ), now.GetYear(), ETA_Hr,
@@ -827,7 +838,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                 html << eta.Format( _T("&nbsp;&nbsp;%b&nbsp;%d&nbsp;%H:%M") );
             }
             else html << _("Unavailable");
-            html << _T("</nobr>") << rowEnd;
+            html << rowEnd;
         }
 
         if( ( Class == AIS_CLASS_A ) || ( Class == AIS_CLASS_B ) ) {
@@ -874,7 +885,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     html << vertSpacer << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
         << rowStart <<_("Speed") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
         << _("Course") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
-        << _("Heading") << _T("</font>") << rowEnd
+        << _("Heading") << _T("</font></td></tr>")
         << rowStartH << _T("<b>") << sogStr << _T("</b></td><td>&nbsp;</td><td><b>")
         << courseStr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
         << hdgStr << rowEnd << _T("</table></td></tr>")
@@ -883,7 +894,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
         << rowStart <<_("Range") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
         << _("Bearing") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
-        << _("Turn Rate") << _T("</font>") << rowEnd
+        << _("Turn Rate") << _T("</font></td></tr>")
         << rowStartH << _T("<b>") << rngStr << _T("</b></td><td>&nbsp;</td><td><b>")
         << brgStr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
         << rotStr << rowEnd << _T("</table></td></tr>")
