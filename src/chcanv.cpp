@@ -3950,8 +3950,13 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
         case 2:                      // Ctrl B
             if( stats ) {
-                if( stats->IsShown() ) stats->Hide();
-                else stats->Show();
+                if( stats->IsShown() )
+                    stats->Hide();
+                else {
+                    stats->Move(0,0);
+                    stats->RePosition();
+                    stats->Show();
+                }
             }
             break;
 
