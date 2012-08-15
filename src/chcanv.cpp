@@ -3956,6 +3956,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                     stats->Move(0,0);
                     stats->RePosition();
                     stats->Show();
+                    gFrame->Raise();
                 }
             }
             break;
