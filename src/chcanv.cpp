@@ -9048,6 +9048,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
         m_pMouseRoute = m_pSelectedRoute;
         parent_frame->nRoute_State = m_pSelectedRoute->GetnPoints() + 1;
+        m_pMouseRoute->m_lastMousePointIndex = m_pSelectedRoute->GetnPoints();
 
         pLast = m_pSelectedRoute->GetLastPoint();
 
