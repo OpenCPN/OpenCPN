@@ -142,9 +142,7 @@ void StatWin::OnSize( wxSizeEvent& event )
 
 void StatWin::FormatStat( void )
 {
-
     pPiano->FormatKeys();
-    Show();
 }
 
 void StatWin::MouseEvent( wxMouseEvent& event )
