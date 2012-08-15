@@ -4319,16 +4319,17 @@ void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
 
                 if ( parent_frame->m_pStatusBar )
                 {
-                    wxString s1 = _("Cursor: ");
-                    s1 += toSDMM(1, cursor_lat);
+                    wxString s1;
                     s1 += _T(" ");
+                    s1 += toSDMM(1, cursor_lat);
+                    s1 += _T("   ");
                     s1 += toSDMM(2, cursor_lon);
                     parent_frame->SetStatusText ( s1, STAT_FIELD_CURSOR_LL );
 
                     double brg, dist;
                     DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
                     wxString s;
-                    s.Printf(_("From Ownship: %03d Deg   "), (int)brg );
+                    s.Printf( wxString("%03d° ", wxConvUTF8 ), (int)brg );
                     s << FormatDistanceAdaptive( dist );
                     parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
                 }
@@ -4999,13 +5000,13 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
             if( Current_Ch ) {
                 double chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
                 double scale_factor = scale_ppm / chart_native_ppm;
-                if( scale_factor > 1.0 ) text.Printf( _("TrueScale: %8.0f  Zoom %4.1fx"),
+                if( scale_factor > 1.0 ) text.Printf( _("Scale %4.0f (%1.1fx)"),
                                                           true_scale_display, scale_factor );
                 else
-                    text.Printf( _("TrueScale: %8.0f  Zoom %4.2fx"), true_scale_display,
+                    text.Printf( _("Scale %4.0f (%1.2fx)"), true_scale_display,
                                  scale_factor );
             } else
-                text.Printf( _("TrueScale: %8.0f             "), true_scale_display );
+                text.Printf( _("Scale %4.0f"), true_scale_display );
 
             parent_frame->SetStatusText( text, STAT_FIELD_SCALE );
         }
@@ -7106,16 +7107,16 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 while( show_cursor_lon > 180. )
                     show_cursor_lon -= 360.;
 
-                wxString s1 = _("Cursor: ");
+                wxString s1 = _(" ");
                 s1 += toSDMM( 1, show_cursor_lat );
-                s1 += _T(" ");
+                s1 += _T("   ");
                 s1 += toSDMM( 2, show_cursor_lon );
                 parent_frame->SetStatusText( s1, STAT_FIELD_CURSOR_LL );
 
                 double brg, dist;
                 DistanceBearingMercator( m_cursor_lat, m_cursor_lon, gLat, gLon, &brg, &dist );
                 wxString s;
-                s.Printf( _("From Ownship: %03d Deg   "), (int) brg );
+                s.Printf( wxString("%03d°  ", wxConvUTF8), (int) brg );
                 s << FormatDistanceAdaptive( dist );
                 parent_frame->SetStatusText( s, STAT_FIELD_CURSOR_BRGRNG );
             }

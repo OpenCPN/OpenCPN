@@ -2208,7 +2208,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_next_available_plugin_tool_id = ID_PLUGIN_BASE;
 
     m_COGFilterLast = 0.;
-    
+
     g_sticky_chart = -1;
 }
 
@@ -2372,7 +2372,6 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     UpdateToolbar( cs );
 
     if( g_pi_manager ) g_pi_manager->SetColorSchemeForAllPlugIns( cs );
-
 }
 
 void MyFrame::ApplyGlobalColorSchemetoStatusBar( void )
@@ -2381,26 +2380,11 @@ void MyFrame::ApplyGlobalColorSchemetoStatusBar( void )
         m_pStatusBar->SetBackgroundColour( GetGlobalColor( _T("UIBDR") ) );    //UINFF
         m_pStatusBar->ClearBackground();
 
-        //    As an optimization, if color scheme is anything other than GLOBAL_COLOR_SCHEME_DAY,
-        //    adjust the status bar field styles to be simple flat fields, with no unmanageable 3-D
-        //    effects.
-
-        int sb_style;
-        if( ( global_color_scheme == GLOBAL_COLOR_SCHEME_DAY )
-                || ( global_color_scheme == GLOBAL_COLOR_SCHEME_RGB ) ) sb_style = wxSB_NORMAL;
-        else
-            sb_style = wxSB_FLAT;
-
-        int sb_styles[N_STATUS_BAR_FIELDS_MAX];
-        for( int i = 0; i < m_StatusBarFieldCount; i++ ) {
-            if( i < N_STATUS_BAR_FIELDS_MAX ) sb_styles[i] = sb_style;
-        }
-
-        m_pStatusBar->SetStatusStyles( m_StatusBarFieldCount, (const int *) &sb_styles[0] );
-        int widths[] = { -3, -3, -3, -3, -2 };
+        int styles[] = { wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT };
+        m_pStatusBar->SetStatusStyles( m_StatusBarFieldCount, styles );
+        int widths[] = { -6, -5, -5, -3, -4 };
         m_pStatusBar->SetStatusWidths( m_StatusBarFieldCount, widths );
     }
-
 }
 
 void MyFrame::DestroyMyToolbar()
@@ -4223,12 +4207,12 @@ void MyFrame::ToggleQuiltMode( void )
         bool cur_mode = cc1->GetQuiltMode();
 
         if( !cc1->GetQuiltMode() && g_bQuiltEnable ) cc1->SetQuiltMode( true );
-        else 
+        else
             if( cc1->GetQuiltMode() ) {
                 cc1->SetQuiltMode( false );
                 g_sticky_chart = cc1->GetQuiltReferenceChartIndex();
             }
-            
+
 
         if( cur_mode != cc1->GetQuiltMode() ) SetupQuiltMode();
     }
@@ -4761,7 +4745,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
 //      Update the Toolbar Status windows and lower status bar the first time watchdog times out
     if( ( gGPS_Watchdog == 0 ) || ( gSAT_Watchdog == 0 ) ) {
-        wxString sogcog( _T("SOG: ----- kts  COG: ----- Deg") );
+        wxString sogcog( wxString("SOG --- kts  COG ---°", wxConvUTF8 ) );
         if( GetStatusBar() ) SetStatusText( sogcog, STAT_FIELD_SOGCOG );
 
         gCog = 0.0;                                 // say speed is zero to kill ownship predictor
@@ -4771,16 +4755,17 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         double cursor_lat, cursor_lon;
         cc1->GetCursorLatLon( &cursor_lat, &cursor_lon );
 
-        wxString s1 = _("Cursor: ");
-        s1 += toSDMM( 1, cursor_lat );
+        wxString s1;
         s1 += _T(" ");
+        s1 += toSDMM( 1, cursor_lat );
+        s1 += _T("   ");
         s1 += toSDMM( 2, cursor_lon );
         if( GetStatusBar() ) SetStatusText( s1, STAT_FIELD_CURSOR_LL );
 
         double brg, dist;
         DistanceBearingMercator( cursor_lat, cursor_lon, gLat, gLon, &brg, &dist );
         wxString s;
-        s.Printf( _("From Ownship: %03d Deg   "), (int) brg );
+        s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int) brg );
         s << cc1->FormatDistanceAdaptive( dist );
         if( GetStatusBar() ) SetStatusText( s, STAT_FIELD_CURSOR_BRGRNG );
     }
@@ -5879,7 +5864,7 @@ bool MyFrame::DoChartUpdate( void )
                 }
                 else
                     proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / set_scale;
-                
+
 
                 //  This logic will bring a new chart onscreen at roughly twice the true paper scale equivalent.
                 //  Note that first chart opened on application startup (bOpenSpecified = true) will open at the config saved scale
@@ -6806,21 +6791,21 @@ void MyFrame::PostProcessNNEA( bool brx_rmc, wxString &sfixtime )
         tick_buf[1] = 0;
 
         wxString s1( tick_buf, wxConvUTF8 );
-        s1 += _(" Ship: ");
+        s1 += _(" Ship ");
         s1 += toSDMM( 1, gLat );
         s1 += _T("   ");
         s1 += toSDMM( 2, gLon );
         SetStatusText( s1, STAT_FIELD_TICK );
 
         wxString sogcog;
-        if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG: ----- kts  ") );
+        if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- kts  ") );
         else
-            sogcog.Printf( _T("SOG: %5.2f kts  "), gSog );
+            sogcog.Printf( _T("SOG %2.2f kts  "), gSog );
 
         wxString cogs;
-        if( wxIsNaN(gCog) ) cogs.Printf( _T("COG: ----- Deg") );
+        if( wxIsNaN(gCog) ) cogs.Printf( wxString( "COG ---°", wxConvUTF8 ) );
         else
-            cogs.Printf( _T("COG: %5.0f Deg"), gCog );
+            cogs.Printf( wxString("COG %2.0f°", wxConvUTF8 ), gCog );
 
         sogcog.Append( cogs );
         SetStatusText( sogcog, STAT_FIELD_SOGCOG );
@@ -7168,11 +7153,11 @@ void MyPrintout::DrawPageOne( wxDC *dc )
     dc->SetDeviceOrigin( (long) posX, (long) posY );
 
 //  Get the latest bitmap as rendered by the ChartCanvas
-    
+
     if(g_bopengl) {
         int gsx = cc1->GetglCanvas()->GetSize().x;
         int gsy = cc1->GetglCanvas()->GetSize().y;
-        
+
         unsigned char *buffer = (unsigned char *)malloc( gsx * gsy * 3 );
         glReadPixels(0, 0, gsx, gsy, GL_RGB, GL_UNSIGNED_BYTE, buffer );
         wxImage image( gsx,gsy );
@@ -7185,7 +7170,7 @@ void MyPrintout::DrawPageOne( wxDC *dc )
         mdc.SelectObject( wxNullBitmap );
     }
     else {
-    
+
 //  And Blit/scale it onto the Printer DC
         wxMemoryDC mdc;
         mdc.SelectObject( *( cc1->pscratch_bm ) );
