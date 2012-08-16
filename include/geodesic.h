@@ -2,7 +2,7 @@
 #define GEODESIC_H_
 
 #define _USE_MATH_DEFINES
-#include <cmath>
+//#include <cmath>
 #include <math.h>
 
 #define GEODESIC_WGS84_SEMI_MAJORAXIS 6378137.0
