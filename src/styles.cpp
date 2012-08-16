@@ -54,13 +54,13 @@ void bmdump( wxBitmap bm, wxString name )
 wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 {
     wxBitmap merged( back.GetWidth(), back.GetHeight(), back.GetDepth() );
-    merged.UseAlpha();
-    back.UseAlpha();
-    front.UseAlpha();
-
 #if (defined(__WXGTK__) || defined(__WXMAC__))
 
     // Manual alpha blending for broken wxWidgets platforms.
+
+    merged.UseAlpha();
+    back.UseAlpha();
+    front.UseAlpha();
 
     wxImage im_front = front.ConvertToImage();
     wxImage im_back = back.ConvertToImage();
