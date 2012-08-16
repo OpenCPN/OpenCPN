@@ -7267,6 +7267,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             rlat = m_cursor_lat;
             rlon = m_cursor_lon;
 
+            m_bRouteEditing = true;
+
             if( parent_frame->nRoute_State == 1 ) {
                 m_pMouseRoute = new Route();
                 pRouteList->Append( m_pMouseRoute );
