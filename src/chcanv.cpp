@@ -3212,7 +3212,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-#if defined( __WXGTK__) || defined(__WXOSX__) /* inline rms */
+#if defined( __WXGTK__) || defined(__WXOSX__) 
 
     wxImage ICursorLeft = style->GetIcon( _T("left") ).ConvertToImage();
     wxImage ICursorRight = style->GetIcon( _T("right") ).ConvertToImage();
@@ -3221,6 +3221,16 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     wxImage ICursorPencil = style->GetIcon( _T("pencil") ).ConvertToImage();
     wxImage ICursorCross = style->GetIcon( _T("cross") ).ConvertToImage();
 
+#if wxCHECK_VERSION(2, 8, 12)
+#else    
+    ICursorLeft.ConvertAlphaToMask(128);
+    ICursorRight.ConvertAlphaToMask(128);
+    ICursorUp.ConvertAlphaToMask(128);
+    ICursorDown.ConvertAlphaToMask(128);
+    ICursorPencil.ConvertAlphaToMask(10);
+    ICursorCross.ConvertAlphaToMask(10);
+#endif    
+    
     if ( ICursorLeft.Ok() )
     {
         ICursorLeft.SetOption ( wxIMAGE_OPTION_CUR_HOTSPOT_X, 0 );

@@ -1006,6 +1006,10 @@ bool MyApp::OnInit()
     vs = vs.Trim( false );
     wxLogMessage( vs );
 
+    wxString wxver(wxVERSION_STRING);
+    wxver.Prepend( _T("wxWidgets version: ") );
+    wxLogMessage( wxver );
+    
     wxLogMessage( _T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"), g_mem_total / 1024,
             g_mem_initial / 1024 );
 
