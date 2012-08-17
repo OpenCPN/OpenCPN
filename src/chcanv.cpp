@@ -3923,6 +3923,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleRocks();
             break;
 
+        case 'A':
+            parent_frame->ToggleAnchor();
+            break;
+
         case 'T':
             parent_frame->ToggleENCText();
             break;
