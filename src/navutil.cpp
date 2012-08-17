@@ -1496,12 +1496,14 @@ void Route::DrawSegment( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, b
 
 void Route::Draw( ocpnDC& dc, ViewPort &VP )
 {
-    if( !m_bVisible || m_nPoints == 0 ) return;
+    if( m_nPoints == 0 ) return;
 
-    if( m_bRtIsSelected ) {
+    if( m_bVisible && m_bRtIsSelected ) {
         dc.SetPen( *g_pRouteMan->GetSelectedRoutePen() );
         dc.SetBrush( *g_pRouteMan->GetSelectedRouteBrush() );
-    } else {
+    } 
+    else if ( m_bVisible )
+    {
         int style = wxSOLID;
         int width = g_route_line_width;
         wxColour col;
@@ -1521,80 +1523,90 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
         dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxSOLID ) );
     }
 
-    if( m_bRtIsActive ) {
+    if( m_bVisible && m_bRtIsActive )
+    {
         dc.SetPen( *g_pRouteMan->GetActiveRoutePen() );
         dc.SetBrush( *g_pRouteMan->GetActiveRouteBrush() );
     }
 
     wxPoint rpt1, rpt2;
-    DrawPointWhich( dc, 1, &rpt1 );
+    if ( m_bVisible )
+        DrawPointWhich( dc, 1, &rpt1 );
 
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp1 = node->GetData();
     node = node->GetNext();
 
+    if ( !m_bVisible && prp1->m_bKeepXRoute )
+            prp1->Draw( dc );
+
     while( node ) {
 
         RoutePoint *prp2 = node->GetData();
-        prp2->Draw( dc, &rpt2 );
+        if ( !m_bVisible && prp2->m_bKeepXRoute )
+            prp2->Draw( dc );
+        else if (m_bVisible)
+            prp2->Draw( dc, &rpt2 );
 
-        //    Handle offscreen points
-        bool b_2_on = VP.GetBBox().PointInBox( prp2->m_lon, prp2->m_lat, 0 );
-        bool b_1_on = VP.GetBBox().PointInBox( prp1->m_lon, prp1->m_lat, 0 );
+        if ( m_bVisible )
+        {
+            //    Handle offscreen points
+            bool b_2_on = VP.GetBBox().PointInBox( prp2->m_lon, prp2->m_lat, 0 );
+            bool b_1_on = VP.GetBBox().PointInBox( prp1->m_lon, prp1->m_lat, 0 );
 
-        //TODO This logic could be simpliifed
-        //Simple case
-        if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, VP, true ); // with arrows
+            //TODO This logic could be simpliifed
+            //Simple case
+            if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, VP, true ); // with arrows
 
-        //    In the cases where one point is on, and one off
-        //    we must decide which way to go in longitude
-        //     Arbitrarily, we will go the shortest way
+            //    In the cases where one point is on, and one off
+            //    we must decide which way to go in longitude
+            //     Arbitrarily, we will go the shortest way
 
-        double pix_full_circle = WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI
+            double pix_full_circle = WGS84_semimajor_axis_meters * mercator_k0 * 2 * PI
                 * VP.view_scale_ppm;
-        double dp = pow( (double) ( rpt1.x - rpt2.x ), 2 ) + pow( (double) ( rpt1.y - rpt2.y ), 2 );
-        double dtest;
-        int adder;
-        if( b_1_on && !b_2_on ) {
-            if( rpt2.x < rpt1.x ) adder = (int) pix_full_circle;
-            else
-                adder = -(int) pix_full_circle;
-
-            dtest = pow( (double) ( rpt1.x - ( rpt2.x + adder ) ), 2 )
-                    + pow( (double) ( rpt1.y - rpt2.y ), 2 );
-
-            if( dp < dtest ) adder = 0;
-
-            RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, VP, true );
-        } else
-            if( !b_1_on && b_2_on ) {
-                if( rpt1.x < rpt2.x ) adder = (int) pix_full_circle;
+            double dp = pow( (double) ( rpt1.x - rpt2.x ), 2 ) + pow( (double) ( rpt1.y - rpt2.y ), 2 );
+            double dtest;
+            int adder;
+            if( b_1_on && !b_2_on ) {
+                if( rpt2.x < rpt1.x ) adder = (int) pix_full_circle;
                 else
                     adder = -(int) pix_full_circle;
 
-                dtest = pow( (double) ( rpt2.x - ( rpt1.x + adder ) ), 2 )
-                        + pow( (double) ( rpt1.y - rpt2.y ), 2 );
+                dtest = pow( (double) ( rpt1.x - ( rpt2.x + adder ) ), 2 )
+                    + pow( (double) ( rpt1.y - rpt2.y ), 2 );
 
                 if( dp < dtest ) adder = 0;
 
-                RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true );
-            }
-
-            //Both off, need to check shortest distance
-            else
-                if( !b_1_on && !b_2_on ) {
+                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, VP, true );
+            } else
+                if( !b_1_on && b_2_on ) {
                     if( rpt1.x < rpt2.x ) adder = (int) pix_full_circle;
                     else
                         adder = -(int) pix_full_circle;
 
                     dtest = pow( (double) ( rpt2.x - ( rpt1.x + adder ) ), 2 )
-                            + pow( (double) ( rpt1.y - rpt2.y ), 2 );
+                        + pow( (double) ( rpt1.y - rpt2.y ), 2 );
 
                     if( dp < dtest ) adder = 0;
 
                     RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true );
                 }
 
+                //Both off, need to check shortest distance
+                else
+                    if( !b_1_on && !b_2_on ) {
+                        if( rpt1.x < rpt2.x ) adder = (int) pix_full_circle;
+                        else
+                            adder = -(int) pix_full_circle;
+
+                        dtest = pow( (double) ( rpt2.x - ( rpt1.x + adder ) ), 2 )
+                            + pow( (double) ( rpt1.y - rpt2.y ), 2 );
+
+                        if( dp < dtest ) adder = 0;
+
+                        RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true );
+                    }
+        }
         rpt1 = rpt2;
         prp1 = prp2;
 
@@ -2088,9 +2100,24 @@ void Route::RebuildGUIDList( void )
         node = node->GetNext();
     }
 }
-void Route::SetVisible( bool visible )
+void Route::SetVisible( bool visible, bool includeWpts )
 {
     m_bVisible = visible;
+
+    if ( !includeWpts )
+        return;
+
+    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    RoutePoint *rp;
+    while( node ) {
+        rp = node->GetData();
+        if ( rp->m_bKeepXRoute )
+        {
+            rp->SetVisible( visible );
+            //pConfig->UpdateWayPoint( rp );
+        }
+        node = node->GetNext();
+    }
 }
 
 void Route::SetListed( bool visible )
@@ -5961,11 +5988,11 @@ Route *LoadGPXRoute( GpxRteElement *rtenode, int routenum, bool b_fullviz )
                     }
                 }
     }
-    if( g_bIsNewLayer ) pTentRoute->SetVisible( g_bLayerViz );
+    if( g_bIsNewLayer ) pTentRoute->SetVisible( g_bLayerViz, false );
     else
-        if( b_propviz ) pTentRoute->SetVisible( b_viz );
+        if( b_propviz ) pTentRoute->SetVisible( b_viz, false );
         else
-            if( b_fullviz ) pTentRoute->SetVisible();
+            if( b_fullviz ) pTentRoute->SetVisible( true, false );
 
     return pTentRoute;
 }

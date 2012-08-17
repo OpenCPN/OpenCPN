@@ -219,7 +219,7 @@ public:
       void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
 
       bool CrossesIDL(){ return m_bcrosses_idl; }
-      void SetVisible(bool visible = true);
+      void SetVisible(bool visible = true, bool includeWpts = true);
       void SetListed(bool visible = true);
       bool IsVisible() { return m_bVisible; }
       bool IsListed() { return m_bListed; }
