@@ -237,6 +237,7 @@ class MyFrame: public wxFrame
     void ToggleSoundings(void);
     void ToggleRocks(void);
     bool ToggleLights( bool doToggle = true, bool temporary = false );
+    void ToggleAnchor(void);
     void TrackOn(void);
     void TrackOff(bool do_add_point = false);
     void TrackMidnightRestart(void);
