@@ -7622,7 +7622,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
         else                      // left click for chart center
         {
-            if( !m_bChartDragging ) {
+            if( !m_bChartDragging && !m_bMeasure_Active ) {
 //          Chart Panning
 
                 switch( cursor_region ) {
