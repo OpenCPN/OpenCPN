@@ -171,26 +171,28 @@ S57Obj::~S57Obj()
 {
     //  Don't delete any allocated records of simple copy clones
     if( !bIsClone ) {
-        for( unsigned int iv = 0; iv < attVal->GetCount(); iv++ ) {
-            S57attVal *vv = attVal->Item( iv );
-            void *v2 = vv->value;
-            free( v2 );
-            delete vv;
+        if( attVal ) {
+            for( unsigned int iv = 0; iv < attVal->GetCount(); iv++ ) {
+                S57attVal *vv = attVal->Item( iv );
+                void *v2 = vv->value;
+                free( v2 );
+                delete vv;
+            }
+            delete attVal;
         }
-        delete attVal;
-        delete attList;
+        if( attList ) delete attList;
 
-        delete pPolyTessGeo;
+        if( pPolyTessGeo ) delete pPolyTessGeo;
 
-        delete pPolyTrapGeo;
+        if( pPolyTrapGeo ) delete pPolyTrapGeo;
 
-        delete FText;
+        if( FText ) delete FText;
 
         if( geoPt ) free( geoPt );
         if( geoPtz ) free( geoPtz );
         if( geoPtMulti ) free( geoPtMulti );
 
-        free( m_lsindex_array );
+        if( m_lsindex_array ) free( m_lsindex_array );
     }
 }
 

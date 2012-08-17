@@ -947,20 +947,30 @@ static void *DEPCNT02 (void *param)
       int quapos = 0;
       GetIntAttr(obj, "QUAPOS", quapos);        // QUAPOS is an E (Enumerated) type attribute
 
-//      S57_getAttVal(geo, "QUAPOS");
-      if (0 != quapos/*0 != quaposstr[0]*/) {
-//            quapos = atoi(quaposstr);
+      if (0 != quapos) {
             if ( 2 <= quapos && quapos < 10) {
-                  if (safe)
-                        rule_str = _T(";LS(DASH,2,DEPSC)");  //depcnt02 = g_string_new(";LS(DASH,2,DEPSC)");
+                  if (safe) {
+                      wxString safeCntr = _T("LS(DASH,2,DEPSC)");
+                      S57Obj tempObj;
+                      tempObj.attList = new wxString();
+                      LUPrec* safelup = ps52plib->S52_LUPLookup( PLAIN_BOUNDARIES, "SAFECD", &tempObj, false );
+                      if( safelup ) safeCntr = *safelup->INST;
+                      rule_str = _T(";") + safeCntr;
+                  }
                   else
-                        rule_str = _T(";LS(DASH,1,DEPCN)");  //depcnt02 = g_string_new(";LS(DASH,1,DEPCN)");
+                        rule_str = _T(";LS(DASH,1,DEPCN)");
             }
       } else {
-            if (safe)
-                  rule_str = _T(";LS(SOLD,2,DEPSC)"); //depcnt02 = g_string_new(";LS(SOLD,2,DEPSC)");
+            if (safe) {
+                wxString safeCntr = _T("LS(SOLD,2,DEPSC)");
+                S57Obj tempObj;
+                tempObj.attList = new wxString();
+                LUPrec* safelup = ps52plib->S52_LUPLookup( PLAIN_BOUNDARIES, "SAFECN", &tempObj, false );
+                if( safelup ) safeCntr = *safelup->INST;
+                rule_str = _T(";") + safeCntr;
+            }
             else
-                  rule_str = _T(";LS(SOLD,1,DEPCN)"); //depcnt02 = g_string_new(";LS(SOLD,1,DEPCN)");
+                  rule_str = _T(";LS(SOLD,1,DEPCN)");
       }
 
       if (safe) {
