@@ -4744,10 +4744,10 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
 
 				wxString wxAttrValue( line, wxConvUTF8 );
 
-				if( wxAttrValue.Length() < strlen(line) ) 
+				if( wxAttrValue.Length() < strlen(line) )
 					wxAttrValue = wxString( line, wxConvISO8859_1 );
 
-				if( wxAttrValue.Length() < strlen(line) ) 
+				if( wxAttrValue.Length() < strlen(line) )
 					wxLogError( _T("Warning: CreateSENCRecord(): Failed to convert string value to wxString.") );
 
                 sheader += wxAttrValue;
@@ -4896,7 +4896,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                         if( !poReader->FetchPoint( RCNM_VC, end_rcid, NULL, NULL, NULL, NULL ) ) end_rcid =
                                 -2;
 
-                        int edge_ornt = 1; 
+                        int edge_ornt = 1;
                         //  Allocate some storage for converted points
 
                         if( edge_ornt == 1 )                                    // forward
@@ -5370,12 +5370,9 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon( float lat, float lon, float
 bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius, S57Obj *obj )
 {
     switch( obj->Primitive_type ){
-        case GEO_POINT:
-            //  For single Point objects, the integral object bounding box contains the lat/lon of the object,
-            //  possibly expanded by text or symbol rendering
-        {
-            if( !obj->bBBObj_valid ) return false;
-
+        //  For single Point objects, the integral object bounding box contains the lat/lon of the object,
+        //  possibly expanded by text or symbol rendering
+        case GEO_POINT: {
             if( 1 == obj->npt ) {
                 //  Special case for LIGHTS
                 //  Sector lights have had their BBObj expanded to include the entire drawn sector
@@ -5395,6 +5392,9 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
 
                 else if( obj->BBObj.PointInBox( lon, lat, select_radius ) ) return true;
             }
+
+            if( !obj->bBBObj_valid ) return false;
+
             //  For MultiPoint objects, make a bounding box from each point's lat/lon
             //  and check it
             else {

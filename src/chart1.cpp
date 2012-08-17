@@ -3595,18 +3595,28 @@ void MyFrame::ToggleSoundings( void )
 #endif
 }
 
-void MyFrame::ToggleLights( void )
+bool MyFrame::ToggleLights( bool doToggle, bool temporary )
 {
+    bool oldstate = true;
 #ifdef USE_S57
     if( ps52plib ) {
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-            if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) pOLE->nViz = !pOLE->nViz;
+            if( !strncmp( pOLE->OBJLName, "LIGHTS", 6 ) ) {
+                oldstate = pOLE->nViz != 0;
+                if( doToggle ) pOLE->nViz = !pOLE->nViz;
+                break;
+            }
         }
-        ps52plib->GenerateStateHash();
-        cc1->ReloadVP();
+        if( doToggle ) {
+            ps52plib->GenerateStateHash();
+            if( ! temporary ) {
+                cc1->ReloadVP();
+            }
+        }
     }
 #endif
+    return oldstate;
 }
 
 void MyFrame::ToggleRocks( void )

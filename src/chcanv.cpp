@@ -8326,13 +8326,20 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
     s57chart *Chs57 = dynamic_cast<s57chart*>( target_chart );
     if( Chs57 ) {
-//    Go get the array of all objects at the cursor lat/lon
+        // Go get the array of all objects at the cursor lat/lon
         int sel_rad_pix = 5;
         float SelectRadius = sel_rad_pix / ( GetVP().view_scale_ppm * 1852 * 60 );
 
+        // Make sure we always get the lights from an object, even if we are currently
+        // not displaying lights on the chart.
+
         SetCursor( wxCURSOR_WAIT );
-        ListOfObjRazRules* rule_list = Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius,
-                                       &GetVP() );
+        bool lightsVis = gFrame->ToggleLights( false );
+        if( ! lightsVis ) gFrame->ToggleLights( true, true );
+        ListOfObjRazRules* rule_list =
+                Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
+        if( ! lightsVis ) gFrame->ToggleLights( true, true );
+
         wxString objText;
         wxFont *dFont = pFontMgr->GetFont( _("ObjectQuery"), 12 );
         wxString face = dFont->GetFaceName();
