@@ -5395,11 +5395,11 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                 else if( obj->BBObj.PointInBox( lon, lat, select_radius ) ) return true;
             }
 
-            if( !obj->bBBObj_valid ) return false;
-
             //  For MultiPoint objects, make a bounding box from each point's lat/lon
             //  and check it
             else {
+                if( !obj->bBBObj_valid ) return false;
+
                 //  Coarse test first
                 if( !obj->BBObj.PointInBox( lon, lat, select_radius ) ) return false;
                 //  Now decomposed soundings, one by one
