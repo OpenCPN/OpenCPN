@@ -3756,6 +3756,7 @@ void MyFrame::SurfaceToolbar( void )
         } else
             g_FloatingToolbarDialog->Surface();
     }
+    gFrame->Raise();
 }
 
 void MyFrame::JumpToPosition( double lat, double lon, double scale )

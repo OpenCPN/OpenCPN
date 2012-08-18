@@ -7051,7 +7051,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
     if( s_ProgDialog ) return;
 
-    if( ( m_bMeasure_Active && ( m_nMeasureState >= 2 ) ) || ( m_pRoutePointEditTarget )
+    if( ( m_bMeasure_Active && ( m_nMeasureState >= 2 ) ) || ( parent_frame->nRoute_State > 1 )
             || ( parent_frame->nRoute_State ) > 1 ) {
         wxPoint p = ClientToScreen( wxPoint( x, y ) );
         gFrame->SubmergeToolbarIfOverlap( p.x, p.y, 20 );
@@ -7093,33 +7093,31 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 //      whenever the mouse has stopped moving for specified interval.
 //      See the method OnCursorTrackTimerEvent()
 #ifndef __WXGTK__
-    {
-        if( parent_frame->m_pStatusBar ) {
-            double show_cursor_lon = m_cursor_lon;
-            double show_cursor_lat = m_cursor_lat;
+    if( parent_frame->m_pStatusBar ) {
+        double show_cursor_lon = m_cursor_lon;
+        double show_cursor_lat = m_cursor_lat;
 
-            //    Check the absolute range of the cursor position
-            //    There could be a window wherein the chart geoereferencing is not valid....
-            if( ( fabs( show_cursor_lat ) < 90. ) && ( fabs( show_cursor_lon ) < 360. ) ) {
-                while( show_cursor_lon < -180. )
-                    show_cursor_lon += 360.;
+        //    Check the absolute range of the cursor position
+        //    There could be a window wherein the chart geoereferencing is not valid....
+        if( ( fabs( show_cursor_lat ) < 90. ) && ( fabs( show_cursor_lon ) < 360. ) ) {
+            while( show_cursor_lon < -180. )
+                show_cursor_lon += 360.;
 
-                while( show_cursor_lon > 180. )
-                    show_cursor_lon -= 360.;
+            while( show_cursor_lon > 180. )
+                show_cursor_lon -= 360.;
 
-                wxString s1 = _(" ");
-                s1 += toSDMM( 1, show_cursor_lat );
-                s1 += _T("   ");
-                s1 += toSDMM( 2, show_cursor_lon );
-                parent_frame->SetStatusText( s1, STAT_FIELD_CURSOR_LL );
+            wxString s1 = _(" ");
+            s1 += toSDMM( 1, show_cursor_lat );
+            s1 += _T("   ");
+            s1 += toSDMM( 2, show_cursor_lon );
+            parent_frame->SetStatusText( s1, STAT_FIELD_CURSOR_LL );
 
-                double brg, dist;
-                DistanceBearingMercator( m_cursor_lat, m_cursor_lon, gLat, gLon, &brg, &dist );
-                wxString s;
-                s.Printf( wxString("%03d°  ", wxConvUTF8), (int) brg );
-                s << FormatDistanceAdaptive( dist );
-                parent_frame->SetStatusText( s, STAT_FIELD_CURSOR_BRGRNG );
-            }
+            double brg, dist;
+            DistanceBearingMercator( m_cursor_lat, m_cursor_lon, gLat, gLon, &brg, &dist );
+            wxString s;
+            s.Printf( wxString( "%03d°  ", wxConvUTF8 ), (int) brg );
+            s << FormatDistanceAdaptive( dist );
+            parent_frame->SetStatusText( s, STAT_FIELD_CURSOR_BRGRNG );
         }
     }
 #endif
