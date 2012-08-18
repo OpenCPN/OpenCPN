@@ -2295,9 +2295,15 @@ void MarkInfoImpl::SetColorScheme( ColorScheme cs )
     DimeControl( m_pLinkProp );
 }
 
-bool MarkInfoImpl::UpdateProperties( void )
+bool MarkInfoImpl::UpdateProperties( bool positionOnly )
 {
     if( m_pRoutePoint ) {
+
+        m_textLatitude->SetValue( ::toSDMM( 1, m_pRoutePoint->m_lat ) );
+        m_textLongitude->SetValue( ::toSDMM( 2, m_pRoutePoint->m_lon ) );
+
+        if( positionOnly ) return true;
+
         //Layer or not?
         if( m_pRoutePoint->m_bIsInLayer ) {
             m_staticTextLayer->Enable();
@@ -2330,8 +2336,6 @@ bool MarkInfoImpl::UpdateProperties( void )
         m_textName->SetValue( m_pRoutePoint->GetName() );
         m_textDescription->SetValue( m_pRoutePoint->m_MarkDescription );
         m_textCtrlExtDescription->SetValue( m_pRoutePoint->m_MarkDescription );
-        m_textLatitude->SetValue( ::toSDMM( 1, m_pRoutePoint->m_lat ) );
-        m_textLongitude->SetValue( ::toSDMM( 2, m_pRoutePoint->m_lon ) );
         m_bitmapIcon->SetBitmap( *m_pRoutePoint->m_pbmIcon );
         wxWindowList kids = m_scrolledWindowLinks->GetChildren();
         for( unsigned int i = 0; i < kids.GetCount(); i++ ) {

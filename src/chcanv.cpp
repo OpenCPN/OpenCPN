@@ -7534,7 +7534,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 //    Update the MarkProperties Dialog, if currently shown
                 if( ( NULL != pMarkPropDialog ) && ( pMarkPropDialog->IsShown() ) ) {
-                    if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties();
+                    if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() )
+                        pMarkPropDialog->UpdateProperties( true );
                 }
 
                 // Get the update rectangle for the edited mark

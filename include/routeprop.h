@@ -360,7 +360,7 @@ public :
       void SetRoutePoint( RoutePoint *pRP );
       void SetDialogTitle(wxString title) { SetTitle(title); }
       RoutePoint *GetRoutePoint(void) { return m_pRoutePoint; }
-      bool UpdateProperties(void);
+      bool UpdateProperties( bool positionOnly = false );
       void ValidateMark(void);
       void InitialFocus(void);
       void OnRightClick( wxCommandEvent& event );
