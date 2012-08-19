@@ -5697,7 +5697,9 @@ void cm93compchart::UpdateRenderRegions ( const ViewPort& VPoint )
       ViewPort vp_positive = VPoint;
 
       SetVPPositive ( &vp_positive );
-
+      
+      SetVPParms ( VPoint );
+      
       if ( m_pcm93chart_current )
       {
             m_pcm93chart_current->SetVPParms ( vp_positive );
