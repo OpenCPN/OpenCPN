@@ -6675,7 +6675,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     double cursor_lat, cursor_lon;
     static double lastLat, lastLon;
 
-    if( !ps52plib->m_bExtendLightSectors ) return false;
+    if( !ps52plib || !ps52plib->m_bExtendLightSectors ) return false;
 
     cc1->GetCanvasPixPoint ( mx, my, cursor_lat, cursor_lon );
 
