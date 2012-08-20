@@ -168,6 +168,10 @@ ChartBase::ChartBase()
       m_pCOVRTable = NULL;
       m_pCOVRTablePoints = NULL;
 
+      m_nNoCOVREntries = 0;
+      m_pNoCOVRTable = NULL;
+      m_pNoCOVRTablePoints = NULL;
+      
       m_EdDate.Set(1, wxDateTime::Jan, 2000);
 
       m_lon_datum_adjust = 0.;

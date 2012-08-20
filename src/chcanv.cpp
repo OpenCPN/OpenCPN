@@ -746,8 +746,8 @@ public:
     QuiltPatch *GetCurrentPatch();
     bool IsChartInQuilt( ChartBase *pc );
     bool IsQuiltVector( void );
-    wxRect GetHiliteBox(ViewPort &vp);
-
+    wxRegion GetHiliteRegion( ViewPort &vp );
+    
 private:
     wxRegion GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp );
     void EmptyCandidateArray( void );
@@ -1018,7 +1018,7 @@ ChartBase *Quilt::GetLargestScaleChart()
 
 wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
 {
-    //    If the chart has exactly one aux ply table, use it for finer region precision
+    //    If the chart has an aux ply table, use it for finer region precision
     wxRegion chart_region;
     wxRegion screen_region( vp.rv_rect );
 
@@ -1047,9 +1047,34 @@ wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
                 chart_region.Union( t_region );
 
         } else
-            chart_region = screen_region; //wxRegion(0, 0, vp.pix_width, vp.pix_height);
+            chart_region = screen_region;
     }
 
+    //  Remove the NoCovr regions
+    int nNoCovrPlyEntries = cte.GetnNoCovrPlyEntries();
+    if( nNoCovrPlyEntries ) {
+        for( int ip = 0; ip < nNoCovrPlyEntries; ip++ ) {
+            float *pfp = cte.GetpNoCovrPlyTableEntry( ip );
+            int nNoCovrPly = cte.GetNoCovrCntTableEntry( ip );
+            
+            wxRegion t_region = vp.GetVPRegionIntersect( screen_region, nNoCovrPly, pfp,
+                                                         cte.GetScale() );
+            
+            //  We do a test removal of the NoCovr region.
+            //  If the result iz empty, it must be that the NoCovr region is 
+            //  the full extent M_COVR(CATCOV=2) feature found in NOAA ENCs.
+            //  We ignore it.
+            
+            if(!t_region.IsEmpty()) {
+                wxRegion test_region = chart_region;
+                test_region.Subtract( t_region );
+
+                if( !test_region.IsEmpty())
+                    chart_region = test_region;
+            }
+        }
+    }
+    
 
     //    Another superbad hack....
     //    Super small scale raster charts like bluemarble.kap usually cross the prime meridian
@@ -1417,9 +1442,9 @@ bool Quilt::IsChartSmallestScale( int dbIndex )
     return ( dbIndex == target_dbindex );
 }
 
-wxRect Quilt::GetHiliteBox( ViewPort &vp )
+wxRegion Quilt::GetHiliteRegion( ViewPort &vp )
 {
-    wxRect box( 0, 0, 0, 0 );
+    wxRegion r;
     if( m_nHiLiteIndex >= 0 ) {
         // Walk the PatchList, looking for the target hilite index
         for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
@@ -1427,13 +1452,13 @@ wxRect Quilt::GetHiliteBox( ViewPort &vp )
             QuiltPatch *piqp = pcinode->GetData();
             if( ( m_nHiLiteIndex == piqp->dbIndex ) && ( piqp->b_Valid ) ) // found it
             {
-                box = piqp->ActiveRegion.GetBox();
+                r = piqp->ActiveRegion;
                 break;
             }
         }
 
         // If not in the patchlist, look in the full chartbar
-        if( box.IsEmpty() ) {
+        if( r.IsEmpty() ) {
             for( unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
                 QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
                 if( m_nHiLiteIndex == pqc->dbIndex ) {
@@ -1449,14 +1474,15 @@ wxRect Quilt::GetHiliteBox( ViewPort &vp )
                             }
                         }
 
-                        if( !b_eclipsed ) box = chart_region.GetBox();
+                        if( !b_eclipsed ) 
+                            r = chart_region;
                         break;
                     }
                 }
             }
         }
     }
-    return box;
+    return r;
 }
 
 bool Quilt::BuildExtendedChartStack(bool b_fullscreen, int ref_db_index, ViewPort &vp_in)
@@ -2082,10 +2108,12 @@ bool Quilt::Compose( const ViewPort &vp_in )
         pqpi->ActiveRegion.Offset( -vp_local.rv_rect.x, -vp_local.rv_rect.y );
 
         //    Could happen that a larger scale chart covers completely a smaller scale chart
-        if( pqpi->ActiveRegion.IsEmpty() ) pqpi->b_eclipsed = true;
+        if( pqpi->ActiveRegion.IsEmpty() )
+            pqpi->b_eclipsed = true;
 
         //    Update the next pass full region to remove the region just allocated
-        if( !vpr_region.Empty() ) unrendered_region.Subtract( vpr_region );
+        if( !vpr_region.Empty() ) 
+            unrendered_region.Subtract( vpr_region );
 
         //    Maintain the present full quilt coverage region
         m_covered_region.Union( pqpi->ActiveRegion );
@@ -2457,44 +2485,10 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
 
         //    Highlighting....
         if( m_nHiLiteIndex >= 0 ) {
-            //    Walk the PatchList, looking for the target hilite index
-            wxRect box( 0, 0, 0, 0 );
-            for( unsigned int i = 0; i < m_PatchList.GetCount(); i++ ) {
-                wxPatchListNode *pcinode = m_PatchList.Item( i );
-                QuiltPatch *piqp = pcinode->GetData();
-                if( ( m_nHiLiteIndex == piqp->dbIndex ) && ( piqp->b_Valid ) )      // found it
-                {
-                    box = piqp->ActiveRegion.GetBox();
-                    break;
-                }
-            }
+            wxRegion hiregion = GetHiliteRegion( vp );
 
-            //    If not in the patchlist, look in the full chartbar
-            if( box.IsEmpty() ) {
-                for( unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
-                    QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
-                    if( m_nHiLiteIndex == pqc->dbIndex ) {
-                        const ChartTableEntry &cte = ChartData->GetChartTableEntry(
-                                                         m_nHiLiteIndex );
-                        wxRegion chart_region = GetChartQuiltRegion( cte, vp );
-                        if( !chart_region.Empty() ) {
-                            //    Do not highlite fully eclipsed charts
-                            bool b_eclipsed = false;
-                            for( unsigned int ir = 0; ir < m_eclipsed_stack_array.GetCount();
-                                    ir++ ) {
-                                if( m_nHiLiteIndex == m_eclipsed_stack_array.Item( ir ) ) {
-                                    b_eclipsed = true;
-                                    break;
-                                }
-                            }
-
-                            if( !b_eclipsed ) box = chart_region.GetBox();
-                            break;
-                        }
-                    }
-                }
-            }
-
+            wxRect box = hiregion.GetBox();
+            
             if( !box.IsEmpty() ) {
                 //    Is scratch member bitmap OK?
                 if( m_pBM ) {
@@ -2556,13 +2550,25 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
                     rdc.SetBackground( wxBrush( wxColour( hlcolor, 0, 0 ) ) );
                     rdc.Clear();
 
-                    //  Blit the mask area of the quilt onto the red-out
-                    rdc.Blit( box.x, box.y, box.width, box.height, &q_dc, box.x, box.y, wxOR,
-                              true );
-
-                    //  And then blit the red-out onto the target
-                    q_dc.Blit( box.x, box.y, box.width, box.height, &rdc, box.x, box.y, wxCOPY,
-                               true );
+                    wxRegionIterator upd ( hiregion );
+                    while ( upd )
+                    {
+                        wxRect rect = upd.GetRect();
+                        rdc.Blit( rect.x, rect.y, rect.width, rect.height, &q_dc, rect.x, rect.y, wxOR,
+                                  true );
+                        upd ++ ;
+                    }
+                    
+                    wxRegionIterator updq ( hiregion );
+                    while ( updq )
+                    {
+                        wxRect rect = updq.GetRect();
+                        q_dc.Blit( rect.x, rect.y, rect.width, rect.height, &rdc, rect.x, rect.y, wxCOPY,
+                                   true );
+                        updq ++ ;
+                    }
+                    
+                    
                     q_dc.SelectObject( wxNullBitmap );
                     m_pBM->SetMask( NULL );
 
@@ -12445,17 +12451,12 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
         }
 
         // Hilite rollover patch
-        wxRect hibox = cc1->m_pQuilt->GetHiliteBox( vp );
+        wxRegion hiregion = cc1->m_pQuilt->GetHiliteRegion( vp );
 
-        if( !hibox.IsEmpty() ) {
+        if( !hiregion.IsEmpty() ) {
             glPushAttrib( GL_COLOR_BUFFER_BIT );
             glEnable( GL_BLEND );
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-            int x = hibox.x;
-            int y = hibox.y;
-            int w = hibox.width;
-            int h = hibox.height;
 
             double hitrans;
             switch( global_color_scheme ) {
@@ -12475,13 +12476,21 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
 
             glColor4f( (float) .8, (float) .4, (float) .4, (float) hitrans );
 
-            glBegin( GL_QUADS );
-            glVertex2i( x, y );
-            glVertex2i( x + w, y );
-            glVertex2i( x + w, y + h );
-            glVertex2i( x, y + h );
-            glEnd();
-
+            wxRegionIterator upd ( hiregion );
+            while ( upd )
+            {
+                wxRect rect = upd.GetRect();
+             
+                glBegin( GL_QUADS );
+                glVertex2i( rect.x, rect.y );
+                glVertex2i( rect.x + rect.width, rect.y );
+                glVertex2i( rect.x + rect.width, rect.y + rect.height );
+                glVertex2i( rect.x, rect.y + rect.height );
+                glEnd();
+            
+                upd ++ ;
+            }
+            
             glDisable( GL_BLEND );
             glPopAttrib();
         }
