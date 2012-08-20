@@ -5895,7 +5895,7 @@ Route *LoadGPXRoute( GpxRteElement *rtenode, int routenum, bool b_fullviz )
 
             RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon );
 
-            if( !pExisting || !pExisting->m_bKeepXRoute ) {
+            if( !pExisting ) {
                 if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->Append( pWp );
 
                 pTentRoute->AddPoint( pWp, false );                 // don't auto-rename numerically
@@ -6032,7 +6032,6 @@ void InsertRoute( Route *pTentRoute, int routenum )
     int ip = 0;
     float prev_rlat = 0., prev_rlon = 0.;
     RoutePoint *prev_pConfPoint = NULL;
-    ;
 
     wxRoutePointListNode *node = pTentRoute->pRoutePointList->GetFirst();
     while( node ) {
