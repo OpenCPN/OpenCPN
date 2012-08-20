@@ -282,6 +282,7 @@ public:
     wxCheckBox              *pCheck_SCAMIN;
     wxCheckBox              *pCheck_ATONTEXT;
     wxCheckBox              *pCheck_LDISTEXT;
+    wxCheckBox              *pCheck_XLSECTTEXT;
     wxCheckBox              *pCheck_DECLTEXT;
     wxTextCtrl              *m_ShallowCtl;
     wxTextCtrl              *m_SafetyCtl;

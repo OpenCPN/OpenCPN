@@ -410,7 +410,23 @@ void ocpnDC::StrokeLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2 )
         dc->CalcBoundingBox( x2, y2 );
     } else
 #endif
-        DrawLine( x1, y1, x2, y2 );
+        DrawLine( x1, y1, x2, y2, true );
+}
+
+void ocpnDC::StrokeLines( int n, wxPoint *points) {
+#if wxUSE_GRAPHICS_CONTEXT
+    if( pgc ) {
+        wxPoint2DDouble* dPoints = (wxPoint2DDouble*) malloc( n * sizeof( wxPoint2DDouble ) );
+        for( int i=0; i<n; i++ ) {
+            dPoints[i].m_x = points[i].x;
+            dPoints[i].m_y = points[i].y;
+        }
+        pgc->SetPen( dc->GetPen() );
+        pgc->StrokeLines( n, dPoints );
+        free( dPoints );
+    } else
+#endif
+        DrawLines( n, points, 0, 0, true );
 }
 
 void ocpnDC::DrawRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h )

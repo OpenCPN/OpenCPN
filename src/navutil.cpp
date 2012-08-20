@@ -1501,7 +1501,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
     if( m_bVisible && m_bRtIsSelected ) {
         dc.SetPen( *g_pRouteMan->GetSelectedRoutePen() );
         dc.SetBrush( *g_pRouteMan->GetSelectedRouteBrush() );
-    } 
+    }
     else if ( m_bVisible )
     {
         int style = wxSOLID;
@@ -1655,8 +1655,8 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
             dc.StrokeLine( x0, y0, x1, y1 );
         }
     } else {
-        if( Visible == cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, 0, sx, 0, sy ) ) dc.DrawLine(
-                x0, y0, x1, y1 );
+        if( Visible == cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, 0, sx, 0, sy ) )
+            dc.StrokeLine( x0, y0, x1, y1 );
     }
 
     if( bdraw_arrow ) {
@@ -3017,6 +3017,9 @@ int MyConfig::LoadMyConfig( int iteration )
         Read( _T ( "bShowLightDescription" ), &read_int, 0 );
         ps52plib->SetShowLdisText( !( read_int == 0 ) );
 
+        Read( _T ( "bExtendLightSectors" ), &read_int, 0 );
+        ps52plib->SetExtendLightSectors( !( read_int == 0 ) );
+
         Read( _T ( "nDisplayCategory" ), &read_int, (enum _DisCat) STANDARD );
         ps52plib->m_nDisplayCategory = (enum _DisCat) read_int;
 
@@ -4250,6 +4253,7 @@ void MyConfig::UpdateSettings()
         Write( _T ( "bUseSCAMIN" ), ps52plib->m_bUseSCAMIN );
         Write( _T ( "bShowAtonText" ), ps52plib->m_bShowAtonText );
         Write( _T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText );
+        Write( _T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors );
         Write( _T ( "bDeClutterText" ), ps52plib->m_bDeClutterText );
 
         Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) );

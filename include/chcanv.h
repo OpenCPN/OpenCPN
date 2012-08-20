@@ -206,7 +206,7 @@ public:
       bool IsQuiltDelta(void);
       void SetQuiltChartHiLiteIndex(int dbIndex);
       int GetQuiltReferenceChartIndex(void);
-      
+
       int GetNextContextMenuId();
 
       void SetColorScheme(ColorScheme cs);
@@ -222,7 +222,8 @@ public:
       double GetCanvasScaleFactor(){return m_canvas_scale_factor;}
       double GetCanvasTrueScale(){return m_true_scale_ppm;}
       double GetAbsoluteMinScalePpm(){ return m_absolute_min_scale_ppm; }
-      ViewPort &GetVP(); const
+      ViewPort &GetVP();
+      ChartBase* GetChartAtCursor();
 
       glChartCanvas *GetglCanvas(){ return m_glcc; }
       GSHHSChart* GetWorldBackgroundChart() { return pWorldBackgroundChart; }
@@ -353,6 +354,8 @@ private:
 
       bool singleClickEventIsValid;
       wxMouseEvent singleClickEvent;
+
+      std::vector<s57Sector_t> extendedSectorLegs;
 
       //    Methods
       void OnActivate(wxActivateEvent& event);
@@ -601,7 +604,7 @@ protected:
       void BuildFBO(void);
       void SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear);
       void ComputeRenderQuiltViewGLRegion( ViewPort &vp, wxRegion Region );
-      
+
       int m_cacheinvalid;
       int max_texture_dimension;
 

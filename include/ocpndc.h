@@ -80,6 +80,7 @@ public:
 
      void StrokeLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2);
      void StrokeLine( wxPoint a, wxPoint b) { StrokeLine(a.x, a.y, b.x, b.y); }
+     void StrokeLines( int n, wxPoint *points);
 
      void Clear();
      void DrawRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h );

@@ -825,8 +825,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         if( ( Class == AIS_CLASS_A ) || ( Class == AIS_CLASS_B ) ) {
             int crs = wxRound( COG );
             if( crs < 360 ) courseStr = wxString::Format( _T("%03d&deg;"), crs );
-            else if( COG == 360.0 ) courseStr = _("---");
-            else if( crs == 360 ) courseStr = _("0&deg;");
+            else if( COG == 360.0 ) courseStr = _T("---");
+            else if( crs == 360 ) courseStr = _T("0&deg;");
 
             if( SOG <= 102.2 )
                 sogStr = wxString::Format( _T("%5.2f Kts"), SOG );

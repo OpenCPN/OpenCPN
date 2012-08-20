@@ -128,6 +128,13 @@ class ChartBase;
 class wxSocketEvent;
 class ocpnToolBarSimple;
 
+typedef struct {
+    wxPoint2DDouble pos;
+    double sector1, sector2;
+    double range;
+    wxColor color;
+    bool fillSector;
+} s57Sector_t;
 
 
 #endif

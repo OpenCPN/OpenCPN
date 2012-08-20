@@ -49,6 +49,7 @@
 #include "georef.h"
 #include "navutil.h"                            // for LogMessageOnce
 #include "ocpn_pixel.h"
+#include "ocpndc.h"
 
 #include "cpl_csv.h"
 #include "setjmp.h"
@@ -86,17 +87,19 @@ extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
 extern bool              g_b_useStencil;
+extern ChartCanvas       *cc1;
+extern ChartBase         *Current_Ch;
+extern MyFrame*          gFrame;
 
 extern wxProgressDialog *s_ProgDialog;
 
 static jmp_buf env_ogrf;                    // the context saved by setjmp();
 
-
 #include <wx/arrimpl.cpp>                   // Implement an array of S57 Objects
 WX_DEFINE_OBJARRAY(ArrayOfS57Obj);
 
 #include <wx/listimpl.cpp>
- WX_DEFINE_LIST(ListOfS57Obj);                // Implement a list of S57 Objects
+WX_DEFINE_LIST(ListOfS57Obj);                // Implement a list of S57 Objects
 
 WX_DEFINE_LIST(ListOfObjRazRules);   // Implement a list ofObjRazRules
 
@@ -104,25 +107,20 @@ WX_DEFINE_LIST(ListOfObjRazRules);   // Implement a list ofObjRazRules
 WX_DEFINE_OBJARRAY(ArrayOfVE_Elements);
 WX_DEFINE_OBJARRAY(ArrayOfVC_Elements);
 
-
-
 #define S57_THUMB_SIZE  200
 
 static int              s_bInS57;         // Exclusion flag to prvent recursion in this class init call.
                                           // Init() is not reentrant due to static wxProgressDialog callback....
-
 int s_cnt;
 
-static bool s_ProgressCallBack(void)
+static bool s_ProgressCallBack( void )
 {
-      bool ret = true;
-      s_cnt++;
-      if((s_cnt % 100) == 0)
-      {
-            if(s_ProgDialog)
-                  ret = s_ProgDialog->Pulse();              // return false if cancel is pressed
-      }
-      return ret;
+    bool ret = true;
+    s_cnt++;
+    if( ( s_cnt % 100 ) == 0 ) {
+        if( s_ProgDialog ) ret = s_ProgDialog->Pulse();         // return false if cancel is pressed
+    }
+    return ret;
 }
 
 //----------------------------------------------------------------------------------
@@ -6574,6 +6572,214 @@ bool s57_GetChartExtent( const wxString& FullPath, Extent *pext )
      delete poDS;
      */
     return false;
-
 }
 
+void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs ) {
+    if( sectorlegs.size() > 0 ) {
+        std::vector<int> sectorangles;
+        for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
+            double endx, endy;
+            ll_gc_ll( sectorlegs[i].pos.m_y, sectorlegs[i].pos.m_x,
+                    sectorlegs[i].sector1 + 180.0, sectorlegs[i].range,
+                    &endy, &endx );
+
+            wxPoint end1 = viewport.GetPixFromLL( endy, endx );
+
+            ll_gc_ll( sectorlegs[i].pos.m_y, sectorlegs[i].pos.m_x,
+                    sectorlegs[i].sector2 + 180.0, sectorlegs[i].range,
+                    &endy, &endx );
+
+            wxPoint end2 = viewport.GetPixFromLL( endy, endx );
+
+            wxPoint lightPos = viewport.GetPixFromLL( sectorlegs[i].pos.m_y, sectorlegs[i].pos.m_x );
+            double range = sqrt( pow(lightPos.x - end1.x, 2.0) + pow(lightPos.y - end1.y, 2.0) );
+            range /= 3;
+            range = wxMin( range, viewport.pix_height / 4 ); // Make sure arcs are well inside viewport.
+
+            int legOpacity;
+            wxPen *arcpen = wxThePenList->FindOrCreatePen( sectorlegs[i].color, 12, wxSOLID );
+            arcpen->SetCap( wxCAP_BUTT );
+            dc.SetPen( *arcpen );
+
+            double angle1, angle2;
+            angle1 = -(sectorlegs[i].sector2 + 90.0) - viewport.rotation * 180.0 / PI;
+            angle2 = -(sectorlegs[i].sector1 + 90.0) - viewport.rotation * 180.0 / PI;
+            if( angle1 > angle2 ) {
+                angle2 += 360.0;
+            }
+            int lpx = lightPos.x;
+            int lpy = lightPos.y;
+            int npoints = 1;
+            wxPoint arcpoints[150]; // Size relates to "step" below.
+
+            arcpoints[0].x = lpx + (int) ( range * cos( angle1 * PI / 180. ) );
+            arcpoints[0].y = lpy - (int) ( range * sin( angle1 * PI / 180. ) );
+            double step = 3.0;
+            while( (range * sin(step * PI / 180.)) < 10 ) step += 2.0; // less points on small arcs
+
+            // Make sure we start and stop exactly on the leg lines.
+            int narc = ( angle2 - angle1 ) / step;
+            narc++;
+            step = ( angle2 - angle1 ) / (double)narc;
+
+            if( angle2 - angle1 < 15 && sectorlegs[i].fillSector ) {
+                wxPoint yellowCone[3];
+                yellowCone[0] = lightPos;
+                yellowCone[1] = end1;
+                yellowCone[2] = end2;
+                arcpen = wxThePenList->FindOrCreatePen( wxColor( 0,0,0,0 ), 1, wxSOLID );
+                dc.SetPen( *arcpen );
+                wxColor c = sectorlegs[i].color;
+                c.Set( c.Red(), c.Green(), c.Blue(), 0.6*c.Alpha() );
+                dc.SetBrush( wxBrush( c ) );
+                dc.StrokePolygon( 3, yellowCone, 0, 0 );
+                legOpacity = 50;
+            } else {
+                for( double a = angle1; a <= angle2 + 0.1; a += step ) {
+                    int x = lpx + (int) ( range * cos( a * PI / 180. ) );
+                    int y = lpy - (int) ( range * sin( a * PI / 180. ) );
+                    arcpoints[npoints].x = x;
+                    arcpoints[npoints].y = y;
+                    npoints++;
+                }
+                dc.StrokeLines( npoints, arcpoints );
+                legOpacity = 128;
+            }
+
+            arcpen = wxThePenList->FindOrCreatePen( wxColor( 0,0,0,legOpacity ), 1, wxSOLID );
+            dc.SetPen( *arcpen );
+
+            // Only draw each leg line once.
+
+            bool haveAngle1 = false;
+            bool haveAngle2 = false;
+            for( unsigned int j=0; j<sectorangles.size(); j++ ) {
+                if( sectorangles[j] == (int)sectorlegs[i].sector1 ) haveAngle1 = true;
+                if( sectorangles[j] == (int)sectorlegs[i].sector2 ) haveAngle2 = true;
+            }
+
+            if( ! haveAngle1 ) {
+                dc.StrokeLine( lightPos, end1 );
+                sectorangles.push_back( (int) sectorlegs[i].sector1 );
+            }
+
+            if( ! haveAngle2 ) {
+                dc.StrokeLine( lightPos, end2 );
+                sectorangles.push_back( (int) sectorlegs[i].sector2 );
+            }
+        }
+    }
+}
+
+bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs ) {
+    double cursor_lat, cursor_lon;
+    static double lastLat, lastLon;
+
+    if( !ps52plib->m_bExtendLightSectors ) return false;
+
+    cc1->GetCanvasPixPoint ( mx, my, cursor_lat, cursor_lon );
+
+    if( lastLat == cursor_lat && lastLon == cursor_lon ) return false;
+
+    lastLat = cursor_lat;
+    lastLon = cursor_lon;
+    bool newSectorsNeedDrawing = false;
+
+    ChartBase *targetchart = cc1->GetChartAtCursor();
+    s57chart *chart = dynamic_cast<s57chart*>( targetchart );
+
+    if( chart ) {
+        sectorlegs.clear();
+
+        float selectRadius = 16 / ( viewport.view_scale_ppm * 1852 * 60 );
+
+        ListOfObjRazRules* rule_list =
+                chart->GetObjRuleListAtLatLon( cursor_lat, cursor_lon, selectRadius, &viewport );
+
+        wxPoint2DDouble lightPosD(0,0);
+
+        for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
+            ObjRazRules *current = node->GetData();
+            S57Obj* light = current->obj;
+            char* curr_att;
+            int attrCounter;
+            double sectr1 = -1;
+            double sectr2 = -1;
+            double valnmr = -1;
+            wxString curAttrName;
+            wxColor color;
+
+            if( !strcmp( light->FeatureName, "LIGHTS" ) ) {
+                wxPoint2DDouble objPos( light->m_lat, light->m_lon );
+                if( lightPosD.m_x == 0 && lightPosD.m_y == 0.0 ) lightPosD = objPos;
+                if( lightPosD == objPos ) {
+                    char *curr_att0 = (char *) calloc( light->attList->Len() + 1, 1 );
+                    strncpy( curr_att0, light->attList->mb_str(), light->attList->Len() );
+                    curr_att = curr_att0;
+
+                    attrCounter = 0;
+                    int noAttr = 0;
+                    bool inDepthRange = false;
+                    s57Sector_t sector;
+
+                    while( *curr_att ) {
+                        curAttrName.Clear();
+                        noAttr++;
+                        while( ( *curr_att ) && ( *curr_att != '\037' ) ) {
+                            char t = *curr_att++;
+                            curAttrName.Append( t );
+                        }
+
+                        if( *curr_att == '\037' ) curr_att++;
+
+                        wxString value = chart->GetObjectAttributeValueAsString( light, attrCounter, curAttrName );
+                        int opacity = 100;
+                        if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ) opacity = 50;
+                        if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
+
+                        int yOpacity = (float)opacity*1.3; // Matched perception with red/green
+
+                        if( curAttrName == _T("SECTR1") ) value.ToDouble( &sectr1 );
+                        if( curAttrName == _T("SECTR2") ) value.ToDouble( &sectr2 );
+                        if( curAttrName == _T("VALNMR") ) value.ToDouble( &valnmr );
+                        if( curAttrName == _T("COLOUR") ) {
+                            sector.fillSector = true;
+                            color = wxColor( 255, 255, 0, yOpacity );
+                            if( value == _T("red(3)") ) {
+                                color = wxColor( 255, 0, 0, opacity );
+                                sector.fillSector = false;
+                            }
+                            if( value == _T("green(4)") ) {
+                                color = wxColor( 0, 255, 0, opacity );
+                                sector.fillSector = false;
+                            }
+                        }
+                        attrCounter++;
+                    }
+
+                    if( ( sectr1 >= 0 ) && ( sectr2 >= 0 ) ) {
+                        sector.pos.m_x = light->m_lon;
+                        sector.pos.m_y = light->m_lat;
+
+                        sector.range = (valnmr > 0.0) ? valnmr : 3.0; // Short default range.
+                        sector.sector1 = sectr1;
+                        sector.sector2 = sectr2;
+                        sector.color = color;
+
+                        bool newsector = true;
+                        for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
+                            if( sectorlegs[i].pos == sector.pos &&
+                                sectorlegs[i].sector1 == sector.sector1 &&
+                                sectorlegs[i].sector2 == sector.sector2 ) newsector = false;
+                        }
+                        if( newsector ) {
+                            sectorlegs.push_back( sector );
+                            newSectorsNeedDrawing = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return newSectorsNeedDrawing;
+}

@@ -47,7 +47,6 @@
 #include "gdal.h"
 
 #include "s52s57.h"                 //types
-///#include "ogr_s57.h"
 #include "chcanv.h"                // for Viewport
 
 
@@ -61,6 +60,8 @@
 extern "C" int  s57_initialize(const wxString& csv_dir, FILE *flog);
 extern "C" bool s57_GetChartExtent(const wxString& FullPath, Extent *pext);
 
+void s57_DrawExtendedLightSectors( ocpnDC& temp_dc, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
+bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
 
 //----------------------------------------------------------------------------
 // Constants

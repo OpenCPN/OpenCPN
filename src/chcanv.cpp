@@ -91,6 +91,8 @@ extern struct sigaction sa_all_old;
 extern sigjmp_buf           env;                    // the context saved by sigsetjmp();
 #endif
 
+#include <vector>
+
 //    Profiling support
 //#include "/usr/include/valgrind/callgrind.h"
 
@@ -3357,7 +3359,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     pCurTrackTimer = new wxTimer( this, CURTRACK_TIMER );
     pCurTrackTimer->Stop();
-    m_curtrack_timer_msec = 2;
+    m_curtrack_timer_msec = 10;
 
     m_MouseWheelTimer.SetOwner( this );
 
@@ -3616,6 +3618,18 @@ int ChartCanvas::GetCanvasChartNativeScale()
 
     return ret;
 
+}
+
+ChartBase* ChartCanvas::GetChartAtCursor() {
+    ChartBase* target_chart;
+    if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) )
+        target_chart = Current_Ch;
+    else
+        if( VPoint.b_quilt )
+            target_chart = cc1->m_pQuilt->GetChartAtPix( wxPoint( mouse_x, mouse_y ) );
+        else
+            target_chart = NULL;
+    return target_chart;
 }
 
 int ChartCanvas::FindClosestCanvasChartdbIndex( int scale )
@@ -4307,42 +4321,42 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
 
 void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
 {
+#ifdef USE_S57
+    if( s57_CheckExtendedLightSectors( mouse_x, mouse_y, VPoint, extendedSectorLegs ) ) ReloadVP( false );
+#endif
+
 //      This is here because GTK status window update is expensive.. Why??
 //      Anyway, only update the status bar when this timer expires
 #ifdef __WXGTK__
     {
-//                char buf[30];
-        if ( 1/*Current_Ch*/)
+        //    Check the absolute range of the cursor position
+        //    There could be a window wherein the chart geoereferencing is not valid....
+        double cursor_lat, cursor_lon;
+        cc1->GetCanvasPixPoint ( mouse_x, mouse_y, cursor_lat, cursor_lon );
+
+        if((fabs(cursor_lat) < 90.) && (fabs(cursor_lon) < 360.))
         {
-            double cursor_lat, cursor_lon;
-            GetCanvasPixPoint ( mouse_x, mouse_y, cursor_lat, cursor_lon );
+            while(cursor_lon < -180.)
+                cursor_lon += 360.;
 
-            //    Check the absolute range of the cursor position
-            //    There could be a window wherein the chart geoereferencing is not valid....
-            if((fabs(cursor_lat) < 90.) && (fabs(cursor_lon) < 360.))
+            while(cursor_lon > 180.)
+                cursor_lon -= 360.;
+
+            if ( parent_frame->m_pStatusBar )
             {
-                while(cursor_lon < -180.)
-                    cursor_lon += 360.;
+                wxString s1;
+                s1 += _T(" ");
+                s1 += toSDMM(1, cursor_lat);
+                s1 += _T("   ");
+                s1 += toSDMM(2, cursor_lon);
+                parent_frame->SetStatusText ( s1, STAT_FIELD_CURSOR_LL );
 
-                while(cursor_lon > 180.)
-                    cursor_lon -= 360.;
-
-                if ( parent_frame->m_pStatusBar )
-                {
-                    wxString s1;
-                    s1 += _T(" ");
-                    s1 += toSDMM(1, cursor_lat);
-                    s1 += _T("   ");
-                    s1 += toSDMM(2, cursor_lon);
-                    parent_frame->SetStatusText ( s1, STAT_FIELD_CURSOR_LL );
-
-                    double brg, dist;
-                    DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
-                    wxString s;
-                    s.Printf( wxString("%03d° ", wxConvUTF8 ), (int)brg );
-                    s << FormatDistanceAdaptive( dist );
-                    parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
-                }
+                double brg, dist;
+                DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
+                wxString s;
+                s.Printf( wxString("%03d° ", wxConvUTF8 ), (int)brg );
+                s << FormatDistanceAdaptive( dist );
+                parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
             }
         }
     }
@@ -4484,6 +4498,7 @@ bool ChartCanvas::ZoomCanvasIn( double factor )
     } else
         DoZoomCanvasIn( factor );
 
+    extendedSectorLegs.clear();
     return true;
 }
 
@@ -4521,6 +4536,7 @@ bool ChartCanvas::ZoomCanvasOut( double factor )
     } else
         DoZoomCanvasOut( factor );
 
+    extendedSectorLegs.clear();
     return true;
 }
 
@@ -4674,7 +4690,7 @@ bool ChartCanvas::PanCanvas( int dx, int dy )
     wxPoint p;
 //      CALLGRIND_START_INSTRUMENTATION
 
-//      printf("Pan: %d %d\n", dx, dy);
+    extendedSectorLegs.clear();
 
     GetCanvasPointPix( GetVP().clat, GetVP().clon, &p );
     GetCanvasPixPoint( p.x + dx, p.y + dy, dlat, dlon );
@@ -8322,14 +8338,9 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
 void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 {
-    ChartBase *target_chart;
-    if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) target_chart =
-            Current_Ch;
-    else if( VPoint.b_quilt ) target_chart = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
-    else
-        target_chart = NULL;
-
+    ChartBase *target_chart = GetChartAtCursor();
     s57chart *Chs57 = dynamic_cast<s57chart*>( target_chart );
+
     if( Chs57 ) {
         // Go get the array of all objects at the cursor lat/lon
         int sel_rad_pix = 5;
@@ -10007,9 +10018,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         upd++;
     }
 
-    ocpnDC scratch_dc( mscratch_dc );
-
 //    Draw the rest of the overlay objects directly on the scratch dc
+    ocpnDC scratch_dc( mscratch_dc );
     DrawOverlayObjects( scratch_dc, ru );
 
     if( m_bShowTide ) DrawAllTidesInBBox( scratch_dc, GetVP().GetBBox(), true, true );
@@ -10547,6 +10557,9 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     RenderAllChartOutlines( dc, GetVP() );
     RenderRouteLegs( dc );
     ScaleBarDraw( dc );
+#ifdef USE_S57
+    s57_DrawExtendedLightSectors( dc, VPoint, extendedSectorLegs );
+#endif
 }
 
 void ChartCanvas::EmbossDepthScale( ocpnDC &dc )

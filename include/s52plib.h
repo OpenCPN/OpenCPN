@@ -239,9 +239,12 @@ public:
 	void SetShowAtonText( bool f ) {
 		m_bShowAtonText = f;
 	}
-	void SetShowLdisText( bool f ) {
-		m_bShowLdisText = f;
-	}
+    void SetShowLdisText( bool f ) {
+        m_bShowLdisText = f;
+    }
+    void SetExtendLightSectors( bool f ) {
+        m_bExtendLightSectors = f;
+    }
 
 	wxArrayOfLUPrec* SelectLUPARRAY( LUPname TNAM );
 	void DestroyPatternRuleNode( Rule *pR );
@@ -258,7 +261,8 @@ public:
 	bool m_bShowS57Text;
 	bool m_bUseSCAMIN;
 	bool m_bShowAtonText;
-	bool m_bShowLdisText;
+    bool m_bShowLdisText;
+    bool m_bExtendLightSectors;
 	bool m_bShowS57ImportantTextOnly;
 	bool m_bDeClutterText;
 

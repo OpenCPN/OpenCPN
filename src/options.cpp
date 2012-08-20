@@ -961,6 +961,10 @@ void options::CreateControls()
     pCheck_LDISTEXT->SetValue( FALSE );
     itemBoxSizer75->Add( pCheck_LDISTEXT, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
 
+    pCheck_XLSECTTEXT = new wxCheckBox( ps57Ctl, ID_LDISTEXTCHECKBOX, _("Extend Light Sectors") );
+    pCheck_XLSECTTEXT->SetValue( FALSE );
+    itemBoxSizer75->Add( pCheck_XLSECTTEXT, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
+
     pCheck_DECLTEXT = new wxCheckBox( ps57Ctl, ID_DECLTEXTCHECKBOX, _("De-Clutter Text") );
     pCheck_DECLTEXT->SetValue( FALSE );
     itemBoxSizer75->Add( pCheck_DECLTEXT, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
@@ -1640,6 +1644,7 @@ void options::SetInitialSettings()
         pCheck_SCAMIN->SetValue( ps52plib->m_bUseSCAMIN );
         pCheck_ATONTEXT->SetValue( ps52plib->m_bShowAtonText );
         pCheck_LDISTEXT->SetValue( ps52plib->m_bShowLdisText );
+        pCheck_XLSECTTEXT->SetValue( ps52plib->m_bExtendLightSectors );
         pCheck_DECLTEXT->SetValue( ps52plib->m_bDeClutterText );
 
         // Chart Display Style
@@ -2076,6 +2081,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
         ps52plib->m_bUseSCAMIN = pCheck_SCAMIN->GetValue();
         ps52plib->m_bShowAtonText = pCheck_ATONTEXT->GetValue();
         ps52plib->m_bShowLdisText = pCheck_LDISTEXT->GetValue();
+        ps52plib->m_bExtendLightSectors = pCheck_XLSECTTEXT->GetValue();
         ps52plib->m_bDeClutterText = pCheck_DECLTEXT->GetValue();
 
         if( 0 == pPointStyle->GetSelection() ) ps52plib->m_nSymbolStyle = PAPER_CHART;

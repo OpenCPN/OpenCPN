@@ -36,11 +36,10 @@
 
 #include "wx/tokenzr.h"
 
-#include "dychart.h"
-
 #include "s57chart.h"
 #include "s52plib.h"
 #include "s52utils.h"
+#include "dychart.h"
 
 bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);
 
