@@ -3212,7 +3212,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-#if defined( __WXGTK__) || defined(__WXOSX__) 
+#if defined( __WXGTK__) || defined(__WXOSX__)
 
     wxImage ICursorLeft = style->GetIcon( _T("left") ).ConvertToImage();
     wxImage ICursorRight = style->GetIcon( _T("right") ).ConvertToImage();
@@ -3222,15 +3222,15 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     wxImage ICursorCross = style->GetIcon( _T("cross") ).ConvertToImage();
 
 #if wxCHECK_VERSION(2, 8, 12)
-#else    
+#else
     ICursorLeft.ConvertAlphaToMask(128);
     ICursorRight.ConvertAlphaToMask(128);
     ICursorUp.ConvertAlphaToMask(128);
     ICursorDown.ConvertAlphaToMask(128);
     ICursorPencil.ConvertAlphaToMask(10);
     ICursorCross.ConvertAlphaToMask(10);
-#endif    
-    
+#endif
+
     if ( ICursorLeft.Ok() )
     {
         ICursorLeft.SetOption ( wxIMAGE_OPTION_CUR_HOTSPOT_X, 0 );
@@ -7928,7 +7928,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     } else
                         seltype |= SELTYPE_TIDEPOINT;
                 }
-
             }
 
             if( 0 == seltype ) seltype |= SELTYPE_UNKNOWN;
@@ -7937,9 +7936,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
             // Seth: Is this refresh needed?
             Refresh( false );            // needed for MSW, not GTK  Why??
-
         }
-
     }
 
 //    Switch to the appropriate cursor on mouse movement
@@ -8315,7 +8312,6 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     if( m_pFoundRoutePoint ) {
         m_pFoundRoutePoint->m_bPtIsSelected = false;
-//              m_pFoundRoutePoint->Draw( dc );
     }
     m_pFoundRoutePoint = NULL;
 
@@ -9175,7 +9171,6 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             pConfig->DeleteConfigRoute( m_pSelectedTrack );
 
             g_pRouteMan->DeleteTrack( m_pSelectedTrack );
-            m_pSelectedRoute = NULL;
             m_pSelectedTrack = NULL;
             m_pFoundRoutePoint = NULL;
             m_pFoundRoutePointSecond = NULL;
@@ -9190,7 +9185,6 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
                 pRouteManagerDialog->UpdateRouteListCtrl();
             }
         }
-
         break;
     }
 
