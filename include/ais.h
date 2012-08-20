@@ -35,6 +35,7 @@
 #include <wx/listctrl.h>
 #include <wx/spinctrl.h>
 #include <wx/aui/aui.h>
+#include <wx/wxhtml.h>
 
 #include <vector>
 
@@ -568,7 +569,7 @@ class AISTargetAlertDialog: public wxDialog
             void OnIdJumptoClick( wxCommandEvent& event );
 
 
-            AISInfoWin        *m_pAlertTextCtl;
+            wxHtmlWindow      *m_pAlertTextCtl;
             int               m_target_mmsi;
             AIS_Decoder       *m_pdecoder;
             wxWindow          *m_pparent;

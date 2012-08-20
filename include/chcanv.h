@@ -755,8 +755,6 @@ class ocpCursor : public wxCursor
 };
 
 
-class AISInfoWin;
-
 //----------------------------------------------------------------------------------------------------------
 //    AISTargetQueryDialog Specification
 //----------------------------------------------------------------------------------------------------------
@@ -844,35 +842,6 @@ class RolloverWin: public wxWindow
             DECLARE_EVENT_TABLE()
 };
 
-
-//------------------------------------------------------------------------------
-//    AISInfoWin Specification
-//------------------------------------------------------------------------------
-
-class AISInfoWin : public wxWindow
-{
-      public:
-            AISInfoWin ( wxWindow *parent, wxWindowID id = -1, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
-                         long style = 0, const wxString& name = _T(""));
-
-            ~AISInfoWin(void);
-
-            void OnPaint(wxPaintEvent& event);
-            void AppendText(wxString &text);
-            void Clear(void){}
-            void SetInsertionPoint(int pt){}
-            wxSize GetOptimumSize(int *pn_nl = NULL, int *pn_cmax = NULL);
-            void SetHPad(int d){ m_offsetx = d; }
-            void SetVPad(int d){ m_offsety = d; }
-
-            wxString    m_text;
-            int         m_maxtl;
-
-            int         m_offsetx, m_offsety;
-
-            DECLARE_EVENT_TABLE()
-};
-
 //------------------------------------------------------------------------------
 //    CM93 Detail Slider Specification
 //------------------------------------------------------------------------------
@@ -901,13 +870,11 @@ class CM93DSlide : public wxDialog
             DECLARE_EVENT_TABLE()
 };
 
-
 //-------------------------------------------------------------------------------
 //
 //    Go To Position Dialog Implementation
 //
 //-------------------------------------------------------------------------------
-
 
 /*!
  * Control identifiers
