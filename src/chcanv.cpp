@@ -4238,9 +4238,11 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     else
                         s.Append( pr->m_RouteNameString );
 
-                    s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive( pr->m_route_length) << _T("\n");
-                    s << _("Leg: from ") << segShow_point_a->GetName() << _(" to ") << segShow_point_b->GetName();
-                    s << _T("\n") << FormatDistanceAdaptive( dist );
+                    s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive( pr->m_route_length)
+                    << _T("\n") << _("Leg: from ") << segShow_point_a->GetName()
+                    << _(" to ") << segShow_point_b->GetName()
+                    << _T("\n") << wxString::Format( wxString( "%3d°  ", wxConvUTF8 ), (int) brg )
+                    << FormatDistanceAdaptive( dist );
 
                     m_pRolloverWin->SetString( s );
 
