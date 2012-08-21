@@ -42,11 +42,35 @@
 class wxProgressDialog;
 ///////////////////////////////////////////////////////////////////////
 
-static const int DB_VERSION_PREVIOUS = 15;
-static const int DB_VERSION_CURRENT = 16;
+static const int DB_VERSION_PREVIOUS = 16;
+static const int DB_VERSION_CURRENT = 17;
 
 class ChartDatabase;
 class ChartGroupArray;
+
+struct ChartTableEntry_onDisk_17
+{
+    int         EntryOffset;
+    int         ChartType;
+    float       LatMax;
+    float       LatMin;
+    float       LonMax;
+    float       LonMin;
+    
+    int         Scale;
+    int         edition_date;
+    int         file_date;
+    
+    int         nPlyEntries;
+    int         nAuxPlyEntries;
+    
+    float       skew;
+    int         ProjectionType;
+    bool        bValid;
+    
+    int         nNoCovrPlyEntries;
+};
+
 
 struct ChartTableEntry_onDisk_16
 {
@@ -143,12 +167,20 @@ struct ChartTableEntry
     void Disable();
     void SetValid(bool valid) { bValid = valid; }
     time_t GetFileTime() const { return file_date; }
-    int GetnAuxPlyEntries() const { return nAuxPlyEntries; }
+
     int GetnPlyEntries() const { return nPlyEntries; }
     float *GetpPlyTable() const { return pPlyTable; }
+
+    int GetnAuxPlyEntries() const { return nAuxPlyEntries; }
     float *GetpAuxPlyTableEntry(int index) const { return pAuxPlyTable[index];}
     int GetAuxCntTableEntry(int index) const { return pAuxCntTable[index];}
 
+    int GetnNoCovrPlyEntries() const { return nNoCovrPlyEntries; }
+    float *GetpNoCovrPlyTableEntry(int index) const { return pNoCovrPlyTable[index];}
+    int GetNoCovrCntTableEntry(int index) const { return pNoCovrCntTable[index];}
+    
+    
+    
     char *GetpFullPath() const { return pFullPath; }
     float GetLonMax() const { return LonMax; }
     float GetLonMin() const { return LonMin; }
@@ -184,6 +216,10 @@ struct ChartTableEntry
     float       Skew;
     int         ProjectionType;
     bool        bValid;
+    int         nNoCovrPlyEntries;
+    int         *pNoCovrCntTable;
+    float       **pNoCovrPlyTable;
+    
     ArrayOfInts m_GroupArray;
     wxString    *m_pfilename;             // a helper member, not on disk
 };

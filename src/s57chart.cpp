@@ -2909,81 +2909,63 @@ bool s57chart::CreateHeaderDataFromENC( void )
     LonMax = -179.;
     LonMin = 179.;
 
+    m_pCOVRTablePoints = NULL;
+    m_pCOVRTable = NULL;
+  
+    //  Create arrays to hold geometry objects temporarily
+    MyFloatPtrArray *pAuxPtrArray = new MyFloatPtrArray;
+    wxArrayInt *pAuxCntArray = new wxArrayInt;
+    
+    MyFloatPtrArray *pNoCovrPtrArray = new MyFloatPtrArray;
+    wxArrayInt *pNoCovrCntArray = new wxArrayInt;
+    
     //Get the first M_COVR object
-    if( ( pFeat = GetChartFirstM_COVR( catcov ) ) ) {
-        OGRPolygon *poly;
-        OGRLinearRing *xring;
-        int npt;
-        float *pf;
+    pFeat = GetChartFirstM_COVR( catcov );
 
-        //  Create arrays to hold geometry objects temporarily
-        MyFloatPtrArray *pAuxPtrArray = new MyFloatPtrArray;
-        wxArrayInt *pAuxCntArray = new wxArrayInt;
+    while( pFeat ) {
 
-        //  Record the first M_COVR, CATCOV=1 object
-        if( catcov == 1 ) {
-
-            poly = (OGRPolygon *) ( pFeat->GetGeometryRef() );
-            xring = poly->getExteriorRing();
-
-            npt = xring->getNumPoints();
-
-            if( npt >= 3 ) {
-                pf = (float *) malloc( 2 * npt * sizeof(float) );
-
-                pAuxPtrArray->Add( pf );
-                pAuxCntArray->Add( npt );
-
-                for( int i = 0; i < npt; i++ ) {
-                    OGRPoint p;
-                    xring->getPoint( i, &p );
-
-                    LatMax = fmax(LatMax, p.getY());
-                    LatMin = fmin(LatMin, p.getY());
-                    LonMax = fmax(LonMax, p.getX());
-                    LonMin = fmin(LonMin, p.getX());
-
-                    *pf++ = p.getY();             // lat
-                    *pf++ = p.getX();             // lon
-                }
-            }
-        }
-
-        delete pFeat;
-        pFeat = NULL;
-
-        while( ( pFeat = GetChartNextM_COVR( catcov ) ) ) {
-
-            if( catcov == 1 ) {
                 //    Get the next M_COVR feature, and create possible additional entries for COVR
-                poly = (OGRPolygon *) ( pFeat->GetGeometryRef() );
-                xring = poly->getExteriorRing();
+                OGRPolygon *poly = (OGRPolygon *) ( pFeat->GetGeometryRef() );
+                OGRLinearRing *xring = poly->getExteriorRing();
 
-                npt = xring->getNumPoints();
+                int npt = xring->getNumPoints();
 
+                float *pf = NULL;
+                
                 if( npt >= 3 ) {
                     pf = (float *) malloc( 2 * npt * sizeof(float) );
-
-                    pAuxPtrArray->Add( pf );
-                    pAuxCntArray->Add( npt );
-
+                    float *pfr = pf;
+                    
                     for( int i = 0; i < npt; i++ ) {
                         OGRPoint p;
                         xring->getPoint( i, &p );
 
-                        LatMax = fmax(LatMax, p.getY());
-                        LatMin = fmin(LatMin, p.getY());
-                        LonMax = fmax(LonMax, p.getX());
-                        LonMin = fmin(LonMin, p.getX());
-
-                        *pf++ = p.getY();             // lat
-                        *pf++ = p.getX();             // lon
+                        if( catcov == 1 ) {
+                            LatMax = fmax(LatMax, p.getY());
+                            LatMin = fmin(LatMin, p.getY());
+                            LonMax = fmax(LonMax, p.getX());
+                            LonMin = fmin(LonMin, p.getX());
+                        }
+                        
+                        pfr[0] = p.getY();             // lat
+                        pfr[1] = p.getX();             // lon
+                        
+                        pfr += 2;
                     }
                 }
-            }
 
             delete pFeat;
 
+            if( catcov == 1 ) {
+                pAuxPtrArray->Add( pf );
+                pAuxCntArray->Add( npt );
+            }
+            else if( catcov == 2 ){
+                pNoCovrPtrArray->Add( pf );
+                pNoCovrCntArray->Add( npt );
+            }
+            
+            pFeat = GetChartNextM_COVR( catcov );
         }         // while
 
         //    Allocate the storage
@@ -3000,7 +2982,6 @@ bool s57chart::CreateHeaderDataFromENC( void )
             *m_pCOVRTable = (float *) malloc( pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
             memcpy( *m_pCOVRTable, pAuxPtrArray->Item( 0 ),
                     pAuxCntArray->Item( 0 ) * 2 * sizeof(float) );
-
         }
 
         else if( m_nCOVREntries > 1 ) {
@@ -3023,20 +3004,40 @@ bool s57chart::CreateHeaderDataFromENC( void )
             wxLogMessage( msg );
         }
 
+        
+        //      And for the NoCovr regions
+        m_nNoCOVREntries = pNoCovrCntArray->GetCount();
+        
+        if( m_nNoCOVREntries ) {
+            //    Create new NoCOVR entries
+            m_pNoCOVRTablePoints = (int *) malloc( m_nNoCOVREntries * sizeof(int) );
+            m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
+            
+            for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
+                int npoints = pNoCovrCntArray->Item( j );
+                m_pNoCOVRTablePoints[j] = npoints;
+                m_pNoCOVRTable[j] = (float *) malloc( npoints * 2 * sizeof(float) );
+                memcpy( m_pNoCOVRTable[j], pNoCovrPtrArray->Item( j ),
+                        npoints * 2 * sizeof(float) );
+            }
+        }
+        else {
+            m_pNoCOVRTablePoints = NULL;
+            m_pNoCOVRTable = NULL;
+        }
+        
         delete pAuxPtrArray;
         delete pAuxCntArray;
-    }
+        delete pNoCovrPtrArray;
+        delete pNoCovrCntArray;
+        
 
-    //  There is no M_COVR object in the Exchange Set.
-    else {
+    if( 0 == m_nCOVREntries ) {                        // fallback
         wxString msg( _T("   ENC contains no M_COVR features:  ") );
         msg.Append( m_FullPath );
         wxLogMessage( msg );
-    }
-
-    if( 0 == m_nCOVREntries )                         // fallback
-            {
-        wxString msg( _T("   Calculating Chart Extents as fallback.") );
+        
+        msg =  _T("   Calculating Chart Extents as fallback.");
         wxLogMessage( msg );
 
         OGREnvelope Env;
@@ -3094,6 +3095,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
     GetChartNameFromTXT( m_FullPath, nice_name );
     m_Name = nice_name;
 
+    
     return true;
 }
 

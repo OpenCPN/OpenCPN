@@ -189,6 +189,11 @@ public:
       virtual int  GetCOVRTablenPoints(int iTable){ return m_pCOVRTablePoints[iTable]; }
       virtual float *GetCOVRTableHead(int iTable){ return m_pCOVRTable[iTable]; }
 
+      virtual int GetNoCOVREntries(){ return  m_nNoCOVREntries; }
+      virtual int GetNoCOVRTablePoints(int iTable) { return m_pNoCOVRTablePoints[iTable]; }
+      virtual int  GetNoCOVRTablenPoints(int iTable){ return m_pNoCOVRTablePoints[iTable]; }
+      virtual float *GetNoCOVRTableHead(int iTable){ return m_pNoCOVRTable[iTable]; }
+      
 protected:
 
       int               m_Chart_Scale;
@@ -237,7 +242,9 @@ protected:
       int         *m_pCOVRTablePoints;                  // int table of number of points in each coverage table entry
       float       **m_pCOVRTable;                       // table of pointers to list of floats describing valid COVR
 
-      //    Todo  Define invalid COVR regions
+      int         m_nNoCOVREntries;                       // number of NoCoverage table entries
+      int         *m_pNoCOVRTablePoints;                  // int table of number of points in each NoCoverage table entry
+      float       **m_pNoCOVRTable;                       // table of pointers to list of floats describing valid NOCOVR
 
 };
 
