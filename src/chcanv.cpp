@@ -14951,13 +14951,13 @@ void GoToPositionDialog::OnGoToPosCancelClick( wxCommandEvent& event )
 
 void GoToPositionDialog::OnGoToPosOkClick( wxCommandEvent& event )
 {
-
-    //    Fetch the control values, convert to degrees
-    double lat = fromDMM( m_MarkLatCtl->GetValue() );
-    double lon = fromDMM( m_MarkLonCtl->GetValue() );
-
+    if( m_MarkLatCtl->GetValue().Length() && m_MarkLonCtl->GetValue().Length() ) {
+        //    Fetch the control values, convert to degrees
+        double lat = fromDMM( m_MarkLatCtl->GetValue() );
+        double lon = fromDMM( m_MarkLonCtl->GetValue() );
+        gFrame->JumpToPosition( lat, lon, cc1->GetVPScale() );
+    }
     Hide();
-    gFrame->JumpToPosition( lat, lon, cc1->GetVPScale() );
     event.Skip();
 }
 
