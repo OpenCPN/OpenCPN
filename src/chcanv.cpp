@@ -751,7 +751,7 @@ public:
     bool IsChartInQuilt( ChartBase *pc );
     bool IsQuiltVector( void );
     wxRegion GetHiliteRegion( ViewPort &vp );
-    
+
 private:
     wxRegion GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp );
     void EmptyCandidateArray( void );
@@ -1021,15 +1021,15 @@ wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
 {
     wxRegion chart_region;
     wxRegion screen_region( vp.rv_rect );
-    
+
     // Special case for charts which extend around the world, or near to it
     //  Mostly this means cm93....
     if(fabs(cte.GetLonMax() - cte.GetLonMin()) > 180.) {
         chart_region = screen_region;
         return chart_region;
     }
-        
-    
+
+
     //    If the chart has an aux ply table, use it for finer region precision
     int nAuxPlyEntries = cte.GetnAuxPlyEntries();
     if( nAuxPlyEntries >= 1 ) {
@@ -1065,15 +1065,15 @@ wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
         for( int ip = 0; ip < nNoCovrPlyEntries; ip++ ) {
             float *pfp = cte.GetpNoCovrPlyTableEntry( ip );
             int nNoCovrPly = cte.GetNoCovrCntTableEntry( ip );
-            
+
             wxRegion t_region = vp.GetVPRegionIntersect( screen_region, nNoCovrPly, pfp,
                                                          cte.GetScale() );
-            
+
             //  We do a test removal of the NoCovr region.
-            //  If the result iz empty, it must be that the NoCovr region is 
+            //  If the result iz empty, it must be that the NoCovr region is
             //  the full extent M_COVR(CATCOV=2) feature found in NOAA ENCs.
             //  We ignore it.
-            
+
             if(!t_region.IsEmpty()) {
                 wxRegion test_region = chart_region;
                 test_region.Subtract( t_region );
@@ -1083,7 +1083,7 @@ wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
             }
         }
     }
-    
+
 
     //    Another superbad hack....
     //    Super small scale raster charts like bluemarble.kap usually cross the prime meridian
@@ -1466,7 +1466,7 @@ wxRegion Quilt::GetHiliteRegion( ViewPort &vp )
                             }
                         }
 
-                        if( !b_eclipsed ) 
+                        if( !b_eclipsed )
                             r = chart_region;
                         break;
                     }
@@ -1481,7 +1481,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 {
     EmptyCandidateArray();
     m_extended_stack_array.Clear();
-    
+
     int reference_scale;
     int reference_type = -1;
     int reference_family;
@@ -1516,7 +1516,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             //  A viable candidate?
             double chart_skew = ChartData->GetDBChartSkew( i );
             if( chart_skew > 180. ) chart_skew -= 360.;
-            
+
             // only unskewed charts of the proper projection and type may be quilted....
             // and we avoid adding CM93 Composite until later
             if( ( reference_type == ChartData->GetDBChartType( i ) )
@@ -1526,18 +1526,18 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                 QuiltCandidate *qcnew = new QuiltCandidate;
                 qcnew->dbIndex = i;
                 qcnew->ChartScale = ChartData->GetDBChartScale( i );
-                
+
                 //      Calculate and store the quilt region on-screen with the candidate
                 const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
                 wxRegion chart_region = GetChartQuiltRegion( cte, vp_local );
                 qcnew->quilt_region = chart_region;
-                
+
                 m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
-                
+
             }
         }
     }
-    
+
     if( b_fullscreen ) {
         //    Search the entire database, potentially adding all charts
         //    which intersect the ViewPort in any way
@@ -1588,10 +1588,10 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
             if( ( ChartData->GetDBChartScale( i ) >= reference_scale ) || ( zoom_factor > .2 ) ) {
                 bool b_add = true;
-                
+
                 const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
                 wxRegion chart_region = GetChartQuiltRegion( cte, vp_local );
-                
+
                 //    Special case for S57 ENC
                 //    Add the chart only if the chart's fractional area exceeds n%
                 if( CHART_TYPE_S57 == reference_type ) {
@@ -1614,7 +1614,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
                 if( ref_db_index == i)
                     b_add = true;
-                
+
                 if( b_add ) {
                     // Check to see if this chart is already in the stack array
                     // by virtue of being under the Viewport center point....
@@ -1639,22 +1639,22 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                                 if( pm->GetFileTime() && pn->GetFileTime()) {
                                     if( pm->GetFileTime() == pn->GetFileTime() ) {           // simple test
                                         if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) )
-                                            b_noadd = true;  
+                                            b_noadd = true;
                                     }
                                 }
                             }
                         }
-                                    
-                        if(!b_noadd) {                    
+
+                        if(!b_noadd) {
                             m_extended_stack_array.Add( i );
-                        
+
                             QuiltCandidate *qcnew = new QuiltCandidate;
                             qcnew->dbIndex = i;
                             qcnew->ChartScale = ChartData->GetDBChartScale( i );
                             qcnew->quilt_region = chart_region;
-                            
+
                             m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
-                        
+
                             b_need_resort = true;
                         }
                     }
@@ -1680,7 +1680,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                 qcnew->dbIndex = sure_index;
                 qcnew->ChartScale = ChartData->GetDBChartScale( sure_index );
                 m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
-                
+
                 b_need_resort = true;
             }
         }
@@ -1891,11 +1891,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
                     QuiltCandidate *qcnew = new QuiltCandidate;
                     qcnew->dbIndex = i;
                     qcnew->ChartScale = ChartData->GetDBChartScale( i );
-                    
+
                     const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
                     wxRegion chart_region = GetChartQuiltRegion( cte, vp_local );
                     qcnew->quilt_region = chart_region;
-                    
+
                     m_pcandidate_array->Add( qcnew );
                 }
             }
@@ -2015,7 +2015,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
             continue;
 
         const ChartTableEntry &ctei = ChartData->GetChartTableEntry( piqp->dbIndex );
-            
+
         wxRegion vpr_region = unrendered_region;
 
         //    Start with the chart's full region coverage.
@@ -2068,11 +2068,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
             pqpi->b_eclipsed = true;
 
         //    Update the next pass full region to remove the region just allocated
-        if( !vpr_region.Empty() ) 
+        if( !vpr_region.Empty() )
             unrendered_region.Subtract( vpr_region );
 
         //    Maintain the present full quilt coverage region
-        if( !pqpi->ActiveRegion.IsEmpty() )    
+        if( !pqpi->ActiveRegion.IsEmpty() )
             m_covered_region.Union( pqpi->ActiveRegion );
     }
 
@@ -2445,7 +2445,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
             wxRegion hiregion = GetHiliteRegion( vp );
 
             wxRect box = hiregion.GetBox();
-            
+
             if( !box.IsEmpty() ) {
                 //    Is scratch member bitmap OK?
                 if( m_pBM ) {
@@ -2515,7 +2515,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
                                   true );
                         upd ++ ;
                     }
-                    
+
                     wxRegionIterator updq ( hiregion );
                     while ( updq )
                     {
@@ -2524,8 +2524,8 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
                                    true );
                         updq ++ ;
                     }
-                    
-                    
+
+
                     q_dc.SelectObject( wxNullBitmap );
                     m_pBM->SetMask( NULL );
 
@@ -6628,7 +6628,6 @@ void ChartCanvas::UpdateAlerts()    // pjotrc 2010.02.22
     alert_draw_rect = alert_rect;
 
     temp_dc.SelectObject( wxNullBitmap );      // clean up
-
 }
 
 void ChartCanvas::UpdateAIS()
@@ -6944,6 +6943,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     int x, y;
     int mx, my;
 
+    // Used to protect from leftUp's coming from event handlers in child windows
+    // who return focus to the canvas.
+    static bool leftIsDown = false;
+
     event.GetPosition( &x, &y );
 
 #ifdef __WXMSW__
@@ -7245,6 +7248,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
         last_drag.x = mx;
         last_drag.y = my;
+        leftIsDown = true;
 
         if( parent_frame->nRoute_State )                  // creating route?
         {
@@ -7541,8 +7545,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             }
         }
 
-        else                                            // must be chart dragging...
-        {
+        // must be chart dragging...
+        else if( leftIsDown ) {
             if( ( last_drag.x != mx ) || ( last_drag.y != my ) ) {
                 m_bChartDragging = true;
                 PanCanvas( last_drag.x - mx, last_drag.y - my );
@@ -7608,46 +7612,40 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( !g_FloatingToolbarDialog->IsShown() ) gFrame->SurfaceToolbar();
         }
 
-        else                      // left click for chart center
-        {
+        else if( leftIsDown ) {  // left click for chart center
+            leftIsDown = false;
+
             if( !m_bChartDragging && !m_bMeasure_Active ) {
-//          Chart Panning
+                switch( cursor_region ){
+                    case MID_RIGHT: {
+                        PanCanvas( 100, 0 );
+                        break;
+                    }
 
-                switch( cursor_region ) {
-                case MID_RIGHT: {
-                    PanCanvas( 100, 0 );
-                    break;
+                    case MID_LEFT: {
+                        PanCanvas( -100, 0 );
+                        break;
+                    }
+
+                    case MID_TOP: {
+                        PanCanvas( 0, 100 );
+                        break;
+                    }
+
+                    case MID_BOT: {
+                        PanCanvas( 0, -100 );
+                        break;
+                    }
+
+                    case CENTER: {
+                        PanCanvas( x - GetVP().pix_width / 2, y - GetVP().pix_height / 2 );
+                        break;
+                    }
                 }
-
-                case MID_LEFT: {
-                    PanCanvas( -100, 0 );
-                    break;
-                }
-
-                case MID_TOP: {
-                    PanCanvas( 0, 100 );
-                    break;
-                }
-
-                case MID_BOT: {
-                    PanCanvas( 0, -100 );
-                    break;
-                }
-
-                case CENTER: {
-                    PanCanvas( x - GetVP().pix_width / 2,
-                               y - GetVP().pix_height / 2 );
-                    break;
-                }
-
-                gFrame->SurfaceToolbar();
-
-                }                             // switch
-
-            } else
+            } else {
                 m_bChartDragging = false;
+            }
         }
-
     }
 
     if( event.RightDown() ) {
@@ -12444,17 +12442,17 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
             while ( upd )
             {
                 wxRect rect = upd.GetRect();
-             
+
                 glBegin( GL_QUADS );
                 glVertex2i( rect.x, rect.y );
                 glVertex2i( rect.x + rect.width, rect.y );
                 glVertex2i( rect.x + rect.width, rect.y + rect.height );
                 glVertex2i( rect.x, rect.y + rect.height );
                 glEnd();
-            
+
                 upd ++ ;
             }
-            
+
             glDisable( GL_BLEND );
             glPopAttrib();
         }
