@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,14 +20,10 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
- *f
  */
-
-
-
 
 #ifndef __CHCANV_H__
 #define __CHCANV_H__
@@ -104,8 +100,6 @@ void DimeControl(wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_colo
 #define     PANKEY_TIMER      9
 #define     DBLCLICK_TIMER   10
 
-
-
 enum                                //  specify the render behaviour of SetViewPoint()
 {
     CURRENT_RENDER,                 // use the current render type
@@ -133,9 +127,6 @@ enum {
       ID_S57QUERYTREECTRL =            10000,
       ID_AISDIALOGOK
 };
-
-
-
 
 class emboss_data
 {
@@ -883,7 +874,7 @@ class CM93DSlide : public wxDialog
 ////@begin control identifiers
 #define ID_GOTOPOS 8100
 #define SYMBOL_GOTOPOS_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
-#define SYMBOL_GOTOPOS_TITLE _("Jump To Position")
+#define SYMBOL_GOTOPOS_TITLE _("Center View")
 #define SYMBOL_GOTOPOS_IDNAME ID_GOTOPOS
 #define SYMBOL_GOTOPOS_SIZE wxSize(200, 300)
 #define SYMBOL_GOTOPOS_POSITION wxDefaultPosition

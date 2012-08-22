@@ -4946,13 +4946,13 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 
       wxBoxSizer* boxSizer02 = new wxBoxSizer( wxVERTICAL );
       boxSizer02->AddSpacer( 22 );
-      //wxBitmapButton* button01 = new wxBitmapButton( this, wxID_ANY, *_img_ais_info, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+
       m_pButtonInfo = new wxButton( this, wxID_ANY, _("Target info"), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
       m_pButtonInfo->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AISTargetListDialog::OnTargetQuery ), NULL, this );
       boxSizer02->Add( m_pButtonInfo, 0, wxALL, 0 );
       boxSizer02->AddSpacer( 5 );
-      //wxBitmapButton* button02 = new wxBitmapButton( this, wxID_ANY, *_img_ais_zoom, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-      m_pButtonJumpTo = new wxButton( this, wxID_ANY, _("Jump To"), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+
+      m_pButtonJumpTo = new wxButton( this, wxID_ANY, _("Center View"), wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
       m_pButtonJumpTo->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( AISTargetListDialog::OnTargetScrollTo ), NULL, this );
       boxSizer02->Add( m_pButtonJumpTo, 0, wxALL, 0 );
       boxSizer02->AddSpacer( 10 );

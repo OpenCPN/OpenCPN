@@ -3007,6 +3007,6 @@ PositionParser::PositionParser( wxString& src )
     if( FindSeparator( src ) ) {
         latitude = fromDMM( latitudeString );
         longitude = fromDMM( longitudeString );
-        parsedOk = true;
+        if( (latitude != 0.0) && (longitude != 0.0) ) parsedOk = true;
     }
 }

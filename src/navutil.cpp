@@ -7469,7 +7469,6 @@ double fromDMM( wxString sdms )
     }
 
     return sign * ( stk[0] + ( stk[1] + stk[2] / 60 ) / 60 );
-
 }
 
 /* render a rectangle at a given color and transparency */

@@ -7995,20 +7995,30 @@ void ChartCanvas::DoCanvasPopupMenu( int x, int y, wxMenu *pMenu )
 
 }
 
+wxString _menuText( wxString name, wxString shortcut ) {
+    wxString menutext;
+    menutext << name << _T("\t") << shortcut;
+    return menutext;
+}
+
 void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 {
     wxMenu* contextMenu = new wxMenu;
     wxMenu* subMenuPosition = new wxMenu;
     wxMenu* subMenuWaypoint = new wxMenu;
     wxMenu* subMenuRoute = new wxMenu;
+    wxMenu* subMenuTrack = new wxMenu;
     wxMenu* subMenuAIS = new wxMenu;
     wxMenu *subMenuChart = new wxMenu;
 
-    wxMenuItem* subItemPosition = contextMenu->AppendSubMenu( subMenuPosition, _("Position") );
+    contextMenu->AppendSeparator();
+    wxMenuItem* subItemPosition = contextMenu->AppendSubMenu( subMenuPosition, _("Chart Position") );
     wxMenuItem* subItemWaypoint = contextMenu->AppendSubMenu( subMenuWaypoint, _("Waypoint") );
-    wxMenuItem* subItemRoute = contextMenu->AppendSubMenu( subMenuRoute, _("Route/Track") );
+    wxMenuItem* subItemRoute = contextMenu->AppendSubMenu( subMenuRoute, _("Route") );
+    wxMenuItem* subItemTrack = contextMenu->AppendSubMenu( subMenuTrack, _("Track") );
     wxMenuItem* subItemAIS = contextMenu->AppendSubMenu( subMenuAIS, _("AIS") );
     wxMenuItem* subItemChart = contextMenu->AppendSubMenu( subMenuChart, _("Chart Groups") );
+    contextMenu->AppendSeparator();
 
     popx = x;
     popy = y;
@@ -8030,54 +8040,60 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( undo->AnythingToUndo() ) {
         wxString undoItem;
         undoItem << _("Undo") << _T(" ") << undo->GetNextUndoableAction()->Description();
-        contextMenu->Prepend( ID_UNDO, undoItem );
+        contextMenu->Prepend( ID_UNDO, _menuText( undoItem, _T("Ctrl-Z") ) );
     }
 
     if( undo->AnythingToRedo() ) {
         wxString redoItem;
         redoItem << _("Redo") << _T(" ") << undo->GetNextRedoableAction()->Description();
-        contextMenu->Prepend( ID_REDO, redoItem );
+        contextMenu->Prepend( ID_REDO, _menuText( redoItem, _T("Ctrl-Y") ) );
     }
 
     if( ! m_pMouseRoute ) {
         if( m_bMeasure_Active )
-            contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE, _( "Measure Off" ) );
+            contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE, _menuText( _("Measure Off"), _T("Esc") ) );
         else
-            contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _( "Measure" ) );
+            contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
     }
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
-        subMenuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Route Properties..." ) );
+        subMenuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
         if( m_pSelectedRoute ) {
-            if( m_pSelectedRoute->IsActive() )
+            if( m_pSelectedRoute->IsActive() ) {
+                subMenuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
                 subMenuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
-            else
+            }
+            else {
                 subMenuRoute->Append( ID_RT_MENU_ACTIVATE, _( "Activate" ) );
+            }
         }
         subMenuRoute->Append( ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
         subMenuRoute->Append( ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
         subMenuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
-        subMenuRoute->Append( ID_RT_MENU_DELETE, _( "Delete Route" ) );
+        subMenuRoute->Append( ID_RT_MENU_DELETE, _( "Delete" ) );
         subMenuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse" ) );
+    }
+
+    if( seltype == SELTYPE_ROUTECREATE ) {
+        contextMenu->Append( ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
     }
 
     if( seltype & SELTYPE_TRACKSEGMENT ) {
         if( seltype & SELTYPE_ROUTESEGMENT ) subMenuRoute->AppendSeparator();
-        subMenuRoute->Append( ID_TK_MENU_PROPERTIES, _( "Track Properties..." ) );
-        subMenuRoute->Append( ID_TK_MENU_COPY, _( "Copy" ) );
-        subMenuRoute->Append( ID_TK_MENU_DELETE, _( "Delete Track" ) );
+        subMenuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
+        subMenuTrack->Append( ID_TK_MENU_COPY, _( "Copy" ) );
+        subMenuTrack->Append( ID_TK_MENU_DELETE, _( "Delete" ) );
     }
 
     if( seltype & SELTYPE_ROUTEPOINT ) {
         subMenuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
-        if( m_pSelectedRoute ) {
+        if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
             subMenuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
-            subMenuWaypoint->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next in Route" ) );
         }
         subMenuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
         subMenuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
         if( m_pFoundRoutePoint->m_IconName != _T("mob") )
-            subMenuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete Waypoint" ) );
+            subMenuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
     }
 
     if( seltype & SELTYPE_MARKPOINT ) {
@@ -8108,68 +8124,57 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             }
     }
 
-    if( seltype & SELTYPE_UNKNOWN ) {
-        if( !VPoint.b_quilt ) {
-            if( parent_frame->GetnChartStack() > 1 ) {
-                subMenuPosition->Append( ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
-                subMenuPosition->Append( ID_DEF_MENU_SCALE_IN, _( "Scale In" ) );
-                subMenuPosition->Append( ID_DEF_MENU_SCALE_OUT, _( "Scale Out" ) );
-            }
-
-            if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
-                subMenuPosition->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
-            }
-
-        } else {
-            ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
-            if( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
-                subMenuPosition->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
-            }
-        }
-    }
-
-    //        Following Select type are exclusive
-    if( seltype == SELTYPE_ROUTECREATE ) {
-        if( !VPoint.b_quilt ) {
+    if( !VPoint.b_quilt ) {
+        if( parent_frame->GetnChartStack() > 1 ) {
             subMenuPosition->Append( ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
-            subMenuPosition->Append( ID_RC_MENU_SCALE_IN, _( "Scale In" ) );
-            subMenuPosition->Append( ID_RC_MENU_SCALE_OUT, _( "Scale Out" ) );
+            subMenuPosition->Append( ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
+            subMenuPosition->Append( ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
         }
-        contextMenu->Append( ID_RC_MENU_ZOOM_IN, _( "Zoom In" ) );
-        contextMenu->Append( ID_RC_MENU_ZOOM_OUT, _( "Zoom Out" ) );
-        contextMenu->Append( ID_RC_MENU_FINISH, _( "End Route" ) );
+
+        if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
+            subMenuPosition->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
+        }
+
+    } else {
+        ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
+        if( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
+            subMenuPosition->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
+        } else {
+            if( parent_frame->GetnChartStack() > 1 ) {
+                subMenuPosition->Append( ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
+                subMenuPosition->Append( ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
+            }
+        }
     }
 
-    //        Add invariant items
-    subMenuPosition->Append( ID_DEF_MENU_DROP_WP, _( "Drop Mark Here" ) );
+    subMenuPosition->Append( ID_DEF_MENU_DROP_WP, _menuText( _( "Drop Mark" ), _T("Ctrl-M") ) );
 
-    if( !bGPSValid ) subMenuPosition->Append( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
+    if( !bGPSValid ) subMenuPosition->Append( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat To" ) );
 
     if( !( g_pRouteMan->GetpActiveRoute() || ( seltype & SELTYPE_MARKPOINT ) ) )
-        subMenuPosition->Append( ID_DEF_MENU_GOTO_HERE, _( "Go To Here" ) );
+        subMenuPosition->Append( ID_DEF_MENU_GOTO_HERE, _( "Navigate To" ) );
 
-    subMenuPosition->Append( ID_DEF_MENU_GOTOPOSITION, _("Jump To...") );
+    subMenuPosition->Append( ID_DEF_MENU_GOTOPOSITION, _("Center View...") );
 
     Kml* kml = new Kml;
     int pasteBuffer = kml->ParsePasteBuffer();
     if( pasteBuffer != KML_PASTE_INVALID ) {
-        contextMenu->AppendSeparator();
         switch( pasteBuffer ) {
             case KML_PASTE_WAYPOINT: {
-                contextMenu->Append( ID_PASTE_WAYPOINT, _( "Paste Waypoint..." ) );
+                contextMenu->Append( ID_PASTE_WAYPOINT, _( "Paste Waypoint" ) );
                 break;
             }
             case KML_PASTE_ROUTE: {
-                contextMenu->Append( ID_PASTE_ROUTE, _( "Paste Route..." ) );
+                contextMenu->Append( ID_PASTE_ROUTE, _( "Paste Route" ) );
                 break;
             }
             case KML_PASTE_TRACK: {
-                contextMenu->Append( ID_PASTE_TRACK, _( "Paste Track..." ) );
+                contextMenu->Append( ID_PASTE_TRACK, _( "Paste Track" ) );
                 break;
             }
             case KML_PASTE_ROUTE_TRACK: {
-                contextMenu->Append( ID_PASTE_ROUTE, _( "Paste Route..." ) );
-                contextMenu->Append( ID_PASTE_TRACK, _( "Paste Track..." ) );
+                contextMenu->Append( ID_PASTE_ROUTE, _( "Paste Route" ) );
+                contextMenu->Append( ID_PASTE_TRACK, _( "Paste Track" ) );
                 break;
             }
         }
@@ -8196,21 +8201,20 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                     subMenuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Show AIS Target CPA" ) );
             }
         }
-        subMenuAIS->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS target list...") );
+        subMenuAIS->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
     }
 
     bool cm93IsAvailable = ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) );
-    for( unsigned int ir = 0; ir < m_pQuilt->GetExtendedStackIndexArray().GetCount(); ir++ ) {
-        int i = m_pQuilt->GetExtendedStackIndexArray().Item(ir);
-
-        if( ChartData->GetDBChartType( i ) == CHART_TYPE_CM93COMP ) {
-            cm93IsAvailable = true;
-            break;
+    if( VPoint.b_quilt ) {
+        ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
+        if( pChartTest ) {
+            if( pChartTest->GetChartType() == CHART_TYPE_CM93 ) cm93IsAvailable = true;
+            if( pChartTest->GetChartType() == CHART_TYPE_CM93COMP ) cm93IsAvailable = true;
         }
     }
 
     if( cm93IsAvailable ) {
-        contextMenu->AppendCheckItem( ID_DEF_MENU_CM93ZOOM, _("Enable CM93 Detail Slider") );
+        contextMenu->AppendCheckItem( ID_DEF_MENU_CM93ZOOM, _("CM93 Detail Slider...") );
         if( pCM93DetailSlider ) {
             contextMenu->Check( ID_DEF_MENU_CM93ZOOM, pCM93DetailSlider->IsShown() );
         }
@@ -8274,6 +8278,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( ! subMenuPosition->GetMenuItemCount() ) contextMenu->Destroy( subItemPosition );
     if( ! subMenuWaypoint->GetMenuItemCount() ) contextMenu->Destroy( subItemWaypoint );
     if( ! subMenuRoute->GetMenuItemCount() ) contextMenu->Destroy( subItemRoute );
+    if( ! subMenuTrack->GetMenuItemCount() ) contextMenu->Destroy( subItemTrack );
     if( ! subMenuAIS->GetMenuItemCount() ) contextMenu->Destroy( subItemAIS );
     if( ! subMenuChart->GetMenuItemCount() ) contextMenu->Destroy( subItemChart );
 

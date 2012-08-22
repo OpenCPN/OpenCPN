@@ -452,7 +452,7 @@ void RouteManagerDialog::Create()
      m_pRouteListCtrl->InsertColumn(rmROUTEDESC, _("To"));
      */
 
-    // Buttons: Delete, Properties..., Zoom to
+    // Buttons: Delete, Properties...
     wxBoxSizer *bsRouteButtons = new wxBoxSizer( wxVERTICAL );
     sbsRoutes->Add( bsRouteButtons, 0, wxALIGN_RIGHT );
 
@@ -468,7 +468,7 @@ void RouteManagerDialog::Create()
     btnRteActivate->Connect( wxEVT_LEFT_DOWN,
             wxMouseEventHandler(RouteManagerDialog::OnRteBtnLeftDown), NULL, this );
 
-    btnRteZoomto = new wxButton( m_pPanelRte, -1, _("&Zoom to") );
+    btnRteZoomto = new wxButton( m_pPanelRte, -1, _("&Center View") );
     bsRouteButtons->Add( btnRteZoomto, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnRteZoomto->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnRteZoomtoClick), NULL, this );
@@ -606,7 +606,7 @@ void RouteManagerDialog::Create()
     btnWptProperties->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnWptPropertiesClick), NULL, this );
 
-    btnWptZoomto = new wxButton( m_pPanelWpt, -1, _("&Zoom to") );
+    btnWptZoomto = new wxButton( m_pPanelWpt, -1, _("&Center View") );
     bsWptButtons->Add( btnWptZoomto, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
     btnWptZoomto->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnWptZoomtoClick), NULL, this );
@@ -1968,7 +1968,7 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
         buttons = wxYES_NO;
         type = 1;
     }
-    else 
+    else
     {
         prompt = _("There are some waypoints used in routes or anchor alarms. Do you want to delete them as well? This will change the routes and disable the anchor alarms. Answering No keeps the waypoints used in routes or alarms.");
         buttons = wxYES_NO | wxCANCEL;

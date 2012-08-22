@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-20 15:53+0200\n"
-"PO-Revision-Date: 2012-08-20 16:12+0100\n"
+"POT-Creation-Date: 2012-08-22 11:49+0200\n"
+"PO-Revision-Date: 2012-08-22 11:57+0100\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -73,7 +73,7 @@ msgstr ""
 
 #
 msgid " "
-msgstr ""
+msgstr " "
 
 #
 #
@@ -339,6 +339,10 @@ msgid "&Cancel"
 msgstr "A&vsluta"
 
 #
+msgid "&Center View"
+msgstr "Visa centrerad"
+
+#
 msgid "&Copy all as text"
 msgstr "&Kopiera allt som text"
 
@@ -470,11 +474,6 @@ msgstr "Egenskaper för &waypoint..."
 #
 msgid "&Weight:"
 msgstr "Fetstil:"
-
-#
-#
-msgid "&Zoom to"
-msgstr "&Zooma till"
 
 #
 #
@@ -644,6 +643,11 @@ msgstr "AIS Allmänt"
 
 #
 #
+msgid "AIS Target List..."
+msgstr "AIS lista..."
+
+#
+#
 msgid "AIS Target Query"
 msgstr "Visa AIS info "
 
@@ -656,11 +660,6 @@ msgstr "Visa AIS info"
 #
 msgid "AIS target list"
 msgstr "AIS lista"
-
-#
-#
-msgid "AIS target list..."
-msgstr "AIS lista..."
 
 #
 #
@@ -699,8 +698,8 @@ msgstr "Aktivera CM93-korrektion"
 
 #
 #
-msgid "Activate Next in Route"
-msgstr "Aktivera nästa i rutt"
+msgid "Activate Next Waypoint"
+msgstr "Aktivera nästa waypoint"
 
 #
 #
@@ -964,6 +963,11 @@ msgstr "CM93"
 
 #
 #
+msgid "CM93 Detail Slider..."
+msgstr "CM93 detaljnivå..."
+
+#
+#
 msgid "CM93 Offset Dialog..."
 msgstr "CM93-korrektion..."
 
@@ -1101,6 +1105,14 @@ msgid "Cell Scale"
 msgstr "Cell-skala"
 
 #
+msgid "Center View"
+msgstr "Visa centrerad"
+
+#
+msgid "Center View..."
+msgstr "Centrera på..."
+
+#
 #
 msgid "Change Color Scheme"
 msgstr "Skärminställning Dag/Skymning/Natt"
@@ -1137,6 +1149,11 @@ msgstr "Sjökortsbuntar..."
 #
 msgid "Chart Groups...New Group"
 msgstr "Sjökortsbuntar... Ny bunt"
+
+#
+#
+msgid "Chart Position"
+msgstr "Sjökortsposition"
 
 #
 #
@@ -1426,18 +1443,8 @@ msgstr "Radera bunt"
 
 #
 #
-msgid "Delete Route"
-msgstr "Radera rutt"
-
-#
-#
 msgid "Delete Selection"
 msgstr "Radera markerad mapp"
-
-#
-#
-msgid "Delete Track"
-msgstr "Radera spår"
 
 #
 #
@@ -1542,8 +1549,8 @@ msgstr "Markera MOB"
 
 #
 #
-msgid "Drop Mark Here"
-msgstr "Placera Waypoint här"
+msgid "Drop Mark"
+msgstr "Placera waypoint"
 
 #
 #
@@ -1588,11 +1595,6 @@ msgstr "Förfluten tid : "
 #
 msgid "Enable"
 msgstr "Aktivera"
-
-#
-#
-msgid "Enable CM93 Detail Slider"
-msgstr "Aktivera CM93 detaljinställning"
 
 #
 #
@@ -1811,11 +1813,6 @@ msgstr "Maritimt lastfartyg"
 
 #
 #
-msgid "Go To Here"
-msgstr "Ny rutt hit"
-
-#
-#
 msgid "Go to "
 msgstr "Gå till "
 
@@ -1929,21 +1926,6 @@ msgstr "Isol. Dngr"
 #
 msgid "Isolated Danger"
 msgstr "Isolerad fara"
-
-#
-#
-msgid "Jump To"
-msgstr "Gå till "
-
-#
-#
-msgid "Jump To Position"
-msgstr "Gå till position"
-
-#
-#
-msgid "Jump To..."
-msgstr "Gå till..."
 
 #
 msgid "KML Standard (Google Earth and others)"
@@ -2354,8 +2336,8 @@ msgstr "Motordriven tanker, bogserbåt"
 
 #
 #
-msgid "Move Boat Here"
-msgstr "Flytta båt till position"
+msgid "Move Boat To"
+msgstr "Flytta båten hit"
 
 #
 #
@@ -2386,6 +2368,10 @@ msgstr "Namn"
 #
 msgid "Nav Status"
 msgstr "Nav status"
+
+#
+msgid "Navigate To"
+msgstr "Starta navigering hit"
 
 #
 msgid "Navigate To This"
@@ -2640,18 +2626,18 @@ msgstr "Passagerarfartyg, färja, kryssningsfartyg, Röda korset-fartyg"
 
 #
 #
-msgid "Paste Route..."
-msgstr "Klistra in rutt..."
+msgid "Paste Route"
+msgstr "Klistra in rutt"
 
 #
 #
-msgid "Paste Track..."
-msgstr "Klistra in spår..."
+msgid "Paste Track"
+msgstr "Klistra in spår"
 
 #
 #
-msgid "Paste Waypoint..."
-msgstr "Klistra in waypoint..."
+msgid "Paste Waypoint"
+msgstr "Klistra in waypoint"
 
 #
 #
@@ -3121,11 +3107,6 @@ msgstr "Ruttegenskaper"
 
 #
 #
-msgid "Route Properties..."
-msgstr "Ruttegenskaper..."
-
-#
-#
 msgid "Route Uploaded successfully."
 msgstr "Rutt uppladdad ok."
 
@@ -3133,11 +3114,6 @@ msgstr "Rutt uppladdad ok."
 #
 msgid "Route from Track"
 msgstr "Rutt från Spår"
-
-#
-#
-msgid "Route/Track"
-msgstr "Rutter och spår"
 
 #
 #
@@ -3564,11 +3540,6 @@ msgstr "Med symboler"
 
 #
 #
-msgid "TCP/IP WiFi Data Server"
-msgstr "TCP/IP WiFi Dataserver"
-
-#
-#
 msgid "TCPA"
 msgstr "TCPA"
 
@@ -3852,6 +3823,11 @@ msgstr "Bogsering"
 
 #
 #
+msgid "Track"
+msgstr "Spår"
+
+#
+#
 msgid "Track Name"
 msgstr "Spårets namn"
 
@@ -3859,11 +3835,6 @@ msgstr "Spårets namn"
 #
 msgid "Track Properties"
 msgstr "Spåregenskaper"
-
-#
-#
-msgid "Track Properties..."
-msgstr "Spåregenskaper..."
 
 #
 #
@@ -4178,11 +4149,6 @@ msgstr "Understruken text."
 #
 msgid "White"
 msgstr "Vit"
-
-#
-#
-msgid "WiFi Options"
-msgstr "WiFi-inställningar"
 
 #
 msgid "Width:"
