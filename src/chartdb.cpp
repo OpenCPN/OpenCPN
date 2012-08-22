@@ -574,15 +574,14 @@ bool ChartDB::IsChartInGroup(const int db_index, const int group)
 //-------------------------------------------------------------------
 bool ChartDB::CheckPositionWithinChart(int index, float lat, float lon)
 {
-//           ChartTableEntry *pt = &pChartTable[index];
             const ChartTableEntry *pt = &GetChartTableEntry(index);
 
 //    First check on rough Bounding box
 
-            if((lat < pt->GetLatMax()) &&
-                (lat > pt->GetLatMin()) &&
-                (lon > pt->GetLonMin()) &&
-                (lon < pt->GetLonMax()))
+            if((lat <= pt->GetLatMax()) &&
+                (lat >= pt->GetLatMin()) &&
+                (lon >= pt->GetLonMin()) &&
+                (lon <= pt->GetLonMax()))
             {
 //    Double check on Primary Ply points polygon
 
