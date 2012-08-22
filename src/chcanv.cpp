@@ -4241,7 +4241,7 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     s << _T("\n") << _("Total Length: ") << FormatDistanceAdaptive( pr->m_route_length)
                     << _T("\n") << _("Leg: from ") << segShow_point_a->GetName()
                     << _(" to ") << segShow_point_b->GetName()
-                    << _T("\n") << wxString::Format( wxString( "%3d°  ", wxConvUTF8 ), (int) brg )
+                    << _T("\n") << wxString::Format( wxString( "%03d°  ", wxConvUTF8 ), (int) brg )
                     << FormatDistanceAdaptive( dist );
 
                     m_pRolloverWin->SetString( s );
@@ -7098,7 +7098,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             while( show_cursor_lon > 180. )
                 show_cursor_lon -= 360.;
 
-            wxString s1 = _(" ");
+            wxString s1 = _T(" ");
             s1 += toSDMM( 1, show_cursor_lat );
             s1 += _T("   ");
             s1 += toSDMM( 2, show_cursor_lon );
@@ -9514,18 +9514,18 @@ wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
         return result;
     }
     if( distance < 5.0 ) {
-        result << wxString::Format(_T("%1.2f "), distance ) << _T("NMi");
+        result << wxString::Format(_T("%1.2f "), distance ) << _("NMi");
         return result;
     }
     if( distance < 100.0 ) {
-        result << wxString::Format(_T("%2.1f "), distance ) << _T("NMi");
+        result << wxString::Format(_T("%2.1f "), distance ) << _("NMi");
         return result;
     }
     if( distance < 1000.0 ) {
-        result << wxString::Format(_T("%3.0f "), distance ) << _T("NMi");
+        result << wxString::Format(_T("%3.0f "), distance ) << _("NMi");
         return result;
     }
-    result << wxString::Format(_T("%4.0f "), distance ) << _T("NMi");
+    result << wxString::Format(_T("%4.0f "), distance ) << _("NMi");
     return result;
 }
 
@@ -9605,8 +9605,8 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         }
 
         wxString routeInfo;
-        routeInfo << wxString::Format( _T("%03d "), (int) brg ) << _("Deg");
-        routeInfo << _T(" ") << FormatDistanceAdaptive( dist );
+        routeInfo << wxString::Format( wxString( "%03d° ", wxConvUTF8 ), (int) brg )
+        << _T(" ") << FormatDistanceAdaptive( dist );
 
         wxFont *dFont = pFontMgr->GetFont( _("RouteLegInfoRollover"), 12 );
         dc.SetFont( *dFont );
@@ -13786,7 +13786,7 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
         time_t ths = tt + ( m_corr_mins * 60 );
         thd.Set( ths );
         p.Printf( thd.Format( _T("%Hh %Mmn") ) );
-        p.Append( _("\n") );
+        p.Append( _T("\n") );
 
         //set tide level or current speed at that time
         ptcmgr->GetTideOrCurrent( tt, pIDX->IDX_rec_num, t, d );
@@ -13799,7 +13799,7 @@ void TCWin::OnTCWinPopupTimerEvent( wxTimerEvent& event )
 
         //set current direction
         if( CURRENT_PLOT == m_plot_type ) {
-            s.Printf( _T("%3.0f Deg"), d );
+            s.Printf( wxString("%3.0f°", wxConvUTF8), d );
             p.Append( _T("\n") );
             p.Append( s );
         }

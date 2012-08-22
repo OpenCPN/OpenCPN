@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-22 11:49+0200\n"
+"POT-Creation-Date: 2012-08-22 18:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,10 +124,6 @@ msgstr ""
 
 #: src/chartdbs.cpp:1032
 msgid " Updated:  "
-msgstr ""
-
-#: src/chartdbs.cpp:1045 src/chcanv.cpp:13789
-msgid "\n"
 msgstr ""
 
 #: src/chartdbs.cpp:1250
@@ -600,10 +596,6 @@ msgstr ""
 msgid "Track Properties"
 msgstr ""
 
-#: src/chcanv.cpp:7101
-msgid " "
-msgstr ""
-
 #: src/chcanv.cpp:7282
 msgid "Use nearby waypoint?"
 msgstr ""
@@ -891,13 +883,14 @@ msgstr ""
 msgid "OpenCPN Track Delete"
 msgstr ""
 
+#: src/chcanv.cpp:9517 src/chcanv.cpp:9521 src/chcanv.cpp:9525
+#: src/chcanv.cpp:9528
+msgid "NMi"
+msgstr ""
+
 #: src/chcanv.cpp:9534 src/chcanv.cpp:9611 src/chcanv.cpp:14633
 #: src/chcanv.cpp:14686
 msgid "RouteLegInfoRollover"
-msgstr ""
-
-#: src/chcanv.cpp:9608
-msgid "Deg"
 msgstr ""
 
 #: src/chcanv.cpp:10588 src/options.cpp:1015

@@ -1042,7 +1042,7 @@ wxString ChartDatabase::GetFullChartInfo(ChartBase *pc, int dbIndex, int *char_w
             if(pc && pc->GetExtraInfo().Len())
             {
                   line += pc->GetExtraInfo();
-                  line += _("\n");
+                  line += _T("\n");
                   max_width = wxMax(max_width, line.Len());
                   r += line;
                   lc++;

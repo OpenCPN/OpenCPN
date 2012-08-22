@@ -6,19 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-22 11:49+0200\n"
-"PO-Revision-Date: 2012-08-22 11:57+0100\n"
+"POT-Creation-Date: 2012-08-22 18:35+0200\n"
+"PO-Revision-Date: 2012-08-22 18:45+0100\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#
-#
-msgid "\n"
-msgstr "\n"
 
 #
 msgid ""
@@ -72,10 +67,6 @@ msgstr ""
 "avsluta.\n"
 
 #
-msgid " "
-msgstr " "
-
-#
 #
 msgid ""
 "           No Charts Installed.\n"
@@ -92,7 +83,7 @@ msgstr "      \"Fartygsnamn\" MMSI (Anropssignal)"
 #
 #
 msgid "      COG arrow predictor length (Minutes):"
-msgstr "     kurspilens längd visar beräknad position efter (Minuter):"
+msgstr "     Kurspilens längd visar beräknad position efter (minuter):"
 
 #
 #
@@ -102,11 +93,11 @@ msgstr "      vid maximal målhastighet (Knop):"
 #
 #
 msgid "      Target track length (Minutes):"
-msgstr "      Längd på målspår (Minuter):"
+msgstr "      Längd på målspår (minuter):"
 
 #
 msgid "    Incompatible PlugIn detected:"
-msgstr "    En Modul som inte fungerar i den här programversionen hittades:"
+msgstr "    En modul som inte fungerar i den här programversionen hittades:"
 
 #
 #
@@ -180,7 +171,7 @@ msgstr "   VP slutkontroll: Sjökortets referenssystem är felaktigt "
 #
 #
 msgid "  ..And TCPA is less than (Minutes):"
-msgstr "  ...och TCPA är mindre än (Minuter):"
+msgstr "  ...och TCPA är mindre än (minuter):"
 
 #
 #
@@ -516,7 +507,7 @@ msgstr "(Waypoint namn)"
 #
 #
 msgid "(unnamed)"
-msgstr "(Ej namngivet lager)"
+msgstr "(namnlös)"
 
 #
 #
@@ -780,7 +771,7 @@ msgstr ""
 #
 #
 msgid "Append Waypoint"
-msgstr "Lägg till Waypoint"
+msgstr "Lägg till waypoint"
 
 #
 #
@@ -1309,7 +1300,7 @@ msgstr "Skapa rutt"
 #
 #
 msgid "Create Waypoint"
-msgstr "Skapa Waypoint"
+msgstr "Skapa waypoint"
 
 #
 #
@@ -1413,11 +1404,6 @@ msgstr "Standardfärg"
 
 #
 #
-msgid "Deg"
-msgstr "Grader"
-
-#
-#
 msgid "Degrees, Decimal minutes"
 msgstr "Grader, decimala minuter"
 
@@ -1449,7 +1435,7 @@ msgstr "Radera markerad mapp"
 #
 #
 msgid "Delete Waypoint"
-msgstr "Radera Waypoint"
+msgstr "Radera waypoint"
 
 #
 #
@@ -1614,7 +1600,7 @@ msgstr "Tillåt steglös skalning / förflyttning"
 #
 #
 msgid "Enable Target Alert Acknowledge timeout (minutes)"
-msgstr "Aktivera max tid för kvittens av Målvarning(minuter)"
+msgstr "Aktivera max tid för kvittens av AIS-varning (minuter)"
 
 #
 #
@@ -1634,7 +1620,7 @@ msgstr "Avsluta rutt"
 #
 #
 msgid "Engaged in Fishing"
-msgstr "Sysselsatt i fiske"
+msgstr "Sysselsatt med fiske"
 
 #
 msgid "Enter Group Name"
@@ -1648,7 +1634,7 @@ msgstr "Fel vid uppladdning av rutt. Kontrollera loggfiler..."
 #
 #
 msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr "Fel vid uppladdning av Waypoint.  Kontrollera loggfiler..."
+msgstr "Fel vid uppladdning av waypoint.  Kontrollera loggfilen..."
 
 #
 #
@@ -1673,12 +1659,12 @@ msgstr "Utdragna fyrsektorer"
 #
 #
 msgid "Extend Route"
-msgstr "Utöka rutt"
+msgstr "Förläng rutt"
 
 #
 #
 msgid "Extend Track"
-msgstr "Utöka spår"
+msgstr "Förläng spår"
 
 #
 #
@@ -1865,7 +1851,7 @@ msgstr "Visa inte CPA för AIS-mål"
 #
 #
 msgid "Hide WPT names"
-msgstr "Dölj Waypoint-namn"
+msgstr "Dölj waypoint-namn"
 
 #
 #
@@ -1915,7 +1901,7 @@ msgstr "Blå flagg"
 #
 #
 msgid "Insert Waypoint"
-msgstr "Infoga Waypoint"
+msgstr "Infoga waypoint"
 
 #
 #
@@ -2103,7 +2089,7 @@ msgstr "Lokal fil..."
 #
 #
 msgid "Lock all waypoints unless a waypoint property dialog is visible"
-msgstr "Lås alla waypoints om inte Waypoint-fönstret visas"
+msgstr "Lås alla waypoints om inte waypoint-fönstret visas"
 
 #
 #
@@ -2207,7 +2193,7 @@ msgstr "Waypointegenskaper, lager: "
 #
 #
 msgid "Mark targets as lost after (Minutes:):"
-msgstr "Markera mål som förlorade efter (Minuter):"
+msgstr "Markera mål som förlorade efter (minuter):"
 
 #
 #
@@ -2217,12 +2203,12 @@ msgstr "Waypoints"
 #
 #
 msgid "Max Detail Here"
-msgstr "Maximal detaljeringsgrad"
+msgstr "Maximal detaljnivå"
 
 #
 #
 msgid "Measure"
-msgstr "Mät"
+msgstr "Mät avstånd"
 
 #
 #
@@ -2342,7 +2328,7 @@ msgstr "Flytta båten hit"
 #
 #
 msgid "Move Waypoint"
-msgstr "Flytta Waypoint"
+msgstr "Flytta waypoint"
 
 #
 #
@@ -2358,6 +2344,10 @@ msgstr "NMEA datakälla"
 #
 msgid "NMEA Options"
 msgstr "NMEA-inställningar"
+
+#
+msgid "NMi"
+msgstr "NM"
 
 #
 #
@@ -2442,12 +2432,12 @@ msgstr "OK"
 #
 #
 msgid "Object Query"
-msgstr "Objektegenskaper"
+msgstr "Detaljinformation"
 
 #
 #
 msgid "Object Query..."
-msgstr "Objektegenskaper..."
+msgstr "Detaljinformation..."
 
 #
 #
@@ -2462,7 +2452,7 @@ msgstr "Objekt under bogsering, ej specificerad ytterligare"
 #
 #
 msgid "ObjectQuery"
-msgstr "Detaljerad information"
+msgstr "Detaljinformation"
 
 #
 #
@@ -2582,7 +2572,7 @@ msgstr "Skriv över befintlig fil?"
 #
 #
 msgid "OwnShip COG arrow predictor length (Minutes):"
-msgstr "Kurspilens längd visar beräknad position efter (Minuter):"
+msgstr "Kurspilens längd visar beräknad position efter (minuter):"
 
 #
 #
@@ -2798,7 +2788,7 @@ msgstr "Ett problem upptäcktes"
 #
 #
 msgid "Processing Waypoints..."
-msgstr "Bearbetar Waypoints..."
+msgstr "Bearbetar waypoints..."
 
 #
 #
@@ -3005,7 +2995,7 @@ msgstr "Ta bort från rutt"
 #
 #
 msgid "Remove lost targets after (Minutes:):"
-msgstr "Ta bort förlorade mål efter (Minuter):"
+msgstr "Ta bort förlorade mål efter (minuter):"
 
 #
 #
@@ -3020,7 +3010,7 @@ msgstr "Dölj det här sjökortet"
 #
 #
 msgid "Rename Waypoints?"
-msgstr "Ändra namn på Waypoints?"
+msgstr "Ändra namn på waypoints?"
 
 #
 #, c-format
@@ -3118,7 +3108,7 @@ msgstr "Rutt från Spår"
 #
 #
 msgid "Route: "
-msgstr "Rutt:"
+msgstr "Rutt: "
 
 #
 #
@@ -3387,7 +3377,7 @@ msgstr "Visa tidvatten"
 #
 #
 msgid "Show WPT names"
-msgstr "Visa Waypoint-namn"
+msgstr "Visa namn på waypoints"
 
 #
 msgid "Show area notices (from AIS binary messages)"
@@ -3775,7 +3765,7 @@ msgstr "Till"
 #
 #
 msgid "To Waypoint"
-msgstr "Till Waypoint"
+msgstr "Till waypoint"
 
 #
 #
@@ -3983,7 +3973,7 @@ msgstr "Inställning för uppdatering"
 #
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr ""
-"Använd Garmin GRMN/GRMN (Host) Mode för Waypoint- och ruttuppladdningar."
+"Använd Garmin GRMN/GRMN (Host) Mode för waypoint- och ruttuppladdningar."
 
 #
 #
@@ -4100,12 +4090,12 @@ msgstr "Varna om CPA är mindre än (NM):"
 #
 #
 msgid "Waypoint"
-msgstr "Waypoints"
+msgstr "Waypoint"
 
 #
 #
 msgid "Waypoint Locking"
-msgstr "Lås waypoint"
+msgstr "Lås waypoints"
 
 #
 #
@@ -4130,7 +4120,7 @@ msgid ""
 "\n"
 "Do you want to rename the waypoints?"
 msgstr ""
-"Namnen på berörda Waypoints kan ändras för att visa den nya ordningen , "
+"Namnen på berörda waypoints kan ändras för att visa den nya ordningen , "
 "namnen blir då '001', '002' osv.\n"
 "\n"
 "Vill du ändra namnen?"
@@ -4202,7 +4192,7 @@ msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
 msgstr ""
-"Du kan inte dölja det sista verktyget i verktygslisten,då skulle du inte "
+"Du kan inte dölja det sista verktyget i verktygslisten, då skulle du inte "
 "komma åt den längre."
 
 #
