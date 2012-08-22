@@ -2911,14 +2911,14 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
     m_pCOVRTablePoints = NULL;
     m_pCOVRTable = NULL;
-  
+
     //  Create arrays to hold geometry objects temporarily
     MyFloatPtrArray *pAuxPtrArray = new MyFloatPtrArray;
     wxArrayInt *pAuxCntArray = new wxArrayInt;
-    
+
     MyFloatPtrArray *pNoCovrPtrArray = new MyFloatPtrArray;
     wxArrayInt *pNoCovrCntArray = new wxArrayInt;
-    
+
     //Get the first M_COVR object
     pFeat = GetChartFirstM_COVR( catcov );
 
@@ -2931,11 +2931,11 @@ bool s57chart::CreateHeaderDataFromENC( void )
                 int npt = xring->getNumPoints();
 
                 float *pf = NULL;
-                
+
                 if( npt >= 3 ) {
                     pf = (float *) malloc( 2 * npt * sizeof(float) );
                     float *pfr = pf;
-                    
+
                     for( int i = 0; i < npt; i++ ) {
                         OGRPoint p;
                         xring->getPoint( i, &p );
@@ -2946,10 +2946,10 @@ bool s57chart::CreateHeaderDataFromENC( void )
                             LonMax = fmax(LonMax, p.getX());
                             LonMin = fmin(LonMin, p.getX());
                         }
-                        
+
                         pfr[0] = p.getY();             // lat
                         pfr[1] = p.getX();             // lon
-                        
+
                         pfr += 2;
                     }
                 }
@@ -2964,7 +2964,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
                 pNoCovrPtrArray->Add( pf );
                 pNoCovrCntArray->Add( npt );
             }
-            
+
             pFeat = GetChartNextM_COVR( catcov );
         }         // while
 
@@ -3004,15 +3004,15 @@ bool s57chart::CreateHeaderDataFromENC( void )
             wxLogMessage( msg );
         }
 
-        
+
         //      And for the NoCovr regions
         m_nNoCOVREntries = pNoCovrCntArray->GetCount();
-        
+
         if( m_nNoCOVREntries ) {
             //    Create new NoCOVR entries
             m_pNoCOVRTablePoints = (int *) malloc( m_nNoCOVREntries * sizeof(int) );
             m_pNoCOVRTable = (float **) malloc( m_nNoCOVREntries * sizeof(float *) );
-            
+
             for( unsigned int j = 0; j < (unsigned int) m_nNoCOVREntries; j++ ) {
                 int npoints = pNoCovrCntArray->Item( j );
                 m_pNoCOVRTablePoints[j] = npoints;
@@ -3025,18 +3025,18 @@ bool s57chart::CreateHeaderDataFromENC( void )
             m_pNoCOVRTablePoints = NULL;
             m_pNoCOVRTable = NULL;
         }
-        
+
         delete pAuxPtrArray;
         delete pAuxCntArray;
         delete pNoCovrPtrArray;
         delete pNoCovrCntArray;
-        
+
 
     if( 0 == m_nCOVREntries ) {                        // fallback
         wxString msg( _T("   ENC contains no M_COVR features:  ") );
         msg.Append( m_FullPath );
         wxLogMessage( msg );
-        
+
         msg =  _T("   Calculating Chart Extents as fallback.");
         wxLogMessage( msg );
 
@@ -3095,7 +3095,7 @@ bool s57chart::CreateHeaderDataFromENC( void )
     GetChartNameFromTXT( m_FullPath, nice_name );
     m_Name = nice_name;
 
-    
+
     return true;
 }
 
@@ -5386,8 +5386,11 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
                             ( obj->y * obj->y_rate ) + obj->y_origin, ref_lat, ref_lon, &olat,
                             &olon );
 
-                    wxBoundingBox sbox( olon - select_radius, olat - select_radius,
-                            olon + select_radius, olat + select_radius );
+                    // Double the select radius to adjust for the fact that LIGHTS has
+                    // a 0x0 BBox to start with, which makes it smaller than all other
+                    // rendered objects.
+                    wxBoundingBox sbox( olon - 2*select_radius, olat - 2*select_radius,
+                            olon + 2*select_radius, olat + 2*select_radius );
 
                     if( sbox.PointInBox( lon, lat, 0 ) ) return true;
                 }
