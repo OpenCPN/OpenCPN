@@ -99,7 +99,6 @@ extern wxString         *pNMEADataSource;
 extern wxString         g_NMEABaudRate;
 
 extern wxString         *pNMEA_AP_Port;
-extern wxString         *pWIFIServerName;
 extern wxString         g_csv_locn;
 extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
@@ -3123,9 +3122,6 @@ int MyConfig::LoadMyConfig( int iteration )
     SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
     Read( _T ( "Port" ), pNMEA_AP_Port, _T ( "NONE" ) );
 
-    SetPath( _T ( "/Settings/WiFiServer" ) );
-    Read( _T ( "Server" ), pWIFIServerName, _T ( "NONE" ) );
-
     SetPath( _T ( "/Settings/AISPort" ) );
     Read( _T ( "Port" ), pAIS_Port, _T ( "NONE" ) );
 
@@ -4287,9 +4283,6 @@ void MyConfig::UpdateSettings()
         pAPilot->GetAP_Port( ap_port );
         Write( _T ( "Port" ), ap_port );
     }
-
-    SetPath( _T ( "/Settings/WiFiServer" ) );
-    Write( _T ( "Server" ), *pWIFIServerName );
 
     if( g_pAIS ) {
         SetPath( _T ( "/Settings/AISPort" ) );

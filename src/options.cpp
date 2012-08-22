@@ -164,10 +164,6 @@ extern bool             g_bFullScreenQuilt;
 
 extern wxLocale         *plocale_def_lang;
 
-#ifdef USE_WIFI_CLIENT
-extern wxString         *pWIFIServerName;
-#endif
-
 #ifdef USE_S57
 extern s52plib          *ps52plib;
 #endif
@@ -588,28 +584,6 @@ void options::CreateControls()
 
         itemStaticBoxSizerCM93OffsetDisplay->Show(g_CM93Maps_Offset_Enable);
     }
-#endif
-
-#ifdef USE_WIFI_CLIENT
-//    Add WiFi Options Box
-    wxStaticBox* itemWIFIStaticBox = new wxStaticBox(itemPanel5, wxID_ANY, _("WiFi Options"));
-    wxStaticBoxSizer* itemWIFIStaticBoxSizer = new wxStaticBoxSizer(itemWIFIStaticBox, wxVERTICAL);
-    itemBoxSizer6->Add(itemWIFIStaticBoxSizer, 0, wxEXPAND|wxALL, border_size);
-
-//    Add WiFi TCP/IP Server address
-    m_itemWIFI_TCPIP_StaticBox = new wxStaticBox(itemPanel5, wxID_ANY, _("TCP/IP WiFi Data Server"));
-    m_itemWIFI_TCPIP_StaticBoxSizer = new wxStaticBoxSizer(m_itemWIFI_TCPIP_StaticBox, wxVERTICAL);
-    itemWIFIStaticBoxSizer->Add(m_itemWIFI_TCPIP_StaticBoxSizer, 0, wxEXPAND|wxALL, border_size);
-
-    m_itemWIFI_TCPIP_Source = new wxTextCtrl(itemPanel5, wxID_ANY);
-    m_itemWIFI_TCPIP_StaticBoxSizer->Add(m_itemWIFI_TCPIP_Source, 0, wxEXPAND|wxALL, border_size);
-
-    m_itemWIFI_TCPIP_StaticBox->Enable(1);
-    m_itemWIFI_TCPIP_Source->Enable(1);
-
-    wxString ip;
-    ip = pWIFIServerName->Mid(7);
-    m_itemWIFI_TCPIP_Source->WriteText(ip);
 #endif
 
     wxStaticBox* itemStaticBoxTCDisplay = new wxStaticBox( itemPanel5, wxID_ANY,
@@ -2024,15 +1998,6 @@ void options::OnXidOkClick( wxCommandEvent& event )
         else
             if( selais.Contains( _T("fifo") ) ) selais.Prepend( _T("Serial:") );
     *pAIS_Port = selais;
-
-#ifdef USE_WIFI_CLIENT
-// WiFi
-    wxString WiFiSource;
-    WiFiSource.Empty();
-    WiFiSource.Append(_T("TCP/IP:"));
-    WiFiSource.Append(m_itemWIFI_TCPIP_Source->GetLineText(0));
-    *pWIFIServerName = WiFiSource;
-#endif
 
 #ifdef USE_S57
     //    Handle Vector Charts Tab

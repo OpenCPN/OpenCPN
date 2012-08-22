@@ -101,10 +101,6 @@
 #include "cpl_csv.h"
 #endif
 
-#ifdef USE_WIFI_CLIENT
-#include "wificlient.h"
-#endif
-
 #ifdef __WXMSW__
 //#define __MSVC__LEAK
 #ifdef __MSVC__LEAK
@@ -237,8 +233,6 @@ bool                      g_bCruising;
 
 ChartDummy                *pDummyChart;
 
-wxString                  *pWIFIServerName;
-
 AutoPilotWindow *pAPilot;
 
 ocpnToolBarSimple*        g_toolbar;
@@ -320,10 +314,6 @@ S57ClassRegistrar         *g_poRegistrar;
 s57RegistrarMgr           *m_pRegistrarMan;
 
 CM93OffsetDialog          *g_pCM93OffsetDialog;
-#endif
-
-#ifdef USE_WIFI_CLIENT
-WIFIWindow                *pWIFI;
 #endif
 
 #ifdef __WXOSX__
@@ -1038,7 +1028,6 @@ bool MyApp::OnInit()
 //      Create some static strings
     pNMEADataSource = new wxString();
     pNMEA_AP_Port = new wxString();
-    pWIFIServerName = new wxString();
     pAIS_Port = new wxString();
     pInit_Chart_Dir = new wxString();
 
@@ -1608,10 +1597,6 @@ if( 0 == g_memCacheLimit )
 
     pAPilot = new AutoPilotWindow( gFrame, *pNMEA_AP_Port );
 
-#ifdef USE_WIFI_CLIENT
-    pWIFI = new WIFIWindow(gFrame, *pWIFIServerName );
-#endif
-
     pthumbwin = new ThumbWin( cc1 );
 
     gFrame->ApplyGlobalSettings( 1, false );               // done once on init with resize
@@ -2017,8 +2002,6 @@ int MyApp::OnExit()
     delete pNMEADataSource;
     delete pNMEA_AP_Port;
     delete pAIS_Port;
-
-    delete pWIFIServerName;
 
     delete pFontMgr;
 
@@ -2921,14 +2904,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         delete g_pnmea;
     }
 
-#ifdef USE_WIFI_CLIENT
-    if(pWIFI)
-    {
-        pWIFI->Close();
-        pWIFI = NULL;
-    }
-#endif
-
     if( g_pAIS ) {
         delete g_pAIS;
         g_pAIS = NULL;
@@ -2976,6 +2951,7 @@ void MyFrame::OnMove( wxMoveEvent& event )
 void MyFrame::ProcessCanvasResize( void )
 {
     if( stats ) {
+        stats->ReSize();
         stats->RePosition();
     }
 
@@ -3028,9 +3004,6 @@ void MyFrame::DoSetSize( void )
         m_pStatusBar->SetFont( *pstat_font );
     }
 
-    int stat_height = 0;
-    if( stats ) stat_height = 22 * stats->GetRows();
-
     int cccw = x;
     int ccch = y;
 
@@ -3043,11 +3016,11 @@ void MyFrame::DoSetSize( void )
         int cur_width, cur_height;
         cc1->GetSize( &cur_width, &cur_height );
         if( ( cur_width != cccw ) || ( cur_height != ccch ) ) {
-            if( g_pauimgr->GetPane( cc1 ).IsOk() ) g_pauimgr->GetPane( cc1 ).BestSize( cccw, ccch );
+            if( g_pauimgr->GetPane( cc1 ).IsOk() )
+                g_pauimgr->GetPane( cc1 ).BestSize( cccw, ccch );
             else
                 cc1->SetSize( 0, 0, cccw, ccch );
         }
-
     }
 
     if( g_FloatingToolbarDialog ) {
@@ -3056,8 +3029,8 @@ void MyFrame::DoSetSize( void )
         g_FloatingToolbarDialog->SetGeometry();
         g_FloatingToolbarDialog->Realize();
 
-        if( oldSize != g_FloatingToolbarDialog->GetSize() ) g_FloatingToolbarDialog->Refresh(
-                false );
+        if( oldSize != g_FloatingToolbarDialog->GetSize() )
+            g_FloatingToolbarDialog->Refresh( false );
 
         g_FloatingToolbarDialog->RePosition();
 
@@ -3068,14 +3041,9 @@ void MyFrame::DoSetSize( void )
     if( console ) PositionConsole();
 
     if( stats ) {
-
-        stats->SetSize( 0, ccch, cccw - 2, stat_height );
-
-        if( stats->IsShown() ) {
-            stats->FormatStat();
-            stats->Refresh( true );
-            stats->RePosition();
-        }
+        stats->ReSize();
+        stats->FormatStat();
+        stats->RePosition();
     }
 
 //  Update the stored window size
@@ -3816,11 +3784,6 @@ int MyFrame::DoOptionsDialog()
     wxString prev_locale = g_locale;
 
 //    Pause all of the async classes
-#ifdef USE_WIFI_CLIENT
-    if(pWIFI)
-    pWIFI->Pause();
-#endif
-
     if( g_pAIS ) g_pAIS->Pause();
     if( g_pnmea ) g_pnmea->Pause();
 
@@ -3990,11 +3953,6 @@ int MyFrame::DoOptionsDialog()
     SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
 //    Restart the async classes
-#ifdef USE_WIFI_CLIENT
-    if(pWIFI)
-    pWIFI->UnPause();
-#endif
-
     if( g_pAIS ) g_pAIS->UnPause();
     if( g_pnmea ) g_pnmea->UnPause();
 
@@ -7007,21 +6965,11 @@ void MyFrame::FilterCogSog( void )
 
 void MyFrame::StopSockets( void )
 {
-#ifdef USE_WIFI_CLIENT
-    if(pWIFI)
-    pWIFI->Pause();
-#endif
-
     if( g_pnmea ) g_pnmea->Pause();
 }
 
 void MyFrame::ResumeSockets( void )
 {
-#ifdef USE_WIFI_CLIENT
-    if(pWIFI)
-    pWIFI->UnPause();
-#endif
-
     if( g_pnmea ) g_pnmea->UnPause();
 }
 

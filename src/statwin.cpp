@@ -48,13 +48,13 @@ extern MyFrame *gFrame;
 //------------------------------------------------------------------------------
 //    StatWin Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(StatWin, wxWindow)
+BEGIN_EVENT_TABLE(StatWin, wxDialog)
     EVT_PAINT(StatWin::OnPaint)
     EVT_SIZE(StatWin::OnSize)
     EVT_MOUSE_EVENTS(StatWin::MouseEvent)
 END_EVENT_TABLE()
 
-StatWin::StatWin( wxWindow *frame )
+StatWin::StatWin( wxWindow *win )
 {
 
     long wstyle = wxSIMPLE_BORDER | wxFRAME_NO_TASKBAR;
@@ -65,7 +65,7 @@ StatWin::StatWin( wxWindow *frame )
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
-    wxDialog::Create( frame, wxID_ANY, _T(""), wxPoint( 20, 20 ), wxSize( 5, 5 ), wstyle );
+    wxDialog::Create( win, wxID_ANY, _T(""), wxPoint( 20, 20 ), wxSize( 5, 5 ), wstyle );
 
     int x, y;
     GetClientSize( &x, &y );
@@ -81,23 +81,12 @@ StatWin::StatWin( wxWindow *frame )
     //   Create the Children
 
     pPiano = new PianoWin( (wxFrame *) this );
-    pPiano->SetSize( 0, 0, x * 6 / 10, y * 1 / m_rows );
-
-#ifdef USE_WIFI_CLIENT
-    pWiFi = new WiFiStatWin((wxFrame *)this);
-    pWiFi->SetSize(x * 6/10, 0, x *4/10, y * 1/m_rows);
-#endif
 
 }
 
 StatWin::~StatWin()
 {
     pPiano->Close();
-
-#ifdef USE_WIFI_CLIENT
-    pWiFi->Close();
-#endif
-
 }
 
 void StatWin::RePosition()
@@ -109,6 +98,15 @@ void StatWin::RePosition()
 
     wxPoint screen_pos = GetParent()->ClientToScreen( position );
     Move( screen_pos );
+}
+
+void StatWin::ReSize()
+{
+    wxSize cs = GetParent()->GetClientSize();
+    wxSize new_size;
+    new_size.x = cs.x;
+    new_size.y = 22 * GetRows();
+    SetSize(new_size);
 }
 
 void StatWin::OnPaint( wxPaintEvent& event )
@@ -133,11 +131,6 @@ void StatWin::OnSize( wxSizeEvent& event )
         pPiano->SetSize( 0, 0, width * 6 / 10, height * 1 / m_rows );
         pPiano->FormatKeys();
     }
-
-#ifdef USE_WIFI_CLIENT
-    if(width) pWiFi->SetSize(width * 6/10, 0, width *4/10, height*1/m_rows);
-#endif
-
 }
 
 void StatWin::FormatStat( void )
@@ -168,9 +161,6 @@ void StatWin::SetColorScheme( ColorScheme cs )
 
     //  Also apply color scheme to all known children
     pPiano->SetColorScheme( cs );
-#ifdef USE_WIFI_CLIENT
-    pWiFi ->SetColorScheme(cs);
-#endif
 
     Refresh();
 }
@@ -573,151 +563,4 @@ void PianoWin::ResetRollover( void )
     m_hover_last = -1;
 }
 
-#ifdef USE_WIFI_CLIENT
-//------------------------------------------------------------------------------
-//          WiFiStat Window Implementation
-//------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(WiFiStatWin, wxWindow)
-EVT_PAINT(WiFiStatWin::OnPaint)
-EVT_SIZE(WiFiStatWin::OnSize)
-END_EVENT_TABLE()
-
-WiFiStatWin::WiFiStatWin(wxFrame *frame):
-wxWindow(frame, wxID_ANY,wxPoint(20,20), wxSize(5,5), wxSIMPLE_BORDER)
-{
-    SetBackgroundStyle(wxBG_STYLE_CUSTOM); // on WXMSW, this prevents flashing on color scheme change
-
-    SetColorScheme((ColorScheme)0);
-
-    for(int ista = 0; ista < NSIGBARS; ista++)
-    m_quality[ista] = 0;
-
-    m_bserverstat = true;
-}
-
-WiFiStatWin::~WiFiStatWin(void)
-{
-}
-
-void WiFiStatWin::OnSize(wxSizeEvent& event)
-{
-}
-
-void WiFiStatWin::SetColorScheme(ColorScheme cs)
-{
-    backBrush = wxBrush(GetGlobalColor(_T("UIBDR")), wxSOLID);
-
-    qual_hiBrush = wxBrush(GetGlobalColor(_T("CHYLW")), wxSOLID);    //Yellow
-    secureBrush = wxBrush(GetGlobalColor(_T("UINFO")), wxSOLID);//Orange
-
-    qual_hiNewBrush = wxBrush(GetGlobalColor(_T("UGREN")), wxSOLID);//Bright Green
-    secureNewBrush = wxBrush(GetGlobalColor(_T("URED")), wxSOLID);//Bright Red
-
-}
-
-void WiFiStatWin::OnPaint(wxPaintEvent& event)
-{
-    int width, height;
-    GetClientSize(&width, &height );
-    wxPaintDC dc(this);
-
-    dc.SetBackground(backBrush);
-    dc.Clear();
-
-    int bar_total = width / NSIGBARS;
-
-//    Create the Signal Strength Indicators
-    dc.SetBrush(backBrush);
-    wxPen ppPen(GetGlobalColor(_T("UBLCK")), 1, wxSOLID);
-    dc.SetPen(ppPen);
-
-    if(m_bserverstat)
-    {
-        for(int ista = 0; ista < NSIGBARS; ista++)
-        {
-            if(0 != m_quality[ista])
-            {
-                int x = width - bar_total * (ista + 1);
-
-                dc.SetBrush(backBrush);
-                dc.DrawRectangle(x+2, 2, bar_total-4 , height-4);
-
-                // Old stations get soft color bars
-                if(m_age[ista])
-                {
-                    dc.SetBrush(qual_hiBrush);
-                    if(m_secure[ista])
-                    dc.SetBrush(secureBrush);
-                }
-                else
-                {
-                    dc.SetBrush(qual_hiNewBrush);
-                    if(m_secure[ista])
-                    dc.SetBrush(secureNewBrush);
-                }
-
-                DrawBars(dc, x+2, 2, bar_total-4 , height-4, m_quality[ista], 100);
-            }
-        }
-    }
-    else
-    {
-        wxPen yellowPen(GetGlobalColor(_T("CHYLW")), 1, wxSOLID);
-        dc.SetPen(yellowPen);
-
-        dc.DrawLine(1, 1, width-1, 1);
-        dc.DrawLine(width-1, 1, width-1, height-1);
-        dc.DrawLine(width-1, height-1, 1, height-1);
-        dc.DrawLine(1, height-1, 1, 1);
-    }
-}
-
-void WiFiStatWin::DrawBars(wxDC &dc, int x, int y, int box_width, int box_height, int val, int val_max)
-{
-    int xb = 0;
-    //  Scale onto 0..50, so we can draw 5 bars = 50 points
-    int aval = (val * 50) / val_max;
-
-    int nBars = ((aval) / 10);
-
-    int bar_w = box_width / 5;
-
-    for(int i=0; i<nBars; i++)
-    {
-        xb = x + (i * bar_w) + 2;
-        dc.DrawRectangle(xb, y+2, bar_w - 2 , box_height-4);
-    }
-
-    // partial bar
-    xb += bar_w;
-    dc.DrawRectangle(xb, y+2, bar_w * (aval % 10) / 10, box_height-4);
-
-}
-
-void WiFiStatWin::TextDraw(const char *text)
-{
-    Refresh(true);
-}
-
-void WiFiStatWin::SetNumberStations(int n)
-{
-    m_nstations = n;
-
-    Refresh(true);
-}
-
-void WiFiStatWin::SetStationQuality(int istation, int quality)
-{
-    m_quality[istation] = quality;
-}
-void WiFiStatWin::SetStationSecureFlag(int istation, int flag)
-{
-    m_secure[istation] = flag;
-}
-void WiFiStatWin::SetStationAge(int istation, int age)
-{
-    m_age[istation] = age;
-}
-
-#endif
 

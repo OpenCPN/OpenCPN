@@ -312,13 +312,6 @@ public:
     wxComboBox              *m_itemNMEAAutoListBox;
     wxComboBox              *m_itemNMEABaudListBox;
 
-#ifdef USE_WIFI_CLIENT
-//    For "WiFi Options" Box
-    wxStaticBox             *m_itemWIFI_TCPIP_StaticBox;
-    wxStaticBoxSizer        *m_itemWIFI_TCPIP_StaticBoxSizer;
-    wxTextCtrl              *m_itemWIFI_TCPIP_Source;
-#endif
-
 //    For "AIS" Page
     wxScrolledWindow          *itemPanelAIS;
 
