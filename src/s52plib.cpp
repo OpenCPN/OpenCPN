@@ -4192,43 +4192,16 @@ int s52plib::dda_tri( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec,
                         unsigned char *pp0 = patt_s0 + ( patt_y * patt_pitch );
 
                         while( ix <= ixm ) {
+                            int patt_x = abs( ( ( ix - pPatt_spec->x ) + x_stagger_off ) % patt_size_x );
 
-                            int patt_x = abs(
-                                    ( ( ix - pPatt_spec->x ) + x_stagger_off ) % patt_size_x );
+                            unsigned char *pp = pp0 + ( patt_x * 4 );
+                            unsigned char alpha = pp[3];
+                            double da = (double) alpha / 256.;
 
-                            /*
-                             if(pPatt_spec->depth == 24)
-                             {
-                             unsigned char *pp = pp0 + (patt_x * 3);
+                            *px++ = (unsigned char) ( *px*(1.0-da) + pp[0] * da );
+                            *px++ = (unsigned char) ( *px*(1.0-da) + pp[1] * da );
+                            *px++ = (unsigned char) ( *px*(1.0-da) + pp[2] * da );
 
-                             //  Todo    This line assumes unused_color is always 0,0,0
-                             if( *pp && *( pp + 1 ) && *( pp + 2 ) ) {
-                             *px++ = *pp++;
-                             *px++ = *pp++;
-                             *px++ = *pp++;
-                             } else {
-                             px += 3;
-                             //                                                      pp += 3;
-                             }
-                             }
-                             else
-                             */
-                            {
-                                unsigned char *pp = pp0 + ( patt_x * 4 );
-                                unsigned char alpha = pp[3];
-                                if( alpha > 128 ) {
-                                    double da = (double) alpha / 256.;
-
-                                    unsigned char r = (unsigned char) ( pp[0] * da );
-                                    unsigned char g = (unsigned char) ( pp[1] * da );
-                                    unsigned char b = (unsigned char) ( pp[2] * da );
-
-                                    *px++ = r;
-                                    *px++ = g;
-                                    *px++ = b;
-                                } else
-                                    px += 3;
-                            }
                             ix++;
                         }
                     }
