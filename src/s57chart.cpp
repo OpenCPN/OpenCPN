@@ -4618,9 +4618,13 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
             while( top != NULL ) {
                 LUP = ps52plib->S52_LUPLookup( PAPER_CHART, top->obj->FeatureName, top->obj );
                 if( LUP ) {
-                    ps52plib->_LUP2rules( LUP, top->obj );
-                    _insertRules( top->obj, LUP, pOwner );
-                    top->obj->m_DisplayCat = LUP->DISC;
+                    //  A POINT object can only appear in two places in the table, SIMPLIFIED or PAPER_CHART
+                    //  although it is allowed for the Display priority to be different for each
+                    if(top->obj->nRef < 2) {
+                        ps52plib->_LUP2rules( LUP, top->obj );
+                        _insertRules( top->obj, LUP, pOwner );
+                        top->obj->m_DisplayCat = LUP->DISC;
+                    }
                 }
 
                 nxx = top->next;
@@ -4635,9 +4639,11 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
             while( top != NULL ) {
                 LUP = ps52plib->S52_LUPLookup( SIMPLIFIED, top->obj->FeatureName, top->obj );
                 if( LUP ) {
-                    ps52plib->_LUP2rules( LUP, top->obj );
-                    _insertRules( top->obj, LUP, pOwner );
-                    top->obj->m_DisplayCat = LUP->DISC;
+                    if(top->obj->nRef < 2) {
+                        ps52plib->_LUP2rules( LUP, top->obj );
+                        _insertRules( top->obj, LUP, pOwner );
+                        top->obj->m_DisplayCat = LUP->DISC;
+                    }
                 }
 
                 nxx = top->next;
@@ -5318,8 +5324,8 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon( float lat, float lon, float
             if( top->obj->npt == 1 )       // Do not select Multipoint objects (SOUNDG) yet.
                     {
                 if( ps52plib->ObjectRenderCheck( top, VPoint ) ) {
-                    if( DoesLatLonSelectObject( lat, lon, select_radius, top->obj ) ) ret_ptr->Append(
-                            top );
+                    if( DoesLatLonSelectObject( lat, lon, select_radius, top->obj ) ) 
+                        ret_ptr->Append( top );
                 }
             }
 
@@ -5329,8 +5335,8 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon( float lat, float lon, float
                 ObjRazRules *child_item = top->child;
                 while( child_item != NULL ) {
                     if( ps52plib->ObjectRenderCheck( child_item, VPoint ) ) {
-                        if( DoesLatLonSelectObject( lat, lon, select_radius, child_item->obj ) ) ret_ptr->Append(
-                                child_item );
+                        if( DoesLatLonSelectObject( lat, lon, select_radius, child_item->obj ) )
+                            ret_ptr->Append( child_item );
                     }
 
                     child_item = child_item->next;
