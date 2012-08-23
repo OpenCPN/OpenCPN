@@ -81,11 +81,11 @@ enum
       ID_DBP_I_DPT,
       ID_DBP_D_DPT,
       ID_DBP_I_TMP,
-      ID_DBP_I_ATMP,  //TR, 08.06.2012 : Airtemp., analogue
-	  ID_DBP_I_AWA,   //TR, 15.06.2012 : app. Wind Angle +-180° on boat axis, analogue
-	  ID_DBP_I_TWA,   //TR, 08.06.2012 : True Wind Angle +-180° on boat axis, analogue
-	  ID_DBP_I_TWD,   //TR, 08.06.2012 : True Wind direction, analogue
-	  ID_DBP_I_TWS,   //TR, 08.06.2012 : True Wind speed, analogue
+      ID_DBP_I_ATMP,  //TR, 08.06.2012 : Airtemp., text display
+	  ID_DBP_I_AWA,   //TR, 15.06.2012 : app. Wind Angle +-180° on boat axis, text display
+	  ID_DBP_I_TWA,   //TR, 08.06.2012 : True Wind Angle +-180° on boat axis, text display
+	  ID_DBP_I_TWD,   //TR, 08.06.2012 : True Wind direction, text display
+	  ID_DBP_I_TWS,   //TR, 08.06.2012 : True Wind speed, text display
 	  ID_DBP_D_TWA,   //TR, 08.06.2012 : True Wind Angle +-180° on boat axis, graphical
 	  ID_DBP_D_TWD,   //TR, 08.06.2012 : True Wind direction, graphical
       ID_DBP_I_VMG,
