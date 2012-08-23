@@ -102,6 +102,7 @@
 #include "gga.hpp"
 #include "dbt.hpp"
 #include "dpt.hpp"
+#include "mda.hpp"
 #include "mtw.hpp"
 #include "mwd.hpp"
 #include "mwv.hpp"
@@ -188,6 +189,7 @@ class NMEA0183
 /*
       GXA Gxa;
 */
+      MDA Mda;
       HDM Hdm;
       HDG Hdg;
       HDT Hdt;

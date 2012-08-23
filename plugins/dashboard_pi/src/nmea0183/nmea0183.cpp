@@ -83,6 +83,7 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &Hsc );
    response_table.Append( (RESPONSE *) &Lcd );
 */
+   response_table.Append( (RESPONSE *) &Mda );
    response_table.Append( (RESPONSE *) &Mwd );
    response_table.Append( (RESPONSE *) &Mtw );
    response_table.Append( (RESPONSE *) &Mwv );

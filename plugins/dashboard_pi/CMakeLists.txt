@@ -98,6 +98,8 @@ SET(SRC_DASHBOARD
             src/depth.h
 	    src/clock.cpp
             src/clock.h
+            src/meteo.cpp
+            src/meteo.h
             src/icons.cpp
             src/icons.h
  	)
@@ -159,7 +161,8 @@ SET(SRC_NMEA0183
             src/nmea0183/mwd.hpp
             src/nmea0183/vwt.cpp
             src/nmea0183/vwt.hpp
-
+	    src/nmea0183/mda.hpp
+	    src/nmea0183/mda.cpp
 	)
 INCLUDE_DIRECTORIES(src/nmea0183)
 
