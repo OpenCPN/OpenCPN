@@ -41,6 +41,8 @@
     #include <wx/wx.h>
 #endif
 
+extern bool g_TWA_LR; //TR 10.06.2012 FALSE-->Left, TRUE-->Right
+
 double rad2deg(double angle)
 {
       return angle*180.0/M_PI;
@@ -370,13 +372,28 @@ void DashboardInstrument_Dial::DrawForeground(wxBufferedDC* dc)
       brush.SetStyle(wxSOLID);
       brush.SetColour(wxColour(255,145,0));
       dc->SetBrush(brush);
+  //TR 10.06.2012 : don't want to change m_MainValue here, so run against  separate variable "data"
+	  //TR 10.06.2012 : Original code see below
+	  //TR 10.06.2012 : this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>, in this case the "True wind angle"
+	  //TR 10.06.2012 : I did it here, because otherwise m_MainValueOption is incorrect !!!
+	  double data;											//TR 10.06.2012
+	  if(m_MainValueCap == OCPN_DBP_STC_VWT && !g_TWA_LR)	//TR 10.06.2012: specially for instrument OCPN_DBP_STC_VWT; g_TWA_LR: FALSE-->Left, TRUE-->Right
+		  data=360-m_MainValue;								//TR 10.06.2012
+	  else													//TR 10.06.2012
+		  data=m_MainValue;									//TR 10.06.2012
+	        // The arrow should stay inside fixed limits
+      double val;											//TR 10.06.2012
+      if (data < m_MainValueMin) val = m_MainValueMin;		//TR 10.06.2012
+      else if (data > m_MainValueMax) val = m_MainValueMax;	//TR 10.06.2012
+      else val = data;										//TR 10.06.2012
 
+/*  //TR 10.06.2012 : original code from here ...
       // The arrow should stay inside fixed limits
       double val;
       if (m_MainValue < m_MainValueMin) val = m_MainValueMin;
       else if (m_MainValue > m_MainValueMax) val = m_MainValueMax;
       else val = m_MainValue;
-
+... till here*/
       double value = deg2rad((val - m_MainValueMin) * m_AngleRange / (m_MainValueMax - m_MainValueMin)) + deg2rad(m_AngleStart - ANGLE_OFFSET);
 
       wxPoint points[3];
