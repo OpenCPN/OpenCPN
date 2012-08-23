@@ -14957,7 +14957,7 @@ void GoToPositionDialog::OnGoToPosOkClick( wxCommandEvent& event )
     lon = fromDMM( m_MarkLonCtl->GetValue() );
 
     if( lat == 0.0 && lon == 0.0 ) goto noGo;
-    if( lat > 90.0 || lat < -90.0 ) goto noGo;
+    if( lat > 80.0 || lat < -80.0 ) goto noGo;
     if( lon > 180.0 || lon < -180.0 ) goto noGo;
 
     gFrame->JumpToPosition( lat, lon, cc1->GetVPScale() );
