@@ -4198,10 +4198,13 @@ int s52plib::dda_tri( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec,
                             unsigned char alpha = pp[3];
                             double da = (double) alpha / 256.;
 
-                            *px++ = (unsigned char) ( *px*(1.0-da) + pp[0] * da );
-                            *px++ = (unsigned char) ( *px*(1.0-da) + pp[1] * da );
-                            *px++ = (unsigned char) ( *px*(1.0-da) + pp[2] * da );
+                            unsigned char r = (unsigned char) ( *px*(1.0-da) + pp[0] * da );
+                            unsigned char g = (unsigned char) ( *(px+1)*(1.0-da) + pp[1] * da );
+                            unsigned char b = (unsigned char) ( *(px+2)*(1.0-da) + pp[2] * da );
 
+                            *px++ = r;
+                            *px++ = g;
+                            *px++ = b;
                             ix++;
                         }
                     }

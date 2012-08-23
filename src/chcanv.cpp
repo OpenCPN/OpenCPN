@@ -14951,14 +14951,27 @@ void GoToPositionDialog::OnGoToPosCancelClick( wxCommandEvent& event )
 
 void GoToPositionDialog::OnGoToPosOkClick( wxCommandEvent& event )
 {
-    if( m_MarkLatCtl->GetValue().Length() && m_MarkLonCtl->GetValue().Length() ) {
-        //    Fetch the control values, convert to degrees
-        double lat = fromDMM( m_MarkLatCtl->GetValue() );
-        double lon = fromDMM( m_MarkLonCtl->GetValue() );
-        gFrame->JumpToPosition( lat, lon, cc1->GetVPScale() );
-    }
+    double lat, lon;
+
+    if( m_MarkLatCtl->GetValue().Length() == 0 ) goto noGo;
+    if( m_MarkLonCtl->GetValue().Length() == 0 ) goto noGo;
+
+    lat = fromDMM( m_MarkLatCtl->GetValue() );
+    lon = fromDMM( m_MarkLonCtl->GetValue() );
+
+    if( lat == 0.0 && lon == 0.0 ) goto noGo;
+    if( lat > 90.0 || lat < -90.0 ) goto noGo;
+    if( lon > 180.0 || lon < -180.0 ) goto noGo;
+
+    gFrame->JumpToPosition( lat, lon, cc1->GetVPScale() );
     Hide();
     event.Skip();
+    return;
+
+    noGo:
+    wxBell();
+    event.Skip();
+    return;
 }
 
 void GoToPositionDialog::CheckPasteBufferForPosition() {
