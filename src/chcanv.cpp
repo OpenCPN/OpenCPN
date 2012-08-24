@@ -8546,10 +8546,11 @@ void pupHandler_PasteRoute() {
             curPoint->m_bPtIsSelected = false;
 
             newPoint = new RoutePoint( curPoint );
-            newPoint->m_bIsolatedMark = true;
+            newPoint->m_bIsolatedMark = false;
             newPoint->m_IconName = _T("circle");
             newPoint->m_bIsVisible = true;
-            newPoint->m_bShowName = true;
+            newPoint->m_bShowName = false;
+            newPoint->m_bKeepXRoute = false;
 
             newRoute->AddPoint( newPoint );
             pSelect->AddSelectableRoutePoint( newPoint->m_lat, newPoint->m_lon, newPoint );
