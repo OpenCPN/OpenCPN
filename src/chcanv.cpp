@@ -692,6 +692,7 @@ public:
     {
         m_bcomposed = false;
         m_vp_quilt.Invalidate();
+        m_zout_dbindex = -1;
     }
     void AdjustQuiltVP( ViewPort &vp_last, ViewPort &vp_proposed );
 
