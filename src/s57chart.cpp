@@ -6626,7 +6626,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             arcpoints[0].x = lpx + (int) ( range * cos( angle1 * PI / 180. ) );
             arcpoints[0].y = lpy - (int) ( range * sin( angle1 * PI / 180. ) );
             double step = 3.0;
-            while( (range * sin(step * PI / 180.)) < 10 ) step += 2.0; // less points on small arcs
+            while( (step < 15) && ((range * sin(step * PI / 180.)) < 10) ) step += 2.0; // less points on small arcs
 
             // Make sure we start and stop exactly on the leg lines.
             int narc = ( angle2 - angle1 ) / step;
