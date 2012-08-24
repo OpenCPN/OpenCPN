@@ -7287,6 +7287,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( dlg_return == wxID_YES ) {
                     pMousePoint = pNearbyPoint;
 
+                    // Using existing waypoint, so nothing to delete for undo.
+                    if( parent_frame->nRoute_State > 1 )
+                        undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_HasParent, NULL );
+
                     // check all other routes to see if this point appears in any other route
                     // If it appears in NO other route, then it should e considered an isolated mark
                     if( !g_pRouteMan->FindRouteContainingWaypoint( pMousePoint ) ) pMousePoint->m_bKeepXRoute =
@@ -7294,19 +7298,21 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 }
             }
 
-            if( NULL == pMousePoint )                   // need a new point
-            {
+            if( NULL == pMousePoint ) {                 // need a new point
                 pMousePoint = new RoutePoint( rlat, rlon, _T("diamond"), _T(""), GPX_EMPTY_STRING );
                 pMousePoint->SetNameShown( false );
 
                 pConfig->AddNewWayPoint( pMousePoint, -1 );    // use auto next num
                 pSelect->AddSelectableRoutePoint( rlat, rlon, pMousePoint );
+
+                if( parent_frame->nRoute_State > 1 )
+                    undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_IsOrphanded, NULL );
             }
 
             if( parent_frame->nRoute_State == 1 ) {
                 // First point in the route.
                 m_pMouseRoute->AddPoint( pMousePoint );
-           } else {
+            } else {
                 if( m_pMouseRoute->m_NextLegGreatCircle ) {
                     double rhumbBearing, rhumbDist, gcBearing, gcDist;
                     DistanceBearingMercator( rlat, rlon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
@@ -7348,17 +7354,21 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             pSelect->AddSelectableRouteSegment( prevGcPoint->m_lat, prevGcPoint->m_lon,
                                     gcPoint->m_lat, gcPoint->m_lon, prevGcPoint, gcPoint, m_pMouseRoute );
                             prevGcPoint = gcPoint;
+
+                            undo->CancelUndoableAction();
                         }
                     } else {
                         m_pMouseRoute->AddPoint( pMousePoint );
                         pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
                                 rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+                        undo->AfterUndoableAction( m_pMouseRoute );
                     }
                 } else {
                     // Ordinary rhumblinesegment.
                     m_pMouseRoute->AddPoint( pMousePoint );
                     pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
                             rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+                    undo->AfterUndoableAction( m_pMouseRoute );
                 }
             }
 
@@ -8359,8 +8369,8 @@ void ChartCanvas::RemovePointFromRoute( RoutePoint* point, Route* route ) {
 
     route->RemovePoint( point );
 
-    //  Check for 1 point routes
-    if( route->GetnPoints() <= 1 ) {
+    //  Check for 1 point routes. If we are creating a route, this is an undo, so keep the 1 point.
+    if( (route->GetnPoints() <= 1) && (parent_frame->nRoute_State == 0) ) {
         pConfig->DeleteConfigRoute( route );
         g_pRouteMan->DeleteRoute( route );
         route = NULL;

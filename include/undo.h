@@ -35,6 +35,7 @@
 enum UndoType {
     Undo_CreateWaypoint,
     Undo_DeleteWaypoint,
+    Undo_AppendWaypoint,
     Undo_MoveWaypoint
 };
 
@@ -75,6 +76,7 @@ public:
     bool BeforeUndoableAction( UndoType type, UndoItemPointer before, UndoBeforePointerType beforeType,
             UndoItemPointer selectable );
     bool AfterUndoableAction( UndoItemPointer after );
+    bool CancelUndoableAction();
 
 private:
     bool isInsideUndoableAction;

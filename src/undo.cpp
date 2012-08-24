@@ -43,12 +43,15 @@
 #include "routemanagerdialog.h"
 #include "tinyxml.h"
 #include "undo.h"
+#include "chcanv.h"
 
 extern Routeman *g_pRouteMan;
 extern MyConfig *pConfig;
 extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern WayPointman *pWayPointMan;
+extern ChartCanvas *cc1;
+extern MyFrame *gFrame;
 
 Undo::Undo()
 {
@@ -77,6 +80,9 @@ wxString UndoAction::Description()
         case Undo_MoveWaypoint:
             descr = _("Move Waypoint");
             break;
+        case Undo_AppendWaypoint:
+            descr = _("Append Waypoint");
+            break;
     }
     return descr;
 }
@@ -103,6 +109,7 @@ void doUndoMoveWaypoint( UndoAction* action ) {
             pr->UpdateSegmentDistances();
             pConfig->UpdateRoute( pr );
         }
+        delete routeArray;
     }
 }
 
@@ -122,6 +129,65 @@ void doRedoDeleteWaypoint( UndoAction* action )
     pSelect->DeleteSelectablePoint( point, SELTYPE_ROUTEPOINT );
     if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->DeleteObject( point );
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+}
+
+void doUndoAppendWaypoint( UndoAction* action )
+{
+    RoutePoint* point = (RoutePoint*) action->before[0];
+    Route* route = (Route*) action->after[0];
+
+    bool noRouteLeftToRedo = false;
+    if( (route->GetnPoints() == 2) && (gFrame->nRoute_State == 0) )
+        noRouteLeftToRedo = true;
+
+    cc1->RemovePointFromRoute( point, route );
+
+    if( action->beforeType[0] == Undo_IsOrphanded ) {
+        pConfig->DeleteWayPoint( point );
+        pSelect->DeleteSelectablePoint( point, SELTYPE_ROUTEPOINT );
+        if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->DeleteObject( point );
+    }
+
+    if( noRouteLeftToRedo ) {
+        cc1->undo->InvalidateRedo();
+    }
+
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+
+    if( gFrame->nRoute_State > 1 ) {
+        gFrame->nRoute_State--;
+        cc1->m_prev_pMousePoint = route->GetLastPoint();
+        cc1->m_prev_rlat = cc1->m_prev_pMousePoint->m_lat;
+        cc1->m_prev_rlon = cc1->m_prev_pMousePoint->m_lon;
+        route->m_lastMousePointIndex = route->GetnPoints();
+    }
+}
+
+void doRedoAppendWaypoint( UndoAction* action )
+{
+    RoutePoint* point = (RoutePoint*) action->before[0];
+    Route* route = (Route*) action->after[0];
+
+    if( action->beforeType[0] == Undo_IsOrphanded ) {
+        pConfig->AddNewWayPoint( point, -1 );
+        pSelect->AddSelectableRoutePoint( point->m_lat, point->m_lon, point );
+    }
+
+    RoutePoint* prevpoint = route->GetLastPoint();
+
+    route->AddPoint( point );
+    pSelect->AddSelectableRouteSegment( prevpoint->m_lat, prevpoint->m_lon,
+            point->m_lat, point->m_lon, prevpoint, point, route );
+
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+
+    if( gFrame->nRoute_State > 1 ) {
+        gFrame->nRoute_State++;
+        cc1->m_prev_pMousePoint = route->GetLastPoint();
+        cc1->m_prev_rlat = cc1->m_prev_pMousePoint->m_lat;
+        cc1->m_prev_rlon = cc1->m_prev_pMousePoint->m_lon;
+        route->m_lastMousePointIndex = route->GetnPoints();
+    }
 }
 
 bool Undo::AnythingToUndo()
@@ -158,6 +224,7 @@ void Undo::InvalidateRedo()
                 break;
             case Undo_CreateWaypoint:
             case Undo_MoveWaypoint:
+            case Undo_AppendWaypoint:
                 break;
         }
         delete undoStack[i];
@@ -194,6 +261,11 @@ bool Undo::UndoLastAction()
             doUndoDeleteWaypoint( action );
             stackpointer++;
             break;
+
+        case Undo_AppendWaypoint:
+            stackpointer++;
+            doUndoAppendWaypoint( action );
+            break;
     }
     return true;
 }
@@ -219,6 +291,11 @@ bool Undo::RedoNextAction()
             doRedoDeleteWaypoint( action );
             stackpointer--;
             break;
+
+        case Undo_AppendWaypoint:
+            doRedoAppendWaypoint( action );
+            stackpointer--;
+            break;
     }
     return true;
 }
@@ -226,13 +303,9 @@ bool Undo::RedoNextAction()
 bool Undo::BeforeUndoableAction( UndoType type, UndoItemPointer before, UndoBeforePointerType beforeType,
         UndoItemPointer selectable )
 {
-    if( isInsideUndoableAction ) {
-        // Cancel the previous Before.
-        delete candidate;
-        return false;
-    }
-
+    if( CancelUndoableAction() ) return false;;
     InvalidateRedo();
+
     candidate = new UndoAction;
     candidate->before.clear();
     candidate->beforeType.clear();
@@ -255,6 +328,7 @@ bool Undo::BeforeUndoableAction( UndoType type, UndoItemPointer before, UndoBefo
                 }
                 case Undo_CreateWaypoint: break;
                 case Undo_DeleteWaypoint: break;
+                case Undo_AppendWaypoint: break;
             }
             break;
         }
@@ -283,6 +357,16 @@ bool Undo::AfterUndoableAction( UndoItemPointer after )
 
     isInsideUndoableAction = false;
     return true;
+}
+
+bool Undo::CancelUndoableAction()
+{
+    if( isInsideUndoableAction ) {
+        // Cancel the previous Before.
+        delete candidate;
+        return true;
+    }
+    return false;
 }
 
 //-----------------------------------------------------------------------------------
@@ -314,6 +398,11 @@ UndoAction::~UndoAction()
                         break;
                     case Undo_CreateWaypoint: break;
                     case Undo_MoveWaypoint: break;
+                    case Undo_AppendWaypoint:
+                        if( before[i] ) {
+                            delete (RoutePoint*) before[i];
+                        }
+                        break;
                 }
                 break;
             }

@@ -273,6 +273,10 @@ public:
       wxBitmap    *pscratch_bm;
       double      m_cursor_lon, m_cursor_lat;
       Undo        *undo;
+      wxPoint     r_rband;
+      double      m_prev_rlat;
+      double      m_prev_rlon;
+      RoutePoint  *m_prev_pMousePoint;
 
       bool PurgeGLCanvasChartCache(ChartBase *pc);
 
@@ -293,7 +297,6 @@ private:
 
       wxRect      bbRect;
 
-      wxPoint     r_rband;
       wxPoint     LastShipPoint;
       wxPoint     LastPredPoint;
       bool        m_bDrawingRoute;
@@ -304,9 +307,6 @@ private:
       bool        m_bChartDragging;
 
       Route       *m_pMouseRoute;
-      double      m_prev_rlat;
-      double      m_prev_rlon;
-      RoutePoint  *m_prev_pMousePoint;
       Route       *m_pSelectedRoute;
       Route       *m_pSelectedTrack;
       wxArrayPtrVoid *m_pEditRouteArray;
