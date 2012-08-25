@@ -6131,14 +6131,14 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         }
 
         //  Highlight the AIS target symbol if an alert dialog is currently open for it
-        if( g_pais_alert_dialog_active ) {
+        if( g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() ) {
             if( g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI ) JaggyCircle( dc,
                         wxPen( GetGlobalColor( _T ( "URED" ) ), 2 ), TargetPoint.x, TargetPoint.y,
                         100 );
         }
 
-        //  Highlight the AIS target symbol if a query dialog is currently open for it      // pjotrc 2010.01.31
-        if( g_pais_query_dialog_active ) {
+        //  Highlight the AIS target symbol if a query dialog is currently open for it
+        if( g_pais_query_dialog_active && g_pais_query_dialog_active->IsShown() ) {
             if( g_pais_query_dialog_active->GetMMSI() == td->MMSI ) TargetFrame( dc,
                         wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ), TargetPoint.x, TargetPoint.y,
                         25 );
