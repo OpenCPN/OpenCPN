@@ -5324,7 +5324,7 @@ ListOfObjRazRules *s57chart::GetObjRuleListAtLatLon( float lat, float lon, float
             if( top->obj->npt == 1 )       // Do not select Multipoint objects (SOUNDG) yet.
                     {
                 if( ps52plib->ObjectRenderCheck( top, VPoint ) ) {
-                    if( DoesLatLonSelectObject( lat, lon, select_radius, top->obj ) ) 
+                    if( DoesLatLonSelectObject( lat, lon, select_radius, top->obj ) )
                         ret_ptr->Append( top );
                 }
             }
@@ -6586,6 +6586,8 @@ bool s57_GetChartExtent( const wxString& FullPath, Extent *pext )
 }
 
 void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs ) {
+    double rangeScale = 0.0;
+
     if( sectorlegs.size() > 0 ) {
         std::vector<int> sectorangles;
         for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
@@ -6603,9 +6605,18 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             wxPoint end2 = viewport.GetPixFromLL( endy, endx );
 
             wxPoint lightPos = viewport.GetPixFromLL( sectorlegs[i].pos.m_y, sectorlegs[i].pos.m_x );
-            double range = sqrt( pow(lightPos.x - end1.x, 2.0) + pow(lightPos.y - end1.y, 2.0) );
-            range /= 3;
-            range = wxMin( range, viewport.pix_height / 4 ); // Make sure arcs are well inside viewport.
+
+            // Make sure arcs are well inside viewport.
+            double rangePx = sqrt( pow(lightPos.x - end1.x, 2.0) + pow(lightPos.y - end1.y, 2.0) );
+            rangePx /= 3.0;
+            if( rangeScale == 0.0 ) {
+                rangeScale = 1.0;
+                if( rangePx > viewport.pix_height / 3 ) {
+                    rangeScale *= (viewport.pix_height / 3) / rangePx;
+                }
+            }
+
+            rangePx = rangePx * rangeScale;
 
             int legOpacity;
             wxPen *arcpen = wxThePenList->FindOrCreatePen( sectorlegs[i].color, 12, wxSOLID );
@@ -6623,10 +6634,10 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             int npoints = 1;
             wxPoint arcpoints[150]; // Size relates to "step" below.
 
-            arcpoints[0].x = lpx + (int) ( range * cos( angle1 * PI / 180. ) );
-            arcpoints[0].y = lpy - (int) ( range * sin( angle1 * PI / 180. ) );
+            arcpoints[0].x = lpx + (int) ( rangePx * cos( angle1 * PI / 180. ) );
+            arcpoints[0].y = lpy - (int) ( rangePx * sin( angle1 * PI / 180. ) );
             double step = 3.0;
-            while( (step < 15) && ((range * sin(step * PI / 180.)) < 10) ) step += 2.0; // less points on small arcs
+            while( (step < 15) && ((rangePx * sin(step * PI / 180.)) < 10) ) step += 2.0; // less points on small arcs
 
             // Make sure we start and stop exactly on the leg lines.
             int narc = ( angle2 - angle1 ) / step;
@@ -6647,8 +6658,8 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
                 legOpacity = 50;
             } else {
                 for( double a = angle1; a <= angle2 + 0.1; a += step ) {
-                    int x = lpx + (int) ( range * cos( a * PI / 180. ) );
-                    int y = lpy - (int) ( range * sin( a * PI / 180. ) );
+                    int x = lpx + (int) ( rangePx * cos( a * PI / 180. ) );
+                    int y = lpy - (int) ( rangePx * sin( a * PI / 180. ) );
                     arcpoints[npoints].x = x;
                     arcpoints[npoints].y = y;
                     npoints++;
@@ -6765,6 +6776,9 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                                 sector.fillSector = false;
                             }
                         }
+                        if( curAttrName == _T("EXCLIT") ) {
+                            if( value.Find( _T("(3)") ) ) valnmr = 1.0;  // Fog lights.
+                        }
                         attrCounter++;
                     }
 
@@ -6772,7 +6786,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                         sector.pos.m_x = light->m_lon;
                         sector.pos.m_y = light->m_lat;
 
-                        sector.range = (valnmr > 0.0) ? valnmr : 3.0; // Short default range.
+                        sector.range = (valnmr > 0.0) ? valnmr : 2.5; // Short default range.
                         sector.sector1 = sectr1;
                         sector.sector2 = sectr2;
                         sector.color = color;
