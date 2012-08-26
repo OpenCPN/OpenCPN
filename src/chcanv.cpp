@@ -7139,33 +7139,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
             if( g_bEnableZoomToCursor ) {
                 bool b_zoom_moved = false;
+                if( wheel_dir > 0 ) b_zoom_moved = ZoomCanvasIn( factor );
+                else if( wheel_dir < 0 ) b_zoom_moved = ZoomCanvasOut( factor );
 
-//                        if((m_wheel_x == x) && (m_wheel_y == y))
-                {
-                    if( wheel_dir > 0 ) b_zoom_moved = ZoomCanvasIn( factor );
-                    else if( wheel_dir < 0 ) b_zoom_moved = ZoomCanvasOut( factor );
-
-                    wxPoint r;
-                    GetCanvasPointPix( m_cursor_lat, m_cursor_lon, &r );
-                    PanCanvas( r.x - x, r.y - y );
-                }
-
-                /*
-                 else
-                 {
-                 if(wheel_dir > 0)
-                 b_zoom_moved = ZoomCanvasIn(2.0, m_cursor_lat, m_cursor_lon);
-                 else if(wheel_dir < 0)
-                 b_zoom_moved = ZoomCanvasOut(2.0, m_cursor_lat, m_cursor_lon);
-
-                 m_wheel_lat = m_cursor_lat;
-                 m_wheel_lon = m_cursor_lon;
-                 m_wheel_x = x;
-                 m_wheel_y = y;
-                 }
-                 */
+                wxPoint r;
+                GetCanvasPointPix( m_cursor_lat, m_cursor_lon, &r );
+                PanCanvas( r.x - x, r.y - y );
                 ClearbFollow();      // update the follow flag
-
             } else {
                 if( wheel_dir > 0 ) ZoomCanvasIn( factor );
                 else if( wheel_dir < 0 ) ZoomCanvasOut( factor );
@@ -7197,8 +7177,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
     bool showRollover = false;
 //    AIS Target Rollover
-    if( g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS )     // pjotrc 2010.02.09
-    {
+    if( g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS ) {
         SelectItem *pFind = pSelectAIS->FindSelection( m_cursor_lat, m_cursor_lon,
                             SELTYPE_AISTARGET, SelectRadius );
         if( pFind ) {

@@ -906,217 +906,197 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
 wxString AIS_Target_Data::GetRolloverString( void )
 {
-      wxString result;
-      wxString t;
-      if(b_nameValid)
-      {
-            result.Append(_T("\""));
-            wxString uret = trimAISField(ShipName);
-            wxString ret;
-            if(uret == _T("Unknown"))
-                  ret = wxGetTranslation(uret);
-            else
-                  ret = uret;
+    wxString result;
+    wxString t;
+    if( b_nameValid ) {
+        result.Append( _T("\"") );
+        wxString uret = trimAISField( ShipName );
+        wxString ret;
+        if( uret == _T("Unknown") ) ret = wxGetTranslation( uret );
+        else
+            ret = uret;
 
-            result.Append(ret);
-            if(strlen(ShipNameExtension))
-                  result.Append(wxString(ShipNameExtension, wxConvUTF8));
+        result.Append( ret );
+        if( strlen( ShipNameExtension ) ) result.Append(
+                wxString( ShipNameExtension, wxConvUTF8 ) );
 
-            result.Append(_T("\" "));
-      }
-      if (Class != AIS_GPSG_BUDDY)
-      {
-            t.Printf(_T("%09d"), abs(MMSI));
-            result.Append(t);
-      }
-      t = trimAISField(CallSign);
-      if (t.Len())
-      {
-            result.Append(_T(" ("));
-            result.Append(t);
-            result.Append(_T(")"));
-      }
-      if (g_bAISRolloverShowClass || (Class == AIS_SART) )
-      {
-            if (result.Len())
-                  result.Append(_T("\n"));
-            result.Append(_T("["));
-            result.Append(wxGetTranslation(Get_class_string(false)));
-            result.Append(_T("] "));
-            if((Class != AIS_ATON) && (Class != AIS_BASE))
-            {
-                  if(Class == AIS_SART)
-                  {
-                        int mmsi_start =  MMSI / 1000000;
-                        switch(mmsi_start)
-                        {
-                              case 970:
-                                    break;
-                              case 972:
-                                    result += _T("MOB");
-                                    break;
-                              case 974:
-                                    result += _T("EPIRB");
-                                    break;
-                              default:
-                                    result += _("Unknown");
-                                    break;
-                        }
-                  }
-
-
-                  if(Class != AIS_SART)
-                        result.Append(wxGetTranslation(Get_vessel_type_string(false)));
-
-                  if( (Class != AIS_CLASS_B) && (Class != AIS_SART) )
-                  {
-                        if((NavStatus <= 15) && (NavStatus >= 0) )
-                        {
-                              result.Append(_T(" ("));
-                              result.Append(wxGetTranslation(ais_status[NavStatus]));
-                              result.Append(_T(")"));
-                        }
-                  }
-                  else if (Class == AIS_SART)
-                  {
-                        result.Append(_T(" ("));
-                        if(NavStatus == RESERVED_14)
-                            result.Append( _("Active") );
-                        else if(NavStatus == UNDEFINED)
-                             result.Append( _("Testing") );
-
-                        result.Append(_T(")"));
-                  }
-
+        result.Append( _T("\" ") );
+    }
+    if( Class != AIS_GPSG_BUDDY ) {
+        t.Printf( _T("%09d"), abs( MMSI ) );
+        result.Append( t );
+    }
+    t = trimAISField( CallSign );
+    if( t.Len() ) {
+        result.Append( _T(" (") );
+        result.Append( t );
+        result.Append( _T(")") );
+    }
+    if( g_bAISRolloverShowClass || ( Class == AIS_SART ) ) {
+        if( result.Len() ) result.Append( _T("\n") );
+        result.Append( _T("[") );
+        result.Append( wxGetTranslation( Get_class_string( false ) ) );
+        result.Append( _T("] ") );
+        if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
+            if( Class == AIS_SART ) {
+                int mmsi_start = MMSI / 1000000;
+                switch( mmsi_start ){
+                    case 970:
+                        break;
+                    case 972:
+                        result += _T("MOB");
+                        break;
+                    case 974:
+                        result += _T("EPIRB");
+                        break;
+                    default:
+                        result += _("Unknown");
+                        break;
+                }
             }
-      }
-      if(g_bAISRolloverShowCOG && (SOG <= 102.2) && ((Class != AIS_ATON) && (Class != AIS_BASE)))
-      {
-            if (result.Len())
-                  result.Append(_T("\n"));
-            t.Printf(_T("SOG: %.2fKts"), SOG); result.Append(t);
-            result.Append(_T(" "));
 
-            int crs = wxRound(COG);
-            if(b_positionOnceValid)
-            {
-                  if(crs < 360)
-                        t.Printf(_(" COG: %03d Deg."), crs);
-                  else if(COG == 360.0)
-                        t.Printf(_(" COG: Unavailable"));
-                  else if(crs == 360)
-                        t.Printf(_(" COG: 000 Deg."));
+            if( Class != AIS_SART ) result.Append(
+                    wxGetTranslation( Get_vessel_type_string( false ) ) );
+
+            if( ( Class != AIS_CLASS_B ) && ( Class != AIS_SART ) ) {
+                if( ( NavStatus <= 15 ) && ( NavStatus >= 0 ) ) {
+                    result.Append( _T(" (") );
+                    result.Append( wxGetTranslation( ais_status[NavStatus] ) );
+                    result.Append( _T(")") );
+                }
+            } else if( Class == AIS_SART ) {
+                result.Append( _T(" (") );
+                if( NavStatus == RESERVED_14 ) result.Append( _("Active") );
+                else if( NavStatus == UNDEFINED ) result.Append( _("Testing") );
+
+                result.Append( _T(")") );
             }
-            else
-                  t.Printf(_(" COG: Unavailable"));
-            result.Append(t);
 
-      }
-      if (g_bAISRolloverShowCPA && bCPA_Valid)
-      {
-            if (result.Len())
-                  result.Append(_T("\n"));
-            result.Append(_("CPA"));
-            result.Append(_T(" "));
-            t.Printf(_T("%.2fNm"), CPA); result.Append(t);
-            result.Append(_T(" "));
-            t.Printf(_T("%.0fMins"), TCPA); result.Append(t);
-      }
-      return result;
+        }
+    }
+
+    if( g_bAISRolloverShowCOG && ( SOG <= 102.2 )
+            && ( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) ) {
+        if( result.Len() ) result << _T("\n");
+        if( SOG < 10.0 ) result << wxString::Format( _T("SOG: %.2f"), SOG ) << _("Kts") << _T(" ");
+        else
+            result << wxString::Format( _T("SOG: %.1f"), SOG ) << _("Kts") << _T(" ");
+
+        int crs = wxRound( COG );
+        if( b_positionOnceValid ) {
+            if( crs < 360 ) result
+                    << wxString::Format( wxString( " COG: %03d°", wxConvUTF8 ), crs );
+            else if( COG == 360.0 ) result << _(" COG: Unavailable");
+            else if( crs == 360 ) result << wxString( " COG: 000°", wxConvUTF8 );
+        } else
+            result << _(" COG: Unavailable");
+    }
+
+    if( g_bAISRolloverShowCPA && bCPA_Valid ) {
+        if( result.Len() ) result << _T("\n");
+        result << _("CPA") << _T(" ") << cc1->FormatDistanceAdaptive( CPA )
+        << _T(" ") << _("in") << _T(" ")
+        << wxString::Format( _T("%.0f"), TCPA ) << _T(" ") << _("min");
+    }
+    return result;
 }
 
-wxString AIS_Target_Data::Get_vessel_type_string(bool b_short)
+wxString AIS_Target_Data::Get_vessel_type_string( bool b_short )
 {
-      int i=19;                            // pjotrc 2010.02.10 renumber
-      if (Class == AIS_ATON)               // pjotrc 2010.02.01
-	{
-		i = ShipType + 20 ;
-	}
-	else
-	switch(ShipType)
-      {
+    int i = 19;
+    if( Class == AIS_ATON ) {
+        i = ShipType + 20;
+    } else
+        switch( ShipType ){
             case 30:
-                  i=0; break;
+                i = 0;
+                break;
             case 31:
-                  i=1; break;
+                i = 1;
+                break;
             case 32:
-                  i=2; break;
+                i = 2;
+                break;
             case 33:
-                  i=3; break;
+                i = 3;
+                break;
             case 34:
-                  i=4; break;
+                i = 4;
+                break;
             case 35:
-                  i=5; break;
+                i = 5;
+                break;
             case 36:
-                  i=6; break;
+                i = 6;
+                break;
             case 37:
-                  i=7; break;
+                i = 7;
+                break;
             case 50:
-                  i=9; break;
+                i = 9;
+                break;
             case 51:
-                  i=10; break;
+                i = 10;
+                break;
             case 52:
-                  i=11; break;
+                i = 11;
+                break;
             case 53:
-                  i=12; break;
+                i = 12;
+                break;
             case 54:
-                  i=13; break;
+                i = 13;
+                break;
             case 55:
-                  i=14; break;
+                i = 14;
+                break;
             case 58:
-                  i=15; break;
+                i = 15;
+                break;
             default:
-                  i=19; break;
-      }
+                i = 19;
+                break;
+        }
 
-      if ((Class == AIS_CLASS_B) || (Class == AIS_CLASS_A) )    // pjotrc 2010.02.07
-	{
-      if((ShipType >= 40) && (ShipType < 50))
-            i=8;
+    if( ( Class == AIS_CLASS_B ) || ( Class == AIS_CLASS_A ) ) {
+        if( ( ShipType >= 40 ) && ( ShipType < 50 ) ) i = 8;
 
-      if((ShipType >= 60) && (ShipType < 70))
-            i=16;
+        if( ( ShipType >= 60 ) && ( ShipType < 70 ) ) i = 16;
 
-      if((ShipType >= 70) && (ShipType < 80))
-            i=17;
+        if( ( ShipType >= 70 ) && ( ShipType < 80 ) ) i = 17;
 
-      if((ShipType >= 80) && (ShipType < 90))
-            i=18;
-	}
-      else if (Class == AIS_GPSG_BUDDY)
-            i = 52;
-      else if (Class == AIS_DSC)
-            i = (ShipType==12)? 54 : 53;  // 12 is distress
+        if( ( ShipType >= 80 ) && ( ShipType < 90 ) ) i = 18;
+    } else if( Class == AIS_GPSG_BUDDY ) i = 52;
+    else if( Class == AIS_DSC ) i = ( ShipType == 12 ) ? 54 : 53;  // 12 is distress
 
-      if(!b_short)
-            return ais_type[i];
-      else
-            return short_ais_type[i];
+    if( !b_short ) return ais_type[i];
+    else
+        return short_ais_type[i];
 }
 
-wxString AIS_Target_Data::Get_class_string(bool b_short)
+wxString AIS_Target_Data::Get_class_string( bool b_short )
 {
-      switch (Class)
-      {
-      case AIS_CLASS_A:
+    switch( Class ){
+        case AIS_CLASS_A:
             return _("A");
-      case AIS_CLASS_B:
+        case AIS_CLASS_B:
             return _("B");
-      case AIS_ATON:
+        case AIS_ATON:
             return b_short ? _("AtoN") : _("Aid to Navigation");
-      case AIS_BASE:
+        case AIS_BASE:
             return b_short ? _("Base") : _("Base Station");
-      case AIS_GPSG_BUDDY:
+        case AIS_GPSG_BUDDY:
             return b_short ? _("Buddy") : _("GPSGate Buddy");
-      case AIS_DSC:
+        case AIS_DSC:
             return b_short ? _("DSC") : _("DSC Position Report");
-      case AIS_SART:
+        case AIS_SART:
             return b_short ? _("SART") : _("SART");
 
-      default:
+        default:
             return b_short ? _("Unk") : _("Unknown");
-      }
+    }
 }
+
 void AIS_Target_Data::Toggle_AIS_CPA(void) //TR 2012.06.28: Show AIS-CPA
 {
 	b_show_AIS_CPA=!b_show_AIS_CPA?true:false; //TR 2012.06.28: Show AIS-CPA :simply toggle b_show_AIS_CPA
