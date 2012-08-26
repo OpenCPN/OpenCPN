@@ -10560,7 +10560,7 @@ void ChartCanvas::EmbossDepthScale( ocpnDC &dc )
         break;
     }
 
-    if( ped ) EmbossCanvas( dc, ped, ( GetVP().pix_width - ped->width ), 0 );
+    if( ped ) EmbossCanvas( dc, ped, ( GetVP().pix_width - ped->width ), 40 );
 }
 
 void ChartCanvas::CreateDepthUnitEmbossMaps( ColorScheme cs )
@@ -10629,7 +10629,7 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
 
     int str_w, str_h;
     temp_dc.GetTextExtent( wxString( str, wxConvUTF8 ), &str_w, &str_h );
-    temp_dc.DrawText( wxString( str, wxConvUTF8 ), width - str_w - 10, 35 );
+    temp_dc.DrawText( wxString( str, wxConvUTF8 ), width - str_w - 10, 10 );
 
     //  Deselect the bitmap
     temp_dc.SelectObject( wxNullBitmap );
