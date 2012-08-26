@@ -476,6 +476,8 @@ Style::Style( void )
     hasBackground = false;
     chartStatusIconWidth = 0;
     chartStatusWindowTransparent = false;
+    embossHeight = 40;
+    embossFont = wxEmptyString;
 
     //  Set compass window style defauilts
     compassMarginTop = 4;
@@ -485,7 +487,7 @@ Style::Style( void )
     compasscornerRadius = 3;
     compassXoffset = 0;
     compassYoffset = 0;
-    
+
     for( int i = 0; i < 2; i++ ) {
         toolbarStartLoc[i] = wxPoint( 0, 0 );
         toolbarEndLoc[i] = wxPoint( 0, 0 );
@@ -624,6 +626,11 @@ void StyleManager::Init( wxString fromPath )
                         style->chartStatusWindowTransparent = wxString(
                                 subNode->Attribute( "transparent" ), wxConvUTF8 ).Lower().IsSameAs(
                                 _T("true") );
+                        continue;
+                    }
+                    if( nodeType == _T("embossed-indicators") ) {
+                        style->embossFont = wxString( subNode->Attribute( "font" ), wxConvUTF8 );
+                        subNode->QueryIntAttribute( "size", &(style->embossHeight) );
                         continue;
                     }
                     if( nodeType == _T("graphics-file") ) {
@@ -788,7 +795,7 @@ void StyleManager::Init( wxString fromPath )
                                 continue;
                             }
                             if( nodeType == _T("compass") ) {
-                                
+
                                 TiXmlElement* attrNode = toolNode->FirstChild()->ToElement();
                                 for( ; attrNode; attrNode = attrNode->NextSiblingElement() ) {
                                     wxString nodeType( attrNode->Value(), wxConvUTF8 );
@@ -818,7 +825,7 @@ void StyleManager::Init( wxString fromPath )
                                     }
                                 }
                              }
-                                 
+
                              if( nodeType == _T("tool") ) {
                                 Tool* tool = new Tool();
                                 style->tools.Add( tool );

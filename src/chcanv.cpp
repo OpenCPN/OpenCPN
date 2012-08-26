@@ -10583,7 +10583,12 @@ void ChartCanvas::EmbossDepthScale( ocpnDC &dc )
 
 void ChartCanvas::CreateDepthUnitEmbossMaps( ColorScheme cs )
 {
-    wxFont font( 60, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    wxFont font;
+    if( style->embossFont == wxEmptyString )
+        font = wxFont( 60, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    else
+        font = wxFont( style->embossHeight, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, style->embossFont );
 
     int emboss_width = 500;
     int emboss_height = 100;
@@ -10603,8 +10608,15 @@ void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
 {
     delete m_pEM_OverZoom;
 
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
     int w, h;
-    wxFont font( 40, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+
+    wxFont font;
+    if( style->embossFont == wxEmptyString )
+        font = wxFont( 40, wxFONTFAMILY_ROMAN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    else
+        font = wxFont( style->embossHeight, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD, false, style->embossFont );
+
     wxClientDC dc( this );
     dc.SetFont( font );
     dc.GetTextExtent( _("OverZoom"), &w, &h );
@@ -10635,7 +10647,7 @@ emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int heig
 
     int str_w, str_h;
     temp_dc.GetTextExtent( wxString( str, wxConvUTF8 ), &str_w, &str_h );
-    temp_dc.DrawText( wxString( str, wxConvUTF8 ), width - str_w - 10, 10 );
+    temp_dc.DrawText( wxString( str, wxConvUTF8 ), width - str_w - 10, 35 );
 
     //  Deselect the bitmap
     temp_dc.SelectObject( wxNullBitmap );

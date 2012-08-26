@@ -129,7 +129,7 @@ public:
       int GetCompassCornerRadius() { return compasscornerRadius; }
       int GetCompassXOffset() { return compassXoffset; }
       int GetCompassYOffset() { return compassYoffset; }
-      
+
       int GetToolSeparation() { return toolSeparation[currentOrientation]; }
       wxSize GetToolSize() { return toolSize[currentOrientation]; }
       wxSize GetToggledToolSize() { return toggledBGSize[currentOrientation]; }
@@ -162,7 +162,7 @@ public:
       int compasscornerRadius;
       int compassXoffset;
       int compassYoffset;
-      
+
       wxSize toolSize[2];
       wxSize toggledBGSize[2];
       wxPoint toggledBGlocation[2];
@@ -190,6 +190,9 @@ public:
 
       int chartStatusIconWidth;
       bool chartStatusWindowTransparent;
+
+      wxString embossFont;
+      int embossHeight;
 
       wxString myConfigFileDir;
 

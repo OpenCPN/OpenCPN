@@ -439,6 +439,7 @@
 		<graphics-file name="toolicons_journeyman.png" />
 		<chart-status-icon width="40"/>
 		<chart-status-window transparent="true"/>
+        <embossed-indicators size="30" font="Verdana" />
 		<active-route>
 			<font-color r="50" g="50" b="50" />
 			<text-background-location x="660" y="260" width="140" height="55" />
@@ -918,6 +919,7 @@
 		<graphics-file name="toolicons_journeyman_flat.png" />
 		<chart-status-icon width="30"/>
 		<chart-status-window transparent="true"/>
+        <embossed-indicators size="30" font="Verdana" />
 		<active-route>
 			<font-color r="50" g="50" b="50" />
 		</active-route>
