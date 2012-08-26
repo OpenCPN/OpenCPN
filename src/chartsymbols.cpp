@@ -169,28 +169,24 @@ void ChartSymbols::ProcessLookups( TiXmlElement* lookupNodes )
             }
 
             if( nodeType == _T("disp-prio") ) {
+                lookup.displayPrio = PRIO_NODATA;
                 if( nodeText == _T("Group 1") ) lookup.displayPrio = PRIO_GROUP1;
                 else
-                    if( nodeText == _T("Area 1") ) lookup.displayPrio = PRIO_AREA_1;
-                    else
-                        if( nodeText == _T("Area 2") ) lookup.displayPrio = PRIO_AREA_2;
-                        else
-                            if( nodeText == _T("Point Symbol") ) lookup.displayPrio =
-                                    PRIO_SYMB_POINT;
-                            else
-                                if( nodeText == _T("Line Symbol") ) lookup.displayPrio =
-                                        PRIO_SYMB_LINE;
-                                else
-                                    if( nodeText == _T("Area Symbol") ) lookup.displayPrio =
-                                            PRIO_SYMB_AREA;
-                                    else
-                                        if( nodeText == _T("Routing") ) lookup.displayPrio =
-                                                PRIO_ROUTEING;
-                                        else
-                                            if( nodeText == _T("Hazards") ) lookup.displayPrio =
-                                                    PRIO_HAZARDS;
-                                            else
-                                                lookup.displayPrio = PRIO_MARINERS;
+                if( nodeText == _T("Area 1") ) lookup.displayPrio = PRIO_AREA_1;
+                else
+                if( nodeText == _T("Area 2") ) lookup.displayPrio = PRIO_AREA_2;
+                else
+                if( nodeText == _T("Point Symbol") ) lookup.displayPrio = PRIO_SYMB_POINT;
+                else
+                if( nodeText == _T("Line Symbol") ) lookup.displayPrio = PRIO_SYMB_LINE;
+                else
+                if( nodeText == _T("Area Symbol") ) lookup.displayPrio = PRIO_SYMB_AREA;
+                else
+                if( nodeText == _T("Routing") ) lookup.displayPrio = PRIO_ROUTEING;
+                else
+                if( nodeText == _T("Hazards") ) lookup.displayPrio = PRIO_HAZARDS;
+                else
+                if( nodeText == _T("Mariners") ) lookup.displayPrio = PRIO_MARINERS;
                 goto nextNode;
             }
             if( nodeType == _T("radar-prio") ) {
@@ -202,26 +198,25 @@ void ChartSymbols::ProcessLookups( TiXmlElement* lookupNodes )
             if( nodeType == _T("table-name") ) {
                 if( nodeText == _T("Simplified") ) lookup.tableName = SIMPLIFIED;
                 else
-                    if( nodeText == _T("Lines") ) lookup.tableName = LINES;
-                    else
-                        if( nodeText == _T("Plain") ) lookup.tableName = PLAIN_BOUNDARIES;
-                        else
-                            if( nodeText == _T("Symbolized") ) lookup.tableName =
-                                    SYMBOLIZED_BOUNDARIES;
-                            else
-                                lookup.tableName = PAPER_CHART;
+                if( nodeText == _T("Lines") ) lookup.tableName = LINES;
+                else
+                if( nodeText == _T("Plain") ) lookup.tableName = PLAIN_BOUNDARIES;
+                else
+                if( nodeText == _T("Symbolized") ) lookup.tableName = SYMBOLIZED_BOUNDARIES;
+                else
+                lookup.tableName = PAPER_CHART;
                 goto nextNode;
             }
             if( nodeType == _T("display-cat") ) {
                 if( nodeText == _T("Displaybase") ) lookup.displayCat = DISPLAYBASE;
                 else
-                    if( nodeText == _T("Standard") ) lookup.displayCat = STANDARD;
-                    else
-                        if( nodeText == _T("Other") ) lookup.displayCat = OTHER;
-                        else
-                            if( nodeText == _T("Mariners") ) lookup.displayCat = MARINERS_STANDARD;
-                            else
-                                lookup.displayCat = OTHER;
+                if( nodeText == _T("Standard") ) lookup.displayCat = STANDARD;
+                else
+                if( nodeText == _T("Other") ) lookup.displayCat = OTHER;
+                else
+                if( nodeText == _T("Mariners") ) lookup.displayCat = MARINERS_STANDARD;
+                else
+                lookup.displayCat = OTHER;
                 goto nextNode;
             }
             if( nodeType == _T("comment") ) {
