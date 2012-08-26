@@ -8306,8 +8306,11 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         // not displaying lights on the chart.
 
         SetCursor( wxCURSOR_WAIT );
+        bool lightsVis = gFrame->ToggleLights( false );
+        if( !lightsVis ) gFrame->ToggleLights( true, true );
         ListOfObjRazRules* rule_list =
                 Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
+        if( !lightsVis ) gFrame->ToggleLights( true, true );
 
         wxString objText;
         wxFont *dFont = pFontMgr->GetFont( _("ObjectQuery"), 12 );
