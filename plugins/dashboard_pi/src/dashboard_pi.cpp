@@ -40,6 +40,8 @@ wxFont *g_pFontTitle;
 wxFont *g_pFontData;
 wxFont *g_pFontLabel;
 wxFont *g_pFontSmall;
+bool g_TWA_LR=0;    //TR 10.06.2012 : direction for relative True Wind Angle (L, R) : L=FALSE, R=TRUE
+bool g_AWA_LR=0;    //TR 15.06.2012 : direction for apparent Wind Angle (L, R) : L=FALSE, R=TRUE
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -79,6 +81,13 @@ enum
       ID_DBP_I_DPT,
       ID_DBP_D_DPT,
       ID_DBP_I_TMP,
+      ID_DBP_I_ATMP,  //TR, 08.06.2012 : Airtemp., text display
+	  ID_DBP_I_AWA,   //TR, 15.06.2012 : app. Wind Angle +-180° on boat axis, text display
+	  ID_DBP_I_TWA,   //TR, 08.06.2012 : True Wind Angle +-180° on boat axis, text display
+	  ID_DBP_I_TWD,   //TR, 08.06.2012 : True Wind direction, text display
+	  ID_DBP_I_TWS,   //TR, 08.06.2012 : True Wind speed, text display
+	  ID_DBP_D_TWA,   //TR, 08.06.2012 : True Wind Angle +-180° on boat axis, graphical
+	  ID_DBP_D_TWD,   //TR, 08.06.2012 : True Wind direction, graphical
       ID_DBP_I_VMG,
       ID_DBP_D_VMG,
       ID_DBP_I_RSA,
@@ -88,7 +97,8 @@ enum
       ID_DBP_I_PTR,
       ID_DBP_I_CLK,
       ID_DBP_I_SUN,
-      ID_DBP_I_MON
+      ID_DBP_I_MON,
+      ID_DBP_I_LAST_ENTRY  //TR: this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
 wxString getInstrumentCaption(unsigned int id)
@@ -124,7 +134,21 @@ wxString getInstrumentCaption(unsigned int id)
       case ID_DBP_D_DPT:
             return _("Depth");
       case ID_DBP_I_TMP:
-            return _("Temp");
+            return _("Watertemp");  //TR : Text changed
+      case ID_DBP_I_ATMP:                         //TR 08.06.2012
+            return _("Airtemp");                  //TR 08.06.2012
+	  case ID_DBP_I_AWA:                          //TR 15.06.2012
+            return _("App. Wind angle");          //TR 15.06.2012
+	  case ID_DBP_I_TWA:                          //TR 08.06.2012
+            return _("True Wind angle");          //TR 08.06.2012
+	  case ID_DBP_I_TWD:                          //TR 08.06.2012
+            return _("True Wind direction");      //TR 08.06.2012
+	  case ID_DBP_I_TWS:                          //TR 08.06.2012
+            return _("True Wind speed");          //TR 08.06.2012
+	  case ID_DBP_D_TWA:                          //TR 08.06.2012
+            return _("True Wind angle & speed");  //TR 08.06.2012
+	  case ID_DBP_D_TWD:                          //TR 08.06.2012
+            return _("True Wind dir. & speed");   //TR 08.06.2012
       case ID_DBP_I_VMG:
             return _("VMG");
       case ID_DBP_D_VMG:
@@ -163,6 +187,11 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
       case ID_DBP_I_AWS:
       case ID_DBP_I_DPT:
       case ID_DBP_I_TMP:
+      case ID_DBP_I_ATMP:  //TR 08.06.2012
+      case ID_DBP_I_TWA:   //TR 09.06.2012 : True wind angle
+	  case ID_DBP_I_TWD:   //TR 09.06.2012 : True wind direction
+	  case ID_DBP_I_TWS:   //TR 09.06.2012 : True wind Speed
+	  case ID_DBP_I_AWA:   //TR 15.06.2012 : App. wind angle
       case ID_DBP_I_VMG:
       case ID_DBP_I_RSA:
       case ID_DBP_I_SAT:
@@ -178,6 +207,8 @@ void getListItemForInstrument(wxListItem &item, unsigned int id)
       case ID_DBP_D_AWA:
       case ID_DBP_D_AWS:
       case ID_DBP_D_TW:
+      case ID_DBP_D_TWA:   //TR 09.06.2012 : True wind angle&Speed
+	  case ID_DBP_D_TWD:   //TR 09.06.2012 : True wind direction&Speed
       case ID_DBP_D_DPT:
       case ID_DBP_D_VMG:
       case ID_DBP_D_RSA:
@@ -543,6 +574,17 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
                         }
                   }
             }
+            else if(m_NMEA0183.LastSentenceIDReceived == _T("MTA"))  //TR, 08.06.2012, complete elseif statement : Air temperature
+            {
+                  if(m_NMEA0183.Parse())
+                  {
+                        /*
+                        double   m_NMEA0183.Mta.Temperature;
+                        wxString m_NMEA0183.Mta.UnitOfMeasurement;
+                        */
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_ATMP, m_NMEA0183.Mta.Temperature, m_NMEA0183.Mta.UnitOfMeasurement);
+                  }
+            }
 
             else if(m_NMEA0183.LastSentenceIDReceived == _T("MTW"))
             {
@@ -560,16 +602,25 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
             {
                   if(m_NMEA0183.Parse())
                   {
+                      	double mwdval=999.;
+					    if (m_NMEA0183.Mwd.WindAngleTrue < 999.)  //TR : if WindAngleTrue is available, use it ...
+							mwdval=m_NMEA0183.Mwd.WindAngleTrue;
+						else
+                            if (m_NMEA0183.Mwd.WindAngleMagnetic < 999.) //TR : otherwise try WindAngleMagnetic ...
+							   mwdval=m_NMEA0183.Mwd.WindAngleMagnetic;
+
                         if (mPriWindT >= 3)
                         {
                               mPriWindT = 3;
 
                               // Option for True vs Magnetic
-                              SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_NMEA0183.Mwd.WindAngleTrue, _T("Deg"));
+                              //SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_NMEA0183.Mwd.WindAngleTrue, _T("Deg"));
+                             SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, mwdval, _T("Deg"));
                               //m_NMEA0183.Mwd.WindAngleMagnetic
                               SendSentenceToAllInstruments(OCPN_DBP_STC_TWS, m_NMEA0183.Mwd.WindSpeedKnots, _("N"));
                               //m_NMEA0183.Mwd.WindSpeedms
                         }
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_MWD, mwdval, _T("Deg")); //TR 09.06.2012
                   }
             }
 
@@ -757,6 +808,8 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
                               double           m_NMEA0183.Vwr.WindSpeedKmh;
                               */
                         }
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_AWA2,m_NMEA0183.Vwr.WindDirectionMagnitude, _T("Deg"));//TR
+                        g_AWA_LR= m_NMEA0183.Vwr.DirectionOfWind==Left ? FALSE : TRUE; //TR
                   }
             }
 
@@ -772,7 +825,9 @@ void dashboard_pi::SetNMEASentence(wxString &sentence)
 Calculated wind angle relative to the vessel, 0 to 180o, left/right L/R of vessel heading
 */
                               SendSentenceToAllInstruments(OCPN_DBP_STC_TWA, m_NMEA0183.Vwt.DirectionOfWind==Left ? 360-m_NMEA0183.Vwt.WindDirectionMagnitude : m_NMEA0183.Vwr.WindDirectionMagnitude, _T("Deg"));
+                              SendSentenceToAllInstruments(OCPN_DBP_STC_VWT, m_NMEA0183.Vwt.WindDirectionMagnitude, _T("Deg")); //TR 09.06.2012           
                               SendSentenceToAllInstruments(OCPN_DBP_STC_TWS, m_NMEA0183.Vwt.WindSpeedKnots, _T("Kts"));
+                              g_TWA_LR= m_NMEA0183.Vwt.DirectionOfWind==Left ? FALSE : TRUE;//TR
                               /*
                               double           m_NMEA0183.Vwt.WindSpeedms;
                               double           m_NMEA0183.Vwt.WindSpeedKmh;
@@ -1559,7 +1614,8 @@ AddInstrumentDlg::AddInstrumentDlg(wxWindow *pparent, wxWindowID id)
       wxStdDialogButtonSizer* DialogButtonSizer = CreateStdDialogButtonSizer(wxOK|wxCANCEL);
       itemBoxSizer01->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, 5);
 
-      for (unsigned int i = ID_DBP_I_POS; i <= ID_DBP_I_MON; i++)
+      //for (unsigned int i = ID_DBP_I_POS; i <= ID_DBP_I_MON; i++)
+      for (unsigned int i = ID_DBP_I_POS; i < ID_DBP_I_LAST_ENTRY; i++) //TR
       {
             wxListItem item;
             getListItemForInstrument(item, i);
@@ -1710,6 +1766,16 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue(_T("%5.0f Deg"), DIAL_POSITION_TOPRIGHT);
                   ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%2.2f Kts"), DIAL_POSITION_TOPLEFT);
                   break;
+            case ID_DBP_D_TWA:																												//TR 09.06.2012
+                  instrument = new DashboardInstrument_Wind( this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_VWT );			        //TR 09.06.2012
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue(_T("%5.0f Deg"), DIAL_POSITION_TOPRIGHT);					//TR 09.06.2012
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%2.2f Kts"), DIAL_POSITION_TOPLEFT);	//TR 09.06.2012
+                  break;																													//TR 09.06.2012
+            case ID_DBP_D_TWD:																												//TR 09.06.2012
+                  instrument = new DashboardInstrument_WindCompass( this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_MWD );			//TR 09.06.2012
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionMainValue(_T("%5.0f Deg"), DIAL_POSITION_TOPRIGHT);					//TR 09.06.2012
+                  ((DashboardInstrument_Dial *)instrument)->SetOptionExtraValue(OCPN_DBP_STC_TWS, _T("%2.2f Kts"), DIAL_POSITION_TOPLEFT);	//TR 09.06.2012
+                  break;																													//TR 09.06.2012
             case ID_DBP_I_DPT:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_DPT, _T("%5.1fm"));
                   break;
@@ -1717,8 +1783,24 @@ void DashboardWindow::SetInstrumentList(wxArrayInt list)
                   instrument = new DashboardInstrument_Depth(this, wxID_ANY, getInstrumentCaption(id));
                   break;
             case ID_DBP_I_TMP:
-                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_TMP, _T("%2.1f°"));
+//                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_TMP, _T("%2.1f°"));
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_TMP, _T("%2.1f"));       //TR, 09.06.2012
                   break;
+            case ID_DBP_I_ATMP:																												//TR, 09.06.2012
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_ATMP, _T("%2.1f"));	//TR, 09.06.2012
+                  break;																													//TR, 09.06.2012
+            case ID_DBP_I_TWA:																												//TR, 09.06.2012
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_VWT, _T("%5.0f"));     //TR, 09.06.2012
+                  break;																													//TR, 09.06.2012
+            case ID_DBP_I_TWD:																												//TR, 09.06.2012
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_MWD, _T("%5.0f")); //TR, 09.06.2012
+                  break;																													//TR, 09.06.2012
+            case ID_DBP_I_TWS:																												//TR, 09.06.2012
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_TWS, _T("%2.2f Kts")); //TR, 09.06.2012
+                  break;																													//TR, 09.06.2012
+            case ID_DBP_I_AWA:																												//TR, 15.06.2012
+                  instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_AWA2, _T("%5.0f"));    //TR, 15.06.2012
+                  break;																													//TR, 15.06.2012
             case ID_DBP_I_VMG:
                   instrument = new DashboardInstrument_Single(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_VMG, _T("%5.2f Kts"));
                   break;

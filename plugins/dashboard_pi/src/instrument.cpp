@@ -42,6 +42,8 @@
 //    Generic DashboardInstrument Implementation
 //
 //----------------------------------------------------------------
+extern bool g_TWA_LR; //TR 10.06.2012: direction for relative True Wind Angle (L, R) : L=FALSE, R=TRUE
+extern bool g_AWA_LR; //TR 10.06.2012: direction for apparent Wind Angle (L, R) : L=FALSE, R=TRUE
 
 DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag)
       :wxWindow(pparent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_NONE, title)
@@ -150,7 +152,60 @@ void DashboardInstrument_Single::Draw(wxBufferedDC* dc)
 
 void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
 {
-      if (m_cap_flag & st)
+     //TR 10.06.2012:
+	  /* complete if-elseif statement, to ...
+	    a) fix the annoying unicode bug of showing the ° character under windows
+		b) set < (= Right) and > (= Left) for the true wind angle
+	  */
+	  if(m_cap_flag == OCPN_DBP_STC_VWT ) //TR 10.06.2012: set left/right arrows (>,<) for true wind angle, plus set the ° character here as fix for the unicode problem
+      {                                   //TR Example : "> 203°" or "234°<"
+		    if(!wxIsNaN(data))  
+			{ 
+		       if(g_TWA_LR)
+			      m_data = wxString::Format(m_format, data)+_T("°<");
+			   else
+				  m_data = _T(">")+ wxString::Format(m_format, data)+_T("°");
+			}
+            Refresh(false);
+      }
+	  else if(m_cap_flag == OCPN_DBP_STC_AWA2 ) //TR 15.06.2012: set left/right arrows (>,<) for apparent wind angle, plus set the ° character here as fix for the unicode problem
+      {     
+		    if(!wxIsNaN(data))  
+			{ 
+		       if(g_AWA_LR)
+			      m_data = wxString::Format(m_format, data)+_T("°<");
+			   else
+				  m_data = _T(">")+ wxString::Format(m_format, data)+_T("°");
+			}
+            Refresh(false);
+      }
+	  
+	  else if (m_cap_flag ==OCPN_DBP_STC_MWD) //TR 10.06.2012: set the ° character here for True Wind Direction as fix for the unicode problem
+	  {
+		    if(!wxIsNaN(data))  
+			      m_data = wxString::Format(m_format, data)+_T("°");
+			else
+                m_data = _T("---");
+            Refresh(false);
+	  }
+	  else if (m_cap_flag == OCPN_DBP_STC_ATMP || m_cap_flag == OCPN_DBP_STC_TMP) //TR 10.06.2012: Air- & Watertemp : set the °C character(s) here as fix for the unicode problem
+	  {
+		    if(!wxIsNaN(data))  
+			      m_data = wxString::Format(m_format, data)+_T("°C");
+			else
+                m_data = _T("---");
+            Refresh(false);
+	  }
+      else if (m_cap_flag & st) //TR 10.06.2012 : for all others ... ; this is the original code
+      {    
+            if(!wxIsNaN(data))  
+			      m_data = wxString::Format(m_format, data);
+			else
+                m_data = _T("---");
+            Refresh(false);
+      }
+	  //TR 10.06.2012
+	  /*  original code of ::SetData(...)      if (m_cap_flag & st)
       {
             if(!wxIsNaN(data))
                 m_data = wxString::Format(m_format, data);
@@ -158,7 +213,7 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
                 m_data = _T("---");
 
             Refresh(false);
-      }
+      }*/
 }
 
 //----------------------------------------------------------------

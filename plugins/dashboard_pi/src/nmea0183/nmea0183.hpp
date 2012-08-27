@@ -102,6 +102,7 @@
 #include "gga.hpp"
 #include "dbt.hpp"
 #include "dpt.hpp"
+#include "mta.hpp" //TR, 08.06.2012
 #include "mtw.hpp"
 #include "mwd.hpp"
 #include "mwv.hpp"
@@ -195,6 +196,7 @@ class NMEA0183
       HSC Hsc;
       LCD Lcd;
 */
+      MTA Mta; //TR, 08.06.2012
       MTW Mtw;
       MWD Mwd;
       MWV Mwv;

@@ -84,6 +84,7 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &Lcd );
 */
    response_table.Append( (RESPONSE *) &Mwd );
+   response_table.Append( (RESPONSE *) &Mta ); //TR, 09.06.2012 :Air Temperature
    response_table.Append( (RESPONSE *) &Mtw );
    response_table.Append( (RESPONSE *) &Mwv );
 /*
