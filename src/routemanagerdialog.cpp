@@ -391,6 +391,10 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
             style );
 
     Create();
+
+    m_lastWptItem = -1;
+    m_lastTrkItem = -1;
+    m_lastRteItem = -1;
 }
 
 void RouteManagerDialog::Create()
@@ -847,6 +851,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
         m_pRouteListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
     }
 
+    if( m_lastRteItem ) m_pRouteListCtrl->EnsureVisible( m_lastRteItem );
     UpdateRteButtons();
 }
 
@@ -856,6 +861,8 @@ void RouteManagerDialog::UpdateRteButtons()
     long selected_index_index = m_pRouteListCtrl->GetNextItem( -1, wxLIST_NEXT_ALL,
             wxLIST_STATE_SELECTED );
     bool enable = !( selected_index_index < 0 );
+
+    m_lastRteItem = selected_index_index;
 
     btnRteDelete->Enable( enable );
     btnRteZoomto->Enable( enable ); // && !cc1->m_bFollow);
@@ -1445,6 +1452,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
         m_pTrkListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
     }
 
+    if( m_lastTrkItem >= 0 ) m_pTrkListCtrl->EnsureVisible( m_lastTrkItem );
     UpdateTrkButtons();
 }
 
@@ -1470,6 +1478,8 @@ void RouteManagerDialog::UpdateTrkButtons()
     long item = -1;
     item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     int items = m_pTrkListCtrl->GetSelectedItemCount();
+
+    m_lastTrkItem = item;
 
     btnTrkProperties->Enable( items == 1 );
     btnTrkDelete->Enable( items == 1 );
@@ -1714,6 +1724,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
         m_pWptListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
     }
 
+    if( m_lastWptItem >= 0 ) m_pWptListCtrl->EnsureVisible( m_lastWptItem );
     UpdateWptButtons();
 }
 
@@ -1747,6 +1758,8 @@ void RouteManagerDialog::UpdateWptButtons()
     long item = -1;
     item = m_pWptListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     bool enable = ( item != -1 );
+
+    if( enable ) m_lastWptItem = item;
 
     btnWptProperties->Enable( enable );
     btnWptZoomto->Enable( enable );

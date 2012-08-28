@@ -167,6 +167,9 @@ class RouteManagerDialog : public wxDialog {
             bool m_bCtrlDown;         // record control key state for some action buttons
             bool m_bNeedConfigFlush;  // if true, update config in destructor
 
+            int m_lastWptItem;
+            int m_lastTrkItem;
+            int m_lastRteItem;
 };
 
 #endif // _RouteManagerDialog_h_
