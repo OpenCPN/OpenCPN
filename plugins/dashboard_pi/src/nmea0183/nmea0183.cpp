@@ -84,7 +84,8 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &Lcd );
 */
    response_table.Append( (RESPONSE *) &Mwd );
-   response_table.Append( (RESPONSE *) &Mtw );
+   response_table.Append( (RESPONSE *) &Mta ); //Air Temperature
+   response_table.Append( (RESPONSE *) &Mtw ); //Water Temperature
    response_table.Append( (RESPONSE *) &Mwv );
 /*
    response_table.Append( (RESPONSE *) &Oln );
