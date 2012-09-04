@@ -150,10 +150,32 @@ void DashboardInstrument_Single::Draw(wxBufferedDC* dc)
 
 void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
 {
-      if (m_cap_flag & st)
-      {
-            if(!wxIsNaN(data))
-                m_data = wxString::Format(m_format, data);
+      if (m_cap_flag & st){
+            if(!wxIsNaN(data)){
+                if (unit == _T("C"))
+                  m_data = wxString::Format(m_format, data)+_T("°C");
+                else if (unit == _T("Deg"))
+                  m_data = wxString::Format(m_format, data)+_T("°");
+                else if (unit == _T("DegT"))
+                  m_data = wxString::Format(m_format, data)+_T("° ") << _("true");
+                else if (unit == _T("DegM"))
+                  m_data = wxString::Format(m_format, data)+_T("° ") << _("mag");
+                else if (unit == _T("DegL"))
+                  m_data = _T(">")+ wxString::Format(m_format, data)+_T("°");
+                else if (unit == _T("DegR"))
+                  m_data = wxString::Format(m_format, data)+_T("°<");
+                else if (unit == _T("N")) //Knots
+                  m_data = wxString::Format(m_format, data)+_T(" Kts");
+/* maybe in the future ...
+                else if (unit == _T("M")) // m/s
+                  m_data = wxString::Format(m_format, data)+_T(" m/s");
+                else if (unit == _T("K")) // km/h
+                  m_data = wxString::Format(m_format, data)+_T(" km/h");
+ ... to be completed
+ */
+                else
+                  m_data = wxString::Format(m_format, data);
+            }
             else
                 m_data = _T("---");
 

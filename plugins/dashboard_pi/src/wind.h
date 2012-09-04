@@ -78,5 +78,22 @@ class DashboardInstrument_WindCompass: public DashboardInstrument_Dial
             void DrawBackground(wxBufferedDC* dc);
 };
 
+class DashboardInstrument_TrueWindAngle: public DashboardInstrument_Dial
+{
+      public:
+            wxString m_unit;
+            DashboardInstrument_TrueWindAngle( wxWindow *parent, wxWindowID id, wxString title, int cap_flag);
+            void SetData(int, double, wxString);
+
+            ~DashboardInstrument_TrueWindAngle(void){}
+
+      private:
+
+      protected:
+            
+            void DrawBackground(wxBufferedDC* dc);
+            void DrawForeground(wxBufferedDC* dc);
+};
+
 #endif // __Wind_H__
 
