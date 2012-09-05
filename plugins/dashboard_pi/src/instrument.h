@@ -38,6 +38,8 @@
 #include "../../../include/ocpn_plugin.h"
 #include <wx/dcbuffer.h>
 
+const wxString DEGREE_SIGN = wxString::Format(_T("%c"), 0x00B0); // This is the degree sign in UTF8. It should be correctly handled on both Win & Unix
+
 // Zeniths for sunset/sunrise calculation
 #define ZENITH_OFFICIAL (90.0 + 50.0 / 60.0)
 #define ZENITH_CIVIL 96.0

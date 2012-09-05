@@ -153,17 +153,17 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
       if (m_cap_flag & st){
             if(!wxIsNaN(data)){
                 if (unit == _T("C"))
-                  m_data = wxString::Format(m_format, data)+_T("°C");
+                  m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("C");
                 else if (unit == _T("Deg"))
-                  m_data = wxString::Format(m_format, data)+_T("°");
+                  m_data = wxString::Format(m_format, data)+DEGREE_SIGN;
                 else if (unit == _T("DegT"))
-                  m_data = wxString::Format(m_format, data)+_T("° ") << _("true");
+                  m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_(" true");
                 else if (unit == _T("DegM"))
-                  m_data = wxString::Format(m_format, data)+_T("° ") << _("mag");
+                  m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_(" mag");
                 else if (unit == _T("DegL"))
-                  m_data = _T(">")+ wxString::Format(m_format, data)+_T("°");
+                  m_data = _T(">")+ wxString::Format(m_format, data)+DEGREE_SIGN;
                 else if (unit == _T("DegR"))
-                  m_data = wxString::Format(m_format, data)+_T("°<");
+                  m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("<");
                 else if (unit == _T("N")) //Knots
                   m_data = wxString::Format(m_format, data)+_T(" Kts");
 /* maybe in the future ...
