@@ -6782,6 +6782,8 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                         attrCounter++;
                     }
 
+                    free(curr_att0);
+
                     if( ( sectr1 >= 0 ) && ( sectr2 >= 0 ) ) {
                         sector.pos.m_x = light->m_lon;
                         sector.pos.m_y = light->m_lat;
@@ -6805,6 +6807,9 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                 }
             }
         }
+
+        rule_list->Clear();
+        delete rule_list;
     }
     return newSectorsNeedDrawing;
 }

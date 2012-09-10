@@ -8339,6 +8339,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         g_pObjectQueryDialog->Show();
 
+        rule_list->Clear();
         delete rule_list;
 
         SetCursor( wxCURSOR_ARROW );
