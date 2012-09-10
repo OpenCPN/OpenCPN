@@ -531,7 +531,7 @@ void ocpnFloatingToolbarDialog::Realize()
             SetShape( wxRegion( shape, *wxWHITE, 10 ) );
 #endif
         }
-        GetParent()->Update();
+//        GetParent()->Update();                // not needed, as toolbat is a TopLevelWindow
     }
 }
 

@@ -194,9 +194,10 @@ wxBitmap Style::GetToolIcon( wxString toolname, int iconType, bool rollover )
 {
 
     if( toolIndex.find( toolname ) == toolIndex.end() ) {
-        wxString msg( _T("The requested tool was not found in the style: ") );
-        msg += toolname;
-        wxLogMessage( msg );
+//  This will produce a flood of log messages for some PlugIns, notably WMM_PI, and GRADAR_PI        
+//        wxString msg( _T("The requested tool was not found in the style: ") );
+//        msg += toolname;
+//        wxLogMessage( msg );
         return wxBitmap( GetToolSize().x, GetToolSize().y, 1 );
     }
 
