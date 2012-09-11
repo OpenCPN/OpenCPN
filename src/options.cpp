@@ -1725,14 +1725,17 @@ void options::OnCharHook( wxKeyEvent& event ) {
 void options::OnButtonaddClick( wxCommandEvent& event )
 {
     wxString selDir;
+    wxFileName dirname;
     wxDirDialog *dirSelector = new wxDirDialog( this, _("Add a directory containing chart files"),
             *pInit_Chart_Dir, wxDD_DEFAULT_STYLE | wxDD_DIR_MUST_EXIST );
 
     if( dirSelector->ShowModal() == wxID_CANCEL ) goto done;
 
     selDir = dirSelector->GetPath();
+    dirname = wxFileName( selDir );
+
     pInit_Chart_Dir->Empty();
-    pInit_Chart_Dir->Append( selDir );
+    pInit_Chart_Dir->Append( dirname.GetPath() );
 
     if( g_bportable ) {
         wxFileName f( selDir );
