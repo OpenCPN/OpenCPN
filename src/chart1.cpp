@@ -1751,7 +1751,7 @@ if( 0 == g_memCacheLimit )
             delete pprog;
         }
 
-        else            // No chart database, no config hints, so bail to Toolbox....
+        else            // No chart database, no config hints, so bail to Options....
         {
             wxLogMessage(
                     _T("Chartlist file not found, config chart dir array is empty.  Chartlist target file is:")
@@ -2462,7 +2462,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
             style->GetToolIcon( _T("follow"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
-    tipString = _("Settings");
+    tipString = _("Options");
     if( _toolbarConfigMenuUtil( ID_SETTINGS, tipString ) )
         tb->AddTool( ID_SETTINGS, _T("settings"),
             style->GetToolIcon( _T("settings"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
@@ -3747,40 +3747,40 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
 
 int MyFrame::DoOptionsDialog()
 {
-    bool b_refresh_after_options = false;
     static int lastPage = -1;
+    static wxPoint lastWindowPos( 0,0 );
 
     ::wxBeginBusyCursor();
-    options SetDlg( this, -1, _("ToolBox") );
+    options optionsDlg( this, -1, _("Options") );
     ::wxEndBusyCursor();
 
 //    Set initial Chart Dir
-    SetDlg.SetInitChartDir( *pInit_Chart_Dir );
+    optionsDlg.SetInitChartDir( *pInit_Chart_Dir );
 
 //      Pass two working pointers for Chart Dir Dialog
-    SetDlg.SetCurrentDirList( ChartData->GetChartDirArray() );
+    optionsDlg.SetCurrentDirList( ChartData->GetChartDirArray() );
     ArrayOfCDI *pWorkDirArray = new ArrayOfCDI;
-    SetDlg.SetWorkDirListPtr( pWorkDirArray );
+    optionsDlg.SetWorkDirListPtr( pWorkDirArray );
 
 //  Grab a copy of the current NMEA source and AP Port and AIS Port
-    wxString previous_NMEA_source( *pNMEADataSource );
-    bool previous_bGarminHost = g_bGarminHost;
+    previous_NMEA_source = *pNMEADataSource;
+    previous_bGarminHost = g_bGarminHost;
 
-    wxString previous_NMEA_APPort( *pNMEA_AP_Port );
-    wxString previous_AIS_Port( *pAIS_Port );
+    previous_NMEA_APPort = *pNMEA_AP_Port;
+    previous_AIS_Port = *pAIS_Port;
 
 //      Pass a ptr to MyConfig, for updates
-    SetDlg.SetConfigPtr( pConfig );
+    optionsDlg.SetConfigPtr( pConfig );
 
-    SetDlg.SetInitialSettings();
+    optionsDlg.SetInitialSettings();
 
     bDBUpdateInProgress = true;
 
-    bool bPrevQuilt = g_bQuiltEnable;
-    bool bPrevFullScreenQuilt = g_bFullScreenQuilt;
-    bool bPrevOGL = g_bopengl;
+    bPrevQuilt = g_bQuiltEnable;
+    bPrevFullScreenQuilt = g_bFullScreenQuilt;
+    bPrevOGL = g_bopengl;
 
-    wxString prev_locale = g_locale;
+    prev_locale = g_locale;
 
 //    Pause all of the async classes
     if( g_pAIS ) g_pAIS->Pause();
@@ -3788,7 +3788,7 @@ int MyFrame::DoOptionsDialog()
 
     bool b_sub = false;
     if( g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown() ) {
-        wxRect bx_rect = SetDlg.GetScreenRect();
+        wxRect bx_rect = optionsDlg.GetScreenRect();
         wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
         if( tb_rect.Intersects( bx_rect ) ) b_sub = true;
 
@@ -3799,15 +3799,22 @@ int MyFrame::DoOptionsDialog()
     if(stats) stats->Hide();
 #endif
 
-    if( lastPage >= 0 ) SetDlg.itemNotebook4->SetSelection( lastPage );
+    if( lastPage >= 0 ) optionsDlg.m_pListbook->SetSelection( lastPage );
+    optionsDlg.lastWindowPos = lastWindowPos;
+    if( lastWindowPos != wxPoint(0,0) ) {
+        optionsDlg.Move( lastWindowPos );
+    } else {
+        optionsDlg.Center();
+    }
 
     if( g_FloatingToolbarDialog) g_FloatingToolbarDialog->DisableTooltips();
 
-    int rr = SetDlg.ShowModal();
+    int rr = optionsDlg.ShowModal();
 
     if( g_FloatingToolbarDialog) g_FloatingToolbarDialog->EnableTooltips();
 
-    lastPage = SetDlg.lastPage;
+    lastPage = optionsDlg.lastPage;
+    lastWindowPos = optionsDlg.lastWindowPos;
 
     if( b_sub ) {
         SurfaceToolbar();
@@ -3819,143 +3826,138 @@ int MyFrame::DoOptionsDialog()
 #endif
 
     if( rr ) {
-        if( ( rr & VISIT_CHARTS )
-                && ( ( rr & CHANGE_CHARTS ) || ( rr & FORCE_UPDATE ) || ( rr & SCAN_UPDATE ) ) ) {
-
-            //    Capture the currently open chart
-            wxString chart_file_name;
-            if( cc1->GetQuiltMode() ) {
-                int dbi = cc1->GetQuiltRefChartdbIndex();
-                chart_file_name = ChartData->GetDBChartFileName( dbi );
-            } else
-                if( Current_Ch ) chart_file_name = Current_Ch->GetFullPath();
-
-            UpdateChartDatabaseInplace( *pWorkDirArray, ( ( rr & FORCE_UPDATE ) == FORCE_UPDATE ),
-                    true, *pChartListFileName );
-
-            //    Re-open the last open chart
-            int dbii = ChartData->FinddbIndex( chart_file_name );
-            ChartsRefresh( dbii, cc1->GetVP() );
-        }
-
-        if( ( *pNMEADataSource != previous_NMEA_source )
-                || ( previous_bGarminHost != g_bGarminHost ) ) {
-            if( g_pnmea ) g_pnmea->Close();
-            delete g_pnmea;
-
-            bGPSValid = false;
-
-            //    If the selected port is the same as AIS port, override the name to force the
-            //    NMEA class to expect muxed data from AIS decoder
-            if( ( pNMEADataSource->IsSameAs( *pAIS_Port ) )
-                    && ( !pNMEADataSource->Upper().Contains( _T("NONE") ) ) ) g_pnmea =
-                    new NMEAHandler( ID_NMEA_WINDOW, gFrame, _T("AIS Port (Shared)"),
-                            g_NMEABaudRate, &m_mutexNMEAEvent, false );
-            else
-                g_pnmea = new NMEAHandler( ID_NMEA_WINDOW, gFrame, *pNMEADataSource, g_NMEABaudRate,
-                        &m_mutexNMEAEvent, g_bGarminHost );
-
-            SetbFollow();
-        }
-
-        if( *pNMEA_AP_Port != previous_NMEA_APPort ) {
-            if( pAPilot ) pAPilot->Close();
-            delete pAPilot;
-            pAPilot = new AutoPilotWindow( gFrame, *pNMEA_AP_Port );
-        }
-
-        if( *pAIS_Port != previous_AIS_Port ) {
-            delete g_pAIS;
-            g_pAIS = new AIS_Decoder( ID_AIS_WINDOW, gFrame, *pAIS_Port, &m_mutexNMEAEvent );
-            b_refresh_after_options = true;
-        }
-
-#ifdef USE_S57
-        if( rr & S52_CHANGED ) {
-            b_refresh_after_options = true;
-        }
-#endif
-
-        if( ( rr & LOCALE_CHANGED ) || ( rr & STYLE_CHANGED ) ) {
-            if( ( prev_locale != g_locale ) || ( rr & STYLE_CHANGED ) ) {
-                OCPNMessageBox( _("Please restart OpenCPN to activate language or style changes."),
-                        _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
-                if( rr & LOCALE_CHANGED ) g_blocale_changed = true;;
-            }
-        }
-
-        if( rr & TOOLBAR_CHANGED ) b_refresh_after_options = true;
-
-        if( bPrevOGL != g_bopengl ) b_refresh_after_options = true;
-
-        if( ( ( rr & VISIT_CHARTS )
-                && ( ( rr & CHANGE_CHARTS ) || ( rr & FORCE_UPDATE ) || ( rr & SCAN_UPDATE ) ) )
-                || ( rr & GROUPS_CHANGED ) ) {
-            ScrubGroupArray();
-            ChartData->ApplyGroupArray( g_pGroupArray );
-            SetGroupIndex( g_GroupIndex );
-        }
-
-        if( rr & GROUPS_CHANGED ) {
-            pConfig->DestroyConfigGroups();
-            pConfig->CreateConfigGroups( g_pGroupArray );
-        }
-
-        if( rr & TIDES_CHANGED ) {
-            LoadHarmonics();
-        }
-
-        pConfig->UpdateSettings();
-
-        if( g_pActiveTrack ) {
-            g_pActiveTrack->SetTrackTimer( g_TrackIntervalSeconds );
-            g_pActiveTrack->SetTrackDeltaDistance( g_TrackDeltaDistance );
-            g_pActiveTrack->SetTPTime( g_bTrackTime );
-            g_pActiveTrack->SetTPDist( g_bTrackDistance );
-        }
-
-        if( ( bPrevQuilt != g_bQuiltEnable ) || ( bPrevFullScreenQuilt != g_bFullScreenQuilt ) ) {
-            cc1->SetQuiltMode( g_bQuiltEnable );
-            SetupQuiltMode();
-        }
-
-        if( g_bCourseUp ) {
-            //    Stuff the COGAvg table in case COGUp is selected
-            double stuff = 0.;
-            if( !wxIsNaN(gCog) ) stuff = gCog;
-            for( int i = 0; i < g_COGAvgSec; i++ )
-                COGTable[i] = stuff;
-
-            g_COGAvg = stuff;
-
-            //    Short circuit the COG timer to force immediate refresh of canvas in case COGUp is selected
-            FrameCOGTimer.Stop();
-            FrameCOGTimer.Start( 100, wxTIMER_CONTINUOUS );
-
-            b_refresh_after_options = true;
-        }
-
-        //    Stuff the Filter tables
-        double stuffcog = 0.;
-        double stuffsog = 0.;
-        if( !wxIsNaN(gCog) ) stuffcog = gCog;
-        if( !wxIsNaN(gSog) ) stuffsog = gSog;
-
-        for( int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++ ) {
-            COGFilterTable[i] = stuffcog;
-            SOGFilterTable[i] = stuffsog;
-        }
-        m_COGFilterLast = stuffcog;
-
+        ProcessOptionsDialog( rr, &optionsDlg );
+        delete pWorkDirArray;
+        return true;
     }
+
+    delete pWorkDirArray;
+    return false;
+}
+
+int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
+{
+    ArrayOfCDI *pWorkDirArray = dialog->GetWorkDirListPtr();
+    if( ( rr & VISIT_CHARTS )
+            && ( ( rr & CHANGE_CHARTS ) || ( rr & FORCE_UPDATE ) || ( rr & SCAN_UPDATE ) ) ) {
+
+        //    Capture the currently open chart
+        wxString chart_file_name;
+        if( cc1->GetQuiltMode() ) {
+            int dbi = cc1->GetQuiltRefChartdbIndex();
+            chart_file_name = ChartData->GetDBChartFileName( dbi );
+        } else
+            if( Current_Ch ) chart_file_name = Current_Ch->GetFullPath();
+
+        UpdateChartDatabaseInplace( *pWorkDirArray, ( ( rr & FORCE_UPDATE ) == FORCE_UPDATE ),
+                true, *pChartListFileName );
+
+        //    Re-open the last open chart
+        int dbii = ChartData->FinddbIndex( chart_file_name );
+        ChartsRefresh( dbii, cc1->GetVP() );
+    }
+
+    if( ( *pNMEADataSource != previous_NMEA_source )
+            || ( previous_bGarminHost != g_bGarminHost ) ) {
+        if( g_pnmea ) g_pnmea->Close();
+        delete g_pnmea;
+
+        bGPSValid = false;
+
+        //    If the selected port is the same as AIS port, override the name to force the
+        //    NMEA class to expect muxed data from AIS decoder
+        if( ( pNMEADataSource->IsSameAs( *pAIS_Port ) )
+                && ( !pNMEADataSource->Upper().Contains( _T("NONE") ) ) ) g_pnmea =
+                new NMEAHandler( ID_NMEA_WINDOW, gFrame, _T("AIS Port (Shared)"),
+                        g_NMEABaudRate, &m_mutexNMEAEvent, false );
+        else
+            g_pnmea = new NMEAHandler( ID_NMEA_WINDOW, gFrame, *pNMEADataSource, g_NMEABaudRate,
+                    &m_mutexNMEAEvent, g_bGarminHost );
+
+        SetbFollow();
+    }
+
+    if( *pNMEA_AP_Port != previous_NMEA_APPort ) {
+        if( pAPilot ) pAPilot->Close();
+        delete pAPilot;
+        pAPilot = new AutoPilotWindow( gFrame, *pNMEA_AP_Port );
+    }
+
+    if( *pAIS_Port != previous_AIS_Port ) {
+        delete g_pAIS;
+        g_pAIS = new AIS_Decoder( ID_AIS_WINDOW, gFrame, *pAIS_Port, &m_mutexNMEAEvent );
+    }
+
+    if( ( rr & LOCALE_CHANGED ) || ( rr & STYLE_CHANGED ) ) {
+        if( ( prev_locale != g_locale ) || ( rr & STYLE_CHANGED ) ) {
+            OCPNMessageBox( _("Please restart OpenCPN to activate language or style changes."),
+                    _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
+            if( rr & LOCALE_CHANGED ) g_blocale_changed = true;;
+        }
+    }
+
+    if( ( ( rr & VISIT_CHARTS )
+            && ( ( rr & CHANGE_CHARTS ) || ( rr & FORCE_UPDATE ) || ( rr & SCAN_UPDATE ) ) )
+            || ( rr & GROUPS_CHANGED ) ) {
+        ScrubGroupArray();
+        ChartData->ApplyGroupArray( g_pGroupArray );
+        SetGroupIndex( g_GroupIndex );
+    }
+
+    if( rr & GROUPS_CHANGED ) {
+        pConfig->DestroyConfigGroups();
+        pConfig->CreateConfigGroups( g_pGroupArray );
+    }
+
+    if( rr & TIDES_CHANGED ) {
+        LoadHarmonics();
+    }
+
+    pConfig->UpdateSettings();
+
+    if( g_pActiveTrack ) {
+        g_pActiveTrack->SetTrackTimer( g_TrackIntervalSeconds );
+        g_pActiveTrack->SetTrackDeltaDistance( g_TrackDeltaDistance );
+        g_pActiveTrack->SetTPTime( g_bTrackTime );
+        g_pActiveTrack->SetTPDist( g_bTrackDistance );
+    }
+
+    if( ( bPrevQuilt != g_bQuiltEnable ) || ( bPrevFullScreenQuilt != g_bFullScreenQuilt ) ) {
+        cc1->SetQuiltMode( g_bQuiltEnable );
+        SetupQuiltMode();
+    }
+
+    if( g_bCourseUp ) {
+        //    Stuff the COGAvg table in case COGUp is selected
+        double stuff = 0.;
+        if( !wxIsNaN(gCog) ) stuff = gCog;
+        for( int i = 0; i < g_COGAvgSec; i++ )
+            COGTable[i] = stuff;
+
+        g_COGAvg = stuff;
+
+        //    Short circuit the COG timer to force immediate refresh of canvas in case COGUp is selected
+        FrameCOGTimer.Stop();
+        FrameCOGTimer.Start( 100, wxTIMER_CONTINUOUS );
+    }
+
+    //    Stuff the Filter tables
+    double stuffcog = 0.;
+    double stuffsog = 0.;
+    if( !wxIsNaN(gCog) ) stuffcog = gCog;
+    if( !wxIsNaN(gSog) ) stuffsog = gSog;
+
+    for( int i = 0; i < MAX_COGSOG_FILTER_SECONDS; i++ ) {
+        COGFilterTable[i] = stuffcog;
+        SOGFilterTable[i] = stuffsog;
+    }
+    m_COGFilterLast = stuffcog;
 
     SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
 //    Restart the async classes
     if( g_pAIS ) g_pAIS->UnPause();
     if( g_pnmea ) g_pnmea->UnPause();
-
-    delete pWorkDirArray;
 
     bDBUpdateInProgress = false;
 
@@ -3967,7 +3969,8 @@ int MyFrame::DoOptionsDialog()
     if(stats) stats->Show();
 #endif
 
-    return b_refresh_after_options;
+    Refresh( false );
+    return 0;
 }
 
 wxString MyFrame::GetGroupName( int igroup )

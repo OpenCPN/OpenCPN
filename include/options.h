@@ -29,7 +29,7 @@
 #define _OPTIONS_H_
 
 
-#include "wx/notebook.h"
+#include "wx/listbook.h"
 #include "wx/dirctrl.h"
 #include "wx/spinctrl.h"
 #include <wx/listctrl.h>
@@ -55,90 +55,91 @@ class MyConfig;
 #define SYMBOL_OPTIONS_POSITION wxDefaultPosition
 
 enum {
-        ID_TEXTCTRL1 =            10000,
-        ID_NOTEBOOK,
-        ID_TEXTCTRL,
-        ID_LISTBOX,
-        ID_PANEL,
-        ID_DIRCTRL,
-        ID_BUTTONDELETE,
-        ID_PANEL2,
-        ID_BUTTONREBUILD,
-        xID_OK,
-        ID_DEBUGCHECKBOX1,
-        ID_PRINTCHECKBOX1,
-        ID_CHECK_DISPLAYGRID,
-        ID_OUTLINECHECKBOX1,
-        ID_BUTTONADD,
-        ID_PANEL3,
-        ID_CHECKLISTBOX,
-        ID_RADIOBOX,
-        ID_PANELFONT,
-        ID_CHOICE_FONTELEMENT,
-        ID_BUTTONFONTCHOOSE,
-        ID_CLEARLIST,
-        ID_SELECTLIST,
-        ID_CHOICE_AIS,
-        ID_CHOICE_AP,
-        ID_SOUNDGCHECKBOX,
-        ID_METACHECKBOX,
-        ID_TEXTCHECKBOX,
-        ID_IMPTEXTCHECKBOX,
-        ID_SCAMINCHECKBOX,
-        ID_SHOWDEPTHUNITSBOX1,
-        ID_AUTOANCHORMARKBOX1,
-        ID_PANELAIS,
-        ID_ATONTEXTCHECKBOX,
-        ID_LDISTEXTCHECKBOX,
-        ID_DECLTEXTCHECKBOX,
-        ID_PANELADVANCED,
-        ID_GPXCHECKBOX,
-        ID_DRAGGINGCHECKBOX,
-        ID_ZTCCHECKBOX,
-        ID_PRESERVECHECKBOX,
-        ID_BELLSCHECKBOX,
-        ID_AISALERTDIALOG,
-        ID_AISALERTAUDIO,
-        ID_AISALERTSELECTSOUND,
-        ID_AISALERTTESTSOUND,
-        ID_TRACKCHECKBOX,
-        ID_DAILYCHECKBOX,
-        ID_CM93ZOOM,
-        ID_PANELPIM,
-        ID_GRIBCHECKBOX,
-        ID_UPDCHECKBOX,
-        ID_SCANCHECKBOX,
-        ID_SHOWGPSWINDOW,
-        ID_CHOICE_LANG,
-        ID_QUILTCHECKBOX1,
-        ID_RASTERCHECKBOX1,
-        ID_VECTORCHECKBOX1,
-        ID_CM93CHECKBOX1,
-        ID_COURSEUPCHECKBOX,
-        ID_CHOICE_NMEA_BAUD,
-        ID_CHECK_LOOKAHEAD,
-        ID_SKEWCOMPBOX,
-        ID_OPENGLBOX,
-        ID_SMOOTHPANZOOMBOX,
-        ID_GARMINHOST,
-        ID_FILTERNMEA,
-        ID_FULLSCREENQUILT,
-        ID_FSTOOLBARCHECKBOX,
-        ID_TRANSTOOLBARCHECKBOX,
-        ID_SHOWLAYERSCHECKBOX,
-        ID_SDMMFORMATCHOICE,
-        ID_TRACKHILITE,
-        ID_BUTTONGROUP,
-        ID_GROUPNOTEBOOK,
-        ID_GROUPINSERTDIR,
-        ID_GROUPREMOVEDIR,
-        ID_GROUPNEWGROUP,
-        ID_GROUPDELETEGROUP,
-        ID_STYLESCOMBOBOX,
-        ID_TIDESELECTED,
-        ID_BUTTONTCDATA,
-        ID_TCDATAADD,
-        ID_TCDATADEL
+    ID_AISALERTAUDIO = 10000,
+    ID_AISALERTDIALOG,
+    ID_AISALERTSELECTSOUND,
+    ID_AISALERTTESTSOUND,
+    ID_APPLY,
+    ID_ATONTEXTCHECKBOX,
+    ID_AUTOANCHORMARKBOX1,
+    ID_BELLSCHECKBOX,
+    ID_BUTTONADD,
+    ID_BUTTONDELETE,
+    ID_BUTTONFONTCHOOSE,
+    ID_BUTTONGROUP,
+    ID_BUTTONREBUILD,
+    ID_BUTTONTCDATA,
+    ID_CHECKLISTBOX,
+    ID_CHECK_DISPLAYGRID,
+    ID_CHECK_LOOKAHEAD,
+    ID_CHOICE_AIS,
+    ID_CHOICE_AP,
+    ID_CHOICE_FONTELEMENT,
+    ID_CHOICE_LANG,
+    ID_CHOICE_NMEA_BAUD,
+    ID_CLEARLIST,
+    ID_CM93CHECKBOX1,
+    ID_CM93ZOOM,
+    ID_COURSEUPCHECKBOX,
+    ID_DAILYCHECKBOX,
+    ID_DEBUGCHECKBOX1,
+    ID_DECLTEXTCHECKBOX,
+    ID_DIRCTRL,
+    ID_DRAGGINGCHECKBOX,
+    ID_FILTERNMEA,
+    ID_FSTOOLBARCHECKBOX,
+    ID_FULLSCREENQUILT,
+    ID_GARMINHOST,
+    ID_GPXCHECKBOX,
+    ID_GRIBCHECKBOX,
+    ID_GROUPDELETEGROUP,
+    ID_GROUPINSERTDIR,
+    ID_GROUPNEWGROUP,
+    ID_GROUPNOTEBOOK,
+    ID_GROUPREMOVEDIR,
+    ID_IMPTEXTCHECKBOX,
+    ID_LDISTEXTCHECKBOX,
+    ID_LISTBOX,
+    ID_METACHECKBOX,
+    ID_NOTEBOOK,
+    ID_OPENGLBOX,
+    ID_OUTLINECHECKBOX1,
+    ID_PANEL,
+    ID_PANEL2,
+    ID_PANEL3,
+    ID_PANELADVANCED,
+    ID_PANELAIS,
+    ID_PANELFONT,
+    ID_PANELPIM,
+    ID_PRESERVECHECKBOX,
+    ID_PRINTCHECKBOX1,
+    ID_QUILTCHECKBOX1,
+    ID_RADIOBOX,
+    ID_RASTERCHECKBOX1,
+    ID_SCAMINCHECKBOX,
+    ID_SCANCHECKBOX,
+    ID_SDMMFORMATCHOICE,
+    ID_SELECTLIST,
+    ID_SHOWDEPTHUNITSBOX1,
+    ID_SHOWGPSWINDOW,
+    ID_SHOWLAYERSCHECKBOX,
+    ID_SKEWCOMPBOX,
+    ID_SMOOTHPANZOOMBOX,
+    ID_SOUNDGCHECKBOX,
+    ID_STYLESCOMBOBOX,
+    ID_TCDATAADD,
+    ID_TCDATADEL,
+    ID_TEXTCHECKBOX,
+    ID_TEXTCTRL,
+    ID_TEXTCTRL1,
+    ID_TIDESELECTED,
+    ID_TRACKCHECKBOX,
+    ID_TRACKHILITE,
+    ID_TRANSTOOLBARCHECKBOX,
+    ID_UPDCHECKBOX,
+    ID_VECTORCHECKBOX1,
+    ID_ZTCCHECKBOX,
+    xID_OK
 };
 
 //    Define an int bit field for dialog return value
@@ -178,59 +179,82 @@ class options: public wxScrollingDialog
     DECLARE_EVENT_TABLE()
 
 public:
-    options( );
-    options( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME, const wxString& caption = SYMBOL_OPTIONS_TITLE,
-           const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size = SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE);
+    options();
+    options( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME, const wxString& caption =
+            SYMBOL_OPTIONS_TITLE, const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size =
+            SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE );
 
-    ~options( );
+    ~options();
 
-    bool Create( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME, const wxString& caption = SYMBOL_OPTIONS_TITLE,
-             const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size = SYMBOL_OPTIONS_SIZE,
-             long style = SYMBOL_OPTIONS_STYLE);
+    bool Create( MyFrame* parent, wxWindowID id = SYMBOL_OPTIONS_IDNAME, const wxString& caption =
+            SYMBOL_OPTIONS_TITLE, const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size =
+            SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE );
 
     void Init();
 
     wxWindow* GetContentWindow() const;
 
     void CreateControls();
-    void SetColorScheme(ColorScheme cs);
+    size_t CreatePanel( wxString title );
+    wxScrolledWindow *AddPage( size_t parent, wxString title );
+    void SetColorScheme( ColorScheme cs );
 
-    void SetInitChartDir(wxString &dir){ m_init_chart_dir = dir;}
+    void SetInitChartDir( wxString &dir )
+    {
+        m_init_chart_dir = dir;
+    }
     void SetInitialSettings();
 
-    void SetCurrentDirList(ArrayOfCDI p)  {m_CurrentDirList = p;}
-    void SetWorkDirListPtr(ArrayOfCDI *p)  {m_pWorkDirList = p;}
+    void SetCurrentDirList( ArrayOfCDI p )
+    {
+        m_CurrentDirList = p;
+    }
+    void SetWorkDirListPtr( ArrayOfCDI *p )
+    {
+        m_pWorkDirList = p;
+    }
+    ArrayOfCDI* GetWorkDirListPtr()
+    {
+        return m_pWorkDirList;
+    }
 
-    void SetConfigPtr(MyConfig *p)  {m_pConfig = p;}
+    void SetConfigPtr( MyConfig *p )
+    {
+        m_pConfig = p;
+    }
     void OnDebugcheckbox1Click( wxCommandEvent& event );
     void OnDirctrlSelChanged( wxTreeEvent& event );
     void OnButtonaddClick( wxCommandEvent& event );
     void OnButtondeleteClick( wxCommandEvent& event );
     void OnRadioboxSelected( wxCommandEvent& event );
+    void OnApplyClick( wxCommandEvent& event );
     void OnXidOkClick( wxCommandEvent& event );
     void OnCancelClick( wxCommandEvent& event );
     void OnChooseFont( wxCommandEvent& event );
-    void OnDisplayCategoryRadioButton( wxCommandEvent& event);
+    void OnDisplayCategoryRadioButton( wxCommandEvent& event );
     void OnButtonClearClick( wxCommandEvent& event );
     void OnButtonSelectClick( wxCommandEvent& event );
-    void OnPageChange(wxNotebookEvent& event);
-    void OnNMEASourceChoice(wxCommandEvent& event);
-    void OnButtonSelectSound(wxCommandEvent& event);
-    void OnButtonTestSound(wxCommandEvent& event);
+    void OnPageChange( wxListbookEvent& event );
+    void OnNMEASourceChoice( wxCommandEvent& event );
+    void OnButtonSelectSound( wxCommandEvent& event );
+    void OnButtonTestSound( wxCommandEvent& event );
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
-    void OnButtonGroups(wxCommandEvent& event);
-    void OnButtonTCData(wxCommandEvent& event);
+    void OnZTCCheckboxClick( wxCommandEvent& event );
+    void OnButtonGroups( wxCommandEvent& event );
+    void OnInsertTideDataLocation( wxCommandEvent &event );
+    void OnRemoveTideDataLocation( wxCommandEvent &event );
     void OnCharHook( wxKeyEvent& event );
 
     void UpdateWorkArrayFromTextCtl();
-    void CreateChartsPage();
-    void PopulateChartsPage();
 
 // Should we show tooltips?
     static bool ShowToolTips();
 
-    wxNotebook*             itemNotebook4;
+    wxListbook*             m_pListbook;
+    size_t idDisplay, idConnections, idCharts, idShip, idUI, idPlugins;
     int                     lastPage;
+    wxPoint                 lastWindowPos;
+    wxButton*               m_ApplyButton;
     wxButton*               m_OKButton;
     wxButton*               m_CancelButton;
 
@@ -238,7 +262,6 @@ public:
     int                     m_groups_changed;
 
 //    For General Options
-    wxScrolledWindow        *itemPanel5;
     wxCheckBox              *pDebugShowStat;
     wxCheckBox              *pPrintShowIcon;
     wxCheckBox              *pCDOOutlines;
@@ -260,7 +283,6 @@ public:
     int                      k_tides;
 
 //    For GPS Page
-    wxScrolledWindow        *itemPanelGPS;
     wxCheckBox              *pShowGPSWin;
     wxCheckBox              *pGarminHost;
     wxCheckBox              *pFilterNMEA;
@@ -268,7 +290,6 @@ public:
     wxTextCtrl              *pCOGUPUpdateSecs;
 
 //    For "S57" page
-    wxScrolledWindow        *ps57Ctl;
     wxCheckListBox          *ps57CtlListBox;
     wxRadioBox              *pDispCat;
     wxButton                *itemButtonClearList;
@@ -293,10 +314,8 @@ public:
     int                       k_vectorcharts;
 
 //    For "Charts" page
-    wxScrolledWindow          *itemPanel9;
-    wxStaticBoxSizer          *itemStaticBoxSizer11;
-    wxBoxSizer                *itemBoxSizer10;
-    wxGenericDirCtrl          *pDirCtl;
+    wxStaticBoxSizer          *loadedSizer;
+    wxBoxSizer                *chartPanel;
     wxTextCtrl                *pSelCtl;
     wxListBox                 *pListBox;
     wxStaticBox               *itemActiveChartStaticBox;
@@ -313,7 +332,6 @@ public:
     wxComboBox              *m_itemNMEABaudListBox;
 
 //    For "AIS" Page
-    wxScrolledWindow          *itemPanelAIS;
 
     wxCheckBox                *m_pCheck_CPA_Max;
     wxTextCtrl                *m_pText_CPA_Max;
@@ -342,8 +360,9 @@ public:
     wxCheckBox                *m_pCheck_Show_Area_Notices;
     wxCheckBox                *m_pCheck_Draw_Target_Size;
 
+//    For Ship page
+
 //    For Fonts page
-    wxScrolledWindow        *itemPanelFont;
     wxBoxSizer              *m_itemBoxSizerFontPanel;
     wxComboBox              *m_itemFontElementListBox;
     wxComboBox              *m_itemStyleListBox;
@@ -358,7 +377,6 @@ public:
     int                     k_plugins;
 
 //    For "Etc." Page
-    wxScrolledWindow        *itemPanelAdvanced;
     wxCheckBox              *pNavAidShowRadarRings;
     wxTextCtrl              *pNavAidRadarRingsNumberVisible;
     wxTextCtrl              *pNavAidRadarRingsStep;
@@ -366,7 +384,7 @@ public:
     wxCheckBox              *pWayPointPreventDragging;
     wxCheckBox              *pEnableZoomToCursor;
     wxCheckBox              *pPreserveScale;
-    wxCheckBox		    *pPlayShipsBells;  // pjotrc 2010.02.09
+    wxCheckBox		        *pPlayShipsBells;
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
     wxCheckBox              *pShowLayers;
@@ -392,9 +410,29 @@ public:
     MyFrame                 *pParent;
 
     wxArrayString           *m_pSerialArray;
+
+private:
+    void CreatePanel_AIS( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
+    void CreatePanel_Ownship( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
+    void CreatePanel_NMEA( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
+    void CreatePanel_ChartsLoad( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
+    void CreatePanel_VectorCharts( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
+    void CreatePanel_TidesCurrents( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
+    void CreatePanel_Display( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
+    void CreatePanel_UI( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
+
+    int m_minimumWidth;
+    int m_returnChanges;
+    wxListBox *tcDataSelected;
 };
-
-
 
 class groups_dialog: public wxDialog
 {
@@ -456,42 +494,6 @@ class groups_dialog: public wxDialog
             ArrayOfDirCtrls   m_DirCtrlArray;
 
             ChartGroupArray *m_pGroupArray;
-};
-
-class tidedata_dialog: public wxDialog
-{
-      DECLARE_DYNAMIC_CLASS( tidedata_dialog )
-                  DECLARE_EVENT_TABLE()
-
-      public:
-            tidedata_dialog( );
-            tidedata_dialog( MyFrame* parent, wxWindowID id = -1, const wxString& caption = _("Tide/Current Data Selector"),
-                    const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size = SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE);
-
-            ~tidedata_dialog( );
-
-            bool Create( MyFrame* parent, wxWindowID id = -1, const wxString& caption = _("Tide/Current Data Selector"),
-                         const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size = SYMBOL_OPTIONS_SIZE,
-                         long style = SYMBOL_OPTIONS_STYLE);
-
-            void Init();
-            void CreateControls();
-
-            void OnInsertTideDataLocation(wxCommandEvent &event);
-            void OnRemoveTideDataLocation(wxCommandEvent &event);
-            void OnOK(wxCommandEvent &event);
-
-      private:
-
-            MyFrame      *pParent;
-
-            wxButton    *m_OKButton;
-            wxButton    *m_CancelButton;
-            wxButton    *m_pinsertButton;
-            wxButton    *m_premoveButton;
-
-            wxListBox   *m_DataSelected;
-
 };
 
 

@@ -121,7 +121,7 @@ bool ChartTableHeader::CheckValid()
                 return false;
           else
           {
-                wxLogMessage(_T("   Scheduling db upgrade to current db version on Toolbox->Charts page visit..."));
+                wxLogMessage(_T("   Scheduling db upgrade to current db version on Options->Charts page visit..."));
                 return true;
           }
 */

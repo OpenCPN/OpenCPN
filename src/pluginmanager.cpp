@@ -735,7 +735,7 @@ void PlugInManager::SendCursorLatLonToAllPlugIns( double lat, double lon)
     }
 }
 
-void PlugInManager::AddAllPlugInToolboxPanels( wxNotebook *pnotebook)
+void PlugInManager::AddAllPlugInToolboxPanels( wxBookCtrlBase *pnotebook)
 {
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
@@ -744,8 +744,10 @@ void PlugInManager::AddAllPlugInToolboxPanels( wxNotebook *pnotebook)
         {
             if(pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)
             {
+/* Deprecated. API will be updated for new Options window
                 pic->m_pplugin->SetupToolboxPanel(0, pnotebook);
                 pic->m_bToolboxPanel = true;
+ */
             }
         }
     }
@@ -1769,7 +1771,7 @@ PlugIn_AIS_Target *Create_PI_AIS_Target(AIS_Target_Data *ptarget)
 
 PluginListPanel::PluginListPanel( wxWindow *parent, wxWindowID id, const wxPoint &pos, const wxSize &size, ArrayOfPlugIns *pPluginArray )
 //      :wxPanel( parent, id, pos, size, wxSUNKEN_BORDER|wxTAB_TRAVERSAL )
-    :wxScrolledWindow( parent, id, pos, size, wxSUNKEN_BORDER|wxTAB_TRAVERSAL|wxVSCROLL )
+    :wxScrolledWindow( parent, id, pos, size, wxTAB_TRAVERSAL|wxVSCROLL )
 
 {
     m_pPluginArray = pPluginArray;

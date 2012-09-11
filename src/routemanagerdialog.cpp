@@ -851,7 +851,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
         m_pRouteListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
     }
 
-    if( m_lastRteItem ) m_pRouteListCtrl->EnsureVisible( m_lastRteItem );
+    if( m_lastRteItem >= 0 ) m_pRouteListCtrl->EnsureVisible( m_lastRteItem );
     UpdateRteButtons();
 }
 

@@ -64,6 +64,7 @@ class OCPN_NMEAEvent;
 class ChartCanvas;
 class ocpnFloatingToolbarDialog;
 class OCPN_MsgEvent;
+class options;
 
 //----------------------------------------------------------------------------
 //   constants
@@ -223,6 +224,7 @@ class MyFrame: public wxFrame
     void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
     void SetChartThumbnail(int index);
     int  DoOptionsDialog();
+    int  ProcessOptionsDialog(int resultFlags , options* dialog );
     void DoPrint(void);
     void StopSockets(void);
     void ResumeSockets(void);
@@ -363,6 +365,15 @@ class MyFrame: public wxFrame
     bool                m_bpersistent_quilt;
     int                 m_ChartUpdatePeriod;
     bool                m_last_bGPSValid;
+
+    wxString            previous_NMEA_source;
+    bool                previous_bGarminHost;
+    wxString            previous_NMEA_APPort;
+    wxString            previous_AIS_Port;
+    wxString            prev_locale;
+    bool                bPrevQuilt;
+    bool                bPrevFullScreenQuilt;
+    bool                bPrevOGL;
 
     DECLARE_EVENT_TABLE()
 };

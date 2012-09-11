@@ -34,6 +34,7 @@
 #endif //precompiled headers
 #include "wx/image.h"
 #include <wx/graphics.h>
+#include <wx/listbook.h>
 #include <wx/clipbrd.h>
 #include <wx/aui/aui.h>
 
@@ -8870,7 +8871,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
                 pCM93DetailSlider = new CM93DSlide( this, -1, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
                                                     CM93_ZOOM_FACTOR_MAX_RANGE,
                                                     wxPoint( g_cm93detail_dialog_x, g_cm93detail_dialog_y ), wxDefaultSize,
-                                                    wxSIMPLE_BORDER, _("cm93 Detail") );
+                                                    wxSIMPLE_BORDER, _("CM93 Detail Level") );
             }
 
             //    Here is an ugly piece of code which prevents the slider from taking the keyboard focus
@@ -15506,17 +15507,17 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
         wxWindowListNode *node = kids.Item( i );
         wxWindow *win = node->GetData();
 
-        if( win->IsKindOf( CLASSINFO(wxListBox) ) ) ( (wxListBox*) win )->SetBackgroundColour(
-                col1 );
+        if( win->IsKindOf( CLASSINFO(wxListBox) ) )
+            ( (wxListBox*) win )->SetBackgroundColour( col );
 
-        if( win->IsKindOf( CLASSINFO(wxListCtrl) ) ) ( (wxListCtrl*) win )->SetBackgroundColour(
-                col1 );
+        if( win->IsKindOf( CLASSINFO(wxListCtrl) ) )
+            ( (wxListCtrl*) win )->SetBackgroundColour( col1 );
 
-        if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) ) ( (wxTextCtrl*) win )->SetBackgroundColour(
-                col );
+        if( win->IsKindOf( CLASSINFO(wxTextCtrl) ) )
+            ( (wxTextCtrl*) win )->SetBackgroundColour( col );
 
-        if( win->IsKindOf( CLASSINFO(wxStaticText) ) ) ( (wxTextCtrl*) win )->SetForegroundColour(
-                uitext );
+        if( win->IsKindOf( CLASSINFO(wxStaticText) ) )
+            ( (wxStaticText*) win )->SetForegroundColour( uitext );
 
         else if( win->IsKindOf( CLASSINFO(wxBitmapComboBox) ) ) {
 #if wxCHECK_VERSION(2,9,0)
@@ -15526,20 +15527,26 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
 #endif
         }
 
-        else if( win->IsKindOf( CLASSINFO(wxChoice) ) ) ( (wxChoice*) win )->SetBackgroundColour(
-                col1 );
+        else if( win->IsKindOf( CLASSINFO(wxChoice) ) )
+            ( (wxChoice*) win )->SetBackgroundColour( col );
 
-        else if( win->IsKindOf( CLASSINFO(wxComboBox) ) ) ( (wxComboBox*) win )->SetBackgroundColour(
-                col1 );
+        else if( win->IsKindOf( CLASSINFO(wxComboBox) ) )
+            ( (wxComboBox*) win )->SetBackgroundColour( col );
 
-        else if( win->IsKindOf( CLASSINFO(wxGenericDirCtrl) ) ) ( (wxGenericDirCtrl*) win )->SetBackgroundColour(
-                col1 );
+        else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) )
+            ( (wxScrolledWindow*) win )->SetBackgroundColour( col1 );
 
-        else if( win->IsKindOf( CLASSINFO(wxTreeCtrl) ) ) ( (wxTreeCtrl*) win )->SetBackgroundColour(
-                col1 );
+        else if( win->IsKindOf( CLASSINFO(wxGenericDirCtrl) ) )
+            ( (wxGenericDirCtrl*) win )->SetBackgroundColour( col1 );
 
-        else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) ) ( (wxRadioButton*) win )->SetBackgroundColour(
-                col1 );
+        else if( win->IsKindOf( CLASSINFO(wxListbook) ) )
+            ( (wxListbook*) win )->SetBackgroundColour( col1 );
+
+        else if( win->IsKindOf( CLASSINFO(wxTreeCtrl) ) )
+            ( (wxTreeCtrl*) win )->SetBackgroundColour( col );
+
+        else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
+            ( (wxRadioButton*) win )->SetBackgroundColour( col1 );
 
         else if( win->IsKindOf( CLASSINFO(wxNotebook) ) ) {
             ( (wxNotebook*) win )->SetBackgroundColour( col1 );
@@ -15551,8 +15558,7 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
         }
 
         else if( win->IsKindOf( CLASSINFO(wxToggleButton) ) ) {
-            ( (wxToggleButton*) win )->SetBackgroundColour(
-                col1 );
+            ( (wxToggleButton*) win )->SetBackgroundColour( col1 );
         }
 
         else if( win->IsKindOf( CLASSINFO(wxPanel) ) ) {

@@ -163,6 +163,36 @@
 		</tools>
 
 		<icons>
+			<icon name="Display">
+				<icon-location x="20" y="400"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="20" y="430"/>
+			</icon>
+			<icon name="Connections">
+				<icon-location x="80" y="400"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="80" y="430"/>
+			</icon>
+			<icon name="Charts">
+				<icon-location x="140" y="400"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="140" y="430"/>
+			</icon>
+			<icon name="Ship">
+				<icon-location x="200" y="400"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="200" y="430"/>
+			</icon>
+			<icon name="UI">
+				<icon-location x="260" y="400"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="260" y="430"/>
+			</icon>
+			<icon name="Plugins">
+				<icon-location x="320" y="400"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="320" y="430"/>
+			</icon>
 			<icon name="mob">
 				<icon-location x="700" y="20"/>
 			</icon>
@@ -483,36 +513,6 @@
 				<icon-location x="260" y="60"/>
 				<rollover-location x="260" y="260"/>
 			</tool>
-			<tool name="Display">
-				<icon-location x="20" y="370"/>
-                <size x="40" y="40"/>
-				<rollover-location x="20" y="430"/>
-			</tool>
-			<tool name="Connections">
-				<icon-location x="80" y="370"/>
-                <size x="40" y="40"/>
-				<rollover-location x="80" y="430"/>
-			</tool>
-			<tool name="Charts">
-				<icon-location x="140" y="370"/>
-                <size x="40" y="40"/>
-				<rollover-location x="140" y="430"/>
-			</tool>
-			<tool name="Ship">
-				<icon-location x="200" y="370"/>
-                <size x="40" y="40"/>
-				<rollover-location x="200" y="430"/>
-			</tool>
-			<tool name="UI">
-				<icon-location x="260" y="370"/>
-                <size x="40" y="40"/>
-				<rollover-location x="260" y="430"/>
-			</tool>
-			<tool name="Plugins">
-				<icon-location x="320" y="370"/>
-                <size x="40" y="40"/>
-				<rollover-location x="320" y="430"/>
-			</tool>
 			<tool name="Dashboard">
 				<icon-location x="658" y="20"/>
 				<rollover-location x="658" y="220"/>
@@ -636,6 +636,36 @@
 		</tools>
 
 		<icons>
+			<icon name="Display">
+				<icon-location x="20" y="370"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="20" y="430"/>
+			</icon>
+			<icon name="Connections">
+				<icon-location x="80" y="370"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="80" y="430"/>
+			</icon>
+			<icon name="Charts">
+				<icon-location x="140" y="370"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="140" y="430"/>
+			</icon>
+			<icon name="Ship">
+				<icon-location x="200" y="370"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="200" y="430"/>
+			</icon>
+			<icon name="UI">
+				<icon-location x="260" y="370"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="260" y="430"/>
+			</icon>
+			<icon name="Plugins">
+				<icon-location x="320" y="370"/>
+                        <size x="40" y="40"/>
+				<rollover-location x="320" y="430"/>
+			</icon>
 			<icon name="mob">
 				<icon-location x="620" y="100"/>
 				<size x="21" y="21"/>
@@ -1077,6 +1107,36 @@
 		</tools>
 
 		<icons>
+			<icon name="Display">
+				<icon-location x="20" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="20" y="430"/>
+			</icon>
+			<icon name="Connections">
+				<icon-location x="80" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="80" y="430"/>
+			</icon>
+			<icon name="Charts">
+				<icon-location x="140" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="140" y="430"/>
+			</icon>
+			<icon name="Ship">
+				<icon-location x="200" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="200" y="430"/>
+			</icon>
+			<icon name="UI">
+				<icon-location x="260" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="260" y="430"/>
+			</icon>
+			<icon name="Plugins">
+				<icon-location x="320" y="370"/>
+                <size x="40" y="40"/>
+				<rollover-location x="320" y="430"/>
+			</icon>
 			<icon name="mob">
 				<icon-location x="620" y="100"/>
 				<size x="21" y="21"/>

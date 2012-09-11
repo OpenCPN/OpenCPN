@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-22 18:35+0200\n"
-"PO-Revision-Date: 2012-08-22 18:45+0100\n"
+"POT-Creation-Date: 2012-09-10 10:13+0200\n"
+"PO-Revision-Date: 2012-09-10 12:45+0100\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -24,15 +24,6 @@ msgstr ""
 "\n"
 "\n"
 "Går vidare med libgps inställningar..."
-
-#
-#
-msgid ""
-"\n"
-"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
-msgstr ""
-"\n"
-"         OpenCPN. Ett program för navigering byggt på öppen källkod"
 
 #
 #
@@ -74,26 +65,6 @@ msgid ""
 msgstr ""
 "           Inga sjökort finns installerade.\n"
 "Välj mapp för sjökort i meny under Verktygslåda->Sjökort"
-
-#
-#
-msgid "      \"Ship Name\" MMSI (Call Sign)"
-msgstr "      \"Fartygsnamn\" MMSI (Anropssignal)"
-
-#
-#
-msgid "      COG arrow predictor length (Minutes):"
-msgstr "     Kurspilens längd visar beräknad position efter (minuter):"
-
-#
-#
-msgid "      Max moored target speed (Kts.):"
-msgstr "      vid maximal målhastighet (Knop):"
-
-#
-#
-msgid "      Target track length (Minutes):"
-msgstr "      Längd på målspår (minuter):"
 
 #
 msgid "    Incompatible PlugIn detected:"
@@ -170,11 +141,6 @@ msgstr "   VP slutkontroll: Sjökortets referenssystem är felaktigt "
 
 #
 #
-msgid "  ..And TCPA is less than (Minutes):"
-msgstr "  ...och TCPA är mindre än (minuter):"
-
-#
-#
 msgid "  Could not open AIS serial port '"
 msgstr "  AIS serieport kan inte öppnas: '"
 
@@ -214,17 +180,6 @@ msgstr " -- [Flyttbar version (-p) körs från"
 #
 msgid " </b>in<b> "
 msgstr " </b>om<b> "
-
-#
-#
-#, c-format
-msgid " COG: %03d Deg."
-msgstr " COG: %03d°"
-
-#
-#
-msgid " COG: 000 Deg."
-msgstr " COG: 000°"
 
 #
 #
@@ -313,6 +268,11 @@ msgstr " till "
 #
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr "\" är tom, visar istället \"Alla aktiva sjökort\"-bunten."
+
+#
+#
+msgid "\"Ship Name\" MMSI (Call Sign)"
+msgstr "\"Fartygsnamn\" MMSI (Anropssignal)"
 
 #
 #
@@ -539,6 +499,11 @@ msgid "..."
 msgstr "..."
 
 #
+#
+msgid "...and TCPA is less than (min)"
+msgstr "...och TCPA är mindre än (minuter):"
+
+#
 msgid "1 pixel"
 msgstr "1 pixel"
 
@@ -628,9 +593,8 @@ msgid "AIS Data Port"
 msgstr "AIS dataport"
 
 #
-#
-msgid "AIS General"
-msgstr "AIS Allmänt"
+msgid "AIS Port (Shared)"
+msgstr "Delad port med AIS"
 
 #
 #
@@ -646,6 +610,11 @@ msgstr "Visa AIS info "
 #
 msgid "AIS Target Query..."
 msgstr "Visa AIS info"
+
+#
+#
+msgid "AIS Targets"
+msgstr "AIS-fartyg"
 
 #
 #
@@ -665,7 +634,7 @@ msgstr "AIS varning"
 #
 #
 msgid "AISTargetQuery"
-msgstr "AIS-målegenskaper"
+msgstr "AIS-fartygsegenskaper"
 
 #
 #
@@ -684,11 +653,6 @@ msgstr "Aktivera"
 
 #
 #
-msgid "Activate CM93 Offset"
-msgstr "Aktivera CM93-korrektion"
-
-#
-#
 msgid "Activate Next Waypoint"
 msgstr "Aktivera nästa waypoint"
 
@@ -699,17 +663,13 @@ msgstr "Aktiv"
 
 #
 #
-msgid "Active Chart Directories"
-msgstr "Valda mappar för sjökort"
-
-#
-#
 msgid "Active Charts"
 msgstr "Använda sjökortsmappar"
 
 #
-msgid "Active Tide/Current Data"
-msgstr "Aktiv tidvatten och strömdata"
+#
+msgid "Active Datasets"
+msgstr "Datafiler för tidvatten och strömmar"
 
 #
 msgid "Add"
@@ -717,8 +677,17 @@ msgstr "Lägg till"
 
 #
 #
-msgid "Add Selection"
-msgstr "Lägg till markerad mapp"
+msgid "Add Dataset..."
+msgstr "Lägg till fil...."
+
+#
+#
+msgid "Add Directory..."
+msgstr "Lägg till mapp...."
+
+#
+msgid "Add a directory containing chart files"
+msgstr "Lägg till en ny mapp med sjökort"
 
 #
 msgid "Add new"
@@ -749,11 +718,6 @@ msgid "All Active Charts"
 msgstr "Alla använda sjökortsmappar"
 
 #
-#
-msgid "All files (*.*)|*.*"
-msgstr "Alla filer (*.*)|*.*"
-
-#
 msgid "Anchorage created "
 msgstr "Ankring skapad"
 
@@ -772,6 +736,10 @@ msgstr ""
 #
 msgid "Append Waypoint"
 msgstr "Lägg till waypoint"
+
+#
+msgid "Apply"
+msgstr "Använd"
 
 #
 #
@@ -832,11 +800,6 @@ msgstr "Automatisk dagligt spår"
 #
 msgid "Autopilot Output Port"
 msgstr "Autopilot utgående port"
-
-#
-#
-msgid "Available Chart Directories"
-msgstr "Välj mapp för sjökort"
 
 #
 #
@@ -943,14 +906,18 @@ msgid "Bunkership"
 msgstr "Bunkerfartyg"
 
 #
+msgid "Buoy/Light Labels"
+msgstr "Namn på bojar och fyrar"
+
+#
 #
 msgid "C&olour:"
 msgstr "Textf&ärg:"
 
 #
 #
-msgid "CM93"
-msgstr "CM93"
+msgid "CM93 Detail Level"
+msgstr "CM93 detaljnivå"
 
 #
 #
@@ -961,21 +928,6 @@ msgstr "CM93 detaljnivå..."
 #
 msgid "CM93 Offset Dialog..."
 msgstr "CM93-korrektion..."
-
-#
-#
-msgid "CM93 Offset Display"
-msgstr "CM93 Visa korrektion"
-
-#
-#
-msgid "CM93 Offsets"
-msgstr "CM93-korrektion"
-
-#
-#
-msgid "CM93 Zoom Detail"
-msgstr "CM93 detaljnivå"
 
 #
 #
@@ -995,7 +947,7 @@ msgstr "CPA/TCPA"
 #
 #
 msgid "CPA/TCPA Alerts"
-msgstr "CPA/TCPA-varning"
+msgstr "CPA/TCPA-larm"
 
 #
 #
@@ -1115,18 +1067,8 @@ msgstr "Enhet för djup"
 
 #
 #
-msgid "Chart Display Filters"
-msgstr "Inställning för Sjökortsvisning"
-
-#
-#
 msgid "Chart Display Options"
 msgstr "Anpassa visning av sjökort"
-
-#
-#
-msgid "Chart Display Style"
-msgstr "Tema för sjökortsvisning"
 
 #
 #
@@ -1140,6 +1082,11 @@ msgstr "Sjökortsbuntar..."
 #
 msgid "Chart Groups...New Group"
 msgstr "Sjökortsbuntar... Ny bunt"
+
+#
+#
+msgid "Chart Information Objects"
+msgstr "Sjökortsfakta"
 
 #
 #
@@ -1241,6 +1188,11 @@ msgstr "Kombo!"
 
 #
 #
+msgid "Connections"
+msgstr "Anslutningar"
+
+#
+#
 msgid "Console Legend"
 msgstr "Rubriker i Aktiv rutt-fönstret"
 
@@ -1262,6 +1214,14 @@ msgstr "Containerfartyg"
 #
 msgid "Copy"
 msgstr "Kopiera"
+
+#
+msgid "Copy Log File to Clipboard"
+msgstr "Kopiera körjournal till urklipp"
+
+#
+msgid "Copy Settings File to Clipboard"
+msgstr "Kopiera inställningar till urklipp"
 
 #
 msgid "Copy..."
@@ -1289,8 +1249,8 @@ msgstr "Visa kurs uppåt"
 
 #
 #
-msgid "Course-Up Mode Display Update Period (Sec.)"
-msgstr "Kurs uppåt-läge, skärmuppdateringsperiod (sekunder)"
+msgid "Course-Up Mode Display Update Period (sec)"
+msgstr "Kurs uppåt-läge, uppdateringsperiod (sek)"
 
 #
 #
@@ -1374,8 +1334,8 @@ msgstr "NMEA datakälla:"
 
 #
 #
-msgid "De-Clutter Text"
-msgstr "Rensa överlappande text"
+msgid "De-Cluttered Text"
+msgstr "Rensa överlappande texter"
 
 #
 #
@@ -1384,7 +1344,7 @@ msgstr "Inaktivera"
 
 #
 #
-msgid "Decimal degrees"
+msgid "Decimal Degrees"
 msgstr "Decimala grader"
 
 #
@@ -1404,7 +1364,7 @@ msgstr "Standardfärg"
 
 #
 #
-msgid "Degrees, Decimal minutes"
+msgid "Degrees, Decimal Minutes"
 msgstr "Grader, decimala minuter"
 
 #
@@ -1429,11 +1389,6 @@ msgstr "Radera bunt"
 
 #
 #
-msgid "Delete Selection"
-msgstr "Radera markerad mapp"
-
-#
-#
 msgid "Delete Waypoint"
 msgstr "Radera waypoint"
 
@@ -1449,13 +1404,13 @@ msgstr "Avgångstid (m/d/å t:m)"
 
 #
 #
-msgid "Depth Settings"
-msgstr "Djupinställning"
+msgid "Depth Settings(m)"
+msgstr "Inställning för"
 
 #
 #
-msgid "Depth Settings(m)"
-msgstr "Inställning för"
+msgid "Depth Soundings"
+msgstr "Visa djupinformation"
 
 #
 #
@@ -1469,13 +1424,18 @@ msgstr "Destination"
 
 #
 #
+msgid "Directories"
+msgstr "Sjökortsmappar"
+
+#
+#
 msgid "Disable"
 msgstr "Avaktivera"
 
 #
 #
 msgid "Disable Full Screen Quilting"
-msgstr "Inaktivera sömlös visning vid fullskärm"
+msgstr "Inaktivera sömlös visning i fullskärmsläge"
 
 #
 #
@@ -1489,12 +1449,17 @@ msgstr "Grundinställning"
 
 #
 #
+msgid "Display Style"
+msgstr "Förinställda detaljnivåer"
+
+#
+#
 msgid "Distance"
 msgstr "Distans"
 
 #
 #
-msgid "Distance between rings"
+msgid "Distance Between Rings"
 msgstr "Avstånd mellan ringar"
 
 #
@@ -1545,11 +1510,6 @@ msgstr "E&xportera alla..."
 
 #
 #
-msgid "ENC/Vector"
-msgstr "ENC/Vektor"
-
-#
-#
 msgid "ETA"
 msgstr "ETA"
 
@@ -1589,28 +1549,13 @@ msgstr "Aktivera sömlös visning"
 
 #
 #
-msgid "Enable Manual CM93 Offsets"
-msgstr "Aktivera manuell CM93-korrektion"
+msgid "Enable Target Alert Acknowledge timeout (min)"
+msgstr "Aktivera max tid för kvittens av AIS-larm (min)"
 
 #
 #
-msgid "Enable Smooth Panning / Zooming"
-msgstr "Tillåt steglös skalning / förflyttning"
-
-#
-#
-msgid "Enable Target Alert Acknowledge timeout (minutes)"
-msgstr "Aktivera max tid för kvittens av AIS-varning (minuter)"
-
-#
-#
-msgid "Enable Wheel-Zoom-to-Cursor"
-msgstr "Aktivera zoom-med-mushjulet"
-
-#
-#
-msgid "Enable transparent toolbar"
-msgstr "Aktivera transparent verktygsmeny"
+msgid "Enable Transparent Toolbar"
+msgstr "Aktivera transparent verktygslist"
 
 #
 #
@@ -1643,18 +1588,8 @@ msgstr "Beräknad tid :"
 
 #
 #
-msgid "Etc."
-msgstr "Övrigt"
-
-#
-#
 msgid "Export GPX file"
 msgstr "Exportera GPXfil"
-
-#
-#
-msgid "Extend Light Sectors"
-msgstr "Utdragna fyrsektorer"
 
 #
 #
@@ -1670,6 +1605,11 @@ msgstr "Förläng spår"
 #
 msgid "Extended"
 msgstr "Utökad"
+
+#
+#
+msgid "Extended Light Sectors"
+msgstr "Utdragna fyrsektorer"
 
 #
 #
@@ -1708,12 +1648,12 @@ msgstr "Färja"
 #
 #
 msgid "Filter NMEA Course and Speed data"
-msgstr "Filtrera NMEA Kurs- och hastighetsdata"
+msgstr "Filtrera NMEA kurs- och hastighetsdata"
 
 #
 #
-msgid "Filter Period (Sec.)"
-msgstr "Filterperiod (Sek.)"
+msgid "Filter Period (sec)"
+msgstr "Filterperiod (sek)"
 
 #
 #
@@ -1731,9 +1671,8 @@ msgid "Fixed Structure"
 msgstr "Fast struktur"
 
 #
-#
-msgid "Font Options"
-msgstr "Alternativ för Teckensnitt"
+msgid "Fonts"
+msgstr "Typsnitt"
 
 #
 msgid "For this leg the Great Circle route is "
@@ -1742,7 +1681,7 @@ msgstr "På det här benet är det "
 #
 #
 msgid "Force Full Database Rebuild"
-msgstr "Tvinga fullständig databasuppdatering"
+msgstr "Läs in alla sjökort på nytt"
 
 #
 #
@@ -1753,11 +1692,6 @@ msgstr "Fraktpråm"
 #
 msgid "Freightbarge with containers"
 msgstr "Fraktpråm med containers"
-
-#
-#
-msgid "GPS"
-msgstr "GPS"
 
 #
 #
@@ -1779,11 +1713,6 @@ msgid "GPX"
 msgstr "GPX"
 
 #
-#
-msgid "GUI Options"
-msgstr "Användarinställningar"
-
-#
 msgid "GUID"
 msgstr "GUID"
 
@@ -1791,6 +1720,11 @@ msgstr "GUID"
 #
 msgid "Gas tanker"
 msgstr "Gastanker"
+
+#
+#
+msgid "General Options"
+msgstr "Allmänna inställningar"
 
 #
 #
@@ -1846,12 +1780,17 @@ msgstr "Här"
 #
 #
 msgid "Hide AIS Target CPA"
-msgstr "Visa inte CPA för AIS-mål"
+msgstr "Visa inte CPA för AIS-fartyg"
 
 #
 #
 msgid "Hide WPT names"
 msgstr "Dölj waypoint-namn"
+
+#
+#
+msgid "Hide anchored/moored targets, speed max (kn)"
+msgstr "Dölj ankrade fartyg, med en fart under (knop)"
 
 #
 #
@@ -1891,7 +1830,12 @@ msgstr "Symbol"
 #
 #
 msgid "Import GPX file"
-msgstr "Importera GPXfil"
+msgstr "Importera GPX-fil"
+
+#
+#
+msgid "Important Text Only"
+msgstr "Enbart viktiga texter"
 
 #
 #
@@ -1906,7 +1850,7 @@ msgstr "Infoga waypoint"
 #
 #
 msgid "Isol. Dngr"
-msgstr "Isol. Dngr"
+msgstr "Isolerad fara"
 
 #
 #
@@ -1920,6 +1864,10 @@ msgstr "Standard KML (för t ex Google Earth)"
 #
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "Utökad KML med extra waypoint-data (för QtVlm)"
+
+#
+msgid "Kts"
+msgstr "knop"
 
 #
 #
@@ -1964,12 +1912,12 @@ msgstr "Lager"
 #
 #
 msgid "Ldg Lt Front"
-msgstr "Ldg Lt Front"
+msgstr "Ensfyr, nedre"
 
 #
 #
 msgid "Ldg Lt Rear"
-msgstr "Ldg Lt Rear"
+msgstr "Ensfyr, övre"
 
 #
 #
@@ -2017,6 +1965,11 @@ msgstr "Ljussignal"
 
 #
 #
+msgid "Light Descriptions"
+msgstr "Visa fyrkaraktärer"
+
+#
+#
 msgid "Light Gray"
 msgstr "Ljusgrå"
 
@@ -2033,7 +1986,7 @@ msgstr "Ljussignal med sektorer"
 #
 #
 msgid "Limit range: NM"
-msgstr "Begränsa räckvidd: NM"
+msgstr "Begränsad räckvidd: NM"
 
 #
 #
@@ -2079,6 +2032,11 @@ msgstr "Visa innehåll"
 
 #
 #
+msgid "Loaded Charts"
+msgstr "Inlästa sjökortsmappar"
+
+#
+#
 msgid "Local @ PC"
 msgstr "Lokal @ PC"
 
@@ -2088,8 +2046,8 @@ msgstr "Lokal fil..."
 
 #
 #
-msgid "Lock all waypoints unless a waypoint property dialog is visible"
-msgstr "Lås alla waypoints om inte waypoint-fönstret visas"
+msgid "Lock Waypoints (Unless waypoint property dialog visible)"
+msgstr "Lås alla waypoints (Om inte waypoint-fönstret visas)"
 
 #
 #
@@ -2108,12 +2066,12 @@ msgstr "Longitud"
 #
 #
 msgid "Look Ahead Mode"
-msgstr "Aktivera framåtseende visning"
+msgstr "Förflytta sjökortet mot framtida position"
 
 #
 #
 msgid "Lost Targets"
-msgstr "Förlorade mål"
+msgstr "Borttappade fartyg"
 
 #
 #
@@ -2144,11 +2102,6 @@ msgstr "M/V"
 #
 msgid "MAN OVERBOARD"
 msgstr "Man över bord"
-
-#
-#
-msgid "META Objects"
-msgstr "META-objekt"
 
 #
 #
@@ -2192,8 +2145,8 @@ msgstr "Waypointegenskaper, lager: "
 
 #
 #
-msgid "Mark targets as lost after (Minutes:):"
-msgstr "Markera mål som förlorade efter (minuter):"
+msgid "Mark targets as lost after (min)"
+msgstr "Markera AIS-fartyg som borttappade efter (min)"
 
 #
 #
@@ -2247,11 +2200,6 @@ msgstr "Meter"
 
 #
 #
-msgid "Metres"
-msgstr "Meter"
-
-#
-#
 msgid "Mil/V"
 msgstr "Mil/V"
 
@@ -2259,6 +2207,10 @@ msgstr "Mil/V"
 #
 msgid "Military Vessel"
 msgstr "Militärfartyg"
+
+#
+msgid "Miscellaneous Options"
+msgstr "Övriga inställningar"
 
 #
 #
@@ -2331,19 +2283,18 @@ msgid "Move Waypoint"
 msgstr "Flytta waypoint"
 
 #
+msgid "NMEA"
+msgstr "NMEA"
+
+#
 #
 msgid "NMEA Baud Rate"
-msgstr "NMEA Baudrate"
+msgstr "NMEA datahastighet"
 
 #
 #
 msgid "NMEA Data Source"
 msgstr "NMEA datakälla"
-
-#
-#
-msgid "NMEA Options"
-msgstr "NMEA-inställningar"
 
 #
 msgid "NMi"
@@ -2368,9 +2319,12 @@ msgid "Navigate To This"
 msgstr "Navigera till denna"
 
 #
+msgid "Network GPSD"
+msgstr "GPSD via nätverk"
+
 #
-msgid "Navigation Data"
-msgstr "Navigationsdata"
+msgid "Network LIBGPS"
+msgstr "LIBGPS via nätverk"
 
 #
 msgid "New Group..."
@@ -2388,8 +2342,8 @@ msgstr "Nästa tidvatten"
 
 #
 #
-msgid "No CPA Calculation if target range is greater than (NMi):"
-msgstr "Ingen CPA-beräkning om målavstånd är större än (NM):"
+msgid "No CPA Calculation if target range is greater than (NMi)"
+msgstr "Ingen CPA-beräkning om fartygets avstånd är större än (NM)"
 
 #
 #
@@ -2410,6 +2364,10 @@ msgid "No. of items"
 msgstr "Antal förekomster"
 
 #
+msgid "None"
+msgstr "Ingen"
+
+#
 #
 msgid "North Up Mode"
 msgstr "Visa Norr uppåt"
@@ -2421,7 +2379,7 @@ msgstr "Ej manöverfärdig"
 
 #
 #
-msgid "Number of radar rings shown"
+msgid "Number of Radar Rings"
 msgstr "Antal radarringar som visas"
 
 #
@@ -2571,13 +2529,18 @@ msgstr "Skriv över befintlig fil?"
 
 #
 #
-msgid "OwnShip COG arrow predictor length (Minutes):"
-msgstr "Kurspilens längd visar beräknad position efter (minuter):"
+msgid "Own Ship"
+msgstr "Eget fartyg"
 
 #
 #
-msgid "OwnShip Display Options"
-msgstr "Anpassa båtsymbol"
+msgid "Own Ship Display Options"
+msgstr "Inställningar för eget fartyg"
+
+#
+#
+msgid "OwnShip COG arrow predictor length (min)"
+msgstr "Kurspilens längd visar beräknad position efter (min)"
 
 #
 #
@@ -2636,18 +2599,18 @@ msgstr "Lots"
 
 #
 #
-msgid "Place Trackpoints at distance interval (NMi):"
-msgstr "Placera spårpunkter med avståndsintervall (NM):"
+msgid "Place Trackpoints at distance interval (NMi)"
+msgstr "Lagra spårpunkter med avståndsintervall (NM)"
 
 #
 #
-msgid "Place Trackpoints at time interval (Seconds):"
-msgstr "Placera spårpunkter med tidsintervall (Sekunder):"
+msgid "Place Trackpoints at time interval (sec)"
+msgstr "Lagra spårpunkter med tidsintervall (sek)"
 
 #
 #
 msgid "Plain"
-msgstr "Enkel"
+msgstr "Enkla"
 
 #
 #
@@ -2661,13 +2624,13 @@ msgstr "Aktuell fart (Knop)"
 
 #
 #
-msgid "Play Sound on CPA/TCPA Alerts"
-msgstr "Ljudsignal vid CPA/TCPA-varning"
+msgid "Play Ships Bells"
+msgstr "Skeppsklocka (ljud)"
 
 #
 #
-msgid "Play ships bells"
-msgstr "Skeppsklocka (ljud)"
+msgid "Play Sound on CPA/TCPA Alerts"
+msgstr "Ljudsignal vid CPA/TCPA-larm"
 
 #
 #
@@ -2688,7 +2651,7 @@ msgstr "Fritidsfartyg, längd över 20 meter"
 
 #
 #
-msgid "PlugIns"
+msgid "Plugins"
 msgstr "Moduler"
 
 #
@@ -2763,8 +2726,8 @@ msgstr "Ställ in GPS för uppladdning av Rutt/Waypoint och klicka Skicka..."
 
 #
 #
-msgid "Preserve scale when switching charts"
-msgstr "Bibehåll skala vid växling till nytt sjökort"
+msgid "Preserve Scale when Switching Charts"
+msgstr "Behåll skala vid växling till nytt sjökort"
 
 #
 #
@@ -2924,11 +2887,6 @@ msgstr "Avstånd"
 
 #
 #
-msgid "Raster"
-msgstr "Raster"
-
-#
-#
 msgid "Real"
 msgstr "Faktisk"
 
@@ -2964,6 +2922,10 @@ msgid "Redo"
 msgstr "Gör om"
 
 #
+msgid "Reduced Detail at Small Scale"
+msgstr "Färre detaljer i utzoomat läge"
+
+#
 #
 msgid "Ref. Pt"
 msgstr "Ref pkt"
@@ -2984,8 +2946,9 @@ msgid "Remaining time : "
 msgstr "Återstående tid :"
 
 #
-msgid "Remove"
-msgstr "Ta bort"
+#
+msgid "Remove Selected"
+msgstr "Ta bort markerade"
 
 #
 #
@@ -2994,8 +2957,8 @@ msgstr "Ta bort från rutt"
 
 #
 #
-msgid "Remove lost targets after (Minutes:):"
-msgstr "Ta bort förlorade mål efter (minuter):"
+msgid "Remove lost targets after (min)"
+msgstr "Tag bort borttappade fartyg efter (min)"
 
 #
 #
@@ -3190,7 +3153,7 @@ msgstr "Öka skalan"
 #
 #
 msgid "Scan Charts and Update Database"
-msgstr "Sök efter sjökort och uppdatera databasen"
+msgstr "Sök efter nya sjökort och uppdatera databasen"
 
 #
 #
@@ -3210,11 +3173,6 @@ msgstr "Välj ljud"
 #
 msgid "Select All"
 msgstr "Välj alla"
-
-#
-#
-msgid "Select Chart Types for Quilting"
-msgstr "Välj sjökort för sömlös visning"
 
 #
 #
@@ -3241,6 +3199,10 @@ msgid "Send To GPS..."
 msgstr "Skicka till GPS"
 
 #
+msgid "Serial"
+msgstr "Seriell"
+
+#
 #
 msgid "Service vessel, police patrol, port service"
 msgstr "Servicefartyg, polis, hamntjänst"
@@ -3253,11 +3215,6 @@ msgstr "Satt"
 #
 msgid "Set Anchor Watch"
 msgstr "Aktivera ankarvakt"
-
-#
-#
-msgid "Settings"
-msgstr "Inställningar"
 
 #
 #
@@ -3276,38 +3233,38 @@ msgstr "Växla till sjökort i mindre skala"
 
 #
 #
+msgid "Ships"
+msgstr "Fartyg"
+
+#
+#
 msgid "Short dash"
 msgstr "Korta streck"
 
 #
 #
 msgid "Show AIS Target CPA"
-msgstr "Visa CPA för AIS-mål"
+msgstr "Visa CPA för AIS-fartyg"
 
 #
 #
 msgid "Show AIS Targets"
-msgstr "Visa AIS-mål"
+msgstr "Visa AIS-fartyg"
 
 #
 #
 msgid "Show AIS targets real size"
-msgstr "Visa AIS-mål med verklig storlek"
-
-#
-#
-msgid "Show ATON labels"
-msgstr "Visa AtoN-etiketter"
+msgstr "Visa AIS-fartyg med verklig storlek"
 
 #
 #
 msgid "Show CPA/TCPA Alert Dialog"
-msgstr "Visa varningsmeny för CPA/TCPA"
+msgstr "Visa larmmeddelande för CPA/TCPA"
 
 #
 #
 msgid "Show Chart Outlines"
-msgstr "Visa sjökortsgränser"
+msgstr "Visa sjökortsramar"
 
 #
 #
@@ -3322,7 +3279,7 @@ msgstr "Visa strömmar"
 #
 #
 msgid "Show Depth Units"
-msgstr "Visa enhet för djup"
+msgstr "Visa sjökortets djupenhet"
 
 #
 #
@@ -3332,17 +3289,12 @@ msgstr "Visa ENC-text"
 #
 #
 msgid "Show GPS/NMEA data stream window"
-msgstr "Visa fönster för GPS/NMEA dataström"
+msgstr "Visa fönster med GPS/NMEA dataström"
 
 #
 #
 msgid "Show Grid"
-msgstr "Visa rutnät"
-
-#
-#
-msgid "Show Important Text Only"
-msgstr "Visa enbart viktig text"
+msgstr "Visa lat/long-linjer"
 
 #
 #
@@ -3351,18 +3303,18 @@ msgstr "Visa Lat/Long som"
 
 #
 #
-msgid "Show Light Descriptions"
-msgstr "Visa fyrkaraktärer"
+msgid "Show Layers Initially"
+msgstr "Visa lager vid uppstart"
 
 #
 #
-msgid "Show Soundings"
-msgstr "Visa djupinformation"
+msgid "Show Skewed Raster Charts as North-Up"
+msgstr "Visa vridna rasterkort med Norr upp"
 
 #
 #
 msgid "Show Status Bar"
-msgstr "Visa statusfält"
+msgstr "Visa statusraden"
 
 #
 #
@@ -3376,17 +3328,17 @@ msgstr "Visa tidvatten"
 
 #
 #
+msgid "Show Toolbar in Fullscreen Mode"
+msgstr "Visa verktygslisten i fullskärmsläge"
+
+#
+#
 msgid "Show WPT names"
 msgstr "Visa namn på waypoints"
 
 #
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Visa områdesupplysningar (från AIS datameddelanden)"
-
-#
-#
-msgid "Show layers initially"
-msgstr "Visa lager vid uppstart"
 
 #
 #
@@ -3405,23 +3357,13 @@ msgstr "Visa radarringar"
 
 #
 #
-msgid "Show skewed raster charts as North-Up"
-msgstr "Visa skeva rasterkort som Norr-Upp"
+msgid "Show target COG predictor arrow, length (min)"
+msgstr "Visa kurspil, med beräknad position efter (min)"
 
 #
 #
-msgid "Show target COG arrows"
-msgstr "Visa målets kurspil"
-
-#
-#
-msgid "Show target tracks"
-msgstr "Visa målspår"
-
-#
-#
-msgid "Show toolbar in fullscreen mode"
-msgstr "Visa menyer vid fullskärmsläge"
+msgid "Show target tracks, length (min)"
+msgstr "Visa fartygsspår, med längd (min):"
 
 #
 #
@@ -3431,7 +3373,12 @@ msgstr "Förhandsgranska teckensnitt."
 #
 #
 msgid "Simplified"
-msgstr "Förenklad"
+msgstr "Förenklat"
+
+#
+#
+msgid "Smooth Panning / Zooming"
+msgstr "Steglös skalning och förflyttning"
 
 #
 #
@@ -3516,12 +3463,7 @@ msgstr "Textstil:"
 #
 #
 msgid "Supress Alerts for anchored/moored targets"
-msgstr "Varna inte för ankrade/förtöjda mål"
-
-#
-#
-msgid "Supress anchored/moored targets"
-msgstr "Dölj ankrade/förtöjda mål"
+msgstr "Larma inte för ankrade/förtöjda fartyg"
 
 #
 #
@@ -3566,12 +3508,12 @@ msgstr "Tanker"
 #
 #
 msgid "Target Count"
-msgstr "Antal mål"
+msgstr "Antal fartyg"
 
 #
 #
 msgid "Target info"
-msgstr "Målinformation"
+msgstr "Fartygsinfo"
 
 #
 #
@@ -3604,17 +3546,17 @@ msgid "Testing"
 msgstr "Testar"
 
 #
-#
-msgid "Text Element"
-msgstr "Symboler och Text"
-
-#
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
 "Man-över-bord-knappen kan vara en viktig säkerhetsfunktion. \n"
 "Är du säker på att du vill dölja den?"
+
+#
+#
+msgid "The Open Source Chart Plotter/Navigator"
+msgstr "OpenCPN - Navigation med öppen källkod"
 
 #
 msgid ""
@@ -3720,20 +3662,6 @@ msgstr "Tidvatten"
 
 #
 #
-msgid "Tide & Current Dataset Selection"
-msgstr "Välj uppsättning strömmar och tidvatten"
-
-#
-#
-msgid "Tide/Current Data Selector"
-msgstr "Tidvatten och strömdiagram"
-
-#
-msgid "Tide/Current Datasets..."
-msgstr "Uppsättningar med tidvatten och strömmar..."
-
-#
-#
 msgid "TideCurrentGraphRollover"
 msgstr "Tidvatten/Strömdiagram \"Rulla över\""
 
@@ -3784,17 +3712,12 @@ msgstr "Imorgon"
 
 #
 #
-msgid "ToolBox"
-msgstr "Verktygslåda"
-
-#
-#
 msgid "ToolTips"
 msgstr "Verktygstips"
 
 #
 msgid "Toolbar and Window Style"
-msgstr "Utseende på verktygsfält och fönster"
+msgstr "Utseende på verktygslist och fönster"
 
 #
 #
@@ -3970,20 +3893,14 @@ msgid "Update Control"
 msgstr "Inställning för uppdatering"
 
 #
+msgid "Use Accelerated Graphics (OpenGL)"
+msgstr "Använd hårdvarugrafik (OpenGL)"
+
+#
 #
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr ""
 "Använd Garmin GRMN/GRMN (Host) Mode för waypoint- och ruttuppladdningar."
-
-#
-#
-msgid "Use OpenGL"
-msgstr "Använd OpenGL"
-
-#
-#
-msgid "Use SCAMIN"
-msgstr "Använd SCAMIN"
 
 #
 #
@@ -3992,7 +3909,7 @@ msgstr "Använd närmaste waypoint?"
 
 #
 msgid "User Interface"
-msgstr "Användargränssnitt"
+msgstr "Användar- gränssnitt"
 
 #
 #
@@ -4084,18 +4001,13 @@ msgstr "WAV filer (*.wav)|*.wav|Alla filer (*.*)|*.*"
 
 #
 #
-msgid "Warn if CPA less than (NMi):"
-msgstr "Varna om CPA är mindre än (NM):"
+msgid "Warn if CPA less than (NMi)"
+msgstr "Larma om CPA är mindre än (NM)"
 
 #
 #
 msgid "Waypoint"
 msgstr "Waypoint"
-
-#
-#
-msgid "Waypoint Locking"
-msgstr "Lås waypoints"
 
 #
 #
@@ -4155,11 +4067,6 @@ msgstr "Vill du inkludera waypoints för storcirkel-rutten på det här benet?"
 
 #
 #
-msgid "X Offset (Positive moves map to East) (NMi Projected) :"
-msgstr "X-korrektion (Positiva värden justerar sjökortet österut) (NM) :"
-
-#
-#
 msgid "XTE         L"
 msgstr "XTE         V"
 
@@ -4167,11 +4074,6 @@ msgstr "XTE         V"
 #
 msgid "XTE         R"
 msgstr "XTE         H"
-
-#
-#
-msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
-msgstr "Y-korrektion (Positiva värden justerar sjökortet norrut) (NM) :"
 
 #
 #
@@ -4206,6 +4108,10 @@ msgid "Zoom Out"
 msgstr "Zooma ut"
 
 #
+msgid "Zoom to Cursor"
+msgstr "Zooma kring markören"
+
+#
 #
 msgid "[Class] Type (Status)"
 msgstr "[Klass] Typ (Status)"
@@ -4227,8 +4133,12 @@ msgstr "_plus"
 
 #
 #
-msgid "cm93 Detail"
-msgstr "cm93-detaljer"
+msgid "in"
+msgstr "om"
+
+#
+msgid "min"
+msgstr "min"
 
 #
 #

@@ -212,7 +212,7 @@ public:
       void SendCursorLatLonToAllPlugIns( double lat, double lon);
       void SendViewPortToRequestingPlugIns( ViewPort &vp );
 
-      void AddAllPlugInToolboxPanels( wxNotebook *pnotebook);
+      void AddAllPlugInToolboxPanels( wxBookCtrlBase *pnotebook );
       void CloseAllPlugInPanels( int );
 
       ArrayOfPlugInToolbarTools &GetPluginToolbarToolArray(){ return m_PlugInToolbarTools; }

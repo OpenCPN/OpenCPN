@@ -28,6 +28,8 @@
 #ifndef _S52PLIB_H_
 #define _S52PLIB_H_
 
+#include <vector>
+
 #include "s52s57.h"                 //types
 
 //    Dynamic arrays of pointers need explicit macros in wx261
@@ -287,8 +289,9 @@ public:
 	wxArrayOfLUPrec *pointPaperLUPArray; // points: PAPER_CHART
 	wxArrayOfLUPrec *condSymbolLUPArray; // Dynamic Conditional Symbology
 
-//  Todo Make this type safe, it is always an array of (OBJLElement *)
-	wxArrayPtrVoid *pOBJLArray; // Used for Display Filtering
+    wxArrayPtrVoid *pOBJLArray; // Used for Display Filtering
+    std::vector<wxString> OBJLDescriptions;
+
 	RuleHash *_symb_sym; // symbol symbolisation rules
 
 private:

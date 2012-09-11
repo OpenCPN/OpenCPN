@@ -33,7 +33,9 @@
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
+
 #include <math.h>
+#include <stdlib.h>
 
 #include "dychart.h"
 #include "georef.h"
@@ -48,13 +50,11 @@
 #include "chartsymbols.h"
 #include "razdsparser.h"
 
-#include <stdlib.h>                             // 261, min() becomes __min(), etc.
-#include "wx/image.h"                   // Missing from wxprec.h
-#include "wx/tokenzr.h"
+#include <wx/image.h>
+#include <wx/tokenzr.h>
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
 #include <crtdbg.h>
 #define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__ )
 #define new DEBUG_NEW
@@ -65,7 +65,6 @@ extern bool g_b_useStencil;
 extern wxString g_csv_locn;
 extern FontMgr *pFontMgr;
 extern double g_GLMinLineWidth;
-extern wxPlatformInfo *g_pPlatform;
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr( S57Obj *obj, const char *AttrName, double &val );
@@ -3575,14 +3574,18 @@ bool s52plib::PreloadOBJLFromCSV( wxString &csv_file )
     wxString str;
     str = file.GetFirstLine();
     wxChar quote[] = { '\"', 0 };
+    wxString description;
+    wxString token;
 
     while( !file.Eof() ) {
         str = file.GetNextLine();
 
         wxStringTokenizer tkz( str, _T(",") );
-        wxString token = tkz.GetNextToken(); // code
-        token = tkz.GetNextToken(); // object class
-        if( !token.EndsWith( quote ) ) token = tkz.GetNextToken(); // object class, post comma
+        token = tkz.GetNextToken(); // code
+
+        description = tkz.GetNextToken(); // May contain comma
+        if( !description.EndsWith( quote ) ) description << tkz.GetNextToken();
+        description.Replace( _T("\""), _T(""), true );
 
         token = tkz.GetNextToken(); // Acronym
 
@@ -3604,11 +3607,11 @@ bool s52plib::PreloadOBJLFromCSV( wxString &csv_file )
                 pOLE->nViz = 0;
 
                 pOBJLArray->Add( (void *) pOLE );
+
+                OBJLDescriptions.push_back( description );
             }
         }
-
     }
-
     return true;
 }
 
