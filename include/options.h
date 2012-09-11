@@ -196,6 +196,7 @@ public:
     void CreateControls();
     size_t CreatePanel( wxString title );
     wxScrolledWindow *AddPage( size_t parent, wxString title );
+    bool DeletePage( wxScrolledWindow *page );
     void SetColorScheme( ColorScheme cs );
 
     void SetInitChartDir( wxString &dir )

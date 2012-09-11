@@ -41,6 +41,7 @@
 #include "chartdbs.h"
 #include "ocpndc.h"
 #include "styles.h"
+#include "options.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
@@ -51,6 +52,7 @@ extern wxLocale        *plocale_def_lang;
 extern ChartDB         *ChartData;
 extern MyFrame         *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
+extern options                *g_pOptions;
 
 //    Some static helper funtions
 //    Scope is local to this module
@@ -529,6 +531,10 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         pic->m_pplugin = dynamic_cast<opencpn_plugin_18*>(plug_in);
         break;
 
+    case 109:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_19*>(plug_in);
+        break;
+
     default:
         break;
     }
@@ -585,6 +591,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                         break;
                     }
                     case 108:
+                    case 109:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -632,6 +639,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                         break;
                     }
                     case 108:
+                    case 109:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -689,6 +697,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
                 }
 
                 case 108:
+                case 109:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -735,21 +744,36 @@ void PlugInManager::SendCursorLatLonToAllPlugIns( double lat, double lon)
     }
 }
 
-void PlugInManager::AddAllPlugInToolboxPanels( wxBookCtrlBase *pnotebook)
+void NotifySetupOptionsPlugin( PlugInContainer *pic )
+{
+    if(pic->m_bEnabled && pic->m_bInitState)
+    {
+        if(pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)
+        {
+            switch(pic->m_api_version)
+            {
+            case 109:
+            {
+                opencpn_plugin_19 *ppi = dynamic_cast<opencpn_plugin_19 *>(pic->m_pplugin);
+                if(ppi) {
+                    ppi->OnSetupOptions();
+                    pic->m_bToolboxPanel = true;
+                }
+                break;
+            }
+            default:
+                break;
+            }
+        }
+    }
+}
+
+void PlugInManager::NotifySetupOptions()
 {
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
-        if(pic->m_bEnabled && pic->m_bInitState)
-        {
-            if(pic->m_cap_flag & INSTALLS_TOOLBOX_PAGE)
-            {
-/* Deprecated. API will be updated for new Options window
-                pic->m_pplugin->SetupToolboxPanel(0, pnotebook);
-                pic->m_bToolboxPanel = true;
- */
-            }
-        }
+        NotifySetupOptionsPlugin( pic );
     }
 }
 
@@ -884,6 +908,7 @@ void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &mess
                     break;
                 }
                 case 108:
+                case 109:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -956,6 +981,7 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
                 switch(pic->m_api_version)
                 {
                 case 108:
+                case 109:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -1530,6 +1556,46 @@ void JumpToPosition(double lat, double lon, double scale)
     gFrame->JumpToPosition(lat, lon, scale);
 }
 
+/* API 1.9 */
+wxScrolledWindow *AddOptionsPage( OptionsParentPI parent, wxString title )
+{
+    if (! g_pOptions) return NULL;
+
+    size_t parentid;
+    switch (parent) {
+    case PI_OPTIONS_PARENT_DISPLAY:
+        parentid = g_pOptions->idDisplay;
+    break;
+    case PI_OPTIONS_PARENT_CONNECTIONS:
+        parentid = g_pOptions->idConnections;
+    break;
+    case PI_OPTIONS_PARENT_CHARTS:
+        parentid = g_pOptions->idCharts;
+    break;
+    case PI_OPTIONS_PARENT_SHIPS:
+        parentid = g_pOptions->idShip;
+    break;
+    case PI_OPTIONS_PARENT_UI:
+        parentid = g_pOptions->idUI;
+    break;
+    case PI_OPTIONS_PARENT_PLUGINS:
+        parentid = g_pOptions->idPlugins;
+    break;
+    default:
+        wxLogMessage( _T("Error in PluginManager::AddOptionsPage: Unknown parent") );
+        return NULL;
+    break;
+    }
+
+    return g_pOptions->AddPage( parentid, title );
+}
+
+bool DeleteOptionsPage( wxScrolledWindow* page )
+{
+    if (! g_pOptions) return false;
+    return g_pOptions->DeletePage( page );
+}
+
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
 //-----------------------------------------------------------------------------------------
@@ -1725,6 +1791,19 @@ void opencpn_plugin_18::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix)
 {}
 
 
+//    Opencpn_Plugin_19 Implementation
+opencpn_plugin_19::opencpn_plugin_19(void *pmgr)
+    : opencpn_plugin_18(pmgr)
+{
+}
+
+opencpn_plugin_19::~opencpn_plugin_19(void)
+{
+}
+
+void opencpn_plugin_19::OnSetupOptions(void)
+{
+}
 
 
 //          Helper and interface classes
@@ -1932,6 +2011,7 @@ void PluginPanel::SetEnabled( bool enabled )
         m_pPlugin->m_bEnabled = enabled;
         if(s_ppim)
             s_ppim->UpdatePlugIns();
+        NotifySetupOptionsPlugin( m_pPlugin );
     }
     if (!enabled && !m_bSelected)
     {

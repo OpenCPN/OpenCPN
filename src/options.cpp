@@ -146,8 +146,6 @@ extern bool             g_bLookAhead;
 
 extern double           g_ownship_predictor_minutes;
 
-extern PlugInManager    *g_pi_manager;
-
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
 extern bool             g_bAISRolloverShowCPA;
@@ -178,6 +176,8 @@ extern wxArrayString *EnumerateSerialPorts(void);           // in chart1.cpp
 
 extern wxArrayString    TideCurrentDataSet;
 extern wxString         g_TCData_Dir;
+
+options                *g_pOptions;
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfDirCtrls);
@@ -241,6 +241,7 @@ options::~options()
     EmptyChartGroupArray( m_pGroupArray );
     delete m_pGroupArray;
     m_pGroupArray = NULL;
+    g_pOptions = NULL;
 }
 
 void options::Init()
@@ -270,6 +271,9 @@ void options::Init()
     m_pListbook = NULL;
     m_pGroupArray = NULL;
     m_groups_changed = 0;
+
+    // This variable is used by plugin callback function AddOptionsPage
+    g_pOptions = this;
 }
 
 bool options::Create( MyFrame* parent, wxWindowID id, const wxString& caption, const wxPoint& pos,
@@ -335,6 +339,7 @@ wxScrolledWindow *options::AddPage( size_t parent, wxString title  )
         window = new wxScrolledWindow( nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
         window->SetScrollRate(1, 1);
         nb->AddPage( window, title );
+        nb->ChangeSelection( 0 );
     } else { // This is the default content, we can replace it now
         int style = wxVSCROLL | wxTAB_TRAVERSAL;
         window = new wxScrolledWindow( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, style, title );
@@ -347,6 +352,44 @@ wxScrolledWindow *options::AddPage( size_t parent, wxString title  )
     return window;
 }
 
+bool options::DeletePage( wxScrolledWindow *page  )
+{
+    for (size_t i = 0; i < m_pListbook->GetPageCount(); i++)
+    {
+        wxNotebookPage* pg = m_pListbook->GetPage( i );
+
+        if( pg->IsKindOf( CLASSINFO(wxNotebook))) {
+            wxNotebook *nb = ((wxNotebook *)pg);
+            for (size_t j = 0; j < nb->GetPageCount(); j++)
+            {
+                wxNotebookPage* spg = nb->GetPage( j );
+                if ( spg == page )
+                {
+                    nb->DeletePage( j );
+                    if (nb->GetPageCount()==1)
+                    {
+                        /* There's only one page, remove inner notebook */
+                        spg = nb->GetPage( 0 );
+                        spg->Reparent( m_pListbook );
+                        nb->RemovePage( 0 );
+                        wxString toptitle = m_pListbook->GetPageText( i );
+                        m_pListbook->DeletePage( i );
+                        m_pListbook->InsertPage( i, spg, toptitle, false, i );
+                    }
+                    return true;
+                }
+            }
+        } else if (pg->IsKindOf(CLASSINFO(wxScrolledWindow)) && pg == page) {
+            /* There's only one page, replace it with empty panel */
+            m_pListbook->DeletePage( i );
+            wxPanel *panel = new wxPanel( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("") );
+            wxString toptitle = m_pListbook->GetPageText( i );
+            m_pListbook->InsertPage( i, panel, toptitle, false, i );
+            return true;
+        }
+    }
+    return false;
+}
 
 void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
 {
@@ -1392,7 +1435,7 @@ void options::CreateControls()
     itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, border_size );
 
     //      PlugIns can add panels, too
-    if( g_pi_manager ) g_pi_manager->AddAllPlugInToolboxPanels( m_pListbook );
+    if( g_pi_manager ) g_pi_manager->NotifySetupOptions();
 
     pSettingsCB1 = pDebugShowStat;
 

@@ -50,7 +50,7 @@
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           8
+#define API_VERSION_MINOR           9
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -460,6 +460,15 @@ class DECL_EXP opencpn_plugin_18 : public opencpn_plugin
 
 };
 
+class DECL_EXP opencpn_plugin_19 : public opencpn_plugin_18
+{
+      public:
+            opencpn_plugin_19(void *pmgr);
+            virtual ~opencpn_plugin_19();
+
+            virtual void OnSetupOptions(void);
+};
+
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn CallBack API Definition
 //
@@ -517,6 +526,19 @@ extern "C"  DECL_EXP void SendPluginMessage( wxString message_id, wxString messa
 extern "C"  DECL_EXP void DimeWindow(wxWindow *);
 
 extern "C"  DECL_EXP void JumpToPosition(double lat, double lon, double scale);
+
+/* API 1.9 */
+typedef enum OptionsParentPI
+{
+      PI_OPTIONS_PARENT_DISPLAY,
+      PI_OPTIONS_PARENT_CONNECTIONS,
+      PI_OPTIONS_PARENT_CHARTS,
+      PI_OPTIONS_PARENT_SHIPS,
+      PI_OPTIONS_PARENT_UI,
+      PI_OPTIONS_PARENT_PLUGINS
+}_OptionsParentPI;
+extern DECL_EXP wxScrolledWindow *AddOptionsPage( OptionsParentPI parent, wxString title ); 
+extern DECL_EXP bool DeleteOptionsPage( wxScrolledWindow* page );
 
 #endif            // _PLUGIN_H_
 
