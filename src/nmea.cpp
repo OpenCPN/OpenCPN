@@ -1461,8 +1461,20 @@ ret_point:
                         }
                         else
                         {
-                              tNMEA0183.Rte.RouteName = _T ( "1" );
-                              tNMEA0183.Rte.AddWaypoint ( _T(" 1234567") );
+                            if (( pr->m_RouteNameString.IsNumber() ) && 
+                                ( pr->m_RouteNameString.Len() <= 2 ) ) {
+                                    if( pr->m_RouteNameString.Len() == 2) {
+                                        tNMEA0183.Rte.RouteName = pr->m_RouteNameString;
+                                    }
+                                    else {
+                                        tNMEA0183.Rte.RouteName = _T("0");
+                                        tNMEA0183.Rte.RouteName += pr->m_RouteNameString;
+                                    }
+                                }
+                            else {
+                                tNMEA0183.Rte.RouteName = _T ( "01" );
+                            }
+                            tNMEA0183.Rte.AddWaypoint ( _T(" 1234567") );
                         }
 
 
@@ -1543,9 +1555,22 @@ ret_point:
                                           else
                                                 oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
                                     }
-                                    else
-                                          oNMEA0183.Rte.RouteName = _T ( "1" );
-
+                                    else {
+                                        if (( pr->m_RouteNameString.IsNumber() ) && 
+                                            ( pr->m_RouteNameString.Len() <= 2 ) ) {
+                                                if( pr->m_RouteNameString.Len() == 2) {
+                                                    oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
+                                                }
+                                                else {
+                                                    oNMEA0183.Rte.RouteName = _T("0");
+                                                    oNMEA0183.Rte.RouteName += pr->m_RouteNameString;
+                                                }
+                                            }
+                                            else {
+                                                oNMEA0183.Rte.RouteName = _T ( "01" );
+                                            }
+                                    }
+                                            
 
                                     oNMEA0183.Rte.total_number_of_messages     = final_total;
                                     oNMEA0183.Rte.message_number               = n_run;
