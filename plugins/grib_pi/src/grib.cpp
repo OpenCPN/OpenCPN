@@ -1009,8 +1009,6 @@ bool GRIBOverlayFactory::RenderGribScatWind(GribRecord *pGRX, GribRecord *pGRY, 
 {
 
       wxDateTime t ( m_pGribRecordSet->m_Reference_Time );
-      wxDateTime tnow = wxDateTime::Now();
-      wxTimeSpan dt = tnow - t;
 
        //    Get the the grid
       int imax = pGRX->getNi();                  // Longitude
