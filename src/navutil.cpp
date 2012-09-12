@@ -3221,7 +3221,7 @@ int MyConfig::LoadMyConfig( int iteration )
                     if( bNeedNew ) {
                         pOLE = (OBJLElement *) calloc( sizeof(OBJLElement), 1 );
                         strncpy( pOLE->OBJLName, sObj.mb_str(), 6 );
-                        pOLE->nViz = val;
+                        pOLE->nViz = 1;
 
                         ps52plib->pOBJLArray->Add( (void *) pOLE );
                     }

@@ -3635,7 +3635,7 @@ void s52plib::UpdateOBJLArray( S57Obj *obj )
     if( bNeedNew ) {
         pOLE = (OBJLElement *) calloc( sizeof(OBJLElement), 1 );
         strncpy( pOLE->OBJLName, obj->FeatureName, 6 );
-        pOLE->nViz = 0;
+        pOLE->nViz = 1;
 
         pOBJLArray->Add( (void *) pOLE );
         obj->iOBJL = pOBJLArray->GetCount() - 1;
