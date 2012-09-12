@@ -26409,6 +26409,28 @@
 			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
+		<lookup id="2551" RCID="3061901" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR4,1,4,1</attrib-code>
+			<instruction>SY(BCNGEN65);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
+		<lookup id="2552" RCID="3062001" name="boylat">
+			<type>Point</type>
+			<disp-prio>Hazards</disp-prio>
+			<radar-prio>On Top</radar-prio>
+			<table-name>Paper</table-name>
+			<attrib-code index="0">BOYSHP5</attrib-code>
+			<attrib-code index="1">COLOUR3,1,3,1</attrib-code>
+			<instruction>SY(BCNGEN64);TE('%s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<display-cat>Standard</display-cat>
+			<comment>17010</comment>
+		</lookup>
 		<lookup id="2553" RCID="30621" name="boylat">
 			<type>Point</type>
 			<disp-prio>Hazards</disp-prio>
