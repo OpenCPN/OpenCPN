@@ -1260,10 +1260,6 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     itemStaticBoxSizerGUIOption->Add( pTransparentToolbar, 1, wxALIGN_LEFT | wxALL, border_size );
     if( g_bopengl ) pTransparentToolbar->Disable();
 
-    pShowLayers = new wxCheckBox( itemPanelFont, ID_SHOWLAYERSCHECKBOX,
-            _("Show Layers Initially") );
-    itemStaticBoxSizerGUIOption->Add( pShowLayers, 1, wxALIGN_LEFT | wxALL, border_size );
-
     wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer( 2 );
     pFormatGrid->AddGrowableCol( 1 );
     itemStaticBoxSizerGUIOption->Add( pFormatGrid, 0, wxALL | wxEXPAND, border_size );
@@ -1481,7 +1477,6 @@ void options::SetInitialSettings()
     pPlayShipsBells->SetValue( g_bPlayShipsBells );
     pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
     pTransparentToolbar->SetValue( g_bTransparentToolbar );
-    pShowLayers->SetValue( g_bShowLayers );
     pSDMMFormat->Select( g_iSDMMFormat );
 
     pTrackDaily->SetValue( g_bTrackDaily );
@@ -1878,7 +1873,6 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bPlayShipsBells = pPlayShipsBells->GetValue();
     g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
-    g_bShowLayers = pShowLayers->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
 
     m_pText_TP_Secs->GetValue().ToDouble( &g_TrackIntervalSeconds );
@@ -2225,7 +2219,7 @@ void options::OnChooseFont( wxCommandEvent& event )
 void options::OnPageChange( wxListbookEvent& event )
 {
 // TODO: SethDart
-    int i = event.GetSelection();
+    unsigned int i = event.GetSelection();
     lastPage = i;
 
     //    User selected Chart Page?

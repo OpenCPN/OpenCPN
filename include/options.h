@@ -122,7 +122,6 @@ enum {
     ID_SELECTLIST,
     ID_SHOWDEPTHUNITSBOX1,
     ID_SHOWGPSWINDOW,
-    ID_SHOWLAYERSCHECKBOX,
     ID_SKEWCOMPBOX,
     ID_SMOOTHPANZOOMBOX,
     ID_SOUNDGCHECKBOX,
@@ -387,7 +386,6 @@ public:
     wxCheckBox		        *pPlayShipsBells;
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
-    wxCheckBox              *pShowLayers;
     wxChoice                *pSDMMFormat;
 
     wxCheckBox              *pTrackShowIcon;
