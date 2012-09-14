@@ -191,11 +191,12 @@ void ConsoleCanvas::LegRoute()
 
 void ConsoleCanvas::OnContextMenu( wxContextMenuEvent& event ) {
     wxMenu* contextMenu = new wxMenu();
-    wxMenuItem* btnLeg = new wxMenuItem(contextMenu, ID_NAVLEG, _("This Leg"), _T(""), true );
-    wxMenuItem* btnRoute = new wxMenuItem(contextMenu, ID_NAVROUTE, _("Full Route"), _T(""), true );
-    wxMenuItem* btnHighw = new wxMenuItem(contextMenu, ID_NAVHIGHWAY, _("Show Highway"), _T(""), true );
+    wxMenuItem* btnLeg = new wxMenuItem(contextMenu, ID_NAVLEG, _("This Leg"), _T(""), wxITEM_RADIO );
+    wxMenuItem* btnRoute = new wxMenuItem(contextMenu, ID_NAVROUTE, _("Full Route"), _T(""), wxITEM_RADIO );
+    wxMenuItem* btnHighw = new wxMenuItem(contextMenu, ID_NAVHIGHWAY, _("Show Highway"), _T(""), wxITEM_CHECK );
     contextMenu->Append( btnLeg );
     contextMenu->Append( btnRoute );
+    contextMenu->AppendSeparator();
     contextMenu->Append( btnHighw );
 
     btnLeg->Check( ! m_bShowRouteTotal );
@@ -222,13 +223,11 @@ void ConsoleCanvas::OnContextMenuSelection( wxCommandEvent& event ) {
         case ID_NAVHIGHWAY: {
             m_bShowHighway = !m_bShowHighway;
             if( m_bShowHighway ) {
-                pCDI->SetSize( pXTE->GetSize().x, pXTE->GetSize().x * 2 );
                 pCDI->Show();
             } else {
                 pCDI->Hide();
-                pCDI->SetSize( 0, 0 );
             }
-            Fit();
+            m_pitemBoxSizerLeg->SetSizeHints( this );
             break;
         }
     }
