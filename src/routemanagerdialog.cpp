@@ -390,11 +390,12 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
     wxDialog::Create( parent, -1, wxString( _("Route Manager") ), wxDefaultPosition, wxDefaultSize,
             style );
 
-    Create();
-
     m_lastWptItem = -1;
     m_lastTrkItem = -1;
     m_lastRteItem = -1;
+    
+    Create();
+
 }
 
 void RouteManagerDialog::Create()
