@@ -112,9 +112,9 @@ public:
       void ShowWithFreshFonts(void);
       void UpdateFonts(void);
       void SetColorScheme(ColorScheme cs);
-      void OnLegRouteButton(wxCommandEvent& event);
-      void MouseEvent(wxMouseEvent& event);
-      void MouseLostCaptureEvent(wxMouseCaptureLostEvent& event);
+      void LegRoute();
+      void OnContextMenu( wxContextMenuEvent& event );
+      void OnContextMenuSelection( wxCommandEvent& event );
       void RefreshConsoleData(void);
 
       wxWindow          *m_pParent;
@@ -127,13 +127,11 @@ public:
       AnnunText         *pTTG;
       AnnunText         *pVMG;
       CDI               *pCDI;
-      wxButton          *m_pLegRouteButton;
 
       wxFont            *pThisLegFont;
-
-      bool              m_bNeedClear;
       bool              m_bShowRouteTotal;
-
+      bool              m_bShowHighway;
+      bool              m_bNeedClear;
       wxBrush           *pbackBrush;
 
 private:

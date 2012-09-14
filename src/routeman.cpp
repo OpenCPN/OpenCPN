@@ -52,28 +52,10 @@
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
 
-/*
-//    Include wxJSON headers
-//    We undefine MIN/MAX so avoid warning of redefinition coming from
-//    json_defs.h
-//    Definitions checked manually, and are identical
-#ifdef MIN
-#undef MIN
-#endif
-
-#ifdef MAX
-#undef MAX
-#endif
-
-#include "json_defs.h"
-#include "jsonwriter.h"
-*/
-
-#include <wx/dir.h>                             // 09.10.07; toh
-#include <wx/filename.h>                        // 09.10.07; toh
-#include "wx/stdpaths.h"                        // 09.10.07; toh
-#include "wx/apptrait.h"                        // 09.10.07; toh
-
+#include <wx/dir.h>
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
+#include <wx/apptrait.h>
 
 extern ConsoleCanvas    *console;
 
@@ -86,14 +68,14 @@ extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
 
 extern wxRect           g_blink_rect;
-extern wxString         g_SData_Locn;     // 09.10.07; toh
+extern wxString         g_SData_Locn;
 extern wxString         g_PrivateDataDir;
 
 extern double           gLat, gLon, gSog, gCog;
 extern double           gVar;
 
-extern RoutePoint       *pAnchorWatchPoint1;   // pjotrc 2010.02.15
-extern RoutePoint       *pAnchorWatchPoint2;   // pjotrc 2010.02.15
+extern RoutePoint       *pAnchorWatchPoint1;
+extern RoutePoint       *pAnchorWatchPoint2;
 
 extern Track            *g_pActiveTrack;
 extern RouteProp        *pRoutePropDialog;
@@ -155,9 +137,7 @@ Route *Routeman::FindRouteContainingWaypoint( RoutePoint *pWP )
         wxRoutePointListNode *pnode = ( proute->pRoutePointList )->GetFirst();
         while( pnode ) {
             RoutePoint *prp = pnode->GetData();
-            if( prp == pWP )                // success
-            return proute;
-
+            if( prp == pWP )  return proute;
             pnode = pnode->GetNext();
         }
 

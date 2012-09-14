@@ -3072,11 +3072,9 @@ void MyFrame::PositionConsole( void )
     cc1->GetPosition( &ccx, &ccy );
 
     console->GetSize( &consx, &consy );
-//      console->SetSize(ccx + ccsx - consx, ccy + 40, -1, -1);
 
-    wxPoint screen_pos = ClientToScreen( wxPoint( ccx + ccsx - consx - 2, ccy + 40 ) );
+    wxPoint screen_pos = ClientToScreen( wxPoint( ccx + ccsx - consx - 2, ccy + 45 ) );
     console->Move( screen_pos );
-
 }
 
 void MyFrame::UpdateAllFonts()

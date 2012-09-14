@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-10 10:13+0200\n"
-"PO-Revision-Date: 2012-09-10 12:45+0100\n"
+"POT-Creation-Date: 2012-09-12 18:24+0200\n"
+"PO-Revision-Date: 2012-09-12 18:31+0100\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -1695,6 +1695,11 @@ msgstr "Fraktpråm med containers"
 
 #
 #
+msgid "Full Route"
+msgstr "Hela rutten"
+
+#
+#
 msgid "GPS/Plotter Port"
 msgstr "GPS/Plotterport"
 
@@ -1937,11 +1942,6 @@ msgstr "Vänster"
 #
 msgid "Leg"
 msgstr "Ben"
-
-#
-#
-msgid "Leg/Route"
-msgstr "Ben/Rutt"
 
 #
 #
@@ -2311,12 +2311,20 @@ msgid "Nav Status"
 msgstr "Nav status"
 
 #
+msgid "Navigate"
+msgstr "Navigera"
+
+#
 msgid "Navigate To"
 msgstr "Starta navigering hit"
 
 #
 msgid "Navigate To This"
 msgstr "Navigera till denna"
+
+#
+msgid "Navigation"
+msgstr "Navigering"
 
 #
 msgid "Network GPSD"
@@ -3199,10 +3207,6 @@ msgid "Send To GPS..."
 msgstr "Skicka till GPS"
 
 #
-msgid "Serial"
-msgstr "Seriell"
-
-#
 #
 msgid "Service vessel, police patrol, port service"
 msgstr "Servicefartyg, polis, hamntjänst"
@@ -3297,14 +3301,13 @@ msgid "Show Grid"
 msgstr "Visa lat/long-linjer"
 
 #
-#
-msgid "Show Lat/Long as"
-msgstr "Visa Lat/Long som"
+msgid "Show Highway"
+msgstr "Visa Highway"
 
 #
 #
-msgid "Show Layers Initially"
-msgstr "Visa lager vid uppstart"
+msgid "Show Lat/Long as"
+msgstr "Visa Lat/Long som"
 
 #
 #
