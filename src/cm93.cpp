@@ -5050,7 +5050,7 @@ wxPoint GetPixFromLLVP ( double lat, double lon, const ViewPort& VPoint )
 
 void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
 {
-      wxRegion screen_region(VPoint.rv_rect.x,VPoint.rv_rect.y,VPoint.rv_rect.width, VPoint.rv_rect.height);
+      wxRegion screen_region(0, 0, VPoint.pix_width, VPoint.pix_height);
       wxRegion ret = GetValidScreenCanvasRegion ( VPoint, screen_region );
       *pValidRegion = ret;
 }
@@ -5869,35 +5869,15 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                                           float_2Dpt *p = mcd->pvertices;
                                           wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
 
-                                          for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++ )
+                                          for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++ ,  p++)
                                           {
+                                              
+                                              pwp[ip] = vp_positive.GetPixFromLL( p->y, p->x );
 
-                                                double plon = p->x;
-                                                if ( fabs ( plon - vp.clon ) > 180. )
-                                                {
-                                                      if ( plon > vp.clon )
-                                                            plon -= 360.;
-                                                      else
-                                                            plon += 360.;
-                                                }
-
-
-                                                double easting, northing, epix, npix;
-                                                toSM ( p->y, plon + 360., vp.clat, vp.clon + 360, &easting, &northing );
-
-                                                //    Outlines stored in MCDs are not adjusted for offsets
-//                                                easting -= mcd->transform_WGS84_offset_x;
-                                                easting -= mcd->user_xoff;
-//                                                northing -= mcd->transform_WGS84_offset_y;
-                                                northing -= mcd->user_yoff;
-
-                                                epix = easting  * vp.view_scale_ppm;
-                                                npix = northing * vp.view_scale_ppm;
-
-                                                pwp[ip].x = ( int ) round ( ( vp.pix_width  / 2 ) + epix );
-                                                pwp[ip].y = ( int ) round ( ( vp.pix_height / 2 ) - npix );
-
-                                                p++;
+                                              //    Outlines stored in MCDs are not adjusted for offsets
+                                              pwp[ip].x -= mcd->user_xoff * vp.view_scale_ppm;
+                                              pwp[ip].y -= mcd->user_yoff * vp.view_scale_ppm;
+                                              
                                           }
 
                                           //    Scrub the points
