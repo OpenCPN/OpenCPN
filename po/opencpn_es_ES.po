@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN Version 2.6 Beta Build 1729\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-14 09:34-0400\n"
+"POT-Creation-Date: 2012-09-15 08:45-0400\n"
 "PO-Revision-Date: 2012-05-30 13:42+0100\n"
 "Last-Translator: opencpn.es <opencpn.es@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -18,14 +18,6 @@ msgstr ""
 "X-Poedit-Language: Spanish\n"
 "X-Poedit-Country: SPAIN\n"
 #
-#
-#
-#
-#
-#
-msgid "\n"
-msgstr "\n"
-#
 msgid ""
 "\n"
 "\n"
@@ -34,19 +26,6 @@ msgstr ""
 "\n"
 "\n"
 "Configurar continuidad libgps..."
-#
-#
-#
-#
-#
-#
-msgid ""
-"\n"
-"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
-msgstr ""
-"\n"
-"         OpenCPN... un programa Open Source simple y conciso para navegación/"
-"cartografía naútica "
 #
 #
 #
@@ -92,37 +71,6 @@ msgid ""
 msgstr ""
 "           No hay cartas instaladas.\n"
 "Por favor seleccione carpeta de cartas en Herramientas->Cartas."
-#
-#
-#
-#
-#
-msgid "      \"Ship Name\" MMSI (Call Sign)"
-msgstr "      \"Nombre Barco\" MMSI (Señal Llamada)"
-#
-#
-#
-#
-#
-#
-msgid "      COG arrow predictor length (Minutes):"
-msgstr "     Predicción longitud flecha COG (Minutos):"
-#
-#
-#
-#
-#
-#
-msgid "      Max moored target speed (Kts.):"
-msgstr "     Velocidad Max objetivo amarrado (Kts.):"
-#
-#
-#
-#
-#
-#
-msgid "      Target track length (Minutes):"
-msgstr "      Longitud Derrota Objetivo (Minutos):"
 #
 msgid "    Incompatible PlugIn detected:"
 msgstr "    Detectado PlugIn Incompatible:"
@@ -231,14 +179,6 @@ msgstr "   Comprobación Final VP: Georeferencia Chart_Error_Factor en carta "
 #
 #
 #
-msgid "  ..And TCPA is less than (Minutes):"
-msgstr "..y TCPA es inferior a (Minutos):"
-#
-#
-#
-#
-#
-#
 msgid "  Could not open AIS serial port '"
 msgstr "  No se pudo abrir puerto serie AIS '"
 #
@@ -287,15 +227,6 @@ msgstr " -- [Portable(-p) executando desde"
 #
 msgid " </b>in<b> "
 msgstr ""
-#
-#
-#, c-format
-msgid " COG: %03d Deg."
-msgstr " COG: %03d Deg."
-#
-#
-msgid " COG: 000 Deg."
-msgstr " COG: 000 Deg."
 #
 #
 #
@@ -367,7 +298,8 @@ msgstr " Escala:  1:%d"
 #
 #
 #
-msgid " Ship: "
+#, fuzzy
+msgid " Ship "
 msgstr " Barco: "
 #
 #
@@ -426,6 +358,14 @@ msgstr "\" está vacío, conectando a grupo\"Todas Cartas Activas\"."
 #
 #
 #
+#, fuzzy
+msgid "\"Ship Name\" MMSI (Call Sign)"
+msgstr "      \"Nombre Barco\" MMSI (Señal Llamada)"
+#
+#
+#
+#
+#
 #
 msgid "&Acknowledge"
 msgstr "&Enterado"
@@ -445,6 +385,9 @@ msgstr "&Activar"
 #
 msgid "&Cancel"
 msgstr "&Cancelar"
+#
+msgid "&Center View"
+msgstr ""
 #
 msgid "&Copy all as text"
 msgstr ""
@@ -658,14 +601,6 @@ msgstr "Tamaño:"
 #
 #
 #
-msgid "&Zoom to"
-msgstr "&Zoom en"
-#
-#
-#
-#
-#
-#
 msgid ""
 "'\n"
 " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
@@ -761,8 +696,14 @@ msgstr "---<<< Aviso:  Precisión georeferencia carta puede ser baja. >>>---"
 msgid "..."
 msgstr "..."
 #
-msgid "0&deg;"
-msgstr ""
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "...and TCPA is less than (min)"
+msgstr "..y TCPA es inferior a (Minutos):"
 #
 msgid "1 pixel"
 msgstr "1 pixel"
@@ -860,13 +801,17 @@ msgstr "Alerta AIS"
 msgid "AIS Data Port"
 msgstr "Puerto Datos AIS"
 #
+msgid "AIS Port (Shared)"
+msgstr ""
 #
 #
 #
 #
 #
-msgid "AIS General"
-msgstr "General AIS"
+#
+#, fuzzy
+msgid "AIS Target List..."
+msgstr "Lista Destino AIS"
 #
 #
 #
@@ -890,16 +835,16 @@ msgstr "Consulta objetivo AIS"
 #
 #
 #
-msgid "AIS target list"
-msgstr "Lista Destino AIS"
-#
-#
-#
-#
-#
-#
 #, fuzzy
-msgid "AIS target list..."
+msgid "AIS Targets"
+msgstr "Mostrar objetivos AIS"
+#
+#
+#
+#
+#
+#
+msgid "AIS target list"
 msgstr "Lista Destino AIS"
 #
 #
@@ -952,15 +897,11 @@ msgstr "Activar"
 #
 #
 #
-msgid "Activate CM93 Offset"
-msgstr "Activar Compensación CM93"
 #
 #
 #
-#
-#
-#
-msgid "Activate Next in Route"
+#, fuzzy
+msgid "Activate Next Waypoint"
 msgstr "Activar Siguiente en Ruta"
 #
 # No se si hay que traducirlo como activar o como activo
@@ -973,30 +914,32 @@ msgstr "Activar"
 #
 #
 #
-msgid "Active Chart Directories"
-msgstr "Carpetas de Cartas Activadas"
-#
-#
-#
-#
-#
-#
 msgid "Active Charts"
 msgstr "Cartas Activas"
 #
-msgid "Active Tide/Current Data"
-msgstr ""
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Active Datasets"
+msgstr "Cartas Activas"
 #
 msgid "Add"
 msgstr "Añadir"
 #
+msgid "Add Dataset..."
+msgstr ""
 #
 #
 #
+#, fuzzy
+msgid "Add Directory..."
+msgstr "Escanear Directorio OpenCPN...."
 #
-#
-msgid "Add Selection"
-msgstr "Añadir Selección"
+msgid "Add a directory containing chart files"
+msgstr ""
 #
 msgid "Add new"
 msgstr "Añadir nuevo"
@@ -1033,14 +976,6 @@ msgstr "Ayuda a la Navegación"
 msgid "All Active Charts"
 msgstr "All Active Charts"
 #
-#
-#
-#
-#
-#
-msgid "All files (*.*)|*.*"
-msgstr "Todos los archivos (*.*)|*.*"
-#
 msgid "Anchorage created "
 msgstr ""
 #
@@ -1057,6 +992,9 @@ msgstr ""
 #
 msgid "Append Waypoint"
 msgstr "Añadir Waypoints"
+#
+msgid "Apply"
+msgstr ""
 #
 #
 #
@@ -1147,14 +1085,6 @@ msgstr "Derrotas diarias automat."
 #
 msgid "Autopilot Output Port"
 msgstr "Puerto Salida Piloto Automático"
-#
-#
-#
-#
-#
-#
-msgid "Available Chart Directories"
-msgstr "Carpetas de Cartas disponibles"
 #
 #
 #
@@ -1278,6 +1208,9 @@ msgstr "Transp. marit. de grano"
 msgid "Bunkership"
 msgstr "Carbonero"
 #
+msgid "Buoy/Light Labels"
+msgstr ""
+#
 #
 #
 #
@@ -1291,32 +1224,24 @@ msgstr "C&olor:"
 #
 #
 #
-msgid "CM93"
-msgstr "CM93"
+#, fuzzy
+msgid "CM93 Detail Level"
+msgstr "Max Detalle Aquí"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "CM93 Detail Slider..."
+msgstr "Habilitar Control de Detalle CM93"
 #
 #
 #
 #, fuzzy
 msgid "CM93 Offset Dialog..."
 msgstr "Diálogo Compensación CM93"
-#
-#
-#
-msgid "CM93 Offset Display"
-msgstr "Mostrar Compensación CM93"
-#
-#
-#
-msgid "CM93 Offsets"
-msgstr "Compensación CM93"
-#
-#
-#
-#
-#
-#
-msgid "CM93 Zoom Detail"
-msgstr "Detalle Zoom CM93"
 #
 #
 #
@@ -1458,6 +1383,12 @@ msgstr "Celda"
 msgid "Cell Scale"
 msgstr "Escala de celda"
 #
+msgid "Center View"
+msgstr ""
+#
+msgid "Center View..."
+msgstr ""
+#
 #
 #
 #
@@ -1479,24 +1410,8 @@ msgstr "Unidades Profundidad Carta"
 #
 #
 #
-msgid "Chart Display Filters"
-msgstr "Filtros Visualización Cartas"
-#
-#
-#
-#
-#
-#
 msgid "Chart Display Options"
 msgstr "Opciones Visualización Carta"
-#
-#
-#
-#
-#
-#
-msgid "Chart Display Style"
-msgstr "Estilo Visualización Carta"
 #
 #
 #
@@ -1511,6 +1426,24 @@ msgstr "Grupos Cartas..."
 #
 msgid "Chart Groups...New Group"
 msgstr "Grupos Cartas...Nuevo Grupo"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Chart Information Objects"
+msgstr "Información  Marca"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Chart Position"
+msgstr "Posición"
 #
 #
 #
@@ -1658,6 +1591,15 @@ msgstr "Combo!"
 #
 #
 #
+#
+#, fuzzy
+msgid "Connections"
+msgstr "Opciones Fuente"
+#
+#
+#
+#
+#
 msgid "Console Legend"
 msgstr "Leyenda Console"
 #
@@ -1679,6 +1621,12 @@ msgid "Container vessel"
 msgstr "Portacontenedores"
 #
 msgid "Copy"
+msgstr ""
+#
+msgid "Copy Log File to Clipboard"
+msgstr ""
+#
+msgid "Copy Settings File to Clipboard"
 msgstr ""
 #
 msgid "Copy..."
@@ -1719,7 +1667,8 @@ msgid "Course Up Mode"
 msgstr "Modo rumbo hacia arriba"
 #
 #
-msgid "Course-Up Mode Display Update Period (Sec.)"
+#, fuzzy
+msgid "Course-Up Mode Display Update Period (sec)"
 msgstr "Refresco (seg.) de pantalla en modo Rumbo Arriba"
 #
 #
@@ -1751,14 +1700,6 @@ msgstr "Crucero"
 #
 msgid "Current"
 msgstr "Corriente"
-#
-#
-#
-#
-#
-#
-msgid "Cursor: "
-msgstr "Cursor: "
 #
 #
 #
@@ -1826,7 +1767,8 @@ msgstr "Origen Datos NMEA"
 #
 #
 #
-msgid "De-Clutter Text"
+#, fuzzy
+msgid "De-Cluttered Text"
 msgstr "Des/agrupar Texto"
 #
 #
@@ -1838,7 +1780,8 @@ msgid "Deactivate"
 msgstr "Desactivar"
 #
 #
-msgid "Decimal degrees"
+#, fuzzy
+msgid "Decimal Degrees"
 msgstr "Grados Decimales"
 #
 #
@@ -1866,15 +1809,8 @@ msgid "Default color"
 msgstr "Color por defecto"
 #
 #
-#
-#
-#
-#
-msgid "Deg"
-msgstr "Deg"
-#
-#
-msgid "Degrees, Decimal minutes"
+#, fuzzy
+msgid "Degrees, Decimal Minutes"
 msgstr "Grados, Minutos Decimales"
 #
 #
@@ -1910,30 +1846,6 @@ msgstr "Borrar Grupo"
 #
 #
 #
-msgid "Delete Route"
-msgstr "Borrar Ruta"
-#
-#
-#
-#
-#
-#
-msgid "Delete Selection"
-msgstr "Eliminar Selección"
-#
-#
-#
-#
-#
-#
-msgid "Delete Track"
-msgstr "Borrar Derrota"
-#
-#
-#
-#
-#
-#
 msgid "Delete Waypoint"
 msgstr "Eliminar Waypoint"
 #
@@ -1955,16 +1867,17 @@ msgstr "Hora Salida (m/d/y h:m)"
 #
 #
 #
-msgid "Depth Settings"
-msgstr "Ajustes Profundidad"
-#
-#
-#
-#
-#
-#
 msgid "Depth Settings(m)"
 msgstr "Ajustes Profundidad (m)"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Depth Soundings"
+msgstr "Mostrar Sondeos"
 #
 #
 #
@@ -1981,6 +1894,15 @@ msgstr "Descripción"
 #
 msgid "Destination"
 msgstr "Destino"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Directories"
+msgstr "Carpetas de Cartas Activadas"
 #
 #
 #
@@ -2019,6 +1941,15 @@ msgstr "Mostrar Categoría"
 #
 #
 #
+#, fuzzy
+msgid "Display Style"
+msgstr "Estilo Visualización Carta"
+#
+#
+#
+#
+#
+#
 msgid "Distance"
 msgstr "Distancia"
 #
@@ -2027,7 +1958,8 @@ msgstr "Distancia"
 #
 #
 #
-msgid "Distance between rings"
+#, fuzzy
+msgid "Distance Between Rings"
 msgstr "Distancia entre marcas"
 #
 #
@@ -2037,6 +1969,11 @@ msgstr "Distancia entre marcas"
 #
 msgid "Distress"
 msgstr "Distress"
+#
+msgid ""
+"Do you also want to toggle the visibility of shared waypoints being part of "
+"this route?"
+msgstr ""
 #
 #
 #
@@ -2067,7 +2004,8 @@ msgstr "Poner Marca MOB"
 #
 #
 #
-msgid "Drop Mark Here"
+#, fuzzy
+msgid "Drop Mark"
 msgstr "Poner Marca Aquí"
 #
 #
@@ -2077,14 +2015,6 @@ msgstr "Poner Marca Aquí"
 #
 msgid "E&xport All..."
 msgstr "&Exportar Todo..."
-#
-#
-#
-#
-#
-#
-msgid "ENC/Vector"
-msgstr "ENC/Vectorial"
 #
 #
 #
@@ -2129,43 +2059,20 @@ msgstr "Activar"
 #
 #
 #
-msgid "Enable CM93 Detail Slider"
-msgstr "Habilitar Control de Detalle CM93"
-#
-#
-#
-#
-#
-#
 msgid "Enable Chart Quilting"
 msgstr "Activar Continuidad Cartas"
 #
 #
 #
-msgid "Enable Manual CM93 Offsets"
-msgstr "Activar Compensación Manual CM93 "
 #
 #
-msgid "Enable Smooth Panning / Zooming"
-msgstr "Activar desplazam/zoom suave"
-#
-#
-#
-#
-#
-msgid "Enable Target Alert Acknowledge timeout (minutes)"
+#, fuzzy
+msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Activar retardopara alertas de objetivos tras reconocimiento (minutos)"
 #
 #
-#
-#
-#
-#
-msgid "Enable Wheel-Zoom-to-Cursor"
-msgstr "Habilitar Zoom con rueda de ratón"
-#
-#
-msgid "Enable transparent toolbar"
+#, fuzzy
+msgid "Enable Transparent Toolbar"
 msgstr "Activar transparencia barra herramientas"
 #
 #
@@ -2208,14 +2115,6 @@ msgstr "Tiempo estimado : "
 #
 #
 #
-msgid "Etc."
-msgstr "Etc."
-#
-#
-#
-#
-#
-#
 msgid "Export GPX file"
 msgstr "Exportar Fichero GPX"
 #
@@ -2242,6 +2141,12 @@ msgstr "Extender Track"
 #
 msgid "Extended"
 msgstr "Extendedido"
+#
+#
+#
+#, fuzzy
+msgid "Extended Light Sectors"
+msgstr "Luz b/Sectores"
 #
 #
 #
@@ -2290,7 +2195,8 @@ msgstr "Filtrar datos NMEA Rumbo y Velocidad"
 #
 #
 #
-msgid "Filter Period (Sec.)"
+#, fuzzy
+msgid "Filter Period (sec)"
 msgstr "Filtrar Periodo (Sec.)"
 #
 #
@@ -2308,13 +2214,8 @@ msgstr "Estruct.Fija"
 msgid "Fixed Structure"
 msgstr "Estructura Fija"
 #
-#
-#
-#
-#
-#
-msgid "Font Options"
-msgstr "Opciones Fuente"
+msgid "Fonts"
+msgstr ""
 #
 msgid "For this leg the Great Circle route is "
 msgstr ""
@@ -2342,17 +2243,9 @@ msgstr "Barcaza de carga con contenedores"
 #
 #
 #
-#, fuzzy, c-format
-msgid "From Ownship: %03d Deg   "
-msgstr "Desde Embarcación: %03d Deg  %6.2f NMi"
-#
-#
-#
-#
-#
-#
-msgid "GPS"
-msgstr "GPS"
+#, fuzzy
+msgid "Full Route"
+msgstr "Cortar Ruta"
 #
 #
 #
@@ -2381,14 +2274,6 @@ msgstr "GPSGate Buddy"
 msgid "GPX"
 msgstr "GPX"
 #
-#
-#
-#
-#
-#
-msgid "GUI Options"
-msgstr "Opciones Interfaz"
-#
 msgid "GUID"
 msgstr "GUID"
 #
@@ -2402,16 +2287,17 @@ msgstr "Gasero"
 #
 #
 #
+#
+#
+#
+#, fuzzy
+msgid "General Options"
+msgstr "Opciones Interfaz"
+#
+#
+#
 msgid "General cargo Vessel maritime"
 msgstr "Buque de carga general"
-#
-#
-#
-#
-#
-#
-msgid "Go To Here"
-msgstr "Ir Aquí"
 #
 #
 #
@@ -2479,6 +2365,15 @@ msgstr "Ocultar nombres WPT"
 #
 #
 #
+#
+#
+#
+#, fuzzy
+msgid "Hide anchored/moored targets, speed max (kn)"
+msgstr "Suprimir objetivos anclados/amarrados"
+#
+#
+#
 msgid "Hide from chart"
 msgstr "Ocultar en carta"
 #
@@ -2533,6 +2428,15 @@ msgstr "Importar Fichero GPX"
 #
 #
 #
+#
+#, fuzzy
+msgid "Important Text Only"
+msgstr "Mostrar Solo Texto Importante"
+#
+#
+#
+#
+#
 #, fuzzy
 msgid "Inland Blue Flag"
 msgstr "B. azul aguas int.        Fijar\n"
@@ -2558,35 +2462,13 @@ msgstr "Pelig. Aisl."
 msgid "Isolated Danger"
 msgstr "Peligro Aislado"
 #
-#
-#
-#
-#
-#
-msgid "Jump To"
-msgstr "Saltar A"
-#
-#
-#
-#
-#
-#
-msgid "Jump To Position"
-msgstr "Saltar a Posición"
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Jump To..."
-msgstr "Saltar A"
-#
 msgid "KML Standard (Google Earth and others)"
 msgstr ""
 #
 msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
+#
+msgid "Kts"
 msgstr ""
 #
 #
@@ -2674,14 +2556,6 @@ msgstr "Etapa"
 #
 #
 #
-msgid "Leg/Route"
-msgstr "Etapa/Ruta"
-#
-#
-#
-#
-#
-#
 msgid "Leg: from "
 msgstr "Etapa:desde"
 #
@@ -2708,6 +2582,15 @@ msgstr "Licencia"
 #
 msgid "Light"
 msgstr "Faro"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Light Descriptions"
+msgstr "Mostrar Descripción Luces"
 #
 #
 #
@@ -2788,6 +2671,15 @@ msgstr "Lista contenidos"
 #
 #
 #
+#
+#
+#
+#, fuzzy
+msgid "Loaded Charts"
+msgstr "Carta en Papel"
+#
+#
+#
 msgid "Local @ PC"
 msgstr "Local @ PC"
 #
@@ -2799,7 +2691,8 @@ msgstr "Archivo local..."
 #
 #
 #
-msgid "Lock all waypoints unless a waypoint property dialog is visible"
+#, fuzzy
+msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr ""
 "Bloquear todos los waypoint a menos que esté abierto el cuadro de propiedades "
 "de un waypoint"
@@ -2872,14 +2765,6 @@ msgstr "HOMBRE AL AGUA"
 #
 #
 #
-#
-msgid "META Objects"
-msgstr "META Objetos"
-#
-#
-#
-#
-#
 msgid "MMSI"
 msgstr "MMSI"
 #
@@ -2937,7 +2822,8 @@ msgstr "Propiedades Marca, Capa:"
 #
 #
 #
-msgid "Mark targets as lost after (Minutes:):"
+#, fuzzy
+msgid "Mark targets as lost after (min)"
 msgstr "Marcar objetivos como perdidos después de (Minutos):"
 #
 #
@@ -3019,14 +2905,6 @@ msgstr "Metros"
 #
 #
 #
-#
-#
-#
-msgid "Metres"
-msgstr "Metros"
-#
-#
-#
 msgid "Mil/V"
 msgstr "Mil/V"
 #
@@ -3034,6 +2912,9 @@ msgstr "Mil/V"
 #
 msgid "Military Vessel"
 msgstr "Buque Militar"
+#
+msgid "Miscellaneous Options"
+msgstr ""
 #
 #
 #
@@ -3100,7 +2981,8 @@ msgstr "Barco cisterna a motor, remolcado"
 #
 #
 #
-msgid "Move Boat Here"
+#, fuzzy
+msgid "Move Boat To"
 msgstr "Mover Barco Aquí"
 #
 #
@@ -3111,6 +2993,9 @@ msgstr "Mover Barco Aquí"
 #, fuzzy
 msgid "Move Waypoint"
 msgstr "Hacia Waypoint"
+#
+msgid "NMEA"
+msgstr ""
 #
 #
 #
@@ -3132,8 +3017,13 @@ msgstr "Origen Datos NMEA"
 #
 #
 #
-msgid "NMEA Options"
-msgstr "Opciones NMEA"
+#
+#
+#
+#
+#
+msgid "NMi"
+msgstr "NMi"
 #
 #
 #
@@ -3151,16 +3041,23 @@ msgstr "Nombre"
 msgid "Nav Status"
 msgstr "Estado Navegación:  "
 #
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Navigate To"
+msgstr "Datos Navegación"
+#
 msgid "Navigate To This"
 msgstr ""
 #
+msgid "Network GPSD"
+msgstr ""
 #
-#
-#
-#
-#
-msgid "Navigation Data"
-msgstr "Datos Navegación"
+msgid "Network LIBGPS"
+msgstr ""
 #
 msgid "New Group..."
 msgstr "Nuevo Grupo..."
@@ -3183,7 +3080,8 @@ msgstr "Próximo evento de marea"
 #
 #
 #
-msgid "No CPA Calculation if target range is greater than (NMi):"
+#, fuzzy
+msgid "No CPA Calculation if target range is greater than (NMi)"
 msgstr "Sin cálculo CPA si distancia al objetivo mayor de (NMi):"
 #
 #
@@ -3205,6 +3103,9 @@ msgstr ""
 msgid "No. of items"
 msgstr "Nº de objetos"
 #
+msgid "None"
+msgstr ""
+#
 #
 #
 #, fuzzy
@@ -3221,7 +3122,8 @@ msgstr "Sin Control"
 #
 #
 #
-msgid "Number of radar rings shown"
+#, fuzzy
+msgid "Number of Radar Rings"
 msgstr "Número de marcas de radar mostradas"
 #
 #
@@ -3452,16 +3354,27 @@ msgstr "¿Sobreescribir fichero existente?"
 #
 #
 #
-msgid "OwnShip COG arrow predictor length (Minutes):"
-msgstr "Longitud de la flecha estimada de COG embarcación (Minutos):"
+#, fuzzy
+msgid "Own Ship"
+msgstr " Barco: "
 #
 #
 #
 #
 #
 #
-msgid "OwnShip Display Options"
+#, fuzzy
+msgid "Own Ship Display Options"
 msgstr "Opciones Visualización Embarcación"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "OwnShip COG arrow predictor length (min)"
+msgstr "Longitud de la flecha estimada de COG embarcación (Minutos):"
 #
 #
 #
@@ -3507,7 +3420,7 @@ msgstr "Barco pasajeros, ferry, crucero, barco Cruz Roja"
 #
 #
 #, fuzzy
-msgid "Paste Route..."
+msgid "Paste Route"
 msgstr "Crear Ruta"
 #
 #
@@ -3516,7 +3429,7 @@ msgstr "Crear Ruta"
 #
 #
 #, fuzzy
-msgid "Paste Track..."
+msgid "Paste Track"
 msgstr "&Exportar Track..."
 #
 #
@@ -3525,7 +3438,7 @@ msgstr "&Exportar Track..."
 #
 #
 #, fuzzy
-msgid "Paste Waypoint..."
+msgid "Paste Waypoint"
 msgstr "Activar Waypoint"
 #
 #
@@ -3538,7 +3451,8 @@ msgstr "Práctico"
 #
 #
 #
-msgid "Place Trackpoints at distance interval (NMi):"
+#, fuzzy
+msgid "Place Trackpoints at distance interval (NMi)"
 msgstr "Puntos de Derrota a intervalo de distancia (NMi):"
 #
 #
@@ -3546,7 +3460,8 @@ msgstr "Puntos de Derrota a intervalo de distancia (NMi):"
 #
 #
 #
-msgid "Place Trackpoints at time interval (Seconds):"
+#, fuzzy
+msgid "Place Trackpoints at time interval (sec)"
 msgstr "Marcar Puntos de Derrota a intervalo de tiempo (Segundos):"
 #
 #
@@ -3578,16 +3493,17 @@ msgstr "Velocidad Estimada (Kts)"
 #
 #
 #
+#, fuzzy
+msgid "Play Ships Bells"
+msgstr "Hacer sonar campanas barcos"
+#
+#
+#
+#
+#
+#
 msgid "Play Sound on CPA/TCPA Alerts"
 msgstr "Reproducir Sonido Alarmas CPA/TCPA"
-#
-#
-#
-#
-#
-#
-msgid "Play ships bells"
-msgstr "Hacer sonar campanas barcos"
 #
 #
 #
@@ -3615,7 +3531,8 @@ msgstr "Buque de recreo, mayor de 20 metros"
 #
 #
 #
-msgid "PlugIns"
+#, fuzzy
+msgid "Plugins"
 msgstr "PlugIns"
 #
 #
@@ -3710,7 +3627,8 @@ msgstr "Prepare GPS para actualizar Ruta/Waypoint y pulse Enviar..."
 #
 #
 #
-msgid "Preserve scale when switching charts"
+#, fuzzy
+msgid "Preserve Scale when Switching Charts"
 msgstr "Conservar escala al alternar entre cartas"
 #
 #
@@ -3878,6 +3796,15 @@ msgstr "Remolcador de empuje, dos barcazas de carga"
 #
 #
 #
+#
+#
+#
+#, fuzzy
+msgid "Question"
+msgstr "Probando"
+#
+#
+#
 msgid "RACON"
 msgstr "RACON"
 #
@@ -3896,14 +3823,6 @@ msgstr "Marcas de Radar"
 #
 msgid "Range"
 msgstr "Rango"
-#
-#
-#
-#
-#
-#
-msgid "Raster"
-msgstr "Raster"
 #
 #
 #
@@ -3946,6 +3865,9 @@ msgstr "Barco Cruz Roja"
 msgid "Redo"
 msgstr ""
 #
+msgid "Reduced Detail at Small Scale"
+msgstr ""
+#
 #
 #
 msgid "Ref. Pt"
@@ -3972,9 +3894,14 @@ msgstr "Estación de Referencia :"
 msgid "Remaining time : "
 msgstr "Tiempo restante : "
 #
+#
+#
+#
+#
+#
 #, fuzzy
-msgid "Remove"
-msgstr "<--Eliminar"
+msgid "Remove Selected"
+msgstr "&Añadir Tracks Seleccionados"
 #
 #
 #
@@ -3990,7 +3917,8 @@ msgstr "Eliminar Waypoint de Ruta"
 #
 #
 #
-msgid "Remove lost targets after (Minutes:):"
+#, fuzzy
+msgid "Remove lost targets after (min)"
 msgstr "Eliminar objetivos perdidos después de (Minutos):"
 #
 #
@@ -4127,15 +4055,6 @@ msgstr "Propiedades Ruta"
 #
 #
 #
-#
-#, fuzzy
-msgid "Route Properties..."
-msgstr "Propiedades Ruta"
-#
-#
-#
-#
-#
 msgid "Route Uploaded successfully."
 msgstr "Ruta Cargada correctamente."
 #
@@ -4144,14 +4063,6 @@ msgstr "Ruta Cargada correctamente."
 #
 #
 msgid "Route from Track"
-msgstr "Ruta desde Track"
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Route/Track"
 msgstr "Ruta desde Track"
 #
 #
@@ -4225,6 +4136,33 @@ msgstr "Velero"
 #
 #
 #
+#, fuzzy, c-format
+msgid "Scale %4.0f"
+msgstr "Escala Mayor"
+#
+#
+#
+#
+#
+#
+#, fuzzy, c-format
+msgid "Scale %4.0f (%1.1fx)"
+msgstr "Escala Real: %8.0f  Zoom %4.1fx"
+#
+#
+#
+#
+#
+#
+#, fuzzy, c-format
+msgid "Scale %4.0f (%1.2fx)"
+msgstr "Escala real: %8.0f  Zoom %4.2fx"
+#
+#
+#
+#
+#
+#
 msgid "Scale In"
 msgstr "Escala Mayor"
 #
@@ -4263,14 +4201,6 @@ msgstr "Seleccionar Sonido Alarma"
 #
 msgid "Select All"
 msgstr "Seleccionar Todo"
-#
-#
-#
-#
-#
-#
-msgid "Select Chart Types for Quilting"
-msgstr "Seleccionar Tipo de Cartas para Continuidad"
 #
 #
 #
@@ -4328,14 +4258,6 @@ msgstr "Establecer Alarma Fondeo "
 #
 #
 #
-msgid "Settings"
-msgstr "Ajustes"
-#
-#
-#
-#
-#
-#
 msgid "Shallow Depth"
 msgstr "Poca Profundidad"
 #
@@ -4354,6 +4276,15 @@ msgstr "Ajustar Carta a Escala Mayor"
 #
 msgid "Shift to Smaller Scale Chart"
 msgstr "Ajustar Carta a Escala Menor"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Ships"
+msgstr " Barco: "
 #
 #
 #
@@ -4388,14 +4319,6 @@ msgstr "Mostrar objetivos AIS"
 #, fuzzy
 msgid "Show AIS targets real size"
 msgstr "Mostrar objetivos AIS"
-#
-#
-#
-#
-#
-#
-msgid "Show ATON labels"
-msgstr "Mostrar Etiquetas ATON"
 #
 #
 #
@@ -4461,13 +4384,8 @@ msgstr "Mostrar datos GPS/NMEA"
 msgid "Show Grid"
 msgstr "Mostrar Rejilla"
 #
-#
-#
-#
-#
-#
-msgid "Show Important Text Only"
-msgstr "Mostrar Solo Texto Importante"
+msgid "Show Highway"
+msgstr ""
 #
 #
 #
@@ -4481,17 +4399,9 @@ msgstr "Mostrar Lat/Long como"
 #
 #
 #
-#
-msgid "Show Light Descriptions"
-msgstr "Mostrar Descripción Luces"
-#
-#
-#
-#
-#
-#
-msgid "Show Soundings"
-msgstr "Mostrar Sondeos"
+#, fuzzy
+msgid "Show Skewed Raster Charts as North-Up"
+msgstr "Mostrar cartas inclinadas como Norte arriba"
 #
 #
 #
@@ -4519,6 +4429,12 @@ msgstr "Mostrar Mareas"
 #
 #
 #
+#, fuzzy
+msgid "Show Toolbar in Fullscreen Mode"
+msgstr "Mostrar barra herramientas en modo pantalla completa"
+#
+#
+#
 #
 #
 #
@@ -4527,10 +4443,6 @@ msgstr "Mostrar Nombre WPT"
 #
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Mostrar mensajes área (desde mensajes binarios AIS)"
-#
-#
-msgid "Show layers initially"
-msgstr "Mostrar capas inicialmente"
 #
 #
 #
@@ -4560,15 +4472,9 @@ msgstr "Mostrar Marcas Radar"
 #
 #
 #
-msgid "Show skewed raster charts as North-Up"
-msgstr "Mostrar cartas inclinadas como Norte arriba"
 #
-#
-#
-#
-#
-#
-msgid "Show target COG arrows"
+#, fuzzy
+msgid "Show target COG predictor arrow, length (min)"
 msgstr "Mostrar flechas COG objetivo"
 #
 #
@@ -4576,13 +4482,9 @@ msgstr "Mostrar flechas COG objetivo"
 #
 #
 #
-msgid "Show target tracks"
+#, fuzzy
+msgid "Show target tracks, length (min)"
 msgstr "Mostrar derrotas objetivo"
-#
-#
-#
-msgid "Show toolbar in fullscreen mode"
-msgstr "Mostrar barra herramientas en modo pantalla completa"
 #
 #
 #
@@ -4599,6 +4501,11 @@ msgstr "Muestra vista previa de fuente."
 #
 msgid "Simplified"
 msgstr "Simplificado"
+#
+#
+#, fuzzy
+msgid "Smooth Panning / Zooming"
+msgstr "Activar desplazam/zoom suave"
 #
 #
 #
@@ -4730,24 +4637,8 @@ msgstr "Suprimir Alarmas para objetivos amarrados/anclados"
 #
 #
 #
-msgid "Supress anchored/moored targets"
-msgstr "Suprimir objetivos anclados/amarrados"
-#
-#
-#
-#
-#
-#
 msgid "Symbolized"
 msgstr "Con símbolos"
-#
-#
-#
-#
-#
-#
-msgid "TCP/IP WiFi Data Server"
-msgstr "Servidor Datos TCP/IP WiFi"
 #
 #
 #
@@ -4843,18 +4734,22 @@ msgstr "Prueba Sonido Alarma"
 msgid "Testing"
 msgstr "Probando"
 #
-#
-#
-#
-#
-#
-msgid "Text Element"
-msgstr "Elementos de Texto"
-#
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "The Open Source Chart Plotter/Navigator"
+msgstr ""
+"\n"
+"         OpenCPN... un programa Open Source simple y conciso para navegación/"
+"cartografía naútica "
 #
 #, fuzzy
 msgid ""
@@ -4971,24 +4866,6 @@ msgstr "Marea"
 #
 #
 #
-#
-#
-#
-#, fuzzy
-msgid "Tide & Current Dataset Selection"
-msgstr "Mareas && Corrientes"
-#
-#
-#
-#, fuzzy
-msgid "Tide/Current Data Selector"
-msgstr "TideCurrentGraphRollover"
-#
-msgid "Tide/Current Datasets..."
-msgstr ""
-#
-#
-#
 #, fuzzy
 msgid "TideCurrentGraphRollover"
 msgstr "TideCurrentGraphRollover"
@@ -5066,14 +4943,6 @@ msgstr "Mañana"
 #
 #
 #
-#
-msgid "ToolBox"
-msgstr "Herramientas"
-#
-#
-#
-#
-#
 msgid "ToolTips"
 msgstr "Info herramienta"
 #
@@ -5110,6 +4979,15 @@ msgstr "Remolque"
 #
 #
 #
+#, fuzzy
+msgid "Track"
+msgstr "Derrotas"
+#
+#
+#
+#
+#
+#
 msgid "Track Name"
 msgstr "Nombre Track"
 #
@@ -5119,15 +4997,6 @@ msgstr "Nombre Track"
 #
 #
 msgid "Track Properties"
-msgstr "Propiedades Derrota"
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Track Properties..."
 msgstr "Propiedades Derrota"
 #
 #
@@ -5145,33 +5014,6 @@ msgstr "Derrotas"
 #
 msgid "Transverse Mercator"
 msgstr "Mercator Transversal"
-#
-#
-#
-#
-#
-#
-#, c-format
-msgid "TrueScale: %8.0f             "
-msgstr "Escala Real: %8.0f             "
-#
-#
-#
-#
-#
-#
-#, c-format
-msgid "TrueScale: %8.0f  Zoom %4.1fx"
-msgstr "Escala Real: %8.0f  Zoom %4.1fx"
-#
-#
-#
-#
-#
-#
-#, c-format
-msgid "TrueScale: %8.0f  Zoom %4.2fx"
-msgstr "Escala real: %8.0f  Zoom %4.2fx"
 #
 #
 #
@@ -5334,24 +5176,15 @@ msgstr "Sin especificar"
 msgid "Update Control"
 msgstr "Control de Actualizaciones"
 #
+msgid "Use Accelerated Graphics (OpenGL)"
+msgstr ""
+#
 #
 #
 #
 #
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr "Usar modo Garmin (GRMN/GRMN host) para descarga de puntos y rutas "
-#
-#
-msgid "Use OpenGL"
-msgstr "Usar OpenGL"
-#
-#
-#
-#
-#
-#
-msgid "Use SCAMIN"
-msgstr "Usar SCAMIN"
 #
 #
 #
@@ -5462,7 +5295,8 @@ msgstr "Archivos WAV (*.wav)|*.wav|Todos los archivos (*.*)|*.*"
 #
 #
 #
-msgid "Warn if CPA less than (NMi):"
+#, fuzzy
+msgid "Warn if CPA less than (NMi)"
 msgstr "Aviso si CPA es inferior a (NMi):"
 #
 #
@@ -5473,14 +5307,6 @@ msgstr "Aviso si CPA es inferior a (NMi):"
 #, fuzzy
 msgid "Waypoint"
 msgstr "Waypoints"
-#
-#
-#
-#
-#
-#
-msgid "Waypoint Locking"
-msgstr "Bloqueo de Waypoints"
 #
 #
 #
@@ -5541,14 +5367,6 @@ msgstr "Si la fuente está subrayada."
 msgid "White"
 msgstr "Blanco"
 #
-#
-#
-#
-#
-#
-msgid "WiFi Options"
-msgstr "Opciones WiFi"
-#
 msgid "Width:"
 msgstr "Ancho:"
 #
@@ -5559,11 +5377,6 @@ msgstr "Vehículo de efecto suelo"
 #
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr ""
-#
-#
-#
-msgid "X Offset (Positive moves map to East) (NMi Projected) :"
-msgstr "Compensación X (+ desplaza mapa al Este) (NMi Projected) :"
 #
 #
 #
@@ -5580,11 +5393,6 @@ msgstr "XTE         Izq"
 #
 msgid "XTE         R"
 msgstr "XTE         Der"
-#
-#
-#
-msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
-msgstr "Compensación Y (+ desplaza mapa al Norte) (NMi Projected) :"
 #
 #
 #
@@ -5627,6 +5435,15 @@ msgstr "Zoom Menor"
 #
 #
 #
+#
+#, fuzzy
+msgid "Zoom to Cursor"
+msgstr "&Zoom en"
+#
+#
+#
+#
+#
 msgid "[Class] Type (Status)"
 msgstr "[Clase] Tipo (Estado)"
 #
@@ -5654,8 +5471,12 @@ msgstr "_plus"
 #
 #
 #
-msgid "cm93 Detail"
-msgstr "Detalle CM93"
+#, fuzzy
+msgid "in"
+msgstr "Enlace"
+#
+msgid "min"
+msgstr ""
 #
 #
 #
@@ -5669,6 +5490,16 @@ msgstr "wgsoy"
 #
 msgid "wxFB Website"
 msgstr "wxFB Website"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "\n"
+#~ msgstr "\n"
+#
 #
 #
 #
@@ -5709,6 +5540,34 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "      COG arrow predictor length (Minutes):"
+#~ msgstr "     Predicción longitud flecha COG (Minutos):"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "      Max moored target speed (Kts.):"
+#~ msgstr "     Velocidad Max objetivo amarrado (Kts.):"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "      Target track length (Minutes):"
+#~ msgstr "      Longitud Derrota Objetivo (Minutos):"
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -5722,6 +5581,7 @@ msgstr "wxFB Website"
 #
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proyección DESCONOCIDA, se asume Mercator: "
+#
 #
 #
 #
@@ -5776,6 +5636,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo create_pi: "
 #
@@ -5804,8 +5665,20 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo destroy_pi: "
+#
+#
+#
+#~ msgid " COG: %03d Deg."
+#~ msgstr " COG: %03d Deg."
+#
+#
+#
+#~ msgid " COG: 000 Deg."
+#~ msgstr " COG: 000 Deg."
+#
 #
 #
 #
@@ -5856,6 +5729,7 @@ msgstr "wxFB Website"
 #
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
 #
 #
 #
@@ -5964,8 +5838,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
 #
 #
 #
@@ -6032,8 +5908,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
 #
 #
 #
@@ -6050,6 +5928,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ ":               Unavailable\n"
 #~ "\n"
@@ -6058,6 +5937,16 @@ msgstr "wxFB Website"
 #~ ":               No disponible\n"
 #~ "\n"
 #~ "\n"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "AIS General"
+#~ msgstr "General AIS"
+#
 #
 #
 #
@@ -6085,6 +5974,13 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "Activate CM93 Offset"
+#~ msgstr "Activar Compensación CM93"
+#
+#
+#
+#
+#
 #
 #
 #
@@ -6098,6 +5994,16 @@ msgstr "wxFB Website"
 #
 #~ msgid "Activate Route"
 #~ msgstr "Activar Ruta"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Add Selection"
+#~ msgstr "Añadir Selección"
+#
 #
 #
 #
@@ -6122,6 +6028,16 @@ msgstr "wxFB Website"
 #
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "All files (*.*)|*.*"
+#~ msgstr "Todos los archivos (*.*)|*.*"
+#
 #
 #
 #
@@ -6160,6 +6076,16 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "Available Chart Directories"
+#~ msgstr "Carpetas de Cartas disponibles"
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -6188,6 +6114,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Demora:                %03d Deg.\n"
 #
@@ -6197,8 +6124,25 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr "Marcación:            No disponible\n"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "CM93"
+#~ msgstr "CM93"
+#
+#
+#
+#
+#~ msgid "CM93 Offset Display"
+#~ msgstr "Mostrar Compensación CM93"
+#
 #
 #
 #
@@ -6283,8 +6227,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 #
@@ -6369,8 +6315,16 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Herramienta Compensación CM93....."
+#
+#
+#
+#
+#~ msgid "CM93 Offsets"
+#~ msgstr "Compensación CM93"
+#
 #
 #
 #
@@ -6421,8 +6375,19 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "CM93 Zoom Detail"
+#~ msgstr "Detalle Zoom CM93"
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "CPA:       \n"
 #~ msgstr "CPA:       \n"
+#
 #
 #
 #
@@ -6482,6 +6447,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Señal Llamada:  "
 #
@@ -6491,8 +6457,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "Señal Llamada:              "
+#
 #
 #
 #
@@ -6574,6 +6542,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ajustar Compensación CM93"
@@ -6598,8 +6567,19 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Chart"
 #~ msgstr "Carta"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Chart Display Filters"
+#~ msgstr "Filtros Visualización Cartas"
+#
 #
 #
 #
@@ -6646,6 +6626,7 @@ msgstr "wxFB Website"
 #
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
 #
 #
 #
@@ -6755,11 +6736,13 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Clase:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -6776,8 +6759,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Course:                 %03d Deg.\n"
 #~ msgstr "Rumbo:                 %03d Deg.\n"
+#
 #
 #
 #
@@ -6794,8 +6779,19 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Course:                 Unavailable\n"
 #~ msgstr "Rumbo:            No disponible\n"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Cursor: "
+#~ msgstr "Cursor: "
+#
 #
 #
 #
@@ -6831,9 +6827,20 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Datos por defecto"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Deg"
+#~ msgstr "Deg"
+#
 #
 #
 #
@@ -6858,6 +6865,43 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "Delete Route"
+#~ msgstr "Borrar Ruta"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Delete Selection"
+#~ msgstr "Eliminar Selección"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Delete Track"
+#~ msgstr "Borrar Derrota"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Depth Settings"
+#~ msgstr "Ajustes Profundidad"
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Destination:          "
 #~ msgstr "Destino:          "
 #
@@ -6866,8 +6910,19 @@ msgstr "wxFB Website"
 #
 #
 #
+#
+#~ msgid "ENC/Vector"
+#~ msgstr "ENC/Vectorial"
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "ETA:"
 #~ msgstr "ETA:"
+#
 #
 #
 #
@@ -6904,8 +6959,34 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Tiempo estimado"
+#
+#
+#
+#
+#~ msgid "Enable Manual CM93 Offsets"
+#~ msgstr "Activar Compensación Manual CM93 "
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Enable Wheel-Zoom-to-Cursor"
+#~ msgstr "Habilitar Zoom con rueda de ratón"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Etc."
+#~ msgstr "Etc."
+#
 #
 #
 #
@@ -6977,8 +7058,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Error al cargar libgps.so"
+#
 #
 #
 #
@@ -7017,6 +7100,35 @@ msgstr "wxFB Website"
 #
 #
 #
+#, fuzzy
+#~ msgid "From Ownship: %03d Deg   "
+#~ msgstr "Desde Embarcación: %03d Deg  %6.2f NMi"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "GPS"
+#~ msgstr "GPS"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Go To Here"
+#~ msgstr "Ir Aquí"
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -7040,6 +7152,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Usar datos harmónicos:"
@@ -7050,8 +7163,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Demora:                %03d Deg.\n"
+#
 #
 #
 #
@@ -7097,9 +7212,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Importar Fichero GPX"
+#
 #
 #
 #
@@ -7115,6 +7232,25 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "Jump To"
+#~ msgstr "Saltar A"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Jump To Position"
+#~ msgstr "Saltar a Posición"
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -7122,6 +7258,17 @@ msgstr "wxFB Website"
 #
 #~ msgid "Jump To Position..."
 #~ msgstr "Saltar A Posición..."
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Jump To..."
+#~ msgstr "Saltar A"
+#
 #
 #
 #
@@ -7150,8 +7297,28 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Hora Último Informe Posición:       "
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Leg/Route"
+#~ msgstr "Etapa/Ruta"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "META Objects"
+#~ msgstr "META Objetos"
+#
 #
 #
 #
@@ -7219,8 +7386,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "Estándar Marino"
+#
 #
 #
 #
@@ -7267,8 +7436,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Mark Name"
 #~ msgstr "Nombre Marca"
+#
 #
 #
 #
@@ -7301,6 +7472,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Medir....."
 #
@@ -7310,12 +7482,18 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "Metres"
+#~ msgstr "Metros"
 #
 #
 #
 #
-#~ msgid "NMi"
-#~ msgstr "NMi"
+#
+#
+#
+#~ msgid "NMEA Options"
+#~ msgstr "Opciones NMEA"
+#
 #
 #
 #
@@ -7332,8 +7510,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "Estado Navegación:  "
+#
 #
 #
 #
@@ -7387,8 +7567,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Plugin OpenCPN Clase de base"
+#
 #
 #
 #
@@ -7455,6 +7637,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN Carga Archivo S57 SENC"
 #
@@ -7482,8 +7665,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestor de PlugIns buscando PlugIns en ubicación"
+#
 #
 #
 #
@@ -7538,8 +7723,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de PlugIns: Iniciando PlugIn: "
+#
 #
 #
 #
@@ -7594,8 +7781,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de PlugIns: Cerrando PlugIn: "
+#
 #
 #
 #
@@ -7632,10 +7821,12 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Antiguedad Informe Posición:               %3d Sec.\n"
+#
 #
 #
 #
@@ -7682,6 +7873,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Possible libgps API version mismatch.\n"
 #~ "libgps did not reasonably respond to version request\n"
@@ -7710,8 +7902,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Imprimiendo"
+#
 #
 #
 #
@@ -7728,8 +7922,19 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Alcance:                %5.1f NM\n"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Raster"
+#~ msgstr "Raster"
+#
 #
 #
 #
@@ -7746,8 +7951,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Tasa De Giro            %3d Deg./Min. Der.\n"
+#
 #
 #
 #
@@ -7764,8 +7971,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Tasa De Giro:       > 5 Deg./30 s. Left\n"
+#
 #
 #
 #
@@ -7812,12 +8021,19 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Recent Report Period:   %3d Sec.\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Plazo Informe Reciente:   %3d Sec.\n"
 #~ "\n"
+#
+#
+#, fuzzy
+#~ msgid "Remove"
+#~ msgstr "<--Eliminar"
+#
 #
 #
 #
@@ -7851,8 +8067,38 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Distancia Ruta:"
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Route Properties..."
+#~ msgstr "Propiedades Ruta"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Route/Track"
+#~ msgstr "Ruta desde Track"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Select Chart Types for Quilting"
+#~ msgstr "Seleccionar Tipo de Cartas para Continuidad"
+#
 #
 #
 #
@@ -7870,6 +8116,16 @@ msgstr "wxFB Website"
 #
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Fijar modo rumbo hacia arriba"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Settings"
+#~ msgstr "Ajustes"
+#
 #
 #
 #
@@ -7921,6 +8177,16 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "Show ATON labels"
+#~ msgstr "Mostrar Etiquetas ATON"
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -7952,8 +8218,15 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar Icono Derrotas"
+#
+#
+#
+#~ msgid "Show layers initially"
+#~ msgstr "Mostrar capas inicialmente"
+#
 #
 #
 #
@@ -7967,6 +8240,7 @@ msgstr "wxFB Website"
 #~ msgstr ""
 #~ "Tamaño:                 %dm x %dm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8013,12 +8287,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Tamaño:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8039,12 +8315,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Tamaño:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8065,12 +8343,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Tamaño:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8091,8 +8371,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Speed:                  Unavailable\n"
 #~ msgstr "Velocidad:            No disponible\n"
+#
 #
 #
 #
@@ -8109,6 +8391,16 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "TCP/IP WiFi Data Server"
+#~ msgstr "Servidor Datos TCP/IP WiFi"
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "TCPA:  \n"
 #~ msgstr "TCPA:  \n"
 #
@@ -8118,8 +8410,36 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Text Element"
+#~ msgstr "Elementos de Texto"
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Tide & Current Dataset Selection"
+#~ msgstr "Mareas && Corrientes"
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Tide/Current Data Selector"
+#~ msgstr "TideCurrentGraphRollover"
+#
 #
 #
 #
@@ -8195,9 +8515,39 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Nombre Ruta"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "ToolBox"
+#~ msgstr "Herramientas"
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Track Properties..."
+#~ msgstr "Propiedades Derrota"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "TrueScale: %8.0f             "
+#~ msgstr "Escala Real: %8.0f             "
+#
 #
 #
 #
@@ -8214,8 +8564,63 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "UN Ship Type:         "
 #~ msgstr "Tipo:Barco ONU"
+#
+#
+#
+#~ msgid "Use OpenGL"
+#~ msgstr "Usar OpenGL"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Use SCAMIN"
+#~ msgstr "Usar SCAMIN"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Waypoint Locking"
+#~ msgstr "Bloqueo de Waypoints"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "WiFi Options"
+#~ msgstr "Opciones WiFi"
+#
+#
+#
+#
+#~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
+#~ msgstr "Compensación X (+ desplaza mapa al Este) (NMi Projected) :"
+#
+#
+#
+#
+#~ msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
+#~ msgstr "Compensación Y (+ desplaza mapa al Norte) (NMi Projected) :"
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "cm93 Detail"
+#~ msgstr "Detalle CM93"
+#
 #
 #
 #

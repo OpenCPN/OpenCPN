@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-14 09:34-0400\n"
+"POT-Creation-Date: 2012-09-15 08:45-0400\n"
 "PO-Revision-Date: 2010-12-16 20:53+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -17,26 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
 #
-# 
-# 
-msgid "\n"
-msgstr "\n"
-#
 msgid ""
 "\n"
 "\n"
 "Continuing libgps setup..."
 msgstr ""
-#
-# 
-# 
-msgid ""
-"\n"
-"         OpenCPN...A Nice Little Open Source Chart Plotter/Navigator"
-msgstr ""
-"\n"
-"         OpenCPN ...ένα ελαφρύ εκλεπτυσμένο Ανοικτού Λογισμικού Πρόγραμμα "
-"αποτύπωσης Χαρτών/Πλοηγός"
 #
 # 
 # 
@@ -77,26 +62,6 @@ msgid ""
 msgstr ""
 "           Δεν έχουν εγκατασταθεί χάρτες.\n"
 "Παρακαλώ επιλέξτε τους φακέλους χαρτών από Εργαλεία -> Ναυτικοί Χάρτες."
-#
-# 
-# 
-msgid "      \"Ship Name\" MMSI (Call Sign)"
-msgstr "       \"Όνομα Πλοίου\" MMSI (Call Sign)"
-#
-# 
-# 
-msgid "      COG arrow predictor length (Minutes):"
-msgstr "      Μήκους Βέλους (COG) σε πρώτα λεπτά μοίρας (Minuten):"
-#
-# 
-# 
-msgid "      Max moored target speed (Kts.):"
-msgstr "      Μέγιστη Ταχύτητα για σταθερά σημεία σε κόμβους (kn):"
-#
-# 
-# 
-msgid "      Target track length (Minutes):"
-msgstr "       Μήκος ίχνους στόχου (Λεπτά) (Minuten):"
 #
 msgid "    Incompatible PlugIn detected:"
 msgstr ""
@@ -172,11 +137,6 @@ msgstr ""
 #
 # 
 # 
-msgid "  ..And TCPA is less than (Minutes):"
-msgstr " ...και TCPA είναι μικρότερο από Πρώτα Λεπτά (Minuten):"
-#
-# 
-# 
 msgid "  Could not open AIS serial port '"
 msgstr "  Δεν μπορώ να ανοίξω την AIS-σειριακή θύρα: '"
 #
@@ -210,15 +170,6 @@ msgid " -- [Portable(-p) executing from "
 msgstr ""
 #
 msgid " </b>in<b> "
-msgstr ""
-#
-# 
-#, c-format
-msgid " COG: %03d Deg."
-msgstr ""
-#
-# 
-msgid " COG: 000 Deg."
 msgstr ""
 #
 # 
@@ -265,7 +216,8 @@ msgstr "Κλίμακα:  1:%d"
 #
 # 
 # 
-msgid " Ship: "
+#, fuzzy
+msgid " Ship "
 msgstr "Σκάφος: "
 #
 # 
@@ -307,6 +259,12 @@ msgstr ""
 #
 # 
 # 
+#, fuzzy
+msgid "\"Ship Name\" MMSI (Call Sign)"
+msgstr "       \"Όνομα Πλοίου\" MMSI (Call Sign)"
+#
+# 
+# 
 msgid "&Acknowledge"
 msgstr "&Αποδοχή"
 #
@@ -319,6 +277,9 @@ msgstr "&Ενεργοποίηση"
 # 
 msgid "&Cancel"
 msgstr "&Ακύρωση"
+#
+msgid "&Center View"
+msgstr ""
 #
 msgid "&Copy all as text"
 msgstr ""
@@ -457,11 +418,6 @@ msgstr "&Πάχος:"
 #
 # 
 # 
-msgid "&Zoom to"
-msgstr "&Μεγένθυση σε"
-#
-# 
-# 
 msgid ""
 "'\n"
 " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
@@ -537,8 +493,11 @@ msgstr ""
 msgid "..."
 msgstr ""
 #
-msgid "0&deg;"
-msgstr ""
+# 
+# 
+#, fuzzy
+msgid "...and TCPA is less than (min)"
+msgstr " ...και TCPA είναι μικρότερο από Πρώτα Λεπτά (Minuten):"
 #
 msgid "1 pixel"
 msgstr ""
@@ -616,10 +575,14 @@ msgstr "Συναγερμός AIS"
 msgid "AIS Data Port"
 msgstr "Θύρα για δεδομένα AIS"
 #
+msgid "AIS Port (Shared)"
+msgstr ""
+#
 # 
 # 
-msgid "AIS General"
-msgstr "AIS Γενικά"
+#, fuzzy
+msgid "AIS Target List..."
+msgstr "Κατάλογος Στόχων AIS"
 #
 # 
 # 
@@ -634,13 +597,13 @@ msgstr "Ερώτηση προορισμών AIS"
 #
 # 
 # 
-msgid "AIS target list"
-msgstr "Κατάλογος Στόχων AIS"
+#, fuzzy
+msgid "AIS Targets"
+msgstr "Δείξε στόχους AIS"
 #
 # 
 # 
-#, fuzzy
-msgid "AIS target list..."
+msgid "AIS target list"
 msgstr "Κατάλογος Στόχων AIS"
 #
 # 
@@ -675,12 +638,8 @@ msgstr "Ενεργοποίηση"
 #
 # 
 # 
-msgid "Activate CM93 Offset"
-msgstr "Ενεργοποίησε Αντιμετάθεση CM93"
-#
-# 
-# 
-msgid "Activate Next in Route"
+#, fuzzy
+msgid "Activate Next Waypoint"
 msgstr "Ενεργοποίηση του επόμενου σημείου Πορείας (WP) στο Ταξίδι (Route)"
 #
 # 
@@ -691,25 +650,30 @@ msgstr "Ενεργοποίηση"
 #
 # 
 # 
-msgid "Active Chart Directories"
+#, fuzzy
+msgid "Active Charts"
 msgstr "Ενεργοί φάκελοι Χαρτών"
 #
 # 
 # 
 #, fuzzy
-msgid "Active Charts"
+msgid "Active Datasets"
 msgstr "Ενεργοί φάκελοι Χαρτών"
-#
-msgid "Active Tide/Current Data"
-msgstr ""
 #
 msgid "Add"
 msgstr ""
 #
+msgid "Add Dataset..."
+msgstr ""
+#
 # 
 # 
-msgid "Add Selection"
-msgstr "Προσθήκη Επιλογής"
+#, fuzzy
+msgid "Add Directory..."
+msgstr "OpenCPN Σκανάρισμα Φακέλων...."
+#
+msgid "Add a directory containing chart files"
+msgstr ""
 #
 msgid "Add new"
 msgstr ""
@@ -738,11 +702,6 @@ msgstr "Βοήθημα στην Πλοήγηση"
 msgid "All Active Charts"
 msgstr "Ενεργοί φάκελοι Χαρτών"
 #
-# 
-# 
-msgid "All files (*.*)|*.*"
-msgstr "Όλα τα αρχεία (*.*)|*.*"
-#
 msgid "Anchorage created "
 msgstr ""
 #
@@ -756,6 +715,9 @@ msgstr ""
 # 
 msgid "Append Waypoint"
 msgstr "Επισύναψη Σημείου Πορείας (WP)"
+#
+msgid "Apply"
+msgstr ""
 #
 # 
 # 
@@ -821,11 +783,6 @@ msgstr ""
 # 
 msgid "Autopilot Output Port"
 msgstr "Θύρα Εξόδου για Αυτόματο Πιλότο"
-#
-# 
-# 
-msgid "Available Chart Directories"
-msgstr "Διαθέσιμοι φάκελοι Χαρτών"
 #
 # 
 # 
@@ -929,6 +886,9 @@ msgstr ""
 msgid "Bunkership"
 msgstr ""
 #
+msgid "Buoy/Light Labels"
+msgstr ""
+#
 # 
 # 
 msgid "C&olour:"
@@ -936,29 +896,21 @@ msgstr "Χ&ρώμα:"
 #
 # 
 # 
-msgid "CM93"
-msgstr "CM93"
+#, fuzzy
+msgid "CM93 Detail Level"
+msgstr "Μέγιστη Λεπτομέρια Εδώ"
+#
+# 
+# 
+#, fuzzy
+msgid "CM93 Detail Slider..."
+msgstr "Εμφάνισε δείκτη λεπτομερειών CM93"
 #
 # 
 # 
 #, fuzzy
 msgid "CM93 Offset Dialog..."
 msgstr "Δείξε Αντιμετάθεση Χαρτών"
-#
-# 
-# 
-msgid "CM93 Offset Display"
-msgstr "Δείξε Αντιμετάθεση Χαρτών"
-#
-# 
-# 
-msgid "CM93 Offsets"
-msgstr "Αντιμεταθέσεις CM93"
-#
-# 
-# 
-msgid "CM93 Zoom Detail"
-msgstr "Λεπτέρειες μεγένθυνσης CM93"
 #
 # 
 # 
@@ -1079,6 +1031,12 @@ msgstr "Κλήση"
 msgid "Cell Scale"
 msgstr ""
 #
+msgid "Center View"
+msgstr ""
+#
+msgid "Center View..."
+msgstr ""
+#
 # 
 # 
 msgid "Change Color Scheme"
@@ -1091,18 +1049,8 @@ msgstr "Μονάδες Βάθους Χάρτη"
 #
 # 
 # 
-msgid "Chart Display Filters"
-msgstr "Απεικόνηση Φίλτρων Χαρτών"
-#
-# 
-# 
 msgid "Chart Display Options"
 msgstr "Επιλογές στην απεικόνηση Χάρτη"
-#
-# 
-# 
-msgid "Chart Display Style"
-msgstr "Στυλ Απεικόνησης χάρτη"
 #
 # 
 # 
@@ -1115,6 +1063,18 @@ msgstr ""
 #
 msgid "Chart Groups...New Group"
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "Chart Information Objects"
+msgstr "Πληροφορίες Σημαδιού"
+#
+# 
+# 
+#, fuzzy
+msgid "Chart Position"
+msgstr "Θέση"
 #
 # 
 # 
@@ -1214,6 +1174,12 @@ msgstr ""
 #
 # 
 # 
+#, fuzzy
+msgid "Connections"
+msgstr "Επιλογές Γραμματοσειράς"
+#
+# 
+# 
 msgid "Console Legend"
 msgstr "Επεξηγήσεις Κονσόλας"
 #
@@ -1233,6 +1199,12 @@ msgid "Container vessel"
 msgstr ""
 #
 msgid "Copy"
+msgstr ""
+#
+msgid "Copy Log File to Clipboard"
+msgstr ""
+#
+msgid "Copy Settings File to Clipboard"
 msgstr ""
 #
 msgid "Copy..."
@@ -1260,8 +1232,7 @@ msgstr "Χάρτης με κατεύθυνση ιδια με της Πορεία
 msgid "Course Up Mode"
 msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
 #
-# 
-msgid "Course-Up Mode Display Update Period (Sec.)"
+msgid "Course-Up Mode Display Update Period (sec)"
 msgstr ""
 #
 # 
@@ -1284,11 +1255,6 @@ msgstr ""
 # 
 msgid "Current"
 msgstr "Παλίρροια"
-#
-# 
-# 
-msgid "Cursor: "
-msgstr "κέρσορας: "
 #
 # 
 # 
@@ -1347,7 +1313,7 @@ msgstr "Πηγή ΝΜΕΑ"
 # 
 # 
 #, fuzzy
-msgid "De-Clutter Text"
+msgid "De-Cluttered Text"
 msgstr "Οργάνωση Κειμένου (exp.)"
 #
 # 
@@ -1355,8 +1321,7 @@ msgstr "Οργάνωση Κειμένου (exp.)"
 msgid "Deactivate"
 msgstr "Απενεργοποίηση"
 #
-# 
-msgid "Decimal degrees"
+msgid "Decimal Degrees"
 msgstr ""
 #
 # 
@@ -1376,14 +1341,7 @@ msgstr "Χρώμα Γραμματοσειράς."
 msgid "Default color"
 msgstr "Χρώμα Γραμματοσειράς."
 #
-# 
-# 
-#, fuzzy
-msgid "Deg"
-msgstr "Σκέλος"
-#
-# 
-msgid "Degrees, Decimal minutes"
+msgid "Degrees, Decimal Minutes"
 msgstr ""
 #
 # 
@@ -1409,21 +1367,6 @@ msgstr "Διαγραφή Ταξιδιού(Route)"
 #
 # 
 # 
-msgid "Delete Route"
-msgstr "Διαγραφή Ταξιδιού(Route)"
-#
-# 
-# 
-msgid "Delete Selection"
-msgstr "Διαγραφή επιλογής"
-#
-# 
-# 
-msgid "Delete Track"
-msgstr "Διαγραφή Ίχνους (πορείας)"
-#
-# 
-# 
 msgid "Delete Waypoint"
 msgstr "Διαγραφή σημείου Πορείας (WP)"
 #
@@ -1439,13 +1382,14 @@ msgstr ""
 #
 # 
 # 
-msgid "Depth Settings"
-msgstr "Ρυθμίσεις Βάθους"
+msgid "Depth Settings(m)"
+msgstr "Ρυθμίσεις Βάθους (μέτρα)"
 #
 # 
 # 
-msgid "Depth Settings(m)"
-msgstr "Ρυθμίσεις Βάθους (μέτρα)"
+#, fuzzy
+msgid "Depth Soundings"
+msgstr "Δείξε βάθη"
 #
 # 
 # 
@@ -1456,6 +1400,12 @@ msgstr "Περιγραφή"
 # 
 msgid "Destination"
 msgstr "Προορισμός"
+#
+# 
+# 
+#, fuzzy
+msgid "Directories"
+msgstr "Ενεργοί φάκελοι Χαρτών"
 #
 # 
 # 
@@ -1480,12 +1430,19 @@ msgstr "Εμφάνισε κατηγορία"
 #
 # 
 # 
+#, fuzzy
+msgid "Display Style"
+msgstr "Στυλ Απεικόνησης χάρτη"
+#
+# 
+# 
 msgid "Distance"
 msgstr "Απόσταση"
 #
 # 
 # 
-msgid "Distance between rings"
+#, fuzzy
+msgid "Distance Between Rings"
 msgstr "Απόσταση μεταξύ δακτυλίων"
 #
 # 
@@ -1493,6 +1450,11 @@ msgstr "Απόσταση μεταξύ δακτυλίων"
 #, fuzzy
 msgid "Distress"
 msgstr "Απόσταση"
+#
+msgid ""
+"Do you also want to toggle the visibility of shared waypoints being part of "
+"this route?"
+msgstr ""
 #
 # 
 # 
@@ -1517,18 +1479,14 @@ msgstr "Σημάδεψε 'Ανθρωπος στη Θάλασσα (ΜΟΒ)"
 #
 # 
 # 
-msgid "Drop Mark Here"
+#, fuzzy
+msgid "Drop Mark"
 msgstr "Σημάδεψε εδώ"
 #
 # 
 # 
 msgid "E&xport All..."
 msgstr "Ε&ξαγωγή Όλων..."
-#
-# 
-# 
-msgid "ENC/Vector"
-msgstr "ENC/Διάνυσμα"
 #
 # 
 # 
@@ -1564,35 +1522,16 @@ msgstr "Επέτρεψε"
 #
 # 
 # 
-msgid "Enable CM93 Detail Slider"
-msgstr "Εμφάνισε δείκτη λεπτομερειών CM93"
-#
-# 
-# 
 msgid "Enable Chart Quilting"
 msgstr "Εμφάνισε επικάλυψη χαρτών"
 #
 # 
 # 
-msgid "Enable Manual CM93 Offsets"
-msgstr "Επέτρεψε χειροκίνητη Αντιμετάθεση CM93"
-#
-# 
-msgid "Enable Smooth Panning / Zooming"
-msgstr ""
-#
-# 
-# 
-msgid "Enable Target Alert Acknowledge timeout (minutes)"
+#, fuzzy
+msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Παύση Έναρξης Αναγνώρισης Συναγερμού Στόχου (λεπτά)"
 #
-# 
-# 
-msgid "Enable Wheel-Zoom-to-Cursor"
-msgstr "Ενεργοποίησε μεγένθυνση με ρόδα ποντικιού στον κέρσορα"
-#
-# 
-msgid "Enable transparent toolbar"
+msgid "Enable Transparent Toolbar"
 msgstr ""
 #
 # 
@@ -1627,11 +1566,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Etc."
-msgstr "Διάφορα"
-#
-# 
-# 
 msgid "Export GPX file"
 msgstr "Εξαγωγή Αρχείου GPX"
 #
@@ -1652,6 +1586,9 @@ msgstr "Διαγραφή Ίχνους (πορείας)"
 #, fuzzy
 msgid "Extended"
 msgstr "Τέλος Ταξιδιού"
+#
+msgid "Extended Light Sectors"
+msgstr ""
 #
 # 
 # 
@@ -1693,7 +1630,8 @@ msgstr "Φίλτραρε πορεία ΝΜΕΑ και στοιχεία ταχύ�
 #
 # 
 # 
-msgid "Filter Period (Sec.)"
+#, fuzzy
+msgid "Filter Period (sec)"
 msgstr "Φίλτρο Περιόδου (Δευτερ/πτα)"
 #
 # 
@@ -1711,10 +1649,8 @@ msgstr ""
 msgid "Fixed Structure"
 msgstr ""
 #
-# 
-# 
-msgid "Font Options"
-msgstr "Επιλογές Γραμματοσειράς"
+msgid "Fonts"
+msgstr ""
 #
 msgid "For this leg the Great Circle route is "
 msgstr ""
@@ -1736,14 +1672,9 @@ msgstr ""
 #
 # 
 # 
-#, fuzzy, c-format
-msgid "From Ownship: %03d Deg   "
-msgstr "Από το Σκάφος: %03d Μοίρες %6.2f ΝΜ"
-#
-# 
-# 
-msgid "GPS"
-msgstr "GPS"
+#, fuzzy
+msgid "Full Route"
+msgstr "Διαγραφή Ταξιδιού(Route)"
 #
 # 
 # 
@@ -1764,11 +1695,6 @@ msgstr ""
 msgid "GPX"
 msgstr "GPS"
 #
-# 
-# 
-msgid "GUI Options"
-msgstr "Ρυθμίσεις Γραφικού Περιβάλλοντος ( GUI )"
-#
 msgid "GUID"
 msgstr ""
 #
@@ -1780,13 +1706,14 @@ msgstr "Χάρτες κουκίδας (Raster )"
 #
 # 
 # 
-msgid "General cargo Vessel maritime"
-msgstr ""
+#, fuzzy
+msgid "General Options"
+msgstr "Ρυθμίσεις Γραφικού Περιβάλλοντος ( GUI )"
 #
 # 
 # 
-msgid "Go To Here"
-msgstr "Πήγαινε ΕΔΩ"
+msgid "General cargo Vessel maritime"
+msgstr ""
 #
 # 
 # 
@@ -1842,6 +1769,12 @@ msgstr ""
 #
 # 
 # 
+#, fuzzy
+msgid "Hide anchored/moored targets, speed max (kn)"
+msgstr "Κρύψε ποντισμένα/αγκυροβολημένα σημάδια"
+#
+# 
+# 
 msgid "Hide from chart"
 msgstr ""
 #
@@ -1883,6 +1816,12 @@ msgstr "Εισαγωγή Αρχείου GPX"
 # 
 # 
 #, fuzzy
+msgid "Important Text Only"
+msgstr "Εμφάνισε μόνο σημαντικό κείμενο"
+#
+# 
+# 
+#, fuzzy
 msgid "Inland Blue Flag"
 msgstr "Inland Blue Flag        Set\n"
 #
@@ -1902,26 +1841,13 @@ msgstr ""
 msgid "Isolated Danger"
 msgstr "Διαχειριστής Ταξιδίου"
 #
-# 
-# 
-msgid "Jump To"
-msgstr "Μεταπήδησε σε"
-#
-# 
-# 
-msgid "Jump To Position"
-msgstr "Μεταπήδησε στη Θέση"
-#
-# 
-# 
-#, fuzzy
-msgid "Jump To..."
-msgstr "Μεταπήδησε σε"
-#
 msgid "KML Standard (Google Earth and others)"
 msgstr ""
 #
 msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
+#
+msgid "Kts"
 msgstr ""
 #
 # 
@@ -1995,11 +1921,6 @@ msgstr "Σκέλος"
 #
 # 
 # 
-msgid "Leg/Route"
-msgstr "Σκέλος/Ταξίδι"
-#
-# 
-# 
 msgid "Leg: from "
 msgstr "Τμήμα: από "
 #
@@ -2018,6 +1939,12 @@ msgstr "Άδεια"
 #, fuzzy
 msgid "Light"
 msgstr "&Πάχος:"
+#
+# 
+# 
+#, fuzzy
+msgid "Light Descriptions"
+msgstr "Δείξε Στοιχεία Φάρων"
 #
 # 
 # 
@@ -2085,6 +2012,12 @@ msgstr "Άδεια"
 #
 # 
 # 
+#, fuzzy
+msgid "Loaded Charts"
+msgstr "Εκυπωμένος χάρτης"
+#
+# 
+# 
 msgid "Local @ PC"
 msgstr ""
 #
@@ -2093,7 +2026,8 @@ msgstr ""
 #
 # 
 # 
-msgid "Lock all waypoints unless a waypoint property dialog is visible"
+#, fuzzy
+msgid "Lock Waypoints (Unless waypoint property dialog visible)"
 msgstr ""
 "Κλείδωσε όλα τα Σημεία Πορείας (WP), εκτός αν εμφανίζεται ο Διάλογος Ιδιοτήτων"
 #
@@ -2152,11 +2086,6 @@ msgstr "ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ (ΜΟΒ)"
 #
 # 
 # 
-msgid "META Objects"
-msgstr "META-Αντικείμενα "
-#
-# 
-# 
 msgid "MMSI"
 msgstr "MMSI"
 #
@@ -2198,7 +2127,8 @@ msgstr "Ιδιότητες Σημαδιού"
 #
 # 
 # 
-msgid "Mark targets as lost after (Minutes:):"
+#, fuzzy
+msgid "Mark targets as lost after (min)"
 msgstr "Μαρκάρισε Στόχους ως χαμένους μετά από (Λεπτά:):"
 #
 # 
@@ -2256,17 +2186,15 @@ msgstr "Μέτρα"
 #
 # 
 # 
-msgid "Metres"
-msgstr "Μέτρα"
-#
-# 
-# 
 msgid "Mil/V"
 msgstr ""
 #
 # 
 # 
 msgid "Military Vessel"
+msgstr ""
+#
+msgid "Miscellaneous Options"
 msgstr ""
 #
 # 
@@ -2331,7 +2259,8 @@ msgstr ""
 #
 # 
 # 
-msgid "Move Boat Here"
+#, fuzzy
+msgid "Move Boat To"
 msgstr "Μετακίνησε το Σκάφος ΕΔΩ"
 #
 # 
@@ -2339,6 +2268,9 @@ msgstr "Μετακίνησε το Σκάφος ΕΔΩ"
 #, fuzzy
 msgid "Move Waypoint"
 msgstr "προς Σημείο Πορείας (WP)"
+#
+msgid "NMEA"
+msgstr ""
 #
 # 
 # 
@@ -2350,10 +2282,8 @@ msgstr "Ταχύτητα Θύρας ΝΜΕΑ (Baud Rate)"
 msgid "NMEA Data Source"
 msgstr "Πηγή ΝΜΕΑ"
 #
-# 
-# 
-msgid "NMEA Options"
-msgstr "Ρυθμίσεις ΝΜΕΑ"
+msgid "NMi"
+msgstr ""
 #
 # 
 # 
@@ -2365,13 +2295,20 @@ msgstr "Όνομα"
 msgid "Nav Status"
 msgstr "Κατάσταση Πλοήγησης"
 #
+# 
+# 
+#, fuzzy
+msgid "Navigate To"
+msgstr "Στοιχεία Πλοήγησης"
+#
 msgid "Navigate To This"
 msgstr ""
 #
-# 
-# 
-msgid "Navigation Data"
-msgstr "Στοιχεία Πλοήγησης"
+msgid "Network GPSD"
+msgstr ""
+#
+msgid "Network LIBGPS"
+msgstr ""
 #
 msgid "New Group..."
 msgstr ""
@@ -2388,7 +2325,8 @@ msgstr ""
 #
 # 
 # 
-msgid "No CPA Calculation if target range is greater than (NMi):"
+#, fuzzy
+msgid "No CPA Calculation if target range is greater than (NMi)"
 msgstr ""
 "Δεν υπολογίζεται η CPA, αν η απόσταση από το σημείο είναι μεγαλύτερη από (ΝΜ):"
 #
@@ -2408,6 +2346,9 @@ msgstr ""
 msgid "No. of items"
 msgstr ""
 #
+msgid "None"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -2421,7 +2362,8 @@ msgstr ""
 #
 # 
 # 
-msgid "Number of radar rings shown"
+#, fuzzy
+msgid "Number of Radar Rings"
 msgstr "Αριθμός Δακτυλίων Ραντάρ για εμφάνιση"
 #
 # 
@@ -2580,13 +2522,21 @@ msgstr "Αντικατάσταση του ήδη υπάρχοντος Αρχεί
 #
 # 
 # 
-msgid "OwnShip COG arrow predictor length (Minutes):"
-msgstr "Βέλος Προπορείας ( σε λεπτά ):"
+#, fuzzy
+msgid "Own Ship"
+msgstr "Σκάφος: "
 #
 # 
 # 
-msgid "OwnShip Display Options"
+#, fuzzy
+msgid "Own Ship Display Options"
 msgstr "Ρυθμίσεις Εμφάνισης στοιχείων του Σκάφους μας"
+#
+# 
+# 
+#, fuzzy
+msgid "OwnShip COG arrow predictor length (min)"
+msgstr "Βέλος Προπορείας ( σε λεπτά ):"
 #
 # 
 # 
@@ -2626,19 +2576,19 @@ msgstr ""
 # 
 # 
 #, fuzzy
-msgid "Paste Route..."
+msgid "Paste Route"
 msgstr "Φτιάξε Ταξίδι"
 #
 # 
 # 
 #, fuzzy
-msgid "Paste Track..."
+msgid "Paste Track"
 msgstr "&Εξαγωγή Ίχνους (πορείας)..."
 #
 # 
 # 
 #, fuzzy
-msgid "Paste Waypoint..."
+msgid "Paste Waypoint"
 msgstr "Ενεργοποίηση Σημείου Πορείας (WP)"
 #
 # 
@@ -2648,12 +2598,14 @@ msgstr ""
 #
 # 
 # 
-msgid "Place Trackpoints at distance interval (NMi):"
+#, fuzzy
+msgid "Place Trackpoints at distance interval (NMi)"
 msgstr "Βάλε σημεία ίχνους ανά διάστημα απόστασης (ΝΜ):"
 #
 # 
 # 
-msgid "Place Trackpoints at time interval (Seconds):"
+#, fuzzy
+msgid "Place Trackpoints at time interval (sec)"
 msgstr "Βάλε σημεία ίχνους ανά χρονικό διάστημα (δευερόλεπτα):"
 #
 # 
@@ -2673,13 +2625,14 @@ msgstr "Προσχεδιασμένη ταχύτητα (Kts)"
 #
 # 
 # 
-msgid "Play Sound on CPA/TCPA Alerts"
-msgstr "Παίξε ήχο σε συναγερμό CPA/ TCPA"
+#, fuzzy
+msgid "Play Ships Bells"
+msgstr "Χτύπα Καμπανάκι πλοίου"
 #
 # 
 # 
-msgid "Play ships bells"
-msgstr "Χτύπα Καμπανάκι πλοίου"
+msgid "Play Sound on CPA/TCPA Alerts"
+msgstr "Παίξε ήχο σε συναγερμό CPA/ TCPA"
 #
 # 
 # 
@@ -2701,7 +2654,8 @@ msgstr ""
 #
 # 
 # 
-msgid "PlugIns"
+#, fuzzy
+msgid "Plugins"
 msgstr "Επιπρόσθετα (PlugIns)"
 #
 # 
@@ -2780,7 +2734,8 @@ msgstr ""
 #
 # 
 # 
-msgid "Preserve scale when switching charts"
+#, fuzzy
+msgid "Preserve Scale when Switching Charts"
 msgstr "Διατήρησε την ίδια Κλίμακα κατά την αλλαγή Χαρτών"
 #
 # 
@@ -2918,6 +2873,12 @@ msgstr ""
 #
 # 
 # 
+#, fuzzy
+msgid "Question"
+msgstr "Ρυθμίσεις"
+#
+# 
+# 
 msgid "RACON"
 msgstr ""
 #
@@ -2930,11 +2891,6 @@ msgstr "Δακτύλιοι Ραντάρ"
 # 
 msgid "Range"
 msgstr "Απόσταση"
-#
-# 
-# 
-msgid "Raster"
-msgstr "Χάρτες κουκίδας (Raster )"
 #
 # 
 # 
@@ -2972,6 +2928,9 @@ msgstr ""
 msgid "Redo"
 msgstr ""
 #
+msgid "Reduced Detail at Small Scale"
+msgstr ""
+#
 # 
 # 
 msgid "Ref. Pt"
@@ -2994,8 +2953,11 @@ msgstr "Σταθμός αναφοράς:"
 msgid "Remaining time : "
 msgstr ""
 #
-msgid "Remove"
-msgstr ""
+# 
+# 
+#, fuzzy
+msgid "Remove Selected"
+msgstr "Διαγραφή Ίχνους (πορείας)"
 #
 # 
 # 
@@ -3005,7 +2967,8 @@ msgstr "Διέγραψε σημεία Πορείας (WP) από Ταξίδια(
 #
 # 
 # 
-msgid "Remove lost targets after (Minutes:):"
+#, fuzzy
+msgid "Remove lost targets after (min)"
 msgstr "Απομάκρυνε χαμένους στόχους μετά από (Λεπτά):"
 #
 # 
@@ -3106,24 +3069,12 @@ msgstr "Ιδιότητες ταξιδίου (Route)"
 #
 # 
 # 
-#, fuzzy
-msgid "Route Properties..."
-msgstr "Ιδιότητες ταξιδίου (Route)"
-#
-# 
-# 
 msgid "Route Uploaded successfully."
 msgstr "Επιτυχής φόρτωση Ταξιδίου(Route)"
 #
 # 
 # 
 msgid "Route from Track"
-msgstr "Ταξίδι(Route) από Ίχνος(Track)"
-#
-# 
-# 
-#, fuzzy
-msgid "Route/Track"
 msgstr "Ταξίδι(Route) από Ίχνος(Track)"
 #
 # 
@@ -3180,6 +3131,24 @@ msgstr ""
 #
 # 
 # 
+#, fuzzy, c-format
+msgid "Scale %4.0f"
+msgstr "Αύξησε Κλίμακα"
+#
+# 
+# 
+#, fuzzy, c-format
+msgid "Scale %4.0f (%1.1fx)"
+msgstr "Αληθής Κλίμακα: %8.0f  Μεγένθυνση: %4.1fx"
+#
+# 
+# 
+#, fuzzy, c-format
+msgid "Scale %4.0f (%1.2fx)"
+msgstr "Αληθής Κλίμακα: %8.0f  Μεγένθυνση: %4.2fx"
+#
+# 
+# 
 msgid "Scale In"
 msgstr "Αύξησε Κλίμακα"
 #
@@ -3209,11 +3178,6 @@ msgstr "Διάλεξε ήχο συναγερμού"
 # 
 msgid "Select All"
 msgstr "Επιλογή όλων"
-#
-# 
-# 
-msgid "Select Chart Types for Quilting"
-msgstr "Διάλεξε τύπους χαρτών για επικάλυψη"
 #
 # 
 # 
@@ -3253,11 +3217,6 @@ msgstr "Καθόρισε επιτήρηση αγκυροβολίας"
 #
 # 
 # 
-msgid "Settings"
-msgstr "Ρυθμίσεις"
-#
-# 
-# 
 msgid "Shallow Depth"
 msgstr "Όριο Αβαθών"
 #
@@ -3270,6 +3229,12 @@ msgstr "Άλλαξε σε χάρτη με μεγαλύτερη Κλίμακα"
 # 
 msgid "Shift to Smaller Scale Chart"
 msgstr "Άλλαξε σε χάρτη με μικρότερη Κλίμακα"
+#
+# 
+# 
+#, fuzzy
+msgid "Ships"
+msgstr "Σκάφος: "
 #
 # 
 # 
@@ -3293,11 +3258,6 @@ msgstr "Δείξε στόχους AIS"
 #, fuzzy
 msgid "Show AIS targets real size"
 msgstr "Δείξε στόχους AIS"
-#
-# 
-# 
-msgid "Show ATON labels"
-msgstr "Δείξε ετικέτες ATON"
 #
 # 
 # 
@@ -3342,10 +3302,8 @@ msgstr "Δείξε παράθυρο με ροή στοιχείων GPS-/ NMEA"
 msgid "Show Grid"
 msgstr "Δείξε πλημμύριδα"
 #
-# 
-# 
-msgid "Show Important Text Only"
-msgstr "Εμφάνισε μόνο σημαντικό κείμενο"
+msgid "Show Highway"
+msgstr ""
 #
 # 
 # 
@@ -3355,14 +3313,9 @@ msgstr "Δείξε στόχους AIS"
 #
 # 
 # 
-msgid "Show Light Descriptions"
-msgstr "Δείξε Στοιχεία Φάρων"
-#
-# 
-# 
 #, fuzzy
-msgid "Show Soundings"
-msgstr "Δείξε βάθη"
+msgid "Show Skewed Raster Charts as North-Up"
+msgstr "Δείξε τους παραμορφωμένους raster χάρτες με το Βορρά Πάνω"
 #
 # 
 # 
@@ -3380,6 +3333,9 @@ msgstr "Πληροφορίες Σημαδιού"
 msgid "Show Tides"
 msgstr "Δείξε πλημμύριδα"
 #
+msgid "Show Toolbar in Fullscreen Mode"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -3387,10 +3343,6 @@ msgid "Show WPT names"
 msgstr "Δείξε Όνομα"
 #
 msgid "Show area notices (from AIS binary messages)"
-msgstr ""
-#
-# 
-msgid "Show layers initially"
 msgstr ""
 #
 # 
@@ -3412,23 +3364,15 @@ msgstr "Δείξε δακτυλίους Ραντάρ"
 #
 # 
 # 
-msgid "Show skewed raster charts as North-Up"
-msgstr "Δείξε τους παραμορφωμένους raster χάρτες με το Βορρά Πάνω"
-#
-# 
-# 
-msgid "Show target COG arrows"
+#, fuzzy
+msgid "Show target COG predictor arrow, length (min)"
 msgstr "Δείξε βέλος COG στόχου"
 #
 # 
 # 
-msgid "Show target tracks"
+#, fuzzy
+msgid "Show target tracks, length (min)"
 msgstr "Δείξε ίχνη στόχων"
-#
-# 
-# 
-msgid "Show toolbar in fullscreen mode"
-msgstr ""
 #
 # 
 # 
@@ -3439,6 +3383,9 @@ msgstr "Δείχνει προεπισκόπιση γραμματοσειράς."
 # 
 msgid "Simplified"
 msgstr "Απλοποιημένο"
+#
+msgid "Smooth Panning / Zooming"
+msgstr ""
 #
 # 
 # 
@@ -3535,18 +3482,8 @@ msgstr "Απενεργοποίησε συναγερμό για ποντισμέ�
 #
 # 
 # 
-msgid "Supress anchored/moored targets"
-msgstr "Κρύψε ποντισμένα/αγκυροβολημένα σημάδια"
-#
-# 
-# 
 msgid "Symbolized"
 msgstr "Συμβολικά"
-#
-# 
-# 
-msgid "TCP/IP WiFi Data Server"
-msgstr "Διακομιστής TCP/IP WLAN"
 #
 # 
 # 
@@ -3628,15 +3565,19 @@ msgstr "Τέστ ήχου συναγερμού"
 msgid "Testing"
 msgstr "Ρυθμίσεις"
 #
-# 
-# 
-msgid "Text Element"
-msgstr "Στοιχείο Κειμένου"
-#
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "The Open Source Chart Plotter/Navigator"
+msgstr ""
+"\n"
+"         OpenCPN ...ένα ελαφρύ εκλεπτυσμένο Ανοικτού Λογισμικού Πρόγραμμα "
+"αποτύπωσης Χαρτών/Πλοηγός"
 #
 msgid ""
 "The currently running Track was not merged.\n"
@@ -3723,18 +3664,6 @@ msgstr "Πλημμύριδα"
 #
 # 
 # 
-#, fuzzy
-msgid "Tide & Current Dataset Selection"
-msgstr "Δείξε παλίρροια"
-#
-msgid "Tide/Current Data Selector"
-msgstr ""
-#
-msgid "Tide/Current Datasets..."
-msgstr ""
-#
-# 
-# 
 msgid "TideCurrentGraphRollover"
 msgstr ""
 #
@@ -3787,11 +3716,6 @@ msgstr "Αύριο"
 #
 # 
 # 
-msgid "ToolBox"
-msgstr "Ρυθμίσεις"
-#
-# 
-# 
 msgid "ToolTips"
 msgstr "Υποδείξεις Εργαλείων"
 #
@@ -3817,18 +3741,18 @@ msgstr "Προς "
 #
 # 
 # 
+#, fuzzy
+msgid "Track"
+msgstr "Ίχνη"
+#
+# 
+# 
 msgid "Track Name"
 msgstr "Όνομα Ίχνους"
 #
 # 
 # 
 msgid "Track Properties"
-msgstr "Ιδιότητες ίχνους"
-#
-# 
-# 
-#, fuzzy
-msgid "Track Properties..."
 msgstr "Ιδιότητες ίχνους"
 #
 # 
@@ -3840,24 +3764,6 @@ msgstr "Ίχνη"
 # 
 msgid "Transverse Mercator"
 msgstr "Εγκάρσια Μερκατορική Προβολή (Transverse Mercator)"
-#
-# 
-# 
-#, c-format
-msgid "TrueScale: %8.0f             "
-msgstr "Αληθής Κλίμακα: %8.0f             "
-#
-# 
-# 
-#, c-format
-msgid "TrueScale: %8.0f  Zoom %4.1fx"
-msgstr "Αληθής Κλίμακα: %8.0f  Μεγένθυνση: %4.1fx"
-#
-# 
-# 
-#, c-format
-msgid "TrueScale: %8.0f  Zoom %4.2fx"
-msgstr "Αληθής Κλίμακα: %8.0f  Μεγένθυνση: %4.2fx"
 #
 # 
 # 
@@ -3993,20 +3899,14 @@ msgstr "&Υπογράμμιση"
 msgid "Update Control"
 msgstr "Έλεγχος Ενημέρωσης"
 #
+msgid "Use Accelerated Graphics (OpenGL)"
+msgstr ""
+#
 # 
 # 
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr ""
 "Χρησιμοποίησε GRMN/GRMN (Host) Mode για φόρτωση Σημίων(WP) και Ταξιδιών(Route)"
-#
-# 
-msgid "Use OpenGL"
-msgstr ""
-#
-# 
-# 
-msgid "Use SCAMIN"
-msgstr "Χρησιμοποίησε το SCAMIN"
 #
 # 
 # 
@@ -4105,7 +4005,8 @@ msgstr "Αρχεία WAV (*.wav)|*.wav|Όλα τα Αρχεία (*.*)|*.*"
 #
 # 
 # 
-msgid "Warn if CPA less than (NMi):"
+#, fuzzy
+msgid "Warn if CPA less than (NMi)"
 msgstr "ΠΡΟΣΟΧΗ, αν η CPA είναι μικρότερη από ( ΝΜ ):"
 #
 # 
@@ -4113,11 +4014,6 @@ msgstr "ΠΡΟΣΟΧΗ, αν η CPA είναι μικρότερη από ( ΝΜ 
 #, fuzzy
 msgid "Waypoint"
 msgstr "Σημεία Πορείας (WP)"
-#
-# 
-# 
-msgid "Waypoint Locking"
-msgstr "Κλείδωμα Σημείων Πορείας (WP)"
 #
 # 
 # 
@@ -4161,11 +4057,6 @@ msgstr "Όπου η γραμματοσειρά είναι υπογραμμισμ
 msgid "White"
 msgstr ""
 #
-# 
-# 
-msgid "WiFi Options"
-msgstr "Ρυθμίσεις για Ασύρματα Δίκτυα ( Wi-Fi )"
-#
 msgid "Width:"
 msgstr ""
 #
@@ -4179,11 +4070,6 @@ msgstr ""
 #
 # 
 # 
-msgid "X Offset (Positive moves map to East) (NMi Projected) :"
-msgstr "Χ Αντιμετάθεση (θετική μετακινεί το χάρτη ανατολικά) (Προβολή σε NMi) :"
-#
-# 
-# 
 msgid "XTE         L"
 msgstr "XTE         L"
 #
@@ -4191,11 +4077,6 @@ msgstr "XTE         L"
 # 
 msgid "XTE         R"
 msgstr "XTE         R"
-#
-# 
-# 
-msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
-msgstr "Υ Αντιμετάθεση (θετική μετακινεί το χάρτη βόρεια) (Προβολή σε NMi) :"
 #
 # 
 # 
@@ -4228,6 +4109,12 @@ msgstr "Σμίκρυνση"
 #
 # 
 # 
+#, fuzzy
+msgid "Zoom to Cursor"
+msgstr "&Μεγένθυση σε"
+#
+# 
+# 
 msgid "[Class] Type (Status)"
 msgstr "[Κατηγορία] Τύπος (Κατάσταση)"
 #
@@ -4250,8 +4137,12 @@ msgstr ""
 #
 # 
 # 
-msgid "cm93 Detail"
-msgstr "Λεπτομέρειες CM93"
+#, fuzzy
+msgid "in"
+msgstr "Συνδέσεις"
+#
+msgid "min"
+msgstr ""
 #
 # 
 # 
@@ -4265,6 +4156,13 @@ msgstr ""
 #
 msgid "wxFB Website"
 msgstr ""
+#
+#
+# 
+# 
+#~ msgid "\n"
+#~ msgstr "\n"
+#
 #
 #
 #
@@ -4298,6 +4196,25 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+# 
+#~ msgid "      COG arrow predictor length (Minutes):"
+#~ msgstr "      Μήκους Βέλους (COG) σε πρώτα λεπτά μοίρας (Minuten):"
+#
+#
+# 
+# 
+#~ msgid "      Max moored target speed (Kts.):"
+#~ msgstr "      Μέγιστη Ταχύτητα για σταθερά σημεία σε κόμβους (kn):"
+#
+#
+# 
+# 
+#~ msgid "      Target track length (Minutes):"
+#~ msgstr "       Μήκος ίχνους στόχου (Λεπτά) (Minuten):"
+#
+#
+#
 #
 #
 #
@@ -4314,6 +4231,7 @@ msgstr ""
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Προβολή Χάρτη ΑΓΝΩΣΤΗ, λαμβάνω την Μερκατορική"
+#
 #
 #
 #
@@ -4357,6 +4275,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4366,6 +4285,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο create_pi: "
+#
 #
 #
 #
@@ -4394,11 +4314,13 @@ msgstr ""
 #~ msgstr "   Διαχειριστής PlugIn: Δεν μπορώ να φορτώσω σύμβολο destroy_pi: "
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid ":               "
 #~ msgstr "Κατηγορία:"
+#
 #
 #
 # 
@@ -4409,6 +4331,13 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #~ msgstr "Διόπτευση:            μη διαθέσιμη\n"
+#
+#
+# 
+# 
+#~ msgid "AIS General"
+#~ msgstr "AIS Γενικά"
+#
 #
 #
 #
@@ -4431,6 +4360,13 @@ msgstr ""
 #~ msgstr "Συναγερμός AIS"
 #
 #
+# 
+# 
+#~ msgid "Activate CM93 Offset"
+#~ msgstr "Ενεργοποίησε Αντιμετάθεση CM93"
+#
+#
+#
 #
 #
 #
@@ -4443,6 +4379,13 @@ msgstr ""
 # 
 #~ msgid "Activate Route"
 #~ msgstr "Ενεργοποίηση Ταξιδιού (Route)"
+#
+#
+# 
+# 
+#~ msgid "Add Selection"
+#~ msgstr "Προσθήκη Επιλογής"
+#
 #
 #
 #
@@ -4464,6 +4407,13 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Πρόσθετες Πληροφορίες"
+#
+#
+# 
+# 
+#~ msgid "All files (*.*)|*.*"
+#~ msgstr "Όλα τα αρχεία (*.*)|*.*"
+#
 #
 #
 #
@@ -4495,6 +4445,13 @@ msgstr ""
 #~ msgstr "Προσπάθεια να φορτωθεί το libgps.so"
 #
 #
+# 
+# 
+#~ msgid "Available Chart Directories"
+#~ msgstr "Διαθέσιμοι φάκελοι Χαρτών"
+#
+#
+#
 #
 #
 #
@@ -4521,16 +4478,31 @@ msgstr ""
 #~ msgstr "ΒασικήΚατηγοριαΣύνηθεςΌνομα"
 #
 #
+#
 # 
 # 
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Διόπτευση:            %03d μοίρες.\n"
 #
 #
+#
 # 
 # 
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr "Διόπτευση:            μη διαθέσιμη\n"
+#
+#
+# 
+# 
+#~ msgid "CM93"
+#~ msgstr "CM93"
+#
+#
+# 
+# 
+#~ msgid "CM93 Offset Display"
+#~ msgstr "Δείξε Αντιμετάθεση Χαρτών"
+#
 #
 #
 #
@@ -4591,6 +4563,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4617,6 +4590,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "Αντιμετάθεση CM93 ανοικτή"
+#
 #
 #
 #
@@ -4677,6 +4651,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4703,6 +4678,13 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Εργαλείο Αντιμετάθεσης CM93..."
+#
+#
+# 
+# 
+#~ msgid "CM93 Offsets"
+#~ msgstr "Αντιμεταθέσεις CM93"
+#
 #
 #
 #
@@ -4750,8 +4732,16 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "CM93 Zoom Detail"
+#~ msgstr "Λεπτέρειες μεγένθυνσης CM93"
+#
+#
+#
+# 
+# 
 #~ msgid "CPA:       \n"
 #~ msgstr "CPA:       \n"
+#
 #
 #
 # 
@@ -4760,10 +4750,12 @@ msgstr ""
 #~ msgstr "CPA:                 %6.1f ΝΜ\n"
 #
 #
+#
 # 
 # 
 #~ msgid "CallSign:             "
 #~ msgstr "Κωδικός Κλήσης:"
+#
 #
 #
 #
@@ -4823,6 +4815,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4864,10 +4857,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Χάρτης"
+#
+#
+# 
+# 
+#~ msgid "Chart Display Filters"
+#~ msgstr "Απεικόνηση Φίλτρων Χαρτών"
+#
 #
 #
 #
@@ -4913,16 +4914,19 @@ msgstr ""
 #~ msgstr "Αρχείο χάρτη κατεστραμένο ... απενεργοποιώ αυτό τον χάρτη \n"
 #
 #
+#
 # 
 # 
 #~ msgid "Class:                "
 #~ msgstr "Κατηγορία:"
 #
 #
+#
 # 
 # 
 #~ msgid "Course:                 %03d Deg.\n"
 #~ msgstr "Πορεία:                 %03d Μοίρες\n"
+#
 #
 #
 # 
@@ -4932,10 +4936,18 @@ msgstr ""
 #~ msgstr "Πορεία:                 %03d Μοίρες\n"
 #
 #
+#
 # 
 # 
 #~ msgid "Course:                 Unavailable\n"
 #~ msgstr "Πορεία:                  μη διαθέσιμη\n"
+#
+#
+# 
+# 
+#~ msgid "Cursor: "
+#~ msgstr "κέρσορας: "
+#
 #
 #
 #
@@ -4963,11 +4975,20 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Χρώμα Γραμματοσειράς."
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Deg"
+#~ msgstr "Σκέλος"
+#
 #
 #
 #
@@ -4986,8 +5007,40 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Delete Route"
+#~ msgstr "Διαγραφή Ταξιδιού(Route)"
+#
+#
+# 
+# 
+#~ msgid "Delete Selection"
+#~ msgstr "Διαγραφή επιλογής"
+#
+#
+# 
+# 
+#~ msgid "Delete Track"
+#~ msgstr "Διαγραφή Ίχνους (πορείας)"
+#
+#
+# 
+# 
+#~ msgid "Depth Settings"
+#~ msgstr "Ρυθμίσεις Βάθους"
+#
+#
+#
+# 
+# 
 #~ msgid "Destination:          "
 #~ msgstr "Προορισμός:                    "
+#
+#
+# 
+# 
+#~ msgid "ENC/Vector"
+#~ msgstr "ENC/Διάνυσμα"
+#
 #
 #
 # 
@@ -4996,10 +5049,12 @@ msgstr ""
 #~ msgstr "ΕΤΑ:"
 #
 #
+#
 # 
 # 
 #~ msgid "ETA:                  "
 #~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 #
@@ -5026,6 +5081,25 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ σφραγίδα χρόνου"
+#
+#
+# 
+# 
+#~ msgid "Enable Manual CM93 Offsets"
+#~ msgstr "Επέτρεψε χειροκίνητη Αντιμετάθεση CM93"
+#
+#
+# 
+# 
+#~ msgid "Enable Wheel-Zoom-to-Cursor"
+#~ msgstr "Ενεργοποίησε μεγένθυνση με ρόδα ποντικιού στον κέρσορα"
+#
+#
+# 
+# 
+#~ msgid "Etc."
+#~ msgstr "Διάφορα"
+#
 #
 #
 #
@@ -5082,6 +5156,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5094,6 +5169,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Αποτυχία στη φόρτωση του libgps.so"
+#
 #
 #
 #
@@ -5125,6 +5201,26 @@ msgstr ""
 #~ msgstr "Αδύνατο να τρέξει το libgps.so.19"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "From Ownship: %03d Deg   "
+#~ msgstr "Από το Σκάφος: %03d Μοίρες %6.2f ΝΜ"
+#
+#
+# 
+# 
+#~ msgid "GPS"
+#~ msgstr "GPS"
+#
+#
+# 
+# 
+#~ msgid "Go To Here"
+#~ msgstr "Πήγαινε ΕΔΩ"
+#
+#
+#
 #
 #
 #
@@ -5139,6 +5235,7 @@ msgstr ""
 #~ msgstr "Μετάβαση στο Σημάδι/WP"
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5146,11 +5243,13 @@ msgstr ""
 #~ msgstr "Διόπτευση:            %03d μοίρες.\n"
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "IMO:                 %8d\n"
 #~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 #
@@ -5189,10 +5288,24 @@ msgstr ""
 #~ msgstr "Εισαγωγή Αρχείου GPX"
 #
 #
+#
 # 
 # 
 #~ msgid "Inland Blue Flag        Clear\n"
 #~ msgstr "Inland Blue Flag        Clear\n"
+#
+#
+# 
+# 
+#~ msgid "Jump To"
+#~ msgstr "Μεταπήδησε σε"
+#
+#
+# 
+# 
+#~ msgid "Jump To Position"
+#~ msgstr "Μεταπήδησε στη Θέση"
+#
 #
 #
 #
@@ -5207,6 +5320,14 @@ msgstr ""
 # 
 #~ msgid "Jump To Position..."
 #~ msgstr "Μεταπήδησε στη Θέση..."
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Jump To..."
+#~ msgstr "Μεταπήδησε σε"
+#
 #
 #
 #
@@ -5227,11 +5348,25 @@ msgstr ""
 #~ msgstr "Γλώσσα/Γραμματοσειρές"
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Χρόνος τελευταίας αναφοράς: "
+#
+#
+# 
+# 
+#~ msgid "Leg/Route"
+#~ msgstr "Σκέλος/Ταξίδι"
+#
+#
+# 
+# 
+#~ msgid "META Objects"
+#~ msgstr "META-Αντικείμενα "
+#
 #
 #
 #
@@ -5254,6 +5389,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 #
@@ -5312,10 +5448,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Εικόνα Σημαδιού"
+#
 #
 #
 #
@@ -5347,11 +5485,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Ιδιότητες Σημαδιών-/ σημείων Πορείας (WP)"
+#
 #
 #
 #
@@ -5370,15 +5510,30 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Metres"
+#~ msgstr "Μέτρα"
+#
+#
+# 
+# 
+#~ msgid "NMEA Options"
+#~ msgstr "Ρυθμίσεις ΝΜΕΑ"
+#
+#
+#
+# 
+# 
 #, fuzzy
 #~ msgid "Name:  "
 #~ msgstr "Όνομα:  "
+#
 #
 #
 # 
 # 
 #~ msgid "Navigational Status:  "
 #~ msgstr "Κατάσταση Πλοήγησης:  "
+#
 #
 #
 #
@@ -5403,6 +5558,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Νέο Σημάδι"
+#
 #
 #
 #
@@ -5446,6 +5602,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5459,6 +5616,7 @@ msgstr ""
 #~ msgstr ""
 #~ "OpenCPN PlugIn Βασική Κλάση\n"
 #~ "Διαχειριστής PlugIn κατασκεύασε αυτή τη Βασική ατηγορία"
+#
 #
 #
 #
@@ -5512,6 +5670,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5521,6 +5680,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Ο Διαχειριστής PlugIn ψάχνει για PlugIn στην τοποθεσία"
+#
 #
 #
 #
@@ -5564,6 +5724,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5573,6 +5734,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αρχικοποίηση PlugIn: "
+#
 #
 #
 #
@@ -5616,6 +5778,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5625,6 +5788,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Διαχειριστής PlugIn: Αποφόρτωση PlugIn: "
+#
 #
 #
 #
@@ -5654,6 +5818,7 @@ msgstr ""
 #~ "Διαχειριστής PlugIn: Ακύρωση του PlugIn με την άκυρη έκδοση της ΑΡΙ %d.%d:"
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5661,6 +5826,7 @@ msgstr ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Επικαιρότητα αναφοράς:       %3d δευτ..\n"
+#
 #
 #
 #
@@ -5686,6 +5852,7 @@ msgstr ""
 # 
 #~ msgid "Position:               "
 #~ msgstr "Θέση:"
+#
 #
 #
 #
@@ -5727,16 +5894,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Εκτύπωση"
 #
 #
+#
 # 
 # 
 #~ msgid "Range:                  Unavailable\n"
 #~ msgstr "Απόσταση:            μη διαθέσιμη\n"
+#
 #
 #
 # 
@@ -5747,14 +5917,23 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "Raster"
+#~ msgstr "Χάρτες κουκίδας (Raster )"
+#
+#
+#
+# 
+# 
 #~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
 #~ msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Αριστερά\n"
+#
 #
 #
 # 
 # 
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Δεξιά\n"
+#
 #
 #
 # 
@@ -5764,6 +5943,7 @@ msgstr ""
 #~ msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά\n"
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5771,11 +5951,13 @@ msgstr ""
 #~ msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Αριστερά\n"
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 #~ msgstr "Ρυθμός Στροφής:     %3d Μοίρες/Λεπτά  Δεξιά\n"
+#
 #
 #
 #
@@ -5826,10 +6008,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Αντιστροφή Ταξιδίου(Route)"
+#
 #
 #
 #
@@ -5848,6 +6032,27 @@ msgstr ""
 #~ msgstr "Ολική Απόσταση"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "Route Properties..."
+#~ msgstr "Ιδιότητες ταξιδίου (Route)"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Route/Track"
+#~ msgstr "Ταξίδι(Route) από Ίχνος(Track)"
+#
+#
+# 
+# 
+#~ msgid "Select Chart Types for Quilting"
+#~ msgstr "Διάλεξε τύπους χαρτών για επικάλυψη"
+#
+#
+#
 #
 #
 #
@@ -5861,6 +6066,13 @@ msgstr ""
 #, fuzzy
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Χάρτης με κατεύθυνση ιδια με της Πορείας"
+#
+#
+# 
+# 
+#~ msgid "Settings"
+#~ msgstr "Ρυθμίσεις"
+#
 #
 #
 #
@@ -5904,6 +6116,13 @@ msgstr ""
 #~ msgstr "Όνομα Σκάφους: "
 #
 #
+# 
+# 
+#~ msgid "Show ATON labels"
+#~ msgstr "Δείξε ετικέτες ATON"
+#
+#
+#
 #
 #
 #
@@ -5932,10 +6151,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Δείξε εικόνα ίχνους"
+#
 #
 #
 # 
@@ -5947,6 +6168,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Μέγεθος:          %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5985,6 +6207,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -5993,6 +6216,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Μέγεθος:          %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -6005,6 +6229,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -6013,6 +6238,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Μέγεθος:          ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 # 
@@ -6025,6 +6251,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -6035,6 +6262,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -6043,10 +6271,12 @@ msgstr ""
 #~ msgstr "Μέγεθος:        %5.1fm x %4.1fm x ---m\n"
 #
 #
+#
 # 
 # 
 #~ msgid "Speed:                  Unavailable\n"
 #~ msgstr "Ταχύτητα:             μη διαθέσιμη\n"
+#
 #
 #
 # 
@@ -6057,14 +6287,36 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "TCP/IP WiFi Data Server"
+#~ msgstr "Διακομιστής TCP/IP WLAN"
+#
+#
+#
+# 
+# 
 #~ msgid "TCPA:  \n"
 #~ msgstr "TCPA:  \n"
+#
 #
 #
 # 
 # 
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Ω:Λεπτά\n"
+#
+#
+# 
+# 
+#~ msgid "Text Element"
+#~ msgstr "Στοιχείο Κειμένου"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Tide & Current Dataset Selection"
+#~ msgstr "Δείξε παλίρροια"
+#
 #
 #
 #
@@ -6118,6 +6370,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6141,9 +6394,30 @@ msgstr ""
 #
 # 
 # 
+#~ msgid "ToolBox"
+#~ msgstr "Ρυθμίσεις"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Track Properties..."
+#~ msgstr "Ιδιότητες ίχνους"
+#
+#
+# 
+# 
+#~ msgid "TrueScale: %8.0f             "
+#~ msgstr "Αληθής Κλίμακα: %8.0f             "
+#
+#
+#
+# 
+# 
 #, fuzzy
 #~ msgid "Type:                 "
 #~ msgstr "ΕΤΑ:                  "
+#
 #
 #
 # 
@@ -6151,6 +6425,44 @@ msgstr ""
 #, fuzzy
 #~ msgid "UN Ship Type:         "
 #~ msgstr "Τύπος Σκάφους:         "
+#
+#
+# 
+# 
+#~ msgid "Use SCAMIN"
+#~ msgstr "Χρησιμοποίησε το SCAMIN"
+#
+#
+# 
+# 
+#~ msgid "Waypoint Locking"
+#~ msgstr "Κλείδωμα Σημείων Πορείας (WP)"
+#
+#
+# 
+# 
+#~ msgid "WiFi Options"
+#~ msgstr "Ρυθμίσεις για Ασύρματα Δίκτυα ( Wi-Fi )"
+#
+#
+# 
+# 
+#~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
+#~ msgstr ""
+#~ "Χ Αντιμετάθεση (θετική μετακινεί το χάρτη ανατολικά) (Προβολή σε NMi) :"
+#
+#
+# 
+# 
+#~ msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
+#~ msgstr "Υ Αντιμετάθεση (θετική μετακινεί το χάρτη βόρεια) (Προβολή σε NMi) :"
+#
+#
+# 
+# 
+#~ msgid "cm93 Detail"
+#~ msgstr "Λεπτομέρειες CM93"
+#
 #
 #
 #
