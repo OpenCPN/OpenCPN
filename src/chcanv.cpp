@@ -3997,6 +3997,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->Close();
             return;
 
+        case 18:                       // Ctrl R
+            gFrame->nRoute_State = 1;
+            cc1->SetCursor( *cc1->pCursorPencil );
+            return;
+
         case 20:                       // Ctrl T
             if( NULL == pGoToPositionDialog ) // There is one global instance of the Go To Position Dialog
                 pGoToPositionDialog = new GoToPositionDialog( this );

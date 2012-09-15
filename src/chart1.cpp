@@ -2448,7 +2448,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     }
 
     CheckAndAddPlugInTool( tb );
-    tipString = _("Create Route");
+    tipString = wxString( _("Create Route") ) << _T(" (Ctrl-R)");
     if( _toolbarConfigMenuUtil( ID_ROUTE, tipString ) )
         tb->AddTool( ID_ROUTE, _T("route"),
             style->GetToolIcon( _T("route"), TOOLICON_NORMAL ),
@@ -3211,8 +3211,6 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_ROUTE: {
             nRoute_State = 1;
             cc1->SetCursor( *cc1->pCursorPencil );
-//            SubmergeToolbar();
-
             break;
         }
 
