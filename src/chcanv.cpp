@@ -8055,8 +8055,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( seltype & SELTYPE_ROUTESEGMENT ) {
         subMenuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
         if( m_pSelectedRoute ) {
+
             if( m_pSelectedRoute->IsActive() ) {
-                subMenuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
+                int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
+                if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
+                    subMenuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
+                }
+
                 subMenuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
             }
             else {
