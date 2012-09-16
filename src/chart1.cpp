@@ -3745,6 +3745,7 @@ int MyFrame::DoOptionsDialog()
 {
     static int lastPage = -1;
     static wxPoint lastWindowPos( 0,0 );
+    static wxSize lastWindowSize( 0,0 );
 
     ::wxBeginBusyCursor();
     options optionsDlg( this, -1, _("Options") );
@@ -3799,6 +3800,7 @@ int MyFrame::DoOptionsDialog()
     optionsDlg.lastWindowPos = lastWindowPos;
     if( lastWindowPos != wxPoint(0,0) ) {
         optionsDlg.Move( lastWindowPos );
+        optionsDlg.SetSize( lastWindowSize );
     } else {
         optionsDlg.Center();
     }
@@ -3811,6 +3813,7 @@ int MyFrame::DoOptionsDialog()
 
     lastPage = optionsDlg.lastPage;
     lastWindowPos = optionsDlg.lastWindowPos;
+    lastWindowSize = optionsDlg.lastWindowSize;
 
     if( b_sub ) {
         SurfaceToolbar();

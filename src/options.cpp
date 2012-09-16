@@ -219,6 +219,9 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
     Init();
 
     pParent = parent;
+    int w, h, maxHeight = -1;
+    ::wxDisplaySize( &w, &h );
+    if( h <= 800 ) maxHeight = h-100;
 
     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
     SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
@@ -226,13 +229,9 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
     wxDialog::Create( parent, id, caption, pos, size, wstyle );
 
     CreateControls();
-
-#ifdef __WXGTK__
-    m_minimumWidth += 100;
-#endif
-    wxSize minSize( m_minimumWidth, 650 );
-    SetMinSize( minSize );
     Fit();
+    SetMaxSize( wxSize( -1, maxHeight ) );
+    Center();
 }
 
 options::~options()
@@ -808,32 +807,32 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
     wxScrolledWindow *ps57Ctl = AddPage( parent, _("Vector Charts") );
 
-    wxBoxSizer* vectorPanel = new wxBoxSizer( wxVERTICAL );
+    wxFlexGridSizer* vectorPanel = new wxFlexGridSizer( 2, 3, border_size, border_size );
+    vectorPanel->AddGrowableCol( 0, 2 );
+    vectorPanel->AddGrowableCol( 1, 2 );
+    vectorPanel->AddGrowableCol( 2, 1 );
     ps57Ctl->SetSizer( vectorPanel );
-
-    wxBoxSizer* filtersSizer = new wxBoxSizer( wxHORIZONTAL );
-    vectorPanel->Add( filtersSizer, 0 );
 
     wxStaticBox* marinersBox = new wxStaticBox( ps57Ctl, wxID_ANY,
             _("Mariner's Standard") );
     wxStaticBoxSizer* marinersSizer = new wxStaticBoxSizer( marinersBox,
             wxVERTICAL );
-    filtersSizer->Add( marinersSizer, 0, wxALL, border_size );
+    vectorPanel->Add( marinersSizer, 1, wxALL | wxEXPAND, border_size );
 
     wxString* ps57CtlListBoxStrings = NULL;
     ps57CtlListBox = new wxCheckListBox( ps57Ctl, ID_CHECKLISTBOX, wxDefaultPosition,
-            wxSize( 200, 200 ), 0, ps57CtlListBoxStrings, wxLB_SINGLE| wxLB_HSCROLL );
-    marinersSizer->Add( ps57CtlListBox, 0, wxALL, group_item_spacing );
+            wxSize( 200, 250 ), 0, ps57CtlListBoxStrings, wxLB_SINGLE | wxLB_HSCROLL | wxLB_SORT );
+    marinersSizer->Add( ps57CtlListBox, 1, wxALL | wxEXPAND, group_item_spacing );
 
-    itemButtonClearList = new wxButton( ps57Ctl, ID_CLEARLIST, _("Clear All") );
-    marinersSizer->Add( itemButtonClearList, 0, wxALL, group_item_spacing );
-
+    wxBoxSizer* btnRow = new wxBoxSizer( wxHORIZONTAL );
     itemButtonSelectList = new wxButton( ps57Ctl, ID_SELECTLIST, _("Select All") );
-    itemButtonSelectList->SetDefault();
-    marinersSizer->Add( itemButtonSelectList, 0, wxALL, group_item_spacing );
+    btnRow->Add( itemButtonSelectList, 0, wxALL, group_item_spacing );
+    itemButtonClearList = new wxButton( ps57Ctl, ID_CLEARLIST, _("Clear All") );
+    btnRow->Add( itemButtonClearList, 0, wxALL, group_item_spacing );
+    marinersSizer->Add( btnRow );
 
     wxBoxSizer* catSizer = new wxBoxSizer( wxVERTICAL );
-    filtersSizer->Add( catSizer, 1, wxALL | wxEXPAND, group_item_spacing );
+    vectorPanel->Add( catSizer, 1, wxALL | wxEXPAND, group_item_spacing );
 
     wxString pDispCatStrings[] = { _("Base"), _("Standard"), _("Other"), _("Mariners Standard") };
     pDispCat = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Display Category"), wxDefaultPosition,
@@ -873,9 +872,8 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     pCheck_DECLTEXT->SetValue( FALSE );
     catSizer->Add( pCheck_DECLTEXT, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
 
-    wxStaticBox* styleBox = new wxStaticBox( ps57Ctl, wxID_ANY, _("Display Style") );
-    wxStaticBoxSizer* styleSizer = new wxStaticBoxSizer( styleBox, wxVERTICAL );
-    filtersSizer->Add( styleSizer, 0, wxALL, 2 );
+    wxBoxSizer* styleSizer = new wxBoxSizer( wxVERTICAL );
+    vectorPanel->Add( styleSizer, 1, wxALL | wxEXPAND, 0 );
 
     wxString pPointStyleStrings[] = { _("Paper Chart"), _("Simplified"), };
     pPointStyle = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Points"), wxDefaultPosition,
@@ -892,58 +890,54 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
             2, pColorNumStrings, 1, wxRA_SPECIFY_COLS );
     styleSizer->Add( p24Color, 0, wxALL | wxEXPAND, check_spacing_2 );
 
-    wxBoxSizer *depthSizer = new wxBoxSizer( wxHORIZONTAL );
-    vectorPanel->Add( depthSizer, 0, wxTOP | wxLEFT | wxRIGHT | wxEXPAND, border_size );
-
     wxStaticBox* depthBox = new wxStaticBox( ps57Ctl, wxID_ANY, _("Depth Settings(m)") );
-    wxStaticBoxSizer* itemStaticBoxSizer27 = new wxStaticBoxSizer( depthBox, wxVERTICAL );
-    depthSizer->Add( itemStaticBoxSizer27, 1, wxTOP | wxALL | wxEXPAND, border_size );
+    wxStaticBoxSizer* depthsSizer = new wxStaticBoxSizer( depthBox, wxVERTICAL );
+    vectorPanel->Add( depthsSizer, 0, wxALL | wxEXPAND, border_size );
 
     wxStaticText* itemStaticText4 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Shallow Depth") );
-    itemStaticBoxSizer27->Add( itemStaticText4, 0,
+    depthsSizer->Add( itemStaticText4, 0,
             wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
 
     m_ShallowCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxSize( 120, -1 ), 0 );
-    itemStaticBoxSizer27->Add( m_ShallowCtl, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM,
+    depthsSizer->Add( m_ShallowCtl, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM,
             group_item_spacing );
 
     wxStaticText* itemStaticText5 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Safety Depth") );
-    itemStaticBoxSizer27->Add( itemStaticText5, 0,
+    depthsSizer->Add( itemStaticText5, 0,
             wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
 
     m_SafetyCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxSize( 120, -1 ), 0 );
-    itemStaticBoxSizer27->Add( m_SafetyCtl, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM,
+    depthsSizer->Add( m_SafetyCtl, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM,
             group_item_spacing );
 
     wxStaticText* itemStaticText6 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Deep Depth") );
-    itemStaticBoxSizer27->Add( itemStaticText6, 0,
+    depthsSizer->Add( itemStaticText6, 0,
             wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
 
     m_DeepCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 120, -1 ),
             0 );
-    itemStaticBoxSizer27->Add( m_DeepCtl, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM,
+    depthsSizer->Add( m_DeepCtl, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM,
             group_item_spacing );
 
     wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
 
     pDepthUnitSelect = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Chart Depth Units"),
             wxDefaultPosition, wxDefaultSize, 3, pDepthUnitStrings, 1, wxRA_SPECIFY_COLS );
-    depthSizer->Add( pDepthUnitSelect, 1, wxALIGN_TOP | wxALL | wxEXPAND, border_size );
+    vectorPanel->Add( pDepthUnitSelect, 1, wxALL | wxEXPAND, border_size );
 
 #ifdef USE_S57
     wxStaticBox *pslStatBox = new wxStaticBox( ps57Ctl, wxID_ANY, _("CM93 Detail Level") );
     wxStaticBoxSizer* cm93Sizer = new wxStaticBoxSizer( pslStatBox, wxVERTICAL );
-    depthSizer->Add( cm93Sizer, 1, wxALL | wxEXPAND, border_size );
+    vectorPanel->Add( cm93Sizer, 1, wxALL | wxEXPAND, border_size );
     m_pSlider_CM93_Zoom = new wxSlider( ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
             CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxDefaultSize,
             wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
     cm93Sizer->Add( m_pSlider_CM93_Zoom, 0, wxALL | wxEXPAND, border_size );
 #endif
 
-    vectorPanel->Fit( ps57Ctl );
-    m_minimumWidth = vectorPanel->GetSize().x + 60;
+    vectorPanel->SetSizeHints( ps57Ctl );
 }
 
 void options::CreatePanel_TidesCurrents( size_t parent, int border_size, int group_item_spacing,
@@ -1356,7 +1350,7 @@ void options::CreateControls()
     int width, height;
     ::wxDisplaySize( &width, &height );
 
-    if( height < 800 ) {
+    if( height <= 800 ) {
         border_size = 2;
         check_spacing = 2;
         group_item_spacing = 1;
@@ -1606,12 +1600,14 @@ void options::SetInitialSettings()
 
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+            wxString item;
             if( iPtr < ps52plib->OBJLDescriptions.size() ) {
-                ps57CtlListBox->Append( ps52plib->OBJLDescriptions[iPtr] );
+                item = ps52plib->OBJLDescriptions[iPtr];
             } else {
-                ps57CtlListBox->Append( wxString( pOLE->OBJLName, wxConvUTF8 ) );
+                item = wxString( pOLE->OBJLName, wxConvUTF8 );
             }
-            ps57CtlListBox->Check( ps57CtlListBox->GetCount() - 1, !( pOLE->nViz == 0 ) );
+            int newpos = ps57CtlListBox->Append( item );
+            ps57CtlListBox->Check( newpos, !( pOLE->nViz == 0 ) );
         }
 
         int nset = 2;                             // default OTHER
@@ -1754,7 +1750,7 @@ void options::OnCharHook( wxKeyEvent& event ) {
             wxCommandEvent okEvent;
             okEvent.SetId( xID_OK );
             okEvent.SetEventType( wxEVT_COMMAND_BUTTON_CLICKED );
-            GetEventHandler()->ProcessEvent( okEvent );
+            GetEventHandler()->AddPendingEvent( okEvent );
         }
     }
 	event.Skip();
@@ -2165,6 +2161,9 @@ void options::OnApplyClick( wxCommandEvent& event )
 
 void options::OnXidOkClick( wxCommandEvent& event )
 {
+    // When closing the form with Ctrl-Enter sometimes we get double events, the second is empty??
+    if( event.GetEventObject() == NULL ) return;
+
     OnApplyClick( event );
 
     //  Required to avoid intermittent crash on wxGTK
@@ -2173,6 +2172,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     delete pListBox;
     delete ps57CtlListBox;
     lastWindowPos = GetPosition();
+    lastWindowSize = GetSize();
     EndModal( m_returnChanges );
 }
 
@@ -2222,7 +2222,7 @@ void options::OnCancelClick( wxCommandEvent& event )
     delete ps57CtlListBox;
 
     lastWindowPos = GetPosition();
-
+    lastWindowSize = GetSize();
     EndModal(0);
 }
 
