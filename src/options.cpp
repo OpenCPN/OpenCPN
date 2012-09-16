@@ -1374,12 +1374,31 @@ void options::CreateControls()
             wxLB_TOP );
     wxImageList *imglist = new wxImageList( 40, 40, true, 1 );
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+#if wxCHECK_VERSION(2, 8, 12)
     imglist->Add( style->GetIcon( _T("Display") ) );
     imglist->Add( style->GetIcon( _T("Connections") ) );
     imglist->Add( style->GetIcon( _T("Charts") ) );
     imglist->Add( style->GetIcon( _T("Ship") ) );
     imglist->Add( style->GetIcon( _T("UI") ) );
     imglist->Add( style->GetIcon( _T("Plugins") ) );
+#else
+    wxBitmap bmp;
+    wxImage img;
+    bmp = style->GetIcon( _T("Display") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
+    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = style->GetIcon( _T("Connections") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
+    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = style->GetIcon( _T("Charts") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
+    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = style->GetIcon( _T("Ship") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
+    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = style->GetIcon( _T("UI") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
+    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = style->GetIcon( _T("Plugins") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
+    bmp = wxBitmap( img ); imglist->Add( bmp );
+#endif
+
     m_pListbook->SetImageList( imglist );
     itemBoxSizer2->Add( m_pListbook, 1,
             wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL | wxEXPAND, border_size );
