@@ -1872,16 +1872,22 @@ void options::OnApplyClick( wxCommandEvent& event )
     int k_force = FORCE_UPDATE;
     if( pUpdateCheckBox ) {
         if( !pUpdateCheckBox->GetValue() ) k_force = 0;
-    } else
+        pUpdateCheckBox->Enable();
+        pUpdateCheckBox->SetValue( false );
+    } else {
         k_force = 0;
+    }
 
     m_returnChanges |= k_force;
 
     int k_scan = SCAN_UPDATE;
     if( pScanCheckBox ) {
         if( !pScanCheckBox->GetValue() ) k_scan = 0;
-    } else
+        pScanCheckBox->Enable();
+        pScanCheckBox->SetValue( false );
+    } else {
         k_scan = 0;
+    }
 
     m_returnChanges |= k_scan;
 
@@ -2174,6 +2180,8 @@ void options::OnApplyClick( wxCommandEvent& event )
     if( event.GetId() == ID_APPLY ) {
         gFrame->ProcessOptionsDialog( m_returnChanges, this );
     }
+
+    k_charts = 0;
 
     ::wxEndBusyCursor();
 }
