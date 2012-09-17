@@ -6950,9 +6950,19 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     int x, y;
     int mx, my;
 
-    // Used to protect from leftUp's coming from event handlers in child windows
-    // who return focus to the canvas.
+    // Protect from leftUp's coming from event handlers in child
+    // windows who return focus to the canvas.
     static bool leftIsDown = false;
+
+    // Protect from very small cursor slips during double click, which produce a
+    // single Drag event.
+    static bool lastEventWasDrag = false;
+
+    if( event.Dragging() && !lastEventWasDrag ) {
+        lastEventWasDrag = true;
+        return;
+    }
+    lastEventWasDrag = event.Dragging();
 
     event.GetPosition( &x, &y );
 
@@ -7515,7 +7525,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( ( lppmax > pre_rect.width / 2 ) || ( lppmax > pre_rect.height / 2 ) ) pre_rect.Inflate(
                         (int) ( lppmax - ( pre_rect.width / 2 ) ),
                         (int) ( lppmax - ( pre_rect.height / 2 ) ) );
-
                 m_pRoutePointEditTarget->m_lat = m_cursor_lat;    // update the RoutePoint entry
                 m_pRoutePointEditTarget->m_lon = m_cursor_lon;
                 m_pFoundPoint->m_slat = m_cursor_lat;             // update the SelectList entry
