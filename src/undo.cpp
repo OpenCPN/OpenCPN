@@ -58,13 +58,18 @@ Undo::Undo()
     depthSetting = 10;
     stackpointer = 0;
     isInsideUndoableAction = false;
+    candidate = NULL;
 }
 
 Undo::~Undo()
 {
     for( unsigned int i=0; i<undoStack.size(); i++ ) {
-        delete undoStack[i];
+        if( undoStack[i] ) {
+            delete undoStack[i];
+            undoStack[i] = NULL;
+        }
     }
+    undoStack.clear();
 }
 
 wxString UndoAction::Description()
@@ -359,11 +364,19 @@ bool Undo::AfterUndoableAction( UndoItemPointer after )
     return true;
 }
 
-bool Undo::CancelUndoableAction()
+bool Undo::CancelUndoableAction( bool noDataDelete )
 {
     if( isInsideUndoableAction ) {
-        // Cancel the previous Before.
-        delete candidate;
+        if( noDataDelete ) {
+            for( unsigned int i = 0; i < candidate->beforeType.size(); i++ ) {
+                if( candidate->beforeType[i] == Undo_IsOrphanded ) {
+                    candidate->beforeType[i] = Undo_HasParent;
+                }
+            }
+        }
+        if( candidate ) delete candidate;
+        candidate = NULL;
+        isInsideUndoableAction = false;
         return true;
     }
     return false;
@@ -382,6 +395,7 @@ UndoAction::~UndoAction()
                     case Undo_MoveWaypoint:
                         if( before[i] ) {
                             delete (wxRealPoint*) before[i];
+                            before[i] = NULL;
                         }
                         break;
                     case Undo_DeleteWaypoint: break;
@@ -401,6 +415,7 @@ UndoAction::~UndoAction()
                     case Undo_AppendWaypoint:
                         if( before[i] ) {
                             delete (RoutePoint*) before[i];
+                            before[i] = NULL;
                         }
                         break;
                 }

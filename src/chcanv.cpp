@@ -7350,9 +7350,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             pSelect->AddSelectableRouteSegment( prevGcPoint->m_lat, prevGcPoint->m_lon,
                                     gcPoint->m_lat, gcPoint->m_lon, prevGcPoint, gcPoint, m_pMouseRoute );
                             prevGcPoint = gcPoint;
-
-                            undo->CancelUndoableAction();
                         }
+
+                        undo->CancelUndoableAction( true );
+
                     } else {
                         m_pMouseRoute->AddPoint( pMousePoint );
                         pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,

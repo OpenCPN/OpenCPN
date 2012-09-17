@@ -76,7 +76,7 @@ public:
     bool BeforeUndoableAction( UndoType type, UndoItemPointer before, UndoBeforePointerType beforeType,
             UndoItemPointer selectable );
     bool AfterUndoableAction( UndoItemPointer after );
-    bool CancelUndoableAction();
+    bool CancelUndoableAction( bool noDataDelete = false );
 
 private:
     bool isInsideUndoableAction;
