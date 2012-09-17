@@ -624,7 +624,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     wxString tableStart = _T("\n<table border=0 cellpadding=1 cellspacing=0>\n");
     wxString tableEnd = _T("</table>\n\n");
     wxString rowStart = _T("<tr><td><font size=-2>");
-    wxString rowStartH = _T("<tr><td>");
+    wxString rowStartH = _T("<tr><td nowrap>");
     wxString rowSeparator = _T("</font></td><td></td><td><b>");
     wxString rowSeparatorH = _T("</td><td></td><td>");
     wxString colSeparator = _T("<td></td>");
@@ -811,12 +811,14 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                  << _T("</font></td><td align=right><font size=-2>")
                  << _("ETA") << _T("</font></td></tr>\n")
                  << rowStartH << _T("<b>") << trimAISField( Destination )
-                 << _T("</b></td><td><b>");
+                 << _T("</b></td><td nowrap align=right><b>");
 
             if( ( ETA_Mo ) && ( ETA_Hr < 24 ) ) {
-                wxDateTime eta( ETA_Day, wxDateTime::Month( ETA_Mo - 1 ), now.GetYear(), ETA_Hr,
-                        ETA_Min );
-                html << eta.Format( _T("&nbsp;&nbsp;%b&nbsp;%d&nbsp;%H:%M") );
+                int yearOffset = 0;
+                if( now.GetMonth() > ( ETA_Mo - 1 ) ) yearOffset = 1;
+                wxDateTime eta( ETA_Day, wxDateTime::Month( ETA_Mo - 1 ),
+                        now.GetYear() + yearOffset, ETA_Hr, ETA_Min );
+                html << eta.Format( _T("%b %d %H:%M") );
             }
             else html << _("Unavailable");
             html << rowEnd;

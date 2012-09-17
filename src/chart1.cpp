@@ -1758,11 +1758,10 @@ if( 0 == g_memCacheLimit )
                             + *pChartListFileName );
 
             wxString msg1(
-                    _("           No Charts Installed.\nPlease select chart folders in ToolBox->Charts.") );
+                    _("No Charts Installed.\nPlease select chart folders in Options > Charts.") );
 
             OCPNMessageDialog mdlg( gFrame, msg1, wxString( _("OpenCPN Info") ),
                     wxICON_INFORMATION | wxOK );
-//                  mdlg.CentreOnParent();
             int dlg_ret;
             dlg_ret = mdlg.ShowModal();
 
