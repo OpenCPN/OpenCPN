@@ -194,7 +194,6 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_BUTTON( xID_OK, options::OnXidOkClick )
     EVT_BUTTON( wxID_CANCEL, options::OnCancelClick )
     EVT_BUTTON( ID_BUTTONFONTCHOOSE, options::OnChooseFont )
-    EVT_LISTBOOK_PAGE_CHANGED(ID_NOTEBOOK, options::OnPageChange)
     EVT_CHOICE( ID_CHOICE_NMEA, options::OnNMEASourceChoice )
     EVT_COMBOBOX( ID_CHOICE_NMEA, options::OnNMEASourceChoice )
     EVT_RADIOBOX(ID_RADIOBOX, options::OnDisplayCategoryRadioButton )
@@ -271,6 +270,13 @@ void options::Init()
     m_pGroupArray = NULL;
     m_groups_changed = 0;
 
+    m_pageDisplay = -1;
+    m_pageConnections = -1;
+    m_pageCharts = -1;
+    m_pageShips = -1;
+    m_pageUI = -1;
+    m_pagePlugins = -1;
+
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
 }
@@ -311,7 +317,7 @@ wxScrolledWindow *options::AddPage( size_t parent, wxString title  )
 {
     if (parent > m_pListbook->GetPageCount()-1)
     {
-        /* SethDart TODO: log error message */
+        wxLogMessage( wxString::Format( _T("Warning: invalid parent in options::AddPage( %d, "), parent ) + title + _T(" )") );
         return NULL;
     }
     wxNotebookPage* page = m_pListbook->GetPage( parent );
@@ -738,7 +744,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
 void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_item_spacing,
         wxSize small_button_size )
 {
-    wxScrolledWindow *chartPanelWin = AddPage( idCharts, _("Loaded Charts") );
+    wxScrolledWindow *chartPanelWin = AddPage( m_pageCharts, _("Loaded Charts") );
     int display_width, display_height;
     wxDisplaySize( &display_width, &display_height );
 
@@ -1416,26 +1422,26 @@ void options::CreateControls()
     m_ApplyButton = new wxButton( itemDialog1, ID_APPLY, _("Apply") );
     buttons->Add( m_ApplyButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
 
-    idDisplay = CreatePanel( _("Display") );
-    CreatePanel_Display( idDisplay, border_size, group_item_spacing, small_button_size );
+    m_pageDisplay = CreatePanel( _("Display") );
+    CreatePanel_Display( m_pageDisplay, border_size, group_item_spacing, small_button_size );
 
-    idConnections = CreatePanel( _("Connections") );
-    CreatePanel_NMEA( idConnections, border_size, group_item_spacing, small_button_size );
+    m_pageConnections = CreatePanel( _("Connections") );
+    CreatePanel_NMEA( m_pageConnections, border_size, group_item_spacing, small_button_size );
 
-    idCharts = CreatePanel( _("Charts") );
-    CreatePanel_ChartsLoad( idCharts, border_size, group_item_spacing, small_button_size );
-    CreatePanel_VectorCharts( idCharts, border_size, group_item_spacing, small_button_size );
-    CreatePanel_TidesCurrents( idCharts, border_size, group_item_spacing, small_button_size );
+    m_pageCharts = CreatePanel( _("Charts") );
+    CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, small_button_size );
+    CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, small_button_size );
+    CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing, small_button_size );
 
-    idShip = CreatePanel( _("Ships") );
-    CreatePanel_Ownship( idShip, border_size, group_item_spacing, small_button_size );
-    CreatePanel_AIS( idShip, border_size, group_item_spacing, small_button_size );
+    m_pageShips = CreatePanel( _("Ships") );
+    CreatePanel_Ownship( m_pageShips, border_size, group_item_spacing, small_button_size );
+    CreatePanel_AIS( m_pageShips, border_size, group_item_spacing, small_button_size );
 
-    idUI = CreatePanel( _("User Interface") );
-    CreatePanel_UI( idUI, border_size, group_item_spacing, small_button_size );
+    m_pageUI = CreatePanel( _("User Interface") );
+    CreatePanel_UI( m_pageUI, border_size, group_item_spacing, small_button_size );
 
-    idPlugins = CreatePanel( _("Plugins") );
-    wxScrolledWindow *itemPanelPlugins = AddPage( idPlugins, _("Plugins") );
+    m_pagePlugins = CreatePanel( _("Plugins") );
+    wxScrolledWindow *itemPanelPlugins = AddPage( m_pagePlugins, _("Plugins") );
 
     wxBoxSizer* itemBoxSizerPanelPlugins = new wxBoxSizer( wxVERTICAL );
     itemPanelPlugins->SetSizer( itemBoxSizerPanelPlugins );
@@ -1453,6 +1459,8 @@ void options::CreateControls()
     pSettingsCB1 = pDebugShowStat;
 
     SetColorScheme( (ColorScheme) 0 );
+
+    m_pListbook->Connect( wxEVT_COMMAND_LISTBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnPageChange ), NULL, this );
 }
 
 void options::SetColorScheme( ColorScheme cs )
@@ -2288,7 +2296,6 @@ void options::OnChooseFont( wxCommandEvent& event )
 
 void options::OnPageChange( wxListbookEvent& event )
 {
-// TODO: SethDart
     unsigned int i = event.GetSelection();
     lastPage = i;
 
@@ -2303,7 +2310,7 @@ void options::OnPageChange( wxListbookEvent& event )
         k_vectorcharts = S52_CHANGED;
     }
 
-    else if( idUI == i ) {                       // 5 is the index of "User Interface" page
+    else if( m_pageUI == i ) {                       // 5 is the index of "User Interface" page
         if( !m_bVisitLang ) {
             ::wxBeginBusyCursor();
 
@@ -2409,7 +2416,7 @@ void options::OnPageChange( wxListbookEvent& event )
         }
     }
 
-    else if( idPlugins == i ) {                    // 7 is the index of "Plugins" page
+    else if( m_pagePlugins == i ) {                    // 7 is the index of "Plugins" page
         k_plugins = TOOLBAR_CHANGED;
     }
 }

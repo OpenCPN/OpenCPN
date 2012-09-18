@@ -1564,22 +1564,22 @@ wxScrolledWindow *AddOptionsPage( OptionsParentPI parent, wxString title )
     size_t parentid;
     switch (parent) {
     case PI_OPTIONS_PARENT_DISPLAY:
-        parentid = g_pOptions->idDisplay;
+        parentid = g_pOptions->m_pageDisplay;
     break;
     case PI_OPTIONS_PARENT_CONNECTIONS:
-        parentid = g_pOptions->idConnections;
+        parentid = g_pOptions->m_pageConnections;
     break;
     case PI_OPTIONS_PARENT_CHARTS:
-        parentid = g_pOptions->idCharts;
+        parentid = g_pOptions->m_pageCharts;
     break;
     case PI_OPTIONS_PARENT_SHIPS:
-        parentid = g_pOptions->idShip;
+        parentid = g_pOptions->m_pageShips;
     break;
     case PI_OPTIONS_PARENT_UI:
-        parentid = g_pOptions->idUI;
+        parentid = g_pOptions->m_pageUI;
     break;
     case PI_OPTIONS_PARENT_PLUGINS:
-        parentid = g_pOptions->idPlugins;
+        parentid = g_pOptions->m_pagePlugins;
     break;
     default:
         wxLogMessage( _T("Error in PluginManager::AddOptionsPage: Unknown parent") );

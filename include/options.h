@@ -251,7 +251,7 @@ public:
     static bool ShowToolTips();
 
     wxListbook*             m_pListbook;
-    size_t idDisplay, idConnections, idCharts, idShip, idUI, idPlugins;
+    size_t                  m_pageDisplay, m_pageConnections, m_pageCharts, m_pageShips, m_pageUI, m_pagePlugins;
     int                     lastPage;
     wxPoint                 lastWindowPos;
     wxSize                  lastWindowSize;
