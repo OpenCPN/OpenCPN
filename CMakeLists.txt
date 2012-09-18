@@ -705,7 +705,7 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${HDRS}
       ${SRCS}
       ${gshhs}
-      ${uidata}
+      ${uiData}
       ${s57data}
       ${tcData}
       data/license.txt
