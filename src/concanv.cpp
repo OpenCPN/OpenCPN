@@ -50,9 +50,9 @@
 extern Routeman         *g_pRouteMan;
 extern FontMgr          *pFontMgr;
 extern MyFrame          *gFrame;
-
-extern double gCog;
-extern double gSog;
+extern bool             g_bShowActiveRouteHighway;
+extern double           gCog;
+extern double           gSog;
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 
@@ -67,6 +67,7 @@ enum eMenuItems {
 //------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(ConsoleCanvas, wxWindow)
     EVT_PAINT(ConsoleCanvas::OnPaint)
+    EVT_SHOW(ConsoleCanvas::OnShow)
     EVT_CONTEXT_MENU(ConsoleCanvas::OnContextMenu)
     EVT_MENU(ID_NAVLEG, ConsoleCanvas::OnContextMenuSelection)
     EVT_MENU(ID_NAVROUTE, ConsoleCanvas::OnContextMenuSelection)
@@ -77,7 +78,7 @@ END_EVENT_TABLE()
 ConsoleCanvas::ConsoleCanvas( wxWindow *frame )
 {
     pbackBrush = NULL;
-    m_bShowHighway = true;
+    m_bNeedClear = false;
 
 long style = wxSIMPLE_BORDER | wxCLIP_CHILDREN;
 #ifdef __WXOSX__
@@ -162,10 +163,6 @@ void ConsoleCanvas::SetColorScheme( ColorScheme cs )
 
 void ConsoleCanvas::OnPaint( wxPaintEvent& event )
 {
-    int x, y;
-    GetClientSize( &x, &y );
-    wxString str_buf;
-
     wxPaintDC dc( this );
 
     if( g_pRouteMan->GetpActiveRoute() ) {
@@ -176,6 +173,14 @@ void ConsoleCanvas::OnPaint( wxPaintEvent& event )
 
         UpdateRouteData();
     }
+
+    if( ! g_bShowActiveRouteHighway ) pCDI->Hide();
+}
+
+void ConsoleCanvas::OnShow( wxShowEvent& event )
+{
+    pCDI->Show( g_bShowActiveRouteHighway );
+    m_pitemBoxSizerLeg->SetSizeHints( this );
 }
 
 void ConsoleCanvas::LegRoute()
@@ -201,7 +206,7 @@ void ConsoleCanvas::OnContextMenu( wxContextMenuEvent& event ) {
 
     btnLeg->Check( ! m_bShowRouteTotal );
     btnRoute->Check( m_bShowRouteTotal );
-    btnHighw->Check( m_bShowHighway );
+    btnHighw->Check( g_bShowActiveRouteHighway );
 
     PopupMenu( contextMenu );
 
@@ -221,8 +226,8 @@ void ConsoleCanvas::OnContextMenuSelection( wxCommandEvent& event ) {
             break;
         }
         case ID_NAVHIGHWAY: {
-            m_bShowHighway = !m_bShowHighway;
-            if( m_bShowHighway ) {
+            g_bShowActiveRouteHighway = !g_bShowActiveRouteHighway;
+            if( g_bShowActiveRouteHighway ) {
                 pCDI->Show();
             } else {
                 pCDI->Hide();

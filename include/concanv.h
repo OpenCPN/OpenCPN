@@ -130,13 +130,12 @@ public:
 
       wxFont            *pThisLegFont;
       bool              m_bShowRouteTotal;
-      bool              m_bShowHighway;
       bool              m_bNeedClear;
       wxBrush           *pbackBrush;
 
 private:
       void OnPaint(wxPaintEvent& event);
-
+      void OnShow(wxShowEvent& event);
 
 DECLARE_EVENT_TABLE()
 };

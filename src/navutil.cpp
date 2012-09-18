@@ -129,6 +129,7 @@ extern bool             g_bsmoothpanzoom;
 
 extern bool             g_bShowOutlines;
 extern bool             g_bGarminPersistance;
+extern bool             g_bShowActiveRouteHighway;
 extern int              g_nNMEADebug;
 extern int              g_nAWDefault;
 extern int              g_nAWMax;
@@ -2858,6 +2859,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark, 0 );
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
     Read( _T ( "GarminPersistance" ), &g_bGarminPersistance, 0 );
+    Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
 
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
 
@@ -4059,6 +4061,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
     Write( _T ( "GarminPersistance" ), g_bGarminPersistance );
+    Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
     Write( _T ( "UseGarminHost" ), g_bGarminHost );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
 
