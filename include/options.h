@@ -431,6 +431,7 @@ private:
 
     int m_returnChanges;
     wxListBox *tcDataSelected;
+    std::vector<int> marinersStdXref;
 };
 
 class groups_dialog: public wxDialog

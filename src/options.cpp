@@ -1624,6 +1624,7 @@ void options::SetInitialSettings()
 
         //    S52 Primary Filters
         ps57CtlListBox->Clear();
+        marinersStdXref.clear();
 
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
@@ -1633,7 +1634,15 @@ void options::SetInitialSettings()
             } else {
                 item = wxString( pOLE->OBJLName, wxConvUTF8 );
             }
+
+            // The ListBox control will insert entries in sorted order, which means we need to
+            // keep track of already inseted items that gets pushed down the line.
             int newpos = ps57CtlListBox->Append( item );
+            marinersStdXref.push_back( newpos );
+            for( size_t i=0; i<iPtr; i++ ) {
+                if( marinersStdXref[i] >= newpos ) marinersStdXref[i]++;
+            }
+
             ps57CtlListBox->Check( newpos, !( pOLE->nViz == 0 ) );
         }
 
@@ -2051,8 +2060,14 @@ void options::OnApplyClick( wxCommandEvent& event )
     int nOBJL = ps57CtlListBox->GetCount();
 
     for( int iPtr = 0; iPtr < nOBJL; iPtr++ ) {
-        OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-
+        int itemIndex;
+        for( size_t i=0; i<marinersStdXref.size(); i++ ) {
+            if( marinersStdXref[ i ] == iPtr ) {
+                itemIndex = i;
+                break;
+            }
+        }
+        OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( itemIndex ) );
         pOLE->nViz = ps57CtlListBox->IsChecked( iPtr );
     }
 
