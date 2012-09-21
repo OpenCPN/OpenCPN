@@ -692,10 +692,6 @@ void RouteManagerDialog::Create()
     btnLayNew->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnLayNewClick), NULL, this );
 
-    //btnLayProperties = new wxButton(m_pPanelLay, -1, _("&Properties"));
-    //bsLayButtons->Add(btnLayProperties, 0, wxALL|wxEXPAND, DIALOG_MARGIN);
-    //btnLayProperties->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
-    //                     wxCommandEventHandler(RouteManagerDialog::OnLayPropertiesClick), NULL, this);
 
     btnLayDelete = new wxButton( m_pPanelLay, -1, _("&Delete") );
     bsLayButtons->Add( btnLayDelete, 0, wxALL | wxEXPAND, DIALOG_MARGIN );
