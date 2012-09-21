@@ -48,6 +48,7 @@
 //      Forward Declarations
 class wxGenericDirCtrl;
 class MyConfig;
+class ChartGroupsUI;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
@@ -94,6 +95,7 @@ enum {
     ID_GARMINHOST,
     ID_GPXCHECKBOX,
     ID_GRIBCHECKBOX,
+    ID_GROUPAVAILABLE,
     ID_GROUPDELETEGROUP,
     ID_GROUPINSERTDIR,
     ID_GROUPNEWGROUP,
@@ -167,9 +169,6 @@ enum {
 #endif
 
 WX_DECLARE_OBJARRAY(wxGenericDirCtrl *, ArrayOfDirCtrls);
-
-
-
 
 #ifndef bert// wxCHECK_VERSION(2, 9, 0)
 class options: public wxDialog
@@ -319,10 +318,10 @@ public:
     int                       k_vectorcharts;
 
 //    For "Charts" page
-    wxStaticBoxSizer          *loadedSizer;
+    wxStaticBoxSizer          *activeSizer;
     wxBoxSizer                *chartPanel;
     wxTextCtrl                *pSelCtl;
-    wxListBox                 *pListBox;
+    wxListBox                 *pActiveChartsList;
     wxStaticBox               *itemActiveChartStaticBox;
     wxCheckBox                *pUpdateCheckBox;
     wxCheckBox                *pScanCheckBox;
@@ -437,6 +436,8 @@ private:
             wxSize small_button_size );
     void CreatePanel_TidesCurrents( size_t parent, int border_size, int group_item_spacing,
             wxSize small_button_size );
+    void CreatePanel_ChartGroups( size_t parent, int border_size, int group_item_spacing,
+            wxSize small_button_size );
     void CreatePanel_Display( size_t parent, int border_size, int group_item_spacing,
             wxSize small_button_size );
     void CreatePanel_UI( size_t parent, int border_size, int group_item_spacing,
@@ -445,70 +446,65 @@ private:
     int m_returnChanges;
     wxListBox *tcDataSelected;
     std::vector<int> marinersStdXref;
+    ChartGroupsUI *groupsPanel;
 };
 
-class groups_dialog: public wxDialog
-{
-      DECLARE_DYNAMIC_CLASS( groups_dialog )
-                  DECLARE_EVENT_TABLE()
+class ChartGroupsUI: public wxScrolledWindow {
 
-      public:
-            groups_dialog( );
-            groups_dialog( MyFrame* parent, wxWindowID id = -1, const wxString& caption = _("Chart Groups"),
-                     const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size = SYMBOL_OPTIONS_SIZE, long style = SYMBOL_OPTIONS_STYLE);
+    DECLARE_EVENT_TABLE()
 
-            ~groups_dialog( );
+public:
+    ChartGroupsUI( wxWindow* parent );
+    ~ChartGroupsUI();
 
-            bool Create( MyFrame* parent, wxWindowID id = -1, const wxString& caption = _("Chart Groups"),
-                         const wxPoint& pos = SYMBOL_OPTIONS_POSITION, const wxSize& size = SYMBOL_OPTIONS_SIZE,
-                         long style = SYMBOL_OPTIONS_STYLE);
+    void CreatePanel( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size );
+    void SetDBDirs( ArrayOfCDI &array ) { m_db_dirs = array; }
+    void SetGroupArray( ChartGroupArray *pGroupArray ) { m_pGroupArray = pGroupArray; }
+    void SetInitialSettings();
 
-            void Init();
-            void CreateControls();
-            void SetDBDirs(ArrayOfCDI &array){ m_db_dirs = array; }
-            void SetGroupArray(ChartGroupArray *pGroupArray){ m_pGroupArray = pGroupArray; }
+    void PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array, const wxColour &col,
+            wxFont *pFont = NULL );
+    wxTreeCtrl *AddEmptyGroupPage( const wxString& label );
 
-            void PopulateTreeCtrl(wxTreeCtrl *ptc, const wxArrayString &dir_array, const wxColour &col, wxFont *pFont = NULL);
-            wxTreeCtrl *AddEmptyGroupPage(const wxString& label);
+    void BuildNotebookPages( ChartGroupArray *pGroupArray );
+    ChartGroupArray* CloneChartGroupArray( ChartGroupArray* s );
+    void EmptyChartGroupArray( ChartGroupArray* s );
 
-            void BuildNotebookPages(ChartGroupArray *pGroupArray);
+    void OnNodeExpanded( wxTreeEvent& event );
+    void OnAvailableSelection( wxTreeEvent& event );
+    void OnInsertChartItem( wxCommandEvent &event );
+    void OnRemoveChartItem( wxCommandEvent &event );
+    void OnGroupPageChange( wxNotebookEvent& event );
+    void OnNewGroup( wxCommandEvent &event );
+    void OnDeleteGroup( wxCommandEvent &event );
 
-            void OnNodeExpanded( wxTreeEvent& event );
-            void OnInsertChartItem(wxCommandEvent &event);
-            void OnRemoveChartItem(wxCommandEvent &event);
-            void OnGroupPageChange(wxNotebookEvent& event);
-            void OnNewGroup(wxCommandEvent &event);
-            void OnDeleteGroup(wxCommandEvent &event);
-            void OnOK(wxCommandEvent &event);
+    bool modified;
 
-      private:
-            int FindGroupBranch(ChartGroup *pGroup, wxTreeCtrl *ptree,
-                                         wxTreeItemId item, wxString *pbranch_adder );
+private:
+    int FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
+            wxString *pbranch_adder );
 
-//            void WalkNode(wxTreeCtrl *ptree, wxTreeItemId &node, ChartGroupElement *p_root_element, wxString root_name );
-//            bool MarkMissing(wxTreeCtrl *ptree, wxTreeItemId node, wxString &xc, wxString root_name);
+    wxWindow *pParent;
 
-            MyFrame      *pParent;
+    wxButton *m_pAddButton;
+    wxButton *m_pRemoveButton;
+    wxButton *m_pNewGroupButton;
+    wxButton *m_pDeleteGroupButton;
 
-            wxButton    *m_OKButton;
-            wxButton    *m_CancelButton;
-            wxButton    *m_pinsertButton;
-            wxButton    *m_premoveButton;
-            wxButton    *m_pNewGroupButton;
-            wxButton    *m_pDeleteGroupButton;
+    wxGenericDirCtrl *allAvailableCtl;
+    wxGenericDirCtrl *defaultAllCtl;
+    wxTreeCtrl* m_pActiveChartsTree;
+    wxTreeCtrl* lastSelectedCtl;
+    wxTreeItemId lastDeletedItem;
+    wxNotebook* m_GroupNB;
+    ArrayOfCDI m_db_dirs;
+    int m_GroupSelectedPage;
+    wxFont *iFont;
 
+    ArrayOfDirCtrls m_DirCtrlArray;
 
-            wxGenericDirCtrl *m_pDirCtl;
-            wxTreeCtrl  *m_pactive_treectl;
-            wxNotebook  *m_GroupNB;
-            ArrayOfCDI   m_db_dirs;
-            int          m_GroupSelectedPage;
-
-            ArrayOfDirCtrls   m_DirCtrlArray;
-
-            ChartGroupArray *m_pGroupArray;
+    ChartGroupArray *m_pGroupArray;
 };
-
 
 static int lang_list[] = {
             wxLANGUAGE_DEFAULT,

@@ -117,8 +117,6 @@ WX_DEFINE_OBJARRAY( ArrayOfCDI );
 WX_DEFINE_OBJARRAY( ArrayOfRect );
 WX_DEFINE_OBJARRAY( MyDialogPtrArray );
 
-extern void EmptyChartGroupArray( ChartGroupArray *s );
-
 //------------------------------------------------------------------------------
 //      Static variable definition
 //------------------------------------------------------------------------------
@@ -2015,12 +2013,6 @@ int MyApp::OnExit()
     delete g_pCommMan;
 
     delete pLayerList;
-
-    if( g_pGroupArray ) {
-        EmptyChartGroupArray( g_pGroupArray );
-//              g_pGroupArray->Clear();
-        delete g_pGroupArray;
-    }
 
 #ifdef USE_S57
     delete m_pRegistrarMan;

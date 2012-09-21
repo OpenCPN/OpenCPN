@@ -58,7 +58,6 @@
 #endif
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
-void EmptyChartGroupArray(ChartGroupArray *s);
 
 extern MyFrame          *gFrame;
 
@@ -207,7 +206,6 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_BUTTON( ID_SELECTLIST, options::OnButtonSelectClick )
     EVT_BUTTON( ID_AISALERTSELECTSOUND, options::OnButtonSelectSound )
     EVT_BUTTON( ID_AISALERTTESTSOUND, options::OnButtonTestSound )
-    EVT_BUTTON( ID_BUTTONGROUP, options::OnButtonGroups )
     EVT_CHECKBOX( ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick )
     EVT_CHECKBOX( ID_ZTCCHECKBOX, options::OnZTCCheckboxClick )
     EVT_COLLAPSIBLEPANE_CHANGED( ID_OSREALSIZE, options::OnCollapsibleClick )
@@ -244,7 +242,7 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 options::~options()
 {
     delete m_pSerialArray;
-    EmptyChartGroupArray( m_pGroupArray );
+    groupsPanel->EmptyChartGroupArray( m_pGroupArray );
     delete m_pGroupArray;
     m_pGroupArray = NULL;
     g_pOptions = NULL;
@@ -256,7 +254,7 @@ void options::Init()
 
     pDebugShowStat = NULL;
     pSelCtl = NULL;
-    pListBox = NULL;
+    pActiveChartsList = NULL;
     ps57CtlListBox = NULL;
     pDispCat = NULL;
     m_pSerialArray = NULL;
@@ -266,7 +264,7 @@ void options::Init()
     k_plugins = 0;
     k_tides = 0;
 
-    loadedSizer = NULL;
+    activeSizer = NULL;
     itemActiveChartStaticBox = NULL;
 
     m_bVisitLang = false;
@@ -780,31 +778,31 @@ void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_
     chartPanelWin->SetSizer( chartPanel );
 
     wxStaticBox* loadedBox = new wxStaticBox( chartPanelWin, wxID_ANY, _("Directories") );
-    loadedSizer = new wxStaticBoxSizer( loadedBox, wxHORIZONTAL );
-    chartPanel->Add( loadedSizer, 1, wxALL|wxEXPAND, border_size );
+    activeSizer = new wxStaticBoxSizer( loadedBox, wxHORIZONTAL );
+    chartPanel->Add( activeSizer, 1, wxALL|wxEXPAND, border_size );
 
     wxString* pListBoxStrings = NULL;
-    pListBox = new wxListBox( chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxSize( -1, -1 ), 0,
+    pActiveChartsList = new wxListBox( chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxSize( -1, -1 ), 0,
             pListBoxStrings, wxLB_MULTIPLE );
 
     if( display_height < 1024 )
-        pListBox->SetMinSize( wxSize( -1, 100 ) );
+        pActiveChartsList->SetMinSize( wxSize( -1, 100 ) );
     else
-        pListBox->SetMinSize( wxSize( -1, 150 ) );
+        pActiveChartsList->SetMinSize( wxSize( -1, 150 ) );
 
-    loadedSizer->Add( pListBox, 2, wxALL|wxEXPAND, border_size );
+    activeSizer->Add( pActiveChartsList, 2, wxALL|wxEXPAND, border_size );
 
     wxBoxSizer* cmdButtonSizer = new wxBoxSizer( wxVERTICAL );
-    loadedSizer->Add( cmdButtonSizer, 1, wxALL|wxEXPAND, border_size );
+    activeSizer->Add( cmdButtonSizer, 1, wxALL|wxEXPAND, border_size );
 
     // Currently loaded chart dirs
     wxString dirname;
-    if( pListBox ) {
-        pListBox->Clear();
+    if( pActiveChartsList ) {
+        pActiveChartsList->Clear();
         int nDir = m_CurrentDirList.GetCount();
         for( int i = 0; i < nDir; i++ ) {
             dirname = m_CurrentDirList.Item( i ).fullpath;
-            if( !dirname.IsEmpty() ) pListBox->Append( dirname );
+            if( !dirname.IsEmpty() ) pActiveChartsList->Append( dirname );
         }
     }
 
@@ -813,9 +811,6 @@ void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_
 
     wxButton* removeBtn = new wxButton( chartPanelWin, ID_BUTTONDELETE, _("Remove Selected") );
     cmdButtonSizer->Add( removeBtn, 0, wxALL, border_size );
-
-    wxButton* group_button = new wxButton( chartPanelWin, ID_BUTTONGROUP, _("Chart Groups...") );
-    cmdButtonSizer->Add( group_button, 0, wxALL, border_size );
 
     wxStaticBox* itemStaticBoxUpdateStatic = new wxStaticBox( chartPanelWin, wxID_ANY,
             _("Update Control") );
@@ -1005,6 +1000,98 @@ void options::CreatePanel_TidesCurrents( size_t parent, int border_size, int gro
 
     btnSizer->Add( insertButton, 1, wxALL, group_item_spacing );
     btnSizer->Add( removeButton, 1, wxALL, group_item_spacing );
+}
+
+void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group_item_spacing,
+        wxSize small_button_size )
+{
+    // Special case for adding the tab here. We know this page has multiple tabs,
+    // and we have the actual widgets in a separate class (because of its complexity)
+
+    wxNotebookPage* page = m_pListbook->GetPage( parent );
+    groupsPanel = new ChartGroupsUI( page );
+    groupsPanel->CreatePanel( parent, border_size, group_item_spacing, small_button_size );
+    ((wxNotebook *)page)->AddPage( groupsPanel, _("Chart Groups") );
+}
+
+void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_spacing,
+        wxSize small_button_size )
+{
+    modified = false;
+
+    wxFlexGridSizer* groupsSizer = new wxFlexGridSizer( 4, 2, border_size, border_size );
+    groupsSizer->AddGrowableCol( 0 );
+    groupsSizer->AddGrowableRow( 1, 1 );
+    groupsSizer->AddGrowableRow( 3, 1 );
+    SetSizer( groupsSizer );
+
+    //    The chart file/dir tree
+    wxStaticText *allChartsLabel = new wxStaticText( this, wxID_ANY, _("All Available Charts") );
+    groupsSizer->Add( allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, border_size );
+
+    wxStaticText *dummy1 = new wxStaticText( this, -1, _T("") );
+    groupsSizer->Add( dummy1 );
+
+    wxBoxSizer* activeListSizer = new wxBoxSizer( wxVERTICAL );
+    groupsSizer->Add( activeListSizer, 1, wxALIGN_LEFT | wxALL | wxEXPAND, 5 );
+
+    allAvailableCtl = new wxGenericDirCtrl( this, ID_GROUPAVAILABLE, _T("") );
+    activeListSizer->Add( allAvailableCtl, 1, wxALIGN_LEFT | wxEXPAND );
+
+    m_pAddButton = new wxButton( this, ID_GROUPINSERTDIR, _("Add") );
+    m_pAddButton->Disable();
+    m_pRemoveButton = new wxButton( this, ID_GROUPREMOVEDIR, _("Remove Chart") );
+    m_pRemoveButton->Disable();
+
+    wxBoxSizer* addRemove = new wxBoxSizer( wxVERTICAL );
+    addRemove->Add( m_pAddButton, 0, wxALL | wxEXPAND, group_item_spacing );
+    groupsSizer->Add( addRemove, 0, wxALL | wxEXPAND, border_size );
+
+    //    Add the Groups notebook control
+    wxStaticText *groupsLabel = new wxStaticText( this, wxID_ANY, _("Chart Groups") );
+    groupsSizer->Add( groupsLabel, 0, wxTOP | wxRIGHT | wxLEFT, border_size );
+
+    wxStaticText *dummy2 = new wxStaticText( this, -1, _T("") );
+    groupsSizer->Add( dummy2 );
+
+    wxBoxSizer* nbSizer = new wxBoxSizer( wxVERTICAL );
+    m_GroupNB = new wxNotebook( this, ID_GROUPNOTEBOOK, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
+    nbSizer->Add( m_GroupNB, 1, wxEXPAND );
+    groupsSizer->Add( nbSizer, 1, wxALL | wxEXPAND, border_size );
+
+    //    Add default (always present) Default Chart Group
+    wxPanel *allActiveGroup = new wxPanel( m_GroupNB, -1, wxDefaultPosition, wxDefaultSize );
+    m_GroupNB->AddPage( allActiveGroup, _("All Charts") );
+
+    wxBoxSizer* page0BoxSizer = new wxBoxSizer( wxHORIZONTAL );
+    allActiveGroup->SetSizer( page0BoxSizer );
+
+    defaultAllCtl = new wxGenericDirCtrl( allActiveGroup, -1, _T("") );
+
+    //    Set the Font for the All Active Chart Group tree to be italic, dimmed
+    iFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC,
+            wxFONTWEIGHT_LIGHT );
+
+    page0BoxSizer->Add( defaultAllCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
+
+    m_DirCtrlArray.Add( defaultAllCtl );
+
+    //    Add the Chart Group (page) "New" and "Delete" buttons
+    m_pNewGroupButton = new wxButton( this, ID_GROUPNEWGROUP, _("New Group...") );
+    m_pDeleteGroupButton = new wxButton( this, ID_GROUPDELETEGROUP, _("Delete Group") );
+
+    wxBoxSizer* newDeleteGrp = new wxBoxSizer( wxVERTICAL );
+    groupsSizer->Add( newDeleteGrp, 0, wxALL, border_size );
+
+    newDeleteGrp->AddSpacer( 25 );
+    newDeleteGrp->Add( m_pNewGroupButton, 0, wxALL | wxEXPAND, group_item_spacing );
+    newDeleteGrp->Add( m_pDeleteGroupButton, 0, wxALL | wxEXPAND, group_item_spacing );
+    newDeleteGrp->AddSpacer( 25 );
+    newDeleteGrp->Add( m_pRemoveButton, 0, wxALL | wxEXPAND, group_item_spacing );
+
+    // Connect this last, otherwise handler is called before all objects are initialized.
+    this->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED,
+            wxTreeEventHandler(ChartGroupsUI::OnAvailableSelection), NULL, this );
 }
 
 void options::CreatePanel_Display( size_t parent, int border_size, int group_item_spacing,
@@ -1459,6 +1546,8 @@ void options::CreateControls()
     m_pageCharts = CreatePanel( _("Charts") );
     CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, small_button_size );
     CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, small_button_size );
+    // ChartGroups must be created after ChartsLoad
+    CreatePanel_ChartGroups( m_pageCharts, border_size, group_item_spacing, small_button_size );
     CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing, small_button_size );
 
     m_pageShips = CreatePanel( _("Ships") );
@@ -1501,15 +1590,31 @@ void options::SetInitialSettings()
     wxString s;
     wxString dirname;
 
+    // ChartsLoad
+
     int nDir = m_CurrentDirList.GetCount();
 
     for( int i = 0; i < nDir; i++ ) {
         dirname = m_CurrentDirList.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) {
-            if( pListBox ) {
-                pListBox->Append( dirname );
+            if( pActiveChartsList ) {
+                pActiveChartsList->Append( dirname );
             }
         }
+    }
+
+    // ChartGroups
+
+    if( pActiveChartsList ) {
+        UpdateWorkArrayFromTextCtl();
+        groupsPanel->SetDBDirs( *m_pWorkDirList );
+
+        // Make a deep copy of the current global Group Array
+        groupsPanel->EmptyChartGroupArray( m_pGroupArray );
+        delete m_pGroupArray;
+        m_pGroupArray = groupsPanel->CloneChartGroupArray( g_pGroupArray );
+        groupsPanel->SetGroupArray( m_pGroupArray );
+        groupsPanel->SetInitialSettings();
     }
 
     if( m_pConfig ) pSettingsCB1->SetValue( m_pConfig->m_bShowDebugWindows );
@@ -1859,9 +1964,9 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     if( g_bportable ) {
         wxFileName f( selDir );
         f.MakeRelativeTo( *pHome_Locn );
-        pListBox->Append( f.GetFullPath() );
+        pActiveChartsList->Append( f.GetFullPath() );
     } else
-        pListBox->Append( selDir );
+        pActiveChartsList->Append( selDir );
 
     k_charts |= CHANGE_CHARTS;
 
@@ -1876,11 +1981,11 @@ void options::UpdateWorkArrayFromTextCtl()
 {
     wxString dirname;
 
-    int n = pListBox->GetCount();
+    int n = pActiveChartsList->GetCount();
     if( m_pWorkDirList ) {
         m_pWorkDirList->Clear();
         for( int i = 0; i < n; i++ ) {
-            dirname = pListBox->GetString( i );
+            dirname = pActiveChartsList->GetString( i );
             if( !dirname.IsEmpty() ) {
                 //    This is a fix for OSX, which appends EOL to results of GetLineText()
                 while( ( dirname.Last() == wxChar( _T('\n') ) )
@@ -1923,7 +2028,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 //    Handle Chart Tab
     wxString dirname;
 
-    if( pListBox ) {
+    if( pActiveChartsList ) {
         UpdateWorkArrayFromTextCtl();
     } else {
         m_pWorkDirList->Clear();
@@ -1957,7 +2062,16 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     m_returnChanges |= k_scan;
 
-//    Handle Settings Tab
+    // Chart Groups
+
+    if( groupsPanel->modified ) {
+        groupsPanel->EmptyChartGroupArray( g_pGroupArray );
+        delete g_pGroupArray;
+        g_pGroupArray = groupsPanel->CloneChartGroupArray( m_pGroupArray );
+        m_returnChanges |= GROUPS_CHANGED;
+    }
+
+    // Handle Settings Tab
 
     if( m_pConfig ) m_pConfig->m_bShowDebugWindows = pSettingsCB1->GetValue();
 
@@ -2275,7 +2389,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     //  Required to avoid intermittent crash on wxGTK
     m_pListbook->ChangeSelection(0);
 
-    delete pListBox;
+    delete pActiveChartsList;
     delete ps57CtlListBox;
     lastWindowPos = GetPosition();
     lastWindowSize = GetSize();
@@ -2288,22 +2402,22 @@ void options::OnButtondeleteClick( wxCommandEvent& event )
     wxString dirname;
 
     wxArrayInt pListBoxSelections;
-    pListBox->GetSelections( pListBoxSelections );
+    pActiveChartsList->GetSelections( pListBoxSelections );
     int nSelections = pListBoxSelections.GetCount();
     for( int i = 0; i < nSelections; i++ ) {
-        pListBox->Delete( pListBoxSelections.Item( ( nSelections - i ) - 1 ) );
+        pActiveChartsList->Delete( pListBoxSelections.Item( ( nSelections - i ) - 1 ) );
     }
 
     UpdateWorkArrayFromTextCtl();
 
     if( m_pWorkDirList ) {
-        pListBox->Clear();
+        pActiveChartsList->Clear();
 
         int nDir = m_pWorkDirList->GetCount();
         for( int id = 0; id < nDir; id++ ) {
             dirname = m_pWorkDirList->Item( id ).fullpath;
             if( !dirname.IsEmpty() ) {
-                pListBox->Append( dirname );
+                pActiveChartsList->Append( dirname );
             }
         }
     }
@@ -2324,7 +2438,7 @@ void options::OnCancelClick( wxCommandEvent& event )
 {
     //  Required to avoid intermittent crash on wxGTK
     m_pListbook->ChangeSelection(0);
-    delete pListBox;
+    delete pActiveChartsList;
     delete ps57CtlListBox;
 
     lastWindowPos = GetPosition();
@@ -2386,7 +2500,6 @@ void options::OnPageChange( wxListbookEvent& event )
             ::wxBeginBusyCursor();
 
             int current_language = plocale_def_lang->GetLanguage();
-//                  wxString oldLocale/*wxMB2WXbuf oldLocale*/ = wxSetlocale(LC_ALL, wxEmptyString);  //2.9.1
             wxString current_sel = wxLocale::GetLanguageName( current_language );
 
             current_sel = GetOCPNKnownLanguage( g_locale, NULL );
@@ -2429,7 +2542,6 @@ void options::OnPageChange( wxListbookEvent& event )
 
             for( int it = 0; it < nLang; it++)
             {
-//                        if(wxLocale::IsAvailable(lang_list[it]))
                 {
                     wxLog::EnableLogging(false);  // avoid "Cannot set locale to..." log message
 
@@ -2635,7 +2747,7 @@ wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
 
 }
 
-ChartGroupArray *CloneChartGroupArray( ChartGroupArray *s )
+ChartGroupArray* ChartGroupsUI::CloneChartGroupArray( ChartGroupArray* s )
 {
     ChartGroupArray *d = new ChartGroupArray;
     for( unsigned int i = 0; i < s->GetCount(); i++ ) {
@@ -2648,21 +2760,17 @@ ChartGroupArray *CloneChartGroupArray( ChartGroupArray *s )
             pde->m_element_name = psg->m_element_array.Item( j )->m_element_name;
             for( unsigned int k = 0;
                     k < psg->m_element_array.Item( j )->m_missing_name_array.GetCount(); k++ ) {
-                wxString missing_name = psg->m_element_array.Item( j )->m_missing_name_array.Item(
-                        k );
+                wxString missing_name = psg->m_element_array.Item( j )->m_missing_name_array.Item(k);
                 pde->m_missing_name_array.Add( missing_name );
             }
-
             pdg->m_element_array.Add( pde );
         }
-
         d->Add( pdg );
     }
-
     return d;
 }
 
-void EmptyChartGroupArray( ChartGroupArray *s )
+void ChartGroupsUI::EmptyChartGroupArray( ChartGroupArray* s )
 {
     if( !s ) return;
     for( unsigned int i = 0; i < s->GetCount(); i++ ) {
@@ -2682,152 +2790,45 @@ void EmptyChartGroupArray( ChartGroupArray *s )
     s->Clear();
 }
 
-void options::OnButtonGroups( wxCommandEvent& event )
-{
-    int display_width, display_height;
-    wxDisplaySize( &display_width, &display_height );
-
-    groups_dialog *pdlg = new groups_dialog;
-
-    if( pListBox ) UpdateWorkArrayFromTextCtl();
-
-    pdlg->SetDBDirs( *m_pWorkDirList/*m_CurrentDirList*/);
-
-    //    Make a deep copy of the current global Group Array
-    EmptyChartGroupArray( m_pGroupArray );
-    delete m_pGroupArray;
-    m_pGroupArray = CloneChartGroupArray( g_pGroupArray );
-
-    //    And inform the Groups dialog
-    pdlg->SetGroupArray( m_pGroupArray );
-
-    pdlg->Create( pParent, -1, _("Chart Groups"), wxPoint( 0, 0 ),
-            wxSize( display_width - 100, 400 ) );
-    pdlg->Centre();
-
-    if( pdlg->ShowModal() == xID_OK ) {
-        m_groups_changed = GROUPS_CHANGED;
-
-        //    Make a deep copy of the edited  working Group Array
-        EmptyChartGroupArray( g_pGroupArray );
-        delete g_pGroupArray;
-        g_pGroupArray = CloneChartGroupArray( m_pGroupArray );
-    } else
-        m_groups_changed = 0;
-
-}
-
 //    Chart Groups dialog implementation
 
-IMPLEMENT_DYNAMIC_CLASS( groups_dialog, wxDialog )
-BEGIN_EVENT_TABLE( groups_dialog, wxDialog ) EVT_TREE_ITEM_EXPANDED( wxID_TREECTRL, groups_dialog::OnNodeExpanded )
-EVT_BUTTON( ID_GROUPINSERTDIR, groups_dialog::OnInsertChartItem )
-EVT_BUTTON( ID_GROUPREMOVEDIR, groups_dialog::OnRemoveChartItem )
-EVT_NOTEBOOK_PAGE_CHANGED(ID_GROUPNOTEBOOK, groups_dialog::OnGroupPageChange)
-EVT_BUTTON( ID_GROUPNEWGROUP, groups_dialog::OnNewGroup )
-EVT_BUTTON( ID_GROUPDELETEGROUP, groups_dialog::OnDeleteGroup )
-EVT_BUTTON( xID_OK, groups_dialog::OnOK )
-
+BEGIN_EVENT_TABLE( ChartGroupsUI, wxScrolledWindow )
+    EVT_TREE_ITEM_EXPANDED( wxID_TREECTRL, ChartGroupsUI::OnNodeExpanded )
+    EVT_BUTTON( ID_GROUPINSERTDIR, ChartGroupsUI::OnInsertChartItem )
+    EVT_BUTTON( ID_GROUPREMOVEDIR, ChartGroupsUI::OnRemoveChartItem )
+    EVT_NOTEBOOK_PAGE_CHANGED(ID_GROUPNOTEBOOK, ChartGroupsUI::OnGroupPageChange)
+    EVT_BUTTON( ID_GROUPNEWGROUP, ChartGroupsUI::OnNewGroup )
+    EVT_BUTTON( ID_GROUPDELETEGROUP, ChartGroupsUI::OnDeleteGroup )
 END_EVENT_TABLE()
 
-groups_dialog::groups_dialog()
+ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
 {
-    Init();
-}
+    Create( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE,
+            _("Chart Groups") );
 
-groups_dialog::groups_dialog( MyFrame* parent, wxWindowID id, const wxString& caption,
-        const wxPoint& pos, const wxSize& size, long style )
-{
-    Init();
-
+    m_GroupSelectedPage = -1;
+    m_pActiveChartsTree = 0;
     pParent = parent;
-
-    //    As a display optimization....
-    //    if current color scheme is other than DAY,
-    //    Then create the dialog ..WITHOUT.. borders and title bar.
-    //    This way, any window decorations set by external themes, etc
-    //    will not detract from night-vision
-
-    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;      //| wxVSCROLL;
-//      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
-//            wstyle |= (wxNO_BORDER);
-
-    SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
-
-    wxDialog::Create( parent, id, caption, pos, size, wstyle );
-
-    CreateControls();
+    lastSelectedCtl = NULL;
+    allAvailableCtl = NULL;
+    defaultAllCtl = NULL;
+    iFont = NULL;
+    m_pAddButton = NULL;
+    m_pRemoveButton = NULL;
+    m_pDeleteGroupButton = NULL;
+    m_pNewGroupButton = NULL;
+    m_pGroupArray= NULL;
+    m_GroupNB = NULL;
+    modified = false;
 }
 
-bool groups_dialog::Create( MyFrame* parent, wxWindowID id, const wxString& caption,
-        const wxPoint& pos, const wxSize& size, long style )
-{
-    Init();
-
-    pParent = parent;
-
-    //    As a display optimization....
-    //    if current color scheme is other than DAY,
-    //    Then create the dialog ..WITHOUT.. borders and title bar.
-    //    This way, any window decorations set by external themes, etc
-    //    will not detract from night-vision
-
-    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;      //| wxVSCROLL;
-//      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
-//            wstyle |= (wxNO_BORDER);
-
-    SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
-
-    wxDialog::Create( parent, id, caption, pos, size, wstyle );
-
-    CreateControls();
-
-    return true;
-}
-
-groups_dialog::~groups_dialog()
+ChartGroupsUI::~ChartGroupsUI()
 {
     m_DirCtrlArray.Clear();
 }
 
-void groups_dialog::Init()
+void ChartGroupsUI::SetInitialSettings()
 {
-    m_GroupSelectedPage = -1;
-    m_pactive_treectl = 0;
-}
-
-void groups_dialog::CreateControls( void )
-{
-    int border_size = 4;
-
-    int display_width, display_height;
-    wxDisplaySize( &display_width, &display_height );
-
-    wxFont *qFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-            wxFONTWEIGHT_NORMAL );
-    SetFont( *qFont );
-
-    int font_size_y, font_descent, font_lead;
-    GetTextExtent( _T("0"), NULL, &font_size_y, &font_descent, &font_lead );
-    wxSize small_button_size( -1, (int) ( 1.4 * ( font_size_y + font_descent + font_lead ) ) );
-
-    //    The total dialog vertical sizer
-    wxBoxSizer* TopVBoxSizer = new wxBoxSizer( wxVERTICAL );
-    SetSizer( TopVBoxSizer );
-
-    //    Add main horizontal sizer....
-    wxBoxSizer* mainHBoxSizer = new wxBoxSizer( wxHORIZONTAL );
-    TopVBoxSizer->Add( mainHBoxSizer, 1, wxALIGN_TOP | wxEXPAND );
-
-    //    The chart file/dir tree
-    wxStaticBox *GroupActiveChartStaticBox = new wxStaticBox( this, wxID_ANY, _("Active Charts") );
-    wxStaticBoxSizer* GroupActiveChartStaticBoxSizer = new wxStaticBoxSizer(
-            GroupActiveChartStaticBox, wxVERTICAL );
-    mainHBoxSizer->Add( GroupActiveChartStaticBoxSizer, 1, wxALIGN_LEFT | wxALL | wxEXPAND, 5 );
-
-    m_pDirCtl = new wxGenericDirCtrl( this, -1, _T("") );
-    GroupActiveChartStaticBoxSizer->Add( m_pDirCtl, 1, wxALIGN_LEFT | wxEXPAND );
-
     //    Fill in the "Active chart" tree control
     //    from the options dialog "Active Chart Directories" list
     wxArrayString dir_array;
@@ -2836,48 +2837,8 @@ void groups_dialog::CreateControls( void )
         wxString dirname = m_db_dirs.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) dir_array.Add( dirname );
     }
-    PopulateTreeCtrl( m_pDirCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) );
-    m_pactive_treectl = m_pDirCtl->GetTreeCtrl();
-
-    //    Add the "Insert/Remove" buttons
-    m_pinsertButton = new wxButton( this, ID_GROUPINSERTDIR, _("Add-->") );
-    m_premoveButton = new wxButton( this, ID_GROUPREMOVEDIR, _("<--Remove") );
-
-    wxBoxSizer* IRSizer = new wxBoxSizer( wxVERTICAL );
-    mainHBoxSizer->AddSpacer( 10 );
-    mainHBoxSizer->Add( IRSizer, 0, wxALIGN_CENTRE | wxEXPAND );
-    mainHBoxSizer->AddSpacer( 10 );
-
-    IRSizer->AddSpacer( 100 );
-    IRSizer->Add( m_pinsertButton, 0, wxALIGN_CENTRE );
-    IRSizer->AddSpacer( 50 );
-    IRSizer->Add( m_premoveButton, 0, wxALIGN_CENTRE );
-
-    //    Add the Groups notebook control
-    wxStaticBox *GroupNBStaticBox = new wxStaticBox( this, wxID_ANY, _("Groups") );
-    wxStaticBoxSizer* GroupNBStaticBoxSizer = new wxStaticBoxSizer( GroupNBStaticBox, wxVERTICAL );
-    mainHBoxSizer->Add( GroupNBStaticBoxSizer, 1, wxALIGN_RIGHT | wxALL | wxEXPAND, 5 );
-
-    m_GroupNB = new wxNotebook( this, ID_GROUPNOTEBOOK, wxDefaultPosition, wxSize( -1, -1 ),
-            wxNB_TOP );
-    GroupNBStaticBoxSizer->Add( m_GroupNB, 1, wxALIGN_RIGHT | wxEXPAND );
-
-    //    Add default (always present) Basic Chart Group
-    wxPanel *pPanelBasicGroup = new wxPanel( m_GroupNB, -1, wxDefaultPosition, wxDefaultSize );
-    m_GroupNB->AddPage( pPanelBasicGroup, _("All Active Charts") );
-
-    wxBoxSizer* page0BoxSizer = new wxBoxSizer( wxHORIZONTAL );
-    pPanelBasicGroup->SetSizer( page0BoxSizer );
-
-    wxGenericDirCtrl *BasicGroupDirCtl = new wxGenericDirCtrl( pPanelBasicGroup, -1, _T("") );
-
-    //    Set the Font for the Basic Chart Group tree to be italic, dimmed
-    wxFont *iFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC,
-            wxFONTWEIGHT_LIGHT );
-
-    page0BoxSizer->Add( BasicGroupDirCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
-
-    m_DirCtrlArray.Add( BasicGroupDirCtl );
+    PopulateTreeCtrl( allAvailableCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) );
+    m_pActiveChartsTree = allAvailableCtl->GetTreeCtrl();
 
     //    Fill in the Page 0 tree control
     //    from the options dialog "Active Chart Directories" list
@@ -2887,35 +2848,13 @@ void groups_dialog::CreateControls( void )
         wxString dirname = m_db_dirs.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) dir_array0.Add( dirname );
     }
-    PopulateTreeCtrl( BasicGroupDirCtl->GetTreeCtrl(), dir_array0, wxColour( 128, 128, 128 ),
+    PopulateTreeCtrl( defaultAllCtl->GetTreeCtrl(), dir_array0, wxColour( 128, 128, 128 ),
             iFont );
 
     BuildNotebookPages( m_pGroupArray );
-
-    //    Add the Chart Group (page) "New" and "Delete" buttons
-    m_pNewGroupButton = new wxButton( this, ID_GROUPNEWGROUP, _("New Group...") );
-    m_pDeleteGroupButton = new wxButton( this, ID_GROUPDELETEGROUP, _("Delete Group") );
-
-    wxBoxSizer* GroupButtonSizer = new wxBoxSizer( wxHORIZONTAL );
-    GroupNBStaticBoxSizer->Add( GroupButtonSizer, 0, wxALIGN_RIGHT | wxALL, border_size );
-
-    GroupButtonSizer->Add( m_pNewGroupButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
-    GroupButtonSizer->Add( m_pDeleteGroupButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
-
-    //      Add standard dialog control buttons
-    wxBoxSizer* itemBoxSizer28 = new wxBoxSizer( wxHORIZONTAL );
-    TopVBoxSizer->Add( itemBoxSizer28, 0, wxALIGN_RIGHT | wxALL, border_size );
-
-    m_OKButton = new wxButton( this, xID_OK, _("Ok") );
-    m_OKButton->SetDefault();
-    itemBoxSizer28->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
-
-    m_CancelButton = new wxButton( this, wxID_CANCEL, _("&Cancel") );
-    itemBoxSizer28->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
-
 }
 
-void groups_dialog::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array,
+void ChartGroupsUI::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array,
         const wxColour &col, wxFont *pFont )
 {
     ptc->DeleteAllItems();
@@ -2940,9 +2879,9 @@ void groups_dialog::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_
     }
 }
 
-void groups_dialog::OnInsertChartItem( wxCommandEvent &event )
+void ChartGroupsUI::OnInsertChartItem( wxCommandEvent &event )
 {
-    wxString insert_candidate = m_pDirCtl->GetPath();
+    wxString insert_candidate = allAvailableCtl->GetPath();
     if( !insert_candidate.IsEmpty() ) {
         if( m_DirCtrlArray.GetCount() ) {
             wxGenericDirCtrl *pDirCtrl = ( m_DirCtrlArray.Item( m_GroupSelectedPage ) );
@@ -2973,9 +2912,12 @@ void groups_dialog::OnInsertChartItem( wxCommandEvent &event )
             }
         }
     }
+    modified = true;
+    allAvailableCtl->GetTreeCtrl()->UnselectAll();
+    m_pAddButton->Disable();
 }
 
-void groups_dialog::OnRemoveChartItem( wxCommandEvent &event )
+void ChartGroupsUI::OnRemoveChartItem( wxCommandEvent &event )
 {
     if( m_DirCtrlArray.GetCount() ) {
         wxGenericDirCtrl *pDirCtrl = ( m_DirCtrlArray.Item( m_GroupSelectedPage ) );
@@ -2987,6 +2929,7 @@ void groups_dialog::OnRemoveChartItem( wxCommandEvent &event )
             wxTreeCtrl *ptree = pDirCtrl->GetTreeCtrl();
             if( ptree && ptree->GetCount() ) {
                 wxTreeItemId id = ptree->GetSelection();
+                lastDeletedItem = id;
                 if( id.IsOk() ) {
                     wxString branch_adder;
                     int group_item_index = FindGroupBranch( pGroup, ptree, id, &branch_adder );
@@ -3011,36 +2954,58 @@ void groups_dialog::OnRemoveChartItem( wxCommandEvent &event )
                         if( branch_adder == _T("") ) {
                             ptree->Delete( id );
                             pGroup->m_element_array.RemoveAt( group_item_index );
-
                         } else {
-
                             ptree->SetItemTextColour( id, wxColour( 128, 128, 128 ) );
-//                                          ptree->SelectItem(id, false);
+                            //   what about toggle back?
                         }
-                    }                                    //   what about toggle back?
+                    }
                 }
+                modified = true;
+                lastSelectedCtl->Unselect();
+                m_pRemoveButton->Disable();
+                wxLogMessage( _T("Disable"));
             }
         }
     }
+    event.Skip();
 }
 
-void groups_dialog::OnGroupPageChange( wxNotebookEvent& event )
+void ChartGroupsUI::OnGroupPageChange( wxNotebookEvent& event )
 {
     m_GroupSelectedPage = event.GetSelection();
-    if( 0 == m_GroupSelectedPage ) {
-        m_pinsertButton->Disable();
-        m_premoveButton->Disable();
-    } else {
-        m_pinsertButton->Enable();
-        m_premoveButton->Enable();
-    }
-
+    allAvailableCtl->GetTreeCtrl()->UnselectAll();
+    if( lastSelectedCtl ) lastSelectedCtl->UnselectAll();
+    m_pRemoveButton->Disable();
+    m_pAddButton->Disable();
 }
 
-void groups_dialog::OnNewGroup( wxCommandEvent &event )
+void ChartGroupsUI::OnAvailableSelection( wxTreeEvent& event ) {
+    if( allAvailableCtl && (event.GetEventObject() == allAvailableCtl->GetTreeCtrl()) ){
+        wxTreeItemId item = allAvailableCtl->GetTreeCtrl()->GetSelection();
+        if( item && item.IsOk() && m_GroupSelectedPage>0 ) {
+            m_pAddButton->Enable();
+        } else {
+            m_pAddButton->Disable();
+        }
+    } else {
+        lastSelectedCtl = (wxTreeCtrl*) event.GetEventObject();
+        wxTreeItemId item = lastSelectedCtl->GetSelection();
+        if( item && item.IsOk() && m_GroupSelectedPage>0 ) {
+            // We need a trick for wxGTK here, since it gives us a Selection event with
+            // the just deleted empty element after OnRemoveChartItem()
+            wxString itemPath = ((wxGenericDirCtrl*) lastSelectedCtl->GetParent())->GetPath();
+            if( itemPath.Length() ) m_pRemoveButton->Enable();
+        } else {
+            m_pRemoveButton->Disable();
+        }
+    }
+    event.Skip();
+}
+
+void ChartGroupsUI::OnNewGroup( wxCommandEvent &event )
 {
     wxTextEntryDialog *pd = new wxTextEntryDialog( this, _("Enter Group Name"),
-            _("Chart Groups...New Group") );
+            _("New Chart Group") );
     if( pd->ShowModal() == wxID_OK ) AddEmptyGroupPage( pd->GetValue() );
 
     ChartGroup *pGroup = new ChartGroup;
@@ -3049,30 +3014,25 @@ void groups_dialog::OnNewGroup( wxCommandEvent &event )
 
     m_GroupSelectedPage = m_GroupNB->GetPageCount() - 1;      // select the new page
     m_GroupNB->ChangeSelection( m_GroupSelectedPage );
-    m_pinsertButton->Enable();
-    m_premoveButton->Enable();
 
     delete pd;
+    modified = true;
 }
 
-void groups_dialog::OnDeleteGroup( wxCommandEvent &event )
+void ChartGroupsUI::OnDeleteGroup( wxCommandEvent &event )
 {
     if( 0 != m_GroupSelectedPage ) {
         m_DirCtrlArray.RemoveAt( m_GroupSelectedPage );
         if( m_pGroupArray ) m_pGroupArray->RemoveAt( m_GroupSelectedPage - 1 );
         m_GroupNB->DeletePage( m_GroupSelectedPage );
+        modified = true;
     }
 }
 
 WX_DEFINE_OBJARRAY( ChartGroupElementArray );
 WX_DEFINE_OBJARRAY( ChartGroupArray );
 
-void groups_dialog::OnOK( wxCommandEvent &event )
-{
-    EndModal (xID_OK);
-}
-
-int groups_dialog::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
+int ChartGroupsUI::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
         wxString *pbranch_adder )
 {
     wxString branch_name;
@@ -3084,20 +3044,11 @@ int groups_dialog::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTre
         wxTreeItemId parent_node = ptree->GetItemParent( current_node );
         if( !parent_node ) break;
 
-//#ifdef __WXMSW__
         if( parent_node == ptree->GetRootItem() ) {
             branch_name = ptree->GetItemText( current_node );
             break;
         }
-//#endif
-        /*
-         wxString t = ptree->GetItemText(parent_node);
-         if(t == _T("Dummy"))
-         {
-         branch_name = ptree->GetItemText(current_node);
-         break;
-         }
-         */
+
         branch_adder.Prepend( ptree->GetItemText( current_node ) );
         branch_adder.Prepend( wxString( wxFILE_SEP_PATH ) );
 
@@ -3122,7 +3073,7 @@ int groups_dialog::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTre
     return target_item_index;
 }
 
-void groups_dialog::OnNodeExpanded( wxTreeEvent& event )
+void ChartGroupsUI::OnNodeExpanded( wxTreeEvent& event )
 {
     wxTreeItemId node = event.GetItem();
 
@@ -3167,7 +3118,7 @@ void groups_dialog::OnNodeExpanded( wxTreeEvent& event )
     }
 }
 
-void groups_dialog::BuildNotebookPages( ChartGroupArray *pGroupArray )
+void ChartGroupsUI::BuildNotebookPages( ChartGroupArray *pGroupArray )
 {
     for( unsigned int i = 0; i < pGroupArray->GetCount(); i++ ) {
         ChartGroup *pGroup = pGroupArray->Item( i );
@@ -3187,109 +3138,10 @@ void groups_dialog::BuildNotebookPages( ChartGroupArray *pGroupArray )
     }
 }
 
-/*
- bool groups_dialog::MarkMissing(wxTreeCtrl *ptree, wxTreeItemId node, wxString &xc, wxString root_name)
- {
- bool b_omit;
- ptree->Expand(node);
- wxTreeItemIdValue cookie;
- wxTreeItemId child = ptree->GetFirstChild(node, cookie);
-
- while(child.IsOk())
- {
- //  what we do here....
- //  if the item matches the passed string,
- //  then mark it by setting text colour to grey
-
- wxString item_name = ptree->GetItemText(child);
- wxString full_item_name = root_name;
- full_item_name += wxString(wxFILE_SEP_PATH);
- full_item_name += item_name;
- b_omit = full_item_name == xc;
-
- if(b_omit)
- {
- ptree->SetItemTextColour(child, wxColour(128, 128, 128));
- return true;
- }
-
-
- //    Is the item a directory?
-
- if(!b_omit)
- {
- if(wxDir::Exists(full_item_name))
- {
- // Recurse....
- wxString next_root_name = full_item_name;
- if(MarkMissing(ptree, child, xc, next_root_name ))
- return true;
- }
- }
-
- child = ptree->GetNextChild(node, cookie);
- }
- return b_omit;
- }
- */
-/*
- void groups_dialog::WalkNode(wxTreeCtrl *ptree, wxTreeItemId &node, ChartGroupElement *p_root_element, wxString root_name )
- {
- ptree->Expand(node);
-
- wxTreeItemIdValue cookie;
- wxTreeItemId child = ptree->GetFirstChild(node, cookie);
-
- while(child.IsOk())
- {
- //  what we do here....
- //  if the item has the omit flag, then create a group element for the item,
- //  and add it to "missing" array of the passed ChartGroupElement belonging to node
-
- bool b_omit = ptree->GetItemTextColour(child) == wxColour(128, 128, 128);
- wxString item_name = ptree->GetItemText(child);
- wxString full_item_name = root_name;
- full_item_name += wxString(wxFILE_SEP_PATH);
- full_item_name += item_name;
-
- if(b_omit)
- {
- ChartGroupElement *p_omit_element = new ChartGroupElement;
- p_omit_element->m_element_name = full_item_name;
- p_root_element->m_missing_name_array.Add(p_omit_element);
- }
-
-
- //    Is the item a directory?
-
- if(!b_omit)
- {
- if(wxDir::Exists(full_item_name))
- {
- // Recurse....
- wxString next_root_name = full_item_name;
- WalkNode(ptree, child, p_root_element, next_root_name );
- }
- }
-
- child = ptree->GetNextChild(node, cookie);
- }
- }
- */
-
-wxTreeCtrl *groups_dialog::AddEmptyGroupPage( const wxString& label )
+wxTreeCtrl *ChartGroupsUI::AddEmptyGroupPage( const wxString& label )
 {
-    wxPanel *pPanel = new wxPanel( m_GroupNB, -1, wxDefaultPosition, wxDefaultSize );
-
-    wxBoxSizer* pageBoxSizer = new wxBoxSizer( wxHORIZONTAL );
-    pPanel->SetSizer( pageBoxSizer );
-
-    wxGenericDirCtrl *GroupDirCtl = new wxGenericDirCtrl( pPanel, -1, _T("TESTDIR") );
-//find a way to add a good imagelist for MSW
-    pageBoxSizer->Add( GroupDirCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
-
-    pageBoxSizer->Layout();
-    m_GroupNB->AddPage( pPanel, label );
+    wxGenericDirCtrl *GroupDirCtl = new wxGenericDirCtrl( m_GroupNB, wxID_ANY, _T("TESTDIR") );
+    m_GroupNB->AddPage( GroupDirCtl, label );
 
     wxTreeCtrl *ptree = GroupDirCtl->GetTreeCtrl();
     ptree->DeleteAllItems();
