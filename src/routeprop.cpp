@@ -34,6 +34,9 @@
 
 #include <wx/datetime.h>
 #include <wx/clipbrd.h>
+#include <wx/print.h>
+#include <wx/printdlg.h>
+#include <wx/stattext.h>
 
 #include "styles.h"
 #include "routeprop.h"
@@ -42,6 +45,7 @@
 #include "chart1.h"
 #include "routeman.h"
 #include "routemanagerdialog.h"
+#include "routeprintout.h"
 #include "chcanv.h"
 #include "tcmgr.h"		// pjotrc 2011.03.02
 
@@ -62,6 +66,15 @@ extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
 
 extern MyFrame            *gFrame;
+
+// Global print data, to remember settings during the session
+extern wxPrintData               *g_printData;
+
+// Global page setup data
+extern wxPageSetupData*          g_pageSetupData;
+
+// Global print route selection dialog
+extern RoutePrintSelection * pRoutePrintSelection;
 
 /*!
 * Helper stuff for calculating Route Plans
@@ -468,6 +481,7 @@ BEGIN_EVENT_TABLE( RouteProp, wxDialog )
     EVT_LIST_ITEM_SELECTED( ID_TRACKLISTCTRL, RouteProp::OnRoutepropListClick )
     EVT_BUTTON( ID_ROUTEPROP_SPLIT, RouteProp::OnRoutepropSplitClick )
     EVT_BUTTON( ID_ROUTEPROP_EXTEND, RouteProp::OnRoutepropExtendClick )
+    EVT_BUTTON( ID_ROUTEPROP_PRINT, RouteProp::OnRoutepropPrintClick )
 END_EVENT_TABLE()
 
 /*!
@@ -585,6 +599,17 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
                 pRouteManagerDialog->UpdateTrkListCtrl();
         }
     }
+}
+
+void RouteProp::OnRoutepropPrintClick( wxCommandEvent& event )
+{
+  
+  if (pRoutePrintSelection == NULL)
+    pRoutePrintSelection = new RoutePrintSelection( GetParent(), m_pRoute );
+
+  if( !pRoutePrintSelection->IsShown() ) pRoutePrintSelection->ShowModal();
+    delete pRoutePrintSelection;
+  pRoutePrintSelection=NULL;
 }
 
 void RouteProp::OnRoutepropExtendClick( wxCommandEvent& event )
@@ -790,6 +815,9 @@ RouteProp::~RouteProp()
     //	delete pDispTz;
 
     delete m_wpList;
+    
+    // delete global print route selection dialog
+    delete pRoutePrintSelection;
 }
 
 /*!
@@ -967,6 +995,12 @@ void RouteProp::CreateControls()
     wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
     itemBoxSizer2->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
 
+     m_PrintButton = new wxButton( itemDialog1, ID_ROUTEPROP_PRINT, _("Print Route"),
+            wxDefaultPosition, wxDefaultSize, 0 );
+    itemBoxSizer16->Add( m_PrintButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    m_PrintButton->Enable( true );   
+    
+    
     m_ExtendButton = new wxButton( itemDialog1, ID_ROUTEPROP_EXTEND, _("Extend Route"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer16->Add( m_ExtendButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -1010,6 +1044,8 @@ void RouteProp::CreateControls()
     m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, 135 );
     m_wpList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 72 );
     m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, 90 );
+    m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, 90 );  
+    m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, 70 );    
     m_wpList->Hide();
 
     m_wpTrackList = new OCPNTrackListCtrl( itemDialog1, ID_TRACKLISTCTRL, wxDefaultPosition,
@@ -1023,7 +1059,10 @@ void RouteProp::CreateControls()
     m_wpTrackList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, 85 );
     m_wpTrackList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, 90 );
     m_wpTrackList->InsertColumn( 6, _("Timestamp"), wxLIST_FORMAT_LEFT, 135 );
-    m_wpTrackList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 100 );
+    m_wpTrackList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 100 ); 
+    m_wpTrackList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, 100 );
+    m_wpTrackList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_CENTER, 100 );     
+    m_wpTrackList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_CENTER, 70 );       
     m_wpTrackList->Hide();
 
     Connect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK,
@@ -1461,7 +1500,9 @@ bool RouteProp::UpdateProperties()
 
             //  Mark Name
             if( arrival ) m_wpList->SetItem( item_line_index, 1, prp->GetName() );
-
+	    // Store Dewcription
+            if( arrival ) m_wpList->SetItem( item_line_index, 9, prp->GetDescription() );
+	    
             //  Distance
             //  Note that Distance/Bearing for Leg 000 is as from current position
 
@@ -1492,14 +1533,42 @@ bool RouteProp::UpdateProperties()
 
             DistanceBearingMercator( prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist );
 
+	    // calculation of course at current WayPoint.
+	    double course=10, tmp_leg_dist=23;
+	    wxRoutePointListNode *next_node = node->GetNext(); 
+	    RoutePoint * _next_prp = (next_node)? next_node->GetData(): NULL;
+	    if (_next_prp )
+	    {
+		DistanceBearingMercator( _next_prp->m_lat, _next_prp->m_lon, prp->m_lat, prp->m_lon, &course, &tmp_leg_dist );
+	    }else
+	    {
+	      course = 0.0;
+	      tmp_leg_dist = 0.0;
+	    }
+	    
+	    prp->SetCourse(course); // save the course to the next waypoint for printing.
+	    // end of calculation
+	    
+	    
             t.Printf( _T("%6.2f NM"), leg_dist );
             if( arrival ) m_wpList->SetItem( item_line_index, 2, t );
             if( !enroute ) m_wpList->SetItem( item_line_index, 2, nullify );
+	    prp->SetDistance(leg_dist); // save the course to the next waypoint for printing.
 
             //  Bearing
             t.Printf( _T("%03.0f Deg. T"), brg );
             if( arrival ) m_wpList->SetItem( item_line_index, 3, t );
             if( !enroute ) m_wpList->SetItem( item_line_index, 3, nullify );
+	    
+	    // Course (bearing of next )
+	    if (_next_prp)
+	    {
+		t.Printf( _T("%03.0f Deg. T"), course );
+		if( arrival ) m_wpList->SetItem( item_line_index, 10, t );
+	    }else
+	    {
+	      m_wpList->SetItem( item_line_index, 10, nullify );
+	    }
 
             //  Lat/Lon
             wxString tlat = toSDMM( 1, prp->m_lat, prp->m_bIsInTrack );  // low precision for routes
@@ -1508,6 +1577,7 @@ bool RouteProp::UpdateProperties()
             wxString tlon = toSDMM( 2, prp->m_lon, prp->m_bIsInTrack );
             if( arrival ) m_wpList->SetItem( item_line_index, 5, tlon );
 
+	    
             tide_form = _T("");
 
             LMT_Offset = long( ( prp->m_lon ) * 3600. / 15. );

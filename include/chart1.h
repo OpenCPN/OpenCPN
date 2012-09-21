@@ -406,13 +406,21 @@ void *x_malloc(size_t t);
 class MyPrintout: public wxPrintout
 {
  public:
-  MyPrintout(const wxChar *title = _T("My printout")):wxPrintout(title) {}
+  MyPrintout(const wxChar *title = _T("My printout")):wxPrintout(title){}
+  virtual
   bool OnPrintPage(int page);
+  virtual
   bool HasPage(int page);
+  virtual
   bool OnBeginDocument(int startPage, int endPage);
+  virtual
   void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo);
 
   void DrawPageOne(wxDC *dc);
+  
+
+  
+  
 };
 
 
