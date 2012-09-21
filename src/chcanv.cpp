@@ -134,11 +134,11 @@ extern Track            *g_pActiveTrack;
 extern IDX_entry        *gpIDX;
 extern int               gpIDXn;
 
-extern RoutePoint       *pAnchorWatchPoint1;   // pjotrc 2010.02.15
-extern RoutePoint       *pAnchorWatchPoint2;   // pjotrc 2010.02.15
+extern RoutePoint       *pAnchorWatchPoint1;
+extern RoutePoint       *pAnchorWatchPoint2;
 extern double           AnchorPointMinDist;
-extern bool             AnchorAlertOn1;  // pjotrc 2010.02.17
-extern bool             AnchorAlertOn2;  // pjotrc 2010.02.17
+extern bool             AnchorAlertOn1;
+extern bool             AnchorAlertOn2;
 extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
 extern int              g_nAWDefault;
@@ -150,7 +150,6 @@ extern GoToPositionDialog *pGoToPositionDialog;
 extern wxString GetLayerName(int id);
 
 extern bool             bDrawCurrentValues;
-extern wxString         *pWorldMapLocation;
 
 #ifdef USE_S57
 extern s52plib          *ps52plib;
@@ -214,11 +213,12 @@ extern bool             g_bUseGreenShip;
 extern ChartCanvas      *cc1;
 
 extern bool             g_bshow_overzoom_emboss;
-extern int              g_n_ownship_length_meters;
-extern int              g_n_ownship_beam_meters;
-extern int              g_n_gps_antenna_offset_y;
-extern int              g_n_gps_antenna_offset_x;
-extern int              g_n_ownship_min_mm;
+extern bool             g_bOwnShipRealSize;
+extern double           g_n_ownship_length_meters;
+extern double           g_n_ownship_beam_meters;
+extern double           g_n_gps_antenna_offset_y;
+extern double           g_n_gps_antenna_offset_x;
+extern long             g_n_ownship_min_mm;
 
 extern wxPlatformInfo   *g_pPlatform;
 
@@ -5220,7 +5220,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                       &ship_mid_lon1 );
             GetCanvasPointPix( ship_mid_lat1, ship_mid_lon1, &lShipMidPoint );
 
-            if( g_n_ownship_beam_meters && g_n_ownship_length_meters )           // use large ship
+            if( g_n_ownship_beam_meters && g_n_ownship_length_meters && g_bOwnShipRealSize )           // use large ship
             {
                 double scale_factor = ship_scale_pix / OWNSHIP_LENGTH;
 
@@ -5288,7 +5288,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                 scale_factor = wxMax(scale_factor, scale_factor_min);
                 scale_factor = wxMin(scale_factor, 10);
 
-                if( g_n_ownship_min_mm == -1 ) scale_factor = 1.0;
+                if( (g_n_ownship_min_mm == -1) || !g_bOwnShipRealSize ) scale_factor = 1.0;
 
                 //      Make a new member image under some conditions
                 if( ( m_cur_ship_pix != ship_scale_pix )

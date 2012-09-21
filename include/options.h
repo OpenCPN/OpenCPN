@@ -29,11 +29,13 @@
 #define _OPTIONS_H_
 
 
-#include "wx/listbook.h"
-#include "wx/dirctrl.h"
-#include "wx/spinctrl.h"
+#include <wx/listbook.h>
+#include <wx/dirctrl.h>
+#include <wx/spinctrl.h>
 #include <wx/listctrl.h>
 #include <wx/choice.h>
+#include <wx/collpane.h>
+
 #include "pluginmanager.h"
 
 #if wxCHECK_VERSION(2, 9, 0)
@@ -103,6 +105,7 @@ enum {
     ID_METACHECKBOX,
     ID_NOTEBOOK,
     ID_OPENGLBOX,
+    ID_OSREALSIZE,
     ID_OUTLINECHECKBOX1,
     ID_PANEL,
     ID_PANEL2,
@@ -114,7 +117,7 @@ enum {
     ID_PRESERVECHECKBOX,
     ID_PRINTCHECKBOX1,
     ID_QUILTCHECKBOX1,
-    ID_RADIOBOX,
+    ID_RADARDISTUNIT,
     ID_RASTERCHECKBOX1,
     ID_SCAMINCHECKBOX,
     ID_SCANCHECKBOX,
@@ -240,6 +243,7 @@ public:
     void OnButtonTestSound( wxCommandEvent& event );
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
     void OnZTCCheckboxClick( wxCommandEvent& event );
+    void OnCollapsibleClick( wxCollapsiblePaneEvent& event );
     void OnButtonGroups( wxCommandEvent& event );
     void OnInsertTideDataLocation( wxCommandEvent &event );
     void OnRemoveTideDataLocation( wxCommandEvent &event );
@@ -362,6 +366,15 @@ public:
     wxCheckBox                *m_pCheck_Draw_Target_Size;
 
 //    For Ship page
+    wxCollapsiblePane       *m_pOSShowRealSize;
+    wxTextCtrl              *m_pOSLength;
+    wxTextCtrl              *m_pOSWidth;
+    wxTextCtrl              *m_pOSGPSOffsetX;
+    wxTextCtrl              *m_pOSGPSOffsetY;
+    wxTextCtrl              *m_pOSMinSize;
+    wxStaticBoxSizer        *dispOptions;
+    wxScrolledWindow        *itemPanelShip;
+    wxBoxSizer              *ownShip;
 
 //    For Fonts page
     wxBoxSizer              *m_itemBoxSizerFontPanel;
@@ -378,10 +391,10 @@ public:
     int                     k_plugins;
 
 //    For "Etc." Page
-    wxCheckBox              *pNavAidShowRadarRings;
+    wxCollapsiblePane       *pNavAidShowRadarRings;
     wxTextCtrl              *pNavAidRadarRingsNumberVisible;
     wxTextCtrl              *pNavAidRadarRingsStep;
-    wxRadioBox              *m_itemNavAidRadarRingsStepUnitsRadioBox;
+    wxChoice                *m_itemRadarRingsUnits;
     wxCheckBox              *pWayPointPreventDragging;
     wxCheckBox              *pEnableZoomToCursor;
     wxCheckBox              *pPreserveScale;
