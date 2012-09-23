@@ -980,18 +980,18 @@ wxString AIS_Target_Data::GetRolloverString( void )
     if( g_bAISRolloverShowCOG && ( SOG <= 102.2 )
             && ( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) ) {
         if( result.Len() ) result << _T("\n");
-        if( SOG < 10.0 ) result << wxString::Format( _T("SOG: %.2f"), SOG ) << _("Kts") << _T(" ");
+        if( SOG < 10.0 ) result << wxString::Format( _T("SOG %.2f "), SOG ) << _("Kts") << _T(" ");
         else
-            result << wxString::Format( _T("SOG: %.1f"), SOG ) << _("Kts") << _T(" ");
+            result << wxString::Format( _T("SOG %.1f "), SOG ) << _("Kts") << _T(" ");
 
         int crs = wxRound( COG );
         if( b_positionOnceValid ) {
             if( crs < 360 ) result
-                    << wxString::Format( wxString( " COG: %03d°", wxConvUTF8 ), crs );
-            else if( COG == 360.0 ) result << _(" COG: Unavailable");
-            else if( crs == 360 ) result << wxString( " COG: 000°", wxConvUTF8 );
+                    << wxString::Format( wxString( " COG %03d°", wxConvUTF8 ), crs );
+            else if( COG == 360.0 ) result << _(" COG Unavailable");
+            else if( crs == 360 ) result << wxString( " COG 000°", wxConvUTF8 );
         } else
-            result << _(" COG: Unavailable");
+            result << _(" COG Unavailable");
     }
 
     if( g_bAISRolloverShowCPA && bCPA_Valid ) {

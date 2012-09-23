@@ -130,6 +130,7 @@ extern MarkInfoImpl     *pMarkPropDialog;
 extern RouteProp        *pRoutePropDialog;
 extern MarkInfoImpl     *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
+extern NMEAHandler      *g_pnmea;
 
 extern IDX_entry        *gpIDX;
 extern int               gpIDXn;
@@ -308,6 +309,7 @@ enum
     ID_RT_MENU_COPY,
     ID_TK_MENU_COPY,
     ID_WPT_MENU_COPY,
+    ID_WPT_MENU_SENDTOGPS,
     ID_PASTE_WAYPOINT,
     ID_PASTE_ROUTE,
     ID_PASTE_TRACK,
@@ -3054,6 +3056,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow ) EVT_PAINT ( ChartCanvas::OnPaint )
     EVT_MENU ( ID_RT_MENU_COPY,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_TK_MENU_COPY,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WPT_MENU_COPY,        ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_WPT_MENU_SENDTOGPS,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_WAYPOINT,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_ROUTE,          ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_TRACK,          ChartCanvas::PopupMenuHandler )
@@ -8105,6 +8108,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         subMenuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
         if( m_pFoundRoutePoint->m_IconName != _T("mob") )
             subMenuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
+
+        if( bGPSValid ) subMenuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
     }
 
     if( seltype & SELTYPE_MARKPOINT ) {
@@ -8117,6 +8122,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
         if( m_pFoundRoutePoint->m_IconName != _T("mob") )
             subMenuWaypoint->Append( ID_WP_MENU_DELPOINT, _( "Delete" ) );
+
+        if( bGPSValid ) subMenuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
 
         if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 )
                 || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
@@ -9077,6 +9084,17 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_WPT_MENU_COPY:
         if( m_pFoundRoutePoint ) Kml::CopyWaypointToClipboard( m_pFoundRoutePoint );
+        break;
+
+    case ID_WPT_MENU_SENDTOGPS:
+        if( m_pFoundRoutePoint ) {
+            wxString port, com;
+            if( g_pnmea ) {
+                g_pnmea->GetSource( port );
+                if( port.StartsWith( _T("Serial:"), &com ) ) port = com;
+                m_pFoundRoutePoint->SendToGPS( port, NULL );
+            }
+        }
         break;
 
     case ID_PASTE_WAYPOINT:
