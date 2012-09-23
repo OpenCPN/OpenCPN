@@ -294,6 +294,8 @@ public:
     wxTextCtrl              *pCOGUPUpdateSecs;
 
 //    For "S57" page
+    wxFlexGridSizer         *vectorPanel;
+    wxScrolledWindow        *ps57Ctl;
     wxCheckListBox          *ps57CtlListBox;
     wxRadioBox              *pDispCat;
     wxButton                *itemButtonClearList;
