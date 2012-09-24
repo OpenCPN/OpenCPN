@@ -777,11 +777,13 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         }
     }
 
-    html << _T("<tr><td colspan=2>") << _T("<b>") << AISTypeStr;
-    if( sub_type.Length() ) html << _T(" (") << sub_type << _T(")");
-    html << _T(", ") << navStatStr;
-    if( UNTypeStr.Length() ) html << _T(" (UN Type ") << UNTypeStr << _T(")");
-    html << rowEnd << _T("<tr><td colspan=2>") << _T("<b>") << sizeString << rowEnd;
+    if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
+        html << _T("<tr><td colspan=2>") << _T("<b>") << AISTypeStr;
+        if( sub_type.Length() ) html << _T(" (") << sub_type << _T(")");
+        html << _T(", ") << navStatStr;
+        if( UNTypeStr.Length() ) html << _T(" (UN Type ") << UNTypeStr << _T(")");
+        html << rowEnd << _T("<tr><td colspan=2>") << _T("<b>") << sizeString << rowEnd;
+    }
 
     if( b_positionOnceValid ) {
         wxString posTypeStr;
@@ -865,19 +867,22 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     else
         brgStr = _("---");
 
-    html << vertSpacer << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
-        << rowStart <<_("Speed") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
-        << _("Course") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
-        << _("Heading") << _T("</font></td></tr>")
-        << rowStartH << _T("<b>") << sogStr << _T("</b></td><td>&nbsp;</td><td><b>")
-        << courseStr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
-        << hdgStr << rowEnd << _T("</table></td></tr>")
-        << vertSpacer
-
-        << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
+    wxString turnRateHdr; // Blank if ATON or BASE
+    if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
+        html << vertSpacer << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
+            << rowStart <<_("Speed") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
+            << _("Course") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
+            << _("Heading") << _T("</font></td></tr>")
+            << rowStartH << _T("<b>") << sogStr << _T("</b></td><td>&nbsp;</td><td><b>")
+            << courseStr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
+            << hdgStr << rowEnd << _T("</table></td></tr>")
+            << vertSpacer;
+        turnRateHdr = _("Turn Rate");
+    }
+    html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
         << rowStart <<_("Range") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
         << _("Bearing") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
-        << _("Turn Rate") << _T("</font></td></tr>")
+        << turnRateHdr << _T("</font></td></tr>")
         << rowStartH << _T("<b>") << rngStr << _T("</b></td><td>&nbsp;</td><td><b>")
         << brgStr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
         << rotStr << rowEnd << _T("</table></td></tr>")

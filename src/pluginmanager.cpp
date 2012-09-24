@@ -2231,6 +2231,31 @@ float *ChartPlugInWrapper::GetCOVRTableHead(int iTable)
         return 0;
 }
 
+//      TODO
+//      PlugIn chart types do not properly support NoCovr Regions
+//      Proper fix is to update PlugIn Chart Type API
+//      Derive an extended PlugIn chart class from existing class,
+//      and use some kind of RTTI to figure out which class to call.
+int ChartPlugInWrapper::GetNoCOVREntries()
+{
+    return 0;
+}
+
+int ChartPlugInWrapper::GetNoCOVRTablePoints(int iTable)
+{
+    return 0;
+}
+
+int  ChartPlugInWrapper::GetNoCOVRTablenPoints(int iTable)
+{
+    return 0;
+}
+
+float *ChartPlugInWrapper::GetNoCOVRTableHead(int iTable)
+{
+    return 0;
+}
+
 bool ChartPlugInWrapper::GetChartExtent(Extent *pext)
 {
     if(m_ppicb)
