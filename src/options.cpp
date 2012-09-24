@@ -315,11 +315,12 @@ size_t options::CreatePanel( wxString title )
     return id;
 }
 
-wxScrolledWindow *options::AddPage( size_t parent, wxString title  )
+wxScrolledWindow *options::AddPage( size_t parent, wxString title )
 {
-    if (parent > m_pListbook->GetPageCount()-1)
-    {
-        wxLogMessage( wxString::Format( _T("Warning: invalid parent in options::AddPage( %d, "), parent ) + title + _T(" )") );
+    if( parent > m_pListbook->GetPageCount() - 1 ) {
+        wxLogMessage(
+                wxString::Format( _T("Warning: invalid parent in options::AddPage( %d, "),
+                        parent ) + title + _T(" )") );
         return NULL;
     }
     wxNotebookPage* page = m_pListbook->GetPage( parent );
@@ -328,11 +329,11 @@ wxScrolledWindow *options::AddPage( size_t parent, wxString title  )
     int style = wxVSCROLL | wxTAB_TRAVERSAL;
     if( page->IsKindOf( CLASSINFO(wxNotebook))) {
         window = new wxScrolledWindow( page, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate(1, 1);
+        window->SetScrollRate(5,5);
         ((wxNotebook *)page)->AddPage( window, title );
     } else if (page->IsKindOf(CLASSINFO(wxScrolledWindow))) {
         wxString toptitle = m_pListbook->GetPageText( parent );
-        wxNotebook *nb = new wxNotebook( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
+        wxNotebook *nb = new wxNotebook( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize,wxNB_TOP );
         /* Only remove the tab from listbook, we still have original content in {page} */
         m_pListbook->RemovePage( parent );
         m_pListbook->InsertPage( parent, nb, toptitle, false, parent );
@@ -343,12 +344,12 @@ wxScrolledWindow *options::AddPage( size_t parent, wxString title  )
          * we must explicitely Show() it */
         page->Show();
         window = new wxScrolledWindow( nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate(1, 1);
+        window->SetScrollRate(5, 5);
         nb->AddPage( window, title );
         nb->ChangeSelection( 0 );
     } else { // This is the default content, we can replace it now
         window = new wxScrolledWindow( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, style, title );
-        window->SetScrollRate(1, 1);
+        window->SetScrollRate(5, 5);
         wxString toptitle = m_pListbook->GetPageText( parent );
         m_pListbook->DeletePage( parent );
         m_pListbook->InsertPage( parent, window, toptitle, false, parent );
