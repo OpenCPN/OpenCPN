@@ -529,12 +529,12 @@ AIS_Target_Data::AIS_Target_Data()
     strncpy(CallSign, "       ", 8);
     strncpy(Destination, "                    ", 21);
     ShipNameExtension[0] = 0;
-	b_show_AIS_CPA = false;             //TR 2012.06.28: Show AIS-CPA
+	b_show_AIS_CPA = false;
 
     SOG = 555.;
     COG = 666.;
     HDG = 511.;
-    ROTAIS = -128;                     // pjotrc 2010.02.07
+    ROTAIS = -128;
     Lat = 0.;
     Lon = 0.;
 
@@ -544,15 +544,15 @@ AIS_Target_Data::AIS_Target_Data()
     StaticReportTicks = now.GetTicks();
     b_lost = false;
 
-    IMO = 0;                       // pjotrc 2010.02.07
+    IMO = 0;
     MID = 555;
     MMSI = 666;
     NavStatus = UNDEFINED;
     SyncState = 888;
     SlotTO = 999;
-    ShipType = 19;	// "Unknown"        // pjotrc 2010.02.10
+    ShipType = 19;	// "Unknown"
 
-    CPA = 100;                // Large values avoid false alarms
+    CPA = 100;     // Large values avoid false alarms
     TCPA = 100;
 
     Range_NM = -1.;
@@ -636,14 +636,13 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     html << tableStart << _T("<tr><td nowrap colspan=2>");
     if( ( Class != AIS_BASE ) && ( Class != AIS_SART ) ) {
         if( b_nameValid ) {
-            wxString uret = trimAISField( ShipName );
-            wxString nameString;
-            if( uret == _T("Unknown") ) nameString = wxGetTranslation( uret );
+            wxString shipName = trimAISField( ShipName );
+            wxString intlName;
+            if( shipName == _T("Unknown") ) intlName = wxGetTranslation( shipName );
             else
-                nameString = uret;
-            nameString.Replace( _T(" "), _T("&nbsp;"), true );
-            html << _T("<font size=+2><i><b>") << nameString ;
-            if( strlen( ShipNameExtension ) ) html << _T("&nbsp;") << wxString( ShipNameExtension, wxConvUTF8 );
+                intlName = shipName;
+            html << _T("<font size=+2><i><b>") << intlName ;
+            if( strlen( ShipNameExtension ) ) html << wxString( ShipNameExtension, wxConvUTF8 );
             html << _T("</b></i></font>&nbsp;&nbsp;<b>");
         }
     }
@@ -2305,10 +2304,10 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
           {
                 break;
           }
-     case 21:                                    // Test Message (Aid to Navigation)   pjotrc 2010.02.01
+     case 21:                                    // Test Message (Aid to Navigation)
           {
 //
-// The following is a patch to impersonate an AtoN as Ship      // pjotrc 2010.02.01
+// The following is a patch to impersonate an AtoN as Ship
 //
 //                  ptd->NavStatus = MOORED;
                   ptd->ShipType = (unsigned char)bstr->GetInt(39,5);
@@ -2341,12 +2340,13 @@ bool AIS_Decoder::Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd)
 
                   bstr->GetStr(44,120, &ptd->ShipName[0], 20); // short name only, extension wont fit in Ship structure
 
-                  if(bstr->GetBitCount() > 276)
-                  {
-                        int nx = ((bstr->GetBitCount() - 272) / 6) * 6;
-                        bstr->GetStr(273,nx, &ptd->ShipNameExtension[0], 20);
-                        ptd->ShipNameExtension[20] = 0;
-                  }
+                if( bstr->GetBitCount() > 276 ) {
+                    int nx = ( ( bstr->GetBitCount() - 272 ) / 6 ) * 6;
+                    bstr->GetStr( 273, nx, &ptd->ShipNameExtension[0], 20 );
+                    ptd->ShipNameExtension[20] = 0;
+                } else {
+                    ptd->ShipNameExtension[0] = 0;
+                }
 
                 ptd->b_nameValid = true;
 
