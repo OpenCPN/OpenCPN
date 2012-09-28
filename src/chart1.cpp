@@ -1984,6 +1984,7 @@ int MyApp::OnExit()
     delete ps52plib;
 #endif
 
+    delete g_pGroupArray;
     delete pDummyChart;
 
     if( logger ) {
