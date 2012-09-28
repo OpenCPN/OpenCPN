@@ -449,6 +449,7 @@ private:
     wxListBox *tcDataSelected;
     std::vector<int> marinersStdXref;
     ChartGroupsUI *groupsPanel;
+    wxImageList *m_topImgList;
 };
 
 class ChartGroupsUI: public wxScrolledWindow {

@@ -5920,6 +5920,7 @@ Route *LoadGPXRoute( GpxRteElement *rtenode, int routenum, bool b_fullviz )
                     pWp->m_LayerID = 0;
             } else {
                 pTentRoute->AddPoint( pExisting, false );           // don't auto-rename numerically
+                delete pWp;
             }
             ip++;
         }
