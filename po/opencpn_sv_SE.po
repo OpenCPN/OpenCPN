@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-09-29 03:01+0200\n"
-"PO-Revision-Date: 2012-09-28 22:04-0300\n"
+"PO-Revision-Date: 2012-09-29 18:08-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -366,7 +366,7 @@ msgstr "&Egenskaper..."
 #
 #
 msgid "&Remove Selected"
-msgstr "Ta bort valda spår"
+msgstr "Ta bort markerade"
 
 #
 #

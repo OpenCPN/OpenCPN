@@ -4254,6 +4254,22 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     << _T("\n") << wxString::Format( wxString( "%03d°  ", wxConvUTF8 ), (int) brg )
                     << FormatDistanceAdaptive( dist );
 
+                    // Compute and display cumulative distance from route start point to current
+                    // leg end point.
+
+                    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst()->GetNext();
+                    RoutePoint *prp;
+                    float dist_to_endleg = 0;
+                    wxString t;
+
+                    while( node ) {
+                        prp = node->GetData();
+                        dist_to_endleg += prp->m_seg_len;
+                        if( prp->IsSame( segShow_point_a ) ) break;
+                        node = node->GetNext();
+                    }
+                    s << _T(" (+") << FormatDistanceAdaptive( dist_to_endleg ) << _T(")");
+
                     m_pRolloverWin->SetString( s );
 
                     wxSize win_size = GetSize();
@@ -6253,22 +6269,22 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 dc.StrokePolygon( 4, ais_real_size, TargetPoint.x, TargetPoint.y );
             }
 
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ) ) );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "SHIPS" ) ) ) );
             switch( td->NavStatus ) {
                 case MOORED:
                 case AT_ANCHOR: {
-                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 5 );
+                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
                     break;
                 }
                 case RESTRICTED_MANOEUVRABILITY: {
                     wxPoint diamond[4];
                     diamond[0] = wxPoint(  4, 0 );
-                    diamond[1] = wxPoint(  0, -5 );
+                    diamond[1] = wxPoint(  0, -6 );
                     diamond[2] = wxPoint( -4, 0 );
-                    diamond[3] = wxPoint(  0, 5 );
-                    dc.StrokePolygon( 4, diamond, TargetPoint.x, TargetPoint.y-10 );
+                    diamond[3] = wxPoint(  0, 6 );
+                    dc.StrokePolygon( 4, diamond, TargetPoint.x, TargetPoint.y-11 );
                     dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
-                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y-20, 4 );
+                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y-22, 4 );
                     break;
                    break;
                 }
@@ -9162,7 +9178,6 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             }
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-
         }
 
         break;
