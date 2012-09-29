@@ -393,7 +393,7 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
     m_lastWptItem = -1;
     m_lastTrkItem = -1;
     m_lastRteItem = -1;
-    
+
     Create();
 
 }
@@ -1266,6 +1266,8 @@ void RouteManagerDialog::OnTrkRightClick( wxListEvent &event )
     wxMenu menu;
     wxMenuItem* mergeItem = menu.Append( TRACK_MERGE, _("&Merge Selected Tracks") );
     mergeItem->Enable( m_pTrkListCtrl->GetSelectedItemCount() > 1 );
+    wxMenuItem* cleanItem = menu.Append( TRACK_CLEAN, _("Reduce Data...") );
+    cleanItem->Enable( m_pTrkListCtrl->GetSelectedItemCount() == 1 );
     wxMenuItem* copyItem = menu.Append( TRACK_COPY_TEXT, _("&Copy as text") );
     copyItem->Enable( m_pTrkListCtrl->GetSelectedItemCount() > 0 );
     PopupMenu( &menu );
@@ -1286,6 +1288,44 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
     int item = -1;
 
     switch( event.GetId() ) {
+
+        case TRACK_CLEAN: {
+            item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+            if( item == -1 ) break;
+            Track* track = (Track*) pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+            if( track->IsRunning() ) {
+                wxBell();
+                break;
+            }
+
+            wxString choices[] = { _T("5.0"), _T("10.0"), _T("20.0"), _T("50.0"), _T("100.0") };
+            wxSingleChoiceDialog* precisionDlg = new wxSingleChoiceDialog( this,
+                    _("Select the maximum error allowed (in meters)\nafter data reduction:"),
+                    _("Reduce Data Precision"), 5, choices );
+
+            int result = precisionDlg->ShowModal();
+            if( result == wxID_CANCEL ) break;
+            double precision;
+            switch( precisionDlg->GetSelection() ) {
+                case 0: precision = 5.0; break;
+                case 1: precision = 10.0; break;
+                case 2: precision = 20.0; break;
+                case 3: precision = 50.0; break;
+                case 4: precision = 100.0; break;
+            }
+
+            int pointsBefore = track->GetnPoints();
+
+            int reduction = track->Simplify( precision );
+            gFrame->Refresh( false );
+
+            reduction = 100 * reduction / pointsBefore;
+            wxString msg = wxString::Format( _("The amount of data used by the track\n was reduced by %d%%."),
+                    reduction );
+            OCPNMessageDialog* dlg = new OCPNMessageDialog( this, msg, _("OpenCPN info"), wxICON_INFORMATION | wxOK );
+            dlg->ShowModal();
+            break;
+        }
 
         case TRACK_COPY_TEXT: {
             wxString csvString;

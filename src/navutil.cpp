@@ -45,6 +45,7 @@
 #include <math.h>
 #include <time.h>
 #include <locale>
+#include <vector>
 
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
@@ -64,6 +65,7 @@
 #include "tinyxml.h"
 #include "gpxdocument.h"
 #include "ocpndc.h"
+#include "geodesic.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -2616,6 +2618,76 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
     route->m_bDeleteOnArrival = false;
 
     return route;
+}
+
+void Track::DouglasPeuckerReducer( std::vector<RoutePoint*>& list, int from, int to, double delta ) {
+    list[from]->m_bIsActive = true;
+    list[to]->m_bIsActive = true;
+
+    int maxdistIndex = -1;
+    double maxdist = 0;
+
+    for( int i=from+1; i<to; i++ ) {
+        double dist, bear1, bear2;
+        Geodesic::GreatCircleDistBear( list[from]->m_lon, list[from]->m_lat, list[to]->m_lon,
+                list[to]->m_lat, &dist, &bear1, &bear2 );
+
+        double fromdist, frombear1, frombear2;
+        Geodesic::GreatCircleDistBear( list[from]->m_lon, list[from]->m_lat, list[i]->m_lon,
+                list[i]->m_lat, &fromdist, &frombear1, &frombear2 );
+
+        // Ref: http://www.movable-type.co.uk/scripts/latlong.html
+        double R = 6371000.0; //Earth radius in meters.
+        dist = asin( sin( fromdist / R ) * sin( GEODESIC_DEG2RAD(frombear1) - GEODESIC_DEG2RAD(bear1) ) ) * R;
+
+        if( dist < 0 ) dist = - dist;
+
+        if( dist > maxdist ) {
+            maxdist = dist;
+            maxdistIndex = i;
+        }
+    }
+
+    if( maxdist > delta ) {
+        DouglasPeuckerReducer( list, from, maxdistIndex, delta );
+        DouglasPeuckerReducer( list, maxdistIndex, to, delta );
+    }
+}
+
+int Track::Simplify( double maxDelta ) {
+    int reduction = 0;
+    wxRoutePointListNode *pointnode = pRoutePointList->GetFirst();
+    RoutePoint *routepoint;
+    std::vector<RoutePoint*> pointlist;
+
+    ::wxBeginBusyCursor();
+
+    while( pointnode ) {
+        routepoint = pointnode->GetData();
+        routepoint->m_bIsActive = false;
+        pointlist.push_back(routepoint);
+        pointnode = pointnode->GetNext();
+    }
+
+    DouglasPeuckerReducer( pointlist, 0, pointlist.size()-1, maxDelta );
+
+    pSelect->DeleteAllSelectableTrackSegments( this );
+    pRoutePointList->Clear();
+
+    for( size_t i=0; i<pointlist.size(); i++ ) {
+        if( pointlist[i]->m_bIsActive ) {
+            pointlist[i]->m_bIsActive = false;
+            pRoutePointList->Append( pointlist[i] );
+        } else {
+            delete pointlist[i];
+            reduction++;
+        }
+    }
+
+    SetnPoints();
+    pSelect->AddAllSelectableTrackSegments( this );
+    ::wxEndBusyCursor();
+    return reduction;
 }
 
 double Track::GetXTE( RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to )
