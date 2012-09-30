@@ -5959,6 +5959,10 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         if( !g_bskew_comp && !g_bCourseUp ) theta += GetVP().skew;
 
+        wxDash dash_long[2];
+        dash_long[0] = (int) ( 1.0 * m_pix_per_mm );  // Long dash  <---------+
+        dash_long[1] = (int) ( 0.5 * m_pix_per_mm );  // Short gap            |
+
         //  Draw the icon rotated to the COG
         wxPoint ais_quad_icon[4];
         ais_quad_icon[0].x = -8;
@@ -6069,10 +6073,6 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                              &tCPAPoint.y, 0, GetVP().pix_width, 0, GetVP().pix_height );
 
             if( res != Invisible ) {
-                wxDash dash_long[2];
-                dash_long[0] = (int) ( 1.0 * m_pix_per_mm );  // Long dash  <---------+
-                dash_long[1] = (int) ( 0.5 * m_pix_per_mm );  // Short gap            |
-
                 wxPen ppPen2( GetGlobalColor( _T ( "URED" ) ), 2, wxUSER_DASH );
                 ppPen2.SetDashes( 2, dash_long );
                 dc.SetPen( ppPen2 );
@@ -6107,10 +6107,6 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 dc.SetPen( wxPen( yellow, 4 ) );
                 dc.StrokeLine( tCPAPoint.x, tCPAPoint.y, oCPAPoint.x, oCPAPoint.y );
 
-                wxDash dash_long[2];
-                dash_long[0] = (int) ( 1.0 * m_pix_per_mm );  // Long dash  <---------+
-                dash_long[1] = (int) ( 0.5 * m_pix_per_mm );  // Short gap            |
-
                 wxPen ppPen2( GetGlobalColor( _T ( "URED" ) ), 2, wxUSER_DASH );
                 ppPen2.SetDashes( 2, dash_long );
                 dc.SetPen( ppPen2 );
@@ -6118,24 +6114,20 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
                 //        Draw little circles at the ends of the CPA alert line
                 wxBrush br( GetGlobalColor( _T ( "BLUE3" ) ) );
-                dc.SetBrush( br ); //( wxBrush ( GetGlobalColor ( _T ( "BLUE3" ) ) ) );
+                dc.SetBrush( br );
                 dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLK" ) ) ) );
 
                 //  Using the true ends, not the clipped ends
                 dc.StrokeCircle( tCPAPoint_sav.x, tCPAPoint_sav.y, 5 );
                 dc.StrokeCircle( oCPAPoint_sav.x, oCPAPoint_sav.y, 5 );
             }
-            //TR 14.07.2012: Draw the intercept line from ownship
 
+            // Draw the intercept line from ownship
             wxPoint oShipPoint;
             GetCanvasPointPix ( gLat, gLon, &oShipPoint );
             ClipResult ownres = cohen_sutherland_line_clip_i ( &oShipPoint.x, &oShipPoint.y, &oCPAPoint.x, &oCPAPoint.y, 0, GetVP().pix_width, 0, GetVP().pix_height );
 
             if ( ownres != Invisible ) {
-                wxDash dash_long[2];
-                dash_long[0] = ( int ) ( 1.0 * m_pix_per_mm );  // Long dash  <---------+
-                dash_long[1] = ( int ) ( 0.5 * m_pix_per_mm );  // Short gap            |
-
                 wxPen ppPen2 ( GetGlobalColor ( _T ( "URED" )), 2, wxUSER_DASH );
                 ppPen2.SetDashes( 2, dash_long );
                 dc.SetPen(ppPen2);
@@ -6318,6 +6310,35 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                     dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
                     dc.StrokeCircle( TargetPoint.x, TargetPoint.y-9, 4 );
                     dc.StrokeCircle( TargetPoint.x, TargetPoint.y-18, 4 );
+                    break;
+                }
+                case HSC:
+                case WIG: {
+                    wxPoint arrow[3];
+                    arrow[0] = wxPoint( -4, 20 );
+                    arrow[1] = wxPoint(  0, 27 );
+                    arrow[2] = wxPoint(  4, 20 );
+                    for( int i = 0; i < 3; i++ ) {
+                        double px = ( (double) arrow[i].x ) * sin( theta )
+                                    + ( (double) arrow[i].y ) * cos( theta );
+                        double py = ( (double) arrow[i].y ) * sin( theta )
+                                    - ( (double) arrow[i].x ) * cos( theta );
+                        arrow[i].x = (int) round( px );
+                        arrow[i].y = (int) round( py );
+                    }
+                    dc.StrokePolygon( 3, arrow, TargetPoint.x, TargetPoint.y );
+                    arrow[0] = wxPoint( -4, 27 );
+                    arrow[1] = wxPoint(  0, 34 );
+                    arrow[2] = wxPoint(  4, 27 );
+                    for( int i = 0; i < 3; i++ ) {
+                        double px = ( (double) arrow[i].x ) * sin( theta )
+                                    + ( (double) arrow[i].y ) * cos( theta );
+                        double py = ( (double) arrow[i].y ) * sin( theta )
+                                    - ( (double) arrow[i].x ) * cos( theta );
+                        arrow[i].x = (int) round( px );
+                        arrow[i].y = (int) round( py );
+                    }
+                    dc.StrokePolygon( 3, arrow, TargetPoint.x, TargetPoint.y );
                     break;
                 }
             }
