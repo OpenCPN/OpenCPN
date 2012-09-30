@@ -711,7 +711,7 @@ void GRIBUIDialog::SetGribRecordSet ( GribRecordSet *pGribRecordSet )
 
                   // GFS SEATMP
 //                  if (pGR->getDataType()==GRB_TEMP )
-//                        m_RS_Idx_SEATEMP = i;       
+//                        m_RS_Idx_SEATEMP = i;
 
                   // RTOFS SEATMP
                   if (pGR->getDataType()==GRB_WTMP )
@@ -817,7 +817,7 @@ void GRIBOverlayFactory::SetGribRecordSet ( GribRecordSet *pGribRecordSet )
 {
       Reset();
       m_pGribRecordSet = pGribRecordSet;
- 
+
      m_bReadyToRender = true;
 
 }
@@ -841,7 +841,7 @@ void GRIBOverlayFactory::ClearCachedData(void)
 bool GRIBOverlayFactory::RenderGLGribOverlay ( wxGLContext *pcontext, PlugIn_ViewPort *vp )
 {
       m_pdc = NULL;                  // inform lower layers that this is OpenGL render
-      
+
       return DoRenderGribOverlay(vp);
 }
 
@@ -1191,7 +1191,7 @@ bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, P
                                           width = m_pgob_current->m_RGBA_width;
                                           height = m_pgob_current->m_RGBA_height;
                                     }
- 
+
                                     wxPoint porg;
                                     GetCanvasPixLL(vp,  &porg, pGRX->getLatMax(), pGRX->getLonMin());
                                     int arrow_pixel_size = 60;
@@ -1218,10 +1218,10 @@ bool GRIBOverlayFactory::RenderGribCurrent(GribRecord *pGRX, GribRecord *pGRY, P
                                     }
                               }
       }
- 
+
       if(!b_drawn)
       {
-                 DrawMessageWindow(wxString(_("Please Zoom or Scale Out to view suppressed SEATEMP GRIB")),
+                 DrawMessageWindow(wxString(_("Please Zoom or Scale Out to view suppressed CURRENT GRIB")),
                   vp->pix_width/2, vp->pix_height/2);
       }
       return true;
@@ -1251,7 +1251,7 @@ bool GRIBOverlayFactory::RenderGribFieldOverlay(GribRecord *pGRA, GribRecord *pG
                   *ppGOB = new GribOverlayBitmap;
             }
 
-            GribOverlayBitmap *pGOB = *ppGOB; 
+            GribOverlayBitmap *pGOB = *ppGOB;
 
             if(m_pdc == NULL)       //OpenGL mode
             {
@@ -1343,7 +1343,7 @@ wxImage GRIBOverlayFactory::CreateGribImage(GribRecord *pGRA, GribRecord *pGRB, 
                                           else
                                           {
                                                 double vx = pGRA->getInterpolatedValue(lon, lat);
-                                                if (vx != GRIB_NOTDEF) 
+                                                if (vx != GRIB_NOTDEF)
                                                 {
                                                       vkn = vx;
                                                       n_def = false;
@@ -1361,7 +1361,7 @@ wxImage GRIBOverlayFactory::CreateGribImage(GribRecord *pGRA, GribRecord *pGRB, 
                                                       c = wxColour((unsigned char)vkn * 255, 0, 0);
                                                 else
                                                       c = GetGenericGraphicColor(vkn);
-                                                
+
                                                 unsigned char r = c.Red();
                                                 unsigned char g = c.Green();
                                                 unsigned char b = c.Blue();
@@ -1599,7 +1599,7 @@ void GRIBOverlayFactory::drawWaveArrow(int i, int j, double ang, wxColour arrowC
       double si=sin(ang * PI / 180.),  co=cos(ang * PI/ 180.);
 
       wxPen pen( arrowColor, 1);
- 
+
       if(m_pdc && m_pdc->IsOk())
       {
             m_pdc->SetPen(pen);
@@ -1654,7 +1654,7 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs(int i, int j, double vx, double 
       wxPen pen( arrowColor, 2);
 
       if(m_pdc && m_pdc->IsOk())
-      {     
+      {
             m_pdc->SetPen(pen);
             m_pdc->SetBrush(*wxTRANSPARENT_BRUSH);
       }
@@ -1761,7 +1761,7 @@ void GRIBOverlayFactory::drawTransformedLine(wxPen pen,
             glColor4ub(c.Red(), c.Green(), c.Blue(), 255/*c.Alpha()*/);
             glLineWidth(pen.GetWidth());
 
-            DrawGLLine( ii, jj, kk, ll, pen.GetWidth()); 
+            DrawGLLine( ii, jj, kk, ll, pen.GetWidth());
       }
 
 }
