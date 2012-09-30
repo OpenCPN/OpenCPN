@@ -592,13 +592,15 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
     }
 }
 
+
+// slot on pressed button "Print Route" with selection of the route properties to print
 void RouteProp::OnRoutepropPrintClick( wxCommandEvent& event )
 {
   
   if (pRoutePrintSelection == NULL)
     pRoutePrintSelection = new RoutePrintSelection( GetParent(), m_pRoute );
 
-  if( !pRoutePrintSelection->IsShown() ) pRoutePrintSelection->ShowModal();
+  if( !pRoutePrintSelection->IsShown() ) pRoutePrintSelection->ShowModal(); 
     delete pRoutePrintSelection;
   pRoutePrintSelection=NULL;
 }
@@ -1016,10 +1018,6 @@ void RouteProp::CreateControls()
     Connect( wxEVT_COMMAND_LIST_COL_END_DRAG,
             (wxObjectEventFunction) (wxEventFunction) &RouteProp::OnEvtColDragEnd );
 
-    // note that under MSW for SetColumnWidth() to work we need to create the
-    // items with images initially even if we specify dummy image id
-    //    wxListItem itemCol;
-    //    itemCol.SetImage(-1);
 
     //      Create the two list controls
     m_wpList = new wxListCtrl( itemDialog1, ID_LISTCTRL, wxDefaultPosition, wxSize( 800, 200 ),
@@ -1034,8 +1032,8 @@ void RouteProp::CreateControls()
     m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, 135 );
     m_wpList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 72 );
     m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, 90 );
-    m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, 90 );  
-    m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, 70 );    
+    m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, 90 );   // additional columt with WP description
+    m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, 70 );       // additional columt with WP new course. Is it same like "bearing" of the next WP.
     m_wpList->Hide();
 
     m_wpTrackList = new OCPNTrackListCtrl( itemDialog1, ID_TRACKLISTCTRL, wxDefaultPosition,
@@ -1051,8 +1049,8 @@ void RouteProp::CreateControls()
     m_wpTrackList->InsertColumn( 6, _("Timestamp"), wxLIST_FORMAT_LEFT, 135 );
     m_wpTrackList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 100 ); 
     m_wpTrackList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, 100 );
-    m_wpTrackList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_CENTER, 100 );     
-    m_wpTrackList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_CENTER, 70 );       
+    m_wpTrackList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_CENTER, 100 );    // additional columt with WP description  
+    m_wpTrackList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_CENTER, 70 );        // additional columt with WP new course. Is it same like "bearing" of the next WP.       
     m_wpTrackList->Hide();
 
     Connect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK,
