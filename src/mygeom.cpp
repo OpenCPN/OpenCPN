@@ -478,7 +478,7 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
         npta += nptr + 2;
     }
 
-    pt *geoPt = (pt*)malloc((npta + 1) * sizeof(pt));     // vertex array
+    pt *geoPt = (pt*)calloc((npta + 1) * sizeof(pt), 1);     // vertex array
 
 //      Create input structures
 
