@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-21 13:50+0200\n"
-"PO-Revision-Date: 2012-09-21 08:57-0300\n"
+"POT-Creation-Date: 2012-09-29 03:01+0200\n"
+"PO-Revision-Date: 2012-09-29 18:08-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -175,8 +175,8 @@ msgstr " </b>om<b> "
 
 #
 #
-msgid " COG: Unavailable"
-msgstr "COG: Ej tillgänglig"
+msgid " COG Unavailable"
+msgstr "COG ej tillgänglig"
 
 #
 #
@@ -366,7 +366,7 @@ msgstr "&Egenskaper..."
 #
 #
 msgid "&Remove Selected"
-msgstr "Ta bort valda spår"
+msgstr "Ta bort markerade"
 
 #
 #
@@ -2521,6 +2521,11 @@ msgstr "OpenCPN kan inte starta."
 
 #
 #
+msgid "OpenCPN info"
+msgstr "OpenCPN Information"
+
+#
+#
 msgid "Options"
 msgstr "Användarinställningar"
 
@@ -2919,6 +2924,15 @@ msgid "Redo"
 msgstr "Gör om"
 
 #
+msgid "Reduce Data Precision"
+msgstr "Noggranhet för datareducering"
+
+#
+#
+msgid "Reduce Data..."
+msgstr "Reducera datamängd..."
+
+#
 msgid "Reduced Detail at Small Scale"
 msgstr "Färre detaljer i utzoomat läge"
 
@@ -3186,6 +3200,14 @@ msgid "Select Tide/Current Data"
 msgstr "Välj tidvatten och strömdata"
 
 #
+msgid ""
+"Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr ""
+"Välj största tillåtna avvikelse (i meter)\n"
+"efter datareducering"
+
+#
 #
 msgid "Send"
 msgstr "Skicka"
@@ -3198,6 +3220,11 @@ msgstr "Skicka rutt till GPS"
 #
 #
 msgid "Send To GPS..."
+msgstr "Skicka till GPS"
+
+#
+#
+msgid "Send to GPS"
 msgstr "Skicka till GPS"
 
 #
@@ -3554,6 +3581,15 @@ msgstr ""
 #
 msgid "The Open Source Chart Plotter/Navigator"
 msgstr "OpenCPN - Navigation med öppen källkod"
+
+#
+#, c-format
+msgid ""
+"The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr ""
+"Mängden data spåret använder\n"
+"minskade med %d%%."
 
 #
 msgid ""

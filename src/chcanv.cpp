@@ -167,7 +167,7 @@ extern MyFrame          *gFrame;
 extern StatWin          *stats;
 
 //    AIS Global configuration
-extern bool             g_bShowAIS; //pjotrc 2010.02.09
+extern bool             g_bShowAIS;
 extern bool             g_bCPAMax;
 extern double           g_CPAMax_NM;
 extern bool             g_bCPAWarn;
@@ -4254,6 +4254,22 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     << _T("\n") << wxString::Format( wxString( "%03d°  ", wxConvUTF8 ), (int) brg )
                     << FormatDistanceAdaptive( dist );
 
+                    // Compute and display cumulative distance from route start point to current
+                    // leg end point.
+
+                    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst()->GetNext();
+                    RoutePoint *prp;
+                    float dist_to_endleg = 0;
+                    wxString t;
+
+                    while( node ) {
+                        prp = node->GetData();
+                        dist_to_endleg += prp->m_seg_len;
+                        if( prp->IsSame( segShow_point_a ) ) break;
+                        node = node->GetNext();
+                    }
+                    s << _T(" (+") << FormatDistanceAdaptive( dist_to_endleg ) << _T(")");
+
                     m_pRolloverWin->SetString( s );
 
                     wxSize win_size = GetSize();
@@ -5825,7 +5841,7 @@ void ChartCanvas::AISDraw( ocpnDC& dc )
 
 // Toggling AIS display on and off
 
-    if( !g_bShowAIS )                   // pjotrc 2010.02.09
+    if( !g_bShowAIS )
         return;//
 
     //      Iterate over the AIS Target Hashmap
@@ -5871,13 +5887,6 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
     //      Target data position must have been valid once
     if( !td->b_positionOnceValid ) return;
-
-    //      Target data speed must be valid
-    //      unless the target is moored, anchored, or "not under command"
-//  Removed for 2.4.523+
-//  So as to render targets with unavailable SOG/COG, but with position known.
-//            if((td->SOG > 102.2) && (td->NavStatus != AT_ANCHOR) && (td->NavStatus != MOORED) && (td->NavStatus != NOT_UNDER_COMMAND))
-//                  return;
 
     // And we never draw ownship
     if( td->b_OwnShip ) return;
@@ -5951,7 +5960,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( !g_bskew_comp && !g_bCourseUp ) theta += GetVP().skew;
 
         //  Draw the icon rotated to the COG
-        wxPoint ais_quad_icon[4];   // pjotrc 2010.01.31
+        wxPoint ais_quad_icon[4];
         ais_quad_icon[0].x = -8;
         ais_quad_icon[0].y = -6;
         ais_quad_icon[1].x = 0;
@@ -5992,8 +6001,8 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             }
         }
 
-        //   If this is an AIS Class B target, so symbolize it differently // pjotrc 2010.01.31
-        if( td->Class == AIS_CLASS_B ) ais_quad_icon[3].y = 0;               // pjotrc 2010.01.31
+        //   If this is an AIS Class B target, so symbolize it differently
+        if( td->Class == AIS_CLASS_B ) ais_quad_icon[3].y = 0;
         if( td->Class == AIS_GPSG_BUDDY ) {
             ais_quad_icon[0].x = -5;
             ais_quad_icon[0].y = -12;
@@ -6011,7 +6020,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             ais_quad_icon[3].y = -8;
         }
 
-        for( int i = 0; i < 4; i++ )                                           // pjotrc 2010.01.31
+        for( int i = 0; i < 4; i++ )
         {
             double px = ( (double) ais_quad_icon[i].x ) * sin( theta )
                         + ( (double) ais_quad_icon[i].y ) * cos( theta );
@@ -6045,8 +6054,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
-//    Check for alarms here, maintained by AIS class timer tick
-//TR original code:           if( ( td->n_alarm_state == AIS_ALARM_SET ) && ( td->bCPA_Valid ) ) {
+        //    Check for alarms here, maintained by AIS class timer tick
         if( ((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) { //TR 2012.06.28: Show AIS-CPA;  show CPA when b_show_AIS_CPA is true
             //  Calculate the point of CPA for target
             double tcpa_lat, tcpa_lon;
@@ -6203,11 +6211,10 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         //        Actually Draw the target
 
-        if( td->Class == AIS_ATON ) {                   // Aid to Navigation    // pjotrc 2010.02.01
+        if( td->Class == AIS_ATON ) {                   // Aid to Navigation
             wxPen aton_pen;
-            if( ( td->NavStatus == ATON_VIRTUAL_OFFPOSITION )
-                    || ( td->NavStatus == ATON_REAL_OFFPOSITION ) ) aton_pen = wxPen(
-                                    GetGlobalColor( _T ( "URED" ) ), 2 );
+            if( ( td->NavStatus == ATON_VIRTUAL_OFFPOSITION ) || ( td->NavStatus == ATON_REAL_OFFPOSITION ) )
+                aton_pen = wxPen( GetGlobalColor( _T ( "URED" ) ), 2 );
             else
                 aton_pen = wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 );
 
@@ -6262,11 +6269,57 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 dc.StrokePolygon( 4, ais_real_size, TargetPoint.x, TargetPoint.y );
             }
 
-            //        If this is a moored/anchored target, so symbolize it
-            if( ( ( td->NavStatus == MOORED ) || ( td->NavStatus == AT_ANCHOR ) ) /*&&(target_sog < g_ShowMoored_Kts)*/) // pjotrc 2010.01.31
-            {
-                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ) ) );
-                dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 5 );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "SHIPS" ) ) ) );
+            switch( td->NavStatus ) {
+                case MOORED:
+                case AT_ANCHOR: {
+                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
+                    break;
+                }
+                case RESTRICTED_MANOEUVRABILITY: {
+                    wxPoint diamond[4];
+                    diamond[0] = wxPoint(  4, 0 );
+                    diamond[1] = wxPoint(  0, -6 );
+                    diamond[2] = wxPoint( -4, 0 );
+                    diamond[3] = wxPoint(  0, 6 );
+                    dc.StrokePolygon( 4, diamond, TargetPoint.x, TargetPoint.y-11 );
+                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
+                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y-22, 4 );
+                    break;
+                   break;
+                }
+                case CONSTRAINED_BY_DRAFT: {
+                    wxPoint can[4];
+                    can[0] = wxPoint( -3, 0 );
+                    can[1] = wxPoint(  3, 0 );
+                    can[2] = wxPoint(  3, -16 );
+                    can[3] = wxPoint( -3, -16 );
+                    dc.StrokePolygon( 4, can, TargetPoint.x, TargetPoint.y );
+                    break;
+                }
+                case NOT_UNDER_COMMAND: {
+                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
+                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y-9, 4 );
+                    break;
+                }
+                case FISHING: {
+                    wxPoint tri[3];
+                    tri[0] = wxPoint( -4, 0 );
+                    tri[1] = wxPoint(  4, 0 );
+                    tri[2] = wxPoint(  0, -9 );
+                    dc.StrokePolygon( 3, tri, TargetPoint.x, TargetPoint.y );
+                    tri[0] = wxPoint(  0, -9 );
+                    tri[1] = wxPoint(  4, -18 );
+                    tri[2] = wxPoint( -4, -18 );
+                    dc.StrokePolygon( 3, tri, TargetPoint.x, TargetPoint.y );
+                    break;
+                }
+                case AGROUND: {
+                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
+                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y-9, 4 );
+                    dc.StrokeCircle( TargetPoint.x, TargetPoint.y-18, 4 );
+                    break;
+                }
             }
 
             //        Draw the inactive cross-out line
@@ -6392,7 +6445,7 @@ void ChartCanvas::JaggyCircle( ocpnDC &dc, wxPen pen, int x, int y, int radius )
     dc.SetPen( pen_save );
 }
 
-void ChartCanvas::TargetFrame( ocpnDC &dc, wxPen pen, int x, int y, int radius ) // pjotrc 2010.02.01
+void ChartCanvas::TargetFrame( ocpnDC &dc, wxPen pen, int x, int y, int radius )
 {
     //    Constants?
     int gap2 = 2 * radius / 6;
@@ -6413,7 +6466,7 @@ void ChartCanvas::TargetFrame( ocpnDC &dc, wxPen pen, int x, int y, int radius )
     dc.SetPen( pen_save );
 }
 
-void ChartCanvas::AtoN_Diamond( ocpnDC &dc, wxPen pen, int x, int y, int radius, bool b_virtual ) // pjotrc 2010.02.01
+void ChartCanvas::AtoN_Diamond( ocpnDC &dc, wxPen pen, int x, int y, int radius, bool b_virtual )
 {
     //    Constants?
     int gap2 = 2 * radius / 8;
@@ -6499,9 +6552,9 @@ void ChartCanvas::SART_Render( ocpnDC &dc, wxPen pen, int x, int y, int radius )
     dc.SetPen( pen_save );
 }
 
-void ChartCanvas::AlertDraw( ocpnDC& dc )                     // pjotrc  2010.02.22
+void ChartCanvas::AlertDraw( ocpnDC& dc )
 {
-// Just for prototyping, visual alert for anchorwatch goes here          2010.02.17 pjotrc
+// Just for prototyping, visual alert for anchorwatch goes here
     bool play_sound = false;
     if( pAnchorWatchPoint1 && AnchorAlertOn1 ) {
         if( AnchorAlertOn1 ) {
@@ -6592,7 +6645,7 @@ void ChartCanvas::UpdateShips()
 
 }
 
-void ChartCanvas::UpdateAlerts()    // pjotrc 2010.02.22
+void ChartCanvas::UpdateAlerts()
 {
     //  Get the rectangle in the current dc which bounds the detected Alert targets
 
@@ -8819,7 +8872,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         ShowMarkPropertiesDialog( m_pFoundRoutePoint );
         break;
 
-    case ID_WP_MENU_CLEAR_ANCHORWATCH:             // pjotrc 2010.02.15
+    case ID_WP_MENU_CLEAR_ANCHORWATCH:
         if( pAnchorWatchPoint1 == m_pFoundRoutePoint ) {
             pAnchorWatchPoint1 = NULL;
             g_AW1GUID.Clear();
@@ -8829,7 +8882,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
         break;
 
-    case ID_WP_MENU_SET_ANCHORWATCH:              // pjotrc 2010.02.15
+    case ID_WP_MENU_SET_ANCHORWATCH:
         if( pAnchorWatchPoint1 == NULL ) {
             pAnchorWatchPoint1 = m_pFoundRoutePoint;
             g_AW1GUID = pAnchorWatchPoint1->m_GUID;
@@ -8851,7 +8904,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
         break;
 
-    case ID_WP_MENU_ADDITIONAL_INFO:             // toh, 2009.02.08
+    case ID_WP_MENU_ADDITIONAL_INFO:
         if( NULL == pMarkInfoDialog )    // There is one global instance of the MarkInfo Dialog
             pMarkInfoDialog = new MarkInfoImpl( this );
 
@@ -9125,7 +9178,6 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             }
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
-
         }
 
         break;
@@ -10915,7 +10967,7 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxR
         node = node->GetNext();
     }
 
-    // draw anchor watch rings, if activated                          // pjotrc 2010.02.22
+    // draw anchor watch rings, if activated
 
     if( pAnchorWatchPoint1 || pAnchorWatchPoint2 ) {
         wxPoint r1, r2;

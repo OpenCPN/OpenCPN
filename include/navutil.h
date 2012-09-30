@@ -216,6 +216,7 @@ public:
       void UpdateSegmentDistances(double planspeed = -1.0);
       void CalculateDCRect(wxDC& dc_route, wxRect *prect, ViewPort &VP);
       int GetnPoints(void){ return m_nPoints; }
+      void SetnPoints(void){ m_nPoints = pRoutePointList->GetCount(); }
       void Reverse(bool bRenamePoints = false);
       void RebuildGUIDList(void);
       void RenameRoutePoints();
@@ -310,6 +311,9 @@ class Track : public wxEvtHandler, public Route
             void Draw(ocpnDC& dc, ViewPort &VP);
 
             Route *RouteFromTrack(wxProgressDialog *pprog);
+
+            void DouglasPeuckerReducer( std::vector<RoutePoint*>& list, int from, int to, double delta );
+            int Simplify( double maxDelta );
             double GetXTE(RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to);
 
       private:
