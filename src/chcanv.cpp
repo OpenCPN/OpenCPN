@@ -8020,9 +8020,10 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     contextMenu->AppendSeparator();
     wxMenuItem* subItemPosition = contextMenu->AppendSubMenu( subMenuPosition, _("Chart Position") );
     wxMenuItem* subItemWaypoint = contextMenu->AppendSubMenu( subMenuWaypoint, _("Waypoint") );
+    int n_wp_index = contextMenu->GetMenuItemCount() + 1;
     wxMenuItem* subItemRoute = contextMenu->AppendSubMenu( subMenuRoute, _("Route") );
+    int n_route_index = contextMenu->GetMenuItemCount() + 1;
     wxMenuItem* subItemTrack = contextMenu->AppendSubMenu( subMenuTrack, _("Track") );
-    wxMenuItem* subItemAIS = contextMenu->AppendSubMenu( subMenuAIS, _("AIS") );
     wxMenuItem* subItemChart = contextMenu->AppendSubMenu( subMenuChart, _("Chart Groups") );
     contextMenu->AppendSeparator();
 
@@ -8064,25 +8065,32 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
         subMenuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
-        if( m_pSelectedRoute ) {
-
-            if( m_pSelectedRoute->IsActive() ) {
-                int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
-                if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
-                    subMenuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
-                }
-
-                subMenuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
-            }
-            else {
-                subMenuRoute->Append( ID_RT_MENU_ACTIVATE, _( "Activate" ) );
-            }
-        }
-        subMenuRoute->Append( ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
-        subMenuRoute->Append( ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
         subMenuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
         subMenuRoute->Append( ID_RT_MENU_DELETE, _( "Delete" ) );
         subMenuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse" ) );
+        
+        int n_items = n_route_index;
+        
+        if( m_pSelectedRoute ) {
+
+            if( m_pSelectedRoute->IsActive() ) {
+                contextMenu->Insert( n_items, ID_RT_MENU_DEACTIVATE, _( "    ->Deactivate" ) );
+                n_items++;
+                
+                int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
+                if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
+                    contextMenu->Insert( n_items, ID_RT_MENU_ACTNXTPOINT, _( "    ->Activate Next Waypoint" ) );
+                    n_items++;
+                }
+            }
+            else {
+                contextMenu->Insert( n_items, ID_RT_MENU_ACTIVATE, _( "    ->Activate" ) );
+                n_items++;
+            }
+        }
+        contextMenu->Insert( n_items, ID_RT_MENU_INSERT, _( "    ->Insert Waypoint" ) );
+        contextMenu->Insert( n_items+1, ID_RT_MENU_APPEND, _( "    ->Append Waypoint" ) );
+        
     }
 
     if( seltype == SELTYPE_ROUTECREATE ) {
@@ -8099,7 +8107,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( seltype & SELTYPE_ROUTEPOINT ) {
         subMenuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
         if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
-            subMenuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
+            contextMenu->Insert( n_wp_index, ID_RT_MENU_ACTPOINT, _( "    ->Activate Waypoint" ) );
         }
         subMenuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
         subMenuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
@@ -8202,17 +8210,18 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     }
 
     if( g_pAIS ) {
+        contextMenu->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
+        
         if( seltype & SELTYPE_AISTARGET ) {
-            subMenuAIS->Append( ID_DEF_MENU_AIS_QUERY, _( "AIS Target Query..." ) );
+            contextMenu->Append( ID_DEF_MENU_AIS_QUERY, _( "AIS Target Query..." ) );
             AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
             if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alarm_state != AIS_ALARM_SET) ) {
                 if( myptarget->b_show_AIS_CPA )
-                    subMenuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Hide AIS Target CPA" ) );
+                    contextMenu->Append( ID_DEF_MENU_AIS_CPA, _( "Hide AIS Target CPA" ) );
                 else
-                    subMenuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Show AIS Target CPA" ) );
+                    contextMenu->Append( ID_DEF_MENU_AIS_CPA, _( "Show AIS Target CPA" ) );
             }
         }
-        subMenuAIS->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
     }
 
     bool cm93IsAvailable = ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) );
@@ -8290,7 +8299,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( ! subMenuWaypoint->GetMenuItemCount() ) contextMenu->Destroy( subItemWaypoint );
     if( ! subMenuRoute->GetMenuItemCount() ) contextMenu->Destroy( subItemRoute );
     if( ! subMenuTrack->GetMenuItemCount() ) contextMenu->Destroy( subItemTrack );
-    if( ! subMenuAIS->GetMenuItemCount() ) contextMenu->Destroy( subItemAIS );
+ //   if( ! subMenuAIS->GetMenuItemCount() ) contextMenu->Destroy( subItemAIS );
     if( ! subMenuChart->GetMenuItemCount() ) contextMenu->Destroy( subItemChart );
 
     //        Invoke the drop-down menu
