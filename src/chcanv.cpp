@@ -7131,7 +7131,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     //  by clicking on the chart surface.
     //  We need to avoid an unintentional pan by eating some clicks...
 #ifdef __WXMSW__
-    if( event.IsButton() || event.Dragging() ) {
+    if( event.LeftDown() || event.LeftUp() || event.Dragging() ) {
         if( g_click_stop > 0 ) {
             g_click_stop--;
             return;
@@ -8091,21 +8091,12 @@ wxString _menuText( wxString name, wxString shortcut ) {
 void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 {
     wxMenu* contextMenu = new wxMenu;
-    wxMenu* subMenuPosition = new wxMenu;
-    wxMenu* subMenuWaypoint = new wxMenu;
-    wxMenu* subMenuRoute = new wxMenu;
-    wxMenu* subMenuTrack = new wxMenu;
-    wxMenu* subMenuAIS = new wxMenu;
-    wxMenu *subMenuChart = new wxMenu;
+    wxMenu* menuWaypoint = new wxMenu( _("Waypoint") );
+    wxMenu* menuRoute = new wxMenu( _("Route") );
+    wxMenu* menuTrack = new wxMenu( _("Track") );
 
-    contextMenu->AppendSeparator();
-    wxMenuItem* subItemPosition = contextMenu->AppendSubMenu( subMenuPosition, _("Chart Position") );
-    wxMenuItem* subItemWaypoint = contextMenu->AppendSubMenu( subMenuWaypoint, _("Waypoint") );
-    wxMenuItem* subItemRoute = contextMenu->AppendSubMenu( subMenuRoute, _("Route") );
-    wxMenuItem* subItemTrack = contextMenu->AppendSubMenu( subMenuTrack, _("Track") );
-    wxMenuItem* subItemAIS = contextMenu->AppendSubMenu( subMenuAIS, _("AIS") );
+    wxMenu *subMenuChart = new wxMenu;
     wxMenuItem* subItemChart = contextMenu->AppendSubMenu( subMenuChart, _("Chart Groups") );
-    contextMenu->AppendSeparator();
 
     popx = x;
     popy = y;
@@ -8124,6 +8115,17 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 #endif
 #endif
 
+    if( seltype == SELTYPE_ROUTECREATE ) {
+        contextMenu->Append( ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
+    }
+
+    if( ! m_pMouseRoute ) {
+        if( m_bMeasure_Active )
+            contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE, _menuText( _("Measure Off"), _T("Esc") ) );
+        else
+            contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
+    }
+
     if( undo->AnythingToUndo() ) {
         wxString undoItem;
         undoItem << _("Undo") << _T(" ") << undo->GetNextUndoableAction()->Description();
@@ -8136,121 +8138,68 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         contextMenu->Prepend( ID_REDO, _menuText( redoItem, _T("Ctrl-Y") ) );
     }
 
-    if( ! m_pMouseRoute ) {
-        if( m_bMeasure_Active )
-            contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE, _menuText( _("Measure Off"), _T("Esc") ) );
-        else
-            contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
-    }
-
-    if( seltype & SELTYPE_ROUTESEGMENT ) {
-        subMenuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
-        if( m_pSelectedRoute ) {
-
-            if( m_pSelectedRoute->IsActive() ) {
-                int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
-                if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
-                    subMenuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
-                }
-
-                subMenuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
-            }
-            else {
-                subMenuRoute->Append( ID_RT_MENU_ACTIVATE, _( "Activate" ) );
-            }
-        }
-        subMenuRoute->Append( ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
-        subMenuRoute->Append( ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
-        subMenuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
-        subMenuRoute->Append( ID_RT_MENU_DELETE, _( "Delete" ) );
-        subMenuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse" ) );
-    }
-
-    if( seltype == SELTYPE_ROUTECREATE ) {
-        contextMenu->Append( ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
-    }
-
-    if( seltype & SELTYPE_TRACKSEGMENT ) {
-        if( seltype & SELTYPE_ROUTESEGMENT ) subMenuRoute->AppendSeparator();
-        subMenuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
-        subMenuTrack->Append( ID_TK_MENU_COPY, _( "Copy" ) );
-        subMenuTrack->Append( ID_TK_MENU_DELETE, _( "Delete" ) );
-    }
-
-    if( seltype & SELTYPE_ROUTEPOINT ) {
-        subMenuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
-        if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
-            subMenuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
-        }
-        subMenuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
-        subMenuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
-        if( m_pFoundRoutePoint->m_IconName != _T("mob") )
-            subMenuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
-
-        if( bGPSValid ) subMenuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
-    }
-
-    if( seltype & SELTYPE_MARKPOINT ) {
-        subMenuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
-
-        if( !g_pRouteMan->GetpActiveRoute() )
-            subMenuWaypoint->Append( ID_WP_MENU_GOTO, _( "Navigate To This" ) );
-
-        subMenuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
-
-        if( m_pFoundRoutePoint->m_IconName != _T("mob") )
-            subMenuWaypoint->Append( ID_WP_MENU_DELPOINT, _( "Delete" ) );
-
-        if( bGPSValid ) subMenuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
-
-        if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 )
-                || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
-            subMenuWaypoint->Append( ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
-        else
-
-            if( !( m_pFoundRoutePoint->m_bIsInLayer )
-                    && ( ( NULL == pAnchorWatchPoint1 ) || ( NULL == pAnchorWatchPoint2 ) ) ) {
-
-                double dist;
-                double brg;
-                DistanceBearingMercator( m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, gLat,
-                                         gLon, &brg, &dist );
-                if( dist * 1852. <= g_nAWMax )
-                    subMenuWaypoint->Append( ID_WP_MENU_SET_ANCHORWATCH,  _( "Set Anchor Watch" ) );
-            }
-    }
-
     if( !VPoint.b_quilt ) {
         if( parent_frame->GetnChartStack() > 1 ) {
-            subMenuPosition->Append( ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
-            subMenuPosition->Append( ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
-            subMenuPosition->Append( ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
+            contextMenu->Append( ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
+            contextMenu->Append( ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
+            contextMenu->Append( ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
         }
 
         if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
-            subMenuPosition->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
+            contextMenu->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         }
 
     } else {
         ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
         if( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
-            subMenuPosition->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
+            contextMenu->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         } else {
             if( parent_frame->GetnChartStack() > 1 ) {
-                subMenuPosition->Append( ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
-                subMenuPosition->Append( ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
+                contextMenu->Append( ID_DEF_MENU_SCALE_IN, _menuText( _( "Scale In" ), _T("F7") ) );
+                contextMenu->Append( ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
             }
         }
     }
 
-    subMenuPosition->Append( ID_DEF_MENU_DROP_WP, _menuText( _( "Drop Mark" ), _T("Ctrl-M") ) );
+    contextMenu->Append( ID_DEF_MENU_DROP_WP, _menuText( _( "Drop Mark" ), _T("Ctrl-M") ) );
 
-    if( !bGPSValid ) subMenuPosition->Append( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat To" ) );
+    if( !bGPSValid ) contextMenu->Append( ID_DEF_MENU_MOVE_BOAT_HERE, _( "Move Boat Here" ) );
 
     if( !( g_pRouteMan->GetpActiveRoute() || ( seltype & SELTYPE_MARKPOINT ) ) )
-        subMenuPosition->Append( ID_DEF_MENU_GOTO_HERE, _( "Navigate To" ) );
+        contextMenu->Append( ID_DEF_MENU_GOTO_HERE, _( "Navigate To Here" ) );
 
-    subMenuPosition->Append( ID_DEF_MENU_GOTOPOSITION, _("Center View...") );
+    contextMenu->Append( ID_DEF_MENU_GOTOPOSITION, _("Center View...") );
+
+    if( !g_bCourseUp ) contextMenu->Append( ID_DEF_MENU_COGUP, _("Course Up Mode") );
+    else {
+        if( !VPoint.b_quilt && Current_Ch && ( fabs( Current_Ch->GetChartSkew() ) > .01 )
+                && !g_bskew_comp ) contextMenu->Append( ID_DEF_MENU_NORTHUP, _("Chart Up Mode") );
+        else
+            contextMenu->Append( ID_DEF_MENU_NORTHUP, _("North Up Mode") );
+    }
+
+    if( g_pAIS ) {
+        if( seltype & SELTYPE_AISTARGET ) {
+            contextMenu->Append( ID_DEF_MENU_AIS_QUERY, _( "AIS Target Query..." ) );
+            AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
+            if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alarm_state != AIS_ALARM_SET) ) {
+                if( myptarget->b_show_AIS_CPA )
+                    contextMenu->Append( ID_DEF_MENU_AIS_CPA, _( "Hide AIS Target CPA" ) );
+                else
+                    contextMenu->Append( ID_DEF_MENU_AIS_CPA, _( "Show AIS Target CPA" ) );
+            }
+        }
+        contextMenu->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
+    }
+
+    bool cm93IsAvailable = ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) );
+    if( VPoint.b_quilt ) {
+        ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
+        if( pChartTest ) {
+            if( pChartTest->GetChartType() == CHART_TYPE_CM93 ) cm93IsAvailable = true;
+            if( pChartTest->GetChartType() == CHART_TYPE_CM93COMP ) cm93IsAvailable = true;
+        }
+    }
 
     Kml* kml = new Kml;
     int pasteBuffer = kml->ParsePasteBuffer();
@@ -8274,40 +8223,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 break;
             }
         }
-        contextMenu->AppendSeparator();
     }
     delete kml;
-
-    if( !g_bCourseUp ) contextMenu->Append( ID_DEF_MENU_COGUP, _("Course Up Mode") );
-    else {
-        if( !VPoint.b_quilt && Current_Ch && ( fabs( Current_Ch->GetChartSkew() ) > .01 )
-                && !g_bskew_comp ) contextMenu->Append( ID_DEF_MENU_NORTHUP, _("Chart Up Mode") );
-        else
-            contextMenu->Append( ID_DEF_MENU_NORTHUP, _("North Up Mode") );
-    }
-
-    if( g_pAIS ) {
-        if( seltype & SELTYPE_AISTARGET ) {
-            subMenuAIS->Append( ID_DEF_MENU_AIS_QUERY, _( "AIS Target Query..." ) );
-            AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
-            if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alarm_state != AIS_ALARM_SET) ) {
-                if( myptarget->b_show_AIS_CPA )
-                    subMenuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Hide AIS Target CPA" ) );
-                else
-                    subMenuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Show AIS Target CPA" ) );
-            }
-        }
-        subMenuAIS->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
-    }
-
-    bool cm93IsAvailable = ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) );
-    if( VPoint.b_quilt ) {
-        ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
-        if( pChartTest ) {
-            if( pChartTest->GetChartType() == CHART_TYPE_CM93 ) cm93IsAvailable = true;
-            if( pChartTest->GetChartType() == CHART_TYPE_CM93COMP ) cm93IsAvailable = true;
-        }
-    }
 
     if( cm93IsAvailable ) {
         contextMenu->AppendCheckItem( ID_DEF_MENU_CM93ZOOM, _("CM93 Detail Slider...") );
@@ -8323,7 +8240,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( ( VPoint.b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
         int dbIndex = m_pQuilt->GetChartdbIndexAtPix( wxPoint( popx, popy ) );
         if( dbIndex != -1 )
-            contextMenu->Append( ID_DEF_MENU_QUILTREMOVE, _( "Remove this chart from quilt" ) );
+            contextMenu->Append( ID_DEF_MENU_QUILTREMOVE, _( "Hide this chart" ) );
     }
 
     if( seltype & SELTYPE_TIDEPOINT ) contextMenu->Append( ID_DEF_MENU_TIDEINFO,
@@ -8334,8 +8251,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
 #ifdef __WXMSW__
     //  If we dismiss the context menu without action, we need to discard some mouse events....
-    //  Eat the next 3 button events, which happen as down-down-up on MSW XP
-    g_click_stop = 3;
+    //  Eat the next 2 button events, which happen as down-up on MSW XP
+    g_click_stop = 2;
 #endif
 
     //  ChartGroup SubMenu
@@ -8371,17 +8288,105 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         }
     }
 
-    if( ! subMenuPosition->GetMenuItemCount() ) contextMenu->Destroy( subItemPosition );
-    if( ! subMenuWaypoint->GetMenuItemCount() ) contextMenu->Destroy( subItemWaypoint );
-    if( ! subMenuRoute->GetMenuItemCount() ) contextMenu->Destroy( subItemRoute );
-    if( ! subMenuTrack->GetMenuItemCount() ) contextMenu->Destroy( subItemTrack );
-    if( ! subMenuAIS->GetMenuItemCount() ) contextMenu->Destroy( subItemAIS );
+    if( seltype & SELTYPE_ROUTESEGMENT ) {
+        menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
+        if( m_pSelectedRoute ) {
+
+            if( m_pSelectedRoute->IsActive() ) {
+                int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
+                if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
+                    menuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
+                }
+
+                menuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
+            }
+            else {
+                menuRoute->Append( ID_RT_MENU_ACTIVATE, _( "Activate" ) );
+            }
+        }
+        menuRoute->Append( ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
+        menuRoute->Append( ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
+        menuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
+        menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
+        menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+    }
+
+    if( seltype & SELTYPE_TRACKSEGMENT ) {
+        menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
+        menuTrack->Append( ID_TK_MENU_COPY, _( "Copy" ) );
+        menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
+    }
+
+    if( seltype & SELTYPE_ROUTEPOINT ) {
+        menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+        if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
+            menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
+        }
+        menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
+        menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
+        if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+            menuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
+
+        if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+    }
+
+    if( seltype & SELTYPE_MARKPOINT ) {
+        menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+
+        if( !g_pRouteMan->GetpActiveRoute() )
+            menuWaypoint->Append( ID_WP_MENU_GOTO, _( "Navigate To This" ) );
+
+        menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
+
+        if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+            menuWaypoint->Append( ID_WP_MENU_DELPOINT, _( "Delete" ) );
+
+        if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+
+        if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 )
+                || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
+            menuWaypoint->Append( ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
+        else
+
+            if( !( m_pFoundRoutePoint->m_bIsInLayer )
+                    && ( ( NULL == pAnchorWatchPoint1 ) || ( NULL == pAnchorWatchPoint2 ) ) ) {
+
+                double dist;
+                double brg;
+                DistanceBearingMercator( m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, gLat,
+                                         gLon, &brg, &dist );
+                if( dist * 1852. <= g_nAWMax )
+                    menuWaypoint->Append( ID_WP_MENU_SET_ANCHORWATCH,  _( "Set Anchor Watch" ) );
+            }
+    }
+
     if( ! subMenuChart->GetMenuItemCount() ) contextMenu->Destroy( subItemChart );
 
     //        Invoke the drop-down menu
+    if( seltype & SELTYPE_MARKPOINT ) {
+        DoCanvasPopupMenu( x, y, menuWaypoint );
+        goto done;
+    }
+
+    if( seltype & SELTYPE_ROUTEPOINT ) {
+        DoCanvasPopupMenu( x, y, menuWaypoint );
+        goto done;
+    }
+
+    if( seltype & SELTYPE_ROUTESEGMENT ) {
+        DoCanvasPopupMenu( x, y, menuRoute );
+        goto done;
+    }
+
+    if( seltype & SELTYPE_TRACKSEGMENT ) {
+        DoCanvasPopupMenu( x, y, menuTrack );
+        goto done;
+    }
+
     DoCanvasPopupMenu( x, y, contextMenu );
 
     // Cleanup
+    done:
     if( ( m_pSelectedRoute ) ) {
         m_pSelectedRoute->m_bRtIsSelected = false;
     }
@@ -9053,33 +9058,39 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
             pRoutePropDialog->UpdateProperties();
         }
-
         break;
-
     }
-    case ID_RT_MENU_DELETE:
-        if( g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute ) g_pRouteMan->DeactivateRoute();
 
-        if( m_pSelectedRoute->m_bIsInLayer ) break;
+    case ID_RT_MENU_DELETE: {
+        OCPNMessageDialog track_delete_confirm_dlg( this,
+                _("Are you sure you want to delete this route?"),
+                _("OpenCPN Route Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
+        int dlg_return = track_delete_confirm_dlg.ShowModal();
 
-        pConfig->DeleteConfigRoute( m_pSelectedRoute );
-        g_pRouteMan->DeleteRoute( m_pSelectedRoute );
-        m_pSelectedRoute = NULL;
-        m_pFoundRoutePoint = NULL;
-        m_pFoundRoutePointSecond = NULL;
-        if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
-            pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
-            pRoutePropDialog->UpdateProperties();
+        if( dlg_return == wxID_YES ) {
+            if( g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute ) g_pRouteMan->DeactivateRoute();
+
+            if( m_pSelectedRoute->m_bIsInLayer ) break;
+
+            pConfig->DeleteConfigRoute( m_pSelectedRoute );
+            g_pRouteMan->DeleteRoute( m_pSelectedRoute );
+            m_pSelectedRoute = NULL;
+            m_pFoundRoutePoint = NULL;
+            m_pFoundRoutePointSecond = NULL;
+            if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
+                pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
+                pRoutePropDialog->UpdateProperties();
+            }
+
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateRouteListCtrl();
+
+            if( pMarkPropDialog && pMarkPropDialog->IsShown() ) {
+                pMarkPropDialog->ValidateMark();
+                pMarkPropDialog->UpdateProperties();
+            }
         }
-
-        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateRouteListCtrl();
-
-        if( pMarkPropDialog && pMarkPropDialog->IsShown() ) {
-            pMarkPropDialog->ValidateMark();
-            pMarkPropDialog->UpdateProperties();
-        }
-
         break;
+    }
 
     case ID_RT_MENU_ACTIVATE: {
         if( g_pRouteMan->GetpActiveRoute() ) g_pRouteMan->DeactivateRoute();
