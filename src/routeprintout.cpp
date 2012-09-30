@@ -150,16 +150,12 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut,
 
       if (toPrintOut[PRINT_WP_NAME])
       {
-// 	dc->DrawText(point->GetName(), marginX , marginY + 10*n ); 
 	string cell(point->GetName().fn_str());
 	table << cell;
       }
       if (toPrintOut[PRINT_WP_POSITION])
       {
-// 	dc->DrawText(_("POS"), marginX + 50, marginY + 10*n   ); 
 	wxString point_position = toSDMM( 1, point->m_lat, point->m_bIsInTrack ) + _T("\n") + toSDMM( 2, point->m_lon, point->m_bIsInTrack );
-// 	point_position.Printf(_T("%03.0f Deg. T \n %03.0f Deg. T"), point->GetLatitude(), point->GetLongitude());;
-
 	string cell(point_position.fn_str());
 	table << cell;
       }
@@ -180,7 +176,6 @@ MyRoutePrintout::MyRoutePrintout(std::vector<bool> _toPrintOut,
       }
       if (toPrintOut[PRINT_WP_DESCRIPTION])
       {
-// 	dc->DrawText(point->GetDescription(), marginX + 200, marginY + 10*n   );
 	string cell(point->GetDescription().fn_str());
 	table << cell;
       }
@@ -225,20 +220,6 @@ void MyRoutePrintout::DrawPage( wxDC *dc )
 {
 
 
-  
-    // Get the Size of the Chart Canvas
-//     int sx, sy;
-//     dc->GetClientSize( &sx, &sy );                       // of the canvas
-
-//     float maxX = sx;
-//     float maxY = sy;
-
-
-
-    // Add the margin to the graphic size
-//     maxX += ( 2 * marginX );
-//     maxY += ( 2 * marginY );
-
     // Get the size of the DC in pixels
     int w, h;
     dc->GetSize( &w, &h );
@@ -263,9 +244,7 @@ void MyRoutePrintout::DrawPage( wxDC *dc )
     // Set the scale and origin
     dc->SetUserScale( actualScale, actualScale );
     dc->SetDeviceOrigin( (long) posX, (long) posY );
-//     wxFont routePrintFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
-//     dc->SetFont(routePrintFont);
-    
+
         
     wxFont routePrintFont_bold(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD);
     dc->SetFont(routePrintFont_bold);
@@ -288,8 +267,7 @@ void MyRoutePrintout::DrawPage( wxDC *dc )
     dc->SetFont(routePrintFont_normal);    
     wxBrush brush( wxNullColour,  wxTRANSPARENT );
     dc->SetBrush(brush);
-//     dc->DrawRectangle(marginX, marginY, maxX-4*marginX, maxY-4*marginY);
-    
+   
     vector< vector < PrintCell > > & cells = table.GetContent();
     currentY = marginY + table.GetHeaderHeight();
     int currentHeight = 0;
@@ -544,32 +522,8 @@ void RoutePrintSelection::OnRoutepropOkClick( wxCommandEvent& event )
     if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(
 	    _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
 	    _T("OpenCPN"), wxOK );
-//        else
-//            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
     } 
 
-  
-/*
-    MyRoutePrintout * myrouteprintout1 = new MyRoutePrintout(toPrintOut, route,  _("Route Print"));
-    MyRoutePrintout * myrouteprintout2 = new MyRoutePrintout(toPrintOut, route,  _("Route Print"));
-    wxPrintPreview *preview = new wxPrintPreview(myrouteprintout1, myrouteprintout2);
-    
-    
-    
-    wxPreviewFrame *frame = new wxPreviewFrame(preview, this,
-                                               _T("Route Print Preview"),
-                                               wxPoint(100, 100),
-                                               wxSize(600, 650));
-    frame->Centre(wxBOTH);
-    frame->Initialize();
-    frame->Show(true);
- 
-    */
-    
-    
-    
-    
-//     cc1->Refresh( false );
     Hide();
     event.Skip();
 }
