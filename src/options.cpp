@@ -60,6 +60,7 @@
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
 
 extern MyFrame          *gFrame;
+extern ChartCanvas      *cc1;
 
 extern bool             g_bShowOutlines;
 extern bool             g_bShowDepthUnits;
@@ -2360,10 +2361,10 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     if( event.GetId() == ID_APPLY ) {
         gFrame->ProcessOptionsDialog( m_returnChanges, this );
+        cc1->ReloadVP();
     }
 
     k_charts = 0;
-
     ::wxEndBusyCursor();
 }
 
