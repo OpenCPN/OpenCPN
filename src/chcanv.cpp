@@ -7878,8 +7878,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             (RoutePoint *) pFindRouteSeg->m_pData1;
                     m_pFoundRoutePointSecond = (RoutePoint *) pFindRouteSeg->m_pData2;
 
-                    m_pSelectedRoute->m_bRtIsSelected = true;
-                    m_pSelectedRoute->Draw( dc, GetVP() );
+                    m_pSelectedRoute->m_bRtIsSelected = !(seltype && SELTYPE_ROUTEPOINT);
+                    if( m_pSelectedRoute->m_bRtIsSelected ) m_pSelectedRoute->Draw( dc, GetVP() );
                     seltype |= SELTYPE_ROUTESEGMENT;
                 }
 
