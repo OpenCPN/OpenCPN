@@ -4278,18 +4278,20 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     // Compute and display cumulative distance from route start point to current
                     // leg end point.
 
-                    wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst()->GetNext();
-                    RoutePoint *prp;
-                    float dist_to_endleg = 0;
-                    wxString t;
+                    if( segShow_point_a != pr->pRoutePointList->GetFirst()->GetData() ) {
+                        wxRoutePointListNode *node = (pr->pRoutePointList)->GetFirst()->GetNext();
+                        RoutePoint *prp;
+                        float dist_to_endleg = 0;
+                        wxString t;
 
-                    while( node ) {
-                        prp = node->GetData();
-                        dist_to_endleg += prp->m_seg_len;
-                        if( prp->IsSame( segShow_point_a ) ) break;
-                        node = node->GetNext();
+                        while( node ) {
+                            prp = node->GetData();
+                            dist_to_endleg += prp->m_seg_len;
+                            if( prp->IsSame( segShow_point_a ) ) break;
+                            node = node->GetNext();
+                        }
+                        s << _T(" (+") << FormatDistanceAdaptive( dist_to_endleg ) << _T(")");
                     }
-                    s << _T(" (+") << FormatDistanceAdaptive( dist_to_endleg ) << _T(")");
 
                     m_pRolloverWin->SetString( s );
 
