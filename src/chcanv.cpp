@@ -8042,7 +8042,6 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     wxMenu* menuAIS = new wxMenu( _("AIS") );
 
     wxMenu *subMenuChart = new wxMenu;
-    wxMenuItem* subItemChart = contextMenu->AppendSubMenu( subMenuChart, _("Chart Groups") );
 
     popx = x;
     popy = y;
@@ -8171,7 +8170,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( ( VPoint.b_quilt ) && ( pCurrentStack && pCurrentStack->b_valid ) ) {
         int dbIndex = m_pQuilt->GetChartdbIndexAtPix( wxPoint( popx, popy ) );
         if( dbIndex != -1 )
-            contextMenu->Append( ID_DEF_MENU_QUILTREMOVE, _( "Hide this chart" ) );
+            contextMenu->Append( ID_DEF_MENU_QUILTREMOVE, _( "Hide This Chart" ) );
     }
 
     if( seltype & SELTYPE_TIDEPOINT ) contextMenu->Append( ID_DEF_MENU_TIDEINFO,
@@ -8187,6 +8186,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 #endif
 
     //  ChartGroup SubMenu
+    wxMenuItem* subItemChart = contextMenu->AppendSubMenu( subMenuChart, _("Chart Groups") );
     if( g_pGroupArray->GetCount() ) {
         subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE, _("All Active Charts") );
 

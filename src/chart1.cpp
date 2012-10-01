@@ -5974,12 +5974,12 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     }
 
     if( b_is_in_noshow ) {
-        pctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Add this chart to quilt.") );
+        pctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Show This Chart") );
         Connect( ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                 wxCommandEventHandler(MyFrame::OnPianoMenuEnableChart) );
     } else
         if( pCurrentStack->nEntry > 1 ) {
-            pctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Remove this chart from quilt.") );
+            pctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Hide This Chart") );
             Connect( ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                     wxCommandEventHandler(MyFrame::OnPianoMenuDisableChart) );
         }
