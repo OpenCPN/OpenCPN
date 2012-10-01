@@ -352,6 +352,11 @@ void SelectItem::SetUserData( int data )
 Select::Select()
 {
     pSelectList = new SelectableItemList;
+    pixelRadius = 8;
+    int w,h;
+    wxDisplaySize( &w, &h );
+    if( h > 800 ) pixelRadius = 10;
+    if( h > 1024 ) pixelRadius = 12;
 }
 
 Select::~Select()
@@ -720,8 +725,7 @@ bool Select::DeleteAllSelectableTrackSegments( Route *pr )
     return true;
 }
 
-bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon,
-        float SelectRadius )
+bool Select::IsSegmentSelected( float a, float b, float c, float d, float slat, float slon )
 {
     double adder = 0.;
 
@@ -747,9 +751,9 @@ bool IsSegmentSelected( float a, float b, float c, float d, float slat, float sl
     }
 
 //    As a course test, use segment bounding box test
-    if( ( slat >= ( fmin ( a,b ) - SelectRadius ) ) && ( slat <= ( fmax ( a,b ) + SelectRadius ) )
-            && ( ( slon + adder ) >= ( fmin ( c,d ) - SelectRadius ) )
-            && ( ( slon + adder ) <= ( fmax ( c,d ) + SelectRadius ) ) ) {
+    if( ( slat >= ( fmin ( a,b ) - selectRadius ) ) && ( slat <= ( fmax ( a,b ) + selectRadius ) )
+            && ( ( slon + adder ) >= ( fmin ( c,d ) - selectRadius ) )
+            && ( ( slon + adder ) <= ( fmax ( c,d ) + selectRadius ) ) ) {
         //    Use vectors to do hit test....
         VECTOR2D va, vb, vn;
 
@@ -767,15 +771,21 @@ bool IsSegmentSelected( float a, float b, float c, float d, float slat, float sl
         vb.y = bp - ap;
 
         double delta = vGetLengthOfNormal( &va, &vb, &vn );
-        if( fabs( delta ) < ( SelectRadius * 1852 * 60 ) ) return true;
+        if( fabs( delta ) < ( selectRadius * 1852 * 60 ) ) return true;
     }
     return false;
 }
 
-SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float SelectRadius )
+void Select::CalcSelectRadius() {
+    selectRadius = pixelRadius / ( cc1->GetCanvasTrueScale() * 1852 * 60 );
+}
+
+SelectItem *Select::FindSelection( float slat, float slon, int fseltype )
 {
     float a, b, c, d;
     SelectItem *pFindSel;
+
+    CalcSelectRadius();
 
 //    Iterate on the list
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -791,8 +801,8 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float S
                     a = fabs( slat - pFindSel->m_slat );
                     b = fabs( slon - pFindSel->m_slon );
 
-                    if( ( fabs( slat - pFindSel->m_slat ) < SelectRadius )
-                            && ( fabs( slon - pFindSel->m_slon ) < SelectRadius ) ) goto find_ok;
+                    if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
+                            && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) goto find_ok;
                     break;
                 case SELTYPE_ROUTESEGMENT:
                 case SELTYPE_TRACKSEGMENT: {
@@ -801,7 +811,7 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float S
                     c = pFindSel->m_slon;
                     d = pFindSel->m_slon2;
 
-                    if( IsSegmentSelected( a, b, c, d, slat, slon, SelectRadius ) ) goto find_ok;
+                    if( IsSegmentSelected( a, b, c, d, slat, slon ) ) goto find_ok;
                     break;
                 }
                 default:
@@ -816,23 +826,25 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float S
     find_ok: return pFindSel;
 }
 
-bool Select::IsSelectableSegmentSelected( float slat, float slon, float SelectRadius,
-        SelectItem *pFindSel )
+bool Select::IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel )
 {
+    CalcSelectRadius();
+
     float a = pFindSel->m_slat;
     float b = pFindSel->m_slat2;
     float c = pFindSel->m_slon;
     float d = pFindSel->m_slon2;
 
-    return IsSegmentSelected( a, b, c, d, slat, slon, SelectRadius );
+    return IsSegmentSelected( a, b, c, d, slat, slon );
 }
 
-SelectableItemList Select::FindSelectionList( float slat, float slon, int fseltype,
-        float SelectRadius )
+SelectableItemList Select::FindSelectionList( float slat, float slon, int fseltype )
 {
     float a, b, c, d;
     SelectItem *pFindSel;
     SelectableItemList ret_list;
+
+    CalcSelectRadius();
 
 //    Iterate on the list
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -845,8 +857,8 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                 case SELTYPE_TIDEPOINT:
                 case SELTYPE_CURRENTPOINT:
                 case SELTYPE_AISTARGET:
-                    if( ( fabs( slat - pFindSel->m_slat ) < SelectRadius )
-                            && ( fabs( slon - pFindSel->m_slon ) < SelectRadius ) ) {
+                    if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
+                            && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) {
                         ret_list.Append( pFindSel );
                     }
                     break;
@@ -857,8 +869,7 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                     c = pFindSel->m_slon;
                     d = pFindSel->m_slon2;
 
-                    if( IsSegmentSelected( a, b, c, d, slat, slon, SelectRadius ) ) ret_list.Append(
-                            pFindSel );
+                    if( IsSegmentSelected( a, b, c, d, slat, slon ) ) ret_list.Append( pFindSel );
 
                     break;
                 }

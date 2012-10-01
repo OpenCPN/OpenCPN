@@ -4231,15 +4231,11 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
     // Show the route segment info
     bool showRollover = false;
 
-    float SelectRadius;
-    int sel_rad_pix = 8;
-    SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
-
     if( NULL == m_pRolloverRouteSeg ) {
         //    Get a list of all selectable sgements, and search for the first visible segment as the rollover target.
 
         SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
-                                     SELTYPE_ROUTESEGMENT, SelectRadius );
+                                     SELTYPE_ROUTESEGMENT );
         wxSelectableItemListNode *node = SelList.GetFirst();
         while( node ) {
             SelectItem *pFindSel = node->GetData();
@@ -4311,7 +4307,7 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
         }
     } else {
         //    Is the cursor still in select radius?
-        if( !pSelect->IsSelectableSegmentSelected( m_cursor_lat, m_cursor_lon, SelectRadius,
+        if( !pSelect->IsSelectableSegmentSelected( m_cursor_lat, m_cursor_lon,
                 m_pRolloverRouteSeg ) ) showRollover = false;
         else
             showRollover = true;
@@ -6964,7 +6960,7 @@ void ChartCanvas::FindRoutePointsAtCursor( float selectRadius, bool setBeingEdit
 
     SelectItem *pFind = NULL;
     SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
-                                 SELTYPE_ROUTEPOINT, selectRadius );
+                                 SELTYPE_ROUTEPOINT );
     wxSelectableItemListNode *node = SelList.GetFirst();
     while( node ) {
         pFind = node->GetData();
@@ -7057,10 +7053,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         double zlat, zlon;
         GetCanvasPixPoint( x, y, zlat, zlon );
 
-        float SelectRadius = 8 / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
-
         SelectItem *pFindAIS;
-        pFindAIS = pSelectAIS->FindSelection( zlat, zlon, SELTYPE_AISTARGET, SelectRadius );
+        pFindAIS = pSelectAIS->FindSelection( zlat, zlon, SELTYPE_AISTARGET );
 
         if( pFindAIS ) {
             m_FoundAIS_MMSI = pFindAIS->GetUserData();
@@ -7077,7 +7071,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }
 
         SelectItem* cursorItem;
-        cursorItem = pSelect->FindSelection( zlat, zlon, SELTYPE_ROUTESEGMENT, SelectRadius );
+        cursorItem = pSelect->FindSelection( zlat, zlon, SELTYPE_ROUTESEGMENT );
 
         if( cursorItem ) {
             Route *pr = (Route *) cursorItem->m_pData3;
@@ -7087,7 +7081,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             }
         }
 
-        cursorItem = pSelect->FindSelection( zlat, zlon, SELTYPE_TRACKSEGMENT, SelectRadius );
+        cursorItem = pSelect->FindSelection( zlat, zlon, SELTYPE_TRACKSEGMENT );
 
         if( cursorItem ) {
             Route *pr = (Route *) cursorItem->m_pData3;
@@ -7269,7 +7263,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 //    AIS Target Rollover
     if( g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS ) {
         SelectItem *pFind = pSelectAIS->FindSelection( m_cursor_lat, m_cursor_lon,
-                            SELTYPE_AISTARGET, SelectRadius );
+                            SELTYPE_AISTARGET );
         if( pFind ) {
             int FoundAIS_MMSI = (long) pFind->m_pData1; // cast to long avoids problems with 64bit compilers
             AIS_Target_Data *ptarget = g_pAIS->Get_Target_Data_From_MMSI( FoundAIS_MMSI );
@@ -7765,17 +7759,15 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             }
 
             //      Get all the selectable things at the cursor
-            pFindAIS = pSelectAIS->FindSelection( slat, slon, SELTYPE_AISTARGET, SelectRadius );
-            pFindRP = pSelect->FindSelection( slat, slon, SELTYPE_ROUTEPOINT, SelectRadius );
-            pFindRouteSeg = pSelect->FindSelection( slat, slon, SELTYPE_ROUTESEGMENT,
-                                                    SelectRadius );
-            pFindTrackSeg = pSelect->FindSelection( slat, slon, SELTYPE_TRACKSEGMENT,
-                                                    SelectRadius );
+            pFindAIS = pSelectAIS->FindSelection( slat, slon, SELTYPE_AISTARGET );
+            pFindRP = pSelect->FindSelection( slat, slon, SELTYPE_ROUTEPOINT );
+            pFindRouteSeg = pSelect->FindSelection( slat, slon, SELTYPE_ROUTESEGMENT );
+            pFindTrackSeg = pSelect->FindSelection( slat, slon, SELTYPE_TRACKSEGMENT );
             if( m_bShowCurrent ) pFindCurrent = pSelectTC->FindSelection( slat, slon,
-                                                    SELTYPE_CURRENTPOINT, SelectRadius );
+                                                    SELTYPE_CURRENTPOINT );
 
             if( m_bShowTide )                                // look for tide stations
-                pFindTide = pSelectTC->FindSelection( slat, slon, SELTYPE_TIDEPOINT, SelectRadius );
+                pFindTide = pSelectTC->FindSelection( slat, slon, SELTYPE_TIDEPOINT );
 
             int seltype = 0;
 
@@ -7800,7 +7792,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 //There is at least one routepoint, so get the whole list
                 SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
-                                             SELTYPE_ROUTEPOINT, SelectRadius );
+                                             SELTYPE_ROUTEPOINT );
                 wxSelectableItemListNode *node = SelList.GetFirst();
                 while( node ) {
                     SelectItem *pFindSel = node->GetData();
@@ -7876,7 +7868,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( pFindRouteSeg )                  // there is at least one select item
             {
                 SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
-                                             SELTYPE_ROUTESEGMENT, SelectRadius );
+                                             SELTYPE_ROUTESEGMENT );
 
                 if( NULL == m_pSelectedRoute )  // the case where a segment only is selected
                 {
@@ -7909,7 +7901,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( pFindTrackSeg ) {
                 m_pSelectedTrack = NULL;
                 SelectableItemList SelList = pSelect->FindSelectionList( slat, slon,
-                                             SELTYPE_TRACKSEGMENT, SelectRadius );
+                                             SELTYPE_TRACKSEGMENT );
 
                 //  Choose the first visible track containing segment in the list
                 wxSelectableItemListNode *node = SelList.GetFirst();
@@ -7940,7 +7932,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                     SelectItem *pFind = NULL;
                     SelectableItemList SelList = pSelectTC->FindSelectionList( m_cursor_lat,
-                                                 m_cursor_lon, SELTYPE_CURRENTPOINT, SelectRadius );
+                                                 m_cursor_lon, SELTYPE_CURRENTPOINT );
 
                     //      Default is first entry
                     wxSelectableItemListNode *node = SelList.GetFirst();
