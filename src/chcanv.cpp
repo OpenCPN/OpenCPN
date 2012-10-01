@@ -8043,43 +8043,7 @@ void ChartCanvas::LostMouseCapture( wxMouseCaptureLostEvent& event )
 //-------------------------------------------------------------------------------
 void ChartCanvas::DoCanvasPopupMenu( int x, int y, wxMenu *pMenu )
 {
-    wxColour back_color = GetGlobalColor( _T("UIBCK") );
-    wxColour text_color = GetGlobalColor( _T ( "UITX1" ) );
-    wxString col;
-    col.Printf( _T("#%02X%02X%02X"), text_color.Red(), text_color.Green(), text_color.Blue() );
-//      wxLogMessage(col);
-
-    for( unsigned int i = 0; i < pMenu->GetMenuItemCount(); i++ ) {
-
-#ifdef __WXGTK__
-#ifdef ocpnUSE_GTK_OPTIMIZE
-        wxMenuItem *pitem = pMenu->FindItemByPosition(i);
-
-        //    This works for at least some versions of GTK+ with <<some>> window managers and themes....
-        wxString text = pitem->GetText();
-//            ::wxSnprintf(tmp, 99, (const wxChar*)("<span color=\"%s\">%s</span>"), col, text);
-        wxString tmp = _T("<span color=\"");
-        tmp += col;
-        tmp += _T("\">");
-        tmp += text;
-        tmp += _T("</span>");
-
-        gtk_label_set_markup( GTK_LABEL( GTK_BIN(pitem->GetMenuItem())->child ), tmp.mb_str());
-#endif
-#endif
-
-#ifdef __WXMSW__
-        //    This does not work......
-        wxMenuItem *pitem = pMenu->FindItemByPosition( i );
-        pitem->SetTextColour( text_color );
-        pitem->SetBackgroundColour( back_color );
-
-#endif
-
-    }
-
     PopupMenu( pMenu, x, y );
-
 }
 
 wxString _menuText( wxString name, wxString shortcut ) {
