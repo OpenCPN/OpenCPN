@@ -8047,6 +8047,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     wxMenu* menuWaypoint = new wxMenu( _("Waypoint") );
     wxMenu* menuRoute = new wxMenu( _("Route") );
     wxMenu* menuTrack = new wxMenu( _("Track") );
+    wxMenu* menuAIS = new wxMenu( _("AIS") );
 
     wxMenu *subMenuChart = new wxMenu;
     wxMenuItem* subItemChart = contextMenu->AppendSubMenu( subMenuChart, _("Chart Groups") );
@@ -8133,14 +8134,15 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     if( g_pAIS ) {
         if( seltype & SELTYPE_AISTARGET ) {
-            contextMenu->Append( ID_DEF_MENU_AIS_QUERY, _( "AIS Target Query..." ) );
+            menuAIS->Append( ID_DEF_MENU_AIS_QUERY, _( "Target Query..." ) );
             AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
             if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alarm_state != AIS_ALARM_SET) ) {
                 if( myptarget->b_show_AIS_CPA )
-                    contextMenu->Append( ID_DEF_MENU_AIS_CPA, _( "Hide AIS Target CPA" ) );
+                    menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Hide Target CPA" ) );
                 else
-                    contextMenu->Append( ID_DEF_MENU_AIS_CPA, _( "Show AIS Target CPA" ) );
+                    menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Show Target CPA" ) );
             }
+            menuAIS->Append( ID_DEF_MENU_AISTARGETLIST, _("Target List...") );
         }
         contextMenu->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
     }
@@ -8300,6 +8302,11 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     if( ! subMenuChart->GetMenuItemCount() ) contextMenu->Destroy( subItemChart );
 
     //        Invoke the drop-down menu
+    if( seltype & SELTYPE_AISTARGET ) {
+        PopupMenu( menuAIS, x, y );
+        goto done;
+    }
+
     if( seltype & SELTYPE_MARKPOINT ) {
         PopupMenu( menuWaypoint, x, y );
         goto done;
