@@ -159,7 +159,6 @@ public:
       void PaintCleanup();
       void Scroll(int dx, int dy);
       void CanvasPopupMenu(int x, int y, int seltype);
-      void DoCanvasPopupMenu ( int x, int y, wxMenu *pMenu );
 
       void PopupMenuHandler(wxCommandEvent& event);
 

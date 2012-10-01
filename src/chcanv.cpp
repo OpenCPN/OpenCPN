@@ -5077,12 +5077,6 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 //    Is ship in Vpoint?
     if( GetVP().GetBBox().PointInBox( gLon, gLat, 0 ) ) drawit++;                             // yep
 
-///debug
-//        gCog = 60.;
-//        gSog = 6.;
-//        gHdt = 70.;
-//        g_bHDxValid = true;
-
 //    Calculate ownship Position Predictor
 
     double pred_lat, pred_lon;
@@ -5329,7 +5323,6 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                 //      Draw the ownship icon
                 wxPoint rot_ctr( pos_image->GetWidth() / 2, pos_image->GetHeight() / 2 );
                 wxImage rot_image = pos_image->Rotate( -( icon_rad - ( PI / 2. ) ), rot_ctr, true );
-
                 // Simple sharpening algorithm.....
                 // TODO  Needs more work.
                 for( int ip = 0; ip < rot_image.GetWidth(); ip++ )
@@ -5427,16 +5420,8 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
         dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
-//                dc.StrokeCircle(lShipPoint.x, lShipPoint.y, 3);
         dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, circle_rad );
 
-//    Test code to draw CEP circle based on chart scale
-        /*
-         double radius = 25;
-         double radius_meters = Current_Ch->GetNativeScale() * .0015;         // 1.5 mm at original scale
-         radius = radius_meters * VPoint.view_scale_ppm;
-         dc.DrawCircle(lShipPoint.x, lShipPoint.y, (int)radius);
-         */
         // Draw radar rings if activated
         if( g_bNavAidShowRadarRings ) {
             double factor = 1.00;
@@ -5463,19 +5448,6 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                 dc.StrokeCircle( lShipPoint.x, lShipPoint.y, i * pix_radius );
         }
     }         // if drawit
-
-    //  Test code to validate the dc drawing rectangle....
-    /*
-     //  Retrieve the drawing extents
-     wxRect ship_rect ( dc.MinX(),
-     dc.MinY(),
-     dc.MaxX() - dc.MinX(),
-     dc.MaxY() - dc.MinY() );
-
-     dc.SetPen(wxPen(*wxRED));
-     dc.SetBrush(wxBrush(*wxRED, wxTRANSPARENT));
-     dc.DrawRectangle(ship_rect);
-     */
 }
 
 /* @ChartCanvas::CalcGridSpacing
@@ -8041,10 +8013,6 @@ void ChartCanvas::LostMouseCapture( wxMouseCaptureLostEvent& event )
 //-------------------------------------------------------------------------------
 //          Popup Menu Handling
 //-------------------------------------------------------------------------------
-void ChartCanvas::DoCanvasPopupMenu( int x, int y, wxMenu *pMenu )
-{
-    PopupMenu( pMenu, x, y );
-}
 
 wxString _menuText( wxString name, wxString shortcut ) {
     wxString menutext;
@@ -8328,26 +8296,26 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     //        Invoke the drop-down menu
     if( seltype & SELTYPE_MARKPOINT ) {
-        DoCanvasPopupMenu( x, y, menuWaypoint );
+        PopupMenu( menuWaypoint, x, y );
         goto done;
     }
 
     if( seltype & SELTYPE_ROUTEPOINT ) {
-        DoCanvasPopupMenu( x, y, menuWaypoint );
+        PopupMenu( menuWaypoint, x, y );
         goto done;
     }
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
-        DoCanvasPopupMenu( x, y, menuRoute );
+        PopupMenu( menuRoute, x, y );
         goto done;
     }
 
     if( seltype & SELTYPE_TRACKSEGMENT ) {
-        DoCanvasPopupMenu( x, y, menuTrack );
+        PopupMenu( menuTrack, x, y );
         goto done;
     }
 
-    DoCanvasPopupMenu( x, y, contextMenu );
+    PopupMenu( contextMenu, x, y );
 
     // Cleanup
     done:
@@ -9052,6 +9020,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
                 pMarkPropDialog->ValidateMark();
                 pMarkPropDialog->UpdateProperties();
             }
+
+            undo->InvalidateUndo();
         }
         break;
     }
