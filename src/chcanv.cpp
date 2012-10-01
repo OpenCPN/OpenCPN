@@ -8253,8 +8253,11 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
             menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
         }
-        menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
+        if( m_pSelectedRoute->GetnPoints() > 2 )
+            menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
+
         menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
+
         if( m_pFoundRoutePoint->m_IconName != _T("mob") )
             menuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
@@ -9293,6 +9296,8 @@ void ChartCanvas::FinishRoute( void )
 
     m_pSelectedRoute = NULL;
     m_pFoundRoutePointSecond = NULL;
+
+    undo->InvalidateUndo();
 }
 
 void ChartCanvas::ShowAISTargetList( void )
