@@ -289,14 +289,13 @@ wxDialog                *g_pcurtain;
 //    Constants for right click menus
 enum
 {
-    ID_DEF_MENU_MAX_DETAIL =1,
+    ID_DEF_MENU_MAX_DETAIL = 1,
     ID_DEF_MENU_SCALE_IN,
     ID_DEF_MENU_SCALE_OUT,
     ID_DEF_MENU_DROP_WP,
     ID_DEF_MENU_QUERY,
     ID_DEF_MENU_MOVE_BOAT_HERE,
     ID_DEF_MENU_GOTO_HERE,
-    ID_DEF_MENU_CM93ZOOM,
     ID_DEF_MENU_GOTOPOSITION,
 
     ID_WP_MENU_GOTO,
@@ -353,8 +352,6 @@ enum
     ID_DEF_MENU_GROUPBASE,
 
     ID_DEF_MENU_LAST
-
-
 };
 
 //constants for hight and low tide search
@@ -3023,7 +3020,8 @@ void ViewPort::SetBoxes( void )
 //------------------------------------------------------------------------------
 //    ChartCanvas Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow ) EVT_PAINT ( ChartCanvas::OnPaint )
+BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
+    EVT_PAINT ( ChartCanvas::OnPaint )
     EVT_ACTIVATE ( ChartCanvas::OnActivate )
     EVT_SIZE ( ChartCanvas::OnSize )
     EVT_MOUSE_EVENTS ( ChartCanvas::MouseEvent )
@@ -3087,7 +3085,6 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow ) EVT_PAINT ( ChartCanvas::OnPaint )
     EVT_MENU ( ID_DEF_MENU_ACTIVATE_MEASURE,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_DEACTIVATE_MEASURE, ChartCanvas::PopupMenuHandler )
 
-    EVT_MENU ( ID_DEF_MENU_CM93ZOOM,            ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_CM93OFFSET_DIALOG,   ChartCanvas::PopupMenuHandler )
 
     EVT_MENU ( ID_WP_MENU_GOTO,               ChartCanvas::PopupMenuHandler )
@@ -3914,28 +3911,52 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         }
 
         switch( key_char ) {
-        case 'S':
-            parent_frame->ToggleSoundings();
+        case 'A':
+            parent_frame->ToggleAnchor();
             break;
 
-        case 'L':
+        case 'D': {
+                int x,y;
+                event.GetPosition( &x, &y );
+                bool cm93IsAvailable = ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) );
+                if( VPoint.b_quilt ) {
+                    ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
+                    if( pChartTest ) {
+                        if( pChartTest->GetChartType() == CHART_TYPE_CM93 ) cm93IsAvailable = true;
+                        if( pChartTest->GetChartType() == CHART_TYPE_CM93COMP ) cm93IsAvailable = true;
+                    }
+                }
+
+                if( cm93IsAvailable ) {
+                    if( !pCM93DetailSlider ) {
+                        pCM93DetailSlider = new CM93DSlide( this, -1, 0,
+                                -CM93_ZOOM_FACTOR_MAX_RANGE, CM93_ZOOM_FACTOR_MAX_RANGE,
+                                wxPoint( g_cm93detail_dialog_x, g_cm93detail_dialog_y ),
+                                wxDefaultSize, wxSIMPLE_BORDER, _("CM93 Detail Level") );
+                    }
+                    pCM93DetailSlider->Show( !pCM93DetailSlider->IsShown() );
+                }
+                break;
+            }
+
+       case 'L':
             parent_frame->ToggleLights();
+            break;
+
+        case 'O':
+            parent_frame->ToggleChartOutlines();
             break;
 
         case 'R':
             parent_frame->ToggleRocks();
             break;
 
-        case 'A':
-            parent_frame->ToggleAnchor();
+        case 'S':
+            parent_frame->ToggleSoundings();
             break;
 
         case 'T':
             parent_frame->ToggleENCText();
-            break;
-
-        case 'O':
-            parent_frame->ToggleChartOutlines();
             break;
 
         case 1:                      // Ctrl A
@@ -8124,15 +8145,6 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         contextMenu->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
     }
 
-    bool cm93IsAvailable = ( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) );
-    if( VPoint.b_quilt ) {
-        ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
-        if( pChartTest ) {
-            if( pChartTest->GetChartType() == CHART_TYPE_CM93 ) cm93IsAvailable = true;
-            if( pChartTest->GetChartType() == CHART_TYPE_CM93COMP ) cm93IsAvailable = true;
-        }
-    }
-
     Kml* kml = new Kml;
     int pasteBuffer = kml->ParsePasteBuffer();
     if( pasteBuffer != KML_PASTE_INVALID ) {
@@ -8157,13 +8169,6 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         }
     }
     delete kml;
-
-    if( cm93IsAvailable ) {
-        contextMenu->AppendCheckItem( ID_DEF_MENU_CM93ZOOM, _("CM93 Detail Slider...") );
-        if( pCM93DetailSlider ) {
-            contextMenu->Check( ID_DEF_MENU_CM93ZOOM, pCM93DetailSlider->IsShown() );
-        }
-    }
 
     if( !VPoint.b_quilt && Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) ) {
         contextMenu->Append( ID_DEF_MENU_CM93OFFSET_DIALOG, _( "CM93 Offset Dialog..." ) );
@@ -8903,30 +8908,6 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         g_pCM93OffsetDialog->Show();
         g_pCM93OffsetDialog->UpdateMCOVRList( GetVP() );
 
-        break;
-
-    case ID_DEF_MENU_CM93ZOOM:
-        g_bShowCM93DetailSlider = event.IsChecked();
-
-        if( g_bShowCM93DetailSlider ) {
-            if( !pCM93DetailSlider ) {
-                pCM93DetailSlider = new CM93DSlide( this, -1, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
-                                                    CM93_ZOOM_FACTOR_MAX_RANGE,
-                                                    wxPoint( g_cm93detail_dialog_x, g_cm93detail_dialog_y ), wxDefaultSize,
-                                                    wxSIMPLE_BORDER, _("CM93 Detail Level") );
-            }
-
-            //    Here is an ugly piece of code which prevents the slider from taking the keyboard focus
-            //    Only seems to work for Windows.....
-            pCM93DetailSlider->Disable();
-            pCM93DetailSlider->Show();
-            pCM93DetailSlider->Enable();
-
-        } else {
-            if( pCM93DetailSlider ) pCM93DetailSlider->Close();
-        }
-
-        Refresh();
         break;
 
     case ID_DEF_MENU_QUERY: {
@@ -14784,7 +14765,8 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
 //------------------------------------------------------------------------------
 //    CM93 Detail Slider Implementation
 //------------------------------------------------------------------------------
-BEGIN_EVENT_TABLE(CM93DSlide, wxDialog) EVT_MOVE( CM93DSlide::OnMove )
+BEGIN_EVENT_TABLE(CM93DSlide, wxDialog)
+    EVT_MOVE( CM93DSlide::OnMove )
     EVT_COMMAND_SCROLL_THUMBRELEASE(-1, CM93DSlide::OnChangeValue)
     EVT_COMMAND_SCROLL_LINEUP(-1, CM93DSlide::OnChangeValue)
     EVT_COMMAND_SCROLL_LINEDOWN(-1, CM93DSlide::OnChangeValue)
@@ -14792,7 +14774,7 @@ BEGIN_EVENT_TABLE(CM93DSlide, wxDialog) EVT_MOVE( CM93DSlide::OnMove )
     EVT_COMMAND_SCROLL_PAGEDOWN(-1, CM93DSlide::OnChangeValue)
     EVT_COMMAND_SCROLL_BOTTOM(-1, CM93DSlide::OnChangeValue)
     EVT_COMMAND_SCROLL_TOP(-1, CM93DSlide::OnChangeValue)
-    EVT_CLOSE(CM93DSlide::OnClose)
+    EVT_CLOSE( CM93DSlide::OnClose )
 END_EVENT_TABLE()
 
 CM93DSlide::CM93DSlide( wxWindow *parent, wxWindowID id, int value, int minValue, int maxValue,
