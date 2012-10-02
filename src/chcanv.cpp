@@ -5102,7 +5102,6 @@ wxPoint transrot( wxPoint pt, double theta, wxPoint offset )
 void ChartCanvas::ShipDraw( ocpnDC& dc )
 {
     if( !GetVP().IsValid() ) return;
-
     int drawit = 0;
     wxPoint lShipPoint, lPredPoint, lHeadPoint;
 
@@ -5227,50 +5226,50 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
         } else {
             double sf_pix_per_mm = (double) ::wxGetDisplaySize().y / ::wxGetDisplaySizeMM().y;
 
-            //  Calculate the true ship length in exact pixels
-            double ship_bow_lat, ship_bow_lon;
-            ll_gc_ll( gLat, gLon, icon_hdt, g_n_ownship_length_meters / 1852., &ship_bow_lat,
-                      &ship_bow_lon );
-            wxPoint lShipBowPoint;
-            wxPoint2DDouble b_point = GetVP().GetDoublePixFromLL( ship_bow_lat, ship_bow_lon );
-            wxPoint2DDouble a_point = GetVP().GetDoublePixFromLL( gLat, gLon );
-
-            double ship_scale_pix = sqrt(
-                                        pow( (double) ( b_point.m_x - a_point.m_x ), 2 )
-                                        + pow( (double) ( b_point.m_y - a_point.m_y ), 2 ) );
-
-            //  And in mm
-            double ship_scale_mm = ship_scale_pix / sf_pix_per_mm;
-
-            //  Set minimum ownship drawing size
-            double ownship_min_mm = g_n_ownship_min_mm;
-            ownship_min_mm = wxMax(ownship_min_mm, 1.0);
-
-            //  Calculate pixel distance from midships to gps antenna
-            //  by two traverses
-            double hdt_ant = icon_hdt + 180.;
-            double dy = ( g_n_ownship_length_meters / 2 - g_n_gps_antenna_offset_y ) / 1852.;
-            double dx = g_n_gps_antenna_offset_x / 1852.;
-            if( g_n_gps_antenna_offset_y > g_n_ownship_length_meters / 2 )      //reverse?
+            if( g_n_ownship_beam_meters && g_n_ownship_length_meters && g_bOwnShipRealSize > 0.0 )           // use large ship
             {
-                hdt_ant = icon_hdt;
-                dy = -dy;
-            }
+                //  Calculate the true ship length in exact pixels
+                double ship_bow_lat, ship_bow_lon;
+                ll_gc_ll( gLat, gLon, icon_hdt, g_n_ownship_length_meters / 1852., &ship_bow_lat,
+                          &ship_bow_lon );
+                wxPoint lShipBowPoint;
+                wxPoint2DDouble b_point = GetVP().GetDoublePixFromLL( ship_bow_lat, ship_bow_lon );
+                wxPoint2DDouble a_point = GetVP().GetDoublePixFromLL( gLat, gLon );
 
-            //  If the drawn ship size is going to be clamped, adjust the gps antenna offsets
-            if( ship_scale_mm < ownship_min_mm ) {
-                dy /= ship_scale_mm / ownship_min_mm;
-                dx /= ship_scale_mm / ownship_min_mm;
-            }
+                double ship_scale_pix = sqrt(
+                                            pow( (double) ( b_point.m_x - a_point.m_x ), 2 )
+                                            + pow( (double) ( b_point.m_y - a_point.m_y ), 2 ) );
 
-            double ship_mid_lat, ship_mid_lon, ship_mid_lat1, ship_mid_lon1;
-            ll_gc_ll( gLat, gLon, hdt_ant, dy, &ship_mid_lat, &ship_mid_lon );
-            ll_gc_ll( ship_mid_lat, ship_mid_lon, icon_hdt - 90., dx, &ship_mid_lat1,
-                      &ship_mid_lon1 );
-            GetCanvasPointPix( ship_mid_lat1, ship_mid_lon1, &lShipMidPoint );
+                //  And in mm
+                double ship_scale_mm = ship_scale_pix / sf_pix_per_mm;
 
-            if( g_n_ownship_beam_meters && g_n_ownship_length_meters && g_bOwnShipRealSize )           // use large ship
-            {
+                //  Set minimum ownship drawing size
+                double ownship_min_mm = g_n_ownship_min_mm;
+                ownship_min_mm = wxMax(ownship_min_mm, 1.0);
+
+                //  Calculate pixel distance from midships to gps antenna
+                //  by two traverses
+                double hdt_ant = icon_hdt + 180.;
+                double dy = ( g_n_ownship_length_meters / 2 - g_n_gps_antenna_offset_y ) / 1852.;
+                double dx = g_n_gps_antenna_offset_x / 1852.;
+                if( g_n_gps_antenna_offset_y > g_n_ownship_length_meters / 2 )      //reverse?
+                {
+                    hdt_ant = icon_hdt;
+                    dy = -dy;
+                }
+
+                //  If the drawn ship size is going to be clamped, adjust the gps antenna offsets
+                if( ship_scale_mm < ownship_min_mm ) {
+                    dy /= ship_scale_mm / ownship_min_mm;
+                    dx /= ship_scale_mm / ownship_min_mm;
+                }
+
+                double ship_mid_lat, ship_mid_lon, ship_mid_lat1, ship_mid_lon1;
+                ll_gc_ll( gLat, gLon, hdt_ant, dy, &ship_mid_lat, &ship_mid_lon );
+                ll_gc_ll( ship_mid_lat, ship_mid_lon, icon_hdt - 90., dx, &ship_mid_lat1,
+                          &ship_mid_lon1 );
+                GetCanvasPointPix( ship_mid_lat1, ship_mid_lon1, &lShipMidPoint );
+
                 double scale_factor = ship_scale_pix / OWNSHIP_LENGTH;
 
                 //  Calculate a scale factor that would produce a reasonably sized icon
@@ -5322,41 +5321,11 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                     if( SHIP_NORMAL != m_ownship_state ) pos_image = m_pos_image_user_grey;
                 }
 
-                img_width = pos_image->GetWidth();
-                img_height = pos_image->GetHeight();
-
-                //    Calculate some scale factors
-                //      using only ownship_length
-
-                double scale_factor = ship_scale_pix / img_height;
-
-                //  Calculate a scale factor that would produce an reasonable size icon
-                double scale_factor_min = ownship_min_mm / ( img_height / sf_pix_per_mm );
-
-                //  And choose the correct one
-                scale_factor = wxMax(scale_factor, scale_factor_min);
-                scale_factor = wxMin(scale_factor, 10);
-
-                if( (g_n_ownship_min_mm == -1) || !g_bOwnShipRealSize ) scale_factor = 1.0;
-
-                //      Make a new member image under some conditions
-                if( ( m_cur_ship_pix != ship_scale_pix )
-                        || ( ( SHIP_NORMAL == m_ownship_state ) && m_cur_ship_pix_isgrey )
-                        || !m_ship_pix_image.IsOk() || ( m_ship_cs != m_cs ) ) {
-                    int nh = img_height * scale_factor;
-                    int nw = img_width * scale_factor;
-                    m_ship_pix_image = pos_image->Scale( nw, nh, wxIMAGE_QUALITY_HIGH );
-                    m_cur_ship_pix_isgrey = ( SHIP_NORMAL != m_ownship_state );
-                    m_cur_ship_pix = ship_scale_pix;
-                    m_ship_cs = m_cs;
-                }
-                pos_image = &m_ship_pix_image;
-
                 //      Draw the ownship icon
                 wxPoint rot_ctr( pos_image->GetWidth() / 2, pos_image->GetHeight() / 2 );
                 wxImage rot_image = pos_image->Rotate( -( icon_rad - ( PI / 2. ) ), rot_ctr, true );
+
                 // Simple sharpening algorithm.....
-                // TODO  Needs more work.
                 for( int ip = 0; ip < rot_image.GetWidth(); ip++ )
                     for( int jp = 0; jp < rot_image.GetHeight(); jp++ )
                         if( rot_image.GetAlpha( ip, jp ) > 64 ) rot_image.SetAlpha( ip, jp, 255 );
@@ -5365,16 +5334,13 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
                 int w = os_bm.GetWidth();
                 int h = os_bm.GetHeight();
+                img_height = h;
 
-                int corr = 0;
-                dc.DrawBitmap( os_bm, lShipMidPoint.x - w / 2 - corr,
-                               lShipMidPoint.y - h / 2 - corr, true );
+                dc.DrawBitmap( os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2, true );
 
                 // Maintain dirty box,, missing in __WXMSW__ library
-                dc.CalcBoundingBox( lShipMidPoint.x - w / 2 - corr,
-                                    lShipMidPoint.y - h / 2 - corr );
-                dc.CalcBoundingBox( lShipMidPoint.x - w / 2 + w + corr,
-                                    lShipMidPoint.y - h / 2 + h + corr );
+                dc.CalcBoundingBox( lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2 );
+                dc.CalcBoundingBox( lShipMidPoint.x - w / 2 + w, lShipMidPoint.y - h / 2 + h );
             }
         }         // ownship draw
 
