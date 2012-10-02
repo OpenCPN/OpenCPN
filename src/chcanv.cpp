@@ -1037,8 +1037,8 @@ wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
         ply[5] = vp.GetBBox().GetMaxX();
         ply[6] = -80.;
         ply[7] = vp.GetBBox().GetMinX();
-        
-        
+
+
         wxRegion t_region = vp.GetVPRegionIntersect( screen_region, 4, &ply[0],
                                                      cte.GetScale() );
         return t_region;
@@ -4261,15 +4261,11 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                 showRollover = true;
 
                 if( NULL == m_pRolloverWin ) {
-                    if( g_bopengl && m_glcc
-                            && ( m_glcc->GetRendererString().Upper().Find( _T("NVIDIA") )
-                                 != wxNOT_FOUND ) ) m_pRolloverWin = new RolloverWin( m_glcc );
-                    else
-                        m_pRolloverWin = new RolloverWin( this );
-                    m_pRolloverWin->Hide();
+                    m_pRolloverWin = new RolloverWin( this );
+                    m_pRolloverWin->IsActive( false );
                 }
 
-                if( !m_pRolloverWin->IsShown() ) {
+                if( !m_pRolloverWin->IsActive() ) {
                     wxString s;
                     RoutePoint *segShow_point_a = (RoutePoint *) m_pRolloverRouteSeg->m_pData1;
                     RoutePoint *segShow_point_b = (RoutePoint *) m_pRolloverRouteSeg->m_pData2;
@@ -4314,7 +4310,8 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     m_pRolloverWin->SetBestPosition( mouse_x, mouse_y, 16, 16, LEG_ROLLOVER,
                                                      win_size );
                     m_pRolloverWin->SetBitmap( LEG_ROLLOVER );
-                    m_pRolloverWin->Show();
+                    m_pRolloverWin->IsActive( true );
+                    Refresh();
                     showRollover = true;
                     break;
                 }
@@ -4333,15 +4330,17 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
     if( parent_frame->nRoute_State ) showRollover = false;
 
     //    Similar for AIS target rollover window
-    if( m_pAISRolloverWin && m_pAISRolloverWin->IsShown() ) showRollover = false;
+    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() ) showRollover = false;
 
-    if( m_pRolloverWin && m_pRolloverWin->IsShown() && !showRollover ) {
-        m_pRolloverWin->Hide();
+    if( m_pRolloverWin && m_pRolloverWin->IsActive() && !showRollover ) {
+        m_pRolloverWin->IsActive( false );
         m_pRolloverRouteSeg = NULL;
         m_pRolloverWin->Destroy();
         m_pRolloverWin = NULL;
+        Refresh();
     } else if( m_pRolloverWin && showRollover ) {
-        m_pRolloverWin->Show();
+        m_pRolloverWin->IsActive( true );
+        Refresh();
     }
 }
 
@@ -6335,6 +6334,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                         arrow[i].x = (int) round( px );
                         arrow[i].y = (int) round( py );
                     }
+                    dc.SetBrush( target_brush );
                     dc.StrokePolygon( 3, arrow, TargetPoint.x, TargetPoint.y );
                     arrow[0] = wxPoint( -4, 27 );
                     arrow[1] = wxPoint(  0, 34 );
@@ -7161,7 +7161,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     mouse_leftisdown = event.LeftIsDown();
 
 //      Retrigger the route leg popup timer
-    if( m_pRolloverWin && m_pRolloverWin->IsShown() ) m_RouteLegPopupTimer.Start( 10,
+    if( m_pRolloverWin && m_pRolloverWin->IsActive() ) m_RouteLegPopupTimer.Start( 10,
                 wxTIMER_ONE_SHOT );               // faster response while the rollover is turned on
     else
         m_RouteLegPopupTimer.Start( m_routeleg_popup_timer_msec, wxTIMER_ONE_SHOT );
@@ -7288,16 +7288,12 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 showRollover = true;
 
                 if( NULL == m_pAISRolloverWin ) {
-                    if( g_bopengl && m_glcc
-                            && ( m_glcc->GetRendererString().Upper().Find( _T("NVIDIA") )
-                                 != wxNOT_FOUND ) ) m_pAISRolloverWin = new RolloverWin( m_glcc,
-                                             10 );
-                    else
-                        m_pAISRolloverWin = new RolloverWin( this, 10 );
-                    m_pAISRolloverWin->Hide();
+                    m_pAISRolloverWin = new RolloverWin( this, 10 );
+                    m_pAISRolloverWin->IsActive( false );
+                    Refresh();
                 }
 
-                if( !m_pAISRolloverWin->IsShown() ) {
+                if( !m_pAISRolloverWin->IsActive() ) {
 
                     wxString s = ptarget->GetRolloverString();
                     m_pAISRolloverWin->SetString( s );
@@ -7307,15 +7303,17 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     m_pAISRolloverWin->SetBestPosition( x, y, 16, 16, AIS_ROLLOVER, win_size );
 
                     m_pAISRolloverWin->SetBitmap( AIS_ROLLOVER );
-                    m_pAISRolloverWin->Refresh();
-                    m_pAISRolloverWin->Show();
-
+                    m_pAISRolloverWin->IsActive( true );
+                    Refresh();
                 }
             }
         }
     }
 
-    if( m_pAISRolloverWin && m_pAISRolloverWin->IsShown() && !showRollover ) m_pAISRolloverWin->Hide();
+    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() && !showRollover ) {
+        m_pAISRolloverWin->IsActive( false );
+        Refresh();
+    }
 
 //          Mouse Clicks
 
@@ -9606,7 +9604,7 @@ void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )
     yp = ref_point.y + h;
     yp += hilite_offset;
 
-    AlphaBlending( dc, xp, yp, w, h, GetGlobalColor( _T ( "YELO1" ) ), 172 );
+    AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
 
     dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
     dc.DrawText( s, xp, yp );
@@ -9682,7 +9680,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         yp = r_rband.y;
         yp += hilite_offset;
 
-        AlphaBlending( dc, xp, yp, w, h, GetGlobalColor( _T ( "YELO1" ) ), 172 );
+        AlphaBlending( dc, xp, yp, w, h, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
 
         dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
         dc.DrawText( routeInfo, xp, yp );
@@ -10318,16 +10316,6 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
             m_pCIWin->Refresh( false );
         }
 
-        if( m_pAISRolloverWin && m_pAISRolloverWin->IsShown() ) {
-            m_pAISRolloverWin->Raise();
-            m_pAISRolloverWin->Refresh( false );
-        }
-
-        if( m_pRolloverWin && m_pRolloverWin->IsShown() ) {
-            m_pRolloverWin->Raise();
-            m_pRolloverWin->Refresh( false );
-        }
-
         if( pthumbwin && pthumbwin->IsShown() ) {
             pthumbwin->Raise();
             pthumbwin->Refresh( false );
@@ -10584,6 +10572,17 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
 #ifdef USE_S57
     s57_DrawExtendedLightSectors( dc, VPoint, extendedSectorLegs );
 #endif
+
+    if( m_pRolloverWin && m_pRolloverWin->IsActive() ) {
+        dc.DrawBitmap( *(m_pRolloverWin->GetBitmap()),
+                m_pRolloverWin->GetPosition().x,
+                m_pRolloverWin->GetPosition().y, false );
+    }
+    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() ) {
+        dc.DrawBitmap( *(m_pAISRolloverWin->GetBitmap()),
+                m_pAISRolloverWin->GetPosition().x,
+                m_pAISRolloverWin->GetPosition().y, false );
+    }
 }
 
 void ChartCanvas::EmbossDepthScale( ocpnDC &dc )
@@ -14645,7 +14644,7 @@ RolloverWin::RolloverWin( wxWindow *parent, int timeout ) :
     m_timer_timeout.SetOwner( this, ROLLOVER_TIMER );
     m_timeout_sec = timeout;
     m_mmouse_propogate = 0;
-
+    isActive = false;
     Hide();
 }
 
@@ -14686,24 +14685,23 @@ void RolloverWin::SetBitmap( int rollover )
     ocpnDC dc( mdc );
 
     switch( rollover ) {
-    case AIS_ROLLOVER:
-        AlphaBlending( dc, 0, 0, m_size.x, m_size.y, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-        dFont = pFontMgr->GetFont( _("AISRollover"), 12 );
-        mdc.SetTextForeground( pFontMgr->GetFontColor( _T("AISRollover") ) );
-        break;
+        case AIS_ROLLOVER:
+            AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
+            dFont = pFontMgr->GetFont( _("AISRollover"), 12 );
+            mdc.SetTextForeground( pFontMgr->GetFontColor( _T("AISRollover") ) );
+            break;
 
-    case TC_ROLLOVER:
-        AlphaBlending( dc, 0, 0, m_size.x, m_size.y, GetGlobalColor( _T ( "YELO1" ) ), 255 );
-        dFont = pFontMgr->GetFont( _("TideCurrentGraphRollover"), 12 );
-        mdc.SetTextForeground( pFontMgr->GetFontColor( _T("TideCurrentGraphRollover") ) );
-        break;
-    default:
-    case LEG_ROLLOVER:
-        AlphaBlending( dc, 0, 0, m_size.x, m_size.y, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-        dFont = pFontMgr->GetFont( _("RouteLegInfoRollover"), 12 );
-        mdc.SetTextForeground( pFontMgr->GetFontColor( _T("RouteLegInfoRollover") ) );
-        break;
-
+        case TC_ROLLOVER:
+            AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 255 );
+            dFont = pFontMgr->GetFont( _("TideCurrentGraphRollover"), 12 );
+            mdc.SetTextForeground( pFontMgr->GetFontColor( _T("TideCurrentGraphRollover") ) );
+            break;
+        default:
+        case LEG_ROLLOVER:
+            AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
+            dFont = pFontMgr->GetFont( _("RouteLegInfoRollover"), 12 );
+            mdc.SetTextForeground( pFontMgr->GetFontColor( _T("RouteLegInfoRollover") ) );
+            break;
     }
 
     int font_size = wxMax(8, dFont->GetPointSize());
@@ -14713,9 +14711,7 @@ void RolloverWin::SetBitmap( int rollover )
     //    Draw the text
     mdc.SetFont( *plabelFont );
 
-//  MSW cannot draw multi-line text.....lame....
-//      mdc.DrawText(m_string, 2, 2);
-    mdc.DrawLabel( m_string, wxRect( 2, 2, m_size.x - 4, m_size.y - 4 ) );
+    mdc.DrawLabel( m_string, wxRect( 4, 4, m_size.x - 4, m_size.y - 4 ) );
     SetSize( m_position.x, m_position.y, m_size.x, m_size.y );   // Assumes a nominal 32 x 32 cursor
 
     // Retrigger the auto timeout
@@ -14768,8 +14764,8 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
     wxClientDC cdc( GetParent() );
     cdc.GetMultiLineTextExtent( m_string, &w, &h, NULL, plabelFont );
 #endif
-    m_size.x = w + 4;
-    m_size.y = h + 4;
+    m_size.x = w + 8;
+    m_size.y = h + 8;
 
     int xp, yp;
     if( ( x + off_x + m_size.x ) > parent_size.x ) {

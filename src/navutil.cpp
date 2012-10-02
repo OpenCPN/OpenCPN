@@ -1169,7 +1169,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 
     //  Highlite any selected point
     if( m_bPtIsSelected ) {
-        AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height,
+        AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, 0.0,
                 pen->GetColour(), transparency );
     }
 
@@ -7573,7 +7573,7 @@ double fromDMM( wxString sdms )
 }
 
 /* render a rectangle at a given color and transparency */
-void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, wxColour color,
+void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radius, wxColour color,
         unsigned char transparency )
 {
     wxDC *pdc = dc.GetDC();
@@ -7586,27 +7586,34 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, wxColour c
         mdc1.SelectObject( wxNullBitmap );
         wxImage oim = obm.ConvertToImage();
 
-        //    Create an image with selected transparency/color
-        int olay_red = color.Red() * transparency;
-        int olay_green = color.Green() * transparency;
-        int olay_blue = color.Blue() * transparency;
-
         //    Create destination image
-        wxImage dest( size_x, size_y, false );
+        wxBitmap olbm( size_x, size_y );
+        wxMemoryDC oldc( olbm );
+        oldc.SetBackground( *wxBLACK_BRUSH );
+        oldc.SetBrush( *wxWHITE_BRUSH );
+        oldc.Clear();
+
+        if( radius > 0.0 )
+            oldc.DrawRoundedRectangle( 0, 0, size_x, size_y, radius );
+
+        wxImage dest = olbm.ConvertToImage();
         unsigned char *dest_data = (unsigned char *) malloc(
                 size_x * size_y * 3 * sizeof(unsigned char) );
-        unsigned char *po = oim.GetData();
+        unsigned char *bg = oim.GetData();
+        unsigned char *box = dest.GetData();
         unsigned char *d = dest_data;
 
+        float alpha = 1.0 - (float)transparency / 255.0;
         int sb = size_x * size_y;
-        transparency = 255 - transparency;
         for( int i = 0; i < sb; i++ ) {
-            int r = ( ( *po++ ) * transparency ) + olay_red;
-            *d++ = (unsigned char) ( r / 255 );
-            int g = ( ( *po++ ) * transparency ) + olay_green;
-            *d++ = (unsigned char) ( g / 255 );
-            int b = ( ( *po++ ) * transparency ) + olay_blue;
-            *d++ = (unsigned char) ( b / 255 );
+            float a = alpha;
+            if( *box == 0 && radius > 0.0 ) a = 1.0;
+            int r = ( ( *bg++ ) * a ) + (1.0-a) * color.Red();
+            *d++ = r; box++;
+            int g = ( ( *bg++ ) * a ) + (1.0-a) * color.Green();
+            *d++ = g; box++;
+            int b = ( ( *bg++ ) * a ) + (1.0-a) * color.Blue();
+            *d++ = b; box++;
         }
 
         dest.SetData( dest_data );
