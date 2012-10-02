@@ -5192,7 +5192,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
 //    Do the draw if either the ship or prediction is within the current VPoint
     if( drawit ) {
-        int img_width, img_height;
+        int img_height;
 
         wxColour pred_colour;
         pred_colour = GetGlobalColor( _T ( "URED" ) );
@@ -5226,7 +5226,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
         } else {
             double sf_pix_per_mm = (double) ::wxGetDisplaySize().y / ::wxGetDisplaySizeMM().y;
 
-            if( g_n_ownship_beam_meters && g_n_ownship_length_meters && g_bOwnShipRealSize > 0.0 )           // use large ship
+            if( g_n_ownship_beam_meters > 0.0 && g_n_ownship_length_meters > 0.0 && g_bOwnShipRealSize )           // use large ship
             {
                 //  Calculate the true ship length in exact pixels
                 double ship_bow_lat, ship_bow_lon;
