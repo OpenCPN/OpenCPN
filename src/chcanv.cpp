@@ -8342,6 +8342,10 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     m_pFoundRoutePointSecond = NULL;
 
     delete contextMenu;
+    delete menuAIS;
+    delete menuRoute;
+    delete menuTrack;
+    delete menuWaypoint;
 }
 
 void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
