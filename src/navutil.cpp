@@ -2850,11 +2850,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "AllowExtremeOverzoom" ), &g_b_overzoom_x, 1 );
     Read( _T ( "ShowOverzoomEmbossWarning" ), &g_bshow_overzoom_emboss, 1 );
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
-    Read( _T ( "OwnshipLengthMeters" ), &g_n_ownship_length_meters, 12 );
-    Read( _T ( "OwnshipBeamMeters" ), &g_n_ownship_beam_meters, 0 );
-    Read( _T ( "OwnshipGPSOffsetY" ), &g_n_gps_antenna_offset_y, g_n_ownship_length_meters / 2 );
-    Read( _T ( "OwnshipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
-    Read( _T ( "OwnshipMinMM" ), &g_n_ownship_min_mm, -1 );
 
     Read( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic") );
 
@@ -2951,8 +2946,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "OwnShipUseRealSize" ), &g_bOwnShipRealSize, 0 );
     Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0 );
     Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0 );
-    Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_y, 0 );
-    Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_x, 0 );
+    Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
+    Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0 );
     Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 0 );
 
     Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
@@ -4180,8 +4175,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "OwnShipUseRealSize" ), g_bOwnShipRealSize );
     Write( _T ( "OwnShipLength" ), g_n_ownship_length_meters );
     Write( _T ( "OwnShipWidth" ), g_n_ownship_beam_meters );
-    Write( _T ( "OwnShipGPSOffsetX" ), g_n_gps_antenna_offset_y );
-    Write( _T ( "OwnShipGPSOffsetY" ), g_n_gps_antenna_offset_x );
+    Write( _T ( "OwnShipGPSOffsetX" ), g_n_gps_antenna_offset_x );
+    Write( _T ( "OwnShipGPSOffsetY" ), g_n_gps_antenna_offset_y );
     Write( _T ( "OwnShipMinSize" ), g_n_ownship_min_mm );
 
     Write( _T ( "ChartQuilting" ), g_bQuiltEnable );
