@@ -1025,9 +1025,23 @@ wxRegion Quilt::GetChartQuiltRegion( const ChartTableEntry &cte, ViewPort &vp )
 
     // Special case for charts which extend around the world, or near to it
     //  Mostly this means cm93....
+    //  Take the whole screen, clipped at +/- 80 degrees lat
     if(fabs(cte.GetLonMax() - cte.GetLonMin()) > 180.) {
-        chart_region = screen_region;
-        return chart_region;
+        int n_ply_entries = 4;
+        float ply[8];
+        ply[0] = 80.;
+        ply[1] = vp.GetBBox().GetMinX();
+        ply[2] = 80.;
+        ply[3] = vp.GetBBox().GetMaxX();
+        ply[4] = -80.;
+        ply[5] = vp.GetBBox().GetMaxX();
+        ply[6] = -80.;
+        ply[7] = vp.GetBBox().GetMinX();
+        
+        
+        wxRegion t_region = vp.GetVPRegionIntersect( screen_region, 4, &ply[0],
+                                                     cte.GetScale() );
+        return t_region;
     }
 
 
