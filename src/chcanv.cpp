@@ -188,7 +188,6 @@ extern bool             g_bAISShowTracks;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 
-extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
@@ -5460,7 +5459,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
         }
 
         // Draw radar rings if activated
-        if( g_bNavAidShowRadarRings ) {
+        if( g_iNavAidRadarRingsNumberVisible ) {
             double factor = 1.00;
             if( g_pNavAidRadarRingsStepUnits == 1 )          // nautical miles
                 factor = 1 / 1.852;

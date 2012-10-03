@@ -258,7 +258,6 @@ bool                      g_bPermanentMOBIcon;
 
 int                       g_iSDMMFormat;
 
-bool                      g_bNavAidShowRadarRings;
 int                       g_iNavAidRadarRingsNumberVisible;
 float                     g_fNavAidRadarRingsStep;
 int                       g_pNavAidRadarRingsStepUnits;

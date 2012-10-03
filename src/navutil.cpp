@@ -189,7 +189,6 @@ extern bool             g_bDrawAISSize;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
-extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
@@ -3731,22 +3730,19 @@ int MyConfig::LoadMyConfig( int iteration )
     SetPath( _T ( "/Settings/Others" ) );
 
     // Radar rings
-    g_bNavAidShowRadarRings = false;          // toh, 2009.02.24
-    Read( _T ( "ShowRadarRings" ), &g_bNavAidShowRadarRings );
-
-    g_iNavAidRadarRingsNumberVisible = 1;     // toh, 2009.02.24
+    g_iNavAidRadarRingsNumberVisible = 0;
     Read( _T ( "RadarRingsNumberVisible" ), &val );
     if( val.Length() > 0 ) g_iNavAidRadarRingsNumberVisible = atoi( val.mb_str() );
 
-    g_fNavAidRadarRingsStep = 1.0;            // toh, 2009.02.24
+    g_fNavAidRadarRingsStep = 1.0;
     Read( _T ( "RadarRingsStep" ), &val );
     if( val.Length() > 0 ) g_fNavAidRadarRingsStep = atof( val.mb_str() );
 
-    g_pNavAidRadarRingsStepUnits = 0;         // toh, 2009.02.24
+    g_pNavAidRadarRingsStepUnits = 0;
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
     // Waypoint dragging with mouse
-    g_bWayPointPreventDragging = false;       // toh, 2009.02.24
+    g_bWayPointPreventDragging = false;
     Read( _T ( "WaypointPreventDragging" ), &g_bWayPointPreventDragging );
 
     g_bEnableZoomToCursor = false;
@@ -4426,8 +4422,7 @@ void MyConfig::UpdateSettings()
 
     SetPath( _T ( "/Settings/Others" ) );
 
-    // Radar rings; toh, 2009.02.24
-    Write( _T ( "ShowRadarRings" ), g_bNavAidShowRadarRings );
+    // Radar rings
     Write( _T ( "RadarRingsNumberVisible" ), g_iNavAidRadarRingsNumberVisible );
     Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
