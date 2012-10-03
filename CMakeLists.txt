@@ -780,13 +780,9 @@ ENDIF(UNIX)
 
 #   Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of the required link libraries
 #   So, add them manually.
-IF(UNIX AND NOT APPLE)
-TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-      dl
-      gobject-2.0
-)
-ENDIF(UNIX AND NOT APPLE)
-
+IF(GTK2_FOUND)
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
+ENDIF(GTK2_FOUND)
 
 
 IF(NOT APPLE)

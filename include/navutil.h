@@ -52,7 +52,7 @@
 
 extern bool LogMessageOnce(wxString &msg);
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
-extern void AlphaBlending ( ocpnDC& dc, int x, int y, int size_x, int size_y,
+extern void AlphaBlending ( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
                                       wxColour color, unsigned char transparency );
 
 extern double fromDMM(wxString sdms);
@@ -498,56 +498,54 @@ WX_DECLARE_LIST(SelectItem, SelectableItemList);// establish class as list membe
 
 
 
-class Select
-{
+class Select {
 public:
+    Select();
+    ~Select();
 
-      Select();
-      ~Select();
+    bool AddSelectableRoutePoint( float slat, float slon, RoutePoint *pRoutePointAdd );
+    bool AddSelectableRouteSegment( float slat1, float slon1, float slat2, float slon2,
+            RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
 
-      bool AddSelectableRoutePoint(float slat, float slon, RoutePoint *pRoutePointAdd);
-      bool AddSelectableRouteSegment(float slat1, float slon1, float slat2, float slon2,
-                                                         RoutePoint *pRoutePointAdd1,
-                                                         RoutePoint *pRoutePointAdd2,
-                                                         Route *pRoute);
+    bool AddSelectableTrackSegment( float slat1, float slon1, float slat2, float slon2,
+            RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
 
-      bool AddSelectableTrackSegment(float slat1, float slon1, float slat2, float slon2,
-                                     RoutePoint *pRoutePointAdd1,
-                                     RoutePoint *pRoutePointAdd2,
-                                     Route *pRoute);
+    SelectItem *FindSelection( float slat, float slon, int fseltype );
+    SelectableItemList FindSelectionList( float slat, float slon, int fseltype );
 
-      SelectItem *FindSelection(float slat, float slon, int fseltype, float SelectRadius);
-      SelectableItemList FindSelectionList(float slat, float slon, int fseltype, float SelectRadius);
+    bool DeleteAllSelectableRouteSegments( Route * );
+    bool DeleteAllSelectableTrackSegments( Route * );
+    bool DeleteAllSelectableRoutePoints( Route * );
+    bool AddAllSelectableRouteSegments( Route *pr );
+    bool AddAllSelectableTrackSegments( Route *pr );
+    bool AddAllSelectableRoutePoints( Route *pr );
+    bool UpdateSelectableRouteSegments( RoutePoint *prp );
+    bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon );
+    bool IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel );
 
-      bool DeleteAllSelectableRouteSegments(Route *);
-      bool DeleteAllSelectableTrackSegments(Route *);
-      bool DeleteAllSelectableRoutePoints(Route *);
-      bool AddAllSelectableRouteSegments(Route *pr);
-      bool AddAllSelectableTrackSegments(Route *pr);
-      bool AddAllSelectableRoutePoints(Route *pr);
-      bool UpdateSelectableRouteSegments(RoutePoint *prp);
+    //    Generic Point Support
+    //      e.g. Tides/Currents and AIS Targets
+    SelectItem *AddSelectablePoint( float slat, float slon, void *data, int fseltype );
+    bool DeleteAllPoints( void );
+    bool DeleteSelectablePoint( void *data, int SeltypeToDelete );
+    bool ModifySelectablePoint( float slat, float slon, void *data, int fseltype );
 
-      bool IsSelectableSegmentSelected(float slat, float slon, float SelectRadius, SelectItem *pFindSel);
+    //    Delete all selectable points in list by type
+    bool DeleteAllSelectableTypePoints( int SeltypeToDelete );
 
+    //  Accessors
 
-//    Generic Point Support
-//      e.g. Tides/Currents and AIS Targets
-      SelectItem *AddSelectablePoint(float slat, float slon, void *data, int fseltype);
-      bool DeleteAllPoints(void);
-      bool DeleteSelectablePoint(void *data, int SeltypeToDelete);
-      bool ModifySelectablePoint(float slat, float slon, void *data, int fseltype);
-
-//    Delete all selectable points in list by type
-      bool DeleteAllSelectableTypePoints(int SeltypeToDelete);
-
-      //  Accessors
-
-      SelectableItemList *GetSelectList(){return pSelectList;}
+    SelectableItemList *GetSelectList()
+    {
+        return pSelectList;
+    }
 
 private:
+    void CalcSelectRadius();
 
-      SelectableItemList      *pSelectList;
-
+    SelectableItemList *pSelectList;
+    int pixelRadius;
+    float selectRadius;
 };
 
 

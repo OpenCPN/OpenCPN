@@ -106,7 +106,7 @@ typedef enum ais_nav_status
     FISHING,
     UNDERWAY_SAILING,
     HSC,
-    RESERVED_10,
+    WIG,
     RESERVED_11,
     RESERVED_12,
     RESERVED_13,

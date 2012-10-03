@@ -263,11 +263,19 @@ ChartTableEntry::~ChartTableEntry()
 {
     free(pFullPath);
     free(pPlyTable);
+    
     for (int i = 0; i < nAuxPlyEntries; i++)
         free(pAuxPlyTable[i]);
     free(pAuxPlyTable);
     free(pAuxCntTable);
 
+    if (nNoCovrPlyEntries) {
+        for (int i = 0; i < nNoCovrPlyEntries; i++) 
+            free( pNoCovrPlyTable[i] );
+        free( pNoCovrPlyTable );
+        free( pNoCovrCntTable );
+    }
+    
     delete m_pfilename;
 }
 

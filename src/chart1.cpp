@@ -260,7 +260,6 @@ bool                      g_bPermanentMOBIcon;
 
 int                       g_iSDMMFormat;
 
-bool                      g_bNavAidShowRadarRings;
 int                       g_iNavAidRadarRingsNumberVisible;
 float                     g_fNavAidRadarRingsStep;
 int                       g_pNavAidRadarRingsStepUnits;
@@ -519,7 +518,7 @@ wxString                  g_AW2GUID;
 bool                      g_b_overzoom_x; // Allow high overzoom
 bool                      g_bshow_overzoom_emboss;
 
-bool                      g_bOwnShipRealSize;
+int                      g_OwnShipIconType;
 double                    g_n_ownship_length_meters;
 double                    g_n_ownship_beam_meters;
 double                    g_n_gps_antenna_offset_y;
@@ -3611,6 +3610,41 @@ void MyFrame::ToggleRocks( void )
 #endif
 }
 
+void MyFrame::ToggleAnchor( void )
+{
+#ifdef USE_S57
+    if( ps52plib ) {
+        int vis =  0;
+        // Need to loop once for SBDARE, which is our "master", then for
+        // other categories, since order is unknown?
+        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+            if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
+                pOLE->nViz = !pOLE->nViz;
+                vis = pOLE->nViz;
+                break;
+            }
+        }
+        const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL" };
+        unsigned int num = sizeof(categories) / sizeof(categories[0]);
+        unsigned int cnt = 0;
+        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+            for( unsigned int c = 0; c < num; c++ ) {
+                if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
+                    pOLE->nViz = vis;
+                    cnt++;
+                    break;
+                }
+            }
+            if( cnt == num ) break;
+        }
+        ps52plib->GenerateStateHash();
+        cc1->ReloadVP();
+    }
+#endif
+}
+
 void MyFrame::TogglebFollow( void )
 {
     if( !cc1->m_bFollow ) SetbFollow();
@@ -5941,12 +5975,12 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     }
 
     if( b_is_in_noshow ) {
-        pctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Add this chart to quilt.") );
+        pctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Show This Chart") );
         Connect( ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                 wxCommandEventHandler(MyFrame::OnPianoMenuEnableChart) );
     } else
         if( pCurrentStack->nEntry > 1 ) {
-            pctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Remove this chart from quilt.") );
+            pctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Hide This Chart") );
             Connect( ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                     wxCommandEventHandler(MyFrame::OnPianoMenuDisableChart) );
         }
