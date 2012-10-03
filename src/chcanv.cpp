@@ -2257,7 +2257,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
             if( pc->GetChartType() == CHART_TYPE_S57 ) {
                 s57chart *ps57 = dynamic_cast<s57chart *>( pc );
                 pqp->b_overlay = ( ps57->GetUsageChar() == 'L' || ps57->GetUsageChar() == 'A' );
-                m_bquilt_has_overlays = true;
+                if( pqp->b_overlay ) 
+                    m_bquilt_has_overlays = true;
             }
         }
     }
@@ -2357,22 +2358,21 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
         ChartBase *chart = GetFirstChart();
         int chartsDrawn = 0;
 
-        while( chart ) {
-            bool okToRender = cc1->IsChartLargeEnoughToRender( chart, vp );
+        if( !chart_region.IsEmpty() ) {
+            while( chart ) {
+                bool okToRender = cc1->IsChartLargeEnoughToRender( chart, vp );
 
-            if( chart->GetChartProjectionType() != PROJECTION_MERCATOR && vp.b_MercatorProjectionOverride )
-                okToRender = false;
+                if( chart->GetChartProjectionType() != PROJECTION_MERCATOR && vp.b_MercatorProjectionOverride )
+                    okToRender = false;
 
-            if( ! okToRender ) {
-                chart = GetNextChart();
-                continue;
-            }
-            QuiltPatch *pqp = GetCurrentPatch();
-            if( pqp->b_Valid  ) {
-                bool b_chart_rendered = false;
-                wxRegion get_region = pqp->ActiveRegion;
-
-                if( !chart_region.IsEmpty() ) {
+                if( ! okToRender ) {
+                    chart = GetNextChart();
+                    continue;
+                }
+                QuiltPatch *pqp = GetCurrentPatch();
+                if( pqp->b_Valid  ) {
+                    bool b_chart_rendered = false;
+                    wxRegion get_region = pqp->ActiveRegion;
 
                     get_region.Intersect( chart_region );
 
@@ -2390,50 +2390,47 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
                     while( upd ) {
                         wxRect rect = upd.GetRect();
                         dc.Blit( rect.x, rect.y, rect.width, rect.height, &tmp_dc, rect.x, rect.y,
-                                 wxCOPY, true );
+                                wxCOPY, true );
                         upd++;
                     }
 
                     tmp_dc.SelectObject( wxNullBitmap );
+
+                    if(b_chart_rendered)
+                        rendered_region.Union(get_region);
                 }
 
-                if(b_chart_rendered)
-                    rendered_region.Union(get_region);
+                chartsDrawn++;
+                chart = GetNextChart();
             }
-
-            chartsDrawn++;
-            chart = GetNextChart();
         }
 
         if( ! chartsDrawn ) cc1->GetVP().SetProjectionType( PROJECTION_MERCATOR );
 
         //    Render any Overlay patches for s57 charts(cells)
-        if( m_bquilt_has_overlays ) {
+        if( m_bquilt_has_overlays && !chart_region.IsEmpty() ) {
             chart = GetFirstChart();
             while( chart ) {
                 QuiltPatch *pqp = GetCurrentPatch();
                 if( pqp->b_Valid ) {
-                    if( !chart_region.IsEmpty() ) {
+                    if( pqp->b_overlay ) {
                         wxRegion get_region = pqp->ActiveRegion;
                         get_region.Intersect( chart_region );
 
                         if( !get_region.IsEmpty() ) {
-                            if( pqp->b_overlay ) {
-                                s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
-                                Chs57->RenderOverlayRegionViewOnDC( tmp_dc, vp, get_region );
+                            s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
+                            Chs57->RenderOverlayRegionViewOnDC( tmp_dc, vp, get_region );
+                                
+                            wxRegionIterator upd( get_region );
+                            while( upd ) {
+                                wxRect rect = upd.GetRect();
+                                dc.Blit( rect.x, rect.y, rect.width, rect.height, &tmp_dc, rect.x,
+                                      rect.y, wxCOPY, true );
+                                upd++;
                             }
+                            tmp_dc.SelectObject( wxNullBitmap );
                         }
-
-                        wxRegionIterator upd( get_region );
-                        while( upd ) {
-                            wxRect rect = upd.GetRect();
-                            dc.Blit( rect.x, rect.y, rect.width, rect.height, &tmp_dc, rect.x,
-                                     rect.y, wxCOPY, true );
-                            upd++;
-                        }
-
-                        tmp_dc.SelectObject( wxNullBitmap );
-                    }
+                     }
                 }
 
                 chart = GetNextChart();
