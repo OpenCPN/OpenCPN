@@ -5259,7 +5259,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
                 //  Set minimum ownship drawing size
                 double ownship_min_mm = g_n_ownship_min_mm;
-                ownship_min_mm = wxMax(ownship_min_mm, 10.0);
+                ownship_min_mm = wxMax(ownship_min_mm, 2.0);
 
                 //  Calculate Nautical Miles distance from midships to gps antenna
                 double hdt_ant = icon_hdt + 180.;

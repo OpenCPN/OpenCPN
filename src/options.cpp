@@ -2042,7 +2042,7 @@ void options::OnApplyClick( wxCommandEvent& event )
         bool OK = true;
         if( g_n_ownship_length_meters <= 0 ) OK = false;
         if( g_n_ownship_beam_meters <= 0 ) OK = false;
-        if( g_n_gps_antenna_offset_x > g_n_ownship_beam_meters/2.0 ) OK = false;
+        if( abs(g_n_gps_antenna_offset_x) > g_n_ownship_beam_meters/2.0 ) OK = false;
         if( g_n_gps_antenna_offset_y > g_n_ownship_length_meters ) OK = false;
         if( g_n_ownship_min_mm > 100 ) OK = false;
         if( g_n_ownship_min_mm <= 0 ) OK = false;
