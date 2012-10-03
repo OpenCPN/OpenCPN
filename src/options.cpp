@@ -122,7 +122,7 @@ extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bTransparentToolbar;
 
-extern bool             g_bOwnShipRealSize;
+extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
 extern double           g_n_gps_antenna_offset_y;
@@ -209,8 +209,8 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_BUTTON( ID_AISALERTTESTSOUND, options::OnButtonTestSound )
     EVT_CHECKBOX( ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick )
     EVT_CHECKBOX( ID_ZTCCHECKBOX, options::OnZTCCheckboxClick )
-    EVT_COLLAPSIBLEPANE_CHANGED( ID_OSREALSIZE, options::OnCollapsibleClick )
-    EVT_COLLAPSIBLEPANE_CHANGED( ID_GPXCHECKBOX, options::OnCollapsibleClick )
+    EVT_CHOICE( ID_SHIPICONTYPE, options::OnShipTypeSelect )
+    EVT_COLLAPSIBLEPANE_CHANGED( ID_RADARRINGS, options::OnCollapsibleClick )
     EVT_CHAR_HOOK( options::OnCharHook )
 END_EVENT_TABLE()
 
@@ -655,50 +655,51 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     dispOptions = new wxStaticBoxSizer( osdBox, wxVERTICAL );
     ownShip->Add( dispOptions, 0, wxTOP | wxALL | wxEXPAND, border_size );
 
-    wxFlexGridSizer* dispOptionsGrid = new wxFlexGridSizer( 1, 2, group_item_spacing, group_item_spacing );
+    wxFlexGridSizer* dispOptionsGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
     dispOptionsGrid->AddGrowableCol( 1 );
     dispOptions->Add( dispOptionsGrid, 1, wxALL | wxEXPAND, border_size );
 
-    wxStaticText *pStatic_OSCOG_Predictor = new wxStaticText( itemPanelShip, -1, _("COG Predictor Length (min)") );
-    dispOptionsGrid->Add( pStatic_OSCOG_Predictor, 0, wxALIGN_LEFT );
+    wxStaticText *pStatic_OSCOG_Predictor = new wxStaticText( itemPanelShip, wxID_ANY, _("COG Predictor Length (min)") );
+    dispOptionsGrid->Add( pStatic_OSCOG_Predictor, 0 );
 
-    m_pText_OSCOG_Predictor = new wxTextCtrl( itemPanelShip, -1 );
+    m_pText_OSCOG_Predictor = new wxTextCtrl( itemPanelShip, wxID_ANY );
     dispOptionsGrid->Add( m_pText_OSCOG_Predictor, 0, wxALIGN_RIGHT );
 
-    m_pOSShowRealSize = new wxCollapsiblePane( itemPanelShip, ID_OSREALSIZE, _("Use Real Ship Size") );
-    dispOptions->Add( m_pOSShowRealSize, 0, wxEXPAND | wxALL, group_item_spacing );
+    wxStaticText *iconTypeTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Ship Icon Type") );
+    dispOptionsGrid->Add( iconTypeTxt, 0 );
 
-    wxWindow* realSizePane = m_pOSShowRealSize->GetPane();
+    wxString iconTypes[] = { _("Fixed Size Bitmap"), _("Real Size Bitmap"), _("Real Size Vector") };
+    m_pShipIconType = new wxChoice( itemPanelShip, ID_SHIPICONTYPE, wxDefaultPosition, wxDefaultSize, 3, iconTypes );
+    dispOptionsGrid->Add( m_pShipIconType, 0, wxALIGN_RIGHT | wxLEFT|wxRIGHT|wxTOP, group_item_spacing );
 
-    wxFlexGridSizer* realSizes = new wxFlexGridSizer( 5, 2, group_item_spacing, group_item_spacing );
+    realSizes = new wxFlexGridSizer( 5, 2, group_item_spacing, group_item_spacing );
     realSizes->AddGrowableCol(1);
 
-    realSizes->Add( new wxStaticText( realSizePane, -1, _("Length Over All (m)") ), 1, wxALIGN_LEFT );
-    m_pOSLength = new wxTextCtrl( realSizePane, 1 );
+    dispOptions->Add( realSizes, 0, wxEXPAND | wxALL, group_item_spacing );
+
+    realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("Length Over All (m)") ), 1, wxALIGN_LEFT );
+    m_pOSLength = new wxTextCtrl( itemPanelShip, 1 );
     realSizes->Add( m_pOSLength, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
-    realSizes->Add( new wxStaticText( realSizePane, -1, _("Width Over All (m)") ), 1, wxALIGN_LEFT );
-    m_pOSWidth = new wxTextCtrl( realSizePane, -1 );
+    realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("Width Over All (m)") ), 1, wxALIGN_LEFT );
+    m_pOSWidth = new wxTextCtrl( itemPanelShip, wxID_ANY );
     realSizes->Add( m_pOSWidth, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
-    realSizes->Add( new wxStaticText( realSizePane, -1, _("GPS Offset from Bow (m)") ), 1, wxALIGN_LEFT );
-    m_pOSGPSOffsetY = new wxTextCtrl( realSizePane, -1 );
+    realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("GPS Offset from Bow (m)") ), 1, wxALIGN_LEFT );
+    m_pOSGPSOffsetY = new wxTextCtrl( itemPanelShip, wxID_ANY );
     realSizes->Add( m_pOSGPSOffsetY, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
-    realSizes->Add( new wxStaticText( realSizePane, -1, _("GPS Offset from Midship (m)") ), 1, wxALIGN_LEFT );
-    m_pOSGPSOffsetX = new wxTextCtrl( realSizePane, -1 );
+    realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("GPS Offset from Midship (m)") ), 1, wxALIGN_LEFT );
+    m_pOSGPSOffsetX = new wxTextCtrl( itemPanelShip, wxID_ANY );
     realSizes->Add( m_pOSGPSOffsetX, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
-    realSizes->Add( new wxStaticText( realSizePane, -1, _("Minimum Screen Size (mm)") ), 1, wxALIGN_LEFT );
-    m_pOSMinSize = new wxTextCtrl( realSizePane, -1 );
+    realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("Minimum Screen Size (mm)") ), 1, wxALIGN_LEFT );
+    m_pOSMinSize = new wxTextCtrl( itemPanelShip, wxID_ANY );
     realSizes->Add( m_pOSMinSize, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
-
-    realSizePane->SetSizer( realSizes );
-    realSizes->SetSizeHints( realSizePane );
 
     // Radar rings
 
-    pNavAidShowRadarRings = new wxCollapsiblePane( itemPanelShip, ID_GPXCHECKBOX, _("Show radar rings") );
+    pNavAidShowRadarRings = new wxCollapsiblePane( itemPanelShip, ID_RADARRINGS, _("Show radar rings") );
     dispOptions->Add( pNavAidShowRadarRings, 0, wxEXPAND | wxALL, group_item_spacing );
 
     wxWindow* radarPane = pNavAidShowRadarRings->GetPane();
@@ -1642,9 +1643,9 @@ void options::SetInitialSettings()
         s.Printf( _T("%4.0f"), g_ownship_predictor_minutes );
     m_pText_OSCOG_Predictor->SetValue( s );
 
-    if( g_bOwnShipRealSize ) m_pOSShowRealSize->Expand();
-    else m_pOSShowRealSize->Collapse();
-
+    m_pShipIconType->SetSelection( g_OwnShipIconType );
+    wxCommandEvent eDummy;
+    OnShipTypeSelect( eDummy );
     m_pOSLength->SetValue( wxString::Format( _T("%.1f"), g_n_ownship_length_meters ) );
     m_pOSWidth->SetValue( wxString::Format( _T("%.1f"), g_n_ownship_beam_meters ) );
     m_pOSGPSOffsetX->SetValue( wxString::Format( _T("%.1f"), g_n_gps_antenna_offset_x ) );
@@ -1872,6 +1873,20 @@ void options::OnZTCCheckboxClick( wxCommandEvent& event )
     }
 }
 
+void options::OnShipTypeSelect( wxCommandEvent& event )
+{
+    if( m_pShipIconType->GetSelection() == 0 ) {
+        realSizes->ShowItems( false );
+    } else {
+        realSizes->ShowItems( true );
+    }
+    dispOptions->Layout();
+    ownShip->Layout();
+    itemPanelShip->Layout();
+    itemPanelShip->Refresh();
+    event.Skip();
+}
+
 void options::OnCollapsibleClick( wxCollapsiblePaneEvent& event )
 {
     dispOptions->Layout();
@@ -2014,7 +2029,36 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     m_returnChanges = 0;
 
-//    Handle Chart Tab
+    // Start with the stuff that requires intelligent validation.
+
+    g_OwnShipIconType = m_pShipIconType->GetSelection();
+    m_pOSLength->GetValue().ToDouble( &g_n_ownship_length_meters );
+    m_pOSWidth->GetValue().ToDouble( &g_n_ownship_beam_meters );
+    m_pOSGPSOffsetX->GetValue().ToDouble( &g_n_gps_antenna_offset_x );
+    m_pOSGPSOffsetY->GetValue().ToDouble( &g_n_gps_antenna_offset_y );
+    m_pOSMinSize->GetValue().ToLong( &g_n_ownship_min_mm );
+
+    if( g_OwnShipIconType > 0 ) {
+        bool OK = true;
+        if( g_n_ownship_length_meters <= 0 ) OK = false;
+        if( g_n_ownship_beam_meters <= 0 ) OK = false;
+        if( g_n_gps_antenna_offset_x > g_n_ownship_beam_meters/2.0 ) OK = false;
+        if( g_n_gps_antenna_offset_y > g_n_ownship_length_meters ) OK = false;
+        if( g_n_ownship_min_mm > 100 ) OK = false;
+        if( g_n_ownship_min_mm <= 0 ) OK = false;
+        if( ! OK ) {
+            OCPNMessageDialog* dlg = new OCPNMessageDialog( this,
+                    _("Your Own Ship size data is not correct.\nPlease review it."), _("OpenCPN info"),
+                    wxICON_ERROR );
+            ::wxEndBusyCursor();
+            dlg->ShowModal();
+            delete dlg;
+            event.SetInt( wxID_STOP );
+            return;
+        }
+    }
+
+    //    Handle Chart Tab
     wxString dirname;
 
     if( pActiveChartsList ) {
@@ -2093,13 +2137,6 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bLookAhead = pCBLookAhead->GetValue();
 
     m_pText_OSCOG_Predictor->GetValue().ToDouble( &g_ownship_predictor_minutes );
-
-    g_bOwnShipRealSize = m_pOSShowRealSize->IsExpanded();
-    m_pOSLength->GetValue().ToDouble( &g_n_ownship_length_meters );
-    m_pOSWidth->GetValue().ToDouble( &g_n_ownship_beam_meters );
-    m_pOSGPSOffsetX->GetValue().ToDouble( &g_n_gps_antenna_offset_x );
-    m_pOSGPSOffsetY->GetValue().ToDouble( &g_n_gps_antenna_offset_y );
-    m_pOSMinSize->GetValue().ToLong( &g_n_ownship_min_mm );
 
     g_bNavAidShowRadarRings = pNavAidShowRadarRings->IsExpanded();
     wxString buf = pNavAidRadarRingsNumberVisible->GetValue();
@@ -2374,6 +2411,7 @@ void options::OnXidOkClick( wxCommandEvent& event )
     if( event.GetEventObject() == NULL ) return;
 
     OnApplyClick( event );
+    if( event.GetInt() == wxID_STOP ) return;
 
     //  Required to avoid intermittent crash on wxGTK
     m_pListbook->ChangeSelection(0);

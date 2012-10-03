@@ -227,7 +227,7 @@ extern bool             g_bUseGreenShip;
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
 extern bool             g_bshow_overzoom_emboss;
 extern int              g_nautosave_interval_seconds;
-extern bool             g_bOwnShipRealSize;
+extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
 extern double           g_n_gps_antenna_offset_y;
@@ -2943,7 +2943,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
-    Read( _T ( "OwnShipUseRealSize" ), &g_bOwnShipRealSize, 0 );
+    Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType, 0 );
     Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0 );
     Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0 );
     Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
@@ -4172,7 +4172,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
 
     Write( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
-    Write( _T ( "OwnShipUseRealSize" ), g_bOwnShipRealSize );
+    Write( _T ( "OwnShipIconType" ), g_OwnShipIconType );
     Write( _T ( "OwnShipLength" ), g_n_ownship_length_meters );
     Write( _T ( "OwnShipWidth" ), g_n_ownship_beam_meters );
     Write( _T ( "OwnShipGPSOffsetX" ), g_n_gps_antenna_offset_x );

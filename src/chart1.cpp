@@ -517,7 +517,7 @@ wxString                  g_AW2GUID;
 bool                      g_b_overzoom_x; // Allow high overzoom
 bool                      g_bshow_overzoom_emboss;
 
-bool                      g_bOwnShipRealSize;
+int                      g_OwnShipIconType;
 double                    g_n_ownship_length_meters;
 double                    g_n_ownship_beam_meters;
 double                    g_n_gps_antenna_offset_y;

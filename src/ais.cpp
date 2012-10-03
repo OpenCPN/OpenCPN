@@ -1522,11 +1522,11 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             dsc_degs = (int) ( dsc_lon / 100.0 );
             dsc_mins = dsc_lon - dsc_degs * 100.0;
             dsc_lon = dsc_degs + dsc_mins / 60.0;
-            switch( dsc_quadrant ){
-                case 0: break;                            // NE
-                case 1: dsc_lon = 0-dsc_lon; break;       // NW
-                case 3: dsc_lon = 0-dsc_lon;          // SW
-                case 2: dsc_lat = 0-dsc_lat;          // SE
+            switch( dsc_quadrant ) {
+                case 0: break;                                             // NE
+                case 1: dsc_lon = -dsc_lon; break;                         // NW
+                case 2: dsc_lat = -dsc_lat; break;                         // SE
+                case 3: dsc_lon = -dsc_lon; dsc_lat = -dsc_lat; break;     // SW
                 default: break;
             }
             if( dsc_fmt != 02 ) mmsi = (int) dsc_mmsi;
