@@ -214,7 +214,8 @@ public:
       double GetAbsoluteMinScalePpm(){ return m_absolute_min_scale_ppm; }
       ViewPort &GetVP();
       ChartBase* GetChartAtCursor();
-
+      ChartBase* GetOverlayChartAtCursor();
+      
       glChartCanvas *GetglCanvas(){ return m_glcc; }
       GSHHSChart* GetWorldBackgroundChart() { return pWorldBackgroundChart; }
 

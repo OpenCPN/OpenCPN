@@ -685,6 +685,7 @@ public:
     bool RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &chart_region );
     bool IsVPBlittable( ViewPort &VPoint, int dx, int dy, bool b_allow_vector = false );
     ChartBase *GetChartAtPix( wxPoint p );
+    ChartBase *GetOverlayChartAtPix( wxPoint p );
     int GetChartdbIndexAtPix( wxPoint p );
     void InvalidateAllQuiltPatchs( void );
     void Invalidate( void )
@@ -1177,14 +1178,38 @@ ChartBase *Quilt::GetChartAtPix( wxPoint p )
     ChartBase *pret = NULL;
     wxPatchListNode *cnode = m_PatchList.GetFirst();
     while( cnode ) {
-        if( cnode->GetData()->ActiveRegion.Contains( p ) == wxInRegion ) pret =
-                ChartData->OpenChartFromDB( cnode->GetData()->dbIndex, FULL_INIT );
+        QuiltPatch *pqp = cnode->GetData();
+        if( !pqp->b_overlay && (pqp->ActiveRegion.Contains( p ) == wxInRegion) )
+                pret = ChartData->OpenChartFromDB( pqp->dbIndex, FULL_INIT );
         cnode = cnode->GetNext();
     }
 
     m_bbusy = false;
     return pret;
 }
+
+ChartBase *Quilt::GetOverlayChartAtPix( wxPoint p )
+{
+    if( m_bbusy ) return NULL;
+    
+    m_bbusy = true;
+    
+    //    The patchlist is organized from small to large scale.
+    //    We generally will want the largest scale chart at this point, so
+    //    walk the whole list.  The result will be the last one found, i.e. the largest scale chart.
+    ChartBase *pret = NULL;
+    wxPatchListNode *cnode = m_PatchList.GetFirst();
+    while( cnode ) {
+        QuiltPatch *pqp = cnode->GetData();
+        if( pqp->b_overlay && ( pqp->ActiveRegion.Contains( p ) == wxInRegion) )
+                pret = ChartData->OpenChartFromDB( pqp->dbIndex, FULL_INIT );
+        cnode = cnode->GetNext();
+    }
+    
+    m_bbusy = false;
+    return pret;
+}
+
 
 void Quilt::InvalidateAllQuiltPatchs( void )
 {
@@ -3602,6 +3627,15 @@ ChartBase* ChartCanvas::GetChartAtCursor() {
             target_chart = cc1->m_pQuilt->GetChartAtPix( wxPoint( mouse_x, mouse_y ) );
         else
             target_chart = NULL;
+    return target_chart;
+}
+
+ChartBase* ChartCanvas::GetOverlayChartAtCursor() {
+    ChartBase* target_chart;
+    if( VPoint.b_quilt )
+        target_chart = cc1->m_pQuilt->GetOverlayChartAtPix( wxPoint( mouse_x, mouse_y ) );
+    else
+        target_chart = NULL;
     return target_chart;
 }
 
@@ -8379,6 +8413,16 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         if( !lightsVis ) gFrame->ToggleLights( true, true );
         ListOfObjRazRules* rule_list =
                 Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
+                
+        ListOfObjRazRules* overlay_rule_list = NULL;
+        ChartBase *overlay_chart = GetOverlayChartAtCursor();
+        s57chart *CHs57_Overlay = dynamic_cast<s57chart*>( overlay_chart );
+        
+        if( CHs57_Overlay ) {
+            overlay_rule_list =
+                CHs57_Overlay->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
+        }
+        
         if( !lightsVis ) gFrame->ToggleLights( true, true );
 
         wxString objText;
@@ -8401,7 +8445,13 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         objText += face;
         objText += _T("\">");
 
+        if( overlay_rule_list && CHs57_Overlay) {
+            objText << CHs57_Overlay->CreateObjDescriptions( overlay_rule_list );
+            objText << _T("<hr noshade>");
+        }
+        
         objText << Chs57->CreateObjDescriptions( rule_list );
+       
         objText << _T("</font></body></html>");
 
         g_pObjectQueryDialog->SetHTMLPage( objText );
@@ -8411,6 +8461,10 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         rule_list->Clear();
         delete rule_list;
 
+        if( overlay_rule_list )
+            overlay_rule_list->Clear();
+        delete overlay_rule_list;
+        
         SetCursor( wxCURSOR_ARROW );
     }
 }
