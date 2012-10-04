@@ -400,7 +400,7 @@ UndoAction::~UndoAction()
                         break;
                     case Undo_DeleteWaypoint: break;
                     case Undo_CreateWaypoint: break;
-                    case Undo_AppendWaypoint: break;
+		    case Undo_AppendWaypoint: break;
                 }
                 break;
             }
