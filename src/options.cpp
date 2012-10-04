@@ -1241,10 +1241,10 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     pCOGUPFilterGrid->Add( itemStaticTextCOGUPFilterSecs, 0, wxADJUST_MINSIZE,
             border_size );
 
-/*TODO    pCOGUPUpdateSecs = new wxTextCtrl( itemPanelUI, ID_TEXTCTRL, _T(""), wxDefaultPosition,
+    pCOGUPUpdateSecs = new wxTextCtrl( itemPanelUI, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxDefaultSize );
     pCOGUPFilterGrid->Add( pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, border_size );
-*/
+
     //  "LookAhead" checkbox
     pCBLookAhead = new wxCheckBox( itemPanelUI, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
     itemStaticBoxSizerCDO->Add( pCBLookAhead, 0, wxALL, border_size );
@@ -1744,10 +1744,10 @@ void options::SetInitialSettings()
 
     s.Printf( _T("%d"), g_COGFilterSec );
     m_tFilterSec->SetValue( s );
-/*TODO
+
     s.Printf( _T("%d"), g_COGAvgSec );
     pCOGUPUpdateSecs->SetValue( s );
-*/
+
     pCDOOutlines->SetValue( g_bShowOutlines );
     pCDOQuilting->SetValue( g_bQuiltEnable );
     pFullScreenQuilt->SetValue( !g_bFullScreenQuilt );
@@ -2307,9 +2307,9 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_SOGFilterSec = g_COGFilterSec;
 
     long update_val = 1;
-/*TODO    pCOGUPUpdateSecs->GetValue().ToLong( &update_val );
+    pCOGUPUpdateSecs->GetValue().ToLong( &update_val );
     g_COGAvgSec = wxMin((int)update_val, MAX_COG_AVERAGE_SECONDS);
-*/
+
     g_bCourseUp = pCBCourseUp->GetValue();
     g_bLookAhead = pCBLookAhead->GetValue();
 

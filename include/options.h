@@ -280,6 +280,7 @@ public:
     wxCheckBox              *pCBVector;
     wxCheckBox              *pCBCM93;
     wxCheckBox              *pCBCourseUp;
+    wxTextCtrl                  *pCOGUPUpdateSecs;
     wxCheckBox              *pCBLookAhead;
     wxTextCtrl              *m_pText_OSCOG_Predictor;
     wxChoice                *m_pShipIconType;
@@ -393,16 +394,7 @@ public:
     wxCheckBox                *pScanCheckBox;
     int                       k_charts;
 
-//    For "NMEA Options" Box
-    wxStaticBox             *m_itemNMEA_TCPIP_StaticBox;
-    wxStaticBoxSizer        *m_itemNMEA_TCPIP_StaticBoxSizer;
-    wxTextCtrl              *m_itemNMEA_TCPIP_Source;
-    wxComboBox              *m_itemNMEAListBox;
-    wxComboBox              *m_itemNMEAAutoListBox;
-    wxComboBox              *m_itemNMEABaudListBox;
-
 //    For "AIS" Page
-
     wxCheckBox                *m_pCheck_CPA_Max;
     wxTextCtrl                *m_pText_CPA_Max;
     wxCheckBox                *m_pCheck_CPA_Warn;
