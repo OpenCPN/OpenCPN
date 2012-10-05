@@ -32,8 +32,8 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
-
 #include "instrument.h"
+#include "georef.h"
 #include <math.h>
 #include <time.h>
 
@@ -533,4 +533,79 @@ void DashboardInstrument_Sun::SetUtcTime(int st, wxDateTime data)
             }
             Refresh(false);
       }
+}
+
+//----------------------------------------------------------------
+//
+//    DashboardInstrument_FromOwnship Implementation
+//
+//----------------------------------------------------------------
+DashboardInstrument_FromOwnship::DashboardInstrument_FromOwnship(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1, int cap_flag2 ,int cap_flag3,int cap_flag4)
+      :DashboardInstrument(pparent, id, title, cap_flag1 | cap_flag2 | cap_flag3 | cap_flag4)
+{
+      m_data1 =_T("---");
+      m_data2 =_T("---");
+      m_cap_flag1 = cap_flag1;
+      m_cap_flag2 = cap_flag2;
+      m_cap_flag3 = cap_flag3;
+      m_cap_flag4 = cap_flag4;
+      s_lat = 99999999;
+      s_lon = 99999999;
+      SetInstrumentWidth(200);
+}
+
+void DashboardInstrument_FromOwnship::SetInstrumentWidth(int width)
+{
+      wxClientDC dc(this);
+      int w;
+      dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
+      dc.GetTextExtent(_T("000"), &w, &m_DataHeight, 0, 0, g_pFontData);
+
+      m_width = width;
+      m_height = m_TitleHeight + (m_DataHeight * 2 );
+      SetMinSize(wxSize(m_width, m_height));
+      Refresh(false);
+}
+
+void DashboardInstrument_FromOwnship::Draw(wxBufferedDC* dc)
+{
+      wxColour cl;
+
+      dc->SetFont(*g_pFontData);
+      //dc.SetTextForeground(pFontMgr->GetFontColor(_T("Dashboard Data")));
+      GetGlobalColor(_T("BLUE2"), &cl);
+      dc->SetTextForeground(cl);
+
+      dc->DrawText(m_data1, 10, m_TitleHeight);
+      dc->DrawText(m_data2, 10, m_TitleHeight + m_DataHeight);
+}
+
+void DashboardInstrument_FromOwnship::SetData(int st, double data, wxString unit)
+{
+      if (st == m_cap_flag1)
+      {
+	      c_lat = data;
+      }
+      else if (st == m_cap_flag2)
+      {
+	      c_lon = data;
+      }
+	  else if (st == m_cap_flag3)
+      {
+	      s_lat = data;
+      }
+      else if (st == m_cap_flag4)
+      {
+            s_lon = data;
+      }
+      else return;
+	      if ( s_lat < 99999999 && s_lon < 99999999 )
+            {
+                  double brg,dist;
+                  DistanceBearingMercator(c_lat, c_lon, s_lat, s_lon, &brg, &dist);
+                  m_data1.Printf(_T("%03d Deg"),(int)brg);
+                  m_data2.Printf(_T("%3.2f NMi"),dist );
+            }
+	  	
+      Refresh(false);
 }
