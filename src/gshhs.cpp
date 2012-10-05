@@ -141,7 +141,9 @@ void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp ) {
 
 //-------------------------------------------------------------------------
 
-Projection::Projection() {
+Projection::Projection() :
+        W( 0 ), H( 0 ), CX( 0 ), CY( 0 ), xW( -90 ), xE( 90 ), yN( 90 ), yS( -90 ), PX( 0 ), PY( 0 )
+{
     frozen = false;
     scalemax = 10e20;
     scale = -1;

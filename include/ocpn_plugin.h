@@ -269,11 +269,6 @@ class DECL_EXP PlugInChartBase : public wxObject
             virtual int  GetCOVRTablenPoints(int iTable){ return 0; }
             virtual float *GetCOVRTableHead(int iTable){ return (float *)NULL; }
 
-            virtual int GetNoCOVREntries(){ return  0; }
-            virtual int GetNoCOVRTablePoints(int iTable) { return 0; }
-            virtual int  GetNoCOVRTablenPoints(int iTable){ return 0; }
-            virtual float *GetNoCOVRTableHead(int iTable){ return (float *)NULL; }
-            
             virtual wxBitmap *GetThumbnail(int tnx, int tny, int cs);
 
 //    Accessors, need not be overridden in derived class if the member variables are maintained

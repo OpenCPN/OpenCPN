@@ -45,6 +45,7 @@
 #include <math.h>
 #include <time.h>
 #include <locale>
+#include <vector>
 
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
@@ -64,6 +65,7 @@
 #include "tinyxml.h"
 #include "gpxdocument.h"
 #include "ocpndc.h"
+#include "geodesic.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -187,7 +189,6 @@ extern bool             g_bDrawAISSize;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
-extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
@@ -225,7 +226,7 @@ extern bool             g_bUseGreenShip;
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
 extern bool             g_bshow_overzoom_emboss;
 extern int              g_nautosave_interval_seconds;
-extern bool             g_bOwnShipRealSize;
+extern int              g_OwnShipIconType;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
 extern double           g_n_gps_antenna_offset_y;
@@ -350,6 +351,11 @@ void SelectItem::SetUserData( int data )
 Select::Select()
 {
     pSelectList = new SelectableItemList;
+    pixelRadius = 8;
+    int w,h;
+    wxDisplaySize( &w, &h );
+    if( h > 800 ) pixelRadius = 10;
+    if( h > 1024 ) pixelRadius = 12;
 }
 
 Select::~Select()
@@ -718,8 +724,7 @@ bool Select::DeleteAllSelectableTrackSegments( Route *pr )
     return true;
 }
 
-bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon,
-        float SelectRadius )
+bool Select::IsSegmentSelected( float a, float b, float c, float d, float slat, float slon )
 {
     double adder = 0.;
 
@@ -745,9 +750,9 @@ bool IsSegmentSelected( float a, float b, float c, float d, float slat, float sl
     }
 
 //    As a course test, use segment bounding box test
-    if( ( slat >= ( fmin ( a,b ) - SelectRadius ) ) && ( slat <= ( fmax ( a,b ) + SelectRadius ) )
-            && ( ( slon + adder ) >= ( fmin ( c,d ) - SelectRadius ) )
-            && ( ( slon + adder ) <= ( fmax ( c,d ) + SelectRadius ) ) ) {
+    if( ( slat >= ( fmin ( a,b ) - selectRadius ) ) && ( slat <= ( fmax ( a,b ) + selectRadius ) )
+            && ( ( slon + adder ) >= ( fmin ( c,d ) - selectRadius ) )
+            && ( ( slon + adder ) <= ( fmax ( c,d ) + selectRadius ) ) ) {
         //    Use vectors to do hit test....
         VECTOR2D va, vb, vn;
 
@@ -765,15 +770,21 @@ bool IsSegmentSelected( float a, float b, float c, float d, float slat, float sl
         vb.y = bp - ap;
 
         double delta = vGetLengthOfNormal( &va, &vb, &vn );
-        if( fabs( delta ) < ( SelectRadius * 1852 * 60 ) ) return true;
+        if( fabs( delta ) < ( selectRadius * 1852 * 60 ) ) return true;
     }
     return false;
 }
 
-SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float SelectRadius )
+void Select::CalcSelectRadius() {
+    selectRadius = pixelRadius / ( cc1->GetCanvasTrueScale() * 1852 * 60 );
+}
+
+SelectItem *Select::FindSelection( float slat, float slon, int fseltype )
 {
     float a, b, c, d;
     SelectItem *pFindSel;
+
+    CalcSelectRadius();
 
 //    Iterate on the list
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -789,8 +800,8 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float S
                     a = fabs( slat - pFindSel->m_slat );
                     b = fabs( slon - pFindSel->m_slon );
 
-                    if( ( fabs( slat - pFindSel->m_slat ) < SelectRadius )
-                            && ( fabs( slon - pFindSel->m_slon ) < SelectRadius ) ) goto find_ok;
+                    if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
+                            && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) goto find_ok;
                     break;
                 case SELTYPE_ROUTESEGMENT:
                 case SELTYPE_TRACKSEGMENT: {
@@ -799,7 +810,7 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float S
                     c = pFindSel->m_slon;
                     d = pFindSel->m_slon2;
 
-                    if( IsSegmentSelected( a, b, c, d, slat, slon, SelectRadius ) ) goto find_ok;
+                    if( IsSegmentSelected( a, b, c, d, slat, slon ) ) goto find_ok;
                     break;
                 }
                 default:
@@ -814,23 +825,25 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float S
     find_ok: return pFindSel;
 }
 
-bool Select::IsSelectableSegmentSelected( float slat, float slon, float SelectRadius,
-        SelectItem *pFindSel )
+bool Select::IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel )
 {
+    CalcSelectRadius();
+
     float a = pFindSel->m_slat;
     float b = pFindSel->m_slat2;
     float c = pFindSel->m_slon;
     float d = pFindSel->m_slon2;
 
-    return IsSegmentSelected( a, b, c, d, slat, slon, SelectRadius );
+    return IsSegmentSelected( a, b, c, d, slat, slon );
 }
 
-SelectableItemList Select::FindSelectionList( float slat, float slon, int fseltype,
-        float SelectRadius )
+SelectableItemList Select::FindSelectionList( float slat, float slon, int fseltype )
 {
     float a, b, c, d;
     SelectItem *pFindSel;
     SelectableItemList ret_list;
+
+    CalcSelectRadius();
 
 //    Iterate on the list
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -843,8 +856,8 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                 case SELTYPE_TIDEPOINT:
                 case SELTYPE_CURRENTPOINT:
                 case SELTYPE_AISTARGET:
-                    if( ( fabs( slat - pFindSel->m_slat ) < SelectRadius )
-                            && ( fabs( slon - pFindSel->m_slon ) < SelectRadius ) ) {
+                    if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
+                            && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) {
                         ret_list.Append( pFindSel );
                     }
                     break;
@@ -855,8 +868,7 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                     c = pFindSel->m_slon;
                     d = pFindSel->m_slon2;
 
-                    if( IsSegmentSelected( a, b, c, d, slat, slon, SelectRadius ) ) ret_list.Append(
-                            pFindSel );
+                    if( IsSegmentSelected( a, b, c, d, slat, slon ) ) ret_list.Append( pFindSel );
 
                     break;
                 }
@@ -1156,7 +1168,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 
     //  Highlite any selected point
     if( m_bPtIsSelected ) {
-        AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height,
+        AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, 0.0,
                 pen->GetColour(), transparency );
     }
 
@@ -2618,6 +2630,76 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
     return route;
 }
 
+void Track::DouglasPeuckerReducer( std::vector<RoutePoint*>& list, int from, int to, double delta ) {
+    list[from]->m_bIsActive = true;
+    list[to]->m_bIsActive = true;
+
+    int maxdistIndex = -1;
+    double maxdist = 0;
+
+    for( int i=from+1; i<to; i++ ) {
+        double dist, bear1, bear2;
+        Geodesic::GreatCircleDistBear( list[from]->m_lon, list[from]->m_lat, list[to]->m_lon,
+                list[to]->m_lat, &dist, &bear1, &bear2 );
+
+        double fromdist, frombear1, frombear2;
+        Geodesic::GreatCircleDistBear( list[from]->m_lon, list[from]->m_lat, list[i]->m_lon,
+                list[i]->m_lat, &fromdist, &frombear1, &frombear2 );
+
+        // Ref: http://www.movable-type.co.uk/scripts/latlong.html
+        double R = 6371000.0; //Earth radius in meters.
+        dist = asin( sin( fromdist / R ) * sin( GEODESIC_DEG2RAD(frombear1) - GEODESIC_DEG2RAD(bear1) ) ) * R;
+
+        if( dist < 0 ) dist = - dist;
+
+        if( dist > maxdist ) {
+            maxdist = dist;
+            maxdistIndex = i;
+        }
+    }
+
+    if( maxdist > delta ) {
+        DouglasPeuckerReducer( list, from, maxdistIndex, delta );
+        DouglasPeuckerReducer( list, maxdistIndex, to, delta );
+    }
+}
+
+int Track::Simplify( double maxDelta ) {
+    int reduction = 0;
+    wxRoutePointListNode *pointnode = pRoutePointList->GetFirst();
+    RoutePoint *routepoint;
+    std::vector<RoutePoint*> pointlist;
+
+    ::wxBeginBusyCursor();
+
+    while( pointnode ) {
+        routepoint = pointnode->GetData();
+        routepoint->m_bIsActive = false;
+        pointlist.push_back(routepoint);
+        pointnode = pointnode->GetNext();
+    }
+
+    DouglasPeuckerReducer( pointlist, 0, pointlist.size()-1, maxDelta );
+
+    pSelect->DeleteAllSelectableTrackSegments( this );
+    pRoutePointList->Clear();
+
+    for( size_t i=0; i<pointlist.size(); i++ ) {
+        if( pointlist[i]->m_bIsActive ) {
+            pointlist[i]->m_bIsActive = false;
+            pRoutePointList->Append( pointlist[i] );
+        } else {
+            delete pointlist[i];
+            reduction++;
+        }
+    }
+
+    SetnPoints();
+    pSelect->AddAllSelectableTrackSegments( this );
+    ::wxEndBusyCursor();
+    return reduction;
+}
+
 double Track::GetXTE( RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to )
 {
     if( !fm1 || !fm2 || !to ) return 0.0;
@@ -2767,11 +2849,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "AllowExtremeOverzoom" ), &g_b_overzoom_x, 1 );
     Read( _T ( "ShowOverzoomEmbossWarning" ), &g_bshow_overzoom_emboss, 1 );
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
-    Read( _T ( "OwnshipLengthMeters" ), &g_n_ownship_length_meters, 12 );
-    Read( _T ( "OwnshipBeamMeters" ), &g_n_ownship_beam_meters, 0 );
-    Read( _T ( "OwnshipGPSOffsetY" ), &g_n_gps_antenna_offset_y, g_n_ownship_length_meters / 2 );
-    Read( _T ( "OwnshipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
-    Read( _T ( "OwnshipMinMM" ), &g_n_ownship_min_mm, -1 );
 
     Read( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic") );
 
@@ -2865,11 +2942,11 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
-    Read( _T ( "OwnShipUseRealSize" ), &g_bOwnShipRealSize, 0 );
+    Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType, 0 );
     Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0 );
     Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0 );
-    Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_y, 0 );
-    Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_x, 0 );
+    Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
+    Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0 );
     Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 0 );
 
     Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
@@ -3653,22 +3730,19 @@ int MyConfig::LoadMyConfig( int iteration )
     SetPath( _T ( "/Settings/Others" ) );
 
     // Radar rings
-    g_bNavAidShowRadarRings = false;          // toh, 2009.02.24
-    Read( _T ( "ShowRadarRings" ), &g_bNavAidShowRadarRings );
-
-    g_iNavAidRadarRingsNumberVisible = 1;     // toh, 2009.02.24
+    g_iNavAidRadarRingsNumberVisible = 0;
     Read( _T ( "RadarRingsNumberVisible" ), &val );
     if( val.Length() > 0 ) g_iNavAidRadarRingsNumberVisible = atoi( val.mb_str() );
 
-    g_fNavAidRadarRingsStep = 1.0;            // toh, 2009.02.24
+    g_fNavAidRadarRingsStep = 1.0;
     Read( _T ( "RadarRingsStep" ), &val );
     if( val.Length() > 0 ) g_fNavAidRadarRingsStep = atof( val.mb_str() );
 
-    g_pNavAidRadarRingsStepUnits = 0;         // toh, 2009.02.24
+    g_pNavAidRadarRingsStepUnits = 0;
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
     // Waypoint dragging with mouse
-    g_bWayPointPreventDragging = false;       // toh, 2009.02.24
+    g_bWayPointPreventDragging = false;
     Read( _T ( "WaypointPreventDragging" ), &g_bWayPointPreventDragging );
 
     g_bEnableZoomToCursor = false;
@@ -4094,11 +4168,11 @@ void MyConfig::UpdateSettings()
     Write( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
 
     Write( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
-    Write( _T ( "OwnShipUseRealSize" ), g_bOwnShipRealSize );
+    Write( _T ( "OwnShipIconType" ), g_OwnShipIconType );
     Write( _T ( "OwnShipLength" ), g_n_ownship_length_meters );
     Write( _T ( "OwnShipWidth" ), g_n_ownship_beam_meters );
-    Write( _T ( "OwnShipGPSOffsetX" ), g_n_gps_antenna_offset_y );
-    Write( _T ( "OwnShipGPSOffsetY" ), g_n_gps_antenna_offset_x );
+    Write( _T ( "OwnShipGPSOffsetX" ), g_n_gps_antenna_offset_x );
+    Write( _T ( "OwnShipGPSOffsetY" ), g_n_gps_antenna_offset_y );
     Write( _T ( "OwnShipMinSize" ), g_n_ownship_min_mm );
 
     Write( _T ( "ChartQuilting" ), g_bQuiltEnable );
@@ -4348,8 +4422,7 @@ void MyConfig::UpdateSettings()
 
     SetPath( _T ( "/Settings/Others" ) );
 
-    // Radar rings; toh, 2009.02.24
-    Write( _T ( "ShowRadarRings" ), g_bNavAidShowRadarRings );
+    // Radar rings
     Write( _T ( "RadarRingsNumberVisible" ), g_iNavAidRadarRingsNumberVisible );
     Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
@@ -5920,6 +5993,7 @@ Route *LoadGPXRoute( GpxRteElement *rtenode, int routenum, bool b_fullviz )
                     pWp->m_LayerID = 0;
             } else {
                 pTentRoute->AddPoint( pExisting, false );           // don't auto-rename numerically
+                delete pWp;
             }
             ip++;
         }
@@ -7489,7 +7563,7 @@ double fromDMM( wxString sdms )
 }
 
 /* render a rectangle at a given color and transparency */
-void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, wxColour color,
+void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radius, wxColour color,
         unsigned char transparency )
 {
     wxDC *pdc = dc.GetDC();
@@ -7502,27 +7576,34 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, wxColour c
         mdc1.SelectObject( wxNullBitmap );
         wxImage oim = obm.ConvertToImage();
 
-        //    Create an image with selected transparency/color
-        int olay_red = color.Red() * transparency;
-        int olay_green = color.Green() * transparency;
-        int olay_blue = color.Blue() * transparency;
-
         //    Create destination image
-        wxImage dest( size_x, size_y, false );
+        wxBitmap olbm( size_x, size_y );
+        wxMemoryDC oldc( olbm );
+        oldc.SetBackground( *wxBLACK_BRUSH );
+        oldc.SetBrush( *wxWHITE_BRUSH );
+        oldc.Clear();
+
+        if( radius > 0.0 )
+            oldc.DrawRoundedRectangle( 0, 0, size_x, size_y, radius );
+
+        wxImage dest = olbm.ConvertToImage();
         unsigned char *dest_data = (unsigned char *) malloc(
                 size_x * size_y * 3 * sizeof(unsigned char) );
-        unsigned char *po = oim.GetData();
+        unsigned char *bg = oim.GetData();
+        unsigned char *box = dest.GetData();
         unsigned char *d = dest_data;
 
+        float alpha = 1.0 - (float)transparency / 255.0;
         int sb = size_x * size_y;
-        transparency = 255 - transparency;
         for( int i = 0; i < sb; i++ ) {
-            int r = ( ( *po++ ) * transparency ) + olay_red;
-            *d++ = (unsigned char) ( r / 255 );
-            int g = ( ( *po++ ) * transparency ) + olay_green;
-            *d++ = (unsigned char) ( g / 255 );
-            int b = ( ( *po++ ) * transparency ) + olay_blue;
-            *d++ = (unsigned char) ( b / 255 );
+            float a = alpha;
+            if( *box == 0 && radius > 0.0 ) a = 1.0;
+            int r = ( ( *bg++ ) * a ) + (1.0-a) * color.Red();
+            *d++ = r; box++;
+            int g = ( ( *bg++ ) * a ) + (1.0-a) * color.Green();
+            *d++ = g; box++;
+            int b = ( ( *bg++ ) * a ) + (1.0-a) * color.Blue();
+            *d++ = b; box++;
         }
 
         dest.SetData( dest_data );

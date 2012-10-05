@@ -4047,8 +4047,8 @@ InitReturn cm93chart::CreateHeaderDataFromCM93Cell ( void )
       //    Specify the whole world as chart coverage
       m_FullExtent.ELON = 179.0;
       m_FullExtent.WLON = -179.0;
-      m_FullExtent.NLAT = 70.0;
-      m_FullExtent.SLAT = -70.0;
+      m_FullExtent.NLAT = 80.0;
+      m_FullExtent.SLAT = -80.0;
       m_bExtentSet = true;
 
 
@@ -6105,9 +6105,9 @@ InitReturn cm93compchart::CreateHeaderData()
                       int ilat = number / 10000;
                       int ilon = number % 10000;
                       
-                      int lat_base = ilat - 270;
-                      int lon_base = ilon;
-                      extent_rect.Union(wxRect(lon_base, lat_base, 60, 30));
+                      int lat_base = ( ilat - 270 ) / 3.;
+                      int lon_base = ilon / 3.;
+                      extent_rect.Union(wxRect(lon_base, lat_base, 20, 20));
                   }
               }
           }
@@ -6115,10 +6115,10 @@ InitReturn cm93compchart::CreateHeaderData()
       }
 
       //    Specify the chart coverage
-      m_FullExtent.ELON = ((double)extent_rect.x + (double)extent_rect.width ) / 3.;
-      m_FullExtent.WLON = ((double)extent_rect.x) / 3.;
-      m_FullExtent.NLAT = ((double)extent_rect.y + (double)extent_rect.height ) / 3.;
-      m_FullExtent.SLAT = ((double)extent_rect.y) / 3.;
+      m_FullExtent.ELON = ((double)extent_rect.x + (double)extent_rect.width );
+      m_FullExtent.WLON = ((double)extent_rect.x);
+      m_FullExtent.NLAT = ((double)extent_rect.y + (double)extent_rect.height );
+      m_FullExtent.SLAT = ((double)extent_rect.y);
       m_bExtentSet = true;
 
 

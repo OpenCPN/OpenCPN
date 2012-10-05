@@ -93,7 +93,7 @@ enum {
     ID_FSTOOLBARCHECKBOX,
     ID_FULLSCREENQUILT,
     ID_GARMINHOST,
-    ID_GPXCHECKBOX,
+    ID_RADARRINGS,
     ID_GRIBCHECKBOX,
     ID_GROUPAVAILABLE,
     ID_GROUPDELETEGROUP,
@@ -107,7 +107,7 @@ enum {
     ID_METACHECKBOX,
     ID_NOTEBOOK,
     ID_OPENGLBOX,
-    ID_OSREALSIZE,
+    ID_SHIPICONTYPE,
     ID_OUTLINECHECKBOX1,
     ID_PANEL,
     ID_PANEL2,
@@ -242,7 +242,8 @@ public:
     void OnButtonTestSound( wxCommandEvent& event );
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
     void OnZTCCheckboxClick( wxCommandEvent& event );
-    void OnCollapsibleClick( wxCollapsiblePaneEvent& event );
+    void OnRadarringSelect( wxCommandEvent& event );
+    void OnShipTypeSelect( wxCommandEvent& event );
     void OnButtonGroups( wxCommandEvent& event );
     void OnInsertTideDataLocation( wxCommandEvent &event );
     void OnRemoveTideDataLocation( wxCommandEvent &event );
@@ -279,6 +280,7 @@ public:
     wxCheckBox              *pCBCourseUp;
     wxCheckBox              *pCBLookAhead;
     wxTextCtrl              *m_pText_OSCOG_Predictor;
+    wxChoice                *m_pShipIconType;
     wxCheckBox              *pSkewComp;
     wxCheckBox              *pOpenGL;
     wxCheckBox              *pSmoothPanZoom;
@@ -294,6 +296,8 @@ public:
     wxTextCtrl              *pCOGUPUpdateSecs;
 
 //    For "S57" page
+    wxFlexGridSizer         *vectorPanel;
+    wxScrolledWindow        *ps57Ctl;
     wxCheckListBox          *ps57CtlListBox;
     wxRadioBox              *pDispCat;
     wxButton                *itemButtonClearList;
@@ -365,7 +369,7 @@ public:
     wxCheckBox                *m_pCheck_Draw_Target_Size;
 
 //    For Ship page
-    wxCollapsiblePane       *m_pOSShowRealSize;
+    wxFlexGridSizer*        realSizes;
     wxTextCtrl              *m_pOSLength;
     wxTextCtrl              *m_pOSWidth;
     wxTextCtrl              *m_pOSGPSOffsetX;
@@ -389,9 +393,8 @@ public:
     PluginListPanel         *m_pPlugInCtrl;
     int                     k_plugins;
 
-//    For "Etc." Page
-    wxCollapsiblePane       *pNavAidShowRadarRings;
-    wxTextCtrl              *pNavAidRadarRingsNumberVisible;
+    wxChoice                *pNavAidRadarRingsNumberVisible;
+    wxFlexGridSizer         *radarGrid;
     wxTextCtrl              *pNavAidRadarRingsStep;
     wxChoice                *m_itemRadarRingsUnits;
     wxCheckBox              *pWayPointPreventDragging;
@@ -447,6 +450,7 @@ private:
     wxListBox *tcDataSelected;
     std::vector<int> marinersStdXref;
     ChartGroupsUI *groupsPanel;
+    wxImageList *m_topImgList;
 };
 
 class ChartGroupsUI: public wxScrolledWindow {

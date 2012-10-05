@@ -1,4 +1,4 @@
-<chartsymbols>	
+<chartsymbols>
 	<color-tables>
 		<color-table name="DAY_BRIGHT">
 			<graphics-file name="rastersymbols-day.png" />
@@ -12799,7 +12799,7 @@
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Simplified</table-name>
 			<instruction></instruction>
-			<display-cat />
+			<display-cat>Standard</display-cat>
 			<comment>0</comment>
 		</lookup>
 		<lookup id="1263" RCID="31315" name="TOWERS">
@@ -20227,7 +20227,7 @@
 			<display-cat>Standard</display-cat>
 			<comment>17010</comment>
 		</lookup>
-		
+
 		<lookup id="1971" RCID="30242" name="BOYSPP">
 			<type>Point</type>
 			<disp-prio>Hazards</disp-prio>
@@ -31978,7 +31978,7 @@
 		</pattern>
 	</patterns>
 
-	<symbols>		
+	<symbols>
 
 		<symbol RCID="2035">
 			<name>ACHARE02</name>

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-21 13:50+0200\n"
-"PO-Revision-Date: 2012-09-21 08:57-0300\n"
+"POT-Creation-Date: 2012-10-01 18:26+0200\n"
+"PO-Revision-Date: 2012-10-01 15:33-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -175,8 +175,8 @@ msgstr " </b>om<b> "
 
 #
 #
-msgid " COG: Unavailable"
-msgstr "COG: Ej tillgänglig"
+msgid " COG Unavailable"
+msgstr "COG ej tillgänglig"
 
 #
 #
@@ -366,7 +366,7 @@ msgstr "&Egenskaper..."
 #
 #
 msgid "&Remove Selected"
-msgstr "Ta bort valda spår"
+msgstr "Ta bort markerade"
 
 #
 #
@@ -586,11 +586,6 @@ msgstr "Visa AIS info "
 
 #
 #
-msgid "AIS Target Query..."
-msgstr "Visa AIS info"
-
-#
-#
 msgid "AIS Targets"
 msgstr "AIS-fartyg"
 
@@ -668,11 +663,6 @@ msgstr "Lägg till ny"
 
 #
 #
-msgid "Add this chart to quilt."
-msgstr "Visa sjökortet"
-
-#
-#
 msgid "Aground"
 msgstr "Står på grund"
 
@@ -737,8 +727,13 @@ msgstr "Vill du radera <ALLA> waypoints?"
 
 #
 #
+msgid "Are you sure you want to delete this route?"
+msgstr "Säker på att du vill radera rutten?"
+
+#
+#
 msgid "Are you sure you want to delete this track?"
-msgstr "Vill du radera Spår?"
+msgstr "Säker på att du vill du radera spåret?"
 
 #
 #
@@ -900,11 +895,6 @@ msgstr "CM93 detaljnivå"
 
 #
 #
-msgid "CM93 Detail Slider..."
-msgstr "CM93 detaljnivå..."
-
-#
-#
 msgid "CM93 Offset Dialog..."
 msgstr "CM93-korrektion..."
 
@@ -1063,11 +1053,6 @@ msgstr "Sjökortsbuntar"
 #
 msgid "Chart Information Objects"
 msgstr "Sjökortsfakta"
-
-#
-#
-msgid "Chart Position"
-msgstr "Sjökortsposition"
 
 #
 #
@@ -1367,6 +1352,11 @@ msgstr "Radera bunt"
 #
 msgid "Delete Waypoint"
 msgstr "Radera waypoint"
+
+#
+#
+msgid "Delete..."
+msgstr "Radera..."
 
 #
 #
@@ -1764,8 +1754,13 @@ msgstr "Här"
 
 #
 #
-msgid "Hide AIS Target CPA"
+msgid "Hide Target CPA"
 msgstr "Visa inte CPA för AIS-fartyg"
+
+#
+#
+msgid "Hide This Chart"
+msgstr "Dölj detta sjökort"
 
 #
 #
@@ -2267,7 +2262,7 @@ msgstr "Motordriven tanker, bogserbåt"
 
 #
 #
-msgid "Move Boat To"
+msgid "Move Boat Here"
 msgstr "Flytta båten hit"
 
 #
@@ -2309,7 +2304,7 @@ msgid "Nav Status"
 msgstr "Nav status"
 
 #
-msgid "Navigate To"
+msgid "Navigate To Here"
 msgstr "Starta navigering hit"
 
 #
@@ -2496,6 +2491,11 @@ msgstr "OpenCPN Skapa rutt"
 
 #
 #
+msgid "OpenCPN Route Delete"
+msgstr "OpenCPN Radera rutt"
+
+#
+#
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN S57 SENC skapar fil..."
 
@@ -2518,6 +2518,11 @@ msgstr "OpenCPN Waypoint"
 #
 msgid "OpenCPN cannot start. "
 msgstr "OpenCPN kan inte starta."
+
+#
+#
+msgid "OpenCPN info"
+msgstr "OpenCPN Information"
 
 #
 #
@@ -2919,6 +2924,15 @@ msgid "Redo"
 msgstr "Gör om"
 
 #
+msgid "Reduce Data Precision"
+msgstr "Noggranhet för datareducering"
+
+#
+#
+msgid "Reduce Data..."
+msgstr "Reducera datamängd..."
+
+#
 msgid "Reduced Detail at Small Scale"
 msgstr "Färre detaljer i utzoomat läge"
 
@@ -2961,16 +2975,6 @@ msgstr "Ta bort från rutt"
 #
 msgid "Remove lost targets after (min)"
 msgstr "Tag bort borttappade fartyg efter (min)"
-
-#
-#
-msgid "Remove this chart from quilt"
-msgstr "Dölj det här sjökortet"
-
-#
-#
-msgid "Remove this chart from quilt."
-msgstr "Dölj det här sjökortet"
 
 #
 #
@@ -3027,8 +3031,8 @@ msgstr "Hämtar språkinställning från Windows Registry"
 
 #
 #
-msgid "Reverse"
-msgstr "&Reversera rutt"
+msgid "Reverse..."
+msgstr "Reversera rutt..."
 
 #
 #
@@ -3186,6 +3190,14 @@ msgid "Select Tide/Current Data"
 msgstr "Välj tidvatten och strömdata"
 
 #
+msgid ""
+"Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr ""
+"Välj största tillåtna avvikelse (i meter)\n"
+"efter datareducering"
+
+#
 #
 msgid "Send"
 msgstr "Skicka"
@@ -3198,6 +3210,11 @@ msgstr "Skicka rutt till GPS"
 #
 #
 msgid "Send To GPS..."
+msgstr "Skicka till GPS"
+
+#
+#
+msgid "Send to GPS"
 msgstr "Skicka till GPS"
 
 #
@@ -3238,11 +3255,6 @@ msgstr "Fartyg"
 #
 msgid "Short dash"
 msgstr "Korta streck"
-
-#
-#
-msgid "Show AIS Target CPA"
-msgstr "Visa CPA för AIS-fartyg"
 
 #
 #
@@ -3312,6 +3324,16 @@ msgstr "Visa vridna rasterkort med Norr upp"
 #
 msgid "Show Status Bar"
 msgstr "Visa statusraden"
+
+#
+#
+msgid "Show Target CPA"
+msgstr "Visa CPA för AIS-fartyg"
+
+#
+#
+msgid "Show This Chart"
+msgstr "Visa detta sjökort"
 
 #
 #
@@ -3509,6 +3531,16 @@ msgstr "Antal fartyg"
 
 #
 #
+msgid "Target List..."
+msgstr "AIS lista..."
+
+#
+#
+msgid "Target Query..."
+msgstr "Detaljinformation..."
+
+#
+#
 msgid "Target info"
 msgstr "Fartygsinfo"
 
@@ -3554,6 +3586,15 @@ msgstr ""
 #
 msgid "The Open Source Chart Plotter/Navigator"
 msgstr "OpenCPN - Navigation med öppen källkod"
+
+#
+#, c-format
+msgid ""
+"The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr ""
+"Mängden data spåret använder\n"
+"minskade med %d%%."
 
 #
 msgid ""

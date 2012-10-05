@@ -40,9 +40,11 @@
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/aui/aui.h>
-#include <version.h> //Gunther
 #include <wx/dialog.h>
 #include <wx/progdlg.h>
+#include <wx/brush.h>
+#include <wx/colour.h>
+
 
 #if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
@@ -82,7 +84,7 @@
 #include "routeprop.h"
 #include "toolbar.h"
 #include "compasswin.h"
-
+#include "version.h" //Gunther
 #include "cutil.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
@@ -258,7 +260,6 @@ bool                      g_bPermanentMOBIcon;
 
 int                       g_iSDMMFormat;
 
-bool                      g_bNavAidShowRadarRings;
 int                       g_iNavAidRadarRingsNumberVisible;
 float                     g_fNavAidRadarRingsStep;
 int                       g_pNavAidRadarRingsStepUnits;
@@ -517,7 +518,7 @@ wxString                  g_AW2GUID;
 bool                      g_b_overzoom_x; // Allow high overzoom
 bool                      g_bshow_overzoom_emboss;
 
-bool                      g_bOwnShipRealSize;
+int                      g_OwnShipIconType;
 double                    g_n_ownship_length_meters;
 double                    g_n_ownship_beam_meters;
 double                    g_n_gps_antenna_offset_y;
@@ -1984,6 +1985,7 @@ int MyApp::OnExit()
     delete ps52plib;
 #endif
 
+    delete g_pGroupArray;
     delete pDummyChart;
 
     if( logger ) {
@@ -3601,6 +3603,41 @@ void MyFrame::ToggleRocks( void )
             if( !strncmp( pOLE->OBJLName, "WRECKS", 6 ) ) {
                 pOLE->nViz = vis;
             }
+        }
+        ps52plib->GenerateStateHash();
+        cc1->ReloadVP();
+    }
+#endif
+}
+
+void MyFrame::ToggleAnchor( void )
+{
+#ifdef USE_S57
+    if( ps52plib ) {
+        int vis =  0;
+        // Need to loop once for SBDARE, which is our "master", then for
+        // other categories, since order is unknown?
+        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+            if( !strncmp( pOLE->OBJLName, "SBDARE", 6 ) ) {
+                pOLE->nViz = !pOLE->nViz;
+                vis = pOLE->nViz;
+                break;
+            }
+        }
+        const char * categories[] = { "ACHBRT", "ACHARE", "CBLSUB", "PIPARE", "PIPSOL", "TUNNEL" };
+        unsigned int num = sizeof(categories) / sizeof(categories[0]);
+        unsigned int cnt = 0;
+        for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
+            OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
+            for( unsigned int c = 0; c < num; c++ ) {
+                if( !strncmp( pOLE->OBJLName, categories[c], 6 ) ) {
+                    pOLE->nViz = vis;
+                    cnt++;
+                    break;
+                }
+            }
+            if( cnt == num ) break;
         }
         ps52plib->GenerateStateHash();
         cc1->ReloadVP();
@@ -5938,12 +5975,12 @@ void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbI
     }
 
     if( b_is_in_noshow ) {
-        pctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Add this chart to quilt.") );
+        pctx_menu->Append( ID_PIANO_ENABLE_QUILT_CHART, _("Show This Chart") );
         Connect( ID_PIANO_ENABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                 wxCommandEventHandler(MyFrame::OnPianoMenuEnableChart) );
     } else
         if( pCurrentStack->nEntry > 1 ) {
-            pctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Remove this chart from quilt.") );
+            pctx_menu->Append( ID_PIANO_DISABLE_QUILT_CHART, _("Hide This Chart") );
             Connect( ID_PIANO_DISABLE_QUILT_CHART, wxEVT_COMMAND_MENU_SELECTED,
                     wxCommandEventHandler(MyFrame::OnPianoMenuDisableChart) );
         }
@@ -6177,32 +6214,32 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
 
 void MyFrame::DoPrint( void )
 {
-    if( NULL == g_printData ) {
-        g_printData = new wxPrintData;
-        g_printData->SetOrientation( wxLANDSCAPE );
-        g_pageSetupData = new wxPageSetupDialogData;
-    }
-
-    wxPrintDialogData printDialogData( *g_printData );
-    printDialogData.EnablePageNumbers( false );
-
-    wxPrinter printer( &printDialogData );
-
-    MyPrintout printout( _("Chart Print") );
-    if( !printer.Print( this, &printout, true ) ) {
-        if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(
-                _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
-                _T("OpenCPN"), wxOK );
-//        else
-//            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
-    } else {
-        ( *g_printData ) = printer.GetPrintDialogData().GetPrintData();
-    }
+//     if( NULL == g_printData ) {
+//         g_printData = new wxPrintData;
+//         g_printData->SetOrientation( wxLANDSCAPE );
+//         g_pageSetupData = new wxPageSetupDialogData;
+//     }
+// 
+//     wxPrintDialogData printDialogData( *g_printData );
+//     printDialogData.EnablePageNumbers( false );
+// 
+//     wxPrinter printer( &printDialogData );
+// 
+//     MyPrintout printout( _("Chart Print") );
+//     if( !printer.Print( this, &printout, true ) ) {
+//         if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(
+//                 _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
+//                 _T("OpenCPN"), wxOK );
+// //        else
+// //            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
+//     } else {
+//         ( *g_printData ) = printer.GetPrintDialogData().GetPrintData();
+//     }
 
 // Pass two printout objects: for preview, and possible printing.
-    /*
-     wxPrintDialogData printDialogData(* g_printData);
-     wxPrintPreview *preview = new wxPrintPreview(new MyPrintout, new MyPrintout, & printDialogData);
+    
+//      wxPrintDialogData printDialogData(* g_printData);
+     wxPrintPreview *preview = new wxPrintPreview(new MyPrintout, new MyPrintout);
      if (!preview->Ok())
      {
      delete preview;
@@ -6210,11 +6247,11 @@ void MyFrame::DoPrint( void )
      return;
      }
 
-     wxPreviewFrame *frame = new wxPreviewFrame(preview, this, _T("Demo Print Preview"), wxPoint(100, 100), wxSize(600, 650));
+     wxPreviewFrame *frame = new wxPreviewFrame(preview, this, _T("Chart Print Preview"), wxPoint(100, 100), wxSize(600, 650));
      frame->Centre(wxBOTH);
      frame->Initialize();
      frame->Show();
-     */
+     
 
 }
 
@@ -7138,6 +7175,8 @@ void MyPrintout::DrawPageOne( wxDC *dc )
     }
 
 }
+
+
 
 //---------------------------------------------------------------------------------------
 //

@@ -52,7 +52,7 @@
 
 extern bool LogMessageOnce(wxString &msg);
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
-extern void AlphaBlending ( ocpnDC& dc, int x, int y, int size_x, int size_y,
+extern void AlphaBlending ( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
                                       wxColour color, unsigned char transparency );
 
 extern double fromDMM(wxString sdms);
@@ -102,6 +102,8 @@ public:
       void SetPropFromString(const wxString &prop_string);
 
       void SetPosition(double lat, double lon);
+      double GetLatitude()  { return m_lat; };
+      double GetLongitude() { return m_lon; };      
       void CalculateDCRect(wxDC& dc, wxRect *prect);
 
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
@@ -112,10 +114,17 @@ public:
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
       wxString GetName(void){ return m_MarkName; }
+      wxString GetDescription(void) { return m_MarkDescription; }
 
       void SetName(wxString name);
       void CalculateNameExtents(void);
 
+      void SetCourse( double course) { m_course = course; }; 
+      double GetCourse() { return m_course; };      
+      void SetDistance( double distance) { m_distance = distance; }; 
+      double GetDistance() { return m_distance; };         
+
+      
       bool SendToGPS ( wxString& com_name, wxGauge *pProgress );
 
 
@@ -163,6 +172,9 @@ public:
       int               m_GPXTrkSegNo;
       bool              m_bIsInLayer;
       int               m_LayerID;
+      
+      double            m_course;		// course from this waypoint to the next waypoint in the route. It is set when the route property dialog created.
+      double            m_distance;		// distance from this waypoint to the next waypoint in the route. It is set when the route property dialog created.
 
       HyperlinkList     *m_HyperlinkList;
 
@@ -204,6 +216,7 @@ public:
       void UpdateSegmentDistances(double planspeed = -1.0);
       void CalculateDCRect(wxDC& dc_route, wxRect *prect, ViewPort &VP);
       int GetnPoints(void){ return m_nPoints; }
+      void SetnPoints(void){ m_nPoints = pRoutePointList->GetCount(); }
       void Reverse(bool bRenamePoints = false);
       void RebuildGUIDList(void);
       void RenameRoutePoints();
@@ -298,6 +311,9 @@ class Track : public wxEvtHandler, public Route
             void Draw(ocpnDC& dc, ViewPort &VP);
 
             Route *RouteFromTrack(wxProgressDialog *pprog);
+
+            void DouglasPeuckerReducer( std::vector<RoutePoint*>& list, int from, int to, double delta );
+            int Simplify( double maxDelta );
             double GetXTE(RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to);
 
       private:
@@ -482,56 +498,54 @@ WX_DECLARE_LIST(SelectItem, SelectableItemList);// establish class as list membe
 
 
 
-class Select
-{
+class Select {
 public:
+    Select();
+    ~Select();
 
-      Select();
-      ~Select();
+    bool AddSelectableRoutePoint( float slat, float slon, RoutePoint *pRoutePointAdd );
+    bool AddSelectableRouteSegment( float slat1, float slon1, float slat2, float slon2,
+            RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
 
-      bool AddSelectableRoutePoint(float slat, float slon, RoutePoint *pRoutePointAdd);
-      bool AddSelectableRouteSegment(float slat1, float slon1, float slat2, float slon2,
-                                                         RoutePoint *pRoutePointAdd1,
-                                                         RoutePoint *pRoutePointAdd2,
-                                                         Route *pRoute);
+    bool AddSelectableTrackSegment( float slat1, float slon1, float slat2, float slon2,
+            RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
 
-      bool AddSelectableTrackSegment(float slat1, float slon1, float slat2, float slon2,
-                                     RoutePoint *pRoutePointAdd1,
-                                     RoutePoint *pRoutePointAdd2,
-                                     Route *pRoute);
+    SelectItem *FindSelection( float slat, float slon, int fseltype );
+    SelectableItemList FindSelectionList( float slat, float slon, int fseltype );
 
-      SelectItem *FindSelection(float slat, float slon, int fseltype, float SelectRadius);
-      SelectableItemList FindSelectionList(float slat, float slon, int fseltype, float SelectRadius);
+    bool DeleteAllSelectableRouteSegments( Route * );
+    bool DeleteAllSelectableTrackSegments( Route * );
+    bool DeleteAllSelectableRoutePoints( Route * );
+    bool AddAllSelectableRouteSegments( Route *pr );
+    bool AddAllSelectableTrackSegments( Route *pr );
+    bool AddAllSelectableRoutePoints( Route *pr );
+    bool UpdateSelectableRouteSegments( RoutePoint *prp );
+    bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon );
+    bool IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel );
 
-      bool DeleteAllSelectableRouteSegments(Route *);
-      bool DeleteAllSelectableTrackSegments(Route *);
-      bool DeleteAllSelectableRoutePoints(Route *);
-      bool AddAllSelectableRouteSegments(Route *pr);
-      bool AddAllSelectableTrackSegments(Route *pr);
-      bool AddAllSelectableRoutePoints(Route *pr);
-      bool UpdateSelectableRouteSegments(RoutePoint *prp);
+    //    Generic Point Support
+    //      e.g. Tides/Currents and AIS Targets
+    SelectItem *AddSelectablePoint( float slat, float slon, void *data, int fseltype );
+    bool DeleteAllPoints( void );
+    bool DeleteSelectablePoint( void *data, int SeltypeToDelete );
+    bool ModifySelectablePoint( float slat, float slon, void *data, int fseltype );
 
-      bool IsSelectableSegmentSelected(float slat, float slon, float SelectRadius, SelectItem *pFindSel);
+    //    Delete all selectable points in list by type
+    bool DeleteAllSelectableTypePoints( int SeltypeToDelete );
 
+    //  Accessors
 
-//    Generic Point Support
-//      e.g. Tides/Currents and AIS Targets
-      SelectItem *AddSelectablePoint(float slat, float slon, void *data, int fseltype);
-      bool DeleteAllPoints(void);
-      bool DeleteSelectablePoint(void *data, int SeltypeToDelete);
-      bool ModifySelectablePoint(float slat, float slon, void *data, int fseltype);
-
-//    Delete all selectable points in list by type
-      bool DeleteAllSelectableTypePoints(int SeltypeToDelete);
-
-      //  Accessors
-
-      SelectableItemList *GetSelectList(){return pSelectList;}
+    SelectableItemList *GetSelectList()
+    {
+        return pSelectList;
+    }
 
 private:
+    void CalcSelectRadius();
 
-      SelectableItemList      *pSelectList;
-
+    SelectableItemList *pSelectList;
+    int pixelRadius;
+    float selectRadius;
 };
 
 
