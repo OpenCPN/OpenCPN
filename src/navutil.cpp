@@ -1707,7 +1707,10 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
             icon[i].x = (int) ( px ) + xb;
             icon[i].y = (int) ( py ) + yb;
         }
-        dc.DrawPolygon( 6, &icon[0], 0, 0 );
+        wxPen savePen = dc.GetPen();
+        dc.SetPen( *wxTRANSPARENT_PEN );
+        dc.StrokePolygon( 6, &icon[0], 0, 0 );
+        dc.SetPen( savePen );
     }
 }
 

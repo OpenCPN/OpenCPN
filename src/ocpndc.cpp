@@ -185,6 +185,33 @@ void ocpnDC::GetSize( wxCoord *width, wxCoord *height ) const
         glcanvas->GetSize( width, height );
 }
 
+void ocpnDC::SetGLStipple() const
+{
+    switch( m_pen.GetStyle() ) {
+        case wxDOT: {
+            glLineStipple( 1, 0x3333 );
+            glEnable( GL_LINE_STIPPLE );
+            break;
+        }
+        case wxLONG_DASH: {
+            glLineStipple( 1, 0xFFF8 );
+            glEnable( GL_LINE_STIPPLE );
+            break;
+        }
+        case wxSHORT_DASH: {
+            glLineStipple( 1, 0x3F3F );
+            glEnable( GL_LINE_STIPPLE );
+            break;
+        }
+        case wxDOT_DASH: {
+            glLineStipple( 1, 0x8FF1 );
+            glEnable( GL_LINE_STIPPLE );
+            break;
+        }
+        default: break;
+    }
+}
+
 // Draws a line between (x1,y1) - (x2,y2) with a start thickness of t1
 void DrawThickLine( double x1, double y1, double x2, double y2, wxPen pen, bool b_hiqual )
 {
@@ -270,6 +297,8 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
 
             //      Enable anti-aliased lines, at best quality
             if( b_hiqual ) {
+                SetGLStipple();
+
                 glEnable( GL_LINE_SMOOTH );
                 glEnable( GL_BLEND );
                 glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -360,6 +389,8 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
         SetGLAttrs( b_hiqual );
 
         bool b_draw_thick = false;
+
+        SetGLStipple();
 
         //      Enable anti-aliased lines, at best quality
         if( b_hiqual ) {
@@ -862,44 +893,12 @@ void ocpnDC::CalcBoundingBox( wxCoord x, wxCoord y )
 bool ocpnDC::ConfigurePen()
 {
     if( m_pen == wxNullPen ) return false;
+    if( m_pen == *wxTRANSPARENT_PEN ) return false;
 
     wxColour c = m_pen.GetColour();
     int width = m_pen.GetWidth();
     glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
-
     glLineWidth( wxMax(g_GLMinLineWidth, width) );
-
-    //     Stippling is not done.
-    //     Instead, we directly calculate and draw the line segments the hard way.
-    //     This allows for simple stipple patterns that are not easily coerced into 16 bits
-
-#if 0
-    wxDash *dash_array;
-    int dashes = m_pen.GetDashes(&dash_array);
-    if(dashes)
-    {
-        int on_bits = dash_array[0] * width;
-        int off_bits = dash_array[1] * width;
-        int mult = 1;
-        while(on_bits + off_bits > 16)
-        {
-            mult *= 2;
-            on_bits /= 2;
-            off_bits /= 2;
-        }
-        unsigned short pattern;
-
-        for(int i=0; i < on_bits; i++)
-        {
-            pattern = pattern << 1;
-            pattern |= 0x01;
-        }
-
-        glLineStipple(mult, pattern);
-        glEnable(GL_LINE_STIPPLE);
-    }
-#endif
-
     return true;
 }
 
