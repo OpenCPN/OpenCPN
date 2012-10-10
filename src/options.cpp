@@ -2039,16 +2039,23 @@ void options::OnApplyClick( wxCommandEvent& event )
         m_pOSGPSOffsetX->GetValue().ToDouble( &n_gps_antenna_offset_x );
         m_pOSGPSOffsetY->GetValue().ToDouble( &n_gps_antenna_offset_y );
         m_pOSMinSize->GetValue().ToLong( &n_ownship_min_mm );
-        bool OK = true;
-        if( n_ownship_length_meters <= 0 ) OK = false;
-        if( n_ownship_beam_meters <= 0 ) OK = false;
-        if( fabs(n_gps_antenna_offset_x) > n_ownship_beam_meters/2.0 ) OK = false;
-        if( n_gps_antenna_offset_y > n_ownship_length_meters ) OK = false;
-        if( n_ownship_min_mm > 100 ) OK = false;
-        if( n_ownship_min_mm <= 0 ) OK = false;
-        if( ! OK ) {
+        wxString msg;
+        if( n_ownship_length_meters <= 0 )
+            msg += _("Your ships length must be > 0.\n");
+        if( n_ownship_beam_meters <= 0 )
+            msg += _("Your ships beam must be > 0.\n");
+        if( fabs(n_gps_antenna_offset_x) > n_ownship_beam_meters/2.0 )
+            msg += _("Your GPS offset from midship must be within your ships beam.\n");
+        if( n_gps_antenna_offset_y < 0 || n_gps_antenna_offset_y > n_ownship_length_meters )
+             msg += _("Your GPS offset from bow must be within your ships length.\n");
+        if( n_ownship_min_mm > 100 )
+             msg += _("Your minimum ship icon size must be <= 100 mm.\n");
+        if( n_ownship_min_mm <= 0 )
+             msg += _("Your minimum ship icon size must be > 0.\n");
+        if( ! msg.IsEmpty() ) {
+            msg.Prepend( _("The settings for own ship real size are not correct:\n") );
             OCPNMessageDialog* dlg = new OCPNMessageDialog( this,
-                    _("Your Own Ship size data is not correct.\nPlease review it."), _("OpenCPN info"),
+                    msg, _("OpenCPN info"),
                     wxICON_ERROR );
             ::wxEndBusyCursor();
             dlg->ShowModal();
