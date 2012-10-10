@@ -1191,9 +1191,9 @@ ChartBase *Quilt::GetChartAtPix( wxPoint p )
 ChartBase *Quilt::GetOverlayChartAtPix( wxPoint p )
 {
     if( m_bbusy ) return NULL;
-    
+
     m_bbusy = true;
-    
+
     //    The patchlist is organized from small to large scale.
     //    We generally will want the largest scale chart at this point, so
     //    walk the whole list.  The result will be the last one found, i.e. the largest scale chart.
@@ -1205,7 +1205,7 @@ ChartBase *Quilt::GetOverlayChartAtPix( wxPoint p )
                 pret = ChartData->OpenChartFromDB( pqp->dbIndex, FULL_INIT );
         cnode = cnode->GetNext();
     }
-    
+
     m_bbusy = false;
     return pret;
 }
@@ -2282,7 +2282,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
             if( pc->GetChartType() == CHART_TYPE_S57 ) {
                 s57chart *ps57 = dynamic_cast<s57chart *>( pc );
                 pqp->b_overlay = ( ps57->GetUsageChar() == 'L' || ps57->GetUsageChar() == 'A' );
-                if( pqp->b_overlay ) 
+                if( pqp->b_overlay )
                     m_bquilt_has_overlays = true;
             }
         }
@@ -2445,7 +2445,7 @@ bool Quilt::RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, wxRegion &c
                         if( !get_region.IsEmpty() ) {
                             s57chart *Chs57 = dynamic_cast<s57chart*>( chart );
                             Chs57->RenderOverlayRegionViewOnDC( tmp_dc, vp, get_region );
-                                
+
                             wxRegionIterator upd( get_region );
                             while( upd ) {
                                 wxRect rect = upd.GetRect();
@@ -5346,10 +5346,15 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                     img_height = h;
 
                     dc.DrawBitmap( os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2, true );
+
+                    // Maintain dirty box,, missing in __WXMSW__ library
+                    dc.CalcBoundingBox( lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2 );
+                    dc.CalcBoundingBox( lShipMidPoint.x - w / 2 + w, lShipMidPoint.y - h / 2 + h );
                 }
 
                 else if( g_OwnShipIconType == 2 ) { // Scaled Vector
                     wxPoint ownship_icon[10];
+
                     for( int i = 0; i < 10; i++ ) {
                         int j = i * 2;
                         double pxa = (double) ( s_ownship_icon[j] );
@@ -5368,12 +5373,12 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                     dc.SetPen( ppPen1 );
                     dc.SetBrush( wxBrush( ship_color ) );
 
-                    dc.DrawPolygon( 6, &ownship_icon[0], 0, 0 );
+                    dc.StrokePolygon( 6, &ownship_icon[0], 0, 0 );
 
                     //     draw reference point (midships) cross
-                    dc.DrawLine( ownship_icon[6].x, ownship_icon[6].y, ownship_icon[7].x,
+                    dc.StrokeLine( ownship_icon[6].x, ownship_icon[6].y, ownship_icon[7].x,
                                  ownship_icon[7].y );
-                    dc.DrawLine( ownship_icon[8].x, ownship_icon[8].y, ownship_icon[9].x,
+                    dc.StrokeLine( ownship_icon[8].x, ownship_icon[8].y, ownship_icon[9].x,
                                  ownship_icon[9].y );
                 }
 
@@ -5513,6 +5518,12 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
             for( int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++ )
                 dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, i * pix_radius );
+        }
+
+        if( dc.GetDC() ) {
+        ship_draw_rect = wxRect( dc.GetDC()->MinX(), dc.GetDC()->MinY(),
+                dc.GetDC()->MaxX() - dc.GetDC()->MinX(),
+                dc.GetDC()->MaxY() - dc.GetDC()->MinY() );
         }
     }         // if drawit
 }
@@ -6661,53 +6672,18 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
 
 void ChartCanvas::UpdateShips()
 {
-    //  Get the rectangle in the current dc which bounds the "ownship" symbol
-
-    //  Use this dc
-    wxClientDC dc( this );
-
-    if( !dc.IsOk() ) return;
-
-    // Get dc boundary
-    int sx, sy;
-    dc.GetSize( &sx, &sy );
-
-    //  Need a bitmap
-    wxBitmap test_bitmap( sx, sy, -1 );
-
-    // Create a memory DC
-    wxMemoryDC temp_dc;
-    temp_dc.SelectObject( test_bitmap );
-
-    temp_dc.ResetBoundingBox();
-    temp_dc.DestroyClippingRegion();
-    temp_dc.SetClippingRegion( wxRect( 0, 0, sx, sy ) );
-
-    // Draw the ownship on the temp_dc
-    ocpnDC ocpndc = ocpnDC( temp_dc );
-    ShipDraw( ocpndc );
-
-    //  Retrieve the drawing extents
-    wxRect ship_rect( temp_dc.MinX(), temp_dc.MinY(), temp_dc.MaxX() - temp_dc.MinX(),
-                      temp_dc.MaxY() - temp_dc.MinY() );
-
     wxRect own_ship_update_rect = ship_draw_rect;
 
-    if( !ship_rect.IsEmpty() ) {
-        ship_rect.Inflate( 2 );                // clear all drawing artifacts
+    if( !own_ship_update_rect.IsEmpty() ) {
+        own_ship_update_rect.Inflate( 2 );                // clear all drawing artifacts
 
-        //  The required invalidate rectangle is the union of the last drawn rectangle
-        //  and this drawn rectangle
-        own_ship_update_rect.Union( ship_rect );
+        own_ship_update_rect.Union( ship_draw_last_rect );
     }
 
-    if( !own_ship_update_rect.IsEmpty() ) RefreshRect( own_ship_update_rect, false );
+    if( !own_ship_update_rect.IsEmpty() )
+        RefreshRect( own_ship_update_rect, false );
 
-    //  Save this rectangle for next time
-    ship_draw_rect = ship_rect;
-
-    temp_dc.SelectObject( wxNullBitmap );      // clean up
-
+    ship_draw_last_rect = ship_draw_rect;
 }
 
 void ChartCanvas::UpdateAlerts()
@@ -8413,16 +8389,16 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         if( !lightsVis ) gFrame->ToggleLights( true, true );
         ListOfObjRazRules* rule_list =
                 Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
-                
+
         ListOfObjRazRules* overlay_rule_list = NULL;
         ChartBase *overlay_chart = GetOverlayChartAtCursor();
         s57chart *CHs57_Overlay = dynamic_cast<s57chart*>( overlay_chart );
-        
+
         if( CHs57_Overlay ) {
             overlay_rule_list =
                 CHs57_Overlay->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
         }
-        
+
         if( !lightsVis ) gFrame->ToggleLights( true, true );
 
         wxString objText;
@@ -8449,9 +8425,9 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
             objText << CHs57_Overlay->CreateObjDescriptions( overlay_rule_list );
             objText << _T("<hr noshade>");
         }
-        
+
         objText << Chs57->CreateObjDescriptions( rule_list );
-       
+
         objText << _T("</font></body></html>");
 
         g_pObjectQueryDialog->SetHTMLPage( objText );
@@ -8464,7 +8440,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         if( overlay_rule_list )
             overlay_rule_list->Clear();
         delete overlay_rule_list;
-        
+
         SetCursor( wxCURSOR_ARROW );
     }
 }
@@ -10618,7 +10594,6 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
 
     AISDraw( dc );
     ShipDraw( dc );
-
     AlertDraw( dc );
 
     RenderAllChartOutlines( dc, GetVP() );
