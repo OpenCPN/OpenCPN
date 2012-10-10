@@ -373,6 +373,10 @@ class MyFrame: public wxFrame
     bool                bPrevFullScreenQuilt;
     bool                bPrevOGL;
 
+    int                 m_current_src_priority;
+    wxString            m_current_src_id;
+    time_t              m_current_src_ticks;
+
     DECLARE_EVENT_TABLE()
 };
 

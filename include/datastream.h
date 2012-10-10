@@ -146,8 +146,10 @@ public:
     // accessors
     wxString GetNMEAString() { return m_NMEAstring; }
     wxString GetDataSource() { return m_datasource; }
+    int GetPrority() { return m_priority; }
     void SetNMEAString(wxString &string) { m_NMEAstring = string; }
     void SetDataSource(wxString &string) { m_datasource = string; }
+    void SetPriority(int priority) { m_priority = priority; }
 
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;
@@ -155,6 +157,7 @@ public:
 private:
     wxString    m_datasource;
     wxString    m_NMEAstring;
+    int         m_priority;
 
             //            DECLARE_DYNAMIC_CLASS(OCPN_DataStreamEvent)
 };
@@ -294,6 +297,7 @@ public:
 
     ~OCP_DataStreamInput_Thread(void);
     void *Entry();
+    int SendMsg(const wxString& msg);
 
     void OnExit(void);
 
@@ -366,6 +370,7 @@ public:
     wxString GetParametersStr();
     wxString GetOutputValueStr();
     wxString GetFiltersStr();
+    wxString GetDSPort();
 
     bool            Valid;
 private:

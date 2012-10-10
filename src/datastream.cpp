@@ -81,6 +81,7 @@ wxEvent* OCPN_DataStreamEvent::Clone() const
     OCPN_DataStreamEvent *newevent=new OCPN_DataStreamEvent(*this);
     newevent->m_NMEAstring=this->m_NMEAstring.c_str();  // this enforces a deep copy of the string data
     newevent->m_datasource=this->m_datasource.c_str();
+    newevent->m_priority=this->m_priority;
     return newevent;
 }
 
@@ -301,7 +302,8 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
             if( str_buf.StartsWith( _T("$GP") ) ) {
                 OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
                 Nevent.SetNMEAString(str_buf);
-                Nevent.SetDataSource(m_portstring); //TODO: invent some identifier which is more unique...
+                Nevent.SetDataSource(m_portstring);
+                Nevent.SetPriority(m_priority);
                 if( m_consumer )
                     if( SentencePassesFilter( str_buf, INPUT ) )
                         m_consumer->AddPendingEvent(Nevent);
@@ -379,10 +381,10 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
 
 bool DataStream::SendSentence( const wxString &sentence )
 {
-    if( !SentencePassesFilter( sentence, OUTPUT ) )
+    if( m_io_select == DS_TYPE_INPUT || !SentencePassesFilter( sentence, OUTPUT ) ) //Output forbidden for this port or sentence filtered out
         return false;
-    //TODO: Actually output the sentence if the media supports it
-    return false;
+    m_pSecondary_Thread->SendMsg(sentence);
+    return true;
 }
 
 
@@ -1194,9 +1196,11 @@ void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
     //            ThreadMessage(msg);
     }
 
-
     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
     Nevent.SetNMEAString(str_temp_buf);
+    wxString port = m_launcher->GetPort();
+    Nevent.SetDataSource(port);
+    Nevent.SetPriority(m_launcher->GetPrority());
     if( m_pMessageTarget )
         m_pMessageTarget->AddPendingEvent(Nevent);
 
@@ -1534,11 +1538,12 @@ bool OCP_DataStreamInput_Thread::CheckComPortPhysical(int port_descriptor)
       return false;
 }
 
-
-
-
 #endif            // __WXMSW__
 
+int OCP_DataStreamInput_Thread::SendMsg(const wxString& msg)
+{
+      return WriteComPortPhysical(m_gps_fd, msg);
+}
 
 //ConnectionParams implementation
 ConnectionParams::ConnectionParams( wxString &configStr )
@@ -1681,5 +1686,22 @@ wxString ConnectionParams::GetFiltersStr()
     else
         ret.Append( _(", Out: None") );
     return  ret;
+}
+
+wxString ConnectionParams::GetDSPort()
+{
+    if ( Type == Serial )
+        return wxString::Format( _T("%s"), Port.c_str() );
+    else
+    {
+        wxString proto;
+        if ( NetProtocol == TCP )
+            proto = _T("TCP");
+        else if (NetProtocol == UDP)
+            proto = _T("UDP");
+        else
+            proto = _T("GPSD");
+        return wxString::Format( _T("%s:%s:%d"), proto.c_str(), NetworkAddress.c_str(), NetworkPort );
+    }
 }
 
