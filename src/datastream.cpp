@@ -303,7 +303,8 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                 Nevent.SetNMEAString(str_buf);
                 Nevent.SetDataSource(m_portstring); //TODO: invent some identifier which is more unique...
                 if( m_consumer )
-                    m_consumer->AddPendingEvent(Nevent);
+                    if( SentencePassesFilter( str_buf, INPUT ) )
+                        m_consumer->AddPendingEvent(Nevent);
             }
 
             break;
@@ -334,6 +335,54 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
 
 void DataStream::OnTimerNMEA(wxTimerEvent& event)
 {
+}
+
+bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection direction)
+{
+    wxArrayString filter;
+    bool listype = false;
+
+    if (direction == INPUT)
+    {
+        filter = m_input_filter;
+        if (m_input_filter_type == WHITELIST)
+            listype = true;
+    }
+    else
+    {
+        filter = m_output_filter;
+        if (m_output_filter_type == WHITELIST)
+            listype = true;
+    }
+    wxString fs;
+    for (size_t i = 0; i < filter.Count(); i++)
+    {
+        fs = filter.Item(i);
+        switch (fs.Length())
+        {
+            case 2:
+                if (fs == sentence.Mid(1, 2))
+                    return listype;
+                break;
+            case 3:
+                if (fs == sentence.Mid(4, 3))
+                    return listype;
+                break;
+            case 5:
+                if (fs == sentence.Mid(1, 5))
+                    return listype;
+                break;
+        }
+    }
+    return !listype;
+}
+
+bool DataStream::SendSentence( const wxString &sentence )
+{
+    if( !SentencePassesFilter( sentence, OUTPUT ) )
+        return false;
+    //TODO: Actually output the sentence if the media supports it
+    return false;
 }
 
 
@@ -1135,34 +1184,36 @@ thread_exit:
 
 void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
 {
-      if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
-      {
-            g_total_NMEAerror_messages++;
-            wxString msg(_T("NMEA Sentence received..."));
-            msg.Append(str_temp_buf);
-//            ThreadMessage(msg);
-      }
+    if( !m_launcher->SentencePassesFilter( str_temp_buf, INPUT ) )
+        return;
+    if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
+    {
+        g_total_NMEAerror_messages++;
+        wxString msg(_T("NMEA Sentence received..."));
+        msg.Append(str_temp_buf);
+    //            ThreadMessage(msg);
+    }
 
 
-      OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-      Nevent.SetNMEAString(str_temp_buf);
-      if( m_pMessageTarget )
-          m_pMessageTarget->AddPendingEvent(Nevent);
+    OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+    Nevent.SetNMEAString(str_temp_buf);
+    if( m_pMessageTarget )
+        m_pMessageTarget->AddPendingEvent(Nevent);
 
-      return;
+    return;
 }
 
 
 void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
 {
-
+    if( !m_launcher->SentencePassesFilter( msg, INPUT ) )
+        return;
     //    Signal the main program thread
-      wxCommandEvent event( EVT_THREADMSG,  GetId());
-      event.SetEventObject( (wxObject *)this );
-      event.SetString(msg);
-      if( m_pMessageTarget )
-          m_pMessageTarget->AddPendingEvent(event);
-
+    wxCommandEvent event( EVT_THREADMSG,  GetId());
+    event.SetEventObject( (wxObject *)this );
+    event.SetString(msg);
+    if( m_pMessageTarget )
+        m_pMessageTarget->AddPendingEvent(event);
 }
 
 

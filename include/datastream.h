@@ -107,6 +107,12 @@ typedef enum
 
 typedef enum
 {
+    INPUT = 0,
+    OUTPUT = 1
+} FilterDirection;
+
+typedef enum
+{
     NMEA0183 = 0,
     SEATALK = 1,
     NMEA2000 = 2
@@ -191,7 +197,7 @@ public:
     int GetPrority(){ return m_priority; }
     void *GetUserData(){ return m_user_data; }
 
-    bool SendSentence( const wxString &sentence ) { /* TODO */ return false; };
+    bool SendSentence( const wxString &sentence );
 
     int GetLastError(){ return m_last_error; }
 
@@ -205,6 +211,7 @@ public:
     void SetInputFilterType(ListType filter_type) { m_input_filter_type = filter_type; }
     void SetOutputFilter(wxArrayString filter) { m_output_filter = filter; }
     void SetOutputFilterType(ListType filter_type) { m_output_filter_type = filter_type; }
+    bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
 
     int                 m_Thread_run_flag;
 private:
