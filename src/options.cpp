@@ -2028,21 +2028,24 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     // Start with the stuff that requires intelligent validation.
 
-    g_OwnShipIconType = m_pShipIconType->GetSelection();
-    m_pOSLength->GetValue().ToDouble( &g_n_ownship_length_meters );
-    m_pOSWidth->GetValue().ToDouble( &g_n_ownship_beam_meters );
-    m_pOSGPSOffsetX->GetValue().ToDouble( &g_n_gps_antenna_offset_x );
-    m_pOSGPSOffsetY->GetValue().ToDouble( &g_n_gps_antenna_offset_y );
-    m_pOSMinSize->GetValue().ToLong( &g_n_ownship_min_mm );
-
-    if( g_OwnShipIconType > 0 ) {
+    if( m_pShipIconType->GetSelection() > 0 ) {
+        double n_ownship_length_meters;
+        double n_ownship_beam_meters;
+        double n_gps_antenna_offset_y;
+        double n_gps_antenna_offset_x;
+        long n_ownship_min_mm;
+        m_pOSLength->GetValue().ToDouble( &n_ownship_length_meters );
+        m_pOSWidth->GetValue().ToDouble( &n_ownship_beam_meters );
+        m_pOSGPSOffsetX->GetValue().ToDouble( &n_gps_antenna_offset_x );
+        m_pOSGPSOffsetY->GetValue().ToDouble( &n_gps_antenna_offset_y );
+        m_pOSMinSize->GetValue().ToLong( &n_ownship_min_mm );
         bool OK = true;
-        if( g_n_ownship_length_meters <= 0 ) OK = false;
-        if( g_n_ownship_beam_meters <= 0 ) OK = false;
-        if( abs(g_n_gps_antenna_offset_x) > g_n_ownship_beam_meters/2.0 ) OK = false;
-        if( g_n_gps_antenna_offset_y > g_n_ownship_length_meters ) OK = false;
-        if( g_n_ownship_min_mm > 100 ) OK = false;
-        if( g_n_ownship_min_mm <= 0 ) OK = false;
+        if( n_ownship_length_meters <= 0 ) OK = false;
+        if( n_ownship_beam_meters <= 0 ) OK = false;
+        if( fabs(n_gps_antenna_offset_x) > n_ownship_beam_meters/2.0 ) OK = false;
+        if( n_gps_antenna_offset_y > n_ownship_length_meters ) OK = false;
+        if( n_ownship_min_mm > 100 ) OK = false;
+        if( n_ownship_min_mm <= 0 ) OK = false;
         if( ! OK ) {
             OCPNMessageDialog* dlg = new OCPNMessageDialog( this,
                     _("Your Own Ship size data is not correct.\nPlease review it."), _("OpenCPN info"),
@@ -2053,6 +2056,12 @@ void options::OnApplyClick( wxCommandEvent& event )
             event.SetInt( wxID_STOP );
             return;
         }
+        g_OwnShipIconType = m_pShipIconType->GetSelection();
+        g_n_ownship_length_meters = n_ownship_length_meters;
+        g_n_ownship_beam_meters = n_ownship_beam_meters;
+        g_n_gps_antenna_offset_y = n_gps_antenna_offset_y;
+        g_n_gps_antenna_offset_x = n_gps_antenna_offset_x;
+        g_n_ownship_min_mm = n_ownship_min_mm;
     }
 
     //    Handle Chart Tab
