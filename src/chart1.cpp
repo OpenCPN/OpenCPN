@@ -2134,6 +2134,10 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         else
             port_type = DS_TYPE_INPUT_OUTPUT;
         DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type );
+        dstr->SetInputFilterType(cp->InputSentenceListType);
+        dstr->SetInputFilter(cp->InputSentenceList);
+        dstr->SetOutputFilterType(cp->OutputSentenceListType);
+        dstr->SetOutputFilter(cp->OutputSentenceList);
         g_pMUX->AddStream(dstr);
     }
     g_pMUX->SetAISHandler(g_pAIS);

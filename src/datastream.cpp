@@ -356,6 +356,10 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
         if (m_output_filter_type == WHITELIST)
             listype = true;
     }
+
+    if (filter.Count() == 0) //If there is no filter defined, everything passes for whitelist and nothing for blacklist
+        return listype;
+
     wxString fs;
     for (size_t i = 0; i < filter.Count(); i++)
     {
