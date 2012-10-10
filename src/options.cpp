@@ -2041,19 +2041,17 @@ void options::OnApplyClick( wxCommandEvent& event )
         m_pOSMinSize->GetValue().ToLong( &n_ownship_min_mm );
         wxString msg;
         if( n_ownship_length_meters <= 0 )
-            msg += _("Your ships length must be > 0.\n");
+            msg += _("\n - your ship's length must be > 0");
         if( n_ownship_beam_meters <= 0 )
-            msg += _("Your ships beam must be > 0.\n");
+            msg += _("\n - your ship's beam must be > 0");
         if( fabs(n_gps_antenna_offset_x) > n_ownship_beam_meters/2.0 )
-            msg += _("Your GPS offset from midship must be within your ships beam.\n");
+            msg += _("\n - your GPS offset from midship must be within your ship's beam");
         if( n_gps_antenna_offset_y < 0 || n_gps_antenna_offset_y > n_ownship_length_meters )
-             msg += _("Your GPS offset from bow must be within your ships length.\n");
-        if( n_ownship_min_mm > 100 )
-             msg += _("Your minimum ship icon size must be <= 100 mm.\n");
-        if( n_ownship_min_mm <= 0 )
-             msg += _("Your minimum ship icon size must be > 0.\n");
+            msg += _("\n - your GPS offset from bow must be within your ship's length");
+        if( n_ownship_min_mm <= 0 || n_ownship_min_mm > 100 )
+            msg += _("\n - your minimum ship icon size must be between 1 and 100 mm");
         if( ! msg.IsEmpty() ) {
-            msg.Prepend( _("The settings for own ship real size are not correct:\n") );
+            msg.Prepend( _("The settings for own ship real size are not correct:") );
             OCPNMessageDialog* dlg = new OCPNMessageDialog( this,
                     msg, _("OpenCPN info"),
                     wxICON_ERROR );
@@ -2063,13 +2061,13 @@ void options::OnApplyClick( wxCommandEvent& event )
             event.SetInt( wxID_STOP );
             return;
         }
-        g_OwnShipIconType = m_pShipIconType->GetSelection();
         g_n_ownship_length_meters = n_ownship_length_meters;
         g_n_ownship_beam_meters = n_ownship_beam_meters;
         g_n_gps_antenna_offset_y = n_gps_antenna_offset_y;
         g_n_gps_antenna_offset_x = n_gps_antenna_offset_x;
         g_n_ownship_min_mm = n_ownship_min_mm;
     }
+    g_OwnShipIconType = m_pShipIconType->GetSelection();
 
     //    Handle Chart Tab
     wxString dirname;
