@@ -436,6 +436,7 @@ private:
 #ifndef OCPN_NO_SOCKETS
     wxIPV4address     addr;
     wxSocketClient    *m_sock;
+    wxString          m_sock_data;
 #endif
 
     bool              m_busy;

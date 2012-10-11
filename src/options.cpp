@@ -1099,14 +1099,16 @@ void options::CreateControls()
     else if(pAIS_Port->Upper().Contains(_T("NONE")))
           sidx = 0;
     else
-          sidx = 0;                                 // malformed selection
+          sidx = wxNOT_FOUND;                                 // malformed selection
 
 
     if(sidx ==  wxNOT_FOUND)                  // user specified in ComboBox
     {
-          wxString nport = pAIS_Port->AfterFirst(':');
-          m_itemAISListBox->Append( nport );
-          sidx = m_itemAISListBox->FindString(nport);
+          //wxString nport = pAIS_Port->AfterFirst(':');
+          //m_itemAISListBox->Append( nport );
+          //sidx = m_itemAISListBox->FindString(nport);
+          m_itemAISListBox->Append( *pAIS_Port );
+          sidx = m_itemAISListBox->FindString(*pAIS_Port);
     }
 
     m_itemAISListBox->SetSelection(sidx);
