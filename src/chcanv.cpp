@@ -14736,7 +14736,7 @@ void RolloverWin::SetBitmap( int rollover )
 
     int font_size = wxMax(8, dFont->GetPointSize());
     wxFont *plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
-                         dFont->GetStyle(), dFont->GetWeight() );
+                         dFont->GetStyle(), dFont->GetWeight(), false, dFont->GetFaceName() );
 
     //    Draw the text
     mdc.SetFont( *plabelFont );
