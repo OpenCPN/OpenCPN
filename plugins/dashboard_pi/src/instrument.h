@@ -6,7 +6,7 @@
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
 
@@ -39,13 +39,7 @@
 #include <wx/dcbuffer.h>
 
 const wxString DEGREE_SIGN = wxString::Format(_T("%c"), 0x00B0); // This is the degree sign in UTF8. It should be correctly handled on both Win & Unix
-
-// Zeniths for sunset/sunrise calculation
-#define ZENITH_OFFICIAL (90.0 + 50.0 / 60.0)
-#define ZENITH_CIVIL 96.0
-#define ZENITH_NAUTICAL 102.0
-#define ZENITH_ASTRONOMICAL 108.0
-
+#define DefaultWidth 150
 
 extern wxFont *g_pFontTitle;
 extern wxFont *g_pFontData;
@@ -53,7 +47,6 @@ extern wxFont *g_pFontLabel;
 extern wxFont *g_pFontSmall;
 
 wxString toSDMM ( int NEflag, double a );
-void calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset);
 
 class DashboardInstrument;
 class DashboardInstrument_Single;
@@ -86,31 +79,30 @@ enum
     OCPN_DBP_STC_CLK = 1 << 21,
     OCPN_DBP_STC_MON = 1 << 22,
     OCPN_DBP_STC_ATMP = 1 << 23, //AirTemp
-	OCPN_DBP_STC_MWD = 1 << 24,  //True Wind direction & Speed
-	OCPN_DBP_STC_VWT = 1 << 25,  //True Wind angle & Speed
-	OCPN_DBP_STC_AWA2 = 1 << 26  //App Wind angle, sends unconverted Spd. value
+	OCPN_DBP_STC_VWT = 1 << 24,  //True Wind angle, relative
+	OCPN_DBP_STC_VWR = 1 << 25   //App Wind angle, relative
 };
 
-class DashboardInstrument : public wxWindow
+class DashboardInstrument : public wxControl
 {
 public:
       DashboardInstrument(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag);
       ~DashboardInstrument(){}
 
       int GetCapacity();
-      virtual void SetInstrumentWidth(int width) = 0;
-      virtual void OnPaint(wxPaintEvent& WXUNUSED(event));
+      void OnEraseBackground(wxEraseEvent& WXUNUSED(evt));
+      virtual wxSize GetSize( int orient, wxSize hint ) = 0;
+      void OnPaint(wxPaintEvent& WXUNUSED(event));
       virtual void SetData(int st, double data, wxString unit) = 0;
 
-private:
+      int               instrumentTypeId;
 
 protected:
       int               m_cap_flag;
-      int               m_TitleHeight, m_width, m_height;
+      int               m_TitleHeight;
       wxString          m_title;
 
-      virtual void Draw(wxBufferedDC* dc) = 0;
-
+      virtual void Draw(wxGCDC* dc) = 0;
 };
 
 class DashboardInstrument_Single : public DashboardInstrument
@@ -119,7 +111,7 @@ public:
       DashboardInstrument_Single(wxWindow *pparent, wxWindowID id, wxString title, int cap, wxString format);
       ~DashboardInstrument_Single(){}
 
-      void SetInstrumentWidth(int width);
+      wxSize GetSize( int orient, wxSize hint );
       void SetData(int st, double data, wxString unit);
 
 protected:
@@ -127,8 +119,7 @@ protected:
       wxString          m_format;
       int               m_DataHeight;
 
-      void Draw(wxBufferedDC* dc);
-
+      void Draw(wxGCDC* dc);
 };
 
 class DashboardInstrument_Position : public DashboardInstrument
@@ -137,7 +128,7 @@ public:
       DashboardInstrument_Position(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2=OCPN_DBP_STC_LON);
       ~DashboardInstrument_Position(){}
 
-      void SetInstrumentWidth(int width);
+      wxSize GetSize( int orient, wxSize hint );
       void SetData(int st, double data, wxString unit);
 
 protected:
@@ -147,27 +138,7 @@ protected:
       int               m_cap_flag2;
       int               m_DataHeight;
 
-      void Draw(wxBufferedDC* dc);
-
-};
-
-class DashboardInstrument_Sun : public DashboardInstrument_Position
-{
-public:
-      DashboardInstrument_Sun(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2 = OCPN_DBP_STC_LON, int cap_flag= OCPN_DBP_STC_CLK) : DashboardInstrument_Position(pparent, id, title, cap_flag1, cap_flag2) { m_lat = m_lon = 999.9; m_dt = wxDateTime::Now().ToUTC(); m_cap_flag = m_cap_flag | cap_flag; }
-      ~DashboardInstrument_Sun(){}
-
-      void SetData(int st, double data, wxString unit);
-      void SetUtcTime(int st, wxDateTime value);
-
-protected:
-      double m_lat;
-      double m_lon;
-      wxDateTime m_dt;
-
-private:
-      void calculateSun(double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset);
+      void Draw(wxGCDC* dc);
 };
 
 #endif
-

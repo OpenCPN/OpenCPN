@@ -6,7 +6,7 @@
  * Author:   Jean-Eudes Onfray
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
 
@@ -35,7 +35,7 @@
 #endif //precompiled headers
 
 #define     PLUGIN_VERSION_MAJOR    1
-#define     PLUGIN_VERSION_MINOR    1
+#define     PLUGIN_VERSION_MINOR    2
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    6
@@ -69,16 +69,16 @@ class DashboardInstrumentContainer;
 class DashboardWindowContainer
 {
       public:
-            DashboardWindowContainer(DashboardWindow *dashboard_window, wxString caption, wxString orientation, int width, wxArrayInt inst) {
-                  m_pDashboardWindow = dashboard_window; m_sCaption = caption; m_sOrientation = orientation; m_iInstrumentWidth = width; m_aInstrumentList = inst; m_bIsVisible = false; m_bIsDeleted = false; }
+            DashboardWindowContainer(DashboardWindow *dashboard_window, wxString name, wxString caption, wxString orientation, wxArrayInt inst) {
+                  m_pDashboardWindow = dashboard_window; m_sName = name; m_sCaption = caption; m_sOrientation = orientation; m_aInstrumentList = inst; m_bIsVisible = false; m_bIsDeleted = false; }
 
             ~DashboardWindowContainer(){}
             DashboardWindow              *m_pDashboardWindow;
             bool                          m_bIsVisible; // Only used for config
             bool                          m_bIsDeleted; // Only used for config
+            wxString                      m_sName;
             wxString                      m_sCaption;
             wxString                      m_sOrientation;
-            int                           m_iInstrumentWidth;
             wxArrayInt                    m_aInstrumentList;
 };
 
@@ -108,7 +108,7 @@ WX_DEFINE_ARRAY(DashboardInstrumentContainer *, wxArrayOfInstrument);
 //----------------------------------------------------------------------------------------------------------
 
 
-class dashboard_pi : public wxEvtHandler, opencpn_plugin_16
+class dashboard_pi : public wxTimer, opencpn_plugin_16
 {
 public:
       dashboard_pi(void *ppimgr);
@@ -117,6 +117,8 @@ public:
 //    The required PlugIn Methods
       int Init(void);
       bool DeInit(void);
+
+      void Notify();
 
       int GetAPIVersionMajor();
       int GetAPIVersionMinor();
@@ -137,14 +139,16 @@ public:
       void SetColorScheme(PI_ColorScheme cs);
       void OnPaneClose( wxAuiManagerEvent& event );
       void UpdateAuiStatus(void);
+      bool SaveConfig(void);
+      void PopulateContextMenu( wxMenu* menu );
+      void ShowDashboard( size_t id, bool visible );
 
 private:
       bool LoadConfig(void);
-      bool SaveConfig(void);
       void ApplyConfig(void);
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
-      void SendUtcTimeToAllInstruments(int st, wxDateTime value);
+      void SendUtcTimeToAllInstruments( wxDateTime value );
       int GetDashboardWindowShownCount();
 
       wxFileConfig     *m_pconfig;
@@ -202,7 +206,6 @@ private:
       wxTextCtrl                   *m_pTextCtrlCaption;
       wxCheckBox                   *m_pCheckBoxIsVisible;
       wxChoice                     *m_pChoiceOrientation;
-      wxSpinCtrl                   *m_pInstrumentWidth;
       wxListCtrl                   *m_pListCtrlInstruments;
       wxButton                     *m_pButtonAdd;
       wxButton                     *m_pButtonEdit;
@@ -228,25 +231,39 @@ enum
       ID_DASHBOARD_WINDOW
 };
 
+enum
+{
+      ID_DASH_PREFS = 999,
+      ID_DASH_VERTICAL,
+      ID_DASH_HORIZONTAL
+};
+
 class DashboardWindow : public wxWindow
 {
 public:
-      DashboardWindow(wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr);
-      ~DashboardWindow();
+    DashboardWindow( wxWindow *pparent, wxWindowID id, wxAuiManager *auimgr, dashboard_pi* plugin,
+             int orient, DashboardWindowContainer* mycont );
+    ~DashboardWindow();
 
-      void SetColorScheme(PI_ColorScheme cs);
-      void SetSizerOrientation( int orient );
-      void OnSize(wxSizeEvent& evt);
-      void SetInstrumentList(wxArrayInt list);
-      void SetInstrumentWidth(int width);
-      void SendSentenceToAllInstruments(int st, double value, wxString unit);
-      void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
-      void SendUtcTimeToAllInstruments(int st, wxDateTime value);
-      //const wxSize DoGetBestSize();
-      /*TODO: OnKeyPress pass event to main window or disable focus*/
+    void SetColorScheme( PI_ColorScheme cs );
+    void SetSizerOrientation( int orient );
+    int GetSizerOrientation();
+    void OnSize( wxSizeEvent& evt );
+    void OnContextMenu( wxContextMenuEvent& evt );
+    void OnContextMenuSelect( wxCommandEvent& evt );
+    bool isInstrumentListEqual( const wxArrayInt& list );
+    void SetInstrumentList( wxArrayInt list );
+    void SendSentenceToAllInstruments( int st, double value, wxString unit );
+    void SendSatInfoToAllInstruments( int cnt, int seq, SAT_INFO sats[4] );
+    void SendUtcTimeToAllInstruments( wxDateTime value );
+    void ChangePaneOrientation( int orient, bool updateAUImgr );
+/*TODO: OnKeyPress pass event to main window or disable focus*/
+
+    DashboardWindowContainer* m_Container;
 
 private:
       wxAuiManager         *m_pauimgr;
+      dashboard_pi*         m_plugin;
 
 //wx2.9      wxWrapSizer*          itemBoxSizer;
       wxBoxSizer*          itemBoxSizer;

@@ -46,9 +46,7 @@ DashboardInstrument_Compass::DashboardInstrument_Compass( wxWindow *parent, wxWi
 {
       SetOptionMarker(5, DIAL_MARKER_SIMPLE, 2);
       SetOptionLabel(20, DIAL_LABEL_ROTATED);
-      SetOptionMainValue(_T("%5.0f Deg"), DIAL_POSITION_TOPRIGHT);
-
-      SetInstrumentWidth(200);
+      SetOptionMainValue( _T("%.0f"), DIAL_POSITION_INSIDE);
 }
 
 void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)
@@ -59,119 +57,22 @@ void DashboardInstrument_Compass::SetData(int st, double data, wxString unit)
             m_AngleStart = -data;
             // Required to display data
             m_MainValue = data;
-
-            Refresh(false);
+            m_MainValueUnit = unit;
       }
       else if (st == m_ExtraValueCap)
       {
             m_ExtraValue = data;
-            Refresh(false);
+            m_ExtraValueUnit = unit;
       }
 }
 
-void DashboardInstrument_Compass::DrawBackground(wxBufferedDC* dc)
+void DashboardInstrument_Compass::DrawBackground(wxGCDC* dc)
 {
-      wxPen pen;
-
-//      wxBrush brushHatch(*wxLIGHT_GREY, wxTRANSPARENT);
-
-      // Now draw the boat
-      wxColour cl;
-      GetGlobalColor(_T("GREY1"), &cl);
-      pen.SetStyle(wxSOLID);
-      pen.SetColour(cl);
-      dc->SetPen(pen);
-      GetGlobalColor(_T("GREY2"), &cl);
-      dc->SetBrush(cl);
-
-      wxPoint points[7];
-
-/*
- *           0
- *          /\
- *         /  \
- *        /    \
- *     6 /      \ 1
- *      |   X    |
- *      |        |
- *    5 |        | 2
- *       \      /
- *        \__ _/
- *        4    3
- */
-      points[0].x = m_cx;
-      points[0].y = m_cy - m_radius * .50; // a little bit longer than compass rose
-      points[1].x = m_cx + m_radius * .15;
-      points[1].y = m_cy;
-      points[2].x = m_cx + m_radius * .15;
-      points[2].y = m_cy + m_radius * .20;
-      points[3].x = m_cx + m_radius * .10;
-      points[3].y = m_cy + m_radius * .40;
-      points[4].x = m_cx - m_radius * .10;
-      points[4].y = m_cy + m_radius * .40;
-      points[5].x = m_cx - m_radius * .15;
-      points[5].y = m_cy + m_radius * .20;
-      points[6].x = m_cx - m_radius * .15;
-      points[6].y = m_cy;
-
-      dc->DrawPolygon(7, points, 0, 0);
-
-      DrawCompassRose(dc);
+    DrawBoat( dc, m_cx, m_cy, m_radius );
+    DrawCompassRose( dc, m_cx, m_cy, 0.7 * m_radius, m_AngleStart, true );
 }
 
-void DashboardInstrument_Compass::DrawCompassRose(wxBufferedDC* dc)
-{
-      wxPoint TextPoint, points[3];
-      wxString Value;
-      int width, height;
-      wxString CompassArray[] = {_("N"),_("NE"),_("E"),_("SE"),_("S"),_("SW"),_("W"),_("NW"),_("N")};
-
-      int tmpradius = m_radius * 0.75;
-
-      dc->SetFont(*g_pFontSmall);
-
-      wxColour cl;
-      wxPen pen;
-      pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("BLUE1"), &cl);
-      pen.SetColour(cl);
-      dc->SetPen(pen);
-      dc->SetTextForeground(cl);
-      //dc->SetPen(*wxTRANSPARENT_PEN);
-
-      int offset = 0;
-      for(double tmpangle = m_AngleStart - ANGLE_OFFSET;
-                        tmpangle <= m_AngleStart + 360 - ANGLE_OFFSET; tmpangle+=45)
-      {
-            Value = CompassArray[offset];
-            dc->GetTextExtent(Value, &width, &height, 0, 0, g_pFontSmall);
-            double x = width/2;
-            long double anglefortext = asin((x/tmpradius));
-            anglefortext = tmpangle - rad2deg(anglefortext);
-            TextPoint.x = m_cx + tmpradius * cos(deg2rad(anglefortext));
-            TextPoint.y = m_cy + tmpradius * sin(deg2rad(anglefortext));
-            dc->DrawRotatedText(Value, TextPoint.x,
-                                                TextPoint.y, -90 - tmpangle);
-
-            dc->SetBrush(*wxTRANSPARENT_BRUSH);
-            points[0].x = m_cx;
-            points[0].y = m_cy;
-            points[1].x = m_cx + tmpradius * 0.1 * cos(deg2rad(tmpangle-45));
-            points[1].y = m_cy + tmpradius * 0.1 * sin(deg2rad(tmpangle-45));
-            double size = (offset % 2 ? 0.50 : 0.80);
-            points[2].x = m_cx + tmpradius * size * cos(deg2rad(tmpangle));
-            points[2].y = m_cy + tmpradius * size * sin(deg2rad(tmpangle));
-            dc->DrawPolygon(3, points, 0, 0);
-
-            points[1].x = m_cx + tmpradius * 0.1 * cos(deg2rad(tmpangle+45));
-            points[1].y = m_cy + tmpradius * 0.1 * sin(deg2rad(tmpangle+45));
-            dc->SetBrush(cl);
-            dc->DrawPolygon(3, points, 0, 0);
-            offset++;
-      }
-}
-
-void DashboardInstrument_Compass::DrawForeground(wxBufferedDC* dc)
+void DashboardInstrument_Compass::DrawForeground(wxGCDC* dc)
 {
       // We dont want the default foreground (arrow) drawn
 }

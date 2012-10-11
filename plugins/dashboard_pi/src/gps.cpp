@@ -58,20 +58,21 @@ DashboardInstrument_GPS::DashboardInstrument_GPS( wxWindow *parent, wxWindowID i
             m_SatInfo[idx].AzimuthDegreesTrue = 0;
             m_SatInfo[idx].SignalToNoiseRatio = 0;
       }
-
-      SetInstrumentWidth(200);
 }
 
-void DashboardInstrument_GPS::SetInstrumentWidth(int width)
+wxSize DashboardInstrument_GPS::GetSize( int orient, wxSize hint )
 {
       wxClientDC dc(this);
       int w;
       dc.GetTextExtent(m_title, &w, &m_TitleHeight, 0, 0, g_pFontTitle);
-      m_cx = width/2;
-      m_width = width;
-      m_height = m_TitleHeight+140;
-      SetMinSize(wxSize(m_width, m_height));
-      Refresh(false);
+      if( orient == wxHORIZONTAL ) {
+          m_cx = DefaultWidth/2;
+          return wxSize( DefaultWidth, wxMax(hint.y, m_TitleHeight+140) );
+      } else {
+          w = wxMax(hint.x, DefaultWidth);
+          m_cx = w/2;
+          return wxSize( w, m_TitleHeight+140 );
+      }
 }
 
 void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, SAT_INFO sats[4])
@@ -89,33 +90,32 @@ void DashboardInstrument_GPS::SetSatInfo(int cnt, int seq, SAT_INFO sats[4])
             m_SatInfo[lidx+idx].AzimuthDegreesTrue = sats[idx].AzimuthDegreesTrue;
             m_SatInfo[lidx+idx].SignalToNoiseRatio = sats[idx].SignalToNoiseRatio;
       }
-
-      Refresh(false);
 }
 
-void DashboardInstrument_GPS::Draw(wxBufferedDC* dc)
+void DashboardInstrument_GPS::Draw(wxGCDC* dc)
 {
       DrawFrame(dc);
       DrawBackground(dc);
       DrawForeground(dc);
 }
 
-void DashboardInstrument_GPS::DrawFrame(wxBufferedDC* dc)
+void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 {
-      wxRect rect = GetClientRect();
+      wxSize size = GetClientSize();
       wxColour cl;
 
-      GetGlobalColor(_T("DILG1"), &cl);
+      GetGlobalColor(_T("DASHB"), &cl);
       dc->SetTextBackground(cl);
       dc->SetBackgroundMode(wxSOLID);
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHL"), &cl);
       dc->SetTextForeground(cl);
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
       wxPen pen;
       pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("BLUE2"), &cl);
+      GetGlobalColor(_T("DASHF"), &cl);
       pen.SetColour(cl);
+      pen.SetWidth(2);
       dc->SetPen(pen);
 
       dc->DrawCircle(m_cx, m_cy, m_radius);
@@ -128,8 +128,8 @@ void DashboardInstrument_GPS::DrawFrame(wxBufferedDC* dc)
 
       dc->SetBackgroundMode(wxTRANSPARENT);
 
-      dc->DrawLine(3, 100, rect.width-3, 100);
-      dc->DrawLine(3, 140, rect.width-3, 140);
+      dc->DrawLine(3, 100, size.x-3, 100);
+      dc->DrawLine(3, 140, size.x-3, 140);
 
       pen.SetStyle(wxDOT);
       dc->SetPen(pen);
@@ -138,12 +138,12 @@ void DashboardInstrument_GPS::DrawFrame(wxBufferedDC* dc)
 
       pen.SetStyle(wxSHORT_DASH);
       dc->SetPen(pen);
-      dc->DrawLine(3, 110, rect.width-3, 110);
-      dc->DrawLine(3, 120, rect.width-3, 120);
-      dc->DrawLine(3, 130, rect.width-3, 130);
+      dc->DrawLine(3, 110, size.x-3, 110);
+      dc->DrawLine(3, 120, size.x-3, 120);
+      dc->DrawLine(3, 130, size.x-3, 130);
 }
 
-void DashboardInstrument_GPS::DrawBackground(wxBufferedDC* dc)
+void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
 {
       dc->SetFont(*g_pFontSmall);
       // Draw SatID
@@ -155,34 +155,34 @@ void DashboardInstrument_GPS::DrawBackground(wxBufferedDC* dc)
       }
 }
 
-void DashboardInstrument_GPS::DrawForeground(wxBufferedDC* dc)
+void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
 {
-      wxColour cl;
-      GetGlobalColor(_T("BLUE1"), &cl);
-      wxBrush brush;
-      brush.SetStyle(wxSOLID);
-      brush.SetColour(cl);
-      dc->SetBrush(brush);
-      dc->SetPen(*wxTRANSPARENT_PEN);
-      dc->SetTextBackground(cl);
-      GetGlobalColor(_T("BLUE2"), &cl);
-      dc->SetTextForeground(cl);
-      dc->SetBackgroundMode(wxSOLID);
+    wxColour cl;
+    GetGlobalColor( _T("DASHL"), &cl );
+    wxBrush* brush = wxTheBrushList->FindOrCreateBrush( cl );
+    dc->SetBrush( *brush );
+    dc->SetPen( *wxTRANSPARENT_PEN);
+    dc->SetTextBackground( cl );
 
-      wxString label;
-      wxFont font = dc->GetFont();
-      for (int idx = 0; idx < 12; idx++)
-      {
-            if (m_SatInfo[idx].SignalToNoiseRatio)
-            {
-                  dc->DrawRectangle(idx*16+5, 140, 14, m_SatInfo[idx].SignalToNoiseRatio * -0.4);
-                  label.Printf(_T("%02d"), m_SatInfo[idx].SatNumber);
-                  int width, height;
-                  dc->GetTextExtent(label, &width, &height, 0, 0, &font);
-                  int posx = m_cx + m_radius * cos(deg2rad(m_SatInfo[idx].AzimuthDegreesTrue-ANGLE_OFFSET)) * sin(deg2rad(ANGLE_OFFSET-m_SatInfo[idx].ElevationDegrees)) - width/2;
-                  int posy = m_cy + m_radius * sin(deg2rad(m_SatInfo[idx].AzimuthDegreesTrue-ANGLE_OFFSET)) * sin(deg2rad(ANGLE_OFFSET-m_SatInfo[idx].ElevationDegrees)) - height/2;
-                  dc->DrawText(label, posx, posy);
-            }
-      }
+    GetGlobalColor( _T("DASHF"), &cl );
+    dc->SetTextForeground( cl );
+    dc->SetBackgroundMode( wxSOLID );
+
+    wxString label;
+    wxFont font = dc->GetFont();
+    for( int idx = 0; idx < 12; idx++ ) {
+        if( m_SatInfo[idx].SignalToNoiseRatio ) {
+            int h = m_SatInfo[idx].SignalToNoiseRatio * 0.4;
+            dc->DrawRectangle( idx * 16 + 5, 140 - h, 13, h );
+            label.Printf( _T("%02d"), m_SatInfo[idx].SatNumber );
+            int width, height;
+            dc->GetTextExtent( label, &width, &height, 0, 0, &font );
+            int posx = m_cx + m_radius * cos( deg2rad( m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET ) )
+                            * sin( deg2rad( ANGLE_OFFSET - m_SatInfo[idx].ElevationDegrees ) ) - width / 2;
+            int posy = m_cy + m_radius * sin( deg2rad( m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET ) )
+                            * sin( deg2rad( ANGLE_OFFSET - m_SatInfo[idx].ElevationDegrees ) ) - height / 2;
+            dc->DrawText( label, posx, posy );
+        }
+    }
 }
 

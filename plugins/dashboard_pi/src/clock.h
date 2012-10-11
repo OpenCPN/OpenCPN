@@ -6,7 +6,7 @@
  * Author:   Pavel Kalian
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
 
@@ -43,27 +43,54 @@
 
 #include "instrument.h"
 
-int moon_phase(int y, int m, int d);
-
 class DashboardInstrument_Clock: public DashboardInstrument_Single
 {
-      public:
-            DashboardInstrument_Clock( wxWindow *parent, wxWindowID id, wxString title);
+public:
+    DashboardInstrument_Clock( wxWindow *parent, wxWindowID id, wxString title, int cap_flag=OCPN_DBP_STC_CLK, wxString format=_T("%02i:%02i:%02i UTC") );
 
-            ~DashboardInstrument_Clock(void){}
+    ~DashboardInstrument_Clock(void){}
 
-            void SetInstrumentWidth(int width);
-            void SetData(int, double, wxString) {};
-            void SetUtcTime(int st, wxDateTime value);
+    wxSize GetSize( int orient, wxSize hint );
+    void SetData(int, double, wxString);
+    virtual void SetUtcTime(wxDateTime value);
 };
 
-class DashboardInstrument_Moon : public DashboardInstrument_Single
+class DashboardInstrument_Moon : public DashboardInstrument_Clock
 {
 public:
-      DashboardInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title);
-      ~DashboardInstrument_Moon(){}
+    DashboardInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title);
+    ~DashboardInstrument_Moon(){}
 
-      void SetUtcTime(int st, wxDateTime value);
+    wxSize GetSize( int orient, wxSize hint );
+    void Draw(wxGCDC* dc);
+    void SetUtcTime(wxDateTime value);
+
+private:
+    int moon_phase(int y, int m, int d);
+    int m_phase;
+    int m_radius;
+};
+
+class DashboardInstrument_Sun : public DashboardInstrument_Clock
+{
+public:
+    DashboardInstrument_Sun( wxWindow *parent, wxWindowID id, wxString title );
+
+    ~DashboardInstrument_Sun(){}
+
+    wxSize GetSize( int orient, wxSize hint );
+    void Draw(wxGCDC* dc);
+    void SetData( int st, double data, wxString unit );
+    void SetUtcTime( wxDateTime value );
+
+private:
+    wxString m_sunrise;
+    wxString m_sunset;
+    double m_lat;
+    double m_lon;
+    wxDateTime m_dt;
+
+    void calculateSun( double latit, double longit, wxDateTime &sunrise, wxDateTime &sunset );
 };
 
 #endif // __CLOCK_H__
