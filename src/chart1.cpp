@@ -1967,6 +1967,10 @@ int MyApp::OnExit()
     if( ptcmgr ) delete ptcmgr;
 
     wxLogMessage( _T("opencpn::MyApp exiting cleanly...\n") );
+
+    g_pConnectionParams->Clear();
+    delete g_pConnectionParams;
+
     delete pConfig;
     delete pSelect;
     delete pSelectTC;
