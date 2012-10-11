@@ -408,8 +408,7 @@ public:
     wxCheckBox              *pTrackShowIcon;
     wxCheckBox              *pTrackDaily;
     wxCheckBox              *pTrackHighlite;
-    wxRadioButton           *m_pCheck_Trackpoint_time;
-    wxRadioButton           *m_pCheck_Trackpoint_distance;
+    wxChoice                *pTrackPrecision;
     wxTextCtrl              *m_pText_TP_Secs;
     wxTextCtrl              *m_pText_TP_Dist;
 

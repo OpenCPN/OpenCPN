@@ -134,8 +134,8 @@ extern bool             g_bHighliteTracks;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern double           g_TrackDeltaDistance;
-extern bool             g_bTrackTime;
-extern bool             g_bTrackDistance;
+extern int              g_nTrackPrecision;
+
 extern int              g_iSDMMFormat;
 
 extern int              g_cm93_zoom_factor;
@@ -705,7 +705,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     wxStaticText *rrTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Show radar rings") );
     rrSelect->Add( rrTxt, 1, wxEXPAND | wxALL, group_item_spacing );
 
-    wxString rrAlt[] = { _("None"), _("1"), _("2"), _("3"), _("4"), _("5"), _("6"), _("7"), _("8"), _("9"), _("10") };
+    wxString rrAlt[] = { _("None"), _T("1"), _T("2"), _T("3"), _T("4"), _T("5"), _T("6"), _T("7"), _T("8"), _T("9"), _T("10") };
     pNavAidRadarRingsNumberVisible = new wxChoice( itemPanelShip, ID_RADARRINGS, wxDefaultPosition, m_pShipIconType->GetSize(), 11, rrAlt );
     rrSelect->Add( pNavAidRadarRingsNumberVisible, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
@@ -727,35 +727,26 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     radarGrid->Add( m_itemRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size );
 
     //  Tracks
-    wxStaticBox* itemStaticBoxSizerTrackStatic = new wxStaticBox( itemPanelShip, wxID_ANY,
-            _("Tracks") );
-    wxStaticBoxSizer* itemStaticBoxSizerTrack = new wxStaticBoxSizer( itemStaticBoxSizerTrackStatic,
-            wxVERTICAL );
-    ownShip->Add( itemStaticBoxSizerTrack, 0, wxGROW | wxALL, border_size );
-    pTrackDaily = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX,
-            _("Automatic Daily Tracks") );
-    itemStaticBoxSizerTrack->Add( pTrackDaily, 1, wxALL, border_size );
+    wxStaticBox* trackText = new wxStaticBox( itemPanelShip, wxID_ANY, _("Tracks") );
+    wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer( trackText, wxVERTICAL );
+    ownShip->Add( trackSizer, 0, wxGROW | wxALL, border_size );
+
+    pTrackDaily = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX, _("Automatic Daily Tracks") );
+    trackSizer->Add( pTrackDaily, 1, wxALL, border_size );
+
     pTrackHighlite = new wxCheckBox( itemPanelShip, ID_TRACKHILITE, _("Highlight Tracks") );
-    itemStaticBoxSizerTrack->Add( pTrackHighlite, 1, wxALL, border_size );
+    trackSizer->Add( pTrackHighlite, 1, wxALL, border_size );
 
-    wxFlexGridSizer *pTrackGrid = new wxFlexGridSizer( 2 );
+    wxFlexGridSizer *pTrackGrid = new wxFlexGridSizer( 1, 2, group_item_spacing, group_item_spacing );
     pTrackGrid->AddGrowableCol( 1 );
-    itemStaticBoxSizerTrack->Add( pTrackGrid, 0, wxALL | wxEXPAND, border_size );
+    trackSizer->Add( pTrackGrid, 0, wxALL | wxEXPAND, border_size );
 
-    m_pCheck_Trackpoint_time = new wxRadioButton( itemPanelShip, -1,
-            _("Place Trackpoints at time interval (sec)"), wxDefaultPosition,
-            wxDefaultSize, wxRB_GROUP );
-    pTrackGrid->Add( m_pCheck_Trackpoint_time, 0, wxALL, 2 );
+    wxStaticText* tpText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Tracking Precision") );
+    pTrackGrid->Add( tpText, 1, wxEXPAND | wxALL, group_item_spacing );
 
-    m_pText_TP_Secs = new wxTextCtrl( itemPanelShip, -1 );
-    pTrackGrid->Add( m_pText_TP_Secs, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
-
-    m_pCheck_Trackpoint_distance = new wxRadioButton( itemPanelShip, -1,
-            _("Place Trackpoints at distance interval (NMi)") );
-    pTrackGrid->Add( m_pCheck_Trackpoint_distance, 0, wxALL, 2 );
-
-    m_pText_TP_Dist = new wxTextCtrl( itemPanelShip, -1, _T("") );
-    pTrackGrid->Add( m_pText_TP_Dist, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
+    wxString trackAlt[] = { _("Low"), _("Medium"), _("High") };
+    pTrackPrecision = new wxChoice( itemPanelShip, wxID_ANY, wxDefaultPosition, m_pShipIconType->GetSize(), 3, trackAlt );
+    pTrackGrid->Add( pTrackPrecision, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
     DimeControl( itemPanelShip );
 }
@@ -1673,13 +1664,7 @@ void options::SetInitialSettings()
     pTrackDaily->SetValue( g_bTrackDaily );
     pTrackHighlite->SetValue( g_bHighliteTracks );
 
-    s.Printf( _T("%4.0f"), g_TrackIntervalSeconds );
-    m_pText_TP_Secs->SetValue( s );
-    s.Printf( _T("%5.2f"), g_TrackDeltaDistance );
-    m_pText_TP_Dist->SetValue( s );
-
-    m_pCheck_Trackpoint_time->SetValue( g_bTrackTime );
-    m_pCheck_Trackpoint_distance->SetValue( g_bTrackDistance );
+    pTrackPrecision->SetSelection( g_nTrackPrecision );
 
     //    AIS Parameters
     //      CPA Box
@@ -2161,10 +2146,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
 
-    m_pText_TP_Secs->GetValue().ToDouble( &g_TrackIntervalSeconds );
-    m_pText_TP_Dist->GetValue().ToDouble( &g_TrackDeltaDistance );
-    g_bTrackTime = m_pCheck_Trackpoint_time->GetValue();
-    g_bTrackDistance = m_pCheck_Trackpoint_distance->GetValue();
+    g_nTrackPrecision = pTrackPrecision->GetSelection();
 
     g_bTrackDaily = pTrackDaily->GetValue();
     g_bHighliteTracks = pTrackHighlite->GetValue();

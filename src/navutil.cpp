@@ -45,7 +45,7 @@
 #include <math.h>
 #include <time.h>
 #include <locale>
-#include <vector>
+#include <deque>
 
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
@@ -135,6 +135,7 @@ extern bool             g_bShowActiveRouteHighway;
 extern int              g_nNMEADebug;
 extern int              g_nAWDefault;
 extern int              g_nAWMax;
+extern int              g_nTrackPrecision;
 
 extern int              g_iSDMMFormat;
 
@@ -198,8 +199,6 @@ extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
-extern bool             g_bTrackTime;
-extern bool             g_bTrackDistance;
 extern int              gps_watchdog_timeout_ticks;
 
 extern int              g_nCacheLimit;
@@ -704,23 +703,42 @@ bool Select::DeleteAllSelectableTrackSegments( Route *pr )
         pFindSel = node->GetData();
         if( pFindSel->m_seltype == SELTYPE_TRACKSEGMENT ) {
 
-//                  RoutePoint *ps1 = (RoutePoint *)pFindSel->m_pData1;
-//                  RoutePoint *ps2 = (RoutePoint *)pFindSel->m_pData2;
-
             if( (Route *) pFindSel->m_pData3 == pr ) {
                 delete pFindSel;
                 pSelectList->DeleteNode( node );   //delete node;
 
                 node = pSelectList->GetFirst();     // reset the top node
-
                 goto got_next_outer_node;
             }
         }
-
         node = node->GetNext();
         got_next_outer_node: continue;
     }
+    return true;
+}
 
+bool Select::DeletePointSelectableTrackSegments( RoutePoint *pr )
+{
+    SelectItem *pFindSel;
+
+//    Iterate on the select list
+    wxSelectableItemListNode *node = pSelectList->GetFirst();
+
+    while( node ) {
+        pFindSel = node->GetData();
+        if( pFindSel->m_seltype == SELTYPE_TRACKSEGMENT ) {
+
+            if( (RoutePoint *) pFindSel->m_pData1 == pr || (RoutePoint *) pFindSel->m_pData2 == pr ) {
+                delete pFindSel;
+                pSelectList->DeleteNode( node );   //delete node;
+
+                node = pSelectList->GetFirst();     // reset the top node
+                goto got_next_outer_node;
+            }
+        }
+        node = node->GetNext();
+        got_next_outer_node: continue;
+    }
     return true;
 }
 
@@ -754,7 +772,7 @@ bool Select::IsSegmentSelected( float a, float b, float c, float d, float slat, 
             && ( ( slon + adder ) >= ( fmin ( c,d ) - selectRadius ) )
             && ( ( slon + adder ) <= ( fmax ( c,d ) + selectRadius ) ) ) {
         //    Use vectors to do hit test....
-        VECTOR2D va, vb, vn;
+        vector2D va, vb, vn;
 
         //    Assuming a Mercator projection
         double ap, cp;
@@ -2240,21 +2258,18 @@ Track::Track( void )
     m_TimerTrack.Stop();
     m_bRunning = false;
     m_bIsTrack = true;
-    m_TrackTimerSec = -1;
-    m_DeltaDistance = 0.0;
-    m_minTrackpoint_delta = .001;
-    m_bTrackTime = false;
-    m_bTrackDistance = false;
-    //m_prev_time = wxDateTime::Now();
-    //m_prev_time.ResetTime();            // set to midnight this morning.
+
+    SetPrecision( g_nTrackPrecision );
+
     m_prev_time = wxInvalidDateTime;
-    m_prev_glon = -999.;
-    m_prev_glat = -999.;
-    m_prev_pTrackPoint = NULL;
+    m_lastStoredTP = NULL;
 
     wxDateTime now = wxDateTime::Now();
     m_ConfigRouteNum = now.GetTicks();        // a unique number....
-
+    trackPointState = firstPoint;
+    m_lastStoredTP = NULL;
+    m_removeTP = NULL;
+    m_fixedTP = NULL;
     m_track_run = 0;
 }
 
@@ -2263,10 +2278,37 @@ Track::~Track()
     Stop();
 }
 
+void Track::SetPrecision( int prec ) {
+    m_nPrecision = prec;
+    switch( m_nPrecision ) {
+        case 0: { // Low
+            m_allowedMaxAngle = 10;
+            m_allowedMaxXTE = 0.008;
+            m_TrackTimerSec = 8;
+            m_minTrackpoint_delta = .004;
+            break;
+        }
+        case 1: { // Medium
+            m_allowedMaxAngle = 10;
+            m_allowedMaxXTE = 0.004;
+            m_TrackTimerSec = 4;
+            m_minTrackpoint_delta = .002;
+            break;
+        }
+        case 2: { // High
+            m_allowedMaxAngle = 8;
+            m_allowedMaxXTE = 0.002;
+            m_TrackTimerSec = 2;
+            m_minTrackpoint_delta = .001;
+            break;
+        }
+    }
+}
+
 void Track::Start( void )
 {
     if( !m_bRunning ) {
-        AddPointNow();                   // Add initial point
+        AddPointNow( true );                   // Add initial point
         m_TimerTrack.Start( 1000, wxTIMER_CONTINUOUS );
         m_bRunning = true;
     }
@@ -2274,10 +2316,12 @@ void Track::Start( void )
 
 void Track::Stop( bool do_add_point )
 {
-    double delta = DistGreatCircle( gLat, gLon, m_prev_glat, m_prev_glon );
+    double delta = 0.0;
+    if( m_lastStoredTP )
+        delta = DistGreatCircle( gLat, gLon, m_lastStoredTP->m_lat, m_lastStoredTP->m_lon );
 
     if( ( m_bRunning ) && ( ( delta > m_minTrackpoint_delta ) || do_add_point ) ) AddPointNow(
-            do_add_point );                   // Add last point
+            true );                   // Add last point
 
     m_TimerTrack.Stop();
     m_bRunning = false;
@@ -2331,9 +2375,7 @@ bool Track::DoExtendDaily()
 void Track::FixMidnight( Track *pPreviousTrack )
 {
     RoutePoint *pMidnightPoint = pPreviousTrack->GetLastPoint();
-    CloneAddedTrackPoint( m_pLastAddedPoint, pMidnightPoint );
-    m_prev_glat = pMidnightPoint->m_lat;
-    m_prev_glon = pMidnightPoint->m_lon;
+    CloneAddedTrackPoint( m_lastStoredTP, pMidnightPoint );
     m_prev_time = pMidnightPoint->m_CreateTime.FromUTC();
 }
 
@@ -2342,20 +2384,22 @@ void Track::OnTimerTrack( wxTimerEvent& event )
     m_TimerTrack.Stop();
     m_track_run++;
 
-    double delta = DistGreatCircle( gLat, gLon, m_prev_glat, m_prev_glon );
+    if( m_lastStoredTP )
+        m_prev_dist = DistGreatCircle( gLat, gLon, m_lastStoredTP->m_lat, m_lastStoredTP->m_lon );
+    else
+        m_prev_dist = 999.0;
+
     bool b_addpoint = false;
 
-    if( m_bTrackTime && ( m_TrackTimerSec > 0. ) && ( (double) m_track_run >= m_TrackTimerSec )
-            && ( delta > m_minTrackpoint_delta ) ) {
+    if( ( m_TrackTimerSec > 0. ) && ( (double) m_track_run >= m_TrackTimerSec )
+            && ( m_prev_dist > m_minTrackpoint_delta ) ) {
         b_addpoint = true;
         m_track_run = 0;
-    } else
-        if( m_bTrackDistance && ( m_DeltaDistance > 0.0 ) && ( delta >= m_DeltaDistance ) ) b_addpoint =
-                true;
+    }
 
     if( b_addpoint ) AddPointNow();
     else
-        if( ( GetnPoints() < 2 ) && ( delta < m_DeltaDistance ) && !g_bTrackDaily ) //continuously update track beginning point timestamp if no movement.
+        if( ( GetnPoints() < 2 ) && !g_bTrackDaily ) //continuously update track beginning point timestamp if no movement.
                 {
             wxDateTime now = wxDateTime::Now();
             pRoutePointList->GetFirst()->GetData()->m_CreateTime = now.ToUTC();
@@ -2364,36 +2408,127 @@ void Track::OnTimerTrack( wxTimerEvent& event )
     m_TimerTrack.Start( 1000, wxTIMER_CONTINUOUS );
 }
 
+RoutePoint* Track::AddNewPoint( vector2D point, wxDateTime time ) {
+    RoutePoint *rPoint = new RoutePoint( point.lat, point.lon, wxString( _T ( "empty" ) ),
+            wxString( _T ( "" ) ), GPX_EMPTY_STRING );
+    rPoint->m_bShowName = false;
+    rPoint->m_bIsVisible = true;
+    rPoint->m_GPXTrkSegNo = 1;
+    rPoint->m_CreateTime = time;
+    AddPoint( rPoint );
+
+    //    This is a hack, need to undo the action of Route::AddPoint
+    rPoint->m_bIsInRoute = false;
+    rPoint->m_bIsInTrack = true;
+    return rPoint;
+}
+
+double angleDiff( RoutePoint* p1, RoutePoint* p2, RoutePoint* p3 ) {
+    double d1, d2, b1, b2;
+    if( !p1 || !p2 || !p3 ) return 0.0;
+    DistanceBearingMercator( p1->m_lat, p1->m_lon, p2->m_lat, p2->m_lon, &b1, &d1 );
+    DistanceBearingMercator( p2->m_lat, p2->m_lon, p3->m_lat, p3->m_lon, &b2, &d2 );
+    double diff = abs( b1 - b2 );
+    if( diff > 180.0 ) diff = 360.0 - diff;
+    return diff;
+}
+
 void Track::AddPointNow( bool do_add_point )
 {
+    static std::vector<RoutePoint> skippedPoints;
 
     wxDateTime now = wxDateTime::Now();
 
-    if( ( m_prev_glat == gLat ) && ( m_prev_glon == gLon ) )              // avoid zero length segs
-    if( !do_add_point ) return;
+    if( m_prev_dist < 0.0005 )              // avoid zero length segs
+        if( !do_add_point ) return;
 
     if( m_prev_time.IsValid() ) if( m_prev_time == now )                    // avoid zero time segs
-    if( !do_add_point ) return;
+        if( !do_add_point ) return;
 
-    RoutePoint *pTrackPoint = new RoutePoint( gLat, gLon, wxString( _T ( "empty" ) ),
-            wxString( _T ( "" ) ), GPX_EMPTY_STRING );
-    pTrackPoint->m_bShowName = false;
-    pTrackPoint->m_bIsVisible = true;
-    pTrackPoint->m_GPXTrkSegNo = 1;
+    vector2D gpsPoint( gLon, gLat );
 
-    pTrackPoint->m_CreateTime = now.ToUTC();
+    // The dynamic interval algorithm will gather all track points in a queue,
+    // and analyze the cross track errors for each point before actually adding
+    // a point to the track.
 
-    AddPoint( pTrackPoint );
+    switch( trackPointState ) {
+        case firstPoint: {
+            RoutePoint *pTrackPoint = AddNewPoint( gpsPoint, now.ToUTC() );
+            m_lastStoredTP = pTrackPoint;
+            trackPointState = secondPoint;
+            do_add_point = false;
+            break;
+        }
+        case secondPoint: {
+            vector2D pPoint( gLon, gLat );
+            skipPoints.push_back( pPoint );
+            skipTimes.push_back( now.ToUTC() );
+            trackPointState = potentialPoint;
+            break;
+        }
+        case potentialPoint: {
+            if( gpsPoint == skipPoints[skipPoints.size()-1] ) break;
 
-    //    This is a hack, need to undo the action of Route::AddPoint
-    pTrackPoint->m_bIsInRoute = false;
-    pTrackPoint->m_bIsInTrack = true;
+            int xteMaxIndex = -1;
+            double xteMax = 0;
 
-    if( GetnPoints() > 1 ) pSelect->AddSelectableTrackSegment( m_prev_glat, m_prev_glon, gLat, gLon,
-            m_prev_pTrackPoint, pTrackPoint, this );
+            // Scan points skipped so far and see if anyone has XTE over the threshold.
+            for( unsigned int i=0; i<skipPoints.size(); i++ ) {
+                double xte = GetXTE( m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLat, gLon, skipPoints[i].lat, skipPoints[i].lon );
+                if( xte > xteMax ) {
+                    xteMax = xte;
+                    xteMaxIndex = i;
+                }
+            }
+            if( xteMax > m_allowedMaxXTE ) {
+                RoutePoint *pTrackPoint = AddNewPoint( skipPoints[xteMaxIndex], skipTimes[xteMaxIndex] );
+                pSelect->AddSelectableTrackSegment( m_lastStoredTP->m_lat, m_lastStoredTP->m_lon,
+                        pTrackPoint->m_lat, pTrackPoint->m_lon,
+                        m_lastStoredTP, pTrackPoint, this );
 
-    m_prev_glon = gLon;
-    m_prev_glat = gLat;
+                m_prevFixedTP = m_fixedTP;
+                m_fixedTP = m_removeTP;
+                m_removeTP = m_lastStoredTP;
+                m_lastStoredTP = pTrackPoint;
+                for( int i=0; i<=xteMaxIndex; i++ ) {
+                    skipPoints.pop_front();
+                    skipTimes.pop_front();
+                }
+
+                // Now back up and see if we just made 3 points in a straight line and the middle one
+                // (the next to last) point can possibly be eliminated. Here we reduce the allowed
+                // XTE as a function of leg length. (Half the XTE for very short legs).
+                if( GetnPoints() > 2 ) {
+                    double dist = DistGreatCircle( m_fixedTP->m_lat, m_fixedTP->m_lon, m_lastStoredTP->m_lat, m_lastStoredTP->m_lon );
+                    double xte = GetXTE( m_fixedTP, m_lastStoredTP, m_removeTP );
+                    if( xte < m_allowedMaxXTE / wxMax(1.0, 2.0 - dist*2.0) ) {
+                        pRoutePointList->pop_back();
+                        pRoutePointList->pop_back();
+                        pRoutePointList->push_back( m_lastStoredTP );
+                        pSelect->DeletePointSelectableTrackSegments( m_removeTP );
+                        pSelect->AddSelectableTrackSegment( m_fixedTP->m_lat, m_fixedTP->m_lon,
+                                m_lastStoredTP->m_lat, m_lastStoredTP->m_lon,
+                                m_fixedTP, m_lastStoredTP, this );
+                        delete m_removeTP;
+                        m_removeTP = m_fixedTP;
+                        m_fixedTP = m_prevFixedTP;
+                    }
+                }
+            }
+
+            skipPoints.push_back( gpsPoint );
+            skipTimes.push_back( now.ToUTC() );
+            break;
+        }
+    }
+
+    // Check if this is the last point of the track.
+    if( do_add_point ) {
+        RoutePoint *pTrackPoint = AddNewPoint( gpsPoint, now.ToUTC() );
+        pSelect->AddSelectableTrackSegment( m_lastStoredTP->m_lat, m_lastStoredTP->m_lon,
+                pTrackPoint->m_lat, pTrackPoint->m_lon,
+                m_lastStoredTP, pTrackPoint, this );
+    }
 
     m_prev_time = now;
 }
@@ -2641,19 +2776,8 @@ void Track::DouglasPeuckerReducer( std::vector<RoutePoint*>& list, int from, int
     double maxdist = 0;
 
     for( int i=from+1; i<to; i++ ) {
-        double dist, bear1, bear2;
-        Geodesic::GreatCircleDistBear( list[from]->m_lon, list[from]->m_lat, list[to]->m_lon,
-                list[to]->m_lat, &dist, &bear1, &bear2 );
 
-        double fromdist, frombear1, frombear2;
-        Geodesic::GreatCircleDistBear( list[from]->m_lon, list[from]->m_lat, list[i]->m_lon,
-                list[i]->m_lat, &fromdist, &frombear1, &frombear2 );
-
-        // Ref: http://www.movable-type.co.uk/scripts/latlong.html
-        double R = 6371000.0; //Earth radius in meters.
-        dist = asin( sin( fromdist / R ) * sin( GEODESIC_DEG2RAD(frombear1) - GEODESIC_DEG2RAD(bear1) ) ) * R;
-
-        if( dist < 0 ) dist = - dist;
+        double dist = 1852.0 * GetXTE( list[from], list[to], list[i] );
 
         if( dist > maxdist ) {
             maxdist = dist;
@@ -2703,26 +2827,31 @@ int Track::Simplify( double maxDelta ) {
     return reduction;
 }
 
+double Track::GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon, double toLat, double toLon  )
+{
+//      Get the XTE vector for prp, normal to segment between pWP_src and prpX
+    vector2D va, vb, vn;
+    double brg1, dist1, brg2, dist2;
+    DistanceBearingMercator( toLat, toLon, fm1Lat, fm1Lon, &brg1, &dist1 );
+    vb.x = dist1 * sin( brg1 * PI / 180. );
+    vb.y = dist1 * cos( brg1 * PI / 180. );
+
+    DistanceBearingMercator( toLat, toLon, fm2Lat, fm2Lon, &brg2, &dist2 );
+    va.x = dist2 * sin( brg2 * PI / 180. );
+    va.y = dist2 * cos( brg2 * PI / 180. );
+
+    double sdelta = vGetLengthOfNormal( &va, &vb, &vn );             // NM
+    sdelta = fabs( sdelta );
+    return sdelta;
+}
+
 double Track::GetXTE( RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to )
 {
     if( !fm1 || !fm2 || !to ) return 0.0;
     if( fm1 == to ) return 0.0;
     if( fm2 == to ) return 0.0;
-//      Get the XTE vector for prp, normal to segment between pWP_src and prpX
-    VECTOR2D va, vb, vn;
-
-    double brg1, dist1, brg2, dist2;
-    DistanceBearingMercator( to->m_lat, to->m_lon, fm1->m_lat, fm1->m_lon, &brg1, &dist1 );
-    vb.x = dist1 * sin( brg1 * PI / 180. );
-    vb.y = dist1 * cos( brg1 * PI / 180. );
-
-    DistanceBearingMercator( to->m_lat, to->m_lon, fm2->m_lat, fm2->m_lon, &brg2, &dist2 );
-    va.x = dist2 * sin( brg2 * PI / 180. );
-    va.y = dist2 * cos( brg2 * PI / 180. );
-
-    double sdelta = vGetLengthOfNormal( &va, &vb, &vn );             // NM
-
-    return ( abs( sdelta ) );
+    return GetXTE( fm1->m_lat, fm1->m_lon, fm2->m_lat, fm2->m_lon, to->m_lat, to->m_lon );
+;
 }
 
 //-----------------------------------------------------------------------------
@@ -3767,8 +3896,7 @@ int MyConfig::LoadMyConfig( int iteration )
         if( tval >= 0.05 ) g_TrackDeltaDistance = tval;
     }
 
-    Read( _T ( "EnableTrackByTime" ), &g_bTrackTime, 1 );
-    Read( _T ( "EnableTrackByDistance" ), &g_bTrackDistance, 0 );
+    Read( _T ( "TrackPrecision" ), &g_nTrackPrecision, 0 );
 
     Read( _T ( "NavObjectFileName" ), m_sNavObjSetFile );
 
@@ -4437,8 +4565,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "TrackIntervalSeconds" ), g_TrackIntervalSeconds );
     Write( _T ( "TrackDeltaDistance" ), g_TrackDeltaDistance );
-    Write( _T ( "EnableTrackByTime" ), g_bTrackTime );
-    Write( _T ( "EnableTrackByDistance" ), g_bTrackDistance );
+    Write( _T ( "TrackPrecision" ), g_nTrackPrecision );
 
     Write( _T ( "RouteLineWidth" ), g_route_line_width );
     Write( _T ( "TrackLineWidth" ), g_track_line_width );
@@ -7290,9 +7417,9 @@ void X11FontPicker::DoFontChange ( void )
 //---------------------------------------------------------------------------------
 //          Vector Stuff for Hit Test Algorithm
 //---------------------------------------------------------------------------------
-double vGetLengthOfNormal( PVECTOR2D a, PVECTOR2D b, PVECTOR2D n )
+double vGetLengthOfNormal( pVector2D a, pVector2D b, pVector2D n )
 {
-    VECTOR2D c, vNormal;
+    vector2D c, vNormal;
     vNormal.x = 0;
     vNormal.y = 0;
     //
@@ -7314,7 +7441,7 @@ double vGetLengthOfNormal( PVECTOR2D a, PVECTOR2D b, PVECTOR2D n )
     return ( vVectorMagnitude( &vNormal ) );
 }
 
-double vDotProduct( PVECTOR2D v0, PVECTOR2D v1 )
+double vDotProduct( pVector2D v0, pVector2D v1 )
 {
     double dotprod;
 
@@ -7323,9 +7450,9 @@ double vDotProduct( PVECTOR2D v0, PVECTOR2D v1 )
     return ( dotprod );
 }
 
-PVECTOR2D vAddVectors( PVECTOR2D v0, PVECTOR2D v1, PVECTOR2D v )
+pVector2D vAddVectors( pVector2D v0, pVector2D v1, pVector2D v )
 {
-    if( v0 == NULL || v1 == NULL ) v = (PVECTOR2D) NULL;
+    if( v0 == NULL || v1 == NULL ) v = (pVector2D) NULL;
     else {
         v->x = v0->x + v1->x;
         v->y = v0->y + v1->y;
@@ -7333,9 +7460,9 @@ PVECTOR2D vAddVectors( PVECTOR2D v0, PVECTOR2D v1, PVECTOR2D v )
     return ( v );
 }
 
-PVECTOR2D vSubtractVectors( PVECTOR2D v0, PVECTOR2D v1, PVECTOR2D v )
+pVector2D vSubtractVectors( pVector2D v0, pVector2D v1, pVector2D v )
 {
-    if( v0 == NULL || v1 == NULL ) v = (PVECTOR2D) NULL;
+    if( v0 == NULL || v1 == NULL ) v = (pVector2D) NULL;
     else {
         v->x = v0->x - v1->x;
         v->y = v0->y - v1->y;
@@ -7343,7 +7470,7 @@ PVECTOR2D vSubtractVectors( PVECTOR2D v0, PVECTOR2D v1, PVECTOR2D v )
     return ( v );
 }
 
-double vVectorSquared( PVECTOR2D v0 )
+double vVectorSquared( pVector2D v0 )
 {
     double dS;
 
@@ -7353,7 +7480,7 @@ double vVectorSquared( PVECTOR2D v0 )
     return ( dS );
 }
 
-double vVectorMagnitude( PVECTOR2D v0 )
+double vVectorMagnitude( pVector2D v0 )
 {
     double dMagnitude;
 

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-01 18:26+0200\n"
-"PO-Revision-Date: 2012-10-01 15:33-0300\n"
+"POT-Creation-Date: 2012-10-12 00:34+0200\n"
+"PO-Revision-Date: 2012-10-11 21:03-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -25,6 +25,46 @@ msgstr ""
 "\n"
 "\n"
 "Går vidare med libgps inställningar..."
+
+#
+msgid ""
+"\n"
+" - your GPS offset from bow must be within your ship's length"
+msgstr ""
+"\n"
+" - GPS avstånd från fören är större än fartygets längd."
+
+#
+msgid ""
+"\n"
+" - your GPS offset from midship must be within your ship's beam"
+msgstr ""
+"\n"
+" - GPS avstånd från midskepps hamnar utanför fartygets bredd."
+
+#
+msgid ""
+"\n"
+" - your minimum ship icon size must be between 1 and 100 mm"
+msgstr ""
+"\n"
+" - Minsta storlek på fartygssymbolen ska vara mellan 1 och 100 mm."
+
+#
+msgid ""
+"\n"
+" - your ship's beam must be > 0"
+msgstr ""
+"\n"
+" - Fartygets bredd ska vara > 0."
+
+#
+msgid ""
+"\n"
+" - your ship's length must be > 0"
+msgstr ""
+"\n"
+" - Fartygets längd ska vara > 0"
 
 #
 #
@@ -901,7 +941,7 @@ msgstr "CM93-korrektion..."
 #
 #
 msgid "COG Predictor Length (min)"
-msgstr "Kurspilens längd i (min)"
+msgstr "Kurspilens längd i tid (min)"
 
 #
 #
@@ -1416,7 +1456,7 @@ msgstr "Grundinställning"
 #
 #
 msgid "Display Options"
-msgstr "Anpassa visning av sjökort"
+msgstr "Alternativ för utseende"
 
 #
 #
@@ -1427,6 +1467,11 @@ msgstr "Distans"
 #
 msgid "Distance Between Rings"
 msgstr "Avstånd mellan ringar"
+
+#
+#
+msgid "Distance Unit"
+msgstr "Enhet för avstånd"
 
 #
 #
@@ -1778,6 +1823,10 @@ msgid "Hide from chart"
 msgstr "Dölj på sjökort"
 
 #
+msgid "High"
+msgstr "Hög"
+
+#
 #
 msgid "High Speed Craft"
 msgstr "Höghastighetsfartyg"
@@ -2059,6 +2108,11 @@ msgstr "Borttappade fartyg"
 
 #
 #
+msgid "Low"
+msgstr "Låg"
+
+#
+#
 msgid "Lt"
 msgstr "Lt"
 
@@ -2161,6 +2215,10 @@ msgstr "Med/V"
 #
 msgid "Medical Transport"
 msgstr "Sjuktransport"
+
+#
+msgid "Medium"
+msgstr "Medium"
 
 #
 #
@@ -2386,11 +2444,6 @@ msgstr "Ej manöverfärdig"
 
 #
 #
-msgid "Number of Radar Rings"
-msgstr "Antal radarringar som visas"
-
-#
-#
 msgid "OK"
 msgstr "OK"
 
@@ -2603,16 +2656,6 @@ msgstr "Klistra in waypoint"
 #
 msgid "Pilot Vessel"
 msgstr "Lots"
-
-#
-#
-msgid "Place Trackpoints at distance interval (NMi)"
-msgstr "Lagra spårpunkter med avståndsintervall (NM)"
-
-#
-#
-msgid "Place Trackpoints at time interval (sec)"
-msgstr "Lagra spårpunkter med tidsintervall (sek)"
 
 #
 #
@@ -2896,6 +2939,14 @@ msgstr "Faktisk"
 #
 msgid "Real (On Position)"
 msgstr "Faktisk (på position)"
+
+#
+msgid "Real Scale Bitmap"
+msgstr "Skalenlig rasterbild"
+
+#
+msgid "Real Scale Vector"
+msgstr "Skalenlig vektorbild"
 
 #
 #
@@ -3245,6 +3296,10 @@ msgstr "Växla till sjökort i större skala"
 #
 msgid "Shift to Smaller Scale Chart"
 msgstr "Växla till sjökort i mindre skala"
+
+#
+msgid "Ship Icon Type"
+msgstr "Fartygssymbol"
 
 #
 #
@@ -3634,6 +3689,10 @@ msgid "The necessary configuration files were not found. "
 msgstr "De konfigurationsfiler som behövs hittades inte."
 
 #
+msgid "The settings for own ship real size are not correct:"
+msgstr "Inställningarna för fartygets storlek är inte korrekta:"
+
+#
 msgid ""
 "The waypoint you want to delete is used in a route, do you really want to "
 "delete it?"
@@ -3789,6 +3848,11 @@ msgstr "Spåregenskaper"
 
 #
 #
+msgid "Tracking Precision"
+msgstr "Precision för nya spår"
+
+#
+#
 msgid "Tracks"
 msgstr "Spår"
 
@@ -3934,10 +3998,6 @@ msgstr "Använd hårdvarugrafik (OpenGL)"
 msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
 msgstr ""
 "Använd Garmin GRMN/GRMN (Host) Mode för waypoint- och ruttuppladdningar."
-
-#
-msgid "Use Real Ship Size"
-msgstr "Visa skalenligt fartyg"
 
 #
 #
