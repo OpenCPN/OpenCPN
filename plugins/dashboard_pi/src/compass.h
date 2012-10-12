@@ -65,9 +65,8 @@ class DashboardInstrument_Compass: public DashboardInstrument_Dial
       private:
 
       protected:
-            void DrawBackground(wxBufferedDC* dc);
-            void DrawCompassRose(wxBufferedDC* dc);
-            void DrawForeground(wxBufferedDC* dc);
+            void DrawBackground(wxGCDC* dc);
+            void DrawForeground(wxGCDC* dc);
 };
 
 #endif // __Compass_H__

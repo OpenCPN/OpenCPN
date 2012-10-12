@@ -53,7 +53,7 @@ class DashboardInstrument_Depth: public DashboardInstrument
 
             ~DashboardInstrument_Depth(void){}
 
-            void SetInstrumentWidth(int width);
+            wxSize GetSize( int orient, wxSize hint );
             void SetData(int, double, wxString);
 
       private:
@@ -62,11 +62,12 @@ class DashboardInstrument_Depth: public DashboardInstrument
             double m_ArrayDepth[DEPTH_RECORD_COUNT];
             double m_MaxDepth;
             double m_Depth;
+            wxString m_DepthUnit;
             wxString m_Temp;
 
-            void Draw(wxBufferedDC* dc);
-            void DrawBackground(wxBufferedDC* dc);
-            void DrawForeground(wxBufferedDC* dc);
+            void Draw(wxGCDC* dc);
+            void DrawBackground(wxGCDC* dc);
+            void DrawForeground(wxGCDC* dc);
 };
 
 #endif // __DEPTH_H__

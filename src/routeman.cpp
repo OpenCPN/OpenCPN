@@ -383,7 +383,7 @@ bool Routeman::UpdateProgress()
         CurrentRngToActivePoint = d5;
 
 //      Get the XTE vector, normal to current segment
-        VECTOR2D va, vb, vn;
+        vector2D va, vb, vn;
 
         double brg1, dist1, brg2, dist2;
         DistanceBearingMercator( pActivePoint->m_lat, pActivePoint->m_lon,
@@ -402,7 +402,7 @@ bool Routeman::UpdateProgress()
 
 //    Calculate the distance to the arrival line, which is perpendicular to the current route segment
 //    Taking advantage of the calculated normal from current position to route segment vn
-        VECTOR2D vToArriveNormal;
+        vector2D vToArriveNormal;
         vSubtractVectors( &va, &vn, &vToArriveNormal );
 
         CurrentRangeToActiveNormalCrossing = vVectorMagnitude( &vToArriveNormal );

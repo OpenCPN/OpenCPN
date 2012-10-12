@@ -48,8 +48,6 @@ DashboardInstrument_Speedometer::DashboardInstrument_Speedometer( wxWindow *pare
 {
       // We want the main value displayed inside the dial as well
       // as the default arrow
-      SetOptionMainValue(_T("%5.2f Kts"), DIAL_POSITION_INSIDE);
-
-      SetInstrumentWidth(200);
+      SetOptionMainValue(_T("%.2f"), DIAL_POSITION_INSIDE);
 }
 

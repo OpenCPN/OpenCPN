@@ -498,8 +498,7 @@ wxString                  g_default_wp_icon;
 Track                     *g_pActiveTrack;
 double                    g_TrackIntervalSeconds;
 double                    g_TrackDeltaDistance;
-bool                      g_bTrackTime;
-bool                      g_bTrackDistance;
+int                       g_nTrackPrecision;
 
 int                       g_total_NMEAerror_messages;
 
@@ -3339,7 +3338,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         case ID_TRACK: {
             if( !g_bTrackActive ) TrackOn();
             else
-                TrackOff();
+                TrackOff( true );
             break;
         }
 
@@ -3460,11 +3459,6 @@ void MyFrame::TrackOn( void )
 {
     g_bTrackActive = true;
     g_pActiveTrack = new Track();
-
-    g_pActiveTrack->SetTrackTimer( g_TrackIntervalSeconds );
-    g_pActiveTrack->SetTrackDeltaDistance( g_TrackDeltaDistance );
-    g_pActiveTrack->SetTPTime( g_bTrackTime );
-    g_pActiveTrack->SetTPDist( g_bTrackDistance );
 
     pRouteList->Append( g_pActiveTrack );
     g_pActiveTrack->Start();
@@ -3943,10 +3937,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     pConfig->UpdateSettings();
 
     if( g_pActiveTrack ) {
-        g_pActiveTrack->SetTrackTimer( g_TrackIntervalSeconds );
-        g_pActiveTrack->SetTrackDeltaDistance( g_TrackDeltaDistance );
-        g_pActiveTrack->SetTPTime( g_bTrackTime );
-        g_pActiveTrack->SetTPDist( g_bTrackDistance );
+        g_pActiveTrack->SetPrecision( g_nTrackPrecision );
     }
 
     if( ( bPrevQuilt != g_bQuiltEnable ) || ( bPrevFullScreenQuilt != g_bFullScreenQuilt ) ) {
@@ -7581,6 +7572,14 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UITX1;   0;  0;  0;",              // Menu Text, derived from UINFF
         "UDKRD; 124; 16;  0;",
         "UARTE; 200;  0;  0;",              // Active Route, Grey on Dusk/Night
+        "DASHB; 255;255;255;",              // Dashboard Instr background
+        "DASHL; 190;190;190;",              // Dashboard Instr Label
+        "DASHF;  50; 50; 50;",              // Dashboard Foreground
+        "DASHR; 200;  0;  0;",              // Dashboard Red
+        "DASHG;   0;200;  0;",              // Dashboard Green
+        "DASHN; 200;120;  0;",              // Dashboard Needle
+        "DASH1; 204;204;255;",              // Dashboard Illustrations
+        "DASH2; 122;131;172;",              // Dashboard Illustrations
 
         "Table:DUSK", "GREEN1; 60;128; 60;", "GREEN2; 22; 75; 22;", "GREEN3; 80;100; 80;",
         "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;", "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;",
@@ -7589,11 +7588,19 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "YELO2;  64; 40;  0;",
         "DILG0; 110;110;110;",              // Dialog Background
         "DILG1; 110;110;110;",              // Dialog Background
-//"DILG2; 100;100;100;",              // Control Background
         "DILG2;   0;  0;  0;",              // Control Background
         "DILG3; 130;130;130;",              // Text
         "UITX1;  41; 46; 46;",              // Menu Text, derived from UINFF
-        "UDKRD;  80;  0;  0;", "UARTE;  64; 64; 64;",
+        "UDKRD;  80;  0;  0;",
+        "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
+        "DASHB;  77; 77; 77;",              // Dashboard Instr background
+        "DASHL;  54; 54; 54;",              // Dashboard Instr Label
+        "DASHF;   0;  0;  0;",              // Dashboard Foreground
+        "DASHR;  58; 21; 21;",              // Dashboard Red
+        "DASHG;  21; 58; 21;",              // Dashboard Green
+        "DASHN; 100; 50;  0;",              // Dashboard Needle
+        "DASH1;  76; 76;113;",              // Dashboard Illustrations
+        "DASH2;  48; 52; 72;",              // Dashboard Illustrations
 
         "Table:NIGHT", "GREEN1; 30; 80; 30;", "GREEN2; 15; 60; 15;", "GREEN3; 12; 23;  9;",
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
@@ -7601,11 +7608,19 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;", "YELO1;  60; 65; 12;",
         "YELO2;  32; 20;  0;", "DILG0;  80; 80; 80;",              // Dialog Background
         "DILG1;  80; 80; 80;",              // Dialog Background
-//"DILG2;  52; 52; 52;",              // Control Background
         "DILG2;   0;  0;  0;",              // Control Background
         "DILG3;  65; 65; 65;",              // Text
         "UITX1;  31; 34; 35;",              // Menu Text, derived from UINFF
-        "UDKRD;  50;  0;  0;", "UARTE;  64; 64; 64;",
+        "UDKRD;  50;  0;  0;",
+        "UARTE;  64; 64; 64;",              // Active Route, Grey on Dusk/Night
+        "DASHB;   0;  0;  0;",              // Dashboard Instr background
+        "DASHL;  20; 20; 20;",              // Dashboard Instr Label
+        "DASHF;  64; 64; 64;",              // Dashboard Foreground
+        "DASHR;  70; 15; 15;",              // Dashboard Red
+        "DASHG;  15; 70; 15;",              // Dashboard Green
+        "DASHN;  17; 80; 56;",              // Dashboard Needle
+        "DASH1;  48; 52; 72;",              // Dashboard Illustrations
+        "DASH2;  36; 36; 53;",              // Dashboard Illustrations
 
         "*****" };
 
