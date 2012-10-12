@@ -257,19 +257,15 @@ typedef enum _OGRatt_t{
    OGR_STR,
 }OGRatt_t;
 
-typedef struct _S57attVal{
-   void *   value;
-   OGRatt_t valType;
-}S57attVal;
+typedef struct _S57attVal {
+    void * value;
+    OGRatt_t valType;
+} S57attVal;
 
-
-
-typedef struct _OBJLElement{
-      char  OBJLName[6];
-      int         nViz;
-}OBJLElement;
-
-
+typedef struct _OBJLElement {
+    char OBJLName[6];
+    int nViz;
+} OBJLElement;
 
 // OGR primitive type
 typedef enum _geoPrim_t{

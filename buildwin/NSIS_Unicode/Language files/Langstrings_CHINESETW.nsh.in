@@ -4,8 +4,8 @@ LangString Installer ${LANG_CHINESETW} "安裝程式"
 #LangString Uninstaller ${LANG_ENGLISH} "uninstaller"
 LangString Uninstaller ${LANG_CHINESETW} "移除安裝程式"
 
-#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows NT/2000."
-LangString Installer_Unsupported_Windows_Version ${LANG_CHINESETW} "不支援您使用的Windows版本(太老舊了)!$\r$\n您至少需要 Windows NT/2000."
+#LangString Installer_Unsupported_Windows_Version ${LANG_ENGLISH} "Your Windows version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3"
+LangString Installer_Unsupported_Windows_Version ${LANG_CHINESETW} "不支援您使用的Windows版本(太老舊了)!$\r$\n您至少需要 Windows XP SP3."
 
 #LangString Installer_Running ${LANG_ENGLISH} "The installer is already running."
 LangString Installer_Running ${LANG_CHINESETW} "安裝程式已經在執行中."
@@ -344,3 +344,7 @@ LangString ^NameDA ${LANG_CHINESETW} "@CPACK_PACKAGE_NAME@ 版本 @CPACK_PACKAGE
 ;added on 2011-07-24
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
 LangString License_Message ${LANG_CHINESETW} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
+
+;Needs to be translated:
+#LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_XP_SP_Version ${LANG_CHINESETW} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."

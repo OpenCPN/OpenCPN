@@ -168,6 +168,10 @@ ChartBase::ChartBase()
       m_pCOVRTable = NULL;
       m_pCOVRTablePoints = NULL;
 
+      m_nNoCOVREntries = 0;
+      m_pNoCOVRTable = NULL;
+      m_pNoCOVRTablePoints = NULL;
+      
       m_EdDate.Set(1, wxDateTime::Jan, 2000);
 
       m_lon_datum_adjust = 0.;
@@ -267,7 +271,7 @@ bool ChartDummy::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, co
 
 bool ChartDummy::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
-      if(m_pBM)
+      if( m_pBM  && m_pBM->IsOk() )
       {
             if((m_pBM->GetWidth() != VPoint.pix_width) || (m_pBM->GetHeight() != VPoint.pix_height))
             {
@@ -275,14 +279,20 @@ bool ChartDummy::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
                   m_pBM = NULL;
             }
       }
+      else {
+          delete m_pBM;
+          m_pBM =NULL;
+      }
 
-      if(NULL == m_pBM)
+      if( VPoint.pix_width && VPoint.pix_height ) {
+        if(NULL == m_pBM)
             m_pBM = new wxBitmap(VPoint.pix_width, VPoint.pix_height,-1);
 
-      dc.SelectObject(*m_pBM);
+        dc.SelectObject(*m_pBM);
 
-      dc.SetBackground(*wxBLACK_BRUSH);
-      dc.Clear();
+        dc.SetBackground(*wxBLACK_BRUSH);
+        dc.Clear();
+      }
 
       return true;
 }
@@ -1014,9 +1024,14 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
                               if(!bp_set)
                               {
-                                    wxString msg(_("   Chart projection is UNKNOWN, assuming Mercator: "));
-                                    msg.Append(m_FullPath);
-                                    wxLogMessage(msg);
+                                  m_projection = PROJECTION_UNKNOWN;
+                                  wxString msg(_T("   Chart projection is "));
+                                  msg += tkz.GetNextToken();
+                                  msg += _T(" which is unsupported.  Disabling chart ");
+                                  msg += m_FullPath;
+                                  wxLogMessage(msg);
+
+                                  return INIT_FAIL_REMOVE;
                               }
 
                         }
@@ -2104,8 +2119,8 @@ wxBitmap *ChartBaseBSB::CreateThumbnail(int tnx, int tny, ColorScheme cs)
 
 //    Calculate the size and divisors
 
-      int divx = Size_X / tnx;
-      int divy = Size_Y / tny;
+      int divx = wxMax(1, Size_X / (4 * tnx) );
+      int divy = wxMax(1, Size_Y / (4 * tny) );
 
       int div_factor = __min(divx, divy);
 
@@ -2180,9 +2195,14 @@ wxBitmap *ChartBaseBSB::CreateThumbnail(int tnx, int tny, ColorScheme cs)
       wxBitmap *retBMP;
 
 #ifdef ocpnUSE_ocpnBitmap
-      retBMP = new ocpnBitmap(pPixTN, des_width, des_height, -1);
+      wxBitmap* bmx2 = new ocpnBitmap(pPixTN, des_width, des_height, -1);
+      wxImage imgx2 = bmx2->ConvertToImage();
+      imgx2.Rescale( des_width/4, des_height/4, wxIMAGE_QUALITY_HIGH );
+      retBMP = new wxBitmap( imgx2 );
+      delete bmx2;
 #else
       wxImage thumb_image(des_width, des_height, pPixTN, true);
+      thumb_image.Rescale( des_width/4, des_height/4, wxIMAGE_QUALITY_HIGH );
       retBMP = new wxBitmap(thumb_image);
 #endif
 
@@ -3018,7 +3038,6 @@ bool ChartBaseBSB::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 
       return (ret_val > 0);
 }
-
 
 bool ChartBaseBSB::IsRenderCacheable( wxRect& source, wxRect& dest )
 {

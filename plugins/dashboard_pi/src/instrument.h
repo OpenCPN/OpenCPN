@@ -38,6 +38,8 @@
 #include "../../../include/ocpn_plugin.h"
 #include <wx/dcbuffer.h>
 
+const wxString DEGREE_SIGN = wxString::Format(_T("%c"), 0x00B0); // This is the degree sign in UTF8. It should be correctly handled on both Win & Unix
+
 // Zeniths for sunset/sunrise calculation
 #define ZENITH_OFFICIAL (90.0 + 50.0 / 60.0)
 #define ZENITH_CIVIL 96.0
@@ -82,7 +84,11 @@ enum
     OCPN_DBP_STC_PLA = 1 << 19, // Cursor latitude
     OCPN_DBP_STC_PLO = 1 << 20, // Cursor longitude
     OCPN_DBP_STC_CLK = 1 << 21,
-    OCPN_DBP_STC_MON = 1 << 22
+    OCPN_DBP_STC_MON = 1 << 22,
+    OCPN_DBP_STC_ATMP = 1 << 23, //AirTemp
+	OCPN_DBP_STC_MWD = 1 << 24,  //True Wind direction & Speed
+	OCPN_DBP_STC_VWT = 1 << 25,  //True Wind angle & Speed
+	OCPN_DBP_STC_AWA2 = 1 << 26  //App Wind angle, sends unconverted Spd. value
 };
 
 class DashboardInstrument : public wxWindow

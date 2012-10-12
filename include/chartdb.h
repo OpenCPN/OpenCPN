@@ -78,7 +78,8 @@ public:
       int         GetDBIndex(int stack_index);
       void        SetDBIndex(int stack_index, int db_index);
       bool        DoesStackContaindbIndex(int db_index);
-
+      void        AddChart( int db_add );
+      
 private:
       int         DBIndex[MAXSTACK];
 
@@ -113,6 +114,7 @@ public:
       bool SaveBinary(wxString *filename) { return ChartDatabase::Write(*filename); }
 
       int  BuildChartStack(ChartStack * cstk, float lat, float lon);
+      int  BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add );
       bool EqualStacks(ChartStack *, ChartStack *);
       bool CopyStack(ChartStack *pa, ChartStack *pb);
       wxString GetFullPath(ChartStack *ps, int stackindex);

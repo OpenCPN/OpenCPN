@@ -122,3 +122,83 @@ void DashboardInstrument_WindCompass::DrawBackground(wxBufferedDC* dc)
       }
 }
 
+// Display the arrow for MainValue (wind angle)
+// We also want the extra value (wind speed) displayed inside the dial
+
+DashboardInstrument_TrueWindAngle::DashboardInstrument_TrueWindAngle( wxWindow *parent, wxWindowID id, wxString title, int cap_flag) :
+      DashboardInstrument_Dial( parent, id, title, cap_flag, 0, 360, 0, 360)
+{
+      m_unit=_T("");
+      SetOptionMarker(10, DIAL_MARKER_REDGREENBAR, 3);
+      // Labels are set static because we've no logic to display them this way
+      wxString labels[] = {_T(""), _T("30"), _T("60"), _T("90"), _T("120"), _T("150"), _T(""), _T("150"), _T("120"), _T("90"), _T("60"), _T("30")};
+      SetOptionLabel(30, DIAL_LABEL_HORIZONTAL, wxArrayString(12, labels));
+
+      SetInstrumentWidth(200);
+}
+
+void DashboardInstrument_TrueWindAngle::DrawBackground(wxBufferedDC* dc)
+{
+      wxCoord x = m_cx - (m_radius * 0.3);
+      wxCoord y = m_cy - (m_radius * 0.6);
+      dc->DrawEllipticArc(x, y, m_radius * 0.6, m_radius * 1.4, 0, 180);
+}
+void DashboardInstrument_TrueWindAngle::DrawForeground(wxBufferedDC* dc)
+{
+      // The default foreground is the arrow used in most dials
+      wxColour cl;
+      GetGlobalColor(_T("GREY1"), &cl);
+      wxPen pen1;
+      pen1.SetStyle(wxSOLID);
+      pen1.SetColour(cl);
+      pen1.SetWidth(2);
+      dc->SetPen(pen1);
+      GetGlobalColor(_T("GREY2"), &cl);
+      wxBrush brush1;
+      brush1.SetStyle(wxSOLID);
+      brush1.SetColour(cl);
+      dc->SetBrush(brush1);
+      dc->DrawCircle(m_cx, m_cy, m_radius / 8);
+
+      dc->SetPen(*wxTRANSPARENT_PEN);
+
+      //GetGlobalColor(_T("BLUE1"), &cl);
+      wxBrush brush;
+      brush.SetStyle(wxSOLID);
+      brush.SetColour(wxColour(255,145,0));
+      dc->SetBrush(brush);
+	  //this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>, in this case the "True wind angle"
+	  //do it here, because otherwise m_MainValueOption is incorrect !!!
+	  double data;
+	  if(m_unit == _T("DegL"))	//specially for instrument OCPN_DBP_STC_VWT
+		  data=360-m_MainValue;
+	  else
+		  data=m_MainValue;
+	        // The arrow should stay inside fixed limits
+      double val;
+      if (data < m_MainValueMin) val = m_MainValueMin;
+      else if (data > m_MainValueMax) val = m_MainValueMax;
+      else val = data;
+
+      double value = deg2rad((val - m_MainValueMin) * m_AngleRange / (m_MainValueMax - m_MainValueMin)) + deg2rad(m_AngleStart - ANGLE_OFFSET);
+
+      wxPoint points[3];
+      points[0].x = m_cx + (m_radius * 0.95 * cos(value));
+      points[0].y = m_cy + (m_radius * 0.95 * sin(value));
+      points[1].x = m_cx + (m_radius * 0.22 * cos(value + 160));
+      points[1].y = m_cy + (m_radius * 0.22 * sin(value + 160));
+      points[2].x = m_cx + (m_radius * 0.22 * cos(value - 160));
+      points[2].y = m_cy + (m_radius * 0.22 * sin(value - 160));
+      dc->DrawPolygon(3, points, 0, 0);
+}
+void DashboardInstrument_TrueWindAngle::SetData(int st, double data, wxString unit)
+{
+      if (st == m_MainValueCap)
+            m_MainValue = data;
+      else if (st == m_ExtraValueCap)
+            m_ExtraValue = data;
+      m_unit=unit;
+
+      Refresh(false);
+}
+

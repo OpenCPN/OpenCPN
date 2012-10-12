@@ -20,8 +20,8 @@
 ## *   Free Software Foundation, Inc.,                                       *
 ## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
 ## ***************************************************************************
- 
- 
+
+
 #TODO:
 # - cross platform compiling
 # - test with Win & OSX
@@ -68,7 +68,7 @@ IF (NOT WIN32)
   IF (EXISTS /etc/debian_version)
     SET (PACKAGE_FORMAT "DEB")
     SET (PACKAGE_DEPS "libc6, libwxgtk2.8-0 (>= 2.8.7.1), libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libsdl1.2debian, libtinyxml2.6.2")
-    SET (PACKAGE_RECS "xcalib") 
+    SET (PACKAGE_RECS "xcalib")
     SET (LIB_INSTALL_DIR "lib")
     IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
       SET (ARCH "amd64")
@@ -99,6 +99,9 @@ IF (NOT WIN32)
       SET (LIB_INSTALL_DIR "lib")
     ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
   ENDIF (EXISTS /etc/suse-release OR EXISTS /etc/SuSE-release)
+  IF (EXISTS /etc/gentoo-release)
+    SET (LIB_INSTALL_DIR "lib${LIB_SUFFIX}")
+  ENDIF (EXISTS /etc/gentoo-release)
   IF(APPLE)
     IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
       IF (CMAKE_OSX_64)
@@ -185,14 +188,6 @@ IF(WIN32)
     ADD_DEFINITIONS(-DPSAPI_VERSION=1)
 ENDIF(WIN32)
 
-# Add a definition to fix some 64 bit linux system builds, avoiding Apple builds
-IF (NOT WIN32 AND NOT APPLE)
-      IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-            ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
-      ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-ENDIF (NOT WIN32 AND NOT APPLE)
-
-
 # Location where cmake first looks for cmake modules.
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build)
 
@@ -202,9 +197,16 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 FIND_PACKAGE(GTK2 2.6)
 IF (GTK2_FOUND)
     MESSAGE (STATUS "Found GTK2")
-    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
     ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
+    ADD_DEFINITIONS(-DocpnHAS_GTK)
+    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK2_LIBRARIES})
+
+    # Add a definition to satisfy some linux system builds, avoiding Apple builds
+    IF (NOT WIN32 AND NOT APPLE)
+       ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
+    ENDIF (NOT WIN32 AND NOT APPLE)
+
 ELSE(GTK2_FOUND)
     MESSAGE (STATUS "GTK2 Not found...")
 ENDIF (GTK2_FOUND)
@@ -219,7 +221,7 @@ IF(UNIX)
     FIND_PACKAGE(TinyXML)
 ENDIF(UNIX)
 
-# For convenience we define the sources as a variable. You can add 
+# For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
 
 SET(SRC_NMEA0183
@@ -268,7 +270,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/nmea0183)
 
 
 IF(NOT WIN32)
-OPTION (USE_GPSD "Enable GPSD Library" ON) 
+OPTION (USE_GPSD "Enable GPSD Library" ON)
 IF (USE_GPSD)
       message (STATUS "GPSD Library support: enabled")
 
@@ -292,8 +294,8 @@ ENDIF (NOT WIN32)
 
 #FILE(GLOB_RECURSE SRCS *.cpp *.c)
 SET(HDRS
-                include/ocpn_types.h
-                include/ocpndc.h
+        include/ocpn_types.h
+        include/ocpndc.h
 		include/chart1.h
 		include/bbox.h
 		include/ocpn_pixel.h
@@ -312,23 +314,30 @@ SET(HDRS
 		include/tcmgr.h
 		include/thumbwin.h
 		include/options.h
-		include/wvschart.h
+		include/gshhs.h
+		include/kml.h
+		include/undo.h
 		include/about.h
 		include/ais.h
-                include/pluginmanager.h
-                include/ocpn_plugin.h
+		include/pluginmanager.h
+		include/ocpn_plugin.h
 		include/gpxdocument.h
-                include/wx/json_defs.h
-                include/wx/jsonwriter.h
-                include/chartsymbols.h
-                include/razdsparser.h
+		include/wx/json_defs.h
+		include/wx/jsonwriter.h
+		include/wx/jsonreader.h
+		include/chartsymbols.h
+		include/razdsparser.h
+		include/styles.h
+		include/toolbar.h
+		include/compasswin.h
+		include/geodesic.h
 )
 
-SET(SRCS 
+SET(SRCS
 		src/chart1.cpp
 		src/bbox.cpp
 		src/ocpn_pixel.cpp
-                src/ocpndc.cpp
+        src/ocpndc.cpp
 		src/chartdb.cpp
 		src/chartdbs.cpp
 		src/chartimg.cpp
@@ -344,16 +353,22 @@ SET(SRCS
 		src/tcmgr.cpp
 		src/thumbwin.cpp
 		src/options.cpp
-		src/wvschart.cpp
+		src/gshhs.cpp
+		src/kml.cpp
+		src/undo.cpp
 		src/about.cpp
 		src/ais.cpp
-                src/pluginmanager.cpp
+		src/pluginmanager.cpp
 		src/gpxdocument.cpp
-            	src/wxJSON/jsonwriter.cpp
-            	src/wxJSON/jsonval.cpp
-                src/chartsymbols.cpp
-                src/razdsparser.cpp
-
+		src/wxJSON/jsonwriter.cpp
+		src/wxJSON/jsonreader.cpp
+		src/wxJSON/jsonval.cpp
+		src/chartsymbols.cpp
+		src/razdsparser.cpp
+		src/styles.cpp
+		src/toolbar.cpp
+		src/compasswin.cpp
+		src/geodesic.cpp
     )
 
 IF(wx_Version MATCHES "2.9")
@@ -451,7 +466,7 @@ IF (USE_S57)
 		src/mygdal/ogrfeature.cpp
 		src/mygdal/ogrfeaturedefn.cpp
 		src/mygdal/ogrfielddefn.cpp
-		src/mygdal/ogrgeometry.cpp 
+		src/mygdal/ogrgeometry.cpp
 		src/mygdal/ogrgeometrycollection.cpp
 		src/mygdal/ogrgeometryfactory.cpp
 		src/mygdal/ogrlinearring.cpp
@@ -523,7 +538,7 @@ IF (USE_GARMINHOST)
                   src/garmin/jeeps/gpssend.h
                   src/garmin/jeeps/gpsusbcommon.h
                   src/garmin/jeeps/gpsutil.h
-                  
+
 	)
         IF(WIN32)
            SET(SRC_GARMINHOST ${SRC_GARMINHOST} src/garmin/jeeps/gpsusbwin.c)
@@ -571,11 +586,24 @@ IF(WIN32)
 ENDIF(WIN32)
 
 # Various data files
-SET(wvsData
-        data/wvsdata/readmewvs.txt
-        data/wvsdata/wvs1.dat
-        data/wvsdata/wvs43.dat
+SET(gshhs
+        data/gshhs/poly-c-1.dat
+        data/gshhs/poly-i-1.dat
+        data/gshhs/poly-l-1.dat
+        data/gshhs/wdb_borders_c.b
+        data/gshhs/wdb_borders_i.b
+        data/gshhs/wdb_borders_l.b
+        data/gshhs/wdb_rivers_c.b
+        data/gshhs/wdb_rivers_i.b
+        data/gshhs/wdb_rivers_l.b
    )
+
+SET(uiData
+	src/bitmaps/styles.xml
+	src/bitmaps/toolicons_journeyman.png
+	src/bitmaps/toolicons_journeyman_flat.png
+	src/bitmaps/toolicons_traditional.png
+	)
 
 IF (USE_S57)
       SET(s57data
@@ -588,7 +616,7 @@ IF (USE_S57)
             data/s57data/rastersymbols-day.png
             data/s57data/rastersymbols-dusk.png
             data/s57data/chartsymbols.xml
-      
+
              )
 ENDIF (USE_S57)
 
@@ -646,7 +674,9 @@ ENDIF(WIN32)
 IF(APPLE)
 
 SET_SOURCE_FILES_PROPERTIES(
-           ${wvsData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/wvsdata  )
+           ${gshhs} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs  )
+SET_SOURCE_FILES_PROPERTIES(
+           ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata  )
 SET_SOURCE_FILES_PROPERTIES(
            ${s57data} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/s57data  )
 SET_SOURCE_FILES_PROPERTIES(
@@ -674,7 +704,8 @@ SET(MACOSX_BUNDLE_ICON_FILE opencpn.icns)
 ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${HDRS}
       ${SRCS}
-      ${wvsData}
+      ${gshhs}
+      ${uiData}
       ${s57data}
       ${tcData}
       data/license.txt
@@ -745,13 +776,9 @@ ENDIF(UNIX)
 
 #   Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of the required link libraries
 #   So, add them manually.
-IF(UNIX AND NOT APPLE)
-TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
-      dl
-      gobject-2.0
-)
-ENDIF(UNIX AND NOT APPLE)
-
+IF(GTK2_FOUND)
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
+ENDIF(GTK2_FOUND)
 
 
 IF(NOT APPLE)
@@ -772,7 +799,9 @@ IF(WIN32)
 SET(PREFIX_PKGDATA ".")
 ENDIF(WIN32)
 
-INSTALL(FILES ${wvsData} DESTINATION ${PREFIX_PKGDATA}/wvsdata PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+INSTALL(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+
+INSTALL(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
 
 IF (USE_S57)
 	INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
@@ -801,9 +830,11 @@ ENDIF(NOT APPLE)
 
 #uninstall-local:
 #        rm -fr $(DESTDIR)$(pkgdatadir)/wvsdata/*
+#        rm -fr $(DESTDIR)$(pkgdatadir)/gshhs/*
 #        rm -fr $(DESTDIR) $(pkgdatadir)/s57data/*
 #        rm -fr $(DESTDIR)$(pkgdatadir)/tcdata/*
 #        rmdir $(DESTDIR)$(pkgdatadir)/wvsdata
+#        rmdir $(DESTDIR)$(pkgdatadir)/gshhs
 #        rmdir $(DESTDIR)$(pkgdatadir)/s57data
 #        rmdir $(DESTDIR)$(pkgdatadir)/tcdata
 #        rmdir $(DESTDIR)$(pkgdatadir)
@@ -814,7 +845,7 @@ IF (GETTEXT_XGETTEXT_EXECUTABLE)
 
 ADD_CUSTOM_COMMAND(
    OUTPUT ${CMAKE_SOURCE_DIR}/po/${PACKAGE_NAME}.pot.dummy
-   COMMAND ${GETTEXT_XGETTEXT_EXECUTABLE} --force-po --package-name=${PACKAGE_NAME} --package-version="${PACKAGE_VERSION}" --output=${CMAKE_SOURCE_DIR}/po/${PACKAGE_NAME}.pot  --keyword=_ --width=80 --files-from=${CMAKE_SOURCE_DIR}/po/POTFILES.in 
+   COMMAND ${GETTEXT_XGETTEXT_EXECUTABLE} --force-po --package-name=${PACKAGE_NAME} --package-version="${PACKAGE_VERSION}" --output=${CMAKE_SOURCE_DIR}/po/${PACKAGE_NAME}.pot  --keyword=_ --width=80 --files-from=${CMAKE_SOURCE_DIR}/po/POTFILES.in
    DEPENDS ${CMAKE_SOURCE_DIR}/po/POTFILES.in ${CMAKE_SOURCE_DIR}/po/${PACKAGE_NAME}.pot
    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
    COMMENT "pot-update [${PACKAGE_NAME}]: Generated pot file."
@@ -942,10 +973,10 @@ IF(WIN32 AND NOT UNIX)
   SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
 
   SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_NAME}_${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}_setup" )
-  
+
   SET(CPACK_NSIS_DIR "${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode")  #Gunther
   SET(CPACK_BUILDWIN_DIR "${CMAKE_SOURCE_DIR}/buildwin")  #Gunther
-  
+
 # Install the VC100 Redistributable
   SET(vc10_redist "vcredist_x86.exe")
 
@@ -1008,7 +1039,7 @@ IF(UNIX AND NOT APPLE)
 #        RPMTools_ADD_RPM_TARGETS(packagename ${CMAKE_SOURCE_DIR}/package.spec)
 #    ENDIF(RPMTools_FOUND)
 
- 
+
     SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
     SET(CPACK_PACKAGE_CONTACT "David S. Register ")
     SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
@@ -1043,6 +1074,7 @@ IF(WIN32 AND NOT UNIX)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_FINNISH.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_FINNISH.nsh" @ONLY)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_NORWEGIAN.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_NORWEGIAN.nsh" @ONLY)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_CHINESETW.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_CHINESETW.nsh" @ONLY)
+ configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_TURKISH.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_TURKISH.nsh" @ONLY)
 ENDIF(WIN32 AND NOT UNIX)
 
 configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h) #Gunther
@@ -1063,7 +1095,7 @@ IF(APPLE)
   SET(DIRS "")
 
   SET(LIBS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libdashboard_pi.dylib")
-  SET(LIBS 
+  SET(LIBS
       ${LIBS} "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app/Contents/PlugIns/libgrib_pi.dylib")
 
   INSTALL(CODE "
@@ -1086,4 +1118,4 @@ ENDIF(APPLE)
 
 MESSAGE(STATUS "Writing spec file...")
 
- 	  	 
+

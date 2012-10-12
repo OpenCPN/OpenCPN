@@ -102,7 +102,8 @@
 #include "gga.hpp"
 #include "dbt.hpp"
 #include "dpt.hpp"
-#include "mtw.hpp"
+#include "mta.hpp" //Air temperature
+#include "mtw.hpp" //Water temperature
 #include "mwd.hpp"
 #include "mwv.hpp"
 #include "vhw.hpp"
@@ -195,6 +196,7 @@ class NMEA0183
       HSC Hsc;
       LCD Lcd;
 */
+      MTA Mta; //Air temperature
       MTW Mtw;
       MWD Mwd;
       MWV Mwv;

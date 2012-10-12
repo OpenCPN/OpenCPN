@@ -40,6 +40,8 @@
 
 #define xID_OK          10009
 #define ID_DONATE       10010
+#define ID_COPYINI      10011
+#define ID_COPYLOG      10012
 
 #define ID_NOTEBOOK_HELP 10002
 
@@ -70,6 +72,7 @@ class about: public wxDialog
     void OnXidOkClick( wxCommandEvent& event );
     void OnPageChange(wxNotebookEvent& event);
     void OnDonateClick( wxCommandEvent& event );
+    void OnCopyClick( wxCommandEvent& event );
     void Update();
 
     wxString          *m_pDataLocn;

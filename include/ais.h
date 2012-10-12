@@ -35,18 +35,21 @@
 #include <wx/listctrl.h>
 #include <wx/spinctrl.h>
 #include <wx/aui/aui.h>
+#include <wx/wxhtml.h>
 
 #include <vector>
 
 ////////////TH//////////////////
 #ifndef OCPN_NO_SOCKETS
 #ifdef __WXGTK__
+#ifdef ocpnHAS_GTK
 // newer versions of glib define its own GSocket but we unfortunately use this
 // name in our own (semi-)public header and so can't change it -- rename glib
 // one instead
 
 #include <gtk/gtk.h>
 #define GSocket GlibGSocket
+#endif
 #endif
 
 #include "wx/socket.h"
@@ -103,7 +106,7 @@ typedef enum ais_nav_status
     FISHING,
     UNDERWAY_SAILING,
     HSC,
-    RESERVED_10,
+    WIG,
     RESERVED_11,
     RESERVED_12,
     RESERVED_13,
@@ -227,6 +230,7 @@ public:
     wxString GetRolloverString(void);
     wxString Get_vessel_type_string(bool b_short = false);
     wxString Get_class_string(bool b_short = false);
+	void Toggle_AIS_CPA(void); //TR 2012.06.28: Show AIS-CPA
 
 
     int                       MID;
@@ -299,6 +303,8 @@ public:
     bool                      bCPA_Valid;
     double                    TCPA;                     // Minutes
     double                    CPA;                      // Nautical Miles
+
+	bool                      b_show_AIS_CPA;           //TR 2012.06.28: Show AIS-CPA
 
     AISTargetTrackList        *m_ptrack;
 
@@ -564,7 +570,7 @@ class AISTargetAlertDialog: public wxDialog
             void OnIdJumptoClick( wxCommandEvent& event );
 
 
-            AISInfoWin        *m_pAlertTextCtl;
+            wxHtmlWindow      *m_pAlertTextCtl;
             int               m_target_mmsi;
             AIS_Decoder       *m_pdecoder;
             wxWindow          *m_pparent;

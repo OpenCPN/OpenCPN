@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  */
 
@@ -34,8 +34,6 @@
 //   constants
 //----------------------------------------------------------------------------
 #define KEY_REGIONS_MAX       100
-
-#define NSIGBARS              4
 
 // Class declarations
 
@@ -83,11 +81,11 @@ public:
       void SetTmercIndexArray(ArrayOfInts array);
       void SetPolyIndexArray(ArrayOfInts array);
 
-      void SetVizIcon(wxBitmap *picon_bmp){ m_pVizIconBmp = picon_bmp; }
-      void SetInVizIcon(wxBitmap *picon_bmp){ m_pInVizIconBmp = picon_bmp; }
-      void SetSkewIcon(wxBitmap *picon_bmp){ m_pSkewIconBmp = picon_bmp; }
-      void SetTMercIcon(wxBitmap *picon_bmp){ m_pTmercIconBmp = picon_bmp; }
-      void SetPolyIcon(wxBitmap *picon_bmp){ m_pPolyIconBmp = picon_bmp; }
+      void SetVizIcon(wxBitmap *picon_bmp){ if( m_pVizIconBmp ) delete m_pVizIconBmp; m_pVizIconBmp = picon_bmp; }
+      void SetInVizIcon(wxBitmap *picon_bmp){ if( m_pInVizIconBmp ) delete m_pInVizIconBmp; m_pInVizIconBmp = picon_bmp; }
+      void SetSkewIcon(wxBitmap *picon_bmp){ if( m_pSkewIconBmp ) delete m_pSkewIconBmp; m_pSkewIconBmp = picon_bmp; }
+      void SetTMercIcon(wxBitmap *picon_bmp){ if( m_pTmercIconBmp ) delete m_pTmercIconBmp; m_pTmercIconBmp = picon_bmp; }
+      void SetPolyIcon(wxBitmap *picon_bmp){ if( m_pPolyIconBmp ) delete m_pPolyIconBmp; m_pPolyIconBmp = picon_bmp; }
 
       wxPoint GetKeyOrigin(int key_index);
       void ResetRollover(void);
@@ -114,7 +112,6 @@ private:
       wxBrush     m_cBrush;
       wxBrush     m_scBrush;
 
-      MyFrame     *gparent;
       ArrayOfInts m_key_array;
       ArrayOfInts m_noshow_index_array;
       ArrayOfInts m_active_index_array;
@@ -136,54 +133,13 @@ private:
 DECLARE_EVENT_TABLE()
 };
 
-#ifdef USE_WIFI_CLIENT
-//----------------------------------------------------------------------------
-// WiFiStatWin
-//----------------------------------------------------------------------------
-class WiFiStatWin: public wxWindow
-{
-    public:
-        WiFiStatWin(wxFrame *frame);
-        ~WiFiStatWin();
-
-        void OnSize(wxSizeEvent& event);
-        void OnPaint(wxPaintEvent& event);
-        void TextDraw(const char * text);
-        void SetNumberStations(int n);
-        void SetStationQuality(int istation, int quality);
-        void SetStationSecureFlag(int istation, int flag);
-        void SetStationAge(int istation, int age);
-        void SetServerStatus(bool stat) { m_bserverstat = stat; }
-        void DrawBars(wxDC &dc, int x, int y, int box_width, int box_height, int val, int val_max);
-        void SetColorScheme(ColorScheme cs);
-
-
-        wxBrush     qual_hiBrush;
-        wxBrush     secureBrush;
-
-        wxBrush     qual_hiNewBrush;
-        wxBrush     secureNewBrush;
-
-        wxBrush     backBrush;
-
-        int         m_nstations;
-        int         m_quality[NSIGBARS];
-        int         m_secure[NSIGBARS];
-        int         m_age[NSIGBARS];
-        bool        m_bserverstat;
-
-        DECLARE_EVENT_TABLE()
-};
-#endif
-
-
 //----------------------------------------------------------------------------
 // StatWin
 //----------------------------------------------------------------------------
-class StatWin: public wxWindow
+class StatWin: public wxDialog
 {
 public:
-      StatWin(wxFrame *frame);
+      StatWin(wxWindow *win);
       ~StatWin();
       void OnSize(wxSizeEvent& event);
       void OnPaint(wxPaintEvent& event);
@@ -191,15 +147,14 @@ public:
       int  GetFontHeight();
       int  GetRows(){ return(m_rows);}
       void SetColorScheme(ColorScheme cs);
-
+      void RePosition();
+      void ReSize();
+      
       void FormatStat(void);
 
       PianoWin    *pPiano;
       TStatWin    *pTStat1;
       TStatWin    *pTStat2;
-#ifdef USE_WIFI_CLIENT
-      WiFiStatWin *pWiFi;
-#endif
 
 private:
       wxBrush     m_backBrush;

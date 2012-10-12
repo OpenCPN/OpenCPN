@@ -75,7 +75,6 @@ typedef enum ColorScheme
 class ViewPort
 {
       public:
-//  ctor
             ViewPort();
 
             wxPoint GetPixFromLL(double lat, double lon) const;
@@ -102,8 +101,6 @@ class ViewPort
             double   skew;
             double   rotation;
 
-
-
             double    chart_scale;            // conventional chart displayed scale
 
             int      pix_width;
@@ -113,23 +110,31 @@ class ViewPort
             bool     b_FullScreenQuilt;
 
             int      m_projection_type;
-
+            bool     b_MercatorProjectionOverride;
             wxRect   rv_rect;
 
       private:
-            //    Methods
-
-            //    Data
             LLBBox   vpBBox;                // An un-skewed rectangular lat/lon bounding box
                                             // which contains the entire vieport
 
-
             bool     bValid;                 // This VP is valid
-
 };
 
 
+//----------------------------------------------------------------------------
+// ocpn Toolbar stuff
+//----------------------------------------------------------------------------
+class ChartBase;
+class wxSocketEvent;
+class ocpnToolBarSimple;
 
+typedef struct {
+    wxPoint2DDouble pos;
+    double sector1, sector2;
+    double range;
+    wxColor color;
+    bool fillSector;
+} s57Sector_t;
 
 
 #endif

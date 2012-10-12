@@ -63,16 +63,12 @@ double AnchorDistFix( double const d, double const AnchorPointMinDist, double co
 class OCPN_NMEAEvent;
 class ChartCanvas;
 class ocpnFloatingToolbarDialog;
+class OCPN_MsgEvent;
+class options;
 
 //----------------------------------------------------------------------------
 //   constants
 //----------------------------------------------------------------------------
-#define OCPN_USE_PNGICONS
-#define USE_PNG_TIDESML
-#define USE_PNG_CURSOR
-
-
-
 
 #define TIMER_GFRAME_1 999
 
@@ -157,15 +153,6 @@ class ChartBase;
 class wxSocketEvent;
 class ocpnToolBarSimple;
 
-//----------------------------------------------------------------------------
-//   Classes
-//----------------------------------------------------------------------------
-WX_DECLARE_STRING_HASH_MAP( char*, string_to_pchar_hash);
-WX_DECLARE_STRING_HASH_MAP(wxBitmap*, string_to_pbitmap_hash);
-WX_DECLARE_STRING_HASH_MAP(wxString*, string_to_string_hash);
-
-
-
 //    A small class used in an array to describe chart directories
 class ChartDirInfo
 {
@@ -214,6 +201,7 @@ class MyFrame: public wxFrame
     void OnEvtNMEA(wxCommandEvent& event);
     void OnEvtTHREADMSG(wxCommandEvent& event);
     void OnEvtOCPN_NMEA(OCPN_NMEAEvent & event);
+    void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
 
     void UpdateAllFonts(void);
@@ -236,6 +224,7 @@ class MyFrame: public wxFrame
     void ApplyGlobalSettings(bool bFlyingUpdate, bool bnewtoolbar);
     void SetChartThumbnail(int index);
     int  DoOptionsDialog();
+    int  ProcessOptionsDialog(int resultFlags , options* dialog );
     void DoPrint(void);
     void StopSockets(void);
     void ResumeSockets(void);
@@ -249,7 +238,8 @@ class MyFrame: public wxFrame
     void ToggleENCText(void);
     void ToggleSoundings(void);
     void ToggleRocks(void);
-    void ToggleLights(void);
+    bool ToggleLights( bool doToggle = true, bool temporary = false );
+    void ToggleAnchor(void);
     void TrackOn(void);
     void TrackOff(bool do_add_point = false);
     void TrackMidnightRestart(void);
@@ -292,10 +282,8 @@ class MyFrame: public wxFrame
     void SetupQuiltMode(void);
 
     void ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge = true);
-    string_to_pbitmap_hash *GetBitmapHash(){ return m_phash; }
     void ShowBrightnessLevelTimedDialog(int brightness, int min, int max);
 
-    ArrayOfRect GetCanvasReserveRects();
     bool CheckGroup(int igroup);
 
     void TouchAISActive(void);
@@ -311,11 +299,9 @@ class MyFrame: public wxFrame
     wxTimer             FrameCOGTimer;
     wxTimer             MemFootTimer;
 
-
-    string_to_pbitmap_hash *m_phash;
-
     //      PlugIn support
     int GetNextToolbarToolId(){return m_next_available_plugin_tool_id;}
+    void RequestNewToolbarArgEvent( wxCommandEvent & event ){ return RequestNewToolbar(); }
     void RequestNewToolbar();
 
     void ActivateMOB(void);
@@ -335,13 +321,7 @@ class MyFrame: public wxFrame
     ocpnToolBarSimple *CreateAToolbar();
     void DestroyMyToolbar();
     void UpdateToolbar(ColorScheme cs);
-    void PrepareToolbarBitmaps(void);
-    void BuildToolBitmap(wxImage *pimg, unsigned char back_color, wxString &index,
-                         string_to_pbitmap_hash &hash, bool grey = false);
-    void BuildGreyScaleTool(wxImage *pimg, unsigned char grey_val, wxString &index,
-                         string_to_pbitmap_hash &hash);
 
-    void DeleteToolbarBitmaps();
     void EnableToolbar(bool newstate);
 
     bool CheckAndAddPlugInTool(ocpnToolBarSimple *tb);
@@ -355,13 +335,6 @@ class MyFrame: public wxFrame
     void ScrubGroupArray();
     wxString GetGroupName(int igroup);
     void LoadHarmonics();
-
-    string_to_pchar_hash tool_xpm_hash;         // hash map of [static] toolbar xpm bitmaps
-
-
-    string_to_pbitmap_hash tool_bitmap_hash_day;
-    string_to_pbitmap_hash tool_bitmap_hash_dusk;
-    string_to_pbitmap_hash tool_bitmap_hash_night;
 
     int                 m_StatusBarFieldCount;
 
@@ -377,11 +350,9 @@ class MyFrame: public wxFrame
     wxString         m_last_reported_chart_name;
     wxString         m_last_reported_chart_pubdate;
 
-    ocpnToolBarSimple  *m_toolBar;
-
     double           COGTable[MAX_COG_AVERAGE_SECONDS];
 
-    wxString         m_AIS_bmp_hash_index_last;
+    wxString         m_lastAISiconName;
 
     bool             m_toolbar_scale_tools_shown;
 
@@ -395,6 +366,15 @@ class MyFrame: public wxFrame
     bool                m_bpersistent_quilt;
     int                 m_ChartUpdatePeriod;
     bool                m_last_bGPSValid;
+
+    wxString            previous_NMEA_source;
+    bool                previous_bGarminHost;
+    wxString            previous_NMEA_APPort;
+    wxString            previous_AIS_Port;
+    wxString            prev_locale;
+    bool                bPrevQuilt;
+    bool                bPrevFullScreenQuilt;
+    bool                bPrevOGL;
 
     DECLARE_EVENT_TABLE()
 };
@@ -433,8 +413,6 @@ enum {
     TIMER_AIS1,
     TIMER_AISAUDIO,
     AIS_SOCKET_ID,
-    WIFI_SOCKET_ID,
-    TIMER_WIFI1,
     FRAME_TIMER_DOG,
     FRAME_TC_TIMER,
     FRAME_COG_TIMER,
@@ -458,340 +436,6 @@ public:
       int         m_last_wheel_dir;
 
       DECLARE_EVENT_TABLE()
-};
-
-
-
-#include "wx/tbarbase.h"
-
-#define TOOLTIPON_TIMER       10000
-
-class ToolTipWin;
-class ocpnToolBarTool;
-
-// ----------------------------------------------------------------------------
-// ocpnToolBarSimple is a generic toolbar implementation in pure wxWidgets
-//    Adapted from wxToolBarSimple( deprecated )
-// ----------------------------------------------------------------------------
-
-class ocpnToolBarSimple : public wxControl
-{
-      public:
-    // ctors and dtor
-            ocpnToolBarSimple() { Init(); }
-
-            ocpnToolBarSimple(wxWindow *parent,
-                            wxWindowID winid,
-                            const wxPoint& pos = wxDefaultPosition,
-                            const wxSize& size = wxDefaultSize,
-                            long style = wxNO_BORDER | wxTB_HORIZONTAL,
-                            const wxString& name = wxToolBarNameStr)
-            {
-                  Init();
-
-                  Create(parent, winid, pos, size, style, name);
-            }
-
-            bool Create(wxWindow *parent,
-                        wxWindowID winid,
-                        const wxPoint& pos = wxDefaultPosition,
-                        const wxSize& size = wxDefaultSize,
-                        long style = wxNO_BORDER | wxTB_HORIZONTAL,
-                        const wxString& name = wxToolBarNameStr);
-
-            virtual ~ocpnToolBarSimple();
-
-            virtual void SetToggledBackgroundColour(wxColour c){ m_toggle_bg_color = c;};
-            virtual void SetColorScheme(ColorScheme cs);
-
-
-    // implementation from now on
-    // --------------------------
-
-    // SCROLLING: this has to be copied from wxScrolledWindow since
-    // wxToolBarBase inherits from wxControl. This could have been put into
-    // wxToolBarSimple, but we might want any derived toolbar class to be
-    // scrollable.
-
-    // Number of pixels per user unit (0 or -1 for no scrollbar)
-    // Length of virtual canvas in user units
-            virtual void SetScrollbars(int horizontal, int vertical,
-                                       int x_length, int y_length,
-                                       int x_pos = 0, int y_pos = 0);
-
-    // Physically scroll the window
-            virtual void Scroll(int x_pos, int y_pos);
-            virtual void GetScrollPixelsPerUnit(int *x_unit, int *y_unit) const;
-            virtual void EnableScrolling(bool x_scrolling, bool y_scrolling);
-            virtual void AdjustScrollbars();
-
-    // Prepare the DC by translating it according to the current scroll position
-            virtual void PrepareDC(wxDC& dc);
-
-            int GetScrollPageSize(int orient) const ;
-            void SetScrollPageSize(int orient, int pageSize);
-
-    // Get the view start
-            virtual void ViewStart(int *x, int *y) const;
-
-    // Actual size in pixels when scrolling is taken into account
-            virtual void GetVirtualSize(int *x, int *y) const;
-
-            int CalcScrollInc(wxScrollEvent& event);
-
-    // event handlers
-            void OnPaint(wxPaintEvent& event);
-            void OnSize(wxSizeEvent& event);
-            void OnMouseEvent(wxMouseEvent& event);
-            void OnKillFocus(wxFocusEvent& event);
-            void OnScroll(wxScrollEvent& event);
-            void OnToolTipTimerEvent(wxTimerEvent& event);
-
-            wxToolBarToolBase *AddTool(int toolid,
-                        const wxString& label,
-                        const wxBitmap& bitmap,
-                        const wxBitmap& bmpDisabled,
-                        wxItemKind kind,
-                        const bool b_decorate_toggle_state,
-                        const wxString& shortHelp,
-                        const wxString& longHelp,
-                        wxObject *data);
-
-            wxToolBarToolBase *AddTool(int toolid,
-                        const wxString& label,
-                        const wxBitmap& bitmap,
-                        const wxString& shortHelp = wxEmptyString,
-                        wxItemKind kind = wxITEM_NORMAL)
-            {
-                  return AddTool(toolid, label, bitmap, wxNullBitmap, kind, true, shortHelp, wxEmptyString, NULL);
-            }
-
-
-            wxToolBarToolBase *InsertTool(size_t pos,
-                        int id,
-                        const wxString& label,
-                        const wxBitmap& bitmap,
-                        const wxBitmap& bmpDisabled,
-                        wxItemKind kind,
-                        const wxString& shortHelp,
-                        const wxString& longHelp,
-                        wxObject *clientData);
-
-            wxToolBarToolBase *InsertTool(size_t pos, wxToolBarToolBase *tool);
-
-    // Only allow toggle if returns true. Call when left button up.
-            virtual bool OnLeftClick(int toolid, bool toggleDown);
-
-    // Call when right button down.
-            virtual void OnRightClick(int toolid, long x, long y);
-
-    // Called when the mouse cursor enters a tool bitmap.
-    // Argument is wxID_ANY if mouse is exiting the toolbar.
-            virtual void OnMouseEnter(int toolid);
-
-           wxSize GetMargins() const { return GetToolMargins(); }
-           size_t GetToolsCount() const { return m_tools.GetCount(); }
-
-    // add an arbitrary control to the toolbar (notice that
-    // the control will be deleted by the toolbar and that it will also adjust
-    // its position/size)
-            //
-    // NB: the control should have toolbar as its parent
-            virtual wxToolBarToolBase *AddControl(wxControl *control);
-            virtual wxToolBarToolBase *InsertControl(size_t pos, wxControl *control);
-
-    // get the control with the given id or return NULL
-            virtual wxControl *FindControl( int toolid );
-
-    // add a separator to the toolbar
-            virtual wxToolBarToolBase *AddSeparator();
-            virtual wxToolBarToolBase *InsertSeparator(size_t pos);
-
-    // remove the tool from the toolbar: the caller is responsible for actually
-    // deleting the pointer
-            virtual wxToolBarToolBase *RemoveTool(int toolid);
-
-    // delete tool either by index or by position
-            virtual bool DeleteToolByPos(size_t pos);
-            virtual bool DeleteTool(int toolid);
-
-    // delete all tools
-            virtual void ClearTools();
-
-    // must be called after all buttons have been created to finish toolbar
-    // initialisation
-            virtual bool Realize();
-
-    // tools state
-    // -----------
-
-            virtual void EnableTool(int toolid, bool enable);
-            virtual void ToggleTool(int toolid, bool toggle);
-
-            virtual void SetToolBitmaps(int toolid, wxBitmap *bmp, wxBitmap *bmpDisabled);
-
-    // Set this to be togglable (or not)
-            virtual void SetToggle(int toolid, bool toggle);
-
-    // set/get tools client data (not for controls)
-            virtual wxObject *GetToolClientData(int toolid) const;
-            virtual void SetToolClientData(int toolid, wxObject *clientData);
-
-    // returns tool pos, or wxNOT_FOUND if tool isn't found
-            virtual int GetToolPos(int id) const;
-
-    // return true if the tool is toggled
-            virtual bool GetToolState(int toolid) const;
-
-            virtual bool GetToolEnabled(int toolid) const;
-
-            virtual void SetToolShortHelp(int toolid, const wxString& helpString);
-            virtual wxString GetToolShortHelp(int toolid) const;
-            virtual void SetToolLongHelp(int toolid, const wxString& helpString);
-            virtual wxString GetToolLongHelp(int toolid) const;
-
-    // margins/packing/separation
-    // --------------------------
-
-            virtual void SetMargins(int x, int y);
-            void SetMargins(const wxSize& size) { SetMargins((int) size.x, (int) size.y); }
-            virtual void SetToolPacking(int packing){ m_toolPacking = packing; }
-            virtual void SetToolSeparation(int separation){ m_toolSeparation = separation; }
-
-            virtual wxSize GetToolMargins() const { return wxSize(m_xMargin, m_yMargin); }
-            virtual int GetToolPacking() const { return m_toolPacking; }
-            virtual int GetToolSeparation() const { return m_toolSeparation; }
-
-    // toolbar geometry
-    // ----------------
-
-    // set the number of toolbar rows
-            virtual void SetRows(int nRows);
-
-    // the toolbar can wrap - limit the number of columns or rows it may take
-            void SetMaxRowsCols(int rows, int cols){ m_maxRows = rows; m_maxCols = cols; }
-            int GetMaxRows() const { return m_maxRows; }
-            int GetMaxCols() const { return m_maxCols; }
-
-    // get/set the size of the bitmaps used by the toolbar: should be called
-    // before adding any tools to the toolbar
-            virtual void SetToolBitmapSize(const wxSize& size) { m_defaultWidth = size.x; m_defaultHeight = size.y; }
-            virtual wxSize GetToolBitmapSize() const  { return wxSize(m_defaultWidth, m_defaultHeight); }
-
-    // the button size in some implementations is bigger than the bitmap size:
-    // get the total button size (by default the same as bitmap size)
-            virtual wxSize GetToolSize() const { return GetToolBitmapSize(); }
-
-            virtual wxRect GetToolRect(int tool_id);
-
-    // returns a (non separator) tool containing the point (x, y) or NULL if
-    // there is no tool at this point (corrdinates are client)
-            wxToolBarToolBase *FindToolForPosition(wxCoord x, wxCoord y);
-
-    // find the tool by id
-            wxToolBarToolBase *FindById(int toolid) const;
-
-    // return true if this is a vertical toolbar, otherwise false
-            bool IsVertical() const { return HasFlag(wxTB_LEFT | wxTB_RIGHT); }
-
-    // the list of all our tools
-            wxToolBarToolsList m_tools;
-
-    // the offset of the first tool
-            int m_xMargin;
-            int m_yMargin;
-
-    // the maximum number of toolbar rows/columns
-            int m_maxRows;
-            int m_maxCols;
-
-    // the tool packing and separation
-            int m_toolPacking,
-            m_toolSeparation;
-
-    // the size of the toolbar bitmaps
-            wxCoord m_defaultWidth, m_defaultHeight;
-
-            void        HideTooltip();
-            void        KillTooltip();
-            void        ShowTooltip(){ m_btooltip_show = true; }
-
-      protected:
-    // common part of all ctors
-            void Init();
-
-    // implement base class pure virtuals
-            virtual wxToolBarToolBase *DoAddTool
-                        (
-                         int toolid,
-                         const wxString& label,
-                         const wxBitmap& bitmap,
-                         const wxBitmap& bmpDisabled,
-                         wxItemKind kind,
-                         const wxString& shortHelp = wxEmptyString,
-                         const wxString& longHelp = wxEmptyString,
-                         wxObject *clientData = NULL,
-                         wxCoord xPos = wxDefaultCoord,
-                         wxCoord yPos = wxDefaultCoord
-                        );
-
-            virtual bool DoInsertTool(size_t pos, wxToolBarToolBase *tool);
-            virtual bool DoDeleteTool(size_t pos, wxToolBarToolBase *tool);
-
-            virtual void DoEnableTool(wxToolBarToolBase *tool, bool enable);
-            virtual void DoToggleTool(wxToolBarToolBase *tool, bool toggle);
-            virtual void DoSetToggle(wxToolBarToolBase *tool, bool toggle);
-
-            virtual wxToolBarToolBase *CreateTool(int winid,
-                        const wxString& label,
-                        const wxBitmap& bmpNormal,
-                        const wxBitmap& bmpDisabled,
-                        wxItemKind kind,
-                        wxObject *clientData,
-                        const wxString& shortHelp,
-                        const wxString& longHelp);
-            virtual wxToolBarToolBase *CreateTool(wxControl *control, const wxString& label);
-            virtual wxToolBarToolBase *CreateTool(wxControl *control);
-
-    // helpers
-            void DrawTool(wxToolBarToolBase *tool);
-            virtual void DrawTool(wxDC& dc, wxToolBarToolBase *tool);
-            virtual void SpringUpButton(int index);
-
-            int  m_currentRowsOrColumns;
-
-            int  m_pressedTool, m_currentTool;
-
-            wxCoord m_lastX, m_lastY;
-            wxCoord m_maxWidth, m_maxHeight;
-            wxCoord m_xPos, m_yPos;
-
-            wxColour                m_toggle_bg_color;
-            wxColour                m_toolOutlineColour;
-            ToolTipWin              *m_pToolTipWin;
-            ocpnToolBarTool         *m_last_ro_tool;
-
-            ColorScheme             m_currentColorScheme;
-
-            wxTimer                 m_tooltip_timer;
-            int                     m_one_shot;
-            bool                    m_btooltip_show;
-
-    // scrolling data
-            int                   m_xScrollPixelsPerLine;
-            int                   m_yScrollPixelsPerLine;
-            bool                  m_xScrollingEnabled;
-            bool                  m_yScrollingEnabled;
-            int                   m_xScrollPosition;
-            int                   m_yScrollPosition;
-            int                   m_xScrollLines;
-            int                   m_yScrollLines;
-            int                   m_xScrollLinesPerPage;
-            int                   m_yScrollLinesPerPage;
-
-      private:
-            DECLARE_EVENT_TABLE()
-                        DECLARE_DYNAMIC_CLASS_NO_COPY(ocpnToolBarSimple)
 };
 
 

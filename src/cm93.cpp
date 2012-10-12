@@ -2212,8 +2212,6 @@ ArrayOfInts cm93chart::GetVPCellArray ( const ViewPort &vpt )
       //    Create an array of CellIndexes covering the current viewport
       ArrayOfInts vpcells;
 
-      vpcells.Clear();
-
       int lower_left_cell = Get_CM93_CellIndex ( ll_lat, ll_lon, GetNativeScale() );
       vpcells.Add ( lower_left_cell );                // always add the lower left cell
 
@@ -4049,8 +4047,8 @@ InitReturn cm93chart::CreateHeaderDataFromCM93Cell ( void )
       //    Specify the whole world as chart coverage
       m_FullExtent.ELON = 179.0;
       m_FullExtent.WLON = -179.0;
-      m_FullExtent.NLAT = 70.0;
-      m_FullExtent.SLAT = -70.0;
+      m_FullExtent.NLAT = 80.0;
+      m_FullExtent.SLAT = -80.0;
       m_bExtentSet = true;
 
 
@@ -4798,9 +4796,9 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale )
                   }
                   else if ( cmscale == 0 )
                   {
-                        wxString msg;
-                        msg.Printf ( _T ( "   CM93 finds no chart of any scale present at Lat/Lon  %g %g" ), vpt.clat, vpt.clon );
-                        wxLogMessage ( msg );
+//                        wxString msg;
+//                        msg.Printf ( _T ( "   CM93 finds no chart of any scale present at Lat/Lon  %g %g" ), vpt.clat, vpt.clon );
+//                        wxLogMessage ( msg );
                         if ( g_bDebugCM93 )
                               printf ( "   CM93 finds no chart of any scale present at Lat/Lon  %g %g\n", vpt.clat, vpt.clon );
 
@@ -5052,7 +5050,7 @@ wxPoint GetPixFromLLVP ( double lat, double lon, const ViewPort& VPoint )
 
 void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
 {
-      wxRegion screen_region(VPoint.rv_rect.x,VPoint.rv_rect.y,VPoint.rv_rect.width, VPoint.rv_rect.height);
+      wxRegion screen_region(0, 0, VPoint.pix_width, VPoint.pix_height);
       wxRegion ret = GetValidScreenCanvasRegion ( VPoint, screen_region );
       *pValidRegion = ret;
 }
@@ -5119,15 +5117,13 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
 //      CALLGRIND_START_INSTRUMENTATION
 
-      if ( m_last_scale_for_busy != VPoint.view_scale_ppm )
-      {
-                  ::wxBeginBusyCursor();
-                  m_b_busy_shown = true;
-                  m_last_scale_for_busy = VPoint.view_scale_ppm;
+      if ( m_last_scale_for_busy != VPoint.view_scale_ppm ) {
+        ::wxBeginBusyCursor();
+        m_b_busy_shown = true;
+        m_last_scale_for_busy = VPoint.view_scale_ppm;
       }
 
-      if ( g_bDebugCM93 )
-      {
+      if ( g_bDebugCM93 ) {
             printf ( "\nOn DoRenderRegionViewOnGL Ref scale is %d, %c %g\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ), VPoint.view_scale_ppm );
             wxRegionIterator upd ( Region );
             while ( upd )
@@ -5144,7 +5140,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
       SetVPPositive ( &vp_positive );
 
-      bool render_return = true;
+      bool render_return = false;
       if ( m_pcm93chart_current )
       {
             m_pcm93chart_current->SetVPParms ( vp_positive );
@@ -5225,7 +5221,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                           }
                                     }
 
-                                    m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
+                                    render_return |= m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
 
                                     //    Update the remaining empty region
                                     if ( !sscale_region.IsEmpty() )
@@ -5253,7 +5249,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
                         //    Finally, render the target scale chart
                         if ( !chart_region.IsEmpty() )
-                              m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
+                            render_return |= m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, chart_region );
 
                   }
                   else
@@ -5325,20 +5321,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                     p++;
                               }
 
-                              //    Scrub the points
-                              //   looking for segments for which the wrong longitude decision was made
-                              //    TODO all this mole needs to be rethought, again
                               bool btest = true;
-                              /*
-                              wxPoint p0 = pwp[0];
-                              for(int ip = 1 ; ip < pmcd->m_nvertices ; ip++)
-                              {
-                               //                                   if(((p0.x > VPoint.pix_width) && (pwp[ip].x < 0)) || ((p0.x < 0) && (pwp[ip].x > VPoint.pix_width)))
-                               //                                         btest = false;
-
-                              p0 = pwp[ip];
-                        }
-                              */
                               if ( btest )
                               {
                                     wxPen pen ( wxTheColourDatabase->Find ( _T ( "YELLOW" ) ), 3);
@@ -5368,7 +5351,6 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                     }
                               }
                         }
-
                   }
             }
       }
@@ -5434,7 +5416,7 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 
       SetVPPositive ( &vp_positive );
 
-      bool render_return = true;
+      bool render_return = false;
       if ( m_pcm93chart_current )
       {
             m_pcm93chart_current->SetVPParms ( vp_positive );
@@ -5558,11 +5540,12 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                         //    And the return dc is the quilt
                         dc.SelectObject ( *m_pDummyBM );
 
-
+                        render_return = true;
                   }
-                  else
-                        render_return = m_pcm93chart_current->RenderRegionViewOnDC ( dc, vp_positive, Region );
-
+                  else {
+                        m_pcm93chart_current->RenderRegionViewOnDC ( dc, vp_positive, Region );
+                        render_return = true;
+                  }
                   m_Name = m_pcm93chart_current->GetName();
 
             }
@@ -5714,7 +5697,9 @@ void cm93compchart::UpdateRenderRegions ( const ViewPort& VPoint )
       ViewPort vp_positive = VPoint;
 
       SetVPPositive ( &vp_positive );
-
+      
+      SetVPParms ( VPoint );
+      
       if ( m_pcm93chart_current )
       {
             m_pcm93chart_current->SetVPParms ( vp_positive );
@@ -5884,35 +5869,15 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                                           float_2Dpt *p = mcd->pvertices;
                                           wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
 
-                                          for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++ )
+                                          for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++ ,  p++)
                                           {
+                                              
+                                              pwp[ip] = vp_positive.GetPixFromLL( p->y, p->x );
 
-                                                double plon = p->x;
-                                                if ( fabs ( plon - vp.clon ) > 180. )
-                                                {
-                                                      if ( plon > vp.clon )
-                                                            plon -= 360.;
-                                                      else
-                                                            plon += 360.;
-                                                }
-
-
-                                                double easting, northing, epix, npix;
-                                                toSM ( p->y, plon + 360., vp.clat, vp.clon + 360, &easting, &northing );
-
-                                                //    Outlines stored in MCDs are not adjusted for offsets
-//                                                easting -= mcd->transform_WGS84_offset_x;
-                                                easting -= mcd->user_xoff;
-//                                                northing -= mcd->transform_WGS84_offset_y;
-                                                northing -= mcd->user_yoff;
-
-                                                epix = easting  * vp.view_scale_ppm;
-                                                npix = northing * vp.view_scale_ppm;
-
-                                                pwp[ip].x = ( int ) round ( ( vp.pix_width  / 2 ) + epix );
-                                                pwp[ip].y = ( int ) round ( ( vp.pix_height / 2 ) - npix );
-
-                                                p++;
+                                              //    Outlines stored in MCDs are not adjusted for offsets
+                                              pwp[ip].x -= mcd->user_xoff * vp.view_scale_ppm;
+                                              pwp[ip].y -= mcd->user_yoff * vp.view_scale_ppm;
+                                              
                                           }
 
                                           //    Scrub the points
@@ -6119,16 +6084,45 @@ InitReturn cm93compchart::CreateHeaderData()
 
       m_Chart_Scale = 20000000;
 
-      //    Specify the whole world as chart coverage
-      //    Note the odd longitude range, to align with cm93 cell boundaries
-      m_FullExtent.ELON = 360.0;
-      m_FullExtent.WLON = -360.0;
-      m_FullExtent.NLAT = 80.0;
-      m_FullExtent.SLAT = -80.0;
+      //        Read the root directory, getting subdirectories to build a small scale coverage region
+      wxRect extent_rect;
+ 
+      wxDir dirt(m_prefixComposite);
+      wxString candidate;
+      wxRegEx test(_T("[0-9]+"));
+      
+      bool b_cont = dirt.GetFirst(&candidate);
+      
+      while(b_cont) {
+          if(test.Matches(candidate)&& (candidate.Len() == 8)) {
+              wxString dir = m_prefixComposite;
+              dir += candidate;
+              if( wxDir::Exists(dir) ) {
+                  wxFileName name( dir );
+                  wxString num_name = name.GetName();
+                  long number;
+                  if( num_name.ToLong( &number ) ) {
+                      int ilat = number / 10000;
+                      int ilon = number % 10000;
+                      
+                      int lat_base = ( ilat - 270 ) / 3.;
+                      int lon_base = ilon / 3.;
+                      extent_rect.Union(wxRect(lon_base, lat_base, 20, 20));
+                  }
+              }
+          }
+          b_cont = dirt.GetNext(&candidate);
+      }
+
+      //    Specify the chart coverage
+      m_FullExtent.ELON = ((double)extent_rect.x + (double)extent_rect.width );
+      m_FullExtent.WLON = ((double)extent_rect.x);
+      m_FullExtent.NLAT = ((double)extent_rect.y + (double)extent_rect.height );
+      m_FullExtent.SLAT = ((double)extent_rect.y);
       m_bExtentSet = true;
 
 
-      //    Populate one (huge) M_COVR Entry
+      //    Populate one M_COVR Entry
       m_nCOVREntries = 1;
       m_pCOVRTablePoints = ( int * ) malloc ( sizeof ( int ) );
       *m_pCOVRTablePoints = 4;

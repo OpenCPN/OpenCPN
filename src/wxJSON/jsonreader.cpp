@@ -1849,10 +1849,10 @@ wxJSONReader::ConvertCharByChar( wxString& s, const wxMemoryBuffer& utf8Buffer )
  @return the last char read or -1 in case of EOF
 */
 
-union byte
+union byte_union
 {
-    unsigned char c[2];
-    short int b;
+    unsigned char cu[2];
+    short int bu;
 };
 
 int

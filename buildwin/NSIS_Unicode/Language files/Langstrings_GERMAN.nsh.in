@@ -343,3 +343,6 @@ LangString ^NameDA ${LANG_GERMAN} "@CPACK_PACKAGE_NAME@ Version @CPACK_PACKAGE_V
 ;added on 2011-07-24
 #LangString License_Message ${LANG_ENGLISH} "OpenCPN is software libre. You are encouraged and legally entitled to copy, reinstall, modify, and redistribute this program for yourself and your friends under the terms of the GPL. $\r$\nSmooth sailing!"
 LangString License_Message ${LANG_GERMAN} "OpenCPN ist Freie Software. Sie werden gebeten und dazu berechtigt, dieses Programm unter den Bestimmungen der GPL für sich und ihre Freunde zu kopieren, installieren, modifizieren und es weiterzugeben. Gute Fahrt!"
+
+#LangString Installer_Unsupported_XP_SP_Version ${LANG_ENGLISH} "Your Windows XP Service Pack version is not supported (it's too old)!$\r$\nYou need at least Windows XP SP3."
+LangString Installer_Unsupported_XP_SP_Version ${LANG_GERMAN} "Deine Windows XP Service Pack Version ist nicht anerkannt. (Sie ist zu alt!)$\r$\nDu brauchst mindestens Windows XP SP3."
