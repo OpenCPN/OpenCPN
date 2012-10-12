@@ -4230,7 +4230,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     CreateDepthUnitEmbossMaps( cs );
     CreateOZEmbossMapData( cs );
 
-    if( m_glcc ) m_glcc->ClearAllRasterTextures();
+    if( g_bopengl && m_glcc ) m_glcc->ClearAllRasterTextures();
 
     SetbTCUpdate( true );                        // force re-render of tide/current locators
 
@@ -6887,7 +6887,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     //  Rescale again, to capture all the changes for new canvas size
     SetVPScale( GetVPScale() );
 
-    if( m_glcc ) {
+    if( g_bopengl && m_glcc ) {
         m_glcc->OnSize( event );
     }
     //  Invalidate the whole window
