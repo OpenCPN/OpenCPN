@@ -40,9 +40,11 @@
 #include <wx/intl.h>
 #include <wx/listctrl.h>
 #include <wx/aui/aui.h>
-#include <version.h> //Gunther
 #include <wx/dialog.h>
 #include <wx/progdlg.h>
+#include <wx/brush.h>
+#include <wx/colour.h>
+
 
 #if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
@@ -82,7 +84,7 @@
 #include "routeprop.h"
 #include "toolbar.h"
 #include "compasswin.h"
-
+#include "version.h" //Gunther
 #include "cutil.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
@@ -6202,32 +6204,32 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
 
 void MyFrame::DoPrint( void )
 {
-    if( NULL == g_printData ) {
-        g_printData = new wxPrintData;
-        g_printData->SetOrientation( wxLANDSCAPE );
-        g_pageSetupData = new wxPageSetupDialogData;
-    }
-
-    wxPrintDialogData printDialogData( *g_printData );
-    printDialogData.EnablePageNumbers( false );
-
-    wxPrinter printer( &printDialogData );
-
-    MyPrintout printout( _("Chart Print") );
-    if( !printer.Print( this, &printout, true ) ) {
-        if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(
-                _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
-                _T("OpenCPN"), wxOK );
-//        else
-//            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
-    } else {
-        ( *g_printData ) = printer.GetPrintDialogData().GetPrintData();
-    }
+//     if( NULL == g_printData ) {
+//         g_printData = new wxPrintData;
+//         g_printData->SetOrientation( wxLANDSCAPE );
+//         g_pageSetupData = new wxPageSetupDialogData;
+//     }
+// 
+//     wxPrintDialogData printDialogData( *g_printData );
+//     printDialogData.EnablePageNumbers( false );
+// 
+//     wxPrinter printer( &printDialogData );
+// 
+//     MyPrintout printout( _("Chart Print") );
+//     if( !printer.Print( this, &printout, true ) ) {
+//         if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(
+//                 _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
+//                 _T("OpenCPN"), wxOK );
+// //        else
+// //            OCPNMessageBox(_T("Print Cancelled"), _T("OpenCPN"), wxOK);
+//     } else {
+//         ( *g_printData ) = printer.GetPrintDialogData().GetPrintData();
+//     }
 
 // Pass two printout objects: for preview, and possible printing.
-    /*
-     wxPrintDialogData printDialogData(* g_printData);
-     wxPrintPreview *preview = new wxPrintPreview(new MyPrintout, new MyPrintout, & printDialogData);
+    
+//      wxPrintDialogData printDialogData(* g_printData);
+     wxPrintPreview *preview = new wxPrintPreview(new MyPrintout, new MyPrintout);
      if (!preview->Ok())
      {
      delete preview;
@@ -6235,11 +6237,11 @@ void MyFrame::DoPrint( void )
      return;
      }
 
-     wxPreviewFrame *frame = new wxPreviewFrame(preview, this, _T("Demo Print Preview"), wxPoint(100, 100), wxSize(600, 650));
+     wxPreviewFrame *frame = new wxPreviewFrame(preview, this, _T("Chart Print Preview"), wxPoint(100, 100), wxSize(600, 650));
      frame->Centre(wxBOTH);
      frame->Initialize();
      frame->Show();
-     */
+     
 
 }
 
@@ -7163,6 +7165,8 @@ void MyPrintout::DrawPageOne( wxDC *dc )
     }
 
 }
+
+
 
 //---------------------------------------------------------------------------------------
 //

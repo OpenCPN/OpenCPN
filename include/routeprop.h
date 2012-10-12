@@ -80,6 +80,7 @@ class   HyperlinkList;
 #define ID_ROUTEPROP_SPLIT     7107
 #define ID_ROUTEPROP_EXTEND    7207
 #define ID_ROUTEPROP_COPYTXT   7307
+#define ID_ROUTEPROP_PRINT     7407
 #define ID_PLANSPEEDCTL        7008
 #define ID_TEXTCTRL4           7009
 #define ID_TEXTCTRLDESC        7010
@@ -159,6 +160,7 @@ public:
     void OnRoutepropListClick( wxListEvent& event );
     void OnRoutepropSplitClick( wxCommandEvent& event );
     void OnRoutepropExtendClick( wxCommandEvent& event );
+    void OnRoutepropPrintClick( wxCommandEvent& event );
     void OnRoutepropCopyTxtClick( wxCommandEvent& event );
     void OnRoutePropRightClick( wxListEvent &event );
     void OnRoutePropMenuSelected( wxCommandEvent &event );
@@ -196,6 +198,7 @@ public:
     wxButton*     m_CancelButton;
     wxButton*     m_OKButton;
     wxButton*     m_CopyTxtButton;
+    wxButton*     m_PrintButton;    
     wxButton*     m_ExtendButton;
     wxButton*     m_SplitButton;
 
