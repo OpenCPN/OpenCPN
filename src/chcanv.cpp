@@ -6672,18 +6672,36 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
 
 void ChartCanvas::UpdateShips()
 {
+    //  Get the rectangle in the current dc which bounds the "ownship" symbol
+
+    wxClientDC dc( this );
+    if( !dc.IsOk() ) return;
+
+    wxBitmap test_bitmap( dc.GetSize().x, dc.GetSize().y );
+    wxMemoryDC temp_dc( test_bitmap );
+
+    temp_dc.ResetBoundingBox();
+    temp_dc.DestroyClippingRegion();
+    temp_dc.SetClippingRegion( 0, 0, dc.GetSize().x, dc.GetSize().y );
+
+    // Draw the ownship on the temp_dc
+    ocpnDC ocpndc = ocpnDC( temp_dc );
+    ShipDraw( ocpndc );
+
     wxRect own_ship_update_rect = ship_draw_rect;
 
     if( !own_ship_update_rect.IsEmpty() ) {
-        own_ship_update_rect.Inflate( 2 );                // clear all drawing artifacts
-
+        //  The required invalidate rectangle is the union of the last drawn rectangle
+        //  and this drawn rectangle
         own_ship_update_rect.Union( ship_draw_last_rect );
+        own_ship_update_rect.Inflate( 2 );
     }
 
-    if( !own_ship_update_rect.IsEmpty() )
-        RefreshRect( own_ship_update_rect, false );
+    if( !own_ship_update_rect.IsEmpty() ) RefreshRect( own_ship_update_rect, false );
 
     ship_draw_last_rect = ship_draw_rect;
+
+    temp_dc.SelectObject( wxNullBitmap );
 }
 
 void ChartCanvas::UpdateAlerts()
