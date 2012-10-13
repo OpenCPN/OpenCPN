@@ -62,6 +62,7 @@ public:
     ~DashboardInstrument_Moon(){}
 
     wxSize GetSize( int orient, wxSize hint );
+    void SetData( int, double, wxString );
     void Draw(wxGCDC* dc);
     void SetUtcTime(wxDateTime value);
 
@@ -69,6 +70,7 @@ private:
     int moon_phase(int y, int m, int d);
     int m_phase;
     int m_radius;
+    wxString m_hemisphere;
 };
 
 class DashboardInstrument_Sun : public DashboardInstrument_Clock

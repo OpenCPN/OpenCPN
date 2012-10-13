@@ -73,10 +73,11 @@ void DashboardInstrument_Clock::SetUtcTime( wxDateTime data )
 }
 
 DashboardInstrument_Moon::DashboardInstrument_Moon( wxWindow *parent, wxWindowID id, wxString title ) :
-      DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_CLK, _T("%i/4 %c") )
+      DashboardInstrument_Clock( parent, id, title, OCPN_DBP_STC_CLK|OCPN_DBP_STC_LAT, _T("%i/4 %c") )
 {
     m_phase = -1;
     m_radius = 14;
+    m_hemisphere = _T("");
 }
 
 wxSize DashboardInstrument_Moon::GetSize( int orient, wxSize hint )
@@ -92,9 +93,16 @@ wxSize DashboardInstrument_Moon::GetSize( int orient, wxSize hint )
       }
 }
 
+void DashboardInstrument_Moon::SetData( int st, double value, wxString format )
+{
+    if( st == OCPN_DBP_STC_LAT ) {
+        m_hemisphere = (value < 0 ? _T("S") : _T("N") );
+    }
+}
+
 void DashboardInstrument_Moon::Draw(wxGCDC* dc)
 {
-    if ( m_phase == -1 ) return;
+    if ( m_phase == -1 || m_hemisphere == _T("") ) return;
 
     wxSize sz = GetClientSize();
     wxColour cl0, cl1, cl2;
@@ -114,6 +122,9 @@ void DashboardInstrument_Moon::Draw(wxGCDC* dc)
     int x = 2+m_radius+(sz.x-m_radius-2)/8*m_phase;
     int y = m_TitleHeight+m_radius+5;
 
+    /* Moon phases are seen upside-down on the southern hemisphere */
+    int startangle = ( m_hemisphere == _("N") ? -90 : 90 );
+
     GetGlobalColor(_T("DASH2"), &cl0);
     GetGlobalColor(_T("DASH1"), &cl1);
     GetGlobalColor(_T("DASHF"), &cl2);
@@ -129,32 +140,33 @@ void DashboardInstrument_Moon::Draw(wxGCDC* dc)
         dc->DrawCircle( x, y, m_radius );
     break;
     case 1:
-        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, -90, 90 );
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, startangle, startangle+180 );
         dc->SetBrush( cl0 );
-        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, -90, 90 );
+        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, startangle, startangle+180 );
     break;
     case 2:
         dc->SetBrush( cl1 );
-        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, -90, 90 );
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, startangle, startangle+180 );
     break;
     case 3:
-        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, 90, 270 );
-        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, -90, 90 );
+        //if( m_hemisphere == _("N") ) {
+        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, -startangle, 180-startangle );
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, startangle, startangle+180 );
     break;
     case 4:
         dc->DrawCircle( x, y, m_radius );
     break;
     case 5:
-        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, 90, 270 );
-        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, -90, 90 );
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, -startangle, 180-startangle );
+        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, startangle, startangle+180 );
     break;
     case 6:
-        dc->DrawEllipticArc(x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, 90, 270);
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, -startangle, 180-startangle );
     break;
     case 7:
-        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, 90, 270 );
+        dc->DrawEllipticArc( x-m_radius, m_TitleHeight+5, m_radius*2, m_radius*2, -startangle, 180-startangle );
         dc->SetBrush( cl0 );
-        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, 90, 270 );
+        dc->DrawEllipticArc( x-m_radius/2, m_TitleHeight+5, m_radius, m_radius*2, -startangle, 180-startangle );
     break;
     }
     dc->SetPen( cl2 );
