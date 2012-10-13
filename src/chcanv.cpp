@@ -5519,12 +5519,6 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
             for( int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++ )
                 dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, i * pix_radius );
         }
-
-        if( dc.GetDC() ) {
-        ship_draw_rect = wxRect( dc.GetDC()->MinX(), dc.GetDC()->MinY(),
-                dc.GetDC()->MaxX() - dc.GetDC()->MinX(),
-                dc.GetDC()->MaxY() - dc.GetDC()->MinY() );
-        }
     }         // if drawit
 }
 
@@ -6687,6 +6681,19 @@ void ChartCanvas::UpdateShips()
     // Draw the ownship on the temp_dc
     ocpnDC ocpndc = ocpnDC( temp_dc );
     ShipDraw( ocpndc );
+
+    if( g_pActiveTrack && g_pActiveTrack->IsRunning() ) {
+        RoutePoint* p = g_pActiveTrack->GetLastPoint();
+        if( p ) {
+            wxPoint px;
+            cc1->GetCanvasPointPix( p->m_lat, p->m_lon, &px );
+            ocpndc.CalcBoundingBox( px.x, px.y );
+        }
+    }
+
+    ship_draw_rect = wxRect( temp_dc.MinX(), temp_dc.MinY(),
+            temp_dc.MaxX() - temp_dc.MinX(),
+            temp_dc.MaxY() - temp_dc.MinY() );
 
     wxRect own_ship_update_rect = ship_draw_rect;
 
