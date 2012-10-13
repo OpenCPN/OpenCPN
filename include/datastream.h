@@ -215,6 +215,7 @@ public:
     void SetOutputFilter(wxArrayString filter) { m_output_filter = filter; }
     void SetOutputFilterType(ListType filter_type) { m_output_filter_type = filter_type; }
     bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
+    static bool ChecksumOK(const wxString& sentence);
 
     int                 m_Thread_run_flag;
 private:
@@ -241,8 +242,11 @@ private:
 
     wxIPV4address       m_addr;
     wxSocketClient      *m_sock;
+    wxString            m_sock_buffer;
     wxString            m_gpsd_addr;
     wxString            m_gpsd_port;
+    NetworkProtocol     m_net_protocol;
+    
 
     wxArrayString       m_input_filter;
     ListType            m_input_filter_type;

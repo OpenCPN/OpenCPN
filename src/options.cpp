@@ -530,7 +530,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     bSizer16 = new wxBoxSizer( wxHORIZONTAL );
 
     m_rbNetProtoTCP = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("TCP"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
-    m_rbNetProtoTCP->Enable( false );
+    m_rbNetProtoTCP->Enable( true );
 
     bSizer16->Add( m_rbNetProtoTCP, 0, wxALL, 5 );
 

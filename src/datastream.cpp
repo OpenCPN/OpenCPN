@@ -46,6 +46,8 @@
 
 #include "datastream.h"
 
+#include <vector>
+
 #define SERIAL_OVERLAPPED
 
 extern int              g_nNMEADebug;
@@ -171,14 +173,17 @@ void DataStream::Open(void)
 
             m_bok = true;
         }
-        else if(m_portstring.Contains(_T("GPSD"))) {
+        else if(m_portstring.Contains(_T("GPSD")) || m_portstring.StartsWith(_T("TCP"))) {
 
             //  Capture the  parameters from the portstring
             m_gpsd_addr = _T("127.0.0.1");              // defaults
             m_gpsd_port = _T("2947");
+            m_net_protocol = GPSD;
 
             wxStringTokenizer tkz(m_portstring, _T(":"));
-            wxString token = tkz.GetNextToken();                //GPSD
+            wxString token = tkz.GetNextToken();                //GPSD or TCP
+            if (token.StartsWith(_T("TCP")))
+                m_net_protocol = TCP;
 
             token = tkz.GetNextToken();                         //ip
             if(!token.IsEmpty())
@@ -253,18 +258,16 @@ void DataStream::Close()
 
 void DataStream::OnSocketEvent(wxSocketEvent& event)
 {
-    #define RD_BUF_SIZE    200
-
-    unsigned char *bp;
-    unsigned char buf[RD_BUF_SIZE + 1];
-    int char_count;
-    wxString str_buf;
+    //#define RD_BUF_SIZE    200
+    #define RD_BUF_SIZE    4096 // Allows handling of high volume data streams, such as a National AIS stream with 100s of msgs a second.
 
     switch(event.GetSocketEvent())
     {
         case wxSOCKET_INPUT :                     // from gpsd Daemon
         {
-            m_sock->SetFlags(wxSOCKET_WAITALL | wxSOCKET_BLOCK);      // was (wxSOCKET_NOWAIT);
+            // TODO determine if the follwing SetFlags needs to be done at every socket event or only once when socket is created, it it needs to be done at all!
+            //m_sock->SetFlags(wxSOCKET_WAITALL | wxSOCKET_BLOCK);      // was (wxSOCKET_NOWAIT);
+            
             // We use wxSOCKET_BLOCK to avoid Yield() reentrancy problems
             // if a long ProgressDialog is active, as in S57 SENC creation.
 
@@ -275,40 +278,53 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
             //          Read the reply, one character at a time, looking for 0x0a (lf)
             //          If the reply contains no lf, break on the buffer full
 
-            bp = buf;
-            char_count = 0;
-
-            while (char_count < RD_BUF_SIZE)
+            std::vector<char> data(RD_BUF_SIZE+1);
+            event.GetSocket()->Read(&data.front(),RD_BUF_SIZE);
+            if(!event.GetSocket()->Error())
             {
-                m_sock->Read(bp, 1);
-
-                if(m_sock->Error())
-                    break;                    // non-specific error, maybe timeout...
-
-                    if(*bp == 0x0a)                 // end of sentence
-                      break;
-
-                    bp++;
-                char_count++;
+                size_t count = event.GetSocket()->LastCount();
+                if(count)
+                {
+                    data[count]=0;
+                    m_sock_buffer.Append(wxString::FromAscii(&data.front()));
+                }
             }
+            
+            bool done = false;
+            
+            while(!done)
+            {
+                
+                size_t nmea_start = m_sock_buffer.find_first_of(_T("$!")); // detect the potential start of a NMEA string
+                size_t nmea_end = wxString::npos;
+                if(nmea_start != wxString::npos)
+                {
+                    nmea_end = m_sock_buffer.find('*',nmea_start); // find the checksum marker
+                    if(nmea_end != wxString::npos && nmea_end < m_sock_buffer.size()-2)
+                        nmea_end += 3; // move to the char after the 2 checksum digits
+                        else
+                            nmea_end = wxString::npos;
+                }
+                if (nmea_end != wxString::npos)
+                {
+                    wxString nmea_line = m_sock_buffer.substr(nmea_start,nmea_end-nmea_start);
+                    m_sock_buffer = m_sock_buffer.substr(nmea_end);
 
-            *bp = 0;                        // end string
-
-            //          Validate the string
-
-            str_buf = wxString((const char *)buf, wxConvUTF8);
-
-            //  Ignore any JSON status messages, take only NMEA-like data
-            if( str_buf.StartsWith( _T("$GP") ) ) {
-                OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                Nevent.SetNMEAString(str_buf);
-                Nevent.SetDataSource(m_portstring);
-                Nevent.SetPriority(m_priority);
-                if( m_consumer )
-                    if( SentencePassesFilter( str_buf, INPUT ) )
+                    if( m_consumer && SentencePassesFilter( nmea_line, INPUT ) && ChecksumOK(nmea_line))
+                    {
+                        OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+                        Nevent.SetNMEAString(nmea_line);
+                        Nevent.SetDataSource(m_portstring);
+                        Nevent.SetPriority(m_priority);
                         m_consumer->AddPendingEvent(Nevent);
+                    }
+                        
+                }
+                else
+                    done = true;
             }
-
+            
+            
             break;
         }
 
@@ -320,9 +336,12 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
 
         case wxSOCKET_CONNECTION :
         {
+            if(m_net_protocol == GPSD)
+            {
                 //      Sign up for watcher mode, raw NMEA
                 char cmd[] = "?WATCH={\"class\":\"WATCH\", \"raw\":1,\"scaled\":true}";
                 m_sock->Write(cmd, strlen(cmd));
+            }
 
                 break;
         }
@@ -356,10 +375,6 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
         if (m_output_filter_type == WHITELIST)
             listype = true;
     }
-
-    if (filter.Count() == 0) //If there is no filter defined, everything passes for whitelist and nothing for blacklist
-        return listype;
-
     wxString fs;
     for (size_t i = 0; i < filter.Count(); i++)
     {
@@ -381,6 +396,24 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
         }
     }
     return !listype;
+}
+
+bool DataStream::ChecksumOK( const wxString &sentence )
+{
+    size_t check_start = sentence.find('*');
+    if(check_start == wxString::npos || check_start > sentence.size() - 3)
+        return false; // * not found, or it didn't have 2 characters following it.
+        
+    wxString check_str = sentence.substr(check_start+1,2);
+    unsigned long checksum;
+    if(!check_str.ToULong(&checksum,16))
+        return false;
+    
+    unsigned char calculated_checksum = 0;
+    for(wxString::const_iterator i = sentence.begin()+1; i != sentence.end() && *i != '*'; ++i)
+        calculated_checksum ^= *i;
+    
+    return calculated_checksum == checksum;
 }
 
 bool DataStream::SendSentence( const wxString &sentence )
