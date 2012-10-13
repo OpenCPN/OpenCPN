@@ -322,10 +322,13 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
 
     if( item != g_prev_item ) {
         if( g_prev_point_index == ( item - 1 ) ) {
-            wxASSERT(g_prev_point_node);
+            if( !g_prev_point_node ) return wxEmptyString;
             g_prev_point = g_this_point;
             g_this_point_node = g_prev_point_node->GetNext();
-            g_this_point = g_this_point_node->GetData();
+            if( g_this_point_node )
+                g_this_point = g_this_point_node->GetData();
+            else
+                g_this_point = NULL;
         } else {
             wxRoutePointListNode *node = m_pRoute->pRoutePointList->GetFirst();
             if( node ) {
@@ -336,16 +339,23 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
                         i++;
                     }
                     g_prev_point_node = node;
+                    if( ! node )  return wxEmptyString;
                     g_prev_point = g_prev_point_node->GetData();
 
                     g_this_point_node = g_prev_point_node->GetNext();
-                    g_this_point = g_this_point_node->GetData();
+                    if( g_this_point_node )
+                        g_this_point = g_this_point_node->GetData();
+                    else
+                        g_this_point = NULL;
                 } else {
                     g_prev_point_node = NULL;
                     g_prev_point = NULL;
 
                     g_this_point_node = node;
-                    g_this_point = g_this_point_node->GetData();
+                    if( g_this_point_node )
+                        g_this_point = g_this_point_node->GetData();
+                    else
+                        g_this_point = NULL;
                 }
             } else {
                 g_prev_point_node = NULL;
@@ -362,8 +372,7 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
         g_prev_item = item;
     }
 
-    wxASSERT(g_this_point);
-    //      if(item > 0) wxASSERT(g_prev_point);
+    if( ! g_this_point ) return wxEmptyString;
 
     switch( column ){
         case 0:
