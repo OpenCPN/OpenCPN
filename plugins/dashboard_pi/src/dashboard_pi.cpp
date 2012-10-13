@@ -125,7 +125,7 @@ wxString getInstrumentCaption( unsigned int id )
         case ID_DBP_I_TWS:
             return _("True Wind Speed");
         case ID_DBP_D_TWA:
-            return _("True Wind Angle");
+            return _("True Wind Direction");
         case ID_DBP_I_VMG:
             return _("VMG");
         case ID_DBP_D_VMG:
