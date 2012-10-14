@@ -6310,7 +6310,13 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             }
 
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "SHIPS" ) ) ) );
-            switch( td->NavStatus ) {
+            int navstatus = td->NavStatus;
+
+            // HSC usually have correct ShipType but navstatus == 0...
+            if( ( ( td->ShipType >= 40 ) && ( td->ShipType < 50 ) )
+                    && navstatus == UNDERWAY_USING_ENGINE ) navstatus = HSC;
+
+            switch( navstatus ) {
                 case MOORED:
                 case AT_ANCHOR: {
                     dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
