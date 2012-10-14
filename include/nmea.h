@@ -113,6 +113,7 @@ typedef struct {
       double kHdt;            // true heading
       time_t FixTime;
       int    nSats;
+      double kVMG;            // VMG
 } GenericPosDatEx;
 
 // The MY_FILETIME structure is a 64-bit value

@@ -6658,6 +6658,15 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
             wxDateTime now = wxDateTime::Now();
             GPSData.FixTime = now.GetTicks();
 
+            // Calculate VMG to the active waypoint if a route is active.
+            if( g_pRouteMan->GetpActiveRoute() )
+                {
+                    double brg;
+                    brg = g_pRouteMan->GetCurrentBrgToActivePoint();
+                    GPSData.kVMG =GPSData.kSog * cos( ( brg - GPSData.kCog ) * PI / 180. );
+                 }
+            else GPSData.kVMG = 1000; // Ridiculous value to notify plugins that there is no active route
+
             g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
         }
     }

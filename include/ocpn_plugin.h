@@ -125,6 +125,7 @@ class PlugIn_Position_Fix
       double Var;            // Variation, typically from RMC message
       time_t FixTime;
       int    nSats;
+      double VMG;
 };
 
 class PlugIn_Position_Fix_Ex
@@ -139,6 +140,7 @@ class PlugIn_Position_Fix_Ex
             double Hdt;
             time_t FixTime;
             int    nSats;
+            double VMG;
 };
 
 //    Describe AIS Alarm state
