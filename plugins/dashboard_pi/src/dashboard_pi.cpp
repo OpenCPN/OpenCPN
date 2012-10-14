@@ -65,7 +65,7 @@ enum {
     ID_DBP_I_DPT, ID_DBP_D_DPT, ID_DBP_I_TMP, ID_DBP_I_VMG, ID_DBP_D_VMG, ID_DBP_I_RSA,
     ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_CLK, ID_DBP_I_SUN,
     ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
-    ID_DBP_D_TWA, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_I_AWD,
+    ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_I_AWD,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -124,7 +124,7 @@ wxString getInstrumentCaption( unsigned int id )
             return _("True Wind Direction");
         case ID_DBP_I_TWS:
             return _("True Wind Speed");
-        case ID_DBP_D_TWA:
+        case ID_DBP_D_TWD:
             return _("True Wind Direction");
         case ID_DBP_I_VMG:
             return _("VMG");
@@ -184,7 +184,7 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_D_AWA:
         case ID_DBP_D_AWS:
         case ID_DBP_D_TW:
-        case ID_DBP_D_TWA:
+        case ID_DBP_D_TWD:
         case ID_DBP_D_DPT:
         case ID_DBP_D_VMG:
         case ID_DBP_D_RSA:
@@ -1843,15 +1843,15 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 break;
             case ID_DBP_D_TW: //True Wind angle +-180° on boat axis
                 instrument = new DashboardInstrument_TrueWindAngle( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_VWT );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_TWA );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%.0f"),
                         DIAL_POSITION_BOTTOMLEFT );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
                         OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_INSIDE );
                 break;
-            case ID_DBP_D_TWA: //True Wind angle
+            case ID_DBP_D_TWD: //True Wind direction
                 instrument = new DashboardInstrument_WindCompass( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_TWA );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_VWT );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%.0f"),
                         DIAL_POSITION_BOTTOMLEFT );
                 break;
