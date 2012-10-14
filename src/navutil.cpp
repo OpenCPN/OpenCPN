@@ -2505,6 +2505,7 @@ void Track::AddPointNow( bool do_add_point )
                         pRoutePointList->pop_back();
                         pRoutePointList->pop_back();
                         pRoutePointList->push_back( m_lastStoredTP );
+                        SetnPoints();
                         pSelect->DeletePointSelectableTrackSegments( m_removeTP );
                         pSelect->AddSelectableTrackSegment( m_fixedTP->m_lat, m_fixedTP->m_lon,
                                 m_lastStoredTP->m_lat, m_lastStoredTP->m_lon,
