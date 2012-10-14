@@ -65,7 +65,7 @@ enum {
     ID_DBP_I_DPT, ID_DBP_D_DPT, ID_DBP_I_TMP, ID_DBP_I_VMG, ID_DBP_D_VMG, ID_DBP_I_RSA,
     ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_CLK, ID_DBP_I_SUN,
     ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
-    ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_I_AWD,
+    ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_I_AWD,ID_DBP_I_CBD,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -140,6 +140,8 @@ wxString getInstrumentCaption( unsigned int id )
             return _("GPS Status");
         case ID_DBP_I_PTR:
             return _("Cursor");
+        case ID_DBP_I_CBD:
+            return _("Brg/Rng to Cursor");
         case ID_DBP_I_CLK:
             return _("Clock");
         case ID_DBP_I_SUN:
@@ -176,6 +178,7 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_PTR:
         case ID_DBP_I_CLK:
         case ID_DBP_I_SUN:
+        case ID_DBP_I_CBD:  // cursor brg/dist to ownship
             item.SetImage( 0 );
             break;
         case ID_DBP_D_SOG:
@@ -838,6 +841,8 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         mPriPosition = 1;
         SendSentenceToAllInstruments( OCPN_DBP_STC_LAT, pfix.Lat, _T("SDMM") );
         SendSentenceToAllInstruments( OCPN_DBP_STC_LON, pfix.Lon, _T("SDMM") );
+        mlat = pfix.Lat;
+        mlon = pfix.Lon;
     }
     if( mPriCOGSOG >= 1 ) {
         mPriCOGSOG = 1;
@@ -859,6 +864,12 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
 
 void dashboard_pi::SetCursorLatLon( double lat, double lon )
 {
+    double brg, dist;
+    BrgDistCalc cBD;
+    cBD.BearingDistanceMercator(lat, lon, mlat, mlon, &brg, &dist);
+    SendSentenceToAllInstruments(OCPN_DBP_STC_CBR, brg, _T("DEGNM"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_CDI, dist, _T("DEGNM"));
+
     SendSentenceToAllInstruments( OCPN_DBP_STC_PLA, lat, _T("SDMM") );
     SendSentenceToAllInstruments( OCPN_DBP_STC_PLO, lon, _T("SDMM") );
 }
@@ -1924,6 +1935,9 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
             case ID_DBP_I_PTR:
                 instrument = new DashboardInstrument_Position( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_PLA, OCPN_DBP_STC_PLO );
+                break;
+            case ID_DBP_I_CBD:
+                instrument = new DashboardInstrument_BrgDist(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_CBR, OCPN_DBP_STC_CDI );
                 break;
             case ID_DBP_I_CLK:
                 instrument = new DashboardInstrument_Clock( this, wxID_ANY,

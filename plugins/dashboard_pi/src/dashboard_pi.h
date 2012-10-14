@@ -59,6 +59,7 @@
 #include "gps.h"
 #include "depth.h"
 #include "clock.h"
+#include "brgdist.h"
 
 class DashboardWindow;
 class DashboardWindowContainer;
@@ -165,6 +166,7 @@ private:
       // FFU
       double               mSatsInView;
       double               mHdm;
+      double               mlat, mlon;
       wxDateTime           mUTCDateTime;
 
 //protected:
