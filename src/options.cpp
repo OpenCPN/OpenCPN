@@ -3513,7 +3513,7 @@ void options::SetNMEAFormToSerial()
     ShowNMEANet( false );
     ShowNMEASerial( true );
     m_pNMEAForm->Layout();
-    m_pListbook->Fit();
+    Fit();
     SetDSFormRWStates();
 }
 
@@ -3523,7 +3523,7 @@ void options::SetNMEAFormToNet()
     ShowNMEANet( true );
     ShowNMEASerial( false );
     m_pNMEAForm->Layout();
-    m_pListbook->Fit();
+    Fit();
     SetDSFormRWStates();
 }
 
