@@ -49,6 +49,7 @@
 #include "options.h"
 #include "styles.h"
 #include "datastream.h"
+#include "multiplexer.h"
 
 #include "navutil.h"
 
@@ -72,6 +73,7 @@ extern bool             g_bsmoothpanzoom;
 extern FontMgr          *pFontMgr;
 extern wxString         *pInit_Chart_Dir;
 extern wxArrayOfConnPrm *g_pConnectionParams;
+extern Multiplexer      *g_pMUX;
 extern bool             g_bGarminPersistance;
 extern bool             g_bGarminHost;
 extern bool             g_bfilter_cogsog;
@@ -2404,51 +2406,25 @@ void options::OnApplyClick( wxCommandEvent& event )
             connectionsaved = true;
         }
     }
-/*TODO
-    wxString sel( m_itemNMEAListBox->GetValue() );
-    wxString serialPrefix = _T("Serial");
-    serialPrefix << _T(":");
-    if( sel.Contains( _T("COM") ) ) sel.Prepend( serialPrefix );
-    else if( sel.Contains( _T("/dev") ) ) sel.Prepend( serialPrefix );
-    else if( sel.Contains( _T("AIS") ) ) sel.Prepend( serialPrefix );
-    else if( sel.Contains( _T("LIBGPS") ) ) {
-        sel.Empty();
-        sel.Append( _T("LIBGPS:") );
-        sel.Append( m_itemNMEA_TCPIP_Source->GetLineText( 0 ) );
-    } else if( sel.Contains( _T("GPSD") ) ) {
-        sel.Empty();
-        sel.Append( _T("GPSD:") );
-        sel.Append( m_itemNMEA_TCPIP_Source->GetLineText( 0 ) );
-    }
-    *pNMEADataSource = sel;
 
-    //    If the selection is anything other than "GARMIN",
-    //    then disable semipermanently the option to select GARMIN in future.
-    //    Note if GARMIN device is found in the future, the option will be
-    //    re-enabled.
-    if( !sel.Contains( _T("GARMIN") ) ) g_bGarminPersistance = false;
-
-    //    Primary NMEA Baud Rate
-    g_NMEABaudRate = m_itemNMEABaudListBox->GetValue();
-
-    // AP Output
-    wxString selp( m_itemNMEAAutoListBox->GetStringSelection() );
-
-    if( selp.Contains( _T("COM") ) ) selp.Prepend( serialPrefix );
-    else
-        if( selp.Contains( _T("/dev") ) ) selp.Prepend( serialPrefix );
-
-    *pNMEA_AP_Port = selp;
-
-    // AIS Input
-    wxString selais( m_itemAISListBox->GetValue() );
-    if( selais.Contains( _T("COM") ) ) selais.Prepend( serialPrefix );
-    else
-        if( selais.Contains( _T("/dev") ) ) selais.Prepend( serialPrefix );
+    //Recreate all the datasource connections
+    g_pMUX->ClearStreams();
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        dsPortType port_type;
+        if (cp->Output)
+            port_type = DS_TYPE_INPUT_OUTPUT;
         else
-            if( selais.Contains( _T("fifo") ) ) selais.Prepend( serialPrefix );
-    *pAIS_Port = selais;
-*/
+            port_type = DS_TYPE_INPUT;
+        DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type );
+        dstr->SetInputFilter(cp->InputSentenceList);
+        dstr->SetInputFilterType(cp->InputSentenceListType);
+        dstr->SetOutputFilter(cp->OutputSentenceList);
+        dstr->SetOutputFilterType(cp->OutputSentenceListType);
+        dstr->SetChecksumCheck(cp->ChecksumCheck);
+        g_pMUX->AddStream(dstr);
+    }
 #ifdef USE_S57
     //    Handle Vector Charts Tab
 
