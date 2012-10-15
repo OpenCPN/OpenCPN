@@ -267,7 +267,7 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
         {
             // TODO determine if the follwing SetFlags needs to be done at every socket event or only once when socket is created, it it needs to be done at all!
             //m_sock->SetFlags(wxSOCKET_WAITALL | wxSOCKET_BLOCK);      // was (wxSOCKET_NOWAIT);
-            
+
             // We use wxSOCKET_BLOCK to avoid Yield() reentrancy problems
             // if a long ProgressDialog is active, as in S57 SENC creation.
 
@@ -289,12 +289,12 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                     m_sock_buffer.Append(wxString::FromAscii(&data.front()));
                 }
             }
-            
+
             bool done = false;
-            
+
             while(!done)
             {
-                
+
                 size_t nmea_start = m_sock_buffer.find_first_of(_T("$!")); // detect the potential start of a NMEA string
                 size_t nmea_end = wxString::npos;
                 if(nmea_start != wxString::npos)
@@ -318,13 +318,13 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                         Nevent.SetPriority(m_priority);
                         m_consumer->AddPendingEvent(Nevent);
                     }
-                        
+
                 }
                 else
                     done = true;
             }
-            
-            
+
+
             break;
         }
 
@@ -363,6 +363,9 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
     wxArrayString filter;
     bool listype = false;
 
+    if (filter.Count() == 0) //Empty list means everything passes
+        return true;
+
     if (direction == INPUT)
     {
         filter = m_input_filter;
@@ -400,19 +403,22 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
 
 bool DataStream::ChecksumOK( const wxString &sentence )
 {
+    if (!m_bchecksumCheck)
+        return true;
+
     size_t check_start = sentence.find('*');
     if(check_start == wxString::npos || check_start > sentence.size() - 3)
         return false; // * not found, or it didn't have 2 characters following it.
-        
+
     wxString check_str = sentence.substr(check_start+1,2);
     unsigned long checksum;
     if(!check_str.ToULong(&checksum,16))
         return false;
-    
+
     unsigned char calculated_checksum = 0;
     for(wxString::const_iterator i = sentence.begin()+1; i != sentence.end() && *i != '*'; ++i)
         calculated_checksum ^= *i;
-    
+
     return calculated_checksum == checksum;
 }
 

@@ -512,6 +512,7 @@ private:
     void SetNMEAFormToSerial();
     void SetNMEAFormToNet();
     void SetConnectionParams(ConnectionParams *cp);
+    void SetDSFormRWStates();
     void FillSourceList();
     ConnectionParams *SaveConnectionParams();
 };

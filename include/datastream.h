@@ -210,12 +210,14 @@ public:
     void SetSecThreadActive(void){m_bsec_thread_active = true;}
     void SetSecThreadInActive(void){m_bsec_thread_active = false;}
 
+    void SetChecksumCheck(bool check) { m_bchecksumCheck = check; }
+
     void SetInputFilter(wxArrayString filter) { m_input_filter = filter; }
     void SetInputFilterType(ListType filter_type) { m_input_filter_type = filter_type; }
     void SetOutputFilter(wxArrayString filter) { m_output_filter = filter; }
     void SetOutputFilterType(ListType filter_type) { m_output_filter_type = filter_type; }
     bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
-    static bool ChecksumOK(const wxString& sentence);
+    bool ChecksumOK(const wxString& sentence);
 
     int                 m_Thread_run_flag;
 private:
@@ -246,8 +248,8 @@ private:
     wxString            m_gpsd_addr;
     wxString            m_gpsd_port;
     NetworkProtocol     m_net_protocol;
-    
 
+    bool                m_bchecksumCheck;
     wxArrayString       m_input_filter;
     ListType            m_input_filter_type;
     wxArrayString       m_output_filter;

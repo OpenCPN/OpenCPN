@@ -224,8 +224,8 @@ bool NMEA0183::IsGood( void ) const
    }
    */
 
-   if ( (sentence.Sentence.Right( 1 ) != _T("\n") ) && (sentence.Sentence.Right( 1 ) != _T("\r") ))
-      return false;
+//TODO: GPSD messages are not terminated with CR/LF   if ( (sentence.Sentence.Right( 1 ) != _T("\n") ) && (sentence.Sentence.Right( 1 ) != _T("\r") ))
+//      return false;
 
    return( TRUE );
 }
