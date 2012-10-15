@@ -431,7 +431,10 @@ bool DataStream::SendSentence( const wxString &sentence )
     else
         if(m_sock)
         {
-            m_sock->Write(sentence.mb_str(), strlen(sentence.mb_str()));
+            if (m_sock->IsDisconnected())
+                m_sock->Connect(m_addr, FALSE);
+            else
+                m_sock->Write(sentence.mb_str(), strlen(sentence.mb_str()));
         }
     return true;
 }
