@@ -159,8 +159,8 @@ void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
 {
     wxColour cl;
     GetGlobalColor( _T("DASHL"), &cl );
-    wxBrush* brush = wxTheBrushList->FindOrCreateBrush( cl );
-    dc->SetBrush( *brush );
+    wxBrush brush( cl );
+    dc->SetBrush( brush );
     dc->SetPen( *wxTRANSPARENT_PEN);
     dc->SetTextBackground( cl );
 

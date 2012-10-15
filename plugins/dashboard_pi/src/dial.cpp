@@ -131,13 +131,13 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
     dc->SetBrush( *wxTRANSPARENT_BRUSH);
 
     int penwidth = 1 + size.x / 100;
-    wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
+    wxPen pen( cl, penwidth, wxSOLID );
 
     if( m_MarkerOption == DIAL_MARKER_REDGREENBAR ) {
-        pen->SetWidth( penwidth * 2 );
+        pen.SetWidth( penwidth * 2 );
         GetGlobalColor( _T("DASHR"), &cl );
-        pen->SetColour( cl );
-        dc->SetPen( *pen );
+        pen.SetColour( cl );
+        dc->SetPen( pen );
         double angle1 = deg2rad( 270 ); // 305-ANGLE_OFFSET
         double angle2 = deg2rad( 90 ); // 55-ANGLE_OFFSET
         int radi = m_radius - 1 - penwidth;
@@ -147,8 +147,8 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
         wxCoord y2 = m_cy + ( ( radi ) * sin( angle2 ) );
         dc->DrawArc( x1, y1, x2, y2, m_cx, m_cy );
         GetGlobalColor( _T("DASHG"), &cl );
-        pen->SetColour( cl );
-        dc->SetPen( *pen );
+        pen.SetColour( cl );
+        dc->SetPen( pen );
         angle1 = deg2rad( 90 ); // 305-ANGLE_OFFSET
         angle2 = deg2rad( 270 ); // 55-ANGLE_OFFSET
         x1 = m_cx + ( ( radi ) * cos( angle1 ) );
@@ -157,11 +157,12 @@ void DashboardInstrument_Dial::DrawFrame( wxGCDC* dc )
         y2 = m_cy + ( ( radi ) * sin( angle2 ) );
         dc->DrawArc( x1, y1, x2, y2, m_cx, m_cy );
         GetGlobalColor( _T("DASHF"), &cl );
-        pen->SetWidth( penwidth );
+        pen.SetWidth( penwidth );
     }
+
     GetGlobalColor( _T("DASHF"), &cl );
-    pen->SetColour( cl );
-    dc->SetPen( *pen );
+    pen.SetColour( cl );
+    dc->SetPen( pen );
 
     dc->DrawCircle( m_cx, m_cy, m_radius );
 }
@@ -173,8 +174,8 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
     wxColour cl;
     GetGlobalColor( _T("DASHF"), &cl );
     int penwidth = GetClientSize().x / 100;
-    wxPen* pen = wxThePenList->FindOrCreatePen( cl, penwidth, wxSOLID );
-    dc->SetPen( *pen );
+    wxPen pen( cl, penwidth, wxSOLID );
+    dc->SetPen( pen );
 
     int diff_angle = m_AngleStart + m_AngleRange - ANGLE_OFFSET;
     // angle between markers
@@ -191,8 +192,8 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
             else
                 GetGlobalColor( _T("DASHF"), &cl );
 
-            pen->SetColour( cl );
-            dc->SetPen( *pen );
+            pen.SetColour( cl );
+            dc->SetPen( pen );
         }
 
         double size = 0.92;
@@ -209,9 +210,9 @@ void DashboardInstrument_Dial::DrawMarkers(wxGCDC* dc)
     // We must reset pen color so following drawings are fine
     if( m_MarkerOption == DIAL_MARKER_REDGREEN ) {
         GetGlobalColor( _T("DASHF"), &cl );
-        pen->SetStyle( wxSOLID );
-        pen->SetColour( cl );
-        dc->SetPen( *pen );
+        pen.SetStyle( wxSOLID );
+        pen.SetColour( cl );
+        dc->SetPen( pen );
     }
 }
 
@@ -382,10 +383,10 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
       brush.SetColour(cl);
       dc->SetBrush(brush);
 
-      //this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>, in this case the "True wind angle"
-      //do it here, because otherwise m_MainValue is incorrect !!!
+      /* this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>
+       * for example TWA & AWA */
       double data;
-      if(m_MainValueUnit == _T("DegL")) //specially for instrument OCPN_DBP_STC_VWT
+      if(m_MainValueUnit == _T("DegL"))
           data=360-m_MainValue;
       else
           data=m_MainValue;

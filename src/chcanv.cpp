@@ -4230,7 +4230,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     CreateDepthUnitEmbossMaps( cs );
     CreateOZEmbossMapData( cs );
 
-    if( m_glcc ) m_glcc->ClearAllRasterTextures();
+    if( g_bopengl && m_glcc ) m_glcc->ClearAllRasterTextures();
 
     SetbTCUpdate( true );                        // force re-render of tide/current locators
 
@@ -5519,12 +5519,6 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
             for( int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++ )
                 dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, i * pix_radius );
         }
-
-        if( dc.GetDC() ) {
-        ship_draw_rect = wxRect( dc.GetDC()->MinX(), dc.GetDC()->MinY(),
-                dc.GetDC()->MaxX() - dc.GetDC()->MinX(),
-                dc.GetDC()->MaxY() - dc.GetDC()->MinY() );
-        }
     }         // if drawit
 }
 
@@ -6316,7 +6310,13 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             }
 
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "SHIPS" ) ) ) );
-            switch( td->NavStatus ) {
+            int navstatus = td->NavStatus;
+
+            // HSC usually have correct ShipType but navstatus == 0...
+            if( ( ( td->ShipType >= 40 ) && ( td->ShipType < 50 ) )
+                    && navstatus == UNDERWAY_USING_ENGINE ) navstatus = HSC;
+
+            switch( navstatus ) {
                 case MOORED:
                 case AT_ANCHOR: {
                     dc.StrokeCircle( TargetPoint.x, TargetPoint.y, 4 );
@@ -6672,18 +6672,49 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
 
 void ChartCanvas::UpdateShips()
 {
+    //  Get the rectangle in the current dc which bounds the "ownship" symbol
+
+    wxClientDC dc( this );
+    if( !dc.IsOk() ) return;
+
+    wxBitmap test_bitmap( dc.GetSize().x, dc.GetSize().y );
+    wxMemoryDC temp_dc( test_bitmap );
+
+    temp_dc.ResetBoundingBox();
+    temp_dc.DestroyClippingRegion();
+    temp_dc.SetClippingRegion( 0, 0, dc.GetSize().x, dc.GetSize().y );
+
+    // Draw the ownship on the temp_dc
+    ocpnDC ocpndc = ocpnDC( temp_dc );
+    ShipDraw( ocpndc );
+
+    if( g_pActiveTrack && g_pActiveTrack->IsRunning() ) {
+        RoutePoint* p = g_pActiveTrack->GetLastPoint();
+        if( p ) {
+            wxPoint px;
+            cc1->GetCanvasPointPix( p->m_lat, p->m_lon, &px );
+            ocpndc.CalcBoundingBox( px.x, px.y );
+        }
+    }
+
+    ship_draw_rect = wxRect( temp_dc.MinX(), temp_dc.MinY(),
+            temp_dc.MaxX() - temp_dc.MinX(),
+            temp_dc.MaxY() - temp_dc.MinY() );
+
     wxRect own_ship_update_rect = ship_draw_rect;
 
     if( !own_ship_update_rect.IsEmpty() ) {
-        own_ship_update_rect.Inflate( 2 );                // clear all drawing artifacts
-
+        //  The required invalidate rectangle is the union of the last drawn rectangle
+        //  and this drawn rectangle
         own_ship_update_rect.Union( ship_draw_last_rect );
+        own_ship_update_rect.Inflate( 2 );
     }
 
-    if( !own_ship_update_rect.IsEmpty() )
-        RefreshRect( own_ship_update_rect, false );
+    if( !own_ship_update_rect.IsEmpty() ) RefreshRect( own_ship_update_rect, false );
 
     ship_draw_last_rect = ship_draw_rect;
+
+    temp_dc.SelectObject( wxNullBitmap );
 }
 
 void ChartCanvas::UpdateAlerts()
@@ -6862,7 +6893,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     //  Rescale again, to capture all the changes for new canvas size
     SetVPScale( GetVPScale() );
 
-    if( m_glcc ) {
+    if( g_bopengl && m_glcc ) {
         m_glcc->OnSize( event );
     }
     //  Invalidate the whole window

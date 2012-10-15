@@ -65,7 +65,7 @@ enum {
     ID_DBP_I_DPT, ID_DBP_D_DPT, ID_DBP_I_TMP, ID_DBP_I_VMG, ID_DBP_D_VMG, ID_DBP_I_RSA,
     ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_CLK, ID_DBP_I_SUN,
     ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
-    ID_DBP_D_TWA, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_I_AWD,
+    ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -116,16 +116,14 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Air Temp.");
         case ID_DBP_I_AWA:
             return _("App. Wind Angle");
-        case ID_DBP_I_AWD:
-            return _("App. Wind Direction");
         case ID_DBP_I_TWA:
             return _("True Wind Angle");
         case ID_DBP_I_TWD:
             return _("True Wind Direction");
         case ID_DBP_I_TWS:
             return _("True Wind Speed");
-        case ID_DBP_D_TWA:
-            return _("True Wind Angle");
+        case ID_DBP_D_TWD:
+            return _("True Wind Dir. & Speed");
         case ID_DBP_I_VMG:
             return _("VMG");
         case ID_DBP_D_VMG:
@@ -169,7 +167,6 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_TWD:
         case ID_DBP_I_TWS:
         case ID_DBP_I_AWA:
-        case ID_DBP_I_AWD:
         case ID_DBP_I_VMG:
         case ID_DBP_I_RSA:
         case ID_DBP_I_SAT:
@@ -184,7 +181,7 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_D_AWA:
         case ID_DBP_D_AWS:
         case ID_DBP_D_TW:
-        case ID_DBP_D_TWA:
+        case ID_DBP_D_TWD:
         case ID_DBP_D_DPT:
         case ID_DBP_D_VMG:
         case ID_DBP_D_RSA:
@@ -279,8 +276,8 @@ int dashboard_pi::Init( void )
     mPriHeadingM = 99; // Magnetic heading
     mPriVar = 99;
     mPriDateTime = 99;
-    mPriWindR = 99; // Relative wind
-    mPriWindT = 99; // True wind
+    mPriAWA = 99; // Relative wind
+    mPriTWA = 99; // True wind
     mPriDepth = 99;
 
     g_pFontTitle = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
@@ -591,36 +588,32 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         m_NMEA0183.Mtw.UnitOfMeasurement );
             }
         }
-
+        // NMEA 0183 standard Wind Direction and Speed, with respect to north.
         else if( m_NMEA0183.LastSentenceIDReceived == _T("MWD") ) {
             if( m_NMEA0183.Parse() ) {
-                if( mPriWindT >= 3 ) {
-                    mPriWindT = 3;
-                    // Option for True vs Magnetic
-                    wxString windunit;
-                    if( m_NMEA0183.Mwd.WindAngleTrue < 999. ) { //if WindAngleTrue is available, use it ...
-                        SendSentenceToAllInstruments( OCPN_DBP_STC_TWA, m_NMEA0183.Mwd.WindAngleTrue,
-                                _T("DegT") );
-                    } else if( m_NMEA0183.Mwd.WindAngleMagnetic < 999. ) { //otherwise try WindAngleMagnetic ...
-                        SendSentenceToAllInstruments( OCPN_DBP_STC_TWA, m_NMEA0183.Mwd.WindAngleMagnetic,
-                                _T("DegM") );
-                    }
-
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_TWS, m_NMEA0183.Mwd.WindSpeedKnots,
-                            _("Kts") );
-                    //m_NMEA0183.Mwd.WindSpeedms
-
+                // Option for True vs Magnetic
+                wxString windunit;
+                if( m_NMEA0183.Mwd.WindAngleTrue < 999. ) { //if WindAngleTrue is available, use it ...
+                    SendSentenceToAllInstruments( OCPN_DBP_STC_TWD, m_NMEA0183.Mwd.WindAngleTrue,
+                            _T("DegT") );
+                } else if( m_NMEA0183.Mwd.WindAngleMagnetic < 999. ) { //otherwise try WindAngleMagnetic ...
+                    SendSentenceToAllInstruments( OCPN_DBP_STC_TWD, m_NMEA0183.Mwd.WindAngleMagnetic,
+                            _T("DegM") );
                 }
+
+                SendSentenceToAllInstruments( OCPN_DBP_STC_TWS2, m_NMEA0183.Mwd.WindSpeedKnots,
+                        _("Kts") );
+                //m_NMEA0183.Mwd.WindSpeedms
             }
         }
-
+        // NMEA 0183 standard Wind Speed and Angle, in relation to the vessel's bow/centerline.
         else if( m_NMEA0183.LastSentenceIDReceived == _T("MWV") ) {
             if( m_NMEA0183.Parse() ) {
                 if( m_NMEA0183.Mwv.IsDataValid == NTrue ) {
                     if( m_NMEA0183.Mwv.Reference == _T("R") ) // Relative (apparent wind)
                     {
-                        if( mPriWindR >= 1 ) {
-                            mPriWindR = 1;
+                        if( mPriAWA >= 1 ) {
+                            mPriAWA = 1;
 
                             SendSentenceToAllInstruments( OCPN_DBP_STC_AWA,
                                     m_NMEA0183.Mwv.WindAngle, _T("Deg") );
@@ -630,9 +623,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         }
                     } else if( m_NMEA0183.Mwv.Reference == _T("T") ) // Theoretical (aka True)
                     {
-                        if( mPriWindT >= 1 ) {
-                            mPriWindT = 1;
-
+                        if( mPriTWA >= 1 ) {
+                            mPriTWA = 1;
                             SendSentenceToAllInstruments( OCPN_DBP_STC_TWA,
                                     m_NMEA0183.Mwv.WindAngle, _T("Deg") );
                             //  4) Wind Speed Units, K/M/N
@@ -759,16 +751,17 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                  */
             }
         }
-
+        /* NMEA 0183 Relative (Apparent) Wind Speed and Angle. Wind angle in relation
+         * to the vessel's heading, and wind speed measured relative to the moving vessel. */
         else if( m_NMEA0183.LastSentenceIDReceived == _T("VWR") ) {
             if( m_NMEA0183.Parse() ) {
-                if( mPriWindR >= 2 ) {
-                    mPriWindR = 2;
+                if( mPriAWA >= 2 ) {
+                    mPriAWA = 2;
 
+                    wxString awaunit;
+                    awaunit = m_NMEA0183.Vwr.DirectionOfWind == Left ? _T("DegL") : _T("DegR");
                     SendSentenceToAllInstruments( OCPN_DBP_STC_AWA,
-                            m_NMEA0183.Vwr.DirectionOfWind == Left ?
-                                    360 - m_NMEA0183.Vwr.WindDirectionMagnitude :
-                                    m_NMEA0183.Vwr.WindDirectionMagnitude, _T("Deg") );
+                            m_NMEA0183.Vwr.WindDirectionMagnitude, awaunit );
                     SendSentenceToAllInstruments( OCPN_DBP_STC_AWS, m_NMEA0183.Vwr.WindSpeedKnots,
                             _T("Kts") );
                     /*
@@ -776,24 +769,21 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                      double m_NMEA0183.Vwr.WindSpeedKmh;
                      */
                 }
-                wxString awaunit;
-                awaunit = m_NMEA0183.Vwr.DirectionOfWind == Left ? _T("DegL") : _T("DegR");
-                SendSentenceToAllInstruments( OCPN_DBP_STC_VWR,
-                        m_NMEA0183.Vwr.WindDirectionMagnitude, awaunit ); //always send unconverted value too
             }
         }
-
+        /* NMEA 0183 True wind angle in relation to the vessel's heading, and true wind
+         * speed referenced to the water. True wind is the vector sum of the Relative
+         * (apparent) wind vector and the vessel's velocity vector relative to the water along
+         * the heading line of the vessel. It represents the wind at the vessel if it were
+         * stationary relative to the water and heading in the same direction. */
         else if( m_NMEA0183.LastSentenceIDReceived == _T("VWT") ) {
             if( m_NMEA0183.Parse() ) {
-                if( mPriWindT >= 2 ) {
-                    mPriWindT = 2;
-                    /*
-                     Calculated wind angle relative to the vessel, 0 to 180o, left/right L/R of vessel heading
-                     */
+                if( mPriTWA >= 2 ) {
+                    mPriTWA = 2;
+                    wxString vwtunit;
+                    vwtunit = m_NMEA0183.Vwt.DirectionOfWind == Left ? _T("DegL") : _T("DegR");
                     SendSentenceToAllInstruments( OCPN_DBP_STC_TWA,
-                            m_NMEA0183.Vwt.DirectionOfWind == Left ?
-                                    360 - m_NMEA0183.Vwt.WindDirectionMagnitude :
-                                    m_NMEA0183.Vwr.WindDirectionMagnitude, _T("Deg") );
+                            m_NMEA0183.Vwt.WindDirectionMagnitude, vwtunit );
                     SendSentenceToAllInstruments( OCPN_DBP_STC_TWS, m_NMEA0183.Vwt.WindSpeedKnots,
                             _T("Kts") );
                     /*
@@ -801,10 +791,6 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                      double           m_NMEA0183.Vwt.WindSpeedKmh;
                      */
                 }
-                wxString vwtunit;
-                vwtunit = m_NMEA0183.Vwt.DirectionOfWind == Left ? _T("DegL") : _T("DegR");
-                SendSentenceToAllInstruments( OCPN_DBP_STC_VWT,
-                        m_NMEA0183.Vwt.WindDirectionMagnitude, vwtunit );
             }
         }
 
@@ -1843,17 +1829,19 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 break;
             case ID_DBP_D_TW: //True Wind angle +-180° on boat axis
                 instrument = new DashboardInstrument_TrueWindAngle( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_VWT );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_TWA );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%.0f"),
                         DIAL_POSITION_BOTTOMLEFT );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
                         OCPN_DBP_STC_TWS, _T("%.1f"), DIAL_POSITION_INSIDE );
                 break;
-            case ID_DBP_D_TWA: //True Wind angle
+            case ID_DBP_D_TWD: //True Wind direction
                 instrument = new DashboardInstrument_WindCompass( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_TWA );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_TWD );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionMainValue( _T("%.0f"),
                         DIAL_POSITION_BOTTOMLEFT );
+                ( (DashboardInstrument_Dial *) instrument )->SetOptionExtraValue(
+                        OCPN_DBP_STC_TWS2, _T("%.1f"), DIAL_POSITION_INSIDE );
                 break;
             case ID_DBP_I_DPT:
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
@@ -1877,7 +1865,7 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 break;
             case ID_DBP_I_TWD: //true wind direction
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_VWT, _T("%5.0f") );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_TWD, _T("%5.0f") );
                 break;
             case ID_DBP_I_TWS: // true wind speed
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
@@ -1886,10 +1874,6 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
             case ID_DBP_I_AWA: //apparent wind angle
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_AWA, _T("%5.0f") );
-                break;
-            case ID_DBP_I_AWD: //apparent wind direction
-                instrument = new DashboardInstrument_Single( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_VWR, _T("%5.0f") );
                 break;
             case ID_DBP_I_VMG:
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
