@@ -310,7 +310,7 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                     wxString nmea_line = m_sock_buffer.substr(nmea_start,nmea_end-nmea_start);
                     m_sock_buffer = m_sock_buffer.substr(nmea_end);
 
-                    if( m_consumer && SentencePassesFilter( nmea_line, INPUT ) && ChecksumOK(nmea_line))
+                    if( m_consumer && SentencePassesFilter( nmea_line, FILTER_INPUT ) && ChecksumOK(nmea_line))
                     {
                         OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
                         Nevent.SetNMEAString(nmea_line);
@@ -366,7 +366,7 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
     if (filter.Count() == 0) //Empty list means everything passes
         return true;
 
-    if (direction == INPUT)
+    if (direction == FILTER_INPUT)
     {
         filter = m_input_filter;
         if (m_input_filter_type == WHITELIST)
@@ -424,7 +424,7 @@ bool DataStream::ChecksumOK( const wxString &sentence )
 
 bool DataStream::SendSentence( const wxString &sentence )
 {
-    if( m_io_select == DS_TYPE_INPUT || !SentencePassesFilter( sentence, OUTPUT ) ) //Output forbidden for this port or sentence filtered out
+    if( m_io_select == DS_TYPE_INPUT || !SentencePassesFilter( sentence, FILTER_OUTPUT ) ) //Output forbidden for this port or sentence filtered out
         return false;
     if (m_pSecondary_Thread)
         return m_pSecondary_Thread->SendMsg(sentence) > 0;
@@ -1228,7 +1228,7 @@ thread_exit:
 
 void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
 {
-    if( !m_launcher->SentencePassesFilter( str_temp_buf, INPUT ) )
+    if( !m_launcher->SentencePassesFilter( str_temp_buf, FILTER_INPUT ) )
         return;
     if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
     {
@@ -1252,7 +1252,7 @@ void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
 
 void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
 {
-    if( !m_launcher->SentencePassesFilter( msg, INPUT ) )
+    if( !m_launcher->SentencePassesFilter( msg, FILTER_INPUT ) )
         return;
     //    Signal the main program thread
     wxCommandEvent event( EVT_THREADMSG,  GetId());
@@ -1495,7 +1495,6 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud
 
 int OCP_DataStreamInput_Thread::CloseComPortPhysical(int fd)
 {
-    wxLogMessage("CloseComPortPhysical");
       if((HANDLE)fd != INVALID_HANDLE_VALUE)
             CloseHandle((HANDLE)fd);
       return 0;

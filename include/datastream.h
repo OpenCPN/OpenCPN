@@ -107,8 +107,8 @@ typedef enum
 
 typedef enum
 {
-    INPUT = 0,
-    OUTPUT = 1
+    FILTER_INPUT = 0,
+    FILTER_OUTPUT = 1
 } FilterDirection;
 
 typedef enum
