@@ -209,7 +209,7 @@ void DataStream::Open(void)
             m_addr.Hostname(m_gpsd_addr);
             m_addr.Service(m_gpsd_port);
             m_sock->Connect(m_addr, FALSE);       // Non-blocking connect
-
+            m_bok = true;
         }
     }
 }
@@ -230,15 +230,15 @@ void DataStream::Close()
                 wxLogMessage(_T("Stopping Secondary Thread"));
 
                 m_Thread_run_flag = 0;
-                int tsec = 5;
+                int tsec = 10;
                 while((m_Thread_run_flag >= 0) && (tsec--))
                     wxSleep(1);
 
                 wxString msg;
                 if(m_Thread_run_flag < 0)
-                      msg.Printf(_T("Stopped in %d sec."), 5 - tsec);
+                      msg.Printf(_T("Stopped in %d sec."), 10 - tsec);
                 else
-                     msg.Printf(_T("Not Stopped after 5 sec."));
+                     msg.Printf(_T("Not Stopped after 10 sec."));
                 wxLogMessage(msg);
 
           }
@@ -426,7 +426,13 @@ bool DataStream::SendSentence( const wxString &sentence )
 {
     if( m_io_select == DS_TYPE_INPUT || !SentencePassesFilter( sentence, OUTPUT ) ) //Output forbidden for this port or sentence filtered out
         return false;
-    m_pSecondary_Thread->SendMsg(sentence);
+    if (m_pSecondary_Thread)
+        return m_pSecondary_Thread->SendMsg(sentence) > 0;
+    else
+        if(m_sock)
+        {
+            m_sock->Write(sentence.mb_str(), strlen(sentence.mb_str()));
+        }
     return true;
 }
 
