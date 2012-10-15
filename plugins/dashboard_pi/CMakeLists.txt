@@ -100,6 +100,8 @@ SET(SRC_DASHBOARD
             src/clock.h
             src/icons.cpp
             src/icons.h
+			src/brgdist.cpp
+			src/brgdist.h
  	)
 
 SET(SRC_NMEA0183
