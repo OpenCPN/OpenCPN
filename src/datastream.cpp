@@ -172,6 +172,7 @@ void DataStream::Open(void)
             m_pSecondary_Thread->Run();
 
             m_bok = true;
+            m_bsec_thread_active = true;
         }
         else if(m_portstring.Contains(_T("GPSD")) || m_portstring.StartsWith(_T("TCP"))) {
 
@@ -216,6 +217,7 @@ void DataStream::Open(void)
 
 DataStream::~DataStream()
 {
+    Close();
 }
 
 void DataStream::Close()
@@ -230,9 +232,7 @@ void DataStream::Close()
                 m_Thread_run_flag = 0;
                 int tsec = 5;
                 while((m_Thread_run_flag >= 0) && (tsec--))
-                {
                     wxSleep(1);
-                }
 
                 wxString msg;
                 if(m_Thread_run_flag < 0)
@@ -539,7 +539,6 @@ void *OCP_DataStreamInput_Thread::Entry()
 
               //  Now try to regain the Mutex
               while(wxMUTEX_BUSY == m_pPortMutex->TryLock()){};
-
               //  Re-initialize the port
               if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) < 0)
               {
@@ -556,7 +555,6 @@ void *OCP_DataStreamInput_Thread::Entry()
       //    Storing incoming characters in circular buffer
       //    And watching for new line character
       //     On new line character, send notification to parent
-
             char next_byte = 0;
             ssize_t newdata;
             newdata = read(m_gps_fd, &next_byte, 1);            // read of one char
@@ -596,7 +594,6 @@ void *OCP_DataStreamInput_Thread::Entry()
 
             // free old unplug current port
                               CloseComPortPhysical(m_gps_fd);
-
             //    Request the com port from the comm manager
                               if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) < 0)  {
                                     wxString msg(_T("NMEA input device open failed (will retry): "));
@@ -605,13 +602,11 @@ void *OCP_DataStreamInput_Thread::Entry()
                               } else {
                                     wxString msg(_T("NMEA input device open on hotplug OK: "));
                               }
-
             //      Reset the log flag
 //                              m_pCommMan->SetLogFlag(blog);
                         }
                   }
             } // end Fulup hack
-
 
             //  And process any character
 
@@ -651,7 +646,6 @@ void *OCP_DataStreamInput_Thread::Entry()
                         wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, (const wxChar *)"temp_buf overrun1");
 
                   }
-
                   if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
                   {
                         *ptmpbuf++ = *tptr++;
@@ -672,14 +666,10 @@ void *OCP_DataStreamInput_Thread::Entry()
                   }                   //if nl
             }                       // if newdata > 0
       //              ThreadMessage(_T("Timeout 1"));
-
     }                          // the big while...
-
 
 //          Close the port cleanly
     CloseComPortPhysical(m_gps_fd);
-
-
 
 thread_exit:
     m_launcher->SetSecThreadInActive();             // I am dead
@@ -1496,6 +1486,7 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud
 
 int OCP_DataStreamInput_Thread::CloseComPortPhysical(int fd)
 {
+    wxLogMessage("CloseComPortPhysical");
       if((HANDLE)fd != INVALID_HANDLE_VALUE)
             CloseHandle((HANDLE)fd);
       return 0;
@@ -1734,7 +1725,7 @@ wxString ConnectionParams::GetFiltersStr()
 wxString ConnectionParams::GetDSPort()
 {
     if ( Type == Serial )
-        return wxString::Format( _T("%s"), Port.c_str() );
+        return wxString::Format( _T("Serial:%s"), Port.c_str() );
     else
     {
         wxString proto;

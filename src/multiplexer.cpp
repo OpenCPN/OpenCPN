@@ -100,8 +100,10 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         for (size_t i = 0; i < m_pdatastreams->Count(); i++)
         {
             DataStream* s = m_pdatastreams->Item(i);
-            if ( ds != s->GetPort() && s->IsOk() && (s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT) )
-                s->SendSentence(message);
+            if ( ds != s->GetPort() )
+                if ( s->IsOk() )
+                    if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT )
+                        s->SendSentence(message);
         }
         //Send to core consumers
         if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
