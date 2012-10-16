@@ -2418,7 +2418,7 @@ void options::OnApplyClick( wxCommandEvent& event )
             port_type = DS_TYPE_INPUT_OUTPUT;
         else
             port_type = DS_TYPE_INPUT;
-        DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type );
+        DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type, cp->Priority );
         dstr->SetInputFilter(cp->InputSentenceList);
         dstr->SetInputFilterType(cp->InputSentenceListType);
         dstr->SetOutputFilter(cp->OutputSentenceList);

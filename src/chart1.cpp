@@ -2133,7 +2133,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
             port_type = DS_TYPE_INPUT_OUTPUT;
         else
             port_type = DS_TYPE_INPUT;
-        DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type );
+        DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type, cp->Priority );
         dstr->SetInputFilter(cp->InputSentenceList);
         dstr->SetInputFilterType(cp->InputSentenceListType);
         dstr->SetOutputFilter(cp->OutputSentenceList);
@@ -6603,8 +6603,12 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
         if (bis_recognized_sentence)
         {
-            m_current_src_priority = event.GetPrority();
-            m_current_src_id = event.GetDataSource();
+            if (m_current_src_priority != event.GetPrority() || m_current_src_id != event.GetDataSource())
+            {
+                wxLogMessage(wxString::Format(_T("Changing NMEA Datasource to %s (Priority: %i)"), event.GetDataSource().c_str(), event.GetPrority()));
+                m_current_src_priority = event.GetPrority();
+                m_current_src_id = event.GetDataSource();
+            }
             m_current_src_ticks = wxDateTime::Now().GetTicks();
         }
 
