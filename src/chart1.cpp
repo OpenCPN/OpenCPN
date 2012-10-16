@@ -1574,24 +1574,6 @@ if( 0 == g_memCacheLimit )
 
     console = new ConsoleCanvas( gFrame );                    // the console
 
-    g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-
-    stats = new StatWin( cc1 );
-
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-
-    if( cc1->GetQuiltMode() ) {
-        stats->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
-        stats->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
-
-        stats->pPiano->SetRoundedRectangles( true );
-    }
-    stats->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
-    stats->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
-    stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
-
-    stats->Show( true );
-
     pAPilot = new AutoPilotWindow( gFrame, *pNMEA_AP_Port );
 
     pthumbwin = new ThumbWin( cc1 );
@@ -1633,10 +1615,27 @@ if( 0 == g_memCacheLimit )
 
     if( g_bframemax ) gFrame->Maximize( true );
 
+    
+    stats = new StatWin( cc1 );
+    stats->SetColorScheme( global_color_scheme );
+    
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    
+    if( cc1->GetQuiltMode() ) {
+        stats->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+        stats->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
+        
+        stats->pPiano->SetRoundedRectangles( true );
+    }
+    stats->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+    stats->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
+    stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+    
+    stats->Show( true );
+    
+    
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
-
-    stats->Show();              // sometimes gets turned off in gtk??
 
     wxString perspective;
     pConfig->SetPath( _T ( "/AUI" ) );
@@ -1905,6 +1904,8 @@ if( 0 == g_memCacheLimit )
 
     cc1->ReloadVP();                  // once more, and good to go
 
+    g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
+    
     if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
 
     g_FloatingToolbarDialog->Raise();
