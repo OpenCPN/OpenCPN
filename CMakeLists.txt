@@ -147,8 +147,6 @@ SET( wxWidgets_USE_STATIC OFF)
 
 FIND_PACKAGE(wxWidgets REQUIRED)
 INCLUDE(${wxWidgets_USE_FILE})
-#INCLUDE_DIRECTORIES(${wxWidgets_INCLUDE_DIRS})
-#ADD_DEFINITIONS(${wxWidgets_DEFINITIONS})
 
 #  Search for wxWidgets 2.9
 STRING(REGEX MATCHALL "2.9" wx_Version "${wxWidgets_INCLUDE_DIRS}")
@@ -282,7 +280,6 @@ IF (USE_GPSD)
             ADD_DEFINITIONS(${GPS_DEFINITIONS})
             ADD_DEFINITIONS(-DBUILD_WITH_LIBGPS)
             message (STATUS "GPS library include location is ${GPS_INCLUDE_DIR}")
-#            SET(EXTRA_LIBS ${EXTRA_LIBS} ${GPS_LIBRARY})
       ELSE (GPS_FOUND)
             message (STATUS "Gps library not found")
       ENDIF (GPS_FOUND)
@@ -292,10 +289,9 @@ ENDIF (NOT WIN32)
 
 
 
-#FILE(GLOB_RECURSE SRCS *.cpp *.c)
 SET(HDRS
-        include/ocpn_types.h
-        include/ocpndc.h
+                include/ocpn_types.h
+                include/ocpndc.h
 		include/chart1.h
 		include/bbox.h
 		include/ocpn_pixel.h
@@ -337,7 +333,7 @@ SET(SRCS
 		src/chart1.cpp
 		src/bbox.cpp
 		src/ocpn_pixel.cpp
-        src/ocpndc.cpp
+                src/ocpndc.cpp
 		src/chartdb.cpp
 		src/chartdbs.cpp
 		src/chartimg.cpp
@@ -377,17 +373,13 @@ ELSE(wx_Version MATCHES "2.9")
   SET(SRCS ${SRCS} src/scrollingdialog.cpp)
 ENDIF(wx_Version MATCHES "2.9")
 
-SET(PACKAGE_HEADERS ""
-#	include/ais.h
-)
+SET( PACKAGE_HEADERS "" )
 
 SET(SRC_TINYXML
             src/tinyxml.cpp
             src/tinyxmlerror.cpp
             src/tinyxmlparser.cpp
             include/tinyxml.h
-#            include/tinystr.h
-#            src/tinystr.cpp
       )
 
 IF(TINYXML_FOUND)
@@ -665,8 +657,6 @@ IF(WIN32)
         SET(CMAKE_CXX_FLAGS_RELEASE           "/MD  /O2  /Ob2 /D NDEBUG")
         SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO    "/MD  /O2  /Ob1 /D NDEBUG" /Zi )
     ENDIF(MSVC)
-#    SET_TARGET_PROPERTIES(${PACKAGE_NAME} PROPERTIES COMPILE_FLAGS /Zp44)
-#    SET_TARGET_PROPERTIES(${PACKAGE_NAME} PROPERTIES LINK_FLAGS /MANIFEST:NO)
 ADD_EXECUTABLE(${PACKAGE_NAME} WIN32 ${HDRS} ${SRCS})
 ENDIF(WIN32)
 
@@ -715,10 +705,6 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       buildosx/MainMenu.xib
       )
 
-
-#  INSTALL(TARGETS
-#    ${PACKAGE_NAME}
-#    BUNDLE DESTINATION "Applications")
 
   INSTALL(TARGETS
     ${PACKAGE_NAME}
@@ -771,11 +757,14 @@ TARGET_LINK_LIBRARIES(${PACKAGE_NAME}
 IF(TINYXML_FOUND)
    TARGET_LINK_LIBRARIES(${PACKAGE_NAME} ${TINYXML_LIBRARIES} )
 ENDIF(TINYXML_FOUND)
-
 ENDIF(UNIX)
 
 #   Certain older Cmake FindGTK2 modules ( e.g. cmake-2.8.0-2) do not yield all of the required link libraries
-#   So, add them manually.
+#   So, add them manually.  These declarations may be redundant in some architectures, but do no harm.
+IF(UNIX)
+TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
+ENDIF(UNIX)
+
 IF(GTK2_FOUND)
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
 ENDIF(GTK2_FOUND)
@@ -791,9 +780,6 @@ IF(UNIX AND NOT APPLE)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION ${PREFIX_BIN} PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 ENDIF(UNIX AND NOT APPLE)
 
-#ADD_CUSTOM_TARGET(dummy ALL DEPENDS ${PACKAGE_NAME} i18n)
-
-#INSTALL(FILES ${PACKAGE_HEADERS} DESTINATION ${PREFIX_INCLUDE})
 
 IF(WIN32)
 SET(PREFIX_PKGDATA ".")
