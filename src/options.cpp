@@ -2185,6 +2185,7 @@ ConnectionParams * options::SaveConnectionParams()
         m_pConnectionParams->NetProtocol = GPSD;
 
     m_pConnectionParams->Baudrate = wxAtoi( m_choiceBaudRate->GetStringSelection() );
+    m_pConnectionParams->Priority = wxAtoi( m_choicePriority->GetStringSelection() );
     m_pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
     m_pConnectionParams->Garmin = m_cbGarminHost->GetValue();
     m_pConnectionParams->InputSentenceList = wxStringTokenize( m_tcInputStc->GetValue() );
@@ -3579,6 +3580,7 @@ void options::SetConnectionParams(ConnectionParams *cp)
     m_tcOutputStc->SetValue(StringArrayToString(cp->OutputSentenceList));
     m_choiceBaudRate->Select(m_choiceBaudRate->FindString(wxString::Format(_T("%d"),cp->Baudrate)));
     m_choiceSerialProtocol->Select(cp->Protocol); //TODO
+    m_choicePriority->Select(m_choicePriority->FindString(wxString::Format(_T("%d"),cp->Priority)));
 
     m_tNetAddress->SetValue(cp->NetworkAddress);
     m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
