@@ -3517,6 +3517,7 @@ void options::SetNMEAFormToSerial()
     ShowNMEASerial( true );
     m_pNMEAForm->Layout();
     Fit();
+    Layout();
     SetDSFormRWStates();
 }
 
@@ -3527,6 +3528,7 @@ void options::SetNMEAFormToNet()
     ShowNMEASerial( false );
     m_pNMEAForm->Layout();
     Fit();
+    Layout();
     SetDSFormRWStates();
 }
 
