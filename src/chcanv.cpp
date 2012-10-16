@@ -8140,8 +8140,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     }
 
     bool ais_areanotice = false;
-    if(g_pAIS && g_bShowAIS && g_bShowAreaNotices)
-    {
+    if(g_pAIS && g_bShowAIS && g_bShowAreaNotices){
         
         AIS_Target_Hash *an_sources = g_pAIS->GetAreaNoticeSourcesList();
         
@@ -8150,15 +8149,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         for( AIS_Target_Hash::iterator target = an_sources->begin(); target != an_sources->end(); ++target ) {
             AIS_Target_Data *target_data = target->second;
             if( !target_data->area_notices.empty() ) {
-                for( AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani )
-                {
+                for( AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani ){
                     Ais8_001_22& area_notice = ani->second;
                 
                     wxBoundingBox bbox;
                     double lat, lon;
                     
-                    for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) 
-                    {
+                    for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ){
                         switch( sa->shape ) {
                             case AIS8_001_22_SHAPE_CIRCLE: {
                                 lat = sa->latitude;
@@ -8184,19 +8181,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                         }
                     }
                     
-                    if(bbox.PointInBox(x,y))
-                    {
-                        ais_areanotice = True;
+                    if(bbox.PointInBox(x,y)){
+                        ais_areanotice = true;
                         break;
                     }
-                    
                 }
             }
-                    
-                
         }
-            
-        
     }
     
     if( !VPoint.b_quilt ) {
@@ -8469,9 +8460,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
     
     std::vector<Ais8_001_22*> area_notices;
     
-    if(g_pAIS && g_bShowAIS && g_bShowAreaNotices)
-    {
-        
+    if(g_pAIS && g_bShowAIS && g_bShowAreaNotices){
         AIS_Target_Hash *an_sources = g_pAIS->GetAreaNoticeSourcesList();
         
         float vp_scale = GetVPScale();
@@ -8479,15 +8468,13 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         for( AIS_Target_Hash::iterator target = an_sources->begin(); target != an_sources->end(); ++target ) {
             AIS_Target_Data *target_data = target->second;
             if( !target_data->area_notices.empty() ) {
-                for( AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani )
-                {
+                for( AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani ){
                     Ais8_001_22& area_notice = ani->second;
                     
                     wxBoundingBox bbox;
                     double lat, lon;
                     
-                    for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) 
-                    {
+                    for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ){
                         switch( sa->shape ) {
                             case AIS8_001_22_SHAPE_CIRCLE: {
                                 lat = sa->latitude;
@@ -8513,15 +8500,11 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
                         }
                     }
                     
-                    if(bbox.PointInBox(x,y))
-                    {
+                    if(bbox.PointInBox(x,y)){
                         area_notices.push_back(&area_notice);
                     }
-                    
                 }
             }
-            
-            
         }
     }
     
@@ -8577,8 +8560,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
             objText << _T("<hr noshade>");
         }
         
-        for(std::vector< Ais8_001_22* >::iterator an = area_notices.begin(); an != area_notices.end(); ++an)
-        {
+        for(std::vector< Ais8_001_22* >::iterator an = area_notices.begin(); an != area_notices.end(); ++an){
             objText << _T("<b>AIS Area Notice:</b> ");
             objText << ais8_001_22_notice_names[(*an)->notice_type];
             for(std::vector< Ais8_001_22_SubArea >::iterator sa = (*an)->sub_areas.begin(); sa != (*an)->sub_areas.end(); ++sa)

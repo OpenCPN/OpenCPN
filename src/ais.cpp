@@ -1788,8 +1788,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         if( bdecode_result ) {
             ( *AISTargetList )[mmsi] = pTargetData;            // update the hash table entry
 
-            if(!pTargetData->area_notices.empty())
-            {   
+            if(!pTargetData->area_notices.empty()){   
                 AIS_Target_Hash::iterator it = AIS_AreaNotice_Sources->find( mmsi );
                 if( it == AIS_AreaNotice_Sources->end() )
                     (*AIS_AreaNotice_Sources)[mmsi] = pTargetData;
