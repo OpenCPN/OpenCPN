@@ -310,6 +310,8 @@ SET(HDRS
 		include/routeman.h
 		include/routemanagerdialog.h
 		include/routeprop.h
+		include/routeprintout.h
+		include/printtable.h		
 		include/statwin.h
 		include/tcmgr.h
 		include/thumbwin.h
@@ -349,6 +351,8 @@ SET(SRCS
 		src/routeman.cpp
 		src/routemanagerdialog.cpp
 		src/routeprop.cpp
+		src/routeprintout.cpp
+		src/printtable.cpp
 		src/statwin.cpp
 		src/tcmgr.cpp
 		src/thumbwin.cpp

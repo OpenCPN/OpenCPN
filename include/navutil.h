@@ -102,6 +102,8 @@ public:
       void SetPropFromString(const wxString &prop_string);
 
       void SetPosition(double lat, double lon);
+      double GetLatitude()  { return m_lat; };
+      double GetLongitude() { return m_lon; };      
       void CalculateDCRect(wxDC& dc, wxRect *prect);
 
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
@@ -112,10 +114,17 @@ public:
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
       wxString GetName(void){ return m_MarkName; }
+      wxString GetDescription(void) { return m_MarkDescription; }
 
       void SetName(wxString name);
       void CalculateNameExtents(void);
 
+      void SetCourse( double course) { m_course = course; }; 
+      double GetCourse() { return m_course; };      
+      void SetDistance( double distance) { m_distance = distance; }; 
+      double GetDistance() { return m_distance; };         
+
+      
       bool SendToGPS ( wxString& com_name, wxGauge *pProgress );
 
 
@@ -163,6 +172,9 @@ public:
       int               m_GPXTrkSegNo;
       bool              m_bIsInLayer;
       int               m_LayerID;
+      
+      double            m_course;		// course from this waypoint to the next waypoint in the route. It is set when the route property dialog created.
+      double            m_distance;		// distance from this waypoint to the next waypoint in the route. It is set when the route property dialog created.
 
       HyperlinkList     *m_HyperlinkList;
 
