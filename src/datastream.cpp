@@ -427,14 +427,20 @@ bool DataStream::SendSentence( const wxString &sentence )
     if( m_io_select == DS_TYPE_INPUT || !SentencePassesFilter( sentence, FILTER_OUTPUT ) ) //Output forbidden for this port or sentence filtered out
         return false;
     if (m_pSecondary_Thread)
-        return m_pSecondary_Thread->SendMsg(sentence) > 0;
+    {
+        m_pSecondary_Thread->SendMsg(sentence);
+        return m_pSecondary_Thread->SendMsg(_T("\r\n")) > 0;
+    }
     else
         if(m_sock)
         {
             if (m_sock->IsDisconnected())
                 m_sock->Connect(m_addr, FALSE);
             else
+            {
                 m_sock->Write(sentence.mb_str(), strlen(sentence.mb_str()));
+                m_sock->Write("\r\n", 2);
+            }
         }
     return true;
 }

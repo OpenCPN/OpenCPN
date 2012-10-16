@@ -6331,7 +6331,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     if( g_NMEALogWindow ) {
         wxDateTime now = wxDateTime::Now();
         wxString ss = now.FormatISOTime();
-        ss.Append( _T("  ") );
+        ss.Append( _T(" (") );
+        ss.Append( event.GetDataSource() );
+        ss.Append( _T(") ") );
         ss.Append( str_buf );
         g_NMEALogWindow->Add( ss );
         g_NMEALogWindow->Refresh( false );
@@ -6342,6 +6344,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
     if ( event.GetPrority() > m_current_src_priority || event.GetDataSource() == m_current_src_id || m_current_src_ticks < wxDateTime::Now().GetTicks() - GPS_TIMEOUT_SECONDS )
     {
+        if( g_NMEALogWindow ) {
+            wxString ss = _T("Passed");
+            g_NMEALogWindow->Add( ss );
+            g_NMEALogWindow->Refresh( false );
+        }
         m_NMEA0183 << str_buf;
         if( m_NMEA0183.PreParse() ) {
             if( m_NMEA0183.LastSentenceIDReceived == _T("RMC") ) {
