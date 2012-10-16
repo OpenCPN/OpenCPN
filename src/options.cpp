@@ -626,13 +626,13 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     } else
         if( pAIS_Port->Contains( _("None") ) ) sidx = 0;
         else
-            sidx = 0;                                 // malformed selection
-
-    if( sidx == wxNOT_FOUND )                  // user specified in ComboBox
+    sidx = wxNOT_FOUND;                                 // malformed selection
+            
+            
+    if(sidx ==  wxNOT_FOUND)                  // user specified in ComboBox
     {
-        wxString nport = pAIS_Port->AfterFirst( ':' );
-        m_itemAISListBox->Append( nport );
-        sidx = m_itemAISListBox->FindString( nport );
+        m_itemAISListBox->Append( *pAIS_Port );
+        sidx = m_itemAISListBox->FindString(*pAIS_Port);
     }
 
     m_itemAISListBox->SetSelection( sidx );
@@ -3213,4 +3213,5 @@ void options::OnRemoveTideDataLocation( wxCommandEvent &event )
         tcDataSelected->Delete( b );
     }
 }
+
 

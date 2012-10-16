@@ -161,7 +161,7 @@ WX_DECLARE_LIST(AISTargetTrackPoint, AISTargetTrackList);
 const size_t AIS8_001_22_NUM_NAMES=128;
 const size_t AIS8_001_22_SUBAREA_SIZE=87;
 
-extern const char *ais8_001_22_notice_names[AIS8_001_22_NUM_NAMES];
+extern wxString ais8_001_22_notice_names[];
 
 enum Ais8_001_22_AreaShapeEnum
 {
@@ -412,6 +412,7 @@ public:
     void UnPause(void);
     void GetSource(wxString& source);
     AIS_Target_Hash *GetTargetList(void) {return AISTargetList;}
+    AIS_Target_Hash *GetAreaNoticeSourcesList(void) {return AIS_AreaNotice_Sources;}
     AIS_Target_Data *Get_Target_Data_From_MMSI(int mmsi);
     int GetNumTargets(void){ return m_n_targets;}
     bool IsAISSuppressed(void){ return m_bSuppressed; }
@@ -438,10 +439,12 @@ private:
     void BuildERIShipTypeHash(void);
 
     AIS_Target_Hash *AISTargetList;
+    AIS_Target_Hash *AIS_AreaNotice_Sources;
 
 #ifndef OCPN_NO_SOCKETS
     wxIPV4address     addr;
     wxSocketClient    *m_sock;
+    wxString          m_sock_data;
 #endif
 
     bool              m_busy;

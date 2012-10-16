@@ -278,135 +278,135 @@ wxString short_ais_type[] = {
     _("Distress")              //xx        54
 };
 
-const char *ais8_001_22_notice_names[AIS8_001_22_NUM_NAMES] = { // 128] = {
-    "Caution Area: Marine mammals habitat (implies whales NOT observed)", // 0 - WARNING: extra text by Kurt
-    "Caution Area: Marine mammals in area - reduce speed", // 1
-    "Caution Area: Marine mammals in area - stay clear", // 2
-    "Caution Area: Marine mammals in area - report sightings", // 3
-    "Caution Area: Protected habitat - reduce speed", // 4
-    "Caution Area: Protected habitat - stay clear", // 5
-    "Caution Area: Protected habitat - no fishing or anchoring", // 6
-    "Caution Area: Derelicts (drifting objects)", // 7
-    "Caution Area: Traffic congestion", // 8
-    "Caution Area: Marine event", // 9
-    "Caution Area: Divers down", // 10
-    "Caution Area: Swim area", // 11
-    "Caution Area: Dredge operations", // 12
-    "Caution Area: Survey operations", // 13
-    "Caution Area: Underwater operation", // 14
-    "Caution Area: Seaplane operations", // 15
-    "Caution Area: Fishery - nets in water", // 16
-    "Caution Area: Cluster of fishing vessels", // 17
-    "Caution Area: Fairway closed", // 18
-    "Caution Area: Harbour closed", // 19
-    "Caution Area: Risk (define in Associated text field)", // 20
-    "Caution Area: Underwater vehicle operation", // 21
-    "(reserved for future use)", // 22
-    "Environmental Caution Area: Storm front (line squall)", // 23
-    "Environmental Caution Area: Hazardous sea ice", // 24
-    "Environmental Caution Area: Storm warning (storm cell or line of storms)", // 25
-    "Environmental Caution Area: High wind", // 26
-    "Environmental Caution Area: High waves", // 27
-    "Environmental Caution Area: Restricted visibility (fog, rain, etc.)", // 28
-    "Environmental Caution Area: Strong currents", // 29
-    "Environmental Caution Area: Heavy icing", // 30
-    "(reserved for future use)", // 31
-    "Restricted Area: Fishing prohibited", // 32
-    "Restricted Area: No anchoring.", // 33
-    "Restricted Area: Entry approval required prior to transit", // 34
-    "Restricted Area: Entry prohibited", // 35
-    "Restricted Area: Active military OPAREA", // 36
-    "Restricted Area: Firing - danger area.", // 37
-    "Restricted Area: Drifting Mines", // 38
-    "(reserved for future use)", // 39
-    "Anchorage Area: Anchorage open", // 40
-    "Anchorage Area: Anchorage closed", // 41
-    "Anchorage Area: Anchoring prohibited", // 42
-    "Anchorage Area: Deep draft anchorage", // 43
-    "Anchorage Area: Shallow draft anchorage", // 44
-    "Anchorage Area: Vessel transfer operations", // 45
-    "(reserved for future use)", // 46
-    "(reserved for future use)", // 47
-    "(reserved for future use)", // 48
-    "(reserved for future use)", // 49
-    "(reserved for future use)", // 50
-    "(reserved for future use)", // 51
-    "(reserved for future use)", // 52
-    "(reserved for future use)", // 53
-    "(reserved for future use)", // 54
-    "(reserved for future use)", // 55
-    "Security Alert - Level 1", // 56
-    "Security Alert - Level 2", // 57
-    "Security Alert - Level 3", // 58
-    "(reserved for future use)", // 59
-    "(reserved for future use)", // 60
-    "(reserved for future use)", // 61
-    "(reserved for future use)", // 62
-    "(reserved for future use)", // 63
-    "Distress Area: Vessel disabled and adrift", // 64
-    "Distress Area: Vessel sinking", // 65
-    "Distress Area: Vessel abandoning ship", // 66
-    "Distress Area: Vessel requests medical assistance", // 67
-    "Distress Area: Vessel flooding", // 68
-    "Distress Area: Vessel fire/explosion", // 69
-    "Distress Area: Vessel grounding", // 70
-    "Distress Area: Vessel collision", // 71
-    "Distress Area: Vessel listing/capsizing", // 72
-    "Distress Area: Vessel under assault", // 73
-    "Distress Area: Person overboard", // 74
-    "Distress Area: SAR area", // 75
-    "Distress Area: Pollution response area", // 76
-    "(reserved for future use)", // 77
-    "(reserved for future use)", // 78
-    "(reserved for future use)", // 79
-    "Instruction: Contact VTS at this point/juncture", // 80
-    "Instruction: Contact Port Administration at this point/juncture", // 81
-    "Instruction: Do not proceed beyond this point/juncture", // 82
-    "Instruction: Await instructions prior to proceeding beyond this point/juncture", // 83
-    "Proceed to this location - await instructions", // 84
-    "Clearance granted - proceed to berth", // 85
-    "(reserved for future use)", // 86
-    "(reserved for future use)", // 87
-    "Information: Pilot boarding position", // 88
-    "Information: Icebreaker waiting area", // 89
-    "Information: Places of refuge", // 90
-    "Information: Position of icebreakers", // 91
-    "Information: Location of response units", // 92
-    "VTS active target", // 93
-    "Rouge or suspicious vessel", // 94
-    "Vessel requesting non-distress assistance", // 95
-    "Chart Feature: Sunken vessel", // 96
-    "Chart Feature: Submerged object", // 97
-    "Chart Feature: Semi-submerged object", // 98
-    "Chart Feature: Shoal area", // 99
-    "Chart Feature: Shoal area due north", // 100
-    "Chart Feature: Shoal area due east", // 101
-    "Chart Feature: Shoal area due south", // 102
-    "Chart Feature: Shoal area due west", // 103
-    "Chart Feature: Channel obstruction", // 104
-    "Chart Feature: Reduced vertical clearance", // 105
-    "Chart Feature: Bridge closed", // 106
-    "Chart Feature: Bridge partially open", // 107
-    "Chart Feature: Bridge fully open", // 108
-    "(reserved for future use)", // 109
-    "(reserved for future use)", // 110
-    "(reserved for future use)", // 111
-    "Report from ship: Icing info", // 112
-    "(reserved for future use)", // 113
-    "Report from ship: Miscellaneous information - define in Associated text field", // 114
-    "(reserved for future use)", // 115
-    "(reserved for future use)", // 116
-    "(reserved for future use)", // 117
-    "(reserved for future use)", // 118
-    "(reserved for future use)", // 119
-    "Route: Recommended route", // 120
-    "Route: Alternative route", // 121
-    "Route: Recommended route through ice", // 122
-    "(reserved for future use)", // 123
-    "(reserved for future use)", // 124
-    "Other - Define in associated text field", // 125
-    "Cancellation - cancel area as identified by Message Linkage ID", // 126
-    "Undefined (default)" //, // 127
+wxString ais8_001_22_notice_names[] = { // 128] = {
+    _T("Caution Area: Marine mammals habitat (implies whales NOT observed)"), // 0 - WARNING: extra text by Kurt
+    _T("Caution Area: Marine mammals in area - reduce speed"), // 1
+    _T("Caution Area: Marine mammals in area - stay clear"), // 2
+    _T("Caution Area: Marine mammals in area - report sightings"), // 3
+    _T("Caution Area: Protected habitat - reduce speed"), // 4
+    _T("Caution Area: Protected habitat - stay clear"), // 5
+    _T("Caution Area: Protected habitat - no fishing or anchoring"), // 6
+    _T("Caution Area: Derelicts (drifting objects)"), // 7
+    _T("Caution Area: Traffic congestion"), // 8
+    _T("Caution Area: Marine event"), // 9
+    _T("Caution Area: Divers down"), // 10
+    _T("Caution Area: Swim area"), // 11
+    _T("Caution Area: Dredge operations"), // 12
+    _T("Caution Area: Survey operations"), // 13
+    _T("Caution Area: Underwater operation"), // 14
+    _T("Caution Area: Seaplane operations"), // 15
+    _T("Caution Area: Fishery - nets in water"), // 16
+    _T("Caution Area: Cluster of fishing vessels"), // 17
+    _T("Caution Area: Fairway closed"), // 18
+    _T("Caution Area: Harbour closed"), // 19
+    _T("Caution Area: Risk (define in Associated text field)"), // 20
+    _T("Caution Area: Underwater vehicle operation"), // 21
+    _T("(reserved for future use)"), // 22
+    _T("Environmental Caution Area: Storm front (line squall)"), // 23
+    _T("Environmental Caution Area: Hazardous sea ice"), // 24
+    _T("Environmental Caution Area: Storm warning (storm cell or line of storms)"), // 25
+    _T("Environmental Caution Area: High wind"), // 26
+    _T("Environmental Caution Area: High waves"), // 27
+    _T("Environmental Caution Area: Restricted visibility (fog, rain, etc.)"), // 28
+    _T("Environmental Caution Area: Strong currents"), // 29
+    _T("Environmental Caution Area: Heavy icing"), // 30
+    _T("(reserved for future use)"), // 31
+    _T("Restricted Area: Fishing prohibited"), // 32
+    _T("Restricted Area: No anchoring."), // 33
+    _T("Restricted Area: Entry approval required prior to transit"), // 34
+    _T("Restricted Area: Entry prohibited"), // 35
+    _T("Restricted Area: Active military OPAREA"), // 36
+    _T("Restricted Area: Firing - danger area."), // 37
+    _T("Restricted Area: Drifting Mines"), // 38
+    _T("(reserved for future use)"), // 39
+    _T("Anchorage Area: Anchorage open"), // 40
+    _T("Anchorage Area: Anchorage closed"), // 41
+    _T("Anchorage Area: Anchoring prohibited"), // 42
+    _T("Anchorage Area: Deep draft anchorage"), // 43
+    _T("Anchorage Area: Shallow draft anchorage"), // 44
+    _T("Anchorage Area: Vessel transfer operations"), // 45
+    _T("(reserved for future use)"), // 46
+    _T("(reserved for future use)"), // 47
+    _T("(reserved for future use)"), // 48
+    _T("(reserved for future use)"), // 49
+    _T("(reserved for future use)"), // 50
+    _T("(reserved for future use)"), // 51
+    _T("(reserved for future use)"), // 52
+    _T("(reserved for future use)"), // 53
+    _T("(reserved for future use)"), // 54
+    _T("(reserved for future use)"), // 55
+    _T("Security Alert - Level 1"), // 56
+    _T("Security Alert - Level 2"), // 57
+    _T("Security Alert - Level 3"), // 58
+    _T("(reserved for future use)"), // 59
+    _T("(reserved for future use)"), // 60
+    _T("(reserved for future use)"), // 61
+    _T("(reserved for future use)"), // 62
+    _T("(reserved for future use)"), // 63
+    _T("Distress Area: Vessel disabled and adrift"), // 64
+    _T("Distress Area: Vessel sinking"), // 65
+    _T("Distress Area: Vessel abandoning ship"), // 66
+    _T("Distress Area: Vessel requests medical assistance"), // 67
+    _T("Distress Area: Vessel flooding"), // 68
+    _T("Distress Area: Vessel fire/explosion"), // 69
+    _T("Distress Area: Vessel grounding"), // 70
+    _T("Distress Area: Vessel collision"), // 71
+    _T("Distress Area: Vessel listing/capsizing"), // 72
+    _T("Distress Area: Vessel under assault"), // 73
+    _T("Distress Area: Person overboard"), // 74
+    _T("Distress Area: SAR area"), // 75
+    _T("Distress Area: Pollution response area"), // 76
+    _T("(reserved for future use)"), // 77
+    _T("(reserved for future use)"), // 78
+    _T("(reserved for future use)"), // 79
+    _T("Instruction: Contact VTS at this point/juncture"), // 80
+    _T("Instruction: Contact Port Administration at this point/juncture"), // 81
+    _T("Instruction: Do not proceed beyond this point/juncture"), // 82
+    _T("Instruction: Await instructions prior to proceeding beyond this point/juncture"), // 83
+    _T("Proceed to this location - await instructions"), // 84
+    _T("Clearance granted - proceed to berth"), // 85
+    _T("(reserved for future use)"), // 86
+    _T("(reserved for future use)"), // 87
+    _T("Information: Pilot boarding position"), // 88
+    _T("Information: Icebreaker waiting area"), // 89
+    _T("Information: Places of refuge"), // 90
+    _T("Information: Position of icebreakers"), // 91
+    _T("Information: Location of response units"), // 92
+    _T("VTS active target"), // 93
+    _T("Rouge or suspicious vessel"), // 94
+    _T("Vessel requesting non-distress assistance"), // 95
+    _T("Chart Feature: Sunken vessel"), // 96
+    _T("Chart Feature: Submerged object"), // 97
+    _T("Chart Feature: Semi-submerged object"), // 98
+    _T("Chart Feature: Shoal area"), // 99
+    _T("Chart Feature: Shoal area due north"), // 100
+    _T("Chart Feature: Shoal area due east"), // 101
+    _T("Chart Feature: Shoal area due south"), // 102
+    _T("Chart Feature: Shoal area due west"), // 103
+    _T("Chart Feature: Channel obstruction"), // 104
+    _T("Chart Feature: Reduced vertical clearance"), // 105
+    _T("Chart Feature: Bridge closed"), // 106
+    _T("Chart Feature: Bridge partially open"), // 107
+    _T("Chart Feature: Bridge fully open"), // 108
+    _T("(reserved for future use)"), // 109
+    _T("(reserved for future use)"), // 110
+    _T("(reserved for future use)"), // 111
+    _T("Report from ship: Icing info"), // 112
+    _T("(reserved for future use)"), // 113
+    _T("Report from ship: Miscellaneous information - define in Associated text field"), // 114
+    _T("(reserved for future use)"), // 115
+    _T("(reserved for future use)"), // 116
+    _T("(reserved for future use)"), // 117
+    _T("(reserved for future use)"), // 118
+    _T("(reserved for future use)"), // 119
+    _T("Route: Recommended route"), // 120
+    _T("Route: Alternative route"), // 121
+    _T("Route: Recommended route through ice"), // 122
+    _T("(reserved for future use)"), // 123
+    _T("(reserved for future use)"), // 124
+    _T("Other - Define in associated text field"), // 125
+    _T("Cancellation - cancel area as identified by Message Linkage ID"), // 126
+    _T("Undefined (default)") //, // 127
 };
 
 enum {
@@ -1174,6 +1174,10 @@ int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
 //
 //---------------------------------------------------------------------------------
 BEGIN_EVENT_TABLE(AIS_Decoder, wxEvtHandler)
+
+#ifndef OCPN_NO_SOCKETS
+  EVT_SOCKET(AIS_SOCKET_ID, AIS_Decoder::OnSocketEvent)
+#endif
     EVT_TIMER(TIMER_AIS1, AIS_Decoder::OnTimerAIS)
     EVT_TIMER(TIMER_AISAUDIO, AIS_Decoder::OnTimerAISAudio)
 END_EVENT_TABLE()
@@ -1192,6 +1196,7 @@ AIS_Decoder::AIS_Decoder( int handler_id, wxFrame *pParent, const wxString& AISD
 {
     m_handler_id = handler_id;
     AISTargetList = new AIS_Target_Hash;
+    AIS_AreaNotice_Sources = new AIS_Target_Hash;
     BuildERIShipTypeHash();
     m_pShareGPSMutex = pGPSMutex;
     m_parent_frame = pParent;
@@ -1786,6 +1791,13 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         //  Update the AIS Target information
         if( bdecode_result ) {
             ( *AISTargetList )[mmsi] = pTargetData;            // update the hash table entry
+
+            if(!pTargetData->area_notices.empty())
+            {   
+                AIS_Target_Hash::iterator it = AIS_AreaNotice_Sources->find( mmsi );
+                if( it == AIS_AreaNotice_Sources->end() )
+                    (*AIS_AreaNotice_Sources)[mmsi] = pTargetData;
+            }
 
             //     Update the most recent report period
             if( !dse_mmsi ) pTargetData->RecentPeriod = pTargetData->PositionReportTicks
@@ -2635,9 +2647,18 @@ AIS_Error AIS_Decoder::OpenDataSource( wxFrame *pParent, const wxString& AISData
     m_sock = NULL;
 
 //      Data Source is private TCP/IP Server
-    if( m_data_source_string.Contains( _T("TCP/IP") ) ) {
-        wxString AIS_data_ip;
-        AIS_data_ip = m_data_source_string.Mid( 7 );         // extract the IP
+      if(m_data_source_string.Contains(_T("TCP/IP")))
+      {
+            wxString AIS_data_ip;
+            AIS_data_ip = m_data_source_string.Mid(7);         // extract the IP
+            
+            unsigned long AIS_data_port = 3047;  /*GPSD_PORT_NUMBER*/
+            
+            if(AIS_data_ip.Contains(_T(":")))
+            {
+                AIS_data_ip.AfterFirst(':').ToULong(&AIS_data_port);
+                AIS_data_ip = AIS_data_ip.BeforeFirst(':');
+            }
 
 // Create the socket
         m_sock = new wxSocketClient();
@@ -2689,12 +2710,12 @@ AIS_Error AIS_Decoder::OpenDataSource( wxFrame *pParent, const wxString& AISData
             return AIS_NO_TCP;
         }
 
-        //      Resolved the name, somehow, so Connect() the socket
-        addr.Hostname( AIS_data_ip );
-        addr.Service( 3047/*GPSD_PORT_NUMBER*/);
-        m_sock->Connect( addr, FALSE );       // Non-blocking connect
-        m_OK = true;
-    }
+            //      Resolved the name, somehow, so Connect() the socket
+            addr.Hostname(AIS_data_ip);
+            addr.Service(AIS_data_port);
+            m_sock->Connect(addr, FALSE);       // Non-blocking connect
+            m_OK = true;
+      }
 
 #endif
 
@@ -2774,49 +2795,68 @@ void AIS_Decoder::OnSocketEvent( wxSocketEvent& event )
 {
 #ifndef OCPN_NO_SOCKETS
 
-#define RD_BUF_SIZE    200
+#define RD_BUF_SIZE    4096
 
-    int nBytes;
-    char *bp;
-    char buf[RD_BUF_SIZE + 1];
-    int char_count;
 
-    switch( event.GetSocketEvent() ){
-        case wxSOCKET_INPUT:                     // from  Daemon
-            m_sock->SetFlags( wxSOCKET_NOWAIT );
-
-//          Read the reply, one character at a time, looking for 0x0a (lf)
-            bp = buf;
-            char_count = 0;
-
-            while( char_count < RD_BUF_SIZE ) {
-                m_sock->Read( bp, 1 );
-                nBytes = m_sock->LastCount();
-                if( *bp == 0x0a ) {
-                    bp++;
-                    break;
+  switch(event.GetSocketEvent())
+  {
+      case wxSOCKET_INPUT :
+            {
+                std::vector<char> data(RD_BUF_SIZE+1);
+                event.GetSocket()->Read(&data.front(),RD_BUF_SIZE);
+                if(!event.GetSocket()->Error())
+                {
+                    size_t count = event.GetSocket()->LastCount();
+                    if(count)
+                    {
+                        data[count]=0;
+                        m_sock_data.Append(wxString::FromAscii(&data.front()));
+                    }
                 }
 
-                bp++;
-                char_count++;
+                bool done = false;
+                
+                while(!done)
+                {
+                    
+                    size_t nmea_start = m_sock_data.find('!');
+                    size_t nmea_end = wxString::npos;
+                    if(nmea_start != wxString::npos)
+                    {
+                        nmea_end = m_sock_data.find('*',nmea_start);
+                        if(nmea_end != wxString::npos && nmea_end < m_sock_data.size()-2)
+                            nmea_end += 3; // move to the char after the 2 checksum digits
+                        else
+                            nmea_end = wxString::npos;
+                    }
+                    if (nmea_end != wxString::npos)
+                    {
+                        wxString nmea_line = m_sock_data.substr(nmea_start,nmea_end);
+                        m_sock_data = m_sock_data.substr(nmea_end);
+                        
+                        OCPN_AISEvent event(wxEVT_OCPN_AIS , ID_AIS_WINDOW );
+                        event.SetEventObject( (wxObject *)this );
+                        event.SetExtraLong(EVT_AIS_PARSE_RX);
+                        event.SetNMEAString(nmea_line);
+                        AddPendingEvent(event);
+                    }
+                    else
+                        done = true;
+                }
+                
             }
-
-            *bp = 0;                        // end string
-
-//          Validate the string
-
-            if( !strncmp( (const char *) buf, "!AIVDM", 6 ) ) {
-//                  Decode(buf);
-
-//    Signal the main program thread
-
-            }
-
-        case wxSOCKET_LOST:
-        case wxSOCKET_CONNECTION:
-        default:
             break;
-    }
+            
+    case wxSOCKET_LOST       :
+        {
+            wxString msg(_T("AIS Connection lost!"));
+            wxLogMessage(msg);
+        }
+        break;
+    case wxSOCKET_CONNECTION :
+    default                  :
+          break;
+  }
 #endif
 }
 
