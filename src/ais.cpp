@@ -279,134 +279,134 @@ wxString short_ais_type[] = {
 };
 
 wxString ais8_001_22_notice_names[] = { // 128] = {
-    _T("Caution Area: Marine mammals habitat (implies whales NOT observed)"), // 0 - WARNING: extra text by Kurt
-    _T("Caution Area: Marine mammals in area - reduce speed"), // 1
-    _T("Caution Area: Marine mammals in area - stay clear"), // 2
-    _T("Caution Area: Marine mammals in area - report sightings"), // 3
-    _T("Caution Area: Protected habitat - reduce speed"), // 4
-    _T("Caution Area: Protected habitat - stay clear"), // 5
-    _T("Caution Area: Protected habitat - no fishing or anchoring"), // 6
-    _T("Caution Area: Derelicts (drifting objects)"), // 7
-    _T("Caution Area: Traffic congestion"), // 8
-    _T("Caution Area: Marine event"), // 9
-    _T("Caution Area: Divers down"), // 10
-    _T("Caution Area: Swim area"), // 11
-    _T("Caution Area: Dredge operations"), // 12
-    _T("Caution Area: Survey operations"), // 13
-    _T("Caution Area: Underwater operation"), // 14
-    _T("Caution Area: Seaplane operations"), // 15
-    _T("Caution Area: Fishery - nets in water"), // 16
-    _T("Caution Area: Cluster of fishing vessels"), // 17
-    _T("Caution Area: Fairway closed"), // 18
-    _T("Caution Area: Harbour closed"), // 19
-    _T("Caution Area: Risk (define in Associated text field)"), // 20
-    _T("Caution Area: Underwater vehicle operation"), // 21
-    _T("(reserved for future use)"), // 22
-    _T("Environmental Caution Area: Storm front (line squall)"), // 23
-    _T("Environmental Caution Area: Hazardous sea ice"), // 24
-    _T("Environmental Caution Area: Storm warning (storm cell or line of storms)"), // 25
-    _T("Environmental Caution Area: High wind"), // 26
-    _T("Environmental Caution Area: High waves"), // 27
-    _T("Environmental Caution Area: Restricted visibility (fog, rain, etc.)"), // 28
-    _T("Environmental Caution Area: Strong currents"), // 29
-    _T("Environmental Caution Area: Heavy icing"), // 30
-    _T("(reserved for future use)"), // 31
-    _T("Restricted Area: Fishing prohibited"), // 32
-    _T("Restricted Area: No anchoring."), // 33
-    _T("Restricted Area: Entry approval required prior to transit"), // 34
-    _T("Restricted Area: Entry prohibited"), // 35
-    _T("Restricted Area: Active military OPAREA"), // 36
-    _T("Restricted Area: Firing - danger area."), // 37
-    _T("Restricted Area: Drifting Mines"), // 38
-    _T("(reserved for future use)"), // 39
-    _T("Anchorage Area: Anchorage open"), // 40
-    _T("Anchorage Area: Anchorage closed"), // 41
-    _T("Anchorage Area: Anchoring prohibited"), // 42
-    _T("Anchorage Area: Deep draft anchorage"), // 43
-    _T("Anchorage Area: Shallow draft anchorage"), // 44
-    _T("Anchorage Area: Vessel transfer operations"), // 45
-    _T("(reserved for future use)"), // 46
-    _T("(reserved for future use)"), // 47
-    _T("(reserved for future use)"), // 48
-    _T("(reserved for future use)"), // 49
-    _T("(reserved for future use)"), // 50
-    _T("(reserved for future use)"), // 51
-    _T("(reserved for future use)"), // 52
-    _T("(reserved for future use)"), // 53
-    _T("(reserved for future use)"), // 54
-    _T("(reserved for future use)"), // 55
-    _T("Security Alert - Level 1"), // 56
-    _T("Security Alert - Level 2"), // 57
-    _T("Security Alert - Level 3"), // 58
-    _T("(reserved for future use)"), // 59
-    _T("(reserved for future use)"), // 60
-    _T("(reserved for future use)"), // 61
-    _T("(reserved for future use)"), // 62
-    _T("(reserved for future use)"), // 63
-    _T("Distress Area: Vessel disabled and adrift"), // 64
-    _T("Distress Area: Vessel sinking"), // 65
-    _T("Distress Area: Vessel abandoning ship"), // 66
-    _T("Distress Area: Vessel requests medical assistance"), // 67
-    _T("Distress Area: Vessel flooding"), // 68
-    _T("Distress Area: Vessel fire/explosion"), // 69
-    _T("Distress Area: Vessel grounding"), // 70
-    _T("Distress Area: Vessel collision"), // 71
-    _T("Distress Area: Vessel listing/capsizing"), // 72
-    _T("Distress Area: Vessel under assault"), // 73
-    _T("Distress Area: Person overboard"), // 74
-    _T("Distress Area: SAR area"), // 75
-    _T("Distress Area: Pollution response area"), // 76
-    _T("(reserved for future use)"), // 77
-    _T("(reserved for future use)"), // 78
-    _T("(reserved for future use)"), // 79
-    _T("Instruction: Contact VTS at this point/juncture"), // 80
-    _T("Instruction: Contact Port Administration at this point/juncture"), // 81
-    _T("Instruction: Do not proceed beyond this point/juncture"), // 82
-    _T("Instruction: Await instructions prior to proceeding beyond this point/juncture"), // 83
-    _T("Proceed to this location - await instructions"), // 84
-    _T("Clearance granted - proceed to berth"), // 85
-    _T("(reserved for future use)"), // 86
-    _T("(reserved for future use)"), // 87
-    _T("Information: Pilot boarding position"), // 88
-    _T("Information: Icebreaker waiting area"), // 89
-    _T("Information: Places of refuge"), // 90
-    _T("Information: Position of icebreakers"), // 91
-    _T("Information: Location of response units"), // 92
-    _T("VTS active target"), // 93
-    _T("Rouge or suspicious vessel"), // 94
-    _T("Vessel requesting non-distress assistance"), // 95
-    _T("Chart Feature: Sunken vessel"), // 96
-    _T("Chart Feature: Submerged object"), // 97
-    _T("Chart Feature: Semi-submerged object"), // 98
-    _T("Chart Feature: Shoal area"), // 99
-    _T("Chart Feature: Shoal area due north"), // 100
-    _T("Chart Feature: Shoal area due east"), // 101
-    _T("Chart Feature: Shoal area due south"), // 102
-    _T("Chart Feature: Shoal area due west"), // 103
-    _T("Chart Feature: Channel obstruction"), // 104
-    _T("Chart Feature: Reduced vertical clearance"), // 105
-    _T("Chart Feature: Bridge closed"), // 106
-    _T("Chart Feature: Bridge partially open"), // 107
-    _T("Chart Feature: Bridge fully open"), // 108
-    _T("(reserved for future use)"), // 109
-    _T("(reserved for future use)"), // 110
-    _T("(reserved for future use)"), // 111
-    _T("Report from ship: Icing info"), // 112
-    _T("(reserved for future use)"), // 113
-    _T("Report from ship: Miscellaneous information - define in Associated text field"), // 114
-    _T("(reserved for future use)"), // 115
-    _T("(reserved for future use)"), // 116
-    _T("(reserved for future use)"), // 117
-    _T("(reserved for future use)"), // 118
-    _T("(reserved for future use)"), // 119
-    _T("Route: Recommended route"), // 120
-    _T("Route: Alternative route"), // 121
-    _T("Route: Recommended route through ice"), // 122
-    _T("(reserved for future use)"), // 123
-    _T("(reserved for future use)"), // 124
-    _T("Other - Define in associated text field"), // 125
-    _T("Cancellation - cancel area as identified by Message Linkage ID"), // 126
-    _T("Undefined (default)") //, // 127
+    _("Caution Area: Marine mammals habitat (implies whales NOT observed)"), // 0 - WARNING: extra text by Kurt
+    _("Caution Area: Marine mammals in area - reduce speed"), // 1
+    _("Caution Area: Marine mammals in area - stay clear"), // 2
+    _("Caution Area: Marine mammals in area - report sightings"), // 3
+    _("Caution Area: Protected habitat - reduce speed"), // 4
+    _("Caution Area: Protected habitat - stay clear"), // 5
+    _("Caution Area: Protected habitat - no fishing or anchoring"), // 6
+    _("Caution Area: Derelicts (drifting objects)"), // 7
+    _("Caution Area: Traffic congestion"), // 8
+    _("Caution Area: Marine event"), // 9
+    _("Caution Area: Divers down"), // 10
+    _("Caution Area: Swim area"), // 11
+    _("Caution Area: Dredge operations"), // 12
+    _("Caution Area: Survey operations"), // 13
+    _("Caution Area: Underwater operation"), // 14
+    _("Caution Area: Seaplane operations"), // 15
+    _("Caution Area: Fishery - nets in water"), // 16
+    _("Caution Area: Cluster of fishing vessels"), // 17
+    _("Caution Area: Fairway closed"), // 18
+    _("Caution Area: Harbour closed"), // 19
+    _("Caution Area: Risk (define in Associated text field)"), // 20
+    _("Caution Area: Underwater vehicle operation"), // 21
+    _("(reserved for future use)"), // 22
+    _("Environmental Caution Area: Storm front (line squall)"), // 23
+    _("Environmental Caution Area: Hazardous sea ice"), // 24
+    _("Environmental Caution Area: Storm warning (storm cell or line of storms)"), // 25
+    _("Environmental Caution Area: High wind"), // 26
+    _("Environmental Caution Area: High waves"), // 27
+    _("Environmental Caution Area: Restricted visibility (fog, rain, etc.)"), // 28
+    _("Environmental Caution Area: Strong currents"), // 29
+    _("Environmental Caution Area: Heavy icing"), // 30
+    _("(reserved for future use)"), // 31
+    _("Restricted Area: Fishing prohibited"), // 32
+    _("Restricted Area: No anchoring."), // 33
+    _("Restricted Area: Entry approval required prior to transit"), // 34
+    _("Restricted Area: Entry prohibited"), // 35
+    _("Restricted Area: Active military OPAREA"), // 36
+    _("Restricted Area: Firing - danger area."), // 37
+    _("Restricted Area: Drifting Mines"), // 38
+    _("(reserved for future use)"), // 39
+    _("Anchorage Area: Anchorage open"), // 40
+    _("Anchorage Area: Anchorage closed"), // 41
+    _("Anchorage Area: Anchoring prohibited"), // 42
+    _("Anchorage Area: Deep draft anchorage"), // 43
+    _("Anchorage Area: Shallow draft anchorage"), // 44
+    _("Anchorage Area: Vessel transfer operations"), // 45
+    _("(reserved for future use)"), // 46
+    _("(reserved for future use)"), // 47
+    _("(reserved for future use)"), // 48
+    _("(reserved for future use)"), // 49
+    _("(reserved for future use)"), // 50
+    _("(reserved for future use)"), // 51
+    _("(reserved for future use)"), // 52
+    _("(reserved for future use)"), // 53
+    _("(reserved for future use)"), // 54
+    _("(reserved for future use)"), // 55
+    _("Security Alert - Level 1"), // 56
+    _("Security Alert - Level 2"), // 57
+    _("Security Alert - Level 3"), // 58
+    _("(reserved for future use)"), // 59
+    _("(reserved for future use)"), // 60
+    _("(reserved for future use)"), // 61
+    _("(reserved for future use)"), // 62
+    _("(reserved for future use)"), // 63
+    _("Distress Area: Vessel disabled and adrift"), // 64
+    _("Distress Area: Vessel sinking"), // 65
+    _("Distress Area: Vessel abandoning ship"), // 66
+    _("Distress Area: Vessel requests medical assistance"), // 67
+    _("Distress Area: Vessel flooding"), // 68
+    _("Distress Area: Vessel fire/explosion"), // 69
+    _("Distress Area: Vessel grounding"), // 70
+    _("Distress Area: Vessel collision"), // 71
+    _("Distress Area: Vessel listing/capsizing"), // 72
+    _("Distress Area: Vessel under assault"), // 73
+    _("Distress Area: Person overboard"), // 74
+    _("Distress Area: SAR area"), // 75
+    _("Distress Area: Pollution response area"), // 76
+    _("(reserved for future use)"), // 77
+    _("(reserved for future use)"), // 78
+    _("(reserved for future use)"), // 79
+    _("Instruction: Contact VTS at this point/juncture"), // 80
+    _("Instruction: Contact Port Administration at this point/juncture"), // 81
+    _("Instruction: Do not proceed beyond this point/juncture"), // 82
+    _("Instruction: Await instructions prior to proceeding beyond this point/juncture"), // 83
+    _("Proceed to this location - await instructions"), // 84
+    _("Clearance granted - proceed to berth"), // 85
+    _("(reserved for future use)"), // 86
+    _("(reserved for future use)"), // 87
+    _("Information: Pilot boarding position"), // 88
+    _("Information: Icebreaker waiting area"), // 89
+    _("Information: Places of refuge"), // 90
+    _("Information: Position of icebreakers"), // 91
+    _("Information: Location of response units"), // 92
+    _("VTS active target"), // 93
+    _("Rouge or suspicious vessel"), // 94
+    _("Vessel requesting non-distress assistance"), // 95
+    _("Chart Feature: Sunken vessel"), // 96
+    _("Chart Feature: Submerged object"), // 97
+    _("Chart Feature: Semi-submerged object"), // 98
+    _("Chart Feature: Shoal area"), // 99
+    _("Chart Feature: Shoal area due north"), // 100
+    _("Chart Feature: Shoal area due east"), // 101
+    _("Chart Feature: Shoal area due south"), // 102
+    _("Chart Feature: Shoal area due west"), // 103
+    _("Chart Feature: Channel obstruction"), // 104
+    _("Chart Feature: Reduced vertical clearance"), // 105
+    _("Chart Feature: Bridge closed"), // 106
+    _("Chart Feature: Bridge partially open"), // 107
+    _("Chart Feature: Bridge fully open"), // 108
+    _("(reserved for future use)"), // 109
+    _("(reserved for future use)"), // 110
+    _("(reserved for future use)"), // 111
+    _("Report from ship: Icing info"), // 112
+    _("(reserved for future use)"), // 113
+    _("Report from ship: Miscellaneous information - define in Associated text field"), // 114
+    _("(reserved for future use)"), // 115
+    _("(reserved for future use)"), // 116
+    _("(reserved for future use)"), // 117
+    _("(reserved for future use)"), // 118
+    _("(reserved for future use)"), // 119
+    _("Route: Recommended route"), // 120
+    _("Route: Alternative route"), // 121
+    _("Route: Recommended route through ice"), // 122
+    _("(reserved for future use)"), // 123
+    _("(reserved for future use)"), // 124
+    _("Other - Define in associated text field"), // 125
+    _("Cancellation - cancel area as identified by Message Linkage ID"), // 126
+    _("Undefined (default)") //, // 127
 };
 
 enum {
