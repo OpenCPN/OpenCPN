@@ -51,6 +51,7 @@
 #include "routeprop.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
+#include "multiplexer.h"
 
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -81,6 +82,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
 extern RoutePoint      *pAnchorWatchPoint2;
 extern int              g_route_line_width;
+extern Multiplexer     *g_pMUX;
 
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -512,9 +514,6 @@ bool Routeman::DeactivateRoute( bool b_arrival )
 
 bool Routeman::UpdateAutopilot()
 {
-/*TODO
-    if( !pAPilot->IsOK() ) return false;
-
     //    Get the requested A/P sentence
     wxString ap_sentence = _T("RMB");               // default
     pConfig->SetPath( _T ( "/Settings" ) );
@@ -561,12 +560,7 @@ bool Routeman::UpdateAutopilot()
 
             m_NMEA0183.Rmb.Write( snt );
 
-            //      stats->pTStat2->TextDraw(( const char *)snt.Sentence);
-//                  char t[200];
-//                  strncpy(t, snt.Sentence, 199);
-//                  printf("%s", t);
-
-            pAPilot->AutopilotOut( snt.Sentence );
+            g_pMUX->SendNMEAMessage( snt.Sentence );
         }
 
         if( token.IsSameAs( _T("RMC"), false ) ) {
@@ -608,16 +602,11 @@ bool Routeman::UpdateAutopilot()
 
             m_NMEA0183.Rmc.Write( snt );
 
-            pAPilot->AutopilotOut( snt.Sentence );
-
-//                  char t[200];
-//                  strncpy(t, snt.Sentence, 199);
-//                  printf("%s", t);
-
+            g_pMUX->SendNMEAMessage( snt.Sentence );
         }
 
     }           // while
-*/
+
     return true;
 }
 

@@ -597,9 +597,6 @@ double g_GLMinLineWidth;
 int n_NavMessageShown;
 wxString g_config_version_string;
 
-DataStream  *g_pDataStreamGPS;
-DataStream  *g_pDataStreamAIS;
-
 #ifndef __WXMSW__
 sigjmp_buf env;                    // the context saved by sigsetjmp();
 #endif
@@ -2115,16 +2112,14 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_ChartUpdatePeriod = 1;                  // set the default (1 sec.) period
 
 //    Establish my children
-///BEGIN TEST
     m_current_src_priority = 0;
     m_current_src_id = wxEmptyString;
     m_current_src_ticks = 0;
-    // test the new DataStream class
+
     g_pMUX = new Multiplexer();
 
     g_pAIS = new AIS_Decoder( );
-//    g_pDataStreamAIS = new DataStream( g_pMUX, _T("/dev/null"), _T("38400"), DS_TYPE_INPUT );
-//    DataStream *pds = new DataStream( g_pMUX, _T("GPSD"), _T(""), DS_TYPE_INPUT );
+
     for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
     {
         ConnectionParams *cp = g_pConnectionParams->Item(i);
@@ -2145,7 +2140,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_pMUX->SetGPSHandler(this);
     //  Create/connect a dynamic event handler slot
     Connect( wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
-///END TEST
+
     bFirstAuto = true;
 
     //        Establish the system icons for the frame.
@@ -2876,12 +2871,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pi_manager->UnLoadAllPlugIns();
         delete g_pi_manager;
         g_pi_manager = NULL;
-    }
-
-    if( g_pDataStreamGPS )
-    {
-        g_pDataStreamGPS->Close();
-        delete g_pDataStreamGPS;
     }
 
     if( g_pAIS ) {
