@@ -363,9 +363,6 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
     wxArrayString filter;
     bool listype = false;
 
-    if (filter.Count() == 0) //Empty list means everything passes
-        return true;
-
     if (direction == FILTER_INPUT)
     {
         filter = m_input_filter;
@@ -378,6 +375,10 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
         if (m_output_filter_type == WHITELIST)
             listype = true;
     }
+
+    if (filter.Count() == 0) //Empty list means everything passes
+        return true;
+
     wxString fs;
     for (size_t i = 0; i < filter.Count(); i++)
     {
