@@ -2157,8 +2157,10 @@ void options::UpdateWorkArrayFromTextCtl()
 
 ConnectionParams * options::SaveConnectionParams()
 {
+    if ( connectionsaved )
+        return NULL;
     ConnectionParams * m_pConnectionParams = new ConnectionParams();
-    //TODO: The error handling is still way too naive... Same for input validation.
+
     if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString )
     {
         wxMessageBox( _("You must select or enter the port..."), _("Error!") );
@@ -3605,6 +3607,7 @@ void options::SetConnectionParams(ConnectionParams *cp)
 
 void options::OnAddDatasourceClick( wxCommandEvent& event )
 {
+    connectionsaved = false;
     ConnectionParams *cp = new ConnectionParams();
     SetConnectionParams( cp );
     SetNMEAFormToSerial();
@@ -3659,6 +3662,7 @@ void options::OnRemoveDatasourceClick( wxCommandEvent& event )
 
 void options::OnSelectDatasource( wxListEvent& event )
 {
+    connectionsaved = false;
     SetConnectionParams(g_pConnectionParams->Item(event.GetIndex()));
     m_buttonRemove->Enable();
     event.Skip();

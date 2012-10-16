@@ -355,7 +355,7 @@ public:
     void OnCbOutput( wxCommandEvent& event ) { OnValChange(event); }
     void OnRbOutput( wxCommandEvent& event ) { OnValChange(event); }
     void OnBtnOStcs( wxCommandEvent& event );
-    void OnValChange( wxCommandEvent& event ) { connectionsaved = false; event.Skip(); }
+    void OnValChange( wxCommandEvent& event ) { event.Skip(); }
     bool connectionsaved;
 
 //    For "S57" page
