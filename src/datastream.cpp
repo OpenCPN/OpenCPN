@@ -291,38 +291,32 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
 
             bool done = false;
 
-            while(!done)
-            {
-
-                size_t nmea_start = m_sock_buffer.find_first_of(_T("$!")); // detect the potential start of a NMEA string
-                size_t nmea_end = wxString::npos;
-                if(nmea_start != wxString::npos)
-                {
-                    nmea_end = m_sock_buffer.find('*',nmea_start); // find the checksum marker
-                    if(nmea_end != wxString::npos && nmea_end < m_sock_buffer.size()-2)
-                        nmea_end += 3; // move to the char after the 2 checksum digits
-                    else
-                        nmea_end = wxString::npos;
-                }
-                if (nmea_end != wxString::npos)
-                {
-                    wxString nmea_line = m_sock_buffer.substr(nmea_start,nmea_end-nmea_start);
+            while(!done){
+                size_t nmea_end = m_sock_buffer.find('*'); // detect the potential end of a NMEA string by finding the checkum marker
+                if(nmea_end != wxString::npos && nmea_end < m_sock_buffer.size()-2){
+                    nmea_end += 3; // move to the char after the 2 checksum digits
+                    wxString nmea_line = m_sock_buffer.substr(0,nmea_end);
                     m_sock_buffer = m_sock_buffer.substr(nmea_end);
 
-                    if( m_consumer && SentencePassesFilter( nmea_line, FILTER_INPUT ) && ChecksumOK(nmea_line))
-                    {
-                        OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                        Nevent.SetNMEAString(nmea_line);
-                        Nevent.SetDataSource(m_portstring);
-                        Nevent.SetPriority(m_priority);
-                        m_consumer->AddPendingEvent(Nevent);
+                    size_t nmea_start = nmea_line.find_last_of(_T("$!")); // detect the potential start of a NMEA string, skipping preceding chars that may look like the start of a string.
+                    if(nmea_start != wxString::npos){
+                        nmea_line = nmea_line.substr(nmea_start);
+                        if( m_consumer && SentencePassesFilter( nmea_line, FILTER_INPUT ) && ChecksumOK(nmea_line)){
+                            OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+                            Nevent.SetNMEAString(nmea_line);
+                            Nevent.SetDataSource(m_portstring);
+                            Nevent.SetPriority(m_priority);
+                            m_consumer->AddPendingEvent(Nevent);
+                        }
                     }
-
                 }
                 else
                     done = true;
             }
 
+            // Prevent non-nmea junk from consuming to much memory by limiting carry-over buffer size.
+            if(m_sock_buffer.size()>RD_BUF_SIZE)
+                m_sock_buffer = m_sock_buffer.substr(m_sock_buffer.size()-RD_BUF_SIZE);
 
             break;
         }
