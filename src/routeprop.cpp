@@ -637,6 +637,7 @@ void RouteProp::OnRoutepropCopyTxtClick( wxCommandEvent& event )
             << _("Destination") << tab << m_pRoute->m_RouteEndString << eol
             << _("Total Distance") << tab << m_TotalDistCtl->GetValue() << eol
             << _("Speed (Kts)") << tab << m_PlanSpeedCtl->GetValue() << eol
+            << _("Departure Time (m/d/y h:m)") << tab << m_StartTimeCtl->GetValue() << eol
             << _("Time Enroute") << tab << m_TimeEnrouteCtl->GetValue() << eol << eol;
 
     int noCols;
