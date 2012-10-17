@@ -6005,7 +6005,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         //    Of course, if the target reported a valid HDG, then use it for icon
         if( (int) ( td->HDG ) != 511 ) theta = ( ( td->HDG - 90 ) * PI / 180. ) + GetVP().rotation;
 
-        if( !g_bskew_comp && !g_bCourseUp ) theta += GetVP().skew;
+//        if( !g_bskew_comp && !g_bCourseUp ) theta += GetVP().skew;
 
         wxDash dash_long[2];
         dash_long[0] = (int) ( 1.0 * m_pix_per_mm );  // Long dash  <---------+
