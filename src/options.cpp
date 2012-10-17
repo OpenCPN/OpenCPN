@@ -2202,7 +2202,7 @@ ConnectionParams * options::SaveConnectionParams()
     else
         m_pConnectionParams->OutputSentenceListType = BLACKLIST;
     m_pConnectionParams->Port = m_comboPort->GetValue();
-    m_pConnectionParams->Protocol = NMEA0183;
+    m_pConnectionParams->Protocol = PROTO_NMEA0183;
     return m_pConnectionParams;
 }
 
@@ -3639,11 +3639,11 @@ void options::FillSourceList()
         m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetFiltersStr());
     }
 
-    m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE );
-    m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE );
-    m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE );
-    m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE );
-    m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE_USEHEADER );
 }
 
 void options::OnRemoveDatasourceClick( wxCommandEvent& event )

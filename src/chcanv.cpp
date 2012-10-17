@@ -64,6 +64,7 @@
 #include "ocpndc.h"
 #include "undo.h"
 #include "toolbar.h"
+#include "multiplexer.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -130,7 +131,6 @@ extern MarkInfoImpl     *pMarkPropDialog;
 extern RouteProp        *pRoutePropDialog;
 extern MarkInfoImpl     *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
-extern NMEAHandler      *g_pnmea;
 
 extern IDX_entry        *gpIDX;
 extern int               gpIDXn;
@@ -266,6 +266,7 @@ extern int              g_current_arrow_scale;
 
 extern S57QueryDialog   *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager* g_StyleManager;
+extern Multiplexer      *g_pMUX;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -9177,11 +9178,11 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_WPT_MENU_SENDTOGPS:
         if( m_pFoundRoutePoint ) {
             wxString port, com;
-/*TODO:            if( g_pnmea ) {
-                g_pnmea->GetSource( port );
-                if( port.StartsWith( _T("Serial:"), &com ) ) port = com;
+            if( g_pMUX ) {
+//                g_pnmea->GetSource( port );
+//                if( port.StartsWith( _T("Serial:"), &com ) ) port = com;
                 m_pFoundRoutePoint->SendToGPS( port, NULL );
-            }*/
+            }
         }
         break;
 

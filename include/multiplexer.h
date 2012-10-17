@@ -48,6 +48,9 @@ class Multiplexer : public wxEvtHandler
         void SetAISHandler(wxEvtHandler *handler);
         void SetGPSHandler(wxEvtHandler *handler);
 
+        bool SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypoints, wxGauge *pProgress);
+        bool SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge *pProgress);
+
         void OnEvtStream(OCPN_DataStreamEvent& event);
 
     private:

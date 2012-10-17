@@ -67,6 +67,7 @@
 #include "ocpndc.h"
 #include "geodesic.h"
 #include "datastream.h"
+#include "multiplexer.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -309,6 +310,7 @@ extern wxString         g_GPS_Ident;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxArrayString    TideCurrentDataSet;
 extern wxString         g_TCData_Dir;
+extern Multiplexer      *g_pMUX;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -1257,7 +1259,7 @@ bool RoutePoint::IsSame( RoutePoint *pOtherRP )
 bool RoutePoint::SendToGPS( wxString& com_name, wxGauge *pProgress )
 {
     bool result = false;
-    //TODO: if( g_pnmea ) result = g_pnmea->SendWaypointToGPS( this, com_name, pProgress );
+    if( g_pMUX ) result = g_pMUX->SendWaypointToGPS( this, com_name, pProgress );
 
     wxString msg;
     if( result ) msg = _("Waypoint(s) Uploaded successfully.");
@@ -2201,7 +2203,7 @@ void Route::RenameRoutePoints( void )
 bool Route::SendToGPS( wxString& com_name, bool bsend_waypoints, wxGauge *pProgress )
 {
     bool result = false;
-    //TODO: if( g_pnmea ) result = g_pnmea->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
+    if( g_pMUX ) result = g_pMUX->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
 
     wxString msg;
     if( result ) msg = _("Route Uploaded successfully.");

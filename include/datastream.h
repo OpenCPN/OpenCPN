@@ -113,9 +113,9 @@ typedef enum
 
 typedef enum
 {
-    NMEA0183 = 0,
-    SEATALK = 1,
-    NMEA2000 = 2
+    PROTO_NMEA0183 = 0,
+    PROTO_SEATALK = 1,
+    PROTO_NMEA2000 = 2
 } DataProtocol;
 
 #define DS_SOCKET_ID             5001

@@ -1616,7 +1616,7 @@ ConnectionParams::ConnectionParams()
     NetProtocol = TCP;
     NetworkAddress = wxEmptyString;
     NetworkPort = 0;
-    Protocol = NMEA0183;
+    Protocol = PROTO_NMEA0183;
     Port = wxEmptyString;
     Baudrate = 4800;
     ChecksumCheck = true;
