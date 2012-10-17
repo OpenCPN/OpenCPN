@@ -35,7 +35,7 @@ private:
 class DashboardInstrument_BrgDist : public DashboardInstrument
 {
 public:
-      DashboardInstrument_BrgDist(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1=OCPN_DBP_STC_LAT, int cap_flag2=OCPN_DBP_STC_LON);
+      DashboardInstrument_BrgDist(wxWindow *pparent, wxWindowID id, wxString title);
       ~DashboardInstrument_BrgDist(){}
 
       wxSize GetSize( int orient, wxSize hint );
@@ -44,9 +44,8 @@ public:
 protected:
       wxString m_data1;
       wxString m_data2;
-      int m_cap_flag1;
-      int m_cap_flag2;
       int m_DataHeight;
+      double m_lat, m_lon, m_curlat, m_curlon, m_brg, m_dist;
 
       void Draw(wxGCDC* dc);
 };

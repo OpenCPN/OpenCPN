@@ -841,8 +841,6 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         mPriPosition = 1;
         SendSentenceToAllInstruments( OCPN_DBP_STC_LAT, pfix.Lat, _T("SDMM") );
         SendSentenceToAllInstruments( OCPN_DBP_STC_LON, pfix.Lon, _T("SDMM") );
-        mlat = pfix.Lat;
-        mlon = pfix.Lon;
     }
     if( mPriCOGSOG >= 1 ) {
         mPriCOGSOG = 1;
@@ -864,11 +862,11 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
 
 void dashboard_pi::SetCursorLatLon( double lat, double lon )
 {
-    double brg, dist;
+ /*   double brg, dist;
     BrgDistCalc cBD;
     cBD.BearingDistanceMercator(lat, lon, mlat, mlon, &brg, &dist);
     SendSentenceToAllInstruments(OCPN_DBP_STC_CBR, brg, _T("DEGNM"));
-    SendSentenceToAllInstruments(OCPN_DBP_STC_CDI, dist, _T("DEGNM"));
+    SendSentenceToAllInstruments(OCPN_DBP_STC_CDI, dist, _T("DEGNM"));*/
 
     SendSentenceToAllInstruments( OCPN_DBP_STC_PLA, lat, _T("SDMM") );
     SendSentenceToAllInstruments( OCPN_DBP_STC_PLO, lon, _T("SDMM") );
@@ -1937,7 +1935,7 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                         getInstrumentCaption( id ), OCPN_DBP_STC_PLA, OCPN_DBP_STC_PLO );
                 break;
             case ID_DBP_I_CBD:
-                instrument = new DashboardInstrument_BrgDist(this, wxID_ANY, getInstrumentCaption(id), OCPN_DBP_STC_CBR, OCPN_DBP_STC_CDI );
+                instrument = new DashboardInstrument_BrgDist(this, wxID_ANY, getInstrumentCaption(id));
                 break;
             case ID_DBP_I_CLK:
                 instrument = new DashboardInstrument_Clock( this, wxID_ANY,

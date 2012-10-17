@@ -34,13 +34,11 @@ static double es, onef, f, f64, f2, f4;
 //
 //----------------------------------------------------------------
 
-DashboardInstrument_BrgDist::DashboardInstrument_BrgDist(wxWindow *pparent, wxWindowID id, wxString title, int cap_flag1, int cap_flag2)
-      :DashboardInstrument(pparent, id, title, cap_flag1 | cap_flag2)
+DashboardInstrument_BrgDist::DashboardInstrument_BrgDist(wxWindow *pparent, wxWindowID id, wxString title)
+      :DashboardInstrument(pparent, id, title, OCPN_DBP_STC_LAT|OCPN_DBP_STC_LON|OCPN_DBP_STC_PLA|OCPN_DBP_STC_PLO)
 {
       m_data1 = _T("---");
       m_data2 = _T("---");
-      m_cap_flag1 = cap_flag1;
-      m_cap_flag2 = cap_flag2;
 }
 
 wxSize DashboardInstrument_BrgDist::GetSize( int orient, wxSize hint )
@@ -70,16 +68,18 @@ void DashboardInstrument_BrgDist::Draw(wxGCDC* dc)
 
 void DashboardInstrument_BrgDist::SetData(int st, double data, wxString unit)
 {
-      if (st == m_cap_flag1)
-      {
-            m_data1 = toDEGNM(1, data);
-      }
-      else if (st == m_cap_flag2)
-      {
-            m_data2 = toDEGNM(2, data);
-      }
-      else return;
-      Refresh(false);
+    if (st == OCPN_DBP_STC_LAT) m_lat = data;
+    if (st == OCPN_DBP_STC_LON) m_lon = data;
+    if (st == OCPN_DBP_STC_PLA) m_curlat = data;
+    if (st == OCPN_DBP_STC_PLO) m_curlon = data;
+
+    BrgDistCalc cBD;
+    cBD.BearingDistanceMercator(m_curlat, m_curlon, m_lat, m_lon, &m_brg, &m_dist);
+    
+    m_data1 = toDEGNM(1, m_brg);
+    m_data2 = toDEGNM(2, m_dist);
+    
+    Refresh(false);
 }
 
 /**************************************************************************/
