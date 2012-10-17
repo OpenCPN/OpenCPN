@@ -279,6 +279,9 @@ void options::Init()
     m_pageShips = -1;
     m_pageUI = -1;
     m_pagePlugins = -1;
+    
+    lastPage = -1;
+    
 
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
