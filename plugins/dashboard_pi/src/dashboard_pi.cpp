@@ -862,12 +862,6 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
 
 void dashboard_pi::SetCursorLatLon( double lat, double lon )
 {
- /*   double brg, dist;
-    BrgDistCalc cBD;
-    cBD.BearingDistanceMercator(lat, lon, mlat, mlon, &brg, &dist);
-    SendSentenceToAllInstruments(OCPN_DBP_STC_CBR, brg, _T("DEGNM"));
-    SendSentenceToAllInstruments(OCPN_DBP_STC_CDI, dist, _T("DEGNM"));*/
-
     SendSentenceToAllInstruments( OCPN_DBP_STC_PLA, lat, _T("SDMM") );
     SendSentenceToAllInstruments( OCPN_DBP_STC_PLO, lon, _T("SDMM") );
 }
