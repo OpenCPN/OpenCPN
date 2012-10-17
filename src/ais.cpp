@@ -86,6 +86,7 @@ extern bool             g_bAISShowTracks;
 extern double           g_AISShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
+extern bool             g_bShowAllCPA;
 
 extern bool             g_bGPSAISMux;
 extern ColorScheme      global_color_scheme;
@@ -475,7 +476,7 @@ AIS_Target_Data::AIS_Target_Data()
     strncpy(CallSign, "       ", 8);
     strncpy(Destination, "                    ", 21);
     ShipNameExtension[0] = 0;
-    b_show_AIS_CPA = false;
+    b_show_AIS_CPA = g_bShowAllCPA;             // default vlaue as set by Options            
 
     SOG = 555.;
     COG = 666.;

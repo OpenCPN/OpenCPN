@@ -367,7 +367,7 @@ public:
     wxTextCtrl                *m_pText_ACK_Timeout;
     wxCheckBox                *m_pCheck_Show_Area_Notices;
     wxCheckBox                *m_pCheck_Draw_Target_Size;
-
+    wxCheckBox                *m_pCheck_ShowAllCPA;
 //    For Ship page
     wxFlexGridSizer*        realSizes;
     wxTextCtrl              *m_pOSLength;
