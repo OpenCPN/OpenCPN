@@ -537,7 +537,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     bSizer16->Add( m_rbNetProtoTCP, 0, wxALL, 5 );
 
     m_rbNetProtoUDP = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("UDP"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_rbNetProtoUDP->Enable( false );
+    m_rbNetProtoUDP->Enable( true );
 
     bSizer16->Add( m_rbNetProtoUDP, 0, wxALL, 5 );
 

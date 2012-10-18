@@ -108,6 +108,7 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
              int EOS_type,
              int handshake_type,
              void *user_data )
+:m_net_protocol(GPSD),m_connection_type(Serial)
 
 {
     m_consumer = input_consumer;
@@ -141,6 +142,7 @@ void DataStream::Open(void)
         //    Data Source is specified serial port
         if(m_portstring.Contains(_T("Serial")))
         {
+            m_connection_type = Serial;
             wxString comx;
             comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
 
@@ -174,28 +176,53 @@ void DataStream::Open(void)
             m_bok = true;
             m_bsec_thread_active = true;
         }
-        else if(m_portstring.Contains(_T("GPSD")) || m_portstring.StartsWith(_T("TCP"))) {
-
-            //  Capture the  parameters from the portstring
-            m_gpsd_addr = _T("127.0.0.1");              // defaults
-            m_gpsd_port = _T("2947");
+        else if(m_portstring.Contains(_T("GPSD"))){
+            m_net_addr = _T("127.0.0.1");              // defaults
+            m_net_port = _T("2947");
             m_net_protocol = GPSD;
+            m_connection_type = Network;
+        }
+        else if(m_portstring.StartsWith(_T("TCP"))) {
+            m_net_addr = _T("127.0.0.1");              // defaults
+            m_net_port = _T("2947");
+            m_net_protocol = TCP;
+            m_connection_type = Network;
+        }
+        else if(m_portstring.StartsWith(_T("UDP"))) {
+            m_net_addr =  _T("0.0.0.0");              // any address
+            m_net_port = _T("0");                     // any port
+            m_net_protocol = UDP;
+            m_connection_type = Network;
+        }
+        
+        if(m_connection_type == Network){
+        
+            //  Capture the  parameters from the portstring
 
             wxStringTokenizer tkz(m_portstring, _T(":"));
-            wxString token = tkz.GetNextToken();                //GPSD or TCP
-            if (token.StartsWith(_T("TCP")))
-                m_net_protocol = TCP;
+            wxString token = tkz.GetNextToken();                //GPSD, TCP or UDP
 
             token = tkz.GetNextToken();                         //ip
             if(!token.IsEmpty())
-                m_gpsd_addr = token;
+                m_net_addr = token;
 
             token = tkz.GetNextToken();                         //port
             if(!token.IsEmpty())
-                m_gpsd_port = token;
+                m_net_port = token;
 
-            // Create the socket to the GPSD Daemon
-            m_sock = new wxSocketClient();
+            
+            m_addr.Hostname(m_net_addr);
+            m_addr.Service(m_net_port);
+            
+            // Create the socket
+            switch(m_net_protocol){
+                case GPSD:
+                case TCP:
+                    m_sock = new wxSocketClient();
+                    break;
+                case UDP:
+                    m_sock = new wxDatagramSocket(m_addr, wxSOCKET_NOWAIT);
+            }
 
             // Setup the event handler and subscribe to most events
             m_sock->SetEventHandler(*this, DS_SOCKET_ID);
@@ -206,9 +233,18 @@ void DataStream::Open(void)
             m_sock->Notify(TRUE);
             m_sock->SetTimeout(1);              // Short timeout
 
-            m_addr.Hostname(m_gpsd_addr);
-            m_addr.Service(m_gpsd_port);
-            m_sock->Connect(m_addr, FALSE);       // Non-blocking connect
+            switch(m_net_protocol){
+                case GPSD:
+                case TCP:{
+                    wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+                    tcp_socket->Connect(m_addr, FALSE);
+                    break;
+                }
+                case UDP:{
+                    break;
+                }
+            }
+            
             m_bok = true;
         }
     }
@@ -420,22 +456,38 @@ bool DataStream::SendSentence( const wxString &sentence )
 {
     if( m_io_select == DS_TYPE_INPUT || !SentencePassesFilter( sentence, FILTER_OUTPUT ) ) //Output forbidden for this port or sentence filtered out
         return false;
-    if (m_pSecondary_Thread)
-    {
-        m_pSecondary_Thread->SendMsg(sentence);
-        return m_pSecondary_Thread->SendMsg(_T("\r\n")) > 0;
-    }
-    else
-        if(m_sock)
-        {
-            if (m_sock->IsDisconnected())
-                m_sock->Connect(m_addr, FALSE);
-            else
-            {
-                m_sock->Write(sentence.mb_str(), strlen(sentence.mb_str()));
-                m_sock->Write("\r\n", 2);
+    switch( m_connection_type ) {
+        case Serial:
+            if( m_pSecondary_Thread ) {
+                m_pSecondary_Thread->SendMsg( sentence );
+                return m_pSecondary_Thread->SendMsg( _T( "\r\n" ) ) > 0;
             }
-        }
+            break;
+        case Network:
+            if( m_sock ) {
+                switch(m_net_protocol){
+                    case GPSD:
+                    case TCP:{
+                        wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+                        assert(tcp_socket);
+                        if( tcp_socket->IsDisconnected() )
+                            tcp_socket->Connect( m_addr, FALSE );
+                        else {
+                            tcp_socket->Write( sentence.mb_str(), strlen( sentence.mb_str() ) );
+                            tcp_socket->Write( "\r\n", 2 );
+                        }
+                    }
+                    break;
+                    case UDP:{
+                        wxDatagramSocket* udp_socket = dynamic_cast<wxDatagramSocket*>(m_sock);
+                        assert(udp_socket);
+                        wxString packet = sentence+_T("\r\n");
+                        udp_socket->SendTo(m_addr, packet.mb_str(), packet.size() );
+                    }
+                }
+            }
+            break;
+    }
     return true;
 }
 

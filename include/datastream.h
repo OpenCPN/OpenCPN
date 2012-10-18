@@ -243,11 +243,12 @@ private:
     int                 m_last_error;
 
     wxIPV4address       m_addr;
-    wxSocketClient      *m_sock;
+    wxSocketBase        *m_sock;
     wxString            m_sock_buffer;
-    wxString            m_gpsd_addr;
-    wxString            m_gpsd_port;
+    wxString            m_net_addr;
+    wxString            m_net_port;
     NetworkProtocol     m_net_protocol;
+    ConnectionType      m_connection_type;
 
     bool                m_bchecksumCheck;
     wxArrayString       m_input_filter;
