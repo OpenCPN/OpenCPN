@@ -3173,7 +3173,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
 
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
-    Read( _T ( "bShowAllCPA" ), &g_bShowAllCPA );
+    Read( _T ( "bShowAllCPA" ), &g_bShowAllCPA, 1 );
     
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
 
