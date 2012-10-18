@@ -166,7 +166,6 @@ private:
       // FFU
       double               mSatsInView;
       double               mHdm;
-      double               mlat, mlon;
       wxDateTime           mUTCDateTime;
 
 //protected:
