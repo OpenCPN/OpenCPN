@@ -1567,7 +1567,7 @@ void ConnectionParams::Deserialize(wxString &configStr)
 {
     Valid = true;
     wxArrayString prms = wxStringTokenize( configStr, _T(";") );
-    if (prms.Count() < 15)
+    if (prms.Count() < 16)
     {
         Valid = false;
         return;
@@ -1587,6 +1587,7 @@ void ConnectionParams::Deserialize(wxString &configStr)
     OutputSentenceList = wxStringTokenize(prms[12], _T(","));
     Priority = wxAtoi(prms[13]);
     Garmin = !!wxAtoi(prms[14]);
+    FurunoGP3X = !!wxAtoi(prms[15]);
 }
 
 wxString ConnectionParams::Serialize()
@@ -1605,7 +1606,7 @@ wxString ConnectionParams::Serialize()
             ostcs.Append( _T(",") );
         ostcs.Append( OutputSentenceList[i] );
     }
-    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d"), Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol, Port.c_str(), Baudrate, ChecksumCheck, Output, InputSentenceListType, istcs.c_str(), OutputSentenceListType, ostcs.c_str(), Priority, Garmin );
+    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d"), Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol, Port.c_str(), Baudrate, ChecksumCheck, Output, InputSentenceListType, istcs.c_str(), OutputSentenceListType, ostcs.c_str(), Priority, Garmin, FurunoGP3X );
 
     return ret;
 }
@@ -1621,6 +1622,7 @@ ConnectionParams::ConnectionParams()
     Baudrate = 4800;
     ChecksumCheck = true;
     Garmin = false;
+    FurunoGP3X = false;
     Output = false;
     InputSentenceListType = WHITELIST;
     OutputSentenceListType = WHITELIST;

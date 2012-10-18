@@ -265,31 +265,32 @@ ADD_LIBRARY(NMEA0183 ${SRC_NMEA0183})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/nmea0183)
 
 
-IF(NOT WIN32)
-OPTION (USE_GPSD "Enable GPSD Library" ON)
-IF (USE_GPSD)
-      message (STATUS "GPSD Library support: enabled")
-
- #     FIND_PACKAGE(gps QUIET)
-     FIND_PACKAGE(gps)
-      IF (GPS_FOUND)
-            message (STATUS "Building with libgps includes")
-            INCLUDE_DIRECTORIES(${GPS_INCLUDE_DIR})
-            ADD_DEFINITIONS(${GPS_DEFINITIONS})
-            ADD_DEFINITIONS(-DBUILD_WITH_LIBGPS)
-            message (STATUS "GPS library include location is ${GPS_INCLUDE_DIR}")
-      ELSE (GPS_FOUND)
-            message (STATUS "Gps library not found")
-      ENDIF (GPS_FOUND)
-ENDIF (USE_GPSD)
-ENDIF (NOT WIN32)
+#IF(NOT WIN32)
+#OPTION (USE_GPSD "Enable GPSD Library" ON)
+#IF (USE_GPSD)
+#      message (STATUS "GPSD Library support: enabled")
+#
+##     FIND_PACKAGE(gps QUIET)
+#     FIND_PACKAGE(gps)
+#      IF (GPS_FOUND)
+#            message (STATUS "Building with libgps includes")
+#            INCLUDE_DIRECTORIES(${GPS_INCLUDE_DIR})
+#            ADD_DEFINITIONS(${GPS_DEFINITIONS})
+#            ADD_DEFINITIONS(-DBUILD_WITH_LIBGPS)
+#            message (STATUS "GPS library include location is ${GPS_INCLUDE_DIR}")
+##            SET(EXTRA_LIBS ${EXTRA_LIBS} ${GPS_LIBRARY})
+#      ELSE (GPS_FOUND)
+#            message (STATUS "Gps library not found")
+#      ENDIF (GPS_FOUND)
+#ENDIF (USE_GPSD)
+#ENDIF (NOT WIN32)
 
 
 
 
 SET(HDRS
-        	include/ocpn_types.h
-        	include/ocpndc.h
+        include/ocpn_types.h
+        include/ocpndc.h
 		include/chart1.h
 		include/bbox.h
 		include/ocpn_pixel.h
@@ -326,14 +327,14 @@ SET(HDRS
 		include/compasswin.h
 		include/geodesic.h
 		include/datastream.h
-                include/multiplexer.h
+        include/multiplexer.h
 )
 
 SET(SRCS
 		src/chart1.cpp
 		src/bbox.cpp
 		src/ocpn_pixel.cpp
-        	src/ocpndc.cpp
+        src/ocpndc.cpp
 		src/chartdb.cpp
 		src/chartdbs.cpp
 		src/chartimg.cpp
@@ -366,7 +367,7 @@ SET(SRCS
 		src/compasswin.cpp
 		src/geodesic.cpp
 		src/datastream.cpp
-                src/multiplexer.cpp
+        src/multiplexer.cpp
     )
 
 IF(wx_Version MATCHES "2.9")
@@ -494,11 +495,11 @@ IF (USE_GARMINHOST)
 	SET(SRC_GARMINHOST
                   src/garmin/jeeps/gpsapp.c
                   src/garmin/jeeps/gpscom.c
-	          src/garmin/jeeps/gpsmath.c
+                  src/garmin/jeeps/gpsmath.c
                   src/garmin/jeeps/gpsmem.c
-	          src/garmin/jeeps/gpsprot.c
+	              src/garmin/jeeps/gpsprot.c
                   src/garmin/jeeps/gpsread.c
-	          src/garmin/jeeps/gpsdevice.c
+	              src/garmin/jeeps/gpsdevice.c
                   src/garmin/jeeps/gpsdevice_ser.c
                   src/garmin/jeeps/gpsdevice_usb.c
                   src/garmin/jeeps/gpsrqst.c
@@ -532,7 +533,6 @@ IF (USE_GARMINHOST)
                   src/garmin/jeeps/gpssend.h
                   src/garmin/jeeps/gpsusbcommon.h
                   src/garmin/jeeps/gpsutil.h
-
 	)
         IF(WIN32)
            SET(SRC_GARMINHOST ${SRC_GARMINHOST} src/garmin/jeeps/gpsusbwin.c)
@@ -610,7 +610,6 @@ IF (USE_S57)
             data/s57data/rastersymbols-day.png
             data/s57data/rastersymbols-dusk.png
             data/s57data/chartsymbols.xml
-
              )
 ENDIF (USE_S57)
 

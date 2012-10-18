@@ -128,7 +128,6 @@ extern bool             g_bopengl;
 extern bool             g_bsmoothpanzoom;
 
 extern bool             g_bShowOutlines;
-extern bool             g_bGarminPersistance;
 extern bool             g_bShowActiveRouteHighway;
 extern int              g_nNMEADebug;
 extern int              g_nAWDefault;
@@ -206,8 +205,6 @@ extern int              g_memCacheLimit;
 extern bool             g_bGDAL_Debug;
 extern bool             g_bDebugCM93;
 extern bool             g_bDebugS57;
-
-extern bool             g_bGarminHost;
 
 extern double           g_ownship_predictor_minutes;
 
@@ -2991,8 +2988,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
 
-    Read( _T ( "UseGarminHost" ), &g_bGarminHost, 0 );
-
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
     Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
     g_COGFilterSec = wxMin(g_COGFilterSec, MAX_COGSOG_FILTER_SECONDS);
@@ -3071,7 +3066,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
     Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark, 0 );
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
-    Read( _T ( "GarminPersistance" ), &g_bGarminPersistance, 0 );
     Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
 
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
@@ -4277,9 +4271,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
     Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
-    Write( _T ( "GarminPersistance" ), g_bGarminPersistance );
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
-    Write( _T ( "UseGarminHost" ), g_bGarminHost );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
 
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );

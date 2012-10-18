@@ -899,7 +899,7 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
     itemDialog1->SetSizer( itemBoxSizer2 );
 
 //      Create the ScrollBox list of available com ports in a labeled static box
-
+/*TODO: Obsolete, we now simply send it to all the places where it makes sense...
     wxStaticBox* comm_box = new wxStaticBox( this, wxID_ANY, _("GPS/Plotter Port") );
 
     wxStaticBoxSizer* comm_box_sizer = new wxStaticBoxSizer( comm_box, wxVERTICAL );
@@ -926,7 +926,7 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
     m_itemCommListBox->SetSelection( sidx );
 
     comm_box_sizer->Add( m_itemCommListBox, 0, wxEXPAND | wxALL, 5 );
-
+*/
     //    Add a reminder text box
     itemBoxSizer2->AddSpacer( 20 );
 
@@ -961,11 +961,13 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
 void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
 {
     //    Get the selected comm port
+/*TODO: Obsolete, we now simply send it to all the places where it makes sense...
     int i = m_itemCommListBox->GetSelection();
     wxString src( m_itemCommListBox->GetString( i ) );
 
     src = m_itemCommListBox->GetValue();
-
+*/
+    wxString src = wxEmptyString;
     //    And send it out
     if( m_pRoute ) m_pRoute->SendToGPS( src, true, m_pgauge );
     if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( src, m_pgauge );

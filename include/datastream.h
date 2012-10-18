@@ -361,6 +361,7 @@ public:
     int             Baudrate;
     bool            ChecksumCheck;
     bool            Garmin;
+    bool            FurunoGP3X;
     bool            Output;
     ListType        InputSentenceListType;
     wxArrayString   InputSentenceList;

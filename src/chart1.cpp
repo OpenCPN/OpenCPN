@@ -239,7 +239,6 @@ wxPageSetupData*          g_pageSetupData = (wxPageSetupData*) NULL;
 bool                      g_bShowOutlines;
 bool                      g_bShowDepthUnits;
 bool                      g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be displayed
-bool                      g_bGarminPersistance;
 bool                      g_bShowActiveRouteHighway;
 int                       g_nNMEADebug;
 int                       g_nAWDefault;
@@ -286,7 +285,6 @@ bool                      g_bSatValid;
 
 bool                      g_bDebugCM93;
 bool                      g_bDebugS57;
-bool                      g_bGarminHost;
 
 bool                      g_bfilter_cogsog;
 int                       g_COGFilterSec;
@@ -7468,7 +7466,6 @@ wxArrayString *EnumerateSerialPorts( void )
     if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
         wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Driver.") );
         preturn->Add( _T("GARMIN") );         // Add generic Garmin selectable device
-        g_bGarminPersistance = true;        // And record the existance
     }
 
 #if 0
@@ -7484,8 +7481,6 @@ wxArrayString *EnumerateSerialPorts( void )
         wxLogMessage(_T("Found Garmin Device."));
 
         preturn->Add(_T("GARMIN"));         // Add generic Garmin selectable device
-        g_bGarminPersistance = true;// And record the existance
-
     }
 #endif
 
