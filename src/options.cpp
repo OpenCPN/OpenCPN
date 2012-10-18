@@ -118,7 +118,7 @@ extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
 
 extern bool             g_bPreserveScaleOnX;
-extern bool             g_bPlayShipsBells;   
+extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bTransparentToolbar;
 
@@ -280,9 +280,9 @@ void options::Init()
     m_pageShips = -1;
     m_pageUI = -1;
     m_pagePlugins = -1;
-    
+
     lastPage = -1;
-    
+
 
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
@@ -991,23 +991,33 @@ void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group
 
     groupsPanel->CreatePanel( parent, border_size, group_item_spacing, small_button_size );
     ((wxNotebook *)page)->AddPage( groupsPanel, _("Chart Groups") );
+
+    page->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnChartsPageChange ), NULL, this );
+
 }
 
 void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_spacing,
         wxSize small_button_size )
 {
     modified = false;
+    m_border_size = border_size;
+    m_group_item_spacing = group_item_spacing;
 
-    wxFlexGridSizer* groupsSizer = new wxFlexGridSizer( 4, 2, border_size, border_size );
+    groupsSizer = new wxFlexGridSizer( 4, 2, border_size, border_size );
     groupsSizer->AddGrowableCol( 0 );
     groupsSizer->AddGrowableRow( 1, 1 );
     groupsSizer->AddGrowableRow( 3, 1 );
 
     SetSizer( groupsSizer );
 
+    m_UIcomplete = false;
+}
+
+void ChartGroupsUI::CompletePanel( void )
+{
     //    The chart file/dir tree
     wxStaticText *allChartsLabel = new wxStaticText( this, wxID_ANY, _("All Available Charts") );
-    groupsSizer->Add( allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, border_size );
+    groupsSizer->Add( allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size );
 
     wxStaticText *dummy1 = new wxStaticText( this, -1, _T("") );
     groupsSizer->Add( dummy1 );
@@ -1024,12 +1034,12 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
     m_pRemoveButton->Disable();
 
     wxBoxSizer* addRemove = new wxBoxSizer( wxVERTICAL );
-    addRemove->Add( m_pAddButton, 0, wxALL | wxEXPAND, group_item_spacing );
-    groupsSizer->Add( addRemove, 0, wxALL | wxEXPAND, border_size );
+    addRemove->Add( m_pAddButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
+    groupsSizer->Add( addRemove, 0, wxALL | wxEXPAND, m_border_size );
 
     //    Add the Groups notebook control
     wxStaticText *groupsLabel = new wxStaticText( this, wxID_ANY, _("Chart Groups") );
-    groupsSizer->Add( groupsLabel, 0, wxTOP | wxRIGHT | wxLEFT, border_size );
+    groupsSizer->Add( groupsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size );
 
     wxStaticText *dummy2 = new wxStaticText( this, -1, _T("") );
     groupsSizer->Add( dummy2 );
@@ -1037,7 +1047,7 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
     wxBoxSizer* nbSizer = new wxBoxSizer( wxVERTICAL );
     m_GroupNB = new wxNotebook( this, ID_GROUPNOTEBOOK, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
     nbSizer->Add( m_GroupNB, 1, wxEXPAND );
-    groupsSizer->Add( nbSizer, 1, wxALL | wxEXPAND, border_size );
+    groupsSizer->Add( nbSizer, 1, wxALL | wxEXPAND, m_border_size );
 
     //    Add default (always present) Default Chart Group
     wxPanel *allActiveGroup = new wxPanel( m_GroupNB, -1, wxDefaultPosition, wxDefaultSize );
@@ -1050,7 +1060,7 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
 
     //    Set the Font for the All Active Chart Group tree to be italic, dimmed
     iFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC,
-            wxFONTWEIGHT_LIGHT );
+    wxFONTWEIGHT_LIGHT );
 
     page0BoxSizer->Add( defaultAllCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
 
@@ -1061,18 +1071,24 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
     m_pDeleteGroupButton = new wxButton( this, ID_GROUPDELETEGROUP, _("Delete Group") );
 
     wxBoxSizer* newDeleteGrp = new wxBoxSizer( wxVERTICAL );
-    groupsSizer->Add( newDeleteGrp, 0, wxALL, border_size );
+    groupsSizer->Add( newDeleteGrp, 0, wxALL, m_border_size );
 
     newDeleteGrp->AddSpacer( 25 );
-    newDeleteGrp->Add( m_pNewGroupButton, 0, wxALL | wxEXPAND, group_item_spacing );
-    newDeleteGrp->Add( m_pDeleteGroupButton, 0, wxALL | wxEXPAND, group_item_spacing );
+    newDeleteGrp->Add( m_pNewGroupButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
+    newDeleteGrp->Add( m_pDeleteGroupButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
     newDeleteGrp->AddSpacer( 25 );
-    newDeleteGrp->Add( m_pRemoveButton, 0, wxALL | wxEXPAND, group_item_spacing );
+    newDeleteGrp->Add( m_pRemoveButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
 
     // Connect this last, otherwise handler is called before all objects are initialized.
     this->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED,
-            wxTreeEventHandler(ChartGroupsUI::OnAvailableSelection), NULL, this );
+    wxTreeEventHandler(ChartGroupsUI::OnAvailableSelection), NULL, this );
+
+    m_UIcomplete = true;
+
 }
+
+
+
 
 void options::CreatePanel_Display( size_t parent, int border_size, int group_item_spacing,
         wxSize small_button_size )
@@ -1254,10 +1270,10 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
 
     wxStaticText *pStatic_Dummy5a = new wxStaticText( panelAIS, -1, _T("") );
     pDisplayGrid->Add( pStatic_Dummy5a, 1, wxALL | wxALL, group_item_spacing );
-    
+
     m_pCheck_ShowAllCPA = new wxCheckBox( panelAIS, -1, _("Show all AIS target CPA vectors") );
     pDisplayGrid->Add( m_pCheck_ShowAllCPA, 1, wxALL, group_item_spacing );
-    
+
     // Rollover
     wxStaticBox* rolloverBox = new wxStaticBox( panelAIS, wxID_ANY, _("Rollover") );
     wxStaticBoxSizer* rolloverSizer = new wxStaticBoxSizer( rolloverBox, wxVERTICAL );
@@ -1722,9 +1738,9 @@ void options::SetInitialSettings()
     m_pCheck_Show_Area_Notices->SetValue( g_bShowAreaNotices );
 
     m_pCheck_Draw_Target_Size->SetValue( g_bDrawAISSize );
-    
+
     m_pCheck_ShowAllCPA->SetValue( g_bShowAllCPA );
-    
+
     //      Alerts
     m_pCheck_AlertDialog->SetValue( g_bAIS_CPA_Alert );
     m_pCheck_AlertAudio->SetValue( g_bAIS_CPA_Alert_Audio );
@@ -2192,7 +2208,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
     g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
     g_bShowAllCPA = m_pCheck_ShowAllCPA->GetValue();
-    
+
     //      Alert
     g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
     g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();
@@ -2508,6 +2524,27 @@ void options::OnChooseFont( wxCommandEvent& event )
 
     event.Skip();
 }
+
+void options::OnChartsPageChange( wxListbookEvent& event )
+{
+    unsigned int i = event.GetSelection();
+
+    //    User selected Chart Groups Page?
+    //    If so, build the remaining UI elements
+    if( 2 == i ) {                       // 2 is the index of "Chart Groups" page
+        if(!groupsPanel->m_UIcomplete)
+            groupsPanel->CompletePanel();
+
+        if(!groupsPanel->m_settingscomplete) {
+            ::wxBeginBusyCursor();
+            groupsPanel->CompleteInitialSettings();
+            ::wxEndBusyCursor();
+        }
+    }
+    
+    event.Skip();               // Allow continued event processing
+}
+
 
 void options::OnPageChange( wxListbookEvent& event )
 {
@@ -2849,6 +2886,7 @@ ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
     m_pGroupArray= NULL;
     m_GroupNB = NULL;
     modified = false;
+    m_UIcomplete = false;
 }
 
 ChartGroupsUI::~ChartGroupsUI()
@@ -2858,6 +2896,11 @@ ChartGroupsUI::~ChartGroupsUI()
 
 void ChartGroupsUI::SetInitialSettings()
 {
+    m_settingscomplete = false;
+}
+
+void ChartGroupsUI::CompleteInitialSettings()
+{
     //    Fill in the "Active chart" tree control
     //    from the options dialog "Active Chart Directories" list
     wxArrayString dir_array;
@@ -2866,8 +2909,11 @@ void ChartGroupsUI::SetInitialSettings()
         wxString dirname = m_db_dirs.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) dir_array.Add( dirname );
     }
+
+
     PopulateTreeCtrl( allAvailableCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) );
     m_pActiveChartsTree = allAvailableCtl->GetTreeCtrl();
+
 
     //    Fill in the Page 0 tree control
     //    from the options dialog "Active Chart Directories" list
@@ -2878,10 +2924,17 @@ void ChartGroupsUI::SetInitialSettings()
         if( !dirname.IsEmpty() ) dir_array0.Add( dirname );
     }
     PopulateTreeCtrl( defaultAllCtl->GetTreeCtrl(), dir_array0, wxColour( 128, 128, 128 ),
-            iFont );
+                      iFont );
 
     BuildNotebookPages( m_pGroupArray );
+
+    groupsSizer->Layout();
+
+    m_settingscomplete = true;
+
 }
+
+
 
 void ChartGroupsUI::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array,
         const wxColour &col, wxFont *pFont )

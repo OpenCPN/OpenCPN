@@ -248,7 +248,8 @@ public:
     void OnInsertTideDataLocation( wxCommandEvent &event );
     void OnRemoveTideDataLocation( wxCommandEvent &event );
     void OnCharHook( wxKeyEvent& event );
-
+    void OnChartsPageChange( wxListbookEvent& event );
+    
     void UpdateWorkArrayFromTextCtl();
 
 // Should we show tooltips?
@@ -461,10 +462,12 @@ public:
     ~ChartGroupsUI();
 
     void CreatePanel( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size );
+    void CompletePanel( void );
     void SetDBDirs( ArrayOfCDI &array ) { m_db_dirs = array; }
     void SetGroupArray( ChartGroupArray *pGroupArray ) { m_pGroupArray = pGroupArray; }
     void SetInitialSettings();
-
+    void CompleteInitialSettings();
+    
     void PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array, const wxColour &col,
             wxFont *pFont = NULL );
     wxTreeCtrl *AddEmptyGroupPage( const wxString& label );
@@ -482,17 +485,22 @@ public:
     void OnDeleteGroup( wxCommandEvent &event );
 
     bool modified;
-
+    bool m_UIcomplete;
+    bool m_settingscomplete;
+    
 private:
     int FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
             wxString *pbranch_adder );
 
     wxWindow *pParent;
 
+    wxFlexGridSizer *groupsSizer;
     wxButton *m_pAddButton;
     wxButton *m_pRemoveButton;
     wxButton *m_pNewGroupButton;
     wxButton *m_pDeleteGroupButton;
+    int m_border_size;
+    int m_group_item_spacing;
 
     wxGenericDirCtrl *allAvailableCtl;
     wxGenericDirCtrl *defaultAllCtl;
