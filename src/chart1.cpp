@@ -3848,14 +3848,30 @@ int MyFrame::DoOptionsDialog()
     Raise();                      // I dunno why...
 #endif
 
+    bool ret_val = false;
     if( rr ) {
         ProcessOptionsDialog( rr, &optionsDlg );
-        delete pWorkDirArray;
-        return true;
+        ret_val = true;
     }
 
     delete pWorkDirArray;
-    return false;
+    
+    //    Restart the async classes
+    if( g_pAIS ) g_pAIS->UnPause();
+    if( g_pnmea ) g_pnmea->UnPause();
+    
+    bDBUpdateInProgress = false;
+    
+    if( g_FloatingToolbarDialog ) {
+        if( IsFullScreen() && !g_bFullscreenToolbar ) g_FloatingToolbarDialog->Submerge();
+    }
+    
+#ifdef __WXMAC__
+    if(stats) stats->Show();
+#endif
+    
+    Refresh( false );
+    return ret_val;
 }
 
 int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
@@ -3975,6 +3991,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 
     SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
+#if 0    
 //    Restart the async classes
     if( g_pAIS ) g_pAIS->UnPause();
     if( g_pnmea ) g_pnmea->UnPause();
@@ -3990,6 +4007,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 #endif
 
     Refresh( false );
+#endif    
     return 0;
 }
 
