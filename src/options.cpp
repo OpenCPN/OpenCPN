@@ -253,8 +253,8 @@ options::~options()
     m_choiceSerialProtocol->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnProtocolChoice ), NULL, this );
     m_choicePriority->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_cbCheckCRC->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCrcCheck ), NULL, this );
-    m_cbGarminHost->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
-    m_cbFurunoGP3X->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_cbGarminHost->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_cbFurunoGP3X->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
     m_rbIAccept->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbInput ), NULL, this );
     m_rbIIgnore->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbInput ), NULL, this );
     m_tcInputStc->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
@@ -723,8 +723,8 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_choiceSerialProtocol->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnProtocolChoice ), NULL, this );
     m_choicePriority->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_cbCheckCRC->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCrcCheck ), NULL, this );
-    m_cbGarminHost->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
-    m_cbFurunoGP3X->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_cbGarminHost->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_cbFurunoGP3X->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
     m_cbFilterSogCog->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_rbIAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbInput ), NULL, this );
@@ -3422,6 +3422,15 @@ void options::OnTypeNetSelected( wxCommandEvent& event )
     SetNMEAFormToNet();
 }
 
+void options::OnUploadFormatChange( wxCommandEvent& event )
+{
+    if ( event.GetEventObject() == m_cbGarminHost && event.IsChecked() )
+        m_cbFurunoGP3X->SetValue(false);
+    else if ( event.GetEventObject() == m_cbFurunoGP3X && event.IsChecked() )
+        m_cbGarminHost->SetValue(false);
+    event.Skip();
+}
+
 void options::ShowNMEACommon(bool visible)
 {
     if ( visible )
@@ -3440,6 +3449,7 @@ void options::ShowNMEACommon(bool visible)
         m_choicePriority->Show();
         m_stPriority->Show();
         m_cbCheckCRC->Show();
+        m_cbFurunoGP3X->Show();
     }
     else
     {
@@ -3457,6 +3467,7 @@ void options::ShowNMEACommon(bool visible)
         m_choicePriority->Hide();
         m_stPriority->Hide();
         m_cbCheckCRC->Hide();
+        m_cbFurunoGP3X->Hide();
         sbSizerOutFilter->SetDimension(0,0,0,0);
         sbSizerInFilter->SetDimension(0,0,0,0);
         sbSizerConnectionProps->SetDimension(0,0,0,0);
@@ -3500,7 +3511,6 @@ void options::ShowNMEASerial(bool visible)
         m_stSerProtocol->Show();
         m_choiceSerialProtocol->Show();
         m_cbGarminHost->Show();
-        m_cbFurunoGP3X->Show();
         gSizerNetProps->SetDimension(0,0,0,0);
     }
     else
@@ -3512,7 +3522,6 @@ void options::ShowNMEASerial(bool visible)
         m_stSerProtocol->Hide();
         m_choiceSerialProtocol->Hide();
         m_cbGarminHost->Hide();
-        m_cbFurunoGP3X->Hide();
         gSizerSerProps->SetDimension(0,0,0,0);
     }
 }
