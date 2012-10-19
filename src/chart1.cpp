@@ -3895,6 +3895,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 
     SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
+#if 0
     bDBUpdateInProgress = false;
 
     if( g_FloatingToolbarDialog ) {
@@ -3906,6 +3907,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 #endif
 
     Refresh( false );
+#endif
     return 0;
 }
 
