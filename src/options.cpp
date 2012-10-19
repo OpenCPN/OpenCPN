@@ -1,3 +1,4 @@
+
 /******************************************************************************
  *
  * Project:  OpenCPN
@@ -108,15 +109,15 @@ extern wxString         g_sAIS_Alert_Sound_File;
 extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
+extern bool             g_bShowAllCPA;
 
-extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
 
 extern bool             g_bPreserveScaleOnX;
-extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
+extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bTransparentToolbar;
 
@@ -133,8 +134,8 @@ extern bool             g_bHighliteTracks;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern double           g_TrackDeltaDistance;
-extern bool             g_bTrackTime;
-extern bool             g_bTrackDistance;
+extern int              g_nTrackPrecision;
+
 extern int              g_iSDMMFormat;
 
 extern int              g_cm93_zoom_factor;
@@ -206,7 +207,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_CHECKBOX( ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick )
     EVT_CHECKBOX( ID_ZTCCHECKBOX, options::OnZTCCheckboxClick )
     EVT_CHOICE( ID_SHIPICONTYPE, options::OnShipTypeSelect )
-    EVT_COLLAPSIBLEPANE_CHANGED( ID_RADARRINGS, options::OnCollapsibleClick )
+    EVT_CHOICE( ID_RADARRINGS, options::OnRadarringSelect )
     EVT_CHAR_HOOK( options::OnCharHook )
 END_EVENT_TABLE()
 
@@ -308,6 +309,9 @@ void options::Init()
     m_pageShips = -1;
     m_pageUI = -1;
     m_pagePlugins = -1;
+
+    lastPage = -1;
+
 
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
@@ -793,7 +797,7 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
 
     wxFlexGridSizer* dispOptionsGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
     dispOptionsGrid->AddGrowableCol( 1 );
-    dispOptions->Add( dispOptionsGrid, 1, wxALL | wxEXPAND, border_size );
+    dispOptions->Add( dispOptionsGrid, 0, wxALL | wxEXPAND, border_size );
 
     wxStaticText *pStatic_OSCOG_Predictor = new wxStaticText( itemPanelShip, wxID_ANY, _("COG Predictor Length (min)") );
     dispOptionsGrid->Add( pStatic_OSCOG_Predictor, 0 );
@@ -804,14 +808,14 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     wxStaticText *iconTypeTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Ship Icon Type") );
     dispOptionsGrid->Add( iconTypeTxt, 0 );
 
-    wxString iconTypes[] = { _("Fixed Size Bitmap"), _("Real Size Bitmap"), _("Real Size Vector") };
+    wxString iconTypes[] = { _("Default"), _("Real Scale Bitmap"), _("Real Scale Vector") };
     m_pShipIconType = new wxChoice( itemPanelShip, ID_SHIPICONTYPE, wxDefaultPosition, wxDefaultSize, 3, iconTypes );
     dispOptionsGrid->Add( m_pShipIconType, 0, wxALIGN_RIGHT | wxLEFT|wxRIGHT|wxTOP, group_item_spacing );
 
     realSizes = new wxFlexGridSizer( 5, 2, group_item_spacing, group_item_spacing );
     realSizes->AddGrowableCol(1);
 
-    dispOptions->Add( realSizes, 0, wxEXPAND | wxALL, group_item_spacing );
+    dispOptions->Add( realSizes, 0, wxEXPAND | wxLEFT, 30 );
 
     realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("Length Over All (m)") ), 1, wxALIGN_LEFT );
     m_pOSLength = new wxTextCtrl( itemPanelShip, 1 );
@@ -835,68 +839,55 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
 
     // Radar rings
 
-    pNavAidShowRadarRings = new wxCollapsiblePane( itemPanelShip, ID_RADARRINGS, _("Show radar rings") );
-    dispOptions->Add( pNavAidShowRadarRings, 0, wxEXPAND | wxALL, group_item_spacing );
+    wxFlexGridSizer* rrSelect = new wxFlexGridSizer( 1, 2, group_item_spacing, group_item_spacing );
+    rrSelect->AddGrowableCol( 1 );
+    dispOptions->Add( rrSelect, 0, wxLEFT|wxRIGHT | wxEXPAND, border_size );
 
-    wxWindow* radarPane = pNavAidShowRadarRings->GetPane();
+    wxStaticText *rrTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Show radar rings") );
+    rrSelect->Add( rrTxt, 1, wxEXPAND | wxALL, group_item_spacing );
 
-    wxFlexGridSizer *radarGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
+    wxString rrAlt[] = { _("None"), _T("1"), _T("2"), _T("3"), _T("4"), _T("5"), _T("6"), _T("7"), _T("8"), _T("9"), _T("10") };
+    pNavAidRadarRingsNumberVisible = new wxChoice( itemPanelShip, ID_RADARRINGS, wxDefaultPosition, m_pShipIconType->GetSize(), 11, rrAlt );
+    rrSelect->Add( pNavAidRadarRingsNumberVisible, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
+
+    radarGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
     radarGrid->AddGrowableCol( 1 );
+    dispOptions->Add( radarGrid, 0, wxLEFT | wxEXPAND, 30 );
 
-    wxStaticText* numberRadarRings = new wxStaticText( radarPane, wxID_STATIC, _("Number of Radar Rings") );
-    radarGrid->Add( numberRadarRings, 0, wxALL, border_size );
+    wxStaticText* distanceText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Distance Between Rings") );
+    radarGrid->Add( distanceText, 1, wxEXPAND | wxALL, group_item_spacing );
 
-    pNavAidRadarRingsNumberVisible = new wxTextCtrl( radarPane, ID_TEXTCTRL, _T(""),
-            wxDefaultPosition, wxSize( 100, -1 ), 0 );
-    radarGrid->Add( pNavAidRadarRingsNumberVisible, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
+    pNavAidRadarRingsStep = new wxTextCtrl( itemPanelShip, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 100, -1 ), 0 );
+    radarGrid->Add( pNavAidRadarRingsStep, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
-    wxBoxSizer* distanceSizer = new wxBoxSizer( wxHORIZONTAL );
-    wxStaticText* distanceText = new wxStaticText( radarPane, wxID_STATIC, _("Distance Between Rings") );
-    distanceSizer->Add( distanceText );
+    wxStaticText* unitText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Distance Unit") );
+    radarGrid->Add( unitText, 1, wxEXPAND | wxALL, group_item_spacing );
 
     wxString pDistUnitsStrings[] = { _("Nautical Miles"), _("Kilometers") };
-    m_itemRadarRingsUnits = new wxChoice( radarPane, ID_RADARDISTUNIT,
-            wxDefaultPosition, wxDefaultSize, 2, pDistUnitsStrings );
-    distanceSizer->Add( m_itemRadarRingsUnits, 0, wxLEFT, 8 );
-    radarGrid->Add( distanceSizer, 0, wxALL | wxEXPAND, border_size );
-
-    pNavAidRadarRingsStep = new wxTextCtrl( radarPane, ID_TEXTCTRL, _T(""),
-            wxDefaultPosition, wxSize( 100, -1 ), 0 );
-    radarGrid->Add( pNavAidRadarRingsStep, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
-
-    radarPane->SetSizer( radarGrid );
-    radarGrid->SetSizeHints( radarPane );
+    m_itemRadarRingsUnits = new wxChoice( itemPanelShip, ID_RADARDISTUNIT, wxDefaultPosition, m_pShipIconType->GetSize(), 2, pDistUnitsStrings );
+    radarGrid->Add( m_itemRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size );
 
     //  Tracks
-    wxStaticBox* itemStaticBoxSizerTrackStatic = new wxStaticBox( itemPanelShip, wxID_ANY,
-            _("Tracks") );
-    wxStaticBoxSizer* itemStaticBoxSizerTrack = new wxStaticBoxSizer( itemStaticBoxSizerTrackStatic,
-            wxVERTICAL );
-    ownShip->Add( itemStaticBoxSizerTrack, 0, wxGROW | wxALL, border_size );
-    pTrackDaily = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX,
-            _("Automatic Daily Tracks") );
-    itemStaticBoxSizerTrack->Add( pTrackDaily, 1, wxALL, border_size );
+    wxStaticBox* trackText = new wxStaticBox( itemPanelShip, wxID_ANY, _("Tracks") );
+    wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer( trackText, wxVERTICAL );
+    ownShip->Add( trackSizer, 0, wxGROW | wxALL, border_size );
+
+    pTrackDaily = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX, _("Automatic Daily Tracks") );
+    trackSizer->Add( pTrackDaily, 1, wxALL, border_size );
+
     pTrackHighlite = new wxCheckBox( itemPanelShip, ID_TRACKHILITE, _("Highlight Tracks") );
-    itemStaticBoxSizerTrack->Add( pTrackHighlite, 1, wxALL, border_size );
+    trackSizer->Add( pTrackHighlite, 1, wxALL, border_size );
 
-    wxFlexGridSizer *pTrackGrid = new wxFlexGridSizer( 2 );
+    wxFlexGridSizer *pTrackGrid = new wxFlexGridSizer( 1, 2, group_item_spacing, group_item_spacing );
     pTrackGrid->AddGrowableCol( 1 );
-    itemStaticBoxSizerTrack->Add( pTrackGrid, 0, wxALL | wxEXPAND, border_size );
+    trackSizer->Add( pTrackGrid, 0, wxALL | wxEXPAND, border_size );
 
-    m_pCheck_Trackpoint_time = new wxRadioButton( itemPanelShip, -1,
-            _("Place Trackpoints at time interval (sec)"), wxDefaultPosition,
-            wxDefaultSize, wxRB_GROUP );
-    pTrackGrid->Add( m_pCheck_Trackpoint_time, 0, wxALL, 2 );
+    wxStaticText* tpText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Tracking Precision") );
+    pTrackGrid->Add( tpText, 1, wxEXPAND | wxALL, group_item_spacing );
 
-    m_pText_TP_Secs = new wxTextCtrl( itemPanelShip, -1 );
-    pTrackGrid->Add( m_pText_TP_Secs, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
-
-    m_pCheck_Trackpoint_distance = new wxRadioButton( itemPanelShip, -1,
-            _("Place Trackpoints at distance interval (NMi)") );
-    pTrackGrid->Add( m_pCheck_Trackpoint_distance, 0, wxALL, 2 );
-
-    m_pText_TP_Dist = new wxTextCtrl( itemPanelShip, -1, _T("") );
-    pTrackGrid->Add( m_pText_TP_Dist, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
+    wxString trackAlt[] = { _("Low"), _("Medium"), _("High") };
+    pTrackPrecision = new wxChoice( itemPanelShip, wxID_ANY, wxDefaultPosition, m_pShipIconType->GetSize(), 3, trackAlt );
+    pTrackGrid->Add( pTrackPrecision, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
     DimeControl( itemPanelShip );
 }
@@ -1137,23 +1128,33 @@ void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group
 
     groupsPanel->CreatePanel( parent, border_size, group_item_spacing, small_button_size );
     ((wxNotebook *)page)->AddPage( groupsPanel, _("Chart Groups") );
+
+    page->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnChartsPageChange ), NULL, this );
+
 }
 
 void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_spacing,
         wxSize small_button_size )
 {
     modified = false;
+    m_border_size = border_size;
+    m_group_item_spacing = group_item_spacing;
 
-    wxFlexGridSizer* groupsSizer = new wxFlexGridSizer( 4, 2, border_size, border_size );
+    groupsSizer = new wxFlexGridSizer( 4, 2, border_size, border_size );
     groupsSizer->AddGrowableCol( 0 );
     groupsSizer->AddGrowableRow( 1, 1 );
     groupsSizer->AddGrowableRow( 3, 1 );
 
     SetSizer( groupsSizer );
 
+    m_UIcomplete = false;
+}
+
+void ChartGroupsUI::CompletePanel( void )
+{
     //    The chart file/dir tree
     wxStaticText *allChartsLabel = new wxStaticText( this, wxID_ANY, _("All Available Charts") );
-    groupsSizer->Add( allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, border_size );
+    groupsSizer->Add( allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size );
 
     wxStaticText *dummy1 = new wxStaticText( this, -1, _T("") );
     groupsSizer->Add( dummy1 );
@@ -1170,12 +1171,12 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
     m_pRemoveButton->Disable();
 
     wxBoxSizer* addRemove = new wxBoxSizer( wxVERTICAL );
-    addRemove->Add( m_pAddButton, 0, wxALL | wxEXPAND, group_item_spacing );
-    groupsSizer->Add( addRemove, 0, wxALL | wxEXPAND, border_size );
+    addRemove->Add( m_pAddButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
+    groupsSizer->Add( addRemove, 0, wxALL | wxEXPAND, m_border_size );
 
     //    Add the Groups notebook control
     wxStaticText *groupsLabel = new wxStaticText( this, wxID_ANY, _("Chart Groups") );
-    groupsSizer->Add( groupsLabel, 0, wxTOP | wxRIGHT | wxLEFT, border_size );
+    groupsSizer->Add( groupsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size );
 
     wxStaticText *dummy2 = new wxStaticText( this, -1, _T("") );
     groupsSizer->Add( dummy2 );
@@ -1183,7 +1184,7 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
     wxBoxSizer* nbSizer = new wxBoxSizer( wxVERTICAL );
     m_GroupNB = new wxNotebook( this, ID_GROUPNOTEBOOK, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
     nbSizer->Add( m_GroupNB, 1, wxEXPAND );
-    groupsSizer->Add( nbSizer, 1, wxALL | wxEXPAND, border_size );
+    groupsSizer->Add( nbSizer, 1, wxALL | wxEXPAND, m_border_size );
 
     //    Add default (always present) Default Chart Group
     wxPanel *allActiveGroup = new wxPanel( m_GroupNB, -1, wxDefaultPosition, wxDefaultSize );
@@ -1196,7 +1197,7 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
 
     //    Set the Font for the All Active Chart Group tree to be italic, dimmed
     iFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC,
-            wxFONTWEIGHT_LIGHT );
+    wxFONTWEIGHT_LIGHT );
 
     page0BoxSizer->Add( defaultAllCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
 
@@ -1207,17 +1208,20 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
     m_pDeleteGroupButton = new wxButton( this, ID_GROUPDELETEGROUP, _("Delete Group") );
 
     wxBoxSizer* newDeleteGrp = new wxBoxSizer( wxVERTICAL );
-    groupsSizer->Add( newDeleteGrp, 0, wxALL, border_size );
+    groupsSizer->Add( newDeleteGrp, 0, wxALL, m_border_size );
 
     newDeleteGrp->AddSpacer( 25 );
-    newDeleteGrp->Add( m_pNewGroupButton, 0, wxALL | wxEXPAND, group_item_spacing );
-    newDeleteGrp->Add( m_pDeleteGroupButton, 0, wxALL | wxEXPAND, group_item_spacing );
+    newDeleteGrp->Add( m_pNewGroupButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
+    newDeleteGrp->Add( m_pDeleteGroupButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
     newDeleteGrp->AddSpacer( 25 );
-    newDeleteGrp->Add( m_pRemoveButton, 0, wxALL | wxEXPAND, group_item_spacing );
+    newDeleteGrp->Add( m_pRemoveButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
 
     // Connect this last, otherwise handler is called before all objects are initialized.
     this->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED,
-            wxTreeEventHandler(ChartGroupsUI::OnAvailableSelection), NULL, this );
+    wxTreeEventHandler(ChartGroupsUI::OnAvailableSelection), NULL, this );
+
+    m_UIcomplete = true;
+
 }
 
 void options::CreatePanel_Display( size_t parent, int border_size, int group_item_spacing,
@@ -1395,9 +1399,14 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     wxStaticText *pStatic_Dummy5 = new wxStaticText( panelAIS, -1, _T("") );
     pDisplayGrid->Add( pStatic_Dummy5, 1, wxALL | wxALL, group_item_spacing );
 
-    m_pCheck_Draw_Target_Size = new wxCheckBox( panelAIS, -1,
-            _("Show AIS targets real size") );
+    m_pCheck_Draw_Target_Size = new wxCheckBox( panelAIS, -1, _("Show AIS targets real size") );
     pDisplayGrid->Add( m_pCheck_Draw_Target_Size, 1, wxALL, group_item_spacing );
+
+    wxStaticText *pStatic_Dummy5a = new wxStaticText( panelAIS, -1, _T("") );
+    pDisplayGrid->Add( pStatic_Dummy5a, 1, wxALL | wxALL, group_item_spacing );
+
+    m_pCheck_ShowAllCPA = new wxCheckBox( panelAIS, -1, _("Show all AIS target CPA vectors") );
+    pDisplayGrid->Add( m_pCheck_ShowAllCPA, 1, wxALL, group_item_spacing );
 
     // Rollover
     wxStaticBox* rolloverBox = new wxStaticBox( panelAIS, wxID_ANY, _("Rollover") );
@@ -1788,17 +1797,14 @@ void options::SetInitialSettings()
     m_pOSGPSOffsetY->SetValue( wxString::Format( _T("%.1f"), g_n_gps_antenna_offset_y ) );
     m_pOSMinSize->SetValue( wxString::Format( _T("%d"), g_n_ownship_min_mm ) );
 
-    if( g_bNavAidShowRadarRings ) pNavAidShowRadarRings->Expand();
-    else pNavAidShowRadarRings->Collapse();
-    wxCollapsiblePaneEvent e;
-    OnCollapsibleClick( e );
-
     wxString buf;
-    buf.Printf( _T("%d"), g_iNavAidRadarRingsNumberVisible );
-    pNavAidRadarRingsNumberVisible->SetValue( buf );
+    if( g_iNavAidRadarRingsNumberVisible > 10 ) g_iNavAidRadarRingsNumberVisible = 10;
+    pNavAidRadarRingsNumberVisible->SetSelection( g_iNavAidRadarRingsNumberVisible );
     buf.Printf( _T("%.3f"), g_fNavAidRadarRingsStep );
     pNavAidRadarRingsStep->SetValue( buf );
     m_itemRadarRingsUnits->SetSelection( g_pNavAidRadarRingsStepUnits );
+    OnRadarringSelect( eDummy );
+
     pWayPointPreventDragging->SetValue( g_bWayPointPreventDragging );
 
     pEnableZoomToCursor->SetValue( g_bEnableZoomToCursor );
@@ -1817,13 +1823,7 @@ void options::SetInitialSettings()
     pTrackDaily->SetValue( g_bTrackDaily );
     pTrackHighlite->SetValue( g_bHighliteTracks );
 
-    s.Printf( _T("%4.0f"), g_TrackIntervalSeconds );
-    m_pText_TP_Secs->SetValue( s );
-    s.Printf( _T("%5.2f"), g_TrackDeltaDistance );
-    m_pText_TP_Dist->SetValue( s );
-
-    m_pCheck_Trackpoint_time->SetValue( g_bTrackTime );
-    m_pCheck_Trackpoint_distance->SetValue( g_bTrackDistance );
+    pTrackPrecision->SetSelection( g_nTrackPrecision );
 
     //    AIS Parameters
     //      CPA Box
@@ -1872,6 +1872,8 @@ void options::SetInitialSettings()
     m_pCheck_Show_Area_Notices->SetValue( g_bShowAreaNotices );
 
     m_pCheck_Draw_Target_Size->SetValue( g_bDrawAISSize );
+
+    m_pCheck_ShowAllCPA->SetValue( g_bShowAllCPA );
 
     //      Alerts
     m_pCheck_AlertDialog->SetValue( g_bAIS_CPA_Alert );
@@ -2023,8 +2025,13 @@ void options::OnShipTypeSelect( wxCommandEvent& event )
     event.Skip();
 }
 
-void options::OnCollapsibleClick( wxCollapsiblePaneEvent& event )
+void options::OnRadarringSelect( wxCommandEvent& event )
 {
+    if( pNavAidRadarRingsNumberVisible->GetSelection() == 0 ) {
+        radarGrid->ShowItems( false );
+    } else {
+        radarGrid->ShowItems( true );
+    }
     dispOptions->Layout();
     ownShip->Layout();
     itemPanelShip->Layout();
@@ -2083,7 +2090,7 @@ void options::OnCharHook( wxKeyEvent& event ) {
             GetEventHandler()->AddPendingEvent( okEvent );
         }
     }
-    event.Skip();
+	event.Skip();
 }
 
 void options::OnButtonaddClick( wxCommandEvent& event )
@@ -2219,24 +2226,32 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     // Start with the stuff that requires intelligent validation.
 
-    g_OwnShipIconType = m_pShipIconType->GetSelection();
-    m_pOSLength->GetValue().ToDouble( &g_n_ownship_length_meters );
-    m_pOSWidth->GetValue().ToDouble( &g_n_ownship_beam_meters );
-    m_pOSGPSOffsetX->GetValue().ToDouble( &g_n_gps_antenna_offset_x );
-    m_pOSGPSOffsetY->GetValue().ToDouble( &g_n_gps_antenna_offset_y );
-    m_pOSMinSize->GetValue().ToLong( &g_n_ownship_min_mm );
-
-    if( g_OwnShipIconType > 0 ) {
-        bool OK = true;
-        if( g_n_ownship_length_meters <= 0 ) OK = false;
-        if( g_n_ownship_beam_meters <= 0 ) OK = false;
-        if( abs(g_n_gps_antenna_offset_x) > g_n_ownship_beam_meters/2.0 ) OK = false;
-        if( g_n_gps_antenna_offset_y > g_n_ownship_length_meters ) OK = false;
-        if( g_n_ownship_min_mm > 100 ) OK = false;
-        if( g_n_ownship_min_mm <= 0 ) OK = false;
-        if( ! OK ) {
+    if( m_pShipIconType->GetSelection() > 0 ) {
+        double n_ownship_length_meters;
+        double n_ownship_beam_meters;
+        double n_gps_antenna_offset_y;
+        double n_gps_antenna_offset_x;
+        long n_ownship_min_mm;
+        m_pOSLength->GetValue().ToDouble( &n_ownship_length_meters );
+        m_pOSWidth->GetValue().ToDouble( &n_ownship_beam_meters );
+        m_pOSGPSOffsetX->GetValue().ToDouble( &n_gps_antenna_offset_x );
+        m_pOSGPSOffsetY->GetValue().ToDouble( &n_gps_antenna_offset_y );
+        m_pOSMinSize->GetValue().ToLong( &n_ownship_min_mm );
+        wxString msg;
+        if( n_ownship_length_meters <= 0 )
+            msg += _("\n - your ship's length must be > 0");
+        if( n_ownship_beam_meters <= 0 )
+            msg += _("\n - your ship's beam must be > 0");
+        if( fabs(n_gps_antenna_offset_x) > n_ownship_beam_meters/2.0 )
+            msg += _("\n - your GPS offset from midship must be within your ship's beam");
+        if( n_gps_antenna_offset_y < 0 || n_gps_antenna_offset_y > n_ownship_length_meters )
+            msg += _("\n - your GPS offset from bow must be within your ship's length");
+        if( n_ownship_min_mm <= 0 || n_ownship_min_mm > 100 )
+            msg += _("\n - your minimum ship icon size must be between 1 and 100 mm");
+        if( ! msg.IsEmpty() ) {
+            msg.Prepend( _("The settings for own ship real size are not correct:") );
             OCPNMessageDialog* dlg = new OCPNMessageDialog( this,
-                    _("Your Own Ship size data is not correct.\nPlease review it."), _("OpenCPN info"),
+                    msg, _("OpenCPN info"),
                     wxICON_ERROR );
             ::wxEndBusyCursor();
             dlg->ShowModal();
@@ -2244,7 +2259,13 @@ void options::OnApplyClick( wxCommandEvent& event )
             event.SetInt( wxID_STOP );
             return;
         }
+        g_n_ownship_length_meters = n_ownship_length_meters;
+        g_n_ownship_beam_meters = n_ownship_beam_meters;
+        g_n_gps_antenna_offset_y = n_gps_antenna_offset_y;
+        g_n_gps_antenna_offset_x = n_gps_antenna_offset_x;
+        g_n_ownship_min_mm = n_ownship_min_mm;
     }
+    g_OwnShipIconType = m_pShipIconType->GetSelection();
 
     //    Handle Chart Tab
     wxString dirname;
@@ -2326,9 +2347,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     m_pText_OSCOG_Predictor->GetValue().ToDouble( &g_ownship_predictor_minutes );
 
-    g_bNavAidShowRadarRings = pNavAidShowRadarRings->IsExpanded();
-    wxString buf = pNavAidRadarRingsNumberVisible->GetValue();
-    g_iNavAidRadarRingsNumberVisible = atoi( buf.mb_str() );
+    g_iNavAidRadarRingsNumberVisible = pNavAidRadarRingsNumberVisible->GetSelection();
     g_fNavAidRadarRingsStep = atof( pNavAidRadarRingsStep->GetValue().mb_str() );
     g_pNavAidRadarRingsStepUnits = m_itemRadarRingsUnits->GetSelection();
     g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
@@ -2340,10 +2359,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
 
-    m_pText_TP_Secs->GetValue().ToDouble( &g_TrackIntervalSeconds );
-    m_pText_TP_Dist->GetValue().ToDouble( &g_TrackDeltaDistance );
-    g_bTrackTime = m_pCheck_Trackpoint_time->GetValue();
-    g_bTrackDistance = m_pCheck_Trackpoint_distance->GetValue();
+    g_nTrackPrecision = pTrackPrecision->GetSelection();
 
     g_bTrackDaily = pTrackDaily->GetValue();
     g_bHighliteTracks = pTrackHighlite->GetValue();
@@ -2691,6 +2707,27 @@ void options::OnChooseFont( wxCommandEvent& event )
     event.Skip();
 }
 
+void options::OnChartsPageChange( wxListbookEvent& event )
+{
+    unsigned int i = event.GetSelection();
+
+    //    User selected Chart Groups Page?
+    //    If so, build the remaining UI elements
+    if( 2 == i ) {                       // 2 is the index of "Chart Groups" page
+        if(!groupsPanel->m_UIcomplete)
+            groupsPanel->CompletePanel();
+
+        if(!groupsPanel->m_settingscomplete) {
+            ::wxBeginBusyCursor();
+            groupsPanel->CompleteInitialSettings();
+            ::wxEndBusyCursor();
+        }
+    }
+
+    event.Skip();               // Allow continued event processing
+}
+
+
 void options::OnPageChange( wxListbookEvent& event )
 {
     unsigned int i = event.GetSelection();
@@ -3033,6 +3070,7 @@ ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
     m_pGroupArray= NULL;
     m_GroupNB = NULL;
     modified = false;
+    m_UIcomplete = false;
 }
 
 ChartGroupsUI::~ChartGroupsUI()
@@ -3042,6 +3080,11 @@ ChartGroupsUI::~ChartGroupsUI()
 
 void ChartGroupsUI::SetInitialSettings()
 {
+    m_settingscomplete = false;
+}
+
+void ChartGroupsUI::CompleteInitialSettings()
+{
     //    Fill in the "Active chart" tree control
     //    from the options dialog "Active Chart Directories" list
     wxArrayString dir_array;
@@ -3050,8 +3093,11 @@ void ChartGroupsUI::SetInitialSettings()
         wxString dirname = m_db_dirs.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) dir_array.Add( dirname );
     }
+
+
     PopulateTreeCtrl( allAvailableCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) );
     m_pActiveChartsTree = allAvailableCtl->GetTreeCtrl();
+
 
     //    Fill in the Page 0 tree control
     //    from the options dialog "Active Chart Directories" list
@@ -3062,10 +3108,17 @@ void ChartGroupsUI::SetInitialSettings()
         if( !dirname.IsEmpty() ) dir_array0.Add( dirname );
     }
     PopulateTreeCtrl( defaultAllCtl->GetTreeCtrl(), dir_array0, wxColour( 128, 128, 128 ),
-            iFont );
+                      iFont );
 
     BuildNotebookPages( m_pGroupArray );
+
+    groupsSizer->Layout();
+
+    m_settingscomplete = true;
+
 }
+
+
 
 void ChartGroupsUI::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array,
         const wxColour &col, wxFont *pFont )
