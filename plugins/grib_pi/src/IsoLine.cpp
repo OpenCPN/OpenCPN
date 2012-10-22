@@ -75,7 +75,7 @@ ClipResult cohen_sutherland_line_clip_d (double *x0, double *y0, double *x1, dou
       outcode outcode0, outcode1, outcodeOut;
       /*Outcodes for P0,P1, and whichever point lies outside the clip rectangle*/
       double x=0., y=0.;
-      
+
       V.xmin = xmin_;
       V.xmax = xmax_;
       V.ymin = ymin_;
@@ -101,7 +101,7 @@ ClipResult cohen_sutherland_line_clip_d (double *x0, double *y0, double *x1, dou
                   outcodeOut = outcode1;
             /*Now find intersection point;
              *            use formulas y=y0+slope*(x-x0),x=x0+(1/slope)*(y-y0).*/
-            
+
             if (((1L << ((long)TOP)) & outcodeOut) != 0) {
                   /*Divide line at top of clip rectangle*/
                   x = *x0 + (*x1 - *x0) * (V.ymax - *y0) / (*y1 - *y0);
@@ -158,7 +158,7 @@ ClipResult cohen_sutherland_line_clip_i (int *x0_, int *y0_, int *x1_, int *y1_,
 double      round_msvc (double x)
 {
       return(floor(x + 0.5));
-      
+
 }
 
 
@@ -352,11 +352,7 @@ MySegList *IsoLine::BuildContinuousSegment(void)
       {
             node = segjoin1.Item( i );
             seg = node->GetData();
-//           double a = seg->px2; seg->px2 = seg->px1; seg->px1 = a;
-//           double b = seg->py2; seg->py2 = seg->py1; seg->py1 = b;
             ret_list->Append(seg);
-
-//           printf("C-Appending seg: %g %g %g %g\n", seg->px1, seg->py1, seg->px2, seg->py2);
       }
 
      //     Now add the "2"side list
@@ -386,15 +382,12 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
 
 #if wxUSE_GRAPHICS_CONTEXT
       wxMemoryDC *pmdc;
-//      pmdc = dynamic_cast<wxMemoryDC*>(&dc);
       pmdc= wxDynamicCast(&dc, wxMemoryDC);
       wxGraphicsContext *pgc = wxGraphicsContext::Create(*pmdc);
       pgc->SetPen(ppISO);
 #endif
 
       dc.SetPen(ppISO);
-
-
 
       std::list<Segment *>::iterator it;
 
@@ -406,22 +399,16 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
         Segment *seg = *it;
 
         {
- //             wxPoint ab = vp->GetMercatorPixFromLL(seg->py1, seg->px1);
- //             wxPoint cd = vp->GetMercatorPixFromLL(seg->py2, seg->px2);
             wxPoint ab;
             GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
             wxPoint cd;
             GetCanvasPixLL(vp, &cd, seg->py2, seg->px2);
 
-
-///            ClipResult res = cohen_sutherland_line_clip_i ( &ab.x, &ab.y, &cd.x, &cd.y,
-///                         0, vp->pix_width, 0, vp->pix_height );
-///            if ( res != Invisible )
              {
 #if wxUSE_GRAPHICS_CONTEXT
                   if(bHiDef && pgc)
                         pgc->StrokeLine(ab.x, ab.y, cd.x, cd.y);
-                  else 
+                  else
                         dc.DrawLine(ab.x, ab.y, cd.x, cd.y);
 #else
                   dc.DrawLine(ab.x, ab.y, cd.x, cd.y);
@@ -612,12 +599,12 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour text
 			GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
 			wxPoint cd;
 			GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
-                  
+
 			int label_offset = 6;
                   int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
                   int yd = (ab.y + cd.y - h)/2;
 
-                 
+
                   dc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
                   dc.DrawText(label, label_offset/2 + xd, yd-1);
             }
@@ -703,7 +690,7 @@ void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour text_color, 
 //            mdc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
             mdc.DrawRectangle(xd, yd, w+(label_offset * 2), h+2);
             mdc.DrawText(label, label_offset/2 + xd, yd-1);
-            
+
             mdc.SelectObject(wxNullBitmap);
 
             wxBitmap sub_BMLabel = bm.GetSubBitmap(wxRect(0,0,w+(label_offset * 2), h+2));

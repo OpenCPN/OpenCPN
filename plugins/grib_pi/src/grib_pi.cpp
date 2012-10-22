@@ -117,7 +117,7 @@ int grib_pi::Init(void)
                    GRIB_TOOL_POSITION, 0, this);
 
       // Create the drawing factory
-      m_pGRIBOverlayFactory = new GRIBOverlayFactory;
+      m_pGRIBOverlayFactory = new GRIBOverlayFactory( m_bGRIBUseHiDef );
 
 //      wxMenuItem *pmi = new wxMenuItem(NULL, -1, _("PlugIn Item"));
 //      int miid = AddCanvasContextMenuItem(pmi, (PlugInCallBackFunction )&s_ContextMenuCallback );
