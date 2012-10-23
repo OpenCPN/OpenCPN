@@ -40,6 +40,7 @@ WX_DEFINE_ARRAY( S57attVal *, wxArrayOfS57attVal );
 #endif
 
 #include <wx/glcanvas.h>
+#include <wx/dcgraph.h>         // supplemental, for Mac
 
 //    wxWindows Hash Map Declarations
 #include <wx/hashmap.h>
