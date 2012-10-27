@@ -1679,6 +1679,8 @@ ConnectionParams::ConnectionParams()
     InputSentenceListType = WHITELIST;
     OutputSentenceListType = WHITELIST;
     Priority = 0;
+    Valid = true;
+    
 }
 
 wxString ConnectionParams::GetSourceTypeStr()
@@ -1692,9 +1694,9 @@ wxString ConnectionParams::GetSourceTypeStr()
 wxString ConnectionParams::GetAddressStr()
 {
     if ( Type == Serial )
-        return wxString::Format( _T("%s (%s)"), Port.c_str(), GetParametersStr().c_str() );
+        return wxString::Format( _T("%s"), Port.c_str() );
     else
-        return wxString::Format( _T("%s:%d (%s)"), NetworkAddress.c_str(), NetworkPort, GetParametersStr().c_str() );
+        return wxString::Format( _T("%s:%d"), NetworkAddress.c_str(), NetworkPort );
 }
 
 wxString ConnectionParams::GetParametersStr()
