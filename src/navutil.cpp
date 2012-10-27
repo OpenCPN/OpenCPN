@@ -3357,29 +3357,35 @@ int MyConfig::LoadMyConfig( int iteration )
         else
             port = _T("");
         
+        if(port.Len() && port != _T("None") ) {
         //  Look in the ConnectionParams array to see if this port has been defined in the newer style
-        bool bfound = false;    
-        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-        {
-            ConnectionParams *cp = g_pConnectionParams->Item(i);
-            if(cp->GetAddressStr() == port) {
-                bfound = true;
-                break;
+            bool bfound = false;    
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                ConnectionParams *cp = g_pConnectionParams->Item(i);
+                if(cp->GetAddressStr() == port) {
+                    bfound = true;
+                    break;
+                }
+            }
+            
+            if(!bfound) {
+                ConnectionParams * prm = new ConnectionParams();
+                prm->Baudrate = wxAtoi(xRate);
+                prm->Port = port;
+                
+                g_pConnectionParams->Add(prm);
             }
         }
-        
-        if(!bfound) {
-             ConnectionParams * prm = new ConnectionParams();
-             prm->Baudrate = wxAtoi(xRate);
-             prm->Port = port;
-             
-             g_pConnectionParams->Add(prm);
+        if( iteration == 1 ) {
+            Write ( _T ( "Source" ), _T("") );          // clear the old tag
+            Write ( _T ( "BaudRate" ), _T("") ); 
         }
     }
              
    //  Is there an existing AISPort definition?
     SetPath( _T ( "/Settings/AISPort" ) );
-    Read ( _T ( "Source" ), &xSource );
+    Read ( _T ( "Port" ), &xSource );
     Read ( _T ( "BaudRate" ), &xRate );
     if(xSource.Len()) {
         wxString port;
@@ -3388,23 +3394,30 @@ int MyConfig::LoadMyConfig( int iteration )
         else
             port = _T("");
         
-        //  Look in the ConnectionParams array to see if this port has been defined in the newer style
-        bool bfound = false;    
-        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-        {
-            ConnectionParams *cp = g_pConnectionParams->Item(i);
-            if(cp->GetAddressStr() == port) {
-                bfound = true;
-                break;
+        if(port.Len() && port != _T("None") ) {
+            //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+            bool bfound = false;    
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                ConnectionParams *cp = g_pConnectionParams->Item(i);
+                if(cp->GetAddressStr() == port) {
+                    bfound = true;
+                    break;
+                }
+            }
+            
+            if(!bfound) {
+                ConnectionParams * prm = new ConnectionParams();
+                prm->Baudrate = wxAtoi(xRate);
+                prm->Port = port;
+                
+                g_pConnectionParams->Add(prm);
             }
         }
-        
-        if(!bfound) {
-             ConnectionParams * prm = new ConnectionParams();
-             prm->Baudrate = wxAtoi(xRate);
-             prm->Port = port;
-             
-             g_pConnectionParams->Add(prm);
+
+        if( iteration == 1 ) {
+            Write ( _T ( "Port" ), _T("") );          // clear the old tag
+            Write ( _T ( "BaudRate" ), _T("") ); 
         }
     }
              
@@ -3418,27 +3431,32 @@ int MyConfig::LoadMyConfig( int iteration )
         else
             port = _T("");
         
-        //  Look in the ConnectionParams array to see if this port has been defined in the newer style
-        bool bfound = false;
-        ConnectionParams *cp;
-        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
-        {
-            cp = g_pConnectionParams->Item(i);
-            if(cp->GetAddressStr() == port) {
-                bfound = true;
-                break;
+        if(port.Len() && port != _T("None") ) {
+            //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+            bool bfound = false;
+            ConnectionParams *cp;
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                cp = g_pConnectionParams->Item(i);
+                if(cp->GetAddressStr() == port) {
+                    bfound = true;
+                    break;
+                }
+            }
+            
+            if(!bfound) {
+                ConnectionParams * prm = new ConnectionParams();
+                prm->Port = port;
+                
+                g_pConnectionParams->Add(prm);
+            }
+            else {                                  // port was found, so make sure it is set for output
+                cp->Output = true;
             }
         }
         
-        if(!bfound) {
-             ConnectionParams * prm = new ConnectionParams();
-             prm->Port = port;
-             
-             g_pConnectionParams->Add(prm);
-        }
-        else {                                  // port was found, so make sure it is set for output
-            cp->Output = true;
-        }
+        if( iteration == 1 )
+            Write ( _T ( "Port" ), _T("") );          // clear the old tag
     }
              
 //    Reasonable starting point
