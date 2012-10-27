@@ -439,34 +439,8 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_pNMEAForm->SetSizer( bSizer4 );
     m_pNMEAForm->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
-    wxBoxSizer* bSizer5;
-    bSizer5 = new wxBoxSizer( wxVERTICAL );
+    wxBoxSizer* bSizerOuterContainer = new wxBoxSizer( wxVERTICAL );
 
-    wxBoxSizer* bSizer17;
-    bSizer17 = new wxBoxSizer( wxHORIZONTAL );
-
-    m_lcSources = new wxListCtrl( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxSize(-1, 150), wxLC_REPORT|wxLC_SINGLE_SEL );
-    bSizer17->Add( m_lcSources, 1, wxALL|wxEXPAND, 5 );
-
-    wxBoxSizer* bSizer18;
-    bSizer18 = new wxBoxSizer( wxVERTICAL );
-
-    m_buttonAdd = new wxButton( m_pNMEAForm, wxID_ANY, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer18->Add( m_buttonAdd, 0, wxALL, 5 );
-
-    m_buttonRemove = new wxButton( m_pNMEAForm, wxID_ANY, _("Remove"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_buttonRemove->Enable( false );
-
-    bSizer18->Add( m_buttonRemove, 0, wxALL, 5 );
-
-
-    bSizer17->Add( bSizer18, 0, wxEXPAND, 5 );
-
-
-    bSizer5->Add( bSizer17, 0, wxEXPAND, 5 );
-
-    wxBoxSizer* bSizer7;
-    bSizer7 = new wxBoxSizer( wxVERTICAL );
 
     wxStaticBoxSizer* sbSizerGeneral;
     sbSizerGeneral = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("General") ), wxVERTICAL );
@@ -485,10 +459,15 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     m_stFilterSec = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Filter period (sec)"), wxDefaultPosition, wxDefaultSize, 0 );
     m_stFilterSec->Wrap( -1 );
-    bSizer171->Add( m_stFilterSec, 0, wxALL, 5 );
+
+    int nspace = 5;
+#ifdef __WXGTK__
+    nspace = 9;
+#endif
+    bSizer171->Add( m_stFilterSec, 0, wxALL, nspace );
 
     m_tFilterSec = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer171->Add( m_tFilterSec, 0, 0, 5 );
+    bSizer171->Add( m_tFilterSec, 0, wxALL, 4 );
 
 
     bSizer161->Add( bSizer171, 1, wxEXPAND, 5 );
@@ -499,17 +478,38 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbNMEADebug = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Show NMEA Debug Window"), wxDefaultPosition, wxDefaultSize, 0 );
     bSizer181->Add( m_cbNMEADebug, 0, wxALL, 5 );
 
-
     bSizer161->Add( bSizer181, 1, wxEXPAND, 5 );
-
-
     bSizer151->Add( bSizer161, 1, wxEXPAND, 5 );
-
-
     sbSizerGeneral->Add( bSizer151, 1, wxEXPAND, 5 );
+    bSizerOuterContainer->Add( sbSizerGeneral, 0, wxALL|wxEXPAND, 5 );
 
 
-    bSizer7->Add( sbSizerGeneral, 0, wxALL|wxEXPAND, 5 );
+    //  Connections listbox, etc
+    wxStaticBoxSizer* sbSizerLB= new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Data Connections") ), wxVERTICAL );
+
+
+    wxBoxSizer* bSizer17;
+    bSizer17 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_lcSources = new wxListCtrl( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxSize(-1, 150), wxLC_REPORT|wxLC_SINGLE_SEL );
+    bSizer17->Add( m_lcSources, 1, wxALL|wxEXPAND, 5 );
+
+    wxBoxSizer* bSizer18;
+    bSizer18 = new wxBoxSizer( wxVERTICAL );
+
+    m_buttonAdd = new wxButton( m_pNMEAForm, wxID_ANY, _("Add Connection"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_buttonAdd, 0, wxALL, 5 );
+
+    m_buttonRemove = new wxButton( m_pNMEAForm, wxID_ANY, _("Remove Connection"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_buttonRemove->Enable( false );
+    bSizer18->Add( m_buttonRemove, 0, wxALL, 5 );
+
+    bSizer17->Add( bSizer18, 0, wxEXPAND, 5 );
+    sbSizerLB->Add( bSizer17, 1, wxEXPAND, 5 );
+    bSizerOuterContainer->Add( sbSizerLB, 0, wxEXPAND, 5 );
+
+
+    //  Connections Properties
 
     sbSizerConnectionProps = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Properties") ), wxVERTICAL );
 
@@ -697,18 +697,12 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
 
     sbSizerOutFilter->Add( bSizer12, 0, wxEXPAND, 5 );
-
-
     sbSizerConnectionProps->Add( sbSizerOutFilter, 0, wxEXPAND, 5 );
 
 
-    bSizer7->Add( sbSizerConnectionProps, 1, wxALL|wxEXPAND, 5 );
+    bSizerOuterContainer->Add( sbSizerConnectionProps, 1, wxALL|wxEXPAND, 5 );
 
-
-    bSizer5->Add( bSizer7, 1, wxEXPAND, 5 );
-
-
-    bSizer4->Add( bSizer5, 1, wxEXPAND, 5 );
+    bSizer4->Add( bSizerOuterContainer, 1, wxEXPAND, 5 );
 
     // Connect Events
     m_lcSources->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
@@ -749,7 +743,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     wxListItem col1;
     col1.SetId(1);
-    col1.SetText( _("Source") );
+    col1.SetText( _("Port") );
     m_lcSources->InsertColumn(1, col1);
 
     wxListItem col2;
@@ -3709,11 +3703,11 @@ void options::FillSourceList()
         m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetFiltersStr());
     }
 
-    m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE_USEHEADER );
-    m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE );
     m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE_USEHEADER );
     m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE_USEHEADER );
-    m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE );
 }
 
 void options::OnRemoveDatasourceClick( wxCommandEvent& event )
