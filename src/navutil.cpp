@@ -3332,6 +3332,7 @@ int MyConfig::LoadMyConfig( int iteration )
     global_color_scheme = (ColorScheme) read_int;
 
     SetPath( _T ( "/Settings/NMEADataSource" ) );
+    
     wxString connectionconfigs;
     Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
     wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
@@ -3342,6 +3343,104 @@ int MyConfig::LoadMyConfig( int iteration )
         g_pConnectionParams->Add(prm);
     }
 
+    //  Automatically handle the upgrade to DataSources architecture...
+    //  Is there an existing NMEADataSource definition?
+    SetPath( _T ( "/Settings/NMEADataSource" ) );
+    wxString xSource;
+    wxString xRate;
+    Read ( _T ( "Source" ), &xSource );
+    Read ( _T ( "BaudRate" ), &xRate );
+    if(xSource.Len()) {
+        wxString port;
+        if(xSource.Mid(0, 6) == _T("Serial"))
+            port = xSource.Mid(7);
+        else
+            port = _T("");
+        
+        //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+        bool bfound = false;    
+        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        {
+            ConnectionParams *cp = g_pConnectionParams->Item(i);
+            if(cp->GetAddressStr() == port) {
+                bfound = true;
+                break;
+            }
+        }
+        
+        if(!bfound) {
+             ConnectionParams * prm = new ConnectionParams();
+             prm->Baudrate = wxAtoi(xRate);
+             prm->Port = port;
+             
+             g_pConnectionParams->Add(prm);
+        }
+    }
+             
+   //  Is there an existing AISPort definition?
+    SetPath( _T ( "/Settings/AISPort" ) );
+    Read ( _T ( "Source" ), &xSource );
+    Read ( _T ( "BaudRate" ), &xRate );
+    if(xSource.Len()) {
+        wxString port;
+        if(xSource.Mid(0, 6) == _T("Serial"))
+            port = xSource.Mid(7);
+        else
+            port = _T("");
+        
+        //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+        bool bfound = false;    
+        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        {
+            ConnectionParams *cp = g_pConnectionParams->Item(i);
+            if(cp->GetAddressStr() == port) {
+                bfound = true;
+                break;
+            }
+        }
+        
+        if(!bfound) {
+             ConnectionParams * prm = new ConnectionParams();
+             prm->Baudrate = wxAtoi(xRate);
+             prm->Port = port;
+             
+             g_pConnectionParams->Add(prm);
+        }
+    }
+             
+    //  Is there an existing NMEAAutoPilotPort definition?
+    SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
+    Read ( _T ( "Port" ), &xSource );
+    if(xSource.Len()) {
+        wxString port;
+        if(xSource.Mid(0, 6) == _T("Serial"))
+            port = xSource.Mid(7);
+        else
+            port = _T("");
+        
+        //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+        bool bfound = false;
+        ConnectionParams *cp;
+        for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+        {
+            cp = g_pConnectionParams->Item(i);
+            if(cp->GetAddressStr() == port) {
+                bfound = true;
+                break;
+            }
+        }
+        
+        if(!bfound) {
+             ConnectionParams * prm = new ConnectionParams();
+             prm->Port = port;
+             
+             g_pConnectionParams->Add(prm);
+        }
+        else {                                  // port was found, so make sure it is set for output
+            cp->Output = true;
+        }
+    }
+             
 //    Reasonable starting point
     vLat = START_LAT;                   // display viewpoint
     vLon = START_LON;
