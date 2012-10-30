@@ -6296,8 +6296,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
         ss.Append( event.GetDataSource() );
         ss.Append( _T(") ") );
         ss.Append( str_buf );
-        g_NMEALogWindow->Add( ss );
-        g_NMEALogWindow->Refresh( false );
+//        g_NMEALogWindow->Add( ss );
+//        g_NMEALogWindow->Refresh( false );
     }
 
     //    Send NMEA sentences to PlugIns
@@ -6307,8 +6307,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     {
         if( g_NMEALogWindow ) {
             wxString ss = _T("Passed");
-            g_NMEALogWindow->Add( ss );
-            g_NMEALogWindow->Refresh( false );
+//            g_NMEALogWindow->Add( ss );
+//            g_NMEALogWindow->Refresh( false );
         }
         m_NMEA0183 << str_buf;
         if( m_NMEA0183.PreParse() ) {
