@@ -49,6 +49,8 @@
 class wxGenericDirCtrl;
 class MyConfig;
 class ChartGroupsUI;
+class ConnectionParams;
+class SentenceListDlg;
 
 #define ID_DIALOG 10001
 #define SYMBOL_OPTIONS_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
@@ -237,7 +239,6 @@ public:
     void OnButtonClearClick( wxCommandEvent& event );
     void OnButtonSelectClick( wxCommandEvent& event );
     void OnPageChange( wxListbookEvent& event );
-    void OnNMEASourceChoice( wxCommandEvent& event );
     void OnButtonSelectSound( wxCommandEvent& event );
     void OnButtonTestSound( wxCommandEvent& event );
     void OnShowGpsWindowCheckboxClick( wxCommandEvent& event );
@@ -290,11 +291,71 @@ public:
     int                      k_tides;
 
 //    For GPS Page
-    wxCheckBox              *pShowGPSWin;
-    wxCheckBox              *pGarminHost;
-    wxCheckBox              *pFilterNMEA;
-    wxTextCtrl              *pFilterSecs;
-    wxTextCtrl              *pCOGUPUpdateSecs;
+    wxListCtrl* m_lcSources;
+    wxButton* m_buttonAdd;
+    wxButton* m_buttonRemove;
+    wxStaticBoxSizer* sbSizerConnectionProps;
+    wxRadioButton* m_rbTypeSerial;
+    wxRadioButton* m_rbTypeNet;
+    wxGridSizer* gSizerNetProps;
+    wxStaticText* m_stNetProto;
+    wxRadioButton* m_rbNetProtoTCP;
+    wxRadioButton* m_rbNetProtoUDP;
+    wxRadioButton* m_rbNetProtoGPSD;
+    wxStaticText* m_stNetAddr;
+    wxTextCtrl* m_tNetAddress;
+    wxStaticText* m_stNetPort;
+    wxTextCtrl* m_tNetPort;
+    wxGridSizer* gSizerSerProps;
+    wxStaticText* m_stSerPort;
+    wxComboBox* m_comboPort;
+    wxStaticText* m_stSerBaudrate;
+    wxChoice* m_choiceBaudRate;
+    wxStaticText* m_stSerProtocol;
+    wxChoice* m_choiceSerialProtocol;
+    wxStaticText* m_stPriority;
+    wxChoice* m_choicePriority;
+    wxCheckBox* m_cbCheckCRC;
+    wxCheckBox* m_cbGarminHost;
+    wxCheckBox* m_cbNMEADebug;
+    wxCheckBox* m_cbFilterSogCog;
+    wxStaticText* m_stFilterSec;
+    wxTextCtrl* m_tFilterSec;
+    wxRadioButton* m_rbIAccept;
+    wxRadioButton* m_rbIIgnore;
+    wxTextCtrl* m_tcInputStc;
+    wxButton* m_btnInputStcList;
+    wxCheckBox* m_cbOutput;
+    wxRadioButton* m_rbOAccept;
+    wxRadioButton* m_rbOIgnore;
+    wxTextCtrl* m_tcOutputStc;
+    wxButton* m_btnOutputStcList;
+    wxStdDialogButtonSizer* m_sdbSizerDlgButtons;
+    wxButton* m_sdbSizerDlgButtonsOK;
+    wxButton* m_sdbSizerDlgButtonsApply;
+    wxButton* m_sdbSizerDlgButtonsCancel;
+    wxStaticBoxSizer* sbSizerInFilter;
+    wxStaticBoxSizer* sbSizerOutFilter;
+
+    SentenceListDlg* m_stcdialog;
+
+    // Virtual event handlers, overide them in your derived class
+    void OnSelectDatasource( wxListEvent& event );
+    void OnAddDatasourceClick( wxCommandEvent& event );
+    void OnRemoveDatasourceClick( wxCommandEvent& event );
+    void OnTypeSerialSelected( wxCommandEvent& event );
+    void OnTypeNetSelected( wxCommandEvent& event );
+    void OnNetProtocolSelected( wxCommandEvent& event );
+    void OnBaudrateChoice( wxCommandEvent& event ) { OnValChange(event); }
+    void OnProtocolChoice( wxCommandEvent& event ) { OnValChange(event); }
+    void OnCrcCheck( wxCommandEvent& event ) { OnValChange(event); }
+    void OnRbInput( wxCommandEvent& event ) { OnValChange(event); }
+    void OnBtnIStcs( wxCommandEvent& event );
+    void OnCbOutput( wxCommandEvent& event ) { OnValChange(event); }
+    void OnRbOutput( wxCommandEvent& event ) { OnValChange(event); }
+    void OnBtnOStcs( wxCommandEvent& event );
+    void OnValChange( wxCommandEvent& event ) { connectionsaved = false; event.Skip(); }
+    bool connectionsaved;
 
 //    For "S57" page
     wxFlexGridSizer         *vectorPanel;
@@ -401,7 +462,7 @@ public:
     wxCheckBox              *pWayPointPreventDragging;
     wxCheckBox              *pEnableZoomToCursor;
     wxCheckBox              *pPreserveScale;
-    wxCheckBox		        *pPlayShipsBells;
+    wxCheckBox            *pPlayShipsBells;
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
     wxChoice                *pSDMMFormat;
@@ -451,6 +512,16 @@ private:
     std::vector<int> marinersStdXref;
     ChartGroupsUI *groupsPanel;
     wxImageList *m_topImgList;
+
+    wxScrolledWindow *m_pNMEAForm;
+    void ShowNMEACommon( bool visible );
+    void ShowNMEASerial( bool visible );
+    void ShowNMEANet( bool visible );
+    void SetNMEAFormToSerial();
+    void SetNMEAFormToNet();
+    void SetConnectionParams(ConnectionParams *cp);
+    void FillSourceList();
+    ConnectionParams *SaveConnectionParams();
 };
 
 class ChartGroupsUI: public wxScrolledWindow {
@@ -749,5 +820,38 @@ static int lang_list[] = {
             wxLANGUAGE_ZULU
             };
 
+///////////////////////////////////////////////////////////////////////////////
+/// Class SentenceListDlg
+///////////////////////////////////////////////////////////////////////////////
+class SentenceListDlg : public wxDialog
+{
+	private:
+        wxArrayString m_sentences;
+        void FillSentences();
+
+	protected:
+		wxListBox* m_lbSentences;
+		wxButton* m_btnAdd;
+		wxButton* m_btnDel;
+		wxButton* m_btnDelAll;
+		wxStdDialogButtonSizer* m_sdbSizer4;
+		wxButton* m_sdbSizer4OK;
+		wxButton* m_sdbSizer4Cancel;
+
+		// Virtual event handlers, overide them in your derived class
+		void OnStcSelect( wxCommandEvent& event );
+        void OnAddClick( wxCommandEvent& event );
+        void OnDeleteClick( wxCommandEvent& event );
+        void OnDeleteAllClick( wxCommandEvent& event );
+        void OnCancelClick( wxCommandEvent& event );
+        void OnOkClick( wxCommandEvent& event );
+
+	public:
+
+		SentenceListDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Sentences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 284,361 ), long style = wxDEFAULT_DIALOG_STYLE );
+		~SentenceListDlg();
+		void SetSentenceList(wxArrayString sentences);
+        wxString GetSentencesAsText();
+};
 #endif
     // _OPTIONS_H_

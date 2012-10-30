@@ -66,6 +66,7 @@
 #include "gpxdocument.h"
 #include "ocpndc.h"
 #include "geodesic.h"
+#include "datastream.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -76,7 +77,6 @@
 
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
-extern NMEAHandler      *g_pnmea;
 extern FontMgr          *pFontMgr;
 
 extern double           g_ChartNotRenderScaleFactor;
@@ -97,16 +97,13 @@ extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
 
 extern wxToolBarBase    *toolBar;
-extern wxString         *pNMEADataSource;
-extern wxString         g_NMEABaudRate;
 
-extern wxString         *pNMEA_AP_Port;
+extern wxArrayOfConnPrm *g_pConnectionParams;
+
 extern wxString         g_csv_locn;
 extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
-extern AutoPilotWindow  *pAPilot;
-extern wxString         *pAIS_Port;
 extern AIS_Decoder      *g_pAIS;
 extern wxString         g_SData_Locn;
 extern wxString         *pInit_Chart_Dir;
@@ -1260,7 +1257,7 @@ bool RoutePoint::IsSame( RoutePoint *pOtherRP )
 bool RoutePoint::SendToGPS( wxString& com_name, wxGauge *pProgress )
 {
     bool result = false;
-    if( g_pnmea ) result = g_pnmea->SendWaypointToGPS( this, com_name, pProgress );
+    //TODO: if( g_pnmea ) result = g_pnmea->SendWaypointToGPS( this, com_name, pProgress );
 
     wxString msg;
     if( result ) msg = _("Waypoint(s) Uploaded successfully.");
@@ -2204,7 +2201,7 @@ void Route::RenameRoutePoints( void )
 bool Route::SendToGPS( wxString& com_name, bool bsend_waypoints, wxGauge *pProgress )
 {
     bool result = false;
-    if( g_pnmea ) result = g_pnmea->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
+    //TODO: if( g_pnmea ) result = g_pnmea->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
 
     wxString msg;
     if( result ) msg = _("Route Uploaded successfully.");
@@ -2914,6 +2911,8 @@ MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
 
     m_bIsImporting = false;
     g_bIsNewLayer = false;
+
+    g_pConnectionParams = new wxArrayOfConnPrm();
 }
 
 void MyConfig::CreateRotatingNavObjBackup()
@@ -3337,14 +3336,15 @@ int MyConfig::LoadMyConfig( int iteration )
     global_color_scheme = (ColorScheme) read_int;
 
     SetPath( _T ( "/Settings/NMEADataSource" ) );
-    Read( _T ( "Source" ), pNMEADataSource, _T ( "NONE" ) );
-    Read( _T ( "BaudRate" ), &g_NMEABaudRate, _T ( "4800" ) );
-
-    SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
-    Read( _T ( "Port" ), pNMEA_AP_Port, _T ( "NONE" ) );
-
-    SetPath( _T ( "/Settings/AISPort" ) );
-    Read( _T ( "Port" ), pAIS_Port, _T ( "NONE" ) );
+    wxString connectionconfigs;
+    Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
+    wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+    g_pConnectionParams->Clear();
+    for (size_t i = 0; i < confs.Count(); i++)
+    {
+        ConnectionParams * prm = new ConnectionParams(confs[i]);
+        g_pConnectionParams->Add(prm);
+    }
 
 //    Reasonable starting point
     vLat = START_LAT;                   // display viewpoint
@@ -4495,27 +4495,15 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPXIODir" ), m_gpx_path );
     Write( _T ( "TCDataDir" ), g_TCData_Dir );
 
-    if( g_pnmea ) {
-        SetPath( _T ( "/Settings/NMEADataSource" ) );
-        wxString source;
-        g_pnmea->GetSource( source );
-        Write( _T ( "Source" ), source );
-        Write( _T ( "BaudRate" ), g_NMEABaudRate );
+    SetPath( _T ( "/Settings/NMEADataSource" ) );
+    wxString connectionconfigs;
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
+    {
+        if (i > 0)
+            connectionconfigs.Append(_T("|"));
+        connectionconfigs.Append(g_pConnectionParams->Item(i)->Serialize());
     }
-
-    if( pAPilot ) {
-        SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
-        wxString ap_port;
-        pAPilot->GetAP_Port( ap_port );
-        Write( _T ( "Port" ), ap_port );
-    }
-
-    if( g_pAIS ) {
-        SetPath( _T ( "/Settings/AISPort" ) );
-        wxString ais_port;
-        g_pAIS->GetSource( ais_port );
-        Write( _T ( "Port" ), ais_port );
-    }
+    Write ( _T ( "DataConnections" ), connectionconfigs );
 
     //    Fonts
     wxString font_path;

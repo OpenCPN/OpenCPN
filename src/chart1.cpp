@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -72,7 +72,6 @@
 #include "routeman.h"
 #include "statwin.h"
 #include "concanv.h"
-#include "nmea.h"
 #include "options.h"
 #include "about.h"
 #include "thumbwin.h"
@@ -82,6 +81,8 @@
 #include "routeprop.h"
 #include "toolbar.h"
 #include "compasswin.h"
+#include "datastream.h"
+#include "multiplexer.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"
@@ -136,7 +137,6 @@ MyFrame                   *gFrame;
 
 ChartCanvas               *cc1;
 ConsoleCanvas             *console;
-NMEAHandler               *g_pnmea;
 StatWin                   *stats;
 
 MyConfig                  *pConfig;
@@ -212,12 +212,8 @@ wxString                  *phost_name;
 
 static unsigned int       malloc_max;
 
-OCP_NMEA_Thread           *pNMEA_Thread;
+wxArrayOfConnPrm          *g_pConnectionParams;
 OCP_GARMIN_Thread         *pGARMIN_Thread;
-wxString                  *pNMEADataSource;
-wxString                  g_NMEABaudRate;
-
-wxString                  *pNMEA_AP_Port;
 
 wxDateTime                g_start_time;
 wxDateTime                g_loglast_time;
@@ -230,8 +226,6 @@ bool                      AnchorAlertOn1, AnchorAlertOn2;
 bool                      g_bCruising;
 
 ChartDummy                *pDummyChart;
-
-AutoPilotWindow *pAPilot;
 
 ocpnToolBarSimple*        g_toolbar;
 ocpnStyle::StyleManager*  g_StyleManager;
@@ -334,10 +328,9 @@ extern HINSTANCE          s_hGLU_DLL; // Handle to DLL
 double                    g_ownship_predictor_minutes;
 int                       g_current_arrow_scale;
 
-OCP_AIS_Thread            *pAIS_Thread;
+Multiplexer               *g_pMUX;
+
 AIS_Decoder               *g_pAIS;
-wxString                  *pAIS_Port;
-bool                      g_bGPSAISMux;
 bool                      g_bAIS_CPA_Alert;
 bool                      g_bAIS_CPA_Alert_Audio;
 AISTargetAlertDialog      *g_pais_alert_dialog_active;
@@ -604,6 +597,9 @@ double g_GLMinLineWidth;
 int n_NavMessageShown;
 wxString g_config_version_string;
 
+DataStream  *g_pDataStreamGPS;
+DataStream  *g_pDataStreamAIS;
+
 #ifndef __WXMSW__
 sigjmp_buf env;                    // the context saved by sigsetjmp();
 #endif
@@ -632,6 +628,8 @@ void appendOSDirSlash( wxString* pString );
 void InitializeUserColors( void );
 void DeInitializeUserColors( void );
 void SetSystemColors( ColorScheme cs );
+
+DEFINE_EVENT_TYPE(EVT_THREADMSG)
 
 //------------------------------------------------------------------------------
 //    PNG Icon resources
@@ -1024,9 +1022,6 @@ bool MyApp::OnInit()
     wxLogMessage( imsg );
 
 //      Create some static strings
-    pNMEADataSource = new wxString();
-    pNMEA_AP_Port = new wxString();
-    pAIS_Port = new wxString();
     pInit_Chart_Dir = new wxString();
 
     //  Establish an empty ChartCroupArray
@@ -1486,9 +1481,6 @@ if( 0 == g_memCacheLimit )
 
     InitializeUserColors();
 
-//  Create the global instance of the CommPortManager
-    g_pCommMan = new ComPortManager;
-
     if( ( g_nframewin_x > 100 ) && ( g_nframewin_y > 100 ) && ( g_nframewin_x <= cw )
             && ( g_nframewin_y <= ch ) ) new_frame_size.Set( g_nframewin_x, g_nframewin_y );
     else
@@ -1616,25 +1608,25 @@ if( 0 == g_memCacheLimit )
 
     if( g_bframemax ) gFrame->Maximize( true );
 
-    
+
     stats = new StatWin( cc1 );
     stats->SetColorScheme( global_color_scheme );
-    
+
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-    
+
     if( cc1->GetQuiltMode() ) {
         stats->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
         stats->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
-        
+
         stats->pPiano->SetRoundedRectangles( true );
     }
     stats->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
     stats->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
     stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
-    
+
     stats->Show( true );
-    
-    
+
+
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
 
@@ -1906,7 +1898,7 @@ if( 0 == g_memCacheLimit )
     cc1->ReloadVP();                  // once more, and good to go
 
     g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-    
+
     if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
 
     g_FloatingToolbarDialog->Raise();
@@ -1998,10 +1990,6 @@ int MyApp::OnExit()
     delete pInit_Chart_Dir;
     delete pWorldMapLocation;
 
-    delete pNMEADataSource;
-    delete pNMEA_AP_Port;
-    delete pAIS_Port;
-
     delete pFontMgr;
 
     delete g_pRouteMan;
@@ -2081,8 +2069,6 @@ EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
 EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
 EVT_ACTIVATE(MyFrame::OnActivate)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
-EVT_COMMAND(wxID_ANY, EVT_NMEA, MyFrame::OnEvtNMEA)
-EVT_COMMAND(wxID_ANY, EVT_THREADMSG, MyFrame::OnEvtTHREADMSG)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbarArgEvent)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
 END_EVENT_TABLE()
@@ -2129,35 +2115,18 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_ChartUpdatePeriod = 1;                  // set the default (1 sec.) period
 
 //    Establish my children
-#ifdef __WXOSX__
-    if ((pNMEADataSource->Contains(_T("Serial"))) &&
-            (false == ValidateSerialPortName(pNMEADataSource->mb_str(),MAX_SERIAL_PORTS)))
-    *pNMEADataSource = _T("NONE");
-    if (false == ValidateSerialPortName(pAIS_Port->mb_str(),MAX_SERIAL_PORTS))
-    *pAIS_Port = _T("NONE");
-    if (false == ValidateSerialPortName(pNMEA_AP_Port->mb_str(), MAX_SERIAL_PORTS))
-    *pNMEA_AP_Port = _T("NONE");
-#endif
+///BEGIN TEST
+    // test the new DataStream class
+    g_pMUX = new Multiplexer();
 
-    //    If the selected port is the same as AIS port, override the name to force the
-    //    NMEA class to expect muxed data from AIS decoder
-    if( ( pNMEADataSource->IsSameAs( *pAIS_Port ) )
-            && ( !pNMEADataSource->Upper().Contains( _T("NONE") ) ) ) g_pnmea = new NMEAHandler(
-            ID_NMEA_WINDOW, this, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent,
-            false );
-    else
-        g_pnmea = new NMEAHandler( ID_NMEA_WINDOW, this, *pNMEADataSource, g_NMEABaudRate,
-                &m_mutexNMEAEvent, g_bGarminHost );
-
-//        pAIS = new AIS_Decoder(ID_AIS_WINDOW, gFrame, wxString("TCP/IP:66.235.48.168"));  // a test
-    g_pAIS = new AIS_Decoder( ID_AIS_WINDOW, this, *pAIS_Port, &m_mutexNMEAEvent );
-
-    //  Create/connect a dynamic event handler slot for OCPN_NMEAEvent(s) coming from NMEA or AIS threads
-    Connect( wxEVT_OCPN_NMEA, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
-
-    //  Create/connect a dynamic event handler slot for OCPN_MsgEvent(s) coming from PlugIn system
-    Connect( wxEVT_OCPN_MSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtPlugInMessage );
-
+    g_pAIS = new AIS_Decoder( );
+    g_pDataStreamAIS = new DataStream( g_pMUX, _T("/dev/null"), _T("38400"), DS_TYPE_INPUT );
+    DataStream *pds = new DataStream( g_pMUX, _T("GPSD"), _T(""), DS_TYPE_INPUT );
+    g_pMUX->SetAISHandler(g_pAIS);
+    g_pMUX->SetGPSHandler(this);
+    //  Create/connect a dynamic event handler slot
+    Connect( wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
+///END TEST
     bFirstAuto = true;
 
     //        Establish the system icons for the frame.
@@ -2469,14 +2438,10 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
             style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     m_pAISTool = NULL;
-    if( !pAIS_Port->IsSameAs( _T("None"), false ) ) {
-        CheckAndAddPlugInTool( tb );
-        tipString = _("Show AIS Targets");
-        if( _toolbarConfigMenuUtil( ID_AIS, tipString ) )
-            m_pAISTool = tb->AddTool( ID_AIS,
-                _T("AIS"), style->GetToolIcon( _T("AIS"), TOOLICON_NORMAL ),
-                style->GetToolIcon( _T("AIS"), TOOLICON_DISABLED ), wxITEM_CHECK, tipString );
-    }
+    CheckAndAddPlugInTool( tb );
+    tipString = _("Show AIS Targets");
+    if( _toolbarConfigMenuUtil( ID_AIS, tipString ) )
+        m_pAISTool = tb->AddTool( ID_AIS, _T("AIS"), style->GetToolIcon( _T("AIS"), TOOLICON_NORMAL ), style->GetToolIcon( _T("AIS"), TOOLICON_DISABLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Show Currents");
@@ -2892,9 +2857,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pi_manager = NULL;
     }
 
-    if( g_pnmea ) {
-        g_pnmea->Close();
-        delete g_pnmea;
+    if( g_pDataStreamGPS )
+    {
+        g_pDataStreamGPS->Close();
+        delete g_pDataStreamGPS;
     }
 
     if( g_pAIS ) {
@@ -2907,12 +2873,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
 //    delete pthumbwin;
     pthumbwin = NULL;
-
-    if( pAPilot ) {
-        pAPilot->Close();
-        pAPilot->Destroy();
-        pAPilot = NULL;
-    }
 
 //    delete g_FloatingToolbarDialog;
     g_FloatingToolbarDialog = NULL;
@@ -3783,13 +3743,6 @@ int MyFrame::DoOptionsDialog()
     ArrayOfCDI *pWorkDirArray = new ArrayOfCDI;
     optionsDlg.SetWorkDirListPtr( pWorkDirArray );
 
-//  Grab a copy of the current NMEA source and AP Port and AIS Port
-    previous_NMEA_source = *pNMEADataSource;
-    previous_bGarminHost = g_bGarminHost;
-
-    previous_NMEA_APPort = *pNMEA_AP_Port;
-    previous_AIS_Port = *pAIS_Port;
-
 //      Pass a ptr to MyConfig, for updates
     optionsDlg.SetConfigPtr( pConfig );
 
@@ -3802,10 +3755,6 @@ int MyFrame::DoOptionsDialog()
     bPrevOGL = g_bopengl;
 
     prev_locale = g_locale;
-
-//    Pause all of the async classes
-    if( g_pAIS ) g_pAIS->Pause();
-    if( g_pnmea ) g_pnmea->Pause();
 
     bool b_sub = false;
     if( g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown() ) {
@@ -3855,21 +3804,21 @@ int MyFrame::DoOptionsDialog()
     }
 
     delete pWorkDirArray;
-    
+
     //    Restart the async classes
     if( g_pAIS ) g_pAIS->UnPause();
     if( g_pnmea ) g_pnmea->UnPause();
-    
+
     bDBUpdateInProgress = false;
-    
+
     if( g_FloatingToolbarDialog ) {
         if( IsFullScreen() && !g_bFullscreenToolbar ) g_FloatingToolbarDialog->Submerge();
     }
-    
+
 #ifdef __WXMAC__
     if(stats) stats->Show();
 #endif
-    
+
     Refresh( false );
     return ret_val;
 }
@@ -3894,37 +3843,6 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         //    Re-open the last open chart
         int dbii = ChartData->FinddbIndex( chart_file_name );
         ChartsRefresh( dbii, cc1->GetVP() );
-    }
-
-    if( ( *pNMEADataSource != previous_NMEA_source )
-            || ( previous_bGarminHost != g_bGarminHost ) ) {
-        if( g_pnmea ) g_pnmea->Close();
-        delete g_pnmea;
-
-        bGPSValid = false;
-
-        //    If the selected port is the same as AIS port, override the name to force the
-        //    NMEA class to expect muxed data from AIS decoder
-        if( ( pNMEADataSource->IsSameAs( *pAIS_Port ) )
-                && ( !pNMEADataSource->Upper().Contains( _T("NONE") ) ) ) g_pnmea =
-                new NMEAHandler( ID_NMEA_WINDOW, gFrame, _T("AIS Port (Shared)"),
-                        g_NMEABaudRate, &m_mutexNMEAEvent, false );
-        else
-            g_pnmea = new NMEAHandler( ID_NMEA_WINDOW, gFrame, *pNMEADataSource, g_NMEABaudRate,
-                    &m_mutexNMEAEvent, g_bGarminHost );
-
-        SetbFollow();
-    }
-
-    if( *pNMEA_AP_Port != previous_NMEA_APPort ) {
-        if( pAPilot ) pAPilot->Close();
-        delete pAPilot;
-        pAPilot = new AutoPilotWindow( gFrame, *pNMEA_AP_Port );
-    }
-
-    if( *pAIS_Port != previous_AIS_Port ) {
-        delete g_pAIS;
-        g_pAIS = new AIS_Decoder( ID_AIS_WINDOW, gFrame, *pAIS_Port, &m_mutexNMEAEvent );
     }
 
     if( ( rr & LOCALE_CHANGED ) || ( rr & STYLE_CHANGED ) ) {
@@ -3991,7 +3909,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 
     SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
-#if 0    
+#if 0
 //    Restart the async classes
     if( g_pAIS ) g_pAIS->UnPause();
     if( g_pnmea ) g_pnmea->UnPause();
@@ -4007,7 +3925,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 #endif
 
     Refresh( false );
-#endif    
+#endif
     return 0;
 }
 
@@ -4922,6 +4840,8 @@ void MyFrame::TouchAISActive( void )
 
 void MyFrame::UpdateAISTool( void )
 {
+    if(!g_pAIS) return;
+
     bool b_need_refresh = false;
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
@@ -6372,7 +6292,7 @@ void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
     wxLogMessage( event.GetString() );
 }
 
-void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
+void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 {
     wxString sfixtime;
     bool bshow_tick = false;
@@ -7004,12 +6924,12 @@ void MyFrame::FilterCogSog( void )
 
 void MyFrame::StopSockets( void )
 {
-    if( g_pnmea ) g_pnmea->Pause();
+//TODO: Can be removed?
 }
 
 void MyFrame::ResumeSockets( void )
 {
-    if( g_pnmea ) g_pnmea->UnPause();
+//TODO: Can be removed?
 }
 
 void MyFrame::LoadHarmonics()

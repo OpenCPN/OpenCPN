@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
  */
@@ -62,8 +62,6 @@ extern ConsoleCanvas    *console;
 extern RouteList        *pRouteList;
 extern Select           *pSelect;
 extern MyConfig         *pConfig;
-extern NMEA0183         *pNMEA0183;
-extern AutoPilotWindow  *pAPilot;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
 
@@ -514,6 +512,7 @@ bool Routeman::DeactivateRoute( bool b_arrival )
 
 bool Routeman::UpdateAutopilot()
 {
+/*TODO
     if( !pAPilot->IsOK() ) return false;
 
     //    Get the requested A/P sentence
@@ -618,6 +617,7 @@ bool Routeman::UpdateAutopilot()
         }
 
     }           // while
+*/
     return true;
 }
 

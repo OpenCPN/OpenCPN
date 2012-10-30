@@ -6767,6 +6767,8 @@ void ChartCanvas::UpdateAlerts()
 
 void ChartCanvas::UpdateAIS()
 {
+    if(!g_pAIS) return;
+
     //  Get the rectangle in the current dc which bounds the detected AIS targets
 
     //  Use this dc
@@ -9175,11 +9177,11 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_WPT_MENU_SENDTOGPS:
         if( m_pFoundRoutePoint ) {
             wxString port, com;
-            if( g_pnmea ) {
+/*TODO:            if( g_pnmea ) {
                 g_pnmea->GetSource( port );
                 if( port.StartsWith( _T("Serial:"), &com ) ) port = com;
                 m_pFoundRoutePoint->SendToGPS( port, NULL );
-            }
+            }*/
         }
         break;
 

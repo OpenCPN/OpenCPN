@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
  */
@@ -39,32 +39,10 @@
 
 #include <vector>
 
-////////////TH//////////////////
-#ifndef OCPN_NO_SOCKETS
-#ifdef __WXGTK__
-#ifdef ocpnHAS_GTK
-// newer versions of glib define its own GSocket but we unfortunately use this
-// name in our own (semi-)public header and so can't change it -- rename glib
-// one instead
-
-#include <gtk/gtk.h>
-#define GSocket GlibGSocket
-#endif
-#endif
-
-#include "wx/socket.h"
-///////////TH100126////////////////
-#endif
-
 #include "wx/sound.h"
 
 #include "dychart.h"
 #include "chart1.h"
-
-#ifdef __POSIX__
-#include <sys/termios.h>
-#endif
-
 
 //    Constants
 #ifndef PI
@@ -304,7 +282,7 @@ public:
     double                    TCPA;                     // Minutes
     double                    CPA;                      // Nautical Miles
 
-	bool                      b_show_AIS_CPA;           //TR 2012.06.28: Show AIS-CPA
+    bool                      b_show_AIS_CPA;           //TR 2012.06.28: Show AIS-CPA
 
     AISTargetTrackList        *m_ptrack;
 
@@ -342,54 +320,6 @@ private:
 
 WX_DECLARE_HASH_MAP( int, AIS_Target_Data*, wxIntegerHash, wxIntegerEqual, AIS_Target_Hash );
 
-
-
-#define AIS_SOCKET_ID             7
-
-enum
-{
-    EVT_AIS_DIRECT,
-    EVT_AIS_PARSE_RX
-};
-
-//----------------------------------------------------------------------------
-// AISEvent
-//----------------------------------------------------------------------------
-
-class OCPN_AISEvent: public wxEvent
-{
-      public:
-            OCPN_AISEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
-
-            OCPN_AISEvent(const OCPN_AISEvent & event)
-            : wxEvent(event),
-                m_NMEAstring(event.m_NMEAstring),
-                m_extra(event.m_extra)
-                { }
-
-                ~OCPN_AISEvent( );
-
-    // accessors
-            wxString GetNMEAString() { return m_NMEAstring; }
-            void SetNMEAString(wxString string) { m_NMEAstring = string; }
-
-            void SetExtraLong(long n){ m_extra = n;}
-            long GetExtraLong(){ return m_extra;}
-
-    // required for sending with wxPostEvent()
-            wxEvent *Clone() const;
-
-      private:
-            wxString    m_NMEAstring;
-            long        m_extra;
-
-};
-
-//    DECLARE_EVENT_TYPE(wxEVT_OCPN_AIS, -1)
-extern /*expdecl*/ const wxEventType wxEVT_OCPN_AIS;
-
-
-
 //---------------------------------------------------------------------------------
 //
 //  AIS_Decoder Definition
@@ -401,28 +331,19 @@ class AIS_Decoder : public wxEvtHandler
 
 public:
     AIS_Decoder(void);
-    AIS_Decoder(int window_id, wxFrame *pParent, const wxString& AISDataSource,  wxMutex *pGPSMutex = 0);
 
     ~AIS_Decoder(void);
 
-
-    void OnEvtAIS(OCPN_AISEvent& event);
+    void OnEvtAIS(OCPN_DataStreamEvent& event);
     AIS_Error Decode(const wxString& str);
-    void Pause(void);
-    void UnPause(void);
-    void GetSource(wxString& source);
     AIS_Target_Hash *GetTargetList(void) {return AISTargetList;}
     AIS_Target_Data *Get_Target_Data_From_MMSI(int mmsi);
     int GetNumTargets(void){ return m_n_targets;}
     bool IsAISSuppressed(void){ return m_bSuppressed; }
     bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
 
-    int             m_Thread_run_flag;
-
 private:
-    AIS_Error OpenDataSource(wxFrame *pParent, const wxString& AISDataSource);
     void OnActivate(wxActivateEvent& event);
-    void OnSocketEvent(wxSocketEvent& event);
     void OnTimerAIS(wxTimerEvent& event);
     void OnTimerAISAudio(wxTimerEvent& event);
 
@@ -433,23 +354,13 @@ private:
     void UpdateAllAlarms(void);
     void UpdateAllTracks(void);
     void UpdateOneTrack(AIS_Target_Data *ptarget);
-    void Parse_And_Send_Posn(wxString &str_temp_buf);
-    void ThreadMessage(const wxString &msg);
     void BuildERIShipTypeHash(void);
 
     AIS_Target_Hash *AISTargetList;
 
-#ifndef OCPN_NO_SOCKETS
-    wxIPV4address     addr;
-    wxSocketClient    *m_sock;
-#endif
-
     bool              m_busy;
     wxTimer           TimerAIS;
     wxFrame           *m_parent_frame;
-    int               m_handler_id;
-
-    wxString          m_data_source_string;
 
     int               nsentences;
     int               isentence;
@@ -457,12 +368,6 @@ private:
     bool              m_OK;
 
     AIS_Target_Data   *m_pLatestTargetData;
-
-    NMEA0183         m_NMEA0183;
-    wxMutex          *m_pShareGPSMutex;
-    wxEvtHandler     *m_pMainEventHandler;
-
-    wxMutex           *m_pShareMutex;
 
     bool             m_bAIS_Audio_Alert_On;
     wxTimer          m_AIS_Audio_Alert_Timer;
@@ -472,62 +377,7 @@ private:
     bool             m_bGeneralAlert;
 
 DECLARE_EVENT_TABLE()
-
-
 };
-
-//-------------------------------------------------------------------------------------------------------------
-//
-//    AIS Input Thread
-//
-//    This thread manages reading the AIS data stream from the declared serial port
-//
-//-------------------------------------------------------------------------------------------------------------
-
-#ifdef __WXMSW__
-#include <windows.h>
-#endif
-
-
-class OCP_AIS_Thread: public wxThread
-{
-
-public:
-
-      OCP_AIS_Thread(AIS_Decoder *pParent, const wxString& PortName);
-      ~OCP_AIS_Thread(void);
-      void *Entry();
-
-      void OnExit(void);
-
-private:
-      bool HandleRead(char *buf, int character_count);
-
-      AIS_Decoder             *m_pParentEventHandler;
-      wxString                *m_pPortName;
-      int                     TimeOutInSec;
-      char                    *put_ptr;
-      char                    *tak_ptr;
-
-      char                    *rx_buffer;
-
-      char                    *temp_buf;
-
-      unsigned long           error;
-      int                     nl_count;
-
-#ifdef __POSIX__
-      termios                 *pttyset;
-      termios                 *pttyset_old;
-
-      int                     m_ais_fd;
-#endif
-
-#ifdef __WXMSW__
-      HANDLE                  m_hSerialComm;
-#endif
-};
-
 
 class AISInfoWin;
 //----------------------------------------------------------------------------------------------------------
