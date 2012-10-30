@@ -3385,12 +3385,14 @@ int MyConfig::LoadMyConfig( int iteration )
              
    //  Is there an existing AISPort definition?
     SetPath( _T ( "/Settings/AISPort" ) );
-    Read ( _T ( "Port" ), &xSource );
-    Read ( _T ( "BaudRate" ), &xRate );
-    if(xSource.Len()) {
+    wxString aSource;
+    wxString aRate;
+    Read ( _T ( "Port" ), &aSource );
+    Read ( _T ( "BaudRate" ), &aRate );
+    if(aSource.Len()) {
         wxString port;
-        if(xSource.Mid(0, 6) == _T("Serial"))
-            port = xSource.Mid(7);
+        if(aSource.Mid(0, 6) == _T("Serial"))
+            port = aSource.Mid(7);
         else
             port = _T("");
         
@@ -3408,7 +3410,10 @@ int MyConfig::LoadMyConfig( int iteration )
             
             if(!bfound) {
                 ConnectionParams * prm = new ConnectionParams();
-                prm->Baudrate = wxAtoi(xRate);
+                if( aRate.Len() )
+                    prm->Baudrate = wxAtoi(aRate);
+                else
+                    prm->Baudrate = 38400;              // default for most AIS receivers
                 prm->Port = port;
                 
                 g_pConnectionParams->Add(prm);
@@ -3447,11 +3452,16 @@ int MyConfig::LoadMyConfig( int iteration )
             if(!bfound) {
                 ConnectionParams * prm = new ConnectionParams();
                 prm->Port = port;
+                prm->OutputSentenceListType = WHITELIST;
+                prm->OutputSentenceList.Add( _T("RMB") );
+                prm->Output = true;
                 
                 g_pConnectionParams->Add(prm);
             }
             else {                                  // port was found, so make sure it is set for output
                 cp->Output = true;
+                cp->OutputSentenceListType = WHITELIST;
+                cp->OutputSentenceList.Add( _T("RMB") );
             }
         }
         
