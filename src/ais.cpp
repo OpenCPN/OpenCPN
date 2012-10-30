@@ -431,7 +431,7 @@ AIS_Target_Data::AIS_Target_Data()
     strncpy(CallSign, "       ", 8);
     strncpy(Destination, "                    ", 21);
     ShipNameExtension[0] = 0;
-    b_show_AIS_CPA = g_bShowAllCPA;             // default vlaue as set by Options            
+    b_show_AIS_CPA = false;             
 
     SOG = 555.;
     COG = 666.;

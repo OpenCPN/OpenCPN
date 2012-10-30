@@ -183,7 +183,6 @@ extern bool             g_bAisTargetList_sortReverse;
 extern wxString         g_AisTargetList_column_spec;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
-extern bool             g_bShowAllCPA;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
@@ -3173,10 +3172,7 @@ int MyConfig::LoadMyConfig( int iteration )
     s.ToDouble( &g_ShowMoored_Kts );
 
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
-
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
-    Read( _T ( "bShowAllCPA" ), &g_bShowAllCPA, 1 );
-    
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
 
     Read( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );
@@ -4557,7 +4553,6 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bAISAlertSuppressMoored" ), g_bAIS_CPA_Alert_Suppress_Moored );
     Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );
     Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
-    Write( _T ( "bShowAllCPA" ), g_bShowAllCPA );
     
     Write( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
     Write( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );

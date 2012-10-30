@@ -469,7 +469,6 @@ bool                      g_bAIS_ACK_Timeout;
 double                    g_AckTimeout_Mins;
 bool                      g_bShowAreaNotices;
 bool                      g_bDrawAISSize;
-bool                      g_bShowAllCPA;
 
 wxToolBarToolBase         *m_pAISTool;
 int                       g_nAIS_activity_timer;

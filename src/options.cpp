@@ -108,7 +108,6 @@ extern wxString         g_sAIS_Alert_Sound_File;
 extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
-extern bool             g_bShowAllCPA;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -1398,9 +1397,6 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     wxStaticText *pStatic_Dummy5a = new wxStaticText( panelAIS, -1, _T("") );
     pDisplayGrid->Add( pStatic_Dummy5a, 1, wxALL | wxALL, group_item_spacing );
 
-    m_pCheck_ShowAllCPA = new wxCheckBox( panelAIS, -1, _("Show all AIS target CPA vectors") );
-    pDisplayGrid->Add( m_pCheck_ShowAllCPA, 1, wxALL, group_item_spacing );
-
     // Rollover
     wxStaticBox* rolloverBox = new wxStaticBox( panelAIS, wxID_ANY, _("Rollover") );
     wxStaticBoxSizer* rolloverSizer = new wxStaticBoxSizer( rolloverBox, wxVERTICAL );
@@ -1865,8 +1861,6 @@ void options::SetInitialSettings()
     m_pCheck_Show_Area_Notices->SetValue( g_bShowAreaNotices );
 
     m_pCheck_Draw_Target_Size->SetValue( g_bDrawAISSize );
-
-    m_pCheck_ShowAllCPA->SetValue( g_bShowAllCPA );
 
     //      Alerts
     m_pCheck_AlertDialog->SetValue( g_bAIS_CPA_Alert );
@@ -2386,7 +2380,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
     g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
-
+    
     //      Alert
     g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
     g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();
