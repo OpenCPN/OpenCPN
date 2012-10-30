@@ -25,8 +25,8 @@
 
 #include "wx/wx.h"
 
-#include "nmea.h"
 #include "multiplexer.h"
+#include "navutil.h"                    // for NMEALogWindow
 
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;

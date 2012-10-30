@@ -54,7 +54,6 @@
 #include "navutil.h"
 #include "chcanv.h"
 #include "georef.h"
-#include "nmea.h"
 #include "ais.h"
 #include "cutil.h"
 #include "styles.h"
@@ -110,7 +109,7 @@ extern wxString         g_SData_Locn;
 extern wxString         *pInit_Chart_Dir;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
-extern ComPortManager   *g_pCommMan;
+//extern ComPortManager   *g_pCommMan;
 extern RouteProp        *pRoutePropDialog;
 
 extern bool             s_bSetSystemTime;

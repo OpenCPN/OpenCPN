@@ -37,7 +37,7 @@
 #include "ocpn_plugin.h"
 #include "chart1.h"                 // for MyFrame
 #include "chcanv.h"                 // for ViewPort
-#include "nmea.h"                   // for GenericPosDat
+#include "datastream.h"             // for GenericPosDat
 
 //For widgets...
 #include "wx/hyperlink.h"

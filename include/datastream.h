@@ -120,6 +120,39 @@ typedef enum
 
 #define DS_SOCKET_ID             5001
 
+#define     MAX_RX_MESSSAGE_SIZE  4096
+#define     RX_BUFFER_SIZE        4096
+
+typedef enum ENUM_BUFFER_STATE
+{
+    RX_BUFFER_EMPTY,
+    RX_BUFFER_FULL
+}_ENUM_BUFFER_STATE;
+
+enum
+{
+    EVT_NMEA_DIRECT,
+    EVT_NMEA_PARSE_RX
+};
+
+// Class declarations
+
+//    A generic Position Data structure
+typedef struct {
+    double kLat;
+    double kLon;
+    double kCog;
+    double kSog;
+    double kVar;            // Variation, typically from RMC message
+    double kHdm;            // Magnetic heading
+    double kHdt;            // true heading
+    time_t FixTime;
+    int    nSats;
+} GenericPosDatEx;
+
+
+
+
 // Class declarations
 class OCP_DataStreamInput_Thread;
 class DataStream;

@@ -41,7 +41,6 @@
 #include "routeman.h"
 #include "georef.h"
 #include "chartbase.h"
-#include "nmea.h"
 
 #define DIALOG_MARGIN 3
 

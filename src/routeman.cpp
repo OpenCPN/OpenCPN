@@ -45,7 +45,6 @@
 #include "styles.h"
 #include "routeman.h"
 #include "concanv.h"
-#include "nmea.h"                   // for Autopilot
 #include "navutil.h"
 #include "georef.h"
 #include "routeprop.h"

@@ -131,8 +131,6 @@ wxString                  gConfig_File;
 
 int                       g_unit_test_1;
 
-ComPortManager            *g_pCommMan;
-
 MyFrame                   *gFrame;
 
 ChartCanvas               *cc1;
@@ -213,7 +211,7 @@ wxString                  *phost_name;
 static unsigned int       malloc_max;
 
 wxArrayOfConnPrm          *g_pConnectionParams;
-OCP_GARMIN_Thread         *pGARMIN_Thread;
+//OCP_GARMIN_Thread         *pGARMIN_Thread;
 
 wxDateTime                g_start_time;
 wxDateTime                g_loglast_time;
@@ -1988,8 +1986,6 @@ int MyApp::OnExit()
     delete pMessageOnceArray;
 
     DeInitializeUserColors();
-
-    delete g_pCommMan;
 
     delete pLayerList;
 
