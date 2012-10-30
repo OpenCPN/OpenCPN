@@ -748,6 +748,7 @@ class TTYScroll : public wxScrolledWindow
             virtual void OnDraw(wxDC& dc);
             virtual void Add(wxString &line);
             void OnSize(wxSizeEvent& event);
+            void Pause(bool pause) { bpause = pause; }
 
       protected:
 
@@ -755,6 +756,8 @@ class TTYScroll : public wxScrolledWindow
             size_t m_nLines;        // the number of lines we draw
 
             wxArrayString     *m_plineArray;
+            bool               bpause;
+            
 };
 
 
@@ -766,25 +769,22 @@ class TTYWindow : public wxDialog
 
       public:
             TTYWindow();
-            TTYWindow(wxWindow *parent, int n_lines)
-      : wxDialog(parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize,
-                 wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
-                 {
-                       m_pScroll = new TTYScroll(this, n_lines);
-                       m_pScroll->Scroll(-1, 1000);        // start with full scroll down
-                 }
+            TTYWindow(wxWindow *parent, int n_lines);
+            ~TTYWindow();
 
-                 ~TTYWindow();
-
-                 void Add(wxString &line);
-                 void OnCloseWindow(wxCloseEvent& event);
-                 void Close();
-                 void OnSize( wxSizeEvent& event );
-                 void OnMove( wxMoveEvent& event );
-
+             void Add(wxString &line);
+             void OnCloseWindow(wxCloseEvent& event);
+             void Close();
+             void OnSize( wxSizeEvent& event );
+             void OnMove( wxMoveEvent& event );
+             void OnPauseClick( wxCommandEvent& event ); 
 
       protected:
+            void CreateLegendBitmap();
             TTYScroll   *m_pScroll;
+            wxButton    *m_buttonPause;
+            bool        bpause;
+            wxBitmap    m_bm_legend;
 };
 
 
