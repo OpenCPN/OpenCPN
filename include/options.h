@@ -44,6 +44,7 @@
 #include "scrollingdialog.h"
 #endif
 
+#include "datastream.h"
 
 //      Forward Declarations
 class wxGenericDirCtrl;
@@ -339,8 +340,9 @@ public:
     wxStaticBoxSizer* sbSizerInFilter;
     wxStaticBoxSizer* sbSizerOutFilter;
 
-    SentenceListDlg* m_stcdialog;
-
+    SentenceListDlg* m_stcdialog_in;
+    SentenceListDlg* m_stcdialog_out;
+    
     // Virtual event handlers, overide them in your derived class
     void OnSelectDatasource( wxListEvent& event );
     void OnAddDatasourceClick( wxCommandEvent& event );
@@ -348,15 +350,17 @@ public:
     void OnTypeSerialSelected( wxCommandEvent& event );
     void OnTypeNetSelected( wxCommandEvent& event );
     void OnNetProtocolSelected( wxCommandEvent& event );
-    void OnBaudrateChoice( wxCommandEvent& event ) { OnValChange(event); }
-    void OnProtocolChoice( wxCommandEvent& event ) { OnValChange(event); }
+    void OnBaudrateChoice( wxCommandEvent& event ) { OnConnValChange(event); }
+    void OnProtocolChoice( wxCommandEvent& event ) { OnConnValChange(event); }
     void OnCrcCheck( wxCommandEvent& event ) { OnValChange(event); }
-    void OnRbInput( wxCommandEvent& event ) { OnValChange(event); }
+    void OnRbAcceptInput( wxCommandEvent& event );
+    void OnRbIgnoreInput( wxCommandEvent& event );
     void OnBtnIStcs( wxCommandEvent& event );
-    void OnCbOutput( wxCommandEvent& event ) { OnValChange(event); }
-    void OnRbOutput( wxCommandEvent& event ) { OnValChange(event); }
+    void OnCbOutput( wxCommandEvent& event ) { OnConnValChange(event); }
+    void OnRbOutput( wxCommandEvent& event );
     void OnBtnOStcs( wxCommandEvent& event );
-    void OnValChange( wxCommandEvent& event ) { event.Skip(); }
+    void OnConnValChange( wxCommandEvent& event );
+    void OnValChange( wxCommandEvent& event );
     void OnUploadFormatChange( wxCommandEvent& event );
     bool connectionsaved;
 
@@ -820,33 +824,49 @@ static int lang_list[] = {
 ///////////////////////////////////////////////////////////////////////////////
 class SentenceListDlg : public wxDialog
 {
-	private:
+    private:
         wxArrayString m_sentences;
         void FillSentences();
+        ListType m_type;
+        FilterDirection m_dir;
 
-	protected:
-		wxListBox* m_lbSentences;
-		wxButton* m_btnAdd;
-		wxButton* m_btnDel;
-		wxButton* m_btnDelAll;
-		wxStdDialogButtonSizer* m_sdbSizer4;
-		wxButton* m_sdbSizer4OK;
-		wxButton* m_sdbSizer4Cancel;
-
-		// Virtual event handlers, overide them in your derived class
-		void OnStcSelect( wxCommandEvent& event );
+    protected:
+        wxCheckListBox* m_clbSentences;
+        wxButton* m_btnAdd;
+        wxButton* m_btnDel;
+        wxButton* m_btnCheckAll;
+        wxButton* m_btnClearAll;
+        wxStdDialogButtonSizer* m_sdbSizer4;
+        wxButton* m_sdbSizer4OK;
+        wxButton* m_sdbSizer4Cancel;
+        wxArrayString standard_sentences;
+        wxStaticBox *m_pclbBox;
+        
+    // Virtual event handlers, overide them in your derived class
+        void OnStcSelect( wxCommandEvent& event );
         void OnAddClick( wxCommandEvent& event );
         void OnDeleteClick( wxCommandEvent& event );
-        void OnDeleteAllClick( wxCommandEvent& event );
         void OnCancelClick( wxCommandEvent& event );
         void OnOkClick( wxCommandEvent& event );
+        void OnCLBSelect( wxCommandEvent& event );
+        void OnCLBToggle( wxCommandEvent& event );
+        void OnCheckAllClick( wxCommandEvent& event );
+        void OnClearAllClick( wxCommandEvent& event );
+        
+    public:
 
-	public:
-
-		SentenceListDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Sentences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 284,361 ), long style = wxDEFAULT_DIALOG_STYLE );
-		~SentenceListDlg();
-		void SetSentenceList(wxArrayString sentences);
-        wxString GetSentencesAsText();
+    SentenceListDlg( FilterDirection dir,
+                     wxWindow* parent,
+                     wxWindowID id = wxID_ANY,
+                     const wxString& title = _("Sentence Filter"),
+                     const wxPoint& pos = wxDefaultPosition,
+                     const wxSize& size = wxSize( 280,420 ),
+                     long style = wxDEFAULT_DIALOG_STYLE );
+    ~SentenceListDlg();
+    void SetSentenceList(wxArrayString sentences);
+    wxString GetSentencesAsText();
+    void BuildSentenceArray();
+    void SetType(int io, ListType type);
 };
 #endif
     // _OPTIONS_H_

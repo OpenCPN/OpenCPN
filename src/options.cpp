@@ -1,4 +1,3 @@
-
 /******************************************************************************
  *
  * Project:  OpenCPN
@@ -239,7 +238,6 @@ options::~options()
     m_lcSources->Disconnect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
     m_buttonAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
     m_buttonRemove->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
-//    m_cbFilterSogCog->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnFilterSOGCOGChange ), NULL, this );
     m_tFilterSec->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_rbTypeSerial->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeSerialSelected ), NULL, this );
     m_rbTypeNet->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeNetSelected ), NULL, this );
@@ -256,8 +254,8 @@ options::~options()
     m_cbCheckCRC->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCrcCheck ), NULL, this );
     m_cbGarminHost->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
     m_cbFurunoGP3X->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
-    m_rbIAccept->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbInput ), NULL, this );
-    m_rbIIgnore->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbInput ), NULL, this );
+    m_rbIAccept->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbAcceptInput ), NULL, this );
+    m_rbIIgnore->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbIgnoreInput ), NULL, this );
     m_tcInputStc->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_btnInputStcList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnIStcs ), NULL, this );
     m_cbOutput->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCbOutput ), NULL, this );
@@ -663,13 +661,12 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_btnInputStcList = new wxButton( m_pNMEAForm, wxID_ANY, _("..."), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
     bSizer11->Add( m_btnInputStcList, 0, wxALL, 5 );
 
-
     sbSizerInFilter->Add( bSizer11, 0, wxEXPAND, 5 );
-
 
     sbSizerConnectionProps->Add( sbSizerInFilter, 0, wxEXPAND, 5 );
 
-    m_cbOutput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Output on this port"), wxDefaultPosition, wxDefaultSize, 0 );
+
+    m_cbOutput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Output on this port ( as Autopilot or NMEA Repeater)"), wxDefaultPosition, wxDefaultSize, 0 );
     sbSizerConnectionProps->Add( m_cbOutput, 0, wxALL, 5 );
 
     sbSizerOutFilter = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Output filtering") ), wxVERTICAL );
@@ -677,10 +674,10 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     wxBoxSizer* bSizer10;
     bSizer10 = new wxBoxSizer( wxHORIZONTAL );
 
-    m_rbOAccept = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Output only sentences"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    m_rbOAccept = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Transmit sentences"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
     bSizer10->Add( m_rbOAccept, 0, wxALL, 5 );
 
-    m_rbOIgnore = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Ignore sentences"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_rbOIgnore = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Drop sentences"), wxDefaultPosition, wxDefaultSize, 0 );
     bSizer10->Add( m_rbOIgnore, 0, wxALL, 5 );
 
 
@@ -713,28 +710,29 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_rbNetProtoTCP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
     m_rbNetProtoUDP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
     m_rbNetProtoGPSD->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
-    m_tNetAddress->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
-    m_tNetPort->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
-    m_comboPort->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( options::OnValChange ), NULL, this );
-    m_comboPort->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_tNetAddress->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_tNetPort->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_comboPort->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_comboPort->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
     m_choiceBaudRate->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnBaudrateChoice ), NULL, this );
     m_choiceSerialProtocol->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnProtocolChoice ), NULL, this );
-    m_choicePriority->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_choicePriority->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
     m_cbCheckCRC->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCrcCheck ), NULL, this );
     m_cbGarminHost->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
     m_cbFurunoGP3X->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
-    m_cbFilterSogCog->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
-    m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
-    m_rbIAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbInput ), NULL, this );
-    m_rbIIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbInput ), NULL, this );
-    m_tcInputStc->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_rbIAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbAcceptInput ), NULL, this );
+    m_rbIIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbIgnoreInput ), NULL, this );
+    m_tcInputStc->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
     m_btnInputStcList->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnIStcs ), NULL, this );
     m_cbOutput->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCbOutput ), NULL, this );
     m_rbOAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
     m_rbOIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
-    m_tcOutputStc->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_tcOutputStc->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
     m_btnOutputStcList->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnOStcs ), NULL, this );
+
     m_cbNMEADebug->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnShowGpsWindowCheckboxClick ), NULL, this );
+    m_cbFilterSogCog->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
 
     wxListItem col0;
     col0.SetId(0);
@@ -763,7 +761,8 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     m_lcSources->Refresh();
 
-    m_stcdialog = new SentenceListDlg(this);
+    m_stcdialog_in = new SentenceListDlg(FILTER_INPUT, this);
+    m_stcdialog_out = new SentenceListDlg(FILTER_OUTPUT, this);
 
     FillSourceList();
 
@@ -2421,6 +2420,7 @@ void options::OnApplyClick( wxCommandEvent& event )
             }
             FillSourceList();
             m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+            m_lcSources->Refresh();
             connectionsaved = true;
         }
     }
@@ -3457,15 +3457,26 @@ void options::OnRemoveTideDataLocation( wxCommandEvent &event )
     }
 }
 
+void options::OnValChange( wxCommandEvent& event )
+{
+    event.Skip();
+}
+
+void options::OnConnValChange( wxCommandEvent& event )
+{
+    connectionsaved = false;
+    event.Skip();
+}
+
 void options::OnTypeSerialSelected( wxCommandEvent& event )
 {
-    OnValChange(event);
+    OnConnValChange(event);
     SetNMEAFormToSerial();
 }
 
 void options::OnTypeNetSelected( wxCommandEvent& event )
 {
-    OnValChange(event);
+    OnConnValChange(event);
     SetNMEAFormToNet();
 }
 
@@ -3656,8 +3667,11 @@ void options::SetConnectionParams(ConnectionParams *cp)
         m_rbNetProtoTCP->SetValue(true);
     else if (cp->NetProtocol == UDP)
         m_rbNetProtoUDP->SetValue(true);
-    else
+    else {
         m_rbNetProtoGPSD->SetValue(true);
+        if( cp->NetworkPort == 0)
+            m_tNetPort->SetValue(_T(""));
+    }
 
     if ( cp->Type == Serial )
     {
@@ -3736,16 +3750,20 @@ void options::OnSelectDatasource( wxListEvent& event )
 
 void options::OnBtnIStcs( wxCommandEvent& event )
 {
-    m_stcdialog->SetSentenceList(wxStringTokenize(m_tcInputStc->GetValue(), _T(",")));
-    if (m_stcdialog->ShowModal() == wxID_OK)
-        m_tcInputStc->SetValue(m_stcdialog->GetSentencesAsText());
+    m_stcdialog_in->SetSentenceList(wxStringTokenize(m_tcInputStc->GetValue(), _T(",")));
+    m_stcdialog_in->SetType(0, (m_rbIAccept->GetValue() == true) ? WHITELIST:BLACKLIST);
+
+    if (m_stcdialog_in->ShowModal() == wxID_OK)
+        m_tcInputStc->SetValue(m_stcdialog_in->GetSentencesAsText());
 }
 
 void options::OnBtnOStcs( wxCommandEvent& event )
 {
-    m_stcdialog->SetSentenceList(wxStringTokenize(m_tcOutputStc->GetValue(), _T(",")));
-    if (m_stcdialog->ShowModal() == wxID_OK)
-        m_tcOutputStc->SetValue(m_stcdialog->GetSentencesAsText());
+    m_stcdialog_out->SetSentenceList(wxStringTokenize(m_tcOutputStc->GetValue(), _T(",")));
+    m_stcdialog_out->SetType(1, (m_rbOAccept->GetValue() == true) ? WHITELIST:BLACKLIST);
+
+    if (m_stcdialog_out->ShowModal() == wxID_OK)
+        m_tcOutputStc->SetValue(m_stcdialog_out->GetSentencesAsText());
 }
 
 void options::OnNetProtocolSelected( wxCommandEvent& event )
@@ -3756,13 +3774,28 @@ void options::OnNetProtocolSelected( wxCommandEvent& event )
             m_tNetPort->SetValue(_T("2947"));
     }
     SetDSFormRWStates();
-    OnValChange(event);
+    OnConnValChange(event);
+}
+
+void options::OnRbAcceptInput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+}
+void options::OnRbIgnoreInput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+}
+
+void options::OnRbOutput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
 }
 
 //SentenceListDlg
 
-SentenceListDlg::SentenceListDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
+    m_dir = dir;
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
     wxBoxSizer* bSizer16;
@@ -3771,11 +3804,34 @@ SentenceListDlg::SentenceListDlg( wxWindow* parent, wxWindowID id, const wxStrin
     wxBoxSizer* bSizer17;
     bSizer17 = new wxBoxSizer( wxHORIZONTAL );
 
-    m_lbSentences = new wxListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
-    bSizer17->Add( m_lbSentences, 1, wxALL|wxEXPAND, 5 );
+    NMEA0183 nmea;
+    standard_sentences = nmea.GetRecognizedArray();
+    if(m_dir == FILTER_OUTPUT) {
+        standard_sentences.Add(_T("ECRMB"));
+        standard_sentences.Add(_T("ECRMC"));
+    }
+
+    m_pclbBox = new wxStaticBox( this,  wxID_ANY, _("")) ;
+
+    wxStaticBoxSizer* sbSizerclb;
+    sbSizerclb = new wxStaticBoxSizer( m_pclbBox , wxVERTICAL );
+    bSizer17->Add( sbSizerclb, 1, wxALL|wxEXPAND, 5 );
+
+    m_clbSentences = new wxCheckListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, standard_sentences );
+
+
+    sbSizerclb->Add( m_clbSentences, 1, wxALL|wxEXPAND, 5 );
 
     wxBoxSizer* bSizer18;
     bSizer18 = new wxBoxSizer( wxVERTICAL );
+
+    m_btnCheckAll = new wxButton( this, wxID_ANY, _("Select All"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_btnCheckAll, 0, wxALL, 5 );
+
+    m_btnClearAll = new wxButton( this, wxID_ANY, _("Clear All"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_btnClearAll, 0, wxALL, 5 );
+
+    bSizer18->AddSpacer(1);
 
     m_btnAdd = new wxButton( this, wxID_ANY, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
     bSizer18->Add( m_btnAdd, 0, wxALL, 5 );
@@ -3784,9 +3840,6 @@ SentenceListDlg::SentenceListDlg( wxWindow* parent, wxWindowID id, const wxStrin
     m_btnDel->Enable( false );
 
     bSizer18->Add( m_btnDel, 0, wxALL, 5 );
-
-    m_btnDelAll = new wxButton( this, wxID_ANY, _("Delete All"), wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer18->Add( m_btnDelAll, 0, wxALL, 5 );
 
 
     bSizer17->Add( bSizer18, 0, wxALL|wxEXPAND, 5 );
@@ -3810,29 +3863,43 @@ SentenceListDlg::SentenceListDlg( wxWindow* parent, wxWindowID id, const wxStrin
     this->Centre( wxBOTH );
 
     // Connect Events
-    m_lbSentences->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnStcSelect ), NULL, this );
     m_btnAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
     m_btnDel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteClick ), NULL, this );
-    m_btnDelAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteAllClick ), NULL, this );
     m_sdbSizer4Cancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCancelClick ), NULL, this );
     m_sdbSizer4OK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnOkClick ), NULL, this );
+    m_clbSentences->Connect( wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, wxCommandEventHandler( SentenceListDlg::OnCLBToggle ), NULL, this );
+    m_clbSentences->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnCLBSelect ), NULL, this );
+    m_btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
+    m_btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
+
 }
 
 SentenceListDlg::~SentenceListDlg()
 {
     // Disconnect Events
-    m_lbSentences->Disconnect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnStcSelect ), NULL, this );
     m_btnAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
     m_btnDel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteClick ), NULL, this );
-    m_btnDelAll->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteAllClick ), NULL, this );
     m_sdbSizer4Cancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCancelClick ), NULL, this );
     m_sdbSizer4OK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnOkClick ), NULL, this );
-
+    m_clbSentences->Disconnect( wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, wxCommandEventHandler( SentenceListDlg::OnCLBToggle ), NULL, this );
+    m_clbSentences->Disconnect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnCLBSelect ), NULL, this );
+    m_btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
+    m_btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
 }
 
 void SentenceListDlg::SetSentenceList(wxArrayString sentences)
 {
     m_sentences = sentences;
+
+    if( (m_sentences.Count() == 0) && (m_type == WHITELIST) ){
+        for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+            m_clbSentences->Check(i, true);
+    }
+    if( (m_sentences.Count() == 0) && (m_type == BLACKLIST) ){
+        for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+            m_clbSentences->Check(i, false);
+    }
+
     FillSentences();
 }
 
@@ -3841,21 +3908,67 @@ wxString SentenceListDlg::GetSentencesAsText()
     return StringArrayToString(m_sentences);
 }
 
+void SentenceListDlg::BuildSentenceArray()
+{
+    m_sentences.Clear();
+    wxString s;
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++) {
+        if( m_clbSentences->IsChecked(i))
+            m_sentences.Add( m_clbSentences->GetString(i) );
+    }
+}
+
 void SentenceListDlg::FillSentences()
 {
-    m_lbSentences->Clear();
-    for (size_t i = 0; i < m_sentences.Count(); i++)
-        m_lbSentences->Append(m_sentences[i]);
+    if(m_sentences.Count() == 0)
+        return;
+
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+        m_clbSentences->Check(i, false);
+
+    for (size_t i = 0; i < m_sentences.Count(); i++) {
+        int item = m_clbSentences->FindString(m_sentences[i]);
+        if( wxNOT_FOUND != item )
+            m_clbSentences->Check(item);
+        else {
+            m_clbSentences->Append(m_sentences[i]);
+            int item = m_clbSentences->FindString(m_sentences[i]);
+            m_clbSentences->Check(item);
+        }
+
+    }
+
     m_btnDel->Enable(false);
-    if (m_sentences.Count() == 0)
-        m_btnDelAll->Enable(false);
-    else
-        m_btnDelAll->Enable();
 }
 
 void SentenceListDlg::OnStcSelect( wxCommandEvent& event )
 {
     m_btnDel->Enable();
+}
+
+void SentenceListDlg::OnCLBSelect( wxCommandEvent& event )
+{
+    // Only active the "Delete" button if the selection is not in the standard list
+    int isel = m_clbSentences->GetSelection();
+    bool bdelete = true;
+    if(isel >= 0) {
+        wxString s = m_clbSentences->GetString(isel);
+        for (size_t i = 0; i < standard_sentences.Count(); i++) {
+            if(standard_sentences[i] == s){
+                bdelete = false;
+                break;
+            }
+        }
+    }
+    else
+        bdelete = false;
+    m_btnDel->Enable( bdelete );
+
+}
+
+void SentenceListDlg::OnCLBToggle( wxCommandEvent& event )
+{
+    BuildSentenceArray();
 }
 
 void SentenceListDlg::OnAddClick( wxCommandEvent& event )
@@ -3864,25 +3977,77 @@ void SentenceListDlg::OnAddClick( wxCommandEvent& event )
     if (stc.Length() == 2 ||stc.Length() == 3 || stc.Length() == 5)
     {
         m_sentences.Add(stc);
-        m_lbSentences->Append(stc);
-        m_btnDelAll->Enable();
+        m_clbSentences->Append(stc);
+        int item = m_clbSentences->FindString(stc);
+        m_clbSentences->Check(item);
     }
     else
-        wxMessageBox(_("A NMEA sentence is actually 3 characters long (like RMC, GGA etc.) It can also have a two letter prefix identifying the source of the message (The whole sentences then looks like GPGGA or AITXT). You can also filter out all the sentences with certain prefix (like GP, AI etc.). The filter accepts just these three formats. No wildcard characters are used (Don't enter any *s anywhere.)"), _("Wrong length of the NMEA filter value"));
+        wxMessageBox(_("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can also have a two letter prefix identifying the source, or TALKER, of the message (The whole sentences then looks like GPGGA or AITXT). You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.). The filter accepts just these three formats."), _("Wrong length of the NMEA filter value"));
 }
 
 void SentenceListDlg::OnDeleteClick( wxCommandEvent& event )
 {
-    m_sentences.RemoveAt(m_lbSentences->GetSelection());
+    BuildSentenceArray();
+
+    // One can only delete items that do not appear in the standard sentence list
+    int isel = m_clbSentences->GetSelection();
+    wxString s = m_clbSentences->GetString(isel);
+    bool bdelete = true;
+    for (size_t i = 0; i < standard_sentences.Count(); i++) {
+        if(standard_sentences[i] == s){
+            bdelete = false;
+            break;
+        }
+    }
+
+    if(bdelete) {
+        m_sentences.Remove( s );
+        m_clbSentences->Delete(isel);
+    }
+
     FillSentences();
 }
 
-void SentenceListDlg::OnDeleteAllClick( wxCommandEvent& event )
+void SentenceListDlg::OnClearAllClick( wxCommandEvent& event )
 {
-    m_sentences.Clear();
-    m_lbSentences->Clear();
-    m_btnDel->Enable(false);
-    m_btnDelAll->Enable(false);
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+        m_clbSentences->Check(i, false);
+
+    BuildSentenceArray();
 }
+
+void SentenceListDlg::OnCheckAllClick( wxCommandEvent& event )
+{
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+        m_clbSentences->Check(i, true);
+
+    BuildSentenceArray();
+}
+
+void SentenceListDlg::SetType(int io, ListType type)
+{
+    m_type = type;
+
+    switch (io)
+    {
+        case 0:                 // input
+        default:
+            if(type == WHITELIST)
+                m_pclbBox->SetLabel(_("Accept Sentences"));
+            else
+                m_pclbBox->SetLabel(_("Ignore Sentences"));
+            break;
+        case 1:                 // output
+            if(type == WHITELIST)
+                m_pclbBox->SetLabel(_("Transmit Sentences"));
+            else
+                m_pclbBox->SetLabel(_("Drop Sentences"));
+            break;
+    }
+    Refresh();
+}
+
+
+
 void SentenceListDlg::OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
 void SentenceListDlg::OnOkClick( wxCommandEvent& event ) { event.Skip(); }
