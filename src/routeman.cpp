@@ -514,18 +514,10 @@ bool Routeman::DeactivateRoute( bool b_arrival )
 
 bool Routeman::UpdateAutopilot()
 {
-    //    Get the requested A/P sentence
-    wxString ap_sentence = _T("RMB");               // default
-    pConfig->SetPath( _T ( "/Settings" ) );
-    pConfig->Read( _T("AutoPilot NMEA Sentence Out"), &ap_sentence );
-
-    wxString str_buf;
-
-    wxStringTokenizer tkz( ap_sentence, _T(";") );
-    while( tkz.HasMoreTokens() ) {
-        wxString token = tkz.GetNextToken();
-
-        if( token.IsSameAs( _T("RMB"), false ) ) {
+    //Send all known Autopilot messages upstream
+    
+    //RMB
+        {
 
             m_NMEA0183.TalkerID = _T("EC");
 
@@ -563,7 +555,8 @@ bool Routeman::UpdateAutopilot()
             g_pMUX->SendNMEAMessage( snt.Sentence );
         }
 
-        if( token.IsSameAs( _T("RMC"), false ) ) {
+        // RMC
+        {
 
             m_NMEA0183.TalkerID = _T("EC");
 
@@ -605,7 +598,6 @@ bool Routeman::UpdateAutopilot()
             g_pMUX->SendNMEAMessage( snt.Sentence );
         }
 
-    }           // while
 
     return true;
 }
