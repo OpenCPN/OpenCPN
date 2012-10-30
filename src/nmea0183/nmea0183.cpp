@@ -339,6 +339,25 @@ bool NMEA0183::Parse( void )
    return( return_value );
 }
 
+wxArrayString NMEA0183::GetRecognizedArray(void)
+{
+    wxArrayString ret;
+    
+    wxMRLNode *node = response_table.GetFirst();
+    
+    while(node)
+    {
+        RESPONSE *resp = node->GetData();
+        ret.Add( resp->Mnemonic );
+        node = node->GetNext();
+    }
+
+    return ret;
+}
+
+    
+    
+    
 NMEA0183& NMEA0183::operator << ( wxString & source )
 {
 //   ASSERT_VALID( this );
