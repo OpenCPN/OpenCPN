@@ -84,6 +84,7 @@ wxEvent* OCPN_DataStreamEvent::Clone() const
     newevent->m_NMEAstring=this->m_NMEAstring.c_str();  // this enforces a deep copy of the string data
     newevent->m_datasource=this->m_datasource.c_str();
     newevent->m_priority=this->m_priority;
+    newevent->m_pDataStream=this->m_pDataStream;
     return newevent;
 }
 
@@ -337,11 +338,13 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                     size_t nmea_start = nmea_line.find_last_of(_T("$!")); // detect the potential start of a NMEA string, skipping preceding chars that may look like the start of a string.
                     if(nmea_start != wxString::npos){
                         nmea_line = nmea_line.substr(nmea_start);
-                        if( m_consumer && SentencePassesFilter( nmea_line, FILTER_INPUT ) && ChecksumOK(nmea_line)){
+                        if( m_consumer && ChecksumOK(nmea_line)){
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
                             Nevent.SetNMEAString(nmea_line);
                             Nevent.SetDataSource(m_portstring);
                             Nevent.SetPriority(m_priority);
+                            Nevent.SetDataStream(this);
+                            
                             m_consumer->AddPendingEvent(Nevent);
                         }
                     }
@@ -419,7 +422,7 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
                     return listype;
                 break;
             case 3:
-                if (fs == sentence.Mid(4, 3))
+                if (fs == sentence.Mid(3, 3))
                     return listype;
                 break;
             case 5:
@@ -454,8 +457,6 @@ bool DataStream::ChecksumOK( const wxString &sentence )
 
 bool DataStream::SendSentence( const wxString &sentence )
 {
-    if( m_io_select == DS_TYPE_INPUT || !SentencePassesFilter( sentence, FILTER_OUTPUT ) ) //Output forbidden for this port or sentence filtered out
-        return false;
     switch( m_connection_type ) {
         case Serial:
             if( m_pSecondary_Thread ) {
@@ -1257,8 +1258,6 @@ thread_exit:
 
 void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
 {
-    if( !m_launcher->SentencePassesFilter( str_temp_buf, FILTER_INPUT ) )
-        return;
     if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
     {
         g_total_NMEAerror_messages++;
@@ -1272,6 +1271,7 @@ void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
     wxString port = m_launcher->GetPort();
     Nevent.SetDataSource(port);
     Nevent.SetPriority(m_launcher->GetPrority());
+    Nevent.SetDataStream(m_launcher);
     if( m_pMessageTarget )
         m_pMessageTarget->AddPendingEvent(Nevent);
 

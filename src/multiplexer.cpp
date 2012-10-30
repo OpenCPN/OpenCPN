@@ -30,6 +30,7 @@
 
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
+extern TTYWindow        *g_NMEALogWindow;
 
 Multiplexer::Multiplexer()
 {
@@ -73,8 +74,33 @@ void Multiplexer::SendNMEAMessage( wxString &msg )
     for (size_t i = 0; i < m_pdatastreams->Count(); i++)
     {
         DataStream* s = m_pdatastreams->Item(i);
-        if ( s->IsOk() && (s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT) )
-            s->SendSentence(msg);
+        if ( s->IsOk() && (s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT) ) {
+            bool bout_filter = true;
+            
+            if(s->SentencePassesFilter( msg, FILTER_OUTPUT ) ) {
+                s->SendSentence(msg);
+                bout_filter = false;
+            }    
+            //Send to the Debug Window, if open
+            if( g_NMEALogWindow) {
+                wxDateTime now = wxDateTime::Now();
+                wxString ss = now.FormatISOTime();
+                ss.Prepend(_T("--> "));
+                ss.Append( _T(" (") );
+                ss.Append( s->GetPort() );
+                ss.Append( _T(") ") );
+                ss.Append( msg );
+                if(bout_filter)
+                    ss.Prepend( _T("<AMBER>") );
+                else
+                    ss.Prepend( _T("<BLUE>") );
+                
+                g_NMEALogWindow->Add( ss );
+                g_NMEALogWindow->Refresh( false );
+            }
+            
+        }
+        
     }
     //Send to plugins
     if ( g_pi_manager )
@@ -95,35 +121,86 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 {
     wxString message = event.GetNMEAString();
     wxString ds = event.GetDataSource();
-
+    DataStream *stream = event.GetDataStream();
+ 
+    
     if( !message.IsEmpty() )
     {
         //Send to all the other outputs
         for (size_t i = 0; i < m_pdatastreams->Count(); i++)
         {
             DataStream* s = m_pdatastreams->Item(i);
-            if ( ds != s->GetPort() )
+            if ( ds != s->GetPort() ) {
                 if ( s->IsOk() )
-                    if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT )
-                        s->SendSentence(message);
+                    if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
+                        bool bout_filter = true;
+                        
+                        if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
+                            s->SendSentence(message);
+                            bout_filter = false;
+                        }    
+                            //Send to the Debug Window, if open
+                        if( g_NMEALogWindow) {
+                            wxDateTime now = wxDateTime::Now();
+                            wxString ss = now.FormatISOTime();
+                            ss.Prepend(_T("--> "));
+                            ss.Append( _T(" (") );
+                            ss.Append( s->GetPort() );
+                            ss.Append( _T(") ") );
+                            ss.Append( message );
+                            if(bout_filter)
+                                ss.Prepend( _T("<AMBER>") );
+                            else
+                                ss.Prepend( _T("<BLUE>") );
+                                
+                            g_NMEALogWindow->Add( ss );
+                            g_NMEALogWindow->Refresh( false );
+                        }
+                            
+                        
+                    }
+            }
         }
         //Send to core consumers
-        if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
+        //if it passes the source's input filter
+        bool bfilter = true;
+        if(stream->SentencePassesFilter( message, FILTER_INPUT ) ) {
+            bfilter = false;
+            if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
                 message.Mid(3,3).IsSameAs(_T("VDO")) ||
                 message.Mid(1,5).IsSameAs(_T("FRPOS")) ||
                 message.Mid(1,2).IsSameAs(_T("CD")) )
-        {
-            if( m_aisconsumer )
-                m_aisconsumer->AddPendingEvent(event);
-        }
-        else
-        {
-            if( m_gpsconsumer )
-                m_gpsconsumer->AddPendingEvent(event);
-        }
+            {
+                if( m_aisconsumer )
+                    m_aisconsumer->AddPendingEvent(event);
+            }
+            else
+            {
+                if( m_gpsconsumer )
+                    m_gpsconsumer->AddPendingEvent(event);
+            }
         //Send to plugins
-        if ( g_pi_manager )
-            g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+            if ( g_pi_manager )
+                g_pi_manager->SendNMEASentenceToAllPlugIns( message );
+        }
+        
+        //Send to the Debug Window, if open
+        if( g_NMEALogWindow) {
+            wxDateTime now = wxDateTime::Now();
+            wxString ss = now.FormatISOTime();
+            ss.Append( _T(" (") );
+            ss.Append( event.GetDataSource() );
+            ss.Append( _T(") ") );
+            ss.Append( message );
+            if(bfilter)
+                ss.Prepend( _T("<AMBER>") );
+            else
+                ss.Prepend( _T("<GREEN>") );
+            
+            g_NMEALogWindow->Add( ss );
+            g_NMEALogWindow->Refresh( false );
+        }
+        
     }
 }
 

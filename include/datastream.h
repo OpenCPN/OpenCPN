@@ -42,7 +42,7 @@
 #include <wx/datetime.h>
 #ifdef __WXGTK__
 #define GSocket GlibGSocket
-#include <gtk/gtk.h>
+//#include <gtk/gtk.h>
 //#include <glib.h>
 #include "wx/socket.h"
 #undef GSocket
@@ -122,7 +122,7 @@ typedef enum
 
 // Class declarations
 class OCP_DataStreamInput_Thread;
-
+class DataStream;
 
 
 //----------------------------------------------------------------------------
@@ -146,11 +146,13 @@ public:
     // accessors
     wxString GetNMEAString() { return m_NMEAstring; }
     wxString GetDataSource() { return m_datasource; }
+    DataStream *GetDataStream() { return m_pDataStream; }
     int GetPrority() { return m_priority; }
     void SetNMEAString(wxString &string) { m_NMEAstring = string; }
     void SetDataSource(wxString &string) { m_datasource = string; }
     void SetPriority(int priority) { m_priority = priority; }
-
+    void SetDataStream(DataStream *pds) { m_pDataStream = pds; }
+    
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;
 
@@ -158,6 +160,7 @@ private:
     wxString    m_datasource;
     wxString    m_NMEAstring;
     int         m_priority;
+    DataStream  *m_pDataStream;
 
             //            DECLARE_DYNAMIC_CLASS(OCPN_DataStreamEvent)
 };
