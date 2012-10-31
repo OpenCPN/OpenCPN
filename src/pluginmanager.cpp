@@ -610,7 +610,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     //    If in OpenGL mode, and the PlugIn has requested OpenGL render callbacks,
                     //    then there is no need to render by wxDC here.
                     if(pic->m_cap_flag & WANTS_OPENGL_OVERLAY_CALLBACK)
-                        return false;
+                        continue;
 
 
                     if((m_cached_overlay_bm.GetWidth() != vp.pix_width) || (m_cached_overlay_bm.GetHeight() != vp.pix_height))
