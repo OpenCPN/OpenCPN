@@ -1282,16 +1282,19 @@ int Quilt::GetNewRefChart( void )
 {
     //    Using the current quilt, select a useable reference chart
     //    Said chart will be in the extended (possibly full-screen) stack,
-    //    And will have a scale equal to or just greater than the current quilt reference scale
+    //    And will have a scale equal to or just greater than the current quilt reference scale,
+    //    And will match current quilt projection type, and
+    //    will have Skew=0, so as to be fully quiltable
     int new_ref_dbIndex = m_refchart_dbIndex;
     unsigned int im = m_extended_stack_array.GetCount();
     if( im > 0 ) {
         for( unsigned int is = 0; is < im; is++ ) {
-            const ChartTableEntry &m = ChartData->GetChartTableEntry(
-                                           m_extended_stack_array.Item( is ) );
+            const ChartTableEntry &m = ChartData->GetChartTableEntry( m_extended_stack_array.Item( is ) );
 //                  if((m.GetScale() >= m_reference_scale) && (m_reference_type == m.GetChartType()))
             if( ( m.GetScale() >= m_reference_scale )
-                    && ( m_reference_family == m.GetChartFamily() ) ) {
+                    && ( m_reference_family == m.GetChartFamily() ) 
+                    && ( m_quilt_proj == m.GetChartProjectionType() )
+                    && ( m.GetChartSkew() == 0.0 ) ) {
                 new_ref_dbIndex = m_extended_stack_array.Item( is );
                 break;
             }
@@ -1778,9 +1781,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    It is possible that the reference chart is not really part of the visible quilt
     //    This can happen when the reference chart is panned
     //    off-screen in full screen quilt mode
-    //    We detect this case, and set a (-1) default value for m_refchart_dbIndex.
-    //    This will cause the quilt parameters such as scale, type, and projection
-    //    to retain their current settings until the reference chart is later directly set.
+    //    If this situation occurs, we need to immediately select a new reference chart
+    //    And rebuild the Candidate Array
     //
     //    A special case occurs with cm93 composite chart set as the reference chart:
     //    It is not at this point a candidate, so won't be found by the search
@@ -1795,9 +1797,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
-    if( !bf && m_pcandidate_array->GetCount() )
-        m_refchart_dbIndex = -1;  ///maybe???
-
+    if( !bf && m_pcandidate_array->GetCount() ) {
+        m_refchart_dbIndex = GetNewRefChart();
+        BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+    }
+        
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
     //    Add only those charts whose scale is smaller than the "reference scale"
@@ -6098,9 +6102,14 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         // Default color is green
         wxBrush target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
-
+        
+        // Euro Inland targets render slightly differently
+        if( td->b_isEuroInland )
+            target_brush = wxBrush( GetGlobalColor( _T ( "TEAL1" ) ) );
+        
         //and....
-        if( !td->b_nameValid ) target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
+        if( !td->b_nameValid )
+            target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
         if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )					// distress
             target_brush = wxBrush( GetGlobalColor( _T ( "URED" ) ) );
 

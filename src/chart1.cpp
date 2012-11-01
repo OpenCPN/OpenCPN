@@ -7512,7 +7512,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREEN3;200;220;200;", "GREEN4;  0;255;  0;", "BLUE1; 170;170;255;", "BLUE2;  45; 45;170;",
         "BLUE3;   0;  0;255;", "GREY1; 200;200;200;", "GREY2; 230;230;230;", "RED1;  220;200;200;",
         "UBLCK;   0;  0;  0;", "UWHIT; 255;255;255;", "URED;  255;  0;  0;", "UGREN;   0;255;  0;",
-        "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;",
+        "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;",
         "DILG0; 238;239;242;",              // Dialog Background white
         "DILG1; 212;208;200;",              // Dialog Background
         "DILG2; 255;255;255;",              // Control Background
@@ -7533,7 +7533,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;", "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;",
         "GREY1; 100;100;100;", "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
         "UWHIT; 255;255;255;", "URED;  120; 54; 11;", "UGREN;  35;110; 20;", "YELO1; 120;115; 24;",
-        "YELO2;  64; 40;  0;",
+        "YELO2;  64; 40;  0;", "TEAL1;   0; 64; 64;",
         "DILG0; 110;110;110;",              // Dialog Background
         "DILG1; 110;110;110;",              // Dialog Background
         "DILG2;   0;  0;  0;",              // Control Background
@@ -7554,7 +7554,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
         "GREY1;  48; 48; 48;", "GREY2;  64; 64; 64;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
         "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;", "YELO1;  60; 65; 12;",
-        "YELO2;  32; 20;  0;", "DILG0;  80; 80; 80;",              // Dialog Background
+        "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;",
+        "DILG0;  80; 80; 80;",              // Dialog Background
         "DILG1;  80; 80; 80;",              // Dialog Background
         "DILG2;   0;  0;  0;",              // Control Background
         "DILG3;  65; 65; 65;",              // Text
