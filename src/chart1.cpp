@@ -253,6 +253,7 @@ int                       g_iNavAidRadarRingsNumberVisible;
 float                     g_fNavAidRadarRingsStep;
 int                       g_pNavAidRadarRingsStepUnits;
 bool                      g_bWayPointPreventDragging;
+bool                      g_bConfirmObjectDelete;
 
 FontMgr                   *pFontMgr;
 

@@ -190,6 +190,7 @@ extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
+extern bool             g_bConfirmObjectDelete;
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
@@ -4000,6 +4001,7 @@ int MyConfig::LoadMyConfig( int iteration )
     if(!b300RadarRings)
         g_iNavAidRadarRingsNumberVisible = 0;
         
+    Read( _T ( "ConfirmObjectDeletion" ), &g_bConfirmObjectDelete, true );
     
     // Waypoint dragging with mouse
     g_bWayPointPreventDragging = false;
@@ -4673,6 +4675,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
 
+    Write( _T ( "ConfirmObjectDeletion" ), g_bConfirmObjectDelete );
+    
     // Waypoint dragging with mouse; toh, 2009.02.24
     Write( _T ( "WaypointPreventDragging" ), g_bWayPointPreventDragging );
 

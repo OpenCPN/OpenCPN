@@ -146,6 +146,7 @@ enum {
     ID_UPDCHECKBOX,
     ID_VECTORCHECKBOX1,
     ID_ZTCCHECKBOX,
+    ID_DELETECHECKBOX,
     xID_OK
 };
 
@@ -281,7 +282,7 @@ public:
     wxCheckBox              *pCBVector;
     wxCheckBox              *pCBCM93;
     wxCheckBox              *pCBCourseUp;
-    wxTextCtrl                  *pCOGUPUpdateSecs;
+    wxTextCtrl              *pCOGUPUpdateSecs;
     wxCheckBox              *pCBLookAhead;
     wxTextCtrl              *m_pText_OSCOG_Predictor;
     wxChoice                *m_pShipIconType;
@@ -458,9 +459,10 @@ public:
     wxTextCtrl              *pNavAidRadarRingsStep;
     wxChoice                *m_itemRadarRingsUnits;
     wxCheckBox              *pWayPointPreventDragging;
+    wxCheckBox              *pConfirmObjectDeletion;
     wxCheckBox              *pEnableZoomToCursor;
     wxCheckBox              *pPreserveScale;
-    wxCheckBox            *pPlayShipsBells;
+    wxCheckBox              *pPlayShipsBells;
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
     wxChoice                *pSDMMFormat;

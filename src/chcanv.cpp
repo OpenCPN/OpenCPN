@@ -131,6 +131,7 @@ extern MarkInfoImpl     *pMarkPropDialog;
 extern RouteProp        *pRoutePropDialog;
 extern MarkInfoImpl     *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
+extern bool             g_bConfirmObjectDelete;
 
 extern IDX_entry        *gpIDX;
 extern int               gpIDXn;
@@ -9071,10 +9072,14 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     }
 
     case ID_RT_MENU_DELETE: {
-        OCPNMessageDialog track_delete_confirm_dlg( this,
+        int dlg_return = wxID_YES;
+        if( g_bConfirmObjectDelete ) {
+            OCPNMessageDialog track_delete_confirm_dlg( this,
                 _("Are you sure you want to delete this route?"),
                 _("OpenCPN Route Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-        int dlg_return = track_delete_confirm_dlg.ShowModal();
+        
+            dlg_return = track_delete_confirm_dlg.ShowModal();
+        }
 
         if( dlg_return == wxID_YES ) {
             if( g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute ) g_pRouteMan->DeactivateRoute();
@@ -9266,10 +9271,13 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     }
 
     case ID_TK_MENU_DELETE: {
-        OCPNMessageDialog track_delete_confirm_dlg( this,
+        int dlg_return = wxID_YES;
+        if( g_bConfirmObjectDelete ) {
+            OCPNMessageDialog track_delete_confirm_dlg( this,
                 _("Are you sure you want to delete this track?"),
                 _("OpenCPN Track Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-        int dlg_return = track_delete_confirm_dlg.ShowModal();
+            dlg_return = track_delete_confirm_dlg.ShowModal();
+        }
 
         if( dlg_return == wxID_YES ) {
 

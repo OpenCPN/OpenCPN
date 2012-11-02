@@ -158,6 +158,7 @@ extern double           g_AckTimeout_Mins;
 
 extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
+extern bool             g_bConfirmObjectDelete;
 
 extern wxLocale         *plocale_def_lang;
 
@@ -1563,6 +1564,12 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     miscOptions->Add( pWayPointPreventDragging, 0, wxALL,
             border_size );
 
+    pConfirmObjectDeletion = new wxCheckBox( itemPanelFont, ID_DELETECHECKBOX,
+                                               _("Confirm deletion of tracks and routes") );
+    pConfirmObjectDeletion->SetValue( FALSE );
+    miscOptions->Add( pConfirmObjectDeletion, 0, wxALL, border_size );
+                                               
+                                               
 }
 
 void options::CreateControls()
@@ -1795,7 +1802,8 @@ void options::SetInitialSettings()
     OnRadarringSelect( eDummy );
 
     pWayPointPreventDragging->SetValue( g_bWayPointPreventDragging );
-
+    pConfirmObjectDeletion->SetValue( g_bConfirmObjectDelete );
+    
     pEnableZoomToCursor->SetValue( g_bEnableZoomToCursor );
     if( pEnableZoomToCursor->GetValue() ) {
         pSmoothPanZoom->Disable();
@@ -2338,7 +2346,8 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_fNavAidRadarRingsStep = atof( pNavAidRadarRingsStep->GetValue().mb_str() );
     g_pNavAidRadarRingsStepUnits = m_itemRadarRingsUnits->GetSelection();
     g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
-
+    g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
+    
     g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();
