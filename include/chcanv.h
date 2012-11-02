@@ -544,6 +544,7 @@ private:
       IDX_entry   *m_pIDXCandidate;
 
       glChartCanvas *m_glcc;
+      wxGLContext   *m_pGLcontext;
 
       //Smooth zoom member variables
       wxTimer     m_zoom_timer;
@@ -575,6 +576,8 @@ public:
 
       glChartCanvas(wxWindow *parent);
       ~glChartCanvas();
+      
+      void SetContext(wxGLContext *pcontext) { m_pcontext = pcontext; }
 
       void OnPaint(wxPaintEvent& event);
       void OnEraseBG(wxEraseEvent& evt);
@@ -597,6 +600,8 @@ protected:
       void SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear);
       void ComputeRenderQuiltViewGLRegion( ViewPort &vp, wxRegion Region );
 
+      wxGLContext       *m_pcontext;
+      
       int m_cacheinvalid;
       int max_texture_dimension;
 

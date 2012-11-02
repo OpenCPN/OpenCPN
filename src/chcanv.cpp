@@ -3211,7 +3211,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     VPoint.Invalidate();
 
     m_glcc = new glChartCanvas(this);
-
+    m_pGLcontext = new wxGLContext(m_glcc);
+    m_glcc->SetContext(m_pGLcontext);
+    
     singleClickEventIsValid = false;
 
 //    Build the cursors
@@ -11621,7 +11623,6 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
                     1 ), m_data( NULL ), m_datasize( 0 ), m_bsetup( false )
 {
     m_ntex = 0;
-
 }
 
 glChartCanvas::~glChartCanvas()
@@ -11763,8 +11764,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 {
     wxPaintDC dc( this );
 
-    if( !GetContext() ) return;
-    SetCurrent();
+    SetCurrent(*m_pcontext);
 
     Show( g_bopengl );
     if( !g_bopengl ) {
@@ -12527,7 +12527,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
                             if( chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                                 wxRegion rr = get_region;
                                 rr.Offset( vp.rv_rect.x, vp.rv_rect.y );
-                                b_rendered = chart->RenderRegionViewOnGL( *GetContext(), cc1->VPoint, rr );
+                                b_rendered = chart->RenderRegionViewOnGL( *m_pcontext, cc1->VPoint, rr );
                             }
                         }
                     }
@@ -12557,7 +12557,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
                                 if( pch ) {
                                     get_region.Offset( cc1->VPoint.rv_rect.x,
                                                        cc1->VPoint.rv_rect.y );
-                                    Chs57->RenderOverlayRegionViewOnGL( *GetContext(), cc1->VPoint,
+                                    Chs57->RenderOverlayRegionViewOnGL( *m_pcontext, cc1->VPoint,
                                                                         get_region );
                                 }
                             }
@@ -13007,7 +13007,7 @@ void glChartCanvas::render()
             if( !dynamic_cast<ChartDummy*>( Current_Ch ) ) {
                 glClear( GL_COLOR_BUFFER_BIT );
                 wxRegion full_region( cc1->VPoint.rv_rect );
-                Current_Ch->RenderRegionViewOnGL( *GetContext(), cc1->VPoint, full_region );
+                Current_Ch->RenderRegionViewOnGL( *m_pcontext, cc1->VPoint, full_region );
             }
         }
     }
@@ -13138,7 +13138,7 @@ void glChartCanvas::render()
 
 void glChartCanvas::DrawGLOverLayObjects( void )
 {
-    if( g_pi_manager ) g_pi_manager->RenderAllGLCanvasOverlayPlugIns( GetContext(), cc1->GetVP() );
+    if( g_pi_manager ) g_pi_manager->RenderAllGLCanvasOverlayPlugIns( m_pcontext, cc1->GetVP() );
 }
 
 void glChartCanvas::GrowData( int size )
