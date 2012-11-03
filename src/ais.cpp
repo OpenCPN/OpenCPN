@@ -1154,6 +1154,9 @@ AIS_Decoder::AIS_Decoder()
 
     m_n_targets = 0;
 
+    TimerAIS.SetOwner(this, TIMER_AIS1);
+    TimerAIS.Start(TIMER_AIS_MSEC,wxTIMER_CONTINUOUS);
+    
     //  Create/connect a dynamic event handler slot for wxEVT_OCPN_DATASTREAM(s)
     Connect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtAIS); 
 }
@@ -1267,7 +1270,7 @@ void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
         {
                 nr = Decode( message );
                 gFrame->TouchAISActive();
-        } 
+        }         
     }
 }
 
