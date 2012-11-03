@@ -2292,8 +2292,8 @@ void Track::SetPrecision( int prec ) {
             break;
         }
         case 2: { // High
-            m_allowedMaxAngle = 8;
-            m_allowedMaxXTE = 0.002;
+            m_allowedMaxAngle = 10;
+            m_allowedMaxXTE = 0.0015;
             m_TrackTimerSec = 2;
             m_minTrackpoint_delta = .001;
             break;
@@ -2419,16 +2419,6 @@ RoutePoint* Track::AddNewPoint( vector2D point, wxDateTime time ) {
     return rPoint;
 }
 
-double angleDiff( RoutePoint* p1, RoutePoint* p2, RoutePoint* p3 ) {
-    double d1, d2, b1, b2;
-    if( !p1 || !p2 || !p3 ) return 0.0;
-    DistanceBearingMercator( p1->m_lat, p1->m_lon, p2->m_lat, p2->m_lon, &b1, &d1 );
-    DistanceBearingMercator( p2->m_lat, p2->m_lon, p3->m_lat, p3->m_lon, &b2, &d2 );
-    double diff = abs( b1 - b2 );
-    if( diff > 180.0 ) diff = 360.0 - diff;
-    return diff;
-}
-
 void Track::AddPointNow( bool do_add_point )
 {
     static std::vector<RoutePoint> skippedPoints;
@@ -2465,7 +2455,7 @@ void Track::AddPointNow( bool do_add_point )
         case potentialPoint: {
             if( gpsPoint == skipPoints[skipPoints.size()-1] ) break;
 
-            int xteMaxIndex = -1;
+            unsigned int xteMaxIndex = 0;
             double xteMax = 0;
 
             // Scan points skipped so far and see if anyone has XTE over the threshold.
@@ -2486,7 +2476,7 @@ void Track::AddPointNow( bool do_add_point )
                 m_fixedTP = m_removeTP;
                 m_removeTP = m_lastStoredTP;
                 m_lastStoredTP = pTrackPoint;
-                for( int i=0; i<=xteMaxIndex; i++ ) {
+                for( unsigned int i=0; i<=xteMaxIndex; i++ ) {
                     skipPoints.pop_front();
                     skipTimes.pop_front();
                 }
@@ -2824,22 +2814,46 @@ int Track::Simplify( double maxDelta ) {
     return reduction;
 }
 
+double _distance2( vector2D& a, vector2D& b ) { return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y); }
+double _distance( vector2D& a, vector2D& b ) { return sqrt( _distance2( a, b ) ); }
+
 double Track::GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon, double toLat, double toLon  )
 {
-//      Get the XTE vector for prp, normal to segment between pWP_src and prpX
-    vector2D va, vb, vn;
+    vector2D v, w, p;
+
+    // First we get the cartesian coordinates to the line endpoints, using
+    // the current position as origo.
+
     double brg1, dist1, brg2, dist2;
     DistanceBearingMercator( toLat, toLon, fm1Lat, fm1Lon, &brg1, &dist1 );
-    vb.x = dist1 * sin( brg1 * PI / 180. );
-    vb.y = dist1 * cos( brg1 * PI / 180. );
+    w.x = dist1 * sin( brg1 * PI / 180. );
+    w.y = dist1 * cos( brg1 * PI / 180. );
 
     DistanceBearingMercator( toLat, toLon, fm2Lat, fm2Lon, &brg2, &dist2 );
-    va.x = dist2 * sin( brg2 * PI / 180. );
-    va.y = dist2 * cos( brg2 * PI / 180. );
+    v.x = dist2 * sin( brg2 * PI / 180. );
+    v.y = dist2 * cos( brg2 * PI / 180. );
 
-    double sdelta = vGetLengthOfNormal( &va, &vb, &vn );             // NM
-    sdelta = fabs( sdelta );
-    return sdelta;
+    p.x = 0.0; p.y = 0.0;
+
+    const double lengthSquared = _distance2( v, w );
+    if ( lengthSquared == 0.0 ) {
+        // v == w case
+        return _distance( p, v );
+    }
+
+    // Consider the line extending the segment, parameterized as v + t (w - v).
+    // We find projection of origo onto the line.
+    // It falls where t = [(p-v) . (w-v)] / |w-v|^2
+
+    vector2D a = p - v;
+    vector2D b = w - v;
+
+    double t = vDotProduct( &a, &b ) / lengthSquared;
+
+    if (t < 0.0) return _distance(p, v);       // Beyond the 'v' end of the segment
+    else if (t > 1.0) return _distance(p, w);  // Beyond the 'w' end of the segment
+    vector2D projection = v + t * (w - v);     // Projection falls on the segment
+    return _distance(p, projection);
 }
 
 double Track::GetXTE( RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to )
