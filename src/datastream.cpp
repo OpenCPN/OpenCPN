@@ -222,7 +222,11 @@ void DataStream::Open(void)
                     m_sock = new wxSocketClient();
                     break;
                 case UDP:
-                    m_sock = new wxDatagramSocket(m_addr, wxSOCKET_NOWAIT);
+                    //  We need a local (bindable) address to create the Datagram socket
+                    wxIPV4address conn_addr;
+                    conn_addr.Service(m_net_port);
+                    conn_addr.AnyAddress();    
+                    m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT);
             }
 
             // Setup the event handler and subscribe to most events
@@ -482,8 +486,10 @@ bool DataStream::SendSentence( const wxString &sentence )
                     case UDP:{
                         wxDatagramSocket* udp_socket = dynamic_cast<wxDatagramSocket*>(m_sock);
                         assert(udp_socket);
-                        wxString packet = sentence+_T("\r\n");
-                        udp_socket->SendTo(m_addr, packet.mb_str(), packet.size() );
+                        if( udp_socket->IsOk() ) {
+                            wxString packet = sentence+_T("\r\n");
+                            udp_socket->SendTo(m_addr, packet.mb_str(), packet.size() );
+                        }
                     }
                 }
             }
