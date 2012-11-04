@@ -6522,7 +6522,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                 wxLogMessage( msg );
                                             }
                                     }
-
                                     else
                                         if( m_NMEA0183.LastSentenceIDReceived == _T("GGA") ) {
                                             if( m_NMEA0183.Parse() ) {
@@ -6596,8 +6595,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 GenericPosDatEx GPSData;
                 GPSData.kLat = gLat;
                 GPSData.kLon = gLon;
-                GPSData.kCog = gCog;
-                GPSData.kSog = gSog;
+                GPSData.kCog = m_COGFiltered;
+                GPSData.kSog = m_SOGFiltered;
                 GPSData.kVar = gVar;
                 GPSData.kHdm = gHdm;
                 GPSData.kHdt = gHdt;
@@ -6698,6 +6697,10 @@ void MyFrame::OnEvtNMEA( wxCommandEvent & event )
 void MyFrame::PostProcessNNEA( bool brx_rmc, wxString &sfixtime )
 {
     FilterCogSog();
+    // pick up sog/cog at a point where it is subject to the NMEA filter option
+    // for use in plugins
+    m_SOGFiltered = gSog;
+    m_COGFiltered = gCog;
 
     //    If gSog is greater than some threshold, we determine that we are "cruising"
     if( gSog > 3.0 ) g_bCruising = true;
