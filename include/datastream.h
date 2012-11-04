@@ -148,6 +148,7 @@ typedef struct {
     double kHdt;            // true heading
     time_t FixTime;
     int    nSats;
+    double kVMG;
 } GenericPosDatEx;
 
 
