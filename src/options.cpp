@@ -48,6 +48,8 @@
 #include "chartdbs.h"
 #include "options.h"
 #include "styles.h"
+#include "datastream.h"
+#include "multiplexer.h"
 
 #include "navutil.h"
 
@@ -68,14 +70,10 @@ extern bool             g_bskew_comp;
 extern bool             g_bopengl;
 extern bool             g_bsmoothpanzoom;
 
-extern wxString         *pNMEADataSource;
-extern wxString         g_NMEABaudRate;
-extern wxString         *pNMEA_AP_Port;
 extern FontMgr          *pFontMgr;
-extern wxString         *pAIS_Port;
 extern wxString         *pInit_Chart_Dir;
-extern bool             g_bGarminPersistance;
-extern bool             g_bGarminHost;
+extern wxArrayOfConnPrm *g_pConnectionParams;
+extern Multiplexer      *g_pMUX;
 extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
 extern int              g_SOGFilterSec;
@@ -117,7 +115,7 @@ extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
 
 extern bool             g_bPreserveScaleOnX;
-extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
+extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bTransparentToolbar;
 
@@ -160,6 +158,7 @@ extern double           g_AckTimeout_Mins;
 
 extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
+extern bool             g_bConfirmObjectDelete;
 
 extern wxLocale         *plocale_def_lang;
 
@@ -199,8 +198,6 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_BUTTON( xID_OK, options::OnXidOkClick )
     EVT_BUTTON( wxID_CANCEL, options::OnCancelClick )
     EVT_BUTTON( ID_BUTTONFONTCHOOSE, options::OnChooseFont )
-    EVT_CHOICE( ID_CHOICE_NMEA, options::OnNMEASourceChoice )
-    EVT_COMBOBOX( ID_CHOICE_NMEA, options::OnNMEASourceChoice )
     EVT_RADIOBOX(ID_RADARDISTUNIT, options::OnDisplayCategoryRadioButton )
     EVT_BUTTON( ID_CLEARLIST, options::OnButtonClearClick )
     EVT_BUTTON( ID_SELECTLIST, options::OnButtonSelectClick )
@@ -237,6 +234,37 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 
 options::~options()
 {
+    // Disconnect Events
+    m_lcSources->Disconnect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
+    m_buttonAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
+    m_buttonRemove->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
+    m_tFilterSec->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_rbTypeSerial->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeSerialSelected ), NULL, this );
+    m_rbTypeNet->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeNetSelected ), NULL, this );
+    m_rbNetProtoTCP->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_rbNetProtoUDP->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_rbNetProtoGPSD->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_tNetAddress->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_tNetPort->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_comboPort->Disconnect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_comboPort->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_choiceBaudRate->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnBaudrateChoice ), NULL, this );
+    m_choiceSerialProtocol->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnProtocolChoice ), NULL, this );
+    m_choicePriority->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_cbCheckCRC->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCrcCheck ), NULL, this );
+    m_cbGarminHost->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_cbFurunoGP3X->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_rbIAccept->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbAcceptInput ), NULL, this );
+    m_rbIIgnore->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbIgnoreInput ), NULL, this );
+    m_tcInputStc->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_btnInputStcList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnIStcs ), NULL, this );
+    m_cbOutput->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCbOutput ), NULL, this );
+    m_rbOAccept->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
+    m_rbOIgnore->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
+    m_tcOutputStc->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_btnOutputStcList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnOStcs ), NULL, this );
+    m_cbNMEADebug->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnShowGpsWindowCheckboxClick ), NULL, this );
+
     delete m_pSerialArray;
     groupsPanel->EmptyChartGroupArray( m_pGroupArray );
     delete m_pGroupArray;
@@ -279,6 +307,9 @@ void options::Init()
     m_pageShips = -1;
     m_pageUI = -1;
     m_pagePlugins = -1;
+
+    lastPage = -1;
+
 
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
@@ -400,246 +431,349 @@ bool options::DeletePage( wxScrolledWindow *page  )
 
 void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
 {
-    wxScrolledWindow *itemPanelGPS = AddPage( parent, _("NMEA") );
+    m_pNMEAForm = AddPage( parent, _("NMEA") );
 
-    wxBoxSizer* itemBoxSizerGPS = new wxBoxSizer( wxVERTICAL );
-    itemPanelGPS->SetSizer( itemBoxSizerGPS );
+    wxBoxSizer* bSizer4 = new wxBoxSizer( wxVERTICAL );
+    m_pNMEAForm->SetSizer( bSizer4 );
+    m_pNMEAForm->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
-    wxBoxSizer* srcBaudBox = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizerGPS->Add( srcBaudBox, 0, wxEXPAND );
+    wxBoxSizer* bSizerOuterContainer = new wxBoxSizer( wxVERTICAL );
 
-    wxBoxSizer* aisSrcBox = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizerGPS->Add( aisSrcBox, 0, wxEXPAND );
 
-    //    Add NMEA data source controls
-    wxStaticBox* itemNMEASourceStaticBox = new wxStaticBox( itemPanelGPS, wxID_ANY,
-            _("NMEA Data Source") );
-    wxStaticBoxSizer* itemNMEASourceStaticBoxSizer = new wxStaticBoxSizer( itemNMEASourceStaticBox,
-            wxVERTICAL );
-    srcBaudBox->Add( itemNMEASourceStaticBoxSizer, 1, wxALL | wxEXPAND, border_size );
+    wxStaticBoxSizer* sbSizerGeneral;
+    sbSizerGeneral = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("General") ), wxVERTICAL );
 
-    m_itemNMEAListBox = new wxComboBox( itemPanelGPS, ID_CHOICE_NMEA );
-    itemNMEASourceStaticBoxSizer->Add( m_itemNMEAListBox, 0, wxALL, border_size );
+    wxBoxSizer* bSizer151;
+    bSizer151 = new wxBoxSizer( wxVERTICAL );
 
-    #if !defined( OCPN_NO_SOCKETS) || defined(BUILD_WITH_LIBGPS)
+    wxBoxSizer* bSizer161;
+    bSizer161 = new wxBoxSizer( wxVERTICAL );
 
-    //    Add NMEA TCP/IP Server address
-    m_itemNMEA_TCPIP_StaticBox = new wxStaticBox( itemPanelGPS, wxID_ANY, _("GPSD Data Server") );
-    m_itemNMEA_TCPIP_StaticBoxSizer = new wxStaticBoxSizer( m_itemNMEA_TCPIP_StaticBox,
-            wxVERTICAL );
-    itemBoxSizerGPS->Add( m_itemNMEA_TCPIP_StaticBoxSizer, 0, wxALL | wxEXPAND, border_size );
+    wxBoxSizer* bSizer171;
+    bSizer171 = new wxBoxSizer( wxHORIZONTAL );
 
-    m_itemNMEA_TCPIP_Source = new wxTextCtrl( itemPanelGPS, wxID_ANY );
-    m_itemNMEA_TCPIP_StaticBoxSizer->Add( m_itemNMEA_TCPIP_Source, 0, wxALL, border_size );
+    m_cbFilterSogCog = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Filter NMEA Course and Speed data"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer171->Add( m_cbFilterSogCog, 0, wxALL, 5 );
 
-    m_itemNMEA_TCPIP_StaticBox->Enable( false );
-    m_itemNMEA_TCPIP_Source->Enable( false );
+    m_stFilterSec = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Filter period (sec)"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stFilterSec->Wrap( -1 );
 
-    m_itemNMEA_TCPIP_Source->Clear();
-    m_itemNMEA_TCPIP_Source->WriteText( _T("localhost") );
+    int nspace = 5;
+#ifdef __WXGTK__
+    nspace = 9;
+#endif
+    bSizer171->Add( m_stFilterSec, 0, wxALL, nspace );
 
-    #endif
+    m_tFilterSec = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer171->Add( m_tFilterSec, 0, wxALL, 4 );
 
-    m_itemNMEAListBox->Append( _("None") );
 
-    //    Fill in the listbox with all detected serial ports
-    for( unsigned int iPortIndex = 0; iPortIndex < m_pSerialArray->GetCount(); iPortIndex++ )
-        m_itemNMEAListBox->Append( m_pSerialArray->Item( iPortIndex ) );
+    bSizer161->Add( bSizer171, 1, wxEXPAND, 5 );
 
-    //    Search the string array looking for "GARMIN"
-    bool bfound_garmin_string = false;
-    for( unsigned int iPortIndex = 0; iPortIndex < m_pSerialArray->GetCount(); iPortIndex++ ) {
-        if( m_pSerialArray->Item( iPortIndex ).Contains( _T("GARMIN") ) ) {
-            bfound_garmin_string = true;
-            break;
-        }
-    }
+    wxBoxSizer* bSizer181;
+    bSizer181 = new wxBoxSizer( wxVERTICAL );
 
-    //  Garmin persistence logic:
-    //  Make sure "GARMIN" is in the list if the persistence flag is set.
-    //  This covers the situation where Garmin is desired, but the
-    //  device is not connected yet.
-    //  n.b. Hot-plugging is not supported.  Opencpn must be
-    //  restarted with device inserted to enable this option.
-    if( g_bGarminPersistance && !bfound_garmin_string ) m_itemNMEAListBox->Append( _T("GARMIN") );
+    m_cbNMEADebug = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Show NMEA Debug Window"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer181->Add( m_cbNMEADebug, 0, wxALL, 5 );
 
-    #ifdef BUILD_WITH_LIBGPS
-    m_itemNMEAListBox->Append( _("Network LIBGPS"));
-    #endif
+    bSizer161->Add( bSizer181, 1, wxEXPAND, 5 );
+    bSizer151->Add( bSizer161, 1, wxEXPAND, 5 );
+    sbSizerGeneral->Add( bSizer151, 1, wxEXPAND, 5 );
+    bSizerOuterContainer->Add( sbSizerGeneral, 0, wxALL|wxEXPAND, 5 );
 
-    #ifndef OCPN_NO_SOCKETS
-    m_itemNMEAListBox->Append( _("Network GPSD") );
-    #endif
 
-    m_itemNMEAListBox->Append( _("AIS Port (Shared)") );
+    //  Connections listbox, etc
+    wxStaticBoxSizer* sbSizerLB= new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Data Connections") ), wxVERTICAL );
 
-    //    Activate the proper selections
-    //    n.b. Hard coded indices
-    int scidx;
-    wxString source;
-    source = ( *pNMEADataSource );
-    if( source.Contains( _T("Serial") ) ) {
-        wxString sourcex = source.Mid( 7 );
-        scidx = m_itemNMEAListBox->FindString( sourcex );
-    } else
-        if( source.Contains( _("None") ) ) scidx = 0;
 
-        else
-            if( source.Contains( _T("GARMIN") ) ) scidx = m_itemNMEAListBox->FindString(
-                    _T("GARMIN") );
+    wxBoxSizer* bSizer17;
+    bSizer17 = new wxBoxSizer( wxHORIZONTAL );
 
-            else
-                if( source.Contains( _T("AIS") ) ) scidx = m_itemNMEAListBox->FindString(
-                        _("AIS Port (Shared)") );
+    m_lcSources = new wxListCtrl( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxSize(-1, 150), wxLC_REPORT|wxLC_SINGLE_SEL );
+    bSizer17->Add( m_lcSources, 1, wxALL|wxEXPAND, 5 );
 
-    #ifdef BUILD_WITH_LIBGPS
-                else if(source.Upper().Contains(_T("LIBGPS")))
-                {
-                    scidx = m_itemNMEAListBox->FindString(_("Network LIBGPS"));
-                    wxString ip;
-                    if(source.StartsWith(_T("LIBGPS")) )
-                    ip = source.AfterFirst(':');
-                    else
-                    ip = _T("localhost");
+    wxBoxSizer* bSizer18;
+    bSizer18 = new wxBoxSizer( wxVERTICAL );
 
-                    m_itemNMEA_TCPIP_Source->Clear();
-                    m_itemNMEA_TCPIP_Source->WriteText(ip);
-                    m_itemNMEA_TCPIP_StaticBox->Enable(true);
-                    m_itemNMEA_TCPIP_Source->Enable(true);
-                }
-    #endif
+    m_buttonAdd = new wxButton( m_pNMEAForm, wxID_ANY, _("Add Connection"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_buttonAdd, 0, wxALL, 5 );
 
-    #ifndef OCPN_NO_SOCKETS
-                else
-                    if( source.Upper().Contains( _T("GPSD") ) ) {
-                        scidx = m_itemNMEAListBox->FindString( _("Network GPSD") );
-                        wxString ip;
-                        if( source.StartsWith( _T("GPSD") ) ) ip = source.AfterFirst( ':' );
-                        else
-                            ip = _T("localhost");
+    m_buttonRemove = new wxButton( m_pNMEAForm, wxID_ANY, _("Remove Connection"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_buttonRemove->Enable( false );
+    bSizer18->Add( m_buttonRemove, 0, wxALL, 5 );
 
-                        m_itemNMEA_TCPIP_Source->Clear();
-                        m_itemNMEA_TCPIP_Source->WriteText( ip );
-                        m_itemNMEA_TCPIP_StaticBox->Enable( true );
-                        m_itemNMEA_TCPIP_Source->Enable( true );
-                    }
-    #endif
-                    else
-                        scidx = 0;                                 // malformed selection
+    bSizer17->Add( bSizer18, 0, wxEXPAND, 5 );
+    sbSizerLB->Add( bSizer17, 1, wxEXPAND, 5 );
+    bSizerOuterContainer->Add( sbSizerLB, 0, wxEXPAND, 5 );
 
-    if( scidx == wxNOT_FOUND )                  // user specified in ComboBox
+
+    //  Connections Properties
+
+    sbSizerConnectionProps = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Properties") ), wxVERTICAL );
+
+    wxBoxSizer* bSizer15;
+    bSizer15 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_rbTypeSerial = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Serial"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_rbTypeSerial->SetValue( true );
+    bSizer15->Add( m_rbTypeSerial, 0, wxALL, 5 );
+
+    m_rbTypeNet = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Network"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer15->Add( m_rbTypeNet, 0, wxALL, 5 );
+
+
+    sbSizerConnectionProps->Add( bSizer15, 0, wxEXPAND, 0 );
+
+    gSizerNetProps = new wxGridSizer( 0, 2, 0, 0 );
+
+    m_stNetProto = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Protocol"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stNetProto->Wrap( -1 );
+    gSizerNetProps->Add( m_stNetProto, 0, wxALL, 5 );
+
+    wxBoxSizer* bSizer16;
+    bSizer16 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_rbNetProtoTCP = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("TCP"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    m_rbNetProtoTCP->Enable( true );
+
+    bSizer16->Add( m_rbNetProtoTCP, 0, wxALL, 5 );
+
+    m_rbNetProtoUDP = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("UDP"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_rbNetProtoUDP->Enable( true );
+
+    bSizer16->Add( m_rbNetProtoUDP, 0, wxALL, 5 );
+
+    m_rbNetProtoGPSD = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("GPSD"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_rbNetProtoGPSD->SetValue( true );
+    bSizer16->Add( m_rbNetProtoGPSD, 0, wxALL, 5 );
+
+
+    gSizerNetProps->Add( bSizer16, 1, wxEXPAND, 5 );
+
+    m_stNetAddr = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Address"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stNetAddr->Wrap( -1 );
+    gSizerNetProps->Add( m_stNetAddr, 0, wxALL, 5 );
+
+    m_tNetAddress = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    gSizerNetProps->Add( m_tNetAddress, 0, wxEXPAND|wxTOP, 5 );
+
+    m_stNetPort = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Port"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stNetPort->Wrap( -1 );
+    gSizerNetProps->Add( m_stNetPort, 0, wxALL, 5 );
+
+    m_tNetPort = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    gSizerNetProps->Add( m_tNetPort, 1, wxEXPAND|wxTOP, 5 );
+
+
+    sbSizerConnectionProps->Add( gSizerNetProps, 0, wxEXPAND, 5 );
+
+    gSizerSerProps = new wxGridSizer( 0, 1, 0, 0 );
+
+    wxFlexGridSizer* fgSizer1;
+    fgSizer1 = new wxFlexGridSizer( 0, 4, 0, 0 );
+    fgSizer1->SetFlexibleDirection( wxBOTH );
+    fgSizer1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+    m_stSerPort = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Port"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stSerPort->Wrap( -1 );
+    fgSizer1->Add( m_stSerPort, 0, wxALL, 5 );
+
+    m_comboPort = new wxComboBox( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+    fgSizer1->Add( m_comboPort, 0, wxEXPAND|wxTOP, 5 );
+
+    m_stSerBaudrate = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Baudrate"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stSerBaudrate->Wrap( -1 );
+    fgSizer1->Add( m_stSerBaudrate, 0, wxALL, 5 );
+
+    wxString m_choiceBaudRateChoices[] = { _("150"), _("300"), _("600"), _("1200"), _("2400"), _("4800"), _("9600"), _("19200"), _("38400"), _("57600"), _("115200"), _("230400"), _("460800"), _("921600") };
+    int m_choiceBaudRateNChoices = sizeof( m_choiceBaudRateChoices ) / sizeof( wxString );
+    m_choiceBaudRate = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceBaudRateNChoices, m_choiceBaudRateChoices, 0 );
+    m_choiceBaudRate->SetSelection( 0 );
+    fgSizer1->Add( m_choiceBaudRate, 1, wxEXPAND|wxTOP, 5 );
+
+    m_stSerProtocol = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Protocol"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stSerProtocol->Wrap( -1 );
+    fgSizer1->Add( m_stSerProtocol, 0, wxALL, 5 );
+
+    wxString m_choiceSerialProtocolChoices[] = { _("NMEA 0183"), _("NMEA 2000"), _("Seatalk") };
+    int m_choiceSerialProtocolNChoices = sizeof( m_choiceSerialProtocolChoices ) / sizeof( wxString );
+    m_choiceSerialProtocol = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceSerialProtocolNChoices, m_choiceSerialProtocolChoices, 0 );
+    m_choiceSerialProtocol->SetSelection( 0 );
+    m_choiceSerialProtocol->Enable( false );
+
+    fgSizer1->Add( m_choiceSerialProtocol, 1, wxEXPAND|wxTOP, 5 );
+
+    m_stPriority = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Priority"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stPriority->Wrap( -1 );
+    fgSizer1->Add( m_stPriority, 0, wxALL, 5 );
+
+    wxString m_choicePriorityChoices[] = { _("0"), _("1"), _("2"), _("3"), _("4"), _("5"), _("6"), _("7"), _("8"), _("9") };
+    int m_choicePriorityNChoices = sizeof( m_choicePriorityChoices ) / sizeof( wxString );
+    m_choicePriority = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choicePriorityNChoices, m_choicePriorityChoices, 0 );
+    m_choicePriority->SetSelection( 9 );
+    fgSizer1->Add( m_choicePriority, 0, wxEXPAND|wxTOP, 5 );
+
+
+    gSizerSerProps->Add( fgSizer1, 0, wxEXPAND, 5 );
+
+    wxFlexGridSizer* fgSizer5;
+    fgSizer5 = new wxFlexGridSizer( 0, 2, 0, 0 );
+    fgSizer5->SetFlexibleDirection( wxBOTH );
+    fgSizer5->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+    m_cbCheckCRC = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Control checksum"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbCheckCRC->SetValue(true);
+    m_cbCheckCRC->SetToolTip( _("If checked, only the sentences with a valid checksum are passed through") );
+
+    fgSizer5->Add( m_cbCheckCRC, 0, wxALL, 5 );
+
+    m_cbGarminHost = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use Garmin GRMN/GRMN (Host) mode for uploads"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbGarminHost->SetValue(false);
+    fgSizer5->Add( m_cbGarminHost, 0, wxALL, 5 );
+
+    m_cbFurunoGP3X = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Format uploads for Furuno GP3X"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbFurunoGP3X->SetValue(false);
+	fgSizer5->Add( m_cbFurunoGP3X, 0, wxALL, 5 );
+
+    sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
+    sbSizerConnectionProps->Add( fgSizer5, 0, wxEXPAND, 5 );
+
+    sbSizerInFilter = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Input filtering") ), wxVERTICAL );
+
+    wxBoxSizer* bSizer9;
+    bSizer9 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_rbIAccept = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Accept only sentences"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    bSizer9->Add( m_rbIAccept, 0, wxALL, 5 );
+
+    m_rbIIgnore = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Ignore sentences"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer9->Add( m_rbIIgnore, 0, wxALL, 5 );
+
+
+    sbSizerInFilter->Add( bSizer9, 0, wxEXPAND, 5 );
+
+    wxBoxSizer* bSizer11;
+    bSizer11 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_tcInputStc = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+    bSizer11->Add( m_tcInputStc, 1, wxALL|wxEXPAND, 5 );
+
+    m_btnInputStcList = new wxButton( m_pNMEAForm, wxID_ANY, _("..."), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+    bSizer11->Add( m_btnInputStcList, 0, wxALL, 5 );
+
+    sbSizerInFilter->Add( bSizer11, 0, wxEXPAND, 5 );
+
+    sbSizerConnectionProps->Add( sbSizerInFilter, 0, wxEXPAND, 5 );
+
+
+    m_cbOutput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Output on this port ( as Autopilot or NMEA Repeater)"), wxDefaultPosition, wxDefaultSize, 0 );
+    sbSizerConnectionProps->Add( m_cbOutput, 0, wxALL, 5 );
+
+    sbSizerOutFilter = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Output filtering") ), wxVERTICAL );
+
+    wxBoxSizer* bSizer10;
+    bSizer10 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_rbOAccept = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Transmit sentences"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    bSizer10->Add( m_rbOAccept, 0, wxALL, 5 );
+
+    m_rbOIgnore = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Drop sentences"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer10->Add( m_rbOIgnore, 0, wxALL, 5 );
+
+
+    sbSizerOutFilter->Add( bSizer10, 0, wxEXPAND, 5 );
+
+    wxBoxSizer* bSizer12;
+    bSizer12 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_tcOutputStc = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+    bSizer12->Add( m_tcOutputStc, 1, wxALL|wxEXPAND, 5 );
+
+    m_btnOutputStcList = new wxButton( m_pNMEAForm, wxID_ANY, _("..."), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+    bSizer12->Add( m_btnOutputStcList, 0, wxALL, 5 );
+
+
+    sbSizerOutFilter->Add( bSizer12, 0, wxEXPAND, 5 );
+    sbSizerConnectionProps->Add( sbSizerOutFilter, 0, wxEXPAND, 5 );
+
+
+    bSizerOuterContainer->Add( sbSizerConnectionProps, 1, wxALL|wxEXPAND, 5 );
+
+    bSizer4->Add( bSizerOuterContainer, 1, wxEXPAND, 5 );
+
+    // Connect Events
+    m_lcSources->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
+    m_buttonAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
+    m_buttonRemove->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
+    m_rbTypeSerial->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeSerialSelected ), NULL, this );
+    m_rbTypeNet->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeNetSelected ), NULL, this );
+    m_rbNetProtoTCP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_rbNetProtoUDP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_rbNetProtoGPSD->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_tNetAddress->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_tNetPort->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_comboPort->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_comboPort->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_choiceBaudRate->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnBaudrateChoice ), NULL, this );
+    m_choiceSerialProtocol->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnProtocolChoice ), NULL, this );
+    m_choicePriority->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_cbCheckCRC->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCrcCheck ), NULL, this );
+    m_cbGarminHost->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_cbFurunoGP3X->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_rbIAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbAcceptInput ), NULL, this );
+    m_rbIIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbIgnoreInput ), NULL, this );
+    m_tcInputStc->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_btnInputStcList->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnIStcs ), NULL, this );
+    m_cbOutput->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCbOutput ), NULL, this );
+    m_rbOAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
+    m_rbOIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
+    m_tcOutputStc->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_btnOutputStcList->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnOStcs ), NULL, this );
+
+    m_cbNMEADebug->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnShowGpsWindowCheckboxClick ), NULL, this );
+    m_cbFilterSogCog->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+
+    wxListItem col0;
+    col0.SetId(0);
+    col0.SetText( _("Type") );
+    m_lcSources->InsertColumn(0, col0);
+
+    wxListItem col1;
+    col1.SetId(1);
+    col1.SetText( _("Port") );
+    m_lcSources->InsertColumn(1, col1);
+
+    wxListItem col2;
+    col2.SetId(2);
+    col2.SetText( _("Parameters") );
+    m_lcSources->InsertColumn(2, col2);
+
+    wxListItem col3;
+    col3.SetId(3);
+    col3.SetText( _("Output") );
+    m_lcSources->InsertColumn(3, col3);
+
+    wxListItem col4;
+    col4.SetId(4);
+    col4.SetText( _("Filters") );
+    m_lcSources->InsertColumn(4, col4);
+
+    m_lcSources->Refresh();
+
+    m_stcdialog_in = new SentenceListDlg(FILTER_INPUT, this);
+    m_stcdialog_out = new SentenceListDlg(FILTER_OUTPUT, this);
+
+    FillSourceList();
+
+    for(size_t i = 0; i < m_pSerialArray->Count() ; i++)
     {
-        wxString nsource = source.AfterFirst( ':' );
-        m_itemNMEAListBox->Append( nsource );
-        scidx = m_itemNMEAListBox->FindString( nsource );
+       m_comboPort->Append(m_pSerialArray->Item(i));
     }
-
-    m_itemNMEAListBox->SetSelection( scidx );
-
-    //    NMEA Baud Rate
-    wxStaticBox* itemNMEABaudStaticBox = new wxStaticBox( itemPanelGPS, wxID_ANY,
-            _("NMEA Baud Rate") );
-    wxStaticBoxSizer* itemNMEABaudStaticBoxSizer = new wxStaticBoxSizer( itemNMEABaudStaticBox,
-            wxVERTICAL );
-    srcBaudBox->Add( itemNMEABaudStaticBoxSizer, 1, wxALL | wxEXPAND, border_size );
-
-    m_itemNMEABaudListBox = new wxComboBox( itemPanelGPS, ID_CHOICE_NMEA_BAUD );
-    m_itemNMEABaudListBox->Append( _T("38400") );
-    m_itemNMEABaudListBox->Append( _T("9600") );
-    m_itemNMEABaudListBox->Append( _T("4800") );
-
-    itemNMEABaudStaticBoxSizer->Add( m_itemNMEABaudListBox, 0, wxALL, border_size );
-
-    scidx = m_itemNMEABaudListBox->FindString( g_NMEABaudRate );      // entry value
-    m_itemNMEABaudListBox->SetSelection( scidx );
-
-    //    Garmin Host Mode
-    pGarminHost = new wxCheckBox( itemPanelGPS, ID_GARMINHOST,
-            _("Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads.") );
-    itemBoxSizerGPS->Add( pGarminHost, 0, wxALL, border_size );
-
-    //    NMEA Monitor window
-    pShowGPSWin = new wxCheckBox( itemPanelGPS, ID_SHOWGPSWINDOW,
-            _("Show GPS/NMEA data stream window") );
-    itemBoxSizerGPS->Add( pShowGPSWin, 0, wxALL, border_size );
-
-    //    NMEA Data Filtering
-    pFilterNMEA = new wxCheckBox( itemPanelGPS, ID_FILTERNMEA,
-            _("Filter NMEA Course and Speed data") );
-    itemBoxSizerGPS->Add( pFilterNMEA, 0, wxALL, border_size );
-
-    wxFlexGridSizer *pFilterGrid = new wxFlexGridSizer( 2 );
-    pFilterGrid->AddGrowableCol( 1 );
-    itemBoxSizerGPS->Add( pFilterGrid, 0, wxALL | wxEXPAND, border_size );
-
-    wxStaticText* itemStaticTextFilterSecs = new wxStaticText( itemPanelGPS, wxID_STATIC,
-            _("Filter Period (sec)") );
-    pFilterGrid->Add( itemStaticTextFilterSecs, 0, wxALL|wxALIGN_CENTER_VERTICAL, border_size );
-
-    pFilterSecs = new wxTextCtrl( itemPanelGPS, ID_TEXTCTRL, _T(""), wxDefaultPosition,
-            wxSize( 100, -1 ) );
-    pFilterGrid->Add( pFilterSecs, 0, wxALL|wxALIGN_CENTER_VERTICAL, border_size );
-
-    //    Add Autopilot serial output port controls
-    wxStaticBox* itemNMEAAutoStaticBox = new wxStaticBox( itemPanelGPS, wxID_ANY,
-            _("Autopilot Output Port") );
-    wxStaticBoxSizer* itemNMEAAutoStaticBoxSizer = new wxStaticBoxSizer( itemNMEAAutoStaticBox,
-            wxVERTICAL );
-    aisSrcBox->Add( itemNMEAAutoStaticBoxSizer, 1, wxEXPAND | wxALL, border_size );
-
-    m_itemNMEAAutoListBox = new wxComboBox( itemPanelGPS, ID_CHOICE_AP );
-    m_itemNMEAAutoListBox->Append( _("None") );
-
-    //    Fill in the listbox with all detected serial ports
-    for( unsigned int iPortIndex = 0; iPortIndex < m_pSerialArray->GetCount(); iPortIndex++ ) {
-        if( m_pSerialArray->Item( iPortIndex ).Contains( _T("GARMIN") ) ) continue;
-        m_itemNMEAAutoListBox->Append( m_pSerialArray->Item( iPortIndex ) );
-    }
-
-    wxString ap_com;
-    if( pNMEA_AP_Port->Contains( _T("Serial") ) ) ap_com = pNMEA_AP_Port->Mid( 7 );
-    else
-        ap_com = _("None");
-
-    int sapidx = m_itemNMEAAutoListBox->FindString( ap_com );
-    m_itemNMEAAutoListBox->SetSelection( sapidx );
-
-    itemNMEAAutoStaticBoxSizer->Add( m_itemNMEAAutoListBox, 0, wxALL, border_size );
-
-    wxStaticBox* itemAISStaticBox = new wxStaticBox( itemPanelGPS, wxID_ANY, _("AIS Data Port") );
-    wxStaticBoxSizer* itemAISStaticBoxSizer = new wxStaticBoxSizer( itemAISStaticBox, wxVERTICAL );
-    aisSrcBox->Add( itemAISStaticBoxSizer, 1, wxALL | wxEXPAND, border_size );
-
-    m_itemAISListBox = new wxComboBox( itemPanelGPS, ID_CHOICE_AIS );
-    m_itemAISListBox->Append( _("None") );
-
-    //    Fill in the listbox with all detected serial ports
-    for( unsigned int iPortIndex = 0; iPortIndex < m_pSerialArray->GetCount(); iPortIndex++ ) {
-        if( m_pSerialArray->Item( iPortIndex ).Contains( _T("GARMIN") ) ) continue;
-        m_itemAISListBox->Append( m_pSerialArray->Item( iPortIndex ) );
-    }
-
-    int sidx;
-    if( pAIS_Port->Contains( _T("Serial") ) ) {
-        wxString ais_com = pAIS_Port->Mid( 7 );
-        sidx = m_itemAISListBox->FindString( ais_com );
-    } else
-        if( pAIS_Port->Contains( _("None") ) ) sidx = 0;
-        else
-            sidx = 0;                                 // malformed selection
-
-    if( sidx == wxNOT_FOUND )                  // user specified in ComboBox
-    {
-        wxString nport = pAIS_Port->AfterFirst( ':' );
-        m_itemAISListBox->Append( nport );
-        sidx = m_itemAISListBox->FindString( nport );
-    }
-
-    m_itemAISListBox->SetSelection( sidx );
-
-    itemAISStaticBoxSizer->Add( m_itemAISListBox, 0, wxALL, border_size );
-
-    itemBoxSizerGPS->AddStretchSpacer(10);
+    ShowNMEACommon( false );
+    ShowNMEASerial( false );
+    ShowNMEANet( false );
+    connectionsaved = true;
 }
 
 void options::CreatePanel_Ownship( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
@@ -987,23 +1121,33 @@ void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group
 
     groupsPanel->CreatePanel( parent, border_size, group_item_spacing, small_button_size );
     ((wxNotebook *)page)->AddPage( groupsPanel, _("Chart Groups") );
+
+    page->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnChartsPageChange ), NULL, this );
+
 }
 
 void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_spacing,
         wxSize small_button_size )
 {
     modified = false;
+    m_border_size = border_size;
+    m_group_item_spacing = group_item_spacing;
 
-    wxFlexGridSizer* groupsSizer = new wxFlexGridSizer( 4, 2, border_size, border_size );
+    groupsSizer = new wxFlexGridSizer( 4, 2, border_size, border_size );
     groupsSizer->AddGrowableCol( 0 );
     groupsSizer->AddGrowableRow( 1, 1 );
     groupsSizer->AddGrowableRow( 3, 1 );
 
     SetSizer( groupsSizer );
 
+    m_UIcomplete = false;
+}
+
+void ChartGroupsUI::CompletePanel( void )
+{
     //    The chart file/dir tree
     wxStaticText *allChartsLabel = new wxStaticText( this, wxID_ANY, _("All Available Charts") );
-    groupsSizer->Add( allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, border_size );
+    groupsSizer->Add( allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size );
 
     wxStaticText *dummy1 = new wxStaticText( this, -1, _T("") );
     groupsSizer->Add( dummy1 );
@@ -1020,12 +1164,12 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
     m_pRemoveButton->Disable();
 
     wxBoxSizer* addRemove = new wxBoxSizer( wxVERTICAL );
-    addRemove->Add( m_pAddButton, 0, wxALL | wxEXPAND, group_item_spacing );
-    groupsSizer->Add( addRemove, 0, wxALL | wxEXPAND, border_size );
+    addRemove->Add( m_pAddButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
+    groupsSizer->Add( addRemove, 0, wxALL | wxEXPAND, m_border_size );
 
     //    Add the Groups notebook control
     wxStaticText *groupsLabel = new wxStaticText( this, wxID_ANY, _("Chart Groups") );
-    groupsSizer->Add( groupsLabel, 0, wxTOP | wxRIGHT | wxLEFT, border_size );
+    groupsSizer->Add( groupsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size );
 
     wxStaticText *dummy2 = new wxStaticText( this, -1, _T("") );
     groupsSizer->Add( dummy2 );
@@ -1033,7 +1177,7 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
     wxBoxSizer* nbSizer = new wxBoxSizer( wxVERTICAL );
     m_GroupNB = new wxNotebook( this, ID_GROUPNOTEBOOK, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
     nbSizer->Add( m_GroupNB, 1, wxEXPAND );
-    groupsSizer->Add( nbSizer, 1, wxALL | wxEXPAND, border_size );
+    groupsSizer->Add( nbSizer, 1, wxALL | wxEXPAND, m_border_size );
 
     //    Add default (always present) Default Chart Group
     wxPanel *allActiveGroup = new wxPanel( m_GroupNB, -1, wxDefaultPosition, wxDefaultSize );
@@ -1046,7 +1190,7 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
 
     //    Set the Font for the All Active Chart Group tree to be italic, dimmed
     iFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC,
-            wxFONTWEIGHT_LIGHT );
+    wxFONTWEIGHT_LIGHT );
 
     page0BoxSizer->Add( defaultAllCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
 
@@ -1057,17 +1201,20 @@ void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_
     m_pDeleteGroupButton = new wxButton( this, ID_GROUPDELETEGROUP, _("Delete Group") );
 
     wxBoxSizer* newDeleteGrp = new wxBoxSizer( wxVERTICAL );
-    groupsSizer->Add( newDeleteGrp, 0, wxALL, border_size );
+    groupsSizer->Add( newDeleteGrp, 0, wxALL, m_border_size );
 
     newDeleteGrp->AddSpacer( 25 );
-    newDeleteGrp->Add( m_pNewGroupButton, 0, wxALL | wxEXPAND, group_item_spacing );
-    newDeleteGrp->Add( m_pDeleteGroupButton, 0, wxALL | wxEXPAND, group_item_spacing );
+    newDeleteGrp->Add( m_pNewGroupButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
+    newDeleteGrp->Add( m_pDeleteGroupButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
     newDeleteGrp->AddSpacer( 25 );
-    newDeleteGrp->Add( m_pRemoveButton, 0, wxALL | wxEXPAND, group_item_spacing );
+    newDeleteGrp->Add( m_pRemoveButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
 
     // Connect this last, otherwise handler is called before all objects are initialized.
     this->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED,
-            wxTreeEventHandler(ChartGroupsUI::OnAvailableSelection), NULL, this );
+    wxTreeEventHandler(ChartGroupsUI::OnAvailableSelection), NULL, this );
+
+    m_UIcomplete = true;
+
 }
 
 void options::CreatePanel_Display( size_t parent, int border_size, int group_item_spacing,
@@ -1245,9 +1392,11 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     wxStaticText *pStatic_Dummy5 = new wxStaticText( panelAIS, -1, _T("") );
     pDisplayGrid->Add( pStatic_Dummy5, 1, wxALL | wxALL, group_item_spacing );
 
-    m_pCheck_Draw_Target_Size = new wxCheckBox( panelAIS, -1,
-            _("Show AIS targets real size") );
+    m_pCheck_Draw_Target_Size = new wxCheckBox( panelAIS, -1, _("Show AIS targets real size") );
     pDisplayGrid->Add( m_pCheck_Draw_Target_Size, 1, wxALL, group_item_spacing );
+
+    wxStaticText *pStatic_Dummy5a = new wxStaticText( panelAIS, -1, _T("") );
+    pDisplayGrid->Add( pStatic_Dummy5a, 1, wxALL | wxALL, group_item_spacing );
 
     // Rollover
     wxStaticBox* rolloverBox = new wxStaticBox( panelAIS, wxID_ANY, _("Rollover") );
@@ -1415,6 +1564,12 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     miscOptions->Add( pWayPointPreventDragging, 0, wxALL,
             border_size );
 
+    pConfirmObjectDeletion = new wxCheckBox( itemPanelFont, ID_DELETECHECKBOX,
+                                               _("Confirm deletion of tracks and routes") );
+    pConfirmObjectDeletion->SetValue( FALSE );
+    miscOptions->Add( pConfirmObjectDeletion, 0, wxALL, border_size );
+                                               
+                                               
 }
 
 void options::CreateControls()
@@ -1594,14 +1749,14 @@ void options::SetInitialSettings()
 
     if( m_pConfig ) pSettingsCB1->SetValue( m_pConfig->m_bShowDebugWindows );
 
-    if( g_NMEALogWindow ) pShowGPSWin->SetValue( true );
-
+    if( g_NMEALogWindow ) m_cbNMEADebug->SetValue( true );
+/*TODO
     if( g_bGarminHost ) pGarminHost->SetValue( true );
-
-    pFilterNMEA->SetValue( g_bfilter_cogsog );
+*/
+    m_cbFilterSogCog->SetValue( g_bfilter_cogsog );
 
     s.Printf( _T("%d"), g_COGFilterSec );
-    pFilterSecs->SetValue( s );
+    m_tFilterSec->SetValue( s );
 
     s.Printf( _T("%d"), g_COGAvgSec );
     pCOGUPUpdateSecs->SetValue( s );
@@ -1647,7 +1802,8 @@ void options::SetInitialSettings()
     OnRadarringSelect( eDummy );
 
     pWayPointPreventDragging->SetValue( g_bWayPointPreventDragging );
-
+    pConfirmObjectDeletion->SetValue( g_bConfirmObjectDelete );
+    
     pEnableZoomToCursor->SetValue( g_bEnableZoomToCursor );
     if( pEnableZoomToCursor->GetValue() ) {
         pSmoothPanZoom->Disable();
@@ -1824,11 +1980,11 @@ void options::SetInitialSettings()
 
 void options::OnShowGpsWindowCheckboxClick( wxCommandEvent& event )
 {
-    if( !pShowGPSWin->GetValue() ) {
+    if( !m_cbNMEADebug->GetValue() ) {
         if( g_NMEALogWindow ) g_NMEALogWindow->Destroy();
     } else {
         g_NMEALogWindow = new TTYWindow( pParent, 35 );
-        wxString com_string( m_itemNMEAListBox->GetValue() );
+        wxString com_string = _("NMEA Debug Window");
         g_NMEALogWindow->SetTitle( com_string );
 
         //    Make sure the window is well on the screen
@@ -2005,6 +2161,58 @@ void options::UpdateWorkArrayFromTextCtl()
     }
 }
 
+ConnectionParams * options::SaveConnectionParams()
+{
+    if ( connectionsaved )
+        return NULL;
+    ConnectionParams * m_pConnectionParams = new ConnectionParams();
+
+    if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString )
+    {
+        wxMessageBox( _("You must select or enter the port..."), _("Error!") );
+        return NULL;
+    }
+    else if ( m_rbTypeNet->GetValue() && m_tNetAddress->GetValue() == wxEmptyString )
+    {
+        wxMessageBox( _("You must enter the address..."), _("Error!") );
+        return NULL;
+    }
+
+    m_pConnectionParams->Valid = true;
+    if ( m_rbTypeSerial->GetValue() )
+        m_pConnectionParams->Type = Serial;
+    else
+        m_pConnectionParams->Type = Network;
+    m_pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
+    m_pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
+    if ( m_rbNetProtoTCP->GetValue() )
+        m_pConnectionParams->NetProtocol = TCP;
+    else if ( m_rbNetProtoUDP->GetValue() )
+        m_pConnectionParams->NetProtocol = UDP;
+    else
+        m_pConnectionParams->NetProtocol = GPSD;
+
+    m_pConnectionParams->Baudrate = wxAtoi( m_choiceBaudRate->GetStringSelection() );
+    m_pConnectionParams->Priority = wxAtoi( m_choicePriority->GetStringSelection() );
+    m_pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
+    m_pConnectionParams->Garmin = m_cbGarminHost->GetValue();
+    m_pConnectionParams->FurunoGP3X = m_cbFurunoGP3X->GetValue();
+    m_pConnectionParams->InputSentenceList = wxStringTokenize( m_tcInputStc->GetValue() );
+    if ( m_rbIAccept->GetValue() )
+        m_pConnectionParams->InputSentenceListType = WHITELIST;
+    else
+        m_pConnectionParams->InputSentenceListType = BLACKLIST;
+    m_pConnectionParams->Output = m_cbOutput->GetValue();
+    m_pConnectionParams->OutputSentenceList = wxStringTokenize( m_tcOutputStc->GetValue() );
+    if ( m_rbOAccept->GetValue() )
+        m_pConnectionParams->OutputSentenceListType = WHITELIST;
+    else
+        m_pConnectionParams->OutputSentenceListType = BLACKLIST;
+    m_pConnectionParams->Port = m_comboPort->GetValue();
+    m_pConnectionParams->Protocol = PROTO_NMEA0183;
+    return m_pConnectionParams;
+}
+
 void options::OnApplyClick( wxCommandEvent& event )
 {
     ::wxBeginBusyCursor();
@@ -2104,7 +2312,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     if( m_pConfig ) m_pConfig->m_bShowDebugWindows = pSettingsCB1->GetValue();
 
-    g_bGarminHost = pGarminHost->GetValue();
+//TODO    g_bGarminHost = pGarminHost->GetValue();
 
     g_bShowOutlines = pCDOOutlines->GetValue();
     g_bDisplayGrid = pSDisplayGrid->GetValue();
@@ -2117,10 +2325,10 @@ void options::OnApplyClick( wxCommandEvent& event )
     bool temp_bopengl = pOpenGL->GetValue();
     g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 
-    g_bfilter_cogsog = pFilterNMEA->GetValue();
+    g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
 
     long filter_val = 1;
-    pFilterSecs->GetValue().ToLong( &filter_val );
+    m_tFilterSec->GetValue().ToLong( &filter_val );
     g_COGFilterSec = wxMin((int)filter_val, MAX_COGSOG_FILTER_SECONDS);
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);
     g_SOGFilterSec = g_COGFilterSec;
@@ -2138,7 +2346,8 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_fNavAidRadarRingsStep = atof( pNavAidRadarRingsStep->GetValue().mb_str() );
     g_pNavAidRadarRingsStepUnits = m_itemRadarRingsUnits->GetSelection();
     g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
-
+    g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
+    
     g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();
@@ -2180,7 +2389,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
     g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
-
+    
     //      Alert
     g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
     g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();
@@ -2195,50 +2404,48 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
 
     // NMEA Source
-    wxString sel( m_itemNMEAListBox->GetValue() );
-    wxString serialPrefix = _T("Serial");
-    serialPrefix << _T(":");
-    if( sel.Contains( _T("COM") ) ) sel.Prepend( serialPrefix );
-    else if( sel.Contains( _T("/dev") ) ) sel.Prepend( serialPrefix );
-    else if( sel.Contains( _T("AIS") ) ) sel.Prepend( serialPrefix );
-    else if( sel.Contains( _T("LIBGPS") ) ) {
-        sel.Empty();
-        sel.Append( _T("LIBGPS:") );
-        sel.Append( m_itemNMEA_TCPIP_Source->GetLineText( 0 ) );
-    } else if( sel.Contains( _T("GPSD") ) ) {
-        sel.Empty();
-        sel.Append( _T("GPSD:") );
-        sel.Append( m_itemNMEA_TCPIP_Source->GetLineText( 0 ) );
+    long itemIndex = m_lcSources->GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+
+    if(!connectionsaved)
+    {
+        ConnectionParams * cp = SaveConnectionParams();
+        if(cp != NULL)
+        {
+            if (itemIndex >= 0)
+            {
+                g_pConnectionParams->RemoveAt(itemIndex);
+                g_pConnectionParams->Insert(cp, itemIndex);
+            }
+            else
+            {
+                g_pConnectionParams->Add(cp);
+                itemIndex = g_pConnectionParams->Count() - 1;
+            }
+            FillSourceList();
+            m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+            m_lcSources->Refresh();
+            connectionsaved = true;
+        }
     }
-    *pNMEADataSource = sel;
 
-    //    If the selection is anything other than "GARMIN",
-    //    then disable semipermanently the option to select GARMIN in future.
-    //    Note if GARMIN device is found in the future, the option will be
-    //    re-enabled.
-    if( !sel.Contains( _T("GARMIN") ) ) g_bGarminPersistance = false;
-
-    //    Primary NMEA Baud Rate
-    g_NMEABaudRate = m_itemNMEABaudListBox->GetValue();
-
-    // AP Output
-    wxString selp( m_itemNMEAAutoListBox->GetStringSelection() );
-
-    if( selp.Contains( _T("COM") ) ) selp.Prepend( serialPrefix );
-    else
-        if( selp.Contains( _T("/dev") ) ) selp.Prepend( serialPrefix );
-
-    *pNMEA_AP_Port = selp;
-
-    // AIS Input
-    wxString selais( m_itemAISListBox->GetValue() );
-    if( selais.Contains( _T("COM") ) ) selais.Prepend( serialPrefix );
-    else
-        if( selais.Contains( _T("/dev") ) ) selais.Prepend( serialPrefix );
+    //Recreate all the datasource connections
+    g_pMUX->ClearStreams();
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        dsPortType port_type;
+        if (cp->Output)
+            port_type = DS_TYPE_INPUT_OUTPUT;
         else
-            if( selais.Contains( _T("fifo") ) ) selais.Prepend( serialPrefix );
-    *pAIS_Port = selais;
-
+            port_type = DS_TYPE_INPUT;
+        DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type, cp->Priority );
+        dstr->SetInputFilter(cp->InputSentenceList);
+        dstr->SetInputFilterType(cp->InputSentenceListType);
+        dstr->SetOutputFilter(cp->OutputSentenceList);
+        dstr->SetOutputFilterType(cp->OutputSentenceListType);
+        dstr->SetChecksumCheck(cp->ChecksumCheck);
+        g_pMUX->AddStream(dstr);
+    }
 #ifdef USE_S57
     //    Handle Vector Charts Tab
 
@@ -2497,6 +2704,27 @@ void options::OnChooseFont( wxCommandEvent& event )
     event.Skip();
 }
 
+void options::OnChartsPageChange( wxListbookEvent& event )
+{
+    unsigned int i = event.GetSelection();
+
+    //    User selected Chart Groups Page?
+    //    If so, build the remaining UI elements
+    if( 2 == i ) {                       // 2 is the index of "Chart Groups" page
+        if(!groupsPanel->m_UIcomplete)
+            groupsPanel->CompletePanel();
+
+        if(!groupsPanel->m_settingscomplete) {
+            ::wxBeginBusyCursor();
+            groupsPanel->CompleteInitialSettings();
+            ::wxEndBusyCursor();
+        }
+    }
+
+    event.Skip();               // Allow continued event processing
+}
+
+
 void options::OnPageChange( wxListbookEvent& event )
 {
     unsigned int i = event.GetSelection();
@@ -2622,8 +2850,9 @@ void options::OnPageChange( wxListbookEvent& event )
     }
 }
 
-void options::OnNMEASourceChoice( wxCommandEvent& event )
-{
+//void options::OnNMEASourceChoice( wxCommandEvent& event )
+//{
+/*TODO
     int i = event.GetSelection();
     wxString src( m_itemNMEAListBox->GetString( i ) );
     if( ( src.Upper().Find( _T("GPSD") ) != wxNOT_FOUND )
@@ -2649,7 +2878,8 @@ void options::OnNMEASourceChoice( wxCommandEvent& event )
         m_itemNMEA_TCPIP_StaticBox->Disable();
         m_itemNMEA_TCPIP_Source->Disable();
     }
-}
+*/
+//}
 
 void options::OnButtonSelectSound( wxCommandEvent& event )
 {
@@ -2837,6 +3067,7 @@ ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
     m_pGroupArray= NULL;
     m_GroupNB = NULL;
     modified = false;
+    m_UIcomplete = false;
 }
 
 ChartGroupsUI::~ChartGroupsUI()
@@ -2846,6 +3077,11 @@ ChartGroupsUI::~ChartGroupsUI()
 
 void ChartGroupsUI::SetInitialSettings()
 {
+    m_settingscomplete = false;
+}
+
+void ChartGroupsUI::CompleteInitialSettings()
+{
     //    Fill in the "Active chart" tree control
     //    from the options dialog "Active Chart Directories" list
     wxArrayString dir_array;
@@ -2854,8 +3090,11 @@ void ChartGroupsUI::SetInitialSettings()
         wxString dirname = m_db_dirs.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) dir_array.Add( dirname );
     }
+
+
     PopulateTreeCtrl( allAvailableCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) );
     m_pActiveChartsTree = allAvailableCtl->GetTreeCtrl();
+
 
     //    Fill in the Page 0 tree control
     //    from the options dialog "Active Chart Directories" list
@@ -2866,10 +3105,17 @@ void ChartGroupsUI::SetInitialSettings()
         if( !dirname.IsEmpty() ) dir_array0.Add( dirname );
     }
     PopulateTreeCtrl( defaultAllCtl->GetTreeCtrl(), dir_array0, wxColour( 128, 128, 128 ),
-            iFont );
+                      iFont );
 
     BuildNotebookPages( m_pGroupArray );
+
+    groupsSizer->Layout();
+
+    m_settingscomplete = true;
+
 }
+
+
 
 void ChartGroupsUI::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array,
         const wxColour &col, wxFont *pFont )
@@ -3214,3 +3460,597 @@ void options::OnRemoveTideDataLocation( wxCommandEvent &event )
     }
 }
 
+void options::OnValChange( wxCommandEvent& event )
+{
+    event.Skip();
+}
+
+void options::OnConnValChange( wxCommandEvent& event )
+{
+    connectionsaved = false;
+    event.Skip();
+}
+
+void options::OnTypeSerialSelected( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+    SetNMEAFormToSerial();
+}
+
+void options::OnTypeNetSelected( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+    SetNMEAFormToNet();
+}
+
+void options::OnUploadFormatChange( wxCommandEvent& event )
+{
+    if ( event.GetEventObject() == m_cbGarminHost && event.IsChecked() )
+        m_cbFurunoGP3X->SetValue(false);
+    else if ( event.GetEventObject() == m_cbFurunoGP3X && event.IsChecked() )
+        m_cbGarminHost->SetValue(false);
+    event.Skip();
+}
+
+void options::ShowNMEACommon(bool visible)
+{
+    if ( visible )
+    {
+        m_rbTypeSerial->Show();
+        m_rbTypeNet->Show();
+        m_rbIAccept->Show();
+        m_rbIIgnore->Show();
+        m_rbOAccept->Show();
+        m_rbOIgnore->Show();
+        m_tcInputStc->Show();
+        m_btnInputStcList->Show();
+        m_tcOutputStc->Show();
+        m_btnOutputStcList->Show();
+        m_cbOutput->Show();
+        m_choicePriority->Show();
+        m_stPriority->Show();
+        m_cbCheckCRC->Show();
+        m_cbFurunoGP3X->Show();
+    }
+    else
+    {
+        m_rbTypeSerial->Hide();
+        m_rbTypeNet->Hide();
+        m_rbIAccept->Hide();
+        m_rbIIgnore->Hide();
+        m_rbOAccept->Hide();
+        m_rbOIgnore->Hide();
+        m_tcInputStc->Hide();
+        m_btnInputStcList->Hide();
+        m_tcOutputStc->Hide();
+        m_btnOutputStcList->Hide();
+        m_cbOutput->Hide();
+        m_choicePriority->Hide();
+        m_stPriority->Hide();
+        m_cbCheckCRC->Hide();
+        m_cbFurunoGP3X->Hide();
+        sbSizerOutFilter->SetDimension(0,0,0,0);
+        sbSizerInFilter->SetDimension(0,0,0,0);
+        sbSizerConnectionProps->SetDimension(0,0,0,0);
+    }
+}
+
+void options::ShowNMEANet(bool visible)
+{
+    if ( visible )
+    {
+        m_stNetAddr->Show();
+        m_tNetAddress->Show();
+        m_stNetPort->Show();
+        m_tNetPort->Show();
+        m_stNetProto->Show();
+        m_rbNetProtoGPSD->Show();
+        m_rbNetProtoTCP->Show();
+        m_rbNetProtoUDP->Show();
+    }
+    else
+    {
+        m_stNetAddr->Hide();
+        m_tNetAddress->Hide();
+        m_stNetPort->Hide();
+        m_tNetPort->Hide();
+        m_stNetProto->Hide();
+        m_rbNetProtoGPSD->Hide();
+        m_rbNetProtoTCP->Hide();
+        m_rbNetProtoUDP->Hide();
+    }
+}
+
+void options::ShowNMEASerial(bool visible)
+{
+    if ( visible )
+    {
+        m_stSerBaudrate->Show();
+        m_choiceBaudRate->Show();
+        m_stSerPort->Show();
+        m_comboPort->Show();
+        m_stSerProtocol->Show();
+        m_choiceSerialProtocol->Show();
+        m_cbGarminHost->Show();
+        gSizerNetProps->SetDimension(0,0,0,0);
+    }
+    else
+    {
+        m_stSerBaudrate->Hide();
+        m_choiceBaudRate->Hide();
+        m_stSerPort->Hide();
+        m_comboPort->Hide();
+        m_stSerProtocol->Hide();
+        m_choiceSerialProtocol->Hide();
+        m_cbGarminHost->Hide();
+        gSizerSerProps->SetDimension(0,0,0,0);
+    }
+}
+
+void options::SetNMEAFormToSerial()
+{
+    ShowNMEACommon( true );
+    ShowNMEANet( false );
+    ShowNMEASerial( true );
+    m_pNMEAForm->Layout();
+    Fit();
+    Layout();
+    SetDSFormRWStates();
+}
+
+void options::SetNMEAFormToNet()
+{
+    ShowNMEACommon( true );
+    ShowNMEANet( true );
+    ShowNMEASerial( false );
+    m_pNMEAForm->Layout();
+    Fit();
+    Layout();
+    SetDSFormRWStates();
+}
+
+wxString StringArrayToString(wxArrayString arr)
+{
+    wxString ret = wxEmptyString;
+    for (size_t i = 0; i < arr.Count(); i++)
+    {
+        if (i > 0)
+            ret.Append(_T(","));
+        ret.Append(arr[i]);
+    }
+    return ret;
+}
+
+void options::SetDSFormRWStates()
+{
+    if (m_rbNetProtoGPSD->GetValue() && !m_rbTypeSerial->GetValue())
+    {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("2947"));
+        m_cbOutput->SetValue(false);
+        m_cbOutput->Enable(false);
+        m_rbOAccept->Enable(false);
+        m_rbOIgnore->Enable(false);
+        m_btnOutputStcList->Enable(false);
+    }
+    else
+    {
+        m_cbOutput->Enable(true);
+        m_rbOAccept->Enable(true);
+        m_rbOIgnore->Enable(true);
+        m_btnOutputStcList->Enable(true);
+    }
+}
+
+void options::SetConnectionParams(ConnectionParams *cp)
+{
+    m_comboPort->Select(m_comboPort->FindString(cp->Port));
+    m_comboPort->SetValue(cp->Port);
+    m_cbCheckCRC->SetValue(cp->ChecksumCheck);
+    m_cbGarminHost->SetValue(cp->Garmin);
+    m_cbFurunoGP3X->SetValue(cp->FurunoGP3X);
+    m_cbOutput->SetValue(cp->Output);
+    if(cp->InputSentenceListType == WHITELIST)
+        m_rbIAccept->SetValue(true);
+    else
+        m_rbIIgnore->SetValue(true);
+    if(cp->OutputSentenceListType == WHITELIST)
+        m_rbOAccept->SetValue(true);
+    else
+        m_rbOIgnore->SetValue(true);
+    m_tcInputStc->SetValue(StringArrayToString(cp->InputSentenceList));
+    m_tcOutputStc->SetValue(StringArrayToString(cp->OutputSentenceList));
+    m_choiceBaudRate->Select(m_choiceBaudRate->FindString(wxString::Format(_T("%d"),cp->Baudrate)));
+    m_choiceSerialProtocol->Select(cp->Protocol); //TODO
+    m_choicePriority->Select(m_choicePriority->FindString(wxString::Format(_T("%d"),cp->Priority)));
+
+    m_tNetAddress->SetValue(cp->NetworkAddress);
+    m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+    if(cp->NetProtocol == TCP)
+        m_rbNetProtoTCP->SetValue(true);
+    else if (cp->NetProtocol == UDP)
+        m_rbNetProtoUDP->SetValue(true);
+    else {
+        m_rbNetProtoGPSD->SetValue(true);
+        if( cp->NetworkPort == 0)
+            m_tNetPort->SetValue(_T(""));
+    }
+
+    if ( cp->Type == Serial )
+    {
+        m_rbTypeSerial->SetValue( true );
+        SetNMEAFormToSerial();
+    }
+    else
+    {
+        m_rbTypeNet->SetValue( true );
+        SetNMEAFormToNet();
+    }
+}
+
+void options::OnAddDatasourceClick( wxCommandEvent& event )
+{
+    connectionsaved = false;
+    ConnectionParams *cp = new ConnectionParams();
+    SetConnectionParams( cp );
+    SetNMEAFormToSerial();
+//    params_saved = false;
+
+    long itemIndex = -1;
+    for ( ;; )
+    {
+        itemIndex = m_lcSources->GetNextItem( itemIndex, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+        if ( itemIndex == -1 )
+            break;
+        m_lcSources->SetItemState( itemIndex, 0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
+    }
+    m_buttonRemove->Enable( false );
+}
+
+void options::FillSourceList()
+{
+    m_buttonRemove->Enable(false);
+    m_lcSources->DeleteAllItems();
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
+    {
+        long itemIndex = m_lcSources->InsertItem(i, g_pConnectionParams->Item(i)->GetSourceTypeStr());
+        m_lcSources->SetItem(itemIndex, 1, g_pConnectionParams->Item(i)->GetAddressStr());
+        m_lcSources->SetItem(itemIndex, 2, g_pConnectionParams->Item(i)->GetParametersStr());
+        m_lcSources->SetItem(itemIndex, 3, g_pConnectionParams->Item(i)->GetOutputValueStr());
+        m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetFiltersStr());
+    }
+
+    m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE );
+}
+
+void options::OnRemoveDatasourceClick( wxCommandEvent& event )
+{
+    long itemIndex = -1;
+    for ( ;; )
+    {
+        itemIndex = m_lcSources->GetNextItem( itemIndex, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+        if ( itemIndex == -1 )
+            break;
+        g_pConnectionParams->RemoveAt( itemIndex );
+    }
+    FillSourceList();
+    ShowNMEACommon( false );
+    ShowNMEANet( false );
+    ShowNMEASerial( false );
+}
+
+void options::OnSelectDatasource( wxListEvent& event )
+{
+    connectionsaved = false;
+    SetConnectionParams(g_pConnectionParams->Item(event.GetIndex()));
+    m_buttonRemove->Enable();
+    event.Skip();
+}
+
+void options::OnBtnIStcs( wxCommandEvent& event )
+{
+    m_stcdialog_in->SetSentenceList(wxStringTokenize(m_tcInputStc->GetValue(), _T(",")));
+    m_stcdialog_in->SetType(0, (m_rbIAccept->GetValue() == true) ? WHITELIST:BLACKLIST);
+
+    if (m_stcdialog_in->ShowModal() == wxID_OK)
+        m_tcInputStc->SetValue(m_stcdialog_in->GetSentencesAsText());
+}
+
+void options::OnBtnOStcs( wxCommandEvent& event )
+{
+    m_stcdialog_out->SetSentenceList(wxStringTokenize(m_tcOutputStc->GetValue(), _T(",")));
+    m_stcdialog_out->SetType(1, (m_rbOAccept->GetValue() == true) ? WHITELIST:BLACKLIST);
+
+    if (m_stcdialog_out->ShowModal() == wxID_OK)
+        m_tcOutputStc->SetValue(m_stcdialog_out->GetSentencesAsText());
+}
+
+void options::OnNetProtocolSelected( wxCommandEvent& event )
+{
+    if (m_rbNetProtoGPSD->GetValue())
+    {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("2947"));
+    }
+    SetDSFormRWStates();
+    OnConnValChange(event);
+}
+
+void options::OnRbAcceptInput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+}
+void options::OnRbIgnoreInput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+}
+
+void options::OnRbOutput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+}
+
+//SentenceListDlg
+
+SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+    m_dir = dir;
+    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+    wxBoxSizer* bSizer16;
+    bSizer16 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer* bSizer17;
+    bSizer17 = new wxBoxSizer( wxHORIZONTAL );
+
+    NMEA0183 nmea;
+    standard_sentences = nmea.GetRecognizedArray();
+    if(m_dir == FILTER_OUTPUT) {
+        standard_sentences.Add(_T("ECRMB"));
+        standard_sentences.Add(_T("ECRMC"));
+    }
+
+    m_pclbBox = new wxStaticBox( this,  wxID_ANY, _("")) ;
+
+    wxStaticBoxSizer* sbSizerclb;
+    sbSizerclb = new wxStaticBoxSizer( m_pclbBox , wxVERTICAL );
+    bSizer17->Add( sbSizerclb, 1, wxALL|wxEXPAND, 5 );
+
+    m_clbSentences = new wxCheckListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, standard_sentences );
+
+
+    sbSizerclb->Add( m_clbSentences, 1, wxALL|wxEXPAND, 5 );
+
+    wxBoxSizer* bSizer18;
+    bSizer18 = new wxBoxSizer( wxVERTICAL );
+
+    m_btnCheckAll = new wxButton( this, wxID_ANY, _("Select All"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_btnCheckAll, 0, wxALL, 5 );
+
+    m_btnClearAll = new wxButton( this, wxID_ANY, _("Clear All"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_btnClearAll, 0, wxALL, 5 );
+
+    bSizer18->AddSpacer(1);
+
+    m_btnAdd = new wxButton( this, wxID_ANY, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_btnAdd, 0, wxALL, 5 );
+
+    m_btnDel = new wxButton( this, wxID_ANY, _("Delete"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_btnDel->Enable( false );
+
+    bSizer18->Add( m_btnDel, 0, wxALL, 5 );
+
+
+    bSizer17->Add( bSizer18, 0, wxALL|wxEXPAND, 5 );
+
+
+    bSizer16->Add( bSizer17, 1, wxEXPAND, 5 );
+
+    m_sdbSizer4 = new wxStdDialogButtonSizer();
+    m_sdbSizer4OK = new wxButton( this, wxID_OK );
+    m_sdbSizer4->AddButton( m_sdbSizer4OK );
+    m_sdbSizer4Cancel = new wxButton( this, wxID_CANCEL );
+    m_sdbSizer4->AddButton( m_sdbSizer4Cancel );
+    m_sdbSizer4->Realize();
+
+    bSizer16->Add( m_sdbSizer4, 0, wxALL|wxEXPAND, 5 );
+
+
+    this->SetSizer( bSizer16 );
+    this->Layout();
+
+    this->Centre( wxBOTH );
+
+    // Connect Events
+    m_btnAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
+    m_btnDel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteClick ), NULL, this );
+    m_sdbSizer4Cancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCancelClick ), NULL, this );
+    m_sdbSizer4OK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnOkClick ), NULL, this );
+    m_clbSentences->Connect( wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, wxCommandEventHandler( SentenceListDlg::OnCLBToggle ), NULL, this );
+    m_clbSentences->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnCLBSelect ), NULL, this );
+    m_btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
+    m_btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
+
+}
+
+SentenceListDlg::~SentenceListDlg()
+{
+    // Disconnect Events
+    m_btnAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
+    m_btnDel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteClick ), NULL, this );
+    m_sdbSizer4Cancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCancelClick ), NULL, this );
+    m_sdbSizer4OK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnOkClick ), NULL, this );
+    m_clbSentences->Disconnect( wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, wxCommandEventHandler( SentenceListDlg::OnCLBToggle ), NULL, this );
+    m_clbSentences->Disconnect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnCLBSelect ), NULL, this );
+    m_btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
+    m_btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
+}
+
+void SentenceListDlg::SetSentenceList(wxArrayString sentences)
+{
+    m_sentences = sentences;
+
+    if( (m_sentences.Count() == 0) && (m_type == WHITELIST) ){
+        for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+            m_clbSentences->Check(i, true);
+    }
+    if( (m_sentences.Count() == 0) && (m_type == BLACKLIST) ){
+        for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+            m_clbSentences->Check(i, false);
+    }
+
+    FillSentences();
+}
+
+wxString SentenceListDlg::GetSentencesAsText()
+{
+    return StringArrayToString(m_sentences);
+}
+
+void SentenceListDlg::BuildSentenceArray()
+{
+    m_sentences.Clear();
+    wxString s;
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++) {
+        if( m_clbSentences->IsChecked(i))
+            m_sentences.Add( m_clbSentences->GetString(i) );
+    }
+}
+
+void SentenceListDlg::FillSentences()
+{
+    if(m_sentences.Count() == 0)
+        return;
+
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+        m_clbSentences->Check(i, false);
+
+    for (size_t i = 0; i < m_sentences.Count(); i++) {
+        int item = m_clbSentences->FindString(m_sentences[i]);
+        if( wxNOT_FOUND != item )
+            m_clbSentences->Check(item);
+        else {
+            m_clbSentences->Append(m_sentences[i]);
+            int item = m_clbSentences->FindString(m_sentences[i]);
+            m_clbSentences->Check(item);
+        }
+
+    }
+
+    m_btnDel->Enable(false);
+}
+
+void SentenceListDlg::OnStcSelect( wxCommandEvent& event )
+{
+    m_btnDel->Enable();
+}
+
+void SentenceListDlg::OnCLBSelect( wxCommandEvent& event )
+{
+    // Only active the "Delete" button if the selection is not in the standard list
+    int isel = m_clbSentences->GetSelection();
+    bool bdelete = true;
+    if(isel >= 0) {
+        wxString s = m_clbSentences->GetString(isel);
+        for (size_t i = 0; i < standard_sentences.Count(); i++) {
+            if(standard_sentences[i] == s){
+                bdelete = false;
+                break;
+            }
+        }
+    }
+    else
+        bdelete = false;
+    m_btnDel->Enable( bdelete );
+
+}
+
+void SentenceListDlg::OnCLBToggle( wxCommandEvent& event )
+{
+    BuildSentenceArray();
+}
+
+void SentenceListDlg::OnAddClick( wxCommandEvent& event )
+{
+    wxString stc = wxGetTextFromUser(_("Enter the NMEA sentence (2, 3 or 5 characters)"), _("Enter the NMEA sentence"));
+    if (stc.Length() == 2 ||stc.Length() == 3 || stc.Length() == 5)
+    {
+        m_sentences.Add(stc);
+        m_clbSentences->Append(stc);
+        int item = m_clbSentences->FindString(stc);
+        m_clbSentences->Check(item);
+    }
+    else
+        wxMessageBox(_("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can also have a two letter prefix identifying the source, or TALKER, of the message (The whole sentences then looks like GPGGA or AITXT). You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.). The filter accepts just these three formats."), _("Wrong length of the NMEA filter value"));
+}
+
+void SentenceListDlg::OnDeleteClick( wxCommandEvent& event )
+{
+    BuildSentenceArray();
+
+    // One can only delete items that do not appear in the standard sentence list
+    int isel = m_clbSentences->GetSelection();
+    wxString s = m_clbSentences->GetString(isel);
+    bool bdelete = true;
+    for (size_t i = 0; i < standard_sentences.Count(); i++) {
+        if(standard_sentences[i] == s){
+            bdelete = false;
+            break;
+        }
+    }
+
+    if(bdelete) {
+        m_sentences.Remove( s );
+        m_clbSentences->Delete(isel);
+    }
+
+    FillSentences();
+}
+
+void SentenceListDlg::OnClearAllClick( wxCommandEvent& event )
+{
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+        m_clbSentences->Check(i, false);
+
+    BuildSentenceArray();
+}
+
+void SentenceListDlg::OnCheckAllClick( wxCommandEvent& event )
+{
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+        m_clbSentences->Check(i, true);
+
+    BuildSentenceArray();
+}
+
+void SentenceListDlg::SetType(int io, ListType type)
+{
+    m_type = type;
+
+    switch (io)
+    {
+        case 0:                 // input
+        default:
+            if(type == WHITELIST)
+                m_pclbBox->SetLabel(_("Accept Sentences"));
+            else
+                m_pclbBox->SetLabel(_("Ignore Sentences"));
+            break;
+        case 1:                 // output
+            if(type == WHITELIST)
+                m_pclbBox->SetLabel(_("Transmit Sentences"));
+            else
+                m_pclbBox->SetLabel(_("Drop Sentences"));
+            break;
+    }
+    Refresh();
+}
+
+
+
+void SentenceListDlg::OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
+void SentenceListDlg::OnOkClick( wxCommandEvent& event ) { event.Skip(); }

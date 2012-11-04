@@ -64,6 +64,7 @@
 #include "ocpndc.h"
 #include "undo.h"
 #include "toolbar.h"
+#include "multiplexer.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -130,7 +131,7 @@ extern MarkInfoImpl     *pMarkPropDialog;
 extern RouteProp        *pRoutePropDialog;
 extern MarkInfoImpl     *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
-extern NMEAHandler      *g_pnmea;
+extern bool             g_bConfirmObjectDelete;
 
 extern IDX_entry        *gpIDX;
 extern int               gpIDXn;
@@ -266,6 +267,7 @@ extern int              g_current_arrow_scale;
 
 extern S57QueryDialog   *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager* g_StyleManager;
+extern Multiplexer      *g_pMUX;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -1281,16 +1283,19 @@ int Quilt::GetNewRefChart( void )
 {
     //    Using the current quilt, select a useable reference chart
     //    Said chart will be in the extended (possibly full-screen) stack,
-    //    And will have a scale equal to or just greater than the current quilt reference scale
+    //    And will have a scale equal to or just greater than the current quilt reference scale,
+    //    And will match current quilt projection type, and
+    //    will have Skew=0, so as to be fully quiltable
     int new_ref_dbIndex = m_refchart_dbIndex;
     unsigned int im = m_extended_stack_array.GetCount();
     if( im > 0 ) {
         for( unsigned int is = 0; is < im; is++ ) {
-            const ChartTableEntry &m = ChartData->GetChartTableEntry(
-                                           m_extended_stack_array.Item( is ) );
+            const ChartTableEntry &m = ChartData->GetChartTableEntry( m_extended_stack_array.Item( is ) );
 //                  if((m.GetScale() >= m_reference_scale) && (m_reference_type == m.GetChartType()))
             if( ( m.GetScale() >= m_reference_scale )
-                    && ( m_reference_family == m.GetChartFamily() ) ) {
+                    && ( m_reference_family == m.GetChartFamily() ) 
+                    && ( m_quilt_proj == m.GetChartProjectionType() )
+                    && ( m.GetChartSkew() == 0.0 ) ) {
                 new_ref_dbIndex = m_extended_stack_array.Item( is );
                 break;
             }
@@ -1777,9 +1782,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    It is possible that the reference chart is not really part of the visible quilt
     //    This can happen when the reference chart is panned
     //    off-screen in full screen quilt mode
-    //    We detect this case, and set a (-1) default value for m_refchart_dbIndex.
-    //    This will cause the quilt parameters such as scale, type, and projection
-    //    to retain their current settings until the reference chart is later directly set.
+    //    If this situation occurs, we need to immediately select a new reference chart
+    //    And rebuild the Candidate Array
     //
     //    A special case occurs with cm93 composite chart set as the reference chart:
     //    It is not at this point a candidate, so won't be found by the search
@@ -1794,9 +1798,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
     }
 
-    if( !bf && m_pcandidate_array->GetCount() )
-        m_refchart_dbIndex = -1;  ///maybe???
-
+    if( !bf && m_pcandidate_array->GetCount() ) {
+        m_refchart_dbIndex = GetNewRefChart();
+        BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+    }
+        
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
     //    Add only those charts whose scale is smaller than the "reference scale"
@@ -3205,7 +3211,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     VPoint.Invalidate();
 
     m_glcc = new glChartCanvas(this);
-
+    m_pGLcontext = new wxGLContext(m_glcc);
+    m_glcc->SetContext(m_pGLcontext);
+    
     singleClickEventIsValid = false;
 
 //    Build the cursors
@@ -6003,9 +6011,11 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         }
 
         //    Of course, if the target reported a valid HDG, then use it for icon
-        if( (int) ( td->HDG ) != 511 ) theta = ( ( td->HDG - 90 ) * PI / 180. ) + GetVP().rotation;
-
-        if( !g_bskew_comp && !g_bCourseUp ) theta += GetVP().skew;
+        if( (int) ( td->HDG ) != 511 ) {
+            theta = ( ( td->HDG - 90 ) * PI / 180. ) + GetVP().rotation;
+            if( !g_bskew_comp && !g_bCourseUp )
+                theta += GetVP().skew;
+        }
 
         wxDash dash_long[2];
         dash_long[0] = (int) ( 1.0 * m_pix_per_mm );  // Long dash  <---------+
@@ -6095,9 +6105,14 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         // Default color is green
         wxBrush target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
-
+        
+        // Euro Inland targets render slightly differently
+        if( td->b_isEuroInland )
+            target_brush = wxBrush( GetGlobalColor( _T ( "TEAL1" ) ) );
+        
         //and....
-        if( !td->b_nameValid ) target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
+        if( !td->b_nameValid )
+            target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
         if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )					// distress
             target_brush = wxBrush( GetGlobalColor( _T ( "URED" ) ) );
 
@@ -6107,7 +6122,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
         //    Check for alarms here, maintained by AIS class timer tick
-        if( ((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) { //TR 2012.06.28: Show AIS-CPA;  show CPA when b_show_AIS_CPA is true
+        if( ((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) { 
             //  Calculate the point of CPA for target
             double tcpa_lat, tcpa_lon;
             ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat,
@@ -6767,6 +6782,8 @@ void ChartCanvas::UpdateAlerts()
 
 void ChartCanvas::UpdateAIS()
 {
+    if(!g_pAIS) return;
+
     //  Get the rectangle in the current dc which bounds the detected AIS targets
 
     //  Use this dc
@@ -9057,10 +9074,14 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     }
 
     case ID_RT_MENU_DELETE: {
-        OCPNMessageDialog track_delete_confirm_dlg( this,
+        int dlg_return = wxID_YES;
+        if( g_bConfirmObjectDelete ) {
+            OCPNMessageDialog track_delete_confirm_dlg( this,
                 _("Are you sure you want to delete this route?"),
                 _("OpenCPN Route Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-        int dlg_return = track_delete_confirm_dlg.ShowModal();
+        
+            dlg_return = track_delete_confirm_dlg.ShowModal();
+        }
 
         if( dlg_return == wxID_YES ) {
             if( g_pRouteMan->GetpActiveRoute() == m_pSelectedRoute ) g_pRouteMan->DeactivateRoute();
@@ -9175,9 +9196,9 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_WPT_MENU_SENDTOGPS:
         if( m_pFoundRoutePoint ) {
             wxString port, com;
-            if( g_pnmea ) {
-                g_pnmea->GetSource( port );
-                if( port.StartsWith( _T("Serial:"), &com ) ) port = com;
+            if( g_pMUX ) {
+//                g_pnmea->GetSource( port );
+//                if( port.StartsWith( _T("Serial:"), &com ) ) port = com;
                 m_pFoundRoutePoint->SendToGPS( port, NULL );
             }
         }
@@ -9252,10 +9273,13 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     }
 
     case ID_TK_MENU_DELETE: {
-        OCPNMessageDialog track_delete_confirm_dlg( this,
+        int dlg_return = wxID_YES;
+        if( g_bConfirmObjectDelete ) {
+            OCPNMessageDialog track_delete_confirm_dlg( this,
                 _("Are you sure you want to delete this track?"),
                 _("OpenCPN Track Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-        int dlg_return = track_delete_confirm_dlg.ShowModal();
+            dlg_return = track_delete_confirm_dlg.ShowModal();
+        }
 
         if( dlg_return == wxID_YES ) {
 
@@ -11599,7 +11623,6 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
                     1 ), m_data( NULL ), m_datasize( 0 ), m_bsetup( false )
 {
     m_ntex = 0;
-
 }
 
 glChartCanvas::~glChartCanvas()
@@ -11741,8 +11764,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 {
     wxPaintDC dc( this );
 
-    if( !GetContext() ) return;
-    SetCurrent();
+    SetCurrent(*m_pcontext);
 
     Show( g_bopengl );
     if( !g_bopengl ) {
@@ -11751,7 +11773,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     }
 
     if( !m_bsetup ) {
-        SetCurrent();
+        SetCurrent(*m_pcontext);
 
         char render_string[80];
         strncpy( render_string, (char *) glGetString( GL_RENDERER ), 79 );
@@ -12505,7 +12527,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
                             if( chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
                                 wxRegion rr = get_region;
                                 rr.Offset( vp.rv_rect.x, vp.rv_rect.y );
-                                b_rendered = chart->RenderRegionViewOnGL( *GetContext(), cc1->VPoint, rr );
+                                b_rendered = chart->RenderRegionViewOnGL( *m_pcontext, cc1->VPoint, rr );
                             }
                         }
                     }
@@ -12535,7 +12557,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
                                 if( pch ) {
                                     get_region.Offset( cc1->VPoint.rv_rect.x,
                                                        cc1->VPoint.rv_rect.y );
-                                    Chs57->RenderOverlayRegionViewOnGL( *GetContext(), cc1->VPoint,
+                                    Chs57->RenderOverlayRegionViewOnGL( *m_pcontext, cc1->VPoint,
                                                                         get_region );
                                 }
                             }
@@ -12640,7 +12662,7 @@ void glChartCanvas::render()
     GetMemoryStatus( &mem_total, &mem_used );
     if(mem_used > g_memCacheLimit * 8 / 10) m_b_mem_crunch = true;
 
-    SetCurrent();
+    SetCurrent(*m_pcontext);
     wxPaintDC( this );
 
     ViewPort VPoint = cc1->VPoint;
@@ -12985,7 +13007,7 @@ void glChartCanvas::render()
             if( !dynamic_cast<ChartDummy*>( Current_Ch ) ) {
                 glClear( GL_COLOR_BUFFER_BIT );
                 wxRegion full_region( cc1->VPoint.rv_rect );
-                Current_Ch->RenderRegionViewOnGL( *GetContext(), cc1->VPoint, full_region );
+                Current_Ch->RenderRegionViewOnGL( *m_pcontext, cc1->VPoint, full_region );
             }
         }
     }
@@ -13116,7 +13138,7 @@ void glChartCanvas::render()
 
 void glChartCanvas::DrawGLOverLayObjects( void )
 {
-    if( g_pi_manager ) g_pi_manager->RenderAllGLCanvasOverlayPlugIns( GetContext(), cc1->GetVP() );
+    if( g_pi_manager ) g_pi_manager->RenderAllGLCanvasOverlayPlugIns( m_pcontext, cc1->GetVP() );
 }
 
 void glChartCanvas::GrowData( int size )

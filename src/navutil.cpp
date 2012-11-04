@@ -54,7 +54,6 @@
 #include "navutil.h"
 #include "chcanv.h"
 #include "georef.h"
-#include "nmea.h"
 #include "ais.h"
 #include "cutil.h"
 #include "styles.h"
@@ -66,6 +65,8 @@
 #include "gpxdocument.h"
 #include "ocpndc.h"
 #include "geodesic.h"
+#include "datastream.h"
+#include "multiplexer.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -76,7 +77,6 @@
 
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
-extern NMEAHandler      *g_pnmea;
 extern FontMgr          *pFontMgr;
 
 extern double           g_ChartNotRenderScaleFactor;
@@ -97,22 +97,19 @@ extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
 
 extern wxToolBarBase    *toolBar;
-extern wxString         *pNMEADataSource;
-extern wxString         g_NMEABaudRate;
 
-extern wxString         *pNMEA_AP_Port;
+extern wxArrayOfConnPrm *g_pConnectionParams;
+
 extern wxString         g_csv_locn;
 extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
-extern AutoPilotWindow  *pAPilot;
-extern wxString         *pAIS_Port;
 extern AIS_Decoder      *g_pAIS;
 extern wxString         g_SData_Locn;
 extern wxString         *pInit_Chart_Dir;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
-extern ComPortManager   *g_pCommMan;
+//extern ComPortManager   *g_pCommMan;
 extern RouteProp        *pRoutePropDialog;
 
 extern bool             s_bSetSystemTime;
@@ -130,7 +127,6 @@ extern bool             g_bopengl;
 extern bool             g_bsmoothpanzoom;
 
 extern bool             g_bShowOutlines;
-extern bool             g_bGarminPersistance;
 extern bool             g_bShowActiveRouteHighway;
 extern int              g_nNMEADebug;
 extern int              g_nAWDefault;
@@ -194,6 +190,7 @@ extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
+extern bool             g_bConfirmObjectDelete;
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
@@ -207,8 +204,6 @@ extern int              g_memCacheLimit;
 extern bool             g_bGDAL_Debug;
 extern bool             g_bDebugCM93;
 extern bool             g_bDebugS57;
-
-extern bool             g_bGarminHost;
 
 extern double           g_ownship_predictor_minutes;
 
@@ -311,6 +306,7 @@ extern wxString         g_GPS_Ident;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxArrayString    TideCurrentDataSet;
 extern wxString         g_TCData_Dir;
+extern Multiplexer      *g_pMUX;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -1259,7 +1255,7 @@ bool RoutePoint::IsSame( RoutePoint *pOtherRP )
 bool RoutePoint::SendToGPS( wxString& com_name, wxGauge *pProgress )
 {
     bool result = false;
-    if( g_pnmea ) result = g_pnmea->SendWaypointToGPS( this, com_name, pProgress );
+    if( g_pMUX ) result = g_pMUX->SendWaypointToGPS( this, com_name, pProgress );
 
     wxString msg;
     if( result ) msg = _("Waypoint(s) Uploaded successfully.");
@@ -2203,7 +2199,7 @@ void Route::RenameRoutePoints( void )
 bool Route::SendToGPS( wxString& com_name, bool bsend_waypoints, wxGauge *pProgress )
 {
     bool result = false;
-    if( g_pnmea ) result = g_pnmea->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
+    if( g_pMUX ) result = g_pMUX->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
 
     wxString msg;
     if( result ) msg = _("Route Uploaded successfully.");
@@ -2296,8 +2292,8 @@ void Track::SetPrecision( int prec ) {
             break;
         }
         case 2: { // High
-            m_allowedMaxAngle = 8;
-            m_allowedMaxXTE = 0.002;
+            m_allowedMaxAngle = 10;
+            m_allowedMaxXTE = 0.0015;
             m_TrackTimerSec = 2;
             m_minTrackpoint_delta = .001;
             break;
@@ -2423,16 +2419,6 @@ RoutePoint* Track::AddNewPoint( vector2D point, wxDateTime time ) {
     return rPoint;
 }
 
-double angleDiff( RoutePoint* p1, RoutePoint* p2, RoutePoint* p3 ) {
-    double d1, d2, b1, b2;
-    if( !p1 || !p2 || !p3 ) return 0.0;
-    DistanceBearingMercator( p1->m_lat, p1->m_lon, p2->m_lat, p2->m_lon, &b1, &d1 );
-    DistanceBearingMercator( p2->m_lat, p2->m_lon, p3->m_lat, p3->m_lon, &b2, &d2 );
-    double diff = abs( b1 - b2 );
-    if( diff > 180.0 ) diff = 360.0 - diff;
-    return diff;
-}
-
 void Track::AddPointNow( bool do_add_point )
 {
     static std::vector<RoutePoint> skippedPoints;
@@ -2469,7 +2455,7 @@ void Track::AddPointNow( bool do_add_point )
         case potentialPoint: {
             if( gpsPoint == skipPoints[skipPoints.size()-1] ) break;
 
-            int xteMaxIndex = -1;
+            unsigned int xteMaxIndex = 0;
             double xteMax = 0;
 
             // Scan points skipped so far and see if anyone has XTE over the threshold.
@@ -2490,7 +2476,7 @@ void Track::AddPointNow( bool do_add_point )
                 m_fixedTP = m_removeTP;
                 m_removeTP = m_lastStoredTP;
                 m_lastStoredTP = pTrackPoint;
-                for( int i=0; i<=xteMaxIndex; i++ ) {
+                for( unsigned int i=0; i<=xteMaxIndex; i++ ) {
                     skipPoints.pop_front();
                     skipTimes.pop_front();
                 }
@@ -2828,22 +2814,46 @@ int Track::Simplify( double maxDelta ) {
     return reduction;
 }
 
+double _distance2( vector2D& a, vector2D& b ) { return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y); }
+double _distance( vector2D& a, vector2D& b ) { return sqrt( _distance2( a, b ) ); }
+
 double Track::GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon, double toLat, double toLon  )
 {
-//      Get the XTE vector for prp, normal to segment between pWP_src and prpX
-    vector2D va, vb, vn;
+    vector2D v, w, p;
+
+    // First we get the cartesian coordinates to the line endpoints, using
+    // the current position as origo.
+
     double brg1, dist1, brg2, dist2;
     DistanceBearingMercator( toLat, toLon, fm1Lat, fm1Lon, &brg1, &dist1 );
-    vb.x = dist1 * sin( brg1 * PI / 180. );
-    vb.y = dist1 * cos( brg1 * PI / 180. );
+    w.x = dist1 * sin( brg1 * PI / 180. );
+    w.y = dist1 * cos( brg1 * PI / 180. );
 
     DistanceBearingMercator( toLat, toLon, fm2Lat, fm2Lon, &brg2, &dist2 );
-    va.x = dist2 * sin( brg2 * PI / 180. );
-    va.y = dist2 * cos( brg2 * PI / 180. );
+    v.x = dist2 * sin( brg2 * PI / 180. );
+    v.y = dist2 * cos( brg2 * PI / 180. );
 
-    double sdelta = vGetLengthOfNormal( &va, &vb, &vn );             // NM
-    sdelta = fabs( sdelta );
-    return sdelta;
+    p.x = 0.0; p.y = 0.0;
+
+    const double lengthSquared = _distance2( v, w );
+    if ( lengthSquared == 0.0 ) {
+        // v == w case
+        return _distance( p, v );
+    }
+
+    // Consider the line extending the segment, parameterized as v + t (w - v).
+    // We find projection of origo onto the line.
+    // It falls where t = [(p-v) . (w-v)] / |w-v|^2
+
+    vector2D a = p - v;
+    vector2D b = w - v;
+
+    double t = vDotProduct( &a, &b ) / lengthSquared;
+
+    if (t < 0.0) return _distance(p, v);       // Beyond the 'v' end of the segment
+    else if (t > 1.0) return _distance(p, w);  // Beyond the 'w' end of the segment
+    vector2D projection = v + t * (w - v);     // Projection falls on the segment
+    return _distance(p, projection);
 }
 
 double Track::GetXTE( RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to )
@@ -2913,6 +2923,8 @@ MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
 
     m_bIsImporting = false;
     g_bIsNewLayer = false;
+
+    g_pConnectionParams = new wxArrayOfConnPrm();
 }
 
 void MyConfig::CreateRotatingNavObjBackup()
@@ -2988,8 +3000,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UseNMEA_RMC" ), &g_bUseRMC, 1 );
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
-
-    Read( _T ( "UseGarminHost" ), &g_bGarminHost, 0 );
 
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
     Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
@@ -3069,7 +3079,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
     Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark, 0 );
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
-    Read( _T ( "GarminPersistance" ), &g_bGarminPersistance, 0 );
     Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
 
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
@@ -3107,6 +3116,14 @@ int MyConfig::LoadMyConfig( int iteration )
     if( g_navobjbackups > 99 ) g_navobjbackups = 99;
     if( g_navobjbackups < 0 ) g_navobjbackups = 0;
 
+    g_NMEALogWindow_sx = Read( _T ( "NMEALogWindowSizeX" ), 400L );
+    g_NMEALogWindow_sy = Read( _T ( "NMEALogWindowSizeY" ), 100L );
+    g_NMEALogWindow_x = Read( _T ( "NMEALogWindowPosX" ), 10L );
+    g_NMEALogWindow_y = Read( _T ( "NMEALogWindowPosY" ), 10L );
+    
+    if( ( g_NMEALogWindow_x < 0 ) || ( g_NMEALogWindow_x > display_width ) ) g_NMEALogWindow_x = 5;
+    if( ( g_NMEALogWindow_y < 0 ) || ( g_NMEALogWindow_y > display_height ) ) g_NMEALogWindow_y = 5;
+                              
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
 
@@ -3170,9 +3187,7 @@ int MyConfig::LoadMyConfig( int iteration )
     s.ToDouble( &g_ShowMoored_Kts );
 
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
-
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
-
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
 
     Read( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );
@@ -3209,14 +3224,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
     Read( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
     Read( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
-
-    g_NMEALogWindow_sx = Read( _T ( "NMEALogWindowSizeX" ), 400L );
-    g_NMEALogWindow_sy = Read( _T ( "NMEALogWindowSizeY" ), 100L );
-    g_NMEALogWindow_x = Read( _T ( "NMEALogWindowPosX" ), 10L );
-    g_NMEALogWindow_y = Read( _T ( "NMEALogWindowPosY" ), 10L );
-
-    if( ( g_NMEALogWindow_x < 0 ) || ( g_NMEALogWindow_x > display_width ) ) g_NMEALogWindow_x = 5;
-    if( ( g_NMEALogWindow_y < 0 ) || ( g_NMEALogWindow_y > display_height ) ) g_NMEALogWindow_y = 5;
 
     g_S57_dialog_sx = Read( _T ( "S57QueryDialogSizeX" ), 400L );
     g_S57_dialog_sy = Read( _T ( "S57QueryDialogSizeY" ), 400L );
@@ -3335,15 +3342,143 @@ int MyConfig::LoadMyConfig( int iteration )
     global_color_scheme = (ColorScheme) read_int;
 
     SetPath( _T ( "/Settings/NMEADataSource" ) );
-    Read( _T ( "Source" ), pNMEADataSource, _T ( "NONE" ) );
-    Read( _T ( "BaudRate" ), &g_NMEABaudRate, _T ( "4800" ) );
+    
+    wxString connectionconfigs;
+    Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
+    wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+    g_pConnectionParams->Clear();
+    for (size_t i = 0; i < confs.Count(); i++)
+    {
+        ConnectionParams * prm = new ConnectionParams(confs[i]);
+        g_pConnectionParams->Add(prm);
+    }
 
-    SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
-    Read( _T ( "Port" ), pNMEA_AP_Port, _T ( "NONE" ) );
-
+    //  Automatically handle the upgrade to DataSources architecture...
+    //  Is there an existing NMEADataSource definition?
+    SetPath( _T ( "/Settings/NMEADataSource" ) );
+    wxString xSource;
+    wxString xRate;
+    Read ( _T ( "Source" ), &xSource );
+    Read ( _T ( "BaudRate" ), &xRate );
+    if(xSource.Len()) {
+        wxString port;
+        if(xSource.Mid(0, 6) == _T("Serial"))
+            port = xSource.Mid(7);
+        else
+            port = _T("");
+        
+        if(port.Len() && port != _T("None") ) {
+        //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+            bool bfound = false;    
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                ConnectionParams *cp = g_pConnectionParams->Item(i);
+                if(cp->GetAddressStr() == port) {
+                    bfound = true;
+                    break;
+                }
+            }
+            
+            if(!bfound) {
+                ConnectionParams * prm = new ConnectionParams();
+                prm->Baudrate = wxAtoi(xRate);
+                prm->Port = port;
+                
+                g_pConnectionParams->Add(prm);
+            }
+        }
+        if( iteration == 1 ) {
+            Write ( _T ( "Source" ), _T("") );          // clear the old tag
+            Write ( _T ( "BaudRate" ), _T("") ); 
+        }
+    }
+             
+   //  Is there an existing AISPort definition?
     SetPath( _T ( "/Settings/AISPort" ) );
-    Read( _T ( "Port" ), pAIS_Port, _T ( "NONE" ) );
+    wxString aSource;
+    wxString aRate;
+    Read ( _T ( "Port" ), &aSource );
+    Read ( _T ( "BaudRate" ), &aRate );
+    if(aSource.Len()) {
+        wxString port;
+        if(aSource.Mid(0, 6) == _T("Serial"))
+            port = aSource.Mid(7);
+        else
+            port = _T("");
+        
+        if(port.Len() && port != _T("None") ) {
+            //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+            bool bfound = false;    
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                ConnectionParams *cp = g_pConnectionParams->Item(i);
+                if(cp->GetAddressStr() == port) {
+                    bfound = true;
+                    break;
+                }
+            }
+            
+            if(!bfound) {
+                ConnectionParams * prm = new ConnectionParams();
+                if( aRate.Len() )
+                    prm->Baudrate = wxAtoi(aRate);
+                else
+                    prm->Baudrate = 38400;              // default for most AIS receivers
+                prm->Port = port;
+                
+                g_pConnectionParams->Add(prm);
+            }
+        }
 
+        if( iteration == 1 ) {
+            Write ( _T ( "Port" ), _T("") );          // clear the old tag
+            Write ( _T ( "BaudRate" ), _T("") ); 
+        }
+    }
+             
+    //  Is there an existing NMEAAutoPilotPort definition?
+    SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
+    Read ( _T ( "Port" ), &xSource );
+    if(xSource.Len()) {
+        wxString port;
+        if(xSource.Mid(0, 6) == _T("Serial"))
+            port = xSource.Mid(7);
+        else
+            port = _T("");
+        
+        if(port.Len() && port != _T("None") ) {
+            //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+            bool bfound = false;
+            ConnectionParams *cp;
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                cp = g_pConnectionParams->Item(i);
+                if(cp->GetAddressStr() == port) {
+                    bfound = true;
+                    break;
+                }
+            }
+            
+            if(!bfound) {
+                ConnectionParams * prm = new ConnectionParams();
+                prm->Port = port;
+                prm->OutputSentenceListType = WHITELIST;
+                prm->OutputSentenceList.Add( _T("RMB") );
+                prm->Output = true;
+                
+                g_pConnectionParams->Add(prm);
+            }
+            else {                                  // port was found, so make sure it is set for output
+                cp->Output = true;
+                cp->OutputSentenceListType = WHITELIST;
+                cp->OutputSentenceList.Add( _T("RMB") );
+            }
+        }
+        
+        if( iteration == 1 )
+            Write ( _T ( "Port" ), _T("") );          // clear the old tag
+    }
+             
 //    Reasonable starting point
     vLat = START_LAT;                   // display viewpoint
     vLon = START_LON;
@@ -3874,6 +4009,14 @@ int MyConfig::LoadMyConfig( int iteration )
     g_pNavAidRadarRingsStepUnits = 0;
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
+    //  Support Version 3.0 and prior config setting for Radar Rings
+    bool b300RadarRings= true;   
+    Read ( _T ( "ShowRadarRings" ), &b300RadarRings );
+    if(!b300RadarRings)
+        g_iNavAidRadarRingsNumberVisible = 0;
+        
+    Read( _T ( "ConfirmObjectDeletion" ), &g_bConfirmObjectDelete, true );
+    
     // Waypoint dragging with mouse
     g_bWayPointPreventDragging = false;
     Read( _T ( "WaypointPreventDragging" ), &g_bWayPointPreventDragging );
@@ -4273,9 +4416,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
     Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
-    Write( _T ( "GarminPersistance" ), g_bGarminPersistance );
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
-    Write( _T ( "UseGarminHost" ), g_bGarminHost );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
 
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
@@ -4435,7 +4576,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bAISAlertSuppressMoored" ), g_bAIS_CPA_Alert_Suppress_Moored );
     Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );
     Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
-
+    
     Write( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
     Write( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );
     Write( _T ( "AlertDialogPosX" ), g_ais_alert_dialog_x );
@@ -4492,27 +4633,15 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPXIODir" ), m_gpx_path );
     Write( _T ( "TCDataDir" ), g_TCData_Dir );
 
-    if( g_pnmea ) {
-        SetPath( _T ( "/Settings/NMEADataSource" ) );
-        wxString source;
-        g_pnmea->GetSource( source );
-        Write( _T ( "Source" ), source );
-        Write( _T ( "BaudRate" ), g_NMEABaudRate );
+    SetPath( _T ( "/Settings/NMEADataSource" ) );
+    wxString connectionconfigs;
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
+    {
+        if (i > 0)
+            connectionconfigs.Append(_T("|"));
+        connectionconfigs.Append(g_pConnectionParams->Item(i)->Serialize());
     }
-
-    if( pAPilot ) {
-        SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
-        wxString ap_port;
-        pAPilot->GetAP_Port( ap_port );
-        Write( _T ( "Port" ), ap_port );
-    }
-
-    if( g_pAIS ) {
-        SetPath( _T ( "/Settings/AISPort" ) );
-        wxString ais_port;
-        g_pAIS->GetSource( ais_port );
-        Write( _T ( "Port" ), ais_port );
-    }
+    Write ( _T ( "DataConnections" ), connectionconfigs );
 
     //    Fonts
     wxString font_path;
@@ -4555,10 +4684,13 @@ void MyConfig::UpdateSettings()
     SetPath( _T ( "/Settings/Others" ) );
 
     // Radar rings
+    Write( _T ( "ShowRadarRings" ), (bool)(g_iNavAidRadarRingsNumberVisible > 0) );  //3.0.0 config support
     Write( _T ( "RadarRingsNumberVisible" ), g_iNavAidRadarRingsNumberVisible );
     Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
 
+    Write( _T ( "ConfirmObjectDeletion" ), g_bConfirmObjectDelete );
+    
     // Waypoint dragging with mouse; toh, 2009.02.24
     Write( _T ( "WaypointPreventDragging" ), g_bWayPointPreventDragging );
 
@@ -7768,7 +7900,8 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
 //    TTYScroll and TTYWindow Implemetation
 
 IMPLEMENT_DYNAMIC_CLASS( TTYWindow, wxDialog )
-BEGIN_EVENT_TABLE( TTYWindow, wxDialog ) EVT_CLOSE(TTYWindow::OnCloseWindow)
+BEGIN_EVENT_TABLE( TTYWindow, wxDialog )
+EVT_CLOSE(TTYWindow::OnCloseWindow)
 EVT_MOVE( TTYWindow::OnMove )
 EVT_SIZE( TTYWindow::OnSize )
 END_EVENT_TABLE()
@@ -7777,13 +7910,110 @@ TTYWindow::TTYWindow()
 {
 }
 
+TTYWindow::TTYWindow(wxWindow *parent, int n_lines)
+{
+    wxDialog::Create( parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
+    
+    wxBoxSizer* bSizerOuterContainer = new wxBoxSizer( wxVERTICAL );
+    SetSizer( bSizerOuterContainer );
+    
+    m_pScroll = new TTYScroll(this, n_lines);
+    m_pScroll->Scroll(-1, 1000);        // start with full scroll down
+    
+    bSizerOuterContainer->Add( m_pScroll, 1, wxEXPAND, 5 );
+
+    wxBoxSizer* bSizerBottomContainer = new wxBoxSizer( wxHORIZONTAL );
+    bSizerOuterContainer->Add( bSizerBottomContainer, 0, wxEXPAND, 5 );
+    
+ 
+    wxStaticBox *psb = new wxStaticBox( this,  wxID_ANY, _("Legend")) ;
+    wxStaticBoxSizer* sbSizer1 = new wxStaticBoxSizer( psb , wxVERTICAL );
+    
+    CreateLegendBitmap();
+    wxBitmapButton *bb = new wxBitmapButton(this, wxID_ANY, m_bm_legend);
+    sbSizer1->Add( bb, 1, wxALL|wxEXPAND, 5 );
+    bSizerBottomContainer->Add( sbSizer1, 0, wxALIGN_LEFT | wxALL, 5 );
+
+    m_buttonPause = new wxButton( this, wxID_ANY, _("Pause"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizerBottomContainer->Add( m_buttonPause, 0, wxALIGN_RIGHT | wxALL, 5 );
+    
+    m_buttonPause->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TTYWindow::OnPauseClick ), NULL, this );
+   
+    bpause = false;
+}
+
 TTYWindow::~TTYWindow()
 {
     delete m_pScroll;
     g_NMEALogWindow = NULL;
 }
 
+void TTYWindow::CreateLegendBitmap()
+{
+    m_bm_legend.Create(400, 80);
+    wxMemoryDC dc;
+    dc.SelectObject( m_bm_legend );
+    if( m_bm_legend.IsOk()) {
+        
+        dc.SetBackground( wxBrush(GetGlobalColor(_T("DILG1"))) );
+        dc.Clear();
+        
+        wxFont f(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+        dc.SetFont(f);
+        
+        int yp = 25;
+        int y = 5;
+        
+        wxBrush b1(wxColour( _T("DARK GREEN")) );
+        dc.SetBrush(b1);
+        dc.DrawRectangle( 5, y, 20, 20 );
+        dc.SetTextForeground( wxColour(_T("DARK GREEN")) );
+        dc.DrawText(  _("Message accepted"), 30, y );
+        
+        y += yp;
+        wxBrush b2(wxColour( _T("#a0832a")) );
+        dc.SetBrush(b2);
+        dc.DrawRectangle( 5, y, 20, 20 );
+        dc.SetTextForeground( wxColour(_T("#a0832a")) );
+        dc.DrawText(  _("Message filtered and dropped"), 30, y );
+        
+        y += yp;
+        wxBrush b3(wxColour( _T("BLUE")) );
+        dc.SetBrush(b3);
+        dc.DrawRectangle( 5, y, 20, 20 );
+        dc.SetTextForeground( wxColour(_T("BLUE")) );
+        dc.DrawText(  _("Output Message"), 30, y );
+        
+        
+        
+    }
+        
+    dc.SelectObject( wxNullBitmap );
+        
+}
+
+
+
+
+void TTYWindow::OnPauseClick( wxCommandEvent& event )
+{
+    if(!bpause) {
+        bpause = true;
+        m_pScroll->Pause( true );
+        
+        m_buttonPause->SetLabel( _("Resume") );
+    }
+    else {
+        bpause = false;
+        m_pScroll->Pause( false );
+        
+        m_buttonPause->SetLabel( _("Pause") );
+    }
+}
+
+
 void TTYWindow::OnCloseWindow( wxCloseEvent& event )
+
 {
     Destroy();
 }
@@ -7810,17 +8040,19 @@ void TTYWindow::OnMove( wxMoveEvent& event )
 
 void TTYScroll::Add( wxString &line )
 {
-    if( m_plineArray->GetCount() > m_nLines - 1 ) {                       // shuffle the arraystring
-        wxArrayString *p_newArray = new wxArrayString;
+    if(!bpause) {
+        if( m_plineArray->GetCount() > m_nLines - 1 ) {                       // shuffle the arraystring
+            wxArrayString *p_newArray = new wxArrayString;
 
-        for( unsigned int i = 1; i < m_plineArray->GetCount(); i++ ) {
-            p_newArray->Add( m_plineArray->Item( i ) );
+            for( unsigned int i = 1; i < m_plineArray->GetCount(); i++ ) 
+                p_newArray->Add( m_plineArray->Item( i ) );
+
+            delete m_plineArray;
+            m_plineArray = p_newArray;
         }
-        delete m_plineArray;
-        m_plineArray = p_newArray;
-    }
 
     m_plineArray->Add( line );
+    }
 }
 
 void TTYScroll::OnDraw( wxDC& dc )
@@ -7834,12 +8066,27 @@ void TTYScroll::OnDraw( wxDC& dc )
     if( lineTo > m_nLines - 1 ) lineTo = m_nLines - 1;
 
     wxCoord y = lineFrom * m_hLine;
+    wxString lss;
     for( size_t line = lineFrom; line <= lineTo; line++ ) {
         wxCoord yPhys;
         CalcScrolledPosition( 0, y, NULL, &yPhys );
 
-        dc.DrawText( m_plineArray->Item( line ), 0, y );
-        y += m_hLine;
+        wxString ls = m_plineArray->Item( line );
+        if(ls.Mid(0, 7) == _T("<GREEN>") ){
+            dc.SetTextForeground( wxColour(_T("DARK GREEN")) );
+            lss = ls.Mid(7);
+        }
+        else if(ls.Mid(0, 7) == _T("<AMBER>") ){
+            dc.SetTextForeground( wxColour(_T("#a0832a")) );
+            lss = ls.Mid(7);
+        }
+        else if(ls.Mid(0, 6) == _T("<BLUE>") ){
+                dc.SetTextForeground( wxColour(_T("BLUE")) );
+                lss = ls.Mid(6);
+        }
+        
+       dc.DrawText( lss, 0, y );
+       y += m_hLine;
     }
 }
 

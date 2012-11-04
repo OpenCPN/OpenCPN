@@ -148,6 +148,8 @@ class NMEA0183
       NMEA0183();
       virtual ~NMEA0183();
 
+      wxArrayString GetRecognizedArray(void);
+      
       /*
       ** NMEA 0183 Sentences we understand
       */

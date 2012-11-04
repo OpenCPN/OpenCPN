@@ -129,6 +129,11 @@ static int nrecurse;
 # define inline __inline
 #endif // defined( _MSC_VER ) && !defined( __cplusplus )
 
+//      And Mac is fussy about c99 conpliance...
+#if defined(__clang__) && __clang__
+# define inline static inline
+#endif
+
 
 #ifdef STANDALONE
 

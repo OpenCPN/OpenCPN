@@ -383,10 +383,10 @@ void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)
       brush.SetColour(cl);
       dc->SetBrush(brush);
 
-      //this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>, in this case the "True wind angle"
-      //do it here, because otherwise m_MainValue is incorrect !!!
+      /* this is fix for a +/-180° round instrument, when m_MainValue is supplied as <0..180><L | R>
+       * for example TWA & AWA */
       double data;
-      if(m_MainValueUnit == _T("DegL")) //specially for instrument OCPN_DBP_STC_VWT
+      if(m_MainValueUnit == _T("DegL"))
           data=360-m_MainValue;
       else
           data=m_MainValue;

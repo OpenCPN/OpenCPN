@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
  */
@@ -45,12 +45,12 @@
 #include "styles.h"
 #include "routeman.h"
 #include "concanv.h"
-#include "nmea.h"                   // for Autopilot
 #include "navutil.h"
 #include "georef.h"
 #include "routeprop.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
+#include "multiplexer.h"
 
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -62,8 +62,6 @@ extern ConsoleCanvas    *console;
 extern RouteList        *pRouteList;
 extern Select           *pSelect;
 extern MyConfig         *pConfig;
-extern NMEA0183         *pNMEA0183;
-extern AutoPilotWindow  *pAPilot;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
 
@@ -83,6 +81,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern RoutePoint      *pAnchorWatchPoint1;
 extern RoutePoint      *pAnchorWatchPoint2;
 extern int              g_route_line_width;
+extern Multiplexer     *g_pMUX;
 
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -514,20 +513,10 @@ bool Routeman::DeactivateRoute( bool b_arrival )
 
 bool Routeman::UpdateAutopilot()
 {
-    if( !pAPilot->IsOK() ) return false;
-
-    //    Get the requested A/P sentence
-    wxString ap_sentence = _T("RMB");               // default
-    pConfig->SetPath( _T ( "/Settings" ) );
-    pConfig->Read( _T("AutoPilot NMEA Sentence Out"), &ap_sentence );
-
-    wxString str_buf;
-
-    wxStringTokenizer tkz( ap_sentence, _T(";") );
-    while( tkz.HasMoreTokens() ) {
-        wxString token = tkz.GetNextToken();
-
-        if( token.IsSameAs( _T("RMB"), false ) ) {
+    //Send all known Autopilot messages upstream
+    
+    //RMB
+        {
 
             m_NMEA0183.TalkerID = _T("EC");
 
@@ -562,15 +551,11 @@ bool Routeman::UpdateAutopilot()
 
             m_NMEA0183.Rmb.Write( snt );
 
-            //      stats->pTStat2->TextDraw(( const char *)snt.Sentence);
-//                  char t[200];
-//                  strncpy(t, snt.Sentence, 199);
-//                  printf("%s", t);
-
-            pAPilot->AutopilotOut( snt.Sentence );
+            g_pMUX->SendNMEAMessage( snt.Sentence );
         }
 
-        if( token.IsSameAs( _T("RMC"), false ) ) {
+        // RMC
+        {
 
             m_NMEA0183.TalkerID = _T("EC");
 
@@ -609,15 +594,10 @@ bool Routeman::UpdateAutopilot()
 
             m_NMEA0183.Rmc.Write( snt );
 
-            pAPilot->AutopilotOut( snt.Sentence );
-
-//                  char t[200];
-//                  strncpy(t, snt.Sentence, 199);
-//                  printf("%s", t);
-
+            g_pMUX->SendNMEAMessage( snt.Sentence );
         }
 
-    }           // while
+
     return true;
 }
 
@@ -910,7 +890,7 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
     itemDialog1->SetSizer( itemBoxSizer2 );
 
 //      Create the ScrollBox list of available com ports in a labeled static box
-
+/*TODO: Obsolete, we now simply send it to all the places where it makes sense...
     wxStaticBox* comm_box = new wxStaticBox( this, wxID_ANY, _("GPS/Plotter Port") );
 
     wxStaticBoxSizer* comm_box_sizer = new wxStaticBoxSizer( comm_box, wxVERTICAL );
@@ -937,7 +917,7 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
     m_itemCommListBox->SetSelection( sidx );
 
     comm_box_sizer->Add( m_itemCommListBox, 0, wxEXPAND | wxALL, 5 );
-
+*/
     //    Add a reminder text box
     itemBoxSizer2->AddSpacer( 20 );
 
@@ -972,11 +952,13 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
 void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
 {
     //    Get the selected comm port
+/*TODO: Obsolete, we now simply send it to all the places where it makes sense...
     int i = m_itemCommListBox->GetSelection();
     wxString src( m_itemCommListBox->GetString( i ) );
 
     src = m_itemCommListBox->GetValue();
-
+*/
+    wxString src = wxEmptyString;
     //    And send it out
     if( m_pRoute ) m_pRoute->SendToGPS( src, true, m_pgauge );
     if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( src, m_pgauge );
