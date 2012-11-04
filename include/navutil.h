@@ -175,9 +175,9 @@ public:
     void Set( RoutePoint* p ) { lat = p->m_lat; lon = p->m_lon; }
     friend bool operator==( vector2D &a, vector2D &b ) { return a.x == b.x && a.y == b.y; }
     friend bool operator!=( vector2D &a, vector2D &b ) { return a.x != b.x || a.y != b.y; }
-    friend vector2D operator-( vector2D &a, vector2D &b ) { return vector2D( a.x - b.x, a.y - b.y ); }
-    friend vector2D operator+( vector2D &a, vector2D &b ) { return vector2D( a.x + b.x, a.y + b.y ); }
-    friend vector2D operator*( double &t, vector2D &a ) { return vector2D( a.x * t, a.y * t ); }
+    friend vector2D operator-( vector2D a, vector2D b ) { return vector2D( a.x - b.x, a.y - b.y ); }
+    friend vector2D operator+( vector2D a, vector2D b ) { return vector2D( a.x + b.x, a.y + b.y ); }
+    friend vector2D operator*( double t, vector2D a ) { return vector2D( a.x * t, a.y * t ); }
 
     union{ double x; double lon; };
     union{ double y; double lat; };
@@ -760,7 +760,7 @@ class TTYScroll : public wxScrolledWindow
 
             wxArrayString     *m_plineArray;
             bool               bpause;
-            
+
 };
 
 
@@ -780,7 +780,7 @@ class TTYWindow : public wxDialog
              void Close();
              void OnSize( wxSizeEvent& event );
              void OnMove( wxMoveEvent& event );
-             void OnPauseClick( wxCommandEvent& event ); 
+             void OnPauseClick( wxCommandEvent& event );
 
       protected:
             void CreateLegendBitmap();
