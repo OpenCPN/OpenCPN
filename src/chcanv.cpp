@@ -11773,7 +11773,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     }
 
     if( !m_bsetup ) {
-        SetCurrent();
+        SetCurrent(*m_pcontext);
 
         char render_string[80];
         strncpy( render_string, (char *) glGetString( GL_RENDERER ), 79 );
@@ -12662,7 +12662,7 @@ void glChartCanvas::render()
     GetMemoryStatus( &mem_total, &mem_used );
     if(mem_used > g_memCacheLimit * 8 / 10) m_b_mem_crunch = true;
 
-    SetCurrent();
+    SetCurrent(*m_pcontext);
     wxPaintDC( this );
 
     ViewPort VPoint = cc1->VPoint;
