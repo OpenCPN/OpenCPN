@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -72,7 +72,6 @@
 #include "routeman.h"
 #include "statwin.h"
 #include "concanv.h"
-#include "nmea.h"
 #include "options.h"
 #include "about.h"
 #include "thumbwin.h"
@@ -82,6 +81,8 @@
 #include "routeprop.h"
 #include "toolbar.h"
 #include "compasswin.h"
+#include "datastream.h"
+#include "multiplexer.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"
@@ -130,13 +131,10 @@ wxString                  gConfig_File;
 
 int                       g_unit_test_1;
 
-ComPortManager            *g_pCommMan;
-
 MyFrame                   *gFrame;
 
 ChartCanvas               *cc1;
 ConsoleCanvas             *console;
-NMEAHandler               *g_pnmea;
 StatWin                   *stats;
 
 MyConfig                  *pConfig;
@@ -212,12 +210,8 @@ wxString                  *phost_name;
 
 static unsigned int       malloc_max;
 
-OCP_NMEA_Thread           *pNMEA_Thread;
-OCP_GARMIN_Thread         *pGARMIN_Thread;
-wxString                  *pNMEADataSource;
-wxString                  g_NMEABaudRate;
-
-wxString                  *pNMEA_AP_Port;
+wxArrayOfConnPrm          *g_pConnectionParams;
+//OCP_GARMIN_Thread         *pGARMIN_Thread;
 
 wxDateTime                g_start_time;
 wxDateTime                g_loglast_time;
@@ -231,8 +225,6 @@ bool                      g_bCruising;
 
 ChartDummy                *pDummyChart;
 
-AutoPilotWindow *pAPilot;
-
 ocpnToolBarSimple*        g_toolbar;
 ocpnStyle::StyleManager*  g_StyleManager;
 
@@ -245,7 +237,6 @@ wxPageSetupData*          g_pageSetupData = (wxPageSetupData*) NULL;
 bool                      g_bShowOutlines;
 bool                      g_bShowDepthUnits;
 bool                      g_bDisplayGrid;  // Flag indicating weather the lat/lon grid should be displayed
-bool                      g_bGarminPersistance;
 bool                      g_bShowActiveRouteHighway;
 int                       g_nNMEADebug;
 int                       g_nAWDefault;
@@ -262,6 +253,7 @@ int                       g_iNavAidRadarRingsNumberVisible;
 float                     g_fNavAidRadarRingsStep;
 int                       g_pNavAidRadarRingsStepUnits;
 bool                      g_bWayPointPreventDragging;
+bool                      g_bConfirmObjectDelete;
 
 FontMgr                   *pFontMgr;
 
@@ -292,7 +284,6 @@ bool                      g_bSatValid;
 
 bool                      g_bDebugCM93;
 bool                      g_bDebugS57;
-bool                      g_bGarminHost;
 
 bool                      g_bfilter_cogsog;
 int                       g_COGFilterSec;
@@ -334,10 +325,9 @@ extern HINSTANCE          s_hGLU_DLL; // Handle to DLL
 double                    g_ownship_predictor_minutes;
 int                       g_current_arrow_scale;
 
-OCP_AIS_Thread            *pAIS_Thread;
+Multiplexer               *g_pMUX;
+
 AIS_Decoder               *g_pAIS;
-wxString                  *pAIS_Port;
-bool                      g_bGPSAISMux;
 bool                      g_bAIS_CPA_Alert;
 bool                      g_bAIS_CPA_Alert_Audio;
 AISTargetAlertDialog      *g_pais_alert_dialog_active;
@@ -631,6 +621,8 @@ void appendOSDirSlash( wxString* pString );
 void InitializeUserColors( void );
 void DeInitializeUserColors( void );
 void SetSystemColors( ColorScheme cs );
+
+DEFINE_EVENT_TYPE(EVT_THREADMSG)
 
 //------------------------------------------------------------------------------
 //    PNG Icon resources
@@ -1023,9 +1015,6 @@ bool MyApp::OnInit()
     wxLogMessage( imsg );
 
 //      Create some static strings
-    pNMEADataSource = new wxString();
-    pNMEA_AP_Port = new wxString();
-    pAIS_Port = new wxString();
     pInit_Chart_Dir = new wxString();
 
     //  Establish an empty ChartCroupArray
@@ -1485,9 +1474,6 @@ if( 0 == g_memCacheLimit )
 
     InitializeUserColors();
 
-//  Create the global instance of the CommPortManager
-    g_pCommMan = new ComPortManager;
-
     if( ( g_nframewin_x > 100 ) && ( g_nframewin_y > 100 ) && ( g_nframewin_x <= cw )
             && ( g_nframewin_y <= ch ) ) new_frame_size.Set( g_nframewin_x, g_nframewin_y );
     else
@@ -1574,26 +1560,6 @@ if( 0 == g_memCacheLimit )
 
     console = new ConsoleCanvas( gFrame );                    // the console
 
-    g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-
-    stats = new StatWin( cc1 );
-
-    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
-
-    if( cc1->GetQuiltMode() ) {
-        stats->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
-        stats->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
-
-        stats->pPiano->SetRoundedRectangles( true );
-    }
-    stats->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
-    stats->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
-    stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
-
-    stats->Show( true );
-
-    pAPilot = new AutoPilotWindow( gFrame, *pNMEA_AP_Port );
-
     pthumbwin = new ThumbWin( cc1 );
 
     gFrame->ApplyGlobalSettings( 1, false );               // done once on init with resize
@@ -1633,10 +1599,25 @@ if( 0 == g_memCacheLimit )
 
     if( g_bframemax ) gFrame->Maximize( true );
 
+    stats = new StatWin( cc1 );
+    stats->SetColorScheme( global_color_scheme );
+
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+
+    if( cc1->GetQuiltMode() ) {
+        stats->pPiano->SetVizIcon( new wxBitmap( style->GetIcon( _T("viz") ) ) );
+        stats->pPiano->SetInVizIcon( new wxBitmap( style->GetIcon( _T("redX") ) ) );
+
+        stats->pPiano->SetRoundedRectangles( true );
+    }
+    stats->pPiano->SetTMercIcon( new wxBitmap( style->GetIcon( _T("tmercprj") ) ) );
+    stats->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
+    stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
+
+    stats->Show( true );
+
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
-
-    stats->Show();              // sometimes gets turned off in gtk??
 
     wxString perspective;
     pConfig->SetPath( _T ( "/AUI" ) );
@@ -1905,6 +1886,7 @@ if( 0 == g_memCacheLimit )
 
     cc1->ReloadVP();                  // once more, and good to go
 
+    g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
     if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
 
     g_FloatingToolbarDialog->Raise();
@@ -1996,10 +1978,6 @@ int MyApp::OnExit()
     delete pInit_Chart_Dir;
     delete pWorldMapLocation;
 
-    delete pNMEADataSource;
-    delete pNMEA_AP_Port;
-    delete pAIS_Port;
-
     delete pFontMgr;
 
     delete g_pRouteMan;
@@ -2008,8 +1986,6 @@ int MyApp::OnExit()
     delete pMessageOnceArray;
 
     DeInitializeUserColors();
-
-    delete g_pCommMan;
 
     delete pLayerList;
 
@@ -2079,8 +2055,6 @@ EVT_TIMER(FRAME_COG_TIMER, MyFrame::OnFrameCOGTimer)
 EVT_TIMER(MEMORY_FOOTPRINT_TIMER, MyFrame::OnMemFootTimer)
 EVT_ACTIVATE(MyFrame::OnActivate)
 EVT_MAXIMIZE(MyFrame::OnMaximize)
-EVT_COMMAND(wxID_ANY, EVT_NMEA, MyFrame::OnEvtNMEA)
-EVT_COMMAND(wxID_ANY, EVT_THREADMSG, MyFrame::OnEvtTHREADMSG)
 EVT_COMMAND(wxID_ANY, wxEVT_COMMAND_TOOL_RCLICKED, MyFrame::RequestNewToolbarArgEvent)
 EVT_ERASE_BACKGROUND(MyFrame::OnEraseBackground)
 END_EVENT_TABLE()
@@ -2127,34 +2101,34 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_ChartUpdatePeriod = 1;                  // set the default (1 sec.) period
 
 //    Establish my children
-#ifdef __WXOSX__
-    if ((pNMEADataSource->Contains(_T("Serial"))) &&
-            (false == ValidateSerialPortName(pNMEADataSource->mb_str(),MAX_SERIAL_PORTS)))
-    *pNMEADataSource = _T("NONE");
-    if (false == ValidateSerialPortName(pAIS_Port->mb_str(),MAX_SERIAL_PORTS))
-    *pAIS_Port = _T("NONE");
-    if (false == ValidateSerialPortName(pNMEA_AP_Port->mb_str(), MAX_SERIAL_PORTS))
-    *pNMEA_AP_Port = _T("NONE");
-#endif
+    m_current_src_priority = 0;
+    m_current_src_id = wxEmptyString;
+    m_current_src_ticks = 0;
 
-    //    If the selected port is the same as AIS port, override the name to force the
-    //    NMEA class to expect muxed data from AIS decoder
-    if( ( pNMEADataSource->IsSameAs( *pAIS_Port ) )
-            && ( !pNMEADataSource->Upper().Contains( _T("NONE") ) ) ) g_pnmea = new NMEAHandler(
-            ID_NMEA_WINDOW, this, _T("AIS Port (Shared)"), g_NMEABaudRate, &m_mutexNMEAEvent,
-            false );
-    else
-        g_pnmea = new NMEAHandler( ID_NMEA_WINDOW, this, *pNMEADataSource, g_NMEABaudRate,
-                &m_mutexNMEAEvent, g_bGarminHost );
+    g_pMUX = new Multiplexer();
 
-//        pAIS = new AIS_Decoder(ID_AIS_WINDOW, gFrame, wxString("TCP/IP:66.235.48.168"));  // a test
-    g_pAIS = new AIS_Decoder( ID_AIS_WINDOW, this, *pAIS_Port, &m_mutexNMEAEvent );
+    g_pAIS = new AIS_Decoder( );
 
-    //  Create/connect a dynamic event handler slot for OCPN_NMEAEvent(s) coming from NMEA or AIS threads
-    Connect( wxEVT_OCPN_NMEA, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
-
-    //  Create/connect a dynamic event handler slot for OCPN_MsgEvent(s) coming from PlugIn system
-    Connect( wxEVT_OCPN_MSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtPlugInMessage );
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        dsPortType port_type;
+        if (cp->Output)
+            port_type = DS_TYPE_INPUT_OUTPUT;
+        else
+            port_type = DS_TYPE_INPUT;
+        DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type, cp->Priority );
+        dstr->SetInputFilter(cp->InputSentenceList);
+        dstr->SetInputFilterType(cp->InputSentenceListType);
+        dstr->SetOutputFilter(cp->OutputSentenceList);
+        dstr->SetOutputFilterType(cp->OutputSentenceListType);
+        dstr->SetChecksumCheck(cp->ChecksumCheck);
+        g_pMUX->AddStream(dstr);
+    }
+    g_pMUX->SetAISHandler(g_pAIS);
+    g_pMUX->SetGPSHandler(this);
+    //  Create/connect a dynamic event handler slot
+    Connect( wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtOCPN_NMEA );
 
     bFirstAuto = true;
 
@@ -2207,6 +2181,8 @@ MyFrame::~MyFrame()
     }
     delete pRouteList;
     delete g_FloatingToolbarConfigMenu;
+    g_pMUX->ClearStreams();
+    delete g_pMUX;
 }
 
 void MyFrame::OnEraseBackground( wxEraseEvent& event )
@@ -2467,14 +2443,10 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
             style->GetToolIcon( _T("text"), TOOLICON_TOGGLED ), wxITEM_CHECK, tipString );
 
     m_pAISTool = NULL;
-    if( !pAIS_Port->IsSameAs( _T("None"), false ) ) {
-        CheckAndAddPlugInTool( tb );
-        tipString = _("Show AIS Targets");
-        if( _toolbarConfigMenuUtil( ID_AIS, tipString ) )
-            m_pAISTool = tb->AddTool( ID_AIS,
-                _T("AIS"), style->GetToolIcon( _T("AIS"), TOOLICON_NORMAL ),
-                style->GetToolIcon( _T("AIS"), TOOLICON_DISABLED ), wxITEM_CHECK, tipString );
-    }
+    CheckAndAddPlugInTool( tb );
+    tipString = _("Show AIS Targets");
+    if( _toolbarConfigMenuUtil( ID_AIS, tipString ) )
+        m_pAISTool = tb->AddTool( ID_AIS, _T("AIS"), style->GetToolIcon( _T("AIS"), TOOLICON_NORMAL ), style->GetToolIcon( _T("AIS"), TOOLICON_DISABLED ), wxITEM_CHECK, tipString );
 
     CheckAndAddPlugInTool( tb );
     tipString = _("Show Currents");
@@ -2890,12 +2862,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pi_manager = NULL;
     }
 
-    if( g_pnmea ) {
-        g_pnmea->Close();
-        delete g_pnmea;
-    }
-
     if( g_pAIS ) {
+        if(g_pMUX)
+            g_pMUX->SetAISHandler(NULL);
         delete g_pAIS;
         g_pAIS = NULL;
     }
@@ -2905,12 +2874,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
 //    delete pthumbwin;
     pthumbwin = NULL;
-
-    if( pAPilot ) {
-        pAPilot->Close();
-        pAPilot->Destroy();
-        pAPilot = NULL;
-    }
 
 //    delete g_FloatingToolbarDialog;
     g_FloatingToolbarDialog = NULL;
@@ -3781,13 +3744,6 @@ int MyFrame::DoOptionsDialog()
     ArrayOfCDI *pWorkDirArray = new ArrayOfCDI;
     optionsDlg.SetWorkDirListPtr( pWorkDirArray );
 
-//  Grab a copy of the current NMEA source and AP Port and AIS Port
-    previous_NMEA_source = *pNMEADataSource;
-    previous_bGarminHost = g_bGarminHost;
-
-    previous_NMEA_APPort = *pNMEA_AP_Port;
-    previous_AIS_Port = *pAIS_Port;
-
 //      Pass a ptr to MyConfig, for updates
     optionsDlg.SetConfigPtr( pConfig );
 
@@ -3800,10 +3756,6 @@ int MyFrame::DoOptionsDialog()
     bPrevOGL = g_bopengl;
 
     prev_locale = g_locale;
-
-//    Pause all of the async classes
-    if( g_pAIS ) g_pAIS->Pause();
-    if( g_pnmea ) g_pnmea->Pause();
 
     bool b_sub = false;
     if( g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown() ) {
@@ -3846,14 +3798,25 @@ int MyFrame::DoOptionsDialog()
     Raise();                      // I dunno why...
 #endif
 
+    bool ret_val = false;
     if( rr ) {
         ProcessOptionsDialog( rr, &optionsDlg );
-        delete pWorkDirArray;
-        return true;
+        ret_val = true;
     }
 
     delete pWorkDirArray;
-    return false;
+
+    bDBUpdateInProgress = false;
+    if( g_FloatingToolbarDialog ) {
+        if( IsFullScreen() && !g_bFullscreenToolbar ) g_FloatingToolbarDialog->Submerge();
+    }
+
+#ifdef __WXMAC__
+    if(stats) stats->Show();
+#endif
+
+    Refresh( false );
+    return ret_val;
 }
 
 int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
@@ -3876,37 +3839,6 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         //    Re-open the last open chart
         int dbii = ChartData->FinddbIndex( chart_file_name );
         ChartsRefresh( dbii, cc1->GetVP() );
-    }
-
-    if( ( *pNMEADataSource != previous_NMEA_source )
-            || ( previous_bGarminHost != g_bGarminHost ) ) {
-        if( g_pnmea ) g_pnmea->Close();
-        delete g_pnmea;
-
-        bGPSValid = false;
-
-        //    If the selected port is the same as AIS port, override the name to force the
-        //    NMEA class to expect muxed data from AIS decoder
-        if( ( pNMEADataSource->IsSameAs( *pAIS_Port ) )
-                && ( !pNMEADataSource->Upper().Contains( _T("NONE") ) ) ) g_pnmea =
-                new NMEAHandler( ID_NMEA_WINDOW, gFrame, _T("AIS Port (Shared)"),
-                        g_NMEABaudRate, &m_mutexNMEAEvent, false );
-        else
-            g_pnmea = new NMEAHandler( ID_NMEA_WINDOW, gFrame, *pNMEADataSource, g_NMEABaudRate,
-                    &m_mutexNMEAEvent, g_bGarminHost );
-
-        SetbFollow();
-    }
-
-    if( *pNMEA_AP_Port != previous_NMEA_APPort ) {
-        if( pAPilot ) pAPilot->Close();
-        delete pAPilot;
-        pAPilot = new AutoPilotWindow( gFrame, *pNMEA_AP_Port );
-    }
-
-    if( *pAIS_Port != previous_AIS_Port ) {
-        delete g_pAIS;
-        g_pAIS = new AIS_Decoder( ID_AIS_WINDOW, gFrame, *pAIS_Port, &m_mutexNMEAEvent );
     }
 
     if( ( rr & LOCALE_CHANGED ) || ( rr & STYLE_CHANGED ) ) {
@@ -3973,10 +3905,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 
     SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
-//    Restart the async classes
-    if( g_pAIS ) g_pAIS->UnPause();
-    if( g_pnmea ) g_pnmea->UnPause();
-
+#if 0
     bDBUpdateInProgress = false;
 
     if( g_FloatingToolbarDialog ) {
@@ -3988,6 +3917,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 #endif
 
     Refresh( false );
+#endif
     return 0;
 }
 
@@ -4902,6 +4832,8 @@ void MyFrame::TouchAISActive( void )
 
 void MyFrame::UpdateAISTool( void )
 {
+    if(!g_pAIS) return;
+
     bool b_need_refresh = false;
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
@@ -6352,7 +6284,7 @@ void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
     wxLogMessage( event.GetString() );
 }
 
-void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
+void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 {
     wxString sfixtime;
     bool bshow_tick = false;
@@ -6370,78 +6302,67 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
     if( g_NMEALogWindow ) {
         wxDateTime now = wxDateTime::Now();
         wxString ss = now.FormatISOTime();
-        ss.Append( _T("  ") );
+        ss.Append( _T(" (") );
+        ss.Append( event.GetDataSource() );
+        ss.Append( _T(") ") );
         ss.Append( str_buf );
-        g_NMEALogWindow->Add( ss );
-        g_NMEALogWindow->Refresh( false );
+//        g_NMEALogWindow->Add( ss );
+//        g_NMEALogWindow->Refresh( false );
     }
 
     //    Send NMEA sentences to PlugIns
     if( g_pi_manager ) g_pi_manager->SendNMEASentenceToAllPlugIns( str_buf );
 
-    m_NMEA0183 << str_buf;
-    if( m_NMEA0183.PreParse() ) {
-        if( m_NMEA0183.LastSentenceIDReceived == _T("RMC") ) {
-            if( m_NMEA0183.Parse() ) {
-                if( m_NMEA0183.Rmc.IsDataValid == NTrue ) {
-                    if( !wxIsNaN(m_NMEA0183.Rmc.Position.Latitude.Latitude) ) {
-                        double llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
-                        int lat_deg_int = (int) ( llt / 100 );
-                        double lat_deg = lat_deg_int;
-                        double lat_min = llt - ( lat_deg * 100 );
-                        gLat = lat_deg + ( lat_min / 60. );
-                        if( m_NMEA0183.Rmc.Position.Latitude.Northing == South ) gLat = -gLat;
-                    }
-
-                    if( !wxIsNaN(m_NMEA0183.Rmc.Position.Longitude.Longitude) ) {
-                        double lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
-                        int lon_deg_int = (int) ( lln / 100 );
-                        double lon_deg = lon_deg_int;
-                        double lon_min = lln - ( lon_deg * 100 );
-                        gLon = lon_deg + ( lon_min / 60. );
-                        if( m_NMEA0183.Rmc.Position.Longitude.Easting == West ) gLon = -gLon;
-                    }
-                    gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
-                    gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
-
-                    if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) ) {
-                        if( m_NMEA0183.Rmc.MagneticVariationDirection == East ) gVar =
-                                m_NMEA0183.Rmc.MagneticVariation;
-                        else
-                            if( m_NMEA0183.Rmc.MagneticVariationDirection == West ) gVar =
-                                    -m_NMEA0183.Rmc.MagneticVariation;
-
-                        g_bVARValid = true;
-                        g_bVAR_Rx = true;
-                        gVAR_Watchdog = gps_watchdog_timeout_ticks;
-
-                    }
-
-                    sfixtime = m_NMEA0183.Rmc.UTCTime;
-
-                    gGPS_Watchdog = gps_watchdog_timeout_ticks;
-
-                    bshow_tick = true;
-                }
-            } else
-                if( g_nNMEADebug ) {
-                    wxString msg( _T("   ") );
-                    msg.Append( m_NMEA0183.ErrorMessage );
-                    msg.Append( _T(" : ") );
-                    msg.Append( str_buf );
-                    wxLogMessage( msg );
-                }
-
+    if ( event.GetPrority() > m_current_src_priority || event.GetDataSource() == m_current_src_id || m_current_src_ticks < wxDateTime::Now().GetTicks() - GPS_TIMEOUT_SECONDS )
+    {
+        if( g_NMEALogWindow ) {
+            wxString ss = _T("Passed");
+//            g_NMEALogWindow->Add( ss );
+//            g_NMEALogWindow->Refresh( false );
         }
-
-        else
-            if( m_NMEA0183.LastSentenceIDReceived == _T("HDT") ) {
+        m_NMEA0183 << str_buf;
+        if( m_NMEA0183.PreParse() ) {
+            if( m_NMEA0183.LastSentenceIDReceived == _T("RMC") ) {
                 if( m_NMEA0183.Parse() ) {
-                    if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) ) {
-                        gHdt = m_NMEA0183.Hdt.DegreesTrue;
-                        g_bHDTValid = true;
-                        g_bHDT_Rx = true;
-                        gHDT_Watchdog = gps_watchdog_timeout_ticks;
+                    if( m_NMEA0183.Rmc.IsDataValid == NTrue ) {
+                        if( !wxIsNaN(m_NMEA0183.Rmc.Position.Latitude.Latitude) ) {
+                            double llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
+                            int lat_deg_int = (int) ( llt / 100 );
+                            double lat_deg = lat_deg_int;
+                            double lat_min = llt - ( lat_deg * 100 );
+                            gLat = lat_deg + ( lat_min / 60. );
+                            if( m_NMEA0183.Rmc.Position.Latitude.Northing == South ) gLat = -gLat;
+                        }
+
+                        if( !wxIsNaN(m_NMEA0183.Rmc.Position.Longitude.Longitude) ) {
+                            double lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
+                            int lon_deg_int = (int) ( lln / 100 );
+                            double lon_deg = lon_deg_int;
+                            double lon_min = lln - ( lon_deg * 100 );
+                            gLon = lon_deg + ( lon_min / 60. );
+                            if( m_NMEA0183.Rmc.Position.Longitude.Easting == West ) gLon = -gLon;
+                        }
+                        gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
+                        gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
+
+                        if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) ) {
+                            if( m_NMEA0183.Rmc.MagneticVariationDirection == East ) gVar =
+                                    m_NMEA0183.Rmc.MagneticVariation;
+                            else
+                                if( m_NMEA0183.Rmc.MagneticVariationDirection == West ) gVar =
+                                        -m_NMEA0183.Rmc.MagneticVariation;
+
+                            g_bVARValid = true;
+                            g_bVAR_Rx = true;
+                            gVAR_Watchdog = gps_watchdog_timeout_ticks;
+
+                        }
+
+                        sfixtime = m_NMEA0183.Rmc.UTCTime;
+
+                        gGPS_Watchdog = gps_watchdog_timeout_ticks;
+
+                        bshow_tick = true;
                     }
                 } else
                     if( g_nNMEADebug ) {
@@ -6455,25 +6376,13 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
             }
 
             else
-                if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") ) {
+                if( m_NMEA0183.LastSentenceIDReceived == _T("HDT") ) {
                     if( m_NMEA0183.Parse() ) {
-                        if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
-                            gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
-
-                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) ) {
-                                if( m_NMEA0183.Hdg.MagneticVariationDirection == East ) gVar =
-                                        m_NMEA0183.Hdg.MagneticVariationDegrees;
-                                else
-                                    if( m_NMEA0183.Hdg.MagneticVariationDirection == West ) gVar =
-                                            -m_NMEA0183.Hdg.MagneticVariationDegrees;
-
-                                g_bVARValid = true;
-                                g_bVAR_Rx = true;
-                                gVAR_Watchdog = gps_watchdog_timeout_ticks;
-                            }
-
-                            g_bHDxValid = true;
-                            gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                        if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) ) {
+                            gHdt = m_NMEA0183.Hdt.DegreesTrue;
+                            g_bHDTValid = true;
+                            g_bHDT_Rx = true;
+                            gHDT_Watchdog = gps_watchdog_timeout_ticks;
                         }
                     } else
                         if( g_nNMEADebug ) {
@@ -6487,10 +6396,22 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
                 }
 
                 else
-                    if( m_NMEA0183.LastSentenceIDReceived == _T("HDM") ) {
+                    if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") ) {
                         if( m_NMEA0183.Parse() ) {
-                            if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) ) {
-                                gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
+                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
+                                gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+
+                                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) ) {
+                                    if( m_NMEA0183.Hdg.MagneticVariationDirection == East ) gVar =
+                                            m_NMEA0183.Hdg.MagneticVariationDegrees;
+                                    else
+                                        if( m_NMEA0183.Hdg.MagneticVariationDirection == West ) gVar =
+                                                -m_NMEA0183.Hdg.MagneticVariationDegrees;
+
+                                    g_bVARValid = true;
+                                    g_bVAR_Rx = true;
+                                    gVAR_Watchdog = gps_watchdog_timeout_ticks;
+                                }
 
                                 g_bHDxValid = true;
                                 gHDx_Watchdog = gps_watchdog_timeout_ticks;
@@ -6507,12 +6428,14 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
                     }
 
                     else
-                        if( m_NMEA0183.LastSentenceIDReceived == _T("VTG") ) {
+                        if( m_NMEA0183.LastSentenceIDReceived == _T("HDM") ) {
                             if( m_NMEA0183.Parse() ) {
-                                if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) ) gSog =
-                                        m_NMEA0183.Vtg.SpeedKnots;
-                                if( !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) ) gCog =
-                                        m_NMEA0183.Vtg.TrackDegreesTrue;
+                                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) ) {
+                                    gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
+
+                                    g_bHDxValid = true;
+                                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                                }
                             } else
                                 if( g_nNMEADebug ) {
                                     wxString msg( _T("   ") );
@@ -6521,15 +6444,16 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
                                     msg.Append( str_buf );
                                     wxLogMessage( msg );
                                 }
+
                         }
 
                         else
-                            if( m_NMEA0183.LastSentenceIDReceived == _T("GSV") ) {
+                            if( m_NMEA0183.LastSentenceIDReceived == _T("VTG") ) {
                                 if( m_NMEA0183.Parse() ) {
-                                    g_SatsInView = m_NMEA0183.Gsv.SatsInView;
-                                    gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                                    g_bSatValid = true;
-
+                                    if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) ) gSog =
+                                            m_NMEA0183.Vtg.SpeedKnots;
+                                    if( !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) ) gCog =
+                                            m_NMEA0183.Vtg.TrackDegreesTrue;
                                 } else
                                     if( g_nNMEADebug ) {
                                         wxString msg( _T("   ") );
@@ -6541,37 +6465,12 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
                             }
 
                             else
-                                if( g_bUseGLL && m_NMEA0183.LastSentenceIDReceived == _T("GLL") ) {
+                                if( m_NMEA0183.LastSentenceIDReceived == _T("GSV") ) {
                                     if( m_NMEA0183.Parse() ) {
-                                        if( m_NMEA0183.Gll.IsDataValid == NTrue ) {
-                                            if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) ) {
-                                                double llt =
-                                                        m_NMEA0183.Gll.Position.Latitude.Latitude;
-                                                int lat_deg_int = (int) ( llt / 100 );
-                                                double lat_deg = lat_deg_int;
-                                                double lat_min = llt - ( lat_deg * 100 );
-                                                gLat = lat_deg + ( lat_min / 60. );
-                                                if( m_NMEA0183.Gll.Position.Latitude.Northing
-                                                        == South ) gLat = -gLat;
-                                            }
+                                        g_SatsInView = m_NMEA0183.Gsv.SatsInView;
+                                        gSAT_Watchdog = sat_watchdog_timeout_ticks;
+                                        g_bSatValid = true;
 
-                                            if( !wxIsNaN(m_NMEA0183.Gll.Position.Longitude.Longitude) ) {
-                                                double lln =
-                                                        m_NMEA0183.Gll.Position.Longitude.Longitude;
-                                                int lon_deg_int = (int) ( lln / 100 );
-                                                double lon_deg = lon_deg_int;
-                                                double lon_min = lln - ( lon_deg * 100 );
-                                                gLon = lon_deg + ( lon_min / 60. );
-                                                if( m_NMEA0183.Gll.Position.Longitude.Easting
-                                                        == West ) gLon = -gLon;
-                                            }
-
-                                            sfixtime = m_NMEA0183.Gll.UTCTime;
-
-                                            gGPS_Watchdog = gps_watchdog_timeout_ticks;
-
-                                            bshow_tick = true;
-                                        }
                                     } else
                                         if( g_nNMEADebug ) {
                                             wxString msg( _T("   ") );
@@ -6583,39 +6482,34 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
                                 }
 
                                 else
-                                    if( m_NMEA0183.LastSentenceIDReceived == _T("GGA") ) {
+                                    if( g_bUseGLL && m_NMEA0183.LastSentenceIDReceived == _T("GLL") ) {
                                         if( m_NMEA0183.Parse() ) {
-                                            if( m_NMEA0183.Gga.GPSQuality > 0 ) {
+                                            if( m_NMEA0183.Gll.IsDataValid == NTrue ) {
                                                 if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) ) {
                                                     double llt =
-                                                            m_NMEA0183.Gga.Position.Latitude.Latitude;
+                                                            m_NMEA0183.Gll.Position.Latitude.Latitude;
                                                     int lat_deg_int = (int) ( llt / 100 );
                                                     double lat_deg = lat_deg_int;
                                                     double lat_min = llt - ( lat_deg * 100 );
                                                     gLat = lat_deg + ( lat_min / 60. );
-                                                    if( m_NMEA0183.Gga.Position.Latitude.Northing
+                                                    if( m_NMEA0183.Gll.Position.Latitude.Northing
                                                             == South ) gLat = -gLat;
                                                 }
 
-                                                if( !wxIsNaN(m_NMEA0183.Gga.Position.Longitude.Longitude) ) {
+                                                if( !wxIsNaN(m_NMEA0183.Gll.Position.Longitude.Longitude) ) {
                                                     double lln =
-                                                            m_NMEA0183.Gga.Position.Longitude.Longitude;
+                                                            m_NMEA0183.Gll.Position.Longitude.Longitude;
                                                     int lon_deg_int = (int) ( lln / 100 );
                                                     double lon_deg = lon_deg_int;
                                                     double lon_min = lln - ( lon_deg * 100 );
                                                     gLon = lon_deg + ( lon_min / 60. );
-                                                    if( m_NMEA0183.Gga.Position.Longitude.Easting
+                                                    if( m_NMEA0183.Gll.Position.Longitude.Easting
                                                             == West ) gLon = -gLon;
                                                 }
 
-                                                sfixtime = m_NMEA0183.Gga.UTCTime;
+                                                sfixtime = m_NMEA0183.Gll.UTCTime;
 
                                                 gGPS_Watchdog = gps_watchdog_timeout_ticks;
-
-                                                g_SatsInView =
-                                                        m_NMEA0183.Gga.NumberOfSatellitesInUse;
-                                                gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                                                g_bSatValid = true;
 
                                                 bshow_tick = true;
                                             }
@@ -6628,42 +6522,99 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_NMEAEvent & event )
                                                 wxLogMessage( msg );
                                             }
                                     }
-    } else {
-        bis_recognized_sentence = false;
-        if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
-            g_total_NMEAerror_messages++;
-            wxString msg( _T("   Unrecognized NMEA Sentence...") );
-            msg.Append( str_buf );
-            wxLogMessage( msg );
+                                    else
+                                        if( m_NMEA0183.LastSentenceIDReceived == _T("GGA") ) {
+                                            if( m_NMEA0183.Parse() ) {
+                                                if( m_NMEA0183.Gga.GPSQuality > 0 ) {
+                                                    if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) ) {
+                                                        double llt =
+                                                                m_NMEA0183.Gga.Position.Latitude.Latitude;
+                                                        int lat_deg_int = (int) ( llt / 100 );
+                                                        double lat_deg = lat_deg_int;
+                                                        double lat_min = llt - ( lat_deg * 100 );
+                                                        gLat = lat_deg + ( lat_min / 60. );
+                                                        if( m_NMEA0183.Gga.Position.Latitude.Northing
+                                                                == South ) gLat = -gLat;
+                                                    }
+
+                                                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Longitude.Longitude) ) {
+                                                        double lln =
+                                                                m_NMEA0183.Gga.Position.Longitude.Longitude;
+                                                        int lon_deg_int = (int) ( lln / 100 );
+                                                        double lon_deg = lon_deg_int;
+                                                        double lon_min = lln - ( lon_deg * 100 );
+                                                        gLon = lon_deg + ( lon_min / 60. );
+                                                        if( m_NMEA0183.Gga.Position.Longitude.Easting
+                                                                == West ) gLon = -gLon;
+                                                    }
+
+                                                    sfixtime = m_NMEA0183.Gga.UTCTime;
+
+                                                    gGPS_Watchdog = gps_watchdog_timeout_ticks;
+
+                                                    g_SatsInView =
+                                                            m_NMEA0183.Gga.NumberOfSatellitesInUse;
+                                                    gSAT_Watchdog = sat_watchdog_timeout_ticks;
+                                                    g_bSatValid = true;
+
+                                                    bshow_tick = true;
+                                                }
+                                            } else
+                                                if( g_nNMEADebug ) {
+                                                    wxString msg( _T("   ") );
+                                                    msg.Append( m_NMEA0183.ErrorMessage );
+                                                    msg.Append( _T(" : ") );
+                                                    msg.Append( str_buf );
+                                                    wxLogMessage( msg );
+                                                }
+                                        }
+        } else {
+            bis_recognized_sentence = false;
+            if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
+                g_total_NMEAerror_messages++;
+                wxString msg( _T("   Unrecognized NMEA Sentence...") );
+                msg.Append( str_buf );
+                wxLogMessage( msg );
+            }
         }
-    }
 
-    //    Build and send a Position Fix event to PlugIns
-    if( bis_recognized_sentence ) {
-        if( g_pi_manager ) {
-            GenericPosDatEx GPSData;
-            GPSData.kLat = gLat;
-            GPSData.kLon = gLon;
-            GPSData.kCog = m_COGFiltered;
-            GPSData.kSog = m_SOGFiltered;
-            GPSData.kVar = gVar;
-            GPSData.kHdm = gHdm;
-            GPSData.kHdt = gHdt;
-
-            GPSData.nSats = g_SatsInView;
-
-            //TODO  This really should be the fix time obtained from the NMEA sentence.
-            //  To do this, we need to cleanly parse the NMEA date and time fields....
-            //  Until that is done, use the current system time.
-            wxDateTime now = wxDateTime::Now();
-            GPSData.FixTime = now.GetTicks();
-
-            g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
+        if (bis_recognized_sentence)
+        {
+            if (m_current_src_priority != event.GetPrority() || m_current_src_id != event.GetDataSource())
+            {
+                wxLogMessage(wxString::Format(_T("Changing NMEA Datasource to %s (Priority: %i)"), event.GetDataSource().c_str(), event.GetPrority()));
+                m_current_src_priority = event.GetPrority();
+                m_current_src_id = event.GetDataSource();
+            }
+            m_current_src_ticks = wxDateTime::Now().GetTicks();
         }
+
+        //    Build and send a Position Fix event to PlugIns
+        if( bis_recognized_sentence ) {
+            if( g_pi_manager ) {
+                GenericPosDatEx GPSData;
+                GPSData.kLat = gLat;
+                GPSData.kLon = gLon;
+                GPSData.kCog = m_COGFiltered;
+                GPSData.kSog = m_SOGFiltered;
+                GPSData.kVar = gVar;
+                GPSData.kHdm = gHdm;
+                GPSData.kHdt = gHdt;
+
+                GPSData.nSats = g_SatsInView;
+
+                //TODO  This really should be the fix time obtained from the NMEA sentence.
+                //  To do this, we need to cleanly parse the NMEA date and time fields....
+                //  Until that is done, use the current system time.
+                wxDateTime now = wxDateTime::Now();
+                GPSData.FixTime = now.GetTicks();
+
+                g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
+            }
+        }
+
+        if( bis_recognized_sentence ) PostProcessNNEA( bshow_tick, sfixtime );
     }
-
-    if( bis_recognized_sentence ) PostProcessNNEA( bshow_tick, sfixtime );
-
 }
 
 void MyFrame::OnEvtNMEA( wxCommandEvent & event )
@@ -6988,12 +6939,12 @@ void MyFrame::FilterCogSog( void )
 
 void MyFrame::StopSockets( void )
 {
-    if( g_pnmea ) g_pnmea->Pause();
+//TODO: Can be removed?
 }
 
 void MyFrame::ResumeSockets( void )
 {
-    if( g_pnmea ) g_pnmea->UnPause();
+//TODO: Can be removed?
 }
 
 void MyFrame::LoadHarmonics()
@@ -7502,7 +7453,6 @@ wxArrayString *EnumerateSerialPorts( void )
     if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
         wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Driver.") );
         preturn->Add( _T("GARMIN") );         // Add generic Garmin selectable device
-        g_bGarminPersistance = true;        // And record the existance
     }
 
 #if 0
@@ -7518,8 +7468,6 @@ wxArrayString *EnumerateSerialPorts( void )
         wxLogMessage(_T("Found Garmin Device."));
 
         preturn->Add(_T("GARMIN"));         // Add generic Garmin selectable device
-        g_bGarminPersistance = true;// And record the existance
-
     }
 #endif
 
@@ -7568,7 +7516,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREEN3;200;220;200;", "GREEN4;  0;255;  0;", "BLUE1; 170;170;255;", "BLUE2;  45; 45;170;",
         "BLUE3;   0;  0;255;", "GREY1; 200;200;200;", "GREY2; 230;230;230;", "RED1;  220;200;200;",
         "UBLCK;   0;  0;  0;", "UWHIT; 255;255;255;", "URED;  255;  0;  0;", "UGREN;   0;255;  0;",
-        "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;",
+        "YELO1; 243;229; 47;", "YELO2; 128; 80;  0;", "TEAL1;   0;128;128;",
         "DILG0; 238;239;242;",              // Dialog Background white
         "DILG1; 212;208;200;",              // Dialog Background
         "DILG2; 255;255;255;",              // Control Background
@@ -7589,7 +7537,7 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREEN4;  0;128;  0;", "BLUE1;  80; 80;160;", "BLUE2;  30; 30;120;", "BLUE3;   0;  0;128;",
         "GREY1; 100;100;100;", "GREY2; 128;128;128;", "RED1;  150;100;100;", "UBLCK;   0;  0;  0;",
         "UWHIT; 255;255;255;", "URED;  120; 54; 11;", "UGREN;  35;110; 20;", "YELO1; 120;115; 24;",
-        "YELO2;  64; 40;  0;",
+        "YELO2;  64; 40;  0;", "TEAL1;   0; 64; 64;",
         "DILG0; 110;110;110;",              // Dialog Background
         "DILG1; 110;110;110;",              // Dialog Background
         "DILG2;   0;  0;  0;",              // Control Background
@@ -7610,7 +7558,8 @@ static const char *usercolors[] = { "Table:DAY", "GREEN1;120;255;120;", "GREEN2;
         "GREEN4;  0; 64;  0;", "BLUE1;  60; 60;100;", "BLUE2;  22; 22; 85;", "BLUE3;   0;  0; 40;",
         "GREY1;  48; 48; 48;", "GREY2;  64; 64; 64;", "RED1;  100; 50; 50;", "UWHIT; 255;255;255;",
         "UBLCK;   0;  0;  0;", "URED;   60; 27;  5;", "UGREN;  17; 55; 10;", "YELO1;  60; 65; 12;",
-        "YELO2;  32; 20;  0;", "DILG0;  80; 80; 80;",              // Dialog Background
+        "YELO2;  32; 20;  0;", "TEAL1;   0; 32; 32;",
+        "DILG0;  80; 80; 80;",              // Dialog Background
         "DILG1;  80; 80; 80;",              // Dialog Background
         "DILG2;   0;  0;  0;",              // Control Background
         "DILG3;  65; 65; 65;",              // Text

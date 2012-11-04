@@ -41,7 +41,6 @@
 #include "routeman.h"
 #include "georef.h"
 #include "chartbase.h"
-#include "nmea.h"
 
 #define DIALOG_MARGIN 3
 
@@ -97,7 +96,6 @@ extern MyFrame          *gFrame;
 extern Select           *pSelect;
 extern double           gLat, gLon;
 extern double           gCog, gSog;
-extern NMEAHandler      *g_pnmea;
 extern bool             g_bShowLayers;
 extern wxString         g_default_wp_icon;
 
@@ -1241,7 +1239,7 @@ void RouteManagerDialog::OnRteSendToGPSClick( wxCommandEvent &event )
     pdlg->SetRoute( route );
 
     wxString source;
-    if( g_pnmea ) g_pnmea->GetSource( source );
+//    if( g_pnmea ) g_pnmea->GetSource( source );
 
     pdlg->Create( NULL, -1, _( "Send To GPS..." ), source );
     pdlg->ShowModal();
@@ -2004,7 +2002,7 @@ void RouteManagerDialog::OnWptSendToGPSClick( wxCommandEvent &event )
     pdlg->SetWaypoint( wp );
 
     wxString source;
-    if( g_pnmea ) g_pnmea->GetSource( source );
+//    if( g_pnmea ) g_pnmea->GetSource( source );
 
     pdlg->Create( NULL, -1, _( "Send To GPS..." ), source );
     pdlg->ShowModal();

@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
  *
@@ -152,6 +152,7 @@ enum
 class ChartBase;
 class wxSocketEvent;
 class ocpnToolBarSimple;
+class OCPN_DataStreamEvent;
 
 //    A small class used in an array to describe chart directories
 class ChartDirInfo
@@ -200,7 +201,7 @@ class MyFrame: public wxFrame
     bool DoChartUpdate(void);
     void OnEvtNMEA(wxCommandEvent& event);
     void OnEvtTHREADMSG(wxCommandEvent& event);
-    void OnEvtOCPN_NMEA(OCPN_NMEAEvent & event);
+    void OnEvtOCPN_NMEA(OCPN_DataStreamEvent & event);
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
 
@@ -367,14 +368,14 @@ class MyFrame: public wxFrame
     int                 m_ChartUpdatePeriod;
     bool                m_last_bGPSValid;
 
-    wxString            previous_NMEA_source;
-    bool                previous_bGarminHost;
-    wxString            previous_NMEA_APPort;
-    wxString            previous_AIS_Port;
     wxString            prev_locale;
     bool                bPrevQuilt;
     bool                bPrevFullScreenQuilt;
     bool                bPrevOGL;
+
+    int                 m_current_src_priority;
+    wxString            m_current_src_id;
+    time_t              m_current_src_ticks;
 
     DECLARE_EVENT_TABLE()
 };

@@ -69,10 +69,16 @@ void DashboardInstrument::OnEraseBackground(wxEraseEvent& WXUNUSED(evt))
 void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
 {
     wxBufferedPaintDC pdc( this );
-    if( !pdc.IsOk() ) return;
+    if( !pdc.IsOk() ) {
+        wxLogMessage( _T("DashboardInstrument::OnPaint() fatal: wxBufferedPaintDC.IsOk() false.") );
+        return;
+    }
 
     wxSize size = GetClientSize();
-    if( size.x == 0 || size.y == 0 ) return;
+    if( size.x == 0 || size.y == 0 ) {
+        wxLogMessage( _T("DashboardInstrument::OnPaint() fatal: Zero size DC.") );
+        return;
+    }
 
     wxBitmap bm( size.x, size.y, 32 );
     bm.UseAlpha();
@@ -133,7 +139,6 @@ wxSize DashboardInstrument_Single::GetSize( int orient, wxSize hint )
 void DashboardInstrument_Single::Draw(wxGCDC* dc)
 {
       wxColour cl;
-
       dc->SetFont(*g_pFontData);
       GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground(cl);
@@ -207,7 +212,6 @@ wxSize DashboardInstrument_Position::GetSize( int orient, wxSize hint )
 void DashboardInstrument_Position::Draw(wxGCDC* dc)
 {
       wxColour cl;
-
       dc->SetFont(*g_pFontData);
       GetGlobalColor(_T("DASHF"), &cl);
       dc->SetTextForeground(cl);

@@ -6,7 +6,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,7 +21,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
  */
@@ -42,6 +42,7 @@
 #include "ocpndc.h"
 #include "styles.h"
 #include "options.h"
+#include "multiplexer.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
@@ -52,7 +53,8 @@ extern wxLocale        *plocale_def_lang;
 extern ChartDB         *ChartData;
 extern MyFrame         *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern options                *g_pOptions;
+extern options         *g_pOptions;
+extern Multiplexer     *g_pMUX;
 
 //    Some static helper funtions
 //    Scope is local to this module
@@ -608,7 +610,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     //    If in OpenGL mode, and the PlugIn has requested OpenGL render callbacks,
                     //    then there is no need to render by wxDC here.
                     if(pic->m_cap_flag & WANTS_OPENGL_OVERLAY_CALLBACK)
-                        return false;
+                        continue;
 
 
                     if((m_cached_overlay_bm.GetWidth() != vp.pix_width) || (m_cached_overlay_bm.GetHeight() != vp.pix_height))
@@ -1473,23 +1475,10 @@ bool AddLocaleCatalog( wxString catalog )
 
 void PushNMEABuffer( wxString buf )
 {
-    if ( buf.Mid(1,2).IsSameAs(_T("AI")) || // AIALR AITXT AIVDM AIVDO
-            buf.Mid(1,4).IsSameAs(_T("CDDS")) || // DSC position message
-            buf.Mid(1,5).IsSameAs(_T("FRPOS")) ) // GpsGate position message
-    {
-        OCPN_AISEvent event( wxEVT_OCPN_AIS, 0 );
-//            event.SetEventObject( (wxObject *)this );
-        event.SetExtraLong(EVT_AIS_PARSE_RX);
-        event.SetNMEAString( buf );
-        g_pAIS->AddPendingEvent( event );
-    }
-    else
-    {
-        OCPN_NMEAEvent event( wxEVT_OCPN_NMEA, 0 );
-        event.SetNMEAString( buf );
-        wxFrame       *pParent = s_ppim->GetParentFrame();
-        pParent->GetEventHandler()->AddPendingEvent( event );
-    }
+    OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
+    event.SetNMEAString( buf );
+
+    g_pMUX->AddPendingEvent( event );
 }
 
 wxXmlDocument GetChartDatabaseEntryXML(int dbIndex, bool b_getGeom)

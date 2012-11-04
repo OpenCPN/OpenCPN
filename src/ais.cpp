@@ -22,21 +22,6 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
- * 2010/02/10 23:00 pjotrc
- * - add pleasure craft type
- *
- * 2010/02/07 12:30 pjotrc
- * - fix NMEA checksum
- * - fix unitialized: ROTAIS, IMO, ShipType
- * - change annot. of s/v
- *
- * 2010/02/01 17:30 pjotrc
- * - implement AIS AtoN
- *
- * 2010/01/31 16:17:00 pjotrc
- * - change condition for skipping moored/anchored targets
- *
- *
  */
 
 #include "wx/wx.h"
@@ -54,17 +39,15 @@
 
 #include "ais.h"
 #include "chart1.h"
-#include "nmea.h"           // for AIS Muxed data stream
 #include "navutil.h"        // for Select
 #include "georef.h"
 #include "pluginmanager.h"  // for PlugInManager
 #include "styles.h"
+#include "datastream.h"
 
-extern  OCP_AIS_Thread  *pAIS_Thread;
 extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;
 extern  double          gLat, gLon, gSog, gCog;
-extern  bool            g_bGPSAISMux;
 extern FontMgr          *pFontMgr;
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
@@ -86,6 +69,7 @@ extern bool             g_bAISShowTracks;
 extern double           g_AISShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
+extern bool             g_bShowAllCPA;
 
 extern bool             g_bGPSAISMux;
 extern ColorScheme      global_color_scheme;
@@ -99,8 +83,6 @@ extern int              g_ais_alert_dialog_x, g_ais_alert_dialog_y;
 extern int              g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
 extern wxString         g_sAIS_Alert_Sound_File;
 
-extern int              g_nNMEADebug;
-extern int              g_total_NMEAerror_messages;
 extern AISTargetListDialog    *g_pAISTargetList;
 extern int              g_AisTargetList_range;
 extern wxString         g_AisTargetList_perspective;
@@ -121,11 +103,6 @@ extern bool             bGPSValid;
 extern PlugInManager    *g_pi_manager;
 extern TTYWindow        *g_NMEALogWindow;
 extern ocpnStyle::StyleManager* g_StyleManager;
-
-//    A static structure storing generic position data
-//    Used to communicate  AIVDO events to main application loop
-static      GenericPosDatEx     AISPositionData;
-extern ComPortManager   *g_pCommMan;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -443,27 +420,6 @@ wxString trimAISField( char *data )
     return field;
 }
 
-//------------------------------------------------------------------------------
-//    AIS Event Implementation
-//------------------------------------------------------------------------------
-DEFINE_EVENT_TYPE(wxEVT_OCPN_AIS)
-
-OCPN_AISEvent::OCPN_AISEvent( wxEventType commandType, int id )
-      :wxEvent(id, commandType)
-{
-}
-
-OCPN_AISEvent::~OCPN_AISEvent( )
-{
-}
-
-wxEvent* OCPN_AISEvent::Clone() const
-{
-      OCPN_AISEvent *newevent=new OCPN_AISEvent(*this);
-      newevent->m_NMEAstring=this->m_NMEAstring.c_str();  // this enforces a deep copy of the string data
-      return newevent;
-}
-
 //---------------------------------------------------------------------------------
 //
 //  AIS_Target_Data Implementation
@@ -475,7 +431,7 @@ AIS_Target_Data::AIS_Target_Data()
     strncpy(CallSign, "       ", 8);
     strncpy(Destination, "                    ", 21);
     ShipNameExtension[0] = 0;
-    b_show_AIS_CPA = false;
+    b_show_AIS_CPA = false;             
 
     SOG = 555.;
     COG = 666.;
@@ -1187,45 +1143,26 @@ static bool b_firstrx;
 static int first_rx_ticks;
 static int rx_ticks;
 
-AIS_Decoder::AIS_Decoder( int handler_id, wxFrame *pParent, const wxString& AISDataSource,
-        wxMutex *pGPSMutex )
+AIS_Decoder::AIS_Decoder()
 {
-    m_handler_id = handler_id;
     AISTargetList = new AIS_Target_Hash;
+
     BuildERIShipTypeHash();
-    m_pShareGPSMutex = pGPSMutex;
-    m_parent_frame = pParent;
-    m_pMainEventHandler = pParent->GetEventHandler();
+
     g_pais_alert_dialog_active = NULL;
     m_bAIS_Audio_Alert_On = false;
+
     m_n_targets = 0;
 
-    OpenDataSource( pParent, AISDataSource );
-
-    //  Create/connect a dynamic event handler slot for OCPN_AISEvent(s) coming from AIS thread
-    Connect( wxEVT_OCPN_AIS, (wxObjectEventFunction) (wxEventFunction) &AIS_Decoder::OnEvtAIS );
+    TimerAIS.SetOwner(this, TIMER_AIS1);
+    TimerAIS.Start(TIMER_AIS_MSEC,wxTIMER_CONTINUOUS);
+    
+    //  Create/connect a dynamic event handler slot for wxEVT_OCPN_DATASTREAM(s)
+    Connect(wxEVT_OCPN_DATASTREAM, (wxObjectEventFunction)(wxEventFunction)&AIS_Decoder::OnEvtAIS); 
 }
 
 AIS_Decoder::~AIS_Decoder( void )
 {
-    if( pAIS_Thread ) {
-        wxLogMessage( _T("Stopping AIS Secondary Thread") );
-
-        m_Thread_run_flag = 0;
-        int tsec = 5;
-        while( ( m_Thread_run_flag >= 0 ) && ( tsec-- ) ) {
-            wxSleep( 1 );
-        }
-
-        wxString msg;
-        if( m_Thread_run_flag < 0 ) msg.Printf( _T("Stopped in %d sec."), 5 - tsec );
-        else
-            msg.Printf( _T("Not Stopped after 5 sec.") );
-        wxLogMessage( msg );
-
-        pAIS_Thread = NULL;
-    }
-
     AIS_Target_Hash::iterator it;
     AIS_Target_Hash *current_targets = GetTargetList();
 
@@ -1236,18 +1173,6 @@ AIS_Decoder::~AIS_Decoder( void )
     }
 
     delete current_targets;
-
-#ifndef OCPN_NO_SOCKETS
-    //    Kill off the TCP/IP Socket if alive
-    if( m_sock ) {
-        m_sock->Notify( FALSE );
-        m_sock->Destroy();
-        TimerAIS.Stop();
-    }
-#endif
-
-    wxDateTime now = wxDateTime::Now();
-    now.MakeGMT();
 
 #ifdef AIS_DEBUG
     printf("First message[1, 2] ticks: %d  Last Message [1,2]ticks %d  Difference:  %d\n", first_rx_ticks, rx_ticks, rx_ticks - first_rx_ticks);
@@ -1329,112 +1254,24 @@ void AIS_Decoder::BuildERIShipTypeHash(void)
 }
 
 //----------------------------------------------------------------------------------
-//     Handle events from AIS Serial Port RX thread
+//     Handle events from AIS DataStream
 //----------------------------------------------------------------------------------
-void AIS_Decoder::OnEvtAIS( OCPN_AISEvent& event )
+void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
 {
-    switch( event.GetExtraLong() ){
-        case EVT_AIS_PARSE_RX: {
-            wxString message = event.GetNMEAString();
+    wxString message = event.GetNMEAString();
 
-            int nr = 0;
-            if( !message.IsEmpty() ) {
-                if( g_NMEALogWindow ) {
-                    wxDateTime now = wxDateTime::Now();
-                    wxString ss = now.FormatISOTime();
-                    ss.Append( _T("  ") );
-                    ss.Append( message );
-                    g_NMEALogWindow->Add( ss );
-                    g_NMEALogWindow->Refresh( false );
-                }
-
-                if( message.Mid( 3, 3 ).IsSameAs( _T("VDM") )
-                        || message.Mid( 3, 3 ).IsSameAs( _T("VDO") )
-                        || message.Mid( 1, 5 ).IsSameAs( _T("FRPOS") )
-                        || message.Mid( 1, 2 ).IsSameAs( _T("CD") ) ) {
-                    nr = Decode( message );
-                    if( message.Mid( 3, 3 ).IsSameAs( _T("VDO") ) ) {
-                        //    This is an ownship message, presumably from a transponder
-                        //    Simulate an ownship GPS position report upstream for message IDs 1,2,3
-
-                        if( m_pLatestTargetData && ( nr == AIS_NoError ) && g_bGPSAISMux
-                                && !m_pLatestTargetData->b_positionDoubtful
-                                && m_pLatestTargetData->b_positionOnceValid ) {
-                            switch( m_pLatestTargetData->MID ){
-                                case 1:
-                                case 2:
-                                case 3:
-                                case 18: {
-                                    AISPositionData.kLat = m_pLatestTargetData->Lat;
-                                    AISPositionData.kLon = m_pLatestTargetData->Lon;
-
-                                    if( m_pLatestTargetData->COG == 360.0 )
-                                        AISPositionData.kCog = NAN;
-                                    else
-                                        AISPositionData.kCog = m_pLatestTargetData->COG;
-
-                                    if( m_pLatestTargetData->SOG > 102.2 )
-                                        AISPositionData.kSog = NAN;
-                                    else
-                                        AISPositionData.kSog = m_pLatestTargetData->SOG;
-
-                                    if( (int) m_pLatestTargetData->HDG == 511 )
-                                        AISPositionData.kHdt = NAN;
-                                    else
-                                        AISPositionData.kHdt = m_pLatestTargetData->HDG;
-
-                                    //  VDO messages do not contain variation or magnetic heading
-                                    AISPositionData.kVar = NAN;
-                                    AISPositionData.kHdm = NAN;
-
-                                    wxCommandEvent event( EVT_NMEA, m_handler_id );
-                                    event.SetEventObject( (wxObject *) this );
-                                    event.SetExtraLong( EVT_NMEA_DIRECT );
-                                    event.SetClientData( &AISPositionData );
-                                    m_pMainEventHandler->AddPendingEvent( event );
-                                    break;
-                                }
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                    g_pi_manager->SendAISSentenceToAllPlugIns( message );
-
-                    gFrame->TouchAISActive();
-
-                } else {
-                    if( g_bGPSAISMux ) Parse_And_Send_Posn( message );
-                }
-            }
-            break;
-        }       //case
-    }           // switch
-}
-
-void AIS_Decoder::ThreadMessage( const wxString &msg )
-{
-    //    Signal the main program thread
-    wxCommandEvent event( EVT_THREADMSG );
-    event.SetEventObject( (wxObject *) this );
-    event.SetString( msg );
-    m_pMainEventHandler->AddPendingEvent( event );
-}
-
-void AIS_Decoder::Parse_And_Send_Posn( wxString &message )
-{
-    if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
-        g_total_NMEAerror_messages++;
-        wxString msg( _T("AIS.NMEA Sentence received...") );
-        msg.Append( message );
-        ThreadMessage( msg );
+    int nr = 0;
+    if( !message.IsEmpty() ) 
+    {
+        if( message.Mid( 3, 3 ).IsSameAs( _T("VDM") ) ||
+            message.Mid( 3, 3 ).IsSameAs( _T("VDO") ) ||
+            message.Mid( 1, 5 ).IsSameAs( _T("FRPOS") ) ||
+            message.Mid( 1, 2 ).IsSameAs( _T("CD") ) )
+        {
+                nr = Decode( message );
+                gFrame->TouchAISActive();
+        }         
     }
-
-    OCPN_NMEAEvent Nevent( wxEVT_OCPN_NMEA, 0 );
-    Nevent.SetNMEAString( message );
-    m_pMainEventHandler->AddPendingEvent( Nevent );
-
-    return;
 }
 
 //----------------------------------------------------------------------------------
@@ -1466,23 +1303,11 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     if( str.Len() > 100 ) return AIS_NMEAVDX_TOO_LONG;
 
     if( !NMEACheckSumOK( str ) ) {
-        if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
-            g_total_NMEAerror_messages++;
-            wxString msg( _T("   AIS checksum bad, continuing...") );
-            msg.Append( str );
-            ThreadMessage( msg );
-        } else
             return AIS_NMEAVDX_CHECKSUM_BAD;
     }
     if( str.Mid( 1, 2 ).IsSameAs( _T("CD") ) ) {
         // parse a DSC Position message            $CDDSx,.....
         //  Use a tokenizer to pull out the first 9 fields
-        if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
-            g_total_NMEAerror_messages++;
-            wxString msg( _T("CDDSx Sentence received...") );
-            ThreadMessage( msg );
-        }
-
         wxString string( str );
         wxStringTokenizer tkz( string, _T(",*") );
 
@@ -1553,12 +1378,6 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         // parse a GpsGate Position message            $FRPOS,.....
 
         //  Use a tokenizer to pull out the first 9 fields
-        if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
-            g_total_NMEAerror_messages++;
-            wxString msg( _T("AIS.FRPOS Sentence received...") );
-            ThreadMessage( msg );
-        }
-
         wxString string( str );
         wxStringTokenizer tkz( string, _T(",*") );
 
@@ -1764,16 +1583,6 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         } else
             bdecode_result = Parse_VDXBitstring( &strbit, pTargetData );       // Parse the new data
 
-        if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
-            g_total_NMEAerror_messages++;
-            wxString msg( _T("   AIS Target data...") );
-            wxString item;
-            item.Printf( _T("MMSI: %d LAT %10.5f LON %10.5f"), pTargetData->MMSI, pTargetData->Lat,
-                    pTargetData->Lon );
-            msg.Append( item );
-            ThreadMessage( msg );
-        }
-
         //  pTargetData is valid, either new or existing. Continue processing
 
         m_pLatestTargetData = pTargetData;
@@ -1814,16 +1623,6 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         }
 
         ret = AIS_NoError;
-
-        if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) // debug pjotrc
-                {
-            g_total_NMEAerror_messages++;
-            wxString msg( _T("   AIS sentence decoded...") );
-            wxString item;
-            item.Printf( _T("MMSI: %09d"), pTargetData->MMSI );
-            msg.Append( item );
-            ThreadMessage( msg );
-        }
 
     } else
         ret = AIS_Partial;                // accumulating parts of a multi-sentence message
@@ -2146,16 +1945,6 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
                 ptd->PositionReportTicks = now.GetTicks();
             } else
                 ptd->b_positionDoubtful = true;
-
-            if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
-                g_total_NMEAerror_messages++;
-                wxString msg( _T("   AIS type 21...(MMSI, lon, lat:") );
-                wxString item;
-                item.Printf( _T("%09d, %10.5f, %10.5f"), ptd->MMSI, ptd->Lon, ptd->Lat );
-                msg.Append( item );
-                msg.Append( _T(" ) ") );
-                ThreadMessage( msg );
-            }
 
             b_posn_report = true;
             break;
@@ -2608,218 +2397,6 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
     }
 }
 
-//------------------------------------------------------------------------------------
-//
-//      AIS Data Source Support
-//
-//------------------------------------------------------------------------------------
-
-AIS_Error AIS_Decoder::OpenDataSource( wxFrame *pParent, const wxString& AISDataSource )
-{
-    pAIS_Thread = NULL;
-    m_OK = false;
-
-    TimerAIS.SetOwner( this, TIMER_AIS1 );
-    TimerAIS.Stop();
-
-    m_data_source_string = AISDataSource;
-
-//      Create and manage AIS data stream source
-
-//    Decide upon source
-    wxString msg( _T("AIS Data Source is....") );
-    msg.Append( m_data_source_string );
-    wxLogMessage( msg );
-
-#ifndef OCPN_NO_SOCKETS
-    m_sock = NULL;
-
-//      Data Source is private TCP/IP Server
-    if( m_data_source_string.Contains( _T("TCP/IP") ) ) {
-        wxString AIS_data_ip;
-        AIS_data_ip = m_data_source_string.Mid( 7 );         // extract the IP
-
-// Create the socket
-        m_sock = new wxSocketClient();
-
-// Setup the event handler and subscribe to most events
-        m_sock->SetEventHandler( *this, AIS_SOCKET_ID );
-
-        m_sock->SetNotify( wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG );
-        m_sock->Notify( TRUE );
-
-        m_busy = FALSE;
-
-//    Build the target address
-
-//    n.b. Win98
-//    wxIPV4address::Hostname() uses sockets function gethostbyname() for address resolution
-//    Implications...Either name target must exist in c:\windows\hosts, or
-//                            a DNS server must be active on the network.
-//    If neither true, then wxIPV4address::Hostname() will block (forever?)....
-//
-//    Workaround....
-//    Use a thread to try the name lookup, in case it hangs
-
-        DNSTestThread *ptest_thread = NULL;
-        ptest_thread = new DNSTestThread( AIS_data_ip );
-
-        ptest_thread->Run();                      // Run the thread from ::Entry()
-
-//    Sleep and loop for N seconds
-#define SLEEP_TEST_SEC  2
-
-        for( int is = 0; is < SLEEP_TEST_SEC * 10; is++ ) {
-            wxMilliSleep( 100 );
-            if( s_dns_test_flag ) break;
-        }
-
-        if( !s_dns_test_flag ) {
-
-            wxString msg( AIS_data_ip );
-            msg.Prepend( _("Could not resolve TCP/IP host '") );
-            msg.Append( _("'\n Suggestion: Try 'xxx.xxx.xxx.xxx' notation") );
-            OCPNMessageDialog md( pParent, msg, _("OpenCPN Message"), wxICON_ERROR );
-            md.ShowModal();
-
-            m_sock->Notify( FALSE );
-            m_sock->Destroy();
-            m_sock = NULL;
-
-            return AIS_NO_TCP;
-        }
-
-        //      Resolved the name, somehow, so Connect() the socket
-        addr.Hostname( AIS_data_ip );
-        addr.Service( 3047/*GPSD_PORT_NUMBER*/);
-        m_sock->Connect( addr, FALSE );       // Non-blocking connect
-        m_OK = true;
-    }
-
-#endif
-
-//    AIS Data Source is specified serial port
-
-    if( m_data_source_string.Contains( _T("Serial") ) ) {
-        wxString comx;
-//          comx =  m_pdata_source_string->Mid(7);        // either "COM1" style or "/dev/ttyS0" style
-        comx = m_data_source_string.AfterFirst( ':' );      // strip "Serial:"
-
-#ifdef __WXMSW__
-        wxString mcomx = comx;
-        comx.Prepend( _T("\\\\.\\") );      // Required for access to Serial Ports greater than COM9
-
-//  As a quick check, verify that the specified port is available
-        HANDLE m_hSerialComm = CreateFile( comx.c_str(),       // Port Name
-                GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL );
-
-        if( m_hSerialComm == INVALID_HANDLE_VALUE ) {
-            wxString msg( mcomx );
-            msg.Prepend( _("  Could not open AIS serial port '") );
-            msg.Append( _("'\nSuggestion: Try closing other applications.") );
-            OCPNMessageDialog md( pParent, msg, _("OpenCPN Message"), wxICON_ERROR );
-            md.ShowModal();
-
-            return AIS_NO_SERIAL;
-        }
-
-        else
-            CloseHandle( m_hSerialComm );
-
-        pAIS_Thread = new OCP_AIS_Thread( this, comx );
-        m_Thread_run_flag = 1;
-        pAIS_Thread->Run();
-#endif
-
-#ifdef __POSIX__
-//    Kick off the NMEA RX thread
-        pAIS_Thread = new OCP_AIS_Thread(this, comx);
-        m_Thread_run_flag = 1;
-        pAIS_Thread->Run();
-#endif
-
-        m_OK = true;
-    }
-
-    if( m_OK ) TimerAIS.Start( TIMER_AIS_MSEC, wxTIMER_CONTINUOUS );
-
-    return AIS_NoError;
-
-}
-
-void AIS_Decoder::GetSource( wxString& source )
-{
-    source = m_data_source_string;
-}
-
-void AIS_Decoder::Pause( void )
-{
-    TimerAIS.Stop();
-
-#ifndef OCPN_NO_SOCKETS
-    if( m_sock ) m_sock->Notify( FALSE );
-#endif
-}
-
-void AIS_Decoder::UnPause( void )
-{
-    TimerAIS.Start( TIMER_AIS_MSEC, wxTIMER_CONTINUOUS );
-
-#ifndef OCPN_NO_SOCKETS
-    if( m_sock ) m_sock->Notify( TRUE );
-#endif
-}
-
-void AIS_Decoder::OnSocketEvent( wxSocketEvent& event )
-{
-#ifndef OCPN_NO_SOCKETS
-
-#define RD_BUF_SIZE    200
-
-    int nBytes;
-    char *bp;
-    char buf[RD_BUF_SIZE + 1];
-    int char_count;
-
-    switch( event.GetSocketEvent() ){
-        case wxSOCKET_INPUT:                     // from  Daemon
-            m_sock->SetFlags( wxSOCKET_NOWAIT );
-
-//          Read the reply, one character at a time, looking for 0x0a (lf)
-            bp = buf;
-            char_count = 0;
-
-            while( char_count < RD_BUF_SIZE ) {
-                m_sock->Read( bp, 1 );
-                nBytes = m_sock->LastCount();
-                if( *bp == 0x0a ) {
-                    bp++;
-                    break;
-                }
-
-                bp++;
-                char_count++;
-            }
-
-            *bp = 0;                        // end string
-
-//          Validate the string
-
-            if( !strncmp( (const char *) buf, "!AIVDM", 6 ) ) {
-//                  Decode(buf);
-
-//    Signal the main program thread
-
-            }
-
-        case wxSOCKET_LOST:
-        case wxSOCKET_CONNECTION:
-        default:
-            break;
-    }
-#endif
-}
-
 void AIS_Decoder::OnTimerAISAudio( wxTimerEvent& event )
 {
     if( g_bAIS_CPA_Alert_Audio && m_bAIS_Audio_Alert_On ) {
@@ -3023,535 +2600,6 @@ AIS_Target_Data *AIS_Decoder::Get_Target_Data_From_MMSI( int mmsi )
         return ( *AISTargetList )[mmsi];          // find current entry
 }
 
-//-------------------------------------------------------------------------------------------------------------
-//
-//    AIS Serial Input Thread
-//
-//    This thread manages reading the AIS data stream from the declared serial port
-//
-//-------------------------------------------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------------------------------------------
-//    OCP_AIS_Thread Implementation
-//-------------------------------------------------------------------------------------------------------------
-
-//    ctor
-
-OCP_AIS_Thread::OCP_AIS_Thread( AIS_Decoder *pParent, const wxString& PortName )
-{
-
-    m_pParentEventHandler = pParent;
-
-    m_pPortName = new wxString( PortName );
-
-    rx_buffer = new char[RX_BUFFER_SIZE + 1];
-    temp_buf = new char[RX_BUFFER_SIZE + 1];
-
-    put_ptr = rx_buffer;
-    tak_ptr = rx_buffer;
-    nl_count = 0;
-
-    Create();
-}
-
-OCP_AIS_Thread::~OCP_AIS_Thread( void )
-{
-    delete m_pPortName;
-    delete rx_buffer;
-    delete temp_buf;
-
-}
-
-void OCP_AIS_Thread::OnExit( void )
-{
-    //  Mark the global status as dead, gone
-    pAIS_Thread = NULL;
-}
-
-bool OCP_AIS_Thread::HandleRead( char *buf, int character_count )
-{
-    // Copy the characters into circular buffer
-
-    char *bp = buf;
-    int ichar = character_count;
-    while( ichar ) {
-        // keep track of how many nl in the buffer
-        if( 0x0a == *bp ) nl_count++;
-
-        *put_ptr++ = *bp++;
-        if( ( put_ptr - rx_buffer ) > RX_BUFFER_SIZE ) put_ptr = rx_buffer;
-
-        ichar--;
-    }
-
-    if( nl_count < 0 )                // "This will never happen..."
-    nl_count = 0;
-
-    // If there are any nl's in the buffer
-    // There is at least one sentences in the buffer,
-    // plus maybe a partial
-    // Try hard to send multiple sentences
-
-    if( nl_count ) {
-        bool bmore_data = true;
-
-        while( ( bmore_data ) && ( nl_count ) ) {
-            if( put_ptr != tak_ptr ) {
-                //copy the buffer, looking for nl
-                char *tptr;
-                char *ptmpbuf;
-
-                tptr = tak_ptr;
-                ptmpbuf = temp_buf;
-
-                while( ( *tptr != 0x0a ) && ( tptr != put_ptr ) ) {
-                    *ptmpbuf++ = *tptr++;
-
-                    if( ( tptr - rx_buffer ) > RX_BUFFER_SIZE ) tptr = rx_buffer;
-                }
-
-                if( ( *tptr == 0x0a ) && ( tptr != put_ptr ) )               // well formed sentence
-                        {
-                    *ptmpbuf++ = *tptr++;
-                    if( ( tptr - rx_buffer ) > RX_BUFFER_SIZE ) tptr = rx_buffer;
-
-                    *ptmpbuf = 0;
-
-                    tak_ptr = tptr;
-
-                    //    Signal the parent program thread
-
-                    OCPN_AISEvent event( wxEVT_OCPN_AIS, ID_AIS_WINDOW );
-                    event.SetEventObject( (wxObject *) this );
-                    event.SetExtraLong( EVT_AIS_PARSE_RX );
-                    event.SetNMEAString( wxString( temp_buf, wxConvUTF8 ) );
-                    m_pParentEventHandler->AddPendingEvent( event );
-                    nl_count--;
-                }   // if good sentence
-                else                                 // partial sentence
-                {
-                    bmore_data = false;
-                }
-
-            }   // if data
-            else {
-                bmore_data = false;                  // no more data in buffer
-            }
-
-        }       // while
-    }       // if nl
-
-    return true;
-}
-
-//      Sadly, the thread itself must implement the underlying OS serial port
-//      in a very machine specific way....
-
-#ifdef __POSIX__
-//    Entry Point
-void *OCP_AIS_Thread::Entry()
-{
-#if 0
-    // testing direct file read of AIS data stream
-    char buf[100];
-    wxFile f("/home/dsr/Desktop/Downloads/SIITECHBIG.TXT");
-    if(f.IsOpened())
-    int yyo = 5;
-
-    wxFileInputStream stream(f);
-
-    if(stream.IsOk())
-    int yyp = 5;
-
-    while(!stream.Eof())
-    {
-        stream.Read(buf, 40);
-        HandleRead(buf, 40);                   // Read completed successfully.
-    }
-
-    return 0;
-#endif
-    // Allocate the termios data structures
-
-    pttyset = (termios *)calloc(sizeof (termios), 1);
-    pttyset_old = (termios *)malloc(sizeof (termios));
-
-    // Open the requested port.
-    //   using O_NDELAY to force ignore of DCD (carrier detect) MODEM line
-    if ((m_ais_fd = open(m_pPortName->fn_str(), O_RDWR|O_NDELAY|O_NOCTTY)) < 0)
-    {
-        wxString msg(_T("AIS input device open failed: "));
-        msg.Append(*m_pPortName);
-        wxLogMessage(msg);
-        return 0;
-    }
-
-    /*
-     A special test for a user defined FIFO
-     To use this method, do the following:
-     a.  Create a fifo            $mkfifo /tmp/aisfifo
-     b.  netcat into the fifo     $nc {ip} {port} > /tmp/aisfifo
-     sample {ip} {port} could be  nc 82.182.117.51 6401 > /tmp/aisfifo
-     c.  hand edit opencpn.conf and make AIS data source like this:
-     [Settings/AISPort]
-     Port=Serial:/tmp/aisfifo
-
-     This also works if you have an ascii ais log
-     for which you can simply $cat ais.log > /tmp/aisfifo
-     */
-    if(m_pPortName->Contains(_T("fifo")))
-    goto port_ready;
-
-    tcsetattr(m_ais_fd, TCSANOW, pttyset);
-
-    if (isatty(m_ais_fd) == 0)
-    {
-        wxString msg(_T("AIS tty input device isatty() failed, retrying open()...  "));
-        msg.Append(*m_pPortName);
-        wxLogMessage(msg);
-
-        close(m_ais_fd);
-        if ((m_ais_fd = open(m_pPortName->fn_str(), O_RDWR|O_NDELAY|O_NOCTTY)) < 0)
-        {
-            wxString msg(_T("AIS tty input device open failed on retry, aborting.  "));
-            msg.Append(*m_pPortName);
-            wxLogMessage(msg);
-            close(m_ais_fd);
-            return(0);
-        }
-
-        if (isatty(m_ais_fd) == 0)
-        {
-            wxString msg(_T("AIS tty input device isatty() failed on retry, aborting.  "));
-            msg.Append(*m_pPortName);
-            wxLogMessage(msg);
-            close(m_ais_fd);
-            return(0);
-        }
-    }
-
-    if (1/*isatty(m_ais_fd) != 0*/)
-    {
-
-        /* Save original terminal parameters */
-        if (tcgetattr(m_ais_fd,pttyset_old) != 0)
-        {
-            wxString msg(_T("AIS tty input device getattr() failed, retrying...  "));
-            msg.Append(*m_pPortName);
-            wxLogMessage(msg);
-
-            close(m_ais_fd);
-            if ((m_ais_fd = open(m_pPortName->fn_str(), O_RDWR|O_NDELAY|O_NOCTTY)) < 0)
-            {
-                wxString msg(_T("AIS tty input device open failed on retry, aborting.  "));
-                msg.Append(*m_pPortName);
-                wxLogMessage(msg);
-                return 0;
-            }
-
-            if (tcgetattr(m_ais_fd,pttyset_old) != 0)
-            {
-                wxString msg(_T("AIS tty input device getattr failed on retry, aborting.  "));
-                msg.Append(*m_pPortName);
-                wxLogMessage(msg);
-                return 0;
-            }
-        }
-
-        memcpy(pttyset, pttyset_old, sizeof(termios));
-
-        //  Build the new parms off the old
-
-        // Set blocking/timeout behaviour
-        memset(pttyset->c_cc,0,sizeof(pttyset->c_cc));
-
-        pttyset->c_cc[VTIME] = 11;// 1.1 sec timeout
-        pttyset->c_cc[VEOF] = 4;// EOF Character
-
-        /*
-         * No Flow Control
-         */
-        pttyset->c_cflag &= ~(PARENB | PARODD | CRTSCTS);
-        pttyset->c_cflag |= CREAD | CLOCAL;
-        pttyset->c_iflag = pttyset->c_oflag = pttyset->c_lflag = (tcflag_t) 0;
-
-        int stopbits = 1;
-        char parity = 'N';
-        pttyset->c_iflag &=~ (PARMRK | INPCK);
-        pttyset->c_cflag &=~ (CSIZE | CSTOPB | PARENB | PARODD);
-        pttyset->c_cflag |= (stopbits==2 ? CS7|CSTOPB : CS8);
-        switch (parity)
-        {
-            case 'E':
-            pttyset->c_iflag |= INPCK;
-            pttyset->c_cflag |= PARENB;
-            break;
-            case 'O':
-            pttyset->c_iflag |= INPCK;
-            pttyset->c_cflag |= PARENB | PARODD;
-            break;
-        }
-        pttyset->c_cflag &=~ CSIZE;
-        pttyset->c_cflag |= (CSIZE & (stopbits==2 ? CS7 : CS8));
-
-        cfsetispeed(pttyset, B38400);
-        cfsetospeed(pttyset, B38400);
-
-        if (tcsetattr(m_ais_fd, TCSANOW, pttyset) != 0)
-        {
-            wxString msg(_T("AIS tty input device setattr() failed  "));
-            msg.Append(*m_pPortName);
-            wxLogMessage(msg);
-            return 0;
-        }
-
-        (void)tcflush(m_ais_fd, TCIOFLUSH);
-    }
-
-    port_ready:
-
-    bool not_done = true;
-    char next_byte = 0;
-    ssize_t newdata = 0;
-
-    while((not_done) && (m_pParentEventHandler->m_Thread_run_flag > 0))
-    {
-        if(TestDestroy())
-        {
-            not_done = false;                               // smooth exit
-        }
-
-#ifdef oldway
-//    Blocking, timeout protected read of one character at a time
-//    Timeout value is set by c_cc[VTIME]
-//    Storing incoming characters in circular buffer
-//    And watching for new line character
-//     On new line character, send notification to parent
-
-        newdata = read(m_ais_fd, &next_byte, 1);// blocking read of one char
-                                                // return (-1) if no data available, timeout
-#else
-//      Kernel I/O multiplexing provides a cheap way to wait for chars
-
-        fd_set rfds;
-        struct timeval tv;
-        int retval;
-
-        //      m_ais_fd to see when it has input.
-        FD_ZERO(&rfds);
-        FD_SET(m_ais_fd, &rfds);
-        // Wait up to 1 second
-        tv.tv_sec = 1;
-        tv.tv_usec = 0;
-
-        newdata = 0;
-        next_byte = 0;
-
-//      wait for a read available on m_ais_fd, we don't care about write or exceptions
-        retval = select(FD_SETSIZE, &rfds, NULL, NULL, &tv);
-
-        if(FD_ISSET(m_ais_fd, &rfds) && (retval != -1) && retval)
-        newdata = read(m_ais_fd, &next_byte, 1);// blocking read of one char
-                                                // bound to succeed
-#endif
-
-        if(newdata > 0)
-        HandleRead(&next_byte, 1);
-
-    }           // the big while
-
-//          Close the port cleanly
-// this is the clean way to do it
-//    pttyset_old->c_cflag |= HUPCL;
-//    (void)tcsetattr(m_ais_fd,TCSANOW,pttyset_old);
-    close(m_ais_fd);
-
-    free (pttyset);
-    free (pttyset_old);
-
-    m_pParentEventHandler->m_Thread_run_flag = -1;
-
-    return 0;
-
-}
-
-#endif          //__POSIX__
-
-#ifdef __WXMSW__
-//    Entry Point
-void *OCP_AIS_Thread::Entry()
-{
-
-    bool not_done;
-
-    DWORD dwRead;
-    BOOL fWaitingOnRead = FALSE;
-    OVERLAPPED osReader = { 0 };
-#define READ_BUF_SIZE 1000
-#define READ_LEN_REQUEST 40
-    char buf[READ_BUF_SIZE];
-
-#define READ_TIMEOUT      500      // milliseconds
-    DWORD dwRes;
-    DWORD dwError;
-
-#if 0                                     // testing direct file read of AIS data stream
-    wxFile f("C:\\SIITECH.TXT");
-
-    wxFileInputStream stream(f);
-
-    if(stream.IsOk())
-    int yyp = 5;
-
-    while(!stream.Eof())
-    {
-        stream.Read(buf, 40);
-        HandleRead(buf, 40);                   // Read completed successfully.
-    }
-
-    return 0;
-#endif
-
-//    Set up the serial port
-
-    m_hSerialComm = CreateFile( m_pPortName->fn_str(),      // Port Name
-            GENERIC_READ,              // Desired Access
-            0,                         // Shared Mode
-            NULL,                      // Security
-            OPEN_EXISTING,             // Creation Disposition
-            FILE_FLAG_OVERLAPPED, NULL );                     //  Overlapped
-
-    if( m_hSerialComm == INVALID_HANDLE_VALUE ) {
-        error = ::GetLastError();
-        goto fail_point;
-    }
-
-    if( !SetupComm( m_hSerialComm, 1024, 1024 ) ) goto fail_point;
-
-    DCB dcbConfig;
-
-    if( GetCommState( m_hSerialComm, &dcbConfig ) )           // Configuring Serial Port Settings
-            {
-        dcbConfig.BaudRate = 38400;
-        dcbConfig.ByteSize = 8;
-        dcbConfig.Parity = NOPARITY;
-        dcbConfig.StopBits = ONESTOPBIT;
-        dcbConfig.fBinary = TRUE;
-        dcbConfig.fParity = TRUE;
-    }
-
-    else
-        goto fail_point;
-
-    if( !SetCommState( m_hSerialComm, &dcbConfig ) ) goto fail_point;
-
-    COMMTIMEOUTS commTimeout;
-
-    TimeOutInSec = 2;
-
-    if( GetCommTimeouts( m_hSerialComm, &commTimeout ) ) // Configuring Read & Write Time Outs
-            {
-        commTimeout.ReadIntervalTimeout = 1000 * TimeOutInSec;
-        commTimeout.ReadTotalTimeoutConstant = 1000 * TimeOutInSec;
-        commTimeout.ReadTotalTimeoutMultiplier = 0;
-        commTimeout.WriteTotalTimeoutConstant = 1000 * TimeOutInSec;
-        commTimeout.WriteTotalTimeoutMultiplier = 0;
-    }
-
-    else
-        goto fail_point;
-
-    if( !SetCommTimeouts( m_hSerialComm, &commTimeout ) ) goto fail_point;
-
-//    Set up event specification
-
-    if( !SetCommMask( m_hSerialComm, EV_RXCHAR ) ) // Setting Event Type
-    goto fail_point;
-
-// Create the overlapped event. Must be closed before exiting
-// to avoid a handle leak.
-    osReader.hEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
-    if( osReader.hEvent == NULL ) goto fail_point;
-    // Error creating overlapped event; abort.
-//    The main loop
-    not_done = true;
-
-    while( ( not_done ) && ( m_pParentEventHandler->m_Thread_run_flag > 0 ) ) {
-        if( TestDestroy() ) not_done = false;                                     // smooth exit
-
-        //    Was port closed due to error condition?
-        while( !m_hSerialComm ) {
-            if( TestDestroy() ) goto fail_point;
-            // smooth exit
-
-            int fd;
-            if( ( fd = g_pCommMan->OpenComPort( *m_pPortName, 38400 ) ) > 0 ) {
-                m_hSerialComm = (HANDLE) fd;
-            } else {
-                m_hSerialComm = NULL;
-                wxThread::Sleep( 2000 );                        // stall for a bit
-            }
-
-        }
-
-        if( !fWaitingOnRead ) {
-            // Issue read operation.
-            if( !ReadFile( m_hSerialComm, buf, READ_LEN_REQUEST, &dwRead, &osReader ) ) {
-                dwError = GetLastError();
-                if( dwError != ERROR_IO_PENDING )     // retry port on all unknown errors
-                {
-                    g_pCommMan->CloseComPort( (int) m_hSerialComm );
-                    m_hSerialComm = NULL;
-                    dwRead = 0;
-                    fWaitingOnRead = FALSE;
-                } else
-                    // read delayed
-                    fWaitingOnRead = TRUE;
-            } else {      // read completed immediately
-                HandleRead( buf, dwRead );                         // read completed immediately
-                fWaitingOnRead = FALSE;
-            }
-        }
-
-        if( fWaitingOnRead ) {
-            //    Loop forever, checking for thread exit request
-            while( fWaitingOnRead ) {
-                if( TestDestroy() ) goto fail_point;
-                // smooth exit
-
-                dwRes = WaitForSingleObject( osReader.hEvent, READ_TIMEOUT );
-                switch( dwRes ){
-                    case WAIT_OBJECT_0:
-                        if( !GetOverlappedResult( m_hSerialComm, &osReader, &dwRead, FALSE ) ) {
-                            g_pCommMan->CloseComPort( (int) m_hSerialComm );
-                            m_hSerialComm = NULL;
-                            dwRead = 0;
-                            fWaitingOnRead = FALSE;
-                        } else {
-                            if( dwRead ) HandleRead( buf, dwRead );  // Read completed successfully.
-                            fWaitingOnRead = FALSE;
-                        }
-                        break;
-
-                    default:
-                        break;
-                }     // switch
-            }           // while
-        }                 // if
-
-    }                 // big while
-
-    fail_point:
-
-    CloseHandle( m_hSerialComm );
-
-    if( osReader.hEvent ) CloseHandle( osReader.hEvent );
-
-    m_pParentEventHandler->m_Thread_run_flag = -1;
-
-    return 0;
-}
-#endif            //__WXMSW__
 //---------------------------------------------------------------------------------------
 //          AISTargetAlertDialog Implementation
 //---------------------------------------------------------------------------------------
