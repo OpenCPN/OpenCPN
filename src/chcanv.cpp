@@ -3211,8 +3211,14 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     VPoint.Invalidate();
 
     m_glcc = new glChartCanvas(this);
+    
+#if wxCHECK_VERSION(2, 9, 0)
     m_pGLcontext = new wxGLContext(m_glcc);
     m_glcc->SetContext(m_pGLcontext);
+#else
+    m_pGLcontext = m_glcc->GetContext();
+#endif
+    
     
     singleClickEventIsValid = false;
 
@@ -11764,8 +11770,12 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 {
     wxPaintDC dc( this );
 
+#if wxCHECK_VERSION(2, 9, 0)
     SetCurrent(*m_pcontext);
-
+#else
+    SetCurrent();
+#endif
+    
     Show( g_bopengl );
     if( !g_bopengl ) {
         event.Skip();
@@ -11773,12 +11783,10 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     }
 
     if( !m_bsetup ) {
-        SetCurrent(*m_pcontext);
 
         char render_string[80];
         strncpy( render_string, (char *) glGetString( GL_RENDERER ), 79 );
         m_renderer = wxString( render_string, wxConvUTF8 );
-//          printf("%s\n", render_string);
 
         wxString msg;
         msg.Printf( _T("OpenGL-> Renderer String: ") );
@@ -12662,7 +12670,6 @@ void glChartCanvas::render()
     GetMemoryStatus( &mem_total, &mem_used );
     if(mem_used > g_memCacheLimit * 8 / 10) m_b_mem_crunch = true;
 
-    SetCurrent(*m_pcontext);
     wxPaintDC( this );
 
     ViewPort VPoint = cc1->VPoint;
