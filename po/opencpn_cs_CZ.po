@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-15 08:45-0400\n"
+"POT-Creation-Date: 2012-11-05 19:42-0500\n"
 "PO-Revision-Date: 2012-08-20 12:08+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -18,12 +18,28 @@ msgstr ""
 #
 msgid ""
 "\n"
-"\n"
-"Continuing libgps setup..."
+" - your GPS offset from bow must be within your ship's length"
 msgstr ""
+#
+msgid ""
 "\n"
+" - your GPS offset from midship must be within your ship's beam"
+msgstr ""
+#
+msgid ""
 "\n"
-"Pokračuje nastavení libgps..."
+" - your minimum ship icon size must be between 1 and 100 mm"
+msgstr ""
+#
+msgid ""
+"\n"
+" - your ship's beam must be > 0"
+msgstr ""
+#
+msgid ""
+"\n"
+" - your ship's length must be > 0"
+msgstr ""
 #
 #
 #
@@ -56,17 +72,6 @@ msgstr ""
 "NESPOLÉHEJTE na OpenCPN pro bezpečnost života a majetku.\n"
 "\n"
 "Prosím klikni \"OK\" pro souhlas a pokračování, \"Zrušit\" pro konec.\n"
-#
-#
-#
-#
-#
-msgid ""
-"           No Charts Installed.\n"
-"Please select chart folders in ToolBox->Charts."
-msgstr ""
-"           Nejsou instalovány mapy.\n"
-"Vyber prosím složky map v Nastavení->Mapy."
 #
 msgid "    Incompatible PlugIn detected:"
 msgstr "    Nalezen nekompatibilní doplněk:"
@@ -161,20 +166,6 @@ msgstr "   VP konečná kontrola: Georeference Chart_Error_Factor na mapě"
 #
 #
 #
-msgid "  Could not open AIS serial port '"
-msgstr "  Nemohu otevřít sériový port AIS '"
-#
-#
-#
-#
-#
-msgid "  Could not open serial port '"
-msgstr "  Nemohu otevří sériový port '"
-#
-#
-#
-#
-#
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr " %D Dnů  %H Hodin %M Minut"
 #
@@ -209,7 +200,8 @@ msgstr " </b>za<b> "
 #
 #
 #
-msgid " COG: Unavailable"
+#, fuzzy
+msgid " COG Unavailable"
 msgstr "COG: Není k dispozici"
 #
 #
@@ -415,22 +407,8 @@ msgstr "&Skok na"
 #
 #
 #
-msgid "&Kilometers"
-msgstr "&Kilometry"
-#
-#
-#
-#
-#
 msgid "&Merge Selected Tracks"
 msgstr "Spojit &vybrané trasy"
-#
-#
-#
-#
-#
-msgid "&Nautical miles"
-msgstr "&Námořní míle"
 #
 #
 #
@@ -533,28 +511,6 @@ msgstr "&Váha:"
 #
 #
 #
-msgid ""
-"'\n"
-" Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
-msgstr ""
-"'\n"
-" Doporučení: Zkus 'xxx.xxx.xxx.xxx' notaci"
-#
-#
-#
-#
-#
-msgid ""
-"'\n"
-"Suggestion: Try closing other applications."
-msgstr ""
-"'\n"
-"Doporučení: Zkus zavřít ostatní aplikace."
-#
-#
-#
-#
-#
 msgid "(Unnamed Layer)"
 msgstr "(Nepojmenovaná vrstva)"
 #
@@ -585,6 +541,9 @@ msgstr "(Nepojmenovaný trasový bod)"
 #
 msgid "(unnamed)"
 msgstr "(Nepojmenovaná)"
+#
+msgid ", Out: None"
+msgstr ""
 #
 #
 #
@@ -630,6 +589,12 @@ msgstr ""
 msgid "...and TCPA is less than (min)"
 msgstr " ..A TCPA je méně než (minut)"
 #
+msgid "0"
+msgstr ""
+#
+msgid "1"
+msgstr ""
+#
 msgid "1 pixel"
 msgstr ""
 #
@@ -641,6 +606,21 @@ msgstr "1.0 NM podél COG"
 msgid "10 pixels"
 msgstr "10 pixelů"
 #
+msgid "115200"
+msgstr ""
+#
+msgid "1200"
+msgstr ""
+#
+msgid "150"
+msgstr ""
+#
+msgid "19200"
+msgstr ""
+#
+msgid "2"
+msgstr ""
+#
 #
 #
 #
@@ -651,8 +631,26 @@ msgstr "2 barvy"
 msgid "2 pixels"
 msgstr "2 pixely"
 #
+msgid "230400"
+msgstr ""
+#
+msgid "2400"
+msgstr ""
+#
+msgid "3"
+msgstr ""
+#
 msgid "3 pixels"
 msgstr "3 pixely"
+#
+msgid "300"
+msgstr ""
+#
+msgid "38400"
+msgstr ""
+#
+msgid "4"
+msgstr ""
 #
 #
 #
@@ -664,23 +662,53 @@ msgstr "4 barvy"
 msgid "4 pixels"
 msgstr "4 pixely"
 #
+msgid "460800"
+msgstr ""
+#
+msgid "4800"
+msgstr ""
+#
+msgid "5"
+msgstr ""
+#
 msgid "5 pixels"
 msgstr "5 pixelů"
+#
+msgid "57600"
+msgstr ""
+#
+msgid "6"
+msgstr ""
 #
 msgid "6 pixels"
 msgstr "6 pixelů"
 #
+msgid "600"
+msgstr ""
+#
+msgid "7"
+msgstr ""
+#
 msgid "7 pixels"
 msgstr "7 pixelů"
+#
+msgid "8"
+msgstr ""
 #
 msgid "8 pixels"
 msgstr "8 pixelů"
 #
+msgid "9"
+msgstr ""
+#
 msgid "9 pixels"
 msgstr "9 pixelů"
 #
-msgid "<--Remove"
-msgstr "<--Odstranit"
+msgid "921600"
+msgstr ""
+#
+msgid "9600"
+msgstr ""
 #
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr "<font size=-2>(Úhly sektorů jsou skutečné náměry z moře)</font><br>"
@@ -714,16 +742,6 @@ msgstr "Výstraha AIS "
 #
 #
 #
-msgid "AIS Data Port"
-msgstr "Datový port AIS"
-#
-msgid "AIS Port (Shared)"
-msgstr ""
-#
-#
-#
-#
-#
 #, fuzzy
 msgid "AIS Target List..."
 msgstr "Seznam cílů AIS..."
@@ -734,13 +752,6 @@ msgstr "Seznam cílů AIS..."
 #
 msgid "AIS Target Query"
 msgstr "Dotaz na cíl AIS"
-#
-#
-#
-#
-#
-msgid "AIS Target Query..."
-msgstr "Dotaz na cíl AIS..."
 #
 #
 #
@@ -791,6 +802,12 @@ msgstr "O programu"
 msgid "About OpenCPN"
 msgstr "O OpenCPN"
 #
+msgid "Accept Sentences"
+msgstr ""
+#
+msgid "Accept only sentences"
+msgstr ""
+#
 #
 #
 #
@@ -817,19 +834,20 @@ msgstr "Aktivní"
 #
 #
 #
-msgid "Active Charts"
-msgstr "Aktivní mapy"
-#
-#
-#
-#
-#
 #, fuzzy
 msgid "Active Datasets"
 msgstr "Aktivní mapy"
 #
 msgid "Add"
 msgstr "Přidat"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Add Connection"
+msgstr "Volby fontu"
 #
 #, fuzzy
 msgid "Add Dataset..."
@@ -847,15 +865,8 @@ msgstr ""
 msgid "Add new"
 msgstr "Přidat nový"
 #
-#
-#
-#
-#
-msgid "Add this chart to quilt."
-msgstr "Přidat tuto mapu do sestavy."
-#
-msgid "Add-->"
-msgstr "Přidat-->"
+msgid "Address"
+msgstr ""
 #
 #
 #
@@ -875,6 +886,33 @@ msgstr "Pomůcka pro navigaci"
 #
 msgid "All Active Charts"
 msgstr "Všechny aktivní mapy"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "All Available Charts"
+msgstr "Všechny aktivní mapy"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "All Charts"
+msgstr "Mapy"
+#
+msgid "All but"
+msgstr ""
+#
+msgid ""
+"An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
+"also have a two letter prefix identifying the source, or TALKER, of the "
+"message (The whole sentences then looks like GPGGA or AITXT). You may filter "
+"out all the sentences with certain TALKER prefix (like GP, AI etc.). The "
+"filter accepts just these three formats."
+msgstr ""
 #
 msgid "Anchorage created "
 msgstr "Kotviště vytvořeno"
@@ -915,6 +953,14 @@ msgstr "Určitě chceš smazat <VŠECHNY> stopy?"
 #
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Určitě chceš smazat <VŠECHNY> trasové body?"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Are you sure you want to delete this route?"
+msgstr "Určitě chceš smazat tuto stopu?"
 #
 #
 #
@@ -969,13 +1015,6 @@ msgstr "Automatické denní stopy"
 #
 #
 #
-#
-#
-msgid "Autopilot Output Port"
-msgstr "Port výstupu autopilota"
-#
-#
-#
 msgid "Avg. speed (Kts)"
 msgstr "Průměrná rychlost (Kts)"
 #
@@ -1010,6 +1049,13 @@ msgstr "Základnová stanice"
 #
 msgid "Basic"
 msgstr "Základní"
+#
+#
+#
+#
+#, fuzzy
+msgid "Baudrate"
+msgstr "Rychlost NMEA"
 #
 #
 #
@@ -1108,16 +1154,16 @@ msgstr "Maximální detail zde"
 #
 #
 #
+msgid "CM93 Offset Dialog..."
+msgstr "Dialog posunu CM93..."
+#
+#
+#
 #
 #
 #, fuzzy
-msgid "CM93 Detail Slider..."
-msgstr "Povolit posuvník detailu CM93"
-#
-#
-#
-msgid "CM93 Offset Dialog..."
-msgstr "Dialog posunu CM93..."
+msgid "COG Predictor Length (min)"
+msgstr "Délka šipky předpovědi COG (minut):"
 #
 #
 #
@@ -1152,20 +1198,6 @@ msgstr "CPA/TCPA výstrahy"
 #
 msgid "Call"
 msgstr "Volání"
-#
-#
-#
-#
-msgid ""
-"Call to gps_open failed.\n"
-"Is gpsd running?\n"
-"\n"
-"gpsd host is: "
-msgstr ""
-"Volání gps_open selhalo.\n"
-"Je gpsd spuštěno?\n"
-"\n"
-"gpsd hostitel je: "
 #
 #
 #
@@ -1285,12 +1317,6 @@ msgstr "Volby mapového zobrazení"
 msgid "Chart Groups"
 msgstr "Skupiny map"
 #
-msgid "Chart Groups..."
-msgstr "Skupiny map..."
-#
-msgid "Chart Groups...New Group"
-msgstr "Skupiny map...Nová skupina"
-#
 #
 #
 #
@@ -1298,14 +1324,6 @@ msgstr "Skupiny map...Nová skupina"
 #, fuzzy
 msgid "Chart Information Objects"
 msgstr "Info o značce"
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Chart Position"
-msgstr "Pozice"
 #
 #
 #
@@ -1428,6 +1446,9 @@ msgstr "Barvy"
 msgid "Combo!"
 msgstr ""
 #
+msgid "Confirm deletion of tracks and routes"
+msgstr ""
+#
 #
 #
 #
@@ -1458,6 +1479,9 @@ msgstr "Omezené ponorem"
 msgid "Container vessel"
 msgstr "Kontejnerová loď"
 #
+msgid "Control checksum"
+msgstr ""
+#
 msgid "Copy"
 msgstr "Kopírovat"
 #
@@ -1469,13 +1493,6 @@ msgstr ""
 #
 msgid "Copy..."
 msgstr "Kopírovat..."
-#
-#
-#
-#
-#
-msgid "Could not resolve TCP/IP host '"
-msgstr "Nemohu rozpoznat TCP/IP hostitele '"
 #
 #
 #
@@ -1583,6 +1600,14 @@ msgstr "Tmavě žlutá"
 #
 #
 #
+#, fuzzy
+msgid "Data Connections"
+msgstr "Volby fontu"
+#
+#
+#
+#
+#
 msgid "Data Source :"
 msgstr "Datový zdroj :"
 #
@@ -1668,6 +1693,14 @@ msgstr "Smazat trasový bod"
 #
 #
 #
+#, fuzzy
+msgid "Delete..."
+msgstr "Smazat"
+#
+#
+#
+#
+#
 msgid "Depart From"
 msgstr "Odplutí z"
 #
@@ -1746,8 +1779,8 @@ msgstr "Kategorie zobrazení"
 #
 #
 #, fuzzy
-msgid "Display Style"
-msgstr "Styl zobrazení map"
+msgid "Display Options"
+msgstr "Volby mapového zobrazení"
 #
 #
 #
@@ -1763,6 +1796,14 @@ msgstr "Vzdálenost"
 #, fuzzy
 msgid "Distance Between Rings"
 msgstr "Vzdálenost mezi kruhy"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Distance Unit"
+msgstr "Vzdálenost"
 #
 #
 #
@@ -1806,6 +1847,12 @@ msgstr "Umístit zde značku MOB"
 #, fuzzy
 msgid "Drop Mark"
 msgstr "Umístit zde značku"
+#
+msgid "Drop Sentences"
+msgstr ""
+#
+msgid "Drop sentences"
+msgstr ""
 #
 #
 #
@@ -1883,6 +1930,12 @@ msgstr "Provádějící rybolov"
 msgid "Enter Group Name"
 msgstr "Zadej název skupiny"
 #
+msgid "Enter the NMEA sentence"
+msgstr ""
+#
+msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
+msgstr ""
+#
 #
 #
 #
@@ -1894,6 +1947,9 @@ msgstr "Chyba při nahrávání trasy. Prosím zkontroluj log..."
 #
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Chyba při nahrávání trasových bodů. Prosím zkontroluj log..."
+#
+msgid "Error!"
+msgstr ""
 #
 #
 #
@@ -1979,8 +2035,16 @@ msgstr "Filtrovat NMEA data kurzu a rychlosti"
 #
 #
 #, fuzzy
-msgid "Filter Period (sec)"
+msgid "Filter period (sec)"
 msgstr "Perioda filtru (sek.)"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Filters"
+msgstr "&Kilometry"
 #
 #
 #
@@ -2010,6 +2074,9 @@ msgstr "Pro toto rameno je trasa po velké kružnici "
 msgid "Force Full Database Rebuild"
 msgstr "Vynutit uplné znovuvytvoření databáze"
 #
+msgid "Format uploads for Furuno GP3X"
+msgstr ""
+#
 #
 #
 msgid "Freightbarge"
@@ -2028,19 +2095,14 @@ msgstr "Níkladní prám s kontejnery"
 msgid "Full Route"
 msgstr "Rozdělit trasu"
 #
+msgid "GPS Offset from Bow (m)"
+msgstr ""
 #
+msgid "GPS Offset from Midship (m)"
+msgstr ""
 #
-#
-#
-msgid "GPS/Plotter Port"
-msgstr "Port GPS/Ploteru"
-#
-#
-#
-#
-#
-msgid "GPSD Data Server"
-msgstr "GPSD Data Server"
+msgid "GPSD"
+msgstr ""
 #
 msgid "GPSGate Buddy"
 msgstr "GPSGate kumpán"
@@ -2061,6 +2123,15 @@ msgstr ""
 #
 msgid "Gas tanker"
 msgstr "Plynový tanker"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "General"
+msgstr "AIS obecné"
 #
 #
 #
@@ -2091,9 +2162,6 @@ msgstr "Zelená"
 #
 msgid "Group \""
 msgstr "Skupina  \""
-#
-msgid "Groups"
-msgstr "Skupiny"
 #
 #
 #
@@ -2126,8 +2194,15 @@ msgstr "Tady"
 #
 #
 #
-msgid "Hide AIS Target CPA"
+#, fuzzy
+msgid "Hide Target CPA"
 msgstr "Skryj CPA cíle AIS"
+#
+#
+#
+#, fuzzy
+msgid "Hide This Chart"
+msgstr "Schovej z mapy"
 #
 #
 #
@@ -2146,6 +2221,9 @@ msgstr "Potlačit zakotvené/vyvázané cíle"
 #
 msgid "Hide from chart"
 msgstr "Schovej z mapy"
+#
+msgid "High"
+msgstr ""
 #
 #
 #
@@ -2181,6 +2259,15 @@ msgstr ""
 msgid "Icon"
 msgstr "Ikona"
 #
+msgid "If checked, only the sentences with a valid checksum are passed through"
+msgstr ""
+#
+msgid "Ignore Sentences"
+msgstr ""
+#
+msgid "Ignore sentences"
+msgstr ""
+#
 #
 #
 #
@@ -2196,11 +2283,17 @@ msgstr "Importuj GPX soubor"
 msgid "Important Text Only"
 msgstr "Zobrazit pouze důležitý text"
 #
+msgid "In: None"
+msgstr ""
+#
 #
 #
 #
 msgid "Inland Blue Flag"
 msgstr "Pozemní modrá vlajka"
+#
+msgid "Input filtering"
+msgstr ""
 #
 #
 #
@@ -2221,11 +2314,22 @@ msgstr "Iz. nebezpečí"
 msgid "Isolated Danger"
 msgstr "Izolované nebezpečí"
 #
+msgid "Just "
+msgstr ""
+#
 msgid "KML Standard (Google Earth and others)"
 msgstr "KML Standard (Google Earth a další)"
 #
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "KML s rozšířenými daty trasových bodů (QtVlm)"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Kilometers"
+msgstr "&Kilometry"
 #
 msgid "Kts"
 msgstr ""
@@ -2316,9 +2420,19 @@ msgstr "Úsek: z"
 #
 #
 #
+#, fuzzy
+msgid "Legend"
+msgstr "Legenda konzole"
+#
+#
+#
+#
 #
 msgid "Length"
 msgstr "Délka"
+#
+msgid "Length Over All (m)"
+msgstr ""
 #
 #
 #
@@ -2470,6 +2584,14 @@ msgstr "Ztracené cíle"
 #
 #
 #
+#
+#
+#, fuzzy
+msgid "Low"
+msgstr "Vlek"
+#
+#
+#
 msgid "Lt"
 msgstr "Sv"
 #
@@ -2596,6 +2718,9 @@ msgstr ""
 msgid "Medical Transport"
 msgstr "Lékařský transport"
 #
+msgid "Medium"
+msgstr ""
+#
 #
 #
 #
@@ -2617,6 +2742,12 @@ msgstr "Sloučit trasový bod?"
 msgid "Merge waypoints?"
 msgstr "Sloučit trasové body?"
 #
+msgid "Message accepted"
+msgstr ""
+#
+msgid "Message filtered and dropped"
+msgstr ""
+#
 #
 #
 #
@@ -2633,6 +2764,9 @@ msgstr ""
 #
 msgid "Military Vessel"
 msgstr "Vojenské plavidlo"
+#
+msgid "Minimum Screen Size (mm)"
+msgstr ""
 #
 msgid "Miscellaneous Options"
 msgstr ""
@@ -2702,7 +2836,7 @@ msgstr ""
 #
 #
 #, fuzzy
-msgid "Move Boat To"
+msgid "Move Boat Here"
 msgstr "Posunout sem loď"
 #
 #
@@ -2715,18 +2849,14 @@ msgstr "Posunout trasový bod"
 msgid "NMEA"
 msgstr ""
 #
+msgid "NMEA 0183"
+msgstr ""
 #
+msgid "NMEA 2000"
+msgstr ""
 #
-#
-msgid "NMEA Baud Rate"
-msgstr "Rychlost NMEA"
-#
-#
-#
-#
-#
-msgid "NMEA Data Source"
-msgstr "Datový zdroj NMEA"
+msgid "NMEA Debug Window"
+msgstr ""
 #
 msgid "NMi"
 msgstr ""
@@ -2742,21 +2872,42 @@ msgstr "Jméno"
 #
 #
 #
+#, fuzzy
+msgid "Nautical Miles"
+msgstr "&Námořní míle"
+#
+#
+#
+#
+#
 msgid "Nav Status"
 msgstr "Nav status"
 #
 #, fuzzy
-msgid "Navigate To"
+msgid "Navigate To Here"
 msgstr "Navigovat sem"
 #
 msgid "Navigate To This"
 msgstr "Navigovat sem"
 #
-msgid "Network GPSD"
+#
+#
+#
+#
+#, fuzzy
+msgid "Net"
+msgstr "Další"
+#
+msgid "Network"
 msgstr ""
 #
-msgid "Network LIBGPS"
-msgstr ""
+#
+#
+#
+#
+#, fuzzy
+msgid "New Chart Group"
+msgstr "Skupiny map"
 #
 msgid "New Group..."
 msgstr "Nová skupina"
@@ -2773,6 +2924,9 @@ msgstr "Další"
 msgid "Next tide event"
 msgstr "Příští přílivová událost"
 #
+msgid "No"
+msgstr ""
+#
 #
 #
 #
@@ -2787,6 +2941,18 @@ msgstr "Žádný výpočet CPA, pokud vzdálenost cíle je větší než (nm):"
 #
 msgid "No Chart Available"
 msgstr "Žádná mapa není k dispozici"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid ""
+"No Charts Installed.\n"
+"Please select chart folders in Options > Charts."
+msgstr ""
+"           Nejsou instalovány mapy.\n"
+"Vyber prosím složky map v Nastavení->Mapy."
 #
 msgid "No, I don't want to hide it."
 msgstr "Ne, nechci to schovat."
@@ -2811,14 +2977,6 @@ msgstr "Mód sever nahoru"
 #
 msgid "Not Under Command"
 msgstr "Neovladatelné"
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Number of Radar Rings"
-msgstr "Počet zobrazených radarových kruhů"
 #
 #
 #
@@ -2926,13 +3084,6 @@ msgstr "Informace OpenCPN"
 #
 #
 #
-msgid "OpenCPN Message"
-msgstr "Zpráva OpenCPN"
-#
-#
-#
-#
-#
 msgid "OpenCPN Remove Waypoint"
 msgstr "OpenCPN odstranit trasový bod"
 #
@@ -2948,6 +3099,14 @@ msgstr "OpenCPN Trasa"
 #
 #
 msgid "OpenCPN Route Create"
+msgstr "Vytvořit OpenCPN Trasu"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "OpenCPN Route Delete"
 msgstr "Vytvořit OpenCPN Trasu"
 #
 #
@@ -2989,6 +3148,14 @@ msgstr "OpenCPN nelze spustit."
 #
 #
 #
+#, fuzzy
+msgid "OpenCPN info"
+msgstr "Informace OpenCPN"
+#
+#
+#
+#
+#
 msgid "Options"
 msgstr "Nastavení"
 #
@@ -2998,6 +3165,23 @@ msgstr "Nastavení"
 #
 msgid "Other"
 msgstr "Jiný"
+#
+msgid "Output"
+msgstr ""
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Output Message"
+msgstr "Zpráva OpenCPN"
+#
+msgid "Output filtering"
+msgstr ""
+#
+msgid "Output on this port ( as Autopilot or NMEA Repeater)"
+msgstr ""
 #
 #
 #
@@ -3023,22 +3207,6 @@ msgstr " Loď: "
 #
 #
 #
-#
-#
-#, fuzzy
-msgid "Own Ship Display Options"
-msgstr "Volby zobrazení vlastní lodi"
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "OwnShip COG arrow predictor length (min)"
-msgstr "Délka šipky předpovědi COG (minut):"
-#
-#
-#
 msgid "P/V"
 msgstr ""
 #
@@ -3053,6 +3221,14 @@ msgstr ""
 #
 msgid "Paper Chart"
 msgstr "Papírová mapa"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Parameters"
+msgstr "Metry"
 #
 #
 #
@@ -3098,26 +3274,13 @@ msgstr "Vložit stopu...."
 msgid "Paste Waypoint"
 msgstr "Vložit trasový bod..."
 #
+msgid "Pause"
+msgstr ""
+#
 #
 #
 msgid "Pilot Vessel"
 msgstr "Loď lodivoda"
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Place Trackpoints at distance interval (NMi)"
-msgstr "Umístit stopové body v intervalu (nm)"
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Place Trackpoints at time interval (sec)"
-msgstr "Umístit stopové body v intervalu (sekund):"
 #
 #
 #
@@ -3291,6 +3454,9 @@ msgstr "Náhled:"
 msgid "Print Chart"
 msgstr "Vytiskni mapu"
 #
+msgid "Priority"
+msgstr ""
+#
 msgid "Problem discovered"
 msgstr "Objeven problém"
 #
@@ -3321,6 +3487,9 @@ msgstr "Vlastnosti"
 #
 msgid "Properties..."
 msgstr "Vlastnosti..."
+#
+msgid "Protocol"
+msgstr ""
 #
 #
 #
@@ -3433,13 +3602,6 @@ msgstr ""
 #
 #
 #
-msgid "Radar rings"
-msgstr "Radarové kruhy"
-#
-#
-#
-#
-#
 msgid "Range"
 msgstr "Rozsah"
 #
@@ -3454,6 +3616,12 @@ msgstr "Skutečný"
 #
 msgid "Real (On Position)"
 msgstr "Skutečný (Na pozici)"
+#
+msgid "Real Scale Bitmap"
+msgstr ""
+#
+msgid "Real Scale Vector"
+msgstr ""
 #
 #
 #
@@ -3480,6 +3648,13 @@ msgstr "Plavidlo červeného kříže"
 #
 msgid "Redo"
 msgstr "Vykonat znovu"
+#
+msgid "Reduce Data Precision"
+msgstr ""
+#
+#, fuzzy
+msgid "Reduce Data..."
+msgstr "Datasety přílivu/proudu..."
 #
 msgid "Reduced Detail at Small Scale"
 msgstr ""
@@ -3509,6 +3684,19 @@ msgid "Remaining time : "
 msgstr "Zbývající čas"
 #
 #
+#, fuzzy
+msgid "Remove Chart"
+msgstr "Odstranit"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Remove Connection"
+msgstr "Volby fontu"
+#
+#
 #
 #
 #
@@ -3530,20 +3718,6 @@ msgstr "Odstranit z trasy"
 #, fuzzy
 msgid "Remove lost targets after (min)"
 msgstr "Odstranit ztracené cíle po (minut)"
-#
-#
-#
-#
-#
-msgid "Remove this chart from quilt"
-msgstr "Odstranit tuto mapu ze sestavy"
-#
-#
-#
-#
-#
-msgid "Remove this chart from quilt."
-msgstr "Odstranit tuto mapu ze sestavy."
 #
 #
 #
@@ -3587,6 +3761,9 @@ msgstr "Rezervováno 14"
 msgid "Restricted Manoeuvrability"
 msgstr "Omezená manévrovatelnost"
 #
+msgid "Resume"
+msgstr ""
+#
 #
 #
 #
@@ -3603,7 +3780,8 @@ msgstr "Získávám úvodní nastavení jazyka z registru Windows"
 #
 #
 #
-msgid "Reverse"
+#, fuzzy
+msgid "Reverse..."
 msgstr "Otočit"
 #
 #
@@ -3764,6 +3942,9 @@ msgstr "Projít mapy a aktualizovat databázi"
 msgid "Search and Rescue Vessel"
 msgstr "SAR plavidlo"
 #
+msgid "Seatalk"
+msgstr ""
+#
 msgid "See the log file at "
 msgstr "Podívej se do logu na"
 #
@@ -3791,6 +3972,11 @@ msgstr "Vybrat zvukový soubor"
 msgid "Select Tide/Current Data"
 msgstr "Vyber data přílivu/proudu"
 #
+msgid ""
+"Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr ""
+#
 #
 #
 #
@@ -3811,6 +3997,25 @@ msgstr "Odeslat trasu do GPS"
 #
 msgid "Send To GPS..."
 msgstr "Odeslat do GPS..."
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Send to GPS"
+msgstr "Ode&slat do GPS"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Sentence Filter"
+msgstr "Potlačit vý&strahu"
+#
+msgid "Serial"
+msgstr ""
 #
 #
 #
@@ -3848,6 +4053,9 @@ msgstr "Posun na mapu většího měřítka"
 msgid "Shift to Smaller Scale Chart"
 msgstr "Posun na mapu menšího měřítka"
 #
+msgid "Ship Icon Type"
+msgstr ""
+#
 #
 #
 #
@@ -3862,13 +4070,6 @@ msgstr " Loď: "
 #
 msgid "Short dash"
 msgstr "Krátké šrafy"
-#
-#
-#
-#
-#
-msgid "Show AIS Target CPA"
-msgstr "Zobrazit CPA AIS cíle"
 #
 #
 #
@@ -3930,13 +4131,6 @@ msgstr "Ukaž ENC text"
 #
 #
 #
-msgid "Show GPS/NMEA data stream window"
-msgstr "Zobrazit okno toku dat GPS/NMEA"
-#
-#
-#
-#
-#
 msgid "Show Grid"
 msgstr "Zobrazit mřížku"
 #
@@ -3953,6 +4147,14 @@ msgstr "Zobrazit zem. šířku a délku jako"
 #
 #
 #
+#
+#, fuzzy
+msgid "Show NMEA Debug Window"
+msgstr "Zobrazit okno toku dat GPS/NMEA"
+#
+#
+#
+#
 #, fuzzy
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "Zobrazit zkosené rasterové mapy jako Sever-Nahoru"
@@ -3963,6 +4165,22 @@ msgstr "Zobrazit zkosené rasterové mapy jako Sever-Nahoru"
 #
 msgid "Show Status Bar"
 msgstr "Zobrazit stavovou řádku"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Show Target CPA"
+msgstr "Zobrazit CPA AIS cíle"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Show This Chart"
+msgstr "Zobrazit na mapě"
 #
 #
 #
@@ -4171,6 +4389,14 @@ msgstr "Symbolizovaný"
 #
 #
 #
+#, fuzzy
+msgid "TCP"
+msgstr "TCPA"
+#
+#
+#
+#
+#
 msgid "TCPA"
 msgstr "TCPA"
 #
@@ -4208,6 +4434,22 @@ msgstr ""
 #
 msgid "Target Count"
 msgstr "Počet cílů"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Target List..."
+msgstr "Seznam cílů AIS..."
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Target Query..."
+msgstr "Dotaz na cíl AIS..."
 #
 #
 #
@@ -4270,6 +4512,12 @@ msgstr ""
 "\n"
 "         OpenCPN...Pěkný malý Open Source Chart Plotter/ Navigator"
 #
+#, c-format
+msgid ""
+"The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr ""
+#
 msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
@@ -4314,6 +4562,9 @@ msgstr "Váha fontu."
 #
 msgid "The necessary configuration files were not found. "
 msgstr "Potřebné konfigurační soubory nebyly nalezeny."
+#
+msgid "The settings for own ship real size are not correct:"
+msgstr ""
 #
 msgid ""
 "The waypoint you want to delete is used in a route, do you really want to "
@@ -4506,8 +4757,22 @@ msgstr "Vlastnosti trasy"
 #
 #
 #
+#, fuzzy
+msgid "Tracking Precision"
+msgstr "Vlastnosti trasy"
+#
+#
+#
+#
+#
 msgid "Tracks"
 msgstr "Stopy"
+#
+msgid "Transmit Sentences"
+msgstr ""
+#
+msgid "Transmit sentences"
+msgstr ""
 #
 #
 #
@@ -4565,6 +4830,9 @@ msgstr "Rychlost obratu"
 msgid "Type"
 msgstr "Typ"
 #
+msgid "UDP"
+msgstr ""
+#
 msgid "URL"
 msgstr ""
 #
@@ -4574,24 +4842,6 @@ msgstr ""
 #
 msgid "UTC"
 msgstr "UTC"
-#
-#
-#
-#
-msgid ""
-"Unable to initialize libgps.\n"
-"\n"
-"gpsd host is: "
-msgstr ""
-"Nemohu inicializovat libgps.\n"
-"\n"
-"gpsd hostitel je: "
-#
-#
-#
-#
-msgid "Unable to load libgps"
-msgstr "Nemohu nahrát libgps"
 #
 #
 #
@@ -4624,13 +4874,6 @@ msgstr "Vrátit zpět"
 #
 msgid "Unit carrier maritime"
 msgstr ""
-#
-#
-#
-#
-#
-msgid "Units"
-msgstr "Jednotky"
 #
 #
 #
@@ -4671,7 +4914,8 @@ msgstr ""
 #
 #
 #
-msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
+#, fuzzy
+msgid "Use Garmin GRMN/GRMN (Host) mode for uploads"
 msgstr "Použít Garmin GRMN/GRMN (Host) mód pro nahrávání tras a trasových bodů."
 #
 #
@@ -4841,6 +5085,9 @@ msgstr "Zda je font podtržen"
 msgid "White"
 msgstr "Bílá"
 #
+msgid "Width Over All (m)"
+msgstr ""
+#
 msgid "Width:"
 msgstr "Šířka:"
 #
@@ -4851,6 +5098,9 @@ msgstr "Letoun s přízemním efektem"
 #
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Chceš zahrnout trasové body na velké kružnici do této etapy?"
+#
+msgid "Wrong length of the NMEA filter value"
+msgstr ""
 #
 #
 #
@@ -4878,6 +5128,9 @@ msgstr ""
 msgid "Yellow"
 msgstr "Žlutá"
 #
+msgid "Yes"
+msgstr ""
+#
 msgid "Yes, hide it."
 msgstr "Ano, schovej to."
 #
@@ -4887,6 +5140,12 @@ msgid ""
 msgstr ""
 "Nemůžeš schovat poslední tlačítko nástrojové lišty,\n"
 "protože by se stala nedostupnou."
+#
+msgid "You must enter the address..."
+msgstr ""
+#
+msgid "You must select or enter the port..."
+msgstr ""
 #
 #
 #
@@ -4962,8 +5221,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
+#
 #
 #
 #
@@ -4999,6 +5260,17 @@ msgstr ""
 #~ "\n"
 #
 #
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "Continuing libgps setup..."
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "Pokračuje nastavení libgps..."
+#
+#
+#
 #
 #
 #
@@ -5011,8 +5283,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Max rychlost vyvázaného cíle (uzle):"
+#
 #
 #
 #
@@ -5039,8 +5313,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Mapová projekce je NEZNÁMÁ, předpokládáme Mercator:"
+#
 #
 #
 #
@@ -5095,8 +5371,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
+#
 #
 #
 #
@@ -5128,13 +5406,32 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#~ msgid "  Could not open AIS serial port '"
+#~ msgstr "  Nemohu otevřít sériový port AIS '"
+#
+#
+#
+#
+#
+#
+#~ msgid "  Could not open serial port '"
+#~ msgstr "  Nemohu otevří sériový port '"
+#
+#
+#
+#
 #~ msgid " COG: %03d Deg."
 #~ msgstr " COG: %03d Stu."
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG: 000 Stu."
+#
 #
 #
 #
@@ -5174,9 +5471,35 @@ msgstr ""
 #
 #
 #
+#~ msgid ""
+#~ "'\n"
+#~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
+#~ msgstr ""
+#~ "'\n"
+#~ " Doporučení: Zkus 'xxx.xxx.xxx.xxx' notaci"
+#
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "'\n"
+#~ "Suggestion: Try closing other applications."
+#~ msgstr ""
+#~ "'\n"
+#~ "Doporučení: Zkus zavřít ostatní aplikace."
+#
+#
+#
+#
+#
+#
+#
 #
 #~ msgid ":               "
 #~ msgstr ":                  "
+#
 #
 #
 #
@@ -5191,12 +5514,17 @@ msgstr ""
 #~ msgstr ":            Nedostupný\n"
 #
 #
+#~ msgid "<--Remove"
+#~ msgstr "<--Odstranit"
 #
 #
 #
 #
-#~ msgid "AIS General"
-#~ msgstr "AIS obecné"
+#
+#
+#~ msgid "AIS Data Port"
+#~ msgstr "Datový port AIS"
+#
 #
 #
 #
@@ -5224,8 +5552,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Activate CM93 Offset"
 #~ msgstr "Aktivovat posuny CM93"
+#
 #
 #
 #
@@ -5245,6 +5575,15 @@ msgstr ""
 #~ msgstr "Aktivovat trasu"
 #
 #
+#
+#
+#
+#
+#~ msgid "Active Charts"
+#~ msgstr "Aktivní mapy"
+#
+#
+#
 #~ msgid "Active Tide/Current Data"
 #~ msgstr "Aktivní data přílivu/proudu"
 #
@@ -5253,8 +5592,22 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Add Selection"
 #~ msgstr "Přidat výběr"
+#
+#
+#
+#
+#
+#
+#~ msgid "Add this chart to quilt."
+#~ msgstr "Přidat tuto mapu do sestavy."
+#
+#
+#~ msgid "Add-->"
+#~ msgstr "Přidat-->"
+#
 #
 #
 #
@@ -5279,6 +5632,7 @@ msgstr ""
 #
 #~ msgid "Additional information"
 #~ msgstr "Další informace"
+#
 #
 #
 #
@@ -5316,6 +5670,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Pokouším se nahrát libgps.so"
 #
@@ -5324,8 +5679,18 @@ msgstr ""
 #
 #
 #
+#~ msgid "Autopilot Output Port"
+#~ msgstr "Port výstupu autopilota"
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Dostupné složky map"
+#
 #
 #
 #
@@ -5361,8 +5726,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Kurs:              %03d St.\n"
+#
 #
 #
 #
@@ -5378,14 +5745,26 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93"
 #~ msgstr "CM93"
 #
 #
 #
 #
+#
+#
+#, fuzzy
+#~ msgid "CM93 Detail Slider..."
+#~ msgstr "Povolit posuvník detailu CM93"
+#
+#
+#
+#
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "Zobrazení posunu CM93"
+#
 #
 #
 #
@@ -5464,8 +5843,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 #
 #
@@ -5544,14 +5925,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
 #
 #
 #
 #
+#
 #~ msgid "CM93 Offsets"
 #~ msgstr "Posuny  CM93"
+#
 #
 #
 #
@@ -5598,8 +5982,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "Detail přiblížení CM93"
+#
 #
 #
 #
@@ -5616,8 +6002,25 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f nm\n"
+#
+#
+#
+#
+#
+#~ msgid ""
+#~ "Call to gps_open failed.\n"
+#~ "Is gpsd running?\n"
+#~ "\n"
+#~ "gpsd host is: "
+#~ msgstr ""
+#~ "Volání gps_open selhalo.\n"
+#~ "Je gpsd spuštěno?\n"
+#~ "\n"
+#~ "gpsd hostitel je: "
+#
 #
 #
 #
@@ -5627,6 +6030,7 @@ msgstr ""
 #
 #~ msgid "CallSign:             "
 #~ msgstr "Volací znak:              "
+#
 #
 #
 #
@@ -5702,6 +6106,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
@@ -5711,8 +6116,35 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "Filtry zobrazení map"
+#
+#
+#~ msgid "Chart Groups..."
+#~ msgstr "Skupiny map..."
+#
+#
+#~ msgid "Chart Groups...New Group"
+#~ msgstr "Skupiny map...Nová skupina"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Chart Position"
+#~ msgstr "Pozice"
+#
+#
+#
+#
+#
+#
+#~ msgid "Could not resolve TCP/IP host '"
+#~ msgstr "Nemohu rozpoznat TCP/IP hostitele '"
+#
 #
 #
 #
@@ -5725,8 +6157,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Deg"
 #~ msgstr "Stupně"
+#
 #
 #
 #
@@ -5741,8 +6175,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "Smazat výběr"
+#
 #
 #
 #
@@ -5757,8 +6193,19 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Depth Settings"
 #~ msgstr "Nastavení hloubky"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Display Style"
+#~ msgstr "Styl zobrazení map"
+#
 #
 #
 #
@@ -5771,8 +6218,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Enable Manual CM93 Offsets"
 #~ msgstr "Povolit manuální posuny  CM93"
+#
 #
 #
 #
@@ -5787,8 +6236,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Atd."
+#
 #
 #
 #
@@ -5803,6 +6254,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
 #
@@ -5811,8 +6263,30 @@ msgstr ""
 #
 #
 #
+#~ msgid "GPS/Plotter Port"
+#~ msgstr "Port GPS/Ploteru"
+#
+#
+#
+#
+#
+#
+#~ msgid "GPSD Data Server"
+#~ msgstr "GPSD Data Server"
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Go To Here"
 #~ msgstr "Navigovat sem"
+#
+#
+#~ msgid "Groups"
+#~ msgstr "Skupiny"
+#
 #
 #
 #
@@ -5827,8 +6301,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Jump To Position"
 #~ msgstr "Skok na pozici"
+#
 #
 #
 #
@@ -5843,8 +6319,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Leg/Route"
 #~ msgstr "Úsek/Trasa"
+#
 #
 #
 #
@@ -5859,8 +6337,18 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Metres"
 #~ msgstr "Metry"
+#
+#
+#
+#
+#
+#
+#~ msgid "NMEA Data Source"
+#~ msgstr "Datový zdroj NMEA"
+#
 #
 #
 #
@@ -5875,8 +6363,54 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Navigation Data"
 #~ msgstr "Navigační data"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Number of Radar Rings"
+#~ msgstr "Počet zobrazených radarových kruhů"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Own Ship Display Options"
+#~ msgstr "Volby zobrazení vlastní lodi"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Place Trackpoints at distance interval (NMi)"
+#~ msgstr "Umístit stopové body v intervalu (nm)"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Place Trackpoints at time interval (sec)"
+#~ msgstr "Umístit stopové body v intervalu (sekund):"
+#
+#
+#
+#
+#
+#
+#~ msgid "Radar rings"
+#~ msgstr "Radarové kruhy"
+#
 #
 #
 #
@@ -5887,8 +6421,21 @@ msgstr ""
 #~ msgstr "Rastr"
 #
 #
-#~ msgid "Remove"
-#~ msgstr "Odstranit"
+#
+#
+#
+#
+#~ msgid "Remove this chart from quilt"
+#~ msgstr "Odstranit tuto mapu ze sestavy"
+#
+#
+#
+#
+#
+#
+#~ msgid "Remove this chart from quilt."
+#~ msgstr "Odstranit tuto mapu ze sestavy."
+#
 #
 #
 #
@@ -5902,8 +6449,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route/Track"
 #~ msgstr "Trasa/stopa"
+#
 #
 #
 #
@@ -5918,8 +6467,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Settings"
 #~ msgstr "Nastavení"
+#
 #
 #
 #
@@ -5931,8 +6482,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "Po startu ukaž vrstvy"
+#
 #
 #
 #
@@ -5947,8 +6500,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Text Element"
 #~ msgstr "Prvek text"
+#
 #
 #
 #
@@ -5961,8 +6516,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "Příliv/proud výběr dat"
+#
 #
 #
 #
@@ -5977,8 +6534,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Track Properties..."
 #~ msgstr "Vlastnosti trasy..."
+#
 #
 #
 #
@@ -5990,8 +6549,38 @@ msgstr ""
 #
 #
 #
+#
+#
+#~ msgid ""
+#~ "Unable to initialize libgps.\n"
+#~ "\n"
+#~ "gpsd host is: "
+#~ msgstr ""
+#~ "Nemohu inicializovat libgps.\n"
+#~ "\n"
+#~ "gpsd hostitel je: "
+#
+#
+#
+#
+#
+#~ msgid "Unable to load libgps"
+#~ msgstr "Nemohu nahrát libgps"
+#
+#
+#
+#
+#
+#
+#~ msgid "Units"
+#~ msgstr "Jednotky"
+#
+#
+#
+#
 #~ msgid "Use OpenGL"
 #~ msgstr "Použít OpenGL"
+#
 #
 #
 #
@@ -6006,8 +6595,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Waypoint Locking"
 #~ msgstr "Zamykání trasových bodů"
+#
 #
 #
 #
@@ -6020,14 +6611,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 #~ msgstr "X posun (Kladný posunuje mapu na východ) (NMi projektováno) :"
 #
 #
 #
 #
+#
 #~ msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
 #~ msgstr "Y posun (Kladný posunuje mapu na sever) (NMi projektováno) :"
+#
 #
 #
 #
