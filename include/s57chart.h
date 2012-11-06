@@ -310,12 +310,8 @@ private:
       bool        m_blastS57TextRender;
       wxString    m_lastColorScheme;
       wxRect      m_last_vprect;
-
       long        m_plib_state_hash;
-
-      int         m_tex_name;
       bool        m_btex_mem;
-
       char        m_usage_char;
 };
 

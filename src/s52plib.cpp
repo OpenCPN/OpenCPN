@@ -5857,12 +5857,6 @@ void s52plib::GetAndAddCSRules( ObjRazRules *rzRules, Rules *rules )
 
 bool s52plib::ObjectRenderCheck( ObjRazRules *rzRules, ViewPort *vp )
 {
-//      if ( !strncmp ( rzRules->LUP->OBCL, "BOYLAT", 6 ) )
-//      {
-//            if ( ObjectRenderCheckPos ( rzRules, vp ) )
-//               int yyp = 5;
-//      }
-
     if( !ObjectRenderCheckPos( rzRules, vp ) ) return false;
 
     if( !ObjectRenderCheckCat( rzRules, vp ) ) return false;
@@ -5925,7 +5919,7 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
     if( !strncmp( rzRules->LUP->OBCL, "M_", 2 ) ) if( !m_bShowMeta ) return false;
 
     //      Do Object Type Filtering
-    DisCat obj_cat = rzRules->obj->m_DisplayCat;
+    DisCat obj_cat = rzRules->LUP->DISC;
 
     if( m_nDisplayCategory == MARINERS_STANDARD ) {
         if( -1 == rzRules->obj->iOBJL ) UpdateOBJLArray( rzRules->obj );

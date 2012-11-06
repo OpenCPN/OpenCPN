@@ -35,7 +35,7 @@
 #endif
 
 #include <wx/progdlg.h>
-#include "wx/sound.h"
+#include <wx/sound.h>
 #include <wx/radiobox.h>
 #include <wx/listbox.h>
 #include <wx/imaglist.h>
@@ -48,6 +48,8 @@
 #include "chartdbs.h"
 #include "options.h"
 #include "styles.h"
+#include "datastream.h"
+#include "multiplexer.h"
 
 #include "navutil.h"
 
@@ -58,9 +60,9 @@
 #endif
 
 wxString GetOCPNKnownLanguage(wxString lang_canonical, wxString *lang_dir);
-void EmptyChartGroupArray(ChartGroupArray *s);
 
 extern MyFrame          *gFrame;
+extern ChartCanvas      *cc1;
 
 extern bool             g_bShowOutlines;
 extern bool             g_bShowDepthUnits;
@@ -68,14 +70,10 @@ extern bool             g_bskew_comp;
 extern bool             g_bopengl;
 extern bool             g_bsmoothpanzoom;
 
-extern wxString         *pNMEADataSource;
-extern wxString         g_NMEABaudRate;
-extern wxString         *pNMEA_AP_Port;
 extern FontMgr          *pFontMgr;
-extern wxString         *pAIS_Port;
 extern wxString         *pInit_Chart_Dir;
-extern bool             g_bGarminPersistance;
-extern bool             g_bGarminHost;
+extern wxArrayOfConnPrm *g_pConnectionParams;
+extern Multiplexer      *g_pMUX;
 extern bool             g_bfilter_cogsog;
 extern int              g_COGFilterSec;
 extern int              g_SOGFilterSec;
@@ -111,17 +109,22 @@ extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 
-extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
 
 extern bool             g_bPreserveScaleOnX;
-extern bool             g_bPlayShipsBells;   // pjotrc 2010.02.09
+extern bool             g_bPlayShipsBells;
 extern bool             g_bFullscreenToolbar;
 extern bool             g_bTransparentToolbar;
-extern bool             g_bShowLayers;
+
+extern int              g_OwnShipIconType;
+extern double           g_n_ownship_length_meters;
+extern double           g_n_ownship_beam_meters;
+extern double           g_n_gps_antenna_offset_y;
+extern double           g_n_gps_antenna_offset_x;
+extern long             g_n_ownship_min_mm;
 
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bTrackDaily;
@@ -129,8 +132,8 @@ extern bool             g_bHighliteTracks;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
 extern double           g_TrackDeltaDistance;
-extern bool             g_bTrackTime;
-extern bool             g_bTrackDistance;
+extern int              g_nTrackPrecision;
+
 extern int              g_iSDMMFormat;
 
 extern int              g_cm93_zoom_factor;
@@ -155,6 +158,7 @@ extern double           g_AckTimeout_Mins;
 
 extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
+extern bool             g_bConfirmObjectDelete;
 
 extern wxLocale         *plocale_def_lang;
 
@@ -194,16 +198,15 @@ BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_BUTTON( xID_OK, options::OnXidOkClick )
     EVT_BUTTON( wxID_CANCEL, options::OnCancelClick )
     EVT_BUTTON( ID_BUTTONFONTCHOOSE, options::OnChooseFont )
-    EVT_CHOICE( ID_CHOICE_NMEA, options::OnNMEASourceChoice )
-    EVT_COMBOBOX( ID_CHOICE_NMEA, options::OnNMEASourceChoice )
-    EVT_RADIOBOX(ID_RADIOBOX, options::OnDisplayCategoryRadioButton )
+    EVT_RADIOBOX(ID_RADARDISTUNIT, options::OnDisplayCategoryRadioButton )
     EVT_BUTTON( ID_CLEARLIST, options::OnButtonClearClick )
     EVT_BUTTON( ID_SELECTLIST, options::OnButtonSelectClick )
     EVT_BUTTON( ID_AISALERTSELECTSOUND, options::OnButtonSelectSound )
     EVT_BUTTON( ID_AISALERTTESTSOUND, options::OnButtonTestSound )
-    EVT_BUTTON( ID_BUTTONGROUP, options::OnButtonGroups )
     EVT_CHECKBOX( ID_SHOWGPSWINDOW, options::OnShowGpsWindowCheckboxClick )
     EVT_CHECKBOX( ID_ZTCCHECKBOX, options::OnZTCCheckboxClick )
+    EVT_CHOICE( ID_SHIPICONTYPE, options::OnShipTypeSelect )
+    EVT_CHOICE( ID_RADARRINGS, options::OnRadarringSelect )
     EVT_CHAR_HOOK( options::OnCharHook )
 END_EVENT_TABLE()
 
@@ -218,9 +221,6 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
     Init();
 
     pParent = parent;
-    int w, h, maxHeight = -1;
-    ::wxDisplaySize( &w, &h );
-    if( h <= 800 ) maxHeight = h-100;
 
     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
     SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
@@ -229,17 +229,48 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
 
     CreateControls();
     Fit();
-    SetMaxSize( wxSize( -1, maxHeight ) );
     Center();
 }
 
 options::~options()
 {
+    // Disconnect Events
+    m_lcSources->Disconnect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
+    m_buttonAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
+    m_buttonRemove->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
+    m_tFilterSec->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_rbTypeSerial->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeSerialSelected ), NULL, this );
+    m_rbTypeNet->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeNetSelected ), NULL, this );
+    m_rbNetProtoTCP->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_rbNetProtoUDP->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_rbNetProtoGPSD->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_tNetAddress->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_tNetPort->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_comboPort->Disconnect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_comboPort->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_choiceBaudRate->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnBaudrateChoice ), NULL, this );
+    m_choiceSerialProtocol->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnProtocolChoice ), NULL, this );
+    m_choicePriority->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_cbCheckCRC->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCrcCheck ), NULL, this );
+    m_cbGarminHost->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_cbFurunoGP3X->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_rbIAccept->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbAcceptInput ), NULL, this );
+    m_rbIIgnore->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbIgnoreInput ), NULL, this );
+    m_tcInputStc->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_btnInputStcList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnIStcs ), NULL, this );
+    m_cbOutput->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCbOutput ), NULL, this );
+    m_rbOAccept->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
+    m_rbOIgnore->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
+    m_tcOutputStc->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_btnOutputStcList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnOStcs ), NULL, this );
+    m_cbNMEADebug->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnShowGpsWindowCheckboxClick ), NULL, this );
+
     delete m_pSerialArray;
-    EmptyChartGroupArray( m_pGroupArray );
+    groupsPanel->EmptyChartGroupArray( m_pGroupArray );
     delete m_pGroupArray;
     m_pGroupArray = NULL;
     g_pOptions = NULL;
+    if( m_topImgList ) delete m_topImgList;
 }
 
 void options::Init()
@@ -248,7 +279,7 @@ void options::Init()
 
     pDebugShowStat = NULL;
     pSelCtl = NULL;
-    pListBox = NULL;
+    pActiveChartsList = NULL;
     ps57CtlListBox = NULL;
     pDispCat = NULL;
     m_pSerialArray = NULL;
@@ -258,12 +289,12 @@ void options::Init()
     k_plugins = 0;
     k_tides = 0;
 
-    loadedSizer = NULL;
+    activeSizer = NULL;
     itemActiveChartStaticBox = NULL;
 
     m_bVisitLang = false;
     m_itemFontElementListBox = NULL;
-
+    m_topImgList = NULL;
     m_pSerialArray = EnumerateSerialPorts();
 
     m_pListbook = NULL;
@@ -276,6 +307,9 @@ void options::Init()
     m_pageShips = -1;
     m_pageUI = -1;
     m_pagePlugins = -1;
+
+    lastPage = -1;
+
 
     // This variable is used by plugin callback function AddOptionsPage
     g_pOptions = this;
@@ -313,24 +347,25 @@ size_t options::CreatePanel( wxString title )
     return id;
 }
 
-wxScrolledWindow *options::AddPage( size_t parent, wxString title  )
+wxScrolledWindow *options::AddPage( size_t parent, wxString title )
 {
-    if (parent > m_pListbook->GetPageCount()-1)
-    {
-        wxLogMessage( wxString::Format( _T("Warning: invalid parent in options::AddPage( %d, "), parent ) + title + _T(" )") );
+    if( parent > m_pListbook->GetPageCount() - 1 ) {
+        wxLogMessage(
+                wxString::Format( _T("Warning: invalid parent in options::AddPage( %d, "),
+                        parent ) + title + _T(" )") );
         return NULL;
     }
     wxNotebookPage* page = m_pListbook->GetPage( parent );
 
     wxScrolledWindow *window;
+    int style = wxVSCROLL | wxTAB_TRAVERSAL;
     if( page->IsKindOf( CLASSINFO(wxNotebook))) {
-        int style = wxVSCROLL | wxTAB_TRAVERSAL;
         window = new wxScrolledWindow( page, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate(1, 1);
+        window->SetScrollRate(5,5);
         ((wxNotebook *)page)->AddPage( window, title );
     } else if (page->IsKindOf(CLASSINFO(wxScrolledWindow))) {
         wxString toptitle = m_pListbook->GetPageText( parent );
-        wxNotebook *nb = new wxNotebook( m_pListbook, wxID_ANY, wxDefaultPosition, wxSize(-1, -1),wxNB_TOP );
+        wxNotebook *nb = new wxNotebook( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize,wxNB_TOP );
         /* Only remove the tab from listbook, we still have original content in {page} */
         m_pListbook->RemovePage( parent );
         m_pListbook->InsertPage( parent, nb, toptitle, false, parent );
@@ -340,15 +375,13 @@ wxScrolledWindow *options::AddPage( size_t parent, wxString title  )
         /* wxNotebookPage is hidden under wxGTK after RemovePage/Reparent
          * we must explicitely Show() it */
         page->Show();
-        int style = wxVSCROLL | wxTAB_TRAVERSAL;
         window = new wxScrolledWindow( nb, wxID_ANY, wxDefaultPosition, wxDefaultSize, style );
-        window->SetScrollRate(1, 1);
+        window->SetScrollRate(5, 5);
         nb->AddPage( window, title );
         nb->ChangeSelection( 0 );
     } else { // This is the default content, we can replace it now
-        int style = wxVSCROLL | wxTAB_TRAVERSAL;
         window = new wxScrolledWindow( m_pListbook, wxID_ANY, wxDefaultPosition, wxDefaultSize, style, title );
-        window->SetScrollRate(1, 1);
+        window->SetScrollRate(5, 5);
         wxString toptitle = m_pListbook->GetPageText( parent );
         m_pListbook->DeletePage( parent );
         m_pListbook->InsertPage( parent, window, toptitle, false, parent );
@@ -398,345 +431,456 @@ bool options::DeletePage( wxScrolledWindow *page  )
 
 void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
 {
-    wxScrolledWindow *itemPanelGPS = AddPage( parent, _("NMEA") );
+    m_pNMEAForm = AddPage( parent, _("NMEA") );
 
-    wxBoxSizer* itemBoxSizerGPS = new wxBoxSizer( wxVERTICAL );
-    itemPanelGPS->SetSizer( itemBoxSizerGPS );
+    wxBoxSizer* bSizer4 = new wxBoxSizer( wxVERTICAL );
+    m_pNMEAForm->SetSizer( bSizer4 );
+    m_pNMEAForm->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
-    wxBoxSizer* srcBaudBox = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizerGPS->Add( srcBaudBox, 0, wxEXPAND );
+    wxBoxSizer* bSizerOuterContainer = new wxBoxSizer( wxVERTICAL );
 
-    wxBoxSizer* aisSrcBox = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizerGPS->Add( aisSrcBox, 0, wxEXPAND );
 
-    //    Add NMEA data source controls
-    wxStaticBox* itemNMEASourceStaticBox = new wxStaticBox( itemPanelGPS, wxID_ANY,
-            _("NMEA Data Source") );
-    wxStaticBoxSizer* itemNMEASourceStaticBoxSizer = new wxStaticBoxSizer( itemNMEASourceStaticBox,
-            wxVERTICAL );
-    srcBaudBox->Add( itemNMEASourceStaticBoxSizer, 1, wxALL | wxEXPAND, border_size );
+    wxStaticBoxSizer* sbSizerGeneral;
+    sbSizerGeneral = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("General") ), wxVERTICAL );
 
-    m_itemNMEAListBox = new wxComboBox( itemPanelGPS, ID_CHOICE_NMEA );
-    itemNMEASourceStaticBoxSizer->Add( m_itemNMEAListBox, 0, wxALL, border_size );
+    wxBoxSizer* bSizer151;
+    bSizer151 = new wxBoxSizer( wxVERTICAL );
 
-    #if !defined( OCPN_NO_SOCKETS) || defined(BUILD_WITH_LIBGPS)
+    wxBoxSizer* bSizer161;
+    bSizer161 = new wxBoxSizer( wxVERTICAL );
 
-    //    Add NMEA TCP/IP Server address
-    m_itemNMEA_TCPIP_StaticBox = new wxStaticBox( itemPanelGPS, wxID_ANY, _("GPSD Data Server") );
-    m_itemNMEA_TCPIP_StaticBoxSizer = new wxStaticBoxSizer( m_itemNMEA_TCPIP_StaticBox,
-            wxVERTICAL );
-    itemBoxSizerGPS->Add( m_itemNMEA_TCPIP_StaticBoxSizer, 0, wxALL | wxEXPAND, border_size );
+    wxBoxSizer* bSizer171;
+    bSizer171 = new wxBoxSizer( wxHORIZONTAL );
 
-    m_itemNMEA_TCPIP_Source = new wxTextCtrl( itemPanelGPS, wxID_ANY );
-    m_itemNMEA_TCPIP_StaticBoxSizer->Add( m_itemNMEA_TCPIP_Source, 0, wxALL, border_size );
+    m_cbFilterSogCog = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Filter NMEA Course and Speed data"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer171->Add( m_cbFilterSogCog, 0, wxALL, 5 );
 
-    m_itemNMEA_TCPIP_StaticBox->Enable( false );
-    m_itemNMEA_TCPIP_Source->Enable( false );
+    m_stFilterSec = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Filter period (sec)"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stFilterSec->Wrap( -1 );
 
-    m_itemNMEA_TCPIP_Source->Clear();
-    m_itemNMEA_TCPIP_Source->WriteText( _T("localhost") );
+    int nspace = 5;
+#ifdef __WXGTK__
+    nspace = 9;
+#endif
+    bSizer171->Add( m_stFilterSec, 0, wxALL, nspace );
 
-    #endif
+    m_tFilterSec = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer171->Add( m_tFilterSec, 0, wxALL, 4 );
 
-    m_itemNMEAListBox->Append( _("None") );
 
-    //    Fill in the listbox with all detected serial ports
-    for( unsigned int iPortIndex = 0; iPortIndex < m_pSerialArray->GetCount(); iPortIndex++ )
-        m_itemNMEAListBox->Append( m_pSerialArray->Item( iPortIndex ) );
+    bSizer161->Add( bSizer171, 1, wxEXPAND, 5 );
 
-    //    Search the string array looking for "GARMIN"
-    bool bfound_garmin_string = false;
-    for( unsigned int iPortIndex = 0; iPortIndex < m_pSerialArray->GetCount(); iPortIndex++ ) {
-        if( m_pSerialArray->Item( iPortIndex ).Contains( _T("GARMIN") ) ) {
-            bfound_garmin_string = true;
-            break;
-        }
-    }
+    wxBoxSizer* bSizer181;
+    bSizer181 = new wxBoxSizer( wxVERTICAL );
 
-    //  Garmin persistence logic:
-    //  Make sure "GARMIN" is in the list if the persistence flag is set.
-    //  This covers the situation where Garmin is desired, but the
-    //  device is not connected yet.
-    //  n.b. Hot-plugging is not supported.  Opencpn must be
-    //  restarted with device inserted to enable this option.
-    if( g_bGarminPersistance && !bfound_garmin_string ) m_itemNMEAListBox->Append( _T("GARMIN") );
+    m_cbNMEADebug = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Show NMEA Debug Window"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer181->Add( m_cbNMEADebug, 0, wxALL, 5 );
 
-    #ifdef BUILD_WITH_LIBGPS
-    m_itemNMEAListBox->Append( _("Network LIBGPS"));
-    #endif
+    bSizer161->Add( bSizer181, 1, wxEXPAND, 5 );
+    bSizer151->Add( bSizer161, 1, wxEXPAND, 5 );
+    sbSizerGeneral->Add( bSizer151, 1, wxEXPAND, 5 );
+    bSizerOuterContainer->Add( sbSizerGeneral, 0, wxALL|wxEXPAND, 5 );
 
-    #ifndef OCPN_NO_SOCKETS
-    m_itemNMEAListBox->Append( _("Network GPSD") );
-    #endif
 
-    m_itemNMEAListBox->Append( _("AIS Port (Shared)") );
+    //  Connections listbox, etc
+    wxStaticBoxSizer* sbSizerLB= new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Data Connections") ), wxVERTICAL );
 
-    //    Activate the proper selections
-    //    n.b. Hard coded indices
-    int scidx;
-    wxString source;
-    source = ( *pNMEADataSource );
-    if( source.Contains( _T("Serial") ) ) {
-        wxString sourcex = source.Mid( 7 );
-        scidx = m_itemNMEAListBox->FindString( sourcex );
-    } else
-        if( source.Contains( _("None") ) ) scidx = 0;
 
-        else
-            if( source.Contains( _T("GARMIN") ) ) scidx = m_itemNMEAListBox->FindString(
-                    _T("GARMIN") );
+    wxBoxSizer* bSizer17;
+    bSizer17 = new wxBoxSizer( wxHORIZONTAL );
 
-            else
-                if( source.Contains( _T("AIS") ) ) scidx = m_itemNMEAListBox->FindString(
-                        _("AIS Port (Shared)") );
+    m_lcSources = new wxListCtrl( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxSize(-1, 150), wxLC_REPORT|wxLC_SINGLE_SEL );
+    bSizer17->Add( m_lcSources, 1, wxALL|wxEXPAND, 5 );
 
-    #ifdef BUILD_WITH_LIBGPS
-                else if(source.Upper().Contains(_T("LIBGPS")))
-                {
-                    scidx = m_itemNMEAListBox->FindString(_("Network LIBGPS"));
-                    wxString ip;
-                    if(source.StartsWith(_T("LIBGPS")) )
-                    ip = source.AfterFirst(':');
-                    else
-                    ip = _T("localhost");
+    wxBoxSizer* bSizer18;
+    bSizer18 = new wxBoxSizer( wxVERTICAL );
 
-                    m_itemNMEA_TCPIP_Source->Clear();
-                    m_itemNMEA_TCPIP_Source->WriteText(ip);
-                    m_itemNMEA_TCPIP_StaticBox->Enable(true);
-                    m_itemNMEA_TCPIP_Source->Enable(true);
-                }
-    #endif
+    m_buttonAdd = new wxButton( m_pNMEAForm, wxID_ANY, _("Add Connection"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_buttonAdd, 0, wxALL, 5 );
 
-    #ifndef OCPN_NO_SOCKETS
-                else
-                    if( source.Upper().Contains( _T("GPSD") ) ) {
-                        scidx = m_itemNMEAListBox->FindString( _("Network GPSD") );
-                        wxString ip;
-                        if( source.StartsWith( _T("GPSD") ) ) ip = source.AfterFirst( ':' );
-                        else
-                            ip = _T("localhost");
+    m_buttonRemove = new wxButton( m_pNMEAForm, wxID_ANY, _("Remove Connection"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_buttonRemove->Enable( false );
+    bSizer18->Add( m_buttonRemove, 0, wxALL, 5 );
 
-                        m_itemNMEA_TCPIP_Source->Clear();
-                        m_itemNMEA_TCPIP_Source->WriteText( ip );
-                        m_itemNMEA_TCPIP_StaticBox->Enable( true );
-                        m_itemNMEA_TCPIP_Source->Enable( true );
-                    }
-    #endif
-                    else
-                        scidx = 0;                                 // malformed selection
+    bSizer17->Add( bSizer18, 0, wxEXPAND, 5 );
+    sbSizerLB->Add( bSizer17, 1, wxEXPAND, 5 );
+    bSizerOuterContainer->Add( sbSizerLB, 0, wxEXPAND, 5 );
 
-    if( scidx == wxNOT_FOUND )                  // user specified in ComboBox
+
+    //  Connections Properties
+
+    sbSizerConnectionProps = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Properties") ), wxVERTICAL );
+
+    wxBoxSizer* bSizer15;
+    bSizer15 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_rbTypeSerial = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Serial"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_rbTypeSerial->SetValue( true );
+    bSizer15->Add( m_rbTypeSerial, 0, wxALL, 5 );
+
+    m_rbTypeNet = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Network"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer15->Add( m_rbTypeNet, 0, wxALL, 5 );
+
+
+    sbSizerConnectionProps->Add( bSizer15, 0, wxEXPAND, 0 );
+
+    gSizerNetProps = new wxGridSizer( 0, 2, 0, 0 );
+
+    m_stNetProto = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Protocol"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stNetProto->Wrap( -1 );
+    gSizerNetProps->Add( m_stNetProto, 0, wxALL, 5 );
+
+    wxBoxSizer* bSizer16;
+    bSizer16 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_rbNetProtoTCP = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("TCP"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    m_rbNetProtoTCP->Enable( true );
+
+    bSizer16->Add( m_rbNetProtoTCP, 0, wxALL, 5 );
+
+    m_rbNetProtoUDP = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("UDP"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_rbNetProtoUDP->Enable( true );
+
+    bSizer16->Add( m_rbNetProtoUDP, 0, wxALL, 5 );
+
+    m_rbNetProtoGPSD = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("GPSD"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_rbNetProtoGPSD->SetValue( true );
+    bSizer16->Add( m_rbNetProtoGPSD, 0, wxALL, 5 );
+
+
+    gSizerNetProps->Add( bSizer16, 1, wxEXPAND, 5 );
+
+    m_stNetAddr = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Address"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stNetAddr->Wrap( -1 );
+    gSizerNetProps->Add( m_stNetAddr, 0, wxALL, 5 );
+
+    m_tNetAddress = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    gSizerNetProps->Add( m_tNetAddress, 0, wxEXPAND|wxTOP, 5 );
+
+    m_stNetPort = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Port"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stNetPort->Wrap( -1 );
+    gSizerNetProps->Add( m_stNetPort, 0, wxALL, 5 );
+
+    m_tNetPort = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+    gSizerNetProps->Add( m_tNetPort, 1, wxEXPAND|wxTOP, 5 );
+
+
+    sbSizerConnectionProps->Add( gSizerNetProps, 0, wxEXPAND, 5 );
+
+    gSizerSerProps = new wxGridSizer( 0, 1, 0, 0 );
+
+    wxFlexGridSizer* fgSizer1;
+    fgSizer1 = new wxFlexGridSizer( 0, 4, 0, 0 );
+    fgSizer1->SetFlexibleDirection( wxBOTH );
+    fgSizer1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+    m_stSerPort = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Port"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stSerPort->Wrap( -1 );
+    fgSizer1->Add( m_stSerPort, 0, wxALL, 5 );
+
+    m_comboPort = new wxComboBox( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
+    fgSizer1->Add( m_comboPort, 0, wxEXPAND|wxTOP, 5 );
+
+    m_stSerBaudrate = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Baudrate"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stSerBaudrate->Wrap( -1 );
+    fgSizer1->Add( m_stSerBaudrate, 0, wxALL, 5 );
+
+    wxString m_choiceBaudRateChoices[] = { _("150"), _("300"), _("600"), _("1200"), _("2400"), _("4800"), _("9600"), _("19200"), _("38400"), _("57600"), _("115200"), _("230400"), _("460800"), _("921600") };
+    int m_choiceBaudRateNChoices = sizeof( m_choiceBaudRateChoices ) / sizeof( wxString );
+    m_choiceBaudRate = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceBaudRateNChoices, m_choiceBaudRateChoices, 0 );
+    m_choiceBaudRate->SetSelection( 0 );
+    fgSizer1->Add( m_choiceBaudRate, 1, wxEXPAND|wxTOP, 5 );
+
+    m_stSerProtocol = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Protocol"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stSerProtocol->Wrap( -1 );
+    fgSizer1->Add( m_stSerProtocol, 0, wxALL, 5 );
+
+    wxString m_choiceSerialProtocolChoices[] = { _("NMEA 0183"), _("NMEA 2000"), _("Seatalk") };
+    int m_choiceSerialProtocolNChoices = sizeof( m_choiceSerialProtocolChoices ) / sizeof( wxString );
+    m_choiceSerialProtocol = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choiceSerialProtocolNChoices, m_choiceSerialProtocolChoices, 0 );
+    m_choiceSerialProtocol->SetSelection( 0 );
+    m_choiceSerialProtocol->Enable( false );
+
+    fgSizer1->Add( m_choiceSerialProtocol, 1, wxEXPAND|wxTOP, 5 );
+
+    m_stPriority = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Priority"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stPriority->Wrap( -1 );
+    fgSizer1->Add( m_stPriority, 0, wxALL, 5 );
+
+    wxString m_choicePriorityChoices[] = { _("0"), _("1"), _("2"), _("3"), _("4"), _("5"), _("6"), _("7"), _("8"), _("9") };
+    int m_choicePriorityNChoices = sizeof( m_choicePriorityChoices ) / sizeof( wxString );
+    m_choicePriority = new wxChoice( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_choicePriorityNChoices, m_choicePriorityChoices, 0 );
+    m_choicePriority->SetSelection( 9 );
+    fgSizer1->Add( m_choicePriority, 0, wxEXPAND|wxTOP, 5 );
+
+
+    gSizerSerProps->Add( fgSizer1, 0, wxEXPAND, 5 );
+
+    wxFlexGridSizer* fgSizer5;
+    fgSizer5 = new wxFlexGridSizer( 0, 2, 0, 0 );
+    fgSizer5->SetFlexibleDirection( wxBOTH );
+    fgSizer5->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+    m_cbCheckCRC = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Control checksum"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbCheckCRC->SetValue(true);
+    m_cbCheckCRC->SetToolTip( _("If checked, only the sentences with a valid checksum are passed through") );
+
+    fgSizer5->Add( m_cbCheckCRC, 0, wxALL, 5 );
+
+    m_cbGarminHost = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use Garmin GRMN/GRMN (Host) mode for uploads"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbGarminHost->SetValue(false);
+    fgSizer5->Add( m_cbGarminHost, 0, wxALL, 5 );
+
+    m_cbFurunoGP3X = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Format uploads for Furuno GP3X"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbFurunoGP3X->SetValue(false);
+	fgSizer5->Add( m_cbFurunoGP3X, 0, wxALL, 5 );
+
+    sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
+    sbSizerConnectionProps->Add( fgSizer5, 0, wxEXPAND, 5 );
+
+    sbSizerInFilter = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Input filtering") ), wxVERTICAL );
+
+    wxBoxSizer* bSizer9;
+    bSizer9 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_rbIAccept = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Accept only sentences"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    bSizer9->Add( m_rbIAccept, 0, wxALL, 5 );
+
+    m_rbIIgnore = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Ignore sentences"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer9->Add( m_rbIIgnore, 0, wxALL, 5 );
+
+
+    sbSizerInFilter->Add( bSizer9, 0, wxEXPAND, 5 );
+
+    wxBoxSizer* bSizer11;
+    bSizer11 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_tcInputStc = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+    bSizer11->Add( m_tcInputStc, 1, wxALL|wxEXPAND, 5 );
+
+    m_btnInputStcList = new wxButton( m_pNMEAForm, wxID_ANY, _("..."), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+    bSizer11->Add( m_btnInputStcList, 0, wxALL, 5 );
+
+    sbSizerInFilter->Add( bSizer11, 0, wxEXPAND, 5 );
+
+    sbSizerConnectionProps->Add( sbSizerInFilter, 0, wxEXPAND, 5 );
+
+
+    m_cbOutput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Output on this port ( as Autopilot or NMEA Repeater)"), wxDefaultPosition, wxDefaultSize, 0 );
+    sbSizerConnectionProps->Add( m_cbOutput, 0, wxALL, 5 );
+
+    sbSizerOutFilter = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Output filtering") ), wxVERTICAL );
+
+    wxBoxSizer* bSizer10;
+    bSizer10 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_rbOAccept = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Transmit sentences"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP );
+    bSizer10->Add( m_rbOAccept, 0, wxALL, 5 );
+
+    m_rbOIgnore = new wxRadioButton( m_pNMEAForm, wxID_ANY, _("Drop sentences"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer10->Add( m_rbOIgnore, 0, wxALL, 5 );
+
+
+    sbSizerOutFilter->Add( bSizer10, 0, wxEXPAND, 5 );
+
+    wxBoxSizer* bSizer12;
+    bSizer12 = new wxBoxSizer( wxHORIZONTAL );
+
+    m_tcOutputStc = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY );
+    bSizer12->Add( m_tcOutputStc, 1, wxALL|wxEXPAND, 5 );
+
+    m_btnOutputStcList = new wxButton( m_pNMEAForm, wxID_ANY, _("..."), wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT );
+    bSizer12->Add( m_btnOutputStcList, 0, wxALL, 5 );
+
+
+    sbSizerOutFilter->Add( bSizer12, 0, wxEXPAND, 5 );
+    sbSizerConnectionProps->Add( sbSizerOutFilter, 0, wxEXPAND, 5 );
+
+
+    bSizerOuterContainer->Add( sbSizerConnectionProps, 1, wxALL|wxEXPAND, 5 );
+
+    bSizer4->Add( bSizerOuterContainer, 1, wxEXPAND, 5 );
+
+    // Connect Events
+    m_lcSources->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED, wxListEventHandler( options::OnSelectDatasource ), NULL, this );
+    m_buttonAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnAddDatasourceClick ), NULL, this );
+    m_buttonRemove->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnRemoveDatasourceClick ), NULL, this );
+    m_rbTypeSerial->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeSerialSelected ), NULL, this );
+    m_rbTypeNet->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnTypeNetSelected ), NULL, this );
+    m_rbNetProtoTCP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_rbNetProtoUDP->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_rbNetProtoGPSD->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnNetProtocolSelected ), NULL, this );
+    m_tNetAddress->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_tNetPort->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_comboPort->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_comboPort->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_choiceBaudRate->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnBaudrateChoice ), NULL, this );
+    m_choiceSerialProtocol->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnProtocolChoice ), NULL, this );
+    m_choicePriority->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_cbCheckCRC->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCrcCheck ), NULL, this );
+    m_cbGarminHost->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_cbFurunoGP3X->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_rbIAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbAcceptInput ), NULL, this );
+    m_rbIIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbIgnoreInput ), NULL, this );
+    m_tcInputStc->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_btnInputStcList->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnIStcs ), NULL, this );
+    m_cbOutput->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCbOutput ), NULL, this );
+    m_rbOAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
+    m_rbOIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
+    m_tcOutputStc->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
+    m_btnOutputStcList->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnOStcs ), NULL, this );
+
+    m_cbNMEADebug->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnShowGpsWindowCheckboxClick ), NULL, this );
+    m_cbFilterSogCog->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+    m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
+
+    wxListItem col0;
+    col0.SetId(0);
+    col0.SetText( _("Type") );
+    m_lcSources->InsertColumn(0, col0);
+
+    wxListItem col1;
+    col1.SetId(1);
+    col1.SetText( _("Port") );
+    m_lcSources->InsertColumn(1, col1);
+
+    wxListItem col2;
+    col2.SetId(2);
+    col2.SetText( _("Parameters") );
+    m_lcSources->InsertColumn(2, col2);
+
+    wxListItem col3;
+    col3.SetId(3);
+    col3.SetText( _("Output") );
+    m_lcSources->InsertColumn(3, col3);
+
+    wxListItem col4;
+    col4.SetId(4);
+    col4.SetText( _("Filters") );
+    m_lcSources->InsertColumn(4, col4);
+
+    m_lcSources->Refresh();
+
+    m_stcdialog_in = new SentenceListDlg(FILTER_INPUT, this);
+    m_stcdialog_out = new SentenceListDlg(FILTER_OUTPUT, this);
+
+    FillSourceList();
+
+    for(size_t i = 0; i < m_pSerialArray->Count() ; i++)
     {
-        wxString nsource = source.AfterFirst( ':' );
-        m_itemNMEAListBox->Append( nsource );
-        scidx = m_itemNMEAListBox->FindString( nsource );
+       m_comboPort->Append(m_pSerialArray->Item(i));
     }
-
-    m_itemNMEAListBox->SetSelection( scidx );
-
-    //    NMEA Baud Rate
-    wxStaticBox* itemNMEABaudStaticBox = new wxStaticBox( itemPanelGPS, wxID_ANY,
-            _("NMEA Baud Rate") );
-    wxStaticBoxSizer* itemNMEABaudStaticBoxSizer = new wxStaticBoxSizer( itemNMEABaudStaticBox,
-            wxVERTICAL );
-    srcBaudBox->Add( itemNMEABaudStaticBoxSizer, 1, wxALL | wxEXPAND, border_size );
-
-    m_itemNMEABaudListBox = new wxComboBox( itemPanelGPS, ID_CHOICE_NMEA_BAUD );
-    m_itemNMEABaudListBox->Append( _T("38400") );
-    m_itemNMEABaudListBox->Append( _T("9600") );
-    m_itemNMEABaudListBox->Append( _T("4800") );
-
-    itemNMEABaudStaticBoxSizer->Add( m_itemNMEABaudListBox, 0, wxALL, border_size );
-
-    scidx = m_itemNMEABaudListBox->FindString( g_NMEABaudRate );      // entry value
-    m_itemNMEABaudListBox->SetSelection( scidx );
-
-    //    Garmin Host Mode
-    pGarminHost = new wxCheckBox( itemPanelGPS, ID_GARMINHOST,
-            _("Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads.") );
-    itemBoxSizerGPS->Add( pGarminHost, 0, wxALIGN_LEFT | wxALL, border_size );
-
-    //    NMEA Monitor window
-    pShowGPSWin = new wxCheckBox( itemPanelGPS, ID_SHOWGPSWINDOW,
-            _("Show GPS/NMEA data stream window") );
-    itemBoxSizerGPS->Add( pShowGPSWin, 0, wxALIGN_LEFT | wxALL, border_size );
-
-    //    NMEA Data Filtering
-    pFilterNMEA = new wxCheckBox( itemPanelGPS, ID_FILTERNMEA,
-            _("Filter NMEA Course and Speed data") );
-    itemBoxSizerGPS->Add( pFilterNMEA, 0, wxALIGN_LEFT | wxALL, border_size );
-
-    wxFlexGridSizer *pFilterGrid = new wxFlexGridSizer( 2 );
-    pFilterGrid->AddGrowableCol( 1 );
-    itemBoxSizerGPS->Add( pFilterGrid, 0, wxALL | wxEXPAND, border_size );
-
-    wxStaticText* itemStaticTextFilterSecs = new wxStaticText( itemPanelGPS, wxID_STATIC,
-            _("Filter Period (sec)") );
-    pFilterGrid->Add( itemStaticTextFilterSecs, 0, wxALL|wxALIGN_CENTER_VERTICAL, border_size );
-
-    pFilterSecs = new wxTextCtrl( itemPanelGPS, ID_TEXTCTRL, _T(""), wxDefaultPosition,
-            wxSize( 100, -1 ) );
-    pFilterGrid->Add( pFilterSecs, 0, wxALL|wxALIGN_CENTER_VERTICAL, border_size );
-
-    //    Add Autopilot serial output port controls
-    wxStaticBox* itemNMEAAutoStaticBox = new wxStaticBox( itemPanelGPS, wxID_ANY,
-            _("Autopilot Output Port") );
-    wxStaticBoxSizer* itemNMEAAutoStaticBoxSizer = new wxStaticBoxSizer( itemNMEAAutoStaticBox,
-            wxVERTICAL );
-    aisSrcBox->Add( itemNMEAAutoStaticBoxSizer, 1, wxEXPAND | wxALL, border_size );
-
-    m_itemNMEAAutoListBox = new wxComboBox( itemPanelGPS, ID_CHOICE_AP );
-    m_itemNMEAAutoListBox->Append( _("None") );
-
-    //    Fill in the listbox with all detected serial ports
-    for( unsigned int iPortIndex = 0; iPortIndex < m_pSerialArray->GetCount(); iPortIndex++ ) {
-        if( m_pSerialArray->Item( iPortIndex ).Contains( _T("GARMIN") ) ) continue;
-        m_itemNMEAAutoListBox->Append( m_pSerialArray->Item( iPortIndex ) );
-    }
-
-    wxString ap_com;
-    if( pNMEA_AP_Port->Contains( _T("Serial") ) ) ap_com = pNMEA_AP_Port->Mid( 7 );
-    else
-        ap_com = _("None");
-
-    int sapidx = m_itemNMEAAutoListBox->FindString( ap_com );
-    m_itemNMEAAutoListBox->SetSelection( sapidx );
-
-    itemNMEAAutoStaticBoxSizer->Add( m_itemNMEAAutoListBox, 0, wxALL, border_size );
-
-    wxStaticBox* itemAISStaticBox = new wxStaticBox( itemPanelGPS, wxID_ANY, _("AIS Data Port") );
-    wxStaticBoxSizer* itemAISStaticBoxSizer = new wxStaticBoxSizer( itemAISStaticBox, wxVERTICAL );
-    aisSrcBox->Add( itemAISStaticBoxSizer, 1, wxALL | wxEXPAND, border_size );
-
-    m_itemAISListBox = new wxComboBox( itemPanelGPS, ID_CHOICE_AIS );
-    m_itemAISListBox->Append( _("None") );
-
-    //    Fill in the listbox with all detected serial ports
-    for( unsigned int iPortIndex = 0; iPortIndex < m_pSerialArray->GetCount(); iPortIndex++ ) {
-        if( m_pSerialArray->Item( iPortIndex ).Contains( _T("GARMIN") ) ) continue;
-        m_itemAISListBox->Append( m_pSerialArray->Item( iPortIndex ) );
-    }
-
-    int sidx;
-    if( pAIS_Port->Contains( _T("Serial") ) ) {
-        wxString ais_com = pAIS_Port->Mid( 7 );
-        sidx = m_itemAISListBox->FindString( ais_com );
-    } else
-        if( pAIS_Port->Contains( _("None") ) ) sidx = 0;
-        else
-            sidx = 0;                                 // malformed selection
-
-    if( sidx == wxNOT_FOUND )                  // user specified in ComboBox
-    {
-        wxString nport = pAIS_Port->AfterFirst( ':' );
-        m_itemAISListBox->Append( nport );
-        sidx = m_itemAISListBox->FindString( nport );
-    }
-
-    m_itemAISListBox->SetSelection( sidx );
-
-    itemAISStaticBoxSizer->Add( m_itemAISListBox, 0, wxALL, border_size );
-
-    itemBoxSizerGPS->AddStretchSpacer(10);
+    ShowNMEACommon( false );
+    ShowNMEASerial( false );
+    ShowNMEANet( false );
+    connectionsaved = true;
 }
 
 void options::CreatePanel_Ownship( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
 {
-    wxScrolledWindow *itemPanelShip = AddPage( parent, _("Own Ship") );
+    itemPanelShip = AddPage( parent, _("Own Ship") );
 
-    wxBoxSizer* itemBoxSizerShip = new wxBoxSizer( wxVERTICAL );
-    itemPanelShip->SetSizer( itemBoxSizerShip );
+    ownShip = new wxBoxSizer( wxVERTICAL );
+    itemPanelShip->SetSizer( ownShip );
 
     //      OwnShip Display options
-    wxStaticBox* itemStaticBoxOSDisplay = new wxStaticBox( itemPanelShip, wxID_ANY,
-            _("Own Ship Display Options") );
-    wxStaticBoxSizer* itemStaticBoxSizerOSDisplay = new wxStaticBoxSizer( itemStaticBoxOSDisplay,
-            wxVERTICAL );
-    itemBoxSizerShip->Add( itemStaticBoxSizerOSDisplay, 0, wxTOP | wxALL | wxEXPAND, border_size );
+    wxStaticBox* osdBox = new wxStaticBox( itemPanelShip, wxID_ANY, _("Display Options") );
+    dispOptions = new wxStaticBoxSizer( osdBox, wxVERTICAL );
+    ownShip->Add( dispOptions, 0, wxTOP | wxALL | wxEXPAND, border_size );
 
-    wxFlexGridSizer *pOSDisplayGrid = new wxFlexGridSizer( 2 );
-    pOSDisplayGrid->AddGrowableCol( 1 );
-    itemStaticBoxSizerOSDisplay->Add( pOSDisplayGrid, 0, wxALL | wxEXPAND, border_size );
+    wxFlexGridSizer* dispOptionsGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
+    dispOptionsGrid->AddGrowableCol( 1 );
+    dispOptions->Add( dispOptionsGrid, 0, wxALL | wxEXPAND, border_size );
 
-    wxStaticText *pStatic_OSCOG_Predictor = new wxStaticText( itemPanelShip, -1,
-            _("OwnShip COG arrow predictor length (min)") );
-    pOSDisplayGrid->Add( pStatic_OSCOG_Predictor, 1, wxALIGN_LEFT | wxALL, group_item_spacing );
+    wxStaticText *pStatic_OSCOG_Predictor = new wxStaticText( itemPanelShip, wxID_ANY, _("COG Predictor Length (min)") );
+    dispOptionsGrid->Add( pStatic_OSCOG_Predictor, 0 );
 
-    m_pText_OSCOG_Predictor = new wxTextCtrl( itemPanelShip, -1 );
-    pOSDisplayGrid->Add( m_pText_OSCOG_Predictor, 1, wxALIGN_RIGHT, group_item_spacing );
+    m_pText_OSCOG_Predictor = new wxTextCtrl( itemPanelShip, wxID_ANY );
+    dispOptionsGrid->Add( m_pText_OSCOG_Predictor, 0, wxALIGN_RIGHT );
 
-    //  Tracks
-    wxStaticBox* itemStaticBoxSizerTrackStatic = new wxStaticBox( itemPanelShip, wxID_ANY,
-            _("Tracks") );
-    wxStaticBoxSizer* itemStaticBoxSizerTrack = new wxStaticBoxSizer( itemStaticBoxSizerTrackStatic,
-            wxVERTICAL );
-    itemBoxSizerShip->Add( itemStaticBoxSizerTrack, 0, wxGROW | wxALL, border_size );
-    pTrackDaily = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX,
-            _("Automatic Daily Tracks") );
-    itemStaticBoxSizerTrack->Add( pTrackDaily, 1, wxALIGN_LEFT | wxALL, border_size );
-    pTrackHighlite = new wxCheckBox( itemPanelShip, ID_TRACKHILITE, _("Highlight Tracks") );
-    itemStaticBoxSizerTrack->Add( pTrackHighlite, 1, wxALIGN_LEFT | wxALL, border_size );
+    wxStaticText *iconTypeTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Ship Icon Type") );
+    dispOptionsGrid->Add( iconTypeTxt, 0 );
 
-    wxFlexGridSizer *pTrackGrid = new wxFlexGridSizer( 2 );
-    pTrackGrid->AddGrowableCol( 1 );
-    itemStaticBoxSizerTrack->Add( pTrackGrid, 0, wxALL | wxEXPAND, border_size );
+    wxString iconTypes[] = { _("Default"), _("Real Scale Bitmap"), _("Real Scale Vector") };
+    m_pShipIconType = new wxChoice( itemPanelShip, ID_SHIPICONTYPE, wxDefaultPosition, wxDefaultSize, 3, iconTypes );
+    dispOptionsGrid->Add( m_pShipIconType, 0, wxALIGN_RIGHT | wxLEFT|wxRIGHT|wxTOP, group_item_spacing );
 
-    m_pCheck_Trackpoint_time = new wxRadioButton( itemPanelShip, -1,
-            _("Place Trackpoints at time interval (sec)"), wxDefaultPosition,
-            wxDefaultSize, wxRB_GROUP );
-    pTrackGrid->Add( m_pCheck_Trackpoint_time, 0, wxALIGN_LEFT | wxALL, 2 );
+    realSizes = new wxFlexGridSizer( 5, 2, group_item_spacing, group_item_spacing );
+    realSizes->AddGrowableCol(1);
 
-    m_pText_TP_Secs = new wxTextCtrl( itemPanelShip, -1 );
-    pTrackGrid->Add( m_pText_TP_Secs, 0, wxALIGN_RIGHT, 2 );
+    dispOptions->Add( realSizes, 0, wxEXPAND | wxLEFT, 30 );
 
-    m_pCheck_Trackpoint_distance = new wxRadioButton( itemPanelShip, -1,
-            _("Place Trackpoints at distance interval (NMi)") );
-    pTrackGrid->Add( m_pCheck_Trackpoint_distance, 0, wxALIGN_LEFT | wxALL, 2 );
+    realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("Length Over All (m)") ), 1, wxALIGN_LEFT );
+    m_pOSLength = new wxTextCtrl( itemPanelShip, 1 );
+    realSizes->Add( m_pOSLength, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
-    m_pText_TP_Dist = new wxTextCtrl( itemPanelShip, -1, _T("") );
-    pTrackGrid->Add( m_pText_TP_Dist, 0, wxALIGN_RIGHT, 2 );
+    realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("Width Over All (m)") ), 1, wxALIGN_LEFT );
+    m_pOSWidth = new wxTextCtrl( itemPanelShip, wxID_ANY );
+    realSizes->Add( m_pOSWidth, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
+
+    realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("GPS Offset from Bow (m)") ), 1, wxALIGN_LEFT );
+    m_pOSGPSOffsetY = new wxTextCtrl( itemPanelShip, wxID_ANY );
+    realSizes->Add( m_pOSGPSOffsetY, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
+
+    realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("GPS Offset from Midship (m)") ), 1, wxALIGN_LEFT );
+    m_pOSGPSOffsetX = new wxTextCtrl( itemPanelShip, wxID_ANY );
+    realSizes->Add( m_pOSGPSOffsetX, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
+
+    realSizes->Add( new wxStaticText( itemPanelShip, wxID_ANY, _("Minimum Screen Size (mm)") ), 1, wxALIGN_LEFT );
+    m_pOSMinSize = new wxTextCtrl( itemPanelShip, wxID_ANY );
+    realSizes->Add( m_pOSMinSize, 1, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
     // Radar rings
-    wxStaticBox* itemStaticBoxSizerRadarRingsStatic = new wxStaticBox( itemPanelShip, wxID_ANY,
-            _("Radar rings") );
-    wxStaticBoxSizer* itemStaticBoxSizerRadarRings = new wxStaticBoxSizer(
-            itemStaticBoxSizerRadarRingsStatic, wxVERTICAL );
-    itemBoxSizerShip->Add( itemStaticBoxSizerRadarRings, 0, wxGROW | wxALL, border_size );
 
-    pNavAidShowRadarRings = new wxCheckBox( itemPanelShip, ID_GPXCHECKBOX,
-            _("Show radar rings") );
-    pNavAidShowRadarRings->SetValue( FALSE );
-    itemStaticBoxSizerRadarRings->Add( pNavAidShowRadarRings, 1, wxALIGN_LEFT | wxALL,
-            border_size );
+    wxFlexGridSizer* rrSelect = new wxFlexGridSizer( 1, 2, group_item_spacing, group_item_spacing );
+    rrSelect->AddGrowableCol( 1 );
+    dispOptions->Add( rrSelect, 0, wxLEFT|wxRIGHT | wxEXPAND, border_size );
 
-    wxFlexGridSizer *pRadarGrid = new wxFlexGridSizer( 2 );
-    pRadarGrid->AddGrowableCol( 1 );
-    itemStaticBoxSizerRadarRings->Add( pRadarGrid, 0, wxALL | wxEXPAND, border_size );
+    wxStaticText *rrTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Show radar rings") );
+    rrSelect->Add( rrTxt, 1, wxEXPAND | wxALL, group_item_spacing );
 
-    wxStaticText* itemStaticTextNumberRadarRings = new wxStaticText( itemPanelShip, wxID_STATIC,
-            _("Number of Radar Rings") );
-    pRadarGrid->Add( itemStaticTextNumberRadarRings, 0,
-            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+    wxString rrAlt[] = { _("None"), _T("1"), _T("2"), _T("3"), _T("4"), _T("5"), _T("6"), _T("7"), _T("8"), _T("9"), _T("10") };
+    pNavAidRadarRingsNumberVisible = new wxChoice( itemPanelShip, ID_RADARRINGS, wxDefaultPosition, m_pShipIconType->GetSize(), 11, rrAlt );
+    rrSelect->Add( pNavAidRadarRingsNumberVisible, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
-    pNavAidRadarRingsNumberVisible = new wxTextCtrl( itemPanelShip, ID_TEXTCTRL, _T(""),
-            wxDefaultPosition, wxSize( 100, -1 ), 0 );
-    pRadarGrid->Add( pNavAidRadarRingsNumberVisible, 0, wxALIGN_RIGHT, 2 );
+    radarGrid = new wxFlexGridSizer( 2, 2, group_item_spacing, group_item_spacing );
+    radarGrid->AddGrowableCol( 1 );
+    dispOptions->Add( radarGrid, 0, wxLEFT | wxEXPAND, 30 );
 
-    wxStaticText* itemStaticTextStepRadarRings = new wxStaticText( itemPanelShip, wxID_STATIC,
-            _("Distance Between Rings") );
-    pRadarGrid->Add( itemStaticTextStepRadarRings, 0,
-            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+    wxStaticText* distanceText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Distance Between Rings") );
+    radarGrid->Add( distanceText, 1, wxEXPAND | wxALL, group_item_spacing );
 
-    pNavAidRadarRingsStep = new wxTextCtrl( itemPanelShip, ID_TEXTCTRL, _T(""),
-            wxDefaultPosition, wxSize( 100, -1 ), 0 );
-    pRadarGrid->Add( pNavAidRadarRingsStep, 0, wxALIGN_RIGHT, 2 );
+    pNavAidRadarRingsStep = new wxTextCtrl( itemPanelShip, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 100, -1 ), 0 );
+    radarGrid->Add( pNavAidRadarRingsStep, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
-    wxString pDistUnitsStrings[] = { _("&Nautical miles"), _("&Kilometers") };
-    m_itemNavAidRadarRingsStepUnitsRadioBox = new wxRadioBox( itemPanelShip, ID_RADIOBOX,
-            _("Units"), wxDefaultPosition, wxDefaultSize, 2, pDistUnitsStrings, 1,
-            wxRA_SPECIFY_ROWS );
-    pRadarGrid->Add( m_itemNavAidRadarRingsStepUnitsRadioBox, 0,
-            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM, border_size );
+    wxStaticText* unitText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Distance Unit") );
+    radarGrid->Add( unitText, 1, wxEXPAND | wxALL, group_item_spacing );
+
+    wxString pDistUnitsStrings[] = { _("Nautical Miles"), _("Kilometers") };
+    m_itemRadarRingsUnits = new wxChoice( itemPanelShip, ID_RADARDISTUNIT, wxDefaultPosition, m_pShipIconType->GetSize(), 2, pDistUnitsStrings );
+    radarGrid->Add( m_itemRadarRingsUnits, 0, wxALIGN_RIGHT | wxALL, border_size );
+
+    //  Tracks
+    wxStaticBox* trackText = new wxStaticBox( itemPanelShip, wxID_ANY, _("Tracks") );
+    wxStaticBoxSizer* trackSizer = new wxStaticBoxSizer( trackText, wxVERTICAL );
+    ownShip->Add( trackSizer, 0, wxGROW | wxALL, border_size );
+
+    pTrackDaily = new wxCheckBox( itemPanelShip, ID_DAILYCHECKBOX, _("Automatic Daily Tracks") );
+    trackSizer->Add( pTrackDaily, 1, wxALL, border_size );
+
+    pTrackHighlite = new wxCheckBox( itemPanelShip, ID_TRACKHILITE, _("Highlight Tracks") );
+    trackSizer->Add( pTrackHighlite, 1, wxALL, border_size );
+
+    wxFlexGridSizer *pTrackGrid = new wxFlexGridSizer( 1, 2, group_item_spacing, group_item_spacing );
+    pTrackGrid->AddGrowableCol( 1 );
+    trackSizer->Add( pTrackGrid, 0, wxALL | wxEXPAND, border_size );
+
+    wxStaticText* tpText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Tracking Precision") );
+    pTrackGrid->Add( tpText, 1, wxEXPAND | wxALL, group_item_spacing );
+
+    wxString trackAlt[] = { _("Low"), _("Medium"), _("High") };
+    pTrackPrecision = new wxChoice( itemPanelShip, wxID_ANY, wxDefaultPosition, m_pShipIconType->GetSize(), 3, trackAlt );
+    pTrackGrid->Add( pTrackPrecision, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
     DimeControl( itemPanelShip );
 }
@@ -745,49 +889,39 @@ void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_
         wxSize small_button_size )
 {
     wxScrolledWindow *chartPanelWin = AddPage( m_pageCharts, _("Loaded Charts") );
-    int display_width, display_height;
-    wxDisplaySize( &display_width, &display_height );
 
     chartPanel = new wxBoxSizer( wxVERTICAL );
     chartPanelWin->SetSizer( chartPanel );
 
     wxStaticBox* loadedBox = new wxStaticBox( chartPanelWin, wxID_ANY, _("Directories") );
-    loadedSizer = new wxStaticBoxSizer( loadedBox, wxHORIZONTAL );
-    chartPanel->Add( loadedSizer, 1, wxALL|wxEXPAND, border_size );
+    activeSizer = new wxStaticBoxSizer( loadedBox, wxHORIZONTAL );
+    chartPanel->Add( activeSizer, 1, wxALL | wxEXPAND, border_size );
 
     wxString* pListBoxStrings = NULL;
-    pListBox = new wxListBox( chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxSize( -1, -1 ), 0,
-            pListBoxStrings, wxLB_MULTIPLE );
+    pActiveChartsList = new wxListBox( chartPanelWin, ID_LISTBOX, wxDefaultPosition, wxDefaultSize,
+             0, pListBoxStrings, wxLB_MULTIPLE );
 
-    if( display_height < 1024 )
-        pListBox->SetMinSize( wxSize( -1, 100 ) );
-    else
-        pListBox->SetMinSize( wxSize( -1, 150 ) );
-
-    loadedSizer->Add( pListBox, 2, wxALL|wxEXPAND, border_size );
+    activeSizer->Add( pActiveChartsList, 1, wxALL | wxEXPAND, border_size );
 
     wxBoxSizer* cmdButtonSizer = new wxBoxSizer( wxVERTICAL );
-    loadedSizer->Add( cmdButtonSizer, 1, wxALL|wxEXPAND, border_size );
+    activeSizer->Add( cmdButtonSizer, 0, wxALL, border_size );
 
     // Currently loaded chart dirs
     wxString dirname;
-    if( pListBox ) {
-        pListBox->Clear();
+    if( pActiveChartsList ) {
+        pActiveChartsList->Clear();
         int nDir = m_CurrentDirList.GetCount();
         for( int i = 0; i < nDir; i++ ) {
             dirname = m_CurrentDirList.Item( i ).fullpath;
-            if( !dirname.IsEmpty() ) pListBox->Append( dirname );
+            if( !dirname.IsEmpty() ) pActiveChartsList->Append( dirname );
         }
     }
 
     wxButton* addBtn = new wxButton( chartPanelWin, ID_BUTTONADD, _("Add Directory...") );
-    cmdButtonSizer->Add( addBtn, 0, wxALL, border_size );
+    cmdButtonSizer->Add( addBtn, 1, wxALL | wxEXPAND, group_item_spacing );
 
     wxButton* removeBtn = new wxButton( chartPanelWin, ID_BUTTONDELETE, _("Remove Selected") );
-    cmdButtonSizer->Add( removeBtn, 0, wxALL, border_size );
-
-    wxButton* group_button = new wxButton( chartPanelWin, ID_BUTTONGROUP, _("Chart Groups...") );
-    cmdButtonSizer->Add( group_button, 0, wxALL, border_size );
+    cmdButtonSizer->Add( removeBtn, 1, wxALL | wxEXPAND, group_item_spacing );
 
     wxStaticBox* itemStaticBoxUpdateStatic = new wxStaticBox( chartPanelWin, wxID_ANY,
             _("Update Control") );
@@ -797,11 +931,11 @@ void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_
 
     pScanCheckBox = new wxCheckBox( chartPanelWin, ID_SCANCHECKBOX,
             _("Scan Charts and Update Database") );
-    itemStaticBoxSizerUpdate->Add( pScanCheckBox, 1, wxALIGN_LEFT | wxALL, 5 );
+    itemStaticBoxSizerUpdate->Add( pScanCheckBox, 1, wxALL, 5 );
 
     pUpdateCheckBox = new wxCheckBox( chartPanelWin, ID_UPDCHECKBOX,
             _("Force Full Database Rebuild") );
-    itemStaticBoxSizerUpdate->Add( pUpdateCheckBox, 1, wxALIGN_LEFT | wxALL, 5 );
+    itemStaticBoxSizerUpdate->Add( pUpdateCheckBox, 1, wxALL, 5 );
 
     chartPanel->Layout();
 }
@@ -809,14 +943,11 @@ void options::CreatePanel_ChartsLoad( size_t parent, int border_size, int group_
 void options::CreatePanel_VectorCharts( size_t parent, int border_size, int group_item_spacing,
         wxSize small_button_size )
 {
-    int check_spacing_2 = 2;
+    ps57Ctl = AddPage( parent, _("Vector Charts") );
 
-    wxScrolledWindow *ps57Ctl = AddPage( parent, _("Vector Charts") );
+    vectorPanel = new wxFlexGridSizer( 2, 3, border_size, border_size );
+    vectorPanel->AddGrowableCol( 0, 1 );
 
-    wxFlexGridSizer* vectorPanel = new wxFlexGridSizer( 2, 3, border_size, border_size );
-    vectorPanel->AddGrowableCol( 0, 2 );
-    vectorPanel->AddGrowableCol( 1, 2 );
-    vectorPanel->AddGrowableCol( 2, 1 );
     ps57Ctl->SetSizer( vectorPanel );
 
     wxStaticBox* marinersBox = new wxStaticBox( ps57Ctl, wxID_ANY,
@@ -841,60 +972,60 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     vectorPanel->Add( catSizer, 1, wxALL | wxEXPAND, group_item_spacing );
 
     wxString pDispCatStrings[] = { _("Base"), _("Standard"), _("Other"), _("Mariners Standard") };
-    pDispCat = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Display Category"), wxDefaultPosition,
+    pDispCat = new wxRadioBox( ps57Ctl, ID_RADARDISTUNIT, _("Display Category"), wxDefaultPosition,
             wxDefaultSize, 4, pDispCatStrings, 1, wxRA_SPECIFY_COLS );
     catSizer->Add( pDispCat, 0, wxALL | wxEXPAND, 2 );
 
     pCheck_SOUNDG = new wxCheckBox( ps57Ctl, ID_SOUNDGCHECKBOX, _("Depth Soundings") );
     pCheck_SOUNDG->SetValue( FALSE );
-    catSizer->Add( pCheck_SOUNDG, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
+    catSizer->Add( pCheck_SOUNDG, 1, wxALL | wxEXPAND, group_item_spacing );
 
     pCheck_META = new wxCheckBox( ps57Ctl, ID_METACHECKBOX, _("Chart Information Objects") );
     pCheck_META->SetValue( FALSE );
-    catSizer->Add( pCheck_META, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
+    catSizer->Add( pCheck_META, 1, wxALL | wxEXPAND, group_item_spacing );
 
     pCheck_SHOWIMPTEXT = new wxCheckBox( ps57Ctl, ID_IMPTEXTCHECKBOX,
             _("Important Text Only") );
     pCheck_SHOWIMPTEXT->SetValue( FALSE );
-    catSizer->Add( pCheck_SHOWIMPTEXT, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
+    catSizer->Add( pCheck_SHOWIMPTEXT, 1, wxALL | wxEXPAND, group_item_spacing );
 
     pCheck_SCAMIN = new wxCheckBox( ps57Ctl, ID_SCAMINCHECKBOX, _("Reduced Detail at Small Scale") );
     pCheck_SCAMIN->SetValue( FALSE );
-    catSizer->Add( pCheck_SCAMIN, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
+    catSizer->Add( pCheck_SCAMIN, 1, wxALL | wxEXPAND, group_item_spacing );
 
     pCheck_ATONTEXT = new wxCheckBox( ps57Ctl, ID_ATONTEXTCHECKBOX, _("Buoy/Light Labels") );
     pCheck_SCAMIN->SetValue( FALSE );
-    catSizer->Add( pCheck_ATONTEXT, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
+    catSizer->Add( pCheck_ATONTEXT, 1, wxALL | wxEXPAND, group_item_spacing );
 
     pCheck_LDISTEXT = new wxCheckBox( ps57Ctl, ID_LDISTEXTCHECKBOX, _("Light Descriptions") );
     pCheck_LDISTEXT->SetValue( FALSE );
-    catSizer->Add( pCheck_LDISTEXT, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
+    catSizer->Add( pCheck_LDISTEXT, 1, wxALL | wxEXPAND, group_item_spacing );
 
     pCheck_XLSECTTEXT = new wxCheckBox( ps57Ctl, ID_LDISTEXTCHECKBOX, _("Extended Light Sectors") );
     pCheck_XLSECTTEXT->SetValue( FALSE );
-    catSizer->Add( pCheck_XLSECTTEXT, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
+    catSizer->Add( pCheck_XLSECTTEXT, 1, wxALL | wxEXPAND, group_item_spacing );
 
     pCheck_DECLTEXT = new wxCheckBox( ps57Ctl, ID_DECLTEXTCHECKBOX, _("De-Cluttered Text") );
     pCheck_DECLTEXT->SetValue( FALSE );
-    catSizer->Add( pCheck_DECLTEXT, 1, wxALIGN_LEFT | wxALL | wxEXPAND, check_spacing_2 );
+    catSizer->Add( pCheck_DECLTEXT, 1, wxALL | wxEXPAND, group_item_spacing );
 
     wxBoxSizer* styleSizer = new wxBoxSizer( wxVERTICAL );
     vectorPanel->Add( styleSizer, 1, wxALL | wxEXPAND, 0 );
 
     wxString pPointStyleStrings[] = { _("Paper Chart"), _("Simplified"), };
-    pPointStyle = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Points"), wxDefaultPosition,
+    pPointStyle = new wxRadioBox( ps57Ctl, ID_RADARDISTUNIT, _("Points"), wxDefaultPosition,
             wxDefaultSize, 2, pPointStyleStrings, 1, wxRA_SPECIFY_COLS );
-    styleSizer->Add( pPointStyle, 0, wxALL | wxEXPAND, check_spacing_2 );
+    styleSizer->Add( pPointStyle, 0, wxALL | wxEXPAND, group_item_spacing );
 
     wxString pBoundStyleStrings[] = { _("Plain"), _("Symbolized"), };
-    pBoundStyle = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Boundaries"), wxDefaultPosition,
+    pBoundStyle = new wxRadioBox( ps57Ctl, ID_RADARDISTUNIT, _("Boundaries"), wxDefaultPosition,
             wxDefaultSize, 2, pBoundStyleStrings, 1, wxRA_SPECIFY_COLS );
-    styleSizer->Add( pBoundStyle, 0, wxALL | wxEXPAND, check_spacing_2 );
+    styleSizer->Add( pBoundStyle, 0, wxALL | wxEXPAND, group_item_spacing );
 
     wxString pColorNumStrings[] = { _("2 Color"), _("4 Color"), };
-    p24Color = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Colors"), wxDefaultPosition, wxDefaultSize,
+    p24Color = new wxRadioBox( ps57Ctl, ID_RADARDISTUNIT, _("Colors"), wxDefaultPosition, wxDefaultSize,
             2, pColorNumStrings, 1, wxRA_SPECIFY_COLS );
-    styleSizer->Add( p24Color, 0, wxALL | wxEXPAND, check_spacing_2 );
+    styleSizer->Add( p24Color, 0, wxALL | wxEXPAND, group_item_spacing );
 
     wxStaticBox* depthBox = new wxStaticBox( ps57Ctl, wxID_ANY, _("Depth Settings(m)") );
     wxStaticBoxSizer* depthsSizer = new wxStaticBoxSizer( depthBox, wxVERTICAL );
@@ -902,48 +1033,48 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
 
     wxStaticText* itemStaticText4 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Shallow Depth") );
     depthsSizer->Add( itemStaticText4, 0,
-            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
+            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
 
     m_ShallowCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxSize( 120, -1 ), 0 );
-    depthsSizer->Add( m_ShallowCtl, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM,
+    depthsSizer->Add( m_ShallowCtl, 0, wxLEFT | wxRIGHT | wxBOTTOM,
             group_item_spacing );
 
     wxStaticText* itemStaticText5 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Safety Depth") );
     depthsSizer->Add( itemStaticText5, 0,
-            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
+            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
 
     m_SafetyCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxSize( 120, -1 ), 0 );
-    depthsSizer->Add( m_SafetyCtl, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM,
+    depthsSizer->Add( m_SafetyCtl, 0, wxLEFT | wxRIGHT | wxBOTTOM,
             group_item_spacing );
 
     wxStaticText* itemStaticText6 = new wxStaticText( ps57Ctl, wxID_STATIC, _("Deep Depth") );
     depthsSizer->Add( itemStaticText6, 0,
-            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
+            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, group_item_spacing );
 
     m_DeepCtl = new wxTextCtrl( ps57Ctl, ID_TEXTCTRL, _T(""), wxDefaultPosition, wxSize( 120, -1 ),
             0 );
-    depthsSizer->Add( m_DeepCtl, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxBOTTOM,
+    depthsSizer->Add( m_DeepCtl, 0, wxLEFT | wxRIGHT | wxBOTTOM,
             group_item_spacing );
 
     wxString pDepthUnitStrings[] = { _("Feet"), _("Meters"), _("Fathoms"), };
 
-    pDepthUnitSelect = new wxRadioBox( ps57Ctl, ID_RADIOBOX, _("Chart Depth Units"),
+    pDepthUnitSelect = new wxRadioBox( ps57Ctl, ID_RADARDISTUNIT, _("Chart Depth Units"),
             wxDefaultPosition, wxDefaultSize, 3, pDepthUnitStrings, 1, wxRA_SPECIFY_COLS );
     vectorPanel->Add( pDepthUnitSelect, 1, wxALL | wxEXPAND, border_size );
 
 #ifdef USE_S57
-    wxStaticBox *pslStatBox = new wxStaticBox( ps57Ctl, wxID_ANY, _("CM93 Detail Level") );
-    wxStaticBoxSizer* cm93Sizer = new wxStaticBoxSizer( pslStatBox, wxVERTICAL );
-    vectorPanel->Add( cm93Sizer, 1, wxALL | wxEXPAND, border_size );
+    wxStaticBox *cm93DetailBox = new wxStaticBox( ps57Ctl, wxID_ANY, _("CM93 Detail Level") );
+    wxStaticBoxSizer* cm93Sizer = new wxStaticBoxSizer( cm93DetailBox, wxVERTICAL );
     m_pSlider_CM93_Zoom = new wxSlider( ps57Ctl, ID_CM93ZOOM, 0, -CM93_ZOOM_FACTOR_MAX_RANGE,
-            CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxDefaultSize,
+            CM93_ZOOM_FACTOR_MAX_RANGE, wxDefaultPosition, wxSize( 140, 50),
             wxSL_HORIZONTAL | wxSL_AUTOTICKS | wxSL_LABELS );
     cm93Sizer->Add( m_pSlider_CM93_Zoom, 0, wxALL | wxEXPAND, border_size );
+    cm93Sizer->SetSizeHints(cm93DetailBox);
+    vectorPanel->Add( cm93Sizer, 1, wxALL | wxEXPAND, border_size );
 #endif
 
-    vectorPanel->SetSizeHints( ps57Ctl );
 }
 
 void options::CreatePanel_TidesCurrents( size_t parent, int border_size, int group_item_spacing,
@@ -951,16 +1082,16 @@ void options::CreatePanel_TidesCurrents( size_t parent, int border_size, int gro
 {
     wxScrolledWindow *tcPanel = AddPage( parent, _("Tides && Currents") );
 
-    wxBoxSizer* mainHBoxSizer = new wxBoxSizer( wxHORIZONTAL );
+    wxBoxSizer* mainHBoxSizer = new wxBoxSizer( wxVERTICAL );
     tcPanel->SetSizer( mainHBoxSizer );
 
     wxStaticBox *tcBox = new wxStaticBox( tcPanel, wxID_ANY, _("Active Datasets" ));
     wxStaticBoxSizer* tcSizer = new wxStaticBoxSizer( tcBox, wxHORIZONTAL );
     mainHBoxSizer->Add( tcSizer, 1, wxALL | wxEXPAND, border_size );
 
-    tcDataSelected = new wxListBox(tcPanel, ID_TIDESELECTED);
+    tcDataSelected = new wxListBox( tcPanel, ID_TIDESELECTED, wxDefaultPosition, wxDefaultSize );
 
-    tcSizer->Add( tcDataSelected, 1, wxALL|wxEXPAND, border_size );
+    tcSizer->Add( tcDataSelected, 1, wxALL | wxEXPAND, border_size );
 
     //  Populate Selection List Control with the contents
     //  of the Global static array
@@ -975,8 +1106,115 @@ void options::CreatePanel_TidesCurrents( size_t parent, int border_size, int gro
     wxBoxSizer* btnSizer = new wxBoxSizer( wxVERTICAL );
     tcSizer->Add( btnSizer );
 
-    btnSizer->Add( insertButton, 1, wxALL, group_item_spacing );
-    btnSizer->Add( removeButton, 1, wxALL, group_item_spacing );
+    btnSizer->Add( insertButton, 1, wxALL | wxEXPAND, group_item_spacing );
+    btnSizer->Add( removeButton, 1, wxALL | wxEXPAND, group_item_spacing );
+}
+
+void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group_item_spacing,
+        wxSize small_button_size )
+{
+    // Special case for adding the tab here. We know this page has multiple tabs,
+    // and we have the actual widgets in a separate class (because of its complexity)
+
+    wxNotebookPage* page = m_pListbook->GetPage( parent );
+    groupsPanel = new ChartGroupsUI( page );
+
+    groupsPanel->CreatePanel( parent, border_size, group_item_spacing, small_button_size );
+    ((wxNotebook *)page)->AddPage( groupsPanel, _("Chart Groups") );
+
+    page->Connect( wxEVT_COMMAND_NOTEBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnChartsPageChange ), NULL, this );
+
+}
+
+void ChartGroupsUI::CreatePanel( size_t parent, int border_size, int group_item_spacing,
+        wxSize small_button_size )
+{
+    modified = false;
+    m_border_size = border_size;
+    m_group_item_spacing = group_item_spacing;
+
+    groupsSizer = new wxFlexGridSizer( 4, 2, border_size, border_size );
+    groupsSizer->AddGrowableCol( 0 );
+    groupsSizer->AddGrowableRow( 1, 1 );
+    groupsSizer->AddGrowableRow( 3, 1 );
+
+    SetSizer( groupsSizer );
+
+    m_UIcomplete = false;
+}
+
+void ChartGroupsUI::CompletePanel( void )
+{
+    //    The chart file/dir tree
+    wxStaticText *allChartsLabel = new wxStaticText( this, wxID_ANY, _("All Available Charts") );
+    groupsSizer->Add( allChartsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size );
+
+    wxStaticText *dummy1 = new wxStaticText( this, -1, _T("") );
+    groupsSizer->Add( dummy1 );
+
+    wxBoxSizer* activeListSizer = new wxBoxSizer( wxVERTICAL );
+    groupsSizer->Add( activeListSizer, 1, wxALL | wxEXPAND, 5 );
+
+    allAvailableCtl = new wxGenericDirCtrl( this, ID_GROUPAVAILABLE, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL );
+    activeListSizer->Add( allAvailableCtl, 1, wxEXPAND );
+
+    m_pAddButton = new wxButton( this, ID_GROUPINSERTDIR, _("Add") );
+    m_pAddButton->Disable();
+    m_pRemoveButton = new wxButton( this, ID_GROUPREMOVEDIR, _("Remove Chart") );
+    m_pRemoveButton->Disable();
+
+    wxBoxSizer* addRemove = new wxBoxSizer( wxVERTICAL );
+    addRemove->Add( m_pAddButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
+    groupsSizer->Add( addRemove, 0, wxALL | wxEXPAND, m_border_size );
+
+    //    Add the Groups notebook control
+    wxStaticText *groupsLabel = new wxStaticText( this, wxID_ANY, _("Chart Groups") );
+    groupsSizer->Add( groupsLabel, 0, wxTOP | wxRIGHT | wxLEFT, m_border_size );
+
+    wxStaticText *dummy2 = new wxStaticText( this, -1, _T("") );
+    groupsSizer->Add( dummy2 );
+
+    wxBoxSizer* nbSizer = new wxBoxSizer( wxVERTICAL );
+    m_GroupNB = new wxNotebook( this, ID_GROUPNOTEBOOK, wxDefaultPosition, wxDefaultSize, wxNB_TOP );
+    nbSizer->Add( m_GroupNB, 1, wxEXPAND );
+    groupsSizer->Add( nbSizer, 1, wxALL | wxEXPAND, m_border_size );
+
+    //    Add default (always present) Default Chart Group
+    wxPanel *allActiveGroup = new wxPanel( m_GroupNB, -1, wxDefaultPosition, wxDefaultSize );
+    m_GroupNB->AddPage( allActiveGroup, _("All Charts") );
+
+    wxBoxSizer* page0BoxSizer = new wxBoxSizer( wxHORIZONTAL );
+    allActiveGroup->SetSizer( page0BoxSizer );
+
+    defaultAllCtl = new wxGenericDirCtrl( allActiveGroup, -1, _T(""), wxDefaultPosition, wxDefaultSize, wxVSCROLL );
+
+    //    Set the Font for the All Active Chart Group tree to be italic, dimmed
+    iFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC,
+    wxFONTWEIGHT_LIGHT );
+
+    page0BoxSizer->Add( defaultAllCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
+
+    m_DirCtrlArray.Add( defaultAllCtl );
+
+    //    Add the Chart Group (page) "New" and "Delete" buttons
+    m_pNewGroupButton = new wxButton( this, ID_GROUPNEWGROUP, _("New Group...") );
+    m_pDeleteGroupButton = new wxButton( this, ID_GROUPDELETEGROUP, _("Delete Group") );
+
+    wxBoxSizer* newDeleteGrp = new wxBoxSizer( wxVERTICAL );
+    groupsSizer->Add( newDeleteGrp, 0, wxALL, m_border_size );
+
+    newDeleteGrp->AddSpacer( 25 );
+    newDeleteGrp->Add( m_pNewGroupButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
+    newDeleteGrp->Add( m_pDeleteGroupButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
+    newDeleteGrp->AddSpacer( 25 );
+    newDeleteGrp->Add( m_pRemoveButton, 0, wxALL | wxEXPAND, m_group_item_spacing );
+
+    // Connect this last, otherwise handler is called before all objects are initialized.
+    this->Connect( wxEVT_COMMAND_TREE_SEL_CHANGED,
+    wxTreeEventHandler(ChartGroupsUI::OnAvailableSelection), NULL, this );
+
+    m_UIcomplete = true;
+
 }
 
 void options::CreatePanel_Display( size_t parent, int border_size, int group_item_spacing,
@@ -996,7 +1234,7 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 
     //  "Course Up" checkbox
     pCBCourseUp = new wxCheckBox( itemPanelUI, ID_COURSEUPCHECKBOX, _("Course UP Mode") );
-    itemStaticBoxSizerCDO->Add( pCBCourseUp, 1, wxALIGN_LEFT | wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pCBCourseUp, 0, wxALL, border_size );
 
     //  Course Up display update period
     wxFlexGridSizer *pCOGUPFilterGrid = new wxFlexGridSizer( 2 );
@@ -1005,60 +1243,60 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
 
     wxStaticText* itemStaticTextCOGUPFilterSecs = new wxStaticText( itemPanelUI, wxID_STATIC,
             _("Course-Up Mode Display Update Period (sec)") );
-    pCOGUPFilterGrid->Add( itemStaticTextCOGUPFilterSecs, 0, wxALIGN_LEFT | wxADJUST_MINSIZE,
+    pCOGUPFilterGrid->Add( itemStaticTextCOGUPFilterSecs, 0, wxADJUST_MINSIZE,
             border_size );
 
     pCOGUPUpdateSecs = new wxTextCtrl( itemPanelUI, ID_TEXTCTRL, _T(""), wxDefaultPosition,
-            wxSize( 100, -1 ) );
-    pCOGUPFilterGrid->Add( pCOGUPUpdateSecs, 0, wxALIGN_RIGHT, 2 );
+            wxDefaultSize );
+    pCOGUPFilterGrid->Add( pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, border_size );
 
     //  "LookAhead" checkbox
     pCBLookAhead = new wxCheckBox( itemPanelUI, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
-    itemStaticBoxSizerCDO->Add( pCBLookAhead, 1, wxALIGN_LEFT | wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pCBLookAhead, 0, wxALL, border_size );
 
     //  Grid display  checkbox
     pSDisplayGrid = new wxCheckBox( itemPanelUI, ID_CHECK_DISPLAYGRID, _("Show Grid") );
-    itemStaticBoxSizerCDO->Add( pSDisplayGrid, 1, wxALIGN_LEFT | wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pSDisplayGrid, 1, wxALL, border_size );
 
     //  Depth Unit checkbox
     pSDepthUnits = new wxCheckBox( itemPanelUI, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
-    itemStaticBoxSizerCDO->Add( pSDepthUnits, 1, wxALIGN_LEFT | wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pSDepthUnits, 1, wxALL, border_size );
 
     //  OpenGL Render checkbox
     pOpenGL = new wxCheckBox( itemPanelUI, ID_OPENGLBOX, _("Use Accelerated Graphics (OpenGL)") );
-    itemStaticBoxSizerCDO->Add( pOpenGL, 1, wxALIGN_LEFT | wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pOpenGL, 1, wxALL, border_size );
 
     //  Smooth Pan/Zoom checkbox
     pSmoothPanZoom = new wxCheckBox( itemPanelUI, ID_SMOOTHPANZOOMBOX,
             _("Smooth Panning / Zooming") );
-    itemStaticBoxSizerCDO->Add( pSmoothPanZoom, 1, wxALIGN_LEFT | wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pSmoothPanZoom, 1, wxALL, border_size );
 
     pEnableZoomToCursor = new wxCheckBox( itemPanelUI, ID_ZTCCHECKBOX,
             _("Zoom to Cursor") );
     pEnableZoomToCursor->SetValue( FALSE );
-    itemStaticBoxSizerCDO->Add( pEnableZoomToCursor, 1, wxALIGN_LEFT | wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pEnableZoomToCursor, 1, wxALL, border_size );
 
     pPreserveScale = new wxCheckBox( itemPanelUI, ID_PRESERVECHECKBOX,
             _("Preserve Scale when Switching Charts") );
-    itemStaticBoxSizerCDO->Add( pPreserveScale, 1, wxALIGN_LEFT | wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pPreserveScale, 1, wxALL, border_size );
 
     //  Quilting checkbox
     pCDOQuilting = new wxCheckBox( itemPanelUI, ID_QUILTCHECKBOX1, _("Enable Chart Quilting") );
-    itemStaticBoxSizerCDO->Add( pCDOQuilting, 1, wxALIGN_LEFT | wxALL, 2 );
+    itemStaticBoxSizerCDO->Add( pCDOQuilting, 1, wxALL, border_size );
 
     //  Full Screen Quilting Disable checkbox
     pFullScreenQuilt = new wxCheckBox( itemPanelUI, ID_FULLSCREENQUILT,
             _("Disable Full Screen Quilting") );
-    itemStaticBoxSizerCDO->Add( pFullScreenQuilt, 1, wxALIGN_LEFT | wxALL, 2 );
+    itemStaticBoxSizerCDO->Add( pFullScreenQuilt, 1, wxALL, border_size );
 
     //  Chart Outlines checkbox
     pCDOOutlines = new wxCheckBox( itemPanelUI, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
-    itemStaticBoxSizerCDO->Add( pCDOOutlines, 1, wxALIGN_LEFT | wxALL, 2 );
+    itemStaticBoxSizerCDO->Add( pCDOOutlines, 1, wxALL, border_size );
 
     //  Skewed Raster compenstation checkbox
     pSkewComp = new wxCheckBox( itemPanelUI, ID_SKEWCOMPBOX,
             _("Show Skewed Raster Charts as North-Up") );
-    itemStaticBoxSizerCDO->Add( pSkewComp, 1, wxALIGN_LEFT | wxALL, 2 );
+    itemStaticBoxSizerCDO->Add( pSkewComp, 1, wxALL, border_size );
 }
 
 void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
@@ -1154,9 +1392,11 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     wxStaticText *pStatic_Dummy5 = new wxStaticText( panelAIS, -1, _T("") );
     pDisplayGrid->Add( pStatic_Dummy5, 1, wxALL | wxALL, group_item_spacing );
 
-    m_pCheck_Draw_Target_Size = new wxCheckBox( panelAIS, -1,
-            _("Show AIS targets real size") );
+    m_pCheck_Draw_Target_Size = new wxCheckBox( panelAIS, -1, _("Show AIS targets real size") );
     pDisplayGrid->Add( m_pCheck_Draw_Target_Size, 1, wxALL, group_item_spacing );
+
+    wxStaticText *pStatic_Dummy5a = new wxStaticText( panelAIS, -1, _T("") );
+    pDisplayGrid->Add( pStatic_Dummy5a, 1, wxALL | wxALL, group_item_spacing );
 
     // Rollover
     wxStaticBox* rolloverBox = new wxStaticBox( panelAIS, wxID_ANY, _("Rollover") );
@@ -1223,11 +1463,12 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 {
     wxScrolledWindow *itemPanelFont = AddPage( parent, _("General Options") );
 
-    m_itemBoxSizerFontPanel = new wxBoxSizer( wxVERTICAL);
+
+    m_itemBoxSizerFontPanel = new wxBoxSizer( wxVERTICAL );
     itemPanelFont->SetSizer( m_itemBoxSizerFontPanel );
 
     wxBoxSizer* langStyleBox = new wxBoxSizer( wxHORIZONTAL );
-    m_itemBoxSizerFontPanel->Add( langStyleBox, 0, wxEXPAND );
+    m_itemBoxSizerFontPanel->Add( langStyleBox, 0, wxEXPAND | wxALL, border_size );
 
     wxStaticBox* itemLangStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
             _("Language") );
@@ -1238,14 +1479,13 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 
     m_itemLangListBox = new wxComboBox( itemPanelFont, ID_CHOICE_LANG );
 
-    itemLangStaticBoxSizer->Add( m_itemLangListBox, 0, wxALL, border_size );
+    itemLangStaticBoxSizer->Add( m_itemLangListBox, 0, wxEXPAND | wxALL, border_size );
 
     wxStaticBox* itemFontStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
             _("Fonts") );
     wxStaticBoxSizer* itemFontStaticBoxSizer = new wxStaticBoxSizer( itemFontStaticBox,
             wxHORIZONTAL );
-    m_itemBoxSizerFontPanel->Add( itemFontStaticBoxSizer, 0, wxEXPAND | wxALL,
-            border_size );
+    m_itemBoxSizerFontPanel->Add( itemFontStaticBoxSizer, 0, wxEXPAND | wxALL, border_size );
 
     m_itemFontElementListBox = new wxComboBox( itemPanelFont, ID_CHOICE_FONTELEMENT );
 
@@ -1260,13 +1500,11 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 
     if( nFonts ) m_itemFontElementListBox->SetSelection( 0 );
 
-    itemFontStaticBoxSizer->Add( m_itemFontElementListBox, 0, wxEXPAND | wxALL,
-            border_size );
+    itemFontStaticBoxSizer->Add( m_itemFontElementListBox, 0, wxALL, border_size );
 
     wxButton* itemFontChooseButton = new wxButton( itemPanelFont, ID_BUTTONFONTCHOOSE,
             _("Choose Font..."), wxDefaultPosition, wxDefaultSize, 0 );
-    itemFontStaticBoxSizer->Add( itemFontChooseButton, 0, wxEXPAND | wxALL,
-            border_size );
+    itemFontStaticBoxSizer->Add( itemFontChooseButton, 0, wxALL, border_size );
 
     wxStaticBox* itemStyleStaticBox = new wxStaticBox( itemPanelFont, wxID_ANY,
             _("Toolbar and Window Style") );
@@ -1282,35 +1520,33 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
         m_itemStyleListBox->Append( style->name );
     }
     m_itemStyleListBox->SetValue( g_StyleManager->GetCurrentStyle()->name );
-    itemStyleStaticBoxSizer->Add( m_itemStyleListBox, 0, wxEXPAND | wxALL, border_size );
+    itemStyleStaticBoxSizer->Add( m_itemStyleListBox, 1, wxEXPAND | wxALL, border_size );
 
-    wxStaticBox* itemStaticBoxSizerGUIOptionsStatic = new wxStaticBox( itemPanelFont, wxID_ANY,
-            _("Miscellaneous Options") );
-    wxStaticBoxSizer* itemStaticBoxSizerGUIOption = new wxStaticBoxSizer(
-            itemStaticBoxSizerGUIOptionsStatic, wxVERTICAL );
-    m_itemBoxSizerFontPanel->Add( itemStaticBoxSizerGUIOption, 0, wxALL, border_size );
+    wxStaticBox* miscOptionsBox = new wxStaticBox( itemPanelFont, wxID_ANY, _("Miscellaneous Options") );
+    wxStaticBoxSizer* miscOptions = new wxStaticBoxSizer( miscOptionsBox, wxVERTICAL );
+    m_itemBoxSizerFontPanel->Add( miscOptions, 0, wxALL | wxEXPAND, border_size );
 
     pDebugShowStat = new wxCheckBox( itemPanelFont, ID_DEBUGCHECKBOX1, _("Show Status Bar") );
     pDebugShowStat->SetValue( FALSE );
-    itemStaticBoxSizerGUIOption->Add( pDebugShowStat, 1, wxALIGN_LEFT | wxALL, border_size );
+    miscOptions->Add( pDebugShowStat, 0, wxALL, border_size );
 
     pFullScreenToolbar = new wxCheckBox( itemPanelFont, ID_FSTOOLBARCHECKBOX,
             _("Show Toolbar in Fullscreen Mode") );
-    itemStaticBoxSizerGUIOption->Add( pFullScreenToolbar, 1, wxALIGN_LEFT | wxALL, border_size );
+    miscOptions->Add( pFullScreenToolbar, 0, wxALL, border_size );
 
     pTransparentToolbar = new wxCheckBox( itemPanelFont, ID_TRANSTOOLBARCHECKBOX,
             _("Enable Transparent Toolbar") );
-    itemStaticBoxSizerGUIOption->Add( pTransparentToolbar, 1, wxALIGN_LEFT | wxALL, border_size );
+    miscOptions->Add( pTransparentToolbar, 0, wxALL, border_size );
     if( g_bopengl ) pTransparentToolbar->Disable();
 
     wxFlexGridSizer *pFormatGrid = new wxFlexGridSizer( 2 );
     pFormatGrid->AddGrowableCol( 1 );
-    itemStaticBoxSizerGUIOption->Add( pFormatGrid, 0, wxALL | wxEXPAND, border_size );
+    miscOptions->Add( pFormatGrid, 0, wxALL | wxEXPAND, border_size );
 
     wxStaticText* itemStaticTextSDMMFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
             _("Show Lat/Long as") );
     pFormatGrid->Add( itemStaticTextSDMMFormat, 0,
-            wxALIGN_LEFT | wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
 
     wxString pSDMMFormats[] = { _("Degrees, Decimal Minutes"), _("Decimal Degrees"),
             _("Degrees, Minutes, Seconds") };
@@ -1320,24 +1556,27 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     pFormatGrid->Add( pSDMMFormat, 0, wxALIGN_RIGHT, 2 );
 
     pPlayShipsBells = new wxCheckBox( itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
-    itemStaticBoxSizerGUIOption->Add( pPlayShipsBells, 0, wxALIGN_LEFT|wxALL, border_size);
+    miscOptions->Add( pPlayShipsBells, 0, wxALIGN_LEFT|wxALL, border_size);
 
     pWayPointPreventDragging = new wxCheckBox( itemPanelFont, ID_DRAGGINGCHECKBOX,
             _("Lock Waypoints (Unless waypoint property dialog visible)") );
     pWayPointPreventDragging->SetValue( FALSE );
-    itemStaticBoxSizerGUIOption->Add( pWayPointPreventDragging, 0, wxALIGN_LEFT | wxALL,
+    miscOptions->Add( pWayPointPreventDragging, 0, wxALL,
             border_size );
 
-    m_itemBoxSizerFontPanel->AddStretchSpacer(2);
-
-    m_itemBoxSizerFontPanel->Layout();
+    pConfirmObjectDeletion = new wxCheckBox( itemPanelFont, ID_DELETECHECKBOX,
+                                               _("Confirm deletion of tracks and routes") );
+    pConfirmObjectDeletion->SetValue( FALSE );
+    miscOptions->Add( pConfirmObjectDeletion, 0, wxALL, border_size );
+                                               
+                                               
 }
 
 void options::CreateControls()
 {
     int border_size = 4;
     int check_spacing = 4;
-    int group_item_spacing = 1;           // use for items within one group, with Add(...wxALL)
+    int group_item_spacing = 2;           // use for items within one group, with Add(...wxALL)
 
     wxFont *qFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
             wxFONTWEIGHT_NORMAL );
@@ -1378,34 +1617,34 @@ void options::CreateControls()
 
     m_pListbook = new wxListbook( itemDialog1, ID_NOTEBOOK, wxDefaultPosition, wxSize(-1, -1),
             wxLB_TOP );
-    wxImageList *imglist = new wxImageList( 40, 40, true, 1 );
+    m_topImgList = new wxImageList( 40, 40, true, 1 );
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
 #if wxCHECK_VERSION(2, 8, 12)
-    imglist->Add( style->GetIcon( _T("Display") ) );
-    imglist->Add( style->GetIcon( _T("Connections") ) );
-    imglist->Add( style->GetIcon( _T("Charts") ) );
-    imglist->Add( style->GetIcon( _T("Ship") ) );
-    imglist->Add( style->GetIcon( _T("UI") ) );
-    imglist->Add( style->GetIcon( _T("Plugins") ) );
+    m_topImgList->Add( style->GetIcon( _T("Display") ) );
+    m_topImgList->Add( style->GetIcon( _T("Connections") ) );
+    m_topImgList->Add( style->GetIcon( _T("Charts") ) );
+    m_topImgList->Add( style->GetIcon( _T("Ship") ) );
+    m_topImgList->Add( style->GetIcon( _T("UI") ) );
+    m_topImgList->Add( style->GetIcon( _T("Plugins") ) );
 #else
     wxBitmap bmp;
     wxImage img;
     bmp = style->GetIcon( _T("Display") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
-    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = wxBitmap( img ); m_topImgList->Add( bmp );
     bmp = style->GetIcon( _T("Connections") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
-    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = wxBitmap( img ); m_topImgList->Add( bmp );
     bmp = style->GetIcon( _T("Charts") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
-    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = wxBitmap( img ); m_topImgList->Add( bmp );
     bmp = style->GetIcon( _T("Ship") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
-    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = wxBitmap( img ); m_topImgList->Add( bmp );
     bmp = style->GetIcon( _T("UI") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
-    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = wxBitmap( img ); m_topImgList->Add( bmp );
     bmp = style->GetIcon( _T("Plugins") ); img = bmp.ConvertToImage(); img.ConvertAlphaToMask(128);
-    bmp = wxBitmap( img ); imglist->Add( bmp );
+    bmp = wxBitmap( img ); m_topImgList->Add( bmp );
 #endif
 
-    m_pListbook->SetImageList( imglist );
+    m_pListbook->SetImageList( m_topImgList );
     itemBoxSizer2->Add( m_pListbook, 1,
             wxALIGN_CENTER_HORIZONTAL | wxALIGN_CENTER_VERTICAL | wxALL | wxEXPAND, border_size );
 
@@ -1431,6 +1670,8 @@ void options::CreateControls()
     m_pageCharts = CreatePanel( _("Charts") );
     CreatePanel_ChartsLoad( m_pageCharts, border_size, group_item_spacing, small_button_size );
     CreatePanel_VectorCharts( m_pageCharts, border_size, group_item_spacing, small_button_size );
+    // ChartGroups must be created after ChartsLoad
+    CreatePanel_ChartGroups( m_pageCharts, border_size, group_item_spacing, small_button_size );
     CreatePanel_TidesCurrents( m_pageCharts, border_size, group_item_spacing, small_button_size );
 
     m_pageShips = CreatePanel( _("Ships") );
@@ -1449,7 +1690,7 @@ void options::CreateControls()
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
             wxDefaultSize, g_pi_manager->GetPlugInArray() );
-    m_pPlugInCtrl->SetScrollRate( 1, 1 );
+    m_pPlugInCtrl->SetScrollRate( 5, 5 );
 
     itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, border_size );
 
@@ -1459,6 +1700,12 @@ void options::CreateControls()
     pSettingsCB1 = pDebugShowStat;
 
     SetColorScheme( (ColorScheme) 0 );
+
+    if( height < 768 ) {
+        SetSizeHints( width-200, height-200, -1, -1 );
+    } else {
+        vectorPanel->SetSizeHints( ps57Ctl );
+    }
 
     m_pListbook->Connect( wxEVT_COMMAND_LISTBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnPageChange ), NULL, this );
 }
@@ -1473,27 +1720,43 @@ void options::SetInitialSettings()
     wxString s;
     wxString dirname;
 
+    // ChartsLoad
+
     int nDir = m_CurrentDirList.GetCount();
 
     for( int i = 0; i < nDir; i++ ) {
         dirname = m_CurrentDirList.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) {
-            if( pListBox ) {
-                pListBox->Append( dirname );
+            if( pActiveChartsList ) {
+                pActiveChartsList->Append( dirname );
             }
         }
     }
 
+    // ChartGroups
+
+    if( pActiveChartsList ) {
+        UpdateWorkArrayFromTextCtl();
+        groupsPanel->SetDBDirs( *m_pWorkDirList );
+
+        // Make a deep copy of the current global Group Array
+        groupsPanel->EmptyChartGroupArray( m_pGroupArray );
+        delete m_pGroupArray;
+        m_pGroupArray = groupsPanel->CloneChartGroupArray( g_pGroupArray );
+        groupsPanel->SetGroupArray( m_pGroupArray );
+        groupsPanel->SetInitialSettings();
+    }
+
     if( m_pConfig ) pSettingsCB1->SetValue( m_pConfig->m_bShowDebugWindows );
 
-    if( g_NMEALogWindow ) pShowGPSWin->SetValue( true );
-
+    if( g_NMEALogWindow ) m_cbNMEADebug->SetValue( true );
+/*TODO
     if( g_bGarminHost ) pGarminHost->SetValue( true );
-
-    pFilterNMEA->SetValue( g_bfilter_cogsog );
+*/
+    m_cbFilterSogCog->SetValue( g_bfilter_cogsog );
 
     s.Printf( _T("%d"), g_COGFilterSec );
-    pFilterSecs->SetValue( s );
+    m_tFilterSec->SetValue( s );
 
     s.Printf( _T("%d"), g_COGAvgSec );
     pCOGUPUpdateSecs->SetValue( s );
@@ -1521,15 +1784,26 @@ void options::SetInitialSettings()
         s.Printf( _T("%4.0f"), g_ownship_predictor_minutes );
     m_pText_OSCOG_Predictor->SetValue( s );
 
-    pNavAidShowRadarRings->SetValue( g_bNavAidShowRadarRings );
+    m_pShipIconType->SetSelection( g_OwnShipIconType );
+    wxCommandEvent eDummy;
+    OnShipTypeSelect( eDummy );
+    m_pOSLength->SetValue( wxString::Format( _T("%.1f"), g_n_ownship_length_meters ) );
+    m_pOSWidth->SetValue( wxString::Format( _T("%.1f"), g_n_ownship_beam_meters ) );
+    m_pOSGPSOffsetX->SetValue( wxString::Format( _T("%.1f"), g_n_gps_antenna_offset_x ) );
+    m_pOSGPSOffsetY->SetValue( wxString::Format( _T("%.1f"), g_n_gps_antenna_offset_y ) );
+    m_pOSMinSize->SetValue( wxString::Format( _T("%d"), g_n_ownship_min_mm ) );
+
     wxString buf;
-    buf.Printf( _T("%d"), g_iNavAidRadarRingsNumberVisible );
-    pNavAidRadarRingsNumberVisible->SetValue( buf );
+    if( g_iNavAidRadarRingsNumberVisible > 10 ) g_iNavAidRadarRingsNumberVisible = 10;
+    pNavAidRadarRingsNumberVisible->SetSelection( g_iNavAidRadarRingsNumberVisible );
     buf.Printf( _T("%.3f"), g_fNavAidRadarRingsStep );
     pNavAidRadarRingsStep->SetValue( buf );
-    m_itemNavAidRadarRingsStepUnitsRadioBox->SetSelection( g_pNavAidRadarRingsStepUnits );
-    pWayPointPreventDragging->SetValue( g_bWayPointPreventDragging );
+    m_itemRadarRingsUnits->SetSelection( g_pNavAidRadarRingsStepUnits );
+    OnRadarringSelect( eDummy );
 
+    pWayPointPreventDragging->SetValue( g_bWayPointPreventDragging );
+    pConfirmObjectDeletion->SetValue( g_bConfirmObjectDelete );
+    
     pEnableZoomToCursor->SetValue( g_bEnableZoomToCursor );
     if( pEnableZoomToCursor->GetValue() ) {
         pSmoothPanZoom->Disable();
@@ -1546,13 +1820,7 @@ void options::SetInitialSettings()
     pTrackDaily->SetValue( g_bTrackDaily );
     pTrackHighlite->SetValue( g_bHighliteTracks );
 
-    s.Printf( _T("%4.0f"), g_TrackIntervalSeconds );
-    m_pText_TP_Secs->SetValue( s );
-    s.Printf( _T("%5.2f"), g_TrackDeltaDistance );
-    m_pText_TP_Dist->SetValue( s );
-
-    m_pCheck_Trackpoint_time->SetValue( g_bTrackTime );
-    m_pCheck_Trackpoint_distance->SetValue( g_bTrackDistance );
+    pTrackPrecision->SetSelection( g_nTrackPrecision );
 
     //    AIS Parameters
     //      CPA Box
@@ -1624,6 +1892,7 @@ void options::SetInitialSettings()
 
         //    S52 Primary Filters
         ps57CtlListBox->Clear();
+        marinersStdXref.clear();
 
         for( unsigned int iPtr = 0; iPtr < ps52plib->pOBJLArray->GetCount(); iPtr++ ) {
             OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
@@ -1633,7 +1902,15 @@ void options::SetInitialSettings()
             } else {
                 item = wxString( pOLE->OBJLName, wxConvUTF8 );
             }
+
+            // The ListBox control will insert entries in sorted order, which means we need to
+            // keep track of already inseted items that gets pushed down the line.
             int newpos = ps57CtlListBox->Append( item );
+            marinersStdXref.push_back( newpos );
+            for( size_t i=0; i<iPtr; i++ ) {
+                if( marinersStdXref[i] >= newpos ) marinersStdXref[i]++;
+            }
+
             ps57CtlListBox->Check( newpos, !( pOLE->nViz == 0 ) );
         }
 
@@ -1703,11 +1980,11 @@ void options::SetInitialSettings()
 
 void options::OnShowGpsWindowCheckboxClick( wxCommandEvent& event )
 {
-    if( !pShowGPSWin->GetValue() ) {
+    if( !m_cbNMEADebug->GetValue() ) {
         if( g_NMEALogWindow ) g_NMEALogWindow->Destroy();
     } else {
         g_NMEALogWindow = new TTYWindow( pParent, 35 );
-        wxString com_string( m_itemNMEAListBox->GetValue() );
+        wxString com_string = _("NMEA Debug Window");
         g_NMEALogWindow->SetTitle( com_string );
 
         //    Make sure the window is well on the screen
@@ -1727,6 +2004,34 @@ void options::OnZTCCheckboxClick( wxCommandEvent& event )
     } else {
         pSmoothPanZoom->Enable();
     }
+}
+
+void options::OnShipTypeSelect( wxCommandEvent& event )
+{
+    if( m_pShipIconType->GetSelection() == 0 ) {
+        realSizes->ShowItems( false );
+    } else {
+        realSizes->ShowItems( true );
+    }
+    dispOptions->Layout();
+    ownShip->Layout();
+    itemPanelShip->Layout();
+    itemPanelShip->Refresh();
+    event.Skip();
+}
+
+void options::OnRadarringSelect( wxCommandEvent& event )
+{
+    if( pNavAidRadarRingsNumberVisible->GetSelection() == 0 ) {
+        radarGrid->ShowItems( false );
+    } else {
+        radarGrid->ShowItems( true );
+    }
+    dispOptions->Layout();
+    ownShip->Layout();
+    itemPanelShip->Layout();
+    itemPanelShip->Refresh();
+    event.Skip();
 }
 
 void options::OnDisplayCategoryRadioButton( wxCommandEvent& event )
@@ -1801,9 +2106,9 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     if( g_bportable ) {
         wxFileName f( selDir );
         f.MakeRelativeTo( *pHome_Locn );
-        pListBox->Append( f.GetFullPath() );
+        pActiveChartsList->Append( f.GetFullPath() );
     } else
-        pListBox->Append( selDir );
+        pActiveChartsList->Append( selDir );
 
     k_charts |= CHANGE_CHARTS;
 
@@ -1818,11 +2123,11 @@ void options::UpdateWorkArrayFromTextCtl()
 {
     wxString dirname;
 
-    int n = pListBox->GetCount();
+    int n = pActiveChartsList->GetCount();
     if( m_pWorkDirList ) {
         m_pWorkDirList->Clear();
         for( int i = 0; i < n; i++ ) {
-            dirname = pListBox->GetString( i );
+            dirname = pActiveChartsList->GetString( i );
             if( !dirname.IsEmpty() ) {
                 //    This is a fix for OSX, which appends EOL to results of GetLineText()
                 while( ( dirname.Last() == wxChar( _T('\n') ) )
@@ -1856,16 +2161,116 @@ void options::UpdateWorkArrayFromTextCtl()
     }
 }
 
+ConnectionParams * options::SaveConnectionParams()
+{
+    if ( connectionsaved )
+        return NULL;
+
+    //  Special encoding for deleted connection
+    if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == _T("Deleted" ))
+        return NULL;
+        
+    if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString )
+    {
+        wxMessageBox( _("You must select or enter the port..."), _("Error!") );
+        return NULL;
+    }
+    else if ( m_rbTypeNet->GetValue() && m_tNetAddress->GetValue() == wxEmptyString )
+    {
+        wxMessageBox( _("You must enter the address..."), _("Error!") );
+        return NULL;
+    }
+
+    ConnectionParams * m_pConnectionParams = new ConnectionParams();
+    
+    m_pConnectionParams->Valid = true;
+    if ( m_rbTypeSerial->GetValue() )
+        m_pConnectionParams->Type = Serial;
+    else
+        m_pConnectionParams->Type = Network;
+    m_pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
+    m_pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
+    if ( m_rbNetProtoTCP->GetValue() )
+        m_pConnectionParams->NetProtocol = TCP;
+    else if ( m_rbNetProtoUDP->GetValue() )
+        m_pConnectionParams->NetProtocol = UDP;
+    else
+        m_pConnectionParams->NetProtocol = GPSD;
+
+    m_pConnectionParams->Baudrate = wxAtoi( m_choiceBaudRate->GetStringSelection() );
+    m_pConnectionParams->Priority = wxAtoi( m_choicePriority->GetStringSelection() );
+    m_pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
+    m_pConnectionParams->Garmin = m_cbGarminHost->GetValue();
+    m_pConnectionParams->FurunoGP3X = m_cbFurunoGP3X->GetValue();
+    m_pConnectionParams->InputSentenceList = wxStringTokenize( m_tcInputStc->GetValue() );
+    if ( m_rbIAccept->GetValue() )
+        m_pConnectionParams->InputSentenceListType = WHITELIST;
+    else
+        m_pConnectionParams->InputSentenceListType = BLACKLIST;
+    m_pConnectionParams->Output = m_cbOutput->GetValue();
+    m_pConnectionParams->OutputSentenceList = wxStringTokenize( m_tcOutputStc->GetValue() );
+    if ( m_rbOAccept->GetValue() )
+        m_pConnectionParams->OutputSentenceListType = WHITELIST;
+    else
+        m_pConnectionParams->OutputSentenceListType = BLACKLIST;
+    m_pConnectionParams->Port = m_comboPort->GetValue();
+    m_pConnectionParams->Protocol = PROTO_NMEA0183;
+    return m_pConnectionParams;
+}
+
 void options::OnApplyClick( wxCommandEvent& event )
 {
     ::wxBeginBusyCursor();
 
     m_returnChanges = 0;
 
-//    Handle Chart Tab
+    // Start with the stuff that requires intelligent validation.
+
+    if( m_pShipIconType->GetSelection() > 0 ) {
+        double n_ownship_length_meters;
+        double n_ownship_beam_meters;
+        double n_gps_antenna_offset_y;
+        double n_gps_antenna_offset_x;
+        long n_ownship_min_mm;
+        m_pOSLength->GetValue().ToDouble( &n_ownship_length_meters );
+        m_pOSWidth->GetValue().ToDouble( &n_ownship_beam_meters );
+        m_pOSGPSOffsetX->GetValue().ToDouble( &n_gps_antenna_offset_x );
+        m_pOSGPSOffsetY->GetValue().ToDouble( &n_gps_antenna_offset_y );
+        m_pOSMinSize->GetValue().ToLong( &n_ownship_min_mm );
+        wxString msg;
+        if( n_ownship_length_meters <= 0 )
+            msg += _("\n - your ship's length must be > 0");
+        if( n_ownship_beam_meters <= 0 )
+            msg += _("\n - your ship's beam must be > 0");
+        if( fabs(n_gps_antenna_offset_x) > n_ownship_beam_meters/2.0 )
+            msg += _("\n - your GPS offset from midship must be within your ship's beam");
+        if( n_gps_antenna_offset_y < 0 || n_gps_antenna_offset_y > n_ownship_length_meters )
+            msg += _("\n - your GPS offset from bow must be within your ship's length");
+        if( n_ownship_min_mm <= 0 || n_ownship_min_mm > 100 )
+            msg += _("\n - your minimum ship icon size must be between 1 and 100 mm");
+        if( ! msg.IsEmpty() ) {
+            msg.Prepend( _("The settings for own ship real size are not correct:") );
+            OCPNMessageDialog* dlg = new OCPNMessageDialog( this,
+                    msg, _("OpenCPN info"),
+                    wxICON_ERROR );
+            ::wxEndBusyCursor();
+            dlg->ShowModal();
+            delete dlg;
+            event.SetInt( wxID_STOP );
+            return;
+        }
+        g_n_ownship_length_meters = n_ownship_length_meters;
+        g_n_ownship_beam_meters = n_ownship_beam_meters;
+        g_n_gps_antenna_offset_y = n_gps_antenna_offset_y;
+        g_n_gps_antenna_offset_x = n_gps_antenna_offset_x;
+        g_n_ownship_min_mm = n_ownship_min_mm;
+    }
+    g_OwnShipIconType = m_pShipIconType->GetSelection();
+
+    //    Handle Chart Tab
     wxString dirname;
 
-    if( pListBox ) {
+    if( pActiveChartsList ) {
         UpdateWorkArrayFromTextCtl();
     } else {
         m_pWorkDirList->Clear();
@@ -1899,11 +2304,20 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     m_returnChanges |= k_scan;
 
-//    Handle Settings Tab
+    // Chart Groups
+
+    if( groupsPanel->modified ) {
+        groupsPanel->EmptyChartGroupArray( g_pGroupArray );
+        delete g_pGroupArray;
+        g_pGroupArray = groupsPanel->CloneChartGroupArray( m_pGroupArray );
+        m_returnChanges |= GROUPS_CHANGED;
+    }
+
+    // Handle Settings Tab
 
     if( m_pConfig ) m_pConfig->m_bShowDebugWindows = pSettingsCB1->GetValue();
 
-    g_bGarminHost = pGarminHost->GetValue();
+//TODO    g_bGarminHost = pGarminHost->GetValue();
 
     g_bShowOutlines = pCDOOutlines->GetValue();
     g_bDisplayGrid = pSDisplayGrid->GetValue();
@@ -1916,10 +2330,10 @@ void options::OnApplyClick( wxCommandEvent& event )
     bool temp_bopengl = pOpenGL->GetValue();
     g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 
-    g_bfilter_cogsog = pFilterNMEA->GetValue();
+    g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
 
     long filter_val = 1;
-    pFilterSecs->GetValue().ToLong( &filter_val );
+    m_tFilterSec->GetValue().ToLong( &filter_val );
     g_COGFilterSec = wxMin((int)filter_val, MAX_COGSOG_FILTER_SECONDS);
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);
     g_SOGFilterSec = g_COGFilterSec;
@@ -1933,13 +2347,12 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     m_pText_OSCOG_Predictor->GetValue().ToDouble( &g_ownship_predictor_minutes );
 
-    g_bNavAidShowRadarRings = pNavAidShowRadarRings->GetValue();
-    wxString buf = pNavAidRadarRingsNumberVisible->GetValue();
-    g_iNavAidRadarRingsNumberVisible = atoi( buf.mb_str() );
+    g_iNavAidRadarRingsNumberVisible = pNavAidRadarRingsNumberVisible->GetSelection();
     g_fNavAidRadarRingsStep = atof( pNavAidRadarRingsStep->GetValue().mb_str() );
-    g_pNavAidRadarRingsStepUnits = m_itemNavAidRadarRingsStepUnitsRadioBox->GetSelection();
+    g_pNavAidRadarRingsStepUnits = m_itemRadarRingsUnits->GetSelection();
     g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
-
+    g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
+    
     g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();
@@ -1947,10 +2360,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
 
-    m_pText_TP_Secs->GetValue().ToDouble( &g_TrackIntervalSeconds );
-    m_pText_TP_Dist->GetValue().ToDouble( &g_TrackDeltaDistance );
-    g_bTrackTime = m_pCheck_Trackpoint_time->GetValue();
-    g_bTrackDistance = m_pCheck_Trackpoint_distance->GetValue();
+    g_nTrackPrecision = pTrackPrecision->GetSelection();
 
     g_bTrackDaily = pTrackDaily->GetValue();
     g_bHighliteTracks = pTrackHighlite->GetValue();
@@ -1984,7 +2394,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
     g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
-
+    
     //      Alert
     g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
     g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();
@@ -1999,50 +2409,48 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bAISRolloverShowCPA = m_pCheck_Rollover_CPA->GetValue();
 
     // NMEA Source
-    wxString sel( m_itemNMEAListBox->GetValue() );
-    wxString serialPrefix = _T("Serial");
-    serialPrefix << _T(":");
-    if( sel.Contains( _T("COM") ) ) sel.Prepend( serialPrefix );
-    else if( sel.Contains( _T("/dev") ) ) sel.Prepend( serialPrefix );
-    else if( sel.Contains( _T("AIS") ) ) sel.Prepend( serialPrefix );
-    else if( sel.Contains( _T("LIBGPS") ) ) {
-        sel.Empty();
-        sel.Append( _T("LIBGPS:") );
-        sel.Append( m_itemNMEA_TCPIP_Source->GetLineText( 0 ) );
-    } else if( sel.Contains( _T("GPSD") ) ) {
-        sel.Empty();
-        sel.Append( _T("GPSD:") );
-        sel.Append( m_itemNMEA_TCPIP_Source->GetLineText( 0 ) );
+    long itemIndex = m_lcSources->GetNextItem( -1, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+
+    if(!connectionsaved)
+    {
+        ConnectionParams * cp = SaveConnectionParams();
+        if(cp != NULL)
+        {
+            if (itemIndex >= 0)
+            {
+                g_pConnectionParams->RemoveAt(itemIndex);
+                g_pConnectionParams->Insert(cp, itemIndex);
+            }
+            else
+            {
+                g_pConnectionParams->Add(cp);
+                itemIndex = g_pConnectionParams->Count() - 1;
+            }
+            FillSourceList();
+            m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
+            m_lcSources->Refresh();
+            connectionsaved = true;
+        }
     }
-    *pNMEADataSource = sel;
 
-    //    If the selection is anything other than "GARMIN",
-    //    then disable semipermanently the option to select GARMIN in future.
-    //    Note if GARMIN device is found in the future, the option will be
-    //    re-enabled.
-    if( !sel.Contains( _T("GARMIN") ) ) g_bGarminPersistance = false;
-
-    //    Primary NMEA Baud Rate
-    g_NMEABaudRate = m_itemNMEABaudListBox->GetValue();
-
-    // AP Output
-    wxString selp( m_itemNMEAAutoListBox->GetStringSelection() );
-
-    if( selp.Contains( _T("COM") ) ) selp.Prepend( serialPrefix );
-    else
-        if( selp.Contains( _T("/dev") ) ) selp.Prepend( serialPrefix );
-
-    *pNMEA_AP_Port = selp;
-
-    // AIS Input
-    wxString selais( m_itemAISListBox->GetValue() );
-    if( selais.Contains( _T("COM") ) ) selais.Prepend( serialPrefix );
-    else
-        if( selais.Contains( _T("/dev") ) ) selais.Prepend( serialPrefix );
+    //Recreate all the datasource connections
+    g_pMUX->ClearStreams();
+    for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+    {
+        ConnectionParams *cp = g_pConnectionParams->Item(i);
+        dsPortType port_type;
+        if (cp->Output)
+            port_type = DS_TYPE_INPUT_OUTPUT;
         else
-            if( selais.Contains( _T("fifo") ) ) selais.Prepend( serialPrefix );
-    *pAIS_Port = selais;
-
+            port_type = DS_TYPE_INPUT;
+        DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type, cp->Priority );
+        dstr->SetInputFilter(cp->InputSentenceList);
+        dstr->SetInputFilterType(cp->InputSentenceListType);
+        dstr->SetOutputFilter(cp->OutputSentenceList);
+        dstr->SetOutputFilterType(cp->OutputSentenceListType);
+        dstr->SetChecksumCheck(cp->ChecksumCheck);
+        g_pMUX->AddStream(dstr);
+    }
 #ifdef USE_S57
     //    Handle Vector Charts Tab
 
@@ -2051,8 +2459,14 @@ void options::OnApplyClick( wxCommandEvent& event )
     int nOBJL = ps57CtlListBox->GetCount();
 
     for( int iPtr = 0; iPtr < nOBJL; iPtr++ ) {
-        OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( iPtr ) );
-
+        int itemIndex;
+        for( size_t i=0; i<marinersStdXref.size(); i++ ) {
+            if( marinersStdXref[ i ] == iPtr ) {
+                itemIndex = i;
+                break;
+            }
+        }
+        OBJLElement *pOLE = (OBJLElement *) ( ps52plib->pOBJLArray->Item( itemIndex ) );
         pOLE->nViz = ps57CtlListBox->IsChecked( iPtr );
     }
 
@@ -2187,10 +2601,10 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     if( event.GetId() == ID_APPLY ) {
         gFrame->ProcessOptionsDialog( m_returnChanges, this );
+        cc1->ReloadVP();
     }
 
     k_charts = 0;
-
     ::wxEndBusyCursor();
 }
 
@@ -2200,11 +2614,12 @@ void options::OnXidOkClick( wxCommandEvent& event )
     if( event.GetEventObject() == NULL ) return;
 
     OnApplyClick( event );
+    if( event.GetInt() == wxID_STOP ) return;
 
     //  Required to avoid intermittent crash on wxGTK
     m_pListbook->ChangeSelection(0);
 
-    delete pListBox;
+    delete pActiveChartsList;
     delete ps57CtlListBox;
     lastWindowPos = GetPosition();
     lastWindowSize = GetSize();
@@ -2217,22 +2632,22 @@ void options::OnButtondeleteClick( wxCommandEvent& event )
     wxString dirname;
 
     wxArrayInt pListBoxSelections;
-    pListBox->GetSelections( pListBoxSelections );
+    pActiveChartsList->GetSelections( pListBoxSelections );
     int nSelections = pListBoxSelections.GetCount();
     for( int i = 0; i < nSelections; i++ ) {
-        pListBox->Delete( pListBoxSelections.Item( ( nSelections - i ) - 1 ) );
+        pActiveChartsList->Delete( pListBoxSelections.Item( ( nSelections - i ) - 1 ) );
     }
 
     UpdateWorkArrayFromTextCtl();
 
     if( m_pWorkDirList ) {
-        pListBox->Clear();
+        pActiveChartsList->Clear();
 
         int nDir = m_pWorkDirList->GetCount();
         for( int id = 0; id < nDir; id++ ) {
             dirname = m_pWorkDirList->Item( id ).fullpath;
             if( !dirname.IsEmpty() ) {
-                pListBox->Append( dirname );
+                pActiveChartsList->Append( dirname );
             }
         }
     }
@@ -2253,7 +2668,7 @@ void options::OnCancelClick( wxCommandEvent& event )
 {
     //  Required to avoid intermittent crash on wxGTK
     m_pListbook->ChangeSelection(0);
-    delete pListBox;
+    delete pActiveChartsList;
     delete ps57CtlListBox;
 
     lastWindowPos = GetPosition();
@@ -2294,6 +2709,27 @@ void options::OnChooseFont( wxCommandEvent& event )
     event.Skip();
 }
 
+void options::OnChartsPageChange( wxListbookEvent& event )
+{
+    unsigned int i = event.GetSelection();
+
+    //    User selected Chart Groups Page?
+    //    If so, build the remaining UI elements
+    if( 2 == i ) {                       // 2 is the index of "Chart Groups" page
+        if(!groupsPanel->m_UIcomplete)
+            groupsPanel->CompletePanel();
+
+        if(!groupsPanel->m_settingscomplete) {
+            ::wxBeginBusyCursor();
+            groupsPanel->CompleteInitialSettings();
+            ::wxEndBusyCursor();
+        }
+    }
+
+    event.Skip();               // Allow continued event processing
+}
+
+
 void options::OnPageChange( wxListbookEvent& event )
 {
     unsigned int i = event.GetSelection();
@@ -2315,7 +2751,6 @@ void options::OnPageChange( wxListbookEvent& event )
             ::wxBeginBusyCursor();
 
             int current_language = plocale_def_lang->GetLanguage();
-//                  wxString oldLocale/*wxMB2WXbuf oldLocale*/ = wxSetlocale(LC_ALL, wxEmptyString);  //2.9.1
             wxString current_sel = wxLocale::GetLanguageName( current_language );
 
             current_sel = GetOCPNKnownLanguage( g_locale, NULL );
@@ -2358,7 +2793,6 @@ void options::OnPageChange( wxListbookEvent& event )
 
             for( int it = 0; it < nLang; it++)
             {
-//                        if(wxLocale::IsAvailable(lang_list[it]))
                 {
                     wxLog::EnableLogging(false);  // avoid "Cannot set locale to..." log message
 
@@ -2421,8 +2855,9 @@ void options::OnPageChange( wxListbookEvent& event )
     }
 }
 
-void options::OnNMEASourceChoice( wxCommandEvent& event )
-{
+//void options::OnNMEASourceChoice( wxCommandEvent& event )
+//{
+/*TODO
     int i = event.GetSelection();
     wxString src( m_itemNMEAListBox->GetString( i ) );
     if( ( src.Upper().Find( _T("GPSD") ) != wxNOT_FOUND )
@@ -2448,7 +2883,8 @@ void options::OnNMEASourceChoice( wxCommandEvent& event )
         m_itemNMEA_TCPIP_StaticBox->Disable();
         m_itemNMEA_TCPIP_Source->Disable();
     }
-}
+*/
+//}
 
 void options::OnButtonSelectSound( wxCommandEvent& event )
 {
@@ -2564,7 +3000,7 @@ wxString GetOCPNKnownLanguage( wxString lang_canonical, wxString *lang_dir )
 
 }
 
-ChartGroupArray *CloneChartGroupArray( ChartGroupArray *s )
+ChartGroupArray* ChartGroupsUI::CloneChartGroupArray( ChartGroupArray* s )
 {
     ChartGroupArray *d = new ChartGroupArray;
     for( unsigned int i = 0; i < s->GetCount(); i++ ) {
@@ -2577,21 +3013,17 @@ ChartGroupArray *CloneChartGroupArray( ChartGroupArray *s )
             pde->m_element_name = psg->m_element_array.Item( j )->m_element_name;
             for( unsigned int k = 0;
                     k < psg->m_element_array.Item( j )->m_missing_name_array.GetCount(); k++ ) {
-                wxString missing_name = psg->m_element_array.Item( j )->m_missing_name_array.Item(
-                        k );
+                wxString missing_name = psg->m_element_array.Item( j )->m_missing_name_array.Item(k);
                 pde->m_missing_name_array.Add( missing_name );
             }
-
             pdg->m_element_array.Add( pde );
         }
-
         d->Add( pdg );
     }
-
     return d;
 }
 
-void EmptyChartGroupArray( ChartGroupArray *s )
+void ChartGroupsUI::EmptyChartGroupArray( ChartGroupArray* s )
 {
     if( !s ) return;
     for( unsigned int i = 0; i < s->GetCount(); i++ ) {
@@ -2611,152 +3043,50 @@ void EmptyChartGroupArray( ChartGroupArray *s )
     s->Clear();
 }
 
-void options::OnButtonGroups( wxCommandEvent& event )
-{
-    int display_width, display_height;
-    wxDisplaySize( &display_width, &display_height );
-
-    groups_dialog *pdlg = new groups_dialog;
-
-    if( pListBox ) UpdateWorkArrayFromTextCtl();
-
-    pdlg->SetDBDirs( *m_pWorkDirList/*m_CurrentDirList*/);
-
-    //    Make a deep copy of the current global Group Array
-    EmptyChartGroupArray( m_pGroupArray );
-    delete m_pGroupArray;
-    m_pGroupArray = CloneChartGroupArray( g_pGroupArray );
-
-    //    And inform the Groups dialog
-    pdlg->SetGroupArray( m_pGroupArray );
-
-    pdlg->Create( pParent, -1, _("Chart Groups"), wxPoint( 0, 0 ),
-            wxSize( display_width - 100, 400 ) );
-    pdlg->Centre();
-
-    if( pdlg->ShowModal() == xID_OK ) {
-        m_groups_changed = GROUPS_CHANGED;
-
-        //    Make a deep copy of the edited  working Group Array
-        EmptyChartGroupArray( g_pGroupArray );
-        delete g_pGroupArray;
-        g_pGroupArray = CloneChartGroupArray( m_pGroupArray );
-    } else
-        m_groups_changed = 0;
-
-}
-
 //    Chart Groups dialog implementation
 
-IMPLEMENT_DYNAMIC_CLASS( groups_dialog, wxDialog )
-BEGIN_EVENT_TABLE( groups_dialog, wxDialog ) EVT_TREE_ITEM_EXPANDED( wxID_TREECTRL, groups_dialog::OnNodeExpanded )
-EVT_BUTTON( ID_GROUPINSERTDIR, groups_dialog::OnInsertChartItem )
-EVT_BUTTON( ID_GROUPREMOVEDIR, groups_dialog::OnRemoveChartItem )
-EVT_NOTEBOOK_PAGE_CHANGED(ID_GROUPNOTEBOOK, groups_dialog::OnGroupPageChange)
-EVT_BUTTON( ID_GROUPNEWGROUP, groups_dialog::OnNewGroup )
-EVT_BUTTON( ID_GROUPDELETEGROUP, groups_dialog::OnDeleteGroup )
-EVT_BUTTON( xID_OK, groups_dialog::OnOK )
-
+BEGIN_EVENT_TABLE( ChartGroupsUI, wxScrolledWindow )
+    EVT_TREE_ITEM_EXPANDED( wxID_TREECTRL, ChartGroupsUI::OnNodeExpanded )
+    EVT_BUTTON( ID_GROUPINSERTDIR, ChartGroupsUI::OnInsertChartItem )
+    EVT_BUTTON( ID_GROUPREMOVEDIR, ChartGroupsUI::OnRemoveChartItem )
+    EVT_NOTEBOOK_PAGE_CHANGED(ID_GROUPNOTEBOOK, ChartGroupsUI::OnGroupPageChange)
+    EVT_BUTTON( ID_GROUPNEWGROUP, ChartGroupsUI::OnNewGroup )
+    EVT_BUTTON( ID_GROUPDELETEGROUP, ChartGroupsUI::OnDeleteGroup )
 END_EVENT_TABLE()
 
-groups_dialog::groups_dialog()
+ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
 {
-    Init();
-}
+    Create( parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxVSCROLL, _("Chart Groups") );
 
-groups_dialog::groups_dialog( MyFrame* parent, wxWindowID id, const wxString& caption,
-        const wxPoint& pos, const wxSize& size, long style )
-{
-    Init();
-
+    m_GroupSelectedPage = -1;
+    m_pActiveChartsTree = 0;
     pParent = parent;
-
-    //    As a display optimization....
-    //    if current color scheme is other than DAY,
-    //    Then create the dialog ..WITHOUT.. borders and title bar.
-    //    This way, any window decorations set by external themes, etc
-    //    will not detract from night-vision
-
-    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;      //| wxVSCROLL;
-//      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
-//            wstyle |= (wxNO_BORDER);
-
-    SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
-
-    wxDialog::Create( parent, id, caption, pos, size, wstyle );
-
-    CreateControls();
+    lastSelectedCtl = NULL;
+    allAvailableCtl = NULL;
+    defaultAllCtl = NULL;
+    iFont = NULL;
+    m_pAddButton = NULL;
+    m_pRemoveButton = NULL;
+    m_pDeleteGroupButton = NULL;
+    m_pNewGroupButton = NULL;
+    m_pGroupArray= NULL;
+    m_GroupNB = NULL;
+    modified = false;
+    m_UIcomplete = false;
 }
 
-bool groups_dialog::Create( MyFrame* parent, wxWindowID id, const wxString& caption,
-        const wxPoint& pos, const wxSize& size, long style )
-{
-    Init();
-
-    pParent = parent;
-
-    //    As a display optimization....
-    //    if current color scheme is other than DAY,
-    //    Then create the dialog ..WITHOUT.. borders and title bar.
-    //    This way, any window decorations set by external themes, etc
-    //    will not detract from night-vision
-
-    long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;      //| wxVSCROLL;
-//      if(global_color_scheme != GLOBAL_COLOR_SCHEME_DAY)
-//            wstyle |= (wxNO_BORDER);
-
-    SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
-
-    wxDialog::Create( parent, id, caption, pos, size, wstyle );
-
-    CreateControls();
-
-    return true;
-}
-
-groups_dialog::~groups_dialog()
+ChartGroupsUI::~ChartGroupsUI()
 {
     m_DirCtrlArray.Clear();
 }
 
-void groups_dialog::Init()
+void ChartGroupsUI::SetInitialSettings()
 {
-    m_GroupSelectedPage = -1;
-    m_pactive_treectl = 0;
+    m_settingscomplete = false;
 }
 
-void groups_dialog::CreateControls( void )
+void ChartGroupsUI::CompleteInitialSettings()
 {
-    int border_size = 4;
-
-    int display_width, display_height;
-    wxDisplaySize( &display_width, &display_height );
-
-    wxFont *qFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
-            wxFONTWEIGHT_NORMAL );
-    SetFont( *qFont );
-
-    int font_size_y, font_descent, font_lead;
-    GetTextExtent( _T("0"), NULL, &font_size_y, &font_descent, &font_lead );
-    wxSize small_button_size( -1, (int) ( 1.4 * ( font_size_y + font_descent + font_lead ) ) );
-
-    //    The total dialog vertical sizer
-    wxBoxSizer* TopVBoxSizer = new wxBoxSizer( wxVERTICAL );
-    SetSizer( TopVBoxSizer );
-
-    //    Add main horizontal sizer....
-    wxBoxSizer* mainHBoxSizer = new wxBoxSizer( wxHORIZONTAL );
-    TopVBoxSizer->Add( mainHBoxSizer, 1, wxALIGN_TOP | wxEXPAND );
-
-    //    The chart file/dir tree
-    wxStaticBox *GroupActiveChartStaticBox = new wxStaticBox( this, wxID_ANY, _("Active Charts") );
-    wxStaticBoxSizer* GroupActiveChartStaticBoxSizer = new wxStaticBoxSizer(
-            GroupActiveChartStaticBox, wxVERTICAL );
-    mainHBoxSizer->Add( GroupActiveChartStaticBoxSizer, 1, wxALIGN_LEFT | wxALL | wxEXPAND, 5 );
-
-    m_pDirCtl = new wxGenericDirCtrl( this, -1, _T("") );
-    GroupActiveChartStaticBoxSizer->Add( m_pDirCtl, 1, wxALIGN_LEFT | wxEXPAND );
-
     //    Fill in the "Active chart" tree control
     //    from the options dialog "Active Chart Directories" list
     wxArrayString dir_array;
@@ -2765,48 +3095,11 @@ void groups_dialog::CreateControls( void )
         wxString dirname = m_db_dirs.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) dir_array.Add( dirname );
     }
-    PopulateTreeCtrl( m_pDirCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) );
-    m_pactive_treectl = m_pDirCtl->GetTreeCtrl();
 
-    //    Add the "Insert/Remove" buttons
-    m_pinsertButton = new wxButton( this, ID_GROUPINSERTDIR, _("Add-->") );
-    m_premoveButton = new wxButton( this, ID_GROUPREMOVEDIR, _("<--Remove") );
 
-    wxBoxSizer* IRSizer = new wxBoxSizer( wxVERTICAL );
-    mainHBoxSizer->AddSpacer( 10 );
-    mainHBoxSizer->Add( IRSizer, 0, wxALIGN_CENTRE | wxEXPAND );
-    mainHBoxSizer->AddSpacer( 10 );
+    PopulateTreeCtrl( allAvailableCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) );
+    m_pActiveChartsTree = allAvailableCtl->GetTreeCtrl();
 
-    IRSizer->AddSpacer( 100 );
-    IRSizer->Add( m_pinsertButton, 0, wxALIGN_CENTRE );
-    IRSizer->AddSpacer( 50 );
-    IRSizer->Add( m_premoveButton, 0, wxALIGN_CENTRE );
-
-    //    Add the Groups notebook control
-    wxStaticBox *GroupNBStaticBox = new wxStaticBox( this, wxID_ANY, _("Groups") );
-    wxStaticBoxSizer* GroupNBStaticBoxSizer = new wxStaticBoxSizer( GroupNBStaticBox, wxVERTICAL );
-    mainHBoxSizer->Add( GroupNBStaticBoxSizer, 1, wxALIGN_RIGHT | wxALL | wxEXPAND, 5 );
-
-    m_GroupNB = new wxNotebook( this, ID_GROUPNOTEBOOK, wxDefaultPosition, wxSize( -1, -1 ),
-            wxNB_TOP );
-    GroupNBStaticBoxSizer->Add( m_GroupNB, 1, wxALIGN_RIGHT | wxEXPAND );
-
-    //    Add default (always present) Basic Chart Group
-    wxPanel *pPanelBasicGroup = new wxPanel( m_GroupNB, -1, wxDefaultPosition, wxDefaultSize );
-    m_GroupNB->AddPage( pPanelBasicGroup, _("All Active Charts") );
-
-    wxBoxSizer* page0BoxSizer = new wxBoxSizer( wxHORIZONTAL );
-    pPanelBasicGroup->SetSizer( page0BoxSizer );
-
-    wxGenericDirCtrl *BasicGroupDirCtl = new wxGenericDirCtrl( pPanelBasicGroup, -1, _T("") );
-
-    //    Set the Font for the Basic Chart Group tree to be italic, dimmed
-    wxFont *iFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC,
-            wxFONTWEIGHT_LIGHT );
-
-    page0BoxSizer->Add( BasicGroupDirCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
-
-    m_DirCtrlArray.Add( BasicGroupDirCtl );
 
     //    Fill in the Page 0 tree control
     //    from the options dialog "Active Chart Directories" list
@@ -2816,35 +3109,20 @@ void groups_dialog::CreateControls( void )
         wxString dirname = m_db_dirs.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) dir_array0.Add( dirname );
     }
-    PopulateTreeCtrl( BasicGroupDirCtl->GetTreeCtrl(), dir_array0, wxColour( 128, 128, 128 ),
-            iFont );
+    PopulateTreeCtrl( defaultAllCtl->GetTreeCtrl(), dir_array0, wxColour( 128, 128, 128 ),
+                      iFont );
 
     BuildNotebookPages( m_pGroupArray );
 
-    //    Add the Chart Group (page) "New" and "Delete" buttons
-    m_pNewGroupButton = new wxButton( this, ID_GROUPNEWGROUP, _("New Group...") );
-    m_pDeleteGroupButton = new wxButton( this, ID_GROUPDELETEGROUP, _("Delete Group") );
+    groupsSizer->Layout();
 
-    wxBoxSizer* GroupButtonSizer = new wxBoxSizer( wxHORIZONTAL );
-    GroupNBStaticBoxSizer->Add( GroupButtonSizer, 0, wxALIGN_RIGHT | wxALL, border_size );
-
-    GroupButtonSizer->Add( m_pNewGroupButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
-    GroupButtonSizer->Add( m_pDeleteGroupButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
-
-    //      Add standard dialog control buttons
-    wxBoxSizer* itemBoxSizer28 = new wxBoxSizer( wxHORIZONTAL );
-    TopVBoxSizer->Add( itemBoxSizer28, 0, wxALIGN_RIGHT | wxALL, border_size );
-
-    m_OKButton = new wxButton( this, xID_OK, _("Ok") );
-    m_OKButton->SetDefault();
-    itemBoxSizer28->Add( m_OKButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
-
-    m_CancelButton = new wxButton( this, wxID_CANCEL, _("&Cancel") );
-    itemBoxSizer28->Add( m_CancelButton, 0, wxALIGN_CENTER_VERTICAL | wxALL, border_size );
+    m_settingscomplete = true;
 
 }
 
-void groups_dialog::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array,
+
+
+void ChartGroupsUI::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array,
         const wxColour &col, wxFont *pFont )
 {
     ptc->DeleteAllItems();
@@ -2869,9 +3147,9 @@ void groups_dialog::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_
     }
 }
 
-void groups_dialog::OnInsertChartItem( wxCommandEvent &event )
+void ChartGroupsUI::OnInsertChartItem( wxCommandEvent &event )
 {
-    wxString insert_candidate = m_pDirCtl->GetPath();
+    wxString insert_candidate = allAvailableCtl->GetPath();
     if( !insert_candidate.IsEmpty() ) {
         if( m_DirCtrlArray.GetCount() ) {
             wxGenericDirCtrl *pDirCtrl = ( m_DirCtrlArray.Item( m_GroupSelectedPage ) );
@@ -2902,9 +3180,12 @@ void groups_dialog::OnInsertChartItem( wxCommandEvent &event )
             }
         }
     }
+    modified = true;
+    allAvailableCtl->GetTreeCtrl()->UnselectAll();
+    m_pAddButton->Disable();
 }
 
-void groups_dialog::OnRemoveChartItem( wxCommandEvent &event )
+void ChartGroupsUI::OnRemoveChartItem( wxCommandEvent &event )
 {
     if( m_DirCtrlArray.GetCount() ) {
         wxGenericDirCtrl *pDirCtrl = ( m_DirCtrlArray.Item( m_GroupSelectedPage ) );
@@ -2916,6 +3197,7 @@ void groups_dialog::OnRemoveChartItem( wxCommandEvent &event )
             wxTreeCtrl *ptree = pDirCtrl->GetTreeCtrl();
             if( ptree && ptree->GetCount() ) {
                 wxTreeItemId id = ptree->GetSelection();
+                lastDeletedItem = id;
                 if( id.IsOk() ) {
                     wxString branch_adder;
                     int group_item_index = FindGroupBranch( pGroup, ptree, id, &branch_adder );
@@ -2940,68 +3222,86 @@ void groups_dialog::OnRemoveChartItem( wxCommandEvent &event )
                         if( branch_adder == _T("") ) {
                             ptree->Delete( id );
                             pGroup->m_element_array.RemoveAt( group_item_index );
-
                         } else {
-
                             ptree->SetItemTextColour( id, wxColour( 128, 128, 128 ) );
-//                                          ptree->SelectItem(id, false);
+                            //   what about toggle back?
                         }
-                    }                                    //   what about toggle back?
+                    }
                 }
+                modified = true;
+                lastSelectedCtl->Unselect();
+                m_pRemoveButton->Disable();
+                wxLogMessage( _T("Disable"));
             }
         }
     }
+    event.Skip();
 }
 
-void groups_dialog::OnGroupPageChange( wxNotebookEvent& event )
+void ChartGroupsUI::OnGroupPageChange( wxNotebookEvent& event )
 {
     m_GroupSelectedPage = event.GetSelection();
-    if( 0 == m_GroupSelectedPage ) {
-        m_pinsertButton->Disable();
-        m_premoveButton->Disable();
-    } else {
-        m_pinsertButton->Enable();
-        m_premoveButton->Enable();
-    }
-
+    allAvailableCtl->GetTreeCtrl()->UnselectAll();
+    if( lastSelectedCtl ) lastSelectedCtl->UnselectAll();
+    m_pRemoveButton->Disable();
+    m_pAddButton->Disable();
 }
 
-void groups_dialog::OnNewGroup( wxCommandEvent &event )
+void ChartGroupsUI::OnAvailableSelection( wxTreeEvent& event ) {
+    if( allAvailableCtl && (event.GetEventObject() == allAvailableCtl->GetTreeCtrl()) ){
+        wxTreeItemId item = allAvailableCtl->GetTreeCtrl()->GetSelection();
+        if( item && item.IsOk() && m_GroupSelectedPage>0 ) {
+            m_pAddButton->Enable();
+        } else {
+            m_pAddButton->Disable();
+        }
+    } else {
+        lastSelectedCtl = (wxTreeCtrl*) event.GetEventObject();
+        wxTreeItemId item = lastSelectedCtl->GetSelection();
+        if( item && item.IsOk() && m_GroupSelectedPage>0 ) {
+            // We need a trick for wxGTK here, since it gives us a Selection event with
+            // the just deleted empty element after OnRemoveChartItem()
+            wxString itemPath = ((wxGenericDirCtrl*) lastSelectedCtl->GetParent())->GetPath();
+            if( itemPath.Length() ) m_pRemoveButton->Enable();
+        } else {
+            m_pRemoveButton->Disable();
+        }
+    }
+    event.Skip();
+}
+
+void ChartGroupsUI::OnNewGroup( wxCommandEvent &event )
 {
     wxTextEntryDialog *pd = new wxTextEntryDialog( this, _("Enter Group Name"),
-            _("Chart Groups...New Group") );
-    if( pd->ShowModal() == wxID_OK ) AddEmptyGroupPage( pd->GetValue() );
+            _("New Chart Group") );
 
-    ChartGroup *pGroup = new ChartGroup;
-    pGroup->m_group_name = pd->GetValue();
-    if( m_pGroupArray ) m_pGroupArray->Add( pGroup );
+    if( pd->ShowModal() == wxID_OK ) {
+        AddEmptyGroupPage( pd->GetValue() );
+        ChartGroup *pGroup = new ChartGroup;
+        pGroup->m_group_name = pd->GetValue();
+        if( m_pGroupArray ) m_pGroupArray->Add( pGroup );
 
-    m_GroupSelectedPage = m_GroupNB->GetPageCount() - 1;      // select the new page
-    m_GroupNB->ChangeSelection( m_GroupSelectedPage );
-    m_pinsertButton->Enable();
-    m_premoveButton->Enable();
-
+        m_GroupSelectedPage = m_GroupNB->GetPageCount() - 1;      // select the new page
+        m_GroupNB->ChangeSelection( m_GroupSelectedPage );
+        modified = true;
+    }
     delete pd;
 }
 
-void groups_dialog::OnDeleteGroup( wxCommandEvent &event )
+void ChartGroupsUI::OnDeleteGroup( wxCommandEvent &event )
 {
     if( 0 != m_GroupSelectedPage ) {
         m_DirCtrlArray.RemoveAt( m_GroupSelectedPage );
         if( m_pGroupArray ) m_pGroupArray->RemoveAt( m_GroupSelectedPage - 1 );
         m_GroupNB->DeletePage( m_GroupSelectedPage );
+        modified = true;
     }
 }
 
 WX_DEFINE_OBJARRAY( ChartGroupElementArray );
 WX_DEFINE_OBJARRAY( ChartGroupArray );
 
-void groups_dialog::OnOK( wxCommandEvent &event )
-{
-    EndModal (xID_OK);
-}
-
-int groups_dialog::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
+int ChartGroupsUI::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
         wxString *pbranch_adder )
 {
     wxString branch_name;
@@ -3013,20 +3313,11 @@ int groups_dialog::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTre
         wxTreeItemId parent_node = ptree->GetItemParent( current_node );
         if( !parent_node ) break;
 
-//#ifdef __WXMSW__
         if( parent_node == ptree->GetRootItem() ) {
             branch_name = ptree->GetItemText( current_node );
             break;
         }
-//#endif
-        /*
-         wxString t = ptree->GetItemText(parent_node);
-         if(t == _T("Dummy"))
-         {
-         branch_name = ptree->GetItemText(current_node);
-         break;
-         }
-         */
+
         branch_adder.Prepend( ptree->GetItemText( current_node ) );
         branch_adder.Prepend( wxString( wxFILE_SEP_PATH ) );
 
@@ -3051,7 +3342,7 @@ int groups_dialog::FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTre
     return target_item_index;
 }
 
-void groups_dialog::OnNodeExpanded( wxTreeEvent& event )
+void ChartGroupsUI::OnNodeExpanded( wxTreeEvent& event )
 {
     wxTreeItemId node = event.GetItem();
 
@@ -3096,7 +3387,7 @@ void groups_dialog::OnNodeExpanded( wxTreeEvent& event )
     }
 }
 
-void groups_dialog::BuildNotebookPages( ChartGroupArray *pGroupArray )
+void ChartGroupsUI::BuildNotebookPages( ChartGroupArray *pGroupArray )
 {
     for( unsigned int i = 0; i < pGroupArray->GetCount(); i++ ) {
         ChartGroup *pGroup = pGroupArray->Item( i );
@@ -3116,109 +3407,10 @@ void groups_dialog::BuildNotebookPages( ChartGroupArray *pGroupArray )
     }
 }
 
-/*
- bool groups_dialog::MarkMissing(wxTreeCtrl *ptree, wxTreeItemId node, wxString &xc, wxString root_name)
- {
- bool b_omit;
- ptree->Expand(node);
- wxTreeItemIdValue cookie;
- wxTreeItemId child = ptree->GetFirstChild(node, cookie);
-
- while(child.IsOk())
- {
- //  what we do here....
- //  if the item matches the passed string,
- //  then mark it by setting text colour to grey
-
- wxString item_name = ptree->GetItemText(child);
- wxString full_item_name = root_name;
- full_item_name += wxString(wxFILE_SEP_PATH);
- full_item_name += item_name;
- b_omit = full_item_name == xc;
-
- if(b_omit)
- {
- ptree->SetItemTextColour(child, wxColour(128, 128, 128));
- return true;
- }
-
-
- //    Is the item a directory?
-
- if(!b_omit)
- {
- if(wxDir::Exists(full_item_name))
- {
- // Recurse....
- wxString next_root_name = full_item_name;
- if(MarkMissing(ptree, child, xc, next_root_name ))
- return true;
- }
- }
-
- child = ptree->GetNextChild(node, cookie);
- }
- return b_omit;
- }
- */
-/*
- void groups_dialog::WalkNode(wxTreeCtrl *ptree, wxTreeItemId &node, ChartGroupElement *p_root_element, wxString root_name )
- {
- ptree->Expand(node);
-
- wxTreeItemIdValue cookie;
- wxTreeItemId child = ptree->GetFirstChild(node, cookie);
-
- while(child.IsOk())
- {
- //  what we do here....
- //  if the item has the omit flag, then create a group element for the item,
- //  and add it to "missing" array of the passed ChartGroupElement belonging to node
-
- bool b_omit = ptree->GetItemTextColour(child) == wxColour(128, 128, 128);
- wxString item_name = ptree->GetItemText(child);
- wxString full_item_name = root_name;
- full_item_name += wxString(wxFILE_SEP_PATH);
- full_item_name += item_name;
-
- if(b_omit)
- {
- ChartGroupElement *p_omit_element = new ChartGroupElement;
- p_omit_element->m_element_name = full_item_name;
- p_root_element->m_missing_name_array.Add(p_omit_element);
- }
-
-
- //    Is the item a directory?
-
- if(!b_omit)
- {
- if(wxDir::Exists(full_item_name))
- {
- // Recurse....
- wxString next_root_name = full_item_name;
- WalkNode(ptree, child, p_root_element, next_root_name );
- }
- }
-
- child = ptree->GetNextChild(node, cookie);
- }
- }
- */
-
-wxTreeCtrl *groups_dialog::AddEmptyGroupPage( const wxString& label )
+wxTreeCtrl *ChartGroupsUI::AddEmptyGroupPage( const wxString& label )
 {
-    wxPanel *pPanel = new wxPanel( m_GroupNB, -1, wxDefaultPosition, wxDefaultSize );
-
-    wxBoxSizer* pageBoxSizer = new wxBoxSizer( wxHORIZONTAL );
-    pPanel->SetSizer( pageBoxSizer );
-
-    wxGenericDirCtrl *GroupDirCtl = new wxGenericDirCtrl( pPanel, -1, _T("TESTDIR") );
-//find a way to add a good imagelist for MSW
-    pageBoxSizer->Add( GroupDirCtl, 1, wxALIGN_TOP | wxALL | wxEXPAND );
-
-    pageBoxSizer->Layout();
-    m_GroupNB->AddPage( pPanel, label );
+    wxGenericDirCtrl *GroupDirCtl = new wxGenericDirCtrl( m_GroupNB, wxID_ANY, _T("TESTDIR") );
+    m_GroupNB->AddPage( GroupDirCtl, label );
 
     wxTreeCtrl *ptree = GroupDirCtl->GetTreeCtrl();
     ptree->DeleteAllItems();
@@ -3273,3 +3465,601 @@ void options::OnRemoveTideDataLocation( wxCommandEvent &event )
     }
 }
 
+void options::OnValChange( wxCommandEvent& event )
+{
+    event.Skip();
+}
+
+void options::OnConnValChange( wxCommandEvent& event )
+{
+    connectionsaved = false;
+    event.Skip();
+}
+
+void options::OnTypeSerialSelected( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+    SetNMEAFormToSerial();
+}
+
+void options::OnTypeNetSelected( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+    SetNMEAFormToNet();
+}
+
+void options::OnUploadFormatChange( wxCommandEvent& event )
+{
+    if ( event.GetEventObject() == m_cbGarminHost && event.IsChecked() )
+        m_cbFurunoGP3X->SetValue(false);
+    else if ( event.GetEventObject() == m_cbFurunoGP3X && event.IsChecked() )
+        m_cbGarminHost->SetValue(false);
+    event.Skip();
+}
+
+void options::ShowNMEACommon(bool visible)
+{
+    if ( visible )
+    {
+        m_rbTypeSerial->Show();
+        m_rbTypeNet->Show();
+        m_rbIAccept->Show();
+        m_rbIIgnore->Show();
+        m_rbOAccept->Show();
+        m_rbOIgnore->Show();
+        m_tcInputStc->Show();
+        m_btnInputStcList->Show();
+        m_tcOutputStc->Show();
+        m_btnOutputStcList->Show();
+        m_cbOutput->Show();
+        m_choicePriority->Show();
+        m_stPriority->Show();
+        m_cbCheckCRC->Show();
+        m_cbFurunoGP3X->Show();
+    }
+    else
+    {
+        m_rbTypeSerial->Hide();
+        m_rbTypeNet->Hide();
+        m_rbIAccept->Hide();
+        m_rbIIgnore->Hide();
+        m_rbOAccept->Hide();
+        m_rbOIgnore->Hide();
+        m_tcInputStc->Hide();
+        m_btnInputStcList->Hide();
+        m_tcOutputStc->Hide();
+        m_btnOutputStcList->Hide();
+        m_cbOutput->Hide();
+        m_choicePriority->Hide();
+        m_stPriority->Hide();
+        m_cbCheckCRC->Hide();
+        m_cbFurunoGP3X->Hide();
+        sbSizerOutFilter->SetDimension(0,0,0,0);
+        sbSizerInFilter->SetDimension(0,0,0,0);
+        sbSizerConnectionProps->SetDimension(0,0,0,0);
+    }
+}
+
+void options::ShowNMEANet(bool visible)
+{
+    if ( visible )
+    {
+        m_stNetAddr->Show();
+        m_tNetAddress->Show();
+        m_stNetPort->Show();
+        m_tNetPort->Show();
+        m_stNetProto->Show();
+        m_rbNetProtoGPSD->Show();
+        m_rbNetProtoTCP->Show();
+        m_rbNetProtoUDP->Show();
+    }
+    else
+    {
+        m_stNetAddr->Hide();
+        m_tNetAddress->Hide();
+        m_stNetPort->Hide();
+        m_tNetPort->Hide();
+        m_stNetProto->Hide();
+        m_rbNetProtoGPSD->Hide();
+        m_rbNetProtoTCP->Hide();
+        m_rbNetProtoUDP->Hide();
+    }
+}
+
+void options::ShowNMEASerial(bool visible)
+{
+    if ( visible )
+    {
+        m_stSerBaudrate->Show();
+        m_choiceBaudRate->Show();
+        m_stSerPort->Show();
+        m_comboPort->Show();
+        m_stSerProtocol->Show();
+        m_choiceSerialProtocol->Show();
+        m_cbGarminHost->Show();
+        gSizerNetProps->SetDimension(0,0,0,0);
+    }
+    else
+    {
+        m_stSerBaudrate->Hide();
+        m_choiceBaudRate->Hide();
+        m_stSerPort->Hide();
+        m_comboPort->Hide();
+        m_stSerProtocol->Hide();
+        m_choiceSerialProtocol->Hide();
+        m_cbGarminHost->Hide();
+        gSizerSerProps->SetDimension(0,0,0,0);
+    }
+}
+
+void options::SetNMEAFormToSerial()
+{
+    ShowNMEACommon( true );
+    ShowNMEANet( false );
+    ShowNMEASerial( true );
+    m_pNMEAForm->Layout();
+    Fit();
+    Layout();
+    SetDSFormRWStates();
+}
+
+void options::SetNMEAFormToNet()
+{
+    ShowNMEACommon( true );
+    ShowNMEANet( true );
+    ShowNMEASerial( false );
+    m_pNMEAForm->Layout();
+    Fit();
+    Layout();
+    SetDSFormRWStates();
+}
+
+wxString StringArrayToString(wxArrayString arr)
+{
+    wxString ret = wxEmptyString;
+    for (size_t i = 0; i < arr.Count(); i++)
+    {
+        if (i > 0)
+            ret.Append(_T(","));
+        ret.Append(arr[i]);
+    }
+    return ret;
+}
+
+void options::SetDSFormRWStates()
+{
+    if (m_rbNetProtoGPSD->GetValue() && !m_rbTypeSerial->GetValue())
+    {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("2947"));
+        m_cbOutput->SetValue(false);
+        m_cbOutput->Enable(false);
+        m_rbOAccept->Enable(false);
+        m_rbOIgnore->Enable(false);
+        m_btnOutputStcList->Enable(false);
+    }
+    else
+    {
+        m_cbOutput->Enable(true);
+        m_rbOAccept->Enable(true);
+        m_rbOIgnore->Enable(true);
+        m_btnOutputStcList->Enable(true);
+    }
+}
+
+void options::SetConnectionParams(ConnectionParams *cp)
+{
+    m_comboPort->Select(m_comboPort->FindString(cp->Port));
+    m_comboPort->SetValue(cp->Port);
+    m_cbCheckCRC->SetValue(cp->ChecksumCheck);
+    m_cbGarminHost->SetValue(cp->Garmin);
+    m_cbFurunoGP3X->SetValue(cp->FurunoGP3X);
+    m_cbOutput->SetValue(cp->Output);
+    if(cp->InputSentenceListType == WHITELIST)
+        m_rbIAccept->SetValue(true);
+    else
+        m_rbIIgnore->SetValue(true);
+    if(cp->OutputSentenceListType == WHITELIST)
+        m_rbOAccept->SetValue(true);
+    else
+        m_rbOIgnore->SetValue(true);
+    m_tcInputStc->SetValue(StringArrayToString(cp->InputSentenceList));
+    m_tcOutputStc->SetValue(StringArrayToString(cp->OutputSentenceList));
+    m_choiceBaudRate->Select(m_choiceBaudRate->FindString(wxString::Format(_T("%d"),cp->Baudrate)));
+    m_choiceSerialProtocol->Select(cp->Protocol); //TODO
+    m_choicePriority->Select(m_choicePriority->FindString(wxString::Format(_T("%d"),cp->Priority)));
+
+    m_tNetAddress->SetValue(cp->NetworkAddress);
+    m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+    if(cp->NetProtocol == TCP)
+        m_rbNetProtoTCP->SetValue(true);
+    else if (cp->NetProtocol == UDP)
+        m_rbNetProtoUDP->SetValue(true);
+    else {
+        m_rbNetProtoGPSD->SetValue(true);
+        if( cp->NetworkPort == 0)
+            m_tNetPort->SetValue(_T(""));
+    }
+
+    if ( cp->Type == Serial )
+    {
+        m_rbTypeSerial->SetValue( true );
+        SetNMEAFormToSerial();
+    }
+    else
+    {
+        m_rbTypeNet->SetValue( true );
+        SetNMEAFormToNet();
+    }
+}
+
+void options::OnAddDatasourceClick( wxCommandEvent& event )
+{
+    connectionsaved = false;
+    ConnectionParams *cp = new ConnectionParams();
+    SetConnectionParams( cp );
+    SetNMEAFormToSerial();
+//    params_saved = false;
+
+    long itemIndex = -1;
+    for ( ;; )
+    {
+        itemIndex = m_lcSources->GetNextItem( itemIndex, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+        if ( itemIndex == -1 )
+            break;
+        m_lcSources->SetItemState( itemIndex, 0, wxLIST_STATE_SELECTED|wxLIST_STATE_FOCUSED );
+    }
+    m_buttonRemove->Enable( false );
+}
+
+void options::FillSourceList()
+{
+    m_buttonRemove->Enable(false);
+    m_lcSources->DeleteAllItems();
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
+    {
+        long itemIndex = m_lcSources->InsertItem(i, g_pConnectionParams->Item(i)->GetSourceTypeStr());
+        m_lcSources->SetItem(itemIndex, 1, g_pConnectionParams->Item(i)->GetAddressStr());
+        m_lcSources->SetItem(itemIndex, 2, g_pConnectionParams->Item(i)->GetParametersStr());
+        m_lcSources->SetItem(itemIndex, 3, g_pConnectionParams->Item(i)->GetOutputValueStr());
+        m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetFiltersStr());
+    }
+
+    m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE );
+}
+
+void options::OnRemoveDatasourceClick( wxCommandEvent& event )
+{
+    long itemIndex = -1;
+    for ( ;; )
+    {
+        itemIndex = m_lcSources->GetNextItem( itemIndex, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+        if ( itemIndex == -1 )
+            break;
+        g_pConnectionParams->RemoveAt( itemIndex );
+
+        //  Mark connection deleted  
+        m_rbTypeSerial->SetValue(true);
+        m_comboPort->SetValue( _T("Deleted") );
+    }
+    FillSourceList();
+    ShowNMEACommon( false );
+    ShowNMEANet( false );
+    ShowNMEASerial( false );
+}
+
+void options::OnSelectDatasource( wxListEvent& event )
+{
+    connectionsaved = false;
+    SetConnectionParams(g_pConnectionParams->Item(event.GetIndex()));
+    m_buttonRemove->Enable();
+    event.Skip();
+}
+
+void options::OnBtnIStcs( wxCommandEvent& event )
+{
+    m_stcdialog_in->SetSentenceList(wxStringTokenize(m_tcInputStc->GetValue(), _T(",")));
+    m_stcdialog_in->SetType(0, (m_rbIAccept->GetValue() == true) ? WHITELIST:BLACKLIST);
+
+    if (m_stcdialog_in->ShowModal() == wxID_OK)
+        m_tcInputStc->SetValue(m_stcdialog_in->GetSentencesAsText());
+}
+
+void options::OnBtnOStcs( wxCommandEvent& event )
+{
+    m_stcdialog_out->SetSentenceList(wxStringTokenize(m_tcOutputStc->GetValue(), _T(",")));
+    m_stcdialog_out->SetType(1, (m_rbOAccept->GetValue() == true) ? WHITELIST:BLACKLIST);
+
+    if (m_stcdialog_out->ShowModal() == wxID_OK)
+        m_tcOutputStc->SetValue(m_stcdialog_out->GetSentencesAsText());
+}
+
+void options::OnNetProtocolSelected( wxCommandEvent& event )
+{
+    if (m_rbNetProtoGPSD->GetValue())
+    {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("2947"));
+    }
+    SetDSFormRWStates();
+    OnConnValChange(event);
+}
+
+void options::OnRbAcceptInput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+}
+void options::OnRbIgnoreInput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+}
+
+void options::OnRbOutput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+}
+
+//SentenceListDlg
+
+SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+    m_dir = dir;
+    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+    wxBoxSizer* bSizer16;
+    bSizer16 = new wxBoxSizer( wxVERTICAL );
+
+    wxBoxSizer* bSizer17;
+    bSizer17 = new wxBoxSizer( wxHORIZONTAL );
+
+    NMEA0183 nmea;
+    standard_sentences = nmea.GetRecognizedArray();
+    if(m_dir == FILTER_OUTPUT) {
+        standard_sentences.Add(_T("ECRMB"));
+        standard_sentences.Add(_T("ECRMC"));
+    }
+
+    m_pclbBox = new wxStaticBox( this,  wxID_ANY, _T("")) ;
+
+    wxStaticBoxSizer* sbSizerclb;
+    sbSizerclb = new wxStaticBoxSizer( m_pclbBox , wxVERTICAL );
+    bSizer17->Add( sbSizerclb, 1, wxALL|wxEXPAND, 5 );
+
+    m_clbSentences = new wxCheckListBox( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, standard_sentences );
+
+
+    sbSizerclb->Add( m_clbSentences, 1, wxALL|wxEXPAND, 5 );
+
+    wxBoxSizer* bSizer18;
+    bSizer18 = new wxBoxSizer( wxVERTICAL );
+
+    m_btnCheckAll = new wxButton( this, wxID_ANY, _("Select All"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_btnCheckAll, 0, wxALL, 5 );
+
+    m_btnClearAll = new wxButton( this, wxID_ANY, _("Clear All"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_btnClearAll, 0, wxALL, 5 );
+
+    bSizer18->AddSpacer(1);
+
+    m_btnAdd = new wxButton( this, wxID_ANY, _("Add"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizer18->Add( m_btnAdd, 0, wxALL, 5 );
+
+    m_btnDel = new wxButton( this, wxID_ANY, _("Delete"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_btnDel->Enable( false );
+
+    bSizer18->Add( m_btnDel, 0, wxALL, 5 );
+
+
+    bSizer17->Add( bSizer18, 0, wxALL|wxEXPAND, 5 );
+
+
+    bSizer16->Add( bSizer17, 1, wxEXPAND, 5 );
+
+    m_sdbSizer4 = new wxStdDialogButtonSizer();
+    m_sdbSizer4OK = new wxButton( this, wxID_OK );
+    m_sdbSizer4->AddButton( m_sdbSizer4OK );
+    m_sdbSizer4Cancel = new wxButton( this, wxID_CANCEL );
+    m_sdbSizer4->AddButton( m_sdbSizer4Cancel );
+    m_sdbSizer4->Realize();
+
+    bSizer16->Add( m_sdbSizer4, 0, wxALL|wxEXPAND, 5 );
+
+
+    this->SetSizer( bSizer16 );
+    this->Layout();
+
+    this->Centre( wxBOTH );
+
+    // Connect Events
+    m_btnAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
+    m_btnDel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteClick ), NULL, this );
+    m_sdbSizer4Cancel->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCancelClick ), NULL, this );
+    m_sdbSizer4OK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnOkClick ), NULL, this );
+    m_clbSentences->Connect( wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, wxCommandEventHandler( SentenceListDlg::OnCLBToggle ), NULL, this );
+    m_clbSentences->Connect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnCLBSelect ), NULL, this );
+    m_btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
+    m_btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
+
+}
+
+SentenceListDlg::~SentenceListDlg()
+{
+    // Disconnect Events
+    m_btnAdd->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnAddClick ), NULL, this );
+    m_btnDel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnDeleteClick ), NULL, this );
+    m_sdbSizer4Cancel->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCancelClick ), NULL, this );
+    m_sdbSizer4OK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnOkClick ), NULL, this );
+    m_clbSentences->Disconnect( wxEVT_COMMAND_CHECKLISTBOX_TOGGLED, wxCommandEventHandler( SentenceListDlg::OnCLBToggle ), NULL, this );
+    m_clbSentences->Disconnect( wxEVT_COMMAND_LISTBOX_SELECTED, wxCommandEventHandler( SentenceListDlg::OnCLBSelect ), NULL, this );
+    m_btnCheckAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnCheckAllClick ), NULL, this );
+    m_btnClearAll->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( SentenceListDlg::OnClearAllClick ), NULL, this );
+}
+
+void SentenceListDlg::SetSentenceList(wxArrayString sentences)
+{
+    m_sentences = sentences;
+
+    if( (m_sentences.Count() == 0) && (m_type == WHITELIST) ){
+        for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+            m_clbSentences->Check(i, true);
+    }
+    if( (m_sentences.Count() == 0) && (m_type == BLACKLIST) ){
+        for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+            m_clbSentences->Check(i, false);
+    }
+
+    FillSentences();
+}
+
+wxString SentenceListDlg::GetSentencesAsText()
+{
+    return StringArrayToString(m_sentences);
+}
+
+void SentenceListDlg::BuildSentenceArray()
+{
+    m_sentences.Clear();
+    wxString s;
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++) {
+        if( m_clbSentences->IsChecked(i))
+            m_sentences.Add( m_clbSentences->GetString(i) );
+    }
+}
+
+void SentenceListDlg::FillSentences()
+{
+    if(m_sentences.Count() == 0)
+        return;
+
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+        m_clbSentences->Check(i, false);
+
+    for (size_t i = 0; i < m_sentences.Count(); i++) {
+        int item = m_clbSentences->FindString(m_sentences[i]);
+        if( wxNOT_FOUND != item )
+            m_clbSentences->Check(item);
+        else {
+            m_clbSentences->Append(m_sentences[i]);
+            int item = m_clbSentences->FindString(m_sentences[i]);
+            m_clbSentences->Check(item);
+        }
+
+    }
+
+    m_btnDel->Enable(false);
+}
+
+void SentenceListDlg::OnStcSelect( wxCommandEvent& event )
+{
+    m_btnDel->Enable();
+}
+
+void SentenceListDlg::OnCLBSelect( wxCommandEvent& event )
+{
+    // Only active the "Delete" button if the selection is not in the standard list
+    int isel = m_clbSentences->GetSelection();
+    bool bdelete = true;
+    if(isel >= 0) {
+        wxString s = m_clbSentences->GetString(isel);
+        for (size_t i = 0; i < standard_sentences.Count(); i++) {
+            if(standard_sentences[i] == s){
+                bdelete = false;
+                break;
+            }
+        }
+    }
+    else
+        bdelete = false;
+    m_btnDel->Enable( bdelete );
+
+}
+
+void SentenceListDlg::OnCLBToggle( wxCommandEvent& event )
+{
+    BuildSentenceArray();
+}
+
+void SentenceListDlg::OnAddClick( wxCommandEvent& event )
+{
+    wxString stc = wxGetTextFromUser(_("Enter the NMEA sentence (2, 3 or 5 characters)"), _("Enter the NMEA sentence"));
+    if (stc.Length() == 2 ||stc.Length() == 3 || stc.Length() == 5)
+    {
+        m_sentences.Add(stc);
+        m_clbSentences->Append(stc);
+        int item = m_clbSentences->FindString(stc);
+        m_clbSentences->Check(item);
+    }
+    else
+        wxMessageBox(_("An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can also have a two letter prefix identifying the source, or TALKER, of the message (The whole sentences then looks like GPGGA or AITXT). You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.). The filter accepts just these three formats."), _("Wrong length of the NMEA filter value"));
+}
+
+void SentenceListDlg::OnDeleteClick( wxCommandEvent& event )
+{
+    BuildSentenceArray();
+
+    // One can only delete items that do not appear in the standard sentence list
+    int isel = m_clbSentences->GetSelection();
+    wxString s = m_clbSentences->GetString(isel);
+    bool bdelete = true;
+    for (size_t i = 0; i < standard_sentences.Count(); i++) {
+        if(standard_sentences[i] == s){
+            bdelete = false;
+            break;
+        }
+    }
+
+    if(bdelete) {
+        m_sentences.Remove( s );
+        m_clbSentences->Delete(isel);
+    }
+
+    FillSentences();
+}
+
+void SentenceListDlg::OnClearAllClick( wxCommandEvent& event )
+{
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+        m_clbSentences->Check(i, false);
+
+    BuildSentenceArray();
+}
+
+void SentenceListDlg::OnCheckAllClick( wxCommandEvent& event )
+{
+    for (size_t i = 0; i < m_clbSentences->GetCount(); i++)
+        m_clbSentences->Check(i, true);
+
+    BuildSentenceArray();
+}
+
+void SentenceListDlg::SetType(int io, ListType type)
+{
+    m_type = type;
+
+    switch (io)
+    {
+        case 0:                 // input
+        default:
+            if(type == WHITELIST)
+                m_pclbBox->SetLabel(_("Accept Sentences"));
+            else
+                m_pclbBox->SetLabel(_("Ignore Sentences"));
+            break;
+        case 1:                 // output
+            if(type == WHITELIST)
+                m_pclbBox->SetLabel(_("Transmit Sentences"));
+            else
+                m_pclbBox->SetLabel(_("Drop Sentences"));
+            break;
+    }
+    Refresh();
+}
+
+
+
+void SentenceListDlg::OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
+void SentenceListDlg::OnOkClick( wxCommandEvent& event ) { event.Skip(); }

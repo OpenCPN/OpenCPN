@@ -49,10 +49,11 @@
 
 
 #define STYLE_UNDEFINED -1
+#define COORD_UNDEFINED -999.0
 
 extern bool LogMessageOnce(wxString &msg);
 extern wxString toSDMM(int NEflag, double a, bool hi_precision = true);
-extern void AlphaBlending ( ocpnDC& dc, int x, int y, int size_x, int size_y,
+extern void AlphaBlending ( ocpnDC& dc, int x, int y, int size_x, int size_y, float radius,
                                       wxColour color, unsigned char transparency );
 
 extern double fromDMM(wxString sdms);
@@ -73,11 +74,6 @@ class wxProgressDialog;
 class ocpnDC;
 
 //    class declarations
-
-typedef struct tagVECTOR2D  {
-  double     x;
-  double     y;
-} VECTOR2D, *PVECTOR2D;
 
 class Hyperlink { // toh, 2009.02.14
       public:
@@ -168,12 +164,26 @@ public:
 
 private:
       wxString          m_MarkName;
-
-
-
 };
 
 WX_DECLARE_LIST(RoutePoint, RoutePointList);// establish class as list member
+
+class vector2D  {
+public:
+    vector2D() { x = 0.0; y = 0.0; }
+    vector2D( double a, double b ) { x = a; y = b; }
+    void Set( RoutePoint* p ) { lat = p->m_lat; lon = p->m_lon; }
+    friend bool operator==( vector2D &a, vector2D &b ) { return a.x == b.x && a.y == b.y; }
+    friend bool operator!=( vector2D &a, vector2D &b ) { return a.x != b.x || a.y != b.y; }
+    friend vector2D operator-( vector2D a, vector2D b ) { return vector2D( a.x - b.x, a.y - b.y ); }
+    friend vector2D operator+( vector2D a, vector2D b ) { return vector2D( a.x + b.x, a.y + b.y ); }
+    friend vector2D operator*( double t, vector2D a ) { return vector2D( a.x * t, a.y * t ); }
+
+    union{ double x; double lon; };
+    union{ double y; double lat; };
+};
+
+typedef vector2D* pVector2D;
 
 //----------------------------------------------------------------------------
 //    Route
@@ -204,6 +214,7 @@ public:
       void UpdateSegmentDistances(double planspeed = -1.0);
       void CalculateDCRect(wxDC& dc_route, wxRect *prect, ViewPort &VP);
       int GetnPoints(void){ return m_nPoints; }
+      void SetnPoints(void){ m_nPoints = pRoutePointList->GetCount(); }
       void Reverse(bool bRenamePoints = false);
       void RebuildGUIDList(void);
       void RenameRoutePoints();
@@ -285,10 +296,7 @@ class Track : public wxEvtHandler, public Route
             Track(void);
             ~Track(void);
 
-            void SetTrackTimer(double sec){ m_TrackTimerSec = sec; }
-            void SetTrackDeltaDistance( double distance){ m_DeltaDistance = distance; }
-            void SetTPTime(bool bTrackTime){ m_bTrackTime = bTrackTime; }
-            void SetTPDist(bool bTrackDistance){ m_bTrackDistance = bTrackDistance; }
+            void SetPrecision(int precision);
 
             void Start(void);
             void Stop(bool do_add_point = false);
@@ -297,8 +305,13 @@ class Track : public wxEvtHandler, public Route
             bool IsRunning(){ return m_bRunning; }
             void Draw(ocpnDC& dc, ViewPort &VP);
 
+            RoutePoint* AddNewPoint( vector2D point, wxDateTime time );
             Route *RouteFromTrack(wxProgressDialog *pprog);
+
+            void DouglasPeuckerReducer( std::vector<RoutePoint*>& list, int from, int to, double delta );
+            int Simplify( double maxDelta );
             double GetXTE(RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to);
+            double GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon, double toLat, double toLon  );
 
       private:
             void OnTimerTrack(wxTimerEvent& event);
@@ -307,19 +320,30 @@ class Track : public wxEvtHandler, public Route
             bool              m_bRunning;
             wxTimer           m_TimerTrack;
 
+            int               m_nPrecision;
             double            m_TrackTimerSec;
-            double            m_DeltaDistance;
-            bool              m_bTrackTime;
-            bool              m_bTrackDistance;
+            double            m_allowedMaxXTE;
+            double            m_allowedMaxAngle;
 
-            double            m_prev_glat, m_prev_glon;
+            vector2D          m_lastAddedPoint;
+            double            m_prev_dist;
             wxDateTime        m_prev_time;
 
-            RoutePoint        *m_prev_pTrackPoint;
+            RoutePoint        *m_lastStoredTP;
+            RoutePoint        *m_removeTP;
+            RoutePoint        *m_prevFixedTP;
+            RoutePoint        *m_fixedTP;
             int               m_track_run;
             double            m_minTrackpoint_delta;
 
+            enum eTrackPointState {
+                firstPoint,
+                secondPoint,
+                potentialPoint
+            } trackPointState;
 
+            std::deque<vector2D> skipPoints;
+            std::deque<wxDateTime> skipTimes;
 
 DECLARE_EVENT_TABLE()
 };
@@ -482,56 +506,55 @@ WX_DECLARE_LIST(SelectItem, SelectableItemList);// establish class as list membe
 
 
 
-class Select
-{
+class Select {
 public:
+    Select();
+    ~Select();
 
-      Select();
-      ~Select();
+    bool AddSelectableRoutePoint( float slat, float slon, RoutePoint *pRoutePointAdd );
+    bool AddSelectableRouteSegment( float slat1, float slon1, float slat2, float slon2,
+            RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
 
-      bool AddSelectableRoutePoint(float slat, float slon, RoutePoint *pRoutePointAdd);
-      bool AddSelectableRouteSegment(float slat1, float slon1, float slat2, float slon2,
-                                                         RoutePoint *pRoutePointAdd1,
-                                                         RoutePoint *pRoutePointAdd2,
-                                                         Route *pRoute);
+    bool AddSelectableTrackSegment( float slat1, float slon1, float slat2, float slon2,
+            RoutePoint *pRoutePointAdd1, RoutePoint *pRoutePointAdd2, Route *pRoute );
 
-      bool AddSelectableTrackSegment(float slat1, float slon1, float slat2, float slon2,
-                                     RoutePoint *pRoutePointAdd1,
-                                     RoutePoint *pRoutePointAdd2,
-                                     Route *pRoute);
+    SelectItem *FindSelection( float slat, float slon, int fseltype );
+    SelectableItemList FindSelectionList( float slat, float slon, int fseltype );
 
-      SelectItem *FindSelection(float slat, float slon, int fseltype, float SelectRadius);
-      SelectableItemList FindSelectionList(float slat, float slon, int fseltype, float SelectRadius);
+    bool DeleteAllSelectableRouteSegments( Route * );
+    bool DeleteAllSelectableTrackSegments( Route * );
+    bool DeleteAllSelectableRoutePoints( Route * );
+    bool AddAllSelectableRouteSegments( Route *pr );
+    bool AddAllSelectableTrackSegments( Route *pr );
+    bool AddAllSelectableRoutePoints( Route *pr );
+    bool UpdateSelectableRouteSegments( RoutePoint *prp );
+    bool DeletePointSelectableTrackSegments( RoutePoint *pr );
+    bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon );
+    bool IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel );
 
-      bool DeleteAllSelectableRouteSegments(Route *);
-      bool DeleteAllSelectableTrackSegments(Route *);
-      bool DeleteAllSelectableRoutePoints(Route *);
-      bool AddAllSelectableRouteSegments(Route *pr);
-      bool AddAllSelectableTrackSegments(Route *pr);
-      bool AddAllSelectableRoutePoints(Route *pr);
-      bool UpdateSelectableRouteSegments(RoutePoint *prp);
+    //    Generic Point Support
+    //      e.g. Tides/Currents and AIS Targets
+    SelectItem *AddSelectablePoint( float slat, float slon, void *data, int fseltype );
+    bool DeleteAllPoints( void );
+    bool DeleteSelectablePoint( void *data, int SeltypeToDelete );
+    bool ModifySelectablePoint( float slat, float slon, void *data, int fseltype );
 
-      bool IsSelectableSegmentSelected(float slat, float slon, float SelectRadius, SelectItem *pFindSel);
+    //    Delete all selectable points in list by type
+    bool DeleteAllSelectableTypePoints( int SeltypeToDelete );
 
+    //  Accessors
 
-//    Generic Point Support
-//      e.g. Tides/Currents and AIS Targets
-      SelectItem *AddSelectablePoint(float slat, float slon, void *data, int fseltype);
-      bool DeleteAllPoints(void);
-      bool DeleteSelectablePoint(void *data, int SeltypeToDelete);
-      bool ModifySelectablePoint(float slat, float slon, void *data, int fseltype);
-
-//    Delete all selectable points in list by type
-      bool DeleteAllSelectableTypePoints(int SeltypeToDelete);
-
-      //  Accessors
-
-      SelectableItemList *GetSelectList(){return pSelectList;}
+    SelectableItemList *GetSelectList()
+    {
+        return pSelectList;
+    }
 
 private:
+    void CalcSelectRadius();
 
-      SelectableItemList      *pSelectList;
-
+    SelectableItemList *pSelectList;
+    int pixelRadius;
+    float selectRadius;
 };
 
 
@@ -728,6 +751,7 @@ class TTYScroll : public wxScrolledWindow
             virtual void OnDraw(wxDC& dc);
             virtual void Add(wxString &line);
             void OnSize(wxSizeEvent& event);
+            void Pause(bool pause) { bpause = pause; }
 
       protected:
 
@@ -735,6 +759,8 @@ class TTYScroll : public wxScrolledWindow
             size_t m_nLines;        // the number of lines we draw
 
             wxArrayString     *m_plineArray;
+            bool               bpause;
+
 };
 
 
@@ -746,25 +772,22 @@ class TTYWindow : public wxDialog
 
       public:
             TTYWindow();
-            TTYWindow(wxWindow *parent, int n_lines)
-      : wxDialog(parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize,
-                 wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
-                 {
-                       m_pScroll = new TTYScroll(this, n_lines);
-                       m_pScroll->Scroll(-1, 1000);        // start with full scroll down
-                 }
+            TTYWindow(wxWindow *parent, int n_lines);
+            ~TTYWindow();
 
-                 ~TTYWindow();
-
-                 void Add(wxString &line);
-                 void OnCloseWindow(wxCloseEvent& event);
-                 void Close();
-                 void OnSize( wxSizeEvent& event );
-                 void OnMove( wxMoveEvent& event );
-
+             void Add(wxString &line);
+             void OnCloseWindow(wxCloseEvent& event);
+             void Close();
+             void OnSize( wxSizeEvent& event );
+             void OnMove( wxMoveEvent& event );
+             void OnPauseClick( wxCommandEvent& event );
 
       protected:
+            void CreateLegendBitmap();
             TTYScroll   *m_pScroll;
+            wxButton    *m_buttonPause;
+            bool        bpause;
+            wxBitmap    m_bm_legend;
 };
 
 
@@ -777,12 +800,12 @@ class TTYWindow : public wxDialog
 //      Vector Stuff for Hit Test Algorithm
 //---------------------------------------------------------------------------------
 
-extern "C" double vGetLengthOfNormal(PVECTOR2D a, PVECTOR2D b, PVECTOR2D n);
-extern "C" double vDotProduct(PVECTOR2D v0, PVECTOR2D v1);
-extern "C" PVECTOR2D vAddVectors(PVECTOR2D v0, PVECTOR2D v1, PVECTOR2D v);
-extern "C" PVECTOR2D vSubtractVectors(PVECTOR2D v0, PVECTOR2D v1, PVECTOR2D v);
-extern "C" double vVectorMagnitude(PVECTOR2D v0);
-extern "C" double vVectorSquared(PVECTOR2D v0);
+extern "C" double vGetLengthOfNormal(pVector2D a, pVector2D b, pVector2D n);
+extern "C" double vDotProduct(pVector2D v0, pVector2D v1);
+extern "C" pVector2D vAddVectors(pVector2D v0, pVector2D v1, pVector2D v);
+extern "C" pVector2D vSubtractVectors(pVector2D v0, pVector2D v1, pVector2D v);
+extern "C" double vVectorMagnitude(pVector2D v0);
+extern "C" double vVectorSquared(pVector2D v0);
 
 
 

@@ -980,7 +980,6 @@ s57chart::s57chart()
     else
         m_plib_state_hash = 0;
 
-    glGenTextures( 1, (GLuint *) &m_tex_name );
     m_btex_mem = false;
 
     ref_lat = 0.0;

@@ -159,7 +159,6 @@ public:
       void PaintCleanup();
       void Scroll(int dx, int dy);
       void CanvasPopupMenu(int x, int y, int seltype);
-      void DoCanvasPopupMenu ( int x, int y, wxMenu *pMenu );
 
       void PopupMenuHandler(wxCommandEvent& event);
 
@@ -215,6 +214,7 @@ public:
       double GetAbsoluteMinScalePpm(){ return m_absolute_min_scale_ppm; }
       ViewPort &GetVP();
       ChartBase* GetChartAtCursor();
+      ChartBase* GetOverlayChartAtCursor();
 
       glChartCanvas *GetglCanvas(){ return m_glcc; }
       GSHHSChart* GetWorldBackgroundChart() { return pWorldBackgroundChart; }
@@ -458,6 +458,7 @@ private:
       wxMask      *pss_overlay_mask;
 
       wxRect      ship_draw_rect;
+      wxRect      ship_draw_last_rect;
       wxRect      ais_draw_rect;
       wxRect      alert_draw_rect;          // pjotrc 2010.02.22
 
@@ -543,6 +544,7 @@ private:
       IDX_entry   *m_pIDXCandidate;
 
       glChartCanvas *m_glcc;
+      wxGLContext   *m_pGLcontext;
 
       //Smooth zoom member variables
       wxTimer     m_zoom_timer;
@@ -574,6 +576,8 @@ public:
 
       glChartCanvas(wxWindow *parent);
       ~glChartCanvas();
+      
+      void SetContext(wxGLContext *pcontext) { m_pcontext = pcontext; }
 
       void OnPaint(wxPaintEvent& event);
       void OnEraseBG(wxEraseEvent& evt);
@@ -596,6 +600,8 @@ protected:
       void SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear);
       void ComputeRenderQuiltViewGLRegion( ViewPort &vp, wxRegion Region );
 
+      wxGLContext       *m_pcontext;
+      
       int m_cacheinvalid;
       int max_texture_dimension;
 
@@ -803,62 +809,63 @@ public:
 //----------------------------------------------------------------------------
 // Generic Rollover Window
 //----------------------------------------------------------------------------
-class RolloverWin: public wxWindow
-{
-      public:
-            RolloverWin(wxWindow *parent, int timeout = -1);
-            ~RolloverWin();
+class RolloverWin: public wxWindow {
+public:
+    RolloverWin( wxWindow *parent, int timeout = -1 );
+    ~RolloverWin();
 
-            void OnPaint(wxPaintEvent& event);
+    void OnPaint( wxPaintEvent& event );
 
-            void SetColorScheme(ColorScheme cs);
-            void SetString(wxString &s){ m_string = s; }
-            void SetPosition(wxPoint pt){ m_position = pt; }
-            void SetBitmap(int rollover);
-            void SetBestPosition(int x, int y, int off_x, int off_y, int rollover, wxSize parent_size);
-            void OnTimer(wxTimerEvent& event);
-            void OnMouseEvent ( wxMouseEvent& event );
-            void SetMousePropogation(int level){ m_mmouse_propogate = level;}
+    void SetColorScheme( ColorScheme cs );
+    void SetString( wxString &s ) { m_string = s; }
+    void SetPosition( wxPoint pt ) { m_position = pt; }
+    void SetBitmap( int rollover );
+    wxBitmap* GetBitmap() { return m_pbm; }
+    void SetBestPosition( int x, int y, int off_x, int off_y, int rollover, wxSize parent_size );
+    void OnTimer( wxTimerEvent& event );
+    void OnMouseEvent( wxMouseEvent& event );
+    void SetMousePropogation( int level ) { m_mmouse_propogate = level; }
+    bool IsActive() { return isActive; }
+    void IsActive( bool state ) { isActive = state; }
 
-      private:
+private:
+    wxString m_string;
+    wxSize m_size;
+    wxPoint m_position;
+    wxBitmap *m_pbm;
+    wxTimer m_timer_timeout;
+    int m_timeout_sec;
+    int m_mmouse_propogate;
+    bool isActive;
 
-            wxString          m_string;
-            wxSize            m_size;
-            wxPoint           m_position;
-            wxBitmap          *m_pbm;
-            wxTimer           m_timer_timeout;
-            int               m_timeout_sec;
-            int               m_mmouse_propogate;
-
-            DECLARE_EVENT_TABLE()
+DECLARE_EVENT_TABLE()
 };
 
 //------------------------------------------------------------------------------
 //    CM93 Detail Slider Specification
 //------------------------------------------------------------------------------
 
-class CM93DSlide : public wxDialog
-{
-      public:
-            CM93DSlide ( wxWindow *parent, wxWindowID id, int value, int minValue, int maxValue,
-                         const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& title = _T(""));
+class CM93DSlide: public wxDialog {
+public:
+    CM93DSlide( wxWindow *parent, wxWindowID id, int value, int minValue, int maxValue,
+            const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+            long style = 0, const wxString& title = _T("") );
 
-            ~CM93DSlide(void);
+    ~CM93DSlide( void );
 
-            void Init(void);
-            bool Create( wxWindow *parent, wxWindowID id, int value, int minValue, int maxValue,
-                                     const wxPoint& pos, const wxSize& size, long style, const wxString& title);
+    void Init( void );
+    bool Create( wxWindow *parent, wxWindowID id, int value, int minValue, int maxValue,
+            const wxPoint& pos, const wxSize& size, long style, const wxString& title );
 
-            void OnCancelClick( wxCommandEvent& event );
-            void OnMove( wxMoveEvent& event );
-            void OnChangeValue( wxScrollEvent& event);
-            void OnClose(wxCloseEvent& event);
+    void OnCancelClick( wxCommandEvent& event );
+    void OnMove( wxMoveEvent& event );
+    void OnChangeValue( wxScrollEvent& event );
+    void OnClose( wxCloseEvent& event );
 
+    wxSlider *m_pCM93DetailSlider;
+    wxWindow *m_pparent;
 
-            wxSlider          *m_pCM93DetailSlider;
-            wxWindow          *m_pparent;
-
-            DECLARE_EVENT_TABLE()
+DECLARE_EVENT_TABLE()
 };
 
 //-------------------------------------------------------------------------------

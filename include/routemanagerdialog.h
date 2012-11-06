@@ -35,7 +35,8 @@ enum {
 
 enum TrackContextMenu {
       TRACK_MERGE  = 1,
-      TRACK_COPY_TEXT
+      TRACK_COPY_TEXT,
+      TRACK_CLEAN
 };
 
 class wxButton;

@@ -45,6 +45,7 @@
 #include <math.h>
 #include <time.h>
 #include <locale>
+#include <deque>
 
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
@@ -53,7 +54,6 @@
 #include "navutil.h"
 #include "chcanv.h"
 #include "georef.h"
-#include "nmea.h"
 #include "ais.h"
 #include "cutil.h"
 #include "styles.h"
@@ -64,6 +64,9 @@
 #include "tinyxml.h"
 #include "gpxdocument.h"
 #include "ocpndc.h"
+#include "geodesic.h"
+#include "datastream.h"
+#include "multiplexer.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -74,7 +77,6 @@
 
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
-extern NMEAHandler      *g_pnmea;
 extern FontMgr          *pFontMgr;
 
 extern double           g_ChartNotRenderScaleFactor;
@@ -95,22 +97,19 @@ extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
 
 extern wxToolBarBase    *toolBar;
-extern wxString         *pNMEADataSource;
-extern wxString         g_NMEABaudRate;
 
-extern wxString         *pNMEA_AP_Port;
+extern wxArrayOfConnPrm *g_pConnectionParams;
+
 extern wxString         g_csv_locn;
 extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
-extern AutoPilotWindow  *pAPilot;
-extern wxString         *pAIS_Port;
 extern AIS_Decoder      *g_pAIS;
 extern wxString         g_SData_Locn;
 extern wxString         *pInit_Chart_Dir;
 extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
-extern ComPortManager   *g_pCommMan;
+//extern ComPortManager   *g_pCommMan;
 extern RouteProp        *pRoutePropDialog;
 
 extern bool             s_bSetSystemTime;
@@ -128,11 +127,11 @@ extern bool             g_bopengl;
 extern bool             g_bsmoothpanzoom;
 
 extern bool             g_bShowOutlines;
-extern bool             g_bGarminPersistance;
 extern bool             g_bShowActiveRouteHighway;
 extern int              g_nNMEADebug;
 extern int              g_nAWDefault;
 extern int              g_nAWMax;
+extern int              g_nTrackPrecision;
 
 extern int              g_iSDMMFormat;
 
@@ -187,18 +186,16 @@ extern bool             g_bDrawAISSize;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
-extern bool             g_bNavAidShowRadarRings;
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
 extern int              g_pNavAidRadarRingsStepUnits;
 extern bool             g_bWayPointPreventDragging;
+extern bool             g_bConfirmObjectDelete;
 
 extern bool             g_bEnableZoomToCursor;
 extern wxString         g_toolbarConfig;
 extern double           g_TrackIntervalSeconds;
 extern double           g_TrackDeltaDistance;
-extern bool             g_bTrackTime;
-extern bool             g_bTrackDistance;
 extern int              gps_watchdog_timeout_ticks;
 
 extern int              g_nCacheLimit;
@@ -207,8 +204,6 @@ extern int              g_memCacheLimit;
 extern bool             g_bGDAL_Debug;
 extern bool             g_bDebugCM93;
 extern bool             g_bDebugS57;
-
-extern bool             g_bGarminHost;
 
 extern double           g_ownship_predictor_minutes;
 
@@ -225,11 +220,12 @@ extern bool             g_bUseGreenShip;
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
 extern bool             g_bshow_overzoom_emboss;
 extern int              g_nautosave_interval_seconds;
-extern int              g_n_ownship_length_meters;
-extern int              g_n_ownship_beam_meters;
-extern int              g_n_gps_antenna_offset_y;
-extern int              g_n_gps_antenna_offset_x;
-extern int              g_n_ownship_min_mm;
+extern int              g_OwnShipIconType;
+extern double           g_n_ownship_length_meters;
+extern double           g_n_ownship_beam_meters;
+extern double           g_n_gps_antenna_offset_y;
+extern double           g_n_gps_antenna_offset_x;
+extern long             g_n_ownship_min_mm;
 
 extern bool             g_bPreserveScaleOnX;
 
@@ -310,6 +306,7 @@ extern wxString         g_GPS_Ident;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern wxArrayString    TideCurrentDataSet;
 extern wxString         g_TCData_Dir;
+extern Multiplexer      *g_pMUX;
 
 //------------------------------------------------------------------------------
 // Some wxWidgets macros for useful classes
@@ -349,6 +346,11 @@ void SelectItem::SetUserData( int data )
 Select::Select()
 {
     pSelectList = new SelectableItemList;
+    pixelRadius = 8;
+    int w,h;
+    wxDisplaySize( &w, &h );
+    if( h > 800 ) pixelRadius = 10;
+    if( h > 1024 ) pixelRadius = 12;
 }
 
 Select::~Select()
@@ -697,28 +699,46 @@ bool Select::DeleteAllSelectableTrackSegments( Route *pr )
         pFindSel = node->GetData();
         if( pFindSel->m_seltype == SELTYPE_TRACKSEGMENT ) {
 
-//                  RoutePoint *ps1 = (RoutePoint *)pFindSel->m_pData1;
-//                  RoutePoint *ps2 = (RoutePoint *)pFindSel->m_pData2;
-
             if( (Route *) pFindSel->m_pData3 == pr ) {
                 delete pFindSel;
                 pSelectList->DeleteNode( node );   //delete node;
 
                 node = pSelectList->GetFirst();     // reset the top node
-
                 goto got_next_outer_node;
             }
         }
-
         node = node->GetNext();
         got_next_outer_node: continue;
     }
-
     return true;
 }
 
-bool IsSegmentSelected( float a, float b, float c, float d, float slat, float slon,
-        float SelectRadius )
+bool Select::DeletePointSelectableTrackSegments( RoutePoint *pr )
+{
+    SelectItem *pFindSel;
+
+//    Iterate on the select list
+    wxSelectableItemListNode *node = pSelectList->GetFirst();
+
+    while( node ) {
+        pFindSel = node->GetData();
+        if( pFindSel->m_seltype == SELTYPE_TRACKSEGMENT ) {
+
+            if( (RoutePoint *) pFindSel->m_pData1 == pr || (RoutePoint *) pFindSel->m_pData2 == pr ) {
+                delete pFindSel;
+                pSelectList->DeleteNode( node );   //delete node;
+
+                node = pSelectList->GetFirst();     // reset the top node
+                goto got_next_outer_node;
+            }
+        }
+        node = node->GetNext();
+        got_next_outer_node: continue;
+    }
+    return true;
+}
+
+bool Select::IsSegmentSelected( float a, float b, float c, float d, float slat, float slon )
 {
     double adder = 0.;
 
@@ -744,11 +764,11 @@ bool IsSegmentSelected( float a, float b, float c, float d, float slat, float sl
     }
 
 //    As a course test, use segment bounding box test
-    if( ( slat >= ( fmin ( a,b ) - SelectRadius ) ) && ( slat <= ( fmax ( a,b ) + SelectRadius ) )
-            && ( ( slon + adder ) >= ( fmin ( c,d ) - SelectRadius ) )
-            && ( ( slon + adder ) <= ( fmax ( c,d ) + SelectRadius ) ) ) {
+    if( ( slat >= ( fmin ( a,b ) - selectRadius ) ) && ( slat <= ( fmax ( a,b ) + selectRadius ) )
+            && ( ( slon + adder ) >= ( fmin ( c,d ) - selectRadius ) )
+            && ( ( slon + adder ) <= ( fmax ( c,d ) + selectRadius ) ) ) {
         //    Use vectors to do hit test....
-        VECTOR2D va, vb, vn;
+        vector2D va, vb, vn;
 
         //    Assuming a Mercator projection
         double ap, cp;
@@ -764,15 +784,21 @@ bool IsSegmentSelected( float a, float b, float c, float d, float slat, float sl
         vb.y = bp - ap;
 
         double delta = vGetLengthOfNormal( &va, &vb, &vn );
-        if( fabs( delta ) < ( SelectRadius * 1852 * 60 ) ) return true;
+        if( fabs( delta ) < ( selectRadius * 1852 * 60 ) ) return true;
     }
     return false;
 }
 
-SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float SelectRadius )
+void Select::CalcSelectRadius() {
+    selectRadius = pixelRadius / ( cc1->GetCanvasTrueScale() * 1852 * 60 );
+}
+
+SelectItem *Select::FindSelection( float slat, float slon, int fseltype )
 {
     float a, b, c, d;
     SelectItem *pFindSel;
+
+    CalcSelectRadius();
 
 //    Iterate on the list
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -788,8 +814,8 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float S
                     a = fabs( slat - pFindSel->m_slat );
                     b = fabs( slon - pFindSel->m_slon );
 
-                    if( ( fabs( slat - pFindSel->m_slat ) < SelectRadius )
-                            && ( fabs( slon - pFindSel->m_slon ) < SelectRadius ) ) goto find_ok;
+                    if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
+                            && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) goto find_ok;
                     break;
                 case SELTYPE_ROUTESEGMENT:
                 case SELTYPE_TRACKSEGMENT: {
@@ -798,7 +824,7 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float S
                     c = pFindSel->m_slon;
                     d = pFindSel->m_slon2;
 
-                    if( IsSegmentSelected( a, b, c, d, slat, slon, SelectRadius ) ) goto find_ok;
+                    if( IsSegmentSelected( a, b, c, d, slat, slon ) ) goto find_ok;
                     break;
                 }
                 default:
@@ -813,23 +839,25 @@ SelectItem *Select::FindSelection( float slat, float slon, int fseltype, float S
     find_ok: return pFindSel;
 }
 
-bool Select::IsSelectableSegmentSelected( float slat, float slon, float SelectRadius,
-        SelectItem *pFindSel )
+bool Select::IsSelectableSegmentSelected( float slat, float slon, SelectItem *pFindSel )
 {
+    CalcSelectRadius();
+
     float a = pFindSel->m_slat;
     float b = pFindSel->m_slat2;
     float c = pFindSel->m_slon;
     float d = pFindSel->m_slon2;
 
-    return IsSegmentSelected( a, b, c, d, slat, slon, SelectRadius );
+    return IsSegmentSelected( a, b, c, d, slat, slon );
 }
 
-SelectableItemList Select::FindSelectionList( float slat, float slon, int fseltype,
-        float SelectRadius )
+SelectableItemList Select::FindSelectionList( float slat, float slon, int fseltype )
 {
     float a, b, c, d;
     SelectItem *pFindSel;
     SelectableItemList ret_list;
+
+    CalcSelectRadius();
 
 //    Iterate on the list
     wxSelectableItemListNode *node = pSelectList->GetFirst();
@@ -842,8 +870,8 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                 case SELTYPE_TIDEPOINT:
                 case SELTYPE_CURRENTPOINT:
                 case SELTYPE_AISTARGET:
-                    if( ( fabs( slat - pFindSel->m_slat ) < SelectRadius )
-                            && ( fabs( slon - pFindSel->m_slon ) < SelectRadius ) ) {
+                    if( ( fabs( slat - pFindSel->m_slat ) < selectRadius )
+                            && ( fabs( slon - pFindSel->m_slon ) < selectRadius ) ) {
                         ret_list.Append( pFindSel );
                     }
                     break;
@@ -854,8 +882,7 @@ SelectableItemList Select::FindSelectionList( float slat, float slon, int fselty
                     c = pFindSel->m_slon;
                     d = pFindSel->m_slon2;
 
-                    if( IsSegmentSelected( a, b, c, d, slat, slon, SelectRadius ) ) ret_list.Append(
-                            pFindSel );
+                    if( IsSegmentSelected( a, b, c, d, slat, slon ) ) ret_list.Append( pFindSel );
 
                     break;
                 }
@@ -1155,7 +1182,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 
     //  Highlite any selected point
     if( m_bPtIsSelected ) {
-        AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height,
+        AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, 0.0,
                 pen->GetColour(), transparency );
     }
 
@@ -1228,7 +1255,7 @@ bool RoutePoint::IsSame( RoutePoint *pOtherRP )
 bool RoutePoint::SendToGPS( wxString& com_name, wxGauge *pProgress )
 {
     bool result = false;
-    if( g_pnmea ) result = g_pnmea->SendWaypointToGPS( this, com_name, pProgress );
+    if( g_pMUX ) result = g_pMUX->SendWaypointToGPS( this, com_name, pProgress );
 
     wxString msg;
     if( result ) msg = _("Waypoint(s) Uploaded successfully.");
@@ -1694,7 +1721,10 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
             icon[i].x = (int) ( px ) + xb;
             icon[i].y = (int) ( py ) + yb;
         }
-        dc.DrawPolygon( 6, &icon[0], 0, 0 );
+        wxPen savePen = dc.GetPen();
+        dc.SetPen( *wxTRANSPARENT_PEN );
+        dc.StrokePolygon( 6, &icon[0], 0, 0 );
+        dc.SetPen( savePen );
     }
 }
 
@@ -2169,7 +2199,7 @@ void Route::RenameRoutePoints( void )
 bool Route::SendToGPS( wxString& com_name, bool bsend_waypoints, wxGauge *pProgress )
 {
     bool result = false;
-    if( g_pnmea ) result = g_pnmea->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
+    if( g_pMUX ) result = g_pMUX->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
 
     wxString msg;
     if( result ) msg = _("Route Uploaded successfully.");
@@ -2224,21 +2254,18 @@ Track::Track( void )
     m_TimerTrack.Stop();
     m_bRunning = false;
     m_bIsTrack = true;
-    m_TrackTimerSec = -1;
-    m_DeltaDistance = 0.0;
-    m_minTrackpoint_delta = .001;
-    m_bTrackTime = false;
-    m_bTrackDistance = false;
-    //m_prev_time = wxDateTime::Now();
-    //m_prev_time.ResetTime();            // set to midnight this morning.
+
+    SetPrecision( g_nTrackPrecision );
+
     m_prev_time = wxInvalidDateTime;
-    m_prev_glon = -999.;
-    m_prev_glat = -999.;
-    m_prev_pTrackPoint = NULL;
+    m_lastStoredTP = NULL;
 
     wxDateTime now = wxDateTime::Now();
     m_ConfigRouteNum = now.GetTicks();        // a unique number....
-
+    trackPointState = firstPoint;
+    m_lastStoredTP = NULL;
+    m_removeTP = NULL;
+    m_fixedTP = NULL;
     m_track_run = 0;
 }
 
@@ -2247,10 +2274,37 @@ Track::~Track()
     Stop();
 }
 
+void Track::SetPrecision( int prec ) {
+    m_nPrecision = prec;
+    switch( m_nPrecision ) {
+        case 0: { // Low
+            m_allowedMaxAngle = 10;
+            m_allowedMaxXTE = 0.008;
+            m_TrackTimerSec = 8;
+            m_minTrackpoint_delta = .004;
+            break;
+        }
+        case 1: { // Medium
+            m_allowedMaxAngle = 10;
+            m_allowedMaxXTE = 0.004;
+            m_TrackTimerSec = 4;
+            m_minTrackpoint_delta = .002;
+            break;
+        }
+        case 2: { // High
+            m_allowedMaxAngle = 10;
+            m_allowedMaxXTE = 0.0015;
+            m_TrackTimerSec = 2;
+            m_minTrackpoint_delta = .001;
+            break;
+        }
+    }
+}
+
 void Track::Start( void )
 {
     if( !m_bRunning ) {
-        AddPointNow();                   // Add initial point
+        AddPointNow( true );                   // Add initial point
         m_TimerTrack.Start( 1000, wxTIMER_CONTINUOUS );
         m_bRunning = true;
     }
@@ -2258,10 +2312,12 @@ void Track::Start( void )
 
 void Track::Stop( bool do_add_point )
 {
-    double delta = DistGreatCircle( gLat, gLon, m_prev_glat, m_prev_glon );
+    double delta = 0.0;
+    if( m_lastStoredTP )
+        delta = DistGreatCircle( gLat, gLon, m_lastStoredTP->m_lat, m_lastStoredTP->m_lon );
 
     if( ( m_bRunning ) && ( ( delta > m_minTrackpoint_delta ) || do_add_point ) ) AddPointNow(
-            do_add_point );                   // Add last point
+            true );                   // Add last point
 
     m_TimerTrack.Stop();
     m_bRunning = false;
@@ -2315,9 +2371,7 @@ bool Track::DoExtendDaily()
 void Track::FixMidnight( Track *pPreviousTrack )
 {
     RoutePoint *pMidnightPoint = pPreviousTrack->GetLastPoint();
-    CloneAddedTrackPoint( m_pLastAddedPoint, pMidnightPoint );
-    m_prev_glat = pMidnightPoint->m_lat;
-    m_prev_glon = pMidnightPoint->m_lon;
+    CloneAddedTrackPoint( m_lastStoredTP, pMidnightPoint );
     m_prev_time = pMidnightPoint->m_CreateTime.FromUTC();
 }
 
@@ -2326,20 +2380,22 @@ void Track::OnTimerTrack( wxTimerEvent& event )
     m_TimerTrack.Stop();
     m_track_run++;
 
-    double delta = DistGreatCircle( gLat, gLon, m_prev_glat, m_prev_glon );
+    if( m_lastStoredTP )
+        m_prev_dist = DistGreatCircle( gLat, gLon, m_lastStoredTP->m_lat, m_lastStoredTP->m_lon );
+    else
+        m_prev_dist = 999.0;
+
     bool b_addpoint = false;
 
-    if( m_bTrackTime && ( m_TrackTimerSec > 0. ) && ( (double) m_track_run >= m_TrackTimerSec )
-            && ( delta > m_minTrackpoint_delta ) ) {
+    if( ( m_TrackTimerSec > 0. ) && ( (double) m_track_run >= m_TrackTimerSec )
+            && ( m_prev_dist > m_minTrackpoint_delta ) ) {
         b_addpoint = true;
         m_track_run = 0;
-    } else
-        if( m_bTrackDistance && ( m_DeltaDistance > 0.0 ) && ( delta >= m_DeltaDistance ) ) b_addpoint =
-                true;
+    }
 
     if( b_addpoint ) AddPointNow();
     else
-        if( ( GetnPoints() < 2 ) && ( delta < m_DeltaDistance ) && !g_bTrackDaily ) //continuously update track beginning point timestamp if no movement.
+        if( ( GetnPoints() < 2 ) && !g_bTrackDaily ) //continuously update track beginning point timestamp if no movement.
                 {
             wxDateTime now = wxDateTime::Now();
             pRoutePointList->GetFirst()->GetData()->m_CreateTime = now.ToUTC();
@@ -2348,36 +2404,118 @@ void Track::OnTimerTrack( wxTimerEvent& event )
     m_TimerTrack.Start( 1000, wxTIMER_CONTINUOUS );
 }
 
+RoutePoint* Track::AddNewPoint( vector2D point, wxDateTime time ) {
+    RoutePoint *rPoint = new RoutePoint( point.lat, point.lon, wxString( _T ( "empty" ) ),
+            wxString( _T ( "" ) ), GPX_EMPTY_STRING );
+    rPoint->m_bShowName = false;
+    rPoint->m_bIsVisible = true;
+    rPoint->m_GPXTrkSegNo = 1;
+    rPoint->m_CreateTime = time;
+    AddPoint( rPoint );
+
+    //    This is a hack, need to undo the action of Route::AddPoint
+    rPoint->m_bIsInRoute = false;
+    rPoint->m_bIsInTrack = true;
+    return rPoint;
+}
+
 void Track::AddPointNow( bool do_add_point )
 {
+    static std::vector<RoutePoint> skippedPoints;
 
     wxDateTime now = wxDateTime::Now();
 
-    if( ( m_prev_glat == gLat ) && ( m_prev_glon == gLon ) )              // avoid zero length segs
-    if( !do_add_point ) return;
+    if( m_prev_dist < 0.0005 )              // avoid zero length segs
+        if( !do_add_point ) return;
 
     if( m_prev_time.IsValid() ) if( m_prev_time == now )                    // avoid zero time segs
-    if( !do_add_point ) return;
+        if( !do_add_point ) return;
 
-    RoutePoint *pTrackPoint = new RoutePoint( gLat, gLon, wxString( _T ( "empty" ) ),
-            wxString( _T ( "" ) ), GPX_EMPTY_STRING );
-    pTrackPoint->m_bShowName = false;
-    pTrackPoint->m_bIsVisible = true;
-    pTrackPoint->m_GPXTrkSegNo = 1;
+    vector2D gpsPoint( gLon, gLat );
 
-    pTrackPoint->m_CreateTime = now.ToUTC();
+    // The dynamic interval algorithm will gather all track points in a queue,
+    // and analyze the cross track errors for each point before actually adding
+    // a point to the track.
 
-    AddPoint( pTrackPoint );
+    switch( trackPointState ) {
+        case firstPoint: {
+            RoutePoint *pTrackPoint = AddNewPoint( gpsPoint, now.ToUTC() );
+            m_lastStoredTP = pTrackPoint;
+            trackPointState = secondPoint;
+            do_add_point = false;
+            break;
+        }
+        case secondPoint: {
+            vector2D pPoint( gLon, gLat );
+            skipPoints.push_back( pPoint );
+            skipTimes.push_back( now.ToUTC() );
+            trackPointState = potentialPoint;
+            break;
+        }
+        case potentialPoint: {
+            if( gpsPoint == skipPoints[skipPoints.size()-1] ) break;
 
-    //    This is a hack, need to undo the action of Route::AddPoint
-    pTrackPoint->m_bIsInRoute = false;
-    pTrackPoint->m_bIsInTrack = true;
+            unsigned int xteMaxIndex = 0;
+            double xteMax = 0;
 
-    if( GetnPoints() > 1 ) pSelect->AddSelectableTrackSegment( m_prev_glat, m_prev_glon, gLat, gLon,
-            m_prev_pTrackPoint, pTrackPoint, this );
+            // Scan points skipped so far and see if anyone has XTE over the threshold.
+            for( unsigned int i=0; i<skipPoints.size(); i++ ) {
+                double xte = GetXTE( m_lastStoredTP->m_lat, m_lastStoredTP->m_lon, gLat, gLon, skipPoints[i].lat, skipPoints[i].lon );
+                if( xte > xteMax ) {
+                    xteMax = xte;
+                    xteMaxIndex = i;
+                }
+            }
+            if( xteMax > m_allowedMaxXTE ) {
+                RoutePoint *pTrackPoint = AddNewPoint( skipPoints[xteMaxIndex], skipTimes[xteMaxIndex] );
+                pSelect->AddSelectableTrackSegment( m_lastStoredTP->m_lat, m_lastStoredTP->m_lon,
+                        pTrackPoint->m_lat, pTrackPoint->m_lon,
+                        m_lastStoredTP, pTrackPoint, this );
 
-    m_prev_glon = gLon;
-    m_prev_glat = gLat;
+                m_prevFixedTP = m_fixedTP;
+                m_fixedTP = m_removeTP;
+                m_removeTP = m_lastStoredTP;
+                m_lastStoredTP = pTrackPoint;
+                for( unsigned int i=0; i<=xteMaxIndex; i++ ) {
+                    skipPoints.pop_front();
+                    skipTimes.pop_front();
+                }
+
+                // Now back up and see if we just made 3 points in a straight line and the middle one
+                // (the next to last) point can possibly be eliminated. Here we reduce the allowed
+                // XTE as a function of leg length. (Half the XTE for very short legs).
+                if( GetnPoints() > 2 ) {
+                    double dist = DistGreatCircle( m_fixedTP->m_lat, m_fixedTP->m_lon, m_lastStoredTP->m_lat, m_lastStoredTP->m_lon );
+                    double xte = GetXTE( m_fixedTP, m_lastStoredTP, m_removeTP );
+                    if( xte < m_allowedMaxXTE / wxMax(1.0, 2.0 - dist*2.0) ) {
+                        pRoutePointList->pop_back();
+                        pRoutePointList->pop_back();
+                        pRoutePointList->push_back( m_lastStoredTP );
+                        SetnPoints();
+                        pSelect->DeletePointSelectableTrackSegments( m_removeTP );
+                        pSelect->AddSelectableTrackSegment( m_fixedTP->m_lat, m_fixedTP->m_lon,
+                                m_lastStoredTP->m_lat, m_lastStoredTP->m_lon,
+                                m_fixedTP, m_lastStoredTP, this );
+                        delete m_removeTP;
+                        m_removeTP = m_fixedTP;
+                        m_fixedTP = m_prevFixedTP;
+                    }
+                }
+            }
+
+            skipPoints.push_back( gpsPoint );
+            skipTimes.push_back( now.ToUTC() );
+            break;
+        }
+    }
+
+    // Check if this is the last point of the track.
+    if( do_add_point ) {
+        RoutePoint *pTrackPoint = AddNewPoint( gpsPoint, now.ToUTC() );
+        pSelect->AddSelectableTrackSegment( m_lastStoredTP->m_lat, m_lastStoredTP->m_lon,
+                pTrackPoint->m_lat, pTrackPoint->m_lon,
+                m_lastStoredTP, pTrackPoint, this );
+    }
 
     m_prev_time = now;
 }
@@ -2617,26 +2755,114 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
     return route;
 }
 
+void Track::DouglasPeuckerReducer( std::vector<RoutePoint*>& list, int from, int to, double delta ) {
+    list[from]->m_bIsActive = true;
+    list[to]->m_bIsActive = true;
+
+    int maxdistIndex = -1;
+    double maxdist = 0;
+
+    for( int i=from+1; i<to; i++ ) {
+
+        double dist = 1852.0 * GetXTE( list[from], list[to], list[i] );
+
+        if( dist > maxdist ) {
+            maxdist = dist;
+            maxdistIndex = i;
+        }
+    }
+
+    if( maxdist > delta ) {
+        DouglasPeuckerReducer( list, from, maxdistIndex, delta );
+        DouglasPeuckerReducer( list, maxdistIndex, to, delta );
+    }
+}
+
+int Track::Simplify( double maxDelta ) {
+    int reduction = 0;
+    wxRoutePointListNode *pointnode = pRoutePointList->GetFirst();
+    RoutePoint *routepoint;
+    std::vector<RoutePoint*> pointlist;
+
+    ::wxBeginBusyCursor();
+
+    while( pointnode ) {
+        routepoint = pointnode->GetData();
+        routepoint->m_bIsActive = false;
+        pointlist.push_back(routepoint);
+        pointnode = pointnode->GetNext();
+    }
+
+    DouglasPeuckerReducer( pointlist, 0, pointlist.size()-1, maxDelta );
+
+    pSelect->DeleteAllSelectableTrackSegments( this );
+    pRoutePointList->Clear();
+
+    for( size_t i=0; i<pointlist.size(); i++ ) {
+        if( pointlist[i]->m_bIsActive ) {
+            pointlist[i]->m_bIsActive = false;
+            pRoutePointList->Append( pointlist[i] );
+        } else {
+            delete pointlist[i];
+            reduction++;
+        }
+    }
+
+    SetnPoints();
+    pSelect->AddAllSelectableTrackSegments( this );
+    ::wxEndBusyCursor();
+    return reduction;
+}
+
+double _distance2( vector2D& a, vector2D& b ) { return (a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y); }
+double _distance( vector2D& a, vector2D& b ) { return sqrt( _distance2( a, b ) ); }
+
+double Track::GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon, double toLat, double toLon  )
+{
+    vector2D v, w, p;
+
+    // First we get the cartesian coordinates to the line endpoints, using
+    // the current position as origo.
+
+    double brg1, dist1, brg2, dist2;
+    DistanceBearingMercator( toLat, toLon, fm1Lat, fm1Lon, &brg1, &dist1 );
+    w.x = dist1 * sin( brg1 * PI / 180. );
+    w.y = dist1 * cos( brg1 * PI / 180. );
+
+    DistanceBearingMercator( toLat, toLon, fm2Lat, fm2Lon, &brg2, &dist2 );
+    v.x = dist2 * sin( brg2 * PI / 180. );
+    v.y = dist2 * cos( brg2 * PI / 180. );
+
+    p.x = 0.0; p.y = 0.0;
+
+    const double lengthSquared = _distance2( v, w );
+    if ( lengthSquared == 0.0 ) {
+        // v == w case
+        return _distance( p, v );
+    }
+
+    // Consider the line extending the segment, parameterized as v + t (w - v).
+    // We find projection of origo onto the line.
+    // It falls where t = [(p-v) . (w-v)] / |w-v|^2
+
+    vector2D a = p - v;
+    vector2D b = w - v;
+
+    double t = vDotProduct( &a, &b ) / lengthSquared;
+
+    if (t < 0.0) return _distance(p, v);       // Beyond the 'v' end of the segment
+    else if (t > 1.0) return _distance(p, w);  // Beyond the 'w' end of the segment
+    vector2D projection = v + t * (w - v);     // Projection falls on the segment
+    return _distance(p, projection);
+}
+
 double Track::GetXTE( RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to )
 {
     if( !fm1 || !fm2 || !to ) return 0.0;
     if( fm1 == to ) return 0.0;
     if( fm2 == to ) return 0.0;
-//      Get the XTE vector for prp, normal to segment between pWP_src and prpX
-    VECTOR2D va, vb, vn;
-
-    double brg1, dist1, brg2, dist2;
-    DistanceBearingMercator( to->m_lat, to->m_lon, fm1->m_lat, fm1->m_lon, &brg1, &dist1 );
-    vb.x = dist1 * sin( brg1 * PI / 180. );
-    vb.y = dist1 * cos( brg1 * PI / 180. );
-
-    DistanceBearingMercator( to->m_lat, to->m_lon, fm2->m_lat, fm2->m_lon, &brg2, &dist2 );
-    va.x = dist2 * sin( brg2 * PI / 180. );
-    va.y = dist2 * cos( brg2 * PI / 180. );
-
-    double sdelta = vGetLengthOfNormal( &va, &vb, &vn );             // NM
-
-    return ( abs( sdelta ) );
+    return GetXTE( fm1->m_lat, fm1->m_lon, fm2->m_lat, fm2->m_lon, to->m_lat, to->m_lon );
+;
 }
 
 //-----------------------------------------------------------------------------
@@ -2697,6 +2923,8 @@ MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
 
     m_bIsImporting = false;
     g_bIsNewLayer = false;
+
+    g_pConnectionParams = new wxArrayOfConnPrm();
 }
 
 void MyConfig::CreateRotatingNavObjBackup()
@@ -2766,19 +2994,12 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "AllowExtremeOverzoom" ), &g_b_overzoom_x, 1 );
     Read( _T ( "ShowOverzoomEmbossWarning" ), &g_bshow_overzoom_emboss, 1 );
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
-    Read( _T ( "OwnshipLengthMeters" ), &g_n_ownship_length_meters, 12 );
-    Read( _T ( "OwnshipBeamMeters" ), &g_n_ownship_beam_meters, 0 );
-    Read( _T ( "OwnshipGPSOffsetY" ), &g_n_gps_antenna_offset_y, g_n_ownship_length_meters / 2 );
-    Read( _T ( "OwnshipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
-    Read( _T ( "OwnshipMinMM" ), &g_n_ownship_min_mm, -1 );
 
     Read( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic") );
 
     Read( _T ( "UseNMEA_RMC" ), &g_bUseRMC, 1 );
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
-
-    Read( _T ( "UseGarminHost" ), &g_bGarminHost, 0 );
 
     Read( _T ( "FilterNMEA_Avg" ), &g_bfilter_cogsog, 0 );
     Read( _T ( "FilterNMEA_Sec" ), &g_COGFilterSec, 1 );
@@ -2858,12 +3079,17 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ShowDepthUnits" ), &g_bShowDepthUnits, 1 );
     Read( _T ( "AutoAnchorDrop" ), &g_bAutoAnchorMark, 0 );
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
-    Read( _T ( "GarminPersistance" ), &g_bGarminPersistance, 0 );
     Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
 
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
+    Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType, 0 );
+    Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0 );
+    Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0 );
+    Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
+    Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0 );
+    Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 0 );
 
     Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
 
@@ -2890,6 +3116,14 @@ int MyConfig::LoadMyConfig( int iteration )
     if( g_navobjbackups > 99 ) g_navobjbackups = 99;
     if( g_navobjbackups < 0 ) g_navobjbackups = 0;
 
+    g_NMEALogWindow_sx = Read( _T ( "NMEALogWindowSizeX" ), 400L );
+    g_NMEALogWindow_sy = Read( _T ( "NMEALogWindowSizeY" ), 100L );
+    g_NMEALogWindow_x = Read( _T ( "NMEALogWindowPosX" ), 10L );
+    g_NMEALogWindow_y = Read( _T ( "NMEALogWindowPosY" ), 10L );
+    
+    if( ( g_NMEALogWindow_x < 0 ) || ( g_NMEALogWindow_x > display_width ) ) g_NMEALogWindow_x = 5;
+    if( ( g_NMEALogWindow_y < 0 ) || ( g_NMEALogWindow_y > display_height ) ) g_NMEALogWindow_y = 5;
+                              
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
 
@@ -2953,9 +3187,7 @@ int MyConfig::LoadMyConfig( int iteration )
     s.ToDouble( &g_ShowMoored_Kts );
 
     Read( _T ( "bShowAreaNotices" ), &g_bShowAreaNotices );
-
     Read( _T ( "bDrawAISSize" ), &g_bDrawAISSize );
-
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
 
     Read( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );
@@ -2992,14 +3224,6 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "bAISRolloverShowClass" ), &g_bAISRolloverShowClass );
     Read( _T ( "bAISRolloverShowCOG" ), &g_bAISRolloverShowCOG );
     Read( _T ( "bAISRolloverShowCPA" ), &g_bAISRolloverShowCPA );
-
-    g_NMEALogWindow_sx = Read( _T ( "NMEALogWindowSizeX" ), 400L );
-    g_NMEALogWindow_sy = Read( _T ( "NMEALogWindowSizeY" ), 100L );
-    g_NMEALogWindow_x = Read( _T ( "NMEALogWindowPosX" ), 10L );
-    g_NMEALogWindow_y = Read( _T ( "NMEALogWindowPosY" ), 10L );
-
-    if( ( g_NMEALogWindow_x < 0 ) || ( g_NMEALogWindow_x > display_width ) ) g_NMEALogWindow_x = 5;
-    if( ( g_NMEALogWindow_y < 0 ) || ( g_NMEALogWindow_y > display_height ) ) g_NMEALogWindow_y = 5;
 
     g_S57_dialog_sx = Read( _T ( "S57QueryDialogSizeX" ), 400L );
     g_S57_dialog_sy = Read( _T ( "S57QueryDialogSizeY" ), 400L );
@@ -3118,15 +3342,143 @@ int MyConfig::LoadMyConfig( int iteration )
     global_color_scheme = (ColorScheme) read_int;
 
     SetPath( _T ( "/Settings/NMEADataSource" ) );
-    Read( _T ( "Source" ), pNMEADataSource, _T ( "NONE" ) );
-    Read( _T ( "BaudRate" ), &g_NMEABaudRate, _T ( "4800" ) );
+    
+    wxString connectionconfigs;
+    Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
+    wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
+    g_pConnectionParams->Clear();
+    for (size_t i = 0; i < confs.Count(); i++)
+    {
+        ConnectionParams * prm = new ConnectionParams(confs[i]);
+        g_pConnectionParams->Add(prm);
+    }
 
-    SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
-    Read( _T ( "Port" ), pNMEA_AP_Port, _T ( "NONE" ) );
-
+    //  Automatically handle the upgrade to DataSources architecture...
+    //  Is there an existing NMEADataSource definition?
+    SetPath( _T ( "/Settings/NMEADataSource" ) );
+    wxString xSource;
+    wxString xRate;
+    Read ( _T ( "Source" ), &xSource );
+    Read ( _T ( "BaudRate" ), &xRate );
+    if(xSource.Len()) {
+        wxString port;
+        if(xSource.Mid(0, 6) == _T("Serial"))
+            port = xSource.Mid(7);
+        else
+            port = _T("");
+        
+        if(port.Len() && port != _T("None") ) {
+        //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+            bool bfound = false;    
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                ConnectionParams *cp = g_pConnectionParams->Item(i);
+                if(cp->GetAddressStr() == port) {
+                    bfound = true;
+                    break;
+                }
+            }
+            
+            if(!bfound) {
+                ConnectionParams * prm = new ConnectionParams();
+                prm->Baudrate = wxAtoi(xRate);
+                prm->Port = port;
+                
+                g_pConnectionParams->Add(prm);
+            }
+        }
+        if( iteration == 1 ) {
+            Write ( _T ( "Source" ), _T("") );          // clear the old tag
+            Write ( _T ( "BaudRate" ), _T("") ); 
+        }
+    }
+             
+   //  Is there an existing AISPort definition?
     SetPath( _T ( "/Settings/AISPort" ) );
-    Read( _T ( "Port" ), pAIS_Port, _T ( "NONE" ) );
+    wxString aSource;
+    wxString aRate;
+    Read ( _T ( "Port" ), &aSource );
+    Read ( _T ( "BaudRate" ), &aRate );
+    if(aSource.Len()) {
+        wxString port;
+        if(aSource.Mid(0, 6) == _T("Serial"))
+            port = aSource.Mid(7);
+        else
+            port = _T("");
+        
+        if(port.Len() && port != _T("None") ) {
+            //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+            bool bfound = false;    
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                ConnectionParams *cp = g_pConnectionParams->Item(i);
+                if(cp->GetAddressStr() == port) {
+                    bfound = true;
+                    break;
+                }
+            }
+            
+            if(!bfound) {
+                ConnectionParams * prm = new ConnectionParams();
+                if( aRate.Len() )
+                    prm->Baudrate = wxAtoi(aRate);
+                else
+                    prm->Baudrate = 38400;              // default for most AIS receivers
+                prm->Port = port;
+                
+                g_pConnectionParams->Add(prm);
+            }
+        }
 
+        if( iteration == 1 ) {
+            Write ( _T ( "Port" ), _T("") );          // clear the old tag
+            Write ( _T ( "BaudRate" ), _T("") ); 
+        }
+    }
+             
+    //  Is there an existing NMEAAutoPilotPort definition?
+    SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
+    Read ( _T ( "Port" ), &xSource );
+    if(xSource.Len()) {
+        wxString port;
+        if(xSource.Mid(0, 6) == _T("Serial"))
+            port = xSource.Mid(7);
+        else
+            port = _T("");
+        
+        if(port.Len() && port != _T("None") ) {
+            //  Look in the ConnectionParams array to see if this port has been defined in the newer style
+            bool bfound = false;
+            ConnectionParams *cp;
+            for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
+            {
+                cp = g_pConnectionParams->Item(i);
+                if(cp->GetAddressStr() == port) {
+                    bfound = true;
+                    break;
+                }
+            }
+            
+            if(!bfound) {
+                ConnectionParams * prm = new ConnectionParams();
+                prm->Port = port;
+                prm->OutputSentenceListType = WHITELIST;
+                prm->OutputSentenceList.Add( _T("RMB") );
+                prm->Output = true;
+                
+                g_pConnectionParams->Add(prm);
+            }
+            else {                                  // port was found, so make sure it is set for output
+                cp->Output = true;
+                cp->OutputSentenceListType = WHITELIST;
+                cp->OutputSentenceList.Add( _T("RMB") );
+            }
+        }
+        
+        if( iteration == 1 )
+            Write ( _T ( "Port" ), _T("") );          // clear the old tag
+    }
+             
 //    Reasonable starting point
     vLat = START_LAT;                   // display viewpoint
     vLon = START_LON;
@@ -3646,22 +3998,27 @@ int MyConfig::LoadMyConfig( int iteration )
     SetPath( _T ( "/Settings/Others" ) );
 
     // Radar rings
-    g_bNavAidShowRadarRings = false;          // toh, 2009.02.24
-    Read( _T ( "ShowRadarRings" ), &g_bNavAidShowRadarRings );
-
-    g_iNavAidRadarRingsNumberVisible = 1;     // toh, 2009.02.24
+    g_iNavAidRadarRingsNumberVisible = 0;
     Read( _T ( "RadarRingsNumberVisible" ), &val );
     if( val.Length() > 0 ) g_iNavAidRadarRingsNumberVisible = atoi( val.mb_str() );
 
-    g_fNavAidRadarRingsStep = 1.0;            // toh, 2009.02.24
+    g_fNavAidRadarRingsStep = 1.0;
     Read( _T ( "RadarRingsStep" ), &val );
     if( val.Length() > 0 ) g_fNavAidRadarRingsStep = atof( val.mb_str() );
 
-    g_pNavAidRadarRingsStepUnits = 0;         // toh, 2009.02.24
+    g_pNavAidRadarRingsStepUnits = 0;
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
+    //  Support Version 3.0 and prior config setting for Radar Rings
+    bool b300RadarRings= true;   
+    Read ( _T ( "ShowRadarRings" ), &b300RadarRings );
+    if(!b300RadarRings)
+        g_iNavAidRadarRingsNumberVisible = 0;
+        
+    Read( _T ( "ConfirmObjectDeletion" ), &g_bConfirmObjectDelete, true );
+    
     // Waypoint dragging with mouse
-    g_bWayPointPreventDragging = false;       // toh, 2009.02.24
+    g_bWayPointPreventDragging = false;
     Read( _T ( "WaypointPreventDragging" ), &g_bWayPointPreventDragging );
 
     g_bEnableZoomToCursor = false;
@@ -3683,8 +4040,7 @@ int MyConfig::LoadMyConfig( int iteration )
         if( tval >= 0.05 ) g_TrackDeltaDistance = tval;
     }
 
-    Read( _T ( "EnableTrackByTime" ), &g_bTrackTime, 1 );
-    Read( _T ( "EnableTrackByDistance" ), &g_bTrackDistance, 0 );
+    Read( _T ( "TrackPrecision" ), &g_nTrackPrecision, 0 );
 
     Read( _T ( "NavObjectFileName" ), m_sNavObjSetFile );
 
@@ -4060,9 +4416,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowDepthUnits" ), g_bShowDepthUnits );
     Write( _T ( "AutoAnchorDrop" ), g_bAutoAnchorMark );
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
-    Write( _T ( "GarminPersistance" ), g_bGarminPersistance );
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
-    Write( _T ( "UseGarminHost" ), g_bGarminHost );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
 
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
@@ -4085,7 +4439,14 @@ void MyConfig::UpdateSettings()
     Write( _T ( "CourseUpMode" ), g_bCourseUp );
     Write( _T ( "LookAheadMode" ), g_bLookAhead );
     Write( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
+
     Write( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
+    Write( _T ( "OwnShipIconType" ), g_OwnShipIconType );
+    Write( _T ( "OwnShipLength" ), g_n_ownship_length_meters );
+    Write( _T ( "OwnShipWidth" ), g_n_ownship_beam_meters );
+    Write( _T ( "OwnShipGPSOffsetX" ), g_n_gps_antenna_offset_x );
+    Write( _T ( "OwnShipGPSOffsetY" ), g_n_gps_antenna_offset_y );
+    Write( _T ( "OwnShipMinSize" ), g_n_ownship_min_mm );
 
     Write( _T ( "ChartQuilting" ), g_bQuiltEnable );
     Write( _T ( "FullScreenQuilt" ), g_bFullScreenQuilt );
@@ -4215,7 +4576,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bAISAlertSuppressMoored" ), g_bAIS_CPA_Alert_Suppress_Moored );
     Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );
     Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
-
+    
     Write( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
     Write( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );
     Write( _T ( "AlertDialogPosX" ), g_ais_alert_dialog_x );
@@ -4272,27 +4633,15 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPXIODir" ), m_gpx_path );
     Write( _T ( "TCDataDir" ), g_TCData_Dir );
 
-    if( g_pnmea ) {
-        SetPath( _T ( "/Settings/NMEADataSource" ) );
-        wxString source;
-        g_pnmea->GetSource( source );
-        Write( _T ( "Source" ), source );
-        Write( _T ( "BaudRate" ), g_NMEABaudRate );
+    SetPath( _T ( "/Settings/NMEADataSource" ) );
+    wxString connectionconfigs;
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
+    {
+        if (i > 0)
+            connectionconfigs.Append(_T("|"));
+        connectionconfigs.Append(g_pConnectionParams->Item(i)->Serialize());
     }
-
-    if( pAPilot ) {
-        SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
-        wxString ap_port;
-        pAPilot->GetAP_Port( ap_port );
-        Write( _T ( "Port" ), ap_port );
-    }
-
-    if( g_pAIS ) {
-        SetPath( _T ( "/Settings/AISPort" ) );
-        wxString ais_port;
-        g_pAIS->GetSource( ais_port );
-        Write( _T ( "Port" ), ais_port );
-    }
+    Write ( _T ( "DataConnections" ), connectionconfigs );
 
     //    Fonts
     wxString font_path;
@@ -4334,12 +4683,14 @@ void MyConfig::UpdateSettings()
 
     SetPath( _T ( "/Settings/Others" ) );
 
-    // Radar rings; toh, 2009.02.24
-    Write( _T ( "ShowRadarRings" ), g_bNavAidShowRadarRings );
+    // Radar rings
+    Write( _T ( "ShowRadarRings" ), (bool)(g_iNavAidRadarRingsNumberVisible > 0) );  //3.0.0 config support
     Write( _T ( "RadarRingsNumberVisible" ), g_iNavAidRadarRingsNumberVisible );
     Write( _T ( "RadarRingsStep" ), g_fNavAidRadarRingsStep );
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
 
+    Write( _T ( "ConfirmObjectDeletion" ), g_bConfirmObjectDelete );
+    
     // Waypoint dragging with mouse; toh, 2009.02.24
     Write( _T ( "WaypointPreventDragging" ), g_bWayPointPreventDragging );
 
@@ -4347,8 +4698,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "TrackIntervalSeconds" ), g_TrackIntervalSeconds );
     Write( _T ( "TrackDeltaDistance" ), g_TrackDeltaDistance );
-    Write( _T ( "EnableTrackByTime" ), g_bTrackTime );
-    Write( _T ( "EnableTrackByDistance" ), g_bTrackDistance );
+    Write( _T ( "TrackPrecision" ), g_nTrackPrecision );
 
     Write( _T ( "RouteLineWidth" ), g_route_line_width );
     Write( _T ( "TrackLineWidth" ), g_track_line_width );
@@ -5906,6 +6256,7 @@ Route *LoadGPXRoute( GpxRteElement *rtenode, int routenum, bool b_fullviz )
                     pWp->m_LayerID = 0;
             } else {
                 pTentRoute->AddPoint( pExisting, false );           // don't auto-rename numerically
+                delete pWp;
             }
             ip++;
         }
@@ -7199,9 +7550,9 @@ void X11FontPicker::DoFontChange ( void )
 //---------------------------------------------------------------------------------
 //          Vector Stuff for Hit Test Algorithm
 //---------------------------------------------------------------------------------
-double vGetLengthOfNormal( PVECTOR2D a, PVECTOR2D b, PVECTOR2D n )
+double vGetLengthOfNormal( pVector2D a, pVector2D b, pVector2D n )
 {
-    VECTOR2D c, vNormal;
+    vector2D c, vNormal;
     vNormal.x = 0;
     vNormal.y = 0;
     //
@@ -7223,7 +7574,7 @@ double vGetLengthOfNormal( PVECTOR2D a, PVECTOR2D b, PVECTOR2D n )
     return ( vVectorMagnitude( &vNormal ) );
 }
 
-double vDotProduct( PVECTOR2D v0, PVECTOR2D v1 )
+double vDotProduct( pVector2D v0, pVector2D v1 )
 {
     double dotprod;
 
@@ -7232,9 +7583,9 @@ double vDotProduct( PVECTOR2D v0, PVECTOR2D v1 )
     return ( dotprod );
 }
 
-PVECTOR2D vAddVectors( PVECTOR2D v0, PVECTOR2D v1, PVECTOR2D v )
+pVector2D vAddVectors( pVector2D v0, pVector2D v1, pVector2D v )
 {
-    if( v0 == NULL || v1 == NULL ) v = (PVECTOR2D) NULL;
+    if( v0 == NULL || v1 == NULL ) v = (pVector2D) NULL;
     else {
         v->x = v0->x + v1->x;
         v->y = v0->y + v1->y;
@@ -7242,9 +7593,9 @@ PVECTOR2D vAddVectors( PVECTOR2D v0, PVECTOR2D v1, PVECTOR2D v )
     return ( v );
 }
 
-PVECTOR2D vSubtractVectors( PVECTOR2D v0, PVECTOR2D v1, PVECTOR2D v )
+pVector2D vSubtractVectors( pVector2D v0, pVector2D v1, pVector2D v )
 {
-    if( v0 == NULL || v1 == NULL ) v = (PVECTOR2D) NULL;
+    if( v0 == NULL || v1 == NULL ) v = (pVector2D) NULL;
     else {
         v->x = v0->x - v1->x;
         v->y = v0->y - v1->y;
@@ -7252,7 +7603,7 @@ PVECTOR2D vSubtractVectors( PVECTOR2D v0, PVECTOR2D v1, PVECTOR2D v )
     return ( v );
 }
 
-double vVectorSquared( PVECTOR2D v0 )
+double vVectorSquared( pVector2D v0 )
 {
     double dS;
 
@@ -7262,7 +7613,7 @@ double vVectorSquared( PVECTOR2D v0 )
     return ( dS );
 }
 
-double vVectorMagnitude( PVECTOR2D v0 )
+double vVectorMagnitude( pVector2D v0 )
 {
     double dMagnitude;
 
@@ -7475,7 +7826,7 @@ double fromDMM( wxString sdms )
 }
 
 /* render a rectangle at a given color and transparency */
-void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, wxColour color,
+void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radius, wxColour color,
         unsigned char transparency )
 {
     wxDC *pdc = dc.GetDC();
@@ -7488,27 +7839,34 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, wxColour c
         mdc1.SelectObject( wxNullBitmap );
         wxImage oim = obm.ConvertToImage();
 
-        //    Create an image with selected transparency/color
-        int olay_red = color.Red() * transparency;
-        int olay_green = color.Green() * transparency;
-        int olay_blue = color.Blue() * transparency;
-
         //    Create destination image
-        wxImage dest( size_x, size_y, false );
+        wxBitmap olbm( size_x, size_y );
+        wxMemoryDC oldc( olbm );
+        oldc.SetBackground( *wxBLACK_BRUSH );
+        oldc.SetBrush( *wxWHITE_BRUSH );
+        oldc.Clear();
+
+        if( radius > 0.0 )
+            oldc.DrawRoundedRectangle( 0, 0, size_x, size_y, radius );
+
+        wxImage dest = olbm.ConvertToImage();
         unsigned char *dest_data = (unsigned char *) malloc(
                 size_x * size_y * 3 * sizeof(unsigned char) );
-        unsigned char *po = oim.GetData();
+        unsigned char *bg = oim.GetData();
+        unsigned char *box = dest.GetData();
         unsigned char *d = dest_data;
 
+        float alpha = 1.0 - (float)transparency / 255.0;
         int sb = size_x * size_y;
-        transparency = 255 - transparency;
         for( int i = 0; i < sb; i++ ) {
-            int r = ( ( *po++ ) * transparency ) + olay_red;
-            *d++ = (unsigned char) ( r / 255 );
-            int g = ( ( *po++ ) * transparency ) + olay_green;
-            *d++ = (unsigned char) ( g / 255 );
-            int b = ( ( *po++ ) * transparency ) + olay_blue;
-            *d++ = (unsigned char) ( b / 255 );
+            float a = alpha;
+            if( *box == 0 && radius > 0.0 ) a = 1.0;
+            int r = ( ( *bg++ ) * a ) + (1.0-a) * color.Red();
+            *d++ = r; box++;
+            int g = ( ( *bg++ ) * a ) + (1.0-a) * color.Green();
+            *d++ = g; box++;
+            int b = ( ( *bg++ ) * a ) + (1.0-a) * color.Blue();
+            *d++ = b; box++;
         }
 
         dest.SetData( dest_data );
@@ -7542,7 +7900,8 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, wxColour c
 //    TTYScroll and TTYWindow Implemetation
 
 IMPLEMENT_DYNAMIC_CLASS( TTYWindow, wxDialog )
-BEGIN_EVENT_TABLE( TTYWindow, wxDialog ) EVT_CLOSE(TTYWindow::OnCloseWindow)
+BEGIN_EVENT_TABLE( TTYWindow, wxDialog )
+EVT_CLOSE(TTYWindow::OnCloseWindow)
 EVT_MOVE( TTYWindow::OnMove )
 EVT_SIZE( TTYWindow::OnSize )
 END_EVENT_TABLE()
@@ -7551,13 +7910,110 @@ TTYWindow::TTYWindow()
 {
 }
 
+TTYWindow::TTYWindow(wxWindow *parent, int n_lines)
+{
+    wxDialog::Create( parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
+    
+    wxBoxSizer* bSizerOuterContainer = new wxBoxSizer( wxVERTICAL );
+    SetSizer( bSizerOuterContainer );
+    
+    m_pScroll = new TTYScroll(this, n_lines);
+    m_pScroll->Scroll(-1, 1000);        // start with full scroll down
+    
+    bSizerOuterContainer->Add( m_pScroll, 1, wxEXPAND, 5 );
+
+    wxBoxSizer* bSizerBottomContainer = new wxBoxSizer( wxHORIZONTAL );
+    bSizerOuterContainer->Add( bSizerBottomContainer, 0, wxEXPAND, 5 );
+    
+ 
+    wxStaticBox *psb = new wxStaticBox( this,  wxID_ANY, _("Legend")) ;
+    wxStaticBoxSizer* sbSizer1 = new wxStaticBoxSizer( psb , wxVERTICAL );
+    
+    CreateLegendBitmap();
+    wxBitmapButton *bb = new wxBitmapButton(this, wxID_ANY, m_bm_legend);
+    sbSizer1->Add( bb, 1, wxALL|wxEXPAND, 5 );
+    bSizerBottomContainer->Add( sbSizer1, 0, wxALIGN_LEFT | wxALL, 5 );
+
+    m_buttonPause = new wxButton( this, wxID_ANY, _("Pause"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizerBottomContainer->Add( m_buttonPause, 0, wxALIGN_RIGHT | wxALL, 5 );
+    
+    m_buttonPause->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TTYWindow::OnPauseClick ), NULL, this );
+   
+    bpause = false;
+}
+
 TTYWindow::~TTYWindow()
 {
     delete m_pScroll;
     g_NMEALogWindow = NULL;
 }
 
+void TTYWindow::CreateLegendBitmap()
+{
+    m_bm_legend.Create(400, 80);
+    wxMemoryDC dc;
+    dc.SelectObject( m_bm_legend );
+    if( m_bm_legend.IsOk()) {
+        
+        dc.SetBackground( wxBrush(GetGlobalColor(_T("DILG1"))) );
+        dc.Clear();
+        
+        wxFont f(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
+        dc.SetFont(f);
+        
+        int yp = 25;
+        int y = 5;
+        
+        wxBrush b1(wxColour( _T("DARK GREEN")) );
+        dc.SetBrush(b1);
+        dc.DrawRectangle( 5, y, 20, 20 );
+        dc.SetTextForeground( wxColour(_T("DARK GREEN")) );
+        dc.DrawText(  _("Message accepted"), 30, y );
+        
+        y += yp;
+        wxBrush b2(wxColour( _T("#a0832a")) );
+        dc.SetBrush(b2);
+        dc.DrawRectangle( 5, y, 20, 20 );
+        dc.SetTextForeground( wxColour(_T("#a0832a")) );
+        dc.DrawText(  _("Message filtered and dropped"), 30, y );
+        
+        y += yp;
+        wxBrush b3(wxColour( _T("BLUE")) );
+        dc.SetBrush(b3);
+        dc.DrawRectangle( 5, y, 20, 20 );
+        dc.SetTextForeground( wxColour(_T("BLUE")) );
+        dc.DrawText(  _("Output Message"), 30, y );
+        
+        
+        
+    }
+        
+    dc.SelectObject( wxNullBitmap );
+        
+}
+
+
+
+
+void TTYWindow::OnPauseClick( wxCommandEvent& event )
+{
+    if(!bpause) {
+        bpause = true;
+        m_pScroll->Pause( true );
+        
+        m_buttonPause->SetLabel( _("Resume") );
+    }
+    else {
+        bpause = false;
+        m_pScroll->Pause( false );
+        
+        m_buttonPause->SetLabel( _("Pause") );
+    }
+}
+
+
 void TTYWindow::OnCloseWindow( wxCloseEvent& event )
+
 {
     Destroy();
 }
@@ -7584,17 +8040,19 @@ void TTYWindow::OnMove( wxMoveEvent& event )
 
 void TTYScroll::Add( wxString &line )
 {
-    if( m_plineArray->GetCount() > m_nLines - 1 ) {                       // shuffle the arraystring
-        wxArrayString *p_newArray = new wxArrayString;
+    if(!bpause) {
+        if( m_plineArray->GetCount() > m_nLines - 1 ) {                       // shuffle the arraystring
+            wxArrayString *p_newArray = new wxArrayString;
 
-        for( unsigned int i = 1; i < m_plineArray->GetCount(); i++ ) {
-            p_newArray->Add( m_plineArray->Item( i ) );
+            for( unsigned int i = 1; i < m_plineArray->GetCount(); i++ ) 
+                p_newArray->Add( m_plineArray->Item( i ) );
+
+            delete m_plineArray;
+            m_plineArray = p_newArray;
         }
-        delete m_plineArray;
-        m_plineArray = p_newArray;
-    }
 
     m_plineArray->Add( line );
+    }
 }
 
 void TTYScroll::OnDraw( wxDC& dc )
@@ -7608,12 +8066,27 @@ void TTYScroll::OnDraw( wxDC& dc )
     if( lineTo > m_nLines - 1 ) lineTo = m_nLines - 1;
 
     wxCoord y = lineFrom * m_hLine;
+    wxString lss;
     for( size_t line = lineFrom; line <= lineTo; line++ ) {
         wxCoord yPhys;
         CalcScrolledPosition( 0, y, NULL, &yPhys );
 
-        dc.DrawText( m_plineArray->Item( line ), 0, y );
-        y += m_hLine;
+        wxString ls = m_plineArray->Item( line );
+        if(ls.Mid(0, 7) == _T("<GREEN>") ){
+            dc.SetTextForeground( wxColour(_T("DARK GREEN")) );
+            lss = ls.Mid(7);
+        }
+        else if(ls.Mid(0, 7) == _T("<AMBER>") ){
+            dc.SetTextForeground( wxColour(_T("#a0832a")) );
+            lss = ls.Mid(7);
+        }
+        else if(ls.Mid(0, 6) == _T("<BLUE>") ){
+                dc.SetTextForeground( wxColour(_T("BLUE")) );
+                lss = ls.Mid(6);
+        }
+        
+       dc.DrawText( lss, 0, y );
+       y += m_hLine;
     }
 }
 
