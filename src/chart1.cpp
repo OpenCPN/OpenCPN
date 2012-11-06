@@ -2107,7 +2107,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
 
     g_pMUX = new Multiplexer();
 
-    g_pAIS = new AIS_Decoder( );
+    g_pAIS = new AIS_Decoder( this );
 
     for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
     {
