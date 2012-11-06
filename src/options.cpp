@@ -3814,7 +3814,7 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindo
         standard_sentences.Add(_T("ECRMC"));
     }
 
-    m_pclbBox = new wxStaticBox( this,  wxID_ANY, _("")) ;
+    m_pclbBox = new wxStaticBox( this,  wxID_ANY, _T("")) ;
 
     wxStaticBoxSizer* sbSizerclb;
     sbSizerclb = new wxStaticBoxSizer( m_pclbBox , wxVERTICAL );
