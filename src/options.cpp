@@ -2165,8 +2165,11 @@ ConnectionParams * options::SaveConnectionParams()
 {
     if ( connectionsaved )
         return NULL;
-    ConnectionParams * m_pConnectionParams = new ConnectionParams();
 
+    //  Special encoding for deleted connection
+    if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == _T("Deleted" ))
+        return NULL;
+        
     if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString )
     {
         wxMessageBox( _("You must select or enter the port..."), _("Error!") );
@@ -2178,6 +2181,8 @@ ConnectionParams * options::SaveConnectionParams()
         return NULL;
     }
 
+    ConnectionParams * m_pConnectionParams = new ConnectionParams();
+    
     m_pConnectionParams->Valid = true;
     if ( m_rbTypeSerial->GetValue() )
         m_pConnectionParams->Type = Serial;
@@ -3736,6 +3741,10 @@ void options::OnRemoveDatasourceClick( wxCommandEvent& event )
         if ( itemIndex == -1 )
             break;
         g_pConnectionParams->RemoveAt( itemIndex );
+
+        //  Mark connection deleted  
+        m_rbTypeSerial->SetValue(true);
+        m_comboPort->SetValue( _T("Deleted") );
     }
     FillSourceList();
     ShowNMEACommon( false );
@@ -3814,7 +3823,7 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindo
         standard_sentences.Add(_T("ECRMC"));
     }
 
-    m_pclbBox = new wxStaticBox( this,  wxID_ANY, _("")) ;
+    m_pclbBox = new wxStaticBox( this,  wxID_ANY, _T("")) ;
 
     wxStaticBoxSizer* sbSizerclb;
     sbSizerclb = new wxStaticBoxSizer( m_pclbBox , wxVERTICAL );

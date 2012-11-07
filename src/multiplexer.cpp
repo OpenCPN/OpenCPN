@@ -163,9 +163,12 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         }
         //Send to core consumers
         //if it passes the source's input filter
-        bool bfilter = true;
-        if(stream->SentencePassesFilter( message, FILTER_INPUT ) ) {
-            bfilter = false;
+        //  If there is no datastream, as for PlugIns, then pass everything
+        bool bpass = true;
+        if( stream )
+            bpass = stream->SentencePassesFilter( message, FILTER_INPUT );
+            
+        if( bpass ) {
             if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
                 message.Mid(3,3).IsSameAs(_T("VDO")) ||
                 message.Mid(1,5).IsSameAs(_T("FRPOS")) ||
@@ -192,7 +195,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             ss.Append( event.GetDataSource() );
             ss.Append( _T(") ") );
             ss.Append( message );
-            if(bfilter)
+            if( !bpass )
                 ss.Prepend( _T("<AMBER>") );
             else
                 ss.Prepend( _T("<GREEN>") );

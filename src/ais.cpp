@@ -1143,7 +1143,7 @@ static bool b_firstrx;
 static int first_rx_ticks;
 static int rx_ticks;
 
-AIS_Decoder::AIS_Decoder()
+AIS_Decoder::AIS_Decoder( wxFrame *parent )
 {
     AISTargetList = new AIS_Target_Hash;
 
@@ -1154,6 +1154,8 @@ AIS_Decoder::AIS_Decoder()
 
     m_n_targets = 0;
 
+    m_parent_frame = parent;
+    
     TimerAIS.SetOwner(this, TIMER_AIS1);
     TimerAIS.Start(TIMER_AIS_MSEC,wxTIMER_CONTINUOUS);
     

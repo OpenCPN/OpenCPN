@@ -5,7 +5,6 @@ include/ocpn_pixel.h
 include/chcanv.h
 include/chartdb.h
 include/s57chart.h
-include/nmea.h
 include/s52plib.h
 include/statwin.h
 include/scrollingdialog.h
@@ -33,6 +32,8 @@ include/concanv.h
 include/s57mgr.h
 include/mygeom.h
 include/cm93.h
+include/datastream.h
+include/multiplexer.h
 src/chartdbs.cpp
 src/mygdal/ogrmultipolygon.cpp
 src/mygdal/cpl_csv.cpp
@@ -103,7 +104,8 @@ src/s57mgr.cpp
 src/cm93.cpp
 src/scrollingdialog.cpp
 src/chartimg.cpp
-src/nmea.cpp
+src/datastream.cpp
+src/multiplexer.cpp
 src/myiso8211/ddffield.cpp
 src/myiso8211/ddfsubfielddefn.cpp
 src/myiso8211/ddffielddefn.cpp
