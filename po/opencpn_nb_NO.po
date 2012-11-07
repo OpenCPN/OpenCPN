@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 2.6.1705\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-15 08:45-0400\n"
+"POT-Creation-Date: 2012-11-05 19:42-0500\n"
 "PO-Revision-Date: 2012-05-07 00:48+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -20,12 +20,28 @@ msgstr ""
 #
 msgid ""
 "\n"
-"\n"
-"Continuing libgps setup..."
+" - your GPS offset from bow must be within your ship's length"
 msgstr ""
+#
+msgid ""
 "\n"
+" - your GPS offset from midship must be within your ship's beam"
+msgstr ""
+#
+msgid ""
 "\n"
-"Fortsetter libgps oppsett..."
+" - your minimum ship icon size must be between 1 and 100 mm"
+msgstr ""
+#
+msgid ""
+"\n"
+" - your ship's beam must be > 0"
+msgstr ""
+#
+msgid ""
+"\n"
+" - your ship's length must be > 0"
+msgstr ""
 #
 #
 msgid ""
@@ -57,14 +73,6 @@ msgstr ""
 "materiell.\n"
 "\n"
 "Vennligst klikk \"OK\" for å godta og fortsette, \"Avbryt\" for å avslutte.\n"
-#
-#
-msgid ""
-"           No Charts Installed.\n"
-"Please select chart folders in ToolBox->Charts."
-msgstr ""
-"           Ingen kart er installert.\n"
-"Velg kartmapper i Verktøy->Kart."
 #
 msgid "    Incompatible PlugIn detected:"
 msgstr "    Ugyldig utvidelse oppdaget:"
@@ -125,14 +133,6 @@ msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
 msgstr "   VP Sluttsjekk: Georeferanse Chart_Error_Factor på kart "
 #
 #
-msgid "  Could not open AIS serial port '"
-msgstr "  Kunne ikke åpne AIS serie port '"
-#
-#
-msgid "  Could not open serial port '"
-msgstr "  Kunne ikke åpne serieport '"
-#
-#
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr " %D Dager  %H Timer  %M Minutter"
 #
@@ -159,7 +159,8 @@ msgid " </b>in<b> "
 msgstr ""
 #
 #
-msgid " COG: Unavailable"
+#, fuzzy
+msgid " COG Unavailable"
 msgstr " COG: Utilgjengelig"
 #
 #
@@ -288,17 +289,9 @@ msgid "&Jump To"
 msgstr "Gå til"
 #
 #
-msgid "&Kilometers"
-msgstr "&Kilometer"
-#
-#
 #, fuzzy
 msgid "&Merge Selected Tracks"
 msgstr "Slett slepestrek"
-#
-#
-msgid "&Nautical miles"
-msgstr "&Nautiske mil"
 #
 #
 msgid "&New"
@@ -357,22 +350,6 @@ msgid "&Weight:"
 msgstr "&Vekt:"
 #
 #
-msgid ""
-"'\n"
-" Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
-msgstr ""
-"'\n"
-" Forslag: Forsøk 'xxx.xxx.xxx.xxx' oppføring"
-#
-#
-msgid ""
-"'\n"
-"Suggestion: Try closing other applications."
-msgstr ""
-"'\n"
-"Forslag: Forsøk å lukke andre programmer."
-#
-#
 msgid "(Unnamed Layer)"
 msgstr "(Lag uten navn)"
 #
@@ -391,6 +368,9 @@ msgstr "(Veipunkt uten navn)"
 #
 msgid "(unnamed)"
 msgstr "(uten navn)"
+#
+msgid ", Out: None"
+msgstr ""
 #
 #
 msgid "-"
@@ -421,6 +401,12 @@ msgstr "..."
 msgid "...and TCPA is less than (min)"
 msgstr "  ..og TCPA er mindre enn (minutter):"
 #
+msgid "0"
+msgstr ""
+#
+msgid "1"
+msgstr ""
+#
 msgid "1 pixel"
 msgstr "1 piksel"
 #
@@ -431,6 +417,21 @@ msgstr "1.0 NM langs COG"
 msgid "10 pixels"
 msgstr "10 piksler"
 #
+msgid "115200"
+msgstr ""
+#
+msgid "1200"
+msgstr ""
+#
+msgid "150"
+msgstr ""
+#
+msgid "19200"
+msgstr ""
+#
+msgid "2"
+msgstr ""
+#
 #
 msgid "2 Color"
 msgstr "2 Farger"
@@ -438,8 +439,26 @@ msgstr "2 Farger"
 msgid "2 pixels"
 msgstr "2 piksler"
 #
+msgid "230400"
+msgstr ""
+#
+msgid "2400"
+msgstr ""
+#
+msgid "3"
+msgstr ""
+#
 msgid "3 pixels"
 msgstr "3 piksler"
+#
+msgid "300"
+msgstr ""
+#
+msgid "38400"
+msgstr ""
+#
+msgid "4"
+msgstr ""
 #
 #
 msgid "4 Color"
@@ -448,23 +467,53 @@ msgstr "4 Farger"
 msgid "4 pixels"
 msgstr "4 piksler"
 #
+msgid "460800"
+msgstr ""
+#
+msgid "4800"
+msgstr ""
+#
+msgid "5"
+msgstr ""
+#
 msgid "5 pixels"
 msgstr "5 piksler"
+#
+msgid "57600"
+msgstr ""
+#
+msgid "6"
+msgstr ""
 #
 msgid "6 pixels"
 msgstr "6 piksler"
 #
+msgid "600"
+msgstr ""
+#
+msgid "7"
+msgstr ""
+#
 msgid "7 pixels"
 msgstr "7 piksler"
+#
+msgid "8"
+msgstr ""
 #
 msgid "8 pixels"
 msgstr "8 piksler"
 #
+msgid "9"
+msgstr ""
+#
 msgid "9 pixels"
 msgstr "9 piksler"
 #
-msgid "<--Remove"
-msgstr "<--Fjern"
+msgid "921600"
+msgstr ""
+#
+msgid "9600"
+msgstr ""
 #
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr ""
@@ -486,24 +535,12 @@ msgid "AIS Alert"
 msgstr "AIS varsel"
 #
 #
-msgid "AIS Data Port"
-msgstr "AIS dataport"
-#
-msgid "AIS Port (Shared)"
-msgstr ""
-#
-#
 #, fuzzy
 msgid "AIS Target List..."
 msgstr "AIS fartøyliste"
 #
 #
 msgid "AIS Target Query"
-msgstr "AIS mål informasjon"
-#
-#
-#, fuzzy
-msgid "AIS Target Query..."
 msgstr "AIS mål informasjon"
 #
 #
@@ -535,6 +572,12 @@ msgstr "Om"
 msgid "About OpenCPN"
 msgstr "Om OpenCPN"
 #
+msgid "Accept Sentences"
+msgstr ""
+#
+msgid "Accept only sentences"
+msgstr ""
+#
 #
 msgid "Activate"
 msgstr "Aktiver"
@@ -549,16 +592,17 @@ msgid "Active"
 msgstr "Aktiv"
 #
 #
-msgid "Active Charts"
-msgstr "Aktive karter"
-#
-#
 #, fuzzy
 msgid "Active Datasets"
 msgstr "Aktive karter"
 #
 msgid "Add"
 msgstr "Legg til"
+#
+#
+#, fuzzy
+msgid "Add Connection"
+msgstr "Skriftvalg"
 #
 msgid "Add Dataset..."
 msgstr ""
@@ -574,12 +618,8 @@ msgstr ""
 msgid "Add new"
 msgstr "Legg til ny"
 #
-#
-msgid "Add this chart to quilt."
-msgstr "Legg dette kartet til for fletting."
-#
-msgid "Add-->"
-msgstr "Legg til-->"
+msgid "Address"
+msgstr ""
 #
 #
 msgid "Aground"
@@ -592,6 +632,27 @@ msgstr "Hjelp til Navigasjon (AtoN)"
 #
 msgid "All Active Charts"
 msgstr "Alle aktive kart"
+#
+#
+#, fuzzy
+msgid "All Available Charts"
+msgstr "Alle aktive kart"
+#
+#
+#, fuzzy
+msgid "All Charts"
+msgstr "Karter"
+#
+msgid "All but"
+msgstr ""
+#
+msgid ""
+"An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
+"also have a two letter prefix identifying the source, or TALKER, of the "
+"message (The whole sentences then looks like GPGGA or AITXT). You may filter "
+"out all the sentences with certain TALKER prefix (like GP, AI etc.). The "
+"filter accepts just these three formats."
+msgstr ""
 #
 msgid "Anchorage created "
 msgstr ""
@@ -620,6 +681,11 @@ msgstr "Er du sikker på at du vil slette <ALLE> slepestrekene?"
 #
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Er du sikker på at du vil slette <ALLE> veipunkter?"
+#
+#
+#, fuzzy
+msgid "Are you sure you want to delete this route?"
+msgstr "Er du sikker på at du vil slette dette slepestreket?"
 #
 #
 msgid "Are you sure you want to delete this track?"
@@ -655,10 +721,6 @@ msgid "Automatic Daily Tracks"
 msgstr "Automatisk daglig slepestrek"
 #
 #
-msgid "Autopilot Output Port"
-msgstr "Autopilot utgangs port"
-#
-#
 msgid "Avg. speed (Kts)"
 msgstr "Gjennomsn.fart (Knop)"
 #
@@ -681,6 +743,11 @@ msgstr "Basestasjon"
 #
 msgid "Basic"
 msgstr "Enkel"
+#
+#
+#, fuzzy
+msgid "Baudrate"
+msgstr "NMEA porthastighet"
 #
 #
 msgid "Beacon, Isolated Danger"
@@ -755,13 +822,13 @@ msgstr "Maks detalj her"
 #
 #
 #, fuzzy
-msgid "CM93 Detail Slider..."
-msgstr "Aktiver CM93 detalj justering"
+msgid "CM93 Offset Dialog..."
+msgstr "CM93 forskyvnings dialog"
 #
 #
 #, fuzzy
-msgid "CM93 Offset Dialog..."
-msgstr "CM93 forskyvnings dialog"
+msgid "COG Predictor Length (min)"
+msgstr "Eget skips COG kursvektor lengde (minutter):"
 #
 #
 msgid "CPA"
@@ -782,18 +849,6 @@ msgstr "CPA/TCPA Varsler"
 #
 msgid "Call"
 msgstr "Kallesignal"
-#
-#
-msgid ""
-"Call to gps_open failed.\n"
-"Is gpsd running?\n"
-"\n"
-"gpsd host is: "
-msgstr ""
-"Forsøk på å åpne gps_open feilet.\n"
-"Er gpsd startet?\n"
-"\n"
-"gpsd vert er: "
 #
 #
 msgid "Cancel"
@@ -881,21 +936,10 @@ msgstr "Kartvisnings valg"
 msgid "Chart Groups"
 msgstr "Kartgrupper"
 #
-msgid "Chart Groups..."
-msgstr "Kartgrupper..."
-#
-msgid "Chart Groups...New Group"
-msgstr "Kartgrupper...Ny gruppe"
-#
 #
 #, fuzzy
 msgid "Chart Information Objects"
 msgstr "Merke informasjon"
-#
-#
-#, fuzzy
-msgid "Chart Position"
-msgstr "Posisjon"
 #
 #
 msgid "Chart Print"
@@ -974,6 +1018,9 @@ msgstr "Farger"
 msgid "Combo!"
 msgstr "Kombinert!"
 #
+msgid "Confirm deletion of tracks and routes"
+msgstr ""
+#
 #
 #, fuzzy
 msgid "Connections"
@@ -995,6 +1042,9 @@ msgstr "Forhindret av dypgående"
 msgid "Container vessel"
 msgstr "Kontainerfartøy"
 #
+msgid "Control checksum"
+msgstr ""
+#
 msgid "Copy"
 msgstr ""
 #
@@ -1006,10 +1056,6 @@ msgstr ""
 #
 msgid "Copy..."
 msgstr ""
-#
-#
-msgid "Could not resolve TCP/IP host '"
-msgstr "Kunne ikke løse TCP/IP vert '"
 #
 #
 #, fuzzy
@@ -1093,6 +1139,11 @@ msgstr "Mørk Gul"
 #
 #
 #, fuzzy
+msgid "Data Connections"
+msgstr "Skriftvalg"
+#
+#
+#, fuzzy
 msgid "Data Source :"
 msgstr "NMEA Datakilde"
 #
@@ -1148,6 +1199,11 @@ msgid "Delete Waypoint"
 msgstr "Slett veipunkt"
 #
 #
+#, fuzzy
+msgid "Delete..."
+msgstr "Slett"
+#
+#
 msgid "Depart From"
 msgstr "Avgang fra"
 #
@@ -1195,8 +1251,8 @@ msgstr "Visnings alternativer"
 #
 #
 #, fuzzy
-msgid "Display Style"
-msgstr "Kartvisnings alternativer"
+msgid "Display Options"
+msgstr "Kartvisnings valg"
 #
 #
 msgid "Distance"
@@ -1206,6 +1262,11 @@ msgstr "Distanse"
 #, fuzzy
 msgid "Distance Between Rings"
 msgstr "Distanse mellom ringene"
+#
+#
+#, fuzzy
+msgid "Distance Unit"
+msgstr "Distanse"
 #
 #
 msgid "Distress"
@@ -1238,6 +1299,12 @@ msgstr "Mann Over Bord"
 #, fuzzy
 msgid "Drop Mark"
 msgstr "Sett merke her"
+#
+msgid "Drop Sentences"
+msgstr ""
+#
+msgid "Drop sentences"
+msgstr ""
 #
 #
 msgid "E&xport All..."
@@ -1295,6 +1362,12 @@ msgstr "Deltar i fiske"
 msgid "Enter Group Name"
 msgstr "Sett inn gruppenavn"
 #
+msgid "Enter the NMEA sentence"
+msgstr ""
+#
+msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
+msgstr ""
+#
 #
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "Feil ved rute opplasting. Sjekk loggfiler..."
@@ -1302,6 +1375,9 @@ msgstr "Feil ved rute opplasting. Sjekk loggfiler..."
 #
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Feil ved veipunkt opplasting. Sjekk loggfiler..."
+#
+msgid "Error!"
+msgstr ""
 #
 #
 msgid "Estimated time : "
@@ -1361,8 +1437,13 @@ msgstr "Filtrer NMEA Kurs og Fartsdata"
 #
 #
 #, fuzzy
-msgid "Filter Period (sec)"
+msgid "Filter period (sec)"
 msgstr "Filterperiode (sek.)"
+#
+#
+#, fuzzy
+msgid "Filters"
+msgstr "&Kilometer"
 #
 #
 msgid "Fishing boat"
@@ -1386,6 +1467,9 @@ msgstr ""
 msgid "Force Full Database Rebuild"
 msgstr "Fremtving full kartdatabase gjenoppbygging"
 #
+msgid "Format uploads for Furuno GP3X"
+msgstr ""
+#
 #
 msgid "Freightbarge"
 msgstr "Fraktelekter"
@@ -1399,13 +1483,14 @@ msgstr "Fraktelekter med kontainere"
 msgid "Full Route"
 msgstr "Splitt rute"
 #
+msgid "GPS Offset from Bow (m)"
+msgstr ""
 #
-msgid "GPS/Plotter Port"
-msgstr "GPS/Plotter port"
+msgid "GPS Offset from Midship (m)"
+msgstr ""
 #
-#
-msgid "GPSD Data Server"
-msgstr "GPSD Dataserver"
+msgid "GPSD"
+msgstr ""
 #
 msgid "GPSGate Buddy"
 msgstr "GPSGate kamerat"
@@ -1420,6 +1505,12 @@ msgstr "GUID"
 #
 msgid "Gas tanker"
 msgstr "Gasstanker"
+#
+#
+#
+#, fuzzy
+msgid "General"
+msgstr "AIS Innstillinger"
 #
 #
 #, fuzzy
@@ -1444,9 +1535,6 @@ msgstr "Grønn"
 msgid "Group \""
 msgstr "Gruppe \""
 #
-msgid "Groups"
-msgstr "Grupper"
-#
 #
 msgid "HSC"
 msgstr "HSC"
@@ -1468,8 +1556,13 @@ msgstr "Her"
 #
 #
 #, fuzzy
-msgid "Hide AIS Target CPA"
+msgid "Hide Target CPA"
 msgstr "AIS mål informasjon"
+#
+#
+#, fuzzy
+msgid "Hide This Chart"
+msgstr "Skjul for kart"
 #
 #
 msgid "Hide WPT names"
@@ -1483,6 +1576,9 @@ msgstr "Skjul ankrede/fortøyde mål"
 #
 msgid "Hide from chart"
 msgstr "Skjul for kart"
+#
+msgid "High"
+msgstr ""
 #
 #
 msgid "High Speed Craft"
@@ -1509,6 +1605,15 @@ msgstr "IMO:\n"
 msgid "Icon"
 msgstr "Ikon"
 #
+msgid "If checked, only the sentences with a valid checksum are passed through"
+msgstr ""
+#
+msgid "Ignore Sentences"
+msgstr ""
+#
+msgid "Ignore sentences"
+msgstr ""
+#
 #
 msgid "Import GPX file"
 msgstr "Importer GPX fil"
@@ -1518,10 +1623,16 @@ msgstr "Importer GPX fil"
 msgid "Important Text Only"
 msgstr "Vis bare viktig tekst"
 #
+msgid "In: None"
+msgstr ""
+#
 #
 #, fuzzy
 msgid "Inland Blue Flag"
 msgstr "Innenlands Blått Flagg        Sett\n"
+#
+msgid "Input filtering"
+msgstr ""
 #
 #
 msgid "Insert Waypoint"
@@ -1535,11 +1646,19 @@ msgstr "Isol. Fare"
 msgid "Isolated Danger"
 msgstr "Isolert Fare"
 #
+msgid "Just "
+msgstr ""
+#
 msgid "KML Standard (Google Earth and others)"
 msgstr ""
 #
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr ""
+#
+#
+#, fuzzy
+msgid "Kilometers"
+msgstr "&Kilometer"
 #
 msgid "Kts"
 msgstr ""
@@ -1604,8 +1723,16 @@ msgid "Leg: from "
 msgstr "Legg: fra "
 #
 #
+#, fuzzy
+msgid "Legend"
+msgstr "Konsoll Forklaring"
+#
+#
 msgid "Length"
 msgstr "Lengde"
+#
+msgid "Length Over All (m)"
+msgstr ""
 #
 #
 msgid "License"
@@ -1706,6 +1833,11 @@ msgid "Lost Targets"
 msgstr "Mistede mål"
 #
 #
+#, fuzzy
+msgid "Low"
+msgstr "Slep"
+#
+#
 msgid "Lt"
 msgstr "Lt"
 #
@@ -1792,6 +1924,9 @@ msgstr "Med/F"
 msgid "Medical Transport"
 msgstr "Medisinsk Fartøy"
 #
+msgid "Medium"
+msgstr ""
+#
 #
 msgid "Mercator"
 msgstr "Mercator"
@@ -1806,6 +1941,12 @@ msgstr "Bytte navn på veipunkter?"
 msgid "Merge waypoints?"
 msgstr "Bytte navn på veipunkter?"
 #
+msgid "Message accepted"
+msgstr ""
+#
+msgid "Message filtered and dropped"
+msgstr ""
+#
 #
 msgid "Meters"
 msgstr "Meter"
@@ -1817,6 +1958,9 @@ msgstr "Mil/V"
 #
 msgid "Military Vessel"
 msgstr "Militær Fartøy"
+#
+msgid "Minimum Screen Size (mm)"
+msgstr ""
 #
 msgid "Miscellaneous Options"
 msgstr ""
@@ -1871,7 +2015,7 @@ msgstr "Motortanker, slepebåt"
 #
 #
 #, fuzzy
-msgid "Move Boat To"
+msgid "Move Boat Here"
 msgstr "Flytt båt hit"
 #
 #
@@ -1882,13 +2026,14 @@ msgstr "Til veipunkt"
 msgid "NMEA"
 msgstr ""
 #
+msgid "NMEA 0183"
+msgstr ""
 #
-msgid "NMEA Baud Rate"
-msgstr "NMEA porthastighet"
+msgid "NMEA 2000"
+msgstr ""
 #
-#
-msgid "NMEA Data Source"
-msgstr "NMEA Datakilde"
+msgid "NMEA Debug Window"
+msgstr ""
 #
 #
 #
@@ -1908,22 +2053,34 @@ msgid "Name"
 msgstr "Navn"
 #
 #
+#, fuzzy
+msgid "Nautical Miles"
+msgstr "&Nautiske mil"
+#
+#
 msgid "Nav Status"
 msgstr "Nav Status"
 #
 #
 #, fuzzy
-msgid "Navigate To"
+msgid "Navigate To Here"
 msgstr "Navigasjonsdata"
 #
 msgid "Navigate To This"
 msgstr ""
 #
-msgid "Network GPSD"
+#
+#, fuzzy
+msgid "Net"
+msgstr "Neste"
+#
+msgid "Network"
 msgstr ""
 #
-msgid "Network LIBGPS"
-msgstr ""
+#
+#, fuzzy
+msgid "New Chart Group"
+msgstr "Kartgrupper"
 #
 msgid "New Group..."
 msgstr "Ny gruppe..."
@@ -1936,6 +2093,9 @@ msgstr "Neste"
 msgid "Next tide event"
 msgstr "Neste tidevannsforekomst"
 #
+msgid "No"
+msgstr ""
+#
 #
 #, fuzzy
 msgid "No CPA Calculation if target range is greater than (NMi)"
@@ -1944,6 +2104,15 @@ msgstr "Ingen CPA kalkulering om målet er lengre borte enn (Nm): "
 #
 msgid "No Chart Available"
 msgstr "Ingen kart er tilgjengelig"
+#
+#
+#, fuzzy
+msgid ""
+"No Charts Installed.\n"
+"Please select chart folders in Options > Charts."
+msgstr ""
+"           Ingen kart er installert.\n"
+"Velg kartmapper i Verktøy->Kart."
 #
 msgid "No, I don't want to hide it."
 msgstr ""
@@ -1966,11 +2135,6 @@ msgstr "Sett nord opp"
 #
 msgid "Not Under Command"
 msgstr "Ikke under kommando"
-#
-#
-#, fuzzy
-msgid "Number of Radar Rings"
-msgstr "Antall radar ringer"
 #
 #
 msgid "OK"
@@ -2039,10 +2203,6 @@ msgid "OpenCPN Info"
 msgstr "OpenCPN info"
 #
 #
-msgid "OpenCPN Message"
-msgstr "OpenCPN melding"
-#
-#
 #, fuzzy
 msgid "OpenCPN Remove Waypoint"
 msgstr "OpenCPN ruteopprettelse"
@@ -2054,6 +2214,11 @@ msgstr "OpenCPN ruteopprettelse"
 #
 #
 msgid "OpenCPN Route Create"
+msgstr "OpenCPN ruteopprettelse"
+#
+#
+#, fuzzy
+msgid "OpenCPN Route Delete"
 msgstr "OpenCPN ruteopprettelse"
 #
 #
@@ -2080,12 +2245,31 @@ msgid "OpenCPN cannot start. "
 msgstr "OpenCPN kart oppdatering"
 #
 #
+#, fuzzy
+msgid "OpenCPN info"
+msgstr "OpenCPN info"
+#
+#
 msgid "Options"
 msgstr "Alternativer"
 #
 #
 msgid "Other"
 msgstr "Annet"
+#
+msgid "Output"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Output Message"
+msgstr "OpenCPN melding"
+#
+msgid "Output filtering"
+msgstr ""
+#
+msgid "Output on this port ( as Autopilot or NMEA Repeater)"
+msgstr ""
 #
 #
 msgid "OverZoom"
@@ -2101,16 +2285,6 @@ msgid "Own Ship"
 msgstr " Skip: "
 #
 #
-#, fuzzy
-msgid "Own Ship Display Options"
-msgstr "Alternativer for visning av eget skip"
-#
-#
-#, fuzzy
-msgid "OwnShip COG arrow predictor length (min)"
-msgstr "Eget skips COG kursvektor lengde (minutter):"
-#
-#
 msgid "P/V"
 msgstr "P/V"
 #
@@ -2121,6 +2295,11 @@ msgstr "PC/V"
 #
 msgid "Paper Chart"
 msgstr "Papirkart"
+#
+#
+#, fuzzy
+msgid "Parameters"
+msgstr "Meter"
 #
 #
 msgid "Pass/V"
@@ -2153,19 +2332,12 @@ msgstr "&Eksporter slepestrek..."
 msgid "Paste Waypoint"
 msgstr "Aktiver veipunkt"
 #
+msgid "Pause"
+msgstr ""
+#
 #
 msgid "Pilot Vessel"
 msgstr "Los Fartøy"
-#
-#
-#, fuzzy
-msgid "Place Trackpoints at distance interval (NMi)"
-msgstr "Plasser slepestrekpunkter ved distanse intervall (Nm):"
-#
-#
-#, fuzzy
-msgid "Place Trackpoints at time interval (sec)"
-msgstr "Plasser slepestrekpunkter ved tidsintervall (sek.):"
 #
 #
 msgid "Plain"
@@ -2279,6 +2451,9 @@ msgstr "Forhåndsvisning:"
 msgid "Print Chart"
 msgstr "Skriv ut kart"
 #
+msgid "Priority"
+msgstr ""
+#
 msgid "Problem discovered"
 msgstr "Problem oppdaget"
 #
@@ -2298,6 +2473,9 @@ msgstr "Egenskaper"
 #, fuzzy
 msgid "Properties..."
 msgstr "&Egenskaper..."
+#
+msgid "Protocol"
+msgstr ""
 #
 #
 msgid "Pushboat, single"
@@ -2385,10 +2563,6 @@ msgid "RACON"
 msgstr "RACON"
 #
 #
-msgid "Radar rings"
-msgstr "Radar ringer"
-#
-#
 msgid "Range"
 msgstr "Avstand"
 #
@@ -2399,6 +2573,12 @@ msgstr "Virkelig"
 #
 msgid "Real (On Position)"
 msgstr "Virkelig (ved posisjon)"
+#
+msgid "Real Scale Bitmap"
+msgstr ""
+#
+msgid "Real Scale Vector"
+msgstr ""
 #
 #
 msgid "Real(Off Position)"
@@ -2417,6 +2597,12 @@ msgid "Red cross ship"
 msgstr "Rødekorsbåt"
 #
 msgid "Redo"
+msgstr ""
+#
+msgid "Reduce Data Precision"
+msgstr ""
+#
+msgid "Reduce Data..."
 msgstr ""
 #
 msgid "Reduced Detail at Small Scale"
@@ -2438,6 +2624,16 @@ msgstr "Referansestasjon :"
 msgid "Remaining time : "
 msgstr "Gjenværende tid : "
 #
+#
+#, fuzzy
+msgid "Remove Chart"
+msgstr "<--Fjern"
+#
+#
+#, fuzzy
+msgid "Remove Connection"
+msgstr "Skriftvalg"
+#
 msgid "Remove Selected"
 msgstr ""
 #
@@ -2450,15 +2646,6 @@ msgstr "Fjern veipunkt fra rute"
 #, fuzzy
 msgid "Remove lost targets after (min)"
 msgstr "Fjern mistede mål etter (minutter): "
-#
-#
-#, fuzzy
-msgid "Remove this chart from quilt"
-msgstr "Fjern dette kartet fra fletting."
-#
-#
-msgid "Remove this chart from quilt."
-msgstr "Fjern dette kartet fra fletting."
 #
 #
 msgid "Rename Waypoints?"
@@ -2495,6 +2682,9 @@ msgstr "Reservert 14"
 msgid "Restricted Manoeuvrability"
 msgstr "Begrenset manøvrerbarhet"
 #
+msgid "Resume"
+msgstr ""
+#
 #
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Innhenter grunnleggende kart kataloger fra Windows registeret"
@@ -2505,7 +2695,7 @@ msgstr "Innhenter grunnleggende språkvalg fra Windows registeret"
 #
 #
 #, fuzzy
-msgid "Reverse"
+msgid "Reverse..."
 msgstr "&Reverser"
 #
 #
@@ -2618,6 +2808,9 @@ msgstr "Søk gjennom karter og oppdater database"
 msgid "Search and Rescue Vessel"
 msgstr "Søk og redningsfartøy"
 #
+msgid "Seatalk"
+msgstr ""
+#
 msgid "See the log file at "
 msgstr ""
 #
@@ -2636,6 +2829,11 @@ msgstr "Velg lydfil"
 msgid "Select Tide/Current Data"
 msgstr ""
 #
+msgid ""
+"Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr ""
+#
 #
 msgid "Send"
 msgstr "Send"
@@ -2647,6 +2845,19 @@ msgstr "Send rute til GPS"
 #
 msgid "Send To GPS..."
 msgstr "Send til GPS..."
+#
+#
+#, fuzzy
+msgid "Send to GPS"
+msgstr "&Send til GPS"
+#
+#
+#, fuzzy
+msgid "Sentence Filter"
+msgstr "&Avstill alarm"
+#
+msgid "Serial"
+msgstr ""
 #
 #
 msgid "Service vessel, police patrol, port service"
@@ -2671,6 +2882,9 @@ msgstr "Bytt til større kartskala"
 msgid "Shift to Smaller Scale Chart"
 msgstr "Bytt til mindre kartskala"
 #
+msgid "Ship Icon Type"
+msgstr ""
+#
 #
 #, fuzzy
 msgid "Ships"
@@ -2679,11 +2893,6 @@ msgstr " Skip: "
 #
 msgid "Short dash"
 msgstr "Kort strek"
-#
-#
-#, fuzzy
-msgid "Show AIS Target CPA"
-msgstr "Vis AIS-mål"
 #
 #
 msgid "Show AIS Targets"
@@ -2719,10 +2928,6 @@ msgid "Show ENC Text"
 msgstr "Vis ENC-tekst"
 #
 #
-msgid "Show GPS/NMEA data stream window"
-msgstr "Vis GPS/NMEA datastrøm vindu"
-#
-#
 msgid "Show Grid"
 msgstr "Vis rutenett"
 #
@@ -2735,12 +2940,27 @@ msgstr "Vis lengde og breddegrad som"
 #
 #
 #, fuzzy
+msgid "Show NMEA Debug Window"
+msgstr "Vis GPS/NMEA datastrøm vindu"
+#
+#
+#, fuzzy
 msgid "Show Skewed Raster Charts as North-Up"
 msgstr "Vis skjeve rasterkarter som Nord opp"
 #
 #
 msgid "Show Status Bar"
 msgstr "Vis statuslinje"
+#
+#
+#, fuzzy
+msgid "Show Target CPA"
+msgstr "Vis AIS-mål"
+#
+#
+#, fuzzy
+msgid "Show This Chart"
+msgstr "Vis på kart"
 #
 #
 msgid "Show Tide Information"
@@ -2873,6 +3093,11 @@ msgstr "Symbolisert"
 #
 #
 #, fuzzy
+msgid "TCP"
+msgstr "CPA TCPA"
+#
+#
+#, fuzzy
 msgid "TCPA"
 msgstr "CPA TCPA"
 #
@@ -2903,6 +3128,16 @@ msgstr "Tanker"
 #
 msgid "Target Count"
 msgstr "Antall mål"
+#
+#
+#, fuzzy
+msgid "Target List..."
+msgstr "AIS fartøyliste"
+#
+#
+#, fuzzy
+msgid "Target Query..."
+msgstr "AIS mål informasjon"
 #
 #
 msgid "Target info"
@@ -2944,6 +3179,12 @@ msgstr ""
 "\n"
 "         OpenCPN...En enkel og grei åpen-kilde kartplotter/navigator"
 #
+#, c-format
+msgid ""
+"The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr ""
+#
 msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
@@ -2970,6 +3211,9 @@ msgid "The font weight."
 msgstr "Font vekt."
 #
 msgid "The necessary configuration files were not found. "
+msgstr ""
+#
+msgid "The settings for own ship real size are not correct:"
 msgstr ""
 #
 msgid ""
@@ -3092,8 +3336,19 @@ msgid "Track Properties"
 msgstr "Egenskaper for slepestrek"
 #
 #
+#, fuzzy
+msgid "Tracking Precision"
+msgstr "Egenskaper for slepestrek"
+#
+#
 msgid "Tracks"
 msgstr "Slepestreker"
+#
+msgid "Transmit Sentences"
+msgstr ""
+#
+msgid "Transmit sentences"
+msgstr ""
 #
 #
 msgid "Transverse Mercator"
@@ -3138,26 +3393,15 @@ msgstr ""
 msgid "Type"
 msgstr "Type"
 #
+msgid "UDP"
+msgstr ""
+#
 msgid "URL"
 msgstr "URL"
 #
 #
 msgid "UTC"
 msgstr "UTC"
-#
-#
-msgid ""
-"Unable to initialize libgps.\n"
-"\n"
-"gpsd host is: "
-msgstr ""
-"Kunne ikke starte libgps.\n"
-"\n"
-"gpsd vert er: "
-#
-#
-msgid "Unable to load libgps"
-msgstr "Kunne ikke laste libgps"
 #
 #
 #, fuzzy
@@ -3184,10 +3428,6 @@ msgid "Unit carrier maritime"
 msgstr "Maritim enhetsfrakt"
 #
 #
-msgid "Units"
-msgstr "Enheter"
-#
-#
 msgid "Unk"
 msgstr "Ukj."
 #
@@ -3211,7 +3451,8 @@ msgid "Use Accelerated Graphics (OpenGL)"
 msgstr ""
 #
 #
-msgid "Use Garmin GRMN/GRMN (Host) Mode for Waypoint and Route uploads."
+#, fuzzy
+msgid "Use Garmin GRMN/GRMN (Host) mode for uploads"
 msgstr "Benytt Garmin GRMN/GRMN (Vert) modus for veipunkter og rute opplasting."
 #
 #
@@ -3338,6 +3579,9 @@ msgstr "Om skriften skal være understreket."
 msgid "White"
 msgstr "Hvit"
 #
+msgid "Width Over All (m)"
+msgstr ""
+#
 msgid "Width:"
 msgstr "Bredde:"
 #
@@ -3346,6 +3590,9 @@ msgid "Wing In Ground Effect"
 msgstr "Vingen i bakken-effekt fartøy (WIG)"
 #
 msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr ""
+#
+msgid "Wrong length of the NMEA filter value"
 msgstr ""
 #
 #
@@ -3364,12 +3611,21 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Gul"
 #
+msgid "Yes"
+msgstr ""
+#
 msgid "Yes, hide it."
 msgstr ""
 #
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make is inaccessible."
+msgstr ""
+#
+msgid "You must enter the address..."
+msgstr ""
+#
+msgid "You must select or enter the port..."
 msgstr ""
 #
 #
@@ -3422,8 +3678,20 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
+#
+#
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "Continuing libgps setup..."
+#~ msgstr ""
+#~ "\n"
+#~ "\n"
+#~ "Fortsetter libgps oppsett..."
+#
 #
 #
 #
@@ -3432,8 +3700,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Maksimum fart på fortøyde mål (knop):"
+#
 #
 #
 #
@@ -3455,8 +3725,20 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartprojisering er UKJENT, antar Mercator: "
+#
+#
+#
+#~ msgid "  Could not open AIS serial port '"
+#~ msgstr "  Kunne ikke åpne AIS serie port '"
+#
+#
+#
+#~ msgid "  Could not open serial port '"
+#~ msgstr "  Kunne ikke åpne serieport '"
+#
 #
 #
 #
@@ -3465,8 +3747,28 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG: 000 Gra."
+#
+#
+#
+#~ msgid ""
+#~ "'\n"
+#~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
+#~ msgstr ""
+#~ "'\n"
+#~ " Forslag: Forsøk 'xxx.xxx.xxx.xxx' oppføring"
+#
+#
+#
+#~ msgid ""
+#~ "'\n"
+#~ "Suggestion: Try closing other applications."
+#~ msgstr ""
+#~ "'\n"
+#~ "Forslag: Forsøk å lukke andre programmer."
+#
 #
 #
 #
@@ -3485,8 +3787,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid ":               "
 #~ msgstr ":               "
+#
 #
 #
 #
@@ -3501,9 +3805,14 @@ msgstr "wxFB Nettsted"
 #~ "\n"
 #
 #
+#~ msgid "<--Remove"
+#~ msgstr "<--Fjern"
 #
-#~ msgid "AIS General"
-#~ msgstr "AIS Innstillinger"
+#
+#
+#~ msgid "AIS Data Port"
+#~ msgstr "AIS dataport"
+#
 #
 #
 #
@@ -3525,8 +3834,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Activate CM93 Offset"
 #~ msgstr "Aktiver CM93 korrigering"
+#
 #
 #
 #
@@ -3544,8 +3855,24 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#~ msgid "Active Charts"
+#~ msgstr "Aktive karter"
+#
+#
+#
+#
 #~ msgid "Add Selection"
 #~ msgstr "Legg til utvalg"
+#
+#
+#
+#~ msgid "Add this chart to quilt."
+#~ msgstr "Legg dette kartet til for fletting."
+#
+#
+#~ msgid "Add-->"
+#~ msgstr "Legg til-->"
+#
 #
 #
 #
@@ -3554,8 +3881,15 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#~ msgid "Autopilot Output Port"
+#~ msgstr "Autopilot utgangs port"
+#
+#
+#
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Tilgjengelige kartmapper"
+#
 #
 #
 #
@@ -3566,8 +3900,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr "Kurs:                Utilgjengelig\n"
+#
 #
 #
 #
@@ -3576,8 +3912,16 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#, fuzzy
+#~ msgid "CM93 Detail Slider..."
+#~ msgstr "Aktiver CM93 detalj justering"
+#
+#
+#
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 korrigeringsvisning"
+#
 #
 #
 #
@@ -3586,8 +3930,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 Zoom detalj"
+#
 #
 #
 #
@@ -3598,8 +3944,23 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f Nm\n"
+#
+#
+#
+#~ msgid ""
+#~ "Call to gps_open failed.\n"
+#~ "Is gpsd running?\n"
+#~ "\n"
+#~ "gpsd host is: "
+#~ msgstr ""
+#~ "Forsøk på å åpne gps_open feilet.\n"
+#~ "Er gpsd startet?\n"
+#~ "\n"
+#~ "gpsd vert er: "
+#
 #
 #
 #
@@ -3609,14 +3970,36 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "Kartvisning filter"
+#
+#
+#~ msgid "Chart Groups..."
+#~ msgstr "Kartgrupper..."
+#
+#
+#~ msgid "Chart Groups...New Group"
+#~ msgstr "Kartgrupper...Ny gruppe"
+#
+#
+#
+#, fuzzy
+#~ msgid "Chart Position"
+#~ msgstr "Posisjon"
+#
 #
 #
 #
 #
 #~ msgid "Class:                "
 #~ msgstr "Klasse:                "
+#
+#
+#
+#~ msgid "Could not resolve TCP/IP host '"
+#~ msgstr "Kunne ikke løse TCP/IP vert '"
+#
 #
 #
 #
@@ -3627,8 +4010,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "Kurs:                 000 Grad.\n"
+#
 #
 #
 #
@@ -3638,8 +4023,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "Kursor: "
+#
 #
 #
 #
@@ -3669,8 +4056,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Standard datasett"
+#
 #
 #
 #
@@ -3688,8 +4077,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Slett merke"
+#
 #
 #
 #
@@ -3698,13 +4089,16 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "Slett utvalg"
 #
 #
 #
+#
 #~ msgid "Delete Track"
 #~ msgstr "Slett slepestrek"
+#
 #
 #
 #
@@ -3714,13 +4108,22 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Destinasjon:          "
 #
 #
 #
+#, fuzzy
+#~ msgid "Display Style"
+#~ msgstr "Kartvisnings alternativer"
+#
+#
+#
+#
 #~ msgid "ENC/Vector"
 #~ msgstr "ENC/Vektor"
+#
 #
 #
 #
@@ -3731,8 +4134,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "ETA:                  "
 #~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -3741,13 +4146,16 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "Aktiver Mushjul-Zoom-til-Kursor"
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Diverse"
+#
 #
 #
 #
@@ -3757,8 +4165,20 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
+#
+#
+#~ msgid "GPS/Plotter Port"
+#~ msgstr "GPS/Plotter port"
+#
+#
+#
+#~ msgid "GPSD Data Server"
+#~ msgstr "GPSD Dataserver"
+#
 #
 #
 #
@@ -3776,8 +4196,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Gå til merke/veipunkt"
+#
+#
+#~ msgid "Groups"
+#~ msgstr "Grupper"
+#
 #
 #
 #
@@ -3798,8 +4224,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Kurs:                %03d Gra.\n"
+#
 #
 #
 #
@@ -3810,13 +4238,16 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Inland Blue Flag        Clear\n"
 #~ msgstr "Innenlands Blått Flagg        Fjern\n"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Gå til"
+#
 #
 #
 #
@@ -3834,8 +4265,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Gå til posisjon"
+#
 #
 #
 #
@@ -3858,8 +4291,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Språk og Skrift"
+#
 #
 #
 #
@@ -3869,13 +4304,16 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Leg/Route"
 #~ msgstr "Legg/Rute"
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "META Objekter"
+#
 #
 #
 #
@@ -3902,8 +4340,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Avstandsmåling..."
+#
 #
 #
 #
@@ -3912,8 +4352,15 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#~ msgid "NMEA Data Source"
+#~ msgstr "NMEA Datakilde"
+#
+#
+#
+#
 #~ msgid "NMEA Options"
 #~ msgstr "NMEA Valg"
+#
 #
 #
 #
@@ -3924,8 +4371,34 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "Navigasjons status:  "
+#
+#
+#
+#, fuzzy
+#~ msgid "Number of Radar Rings"
+#~ msgstr "Antall radar ringer"
+#
+#
+#
+#, fuzzy
+#~ msgid "Own Ship Display Options"
+#~ msgstr "Alternativer for visning av eget skip"
+#
+#
+#
+#, fuzzy
+#~ msgid "Place Trackpoints at distance interval (NMi)"
+#~ msgstr "Plasser slepestrekpunkter ved distanse intervall (Nm):"
+#
+#
+#
+#, fuzzy
+#~ msgid "Place Trackpoints at time interval (sec)"
+#~ msgstr "Plasser slepestrekpunkter ved tidsintervall (sek.):"
+#
 #
 #
 #
@@ -3936,6 +4409,7 @@ msgstr "wxFB Nettsted"
 #~ msgstr ""
 #~ "Alder for posisjonsrapport:       %3d sek.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -3977,8 +4451,15 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Utskrift"
+#
+#
+#
+#~ msgid "Radar rings"
+#~ msgstr "Radar ringer"
+#
 #
 #
 #
@@ -3989,13 +4470,16 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Avstand:                %5.1f NM\n"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Raster"
+#
 #
 #
 #
@@ -4006,8 +4490,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Svinghastighet            %3d Gra./Min. Høyre\n"
+#
 #
 #
 #
@@ -4018,8 +4504,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Svinghastighet:       > 5 Grad./30 s. Venstre\n"
+#
 #
 #
 #
@@ -4028,9 +4516,16 @@ msgstr "wxFB Nettsted"
 #~ msgstr "Svinghastighet:       > 5 Grad./30 s. Høyre\n"
 #
 #
+#
 #, fuzzy
-#~ msgid "Remove"
-#~ msgstr "<--Fjern"
+#~ msgid "Remove this chart from quilt"
+#~ msgstr "Fjern dette kartet fra fletting."
+#
+#
+#
+#~ msgid "Remove this chart from quilt."
+#~ msgstr "Fjern dette kartet fra fletting."
+#
 #
 #
 #
@@ -4058,8 +4553,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rutedistanse"
+#
 #
 #
 #
@@ -4069,9 +4566,11 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Rute fra Slepestrek"
+#
 #
 #
 #
@@ -4089,8 +4588,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Sett kurs opp"
+#
 #
 #
 #
@@ -4099,8 +4600,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "Vis AtoN etiketter"
+#
 #
 #
 #
@@ -4133,13 +4636,16 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Vis slepestrek ikon"
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "Vis lag først"
+#
 #
 #
 #
@@ -4154,12 +4660,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Størrelse:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4174,12 +4682,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Størrelse:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4194,12 +4704,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Størrelse:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4214,8 +4726,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Speed:                  Unavailable\n"
 #~ msgstr "Fart:                  Unavailable\n"
+#
 #
 #
 #
@@ -4225,8 +4739,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi data server"
+#
 #
 #
 #
@@ -4237,13 +4753,16 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Tim:Min\n"
 #
 #
 #
+#
 #~ msgid "Text Element"
 #~ msgstr "Tekstelement"
+#
 #
 #
 #
@@ -4253,14 +4772,17 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "TidevannstrømGrafMusOver"
 #
 #
 #
+#
 #~ msgid "ToolBox"
 #~ msgstr "Verktøy"
+#
 #
 #
 #
@@ -4270,8 +4792,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Virkelig skala: %8.0f"
+#
 #
 #
 #
@@ -4282,8 +4806,31 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "UN Ship Type:         "
 #~ msgstr "UN Skipstype:            "
+#
+#
+#
+#~ msgid ""
+#~ "Unable to initialize libgps.\n"
+#~ "\n"
+#~ "gpsd host is: "
+#~ msgstr ""
+#~ "Kunne ikke starte libgps.\n"
+#~ "\n"
+#~ "gpsd vert er: "
+#
+#
+#
+#~ msgid "Unable to load libgps"
+#~ msgstr "Kunne ikke laste libgps"
+#
+#
+#
+#~ msgid "Units"
+#~ msgstr "Enheter"
+#
 #
 #
 #
@@ -4292,8 +4839,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Use SCAMIN"
 #~ msgstr "Benytt SCAMIN"
+#
 #
 #
 #
@@ -4302,8 +4851,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "WiFi Options"
 #~ msgstr "WiFi alternativer"
+#
 #
 #
 #
@@ -4312,13 +4863,16 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
 #~ msgstr "Y forskyvning (Positiv, flytter kart mot nord) (Nm projisert) :"
 #
 #
 #
+#
 #~ msgid "cm93 Detail"
 #~ msgstr "CM93 detalj"
+#
 #
 #
 #

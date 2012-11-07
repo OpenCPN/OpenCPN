@@ -168,12 +168,6 @@ class OCPN_DataStreamEvent: public wxEvent
 {
 public:
     OCPN_DataStreamEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
-
-    OCPN_DataStreamEvent(const OCPN_DataStreamEvent & event)
-            : wxEvent(event),
-              m_NMEAstring(event.m_NMEAstring)
-              { }
-
     ~OCPN_DataStreamEvent( );
 
     // accessors

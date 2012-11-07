@@ -71,6 +71,8 @@ const wxEventType wxEVT_OCPN_DATASTREAM = wxNewEventType();
 OCPN_DataStreamEvent::OCPN_DataStreamEvent( wxEventType commandType, int id )
       :wxEvent(id, commandType)
 {
+    m_priority = 0;
+    m_pDataStream = NULL;
 }
 
 

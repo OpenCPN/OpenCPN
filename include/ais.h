@@ -330,7 +330,7 @@ class AIS_Decoder : public wxEvtHandler
 {
 
 public:
-    AIS_Decoder(void);
+    AIS_Decoder(wxFrame *parent);
 
     ~AIS_Decoder(void);
 
