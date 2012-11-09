@@ -1108,6 +1108,7 @@ void options::CreatePanel_TidesCurrents( size_t parent, int border_size, int gro
 
     btnSizer->Add( insertButton, 1, wxALL | wxEXPAND, group_item_spacing );
     btnSizer->Add( removeButton, 1, wxALL | wxEXPAND, group_item_spacing );
+    
 }
 
 void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group_item_spacing,
@@ -2618,9 +2619,20 @@ void options::OnXidOkClick( wxCommandEvent& event )
 
     //  Required to avoid intermittent crash on wxGTK
     m_pListbook->ChangeSelection(0);
-
+    for (size_t i = 0; i < m_pListbook->GetPageCount(); i++)
+    {
+        wxNotebookPage* pg = m_pListbook->GetPage( i );
+            
+        if( pg->IsKindOf( CLASSINFO(wxNotebook))) {
+                wxNotebook *nb = ((wxNotebook *)pg);
+                nb->ChangeSelection(0);
+        }
+    }
+                            
     delete pActiveChartsList;
     delete ps57CtlListBox;
+    delete tcDataSelected;
+    
     lastWindowPos = GetPosition();
     lastWindowSize = GetSize();
     EndModal( m_returnChanges );
