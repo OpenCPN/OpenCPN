@@ -2282,7 +2282,9 @@ void options::OnApplyClick( wxCommandEvent& event )
             m_pWorkDirList->Add( cdi );
         }
     }
-
+    groupsPanel->SetDBDirs( *m_pWorkDirList );          // update the Groups tab
+    groupsPanel->m_treespopulated = false;
+    
     int k_force = FORCE_UPDATE;
     if( pUpdateCheckBox ) {
         if( !pUpdateCheckBox->GetValue() ) k_force = 0;
@@ -2667,7 +2669,7 @@ void options::OnButtondeleteClick( wxCommandEvent& event )
     k_charts |= CHANGE_CHARTS;
 
     pScanCheckBox->Disable();
-
+    
     event.Skip();
 }
 
@@ -2735,6 +2737,10 @@ void options::OnChartsPageChange( wxListbookEvent& event )
             ::wxBeginBusyCursor();
             groupsPanel->CompleteInitialSettings();
             ::wxEndBusyCursor();
+        }
+        else if( !groupsPanel->m_treespopulated ) {
+            groupsPanel->PopulateTrees();
+            groupsPanel->m_treespopulated = true;
         }
     }
 
@@ -3085,6 +3091,7 @@ ChartGroupsUI::ChartGroupsUI( wxWindow* parent )
     m_GroupNB = NULL;
     modified = false;
     m_UIcomplete = false;
+    m_treespopulated = false;
 }
 
 ChartGroupsUI::~ChartGroupsUI()
@@ -3095,9 +3102,10 @@ ChartGroupsUI::~ChartGroupsUI()
 void ChartGroupsUI::SetInitialSettings()
 {
     m_settingscomplete = false;
+    m_treespopulated = false;
 }
 
-void ChartGroupsUI::CompleteInitialSettings()
+void ChartGroupsUI::PopulateTrees()
 {
     //    Fill in the "Active chart" tree control
     //    from the options dialog "Active Chart Directories" list
@@ -3107,12 +3115,12 @@ void ChartGroupsUI::CompleteInitialSettings()
         wxString dirname = m_db_dirs.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) dir_array.Add( dirname );
     }
-
-
+    
+    
     PopulateTreeCtrl( allAvailableCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) );
     m_pActiveChartsTree = allAvailableCtl->GetTreeCtrl();
-
-
+    
+    
     //    Fill in the Page 0 tree control
     //    from the options dialog "Active Chart Directories" list
     wxArrayString dir_array0;
@@ -3123,13 +3131,21 @@ void ChartGroupsUI::CompleteInitialSettings()
     }
     PopulateTreeCtrl( defaultAllCtl->GetTreeCtrl(), dir_array0, wxColour( 128, 128, 128 ),
                       iFont );
+    
+}
+
+
+
+void ChartGroupsUI::CompleteInitialSettings()
+{
+    PopulateTrees();
 
     BuildNotebookPages( m_pGroupArray );
 
     groupsSizer->Layout();
 
     m_settingscomplete = true;
-
+    m_treespopulated = true;
 }
 
 
@@ -3152,6 +3168,9 @@ void ChartGroupsUI::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_
         if( !dirname.IsEmpty() ) {
             wxDirItemData *dir_item = new wxDirItemData( dirname, dirname, true );
             wxTreeItemId id = ptc->AppendItem( m_rootId, dirname, 0, -1, dir_item );
+            
+            //wxWidgets bug workaraound (Ticket #10085)
+            ptc->SetItemText(id, dirname);
             if( pFont ) ptc->SetItemFont( id, *pFont );
             ptc->SetItemTextColour( id, col );
             ptc->SetItemHasChildren( id );
