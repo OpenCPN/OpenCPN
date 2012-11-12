@@ -3628,6 +3628,7 @@ void options::SetNMEAFormToSerial()
     ShowNMEACommon( true );
     ShowNMEANet( false );
     ShowNMEASerial( true );
+    m_pNMEAForm->FitInside();
     m_pNMEAForm->Layout();
     Fit();
     Layout();
@@ -3639,6 +3640,7 @@ void options::SetNMEAFormToNet()
     ShowNMEACommon( true );
     ShowNMEANet( true );
     ShowNMEASerial( false );
+    m_pNMEAForm->FitInside();
     m_pNMEAForm->Layout();
     Fit();
     Layout();
