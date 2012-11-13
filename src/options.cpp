@@ -2203,13 +2203,13 @@ ConnectionParams * options::SaveConnectionParams()
     m_pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
     m_pConnectionParams->Garmin = m_cbGarminHost->GetValue();
     m_pConnectionParams->FurunoGP3X = m_cbFurunoGP3X->GetValue();
-    m_pConnectionParams->InputSentenceList = wxStringTokenize( m_tcInputStc->GetValue() );
+    m_pConnectionParams->InputSentenceList = wxStringTokenize( m_tcInputStc->GetValue(), _T(",") );
     if ( m_rbIAccept->GetValue() )
         m_pConnectionParams->InputSentenceListType = WHITELIST;
     else
         m_pConnectionParams->InputSentenceListType = BLACKLIST;
     m_pConnectionParams->Output = m_cbOutput->GetValue();
-    m_pConnectionParams->OutputSentenceList = wxStringTokenize( m_tcOutputStc->GetValue() );
+    m_pConnectionParams->OutputSentenceList = wxStringTokenize( m_tcOutputStc->GetValue(), _T(",") );
     if ( m_rbOAccept->GetValue() )
         m_pConnectionParams->OutputSentenceListType = WHITELIST;
     else
