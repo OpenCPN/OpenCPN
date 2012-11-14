@@ -6,265 +6,274 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: dashboard_pi 3.1.814\n"
+"Project-Id-Version: dashboard_pi 3.1.1105\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-01 11:08+0200\n"
+"POT-Creation-Date: 2012-11-14 17:36+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/compass.cpp:127 src/wind.cpp:84 src/gps.cpp:124 src/dashboard_pi.cpp:619
+#: src/clock.cpp:126 src/dial.cpp:420 src/gps.cpp:124 src/wind.cpp:64
 msgid "N"
 msgstr ""
 
-#: src/compass.cpp:127 src/wind.cpp:84
-msgid "NE"
-msgstr ""
-
-#: src/compass.cpp:127 src/wind.cpp:84 src/gps.cpp:125
-msgid "E"
-msgstr ""
-
-#: src/compass.cpp:127 src/wind.cpp:84
-msgid "SE"
-msgstr ""
-
-#: src/compass.cpp:127 src/wind.cpp:84 src/gps.cpp:126
-msgid "S"
-msgstr ""
-
-#: src/compass.cpp:127 src/wind.cpp:84
-msgid "SW"
-msgstr ""
-
-#: src/compass.cpp:127 src/wind.cpp:84 src/gps.cpp:127
-msgid "W"
-msgstr ""
-
-#: src/compass.cpp:127 src/wind.cpp:84
-msgid "NW"
-msgstr ""
-
-#: src/instrument.cpp:160
-msgid "true"
-msgstr ""
-
-#: src/instrument.cpp:162
-msgid "mag"
-msgstr ""
-
-#: src/dashboard_pi.cpp:108
+#: src/dashboard_pi.cpp:83
 msgid "Position"
 msgstr ""
 
-#: src/dashboard_pi.cpp:110
+#: src/dashboard_pi.cpp:85
 msgid "SOG"
 msgstr ""
 
-#: src/dashboard_pi.cpp:112
+#: src/dashboard_pi.cpp:87
 msgid "Speedometer"
 msgstr ""
 
-#: src/dashboard_pi.cpp:114
+#: src/dashboard_pi.cpp:89
 msgid "COG"
 msgstr ""
 
-#: src/dashboard_pi.cpp:116
+#: src/dashboard_pi.cpp:91
+msgid "GPS Compass"
+msgstr ""
+
+#: src/dashboard_pi.cpp:93
 msgid "Compass"
 msgstr ""
 
-#: src/dashboard_pi.cpp:118
+#: src/dashboard_pi.cpp:95
+msgid "COG+HDG Compass"
+msgstr ""
+
+#: src/dashboard_pi.cpp:97
 msgid "STW"
 msgstr ""
 
-#: src/dashboard_pi.cpp:120
-msgid "true HDG"
+#: src/dashboard_pi.cpp:99
+msgid "True HDG"
 msgstr ""
 
-#: src/dashboard_pi.cpp:122
-msgid "mag HDG"
+#: src/dashboard_pi.cpp:101
+msgid "Mag HDG"
 msgstr ""
 
-#: src/dashboard_pi.cpp:124
-msgid "Apparent wind"
+#: src/dashboard_pi.cpp:104
+msgid "App. Wind Angle & Speed"
 msgstr ""
 
-#: src/dashboard_pi.cpp:126
-msgid "Wind angle"
+#: src/dashboard_pi.cpp:106 src/dashboard_pi.cpp:108
+msgid "App. Wind Speed"
 msgstr ""
 
-#: src/dashboard_pi.cpp:128 src/dashboard_pi.cpp:130
-msgid "Wind speed"
+#: src/dashboard_pi.cpp:110
+msgid "True Wind Angle & Speed"
 msgstr ""
 
-#: src/dashboard_pi.cpp:132
-msgid "True wind"
-msgstr ""
-
-#: src/dashboard_pi.cpp:134 src/dashboard_pi.cpp:136
+#: src/dashboard_pi.cpp:112 src/dashboard_pi.cpp:114
 msgid "Depth"
 msgstr ""
 
-#: src/dashboard_pi.cpp:138
-msgid "Watertemp"
+#: src/dashboard_pi.cpp:116
+msgid "Water Temp."
 msgstr ""
 
-#: src/dashboard_pi.cpp:140
-msgid "Airtemp"
+#: src/dashboard_pi.cpp:118
+msgid "Air Temp."
 msgstr ""
 
-#: src/dashboard_pi.cpp:142
-msgid "App. Wind angle"
+#: src/dashboard_pi.cpp:120
+msgid "App. Wind Angle"
 msgstr ""
 
-#: src/dashboard_pi.cpp:144
-msgid "True Wind angle"
+#: src/dashboard_pi.cpp:122
+msgid "True Wind Angle"
 msgstr ""
 
-#: src/dashboard_pi.cpp:146
-msgid "True Wind direction"
+#: src/dashboard_pi.cpp:124
+msgid "True Wind Direction"
 msgstr ""
 
-#: src/dashboard_pi.cpp:148
-msgid "True Wind speed"
+#: src/dashboard_pi.cpp:126
+msgid "True Wind Speed"
 msgstr ""
 
-#: src/dashboard_pi.cpp:150
-msgid "True Wind angle & speed"
+#: src/dashboard_pi.cpp:128
+msgid "True Wind Dir. & Speed"
 msgstr ""
 
-#: src/dashboard_pi.cpp:152 src/dashboard_pi.cpp:154
+#: src/dashboard_pi.cpp:130 src/dashboard_pi.cpp:132
 msgid "VMG"
 msgstr ""
 
-#: src/dashboard_pi.cpp:156 src/dashboard_pi.cpp:158
-msgid "Rudder angle"
+#: src/dashboard_pi.cpp:134 src/dashboard_pi.cpp:136
+msgid "Rudder Angle"
 msgstr ""
 
-#: src/dashboard_pi.cpp:160
-msgid "GPS in view"
+#: src/dashboard_pi.cpp:138
+msgid "GPS in View"
 msgstr ""
 
-#: src/dashboard_pi.cpp:162
-msgid "GPS status"
+#: src/dashboard_pi.cpp:140
+msgid "GPS Status"
 msgstr ""
 
-#: src/dashboard_pi.cpp:164
+#: src/dashboard_pi.cpp:142
 msgid "Cursor"
 msgstr ""
 
-#: src/dashboard_pi.cpp:166
+#: src/dashboard_pi.cpp:144
 msgid "Clock"
 msgstr ""
 
-#: src/dashboard_pi.cpp:168
+#: src/dashboard_pi.cpp:146
 msgid "Sunrise/Sunset"
 msgstr ""
 
-#: src/dashboard_pi.cpp:170
+#: src/dashboard_pi.cpp:148
 msgid "Moon phase"
 msgstr ""
 
-#: src/dashboard_pi.cpp:276 src/dashboard_pi.cpp:347 src/dashboard_pi.cpp:1115
-#: src/dashboard_pi.cpp:1123 src/dashboard_pi.cpp:1267
-#: src/dashboard_pi.cpp:1302 src/dashboard_pi.cpp:1494
+#: src/dashboard_pi.cpp:303 src/dashboard_pi.cpp:377 src/dashboard_pi.cpp:1056
+#: src/dashboard_pi.cpp:1064 src/dashboard_pi.cpp:1209
+#: src/dashboard_pi.cpp:1248 src/dashboard_pi.cpp:1446
 msgid "Dashboard"
 msgstr ""
 
-#: src/dashboard_pi.cpp:353
+#: src/dashboard_pi.cpp:382
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr ""
 
-#: src/dashboard_pi.cpp:358
+#: src/dashboard_pi.cpp:387
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 
-#: src/dashboard_pi.cpp:1248
+#: src/dashboard_pi.cpp:608
+msgid "Kts"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1185
 msgid "Dashboard preferences"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1309
+#: src/dashboard_pi.cpp:1255
 msgid "show this dashboard"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1314
+#: src/dashboard_pi.cpp:1261
 msgid "Caption:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1319
+#: src/dashboard_pi.cpp:1269
 msgid "Orientation:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1322
+#: src/dashboard_pi.cpp:1273 src/dashboard_pi.cpp:1637
 msgid "Vertical"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1323
+#: src/dashboard_pi.cpp:1274 src/dashboard_pi.cpp:1639
 msgid "Horizontal"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1326
-msgid "Instrument width:"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1335 src/dashboard_pi.cpp:1342
-#: src/dashboard_pi.cpp:1607
+#: src/dashboard_pi.cpp:1281 src/dashboard_pi.cpp:1289
+#: src/dashboard_pi.cpp:1563
 msgid "Instruments"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1350
+#: src/dashboard_pi.cpp:1297
 msgid "Add"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1354
+#: src/dashboard_pi.cpp:1302
 msgid "Edit"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1358
+#: src/dashboard_pi.cpp:1307
 msgid "Delete"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1363
+#: src/dashboard_pi.cpp:1313
 msgid "Up"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1367
+#: src/dashboard_pi.cpp:1318
 msgid "Down"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1375
+#: src/dashboard_pi.cpp:1328
 msgid "Appearance"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1377
+#: src/dashboard_pi.cpp:1330
 msgid "Fonts"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1383
+#: src/dashboard_pi.cpp:1336
 msgid "Title:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1387
+#: src/dashboard_pi.cpp:1342
 msgid "Data:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1391
+#: src/dashboard_pi.cpp:1348
 msgid "Label:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1395
+#: src/dashboard_pi.cpp:1354
 msgid "Small:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1593
+#: src/dashboard_pi.cpp:1546
 msgid "Add instrument"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1597
+#: src/dashboard_pi.cpp:1552
 msgid "Select instrument to add:"
+msgstr ""
+
+#: src/dashboard_pi.cpp:1646
+msgid "Preferences..."
+msgstr ""
+
+#: src/dial.cpp:420 src/wind.cpp:64
+msgid "NE"
+msgstr ""
+
+#: src/dial.cpp:420 src/gps.cpp:125 src/wind.cpp:64
+msgid "E"
+msgstr ""
+
+#: src/dial.cpp:420 src/wind.cpp:64
+msgid "SE"
+msgstr ""
+
+#: src/dial.cpp:420 src/gps.cpp:126 src/wind.cpp:64
+msgid "S"
+msgstr ""
+
+#: src/dial.cpp:420 src/wind.cpp:64
+msgid "SW"
+msgstr ""
+
+#: src/dial.cpp:420 src/gps.cpp:127 src/wind.cpp:64
+msgid "W"
+msgstr ""
+
+#: src/dial.cpp:420 src/wind.cpp:64
+msgid "NW"
+msgstr ""
+
+#: src/instrument.cpp:158
+msgid " true"
+msgstr ""
+
+#: src/instrument.cpp:160
+msgid " mag"
 msgstr ""
