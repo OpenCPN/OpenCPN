@@ -456,7 +456,7 @@ bool DataStream::ChecksumOK( const wxString &sentence )
 
     unsigned char calculated_checksum = 0;
     for(wxString::const_iterator i = sentence.begin()+1; i != sentence.end() && *i != '*'; ++i)
-        calculated_checksum ^= *i;
+        calculated_checksum ^= static_cast<unsigned char> (*i);
 
     return calculated_checksum == checksum;
 }

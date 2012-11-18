@@ -37,6 +37,7 @@
 // Required GetGlobalColor
 #include "../../../include/ocpn_plugin.h"
 #include <wx/dcbuffer.h>
+#include <wx/dcgraph.h>         // supplemental, for Mac
 
 const wxString DEGREE_SIGN = wxString::Format(_T("%c"), 0x00B0); // This is the degree sign in UTF8. It should be correctly handled on both Win & Unix
 #define DefaultWidth 150

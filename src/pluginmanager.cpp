@@ -1535,7 +1535,7 @@ void SendPluginMessage( wxString message_id, wxString message_body )
     OCPN_MsgEvent Nevent(wxEVT_OCPN_MSG, 0);
     Nevent.SetID(message_id);
     Nevent.SetJSONText(message_body);
-    gFrame->AddPendingEvent(Nevent);
+    gFrame->GetEventHandler()->AddPendingEvent( Nevent );
     
 }
 
