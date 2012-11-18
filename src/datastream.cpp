@@ -226,7 +226,7 @@ void DataStream::Open(void)
                 case UDP:
                     //  We need a local (bindable) address to create the Datagram socket
                     wxIPV4address conn_addr;
-                    conn_addr.Service(m_net_port);
+                    conn_addr.Service(_T("0"));   // use ephemeral port for source, selected by O/S
                     conn_addr.AnyAddress();    
                     m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT);
             }
