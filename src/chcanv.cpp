@@ -1723,6 +1723,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                 QuiltCandidate *qcnew = new QuiltCandidate;
                 qcnew->dbIndex = sure_index;
                 qcnew->ChartScale = ChartData->GetDBChartScale( sure_index );
+                const ChartTableEntry &cte = ChartData->GetChartTableEntry( sure_index );
+                qcnew->quilt_region = GetChartQuiltRegion( cte, vp_local );
                 m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
 
                 b_need_resort = true;
@@ -1802,6 +1804,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
         m_refchart_dbIndex = GetNewRefChart();
         BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
     }
+
         
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
@@ -2064,8 +2067,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         wxRegion vpr_region = unrendered_region;
 
         //    Start with the chart's full region coverage.
-        vpr_region = piqp->quilt_region; //GetChartQuiltRegion( ctei, vp_local );
-
+        vpr_region = piqp->quilt_region; 
+        
 
 #if 1       // This clause went away with full-screen quilting
         // ...and came back with OpenGL....
