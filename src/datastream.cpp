@@ -228,7 +228,7 @@ void DataStream::Open(void)
                     wxIPV4address conn_addr;
                     conn_addr.Service(_T("0"));   // use ephemeral port for source, selected by O/S
                     conn_addr.AnyAddress();    
-                    m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT);
+                    m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
             }
 
             // Setup the event handler and subscribe to most events
