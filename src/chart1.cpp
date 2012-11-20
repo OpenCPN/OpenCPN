@@ -2108,6 +2108,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     g_pMUX = new Multiplexer();
 
     g_pAIS = new AIS_Decoder( this );
+   
 
     for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
     {
@@ -6302,17 +6303,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
         wxLogMessage( msg );
     }
 
-    if( g_NMEALogWindow ) {
-        wxDateTime now = wxDateTime::Now();
-        wxString ss = now.FormatISOTime();
-        ss.Append( _T(" (") );
-        ss.Append( event.GetDataSource() );
-        ss.Append( _T(") ") );
-        ss.Append( str_buf );
-//        g_NMEALogWindow->Add( ss );
-//        g_NMEALogWindow->Refresh( false );
-    }
-
     //    Send NMEA sentences to PlugIns
     if( g_pi_manager ) g_pi_manager->SendNMEASentenceToAllPlugIns( str_buf );
 
@@ -6572,7 +6562,54 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                     wxLogMessage( msg );
                                                 }
                                         }
-        } else {
+        }
+        //      Process ownship (AIVDO) messages from any source
+        else if(str_buf.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) ) {
+            GenericPosDatEx gpd;
+            AIS_Error nerr = AIS_GENERIC_ERROR;
+            if(g_pAIS) 
+                nerr = g_pAIS->DecodeSingleVDO(str_buf, &gpd);
+            if(nerr == AIS_NoError){
+                if( !wxIsNaN(gpd.kLat) )
+                    gLat = gpd.kLat;
+                if( !wxIsNaN(gpd.kLon) ) 
+                    gLon = gpd.kLon;
+                
+                gCog = gpd.kCog;
+                gSog = gpd.kSog;
+                
+                if( !wxIsNaN(gpd.kVar) ) {
+                    gVar = gpd.kVar;
+                    g_bVARValid = true;
+                    g_bVAR_Rx = true;
+                    gVAR_Watchdog = gps_watchdog_timeout_ticks;
+                }
+                if( !wxIsNaN(gpd.kHdt) ) {
+                    gHdt = gpd.kHdt;
+                    g_bHDTValid = true;
+                    g_bHDT_Rx = true;
+                    gHDT_Watchdog = gps_watchdog_timeout_ticks;
+                }
+                if( !wxIsNaN(gpd.kHdm) ) {
+                    gHdm = gpd.kHdm;
+                    g_bHDxValid = true;
+                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                }
+                
+                gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                bshow_tick = true;
+            }
+            else {
+                if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
+                    g_total_NMEAerror_messages++;
+                    wxString msg( _T("   Invalid AIVDO Sentence...") );
+                    msg.Append( str_buf );
+                    wxLogMessage( msg );
+                }
+            }
+        }
+        
+        else {
             bis_recognized_sentence = false;
             if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
                 g_total_NMEAerror_messages++;
@@ -6619,74 +6656,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
         if( bis_recognized_sentence ) PostProcessNNEA( bshow_tick, sfixtime );
     }
-}
-
-void MyFrame::OnEvtNMEA( wxCommandEvent & event )
-{
-    bool bshow_tick = false;
-    time_t fixtime;
-
-    switch( event.GetExtraLong() ){
-        case EVT_NMEA_DIRECT: {
-            wxMutexLocker stateLocker( m_mutexNMEAEvent );          // scope is this case
-
-            GenericPosDatEx *pGPSData = (GenericPosDatEx *) event.GetClientData();
-            if( !wxIsNaN(pGPSData->kLat) ) gLat = pGPSData->kLat;
-            if( !wxIsNaN(pGPSData->kLon) ) gLon = pGPSData->kLon;
-            gCog = pGPSData->kCog;
-            gSog = pGPSData->kSog;
-            if( !wxIsNaN(pGPSData->kVar) ) {
-                gVar = pGPSData->kVar;
-                g_bVARValid = true;
-                g_bVAR_Rx = true;
-                gVAR_Watchdog = gps_watchdog_timeout_ticks;
-
-            }
-
-            if( !wxIsNaN(pGPSData->kHdt) ) {
-                gHdt = pGPSData->kHdt;
-                g_bHDTValid = true;
-                g_bHDT_Rx = true;
-                gHDT_Watchdog = gps_watchdog_timeout_ticks;
-            }
-
-            if( !wxIsNaN(pGPSData->kHdm) ) {
-                gHdm = pGPSData->kHdm;
-                g_bHDxValid = true;
-                gHDx_Watchdog = gps_watchdog_timeout_ticks;
-            }
-
-            fixtime = pGPSData->FixTime;
-
-            bool last_bGPSValid = bGPSValid;
-            bGPSValid = true;
-
-            gGPS_Watchdog = gps_watchdog_timeout_ticks;
-
-            g_SatsInView = pGPSData->nSats;
-            if( g_SatsInView ) {
-                gSAT_Watchdog = sat_watchdog_timeout_ticks;
-                g_bSatValid = true;
-            }
-
-            if( !last_bGPSValid ) {
-                UpdateGPSCompassStatusBox();
-                cc1->Refresh( false );            // cause own-ship icon to redraw
-            }
-
-            bshow_tick = true;
-
-            //    Send Position Fix events to PlugIns
-            if( g_pi_manager ) g_pi_manager->SendPositionFixToAllPlugIns( pGPSData );
-
-            break;
-        }
-
-    }           // switch
-
-    wxString sfixtime( _T("") );
-    PostProcessNNEA( bshow_tick, sfixtime );
-
 }
 
 void MyFrame::PostProcessNNEA( bool brx_rmc, wxString &sfixtime )

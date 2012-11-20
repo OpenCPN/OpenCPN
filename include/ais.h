@@ -43,6 +43,7 @@
 
 #include "dychart.h"
 #include "chart1.h"
+#include "datastream.h"         // For GenericPosDatEx
 
 //    Constants
 #ifndef PI
@@ -67,7 +68,8 @@ typedef enum AIS_Error
     AIS_NMEAVDX_CHECKSUM_BAD,
     AIS_NMEAVDX_BAD,
     AIS_NO_SERIAL,
-    AIS_NO_TCP
+    AIS_NO_TCP,
+    AIS_GENERIC_ERROR
 }_AIS_Error;
 
 
@@ -196,7 +198,6 @@ WX_DECLARE_HASH_MAP( int, Ais8_001_22, wxIntegerHash, wxIntegerEqual, AIS_Area_N
 //  AIS_Decoder Helpers
 //
 //---------------------------------------------------------------------------------
-
 class AIS_Target_Data
 {
 public:
@@ -341,7 +342,8 @@ public:
     int GetNumTargets(void){ return m_n_targets;}
     bool IsAISSuppressed(void){ return m_bSuppressed; }
     bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
-
+    AIS_Error DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos );
+    
 private:
     void OnActivate(wxActivateEvent& event);
     void OnTimerAIS(wxTimerEvent& event);

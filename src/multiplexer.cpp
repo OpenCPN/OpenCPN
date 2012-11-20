@@ -182,6 +182,13 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                 if( m_gpsconsumer )
                     m_gpsconsumer->AddPendingEvent(event);
             }
+
+            //  Handle AIVDO messages from transponder....
+            if( message.Mid(3,3).IsSameAs(_T("VDO")) ) {
+                if( m_gpsconsumer )
+                    m_gpsconsumer->AddPendingEvent(event);
+            }
+            
         //Send to plugins
             if ( g_pi_manager )
                 g_pi_manager->SendNMEASentenceToAllPlugIns( message );

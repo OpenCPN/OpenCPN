@@ -1277,6 +1277,96 @@ void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
 }
 
 //----------------------------------------------------------------------------------
+//      Decode a single AIVDO sentence to a Generic Position Report
+//----------------------------------------------------------------------------------
+AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos )
+{
+    //  Make some simple tests for validity
+    if( str.Len() > 100 )
+        return AIS_NMEAVDX_TOO_LONG;
+    
+    if( !NMEACheckSumOK( str ) )
+        return AIS_NMEAVDX_CHECKSUM_BAD;
+
+    if( !pos ) 
+        return AIS_GENERIC_ERROR;
+    
+    //  We only process AIVDO messages
+    if( !str.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) ) 
+        return AIS_GENERIC_ERROR;
+
+    //  Use a tokenizer to pull out the first 4 fields
+    wxStringTokenizer tkz( str, _T(",") );
+        
+    wxString token;
+    token = tkz.GetNextToken();         // !xxVDx
+        
+    token = tkz.GetNextToken();
+    int nsentences = atoi( token.mb_str() );
+        
+    token = tkz.GetNextToken();
+    int isentence = atoi( token.mb_str() );
+        
+    token = tkz.GetNextToken();         // skip 2 fields
+    token = tkz.GetNextToken();
+        
+    wxString string_to_parse = tkz.GetNextToken();    // tha actual data
+        
+      // We only parse the first part of one part sentences
+    if( ( 1 != nsentences ) || ( 1 != isentence ) )
+        return AIS_GENERIC_ERROR;
+        
+    //  Create the bit accessible string
+    AIS_Bitstring strbit( string_to_parse.mb_str() );
+    
+    AIS_Target_Data *pTargetData = new AIS_Target_Data;
+
+    bool bdecode_result = Parse_VDXBitstring( &strbit, pTargetData );
+    
+    if(bdecode_result) {
+        switch(pTargetData->MID)
+        {
+            case 1:
+            case 2:
+            case 3:
+            case 18:
+            {
+                pos->kLat = pTargetData->Lat;
+                pos->kLon = pTargetData->Lon;
+                
+                if(pTargetData->COG == 360.0)
+                    pos->kCog = NAN;
+                else
+                    pos->kCog = pTargetData->COG;
+                
+                
+                if(pTargetData->SOG > 102.2)
+                    pos->kSog = NAN;
+                else
+                    pos->kSog = pTargetData->SOG;
+                
+                if((int)pTargetData->HDG == 511)
+                    pos->kHdt = NAN;
+                else
+                    pos->kHdt = pTargetData->HDG;
+                
+                //  VDO messages do not contain variation or magnetic heading
+                pos->kVar = NAN;
+                pos->kHdm = NAN;
+                    
+            }
+            default:
+                break;
+        }
+        
+        return AIS_NoError;
+    }
+    else
+        return AIS_GENERIC_ERROR;
+}
+
+
+//----------------------------------------------------------------------------------
 //      Decode NMEA VDM/VDO/FRPOS/DSCDSE sentence to AIS Target(s)
 //----------------------------------------------------------------------------------
 AIS_Error AIS_Decoder::Decode( const wxString& str )

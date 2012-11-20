@@ -199,7 +199,6 @@ class MyFrame: public wxFrame
     void OnMove(wxMoveEvent& event);
     void OnFrameTimer1(wxTimerEvent& event);
     bool DoChartUpdate(void);
-    void OnEvtNMEA(wxCommandEvent& event);
     void OnEvtTHREADMSG(wxCommandEvent& event);
     void OnEvtOCPN_NMEA(OCPN_DataStreamEvent & event);
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );

@@ -54,7 +54,6 @@
 #include "navutil.h"
 #include "chcanv.h"
 #include "georef.h"
-#include "ais.h"
 #include "cutil.h"
 #include "styles.h"
 #include "routeman.h"
@@ -67,6 +66,7 @@
 #include "geodesic.h"
 #include "datastream.h"
 #include "multiplexer.h"
+#include "ais.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
