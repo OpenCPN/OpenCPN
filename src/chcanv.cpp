@@ -8122,9 +8122,11 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     wxMenu* menuRoute = new wxMenu( _("Route") );
     wxMenu* menuTrack = new wxMenu( _("Track") );
     wxMenu* menuAIS = new wxMenu( _("AIS") );
-
+    
     wxMenu *subMenuChart = new wxMenu;
 
+    wxMenu *menuFocus = contextMenu;    // This is the one that will be shown
+    
     popx = x;
     popy = y;
 
@@ -8255,12 +8257,6 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             contextMenu->Append( ID_DEF_MENU_QUILTREMOVE, _( "Hide This Chart" ) );
     }
 
-    if( seltype & SELTYPE_TIDEPOINT ) contextMenu->Append( ID_DEF_MENU_TIDEINFO,
-                _( "Show Tide Information" ) );
-
-    if( seltype & SELTYPE_CURRENTPOINT ) contextMenu->Append( ID_DEF_MENU_CURRENTINFO,
-                _( "Show Current Information" ) );
-
 #ifdef __WXMSW__
     //  If we dismiss the context menu without action, we need to discard some mouse events....
     //  Eat the next 2 button events, which happen as down-up on MSW XP
@@ -8300,6 +8296,9 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             }
         }
     }
+    
+    //  This is the default context menu
+    menuFocus = contextMenu;
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
         menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
@@ -8322,12 +8321,18 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         menuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
         menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
         menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+        
+        //      Set this menu as the "focused context menu"
+        menuFocus = menuRoute;
     }
 
     if( seltype & SELTYPE_TRACKSEGMENT ) {
         menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
         menuTrack->Append( ID_TK_MENU_COPY, _( "Copy" ) );
         menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
+        
+        //      Set this menu as the "focused context menu"
+        menuFocus = menuTrack;
     }
 
     if( seltype & SELTYPE_ROUTEPOINT ) {
@@ -8374,40 +8379,33 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 if( dist * 1852. <= g_nAWMax )
                     menuWaypoint->Append( ID_WP_MENU_SET_ANCHORWATCH,  _( "Set Anchor Watch" ) );
             }
+
+        //      Set this menu as the "focused context menu"
+        menuFocus = menuWaypoint;
     }
 
     if( ! subMenuChart->GetMenuItemCount() ) contextMenu->Destroy( subItemChart );
 
-    //        Invoke the drop-down menu
-    if( seltype & SELTYPE_AISTARGET ) {
-        PopupMenu( menuAIS, x, y );
-        goto done;
+    //  Add the Tide/Current selections if the item was not activated by shortcut in right-click handlers
+    bool bsep = false;
+    if( seltype & SELTYPE_TIDEPOINT ){
+        menuFocus->AppendSeparator();
+        bsep = true;
+        menuFocus->Append( ID_DEF_MENU_TIDEINFO, _( "Show Tide Information" ) );
     }
-
-    if( seltype & SELTYPE_MARKPOINT ) {
-        PopupMenu( menuWaypoint, x, y );
-        goto done;
+    
+    if( seltype & SELTYPE_CURRENTPOINT ) {
+        if( !bsep )
+            menuFocus->AppendSeparator();
+        menuFocus->Append( ID_DEF_MENU_CURRENTINFO, _( "Show Current Information" ) );
     }
-
-    if( seltype & SELTYPE_ROUTEPOINT ) {
-        PopupMenu( menuWaypoint, x, y );
-        goto done;
-    }
-
-    if( seltype & SELTYPE_ROUTESEGMENT ) {
-        PopupMenu( menuRoute, x, y );
-        goto done;
-    }
-
-    if( seltype & SELTYPE_TRACKSEGMENT ) {
-        PopupMenu( menuTrack, x, y );
-        goto done;
-    }
-
-    PopupMenu( contextMenu, x, y );
-
+    
+    //        Invoke the correct focused drop-down menu
+    PopupMenu( menuFocus, x, y );
+        
+        
     // Cleanup
-    done:
+done:
     if( ( m_pSelectedRoute ) ) {
         m_pSelectedRoute->m_bRtIsSelected = false;
     }
