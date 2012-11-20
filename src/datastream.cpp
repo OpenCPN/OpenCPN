@@ -376,8 +376,9 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
         {
             if(m_net_protocol == GPSD)
             {
-                //      Sign up for watcher mode, raw NMEA
-                char cmd[] = "?WATCH={\"class\":\"WATCH\", \"raw\":1,\"scaled\":true}";
+                //      Sign up for watcher mode, Cooked NMEA
+                //      Notethat SIRF devices will be converted by gpsd into pseudo-NMEA
+                char cmd[] = "?WATCH={\"class\":\"WATCH\", \"nmea\":true}";
                 m_sock->Write(cmd, strlen(cmd));
             }
 
