@@ -2448,7 +2448,7 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
 
     m_pAISTool = NULL;
     CheckAndAddPlugInTool( tb );
-    tipString = _("Show AIS Targets");
+    tipString = _("Hide AIS Targets");          // inital state is on
     if( _toolbarConfigMenuUtil( ID_AIS, tipString ) )
         m_pAISTool = tb->AddTool( ID_AIS, _T("AIS"), style->GetToolIcon( _T("AIS"), TOOLICON_NORMAL ), style->GetToolIcon( _T("AIS"), TOOLICON_DISABLED ), wxITEM_CHECK, tipString );
 
@@ -3191,6 +3191,14 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             g_bShowAIS = !g_bShowAIS;
             if( g_toolbar ) g_toolbar->ToggleTool( ID_AIS, g_bShowAIS );
             cc1->ReloadVP();
+            
+            if( g_toolbar ) {
+                if( g_bShowAIS )
+                    g_toolbar->SetToolShortHelp( ID_AIS, _("Hide AIS Targets") );
+                else
+                    g_toolbar->SetToolShortHelp( ID_AIS, _("Show AIS Targets") );
+            }
+            
             break;
         }
 

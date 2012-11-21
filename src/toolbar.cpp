@@ -1226,7 +1226,9 @@ void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
                         && ( g_FloatingToolbarDialog->GetOrient() == wxTB_VERTICAL ) ) pos_in_toolbar.y =
                         m_last_ro_tool->m_y - 30;
 
-                m_pToolTipWin->SetPosition( GetParent()->ClientToScreen( pos_in_toolbar ) );
+                m_pToolTipWin->Move(0,0);       // workaround for gtk autocentre dialog behavior
+                
+                m_pToolTipWin->SetPosition( ClientToScreen( pos_in_toolbar ) );
                 m_pToolTipWin->SetBitmap();
                 m_pToolTipWin->Show();
                 gFrame->Raise();
