@@ -2176,10 +2176,15 @@ ConnectionParams * options::SaveConnectionParams()
         wxMessageBox( _("You must select or enter the port..."), _("Error!") );
         return NULL;
     }
-    else if ( m_rbTypeNet->GetValue() && m_tNetAddress->GetValue() == wxEmptyString )
-    {
-        wxMessageBox( _("You must enter the address..."), _("Error!") );
-        return NULL;
+    //  TCP (I/O), GPSD (Input) and UDP (Output) ports require address field to be set
+    else if ( m_rbTypeNet->GetValue() && m_tNetAddress->GetValue() == wxEmptyString ) {
+        if( m_rbNetProtoTCP->GetValue() ||
+            m_rbNetProtoGPSD->GetValue() ||
+            ( m_rbNetProtoUDP->GetValue() &&  m_cbOutput->GetValue()) )
+        {
+            wxMessageBox( _("You must enter the address..."), _("Error!") );
+            return NULL;
+        }
     }
 
     ConnectionParams * m_pConnectionParams = new ConnectionParams();
