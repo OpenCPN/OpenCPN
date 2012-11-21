@@ -14802,7 +14802,7 @@ void RolloverWin::SetBitmap( int rollover )
     //    Draw the text
     mdc.SetFont( *plabelFont );
 
-    mdc.DrawLabel( m_string, wxRect( 4, 4, m_size.x - 4, m_size.y - 4 ) );
+    mdc.DrawLabel( m_string, wxRect( 0, 0, m_size.x, m_size.y ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
     SetSize( m_position.x, m_position.y, m_size.x, m_size.y );   // Assumes a nominal 32 x 32 cursor
 
     // Retrigger the auto timeout
