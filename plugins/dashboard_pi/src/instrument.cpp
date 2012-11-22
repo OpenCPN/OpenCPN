@@ -47,7 +47,7 @@ DashboardInstrument::DashboardInstrument(wxWindow *pparent, wxWindowID id, wxStr
       m_cap_flag = cap_flag;
 
       SetBackgroundStyle( wxBG_STYLE_CUSTOM );
-
+      SetDrawSoloInPane(false);
       wxClientDC dc(this);
       int width;
       dc.GetTextExtent(m_title, &width, &m_TitleHeight, 0, 0, g_pFontTitle);
@@ -60,7 +60,10 @@ int DashboardInstrument::GetCapacity()
 {
       return m_cap_flag;
 }
-
+void DashboardInstrument::SetDrawSoloInPane(bool value)
+{ 
+    m_drawSoloInPane = value;
+}
 void DashboardInstrument::OnEraseBackground(wxEraseEvent& WXUNUSED(evt))
 {
         // intentionally empty
@@ -91,20 +94,21 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
 
     Draw( &dc );
 
+    if(!m_drawSoloInPane) {
     // With wxTRANSPARENT_PEN the borders are ugly so lets use the same color for both
-    wxPen pen;
-    pen.SetStyle( wxSOLID );
-    GetGlobalColor( _T("DASHL"), &cl );
-    pen.SetColour( cl );
-    dc.SetPen( pen );
-    dc.SetBrush( cl );
-    dc.DrawRoundedRectangle( 0, 0, size.x, m_TitleHeight, 3 );
+      wxPen pen;
+      pen.SetStyle( wxSOLID );
+      GetGlobalColor( _T("DASHL"), &cl );
+      pen.SetColour( cl );
+      dc.SetPen( pen );
+      dc.SetBrush( cl );
+      dc.DrawRoundedRectangle( 0, 0, size.x, m_TitleHeight, 3 );
 
-    dc.SetFont( *g_pFontTitle );
-    GetGlobalColor( _T("DASHF"), &cl );
-    dc.SetTextForeground( cl );
-    dc.DrawText( m_title, 5, 0 );
-
+      dc.SetFont( *g_pFontTitle );
+      GetGlobalColor( _T("DASHF"), &cl );
+      dc.SetTextForeground( cl );
+      dc.DrawText( m_title, 5, 0 );
+    }
     mdc.SelectObject( wxNullBitmap );
     pdc.DrawBitmap( bm, 0, 0, false );
 }
