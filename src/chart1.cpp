@@ -2101,10 +2101,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_ChartUpdatePeriod = 1;                  // set the default (1 sec.) period
 
 //    Establish my children
-    m_current_src_priority = 0;
-    m_current_src_id = wxEmptyString;
-    m_current_src_ticks = 0;
-
     g_pMUX = new Multiplexer();
 
     g_pAIS = new AIS_Decoder( this );
@@ -6296,6 +6292,65 @@ void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
     wxLogMessage( event.GetString() );
 }
 
+
+bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS )
+{
+    bool bret = true;
+    wxString msg_type = str_buf.Mid(1, 5);
+    
+    //  If the message type has never been seen before...
+    if( NMEA_Msg_Hash.find( msg_type ) == NMEA_Msg_Hash.end() ) {
+        NMEA_Msg_Container *pcontainer = new NMEA_Msg_Container;
+        pcontainer-> current_priority = -1;     //  guarantee to execute the next clause
+        pcontainer->pDataStream = pDS;
+        pcontainer->receipt_time = wxDateTime::Now();
+        
+        NMEA_Msg_Hash[msg_type] = pcontainer;
+    }
+    
+    NMEA_Msg_Container *pcontainer = NMEA_Msg_Hash[msg_type];
+    wxString old_port = pcontainer->pDataStream->GetPort();
+    int old_priority = pcontainer->current_priority;
+    
+    //  If the message has been seen before, and the priority is greater than or equal to current priority,
+    //  then simply update the record
+    if( pDS->GetPrority() >= pcontainer->current_priority ) {
+        pcontainer->receipt_time = wxDateTime::Now();
+        pcontainer-> current_priority = pDS->GetPrority();
+        pcontainer->pDataStream = pDS;
+        
+        bret = true;
+    }
+    
+    //  If the message has been seen before, and the priority is less than the current priority,
+    //  then if the time since the last recorded message is greater than GPS_TIMEOUT_SECONDS
+    //  then update the record with the new priority and stream.
+    //  Otherwise, ignore the message as too low a priority
+    else {
+        if( (wxDateTime::Now().GetTicks() - pcontainer->receipt_time.GetTicks()) > GPS_TIMEOUT_SECONDS ) {
+            pcontainer->receipt_time = wxDateTime::Now();
+            pcontainer-> current_priority = pDS->GetPrority();
+            pcontainer->pDataStream = pDS;
+            
+            bret = true;
+        }
+        else
+            bret = false;
+    }
+    
+    //  If the data source or priority has changed for this message type, emit a log entry
+    if (pcontainer->current_priority != old_priority ||
+        pcontainer->pDataStream->GetPort() != old_port )
+        {
+            wxLogMessage(wxString::Format(_T("Changing NMEA Datasource for %s to %s (Priority: %i)"),
+                                          msg_type.c_str(),
+                                          pcontainer->pDataStream->GetPort().c_str(),
+                                          pcontainer->current_priority) );
+        }
+        
+    return bret;
+}
+
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 {
     wxString sfixtime;
@@ -6314,13 +6369,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     //    Send NMEA sentences to PlugIns
     if( g_pi_manager ) g_pi_manager->SendNMEASentenceToAllPlugIns( str_buf );
 
-    if ( event.GetPrority() > m_current_src_priority || event.GetDataSource() == m_current_src_id || m_current_src_ticks < wxDateTime::Now().GetTicks() - GPS_TIMEOUT_SECONDS )
-    {
-        if( g_NMEALogWindow ) {
-            wxString ss = _T("Passed");
-//            g_NMEALogWindow->Add( ss );
-//            g_NMEALogWindow->Refresh( false );
-        }
+    bool b_accept = EvalPriority( str_buf, event.GetDataStream() );
+    if( b_accept ) {
         m_NMEA0183 << str_buf;
         if( m_NMEA0183.PreParse() ) {
             if( m_NMEA0183.LastSentenceIDReceived == _T("RMC") ) {
@@ -6625,17 +6675,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 msg.Append( str_buf );
                 wxLogMessage( msg );
             }
-        }
-
-        if (bis_recognized_sentence)
-        {
-            if (m_current_src_priority != event.GetPrority() || m_current_src_id != event.GetDataSource())
-            {
-                wxLogMessage(wxString::Format(_T("Changing NMEA Datasource to %s (Priority: %i)"), event.GetDataSource().c_str(), event.GetPrority()));
-                m_current_src_priority = event.GetPrority();
-                m_current_src_id = event.GetDataSource();
-            }
-            m_current_src_ticks = wxDateTime::Now().GetTicks();
         }
 
         //    Build and send a Position Fix event to PlugIns

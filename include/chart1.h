@@ -59,6 +59,9 @@ int GetApplicationMemoryUse(void);
 // The point for anchor watch should really be a class...
 double AnchorDistFix( double const d, double const AnchorPointMinDist, double const AnchorPointMaxDist);   //  pjotrc 2010.02.22
 
+class NMEA_Msg_Container;
+WX_DECLARE_STRING_HASH_MAP( NMEA_Msg_Container*, MsgPriorityHash );
+
 //    Fwd definitions
 class OCPN_NMEAEvent;
 class ChartCanvas;
@@ -153,6 +156,16 @@ class ChartBase;
 class wxSocketEvent;
 class ocpnToolBarSimple;
 class OCPN_DataStreamEvent;
+class DataStream;
+
+//      A class to contain NMEA messages, their receipt time, and their source priority
+class NMEA_Msg_Container
+{
+public:
+    wxDateTime  receipt_time;
+    int         current_priority;
+    DataStream  *pDataStream;
+};
 
 //    A small class used in an array to describe chart directories
 class ChartDirInfo
@@ -335,6 +348,8 @@ class MyFrame: public wxFrame
     void ScrubGroupArray();
     wxString GetGroupName(int igroup);
     void LoadHarmonics();
+    
+    bool EvalPriority( wxString str_buf, DataStream *pDS );
 
     int                 m_StatusBarFieldCount;
 
@@ -372,9 +387,7 @@ class MyFrame: public wxFrame
     bool                bPrevFullScreenQuilt;
     bool                bPrevOGL;
 
-    int                 m_current_src_priority;
-    wxString            m_current_src_id;
-    time_t              m_current_src_ticks;
+    MsgPriorityHash     NMEA_Msg_Hash;
 
     DECLARE_EVENT_TABLE()
 };
