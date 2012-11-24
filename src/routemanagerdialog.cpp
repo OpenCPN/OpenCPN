@@ -1152,9 +1152,12 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
     //    Clicking Visibility column?
     if( clicked_index > -1 && event.GetX() < m_pRouteListCtrl->GetColumnWidth( rmVISIBLE ) ) {
         // Process the clicked item
-        Route *route =
-                pRouteList->Item( m_pRouteListCtrl->GetItemData( clicked_index ) )->GetData();
-        bool wpts_set_viz = wxYES == wxMessageBox( _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
+        Route *route = pRouteList->Item( m_pRouteListCtrl->GetItemData( clicked_index ) )->GetData();
+                
+        bool wpts_set_viz = wxYES;
+        if( g_pRouteMan->DoesRouteContainSharedPoints(route) ) {        
+            wpts_set_viz = wxYES == wxMessageBox( _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
+        }
         route->SetVisible( !route->IsVisible(), wpts_set_viz );
         m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : -1 );
 
