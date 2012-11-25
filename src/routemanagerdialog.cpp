@@ -75,6 +75,38 @@ static const char *eye[]={
 "....................",
 "...................."};
 
+/* XPM */
+static const char *eyex[]={
+    "20 20 8 1",
+    "# c None",
+    "a c #000000",
+    "b c #333333",
+    "c c #666666",
+    "d c #999999",
+    "f c #cccccc",
+    ". c #ff0000",
+    "e c #ffffff",
+    ".##################.",
+    "..################..",
+    "#..##############..#",
+    "##..############..##",
+    "###..##aaaaaa##..###",
+    "####..bbcddcab..####",
+    "####a..eeffee..ca###",
+    "##abee..daab..beda##",
+    "#acefbe..aa..fcdeda#",
+    "abeefcfb....acddeeba",
+    "#acefbfaa..aabcdeda#",
+    "##aceafa....afbfca##",
+    "###abcb..aa..ccba###",
+    "#####a..dcbd..a#####",
+    "#####..aaaaaa..#####",
+    "####..########..####",
+    "###..##########..###",
+    "##..############..##",
+    "#..##############..#",
+    "..################.."};
+    
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS };
@@ -441,7 +473,7 @@ void RouteManagerDialog::Create()
     // note that under MSW for SetColumnWidth() to work we need to create the
     // items with images initially even if we specify dummy image id
 
-    m_pRouteListCtrl->InsertColumn( rmVISIBLE, _T(""), wxLIST_FORMAT_LEFT, 28 );
+    m_pRouteListCtrl->InsertColumn( rmVISIBLE, _("Show"), wxLIST_FORMAT_LEFT, 40 );
     m_pRouteListCtrl->InsertColumn( rmROUTENAME, _("Route Name"), wxLIST_FORMAT_LEFT, 120 );
     m_pRouteListCtrl->InsertColumn( rmROUTEDESC, _("To"), wxLIST_FORMAT_LEFT, 230 );
     /*Seth
@@ -531,7 +563,7 @@ void RouteManagerDialog::Create()
 
     itemBoxSizer3->Add( m_pTrkListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
 
-    m_pTrkListCtrl->InsertColumn( colTRKVISIBLE, _T(""), wxLIST_FORMAT_LEFT, 28 );
+    m_pTrkListCtrl->InsertColumn( colTRKVISIBLE, _("Show"), wxLIST_FORMAT_LEFT, 40 );
     m_pTrkListCtrl->InsertColumn( colTRKNAME, _("Track Name"), wxLIST_FORMAT_LEFT, 250 );
     m_pTrkListCtrl->InsertColumn( colTRKLENGTH, _("Length"), wxLIST_FORMAT_LEFT, 100 );
 
@@ -727,6 +759,7 @@ void RouteManagerDialog::Create()
     // create a image list for the list with just the eye icon
     wxImageList *imglist = new wxImageList( 20, 20, true, 1 );
     imglist->Add( wxBitmap( eye ) );
+    imglist->Add( wxBitmap( eyex ) );
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     // Assign will handle destroy, Set will not. It's OK, that's what we want
     m_pTrkListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
@@ -818,7 +851,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
 
         wxListItem li;
         li.SetId( index );
-        li.SetImage( ( *it )->IsVisible() ? 0 : -1 );
+        li.SetImage( ( *it )->IsVisible() ? 0 : 1 );
         li.SetData( index );
         li.SetText( _T("") );
 
@@ -898,7 +931,7 @@ void RouteManagerDialog::MakeAllRoutesInvisible()
     for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it, ++index ) {
         if( ( *it )->IsVisible() ) { // avoid config updating as much as possible!
             ( *it )->SetVisible( false );
-            m_pRouteListCtrl->SetItemImage( m_pRouteListCtrl->FindItem( -1, index ), -1 ); // Likely not same order :0
+            m_pRouteListCtrl->SetItemImage( m_pRouteListCtrl->FindItem( -1, index ), 1 ); // Likely not same order :0
             pConfig->UpdateRoute( *it ); // auch, flushes config to disk. FIXME
         }
     }
@@ -1052,7 +1085,7 @@ void RouteManagerDialog::OnRteZoomtoClick( wxCommandEvent &event )
     // Ensure route is visible
     if( !route->IsVisible() ) {
         route->SetVisible( true );
-        m_pRouteListCtrl->SetItemImage( item, route->IsVisible() ? 0 : -1 );
+        m_pRouteListCtrl->SetItemImage( item, route->IsVisible() ? 0 : 1 );
         pConfig->UpdateRoute( route );
     }
 
@@ -1160,7 +1193,7 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
             wpts_set_viz = wxYES == wxMessageBox( _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
         }
         route->SetVisible( !route->IsVisible(), wpts_set_viz );
-        m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : -1 );
+        m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 
         ::wxBeginBusyCursor();
 
@@ -1209,7 +1242,7 @@ void RouteManagerDialog::OnRteSelected( wxListEvent &event )
     // Process the clicked item
     Route *route = pRouteList->Item( m_pRouteListCtrl->GetItemData( clicked_index ) )->GetData();
 //    route->SetVisible(!route->IsVisible());
-    m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : -1 );
+    m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 //    pConfig->UpdateRoute(route);
     cc1->Refresh();
 
@@ -1459,7 +1492,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
 
         wxListItem li;
         li.SetId( index );
-        li.SetImage( trk->IsVisible() ? 0 : -1 );
+        li.SetImage( trk->IsVisible() ? 0 : 1 );
         li.SetData( index );
         li.SetText( _T("") );
 
@@ -1541,7 +1574,7 @@ void RouteManagerDialog::OnTrkToggleVisibility( wxMouseEvent &event )
         // Process the clicked item
         Route *route = pRouteList->Item( m_pTrkListCtrl->GetItemData( clicked_index ) )->GetData();
         route->SetVisible( !route->IsVisible() );
-        m_pTrkListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : -1 );
+        m_pTrkListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 
 //            pConfig->UpdateRoute(route);
         cc1->Refresh();
@@ -2116,7 +2149,7 @@ void RouteManagerDialog::OnLayToggleVisibility( wxMouseEvent &event )
         Layer *layer = pLayerList->Item( m_pLayListCtrl->GetItemData( clicked_index ) )->GetData();
 
         layer->SetVisibleOnChart( !layer->IsVisibleOnChart() );
-        m_pLayListCtrl->SetItemImage( clicked_index, layer->IsVisibleOnChart() ? 0 : -1 );
+        m_pLayListCtrl->SetItemImage( clicked_index, layer->IsVisibleOnChart() ? 0 : 1 );
 
         ToggleLayerContentsOnChart( layer );
     }
@@ -2235,7 +2268,7 @@ void RouteManagerDialog::OnLayToggleChartClick( wxCommandEvent &event )
     if( !layer ) return;
 
     layer->SetVisibleOnChart( !layer->IsVisibleOnChart() );
-    m_pLayListCtrl->SetItemImage( item, layer->IsVisibleOnChart() ? 0 : -1 );
+    m_pLayListCtrl->SetItemImage( item, layer->IsVisibleOnChart() ? 0 : 1 );
 
     ToggleLayerContentsOnChart( layer );
 }
@@ -2407,7 +2440,7 @@ void RouteManagerDialog::UpdateLayListCtrl()
 
         wxListItem li;
         li.SetId( index );
-        li.SetImage( lay->IsVisibleOnChart() ? 0 : -1 );
+        li.SetImage( lay->IsVisibleOnChart() ? 0 : 1 );
         li.SetData( index );
         li.SetText( _T("") );
 
