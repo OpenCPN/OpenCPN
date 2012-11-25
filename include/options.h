@@ -320,6 +320,7 @@ public:
     wxChoice* m_choicePriority;
     wxCheckBox* m_cbCheckCRC;
     wxCheckBox* m_cbGarminHost;
+    wxCheckBox* m_cbGarminUploadHost;
     wxCheckBox* m_cbFurunoGP3X;
     wxCheckBox* m_cbNMEADebug;
     wxCheckBox* m_cbFilterSogCog;

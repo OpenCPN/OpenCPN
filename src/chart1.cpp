@@ -2120,6 +2120,8 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         dstr->SetOutputFilter(cp->OutputSentenceList);
         dstr->SetOutputFilterType(cp->OutputSentenceListType);
         dstr->SetChecksumCheck(cp->ChecksumCheck);
+        dstr->SetGarminMode(cp->Garmin);
+        dstr->SetGarminUploadMode(cp->GarminUpload);
         g_pMUX->AddStream(dstr);
     }
     g_pMUX->SetAISHandler(g_pAIS);
@@ -6314,9 +6316,9 @@ bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS )
     
     //  If the message has been seen before, and the priority is greater than or equal to current priority,
     //  then simply update the record
-    if( pDS->GetPrority() >= pcontainer->current_priority ) {
+    if( pDS->GetPriority() >= pcontainer->current_priority ) {
         pcontainer->receipt_time = wxDateTime::Now();
-        pcontainer-> current_priority = pDS->GetPrority();
+        pcontainer-> current_priority = pDS->GetPriority();
         pcontainer->pDataStream = pDS;
         
         bret = true;
@@ -6329,7 +6331,7 @@ bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS )
     else {
         if( (wxDateTime::Now().GetTicks() - pcontainer->receipt_time.GetTicks()) > GPS_TIMEOUT_SECONDS ) {
             pcontainer->receipt_time = wxDateTime::Now();
-            pcontainer-> current_priority = pDS->GetPrority();
+            pcontainer-> current_priority = pDS->GetPriority();
             pcontainer->pDataStream = pDS;
             
             bret = true;

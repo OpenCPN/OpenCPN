@@ -139,7 +139,9 @@ void DataStream::Init(void)
 
 void DataStream::Open(void)
 {
-    //  Open an input port
+    //  Open a port
+    wxLogMessage( wxString::Format(_T("Opening NMEA Datastream %s"), m_portstring.c_str()) );
+    
     if( (m_io_select == DS_TYPE_INPUT) || (m_io_select == DS_TYPE_INPUT_OUTPUT) ) {
 
         //    Data Source is specified serial port
@@ -265,6 +267,8 @@ DataStream::~DataStream()
 
 void DataStream::Close()
 {
+    wxLogMessage( wxString::Format(_T("Closing NMEA Datastream %s"), m_portstring.c_str()) );
+    
 //    Kill off the Secondary RX Thread if alive
     if(m_pSecondary_Thread)
     {
@@ -1279,7 +1283,7 @@ void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
     Nevent.SetNMEAString(str_temp_buf);
     wxString port = m_launcher->GetPort();
     Nevent.SetDataSource(port);
-    Nevent.SetPriority(m_launcher->GetPrority());
+    Nevent.SetPriority(m_launcher->GetPriority());
     Nevent.SetDataStream(m_launcher);
     if( m_pMessageTarget )
         m_pMessageTarget->AddPendingEvent(Nevent);
@@ -1628,11 +1632,11 @@ void ConnectionParams::Deserialize(wxString &configStr)
 {
     Valid = true;
     wxArrayString prms = wxStringTokenize( configStr, _T(";") );
-    if (prms.Count() < 16)
-    {
+    if (prms.Count() != 17) {
         Valid = false;
         return;
     }
+    
     Type = (ConnectionType)wxAtoi(prms[0]);
     NetProtocol = (NetworkProtocol)wxAtoi(prms[1]);
     NetworkAddress = prms[2];
@@ -1648,7 +1652,8 @@ void ConnectionParams::Deserialize(wxString &configStr)
     OutputSentenceList = wxStringTokenize(prms[12], _T(","));
     Priority = wxAtoi(prms[13]);
     Garmin = !!wxAtoi(prms[14]);
-    FurunoGP3X = !!wxAtoi(prms[15]);
+    GarminUpload = !!wxAtoi(prms[15]);
+    FurunoGP3X = !!wxAtoi(prms[16]);
 }
 
 wxString ConnectionParams::Serialize()
@@ -1667,7 +1672,24 @@ wxString ConnectionParams::Serialize()
             ostcs.Append( _T(",") );
         ostcs.Append( OutputSentenceList[i] );
     }
-    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d"), Type, NetProtocol, NetworkAddress.c_str(), NetworkPort, Protocol, Port.c_str(), Baudrate, ChecksumCheck, Output, InputSentenceListType, istcs.c_str(), OutputSentenceListType, ostcs.c_str(), Priority, Garmin, FurunoGP3X );
+    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d"),
+                                     Type,
+                                     NetProtocol,
+                                     NetworkAddress.c_str(),
+                                     NetworkPort,
+                                     Protocol,
+                                     Port.c_str(),
+                                     Baudrate,
+                                     ChecksumCheck,
+                                     Output,
+                                     InputSentenceListType,
+                                     istcs.c_str(),
+                                     OutputSentenceListType,
+                                     ostcs.c_str(),
+                                     Priority,
+                                     Garmin,
+                                     GarminUpload,
+                                     FurunoGP3X );
 
     return ret;
 }

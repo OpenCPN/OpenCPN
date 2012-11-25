@@ -253,6 +253,7 @@ options::~options()
     m_choicePriority->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_cbCheckCRC->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCrcCheck ), NULL, this );
     m_cbGarminHost->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_cbGarminUploadHost->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
     m_cbFurunoGP3X->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
     m_rbIAccept->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbAcceptInput ), NULL, this );
     m_rbIIgnore->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbIgnoreInput ), NULL, this );
@@ -624,17 +625,21 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbCheckCRC = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Control checksum"), wxDefaultPosition, wxDefaultSize, 0 );
     m_cbCheckCRC->SetValue(true);
     m_cbCheckCRC->SetToolTip( _("If checked, only the sentences with a valid checksum are passed through") );
-
     fgSizer5->Add( m_cbCheckCRC, 0, wxALL, 5 );
 
-    m_cbGarminHost = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use Garmin GRMN/GRMN (Host) mode for uploads"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbGarminHost = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use Garmin (GRMN) mode for input"), wxDefaultPosition, wxDefaultSize, 0 );
     m_cbGarminHost->SetValue(false);
     fgSizer5->Add( m_cbGarminHost, 0, wxALL, 5 );
 
     m_cbFurunoGP3X = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Format uploads for Furuno GP3X"), wxDefaultPosition, wxDefaultSize, 0 );
     m_cbFurunoGP3X->SetValue(false);
-	fgSizer5->Add( m_cbFurunoGP3X, 0, wxALL, 5 );
-
+    fgSizer5->Add( m_cbFurunoGP3X, 0, wxALL, 5 );
+        
+    m_cbGarminUploadHost = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use Garmin GRMN (Host) mode for uploads"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbGarminUploadHost->SetValue(false);
+    fgSizer5->Add( m_cbGarminUploadHost, 0, wxALL, 5 );
+        
+        
     sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
     sbSizerConnectionProps->Add( fgSizer5, 0, wxEXPAND, 5 );
 
@@ -719,6 +724,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_choicePriority->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
     m_cbCheckCRC->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCrcCheck ), NULL, this );
     m_cbGarminHost->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
+    m_cbGarminUploadHost->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
     m_cbFurunoGP3X->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnUploadFormatChange ), NULL, this );
     m_rbIAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbAcceptInput ), NULL, this );
     m_rbIIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbIgnoreInput ), NULL, this );
@@ -2207,6 +2213,7 @@ ConnectionParams * options::SaveConnectionParams()
     m_pConnectionParams->Priority = wxAtoi( m_choicePriority->GetStringSelection() );
     m_pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
     m_pConnectionParams->Garmin = m_cbGarminHost->GetValue();
+    m_pConnectionParams->GarminUpload = m_cbGarminUploadHost->GetValue();
     m_pConnectionParams->FurunoGP3X = m_cbFurunoGP3X->GetValue();
     m_pConnectionParams->InputSentenceList = wxStringTokenize( m_tcInputStc->GetValue(), _T(",") );
     if ( m_rbIAccept->GetValue() )
@@ -2457,6 +2464,9 @@ void options::OnApplyClick( wxCommandEvent& event )
         dstr->SetOutputFilter(cp->OutputSentenceList);
         dstr->SetOutputFilterType(cp->OutputSentenceListType);
         dstr->SetChecksumCheck(cp->ChecksumCheck);
+        dstr->SetGarminMode(cp->Garmin);
+        dstr->SetGarminUploadMode(cp->GarminUpload);
+        
         g_pMUX->AddStream(dstr);
     }
 #ifdef USE_S57
@@ -3613,6 +3623,7 @@ void options::ShowNMEASerial(bool visible)
         m_stSerProtocol->Show();
         m_choiceSerialProtocol->Show();
         m_cbGarminHost->Show();
+        m_cbGarminUploadHost->Show();
         gSizerNetProps->SetDimension(0,0,0,0);
     }
     else
@@ -3624,6 +3635,7 @@ void options::ShowNMEASerial(bool visible)
         m_stSerProtocol->Hide();
         m_choiceSerialProtocol->Hide();
         m_cbGarminHost->Hide();
+        m_cbGarminUploadHost->Hide();
         gSizerSerProps->SetDimension(0,0,0,0);
     }
 }
@@ -3691,6 +3703,7 @@ void options::SetConnectionParams(ConnectionParams *cp)
     m_comboPort->SetValue(cp->Port);
     m_cbCheckCRC->SetValue(cp->ChecksumCheck);
     m_cbGarminHost->SetValue(cp->Garmin);
+    m_cbGarminUploadHost->SetValue(cp->GarminUpload);
     m_cbFurunoGP3X->SetValue(cp->FurunoGP3X);
     m_cbOutput->SetValue(cp->Output);
     if(cp->InputSentenceListType == WHITELIST)

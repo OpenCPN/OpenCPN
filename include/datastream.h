@@ -227,7 +227,7 @@ public:
     bool IsOk(){ return m_bok; }
     wxString GetPort(){ return m_portstring; }
     dsPortType GetIoSelect(){ return m_io_select; }
-    int GetPrority(){ return m_priority; }
+    int GetPriority(){ return m_priority; }
     void *GetUserData(){ return m_user_data; }
 
     bool SendSentence( const wxString &sentence );
@@ -248,6 +248,21 @@ public:
     void SetOutputFilterType(ListType filter_type) { m_output_filter_type = filter_type; }
     bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
     bool ChecksumOK(const wxString& sentence);
+    bool GetGarminUploadMode(){ return m_bGarmin_GRM_upload; }
+    bool GetGarminMode(){ return m_bGarmin_GRMN_mode; }
+    void SetGarminUploadMode(bool b){ m_bGarmin_GRM_upload = b; }
+    void SetGarminMode(bool b){ m_bGarmin_GRMN_mode = b; }
+    
+    
+    wxString GetBaudRate(){ return m_BaudRate; }
+    dsPortType GetPortType(){ return m_io_select; }
+    wxArrayString GetInputSentenceList(){ return m_input_filter; }
+    wxArrayString GetOutputSentenceList(){ return m_output_filter; }
+    ListType GetInputSentenceListType(){ return m_input_filter_type; }
+    ListType GetOutputSentenceListType(){ return m_output_filter_type; }
+    bool GetChecksumCheck(){ return m_bchecksumCheck; }
+    
+    
 
     int                 m_Thread_run_flag;
 private:
@@ -285,6 +300,9 @@ private:
     ListType            m_input_filter_type;
     wxArrayString       m_output_filter;
     ListType            m_output_filter_type;
+    
+    bool                m_bGarmin_GRM_upload;
+    bool                m_bGarmin_GRMN_mode;
 
 DECLARE_EVENT_TABLE()
 };
@@ -392,6 +410,7 @@ public:
     int             Baudrate;
     bool            ChecksumCheck;
     bool            Garmin;
+    bool            GarminUpload;
     bool            FurunoGP3X;
     bool            Output;
     ListType        InputSentenceListType;
