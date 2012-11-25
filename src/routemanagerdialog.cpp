@@ -988,6 +988,7 @@ void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
 //            m_pFoundRoutePoint = NULL;
 //            m_pFoundRoutePointSecond = NULL;
 
+        m_lastRteItem = -1;
         UpdateRouteListCtrl();
 
         //    Also need to update the track list control, since routes and tracks share a common global list (pRouteList)
@@ -1683,6 +1684,9 @@ void RouteManagerDialog::OnTrkDeleteAllClick( wxCommandEvent &event )
         g_pRouteMan->DeleteAllTracks();
     }
 
+    m_lastTrkItem = -1;
+    m_lastRteItem = -1;
+    
     UpdateTrkListCtrl();
 
     //    Also need to update the route list control, since routes and tracks share a common global list (pRouteList)
@@ -2042,6 +2046,7 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
         pMarkPropDialog->UpdateProperties();
     }
 
+    m_lastWptItem = -1;
     UpdateRouteListCtrl();
     UpdateWptListCtrl();
     cc1->undo->InvalidateUndo();
