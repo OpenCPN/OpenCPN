@@ -239,7 +239,8 @@ public:
  //    be safely called or polled, e.g. wxThread->Destroy();
     void SetSecThreadActive(void){m_bsec_thread_active = true;}
     void SetSecThreadInActive(void){m_bsec_thread_active = false;}
-
+    bool IsSecThreadActive(){ return m_bsec_thread_active; }
+    
     void SetChecksumCheck(bool check) { m_bchecksumCheck = check; }
 
     void SetInputFilter(wxArrayString filter) { m_input_filter = filter; }

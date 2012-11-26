@@ -93,6 +93,26 @@ void Multiplexer::StopAndRemoveStream( DataStream *stream )
     }
 }
 
+void Multiplexer::LogOutputMessage( wxString &msg, DataStream *stream, bool b_filter )
+{
+    if( g_NMEALogWindow) {
+        wxDateTime now = wxDateTime::Now();
+        wxString ss = now.FormatISOTime();
+        ss.Prepend(_T("--> "));
+        ss.Append( _T(" (") );
+        ss.Append( stream->GetPort() );
+        ss.Append( _T(") ") );
+        ss.Append( msg );
+        if(b_filter)
+            ss.Prepend( _T("<AMBER>") );
+        else
+            ss.Prepend( _T("<BLUE>") );
+        
+        g_NMEALogWindow->Add( ss );
+        g_NMEALogWindow->Refresh( false );
+    }
+}
+
 
 void Multiplexer::SendNMEAMessage( wxString &msg )
 {
@@ -108,23 +128,7 @@ void Multiplexer::SendNMEAMessage( wxString &msg )
                 bout_filter = false;
             }    
             //Send to the Debug Window, if open
-            if( g_NMEALogWindow) {
-                wxDateTime now = wxDateTime::Now();
-                wxString ss = now.FormatISOTime();
-                ss.Prepend(_T("--> "));
-                ss.Append( _T(" (") );
-                ss.Append( s->GetPort() );
-                ss.Append( _T(") ") );
-                ss.Append( msg );
-                if(bout_filter)
-                    ss.Prepend( _T("<AMBER>") );
-                else
-                    ss.Prepend( _T("<BLUE>") );
-                
-                g_NMEALogWindow->Add( ss );
-                g_NMEALogWindow->Refresh( false );
-            }
-            
+            LogOutputMessage( msg, s, bout_filter );
         }
         
     }
@@ -166,24 +170,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                             bout_filter = false;
                         }    
                             //Send to the Debug Window, if open
-                        if( g_NMEALogWindow) {
-                            wxDateTime now = wxDateTime::Now();
-                            wxString ss = now.FormatISOTime();
-                            ss.Prepend(_T("--> "));
-                            ss.Append( _T(" (") );
-                            ss.Append( s->GetPort() );
-                            ss.Append( _T(") ") );
-                            ss.Append( message );
-                            if(bout_filter)
-                                ss.Prepend( _T("<AMBER>") );
-                            else
-                                ss.Prepend( _T("<BLUE>") );
-                                
-                            g_NMEALogWindow->Add( ss );
-                            g_NMEALogWindow->Refresh( false );
-                        }
-                            
-                        
+                        LogOutputMessage( message, s, bout_filter );
                     }
             }
         }
@@ -505,9 +492,9 @@ ret_point:
                         oNMEA0183.GPwpl.Write ( snt );
                     }
 
-                    dstr->SendSentence( snt.Sentence );
-//                    SendNMEAMessage( snt.Sentence );
-
+                    if( dstr->SendSentence( snt.Sentence ) )
+                        LogOutputMessage( snt.Sentence, dstr, false );
+                    
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
                     msg += _T(" Sentence: ");
@@ -737,9 +724,9 @@ ret_point:
 
                 for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
                 {
-                    dstr->SendSentence( sentence_array.Item(ii) );
-//                  SendNMEAMessage( sentence_array.Item(ii) );
-
+                    if(dstr->SendSentence( sentence_array.Item(ii) ) )
+                        LogOutputMessage( sentence_array.Item(ii), dstr, false );
+                    
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
                     msg += _T(" Sentence: ");
@@ -753,9 +740,9 @@ ret_point:
             }
             else
             {
-                dstr->SendSentence( snt.Sentence );
-//                SendNMEAMessage( snt.Sentence );
-
+                if( dstr->SendSentence( snt.Sentence ) )
+                    LogOutputMessage( snt.Sentence, dstr, false );
+                
                 wxString msg(_T("-->GPS Port:"));
                 msg += com_name;
                 msg += _T(" Sentence: ");
@@ -769,9 +756,9 @@ ret_point:
                 wxString term;
                 term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
-                dstr->SendSentence( term );
-//                SendNMEAMessage( term );
-
+                if( dstr->SendSentence( term ) )
+                    LogOutputMessage( term, dstr, false );
+                
                 wxString msg(_T("-->GPS Port:"));
                 msg += com_name;
                 msg += _T(" Sentence: ");
@@ -998,9 +985,9 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
             oNMEA0183.GPwpl.Write ( snt );
         }
 
-        dstr->SendSentence( snt.Sentence );
-//        SendNMEAMessage( snt.Sentence );
-
+        if( dstr->SendSentence( snt.Sentence ) )
+            LogOutputMessage( snt.Sentence, dstr, false );
+        
         wxString msg(_T("-->GPS Port:"));
         msg += com_name;
         msg += _T(" Sentence: ");
@@ -1013,9 +1000,9 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
             wxString term;
             term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
-            dstr->SendSentence( term );
-//            SendNMEAMessage( term );
-
+            if( dstr->SendSentence( term ) )
+                LogOutputMessage( term, dstr, false );
+            
             wxString msg(_T("-->GPS Port:"));
             msg += com_name;
             msg += _T(" Sentence: ");

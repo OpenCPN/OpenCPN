@@ -179,7 +179,7 @@ void DataStream::Open(void)
             m_pSecondary_Thread->Run();
 
             m_bok = true;
-            m_bsec_thread_active = true;
+//            m_bsec_thread_active = true;
         }
         else if(m_portstring.Contains(_T("GPSD"))){
             m_net_addr = _T("127.0.0.1");              // defaults
@@ -468,11 +468,25 @@ bool DataStream::ChecksumOK( const wxString &sentence )
 
 bool DataStream::SendSentence( const wxString &sentence )
 {
+    bool has_crlf = sentence.EndsWith(_T("\r\n"));
     switch( m_connection_type ) {
         case Serial:
             if( m_pSecondary_Thread ) {
-                m_pSecondary_Thread->SendMsg( sentence );
-                return m_pSecondary_Thread->SendMsg( _T( "\r\n" ) ) > 0;
+                wxDateTime then = wxDateTime::Now();
+                wxTimeSpan wait = wxDateTime::Now() - then;
+                while( (wait < wxTimeSpan(0,0,5,0)) && !IsSecThreadActive() ) {
+                    wait = wxDateTime::Now() - then;
+                }
+                if( IsSecThreadActive() )
+                {
+                    int ncount = m_pSecondary_Thread->SendMsg( sentence );
+                    if( has_crlf )
+                        return ncount > 0;
+                    else
+                        return m_pSecondary_Thread->SendMsg( _T( "\r\n" ) ) > 0;
+                }
+                else
+                    return false;
             }
             break;
         case Network:
@@ -486,7 +500,8 @@ bool DataStream::SendSentence( const wxString &sentence )
                             tcp_socket->Connect( m_addr, FALSE );
                         else {
                             tcp_socket->Write( sentence.mb_str(), strlen( sentence.mb_str() ) );
-                            tcp_socket->Write( "\r\n", 2 );
+                            if( !has_crlf )
+                                tcp_socket->Write( "\r\n", 2 );
                         }
                     }
                     break;
@@ -494,7 +509,9 @@ bool DataStream::SendSentence( const wxString &sentence )
                         wxDatagramSocket* udp_socket = dynamic_cast<wxDatagramSocket*>(m_sock);
                         assert(udp_socket);
                         if( udp_socket->IsOk() ) {
-                            wxString packet = sentence+_T("\r\n");
+                            wxString packet = sentence;
+                            if( !has_crlf )
+                                packet += _T("\r\n");
                             udp_socket->SendTo(m_addr, packet.mb_str(), packet.size() );
                         }
                     }
@@ -561,7 +578,6 @@ void OCP_DataStreamInput_Thread::OnExit(void)
 //    Entry Point
 void *OCP_DataStreamInput_Thread::Entry()
 {
-    m_launcher->SetSecThreadActive();               // I am alive
 
     bool not_done = true;
     bool nl_found;
@@ -577,6 +593,8 @@ void *OCP_DataStreamInput_Thread::Entry()
         goto thread_exit;
     }
 
+    m_launcher->SetSecThreadActive();               // I am alive
+    
 #if 0
     if(wxMUTEX_NO_ERROR != m_pPortMutex->Lock())              // I have the ball
     {
@@ -754,7 +772,6 @@ void *OCP_DataStreamInput_Thread::Entry()
 {
     wxString msg;
 
-    m_launcher->SetSecThreadActive();               // I am alive
 
     OVERLAPPED osReader = {0};
 
@@ -775,6 +792,7 @@ void *OCP_DataStreamInput_Thread::Entry()
         goto thread_exit;
     }
 
+    m_launcher->SetSecThreadActive();               // I am alive
     hSerialComm = (HANDLE)m_gps_fd;
 
 
@@ -1271,14 +1289,6 @@ thread_exit:
 
 void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
 {
-    if( g_nNMEADebug && (g_total_NMEAerror_messages < g_nNMEADebug) )
-    {
-        g_total_NMEAerror_messages++;
-        wxString msg(_T("NMEA Sentence received..."));
-        msg.Append(str_temp_buf);
-    //            ThreadMessage(msg);
-    }
-
     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
     Nevent.SetNMEAString(str_temp_buf);
     wxString port = m_launcher->GetPort();
