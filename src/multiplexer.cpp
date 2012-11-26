@@ -294,8 +294,8 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
     {
-        if(m_pdevmon)
-            m_pdevmon->StopIOThread(true);
+//        if(m_pdevmon)
+//            m_pdevmon->StopIOThread(true);
 
         int v_init = Garmin_GPS_Init(NULL, wxString(_T("usb:")));
 
@@ -337,8 +337,8 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
                 ret_bool = true;
         }
 
-        if(m_pdevmon)
-            m_pdevmon->RestartIOThread();
+//        if(m_pdevmon)
+//            m_pdevmon->RestartIOThread();
 
         goto ret_point_1;
     }
@@ -818,8 +818,8 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
     {
-        if(m_pdevmon)
-            m_pdevmon->StopIOThread(true);
+//        if(m_pdevmon)
+//            m_pdevmon->StopIOThread(true);
 
         int v_init = Garmin_GPS_Init(NULL, wxString(_T("usb:")));
 
@@ -866,8 +866,8 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
                 ret_bool = true;
         }
 
-        if(m_pdevmon)
-            m_pdevmon->RestartIOThread();
+//        if(m_pdevmon)
+//            m_pdevmon->RestartIOThread();
 
         return ret_bool;
     }
