@@ -3170,8 +3170,9 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
             } else
                 s1 = _("-");
 
-            if( ( t1->Class == AIS_BASE ) ) s1 = _T("-");
-
+            if( ( t1->Class == AIS_ATON ) || ( t1->Class == AIS_BASE )
+                || ( t1->Class == AIS_CLASS_B ) ) s1 = _T("-");
+ 
             if( ( t2->NavStatus <= 15 ) && ( t2->NavStatus >= 0 ) ) {
                 if( t2->Class == AIS_SART ) {
                     if( t2->NavStatus == RESERVED_14 ) s2 = _("Active");
@@ -3181,7 +3182,8 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
             } else
                 s2 = _("-");
 
-            if( ( t2->Class == AIS_BASE ) ) s2 = _T("-");
+            if( ( t2->Class == AIS_ATON ) || ( t2->Class == AIS_BASE )
+                || ( t2->Class == AIS_CLASS_B ) ) s2 = _T("-");
 
             break;
         }
