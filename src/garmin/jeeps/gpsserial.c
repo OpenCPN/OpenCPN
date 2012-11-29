@@ -63,6 +63,20 @@ void VerifySerialPortClosed()
             GPS_Device_Off(g_gps_devh);
 }
 
+int Garmin_Serial_GPS_PVT_On( const char *port_name )
+{
+    return GPS_A800_On(port_name, &g_gps_devh);
+}
+
+int Garmin_Serial_GPS_PVT_Off( const char *port_name )
+{
+    return GPS_A800_Off(port_name, &g_gps_devh);
+}
+
+int GPS_Serial_Command_Pvt_Get(GPS_PPvt_Data *pvt )
+{
+    return GPS_Command_Pvt_Get(&g_gps_devh, pvt );
+}
 
 /*
  * termio on Cygwin is apparently broken, so we revert to Windows serial.

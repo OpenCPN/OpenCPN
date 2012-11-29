@@ -2114,13 +2114,18 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
             port_type = DS_TYPE_INPUT_OUTPUT;
         else
             port_type = DS_TYPE_INPUT;
-        DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type, cp->Priority );
+        DataStream *dstr = new DataStream( g_pMUX,
+                                           cp->GetDSPort(),
+                                           wxString::Format(wxT("%i"),cp->Baudrate),
+                                           port_type,
+                                           cp->Priority,
+                                           cp->Garmin
+                                         );
         dstr->SetInputFilter(cp->InputSentenceList);
         dstr->SetInputFilterType(cp->InputSentenceListType);
         dstr->SetOutputFilter(cp->OutputSentenceList);
         dstr->SetOutputFilterType(cp->OutputSentenceListType);
         dstr->SetChecksumCheck(cp->ChecksumCheck);
-        dstr->SetGarminMode(cp->Garmin);
         dstr->SetGarminUploadMode(cp->GarminUpload);
         g_pMUX->AddStream(dstr);
     }
@@ -6295,7 +6300,7 @@ void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
 }
 
 
-bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS )
+bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS, int priority )
 {
     bool bret = true;
     wxString msg_type = str_buf.Mid(1, 5);
@@ -6316,9 +6321,9 @@ bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS )
     
     //  If the message has been seen before, and the priority is greater than or equal to current priority,
     //  then simply update the record
-    if( pDS->GetPriority() >= pcontainer->current_priority ) {
+    if( priority >= pcontainer->current_priority ) {
         pcontainer->receipt_time = wxDateTime::Now();
-        pcontainer-> current_priority = pDS->GetPriority();
+        pcontainer-> current_priority = priority;
         pcontainer->pDataStream = pDS;
         
         bret = true;
@@ -6331,7 +6336,7 @@ bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS )
     else {
         if( (wxDateTime::Now().GetTicks() - pcontainer->receipt_time.GetTicks()) > GPS_TIMEOUT_SECONDS ) {
             pcontainer->receipt_time = wxDateTime::Now();
-            pcontainer-> current_priority = pDS->GetPriority();
+            pcontainer-> current_priority = priority;
             pcontainer->pDataStream = pDS;
             
             bret = true;
@@ -6371,7 +6376,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     //    Send NMEA sentences to PlugIns
     if( g_pi_manager ) g_pi_manager->SendNMEASentenceToAllPlugIns( str_buf );
 
-    bool b_accept = EvalPriority( str_buf, event.GetDataStream() );
+    bool b_accept = EvalPriority( str_buf, event.GetDataStream(), event.GetPrority() );
     if( b_accept ) {
         m_NMEA0183 << str_buf;
         if( m_NMEA0183.PreParse() ) {

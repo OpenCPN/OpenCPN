@@ -2458,13 +2458,18 @@ void options::OnApplyClick( wxCommandEvent& event )
             port_type = DS_TYPE_INPUT_OUTPUT;
         else
             port_type = DS_TYPE_INPUT;
-        DataStream *dstr = new DataStream( g_pMUX, cp->GetDSPort(), wxString::Format(wxT("%i"), cp->Baudrate), port_type, cp->Priority );
+        DataStream *dstr = new DataStream( g_pMUX,
+                                           cp->GetDSPort(),
+                                           wxString::Format(wxT("%i"), cp->Baudrate),
+                                           port_type,
+                                           cp->Priority,
+                                           cp->Garmin
+                                         );
         dstr->SetInputFilter(cp->InputSentenceList);
         dstr->SetInputFilterType(cp->InputSentenceListType);
         dstr->SetOutputFilter(cp->OutputSentenceList);
         dstr->SetOutputFilterType(cp->OutputSentenceListType);
         dstr->SetChecksumCheck(cp->ChecksumCheck);
-        dstr->SetGarminMode(cp->Garmin);
         dstr->SetGarminUploadMode(cp->GarminUpload);
         
         g_pMUX->AddStream(dstr);

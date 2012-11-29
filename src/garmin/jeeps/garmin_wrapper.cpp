@@ -23,11 +23,11 @@
 
 #include "gpsapp.h"
 #include "garmin_gps.h"
+#include "gpsserial.h"
 
 #define GPS_DEBUG
 
 extern char last_error[];
-extern gpsdevh *g_gps_devh;
 
 gpsdevh *my_gps_devh;
 
@@ -43,7 +43,7 @@ wxString GetLastGarminError(void)
 */
 
 /*  Wrapped interface from higher level objects   */
-int Garmin_GPS_Init(ComPortManager *pPortMan, wxString &port_name)
+int Garmin_GPS_Init( wxString &port_name)
 {
       int ret;
 #ifdef GPS_DEBUG
@@ -69,12 +69,35 @@ int Garmin_GPS_Init(ComPortManager *pPortMan, wxString &port_name)
       return ret;
 }
 
+int Garmin_GPS_Open( wxString &port_name )
+{
+    return GPS_Init(port_name.mb_str());
+}
+
+
+int Garmin_GPS_PVT_On( wxString &port_name )
+{
+    return Garmin_Serial_GPS_PVT_On( port_name.mb_str() );
+}
+
+int Garmin_GPS_PVT_Off( wxString &port_name )
+{
+    return Garmin_Serial_GPS_PVT_Off( port_name.mb_str() );
+}
+
+int Garmin_GPS_GetPVT(void *pvt)
+{
+    return GPS_Serial_Command_Pvt_Get((GPS_PPvt_Data *)pvt );
+    
+}
+
+
 wxString Garmin_GPS_GetSaveString()
 {
       return wxString(gps_save_string,  wxConvUTF8);
 }
 
-int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, RoutePointList *wplist)
+int Garmin_GPS_SendWaypoints( wxString &port_name, RoutePointList *wplist)
 {
       int ret_val = 0;
 
@@ -244,7 +267,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
       return ppway;
 }
 
-int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *pr, wxGauge *pProgress)
+int Garmin_GPS_SendRoute( wxString &port_name, Route *pr, wxGauge *pProgress)
 {
       int ret_val = 0;
 

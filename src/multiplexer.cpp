@@ -251,14 +251,15 @@ bool Multiplexer::CreateAndRestoreSavedStreamProperties()
                                        port_save,
                                        baud_rate_save,
                                        port_type_save,
-                                       priority_save );
+                                       priority_save,
+                                       bGarmin_GRMN_mode_save
+                                     );
     dstr->SetInputFilter(input_sentence_list_save);
     dstr->SetInputFilterType(input_sentence_list_type_save);
     dstr->SetOutputFilter(output_sentence_list_save);
     dstr->SetOutputFilterType(output_sentence_list_type_save);
     dstr->SetChecksumCheck(bchecksum_check_save);
     dstr->SetGarminUploadMode(bGarmin_GRM_upload_save);
-    dstr->SetGarminMode(bGarmin_GRMN_mode_save);
     
     AddStream(dstr);
     
@@ -284,7 +285,7 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
 //        if(m_pdevmon)
 //            m_pdevmon->StopIOThread(true);
 
-        int v_init = Garmin_GPS_Init(NULL, wxString(_T("usb:")));
+        int v_init = Garmin_GPS_Init(wxString(_T("usb:")));
 
         if(v_init < 0)
         {
@@ -308,7 +309,7 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
             wxLogMessage(msg);
 
             wxLogMessage(_T("Sending Routes..."));
-            int ret1 = Garmin_GPS_SendRoute(NULL, wxString(_T("usb:")), pr, pProgress);
+            int ret1 = Garmin_GPS_SendRoute(wxString(_T("usb:")), pr, pProgress);
 
             if(ret1 != 1)
             {
@@ -343,7 +344,7 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
 
         wxString short_com = com_name.Mid(7);
         // Initialize the Garmin receiver, build required Jeeps internal data structures
-        int v_init = Garmin_GPS_Init(NULL, short_com);
+        int v_init = Garmin_GPS_Init(short_com);
         if(v_init < 0)
         {
             wxString msg(_T("Garmin GPS could not be initialized on port: "));
@@ -378,7 +379,7 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
             pProgress->Update();
         }
 
-        ret_val = Garmin_GPS_SendRoute(NULL, short_com, pr, pProgress);
+        ret_val = Garmin_GPS_SendRoute(short_com, pr, pProgress);
         if(ret_val != 1)
         {
             wxString msg(_T("Error Sending Route to Garmin GPS on port: "));
@@ -808,7 +809,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
 //        if(m_pdevmon)
 //            m_pdevmon->StopIOThread(true);
 
-        int v_init = Garmin_GPS_Init(NULL, wxString(_T("usb:")));
+        int v_init = Garmin_GPS_Init(wxString(_T("usb:")));
 
         if(v_init < 0)
         {
@@ -837,7 +838,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
             RoutePointList rplist;
             rplist.Append(prp);
 
-            int ret1 = Garmin_GPS_SendWaypoints(NULL, wxString(_T("usb:")), &rplist);
+            int ret1 = Garmin_GPS_SendWaypoints(wxString(_T("usb:")), &rplist);
 
             if(ret1 != 1)
             {
@@ -868,7 +869,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
 
         wxString short_com = com_name.Mid(7);
         // Initialize the Garmin receiver, build required Jeeps internal data structures
-        int v_init = Garmin_GPS_Init(NULL, short_com);
+        int v_init = Garmin_GPS_Init(short_com);
         if(v_init < 0)
         {
             wxString msg(_T("Garmin GPS could not be initialized on port: "));
@@ -898,7 +899,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
         // Create a RoutePointList with one item
         rplist.Append(prp);
 
-        ret_val = Garmin_GPS_SendWaypoints(NULL, short_com, &rplist);
+        ret_val = Garmin_GPS_SendWaypoints(short_com, &rplist);
         if(ret_val != 1)
         {
             wxString msg(_T("Error Sending Waypoint(s) to Garmin GPS on port: "));
