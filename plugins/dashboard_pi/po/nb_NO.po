@@ -5,18 +5,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 2.6.1705\n"
+"Project-Id-Version: OpenCPN 3.1.1105\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-11 10:27-0400\n"
-"PO-Revision-Date: 2012-05-07 00:49+0100\n"
+"PO-Revision-Date: 2012-11-16 00:31+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
-"X-Poedit-Language: Norsk\n"
-"X-Poedit-Country: Norge\n"
+"Language: Norsk\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #
 msgid "Add"
@@ -233,4 +232,3 @@ msgstr "Vindhastighet"
 #
 msgid "show this dashboard"
 msgstr "vis dette instrumentbord"
-

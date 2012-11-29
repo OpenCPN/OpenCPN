@@ -4,32 +4,26 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-22 22:21-0400\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Gilletarom <gilletarom@netpratique.fr>\n"
+"Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
+"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
-"X-Poedit-Language: French\n"
-"X-Poedit-Country: FRANCE\n"
+"X-Generator: Poedit 1.5.4\n"
 
-#: src/grib.h:124
-#: src/grib_pi.cpp:277
-#: src/grib_pi.cpp:346
+#: src/grib.h:124 src/grib_pi.cpp:277 src/grib_pi.cpp:346
 msgid "GRIB Display Control"
 msgstr "Gestionnaire d'affichage GRIB"
 
 #
-#: src/grib_pi.cpp:118
-#: src/grib_pi.cpp:208
-#: src/grib_pi.cpp:261
+#: src/grib_pi.cpp:118 src/grib_pi.cpp:208 src/grib_pi.cpp:261
 msgid "Grib"
 msgstr "GRIB"
 
 #
 #
-#: src/grib_pi.cpp:177
-#: src/grib_pi.cpp:230
+#: src/grib_pi.cpp:177 src/grib_pi.cpp:230
 msgid "GRIB"
 msgstr "Affichage"
 
@@ -49,9 +43,10 @@ msgid ""
 "- surface current direction and speed."
 msgstr ""
 "Complément \"Météo\" pour l'affichage des fichiers GRIB par OpenCPN\n"
-"Fournit un affichage de base des fichiers GRIB pour plusieurs types de fichiers.\n"
+"Fournit un affichage de base des fichiers GRIB pour plusieurs types de "
+"fichiers.\n"
 "\n"
-"Supporte les types de fichiers GRIG suivants :\n"
+"Supporte les types de fichiers GRIB suivants :\n"
 "- Vent : Direction et vitesse\n"
 "- Hauteur significative des vagues\n"
 "- Température de surface de la mer\n"
@@ -144,18 +139,20 @@ msgstr "Sélectionner le dossier des fichiers GRIB"
 #
 #: src/grib.cpp:1092
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les hauteurs de vagues non visibles"
+msgstr ""
+"Veuillez diminuer le zoom ou l'échelle pour afficher les hauteurs de vagues "
+"non visibles"
 
 #
 #
 #: src/grib.cpp:1156
 msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les précipitations non visibles"
+msgstr ""
+"Veuillez diminuer le zoom ou l'échelle pour afficher les précipitations non "
+"visibles"
 
-#
-#
-#: src/grib.cpp:1168
-#: src/grib.cpp:1225
+#: src/grib.cpp:1168 src/grib.cpp:1225
 msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les température de l'eau non visibles"
-
+msgstr ""
+"Veuillez diminuer le zoom ou l'échelle pour afficher les températures de "
+"l'eau non visibles"
