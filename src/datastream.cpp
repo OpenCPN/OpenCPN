@@ -133,6 +133,7 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
 void DataStream::Init(void)
 {
     m_pSecondary_Thread = NULL;
+    m_GarminHandler = NULL;
     m_bok = false;
     SetSecThreadInActive();
     m_Thread_run_flag = -1;
