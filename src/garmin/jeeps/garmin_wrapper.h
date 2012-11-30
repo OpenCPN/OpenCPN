@@ -39,6 +39,7 @@ int Garmin_GPS_Open( wxString &port_name );
 int Garmin_GPS_PVT_On( wxString &port_name );
 int Garmin_GPS_PVT_Off( wxString &port_name );
 int Garmin_GPS_GetPVT(void *pvt);
+void Garmin_GPS_ClosePortVerify(void);
 
 
 wxString Garmin_GPS_GetSaveString();

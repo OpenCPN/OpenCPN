@@ -118,6 +118,11 @@ WX_DEFINE_OBJARRAY( ArrayOfCDI );
 WX_DEFINE_OBJARRAY( ArrayOfRect );
 WX_DEFINE_OBJARRAY( MyDialogPtrArray );
 
+#ifdef __WXMSW__
+void RedirectIOToConsole();
+#endif
+
+
 //------------------------------------------------------------------------------
 //      Static variable definition
 //------------------------------------------------------------------------------
@@ -963,6 +968,13 @@ bool MyApp::OnInit()
 
     Oldlogger = wxLog::SetActiveTarget( logger );
 
+#ifdef __WXMSW__
+
+//  Un-comment the following to establish a separate console window as a target for printf() in Windows   
+//     RedirectIOToConsole();
+
+#endif
+    
 //        wxLog::AddTraceMask("timer");               // verbose message traces to log output
 
 #ifndef __WXMSW__
@@ -6316,7 +6328,12 @@ bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS, int priority )
     }
     
     NMEA_Msg_Container *pcontainer = NMEA_Msg_Hash[msg_type];
-    wxString old_port = pcontainer->pDataStream->GetPort();
+    wxString old_port;
+    if( pcontainer->pDataStream )
+        old_port = pcontainer->pDataStream->GetPort();
+    else
+        old_port = _T("PlugIn Virtual");
+    
     int old_priority = pcontainer->current_priority;
     
     //  If the message has been seen before, and the priority is greater than or equal to current priority,
@@ -6344,14 +6361,20 @@ bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS, int priority )
         else
             bret = false;
     }
-    
+ 
+    wxString new_port;
+    if( pcontainer->pDataStream )
+        new_port = pcontainer->pDataStream->GetPort();
+    else
+        new_port = _T("PlugIn Virtual");
+ 
     //  If the data source or priority has changed for this message type, emit a log entry
     if (pcontainer->current_priority != old_priority ||
-        pcontainer->pDataStream->GetPort() != old_port )
+        new_port != old_port )
         {
             wxLogMessage(wxString::Format(_T("Changing NMEA Datasource for %s to %s (Priority: %i)"),
                                           msg_type.c_str(),
-                                          pcontainer->pDataStream->GetPort().c_str(),
+                                          new_port.c_str(),
                                           pcontainer->current_priority) );
         }
         
@@ -7956,4 +7979,74 @@ void OCPNBitmapDialog::OnPaint( wxPaintEvent& event )
 
     if( m_bitmap.IsOk() ) dc.DrawBitmap( m_bitmap, 0, 0 );
 }
+
+
+
+//      Console supporting printf functionality for Windows GUI app
+
+// maximum mumber of lines the output console should have
+
+#ifdef __WXMSW__
+static const WORD MAX_CONSOLE_LINES = 500;
+
+//#ifdef _DEBUG
+
+void RedirectIOToConsole()
+
+{
+    
+    int hConHandle;
+    
+    long lStdHandle;
+    
+    CONSOLE_SCREEN_BUFFER_INFO coninfo;
+    
+    FILE *fp;
+    
+    // allocate a console for this app
+    
+    AllocConsole();
+    
+    // set the screen buffer to be big enough to let us scroll text
+    
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
+    coninfo.dwSize.Y = MAX_CONSOLE_LINES;
+    SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE),coninfo.dwSize);
+    
+    // redirect unbuffered STDOUT to the console
+    
+    lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+    hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+    fp = _fdopen( hConHandle, "w" );
+    *stdout = *fp;
+    setvbuf( stdout, NULL, _IONBF, 0 );
+    
+    
+    // redirect unbuffered STDIN to the console
+    
+    lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
+    hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+    fp = _fdopen( hConHandle, "r" );
+    *stdin = *fp;
+    setvbuf( stdin, NULL, _IONBF, 0 );
+    
+    // redirect unbuffered STDERR to the console
+    
+    lStdHandle = (long)GetStdHandle(STD_ERROR_HANDLE);
+    hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+    fp = _fdopen( hConHandle, "w" );
+    *stderr = *fp;
+    setvbuf( stderr, NULL, _IONBF, 0 );
+    
+    // make cout, wcout, cin, wcin, wcerr, cerr, wclog and clog point to console as well
+    
+    //ios::sync_with_stdio();
+    
+}
+
+//#endif
+#endif
+
+
+
 

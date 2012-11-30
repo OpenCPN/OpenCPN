@@ -234,7 +234,20 @@ int32 GPS_Serial_Wait(gpsdevh *fd)
 
 int32 GPS_Serial_Flush(gpsdevh *fd)
 {
-	return 1;
+    unsigned char u;
+    int n;
+    
+    GPS_Diag("Flush:");
+    n=0;
+    while( (GPS_Serial_Chars_Ready(fd)) && (n < 1000))
+    {
+        GPS_Serial_Read(fd,&u,1);
+        GPS_Diag("%02x ", u);
+        
+        n++;
+    }
+    GPS_Diag("\r\n");
+    return 1;
 }
 
 int32 GPS_Serial_Write(gpsdevh *dh, const void *obuf, int size)

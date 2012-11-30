@@ -46,18 +46,16 @@ wxString GetLastGarminError(void)
 int Garmin_GPS_Init( wxString &port_name)
 {
       int ret;
-#ifdef GPS_DEBUG
-      if (getenv("OPENCPN_GPS_ERROR") != NULL)
+#ifdef GPS_DEBUG0
+//      if (getenv("OPENCPN_GPS_ERROR") != NULL)
 	GPS_Enable_Error();
-      if (getenv("OPENCPN_GPS_WARNING") != NULL)
+//      if (getenv("OPENCPN_GPS_WARNING") != NULL)
 	GPS_Enable_Warning();
-      if (getenv("OPENCPN_GPS_USER") != NULL)
+//      if (getenv("OPENCPN_GPS_USER") != NULL)
 	GPS_Enable_User();
-      if (getenv("OPENCPN_GPS_DIAGNOSE") != NULL)
+//      if (getenv("OPENCPN_GPS_DIAGNOSE") != NULL)
 	GPS_Enable_Diagnose();
 #endif
-//      GPS_Enable_Diagnose();
-      GPS_Enable_Error();
       char m[1];
       m[0] = '\0';
 
@@ -91,6 +89,10 @@ int Garmin_GPS_GetPVT(void *pvt)
     
 }
 
+void Garmin_GPS_ClosePortVerify(void)
+{
+    VerifyPortClosed();
+}
 
 wxString Garmin_GPS_GetSaveString()
 {

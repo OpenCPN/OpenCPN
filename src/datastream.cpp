@@ -2566,8 +2566,7 @@ void *GARMIN_Serial_Thread::Entry()
     
     bool not_done = true;
  
-    
-    
+   
     //    The main loop
     
     while((not_done) && (m_parent->m_Thread_run_flag > 0)) {
@@ -2582,7 +2581,7 @@ void *GARMIN_Serial_Thread::Entry()
             //  Try to init the port once
             int v_init = Garmin_GPS_Init(m_port);
             if( v_init < 0 ){           //  Open failed, so sleep and try again
-                wxSleep(1);
+                wxSleep(4);
                 
                 if(TestDestroy())
                     goto thread_exit;
@@ -2649,13 +2648,15 @@ void *GARMIN_Serial_Thread::Entry()
                             m_pMessageTarget->AddPendingEvent(Nevent);
                         
                     }
-                        
             }
         }
     }                          // the big while...
             
 thread_exit:
-            //    m_launcher->SetSecThreadInActive();             // I am dead
+
+    Garmin_GPS_PVT_Off( m_port);  
+    Garmin_GPS_ClosePortVerify();
+    
     m_parent->m_Thread_run_flag = -1;   // in GarminProtocolHandler        
     return 0;
 }

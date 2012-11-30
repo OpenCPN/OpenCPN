@@ -40,10 +40,20 @@
 
 
 #include <wx/datetime.h>
-#include "wx/socket.h"
 
 #ifdef __POSIX__
 #include <sys/termios.h>
+#endif
+
+#ifdef __WXGTK__
+// newer versions of glib define its own GSocket but we unfortunately use this
+// name in our own (semi-)public header and so can't change it -- rename glib
+// one instead
+//#include <gtk/gtk.h>
+#define GSocket GlibGSocket
+#include "wx/socket.h"
+#else
+#include "wx/socket.h"
 #endif
 
 #ifdef __WXMSW__

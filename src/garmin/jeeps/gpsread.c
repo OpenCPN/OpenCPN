@@ -29,6 +29,10 @@
 #include <time.h>
 #include <errno.h>
 
+#if defined (__WIN32__)
+#include <windows.h>
+#endif
+
 
 /* @func GPS_Time_Now ***********************************************
 **
@@ -109,8 +113,8 @@ int32 GPS_Serial_Packet_Read(gpsdevh *fd, GPS_PPacket *packet)
 		    (void) fflush(stderr);
 		    return 0;
 		}
-		++len;
-		continue;
+                ++len;
+                continue;
 	    }
 
 	    if(len==1)
@@ -180,6 +184,9 @@ int32 GPS_Serial_Packet_Read(gpsdevh *fd, GPS_PPacket *packet)
 	    }
 	    *p++ = u;
 	}
+#if defined (__WIN32__)
+	Sleep(10);
+#endif        
     }
 
 
