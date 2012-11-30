@@ -646,6 +646,16 @@ IF(APPLE)
     )
 ENDIF(APPLE)
 
+#  Mac has trouble finding libgobject-2.0.dylib
+#  We look for it explicitely
+IF(APPLE)
+#       Assume pkg-config is available.
+    INCLUDE( FindPkgConfig )
+    PKG_SEARCH_MODULE( GOBJECT REQUIRED gobject-2.0 )
+#    MESSAGE (STATUS "    GOBJECT: " ${GOBJECT_LDFLAGS})
+
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${GOBJECT_LDFLAGS})
+ENDIF(APPLE)
 
 IF(WIN32)
     IF(MSVC)
