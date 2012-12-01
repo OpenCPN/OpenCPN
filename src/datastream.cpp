@@ -153,8 +153,11 @@ void DataStream::Open(void)
             m_connection_type = Serial;
             wxString comx;
             comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
-            
-            if( m_bGarmin_GRMN_mode ) {
+
+            if( wxNOT_FOUND != m_portstring.Find(_T("USB")) ) {
+                m_GarminHandler = new GarminProtocolHandler(this, m_consumer,  true);
+            }
+            else if( m_bGarmin_GRMN_mode ) {
                 m_GarminHandler = new GarminProtocolHandler(this, m_consumer,  false);
             }
             else {
@@ -1920,7 +1923,8 @@ GarminProtocolHandler::GarminProtocolHandler(DataStream *parent, wxEvtHandler *M
 {
     m_pparent = parent;
     m_pMainEventHandler = MessageTarget;
-    m_io_thread = NULL;
+    m_garmin_serial_thread = NULL;
+    m_garmin_usb_thread = NULL;    
     m_bOK = false;
     m_busb = bsel_usb;
     
@@ -1932,32 +1936,32 @@ GarminProtocolHandler::GarminProtocolHandler(DataStream *parent, wxEvtHandler *M
     char  pvt_off[14] =
     {20, 0, 0, 0, 10, 0, 0, 0, 2, 0, 0, 0, 50, 0};
     
-    #ifdef __WXMSW__    
-    m_usb_handle = INVALID_HANDLE_VALUE;
+#ifdef __WXMSW__    
+    if(m_busb) {
+        m_usb_handle = INVALID_HANDLE_VALUE;
     
-    m_bneed_int_reset = true;
-    m_receive_state = rs_fromintr;
-    m_ndelay = 0;
+        m_bneed_int_reset = true;
+        m_receive_state = rs_fromintr;
+        m_ndelay = 0;
     
-    wxLogMessage(_T("Searching for Garmin DeviceInterface and Device..."));
+        wxLogMessage(_T("Searching for Garmin DeviceInterface and Device..."));
     
-    if(!FindGarminDeviceInterface())
-    {
-        wxLogMessage(_T("   Find:Is the Garmin USB driver installed?"));
+        if(!FindGarminDeviceInterface()) {
+            wxLogMessage(_T("   Find:Is the Garmin USB driver installed?"));
+        }
+        else {
+            if(!ResetGarminUSBDriver())
+                wxLogMessage(_T("   Reset:Is the Garmin USB Device plugged in?"));
+        }
     }
-    else
-    {
-        if(!ResetGarminUSBDriver())
-            wxLogMessage(_T("   Reset:Is the Garmin USB Device plugged in?"));
-    }
-    #endif
+#endif
     
     //  Not using USB, so try a Garmin port open and device ident
     if(! m_busb ) {
         m_port =  m_pparent->GetPort().AfterFirst(':');      // strip "Serial:"
         
                 // Start handler thread
-        m_garmin_serial_thread = new GARMIN_Serial_Thread(this, m_pparent, m_pMainEventHandler, NULL, m_port );
+        m_garmin_serial_thread = new GARMIN_Serial_Thread(this, m_pparent, m_pMainEventHandler, m_port );
         m_Thread_run_flag = 1;
         m_garmin_serial_thread->Run();
     }
@@ -2013,9 +2017,9 @@ void GarminProtocolHandler::StopIOThread(bool b_pause)
     if(b_pause)
         TimerGarmin1.Stop();
     
-    if(m_io_thread)
+    if(m_garmin_usb_thread)
     {
-        wxLogMessage(_T("Stopping Garmin I/O thread"));
+        wxLogMessage(_T("Stopping Garmin USB thread"));
         m_Thread_run_flag = 0;
         
         int tsec = 5;
@@ -2032,13 +2036,13 @@ void GarminProtocolHandler::StopIOThread(bool b_pause)
         wxLogMessage(msg);
     }
     
-    m_io_thread = NULL;
+    m_garmin_usb_thread = NULL;
     
-    #ifdef __WXMSW__    
-    if(m_usb_handle != INVALID_HANDLE_VALUE)
+#ifdef __WXMSW__    
+    if(m_busb && (m_usb_handle != INVALID_HANDLE_VALUE) )
         CloseHandle(m_usb_handle);
     m_usb_handle = INVALID_HANDLE_VALUE;
-    #endif
+#endif
     
     m_ndelay = 30;          // Fix delay for next restart
     
@@ -2072,9 +2076,10 @@ void GarminProtocolHandler::OnTimerGarmin1(wxTimerEvent& event)
                 gusb_cmd_send((const garmin_usb_packet *) pvt_on, sizeof(pvt_on));
                 
                 //    Start the pump
-//                m_io_thread = new GARMIN_IO_Thread(this, m_pMainEventHandler, m_pShareMutex, m_usb_handle, m_max_tx_size);
-//                m_Thread_run_flag = 1;
-//                m_io_thread->Run();
+                m_garmin_usb_thread = new GARMIN_USB_Thread(this, m_pparent,
+						m_pMainEventHandler, (int)m_usb_handle, m_max_tx_size);
+                m_Thread_run_flag = 1;
+                m_garmin_usb_thread->Run();
             }
         }
         #endif
@@ -2470,6 +2475,7 @@ int GarminProtocolHandler::gusb_win_send(const garmin_usb_packet *opkt, size_t s
      * data in a single call to WriteFile if it spans buffers.
      */
     WriteFile(m_usb_handle, obuf, sz, &rsz, NULL);
+	int err = GetLastError();
     
     //    if (rsz != sz)
     //          fatal ("Error sending %d bytes.   Successfully sent %ld\n", sz, rsz);
@@ -2541,7 +2547,6 @@ D800_Pvt_Data_Type_Aligned mypvt;
 GARMIN_Serial_Thread::GARMIN_Serial_Thread(GarminProtocolHandler *parent,
                                            DataStream *GParentStream,
                                            wxEvtHandler *MessageTarget,
-                                           wxMutex *pMutex,
                                            wxString port)
 {
     m_parent = parent;                          // This thread's immediate "parent"
@@ -2638,11 +2643,12 @@ void *GARMIN_Serial_Thread::Entry()
                             
                         oNMEA0183.Rmc.Write ( snt );
                         wxString message = snt.Sentence;
-                        int rrt = 4;
+
                         OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
                         Nevent.SetNMEAString(message);
                         Nevent.SetDataSource(m_port);
-                        Nevent.SetPriority(m_parent_stream->GetPriority());
+                        if(m_parent_stream)
+                            Nevent.SetPriority(m_parent_stream->GetPriority());
                         Nevent.SetDataStream(m_parent_stream);
                         if( m_pMessageTarget )
                             m_pMessageTarget->AddPendingEvent(Nevent);
@@ -2662,6 +2668,228 @@ thread_exit:
 }
         
         
+//-------------------------------------------------------------------------------------------------------------
+//    GARMIN_USB_Thread Implementation
+//-------------------------------------------------------------------------------------------------------------
+
+GARMIN_USB_Thread::GARMIN_USB_Thread(GarminProtocolHandler *parent,
+                                     DataStream *GParentStream,
+                                     wxEvtHandler *MessageTarget,
+                                     unsigned int device_handle,
+                                     size_t max_tx_size)
+{
+      m_parent = parent;                        // This thread's immediate "parent"
+      m_parent_stream = GParentStream;
+      m_pMessageTarget = MessageTarget;
+      m_max_tx_size = max_tx_size;
+
+#ifdef __WXMSW__      
+      m_usb_handle = (HANDLE)(device_handle & 0xffff);
+#endif      
+
+      Create();
+}
+
+GARMIN_USB_Thread::~GARMIN_USB_Thread()
+{
+}
+
+void *GARMIN_USB_Thread::Entry()
+{
+      garmin_usb_packet iresp;
+          int n_short_read = 0;
+      m_receive_state = rs_fromintr;
+
+      //    Here comes the big while loop
+      while(m_parent->m_Thread_run_flag > 0)
+      {
+            if(TestDestroy())
+                  goto thread_prexit;                               // smooth exit
+
+      //    Get one  packet
+
+            int nr = gusb_cmd_get(&iresp, sizeof(iresp));
+
+            if(iresp.gusb_pkt.pkt_id[0] == GUSB_RESPONSE_SDR)     //Satellite Data Record
+            {
+                  unsigned char *t = (unsigned char *)&(iresp.gusb_pkt.databuf[0]);
+                  for(int i=0 ; i < 12 ; i++)
+                  {
+                        m_sat_data[i].svid =  *t++;
+                        m_sat_data[i].snr =   ((*t)<<8) + *(t+1); t += 2;
+                        m_sat_data[i].elev =  *t++;
+                        m_sat_data[i].azmth = ((*t)<<8) + *(t+1); t += 2;
+                        m_sat_data[i].status = *t++;
+                  }
+
+                  m_nSats = 0;
+                  for(int i=0 ; i < 12 ; i++)
+                  {
+                        if(m_sat_data[i].svid != 255)
+                              m_nSats++;
+                  }
+                  
+                  // Synthesize an NMEA GMGSV message
+                  SENTENCE snt;
+                  NMEA0183 oNMEA0183;
+                  oNMEA0183.TalkerID = _T ( "GM" );
+                  oNMEA0183.Gsv.SatsInView = m_nSats;
+                  
+                  oNMEA0183.Gsv.Write ( snt );
+                  wxString message = snt.Sentence;
+                  
+                  OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+                  Nevent.SetNMEAString(message);
+                  wxString source = _T("Garmin-USB");
+                  Nevent.SetDataSource( source );
+                  if(m_parent_stream)
+                      Nevent.SetPriority(m_parent_stream->GetPriority());
+                  Nevent.SetDataStream(m_parent_stream);
+                  if( m_pMessageTarget )
+                      m_pMessageTarget->AddPendingEvent(Nevent);
+                  
+            }
+
+            if(iresp.gusb_pkt.pkt_id[0] == GUSB_RESPONSE_PVT)     //PVT Data Record
+            {
+
+
+                  D800_Pvt_Data_Type *ppvt = (D800_Pvt_Data_Type *)&(iresp.gusb_pkt.databuf[0]);
+
+                  if((ppvt->fix) >= 2 && (ppvt->fix <= 5)) {
+                          // Synthesize an NMEA GMRMC message
+                          SENTENCE snt;
+                          NMEA0183 oNMEA0183;
+                          oNMEA0183.TalkerID = _T ( "GM" );
+                          
+                          if ( ppvt->lat < 0. )
+                              oNMEA0183.Rmc.Position.Latitude.Set ( -ppvt->lat*180./PI, _T ( "S" ) );
+                          else
+                              oNMEA0183.Rmc.Position.Latitude.Set ( ppvt->lat*180./PI, _T ( "N" ) );
+                          
+                          if ( ppvt->lon < 0. )
+                              oNMEA0183.Rmc.Position.Longitude.Set ( -ppvt->lon*180./PI, _T ( "W" ) );
+                          else
+                              oNMEA0183.Rmc.Position.Longitude.Set ( ppvt->lon*180./PI, _T ( "E" ) );
+                          
+                          /* speed over ground */
+                          double sog = sqrt(ppvt->east*ppvt->east + ppvt->north*ppvt->north) * 3.6 / 1.852;
+                          oNMEA0183.Rmc.SpeedOverGroundKnots = sog;
+                          
+                          /* course over ground */
+                          double course = atan2(ppvt->east, ppvt->north);
+                          if (course < 0)
+                              course += 2*PI;
+                          double cog = course * 180 / PI;
+                          oNMEA0183.Rmc.TrackMadeGoodDegreesTrue = cog;
+                          
+                          oNMEA0183.Rmc.IsDataValid = NTrue;
+                          
+                          oNMEA0183.Rmc.Write ( snt );
+                          wxString message = snt.Sentence;
+
+                          OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+                          Nevent.SetNMEAString(message);
+                          wxString source = _T("Garmin-USB");
+                          Nevent.SetDataSource( source );
+                          if(m_parent_stream)
+                            Nevent.SetPriority(m_parent_stream->GetPriority());
+                          Nevent.SetDataStream(m_parent_stream);
+                          if( m_pMessageTarget )
+                              m_pMessageTarget->AddPendingEvent(Nevent);
+                          
+                          }
+                  
+            }
+
+      }
+
+thread_prexit:
+      m_parent->m_Thread_run_flag = -1;
+      return 0;
+}
+
+
+int GARMIN_USB_Thread::gusb_cmd_get(garmin_usb_packet *ibuf, size_t sz)
+{
+      int rv;
+      unsigned char *buf = (unsigned char *) &ibuf->dbuf[0];
+      int orig_receive_state;
+top:
+      orig_receive_state = m_receive_state;
+      switch (m_receive_state) {
+            case rs_fromintr:
+                  rv = gusb_win_get(ibuf, sz);
+                  break;
+            case rs_frombulk:
+                  rv = gusb_win_get_bulk(ibuf, sz);
+                  break;
+      }
+
+      /* Adjust internal state and retry the read */
+      if ((rv > 0) && (ibuf->gusb_pkt.pkt_id[0] == GUSB_REQUEST_BULK)) {
+            m_receive_state = rs_frombulk;
+            goto top;
+      }
+      /*
+      * If we were reading from the bulk pipe and we just got
+      * a zero request, adjust our internal state.
+      * It's tempting to retry the read here to hide this "stray"
+      * packet from our callers, but that only works when you know
+      * there's another packet coming.   That works in every case
+      * except the A000 discovery sequence.
+      */
+      if ((m_receive_state == rs_frombulk) && (rv <= 0)) {
+            m_receive_state = rs_fromintr;
+      }
+
+      return rv;
+}
+
+int GARMIN_USB_Thread::gusb_win_get(garmin_usb_packet *ibuf, size_t sz)
+{
+    int tsz=0;
+#ifdef __WXMSW__    
+    DWORD rxed = GARMIN_USB_INTERRUPT_DATA_SIZE;
+      unsigned char *buf = (unsigned char *) &ibuf->dbuf[0];
+
+      while (sz)
+      {
+            /* The driver wrongly (IMO) rejects reads smaller than
+            * GARMIN_USB_INTERRUPT_DATA_SIZE
+            */
+            if(!DeviceIoControl(m_usb_handle, IOCTL_GARMIN_USB_INTERRUPT_IN, NULL, 0,
+                buf, GARMIN_USB_INTERRUPT_DATA_SIZE, &rxed, NULL))
+            {
+//                GPS_Serial_Error("Ioctl");
+//                fatal("ioctl\n");
+            }
+
+            buf += rxed;
+            sz  -= rxed;
+            tsz += rxed;
+            if (rxed < GARMIN_USB_INTERRUPT_DATA_SIZE)
+                  break;
+      }
+      
+#endif      
+      return tsz;
+}
+
+int GARMIN_USB_Thread::gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz)
+{
+      int n;
+      int ret_val = 0;
+#ifdef __WXMSW__      
+      DWORD rsz;
+      unsigned char *buf = (unsigned char *) &ibuf->dbuf[0];
+
+      n = ReadFile(m_usb_handle, buf, sz, &rsz, NULL);
+      ret_val = rsz;
+#endif
+      
+      return ret_val;
+}
         
         
 

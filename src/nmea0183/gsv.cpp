@@ -115,6 +115,10 @@ bool GSV::Write( SENTENCE& sentence )
 
    RESPONSE::Write( sentence );
 
+   sentence += 1;
+   sentence += 1;
+   sentence += SatsInView;
+   
    sentence.Finish();
 
    return( TRUE );

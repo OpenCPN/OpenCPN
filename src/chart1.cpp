@@ -7498,7 +7498,7 @@ wxArrayString *EnumerateSerialPorts( void )
 
     if( hdeviceinfo != INVALID_HANDLE_VALUE ) {
         wxLogMessage( _T("EnumerateSerialPorts() Found Garmin USB Driver.") );
-        preturn->Add( _T("GARMIN") );         // Add generic Garmin selectable device
+        preturn->Add( _T("Garmin-USB") );         // Add generic Garmin selectable device
     }
 
 #if 0

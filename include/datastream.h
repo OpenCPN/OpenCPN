@@ -52,6 +52,7 @@
 //#include <gtk/gtk.h>
 #define GSocket GlibGSocket
 #include "wx/socket.h"
+#undef GSocket
 #else
 #include "wx/socket.h"
 #endif
@@ -385,9 +386,6 @@ private:
     DataStream              *m_launcher;
     wxString                m_PortName;
 
-    wxMutex                 *m_pShareMutex;
-    wxMutex                 *m_pPortMutex;
-
     char                    *put_ptr;
     char                    *tak_ptr;
 
@@ -585,8 +583,8 @@ enum {
 
 #define TIMER_GARMIN1   7005
 
-class GARMIN_IO_Thread;
 class GARMIN_Serial_Thread;
+class GARMIN_USB_Thread;
 
 class GarminProtocolHandler: public wxEvtHandler
 {
@@ -619,15 +617,15 @@ public:
     wxTimer                 TimerGarmin1;
     
     int                     m_Thread_run_flag;
-    GARMIN_IO_Thread        *m_io_thread;
     GARMIN_Serial_Thread    *m_garmin_serial_thread;
+    GARMIN_USB_Thread       *m_garmin_usb_thread;
     bool                    m_bneed_int_reset;
     int                     m_ndelay;
     bool                    m_bOK;
     bool                    m_busb;
     wxString                m_port;
     
-    #ifdef __WXMSW__    
+#ifdef __WXMSW__    
     HANDLE garmin_usb_start();
     bool ResetGarminUSBDriver();
     bool IsGarminPlugged();
@@ -643,7 +641,7 @@ public:
     HANDLE                  m_usb_handle;
     
     WXLRESULT MSWWindowProc(WXUINT message, WXWPARAM wParam, WXLPARAM lParam);
-    #endif    
+#endif    
     
     DECLARE_EVENT_TABLE()
 };
@@ -664,7 +662,6 @@ public:
     GARMIN_Serial_Thread(GarminProtocolHandler *parent,
                          DataStream *GParentStream,
                          wxEvtHandler *MessageTarget,
-                         wxMutex *pMutex,
                          wxString port);
     ~GARMIN_Serial_Thread(void);
     void *Entry();
@@ -679,6 +676,51 @@ private:
     wxString                m_port;
     bool                    m_bconnected;
     bool                    m_bdetected;
+    
+};
+
+
+
+//-------------------------------------------------------------------------------------------------------------
+//
+//    Garmin USB Worker Thread
+//
+//    This thread manages reading the positioning data stream from the declared Garmin USB device
+//
+//-------------------------------------------------------------------------------------------------------------
+class GARMIN_USB_Thread: public wxThread
+{
+    
+public:
+    
+    GARMIN_USB_Thread(GarminProtocolHandler *parent,
+                      DataStream *GParentStream,
+                      wxEvtHandler *MessageTarget,
+                      unsigned int device_handle,
+                      size_t max_tx_size);
+    ~GARMIN_USB_Thread(void);
+    void *Entry();
+    
+    
+private:
+    DataStream *m_parent_stream;
+    
+    int gusb_win_get(garmin_usb_packet *ibuf, size_t sz);
+    int gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz);
+    int gusb_cmd_get(garmin_usb_packet *ibuf, size_t sz);
+    
+    wxEvtHandler            *m_pMessageTarget;
+    GarminProtocolHandler   *m_parent;
+    
+    
+    int                     m_receive_state;
+    cpo_sat_data            m_sat_data[12];
+    unit_info_type          grmin_unit_info[2];
+    int                     m_nSats;
+    int                     m_max_tx_size;
+#ifdef __WXMSW__    
+    HANDLE                  m_usb_handle;
+#endif    
     
 };
 
