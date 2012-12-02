@@ -558,7 +558,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_tNetAddress = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     gSizerNetProps->Add( m_tNetAddress, 0, wxEXPAND|wxTOP, 5 );
 
-    m_stNetPort = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Port"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stNetPort = new wxStaticText( m_pNMEAForm, wxID_ANY, _("DataPort"), wxDefaultPosition, wxDefaultSize, 0 );
     m_stNetPort->Wrap( -1 );
     gSizerNetProps->Add( m_stNetPort, 0, wxALL, 5 );
 
@@ -575,7 +575,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     fgSizer1->SetFlexibleDirection( wxBOTH );
     fgSizer1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-    m_stSerPort = new wxStaticText( m_pNMEAForm, wxID_ANY, _("Port"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_stSerPort = new wxStaticText( m_pNMEAForm, wxID_ANY, _("DataPort"), wxDefaultPosition, wxDefaultSize, 0 );
     m_stSerPort->Wrap( -1 );
     fgSizer1->Add( m_stSerPort, 0, wxALL, 5 );
 
@@ -747,7 +747,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     wxListItem col1;
     col1.SetId(1);
-    col1.SetText( _("Port") );
+    col1.SetText( _("DataPort") );
     m_lcSources->InsertColumn(1, col1);
 
     wxListItem col2;
