@@ -1836,6 +1836,8 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
         }
 
         case 18: {
+            ptd->NavStatus = UNDEFINED;         // Class B targets have no status.  Enforce this...
+            
             ptd->SOG = 0.1 * ( bstr->GetInt( 47, 10 ) );
 
             int lon = bstr->GetInt( 58, 28 );
