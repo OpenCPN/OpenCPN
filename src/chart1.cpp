@@ -955,10 +955,10 @@ bool MyApp::OnInit()
             wxString oldlog = glog_file;                      // pjotrc 2010.02.09
             oldlog.Append( _T(".log") );
             wxString msg1( _T("Old log will be moved to opencpn.log.log") );
-            OCPNMessageDialog mdlg( gFrame, msg1, wxString( _("OpenCPN Info") ),
+            OCPNMessageBox ( NULL, msg1, wxString( _("OpenCPN Info") ),
                     wxICON_INFORMATION | wxOK );
-            int dlg_ret;
-            dlg_ret = mdlg.ShowModal();
+//            int dlg_ret;
+//            dlg_ret = mdlg.ShowModal();
             ::wxRenameFile( glog_file, oldlog );
         }
     }
@@ -1244,7 +1244,7 @@ bool MyApp::OnInit()
 //  Send the Welcome/warning message if it has never been sent before,
 //  or if the version string has changed at all
 //  We defer until here to allow for localization of the message
-
+    n_NavMessageShown = false;
     if( !n_NavMessageShown || ( vs != g_config_version_string ) ) {
         if( wxID_CANCEL == ShowNavWarning() ) return false;
         n_NavMessageShown = 1;
@@ -1751,12 +1751,14 @@ if( 0 == g_memCacheLimit )
             wxString msg1(
                     _("No Charts Installed.\nPlease select chart folders in Options > Charts.") );
 
-            OCPNMessageDialog mdlg( gFrame, msg1, wxString( _("OpenCPN Info") ),
-                    wxICON_INFORMATION | wxOK );
-            int dlg_ret;
-            dlg_ret = mdlg.ShowModal();
+//            OCPNMessageDialog mdlg( gFrame, msg1, wxString( _("OpenCPN Info") ),
+//                    wxICON_INFORMATION | wxOK );
+// works            wxMessageDialog mdlg( gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
+            OCPNMessageBox(gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
+//            int dlg_ret;
+//            dlg_ret = mdlg.ShowModal();
 
-            gFrame->DoOptionsDialog();
+//            gFrame->DoOptionsDialog();
 
             b_SetInitialPoint = true;
 
@@ -3870,7 +3872,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 
     if( ( rr & LOCALE_CHANGED ) || ( rr & STYLE_CHANGED ) ) {
         if( ( prev_locale != g_locale ) || ( rr & STYLE_CHANGED ) ) {
-            OCPNMessageBox( _("Please restart OpenCPN to activate language or style changes."),
+            OCPNMessageBox(NULL, _("Please restart OpenCPN to activate language or style changes."),
                     _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
             if( rr & LOCALE_CHANGED ) g_blocale_changed = true;;
         }
@@ -6174,7 +6176,7 @@ void MyFrame::DoPrint( void )
 
     MyPrintout printout( _("Chart Print") );
     if( !printer.Print( this, &printout, true ) ) {
-        if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(
+        if( wxPrinter::GetLastError() == wxPRINTER_ERROR ) OCPNMessageBox(NULL,
                 _("There was a problem printing.\nPerhaps your current printer is not set correctly?"),
                 _T("OpenCPN"), wxOK );
 //        else
@@ -7895,6 +7897,7 @@ void SetSystemColors( ColorScheme cs )
 #endif
 }
 
+#if 0
 /*          OCPN MessageDialog Implementation   */
 
 OCPNMessageDialog::OCPNMessageDialog( wxWindow* parent, const wxString& message,
@@ -7912,7 +7915,7 @@ int OCPNMessageDialog::ShowModal()
 {
 #ifdef __WXOSX__
     if(g_FloatingToolbarDialog)
-    g_FloatingToolbarDialog->Submerge();
+          g_FloatingToolbarDialog->Submerge();
 #endif
     int ret_val = m_pdialog->ShowModal();
 
@@ -7922,14 +7925,42 @@ int OCPNMessageDialog::ShowModal()
 
     return ret_val;
 }
+#endif
 
-int OCPNMessageBox( const wxString& message, const wxString& caption, int style, wxWindow *parent,
+int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& caption, int style,
         int x, int y )
 {
 
-    OCPNMessageDialog dlg( parent, message, caption, style, wxPoint( x, y ) );
+//    OCPNMessageDialog dlg( parent, message, caption, style, wxPoint( x, y ) );
+#ifdef __WXOSX__
+if(g_FloatingToolbarDialog)
+    g_FloatingToolbarDialog->Hide();
+#endif
+    gFrame->Lower();
+    wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
+  
+    dlg.Raise();
+    int ret = dlg.ShowModal();
 
-    return dlg.ShowModal();
+//    gFrame->Show();
+    #ifdef __WXOSX__
+    gFrame->SurfaceToolbar();
+    #endif
+    
+    return ret;
+    
+/*
+    #ifdef __WXOSX__
+    if(g_FloatingToolbarDialog)
+        g_FloatingToolbarDialog->Submerge();
+    #endif
+        
+        return wxMessageBox( message, caption, style, gFrame, x, y );
+    
+        #ifdef __WXOSX__
+        gFrame->SurfaceToolbar();
+        #endif
+*/        
 }
 
 //               A helper function to check for proper parameters of anchor watch

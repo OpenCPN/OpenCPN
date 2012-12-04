@@ -7425,10 +7425,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
                     && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
             {
-                OCPNMessageDialog near_point_dlg( this, _("Use nearby waypoint?"),
+                int dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                   _("OpenCPN Route Create"),
                                                   (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-                int dlg_return = near_point_dlg.ShowModal();
+//                int dlg_return = near_point_dlg.ShowModal();
 
                 if( dlg_return == wxID_YES ) {
                     pMousePoint = pNearbyPoint;
@@ -7473,8 +7473,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                         << _("Would you like include the Great Circle routing points for this leg?");
 
-                    OCPNMessageDialog question( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
-                    int answer = question.ShowModal();
+                    int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
 
                     if( answer == wxID_YES ) {
                         RoutePoint* gcPoint;
@@ -7817,9 +7816,16 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             slat = m_cursor_lat;
             slon = m_cursor_lon;
 //                      SelectItem *pFind;
-            wxClientDC cdc( this );
+ //           wxClientDC cdc( this );
+//            ocpnDC dc( cdc );
+#ifdef __WXMAC__
+            wxScreenDC sdc;
+            ocpnDC dc( sdc );
+#else
+            wxClientDC cdc( GetParent() );
             ocpnDC dc( cdc );
-
+#endif
+            
             SelectItem *pFindAIS;
             SelectItem *pFindRP;
             SelectItem *pFindRouteSeg;
@@ -7974,7 +7980,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     m_pFoundRoutePointSecond = (RoutePoint *) pFindRouteSeg->m_pData2;
 
                     m_pSelectedRoute->m_bRtIsSelected = !(seltype && SELTYPE_ROUTEPOINT);
-                    if( m_pSelectedRoute->m_bRtIsSelected ) m_pSelectedRoute->Draw( dc, GetVP() );
+                    if( m_pSelectedRoute->m_bRtIsSelected )
+                        m_pSelectedRoute->Draw( dc, GetVP() );
                     seltype |= SELTYPE_ROUTESEGMENT;
                 }
 
@@ -8575,9 +8582,7 @@ void pupHandler_PasteWaypoint() {
         wxString msg;
         msg << _("There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n");
         msg << _("Answering 'No' will create a new waypoint at the same location.");
-        OCPNMessageDialog dlg( cc1, msg, _("Merge waypoint?"),
-                 (long) wxYES_NO | wxCANCEL | wxNO_DEFAULT );
-        answer = dlg.ShowModal();
+        answer = OCPNMessageBox( cc1, msg, _("Merge waypoint?"), (long) wxYES_NO | wxCANCEL | wxNO_DEFAULT );
     }
 
     if( answer == wxID_YES ) {
@@ -8637,9 +8642,7 @@ void pupHandler_PasteRoute() {
         wxString msg;
         msg << _("There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n");
         msg << _("Answering 'No' will create all new waypoints for this route.");
-        OCPNMessageDialog dlg( cc1, msg, _("Merge waypoints?"),
-                 (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-        answer = dlg.ShowModal();
+        answer = OCPNMessageBox( cc1, msg, _("Merge waypoints?"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
 
         if( answer == wxID_CANCEL ) {
             delete kml;
@@ -9064,10 +9067,10 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
         pSelect->DeleteAllSelectableRouteSegments( m_pSelectedRoute );
 
-        OCPNMessageDialog ask( this, g_pRouteMan->GetRouteReverseMessage(),
+        int ask_return = OCPNMessageBox( this, g_pRouteMan->GetRouteReverseMessage(),
                                _("Rename Waypoints?"), wxYES_NO );
 
-        m_pSelectedRoute->Reverse( ask.ShowModal() == wxID_YES );
+        m_pSelectedRoute->Reverse( ask_return == wxID_YES );
 
         pSelect->AddAllSelectableRouteSegments( m_pSelectedRoute );
 
@@ -9083,11 +9086,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_RT_MENU_DELETE: {
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {
-            OCPNMessageDialog track_delete_confirm_dlg( this,
-                _("Are you sure you want to delete this route?"),
+            dlg_return = OCPNMessageBox( this,  _("Are you sure you want to delete this route?"),
                 _("OpenCPN Route Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-        
-            dlg_return = track_delete_confirm_dlg.ShowModal();
         }
 
         if( dlg_return == wxID_YES ) {
@@ -9282,10 +9282,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_TK_MENU_DELETE: {
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {
-            OCPNMessageDialog track_delete_confirm_dlg( this,
-                _("Are you sure you want to delete this track?"),
+            dlg_return = OCPNMessageBox( this, _("Are you sure you want to delete this track?"),
                 _("OpenCPN Track Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-            dlg_return = track_delete_confirm_dlg.ShowModal();
         }
 
         if( dlg_return == wxID_YES ) {
@@ -13559,6 +13557,9 @@ void TCWin::NXEvent( wxCommandEvent& event )
     wxDateTime dm = m_graphday;
 
     wxDateTime graphday_00 = dm.ResetTime();
+    if(graphday_00.GetYear() == 2013)
+        int yyp = 4;
+    
     time_t t_graphday_00 = graphday_00.GetTicks();
     if( !graphday_00.IsDST() && m_graphday.IsDST() ) t_graphday_00 -= 3600;
     if( graphday_00.IsDST() && !m_graphday.IsDST() ) t_graphday_00 += 3600;

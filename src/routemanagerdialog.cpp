@@ -1006,9 +1006,8 @@ void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
 {
-    OCPNMessageDialog mdlg( this, _("Are you sure you want to delete <ALL> routes?"),
+    int dialog_ret = OCPNMessageBox( this, _("Are you sure you want to delete <ALL> routes?"),
             wxString( _("OpenCPN Alert") ), wxYES_NO );
-    int dialog_ret = mdlg.ShowModal();
 
     if( dialog_ret == wxID_YES ) {
         if( g_pRouteMan->GetpActiveRoute() ) g_pRouteMan->DeactivateRoute();
@@ -1104,9 +1103,9 @@ void RouteManagerDialog::OnRteReverseClick( wxCommandEvent &event )
     if( !route ) return;
     if( route->m_bIsInLayer ) return;
 
-    OCPNMessageDialog ask( this, g_pRouteMan->GetRouteReverseMessage(), _("Rename Waypoints?"),
+    int ask_return = OCPNMessageBox( this, g_pRouteMan->GetRouteReverseMessage(), _("Rename Waypoints?"),
             wxYES_NO );
-    bool rename = ( ask.ShowModal() == wxID_YES );
+    bool rename = ( ask_return == wxID_YES );
 
     pSelect->DeleteAllSelectableRouteSegments( route );
     route->Reverse( rename );
@@ -1357,8 +1356,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             reduction = 100 * reduction / pointsBefore;
             wxString msg = wxString::Format( _("The amount of data used by the track\n was reduced by %d%%."),
                     reduction );
-            OCPNMessageDialog* dlg = new OCPNMessageDialog( this, msg, _("OpenCPN info"), wxICON_INFORMATION | wxOK );
-            dlg->ShowModal();
+            OCPNMessageBox( this, msg, _("OpenCPN info"), wxICON_INFORMATION | wxOK );
             break;
         }
 
@@ -1709,9 +1707,8 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnTrkDeleteAllClick( wxCommandEvent &event )
 {
-    OCPNMessageDialog mdlg( this, _("Are you sure you want to delete <ALL> tracks?"),
+    int dialog_ret = OCPNMessageBox( this, _("Are you sure you want to delete <ALL> tracks?"),
             wxString( _("OpenCPN Alert") ), wxYES_NO );
-    int dialog_ret = mdlg.ShowModal();
 
     if( dialog_ret == wxID_YES ) {
         g_pRouteMan->DeleteAllTracks();
@@ -2066,9 +2063,7 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
         buttons = wxYES_NO | wxCANCEL;
         type = 2;
     }
-    OCPNMessageDialog mdlg( this, prompt,
-            wxString( _("OpenCPN Alert") ), buttons );
-    int answer = mdlg.ShowModal();
+    int answer = OCPNMessageBox( this, prompt, wxString( _("OpenCPN Alert") ), buttons );
     if ( answer == wxID_YES )
         pWayPointMan->DeleteAllWaypoints( true );
     if ( answer == wxID_NO && type == 2 )

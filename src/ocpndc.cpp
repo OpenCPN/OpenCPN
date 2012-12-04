@@ -60,6 +60,7 @@ ocpnDC::ocpnDC( wxGLCanvas &canvas ) :
         glcanvas( &canvas ), dc( NULL ), m_pen( wxNullPen ), m_brush( wxNullBrush ), pgc( NULL )
 {
     tex = 0;
+    pgc = NULL;
     glGenTextures( 1, &tex );
     m_textforegroundcolour = wxColour( 0, 0, 0 );
 }

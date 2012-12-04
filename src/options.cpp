@@ -2263,12 +2263,8 @@ void options::OnApplyClick( wxCommandEvent& event )
             msg += _("\n - your minimum ship icon size must be between 1 and 100 mm");
         if( ! msg.IsEmpty() ) {
             msg.Prepend( _("The settings for own ship real size are not correct:") );
-            OCPNMessageDialog* dlg = new OCPNMessageDialog( this,
-                    msg, _("OpenCPN info"),
-                    wxICON_ERROR );
+            OCPNMessageBox( this, msg, _("OpenCPN info"), wxICON_ERROR );
             ::wxEndBusyCursor();
-            dlg->ShowModal();
-            delete dlg;
             event.SetInt( wxID_STOP );
             return;
         }
