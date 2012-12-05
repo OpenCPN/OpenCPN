@@ -8152,12 +8152,20 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 #endif
 
     if( seltype == SELTYPE_ROUTECREATE ) {
+#ifndef __WXOSX__        
         contextMenu->Append( ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
+#else
+        contextMenu->Append( ID_RC_MENU_FINISH,  _( "End Route" ) );
+#endif        
     }
 
     if( ! m_pMouseRoute ) {
         if( m_bMeasure_Active )
+#ifndef __WXOSX__            
             contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE, _menuText( _("Measure Off"), _T("Esc") ) );
+#else
+            contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE,  _("Measure Off") );
+#endif
         else
             contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
     }
