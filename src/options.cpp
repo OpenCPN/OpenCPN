@@ -3874,7 +3874,12 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindo
         standard_sentences.Add(_T("ECRMB"));
         standard_sentences.Add(_T("ECRMC"));
     }
-
+    
+    standard_sentences.Add(_T("AIVDM"));
+    standard_sentences.Add(_T("AIVDO"));
+    standard_sentences.Add(_T("FRPOS"));
+    standard_sentences.Add(_T("CD"));
+    
     m_pclbBox = new wxStaticBox( this,  wxID_ANY, _T("")) ;
 
     wxStaticBoxSizer* sbSizerclb;
