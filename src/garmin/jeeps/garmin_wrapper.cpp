@@ -23,11 +23,11 @@
 
 #include "gpsapp.h"
 #include "garmin_gps.h"
+#include "gpsserial.h"
 
 #define GPS_DEBUG
 
 extern char last_error[];
-extern gpsdevh *g_gps_devh;
 
 gpsdevh *my_gps_devh;
 
@@ -43,21 +43,19 @@ wxString GetLastGarminError(void)
 */
 
 /*  Wrapped interface from higher level objects   */
-int Garmin_GPS_Init(ComPortManager *pPortMan, wxString &port_name)
+int Garmin_GPS_Init( wxString &port_name)
 {
       int ret;
-#ifdef GPS_DEBUG
-      if (getenv("OPENCPN_GPS_ERROR") != NULL)
+#ifdef GPS_DEBUG0
+//      if (getenv("OPENCPN_GPS_ERROR") != NULL)
 	GPS_Enable_Error();
-      if (getenv("OPENCPN_GPS_WARNING") != NULL)
+//      if (getenv("OPENCPN_GPS_WARNING") != NULL)
 	GPS_Enable_Warning();
-      if (getenv("OPENCPN_GPS_USER") != NULL)
+//      if (getenv("OPENCPN_GPS_USER") != NULL)
 	GPS_Enable_User();
-      if (getenv("OPENCPN_GPS_DIAGNOSE") != NULL)
+//      if (getenv("OPENCPN_GPS_DIAGNOSE") != NULL)
 	GPS_Enable_Diagnose();
 #endif
-//      GPS_Enable_Diagnose();
-      GPS_Enable_Error();
       char m[1];
       m[0] = '\0';
 
@@ -69,12 +67,39 @@ int Garmin_GPS_Init(ComPortManager *pPortMan, wxString &port_name)
       return ret;
 }
 
+int Garmin_GPS_Open( wxString &port_name )
+{
+    return GPS_Init(port_name.mb_str());
+}
+
+
+int Garmin_GPS_PVT_On( wxString &port_name )
+{
+    return Garmin_Serial_GPS_PVT_On( port_name.mb_str() );
+}
+
+int Garmin_GPS_PVT_Off( wxString &port_name )
+{
+    return Garmin_Serial_GPS_PVT_Off( port_name.mb_str() );
+}
+
+int Garmin_GPS_GetPVT(void *pvt)
+{
+    return GPS_Serial_Command_Pvt_Get((GPS_PPvt_Data *)pvt );
+    
+}
+
+void Garmin_GPS_ClosePortVerify(void)
+{
+    VerifyPortClosed();
+}
+
 wxString Garmin_GPS_GetSaveString()
 {
       return wxString(gps_save_string,  wxConvUTF8);
 }
 
-int Garmin_GPS_SendWaypoints(ComPortManager *pPortMan, wxString &port_name, RoutePointList *wplist)
+int Garmin_GPS_SendWaypoints( wxString &port_name, RoutePointList *wplist)
 {
       int ret_val = 0;
 
@@ -244,7 +269,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
       return ppway;
 }
 
-int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *pr, wxGauge *pProgress)
+int Garmin_GPS_SendRoute( wxString &port_name, Route *pr, wxGauge *pProgress)
 {
       int ret_val = 0;
 
@@ -299,7 +324,7 @@ int Garmin_GPS_SendRoute(ComPortManager *pPortMan, wxString &port_name, Route *p
             //  Ask the user if it is all right to overwrite
             if(!bfound_empty)
             {
-                  int rv = OCPNMessageBox(_("Overwrite Garmin device route number 1?"),
+                  int rv = OCPNMessageBox(NULL, _("Overwrite Garmin device route number 1?"),
                                           _("OpenCPN Message"), wxOK | wxCANCEL | wxICON_QUESTION);
                   if(rv != wxOK)
                         return 0;

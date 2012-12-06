@@ -1093,10 +1093,8 @@ void RouteProp::OnRoutePropMenuSelected( wxCommandEvent& event )
             break;
         }
         case ID_RCLK_MENU_DELETE: {
-            OCPNMessageDialog wpDeleteConfirm( this,
-                    _("Are you sure you want to remove this waypoint?"),
+            int dlg_return = OCPNMessageBox( this, _("Are you sure you want to remove this waypoint?"),
                     _("OpenCPN Remove Waypoint"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-            int dlg_return = wpDeleteConfirm.ShowModal();
 
             if( dlg_return == wxID_YES ) {
                 long item = -1;
@@ -2949,9 +2947,15 @@ bool PositionParser::FindSeparator( wxString src )
     // GPX format <wpt lat="<lat>" lon="<lon>" /> tag among others.
 
     wxRegEx regex;
-	regex.Compile(
+    
+    int re_compile_flags = wxRE_ICASE;
+#ifdef wxHAS_REGEX_ADVANCED
+    re_compile_flags |= wxRE_ADVANCED;
+#endif
+    
+    regex.Compile(
             _T( "<[a-z,A-Z]*\\s*[a-z,A-Z]*=\"([0-9,.]*)\"\\s*[a-z,A-Z]*=\"([-,0-9,.]*)\"\\s*/*>" ),
-            wxRE_ADVANCED );
+                  re_compile_flags );
 
     if( regex.IsValid() ) {
         if( regex.Matches( src ) ) {

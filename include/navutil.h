@@ -733,6 +733,7 @@ class TTYScroll : public wxScrolledWindow
             TTYScroll(wxWindow *parent, int n_lines)
       : wxScrolledWindow(parent), m_nLines( n_lines )
             {
+                  bpause = false;
                   wxClientDC dc(this);
                   dc.GetTextExtent(_T("Line Height"), NULL, &m_hLine);
 

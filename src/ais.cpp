@@ -1143,7 +1143,7 @@ static bool b_firstrx;
 static int first_rx_ticks;
 static int rx_ticks;
 
-AIS_Decoder::AIS_Decoder()
+AIS_Decoder::AIS_Decoder( wxFrame *parent )
 {
     AISTargetList = new AIS_Target_Hash;
 
@@ -1154,6 +1154,8 @@ AIS_Decoder::AIS_Decoder()
 
     m_n_targets = 0;
 
+    m_parent_frame = parent;
+    
     TimerAIS.SetOwner(this, TIMER_AIS1);
     TimerAIS.Start(TIMER_AIS_MSEC,wxTIMER_CONTINUOUS);
     
@@ -1275,6 +1277,96 @@ void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
 }
 
 //----------------------------------------------------------------------------------
+//      Decode a single AIVDO sentence to a Generic Position Report
+//----------------------------------------------------------------------------------
+AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos )
+{
+    //  Make some simple tests for validity
+    if( str.Len() > 100 )
+        return AIS_NMEAVDX_TOO_LONG;
+    
+    if( !NMEACheckSumOK( str ) )
+        return AIS_NMEAVDX_CHECKSUM_BAD;
+
+    if( !pos ) 
+        return AIS_GENERIC_ERROR;
+    
+    //  We only process AIVDO messages
+    if( !str.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) ) 
+        return AIS_GENERIC_ERROR;
+
+    //  Use a tokenizer to pull out the first 4 fields
+    wxStringTokenizer tkz( str, _T(",") );
+        
+    wxString token;
+    token = tkz.GetNextToken();         // !xxVDx
+        
+    token = tkz.GetNextToken();
+    int nsentences = atoi( token.mb_str() );
+        
+    token = tkz.GetNextToken();
+    int isentence = atoi( token.mb_str() );
+        
+    token = tkz.GetNextToken();         // skip 2 fields
+    token = tkz.GetNextToken();
+        
+    wxString string_to_parse = tkz.GetNextToken();    // tha actual data
+        
+      // We only parse the first part of one part sentences
+    if( ( 1 != nsentences ) || ( 1 != isentence ) )
+        return AIS_GENERIC_ERROR;
+        
+    //  Create the bit accessible string
+    AIS_Bitstring strbit( string_to_parse.mb_str() );
+    
+    AIS_Target_Data *pTargetData = new AIS_Target_Data;
+
+    bool bdecode_result = Parse_VDXBitstring( &strbit, pTargetData );
+    
+    if(bdecode_result) {
+        switch(pTargetData->MID)
+        {
+            case 1:
+            case 2:
+            case 3:
+            case 18:
+            {
+                pos->kLat = pTargetData->Lat;
+                pos->kLon = pTargetData->Lon;
+                
+                if(pTargetData->COG == 360.0)
+                    pos->kCog = NAN;
+                else
+                    pos->kCog = pTargetData->COG;
+                
+                
+                if(pTargetData->SOG > 102.2)
+                    pos->kSog = NAN;
+                else
+                    pos->kSog = pTargetData->SOG;
+                
+                if((int)pTargetData->HDG == 511)
+                    pos->kHdt = NAN;
+                else
+                    pos->kHdt = pTargetData->HDG;
+                
+                //  VDO messages do not contain variation or magnetic heading
+                pos->kVar = NAN;
+                pos->kHdm = NAN;
+                    
+            }
+            default:
+                break;
+        }
+        
+        return AIS_NoError;
+    }
+    else
+        return AIS_GENERIC_ERROR;
+}
+
+
+//----------------------------------------------------------------------------------
 //      Decode NMEA VDM/VDO/FRPOS/DSCDSE sentence to AIS Target(s)
 //----------------------------------------------------------------------------------
 AIS_Error AIS_Decoder::Decode( const wxString& str )
@@ -1284,13 +1376,17 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
     double gpsg_lat, gpsg_lon, gpsg_mins, gpsg_degs;
     double gpsg_cog, gpsg_sog, gpsg_utc_time;
-    int gpsg_utc_hour;
-    int gpsg_utc_min;
-    int gpsg_utc_sec;
+    int gpsg_utc_hour = 0;
+    int gpsg_utc_min = 0;
+    int gpsg_utc_sec = 0;
     char gpsg_name_str[21];
 
-    double dsc_lat, dsc_lon, dsc_mins, dsc_degs, dsc_tmp, dsc_addr;
-    double dse_tmp, dse_lat, dse_lon, dse_addr;
+    double dsc_lat = 0.;
+    double dsc_lon = 0.;
+    double dsc_mins, dsc_degs, dsc_tmp, dsc_addr;
+    double dse_tmp, dse_addr;
+    double dse_lat = 0.;
+    double dse_lon = 0;
     long dsc_fmt, dsc_quadrant;
 
     int gpsg_mmsi = 0;
@@ -1744,6 +1840,8 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
         }
 
         case 18: {
+            ptd->NavStatus = UNDEFINED;         // Class B targets have no status.  Enforce this...
+            
             ptd->SOG = 0.1 * ( bstr->GetInt( 47, 10 ) );
 
             int lon = bstr->GetInt( 58, 28 );
@@ -3078,8 +3176,9 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
             } else
                 s1 = _("-");
 
-            if( ( t1->Class == AIS_BASE ) ) s1 = _T("-");
-
+            if( ( t1->Class == AIS_ATON ) || ( t1->Class == AIS_BASE )
+                || ( t1->Class == AIS_CLASS_B ) ) s1 = _T("-");
+ 
             if( ( t2->NavStatus <= 15 ) && ( t2->NavStatus >= 0 ) ) {
                 if( t2->Class == AIS_SART ) {
                     if( t2->NavStatus == RESERVED_14 ) s2 = _("Active");
@@ -3089,7 +3188,8 @@ int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
             } else
                 s2 = _("-");
 
-            if( ( t2->Class == AIS_BASE ) ) s2 = _T("-");
+            if( ( t2->Class == AIS_ATON ) || ( t2->Class == AIS_BASE )
+                || ( t2->Class == AIS_CLASS_B ) ) s2 = _T("-");
 
             break;
         }

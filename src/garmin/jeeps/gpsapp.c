@@ -29,7 +29,6 @@
 #include <time.h>
 #include <stdlib.h>
 #include <ctype.h>
-
 /*
  * This violates the layering design, but is needed for device discovery.
  * See the use of gps_is_usb and GPS_Packet_Read_usb below.
@@ -200,6 +199,8 @@ static int32 GPS_A000(const char *port)
     GPS_PPacket rec;
     int16 version;
     int16 id;
+	int32 err;
+	err = 1;
 
     if(!GPS_Device_On(port, &fd))
 	return gps_errno;
@@ -209,20 +210,39 @@ static int32 GPS_A000(const char *port)
 
     if(!(tra = GPS_Packet_New()) || !(rec = GPS_Packet_New()))
 	return MEMORY_ERROR;
-
+    
     GPS_Make_Packet(&tra, LINK_ID[0].Pid_Product_Rqst,NULL,0);
     if(!GPS_Write_Packet(fd,tra))
     {
-          GPS_Error("GPS_Write_Packet error");
-          goto carry_out;
+        GPS_Error("GPS_Write_Packet error");
+		err = -55;
+        goto carry_out;
     }
-
+    
     if(!GPS_Get_Ack(fd, &tra, &rec))
     {
-          GPS_Error("GPS_Get_Ack error");
-          goto carry_out;
+ 
+        // It seems that sometimes the first byte received after port open is lost...
+        //      On error, Flush() and try once more....
+        GPS_Error("GPS_Get_Ack error");
+        
+        GPS_Device_Flush(fd);
+            
+        if(!GPS_Write_Packet(fd,tra))
+        {
+            GPS_Error("GPS_Write_Packet error");
+            err = -55;
+            goto carry_out;
+        }
+        
+        if(!GPS_Get_Ack(fd, &tra, &rec))
+        {
+            GPS_Error("GPS_Get_Ack error");
+            err = -56;
+            goto carry_out;
+        }            
     }
-
+    
     GPS_Packet_Read(fd, &rec);
     GPS_Send_Ack(fd, &tra, &rec);
 
@@ -232,7 +252,6 @@ static int32 GPS_A000(const char *port)
     (void) strcpy(gps_save_string,(char *)rec->data+4);
     gps_save_id = id;
     gps_save_version = (double)((double)version/(double)100.);
-
     GPS_User("Unit:\t%s\nID:\t%d\nVersion:\t%.2f",
 	gps_save_string, gps_save_id, gps_save_version);
 
@@ -366,7 +385,7 @@ carry_out:
     if(!GPS_Device_Off(fd))
 	return gps_errno;
 
-    return 1;
+    return err;
 }
 
 

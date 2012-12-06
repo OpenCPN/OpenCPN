@@ -453,8 +453,17 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
                               j++;
                               cstk->nEntry = j;
                               cstk->SetDBIndex(j-1, db_index);
-
                         }
+                  }
+                  //    Western hemisphere, some type of charts
+                  else if( (pt->GetLonMax() > 180.) && (pt->GetLonMin() > 180.) )       
+                  {
+                      if(CheckPositionWithinChart(db_index, lat, lon + 360.)  &&  (j < MAXSTACK) )
+                      {
+                          j++;
+                          cstk->nEntry = j;
+                          cstk->SetDBIndex(j-1, db_index);
+                      }
                   }
             }
       }

@@ -54,7 +54,6 @@
 #include "navutil.h"
 #include "chcanv.h"
 #include "georef.h"
-#include "ais.h"
 #include "cutil.h"
 #include "styles.h"
 #include "routeman.h"
@@ -67,6 +66,7 @@
 #include "geodesic.h"
 #include "datastream.h"
 #include "multiplexer.h"
+#include "ais.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -1262,7 +1262,7 @@ bool RoutePoint::SendToGPS( wxString& com_name, wxGauge *pProgress )
     else
         msg = _("Error on Waypoint Upload.  Please check logfiles...");
 
-    OCPNMessageBox( msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
+    OCPNMessageBox( NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
 
     return result;
 }
@@ -2206,7 +2206,7 @@ bool Route::SendToGPS( wxString& com_name, bool bsend_waypoints, wxGauge *pProgr
     else
         msg = _("Error on Route Upload.  Please check logfiles...");
 
-    OCPNMessageBox( msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
+    OCPNMessageBox( NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
 
     return result;
 }
@@ -4750,7 +4750,7 @@ bool MyConfig::ExportGPXRoute( wxWindow* parent, Route *pRoute )
         fn.SetExt( _T ( "gpx" ) );
 
         if( wxFileExists( fn.GetFullPath() ) ) {
-            int answer = OCPNMessageBox( _("Overwrite existing file?"), _T("Confirm"),
+            int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return false;
         }
@@ -4790,7 +4790,7 @@ bool MyConfig::ExportGPXWaypoint( wxWindow* parent, RoutePoint *pRoutePoint )
         fn.SetExt( _T ( "gpx" ) );
 
         if( wxFileExists( fn.GetFullPath() ) ) {
-            int answer = OCPNMessageBox( _("Overwrite existing file?"), _T("Confirm"),
+            int answer = OCPNMessageBox(NULL,  _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return false;
         }
@@ -4826,7 +4826,7 @@ void MyConfig::ExportGPX( wxWindow* parent )
         fn.SetExt( _T ( "gpx" ) );
 
         if( wxFileExists( fn.GetFullPath() ) ) {
-            int answer = OCPNMessageBox( _("Overwrite existing file?"), _T("Confirm"),
+            int answer = OCPNMessageBox( NULL, _("Overwrite existing file?"), _T("Confirm"),
                     wxICON_QUESTION | wxYES_NO | wxCANCEL );
             if( answer != wxID_YES ) return;
         }

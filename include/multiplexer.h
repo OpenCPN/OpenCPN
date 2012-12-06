@@ -44,6 +44,11 @@ class Multiplexer : public wxEvtHandler
         void AddStream(DataStream *stream);
         void StopAllStreams();
         void ClearStreams();
+        DataStream *FindStream( wxString port );
+        void StopAndRemoveStream( DataStream *stream );
+        void SaveStreamProperties( DataStream *stream );
+        bool CreateAndRestoreSavedStreamProperties();
+        
         void SendNMEAMessage( wxString &msg );
         void SetAISHandler(wxEvtHandler *handler);
         void SetGPSHandler(wxEvtHandler *handler);
@@ -52,12 +57,27 @@ class Multiplexer : public wxEvtHandler
         bool SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge *pProgress);
 
         void OnEvtStream(OCPN_DataStreamEvent& event);
-
+        void LogOutputMessage( wxString &msg, DataStream *stream, bool b_filter );
+        
     private:
         wxArrayOfDataStreams *m_pdatastreams;
 
         wxEvtHandler        *m_aisconsumer;
         wxEvtHandler        *m_gpsconsumer;
+        
+        //      A set of temporarily saved parameters for a DataStream
+        wxString port_save;
+        wxString baud_rate_save;
+        dsPortType port_type_save;
+        int priority_save;
+        wxArrayString input_sentence_list_save;
+        ListType input_sentence_list_type_save;
+        wxArrayString output_sentence_list_save;
+        ListType output_sentence_list_type_save;
+        bool bchecksum_check_save;
+        bool bGarmin_GRM_upload_save;
+        bool bGarmin_GRMN_mode_save;
+        
 };
 #endif // __MULTIPLEXER_H__
 

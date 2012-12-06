@@ -566,10 +566,9 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
             }
 
             if( m_ptoolbar->GetVisibleToolCount() == 1 ) {
-                OCPNMessageDialog mdlg( this,
+                OCPNMessageBox( this,
                         _("You can't hide the last tool from the toolbar\nas this would make is inaccessible."),
                         _("OpenCPN Alert"), wxOK );
-                int dialog_ret = mdlg.ShowModal();
                 g_FloatingToolbarConfigMenu->FindItem( event.GetId() )->Check( true );
                 return;
             }
@@ -1226,7 +1225,9 @@ void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
                         && ( g_FloatingToolbarDialog->GetOrient() == wxTB_VERTICAL ) ) pos_in_toolbar.y =
                         m_last_ro_tool->m_y - 30;
 
-                m_pToolTipWin->SetPosition( GetParent()->ClientToScreen( pos_in_toolbar ) );
+                m_pToolTipWin->Move(0,0);       // workaround for gtk autocentre dialog behavior
+                
+                m_pToolTipWin->SetPosition( ClientToScreen( pos_in_toolbar ) );
                 m_pToolTipWin->SetBitmap();
                 m_pToolTipWin->Show();
                 gFrame->Raise();

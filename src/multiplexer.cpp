@@ -27,6 +27,8 @@
 
 #include "multiplexer.h"
 #include "navutil.h"                    // for NMEALogWindow
+#include "garmin/jeeps/garmin_wrapper.h"
+
 
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
@@ -68,6 +70,50 @@ void Multiplexer::ClearStreams()
     m_pdatastreams->Clear();
 }
 
+DataStream *Multiplexer::FindStream( wxString port )
+{
+    for (size_t i = 0; i < m_pdatastreams->Count(); i++)
+    {
+        DataStream *stream = m_pdatastreams->Item(i);
+        if( stream && stream->GetPort() == port )
+            return stream;
+    }
+    return NULL;
+}
+
+void Multiplexer::StopAndRemoveStream( DataStream *stream )
+{
+    if( stream )
+        stream->Close();
+    
+    if( m_pdatastreams ) {
+        int index = m_pdatastreams->Index( stream );
+        if( wxNOT_FOUND != index )
+            m_pdatastreams->RemoveAt( index );
+    }
+}
+
+void Multiplexer::LogOutputMessage( wxString &msg, DataStream *stream, bool b_filter )
+{
+    if( g_NMEALogWindow) {
+        wxDateTime now = wxDateTime::Now();
+        wxString ss = now.FormatISOTime();
+        ss.Prepend(_T("--> "));
+        ss.Append( _T(" (") );
+        ss.Append( stream->GetPort() );
+        ss.Append( _T(") ") );
+        ss.Append( msg );
+        if(b_filter)
+            ss.Prepend( _T("<AMBER>") );
+        else
+            ss.Prepend( _T("<BLUE>") );
+        
+        g_NMEALogWindow->Add( ss );
+        g_NMEALogWindow->Refresh( false );
+    }
+}
+
+
 void Multiplexer::SendNMEAMessage( wxString &msg )
 {
     //Send to all the outputs
@@ -82,23 +128,7 @@ void Multiplexer::SendNMEAMessage( wxString &msg )
                 bout_filter = false;
             }    
             //Send to the Debug Window, if open
-            if( g_NMEALogWindow) {
-                wxDateTime now = wxDateTime::Now();
-                wxString ss = now.FormatISOTime();
-                ss.Prepend(_T("--> "));
-                ss.Append( _T(" (") );
-                ss.Append( s->GetPort() );
-                ss.Append( _T(") ") );
-                ss.Append( msg );
-                if(bout_filter)
-                    ss.Prepend( _T("<AMBER>") );
-                else
-                    ss.Prepend( _T("<BLUE>") );
-                
-                g_NMEALogWindow->Add( ss );
-                g_NMEALogWindow->Refresh( false );
-            }
-            
+            LogOutputMessage( msg, s, bout_filter );
         }
         
     }
@@ -140,32 +170,18 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                             bout_filter = false;
                         }    
                             //Send to the Debug Window, if open
-                        if( g_NMEALogWindow) {
-                            wxDateTime now = wxDateTime::Now();
-                            wxString ss = now.FormatISOTime();
-                            ss.Prepend(_T("--> "));
-                            ss.Append( _T(" (") );
-                            ss.Append( s->GetPort() );
-                            ss.Append( _T(") ") );
-                            ss.Append( message );
-                            if(bout_filter)
-                                ss.Prepend( _T("<AMBER>") );
-                            else
-                                ss.Prepend( _T("<BLUE>") );
-                                
-                            g_NMEALogWindow->Add( ss );
-                            g_NMEALogWindow->Refresh( false );
-                        }
-                            
-                        
+                        LogOutputMessage( message, s, bout_filter );
                     }
             }
         }
         //Send to core consumers
         //if it passes the source's input filter
-        bool bfilter = true;
-        if(stream->SentencePassesFilter( message, FILTER_INPUT ) ) {
-            bfilter = false;
+        //  If there is no datastream, as for PlugIns, then pass everything
+        bool bpass = true;
+        if( stream )
+            bpass = stream->SentencePassesFilter( message, FILTER_INPUT );
+            
+        if( bpass ) {
             if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
                 message.Mid(3,3).IsSameAs(_T("VDO")) ||
                 message.Mid(1,5).IsSameAs(_T("FRPOS")) ||
@@ -179,6 +195,13 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                 if( m_gpsconsumer )
                     m_gpsconsumer->AddPendingEvent(event);
             }
+
+            //  Handle AIVDO messages from transponder....
+            if( message.Mid(3,3).IsSameAs(_T("VDO")) ) {
+                if( m_gpsconsumer )
+                    m_gpsconsumer->AddPendingEvent(event);
+            }
+            
         //Send to plugins
             if ( g_pi_manager )
                 g_pi_manager->SendNMEASentenceToAllPlugIns( message );
@@ -192,7 +215,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             ss.Append( event.GetDataSource() );
             ss.Append( _T(") ") );
             ss.Append( message );
-            if(bfilter)
+            if( !bpass )
                 ss.Prepend( _T("<AMBER>") );
             else
                 ss.Prepend( _T("<GREEN>") );
@@ -204,18 +227,65 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
     }
 }
 
+void Multiplexer::SaveStreamProperties( DataStream *stream )
+{
+    if( stream ) {
+        port_save = stream->GetPort();
+        baud_rate_save = stream->GetBaudRate();
+        port_type_save = stream->GetPortType();
+        priority_save = stream->GetPriority();
+        input_sentence_list_save = stream->GetInputSentenceList();
+        input_sentence_list_type_save = stream->GetInputSentenceListType();
+        output_sentence_list_save = stream->GetOutputSentenceList();
+        output_sentence_list_type_save = stream->GetOutputSentenceListType();
+        bchecksum_check_save = stream->GetChecksumCheck();
+        bGarmin_GRM_upload_save = stream->GetGarminUploadMode();
+        bGarmin_GRMN_mode_save = stream->GetGarminMode();
+        
+    }
+}
+
+bool Multiplexer::CreateAndRestoreSavedStreamProperties()
+{
+    DataStream *dstr = new DataStream( this,
+                                       port_save,
+                                       baud_rate_save,
+                                       port_type_save,
+                                       priority_save,
+                                       bGarmin_GRMN_mode_save
+                                     );
+    dstr->SetInputFilter(input_sentence_list_save);
+    dstr->SetInputFilterType(input_sentence_list_type_save);
+    dstr->SetOutputFilter(output_sentence_list_save);
+    dstr->SetOutputFilterType(output_sentence_list_type_save);
+    dstr->SetChecksumCheck(bchecksum_check_save);
+    dstr->SetGarminUploadMode(bGarmin_GRM_upload_save);
+    
+    AddStream(dstr);
+    
+    return true;
+    
+}
+
+
 bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypoints, wxGauge *pProgress)
 {
     bool ret_bool = false;
-/*TODO: RE-enable use of Garmin host
+    DataStream *old_stream = FindStream( com_name );
+    if( old_stream ) {
+        SaveStreamProperties( old_stream );
+        StopAndRemoveStream( old_stream );
+    }      
+        
+    
 #ifdef USE_GARMINHOST
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
     {
-        if(m_pdevmon)
-            m_pdevmon->StopIOThread(true);
+//        if(m_pdevmon)
+//            m_pdevmon->StopIOThread(true);
 
-        int v_init = Garmin_GPS_Init(NULL, wxString(_T("usb:")));
+        int v_init = Garmin_GPS_Init(wxString(_T("usb:")));
 
         if(v_init < 0)
         {
@@ -239,7 +309,7 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
             wxLogMessage(msg);
 
             wxLogMessage(_T("Sending Routes..."));
-            int ret1 = Garmin_GPS_SendRoute(NULL, wxString(_T("usb:")), pr, pProgress);
+            int ret1 = Garmin_GPS_SendRoute(wxString(_T("usb:")), pr, pProgress);
 
             if(ret1 != 1)
             {
@@ -255,42 +325,16 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
                 ret_bool = true;
         }
 
-        if(m_pdevmon)
-            m_pdevmon->RestartIOThread();
+//        if(m_pdevmon)
+//            m_pdevmon->RestartIOThread();
 
-        return ret_bool;
+        goto ret_point_1;
     }
 #endif
 
-    if(m_bGarmin_host)
+    if(bGarmin_GRM_upload_save)
     {
         int ret_val;
-
-        // Request that the thread should pause
-        m_brequest_thread_pause = true;
-
-        ::wxSleep(1);
-        bool b_gotPort = false;
-        // Poll, waiting for the Mutex. Abort after 5 seconds
-        long time = ::wxGetLocalTime();
-        while(::wxGetLocalTime() < time + 5)
-        {
-            if(wxMUTEX_BUSY != m_pPortMutex->TryLock())
-            {
-                b_gotPort = true;
-                break;
-            }
-        }
-
-        if(!b_gotPort)
-        {
-            wxString msg(_T("Error Sending Route...could not lock Mutex on port: "));
-            msg +=com_name;
-            wxLogMessage(msg);
-
-            return false;
-        }
-
         if ( pProgress )
         {
             pProgress->SetValue ( 20 );
@@ -298,12 +342,13 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
             pProgress->Update();
         }
 
+        wxString short_com = com_name.Mid(7);
         // Initialize the Garmin receiver, build required Jeeps internal data structures
-        int v_init = Garmin_GPS_Init(g_pCommMan, com_name);
+        int v_init = Garmin_GPS_Init(short_com);
         if(v_init < 0)
         {
             wxString msg(_T("Garmin GPS could not be initialized on port: "));
-            msg +=com_name;
+            msg +=short_com;
             wxString err;
             err.Printf(_T(" Error Code is %d"), v_init);
             msg += err;
@@ -319,7 +364,7 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
         else
         {
             wxString msg(_T("Sent Route to Garmin GPS on port: "));
-            msg +=com_name;
+            msg +=short_com;
             msg += _T("\n Unit identifies as: ");
             wxString GPS_Unit = Garmin_GPS_GetSaveString();
             msg += GPS_Unit;
@@ -334,11 +379,11 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
             pProgress->Update();
         }
 
-        ret_val = Garmin_GPS_SendRoute(g_pCommMan, com_name, pr, pProgress);
+        ret_val = Garmin_GPS_SendRoute(short_com, pr, pProgress);
         if(ret_val != 1)
         {
             wxString msg(_T("Error Sending Route to Garmin GPS on port: "));
-            msg +=com_name;
+            msg +=short_com;
             wxString err;
             err.Printf(_T(" Error Code is %d"), ret_val);
 
@@ -355,9 +400,6 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
             ret_bool = true;
 
 ret_point:
-        // Release the Mutex
-        m_brequest_thread_pause = false;
-        m_pPortMutex->Unlock();
 
         if ( pProgress )
         {
@@ -368,13 +410,31 @@ ret_point:
 
         wxMilliSleep ( 500 );
 
-        return ret_bool;
+        goto ret_point_1;
     }
     else
 #endif //USE_GARMINHOST
-*/
+
     {
         { // Standard NMEA mode
+        
+            //  If the port was temporarily closed, reopen as I/O type
+            //  Otherwise, open another port using default properties
+            wxString baud;
+
+            if( old_stream ) {
+                baud = baud_rate_save;
+            }
+            else {
+                baud = _T("4800");
+            }
+            
+            DataStream *dstr = new DataStream( this,
+                                               com_name,
+                                               baud,
+                                               DS_TYPE_INPUT_OUTPUT,
+                                               0 );
+            
             SENTENCE snt;
             NMEA0183 oNMEA0183;
             oNMEA0183.TalkerID = _T ( "EC" );
@@ -433,8 +493,9 @@ ret_point:
                         oNMEA0183.GPwpl.Write ( snt );
                     }
 
-                    SendNMEAMessage( snt.Sentence );
-
+                    if( dstr->SendSentence( snt.Sentence ) )
+                        LogOutputMessage( snt.Sentence, dstr, false );
+                    
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
                     msg += _T(" Sentence: ");
@@ -664,8 +725,9 @@ ret_point:
 
                 for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
                 {
-                    SendNMEAMessage( sentence_array.Item(ii) );
-
+                    if(dstr->SendSentence( sentence_array.Item(ii) ) )
+                        LogOutputMessage( sentence_array.Item(ii), dstr, false );
+                    
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
                     msg += _T(" Sentence: ");
@@ -679,8 +741,9 @@ ret_point:
             }
             else
             {
-                SendNMEAMessage( snt.Sentence );
-
+                if( dstr->SendSentence( snt.Sentence ) )
+                    LogOutputMessage( snt.Sentence, dstr, false );
+                
                 wxString msg(_T("-->GPS Port:"));
                 msg += com_name;
                 msg += _T(" Sentence: ");
@@ -694,8 +757,9 @@ ret_point:
                 wxString term;
                 term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
-                SendNMEAMessage( term );
-
+                if( dstr->SendSentence( term ) )
+                    LogOutputMessage( term, dstr, false );
+                
                 wxString msg(_T("-->GPS Port:"));
                 msg += com_name;
                 msg += _T(" Sentence: ");
@@ -714,10 +778,17 @@ ret_point:
             wxMilliSleep ( 500 );
 
             ret_bool = true;
-            return ret_bool;
+            
+            //  All finished with the temp port
+            dstr->Close();
         }
     }
 
+ret_point_1:
+
+    if( old_stream )
+        CreateAndRestoreSavedStreamProperties();
+    
     return ret_bool;
 }
 
@@ -725,15 +796,20 @@ ret_point:
 bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge *pProgress)
 {
     bool ret_bool = false;
-/*TODO: RE-enable use of Garmin host
+    DataStream *old_stream = FindStream( com_name );
+    if( old_stream ) {
+        SaveStreamProperties( old_stream );
+        StopAndRemoveStream( old_stream );
+    }      
+    
 #ifdef USE_GARMINHOST
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
     {
-        if(m_pdevmon)
-            m_pdevmon->StopIOThread(true);
+//        if(m_pdevmon)
+//            m_pdevmon->StopIOThread(true);
 
-        int v_init = Garmin_GPS_Init(NULL, wxString(_T("usb:")));
+        int v_init = Garmin_GPS_Init(wxString(_T("usb:")));
 
         if(v_init < 0)
         {
@@ -762,7 +838,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
             RoutePointList rplist;
             rplist.Append(prp);
 
-            int ret1 = Garmin_GPS_SendWaypoints(NULL, wxString(_T("usb:")), &rplist);
+            int ret1 = Garmin_GPS_SendWaypoints(wxString(_T("usb:")), &rplist);
 
             if(ret1 != 1)
             {
@@ -778,46 +854,22 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
                 ret_bool = true;
         }
 
-        if(m_pdevmon)
-            m_pdevmon->RestartIOThread();
+//        if(m_pdevmon)
+//            m_pdevmon->RestartIOThread();
 
         return ret_bool;
     }
 #endif
 
     // Are we using Garmin Host mode for uploads?
-    if(m_bGarmin_host)
+    if(bGarmin_GRM_upload_save)
     {
         RoutePointList rplist;
         int ret_val;
 
-        // Request that the thread should pause
-        m_brequest_thread_pause = true;
-
-        bool b_gotPort = false;
-        // Poll, waiting for the Mutex. Abort after 5 seconds
-        long time = ::wxGetLocalTime();
-        while(::wxGetLocalTime() < time + 5)
-        {
-            if(wxMUTEX_BUSY != m_pPortMutex->TryLock())
-            {
-                b_gotPort = true;
-                break;
-            }
-        }
-
-        if(!b_gotPort)
-        {
-            wxString msg(_T("Error Sending waypoint(s)...could not lock Mutex on port: "));
-            msg +=com_name;
-            wxLogMessage(msg);
-
-            return false;
-        }
-
-
+        wxString short_com = com_name.Mid(7);
         // Initialize the Garmin receiver, build required Jeeps internal data structures
-        int v_init = Garmin_GPS_Init(g_pCommMan, com_name);
+        int v_init = Garmin_GPS_Init(short_com);
         if(v_init < 0)
         {
             wxString msg(_T("Garmin GPS could not be initialized on port: "));
@@ -847,7 +899,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
         // Create a RoutePointList with one item
         rplist.Append(prp);
 
-        ret_val = Garmin_GPS_SendWaypoints(g_pCommMan, com_name, &rplist);
+        ret_val = Garmin_GPS_SendWaypoints(short_com, &rplist);
         if(ret_val != 1)
         {
             wxString msg(_T("Error Sending Waypoint(s) to Garmin GPS on port: "));
@@ -867,17 +919,30 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
         else
             ret_bool = true;
 
-ret_point:
-        // Release the Mutex
-        m_brequest_thread_pause = false;
-        m_pPortMutex->Unlock();
-
-        return ret_bool;
+        goto ret_point;
     }
     else
 #endif //USE_GARMINHOST
-*/
+
     { // Standard NMEA mode
+    
+    //  If the port was temporarily closed, reopen as I/O type
+    //  Otherwise, open another port using default properties
+    wxString baud;
+    
+    if( old_stream ) {
+        baud = baud_rate_save;
+    }
+    else {
+        baud = _T("4800");
+    }
+    
+    DataStream *dstr = new DataStream( this,
+                                       com_name,
+                                       baud,
+                                       DS_TYPE_INPUT_OUTPUT,
+                                       0 );
+    
         SENTENCE snt;
         NMEA0183 oNMEA0183;
         oNMEA0183.TalkerID = _T ( "EC" );
@@ -921,8 +986,9 @@ ret_point:
             oNMEA0183.GPwpl.Write ( snt );
         }
 
-        SendNMEAMessage( snt.Sentence );
-
+        if( dstr->SendSentence( snt.Sentence ) )
+            LogOutputMessage( snt.Sentence, dstr, false );
+        
         wxString msg(_T("-->GPS Port:"));
         msg += com_name;
         msg += _T(" Sentence: ");
@@ -935,8 +1001,9 @@ ret_point:
             wxString term;
             term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
-            SendNMEAMessage( term );
-
+            if( dstr->SendSentence( term ) )
+                LogOutputMessage( term, dstr, false );
+            
             wxString msg(_T("-->GPS Port:"));
             msg += com_name;
             msg += _T(" Sentence: ");
@@ -954,9 +1021,19 @@ ret_point:
 
         wxMilliSleep ( 500 );
 
+        //  All finished with the temp port
+        dstr->Close();
+        
         ret_bool = true;
-        return ret_bool;
     }
 
+ret_point:
+    
+    if( old_stream )
+        CreateAndRestoreSavedStreamProperties();
+    
+    
+    return ret_bool;
+    
 }
 

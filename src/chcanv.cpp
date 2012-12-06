@@ -1723,6 +1723,8 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                 QuiltCandidate *qcnew = new QuiltCandidate;
                 qcnew->dbIndex = sure_index;
                 qcnew->ChartScale = ChartData->GetDBChartScale( sure_index );
+                const ChartTableEntry &cte = ChartData->GetChartTableEntry( sure_index );
+                qcnew->quilt_region = GetChartQuiltRegion( cte, vp_local );
                 m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
 
                 b_need_resort = true;
@@ -1802,6 +1804,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
         m_refchart_dbIndex = GetNewRefChart();
         BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
     }
+
         
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
@@ -2064,8 +2067,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         wxRegion vpr_region = unrendered_region;
 
         //    Start with the chart's full region coverage.
-        vpr_region = piqp->quilt_region; //GetChartQuiltRegion( ctei, vp_local );
-
+        vpr_region = piqp->quilt_region; 
+        
 
 #if 1       // This clause went away with full-screen quilting
         // ...and came back with OpenGL....
@@ -7422,10 +7425,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
                     && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
             {
-                OCPNMessageDialog near_point_dlg( this, _("Use nearby waypoint?"),
+                int dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                   _("OpenCPN Route Create"),
                                                   (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-                int dlg_return = near_point_dlg.ShowModal();
+//                int dlg_return = near_point_dlg.ShowModal();
 
                 if( dlg_return == wxID_YES ) {
                     pMousePoint = pNearbyPoint;
@@ -7470,8 +7473,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                         << _("Would you like include the Great Circle routing points for this leg?");
 
-                    OCPNMessageDialog question( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
-                    int answer = question.ShowModal();
+                    int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
 
                     if( answer == wxID_YES ) {
                         RoutePoint* gcPoint;
@@ -7814,9 +7816,16 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             slat = m_cursor_lat;
             slon = m_cursor_lon;
 //                      SelectItem *pFind;
-            wxClientDC cdc( this );
+ //           wxClientDC cdc( this );
+//            ocpnDC dc( cdc );
+#ifdef __WXMAC__
+            wxScreenDC sdc;
+            ocpnDC dc( sdc );
+#else
+            wxClientDC cdc( GetParent() );
             ocpnDC dc( cdc );
-
+#endif
+            
             SelectItem *pFindAIS;
             SelectItem *pFindRP;
             SelectItem *pFindRouteSeg;
@@ -7971,7 +7980,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     m_pFoundRoutePointSecond = (RoutePoint *) pFindRouteSeg->m_pData2;
 
                     m_pSelectedRoute->m_bRtIsSelected = !(seltype && SELTYPE_ROUTEPOINT);
-                    if( m_pSelectedRoute->m_bRtIsSelected ) m_pSelectedRoute->Draw( dc, GetVP() );
+                    if( m_pSelectedRoute->m_bRtIsSelected )
+                        m_pSelectedRoute->Draw( dc, GetVP() );
                     seltype |= SELTYPE_ROUTESEGMENT;
                 }
 
@@ -8119,9 +8129,11 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     wxMenu* menuRoute = new wxMenu( _("Route") );
     wxMenu* menuTrack = new wxMenu( _("Track") );
     wxMenu* menuAIS = new wxMenu( _("AIS") );
-
+    
     wxMenu *subMenuChart = new wxMenu;
 
+    wxMenu *menuFocus = contextMenu;    // This is the one that will be shown
+    
     popx = x;
     popy = y;
 
@@ -8140,12 +8152,20 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 #endif
 
     if( seltype == SELTYPE_ROUTECREATE ) {
+#ifndef __WXOSX__        
         contextMenu->Append( ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
+#else
+        contextMenu->Append( ID_RC_MENU_FINISH,  _( "End Route" ) );
+#endif        
     }
 
     if( ! m_pMouseRoute ) {
         if( m_bMeasure_Active )
+#ifndef __WXOSX__            
             contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE, _menuText( _("Measure Off"), _T("Esc") ) );
+#else
+            contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE,  _("Measure Off") );
+#endif
         else
             contextMenu->Prepend( ID_DEF_MENU_ACTIVATE_MEASURE, _menuText( _( "Measure" ), _T("F4") ) );
     }
@@ -8252,12 +8272,6 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             contextMenu->Append( ID_DEF_MENU_QUILTREMOVE, _( "Hide This Chart" ) );
     }
 
-    if( seltype & SELTYPE_TIDEPOINT ) contextMenu->Append( ID_DEF_MENU_TIDEINFO,
-                _( "Show Tide Information" ) );
-
-    if( seltype & SELTYPE_CURRENTPOINT ) contextMenu->Append( ID_DEF_MENU_CURRENTINFO,
-                _( "Show Current Information" ) );
-
 #ifdef __WXMSW__
     //  If we dismiss the context menu without action, we need to discard some mouse events....
     //  Eat the next 2 button events, which happen as down-up on MSW XP
@@ -8297,6 +8311,9 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             }
         }
     }
+    
+    //  This is the default context menu
+    menuFocus = contextMenu;
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
         menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
@@ -8319,12 +8336,18 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         menuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
         menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
         menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+        
+        //      Set this menu as the "focused context menu"
+        menuFocus = menuRoute;
     }
 
     if( seltype & SELTYPE_TRACKSEGMENT ) {
         menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
         menuTrack->Append( ID_TK_MENU_COPY, _( "Copy" ) );
         menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
+        
+        //      Set this menu as the "focused context menu"
+        menuFocus = menuTrack;
     }
 
     if( seltype & SELTYPE_ROUTEPOINT ) {
@@ -8371,40 +8394,33 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 if( dist * 1852. <= g_nAWMax )
                     menuWaypoint->Append( ID_WP_MENU_SET_ANCHORWATCH,  _( "Set Anchor Watch" ) );
             }
+
+        //      Set this menu as the "focused context menu"
+        menuFocus = menuWaypoint;
     }
 
     if( ! subMenuChart->GetMenuItemCount() ) contextMenu->Destroy( subItemChart );
 
-    //        Invoke the drop-down menu
-    if( seltype & SELTYPE_AISTARGET ) {
-        PopupMenu( menuAIS, x, y );
-        goto done;
+    //  Add the Tide/Current selections if the item was not activated by shortcut in right-click handlers
+    bool bsep = false;
+    if( seltype & SELTYPE_TIDEPOINT ){
+        menuFocus->AppendSeparator();
+        bsep = true;
+        menuFocus->Append( ID_DEF_MENU_TIDEINFO, _( "Show Tide Information" ) );
     }
-
-    if( seltype & SELTYPE_MARKPOINT ) {
-        PopupMenu( menuWaypoint, x, y );
-        goto done;
+    
+    if( seltype & SELTYPE_CURRENTPOINT ) {
+        if( !bsep )
+            menuFocus->AppendSeparator();
+        menuFocus->Append( ID_DEF_MENU_CURRENTINFO, _( "Show Current Information" ) );
     }
-
-    if( seltype & SELTYPE_ROUTEPOINT ) {
-        PopupMenu( menuWaypoint, x, y );
-        goto done;
-    }
-
-    if( seltype & SELTYPE_ROUTESEGMENT ) {
-        PopupMenu( menuRoute, x, y );
-        goto done;
-    }
-
-    if( seltype & SELTYPE_TRACKSEGMENT ) {
-        PopupMenu( menuTrack, x, y );
-        goto done;
-    }
-
-    PopupMenu( contextMenu, x, y );
-
+    
+    //        Invoke the correct focused drop-down menu
+    PopupMenu( menuFocus, x, y );
+        
+        
     // Cleanup
-    done:
+done:
     if( ( m_pSelectedRoute ) ) {
         m_pSelectedRoute->m_bRtIsSelected = false;
     }
@@ -8574,9 +8590,7 @@ void pupHandler_PasteWaypoint() {
         wxString msg;
         msg << _("There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n\n");
         msg << _("Answering 'No' will create a new waypoint at the same location.");
-        OCPNMessageDialog dlg( cc1, msg, _("Merge waypoint?"),
-                 (long) wxYES_NO | wxCANCEL | wxNO_DEFAULT );
-        answer = dlg.ShowModal();
+        answer = OCPNMessageBox( cc1, msg, _("Merge waypoint?"), (long) wxYES_NO | wxCANCEL | wxNO_DEFAULT );
     }
 
     if( answer == wxID_YES ) {
@@ -8636,9 +8650,7 @@ void pupHandler_PasteRoute() {
         wxString msg;
         msg << _("There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n\n");
         msg << _("Answering 'No' will create all new waypoints for this route.");
-        OCPNMessageDialog dlg( cc1, msg, _("Merge waypoints?"),
-                 (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-        answer = dlg.ShowModal();
+        answer = OCPNMessageBox( cc1, msg, _("Merge waypoints?"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
 
         if( answer == wxID_CANCEL ) {
             delete kml;
@@ -9063,10 +9075,10 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
         pSelect->DeleteAllSelectableRouteSegments( m_pSelectedRoute );
 
-        OCPNMessageDialog ask( this, g_pRouteMan->GetRouteReverseMessage(),
+        int ask_return = OCPNMessageBox( this, g_pRouteMan->GetRouteReverseMessage(),
                                _("Rename Waypoints?"), wxYES_NO );
 
-        m_pSelectedRoute->Reverse( ask.ShowModal() == wxID_YES );
+        m_pSelectedRoute->Reverse( ask_return == wxID_YES );
 
         pSelect->AddAllSelectableRouteSegments( m_pSelectedRoute );
 
@@ -9082,11 +9094,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_RT_MENU_DELETE: {
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {
-            OCPNMessageDialog track_delete_confirm_dlg( this,
-                _("Are you sure you want to delete this route?"),
+            dlg_return = OCPNMessageBox( this,  _("Are you sure you want to delete this route?"),
                 _("OpenCPN Route Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-        
-            dlg_return = track_delete_confirm_dlg.ShowModal();
         }
 
         if( dlg_return == wxID_YES ) {
@@ -9281,10 +9290,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_TK_MENU_DELETE: {
         int dlg_return = wxID_YES;
         if( g_bConfirmObjectDelete ) {
-            OCPNMessageDialog track_delete_confirm_dlg( this,
-                _("Are you sure you want to delete this track?"),
+            dlg_return = OCPNMessageBox( this, _("Are you sure you want to delete this track?"),
                 _("OpenCPN Track Delete"), (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-            dlg_return = track_delete_confirm_dlg.ShowModal();
         }
 
         if( dlg_return == wxID_YES ) {
@@ -13558,6 +13565,9 @@ void TCWin::NXEvent( wxCommandEvent& event )
     wxDateTime dm = m_graphday;
 
     wxDateTime graphday_00 = dm.ResetTime();
+    if(graphday_00.GetYear() == 2013)
+        int yyp = 4;
+    
     time_t t_graphday_00 = graphday_00.GetTicks();
     if( !graphday_00.IsDST() && m_graphday.IsDST() ) t_graphday_00 -= 3600;
     if( graphday_00.IsDST() && !m_graphday.IsDST() ) t_graphday_00 += 3600;
@@ -14801,7 +14811,7 @@ void RolloverWin::SetBitmap( int rollover )
     //    Draw the text
     mdc.SetFont( *plabelFont );
 
-    mdc.DrawLabel( m_string, wxRect( 4, 4, m_size.x - 4, m_size.y - 4 ) );
+    mdc.DrawLabel( m_string, wxRect( 0, 0, m_size.x, m_size.y ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
     SetSize( m_position.x, m_position.y, m_size.x, m_size.y );   // Assumes a nominal 32 x 32 cursor
 
     // Retrigger the auto timeout

@@ -75,6 +75,38 @@ static const char *eye[]={
 "....................",
 "...................."};
 
+/* XPM */
+static const char *eyex[]={
+    "20 20 8 1",
+    "# c None",
+    "a c #000000",
+    "b c #333333",
+    "c c #666666",
+    "d c #999999",
+    "f c #cccccc",
+    ". c #ff0000",
+    "e c #ffffff",
+    ".##################.",
+    "..################..",
+    "#..##############..#",
+    "##..############..##",
+    "###..##aaaaaa##..###",
+    "####..bbcddcab..####",
+    "####a..eeffee..ca###",
+    "##abee..daab..beda##",
+    "#acefbe..aa..fcdeda#",
+    "abeefcfb....acddeeba",
+    "#acefbfaa..aabcdeda#",
+    "##aceafa....afbfca##",
+    "###abcb..aa..ccba###",
+    "#####a..dcbd..a#####",
+    "#####..aaaaaa..#####",
+    "####..########..####",
+    "###..##########..###",
+    "##..############..##",
+    "#..##############..#",
+    "..################.."};
+    
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS };
@@ -382,7 +414,7 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
 {
     long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
 #ifdef __WXOSX__
-    style |= wxSTAY_ON_TOP;
+//    style |= wxSTAY_ON_TOP;
 #endif
 
     wxDialog::Create( parent, -1, wxString( _("Route Manager") ), wxDefaultPosition, wxDefaultSize,
@@ -441,7 +473,7 @@ void RouteManagerDialog::Create()
     // note that under MSW for SetColumnWidth() to work we need to create the
     // items with images initially even if we specify dummy image id
 
-    m_pRouteListCtrl->InsertColumn( rmVISIBLE, _T(""), wxLIST_FORMAT_LEFT, 28 );
+    m_pRouteListCtrl->InsertColumn( rmVISIBLE, _("Show"), wxLIST_FORMAT_LEFT, 40 );
     m_pRouteListCtrl->InsertColumn( rmROUTENAME, _("Route Name"), wxLIST_FORMAT_LEFT, 120 );
     m_pRouteListCtrl->InsertColumn( rmROUTEDESC, _("To"), wxLIST_FORMAT_LEFT, 230 );
     /*Seth
@@ -531,7 +563,7 @@ void RouteManagerDialog::Create()
 
     itemBoxSizer3->Add( m_pTrkListCtrl, 1, wxEXPAND | wxALL, DIALOG_MARGIN );
 
-    m_pTrkListCtrl->InsertColumn( colTRKVISIBLE, _T(""), wxLIST_FORMAT_LEFT, 28 );
+    m_pTrkListCtrl->InsertColumn( colTRKVISIBLE, _("Show"), wxLIST_FORMAT_LEFT, 40 );
     m_pTrkListCtrl->InsertColumn( colTRKNAME, _("Track Name"), wxLIST_FORMAT_LEFT, 250 );
     m_pTrkListCtrl->InsertColumn( colTRKLENGTH, _("Length"), wxLIST_FORMAT_LEFT, 100 );
 
@@ -727,6 +759,7 @@ void RouteManagerDialog::Create()
     // create a image list for the list with just the eye icon
     wxImageList *imglist = new wxImageList( 20, 20, true, 1 );
     imglist->Add( wxBitmap( eye ) );
+    imglist->Add( wxBitmap( eyex ) );
     m_pRouteListCtrl->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
     // Assign will handle destroy, Set will not. It's OK, that's what we want
     m_pTrkListCtrl->SetImageList( imglist, wxIMAGE_LIST_SMALL );
@@ -818,7 +851,7 @@ void RouteManagerDialog::UpdateRouteListCtrl()
 
         wxListItem li;
         li.SetId( index );
-        li.SetImage( ( *it )->IsVisible() ? 0 : -1 );
+        li.SetImage( ( *it )->IsVisible() ? 0 : 1 );
         li.SetData( index );
         li.SetText( _T("") );
 
@@ -898,7 +931,7 @@ void RouteManagerDialog::MakeAllRoutesInvisible()
     for( it = ( *pRouteList ).begin(); it != ( *pRouteList ).end(); ++it, ++index ) {
         if( ( *it )->IsVisible() ) { // avoid config updating as much as possible!
             ( *it )->SetVisible( false );
-            m_pRouteListCtrl->SetItemImage( m_pRouteListCtrl->FindItem( -1, index ), -1 ); // Likely not same order :0
+            m_pRouteListCtrl->SetItemImage( m_pRouteListCtrl->FindItem( -1, index ), 1 ); // Likely not same order :0
             pConfig->UpdateRoute( *it ); // auch, flushes config to disk. FIXME
         }
     }
@@ -973,9 +1006,8 @@ void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
 {
-    OCPNMessageDialog mdlg( this, _("Are you sure you want to delete <ALL> routes?"),
+    int dialog_ret = OCPNMessageBox( this, _("Are you sure you want to delete <ALL> routes?"),
             wxString( _("OpenCPN Alert") ), wxYES_NO );
-    int dialog_ret = mdlg.ShowModal();
 
     if( dialog_ret == wxID_YES ) {
         if( g_pRouteMan->GetpActiveRoute() ) g_pRouteMan->DeactivateRoute();
@@ -988,6 +1020,7 @@ void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
 //            m_pFoundRoutePoint = NULL;
 //            m_pFoundRoutePointSecond = NULL;
 
+        m_lastRteItem = -1;
         UpdateRouteListCtrl();
 
         //    Also need to update the track list control, since routes and tracks share a common global list (pRouteList)
@@ -1051,7 +1084,7 @@ void RouteManagerDialog::OnRteZoomtoClick( wxCommandEvent &event )
     // Ensure route is visible
     if( !route->IsVisible() ) {
         route->SetVisible( true );
-        m_pRouteListCtrl->SetItemImage( item, route->IsVisible() ? 0 : -1 );
+        m_pRouteListCtrl->SetItemImage( item, route->IsVisible() ? 0 : 1 );
         pConfig->UpdateRoute( route );
     }
 
@@ -1070,9 +1103,9 @@ void RouteManagerDialog::OnRteReverseClick( wxCommandEvent &event )
     if( !route ) return;
     if( route->m_bIsInLayer ) return;
 
-    OCPNMessageDialog ask( this, g_pRouteMan->GetRouteReverseMessage(), _("Rename Waypoints?"),
+    int ask_return = OCPNMessageBox( this, g_pRouteMan->GetRouteReverseMessage(), _("Rename Waypoints?"),
             wxYES_NO );
-    bool rename = ( ask.ShowModal() == wxID_YES );
+    bool rename = ( ask_return == wxID_YES );
 
     pSelect->DeleteAllSelectableRouteSegments( route );
     route->Reverse( rename );
@@ -1152,11 +1185,14 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
     //    Clicking Visibility column?
     if( clicked_index > -1 && event.GetX() < m_pRouteListCtrl->GetColumnWidth( rmVISIBLE ) ) {
         // Process the clicked item
-        Route *route =
-                pRouteList->Item( m_pRouteListCtrl->GetItemData( clicked_index ) )->GetData();
-        bool wpts_set_viz = wxYES == wxMessageBox( _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
-        route->SetVisible( !route->IsVisible(), wpts_set_viz );
-        m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : -1 );
+        Route *route = pRouteList->Item( m_pRouteListCtrl->GetItemData( clicked_index ) )->GetData();
+                
+        int wpts_set_viz = wxYES;
+        if( g_pRouteMan->DoesRouteContainSharedPoints(route) ) {        
+            wpts_set_viz = wxYES == wxMessageBox( _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
+        }
+        route->SetVisible( !route->IsVisible(), (wpts_set_viz = wxYES) );
+        m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 
         ::wxBeginBusyCursor();
 
@@ -1205,7 +1241,7 @@ void RouteManagerDialog::OnRteSelected( wxListEvent &event )
     // Process the clicked item
     Route *route = pRouteList->Item( m_pRouteListCtrl->GetItemData( clicked_index ) )->GetData();
 //    route->SetVisible(!route->IsVisible());
-    m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : -1 );
+    m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 //    pConfig->UpdateRoute(route);
     cc1->Refresh();
 
@@ -1303,7 +1339,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
 
             int result = precisionDlg->ShowModal();
             if( result == wxID_CANCEL ) break;
-            double precision;
+            double precision = 5.0;
             switch( precisionDlg->GetSelection() ) {
                 case 0: precision = 5.0; break;
                 case 1: precision = 10.0; break;
@@ -1320,8 +1356,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             reduction = 100 * reduction / pointsBefore;
             wxString msg = wxString::Format( _("The amount of data used by the track\n was reduced by %d%%."),
                     reduction );
-            OCPNMessageDialog* dlg = new OCPNMessageDialog( this, msg, _("OpenCPN info"), wxICON_INFORMATION | wxOK );
-            dlg->ShowModal();
+            OCPNMessageBox( this, msg, _("OpenCPN info"), wxICON_INFORMATION | wxOK );
             break;
         }
 
@@ -1423,7 +1458,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             cc1->Refresh();
 
             if( runningSkipped ) {
-                wxMessageDialog skipWarning( NULL,
+                wxMessageDialog skipWarning( this,
                         _("The currently running Track was not merged.\nYou can merge it later when it is completed."),
                         _T("Warning"), wxCANCEL | wxICON_WARNING );
                 skipWarning.ShowModal();
@@ -1455,7 +1490,7 @@ void RouteManagerDialog::UpdateTrkListCtrl()
 
         wxListItem li;
         li.SetId( index );
-        li.SetImage( trk->IsVisible() ? 0 : -1 );
+        li.SetImage( trk->IsVisible() ? 0 : 1 );
         li.SetData( index );
         li.SetText( _T("") );
 
@@ -1537,7 +1572,7 @@ void RouteManagerDialog::OnTrkToggleVisibility( wxMouseEvent &event )
         // Process the clicked item
         Route *route = pRouteList->Item( m_pTrkListCtrl->GetItemData( clicked_index ) )->GetData();
         route->SetVisible( !route->IsVisible() );
-        m_pTrkListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : -1 );
+        m_pTrkListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 
 //            pConfig->UpdateRoute(route);
         cc1->Refresh();
@@ -1672,14 +1707,16 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnTrkDeleteAllClick( wxCommandEvent &event )
 {
-    OCPNMessageDialog mdlg( this, _("Are you sure you want to delete <ALL> tracks?"),
+    int dialog_ret = OCPNMessageBox( this, _("Are you sure you want to delete <ALL> tracks?"),
             wxString( _("OpenCPN Alert") ), wxYES_NO );
-    int dialog_ret = mdlg.ShowModal();
 
     if( dialog_ret == wxID_YES ) {
         g_pRouteMan->DeleteAllTracks();
     }
 
+    m_lastTrkItem = -1;
+    m_lastRteItem = -1;
+    
     UpdateTrkListCtrl();
 
     //    Also need to update the route list control, since routes and tracks share a common global list (pRouteList)
@@ -2026,9 +2063,7 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
         buttons = wxYES_NO | wxCANCEL;
         type = 2;
     }
-    OCPNMessageDialog mdlg( this, prompt,
-            wxString( _("OpenCPN Alert") ), buttons );
-    int answer = mdlg.ShowModal();
+    int answer = OCPNMessageBox( this, prompt, wxString( _("OpenCPN Alert") ), buttons );
     if ( answer == wxID_YES )
         pWayPointMan->DeleteAllWaypoints( true );
     if ( answer == wxID_NO && type == 2 )
@@ -2039,6 +2074,7 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
         pMarkPropDialog->UpdateProperties();
     }
 
+    m_lastWptItem = -1;
     UpdateRouteListCtrl();
     UpdateWptListCtrl();
     cc1->undo->InvalidateUndo();
@@ -2108,7 +2144,7 @@ void RouteManagerDialog::OnLayToggleVisibility( wxMouseEvent &event )
         Layer *layer = pLayerList->Item( m_pLayListCtrl->GetItemData( clicked_index ) )->GetData();
 
         layer->SetVisibleOnChart( !layer->IsVisibleOnChart() );
-        m_pLayListCtrl->SetItemImage( clicked_index, layer->IsVisibleOnChart() ? 0 : -1 );
+        m_pLayListCtrl->SetItemImage( clicked_index, layer->IsVisibleOnChart() ? 0 : 1 );
 
         ToggleLayerContentsOnChart( layer );
     }
@@ -2227,7 +2263,7 @@ void RouteManagerDialog::OnLayToggleChartClick( wxCommandEvent &event )
     if( !layer ) return;
 
     layer->SetVisibleOnChart( !layer->IsVisibleOnChart() );
-    m_pLayListCtrl->SetItemImage( item, layer->IsVisibleOnChart() ? 0 : -1 );
+    m_pLayListCtrl->SetItemImage( item, layer->IsVisibleOnChart() ? 0 : 1 );
 
     ToggleLayerContentsOnChart( layer );
 }
@@ -2399,7 +2435,7 @@ void RouteManagerDialog::UpdateLayListCtrl()
 
         wxListItem li;
         li.SetId( index );
-        li.SetImage( lay->IsVisibleOnChart() ? 0 : -1 );
+        li.SetImage( lay->IsVisibleOnChart() ? 0 : 1 );
         li.SetData( index );
         li.SetText( _T("") );
 

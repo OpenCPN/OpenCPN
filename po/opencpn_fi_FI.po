@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-05 19:42-0500\n"
+"POT-Creation-Date: 2012-12-02 08:16-0500\n"
 "PO-Revision-Date: 2010-12-09 22:35+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaiet@netti.fi>\n"
@@ -1375,6 +1375,13 @@ msgstr "Kirjasinasetukset"
 msgid "Data Source :"
 msgstr "NMEA lähde"
 #
+#
+# 
+# 
+#, fuzzy
+msgid "DataPort"
+msgstr "AIS data-portti"
+#
 # 
 # 
 #, fuzzy
@@ -1778,6 +1785,12 @@ msgstr ""
 msgid "GPS Offset from Midship (m)"
 msgstr ""
 #
+#
+# 
+# 
+msgid "GPS/Plotter Port"
+msgstr "GPS/Plotter portti"
+#
 msgid "GPSD"
 msgstr ""
 #
@@ -1877,6 +1890,12 @@ msgstr "Ohje"
 # 
 msgid "Here"
 msgstr "Tässä"
+#
+# 
+# 
+#, fuzzy
+msgid "Hide AIS Targets"
+msgstr "Näytä AIS maalit"
 #
 # 
 # 
@@ -3488,6 +3507,12 @@ msgstr "Näytä vuorovedet"
 #
 # 
 # 
+#, fuzzy
+msgid "Show"
+msgstr "Näytä vuorovedet"
+#
+# 
+# 
 msgid "Show AIS Targets"
 msgstr "Näytä AIS maalit"
 #
@@ -4170,7 +4195,10 @@ msgstr "Päivitys"
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr ""
 #
-msgid "Use Garmin GRMN/GRMN (Host) mode for uploads"
+msgid "Use Garmin (GRMN) mode for input"
+msgstr ""
+#
+msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr ""
 #
 # 
@@ -4439,10 +4467,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "\n"
 #~ msgstr "\n"
+#
 #
 #
 #
@@ -4453,10 +4483,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "  Kiinteän maalin max nopeus (solmua):"
+#
 #
 #
 #
@@ -4480,10 +4512,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Karttaprojektio on TUNTEMATON, oletus Mercator:"
+#
 #
 #
 # 
@@ -4492,10 +4526,12 @@ msgstr ""
 #~ msgstr "AIS-sarjaportti ei aukea"
 #
 #
+#
 # 
 # 
 #~ msgid "  Could not open serial port '"
 #~ msgstr "  Ssarjaporttia ei pysty avaamaan'"
+#
 #
 #
 #
@@ -4561,6 +4597,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4588,6 +4625,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Poista kaikki reitit"
+#
 #
 #
 #
@@ -4636,6 +4674,7 @@ msgstr ""
 #~ msgstr "&Poista kaikki jäljet"
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -4646,6 +4685,7 @@ msgstr ""
 #~ " Ehdotus:  Kokeile 'xxx.xxx.xxx.xxx' merkintätapaa"
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -4654,6 +4694,7 @@ msgstr ""
 #~ msgstr ""
 #~ "'\n"
 #~ "Ehdotus: Yritä sulkea muut sovellukset."
+#
 #
 #
 #
@@ -4704,11 +4745,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid ":               "
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -4722,11 +4765,6 @@ msgstr ""
 #~ "\n"
 #~ msgstr "Nopeus:            Tuntematon\n"
 #
-#
-# 
-# 
-#~ msgid "AIS Data Port"
-#~ msgstr "AIS data-portti"
 #
 #
 #
@@ -4761,10 +4799,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Activate Route"
 #~ msgstr "Aktivoi reitti"
+#
 #
 #
 #
@@ -4774,10 +4814,12 @@ msgstr ""
 #~ msgstr "Valitse mukaan"
 #
 #
+#
 # 
 # 
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Lisää tämä kartta tilkkutäkkiin."
+#
 #
 #
 #
@@ -4804,10 +4846,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "All files (*.*)|*.*"
 #~ msgstr "Kaikki tiedostot (*.*)|*.*"
+#
 #
 #
 # 
@@ -4817,10 +4861,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Available Chart Directories"
 #~ msgstr "Käytettävät karttahakemistot"
+#
 #
 #
 #
@@ -4834,6 +4880,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -4842,10 +4889,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 # 
@@ -4856,10 +4905,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 zoom-detaljit"
+#
 #
 #
 #
@@ -4872,10 +4923,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f NM\n"
+#
 #
 #
 # 
@@ -4890,6 +4943,7 @@ msgstr ""
 #~ "Onko gpsd käynnissä?\n"
 #~ "\n"
 #~ "gpsd isäntä on: "
+#
 #
 #
 #
@@ -4940,11 +4994,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "CallSign:             "
 #~ msgstr "Sijainti:"
+#
 #
 #
 #
@@ -4970,10 +5026,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart Display Filters"
 #~ msgstr "Karttanäyttösuodin"
+#
 #
 #
 # 
@@ -4981,6 +5039,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Sijainti"
+#
 #
 #
 #
@@ -5045,6 +5104,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5080,11 +5140,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Class:                "
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -5154,6 +5216,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5187,10 +5250,12 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "TCP/IP-hostia ei löydy '"
+#
 #
 #
 #
@@ -5204,6 +5269,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5213,11 +5279,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Course:                 Unavailable\n"
 #~ msgstr "Nopeus:            Tuntematon\n"
+#
 #
 #
 #
@@ -5267,10 +5335,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Cursor: "
 #~ msgstr "Osoitin:"
+#
 #
 #
 #
@@ -5302,11 +5372,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Kirjasinväri."
+#
 #
 #
 #
@@ -5327,10 +5399,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Poista merkintä"
+#
 #
 #
 #
@@ -5341,6 +5415,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Selection"
@@ -5348,10 +5423,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Track"
 #~ msgstr "Poista jälki"
+#
 #
 #
 #
@@ -5363,10 +5440,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Destination:          "
 #~ msgstr "Päämäärä:"
+#
 #
 #
 # 
@@ -5377,10 +5456,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ENC/Vector"
 #~ msgstr "ENC/Vektori"
+#
 #
 #
 #
@@ -5394,10 +5475,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ETA:                  "
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -5463,6 +5546,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5475,6 +5559,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
@@ -5482,10 +5567,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Etc."
 #~ msgstr "jne."
+#
 #
 #
 #
@@ -5546,6 +5633,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5562,6 +5650,7 @@ msgstr ""
 #~ "libgps:ää ei pysty avaamaan.\n"
 #~ "\n"
 #~ "gpsd-isäntä on: "
+#
 #
 #
 #
@@ -5600,11 +5689,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "From Ownship: %03d Deg   "
 #~ msgstr "Omasta aluksesta: %03d ast  %6.2f mpk"
+#
 #
 #
 #
@@ -5614,16 +5705,12 @@ msgstr ""
 #~ msgstr "GPS"
 #
 #
-# 
-# 
-#~ msgid "GPS/Plotter Port"
-#~ msgstr "GPS/Plotter portti"
-#
 #
 # 
 # 
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD Data Server"
+#
 #
 #
 #
@@ -5689,6 +5776,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5716,6 +5804,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB data"
+#
 #
 #
 #
@@ -5781,6 +5870,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5811,10 +5901,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Go To Here"
 #~ msgstr "Mene tänne"
+#
 #
 #
 #
@@ -5836,6 +5928,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5845,11 +5938,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "IMO:                 %8d\n"
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -5891,11 +5986,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Jump To Position"
 #~ msgstr "Sijainti"
+#
 #
 #
 #
@@ -5920,6 +6017,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5928,10 +6026,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Leg/Route"
 #~ msgstr "Reittiosuus/reitti"
+#
 #
 #
 #
@@ -5958,11 +6058,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -6025,10 +6127,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Merkitse ikoni"
+#
 #
 #
 #
@@ -6064,11 +6168,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Merkkaa /WP ominaisuudet"
+#
 #
 #
 #
@@ -6088,10 +6194,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Metres"
 #~ msgstr "Metrit"
+#
 #
 #
 # 
@@ -6101,10 +6209,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "NMEA Options"
 #~ msgstr "NMEA asetukset"
+#
 #
 #
 #
@@ -6118,10 +6228,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Navigational Status:  "
 #~ msgstr "Status: "
+#
 #
 #
 #
@@ -6150,11 +6262,13 @@ msgstr ""
 #~ msgstr "Uusi merkintä"
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Number of Radar Rings"
 #~ msgstr "Tutkarenkaiden määrä"
+#
 #
 #
 # 
@@ -6164,6 +6278,7 @@ msgstr ""
 #~ msgstr "Oman aluksen asetukset"
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6171,11 +6286,13 @@ msgstr ""
 #~ msgstr "Jälkipisteiden etäisyysväli (mpk):"
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Jälkipisteiden aikaväli (sekuntia):"
+#
 #
 #
 #
@@ -6241,6 +6358,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6268,6 +6386,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
+#
 #
 #
 #
@@ -6333,6 +6452,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6364,6 +6484,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6371,6 +6492,7 @@ msgstr ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Raportin ikä:               %3d Sec.\n"
+#
 #
 #
 #
@@ -6415,6 +6537,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6426,6 +6549,7 @@ msgstr ""
 #~ msgstr ""
 #~ "libgps API Version mismatch.\n"
 #~ "Opencpn found version %d.%d, but requires at least version 3.1"
+#
 #
 #
 #
@@ -6487,16 +6611,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Tulostus"
 #
 #
+#
 # 
 # 
 #~ msgid "Radar rings"
 #~ msgstr "Tutkarenkaat"
+#
 #
 #
 #
@@ -6510,6 +6637,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Range:                %5.1f NM\n"
@@ -6517,10 +6645,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Raster"
 #~ msgstr "Rasteri"
+#
 #
 #
 #
@@ -6534,11 +6664,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Raportin ikä:               %3d Sec.\n"
+#
 #
 #
 #
@@ -6552,6 +6684,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6561,11 +6694,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 #~ msgstr "Raportin ikä:               %3d Sec.\n"
+#
 #
 #
 #
@@ -6611,6 +6746,7 @@ msgstr ""
 #~ "\n"
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6618,10 +6754,12 @@ msgstr ""
 #~ msgstr "Poista tämä kartta tilkkutäkistä."
 #
 #
+#
 # 
 # 
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Poista tämä kartta tilkkutäkistä."
+#
 #
 #
 #
@@ -6651,11 +6789,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Route Distance: "
 #~ msgstr "Kokonaismatka"
+#
 #
 #
 #
@@ -6705,6 +6845,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6713,11 +6854,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Reitti"
+#
 #
 #
 #
@@ -6767,10 +6910,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "Valitse tilkkutäkin karttatyypit"
+#
 #
 #
 #
@@ -6836,6 +6981,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6875,6 +7021,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6883,10 +7030,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Settings"
 #~ msgstr "Asetukset"
+#
 #
 #
 #
@@ -6933,10 +7082,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show ATON labels"
 #~ msgstr "Näytä ATON-leimat"
+#
 #
 #
 #
@@ -7002,6 +7153,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7029,6 +7181,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Näytä GRIB-ruutu"
+#
 #
 #
 #
@@ -7090,6 +7243,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Printing Icon"
@@ -7109,10 +7263,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Näytä jälki-ikoni"
+#
 #
 #
 #
@@ -7163,6 +7319,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -7172,6 +7329,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7214,6 +7372,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -7223,6 +7382,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7240,6 +7400,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -7249,6 +7410,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7266,6 +7428,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -7275,6 +7438,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7292,11 +7456,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Speed:                  Unavailable\n"
 #~ msgstr "Nopeus:            Tuntematon\n"
+#
 #
 #
 #
@@ -7308,10 +7474,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi Data Server"
+#
 #
 #
 #
@@ -7324,10 +7492,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -7338,11 +7508,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Tide & Current Dataset Selection"
 #~ msgstr "Näytä virrat"
+#
 #
 #
 #
@@ -7400,6 +7572,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7422,10 +7595,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ToolBox"
 #~ msgstr "Työkalut"
+#
 #
 #
 #
@@ -7437,10 +7612,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Mittakaava: %8.0f       "
+#
 #
 #
 #
@@ -7454,11 +7631,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "UN Ship Type:         "
 #~ msgstr "Alustyyppi:"
+#
 #
 #
 # 
@@ -7473,6 +7652,7 @@ msgstr ""
 #~ "gpsd isäntä on: "
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -7483,10 +7663,12 @@ msgstr ""
 #~ "gpsd-isäntä on: "
 #
 #
+#
 # 
 # 
 #~ msgid "Units"
 #~ msgstr "Yksiköt"
+#
 #
 #
 #
@@ -7536,10 +7718,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Use SCAMIN"
 #~ msgstr "Käytä SCAMIN-asetusta"
+#
 #
 #
 #
@@ -7589,10 +7773,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Waypoint Locking"
 #~ msgstr "Kiintopisteiden lukitus"
+#
 #
 #
 #
@@ -7603,10 +7789,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "cm93 Detail"
 #~ msgstr "CM93 detaljit"
+#
 #
 #
 #

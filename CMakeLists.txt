@@ -147,6 +147,8 @@ SET( wxWidgets_USE_STATIC OFF)
 
 FIND_PACKAGE(wxWidgets REQUIRED)
 INCLUDE(${wxWidgets_USE_FILE})
+    MESSAGE (STATUS "Found wxWidgets..." )
+    MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
 
 #  Search for wxWidgets 2.9
 STRING(REGEX MATCHALL "2.9" wx_Version "${wxWidgets_INCLUDE_DIRS}")
@@ -192,6 +194,8 @@ SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/build)
 # Let cmake find additional modules private to opencpn
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
+IF (NOT WIN32 AND NOT APPLE)
+
 FIND_PACKAGE(GTK2 2.6)
 IF (GTK2_FOUND)
     MESSAGE (STATUS "Found GTK2")
@@ -208,6 +212,7 @@ IF (GTK2_FOUND)
 ELSE(GTK2_FOUND)
     MESSAGE (STATUS "GTK2 Not found...")
 ENDIF (GTK2_FOUND)
+ENDIF (NOT WIN32 AND NOT APPLE)
 
 FIND_PACKAGE(Gettext REQUIRED)
 
@@ -630,11 +635,11 @@ IF(APPLE)
   SET(CMAKE_C_FLAGS_RELEASE "-O3 -arch ${ARCH}")
   SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH}")
 
-  SET(CMAKE_CXX_FLAGS "-O2 -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -arch ${ARCH}")
-  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS "-O2 -arch ${ARCH} -Wno-deprecated -Wno-deprecated-declarations")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -arch ${ARCH} -Wno-deprecated -Wno-deprecated-declarations")
+  SET(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -arch ${ARCH} -Wno-deprecated -Wno-deprecated-declarations")
+  SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -arch ${ARCH} -Wno-deprecated -Wno-deprecated-declarations")
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH} -Wno-deprecated -Wno-deprecated-declarations")
 
   SET(CMAKE_EXE_LINKER_FLAGS "-O2 -arch ${ARCH}")
   SET(CMAKE_SHARED_LINKER_FLAGS "-O2 -arch ${ARCH}")
@@ -646,6 +651,17 @@ IF(APPLE)
     )
 ENDIF(APPLE)
 
+#  Mac has trouble finding libgobject-2.0.dylib
+#  We look for it explicitely
+IF(APPLE)
+#       Assume pkg-config is available.
+    INCLUDE( FindPkgConfig )
+    PKG_SEARCH_MODULE( GOBJECT REQUIRED gobject-2.0 )
+#    MESSAGE (STATUS "    GOBJECT: " ${GOBJECT_LDFLAGS})
+
+    SET(EXTRA_LIBS ${EXTRA_LIBS} ${GOBJECT_LDFLAGS})
+    SET(EXTRA_LIBS ${EXTRA_LIBS} "iconv")
+ENDIF(APPLE)
 
 IF(WIN32)
     IF(MSVC)

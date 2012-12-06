@@ -320,6 +320,7 @@ public:
     wxChoice* m_choicePriority;
     wxCheckBox* m_cbCheckCRC;
     wxCheckBox* m_cbGarminHost;
+    wxCheckBox* m_cbGarminUploadHost;
     wxCheckBox* m_cbFurunoGP3X;
     wxCheckBox* m_cbNMEADebug;
     wxCheckBox* m_cbFilterSogCog;
@@ -539,6 +540,7 @@ public:
     void SetGroupArray( ChartGroupArray *pGroupArray ) { m_pGroupArray = pGroupArray; }
     void SetInitialSettings();
     void CompleteInitialSettings();
+    void PopulateTrees();
     
     void PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array, const wxColour &col,
             wxFont *pFont = NULL );
@@ -559,6 +561,8 @@ public:
     bool modified;
     bool m_UIcomplete;
     bool m_settingscomplete;
+    bool m_treespopulated;
+    
     
 private:
     int FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,

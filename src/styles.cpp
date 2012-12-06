@@ -452,7 +452,12 @@ void Style::SetColorScheme( ColorScheme cs )
     Unload();
     wxBitmap bm = graphics->GetSubBitmap(
             wxRect( consoleTextBackgroundLoc, consoleTextBackgroundSize ) );
-    consoleTextBackground = SetBitmapBrightness( bm );
+
+    // The background bitmap in the icons file may be too small, so will grow it arbitrailly
+    wxImage image = bm.ConvertToImage();
+    image.Rescale( consoleTextBackgroundSize.GetX() * 2, consoleTextBackgroundSize.GetY() * 2 , wxIMAGE_QUALITY_NORMAL );
+    wxBitmap bn( image );
+    consoleTextBackground = SetBitmapBrightness( bn );
 }
 
 void Style::Unload()
@@ -875,7 +880,7 @@ void StyleManager::Init( wxString fromPath )
 
 void StyleManager::SetStyle( wxString name )
 {
-    Style* style;
+    Style* style = NULL;
     bool ok = true;
     if( currentStyle ) currentStyle->Unload();
     else ok = false;
@@ -928,9 +933,11 @@ void StyleManager::SetStyle( wxString name )
         return;
     }
 
-    style->consoleTextBackground = style->graphics->GetSubBitmap(
+    if(style) {
+        style->consoleTextBackground = style->graphics->GetSubBitmap(
             wxRect( style->consoleTextBackgroundLoc, style->consoleTextBackgroundSize ) );
-    nextInvocationStyle = style->name;
+        nextInvocationStyle = style->name;
+    }
     return;
 }
 

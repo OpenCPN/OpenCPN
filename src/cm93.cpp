@@ -5986,7 +5986,13 @@ ListOfObjRazRules *cm93compchart::GetObjRuleListAtLatLon ( float lat, float lon,
       SetVPPositive ( &vp_positive );
 
       if ( !VPoint->b_quilt )
-            return  m_pcm93chart_current->GetObjRuleListAtLatLon ( lat, alon, select_radius, &vp_positive );
+          if( m_pcm93chart_current )
+              return  m_pcm93chart_current->GetObjRuleListAtLatLon ( lat, alon, select_radius, &vp_positive );
+          else {
+              //     As default, return an empty list
+              ListOfObjRazRules *ret_ptr = new ListOfObjRazRules;
+              return ret_ptr;
+          }
       else
       {
             UpdateRenderRegions ( *VPoint );

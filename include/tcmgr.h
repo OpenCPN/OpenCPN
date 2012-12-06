@@ -221,6 +221,7 @@ public:
     double      *m_work_buffer;
     int         first_year;
     time_t      epoch;
+    int         epoch_year;
 
 };
 

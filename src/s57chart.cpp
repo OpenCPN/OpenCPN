@@ -4058,7 +4058,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 
     }
 
-    if( bbad_update ) OCPNMessageBox(
+    if( bbad_update ) OCPNMessageBox(NULL, 
             _T("Errors encountered processing ENC update file(s).\nENC features may be incomplete or inaccurate."),
             _T("OpenCPN Create SENC"), wxOK | wxICON_EXCLAMATION );
 

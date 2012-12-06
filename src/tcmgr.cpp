@@ -97,7 +97,6 @@ hhmm2seconds (char *hhmm)
 time_t s_next_epoch      = TIDE_BAD_TIME; /* next years newyears */
 time_t s_this_epoch      = TIDE_BAD_TIME; /* this years newyears */
 int    s_this_year       = -1;
-int    s_year            = -1;
 
 double time2dt_tide (time_t t, int deriv, IDX_entry *pIDX);
 int yearoftimet (time_t t);
@@ -223,14 +222,14 @@ double time2mean (time_t t, IDX_entry *pIDX)
     double tide = 0.0;
     int a;
     int new_year = yearoftimet (t);
-    if (s_year != new_year)
+    if (pIDX->epoch_year != new_year)
         happy_new_year (pIDX, new_year);
 
     for (a=0; a<pIDX->num_csts; a++) {
         if (pIDX->m_cst_speeds[a] < 6e-6) {
             tide += pIDX->m_work_buffer[a] *
                     cos (pIDX->m_cst_speeds[a] * ((long)(t - pIDX->epoch) + pIDX->pref_sta_data->meridian) +
-                         pIDX->m_cst_epochs[a][new_year-pIDX->first_year] - pIDX->pref_sta_data->epoch[a]);
+                    pIDX->m_cst_epochs[a][pIDX->epoch_year-pIDX->first_year] - pIDX->pref_sta_data->epoch[a]);
         }
     }
 
@@ -462,15 +461,13 @@ double _time2dt_tide (time_t t, int deriv, IDX_entry *pIDX)
     int a, b;
     double term, tempd;
 
-    int year = yearoftimet(t);
-
     tempd = M_PI / 2.0 * deriv;
     for (a=0; a<pIDX->num_csts; a++)
     {
         term = pIDX->m_work_buffer[a] *
                cos(tempd +
                    pIDX->m_cst_speeds[a] * ((long)(t - pIDX->epoch) + pIDX->pref_sta_data->meridian) +
-                   pIDX->m_cst_epochs[a][year-pIDX->first_year] - pIDX->pref_sta_data->epoch[a]);
+                   pIDX->m_cst_epochs[a][pIDX->epoch_year-pIDX->first_year] - pIDX->pref_sta_data->epoch[a]);
         for (b = deriv; b > 0; b--)
             term *= pIDX->m_cst_speeds[a];
         dt_tide += term;
@@ -564,21 +561,23 @@ double blend_tide (time_t t, unsigned int deriv, int first_year, double blend, I
     /*
      * Do the blending.
      */
+    
+    
     f = fl[deriv];
     for (n = 0; n <= deriv; n++)
     {
         f += fact * w[n] * (fr[deriv-n] - fl[deriv-n]);
         fact *= (double)(deriv - n)/(n+1) * (1.0/TIDE_BLEND_TIME);
     }
+    printf(" %ld  %g     %g %g %g\n", t, blend, fr[0], fl[0], f);
     return f;
 }
 
 double  time2dt_tide (time_t t, int deriv, IDX_entry *pIDX)
 {
     int           new_year;
-    time_t tt = time(NULL);
-    int yott = ((gmtime (&tt))->tm_year) + 1900;
-    new_year = yott;                    //= yearoftimet(t);
+    int yott = yearoftimet( t );
+    new_year = yott;
 
     /* Make sure our values of next_epoch and epoch are up to date. */
     if (new_year != s_this_year)
@@ -615,7 +614,7 @@ double  time2dt_tide (time_t t, int deriv, IDX_entry *pIDX)
     /*
      * Else, we're far enough from newyears to ignore the blending.
      */
-    if (s_year != new_year)
+    if (pIDX->epoch_year != new_year)
         happy_new_year(pIDX, new_year);
 
     return _time2dt_tide(t, deriv, pIDX);
@@ -738,7 +737,7 @@ void set_epoch (IDX_entry *pIDX, int year)
 /* Re-initialize for a different year */
 void happy_new_year (IDX_entry *pIDX, int new_year)
 {
-    s_year = new_year;
+    pIDX->epoch_year = new_year;
     figure_multipliers ( pIDX, new_year );
     set_epoch ( pIDX, new_year );
 }
@@ -876,8 +875,8 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float& dir)
     }
 
     pIDX->max_amplitude = 0.0;                // Force multiplier re-compute
-    time_t tt = time(NULL);
-    int yott = ((gmtime (&tt))->tm_year) + 1900;
+    int yott = yearoftimet( t );
+    
     happy_new_year (pIDX, yott);              //Calculate new multipliers
 
     //    Finally, calculate the tide/current
@@ -988,8 +987,7 @@ bool TCMgr::GetTideFlowSens(time_t t, int sch_step, int idx, float &tcvalue_now,
     }
 
     pIDX->max_amplitude = 0.0;                // Force multiplier re-compute
-    time_t tt = time(NULL);
-    int yott = ((gmtime (&tt))->tm_year) + 1900;
+    int yott = yearoftimet( t );
     happy_new_year (pIDX, yott);              //Force new multipliers
 
     //    Finally, process the tide flow sens
@@ -1023,9 +1021,8 @@ void TCMgr::GetHightOrLowTide(time_t t, int sch_step_1, int sch_step_2, float ti
     }
 
     pIDX->max_amplitude = 0.0;                // Force multiplier re-compute
-    time_t tt = time(NULL);
-    int yott = ((gmtime (&tt))->tm_year) + 1900;
-    happy_new_year (pIDX, yott);//Force new multipliers
+    int yott = yearoftimet( t );
+    happy_new_year (pIDX, yott);
 
     // Finally, calculate the Hight and low tides
     double newval = tide_val;

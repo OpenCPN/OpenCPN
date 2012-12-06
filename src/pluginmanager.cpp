@@ -1477,7 +1477,11 @@ void PushNMEABuffer( wxString buf )
 {
     OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
     event.SetNMEAString( buf );
-
+    wxString source(_T("PlugIn"));
+    event.SetDataSource( source );
+    event.SetPriority( 0 );
+    event.SetDataStream( NULL );        // PlugIns have virtual DataStream
+    
     g_pMUX->AddPendingEvent( event );
 }
 
@@ -1531,7 +1535,7 @@ void SendPluginMessage( wxString message_id, wxString message_body )
     OCPN_MsgEvent Nevent(wxEVT_OCPN_MSG, 0);
     Nevent.SetID(message_id);
     Nevent.SetJSONText(message_body);
-    gFrame->AddPendingEvent(Nevent);
+    gFrame->GetEventHandler()->AddPendingEvent( Nevent );
     
 }
 

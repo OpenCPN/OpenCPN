@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-05 19:42-0500\n"
-"PO-Revision-Date: 2012-10-11 21:03-0300\n"
+"POT-Creation-Date: 2012-12-02 08:16-0500\n"
+"PO-Revision-Date: 2012-11-29 18:35-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
 "Language: sv_SE\n"
@@ -376,7 +376,7 @@ msgid "(unnamed)"
 msgstr "(namnlös)"
 #
 msgid ", Out: None"
-msgstr ""
+msgstr ", Ut: Ingen"
 #
 #
 msgid "-"
@@ -576,10 +576,10 @@ msgid "About OpenCPN"
 msgstr "Om OpenCPN"
 #
 msgid "Accept Sentences"
-msgstr ""
+msgstr "Ta emot kommandon"
 #
 msgid "Accept only sentences"
-msgstr ""
+msgstr "Kommandon som tas emot"
 #
 #
 msgid "Activate"
@@ -601,9 +601,8 @@ msgid "Add"
 msgstr "Lägg till"
 #
 #
-#, fuzzy
 msgid "Add Connection"
-msgstr "Anslutningar"
+msgstr "Lägg till anslutning"
 #
 #
 msgid "Add Dataset..."
@@ -620,7 +619,7 @@ msgid "Add new"
 msgstr "Lägg till ny"
 #
 msgid "Address"
-msgstr ""
+msgstr "Address"
 #
 #
 msgid "Aground"
@@ -643,7 +642,7 @@ msgid "All Charts"
 msgstr "Alla sjökort"
 #
 msgid "All but"
-msgstr ""
+msgstr "Alla utom"
 #
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -652,6 +651,11 @@ msgid ""
 "out all the sentences with certain TALKER prefix (like GP, AI etc.). The "
 "filter accepts just these three formats."
 msgstr ""
+"Följande former accepteras av filtret: NMEA-kommandon, normalt tre tecken "
+"långa (exempelvis RMC, GGA, etc). Kommandon som skall filtreras kan också "
+"förses med ett prefix på två tecken som då identifierar den sändande enheten, "
+"kallad TALKER. Då fås kommandon av formen GPGGA eller AITXT. Det går också "
+"bra att ange endast TALKER i filtret, då med två tecklen."
 #
 msgid "Anchorage created "
 msgstr "Ankring skapad"
@@ -744,9 +748,8 @@ msgid "Basic"
 msgstr "Enkel"
 #
 #
-#, fuzzy
 msgid "Baudrate"
-msgstr "NMEA datahastighet"
+msgstr "Datahastighet"
 #
 #
 msgid "Beacon, Isolated Danger"
@@ -1011,7 +1014,7 @@ msgid "Combo!"
 msgstr "Kombo!"
 #
 msgid "Confirm deletion of tracks and routes"
-msgstr ""
+msgstr "Vill du verkligen ta bort spår och rutter?"
 #
 #
 msgid "Connections"
@@ -1034,7 +1037,7 @@ msgid "Container vessel"
 msgstr "Containerfartyg"
 #
 msgid "Control checksum"
-msgstr ""
+msgstr "Använd kontrollsumma"
 #
 msgid "Copy"
 msgstr "Kopiera"
@@ -1125,13 +1128,17 @@ msgid "Dark Yellow"
 msgstr "Mörkgul"
 #
 #
-#, fuzzy
 msgid "Data Connections"
 msgstr "Anslutningar"
 #
 #
 msgid "Data Source :"
 msgstr "NMEA datakälla:"
+#
+#
+#, fuzzy
+msgid "DataPort"
+msgstr "Hamn"
 #
 #
 msgid "De-Cluttered Text"
@@ -1279,10 +1286,10 @@ msgid "Drop Mark"
 msgstr "Placera waypoint"
 #
 msgid "Drop Sentences"
-msgstr ""
+msgstr "Ignorera kommandon"
 #
 msgid "Drop sentences"
-msgstr ""
+msgstr "Ignorera kommandon"
 #
 #
 msgid "E&xport All..."
@@ -1339,10 +1346,10 @@ msgid "Enter Group Name"
 msgstr "Buntens namn"
 #
 msgid "Enter the NMEA sentence"
-msgstr ""
+msgstr "Ange NMEA-kommando"
 #
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
-msgstr ""
+msgstr "Ange NMEA-kommando (2, 3 eller 5 tecken)"
 #
 #
 msgid "Error on Route Upload.  Please check logfiles..."
@@ -1353,7 +1360,7 @@ msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr "Fel vid uppladdning av waypoint.  Kontrollera loggfilen..."
 #
 msgid "Error!"
-msgstr ""
+msgstr "Fel!"
 #
 #
 msgid "Estimated time : "
@@ -1411,14 +1418,12 @@ msgid "Filter NMEA Course and Speed data"
 msgstr "Filtrera NMEA kurs- och hastighetsdata"
 #
 #
-#, fuzzy
 msgid "Filter period (sec)"
 msgstr "Filterperiod (sek)"
 #
 #
-#, fuzzy
 msgid "Filters"
-msgstr "Kilometer"
+msgstr "Filter"
 #
 #
 msgid "Fishing boat"
@@ -1443,7 +1448,7 @@ msgid "Force Full Database Rebuild"
 msgstr "Läs in alla sjökort på nytt"
 #
 msgid "Format uploads for Furuno GP3X"
-msgstr ""
+msgstr "Formatera för överföring till Furuno GP3X"
 #
 #
 msgid "Freightbarge"
@@ -1463,8 +1468,11 @@ msgstr "GPS avstånd från för (m)"
 msgid "GPS Offset from Midship (m)"
 msgstr "GPS avstånd från midskepps (m)"
 #
-msgid "GPSD"
+msgid "GPS/Plotter Port"
 msgstr ""
+#
+msgid "GPSD"
+msgstr "GPSD"
 #
 msgid "GPSGate Buddy"
 msgstr "GPSGate Buddy"
@@ -1481,7 +1489,6 @@ msgid "Gas tanker"
 msgstr "Gastanker"
 #
 #
-#, fuzzy
 msgid "General"
 msgstr "Allmänna inställningar"
 #
@@ -1525,6 +1532,11 @@ msgstr "Hjälp"
 #
 msgid "Here"
 msgstr "Här"
+#
+#
+#, fuzzy
+msgid "Hide AIS Targets"
+msgstr "AIS-fartyg"
 #
 #
 msgid "Hide Target CPA"
@@ -1575,12 +1587,13 @@ msgstr "Symbol"
 #
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr ""
+"Kryssa här för att enbart acceptera kommandon med korrekt kontrollsumma."
 #
 msgid "Ignore Sentences"
-msgstr ""
+msgstr "Ignorera kommandon"
 #
 msgid "Ignore sentences"
-msgstr ""
+msgstr "Ignorera kommandon"
 #
 #
 msgid "Import GPX file"
@@ -1590,16 +1603,15 @@ msgstr "Importera GPX-fil"
 msgid "Important Text Only"
 msgstr "Enbart viktiga texter"
 #
-#, fuzzy
 msgid "In: None"
-msgstr "Ingen"
+msgstr "In: Ingen"
 #
 #
 msgid "Inland Blue Flag"
 msgstr "Blå flagg"
 #
 msgid "Input filtering"
-msgstr ""
+msgstr "Filtrera indata"
 #
 #
 msgid "Insert Waypoint"
@@ -1614,7 +1626,7 @@ msgid "Isolated Danger"
 msgstr "Isolerad fara"
 #
 msgid "Just "
-msgstr ""
+msgstr "Endast"
 #
 msgid "KML Standard (Google Earth and others)"
 msgstr "Standard KML (för t ex Google Earth)"
@@ -1689,7 +1701,6 @@ msgid "Leg: from "
 msgstr "Ben: från "
 #
 #
-#, fuzzy
 msgid "Legend"
 msgstr "Rubriker i Aktiv rutt-fönstret"
 #
@@ -1899,10 +1910,10 @@ msgid "Merge waypoints?"
 msgstr "Slå samman waypoints?"
 #
 msgid "Message accepted"
-msgstr ""
+msgstr "Kommandot accepterat"
 #
 msgid "Message filtered and dropped"
-msgstr ""
+msgstr "Kommandot bortfiltrerat"
 #
 #
 msgid "Meters"
@@ -1981,16 +1992,14 @@ msgstr "Flytta waypoint"
 msgid "NMEA"
 msgstr "NMEA"
 #
-#, fuzzy
 msgid "NMEA 0183"
-msgstr "NMEA"
+msgstr "NMEA 0183"
 #
-#, fuzzy
 msgid "NMEA 2000"
-msgstr "NMEA"
+msgstr "NMEA 2000"
 #
 msgid "NMEA Debug Window"
-msgstr ""
+msgstr "NMEA Datafönster"
 #
 msgid "NMi"
 msgstr "NM"
@@ -2014,13 +2023,11 @@ msgid "Navigate To This"
 msgstr "Navigera till denna"
 #
 #
-#, fuzzy
 msgid "Net"
-msgstr "Nästa"
+msgstr "Nätverk"
 #
-#, fuzzy
 msgid "Network"
-msgstr "GPSD via nätverk"
+msgstr "Nätverk"
 #
 #
 msgid "New Chart Group"
@@ -2037,9 +2044,8 @@ msgstr "Nästa"
 msgid "Next tide event"
 msgstr "Nästa tidvatten"
 #
-#, fuzzy
 msgid "No"
-msgstr "Ingen"
+msgstr "Nej"
 #
 #
 msgid "No CPA Calculation if target range is greater than (NMi)"
@@ -2191,18 +2197,17 @@ msgid "Other"
 msgstr "Annan"
 #
 msgid "Output"
-msgstr ""
+msgstr "Utdata"
 #
 #
-#, fuzzy
 msgid "Output Message"
-msgstr "OpenCPN meddelande"
+msgstr "Utdata"
 #
 msgid "Output filtering"
-msgstr ""
+msgstr "Filtrering av utdata"
 #
 msgid "Output on this port ( as Autopilot or NMEA Repeater)"
-msgstr ""
+msgstr "Skicka utdata på den här porten"
 #
 #
 msgid "OverZoom"
@@ -2229,9 +2234,8 @@ msgid "Paper Chart"
 msgstr "Tryckt sjökort"
 #
 #
-#, fuzzy
 msgid "Parameters"
-msgstr "Meter"
+msgstr "Parametrar"
 #
 #
 msgid "Pass/V"
@@ -2262,7 +2266,7 @@ msgid "Paste Waypoint"
 msgstr "Klistra in waypoint"
 #
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 #
 #
 msgid "Pilot Vessel"
@@ -2379,7 +2383,7 @@ msgid "Print Chart"
 msgstr "Skriv ut sjökort"
 #
 msgid "Priority"
-msgstr ""
+msgstr "Prioritet"
 #
 msgid "Problem discovered"
 msgstr "Ett problem upptäcktes"
@@ -2401,7 +2405,7 @@ msgid "Properties..."
 msgstr "&Egenskaper..."
 #
 msgid "Protocol"
-msgstr ""
+msgstr "Protokoll"
 #
 #
 msgid "Pushboat, single"
@@ -2559,9 +2563,8 @@ msgid "Remove Chart"
 msgstr "Ta bort sjökort"
 #
 #
-#, fuzzy
 msgid "Remove Connection"
-msgstr "Anslutningar"
+msgstr "Ta bort anslutning"
 #
 #
 msgid "Remove Selected"
@@ -2610,7 +2613,7 @@ msgid "Restricted Manoeuvrability"
 msgstr "Nedsatt manöverförmåga"
 #
 msgid "Resume"
-msgstr ""
+msgstr "Återuppta"
 #
 #
 msgid "Retrieving initial Chart Directory set from Windows Registry"
@@ -2731,7 +2734,7 @@ msgid "Search and Rescue Vessel"
 msgstr "Sjöräddningsfartyg"
 #
 msgid "Seatalk"
-msgstr ""
+msgstr "Seatalk"
 #
 msgid "See the log file at "
 msgstr "Mer info finns i loggfilen "
@@ -2775,12 +2778,11 @@ msgid "Send to GPS"
 msgstr "Skicka till GPS"
 #
 #
-#, fuzzy
 msgid "Sentence Filter"
-msgstr "&Tysta Larm"
+msgstr "Kommandofilter"
 #
 msgid "Serial"
-msgstr ""
+msgstr "Seriell"
 #
 #
 msgid "Service vessel, police patrol, port service"
@@ -2815,6 +2817,11 @@ msgstr "Fartyg"
 #
 msgid "Short dash"
 msgstr "Korta streck"
+#
+#
+#, fuzzy
+msgid "Show"
+msgstr "Visa lat/long-linjer"
 #
 #
 msgid "Show AIS Targets"
@@ -2860,7 +2867,6 @@ msgid "Show Lat/Long as"
 msgstr "Visa Lat/Long som"
 #
 #
-#, fuzzy
 msgid "Show NMEA Debug Window"
 msgstr "Visa fönster med GPS/NMEA dataström"
 #
@@ -3004,9 +3010,8 @@ msgid "Symbolized"
 msgstr "Med symboler"
 #
 #
-#, fuzzy
 msgid "TCP"
-msgstr "TCPA"
+msgstr "TCP"
 #
 #
 msgid "TCPA"
@@ -3264,10 +3269,10 @@ msgid "Tracks"
 msgstr "Spår"
 #
 msgid "Transmit Sentences"
-msgstr ""
+msgstr "Skicka kommandon"
 #
 msgid "Transmit sentences"
-msgstr ""
+msgstr "Skicka kommandon"
 #
 #
 msgid "Transverse Mercator"
@@ -3313,7 +3318,7 @@ msgid "Type"
 msgstr "Typ"
 #
 msgid "UDP"
-msgstr ""
+msgstr "UDP"
 #
 msgid "URL"
 msgstr "URL"
@@ -3370,7 +3375,13 @@ msgstr "Använd hårdvarugrafik (OpenGL)"
 #
 #
 #, fuzzy
-msgid "Use Garmin GRMN/GRMN (Host) mode for uploads"
+msgid "Use Garmin (GRMN) mode for input"
+msgstr ""
+"Använd Garmin GRMN/GRMN (Host) Mode för waypoint- och ruttuppladdningar."
+#
+#
+#, fuzzy
+msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr ""
 "Använd Garmin GRMN/GRMN (Host) Mode för waypoint- och ruttuppladdningar."
 #
@@ -3510,7 +3521,7 @@ msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr "Vill du inkludera waypoints för storcirkel-rutten på det här benet?"
 #
 msgid "Wrong length of the NMEA filter value"
-msgstr ""
+msgstr "En filterpost har fel längd"
 #
 #
 msgid "XTE         L"
@@ -3529,7 +3540,7 @@ msgid "Yellow"
 msgstr "Gul"
 #
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 #
 msgid "Yes, hide it."
 msgstr "Ja, dölj den."
@@ -3542,10 +3553,10 @@ msgstr ""
 "komma åt den längre."
 #
 msgid "You must enter the address..."
-msgstr ""
+msgstr "Det krävs en address."
 #
 msgid "You must select or enter the port..."
-msgstr ""
+msgstr "En port måste väljas eller anges manuellt"
 #
 #
 msgid "Zoom In"
@@ -3591,108 +3602,3 @@ msgstr "wgsoy"
 #
 msgid "wxFB Website"
 msgstr "Webbsida för wxFB"
-#
-#
-#~ msgid ""
-#~ "\n"
-#~ "\n"
-#~ "Continuing libgps setup..."
-#~ msgstr ""
-#~ "\n"
-#~ "\n"
-#~ "Går vidare med libgps inställningar..."
-#
-#
-#
-#~ msgid "  Could not open AIS serial port '"
-#~ msgstr "  AIS serieport kan inte öppnas: '"
-#
-#
-#
-#~ msgid "  Could not open serial port '"
-#~ msgstr "  Serieport kan inte öppnas '"
-#
-#
-#
-#~ msgid ""
-#~ "'\n"
-#~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
-#~ msgstr ""
-#~ "'\n"
-#~ " Förslag: Försök med 'xxx.xxx.xxx.xxx' formatet"
-#
-#
-#
-#~ msgid ""
-#~ "'\n"
-#~ "Suggestion: Try closing other applications."
-#~ msgstr ""
-#~ "'\n"
-#~ "Förslag: Kontrollera att inget annat program använder porten."
-#
-#
-#
-#~ msgid "AIS Data Port"
-#~ msgstr "AIS dataport"
-#
-#
-#~ msgid "AIS Port (Shared)"
-#~ msgstr "Delad port med AIS"
-#
-#
-#
-#~ msgid "Autopilot Output Port"
-#~ msgstr "Autopilot utgående port"
-#
-#
-#
-#~ msgid ""
-#~ "Call to gps_open failed.\n"
-#~ "Is gpsd running?\n"
-#~ "\n"
-#~ "gpsd host is: "
-#~ msgstr ""
-#~ "Programanrop till gps_open misslyckades.\n"
-#~ "Är gpsd startad?\n"
-#~ "\n"
-#~ "gpsd host är: "
-#
-#
-#
-#~ msgid "Could not resolve TCP/IP host '"
-#~ msgstr "Kunde inte hitta TCP/IP datorn '"
-#
-#
-#
-#~ msgid "GPS/Plotter Port"
-#~ msgstr "GPS/Plotterport"
-#
-#
-#
-#~ msgid "GPSD Data Server"
-#~ msgstr "GPSD Dataserver"
-#
-#
-#
-#~ msgid "NMEA Data Source"
-#~ msgstr "NMEA datakälla"
-#
-#
-#~ msgid "Network LIBGPS"
-#~ msgstr "LIBGPS via nätverk"
-#
-#
-#
-#~ msgid ""
-#~ "Unable to initialize libgps.\n"
-#~ "\n"
-#~ "gpsd host is: "
-#~ msgstr ""
-#~ "libgps kan inte initialiseras.\n"
-#~ "\n"
-#~ "gpsd host är: "
-#
-#
-#
-#~ msgid "Unable to load libgps"
-#~ msgstr "libgps kan inte laddas"
