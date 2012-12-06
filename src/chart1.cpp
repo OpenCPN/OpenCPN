@@ -746,25 +746,11 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
 //      It does NOT get hit on iconizing the app
     if(!event.GetActive())
     {
-        if(g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->Submerge();
-
-        if(console && console->IsShown())
-        {
-            console->Hide();
-            g_MacShowDialogArray.Add(console);
-        }
-
-        if(pRouteManagerDialog && pRouteManagerDialog->IsShown())
-        {
-            pRouteManagerDialog->Hide();
-            g_MacShowDialogArray.Add(pRouteManagerDialog);
-        }
+//        printf("App de-activate\n");
     }
     else
     {
-        if(gFrame) gFrame->SurfaceToolbar();
-        if(g_FloatingToolbarDialog) g_FloatingToolbarDialog->Raise();
+//        printf("App Activate\n");
     }
 #endif
 
@@ -1244,7 +1230,6 @@ bool MyApp::OnInit()
 //  Send the Welcome/warning message if it has never been sent before,
 //  or if the version string has changed at all
 //  We defer until here to allow for localization of the message
-    n_NavMessageShown = false;
     if( !n_NavMessageShown || ( vs != g_config_version_string ) ) {
         if( wxID_CANCEL == ShowNavWarning() ) return false;
         n_NavMessageShown = 1;
@@ -1751,14 +1736,9 @@ if( 0 == g_memCacheLimit )
             wxString msg1(
                     _("No Charts Installed.\nPlease select chart folders in Options > Charts.") );
 
-//            OCPNMessageDialog mdlg( gFrame, msg1, wxString( _("OpenCPN Info") ),
-//                    wxICON_INFORMATION | wxOK );
-// works            wxMessageDialog mdlg( gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
             OCPNMessageBox(gFrame, msg1, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
-//            int dlg_ret;
-//            dlg_ret = mdlg.ShowModal();
 
-//            gFrame->DoOptionsDialog();
+            gFrame->DoOptionsDialog();
 
             b_SetInitialPoint = true;
 
@@ -2229,25 +2209,21 @@ void MyFrame::OnActivate( wxActivateEvent& event )
     {
         SurfaceToolbar();
 
-        for(unsigned int i=0; i < g_MacShowDialogArray.GetCount(); i++)
-        {
-            wxDialog *ptr = g_MacShowDialogArray.Item(i);
-            ptr->Show();
+        if(g_FloatingCompassDialog)
+            g_FloatingCompassDialog->Show();
+
+        if(stats)
+            stats->Show();
+        
+        if(console) {
+            if( g_pRouteMan->IsAnyRouteActive() )
+                console->Show();
         }
-
-        g_MacShowDialogArray.Empty();
-
+        
+        gFrame->Raise();
+        
     }
     else {
-        if(stats && stats->IsShown()) {
-            stats->Hide();
-            g_MacShowDialogArray.Add(stats);
-        }
-
-        if(g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
-            g_FloatingCompassDialog->Hide();
-            g_MacShowDialogArray.Add(g_FloatingCompassDialog);
-        }
     }
 
 
@@ -3795,7 +3771,7 @@ int MyFrame::DoOptionsDialog()
         if( b_sub ) g_FloatingToolbarDialog->Submerge();
     }
 
-#ifdef __WXMAC__
+#ifdef __WXOSX__
     if(stats) stats->Hide();
 #endif
 
@@ -4494,10 +4470,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     g_tick++;
 
 #ifdef __WXOSX__
-    //    To fix an ugly bug in wxWidgets for Carbon.....
-    //    Hide some Dialogs if the application is minimized....
-    //    Add them to an array which will be Shown() in MyFrame::OnActivate()
-
+    //    To fix an ugly bug ?? in wxWidgets for Carbon.....
+    //    Or, maybe this is the way Macs work....
+    //    Hide some non-UI Dialogs if the application is minimized....
+    //    They will be re-Show()-n in MyFrame::OnActivate()
     if(IsIconized())
     {
         if(g_FloatingToolbarDialog) {
@@ -4507,22 +4483,14 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
         if(console && console->IsShown()) {
             console->Hide();
-            g_MacShowDialogArray.Add(console);
-        }
-
-        if(pRouteManagerDialog && pRouteManagerDialog->IsShown()) {
-            pRouteManagerDialog->Hide();
-            g_MacShowDialogArray.Add(pRouteManagerDialog);
         }
 
         if(g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
             g_FloatingCompassDialog->Hide();
-            g_MacShowDialogArray.Add(g_FloatingCompassDialog);
         }
 
         if(stats && stats->IsShown()) {
             stats->Hide();
-            g_MacShowDialogArray.Add(stats);
         }
     }
 #endif
@@ -7897,70 +7865,31 @@ void SetSystemColors( ColorScheme cs )
 #endif
 }
 
-#if 0
-/*          OCPN MessageDialog Implementation   */
-
-OCPNMessageDialog::OCPNMessageDialog( wxWindow* parent, const wxString& message,
-        const wxString& caption, long style, const wxPoint& pos )
-{
-    m_pdialog = new wxMessageDialog( parent, message, caption, style, pos );
-}
-
-OCPNMessageDialog::~OCPNMessageDialog()
-{
-    delete m_pdialog;
-}
-
-int OCPNMessageDialog::ShowModal()
-{
-#ifdef __WXOSX__
-    if(g_FloatingToolbarDialog)
-          g_FloatingToolbarDialog->Submerge();
-#endif
-    int ret_val = m_pdialog->ShowModal();
-
-#ifdef __WXOSX__
-    gFrame->SurfaceToolbar();
-#endif
-
-    return ret_val;
-}
-#endif
-
 int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& caption, int style,
         int x, int y )
 {
 
-//    OCPNMessageDialog dlg( parent, message, caption, style, wxPoint( x, y ) );
 #ifdef __WXOSX__
-if(g_FloatingToolbarDialog)
-    g_FloatingToolbarDialog->Hide();
+    if(g_FloatingToolbarDialog)
+        g_FloatingToolbarDialog->Hide();
+    
+    if( g_FloatingCompassDialog )
+        g_FloatingCompassDialog->Hide();
 #endif
-    gFrame->Lower();
     wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
-  
-    dlg.Raise();
     int ret = dlg.ShowModal();
 
-//    gFrame->Show();
-    #ifdef __WXOSX__
+#ifdef __WXOSX__
     gFrame->SurfaceToolbar();
-    #endif
+
+    if( g_FloatingCompassDialog )
+        g_FloatingCompassDialog->Show();
+    
+    if(parent)
+        parent->Raise();
+#endif
     
     return ret;
-    
-/*
-    #ifdef __WXOSX__
-    if(g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->Submerge();
-    #endif
-        
-        return wxMessageBox( message, caption, style, gFrame, x, y );
-    
-        #ifdef __WXOSX__
-        gFrame->SurfaceToolbar();
-        #endif
-*/        
 }
 
 //               A helper function to check for proper parameters of anchor watch

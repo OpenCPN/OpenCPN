@@ -1376,13 +1376,17 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
     double gpsg_lat, gpsg_lon, gpsg_mins, gpsg_degs;
     double gpsg_cog, gpsg_sog, gpsg_utc_time;
-    int gpsg_utc_hour;
-    int gpsg_utc_min;
-    int gpsg_utc_sec;
+    int gpsg_utc_hour = 0;
+    int gpsg_utc_min = 0;
+    int gpsg_utc_sec = 0;
     char gpsg_name_str[21];
 
-    double dsc_lat, dsc_lon, dsc_mins, dsc_degs, dsc_tmp, dsc_addr;
-    double dse_tmp, dse_lat, dse_lon, dse_addr;
+    double dsc_lat = 0.;
+    double dsc_lon = 0.;
+    double dsc_mins, dsc_degs, dsc_tmp, dsc_addr;
+    double dse_tmp, dse_addr;
+    double dse_lat = 0.;
+    double dse_lon = 0;
     long dsc_fmt, dsc_quadrant;
 
     int gpsg_mmsi = 0;

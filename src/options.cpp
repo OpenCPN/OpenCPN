@@ -2478,7 +2478,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     int nOBJL = ps57CtlListBox->GetCount();
 
     for( int iPtr = 0; iPtr < nOBJL; iPtr++ ) {
-        int itemIndex;
+        int itemIndex = -1;
         for( size_t i=0; i<marinersStdXref.size(); i++ ) {
             if( marinersStdXref[ i ] == iPtr ) {
                 itemIndex = i;

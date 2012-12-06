@@ -414,7 +414,7 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
 {
     long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
 #ifdef __WXOSX__
-    style |= wxSTAY_ON_TOP;
+//    style |= wxSTAY_ON_TOP;
 #endif
 
     wxDialog::Create( parent, -1, wxString( _("Route Manager") ), wxDefaultPosition, wxDefaultSize,
@@ -1339,7 +1339,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
 
             int result = precisionDlg->ShowModal();
             if( result == wxID_CANCEL ) break;
-            double precision;
+            double precision = 5.0;
             switch( precisionDlg->GetSelection() ) {
                 case 0: precision = 5.0; break;
                 case 1: precision = 10.0; break;
@@ -1458,7 +1458,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             cc1->Refresh();
 
             if( runningSkipped ) {
-                wxMessageDialog skipWarning( NULL,
+                wxMessageDialog skipWarning( this,
                         _("The currently running Track was not merged.\nYou can merge it later when it is completed."),
                         _T("Warning"), wxCANCEL | wxICON_WARNING );
                 skipWarning.ShowModal();
