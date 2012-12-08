@@ -837,6 +837,7 @@ private:
     int m_timeout_sec;
     int m_mmouse_propogate;
     bool isActive;
+    wxFont *m_plabelFont;
 
 DECLARE_EVENT_TABLE()
 };

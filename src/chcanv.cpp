@@ -14757,6 +14757,7 @@ RolloverWin::RolloverWin( wxWindow *parent, int timeout ) :
     m_timeout_sec = timeout;
     m_mmouse_propogate = 0;
     isActive = false;
+    m_plabelFont = NULL;
     Hide();
 }
 
@@ -14793,37 +14794,34 @@ void RolloverWin::SetBitmap( int rollover )
               m_position.y + canvasPos.y );
     delete cdc;
 
-    wxFont *dFont;
     ocpnDC dc( mdc );
 
     switch( rollover ) {
         case AIS_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-            dFont = pFontMgr->GetFont( _("AISRollover"), 12 );
             mdc.SetTextForeground( pFontMgr->GetFontColor( _T("AISRollover") ) );
             break;
 
         case TC_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 255 );
-            dFont = pFontMgr->GetFont( _("TideCurrentGraphRollover"), 12 );
             mdc.SetTextForeground( pFontMgr->GetFontColor( _T("TideCurrentGraphRollover") ) );
             break;
         default:
         case LEG_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-            dFont = pFontMgr->GetFont( _("RouteLegInfoRollover"), 12 );
             mdc.SetTextForeground( pFontMgr->GetFontColor( _T("RouteLegInfoRollover") ) );
             break;
     }
 
-    int font_size = wxMax(8, dFont->GetPointSize());
-    wxFont *plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
-                         dFont->GetStyle(), dFont->GetWeight(), false, dFont->GetFaceName() );
 
+    if(m_plabelFont && m_plabelFont->IsOk()) {
+        
     //    Draw the text
-    mdc.SetFont( *plabelFont );
+        mdc.SetFont( *m_plabelFont );
 
-    mdc.DrawLabel( m_string, wxRect( 0, 0, m_size.x, m_size.y ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
+        mdc.DrawLabel( m_string, wxRect( 0, 0, m_size.x, m_size.y ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
+    }
+
     SetSize( m_position.x, m_position.y, m_size.x, m_size.y );   // Assumes a nominal 32 x 32 cursor
 
     // Retrigger the auto timeout
@@ -14865,17 +14863,25 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
         break;
 
     }
+    
     int font_size = wxMax(8, dFont->GetPointSize());
-    wxFont *plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
-                         dFont->GetStyle(), dFont->GetWeight() );
+    m_plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
+                         dFont->GetStyle(), dFont->GetWeight(), false, dFont->GetFaceName() );
 
+    if(m_plabelFont && m_plabelFont->IsOk()) {
 #ifdef __WXMAC__
-    wxScreenDC sdc;
-    sdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, plabelFont);
+        wxScreenDC sdc;
+        sdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, m_plabelFont);
 #else
-    wxClientDC cdc( GetParent() );
-    cdc.GetMultiLineTextExtent( m_string, &w, &h, NULL, plabelFont );
+        wxClientDC cdc( GetParent() );
+        cdc.GetMultiLineTextExtent( m_string, &w, &h, NULL, m_plabelFont );
 #endif
+    }
+    else {
+        w = 10;
+        h = 10;
+    }
+    
     m_size.x = w + 8;
     m_size.y = h + 8;
 
