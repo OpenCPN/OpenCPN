@@ -1150,17 +1150,33 @@ thread_exit:
     if(!SetCommMask((HANDLE)m_gps_fd, EV_RXCHAR)) // Setting Event Type
         goto thread_exit;
 
+    COMMTIMEOUTS timeouts;
+    
+    timeouts.ReadIntervalTimeout = MAXDWORD;
+    timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
+    timeouts.ReadTotalTimeoutConstant = 2000;
+    timeouts.WriteTotalTimeoutMultiplier = MAXDWORD;
+    timeouts.WriteTotalTimeoutConstant = MAXDWORD;
+    
+    if (!SetCommTimeouts((HANDLE)m_gps_fd, &timeouts)) // Error setting time-outs.
+        goto thread_exit;
+    
+    
+    
     not_done = true;
     bool nl_found;
 
-#define READ_BUF_SIZE 20
+#define READ_BUF_SIZE 200
     char szBuf[READ_BUF_SIZE];
 
     DWORD dwRead;
     DWORD dwOneRead;
-    DWORD dwCommEvent;
+//    DWORD dwCommEvent;
     char  chRead;
     int ic;
+    int n_timeout;
+    int n_reopen_wait = 2000;
+#define MAX_N_TIMEOUT 5
 
 //    The main loop
 
@@ -1169,31 +1185,80 @@ thread_exit:
         if(TestDestroy())
             not_done = false;                               // smooth exit
 
-
-        dwRead = 0;
-        ic = 0;
-
-        if (WaitCommEvent((HANDLE)m_gps_fd, &dwCommEvent, NULL))
+       //    Was port closed due to error condition?
+        while(!m_gps_fd)
         {
-            do {
-                if (ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL))
-                {
+            if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0))
+                goto thread_exit;                               // smooth exit
+
+            if(n_reopen_wait)
+            {
+                wxThread::Sleep(n_reopen_wait);                        // stall for a bit
+                n_reopen_wait = 0;
+            }
+
+
+            if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) > 0)
+            {
+                hSerialComm = (HANDLE)m_gps_fd;
+                
+                if(!SetCommMask((HANDLE)m_gps_fd, EV_RXCHAR)) // Setting Event Type
+                    goto thread_exit;
+        
+                COMMTIMEOUTS timeouts;
+                timeouts.ReadIntervalTimeout = MAXDWORD;
+                timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
+                timeouts.ReadTotalTimeoutConstant = 2000;
+                timeouts.WriteTotalTimeoutMultiplier = MAXDWORD;
+                timeouts.WriteTotalTimeoutConstant = MAXDWORD;
+        
+                if (!SetCommTimeouts((HANDLE)m_gps_fd, &timeouts)) // Error setting time-outs.
+                    goto thread_exit;
+            }
+            else
+            {
+                m_gps_fd = NULL;
+                wxThread::Sleep(2000);                        // stall for a bit
+            }
+        }
+
+
+
+        bool b_inner = true;
+        dwRead = 0;
+        n_timeout = 0;
+        ic=0;
+        while( b_inner ) {
+            if (ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL))
+            {
+                if(1 == dwOneRead) {
                     szBuf[ic] = chRead;
                     dwRead++;
                     if(ic++ > READ_BUF_SIZE - 1)
-                          goto HandleASuccessfulRead;
+                        goto HandleASuccessfulRead;
+                    if(chRead == 0x0a)
+                        goto HandleASuccessfulRead;
                 }
-                else
-                {            // An error occurred in the ReadFile call.
-                    goto fail_point;                               // smooth exit
-
+                else {                          // timed out
+                    n_timeout++;;
+                    if( n_timeout > MAX_N_TIMEOUT ) {
+                        b_inner = false;
+                        
+                        CloseComPortPhysical(m_gps_fd);
+                        m_gps_fd = NULL;
+                        dwRead = 0;
+                        nl_found = false;
+                        n_reopen_wait = 2000;
+                    }
+                        
                 }
-            } while (dwOneRead);
+                
+            }
+            else {
+                //      ReadFile Erorr
+            }
         }
-        else
-            goto fail_point;                               // smooth exit
-
-
+            
 
 HandleASuccessfulRead:
 
@@ -1257,7 +1322,7 @@ HandleASuccessfulRead:
 
                     if((tptr - rx_buffer) > RX_BUFFER_SIZE)
                         tptr = rx_buffer;
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
+//                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
                 }
 
                 if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
@@ -1265,14 +1330,14 @@ HandleASuccessfulRead:
                     *ptmpbuf++ = *tptr++;
                     if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
                         tptr = rx_buffer;
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
+//                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
 
                     *ptmpbuf = 0;
 
                     tak_ptr = tptr;
 
                     // parse and send the message
-                    if(g_bShowOutlines)
+//                    if(g_bShowOutlines)
                     {
                         wxString str_temp_buf(temp_buf, wxConvUTF8);
                         Parse_And_Send_Posn(str_temp_buf);
@@ -1289,7 +1354,6 @@ HandleASuccessfulRead:
 
 
 
-fail_point:
 thread_exit:
 
 //          Close the port cleanly
