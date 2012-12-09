@@ -1293,7 +1293,7 @@ int Quilt::GetNewRefChart( void )
             const ChartTableEntry &m = ChartData->GetChartTableEntry( m_extended_stack_array.Item( is ) );
 //                  if((m.GetScale() >= m_reference_scale) && (m_reference_type == m.GetChartType()))
             if( ( m.GetScale() >= m_reference_scale )
-                    && ( m_reference_family == m.GetChartFamily() ) 
+                    && ( m_reference_family == m.GetChartFamily() )
                     && ( m_quilt_proj == m.GetChartProjectionType() )
                     && ( m.GetChartSkew() == 0.0 ) ) {
                 new_ref_dbIndex = m_extended_stack_array.Item( is );
@@ -1805,7 +1805,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
         BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
     }
 
-        
+
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
     //    Add only those charts whose scale is smaller than the "reference scale"
@@ -2067,8 +2067,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         wxRegion vpr_region = unrendered_region;
 
         //    Start with the chart's full region coverage.
-        vpr_region = piqp->quilt_region; 
-        
+        vpr_region = piqp->quilt_region;
+
 
 #if 1       // This clause went away with full-screen quilting
         // ...and came back with OpenGL....
@@ -3214,15 +3214,15 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     VPoint.Invalidate();
 
     m_glcc = new glChartCanvas(this);
-    
+
 #if wxCHECK_VERSION(2, 9, 0)
     m_pGLcontext = new wxGLContext(m_glcc);
     m_glcc->SetContext(m_pGLcontext);
 #else
     m_pGLcontext = m_glcc->GetContext();
 #endif
-    
-    
+
+
     singleClickEventIsValid = false;
 
 //    Build the cursors
@@ -6114,11 +6114,11 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         // Default color is green
         wxBrush target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
-        
+
         // Euro Inland targets render slightly differently
         if( td->b_isEuroInland )
             target_brush = wxBrush( GetGlobalColor( _T ( "TEAL1" ) ) );
-        
+
         //and....
         if( !td->b_nameValid )
             target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
@@ -6131,7 +6131,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
         //    Check for alarms here, maintained by AIS class timer tick
-        if( ((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) { 
+        if( ((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
             //  Calculate the point of CPA for target
             double tcpa_lat, tcpa_lon;
             ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat,
@@ -7825,7 +7825,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             wxClientDC cdc( GetParent() );
             ocpnDC dc( cdc );
 #endif
-            
+
             SelectItem *pFindAIS;
             SelectItem *pFindRP;
             SelectItem *pFindRouteSeg;
@@ -8129,11 +8129,11 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     wxMenu* menuRoute = new wxMenu( _("Route") );
     wxMenu* menuTrack = new wxMenu( _("Track") );
     wxMenu* menuAIS = new wxMenu( _("AIS") );
-    
+
     wxMenu *subMenuChart = new wxMenu;
 
     wxMenu *menuFocus = contextMenu;    // This is the one that will be shown
-    
+
     popx = x;
     popy = y;
 
@@ -8152,16 +8152,16 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 #endif
 
     if( seltype == SELTYPE_ROUTECREATE ) {
-#ifndef __WXOSX__        
+#ifndef __WXOSX__
         contextMenu->Append( ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
 #else
         contextMenu->Append( ID_RC_MENU_FINISH,  _( "End Route" ) );
-#endif        
+#endif
     }
 
     if( ! m_pMouseRoute ) {
         if( m_bMeasure_Active )
-#ifndef __WXOSX__            
+#ifndef __WXOSX__
             contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE, _menuText( _("Measure Off"), _T("Esc") ) );
 #else
             contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE,  _("Measure Off") );
@@ -8220,21 +8220,6 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 && !g_bskew_comp ) contextMenu->Append( ID_DEF_MENU_NORTHUP, _("Chart Up Mode") );
         else
             contextMenu->Append( ID_DEF_MENU_NORTHUP, _("North Up Mode") );
-    }
-
-    if( g_pAIS ) {
-        if( seltype & SELTYPE_AISTARGET ) {
-            menuAIS->Append( ID_DEF_MENU_AIS_QUERY, _( "Target Query..." ) );
-            AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
-            if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alarm_state != AIS_ALARM_SET) ) {
-                if( myptarget->b_show_AIS_CPA )
-                    menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Hide Target CPA" ) );
-                else
-                    menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Show Target CPA" ) );
-            }
-            menuAIS->Append( ID_DEF_MENU_AISTARGETLIST, _("Target List...") );
-        }
-        contextMenu->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
     }
 
     Kml* kml = new Kml;
@@ -8311,9 +8296,26 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             }
         }
     }
-    
+
     //  This is the default context menu
     menuFocus = contextMenu;
+
+    if( g_pAIS ) {
+        contextMenu->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
+
+        if( seltype & SELTYPE_AISTARGET ) {
+            menuAIS->Append( ID_DEF_MENU_AIS_QUERY, _( "Target Query..." ) );
+            AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
+            if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alarm_state != AIS_ALARM_SET) ) {
+                if( myptarget->b_show_AIS_CPA )
+                    menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Hide Target CPA" ) );
+                else
+                    menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Show Target CPA" ) );
+            }
+            menuAIS->Append( ID_DEF_MENU_AISTARGETLIST, _("Target List...") );
+            menuFocus = menuAIS;
+        }
+    }
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
         menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
@@ -8336,7 +8338,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         menuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
         menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
         menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
-        
+
         //      Set this menu as the "focused context menu"
         menuFocus = menuRoute;
     }
@@ -8345,7 +8347,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
         menuTrack->Append( ID_TK_MENU_COPY, _( "Copy" ) );
         menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
-        
+
         //      Set this menu as the "focused context menu"
         menuFocus = menuTrack;
     }
@@ -8408,19 +8410,18 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         bsep = true;
         menuFocus->Append( ID_DEF_MENU_TIDEINFO, _( "Show Tide Information" ) );
     }
-    
+
     if( seltype & SELTYPE_CURRENTPOINT ) {
         if( !bsep )
             menuFocus->AppendSeparator();
         menuFocus->Append( ID_DEF_MENU_CURRENTINFO, _( "Show Current Information" ) );
     }
-    
+
     //        Invoke the correct focused drop-down menu
     PopupMenu( menuFocus, x, y );
-        
-        
+
+
     // Cleanup
-done:
     if( ( m_pSelectedRoute ) ) {
         m_pSelectedRoute->m_bRtIsSelected = false;
     }
@@ -11782,7 +11783,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 #else
     SetCurrent();
 #endif
-    
+
     Show( g_bopengl );
     if( !g_bopengl ) {
         event.Skip();
@@ -13567,7 +13568,7 @@ void TCWin::NXEvent( wxCommandEvent& event )
     wxDateTime graphday_00 = dm.ResetTime();
     if(graphday_00.GetYear() == 2013)
         int yyp = 4;
-    
+
     time_t t_graphday_00 = graphday_00.GetTicks();
     if( !graphday_00.IsDST() && m_graphday.IsDST() ) t_graphday_00 -= 3600;
     if( graphday_00.IsDST() && !m_graphday.IsDST() ) t_graphday_00 += 3600;
