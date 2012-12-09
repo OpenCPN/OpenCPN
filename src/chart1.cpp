@@ -1611,8 +1611,6 @@ if( 0 == g_memCacheLimit )
     stats->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
     stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
-    stats->Show( true );
-
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
 
@@ -1829,6 +1827,8 @@ if( 0 == g_memCacheLimit )
         pAnchorWatchPoint2 = pWayPointMan->FindRoutePointByGUID( g_AW2GUID );
     }
 
+    stats->Show( true );
+    
     gFrame->DoChartUpdate();
 
     g_FloatingToolbarDialog->LockPosition(false);
@@ -1843,9 +1843,6 @@ if( 0 == g_memCacheLimit )
 
 //        gFrame->MemFootTimer.Start(wxMax(g_MemFootSec * 1000, 60 * 1000), wxTIMER_CONTINUOUS);
 //        gFrame->MemFootTimer.Start(1000, wxTIMER_CONTINUOUS);
-
-//debug
-//        g_COGAvg = 45.0;
 
     // Import Layer-wise any .gpx files from /Layers directory
     wxString layerdir = g_PrivateDataDir;  //g_SData_Locn;
@@ -7875,6 +7872,9 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
     
     if( g_FloatingCompassDialog )
         g_FloatingCompassDialog->Hide();
+    
+    if( stats )
+        stats->Hide();
 #endif
     wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
     int ret = dlg.ShowModal();
@@ -7884,6 +7884,9 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 
     if( g_FloatingCompassDialog )
         g_FloatingCompassDialog->Show();
+    
+    if( stats )
+        stats->Show();
     
     if(parent)
         parent->Raise();
