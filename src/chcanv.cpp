@@ -268,6 +268,7 @@ extern int              g_current_arrow_scale;
 extern S57QueryDialog   *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern Multiplexer      *g_pMUX;
+extern wxArrayOfConnPrm *g_pConnectionParams;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -9211,11 +9212,21 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_WPT_MENU_SENDTOGPS:
         if( m_pFoundRoutePoint ) {
-            wxString port, com;
-            if( g_pMUX ) {
-//                g_pnmea->GetSource( port );
-//                if( port.StartsWith( _T("Serial:"), &com ) ) port = com;
-                m_pFoundRoutePoint->SendToGPS( port, NULL );
+            wxString port;
+            if( g_pConnectionParams ) {
+                // With the new multiplexer code we take a bit of a chance here,
+                // and use the first available serial connection which has output.
+                // This could potentially fail in complex installations...
+                for( size_t i = 0; i < g_pConnectionParams->Count(); i++ ) {
+                    ConnectionParams *cp = g_pConnectionParams->Item( i );
+                    if( cp->Output && cp->Type == Serial ) {
+                        port << _T("Serial:") << cp->Port;
+                    }
+                }
+                if( port.Length() )
+                    m_pFoundRoutePoint->SendToGPS( port, NULL );
+                else
+                    OCPNMessageBox( NULL, _("Can't send waypoint. Found no serial data port with output defined."), _("OpenCPN Info"), wxOK | wxICON_WARNING );
             }
         }
         break;
