@@ -49,7 +49,7 @@
 
 #include <vector>
 
-#define SERIAL_OVERLAPPED
+//#define SERIAL_OVERLAPPED
 
 extern int              g_nNMEADebug;
 extern bool             g_bGPSAISMux;
@@ -240,7 +240,7 @@ void DataStream::Open(void)
                 case UDP:
                     //  We need a local (bindable) address to create the Datagram socket
                     wxIPV4address conn_addr;
-                    conn_addr.Service(_T("0"));   // use ephemeral port for source, selected by O/S
+                    conn_addr.Service(m_net_port);
                     conn_addr.AnyAddress();    
                     m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
             }
@@ -1015,9 +1015,14 @@ void *OCP_DataStreamInput_Thread::Entry()
                         m_n_timeout++;
                         if(m_n_timeout > 5)             //5 x 2000 msec
                         {
+                            fWaitingOnRead = FALSE;
+                            CloseComPortPhysical(m_gps_fd);
+                            m_gps_fd = NULL;
                             dwRead = 0;
                             nl_found = false;
                             fWaitingOnRead = FALSE;
+                            n_reopen_wait = 2000;
+                            
                         }
                         break;
 
@@ -1569,6 +1574,10 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud
         return (0 - abs((int)::GetLastError()));
     }
 
+    DWORD err;
+    COMSTAT cs;
+    bool b = ClearCommError(hSerialComm, &err, &cs);
+    
     if(!SetupComm(hSerialComm, 1024, 1024))
     {
         return (0 - abs((int)::GetLastError()));
