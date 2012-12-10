@@ -2523,7 +2523,7 @@ void Track::AddPointNow( bool do_add_point )
 void Track::Draw( ocpnDC& dc, ViewPort &VP )
 {
     if( !IsVisible() || GetnPoints() == 0 ) return;
-
+/*
     if( m_bRunning ) {                                       // pjotrc 2010.02.26
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ) ) );
         wxPen dPen( GetGlobalColor( _T ( "URED" ) ), g_track_line_width );
@@ -2533,24 +2533,63 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
         wxPen dPen( GetGlobalColor( _T ( "CHMGD" ) ), g_track_line_width );
         dc.SetPen( dPen );
     }
-
-    double radius_meters = 20; //Current_Ch->GetNativeScale() * .0015;         // 1.5 mm at original scale
-    double radius = radius_meters * VP.view_scale_ppm;
-
-    if( !g_bHighliteTracks ) radius = 0;                         // disable highlights
+*/
+    double radius = 0.;
+    if( g_bHighliteTracks ) {
+        double radius_meters = 20; //Current_Ch->GetNativeScale() * .0015;         // 1.5 mm at original scale
+        radius = radius_meters * VP.view_scale_ppm;
+    }
 
     unsigned short int FromSegNo = 1;
 
-    wxPoint rpt, rptn;
-    DrawPointWhich( dc, 1, &rpt );
 
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
-    node = node->GetNext();
+    RoutePoint *prp = node->GetData();
+    
+    //  Establish basic colour
+    wxColour basic_colour;
+    if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {     
+            basic_colour = GetGlobalColor( _T ( "URED" ) );
+    } else
+        if( prp->m_IconName.StartsWith( _T("xmblue") ) ) {            
+                basic_colour = GetGlobalColor( _T ( "BLUE3" ) );
+        } else
+            if( prp->m_IconName.StartsWith( _T("xmgreen") ) ) {        
+                    basic_colour = GetGlobalColor( _T ( "UGREN" ) );
+            } else {                                                   
+                    basic_colour = GetGlobalColor( _T ( "CHMGD" ) );
+            }
+            
+    int style = wxSOLID;
+    int width = g_route_line_width;
+    wxColour col;
+    if( m_style != STYLE_UNDEFINED )
+        style = m_style;
+    if( m_width != STYLE_UNDEFINED )
+        width = m_width;
+    if( m_Colour == wxEmptyString ) {
+        col = basic_colour;
+    } else {
+        for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
+                if( m_Colour == ::GpxxColorNames[i] ) {
+                    col = ::GpxxColors[i];
+                    break;
+                }
+            }
+    }
+    dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
+    dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxSOLID ) );
 
+    //  Draw the first point
+    wxPoint rpt, rptn;
+    DrawPointWhich( dc, 1, &rpt );
+    
+    node = node->GetNext();
     while( node ) {
         RoutePoint *prp = node->GetData();
         unsigned short int ToSegNo = prp->m_GPXTrkSegNo;
 
+/*        
         if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {         // pjotrc 2010.02.26
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ) ) );
             wxPen dPen( GetGlobalColor( _T ( "URED" ) ), g_track_line_width );
@@ -2570,33 +2609,17 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
                     wxPen dPen( GetGlobalColor( _T ( "CHMGD" ) ), g_track_line_width );
                     dc.SetPen( dPen );
                 }
-        int style = wxSOLID;
-        int width = g_route_line_width;
-        wxColour col;
-        if( m_style != STYLE_UNDEFINED ) style = m_style;
-        if( m_width != STYLE_UNDEFINED ) width = m_width;
-        if( m_Colour == wxEmptyString ) {
-            col = dc.GetPen().GetColour();
-        } else {
-            for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
-                if( m_Colour == ::GpxxColorNames[i] ) {
-                    col = ::GpxxColors[i];
-                    break;
-                }
-            }
-        }
-        dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
-        dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxSOLID ) );
+*/                
 
         prp->Draw( dc, &rptn );
 
-        if( ToSegNo == FromSegNo )                                        // pjotrc 2010.02.27
-        RenderSegment( dc, rpt.x, rpt.y, rptn.x, rptn.y, VP, false, (int) radius ); // no arrows, with hilite
+        if( ToSegNo == FromSegNo )                  
+            RenderSegment( dc, rpt.x, rpt.y, rptn.x, rptn.y, VP, false, (int) radius ); // no arrows, with hilite
 
         rpt = rptn;
 
         node = node->GetNext();
-        FromSegNo = ToSegNo;                                  // pjotrc 2010.02.27
+        FromSegNo = ToSegNo;          
 
     }
 
