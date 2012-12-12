@@ -3055,6 +3055,9 @@ void MyFrame::SetGroupIndex( int index )
     ViewPort vp = cc1->GetVP();
 
     g_GroupIndex = new_index;
+    
+    //  Invalidate the "sticky" chart on group change, since it might not be in the new group
+    g_sticky_chart = -1;
 
     //    We need a new chartstack and quilt to figure out which chart to open in the new group
     cc1->UpdateCanvasOnGroupChange();
