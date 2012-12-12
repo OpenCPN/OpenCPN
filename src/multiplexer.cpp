@@ -149,10 +149,9 @@ void Multiplexer::SetGPSHandler(wxEvtHandler *handler)
 
 void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 {
-    wxString message = event.GetNMEAString();
-    wxString ds = event.GetDataSource();
+    wxString message = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
     DataStream *stream = event.GetDataStream();
- 
+    wxString ds = stream->GetPort();
     
     if( !message.IsEmpty() )
     {
@@ -212,7 +211,8 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             wxDateTime now = wxDateTime::Now();
             wxString ss = now.FormatISOTime();
             ss.Append( _T(" (") );
-            ss.Append( event.GetDataSource() );
+            if(stream)
+                ss.Append( stream->GetPort() );
             ss.Append( _T(") ") );
             ss.Append( message );
             if( !bpass )

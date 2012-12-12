@@ -412,13 +412,6 @@ S57QueryDialog            *g_pObjectQueryDialog;
 wxArrayString             TideCurrentDataSet;
 wxString                  g_TCData_Dir;
 
-//-----------------------------------------------------------------------------------------------------
-//                        OCP_NMEA_Thread Static data store
-//-----------------------------------------------------------------------------------------------------
-char                      rx_share_buffer[MAX_RX_MESSSAGE_SIZE];
-unsigned int              rx_share_buffer_length;
-ENUM_BUFFER_STATE         rx_share_buffer_state;
-
 #ifndef __WXMSW__
 struct sigaction          sa_all;
 struct sigaction          sa_all_old;
@@ -6279,10 +6272,14 @@ void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
 }
 
 
-bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS, int priority )
+bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS )
 {
     bool bret = true;
     wxString msg_type = str_buf.Mid(1, 5);
+    
+    int priority = 0;
+    if(pDS)
+        priority = pDS->GetPriority();
     
     //  If the message type has never been seen before...
     if( NMEA_Msg_Hash.find( msg_type ) == NMEA_Msg_Hash.end() ) {
@@ -6354,19 +6351,19 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     bool bshow_tick = false;
     bool bis_recognized_sentence = true; //PL
 
-    wxString str_buf = event.GetNMEAString();
-
+    wxString str_buf = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
+    
     if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
         g_total_NMEAerror_messages++;
         wxString msg( _T("MEH.NMEA Sentence received...") );
         msg.Append( str_buf );
         wxLogMessage( msg );
     }
-
+    
     //    Send NMEA sentences to PlugIns
     if( g_pi_manager ) g_pi_manager->SendNMEASentenceToAllPlugIns( str_buf );
 
-    bool b_accept = EvalPriority( str_buf, event.GetDataStream(), event.GetPrority() );
+    bool b_accept = EvalPriority( str_buf, event.GetDataStream() );
     if( b_accept ) {
         m_NMEA0183 << str_buf;
         if( m_NMEA0183.PreParse() ) {

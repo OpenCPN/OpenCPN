@@ -1260,8 +1260,8 @@ void AIS_Decoder::BuildERIShipTypeHash(void)
 //----------------------------------------------------------------------------------
 void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
 {
-    wxString message = event.GetNMEAString();
-
+    wxString message = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
+    
     int nr = 0;
     if( !message.IsEmpty() ) 
     {

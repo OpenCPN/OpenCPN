@@ -349,7 +349,7 @@ class MyFrame: public wxFrame
     wxString GetGroupName(int igroup);
     void LoadHarmonics();
     
-    bool EvalPriority( wxString str_buf, DataStream *pDS, int priority );
+    bool EvalPriority( wxString str_buf, DataStream *pDS );
 
     int                 m_StatusBarFieldCount;
 

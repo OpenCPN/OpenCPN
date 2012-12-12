@@ -72,7 +72,6 @@ const wxEventType wxEVT_OCPN_DATASTREAM = wxNewEventType();
 OCPN_DataStreamEvent::OCPN_DataStreamEvent( wxEventType commandType, int id )
       :wxEvent(id, commandType)
 {
-    m_priority = 0;
     m_pDataStream = NULL;
 }
 
@@ -84,9 +83,8 @@ OCPN_DataStreamEvent::~OCPN_DataStreamEvent( )
 wxEvent* OCPN_DataStreamEvent::Clone() const
 {
     OCPN_DataStreamEvent *newevent=new OCPN_DataStreamEvent(*this);
-    newevent->m_NMEAstring=this->m_NMEAstring.c_str();  // this enforces a deep copy of the string data
-    newevent->m_datasource=this->m_datasource.c_str();
-    newevent->m_priority=this->m_priority;
+    newevent->m_NMEAstring=this->m_NMEAstring;
+    newevent->m_NMEAstring += " ";
     newevent->m_pDataStream=this->m_pDataStream;
     return newevent;
 }
@@ -368,9 +366,8 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                         nmea_line = nmea_line.substr(nmea_start);
                         if( m_consumer && ChecksumOK(nmea_line)){
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                            Nevent.SetNMEAString(nmea_line);
-                            Nevent.SetDataSource(m_portstring);
-                            Nevent.SetPriority(m_priority);
+                            std::string s = std::string(nmea_line.mb_str());
+                            Nevent.SetNMEAString(s);
                             Nevent.SetDataStream(this);
                             
                             m_consumer->AddPendingEvent(Nevent);
@@ -613,17 +610,6 @@ void *OCP_DataStreamInput_Thread::Entry()
 
     m_launcher->SetSecThreadActive();               // I am alive
     
-#if 0
-    if(wxMUTEX_NO_ERROR != m_pPortMutex->Lock())              // I have the ball
-    {
-        wxString msg(_T("NMEA input device failed to lock Mutex on port : "));
-        msg.Append(m_PortName);
-//            ThreadMessage(msg);
-        goto thread_exit;
-    }
-
-#endif
-
 
 //    The main loop
 
@@ -632,27 +618,6 @@ void *OCP_DataStreamInput_Thread::Entry()
         if(TestDestroy())
             not_done = false;                               // smooth exit
 
-#if 0
-        if( m_launcher->IsPauseRequested())                 // external pause requested?
-        {
-            CloseComPortPhysical(m_gps_fd);
-            m_pPortMutex->Unlock();                       // release the port
-
-            wxThread::Sleep(2000);                        // stall for a bit
-
-            //  Now try to regain the Mutex
-            while(wxMUTEX_BUSY == m_pPortMutex->TryLock()){};
-            //  Re-initialize the port
-            if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) < 0)
-            {
-                wxString msg(_T("NMEA input device open failed after requested Pause on port: "));
-                msg.Append(m_PortName);
-//                    ThreadMessage(msg);
-                goto thread_exit;
-            }
-
-        }
-#endif
       //    Blocking, timeout protected read of one character at a time
       //    Timeout value is set by c_cc[VTIME]
       //    Storing incoming characters in circular buffer
@@ -691,25 +656,21 @@ void *OCP_DataStreamInput_Thread::Entry()
         // do not retry for the next 5s
                           maxErrorLoop = 0;
 
-        //  Turn off Open/Close logging
-        //                              bool blog = m_pCommMan->GetLogFlag();
-        //                              m_pCommMan->SetLogFlag(false);
-
         // free old unplug current port
                           CloseComPortPhysical(m_gps_fd);
         //    Request the com port from the comm manager
                           if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) < 0)  {
-                                wxString msg(_T("NMEA input device open failed (will retry): "));
-                                msg.Append(m_PortName);
-        //                                    ThreadMessage(msg);
+//                                wxString msg(_T("NMEA input device open failed (will retry): "));
+//                                msg.Append(m_PortName);
+//                                ThreadMessage(msg);
                           } else {
                                 wxString msg(_T("NMEA input device open on hotplug OK: "));
+                                msg.Append(m_PortName);
+                                ThreadMessage(msg);
                           }
-        //      Reset the log flag
-        //                              m_pCommMan->SetLogFlag(blog);
                     }
               }
-        } // end Fulup hack
+        } 
 
         //  And process any character
 
@@ -717,7 +678,6 @@ void *OCP_DataStreamInput_Thread::Entry()
         {
         //                    printf("%c", next_byte);
             nl_found = false;
-
             *put_ptr++ = next_byte;
             if((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
             put_ptr = rx_buffer;
@@ -1377,10 +1337,8 @@ thread_exit:
 void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
 {
     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-    Nevent.SetNMEAString(str_temp_buf);
-    wxString port = m_launcher->GetPort();
-    Nevent.SetDataSource(port);
-    Nevent.SetPriority(m_launcher->GetPriority());
+    std::string s = std::string(str_temp_buf.mb_str());
+    Nevent.SetNMEAString(s);
     Nevent.SetDataStream(m_launcher);
     if( m_pMessageTarget )
         m_pMessageTarget->AddPendingEvent(Nevent);
@@ -1391,8 +1349,6 @@ void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
 
 void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
 {
-    if( !m_launcher->SentencePassesFilter( msg, FILTER_INPUT ) )
-        return;
     //    Signal the main program thread
     wxCommandEvent event( EVT_THREADMSG,  GetId());
     event.SetEventObject( (wxObject *)this );
@@ -2718,10 +2674,8 @@ void *GARMIN_Serial_Thread::Entry()
                         wxString message = snt.Sentence;
 
                         OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                        Nevent.SetNMEAString(message);
-                        Nevent.SetDataSource(m_port);
-                        if(m_parent_stream)
-                            Nevent.SetPriority(m_parent_stream->GetPriority());
+                        std::string s = std::string(message.mb_str());
+                        Nevent.SetNMEAString(s);
                         Nevent.SetDataStream(m_parent_stream);
                         if( m_pMessageTarget )
                             m_pMessageTarget->AddPendingEvent(Nevent);
@@ -2812,11 +2766,8 @@ void *GARMIN_USB_Thread::Entry()
                   wxString message = snt.Sentence;
                   
                   OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                  Nevent.SetNMEAString(message);
-                  wxString source = _T("Garmin-USB");
-                  Nevent.SetDataSource( source );
-                  if(m_parent_stream)
-                      Nevent.SetPriority(m_parent_stream->GetPriority());
+                  std::string s = std::string(message.mb_str());
+                  Nevent.SetNMEAString(s);
                   Nevent.SetDataStream(m_parent_stream);
                   if( m_pMessageTarget )
                       m_pMessageTarget->AddPendingEvent(Nevent);
@@ -2862,11 +2813,8 @@ void *GARMIN_USB_Thread::Entry()
                           wxString message = snt.Sentence;
 
                           OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                          Nevent.SetNMEAString(message);
-                          wxString source = _T("Garmin-USB");
-                          Nevent.SetDataSource( source );
-                          if(m_parent_stream)
-                            Nevent.SetPriority(m_parent_stream->GetPriority());
+                          std::string s = std::string(message.mb_str());
+                          Nevent.SetNMEAString(s);
                           Nevent.SetDataStream(m_parent_stream);
                           if( m_pMessageTarget )
                               m_pMessageTarget->AddPendingEvent(Nevent);
