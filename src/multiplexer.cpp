@@ -151,7 +151,11 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 {
     wxString message = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
     DataStream *stream = event.GetDataStream();
-    wxString ds = stream->GetPort();
+    wxString port;
+    if( stream )
+        port = stream->GetPort();
+    else
+        port = _T("PlugIn Virtual");
     
     if( !message.IsEmpty() )
     {
@@ -159,7 +163,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         for (size_t i = 0; i < m_pdatastreams->Count(); i++)
         {
             DataStream* s = m_pdatastreams->Item(i);
-            if ( ds != s->GetPort() ) {
+            if ( port != s->GetPort() ) {
                 if ( s->IsOk() )
                     if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
                         bool bout_filter = true;
@@ -211,8 +215,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             wxDateTime now = wxDateTime::Now();
             wxString ss = now.FormatISOTime();
             ss.Append( _T(" (") );
-            if(stream)
-                ss.Append( stream->GetPort() );
+            ss.Append( port );
             ss.Append( _T(") ") );
             ss.Append( message );
             if( !bpass )
