@@ -2302,21 +2302,24 @@ void AIS_Decoder::UpdateAllAlarms( void )
             //  Maintain General Alert
             if( !m_bGeneralAlert ) {
                 //    Quick check on basic condition
-                if( ( td->CPA < g_CPAWarn_NM ) && ( td->TCPA > 0 ) && ( td->Class != AIS_ATON ) ) m_bGeneralAlert =
-                        true;
+                if( ( td->CPA < g_CPAWarn_NM ) && ( td->TCPA > 0 ) && ( td->Class != AIS_ATON ) )
+                    m_bGeneralAlert = true;
 
                 //    Some options can suppress general alerts
-                if( g_bAIS_CPA_Alert_Suppress_Moored && ( td->SOG <= g_ShowMoored_Kts ) ) m_bGeneralAlert =
-                        false;
+                if( g_bAIS_CPA_Alert_Suppress_Moored && ( td->SOG <= g_ShowMoored_Kts ) )
+                    m_bGeneralAlert = false;
 
                 //    Skip distant targets if requested
-                if( ( g_bCPAMax ) && ( td->Range_NM > g_CPAMax_NM ) ) m_bGeneralAlert = false;
+                if( ( g_bCPAMax ) && ( td->Range_NM > g_CPAMax_NM ) )
+                    m_bGeneralAlert = false;
 
                 //    Skip if TCPA is too long
-                if( ( g_bTCPA_Max ) && ( td->TCPA > g_TCPA_Max ) ) m_bGeneralAlert = false;
+                if( ( g_bTCPA_Max ) && ( td->TCPA > g_TCPA_Max ) )
+                    m_bGeneralAlert = false;
 
                 //  SART targets always alert
-                if( td->Class == AIS_SART ) m_bGeneralAlert = true;
+                if( td->Class == AIS_SART )
+                    m_bGeneralAlert = true;
 
             }
 
