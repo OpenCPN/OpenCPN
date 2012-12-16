@@ -950,6 +950,7 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
     pfix.Var = ppos->kVar;
     pfix.FixTime = ppos->FixTime;
     pfix.nSats = ppos->nSats;
+    pfix.VMG = ppos->kVMG;       // VMG to active waypoint
 
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
@@ -972,6 +973,7 @@ void PlugInManager::SendPositionFixToAllPlugIns(GenericPosDatEx *ppos)
     pfix_ex.nSats = ppos->nSats;
     pfix_ex.Hdt = ppos->kHdt;
     pfix_ex.Hdm = ppos->kHdm;
+    pfix_ex.VMG = ppos->kVMG;       // VMG to active waypoint
 
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {

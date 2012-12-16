@@ -377,7 +377,7 @@ class MyFrame: public wxFrame
     double              m_COGFilterLast;
     double              COGFilterTable[MAX_COGSOG_FILTER_SECONDS];
     double              SOGFilterTable[MAX_COGSOG_FILTER_SECONDS];
-
+    double              m_SOGFiltered, m_COGFiltered;
     bool                m_bpersistent_quilt;
     int                 m_ChartUpdatePeriod;
     bool                m_last_bGPSValid;

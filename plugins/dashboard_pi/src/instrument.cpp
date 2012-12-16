@@ -164,6 +164,8 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("<");
                 else if (unit == _T("N")) //Knots
                   m_data = wxString::Format(m_format, data)+_T(" Kts");
+                else if (unit == _T("NAR")) // No route is active
+                  m_data = _T("No Active Rte");
 /* maybe in the future ...
                 else if (unit == _T("M")) // m/s
                   m_data = wxString::Format(m_format, data)+_T(" m/s");

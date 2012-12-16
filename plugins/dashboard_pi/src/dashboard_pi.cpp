@@ -840,6 +840,8 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         mUTCDateTime.Set( pfix.FixTime );
         mUTCDateTime = mUTCDateTime.ToUTC();
     }
+    if (pfix.VMG > 999) SendSentenceToAllInstruments(OCPN_DBP_STC_VMG, 0 , _T("NAR")); // VMG > 999 flags no active route
+    else SendSentenceToAllInstruments(OCPN_DBP_STC_VMG, pfix.VMG, _T("Kts"));
     mSatsInView = pfix.nSats;
 }
 
