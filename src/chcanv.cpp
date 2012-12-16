@@ -150,6 +150,7 @@ extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern wxString GetLayerName(int id);
+extern wxString         g_uploadConnection;
 
 extern bool             bDrawCurrentValues;
 
@@ -9213,21 +9214,26 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_WPT_MENU_SENDTOGPS:
         if( m_pFoundRoutePoint ) {
             wxString port;
-            if( g_pConnectionParams ) {
-                // With the new multiplexer code we take a bit of a chance here,
-                // and use the first available serial connection which has output.
-                // This could potentially fail in complex installations...
+            //  Try to use the saved persistent upload port first
+            if( g_uploadConnection.Len() ) {
+                if( g_uploadConnection.StartsWith(_T("Serial")) ) {
+                    port = g_uploadConnection;
+                }
+            }
+            else if( g_pConnectionParams ) {
+                // If there is no persistent upload port recorded (yet)
+                // then use the first available serial connection which has output defined.
                 for( size_t i = 0; i < g_pConnectionParams->Count(); i++ ) {
                     ConnectionParams *cp = g_pConnectionParams->Item( i );
-                    if( cp->Output && cp->Type == Serial ) {
+                    if( cp->Output && cp->Type == Serial )
                         port << _T("Serial:") << cp->Port;
-                    }
                 }
-                if( port.Length() )
-                    m_pFoundRoutePoint->SendToGPS( port, NULL );
-                else
-                    OCPNMessageBox( NULL, _("Can't send waypoint. Found no serial data port with output defined."), _("OpenCPN Info"), wxOK | wxICON_WARNING );
             }
+             
+             if( port.Length() )
+                m_pFoundRoutePoint->SendToGPS( port, NULL );
+             else
+                OCPNMessageBox( NULL, _("Can't send waypoint. Found no serial data port with output defined."), _("OpenCPN Info"), wxOK | wxICON_WARNING );
         }
         break;
 

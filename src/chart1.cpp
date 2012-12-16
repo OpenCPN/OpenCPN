@@ -202,6 +202,8 @@ extern wxString           str_version_major;
 extern wxString           str_version_minor;
 extern wxString           str_version_patch;
 
+wxString                  g_uploadConnection;
+
 int                       user_user_id;
 int                       file_user_id;
 

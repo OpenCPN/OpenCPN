@@ -85,6 +85,7 @@ extern Multiplexer     *g_pMUX;
 
 extern PlugInManager    *g_pi_manager;
 extern ocpnStyle::StyleManager* g_StyleManager;
+extern wxString         g_uploadConnection;
 
 //    List definitions for Waypoint Manager Icons
 WX_DECLARE_LIST(wxBitmap, markicon_bitmap_list_type);
@@ -946,20 +947,21 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
         full_port.Prepend(_T("Serial:"));
         m_itemCommListBox->Append( full_port );
     }
-
+    
+ 
     delete pSerialArray;
 
     //    Make the proper inital selection
     int sidx = 0;
-/*    
-    if( hint.Upper().Contains( _T("SERIAL") ) ) {
-        wxString sourcex = hint.Mid( 7 );
-        sidx = m_itemCommListBox->FindString( sourcex );
-    } else
-        sidx = m_itemCommListBox->FindString( hint );
-*/
-    m_itemCommListBox->SetSelection( sidx );
-
+    if( g_uploadConnection != _T("") ) {
+        sidx = m_itemCommListBox->FindString( g_uploadConnection );
+    }
+    
+    if( sidx != wxNOT_FOUND )
+        m_itemCommListBox->SetSelection( sidx );
+    else
+        m_itemCommListBox->SetSelection( 0 );
+    
     comm_box_sizer->Add( m_itemCommListBox, 0, wxEXPAND | wxALL, 5 );
 
     //    Add a reminder text box
@@ -999,6 +1001,8 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
     int i = m_itemCommListBox->GetSelection();
     wxString src( m_itemCommListBox->GetString( i ) );
 
+    g_uploadConnection = src;                   // save for persistence
+    
     src = m_itemCommListBox->GetValue();
 
     //    And send it out
