@@ -1918,8 +1918,6 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
         }
 
         case 24: {
-            ptd->Class = AIS_CLASS_B;
-
             int part_number = bstr->GetInt( 39, 2 );
             if( 0 == part_number ) {
                 bstr->GetStr( 41, 120, &ptd->ShipName[0], 20 );
