@@ -1833,12 +1833,18 @@ wxString ConnectionParams::GetFiltersStr()
         ostcs.Append( OutputSentenceList[i] );
     }
     wxString ret = wxEmptyString;
-    if ( istcs.Len() > 0 )
-        ret.Append(wxString::Format( _T("In: %s %s"), FilterTypeToStr(InputSentenceListType).c_str(), istcs.c_str()) );
+    if ( istcs.Len() > 0 ){
+        ret.Append( _("In") );
+        ret.Append(wxString::Format( _T(": %s %s"), FilterTypeToStr(InputSentenceListType).c_str(), istcs.c_str()) );
+    }
     else
         ret.Append( _("In: None") );
-    if ( ostcs.Len() > 0 )
-        ret.Append( wxString::Format( _T(", Out: %s %s"), FilterTypeToStr(OutputSentenceListType).c_str(), ostcs.c_str() ) );
+    
+    if ( ostcs.Len() > 0 ){
+        ret.Append(  _T(", ") );
+        ret.Append(  _("Out") );
+        ret.Append( wxString::Format( _T(": %s %s"), FilterTypeToStr(OutputSentenceListType).c_str(), ostcs.c_str() ) );
+    }
     else
         ret.Append( _(", Out: None") );
     return  ret;
