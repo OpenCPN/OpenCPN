@@ -163,20 +163,20 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         for (size_t i = 0; i < m_pdatastreams->Count(); i++)
         {
             DataStream* s = m_pdatastreams->Item(i);
-            if ( port != s->GetPort() ) {
-                if ( s->IsOk() )
-                    if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
-                        bool bout_filter = true;
+            if ( s->IsOk() && (s->GetConnectionType() == Serial) ) {
+                if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
+                    bool bout_filter = true;
                         
-                        if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
-                            s->SendSentence(message);
-                            bout_filter = false;
-                        }    
+                    if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
+                        s->SendSentence(message);
+                        bout_filter = false;
+                    }    
                             //Send to the Debug Window, if open
-                        LogOutputMessage( message, s, bout_filter );
-                    }
+                    LogOutputMessage( message, s, bout_filter );
+                }
             }
         }
+        
         //Send to core consumers
         //if it passes the source's input filter
         //  If there is no datastream, as for PlugIns, then pass everything

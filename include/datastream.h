@@ -259,6 +259,7 @@ public:
     ListType GetInputSentenceListType(){ return m_input_filter_type; }
     ListType GetOutputSentenceListType(){ return m_output_filter_type; }
     bool GetChecksumCheck(){ return m_bchecksumCheck; }
+    ConnectionType GetConnectionType(){ return m_connection_type; }
     
     
 
