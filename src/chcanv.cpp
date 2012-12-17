@@ -8368,6 +8368,9 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             menuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
         if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+        
+        //      Set this menu as the "focused context menu"
+        menuFocus = menuWaypoint;
     }
 
     if( seltype & SELTYPE_MARKPOINT ) {
