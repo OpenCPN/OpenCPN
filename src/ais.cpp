@@ -2010,8 +2010,8 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
 
             if( bstr->GetBitCount() > 276 ) {
                 int nx = ( ( bstr->GetBitCount() - 272 ) / 6 ) * 6;
-                bstr->GetStr( 273, nx, &ptd->ShipNameExtension[0], 20 );
-                ptd->ShipNameExtension[20] = 0;
+                bstr->GetStr( 273, nx, &ptd->ShipNameExtension[0], 14 );
+                ptd->ShipNameExtension[14] = 0;
             } else {
                 ptd->ShipNameExtension[0] = 0;
             }

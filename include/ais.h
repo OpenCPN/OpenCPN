@@ -227,7 +227,7 @@ public:
     int                       ROTIND;
     char                      CallSign[8];                // includes terminator
     char                      ShipName[21];
-    char                      ShipNameExtension[21];
+    char                      ShipNameExtension[15];
     unsigned char             ShipType;
     int                       IMO;
 
