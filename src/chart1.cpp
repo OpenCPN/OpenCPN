@@ -3504,8 +3504,10 @@ void MyFrame::ToggleCourseUp( void )
         double stuff = 0.;
         if( !wxIsNaN(gCog) ) stuff = gCog;
 
-        for( int i = 0; i < g_COGAvgSec; i++ )
-            COGTable[i] = stuff;
+        if( g_COGAvgSec > 0) { 
+            for( int i = 0; i < g_COGAvgSec; i++ )
+                COGTable[i] = stuff;
+        }
         g_COGAvg = stuff;
     }
 
@@ -3906,8 +3908,10 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         //    Stuff the COGAvg table in case COGUp is selected
         double stuff = 0.;
         if( !wxIsNaN(gCog) ) stuff = gCog;
-        for( int i = 0; i < g_COGAvgSec; i++ )
-            COGTable[i] = stuff;
+        if( g_COGAvgSec > 0 ) {
+            for( int i = 0; i < g_COGAvgSec; i++ )
+                COGTable[i] = stuff;
+        }
 
         g_COGAvg = stuff;
 
@@ -4912,8 +4916,12 @@ void MyFrame::OnFrameCOGTimer( wxTimerEvent& event )
 
     DoCOGSet();
 
-    //    Restart the timer
-    FrameCOGTimer.Start( g_COGAvgSec * 1000, wxTIMER_CONTINUOUS );
+    //    Restart the timer, max frequency is 10 hz.
+    if( g_COGAvgSec > 0 )
+        FrameCOGTimer.Start( g_COGAvgSec * 1000, wxTIMER_CONTINUOUS );
+    else
+        FrameCOGTimer.Start( 100, wxTIMER_CONTINUOUS );
+    
 }
 
 void MyFrame::DoCOGSet( void )
@@ -6801,31 +6809,34 @@ void MyFrame::PostProcessNNEA( bool brx_rmc, wxString &sfixtime )
 //    Maintain average COG for Course Up Mode
 
     if( !wxIsNaN(gCog) ) {
-        //    Make a hole
-        for( int i = g_COGAvgSec - 1; i > 0; i-- )
-            COGTable[i] = COGTable[i - 1];
-        COGTable[0] = gCog;
+        if( g_COGAvgSec > 0 ) {
+            //    Make a hole
+            for( int i = g_COGAvgSec - 1; i > 0; i-- )
+                COGTable[i] = COGTable[i - 1];
+            COGTable[0] = gCog;
 
-        //
-        double sum = 0.;
-        for( int i = 0; i < g_COGAvgSec; i++ ) {
-            double adder = COGTable[i];
+            double sum = 0.;
+            for( int i = 0; i < g_COGAvgSec; i++ ) {
+                double adder = COGTable[i];
 
-            if( fabs( adder - g_COGAvg ) > 180. ) {
-                if( ( adder - g_COGAvg ) > 0. ) adder -= 360.;
-                else
-                    adder += 360.;
+                if( fabs( adder - g_COGAvg ) > 180. ) {
+                    if( ( adder - g_COGAvg ) > 0. ) adder -= 360.;
+                    else
+                        adder += 360.;
+                }
+
+                sum += adder;
             }
+            sum /= g_COGAvgSec;
 
-            sum += adder;
+            if( sum < 0. ) sum += 360.;
+            else
+                if( sum >= 360. ) sum -= 360.;
+
+            g_COGAvg = sum;
         }
-        sum /= g_COGAvgSec;
-
-        if( sum < 0. ) sum += 360.;
         else
-            if( sum >= 360. ) sum -= 360.;
-
-        g_COGAvg = sum;
+            g_COGAvg = gCog;
     }
 
 #ifdef ocpnUPDATE_SYSTEM_TIME
