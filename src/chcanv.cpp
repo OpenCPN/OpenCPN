@@ -5809,7 +5809,7 @@ void ChartCanvas::AISDrawAreaNotices( ocpnDC& dc )
     wxBrush *green_brush;
     wxBrush *brush;
 
-    AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
+    AIS_Target_Hash *current_targets = g_pAIS->GetAreaNoticeSourcesList();
 
     float vp_scale = GetVPScale();
 
@@ -8184,6 +8184,56 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         contextMenu->Prepend( ID_REDO, _menuText( redoItem, _T("Ctrl-Y") ) );
     }
 
+    bool ais_areanotice = false;
+    if( g_pAIS && g_bShowAIS && g_bShowAreaNotices ) {
+
+        AIS_Target_Hash* an_sources = g_pAIS->GetAreaNoticeSourcesList();
+
+        float vp_scale = GetVPScale();
+
+        for( AIS_Target_Hash::iterator target = an_sources->begin(); target != an_sources->end(); ++target ) {
+            AIS_Target_Data* target_data = target->second;
+            if( !target_data->area_notices.empty() ) {
+                for( AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani ) {
+                    Ais8_001_22& area_notice = ani->second;
+
+                    wxBoundingBox bbox;
+                    double lat, lon;
+
+                    for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) {
+                        switch( sa->shape ) {
+                            case AIS8_001_22_SHAPE_CIRCLE: {
+                                lat = sa->latitude;
+                                lon = sa->longitude;
+
+                                wxPoint target_point;
+                                GetCanvasPointPix( sa->latitude, sa->longitude, &target_point );
+                                bbox.Expand( target_point );
+                                if( sa->radius_m > 0.0 )
+                                    bbox.EnLarge( sa->radius_m * vp_scale );
+                                break;
+                            }
+                            case AIS8_001_22_SHAPE_POLYGON:
+                            case AIS8_001_22_SHAPE_POLYLINE: {
+                                for( int i = 0; i < 4; ++i ) {
+                                    ll_gc_ll( lat, lon, sa->angles[i], sa->dists_m[i] / 1852.0,
+                                              &lat, &lon );
+                                    wxPoint target_point;
+                                    GetCanvasPointPix( lat, lon, &target_point );
+                                    bbox.Expand( target_point );
+                                }
+                            }
+                        }
+                    }
+
+                    if( bbox.PointInBox( x, y ) ) {
+                        ais_areanotice = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }  
     if( !VPoint.b_quilt ) {
         if( parent_frame->GetnChartStack() > 1 ) {
             contextMenu->Append( ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
@@ -8191,13 +8241,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             contextMenu->Append( ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
         }
 
-        if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
+        if( ( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
             contextMenu->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         }
 
     } else {
         ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
-        if( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
+        if( ( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
             contextMenu->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         } else {
             if( parent_frame->GetnChartStack() > 1 ) {
@@ -8451,8 +8501,58 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 {
     ChartBase *target_chart = GetChartAtCursor();
     s57chart *Chs57 = dynamic_cast<s57chart*>( target_chart );
+    std::vector<Ais8_001_22*> area_notices;
 
-    if( Chs57 ) {
+    if( g_pAIS && g_bShowAIS && g_bShowAreaNotices ) {
+        AIS_Target_Hash* an_sources = g_pAIS->GetAreaNoticeSourcesList();
+
+        float vp_scale = GetVPScale();
+
+        for( AIS_Target_Hash::iterator target = an_sources->begin(); target != an_sources->end(); ++target ) {
+            AIS_Target_Data* target_data = target->second;
+            if( !target_data->area_notices.empty() ) {
+                for( AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani ) {
+                    Ais8_001_22& area_notice = ani->second;
+
+                    wxBoundingBox bbox;
+                    double lat, lon;
+
+                    for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) {
+                        switch( sa->shape ) {
+                            case AIS8_001_22_SHAPE_CIRCLE: {
+                                lat = sa->latitude;
+                                lon = sa->longitude;
+
+                                wxPoint target_point;
+                                GetCanvasPointPix( sa->latitude, sa->longitude, &target_point );
+                                bbox.Expand( target_point );
+                                if( sa->radius_m > 0.0 )
+                                    bbox.EnLarge( sa->radius_m * vp_scale );
+                                break;
+                            }
+                            case AIS8_001_22_SHAPE_POLYGON:
+                            case AIS8_001_22_SHAPE_POLYLINE: {
+                                for( int i = 0; i < 4; ++i ) {
+                                    ll_gc_ll( lat, lon, sa->angles[i], sa->dists_m[i] / 1852.0,
+                                              &lat, &lon );
+                                    wxPoint target_point;
+                                    GetCanvasPointPix( lat, lon, &target_point );
+                                    bbox.Expand( target_point );
+                                }
+                            }
+                        }
+                    }
+
+                    if( bbox.PointInBox( x, y ) ) {
+                        area_notices.push_back( &area_notice );
+                    }
+                }
+            }
+        }
+    }
+    
+
+    if( Chs57 || !area_notices.empty() ) {
         // Go get the array of all objects at the cursor lat/lon
         int sel_rad_pix = 5;
         float SelectRadius = sel_rad_pix / ( GetVP().view_scale_ppm * 1852 * 60 );
@@ -8463,8 +8563,9 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         SetCursor( wxCURSOR_WAIT );
         bool lightsVis = gFrame->ToggleLights( false );
         if( !lightsVis ) gFrame->ToggleLights( true, true );
-        ListOfObjRazRules* rule_list =
-                Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
+        ListOfObjRazRules* rule_list = NULL;
+        if( Chs57 )
+            rule_list = Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
 
         ListOfObjRazRules* overlay_rule_list = NULL;
         ChartBase *overlay_chart = GetOverlayChartAtCursor();
@@ -8501,8 +8602,19 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
             objText << CHs57_Overlay->CreateObjDescriptions( overlay_rule_list );
             objText << _T("<hr noshade>");
         }
+        
+        for( std::vector< Ais8_001_22* >::iterator an = area_notices.begin(); an != area_notices.end(); ++an ) {
+            objText << _T( "<b>AIS Area Notice:</b> " );
+            objText << ais8_001_22_notice_names[( *an )->notice_type];
+            for( std::vector< Ais8_001_22_SubArea >::iterator sa = ( *an )->sub_areas.begin(); sa != ( *an )->sub_areas.end(); ++sa )
+                if( !sa->text.empty() )
+                    objText << sa->text;
+            objText << _T( "<br>expires: " ) << ( *an )->expiry_time.Format();
+            objText << _T( "<hr noshade>" );
+        }
 
-        objText << Chs57->CreateObjDescriptions( rule_list );
+        if( Chs57 )
+            objText << Chs57->CreateObjDescriptions( rule_list );
 
         objText << _T("</font></body></html>");
 
@@ -8510,7 +8622,8 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         g_pObjectQueryDialog->Show();
 
-        rule_list->Clear();
+        if( rule_list )
+            rule_list->Clear();
         delete rule_list;
 
         if( overlay_rule_list )
