@@ -1780,6 +1780,10 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    Set up the vieport projection type
     vp_local.SetProjectionType( m_quilt_proj );
 
+    //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
+    double saved_vp_rotation = vp_local.rotation;                      // save a copy
+    vp_local.SetRotationAngle( 0. );
+    
     bool bfull = vp_in.b_FullScreenQuilt;
     BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
 
@@ -1813,10 +1817,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    Add only those charts whose scale is smaller than the "reference scale"
     wxRegion vp_region( vp_local.rv_rect );
     unsigned int ir;
-
-    //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
-    double saved_vp_rotation = vp_local.rotation;                      // save a copy
-    vp_local.SetRotationAngle( 0. );
 
     //    "Draw" the reference chart first, since it is special in that it controls the fine vpscale setting
     QuiltCandidate *pqc_ref = NULL;
