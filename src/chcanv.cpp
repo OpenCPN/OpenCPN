@@ -1528,10 +1528,10 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
     EmptyCandidateArray();
     m_extended_stack_array.Clear();
 
-    int reference_scale;
+    int reference_scale = 1.;
     int reference_type = -1;
     int reference_family;
-    int quilt_proj;
+    int quilt_proj = PROJECTION_UNKNOWN;
 
     if( ref_db_index >= 0 ) {
         const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry( ref_db_index );
@@ -5805,8 +5805,8 @@ void ChartCanvas::AISDrawAreaNotices( ocpnDC& dc )
     wxColour yellow;
     wxColour green;
     wxPen pen;
-    wxBrush *yellow_brush;
-    wxBrush *green_brush;
+    wxBrush *yellow_brush = wxTheBrushList->FindOrCreateBrush( wxColour(0,0,0), wxTRANSPARENT );
+    wxBrush *green_brush  = wxTheBrushList->FindOrCreateBrush( wxColour(0,0,0), wxTRANSPARENT );;
     wxBrush *brush;
 
     AIS_Target_Hash *current_targets = g_pAIS->GetAreaNoticeSourcesList();
@@ -6044,7 +6044,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         ais_quad_icon[3].y = -6;
 
         wxPoint ais_real_size[4];
-        bool bcan_draw_size;
+        bool bcan_draw_size = true;
         if (g_bDrawAISSize)
         {
             if (td->DimA + td->DimB == 0 || td->DimC + td->DimD == 0)
@@ -8792,7 +8792,7 @@ void pupHandler_PasteRoute() {
         }
     }
 
-    Route* newRoute;
+    Route* newRoute = NULL;
     RoutePoint* newPoint;
 
     if( createNewRoute ) {
