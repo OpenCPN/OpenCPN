@@ -415,6 +415,7 @@ public:
     ListType        OutputSentenceListType;
     wxArrayString   OutputSentenceList;
     int             Priority;
+    bool            bEnabled;
 
     wxString        Serialize();
     void            Deserialize(wxString &configStr);

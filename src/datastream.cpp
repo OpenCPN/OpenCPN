@@ -1689,7 +1689,7 @@ void ConnectionParams::Deserialize(wxString &configStr)
 {
     Valid = true;
     wxArrayString prms = wxStringTokenize( configStr, _T(";") );
-    if (prms.Count() != 17) {
+    if (prms.Count() < 17) {
         Valid = false;
         return;
     }
@@ -1711,6 +1711,10 @@ void ConnectionParams::Deserialize(wxString &configStr)
     Garmin = !!wxAtoi(prms[14]);
     GarminUpload = !!wxAtoi(prms[15]);
     FurunoGP3X = !!wxAtoi(prms[16]);
+
+    bEnabled = true;
+    if (prms.Count() >= 18) 
+        bEnabled = !!wxAtoi(prms[17]);
 }
 
 wxString ConnectionParams::Serialize()
@@ -1729,7 +1733,7 @@ wxString ConnectionParams::Serialize()
             ostcs.Append( _T(",") );
         ostcs.Append( OutputSentenceList[i] );
     }
-    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d"),
+    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d"),
                                      Type,
                                      NetProtocol,
                                      NetworkAddress.c_str(),
@@ -1746,7 +1750,9 @@ wxString ConnectionParams::Serialize()
                                      Priority,
                                      Garmin,
                                      GarminUpload,
-                                     FurunoGP3X );
+                                     FurunoGP3X,
+                                     bEnabled
+                                   );
 
     return ret;
 }
@@ -1768,7 +1774,7 @@ ConnectionParams::ConnectionParams()
     OutputSentenceListType = WHITELIST;
     Priority = 0;
     Valid = true;
-    
+    bEnabled = true;
 }
 
 wxString ConnectionParams::GetSourceTypeStr()
