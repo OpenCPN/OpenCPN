@@ -2251,9 +2251,9 @@ ConnectionParams * options::SaveConnectionParams()
     
     m_pConnectionParams->Valid = true;
     if ( m_rbTypeSerial->GetValue() )
-        m_pConnectionParams->Type = Serial;
+        m_pConnectionParams->Type = SERIAL;
     else
-        m_pConnectionParams->Type = Network;
+        m_pConnectionParams->Type = NETWORK;
     m_pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
     m_pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
     if ( m_rbNetProtoTCP->GetValue() )
@@ -3792,7 +3792,7 @@ void options::SetConnectionParams(ConnectionParams *cp)
             m_tNetPort->SetValue(_T(""));
     }
 
-    if ( cp->Type == Serial )
+    if ( cp->Type == SERIAL )
     {
         m_rbTypeSerial->SetValue( true );
         SetNMEAFormToSerial();

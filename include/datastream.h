@@ -102,8 +102,8 @@ enum {
 //Type definitions for connection parameters
 typedef enum
 {
-    Serial = 0,
-    Network = 1
+    SERIAL = 0,
+    NETWORK = 1
 } ConnectionType;
 
 typedef enum
@@ -429,7 +429,7 @@ public:
 
     bool            Valid;
 private:
-    wxString FilterTypeToStr(ListType type);
+    wxString FilterTypeToStr(ListType type, FilterDirection dir);
 };
 
 WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);

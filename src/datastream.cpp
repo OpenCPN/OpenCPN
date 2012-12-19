@@ -111,7 +111,7 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
              int EOS_type,
              int handshake_type,
              void *user_data )
-:m_net_protocol(GPSD),m_connection_type(Serial)
+:m_net_protocol(GPSD),m_connection_type(SERIAL)
 
 {
     m_consumer = input_consumer;
@@ -148,7 +148,7 @@ void DataStream::Open(void)
 
         //    Data Source is specified serial port
         if(m_portstring.Contains(_T("Serial"))) {
-            m_connection_type = Serial;
+            m_connection_type = SERIAL;
             wxString comx;
             comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
 
@@ -159,7 +159,7 @@ void DataStream::Open(void)
                 m_GarminHandler = new GarminProtocolHandler(this, m_consumer,  false);
             }
             else {
-                m_connection_type = Serial;
+                m_connection_type = SERIAL;
                 wxString comx;
                 comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
 
@@ -195,22 +195,22 @@ void DataStream::Open(void)
             m_net_addr = _T("127.0.0.1");              // defaults
             m_net_port = _T("2947");
             m_net_protocol = GPSD;
-            m_connection_type = Network;
+            m_connection_type = NETWORK;
         }
         else if(m_portstring.StartsWith(_T("TCP"))) {
             m_net_addr = _T("127.0.0.1");              // defaults
             m_net_port = _T("2947");
             m_net_protocol = TCP;
-            m_connection_type = Network;
+            m_connection_type = NETWORK;
         }
         else if(m_portstring.StartsWith(_T("UDP"))) {
             m_net_addr =  _T("0.0.0.0");              // any address
             m_net_port = _T("0");                     // any port
             m_net_protocol = UDP;
-            m_connection_type = Network;
+            m_connection_type = NETWORK;
         }
         
-        if(m_connection_type == Network){
+        if(m_connection_type == NETWORK){
         
             //  Capture the  parameters from the portstring
 
@@ -485,7 +485,7 @@ bool DataStream::SendSentence( const wxString &sentence )
 {
     bool has_crlf = sentence.EndsWith(_T("\r\n"));
     switch( m_connection_type ) {
-        case Serial:
+        case SERIAL:
             if( m_pSecondary_Thread ) {
                 wxDateTime then = wxDateTime::Now();
                 wxTimeSpan wait = wxDateTime::Now() - then;
@@ -504,7 +504,7 @@ bool DataStream::SendSentence( const wxString &sentence )
                     return false;
             }
             break;
-        case Network:
+        case NETWORK:
             if( m_sock ) {
                 switch(m_net_protocol){
                     case GPSD:
@@ -1759,7 +1759,7 @@ wxString ConnectionParams::Serialize()
 
 ConnectionParams::ConnectionParams()
 {
-    Type = Serial;
+    Type = SERIAL;
     NetProtocol = TCP;
     NetworkAddress = wxEmptyString;
     NetworkPort = 0;
@@ -1779,7 +1779,7 @@ ConnectionParams::ConnectionParams()
 
 wxString ConnectionParams::GetSourceTypeStr()
 {
-    if ( Type == Serial )
+    if ( Type == SERIAL )
         return _("Serial");
     else
         return _("Net");
@@ -1787,7 +1787,7 @@ wxString ConnectionParams::GetSourceTypeStr()
 
 wxString ConnectionParams::GetAddressStr()
 {
-    if ( Type == Serial )
+    if ( Type == SERIAL )
         return wxString::Format( _T("%s"), Port.c_str() );
     else
         return wxString::Format( _T("%s:%d"), NetworkAddress.c_str(), NetworkPort );
@@ -1795,7 +1795,7 @@ wxString ConnectionParams::GetAddressStr()
 
 wxString ConnectionParams::GetParametersStr()
 {
-    if ( Type == Serial )
+    if ( Type == SERIAL )
         return wxString::Format( _T("%d"), Baudrate );
     else
         if ( NetProtocol == TCP )
@@ -1814,12 +1814,20 @@ wxString ConnectionParams::GetOutputValueStr()
         return _("No");
 }
 
-wxString ConnectionParams::FilterTypeToStr(ListType type)
+wxString ConnectionParams::FilterTypeToStr(ListType type, FilterDirection dir)
 {
-    if ( type == BLACKLIST )
-        return _("All but");
-    else
-        return _("Just ");
+    if(dir == FILTER_INPUT) {
+        if ( type == BLACKLIST )
+            return _("Reject");
+        else
+            return _("Accept");
+    }
+    else {
+        if ( type == BLACKLIST )
+            return _("Drop");
+        else
+            return _("Send");
+    }
 }
 
 wxString ConnectionParams::GetFiltersStr()
@@ -1841,7 +1849,8 @@ wxString ConnectionParams::GetFiltersStr()
     wxString ret = wxEmptyString;
     if ( istcs.Len() > 0 ){
         ret.Append( _("In") );
-        ret.Append(wxString::Format( _T(": %s %s"), FilterTypeToStr(InputSentenceListType).c_str(), istcs.c_str()) );
+        ret.Append(wxString::Format( _T(": %s %s"),
+                                     FilterTypeToStr(InputSentenceListType, FILTER_INPUT).c_str(), istcs.c_str()) );
     }
     else
         ret.Append( _("In: None") );
@@ -1849,7 +1858,8 @@ wxString ConnectionParams::GetFiltersStr()
     if ( ostcs.Len() > 0 ){
         ret.Append(  _T(", ") );
         ret.Append(  _("Out") );
-        ret.Append( wxString::Format( _T(": %s %s"), FilterTypeToStr(OutputSentenceListType).c_str(), ostcs.c_str() ) );
+        ret.Append( wxString::Format( _T(": %s %s"),
+                                      FilterTypeToStr(OutputSentenceListType, FILTER_OUTPUT).c_str(), ostcs.c_str() ) );
     }
     else
         ret.Append( _(", Out: None") );
@@ -1858,7 +1868,7 @@ wxString ConnectionParams::GetFiltersStr()
 
 wxString ConnectionParams::GetDSPort()
 {
-    if ( Type == Serial )
+    if ( Type == SERIAL )
         return wxString::Format( _T("Serial:%s"), Port.c_str() );
     else
     {
