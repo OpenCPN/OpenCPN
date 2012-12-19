@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1105\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-02 08:16-0500\n"
+"POT-Creation-Date: 2012-12-19 12:21-0500\n"
 "PO-Revision-Date: 2012-11-13 13:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC sailingteam <sailingteam@isc.tuc.gr>\n"
@@ -318,6 +318,9 @@ msgstr "(Ανώνυμο ίχνος πορείας)"
 msgid "(Unnamed Waypoint)"
 msgstr "(Ανώνυμο σημείο πορείας)"
 #
+msgid "(reserved for future use)"
+msgstr ""
+#
 msgid "(unnamed)"
 msgstr "(ανώνυμο)"
 #
@@ -503,6 +506,9 @@ msgstr "Περί"
 msgid "About OpenCPN"
 msgstr "Περί OpenCPN"
 #
+msgid "Accept"
+msgstr ""
+#
 msgid "Accept Sentences"
 msgstr "Αποδέχεται τα δεδομένα"
 #
@@ -557,9 +563,6 @@ msgstr "Όλοι οι διαθέσιμοι χάρτες"
 msgid "All Charts"
 msgstr "Όλοι οι χάρτες"
 #
-msgid "All but"
-msgstr "Όλα εκτός από"
-#
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
 "also have a two letter prefix identifying the source, or TALKER, of the "
@@ -572,6 +575,26 @@ msgstr ""
 "TALKER, των δεδομένων (ολόκληρος ο τύπος, τότε, είναι κάτι σαν GPGGA ή "
 "AITXT). Μπορείτε να αποκλείσετε όλους τους τύπους δεδομένων με συγκεκριμένα "
 "αρχικά πηγής (όπως GP, AI κ.λπ.). Το φίλτρο δέχεται μόνο αυτά τα τρία φορμά."
+#
+#, fuzzy
+msgid "Anchorage Area: Anchorage closed"
+msgstr "Δημιουργήθηκε αγκυροβόλιο"
+#
+#, fuzzy
+msgid "Anchorage Area: Anchorage open"
+msgstr "Δημιουργήθηκε αγκυροβόλιο"
+#
+msgid "Anchorage Area: Anchoring prohibited"
+msgstr ""
+#
+msgid "Anchorage Area: Deep draft anchorage"
+msgstr ""
+#
+msgid "Anchorage Area: Shallow draft anchorage"
+msgstr ""
+#
+msgid "Anchorage Area: Vessel transfer operations"
+msgstr ""
 #
 msgid "Anchorage created "
 msgstr "Δημιουργήθηκε αγκυροβόλιο"
@@ -721,8 +744,14 @@ msgstr "Συναγερμοί CPA/TCPA"
 msgid "Call"
 msgstr "ΔΔΣ"
 #
+msgid "Can't send waypoint. Found no serial data port with output defined."
+msgstr ""
+#
 msgid "Cancel"
 msgstr "Ακύρωση"
+#
+msgid "Cancellation - cancel area as identified by Message Linkage ID"
+msgstr ""
 #
 msgid "Card. E"
 msgstr "Ττρτκλ. Α"
@@ -763,6 +792,72 @@ msgstr "Τεταρτοκυκλικός φάρος, Δυτικος"
 msgid "Cargo Ship"
 msgstr "Φορτηγό"
 #
+msgid "Caution Area: Cluster of fishing vessels"
+msgstr ""
+#
+msgid "Caution Area: Derelicts (drifting objects)"
+msgstr ""
+#
+msgid "Caution Area: Divers down"
+msgstr ""
+#
+msgid "Caution Area: Dredge operations"
+msgstr ""
+#
+msgid "Caution Area: Fairway closed"
+msgstr ""
+#
+msgid "Caution Area: Fishery - nets in water"
+msgstr ""
+#
+msgid "Caution Area: Harbour closed"
+msgstr ""
+#
+msgid "Caution Area: Marine event"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - reduce speed"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - report sightings"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - stay clear"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - no fishing or anchoring"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - reduce speed"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - stay clear"
+msgstr ""
+#
+msgid "Caution Area: Risk (define in Associated text field)"
+msgstr ""
+#
+msgid "Caution Area: Seaplane operations"
+msgstr ""
+#
+msgid "Caution Area: Survey operations"
+msgstr ""
+#
+msgid "Caution Area: Swim area"
+msgstr ""
+#
+msgid "Caution Area: Traffic congestion"
+msgstr ""
+#
+msgid "Caution Area: Underwater operation"
+msgstr ""
+#
+msgid "Caution Area: Underwater vehicle operation"
+msgstr ""
+#
 msgid "Cell"
 msgstr "Κυψέλλη"
 #
@@ -783,6 +878,45 @@ msgstr "Βυθομετρικές μονάδες χάρτη"
 #
 msgid "Chart Display Options"
 msgstr "Επιλογές εμφάνισης χάρτη"
+#
+msgid "Chart Feature: Bridge closed"
+msgstr ""
+#
+msgid "Chart Feature: Bridge fully open"
+msgstr ""
+#
+msgid "Chart Feature: Bridge partially open"
+msgstr ""
+#
+msgid "Chart Feature: Channel obstruction"
+msgstr ""
+#
+msgid "Chart Feature: Reduced vertical clearance"
+msgstr ""
+#
+msgid "Chart Feature: Semi-submerged object"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due east"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due north"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due south"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due west"
+msgstr ""
+#
+msgid "Chart Feature: Submerged object"
+msgstr ""
+#
+msgid "Chart Feature: Sunken vessel"
+msgstr ""
 #
 msgid "Chart Groups"
 msgstr "Ομάδες χαρτών"
@@ -825,6 +959,9 @@ msgstr "Εκκαθάριση όλων"
 #
 msgid "Clear Anchor Watch"
 msgstr "Σταμάτησε την επιτήρηση αγκυροβολίας"
+#
+msgid "Clearance granted - proceed to berth"
+msgstr ""
 #
 msgid "Click to cancel the font selection."
 msgstr "Για να ακυρωθεί η επιλογή γραμματοσειράς"
@@ -1034,6 +1171,45 @@ msgstr "Μονάδα απόστασης"
 msgid "Distress"
 msgstr "Κατάσταση κινδύνου"
 #
+msgid "Distress Area: Person overboard"
+msgstr ""
+#
+msgid "Distress Area: Pollution response area"
+msgstr ""
+#
+msgid "Distress Area: SAR area"
+msgstr ""
+#
+msgid "Distress Area: Vessel abandoning ship"
+msgstr ""
+#
+msgid "Distress Area: Vessel collision"
+msgstr ""
+#
+msgid "Distress Area: Vessel disabled and adrift"
+msgstr ""
+#
+msgid "Distress Area: Vessel fire/explosion"
+msgstr ""
+#
+msgid "Distress Area: Vessel flooding"
+msgstr ""
+#
+msgid "Distress Area: Vessel grounding"
+msgstr ""
+#
+msgid "Distress Area: Vessel listing/capsizing"
+msgstr ""
+#
+msgid "Distress Area: Vessel requests medical assistance"
+msgstr ""
+#
+msgid "Distress Area: Vessel sinking"
+msgstr ""
+#
+msgid "Distress Area: Vessel under assault"
+msgstr ""
+#
 msgid ""
 "Do you also want to toggle the visibility of shared waypoints being part of "
 "this route?"
@@ -1052,6 +1228,10 @@ msgstr "Τελεία-παύλα"
 #
 msgid "Dredge"
 msgstr "Βυθοκόρος"
+#
+#, fuzzy
+msgid "Drop"
+msgstr "Τοποθέτησε σημάδι"
 #
 msgid "Drop MOB Marker"
 msgstr "Ρίξε σημάδι «Άνθρωπος στη Θάλασσα» (MOB)"
@@ -1112,6 +1292,30 @@ msgstr "Γράψτε τον τύπο δεδομένων NMEA"
 #
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
 msgstr "Γράψτε τον τύπο δεδομένων NMEA (2, 3, η 5 χαρακτήρες)"
+#
+msgid "Environmental Caution Area: Hazardous sea ice"
+msgstr ""
+#
+msgid "Environmental Caution Area: Heavy icing"
+msgstr ""
+#
+msgid "Environmental Caution Area: High waves"
+msgstr ""
+#
+msgid "Environmental Caution Area: High wind"
+msgstr ""
+#
+msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Storm front (line squall)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Strong currents"
+msgstr ""
 #
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "Σφάλμα στη φόρτωση της διαδρομής. Δες τα log αρχεία..."
@@ -1317,8 +1521,27 @@ msgstr "Εισαγωγή αρχείου GPX"
 msgid "Important Text Only"
 msgstr "Μονο σημαντικό κείμενο"
 #
+#, fuzzy
+msgid "In"
+msgstr "Εικονίδιο"
+#
 msgid "In: None"
 msgstr "In: κανένα"
+#
+msgid "Information: Icebreaker waiting area"
+msgstr ""
+#
+msgid "Information: Location of response units"
+msgstr ""
+#
+msgid "Information: Pilot boarding position"
+msgstr ""
+#
+msgid "Information: Places of refuge"
+msgstr ""
+#
+msgid "Information: Position of icebreakers"
+msgstr ""
 #
 msgid "Inland Blue Flag"
 msgstr "Μπλε σημαία"
@@ -1329,14 +1552,24 @@ msgstr "Φίλτρο εισόδου"
 msgid "Insert Waypoint"
 msgstr "Εισαγωγή Σημείου Πορείας"
 #
+msgid ""
+"Instruction: Await instructions prior to proceeding beyond this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Contact Port Administration at this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Contact VTS at this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Do not proceed beyond this point/juncture"
+msgstr ""
+#
 msgid "Isol. Dngr"
 msgstr "Μεμ. Κίνδυνος"
 #
 msgid "Isolated Danger"
 msgstr "Μεμονωμένος κίνδυνος"
-#
-msgid "Just "
-msgstr "Μόνο"
 #
 msgid "KML Standard (Google Earth and others)"
 msgstr "Στάνταρτ KML (Google Earth κ.α.)"
@@ -1788,6 +2021,13 @@ msgstr "Επιλογές"
 msgid "Other"
 msgstr "Άλλη"
 #
+msgid "Other - Define in associated text field"
+msgstr ""
+#
+#, fuzzy
+msgid "Out"
+msgstr "Έξοδος"
+#
 msgid "Output"
 msgstr "Έξοδος"
 #
@@ -1937,6 +2177,9 @@ msgstr "Προτεραιότητα"
 msgid "Problem discovered"
 msgstr "Το πρόβλημα βρέθηκε"
 #
+msgid "Proceed to this location - await instructions"
+msgstr ""
+#
 msgid "Processing Waypoints..."
 msgstr "Επεξεργασία σημείων πορείας..."
 #
@@ -2064,6 +2307,9 @@ msgstr "Σημείο αναφοράς"
 msgid "Reference Station :"
 msgstr "Σταθμός αναφοράς :"
 #
+msgid "Reject"
+msgstr ""
+#
 msgid "Remaining time : "
 msgstr "Απομένων χρόνος:"
 #
@@ -2096,6 +2342,13 @@ msgstr "Παλαιότητα αναφοράς"
 msgid "Report as of"
 msgstr "Αναφορά από τις"
 #
+msgid "Report from ship: Icing info"
+msgstr ""
+#
+msgid ""
+"Report from ship: Miscellaneous information - define in Associated text field"
+msgstr ""
+#
 msgid "Reserved 11"
 msgstr "Reserved 11"
 #
@@ -2107,6 +2360,27 @@ msgstr "Reserved 13"
 #
 msgid "Reserved 14"
 msgstr "Reserved 14"
+#
+msgid "Restricted Area: Active military OPAREA"
+msgstr ""
+#
+msgid "Restricted Area: Drifting Mines"
+msgstr ""
+#
+msgid "Restricted Area: Entry approval required prior to transit"
+msgstr ""
+#
+msgid "Restricted Area: Entry prohibited"
+msgstr ""
+#
+msgid "Restricted Area: Firing - danger area."
+msgstr ""
+#
+msgid "Restricted Area: Fishing prohibited"
+msgstr ""
+#
+msgid "Restricted Area: No anchoring."
+msgstr ""
 #
 msgid "Restricted Manoeuvrability"
 msgstr "Περιορισμένη ικανότητα ελιγμών"
@@ -2129,6 +2403,9 @@ msgstr "Δεξιά"
 msgid "Rollover"
 msgstr "Το Rollover ποντικιού δείχνει:"
 #
+msgid "Rouge or suspicious vessel"
+msgstr ""
+#
 msgid "Route"
 msgstr "Διαδρομή"
 #
@@ -2149,6 +2426,15 @@ msgstr "Διαδρομή από ίχνος πορείας"
 #
 msgid "Route: "
 msgstr "Διαδρομή:"
+#
+msgid "Route: Alternative route"
+msgstr ""
+#
+msgid "Route: Recommended route"
+msgstr ""
+#
+msgid "Route: Recommended route through ice"
+msgstr ""
 #
 msgid "RouteLegInfoRollover"
 msgstr "Πληροφορίες σκέλους διαδρομης σε Rollover ποντικιού"
@@ -2208,6 +2494,15 @@ msgid "Search and Rescue Vessel"
 msgstr "Πλοιο διασωσης"
 #
 msgid "Seatalk"
+msgstr ""
+#
+msgid "Security Alert - Level 1"
+msgstr ""
+#
+msgid "Security Alert - Level 2"
+msgstr ""
+#
+msgid "Security Alert - Level 3"
 msgstr ""
 #
 msgid "See the log file at "
@@ -2689,6 +2984,10 @@ msgstr "Μη διαθέσιμο"
 msgid "Undefined"
 msgstr "Απροσδιόριστο"
 #
+#, fuzzy
+msgid "Undefined (default)"
+msgstr "Απροσδιόριστο"
+#
 msgid "Under way sailing"
 msgstr "Εν πλω με πανιά"
 #
@@ -2745,6 +3044,10 @@ msgstr "Αντιστάθμιση Υ άξονα από χρήστη"
 msgid "User Y Offset (Metres)"
 msgstr "Αντιστάθμιση Y άξονα από χρήστη (m)"
 #
+#, fuzzy
+msgid "VTS active target"
+msgstr "Ενεργές βάσεις δεδομένων"
+#
 msgid "Vector Charts"
 msgstr "Διανυσματικοί χάρτες"
 #
@@ -2762,6 +3065,9 @@ msgstr "Πλοίο που ρυμουλκεί"
 #
 msgid "Vessel Towing, Long"
 msgstr "Πλοίο με μακριά ρυμούλκα"
+#
+msgid "Vessel requesting non-distress assistance"
+msgstr ""
 #
 msgid "Vessel, type unknown"
 msgstr "Σκάφος αγνώστου τύπου"
@@ -2906,3 +3212,11 @@ msgstr "wgsoy"
 #
 msgid "wxFB Website"
 msgstr "wxFB Website"
+#
+#
+#~ msgid "All but"
+#~ msgstr "Όλα εκτός από"
+#
+#
+#~ msgid "Just "
+#~ msgstr "Μόνο"

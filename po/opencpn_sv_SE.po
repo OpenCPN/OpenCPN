@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-02 08:16-0500\n"
+"POT-Creation-Date: 2012-12-19 12:21-0500\n"
 "PO-Revision-Date: 2012-11-29 18:35-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -371,6 +371,9 @@ msgstr "(Ej namngivet spår)"
 msgid "(Unnamed Waypoint)"
 msgstr "(Waypoint namn)"
 #
+msgid "(reserved for future use)"
+msgstr ""
+#
 #
 msgid "(unnamed)"
 msgstr "(namnlös)"
@@ -575,6 +578,9 @@ msgstr "Om"
 msgid "About OpenCPN"
 msgstr "Om OpenCPN"
 #
+msgid "Accept"
+msgstr ""
+#
 msgid "Accept Sentences"
 msgstr "Ta emot kommandon"
 #
@@ -641,9 +647,6 @@ msgstr "Alla tillgängliga sjökort"
 msgid "All Charts"
 msgstr "Alla sjökort"
 #
-msgid "All but"
-msgstr "Alla utom"
-#
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
 "also have a two letter prefix identifying the source, or TALKER, of the "
@@ -656,6 +659,26 @@ msgstr ""
 "förses med ett prefix på två tecken som då identifierar den sändande enheten, "
 "kallad TALKER. Då fås kommandon av formen GPGGA eller AITXT. Det går också "
 "bra att ange endast TALKER i filtret, då med två tecklen."
+#
+#, fuzzy
+msgid "Anchorage Area: Anchorage closed"
+msgstr "Ankring skapad"
+#
+#, fuzzy
+msgid "Anchorage Area: Anchorage open"
+msgstr "Ankring skapad"
+#
+msgid "Anchorage Area: Anchoring prohibited"
+msgstr ""
+#
+msgid "Anchorage Area: Deep draft anchorage"
+msgstr ""
+#
+msgid "Anchorage Area: Shallow draft anchorage"
+msgstr ""
+#
+msgid "Anchorage Area: Vessel transfer operations"
+msgstr ""
 #
 msgid "Anchorage created "
 msgstr "Ankring skapad"
@@ -849,9 +872,15 @@ msgstr "CPA/TCPA-larm"
 msgid "Call"
 msgstr "Anrop"
 #
+msgid "Can't send waypoint. Found no serial data port with output defined."
+msgstr ""
+#
 #
 msgid "Cancel"
 msgstr "Avbryt"
+#
+msgid "Cancellation - cancel area as identified by Message Linkage ID"
+msgstr ""
 #
 #
 msgid "Card. E"
@@ -905,6 +934,72 @@ msgstr "Kardinalmärke V Ljussignal"
 msgid "Cargo Ship"
 msgstr "Lastfartyg"
 #
+msgid "Caution Area: Cluster of fishing vessels"
+msgstr ""
+#
+msgid "Caution Area: Derelicts (drifting objects)"
+msgstr ""
+#
+msgid "Caution Area: Divers down"
+msgstr ""
+#
+msgid "Caution Area: Dredge operations"
+msgstr ""
+#
+msgid "Caution Area: Fairway closed"
+msgstr ""
+#
+msgid "Caution Area: Fishery - nets in water"
+msgstr ""
+#
+msgid "Caution Area: Harbour closed"
+msgstr ""
+#
+msgid "Caution Area: Marine event"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - reduce speed"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - report sightings"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - stay clear"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - no fishing or anchoring"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - reduce speed"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - stay clear"
+msgstr ""
+#
+msgid "Caution Area: Risk (define in Associated text field)"
+msgstr ""
+#
+msgid "Caution Area: Seaplane operations"
+msgstr ""
+#
+msgid "Caution Area: Survey operations"
+msgstr ""
+#
+msgid "Caution Area: Swim area"
+msgstr ""
+#
+msgid "Caution Area: Traffic congestion"
+msgstr ""
+#
+msgid "Caution Area: Underwater operation"
+msgstr ""
+#
+msgid "Caution Area: Underwater vehicle operation"
+msgstr ""
+#
 #
 msgid "Cell"
 msgstr "Cell"
@@ -930,6 +1025,45 @@ msgstr "Enhet för djup"
 #
 msgid "Chart Display Options"
 msgstr "Anpassa visning av sjökort"
+#
+msgid "Chart Feature: Bridge closed"
+msgstr ""
+#
+msgid "Chart Feature: Bridge fully open"
+msgstr ""
+#
+msgid "Chart Feature: Bridge partially open"
+msgstr ""
+#
+msgid "Chart Feature: Channel obstruction"
+msgstr ""
+#
+msgid "Chart Feature: Reduced vertical clearance"
+msgstr ""
+#
+msgid "Chart Feature: Semi-submerged object"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due east"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due north"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due south"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due west"
+msgstr ""
+#
+msgid "Chart Feature: Submerged object"
+msgstr ""
+#
+msgid "Chart Feature: Sunken vessel"
+msgstr ""
 #
 #
 msgid "Chart Groups"
@@ -985,6 +1119,9 @@ msgstr "Rensa alla"
 #
 msgid "Clear Anchor Watch"
 msgstr "Deaktivera ankarvakt"
+#
+msgid "Clearance granted - proceed to berth"
+msgstr ""
 #
 #
 msgid "Click to cancel the font selection."
@@ -1256,6 +1393,45 @@ msgstr "Enhet för avstånd"
 msgid "Distress"
 msgstr "I nöd"
 #
+msgid "Distress Area: Person overboard"
+msgstr ""
+#
+msgid "Distress Area: Pollution response area"
+msgstr ""
+#
+msgid "Distress Area: SAR area"
+msgstr ""
+#
+msgid "Distress Area: Vessel abandoning ship"
+msgstr ""
+#
+msgid "Distress Area: Vessel collision"
+msgstr ""
+#
+msgid "Distress Area: Vessel disabled and adrift"
+msgstr ""
+#
+msgid "Distress Area: Vessel fire/explosion"
+msgstr ""
+#
+msgid "Distress Area: Vessel flooding"
+msgstr ""
+#
+msgid "Distress Area: Vessel grounding"
+msgstr ""
+#
+msgid "Distress Area: Vessel listing/capsizing"
+msgstr ""
+#
+msgid "Distress Area: Vessel requests medical assistance"
+msgstr ""
+#
+msgid "Distress Area: Vessel sinking"
+msgstr ""
+#
+msgid "Distress Area: Vessel under assault"
+msgstr ""
+#
 msgid ""
 "Do you also want to toggle the visibility of shared waypoints being part of "
 "this route?"
@@ -1276,6 +1452,11 @@ msgstr "Streck-prickad"
 #
 msgid "Dredge"
 msgstr "Muddring"
+#
+#
+#, fuzzy
+msgid "Drop"
+msgstr "Placera waypoint"
 #
 #
 msgid "Drop MOB Marker"
@@ -1350,6 +1531,30 @@ msgstr "Ange NMEA-kommando"
 #
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
 msgstr "Ange NMEA-kommando (2, 3 eller 5 tecken)"
+#
+msgid "Environmental Caution Area: Hazardous sea ice"
+msgstr ""
+#
+msgid "Environmental Caution Area: Heavy icing"
+msgstr ""
+#
+msgid "Environmental Caution Area: High waves"
+msgstr ""
+#
+msgid "Environmental Caution Area: High wind"
+msgstr ""
+#
+msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Storm front (line squall)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Strong currents"
+msgstr ""
 #
 #
 msgid "Error on Route Upload.  Please check logfiles..."
@@ -1603,8 +1808,28 @@ msgstr "Importera GPX-fil"
 msgid "Important Text Only"
 msgstr "Enbart viktiga texter"
 #
+#
+#, fuzzy
+msgid "In"
+msgstr "Symbol"
+#
 msgid "In: None"
 msgstr "In: Ingen"
+#
+msgid "Information: Icebreaker waiting area"
+msgstr ""
+#
+msgid "Information: Location of response units"
+msgstr ""
+#
+msgid "Information: Pilot boarding position"
+msgstr ""
+#
+msgid "Information: Places of refuge"
+msgstr ""
+#
+msgid "Information: Position of icebreakers"
+msgstr ""
 #
 #
 msgid "Inland Blue Flag"
@@ -1617,6 +1842,19 @@ msgstr "Filtrera indata"
 msgid "Insert Waypoint"
 msgstr "Infoga waypoint"
 #
+msgid ""
+"Instruction: Await instructions prior to proceeding beyond this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Contact Port Administration at this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Contact VTS at this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Do not proceed beyond this point/juncture"
+msgstr ""
+#
 #
 msgid "Isol. Dngr"
 msgstr "Isolerad fara"
@@ -1624,9 +1862,6 @@ msgstr "Isolerad fara"
 #
 msgid "Isolated Danger"
 msgstr "Isolerad fara"
-#
-msgid "Just "
-msgstr "Endast"
 #
 msgid "KML Standard (Google Earth and others)"
 msgstr "Standard KML (för t ex Google Earth)"
@@ -2196,6 +2431,13 @@ msgstr "Användarinställningar"
 msgid "Other"
 msgstr "Annan"
 #
+msgid "Other - Define in associated text field"
+msgstr ""
+#
+#, fuzzy
+msgid "Out"
+msgstr "Utdata"
+#
 msgid "Output"
 msgstr "Utdata"
 #
@@ -2388,6 +2630,9 @@ msgstr "Prioritet"
 msgid "Problem discovered"
 msgstr "Ett problem upptäcktes"
 #
+msgid "Proceed to this location - await instructions"
+msgstr ""
+#
 #
 msgid "Processing Waypoints..."
 msgstr "Bearbetar waypoints..."
@@ -2554,6 +2799,9 @@ msgstr "Referenspunkt"
 msgid "Reference Station :"
 msgstr "Referensstation:"
 #
+msgid "Reject"
+msgstr ""
+#
 #
 msgid "Remaining time : "
 msgstr "Återstående tid :"
@@ -2592,6 +2840,13 @@ msgstr "Uppdaterad sedan"
 msgid "Report as of"
 msgstr "Rapporterades"
 #
+msgid "Report from ship: Icing info"
+msgstr ""
+#
+msgid ""
+"Report from ship: Miscellaneous information - define in Associated text field"
+msgstr ""
+#
 #
 msgid "Reserved 11"
 msgstr "Reserverad 11"
@@ -2607,6 +2862,27 @@ msgstr "Reserverad 13"
 #
 msgid "Reserved 14"
 msgstr "Reserverad 14"
+#
+msgid "Restricted Area: Active military OPAREA"
+msgstr ""
+#
+msgid "Restricted Area: Drifting Mines"
+msgstr ""
+#
+msgid "Restricted Area: Entry approval required prior to transit"
+msgstr ""
+#
+msgid "Restricted Area: Entry prohibited"
+msgstr ""
+#
+msgid "Restricted Area: Firing - danger area."
+msgstr ""
+#
+msgid "Restricted Area: Fishing prohibited"
+msgstr ""
+#
+msgid "Restricted Area: No anchoring."
+msgstr ""
 #
 #
 msgid "Restricted Manoeuvrability"
@@ -2635,6 +2911,9 @@ msgstr "Höger"
 msgid "Rollover"
 msgstr "\"Rulla över\""
 #
+msgid "Rouge or suspicious vessel"
+msgstr ""
+#
 #
 msgid "Route"
 msgstr "Rutt"
@@ -2662,6 +2941,15 @@ msgstr "Rutt från Spår"
 #
 msgid "Route: "
 msgstr "Rutt: "
+#
+msgid "Route: Alternative route"
+msgstr ""
+#
+msgid "Route: Recommended route"
+msgstr ""
+#
+msgid "Route: Recommended route through ice"
+msgstr ""
 #
 #
 msgid "RouteLegInfoRollover"
@@ -2735,6 +3023,15 @@ msgstr "Sjöräddningsfartyg"
 #
 msgid "Seatalk"
 msgstr "Seatalk"
+#
+msgid "Security Alert - Level 1"
+msgstr ""
+#
+msgid "Security Alert - Level 2"
+msgstr ""
+#
+msgid "Security Alert - Level 3"
+msgstr ""
 #
 msgid "See the log file at "
 msgstr "Mer info finns i loggfilen "
@@ -3336,6 +3633,11 @@ msgid "Undefined"
 msgstr "Odefinierad"
 #
 #
+#, fuzzy
+msgid "Undefined (default)"
+msgstr "Odefinierad"
+#
+#
 msgid "Under way sailing"
 msgstr "Under segel"
 #
@@ -3409,6 +3711,11 @@ msgid "User Y Offset (Metres)"
 msgstr "Anpassad Y-korrektion (Meter)"
 #
 #
+#, fuzzy
+msgid "VTS active target"
+msgstr "Datafiler för tidvatten och strömmar"
+#
+#
 msgid "Vector Charts"
 msgstr "Vektorsjökort"
 #
@@ -3431,6 +3738,9 @@ msgstr "Bogserbåt"
 #
 msgid "Vessel Towing, Long"
 msgstr "Bogserbåt, lång"
+#
+msgid "Vessel requesting non-distress assistance"
+msgstr ""
 #
 #
 msgid "Vessel, type unknown"
@@ -3602,3 +3912,11 @@ msgstr "wgsoy"
 #
 msgid "wxFB Website"
 msgstr "Webbsida för wxFB"
+#
+#
+#~ msgid "All but"
+#~ msgstr "Alla utom"
+#
+#
+#~ msgid "Just "
+#~ msgstr "Endast"

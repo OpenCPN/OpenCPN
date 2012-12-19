@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-02 08:16-0500\n"
-"PO-Revision-Date: 2012-11-10 17:48+0100\n"
+"POT-Creation-Date: 2012-12-19 12:21-0500\n"
+"PO-Revision-Date: 2012-12-07 21:28+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigiszabolcs@gmail.com>\n"
 "Language: hu_HU\n"
@@ -369,6 +369,9 @@ msgstr "(Névtelen nyomvonal)"
 msgid "(Unnamed Waypoint)"
 msgstr "(Névtelen útpont)"
 #
+msgid "(reserved for future use)"
+msgstr ""
+#
 #
 msgid "(unnamed)"
 msgstr "(névtelen)"
@@ -517,7 +520,7 @@ msgid "9600"
 msgstr ""
 #
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
-msgstr ""
+msgstr "<font size=-2>(Szektor szögek valós irányok a víz felé)</font><br>"
 #
 #
 msgid "?"
@@ -570,6 +573,9 @@ msgstr "Névjegy"
 #
 msgid "About OpenCPN"
 msgstr "Az OpenCPN-ről"
+#
+msgid "Accept"
+msgstr ""
 #
 msgid "Accept Sentences"
 msgstr "Mondatok elfogadása"
@@ -636,9 +642,6 @@ msgstr "Minden elérhető térkép"
 msgid "All Charts"
 msgstr "Minden térkép"
 #
-msgid "All but"
-msgstr "Mind, kivéve"
-#
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
 "also have a two letter prefix identifying the source, or TALKER, of the "
@@ -651,6 +654,26 @@ msgstr ""
 "azonosítja (az egész mondat így úgy néz ki, mint például GPGGA avyg AITXT). "
 "Kiszűrheted minden üzenetet egy adott Bezsélővel (mint GP, AI stb.). A szűrő "
 "csak ezt a három formátumot fogadja el."
+#
+#, fuzzy
+msgid "Anchorage Area: Anchorage closed"
+msgstr "Horgonyzóhely létrehozva "
+#
+#, fuzzy
+msgid "Anchorage Area: Anchorage open"
+msgstr "Horgonyzóhely létrehozva "
+#
+msgid "Anchorage Area: Anchoring prohibited"
+msgstr ""
+#
+msgid "Anchorage Area: Deep draft anchorage"
+msgstr ""
+#
+msgid "Anchorage Area: Shallow draft anchorage"
+msgstr ""
+#
+msgid "Anchorage Area: Vessel transfer operations"
+msgstr ""
 #
 msgid "Anchorage created "
 msgstr "Horgonyzóhely létrehozva "
@@ -842,9 +865,15 @@ msgstr "CPA/TCPA risztás"
 msgid "Call"
 msgstr "Hívójel"
 #
+msgid "Can't send waypoint. Found no serial data port with output defined."
+msgstr ""
+#
 #
 msgid "Cancel"
 msgstr "Mégsem"
+#
+msgid "Cancellation - cancel area as identified by Message Linkage ID"
+msgstr ""
 #
 #
 msgid "Card. E"
@@ -898,6 +927,72 @@ msgstr "Ny kardinális fényjel"
 msgid "Cargo Ship"
 msgstr "Teherhajó"
 #
+msgid "Caution Area: Cluster of fishing vessels"
+msgstr ""
+#
+msgid "Caution Area: Derelicts (drifting objects)"
+msgstr ""
+#
+msgid "Caution Area: Divers down"
+msgstr ""
+#
+msgid "Caution Area: Dredge operations"
+msgstr ""
+#
+msgid "Caution Area: Fairway closed"
+msgstr ""
+#
+msgid "Caution Area: Fishery - nets in water"
+msgstr ""
+#
+msgid "Caution Area: Harbour closed"
+msgstr ""
+#
+msgid "Caution Area: Marine event"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - reduce speed"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - report sightings"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - stay clear"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - no fishing or anchoring"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - reduce speed"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - stay clear"
+msgstr ""
+#
+msgid "Caution Area: Risk (define in Associated text field)"
+msgstr ""
+#
+msgid "Caution Area: Seaplane operations"
+msgstr ""
+#
+msgid "Caution Area: Survey operations"
+msgstr ""
+#
+msgid "Caution Area: Swim area"
+msgstr ""
+#
+msgid "Caution Area: Traffic congestion"
+msgstr ""
+#
+msgid "Caution Area: Underwater operation"
+msgstr ""
+#
+msgid "Caution Area: Underwater vehicle operation"
+msgstr ""
+#
 #
 msgid "Cell"
 msgstr "Cella"
@@ -923,6 +1018,45 @@ msgstr "Térkép mélység mértékegysége"
 #
 msgid "Chart Display Options"
 msgstr "Térkép megjelenítési beállítások"
+#
+msgid "Chart Feature: Bridge closed"
+msgstr ""
+#
+msgid "Chart Feature: Bridge fully open"
+msgstr ""
+#
+msgid "Chart Feature: Bridge partially open"
+msgstr ""
+#
+msgid "Chart Feature: Channel obstruction"
+msgstr ""
+#
+msgid "Chart Feature: Reduced vertical clearance"
+msgstr ""
+#
+msgid "Chart Feature: Semi-submerged object"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due east"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due north"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due south"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due west"
+msgstr ""
+#
+msgid "Chart Feature: Submerged object"
+msgstr ""
+#
+msgid "Chart Feature: Sunken vessel"
+msgstr ""
 #
 #
 msgid "Chart Groups"
@@ -977,6 +1111,9 @@ msgstr "Minden törlése"
 #
 msgid "Clear Anchor Watch"
 msgstr "Horgonyőr törlése"
+#
+msgid "Clearance granted - proceed to berth"
+msgstr ""
 #
 #
 msgid "Click to cancel the font selection."
@@ -1127,9 +1264,8 @@ msgid "Data Source :"
 msgstr "Adatforrás :"
 #
 #
-#, fuzzy
 msgid "DataPort"
-msgstr "AIS adatport"
+msgstr "Adatport"
 #
 #
 msgid "De-Cluttered Text"
@@ -1247,6 +1383,45 @@ msgstr "Távolság egység"
 msgid "Distress"
 msgstr "Vészhelyzet"
 #
+msgid "Distress Area: Person overboard"
+msgstr ""
+#
+msgid "Distress Area: Pollution response area"
+msgstr ""
+#
+msgid "Distress Area: SAR area"
+msgstr ""
+#
+msgid "Distress Area: Vessel abandoning ship"
+msgstr ""
+#
+msgid "Distress Area: Vessel collision"
+msgstr ""
+#
+msgid "Distress Area: Vessel disabled and adrift"
+msgstr ""
+#
+msgid "Distress Area: Vessel fire/explosion"
+msgstr ""
+#
+msgid "Distress Area: Vessel flooding"
+msgstr ""
+#
+msgid "Distress Area: Vessel grounding"
+msgstr ""
+#
+msgid "Distress Area: Vessel listing/capsizing"
+msgstr ""
+#
+msgid "Distress Area: Vessel requests medical assistance"
+msgstr ""
+#
+msgid "Distress Area: Vessel sinking"
+msgstr ""
+#
+msgid "Distress Area: Vessel under assault"
+msgstr ""
+#
 msgid ""
 "Do you also want to toggle the visibility of shared waypoints being part of "
 "this route?"
@@ -1267,6 +1442,11 @@ msgstr "Pont vonás"
 #
 msgid "Dredge"
 msgstr "Kotró"
+#
+#
+#, fuzzy
+msgid "Drop"
+msgstr "Jel lerakása"
 #
 #
 msgid "Drop MOB Marker"
@@ -1342,6 +1522,30 @@ msgstr "Add meg az NMEA mondatot"
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
 msgstr "Add meg az NMEA mondatot (2,3 vagy 5 karakter)"
 #
+msgid "Environmental Caution Area: Hazardous sea ice"
+msgstr ""
+#
+msgid "Environmental Caution Area: Heavy icing"
+msgstr ""
+#
+msgid "Environmental Caution Area: High waves"
+msgstr ""
+#
+msgid "Environmental Caution Area: High wind"
+msgstr ""
+#
+msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Storm front (line squall)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Strong currents"
+msgstr ""
+#
 #
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "Hiba történt az útvonal feltöltés közben. Ellenőrizd a naplófájlt..."
@@ -1394,11 +1598,11 @@ msgstr "Gyorsjáratú hajó"
 #
 #
 msgid "Fathoms"
-msgstr "Öl"
+msgstr "öl"
 #
 #
 msgid "Feet"
-msgstr "Láb"
+msgstr "láb"
 #
 #
 msgid "Ferry"
@@ -1525,9 +1729,8 @@ msgid "Here"
 msgstr "Itt"
 #
 #
-#, fuzzy
 msgid "Hide AIS Targets"
-msgstr "AIS célpontok"
+msgstr "AIS célpontok elrejtése"
 #
 msgid "Hide Target CPA"
 msgstr "Célpont CPA elrejtése"
@@ -1593,8 +1796,28 @@ msgstr "GPX fájl importálása"
 msgid "Important Text Only"
 msgstr "Csak a fontos szövegek"
 #
+#
+#, fuzzy
+msgid "In"
+msgstr "Kép"
+#
 msgid "In: None"
 msgstr "Be: semmi"
+#
+msgid "Information: Icebreaker waiting area"
+msgstr ""
+#
+msgid "Information: Location of response units"
+msgstr ""
+#
+msgid "Information: Pilot boarding position"
+msgstr ""
+#
+msgid "Information: Places of refuge"
+msgstr ""
+#
+msgid "Information: Position of icebreakers"
+msgstr ""
 #
 #
 msgid "Inland Blue Flag"
@@ -1607,6 +1830,19 @@ msgstr "Bemenet szűrés"
 msgid "Insert Waypoint"
 msgstr "Útpont beillesztése"
 #
+msgid ""
+"Instruction: Await instructions prior to proceeding beyond this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Contact Port Administration at this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Contact VTS at this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Do not proceed beyond this point/juncture"
+msgstr ""
+#
 #
 msgid "Isol. Dngr"
 msgstr "Külön. veszély."
@@ -1614,9 +1850,6 @@ msgstr "Külön. veszély."
 #
 msgid "Isolated Danger"
 msgstr "Különálló veszélyes hely"
-#
-msgid "Just "
-msgstr "Csak"
 #
 msgid "KML Standard (Google Earth and others)"
 msgstr "KML Standard (Google Earth és mások)"
@@ -1629,7 +1862,7 @@ msgid "Kilometers"
 msgstr "Kilométer"
 #
 msgid "Kts"
-msgstr ""
+msgstr "Csomó"
 #
 #
 msgid "LE/V"
@@ -1907,7 +2140,7 @@ msgstr "Üzenet kiszűrve és eldobva"
 #
 #
 msgid "Meters"
-msgstr "Méter"
+msgstr "méter"
 #
 #
 msgid "Mil/V"
@@ -2187,6 +2420,13 @@ msgstr "Beállítások"
 msgid "Other"
 msgstr "Más"
 #
+msgid "Other - Define in associated text field"
+msgstr ""
+#
+#, fuzzy
+msgid "Out"
+msgstr "Kimenet"
+#
 msgid "Output"
 msgstr "Kimenet"
 #
@@ -2379,6 +2619,9 @@ msgstr "Prioritás"
 msgid "Problem discovered"
 msgstr "Probléma lépett fel"
 #
+msgid "Proceed to this location - await instructions"
+msgstr ""
+#
 #
 msgid "Processing Waypoints..."
 msgstr "Útpontok feldolgozása..."
@@ -2540,6 +2783,9 @@ msgstr "Viszonyítási pont"
 msgid "Reference Station :"
 msgstr "Referencia állomás :"
 #
+msgid "Reject"
+msgstr ""
+#
 #
 msgid "Remaining time : "
 msgstr "Hátralévő idő : "
@@ -2577,6 +2823,13 @@ msgstr "Jelentés kora"
 msgid "Report as of"
 msgstr "Jelentés időpontja"
 #
+msgid "Report from ship: Icing info"
+msgstr ""
+#
+msgid ""
+"Report from ship: Miscellaneous information - define in Associated text field"
+msgstr ""
+#
 #
 msgid "Reserved 11"
 msgstr "Fenntartva 11"
@@ -2592,6 +2845,27 @@ msgstr "Fenntartva 13"
 #
 msgid "Reserved 14"
 msgstr "Fenntartva 14"
+#
+msgid "Restricted Area: Active military OPAREA"
+msgstr ""
+#
+msgid "Restricted Area: Drifting Mines"
+msgstr ""
+#
+msgid "Restricted Area: Entry approval required prior to transit"
+msgstr ""
+#
+msgid "Restricted Area: Entry prohibited"
+msgstr ""
+#
+msgid "Restricted Area: Firing - danger area."
+msgstr ""
+#
+msgid "Restricted Area: Fishing prohibited"
+msgstr ""
+#
+msgid "Restricted Area: No anchoring."
+msgstr ""
 #
 #
 msgid "Restricted Manoeuvrability"
@@ -2620,6 +2894,9 @@ msgstr "Jobb"
 msgid "Rollover"
 msgstr "Görgetés"
 #
+msgid "Rouge or suspicious vessel"
+msgstr ""
+#
 #
 msgid "Route"
 msgstr "Útvonal"
@@ -2647,6 +2924,15 @@ msgstr "Útvonal nyomvonalból"
 #
 msgid "Route: "
 msgstr "Útvonal: "
+#
+msgid "Route: Alternative route"
+msgstr ""
+#
+msgid "Route: Recommended route"
+msgstr ""
+#
+msgid "Route: Recommended route through ice"
+msgstr ""
 #
 #
 msgid "RouteLegInfoRollover"
@@ -2720,6 +3006,15 @@ msgstr "Mentőjármű"
 msgid "Seatalk"
 msgstr ""
 #
+msgid "Security Alert - Level 1"
+msgstr ""
+#
+msgid "Security Alert - Level 2"
+msgstr ""
+#
+msgid "Security Alert - Level 3"
+msgstr ""
+#
 msgid "See the log file at "
 msgstr "Lásd a napló állományt "
 #
@@ -2766,14 +3061,14 @@ msgid "Sentence Filter"
 msgstr "Mondat szűrő"
 #
 msgid "Serial"
-msgstr ""
+msgstr "Soros"
 #
 #
 msgid "Service vessel, police patrol, port service"
 msgstr "Ellátóhajó, rendőrhajó, kikötő hatóság"
 #
 msgid "Set"
-msgstr ""
+msgstr "Beállít"
 #
 #
 msgid "Set Anchor Watch"
@@ -2803,9 +3098,8 @@ msgid "Short dash"
 msgstr "Rövid vonás"
 #
 #
-#, fuzzy
 msgid "Show"
-msgstr "Név mutatása"
+msgstr "Mutat"
 #
 #
 msgid "Show AIS Targets"
@@ -3318,6 +3612,11 @@ msgid "Undefined"
 msgstr "Nem definiált"
 #
 #
+#, fuzzy
+msgid "Undefined (default)"
+msgstr "Nem definiált"
+#
+#
 msgid "Under way sailing"
 msgstr "Vitorlával úton"
 #
@@ -3356,14 +3655,12 @@ msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Grafikus gyorsítás használata (OpenGL)"
 #
 #
-#, fuzzy
 msgid "Use Garmin (GRMN) mode for input"
-msgstr "Használja a Garmin GRMN/GRMN (Host) módot a feltöltéséhez."
+msgstr "Használja a Garmin (GRMN) módot a bevitelhez"
 #
 #
-#, fuzzy
 msgid "Use Garmin GRMN (Host) mode for uploads"
-msgstr "Használja a Garmin GRMN/GRMN (Host) módot a feltöltéséhez."
+msgstr "Használja a Garmin GRMN (Host) módot a feltöltéséhez"
 #
 #
 msgid "Use nearby waypoint?"
@@ -3389,6 +3686,11 @@ msgid "User Y Offset (Metres)"
 msgstr "Felhasználói Y eltolás (méter)"
 #
 #
+#, fuzzy
+msgid "VTS active target"
+msgstr "Aktív adatok"
+#
+#
 msgid "Vector Charts"
 msgstr "Vektoros térképek"
 #
@@ -3411,6 +3713,9 @@ msgstr "Vontató jármű"
 #
 msgid "Vessel Towing, Long"
 msgstr "Hosszú vontató jármű"
+#
+msgid "Vessel requesting non-distress assistance"
+msgstr ""
 #
 #
 msgid "Vessel, type unknown"
@@ -3729,6 +4034,9 @@ msgstr ""
 #~ msgid "Additional information"
 #~ msgstr "További információ"
 #
+#~ msgid "All but"
+#~ msgstr "Mind, kivéve"
+#
 #
 #
 #~ msgid "All files (*.*)|*.*"
@@ -4002,6 +4310,9 @@ msgstr ""
 #
 #~ msgid "Jump To Position..."
 #~ msgstr "Pozícióra ugrás..."
+#
+#~ msgid "Just "
+#~ msgstr "Csak"
 #
 #
 #
