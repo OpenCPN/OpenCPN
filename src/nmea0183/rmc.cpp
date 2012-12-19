@@ -129,18 +129,13 @@ bool RMC::Parse( const SENTENCE& sentence )
    }
 
    //   Is this a 2.3 message?
-   bool b23 = true;
    bool bext_valid = true;
    wxString checksum_in_sentence = sentence.Field( 12 );
-   if(checksum_in_sentence.StartsWith(_T("*")))       
-       b23 = false;
-   else {
+   if(!checksum_in_sentence.StartsWith(_T("*"))) {
        if(checksum_in_sentence == _T("N") ) 
             bext_valid = false;
    }
        
-   
-
 
    UTCTime                    = sentence.Field( 1 );
    
