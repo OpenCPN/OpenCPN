@@ -38,6 +38,7 @@ wxFont *g_pFontTitle;
 wxFont *g_pFontData;
 wxFont *g_pFontLabel;
 wxFont *g_pFontSmall;
+dashboard_pi *g_dash_pi;
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -267,6 +268,7 @@ dashboard_pi::~dashboard_pi( void )
 
 int dashboard_pi::Init( void )
 {
+    g_dash_pi = this;
     AddLocaleCatalog( _T("opencpn-dashboard_pi") );
 
     mVar = 0;
@@ -1649,6 +1651,8 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
 {
     if( event.GetId() < ID_DASH_PREFS ) { // Toggle dashboard visibility
         m_plugin->ShowDashboard( event.GetId(), event.IsChecked() );
+        if( g_dash_pi )
+        SetToolbarItemState( g_dash_pi->GetToolbarItemId(), g_dash_pi->GetDashboardWindowShownCount() != 0 );
     }
 
     switch( event.GetId() ){
