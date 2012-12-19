@@ -159,24 +159,6 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
     
     if( !message.IsEmpty() )
     {
-        //Send to all the other outputs
-        for (size_t i = 0; i < m_pdatastreams->Count(); i++)
-        {
-            DataStream* s = m_pdatastreams->Item(i);
-            if ( s->IsOk() && (s->GetConnectionType() == Serial) ) {
-                if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
-                    bool bout_filter = true;
-                        
-                    if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
-                        s->SendSentence(message);
-                        bout_filter = false;
-                    }    
-                            //Send to the Debug Window, if open
-                    LogOutputMessage( message, s, bout_filter );
-                }
-            }
-        }
-        
         //Send to core consumers
         //if it passes the source's input filter
         //  If there is no datastream, as for PlugIns, then pass everything
@@ -204,29 +186,48 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                 if( m_gpsconsumer )
                     m_gpsconsumer->AddPendingEvent(event);
             }
+
+            //Send to the Debug Window, if open
+            if( g_NMEALogWindow) {
+                wxDateTime now = wxDateTime::Now();
+                wxString ss = now.FormatISOTime();
+                ss.Append( _T(" (") );
+                ss.Append( port );
+                ss.Append( _T(") ") );
+                ss.Append( message );
+                if( !bpass )
+                    ss.Prepend( _T("<AMBER>") );
+                else
+                    ss.Prepend( _T("<GREEN>") );
+                
+                g_NMEALogWindow->Add( ss );
+                g_NMEALogWindow->Refresh( false );
+            }
             
         //Send to plugins
             if ( g_pi_manager )
                 g_pi_manager->SendNMEASentenceToAllPlugIns( message );
-        }
-        
-        //Send to the Debug Window, if open
-        if( g_NMEALogWindow) {
-            wxDateTime now = wxDateTime::Now();
-            wxString ss = now.FormatISOTime();
-            ss.Append( _T(" (") );
-            ss.Append( port );
-            ss.Append( _T(") ") );
-            ss.Append( message );
-            if( !bpass )
-                ss.Prepend( _T("<AMBER>") );
-            else
-                ss.Prepend( _T("<GREEN>") );
             
-            g_NMEALogWindow->Add( ss );
-            g_NMEALogWindow->Refresh( false );
+       //Send to all the other outputs
+            for (size_t i = 0; i < m_pdatastreams->Count(); i++)
+            {
+                DataStream* s = m_pdatastreams->Item(i);
+                if ( s->IsOk() ) {
+                    if((s->GetConnectionType() == Serial)  || (s->GetPort() != port)) {
+                        if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
+                            bool bout_filter = true;
+                        
+                            if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
+                                s->SendSentence(message);
+                                bout_filter = false;
+                            }    
+                            //Send to the Debug Window, if open
+                            LogOutputMessage( message, s, bout_filter );
+                        }
+                    }
+                }
+            }
         }
-        
     }
 }
 
