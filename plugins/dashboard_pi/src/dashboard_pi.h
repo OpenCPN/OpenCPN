@@ -167,7 +167,8 @@ private:
       double               mSatsInView;
       double               mHdm;
       wxDateTime           mUTCDateTime;
-
+      int                  m_config_version;
+      
 //protected:
 //      DECLARE_EVENT_TABLE();
 };
