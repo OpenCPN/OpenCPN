@@ -241,6 +241,13 @@ void DataStream::Open(void)
                     conn_addr.Service(m_net_port);
                     conn_addr.AnyAddress();    
                     m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
+                    if((m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT)) {
+                        wxString addr = m_addr.IPAddress();
+                        if( addr.EndsWith(_T("255")) ) {
+                            int broadcastEnable=1;
+                            bool bam = m_sock->SetOption(SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
+                        }
+                    }
             }
 
             // Setup the event handler and subscribe to most events
@@ -2855,7 +2862,7 @@ thread_prexit:
 
 int GARMIN_USB_Thread::gusb_cmd_get(garmin_usb_packet *ibuf, size_t sz)
 {
-      int rv;
+      int rv = 0;
       unsigned char *buf = (unsigned char *) &ibuf->dbuf[0];
       int orig_receive_state;
 top:
