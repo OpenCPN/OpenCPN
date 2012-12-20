@@ -3752,11 +3752,10 @@ void options::SetDSFormRWStates()
     {
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("10110"));
-        m_cbOutput->SetValue(false);
-        m_cbOutput->Enable(false);
-        m_rbOAccept->Enable(false);
-        m_rbOIgnore->Enable(false);
-        m_btnOutputStcList->Enable(false);
+        m_cbOutput->Enable(true);
+        m_rbOAccept->Enable(true);
+        m_rbOIgnore->Enable(true);
+        m_btnOutputStcList->Enable(true);
     }
     else
     {
