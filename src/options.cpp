@@ -3860,12 +3860,22 @@ void options::FillSourceList()
         m_lcSources->SetItem(itemIndex, 5, g_pConnectionParams->Item(i)->GetFiltersStr());
     }
 
+#ifdef __WXOSX__
+    m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 5, wxLIST_AUTOSIZE );
+#else
     m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE_USEHEADER );
     m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE_USEHEADER );
     m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE );
     m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE_USEHEADER );
     m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE_USEHEADER );
     m_lcSources->SetColumnWidth( 5, wxLIST_AUTOSIZE );
+#endif
+    
 }
 
 void options::OnRemoveDatasourceClick( wxCommandEvent& event )
