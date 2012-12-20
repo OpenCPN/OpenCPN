@@ -3748,6 +3748,16 @@ void options::SetDSFormRWStates()
         m_rbOIgnore->Enable(false);
         m_btnOutputStcList->Enable(false);
     }
+    else if (m_rbNetProtoUDP->GetValue() && !m_rbTypeSerial->GetValue())
+    {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("10110"));
+        m_cbOutput->SetValue(false);
+        m_cbOutput->Enable(false);
+        m_rbOAccept->Enable(false);
+        m_rbOIgnore->Enable(false);
+        m_btnOutputStcList->Enable(false);
+    }
     else
     {
         m_cbOutput->Enable(true);
@@ -3781,17 +3791,19 @@ void options::SetConnectionParams(ConnectionParams *cp)
     m_choicePriority->Select(m_choicePriority->FindString(wxString::Format(_T("%d"),cp->Priority)));
 
     m_tNetAddress->SetValue(cp->NetworkAddress);
-    m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+    
+    if( cp->NetworkPort == 0)
+        m_tNetPort->SetValue(_T(""));
+    else
+        m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+    
     if(cp->NetProtocol == TCP)
         m_rbNetProtoTCP->SetValue(true);
     else if (cp->NetProtocol == UDP)
         m_rbNetProtoUDP->SetValue(true);
-    else {
+    else 
         m_rbNetProtoGPSD->SetValue(true);
-        if( cp->NetworkPort == 0)
-            m_tNetPort->SetValue(_T(""));
-    }
-
+    
     if ( cp->Type == SERIAL )
     {
         m_rbTypeSerial->SetValue( true );
@@ -3909,6 +3921,13 @@ void options::OnNetProtocolSelected( wxCommandEvent& event )
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("2947"));
     }
+    else if (m_rbNetProtoUDP->GetValue())
+    {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("10110"));
+    }
+    
+    
     SetDSFormRWStates();
     OnConnValChange(event);
 }
