@@ -57,6 +57,10 @@
 #include "wx/socket.h"
 #endif
 
+#ifndef __WXMSW__
+#include <sys/socket.h>                 // needed for (some) Mac builds
+#endif
+
 #ifdef __WXMSW__
 #include <windows.h>
 #include <dbt.h>
