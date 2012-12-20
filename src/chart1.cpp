@@ -2096,26 +2096,29 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
     {
         ConnectionParams *cp = g_pConnectionParams->Item(i);
-        dsPortType port_type;
-        if (cp->Output)
-            port_type = DS_TYPE_INPUT_OUTPUT;
-        else
-            port_type = DS_TYPE_INPUT;
-        DataStream *dstr = new DataStream( g_pMUX,
+        if( cp->bEnabled ) {
+            dsPortType port_type;
+            if (cp->Output)
+                port_type = DS_TYPE_INPUT_OUTPUT;
+            else
+                port_type = DS_TYPE_INPUT;
+            DataStream *dstr = new DataStream( g_pMUX,
                                            cp->GetDSPort(),
                                            wxString::Format(wxT("%i"),cp->Baudrate),
                                            port_type,
                                            cp->Priority,
                                            cp->Garmin
                                          );
-        dstr->SetInputFilter(cp->InputSentenceList);
-        dstr->SetInputFilterType(cp->InputSentenceListType);
-        dstr->SetOutputFilter(cp->OutputSentenceList);
-        dstr->SetOutputFilterType(cp->OutputSentenceListType);
-        dstr->SetChecksumCheck(cp->ChecksumCheck);
-        dstr->SetGarminUploadMode(cp->GarminUpload);
-        g_pMUX->AddStream(dstr);
+            dstr->SetInputFilter(cp->InputSentenceList);
+            dstr->SetInputFilterType(cp->InputSentenceListType);
+            dstr->SetOutputFilter(cp->OutputSentenceList);
+            dstr->SetOutputFilterType(cp->OutputSentenceListType);
+            dstr->SetChecksumCheck(cp->ChecksumCheck);
+            dstr->SetGarminUploadMode(cp->GarminUpload);
+            g_pMUX->AddStream(dstr);
+        }
     }
+    
     g_pMUX->SetAISHandler(g_pAIS);
     g_pMUX->SetGPSHandler(this);
     //  Create/connect a dynamic event handler slot
