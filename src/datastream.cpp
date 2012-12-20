@@ -395,7 +395,11 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
         case wxSOCKET_LOST:
         {
    //          wxSocketError e = m_sock->LastError();          // this produces wxSOCKET_WOULDBLOCK.
+            if(m_net_protocol == TCP) {
+                wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+                tcp_socket->Connect(m_addr, FALSE);
                 break;
+            }
         }
 
         case wxSOCKET_CONNECTION :
