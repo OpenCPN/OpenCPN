@@ -152,9 +152,11 @@ void DataStream::Open(void)
             wxString comx;
             comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
 
-            if( wxNOT_FOUND != m_portstring.Find(_T("USB")) ) {
+            wxString port_uc = m_portstring.Upper();
+
+            if( (wxNOT_FOUND != port_uc.Find(_T("USB"))) && (wxNOT_FOUND != port_uc.Find(_T("GARMIN"))) ) {
                 m_GarminHandler = new GarminProtocolHandler(this, m_consumer,  true);
-            }
+            }    
             else if( m_bGarmin_GRMN_mode ) {
                 m_GarminHandler = new GarminProtocolHandler(this, m_consumer,  false);
             }
