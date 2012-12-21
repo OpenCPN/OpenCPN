@@ -740,31 +740,62 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbFilterSogCog->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
 
+    m_lcSources->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConnectionToggleEnable), NULL, this );
+    
     wxListItem col0;
     col0.SetId(0);
-    col0.SetText( _("Type") );
+    col0.SetText( _("Enable") );
     m_lcSources->InsertColumn(0, col0);
-
+    
     wxListItem col1;
     col1.SetId(1);
-    col1.SetText( _("DataPort") );
+    col1.SetText( _("Type") );
     m_lcSources->InsertColumn(1, col1);
 
     wxListItem col2;
     col2.SetId(2);
-    col2.SetText( _("Parameters") );
+    col2.SetText( _("DataPort") );
     m_lcSources->InsertColumn(2, col2);
 
     wxListItem col3;
     col3.SetId(3);
-    col3.SetText( _("Output") );
+    col3.SetText( _("Parameters") );
     m_lcSources->InsertColumn(3, col3);
 
     wxListItem col4;
     col4.SetId(4);
-    col4.SetText( _("Filters") );
+    col4.SetText( _("Output") );
     m_lcSources->InsertColumn(4, col4);
 
+    wxListItem col5;
+    col5.SetId(5);
+    col5.SetText( _("Filters") );
+    m_lcSources->InsertColumn(5, col5);
+    
+    //  Build the image list
+    wxBitmap unchecked_bmp(16, 16), checked_bmp(16, 16);
+    
+    {
+        wxMemoryDC renderer_dc;
+        
+        // Unchecked
+        renderer_dc.SelectObject(unchecked_bmp);
+        renderer_dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxSOLID));
+        renderer_dc.Clear();
+        wxRendererNative::Get().DrawCheckBox(this, renderer_dc, wxRect(0, 0, 16, 16), 0);
+        
+        // Checked
+        renderer_dc.SelectObject(checked_bmp);
+        renderer_dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxSOLID));
+        renderer_dc.Clear();
+        wxRendererNative::Get().DrawCheckBox(this, renderer_dc, wxRect(0, 0, 16, 16), wxCONTROL_CHECKED);
+    }
+ 
+    wxImageList *imglist = new wxImageList( 16, 16, true, 1 );
+    imglist->Add( unchecked_bmp );
+    imglist->Add( checked_bmp );
+    m_lcSources->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
+ 
     m_lcSources->Refresh();
 
     m_stcdialog_in = new SentenceListDlg(FILTER_INPUT, this);
@@ -781,6 +812,29 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     ShowNMEANet( false );
     connectionsaved = true;
 }
+
+void options::OnConnectionToggleEnable( wxMouseEvent &event )
+{
+    wxPoint pos = event.GetPosition();
+    int flags = 0;
+    long clicked_index = m_lcSources->HitTest( pos, flags );
+    
+    //    Clicking Enable Checkbox (full column)?
+    if( clicked_index > -1 && event.GetX() < m_lcSources->GetColumnWidth( 0 ) ) {
+        // Process the clicked item
+        ConnectionParams *conn = g_pConnectionParams->Item( m_lcSources->GetItemData( clicked_index ) );
+        conn->bEnabled = !conn->bEnabled;
+        m_connection_enabled = conn->bEnabled;
+        m_lcSources->SetItemImage( clicked_index, conn->bEnabled ? 1 : 0 );
+        
+        cc1->Refresh();
+    }
+    
+    // Allow wx to process...
+    event.Skip();
+}
+
+
 
 void options::CreatePanel_Ownship( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
 {
@@ -2197,9 +2251,9 @@ ConnectionParams * options::SaveConnectionParams()
     
     m_pConnectionParams->Valid = true;
     if ( m_rbTypeSerial->GetValue() )
-        m_pConnectionParams->Type = Serial;
+        m_pConnectionParams->Type = SERIAL;
     else
-        m_pConnectionParams->Type = Network;
+        m_pConnectionParams->Type = NETWORK;
     m_pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
     m_pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
     if ( m_rbNetProtoTCP->GetValue() )
@@ -2228,6 +2282,8 @@ ConnectionParams * options::SaveConnectionParams()
         m_pConnectionParams->OutputSentenceListType = BLACKLIST;
     m_pConnectionParams->Port = m_comboPort->GetValue();
     m_pConnectionParams->Protocol = PROTO_NMEA0183;
+    
+    m_pConnectionParams->bEnabled = m_connection_enabled;
     return m_pConnectionParams;
 }
 
@@ -2449,27 +2505,30 @@ void options::OnApplyClick( wxCommandEvent& event )
     for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
     {
         ConnectionParams *cp = g_pConnectionParams->Item(i);
-        dsPortType port_type;
-        if (cp->Output)
-            port_type = DS_TYPE_INPUT_OUTPUT;
-        else
-            port_type = DS_TYPE_INPUT;
-        DataStream *dstr = new DataStream( g_pMUX,
+        if( cp->bEnabled ) {
+            dsPortType port_type;
+            if (cp->Output)
+                port_type = DS_TYPE_INPUT_OUTPUT;
+            else
+                port_type = DS_TYPE_INPUT;
+            DataStream *dstr = new DataStream( g_pMUX,
                                            cp->GetDSPort(),
                                            wxString::Format(wxT("%i"), cp->Baudrate),
                                            port_type,
                                            cp->Priority,
                                            cp->Garmin
                                          );
-        dstr->SetInputFilter(cp->InputSentenceList);
-        dstr->SetInputFilterType(cp->InputSentenceListType);
-        dstr->SetOutputFilter(cp->OutputSentenceList);
-        dstr->SetOutputFilterType(cp->OutputSentenceListType);
-        dstr->SetChecksumCheck(cp->ChecksumCheck);
-        dstr->SetGarminUploadMode(cp->GarminUpload);
+            dstr->SetInputFilter(cp->InputSentenceList);
+            dstr->SetInputFilterType(cp->InputSentenceListType);
+            dstr->SetOutputFilter(cp->OutputSentenceList);
+            dstr->SetOutputFilterType(cp->OutputSentenceListType);
+            dstr->SetChecksumCheck(cp->ChecksumCheck);
+            dstr->SetGarminUploadMode(cp->GarminUpload);
         
-        g_pMUX->AddStream(dstr);
+            g_pMUX->AddStream(dstr);
+        }
     }
+    
 #ifdef USE_S57
     //    Handle Vector Charts Tab
 
@@ -3689,6 +3748,15 @@ void options::SetDSFormRWStates()
         m_rbOIgnore->Enable(false);
         m_btnOutputStcList->Enable(false);
     }
+    else if (m_rbNetProtoUDP->GetValue() && !m_rbTypeSerial->GetValue())
+    {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("10110"));
+        m_cbOutput->Enable(true);
+        m_rbOAccept->Enable(true);
+        m_rbOIgnore->Enable(true);
+        m_btnOutputStcList->Enable(true);
+    }
     else
     {
         m_cbOutput->Enable(true);
@@ -3722,18 +3790,20 @@ void options::SetConnectionParams(ConnectionParams *cp)
     m_choicePriority->Select(m_choicePriority->FindString(wxString::Format(_T("%d"),cp->Priority)));
 
     m_tNetAddress->SetValue(cp->NetworkAddress);
-    m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+    
+    if( cp->NetworkPort == 0)
+        m_tNetPort->SetValue(_T(""));
+    else
+        m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
+    
     if(cp->NetProtocol == TCP)
         m_rbNetProtoTCP->SetValue(true);
     else if (cp->NetProtocol == UDP)
         m_rbNetProtoUDP->SetValue(true);
-    else {
+    else 
         m_rbNetProtoGPSD->SetValue(true);
-        if( cp->NetworkPort == 0)
-            m_tNetPort->SetValue(_T(""));
-    }
-
-    if ( cp->Type == Serial )
+    
+    if ( cp->Type == SERIAL )
     {
         m_rbTypeSerial->SetValue( true );
         SetNMEAFormToSerial();
@@ -3743,6 +3813,9 @@ void options::SetConnectionParams(ConnectionParams *cp)
         m_rbTypeNet->SetValue( true );
         SetNMEAFormToNet();
     }
+    
+    m_connection_enabled = cp->bEnabled;
+    
 }
 
 void options::OnAddDatasourceClick( wxCommandEvent& event )
@@ -3770,18 +3843,38 @@ void options::FillSourceList()
     m_lcSources->DeleteAllItems();
     for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
     {
-        long itemIndex = m_lcSources->InsertItem(i, g_pConnectionParams->Item(i)->GetSourceTypeStr());
-        m_lcSources->SetItem(itemIndex, 1, g_pConnectionParams->Item(i)->GetAddressStr());
-        m_lcSources->SetItem(itemIndex, 2, g_pConnectionParams->Item(i)->GetParametersStr());
-        m_lcSources->SetItem(itemIndex, 3, g_pConnectionParams->Item(i)->GetOutputValueStr());
-        m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetFiltersStr());
+ 
+        wxListItem li;
+        li.SetId( i );
+        li.SetImage( g_pConnectionParams->Item(i)->bEnabled ? 1 : 0  );
+        li.SetData( i );
+        li.SetText( _T("") );
+        
+        long itemIndex = m_lcSources->InsertItem( li );
+        
+        m_lcSources->SetItem(itemIndex, 1, g_pConnectionParams->Item(i)->GetSourceTypeStr());
+        m_lcSources->SetItem(itemIndex, 2, g_pConnectionParams->Item(i)->GetAddressStr());
+        m_lcSources->SetItem(itemIndex, 3, g_pConnectionParams->Item(i)->GetParametersStr());
+        m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetOutputValueStr());
+        m_lcSources->SetItem(itemIndex, 5, g_pConnectionParams->Item(i)->GetFiltersStr());
     }
 
+#ifdef __WXOSX__
     m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE );
     m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE );
-    m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE_USEHEADER );
-    m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE );
     m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 5, wxLIST_AUTOSIZE );
+#else
+    m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 5, wxLIST_AUTOSIZE );
+#endif
+    
 }
 
 void options::OnRemoveDatasourceClick( wxCommandEvent& event )
@@ -3837,6 +3930,13 @@ void options::OnNetProtocolSelected( wxCommandEvent& event )
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("2947"));
     }
+    else if (m_rbNetProtoUDP->GetValue())
+    {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("10110"));
+    }
+    
+    
     SetDSFormRWStates();
     OnConnValChange(event);
 }

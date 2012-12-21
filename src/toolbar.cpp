@@ -751,6 +751,7 @@ public:
         if( toolname == _T("") ) {
             isPluginTool = false;
             toolname = label;
+            iconName = label;
         } else {
             isPluginTool = true;
             pluginNormalIcon = &bmpNormal;
@@ -778,13 +779,23 @@ public:
     {
         return toolname;
     }
-
+    
+    void SetIconName(wxString name)
+    {
+        iconName = name;
+    }
+    wxString GetIconName()
+    {
+        return iconName;
+    }
+    
     wxCoord m_x;
     wxCoord m_y;
     wxCoord m_width;
     wxCoord m_height;
     wxRect trect;
     wxString toolname;
+    wxString iconName;
     const wxBitmap* pluginNormalIcon;
     const wxBitmap* pluginRolloverIcon;
     bool firstInLine;
@@ -1401,8 +1412,8 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
     if( tool->bitmapOK ) {
         if( tool->IsEnabled() ) {
             bmp = tool->GetNormalBitmap();
-            if( !bmp.IsOk() ) bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL,
-                    tool->rollover );
+            if( !bmp.IsOk() )
+                bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL, tool->rollover );
         } else {
             bmp = tool->GetDisabledBitmap();
             if( !bmp.IsOk() ) bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_DISABLED );
@@ -1438,10 +1449,11 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
             tool->bitmapOK = true;
         } else {
             if( tool->IsEnabled() ) {
-                if( tool->IsToggled() ) bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED,
-                        tool->rollover );
-                else
-                    bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_NORMAL, tool->rollover );
+                if( tool->IsToggled() )
+                    bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover );
+                else 
+                    bmp = m_style->GetToolIcon( tool->GetIconName(), TOOLICON_NORMAL, tool->rollover );
+                
                 tool->SetNormalBitmap( bmp );
                 tool->bitmapOK = true;
             } else {
@@ -1862,6 +1874,20 @@ void ocpnToolBarSimple::OnMouseEnter( int id )
 
     (void) GetEventHandler()->ProcessEvent( event );
 }
+
+void ocpnToolBarSimple::SetToolNormalBitmapEx( wxToolBarToolBase *tool, wxString iconName )
+{
+    if( tool ) {
+        ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
+        
+        wxBitmap bmp = style->GetToolIcon( iconName, TOOLICON_NORMAL );
+        tool->SetNormalBitmap( bmp );
+        ocpnToolBarTool *otool = (ocpnToolBarTool *)tool;
+        if(otool)
+            otool->SetIconName( iconName );
+    }
+}
+
 
 //-------------------------------------------------------------------------------------
 

@@ -202,6 +202,9 @@ const wxString& SENTENCE::Field( int desired_field_number ) const
          current_field_number++;
       }
 
+      if( Sentence[ index ] == '*')
+          return_string += Sentence[ index ];
+
       index++;
    }
 
@@ -283,7 +286,8 @@ NMEA0183_BOOLEAN SENTENCE::IsChecksumBad( int checksum_field_number ) const
       return( Unknown0183 );
    }
 
-   if ( ComputeChecksum() != HexValue( checksum_in_sentence ) )
+   wxString check = checksum_in_sentence.Mid( 1 );
+   if ( ComputeChecksum() != HexValue( check ) )
    {
       return( NTrue );
    }

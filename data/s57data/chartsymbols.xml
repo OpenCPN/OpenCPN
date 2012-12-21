@@ -10693,7 +10693,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">CATSPM54</attrib-code>
 			<attrib-code index="1">BOYSHP4</attrib-code>
-			<instruction>SY(BOYSPP35);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<instruction>SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>27010</comment>
 		</lookup>
@@ -10704,7 +10704,7 @@
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">CATSPM54</attrib-code>
 			<attrib-code index="1">BOYSHP5</attrib-code>
-			<instruction>SY(BOYSPP35);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<instruction>SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>27010</comment>
 		</lookup>
@@ -10764,7 +10764,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">BOYSHP4</attrib-code>
-			<instruction>SY(BOYSPP35);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<instruction>SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>27010</comment>
 		</lookup>
@@ -10774,7 +10774,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">BOYSHP5</attrib-code>
-			<instruction>SY(BOYSPP35);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<instruction>SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>27010</comment>
 		</lookup>
@@ -10804,7 +10804,7 @@
 			<radar-prio>On Top</radar-prio>
 			<table-name>Simplified</table-name>
 			<attrib-code index="0">BOYSHP8</attrib-code>
-			<instruction>SY(BOYSPP35);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
+			<instruction>SY(BOYSPP11);TE('by %s','OBJNAM',2,1,2,'15110',-1,-1,CHBLK,21)</instruction>
 			<display-cat>Standard</display-cat>
 			<comment>27010</comment>
 		</lookup>

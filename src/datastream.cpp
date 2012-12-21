@@ -49,7 +49,7 @@
 
 #include <vector>
 
-#define SERIAL_OVERLAPPED
+//#define SERIAL_OVERLAPPED
 
 extern int              g_nNMEADebug;
 extern bool             g_bGPSAISMux;
@@ -72,7 +72,6 @@ const wxEventType wxEVT_OCPN_DATASTREAM = wxNewEventType();
 OCPN_DataStreamEvent::OCPN_DataStreamEvent( wxEventType commandType, int id )
       :wxEvent(id, commandType)
 {
-    m_priority = 0;
     m_pDataStream = NULL;
 }
 
@@ -84,9 +83,8 @@ OCPN_DataStreamEvent::~OCPN_DataStreamEvent( )
 wxEvent* OCPN_DataStreamEvent::Clone() const
 {
     OCPN_DataStreamEvent *newevent=new OCPN_DataStreamEvent(*this);
-    newevent->m_NMEAstring=this->m_NMEAstring.c_str();  // this enforces a deep copy of the string data
-    newevent->m_datasource=this->m_datasource.c_str();
-    newevent->m_priority=this->m_priority;
+    newevent->m_NMEAstring=this->m_NMEAstring;
+    newevent->m_NMEAstring += " ";
     newevent->m_pDataStream=this->m_pDataStream;
     return newevent;
 }
@@ -113,7 +111,7 @@ DataStream::DataStream(wxEvtHandler *input_consumer,
              int EOS_type,
              int handshake_type,
              void *user_data )
-:m_net_protocol(GPSD),m_connection_type(Serial)
+:m_net_protocol(GPSD),m_connection_type(SERIAL)
 
 {
     m_consumer = input_consumer;
@@ -150,7 +148,7 @@ void DataStream::Open(void)
 
         //    Data Source is specified serial port
         if(m_portstring.Contains(_T("Serial"))) {
-            m_connection_type = Serial;
+            m_connection_type = SERIAL;
             wxString comx;
             comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
 
@@ -161,7 +159,7 @@ void DataStream::Open(void)
                 m_GarminHandler = new GarminProtocolHandler(this, m_consumer,  false);
             }
             else {
-                m_connection_type = Serial;
+                m_connection_type = SERIAL;
                 wxString comx;
                 comx =  m_portstring.AfterFirst(':');      // strip "Serial:"
 
@@ -197,22 +195,22 @@ void DataStream::Open(void)
             m_net_addr = _T("127.0.0.1");              // defaults
             m_net_port = _T("2947");
             m_net_protocol = GPSD;
-            m_connection_type = Network;
+            m_connection_type = NETWORK;
         }
         else if(m_portstring.StartsWith(_T("TCP"))) {
             m_net_addr = _T("127.0.0.1");              // defaults
             m_net_port = _T("2947");
             m_net_protocol = TCP;
-            m_connection_type = Network;
+            m_connection_type = NETWORK;
         }
         else if(m_portstring.StartsWith(_T("UDP"))) {
             m_net_addr =  _T("0.0.0.0");              // any address
             m_net_port = _T("0");                     // any port
             m_net_protocol = UDP;
-            m_connection_type = Network;
+            m_connection_type = NETWORK;
         }
         
-        if(m_connection_type == Network){
+        if(m_connection_type == NETWORK){
         
             //  Capture the  parameters from the portstring
 
@@ -240,9 +238,16 @@ void DataStream::Open(void)
                 case UDP:
                     //  We need a local (bindable) address to create the Datagram socket
                     wxIPV4address conn_addr;
-                    conn_addr.Service(_T("0"));   // use ephemeral port for source, selected by O/S
+                    conn_addr.Service(m_net_port);
                     conn_addr.AnyAddress();    
                     m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
+                    if((m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT)) {
+                        wxString addr = m_addr.IPAddress();
+                        if( addr.EndsWith(_T("255")) ) {
+                            int broadcastEnable=1;
+                            bool bam = m_sock->SetOption(SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
+                        }
+                    }
             }
 
             // Setup the event handler and subscribe to most events
@@ -368,9 +373,8 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                         nmea_line = nmea_line.substr(nmea_start);
                         if( m_consumer && ChecksumOK(nmea_line)){
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                            Nevent.SetNMEAString(nmea_line);
-                            Nevent.SetDataSource(m_portstring);
-                            Nevent.SetPriority(m_priority);
+                            std::string s = std::string(nmea_line.mb_str());
+                            Nevent.SetNMEAString(s);
                             Nevent.SetDataStream(this);
                             
                             m_consumer->AddPendingEvent(Nevent);
@@ -391,7 +395,11 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
         case wxSOCKET_LOST:
         {
    //          wxSocketError e = m_sock->LastError();          // this produces wxSOCKET_WOULDBLOCK.
+            if(m_net_protocol == TCP) {
+                wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+                tcp_socket->Connect(m_addr, FALSE);
                 break;
+            }
         }
 
         case wxSOCKET_CONNECTION :
@@ -488,7 +496,7 @@ bool DataStream::SendSentence( const wxString &sentence )
 {
     bool has_crlf = sentence.EndsWith(_T("\r\n"));
     switch( m_connection_type ) {
-        case Serial:
+        case SERIAL:
             if( m_pSecondary_Thread ) {
                 wxDateTime then = wxDateTime::Now();
                 wxTimeSpan wait = wxDateTime::Now() - then;
@@ -507,7 +515,7 @@ bool DataStream::SendSentence( const wxString &sentence )
                     return false;
             }
             break;
-        case Network:
+        case NETWORK:
             if( m_sock ) {
                 switch(m_net_protocol){
                     case GPSD:
@@ -613,17 +621,6 @@ void *OCP_DataStreamInput_Thread::Entry()
 
     m_launcher->SetSecThreadActive();               // I am alive
     
-#if 0
-    if(wxMUTEX_NO_ERROR != m_pPortMutex->Lock())              // I have the ball
-    {
-        wxString msg(_T("NMEA input device failed to lock Mutex on port : "));
-        msg.Append(m_PortName);
-//            ThreadMessage(msg);
-        goto thread_exit;
-    }
-
-#endif
-
 
 //    The main loop
 
@@ -632,27 +629,6 @@ void *OCP_DataStreamInput_Thread::Entry()
         if(TestDestroy())
             not_done = false;                               // smooth exit
 
-#if 0
-        if( m_launcher->IsPauseRequested())                 // external pause requested?
-        {
-            CloseComPortPhysical(m_gps_fd);
-            m_pPortMutex->Unlock();                       // release the port
-
-            wxThread::Sleep(2000);                        // stall for a bit
-
-            //  Now try to regain the Mutex
-            while(wxMUTEX_BUSY == m_pPortMutex->TryLock()){};
-            //  Re-initialize the port
-            if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) < 0)
-            {
-                wxString msg(_T("NMEA input device open failed after requested Pause on port: "));
-                msg.Append(m_PortName);
-//                    ThreadMessage(msg);
-                goto thread_exit;
-            }
-
-        }
-#endif
       //    Blocking, timeout protected read of one character at a time
       //    Timeout value is set by c_cc[VTIME]
       //    Storing incoming characters in circular buffer
@@ -691,25 +667,21 @@ void *OCP_DataStreamInput_Thread::Entry()
         // do not retry for the next 5s
                           maxErrorLoop = 0;
 
-        //  Turn off Open/Close logging
-        //                              bool blog = m_pCommMan->GetLogFlag();
-        //                              m_pCommMan->SetLogFlag(false);
-
         // free old unplug current port
                           CloseComPortPhysical(m_gps_fd);
         //    Request the com port from the comm manager
                           if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) < 0)  {
-                                wxString msg(_T("NMEA input device open failed (will retry): "));
-                                msg.Append(m_PortName);
-        //                                    ThreadMessage(msg);
+//                                wxString msg(_T("NMEA input device open failed (will retry): "));
+//                                msg.Append(m_PortName);
+//                                ThreadMessage(msg);
                           } else {
                                 wxString msg(_T("NMEA input device open on hotplug OK: "));
+                                msg.Append(m_PortName);
+                                ThreadMessage(msg);
                           }
-        //      Reset the log flag
-        //                              m_pCommMan->SetLogFlag(blog);
                     }
               }
-        } // end Fulup hack
+        } 
 
         //  And process any character
 
@@ -717,7 +689,6 @@ void *OCP_DataStreamInput_Thread::Entry()
         {
         //                    printf("%c", next_byte);
             nl_found = false;
-
             *put_ptr++ = next_byte;
             if((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
             put_ptr = rx_buffer;
@@ -1015,9 +986,14 @@ void *OCP_DataStreamInput_Thread::Entry()
                         m_n_timeout++;
                         if(m_n_timeout > 5)             //5 x 2000 msec
                         {
+                            fWaitingOnRead = FALSE;
+                            CloseComPortPhysical(m_gps_fd);
+                            m_gps_fd = NULL;
                             dwRead = 0;
                             nl_found = false;
                             fWaitingOnRead = FALSE;
+                            n_reopen_wait = 2000;
+                            
                         }
                         break;
 
@@ -1150,17 +1126,33 @@ thread_exit:
     if(!SetCommMask((HANDLE)m_gps_fd, EV_RXCHAR)) // Setting Event Type
         goto thread_exit;
 
+    COMMTIMEOUTS timeouts;
+    
+    timeouts.ReadIntervalTimeout = MAXDWORD;
+    timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
+    timeouts.ReadTotalTimeoutConstant = 2000;
+    timeouts.WriteTotalTimeoutMultiplier = MAXDWORD;
+    timeouts.WriteTotalTimeoutConstant = MAXDWORD;
+    
+    if (!SetCommTimeouts((HANDLE)m_gps_fd, &timeouts)) // Error setting time-outs.
+        goto thread_exit;
+    
+    
+    
     not_done = true;
     bool nl_found;
 
-#define READ_BUF_SIZE 20
+#define READ_BUF_SIZE 200
     char szBuf[READ_BUF_SIZE];
 
     DWORD dwRead;
     DWORD dwOneRead;
-    DWORD dwCommEvent;
+//    DWORD dwCommEvent;
     char  chRead;
     int ic;
+    int n_timeout;
+    int n_reopen_wait = 2000;
+#define MAX_N_TIMEOUT 5
 
 //    The main loop
 
@@ -1169,31 +1161,80 @@ thread_exit:
         if(TestDestroy())
             not_done = false;                               // smooth exit
 
-
-        dwRead = 0;
-        ic = 0;
-
-        if (WaitCommEvent((HANDLE)m_gps_fd, &dwCommEvent, NULL))
+       //    Was port closed due to error condition?
+        while(!m_gps_fd)
         {
-            do {
-                if (ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL))
-                {
+            if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0))
+                goto thread_exit;                               // smooth exit
+
+            if(n_reopen_wait)
+            {
+                wxThread::Sleep(n_reopen_wait);                        // stall for a bit
+                n_reopen_wait = 0;
+            }
+
+
+            if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) > 0)
+            {
+                hSerialComm = (HANDLE)m_gps_fd;
+                
+                if(!SetCommMask((HANDLE)m_gps_fd, EV_RXCHAR)) // Setting Event Type
+                    goto thread_exit;
+        
+                COMMTIMEOUTS timeouts;
+                timeouts.ReadIntervalTimeout = MAXDWORD;
+                timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
+                timeouts.ReadTotalTimeoutConstant = 2000;
+                timeouts.WriteTotalTimeoutMultiplier = MAXDWORD;
+                timeouts.WriteTotalTimeoutConstant = MAXDWORD;
+        
+                if (!SetCommTimeouts((HANDLE)m_gps_fd, &timeouts)) // Error setting time-outs.
+                    goto thread_exit;
+            }
+            else
+            {
+                m_gps_fd = NULL;
+                wxThread::Sleep(2000);                        // stall for a bit
+            }
+        }
+
+
+
+        bool b_inner = true;
+        dwRead = 0;
+        n_timeout = 0;
+        ic=0;
+        while( b_inner ) {
+            if (ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL))
+            {
+                if(1 == dwOneRead) {
                     szBuf[ic] = chRead;
                     dwRead++;
                     if(ic++ > READ_BUF_SIZE - 1)
-                          goto HandleASuccessfulRead;
+                        goto HandleASuccessfulRead;
+                    if(chRead == 0x0a)
+                        goto HandleASuccessfulRead;
                 }
-                else
-                {            // An error occurred in the ReadFile call.
-                    goto fail_point;                               // smooth exit
-
+                else {                          // timed out
+                    n_timeout++;;
+                    if( n_timeout > MAX_N_TIMEOUT ) {
+                        b_inner = false;
+                        
+                        CloseComPortPhysical(m_gps_fd);
+                        m_gps_fd = NULL;
+                        dwRead = 0;
+                        nl_found = false;
+                        n_reopen_wait = 2000;
+                    }
+                        
                 }
-            } while (dwOneRead);
+                
+            }
+            else {
+                //      ReadFile Erorr
+            }
         }
-        else
-            goto fail_point;                               // smooth exit
-
-
+            
 
 HandleASuccessfulRead:
 
@@ -1257,7 +1298,7 @@ HandleASuccessfulRead:
 
                     if((tptr - rx_buffer) > RX_BUFFER_SIZE)
                         tptr = rx_buffer;
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
+//                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
                 }
 
                 if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
@@ -1265,14 +1306,14 @@ HandleASuccessfulRead:
                     *ptmpbuf++ = *tptr++;
                     if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
                         tptr = rx_buffer;
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
+//                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, "temp_buf overrun");
 
                     *ptmpbuf = 0;
 
                     tak_ptr = tptr;
 
                     // parse and send the message
-                    if(g_bShowOutlines)
+//                    if(g_bShowOutlines)
                     {
                         wxString str_temp_buf(temp_buf, wxConvUTF8);
                         Parse_And_Send_Posn(str_temp_buf);
@@ -1289,7 +1330,6 @@ HandleASuccessfulRead:
 
 
 
-fail_point:
 thread_exit:
 
 //          Close the port cleanly
@@ -1308,10 +1348,8 @@ thread_exit:
 void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
 {
     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-    Nevent.SetNMEAString(str_temp_buf);
-    wxString port = m_launcher->GetPort();
-    Nevent.SetDataSource(port);
-    Nevent.SetPriority(m_launcher->GetPriority());
+    std::string s = std::string(str_temp_buf.mb_str());
+    Nevent.SetNMEAString(s);
     Nevent.SetDataStream(m_launcher);
     if( m_pMessageTarget )
         m_pMessageTarget->AddPendingEvent(Nevent);
@@ -1322,8 +1360,6 @@ void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
 
 void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
 {
-    if( !m_launcher->SentencePassesFilter( msg, FILTER_INPUT ) )
-        return;
     //    Signal the main program thread
     wxCommandEvent event( EVT_THREADMSG,  GetId());
     event.SetEventObject( (wxObject *)this );
@@ -1505,6 +1541,10 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud
         return (0 - abs((int)::GetLastError()));
     }
 
+    DWORD err;
+    COMSTAT cs;
+    bool b = ClearCommError(hSerialComm, &err, &cs);
+    
     if(!SetupComm(hSerialComm, 1024, 1024))
     {
         return (0 - abs((int)::GetLastError()));
@@ -1660,7 +1700,7 @@ void ConnectionParams::Deserialize(wxString &configStr)
 {
     Valid = true;
     wxArrayString prms = wxStringTokenize( configStr, _T(";") );
-    if (prms.Count() != 17) {
+    if (prms.Count() < 17) {
         Valid = false;
         return;
     }
@@ -1682,6 +1722,10 @@ void ConnectionParams::Deserialize(wxString &configStr)
     Garmin = !!wxAtoi(prms[14]);
     GarminUpload = !!wxAtoi(prms[15]);
     FurunoGP3X = !!wxAtoi(prms[16]);
+
+    bEnabled = true;
+    if (prms.Count() >= 18) 
+        bEnabled = !!wxAtoi(prms[17]);
 }
 
 wxString ConnectionParams::Serialize()
@@ -1700,7 +1744,7 @@ wxString ConnectionParams::Serialize()
             ostcs.Append( _T(",") );
         ostcs.Append( OutputSentenceList[i] );
     }
-    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d"),
+    wxString ret = wxString::Format( _T("%d;%d;%s;%d;%d;%s;%d;%d;%d;%d;%s;%d;%s;%d;%d;%d;%d;%d"),
                                      Type,
                                      NetProtocol,
                                      NetworkAddress.c_str(),
@@ -1717,14 +1761,16 @@ wxString ConnectionParams::Serialize()
                                      Priority,
                                      Garmin,
                                      GarminUpload,
-                                     FurunoGP3X );
+                                     FurunoGP3X,
+                                     bEnabled
+                                   );
 
     return ret;
 }
 
 ConnectionParams::ConnectionParams()
 {
-    Type = Serial;
+    Type = SERIAL;
     NetProtocol = TCP;
     NetworkAddress = wxEmptyString;
     NetworkPort = 0;
@@ -1739,12 +1785,12 @@ ConnectionParams::ConnectionParams()
     OutputSentenceListType = WHITELIST;
     Priority = 0;
     Valid = true;
-    
+    bEnabled = true;
 }
 
 wxString ConnectionParams::GetSourceTypeStr()
 {
-    if ( Type == Serial )
+    if ( Type == SERIAL )
         return _("Serial");
     else
         return _("Net");
@@ -1752,7 +1798,7 @@ wxString ConnectionParams::GetSourceTypeStr()
 
 wxString ConnectionParams::GetAddressStr()
 {
-    if ( Type == Serial )
+    if ( Type == SERIAL )
         return wxString::Format( _T("%s"), Port.c_str() );
     else
         return wxString::Format( _T("%s:%d"), NetworkAddress.c_str(), NetworkPort );
@@ -1760,7 +1806,7 @@ wxString ConnectionParams::GetAddressStr()
 
 wxString ConnectionParams::GetParametersStr()
 {
-    if ( Type == Serial )
+    if ( Type == SERIAL )
         return wxString::Format( _T("%d"), Baudrate );
     else
         if ( NetProtocol == TCP )
@@ -1779,12 +1825,20 @@ wxString ConnectionParams::GetOutputValueStr()
         return _("No");
 }
 
-wxString ConnectionParams::FilterTypeToStr(ListType type)
+wxString ConnectionParams::FilterTypeToStr(ListType type, FilterDirection dir)
 {
-    if ( type == BLACKLIST )
-        return _("All but");
-    else
-        return _("Just ");
+    if(dir == FILTER_INPUT) {
+        if ( type == BLACKLIST )
+            return _("Reject");
+        else
+            return _("Accept");
+    }
+    else {
+        if ( type == BLACKLIST )
+            return _("Drop");
+        else
+            return _("Send");
+    }
 }
 
 wxString ConnectionParams::GetFiltersStr()
@@ -1804,12 +1858,20 @@ wxString ConnectionParams::GetFiltersStr()
         ostcs.Append( OutputSentenceList[i] );
     }
     wxString ret = wxEmptyString;
-    if ( istcs.Len() > 0 )
-        ret.Append(wxString::Format( _T("In: %s %s"), FilterTypeToStr(InputSentenceListType).c_str(), istcs.c_str()) );
+    if ( istcs.Len() > 0 ){
+        ret.Append( _("In") );
+        ret.Append(wxString::Format( _T(": %s %s"),
+                                     FilterTypeToStr(InputSentenceListType, FILTER_INPUT).c_str(), istcs.c_str()) );
+    }
     else
         ret.Append( _("In: None") );
-    if ( ostcs.Len() > 0 )
-        ret.Append( wxString::Format( _T(", Out: %s %s"), FilterTypeToStr(OutputSentenceListType).c_str(), ostcs.c_str() ) );
+    
+    if ( ostcs.Len() > 0 ){
+        ret.Append(  _T(", ") );
+        ret.Append(  _("Out") );
+        ret.Append( wxString::Format( _T(": %s %s"),
+                                      FilterTypeToStr(OutputSentenceListType, FILTER_OUTPUT).c_str(), ostcs.c_str() ) );
+    }
     else
         ret.Append( _(", Out: None") );
     return  ret;
@@ -1817,7 +1879,7 @@ wxString ConnectionParams::GetFiltersStr()
 
 wxString ConnectionParams::GetDSPort()
 {
-    if ( Type == Serial )
+    if ( Type == SERIAL )
         return wxString::Format( _T("Serial:%s"), Port.c_str() );
     else
     {
@@ -2645,10 +2707,8 @@ void *GARMIN_Serial_Thread::Entry()
                         wxString message = snt.Sentence;
 
                         OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                        Nevent.SetNMEAString(message);
-                        Nevent.SetDataSource(m_port);
-                        if(m_parent_stream)
-                            Nevent.SetPriority(m_parent_stream->GetPriority());
+                        std::string s = std::string(message.mb_str());
+                        Nevent.SetNMEAString(s);
                         Nevent.SetDataStream(m_parent_stream);
                         if( m_pMessageTarget )
                             m_pMessageTarget->AddPendingEvent(Nevent);
@@ -2739,11 +2799,8 @@ void *GARMIN_USB_Thread::Entry()
                   wxString message = snt.Sentence;
                   
                   OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                  Nevent.SetNMEAString(message);
-                  wxString source = _T("Garmin-USB");
-                  Nevent.SetDataSource( source );
-                  if(m_parent_stream)
-                      Nevent.SetPriority(m_parent_stream->GetPriority());
+                  std::string s = std::string(message.mb_str());
+                  Nevent.SetNMEAString(s);
                   Nevent.SetDataStream(m_parent_stream);
                   if( m_pMessageTarget )
                       m_pMessageTarget->AddPendingEvent(Nevent);
@@ -2789,11 +2846,8 @@ void *GARMIN_USB_Thread::Entry()
                           wxString message = snt.Sentence;
 
                           OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                          Nevent.SetNMEAString(message);
-                          wxString source = _T("Garmin-USB");
-                          Nevent.SetDataSource( source );
-                          if(m_parent_stream)
-                            Nevent.SetPriority(m_parent_stream->GetPriority());
+                          std::string s = std::string(message.mb_str());
+                          Nevent.SetNMEAString(s);
                           Nevent.SetDataStream(m_parent_stream);
                           if( m_pMessageTarget )
                               m_pMessageTarget->AddPendingEvent(Nevent);
@@ -2812,7 +2866,7 @@ thread_prexit:
 
 int GARMIN_USB_Thread::gusb_cmd_get(garmin_usb_packet *ibuf, size_t sz)
 {
-      int rv;
+      int rv = 0;
       unsigned char *buf = (unsigned char *) &ibuf->dbuf[0];
       int orig_receive_state;
 top:

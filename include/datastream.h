@@ -57,6 +57,10 @@
 #include "wx/socket.h"
 #endif
 
+#ifndef __WXMSW__
+#include <sys/socket.h>                 // needed for (some) Mac builds
+#endif
+
 #ifdef __WXMSW__
 #include <windows.h>
 #include <dbt.h>
@@ -64,6 +68,8 @@
 #include <winioctl.h>
 #include <initguid.h>
 #endif
+
+#include <string>
 
 //----------------------------------------------------------------------------
 //   constants
@@ -102,8 +108,8 @@ enum {
 //Type definitions for connection parameters
 typedef enum
 {
-    Serial = 0,
-    Network = 1
+    SERIAL = 0,
+    NETWORK = 1
 } ConnectionType;
 
 typedef enum
@@ -137,17 +143,6 @@ typedef enum
 #define     MAX_RX_MESSSAGE_SIZE  4096
 #define     RX_BUFFER_SIZE        4096
 
-typedef enum ENUM_BUFFER_STATE
-{
-    RX_BUFFER_EMPTY,
-    RX_BUFFER_FULL
-}_ENUM_BUFFER_STATE;
-
-enum
-{
-    EVT_NMEA_DIRECT,
-    EVT_NMEA_PARSE_RX
-};
 
 // Class declarations
 
@@ -185,22 +180,16 @@ public:
     ~OCPN_DataStreamEvent( );
 
     // accessors
-    wxString GetNMEAString() { return m_NMEAstring; }
-    wxString GetDataSource() { return m_datasource; }
+    std::string GetNMEAString() { return m_NMEAstring; }
     DataStream *GetDataStream() { return m_pDataStream; }
-    int GetPrority() { return m_priority; }
-    void SetNMEAString(wxString &string) { m_NMEAstring = string; }
-    void SetDataSource(wxString &string) { m_datasource = string; }
-    void SetPriority(int priority) { m_priority = priority; }
+    void SetNMEAString(std::string string) { m_NMEAstring = string; }
     void SetDataStream(DataStream *pds) { m_pDataStream = pds; }
     
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;
 
 private:
-    wxString    m_datasource;
-    wxString    m_NMEAstring;
-    int         m_priority;
+    std::string m_NMEAstring;
     DataStream  *m_pDataStream;
 
             //            DECLARE_DYNAMIC_CLASS(OCPN_DataStreamEvent)
@@ -276,6 +265,7 @@ public:
     ListType GetInputSentenceListType(){ return m_input_filter_type; }
     ListType GetOutputSentenceListType(){ return m_output_filter_type; }
     bool GetChecksumCheck(){ return m_bchecksumCheck; }
+    ConnectionType GetConnectionType(){ return m_connection_type; }
     
     
 
@@ -431,6 +421,7 @@ public:
     ListType        OutputSentenceListType;
     wxArrayString   OutputSentenceList;
     int             Priority;
+    bool            bEnabled;
 
     wxString        Serialize();
     void            Deserialize(wxString &configStr);
@@ -444,7 +435,7 @@ public:
 
     bool            Valid;
 private:
-    wxString FilterTypeToStr(ListType type);
+    wxString FilterTypeToStr(ListType type, FilterDirection dir);
 };
 
 WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
@@ -665,6 +656,7 @@ public:
                          wxString port);
     ~GARMIN_Serial_Thread(void);
     void *Entry();
+    void string(wxCharBuffer mb_str);
     
     
 private:

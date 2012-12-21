@@ -1476,10 +1476,8 @@ bool AddLocaleCatalog( wxString catalog )
 void PushNMEABuffer( wxString buf )
 {
     OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
-    event.SetNMEAString( buf );
-    wxString source(_T("PlugIn"));
-    event.SetDataSource( source );
-    event.SetPriority( 0 );
+    std::string s = std::string( buf.mb_str() );
+    event.SetNMEAString( s );
     event.SetDataStream( NULL );        // PlugIns have virtual DataStream
     
     g_pMUX->AddPendingEvent( event );

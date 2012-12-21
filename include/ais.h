@@ -141,7 +141,7 @@ WX_DECLARE_LIST(AISTargetTrackPoint, AISTargetTrackList);
 const size_t AIS8_001_22_NUM_NAMES=128;
 const size_t AIS8_001_22_SUBAREA_SIZE=87;
 
-extern const char *ais8_001_22_notice_names[AIS8_001_22_NUM_NAMES];
+extern wxString ais8_001_22_notice_names[];
 
 enum Ais8_001_22_AreaShapeEnum
 {
@@ -227,7 +227,7 @@ public:
     int                       ROTIND;
     char                      CallSign[8];                // includes terminator
     char                      ShipName[21];
-    char                      ShipNameExtension[21];
+    char                      ShipNameExtension[15];
     unsigned char             ShipType;
     int                       IMO;
 
@@ -338,6 +338,7 @@ public:
     void OnEvtAIS(OCPN_DataStreamEvent& event);
     AIS_Error Decode(const wxString& str);
     AIS_Target_Hash *GetTargetList(void) {return AISTargetList;}
+    AIS_Target_Hash *GetAreaNoticeSourcesList(void) {return AIS_AreaNotice_Sources;}
     AIS_Target_Data *Get_Target_Data_From_MMSI(int mmsi);
     int GetNumTargets(void){ return m_n_targets;}
     bool IsAISSuppressed(void){ return m_bSuppressed; }
@@ -359,6 +360,7 @@ private:
     void BuildERIShipTypeHash(void);
 
     AIS_Target_Hash *AISTargetList;
+    AIS_Target_Hash *AIS_AreaNotice_Sources;
 
     bool              m_busy;
     wxTimer           TimerAIS;

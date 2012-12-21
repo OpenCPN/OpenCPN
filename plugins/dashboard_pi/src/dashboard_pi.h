@@ -142,14 +142,15 @@ public:
       bool SaveConfig(void);
       void PopulateContextMenu( wxMenu* menu );
       void ShowDashboard( size_t id, bool visible );
-
+      int GetToolbarItemId(){ return m_toolbar_item_id; }
+      int GetDashboardWindowShownCount();
+      
 private:
       bool LoadConfig(void);
       void ApplyConfig(void);
       void SendSentenceToAllInstruments(int st, double value, wxString unit);
       void SendSatInfoToAllInstruments(int cnt, int seq, SAT_INFO sats[4]);
       void SendUtcTimeToAllInstruments( wxDateTime value );
-      int GetDashboardWindowShownCount();
 
       wxFileConfig     *m_pconfig;
       wxAuiManager     *m_pauimgr;
@@ -166,7 +167,8 @@ private:
       double               mSatsInView;
       double               mHdm;
       wxDateTime           mUTCDateTime;
-
+      int                  m_config_version;
+      
 //protected:
 //      DECLARE_EVENT_TABLE();
 };

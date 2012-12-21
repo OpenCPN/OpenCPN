@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Open CPN 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-02 08:16-0500\n"
+"POT-Creation-Date: 2012-12-19 12:21-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Ole E. Mikkelsen <oem@live.dk>\n"
 "Language-Team: \n"
@@ -457,6 +457,9 @@ msgstr "(unavngivet spor)"
 msgid "(Unnamed Waypoint)"
 msgstr "(Unavngivet Waypoint)"
 #
+msgid "(reserved for future use)"
+msgstr ""
+#
 # 
 # 
 # 
@@ -705,6 +708,9 @@ msgstr "Om"
 msgid "About OpenCPN"
 msgstr "Om 'OpenCPN'"
 #
+msgid "Accept"
+msgstr ""
+#
 msgid "Accept Sentences"
 msgstr ""
 #
@@ -838,15 +844,30 @@ msgstr "Aktive kort kataloger"
 msgid "All Charts"
 msgstr "Kort"
 #
-msgid "All but"
-msgstr ""
-#
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
 "also have a two letter prefix identifying the source, or TALKER, of the "
 "message (The whole sentences then looks like GPGGA or AITXT). You may filter "
 "out all the sentences with certain TALKER prefix (like GP, AI etc.). The "
 "filter accepts just these three formats."
+msgstr ""
+#
+msgid "Anchorage Area: Anchorage closed"
+msgstr ""
+#
+msgid "Anchorage Area: Anchorage open"
+msgstr ""
+#
+msgid "Anchorage Area: Anchoring prohibited"
+msgstr ""
+#
+msgid "Anchorage Area: Deep draft anchorage"
+msgstr ""
+#
+msgid "Anchorage Area: Shallow draft anchorage"
+msgstr ""
+#
+msgid "Anchorage Area: Vessel transfer operations"
 msgstr ""
 #
 msgid "Anchorage created "
@@ -1104,11 +1125,17 @@ msgstr "CPA/TCPA advarsler"
 msgid "Call"
 msgstr "Kald"
 #
+msgid "Can't send waypoint. Found no serial data port with output defined."
+msgstr ""
+#
 # 
 # 
 # 
 msgid "Cancel"
 msgstr "Annuller"
+#
+msgid "Cancellation - cancel area as identified by Message Linkage ID"
+msgstr ""
 #
 # 
 # 
@@ -1175,6 +1202,72 @@ msgstr ""
 msgid "Cargo Ship"
 msgstr ""
 #
+msgid "Caution Area: Cluster of fishing vessels"
+msgstr ""
+#
+msgid "Caution Area: Derelicts (drifting objects)"
+msgstr ""
+#
+msgid "Caution Area: Divers down"
+msgstr ""
+#
+msgid "Caution Area: Dredge operations"
+msgstr ""
+#
+msgid "Caution Area: Fairway closed"
+msgstr ""
+#
+msgid "Caution Area: Fishery - nets in water"
+msgstr ""
+#
+msgid "Caution Area: Harbour closed"
+msgstr ""
+#
+msgid "Caution Area: Marine event"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - reduce speed"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - report sightings"
+msgstr ""
+#
+msgid "Caution Area: Marine mammals in area - stay clear"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - no fishing or anchoring"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - reduce speed"
+msgstr ""
+#
+msgid "Caution Area: Protected habitat - stay clear"
+msgstr ""
+#
+msgid "Caution Area: Risk (define in Associated text field)"
+msgstr ""
+#
+msgid "Caution Area: Seaplane operations"
+msgstr ""
+#
+msgid "Caution Area: Survey operations"
+msgstr ""
+#
+msgid "Caution Area: Swim area"
+msgstr ""
+#
+msgid "Caution Area: Traffic congestion"
+msgstr ""
+#
+msgid "Caution Area: Underwater operation"
+msgstr ""
+#
+msgid "Caution Area: Underwater vehicle operation"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -1209,6 +1302,45 @@ msgstr "Enhed for havdybde"
 # 
 msgid "Chart Display Options"
 msgstr "Valgmuligheder for kortvisning"
+#
+msgid "Chart Feature: Bridge closed"
+msgstr ""
+#
+msgid "Chart Feature: Bridge fully open"
+msgstr ""
+#
+msgid "Chart Feature: Bridge partially open"
+msgstr ""
+#
+msgid "Chart Feature: Channel obstruction"
+msgstr ""
+#
+msgid "Chart Feature: Reduced vertical clearance"
+msgstr ""
+#
+msgid "Chart Feature: Semi-submerged object"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due east"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due north"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due south"
+msgstr ""
+#
+msgid "Chart Feature: Shoal area due west"
+msgstr ""
+#
+msgid "Chart Feature: Submerged object"
+msgstr ""
+#
+msgid "Chart Feature: Sunken vessel"
+msgstr ""
 #
 # 
 # 
@@ -1297,6 +1429,9 @@ msgstr "Blank alle"
 # 
 msgid "Clear Anchor Watch"
 msgstr "Fjern anker overvågning"
+#
+msgid "Clearance granted - proceed to berth"
+msgstr ""
 #
 # 
 # 
@@ -1674,6 +1809,45 @@ msgstr "Afstand"
 msgid "Distress"
 msgstr "Afstand"
 #
+msgid "Distress Area: Person overboard"
+msgstr ""
+#
+msgid "Distress Area: Pollution response area"
+msgstr ""
+#
+msgid "Distress Area: SAR area"
+msgstr ""
+#
+msgid "Distress Area: Vessel abandoning ship"
+msgstr ""
+#
+msgid "Distress Area: Vessel collision"
+msgstr ""
+#
+msgid "Distress Area: Vessel disabled and adrift"
+msgstr ""
+#
+msgid "Distress Area: Vessel fire/explosion"
+msgstr ""
+#
+msgid "Distress Area: Vessel flooding"
+msgstr ""
+#
+msgid "Distress Area: Vessel grounding"
+msgstr ""
+#
+msgid "Distress Area: Vessel listing/capsizing"
+msgstr ""
+#
+msgid "Distress Area: Vessel requests medical assistance"
+msgstr ""
+#
+msgid "Distress Area: Vessel sinking"
+msgstr ""
+#
+msgid "Distress Area: Vessel under assault"
+msgstr ""
+#
 msgid ""
 "Do you also want to toggle the visibility of shared waypoints being part of "
 "this route?"
@@ -1694,6 +1868,13 @@ msgstr ""
 # 
 msgid "Dredge"
 msgstr ""
+#
+# 
+# 
+# 
+#, fuzzy
+msgid "Drop"
+msgstr "Sæt waypoint her"
 #
 # 
 # 
@@ -1780,6 +1961,30 @@ msgid "Enter the NMEA sentence"
 msgstr ""
 #
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Hazardous sea ice"
+msgstr ""
+#
+msgid "Environmental Caution Area: Heavy icing"
+msgstr ""
+#
+msgid "Environmental Caution Area: High waves"
+msgstr ""
+#
+msgid "Environmental Caution Area: High wind"
+msgstr ""
+#
+msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Storm front (line squall)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
+msgstr ""
+#
+msgid "Environmental Caution Area: Strong currents"
 msgstr ""
 #
 # 
@@ -2104,7 +2309,30 @@ msgstr "Importer GPX-fil"
 msgid "Important Text Only"
 msgstr "Vis kun vigtig tekst"
 #
+# 
+# 
+# 
+# Translation?
+#, fuzzy
+msgid "In"
+msgstr "Ikon"
+#
 msgid "In: None"
+msgstr ""
+#
+msgid "Information: Icebreaker waiting area"
+msgstr ""
+#
+msgid "Information: Location of response units"
+msgstr ""
+#
+msgid "Information: Pilot boarding position"
+msgstr ""
+#
+msgid "Information: Places of refuge"
+msgstr ""
+#
+msgid "Information: Position of icebreakers"
 msgstr ""
 #
 # 
@@ -2122,6 +2350,19 @@ msgstr ""
 msgid "Insert Waypoint"
 msgstr "Tilføj waypoint"
 #
+msgid ""
+"Instruction: Await instructions prior to proceeding beyond this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Contact Port Administration at this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Contact VTS at this point/juncture"
+msgstr ""
+#
+msgid "Instruction: Do not proceed beyond this point/juncture"
+msgstr ""
+#
 # 
 # 
 msgid "Isol. Dngr"
@@ -2133,9 +2374,6 @@ msgstr ""
 #, fuzzy
 msgid "Isolated Danger"
 msgstr "Rute manager"
-#
-msgid "Just "
-msgstr ""
 #
 msgid "KML Standard (Google Earth and others)"
 msgstr ""
@@ -2936,6 +3174,12 @@ msgstr "Valgmuligheder"
 msgid "Other"
 msgstr "Andet"
 #
+msgid "Other - Define in associated text field"
+msgstr ""
+#
+msgid "Out"
+msgstr ""
+#
 msgid "Output"
 msgstr ""
 #
@@ -3205,6 +3449,9 @@ msgstr ""
 msgid "Problem discovered"
 msgstr ""
 #
+msgid "Proceed to this location - await instructions"
+msgstr ""
+#
 # 
 # 
 # 
@@ -3411,6 +3658,9 @@ msgstr "Reference Station:"
 msgid "Reference Station :"
 msgstr "Reference Station:"
 #
+msgid "Reject"
+msgstr ""
+#
 # 
 # 
 msgid "Remaining time : "
@@ -3467,6 +3717,13 @@ msgstr ""
 msgid "Report as of"
 msgstr ""
 #
+msgid "Report from ship: Icing info"
+msgstr ""
+#
+msgid ""
+"Report from ship: Miscellaneous information - define in Associated text field"
+msgstr ""
+#
 # 
 # 
 msgid "Reserved 11"
@@ -3483,6 +3740,27 @@ msgid "Reserved 13"
 msgstr ""
 #
 msgid "Reserved 14"
+msgstr ""
+#
+msgid "Restricted Area: Active military OPAREA"
+msgstr ""
+#
+msgid "Restricted Area: Drifting Mines"
+msgstr ""
+#
+msgid "Restricted Area: Entry approval required prior to transit"
+msgstr ""
+#
+msgid "Restricted Area: Entry prohibited"
+msgstr ""
+#
+msgid "Restricted Area: Firing - danger area."
+msgstr ""
+#
+msgid "Restricted Area: Fishing prohibited"
+msgstr ""
+#
+msgid "Restricted Area: No anchoring."
 msgstr ""
 #
 # 
@@ -3521,6 +3799,9 @@ msgstr "&Skrifteffekt:"
 # 
 # 
 msgid "Rollover"
+msgstr ""
+#
+msgid "Rouge or suspicious vessel"
 msgstr ""
 #
 # 
@@ -3563,6 +3844,15 @@ msgstr "Rute fra spor"
 #, fuzzy
 msgid "Route: "
 msgstr "Rute"
+#
+msgid "Route: Alternative route"
+msgstr ""
+#
+msgid "Route: Recommended route"
+msgstr ""
+#
+msgid "Route: Recommended route through ice"
+msgstr ""
 #
 # 
 # 
@@ -3652,6 +3942,15 @@ msgid "Search and Rescue Vessel"
 msgstr ""
 #
 msgid "Seatalk"
+msgstr ""
+#
+msgid "Security Alert - Level 1"
+msgstr ""
+#
+msgid "Security Alert - Level 2"
+msgstr ""
+#
+msgid "Security Alert - Level 3"
 msgstr ""
 #
 msgid "See the log file at "
@@ -4490,6 +4789,14 @@ msgstr "&Understreget"
 #
 # 
 # 
+# 
+# & ..?
+#, fuzzy
+msgid "Undefined (default)"
+msgstr "&Understreget"
+#
+# 
+# 
 msgid "Under way sailing"
 msgstr ""
 #
@@ -4583,6 +4890,13 @@ msgstr ""
 # 
 # 
 # 
+#, fuzzy
+msgid "VTS active target"
+msgstr "Aktive kort kataloger"
+#
+# 
+# 
+# 
 msgid "Vector Charts"
 msgstr "Vektor kort"
 #
@@ -4609,6 +4923,9 @@ msgstr ""
 # 
 # 
 msgid "Vessel Towing, Long"
+msgstr ""
+#
+msgid "Vessel requesting non-distress assistance"
 msgstr ""
 #
 # 
@@ -4823,10 +5140,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "    Pillængde (minutter) for beholden kurs(COG):"
+#
 #
 #
 #
@@ -4836,6 +5155,7 @@ msgstr ""
 # 
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "    Højeste hastighed for at være opankret/fortøjet(knob):"
+#
 #
 #
 #
@@ -4862,10 +5182,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kortprojektion kan ikke uddrages. Mercator antages: "
+#
 #
 #
 #
@@ -4915,6 +5237,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4924,6 +5247,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: 'create_pi' kan ikke indlæses: "
+#
 #
 #
 #
@@ -4956,6 +5280,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -4964,11 +5289,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "  Could not open serial port '"
 #~ msgstr "  Kunne ikke åbne AIS port '"
+#
 #
 #
 #
@@ -5018,6 +5345,7 @@ msgstr ""
 # 
 #~ msgid "&Close"
 #~ msgstr "&Luk"
+#
 #
 #
 #
@@ -5092,6 +5420,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5129,6 +5458,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5141,6 +5471,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5150,6 +5481,7 @@ msgstr ""
 #~ msgstr ""
 #~ "'\n"
 #~ "Forslag: Prøv at lukke andre programmer."
+#
 #
 #
 #
@@ -5209,11 +5541,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid ":               "
 #~ msgstr "Klasse:                "
+#
 #
 #
 #
@@ -5227,6 +5561,7 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #~ msgstr "Pejling:                Ikke tilgængelig\n"
+#
 #
 #
 #
@@ -5264,11 +5599,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Activate Route"
 #~ msgstr "Aktiver rute"
+#
 #
 #
 #
@@ -5281,11 +5618,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Tilføj dette kort til quiltning"
+#
 #
 #
 #
@@ -5315,11 +5654,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "All files (*.*)|*.*"
 #~ msgstr "Alle filer (*.*)|*.*"
+#
 #
 #
 #
@@ -5356,11 +5697,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Autopilot Output Port"
 #~ msgstr "Selvstyrer port"
+#
 #
 #
 #
@@ -5375,10 +5718,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Pejling:                %03d.\n"
+#
 #
 #
 #
@@ -5391,6 +5736,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5400,11 +5746,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 Zoom detaljer"
+#
 #
 #
 #
@@ -5420,11 +5768,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "Korteste afstand (CPA):              %6.1f sømil\n"
+#
 #
 #
 #
@@ -5441,6 +5791,7 @@ msgstr ""
 #~ "Kører 'gpsd'?\n"
 #~ "\n"
 #~ "gpsd vært er: "
+#
 #
 #
 #
@@ -5497,10 +5848,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CallSign:             "
 #~ msgstr "Kaldesignal:             "
+#
 #
 #
 #
@@ -5529,10 +5882,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart Display Filters"
 #~ msgstr "Valgmuligheder for kortvisning"
+#
 #
 #
 #
@@ -5543,6 +5898,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Kort Udskriv"
+#
 #
 #
 #
@@ -5590,6 +5946,7 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Kortfilen er ikke valid..Kortet bliver inaktiveret \n"
+#
 #
 #
 #
@@ -5668,6 +6025,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5707,10 +6065,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Class:                "
 #~ msgstr "Klasse:                "
+#
 #
 #
 #
@@ -5724,10 +6084,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Course:                 %03d Deg.\n"
 #~ msgstr "Kurs:                 %03d.\n"
+#
 #
 #
 #
@@ -5743,10 +6105,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Course:                 Unavailable\n"
 #~ msgstr "Kurs:                 Ikke tilgængelig\n"
+#
 #
 #
 #
@@ -5800,11 +6164,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Cursor: "
 #~ msgstr "Markør: "
+#
 #
 #
 #
@@ -5838,12 +6204,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Farve"
+#
 #
 #
 #
@@ -5867,6 +6235,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
@@ -5875,10 +6244,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Route"
 #~ msgstr "Slet rute"
+#
 #
 #
 #
@@ -5892,11 +6263,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Delete Track"
 #~ msgstr "Slet spor"
+#
 #
 #
 #
@@ -5911,11 +6284,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Destination:          "
 #~ msgstr "Destination:"
+#
 #
 #
 #
@@ -5930,10 +6305,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ETA:                  "
 #~ msgstr "FREMME KL:                   "
+#
 #
 #
 #
@@ -5968,6 +6345,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # What function, - precise?
@@ -5977,11 +6355,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Etc."
 #~ msgstr "Andet"
+#
 #
 #
 #
@@ -6045,6 +6425,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6058,6 +6439,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Ikke muligt at indlæse 'libgps.so.19'"
+#
 #
 #
 #
@@ -6095,6 +6477,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6104,11 +6487,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD vært"
+#
 #
 #
 #
@@ -6178,6 +6563,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6207,6 +6593,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "Meteorologi(GRIB)"
+#
 #
 #
 #
@@ -6276,6 +6663,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6309,11 +6697,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Go To Here"
 #~ msgstr "Gå hertil"
+#
 #
 #
 #
@@ -6336,6 +6726,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6346,11 +6737,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "IMO:                 %8d\n"
 #~ msgstr "FREMME KL:                   "
+#
 #
 #
 #
@@ -6396,10 +6789,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Inland Blue Flag        Clear\n"
 #~ msgstr "Insland Blå Flag        Fjern\n"
+#
 #
 #
 #
@@ -6427,6 +6822,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6436,11 +6832,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Leg/Route"
 #~ msgstr "Ben|Rute"
+#
 #
 #
 #
@@ -6470,11 +6868,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "FREMME KL:                   "
+#
 #
 #
 #
@@ -6540,12 +6940,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # Translation?
 #~ msgid "Mark Icon"
 #~ msgstr "Ikon for waypoint"
+#
 #
 #
 #
@@ -6585,12 +6987,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Egenskaber for waypoint"
+#
 #
 #
 #
@@ -6613,11 +7017,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Metres"
 #~ msgstr "Meter"
+#
 #
 #
 #
@@ -6630,11 +7036,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "NMEA Options"
 #~ msgstr "Valgmuligheder for NMEA-data"
+#
 #
 #
 #
@@ -6651,11 +7059,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Navigational Status:  "
 #~ msgstr "Navigering:"
+#
 #
 #
 #
@@ -6687,12 +7097,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Number of Radar Rings"
 #~ msgstr "Antal afstandscirkler"
+#
 #
 #
 #
@@ -6742,6 +7154,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6758,12 +7171,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "Visningsmunigheder for eget fartøj"
+#
 #
 #
 #
@@ -6776,12 +7191,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Gem sporpunkt pr. tidsinterval  (sekunder):"
+#
 #
 #
 #
@@ -6851,6 +7268,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6880,6 +7298,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
 #
 #
 #
@@ -6949,6 +7368,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6978,6 +7398,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Zoom eller skaler ud for at se skjult HTSGW GRIB"
+#
 #
 #
 #
@@ -7045,6 +7466,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7054,6 +7476,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager søger tilføjelser på lokation "
+#
 #
 #
 #
@@ -7103,6 +7526,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7112,6 +7536,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiserer tilføjelse: "
+#
 #
 #
 #
@@ -7161,6 +7586,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7170,6 +7596,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Frakobler tilføjelse: "
+#
 #
 #
 #
@@ -7204,6 +7631,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -7211,6 +7639,7 @@ msgstr ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Alder på data:             %3d Sek.\n"
+#
 #
 #
 #
@@ -7256,6 +7685,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -7270,6 +7700,7 @@ msgstr ""
 #~ "\n"
 #~ "                              Vil du køre denne version af 'libgps' "
 #~ "alligevel?"
+#
 #
 #
 #
@@ -7335,11 +7766,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Printing"
 #~ msgstr "Udskrift"
+#
 #
 #
 #
@@ -7354,10 +7787,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Range:                  Unavailable\n"
 #~ msgstr "Afstand:                  Ikke tilgængelig\n"
+#
 #
 #
 #
@@ -7373,6 +7808,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
@@ -7382,10 +7818,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Dreje            %3d Gr./Min. Højre\n"
+#
 #
 #
 #
@@ -7401,6 +7839,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -7411,11 +7850,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 #~ msgstr "Dreje            %3d Gr./Min. Højre\n"
+#
 #
 #
 #
@@ -7462,6 +7903,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7471,11 +7913,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Slet dette kort fra quiltning"
+#
 #
 #
 #
@@ -7508,12 +7952,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Route Distance: "
 #~ msgstr "Afstand i alt"
+#
 #
 #
 #
@@ -7528,11 +7974,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Rute fra spor"
+#
 #
 #
 #
@@ -7586,11 +8034,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "Vælg korttyper for quiltning"
+#
 #
 #
 #
@@ -7653,6 +8103,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7663,11 +8114,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Settings"
 #~ msgstr "Konfiguration"
+#
 #
 #
 #
@@ -7717,12 +8170,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # Translation?
 #~ msgid "Show ATON labels"
 #~ msgstr "Vis ATON beskrivelser"
+#
 #
 #
 #
@@ -7788,6 +8243,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7809,11 +8265,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Vis ikon for spor"
+#
 #
 #
 #
@@ -7868,6 +8326,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -7877,6 +8336,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Str.:                 %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7921,6 +8381,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -7929,6 +8390,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Str.:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7947,6 +8409,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -7955,6 +8418,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Str.:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7973,6 +8437,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -7981,6 +8446,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Str.:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7999,10 +8465,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Speed:                  Unavailable\n"
 #~ msgstr "Hastighed:         Ikke tilgængelig\n"
+#
 #
 #
 #
@@ -8016,11 +8484,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi data vært"
+#
 #
 #
 #
@@ -8036,11 +8506,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "Tid til korteste afstand (TCPA):     %02d:%02d Tim:Min\n"
+#
 #
 #
 #
@@ -8054,12 +8526,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "Tide & Current Dataset Selection"
 #~ msgstr "Vis strømforhold"
+#
 #
 #
 #
@@ -8120,6 +8594,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8144,11 +8619,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "ToolBox"
 #~ msgstr "Værktøjer"
+#
 #
 #
 #
@@ -8163,10 +8640,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Målestok: %8.0f  "
+#
 #
 #
 #
@@ -8182,12 +8661,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #, fuzzy
 #~ msgid "UN Ship Type:         "
 #~ msgstr "Fartøjstype:"
+#
 #
 #
 #
@@ -8205,6 +8686,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -8213,10 +8695,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Units"
 #~ msgstr "Enheder"
+#
 #
 #
 #
@@ -8270,11 +8754,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Use SCAMIN"
 #~ msgstr "Standardskalering (SCAMIN)"
+#
 #
 #
 #
@@ -8328,11 +8814,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "Waypoint Locking"
 #~ msgstr "Lås waypoints"
+#
 #
 #
 #
@@ -8346,11 +8834,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 #~ msgid "cm93 Detail"
 #~ msgstr "CM93 detaljer"
+#
 #
 #
 #

@@ -1875,10 +1875,16 @@ void LatLonTextCtrl::OnKillFocus( wxFocusEvent& event )
 //-------------------------------------------------------------------------------
 
 MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title,
-        const wxPoint& pos, const wxSize& size, long style ) :
-        wxDialog( parent, id, title, pos, size, style )
+        const wxPoint& pos, const wxSize& size, long style )
 {
-    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+    long wstyle = style;
+#ifdef __WXOSX__
+    wstyle |= wxSTAY_ON_TOP;
+#endif
+    
+    Create( parent, id, title, pos, size, wstyle );
+
+    SetSizeHints( wxDefaultSize, wxDefaultSize );
 
     wxBoxSizer* bSizer1;
     bSizer1 = new wxBoxSizer( wxVERTICAL );

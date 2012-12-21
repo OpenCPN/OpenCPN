@@ -364,7 +364,10 @@ public:
     void OnConnValChange( wxCommandEvent& event );
     void OnValChange( wxCommandEvent& event );
     void OnUploadFormatChange( wxCommandEvent& event );
+    void OnConnectionToggleEnable( wxMouseEvent &event );
+    
     bool connectionsaved;
+    bool m_connection_enabled;
 
 //    For "S57" page
     wxFlexGridSizer         *vectorPanel;

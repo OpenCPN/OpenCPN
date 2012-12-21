@@ -150,6 +150,7 @@ extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern GoToPositionDialog *pGoToPositionDialog;
 extern wxString GetLayerName(int id);
+extern wxString         g_uploadConnection;
 
 extern bool             bDrawCurrentValues;
 
@@ -268,6 +269,7 @@ extern int              g_current_arrow_scale;
 extern S57QueryDialog   *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern Multiplexer      *g_pMUX;
+extern wxArrayOfConnPrm *g_pConnectionParams;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -1293,7 +1295,7 @@ int Quilt::GetNewRefChart( void )
             const ChartTableEntry &m = ChartData->GetChartTableEntry( m_extended_stack_array.Item( is ) );
 //                  if((m.GetScale() >= m_reference_scale) && (m_reference_type == m.GetChartType()))
             if( ( m.GetScale() >= m_reference_scale )
-                    && ( m_reference_family == m.GetChartFamily() ) 
+                    && ( m_reference_family == m.GetChartFamily() )
                     && ( m_quilt_proj == m.GetChartProjectionType() )
                     && ( m.GetChartSkew() == 0.0 ) ) {
                 new_ref_dbIndex = m_extended_stack_array.Item( is );
@@ -1526,10 +1528,10 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
     EmptyCandidateArray();
     m_extended_stack_array.Clear();
 
-    int reference_scale;
+    int reference_scale = 1.;
     int reference_type = -1;
     int reference_family;
-    int quilt_proj;
+    int quilt_proj = PROJECTION_UNKNOWN;
 
     if( ref_db_index >= 0 ) {
         const ChartTableEntry &cte_ref = ChartData->GetChartTableEntry( ref_db_index );
@@ -1778,6 +1780,10 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    Set up the vieport projection type
     vp_local.SetProjectionType( m_quilt_proj );
 
+    //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
+    double saved_vp_rotation = vp_local.rotation;                      // save a copy
+    vp_local.SetRotationAngle( 0. );
+    
     bool bfull = vp_in.b_FullScreenQuilt;
     BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
 
@@ -1805,16 +1811,12 @@ bool Quilt::Compose( const ViewPort &vp_in )
         BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
     }
 
-        
+
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
     //    Add only those charts whose scale is smaller than the "reference scale"
     wxRegion vp_region( vp_local.rv_rect );
     unsigned int ir;
-
-    //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
-    double saved_vp_rotation = vp_local.rotation;                      // save a copy
-    vp_local.SetRotationAngle( 0. );
 
     //    "Draw" the reference chart first, since it is special in that it controls the fine vpscale setting
     QuiltCandidate *pqc_ref = NULL;
@@ -2067,8 +2069,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         wxRegion vpr_region = unrendered_region;
 
         //    Start with the chart's full region coverage.
-        vpr_region = piqp->quilt_region; 
-        
+        vpr_region = piqp->quilt_region;
+
 
 #if 1       // This clause went away with full-screen quilting
         // ...and came back with OpenGL....
@@ -3214,15 +3216,15 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     VPoint.Invalidate();
 
     m_glcc = new glChartCanvas(this);
-    
+
 #if wxCHECK_VERSION(2, 9, 0)
     m_pGLcontext = new wxGLContext(m_glcc);
     m_glcc->SetContext(m_pGLcontext);
 #else
     m_pGLcontext = m_glcc->GetContext();
 #endif
-    
-    
+
+
     singleClickEventIsValid = false;
 
 //    Build the cursors
@@ -3238,15 +3240,15 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     wxImage ICursorPencil = style->GetIcon( _T("pencil") ).ConvertToImage();
     wxImage ICursorCross = style->GetIcon( _T("cross") ).ConvertToImage();
 
-#if wxCHECK_VERSION(2, 8, 12)
-#else
+//#if wxCHECK_VERSION(2, 8, 12)
+//#else
     ICursorLeft.ConvertAlphaToMask(128);
     ICursorRight.ConvertAlphaToMask(128);
     ICursorUp.ConvertAlphaToMask(128);
     ICursorDown.ConvertAlphaToMask(128);
     ICursorPencil.ConvertAlphaToMask(10);
     ICursorCross.ConvertAlphaToMask(10);
-#endif
+//#endif
 
     if ( ICursorLeft.Ok() )
     {
@@ -5803,11 +5805,11 @@ void ChartCanvas::AISDrawAreaNotices( ocpnDC& dc )
     wxColour yellow;
     wxColour green;
     wxPen pen;
-    wxBrush *yellow_brush;
-    wxBrush *green_brush;
+    wxBrush *yellow_brush = wxTheBrushList->FindOrCreateBrush( wxColour(0,0,0), wxTRANSPARENT );
+    wxBrush *green_brush  = wxTheBrushList->FindOrCreateBrush( wxColour(0,0,0), wxTRANSPARENT );;
     wxBrush *brush;
 
-    AIS_Target_Hash *current_targets = g_pAIS->GetTargetList();
+    AIS_Target_Hash *current_targets = g_pAIS->GetAreaNoticeSourcesList();
 
     float vp_scale = GetVPScale();
 
@@ -6042,7 +6044,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         ais_quad_icon[3].y = -6;
 
         wxPoint ais_real_size[4];
-        bool bcan_draw_size;
+        bool bcan_draw_size = true;
         if (g_bDrawAISSize)
         {
             if (td->DimA + td->DimB == 0 || td->DimC + td->DimD == 0)
@@ -6114,11 +6116,11 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         // Default color is green
         wxBrush target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
-        
+
         // Euro Inland targets render slightly differently
         if( td->b_isEuroInland )
             target_brush = wxBrush( GetGlobalColor( _T ( "TEAL1" ) ) );
-        
+
         //and....
         if( !td->b_nameValid )
             target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
@@ -6131,7 +6133,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
         //    Check for alarms here, maintained by AIS class timer tick
-        if( ((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) { 
+        if( ((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
             //  Calculate the point of CPA for target
             double tcpa_lat, tcpa_lon;
             ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat,
@@ -7825,7 +7827,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             wxClientDC cdc( GetParent() );
             ocpnDC dc( cdc );
 #endif
-            
+
             SelectItem *pFindAIS;
             SelectItem *pFindRP;
             SelectItem *pFindRouteSeg;
@@ -8129,11 +8131,11 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     wxMenu* menuRoute = new wxMenu( _("Route") );
     wxMenu* menuTrack = new wxMenu( _("Track") );
     wxMenu* menuAIS = new wxMenu( _("AIS") );
-    
+
     wxMenu *subMenuChart = new wxMenu;
 
     wxMenu *menuFocus = contextMenu;    // This is the one that will be shown
-    
+
     popx = x;
     popy = y;
 
@@ -8152,16 +8154,16 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 #endif
 
     if( seltype == SELTYPE_ROUTECREATE ) {
-#ifndef __WXOSX__        
+#ifndef __WXOSX__
         contextMenu->Append( ID_RC_MENU_FINISH, _menuText( _( "End Route" ), _T("Esc") ) );
 #else
         contextMenu->Append( ID_RC_MENU_FINISH,  _( "End Route" ) );
-#endif        
+#endif
     }
 
     if( ! m_pMouseRoute ) {
         if( m_bMeasure_Active )
-#ifndef __WXOSX__            
+#ifndef __WXOSX__
             contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE, _menuText( _("Measure Off"), _T("Esc") ) );
 #else
             contextMenu->Prepend( ID_DEF_MENU_DEACTIVATE_MEASURE,  _("Measure Off") );
@@ -8182,6 +8184,56 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         contextMenu->Prepend( ID_REDO, _menuText( redoItem, _T("Ctrl-Y") ) );
     }
 
+    bool ais_areanotice = false;
+    if( g_pAIS && g_bShowAIS && g_bShowAreaNotices ) {
+
+        AIS_Target_Hash* an_sources = g_pAIS->GetAreaNoticeSourcesList();
+
+        float vp_scale = GetVPScale();
+
+        for( AIS_Target_Hash::iterator target = an_sources->begin(); target != an_sources->end(); ++target ) {
+            AIS_Target_Data* target_data = target->second;
+            if( !target_data->area_notices.empty() ) {
+                for( AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani ) {
+                    Ais8_001_22& area_notice = ani->second;
+
+                    wxBoundingBox bbox;
+                    double lat, lon;
+
+                    for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) {
+                        switch( sa->shape ) {
+                            case AIS8_001_22_SHAPE_CIRCLE: {
+                                lat = sa->latitude;
+                                lon = sa->longitude;
+
+                                wxPoint target_point;
+                                GetCanvasPointPix( sa->latitude, sa->longitude, &target_point );
+                                bbox.Expand( target_point );
+                                if( sa->radius_m > 0.0 )
+                                    bbox.EnLarge( sa->radius_m * vp_scale );
+                                break;
+                            }
+                            case AIS8_001_22_SHAPE_POLYGON:
+                            case AIS8_001_22_SHAPE_POLYLINE: {
+                                for( int i = 0; i < 4; ++i ) {
+                                    ll_gc_ll( lat, lon, sa->angles[i], sa->dists_m[i] / 1852.0,
+                                              &lat, &lon );
+                                    wxPoint target_point;
+                                    GetCanvasPointPix( lat, lon, &target_point );
+                                    bbox.Expand( target_point );
+                                }
+                            }
+                        }
+                    }
+
+                    if( bbox.PointInBox( x, y ) ) {
+                        ais_areanotice = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }  
     if( !VPoint.b_quilt ) {
         if( parent_frame->GetnChartStack() > 1 ) {
             contextMenu->Append( ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
@@ -8189,13 +8241,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             contextMenu->Append( ID_DEF_MENU_SCALE_OUT, _menuText( _( "Scale Out" ), _T("F8") ) );
         }
 
-        if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
+        if( ( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
             contextMenu->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         }
 
     } else {
         ChartBase *pChartTest = m_pQuilt->GetChartAtPix( wxPoint( x, y ) );
-        if( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) {
+        if( ( pChartTest && ( pChartTest->GetChartFamily() == CHART_FAMILY_VECTOR ) ) || ais_areanotice ) {
             contextMenu->Append( ID_DEF_MENU_QUERY, _( "Object Query..." ) );
         } else {
             if( parent_frame->GetnChartStack() > 1 ) {
@@ -8220,21 +8272,6 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 && !g_bskew_comp ) contextMenu->Append( ID_DEF_MENU_NORTHUP, _("Chart Up Mode") );
         else
             contextMenu->Append( ID_DEF_MENU_NORTHUP, _("North Up Mode") );
-    }
-
-    if( g_pAIS ) {
-        if( seltype & SELTYPE_AISTARGET ) {
-            menuAIS->Append( ID_DEF_MENU_AIS_QUERY, _( "Target Query..." ) );
-            AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
-            if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alarm_state != AIS_ALARM_SET) ) {
-                if( myptarget->b_show_AIS_CPA )
-                    menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Hide Target CPA" ) );
-                else
-                    menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Show Target CPA" ) );
-            }
-            menuAIS->Append( ID_DEF_MENU_AISTARGETLIST, _("Target List...") );
-        }
-        contextMenu->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
     }
 
     Kml* kml = new Kml;
@@ -8311,9 +8348,26 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             }
         }
     }
-    
+
     //  This is the default context menu
     menuFocus = contextMenu;
+
+    if( g_pAIS ) {
+        contextMenu->Append( ID_DEF_MENU_AISTARGETLIST, _("AIS Target List...") );
+
+        if( seltype & SELTYPE_AISTARGET ) {
+            menuAIS->Append( ID_DEF_MENU_AIS_QUERY, _( "Target Query..." ) );
+            AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
+            if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alarm_state != AIS_ALARM_SET) ) {
+                if( myptarget->b_show_AIS_CPA )
+                    menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Hide Target CPA" ) );
+                else
+                    menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Show Target CPA" ) );
+            }
+            menuAIS->Append( ID_DEF_MENU_AISTARGETLIST, _("Target List...") );
+            menuFocus = menuAIS;
+        }
+    }
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
         menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
@@ -8336,7 +8390,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         menuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
         menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
         menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
-        
+
         //      Set this menu as the "focused context menu"
         menuFocus = menuRoute;
     }
@@ -8345,7 +8399,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
         menuTrack->Append( ID_TK_MENU_COPY, _( "Copy" ) );
         menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
-        
+
         //      Set this menu as the "focused context menu"
         menuFocus = menuTrack;
     }
@@ -8364,6 +8418,9 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             menuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
         if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+        
+        //      Set this menu as the "focused context menu"
+        menuFocus = menuWaypoint;
     }
 
     if( seltype & SELTYPE_MARKPOINT ) {
@@ -8408,19 +8465,18 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         bsep = true;
         menuFocus->Append( ID_DEF_MENU_TIDEINFO, _( "Show Tide Information" ) );
     }
-    
+
     if( seltype & SELTYPE_CURRENTPOINT ) {
         if( !bsep )
             menuFocus->AppendSeparator();
         menuFocus->Append( ID_DEF_MENU_CURRENTINFO, _( "Show Current Information" ) );
     }
-    
+
     //        Invoke the correct focused drop-down menu
     PopupMenu( menuFocus, x, y );
-        
-        
+
+
     // Cleanup
-done:
     if( ( m_pSelectedRoute ) ) {
         m_pSelectedRoute->m_bRtIsSelected = false;
     }
@@ -8445,8 +8501,58 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 {
     ChartBase *target_chart = GetChartAtCursor();
     s57chart *Chs57 = dynamic_cast<s57chart*>( target_chart );
+    std::vector<Ais8_001_22*> area_notices;
 
-    if( Chs57 ) {
+    if( g_pAIS && g_bShowAIS && g_bShowAreaNotices ) {
+        AIS_Target_Hash* an_sources = g_pAIS->GetAreaNoticeSourcesList();
+
+        float vp_scale = GetVPScale();
+
+        for( AIS_Target_Hash::iterator target = an_sources->begin(); target != an_sources->end(); ++target ) {
+            AIS_Target_Data* target_data = target->second;
+            if( !target_data->area_notices.empty() ) {
+                for( AIS_Area_Notice_Hash::iterator ani = target_data->area_notices.begin(); ani != target_data->area_notices.end(); ++ani ) {
+                    Ais8_001_22& area_notice = ani->second;
+
+                    wxBoundingBox bbox;
+                    double lat, lon;
+
+                    for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) {
+                        switch( sa->shape ) {
+                            case AIS8_001_22_SHAPE_CIRCLE: {
+                                lat = sa->latitude;
+                                lon = sa->longitude;
+
+                                wxPoint target_point;
+                                GetCanvasPointPix( sa->latitude, sa->longitude, &target_point );
+                                bbox.Expand( target_point );
+                                if( sa->radius_m > 0.0 )
+                                    bbox.EnLarge( sa->radius_m * vp_scale );
+                                break;
+                            }
+                            case AIS8_001_22_SHAPE_POLYGON:
+                            case AIS8_001_22_SHAPE_POLYLINE: {
+                                for( int i = 0; i < 4; ++i ) {
+                                    ll_gc_ll( lat, lon, sa->angles[i], sa->dists_m[i] / 1852.0,
+                                              &lat, &lon );
+                                    wxPoint target_point;
+                                    GetCanvasPointPix( lat, lon, &target_point );
+                                    bbox.Expand( target_point );
+                                }
+                            }
+                        }
+                    }
+
+                    if( bbox.PointInBox( x, y ) ) {
+                        area_notices.push_back( &area_notice );
+                    }
+                }
+            }
+        }
+    }
+    
+
+    if( Chs57 || !area_notices.empty() ) {
         // Go get the array of all objects at the cursor lat/lon
         int sel_rad_pix = 5;
         float SelectRadius = sel_rad_pix / ( GetVP().view_scale_ppm * 1852 * 60 );
@@ -8457,8 +8563,9 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         SetCursor( wxCURSOR_WAIT );
         bool lightsVis = gFrame->ToggleLights( false );
         if( !lightsVis ) gFrame->ToggleLights( true, true );
-        ListOfObjRazRules* rule_list =
-                Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
+        ListOfObjRazRules* rule_list = NULL;
+        if( Chs57 )
+            rule_list = Chs57->GetObjRuleListAtLatLon( zlat, zlon, SelectRadius, &GetVP() );
 
         ListOfObjRazRules* overlay_rule_list = NULL;
         ChartBase *overlay_chart = GetOverlayChartAtCursor();
@@ -8495,8 +8602,19 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
             objText << CHs57_Overlay->CreateObjDescriptions( overlay_rule_list );
             objText << _T("<hr noshade>");
         }
+        
+        for( std::vector< Ais8_001_22* >::iterator an = area_notices.begin(); an != area_notices.end(); ++an ) {
+            objText << _T( "<b>AIS Area Notice:</b> " );
+            objText << ais8_001_22_notice_names[( *an )->notice_type];
+            for( std::vector< Ais8_001_22_SubArea >::iterator sa = ( *an )->sub_areas.begin(); sa != ( *an )->sub_areas.end(); ++sa )
+                if( !sa->text.empty() )
+                    objText << sa->text;
+            objText << _T( "<br>expires: " ) << ( *an )->expiry_time.Format();
+            objText << _T( "<hr noshade>" );
+        }
 
-        objText << Chs57->CreateObjDescriptions( rule_list );
+        if( Chs57 )
+            objText << Chs57->CreateObjDescriptions( rule_list );
 
         objText << _T("</font></body></html>");
 
@@ -8504,7 +8622,8 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         g_pObjectQueryDialog->Show();
 
-        rule_list->Clear();
+        if( rule_list )
+            rule_list->Clear();
         delete rule_list;
 
         if( overlay_rule_list )
@@ -8673,7 +8792,7 @@ void pupHandler_PasteRoute() {
         }
     }
 
-    Route* newRoute;
+    Route* newRoute = NULL;
     RoutePoint* newPoint;
 
     if( createNewRoute ) {
@@ -9210,12 +9329,27 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_WPT_MENU_SENDTOGPS:
         if( m_pFoundRoutePoint ) {
-            wxString port, com;
-            if( g_pMUX ) {
-//                g_pnmea->GetSource( port );
-//                if( port.StartsWith( _T("Serial:"), &com ) ) port = com;
-                m_pFoundRoutePoint->SendToGPS( port, NULL );
+            wxString port;
+            //  Try to use the saved persistent upload port first
+            if( g_uploadConnection.Len() ) {
+                if( g_uploadConnection.StartsWith(_T("Serial")) ) {
+                    port = g_uploadConnection;
+                }
             }
+            else if( g_pConnectionParams ) {
+                // If there is no persistent upload port recorded (yet)
+                // then use the first available serial connection which has output defined.
+                for( size_t i = 0; i < g_pConnectionParams->Count(); i++ ) {
+                    ConnectionParams *cp = g_pConnectionParams->Item( i );
+                    if( cp->Output && cp->Type == SERIAL )
+                        port << _T("Serial:") << cp->Port;
+                }
+            }
+             
+             if( port.Length() )
+                m_pFoundRoutePoint->SendToGPS( port, NULL );
+             else
+                OCPNMessageBox( NULL, _("Can't send waypoint. Found no serial data port with output defined."), _("OpenCPN Info"), wxOK | wxICON_WARNING );
         }
         break;
 
@@ -11782,7 +11916,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 #else
     SetCurrent();
 #endif
-    
+
     Show( g_bopengl );
     if( !g_bopengl ) {
         event.Skip();
@@ -13567,7 +13701,7 @@ void TCWin::NXEvent( wxCommandEvent& event )
     wxDateTime graphday_00 = dm.ResetTime();
     if(graphday_00.GetYear() == 2013)
         int yyp = 4;
-    
+
     time_t t_graphday_00 = graphday_00.GetTicks();
     if( !graphday_00.IsDST() && m_graphday.IsDST() ) t_graphday_00 -= 3600;
     if( graphday_00.IsDST() && !m_graphday.IsDST() ) t_graphday_00 += 3600;
@@ -14745,6 +14879,7 @@ RolloverWin::RolloverWin( wxWindow *parent, int timeout ) :
     m_timeout_sec = timeout;
     m_mmouse_propogate = 0;
     isActive = false;
+    m_plabelFont = NULL;
     Hide();
 }
 
@@ -14781,37 +14916,34 @@ void RolloverWin::SetBitmap( int rollover )
               m_position.y + canvasPos.y );
     delete cdc;
 
-    wxFont *dFont;
     ocpnDC dc( mdc );
 
     switch( rollover ) {
         case AIS_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-            dFont = pFontMgr->GetFont( _("AISRollover"), 12 );
             mdc.SetTextForeground( pFontMgr->GetFontColor( _T("AISRollover") ) );
             break;
 
         case TC_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 255 );
-            dFont = pFontMgr->GetFont( _("TideCurrentGraphRollover"), 12 );
             mdc.SetTextForeground( pFontMgr->GetFontColor( _T("TideCurrentGraphRollover") ) );
             break;
         default:
         case LEG_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-            dFont = pFontMgr->GetFont( _("RouteLegInfoRollover"), 12 );
             mdc.SetTextForeground( pFontMgr->GetFontColor( _T("RouteLegInfoRollover") ) );
             break;
     }
 
-    int font_size = wxMax(8, dFont->GetPointSize());
-    wxFont *plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
-                         dFont->GetStyle(), dFont->GetWeight(), false, dFont->GetFaceName() );
 
+    if(m_plabelFont && m_plabelFont->IsOk()) {
+        
     //    Draw the text
-    mdc.SetFont( *plabelFont );
+        mdc.SetFont( *m_plabelFont );
 
-    mdc.DrawLabel( m_string, wxRect( 0, 0, m_size.x, m_size.y ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
+        mdc.DrawLabel( m_string, wxRect( 0, 0, m_size.x, m_size.y ), wxALIGN_CENTRE_HORIZONTAL | wxALIGN_CENTRE_VERTICAL);
+    }
+
     SetSize( m_position.x, m_position.y, m_size.x, m_size.y );   // Assumes a nominal 32 x 32 cursor
 
     // Retrigger the auto timeout
@@ -14853,17 +14985,25 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
         break;
 
     }
+    
     int font_size = wxMax(8, dFont->GetPointSize());
-    wxFont *plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
-                         dFont->GetStyle(), dFont->GetWeight() );
+    m_plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
+                         dFont->GetStyle(), dFont->GetWeight(), false, dFont->GetFaceName() );
 
+    if(m_plabelFont && m_plabelFont->IsOk()) {
 #ifdef __WXMAC__
-    wxScreenDC sdc;
-    sdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, plabelFont);
+        wxScreenDC sdc;
+        sdc.GetMultiLineTextExtent(m_string, &w, &h, NULL, m_plabelFont);
 #else
-    wxClientDC cdc( GetParent() );
-    cdc.GetMultiLineTextExtent( m_string, &w, &h, NULL, plabelFont );
+        wxClientDC cdc( GetParent() );
+        cdc.GetMultiLineTextExtent( m_string, &w, &h, NULL, m_plabelFont );
 #endif
+    }
+    else {
+        w = 10;
+        h = 10;
+    }
+    
     m_size.x = w + 8;
     m_size.y = h + 8;
 

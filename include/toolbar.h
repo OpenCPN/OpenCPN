@@ -131,6 +131,8 @@ public:
       int GetLineCount() { return m_LineCount; };
       int GetVisibleToolCount();
 
+      void SetToolNormalBitmapEx( wxToolBarToolBase *tool, wxString iconname );
+      
       // get the control with the given id or return NULL
       virtual wxControl *FindControl( int toolid );
 

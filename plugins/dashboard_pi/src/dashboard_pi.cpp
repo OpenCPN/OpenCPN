@@ -279,7 +279,8 @@ int dashboard_pi::Init( void )
     mPriAWA = 99; // Relative wind
     mPriTWA = 99; // True wind
     mPriDepth = 99;
-
+    m_config_version = -1;
+    
     g_pFontTitle = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
     g_pFontData = new wxFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
     g_pFontLabel = new wxFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
@@ -300,6 +301,12 @@ int dashboard_pi::Init( void )
             _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
 
     ApplyConfig();
+    
+    //  If we loaded a version 1 config setup, convert now to version 2
+    if(m_config_version == 1) {
+        SaveConfig();
+    }
+    
     Start( 1000, wxTIMER_CONTINUOUS );
 
     return ( WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL
@@ -1032,6 +1039,7 @@ bool dashboard_pi::LoadConfig( void )
         // TODO: Memory leak? We should destroy everything first
         m_ArrayOfDashboardWindow.Clear();
         if( version.IsEmpty() && d_cnt == -1 ) {
+            m_config_version = 1;
             // Let's load version 1 or default settings.
             int i_cnt;
             pConf->Read( _T("InstrumentCount"), &i_cnt, -1 );
@@ -1053,6 +1061,7 @@ bool dashboard_pi::LoadConfig( void )
                     new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar ) );
         } else {
             // Version 2
+            m_config_version = 2;
             for( int i = 0; i < d_cnt; i++ ) {
                 pConf->SetPath( wxString::Format( _T("/PlugIns/Dashboard/Dashboard%d"), i + 1 ) );
                 wxString name;
@@ -1125,14 +1134,19 @@ void dashboard_pi::ApplyConfig( void )
             }
             m_ArrayOfDashboardWindow.Remove( cont );
             delete cont;
+            
         } else if( !cont->m_pDashboardWindow ) {
             // A new dashboard is created
             cont->m_pDashboardWindow = new DashboardWindow( GetOCPNCanvasWindow(), wxID_ANY,
                     m_pauimgr, this, orient, cont );
             cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList );
             bool vertical = orient == wxVERTICAL;
-            //wxSize sz = cont->m_pDashboardWindow->GetSize( orient, wxDefaultSize );
             wxSize sz = cont->m_pDashboardWindow->GetMinSize();
+// Mac has a little trouble with initial Layout() sizing...            
+#ifdef __WXOSX__
+            if(sz.x == 0)
+                sz.IncTo( wxSize( 160, 388) );
+#endif            
             m_pauimgr->AddPane( cont->m_pDashboardWindow,
                 wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( true ).TopDockable(
                 !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
@@ -1142,7 +1156,6 @@ void dashboard_pi::ApplyConfig( void )
             pane.Caption( cont->m_sCaption ).Show( cont->m_bIsVisible );
             if( !cont->m_pDashboardWindow->isInstrumentListEqual( cont->m_aInstrumentList ) ) {
                 cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList );
-                //wxSize sz = cont->m_pDashboardWindow->GetSize( orient, wxDefaultSize );
                 wxSize sz = cont->m_pDashboardWindow->GetMinSize();
                 pane.MinSize( sz ).BestSize( sz ).FloatingSize( sz );
             }
@@ -1649,6 +1662,8 @@ void DashboardWindow::OnContextMenuSelect( wxCommandEvent& event )
 {
     if( event.GetId() < ID_DASH_PREFS ) { // Toggle dashboard visibility
         m_plugin->ShowDashboard( event.GetId(), event.IsChecked() );
+        if( m_plugin )
+            SetToolbarItemState( m_plugin->GetToolbarItemId(), m_plugin->GetDashboardWindowShownCount() != 0 );
     }
 
     switch( event.GetId() ){
