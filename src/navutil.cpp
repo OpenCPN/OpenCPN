@@ -3392,7 +3392,7 @@ int MyConfig::LoadMyConfig( int iteration )
         else
             port = _T("");
         
-        if(port.Len() && port != _T("None") ) {
+        if( port.Len() && (port != _T("None")) && (port != _T("AIS Port (Shared)")) ) {
         //  Look in the ConnectionParams array to see if this port has been defined in the newer style
             bool bfound = false;    
             for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
