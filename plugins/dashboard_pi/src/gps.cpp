@@ -136,8 +136,11 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
       dc->DrawCircle(m_cx, m_cy, m_radius * sin(deg2rad(45)));
       dc->DrawCircle(m_cx, m_cy, m_radius * sin(deg2rad(20)));
 
+      //        wxSHORT_DASH is not supported on GTK, and it destroys the pen.
+#ifndef __WXGTK__
       pen.SetStyle(wxSHORT_DASH);
       dc->SetPen(pen);
+#endif      
       dc->DrawLine(3, 110, size.x-3, 110);
       dc->DrawLine(3, 120, size.x-3, 120);
       dc->DrawLine(3, 130, size.x-3, 130);
