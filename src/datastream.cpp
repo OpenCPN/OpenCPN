@@ -84,7 +84,6 @@ wxEvent* OCPN_DataStreamEvent::Clone() const
 {
     OCPN_DataStreamEvent *newevent=new OCPN_DataStreamEvent(*this);
     newevent->m_NMEAstring=this->m_NMEAstring;
-    newevent->m_NMEAstring += " ";
     newevent->m_pDataStream=this->m_pDataStream;
     return newevent;
 }
