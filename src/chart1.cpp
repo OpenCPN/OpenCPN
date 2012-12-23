@@ -111,6 +111,10 @@
 
 #include <wx/jsonreader.h>
 
+#ifdef OCPN_USE_PORTAUDIO
+#include "portaudio.h"
+#endif
+
 WX_DECLARE_OBJARRAY(wxDialog *, MyDialogPtrArray);
 
 #include <wx/arrimpl.cpp>
@@ -222,7 +226,9 @@ wxArrayOfConnPrm          *g_pConnectionParams;
 
 wxDateTime                g_start_time;
 wxDateTime                g_loglast_time;
-wxSound                   bells_sound[8];
+OCPN_Sound                bells_sound[8];
+
+OCPN_Sound                g_anchorwatch_sound;
 
 RoutePoint                *pAnchorWatchPoint1;
 RoutePoint                *pAnchorWatchPoint2;
@@ -582,6 +588,8 @@ char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 
         };
 
+int                       portaudio_initialized;
+
 static char nmea_tick_chars[] = { '|', '/', '-', '\\', '|', '/', '-', '\\' };
 static int tick_idx;
 
@@ -761,6 +769,9 @@ bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
 
+//    bells_sound[0].Create(_T("/home/dsr/2bells.wav"));
+//    bells_sound[0].Play();
+    
     g_pPlatform = new wxPlatformInfo;
 
     //    On MSW, force the entire process to run on one CPU core only
@@ -1994,7 +2005,11 @@ int MyApp::OnExit()
 #endif
 #endif
 
-//        _CrtDumpMemoryLeaks( );
+#ifdef OCPN_USE_PORTAUDIO
+    if(portaudio_initialized)
+        Pa_Terminate();
+#endif
+        
 
     //      Restore any changed system colors
 #ifdef __WXMSW__

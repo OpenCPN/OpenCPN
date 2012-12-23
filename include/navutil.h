@@ -34,10 +34,15 @@
 #include <wx/config.h>
 #include <wx/confbase.h>
 #include <wx/fileconf.h>
+#include <wx/sound.h>
 
 #ifdef __WXMSW__
 #include <wx/msw/regconf.h>
 #include <wx/msw/iniconf.h>
+#endif
+
+#ifdef OCPN_USE_PORTAUDIO
+#include "portaudio.h"
 #endif
 
 #include "bbox.h"
@@ -808,6 +813,61 @@ extern "C" pVector2D vSubtractVectors(pVector2D v0, pVector2D v1, pVector2D v);
 extern "C" double vVectorMagnitude(pVector2D v0);
 extern "C" double vVectorSquared(pVector2D v0);
 
+
+
+//---------------------------------------------------------------------------------
+//      OpenCPN internal Sound support class
+//---------------------------------------------------------------------------------
+
+/// Sound data, as loaded from .wav file:
+class OCPNSoundData
+{
+public:
+    OCPNSoundData() : m_dataWithHeader(NULL) {}
+    ~OCPNSoundData() {};
+    
+    // .wav header information:
+    unsigned m_channels;       // num of channels (mono:1, stereo:2)
+    unsigned m_samplingRate;
+    unsigned m_bitsPerSample;  // if 8, then m_data contains unsigned 8bit
+    // samples (wxUint8), if 16 then signed 16bit
+    // (wxInt16)
+    unsigned m_samples;        // length in samples:
+    
+    // wave data:
+    size_t   m_dataBytes;
+    wxUint8 *m_data;           // m_dataBytes bytes of data
+    
+    wxUint8 *m_dataWithHeader; // ditto, but prefixed with .wav header
+};
+
+
+
+
+class OCPN_Sound: public wxSound
+{
+public:
+    OCPN_Sound();
+    ~OCPN_Sound();
+    
+    bool IsOk() const;
+    bool Create(const wxString& fileName, bool isResource = false);
+    bool Play(unsigned flags = wxSOUND_ASYNC) const;
+    bool IsPlaying() const;
+    void Stop();
+    
+private:
+    bool m_OK;
+    
+#ifdef OCPN_USE_PORTAUDIO
+    bool LoadWAV(const wxUint8 *data, size_t length, bool copyData);
+    void FreeMem(void);
+    
+    OCPNSoundData *m_osdata;
+    PaStream *m_stream;
+#endif    
+    
+};
 
 
 #endif
