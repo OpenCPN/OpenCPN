@@ -1118,7 +1118,8 @@ int AIS_Bitstring::GetStr(int sp, int bit_len, char *dest, int max_len)
 
     int copy_len = wxMin((int)strlen(temp_str), max_len);
     strncpy(dest, temp_str, copy_len);
-
+    dest[k] = 0;
+    
     delete [] temp_str;
 
     return copy_len;
