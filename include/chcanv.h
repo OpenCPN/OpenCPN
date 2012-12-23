@@ -554,7 +554,6 @@ private:
       double      m_zoom_target_factor;
       double      m_zoom_current_factor;
 
-      wxSound     m_anchorwatch_sound;
 
 DECLARE_EVENT_TABLE()
 };

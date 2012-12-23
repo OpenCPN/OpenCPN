@@ -2995,18 +2995,21 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
 
 void options::OnButtonTestSound( wxCommandEvent& event )
 {
-#if wxUSE_LIBSDL
-// printf("wxUSE_LIBSDL true\n");
-#endif
 
-    wxSound AIS_Sound( g_sAIS_Alert_Sound_File );
+    OCPN_Sound AIS_Sound;
+    AIS_Sound.Create( g_sAIS_Alert_Sound_File );
 
     if( AIS_Sound.IsOk() ) {
-//            printf("playing sound\n");
         AIS_Sound.Play();
+
+        int t = 0;
+        while( AIS_Sound.IsPlaying() && (t < 10) ) {
+            wxSleep(1);
+            t++;
+        }
+        if( AIS_Sound.IsPlaying() )
+            AIS_Sound.Stop();
     }
-//      else
-//            printf("sound is NOT ok\n");
 
 }
 
