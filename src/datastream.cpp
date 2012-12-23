@@ -49,7 +49,6 @@
 
 #include <vector>
 
-//#define SERIAL_OVERLAPPED
 
 extern int              g_nNMEADebug;
 extern bool             g_bGPSAISMux;
@@ -185,7 +184,10 @@ void DataStream::Open(void)
                     CloseHandle(hSerialComm);
 #endif
         //    Kick off the DataSource RX thread
-                m_pSecondary_Thread = new OCP_DataStreamInput_Thread(this, m_consumer, comx, m_BaudRate);
+                m_pSecondary_Thread = new OCP_DataStreamInput_Thread(this,
+                                                                     m_consumer,
+                                                                     comx, m_BaudRate,
+                                                                     &m_output_mutex, m_io_select);
                 m_Thread_run_flag = 1;
                 m_pSecondary_Thread->Run();
 
@@ -495,7 +497,10 @@ bool DataStream::ChecksumOK( const wxString &sentence )
 
 bool DataStream::SendSentence( const wxString &sentence )
 {
-    bool has_crlf = sentence.EndsWith(_T("\r\n"));
+    wxString payload = sentence;
+    if( !sentence.EndsWith(_T("\r\n")) )
+        payload += _T("\r\n");
+
     switch( m_connection_type ) {
         case SERIAL:
             if( m_pSecondary_Thread ) {
@@ -506,11 +511,20 @@ bool DataStream::SendSentence( const wxString &sentence )
                 }
                 if( IsSecThreadActive() )
                 {
-                    int ncount = m_pSecondary_Thread->SendMsg( sentence );
-                    if( has_crlf )
-                        return ncount > 0;
-                    else
-                        return m_pSecondary_Thread->SendMsg( _T( "\r\n" ) ) > 0;
+                    int retry = 3;
+                    while( retry ) {
+                        if(m_output_mutex.TryLock() == wxMUTEX_NO_ERROR) {
+//                                printf("set\n");
+                                m_pSecondary_Thread->SetOutMsg( payload );
+                                m_output_mutex.Unlock();
+                                return true;
+                         }
+                        else {
+                            retry--;
+//                            printf("retry %d\n", retry);
+                        }
+                    }
+                    return false;
                 }
                 else
                     return false;
@@ -526,9 +540,7 @@ bool DataStream::SendSentence( const wxString &sentence )
                         if( tcp_socket->IsDisconnected() )
                             tcp_socket->Connect( m_addr, FALSE );
                         else {
-                            tcp_socket->Write( sentence.mb_str(), strlen( sentence.mb_str() ) );
-                            if( !has_crlf )
-                                tcp_socket->Write( "\r\n", 2 );
+                            tcp_socket->Write( payload.mb_str(), strlen( payload.mb_str() ) );
                         }
                     }
                     break;
@@ -536,10 +548,7 @@ bool DataStream::SendSentence( const wxString &sentence )
                         wxDatagramSocket* udp_socket = dynamic_cast<wxDatagramSocket*>(m_sock);
                         assert(udp_socket);
                         if( udp_socket->IsOk() ) {
-                            wxString packet = sentence;
-                            if( !has_crlf )
-                                packet += _T("\r\n");
-                            udp_socket->SendTo(m_addr, packet.mb_str(), packet.size() );
+                            udp_socket->SendTo(m_addr, payload.mb_str(), payload.size() );
                         }
                     }
                 }
@@ -566,7 +575,10 @@ bool DataStream::SendSentence( const wxString &sentence )
 OCP_DataStreamInput_Thread::OCP_DataStreamInput_Thread(DataStream *Launcher,
                                                        wxEvtHandler *MessageTarget,
                                                        const wxString& PortName,
-                                                       const wxString& strBaudRate )
+                                                       const wxString& strBaudRate,
+                                                       wxMutex *pout_mutex,
+                                                       dsPortType io_select
+                                                      )
 {
     m_launcher = Launcher;                          // This thread's immediate "parent"
 
@@ -574,6 +586,9 @@ OCP_DataStreamInput_Thread::OCP_DataStreamInput_Thread(DataStream *Launcher,
 
     m_PortName = PortName;
 
+    m_pout_mutex = pout_mutex;
+    m_io_select = io_select;
+    
     rx_buffer = new char[DS_RX_BUFFER_SIZE + 1];
     temp_buf = new char[DS_RX_BUFFER_SIZE + 1];
 
@@ -738,6 +753,16 @@ void *OCP_DataStreamInput_Thread::Entry()
 
             }                   //if nl
         }                       // if newdata > 0
+        
+        //      Check for any pending output message
+        if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->Lock()) ){
+            if( !m_outmsg.IsEmpty() ) {
+                printf("write\n");
+                WriteComPortPhysical(m_gps_fd, m_outmsg);
+                m_outmsg.Clear();
+            }
+            m_pout_mutex->Unlock();
+        }
       //              ThreadMessage(_T("Timeout 1"));
     }                          // the big while...
 
@@ -763,10 +788,8 @@ void *OCP_DataStreamInput_Thread::Entry()
     wxString msg;
 
 
-    OVERLAPPED osReader = {0};
 
     bool not_done;
-    BOOL fWaitingOnRead = FALSE;
     HANDLE hSerialComm = (HANDLE)(-1);
 
        //    Request the com port from the comm manager
@@ -786,352 +809,20 @@ void *OCP_DataStreamInput_Thread::Entry()
     hSerialComm = (HANDLE)m_gps_fd;
 
 
-#ifdef SERIAL_OVERLAPPED
-//    Set up read event specification
-
-    if(!SetCommMask((HANDLE)m_gps_fd, EV_RXCHAR)) // Setting Event Type
-    {
-        wxString msg(_T("NMEA input device (overlapped) SetCommMask failed: "));
-        msg.Append(m_PortName);
-        wxString msg_error;
-        msg_error.Printf(_T("...GetLastError():  %d"), GetLastError());
-        msg.Append(msg_error);
-
-        ThreadMessage(msg);
-        goto thread_exit;
+    //  If port supports output, set a short timeout so that output polling mechanism works
+    int max_timeout = 5;
+    int loop_timeout = 2000;
+    int n_reopen_wait = 2000;
+    if( (m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT) ) {
+        loop_timeout = 2;
+        max_timeout = 5000;
     }
-
-// Create the overlapped event. Must be closed before exiting
-// to avoid a handle leak.
-    osReader.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-    if (osReader.hEvent == NULL)
-    {
-        wxString msg(_T("NMEA input device (overlapped) CreateEvent failed: "));
-        msg.Append(m_PortName);
-        wxString msg_error;
-        msg_error.Printf(_T("...GetLastError():  %d"), GetLastError());
-        msg.Append(msg_error);
-
-        ThreadMessage(msg);
-        goto thread_exit;
-    }
-
-#if 0
-    if(wxMUTEX_NO_ERROR != m_pPortMutex->Lock())              // I have the ball
-    {
-        wxString msg(_T("NMEA input device failed to lock Mutex on port : "));
-        msg.Append(m_PortName);
-        ThreadMessage(msg);
-        goto thread_exit;
-    }
-#endif
-    not_done = true;
-    bool nl_found = false;
-
-#define READ_BUF_SIZE 20
-    char szBuf[READ_BUF_SIZE];
-
-    DWORD dwRead;
-
-    m_n_timeout = 0;                // reset the timeout counter
-    int n_reopen_wait = 0;
-
-    //    The main loop
-
-    while((not_done) && (m_launcher->m_Thread_run_flag > 0))
-    {
-        if(TestDestroy())
-        {
-            not_done = false;                               // smooth exit
-            goto thread_exit;                               // smooth exit
-        }
-
-        //    Was port closed due to error condition?
-        while(!m_gps_fd)
-        {
-            if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0))
-                goto thread_exit;                               // smooth exit
-
-            if(n_reopen_wait)
-            {
-                wxThread::Sleep(n_reopen_wait);                        // stall for a bit
-                n_reopen_wait = 0;
-            }
-
-
-            if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) > 0)
-            {
-                hSerialComm = (HANDLE)m_gps_fd;
-                m_n_timeout = 0;                             // reset the timeout counter
-
-            }
-            else
-            {
-                m_gps_fd = NULL;
-                wxThread::Sleep(2000);                        // stall for a bit
-            }
-        }
-
-#if 0
-        if( m_launcher->IsPauseRequested())                 // external pause requested?
-        {
-            m_pCommMan->CloseComPort(m_gps_fd);
-            m_pPortMutex->Unlock();                         // release the port
-
-            wxThread::Sleep(2000);                          // stall for a bit
-
-            //  Now try to regain the Mutex
-            while(wxMUTEX_BUSY == m_pPortMutex->TryLock()){};
-
-            //  Re-initialize the port
-            if ((m_gps_fd = OpenComPortPhysical(m_PortName, m_baud)) > 0)
-            {
-                hSerialComm = (HANDLE)m_gps_fd;
-                m_n_timeout = 0;                            // reset the timeout counter
-            }
-            else
-            {
-                wxString msg(_T("NMEA input device open failed after requested Pause on port: "));
-                msg.Append(m_PortName);
-                ThreadMessage(msg);
-                goto thread_exit;
-            }
-        }
-
-#endif
-        if (!fWaitingOnRead)
-        {
-        // Issue read operation.
-            if (!ReadFile(hSerialComm, szBuf, READ_BUF_SIZE, &dwRead, &osReader))
-            {
-                int errt = GetLastError();
-
-                // read delayed ?
-                if (errt == ERROR_IO_PENDING)
-                {
-                    fWaitingOnRead = TRUE;
-                }
-
-                //  We sometimes see this return if using virtual ports, with no data flow....
-                //  Especially on Xport 149 and above....
-                //  What does it mean?  Who knows...
-                //  Workaround:  Try the IO again after a slight pause
-                else if(errt == ERROR_NO_SYSTEM_RESOURCES)
-                {
-                    dwRead = 0;
-                    nl_found = false;
-                    fWaitingOnRead = FALSE;
-                    wxThread::Sleep(1000);                        // stall for a bit
-
-                }
-                else                              // reset the port and retry on any other error
-                {
-                    CloseComPortPhysical(m_gps_fd);
-                    m_gps_fd = NULL;
-                    dwRead = 0;
-                    nl_found = false;
-                    fWaitingOnRead = FALSE;
-                    n_reopen_wait = 2000;
-                }
-            }
-            else
-            {      // read completed immediately
-                goto HandleASuccessfulRead;
-            }
-        }
-
-
-            // Read command has been issued, and did not return immediately
-
-#define READ_TIMEOUT      2000      // milliseconds
-
-        DWORD dwRes;
-
-        if (fWaitingOnRead)
-        {
-            //    Loop forever, checking for thread exit request
-            while(fWaitingOnRead)
-            {
-                if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0))
-                    goto fail_point;                               // smooth exit
-
-                dwRes = WaitForSingleObject(osReader.hEvent, READ_TIMEOUT);
-                switch(dwRes)
-                {
-                    case WAIT_OBJECT_0:
-                        if (!GetOverlappedResult(hSerialComm, &osReader, &dwRead, FALSE))
-                        {
-                            CloseComPortPhysical(m_gps_fd);
-                            m_gps_fd = NULL;
-                            dwRead = 0;
-                            nl_found = false;
-                            fWaitingOnRead = FALSE;
-                            n_reopen_wait = 2000;
-                        }
-                        else
-                        {
-                            goto HandleASuccessfulRead;             // Read completed successfully.
-                        }
-                        break;
-
-                    case WAIT_TIMEOUT:
-                        if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
-                        {
-                            g_total_NMEAerror_messages++;
-                            wxString msg;
-                            msg.Printf(_T("NMEA timeout"));
-                            ThreadMessage(msg);
-                        }
-
-                        m_n_timeout++;
-                        if(m_n_timeout > 5)             //5 x 2000 msec
-                        {
-                            fWaitingOnRead = FALSE;
-                            CloseComPortPhysical(m_gps_fd);
-                            m_gps_fd = NULL;
-                            dwRead = 0;
-                            nl_found = false;
-                            fWaitingOnRead = FALSE;
-                            n_reopen_wait = 2000;
-                            
-                        }
-                        break;
-
-                    default:                // Reset the port on all unhandled return values....
-                        CloseComPortPhysical(m_gps_fd);
-                        m_gps_fd = NULL;
-                        dwRead = 0;
-                        nl_found = false;
-                        fWaitingOnRead = FALSE;
-                        n_reopen_wait = 2000;
-
-                        break;
-                }     // switch
-            }           // while
-        }                 // if
-
-HandleASuccessfulRead:
-
-        if(dwRead > 0)
-        {
-             m_n_timeout = 0;                // reset the timeout counter
-             if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
-              {
-                    g_total_NMEAerror_messages++;
-                    wxString msg;
-                    msg.Printf(_T("NMEA activity...%d bytes"), dwRead);
-                    ThreadMessage(msg);
-              }
-
-              int nchar = dwRead;
-              char *pb = szBuf;
-
-              while(nchar)
-              {
-                    if(0x0a == *pb)
-                          nl_found = true;
-
-                    *put_ptr++ = *pb++;
-                    if((put_ptr - rx_buffer) > DS_RX_BUFFER_SIZE)
-                          put_ptr = rx_buffer;
-
-                    nchar--;
-              }
-              if((g_total_NMEAerror_messages < g_nNMEADebug) && (g_nNMEADebug > 1000))
-              {
-                    g_total_NMEAerror_messages++;
-                    wxString msg1 = _T("Buffer is: ");
-                    int nc = dwRead;
-                    char *pb = szBuf;
-                    while(nc)
-                    {
-                          msg1.Append(*pb++);
-                          nc--;
-                    }
-                    ThreadMessage(msg1);
-              }
-        }
-
-
-    //    Found a NL char, thus end of message?
-        if(nl_found)
-        {
-              char *tptr;
-              char *ptmpbuf;
-
-              bool partial = false;
-              while (!partial)
-              {
-
-            //    Copy the message into a temp buffer
-
-                tptr = tak_ptr;
-                ptmpbuf = temp_buf;
-
-                while((*tptr != 0x0a) && (tptr != put_ptr))
-                {
-                    *ptmpbuf++ = *tptr++;
-
-                    if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
-                        tptr = rx_buffer;
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, _T("temp_buf overrun"));
-                }
-
-                if((*tptr == 0x0a) && (tptr != put_ptr))    // well formed sentence
-                {
-                    *ptmpbuf++ = *tptr++;
-                    if((tptr - rx_buffer) > DS_RX_BUFFER_SIZE)
-                        tptr = rx_buffer;
-                    wxASSERT_MSG((ptmpbuf - temp_buf) < DS_RX_BUFFER_SIZE, _T("temp_buf overrun"));
-
-                    *ptmpbuf = 0;
-
-                    tak_ptr = tptr;
-
-                    // parse and send the message
-                    wxString str_temp_buf(temp_buf, wxConvUTF8);
-                    Parse_And_Send_Posn(str_temp_buf);
-                }
-                else
-                {
-                    partial = true;
-                }
-            }                 // while !partial
-
-        }           // nl found
-
-        fWaitingOnRead = FALSE;
-
-    }           // the big while...
-
-
-
-fail_point:
-thread_exit:
-
-//          Close the port cleanly
-    CloseComPortPhysical(m_gps_fd);
-
-    if (osReader.hEvent)
-        CloseHandle(osReader.hEvent);
-
-    m_launcher->SetSecThreadInActive();             // I am dead
-    m_launcher->m_Thread_run_flag = -1;
-
-    return 0;
-
-#else                   // non-overlapped
-//    Set up read event specification
-
-    if(!SetCommMask((HANDLE)m_gps_fd, EV_RXCHAR)) // Setting Event Type
-        goto thread_exit;
-
+    
     COMMTIMEOUTS timeouts;
     
     timeouts.ReadIntervalTimeout = MAXDWORD;
     timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
-    timeouts.ReadTotalTimeoutConstant = 2000;
+    timeouts.ReadTotalTimeoutConstant = loop_timeout;
     timeouts.WriteTotalTimeoutMultiplier = MAXDWORD;
     timeouts.WriteTotalTimeoutConstant = MAXDWORD;
     
@@ -1148,12 +839,9 @@ thread_exit:
 
     DWORD dwRead;
     DWORD dwOneRead;
-//    DWORD dwCommEvent;
     char  chRead;
     int ic;
     int n_timeout;
-    int n_reopen_wait = 2000;
-#define MAX_N_TIMEOUT 5
 
 //    The main loop
 
@@ -1185,7 +873,7 @@ thread_exit:
                 COMMTIMEOUTS timeouts;
                 timeouts.ReadIntervalTimeout = MAXDWORD;
                 timeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
-                timeouts.ReadTotalTimeoutConstant = 2000;
+                timeouts.ReadTotalTimeoutConstant = loop_timeout;
                 timeouts.WriteTotalTimeoutMultiplier = MAXDWORD;
                 timeouts.WriteTotalTimeoutConstant = MAXDWORD;
         
@@ -1199,7 +887,16 @@ thread_exit:
             }
         }
 
-
+        //      Check for any pending output message
+        if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->Lock()) ){
+            if( !m_outmsg.IsEmpty() ) {
+//                printf("write0\n");
+                WriteComPortPhysical(m_gps_fd, m_outmsg);
+                m_outmsg.Clear();
+            }
+            m_pout_mutex->Unlock();
+        }
+        
 
         bool b_inner = true;
         dwRead = 0;
@@ -1218,7 +915,7 @@ thread_exit:
                 }
                 else {                          // timed out
                     n_timeout++;;
-                    if( n_timeout > MAX_N_TIMEOUT ) {
+                    if( n_timeout > max_timeout ) {
                         b_inner = false;
                         
                         CloseComPortPhysical(m_gps_fd);
@@ -1227,16 +924,27 @@ thread_exit:
                         nl_found = false;
                         n_reopen_wait = 2000;
                     }
-                        
+                    else if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0)) {
+                        goto thread_exit;                               // smooth exit
+                    }
+                    else {
+                        //      Check for any pending output message
+                        if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->Lock()) ){
+                            if( !m_outmsg.IsEmpty() ) {
+//                                printf("write1\n");
+                                WriteComPortPhysical(m_gps_fd, m_outmsg);
+                                m_outmsg.Clear();
+                            }
+                            m_pout_mutex->Unlock();
+                        }
+                    }
                 }
-                
             }
             else {
                 //      ReadFile Erorr
             }
         }
             
-
 HandleASuccessfulRead:
 
         if(dwRead > 0)
@@ -1341,7 +1049,6 @@ thread_exit:
 
     return 0;
 
-#endif
 }
 
 #endif            // __WXMSW__
@@ -1369,6 +1076,11 @@ void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
         m_pMessageTarget->AddPendingEvent(event);
 }
 
+void OCP_DataStreamInput_Thread::SetOutMsg(wxString msg)
+{
+    //  Assume that the caller owns the mutex
+    m_outmsg = msg.c_str();
+}
 
 
 
@@ -1384,7 +1096,6 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud
     // Open the serial port.
     int com_fd;
     if ((com_fd = open(com_name.mb_str(), O_RDWR|O_NONBLOCK|O_NOCTTY)) < 0)
-    //      if ((com_fd = open(com_name.mb_str(), O_RDWR|O_NOCTTY)) < 0)
         return com_fd;
 
     speed_t baud_parm;
@@ -1523,11 +1234,7 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud
     wxString xcom_name = com_name;
     xcom_name.Prepend(_T("\\\\.\\"));                  // Required for access to Serial Ports greater than COM9
 
-#ifdef SERIAL_OVERLAPPED
-    DWORD open_flags = FILE_FLAG_OVERLAPPED;
-#else
     DWORD open_flags = 0;
-#endif
 
     HANDLE hSerialComm = CreateFile(xcom_name.fn_str(),      // Port Name
                              GENERIC_READ | GENERIC_WRITE,     // Desired Access
@@ -1544,7 +1251,7 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud
 
     DWORD err;
     COMSTAT cs;
-    bool b = ClearCommError(hSerialComm, &err, &cs);
+    ClearCommError(hSerialComm, &err, &cs);
     
     if(!SetupComm(hSerialComm, 1024, 1024))
     {
@@ -1610,48 +1317,6 @@ int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, const 
     char *pszBuf = (char *)malloc((dwSize + 1) * sizeof(char));
     strncpy(pszBuf, string.mb_str(), dwSize+1);
 
-#ifdef SERIAL_OVERLAPPED
-
-    OVERLAPPED osWrite = {0};
-    DWORD dwWritten;
-    int fRes;
-
-    // Create this writes OVERLAPPED structure hEvent.
-    osWrite.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    if (osWrite.hEvent == NULL)
-    {
-    // Error creating overlapped event handle.
-        free(pszBuf);
-        return 0;
-    }
-
-    // Issue write.
-    if (!WriteFile((HANDLE)port_descriptor, pszBuf, dwSize, &dwWritten, &osWrite))
-    {
-        if (GetLastError() != ERROR_IO_PENDING)
-        {
-     // WriteFile failed, but it isn't delayed. Report error and abort.
-            fRes = 0;
-        }
-        else
-        {
-     // Write is pending.
-            if (!GetOverlappedResult((HANDLE)port_descriptor, &osWrite, &dwWritten, TRUE))
-                fRes = 0;
-            else
-            // Write operation completed successfully.
-                fRes = dwWritten;
-        }
-    }
-    else
-    // WriteFile completed immediately.
-        fRes = dwWritten;
-
-    CloseHandle(osWrite.hEvent);
-
-    free (pszBuf);
-
-#else
     DWORD dwWritten;
     int fRes;
 
@@ -1663,7 +1328,6 @@ int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, const 
 
     free (pszBuf);
 
-#endif
 
     return fRes;
 }
@@ -1685,11 +1349,6 @@ bool OCP_DataStreamInput_Thread::CheckComPortPhysical(int port_descriptor)
 }
 
 #endif            // __WXMSW__
-
-int OCP_DataStreamInput_Thread::SendMsg(const wxString& msg)
-{
-    return WriteComPortPhysical(m_gps_fd, msg);
-}
 
 //ConnectionParams implementation
 ConnectionParams::ConnectionParams( wxString &configStr )

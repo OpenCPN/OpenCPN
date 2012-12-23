@@ -267,8 +267,6 @@ public:
     bool GetChecksumCheck(){ return m_bchecksumCheck; }
     ConnectionType GetConnectionType(){ return m_connection_type; }
     
-    
-
     int                 m_Thread_run_flag;
 private:
     void Init(void);
@@ -277,7 +275,7 @@ private:
     void OnSocketEvent(wxSocketEvent& event);
     void OnTimerNMEA(wxTimerEvent& event);
 
-
+    wxMutex             m_output_mutex;
     bool                m_bok;
     wxEvtHandler        *m_consumer;
     wxString            m_portstring;
@@ -354,11 +352,14 @@ public:
     OCP_DataStreamInput_Thread(DataStream *Launcher,
                                   wxEvtHandler *MessageTarget,
                                   const wxString& PortName,
-                                  const wxString& strBaudRate );
+                                  const wxString& strBaudRate,
+                                  wxMutex *out_mutex,
+                                  dsPortType io_select
+                              );
 
     ~OCP_DataStreamInput_Thread(void);
     void *Entry();
-    int SendMsg(const wxString& msg);
+    void SetOutMsg(wxString msg);
 
     void OnExit(void);
 
@@ -372,10 +373,13 @@ private:
     int ReadComPortPhysical(int port_descriptor, int count, unsigned char *p);
     bool CheckComPortPhysical(int port_descriptor);
 
+    wxMutex                 *m_pout_mutex;
     wxEvtHandler            *m_pMessageTarget;
     DataStream              *m_launcher;
     wxString                m_PortName;
-
+    dsPortType              m_io_select;
+    wxString                m_outmsg;
+    
     char                    *put_ptr;
     char                    *tak_ptr;
 
