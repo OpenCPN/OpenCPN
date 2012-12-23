@@ -58,6 +58,7 @@ class Multiplexer : public wxEvtHandler
 
         void OnEvtStream(OCPN_DataStreamEvent& event);
         void LogOutputMessage( wxString &msg, DataStream *stream, bool b_filter );
+        void LogInputMessage( wxString &msg, DataStream *stream, bool b_filter );
         
     private:
         wxArrayOfDataStreams *m_pdatastreams;
