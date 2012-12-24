@@ -59,6 +59,8 @@
 #include "gps.h"
 #include "depth.h"
 #include "clock.h"
+#include "wind_history.h"
+
 
 class DashboardWindow;
 class DashboardWindowContainer;
