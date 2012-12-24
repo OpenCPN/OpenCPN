@@ -134,7 +134,8 @@ void DataStream::Init(void)
     SetSecThreadInActive();
     m_Thread_run_flag = -1;
     m_sock = 0;
-
+    m_tsock = 0;
+    
 }
 
 void DataStream::Open(void)
@@ -239,18 +240,26 @@ void DataStream::Open(void)
                     m_sock = new wxSocketClient();
                     break;
                 case UDP:
-                    //  We need a local (bindable) address to create the Datagram socket
+                    //  We need a local (bindable) address to create the Datagram receive socket
+                    // Set up the receive socket
                     wxIPV4address conn_addr;
                     conn_addr.Service(m_net_port);
                     conn_addr.AnyAddress();    
                     m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
+                    
+                    // Set up another socket for transmit
                     if((m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT)) {
-                        wxString addr = m_addr.IPAddress();
+                        wxIPV4address tconn_addr;
+                        tconn_addr.Service(0);          // use ephemeral out port
+                        tconn_addr.AnyAddress();    
+                        m_tsock = new wxDatagramSocket(tconn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
+                        wxString addr = tconn_addr.IPAddress();
                         if( addr.EndsWith(_T("255")) ) {
                             int broadcastEnable=1;
-                            bool bam = m_sock->SetOption(SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
+                            bool bam = m_tsock->SetOption(SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
                         }
                     }
+                    break;
             }
 
             // Setup the event handler and subscribe to most events
@@ -318,6 +327,12 @@ void DataStream::Close()
     {
         m_sock->Notify(FALSE);
         m_sock->Destroy();
+    }
+
+    if(m_tsock)
+    {
+        m_tsock->Notify(FALSE);
+        m_tsock->Destroy();
     }
     
     //  Kill off the Garmin handler, if alive
@@ -536,7 +551,6 @@ bool DataStream::SendSentence( const wxString &sentence )
                     case GPSD:
                     case TCP:{
                         wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
-                        assert(tcp_socket);
                         if( tcp_socket->IsDisconnected() )
                             tcp_socket->Connect( m_addr, FALSE );
                         else {
@@ -545,8 +559,7 @@ bool DataStream::SendSentence( const wxString &sentence )
                     }
                     break;
                     case UDP:{
-                        wxDatagramSocket* udp_socket = dynamic_cast<wxDatagramSocket*>(m_sock);
-                        assert(udp_socket);
+                        wxDatagramSocket* udp_socket = dynamic_cast<wxDatagramSocket*>(m_tsock);
                         if( udp_socket->IsOk() ) {
                             udp_socket->SendTo(m_addr, payload.mb_str(), payload.size() );
                         }

@@ -292,6 +292,7 @@ private:
 
     wxIPV4address       m_addr;
     wxSocketBase        *m_sock;
+    wxSocketBase        *m_tsock;
     wxString            m_sock_buffer;
     wxString            m_net_addr;
     wxString            m_net_port;
