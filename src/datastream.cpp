@@ -901,6 +901,8 @@ void *OCP_DataStreamInput_Thread::Entry()
         bool b_inner = true;
         dwRead = 0;
         n_timeout = 0;
+        wxDateTime now = wxDateTime::Now();
+        int t = now.GetTicks();                 // set a separate timer not controlled by serial port
         ic=0;
         while( b_inner ) {
             if (ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL))
@@ -916,13 +918,28 @@ void *OCP_DataStreamInput_Thread::Entry()
                 else {                          // timed out
                     n_timeout++;;
                     if( n_timeout > max_timeout ) {
-                        b_inner = false;
+
+                        bool b_close = true;
                         
-                        CloseComPortPhysical(m_gps_fd);
-                        m_gps_fd = NULL;
-                        dwRead = 0;
-                        nl_found = false;
-                        n_reopen_wait = 2000;
+                        //  If the port is input only, double check the timeout
+                        //  We do this since some virtual serial port emulators
+                        //  do not seem to honor SetCommTimeouts() function
+                        if( m_io_select == DS_TYPE_INPUT ) {
+                            wxDateTime then = wxDateTime::Now();
+                            int tt = then.GetTicks();
+                            if( (tt - t) <  (max_timeout * loop_timeout)/1000 ) {
+                                b_close = false;
+                            }
+                        }
+                            
+                        if( b_close ) {
+                            b_inner = false;
+                            CloseComPortPhysical(m_gps_fd);
+                            m_gps_fd = NULL;
+                            dwRead = 0;
+                            nl_found = false;
+                            n_reopen_wait = 2000;
+                        }
                     }
                     else if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0)) {
                         goto thread_exit;                               // smooth exit
