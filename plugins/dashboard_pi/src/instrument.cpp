@@ -116,9 +116,6 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
             dc.DrawText( m_title, 5, 0 );
         }
 
-        mdc.SelectObject( wxNullBitmap );
-        pdc.DrawBitmap( bm, 0, 0, false );
-
 #ifdef __WXMSW__
         if( g_pFontTitle->GetPointSize() <= 12 ) {
             wxBitmap bm( size.x, m_TitleHeight, -1 );
@@ -140,12 +137,11 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
             GetGlobalColor( _T("DASHF"), &cl );
             dc.SetTextForeground( cl );
             dc.DrawText( m_title, 5, 0 );
-
-            dc.SelectObject( wxNullBitmap );
-            pdc.DrawBitmap( bm, 0, 0, false );
         }
 #endif
     }
+    mdc.SelectObject( wxNullBitmap );
+    pdc.DrawBitmap( bm, 0, 0, false );
 }
 
 //----------------------------------------------------------------
