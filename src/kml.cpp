@@ -198,7 +198,8 @@ KmlPastebufferType Kml::ParseOnePlacemarkPoint( TiXmlNode* node, wxString& name 
 }
 
 KmlPastebufferType Kml::ParsePasteBuffer() {
-    if( ! wxTheClipboard->Open() ) return KML_PASTE_INVALID;
+    if( !wxTheClipboard->IsOpened() )
+        if( ! wxTheClipboard->Open() ) return KML_PASTE_INVALID;
 
     wxTextDataObject data;
     wxTheClipboard->GetData( data );
