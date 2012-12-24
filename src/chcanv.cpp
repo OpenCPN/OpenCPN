@@ -8390,7 +8390,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         }
         menuRoute->Append( ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
         menuRoute->Append( ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
-        menuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
+        menuRoute->Append( ID_RT_MENU_COPY, _( "Copy as KML..." ) );
         menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
         menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
 
@@ -8400,7 +8400,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     if( seltype & SELTYPE_TRACKSEGMENT ) {
         menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
-        menuTrack->Append( ID_TK_MENU_COPY, _( "Copy" ) );
+        menuTrack->Append( ID_TK_MENU_COPY, _( "Copy As KML" ) );
         menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
 
         //      Set this menu as the "focused context menu"
@@ -8415,7 +8415,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         if( m_pSelectedRoute->GetnPoints() > 2 )
             menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
 
-        menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
+        menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
         if( m_pFoundRoutePoint->m_IconName != _T("mob") )
             menuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
@@ -8432,7 +8432,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         if( !g_pRouteMan->GetpActiveRoute() )
             menuWaypoint->Append( ID_WP_MENU_GOTO, _( "Navigate To This" ) );
 
-        menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
+        menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
         if( m_pFoundRoutePoint->m_IconName != _T("mob") )
             menuWaypoint->Append( ID_WP_MENU_DELPOINT, _( "Delete" ) );
