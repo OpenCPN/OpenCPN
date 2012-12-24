@@ -620,19 +620,28 @@
 			</tool>
 			<tool name="AIS_Suppressed">
 				<icon-location x="300" y="260"/>
+                                <rollover-location x="337" y="220"/>
 			</tool>
 			<tool name="AIS_AlertGeneral">
 				<icon-location x="380" y="260"/>
+                                <rollover-location x="337" y="220"/>
 			</tool>
 			<tool name="AIS_Normal_Active">
 				<icon-location x="500" y="260"/>
+                                <rollover-location x="337" y="220"/>
 			</tool>
 			<tool name="AIS_Suppressed_Active">
 				<icon-location x="340" y="260"/>
+                                <rollover-location x="337" y="220"/>
 			</tool>
 			<tool name="AIS_AlertGeneral_Active">
 				<icon-location x="420" y="260"/>
+                                <rollover-location x="337" y="220"/>
 			</tool>
+                        <tool name="AIS_Disabled">
+                                <icon-location x="337" y="320"/>
+                                <rollover-location x="337" y="220"/>
+                        </tool>
 		</tools>
 
 		<icons>
@@ -952,6 +961,7 @@
         <embossed-indicators size="30" font="Verdana" />
 		<active-route>
 			<font-color r="50" g="50" b="50" />
+                        <text-background-location x="660" y="260" width="140" height="55" />
 		</active-route>
 		<tools>
 			<horizontal>
@@ -1104,6 +1114,10 @@
 			<tool name="AIS_AlertGeneral_Active">
 				<icon-location x="420" y="260"/>
 			</tool>
+                        <tool name="AIS_Disabled">
+                                <icon-location x="337" y="320"/>
+                                <rollover-location x="337" y="220"/>
+                        </tool>
 		</tools>
 
 		<icons>
