@@ -529,9 +529,6 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
   dc->SetFont(*g_pFontLabel);
   //determine the time range of the available data (=oldest data value)
   int i=0;
-  wxDateTime d = m_ArrayRecTime[i];
-  int p = d.GetYear();
-
   while(m_ArrayRecTime[i].GetYear()== 999 && i<WIND_RECORD_COUNT-1) i++;
   if (i == WIND_RECORD_COUNT -1) {
     min=0;
