@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.1.1105\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-24 20:05-0500\n"
+"POT-Creation-Date: 2012-12-24 21:28-0500\n"
 "PO-Revision-Date: 2012-12-05 14:08+0100\n"
 "Last-Translator: Frode Lynum <post@kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -1907,6 +1907,24 @@ msgstr "Lov opprettholdelses fartøy"
 #
 msgid "Layer Name"
 msgstr "Lagets navn"
+#
+#
+#, fuzzy
+msgid "Layer Route"
+msgstr "Lim inn rute"
+#
+msgid "Layer Routepoint"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Layer Track"
+msgstr "Lim inn slepestrek"
+#
+#
+#, fuzzy
+msgid "Layer Waypoint"
+msgstr "Lim inn slepestrek"
 #
 #
 msgid "Layers"
@@ -3926,8 +3944,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
+#
 #
 #
 #
@@ -3948,6 +3968,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "      COG kursvektor lengde (minutter):"
 #
@@ -3957,8 +3978,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Maksimum fart på fortøyde mål (knop):"
+#
 #
 #
 #
@@ -3988,8 +4011,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartprojisering er UKJENT, antar Mercator: "
+#
 #
 #
 #
@@ -4004,8 +4029,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "  Could not open serial port '"
 #~ msgstr "  Kunne ikke åpne serieport '"
+#
 #
 #
 #
@@ -4022,8 +4049,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG: 000 Gra."
+#
 #
 #
 #
@@ -4036,6 +4065,7 @@ msgstr "wxFB Nettsted"
 #~ msgstr ""
 #~ "'\n"
 #~ " Forslag: Forsøk 'xxx.xxx.xxx.xxx' oppføring"
+#
 #
 #
 #
@@ -4064,6 +4094,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
 #
@@ -4074,8 +4105,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid ":               "
 #~ msgstr ":               "
+#
 #
 #
 #
@@ -4097,8 +4130,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "<--Remove"
 #~ msgstr "<--Fjern"
+#
 #
 #
 #
@@ -4128,8 +4163,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Activate CM93 Offset"
 #~ msgstr "Aktiver CM93 korrigering"
+#
 #
 #
 #
@@ -4154,8 +4191,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Active Charts"
 #~ msgstr "Aktive karter"
+#
 #
 #
 #
@@ -4171,8 +4210,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Legg dette kartet til for fletting."
+#
 #
 #
 #
@@ -4183,8 +4224,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Alle, unntatt"
+#
 #
 #
 #
@@ -4200,6 +4243,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Autopilot Output Port"
 #~ msgstr "Autopilot utgangs port"
 #
@@ -4209,8 +4253,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Tilgjengelige kartmapper"
+#
 #
 #
 #
@@ -4229,6 +4275,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr "Kurs:                Utilgjengelig\n"
 #
@@ -4238,8 +4285,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -4256,8 +4305,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 korrigeringsvisning"
+#
 #
 #
 #
@@ -4274,8 +4325,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 Zoom detalj"
+#
 #
 #
 #
@@ -4294,8 +4347,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f Nm\n"
+#
 #
 #
 #
@@ -4320,8 +4375,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "Kallesignal:             "
+#
 #
 #
 #
@@ -4336,6 +4393,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Chart Groups..."
 #~ msgstr "Kartgrupper..."
 #
@@ -4343,8 +4401,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Chart Groups...New Group"
 #~ msgstr "Kartgrupper...Ny gruppe"
+#
 #
 #
 #
@@ -4362,8 +4422,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Class:                "
 #~ msgstr "Klasse:                "
+#
 #
 #
 #~ msgid "Copy"
@@ -4374,8 +4436,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "Kunne ikke løse TCP/IP vert '"
+#
 #
 #
 #
@@ -4394,8 +4458,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "Kurs:                 000 Grad.\n"
+#
 #
 #
 #
@@ -4413,8 +4479,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "Kursor: "
+#
 #
 #
 #
@@ -4452,8 +4520,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Standard datasett"
+#
 #
 #
 #
@@ -4479,8 +4549,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Slett merke"
+#
 #
 #
 #
@@ -4497,6 +4569,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "Slett utvalg"
 #
@@ -4506,8 +4579,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Delete Track"
 #~ msgstr "Slett slepestrek"
+#
 #
 #
 #
@@ -4525,8 +4600,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Destinasjon:          "
+#
 #
 #
 #
@@ -4543,8 +4620,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "ENC/Vector"
 #~ msgstr "ENC/Vektor"
+#
 #
 #
 #
@@ -4563,8 +4642,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "ETA:                  "
 #~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -4581,6 +4662,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "Aktiver Mushjul-Zoom-til-Kursor"
 #
@@ -4590,8 +4672,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Diverse"
+#
 #
 #
 #
@@ -4609,6 +4693,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
 #
@@ -4617,8 +4702,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD Dataserver"
+#
 #
 #
 #
@@ -4644,6 +4731,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Gå til merke/veipunkt"
 #
@@ -4651,8 +4739,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Groups"
 #~ msgstr "Grupper"
+#
 #
 #
 #
@@ -4681,8 +4771,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Kurs:                %03d Gra.\n"
+#
 #
 #
 #
@@ -4701,6 +4793,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Inland Blue Flag        Clear\n"
 #~ msgstr "Innenlands Blått Flagg        Fjern\n"
 #
@@ -4710,8 +4803,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Gå til"
+#
 #
 #
 #
@@ -4737,8 +4832,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Gå til posisjon"
+#
 #
 #
 #
@@ -4752,8 +4849,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Bare "
+#
 #
 #
 #
@@ -4784,8 +4883,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Tid for siste posisjonsrapport:  "
+#
 #
 #
 #
@@ -4802,8 +4903,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "META Objekter"
+#
 #
 #
 #
@@ -4838,8 +4941,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Avstandsmåling..."
+#
 #
 #
 #
@@ -4855,6 +4960,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA Datakilde"
 #
@@ -4864,8 +4970,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "NMEA Options"
 #~ msgstr "NMEA Valg"
+#
 #
 #
 #
@@ -4884,8 +4992,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "Navigasjons status:  "
+#
 #
 #
 #
@@ -4901,6 +5011,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "Alternativer for visning av eget skip"
@@ -4910,9 +5021,11 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at distance interval (NMi)"
 #~ msgstr "Plasser slepestrekpunkter ved distanse intervall (Nm):"
+#
 #
 #
 #
@@ -4930,12 +5043,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Alder for posisjonsrapport:       %3d sek.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4985,6 +5100,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Utskrift"
 #
@@ -4993,8 +5109,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Radar rings"
 #~ msgstr "Radar ringer"
+#
 #
 #
 #
@@ -5013,6 +5131,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Avstand:                %5.1f NM\n"
 #
@@ -5022,8 +5141,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Raster"
+#
 #
 #
 #
@@ -5042,8 +5163,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Svinghastighet            %3d Gra./Min. Høyre\n"
+#
 #
 #
 #
@@ -5062,8 +5185,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Svinghastighet:       > 5 Grad./30 s. Venstre\n"
+#
 #
 #
 #
@@ -5080,6 +5205,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Fjern dette kartet fra fletting."
@@ -5089,8 +5215,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Fjern dette kartet fra fletting."
+#
 #
 #
 #
@@ -5126,8 +5254,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rutedistanse"
+#
 #
 #
 #
@@ -5145,9 +5275,11 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Rute fra Slepestrek"
+#
 #
 #
 #
@@ -5173,8 +5305,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Sett kurs opp"
+#
 #
 #
 #
@@ -5191,8 +5325,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "Vis AtoN etiketter"
+#
 #
 #
 #
@@ -5233,6 +5369,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Vis slepestrek ikon"
 #
@@ -5242,8 +5379,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "Vis lag først"
+#
 #
 #
 #
@@ -5266,12 +5405,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Størrelse:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5294,12 +5435,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Størrelse:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5322,12 +5465,14 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Størrelse:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5350,8 +5495,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Speed:                  Unavailable\n"
 #~ msgstr "Fart:                  Unavailable\n"
+#
 #
 #
 #
@@ -5369,8 +5516,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi data server"
+#
 #
 #
 #
@@ -5389,6 +5538,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Tim:Min\n"
 #
@@ -5398,8 +5548,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "Text Element"
 #~ msgstr "Tekstelement"
+#
 #
 #
 #
@@ -5417,6 +5569,7 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "TidevannstrømGrafMusOver"
@@ -5427,8 +5580,10 @@ msgstr "wxFB Nettsted"
 #
 #
 #
+#
 #~ msgid "ToolBox"
 #~ msgstr "Verktøy"
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-24 20:05-0500\n"
+"POT-Creation-Date: 2012-12-24 21:28-0500\n"
 "PO-Revision-Date: 2012-08-20 12:08+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -2649,6 +2649,33 @@ msgstr "Fízlové"
 #
 msgid "Layer Name"
 msgstr "Jméno vrstvy"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Layer Route"
+msgstr "Vložit trasu"
+#
+msgid "Layer Routepoint"
+msgstr ""
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Layer Track"
+msgstr "Vložit stopu...."
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Layer Waypoint"
+msgstr "Vložit trasový bod..."
 #
 #
 #
@@ -5599,6 +5626,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
 #
@@ -5630,6 +5658,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5638,6 +5667,7 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5661,6 +5691,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "      Délka šipky předpovědi COG (minut):"
 #
@@ -5673,8 +5704,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Max rychlost vyvázaného cíle (uzle):"
+#
 #
 #
 #
@@ -5709,8 +5742,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Mapová projekce je NEZNÁMÁ, předpokládáme Mercator:"
+#
 #
 #
 #
@@ -5773,8 +5808,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
+#
 #
 #
 #
@@ -5816,8 +5853,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr "  Nemohu otevřít sériový port AIS '"
+#
 #
 #
 #
@@ -5836,6 +5875,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " COG: %03d Deg."
 #~ msgstr " COG: %03d Stu."
 #
@@ -5845,8 +5885,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG: 000 Stu."
+#
 #
 #
 #
@@ -5893,12 +5935,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
 #~ msgstr ""
 #~ "'\n"
 #~ " Doporučení: Zkus 'xxx.xxx.xxx.xxx' notaci"
+#
 #
 #
 #
@@ -5925,8 +5969,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ":               "
 #~ msgstr ":                  "
+#
 #
 #
 #
@@ -5948,8 +5994,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "<--Remove"
 #~ msgstr "<--Odstranit"
+#
 #
 #
 #
@@ -5985,8 +6033,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Activate CM93 Offset"
 #~ msgstr "Aktivovat posuny CM93"
+#
 #
 #
 #
@@ -6017,6 +6067,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Active Charts"
 #~ msgstr "Aktivní mapy"
 #
@@ -6025,8 +6076,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Active Tide/Current Data"
 #~ msgstr "Aktivní data přílivu/proudu"
+#
 #
 #
 #
@@ -6048,8 +6101,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Přidat tuto mapu do sestavy."
+#
 #
 #
 #
@@ -6083,8 +6138,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Další informace"
+#
 #
 #
 #
@@ -6130,8 +6187,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Pokouším se nahrát libgps.so"
+#
 #
 #
 #
@@ -6153,8 +6212,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Dostupné složky map"
+#
 #
 #
 #
@@ -6198,8 +6259,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Kurs:              %03d St.\n"
+#
 #
 #
 #
@@ -6223,8 +6286,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -6245,8 +6310,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "Zobrazení posunu CM93"
+#
 #
 #
 #
@@ -6333,8 +6400,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 #
 #
@@ -6421,6 +6490,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
 #
@@ -6431,8 +6501,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets"
 #~ msgstr "Posuny  CM93"
+#
 #
 #
 #
@@ -6487,8 +6559,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "Detail přiblížení CM93"
+#
 #
 #
 #
@@ -6513,8 +6587,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f nm\n"
+#
 #
 #
 #
@@ -6544,8 +6620,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "Volací znak:              "
+#
 #
 #
 #
@@ -6629,9 +6707,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 #
 #
@@ -6649,8 +6729,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart Groups..."
 #~ msgstr "Skupiny map..."
+#
 #
 #
 #
@@ -6667,13 +6749,16 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Pozice"
 #
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Kopírovat"
+#
 #
 #
 #
@@ -6695,6 +6780,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "Kurzor:"
 #
@@ -6705,8 +6791,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Deg"
 #~ msgstr "Stupně"
+#
 #
 #
 #
@@ -6729,8 +6817,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "Smazat výběr"
+#
 #
 #
 #
@@ -6753,8 +6843,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Depth Settings"
 #~ msgstr "Nastavení hloubky"
+#
 #
 #
 #
@@ -6777,6 +6869,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "ENC/Vector"
 #~ msgstr "ENC/Vector"
 #
@@ -6787,8 +6880,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Enable Manual CM93 Offsets"
 #~ msgstr "Povolit manuální posuny  CM93"
+#
 #
 #
 #
@@ -6811,8 +6906,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Atd."
+#
 #
 #
 #
@@ -6835,8 +6932,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
 #
 #
 #
@@ -6858,6 +6957,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Go To Here"
 #~ msgstr "Navigovat sem"
 #
@@ -6865,8 +6965,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Groups"
 #~ msgstr "Skupiny"
+#
 #
 #
 #
@@ -6889,8 +6991,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Jump To Position"
 #~ msgstr "Skok na pozici"
+#
 #
 #
 #
@@ -6913,8 +7017,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Leg/Route"
 #~ msgstr "Úsek/Trasa"
+#
 #
 #
 #
@@ -6937,6 +7043,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Metres"
 #~ msgstr "Metry"
 #
@@ -6948,8 +7055,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "Datový zdroj NMEA"
+#
 #
 #
 #
@@ -6972,8 +7081,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Navigation Data"
 #~ msgstr "Navigační data"
+#
 #
 #
 #
@@ -6995,9 +7106,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "Volby zobrazení vlastní lodi"
+#
 #
 #
 #
@@ -7019,9 +7132,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Umístit stopové body v intervalu (sekund):"
+#
 #
 #
 #
@@ -7043,6 +7158,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Rastr"
 #
@@ -7054,8 +7170,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Odstranit tuto mapu ze sestavy"
+#
 #
 #
 #
@@ -7077,6 +7195,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Properties..."
 #~ msgstr "Vlastnosti trasy..."
 #
@@ -7088,8 +7207,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route/Track"
 #~ msgstr "Trasa/stopa"
+#
 #
 #
 #
@@ -7112,8 +7233,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Settings"
 #~ msgstr "Nastavení"
+#
 #
 #
 #
@@ -7133,8 +7256,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "Po startu ukaž vrstvy"
+#
 #
 #
 #
@@ -7157,8 +7282,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Text Element"
 #~ msgstr "Prvek text"
+#
 #
 #
 #
@@ -7179,8 +7306,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "Příliv/proud výběr dat"
+#
 #
 #
 #
@@ -7203,6 +7332,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Track Properties..."
 #~ msgstr "Vlastnosti trasy..."
 #
@@ -7215,8 +7345,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Skut. měřítko: %8.0f"
+#
 #
 #
 #
@@ -7241,8 +7373,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Unable to load libgps"
 #~ msgstr "Nemohu nahrát libgps"
+#
 #
 #
 #
@@ -7261,8 +7395,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Use OpenGL"
 #~ msgstr "Použít OpenGL"
+#
 #
 #
 #
@@ -7285,8 +7421,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Waypoint Locking"
 #~ msgstr "Zamykání trasových bodů"
+#
 #
 #
 #
@@ -7307,6 +7445,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 #~ msgstr "X posun (Kladný posunuje mapu na východ) (NMi projektováno) :"
 #
@@ -7317,8 +7456,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
 #~ msgstr "Y posun (Kladný posunuje mapu na sever) (NMi projektováno) :"
+#
 #
 #
 #
