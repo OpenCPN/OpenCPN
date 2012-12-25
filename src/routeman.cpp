@@ -998,13 +998,9 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
 void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
 {
     //    Get the selected comm port
-    int i = m_itemCommListBox->GetSelection();
-    wxString src( m_itemCommListBox->GetString( i ) );
-
+    wxString src = m_itemCommListBox->GetValue();
     g_uploadConnection = src;                   // save for persistence
     
-    src = m_itemCommListBox->GetValue();
-
     //    And send it out
     if( m_pRoute ) m_pRoute->SendToGPS( src, true, m_pgauge );
     if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( src, m_pgauge );

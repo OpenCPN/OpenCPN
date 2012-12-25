@@ -80,8 +80,8 @@ enum
     OCPN_DBP_STC_CLK = 1 << 21,
     OCPN_DBP_STC_MON = 1 << 22,
     OCPN_DBP_STC_ATMP = 1 << 23, //AirTemp
-	OCPN_DBP_STC_TWD = 1 << 24,
-	OCPN_DBP_STC_TWS2 = 1 << 25
+    OCPN_DBP_STC_TWD = 1 << 24,
+    OCPN_DBP_STC_TWS2 = 1 << 25
 };
 
 class DashboardInstrument : public wxControl
@@ -95,6 +95,7 @@ public:
       virtual wxSize GetSize( int orient, wxSize hint ) = 0;
       void OnPaint(wxPaintEvent& WXUNUSED(event));
       virtual void SetData(int st, double data, wxString unit) = 0;
+      void SetDrawSoloInPane(bool value);
 
       int               instrumentTypeId;
 
@@ -104,6 +105,8 @@ protected:
       wxString          m_title;
 
       virtual void Draw(wxGCDC* dc) = 0;
+private:
+    bool m_drawSoloInPane;
 };
 
 class DashboardInstrument_Single : public DashboardInstrument

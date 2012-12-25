@@ -535,6 +535,7 @@ extern "C" void fromSM(double x, double y, double lat0, double lon0, double *lat
 extern "C" void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x, double *y);
 extern "C" void fromSM_ECC(double x, double y, double lat0, double lon0, double *lat, double *lon);
 
+extern "C" DECL_EXP bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, wxString *acc );
 
 
 /* API 1.9 */

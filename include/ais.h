@@ -44,6 +44,7 @@
 #include "dychart.h"
 #include "chart1.h"
 #include "datastream.h"         // For GenericPosDatEx
+#include "navutil.h"
 
 //    Constants
 #ifndef PI
@@ -343,7 +344,7 @@ public:
     int GetNumTargets(void){ return m_n_targets;}
     bool IsAISSuppressed(void){ return m_bSuppressed; }
     bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
-    AIS_Error DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos );
+    AIS_Error DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos, wxString *acc );
     
 private:
     void OnActivate(wxActivateEvent& event);
@@ -375,7 +376,7 @@ private:
 
     bool             m_bAIS_Audio_Alert_On;
     wxTimer          m_AIS_Audio_Alert_Timer;
-    wxSound          m_AIS_Sound;
+    OCPN_Sound       m_AIS_Sound;
     int              m_n_targets;
     bool             m_bSuppressed;
     bool             m_bGeneralAlert;

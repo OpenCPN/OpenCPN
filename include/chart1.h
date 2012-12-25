@@ -388,6 +388,7 @@ class MyFrame: public wxFrame
     bool                bPrevOGL;
 
     MsgPriorityHash     NMEA_Msg_Hash;
+    wxString            m_VDO_accumulator;
 
     DECLARE_EVENT_TABLE()
 };

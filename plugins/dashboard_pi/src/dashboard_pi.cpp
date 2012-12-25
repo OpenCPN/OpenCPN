@@ -65,7 +65,7 @@ enum {
     ID_DBP_I_DPT, ID_DBP_D_DPT, ID_DBP_I_TMP, ID_DBP_I_VMG, ID_DBP_D_VMG, ID_DBP_I_RSA,
     ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_CLK, ID_DBP_I_SUN,
     ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
-    ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT,
+    ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT,ID_DBP_D_WDH,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -144,6 +144,8 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Sunrise/Sunset");
         case ID_DBP_D_MON:
             return _("Moon phase");
+        case ID_DBP_D_WDH:
+            return _("Wind history");
     }
     return _T("");
 }
@@ -188,6 +190,7 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_D_GPS:
         case ID_DBP_D_HDT:
         case ID_DBP_D_MON:
+        case ID_DBP_D_WDH:
             item.SetImage( 1 );
             break;
     }
@@ -280,7 +283,7 @@ int dashboard_pi::Init( void )
     mPriTWA = 99; // True wind
     mPriDepth = 99;
     m_config_version = -1;
-    
+
     g_pFontTitle = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
     g_pFontData = new wxFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
     g_pFontLabel = new wxFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
@@ -301,12 +304,12 @@ int dashboard_pi::Init( void )
             _("Dashboard"), _T(""), NULL, DASHBOARD_TOOL_POSITION, 0, this );
 
     ApplyConfig();
-    
+
     //  If we loaded a version 1 config setup, convert now to version 2
     if(m_config_version == 1) {
         SaveConfig();
     }
-    
+
     Start( 1000, wxTIMER_CONTINUOUS );
 
     return ( WANTS_CURSOR_LATLON | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL
@@ -823,6 +826,30 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             }
         }
     }
+        //      Process an AIVDO message
+    else if( sentence.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) ) {
+        PlugIn_Position_Fix_Ex gpd;
+        if( DecodeSingleVDOMessage(sentence, &gpd, &m_VDO_accumulator) ) {
+
+            if( !wxIsNaN(gpd.Lat) )
+                SendSentenceToAllInstruments( OCPN_DBP_STC_LAT, gpd.Lat, _T("SDMM") );
+
+            if( !wxIsNaN(gpd.Lon) )
+                SendSentenceToAllInstruments( OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM") );
+
+            if( !wxIsNaN(gpd.Sog) )
+                SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, gpd.Sog, _T("Kts") );
+
+            if( !wxIsNaN(gpd.Cog) )
+                SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("Deg") );
+
+            if( !wxIsNaN(gpd.Hdt) ) {
+                if( gpd.Hdt < 999. ) {
+                    SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("DegT") );
+                }
+            }
+        }
+    }
 }
 
 void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
@@ -1134,7 +1161,7 @@ void dashboard_pi::ApplyConfig( void )
             }
             m_ArrayOfDashboardWindow.Remove( cont );
             delete cont;
-            
+
         } else if( !cont->m_pDashboardWindow ) {
             // A new dashboard is created
             cont->m_pDashboardWindow = new DashboardWindow( GetOCPNCanvasWindow(), wxID_ANY,
@@ -1142,11 +1169,11 @@ void dashboard_pi::ApplyConfig( void )
             cont->m_pDashboardWindow->SetInstrumentList( cont->m_aInstrumentList );
             bool vertical = orient == wxVERTICAL;
             wxSize sz = cont->m_pDashboardWindow->GetMinSize();
-// Mac has a little trouble with initial Layout() sizing...            
+// Mac has a little trouble with initial Layout() sizing...
 #ifdef __WXOSX__
             if(sz.x == 0)
                 sz.IncTo( wxSize( 160, 388) );
-#endif            
+#endif
             m_pauimgr->AddPane( cont->m_pDashboardWindow,
                 wxAuiPaneInfo().Name( cont->m_sName ).Caption( cont->m_sCaption ).CaptionVisible( true ).TopDockable(
                 !vertical ).BottomDockable( !vertical ).LeftDockable( vertical ).RightDockable( vertical ).MinSize(
@@ -1309,11 +1336,14 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemBoxSizer04->Add( m_pButtonAdd, 0, wxEXPAND | wxALL, border_size );
     m_pButtonAdd->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(DashboardPreferencesDialog::OnInstrumentAdd), NULL, this );
+
+/* TODO  Instrument Properties
     m_pButtonEdit = new wxButton( m_pPanelDashboard, wxID_ANY, _("Edit"), wxDefaultPosition,
             wxDefaultSize );
     itemBoxSizer04->Add( m_pButtonEdit, 0, wxEXPAND | wxALL, border_size );
     m_pButtonEdit->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(DashboardPreferencesDialog::OnInstrumentEdit), NULL, this );
+*/
     m_pButtonDelete = new wxButton( m_pPanelDashboard, wxID_ANY, _("Delete"), wxDefaultPosition,
             wxSize( 20, -1 ) );
     itemBoxSizer04->Add( m_pButtonDelete, 0, wxEXPAND | wxALL, border_size );
@@ -1479,7 +1509,7 @@ void DashboardPreferencesDialog::UpdateButtonsState()
     bool enable = ( item != -1 );
 
     m_pButtonDelete->Enable( enable );
-    m_pButtonEdit->Enable( false ); // TODO: Properties
+//    m_pButtonEdit->Enable( false ); // TODO: Properties
     m_pButtonUp->Enable( item > 0 );
     m_pButtonDown->Enable( item != -1 && item < m_pListCtrlInstruments->GetItemCount() - 1 );
 }
@@ -1936,6 +1966,10 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 instrument = new DashboardInstrument_Moon( this, wxID_ANY,
                         getInstrumentCaption( id ) );
                 break;
+            case ID_DBP_D_WDH:
+                instrument = new DashboardInstrument_WindDirHistory(this, wxID_ANY,
+                        getInstrumentCaption( id ) );
+                  break;
         }
         if( instrument ) {
             instrument->instrumentTypeId = id;

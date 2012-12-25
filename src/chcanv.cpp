@@ -271,6 +271,8 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern Multiplexer      *g_pMUX;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 
+extern OCPN_Sound        g_anchorwatch_sound;
+
 //  TODO why are these static?
 static int mouse_x;
 static int mouse_y;
@@ -4167,7 +4169,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     if( !pPanKeyTimer->IsRunning() && ( m_panx || m_pany ) ) pPanKeyTimer->Start( 1,
                 wxTIMER_ONE_SHOT );
 
+#ifndef __WXMAC__    
     event.Skip();
+#endif    
 }
 
 void ChartCanvas::OnKeyUp( wxKeyEvent &event )
@@ -4323,7 +4327,11 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     DistanceBearingMercator( segShow_point_b->m_lat, segShow_point_b->m_lon,
                                              segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist );
 
-                    s.Append( _("Route: ") );
+                    if( !pr->m_bIsInLayer )
+                        s.Append( _("Route: ") );
+                    else
+                        s.Append( _("Layer Route: ") );
+                    
                     if( pr->m_RouteNameString.IsEmpty() ) s.Append( _("(unnamed)") );
                     else
                         s.Append( pr->m_RouteNameString );
@@ -6680,17 +6688,18 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
     } else
         AnchorAlertOn2 = false;
 
+    
     if( play_sound ) {
-        if( !m_anchorwatch_sound.IsOk() ) m_anchorwatch_sound.Create( g_sAIS_Alert_Sound_File );
+        if( !g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Create( g_sAIS_Alert_Sound_File );
 
 #ifndef __WXMSW__
-        if(m_anchorwatch_sound.IsOk() && !m_anchorwatch_sound.IsPlaying())
-            m_anchorwatch_sound.Play();
+        if(g_anchorwatch_sound.IsOk() && !g_anchorwatch_sound.IsPlaying())
+            g_anchorwatch_sound.Play();
 #else
-        if( m_anchorwatch_sound.IsOk() ) m_anchorwatch_sound.Play();
+            if( g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Play();
 #endif
     } else {
-        if( m_anchorwatch_sound.IsOk() ) m_anchorwatch_sound.Stop();
+        if( g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Stop();
     }
 
 }
@@ -8370,87 +8379,128 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     }
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
-        menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
-        if( m_pSelectedRoute ) {
-
-            if( m_pSelectedRoute->IsActive() ) {
-                int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
-                if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
-                    menuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
-                }
-
-                menuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
-            }
-            else {
-                menuRoute->Append( ID_RT_MENU_ACTIVATE, _( "Activate" ) );
-            }
+        bool blay = false;
+        if( m_pSelectedRoute && m_pSelectedRoute->m_bIsInLayer ) 
+            blay = true;
+        
+        if( blay ){
+            delete menuRoute;
+            menuRoute = new wxMenu( _("Layer Route") );
+            menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
         }
-        menuRoute->Append( ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
-        menuRoute->Append( ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
-        menuRoute->Append( ID_RT_MENU_COPY, _( "Copy..." ) );
-        menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
-        menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+        else {
+            menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
+            if( m_pSelectedRoute ) {
 
+                if( m_pSelectedRoute->IsActive() ) {
+                    int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
+                    if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
+                        menuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
+                    }
+
+                    menuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
+                }
+                else {
+                    menuRoute->Append( ID_RT_MENU_ACTIVATE, _( "Activate" ) );
+                }
+            }
+            menuRoute->Append( ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
+            menuRoute->Append( ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
+            menuRoute->Append( ID_RT_MENU_COPY, _( "Copy as KML..." ) );
+            menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
+            menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+        }
         //      Set this menu as the "focused context menu"
         menuFocus = menuRoute;
     }
 
     if( seltype & SELTYPE_TRACKSEGMENT ) {
-        menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
-        menuTrack->Append( ID_TK_MENU_COPY, _( "Copy" ) );
-        menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
-
+        bool blay = false;
+        if( m_pSelectedTrack && m_pSelectedTrack->m_bIsInLayer ) 
+            blay = true;
+        
+        if( blay ) {
+            delete menuTrack;
+            menuTrack = new wxMenu( _("Layer Track") );
+            menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
+        }
+        else {
+            menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
+            menuTrack->Append( ID_TK_MENU_COPY, _( "Copy As KML" ) );
+            menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
+        }
+        
         //      Set this menu as the "focused context menu"
         menuFocus = menuTrack;
     }
 
     if( seltype & SELTYPE_ROUTEPOINT ) {
-        menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
-        if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
-            menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
-        }
-        if( m_pSelectedRoute->GetnPoints() > 2 )
-            menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
-
-        menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
-
-        if( m_pFoundRoutePoint->m_IconName != _T("mob") )
-            menuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
-
-        if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+        bool blay = false;
+        if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer ) 
+            blay = true;
         
+        if( blay ){
+            delete menuWaypoint;
+            menuWaypoint = new wxMenu( _("Layer Routepoint") );
+            menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+        }
+        else {
+            menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
+                menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
+            }
+            if( m_pSelectedRoute->GetnPoints() > 2 )
+                menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
+
+            menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy as KML" ) );
+
+            if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+                menuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
+
+            if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+        }
         //      Set this menu as the "focused context menu"
         menuFocus = menuWaypoint;
     }
 
     if( seltype & SELTYPE_MARKPOINT ) {
-        menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+        bool blay = false;
+        if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer ) 
+            blay = true;
+        
+        if( blay ){
+            delete menuWaypoint;
+            menuWaypoint = new wxMenu( _("Layer Waypoint") );
+            menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+        }
+        else {
+            menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
 
-        if( !g_pRouteMan->GetpActiveRoute() )
-            menuWaypoint->Append( ID_WP_MENU_GOTO, _( "Navigate To This" ) );
+            if( !g_pRouteMan->GetpActiveRoute() )
+                menuWaypoint->Append( ID_WP_MENU_GOTO, _( "Navigate To This" ) );
 
-        menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy" ) );
+            menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-        if( m_pFoundRoutePoint->m_IconName != _T("mob") )
-            menuWaypoint->Append( ID_WP_MENU_DELPOINT, _( "Delete" ) );
+            if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+                menuWaypoint->Append( ID_WP_MENU_DELPOINT, _( "Delete" ) );
 
-        if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+            if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
 
-        if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 )
-                || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
-            menuWaypoint->Append( ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
-        else
-
-            if( !( m_pFoundRoutePoint->m_bIsInLayer )
+            if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 ) || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
+                menuWaypoint->Append( ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
+            else {
+                if( !( m_pFoundRoutePoint->m_bIsInLayer )
                     && ( ( NULL == pAnchorWatchPoint1 ) || ( NULL == pAnchorWatchPoint2 ) ) ) {
 
-                double dist;
-                double brg;
-                DistanceBearingMercator( m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, gLat,
+                    double dist;
+                    double brg;
+                    DistanceBearingMercator( m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, gLat,
                                          gLon, &brg, &dist );
-                if( dist * 1852. <= g_nAWMax )
-                    menuWaypoint->Append( ID_WP_MENU_SET_ANCHORWATCH,  _( "Set Anchor Watch" ) );
+                    if( dist * 1852. <= g_nAWMax )
+                        menuWaypoint->Append( ID_WP_MENU_SET_ANCHORWATCH,  _( "Set Anchor Watch" ) );
+                }
             }
+        }
 
         //      Set this menu as the "focused context menu"
         menuFocus = menuWaypoint;
@@ -9918,7 +9968,12 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
         dc.DrawText( routeInfo, xp, yp );
 
-        wxString s0( _("Route: ") );
+        wxString s0;
+        if( !route->m_bIsInLayer )
+            s0.Append( _("Route: ") );
+        else
+            s0.Append( _("Layer Route: ") );
+        
         s0 += FormatDistanceAdaptive( route->m_route_length + dist );
         RenderExtraRouteLegInfo( dc, r_rband, s0 );
     }

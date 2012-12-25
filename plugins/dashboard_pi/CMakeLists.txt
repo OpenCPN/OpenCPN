@@ -100,6 +100,9 @@ SET(SRC_DASHBOARD
             src/clock.h
             src/icons.cpp
             src/icons.h
+		src/wind_history.cpp
+		src/wind_history.h
+
  	)
 
 SET(SRC_NMEA0183
