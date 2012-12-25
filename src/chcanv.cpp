@@ -8373,87 +8373,128 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     }
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
-        menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
-        if( m_pSelectedRoute ) {
-
-            if( m_pSelectedRoute->IsActive() ) {
-                int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
-                if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
-                    menuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
-                }
-
-                menuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
-            }
-            else {
-                menuRoute->Append( ID_RT_MENU_ACTIVATE, _( "Activate" ) );
-            }
+        bool blay = false;
+        if( m_pSelectedRoute && m_pSelectedRoute->m_bIsInLayer ) 
+            blay = true;
+        
+        if( blay ){
+            delete menuRoute;
+            menuRoute = new wxMenu( _("Layer Route") );
+            menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
         }
-        menuRoute->Append( ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
-        menuRoute->Append( ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
-        menuRoute->Append( ID_RT_MENU_COPY, _( "Copy as KML..." ) );
-        menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
-        menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+        else {
+            menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
+            if( m_pSelectedRoute ) {
 
+                if( m_pSelectedRoute->IsActive() ) {
+                    int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
+                    if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
+                        menuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
+                    }
+
+                    menuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
+                }
+                else {
+                    menuRoute->Append( ID_RT_MENU_ACTIVATE, _( "Activate" ) );
+                }
+            }
+            menuRoute->Append( ID_RT_MENU_INSERT, _( "Insert Waypoint" ) );
+            menuRoute->Append( ID_RT_MENU_APPEND, _( "Append Waypoint" ) );
+            menuRoute->Append( ID_RT_MENU_COPY, _( "Copy as KML..." ) );
+            menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
+            menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+        }
         //      Set this menu as the "focused context menu"
         menuFocus = menuRoute;
     }
 
     if( seltype & SELTYPE_TRACKSEGMENT ) {
-        menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
-        menuTrack->Append( ID_TK_MENU_COPY, _( "Copy As KML" ) );
-        menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
-
+        bool blay = false;
+        if( m_pSelectedTrack && m_pSelectedTrack->m_bIsInLayer ) 
+            blay = true;
+        
+        if( blay ) {
+            delete menuTrack;
+            menuTrack = new wxMenu( _("Layer Track") );
+            menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
+        }
+        else {
+            menuTrack->Append( ID_TK_MENU_PROPERTIES, _( "Properties..." ) );
+            menuTrack->Append( ID_TK_MENU_COPY, _( "Copy As KML" ) );
+            menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
+        }
+        
         //      Set this menu as the "focused context menu"
         menuFocus = menuTrack;
     }
 
     if( seltype & SELTYPE_ROUTEPOINT ) {
-        menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
-        if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
-            menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
-        }
-        if( m_pSelectedRoute->GetnPoints() > 2 )
-            menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
-
-        menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy as KML" ) );
-
-        if( m_pFoundRoutePoint->m_IconName != _T("mob") )
-            menuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
-
-        if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+        bool blay = false;
+        if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer ) 
+            blay = true;
         
+        if( blay ){
+            delete menuWaypoint;
+            menuWaypoint = new wxMenu( _("Layer Routepoint") );
+            menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+        }
+        else {
+            menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
+                menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
+            }
+            if( m_pSelectedRoute->GetnPoints() > 2 )
+                menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
+
+            menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy as KML" ) );
+
+            if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+                menuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
+
+            if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+        }
         //      Set this menu as the "focused context menu"
         menuFocus = menuWaypoint;
     }
 
     if( seltype & SELTYPE_MARKPOINT ) {
-        menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+        bool blay = false;
+        if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer ) 
+            blay = true;
+        
+        if( blay ){
+            delete menuWaypoint;
+            menuWaypoint = new wxMenu( _("Layer Waypoint") );
+            menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+        }
+        else {
+            menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
 
-        if( !g_pRouteMan->GetpActiveRoute() )
-            menuWaypoint->Append( ID_WP_MENU_GOTO, _( "Navigate To This" ) );
+            if( !g_pRouteMan->GetpActiveRoute() )
+                menuWaypoint->Append( ID_WP_MENU_GOTO, _( "Navigate To This" ) );
 
-        menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy as KML" ) );
+            menuWaypoint->Append( ID_WPT_MENU_COPY, _( "Copy as KML" ) );
 
-        if( m_pFoundRoutePoint->m_IconName != _T("mob") )
-            menuWaypoint->Append( ID_WP_MENU_DELPOINT, _( "Delete" ) );
+            if( m_pFoundRoutePoint->m_IconName != _T("mob") )
+                menuWaypoint->Append( ID_WP_MENU_DELPOINT, _( "Delete" ) );
 
-        if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+            if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
 
-        if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 )
-                || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
-            menuWaypoint->Append( ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
-        else
-
-            if( !( m_pFoundRoutePoint->m_bIsInLayer )
+            if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 ) || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
+                menuWaypoint->Append( ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
+            else {
+                if( !( m_pFoundRoutePoint->m_bIsInLayer )
                     && ( ( NULL == pAnchorWatchPoint1 ) || ( NULL == pAnchorWatchPoint2 ) ) ) {
 
-                double dist;
-                double brg;
-                DistanceBearingMercator( m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, gLat,
+                    double dist;
+                    double brg;
+                    DistanceBearingMercator( m_pFoundRoutePoint->m_lat, m_pFoundRoutePoint->m_lon, gLat,
                                          gLon, &brg, &dist );
-                if( dist * 1852. <= g_nAWMax )
-                    menuWaypoint->Append( ID_WP_MENU_SET_ANCHORWATCH,  _( "Set Anchor Watch" ) );
+                    if( dist * 1852. <= g_nAWMax )
+                        menuWaypoint->Append( ID_WP_MENU_SET_ANCHORWATCH,  _( "Set Anchor Watch" ) );
+                }
             }
+        }
 
         //      Set this menu as the "focused context menu"
         menuFocus = menuWaypoint;
