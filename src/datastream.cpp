@@ -253,7 +253,7 @@ void DataStream::Open(void)
                         tconn_addr.Service(0);          // use ephemeral out port
                         tconn_addr.AnyAddress();    
                         m_tsock = new wxDatagramSocket(tconn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
-                        wxString addr = tconn_addr.IPAddress();
+                        wxString addr = m_addr.IPAddress();
                         if( addr.EndsWith(_T("255")) ) {
                             int broadcastEnable=1;
                             bool bam = m_tsock->SetOption(SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
