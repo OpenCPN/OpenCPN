@@ -6416,6 +6416,10 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
         wxLogMessage( msg );
     }
     
+    //  The message must be at least reasonably formed...
+    if( (str_buf[0] != '$')  &&  (str_buf[0] != '!') )
+        return;
+    
     //    Send NMEA sentences to PlugIns
     if( g_pi_manager ) g_pi_manager->SendNMEASentenceToAllPlugIns( str_buf );
 
