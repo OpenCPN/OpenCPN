@@ -4327,7 +4327,11 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                     DistanceBearingMercator( segShow_point_b->m_lat, segShow_point_b->m_lon,
                                              segShow_point_a->m_lat, segShow_point_a->m_lon, &brg, &dist );
 
-                    s.Append( _("Route: ") );
+                    if( !pr->m_bIsInLayer )
+                        s.Append( _("Route: ") );
+                    else
+                        s.Append( _("Layer Route: ") );
+                    
                     if( pr->m_RouteNameString.IsEmpty() ) s.Append( _("(unnamed)") );
                     else
                         s.Append( pr->m_RouteNameString );
@@ -9964,7 +9968,12 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
         dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
         dc.DrawText( routeInfo, xp, yp );
 
-        wxString s0( _("Route: ") );
+        wxString s0;
+        if( !route->m_bIsInLayer )
+            s0.Append( _("Route: ") );
+        else
+            s0.Append( _("Layer Route: ") );
+        
         s0 += FormatDistanceAdaptive( route->m_route_length + dist );
         RenderExtraRouteLegInfo( dc, r_rband, s0 );
     }
