@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1105\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-24 21:28-0500\n"
+"POT-Creation-Date: 2012-12-25 11:42-0500\n"
 "PO-Revision-Date: 2012-11-13 13:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC sailingteam <sailingteam@isc.tuc.gr>\n"
@@ -1615,6 +1615,10 @@ msgstr "Όνομα ταξιδιού"
 #
 #, fuzzy
 msgid "Layer Route"
+msgstr "Επικόλληση διαδρομής"
+#
+#, fuzzy
+msgid "Layer Route: "
 msgstr "Επικόλληση διαδρομής"
 #
 msgid "Layer Routepoint"
@@ -3244,13 +3248,16 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Όλα εκτός από"
 #
 #
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Αντιγραφή"
+#
 #
 #
 #

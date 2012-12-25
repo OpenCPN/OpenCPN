@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-24 21:28-0500\n"
+"POT-Creation-Date: 2012-12-25 11:42-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
@@ -1717,6 +1717,10 @@ msgstr "Nom de la couche"
 #
 #, fuzzy
 msgid "Layer Route"
+msgstr "Route : Coller"
+#
+#, fuzzy
+msgid "Layer Route: "
 msgstr "Route : Coller"
 #
 msgid "Layer Routepoint"
@@ -3475,20 +3479,25 @@ msgid "wxFB Website"
 msgstr "Site web wxFB"
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Mosaïque des cartes : Ajouter cette carte"
+#
 #
 #
 #~ msgid "All but"
 #~ msgstr " Tout mais "
 #
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Copier"
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr " Seulement"
+#
 #
 #
 #~ msgid "Remove this chart from quilt."
