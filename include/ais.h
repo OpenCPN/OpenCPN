@@ -344,7 +344,7 @@ public:
     int GetNumTargets(void){ return m_n_targets;}
     bool IsAISSuppressed(void){ return m_bSuppressed; }
     bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
-    AIS_Error DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos );
+    AIS_Error DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos, wxString *acc );
     
 private:
     void OnActivate(wxActivateEvent& event);

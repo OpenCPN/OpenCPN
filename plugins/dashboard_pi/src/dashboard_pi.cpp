@@ -826,6 +826,30 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             }
         }
     }
+        //      Process an AIVDO message
+    else if( sentence.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) ) {
+        PlugIn_Position_Fix_Ex gpd;
+        if( DecodeSingleVDOMessage(sentence, &gpd, &m_VDO_accumulator) ) {
+
+            if( !wxIsNaN(gpd.Lat) )
+                SendSentenceToAllInstruments( OCPN_DBP_STC_LAT, gpd.Lat, _T("SDMM") );
+
+            if( !wxIsNaN(gpd.Lon) )
+                SendSentenceToAllInstruments( OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM") );
+
+            if( !wxIsNaN(gpd.Sog) )
+                SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, gpd.Sog, _T("Kts") );
+
+            if( !wxIsNaN(gpd.Cog) )
+                SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("Deg") );
+
+            if( !wxIsNaN(gpd.Hdt) ) {
+                if( gpd.Hdt < 999. ) {
+                    SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("DegT") );
+                }
+            }
+        }
+    }
 }
 
 void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )

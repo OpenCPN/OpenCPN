@@ -6676,15 +6676,17 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             GenericPosDatEx gpd;
             AIS_Error nerr = AIS_GENERIC_ERROR;
             if(g_pAIS) 
-                nerr = g_pAIS->DecodeSingleVDO(str_buf, &gpd);
+                nerr = g_pAIS->DecodeSingleVDO(str_buf, &gpd, &m_VDO_accumulator);
             if(nerr == AIS_NoError){
                 if( !wxIsNaN(gpd.kLat) )
                     gLat = gpd.kLat;
                 if( !wxIsNaN(gpd.kLon) ) 
                     gLon = gpd.kLon;
                 
-                gCog = gpd.kCog;
-                gSog = gpd.kSog;
+                if( !wxIsNaN(gpd.kCog) ) 
+                    gCog = gpd.kCog;
+                if( !wxIsNaN(gpd.kSog) ) 
+                    gSog = gpd.kSog;
                 
                 if( !wxIsNaN(gpd.kVar) ) {
                     gVar = gpd.kVar;

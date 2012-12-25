@@ -1280,7 +1280,7 @@ void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
 //----------------------------------------------------------------------------------
 //      Decode a single AIVDO sentence to a Generic Position Report
 //----------------------------------------------------------------------------------
-AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos )
+AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos, wxString *accumulator )
 {
     //  Make some simple tests for validity
     if( str.Len() > 100 )
@@ -1290,6 +1290,9 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
         return AIS_NMEAVDX_CHECKSUM_BAD;
 
     if( !pos ) 
+        return AIS_GENERIC_ERROR;
+    
+    if( !accumulator ) 
         return AIS_GENERIC_ERROR;
     
     //  We only process AIVDO messages
@@ -1310,12 +1313,43 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
         
     token = tkz.GetNextToken();         // skip 2 fields
     token = tkz.GetNextToken();
+    
+    wxString string_to_parse;
+    string_to_parse.Clear();
+    
+    //  Fill the output structure with all NANs
+    pos->kLat = NAN;
+    pos->kLon = NAN;
+    pos->kCog = NAN;
+    pos->kSog = NAN;
+    pos->kHdt = NAN;
+    pos->kVar = NAN;
+    pos->kHdm = NAN;
         
-    wxString string_to_parse = tkz.GetNextToken();    // tha actual data
+    //  Simple case first
+    //  First and only part of a one-part sentence
+    if( ( 1 == nsentences ) && ( 1 == isentence ) ) {
+        string_to_parse = tkz.GetNextToken();         // the encapsulated data
+    }
+    
+    else if( nsentences > 1 ) {
+        if( 1 == isentence ) {
+            *accumulator = tkz.GetNextToken();         // the encapsulated data
+        }
         
-      // We only parse the first part of one part sentences
-    if( ( 1 != nsentences ) || ( 1 != isentence ) )
-        return AIS_GENERIC_ERROR;
+        else {
+            accumulator->Append(tkz.GetNextToken() );
+        }
+        
+        if( isentence == nsentences ) {         // ready to parse
+            string_to_parse = *accumulator;
+        }
+    }
+    
+    if( string_to_parse.IsEmpty() && (nsentences > 1) ) {      // not ready, so return with NAN
+        return AIS_NoError;                                    // but no error
+    }
+                    
         
     //  Create the bit accessible string
     AIS_Bitstring strbit( string_to_parse.mb_str() );
@@ -1354,10 +1388,10 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
                 //  VDO messages do not contain variation or magnetic heading
                 pos->kVar = NAN;
                 pos->kHdm = NAN;
-                    
+                break;
             }
             default:
-                break;
+                return AIS_GENERIC_ERROR;       // unrecognised sentence
         }
         
         return AIS_NoError;

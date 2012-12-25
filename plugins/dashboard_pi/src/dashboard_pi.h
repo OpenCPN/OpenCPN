@@ -146,7 +146,7 @@ public:
       void ShowDashboard( size_t id, bool visible );
       int GetToolbarItemId(){ return m_toolbar_item_id; }
       int GetDashboardWindowShownCount();
-      
+
 private:
       bool LoadConfig(void);
       void ApplyConfig(void);
@@ -170,7 +170,8 @@ private:
       double               mHdm;
       wxDateTime           mUTCDateTime;
       int                  m_config_version;
-      
+      wxString             m_VDO_accumulator;
+
 //protected:
 //      DECLARE_EVENT_TABLE();
 };

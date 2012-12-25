@@ -1587,6 +1587,34 @@ bool DeleteOptionsPage( wxScrolledWindow* page )
     return g_pOptions->DeletePage( page );
 }
 
+bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, wxString *accumulator )
+{
+    if(!pos)
+        return false;
+    
+    GenericPosDatEx gpd;
+    AIS_Error nerr = AIS_GENERIC_ERROR;
+    if(g_pAIS) 
+        nerr = g_pAIS->DecodeSingleVDO(str, &gpd, accumulator);
+    if(nerr == AIS_NoError){
+        pos->Lat = gpd.kLat;
+        pos->Lon = gpd.kLon;
+        pos->Cog = gpd.kCog;
+        pos->Sog = gpd.kSog;
+        pos->Hdt = gpd.kHdt;
+        
+        //  Fill in the dummy values
+        pos->FixTime = 0;
+        pos->Hdm = 1000;
+        pos->Var = 1000;
+        pos->nSats = 0;
+        
+        return true;
+    }
+        
+    return false;
+}
+
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
 //-----------------------------------------------------------------------------------------
