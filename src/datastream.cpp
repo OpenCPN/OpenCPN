@@ -912,15 +912,19 @@ void *OCP_DataStreamInput_Thread::Entry()
         
 
         bool b_inner = true;
+        bool b_sleep = false;
         dwRead = 0;
         n_timeout = 0;
         wxDateTime now = wxDateTime::Now();
         int t = now.GetTicks();                 // set a separate timer not controlled by serial port
         ic=0;
         while( b_inner ) {
-            if (ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL))
+            if( b_sleep )                       // we need a sleep if the serial port does not honor commtimeouts
+                wxSleep(1);
+            if(ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL))
             {
                 if(1 == dwOneRead) {
+                    b_sleep = false;
                     szBuf[ic] = chRead;
                     dwRead++;
                     if(ic++ > READ_BUF_SIZE - 1)
@@ -942,6 +946,8 @@ void *OCP_DataStreamInput_Thread::Entry()
                             int tt = then.GetTicks();
                             if( (tt - t) <  (max_timeout * loop_timeout)/1000 ) {
                                 b_close = false;
+                                n_timeout = 0;
+                                b_sleep = true;
                             }
                         }
                             
@@ -957,6 +963,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                     else if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0)) {
                         goto thread_exit;                               // smooth exit
                     }
+                    
                     else {
                         //      Check for any pending output message
                         if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->Lock()) ){
@@ -966,7 +973,9 @@ void *OCP_DataStreamInput_Thread::Entry()
                                 m_outmsg.Clear();
                             }
                             m_pout_mutex->Unlock();
+                            
                         }
+
                     }
                 }
             }
