@@ -1,60 +1,47 @@
-# SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR &lt;EMAIL@ADDRESS&gt;, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 2.4.708 beta for 2.5\n"
+"Project-Id-Version: grib_pi 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:28-0400\n"
-"PO-Revision-Date: 2011-07-10 12:28+0100\n"
+"POT-Creation-Date: 2012-05-22 22:21-0400\n"
+"PO-Revision-Date: 2012-12-23 10:31+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
-"Language-Team:  <rider2@kpnmail.nl>\n"
+"Language-Team: rider2@kpnmail.nl\n"
+"Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
-"X-Poedit-Language: Dutch\n"
-"X-Poedit-Country: NETHERLANDS\n"
-"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Bookmarks: -1,-1,-1,-1,-1,182,-1,-1,-1,-1\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #
 #
-msgid "&Close"
-msgstr "&Sluiten"
-
-#
-#
-msgid "Current Velocity, Kts."
-msgstr "stroomsnelheid (knopen)"
-
-#
-#
-msgid "GRIB"
-msgstr "GRIB"
-
-#
-#
-msgid "GRIB Data"
-msgstr "GRIB gegevens"
-
-#
-#
+#: src/grib.h:124 src/grib_pi.cpp:277 src/grib_pi.cpp:346
 msgid "GRIB Display Control"
 msgstr "GRIB Weergaveopties"
 
 #
-#
-msgid "GRIB File Directory"
-msgstr "Map voor GRIB bestand"
+#: src/grib_pi.cpp:118 src/grib_pi.cpp:208 src/grib_pi.cpp:261
+msgid "Grib"
+msgstr "Grib"
 
 #
+#
+#: src/grib_pi.cpp:177 src/grib_pi.cpp:230
+msgid "GRIB"
+msgstr "GRIB"
+
+#
+#: src/grib_pi.cpp:183
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "GRIB PlugIn voor OpenCPN"
 
 #
+#: src/grib_pi.cpp:189
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
@@ -75,76 +62,106 @@ msgstr ""
 "- stroomrichting en -snelheid."
 
 #
+#: src/grib_pi.cpp:221
 msgid "GRIB Preferences"
 msgstr "GRIB voorkeuren"
 
 #
-msgid "Grib"
-msgstr "Grib"
-
 #
-#
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
-
-#
-#
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte HTSGW GRIB te zien."
-
-#
-#
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte OCEAN CURRENT GRIB te zien."
-
-#
-#
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
-
-#
-#
-msgid "Pressure, mBar"
-msgstr "luchtdruk (hPa)"
-
-#
-#
-msgid "Sea Surface Temp, C"
-msgstr "zeewatertemperatuur (°C)"
-
-#
-#
-msgid "Select GRIB Directory"
-msgstr "Map voor GRIB bestand"
-
-#
-#
+#: src/grib_pi.cpp:234
 msgid "Show GRIB icon"
 msgstr "Toon GRIB-icoon"
 
 #
 #
-msgid "Significant Wave Height, m"
-msgstr "significante golfhoogte (m)"
-
-#
-#
+#: src/grib_pi.cpp:237
 msgid "Use High Definition Graphics"
 msgstr "Gebruik hoge grafische resolutie"
 
-#
-#
-#, c-format
-msgid "WARNING:  QuickScat GRIB data is %d hours old."
-msgstr "WAARSCHUWING: QuickScat GRIB gegevens zijn %d uur oud"
+#: src/grib_pi.cpp:240
+msgid "Show metres/sec for Wind Speed"
+msgstr "Toon windsnelheid in m/sec"
 
 #
 #
+#: src/grib.cpp:195
+msgid "GRIB File Directory"
+msgstr "Map voor GRIB bestand"
+
+#
+#
+#: src/grib.cpp:221
+msgid "GRIB Data"
+msgstr "GRIB gegevens"
+
+#
+#
+#: src/grib.cpp:234
+msgid "Wind Speed, Kts."
+msgstr "windsnelheid (knopen)"
+
+#
+#
+#: src/grib.cpp:236
+msgid "Wind Speed, m/sec."
+msgstr "windsnelheid (m/sec)"
+
+#
+#
+#: src/grib.cpp:248
 msgid "Wind Direction"
 msgstr "windrichting"
 
 #
 #
-msgid "Wind Speed, Kts."
-msgstr "windsnelheid (knopen)"
+#: src/grib.cpp:258
+msgid "Pressure, mBar"
+msgstr "luchtdruk (hPa)"
 
+#
+#
+#: src/grib.cpp:268
+msgid "Significant Wave Height, m"
+msgstr "significante golfhoogte (m)"
+
+#
+#
+#: src/grib.cpp:279
+msgid "Sea Surface Temp, C"
+msgstr "zeewatertemperatuur (°C)"
+
+#
+#
+#: src/grib.cpp:289
+msgid "Current Velocity, Kts."
+msgstr "stroomsnelheid (knopen)"
+
+#
+#
+#: src/grib.cpp:304
+msgid "&Close"
+msgstr "&Sluiten"
+
+#
+#
+#: src/grib.cpp:510
+msgid "Select GRIB Directory"
+msgstr "Map voor GRIB bestand"
+
+#
+#
+#: src/grib.cpp:1092
+msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgstr "Zoom uit of verklein schaal om onderdrukte HTSGW GRIB te zien."
+
+#
+#
+#: src/grib.cpp:1156
+msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+
+#
+#
+#: src/grib.cpp:1168 src/grib.cpp:1225
+msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1105\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-19 12:21-0500\n"
+"POT-Creation-Date: 2012-12-24 20:05-0500\n"
 "PO-Revision-Date: 2012-11-13 13:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC sailingteam <sailingteam@isc.tuc.gr>\n"
@@ -1005,8 +1005,8 @@ msgstr "Πλοίο κοντέηνερ"
 msgid "Control checksum"
 msgstr "Έλεγχος checksum"
 #
-msgid "Copy"
-msgstr "Αντιγραφή"
+msgid "Copy As KML"
+msgstr ""
 #
 msgid "Copy Log File to Clipboard"
 msgstr "Αντιγραφή του Log στο Clipboard"
@@ -1014,8 +1014,17 @@ msgstr "Αντιγραφή του Log στο Clipboard"
 msgid "Copy Settings File to Clipboard"
 msgstr "Αντιγραφή αρχείου ρυθμίσεων στο Clipboard"
 #
-msgid "Copy..."
+#, fuzzy
+msgid "Copy as KML"
+msgstr "&Αντιγραφή ως κείμενο"
+#
+#, fuzzy
+msgid "Copy as KML..."
 msgstr "Αντιγραφή..."
+#
+#, c-format
+msgid "Couldn't load sound data from '%s'."
+msgstr ""
 #
 msgid "Course"
 msgstr "Πορεία"
@@ -2669,6 +2678,10 @@ msgstr "SoG"
 msgid "Solid"
 msgstr "Συμπαγής"
 #
+#, c-format
+msgid "Sound file '%s' is in unsupported format."
+msgstr ""
+#
 msgid "Spare"
 msgstr "Ρεζέρβα"
 #
@@ -3214,8 +3227,14 @@ msgid "wxFB Website"
 msgstr "wxFB Website"
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Όλα εκτός από"
+#
+#
+#~ msgid "Copy"
+#~ msgstr "Αντιγραφή"
+#
 #
 #
 #~ msgid "Just "
