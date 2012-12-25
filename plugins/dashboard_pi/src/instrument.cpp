@@ -94,7 +94,11 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
 
     Draw( &dc );
 
-    if(!m_drawSoloInPane) {
+    if(m_drawSoloInPane) {
+        mdc.SelectObject( wxNullBitmap );
+        pdc.DrawBitmap( bm, 0, 0, false );
+    }
+    else {
 
     //  Windows GCDC does a terrible job of rendering small texts
     //  Workaround by using plain old DC for title box if text size is too small
@@ -114,34 +118,42 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
             GetGlobalColor( _T("DASHF"), &cl );
             dc.SetTextForeground( cl );
             dc.DrawText( m_title, 5, 0 );
+
+            mdc.SelectObject( wxNullBitmap );
+            pdc.DrawBitmap( bm, 0, 0, false );
         }
 
 #ifdef __WXMSW__
         if( g_pFontTitle->GetPointSize() <= 12 ) {
-            wxBitmap bm( size.x, m_TitleHeight, -1 );
-            wxMemoryDC dc( bm );
+            mdc.SelectObject( wxNullBitmap );           // the instrument body
+            pdc.DrawBitmap( bm, 0, 0, false );
+
+            wxBitmap tbm( size.x, m_TitleHeight, -1 );
+            wxMemoryDC tdc( tbm );
             wxColour cl;
             GetGlobalColor( _T("DASHB"), &cl );
-            dc.SetBackground( cl );
-            dc.Clear();
+            tdc.SetBackground( cl );
+            tdc.Clear();
 
             wxPen pen;
             pen.SetStyle( wxSOLID );
             GetGlobalColor( _T("DASHL"), &cl );
             pen.SetColour( cl );
-            dc.SetPen( pen );
-            dc.SetBrush( cl );
-            dc.DrawRoundedRectangle( 0, 0, size.x, m_TitleHeight, 3 );
+            tdc.SetPen( pen );
+            tdc.SetBrush( cl );
+            tdc.DrawRoundedRectangle( 0, 0, size.x, m_TitleHeight, 3 );
 
-            dc.SetFont( *g_pFontTitle );
+            tdc.SetFont( *g_pFontTitle );
             GetGlobalColor( _T("DASHF"), &cl );
-            dc.SetTextForeground( cl );
-            dc.DrawText( m_title, 5, 0 );
+            tdc.SetTextForeground( cl );
+            tdc.DrawText( m_title, 5, 0 );
+
+            tdc.SelectObject( wxNullBitmap );
+            pdc.DrawBitmap( tbm, 0, 0, false );
+
         }
 #endif
     }
-    mdc.SelectObject( wxNullBitmap );
-    pdc.DrawBitmap( bm, 0, 0, false );
 }
 
 //----------------------------------------------------------------
