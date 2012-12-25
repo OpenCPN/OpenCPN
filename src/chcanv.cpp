@@ -4169,7 +4169,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     if( !pPanKeyTimer->IsRunning() && ( m_panx || m_pany ) ) pPanKeyTimer->Start( 1,
                 wxTIMER_ONE_SHOT );
 
+#ifndef __WXMAC__    
     event.Skip();
+#endif    
 }
 
 void ChartCanvas::OnKeyUp( wxKeyEvent &event )
