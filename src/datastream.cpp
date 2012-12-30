@@ -934,7 +934,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                     b_sleep = false;
                     szBuf[ic] = chRead;
                     dwRead++;
-                    if(ic++ > READ_BUF_SIZE - 1)
+                    if(++ic > READ_BUF_SIZE - 1)
                         goto HandleASuccessfulRead;
                     if(chRead == 0x0a)
                         goto HandleASuccessfulRead;
