@@ -600,7 +600,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         int mmsi_start = MMSI / 1000000;
         switch( mmsi_start ){
             case 970:
-//                        sub_type = _T("SART");
+                sub_type = _T("SART");
                 break;
             case 972:
                 sub_type = _T("MOB");
