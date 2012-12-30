@@ -8158,7 +8158,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
     color.green = back_color.Green() << 8;
     color.blue = back_color.Blue() << 8;
 
-    gtk_widget_modify_bg (GTK_WIDGET(contextMenu->m_menu), GTK_STATE_NORMAL, &color);
+//    gtk_widget_modify_bg (GTK_WIDGET(contextMenu->m_menu), GTK_STATE_NORMAL, &color);
 #endif
 #endif
 
