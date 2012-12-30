@@ -526,17 +526,25 @@ bool DataStream::SendSentence( const wxString &sentence )
                 }
                 if( IsSecThreadActive() )
                 {
-                    int retry = 3;
+                    int retry = 10;
                     while( retry ) {
                         if(m_output_mutex.TryLock() == wxMUTEX_NO_ERROR) {
+                            if( !m_pSecondary_Thread->GetOutMsg().Length() ) {
 //                                printf("set\n");
                                 m_pSecondary_Thread->SetOutMsg( payload );
                                 m_output_mutex.Unlock();
                                 return true;
-                         }
+                            }
+                            else {
+                                m_output_mutex.Unlock();
+//                                printf("sleep retry\n");
+                                wxMilliSleep(100);
+                                retry--;
+                            }
+                        }
                         else {
                             retry--;
-//                            printf("retry %d\n", retry);
+//                            printf("mutex retry %d\n", retry);
                         }
                     }
                     return false;
@@ -770,13 +778,12 @@ void *OCP_DataStreamInput_Thread::Entry()
         //      Check for any pending output message
         if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->Lock()) ){
             if( !m_outmsg.IsEmpty() ) {
-                printf("write\n");
+//                printf("write\n");
                 WriteComPortPhysical(m_gps_fd, m_outmsg);
                 m_outmsg.Clear();
             }
             m_pout_mutex->Unlock();
         }
-      //              ThreadMessage(_T("Timeout 1"));
     }                          // the big while...
 
 //          Close the port cleanly
@@ -1219,9 +1226,13 @@ int OCP_DataStreamInput_Thread::CloseComPortPhysical(int fd)
 
 int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, const wxString& string)
 {
+    char s[100];
+    strcpy(s, string.fn_str());
     ssize_t status;
     status = write(port_descriptor, string.mb_str(), string.Len());
-
+    printf("%s", s);
+    printf("Status: %d\n", status);
+    
     return status;
 }
 
@@ -1229,7 +1240,6 @@ int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, unsign
 {
     ssize_t status;
     status = write(port_descriptor, msg, count);
-
     return status;
 }
 

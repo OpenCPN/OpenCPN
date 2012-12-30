@@ -361,7 +361,7 @@ public:
     ~OCP_DataStreamInput_Thread(void);
     void *Entry();
     void SetOutMsg(wxString msg);
-
+    wxString GetOutMsg(){ return m_outmsg; }
     void OnExit(void);
 
 private:
