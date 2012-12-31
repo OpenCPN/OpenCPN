@@ -595,21 +595,21 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         else if( NavStatus == UNDEFINED ) navStatStr = _("Testing");
     }
 
-    wxString sub_type;
+    wxString sart_sub_type;
     if( Class == AIS_SART ) {
         int mmsi_start = MMSI / 1000000;
         switch( mmsi_start ){
             case 970:
-                sub_type = _T("SART");
+//                sart_sub_type = _T("SART");
                 break;
             case 972:
-                sub_type = _T("MOB");
+                sart_sub_type = _T("MOB");
                 break;
             case 974:
-                sub_type = _T("EPIRB");
+                sart_sub_type = _T("EPIRB");
                 break;
             default:
-                sub_type = _("Unknown");
+                sart_sub_type = _("Unknown");
                 break;
         }
     }
@@ -681,11 +681,20 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         }
     }
 
-    if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
+    if( Class == AIS_SART ) {
         html << _T("<tr><td colspan=2>") << _T("<b>") << AISTypeStr;
-        if( sub_type.Length() ) html << _T(" (") << sub_type << _T(")");
-        html << _T(", ") << navStatStr;
-        if( UNTypeStr.Length() ) html << _T(" (UN Type ") << UNTypeStr << _T(")");
+        if( sart_sub_type.Length() ) 
+            html << _T(" (") << sart_sub_type << _T("), ");
+        html << navStatStr;
+        html << rowEnd << _T("<tr><td colspan=2>") << _T("<b>") << sizeString << rowEnd;
+    }
+    
+    else if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
+        html << _T("<tr><td colspan=2>") << _T("<b>") << AISTypeStr;
+        if( navStatStr.Length() )
+            html << _T(", ") << navStatStr;
+        if( UNTypeStr.Length() )
+            html << _T(" (UN Type ") << UNTypeStr << _T(")");
         html << rowEnd << _T("<tr><td colspan=2>") << _T("<b>") << sizeString << rowEnd;
     }
 
