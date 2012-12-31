@@ -6328,40 +6328,32 @@ void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
 }
 
 
-bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS )
+bool MyFrame::EvalPriority( wxString message, wxString stream_name, int stream_priority )
 {
     bool bret = true;
-    wxString msg_type = str_buf.Mid(1, 5);
-    
-    int priority = 0;
-    if(pDS)
-        priority = pDS->GetPriority();
+    wxString msg_type = message.Mid(1, 5);
     
     //  If the message type has never been seen before...
     if( NMEA_Msg_Hash.find( msg_type ) == NMEA_Msg_Hash.end() ) {
         NMEA_Msg_Container *pcontainer = new NMEA_Msg_Container;
         pcontainer-> current_priority = -1;     //  guarantee to execute the next clause
-        pcontainer->pDataStream = pDS;
+        pcontainer->stream_name = stream_name;
         pcontainer->receipt_time = wxDateTime::Now();
         
         NMEA_Msg_Hash[msg_type] = pcontainer;
     }
     
     NMEA_Msg_Container *pcontainer = NMEA_Msg_Hash[msg_type];
-    wxString old_port;
-    if( pcontainer->pDataStream )
-        old_port = pcontainer->pDataStream->GetPort();
-    else
-        old_port = _T("PlugIn Virtual");
+    wxString old_port = pcontainer->stream_name;
     
     int old_priority = pcontainer->current_priority;
     
     //  If the message has been seen before, and the priority is greater than or equal to current priority,
     //  then simply update the record
-    if( priority >= pcontainer->current_priority ) {
+    if( stream_priority >= pcontainer->current_priority ) {
         pcontainer->receipt_time = wxDateTime::Now();
-        pcontainer-> current_priority = priority;
-        pcontainer->pDataStream = pDS;
+        pcontainer-> current_priority = stream_priority;
+        pcontainer->stream_name = stream_name;
         
         bret = true;
     }
@@ -6373,8 +6365,8 @@ bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS )
     else {
         if( (wxDateTime::Now().GetTicks() - pcontainer->receipt_time.GetTicks()) > GPS_TIMEOUT_SECONDS ) {
             pcontainer->receipt_time = wxDateTime::Now();
-            pcontainer-> current_priority = priority;
-            pcontainer->pDataStream = pDS;
+            pcontainer-> current_priority = stream_priority;
+            pcontainer->stream_name = stream_name;
             
             bret = true;
         }
@@ -6382,20 +6374,29 @@ bool MyFrame::EvalPriority( wxString str_buf, DataStream *pDS )
             bret = false;
     }
  
-    wxString new_port;
-    if( pcontainer->pDataStream )
-        new_port = pcontainer->pDataStream->GetPort();
-    else
-        new_port = _T("PlugIn Virtual");
+    wxString new_port = pcontainer->stream_name;
  
     //  If the data source or priority has changed for this message type, emit a log entry
     if (pcontainer->current_priority != old_priority ||
         new_port != old_port )
         {
-            wxLogMessage(wxString::Format(_T("Changing NMEA Datasource for %s to %s (Priority: %i)"),
-                                          msg_type.c_str(),
-                                          new_port.c_str(),
-                                          pcontainer->current_priority) );
+            wxString logmsg = wxString::Format(_T("Changing NMEA Datasource for %s to %s (Priority: %i)"),
+                                            msg_type.c_str(),
+                                            new_port.c_str(),
+                                            pcontainer->current_priority);
+            wxLogMessage(logmsg );
+            
+            if( g_NMEALogWindow) {
+                wxDateTime now = wxDateTime::Now();
+                wxString ss = now.FormatISOTime();
+                ss.Append( _T(" ") );
+                ss.Append( logmsg );
+                ss.Prepend( _T("<RED>") );
+                
+                g_NMEALogWindow->Add( ss );
+                g_NMEALogWindow->Refresh( false );
+            }
+            
         }
         
     return bret;
@@ -6408,6 +6409,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     bool bis_recognized_sentence = true; //PL
 
     wxString str_buf = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
+    wxString stream_name = wxString(event.GetStreamName().c_str(), wxConvUTF8);
     
     if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
         g_total_NMEAerror_messages++;
@@ -6423,7 +6425,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     //    Send NMEA sentences to PlugIns
     if( g_pi_manager ) g_pi_manager->SendNMEASentenceToAllPlugIns( str_buf );
 
-    bool b_accept = EvalPriority( str_buf, event.GetDataStream() );
+    bool b_accept = EvalPriority( str_buf, stream_name, event.GetStreamPriority() );
     if( b_accept ) {
         m_NMEA0183 << str_buf;
         if( m_NMEA0183.PreParse() ) {

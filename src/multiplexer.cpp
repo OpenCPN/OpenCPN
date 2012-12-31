@@ -93,14 +93,14 @@ void Multiplexer::StopAndRemoveStream( DataStream *stream )
     }
 }
 
-void Multiplexer::LogOutputMessage( wxString &msg, DataStream *stream, bool b_filter )
+void Multiplexer::LogOutputMessage( wxString &msg, wxString stream_name, bool b_filter )
 {
     if( g_NMEALogWindow) {
         wxDateTime now = wxDateTime::Now();
         wxString ss = now.FormatISOTime();
         ss.Prepend(_T("--> "));
         ss.Append( _T(" (") );
-        ss.Append( stream->GetPort() );
+        ss.Append( stream_name );
         ss.Append( _T(") ") );
         ss.Append( msg );
         if(b_filter)
@@ -113,13 +113,13 @@ void Multiplexer::LogOutputMessage( wxString &msg, DataStream *stream, bool b_fi
     }
 }
 
-void Multiplexer::LogInputMessage( wxString &msg, DataStream *stream, bool b_filter )
+void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_filter )
 {
     if( g_NMEALogWindow) {
         wxDateTime now = wxDateTime::Now();
         wxString ss = now.FormatISOTime();
         ss.Append( _T(" (") );
-        ss.Append( stream->GetPort() );
+        ss.Append( stream_name );
         ss.Append( _T(") ") );
         ss.Append( msg );
         if(b_filter)
@@ -147,7 +147,7 @@ void Multiplexer::SendNMEAMessage( wxString &msg )
                 bout_filter = false;
             }    
             //Send to the Debug Window, if open
-            LogOutputMessage( msg, s, bout_filter );
+            LogOutputMessage( msg, s->GetPort(), bout_filter );
         }
         
     }
@@ -169,13 +169,8 @@ void Multiplexer::SetGPSHandler(wxEvtHandler *handler)
 void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 {
     wxString message = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
-    DataStream *stream = event.GetDataStream();
-    wxString port;
-    if( stream )
-        port = stream->GetPort();
-    else
-        port = _T("PlugIn Virtual");
-    
+    wxString port = wxString(event.GetStreamName().c_str(), wxConvUTF8);
+    DataStream *stream = FindStream(port);
     if( !message.IsEmpty() )
     {
         //Send to core consumers
@@ -208,7 +203,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         }
 
             //Send to the Debug Window, if open
-        LogInputMessage( message, stream, !bpass );
+        LogInputMessage( message, port, !bpass );
             
         //Send to plugins
         if ( g_pi_manager )
@@ -228,7 +223,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                             bout_filter = false;
                         }    
                             //Send to the Debug Window, if open
-                        LogOutputMessage( message, s, bout_filter );
+                        LogOutputMessage( message, port, bout_filter );
                     }
                 }
             }
@@ -503,7 +498,7 @@ ret_point:
                     }
 
                     if( dstr->SendSentence( snt.Sentence ) )
-                        LogOutputMessage( snt.Sentence, dstr, false );
+                        LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
                     
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
@@ -735,7 +730,7 @@ ret_point:
                 for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
                 {
                     if(dstr->SendSentence( sentence_array.Item(ii) ) )
-                        LogOutputMessage( sentence_array.Item(ii), dstr, false );
+                        LogOutputMessage( sentence_array.Item(ii), dstr->GetPort(), false );
                     
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
@@ -751,7 +746,7 @@ ret_point:
             else
             {
                 if( dstr->SendSentence( snt.Sentence ) )
-                    LogOutputMessage( snt.Sentence, dstr, false );
+                    LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
                 
                 wxString msg(_T("-->GPS Port:"));
                 msg += com_name;
@@ -767,7 +762,7 @@ ret_point:
                 term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
                 if( dstr->SendSentence( term ) )
-                    LogOutputMessage( term, dstr, false );
+                    LogOutputMessage( term, dstr->GetPort(), false );
                 
                 wxString msg(_T("-->GPS Port:"));
                 msg += com_name;
@@ -996,7 +991,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
         }
 
         if( dstr->SendSentence( snt.Sentence ) )
-            LogOutputMessage( snt.Sentence, dstr, false );
+            LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
         
         wxString msg(_T("-->GPS Port:"));
         msg += com_name;
@@ -1011,7 +1006,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
             term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
             if( dstr->SendSentence( term ) )
-                LogOutputMessage( term, dstr, false );
+                LogOutputMessage( term, dstr->GetPort(), false );
             
             wxString msg(_T("-->GPS Port:"));
             msg += com_name;

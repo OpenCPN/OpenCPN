@@ -1478,7 +1478,8 @@ void PushNMEABuffer( wxString buf )
     OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
     std::string s = std::string( buf.mb_str() );
     event.SetNMEAString( s );
-    event.SetDataStream( NULL );        // PlugIns have virtual DataStream
+    event.SetStreamName("PlugIn Virtual");        
+    event.SetPriority( 0 );        
     
     g_pMUX->AddPendingEvent( event );
 }

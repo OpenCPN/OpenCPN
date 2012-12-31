@@ -164,7 +164,7 @@ class NMEA_Msg_Container
 public:
     wxDateTime  receipt_time;
     int         current_priority;
-    DataStream  *pDataStream;
+    wxString    stream_name;
 };
 
 //    A small class used in an array to describe chart directories
@@ -349,7 +349,7 @@ class MyFrame: public wxFrame
     wxString GetGroupName(int igroup);
     void LoadHarmonics();
     
-    bool EvalPriority( wxString str_buf, DataStream *pDS );
+    bool EvalPriority( wxString message, wxString stream_name, int stream_priority );
 
     int                 m_StatusBarFieldCount;
 
