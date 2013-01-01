@@ -948,17 +948,11 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
         m_itemCommListBox->Append( full_port );
     }
     
- 
     delete pSerialArray;
 
     //    Make the proper inital selection
-    int sidx = 0;
-    if( g_uploadConnection != _T("") ) {
-        sidx = m_itemCommListBox->FindString( g_uploadConnection );
-    }
-    
-    if( sidx != wxNOT_FOUND )
-        m_itemCommListBox->SetSelection( sidx );
+    if( !g_uploadConnection.IsEmpty() ) 
+        m_itemCommListBox->SetValue( g_uploadConnection );
     else
         m_itemCommListBox->SetSelection( 0 );
     
