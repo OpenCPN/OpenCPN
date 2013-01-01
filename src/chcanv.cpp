@@ -8457,7 +8457,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             if( m_pFoundRoutePoint->m_IconName != _T("mob") )
                 menuWaypoint->Append( ID_RT_MENU_DELPOINT,  _( "Delete" ) );
 
-            if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+            wxString port = FindValidUploadPort();
+            m_active_upload_port = port;
+            if( !port.IsEmpty() ) {
+                port.Prepend(_( "Send to GPS ( " ));
+                port .Append(_T(" )"));
+                menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, port );
+            }
         }
         //      Set this menu as the "focused context menu"
         menuFocus = menuWaypoint;
@@ -8484,7 +8490,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             if( m_pFoundRoutePoint->m_IconName != _T("mob") )
                 menuWaypoint->Append( ID_WP_MENU_DELPOINT, _( "Delete" ) );
 
-            if( bGPSValid ) menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, _( "Send to GPS" ) );
+            wxString port = FindValidUploadPort();
+            m_active_upload_port = port;
+            if( !port.IsEmpty() ) {
+                port.Prepend(_( "Send to GPS ( " ));
+                port .Append(_T(" )"));
+                menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, port );
+            }
 
             if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 ) || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
                 menuWaypoint->Append( ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
@@ -9379,27 +9391,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_WPT_MENU_SENDTOGPS:
         if( m_pFoundRoutePoint ) {
-            wxString port;
-            //  Try to use the saved persistent upload port first
-            if( g_uploadConnection.Len() ) {
-                if( g_uploadConnection.StartsWith(_T("Serial")) ) {
-                    port = g_uploadConnection;
-                }
-            }
-            else if( g_pConnectionParams ) {
-                // If there is no persistent upload port recorded (yet)
-                // then use the first available serial connection which has output defined.
-                for( size_t i = 0; i < g_pConnectionParams->Count(); i++ ) {
-                    ConnectionParams *cp = g_pConnectionParams->Item( i );
-                    if( cp->Output && cp->Type == SERIAL )
-                        port << _T("Serial:") << cp->Port;
-                }
-            }
-             
-             if( port.Length() )
-                m_pFoundRoutePoint->SendToGPS( port, NULL );
-             else
-                OCPNMessageBox( NULL, _("Can't send waypoint. Found no serial data port with output defined."), _("OpenCPN Info"), wxOK | wxICON_WARNING );
+             if( m_active_upload_port.Length() )
+                 m_pFoundRoutePoint->SendToGPS( m_active_upload_port, NULL );
         }
         break;
 
@@ -11748,6 +11741,27 @@ void ChartCanvas::DrawArrow( ocpnDC& dc, int x, int y, double rot_angle, double 
             y1 = y2;
         }
     }
+}
+
+wxString ChartCanvas::FindValidUploadPort()
+{
+    wxString port;
+    //  Try to use the saved persistent upload port first
+    if( !g_uploadConnection.IsEmpty() &&  g_uploadConnection.StartsWith(_T("Serial") ) ) {
+            port = g_uploadConnection;
+    }
+
+    else if( g_pConnectionParams ) {
+    // If there is no persistent upload port recorded (yet)
+            // then use the first available serial connection which has output defined.
+            for( size_t i = 0; i < g_pConnectionParams->Count(); i++ ) {
+                ConnectionParams *cp = g_pConnectionParams->Item( i );
+                if( cp->Output && cp->Type == SERIAL )
+                    port << _T("Serial:") << cp->Port;
+            }
+    }
+
+    return port;
 }
 
 //----------------------------------------------------------------------------

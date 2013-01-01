@@ -1229,12 +1229,8 @@ int OCP_DataStreamInput_Thread::CloseComPortPhysical(int fd)
 
 int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, const wxString& string)
 {
-    char s[100];
-    strcpy(s, string.fn_str());
     ssize_t status;
     status = write(port_descriptor, string.mb_str(), string.Len());
-    printf("%s", s);
-    printf("Status: %d\n", status);
     
     return status;
 }
