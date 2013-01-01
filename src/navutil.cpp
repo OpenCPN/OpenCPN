@@ -3115,8 +3115,9 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0 );
     Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
     Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0 );
-    Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 0 );
-
+    Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 1 );
+    g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
+    
     Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
 
     Read( _T ( "StartWithTrackActive" ), &g_bTrackCarryOver, 0 );
