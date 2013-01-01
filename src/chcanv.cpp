@@ -8387,17 +8387,27 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             delete menuRoute;
             menuRoute = new wxMenu( _("Layer Route") );
             menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
-        }
-        else {
-            menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
             if( m_pSelectedRoute ) {
-
                 if( m_pSelectedRoute->IsActive() ) {
                     int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
                     if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
                         menuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
                     }
-
+                    menuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
+                }
+                else {
+                    menuRoute->Append( ID_RT_MENU_ACTIVATE, _( "Activate" ) );
+                }
+            }
+        }
+        else {
+            menuRoute->Append( ID_RT_MENU_PROPERTIES, _( "Properties..." ) );
+            if( m_pSelectedRoute ) {
+                if( m_pSelectedRoute->IsActive() ) {
+                    int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
+                    if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() ) {
+                        menuRoute->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
+                    }
                     menuRoute->Append( ID_RT_MENU_DEACTIVATE, _( "Deactivate" ) );
                 }
                 else {
@@ -8443,12 +8453,15 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             delete menuWaypoint;
             menuWaypoint = new wxMenu( _("Layer Routepoint") );
             menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
+            
+            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) 
+                menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
         }
         else {
             menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
-            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
+            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) 
                 menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
-            }
+
             if( m_pSelectedRoute->GetnPoints() > 2 )
                 menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
 
