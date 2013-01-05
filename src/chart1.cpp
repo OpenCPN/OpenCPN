@@ -6774,10 +6774,12 @@ void MyFrame::PostProcessNNEA( bool brx_rmc, wxString &sfixtime )
     //    but only if NMEA HDT sentence is not being received
 
     if( !g_bHDT_Rx ) {
-        if( !wxIsNaN(gVar) && !wxIsNaN(gHdm) ) {
+        if( !wxIsNaN(gVar) && !wxIsNaN(gHdm) && g_bVARValid && g_bHDxValid) {
             gHdt = gHdm + gVar;
             g_bHDTValid = true;
         }
+        else
+            g_bHDTValid = false;
     }
 
     if( brx_rmc ) {
