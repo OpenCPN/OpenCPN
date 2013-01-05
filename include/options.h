@@ -523,6 +523,10 @@ private:
     void ShowNMEANet( bool visible );
     void SetNMEAFormToSerial();
     void SetNMEAFormToNet();
+    void ClearNMEAForm();
+    bool m_bNMEAParams_shown;
+    
+    
     void SetConnectionParams(ConnectionParams *cp);
     void SetDSFormRWStates();
     void FillSourceList();

@@ -829,7 +829,11 @@ void options::OnConnectionToggleEnable( wxMouseEvent &event )
         
         cc1->Refresh();
     }
-    
+    else if( clicked_index == -1 ) {
+        ClearNMEAForm();
+        m_buttonRemove->Enable( false );
+    }
+
     // Allow wx to process...
     event.Skip();
 }
@@ -2224,7 +2228,7 @@ void options::UpdateWorkArrayFromTextCtl()
 
 ConnectionParams * options::SaveConnectionParams()
 {
-    if ( connectionsaved )
+    if( !m_bNMEAParams_shown )
         return NULL;
 
     //  Special encoding for deleted connection
@@ -3647,6 +3651,8 @@ void options::ShowNMEACommon(bool visible)
         sbSizerInFilter->SetDimension(0,0,0,0);
         sbSizerConnectionProps->SetDimension(0,0,0,0);
     }
+    
+    m_bNMEAParams_shown = visible;
 }
 
 void options::ShowNMEANet(bool visible)
@@ -3727,6 +3733,17 @@ void options::SetNMEAFormToNet()
     SetDSFormRWStates();
 }
 
+void options::ClearNMEAForm()
+{
+    ShowNMEACommon( false );
+    ShowNMEANet( false );
+    ShowNMEASerial( false );
+    m_pNMEAForm->FitInside();
+    m_pNMEAForm->Layout();
+    Fit();
+    Layout();
+}
+    
 wxString StringArrayToString(wxArrayString arr)
 {
     wxString ret = wxEmptyString;
