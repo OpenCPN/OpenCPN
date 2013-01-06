@@ -33,6 +33,7 @@
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
 extern TTYWindow        *g_NMEALogWindow;
+extern bool             g_bGarminHostUpload;
 
 Multiplexer::Multiplexer()
 {
@@ -243,7 +244,6 @@ void Multiplexer::SaveStreamProperties( DataStream *stream )
         output_sentence_list_save = stream->GetOutputSentenceList();
         output_sentence_list_type_save = stream->GetOutputSentenceListType();
         bchecksum_check_save = stream->GetChecksumCheck();
-        bGarmin_GRM_upload_save = stream->GetGarminUploadMode();
         bGarmin_GRMN_mode_save = stream->GetGarminMode();
         
     }
@@ -263,7 +263,6 @@ bool Multiplexer::CreateAndRestoreSavedStreamProperties()
     dstr->SetOutputFilter(output_sentence_list_save);
     dstr->SetOutputFilterType(output_sentence_list_type_save);
     dstr->SetChecksumCheck(bchecksum_check_save);
-    dstr->SetGarminUploadMode(bGarmin_GRM_upload_save);
     
     AddStream(dstr);
     
@@ -336,7 +335,7 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
     }
 #endif
 
-    if(bGarmin_GRM_upload_save)
+    if(g_bGarminHostUpload)
     {
         int ret_val;
         if ( pProgress )
@@ -866,7 +865,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
 #endif
 
     // Are we using Garmin Host mode for uploads?
-    if(bGarmin_GRM_upload_save)
+    if(g_bGarminHostUpload)
     {
         RoutePointList rplist;
         int ret_val;

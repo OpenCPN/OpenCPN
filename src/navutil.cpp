@@ -302,6 +302,7 @@ extern int              g_GroupIndex;
 extern bool             g_bDebugOGL;
 extern int              g_current_arrow_scale;
 extern wxString         g_GPS_Ident;
+extern bool             g_bGarminHostUpload;
 extern wxString         g_uploadConnection;
 
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -3021,7 +3022,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
 
     Read( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic") );
-
+    Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload, 0 );
+    
     Read( _T ( "UseNMEA_RMC" ), &g_bUseRMC, 1 );
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
@@ -4504,6 +4506,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ToolbarOrient" ), g_toolbar_orient );
     Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
 
+    Write( _T ( "GPSIdent" ), g_GPS_Ident );
+    Write( _T ( "UseGarminHostUpload" ), g_bGarminHostUpload );
+    
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );

@@ -558,6 +558,8 @@ bool                      g_bAisTargetList_sortReverse;
 wxString                  g_AisTargetList_column_spec;
 int                       g_AisTargetList_count;
 
+bool                      g_bGarminHostUpload;
+
 wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
@@ -2129,7 +2131,6 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
             dstr->SetOutputFilter(cp->OutputSentenceList);
             dstr->SetOutputFilterType(cp->OutputSentenceListType);
             dstr->SetChecksumCheck(cp->ChecksumCheck);
-            dstr->SetGarminUploadMode(cp->GarminUpload);
             g_pMUX->AddStream(dstr);
         }
     }

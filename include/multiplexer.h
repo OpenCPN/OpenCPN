@@ -76,7 +76,6 @@ class Multiplexer : public wxEvtHandler
         wxArrayString output_sentence_list_save;
         ListType output_sentence_list_type_save;
         bool bchecksum_check_save;
-        bool bGarmin_GRM_upload_save;
         bool bGarmin_GRMN_mode_save;
         
 };

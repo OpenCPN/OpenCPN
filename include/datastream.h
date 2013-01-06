@@ -256,9 +256,7 @@ public:
     void SetOutputFilterType(ListType filter_type) { m_output_filter_type = filter_type; }
     bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
     bool ChecksumOK(const wxString& sentence);
-    bool GetGarminUploadMode(){ return m_bGarmin_GRM_upload; }
     bool GetGarminMode(){ return m_bGarmin_GRMN_mode; }
-    void SetGarminUploadMode(bool b){ m_bGarmin_GRM_upload = b; }
    
     
     wxString GetBaudRate(){ return m_BaudRate; }
@@ -308,7 +306,6 @@ private:
     wxArrayString       m_output_filter;
     ListType            m_output_filter_type;
     
-    bool                m_bGarmin_GRM_upload;
     bool                m_bGarmin_GRMN_mode;
     GarminProtocolHandler *m_GarminHandler;
 
