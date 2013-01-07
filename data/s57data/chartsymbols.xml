@@ -33802,6 +33802,7 @@
 				<origin x="684" y="362" />
 				<HPGL>SPA;SW1;PU685,1257;PD785,1058;PD884,1257;SPA;SW1;PU685,1073;PD785,874;PD884,1073;SPA;SW1;PU785,362;PD785,1270;SPA;SW1;PU684,611;PD786,364;PD886,611;</HPGL>
 			</vector>
+                        <prefer-bitmap>no</prefer-bitmap>
                         <definition>V</definition>
 		</symbol>
 
