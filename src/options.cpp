@@ -2686,7 +2686,7 @@ void options::OnApplyClick( wxCommandEvent& event )
         cc1->ReloadVP();
     }
 
-    k_charts = 0;
+    k_charts = k_charts & VISIT_CHARTS;
     ::wxEndBusyCursor();
 }
 
