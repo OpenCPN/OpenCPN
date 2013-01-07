@@ -987,8 +987,13 @@ void *OCP_DataStreamInput_Thread::Entry()
                     }
                 }
             }
-            else {
-                //      ReadFile Erorr
+            else {                     //      ReadFile Erorr
+                b_inner = false;
+                CloseComPortPhysical(m_gps_fd);
+                m_gps_fd = NULL;
+                dwRead = 0;
+                nl_found = false;
+                n_reopen_wait = 2000;
             }
         }
             
