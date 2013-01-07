@@ -2342,6 +2342,7 @@ void *GARMIN_Serial_Thread::Entry()
     bool not_done = true;
  
    
+#ifdef USE_GARMINHOST
     //    The main loop
     
     while((not_done) && (m_parent->m_Thread_run_flag > 0)) {
@@ -2433,7 +2434,22 @@ thread_exit:
 
     Garmin_GPS_PVT_Off( m_port);  
     Garmin_GPS_ClosePortVerify();
-    
+
+#else           //#ifdef USE_GARMINHOST
+
+    while((not_done) && (m_parent->m_Thread_run_flag > 0)) {
+
+        wxSleep(1);
+        if(TestDestroy()) {
+            not_done = false;                               // smooth exit
+            goto thread_exit;
+        }
+    }
+        
+thread_exit:
+
+#endif          //#ifdef USE_GARMINHOST
+
     m_parent->m_Thread_run_flag = -1;   // in GarminProtocolHandler        
     return 0;
 }
