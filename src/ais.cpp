@@ -725,8 +725,13 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             html << vertSpacer << rowStart << _("Destination")
                  << _T("</font></td><td align=right><font size=-2>")
                  << _("ETA") << _T("</font></td></tr>\n")
-                 << rowStartH << _T("<b>") << trimAISField( Destination )
-                 << _T("</b></td><td nowrap align=right><b>");
+                 << rowStartH << _T("<b>");
+                 wxString dest =  trimAISField( Destination );
+                 if(dest.Length() )
+                     html << dest;
+                 else
+                     html << _("---");
+                 html << _T("</b></td><td nowrap align=right><b>");
 
             if( ( ETA_Mo ) && ( ETA_Hr < 24 ) ) {
                 int yearOffset = 0;
@@ -735,7 +740,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                         now.GetYear() + yearOffset, ETA_Hr, ETA_Min );
                 html << eta.Format( _T("%b %d %H:%M") );
             }
-            else html << _("Unavailable");
+            else html << _("---");
             html << rowEnd;
         }
 
@@ -765,6 +770,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                     else rotStr = _T("0");
                 }
             }
+            else
+                rotStr = _("---");
         }
     }
 
