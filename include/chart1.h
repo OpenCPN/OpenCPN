@@ -343,7 +343,7 @@ class MyFrame: public wxFrame
     void SetChartUpdatePeriod(ViewPort &vp);
 
     void ApplyGlobalColorSchemetoStatusBar(void);
-    void PostProcessNNEA(bool brx_rmc, wxString &sfixtime);
+    void PostProcessNNEA(bool pos_valid, wxString &sfixtime);
 
     void ScrubGroupArray();
     wxString GetGroupName(int igroup);

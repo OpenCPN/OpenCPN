@@ -6406,8 +6406,9 @@ bool MyFrame::EvalPriority( wxString message, wxString stream_name, int stream_p
 void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 {
     wxString sfixtime;
-    bool bshow_tick = false;
-    bool bis_recognized_sentence = true; //PL
+    bool pos_valid = false;
+    bool bis_recognized_sentence = true;
+    bool ll_valid = true;
 
     wxString str_buf = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
     wxString stream_name = wxString(event.GetStreamName().c_str(), wxConvUTF8);
@@ -6441,6 +6442,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                             gLat = lat_deg + ( lat_min / 60. );
                             if( m_NMEA0183.Rmc.Position.Latitude.Northing == South ) gLat = -gLat;
                         }
+                        else
+                            ll_valid = false;
 
                         if( !wxIsNaN(m_NMEA0183.Rmc.Position.Longitude.Longitude) ) {
                             double lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
@@ -6450,6 +6453,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                             gLon = lon_deg + ( lon_min / 60. );
                             if( m_NMEA0183.Rmc.Position.Longitude.Easting == West ) gLon = -gLon;
                         }
+                        else
+                            ll_valid = false;
+                        
                         gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
                         gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
 
@@ -6468,9 +6474,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
                         sfixtime = m_NMEA0183.Rmc.UTCTime;
 
-                        gGPS_Watchdog = gps_watchdog_timeout_ticks;
-
-                        bshow_tick = true;
+                        if(ll_valid)
+                            gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                        pos_valid = ll_valid;
                     }
                 } else
                     if( g_nNMEADebug ) {
@@ -6603,7 +6609,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                     if( m_NMEA0183.Gll.Position.Latitude.Northing
                                                             == South ) gLat = -gLat;
                                                 }
-
+                                                else
+                                                    ll_valid = false;
+                                                
                                                 if( !wxIsNaN(m_NMEA0183.Gll.Position.Longitude.Longitude) ) {
                                                     double lln =
                                                             m_NMEA0183.Gll.Position.Longitude.Longitude;
@@ -6614,12 +6622,14 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                     if( m_NMEA0183.Gll.Position.Longitude.Easting
                                                             == West ) gLon = -gLon;
                                                 }
-
+                                                else
+                                                    ll_valid = false;
+                                                
                                                 sfixtime = m_NMEA0183.Gll.UTCTime;
 
-                                                gGPS_Watchdog = gps_watchdog_timeout_ticks;
-
-                                                bshow_tick = true;
+                                                if(ll_valid)
+                                                    gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                                                pos_valid = ll_valid;
                                             }
                                         } else
                                             if( g_nNMEADebug ) {
@@ -6645,7 +6655,9 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                         if( m_NMEA0183.Gga.Position.Latitude.Northing
                                                                 == South ) gLat = -gLat;
                                                     }
-
+                                                    else
+                                                        ll_valid = false;
+                                                    
                                                     if( !wxIsNaN(m_NMEA0183.Gga.Position.Longitude.Longitude) ) {
                                                         double lln =
                                                                 m_NMEA0183.Gga.Position.Longitude.Longitude;
@@ -6656,17 +6668,20 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                         if( m_NMEA0183.Gga.Position.Longitude.Easting
                                                                 == West ) gLon = -gLon;
                                                     }
-
+                                                    else
+                                                        ll_valid = false;
+                                                    
                                                     sfixtime = m_NMEA0183.Gga.UTCTime;
 
-                                                    gGPS_Watchdog = gps_watchdog_timeout_ticks;
-
+                                                    if(ll_valid)
+                                                        gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                                                    pos_valid = ll_valid;
+                                                    
                                                     g_SatsInView =
                                                             m_NMEA0183.Gga.NumberOfSatellitesInUse;
                                                     gSAT_Watchdog = sat_watchdog_timeout_ticks;
                                                     g_bSatValid = true;
 
-                                                    bshow_tick = true;
                                                 }
                                             } else
                                                 if( g_nNMEADebug ) {
@@ -6684,15 +6699,14 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             AIS_Error nerr = AIS_GENERIC_ERROR;
             if(g_pAIS) 
                 nerr = g_pAIS->DecodeSingleVDO(str_buf, &gpd, &m_VDO_accumulator);
+            
             if(nerr == AIS_NoError){
                 if( !wxIsNaN(gpd.kLat) )
                     gLat = gpd.kLat;
                 if( !wxIsNaN(gpd.kLon) ) 
                     gLon = gpd.kLon;
                 
-                if( !wxIsNaN(gpd.kCog) ) 
                     gCog = gpd.kCog;
-                if( !wxIsNaN(gpd.kSog) ) 
                     gSog = gpd.kSog;
                 
                 if( !wxIsNaN(gpd.kVar) ) {
@@ -6713,8 +6727,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
                 }
                 
-                gGPS_Watchdog = gps_watchdog_timeout_ticks;
-                bshow_tick = true;
+                if( !wxIsNaN(gpd.kLat) && !wxIsNaN(gpd.kLon) ) { 
+                    gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                    pos_valid = true;
+                }
+                
             }
             else {
                 if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
@@ -6760,11 +6777,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             }
         }
 
-        if( bis_recognized_sentence ) PostProcessNNEA( bshow_tick, sfixtime );
+        if( bis_recognized_sentence ) PostProcessNNEA( pos_valid, sfixtime );
     }
 }
 
-void MyFrame::PostProcessNNEA( bool brx_rmc, wxString &sfixtime )
+void MyFrame::PostProcessNNEA( bool pos_valid, wxString &sfixtime )
 {
     FilterCogSog();
 
@@ -6783,7 +6800,7 @@ void MyFrame::PostProcessNNEA( bool brx_rmc, wxString &sfixtime )
             g_bHDTValid = false;
     }
 
-    if( brx_rmc ) {
+    if( pos_valid ) {
         if( g_nNMEADebug ) {
             wxString msg( _T("PostProcess NMEA with valid position") );
             wxLogMessage( msg );

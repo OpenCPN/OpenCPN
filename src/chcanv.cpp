@@ -5169,9 +5169,11 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
     //  COG/SOG may be undefined in NMEA data stream
     double pCog = gCog;
-    if( wxIsNaN(pCog) ) pCog = 0.0;
+    if( wxIsNaN(pCog) )
+        pCog = 0.0;
     double pSog = gSog;
-    if( wxIsNaN(pSog) ) pSog = 0.0;
+    if( wxIsNaN(pSog) )
+        pSog = 0.0;
 
     ll_gc_ll( gLat, gLon, pCog, pSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
 
@@ -5232,7 +5234,8 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
         double dist = sqrt(
                           pow( (double) ( lHeadPoint.x - lPredPoint.x ), 2 )
                           + pow( (double) ( lHeadPoint.y - lPredPoint.y ), 2 ) );
-        if( dist > ndelta_pix ) b_render_hdt = true;
+        if( dist > ndelta_pix && !wxIsNaN(gSog) ) 
+            b_render_hdt = true;
     }
 
 //    Another draw test ,based on pixels, assuming the ship icon is a fixed nominal size
@@ -5451,54 +5454,57 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
         }         // ownship draw
 
         // draw course over ground if they are longer than the ship
-        if( lpp >= img_height / 2 ) {
-            const double png_pred_icon_scale_factor = .4;
-            wxPoint icon[4];
+        if( !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
+            if( lpp >= img_height / 2 ) {
+                const double png_pred_icon_scale_factor = .4;
+                wxPoint icon[4];
 
-            for( int i = 0; i < 4; i++ ) {
-                int j = i * 2;
-                double pxa = (double) ( s_png_pred_icon[j] );
-                double pya = (double) ( s_png_pred_icon[j + 1] );
+                for( int i = 0; i < 4; i++ ) {
+                    int j = i * 2;
+                    double pxa = (double) ( s_png_pred_icon[j] );
+                    double pya = (double) ( s_png_pred_icon[j + 1] );
 
-                pya *= png_pred_icon_scale_factor;
-                pxa *= png_pred_icon_scale_factor;
+                    pya *= png_pred_icon_scale_factor;
+                    pxa *= png_pred_icon_scale_factor;
 
-                double px = ( pxa * sin( cog_rad ) ) + ( pya * cos( cog_rad ) );
-                double py = ( pya * sin( cog_rad ) ) - ( pxa * cos( cog_rad ) );
+                    double px = ( pxa * sin( cog_rad ) ) + ( pya * cos( cog_rad ) );
+                    double py = ( pya * sin( cog_rad ) ) - ( pxa * cos( cog_rad ) );
 
-                icon[i].x = (int) wxRound( px ) + lPredPoint.x + GPSOffsetPixels.x;
-                icon[i].y = (int) wxRound( py ) + lPredPoint.y + GPSOffsetPixels.y;
+                    icon[i].x = (int) wxRound( px ) + lPredPoint.x + GPSOffsetPixels.x;
+                    icon[i].y = (int) wxRound( py ) + lPredPoint.y + GPSOffsetPixels.y;
+                }
+
+                //      COG Predictor
+                wxDash dash_long[2];
+                dash_long[0] = (int) ( 3.0 * m_pix_per_mm );  //8// Long dash  <---------+
+                dash_long[1] = (int) ( 1.5 * m_pix_per_mm );  //2// Short gap            |
+
+                //       If COG is unknown, render the predictor in grey
+        //            if( wxIsNaN(gCog) )
+        //                pred_colour = GetGlobalColor( _T ( "GREY1" ) );
+
+                wxPen ppPen2( pred_colour, 3, wxUSER_DASH );
+                ppPen2.SetDashes( 2, dash_long );
+                dc.SetPen( ppPen2 );
+                dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+
+                wxDash dash_long3[2];
+                dash_long3[0] = 3 * dash_long[0];
+                dash_long3[1] = 3 * dash_long[1];
+
+                wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxUSER_DASH );
+                ppPen3.SetDashes( 2, dash_long3 );
+                dc.SetPen( ppPen3 );
+                dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+
+                wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxSOLID );
+                dc.SetPen( ppPen1 );
+                dc.SetBrush( wxBrush( pred_colour ) ); //*wxWHITE_BRUSH);
+
+                dc.StrokePolygon( 4, icon );
             }
-
-            //      COG Predictor
-            wxDash dash_long[2];
-            dash_long[0] = (int) ( 3.0 * m_pix_per_mm );  //8// Long dash  <---------+
-            dash_long[1] = (int) ( 1.5 * m_pix_per_mm );  //2// Short gap            |
-
-            //       If COG is unknown, render the predictor in grey
-            if( wxIsNaN(gCog) ) pred_colour = GetGlobalColor( _T ( "GREY1" ) );
-
-            wxPen ppPen2( pred_colour, 3, wxUSER_DASH );
-            ppPen2.SetDashes( 2, dash_long );
-            dc.SetPen( ppPen2 );
-            dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-                           lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
-
-            wxDash dash_long3[2];
-            dash_long3[0] = 3 * dash_long[0];
-            dash_long3[1] = 3 * dash_long[1];
-
-            wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxUSER_DASH );
-            ppPen3.SetDashes( 2, dash_long3 );
-            dc.SetPen( ppPen3 );
-            dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-                           lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
-
-            wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxSOLID );
-            dc.SetPen( ppPen1 );
-            dc.SetBrush( wxBrush( pred_colour ) ); //*wxWHITE_BRUSH);
-
-            dc.StrokePolygon( 4, icon );
         }
 
         //      HDT Predictor

@@ -1375,8 +1375,14 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
             case 3:
             case 18:
             {
-                pos->kLat = pTargetData->Lat;
-                pos->kLon = pTargetData->Lon;
+                if( !pTargetData->b_positionDoubtful ) {
+                    pos->kLat = pTargetData->Lat;
+                    pos->kLon = pTargetData->Lon;
+                }
+                else {
+                    pos->kLat = NAN;
+                    pos->kLon = NAN;
+                }
                 
                 if(pTargetData->COG == 360.0)
                     pos->kCog = NAN;
