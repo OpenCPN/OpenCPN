@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-30 20:07+0100\n"
+"POT-Creation-Date: 2013-01-08 14:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,9 +138,9 @@ msgstr ""
 msgid "Wind history"
 msgstr ""
 
-#: src/dashboard_pi.cpp:304 src/dashboard_pi.cpp:384 src/dashboard_pi.cpp:1088
-#: src/dashboard_pi.cpp:1097 src/dashboard_pi.cpp:1246
-#: src/dashboard_pi.cpp:1285 src/dashboard_pi.cpp:1486
+#: src/dashboard_pi.cpp:304 src/dashboard_pi.cpp:384 src/dashboard_pi.cpp:1104
+#: src/dashboard_pi.cpp:1113 src/dashboard_pi.cpp:1269
+#: src/dashboard_pi.cpp:1308 src/dashboard_pi.cpp:1509
 msgid "Dashboard"
 msgstr ""
 
@@ -154,88 +154,84 @@ msgid ""
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 
-#: src/dashboard_pi.cpp:615
-msgid "Kts"
-msgstr ""
-
-#: src/dashboard_pi.cpp:1222
+#: src/dashboard_pi.cpp:1245
 msgid "Dashboard preferences"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1292
+#: src/dashboard_pi.cpp:1315
 msgid "show this dashboard"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1298
+#: src/dashboard_pi.cpp:1321
 msgid "Caption:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1306
+#: src/dashboard_pi.cpp:1329
 msgid "Orientation:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1310 src/dashboard_pi.cpp:1677
+#: src/dashboard_pi.cpp:1333 src/dashboard_pi.cpp:1700
 msgid "Vertical"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1311 src/dashboard_pi.cpp:1679
+#: src/dashboard_pi.cpp:1334 src/dashboard_pi.cpp:1702
 msgid "Horizontal"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1318 src/dashboard_pi.cpp:1326
-#: src/dashboard_pi.cpp:1603
+#: src/dashboard_pi.cpp:1341 src/dashboard_pi.cpp:1349
+#: src/dashboard_pi.cpp:1626
 msgid "Instruments"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1334
+#: src/dashboard_pi.cpp:1357
 msgid "Add"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1347
+#: src/dashboard_pi.cpp:1370
 msgid "Delete"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1353
+#: src/dashboard_pi.cpp:1376
 msgid "Up"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1358
+#: src/dashboard_pi.cpp:1381
 msgid "Down"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1368
+#: src/dashboard_pi.cpp:1391
 msgid "Appearance"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1370
+#: src/dashboard_pi.cpp:1393
 msgid "Fonts"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1376
+#: src/dashboard_pi.cpp:1399
 msgid "Title:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1382
+#: src/dashboard_pi.cpp:1405
 msgid "Data:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1388
+#: src/dashboard_pi.cpp:1411
 msgid "Label:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1394
+#: src/dashboard_pi.cpp:1417
 msgid "Small:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1586
+#: src/dashboard_pi.cpp:1609
 msgid "Add instrument"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1592
+#: src/dashboard_pi.cpp:1615
 msgid "Select instrument to add:"
 msgstr ""
 
-#: src/dashboard_pi.cpp:1686
+#: src/dashboard_pi.cpp:1709
 msgid "Preferences..."
 msgstr ""
 
@@ -305,4 +301,9 @@ msgstr ""
 
 #: src/wind_history.cpp:444
 msgid "NNW"
+msgstr ""
+
+#: src/wind_history.cpp:541
+#, c-format
+msgid "Max %.1f since %02d:%02d  Overall %.1f"
 msgstr ""

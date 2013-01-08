@@ -538,7 +538,7 @@ void DashboardInstrument_WindDirHistory::DrawForeground(wxGCDC* dc)
     min=m_ArrayRecTime[i].GetMinute();
     hour=m_ArrayRecTime[i].GetHour();
   }
-  dc->DrawText(wxString::Format(_T("Max %.1f since %02d:%02d  Overall %.1f"),m_MaxWindSpd, hour,min,m_TotalMaxWindSpd), m_LeftLegend+3+2+degw, m_TopLineHeight-degh+5);
+  dc->DrawText(wxString::Format(_("Max %.1f since %02d:%02d  Overall %.1f"),m_MaxWindSpd, hour,min,m_TotalMaxWindSpd), m_LeftLegend+3+2+degw, m_TopLineHeight-degh+5);
   pen.SetStyle(wxSOLID);
   pen.SetColour(wxColour(61,61,204,96)); //blue, transparent
   pen.SetWidth(1);
