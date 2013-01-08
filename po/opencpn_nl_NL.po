@@ -1,10 +1,9 @@
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 3.1.1220 beta\n"
+"Project-Id-Version: OpenCPN 3.1.1224 beta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-25 11:42-0500\n"
-"PO-Revision-Date: 2012-12-23 10:43+0100\n"
+"POT-Creation-Date: 2013-01-08 17:57-0500\n"
+"PO-Revision-Date: 2012-12-26 15:40+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
 "Language: nl_NL\n"
@@ -1263,10 +1262,6 @@ msgstr "CPA/TCPA Waarschuwingen"
 msgid "Call"
 msgstr "C/S"
 #
-msgid "Can't send waypoint. Found no serial data port with output defined."
-msgstr ""
-"Kan routepunt niet verzenden. De opgegeven seriële poort is niet gevonden."
-#
 #
 #
 #
@@ -1666,7 +1661,7 @@ msgid "Control checksum"
 msgstr "Checksum"
 #
 msgid "Copy As KML"
-msgstr ""
+msgstr "Kopiëren als KML"
 #
 msgid "Copy Log File to Clipboard"
 msgstr "Kopieer het log-bestand naar het Klembord"
@@ -1674,17 +1669,15 @@ msgstr "Kopieer het log-bestand naar het Klembord"
 msgid "Copy Settings File to Clipboard"
 msgstr "Kopieer het instellingenbestand naar het Klembord"
 #
-#, fuzzy
 msgid "Copy as KML"
-msgstr "&Kopieer als tekst"
+msgstr "Kopiëren als KML"
 #
-#, fuzzy
 msgid "Copy as KML..."
-msgstr "Kopiëren ..."
+msgstr "Kopiëren als KML ..."
 #
 #, c-format
 msgid "Couldn't load sound data from '%s'."
-msgstr ""
+msgstr "Kan dieptegegevens niet laden van '%s'"
 #
 #
 #
@@ -2709,36 +2702,32 @@ msgstr "Kaartlaag-naam"
 #
 #
 #
-#, fuzzy
 msgid "Layer Route"
-msgstr "Plak route"
+msgstr "Laag-route"
 #
 #
 #
 #
 #
-#, fuzzy
 msgid "Layer Route: "
-msgstr "Plak route"
+msgstr "Laag-route: "
 #
 msgid "Layer Routepoint"
-msgstr ""
+msgstr "Laag-routepunt"
 #
 #
 #
 #
 #
-#, fuzzy
 msgid "Layer Track"
-msgstr "Plak track"
+msgstr "Laag-track"
 #
 #
 #
 #
 #
-#, fuzzy
 msgid "Layer Waypoint"
-msgstr "Plak markeringspunt"
+msgstr "Laag-markeringspunt"
 #
 #
 #
@@ -4445,7 +4434,8 @@ msgstr "Zend naar GPS ..."
 #
 #
 #
-msgid "Send to GPS"
+#, fuzzy
+msgid "Send to GPS ( "
 msgstr "Zend naar GPS ..."
 #
 #
@@ -4728,7 +4718,7 @@ msgstr "ononderbroken"
 #
 #, c-format
 msgid "Sound file '%s' is in unsupported format."
-msgstr ""
+msgstr "Format van dieptebestand '%s' wordt niet ondersteund"
 #
 #
 #
@@ -5300,13 +5290,6 @@ msgstr "UTC"
 #
 #
 #
-msgid "Unavailable"
-msgstr "niet beschikbaar"
-#
-#
-#
-#
-#
 msgid "Undefined"
 msgstr "niet gedefinieerd"
 #
@@ -5708,6 +5691,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
 #
@@ -5740,6 +5724,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -5748,6 +5733,7 @@ msgstr "wxFB website"
 #~ "\n"
 #~ "\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5776,6 +5762,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "     Vectorlengte (in tijdminuten): "
 #
@@ -5790,8 +5777,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "     Max. vaart geankerde objecten (knopen): "
+#
 #
 #
 #
@@ -5829,8 +5818,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr " Onbekende kaartprojectie (aanname is Mercator): "
+#
 #
 #
 #
@@ -5895,8 +5886,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
+#
 #
 #
 #
@@ -5941,8 +5934,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr " Kan de AIS poort niet openen"
+#
 #
 #
 #
@@ -5966,8 +5961,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid " COG: %03d Deg."
 #~ msgstr "COG: %03d°"
+#
 #
 #
 #
@@ -5991,12 +5988,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
 #~ msgstr ""
 #~ "'\n"
 #~ "Suggestie: probeer 'xxx.xxx.xxx.xxx' notatie."
+#
 #
 #
 #
@@ -6033,6 +6032,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
 #
@@ -6048,8 +6048,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ":               "
 #~ msgstr ":       "
+#
 #
 #
 #
@@ -6079,8 +6081,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "<--Remove"
 #~ msgstr "<--Verwijder"
+#
 #
 #
 #
@@ -6118,8 +6122,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Activate CM93 Offset"
 #~ msgstr "Activeer CM93 offsets"
+#
 #
 #
 #
@@ -6154,8 +6160,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Active Charts"
 #~ msgstr "Actieve Kaarten"
+#
 #
 #
 #
@@ -6181,8 +6189,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Voeg deze kaart toe aan samenvoeging."
+#
 #
 #
 #
@@ -6219,6 +6229,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Aanvullende informatie"
 #
@@ -6226,8 +6237,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Alles behalve"
+#
 #
 #
 #
@@ -6253,6 +6266,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Autopilot Output Port"
 #~ msgstr "Poort voor autopilot"
 #
@@ -6267,8 +6281,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Beschikbare Kaartmappen"
+#
 #
 #
 #
@@ -6315,8 +6331,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Peiling:                  %03d°\n"
+#
 #
 #
 #
@@ -6344,8 +6362,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -6370,8 +6390,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 Offsets Weergave"
+#
 #
 #
 #
@@ -6396,8 +6418,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 zoomdetail"
+#
 #
 #
 #
@@ -6426,8 +6450,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f NM\n"
+#
 #
 #
 #
@@ -6462,8 +6488,15 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "Roepnaam:         "
+#
+#
+#~ msgid "Can't send waypoint. Found no serial data port with output defined."
+#~ msgstr ""
+#~ "Kan routepunt niet verzenden. De opgegeven seriële poort is niet gevonden."
+#
 #
 #
 #
@@ -6503,8 +6536,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "Filters Kaartweergave"
+#
 #
 #
 #
@@ -6523,8 +6558,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Chart Groups...New Group"
 #~ msgstr "Kaartgroepen ... Nieuwe groep"
+#
 #
 #
 #
@@ -6552,8 +6589,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Class:                "
 #~ msgstr "Klasse:       "
+#
 #
 #
 #
@@ -6571,8 +6610,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "Kan TCP/IP host niet vinden"
+#
 #
 #
 #
@@ -6601,8 +6642,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "Koers:               000°\n"
+#
 #
 #
 #
@@ -6630,8 +6673,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "POS cursor: "
+#
 #
 #
 #
@@ -6678,6 +6723,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "standaard gegevens "
 #
@@ -6690,8 +6736,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Deg"
 #~ msgstr "°"
+#
 #
 #
 #
@@ -6727,8 +6775,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Delete Route"
 #~ msgstr "Route verwijderen"
+#
 #
 #
 #
@@ -6755,8 +6805,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Delete Track"
 #~ msgstr "Track verwijderen"
+#
 #
 #
 #
@@ -6784,8 +6836,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Bestemming:          "
+#
 #
 #
 #
@@ -6800,6 +6854,7 @@ msgstr "wxFB website"
 #, fuzzy
 #~ msgid "Display Style"
 #~ msgstr "Stijl Kaartweergave"
+#
 #
 #
 #
@@ -6827,8 +6882,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "ETA:"
 #~ msgstr "ETA:"
+#
 #
 #
 #
@@ -6875,6 +6932,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Vaartijd/Tijdstip"
 #
@@ -6887,8 +6945,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Enable Manual CM93 Offsets"
 #~ msgstr "Activeer handmatige CM93 offsets"
+#
 #
 #
 #
@@ -6915,8 +6975,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Overig"
+#
 #
 #
 #
@@ -6944,6 +7006,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
 #
@@ -6957,8 +7020,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD dataserver"
+#
 #
 #
 #
@@ -6994,6 +7059,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Ga naar markeringspunt/routepunt"
 #
@@ -7004,8 +7070,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Groups"
 #~ msgstr "Groepen"
+#
 #
 #
 #
@@ -7041,8 +7109,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Peiling:                  %03d°\n"
+#
 #
 #
 #
@@ -7071,6 +7141,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Inland Blue Flag        Clear\n"
 #~ msgstr "Blauwe Bord binnenwateren     Verwijder\n"
 #
@@ -7085,8 +7156,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Spring naar"
+#
 #
 #
 #
@@ -7120,8 +7193,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Spring naar positie ..."
+#
 #
 #
 #
@@ -7142,8 +7217,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Precies"
+#
 #
 #
 #
@@ -7182,8 +7259,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Laatste rapportagetijdstip: "
+#
 #
 #
 #
@@ -7210,8 +7289,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "Toon metagegevens"
+#
 #
 #
 #
@@ -7266,8 +7347,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Markeringspunt-icoon"
+#
 #
 #
 #
@@ -7317,8 +7400,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Markeringspunt-/Routepunt-eigenschappen ..."
+#
 #
 #
 #
@@ -7354,6 +7439,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Metres"
 #~ msgstr "meter"
 #
@@ -7367,8 +7453,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA databron"
+#
 #
 #
 #
@@ -7396,8 +7484,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Name:  "
 #~ msgstr " Naam: "
+#
 #
 #
 #
@@ -7442,8 +7532,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "New Mark"
 #~ msgstr "markering, nieuw gevaar"
+#
 #
 #
 #
@@ -7458,6 +7550,7 @@ msgstr "wxFB website"
 #, fuzzy
 #~ msgid "Number of Radar Rings"
 #~ msgstr "   Aantal te tonen cirkels: "
+#
 #
 #
 #
@@ -7522,12 +7615,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "OpenCPN PlugIn Base Class\n"
 #~ "PlugInManager created this base class"
 #~ msgstr ""
 #~ "OpenCPN PlugIn Basis Klasse\n"
 #~ "PlugInManager heeft deze klasse gecreëerd."
+#
 #
 #
 #
@@ -7553,9 +7648,11 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at distance interval (NMi)"
 #~ msgstr "Plaats trackpunten met afstandinterval van (zeemijl): "
+#
 #
 #
 #
@@ -7600,8 +7697,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 #
 #
@@ -7666,8 +7765,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 #
 #
@@ -7732,6 +7833,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
 #
@@ -7765,8 +7867,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn met verkeerde API versie %d.%d:"
+#
 #
 #
 #
@@ -7816,8 +7920,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Positie:"
+#
 #
 #
 #
@@ -7874,6 +7980,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Weergaveoptie Afdrukken"
 #
@@ -7887,8 +7994,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Radar rings"
 #~ msgstr "Weergaveopties Afstandcirkels"
+#
 #
 #
 #
@@ -7917,6 +8026,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Afstand:                %5.1f NM\n"
 #
@@ -7931,8 +8041,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Raster"
+#
 #
 #
 #
@@ -7961,8 +8073,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Draaisnelheid:             %3d°/min. SB\n"
+#
 #
 #
 #
@@ -7991,8 +8105,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Draaisnelheid:             > 5°/30 sec. BB\n"
+#
 #
 #
 #
@@ -8019,6 +8135,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Verwijder deze kaart uit samenvoeging."
@@ -8033,8 +8150,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Verwijder deze kaart uit samenvoeging."
+#
 #
 #
 #
@@ -8080,8 +8199,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Totale verheid (NM):"
+#
 #
 #
 #
@@ -8108,9 +8229,11 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Maak route van track"
+#
 #
 #
 #
@@ -8146,8 +8269,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Koers-Boven presentatie"
+#
 #
 #
 #
@@ -8174,8 +8299,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "Toon labels bij navigatiesymbolen"
+#
 #
 #
 #
@@ -8224,6 +8351,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Toon track-icoon"
 #
@@ -8236,8 +8364,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "Toon kaartlagen initieel"
+#
 #
 #
 #
@@ -8270,12 +8400,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Grootte:                %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8308,12 +8440,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Grootte:                ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8346,12 +8480,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Grootte:                %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8384,8 +8520,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Speed:                  Unavailable\n"
 #~ msgstr "Vaart:            niet beschikbaar\n"
+#
 #
 #
 #
@@ -8413,8 +8551,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi dataserver"
+#
 #
 #
 #
@@ -8443,8 +8583,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d uur:min\n"
+#
 #
 #
 #
@@ -8471,6 +8613,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide & Current Dataset Selection"
 #~ msgstr "Getijden && Stromen"
@@ -8484,9 +8627,11 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "Info getijgrafiek bij aanwijzen"
+#
 #
 #
 #
@@ -8513,6 +8658,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Track Properties..."
 #~ msgstr "Track-eigenschappen ..."
 #
@@ -8527,8 +8673,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Schaal 1 : %8.0f         "
+#
 #
 #
 #
@@ -8557,8 +8705,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "UN Ship Type:         "
 #~ msgstr "VN scheepstype: "
+#
 #
 #
 #
@@ -8589,8 +8739,18 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Unable to load libgps"
 #~ msgstr "Kan libgps niet laden."
+#
+#
+#
+#
+#
+#
+#~ msgid "Unavailable"
+#~ msgstr "niet beschikbaar"
+#
 #
 #
 #
@@ -8614,8 +8774,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Use OpenGL"
 #~ msgstr "Gebruik OpenGL"
+#
 #
 #
 #
@@ -8642,8 +8804,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Waypoint Locking"
 #~ msgstr "Route- en Markeringspunten Vastzetten"
+#
 #
 #
 #
@@ -8668,8 +8832,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 #~ msgstr "     X offset (in NM; positief verplaatst kaart naar oosten):"
+#
 #
 #
 #
@@ -8694,8 +8860,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "cm93 Detail"
 #~ msgstr "cm93 detail"
+#
 #
 #
 #

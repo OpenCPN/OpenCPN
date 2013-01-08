@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-25 11:42-0500\n"
+"POT-Creation-Date: 2013-01-08 17:57-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -258,15 +258,15 @@ msgstr "&Tümünü Sil"
 #
 #
 msgid "&Export Route..."
-msgstr "&Rotayı Sakla"
+msgstr "&Rotayı Kaydet"
 #
 #
 msgid "&Export Track..."
-msgstr "&Seyirizini Sakla"
+msgstr "&Seyirizini Kaydet"
 #
 #
 msgid "&Export Wpt..."
-msgstr "&Seyirnoktalarını Sakla"
+msgstr "&Seyirnoktasını Kaydet"
 #
 # Toolbox/Langue
 msgid "&Font family:"
@@ -300,7 +300,7 @@ msgstr "&Özellikler"
 #
 #
 msgid "&Properties..."
-msgstr "&Özellikler..."
+msgstr "&Özellikler"
 #
 # Menu contextuel : Trace
 msgid "&Remove Selected"
@@ -355,14 +355,14 @@ msgid "(Unnamed Waypoint)"
 msgstr "(Adsız Seyirnoktası)"
 #
 msgid "(reserved for future use)"
-msgstr "(sonraki kullanım için)"
+msgstr "(sonraki kullanım için bırakıldı)"
 #
 # Couche
 msgid "(unnamed)"
 msgstr "(Adsız)"
 #
 msgid ", Out: None"
-msgstr ", Dışarda: Hiçbiri"
+msgstr ", Dışarda: Yok"
 #
 msgid "-"
 msgstr "-"
@@ -543,7 +543,7 @@ msgstr "AISHedefAlarmı"
 #
 # Menu contextuel : AIS
 msgid "AISTargetQuery"
-msgstr "AISHedefSorgusu"
+msgstr "AISHedefAçıklaması"
 #
 #
 msgid "About"
@@ -557,7 +557,7 @@ msgid "Accept"
 msgstr "Kabul"
 #
 msgid "Accept Sentences"
-msgstr "Cümleleri kabul et"
+msgstr "Cümleleri Kabul Edin"
 #
 msgid "Accept only sentences"
 msgstr "Sadece cümleleri kabul et."
@@ -584,10 +584,10 @@ msgid "Add Connection"
 msgstr "Bağlantı Ekle"
 #
 msgid "Add Dataset..."
-msgstr "Veritabanı Ekle..."
+msgstr "Veritabanı Ekle"
 #
 msgid "Add Directory..."
-msgstr "Klasör Ekle..."
+msgstr "Klasör Ekle"
 #
 msgid "Add a directory containing chart files"
 msgstr "Harita dosyalarını içeren klasörü ekle."
@@ -653,36 +653,36 @@ msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "'Hayır' yanıtı, aynı yerde yeni bir seyir noktası oluşturacaktır."
 #
 msgid "Answering 'No' will create all new waypoints for this route."
-msgstr "'Hayır' yanıtı bu rotada yeni bir seyir noktası oluşturacaktır."
+msgstr "'Hayır' yanıtı bu rotada tümüyle yeni seyir noktaları oluşturacaktır."
 #
 # Menu contextuel : Route
 msgid "Append Waypoint"
-msgstr "Yeni Seyirnoktası ekle"
+msgstr "Yeni Seyirnoktası Ekle"
 #
 msgid "Apply"
 msgstr "Uygula"
 #
 #
 msgid "Are you sure you want to delete <ALL> routes?"
-msgstr "Rotaların<TÜMÜNÜ> silmek istediğinizden emin misiniz ?"
+msgstr "Rotaların<TÜMÜNÜ> silmek istediğinizden emin misiniz?"
 #
 #
 msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr "Seyirizlerinin<TÜMÜNÜ> silmek istediğinizden emin misiniz ?"
+msgstr "Seyirizlerinin<TÜMÜNÜ> silmek istediğinizden emin misiniz?"
 #
 msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr "Seyirnoktalarının<TÜMÜNÜ> silmek istediğinizden emin misiniz ?"
+msgstr "Seyirnoktalarının<TÜMÜNÜ> silmek istediğinizden emin misiniz?"
 #
 #
 msgid "Are you sure you want to delete this route?"
-msgstr "Bu rotayıi silmek istediğinizden emin misiniz ?"
+msgstr "Bu rotayıi silmek istediğinizden emin misiniz?"
 #
 #
 msgid "Are you sure you want to delete this track?"
-msgstr "Bu seyirizini silmek istediğinizden emin misiniz ?"
+msgstr "Bu seyirizini silmek istediğinizden emin misiniz?"
 #
 msgid "Are you sure you want to remove this waypoint?"
-msgstr "Bu seyirnoktasını silmek istediğinizden emin misiniz ?"
+msgstr "Bu seyirnoktasını silmek istediğinizden emin misiniz?"
 #
 # Traduction à confirmer (2010-11-25)
 msgid "Assumed 1 Mile Point"
@@ -693,7 +693,7 @@ msgid "At Anchor"
 msgstr "Demirde"
 #
 msgid "AtoN"
-msgstr "A,Nye"
+msgstr "A'danN'ye"
 #
 #
 msgid "Authors"
@@ -728,7 +728,7 @@ msgid "Baudrate"
 msgstr "Verihızı"
 #
 msgid "Beacon, Isolated Danger"
-msgstr "Şamandıra, Dentim Altına Alınmış Tehlike"
+msgstr "Şamandıra, Denetim Altına Alınmış Tehlike"
 #
 msgid "Beacon, Port Hand"
 msgstr "Şamandıra, İskele Geçişli"
@@ -785,7 +785,7 @@ msgid "CM93 Detail Level"
 msgstr "  CM93 Harita Ayrıntı Ayarı"
 #
 msgid "CM93 Offset Dialog..."
-msgstr "CM93 Ayarı..."
+msgstr "CM93 Ayarı"
 #
 #
 msgid "COG Predictor Length (min)"
@@ -810,17 +810,12 @@ msgstr "CPA/TCPA Alarmları"
 msgid "Call"
 msgstr "Çağrı"
 #
-msgid "Can't send waypoint. Found no serial data port with output defined."
-msgstr ""
-"Seyir noktası gönderilemiyor. Çıkışı tanımlanmış seri bağlantı noktası "
-"bulunamıyor."
-#
 #
 msgid "Cancel"
-msgstr "Sil"
+msgstr "İptal"
 #
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
-msgstr "İptal işlemi- Mesaj bağlantı ID'nin tanımladığı iptal alanı"
+msgstr "İptal işlemi- ID Bağlantılı Mesaj olarak tanımlanmış iptal alanı"
 #
 msgid "Card. E"
 msgstr "Kardinal D"
@@ -863,70 +858,70 @@ msgid "Cargo Ship"
 msgstr "Kargo Gemisi"
 #
 msgid "Caution Area: Cluster of fishing vessels"
-msgstr "Uyarı Bölgesi: Balıkçı tekneleri çarpışabilir"
+msgstr "Bölgesel Uyarı: Balıkçı tekneleri çarpışabilir"
 #
 msgid "Caution Area: Derelicts (drifting objects)"
-msgstr "Uyarı Bölgesi: Sürüklenen nesneler"
+msgstr "Bölgesel Uyarı: Sürüklenen nesneler"
 #
 msgid "Caution Area: Divers down"
-msgstr "Uyarı Bölgesi: Dalgıçlar suda"
+msgstr "Bölgesel Uyarı: Dalgıçlar suda"
 #
 msgid "Caution Area: Dredge operations"
-msgstr "Uyarı Bölgesi: Sürükleme manevraları"
+msgstr "Bölgesel Uyarı: Sürükleme manevraları"
 #
 msgid "Caution Area: Fairway closed"
-msgstr "Uyarı Bölgesi: Geçiş kapalı"
+msgstr "Bölgesel Uyarı: Geçiş kapalı"
 #
 msgid "Caution Area: Fishery - nets in water"
-msgstr "Uyarı Bölgesi: Balıkçılık - suda balıkçı ağları"
+msgstr "Bölgesel Uyarı: Balıkçılık - suda balıkçı ağları"
 #
 msgid "Caution Area: Harbour closed"
-msgstr "Uyarı Bölgesi: Liman kapalı"
+msgstr "Bölgesel Uyarı: Liman kapalı"
 #
 msgid "Caution Area: Marine event"
-msgstr "Uyarı Bölgesi: Deniz olayı"
+msgstr "Bölgesel Uyarı: Deniz olayı"
 #
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
-msgstr "Uyarı Bölgesi: Deniz memelileri (balina gözlenmedi)"
+msgstr "Bölgesel Uyarı: Deniz memelileri (balina gözlenmedi)"
 #
 msgid "Caution Area: Marine mammals in area - reduce speed"
-msgstr "Uyarı Bölgesi:  Deniz memelileri, hız kesin"
+msgstr "Bölgesel Uyarı: Deniz memelileri, hız kesin"
 #
 msgid "Caution Area: Marine mammals in area - report sightings"
-msgstr "Uyarı Bölgesi: Deniz mamalileri - görüldüğü belirtildi"
+msgstr "Bölgesel Uyarı: Deniz memelileri - görüldüğü belirtildi"
 #
 msgid "Caution Area: Marine mammals in area - stay clear"
-msgstr "Uyarı Bölgesi: Deniz memelileri bölgesi - temiz olun"
+msgstr "Bölgesel Uyarı: Deniz memelileri bölgesi - temiz olun"
 #
 msgid "Caution Area: Protected habitat - no fishing or anchoring"
-msgstr "Uyarı Bölgesi:  Doğa koruması - balık avlanmayın, demirlenmeyin"
+msgstr "Bölgesel Uyarı: Doğa koruması - balık avlanmayın, demirlenmeyin"
 #
 msgid "Caution Area: Protected habitat - reduce speed"
-msgstr "Uyarı Bölgesi: Doğa korıması - hızı zaltın"
+msgstr "Bölgesel Uyarı: Doğa koruması - hızı zaltın"
 #
 msgid "Caution Area: Protected habitat - stay clear"
-msgstr "Uyarı Bölgesi: Doğa koruması - temiz olun"
+msgstr "Bölgesel Uyarı: Doğa koruması - temiz olun"
 #
 msgid "Caution Area: Risk (define in Associated text field)"
-msgstr "Uyarı Bölgesi: Risk (Birleşik metinde belirtiliyor)"
+msgstr "Bölgesel Uyarı: Risk (Birleşik metinde belirtiliyor)"
 #
 msgid "Caution Area: Seaplane operations"
-msgstr "Uyarı Bölgesi: Deniz uçağı manevraları"
+msgstr "Bölgesel Uyarı: Deniz uçağı manevraları"
 #
 msgid "Caution Area: Survey operations"
-msgstr "Uyarı Bölgesi:  Survey manevraları"
+msgstr "Bölgesel Uyarı: Survey manevraları"
 #
 msgid "Caution Area: Swim area"
-msgstr "Uyarı Bölgesi: Yüzme bölgesi"
+msgstr "Bölgesel Uyarı: Yüzme bölgesi"
 #
 msgid "Caution Area: Traffic congestion"
-msgstr "Uyarı Bölgesi: Trafik kavşak alanı"
+msgstr "Bölgesel Uyarı: Trafik kavşak alanı"
 #
 msgid "Caution Area: Underwater operation"
-msgstr "Uyarı Bölgesi:  Sualtı manevrası"
+msgstr "Bölgesel Uyarı: Sualtı manevrası"
 #
 msgid "Caution Area: Underwater vehicle operation"
-msgstr "Uyarı Bölgesi: Sualtı aracı manevrası"
+msgstr "Bölgesel Uyarı: Sualtı aracı manevrası"
 #
 #
 msgid "Cell"
@@ -957,7 +952,7 @@ msgid "Chart Feature: Bridge closed"
 msgstr "Harita Durumu: Köprü kapalı"
 #
 msgid "Chart Feature: Bridge fully open"
-msgstr "Harita Durumu:  Köprü tümüyle açık"
+msgstr "Harita Durumu: Köprü tümüyle açık"
 #
 msgid "Chart Feature: Bridge partially open"
 msgstr "Harita Durumu: Köprü kısmen açık"
@@ -978,7 +973,7 @@ msgid "Chart Feature: Shoal area due east"
 msgstr "Harita Durumu: Doğudan sığ su bölgesi"
 #
 msgid "Chart Feature: Shoal area due north"
-msgstr "Harita Durumu:Kuzeyden sığ su bölgesi"
+msgstr "Harita Durumu: Kuzeyden sığ su bölgesi"
 #
 msgid "Chart Feature: Shoal area due south"
 msgstr "Harita Durumu: Güneyden sığ su bölgesi"
@@ -1019,7 +1014,7 @@ msgstr "Haritalar"
 #
 #
 msgid "Choose Font..."
-msgstr "Yazı Türünü Seçin..."
+msgstr "Yazı Türünü Seçin"
 #
 msgid "Choose Format for Copy"
 msgstr "Kopyalamak İçin Yazı Şekillendirmesini Seçiniz"
@@ -1096,7 +1091,7 @@ msgid "Control checksum"
 msgstr "Toplu denetim "
 #
 msgid "Copy As KML"
-msgstr ""
+msgstr "KML Olarak Kopyala"
 #
 msgid "Copy Log File to Clipboard"
 msgstr "Kütük Dosyasını Panoya Kopyala"
@@ -1104,17 +1099,15 @@ msgstr "Kütük Dosyasını Panoya Kopyala"
 msgid "Copy Settings File to Clipboard"
 msgstr "Kopya Seçenekleri Dosyasını Panoya Kopyala"
 #
-#, fuzzy
 msgid "Copy as KML"
-msgstr "&Metin olarak kopyala"
+msgstr "KML Olarak Kopyala"
 #
-#, fuzzy
 msgid "Copy as KML..."
-msgstr "Kopyala..."
+msgstr "KML Olarak Kopyala"
 #
 #, c-format
 msgid "Couldn't load sound data from '%s'."
-msgstr ""
+msgstr "'%s' dan ses verisi yüklenemedi."
 #
 #
 msgid "Course"
@@ -1137,7 +1130,7 @@ msgstr "Rota Oluştur"
 #
 # Menu contextuel : Waypoint
 msgid "Create Waypoint"
-msgstr "Seyirnoktasını Oluştur"
+msgstr "  "
 #
 msgid "Cruise ship"
 msgstr "Yolcu gemisi"
@@ -1197,7 +1190,7 @@ msgstr "Dağınık Metin"
 #
 #
 msgid "Deactivate"
-msgstr "Etkinsizleştir"
+msgstr "Etkisizleştir"
 #
 msgid "Decimal Degrees"
 msgstr "Ondalık Dakika"
@@ -1233,7 +1226,7 @@ msgstr "Grubu Sil"
 #
 # Menu contextuel : Waypoint
 msgid "Delete Waypoint"
-msgstr "(Silinen Seyirnoktasını)"
+msgstr "   "
 #
 msgid "Delete..."
 msgstr "Sil"
@@ -1287,7 +1280,7 @@ msgstr "Görünüm Seçenekleri"
 #
 #
 msgid "Distance"
-msgstr "Uzaklık"
+msgstr "Tekneden Uzaklık"
 #
 msgid "Distance Between Rings"
 msgstr "Halkalar Arası Uzaklık"
@@ -1358,13 +1351,13 @@ msgid "Dredge"
 msgstr "Tarama"
 #
 msgid "Drop"
-msgstr "İşaret Bırak "
+msgstr "İşaret Bırak"
 #
 msgid "Drop MOB Marker"
 msgstr "DAD (Denize Adam Düştü) işareti bırak"
 #
 msgid "Drop Mark"
-msgstr "İşaret Bırak"
+msgstr "Seyirnoktası/İşaret Oluştur"
 #
 msgid "Drop Sentences"
 msgstr "Cümleleri Dikkate Alma"
@@ -1374,7 +1367,7 @@ msgstr "Cümleleri dikkate alma"
 #
 #
 msgid "E&xport All..."
-msgstr "&Tümünü Sakla"
+msgstr "&Tümünü Kaydet"
 #
 msgid "ETA"
 msgstr "ETA, Hesaplanan Varış Zamanı :"
@@ -1464,7 +1457,7 @@ msgid "Estimated time : "
 msgstr "Hesaplanan zaman :"
 #
 msgid "Export GPX file"
-msgstr "GPX dosyasını sakla"
+msgstr "Kaydet (.gpx)"
 #
 msgid "Extend Route"
 msgstr "Rotayı Uzat"
@@ -1516,13 +1509,13 @@ msgid "Fishing boat"
 msgstr "Balıkçı teknesi"
 #
 msgid "Fix.Struct."
-msgstr "Sabit yapı"
+msgstr "Sabit Yapı"
 #
 msgid "Fixed Structure"
 msgstr "Sabit Yapı"
 #
 msgid "Fonts"
-msgstr "Harf Türü"
+msgstr "Yazım Şekli Değiştirilebilir Birimler"
 #
 msgid "For this leg the Great Circle route is "
 msgstr "Bu bacak için Büyük Daire Rotası,"
@@ -1611,7 +1604,7 @@ msgstr "Buraya"
 #
 #
 msgid "Hide AIS Targets"
-msgstr "AIS Hedeflerini Sakla"
+msgstr "AIS Hedeflerini Gizle"
 #
 #
 msgid "Hide Target CPA"
@@ -1679,7 +1672,7 @@ msgid "In"
 msgstr "Giriş"
 #
 msgid "In: None"
-msgstr "İçerde: Hiçbiri"
+msgstr "İçerde: Yok"
 #
 msgid "Information: Icebreaker waiting area"
 msgstr "Bilgi: Buzkıran bekleme sahası"
@@ -1743,7 +1736,7 @@ msgid "LE/V"
 msgstr "LE/V"
 #
 msgid "LMT @ Location"
-msgstr "LMT @ Mevki"
+msgstr "Mevkideki LMT"
 #
 msgid "LW"
 msgstr "LW"
@@ -1758,34 +1751,30 @@ msgstr "Enlem"
 #
 # AIS
 msgid "Law Enforcement Vessel"
-msgstr "Yasal denetim teknesi"
+msgstr "Yasal Denetim Teknesi"
 #
 # Couche
 msgid "Layer Name"
 msgstr "Etiket Adı"
 #
 #
-#, fuzzy
 msgid "Layer Route"
-msgstr "Rota Yapıştır"
+msgstr "Etiket Rotası"
 #
 #
-#, fuzzy
 msgid "Layer Route: "
-msgstr "Rota Yapıştır"
+msgstr "Etiket Rotası"
 #
 msgid "Layer Routepoint"
-msgstr ""
+msgstr "Etiket Rotanoktası"
 #
 #
-#, fuzzy
 msgid "Layer Track"
-msgstr "Seyirizini Yapıştır"
+msgstr "Etiket Seyirizi"
 #
 # Menu contextuel : Waypoint
-#, fuzzy
 msgid "Layer Waypoint"
-msgstr "Seyirnoktasını Yapıştır"
+msgstr "Etiket Seyirnoktası"
 #
 # Couche
 msgid "Layers"
@@ -1812,7 +1801,7 @@ msgstr "Bacak"
 #
 #
 msgid "Leg: from "
-msgstr " Bacak Başlangıcı"
+msgstr "Bacak Başlangıcı"
 #
 msgid "Legend"
 msgstr "Yazıt"
@@ -1830,24 +1819,24 @@ msgstr "Lisans"
 #
 #
 msgid "Light"
-msgstr "Işık"
+msgstr "Fener"
 #
 #
 msgid "Light Descriptions"
-msgstr "Işık Açıklamaları"
+msgstr "Fener Açıklamaları"
 #
 #
 msgid "Light Gray"
 msgstr "Gri Işık"
 #
 msgid "Light Vessel/Rig"
-msgstr "Tekne/donanım Işığı"
+msgstr "Tekne/donanım Feneri"
 #
 msgid "Light w/Sectors"
-msgstr "Işık w/Alanları"
+msgstr "Fener w/Alanları"
 #
 msgid "Limit range: NM"
-msgstr "Menzil sınırı : NM"
+msgstr "Uzaklık sınırı : NM"
 #
 msgid "Link"
 msgstr "Bağlantı"
@@ -1860,7 +1849,7 @@ msgid "Link description"
 msgstr "Bağlantı açıklaması"
 #
 msgid "Link not complete, can't be saved."
-msgstr "Bağlantı tamamlanmadı, saklanamıyor."
+msgstr "Bağlantı tamamlanmadı, kaydedilemiyor."
 #
 #
 msgid "Links"
@@ -1884,7 +1873,7 @@ msgid "Loaded Charts"
 msgstr "Yüklü Haritalar"
 #
 msgid "Local @ PC"
-msgstr "Bilgisayarınız"
+msgstr "Bilgisayardaki yeri"
 #
 msgid "Local file..."
 msgstr "Bilgisayardaki dosya yolu"
@@ -1915,10 +1904,10 @@ msgid "Low"
 msgstr "Düşük"
 #
 msgid "Lt"
-msgstr "Işık"
+msgstr "Fener"
 #
 msgid "Lt sect."
-msgstr "Işık alanı"
+msgstr "Fener alanı"
 #
 msgid "LtV/Rig"
 msgstr "LtV/Rig"
@@ -1952,19 +1941,19 @@ msgstr "Denizci Standardı"
 #
 # arque :
 msgid "Mark Information"
-msgstr "İşaret Bilgisi"
+msgstr "Seyirnoktası/İşaret Bilgisi"
 #
 # Menu contextuel : Waypoint/marque
 msgid "Mark Properties"
-msgstr "İşaret Özellikleri"
+msgstr "Seyirnoktası/İşaret Özellikleri"
 #
 # Menu contextuel : Waypoint/marque
 msgid "Mark Properties, Layer: "
-msgstr "Etiket, Özelliklerini Belirle:"
+msgstr "Etiket Özellikleri:"
 #
 #
 msgid "Mark targets as lost after (min)"
-msgstr "Hedefleri kayıp olarak işaretleme süresi (dakika) :"
+msgstr "Hedefleri Kayıp Olarak İşaretleme Süresi (dakika) :"
 #
 #
 msgid "Marks"
@@ -1978,10 +1967,10 @@ msgid "Measure"
 msgstr "Ölç"
 #
 msgid "Measure Off"
-msgstr "Ölçümü sonlandır"
+msgstr "Ölçümü Sonlandır"
 #
 msgid "Med/V"
-msgstr "Med/V"
+msgstr "Sağlık/Teknesi"
 #
 # AIS
 msgid "Medical Transport"
@@ -1996,11 +1985,11 @@ msgstr "Mercator"
 #
 #
 msgid "Merge waypoint?"
-msgstr "Seyirnoktaları birleştirilsin mi ?"
+msgstr "Seyirnoktası birleştirilsin mi ?"
 #
 #
 msgid "Merge waypoints?"
-msgstr "Seyirnoktalarını birleştirecek misiniz?"
+msgstr "Seyirnoktaları birleştirilsin mi?"
 #
 msgid "Message accepted"
 msgstr "Mesaj alındı"
@@ -2013,7 +2002,7 @@ msgid "Meters"
 msgstr "Metre"
 #
 msgid "Mil/V"
-msgstr "Mil/V"
+msgstr "Askeril/Tekne"
 #
 # AIS
 msgid "Military Vessel"
@@ -2124,7 +2113,7 @@ msgid "New Chart Group"
 msgstr "Yeni Harita Grubu"
 #
 msgid "New Group..."
-msgstr "Yeni Grup..."
+msgstr "Yeni Grup"
 #
 #
 msgid "Next"
@@ -2150,20 +2139,20 @@ msgid ""
 "Please select chart folders in Options > Charts."
 msgstr ""
 "Harita Yüklenmedi \n"
-"Lütfen harita klasörlerini seçiniz (Seçenekler -> Haritalar)."
+" Lütfen harita klasörlerini seçiniz (Seçenekler -> Haritalar)."
 #
 msgid "No, I don't want to hide it."
-msgstr "Hayır, saklamak istemiyorum."
+msgstr "Hayır, gizlemek istemiyorum."
 #
 msgid "No, and permanently remove the option to hide it."
-msgstr "Hayır, saklama seçeneğini sürekli olarak kaldır."
+msgstr "Hayır, gizleme seçeneğini sürekli olarak kaldır."
 #
 # Couche
 msgid "No. of items"
-msgstr "ParçaSayısı"
+msgstr "Parça Sayısı"
 #
 msgid "None"
-msgstr "Hiçbiri"
+msgstr "Yok"
 #
 msgid "North Up Mode"
 msgstr "Kuzey Yukarı Durumu"
@@ -2178,20 +2167,20 @@ msgstr "Tamam"
 #
 #
 msgid "Object Query"
-msgstr "İşaret Sorgusu"
+msgstr "Nesne Açıklaması"
 #
 #
 msgid "Object Query..."
-msgstr "İşaret Sorgusu"
+msgstr "Nesne Açıklaması"
 #
 msgid "Object, not otherwise specified"
-msgstr "İşaret (başka türlü belirtilmedikçe)"
+msgstr "Nesne (başka türlü belirtilmedikçe)"
 #
 msgid "Object, towed, not otherwise specified"
-msgstr "İşaret, (başka türlü belirtilmedikçe, yedeklenen)"
+msgstr "Nesne, (yedeklenen, başka türlü belirtilmedikçe)"
 #
 msgid "ObjectQuery"
-msgstr "İşaret sorgusu"
+msgstr "NesneAçıklaması"
 #
 #
 msgid "Ok"
@@ -2206,21 +2195,21 @@ msgstr "OpenCPN, CM93 Hücre Uzantı Ayarları"
 #
 #
 msgid "OpenCPN Chart Add...."
-msgstr "OpenCPN Harita ekliyor..."
+msgstr "OpenCPN Harita Ekliyor"
 #
 #
 msgid "OpenCPN Chart Scan...."
-msgstr "OpenCPN Harita arıyor.."
+msgstr "OpenCPN Harita Arıyor"
 #
 #
 msgid "OpenCPN Chart Update"
-msgstr "OpenCPN için Harita Güncelle"
+msgstr "OpenCPN için Harita Güncelliyor"
 #
 msgid "OpenCPN Converting Track to Route...."
-msgstr "OpenCPN seyirizini rotaya dönüştürüyor..."
+msgstr "OpenCPN Seyirizini Rotaya Dönüştürüyor"
 #
 msgid "OpenCPN Directory Scan...."
-msgstr "OpenCPN Dosya arıyor ..."
+msgstr "OpenCPN Klasör Aranıyor"
 #
 # Menu contextuel : Route
 msgid "OpenCPN Group Notice"
@@ -2232,7 +2221,7 @@ msgstr "OpenCPN Hakkında"
 #
 # Menu contextuel : Route
 msgid "OpenCPN Remove Waypoint"
-msgstr "OpenCPN Seyirnoktasını kaldır."
+msgstr "OpenCPN Seyirnoktasını Kaldır"
 #
 # Menu contextuel : Route
 msgid "OpenCPN Route"
@@ -2240,15 +2229,15 @@ msgstr "OpenCPN Rotası"
 #
 # Menu contextuel : Route
 msgid "OpenCPN Route Create"
-msgstr "OpenCPN Rotası oluştur"
+msgstr "OpenCPN Rotası Oluştur"
 #
 # Menu contextuel : Route
 msgid "OpenCPN Route Delete"
-msgstr "OpenCPN Rotasını sil"
+msgstr "OpenCPN Rotasını Sil"
 #
 #
 msgid "OpenCPN S57 SENC File Create..."
-msgstr "OpenCPN S57 SENC dosyası oluşturuyor"
+msgstr "OpenCPN S57 SENC Dosyası Oluşturuyor"
 #
 #
 msgid "OpenCPN Track"
@@ -2256,7 +2245,7 @@ msgstr "OpenCPN Seyirizi"
 #
 #
 msgid "OpenCPN Track Delete"
-msgstr "OpenCPN Seyirizini sil"
+msgstr "OpenCPN Seyirizini Sil"
 #
 # Menu contextuel : Route
 msgid "OpenCPN Waypoint"
@@ -2264,7 +2253,7 @@ msgstr "OpenCPN Seyirnoktası"
 #
 #
 msgid "OpenCPN cannot start. "
-msgstr "OpenCPN başlatılamıyor."
+msgstr "OpenCPN başlatılamıyor"
 #
 #
 msgid "OpenCPN info"
@@ -2288,13 +2277,13 @@ msgstr "Çıktı"
 #
 #
 msgid "Output Message"
-msgstr "OpenCPN Mesajı "
+msgstr "Çıktı Mesajı "
 #
 msgid "Output filtering"
 msgstr "Çıkış Filtresi"
 #
 msgid "Output on this port ( as Autopilot or NMEA Repeater)"
-msgstr "Bu bağlantı noktasının çıkışı (Otopilot ya da NMEA cihazı)"
+msgstr "Bu bağlantı noktası çıkışı (Otopilot ya da NMEA cihazı)"
 #
 #
 msgid "OverZoom"
@@ -2359,7 +2348,7 @@ msgstr "Düz"
 #
 #
 msgid "Plan Speed"
-msgstr "Hızı Hesapla"
+msgstr "Planlanan Hız"
 #
 #
 msgid "Plan speed (Kts)"
@@ -2380,13 +2369,13 @@ msgstr ""
 #
 # AIS
 msgid "Pleasure craft"
-msgstr "Yat"
+msgstr "Spor amaçlı tekne, Yat"
 #
 msgid "Pleasure craft, longer than 20 metres"
 msgstr "Spor amaçlı tekne, 20 metreden uzun"
 #
 msgid "Plugins"
-msgstr "Uzantılar"
+msgstr "Eklentiler"
 #
 #
 msgid "Points"
@@ -2463,11 +2452,11 @@ msgstr "Bu noktaya geçin ve talimatları bekleyin"
 #
 #
 msgid "Processing Waypoints..."
-msgstr "Seyirnoktası Oluşturuluyor..."
+msgstr "Seyirnoktası Oluşturuluyor"
 #
 #
 msgid "Progress..."
-msgstr "İşlem sürüyor..."
+msgstr "İşlem sürüyor"
 #
 #
 msgid "Properties"
@@ -2553,7 +2542,7 @@ msgstr "RACON"
 #
 #
 msgid "Range"
-msgstr "Menzil"
+msgstr "Uzaklık"
 #
 # AIS
 msgid "Real"
@@ -2590,7 +2579,7 @@ msgid "Reduce Data Precision"
 msgstr "Veri Kesinliğini Azalt"
 #
 msgid "Reduce Data..."
-msgstr "Veriyi Azalt..."
+msgstr "Veriyi Azalt"
 #
 msgid "Reduced Detail at Small Scale"
 msgstr "Küçük Ölçekte Azaltılmış Ayrıntı "
@@ -2633,11 +2622,11 @@ msgstr "Kayıp Hedeflerin Kaldırılacağı Süre (dakika)"
 #
 #
 msgid "Rename Waypoints?"
-msgstr "Seyirnoktalarınıı yeniden mi adlandıracaksınız ?"
+msgstr "Seyirnoktaları yeniden adlandırılsın mı?"
 #
 #, c-format
 msgid "RenderHPGL: The '%s' instruction is not implemented."
-msgstr "HPGL çevrimi:  '%s' yönergesi uygulanmadı. "
+msgstr "HPGL çevrimi:  '%s' yönergesi uygulanmadı"
 #
 msgid "Report Age"
 msgstr "Rapor Yaşı"
@@ -2646,27 +2635,27 @@ msgid "Report as of"
 msgstr "Raporlanan"
 #
 msgid "Report from ship: Icing info"
-msgstr "Gemiden rapor edin: "
+msgstr "Gemiden rapor edilen: Buzlanma bilgisi"
 #
 msgid ""
 "Report from ship: Miscellaneous information - define in Associated text field"
-msgstr "Gemiden rapor edin: Çeşitli bilgiler - açıklama ilişkteki metinde"
+msgstr "Gemiden rapor edilen: Çeşitli bilgiler - açıklama ilişkteki metinde"
 #
 # AIS
 msgid "Reserved 11"
-msgstr "11 Saklandı"
+msgstr "11 Saklı"
 #
 # AIS
 msgid "Reserved 12"
-msgstr "12 Saklandı"
+msgstr "12 Saklı"
 #
 # AIS
 msgid "Reserved 13"
-msgstr "13 Saklandı"
+msgstr "13 Saklı"
 #
 # AIS
 msgid "Reserved 14"
-msgstr "14 Saklandı"
+msgstr "14 Saklı"
 #
 msgid "Restricted Area: Active military OPAREA"
 msgstr "Yasak Bölge: Etkin askeri manevra"
@@ -2721,7 +2710,7 @@ msgid "Route"
 msgstr "Rota"
 #
 msgid "Route Manager"
-msgstr "RotaYöneticisi"
+msgstr "Rota Yöneticisi"
 #
 #
 msgid "Route Name"
@@ -2741,7 +2730,7 @@ msgid "Route: "
 msgstr "Rota:"
 #
 msgid "Route: Alternative route"
-msgstr "Rota: Rota değiştir"
+msgstr "Rota: Alternatif rota"
 #
 msgid "Route: Recommended route"
 msgstr "Rota: Önerilen rota"
@@ -2770,7 +2759,7 @@ msgid "SOG COG"
 msgstr "SOG / COG "
 #
 msgid "Safe Water"
-msgstr "Emin Sular"
+msgstr "Güvenli Su"
 #
 msgid "Safety Broadcast Message"
 msgstr "Güvenli Yayın Mesajı"
@@ -2781,7 +2770,7 @@ msgstr "Güvenli Derinlik"
 #
 # AIS
 msgid "Sailing Vessel"
-msgstr "Yelkenli gemi"
+msgstr "Yelkenli Tekne"
 #
 #, c-format
 msgid "Scale %4.0f"
@@ -2845,7 +2834,7 @@ msgid ""
 "after data reduction:"
 msgstr ""
 "Veri düzeltimi sonrasında\n"
-"kabul edilir en çok hata payı (metre)"
+" kabul edilir en çok hata payı (metre)"
 #
 #
 msgid "Send"
@@ -2853,14 +2842,15 @@ msgstr "Gönder"
 #
 # Menu contextuel : Route
 msgid "Send Route To GPS"
-msgstr "GPS'e Rota Gönder"
+msgstr "Rotayı GPS'e Gönder"
 #
 #
 msgid "Send To GPS..."
 msgstr "GPS'e Gönder"
 #
 #
-msgid "Send to GPS"
+#, fuzzy
+msgid "Send to GPS ( "
 msgstr "GPS'e Gönder"
 #
 #
@@ -2936,17 +2926,17 @@ msgstr "Derinlik Birimlerini Göster"
 #
 #
 msgid "Show ENC Text"
-msgstr "Haritada yeradlarını göster"
+msgstr "Harita Metinlerini Göster"
 #
 #
 msgid "Show Grid"
-msgstr "Enlem Boylamı Çizgilerini Göster"
+msgstr "Enlem/Boylamı Göster"
 #
 msgid "Show Highway"
 msgstr "Otoyolu Göster"
 #
 msgid "Show Lat/Long as"
-msgstr "Enlem/Boylamı görünümü:"
+msgstr "Enlem/Boylamın gösteriliş şekli.....................................:"
 #
 #
 msgid "Show NMEA Debug Window"
@@ -2997,7 +2987,7 @@ msgstr "Radar Halkalarını Göster"
 #
 #
 msgid "Show target COG predictor arrow, length (min)"
-msgstr "Hedef COG Oklarını Göster, Uuzunluk (dakika)"
+msgstr "Hedef COG Oklarını Göster, Uzunluk (dakika)"
 #
 #
 msgid "Show target tracks, length (min)"
@@ -3005,7 +2995,7 @@ msgstr "Hedef İzsürümünü Göster, Uzunluk (dakika)"
 #
 # Toolbox/Langue
 msgid "Shows the font preview."
-msgstr "Harfin önizlenmesini gösterir"
+msgstr "Harf önizlenmeyi gösterir"
 #
 #
 msgid "Simplified"
@@ -3022,7 +3012,7 @@ msgstr "Kalın"
 #
 #, c-format
 msgid "Sound file '%s' is in unsupported format."
-msgstr ""
+msgstr "'%s' ses dosyası biçimi desteklenmiyor."
 #
 #
 msgid "Spare"
@@ -3114,23 +3104,23 @@ msgstr "Hedef Hesabı"
 #
 # Menu contextuel : AIS
 msgid "Target List..."
-msgstr "Hedef Listesi..."
+msgstr "Hedef Listesi"
 #
 #
 msgid "Target Query..."
-msgstr "Hedef Sorgusu..."
+msgstr "Hedef Sorgusu"
 #
 msgid "Target info"
-msgstr "Hedef bilgisi"
+msgstr "Hedef Bilgisi"
 #
 msgid "Temporary GOTO Route"
 msgstr "Geçici OrayaGit Rotası"
 #
 msgid "Temporary MOB Route"
-msgstr "Geçici MOB Rotası"
+msgstr "Geçici Denize Adam Düştü (DAD) Rotası"
 #
 msgid "Temporary layer"
-msgstr "Geçici etiket"
+msgstr "Geçici Etiket"
 #
 #
 msgid "Tender"
@@ -3167,7 +3157,7 @@ msgid ""
 "You can merge it later when it is completed."
 msgstr ""
 "Halen sürdürülen rotaizi birleştirilmedi.\n"
-"Bittikten sonra birleştirebilirsiniz."
+" Bittikten sonra birleştirebilirsiniz."
 #
 # Toolbox/Langue
 msgid "The font colour."
@@ -3175,25 +3165,25 @@ msgstr "Yazı rengi"
 #
 # Toolbox/Langue
 msgid "The font family."
-msgstr "Yazı türü."
+msgstr "Yazı türü"
 #
 # Toolbox/Langue
 msgid "The font point size."
-msgstr "Yazı nokta büyüklüğü."
+msgstr "Yazı nokta büyüklüğü"
 #
 # Toolbox/Langue
 msgid "The font style."
-msgstr "Yazı tipi."
+msgstr "Yazı tipi"
 #
 # Toolbox/Langue
 msgid "The font weight."
 msgstr "Yazı kalınlığı"
 #
 msgid "The necessary configuration files were not found. "
-msgstr "Gerekli ayar dosyaları bulunamadı."
+msgstr "Gerekli ayar dosyaları bulunamadı"
 #
 msgid "The settings for own ship real size are not correct:"
-msgstr "Gerçek boyutlu tekne verileriniz doğru değil."
+msgstr "Gerçek boyutlu tekne verileriniz doğru değil"
 #
 msgid ""
 "The waypoint you want to delete is used in a route, do you really want to "
@@ -3213,7 +3203,7 @@ msgid ""
 msgstr ""
 "Yapıştırdıklarınızdan bazılarıyla aynı yerde başka seyirnoktaları da var. "
 "Onlara sadece ortak verileri yapıştırmak ister misiniz?\n"
-"\n"
+" \n"
 #
 msgid ""
 "There are some waypoints used in routes or anchor alarms. Do you want to "
@@ -3240,14 +3230,14 @@ msgid ""
 "Perhaps your current printer is not set correctly?"
 msgstr ""
 "Yazdırırken br sorun oluştu.\n"
-"Belki kullandığınız yazıcı doğru yapılandırılmamıştır ?"
+" Belki kullandığınız yazıcı doğru yapılandırılmamıştır?"
 #
 #
 msgid "This Leg"
-msgstr "Bu bacak"
+msgstr "Bu Bacak"
 #
 msgid "This waypoint is part of a layer and can't be edited"
-msgstr "Bu seyirnoktası bir etiketin parçası olduğu için iptal edilemiyor."
+msgstr "Bu seyirnoktası bir etiketin parçası olduğu için iptal edilemiyor"
 #
 #
 msgid "Tide"
@@ -3258,10 +3248,10 @@ msgid "TideCurrentGraphRollover"
 msgstr "GelgitAkıntıÇizelgeUzantısı"
 #
 msgid "Tides && Currents"
-msgstr "Gelgitler&&Akıntılar"
+msgstr "Gelgitler && Akıntılar"
 #
 msgid "Time Enroute"
-msgstr "Yoldaki süre"
+msgstr "Yoldaki Süre"
 #
 msgid "Times shown as"
 msgstr "Zamanın gösterim şekli"
@@ -3271,7 +3261,7 @@ msgstr "Zamanlama"
 #
 #
 msgid "To"
-msgstr "Varış Limanı"
+msgstr "Kalkış - Varış Limanları"
 #
 #
 msgid "To Waypoint"
@@ -3290,7 +3280,7 @@ msgid "Tomorrow"
 msgstr "Yarın"
 #
 msgid "ToolTips"
-msgstr "Araçİpucu"
+msgstr "Araç Çubuğu"
 #
 msgid "Toolbar and Window Style"
 msgstr "Araç Çubuğu ve Pencere Düzeni"
@@ -3362,7 +3352,7 @@ msgid "Tug, tanker"
 msgstr "Römork, tanker"
 #
 msgid "Turn Rate"
-msgstr "Oranı Sapta"
+msgstr "Dönüş Oranı"
 #
 msgid "Type"
 msgstr "Tür"
@@ -3376,9 +3366,6 @@ msgstr "URL"
 #
 msgid "UTC"
 msgstr "UTC"
-#
-msgid "Unavailable"
-msgstr "Ulaşılamaz"
 #
 # AIS
 msgid "Undefined"
@@ -3512,7 +3499,7 @@ msgstr "CPA Uyarısı İçin En Uzak Mesafe (NMi)"
 #
 #
 msgid "Waypoint"
-msgstr "Seyirnoktası"
+msgstr "Seyirnoktası/İşaret"
 #
 #
 msgid "Waypoint Name"
@@ -3542,7 +3529,7 @@ msgstr "OpenCPN'e Hoşgeldiniz"
 #
 # Toolbox/Langue
 msgid "Whether the font is underlined."
-msgstr "Harflerin altının çizili olup olmadığı"
+msgstr "Yazı altının çizlii olup olmadığı"
 #
 msgid "White"
 msgstr "Beyaz"
@@ -3582,7 +3569,7 @@ msgid "Yes"
 msgstr "Evet"
 #
 msgid "Yes, hide it."
-msgstr "Evet, sakla."
+msgstr "Evet, gizle."
 #
 msgid ""
 "You can't hide the last tool from the toolbar\n"
@@ -3592,7 +3579,7 @@ msgstr ""
 "Araç çubuğundaki son düğmeyi gizleyemezsiniz."
 #
 msgid "You must enter the address..."
-msgstr "Adres girmelisiniz..."
+msgstr "Adres girmelisiniz"
 #
 msgid "You must select or enter the port..."
 msgstr "Seçin ya da bir bağlantı noktası girin..."
@@ -3610,7 +3597,7 @@ msgid "Zoom to Cursor"
 msgstr "Fareye Yakınlaştır"
 #
 msgid "[Class] Type (Status)"
-msgstr "[Sınıfı] Tür (Durum)"
+msgstr "[Sınıf] Tür (Durum)"
 #
 msgid "_A"
 msgstr "_A"
@@ -3644,8 +3631,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
+#
 #
 #
 #
@@ -3670,6 +3659,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "      COG oku gösterge uzunluğu (Dakika) :   "
 #
@@ -3681,8 +3671,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Tonozdaki hedefler için enyüksek hız (Kts) :"
+#
 #
 #
 #
@@ -3715,9 +3707,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "  Harita projeksionu bilinemediği için, merkator olarak kabul edildi."
+#
 #
 #
 #
@@ -3734,8 +3728,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "  Could not open serial port '"
 #~ msgstr "      Bağlantı noktası açılamadı "
+#
 #
 #
 #
@@ -3754,8 +3750,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG : 000 Deg."
+#
 #
 #
 #
@@ -3770,6 +3768,7 @@ msgstr "wxFB veb sayfası"
 #~ msgstr ""
 #~ "'\n"
 #~ "Önerilen : Şu notasyonu deneyin 'xxx.xxx.xxx.xxx'"
+#
 #
 #
 #
@@ -3801,6 +3800,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
 #
@@ -3812,8 +3812,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ":               "
 #~ msgstr ":               "
+#
 #
 #
 #
@@ -3838,8 +3840,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "<--Remove"
 #~ msgstr "<-- Kaldır"
+#
 #
 #
 #
@@ -3867,6 +3871,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Route
 #~ msgid "Activate Route"
 #~ msgstr "Rotayı etkinleştir"
@@ -3877,8 +3882,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Active Charts"
 #~ msgstr "Etkin harita"
+#
 #
 #
 #
@@ -3898,8 +3905,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Bu haritayı diğer haritalara ekle"
+#
 #
 #
 #
@@ -3914,8 +3923,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Dışında, hepsi "
+#
 #
 #
 #
@@ -3934,8 +3945,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Autopilot Output Port"
 #~ msgstr "OtoPilot Çıkış Noktası"
+#
 #
 #
 #
@@ -3956,8 +3969,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Kerteriz   : %03d   Deg.\n"
+#
 #
 #
 #
@@ -3978,8 +3993,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -3998,6 +4015,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 uzantısı görünümü"
 #
@@ -4008,8 +4026,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CM93 Offsets"
 #~ msgstr "CM93 Dengeleri"
+#
 #
 #
 #
@@ -4031,6 +4051,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CPA:       \n"
 #~ msgstr "CPA  : \n"
 #
@@ -4042,8 +4063,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA  :               %6.1f NM\n"
+#
 #
 #
 #
@@ -4071,8 +4094,16 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "Çağrıİşareti: "
+#
+#
+#~ msgid "Can't send waypoint. Found no serial data port with output defined."
+#~ msgstr ""
+#~ "Seyir noktası gönderilemiyor. Çıkışı tanımlanmış seri bağlantı noktası "
+#~ "bulunamıyor."
+#
 #
 #
 #
@@ -4090,6 +4121,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Chart Groups..."
 #~ msgstr "Harita grupları"
 #
@@ -4099,8 +4131,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Chart Groups...New Group"
 #~ msgstr "Hrita grupları... Yeni grup"
+#
 #
 #
 #
@@ -4121,8 +4155,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Class:                "
 #~ msgstr "Sınıfı: "
+#
 #
 #
 #
@@ -4137,8 +4173,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "TCP/IP servis sağlayıcısı bulunamadı"
+#
 #
 #
 #
@@ -4159,8 +4197,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "COG                 : 000   Deg.\n"
+#
 #
 #
 #
@@ -4181,8 +4221,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "Fare işaret noktası: "
+#
 #
 #
 #
@@ -4223,9 +4265,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Varsayılan veri bileşeni"
+#
 #
 #
 #
@@ -4253,8 +4297,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "İşareti sil"
+#
 #
 #
 #
@@ -4275,8 +4321,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "Seçimi sil"
+#
 #
 #
 #
@@ -4288,6 +4336,7 @@ msgstr "wxFB veb sayfası"
 # Menu contextuel : Trace
 #~ msgid "Delete Track"
 #~ msgstr "Seyirizini sil"
+#
 #
 #
 #
@@ -4309,8 +4358,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Varış :"
+#
 #
 #
 #
@@ -4331,8 +4382,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "ENC/Vector"
 #~ msgstr "ENC/Vektör"
+#
 #
 #
 #
@@ -4353,6 +4406,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "ETA:                  "
 #~ msgstr "Yaklaşık Varış Zamanı:"
 #
@@ -4363,8 +4417,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Enable Manual CM93 Offsets"
 #~ msgstr "CM93 dengelemesini elle yapılandırmaya izin ver"
+#
 #
 #
 #
@@ -4385,8 +4441,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Diğer"
+#
 #
 #
 #
@@ -4408,6 +4466,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
 #
@@ -4418,8 +4477,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPS Veri sağlayıcı"
+#
 #
 #
 #
@@ -4448,6 +4509,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Seyirnoktasına/İşarete git"
 #
@@ -4457,8 +4519,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Groups"
 #~ msgstr "Grupla"
+#
 #
 #
 #
@@ -4490,8 +4554,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Pruva   : %03d   Deg.\n"
+#
 #
 #
 #
@@ -4512,6 +4578,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Inland Blue Flag        Clear\n"
 #~ msgstr "Karasal Mavi Bayrak         Temiz\n"
 #
@@ -4522,8 +4589,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Oraya git"
+#
 #
 #
 #
@@ -4551,8 +4620,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Pozisyona git..."
+#
 #
 #
 #
@@ -4569,8 +4640,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Tam"
+#
 #
 #
 #
@@ -4604,8 +4677,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Son mevki rapor zamanı   : "
+#
 #
 #
 #
@@ -4637,6 +4712,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Chargez les données PLIB"
 #
@@ -4647,8 +4723,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "META nesneleri"
+#
 #
 #
 #
@@ -4686,8 +4764,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Uzaklığıi ölç"
+#
 #
 #
 #
@@ -4707,6 +4787,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr " NMEA Veri kaynağı"
 #
@@ -4718,8 +4799,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "NMEA Options"
 #~ msgstr "NMEA Seçenekleri"
+#
 #
 #
 #
@@ -4742,8 +4825,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "Seyir durumu: "
+#
 #
 #
 #
@@ -4762,6 +4847,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "KendiTeknenizin görünüm seçenekleri"
@@ -4772,9 +4858,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at distance interval (NMi)"
 #~ msgstr "Her ( ) milde bir seyirizinoktası koy (NMI):"
+#
 #
 #
 #
@@ -4794,10 +4882,12 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Mevki rapor ömrü     : %3d Sec.\n"
+#
 #
 #
 #
@@ -4850,6 +4940,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Yazılıyor"
 #
@@ -4859,8 +4950,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Radar rings"
 #~ msgstr "Radar halkaları"
+#
 #
 #
 #
@@ -4883,6 +4976,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Menzil           :%5.1f  NM\n"
 #
@@ -4894,8 +4988,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Raster"
+#
 #
 #
 #
@@ -4918,8 +5014,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Dönüş hızı: %3d Deg./Min. Droite\n"
+#
 #
 #
 #
@@ -4942,8 +5040,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Dönüş hızı : >5d Deg./Min. Gauche\n"
+#
 #
 #
 #
@@ -4964,6 +5064,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Bu haritaları ekli diğer haritalardan çıkar"
@@ -4975,8 +5076,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Bu haritaları ekli diğer haritalardan çıkar"
+#
 #
 #
 #
@@ -5015,8 +5118,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Rota mesafesi"
+#
 #
 #
 #
@@ -5037,9 +5142,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Seyirizinden Rota"
+#
 #
 #
 #
@@ -5068,8 +5175,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Yön yukarı olacak şekilde kullan"
+#
 #
 #
 #
@@ -5090,8 +5199,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "ATON etiketlerini göster"
+#
 #
 #
 #
@@ -5135,8 +5246,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Seyirizi simgesini göster"
+#
 #
 #
 #
@@ -5156,12 +5269,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Büyüklük               : %dm x %dm \n"
 #~ "\n"
+#
 #
 #
 #
@@ -5188,12 +5303,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x ---m\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Büyüklük           : %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5220,12 +5337,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x ---m\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Büyüklük             : ---m x ---m x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5252,12 +5371,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x ---m\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Büyüklük           : %5.1fm x %4.1fm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5280,6 +5401,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "Hız            : %5.2f noeuds.\n"
 #
@@ -5291,8 +5413,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP, Wifi Veri sağlayıcısı "
+#
 #
 #
 #
@@ -5315,8 +5439,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA :  %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -5336,9 +5462,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide & Current Dataset Selection"
 #~ msgstr "Gelgitler&&Akıntılar"
+#
 #
 #
 #
@@ -5360,8 +5488,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "ToolBox"
 #~ msgstr "AraçKutusu"
+#
 #
 #
 #
@@ -5383,6 +5513,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Doğru ölçüm : %8.de"
+#
+#
+#~ msgid "Unavailable"
+#~ msgstr "Ulaşılamaz"

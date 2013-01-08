@@ -1,0 +1,133 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: grib_pi 2.6.1718\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-05-22 22:21-0400\n"
+"PO-Revision-Date: 2012-12-29 13:16+0100\n"
+"Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"Language: HU\n"
+
+#: src/grib.h:124 src/grib_pi.cpp:277 src/grib_pi.cpp:346
+msgid "GRIB Display Control"
+msgstr "GRIB kijelzés vezérlés"
+
+#: src/grib_pi.cpp:118 src/grib_pi.cpp:208 src/grib_pi.cpp:261
+msgid "Grib"
+msgstr ""
+
+#: src/grib_pi.cpp:177 src/grib_pi.cpp:230
+msgid "GRIB"
+msgstr ""
+
+#: src/grib_pi.cpp:183
+msgid "GRIB PlugIn for OpenCPN"
+msgstr "OpenCPN GRIB modul"
+
+#: src/grib_pi.cpp:189
+msgid ""
+"GRIB PlugIn for OpenCPN\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
+"\n"
+"Supported GRIB file types include:\n"
+"- wind direction and speed\n"
+"- significant wave height\n"
+"- sea surface temperature\n"
+"- surface current direction and speed."
+msgstr ""
+"A GRIB OpenCPN modul\n"
+"alapvető GRIB állomány kijezését teszi lehetővé különböző GRIB fájl "
+"típusokkal.\n"
+"\n"
+"Támogatott GRIB fájl típusok:\n"
+"- szél irány és sebesség\n"
+"- hullám magasság\n"
+"- tenger felszíni hőmérséklete\n"
+"- felszíni áramlás iránya és sebessége."
+
+#: src/grib_pi.cpp:221
+msgid "GRIB Preferences"
+msgstr "BRIB beállítások"
+
+#: src/grib_pi.cpp:234
+msgid "Show GRIB icon"
+msgstr "GRIB ikon mutatása"
+
+#: src/grib_pi.cpp:237
+msgid "Use High Definition Graphics"
+msgstr "Nagyfelbontású grafika használata"
+
+#: src/grib_pi.cpp:240
+msgid "Show metres/sec for Wind Speed"
+msgstr "Szélsebesség méter/sec-ben mutatása"
+
+#: src/grib.cpp:195
+msgid "GRIB File Directory"
+msgstr "GRIB fájl könyvtár"
+
+#: src/grib.cpp:221
+msgid "GRIB Data"
+msgstr "GRIB adat"
+
+#: src/grib.cpp:234
+msgid "Wind Speed, Kts."
+msgstr "Szél sebesség, csomó."
+
+#: src/grib.cpp:236
+msgid "Wind Speed, m/sec."
+msgstr "Szél sebesség, m/s."
+
+#: src/grib.cpp:248
+msgid "Wind Direction"
+msgstr "Szél irány"
+
+#: src/grib.cpp:258
+msgid "Pressure, mBar"
+msgstr "Légnyomás, mBar"
+
+#: src/grib.cpp:268
+msgid "Significant Wave Height, m"
+msgstr "Hullám magasság, m"
+
+#: src/grib.cpp:279
+msgid "Sea Surface Temp, C"
+msgstr "Tenger felszín hőmérséklete, C"
+
+#: src/grib.cpp:289
+msgid "Current Velocity, Kts."
+msgstr "Áramlat sebessége, csomó."
+
+#: src/grib.cpp:304
+msgid "&Close"
+msgstr "Bezár"
+
+#: src/grib.cpp:510
+msgid "Select GRIB Directory"
+msgstr "GRIB könyvtár kiválasztása"
+
+#: src/grib.cpp:1092
+msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgstr ""
+"Zoomolj, vagy válts nagyobb méretarányra az elnyomott HTSGW GRIB "
+"megjelenítéséhez"
+
+#: src/grib.cpp:1156
+msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+msgstr ""
+"Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
+"megjelenítéséhez"
+
+#: src/grib.cpp:1168 src/grib.cpp:1225
+msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+msgstr ""
+"Zoomolj, vagy válts nagyobb méretarányra az elnyomott SEATEMP GRIB "
+"megjelenítéséhez"
