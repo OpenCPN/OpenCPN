@@ -753,10 +753,42 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
     if(!event.GetActive())
     {
 //        printf("App de-activate\n");
+        if(g_FloatingToolbarDialog) {
+            if(g_FloatingToolbarDialog->IsShown())
+                g_FloatingToolbarDialog->Submerge();
+        }
+
+        if(console && console->IsShown()) {
+            console->Hide();
+        }
+
+        if(g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
+            g_FloatingCompassDialog->Hide();
+        }
+
+        if(stats && stats->IsShown()) {
+            stats->Hide();
+        }
+
     }
     else
     {
 //        printf("App Activate\n");
+        gFrame->SurfaceToolbar();
+
+        if(g_FloatingCompassDialog)
+            g_FloatingCompassDialog->Show();
+
+        if(stats)
+            stats->Show();
+
+        if(console) {
+            if( g_pRouteMan->IsAnyRouteActive() )
+                console->Show();
+        }
+        
+        gFrame->Raise();
+
     }
 #endif
 
