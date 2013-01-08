@@ -612,7 +612,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 }
 
                 SendSentenceToAllInstruments( OCPN_DBP_STC_TWS2, m_NMEA0183.Mwd.WindSpeedKnots,
-                        _("Kts") );
+                        _T("Kts") );
                 //m_NMEA0183.Mwd.WindSpeedms
             }
         }
