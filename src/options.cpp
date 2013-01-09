@@ -159,6 +159,8 @@ extern double           g_AckTimeout_Mins;
 extern bool             g_bQuiltEnable;
 extern bool             g_bFullScreenQuilt;
 extern bool             g_bConfirmObjectDelete;
+extern wxString         g_GPS_Ident;
+extern bool             g_bGarminHostUpload;
 
 extern wxLocale         *plocale_def_lang;
 
@@ -468,16 +470,19 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_tFilterSec = new wxTextCtrl( m_pNMEAForm, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
     bSizer171->Add( m_tFilterSec, 0, wxALL, 4 );
 
-
     bSizer161->Add( bSizer171, 1, wxEXPAND, 5 );
 
-    wxBoxSizer* bSizer181;
-    bSizer181 = new wxBoxSizer( wxVERTICAL );
-
     m_cbNMEADebug = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Show NMEA Debug Window"), wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer181->Add( m_cbNMEADebug, 0, wxALL, 5 );
+    bSizer161->Add( m_cbNMEADebug, 0, wxALL, 3 );
 
-    bSizer161->Add( bSizer181, 1, wxEXPAND, 5 );
+    m_cbFurunoGP3X = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Format uploads for Furuno GP3X"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbFurunoGP3X->SetValue(g_GPS_Ident == _T("FurunoGP3X"));
+    bSizer161->Add( m_cbFurunoGP3X, 0, wxALL, 3 );
+    
+    m_cbGarminUploadHost = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use Garmin GRMN (Host) mode for uploads"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbGarminUploadHost->SetValue(g_bGarminHostUpload);
+    bSizer161->Add( m_cbGarminUploadHost, 0, wxALL, 3 );
+    
     bSizer151->Add( bSizer161, 1, wxEXPAND, 5 );
     sbSizerGeneral->Add( bSizer151, 1, wxEXPAND, 5 );
     bSizerOuterContainer->Add( sbSizerGeneral, 0, wxALL|wxEXPAND, 5 );
@@ -631,15 +636,6 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbGarminHost->SetValue(false);
     fgSizer5->Add( m_cbGarminHost, 0, wxALL, 5 );
 
-    m_cbFurunoGP3X = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Format uploads for Furuno GP3X"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_cbFurunoGP3X->SetValue(false);
-    fgSizer5->Add( m_cbFurunoGP3X, 0, wxALL, 5 );
-        
-    m_cbGarminUploadHost = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use Garmin GRMN (Host) mode for uploads"), wxDefaultPosition, wxDefaultSize, 0 );
-    m_cbGarminUploadHost->SetValue(false);
-    fgSizer5->Add( m_cbGarminUploadHost, 0, wxALL, 5 );
-        
-        
     sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
     sbSizerConnectionProps->Add( fgSizer5, 0, wxEXPAND, 5 );
 
@@ -829,7 +825,11 @@ void options::OnConnectionToggleEnable( wxMouseEvent &event )
         
         cc1->Refresh();
     }
-    
+    else if( clicked_index == -1 ) {
+        ClearNMEAForm();
+        m_buttonRemove->Enable( false );
+    }
+
     // Allow wx to process...
     event.Skip();
 }
@@ -2224,7 +2224,7 @@ void options::UpdateWorkArrayFromTextCtl()
 
 ConnectionParams * options::SaveConnectionParams()
 {
-    if ( connectionsaved )
+    if( !m_bNMEAParams_shown )
         return NULL;
 
     //  Special encoding for deleted connection
@@ -2267,8 +2267,6 @@ ConnectionParams * options::SaveConnectionParams()
     m_pConnectionParams->Priority = wxAtoi( m_choicePriority->GetStringSelection() );
     m_pConnectionParams->ChecksumCheck = m_cbCheckCRC->GetValue();
     m_pConnectionParams->Garmin = m_cbGarminHost->GetValue();
-    m_pConnectionParams->GarminUpload = m_cbGarminUploadHost->GetValue();
-    m_pConnectionParams->FurunoGP3X = m_cbFurunoGP3X->GetValue();
     m_pConnectionParams->InputSentenceList = wxStringTokenize( m_tcInputStc->GetValue(), _T(",") );
     if ( m_rbIAccept->GetValue() )
         m_pConnectionParams->InputSentenceListType = WHITELIST;
@@ -2523,11 +2521,17 @@ void options::OnApplyClick( wxCommandEvent& event )
             dstr->SetOutputFilter(cp->OutputSentenceList);
             dstr->SetOutputFilterType(cp->OutputSentenceListType);
             dstr->SetChecksumCheck(cp->ChecksumCheck);
-            dstr->SetGarminUploadMode(cp->GarminUpload);
         
             g_pMUX->AddStream(dstr);
         }
     }
+    
+    g_bGarminHostUpload = m_cbGarminUploadHost->GetValue();
+    if( m_cbFurunoGP3X->GetValue() )
+        g_GPS_Ident = _T("FurunoGP3X");
+    else
+        g_GPS_Ident = _T("Generic");
+    
     
 #ifdef USE_S57
     //    Handle Vector Charts Tab
@@ -2682,7 +2686,7 @@ void options::OnApplyClick( wxCommandEvent& event )
         cc1->ReloadVP();
     }
 
-    k_charts = 0;
+    k_charts = k_charts & VISIT_CHARTS;
     ::wxEndBusyCursor();
 }
 
@@ -3599,10 +3603,10 @@ void options::OnTypeNetSelected( wxCommandEvent& event )
 
 void options::OnUploadFormatChange( wxCommandEvent& event )
 {
-    if ( event.GetEventObject() == m_cbGarminHost && event.IsChecked() )
+    if ( event.GetEventObject() == m_cbGarminUploadHost && event.IsChecked() )
         m_cbFurunoGP3X->SetValue(false);
     else if ( event.GetEventObject() == m_cbFurunoGP3X && event.IsChecked() )
-        m_cbGarminHost->SetValue(false);
+        m_cbGarminUploadHost->SetValue(false);
     event.Skip();
 }
 
@@ -3624,7 +3628,6 @@ void options::ShowNMEACommon(bool visible)
         m_choicePriority->Show();
         m_stPriority->Show();
         m_cbCheckCRC->Show();
-        m_cbFurunoGP3X->Show();
     }
     else
     {
@@ -3642,11 +3645,12 @@ void options::ShowNMEACommon(bool visible)
         m_choicePriority->Hide();
         m_stPriority->Hide();
         m_cbCheckCRC->Hide();
-        m_cbFurunoGP3X->Hide();
         sbSizerOutFilter->SetDimension(0,0,0,0);
         sbSizerInFilter->SetDimension(0,0,0,0);
         sbSizerConnectionProps->SetDimension(0,0,0,0);
     }
+    
+    m_bNMEAParams_shown = visible;
 }
 
 void options::ShowNMEANet(bool visible)
@@ -3686,7 +3690,6 @@ void options::ShowNMEASerial(bool visible)
         m_stSerProtocol->Show();
         m_choiceSerialProtocol->Show();
         m_cbGarminHost->Show();
-        m_cbGarminUploadHost->Show();
         gSizerNetProps->SetDimension(0,0,0,0);
     }
     else
@@ -3698,7 +3701,6 @@ void options::ShowNMEASerial(bool visible)
         m_stSerProtocol->Hide();
         m_choiceSerialProtocol->Hide();
         m_cbGarminHost->Hide();
-        m_cbGarminUploadHost->Hide();
         gSizerSerProps->SetDimension(0,0,0,0);
     }
 }
@@ -3727,6 +3729,17 @@ void options::SetNMEAFormToNet()
     SetDSFormRWStates();
 }
 
+void options::ClearNMEAForm()
+{
+    ShowNMEACommon( false );
+    ShowNMEANet( false );
+    ShowNMEASerial( false );
+    m_pNMEAForm->FitInside();
+    m_pNMEAForm->Layout();
+    Fit();
+    Layout();
+}
+    
 wxString StringArrayToString(wxArrayString arr)
 {
     wxString ret = wxEmptyString;
@@ -3775,8 +3788,6 @@ void options::SetConnectionParams(ConnectionParams *cp)
     m_comboPort->SetValue(cp->Port);
     m_cbCheckCRC->SetValue(cp->ChecksumCheck);
     m_cbGarminHost->SetValue(cp->Garmin);
-    m_cbGarminUploadHost->SetValue(cp->GarminUpload);
-    m_cbFurunoGP3X->SetValue(cp->FurunoGP3X);
     m_cbOutput->SetValue(cp->Output);
     if(cp->InputSentenceListType == WHITELIST)
         m_rbIAccept->SetValue(true);

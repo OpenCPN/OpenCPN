@@ -5,12 +5,12 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.1.0b604\n"
+"Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-06-11 10:28-0400\n"
-"PO-Revision-Date: 2011-06-15 17:09+0100\n"
-"Last-Translator: Gunther Pilz <gunther.pilz@gmail.com>\n"
-"Language-Team: Gunther Pilz <service@opencpn.de>\n"
+"PO-Revision-Date: 2012-12-25 11:00+0100\n"
+"Last-Translator: CarCode <carcode@me.com>\n"
+"Language-Team: Gerhard Mueller <carcode@me.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -22,15 +22,9 @@ msgstr ""
 msgid "&Close"
 msgstr "Schließen"
 
-#
-#
-#
 msgid "Current Velocity, Kts."
 msgstr "Geschw. Gezeitenstrom, kn"
 
-#
-#
-#
 msgid "GRIB"
 msgstr "GRIB"
 
@@ -40,9 +34,6 @@ msgstr "GRIB-Daten"
 msgid "GRIB Display Control"
 msgstr "GRIB-Anzeige Einstellungen"
 
-#
-#
-#
 msgid "GRIB File Directory"
 msgstr "Verzeichnis GRIB-Dateien"
 
@@ -74,82 +65,43 @@ msgstr "GRIB Einstellungen"
 msgid "Grib"
 msgstr "GRIB"
 
-#
-#
-#
 msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
 msgstr "Zur Anzeige der ausgeblendeten CRAIN GRIB-Daten bitte herauszoom oder Maßstab verkleinern."
 
-#
-#
-#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Zur Anzeige der ausgeblendeten HTSGW GRIB-Daten bitte herauszoom oder Maßstab verkleinern."
 
-#
-#
-#
 msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
 msgstr "Zur Anzeige der ausgeblendeten GRIB Ozean-Strömung bitte herauszoom oder Maßstab verkleinern."
 
-#
-#
-#
 msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 msgstr "Zur Anzeige der ausgeblendeten GRIB Wassertemperatur bitte herauszoom oder Maßstab verkleinern."
 
-#
-#
-#
 msgid "Pressure, mBar"
 msgstr "Luftdruck, mBar"
 
-#
-#
-#
 msgid "Sea Surface Temp, C"
 msgstr "Wassertemp. (Oberfl.), °C"
 
-#
-#
-#
 msgid "Select GRIB Directory"
 msgstr "GRIB-Verzeichnis auswählen"
 
-#
-#
-#
 msgid "Show GRIB icon"
 msgstr "GRIB-Symbol anzeigen"
 
-#
-#
-#
 msgid "Significant Wave Height, m"
 msgstr "Signifik. Wellenhöhe, m"
 
-#
-#
-#
 msgid "Use High Definition Graphics"
-msgstr "Hochäuflösende Grafik verwenden"
+msgstr "Hochauflösende Grafik verwenden"
 
-#
-#
-#
 #, c-format
 msgid "WARNING:  QuickScat GRIB data is %d hours old."
 msgstr "WARNUNG:  Die QuickScat GRIB-Daten sind %d Stunden alt."
 
-#
-#
-#
 msgid "Wind Direction"
 msgstr "Windrichtung"
 
-#
-#
-#
 msgid "Wind Speed, Kts."
 msgstr "Windgeschwindigkeit, kn"
 

@@ -71,7 +71,6 @@ const wxEventType wxEVT_OCPN_DATASTREAM = wxNewEventType();
 OCPN_DataStreamEvent::OCPN_DataStreamEvent( wxEventType commandType, int id )
       :wxEvent(id, commandType)
 {
-    m_pDataStream = NULL;
 }
 
 
@@ -83,7 +82,8 @@ wxEvent* OCPN_DataStreamEvent::Clone() const
 {
     OCPN_DataStreamEvent *newevent=new OCPN_DataStreamEvent(*this);
     newevent->m_NMEAstring=this->m_NMEAstring;
-    newevent->m_pDataStream=this->m_pDataStream;
+    newevent->m_StreamName=this->m_StreamName;
+    newevent->m_priority=this->m_priority;
     return newevent;
 }
 
@@ -393,7 +393,8 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
                             std::string s = std::string(nmea_line.mb_str());
                             Nevent.SetNMEAString(s);
-                            Nevent.SetDataStream(this);
+                            Nevent.SetStreamName(std::string( GetPort().mb_str() ));
+                            Nevent.SetPriority(GetPriority());
                             
                             m_consumer->AddPendingEvent(Nevent);
                         }
@@ -526,17 +527,25 @@ bool DataStream::SendSentence( const wxString &sentence )
                 }
                 if( IsSecThreadActive() )
                 {
-                    int retry = 3;
+                    int retry = 10;
                     while( retry ) {
                         if(m_output_mutex.TryLock() == wxMUTEX_NO_ERROR) {
+                            if( !m_pSecondary_Thread->GetOutMsg().Length() ) {
 //                                printf("set\n");
                                 m_pSecondary_Thread->SetOutMsg( payload );
                                 m_output_mutex.Unlock();
                                 return true;
-                         }
+                            }
+                            else {
+                                m_output_mutex.Unlock();
+//                                printf("sleep retry\n");
+                                wxMilliSleep(100);
+                                retry--;
+                            }
+                        }
                         else {
                             retry--;
-//                            printf("retry %d\n", retry);
+//                            printf("mutex retry %d\n", retry);
                         }
                     }
                     return false;
@@ -770,13 +779,12 @@ void *OCP_DataStreamInput_Thread::Entry()
         //      Check for any pending output message
         if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->Lock()) ){
             if( !m_outmsg.IsEmpty() ) {
-                printf("write\n");
+//                printf("write\n");
                 WriteComPortPhysical(m_gps_fd, m_outmsg);
                 m_outmsg.Clear();
             }
             m_pout_mutex->Unlock();
         }
-      //              ThreadMessage(_T("Timeout 1"));
     }                          // the big while...
 
 //          Close the port cleanly
@@ -927,7 +935,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                     b_sleep = false;
                     szBuf[ic] = chRead;
                     dwRead++;
-                    if(ic++ > READ_BUF_SIZE - 1)
+                    if(++ic > READ_BUF_SIZE - 1)
                         goto HandleASuccessfulRead;
                     if(chRead == 0x0a)
                         goto HandleASuccessfulRead;
@@ -979,8 +987,13 @@ void *OCP_DataStreamInput_Thread::Entry()
                     }
                 }
             }
-            else {
-                //      ReadFile Erorr
+            else {                     //      ReadFile Erorr
+                b_inner = false;
+                CloseComPortPhysical(m_gps_fd);
+                m_gps_fd = NULL;
+                dwRead = 0;
+                nl_found = false;
+                n_reopen_wait = 2000;
             }
         }
             
@@ -1097,7 +1110,9 @@ void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
     std::string s = std::string(str_temp_buf.mb_str());
     Nevent.SetNMEAString(s);
-    Nevent.SetDataStream(m_launcher);
+    Nevent.SetStreamName(std::string( m_launcher->GetPort().mb_str() ));
+    Nevent.SetPriority(m_launcher->GetPriority());
+    
     if( m_pMessageTarget )
         m_pMessageTarget->AddPendingEvent(Nevent);
 
@@ -1221,7 +1236,7 @@ int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, const 
 {
     ssize_t status;
     status = write(port_descriptor, string.mb_str(), string.Len());
-
+    
     return status;
 }
 
@@ -1229,7 +1244,6 @@ int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, unsign
 {
     ssize_t status;
     status = write(port_descriptor, msg, count);
-
     return status;
 }
 
@@ -2333,6 +2347,7 @@ void *GARMIN_Serial_Thread::Entry()
     bool not_done = true;
  
    
+#ifdef USE_GARMINHOST
     //    The main loop
     
     while((not_done) && (m_parent->m_Thread_run_flag > 0)) {
@@ -2405,12 +2420,15 @@ void *GARMIN_Serial_Thread::Entry()
                         oNMEA0183.Rmc.Write ( snt );
                         wxString message = snt.Sentence;
 
-                        OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                        std::string s = std::string(message.mb_str());
-                        Nevent.SetNMEAString(s);
-                        Nevent.SetDataStream(m_parent_stream);
-                        if( m_pMessageTarget )
+                        if( m_pMessageTarget ) {
+                            OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+                            std::string s = std::string(message.mb_str());
+                            Nevent.SetNMEAString(s);
+                            Nevent.SetStreamName(std::string( m_parent_stream->GetPort().mb_str() ));
+                            Nevent.SetPriority(m_parent_stream->GetPriority());
+                        
                             m_pMessageTarget->AddPendingEvent(Nevent);
+                        }
                         
                     }
             }
@@ -2421,7 +2439,22 @@ thread_exit:
 
     Garmin_GPS_PVT_Off( m_port);  
     Garmin_GPS_ClosePortVerify();
-    
+
+#else           //#ifdef USE_GARMINHOST
+
+    while((not_done) && (m_parent->m_Thread_run_flag > 0)) {
+
+        wxSleep(1);
+        if(TestDestroy()) {
+            not_done = false;                               // smooth exit
+            goto thread_exit;
+        }
+    }
+        
+thread_exit:
+
+#endif          //#ifdef USE_GARMINHOST
+
     m_parent->m_Thread_run_flag = -1;   // in GarminProtocolHandler        
     return 0;
 }
@@ -2496,13 +2529,16 @@ void *GARMIN_USB_Thread::Entry()
                   
                   oNMEA0183.Gsv.Write ( snt );
                   wxString message = snt.Sentence;
+
+                  if( m_pMessageTarget ) {
+                    OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+                    std::string s = std::string(message.mb_str());
+                    Nevent.SetNMEAString(s);
+                    Nevent.SetStreamName(std::string( m_parent_stream->GetPort().mb_str() ));
+                    Nevent.SetPriority(m_parent_stream->GetPriority());
                   
-                  OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                  std::string s = std::string(message.mb_str());
-                  Nevent.SetNMEAString(s);
-                  Nevent.SetDataStream(m_parent_stream);
-                  if( m_pMessageTarget )
-                      m_pMessageTarget->AddPendingEvent(Nevent);
+                    m_pMessageTarget->AddPendingEvent(Nevent);
+                  }
                   
             }
 
@@ -2544,12 +2580,15 @@ void *GARMIN_USB_Thread::Entry()
                           oNMEA0183.Rmc.Write ( snt );
                           wxString message = snt.Sentence;
 
-                          OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                          std::string s = std::string(message.mb_str());
-                          Nevent.SetNMEAString(s);
-                          Nevent.SetDataStream(m_parent_stream);
-                          if( m_pMessageTarget )
-                              m_pMessageTarget->AddPendingEvent(Nevent);
+                          if( m_pMessageTarget ) {
+                            OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+                            std::string s = std::string(message.mb_str());
+                            Nevent.SetNMEAString(s);
+                            Nevent.SetStreamName(std::string( m_parent_stream->GetPort().mb_str() ));
+                            Nevent.SetPriority(m_parent_stream->GetPriority());
+                          
+                            m_pMessageTarget->AddPendingEvent(Nevent);
+                          }
                           
                           }
                   

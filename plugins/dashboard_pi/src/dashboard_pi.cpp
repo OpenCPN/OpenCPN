@@ -612,7 +612,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 }
 
                 SendSentenceToAllInstruments( OCPN_DBP_STC_TWS2, m_NMEA0183.Mwd.WindSpeedKnots,
-                        _("Kts") );
+                        _T("Kts") );
                 //m_NMEA0183.Mwd.WindSpeedms
             }
         }
@@ -965,6 +965,15 @@ void dashboard_pi::OnToolbarToolCallback( int id )
 {
     int cnt = GetDashboardWindowShownCount();
 
+    bool b_anyviz = false;
+    for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
+        DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( i );
+        if( cont->m_bIsVisible ) {
+            b_anyviz = true;
+            break;
+        }
+    }
+
     for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
         DashboardWindowContainer *cont = m_ArrayOfDashboardWindow.Item( i );
         DashboardWindow *dashboard_window = cont->m_pDashboardWindow;
@@ -1003,8 +1012,15 @@ void dashboard_pi::OnToolbarToolCallback( int id )
 
                 if( b_reset_pos ) pane.FloatingPosition( 50, 50 );
 
-                cont->m_bIsVisible = cnt == 0;
-                pane.Show( cnt == 0 );
+                if( cnt == 0 )
+                    if( b_anyviz )
+                        pane.Show( cont->m_bIsVisible );
+                    else {
+                       cont->m_bIsVisible = true;
+                       pane.Show( true );       // show all if none are marked visible and none are shown
+                    }
+                else
+                    pane.Show( false );
             }
 
             //  This patch fixes a bug in wxAUIManager
@@ -1097,8 +1113,11 @@ bool dashboard_pi::LoadConfig( void )
                 pConf->Read( _T("Caption"), &caption, _("Dashboard") );
                 wxString orient;
                 pConf->Read( _T("Orientation"), &orient, _T("V") );
+                int b_viz;
+                pConf->Read( _T("Visible"), &b_viz, 1 );
                 int i_cnt;
                 pConf->Read( _T("InstrumentCount"), &i_cnt, -1 );
+
                 wxArrayInt ar;
                 for( int i = 0; i < i_cnt; i++ ) {
                     int id;
@@ -1106,8 +1125,10 @@ bool dashboard_pi::LoadConfig( void )
                     if( id != -1 ) ar.Add( id );
                 }
 // TODO: Do not add if GetCount == 0
-                m_ArrayOfDashboardWindow.Add(
-                        new DashboardWindowContainer( NULL, name, caption, orient, ar ) );
+                DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, name, caption, orient, ar );
+                cont->m_bIsVisible = b_viz;
+
+                m_ArrayOfDashboardWindow.Add( cont );
             }
         }
 
@@ -1135,6 +1156,8 @@ bool dashboard_pi::SaveConfig( void )
             pConf->Write( _T("Name"), cont->m_sName );
             pConf->Write( _T("Caption"), cont->m_sCaption );
             pConf->Write( _T("Orientation"), cont->m_sOrientation );
+            pConf->Write( _T("Visible"), cont->m_bIsVisible );
+
             pConf->Write( _T("InstrumentCount"), (int) cont->m_aInstrumentList.GetCount() );
             for( size_t j = 0; j < cont->m_aInstrumentList.GetCount(); j++ )
                 pConf->Write( wxString::Format( _T("Instrument%d"), j + 1 ),

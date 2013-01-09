@@ -33,6 +33,7 @@
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
 extern TTYWindow        *g_NMEALogWindow;
+extern bool             g_bGarminHostUpload;
 
 Multiplexer::Multiplexer()
 {
@@ -93,14 +94,14 @@ void Multiplexer::StopAndRemoveStream( DataStream *stream )
     }
 }
 
-void Multiplexer::LogOutputMessage( wxString &msg, DataStream *stream, bool b_filter )
+void Multiplexer::LogOutputMessage( wxString &msg, wxString stream_name, bool b_filter )
 {
     if( g_NMEALogWindow) {
         wxDateTime now = wxDateTime::Now();
         wxString ss = now.FormatISOTime();
         ss.Prepend(_T("--> "));
         ss.Append( _T(" (") );
-        ss.Append( stream->GetPort() );
+        ss.Append( stream_name );
         ss.Append( _T(") ") );
         ss.Append( msg );
         if(b_filter)
@@ -113,13 +114,13 @@ void Multiplexer::LogOutputMessage( wxString &msg, DataStream *stream, bool b_fi
     }
 }
 
-void Multiplexer::LogInputMessage( wxString &msg, DataStream *stream, bool b_filter )
+void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_filter )
 {
     if( g_NMEALogWindow) {
         wxDateTime now = wxDateTime::Now();
         wxString ss = now.FormatISOTime();
         ss.Append( _T(" (") );
-        ss.Append( stream->GetPort() );
+        ss.Append( stream_name );
         ss.Append( _T(") ") );
         ss.Append( msg );
         if(b_filter)
@@ -147,7 +148,7 @@ void Multiplexer::SendNMEAMessage( wxString &msg )
                 bout_filter = false;
             }    
             //Send to the Debug Window, if open
-            LogOutputMessage( msg, s, bout_filter );
+            LogOutputMessage( msg, s->GetPort(), bout_filter );
         }
         
     }
@@ -169,13 +170,8 @@ void Multiplexer::SetGPSHandler(wxEvtHandler *handler)
 void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 {
     wxString message = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
-    DataStream *stream = event.GetDataStream();
-    wxString port;
-    if( stream )
-        port = stream->GetPort();
-    else
-        port = _T("PlugIn Virtual");
-    
+    wxString port = wxString(event.GetStreamName().c_str(), wxConvUTF8);
+    DataStream *stream = FindStream(port);
     if( !message.IsEmpty() )
     {
         //Send to core consumers
@@ -187,7 +183,6 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
             
         if( bpass ) {
             if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
-                message.Mid(3,3).IsSameAs(_T("VDO")) ||
                 message.Mid(1,5).IsSameAs(_T("FRPOS")) ||
                 message.Mid(1,2).IsSameAs(_T("CD")) )
             {
@@ -208,7 +203,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         }
 
             //Send to the Debug Window, if open
-        LogInputMessage( message, stream, !bpass );
+        LogInputMessage( message, port, !bpass );
             
         //Send to plugins
         if ( g_pi_manager )
@@ -228,7 +223,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                             bout_filter = false;
                         }    
                             //Send to the Debug Window, if open
-                        LogOutputMessage( message, s, bout_filter );
+                        LogOutputMessage( message, port, bout_filter );
                     }
                 }
             }
@@ -248,7 +243,6 @@ void Multiplexer::SaveStreamProperties( DataStream *stream )
         output_sentence_list_save = stream->GetOutputSentenceList();
         output_sentence_list_type_save = stream->GetOutputSentenceListType();
         bchecksum_check_save = stream->GetChecksumCheck();
-        bGarmin_GRM_upload_save = stream->GetGarminUploadMode();
         bGarmin_GRMN_mode_save = stream->GetGarminMode();
         
     }
@@ -268,7 +262,6 @@ bool Multiplexer::CreateAndRestoreSavedStreamProperties()
     dstr->SetOutputFilter(output_sentence_list_save);
     dstr->SetOutputFilterType(output_sentence_list_type_save);
     dstr->SetChecksumCheck(bchecksum_check_save);
-    dstr->SetGarminUploadMode(bGarmin_GRM_upload_save);
     
     AddStream(dstr);
     
@@ -341,7 +334,7 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
     }
 #endif
 
-    if(bGarmin_GRM_upload_save)
+    if(g_bGarminHostUpload)
     {
         int ret_val;
         if ( pProgress )
@@ -503,7 +496,7 @@ ret_point:
                     }
 
                     if( dstr->SendSentence( snt.Sentence ) )
-                        LogOutputMessage( snt.Sentence, dstr, false );
+                        LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
                     
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
@@ -735,7 +728,7 @@ ret_point:
                 for(unsigned int ii=0 ; ii < sentence_array.GetCount(); ii++)
                 {
                     if(dstr->SendSentence( sentence_array.Item(ii) ) )
-                        LogOutputMessage( sentence_array.Item(ii), dstr, false );
+                        LogOutputMessage( sentence_array.Item(ii), dstr->GetPort(), false );
                     
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
@@ -751,7 +744,7 @@ ret_point:
             else
             {
                 if( dstr->SendSentence( snt.Sentence ) )
-                    LogOutputMessage( snt.Sentence, dstr, false );
+                    LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
                 
                 wxString msg(_T("-->GPS Port:"));
                 msg += com_name;
@@ -767,7 +760,7 @@ ret_point:
                 term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
                 if( dstr->SendSentence( term ) )
-                    LogOutputMessage( term, dstr, false );
+                    LogOutputMessage( term, dstr->GetPort(), false );
                 
                 wxString msg(_T("-->GPS Port:"));
                 msg += com_name;
@@ -871,7 +864,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
 #endif
 
     // Are we using Garmin Host mode for uploads?
-    if(bGarmin_GRM_upload_save)
+    if(g_bGarminHostUpload)
     {
         RoutePointList rplist;
         int ret_val;
@@ -996,7 +989,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
         }
 
         if( dstr->SendSentence( snt.Sentence ) )
-            LogOutputMessage( snt.Sentence, dstr, false );
+            LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
         
         wxString msg(_T("-->GPS Port:"));
         msg += com_name;
@@ -1011,7 +1004,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
             term.Printf(_T("$PFEC,GPxfr,CTL,E%c%c"), 0x0d, 0x0a);
 
             if( dstr->SendSentence( term ) )
-                LogOutputMessage( term, dstr, false );
+                LogOutputMessage( term, dstr->GetPort(), false );
             
             wxString msg(_T("-->GPS Port:"));
             msg += com_name;

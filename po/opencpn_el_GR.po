@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1105\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-25 11:42-0500\n"
+"POT-Creation-Date: 2013-01-08 17:57-0500\n"
 "PO-Revision-Date: 2012-11-13 13:01+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC sailingteam <sailingteam@isc.tuc.gr>\n"
@@ -743,9 +743,6 @@ msgstr "Συναγερμοί CPA/TCPA"
 #
 msgid "Call"
 msgstr "ΔΔΣ"
-#
-msgid "Can't send waypoint. Found no serial data port with output defined."
-msgstr ""
 #
 msgid "Cancel"
 msgstr "Ακύρωση"
@@ -2564,7 +2561,8 @@ msgstr "Αποστολή διαδρομής στο  GPS"
 msgid "Send To GPS..."
 msgstr "Στείλε στο GPS..."
 #
-msgid "Send to GPS"
+#, fuzzy
+msgid "Send to GPS ( "
 msgstr "Στείλε στο GPS..."
 #
 msgid "Sentence Filter"
@@ -3010,9 +3008,6 @@ msgstr "URL"
 msgid "UTC"
 msgstr "UTC"
 #
-msgid "Unavailable"
-msgstr "Μη διαθέσιμο"
-#
 msgid "Undefined"
 msgstr "Απροσδιόριστο"
 #
@@ -3249,8 +3244,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Όλα εκτός από"
+#
 #
 #
 #
@@ -3262,5 +3259,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Μόνο"
+#
+#
+#~ msgid "Unavailable"
+#~ msgstr "Μη διαθέσιμο"

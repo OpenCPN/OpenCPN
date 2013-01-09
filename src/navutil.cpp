@@ -302,6 +302,7 @@ extern int              g_GroupIndex;
 extern bool             g_bDebugOGL;
 extern int              g_current_arrow_scale;
 extern wxString         g_GPS_Ident;
+extern bool             g_bGarminHostUpload;
 extern wxString         g_uploadConnection;
 
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -3021,7 +3022,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
 
     Read( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic") );
-
+    Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload, 0 );
+    
     Read( _T ( "UseNMEA_RMC" ), &g_bUseRMC, 1 );
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
@@ -3115,8 +3117,9 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0 );
     Read( _T ( "OwnShipGPSOffsetX" ), &g_n_gps_antenna_offset_x, 0 );
     Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0 );
-    Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 0 );
-
+    Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 1 );
+    g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
+    
     Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
 
     Read( _T ( "StartWithTrackActive" ), &g_bTrackCarryOver, 0 );
@@ -4503,6 +4506,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ToolbarOrient" ), g_toolbar_orient );
     Write( _T ( "ToolbarConfig" ), g_toolbarConfig );
 
+    Write( _T ( "GPSIdent" ), g_GPS_Ident );
+    Write( _T ( "UseGarminHostUpload" ), g_bGarminHostUpload );
+    
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
@@ -8112,7 +8118,12 @@ void TTYScroll::OnDraw( wxDC& dc )
                 lss = ls.Mid(6);
         }
         
-       dc.DrawText( lss, 0, y );
+        else if(ls.Mid(0, 5) == _T("<RED>") ){
+            dc.SetTextForeground( wxColour(_T("RED")) );
+            lss = ls.Mid(5);
+        }
+        
+        dc.DrawText( lss, 0, y );
        y += m_hLine;
     }
 }

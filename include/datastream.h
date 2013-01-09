@@ -180,19 +180,22 @@ public:
     ~OCPN_DataStreamEvent( );
 
     // accessors
-    std::string GetNMEAString() { return m_NMEAstring; }
-    DataStream *GetDataStream() { return m_pDataStream; }
     void SetNMEAString(std::string string) { m_NMEAstring = string; }
-    void SetDataStream(DataStream *pds) { m_pDataStream = pds; }
+    void SetStreamName(std::string string) { m_StreamName = string; }
+    void SetPriority( int prio ) { m_priority = prio; }
+    
+    std::string GetNMEAString() { return m_NMEAstring; }
+    std::string GetStreamName() { return m_StreamName; }
+    int GetStreamPriority() { return m_priority; }
     
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;
 
 private:
     std::string m_NMEAstring;
-    DataStream  *m_pDataStream;
+    std::string m_StreamName;
+    int m_priority;
 
-            //            DECLARE_DYNAMIC_CLASS(OCPN_DataStreamEvent)
 };
 
 
@@ -253,9 +256,7 @@ public:
     void SetOutputFilterType(ListType filter_type) { m_output_filter_type = filter_type; }
     bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
     bool ChecksumOK(const wxString& sentence);
-    bool GetGarminUploadMode(){ return m_bGarmin_GRM_upload; }
     bool GetGarminMode(){ return m_bGarmin_GRMN_mode; }
-    void SetGarminUploadMode(bool b){ m_bGarmin_GRM_upload = b; }
    
     
     wxString GetBaudRate(){ return m_BaudRate; }
@@ -305,7 +306,6 @@ private:
     wxArrayString       m_output_filter;
     ListType            m_output_filter_type;
     
-    bool                m_bGarmin_GRM_upload;
     bool                m_bGarmin_GRMN_mode;
     GarminProtocolHandler *m_GarminHandler;
 
@@ -361,7 +361,7 @@ public:
     ~OCP_DataStreamInput_Thread(void);
     void *Entry();
     void SetOutMsg(wxString msg);
-
+    wxString GetOutMsg(){ return m_outmsg; }
     void OnExit(void);
 
 private:

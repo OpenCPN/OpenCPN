@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-12-25 11:42-0500\n"
+"POT-Creation-Date: 2013-01-08 17:57-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
@@ -336,7 +336,7 @@ msgid "(Unnamed Track)"
 msgstr "(Trace sans nom)"
 #
 msgid "(Unnamed Waypoint)"
-msgstr "(Waypoint sans nom)"
+msgstr "(Marque sans nom)"
 #
 msgid "(reserved for future use)"
 msgstr "(Réservé pour un futur usgae)"
@@ -630,7 +630,7 @@ msgstr "Mouillage créé"
 #
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr ""
-"Répondre \"Non\" permettra de créer un nouveau waypoint à la même position."
+"Répondre «Non» permettra de créer un nouveau waypoint à la même position."
 #
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Répondre «Non» permettra de créer tous les waypoints de cette route."
@@ -784,9 +784,6 @@ msgstr "Alarmes CPA/TCPA ( TCPA = Temps pour le CPA)."
 #
 msgid "Call"
 msgstr "Indicatif"
-#
-msgid "Can't send waypoint. Found no serial data port with output defined."
-msgstr "Impossible d'envoyer le waypoint. Aucun port de sortie n'a été défini."
 #
 #
 msgid "Cancel"
@@ -1067,7 +1064,7 @@ msgid "Control checksum"
 msgstr "Contrôle du checksum"
 #
 msgid "Copy As KML"
-msgstr ""
+msgstr "Copier format KML"
 #
 msgid "Copy Log File to Clipboard"
 msgstr "Copier le fichier log dans le presse papier"
@@ -1075,17 +1072,15 @@ msgstr "Copier le fichier log dans le presse papier"
 msgid "Copy Settings File to Clipboard"
 msgstr "Copier le fichier d'initialisation dans le presse-papier"
 #
-#, fuzzy
 msgid "Copy as KML"
-msgstr "Copier comme du texte"
+msgstr "Copier au format KML"
 #
-#, fuzzy
 msgid "Copy as KML..."
-msgstr "Copier ..."
+msgstr "Copier au format KML ..."
 #
 #, c-format
 msgid "Couldn't load sound data from '%s'."
-msgstr ""
+msgstr "Impossible de charger les données de son depuis '%s'"
 #
 msgid "Course"
 msgstr "Cap"
@@ -1316,7 +1311,7 @@ msgid "Drop MOB Marker"
 msgstr "Insérer un point MOB (Homme à la mer)"
 #
 msgid "Drop Mark"
-msgstr "Waypoint/marque : Créer ici"
+msgstr "Marque : Créer ici"
 #
 msgid "Drop Sentences"
 msgstr "Phrases rejetées"
@@ -1715,25 +1710,21 @@ msgstr "Police maritime"
 msgid "Layer Name"
 msgstr "Nom de la couche"
 #
-#, fuzzy
 msgid "Layer Route"
-msgstr "Route : Coller"
+msgstr "Couche : Route"
 #
-#, fuzzy
 msgid "Layer Route: "
-msgstr "Route : Coller"
+msgstr "Route (Couche) :"
 #
 msgid "Layer Routepoint"
-msgstr ""
+msgstr "Couche : Point de route"
 #
-#, fuzzy
 msgid "Layer Track"
-msgstr "Trace : Coller"
+msgstr "Couche : Trace"
 #
 # Menu contextuel : Waypoint
-#, fuzzy
 msgid "Layer Waypoint"
-msgstr "Waypoint : coller"
+msgstr "Couche : Marque"
 #
 # Couche
 msgid "Layers"
@@ -2608,7 +2599,7 @@ msgid "Route"
 msgstr "Route :"
 #
 msgid "Route Manager"
-msgstr "Gestionnaire de routes, traces, waypoint et couches."
+msgstr "Gestionnaire de routes, traces, marques et couches."
 #
 #
 msgid "Route Name"
@@ -2742,7 +2733,8 @@ msgstr "Route : Envoyer au GPS"
 msgid "Send To GPS..."
 msgstr "Envoyer au GPS ..."
 #
-msgid "Send to GPS"
+#, fuzzy
+msgid "Send to GPS ( "
 msgstr "Envoyer au GPS"
 #
 msgid "Sentence Filter"
@@ -2886,7 +2878,7 @@ msgstr "Trait plein"
 #
 #, c-format
 msgid "Sound file '%s' is in unsupported format."
-msgstr ""
+msgstr "Le format du fichier de son '%s' n'est pas supporté"
 #
 #
 msgid "Spare"
@@ -3107,7 +3099,8 @@ msgid "This Leg"
 msgstr "Ce segment"
 #
 msgid "This waypoint is part of a layer and can't be edited"
-msgstr "Ce waypoint appartient à une couche et ne peut être édité"
+msgstr ""
+"Cette marque ou ce waypoint appartient à une couche et ne peut être édité"
 #
 #
 msgid "Tide"
@@ -3230,9 +3223,6 @@ msgstr "URL"
 #
 msgid "UTC"
 msgstr "UTC"
-#
-msgid "Unavailable"
-msgstr "Indisponible"
 #
 # AIS
 msgid "Undefined"
@@ -3478,27 +3468,24 @@ msgstr "WGS Y"
 msgid "wxFB Website"
 msgstr "Site web wxFB"
 #
-#
-#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Mosaïque des cartes : Ajouter cette carte"
-#
-#
 #
 #~ msgid "All but"
 #~ msgstr " Tout mais "
 #
-#
+#~ msgid "Can't send waypoint. Found no serial data port with output defined."
+#~ msgstr ""
+#~ "Impossible d'envoyer le waypoint. Aucun port de sortie n'a été défini."
 #
 #~ msgid "Copy"
 #~ msgstr "Copier"
 #
-#
-#
 #~ msgid "Just "
 #~ msgstr " Seulement"
 #
-#
-#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Mosaïque des cartes : Retirer cette carte"
+#
+#~ msgid "Unavailable"
+#~ msgstr "Indisponible"

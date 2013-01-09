@@ -57,8 +57,8 @@ class Multiplexer : public wxEvtHandler
         bool SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge *pProgress);
 
         void OnEvtStream(OCPN_DataStreamEvent& event);
-        void LogOutputMessage( wxString &msg, DataStream *stream, bool b_filter );
-        void LogInputMessage( wxString &msg, DataStream *stream, bool b_filter );
+        void LogOutputMessage( wxString &msg, wxString stream_name, bool b_filter );
+        void LogInputMessage( wxString &msg, wxString stream_name, bool b_filter );
         
     private:
         wxArrayOfDataStreams *m_pdatastreams;
@@ -76,7 +76,6 @@ class Multiplexer : public wxEvtHandler
         wxArrayString output_sentence_list_save;
         ListType output_sentence_list_type_save;
         bool bchecksum_check_save;
-        bool bGarmin_GRM_upload_save;
         bool bGarmin_GRMN_mode_save;
         
 };

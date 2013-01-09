@@ -191,7 +191,7 @@ IF(WIN32)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
 ENDIF(WIN32)
 
-# find src/ -name \*.cpp -or -name \*.h -or -name \*.hpp >po/POTFILES.in
+# find src/ -name \*.cpp -or -name \*.h -or -name \*.hpp | sort>po/POTFILES.in
 FIND_PROGRAM(GETTEXT_XGETTEXT_EXECUTABLE xgettext)
 IF (GETTEXT_XGETTEXT_EXECUTABLE)
 ADD_CUSTOM_COMMAND(

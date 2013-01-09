@@ -948,17 +948,11 @@ void SendToGpsDlg::CreateControls( const wxString& hint )
         m_itemCommListBox->Append( full_port );
     }
     
- 
     delete pSerialArray;
 
     //    Make the proper inital selection
-    int sidx = 0;
-    if( g_uploadConnection != _T("") ) {
-        sidx = m_itemCommListBox->FindString( g_uploadConnection );
-    }
-    
-    if( sidx != wxNOT_FOUND )
-        m_itemCommListBox->SetSelection( sidx );
+    if( !g_uploadConnection.IsEmpty() ) 
+        m_itemCommListBox->SetValue( g_uploadConnection );
     else
         m_itemCommListBox->SetSelection( 0 );
     
@@ -1218,7 +1212,7 @@ wxImageList *WayPointman::Getpmarkicon_image_list( void )
         wxImage icon_larger;
         if( h0 <= h && w0 <= w ) {
             // Resize & Center smaller icons in the bitmap, so menus won't look so weird.
-            icon_larger = icon_image.Resize( wxSize( h, w ), wxPoint( (w-w0)/2, (h-h0)/2 ) );
+            icon_larger = icon_image.Resize( wxSize( w, h ), wxPoint( (w-w0)/2, (h-h0)/2 ) );
         } else {
             // rescale in one or two directions to avoid cropping, then resize to fit to cell
             int h1 = h;
@@ -1228,7 +1222,7 @@ wxImageList *WayPointman::Getpmarkicon_image_list( void )
             else if( w0 > w ) h1 = wxRound( (double) h0 * ( (double) w / (double) w0 ) );
 
             icon_larger = icon_image.Rescale( w1, h1 );
-            icon_larger = icon_larger.Resize( wxSize( h, w ), wxPoint( 0, 0 ) );
+            icon_larger = icon_larger.Resize( wxSize( w, h ), wxPoint( 0, 0 ) );
         }
 
         pmarkicon_image_list->Add( icon_larger );

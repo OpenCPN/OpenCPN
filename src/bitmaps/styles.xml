@@ -749,7 +749,7 @@
 			</icon>
 			<icon name="pencil">
 				<icon-location x="380" y="100"/>
-				<size x="16" y="16"/>
+				<size x="32" y="32"/>
 			</icon>
 			<icon name="up">
 				<icon-location x="420" y="100"/>
@@ -1225,7 +1225,7 @@
 			</icon>
 			<icon name="pencil">
 				<icon-location x="380" y="100"/>
-				<size x="16" y="16"/>
+				<size x="32" y="32"/>
 			</icon>
 			<icon name="up">
 				<icon-location x="420" y="100"/>

@@ -595,21 +595,21 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         else if( NavStatus == UNDEFINED ) navStatStr = _("Testing");
     }
 
-    wxString sub_type;
+    wxString sart_sub_type;
     if( Class == AIS_SART ) {
         int mmsi_start = MMSI / 1000000;
         switch( mmsi_start ){
             case 970:
-//                        sub_type = _T("SART");
+//                sart_sub_type = _T("SART");
                 break;
             case 972:
-                sub_type = _T("MOB");
+                sart_sub_type = _T("MOB");
                 break;
             case 974:
-                sub_type = _T("EPIRB");
+                sart_sub_type = _T("EPIRB");
                 break;
             default:
-                sub_type = _("Unknown");
+                sart_sub_type = _("Unknown");
                 break;
         }
     }
@@ -681,11 +681,20 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         }
     }
 
-    if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
+    if( Class == AIS_SART ) {
         html << _T("<tr><td colspan=2>") << _T("<b>") << AISTypeStr;
-        if( sub_type.Length() ) html << _T(" (") << sub_type << _T(")");
-        html << _T(", ") << navStatStr;
-        if( UNTypeStr.Length() ) html << _T(" (UN Type ") << UNTypeStr << _T(")");
+        if( sart_sub_type.Length() ) 
+            html << _T(" (") << sart_sub_type << _T("), ");
+        html << navStatStr;
+        html << rowEnd << _T("<tr><td colspan=2>") << _T("<b>") << sizeString << rowEnd;
+    }
+    
+    else if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
+        html << _T("<tr><td colspan=2>") << _T("<b>") << AISTypeStr;
+        if( navStatStr.Length() )
+            html << _T(", ") << navStatStr;
+        if( UNTypeStr.Length() )
+            html << _T(" (UN Type ") << UNTypeStr << _T(")");
         html << rowEnd << _T("<tr><td colspan=2>") << _T("<b>") << sizeString << rowEnd;
     }
 
@@ -716,8 +725,13 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             html << vertSpacer << rowStart << _("Destination")
                  << _T("</font></td><td align=right><font size=-2>")
                  << _("ETA") << _T("</font></td></tr>\n")
-                 << rowStartH << _T("<b>") << trimAISField( Destination )
-                 << _T("</b></td><td nowrap align=right><b>");
+                 << rowStartH << _T("<b>");
+                 wxString dest =  trimAISField( Destination );
+                 if(dest.Length() )
+                     html << dest;
+                 else
+                     html << _("---");
+                 html << _T("</b></td><td nowrap align=right><b>");
 
             if( ( ETA_Mo ) && ( ETA_Hr < 24 ) ) {
                 int yearOffset = 0;
@@ -726,7 +740,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                         now.GetYear() + yearOffset, ETA_Hr, ETA_Min );
                 html << eta.Format( _T("%b %d %H:%M") );
             }
-            else html << _("Unavailable");
+            else html << _("---");
             html << rowEnd;
         }
 
@@ -756,6 +770,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                     else rotStr = _T("0");
                 }
             }
+            else
+                rotStr = _("---");
         }
     }
 
@@ -1366,8 +1382,14 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
             case 3:
             case 18:
             {
-                pos->kLat = pTargetData->Lat;
-                pos->kLon = pTargetData->Lon;
+                if( !pTargetData->b_positionDoubtful ) {
+                    pos->kLat = pTargetData->Lat;
+                    pos->kLon = pTargetData->Lon;
+                }
+                else {
+                    pos->kLat = NAN;
+                    pos->kLon = NAN;
+                }
                 
                 if(pTargetData->COG == 360.0)
                     pos->kCog = NAN;

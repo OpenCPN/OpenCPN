@@ -287,6 +287,8 @@ private:
       ViewPort    VPoint;
       void        PositionConsole(void);
       void        FinishRoute(void);
+      wxString    FindValidUploadPort();
+      
 
       ChInfoWin   *m_pCIWin;
 
@@ -305,7 +307,7 @@ private:
       RoutePoint  *m_pRoutePointEditTarget;
       SelectItem  *m_pFoundPoint;
       bool        m_bChartDragging;
-
+      wxString    m_active_upload_port;
       Route       *m_pMouseRoute;
       Route       *m_pSelectedRoute;
       Route       *m_pSelectedTrack;
