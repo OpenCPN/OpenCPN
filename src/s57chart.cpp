@@ -444,7 +444,7 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         float easting, northing;
                         npt = 1;
                         float *pfs = (float *) ( buf + 5 );                // point to the point
-#ifndef ARMHF
+#ifdef ARMHF
                         float east, north;
                         memcpy(&east, pfs++, sizeof(float));
                         memcpy(&north, pfs, sizeof(float));
@@ -488,7 +488,7 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         float *pfs = (float *) ( buf + 9 );                 // start of data
                         for( int ip = 0; ip < npt; ip++ ) {
                             float easting, northing;
-#ifndef ARMHF
+#ifdef ARMHF
                             float east, north, deep;
                             memcpy(&east, pfs++, sizeof(float));
                             memcpy(&north, pfs++, sizeof(float));
@@ -553,7 +553,7 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         float xmax, xmin, ymax, ymin;
                         
 
-#ifndef ARMHF
+#ifdef ARMHF
                         for( int ip = 0; ip < npt; ip++ ) {
                             float east, north;
                             memcpy(&east, pf++, sizeof(float));
@@ -5122,7 +5122,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 }
 
                 //      Store the Bounding Box as lat/lon
- #ifdef ARMHF
+#ifdef ARMHF
                 float tmp;
                 tmp = lonmax;
                 memcpy(pdf++, &tmp, sizeof(float));
