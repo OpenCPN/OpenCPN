@@ -194,12 +194,6 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                 if( m_gpsconsumer )
                     m_gpsconsumer->AddPendingEvent(event);
             }
-
-            //  Handle AIVDO messages from transponder....
-            if( message.Mid(3,3).IsSameAs(_T("VDO")) ) {
-                if( m_gpsconsumer )
-                    m_gpsconsumer->AddPendingEvent(event);
-            }
         }
 
             //Send to the Debug Window, if open
@@ -223,7 +217,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                             bout_filter = false;
                         }    
                             //Send to the Debug Window, if open
-                        LogOutputMessage( message, port, bout_filter );
+                        LogOutputMessage( message, s->GetPort(), bout_filter );
                     }
                 }
             }
