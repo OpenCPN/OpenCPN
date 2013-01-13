@@ -6456,9 +6456,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     if( (str_buf[0] != '$')  &&  (str_buf[0] != '!') )
         return;
     
-    //    Send NMEA sentences to PlugIns
-    if( g_pi_manager ) g_pi_manager->SendNMEASentenceToAllPlugIns( str_buf );
-
     bool b_accept = EvalPriority( str_buf, stream_name, event.GetStreamPriority() );
     if( b_accept ) {
         m_NMEA0183 << str_buf;
@@ -6805,7 +6802,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 wxDateTime now = wxDateTime::Now();
                 GPSData.FixTime = now.GetTicks();
 
-                g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
+                if(g_pi_manager)
+                    g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
             }
         }
 
