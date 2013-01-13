@@ -4012,10 +4012,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleChartOutlines();
             break;
 
+#if 0            
         case 'R':
             parent_frame->ToggleRocks();
             break;
-
+#endif
         case 'S':
             parent_frame->ToggleSoundings();
             break;
