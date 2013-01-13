@@ -6170,14 +6170,17 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             }
 
             //  Calculate the point of CPA for ownship
-
-            //  Detect and handle the case where ownship COG is undefined....
-            double cog_assumed = gCog;
-            if( wxIsNaN(gCog) && ( gSog < .01 ) ) cog_assumed = 0.;          // substitute value
-            // for the case where SOG = 0, and COG is unknown.
-
             double ocpa_lat, ocpa_lon;
-            ll_gc_ll( gLat, gLon, cog_assumed, gSog * td->TCPA / 60., &ocpa_lat, &ocpa_lon );
+            
+            //  Detect and handle the case where ownship COG is undefined....
+            if( wxIsNaN(gCog) || wxIsNaN( gSog ) ) {
+                ocpa_lat = gLat;
+                ocpa_lon = gLon;
+            }
+            else {
+                ll_gc_ll( gLat, gLon, gCog, gSog * td->TCPA / 60., &ocpa_lat, &ocpa_lon );
+            }
+            
             wxPoint oCPAPoint;
 
             GetCanvasPointPix( ocpa_lat, ocpa_lon, &oCPAPoint );
