@@ -6895,7 +6895,7 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, d
         }
 
         // Only get here if non of the other cases did a continue.
-        wxString msg( _("RenderHPGL: The '%s' instruction is not implemented.") );
+        wxString msg( _T("RenderHPGL: The '%s' instruction is not implemented.") );
         msg += wxString( command );
         wxLogWarning( msg );
     }
