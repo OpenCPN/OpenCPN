@@ -1506,7 +1506,9 @@ void DashboardPreferencesDialog::OnDashboardAdd( wxCommandEvent& event )
     // Data is index in m_Config
     m_pListCtrlDashboards->SetItemData( idx, m_Config.GetCount() );
     wxArrayInt ar;
-    m_Config.Add( new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar ) );
+    DashboardWindowContainer *dwc = new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar );
+    dwc->m_bIsVisible = true;
+    m_Config.Add( dwc );
 }
 
 void DashboardPreferencesDialog::OnDashboardDelete( wxCommandEvent& event )
