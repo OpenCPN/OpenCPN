@@ -389,6 +389,7 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                     size_t nmea_start = nmea_line.find_last_of(_T("$!")); // detect the potential start of a NMEA string, skipping preceding chars that may look like the start of a string.
                     if(nmea_start != wxString::npos){
                         nmea_line = nmea_line.substr(nmea_start);
+                        nmea_line += _T("\r\n");        // Add cr/lf, possibly superfluous
                         if( m_consumer && ChecksumOK(nmea_line)){
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
                             std::string s = std::string(nmea_line.mb_str());
