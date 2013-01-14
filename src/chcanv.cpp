@@ -325,6 +325,7 @@ enum
     ID_RT_MENU_ACTNXTPOINT,
     ID_RT_MENU_REMPOINT,
     ID_RT_MENU_PROPERTIES,
+    ID_RT_MENU_SENDTOGPS,
     ID_WP_MENU_SET_ANCHORWATCH,
     ID_WP_MENU_CLEAR_ANCHORWATCH,
     ID_DEF_MENU_AISTARGETLIST,
@@ -3101,6 +3102,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_RT_MENU_APPEND,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_COPY,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_TK_MENU_COPY,         ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_RT_MENU_SENDTOGPS,    ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WPT_MENU_COPY,        ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WPT_MENU_SENDTOGPS,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_WAYPOINT,       ChartCanvas::PopupMenuHandler )
@@ -8429,6 +8431,14 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             menuRoute->Append( ID_RT_MENU_COPY, _( "Copy as KML..." ) );
             menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
             menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+            wxString port = FindValidUploadPort();
+            m_active_upload_port = port;
+            if( !port.IsEmpty() ) {
+                port.Prepend(_( "Send to GPS ( " ));
+                port .Append(_T(" )"));
+                menuRoute->Append( ID_RT_MENU_SENDTOGPS, port );
+            }
+            
         }
         //      Set this menu as the "focused context menu"
         menuFocus = menuRoute;
@@ -9419,6 +9429,13 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
         break;
 
+    case ID_RT_MENU_SENDTOGPS:
+        if( m_pSelectedRoute ) {
+            if( m_active_upload_port.Length() )
+                m_pSelectedRoute->SendToGPS( m_active_upload_port, true, NULL );
+        }
+        break;
+        
     case ID_PASTE_WAYPOINT:
         pupHandler_PasteWaypoint();
         break;
