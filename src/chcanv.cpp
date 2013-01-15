@@ -8482,9 +8482,18 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         }
         else {
             menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
-            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) 
-                menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
+            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
+                if(m_pSelectedRoute->m_pRouteActivePoint != m_pFoundRoutePoint ) 
+                    menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
+            }
 
+            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
+                if(m_pSelectedRoute->m_pRouteActivePoint == m_pFoundRoutePoint ) {
+                    int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
+                    if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() )
+                        menuWaypoint->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
+                }
+            }
             if( m_pSelectedRoute->GetnPoints() > 2 )
                 menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
 
