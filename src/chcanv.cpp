@@ -7923,6 +7923,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                                 break;
                             }
                         }
+                        if( !brp_viz )                          // is not visible as part of route
+                            brp_viz = prp->IsVisible();         //  so treat as isolated point
+                        
                     } else
                         brp_viz = prp->IsVisible();               // isolated point
 
@@ -9150,19 +9153,30 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         if( m_pFoundRoutePoint && !( m_pFoundRoutePoint->m_bIsInLayer )
                 && ( m_pFoundRoutePoint->m_IconName != _T("mob") ) ) {
 
-            undo->BeforeUndoableAction( Undo_DeleteWaypoint, m_pFoundRoutePoint, Undo_IsOrphanded, m_pFoundPoint );
-            pConfig->DeleteWayPoint( m_pFoundRoutePoint );
-            pSelect->DeleteSelectablePoint( m_pFoundRoutePoint, SELTYPE_ROUTEPOINT );
-            if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->DeleteObject( m_pFoundRoutePoint );
-            m_pFoundRoutePoint = NULL;
-            undo->AfterUndoableAction( NULL );
+            // If the WP belongs to an invisible route, we come here instead of to ID_RT_MENU_DELPOINT
+            //  Check it, and if so then remove the point from its routes
+            wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining( m_pFoundRoutePoint );
+            if( proute_array ) {
+                pWayPointMan->DestroyWaypoint( m_pFoundRoutePoint );
+                m_pFoundRoutePoint = NULL;
+             }
+            else {
+                undo->BeforeUndoableAction( Undo_DeleteWaypoint, m_pFoundRoutePoint, Undo_IsOrphanded, m_pFoundPoint );
+                pConfig->DeleteWayPoint( m_pFoundRoutePoint );
+                pSelect->DeleteSelectablePoint( m_pFoundRoutePoint, SELTYPE_ROUTEPOINT );
+                if( NULL != pWayPointMan )
+                    pWayPointMan->m_pWayPointList->DeleteObject( m_pFoundRoutePoint );
+                m_pFoundRoutePoint = NULL;
+                undo->AfterUndoableAction( NULL );
+            }
 
             if( pMarkPropDialog ) {
                 pMarkPropDialog->SetRoutePoint( NULL );
                 pMarkPropDialog->UpdateProperties();
             }
 
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateWptListCtrl();
         }
         break;
     }
