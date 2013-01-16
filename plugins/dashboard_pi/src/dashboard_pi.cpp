@@ -283,6 +283,9 @@ int dashboard_pi::Init( void )
     mPriTWA = 99; // True wind
     mPriDepth = 99;
     m_config_version = -1;
+    mHDx_Watchdog = 2;
+    mHDT_Watchdog = 2;
+
 
     g_pFontTitle = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
     g_pFontData = new wxFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
@@ -352,6 +355,18 @@ void dashboard_pi::Notify()
         DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
         if( dashboard_window ) dashboard_window->Refresh();
     }
+    //  Manage the watchdogs
+    mHDx_Watchdog--;
+    if( mHDx_Watchdog <= 0 ) {
+        mHdm = NAN;
+        SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("Deg") );
+    }
+
+    mHDT_Watchdog--;
+    if( mHDT_Watchdog <= 0 ) {
+        SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, NAN, _T("DegT") );
+    }
+
 }
 
 int dashboard_pi::GetAPIVersionMajor()
@@ -553,6 +568,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("Deg") );
                     //SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, mHdm + mVar, _T("Deg"));
                 }
+                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
+                       mHDx_Watchdog = gps_watchdog_timeout_ticks;
+
             }
         }
 
@@ -564,6 +582,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("DegM") );
                     //SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, mHdm + mVar, _T("Deg"));
                 }
+                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
+                    mHDx_Watchdog = gps_watchdog_timeout_ticks;
+
             }
         }
 
@@ -576,6 +597,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                 _T("DegT") );
                     }
                 }
+                if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
+                    mHDT_Watchdog = gps_watchdog_timeout_ticks;
+
             }
         } else if( m_NMEA0183.LastSentenceIDReceived == _T("MTA") ) {  //Air temperature
             if( m_NMEA0183.Parse() ) {
@@ -733,6 +757,12 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     SendSentenceToAllInstruments( OCPN_DBP_STC_STW, m_NMEA0183.Vhw.Knots,
                             _T("Kts") );
                 }
+
+                if( !wxIsNaN(m_NMEA0183.Vhw.DegreesMagnetic) )
+                    mHDx_Watchdog = gps_watchdog_timeout_ticks;
+                if( !wxIsNaN(m_NMEA0183.Vhw.DegreesTrue) )
+                    mHDT_Watchdog = gps_watchdog_timeout_ticks;
+
             }
         }
 
@@ -837,17 +867,12 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             if( !wxIsNaN(gpd.Lon) )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM") );
 
-            if( !wxIsNaN(gpd.Sog) )
-                SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, gpd.Sog, _T("Kts") );
+            SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, gpd.Sog, _T("Kts") );
+            SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("Deg") );
+            SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("DegT") );
+            if( !wxIsNaN(gpd.Hdt) )
+                mHDT_Watchdog = gps_watchdog_timeout_ticks;
 
-            if( !wxIsNaN(gpd.Cog) )
-                SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("Deg") );
-
-            if( !wxIsNaN(gpd.Hdt) ) {
-                if( gpd.Hdt < 999. ) {
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("DegT") );
-                }
-            }
         }
     }
 }
