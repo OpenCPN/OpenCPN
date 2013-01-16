@@ -5198,7 +5198,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     //  Draw the icon rotated to the COG
     //  or to the Hdt if available
     double icon_hdt = pCog;
-    if( g_bHDTValid ) icon_hdt = gHdt;
+    if( !wxIsNaN( gHdt ) ) icon_hdt = gHdt;
 
     //  COG may be undefined in NMEA data stream
     if( wxIsNaN(icon_hdt) ) icon_hdt = 0.0;
@@ -5233,7 +5233,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
     double ndelta_pix = 10.;
     bool b_render_hdt = false;
-    if( g_bHDTValid ) {
+    if( !wxIsNaN( gHdt ) ) {
         double dist = sqrt(
                           pow( (double) ( lHeadPoint.x - lPredPoint.x ), 2 )
                           + pow( (double) ( lHeadPoint.y - lPredPoint.y ), 2 ) );
