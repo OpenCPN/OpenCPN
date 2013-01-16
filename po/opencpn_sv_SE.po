@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-08 17:57-0500\n"
+"POT-Creation-Date: 2013-01-15 20:48-0500\n"
 "PO-Revision-Date: 2012-11-29 18:35-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -2859,10 +2859,6 @@ msgstr "Tag bort borttappade fartyg efter (min)"
 msgid "Rename Waypoints?"
 msgstr "Ändra namn på waypoints?"
 #
-#, c-format
-msgid "RenderHPGL: The '%s' instruction is not implemented."
-msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
-#
 msgid "Report Age"
 msgstr "Uppdaterad sedan"
 #
@@ -3948,8 +3944,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Alla utom"
+#
 #
 #
 #
@@ -3963,8 +3961,14 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Endast"
+#
+#
+#~ msgid "RenderHPGL: The '%s' instruction is not implemented."
+#~ msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
+#
 #
 #
 #

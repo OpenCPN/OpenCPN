@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-08 17:57-0500\n"
+"POT-Creation-Date: 2013-01-15 20:48-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -4059,10 +4059,6 @@ msgstr "Rimuovi i Target persi dopo (Minuti):"
 msgid "Rename Waypoints?"
 msgstr "Rinomina Waypoints?"
 #
-#, c-format
-msgid "RenderHPGL: The '%s' instruction is not implemented."
-msgstr ""
-#
 msgid "Report Age"
 msgstr ""
 #
@@ -5623,6 +5619,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "      Lunghezza delle frecce COG (Minuti):"
 #
@@ -5638,8 +5635,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Velocità Max. Target ancorati (nodi):"
+#
 #
 #
 #
@@ -5680,8 +5679,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proiezione della carta sconosciuta, assumo sia Mercatore: "
+#
 #
 #
 #
@@ -5744,8 +5745,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Non posso caricare il simbolo create_pi: "
+#
 #
 #
 #
@@ -5790,8 +5793,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr "  Impossibile aprire porta Sorgente AIS '"
+#
 #
 #
 #
@@ -5816,8 +5821,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " COG: %03d Deg."
 #~ msgstr " COG: %03d °"
+#
 #
 #
 #
@@ -5872,8 +5879,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
 #
 #
 #
@@ -5970,8 +5979,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "Elimina tutte le &Tracce..."
+#
 #
 #
 #
@@ -6015,12 +6026,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
 #~ msgstr ""
 #~ "'\n"
 #~ " Suggerimento: Prova la notazione 'xxx.xxx.xxx.xxx'"
+#
 #
 #
 #
@@ -6086,8 +6099,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(Traccia attiva)"
+#
 #
 #
 #
@@ -6118,6 +6133,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ ":               Unavailable\n"
 #~ "\n"
@@ -6134,8 +6150,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "<--Remove"
 #~ msgstr "<--Rimuovi"
+#
 #
 #
 #
@@ -6176,8 +6194,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Activate CM93 Offset"
 #~ msgstr "Attiva CM93 Offset"
+#
 #
 #
 #
@@ -6214,8 +6234,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Active Charts"
 #~ msgstr "Cartelle Carte Attive"
+#
 #
 #
 #
@@ -6243,6 +6265,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Aggiungi questa carta al Mosaico"
 #
@@ -6253,8 +6276,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Add-->"
 #~ msgstr "Aggiungi-->"
+#
 #
 #
 #
@@ -6313,8 +6338,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Tentativo di caricamento libgps.so"
+#
 #
 #
 #
@@ -6342,8 +6369,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Cartelle da selezionare per ricercare Carte Nautiche"
+#
 #
 #
 #
@@ -6376,10 +6405,12 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr ""
 #~ "Rilevamento  : Non disponibile\n"
 #~ "\n"
+#
 #
 #
 #
@@ -6406,8 +6437,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 Offsets"
+#
 #
 #
 #
@@ -6482,8 +6515,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Applica Offset"
+#
 #
 #
 #
@@ -6558,6 +6593,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Strumento Offset..."
 #
@@ -6571,8 +6607,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets"
 #~ msgstr "CM93 Offsets"
+#
 #
 #
 #
@@ -6624,8 +6662,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "Dettagli CM93"
+#
 #
 #
 #
@@ -6656,8 +6696,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "                  CPA : %3.1f Miglia\n"
+#
 #
 #
 #
@@ -6693,8 +6735,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "CallSign     : "
+#
 #
 #
 #
@@ -6766,9 +6810,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Configura Offset CM93"
+#
 #
 #
 #
@@ -6810,8 +6856,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "Opzioni di Visualizzazione Carta Vettoriale"
+#
 #
 #
 #
@@ -6830,8 +6878,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart Groups...New Group"
 #~ msgstr "Gruppi Carte...Nuovo Gruppo"
+#
 #
 #
 #
@@ -6885,8 +6935,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Il file della Carta è corrotto e verrà ignorato \n"
+#
 #
 #
 #
@@ -6984,11 +7036,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Classe:    A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7017,8 +7071,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "Indirizzo IP non trovato"
+#
 #
 #
 #
@@ -7049,8 +7105,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "Rotta        : 000 °\n"
+#
 #
 #
 #
@@ -7080,8 +7138,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "Cursore: "
+#
 #
 #
 #
@@ -7131,6 +7191,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "Default File"
 #
@@ -7144,8 +7205,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Deg"
 #~ msgstr "Gradi"
+#
 #
 #
 #
@@ -7183,8 +7246,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Delete Route"
 #~ msgstr "Elimina Rotta"
+#
 #
 #
 #
@@ -7213,8 +7278,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Delete Track"
 #~ msgstr "Elimina Traccia"
+#
 #
 #
 #
@@ -7244,8 +7311,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Destinazione : "
+#
 #
 #
 #
@@ -7261,6 +7330,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Display Style"
 #~ msgstr "Stile Visualizzazione Carta"
+#
 #
 #
 #
@@ -7290,6 +7360,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "ETA:                  "
 #~ msgstr "ETA          : "
 #
@@ -7303,8 +7374,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Enable Manual CM93 Offsets"
 #~ msgstr "Abilita l'allineamento manuale delle carte CM93 (Offset)"
+#
 #
 #
 #
@@ -7334,8 +7407,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Etc."
+#
 #
 #
 #
@@ -7365,8 +7440,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
 #
 #
 #
@@ -7404,6 +7481,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Vai a Punto/WP"
 #
@@ -7414,8 +7492,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Groups"
 #~ msgstr "Gruppi"
+#
 #
 #
 #
@@ -7453,8 +7533,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Prua         : %03d °\n"
+#
 #
 #
 #
@@ -7484,6 +7566,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Inland Blue Flag        Clear\n"
 #~ msgstr "Passaggio a dritta    : Non Attivo\n"
 #
@@ -7497,8 +7580,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Vai a"
+#
 #
 #
 #
@@ -7534,8 +7619,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Zoom a Lat/Lon"
+#
 #
 #
 #
@@ -7550,6 +7637,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Jump To..."
 #~ msgstr "Vai a"
+#
 #
 #
 #
@@ -7592,8 +7680,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Ora ultimo Report     : "
+#
 #
 #
 #
@@ -7622,8 +7712,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "META Oggetti"
+#
 #
 #
 #
@@ -7670,8 +7762,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Strumento Misura..."
+#
 #
 #
 #
@@ -7699,6 +7793,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "Sorgente dati NMEA"
 #
@@ -7714,8 +7809,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "NMEA Options"
 #~ msgstr "Opzioni NMEA"
+#
 #
 #
 #
@@ -7746,8 +7843,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "Stato        : "
+#
 #
 #
 #
@@ -7775,6 +7874,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "Opzioni Visualizzazione Imbarcazione"
@@ -7790,9 +7890,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at distance interval (NMi)"
 #~ msgstr "Aggiungi un punto sulla traccia ogni (Miglia):"
+#
 #
 #
 #
@@ -7822,10 +7924,12 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Tempo dal Report      : %d s\n"
+#
 #
 #
 #
@@ -7886,6 +7990,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Stampa"
 #
@@ -7900,8 +8005,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Radar rings"
 #~ msgstr "Cerchi distanza Radar"
+#
 #
 #
 #
@@ -7932,6 +8039,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Distanza     : %3.1f Miglia\n"
 #
@@ -7947,8 +8055,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Raster"
+#
 #
 #
 #
@@ -7979,8 +8089,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Accostata    : a Destra, %3d°/Min.\n"
+#
 #
 #
 #
@@ -8011,8 +8123,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Accostata    : a Sinistra, > 10°/Min.\n"
+#
 #
 #
 #
@@ -8041,6 +8155,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Rimuovi carta dal Mosaico"
@@ -8056,8 +8171,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Rimuovi carta dal Mosaico"
+#
 #
 #
 #
@@ -8105,8 +8222,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Distanza Rotta:"
+#
 #
 #
 #
@@ -8135,9 +8254,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "&Rotta da Traccia"
+#
 #
 #
 #
@@ -8175,8 +8296,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Visualizza 'Rotta in Alto'"
+#
 #
 #
 #
@@ -8205,8 +8328,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "Mostra etichette ATON"
+#
 #
 #
 #
@@ -8259,6 +8384,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Mostra l'icona della Traccia"
 #
@@ -8271,8 +8397,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "Mostra inizialmente i Layer"
+#
 #
 #
 #
@@ -8307,12 +8435,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Dimensioni   : %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8347,6 +8477,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
@@ -8366,12 +8497,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x ---m\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Dimensioni   : ---m x ---m x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8406,12 +8539,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x ---m\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Dimensioni   :%5.1fm x %4.1fm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8442,8 +8577,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "Velocità     : %3.1f Nodi\n"
+#
 #
 #
 #
@@ -8474,8 +8611,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "Minima Distanza, TCPA : %1d:%02d ore:min\n"
+#
 #
 #
 #
@@ -8504,9 +8643,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide & Current Dataset Selection"
 #~ msgstr "Mostra/Nascondi le Correnti"
+#
 #
 #
 #
@@ -8534,8 +8675,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "ToolBox"
 #~ msgstr "Strumenti"
+#
 #
 #
 #
@@ -8565,8 +8708,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Scala Reale: %8.0f"
+#
 #
 #
 #
@@ -8597,8 +8742,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "UN Ship Type:         "
 #~ msgstr "UN Tipo di Nave:"
+#
 #
 #
 #
@@ -8629,8 +8776,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Unable to load libgps"
 #~ msgstr "Impossibile caricare libgps"
+#
 #
 #
 #
@@ -8640,6 +8789,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Unavailable"
 #~ msgstr " COG : Non disponibile"
+#
 #
 #
 #
@@ -8664,8 +8814,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Use OpenGL"
 #~ msgstr "Usa OpenGL"
+#
 #
 #
 #
@@ -8694,8 +8846,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Waypoint Locking"
 #~ msgstr "Blocco Punti/WP"
+#
 #
 #
 #
@@ -8722,8 +8876,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 #~ msgstr "X Offset (se positivo, muove la mappa verso Est) (Miglia/cos(lat)) :"
+#
 #
 #
 #
@@ -8751,8 +8907,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "cm93 Detail"
 #~ msgstr "Dettagli CM93"
+#
 #
 #
 #

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-08 17:57-0500\n"
+"POT-Creation-Date: 2013-01-15 20:48-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
@@ -2511,10 +2511,6 @@ msgstr "Effacer les cibles perdues après ... minutes :"
 msgid "Rename Waypoints?"
 msgstr "Renommer les waypoint ?"
 #
-#, c-format
-msgid "RenderHPGL: The '%s' instruction is not implemented."
-msgstr "RenderHPGL: Le '%s' instruction n'est pas implémenté."
-#
 msgid "Report Age"
 msgstr "Age du rapport"
 #
@@ -3468,24 +3464,35 @@ msgstr "WGS Y"
 msgid "wxFB Website"
 msgstr "Site web wxFB"
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Mosaïque des cartes : Ajouter cette carte"
 #
+#
 #~ msgid "All but"
 #~ msgstr " Tout mais "
+#
 #
 #~ msgid "Can't send waypoint. Found no serial data port with output defined."
 #~ msgstr ""
 #~ "Impossible d'envoyer le waypoint. Aucun port de sortie n'a été défini."
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Copier"
+#
 #
 #~ msgid "Just "
 #~ msgstr " Seulement"
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Mosaïque des cartes : Retirer cette carte"
+#
+#
+#~ msgid "RenderHPGL: The '%s' instruction is not implemented."
+#~ msgstr "RenderHPGL: Le '%s' instruction n'est pas implémenté."
+#
 #
 #~ msgid "Unavailable"
 #~ msgstr "Indisponible"
