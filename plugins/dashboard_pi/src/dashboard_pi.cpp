@@ -39,6 +39,12 @@ wxFont *g_pFontData;
 wxFont *g_pFontLabel;
 wxFont *g_pFontSmall;
 
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+#endif
+
+
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin* create_pi( void *ppimgr )
