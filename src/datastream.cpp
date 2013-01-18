@@ -532,21 +532,17 @@ bool DataStream::SendSentence( const wxString &sentence )
                     while( retry ) {
                         if(m_output_mutex.TryLock() == wxMUTEX_NO_ERROR) {
                             if( !m_pSecondary_Thread->GetOutMsg().Length() ) {
-//                                printf("set\n");
                                 m_pSecondary_Thread->SetOutMsg( payload );
                                 m_output_mutex.Unlock();
                                 return true;
                             }
                             else {
                                 m_output_mutex.Unlock();
-//                                printf("sleep retry\n");
-                                wxMilliSleep(100);
                                 retry--;
                             }
                         }
                         else {
                             retry--;
-//                            printf("mutex retry %d\n", retry);
                         }
                     }
                     return false;
@@ -572,6 +568,8 @@ bool DataStream::SendSentence( const wxString &sentence )
                         wxDatagramSocket* udp_socket = dynamic_cast<wxDatagramSocket*>(m_tsock);
                         if( udp_socket->IsOk() ) {
                             udp_socket->SendTo(m_addr, payload.mb_str(), payload.size() );
+                            if( udp_socket->Error())
+                                return false;
                         }
                     }
                 }
@@ -909,17 +907,6 @@ void *OCP_DataStreamInput_Thread::Entry()
             }
         }
 
-        //      Check for any pending output message
-        if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->Lock()) ){
-            if( !m_outmsg.IsEmpty() ) {
-//                printf("write0\n");
-                WriteComPortPhysical(m_gps_fd, m_outmsg);
-                m_outmsg.Clear();
-            }
-            m_pout_mutex->Unlock();
-        }
-        
-
         bool b_inner = true;
         bool b_sleep = false;
         dwRead = 0;
@@ -928,6 +915,26 @@ void *OCP_DataStreamInput_Thread::Entry()
         int t = now.GetTicks();                 // set a separate timer not controlled by serial port
         ic=0;
         while( b_inner ) {
+            
+                //      Check for any pending output message
+                
+            if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->TryLock()) ){
+                if( !m_outmsg.IsEmpty() ) {
+                    wxString msg = wxString( m_outmsg.c_str(), wxConvUTF8 );
+                    m_outmsg.Clear();
+                    m_pout_mutex->Unlock();
+  
+                    //  This call will block this thread if the port output buffer is full
+                    if( WriteComPortPhysical(m_gps_fd, msg) )
+                        n_timeout = 0;              // port is evidently OK
+                            
+                }
+                else
+                    m_pout_mutex->Unlock();
+            }
+                
+            
+            
             if( b_sleep )                       // we need a sleep if the serial port does not honor commtimeouts
                 wxSleep(1);
             if(ReadFile((HANDLE)m_gps_fd, &chRead, 1, &dwOneRead, NULL))
@@ -971,20 +978,6 @@ void *OCP_DataStreamInput_Thread::Entry()
                     }
                     else if((TestDestroy()) || (m_launcher->m_Thread_run_flag == 0)) {
                         goto thread_exit;                               // smooth exit
-                    }
-                    
-                    else {
-                        //      Check for any pending output message
-                        if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->Lock()) ){
-                            if( !m_outmsg.IsEmpty() ) {
-//                                printf("write1\n");
-                                WriteComPortPhysical(m_gps_fd, m_outmsg);
-                                m_outmsg.Clear();
-                            }
-                            m_pout_mutex->Unlock();
-                            
-                        }
-
                     }
                 }
             }
