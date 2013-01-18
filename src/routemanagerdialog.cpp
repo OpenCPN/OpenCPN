@@ -392,7 +392,7 @@ int wxCALLBACK SortLayersOnSize(long item1, long item2, long list)
 // event table. Empty, because I find it much easier to see what is connected to what
 // using Connect() where possible, so that it is visible in the code.
 BEGIN_EVENT_TABLE(RouteManagerDialog, wxDialog)
-//EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, RouteManagerDialog::OnTabSwitch) // This should work under Windows :-(
+EVT_NOTEBOOK_PAGE_CHANGED(wxID_ANY, RouteManagerDialog::OnTabSwitch) // This should work under Windows :-(
 END_EVENT_TABLE()
 
 void RouteManagerDialog::OnTabSwitch( wxNotebookEvent &event )
@@ -402,9 +402,12 @@ void RouteManagerDialog::OnTabSwitch( wxNotebookEvent &event )
     if( current_page == 3 ) {
         if( btnImport ) btnImport->Enable( false );
         if( btnExport ) btnExport->Enable( false );
+        if( btnExportViz ) btnExportViz->Enable( false );
     } else {
         if( btnImport ) btnImport->Enable( true );
         if( btnExport ) btnExport->Enable( true );
+        if( btnExportViz ) btnExportViz->Enable( true );
+        
     }
     event.Skip(); // remove if using event table... why?
 }
@@ -423,6 +426,10 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
     m_lastWptItem = -1;
     m_lastTrkItem = -1;
     m_lastRteItem = -1;
+    
+    btnImport = NULL;
+    btnExport = NULL;
+    btnExportViz = NULL;
 
     Create();
 
@@ -687,7 +694,11 @@ void RouteManagerDialog::Create()
     itemBoxSizer6->Add( btnExport, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnExport->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnExportClick), NULL, this );
-
+    btnExportViz = new wxButton( this, -1, _("Export All Visible...") );
+    itemBoxSizer6->Add( btnExportViz, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
+    btnExportViz->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+                        wxCommandEventHandler(RouteManagerDialog::OnExportVizClick), NULL, this );
+    
     //  Create "Layers" panel
     m_pPanelLay = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
             wxNO_BORDER | wxTAB_TRAVERSAL );
@@ -816,7 +827,8 @@ RouteManagerDialog::~RouteManagerDialog()
     delete btnLayDelete;
     delete btnImport;
     delete btnExport;
-
+    delete btnExportViz;
+    
     delete m_pNotebook;
 
     //    Does not need to be done here at all, since this dialog is autommatically deleted as a child of the frame.
@@ -2485,6 +2497,11 @@ void RouteManagerDialog::OnImportClick( wxCommandEvent &event )
 void RouteManagerDialog::OnExportClick( wxCommandEvent &event )
 {
     pConfig->ExportGPX( this );
+}
+
+void RouteManagerDialog::OnExportVizClick( wxCommandEvent &event )
+{
+    pConfig->ExportGPX( this, true, true );     // only visible objects, layers included
 }
 
 //END Event handlers
