@@ -58,6 +58,7 @@ class Multiplexer : public wxEvtHandler
 
         void OnEvtStream(OCPN_DataStreamEvent& event);
         void LogOutputMessage( wxString &msg, wxString stream_name, bool b_filter );
+        void LogOutputMessageColor( wxString &msg, wxString stream_name, wxString color );
         void LogInputMessage( wxString &msg, wxString stream_name, bool b_filter );
         
     private:
