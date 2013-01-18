@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-15 20:48-0500\n"
+"POT-Creation-Date: 2013-01-17 23:08-0500\n"
 "PO-Revision-Date: 2013-01-10 10:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC Sailing team <sailingteam@isc.tuc.gr>\n"
@@ -1335,6 +1335,10 @@ msgstr "Σφάλμα!"
 #
 msgid "Estimated time : "
 msgstr "Εκτιμώμενος χρόνος: "
+#
+#, fuzzy
+msgid "Export All Visible..."
+msgstr "Ε&ξαγωγή ολων..."
 #
 msgid "Export GPX file"
 msgstr "Εξαγωγή αρχείου GPX"
@@ -3224,14 +3228,17 @@ msgstr "wgsoy"
 msgid "wxFB Website"
 msgstr "wxFB Website"
 #
+#
 #~ msgid "Can't send waypoint. Found no serial data port with output defined."
 #~ msgstr ""
 #~ "Δεν μπορώ να στείλω το σημείο πορείας. Δεν βρέθηκε σειριακή θύρα "
 #~ "προγραμματισμένη για αποδοχή."
 #
+#
 # , c-format
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "HPGL: Η εντολή '%s' δεν μπορεί να εφαρμοσθεί."
+#
 #
 #
 #~ msgid "Unavailable"

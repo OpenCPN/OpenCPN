@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-15 20:48-0500\n"
+"POT-Creation-Date: 2013-01-17 23:08-0500\n"
 "PO-Revision-Date: 2012-11-29 18:35-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -1576,6 +1576,11 @@ msgstr "Fel!"
 #
 msgid "Estimated time : "
 msgstr "Beräknad tid :"
+#
+#
+#, fuzzy
+msgid "Export All Visible..."
+msgstr "E&xportera alla..."
 #
 #
 msgid "Export GPX file"
@@ -3945,8 +3950,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Alla utom"
+#
 #
 #
 #
@@ -3962,12 +3969,15 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Endast"
 #
 #
+#
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
+#
 #
 #
 #
