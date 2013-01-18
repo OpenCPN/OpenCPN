@@ -39,6 +39,9 @@
 #include "chartbase.h"
 #include "styles.h"
 
+#include <wx/arrimpl.cpp> 
+WX_DEFINE_OBJARRAY(RegionArray);
+
 //------------------------------------------------------------------------------
 //    External Static Storage
 //------------------------------------------------------------------------------
@@ -286,7 +289,6 @@ void PianoWin::OnPaint( wxPaintEvent& event )
 
     int nKeys = m_key_array.GetCount();
 
-    //     assert(nKeys <= KEY_REGIONS_MAX);
 
     if( nKeys ) {
         wxPen ppPen( GetGlobalColor( _T("CHBLK") ), 1, wxSOLID );
@@ -348,7 +350,7 @@ void PianoWin::OnPaint( wxPaintEvent& event )
                 }
             }
 
-            wxRect box = KeyRegion[i].GetBox();
+            wxRect box = KeyRegion.Item( i ).GetBox();
 
             if( m_brounded ) {
                 dc.DrawRoundedRectangle( box.x, box.y, box.width, box.height, 4 );
@@ -467,18 +469,17 @@ void PianoWin::FormatKeys( void )
     GetClientSize( &width, &height );
 
     int nKeys = m_key_array.GetCount();
-
     if( nKeys ) {
         int kw = style->chartStatusIconWidth;
         if( !kw ) kw = width / nKeys;
 
 //    Build the Key Regions
 
-//            assert(nKeys <= KEY_REGIONS_MAX);
-
+        KeyRegion.Empty();
+        KeyRegion.Alloc( nKeys );
         for( int i = 0; i < nKeys; i++ ) {
             wxRegion r( ( i * kw ) + 3, 2, kw - 6, height - 4 );
-            KeyRegion[i] = r;
+            KeyRegion.Add( r );
         }
     }
     m_nRegions = nKeys;
@@ -487,7 +488,7 @@ void PianoWin::FormatKeys( void )
 wxPoint PianoWin::GetKeyOrigin( int key_index )
 {
     if( ( key_index >= 0 ) && ( key_index <= (int) m_key_array.GetCount() - 1 ) ) {
-        wxRect box = KeyRegion[key_index].GetBox();
+        wxRect box = KeyRegion.Item( key_index ).GetBox();
         return wxPoint( box.x, box.y );
     } else
         return wxPoint( -1, -1 );
@@ -505,7 +506,7 @@ void PianoWin::MouseEvent( wxMouseEvent& event )
     int sel_dbindex = -1;
 
     for( int i = 0; i < m_nRegions; i++ ) {
-        if( KeyRegion[i].Contains( x, y ) == wxInRegion ) {
+        if( KeyRegion.Item( i ).Contains( x, y ) == wxInRegion ) {
             sel_index = i;
             sel_dbindex = m_key_array.Item( i );
             break;
