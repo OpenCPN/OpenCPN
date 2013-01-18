@@ -241,8 +241,6 @@ class MyFrame: public wxFrame
     void DoPrint(void);
     void StopSockets(void);
     void ResumeSockets(void);
-    void DoExportGPX(void);
-    void DoImportGPX(void);
     void TogglebFollow(void);
     void ToggleFullScreen();
     void SetbFollow(void);

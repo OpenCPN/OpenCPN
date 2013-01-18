@@ -6268,22 +6268,6 @@ void MyFrame::DoPrint( void )
      */
 
 }
-
-// toh, 2009.02.15
-void MyFrame::DoExportGPX( void )
-{
-    if( pConfig ) pConfig->ExportGPX( this );
-}
-
-// toh, 2009.02.16
-void MyFrame::DoImportGPX( void )
-{
-    if( pConfig ) {
-        pConfig->ImportGPX( this );
-        Refresh();
-    }
-}
-
 //---------------------------------------------------------------------------------------------------------
 //
 //              Private Memory Management
