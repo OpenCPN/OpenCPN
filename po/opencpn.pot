@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1309\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-17 23:08-0500\n"
+"POT-Creation-Date: 2013-01-18 21:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -468,63 +468,63 @@ msgstr ""
 msgid "   Result: OK, Internal georef solution used."
 msgstr ""
 
-#: src/datastream.cpp:1501 src/options.cpp:523
+#: src/datastream.cpp:1571 src/options.cpp:523
 msgid "Serial"
 msgstr ""
 
-#: src/datastream.cpp:1503
+#: src/datastream.cpp:1573
 msgid "Net"
 msgstr ""
 
-#: src/datastream.cpp:1520 src/options.cpp:542
+#: src/datastream.cpp:1590 src/options.cpp:542
 msgid "TCP"
 msgstr ""
 
-#: src/datastream.cpp:1522 src/options.cpp:547
+#: src/datastream.cpp:1592 src/options.cpp:547
 msgid "UDP"
 msgstr ""
 
-#: src/datastream.cpp:1524 src/options.cpp:552
+#: src/datastream.cpp:1594 src/options.cpp:552
 msgid "GPSD"
 msgstr ""
 
-#: src/datastream.cpp:1530
+#: src/datastream.cpp:1600
 msgid "Yes"
 msgstr ""
 
-#: src/datastream.cpp:1532
+#: src/datastream.cpp:1602
 msgid "No"
 msgstr ""
 
-#: src/datastream.cpp:1539
+#: src/datastream.cpp:1609
 msgid "Reject"
 msgstr ""
 
-#: src/datastream.cpp:1541
+#: src/datastream.cpp:1611
 msgid "Accept"
 msgstr ""
 
-#: src/datastream.cpp:1545
+#: src/datastream.cpp:1615
 msgid "Drop"
 msgstr ""
 
-#: src/datastream.cpp:1547 src/routeman.cpp:985
+#: src/datastream.cpp:1617 src/routeman.cpp:985
 msgid "Send"
 msgstr ""
 
-#: src/datastream.cpp:1569
+#: src/datastream.cpp:1639
 msgid "In"
 msgstr ""
 
-#: src/datastream.cpp:1574
+#: src/datastream.cpp:1644
 msgid "In: None"
 msgstr ""
 
-#: src/datastream.cpp:1578
+#: src/datastream.cpp:1648
 msgid "Out"
 msgstr ""
 
-#: src/datastream.cpp:1583
+#: src/datastream.cpp:1653
 msgid ", Out: None"
 msgstr ""
 
@@ -4105,7 +4105,7 @@ msgstr ""
 #: src/toolbar.cpp:570
 msgid ""
 "You can't hide the last tool from the toolbar\n"
-"as this would make is inaccessible."
+"as this would make it inaccessible."
 msgstr ""
 
 #: src/toolbar.cpp:692

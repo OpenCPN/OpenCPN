@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-17 23:08-0500\n"
+"POT-Creation-Date: 2013-01-18 21:24-0500\n"
 "PO-Revision-Date: 2013-01-03 14:23+0100\n"
 "Last-Translator: CarCode <carcode@me.com>\n"
 "Language-Team: Gerhard Mueller <carcode@me.com>\n"
@@ -3157,9 +3157,10 @@ msgstr "Ja"
 msgid "Yes, hide it."
 msgstr "Ja, verstecken."
 #
+#, fuzzy
 msgid ""
 "You can't hide the last tool from the toolbar\n"
-"as this would make is inaccessible."
+"as this would make it inaccessible."
 msgstr ""
 "Das letzte Symbol der Symbolleiste kann nicht\n"
 "versteckt werden, da sie sonst unzugänglich ist."
@@ -3217,8 +3218,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
+#
 #
 #
 #
@@ -3271,6 +3274,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "    Länge Voraus-Anzeige COG-Pfeil (Minuten):"
 #
@@ -3285,8 +3289,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "    max. Geschwindigkeit für festgemachte Ziele (kn):"
+#
 #
 #
 #
@@ -3326,8 +3332,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Kartenprojektion ist UNBEKANNT, nehme Mercator an: "
+#
 #
 #
 #
@@ -3396,8 +3404,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "Plugin-Manager: Kann Symbol create_pi nicht laden:"
+#
 #
 #
 #
@@ -3444,6 +3454,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr "Die seriellle AIS-Schnittstelle konnte  nicht geöffnet werden: '"
 #
@@ -3457,8 +3468,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "  Could not open serial port '"
 #~ msgstr "  Die serielle Schnittstelle konnte nicht geöffnet werden: '"
+#
 #
 #
 #
@@ -3485,8 +3498,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr "COG: 000 Deg."
+#
 #
 #
 #
@@ -3561,8 +3576,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "&Toggle Chart"
+#
 #
 #
 #
@@ -3580,6 +3597,7 @@ msgstr "wxFB Website"
 #~ msgstr ""
 #~ "'\n"
 #~ " Vorschlag: Im Format 'xxx.xxx.xxx.xxx' versuchen."
+#
 #
 #
 #
@@ -3610,9 +3628,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid ":               "
 #~ msgstr "Klasse:                 "
+#
 #
 #
 #
@@ -3658,9 +3678,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS Alarm"
+#
 #
 #
 #
@@ -3696,6 +3718,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Route aktivieren"
 #
@@ -3710,8 +3733,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Add Selection"
 #~ msgstr "Auswahl hinzufügen"
+#
 #
 #
 #
@@ -3753,8 +3778,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Zusätzliche Informationen"
+#
 #
 #
 #
@@ -3805,8 +3832,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Versuche libgps.so zu laden"
+#
 #
 #
 #
@@ -3832,8 +3861,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Verzeichnis-Auswahlfenster"
+#
 #
 #
 #
@@ -3882,8 +3913,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Peilung:                %03d Grad\n"
+#
 #
 #
 #
@@ -3911,8 +3944,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -3939,8 +3974,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 Versatz (Offset) Anzeige"
+#
 #
 #
 #
@@ -3967,8 +4004,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93-Detailgrad"
+#
 #
 #
 #
@@ -3997,8 +4036,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                   %6.1f sm\n"
+#
 #
 #
 #
@@ -4056,8 +4097,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Rufzeichen:  "
+#
 #
 #
 #
@@ -4076,9 +4119,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Can't send waypoint. Found no serial data port with output defined."
 #~ msgstr ""
 #~ "Kann Wegpunkt nicht senden. Kein serieller Ausgangs-Datenport gefunden."
+#
 #
 #
 #
@@ -4120,8 +4165,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "Kartendarstellungs-Filter"
+#
 #
 #
 #
@@ -4136,6 +4183,7 @@ msgstr "wxFB Website"
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Position"
+#
 #
 #
 #
@@ -4210,11 +4258,13 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Klasse:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -4241,8 +4291,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "Der TCP/IP Host konnte nicht ermittelt werden: '"
+#
 #
 #
 #
@@ -4271,8 +4323,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "Kurs:                   000 Deg.\n"
+#
 #
 #
 #
@@ -4300,8 +4354,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "Cursor: "
+#
 #
 #
 #
@@ -4349,9 +4405,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Standardfarbe"
+#
 #
 #
 #
@@ -4388,8 +4446,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Markierung löschen"
+#
 #
 #
 #
@@ -4416,6 +4476,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "Auswahl löschen"
 #
@@ -4430,8 +4491,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Delete Track"
 #~ msgstr "Track löschen"
+#
 #
 #
 #
@@ -4459,8 +4522,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Bestimmungsort:         "
+#
 #
 #
 #
@@ -4475,6 +4540,7 @@ msgstr "wxFB Website"
 #, fuzzy
 #~ msgid "Display Style"
 #~ msgstr "Kartendarstellungs-Stil"
+#
 #
 #
 #
@@ -4502,8 +4568,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "ETA:"
 #~ msgstr "ETA:"
+#
 #
 #
 #
@@ -4552,8 +4620,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/ Zeitstempel"
+#
 #
 #
 #
@@ -4582,6 +4652,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "Mausrad-Zoom auf Cursorposition aktivieren"
 #
@@ -4596,8 +4667,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Sonstiges"
+#
 #
 #
 #
@@ -4625,8 +4698,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
 #
 #
 #
@@ -4652,8 +4727,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Go To Here"
 #~ msgstr "Zielfahrt hierhin (Direktwegpunkt)"
+#
 #
 #
 #
@@ -4690,8 +4767,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Kurs:                   %03d Grad\n"
+#
 #
 #
 #
@@ -4720,6 +4799,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Inland Blue Flag        Clear\n"
 #~ msgstr "Binnen Blaue Tafel      Löschen\n"
 #
@@ -4734,8 +4814,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Hinspringen"
+#
 #
 #
 #
@@ -4771,8 +4853,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Springe zu Position ..."
+#
 #
 #
 #
@@ -4813,8 +4897,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "Sprache/Schrift"
+#
 #
 #
 #
@@ -4844,6 +4930,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Leg/Route"
 #~ msgstr "Abschn./Route"
 #
@@ -4858,8 +4945,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "META-Objekte anzeigen"
+#
 #
 #
 #
@@ -4918,8 +5007,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Symbol der Markierung"
+#
 #
 #
 #
@@ -4971,9 +5062,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Markierungs-/ WP-Eigenschaften"
+#
 #
 #
 #
@@ -5009,6 +5102,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Metres"
 #~ msgstr "Meter"
 #
@@ -5022,8 +5116,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA-Datenquelle"
+#
 #
 #
 #
@@ -5051,8 +5147,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Name:  "
 #~ msgstr "Name: "
+#
 #
 #
 #
@@ -5099,8 +5197,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "New Mark"
 #~ msgstr "Neue Markierung"
+#
 #
 #
 #
@@ -5115,6 +5215,7 @@ msgstr "wxFB Website"
 #, fuzzy
 #~ msgid "Number of Radar Rings"
 #~ msgstr "Anzahl anzuzeigender Radar-Ringe"
+#
 #
 #
 #
@@ -5183,12 +5284,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "OpenCPN PlugIn Base Class\n"
 #~ "PlugInManager created this base class"
 #~ msgstr ""
 #~ "           OpenCPN Plugin Basis-Klasse\n"
 #~ "Plugin-Manager hat diese Basis-Klasse erstellt"
+#
 #
 #
 #
@@ -5214,6 +5317,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at distance interval (NMi)"
 #~ msgstr "Tracking-Punkte im Entfernungsintervall setzen (sm):"
@@ -5228,9 +5332,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Tracking-Punkte im Zeitintervall setzen (Sekunden):"
+#
 #
 #
 #
@@ -5299,8 +5405,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Plugin-Manager: Deaktiviere Plugin: "
+#
 #
 #
 #
@@ -5369,8 +5477,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Plugin-Manager: Lade Plugin:"
+#
 #
 #
 #
@@ -5439,8 +5549,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "Plugin-Manager: Entlade Plugin mit ungültiger API version %d.%d: "
+#
 #
 #
 #
@@ -5460,6 +5572,7 @@ msgstr "wxFB Website"
 #~ msgstr ""
 #~ "Alter der Meldung:      %3d Sek.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5519,6 +5632,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Possible libgps API version mismatch.\n"
 #~ "libgps did not reasonably respond to version request\n"
@@ -5529,6 +5643,7 @@ msgstr "wxFB Website"
 #~ "libgps lieferte keine verwertbare Antwort auf die Versionsanfrage.\n"
 #~ "\n"
 #~ "Möchten Sie diese Version von libgps trotzdem verwenden?"
+#
 #
 #
 #
@@ -5566,8 +5681,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Radar rings"
 #~ msgstr "Radar-Ringe"
+#
 #
 #
 #
@@ -5596,6 +5713,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Entfernung:             %5.1f sm.\n"
 #
@@ -5610,8 +5728,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Rasterkarten"
+#
 #
 #
 #
@@ -5640,8 +5760,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Drehgeschw./-richtung:  %3d Grad/ Min. Rechts\n"
+#
 #
 #
 #
@@ -5670,8 +5792,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Drehgeschw./-richtung:  > 5 Grad/ 30s Links\n"
+#
 #
 #
 #
@@ -5698,9 +5822,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Karte aus dem Patchwork entfernen"
+#
 #
 #
 #
@@ -5717,8 +5843,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "RenderHPGL: Die '%s' Instruktion ist nicht implementiert."
+#
 #
 #
 #
@@ -5764,9 +5892,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Route Distance: "
 #~ msgstr "Gesamtentfernung"
+#
 #
 #
 #
@@ -5794,9 +5924,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Route aus Track"
+#
 #
 #
 #
@@ -5832,8 +5964,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Karte nach Kurs ausrichten"
+#
 #
 #
 #
@@ -5860,8 +5994,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "ATON (Seezeichen) Namen anzeigen"
+#
 #
 #
 #
@@ -5912,6 +6048,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Track-Symbol anzeigen"
 #
@@ -5926,8 +6063,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "Layer direkt anzeigen"
+#
 #
 #
 #
@@ -5960,12 +6099,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Größe:                  %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5998,12 +6139,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Größe:                  ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -6036,12 +6179,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Größe:                  %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -6074,8 +6219,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Speed:                  Unavailable\n"
 #~ msgstr "Geschwindigkeit:        nicht verfügbar\n"
+#
 #
 #
 #
@@ -6103,8 +6250,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WLAN-Datenserver"
+#
 #
 #
 #
@@ -6133,6 +6282,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                   %02d:%02d h:min\n"
 #
@@ -6147,8 +6297,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Text Element"
 #~ msgstr "Textelement"
+#
 #
 #
 #
@@ -6176,6 +6328,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "Kurzinfo Gezeiten- und Strömungskurve"
@@ -6191,8 +6344,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "ToolBox"
 #~ msgstr "Einstellungen"
+#
 #
 #
 #
@@ -6220,8 +6375,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Maßstab: %8.0f             "
+#
 #
 #
 #
@@ -6250,8 +6407,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "UN Ship Type:         "
 #~ msgstr "UN Schiffstyp:          "
+#
 #
 #
 #
@@ -6282,8 +6441,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Unable to load libgps"
 #~ msgstr "Laden von libgps nicht möglich"
+#
 #
 #
 #
@@ -6300,8 +6461,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Units"
 #~ msgstr "Maßeinheit"
+#
 #
 #
 #
@@ -6328,8 +6491,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Waypoint Locking"
 #~ msgstr "Wegpunkte sperren"
+#
 #
 #
 #
@@ -6356,8 +6521,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 #~ msgstr "X Versatz (pos. Werte verschieben die Karte nach Osten) "
+#
 #
 #
 #
@@ -6386,8 +6553,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "cm93 Detail"
 #~ msgstr "CM93 Details"
+#
 #
 #
 #

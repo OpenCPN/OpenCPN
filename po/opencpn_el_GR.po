@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-17 23:08-0500\n"
+"POT-Creation-Date: 2013-01-18 21:24-0500\n"
 "PO-Revision-Date: 2013-01-10 10:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC Sailing team <sailingteam@isc.tuc.gr>\n"
@@ -3179,9 +3179,10 @@ msgstr "Ναι"
 msgid "Yes, hide it."
 msgstr "Ναι, κρύψτο."
 #
+#, fuzzy
 msgid ""
 "You can't hide the last tool from the toolbar\n"
-"as this would make is inaccessible."
+"as this would make it inaccessible."
 msgstr ""
 "Δεν μπορείς να κρύψεις το τελευταίο εργαλείο από την μπάρα\n"
 "γιατί τότε η μπάρα θα γίνει μη προσβάσιμη"
@@ -3229,15 +3230,18 @@ msgid "wxFB Website"
 msgstr "wxFB Website"
 #
 #
+#
 #~ msgid "Can't send waypoint. Found no serial data port with output defined."
 #~ msgstr ""
 #~ "Δεν μπορώ να στείλω το σημείο πορείας. Δεν βρέθηκε σειριακή θύρα "
 #~ "προγραμματισμένη για αποδοχή."
 #
 #
+#
 # , c-format
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "HPGL: Η εντολή '%s' δεν μπορεί να εφαρμοσθεί."
+#
 #
 #
 #
