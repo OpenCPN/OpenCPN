@@ -104,12 +104,18 @@ void DashboardInstrument_Dial::SetData(int st, double data, wxString unit)
 
 void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
 {
+    wxColour c1;
+    GetGlobalColor(_T("DASHB"), &c1);
+    wxBrush b1(c1);
+    bdc->SetBackground(b1);
+    bdc->Clear();
+
+    DrawData(bdc, m_ExtraValue, m_ExtraValueUnit, m_ExtraValueFormat, m_ExtraValueOption);
     DrawFrame(bdc);
     DrawMarkers(bdc);
     DrawLabels(bdc);
     DrawBackground(bdc);
     DrawData(bdc, m_MainValue, m_MainValueUnit, m_MainValueFormat, m_MainValueOption);
-    DrawData(bdc, m_ExtraValue, m_ExtraValueUnit, m_ExtraValueFormat, m_ExtraValueOption);
     DrawForeground(bdc);
 }
 
@@ -312,7 +318,9 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
            text = _T("---");
 
       int width, height;
-      dc->GetMultiLineTextExtent(text, &width, &height, NULL, g_pFontLabel);
+      wxScreenDC sdc;
+      sdc.GetMultiLineTextExtent(text, &width, &height, NULL, g_pFontLabel);
+
       wxRect TextPoint;
       TextPoint.width = width;
       TextPoint.height = height;
@@ -355,7 +363,24 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
                   break;
       }
 
-      dc->DrawLabel(text, TextPoint);
+      wxBitmap tbm( TextPoint.width, TextPoint.height, -1 );
+      wxMemoryDC tdc( tbm );
+      wxColour c2;
+      GetGlobalColor( _T("DASHB"), &c2 );
+      tdc.SetBackground( c2 );
+      tdc.Clear();
+
+      wxColour c3;
+      tdc.SetFont(*g_pFontLabel );
+      GetGlobalColor( _T("DASHF"), &c3 );
+      tdc.SetTextForeground( c3 );
+
+      tdc.DrawLabel(text, wxRect(0, 0, TextPoint.width, TextPoint.height));
+
+      tdc.SelectObject( wxNullBitmap );
+
+      dc->DrawBitmap(tbm, TextPoint.x, TextPoint.y, false);
+ //     dc->DrawLabel(text, TextPoint);
 }
 
 void DashboardInstrument_Dial::DrawForeground(wxGCDC* dc)

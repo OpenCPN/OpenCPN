@@ -3331,9 +3331,15 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         break;
                   }
                   case 'R':
-                        pf = ( float * ) aval;
-                        pAVR = ( double * ) malloc ( sizeof ( double ) );   //new double;
+                      pAVR = ( double * ) malloc ( sizeof ( double ) );   //new double;
+                      pf = ( float * ) aval;
+#ifdef ARMHF
+                        float tf1;
+                        memcpy(&tf1, pf, sizeof(float));
+                        *pAVR = tf1;
+#else
                         *pAVR = *pf;
+#endif                        
                         pattValTmp->valType = OGR_REAL;
                         pattValTmp->value   = pAVR;
                         break;
@@ -4118,11 +4124,19 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                                     if ( vtype == 'R' )
                                     {
                                           float *pf = ( float * ) aval;
-
+#ifdef ARMHF
+                                          float tf1;
+                                          memcpy(&tf1, pf, sizeof(float));
+                                          if ( sattr.IsSameAs ( _T ( "_wgsox" ) ) )
+                                              tmp_transform_x = tf1;
+                                          else if ( sattr.IsSameAs ( _T ( "_wgsoy" ) ) )
+                                              tmp_transform_y = tf1;
+#else
                                           if ( sattr.IsSameAs ( _T ( "_wgsox" ) ) )
                                                 tmp_transform_x = *pf;
                                           else if ( sattr.IsSameAs ( _T ( "_wgsoy" ) ) )
                                                 tmp_transform_y = *pf;
+#endif                                          
                                     }
 
 

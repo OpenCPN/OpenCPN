@@ -325,6 +325,7 @@ enum
     ID_RT_MENU_ACTNXTPOINT,
     ID_RT_MENU_REMPOINT,
     ID_RT_MENU_PROPERTIES,
+    ID_RT_MENU_SENDTOGPS,
     ID_WP_MENU_SET_ANCHORWATCH,
     ID_WP_MENU_CLEAR_ANCHORWATCH,
     ID_DEF_MENU_AISTARGETLIST,
@@ -3101,6 +3102,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_RT_MENU_APPEND,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_COPY,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_TK_MENU_COPY,         ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_RT_MENU_SENDTOGPS,    ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WPT_MENU_COPY,        ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WPT_MENU_SENDTOGPS,   ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_WAYPOINT,       ChartCanvas::PopupMenuHandler )
@@ -4012,10 +4014,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleChartOutlines();
             break;
 
+#if 0            
         case 'R':
             parent_frame->ToggleRocks();
             break;
-
+#endif
         case 'S':
             parent_frame->ToggleSoundings();
             break;
@@ -5195,7 +5198,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     //  Draw the icon rotated to the COG
     //  or to the Hdt if available
     double icon_hdt = pCog;
-    if( g_bHDTValid ) icon_hdt = gHdt;
+    if( !wxIsNaN( gHdt ) ) icon_hdt = gHdt;
 
     //  COG may be undefined in NMEA data stream
     if( wxIsNaN(icon_hdt) ) icon_hdt = 0.0;
@@ -5230,7 +5233,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
     double ndelta_pix = 10.;
     bool b_render_hdt = false;
-    if( g_bHDTValid ) {
+    if( !wxIsNaN( gHdt ) ) {
         double dist = sqrt(
                           pow( (double) ( lHeadPoint.x - lPredPoint.x ), 2 )
                           + pow( (double) ( lHeadPoint.y - lPredPoint.y ), 2 ) );
@@ -6169,14 +6172,17 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             }
 
             //  Calculate the point of CPA for ownship
-
-            //  Detect and handle the case where ownship COG is undefined....
-            double cog_assumed = gCog;
-            if( wxIsNaN(gCog) && ( gSog < .01 ) ) cog_assumed = 0.;          // substitute value
-            // for the case where SOG = 0, and COG is unknown.
-
             double ocpa_lat, ocpa_lon;
-            ll_gc_ll( gLat, gLon, cog_assumed, gSog * td->TCPA / 60., &ocpa_lat, &ocpa_lon );
+            
+            //  Detect and handle the case where ownship COG is undefined....
+            if( wxIsNaN(gCog) || wxIsNaN( gSog ) ) {
+                ocpa_lat = gLat;
+                ocpa_lon = gLon;
+            }
+            else {
+                ll_gc_ll( gLat, gLon, gCog, gSog * td->TCPA / 60., &ocpa_lat, &ocpa_lon );
+            }
+            
             wxPoint oCPAPoint;
 
             GetCanvasPointPix( ocpa_lat, ocpa_lon, &oCPAPoint );
@@ -7917,6 +7923,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                                 break;
                             }
                         }
+                        if( !brp_viz )                          // is not visible as part of route
+                            brp_viz = prp->IsVisible();         //  so treat as isolated point
+                        
                     } else
                         brp_viz = prp->IsVisible();               // isolated point
 
@@ -8425,6 +8434,14 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             menuRoute->Append( ID_RT_MENU_COPY, _( "Copy as KML..." ) );
             menuRoute->Append( ID_RT_MENU_DELETE, _( "Delete..." ) );
             menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
+            wxString port = FindValidUploadPort();
+            m_active_upload_port = port;
+            if( !port.IsEmpty() ) {
+                port.Prepend(_( "Send to GPS ( " ));
+                port .Append(_T(" )"));
+                menuRoute->Append( ID_RT_MENU_SENDTOGPS, port );
+            }
+            
         }
         //      Set this menu as the "focused context menu"
         menuFocus = menuRoute;
@@ -8465,9 +8482,18 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         }
         else {
             menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
-            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) 
-                menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
+            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
+                if(m_pSelectedRoute->m_pRouteActivePoint != m_pFoundRoutePoint ) 
+                    menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
+            }
 
+            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
+                if(m_pSelectedRoute->m_pRouteActivePoint == m_pFoundRoutePoint ) {
+                    int indexActive = m_pSelectedRoute->GetIndexOf( m_pSelectedRoute->m_pRouteActivePoint );
+                    if( ( indexActive + 1 ) <= m_pSelectedRoute->GetnPoints() )
+                        menuWaypoint->Append( ID_RT_MENU_ACTNXTPOINT, _( "Activate Next Waypoint" ) );
+                }
+            }
             if( m_pSelectedRoute->GetnPoints() > 2 )
                 menuWaypoint->Append( ID_RT_MENU_REMPOINT, _( "Remove from Route" ) );
 
@@ -9136,19 +9162,30 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         if( m_pFoundRoutePoint && !( m_pFoundRoutePoint->m_bIsInLayer )
                 && ( m_pFoundRoutePoint->m_IconName != _T("mob") ) ) {
 
-            undo->BeforeUndoableAction( Undo_DeleteWaypoint, m_pFoundRoutePoint, Undo_IsOrphanded, m_pFoundPoint );
-            pConfig->DeleteWayPoint( m_pFoundRoutePoint );
-            pSelect->DeleteSelectablePoint( m_pFoundRoutePoint, SELTYPE_ROUTEPOINT );
-            if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->DeleteObject( m_pFoundRoutePoint );
-            m_pFoundRoutePoint = NULL;
-            undo->AfterUndoableAction( NULL );
+            // If the WP belongs to an invisible route, we come here instead of to ID_RT_MENU_DELPOINT
+            //  Check it, and if so then remove the point from its routes
+            wxArrayPtrVoid *proute_array = g_pRouteMan->GetRouteArrayContaining( m_pFoundRoutePoint );
+            if( proute_array ) {
+                pWayPointMan->DestroyWaypoint( m_pFoundRoutePoint );
+                m_pFoundRoutePoint = NULL;
+             }
+            else {
+                undo->BeforeUndoableAction( Undo_DeleteWaypoint, m_pFoundRoutePoint, Undo_IsOrphanded, m_pFoundPoint );
+                pConfig->DeleteWayPoint( m_pFoundRoutePoint );
+                pSelect->DeleteSelectablePoint( m_pFoundRoutePoint, SELTYPE_ROUTEPOINT );
+                if( NULL != pWayPointMan )
+                    pWayPointMan->m_pWayPointList->DeleteObject( m_pFoundRoutePoint );
+                m_pFoundRoutePoint = NULL;
+                undo->AfterUndoableAction( NULL );
+            }
 
             if( pMarkPropDialog ) {
                 pMarkPropDialog->SetRoutePoint( NULL );
                 pMarkPropDialog->UpdateProperties();
             }
 
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateWptListCtrl();
         }
         break;
     }
@@ -9415,6 +9452,13 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
         break;
 
+    case ID_RT_MENU_SENDTOGPS:
+        if( m_pSelectedRoute ) {
+            if( m_active_upload_port.Length() )
+                m_pSelectedRoute->SendToGPS( m_active_upload_port, true, NULL );
+        }
+        break;
+        
     case ID_PASTE_WAYPOINT:
         pupHandler_PasteWaypoint();
         break;

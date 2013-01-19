@@ -1363,7 +1363,7 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
     }
     
     if( string_to_parse.IsEmpty() && (nsentences > 1) ) {      // not ready, so return with NAN
-        return AIS_NoError;                                    // but no error
+        return AIS_INCOMPLETE_MULTIPART;                       // and non-zero return
     }
                     
         

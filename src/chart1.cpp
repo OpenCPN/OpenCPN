@@ -285,9 +285,6 @@ bool                      bGPSValid;
 int                       gHDx_Watchdog;
 int                       gHDT_Watchdog;
 int                       gVAR_Watchdog;
-bool                      g_bHDxValid;
-bool                      g_bHDTValid;
-bool                      g_bVARValid;
 bool                      g_bHDT_Rx;
 bool                      g_bVAR_Rx;
 
@@ -1846,15 +1843,8 @@ if( 0 == g_memCacheLimit )
     gVAR_Watchdog = 2;
 
     //  Most likely installations have no ownship heading information
-    g_bHDxValid = false;
-    g_bHDTValid = false;
-    g_bVARValid = false;
     g_bHDT_Rx = false;
     g_bVAR_Rx = false;
-
-    gHdt = NAN;
-    gHdm = NAN;
-    gVar = NAN;
 
 //  Start up a new track if enabled in config file
 //        test this
@@ -2132,6 +2122,12 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     m_COGFilterLast = 0.;
     m_last_bGPSValid = false;
 
+    gHdt = NAN;
+    gHdm = NAN;
+    gVar = NAN;
+    gSog = NAN;
+    gCog = NAN;
+    
     m_bpersistent_quilt = false;
 
     m_ChartUpdatePeriod = 1;                  // set the default (1 sec.) period
@@ -4598,12 +4594,13 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         bGPSValid = false;
         if( g_nNMEADebug && ( gGPS_Watchdog == 0 ) ) wxLogMessage(
                 _T("   ***GPS Watchdog timeout...") );
+        gSog = NAN;
+        gCog = NAN;
     }
 
 //  Update and check watchdog timer for Mag Heading data source
     gHDx_Watchdog--;
     if( gHDx_Watchdog <= 0 ) {
-        g_bHDxValid = false;
         gHdm = NAN;
         if( g_nNMEADebug && ( gHDx_Watchdog == 0 ) ) wxLogMessage(
                 _T("   ***HDx Watchdog timeout...") );
@@ -4613,6 +4610,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     gHDT_Watchdog--;
     if( gHDT_Watchdog <= 0 ) {
         g_bHDT_Rx = false;
+        gHdt = NAN;
         if( g_nNMEADebug && ( gHDT_Watchdog == 0 ) ) wxLogMessage(
                 _T("   ***HDT Watchdog timeout...") );
     }
@@ -4632,6 +4630,26 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 _T("   ***SAT Watchdog timeout...") );
     }
 
+    //    Build and send a Position Fix event to PlugIns
+    if( g_pi_manager ) {
+            GenericPosDatEx GPSData;
+            GPSData.kLat = gLat;
+            GPSData.kLon = gLon;
+            GPSData.kCog = gCog;
+            GPSData.kSog = gSog;
+            GPSData.kVar = gVar;
+            GPSData.kHdm = gHdm;
+            GPSData.kHdt = gHdt;
+            GPSData.nSats = g_SatsInView;
+            
+            wxDateTime now = wxDateTime::Now();
+            GPSData.FixTime = now.GetTicks();
+            
+            if(g_pi_manager)
+                g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
+        
+    }
+    
     //   Check for anchorwatch alarms                                 // pjotrc 2010.02.15
     if( pAnchorWatchPoint1 ) {
         double dist;
@@ -6250,22 +6268,6 @@ void MyFrame::DoPrint( void )
      */
 
 }
-
-// toh, 2009.02.15
-void MyFrame::DoExportGPX( void )
-{
-    if( pConfig ) pConfig->ExportGPX( this );
-}
-
-// toh, 2009.02.16
-void MyFrame::DoImportGPX( void )
-{
-    if( pConfig ) {
-        pConfig->ImportGPX( this );
-        Refresh();
-    }
-}
-
 //---------------------------------------------------------------------------------------------------------
 //
 //              Private Memory Management
@@ -6350,7 +6352,6 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
             decl.ToDouble(&decl_val);
 
             gVar = decl_val;
-            g_bVARValid = true;
         }
     }
 }
@@ -6456,9 +6457,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     if( (str_buf[0] != '$')  &&  (str_buf[0] != '!') )
         return;
     
-    //    Send NMEA sentences to PlugIns
-    if( g_pi_manager ) g_pi_manager->SendNMEASentenceToAllPlugIns( str_buf );
-
     bool b_accept = EvalPriority( str_buf, stream_name, event.GetStreamPriority() );
     if( b_accept ) {
         m_NMEA0183 << str_buf;
@@ -6498,7 +6496,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                 if( m_NMEA0183.Rmc.MagneticVariationDirection == West ) gVar =
                                         -m_NMEA0183.Rmc.MagneticVariation;
 
-                            g_bVARValid = true;
                             g_bVAR_Rx = true;
                             gVAR_Watchdog = gps_watchdog_timeout_ticks;
 
@@ -6506,7 +6503,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
                         sfixtime = m_NMEA0183.Rmc.UTCTime;
 
-                        if(ll_valid)
+                        if(ll_valid )
                             gGPS_Watchdog = gps_watchdog_timeout_ticks;
                         pos_valid = ll_valid;
                     }
@@ -6524,9 +6521,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             else
                 if( m_NMEA0183.LastSentenceIDReceived == _T("HDT") ) {
                     if( m_NMEA0183.Parse() ) {
+                        gHdt = m_NMEA0183.Hdt.DegreesTrue;
                         if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) ) {
-                            gHdt = m_NMEA0183.Hdt.DegreesTrue;
-                            g_bHDTValid = true;
                             g_bHDT_Rx = true;
                             gHDT_Watchdog = gps_watchdog_timeout_ticks;
                         }
@@ -6544,24 +6540,21 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 else
                     if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") ) {
                         if( m_NMEA0183.Parse() ) {
-                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
-                                gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+                            gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
+                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
+                                gHDx_Watchdog = gps_watchdog_timeout_ticks;
+                            
+                            if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
+                                gVar = m_NMEA0183.Hdg.MagneticVariationDegrees;
+                            else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
+                                gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
 
-                                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) ) {
-                                    if( m_NMEA0183.Hdg.MagneticVariationDirection == East ) gVar =
-                                            m_NMEA0183.Hdg.MagneticVariationDegrees;
-                                    else
-                                        if( m_NMEA0183.Hdg.MagneticVariationDirection == West ) gVar =
-                                                -m_NMEA0183.Hdg.MagneticVariationDegrees;
-
-                                    g_bVARValid = true;
+                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) ) {
                                     g_bVAR_Rx = true;
                                     gVAR_Watchdog = gps_watchdog_timeout_ticks;
-                                }
-
-                                g_bHDxValid = true;
-                                gHDx_Watchdog = gps_watchdog_timeout_ticks;
                             }
+
+                            
                         } else
                             if( g_nNMEADebug ) {
                                 wxString msg( _T("   ") );
@@ -6576,10 +6569,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                     else
                         if( m_NMEA0183.LastSentenceIDReceived == _T("HDM") ) {
                             if( m_NMEA0183.Parse() ) {
+                                gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
                                 if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) ) {
-                                    gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
-
-                                    g_bHDxValid = true;
                                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
                                 }
                             } else
@@ -6596,10 +6587,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                         else
                             if( m_NMEA0183.LastSentenceIDReceived == _T("VTG") ) {
                                 if( m_NMEA0183.Parse() ) {
-                                    if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) ) gSog =
-                                            m_NMEA0183.Vtg.SpeedKnots;
-                                    if( !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) ) gCog =
-                                            m_NMEA0183.Vtg.TrackDegreesTrue;
+                                    gSog = m_NMEA0183.Vtg.SpeedKnots;
+                                    gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
+                                    if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) && !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
+                                        gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                                    
                                 } else
                                     if( g_nNMEADebug ) {
                                         wxString msg( _T("   ") );
@@ -6738,24 +6730,23 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 if( !wxIsNaN(gpd.kLon) ) 
                     gLon = gpd.kLon;
                 
-                    gCog = gpd.kCog;
-                    gSog = gpd.kSog;
+                gCog = gpd.kCog;
+                gSog = gpd.kSog;
                 
+                gVar = gpd.kVar;
                 if( !wxIsNaN(gpd.kVar) ) {
-                    gVar = gpd.kVar;
-                    g_bVARValid = true;
                     g_bVAR_Rx = true;
                     gVAR_Watchdog = gps_watchdog_timeout_ticks;
                 }
+                
+                gHdt = gpd.kHdt;
                 if( !wxIsNaN(gpd.kHdt) ) {
-                    gHdt = gpd.kHdt;
-                    g_bHDTValid = true;
                     g_bHDT_Rx = true;
                     gHDT_Watchdog = gps_watchdog_timeout_ticks;
                 }
+                
+                gHdm = gpd.kHdm;
                 if( !wxIsNaN(gpd.kHdm) ) {
-                    gHdm = gpd.kHdm;
-                    g_bHDxValid = true;
                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
                 }
                 
@@ -6785,30 +6776,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             }
         }
 
-        //    Build and send a Position Fix event to PlugIns
-        if( bis_recognized_sentence ) {
-            if( g_pi_manager ) {
-                GenericPosDatEx GPSData;
-                GPSData.kLat = gLat;
-                GPSData.kLon = gLon;
-                GPSData.kCog = gCog;
-                GPSData.kSog = gSog;
-                GPSData.kVar = gVar;
-                GPSData.kHdm = gHdm;
-                GPSData.kHdt = gHdt;
-
-                GPSData.nSats = g_SatsInView;
-
-                //TODO  This really should be the fix time obtained from the NMEA sentence.
-                //  To do this, we need to cleanly parse the NMEA date and time fields....
-                //  Until that is done, use the current system time.
-                wxDateTime now = wxDateTime::Now();
-                GPSData.FixTime = now.GetTicks();
-
-                g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
-            }
-        }
-
         if( bis_recognized_sentence ) PostProcessNNEA( pos_valid, sfixtime );
     }
 }
@@ -6824,12 +6791,9 @@ void MyFrame::PostProcessNNEA( bool pos_valid, wxString &sfixtime )
     //    but only if NMEA HDT sentence is not being received
 
     if( !g_bHDT_Rx ) {
-        if( !wxIsNaN(gVar) && !wxIsNaN(gHdm) && g_bVARValid && g_bHDxValid) {
+        if( !wxIsNaN(gVar) && !wxIsNaN(gHdm)) {
             gHdt = gHdm + gVar;
-            g_bHDTValid = true;
         }
-        else
-            g_bHDTValid = false;
     }
 
     if( pos_valid ) {

@@ -5,12 +5,12 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 3.1.1105\n"
+"Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-08 17:57-0500\n"
-"PO-Revision-Date: 2012-11-13 13:01+0200\n"
+"POT-Creation-Date: 2013-01-18 21:24-0500\n"
+"PO-Revision-Date: 2013-01-10 10:23+0200\n"
 "Last-Translator: \n"
-"Language-Team: TUC sailingteam <sailingteam@isc.tuc.gr>\n"
+"Language-Team: TUC Sailing team <sailingteam@isc.tuc.gr>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -32,7 +32,7 @@ msgid ""
 " - your GPS offset from midship must be within your ship's beam"
 msgstr ""
 "\n"
-" -η απόσταση του GPS από το κέντρο του σκάφους πρέπει να είναι εντός του "
+" - η απόσταση του GPS από τον άξονα του σκάφους πρέπει να είναι εντός του "
 "πλάτους του"
 #
 msgid ""
@@ -73,12 +73,12 @@ msgid ""
 msgstr ""
 "\n"
 "Το OpenCPN διανέμεται με την ελπίδα ότι θα είναι χρήσιμο,\n"
-"αλλά χωρίς καμία εγγύηση, ρητή ή εννοούμενη\n"
+"αλλά χωρίς να δίδει καμία εγγύηση, ρητή ή εννοούμενη\n"
 "για εμπορευσιμότητα ή καταλληλότητα για κάποιον σκοπό\n"
 "\n"
 "Δείτε την Δημόσια Άδεια Χρήσης του GNU για περισσότερες λεπτομέρειες.\n"
 "\n"
-"OpenCPN πρέπει να χρησιμοποιείται μόνο σε συνδυασμό με εγκεκριμένους\n"
+"Το OpenCPN πρέπει να χρησιμοποιείται μόνο σε συνδυασμό με εγκεκριμένους\n"
 "χάρτινους ναυτικούς χάρτες και κλασσικές μεθόδους ναυσιπλοΐας.\n"
 "\n"
 "Μην βασίζεστε στο OpenCPN για την ασφάλεια της ζωής και της περιουσίας σας.\n"
@@ -87,29 +87,29 @@ msgstr ""
 "σταματήσετε.\n"
 #
 msgid "    Incompatible PlugIn detected:"
-msgstr "   Μη συμβατό PlugIn:"
+msgstr "   Μη συμβατό PlugIn: "
 #
 msgid "   Chart File RLL data corrupt on chart "
 msgstr "   Τα δεδομένα RLL είναι κατεστραμμένα στο αρχείο του χάρτη"
 #
 msgid "   Chart File contains less than 3 PLY points: "
-msgstr "   Το αρχείο του χάρτη περιέχει λιγότερα από 3 σημεία PLY:"
+msgstr "   Το αρχείο του χάρτη περιέχει λιγότερα από 3 σημεία PLY: "
 #
 msgid "   Chart File corrupt in PostInit() on chart "
-msgstr "   Αρχείο Χάρτη κατεστραμένο στο PostInit() του χάρτη"
+msgstr "   Αρχείο Χάρτη κατεστραμμένο στο PostInit() του χάρτη"
 #
 msgid "   Chart file has no BSB header, cannot Init."
-msgstr "   Το αρχείο του χάρτη δεν έχει επικεφαλίδα BSB."
+msgstr "   Το αρχείο του χάρτη δεν έχει επικεφαλίδα BSB"
 #
 # , c-format
 #, c-format
 msgid "   Could not read first %d bytes of header for chart file: "
 msgstr ""
 "   Δεν μπόρεσα να διαβάσω τα πρώτα %d bytes της επικεφαλίδας του αρχείου του "
-"χάρτη:"
+"χάρτη: "
 #
 msgid "   Error creating Line Index for chart "
-msgstr "   Λάθος στην κατασκευή ευρετήριου για τον χάρτη."
+msgstr "   Λάθος στην κατασκευή ευρετηρίου για τον χάρτη."
 #
 msgid ""
 "   External application \"xcalib\" not found. Screen brightness not changed."
@@ -118,23 +118,23 @@ msgstr ""
 "άλλαξε."
 #
 msgid "   Line Index corrupt, recreating Index for chart "
-msgstr "   Κατεστραμμένο ευρετήριο, ανακατασκευή του ευρετήριου του Χάρτη"
+msgstr "   Κατεστραμμένο ευρετήριο, ανακατασκευή του ευρετηρίου του Χάρτη"
 #
 msgid "   Result: OK, Internal georef solution used."
-msgstr "   Αποτέλεσμα: OK, χρησιμοποιήθηκε εσωτερική γεωδετική λύση."
+msgstr "   Αποτέλεσμα: OK, χρησιμοποιήθηκε εσωτερική γεωδαιτική λύση."
 #
 msgid "   Trying again with internally calculated georef solution "
-msgstr "   Νέα προσπάθεια με εσωτερικά υπολογισμένη γεωδετική λύση"
+msgstr "   Νέα προσπάθεια με εσωτερικά υπολογισμένη γεωδαιτική λύση"
 #
 msgid ""
 "   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
 "chart "
 msgstr ""
-"   Τελικός έλεγχος VP με χρήση εσωτερικής γεωδεσίας :  Ο Chart_Error_Factor "
+"   Τελικός έλεγχος VP με χρήση εσωτερικής γεωδαισίας:  Chart_Error_Factor "
 "στον χάρτη "
 #
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
-msgstr "   VP τελικός έλεγχος: γεωδετικός Chart_Error_Factor στον χάρτη"
+msgstr "   τελικός έλεγχος VP: γεωδαιτικός Chart_Error_Factor στον χάρτη "
 #
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr "%D Ημέρες  %H ώρες  %M λεπτά"
@@ -161,39 +161,38 @@ msgid " COG Unavailable"
 msgstr " CoG μη διαθέσιμη"
 #
 msgid " ChartFile:  "
-msgstr " ΑρχείοΧάρτη:"
+msgstr " ΑρχείοΧάρτη: "
 #
 msgid " Datum:  "
-msgstr "Δεδομένο:"
+msgstr " Δεδομένα: "
 #
 msgid " Depth Units:  "
-msgstr "Βαθυμετρικές μονάδες"
+msgstr " Βαθυμετρικές μονάδες: "
 #
 msgid " ID:  "
-msgstr "ID:"
+msgstr ""
 #
 msgid " Name:  "
-msgstr "Όνομα:"
+msgstr "Όνομα: "
 #
 msgid " Projection:  "
-msgstr "Προβολή:"
+msgstr " Προβολή: "
 #
-# , c-format
 #, c-format
 msgid " Scale:  1:%d"
-msgstr "Κλίμακα:  1:%d"
+msgstr " Κλίμακα:  1:%d "
 #
 msgid " Ship "
 msgstr " Πλοίο "
 #
 msgid " Soundings:  "
-msgstr "Βυθομετρήσεις:"
+msgstr " Βυθομετρήσεις: "
 #
 msgid " Source Edition:  "
-msgstr "Έκδοση πηγής:"
+msgstr " Αρ. έκδοσης: "
 #
 msgid " Updated:  "
-msgstr " Ανανεωμένο:"
+msgstr " Ανανέωση: "
 #
 msgid " for details."
 msgstr " για λεπτομέρειες."
@@ -211,10 +210,10 @@ msgstr ""
 " \n"
 #
 msgid " to "
-msgstr " προς"
+msgstr " προς "
 #
 msgid "\" is empty, switching to \"All Active Charts\" group."
-msgstr "\" είναι άδεια. Θα γυρίσουμε στην ομάδα \"Όλοι οι ενεργοί Χάρτες \"."
+msgstr "\" είναι άδεια, γυρίζουμε στην ομάδα \"Όλοι οι ενεργοί Χάρτες \"."
 #
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"Όνομα πλοιου\" MMSI (ΔΔΣ)"
@@ -253,7 +252,7 @@ msgid "&Export Wpt..."
 msgstr "Ε&ξαγωγή σημείου..."
 #
 msgid "&Font family:"
-msgstr "&Γραμματοσειρά:"
+msgstr "&Γραμματοσειρά: "
 #
 msgid "&Go To"
 msgstr "&Πήγαινε"
@@ -271,10 +270,10 @@ msgid "&OK"
 msgstr "&Εντάξει"
 #
 msgid "&Point size:"
-msgstr "&Μέγεθος:"
+msgstr "&Μέγεθος: "
 #
 msgid "&Properties"
-msgstr "&Ιδιότητες..."
+msgstr "&Ιδιότητες"
 #
 msgid "&Properties..."
 msgstr "&Ιδιότητες..."
@@ -295,7 +294,7 @@ msgid "&Start Track"
 msgstr "&Εκκίνηση παρακολουθηση πορείας"
 #
 msgid "&Style:"
-msgstr "&Στυλ:"
+msgstr "&Στυλ: "
 #
 msgid "&Underline"
 msgstr "&Υπογράμμιση"
@@ -304,7 +303,7 @@ msgid "&Waypoint Properties..."
 msgstr "&Ιδιότητες σημείου πορείας..."
 #
 msgid "&Weight:"
-msgstr "&Βάρος:"
+msgstr "&Βάρος: "
 #
 msgid "(Unnamed Layer)"
 msgstr "(ανώνυμο ταξίδι)"
@@ -319,7 +318,7 @@ msgid "(Unnamed Waypoint)"
 msgstr "(Ανώνυμο σημείο πορείας)"
 #
 msgid "(reserved for future use)"
-msgstr ""
+msgstr "(κρατημένο για μελλοντική χρήση)"
 #
 msgid "(unnamed)"
 msgstr "(ανώνυμο)"
@@ -349,7 +348,7 @@ msgid "..."
 msgstr "..."
 #
 msgid "...and TCPA is less than (min)"
-msgstr "...και ο χρόνος για CPA είναι λιγότερος από (min)"
+msgstr "...και ο χρόνος μέχρι το CPA είναι λιγότερος από (min)"
 #
 msgid "0"
 msgstr ""
@@ -468,7 +467,7 @@ msgstr ""
 "</font><br>"
 #
 msgid "?"
-msgstr ";"
+msgstr "; "
 #
 msgid "A"
 msgstr "Α"
@@ -498,7 +497,7 @@ msgid "AISTargetAlert"
 msgstr "AISΣυναγερμοςΣτόχου"
 #
 msgid "AISTargetQuery"
-msgstr "AIS.Πληρ.Στόχου"
+msgstr "AISΠληρΣτόχου"
 #
 msgid "About"
 msgstr "Περί"
@@ -507,13 +506,13 @@ msgid "About OpenCPN"
 msgstr "Περί OpenCPN"
 #
 msgid "Accept"
-msgstr ""
+msgstr "Αποδοχή "
 #
 msgid "Accept Sentences"
-msgstr "Αποδέχεται τα δεδομένα"
+msgstr "Αποδέξου τα δεδομένα"
 #
 msgid "Accept only sentences"
-msgstr "Αποδοχή μόνο των δεδομένων:"
+msgstr "Δέξου μόνο τα δεδομένα"
 #
 msgid "Activate"
 msgstr "Ενεργοποίηση"
@@ -546,7 +545,7 @@ msgid "Add new"
 msgstr "Προσθήκη νέου"
 #
 msgid "Address"
-msgstr "Δειύθυνση"
+msgstr "Διεύθυνση"
 #
 msgid "Aground"
 msgstr "Προσαραγμένο"
@@ -572,29 +571,28 @@ msgid ""
 msgstr ""
 "Οι τύποι δεδομένων NMEA έχουν συνήθως 3 χαρακτήρες (π.χ. RMC, GGA κ.λπ.). "
 "Μπορεί να έχουν και δύο αρχικά γράμματα που υποδηλώνουν την πηγή, ή τον "
-"TALKER, των δεδομένων (ολόκληρος ο τύπος, τότε, είναι κάτι σαν GPGGA ή "
+"«ομιλητή», των δεδομένων (ολόκληρος ο τύπος, τότε, είναι κάτι σαν GPGGA ή "
 "AITXT). Μπορείτε να αποκλείσετε όλους τους τύπους δεδομένων με συγκεκριμένα "
-"αρχικά πηγής (όπως GP, AI κ.λπ.). Το φίλτρο δέχεται μόνο αυτά τα τρία φορμά."
+"αρχικά πηγής (όπως GP, AI κ.λπ.). Το φίλτρο δέχεται μόνο αυτούς τους τρεις "
+"τύπους δεδομένων."
 #
-#, fuzzy
 msgid "Anchorage Area: Anchorage closed"
-msgstr "Δημιουργήθηκε αγκυροβόλιο"
+msgstr "Περιοχή αγκυροβολίας: η περιοχή είναι κλειστή"
 #
-#, fuzzy
 msgid "Anchorage Area: Anchorage open"
-msgstr "Δημιουργήθηκε αγκυροβόλιο"
+msgstr "Περιοχή αγκυροβολίας: η περιοχή είναι ανοικτή"
 #
 msgid "Anchorage Area: Anchoring prohibited"
-msgstr ""
+msgstr "Περιοχή αγκυροβολίας: απαγορεύεται η αγκυροβολία"
 #
 msgid "Anchorage Area: Deep draft anchorage"
-msgstr ""
+msgstr "Περιοχή αγκυροβολίας: αγκυροβολία μεγάλου βάθους"
 #
 msgid "Anchorage Area: Shallow draft anchorage"
-msgstr ""
+msgstr "Περιοχή αγκυροβολίας: ρηχή αγκυροβολία"
 #
 msgid "Anchorage Area: Vessel transfer operations"
-msgstr ""
+msgstr "Περιοχή αγκυροβολίας: εργασίες μεταφοράς σκαφών"
 #
 msgid "Anchorage created "
 msgstr "Δημιουργήθηκε αγκυροβόλιο"
@@ -658,7 +656,7 @@ msgid "Barge, tanker, chemical"
 msgstr "Φορτηγίδα, τάνκερ, χημικά"
 #
 msgid "Base"
-msgstr "Βάση"
+msgstr "Βασική"
 #
 msgid "Base Station"
 msgstr "Σταθμος βάσης"
@@ -670,28 +668,28 @@ msgid "Baudrate"
 msgstr ""
 #
 msgid "Beacon, Isolated Danger"
-msgstr "Φωτοσημαντήρας, μεμ. κίνδυνος"
+msgstr "Φάρος, μεμον. κίνδυνος"
 #
 msgid "Beacon, Port Hand"
-msgstr "Φωτοσημαντήρας, αριστερός"
+msgstr "Φάρος, αριστερός"
 #
 msgid "Beacon, Preferred Channel Port Hand"
-msgstr "Φωτοσημαντήρας, προτιμ. δίαυλος αριστερά"
+msgstr "Φάρος, προτιμ. δίαυλος αριστερά"
 #
 msgid "Beacon, Preferred Channel Starboard Hand"
-msgstr "Φωτοσημαντήρας, προτιμ. δίαυλος δεξιά"
+msgstr "Φάρος, προτιμ. δίαυλος δεξιά"
 #
 msgid "Beacon, Safe Water"
-msgstr "Φωτοσημαντήρας, ασφαλή νερά"
+msgstr "Φάρος, ασφαλή νερά"
 #
 msgid "Beacon, Special Mark"
-msgstr "Φωτοσημαντήρας, ειδικό σημάδι"
+msgstr "Φάρος, ειδικό σημάδι"
 #
 msgid "Beacon, Starboard Hand"
-msgstr "Φωτοσημαντήρας, δεξιός"
+msgstr "Φάρος, δεξιός"
 #
 msgid "Bearing"
-msgstr "Κατ. πυξίδας"
+msgstr "Κατεύθυνση πυξίδας"
 #
 msgid "Black"
 msgstr "Μαύρο"
@@ -718,10 +716,10 @@ msgid "Buoy/Light Labels"
 msgstr "Ετικέτες σημαδούρας/φάρου"
 #
 msgid "C&olour:"
-msgstr "&Χρώμα:"
+msgstr "&Χρώμα: "
 #
 msgid "CM93 Detail Level"
-msgstr "Λεπτομέρειες CM93"
+msgstr "Επίπεδο λεπτομέρειας στον CM93 "
 #
 msgid "CM93 Offset Dialog..."
 msgstr "Διάλογος αντιστάθμισης χάρτη CM93..."
@@ -733,10 +731,10 @@ msgid "CPA"
 msgstr "CPA"
 #
 msgid "CPA Calculation"
-msgstr "Υπολογισμός σημείου πλησιέστερης προσέγγισης (CPA)"
+msgstr "Υπολογισμός Σημείου Πλησιέστερης Προσέγγισης (CPA)"
 #
 msgid "CPA TCPA"
-msgstr "Πλησ. σημείο προσέγγισης και χρόνος (CPA TCPA)"
+msgstr "Πλησιέστερο Σημείο Προσέγγισης και χρόνος (CPA, TCPA)"
 #
 msgid "CPA/TCPA Alerts"
 msgstr "Συναγερμοί CPA/TCPA"
@@ -749,6 +747,7 @@ msgstr "Ακύρωση"
 #
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
 msgstr ""
+"Ακύρωση - ακυρώνεται ο προσδιορισμός της περιοχής του μηνύματος υπ αρ.  "
 #
 msgid "Card. E"
 msgstr "Ττρτκλ. Α"
@@ -784,82 +783,84 @@ msgid "Cardinal S Beacon"
 msgstr "Τεταρτοκυκλικός φάρος, Νότιος"
 #
 msgid "Cardinal W Beacon"
-msgstr "Τεταρτοκυκλικός φάρος, Δυτικος"
+msgstr "Τεταρτοκυκλικός φάρος, Δυτικός"
 #
 msgid "Cargo Ship"
 msgstr "Φορτηγό"
 #
 msgid "Caution Area: Cluster of fishing vessels"
-msgstr ""
+msgstr "Προσοχή: Πολλά ψαράδικα"
 #
 msgid "Caution Area: Derelicts (drifting objects)"
-msgstr ""
+msgstr "Προσοχή: Συντρίμμια (επιπλέοντα αντικείμενα)"
 #
 msgid "Caution Area: Divers down"
-msgstr ""
+msgstr "Προσοχή: Δύτες στο νερό"
 #
 msgid "Caution Area: Dredge operations"
-msgstr ""
+msgstr "Προσοχή: Εργασίες βυθοκόρου"
 #
 msgid "Caution Area: Fairway closed"
-msgstr ""
+msgstr "Προσοχή: Δίαυλος κλειστός"
 #
 msgid "Caution Area: Fishery - nets in water"
-msgstr ""
+msgstr "Προσοχή: Περιοχή ψαρέματος - δίχτυα στο νερό"
 #
 msgid "Caution Area: Harbour closed"
-msgstr ""
+msgstr "Προσοχή: Λιμένας κλειστός"
 #
 msgid "Caution Area: Marine event"
-msgstr ""
+msgstr "Προσοχή: Ναυτικό συμβάν"
 #
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
 msgstr ""
+"Προσοχή: Περιοχή κατοικίας θαλασσίων θηλαστικών (ΟΧΙ παρατήρηση φαλαινών)"
 #
 msgid "Caution Area: Marine mammals in area - reduce speed"
-msgstr ""
+msgstr "Προσοχή: Περιοχή θαλασσίων θηλαστικών - μειώστε ταχύτητα"
 #
 msgid "Caution Area: Marine mammals in area - report sightings"
-msgstr ""
+msgstr "Προσοχή: Περιοχή θαλασσίων θηλαστικών - αναφέρατε παρατηρήσεις"
 #
 msgid "Caution Area: Marine mammals in area - stay clear"
-msgstr ""
+msgstr "Προσοχή: Περιοχή θαλασσίων θηλαστικών - μην πλησιάζετε"
 #
 msgid "Caution Area: Protected habitat - no fishing or anchoring"
 msgstr ""
+"Προσοχή: Προστατευόμενο οικοσύστημα - απαγορεύεται το ψάρεμα και η αγκυροβολία"
 #
 msgid "Caution Area: Protected habitat - reduce speed"
-msgstr ""
+msgstr "Προσοχή: Προστατευόμενο οικοσύστημα - μειώστε ταχύτητα"
 #
 msgid "Caution Area: Protected habitat - stay clear"
-msgstr ""
+msgstr "Προσοχή: Προστατευόμενο οικοσύστημα - μην πλησιάζετε"
 #
 msgid "Caution Area: Risk (define in Associated text field)"
-msgstr ""
+msgstr "Προσοχή: Κίνδυνος (καθορισμός στο σχετικό πεδίο κειμένου)"
 #
 msgid "Caution Area: Seaplane operations"
-msgstr ""
+msgstr "Προσοχή: Επιχειρήσεις με υδροπλάνο"
 #
 msgid "Caution Area: Survey operations"
-msgstr ""
+msgstr "Προσοχή: Εργασίες χαρτογράφησης"
 #
 msgid "Caution Area: Swim area"
-msgstr ""
+msgstr "Προσοχή: Περιοχή κολυμβητών"
 #
 msgid "Caution Area: Traffic congestion"
-msgstr ""
+msgstr "Προσοχή: Πυκνή κυκλοφορία"
 #
 msgid "Caution Area: Underwater operation"
-msgstr ""
+msgstr "Προσοχή: Περιοχή υποβρύχιων εργασιών"
 #
 msgid "Caution Area: Underwater vehicle operation"
-msgstr ""
+msgstr "Προσοχή: Εργασίες υποβρυχίου σκάφους"
 #
 msgid "Cell"
-msgstr "Κυψέλλη"
+msgstr "Κυψέλη"
 #
 msgid "Cell Scale"
-msgstr "Κλίμακα κυψέλλης"
+msgstr "Κλίμακα κυψέλης"
 #
 msgid "Center View"
 msgstr "Κεντράρισμα"
@@ -871,49 +872,49 @@ msgid "Change Color Scheme"
 msgstr "Αλλαγή χρωμάτων"
 #
 msgid "Chart Depth Units"
-msgstr "Βυθομετρικές μονάδες χάρτη"
+msgstr "Βαθυμετρικές μονάδες χάρτη "
 #
 msgid "Chart Display Options"
 msgstr "Επιλογές εμφάνισης χάρτη"
 #
 msgid "Chart Feature: Bridge closed"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: γέφυρα κλειστή"
 #
 msgid "Chart Feature: Bridge fully open"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: γέφυρα ανοικτή"
 #
 msgid "Chart Feature: Bridge partially open"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: γέφυρα μερικώς ανοικτή"
 #
 msgid "Chart Feature: Channel obstruction"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: εμπόδιο στο κανάλι"
 #
 msgid "Chart Feature: Reduced vertical clearance"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: μειωμένο ελεύθερο ύψος"
 #
 msgid "Chart Feature: Semi-submerged object"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: Ημιβυθισμένο αντικείμενο"
 #
 msgid "Chart Feature: Shoal area"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: Περιοχή υφάλων"
 #
 msgid "Chart Feature: Shoal area due east"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: Περιοχή υφάλων προς τα ανατολικά"
 #
 msgid "Chart Feature: Shoal area due north"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: Περιοχή υφάλων προς τα βόρεια"
 #
 msgid "Chart Feature: Shoal area due south"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: Περιοχή υφάλων προς τα νότια"
 #
 msgid "Chart Feature: Shoal area due west"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: Περιοχή υφάλων προς τα δυτικά"
 #
 msgid "Chart Feature: Submerged object"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: Βυθισμένο αντικείμενο"
 #
 msgid "Chart Feature: Sunken vessel"
-msgstr ""
+msgstr "Λεπτομέρεια χάρτη: Βυθισμένο πλοίο"
 #
 msgid "Chart Groups"
 msgstr "Ομάδες χαρτών"
@@ -940,7 +941,7 @@ msgid "Choose Font..."
 msgstr "Επιλογή γραμματοσειράς..."
 #
 msgid "Choose Format for Copy"
-msgstr "Επίλεξε φορμά για την αντιγραφή"
+msgstr "Επιλέξτε φορμά για την αντιγραφή"
 #
 msgid "Choose a file"
 msgstr "Διαλέξτε αρχείο"
@@ -958,7 +959,7 @@ msgid "Clear Anchor Watch"
 msgstr "Σταμάτησε την επιτήρηση αγκυροβολίας"
 #
 msgid "Clearance granted - proceed to berth"
-msgstr ""
+msgstr "Δίνεται η άδεια - προχωρήστε στη θέση πρόσδεσης"
 #
 msgid "Click to cancel the font selection."
 msgstr "Για να ακυρωθεί η επιλογή γραμματοσειράς"
@@ -973,7 +974,7 @@ msgid "CoG"
 msgstr "CoG"
 #
 msgid "Color:"
-msgstr "Χρώμα:"
+msgstr "Χρώμα: "
 #
 msgid "Colors"
 msgstr "Χρώματα"
@@ -982,7 +983,7 @@ msgid "Combo!"
 msgstr "Συνδυασμός!"
 #
 msgid "Confirm deletion of tracks and routes"
-msgstr "Επιβεβαίωση για διαγραφή ιχνών πορείας και διαδρομών"
+msgstr "Ζήτα επιβεβαίωση για τη διαγραφή ιχνών πορείας και διαδρομών"
 #
 msgid "Connections"
 msgstr "Συνδέσεις"
@@ -997,13 +998,13 @@ msgid "Constrained by draught"
 msgstr "Εμποδιζόμενο από το βύθισμα του"
 #
 msgid "Container vessel"
-msgstr "Πλοίο κοντέηνερ"
+msgstr "Πλοίο κοντέινερ"
 #
 msgid "Control checksum"
 msgstr "Έλεγχος checksum"
 #
 msgid "Copy As KML"
-msgstr ""
+msgstr "Αντιγραφή ως KML"
 #
 msgid "Copy Log File to Clipboard"
 msgstr "Αντιγραφή του Log στο Clipboard"
@@ -1011,17 +1012,15 @@ msgstr "Αντιγραφή του Log στο Clipboard"
 msgid "Copy Settings File to Clipboard"
 msgstr "Αντιγραφή αρχείου ρυθμίσεων στο Clipboard"
 #
-#, fuzzy
 msgid "Copy as KML"
-msgstr "&Αντιγραφή ως κείμενο"
+msgstr "Αντιγραφή ως KML"
 #
-#, fuzzy
 msgid "Copy as KML..."
-msgstr "Αντιγραφή..."
+msgstr "Αντιγραφή ως KML... "
 #
 #, c-format
 msgid "Couldn't load sound data from '%s'."
-msgstr ""
+msgstr "Δεν μπορώ να φορτώσω δεδομένα ήχου από τη '%s'."
 #
 msgid "Course"
 msgstr "Πορεία"
@@ -1081,14 +1080,13 @@ msgid "Dark Yellow"
 msgstr "Σκούρο κίτρινο"
 #
 msgid "Data Connections"
-msgstr "Σνδέσεις δεδομένων"
+msgstr "Συνδέσεις δεδομένων"
 #
 msgid "Data Source :"
-msgstr "Πηγή δεδομένων :"
+msgstr "Πηγή δεδομένων: "
 #
-#, fuzzy
 msgid "DataPort"
-msgstr "Θύρα"
+msgstr "ΘύραΔεδομένων"
 #
 msgid "De-Cluttered Text"
 msgstr "Αραιωμένο κείμενο"
@@ -1109,7 +1107,7 @@ msgid "Default color"
 msgstr "Προεπιλεγμένο χρώμα"
 #
 msgid "Degrees, Decimal Minutes"
-msgstr "Μοίρες, λεπτά με δεκαδικά"
+msgstr "Μοίρες και λεπτά με δεκαδικά"
 #
 msgid "Degrees, Minutes, Seconds"
 msgstr "Μοίρες, λεπτά, δεύτερα"
@@ -1169,7 +1167,7 @@ msgid "Distance"
 msgstr "Απόσταση"
 #
 msgid "Distance Between Rings"
-msgstr "Απόσταση ανάμεσα στους δακτυλιους"
+msgstr "Απόσταση ανάμεσα στους δακτύλιους"
 #
 msgid "Distance Unit"
 msgstr "Μονάδα απόστασης"
@@ -1178,49 +1176,49 @@ msgid "Distress"
 msgstr "Κατάσταση κινδύνου"
 #
 msgid "Distress Area: Person overboard"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Άνθρωπος στη θάλασσα"
 #
 msgid "Distress Area: Pollution response area"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: περιοχή αντιμετώπισης ρύπανσης"
 #
 msgid "Distress Area: SAR area"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: περιοχή SAR (επιχείρηση διάσωσης)"
 #
 msgid "Distress Area: Vessel abandoning ship"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Πλοίο που εγκαταλείπεται"
 #
 msgid "Distress Area: Vessel collision"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Σύγκρουση πλοίων"
 #
 msgid "Distress Area: Vessel disabled and adrift"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Πλοίο ακυβέρνητο και έρμαιο"
 #
 msgid "Distress Area: Vessel fire/explosion"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Φωτιά/έκρηξη σε πλοίο"
 #
 msgid "Distress Area: Vessel flooding"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Πλοίο που κάνει νερά"
 #
 msgid "Distress Area: Vessel grounding"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Προσαραγμένο πλοίο"
 #
 msgid "Distress Area: Vessel listing/capsizing"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Πλοίο που γέρνει/ανατρέπεται"
 #
 msgid "Distress Area: Vessel requests medical assistance"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Πλοίο που ζητά ιατρική βοήθεια"
 #
 msgid "Distress Area: Vessel sinking"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Πλοίο που βουλιάζει"
 #
 msgid "Distress Area: Vessel under assault"
-msgstr ""
+msgstr "Περιοχή με κατάσταση κινδύνου: Πλοίο που δέχεται επίθεση"
 #
 msgid ""
 "Do you also want to toggle the visibility of shared waypoints being part of "
 "this route?"
 msgstr ""
-"Θέλετε να αλλάξετε και την ορατότητα των μοιραζόμενων σημείων πορείας αυτής "
+"Θέλετε να αλλάξετε και την ορατότητα των μοιραζόμενων σημείων πορείας αυτλης "
 "της διαδρομής;"
 #
 msgid "Done."
@@ -1230,14 +1228,13 @@ msgid "Dot"
 msgstr "Διάστικτη"
 #
 msgid "Dot dash"
-msgstr "Τελεία-παύλα"
+msgstr "Τελεία παύλα"
 #
 msgid "Dredge"
 msgstr "Βυθοκόρος"
 #
-#, fuzzy
 msgid "Drop"
-msgstr "Τοποθέτησε σημάδι"
+msgstr "Παράλειψη"
 #
 msgid "Drop MOB Marker"
 msgstr "Ρίξε σημάδι «Άνθρωπος στη Θάλασσα» (MOB)"
@@ -1246,10 +1243,10 @@ msgid "Drop Mark"
 msgstr "Τοποθέτησε σημάδι"
 #
 msgid "Drop Sentences"
-msgstr "Εκπίπτει τα δεδομένα"
+msgstr "Παράλειψε τα δεδομένα"
 #
 msgid "Drop sentences"
-msgstr "Αγνόησε τα δεδομένα:"
+msgstr "Παράλειψε τα δεδομένα"
 #
 msgid "E&xport All..."
 msgstr "Ε&ξαγωγή ολων..."
@@ -1258,7 +1255,7 @@ msgid "ETA"
 msgstr "Εκτ. Ώρα Άφιξης"
 #
 msgid "ETA          "
-msgstr "Εκτ.Ωρα.Αφ."
+msgstr "Εκ.Ω.Αφ."
 #
 msgid "ETE"
 msgstr "Εκτ. χρόνος εν πλώ"
@@ -1270,7 +1267,7 @@ msgid "Edit"
 msgstr "Επεξεργασία"
 #
 msgid "Elapsed time : "
-msgstr "Παρελθών χρόνος:"
+msgstr "Παρελθών χρόνος: "
 #
 msgid "Enable"
 msgstr "Επίτρεψε"
@@ -1300,28 +1297,32 @@ msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
 msgstr "Γράψτε τον τύπο δεδομένων NMEA (2, 3, η 5 χαρακτήρες)"
 #
 msgid "Environmental Caution Area: Hazardous sea ice"
-msgstr ""
+msgstr "Περιοχή περιβαλλοντικού κινδύνου: επικίνδυνος θαλάσσιος πάγος"
 #
 msgid "Environmental Caution Area: Heavy icing"
-msgstr ""
+msgstr "Περιοχή περιβαλλοντικού κινδύνου: Πολύς πάγος"
 #
 msgid "Environmental Caution Area: High waves"
-msgstr ""
+msgstr "Περιοχή περιβαλλοντικού κινδύνου: Υψηλά κύματα"
 #
 msgid "Environmental Caution Area: High wind"
-msgstr ""
+msgstr "Περιοχή περιβαλλοντικού κινδύνου: Σφοδρός άνεμος"
 #
 msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
 msgstr ""
+"Περιοχή περιβαλλοντικού κινδύνου: Περιορισμένη ορατότητα (ομίχλη, βροχή, κ."
+"λπ.)"
 #
 msgid "Environmental Caution Area: Storm front (line squall)"
-msgstr ""
+msgstr "Περιοχή περιβαλλοντικού κινδύνου: Μέτωπο θύελλας (σειράς θυελλών)"
 #
 msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
 msgstr ""
+"Περιοχή περιβαλλοντικού κινδύνου: Προειδοποίηση θύελλας (μεμονωμένης ή σειράς "
+"θυελλών)"
 #
 msgid "Environmental Caution Area: Strong currents"
-msgstr ""
+msgstr "Περιοχή περιβαλλοντικού κινδύνου: Ισχυρά θαλάσσια ρεύματα"
 #
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr "Σφάλμα στη φόρτωση της διαδρομής. Δες τα log αρχεία..."
@@ -1333,7 +1334,11 @@ msgid "Error!"
 msgstr "Σφάλμα!"
 #
 msgid "Estimated time : "
-msgstr "Εκτιμώμενος χρόνος:"
+msgstr "Εκτιμώμενος χρόνος: "
+#
+#, fuzzy
+msgid "Export All Visible..."
+msgstr "Ε&ξαγωγή ολων..."
 #
 msgid "Export GPX file"
 msgstr "Εξαγωγή αρχείου GPX"
@@ -1351,7 +1356,7 @@ msgid "Extended Light Sectors"
 msgstr "Επέκταση τομέων φάρου"
 #
 msgid "ExtendedTideIcon"
-msgstr "Εικονίδιο παλίρροιας"
+msgstr "ΕικονίδιοΠαλίρροιας"
 #
 msgid "F/V"
 msgstr "Αλιευτικό"
@@ -1393,13 +1398,13 @@ msgid "Fonts"
 msgstr "Γραμματοσειρές"
 #
 msgid "For this leg the Great Circle route is "
-msgstr "Για αυτό το σκέλος, η διαδρομή Μεγίστου Κύκλου είναι "
+msgstr "Για αυτό το σκέλος, η διαδρομή μεγίστου κύκλου είναι "
 #
 msgid "Force Full Database Rebuild"
 msgstr "Ανακατασκευή ολόκληρης της βάσης δεδομένων"
 #
 msgid "Format uploads for Furuno GP3X"
-msgstr "Διαμόρφωση μεταφοράς για Furuno GP3X (GPS)"
+msgstr "Μέθοδος μεταφοράς για Furuno GP3X (GPS)"
 #
 msgid "Freightbarge"
 msgstr "Φορτηγίδα"
@@ -1411,13 +1416,13 @@ msgid "Full Route"
 msgstr "Ολόκληρη διαδρομή"
 #
 msgid "GPS Offset from Bow (m)"
-msgstr "Απόσταση της κεραίας GPS από την πλώρη"
+msgstr "Αντιστάθμιση GPS από την πλώρη"
 #
 msgid "GPS Offset from Midship (m)"
-msgstr "Απόσταση της κεραίας GPS από τον άξονα του πλοίου"
+msgstr "Αντιστάθμιση GPS από το μέσον του πλοίου"
 #
 msgid "GPS/Plotter Port"
-msgstr ""
+msgstr "Θύρα GPS/καταγραφέα"
 #
 msgid "GPSD"
 msgstr ""
@@ -1447,7 +1452,7 @@ msgid "Go to "
 msgstr "Πήγαινε "
 #
 msgid "GpsGate Buddy"
-msgstr "Buddy θύραGPS"
+msgstr "Buddy θύρα GPS"
 #
 msgid "Green"
 msgstr "Πράσινο"
@@ -1459,7 +1464,7 @@ msgid "HSC"
 msgstr "Ταχύπλοο"
 #
 msgid "HW"
-msgstr "Πλυμμ."
+msgstr "Πλυμ."
 #
 msgid "Heading"
 msgstr "Κατεύθυνση"
@@ -1470,9 +1475,8 @@ msgstr "Βοήθεια"
 msgid "Here"
 msgstr "Εδώ"
 #
-#, fuzzy
 msgid "Hide AIS Targets"
-msgstr "Στόχοι AIS"
+msgstr "Κρύψε τους στόχους AIS "
 #
 msgid "Hide Target CPA"
 msgstr "Κρύψε το CPA του στόχου"
@@ -1484,7 +1488,7 @@ msgid "Hide WPT names"
 msgstr "Κρύψε τα ονόματα των σημείων πορείας"
 #
 msgid "Hide anchored/moored targets, speed max (kn)"
-msgstr "Κρύψε αγκυροβολημένους στοχους, μεγ. ταχύτητα (κόμβοι)"
+msgstr "Κρύβε τους αγκυροβολημένους στόχους, μεγ. ταχύτητα (κόμβοι)"
 #
 msgid "Hide from chart"
 msgstr "Κρύψε από τον χάρτη"
@@ -1511,15 +1515,13 @@ msgid "Icon"
 msgstr "Εικονίδιο"
 #
 msgid "If checked, only the sentences with a valid checksum are passed through"
-msgstr ""
-"Αν τσεκαριστεί, περνούν μόνο τα δεδομένα με για τα οποία ισχύει το chekcsum "
-"τους"
+msgstr "Αν τσεκαριστεί, περνούν μόνο τα δεδομένα με έγκυρο chekcsum"
 #
 msgid "Ignore Sentences"
-msgstr "Αγνοεί τα δεδομένα"
+msgstr "Αγνόησε τα δεδομένα"
 #
 msgid "Ignore sentences"
-msgstr "Αγνόησε τα δεδομένα:"
+msgstr "Αγνόησε τα δεδομένα"
 #
 msgid "Import GPX file"
 msgstr "Εισαγωγή αρχείου GPX"
@@ -1527,27 +1529,26 @@ msgstr "Εισαγωγή αρχείου GPX"
 msgid "Important Text Only"
 msgstr "Μονο σημαντικό κείμενο"
 #
-#, fuzzy
 msgid "In"
-msgstr "Εικονίδιο"
+msgstr ""
 #
 msgid "In: None"
 msgstr "In: κανένα"
 #
 msgid "Information: Icebreaker waiting area"
-msgstr ""
+msgstr "Πληροφορίες: περιοχή αναμονής παγοθραυστικού"
 #
 msgid "Information: Location of response units"
-msgstr ""
+msgstr "Πληροφορίες: θέση μονάδων απόκρισης"
 #
 msgid "Information: Pilot boarding position"
-msgstr ""
+msgstr "Πληροφορίες: θέση επιβίβασης πιλότου"
 #
 msgid "Information: Places of refuge"
-msgstr ""
+msgstr "Πληροφορίες: καταφύγια"
 #
 msgid "Information: Position of icebreakers"
-msgstr ""
+msgstr "Πληροφορίες: Τοποθεσία παγοθραυστικών"
 #
 msgid "Inland Blue Flag"
 msgstr "Μπλε σημαία"
@@ -1560,25 +1561,27 @@ msgstr "Εισαγωγή Σημείου Πορείας"
 #
 msgid ""
 "Instruction: Await instructions prior to proceeding beyond this point/juncture"
-msgstr ""
+msgstr "Οδηγία: περιμένετε οδηγίες πριν προχωρήσετε πέρα από αυτό το σημείο"
 #
 msgid "Instruction: Contact Port Administration at this point/juncture"
-msgstr ""
+msgstr "Οδηγία: Επικοινωνήστε με το λιμεναρχείο σε αυτό το σημείο"
 #
 msgid "Instruction: Contact VTS at this point/juncture"
 msgstr ""
+"Οδηγία: Επικοινωνήστε με τη VTS (Υπηρεσία Εξυπηρέτησης Κυκλοφορίας Πλοίων) σε "
+"αυτό το σημείο"
 #
 msgid "Instruction: Do not proceed beyond this point/juncture"
-msgstr ""
+msgstr "Οδηγία: Μη προχωρείτε πέρα από αυτό το σημείο"
 #
 msgid "Isol. Dngr"
-msgstr "Μεμ. Κίνδυνος"
+msgstr "Μεμον. Κίνδ."
 #
 msgid "Isolated Danger"
 msgstr "Μεμονωμένος κίνδυνος"
 #
 msgid "KML Standard (Google Earth and others)"
-msgstr "Στάνταρτ KML (Google Earth κ.α.)"
+msgstr "Στάνταρ KML (Google Earth κ.α.)"
 #
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "KML με επεκτάσεις για τα δεδομένα (QtVlm)"
@@ -1602,7 +1605,7 @@ msgid "Language"
 msgstr "Γλώσσα"
 #
 msgid "Latitude"
-msgstr "Γ. πλάτος"
+msgstr "Γεωγρ. πλάτος"
 #
 msgid "Law Enforcement Vessel"
 msgstr "Ακταιωρός"
@@ -1610,33 +1613,29 @@ msgstr "Ακταιωρός"
 msgid "Layer Name"
 msgstr "Όνομα ταξιδιού"
 #
-#, fuzzy
 msgid "Layer Route"
-msgstr "Επικόλληση διαδρομής"
+msgstr "Διαδρομή ταξιδιού"
 #
-#, fuzzy
 msgid "Layer Route: "
-msgstr "Επικόλληση διαδρομής"
+msgstr "Διαδρομή ταξιδιού: "
 #
 msgid "Layer Routepoint"
-msgstr ""
+msgstr "Σημείο διαδρομής ταξιδιού"
 #
-#, fuzzy
 msgid "Layer Track"
-msgstr "Επικόλληση ίχνους πορείας"
+msgstr "Πορεία ταξιδιού "
 #
-#, fuzzy
 msgid "Layer Waypoint"
-msgstr "Επικόλληση σημείου πορείας"
+msgstr "Σημείο πορείας ταξιδιού"
 #
 msgid "Layers"
 msgstr "Ταξίδια"
 #
 msgid "Ldg Lt Front"
-msgstr "Οδ. φάρος μπρος"
+msgstr "Οδ. Φάρος, μπρος"
 #
 msgid "Ldg Lt Rear"
-msgstr "Οδ. φάρος πίσω"
+msgstr "Οδ. φάρος, πίσω"
 #
 msgid "Leading Light Front"
 msgstr "Οδηγός φάρος, μπρος"
@@ -1675,7 +1674,7 @@ msgid "Light Gray"
 msgstr "Ανοιχτό γκρι"
 #
 msgid "Light Vessel/Rig"
-msgstr "Φαρό-πλοιο/κατασκ."
+msgstr "Φαρόπλοιο/κατασκ."
 #
 msgid "Light w/Sectors"
 msgstr "Φάρος με τομείς"
@@ -1702,7 +1701,7 @@ msgid "Links are opened for editing."
 msgstr "Οι σύνδεσμοι είναι ανοικτοί για επεξεργασία"
 #
 msgid "Links are opened in the default browser."
-msgstr "Οι σύνδεσμοι ανοίγουν στον στάνταρτ browser"
+msgstr "Οι σύνδεσμοι ανοίγουν στον στάνταρ browser"
 #
 msgid "Liquified gas tanker"
 msgstr "Τάνκερ με υγροπ. αέριο"
@@ -1711,7 +1710,7 @@ msgid "List contents"
 msgstr "Περιεχόμενα"
 #
 msgid "Loaded Charts"
-msgstr "Χάρτες που έχουν φορτωθεί "
+msgstr "Χάρτες που έχουν φορτωθεί"
 #
 msgid "Local @ PC"
 msgstr "Τοπική στο PC"
@@ -1730,7 +1729,7 @@ msgid "Long dash"
 msgstr "Με μακριές παύλες"
 #
 msgid "Longitude"
-msgstr "Γ. μήκος"
+msgstr "Γεωγρ. μήκος"
 #
 msgid "Look Ahead Mode"
 msgstr "Λειτουργία προεπισκόπισης πορείας"
@@ -1748,7 +1747,7 @@ msgid "Lt sect."
 msgstr "Τομέας φάρου"
 #
 msgid "LtV/Rig"
-msgstr "Φαρο-πλοίο/κατασ."
+msgstr "Φαρόπλοιο/κατασ."
 #
 msgid "M/T"
 msgstr "Ο/Γ"
@@ -1769,10 +1768,10 @@ msgid "Magenta"
 msgstr "Ματζέντα"
 #
 msgid "Mariner's Standard"
-msgstr "Στάνταρτ ναυτικών"
+msgstr "Στάνταρ ναυτικών"
 #
 msgid "Mariners Standard"
-msgstr "Στάνταρτ ναυτικών"
+msgstr "Στάνταρ ναυτικών"
 #
 msgid "Mark Information"
 msgstr "Πληροφορίες σημαδιού"
@@ -1817,7 +1816,7 @@ msgid "Merge waypoints?"
 msgstr "Συγχώνευση σημείων πορείας;"
 #
 msgid "Message accepted"
-msgstr "Το μήνυμα έγινε δεκτό"
+msgstr "Δεκτό μήνυμα"
 #
 msgid "Message filtered and dropped"
 msgstr "Το μήνυμα απερρίφθη"
@@ -1832,13 +1831,13 @@ msgid "Military Vessel"
 msgstr "Πολεμικό σκάφος"
 #
 msgid "Minimum Screen Size (mm)"
-msgstr "Ελάχιστο μέγεθος στην οθόνη (mm)"
+msgstr "Ελάχιστο μέγεθος οθόνης (mm)"
 #
 msgid "Miscellaneous Options"
 msgstr "Διάφορες επιλογές"
 #
 msgid "Moored"
-msgstr "Αγκυροβολιμένο"
+msgstr "Αγκυροβολημένο"
 #
 msgid "Motor freighter"
 msgstr "Φορτηγό"
@@ -1910,10 +1909,10 @@ msgid "Navigate To This"
 msgstr "Πλεύση προς αυτό"
 #
 msgid "Net"
-msgstr "Δικτύου"
+msgstr "Δίκτυο"
 #
 msgid "Network"
-msgstr "Δικτύου"
+msgstr "Δίκτυο"
 #
 msgid "New Chart Group"
 msgstr "Νέα ομάδα χαρτών"
@@ -1948,13 +1947,13 @@ msgid "No, I don't want to hide it."
 msgstr "Όχι, δεν θέλω να κρυφτεί"
 #
 msgid "No, and permanently remove the option to hide it."
-msgstr "Όχι! Και να απομακρυνθεί η επιλογή να κρύβεται."
+msgstr "Όχι! Και να καταργηθεί η επιλογή να κρύβεται."
 #
 msgid "No. of items"
 msgstr "Αρ. στοιχείων"
 #
 msgid "None"
-msgstr "Κανένα"
+msgstr "Καμία"
 #
 msgid "North Up Mode"
 msgstr "Λειτουργία «βορράς προς τα πάνω»"
@@ -1978,7 +1977,7 @@ msgid "Object, towed, not otherwise specified"
 msgstr "Ρυμουλκούμενο, μη περαιτέρω προσδιορισμένο"
 #
 msgid "ObjectQuery"
-msgstr "ΠληροφορίεςΑντικειμένου"
+msgstr "ΠληροφΑντικειμ"
 #
 msgid "Ok"
 msgstr "Εντάξει"
@@ -1987,52 +1986,52 @@ msgid "OpenCPN Alert"
 msgstr "Συναγερμός OpenCPN"
 #
 msgid "OpenCPN CM93 Cell Offset Adjustments"
-msgstr "OpenCPN Ρυθμίσεις για την αντιστάθμιση κυψέλλης στον χάρτη CM93"
+msgstr "OpenCPN: Ρυθμίσεις στην αντιστάθμιση κυψέλης του χάρτη CM93"
 #
 msgid "OpenCPN Chart Add...."
-msgstr "Το OpenCPN προσθέτει τον χάρτη...."
+msgstr "OpenCPN: προσθήκη χάρτη...."
 #
 msgid "OpenCPN Chart Scan...."
-msgstr "Το OpenCPN ψάχνει για χάρτες...."
+msgstr "OpenCPN: ψάξιμο για χάρτες...."
 #
 msgid "OpenCPN Chart Update"
-msgstr "Το OpenCPN ανανεώνει τον χάρτη"
+msgstr "OpenCPN ανανέωση χάρτη"
 #
 msgid "OpenCPN Converting Track to Route...."
-msgstr "Το OpenCPN μετατρέπει το ίχνος σε διαδρομή..."
+msgstr "OpenCPN μετατρέπει το ίχνος σε διαδρομή..."
 #
 msgid "OpenCPN Directory Scan...."
-msgstr "Το OpenCPN ψάχνει για φακέλους...."
+msgstr "OpenCPN: ψάξιμο για φακέλους...."
 #
 msgid "OpenCPN Group Notice"
-msgstr "Σημείωση ομάδας OpenCPN"
+msgstr "OpenCPN: Σημείωση για την ομάδα"
 #
 msgid "OpenCPN Info"
 msgstr "Πληροφορίες OpenCPN"
 #
 msgid "OpenCPN Remove Waypoint"
-msgstr "OpenCPN αφαίρεση σημείου πορείας"
+msgstr "OpenCPN: αφαίρεση σημείου πορείας"
 #
 msgid "OpenCPN Route"
-msgstr "OpenCPN διαδρομή"
+msgstr "OpenCPN Διαδρομή"
 #
 msgid "OpenCPN Route Create"
-msgstr "OpenCPN, δημιουργία διαδρομής"
+msgstr "OpenCPN: Δημιουργία διαδρομής"
 #
 msgid "OpenCPN Route Delete"
-msgstr "Διαγραφή διαδρομής OpenCPN"
+msgstr "OpenCPN: Διαγραφή διαδρομής"
 #
 msgid "OpenCPN S57 SENC File Create..."
-msgstr "OpenCPN δημιουργία αρχείου S57 SENC..."
+msgstr "OpenCPN: Δημιουργία αρχείου S57 SENC..."
 #
 msgid "OpenCPN Track"
-msgstr "OpenCPN ίχνος πορείας"
+msgstr "OpenCPN Ίχνος πορείας"
 #
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN διαγραφή ίχνους πορείας"
 #
 msgid "OpenCPN Waypoint"
-msgstr "OpenCPN σημείο πορείας"
+msgstr "OpenCPN Σημείο πορείας"
 #
 msgid "OpenCPN cannot start. "
 msgstr "Το OpenCPN δεν μπορεί να ξεκινήσει. "
@@ -2047,11 +2046,10 @@ msgid "Other"
 msgstr "Άλλη"
 #
 msgid "Other - Define in associated text field"
-msgstr ""
+msgstr "Άλλο: ορίζεται στο σχετικό πεδίο κειμένου"
 #
-#, fuzzy
 msgid "Out"
-msgstr "Έξοδος"
+msgstr ""
 #
 msgid "Output"
 msgstr "Έξοδος"
@@ -2081,7 +2079,7 @@ msgid "PC/V"
 msgstr "Σκ. Ελ. Ρύπανσης"
 #
 msgid "Paper Chart"
-msgstr "Σαν τυπωμένοι"
+msgstr "Σαν τυπωμένοι χάρτες"
 #
 msgid "Parameters"
 msgstr "Παράμετροι"
@@ -2117,7 +2115,7 @@ msgid "Plain"
 msgstr "Απλοί"
 #
 msgid "Plan Speed"
-msgstr "Σχεδιασμ. ταχύτητα"
+msgstr "Σχεδ. ταχύτητα"
 #
 msgid "Plan speed (Kts)"
 msgstr "Σχεδ. ταχύτητα (κόμβοι)"
@@ -2130,7 +2128,7 @@ msgstr "'Ηχητικός συναγερμός CPA/TCPA"
 #
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr ""
-"Επανεκκινείστε το OpenCPN για να ενεργοποίησετε τις αλλαγές στη γλώσσα ή στο "
+"Επανεκκινείστε το OpenCPN για να ενεργοποιήσετε τις αλλαγές στη γλώσσα ή στο "
 "στυλ."
 #
 msgid "Pleasure craft"
@@ -2152,7 +2150,7 @@ msgid "Polyconic"
 msgstr "Πολυκωνική"
 #
 msgid "Port"
-msgstr "Θύρα"
+msgstr "Αριστερά"
 #
 msgid "Port Hand"
 msgstr "Αριστερά"
@@ -2182,7 +2180,7 @@ msgid "Preferred Channel Starboard Hand"
 msgstr "Προτιμητέος δίαυλος δεξιά"
 #
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr "Ετοίμασε το GPS για τη φόρτωση και πάτησε «Στείλε...»"
+msgstr "Ετοίμασε το GPS για τη μεταφόρτωση και πάτησε «Στείλε...»"
 #
 msgid "Preserve Scale when Switching Charts"
 msgstr "Διατήρηση της κλίμακας όταν αλλάζει ο χάρτης"
@@ -2203,7 +2201,7 @@ msgid "Problem discovered"
 msgstr "Το πρόβλημα βρέθηκε"
 #
 msgid "Proceed to this location - await instructions"
-msgstr ""
+msgstr "Προχωρήστε σε αυτή τη θέση - περιμένετε οδηγίες"
 #
 msgid "Processing Waypoints..."
 msgstr "Επεξεργασία σημείων πορείας..."
@@ -2246,7 +2244,8 @@ msgstr "Ρυμουλκό ώθησης, 9 ή περισσότερες φορτη�
 #
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 msgstr ""
-"Ρυμουλκό ώθησης, 9 ή περισσότερες φορτηγίδες, τουλάχιστον μία δεξ/φορτηγίδα"
+"Ρυμουλκό ώθησης, 9 ή περισσότερες φορτηγίδες, τουλάχιστον μία "
+"δεξαμενοφορτηγίδα"
 #
 msgid "Pushtow, one cargo barge"
 msgstr "Ρυμουλκό ώθησης, μία φορτηγίδα"
@@ -2291,7 +2290,7 @@ msgid "Real"
 msgstr "Πραγματικό"
 #
 msgid "Real (On Position)"
-msgstr "Πραγματικό - On"
+msgstr "Πραγματικό (ενεργοποιημένο)"
 #
 msgid "Real Scale Bitmap"
 msgstr "Bitmap σε πραγματική κλίμακα"
@@ -2300,7 +2299,7 @@ msgid "Real Scale Vector"
 msgstr "Διανυσματικό σε πραγματική κλίμακα"
 #
 msgid "Real(Off Position)"
-msgstr "Πραγματικό - Off"
+msgstr "Πραγματικό (απενεργοποιημένο)"
 #
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Ανακατασκευή της βάσης δεδομένων χαρτών από τα αρχεία διαμόρφωσης..."
@@ -2315,7 +2314,7 @@ msgid "Redo"
 msgstr "Επανάληψη"
 #
 msgid "Reduce Data Precision"
-msgstr "Μείωση της σκρίβειας των δεδομένων"
+msgstr "Μείωση της σκρίβειας "
 #
 msgid "Reduce Data..."
 msgstr "Μείωση δεδομένων..."
@@ -2330,13 +2329,13 @@ msgid "Reference Point"
 msgstr "Σημείο αναφοράς"
 #
 msgid "Reference Station :"
-msgstr "Σταθμός αναφοράς :"
+msgstr "Σταθμός αναφοράς: "
 #
 msgid "Reject"
-msgstr ""
+msgstr "Απόρριψη "
 #
 msgid "Remaining time : "
-msgstr "Απομένων χρόνος:"
+msgstr "Απομένων χρόνος: "
 #
 msgid "Remove Chart"
 msgstr "Αφαίρεση χάρτη"
@@ -2356,23 +2355,19 @@ msgstr "Αφαίρεσε τους χαμένους στόχους μετά απ�
 msgid "Rename Waypoints?"
 msgstr "Αλλαγή ονόματος σημείων πορείας;"
 #
-# , c-format
-#, c-format
-msgid "RenderHPGL: The '%s' instruction is not implemented."
-msgstr "HPGL: Η εντολή '%s' δεν μπορεί να εφαρμοσθεί."
-#
 msgid "Report Age"
 msgstr "Παλαιότητα αναφοράς"
 #
 msgid "Report as of"
-msgstr "Αναφορά από τις"
+msgstr "Αναφορά από την"
 #
 msgid "Report from ship: Icing info"
-msgstr ""
+msgstr "Αναφορά από πλοίο: πληροφορίες πάγου"
 #
 msgid ""
 "Report from ship: Miscellaneous information - define in Associated text field"
 msgstr ""
+"Αναφορά από πλοίο: διάφορες πληροφορίες - ορίζονται στο σχετικό πεδίο κειμένου"
 #
 msgid "Reserved 11"
 msgstr "Reserved 11"
@@ -2387,25 +2382,25 @@ msgid "Reserved 14"
 msgstr "Reserved 14"
 #
 msgid "Restricted Area: Active military OPAREA"
-msgstr ""
+msgstr "Περιοχή με περιορισμούς: Ενεργή πολεμική OPAREA (περιοχή επιχειρήσεων) "
 #
 msgid "Restricted Area: Drifting Mines"
-msgstr ""
+msgstr "Περιοχή με περιορισμούς: Επιπλέουσες νάρκες "
 #
 msgid "Restricted Area: Entry approval required prior to transit"
-msgstr ""
+msgstr "Περιοχή με περιορισμούς: Χρειάζεται άδεια εισόδου πριν τον διάπλου"
 #
 msgid "Restricted Area: Entry prohibited"
-msgstr ""
+msgstr "Περιοχή με περιορισμούς: Απαγορεύεται η είσοδος"
 #
 msgid "Restricted Area: Firing - danger area."
-msgstr ""
+msgstr "Περιοχή με περιορισμούς: Διενεργούνται βολές - κίνδυνος "
 #
 msgid "Restricted Area: Fishing prohibited"
-msgstr ""
+msgstr "Περιοχή με περιορισμούς: Απαγορεύεται το ψάρεμα"
 #
 msgid "Restricted Area: No anchoring."
-msgstr ""
+msgstr "Περιοχή με περιορισμούς: Απαγορεύεται η αγκυροβολία"
 #
 msgid "Restricted Manoeuvrability"
 msgstr "Περιορισμένη ικανότητα ελιγμών"
@@ -2414,22 +2409,22 @@ msgid "Resume"
 msgstr "Συνέχισε"
 #
 msgid "Retrieving initial Chart Directory set from Windows Registry"
-msgstr "Εξάγει τους αρχικούς φακέλους χαρτών από τα κατάστιχα των Windows"
+msgstr "Ανακτώνται οι αρχικοί φακέλοι χαρτών από τα κατάστιχα των Windows"
 #
 msgid "Retrieving initial language selection from Windows Registry"
-msgstr "Εξάγει την αρχική επιλογή γλώσσας από τα κατάστιχα των Windows"
+msgstr "Ανακτάται η αρχική επιλογή γλώσσας από τα κατάστιχα των Windows"
 #
 msgid "Reverse..."
-msgstr "Αναστροφή"
+msgstr "Αντιστροφή"
 #
 msgid "Right"
 msgstr "Δεξιά"
 #
 msgid "Rollover"
-msgstr "Το Rollover ποντικιού δείχνει:"
+msgstr "Το Rollover του ποντικιού δείχνει:"
 #
 msgid "Rouge or suspicious vessel"
-msgstr ""
+msgstr "«Ροζ» ή ύποπτο πλοίο"
 #
 msgid "Route"
 msgstr "Διαδρομή"
@@ -2444,25 +2439,25 @@ msgid "Route Properties"
 msgstr "Ιδιότητες διαδρομής"
 #
 msgid "Route Uploaded successfully."
-msgstr "Η διαδρομή φορτώθηκε επιτυχώς."
+msgstr "Η διαδρομή φορτώθηκε επιτυχώς"
 #
 msgid "Route from Track"
 msgstr "Διαδρομή από ίχνος πορείας"
 #
 msgid "Route: "
-msgstr "Διαδρομή:"
+msgstr "Διαδρομή: "
 #
 msgid "Route: Alternative route"
-msgstr ""
+msgstr "Διαδρομή: Εναλλακτική διαδρομή"
 #
 msgid "Route: Recommended route"
-msgstr ""
+msgstr "Διαδρομή: συνιστώμενη διαδρομή"
 #
 msgid "Route: Recommended route through ice"
-msgstr ""
+msgstr "Διαδρομή: Συνιστώμενη διαδρομή μέσα από τον πάγο"
 #
 msgid "RouteLegInfoRollover"
-msgstr "Πληροφορίες σκέλους διαδρομης σε Rollover ποντικιού"
+msgstr "Πληροφορίες σκέλους διαδρομης σε Rollover"
 #
 msgid "Routes"
 msgstr "Διαδρομές"
@@ -2477,7 +2472,7 @@ msgid "SART"
 msgstr "SART (πομπός διάσωσης)"
 #
 msgid "SOG COG"
-msgstr "Ταχύτητα, πορεία (SOG COG)"
+msgstr "Πραγματική ταχύτητα και πορεία (SOG, COG)"
 #
 msgid "Safe Water"
 msgstr "Ασφαλή νερά"
@@ -2507,31 +2502,31 @@ msgid "Scale %4.0f (%1.2fx)"
 msgstr "Κλίμακα %4.0f (%1.2fx)"
 #
 msgid "Scale In"
-msgstr "Κλίμακα In"
+msgstr "Μεγέθυνση"
 #
 msgid "Scale Out"
-msgstr "Κλίμακα Out"
+msgstr "Σμίκρυνση"
 #
 msgid "Scan Charts and Update Database"
-msgstr "Σκάναρε τους χάρτες και ανανέωσε τη βάση δεδομένων "
+msgstr "Σκάναρε τους χάρτες και ανανέωσε τη βάση δεδομένων"
 #
 msgid "Search and Rescue Vessel"
-msgstr "Πλοιο διασωσης"
+msgstr "Πλοίο διάσωσης"
 #
 msgid "Seatalk"
 msgstr ""
 #
 msgid "Security Alert - Level 1"
-msgstr ""
+msgstr "Ειδοποίηση ασφαλείας - επίπεδο 1"
 #
 msgid "Security Alert - Level 2"
-msgstr ""
+msgstr "Ειδοποίηση ασφαλείας - επίπεδο 2"
 #
 msgid "Security Alert - Level 3"
-msgstr ""
+msgstr "Ειδοποίηση ασφαλείας - επίπεδο 3"
 #
 msgid "See the log file at "
-msgstr "Δες το log στο"
+msgstr "Δες το log στο "
 #
 msgid "Select Alert Sound"
 msgstr "Διάλεξε ήχο συναγερμού"
@@ -2540,7 +2535,7 @@ msgid "Select All"
 msgstr "Επιλογή όλων"
 #
 msgid "Select Sound File"
-msgstr "Επιλογή αρχεοίυ ήχου"
+msgstr "Επιλογή αρχείου ήχου"
 #
 msgid "Select Tide/Current Data"
 msgstr "Επιλογή δεδομένων παλίρροιας/ρευμάτων"
@@ -2563,7 +2558,7 @@ msgstr "Στείλε στο GPS..."
 #
 #, fuzzy
 msgid "Send to GPS ( "
-msgstr "Στείλε στο GPS..."
+msgstr "Στείλε στο GPS"
 #
 msgid "Sentence Filter"
 msgstr "Φίλτρο δεδομένων"
@@ -2598,15 +2593,14 @@ msgstr "Πλοία"
 msgid "Short dash"
 msgstr "Με κοντές παύλες"
 #
-#, fuzzy
 msgid "Show"
-msgstr "Δείξε το όνομα"
+msgstr "Δείξε "
 #
 msgid "Show AIS Targets"
 msgstr "Εμφάνιση όλων των στόχων AIS"
 #
 msgid "Show AIS targets real size"
-msgstr "Δείξε τους στόχους AIS σε πραγματικό μέγεθος"
+msgstr "Δείχνε τους στόχους AIS σε πραγματικό μέγεθος"
 #
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Διάλογος για συναγερμούς  CPA/TCPA"
@@ -2621,7 +2615,7 @@ msgid "Show Currents"
 msgstr "Εμφάνιση ρευμάτων"
 #
 msgid "Show Depth Units"
-msgstr "Δείξε βυθομετρικές μονάδες"
+msgstr "Δείξε βαθυμετρικές μονάδες"
 #
 msgid "Show ENC Text"
 msgstr "Εμφάνιση κειμένου ENC"
@@ -2633,16 +2627,16 @@ msgid "Show Highway"
 msgstr "Δείξε στυλ αυτοκινητόδρομού"
 #
 msgid "Show Lat/Long as"
-msgstr "Δείξε γεωγ. πλάτος/μήκος ως"
+msgstr "Δείξε γεωγραφικό πλάτος/μήκος ως"
 #
 msgid "Show NMEA Debug Window"
 msgstr "Παράθυρο δεδομένων NMEA"
 #
 msgid "Show Skewed Raster Charts as North-Up"
-msgstr "Δείξε τους παραμορφωμένους raster χάρτες με τον Βορρά Πάνω"
+msgstr "Δείξε τους παραμορφωμένους raster χάρτες ως «Βορράς Πάνω»"
 #
 msgid "Show Status Bar"
-msgstr "Δείξε την μπάρα κατάστασης"
+msgstr "Δείξε μπάρα κατάστασης"
 #
 msgid "Show Target CPA"
 msgstr "Δείξε το CPA του στόχου"
@@ -2663,22 +2657,22 @@ msgid "Show WPT names"
 msgstr "Δείξε τα ονόματα των σημείων πορείας"
 #
 msgid "Show area notices (from AIS binary messages)"
-msgstr "Τοπικές ανακοινώσεις (από μηνύματα AIS)"
+msgstr "Δείχνε τοπικές ανακοινώσεις (από μηνύματα AIS)"
 #
 msgid "Show name"
 msgstr "Δείξε το όνομα"
 #
 msgid "Show on chart"
-msgstr "Δειξε στον χάρτη"
+msgstr "Δείξε στον χάρτη"
 #
 msgid "Show radar rings"
 msgstr "Δείξε δακτύλιους ραντάρ"
 #
 msgid "Show target COG predictor arrow, length (min)"
-msgstr "Βέλος COG στόχου, μήκος (min)"
+msgstr "Βέλος πορείας COG στόχου, μήκος (min)"
 #
 msgid "Show target tracks, length (min)"
-msgstr "Ίχνη πορείας στόχων, μήκος (min)"
+msgstr "Ίχνος πορείας στόχων, μήκος (min)"
 #
 msgid "Shows the font preview."
 msgstr "Δείχνει προεπισκόπιση γραμματοσειράς."
@@ -2697,7 +2691,7 @@ msgstr "Συμπαγής"
 #
 #, c-format
 msgid "Sound file '%s' is in unsupported format."
-msgstr ""
+msgstr "Το αρχείο ήχου '%s' είναι σε μη αναγνωρίσιμο format."
 #
 msgid "Spare"
 msgstr "Ρεζέρβα"
@@ -2742,7 +2736,7 @@ msgid "Style:"
 msgstr "Στυλ:"
 #
 msgid "Supress Alerts for anchored/moored targets"
-msgstr "Όχι συναγερμος για αγκυροβολημένους στόχους"
+msgstr "Όχι συναγερμός για αγκυροβολημένους στόχους"
 #
 msgid "Symbolized"
 msgstr "Με σύμβολα"
@@ -2757,7 +2751,7 @@ msgid "Tankbarge"
 msgstr "Φορτηγίδα δεξαμενή"
 #
 msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
-msgstr "Φορτηγίδα ξηρού φορτίου κόνεως"
+msgstr "Φορτηγίδα ξηρού φορτίου"
 #
 msgid "Tankbarge, gas"
 msgstr "Φορτηγίδα αερίου"
@@ -2805,7 +2799,7 @@ msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
-"Το κουμπί «Ανθρωπος στη Θάλασσα» (MOB) είναι σημαντικό χαρακτηριστικό.\n"
+"Το κουμπί «Άνθρωπος στη Θάλασσα» (MOB) είναι σημαντικό στοιχείο ασφάλειας.\n"
 "Σίγουρα θέλετε να το κρύψετε;"
 #
 msgid "The Open Source Chart Plotter/Navigator"
@@ -2817,8 +2811,8 @@ msgid ""
 "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr ""
-"Τα δεδομένα του ίχνους της πορείας \n"
-"μειωθηκαν κατά %d%%."
+"Τα σημεία του ίχνους της πορείας \n"
+"μειώθηκαν κατά %d%%."
 #
 msgid ""
 "The currently running Track was not merged.\n"
@@ -2843,7 +2837,7 @@ msgid "The font weight."
 msgstr "Το είδος των γραμμάτων."
 #
 msgid "The necessary configuration files were not found. "
-msgstr "Δεν βρέθηκαν τα απαραίτητα αρχεία διαμόρφωσης."
+msgstr "Δεν βρέθηκαν τα απαραίτητα αρχεία για τη διαμόρφωση."
 #
 msgid "The settings for own ship real size are not correct:"
 msgstr "Οι ρυθμίσεις του ιδίου πλοίου δεν είναι σωστές:"
@@ -2901,7 +2895,7 @@ msgid "Tide"
 msgstr "Παλίρροια"
 #
 msgid "TideCurrentGraphRollover"
-msgstr "ΔιάγραμμαΠαλίρροιαςRollover"
+msgstr "ΔιάγρμΠαλίρροιαςRollover"
 #
 msgid "Tides && Currents"
 msgstr "Παλίρροια && ρεύματα"
@@ -2913,13 +2907,13 @@ msgid "Times shown as"
 msgstr "Η ώρα έχει τη μορφή"
 #
 msgid "Timestamp"
-msgstr "Χρ.στιγμή"
+msgstr "Καταγραφή χρονικής στιγμής"
 #
 msgid "To"
 msgstr "Προς"
 #
 msgid "To Waypoint"
-msgstr "Προς σ. πορείας"
+msgstr "Προς το σημείο πορείας"
 #
 msgid "Today"
 msgstr "Σήμερα"
@@ -2940,10 +2934,10 @@ msgid "Total Distance"
 msgstr "Συνολική απόσταση"
 #
 msgid "Total Length: "
-msgstr "Συνολικό μήκος:"
+msgstr "Συνολικό μήκος: "
 #
 msgid "Tow"
-msgstr "Ρυμουλκούμενο"
+msgstr "Ρυμουλκό"
 #
 msgid "Track"
 msgstr "Ίχνος πορείας"
@@ -2961,10 +2955,10 @@ msgid "Tracks"
 msgstr "Ίχνη πορείας "
 #
 msgid "Transmit Sentences"
-msgstr "Μεταδίδει τα δεδομένα"
+msgstr "Μετάδοσε τα δεδομένα"
 #
 msgid "Transmit sentences"
-msgstr "Στείλε τα δεδομένα:"
+msgstr "Στείλε τα δεδομένα"
 #
 msgid "Transverse Mercator"
 msgstr "Αντίστροφη Μερκατορική"
@@ -2988,7 +2982,7 @@ msgid "Tug, one or more tows"
 msgstr "Ρυμουλκό, μία ή περισσότερες ρυμούλκες"
 #
 msgid "Tug, single"
-msgstr "Ρυμουλκό, μονό"
+msgstr "Ρυμουλκό, μoνό"
 #
 msgid "Tug, tanker"
 msgstr "Ρυμουλκό, δεξαμενόπλοιο"
@@ -3011,9 +3005,8 @@ msgstr "UTC"
 msgid "Undefined"
 msgstr "Απροσδιόριστο"
 #
-#, fuzzy
 msgid "Undefined (default)"
-msgstr "Απροσδιόριστο"
+msgstr "Ακαθόριστη (default)"
 #
 msgid "Under way sailing"
 msgstr "Εν πλω με πανιά"
@@ -3045,13 +3038,11 @@ msgstr "Έλεγχος ανανέωσης"
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Χρήση OpenGL"
 #
-#, fuzzy
 msgid "Use Garmin (GRMN) mode for input"
-msgstr "Χρήση τρόπου λειτουργίας Garmin GRMN/GRMN (Host) για μεταφορές"
+msgstr "Χρήση μεθόδου Garmin (GRMN) για εισαγωγή δεδομένων"
 #
-#, fuzzy
 msgid "Use Garmin GRMN (Host) mode for uploads"
-msgstr "Χρήση τρόπου λειτουργίας Garmin GRMN/GRMN (Host) για μεταφορές"
+msgstr "Χρήση μεθόδου Garmin GRMN (Host) για εξαγωγή δεδομένων"
 #
 msgid "Use nearby waypoint?"
 msgstr "Να χρησιμοποιήσω το κοντινό σημείο πορείας;"
@@ -3071,9 +3062,8 @@ msgstr "Αντιστάθμιση Υ άξονα από χρήστη"
 msgid "User Y Offset (Metres)"
 msgstr "Αντιστάθμιση Y άξονα από χρήστη (m)"
 #
-#, fuzzy
 msgid "VTS active target"
-msgstr "Ενεργές βάσεις δεδομένων"
+msgstr "Ενεργός στόχος VTS (Υπηρεσία Εξυπηρέτησης Κυκλοφορίας Πλοίων)"
 #
 msgid "Vector Charts"
 msgstr "Διανυσματικοί χάρτες"
@@ -3094,7 +3084,7 @@ msgid "Vessel Towing, Long"
 msgstr "Πλοίο με μακριά ρυμούλκα"
 #
 msgid "Vessel requesting non-distress assistance"
-msgstr ""
+msgstr "Πλοίο που ζητά βοήθεια (όχι σε κατάσταση κινδύνου)"
 #
 msgid "Vessel, type unknown"
 msgstr "Σκάφος αγνώστου τύπου"
@@ -3102,18 +3092,16 @@ msgstr "Σκάφος αγνώστου τύπου"
 msgid ""
 "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
 "dredge"
-msgstr ""
-"Σκάφος επισκευών, πλωτός γερανός, σκ. τοποθ. καλωδίων, σκ. σημαδούρα, "
-"βυθοκόρος"
+msgstr "Σκάφος, επισκευών, πλωτός γερανός, καλωδιοθέτης, σημαδούρα, βυθοκόρος"
 #
 msgid "Virtual"
 msgstr "Εικονικό"
 #
 msgid "Virtual (Off Position)"
-msgstr "Εικονικό - Off"
+msgstr "Εικονικό (απενεργοποιημένο)"
 #
 msgid "Virtual (On Position)"
-msgstr "Εικονικό - On"
+msgstr "Εικονικό (ενεργοποιημένο)"
 #
 msgid "Visible buttons"
 msgstr "Ορατοί διακόπτες"
@@ -3145,10 +3133,10 @@ msgstr ""
 "Τα σημεία πορείας μπορούν να μετονομαστούν, ώστε να αντικατοπτρίζουν την νέα "
 "σειρά. Η ονομασία θα είναι  '001', '002', κλπ.\n"
 "\n"
-"Θέλετε να τα μετονομάσετε;"
+"Θέλετε να τα μετονομάστε;"
 #
 msgid "Welcome to OpenCPN"
-msgstr "Καλωσήρθατε στο OpenCPN"
+msgstr "Καλώς ήρθατε στο OpenCPN"
 #
 msgid "Whether the font is underlined."
 msgstr "Αν υπάρχει υπογράμμιση."
@@ -3191,12 +3179,13 @@ msgstr "Ναι"
 msgid "Yes, hide it."
 msgstr "Ναι, κρύψτο."
 #
+#, fuzzy
 msgid ""
 "You can't hide the last tool from the toolbar\n"
-"as this would make is inaccessible."
+"as this would make it inaccessible."
 msgstr ""
 "Δεν μπορείς να κρύψεις το τελευταίο εργαλείο από την μπάρα\n"
-"γιατί η μπάρα θα γίνει μη προσβάσιμη"
+"γιατί τότε η μπάρα θα γίνει μη προσβάσιμη"
 #
 msgid "You must enter the address..."
 msgstr "Πρέπει να γράψετε τη διεύθυνση..."
@@ -3242,26 +3231,18 @@ msgstr "wxFB Website"
 #
 #
 #
+#~ msgid "Can't send waypoint. Found no serial data port with output defined."
+#~ msgstr ""
+#~ "Δεν μπορώ να στείλω το σημείο πορείας. Δεν βρέθηκε σειριακή θύρα "
+#~ "προγραμματισμένη για αποδοχή."
 #
 #
 #
-#~ msgid "All but"
-#~ msgstr "Όλα εκτός από"
+# , c-format
+#~ msgid "RenderHPGL: The '%s' instruction is not implemented."
+#~ msgstr "HPGL: Η εντολή '%s' δεν μπορεί να εφαρμοσθεί."
 #
 #
-#
-#
-#
-#~ msgid "Copy"
-#~ msgstr "Αντιγραφή"
-#
-#
-#
-#
-#
-#
-#~ msgid "Just "
-#~ msgstr "Μόνο"
 #
 #
 #~ msgid "Unavailable"

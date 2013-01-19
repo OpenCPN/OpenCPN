@@ -441,13 +441,19 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         int wkb_len = atoi( buf + 2 );
                         pfpx->Read( buf, wkb_len );
 
+                        float easting, northing;
                         npt = 1;
                         float *pfs = (float *) ( buf + 5 );                // point to the point
-
-                        float easting, northing;
+#ifdef ARMHF
+                        float east, north;
+                        memcpy(&east, pfs++, sizeof(float));
+                        memcpy(&north, pfs, sizeof(float));
+                        easting = east;
+                        northing = north;
+#else
                         easting = *pfs++;
                         northing = *pfs;
-
+#endif
                         x = easting;                                    // and save as SM
                         y = northing;
 
@@ -482,6 +488,19 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         float *pfs = (float *) ( buf + 9 );                 // start of data
                         for( int ip = 0; ip < npt; ip++ ) {
                             float easting, northing;
+#ifdef ARMHF
+                            float east, north, deep;
+                            memcpy(&east, pfs++, sizeof(float));
+                            memcpy(&north, pfs++, sizeof(float));
+                            memcpy(&deep, pfs++, sizeof(float));
+
+                            easting = east;
+                            northing = north;
+                            
+                            *pdd++ = east;
+                            *pdd++ = north;
+                            *pdd++ = deep;
+#else                        
                             easting = *pfs++;
                             northing = *pfs++;
                             float depth = *pfs++;
@@ -489,7 +508,7 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                             *pdd++ = easting;
                             *pdd++ = northing;
                             *pdd++ = depth;
-
+#endif
                             //  Convert point from SM to lat/lon for later use in decomposed bboxes
                             double xll, yll;
                             fromSM( easting, northing, point_ref_lat, point_ref_lon, &yll, &xll );
@@ -497,7 +516,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                             *pdl++ = xll;
                             *pdl++ = yll;
                         }
-
                         // Capture bbox limits recorded in SENC record as lon/lat
                         float xmax = *pfs++;
                         float xmin = *pfs++;
@@ -532,7 +550,25 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         geoPt = (pt*) malloc( ( npt ) * sizeof(pt) );
                         pt *ppt = geoPt;
                         float *pf = (float *) ( buft + 9 );
+                        float xmax, xmin, ymax, ymin;
+                        
 
+#ifdef ARMHF
+                        for( int ip = 0; ip < npt; ip++ ) {
+                            float east, north;
+                            memcpy(&east, pf++, sizeof(float));
+                            memcpy(&north, pf++, sizeof(float));
+                            
+                            ppt->x = east;
+                            ppt->y = north;
+                            ppt++;
+                        }
+                        memcpy(&xmax, pf++, sizeof(float));
+                        memcpy(&xmin, pf++, sizeof(float));
+                        memcpy(&ymax, pf++, sizeof(float));
+                        memcpy(&ymin, pf,   sizeof(float));
+                        
+#else                        
                         // Capture SM points
                         for( int ip = 0; ip < npt; ip++ ) {
                             ppt->x = *pf++;
@@ -541,11 +577,11 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                         }
 
                         // Capture bbox limits recorded as lon/lat
-                        float xmax = *pf++;
-                        float xmin = *pf++;
-                        float ymax = *pf++;
-                        float ymin = *pf;
-
+                        xmax = *pf++;
+                        xmin = *pf++;
+                        ymax = *pf++;
+                        ymin = *pf;
+#endif
                         free( buft );
 
                         // set s57obj bbox as lat/lon
@@ -4834,16 +4870,30 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 for( i = 0; i < ip; i++ )                           // convert doubles to floats
                         {                                                 // computing bbox as we go
 
-                    float lon = (float) *psd++;
-                    float lat = (float) *psd++;
+                    float lon, lat;
+                    double easting, northing;
+#ifdef ARMHF
+                    double east_d, north_d;
+                    memcpy(&east_d, psd++, sizeof(double));
+                    memcpy(&north_d, psd++, sizeof(double));
+                    lon = east_d;
+                    lat = north_d;
 
                     //  Calculate SM from chart common reference point
-                    double easting, northing;
+                    toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
+                    memcpy(pdf++, &easting, sizeof(float));
+                    memcpy(pdf++, &northing, sizeof(float));
+                    
+#else                    
+                    lon = (float) *psd++;
+                    lat = (float) *psd++;
+
+                    //  Calculate SM from chart common reference point
                     toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
 
                     *pdf++ = easting;
                     *pdf++ = northing;
-
+#endif
                     lonmax = fmax(lon, lonmax);
                     lonmin = fmin(lon, lonmin);
                     latmax = fmax(lat, latmax);
@@ -4851,12 +4901,23 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
 
                 }
 
+#ifdef ARMHF
+                float tmp;
+                tmp = lonmax;
+                memcpy(pdf++, &tmp, sizeof(float));
+                tmp = lonmin;
+                memcpy(pdf++, &tmp, sizeof(float));
+                tmp = latmax;
+                memcpy(pdf++, &tmp, sizeof(float));
+                tmp = latmin;
+                memcpy(pdf, &tmp, sizeof(float));
+#else                
                 //      Store the Bounding Box as lat/lon
                 *pdf++ = lonmax;
                 *pdf++ = lonmin;
                 *pdf++ = latmax;
                 *pdf = latmin;
-
+#endif
                 fwrite( psb_buffer, 1, sb_len, fpOut );
                 fprintf( fpOut, "\n" );
                 free( psb_buffer );
@@ -4954,7 +5015,6 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
 
             case wkbPoint: {
                 int nq_len = 4;                                     // nQual length
-//                    int nqual = *(int *)(pwkb_buffer + 5);              // fetch nqual
 
                 sb_len = ( ( wkb_len - ( 5 + nq_len ) ) / 2 ) + 5; // data will be 4 byte float, not double
                                                                    // and skipping nQual
@@ -4975,16 +5035,21 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 lon = *psd++;                                      // fetch the point
                 lat = *psd;
 
-//                    if(314 == pFeature->GetFID())
-//                          int yyp = 4;
 
                 //  Calculate SM from chart common reference point
                 double easting, northing;
                 toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
 
+#ifdef ARMHF
+                float east, north;
+                east = easting;
+                north = northing;
+                memcpy(pdf++, &east, sizeof(float));
+                memcpy(pdf,   &north, sizeof(float));
+#else                
                 *pdf++ = easting;
                 *pdf = northing;
-
+#endif
                 //  And write it out
                 fwrite( psb_buffer, 1, sb_len, fpOut );
                 fprintf( fpOut, "\n" );
@@ -5031,24 +5096,23 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                     lat = pt_geom->getY();
                     double depth = pt_geom->getZ();
 
-                    /*
-                     ps += 5;
-                     psd = (double *)ps;
-
-                     lon = *psd++;
-                     lat = *psd++;
-                     double depth = *psd;
-                     */
-
-                    //  Calculate SM from chart common reference point
+                     //  Calculate SM from chart common reference point
                     double easting, northing;
                     toSM( lat, lon, ref_lat, ref_lon, &easting, &northing );
 
+#ifdef ARMHF
+                    float east = easting;
+                    float north = northing;
+                    float deep = depth;
+                    memcpy(pdf++, &east, sizeof(float));
+                    memcpy(pdf++, &north, sizeof(float));
+                    memcpy(pdf++, &deep, sizeof(float));
+                    
+#else                    
                     *pdf++ = easting;
                     *pdf++ = northing;
                     *pdf++ = (float) depth;
-
-//                        ps += 3 * sizeof(double);
+#endif
 
                     //  Keep a running calculation of min/max
                     lonmax = fmax(lon, lonmax);
@@ -5058,11 +5122,22 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 }
 
                 //      Store the Bounding Box as lat/lon
+#ifdef ARMHF
+                float tmp;
+                tmp = lonmax;
+                memcpy(pdf++, &tmp, sizeof(float));
+                tmp = lonmin;
+                memcpy(pdf++, &tmp, sizeof(float));
+                tmp = latmax;
+                memcpy(pdf++, &tmp, sizeof(float));
+                tmp = latmin;
+                memcpy(pdf, &tmp, sizeof(float));
+#else                
                 *pdf++ = lonmax;
                 *pdf++ = lonmin;
                 *pdf++ = latmax;
                 *pdf = latmin;
-
+#endif
                 //  And write it out
                 fwrite( psb_buffer, 1, sb_len, fpOut );
                 free( psb_buffer );

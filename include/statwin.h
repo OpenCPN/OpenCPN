@@ -33,9 +33,9 @@
 //----------------------------------------------------------------------------
 //   constants
 //----------------------------------------------------------------------------
-#define KEY_REGIONS_MAX       100
 
 // Class declarations
+WX_DECLARE_OBJARRAY(wxRegion, RegionArray);
 
 class MyFrame;
 //----------------------------------------------------------------------------
@@ -91,11 +91,7 @@ public:
       void ResetRollover(void);
       void SetRoundedRectangles(bool val){ m_brounded = val; }
 
-
       int         Size_X, Size_Y, Pos_X, Pos_Y;
-
-      wxRegion    KeyRegion[KEY_REGIONS_MAX];
-
 private:
       int         m_nRegions;
       int         m_index_last;
@@ -120,7 +116,8 @@ private:
       ArrayOfInts m_tmerc_index_array;
       ArrayOfInts m_poly_index_array;
 
-
+      RegionArray KeyRegion;
+      
       wxBitmap    *m_pVizIconBmp;
       wxBitmap    *m_pInVizIconBmp;
       wxBitmap    *m_pTmercIconBmp;

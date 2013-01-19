@@ -3436,6 +3436,7 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
     if( !ObjectRenderCheckPos( rzRules, vp ) ) return 0;
 
     if( !ObjectRenderCheckCat( rzRules, vp ) ) {
+#if 0        
         //  This is an "out-of-spec" optimization
         //    Conditional symbology for rocks and wrecks is expensive
         //    because we have to find the DEPARE or DRGARE that it is in,
@@ -3443,11 +3444,12 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
         //    and then potentially move the hazard to DISPLAYBASE category.
         //
         //    Lets only consider and allow this case for large scale chart views....
+        
         if( ( !strncmp( rzRules->LUP->OBCL, "UWTROC", 6 ) )
                 || ( !strncmp( rzRules->LUP->OBCL, "WRECKS", 6 ) ) ) {
             if( vp->chart_scale > 20000. ) return 0;
         }
-
+#endif
         if( !ObjectRenderCheckCS( rzRules, vp ) ) return 0;
     }
 
@@ -5356,9 +5358,14 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
     while( rules != NULL ) {
         switch( rules->ruleType ){
             case RUL_ARE_CO:
+                if( rzRules->obj->bCS_Added  && !ObjectRenderCheckCat( rzRules, vp ) ) 
+                    break; 
                 RenderToGLAC( rzRules, rules, vp );
                 break; // AC
+                
             case RUL_ARE_PA:
+                if( rzRules->obj->bCS_Added  && !ObjectRenderCheckCat( rzRules, vp ) ) 
+                        break; 
                 RenderToGLAP( rzRules, rules, vp );
                 break; // AP
 
@@ -5919,8 +5926,8 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
     if( !strncmp( rzRules->LUP->OBCL, "M_", 2 ) ) if( !m_bShowMeta ) return false;
 
     //      Do Object Type Filtering
-    DisCat obj_cat = rzRules->LUP->DISC;
-
+    DisCat obj_cat = rzRules->obj->m_DisplayCat;
+    
     if( m_nDisplayCategory == MARINERS_STANDARD ) {
         if( -1 == rzRules->obj->iOBJL ) UpdateOBJLArray( rzRules->obj );
 
@@ -6895,7 +6902,7 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, d
         }
 
         // Only get here if non of the other cases did a continue.
-        wxString msg( _("RenderHPGL: The '%s' instruction is not implemented.") );
+        wxString msg( _T("RenderHPGL: The '%s' instruction is not implemented.") );
         msg += wxString( command );
         wxLogWarning( msg );
     }

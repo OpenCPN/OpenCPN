@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-08 17:57-0500\n"
+"POT-Creation-Date: 2013-01-18 21:24-0500\n"
 "PO-Revision-Date: 2012-11-29 18:35-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -1578,6 +1578,11 @@ msgid "Estimated time : "
 msgstr "Beräknad tid :"
 #
 #
+#, fuzzy
+msgid "Export All Visible..."
+msgstr "E&xportera alla..."
+#
+#
 msgid "Export GPX file"
 msgstr "Exportera GPXfil"
 #
@@ -2859,10 +2864,6 @@ msgstr "Tag bort borttappade fartyg efter (min)"
 msgid "Rename Waypoints?"
 msgstr "Ändra namn på waypoints?"
 #
-#, c-format
-msgid "RenderHPGL: The '%s' instruction is not implemented."
-msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
-#
 msgid "Report Age"
 msgstr "Uppdaterad sedan"
 #
@@ -3885,9 +3886,10 @@ msgstr "Ja"
 msgid "Yes, hide it."
 msgstr "Ja, dölj den."
 #
+#, fuzzy
 msgid ""
 "You can't hide the last tool from the toolbar\n"
-"as this would make is inaccessible."
+"as this would make it inaccessible."
 msgstr ""
 "Du kan inte dölja det sista verktyget i verktygslisten, då skulle du inte "
 "komma åt den längre."
@@ -3948,8 +3950,14 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "All but"
 #~ msgstr "Alla utom"
+#
+#
+#
 #
 #
 #
@@ -3963,8 +3971,20 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
+#
+#
 #~ msgid "Just "
 #~ msgstr "Endast"
+#
+#
+#
+#
+#~ msgid "RenderHPGL: The '%s' instruction is not implemented."
+#~ msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
+#
+#
+#
 #
 #
 #

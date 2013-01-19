@@ -336,10 +336,9 @@ typedef enum DS_ENUM_BUFFER_STATE
       DS_RX_BUFFER_FULL
 }_DS_ENUM_BUFFER_STATE;
 
-//#define MAX_RX_MESSSAGE_SIZE  4096
 #define DS_RX_BUFFER_SIZE 4096
 
-
+#define OUT_QUEUE_LENGTH        20
 
 //          Inter-thread communication event declaration
 
@@ -360,8 +359,7 @@ public:
 
     ~OCP_DataStreamInput_Thread(void);
     void *Entry();
-    void SetOutMsg(wxString msg);
-    wxString GetOutMsg(){ return m_outmsg; }
+    bool SetOutMsg(wxString msg);
     void OnExit(void);
 
 private:
@@ -379,7 +377,6 @@ private:
     DataStream              *m_launcher;
     wxString                m_PortName;
     dsPortType              m_io_select;
-    wxString                m_outmsg;
     
     char                    *put_ptr;
     char                    *tak_ptr;
@@ -392,6 +389,11 @@ private:
     int                     m_gps_fd;
     int                     m_baud;
     int                     m_n_timeout;
+    
+    int                     m_takIndex;
+    int                     m_putIndex;
+    wxArrayString           m_outQueue;
+    
 
 #ifdef __WXMSW__
     HANDLE                  m_hSerialComm;

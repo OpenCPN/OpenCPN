@@ -68,6 +68,8 @@ class DashboardInstrumentContainer;
 
 #define DASHBOARD_TOOL_POSITION -1          // Request default positioning of toolbar tool
 
+#define gps_watchdog_timeout_ticks  5
+
 class DashboardWindowContainer
 {
       public:
@@ -171,6 +173,9 @@ private:
       wxDateTime           mUTCDateTime;
       int                  m_config_version;
       wxString             m_VDO_accumulator;
+      int                  mHDx_Watchdog;
+      int                  mHDT_Watchdog;
+      int                  mGPS_Watchdog;
 
 //protected:
 //      DECLARE_EVENT_TABLE();

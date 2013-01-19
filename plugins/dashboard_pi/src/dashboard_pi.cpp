@@ -39,6 +39,12 @@ wxFont *g_pFontData;
 wxFont *g_pFontLabel;
 wxFont *g_pFontSmall;
 
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+#endif
+
+
 // the class factories, used to create and destroy instances of the PlugIn
 
 extern "C" DECL_EXP opencpn_plugin* create_pi( void *ppimgr )
@@ -283,6 +289,9 @@ int dashboard_pi::Init( void )
     mPriTWA = 99; // True wind
     mPriDepth = 99;
     m_config_version = -1;
+    mHDx_Watchdog = 2;
+    mHDT_Watchdog = 2;
+    mGPS_Watchdog = 2;
 
     g_pFontTitle = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
     g_pFontData = new wxFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
@@ -351,6 +360,29 @@ void dashboard_pi::Notify()
     for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
         DashboardWindow *dashboard_window = m_ArrayOfDashboardWindow.Item( i )->m_pDashboardWindow;
         if( dashboard_window ) dashboard_window->Refresh();
+    }
+    //  Manage the watchdogs
+    mHDx_Watchdog--;
+    if( mHDx_Watchdog <= 0 ) {
+        mHdm = NAN;
+        SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("Deg") );
+    }
+
+    mHDT_Watchdog--;
+    if( mHDT_Watchdog <= 0 ) {
+        SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, NAN, _T("DegT") );
+    }
+
+    mGPS_Watchdog--;
+    if( mGPS_Watchdog <= 0 ) {
+        SAT_INFO sats[4];
+        for(int i=0 ; i < 4 ; i++) {
+            sats[i].SatNumber = 0;
+            sats[i].SignalToNoiseRatio = 0;
+        }
+        SendSatInfoToAllInstruments( 0, 1, sats );
+        SendSatInfoToAllInstruments( 0, 2, sats );
+        SendSatInfoToAllInstruments( 0, 3, sats );
     }
 }
 
@@ -534,6 +566,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_SAT, m_NMEA0183.Gsv.SatsInView, _T("") );
                 SendSatInfoToAllInstruments( m_NMEA0183.Gsv.SatsInView,
                         m_NMEA0183.Gsv.MessageNumber, m_NMEA0183.Gsv.SatInfo );
+
+                mGPS_Watchdog = gps_watchdog_timeout_ticks;
             }
         }
 
@@ -553,6 +587,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("Deg") );
                     //SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, mHdm + mVar, _T("Deg"));
                 }
+                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
+                       mHDx_Watchdog = gps_watchdog_timeout_ticks;
+
             }
         }
 
@@ -564,6 +601,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     SendSentenceToAllInstruments( OCPN_DBP_STC_HDM, mHdm, _T("DegM") );
                     //SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, mHdm + mVar, _T("Deg"));
                 }
+                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
+                    mHDx_Watchdog = gps_watchdog_timeout_ticks;
+
             }
         }
 
@@ -576,6 +616,9 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                                 _T("DegT") );
                     }
                 }
+                if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
+                    mHDT_Watchdog = gps_watchdog_timeout_ticks;
+
             }
         } else if( m_NMEA0183.LastSentenceIDReceived == _T("MTA") ) {  //Air temperature
             if( m_NMEA0183.Parse() ) {
@@ -733,6 +776,12 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     SendSentenceToAllInstruments( OCPN_DBP_STC_STW, m_NMEA0183.Vhw.Knots,
                             _T("Kts") );
                 }
+
+                if( !wxIsNaN(m_NMEA0183.Vhw.DegreesMagnetic) )
+                    mHDx_Watchdog = gps_watchdog_timeout_ticks;
+                if( !wxIsNaN(m_NMEA0183.Vhw.DegreesTrue) )
+                    mHDT_Watchdog = gps_watchdog_timeout_ticks;
+
             }
         }
 
@@ -837,17 +886,12 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             if( !wxIsNaN(gpd.Lon) )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM") );
 
-            if( !wxIsNaN(gpd.Sog) )
-                SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, gpd.Sog, _T("Kts") );
+            SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, gpd.Sog, _T("Kts") );
+            SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("Deg") );
+            SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("DegT") );
+            if( !wxIsNaN(gpd.Hdt) )
+                mHDT_Watchdog = gps_watchdog_timeout_ticks;
 
-            if( !wxIsNaN(gpd.Cog) )
-                SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("Deg") );
-
-            if( !wxIsNaN(gpd.Hdt) ) {
-                if( gpd.Hdt < 999. ) {
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("DegT") );
-                }
-            }
         }
     }
 }
@@ -1506,7 +1550,9 @@ void DashboardPreferencesDialog::OnDashboardAdd( wxCommandEvent& event )
     // Data is index in m_Config
     m_pListCtrlDashboards->SetItemData( idx, m_Config.GetCount() );
     wxArrayInt ar;
-    m_Config.Add( new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar ) );
+    DashboardWindowContainer *dwc = new DashboardWindowContainer( NULL, GetUUID(), _("Dashboard"), _T("V"), ar );
+    dwc->m_bIsVisible = true;
+    m_Config.Add( dwc );
 }
 
 void DashboardPreferencesDialog::OnDashboardDelete( wxCommandEvent& event )

@@ -3146,7 +3146,7 @@ int MyConfig::LoadMyConfig( int iteration )
     if( g_navobjbackups < 0 ) g_navobjbackups = 0;
 
     g_NMEALogWindow_sx = Read( _T ( "NMEALogWindowSizeX" ), 400L );
-    g_NMEALogWindow_sy = Read( _T ( "NMEALogWindowSizeY" ), 100L );
+    g_NMEALogWindow_sy = Read( _T ( "NMEALogWindowSizeY" ), 400L );
     g_NMEALogWindow_x = Read( _T ( "NMEALogWindowPosX" ), 10L );
     g_NMEALogWindow_y = Read( _T ( "NMEALogWindowPosY" ), 10L );
     
@@ -4843,7 +4843,7 @@ bool MyConfig::ExportGPXWaypoint( wxWindow* parent, RoutePoint *pRoutePoint )
         return false;
 }
 
-void MyConfig::ExportGPX( wxWindow* parent )
+void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
 {
     //FIXME: get rid of the Dialogs and unite with the other
     wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
@@ -4872,23 +4872,38 @@ void MyConfig::ExportGPX( wxWindow* parent )
         while( node ) {
             pr = node->GetData();
 
-//                  if ( pr->m_bKeepXRoute || !WptIsInRouteList ( pr ) )
-            if( ( pr->m_bKeepXRoute || !WptIsInRouteList( pr ) ) && !( pr->m_bIsInLayer ) ) {
+            bool b_add = pr->m_bKeepXRoute || !WptIsInRouteList( pr );
+            
+            if( bviz_only && !pr->m_bIsVisible )
+                b_add = false;
+            
+            if( pr->m_bIsInLayer && !blayer )
+                    b_add = false;
+
+            if( b_add ) 
                 gpxroot->AddWaypoint( CreateGPXWpt( pr, GPX_WPT_WAYPOINT ) );
-            }
+
             node = node->GetNext();
         }
         //RTEs and TRKs
         wxRouteListNode *node1 = pRouteList->GetFirst();
         while( node1 ) {
             Route *pRoute = node1->GetData();
-            if( !( pRoute->m_bIsInLayer ) ) {
-                if( !pRoute->m_bIsTrack ) {
+            
+            bool b_add = true;
+            
+            if( bviz_only && !pRoute->IsVisible() )
+                b_add = false;
+            
+            if(  pRoute->m_bIsInLayer && !blayer ) 
+                b_add = false;
+                
+            if( b_add ) {
+                if( !pRoute->m_bIsTrack ) 
                     gpxroot->AddRoute( CreateGPXRte( pRoute ) );
-                } else {
+                else
                     gpxroot->AddTrack( CreateGPXTrk( pRoute ) );
                 }
-            }
             node1 = node1->GetNext();
         }
 
@@ -8085,6 +8100,7 @@ void TTYScroll::Add( wxString &line )
         }
 
     m_plineArray->Add( line );
+    Refresh( true );
     }
 }
 

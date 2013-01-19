@@ -657,6 +657,11 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
             }
 */
     }
+    // This is an enhancement to the original PLIB spec
+    //  It forces all obstructions (rocks/wrecks) to be in category "Standard", at least
+    else{
+        rzRules->obj->m_DisplayCat = STANDARD;
+    }
 
 
     wxString *ret_str = new wxString(udwhaz03str);

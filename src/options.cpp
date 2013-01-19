@@ -2055,6 +2055,8 @@ void options::OnShowGpsWindowCheckboxClick( wxCommandEvent& event )
         g_NMEALogWindow->SetSize( g_NMEALogWindow_x, g_NMEALogWindow_y, g_NMEALogWindow_sx,
                 g_NMEALogWindow_sy );
         g_NMEALogWindow->Show();
+        
+        Raise();
     }
 }
 

@@ -94,7 +94,7 @@ void Multiplexer::StopAndRemoveStream( DataStream *stream )
     }
 }
 
-void Multiplexer::LogOutputMessage( wxString &msg, wxString stream_name, bool b_filter )
+void Multiplexer::LogOutputMessageColor( wxString &msg, wxString stream_name, wxString color )
 {
     if( g_NMEALogWindow) {
         wxDateTime now = wxDateTime::Now();
@@ -104,14 +104,22 @@ void Multiplexer::LogOutputMessage( wxString &msg, wxString stream_name, bool b_
         ss.Append( stream_name );
         ss.Append( _T(") ") );
         ss.Append( msg );
-        if(b_filter)
-            ss.Prepend( _T("<AMBER>") );
-        else
-            ss.Prepend( _T("<BLUE>") );
+        ss.Prepend( color );
         
         g_NMEALogWindow->Add( ss );
-        g_NMEALogWindow->Refresh( false );
+//        g_NMEALogWindow->Refresh( false );
     }
+}
+
+
+
+void Multiplexer::LogOutputMessage( wxString &msg, wxString stream_name, bool b_filter )
+{
+    if(b_filter)
+        LogOutputMessageColor( msg, stream_name, _T("<AMBER>") );
+    else
+        LogOutputMessageColor( msg, stream_name, _T("<BLUE>") );
+    
 }
 
 void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_filter )
@@ -129,7 +137,7 @@ void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_f
             ss.Prepend( _T("<GREEN>") );
         
         g_NMEALogWindow->Add( ss );
-        g_NMEALogWindow->Refresh( false );
+//        g_NMEALogWindow->Refresh( false );
     }
 }
 
@@ -142,13 +150,21 @@ void Multiplexer::SendNMEAMessage( wxString &msg )
         DataStream* s = m_pdatastreams->Item(i);
         if ( s->IsOk() && (s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT) ) {
             bool bout_filter = true;
-            
+
+            bool bxmit_ok = true;
             if(s->SentencePassesFilter( msg, FILTER_OUTPUT ) ) {
-                s->SendSentence(msg);
+                bxmit_ok = s->SendSentence(msg);
                 bout_filter = false;
             }    
             //Send to the Debug Window, if open
-            LogOutputMessage( msg, s->GetPort(), bout_filter );
+            if( !bout_filter ) {
+                if( bxmit_ok )
+                    LogOutputMessageColor( msg, s->GetPort(), _T("<BLUE>") );
+                else
+                    LogOutputMessageColor( msg, s->GetPort(), _T("<RED>") );
+            }
+            else
+                LogOutputMessageColor( msg, s->GetPort(), _T("<AMBER>") );
         }
         
     }
@@ -194,12 +210,6 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                 if( m_gpsconsumer )
                     m_gpsconsumer->AddPendingEvent(event);
             }
-
-            //  Handle AIVDO messages from transponder....
-            if( message.Mid(3,3).IsSameAs(_T("VDO")) ) {
-                if( m_gpsconsumer )
-                    m_gpsconsumer->AddPendingEvent(event);
-            }
         }
 
             //Send to the Debug Window, if open
@@ -218,12 +228,22 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                     if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
                         bool bout_filter = true;
                        
+                        bool bxmit_ok = true;
                         if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
-                            s->SendSentence(message);
+                            bxmit_ok = s->SendSentence(message);
                             bout_filter = false;
-                        }    
-                            //Send to the Debug Window, if open
-                        LogOutputMessage( message, port, bout_filter );
+                        }
+
+                        //Send to the Debug Window, if open
+                        if( !bout_filter ) {
+                            if( bxmit_ok )
+                                LogOutputMessageColor( message, s->GetPort(), _T("<BLUE>") );
+                            else
+                                LogOutputMessageColor( message, s->GetPort(), _T("<RED>") );
+                        }
+                        else
+                            LogOutputMessageColor( message, s->GetPort(), _T("<AMBER>") );
+                        
                     }
                 }
             }
