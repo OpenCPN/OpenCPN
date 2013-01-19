@@ -186,11 +186,23 @@ wxSize DashboardInstrument_Single::GetSize( int orient, wxSize hint )
 void DashboardInstrument_Single::Draw(wxGCDC* dc)
 {
       wxColour cl;
-      dc->SetFont(*g_pFontData);
-      GetGlobalColor(_T("DASHF"), &cl);
-      dc->SetTextForeground(cl);
+      wxBitmap tbm( dc->GetSize().x, m_DataHeight, -1 );
+      wxMemoryDC tdc( tbm );
+      wxColour c2;
+      GetGlobalColor( _T("DASHB"), &c2 );
+      tdc.SetBackground( c2 );
+      tdc.Clear();
 
-      dc->DrawText(m_data, 10, m_TitleHeight);
+      tdc.SetFont(*g_pFontData );
+      GetGlobalColor( _T("DASHF"), &cl );
+      tdc.SetTextForeground( cl );
+
+      tdc.DrawText(m_data, 10, 0);
+
+      tdc.SelectObject( wxNullBitmap );
+
+      dc->DrawBitmap(tbm, 0, m_TitleHeight, false);
+
 }
 
 void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
@@ -259,12 +271,25 @@ wxSize DashboardInstrument_Position::GetSize( int orient, wxSize hint )
 void DashboardInstrument_Position::Draw(wxGCDC* dc)
 {
       wxColour cl;
-      dc->SetFont(*g_pFontData);
-      GetGlobalColor(_T("DASHF"), &cl);
-      dc->SetTextForeground(cl);
 
-      dc->DrawText(m_data1, 10, m_TitleHeight);
-      dc->DrawText(m_data2, 10, m_TitleHeight+m_DataHeight);
+      wxBitmap tbm( dc->GetSize().x, m_DataHeight * 2, -1 );
+      wxMemoryDC tdc( tbm );
+      wxColour c2;
+      GetGlobalColor( _T("DASHB"), &c2 );
+      tdc.SetBackground( c2 );
+      tdc.Clear();
+
+      tdc.SetFont(*g_pFontData );
+      GetGlobalColor( _T("DASHF"), &cl );
+      tdc.SetTextForeground( cl );
+
+      tdc.DrawText(m_data1, 10, 0);
+      tdc.DrawText(m_data2, 10, m_DataHeight);
+
+      tdc.SelectObject( wxNullBitmap );
+
+      dc->DrawBitmap(tbm, 0, m_TitleHeight, false);
+
 }
 
 void DashboardInstrument_Position::SetData(int st, double data, wxString unit)

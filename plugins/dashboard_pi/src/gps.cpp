@@ -102,29 +102,59 @@ void DashboardInstrument_GPS::Draw(wxGCDC* dc)
 void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 {
       wxSize size = GetClientSize();
-      wxColour cl;
+      wxColour cb;
 
-      GetGlobalColor(_T("DASHB"), &cl);
-      dc->SetTextBackground(cl);
+      GetGlobalColor(_T("DASHB"), &cb);
+      dc->SetTextBackground(cb);
       dc->SetBackgroundMode(wxSOLID);
+
+      wxColour cl;
       GetGlobalColor(_T("DASHL"), &cl);
       dc->SetTextForeground(cl);
       dc->SetBrush(*wxTRANSPARENT_BRUSH);
 
       wxPen pen;
       pen.SetStyle(wxSOLID);
-      GetGlobalColor(_T("DASHF"), &cl);
-      pen.SetColour(cl);
+      wxColour cf;
+      GetGlobalColor(_T("DASHF"), &cf);
+      pen.SetColour(cf);
       pen.SetWidth(2);
       dc->SetPen(pen);
 
       dc->DrawCircle(m_cx, m_cy, m_radius);
 
       dc->SetFont(*g_pFontSmall);
-      dc->DrawText(_("N"), m_cx-3, m_cy-m_radius-6);
-      dc->DrawText(_("E"), m_cx+m_radius-4, m_cy-5);
-      dc->DrawText(_("S"), m_cx-3, m_cy+m_radius-6);
-      dc->DrawText(_("W"), m_cx-m_radius-4, m_cy-5);
+
+      wxScreenDC sdc;
+      int height, width;
+      sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, g_pFontSmall);
+
+      wxBitmap tbm( width, height, -1 );
+      wxMemoryDC tdc( tbm );
+      tdc.SetBackground( cb );
+      tdc.SetTextForeground( cl );
+      tdc.SetTextBackground(cb);
+      tdc.SetBackgroundMode(wxSOLID);
+      tdc.SetFont(*g_pFontSmall );
+
+        tdc.Clear();
+        tdc.DrawText(_("N"), 0,0);
+        dc->Blit(m_cx-3, m_cy-m_radius-6, width, height, &tdc, 0, 0);
+
+        tdc.Clear();
+        tdc.DrawText(_("E"), 0,0);
+        dc->Blit(m_cx+m_radius-4, m_cy-5, width, height, &tdc, 0, 0);
+
+        tdc.Clear();
+        tdc.DrawText(_("S"), 0,0);
+        dc->Blit(m_cx-3, m_cy+m_radius-6, width, height, &tdc, 0, 0);
+
+        tdc.Clear();
+        tdc.DrawText(_("W"), 0,0);
+        dc->Blit(m_cx-m_radius-4, m_cy-5, width, height, &tdc, 0, 0);
+
+      tdc.SelectObject( wxNullBitmap );
+
 
       dc->SetBackgroundMode(wxTRANSPARENT);
 
@@ -140,7 +170,7 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 #ifndef __WXGTK__
       pen.SetStyle(wxSHORT_DASH);
       dc->SetPen(pen);
-#endif      
+#endif
       dc->DrawLine(3, 110, size.x-3, 110);
       dc->DrawLine(3, 120, size.x-3, 120);
       dc->DrawLine(3, 130, size.x-3, 130);
@@ -148,14 +178,33 @@ void DashboardInstrument_GPS::DrawFrame(wxGCDC* dc)
 
 void DashboardInstrument_GPS::DrawBackground(wxGCDC* dc)
 {
-      dc->SetFont(*g_pFontSmall);
       // Draw SatID
+
+      wxScreenDC sdc;
+      int height, width;
+      sdc.GetTextExtent(_T("W"), &width, &height, NULL, NULL, g_pFontSmall);
+
+      wxColour cl;
+      wxBitmap tbm( dc->GetSize().x, height, -1 );
+      wxMemoryDC tdc( tbm );
+      wxColour c2;
+      GetGlobalColor( _T("DASHB"), &c2 );
+      tdc.SetBackground( c2 );
+      tdc.Clear();
+
+      tdc.SetFont(*g_pFontSmall );
+      GetGlobalColor( _T("DASHF"), &cl );
+      tdc.SetTextForeground( cl );
+
       for (int idx = 0; idx < 12; idx++)
       {
-            //if (m_SatInfo[idx].SignalToNoiseRatio)
             if (m_SatInfo[idx].SatNumber)
-                  dc->DrawText(wxString::Format(_T("%02d"), m_SatInfo[idx].SatNumber), idx*16+5, 142);
+                  tdc.DrawText(wxString::Format(_T("%02d"), m_SatInfo[idx].SatNumber), idx*16+5, 0);
       }
+
+      tdc.SelectObject( wxNullBitmap );
+      dc->DrawBitmap(tbm, 0, 142, false);
+
 }
 
 void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
@@ -167,25 +216,49 @@ void DashboardInstrument_GPS::DrawForeground( wxGCDC* dc )
     dc->SetPen( *wxTRANSPARENT_PEN);
     dc->SetTextBackground( cl );
 
-    GetGlobalColor( _T("DASHF"), &cl );
-    dc->SetTextForeground( cl );
+    wxColor cf;
+    GetGlobalColor( _T("DASHF"), &cf );
+    dc->SetTextForeground( cf );
     dc->SetBackgroundMode( wxSOLID );
 
-    wxString label;
-    wxFont font = dc->GetFont();
+    wxColour cb;
+    GetGlobalColor( _T("DASHB"), &cb );
+
     for( int idx = 0; idx < 12; idx++ ) {
         if( m_SatInfo[idx].SignalToNoiseRatio ) {
             int h = m_SatInfo[idx].SignalToNoiseRatio * 0.4;
             dc->DrawRectangle( idx * 16 + 5, 140 - h, 13, h );
+        }
+    }
+
+    wxString label;
+    for( int idx = 0; idx < 12; idx++ ) {
+        if( m_SatInfo[idx].SignalToNoiseRatio ) {
             label.Printf( _T("%02d"), m_SatInfo[idx].SatNumber );
             int width, height;
-            dc->GetTextExtent( label, &width, &height, 0, 0, &font );
+            wxScreenDC sdc;
+            sdc.GetTextExtent( label, &width, &height, 0, 0, g_pFontSmall );
+
+            wxBitmap tbm( width, height, -1 );
+            wxMemoryDC tdc( tbm );
+            tdc.SetBackground( cb );
+            tdc.Clear();
+
+            tdc.SetFont(*g_pFontSmall );
+            tdc.SetTextForeground( cf );
+            tdc.SetBackgroundMode( wxSOLID );
+            tdc.SetTextBackground( cl );
+
+            tdc.DrawText( label, 0, 0 );
+            tdc.SelectObject( wxNullBitmap );
+
             int posx = m_cx + m_radius * cos( deg2rad( m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET ) )
                             * sin( deg2rad( ANGLE_OFFSET - m_SatInfo[idx].ElevationDegrees ) ) - width / 2;
             int posy = m_cy + m_radius * sin( deg2rad( m_SatInfo[idx].AzimuthDegreesTrue - ANGLE_OFFSET ) )
                             * sin( deg2rad( ANGLE_OFFSET - m_SatInfo[idx].ElevationDegrees ) ) - height / 2;
-            dc->DrawText( label, posx, posy );
+             dc->DrawBitmap( tbm, posx, posy, false );
         }
     }
+
 }
 
