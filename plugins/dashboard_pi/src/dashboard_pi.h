@@ -175,6 +175,7 @@ private:
       wxString             m_VDO_accumulator;
       int                  mHDx_Watchdog;
       int                  mHDT_Watchdog;
+      int                  mGPS_Watchdog;
 
 //protected:
 //      DECLARE_EVENT_TABLE();

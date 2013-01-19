@@ -291,7 +291,7 @@ int dashboard_pi::Init( void )
     m_config_version = -1;
     mHDx_Watchdog = 2;
     mHDT_Watchdog = 2;
-
+    mGPS_Watchdog = 2;
 
     g_pFontTitle = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
     g_pFontData = new wxFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
@@ -373,6 +373,17 @@ void dashboard_pi::Notify()
         SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, NAN, _T("DegT") );
     }
 
+    mGPS_Watchdog--;
+    if( mGPS_Watchdog <= 0 ) {
+        SAT_INFO sats[4];
+        for(int i=0 ; i < 4 ; i++) {
+            sats[i].SatNumber = 0;
+            sats[i].SignalToNoiseRatio = 0;
+        }
+        SendSatInfoToAllInstruments( 0, 1, sats );
+        SendSatInfoToAllInstruments( 0, 2, sats );
+        SendSatInfoToAllInstruments( 0, 3, sats );
+    }
 }
 
 int dashboard_pi::GetAPIVersionMajor()
@@ -555,6 +566,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_SAT, m_NMEA0183.Gsv.SatsInView, _T("") );
                 SendSatInfoToAllInstruments( m_NMEA0183.Gsv.SatsInView,
                         m_NMEA0183.Gsv.MessageNumber, m_NMEA0183.Gsv.SatInfo );
+
+                mGPS_Watchdog = gps_watchdog_timeout_ticks;
             }
         }
 
