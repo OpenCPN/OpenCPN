@@ -2396,10 +2396,11 @@ void Track::OnTimerTrack( wxTimerEvent& event )
         m_track_run = 0;
     }
 
-    if( b_addpoint ) AddPointNow();
-    else
-        if( ( GetnPoints() < 2 ) && !g_bTrackDaily ) //continuously update track beginning point timestamp if no movement.
-                {
+    if( b_addpoint )
+        AddPointNow();
+    else   //continuously update track beginning point timestamp if no movement.
+        if( ( trackPointState == firstPoint ) && !g_bTrackDaily )
+        {
             wxDateTime now = wxDateTime::Now();
             pRoutePointList->GetFirst()->GetData()->m_CreateTime = now.ToUTC();
         }
