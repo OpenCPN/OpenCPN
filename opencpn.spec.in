@@ -135,7 +135,6 @@ desktop-file-install \
 %{_datadir}/%{name}/sounds/8bells.wav
 %doc %{_datadir}/%{name}/sounds/README.bells
 %doc %{_datadir}/%{name}/doc
-%dir %{_datadir}/doc
 %dir %{_datadir}/doc/%{name}
 %{_datadir}/doc/%{name}/changelog.Debian.gz
 %doc %{_datadir}/doc/%{name}/copyright
