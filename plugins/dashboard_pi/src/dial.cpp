@@ -110,12 +110,12 @@ void DashboardInstrument_Dial::Draw(wxGCDC* bdc)
     bdc->SetBackground(b1);
     bdc->Clear();
 
-    DrawData(bdc, m_ExtraValue, m_ExtraValueUnit, m_ExtraValueFormat, m_ExtraValueOption);
     DrawFrame(bdc);
     DrawMarkers(bdc);
     DrawLabels(bdc);
     DrawBackground(bdc);
     DrawData(bdc, m_MainValue, m_MainValueUnit, m_MainValueFormat, m_MainValueOption);
+    DrawData(bdc, m_ExtraValue, m_ExtraValueUnit, m_ExtraValueFormat, m_ExtraValueOption);
     DrawForeground(bdc);
 }
 
