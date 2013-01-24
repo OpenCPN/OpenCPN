@@ -1157,8 +1157,6 @@ bool dashboard_pi::LoadConfig( void )
                 pConf->Read( _T("Caption"), &caption, _("Dashboard") );
                 wxString orient;
                 pConf->Read( _T("Orientation"), &orient, _T("V") );
-                int b_viz;
-                pConf->Read( _T("Visible"), &b_viz, 1 );
                 int i_cnt;
                 pConf->Read( _T("InstrumentCount"), &i_cnt, -1 );
 
@@ -1169,10 +1167,9 @@ bool dashboard_pi::LoadConfig( void )
                     if( id != -1 ) ar.Add( id );
                 }
 // TODO: Do not add if GetCount == 0
-                DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, name, caption, orient, ar );
-                cont->m_bIsVisible = (b_viz == 1);
+                m_ArrayOfDashboardWindow.Add(
+                        new DashboardWindowContainer( NULL, name, caption, orient, ar ) );
 
-                m_ArrayOfDashboardWindow.Add( cont );
             }
         }
 
@@ -1200,7 +1197,6 @@ bool dashboard_pi::SaveConfig( void )
             pConf->Write( _T("Name"), cont->m_sName );
             pConf->Write( _T("Caption"), cont->m_sCaption );
             pConf->Write( _T("Orientation"), cont->m_sOrientation );
-            pConf->Write( _T("Visible"), cont->m_bIsVisible );
 
             pConf->Write( _T("InstrumentCount"), (int) cont->m_aInstrumentList.GetCount() );
             for( size_t j = 0; j < cont->m_aInstrumentList.GetCount(); j++ )
