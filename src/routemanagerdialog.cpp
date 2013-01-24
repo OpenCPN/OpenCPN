@@ -401,11 +401,11 @@ void RouteManagerDialog::OnTabSwitch( wxNotebookEvent &event )
     int current_page = m_pNotebook->GetSelection();
     if( current_page == 3 ) {
         if( btnImport ) btnImport->Enable( false );
-        if( btnExport ) btnExport->Enable( false );
+//        if( btnExport ) btnExport->Enable( false );
         if( btnExportViz ) btnExportViz->Enable( false );
     } else {
         if( btnImport ) btnImport->Enable( true );
-        if( btnExport ) btnExport->Enable( true );
+//        if( btnExport ) btnExport->Enable( true );
         if( btnExportViz ) btnExportViz->Enable( true );
         
     }
@@ -689,10 +689,12 @@ void RouteManagerDialog::Create()
     itemBoxSizer6->Add( btnImport, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnImport->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnImportClick), NULL, this );
+/*    
     btnExport = new wxButton( this, -1, _("E&xport All...") );
     itemBoxSizer6->Add( btnExport, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnExport->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnExportClick), NULL, this );
+*/            
     btnExportViz = new wxButton( this, -1, _("Export All Visible...") );
     itemBoxSizer6->Add( btnExportViz, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnExportViz->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
