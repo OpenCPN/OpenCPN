@@ -68,7 +68,7 @@ class DashboardInstrumentContainer;
 
 #define DASHBOARD_TOOL_POSITION -1          // Request default positioning of toolbar tool
 
-#define gps_watchdog_timeout_ticks  5
+#define gps_watchdog_timeout_ticks  10
 
 class DashboardWindowContainer
 {
