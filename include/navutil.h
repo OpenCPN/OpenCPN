@@ -515,6 +515,8 @@ class Select {
 public:
     Select();
     ~Select();
+    
+    void SetSelectPixelRadius(int radius){ pixelRadius = radius; }
 
     bool AddSelectableRoutePoint( float slat, float slon, RoutePoint *pRoutePointAdd );
     bool AddSelectableRouteSegment( float slat1, float slon1, float slat2, float slon2,

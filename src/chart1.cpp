@@ -1091,6 +1091,8 @@ bool MyApp::OnInit()
 
 //      Init the Selectable Tide/Current Items List
     pSelectTC = new Select();
+    //  Increase the select radius for tide/current stations
+    pSelectTC->SetSelectPixelRadius(25);
 
 //      Init the Selectable AIS Target List
     pSelectAIS = new Select();
