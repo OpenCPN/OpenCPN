@@ -7874,6 +7874,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             pFindRP = pSelect->FindSelection( slat, slon, SELTYPE_ROUTEPOINT );
             pFindRouteSeg = pSelect->FindSelection( slat, slon, SELTYPE_ROUTESEGMENT );
             pFindTrackSeg = pSelect->FindSelection( slat, slon, SELTYPE_TRACKSEGMENT );
+            
             if( m_bShowCurrent ) pFindCurrent = pSelectTC->FindSelection( slat, slon,
                                                     SELTYPE_CURRENTPOINT );
 
@@ -8436,11 +8437,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             menuRoute->Append( ID_RT_MENU_REVERSE, _( "Reverse..." ) );
             wxString port = FindValidUploadPort();
             m_active_upload_port = port;
+            wxString item = _( "Send to GPS" );
             if( !port.IsEmpty() ) {
-                port.Prepend(_( "Send to GPS ( " ));
-                port .Append(_T(" )"));
-                menuRoute->Append( ID_RT_MENU_SENDTOGPS, port );
+                item.Append( _T(" ( ") );
+                item.Append( port );
+                item.Append(_T(" )") );
             }
+            menuRoute->Append( ID_RT_MENU_SENDTOGPS, item );
             
         }
         //      Set this menu as the "focused context menu"
@@ -8504,11 +8507,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
             wxString port = FindValidUploadPort();
             m_active_upload_port = port;
+            wxString item = _( "Send to GPS" );
             if( !port.IsEmpty() ) {
-                port.Prepend(_( "Send to GPS ( " ));
-                port .Append(_T(" )"));
-                menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, port );
+                item.Append( _T(" ( ") );
+                item.Append( port );
+                item.Append(_T(" )") );
             }
+            menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, item );
         }
         //      Set this menu as the "focused context menu"
         menuFocus = menuWaypoint;
@@ -8537,11 +8542,14 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
             wxString port = FindValidUploadPort();
             m_active_upload_port = port;
+            wxString item = _( "Send to GPS" );
             if( !port.IsEmpty() ) {
-                port.Prepend(_( "Send to GPS ( " ));
-                port .Append(_T(" )"));
-                menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, port );
+                item.Append( _T(" ( ") );
+                item.Append( port );
+                item.Append(_T(" )") );
             }
+            menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, item );
+            
 
             if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 ) || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
                 menuWaypoint->Append( ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
@@ -9449,6 +9457,13 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         if( m_pFoundRoutePoint ) {
              if( m_active_upload_port.Length() )
                  m_pFoundRoutePoint->SendToGPS( m_active_upload_port, NULL );
+             else {
+                 SendToGpsDlg dlg;
+                 dlg.SetWaypoint( m_pFoundRoutePoint );
+                 
+                 dlg.Create( NULL, -1, _( "Send To GPS..." ), _T("") );
+                 dlg.ShowModal();
+             }
         }
         break;
 
@@ -9456,6 +9471,14 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         if( m_pSelectedRoute ) {
             if( m_active_upload_port.Length() )
                 m_pSelectedRoute->SendToGPS( m_active_upload_port, true, NULL );
+            else {
+                SendToGpsDlg dlg;
+                dlg.SetRoute( m_pSelectedRoute );
+                
+                dlg.Create( NULL, -1, _( "Send To GPS..." ), _T("") );
+                dlg.ShowModal();
+            }
+                
         }
         break;
         
