@@ -1170,7 +1170,7 @@ bool dashboard_pi::LoadConfig( void )
                 }
 // TODO: Do not add if GetCount == 0
                 DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, name, caption, orient, ar );
-                cont->m_bIsVisible = b_viz;
+                cont->m_bIsVisible = (b_viz == 1);
 
                 m_ArrayOfDashboardWindow.Add( cont );
             }
@@ -1515,7 +1515,17 @@ void DashboardPreferencesDialog::UpdateDashboardButtonsState()
     item = m_pListCtrlDashboards->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     bool enable = ( item != -1 );
 
-    m_pButtonDeleteDashboard->Enable( enable );
+    //  Disable the Dashboard Delete button if the parent(Dashboard) of this dialog is selected.
+    bool delete_enable = enable;
+    if( item != -1 ) {
+        int sel = m_pListCtrlDashboards->GetItemData( item );
+        DashboardWindowContainer *cont = m_Config.Item( sel );
+        DashboardWindow *dash_sel = cont->m_pDashboardWindow;
+        if(dash_sel == GetParent())
+            delete_enable = false;
+    }
+    m_pButtonDeleteDashboard->Enable( delete_enable );
+
     m_pPanelDashboard->Enable( enable );
 
     if( item != -1 ) {
