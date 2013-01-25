@@ -78,6 +78,8 @@
 #define PI        3.1415926535897931160E0      /* pi */
 #endif
 
+#define TIMER_SOCKET   7006
+
 //      Port I/O type
 typedef enum {
     DS_TYPE_INPUT,
@@ -274,7 +276,7 @@ private:
     void Open(void);
 
     void OnSocketEvent(wxSocketEvent& event);
-    void OnTimerNMEA(wxTimerEvent& event);
+    void OnTimerSocket(wxTimerEvent& event);
 
     wxMutex             m_output_mutex;
     bool                m_bok;
@@ -308,6 +310,10 @@ private:
     
     bool                m_bGarmin_GRMN_mode;
     GarminProtocolHandler *m_GarminHandler;
+    wxDateTime          m_connect_time;
+    bool                m_brx_connect_event;
+    wxTimer             m_socket_timer;
+    
 
 DECLARE_EVENT_TABLE()
 };
