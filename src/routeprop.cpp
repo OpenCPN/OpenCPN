@@ -2890,7 +2890,10 @@ void MarkInfoImpl::OnHyperLinkClick( wxHyperlinkEvent &event )
     } else
         event.Skip();
 #else
-    event.Skip();
+    wxString url = event.GetURL();
+    url.Replace(_T(" "), _T("%20") );
+    ::wxLaunchDefaultBrowser(url);
+//    event.Skip();
 #endif
 }
 
