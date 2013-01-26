@@ -628,7 +628,8 @@ OCP_DataStreamInput_Thread::OCP_DataStreamInput_Thread(DataStream *Launcher,
     m_pMessageTarget = MessageTarget;
 
     m_PortName = PortName;
-
+    m_FullPortName = _T("Serial:") + PortName;
+    
     m_pout_mutex = pout_mutex;
     m_io_select = io_select;
     
@@ -1139,11 +1140,8 @@ HandleASuccessfulRead:
                     tak_ptr = tptr;
 
                     // parse and send the message
-//                    if(g_bShowOutlines)
-                    {
-                        wxString str_temp_buf(temp_buf, wxConvUTF8);
-                        Parse_And_Send_Posn(str_temp_buf);
-                    }
+                    wxString str_temp_buf(temp_buf, wxConvUTF8);
+                    Parse_And_Send_Posn(str_temp_buf);
                 }
                 else
                 {
@@ -1175,7 +1173,7 @@ void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
     std::string s = std::string(str_temp_buf.mb_str());
     Nevent.SetNMEAString(s);
-    Nevent.SetStreamName(std::string( m_launcher->GetPort().mb_str() ));
+    Nevent.SetStreamName(std::string( m_FullPortName.mb_str() ));
     Nevent.SetPriority(m_launcher->GetPriority());
     
     if( m_pMessageTarget )

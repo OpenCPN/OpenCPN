@@ -382,6 +382,8 @@ private:
     wxEvtHandler            *m_pMessageTarget;
     DataStream              *m_launcher;
     wxString                m_PortName;
+    wxString                m_FullPortName;
+    
     dsPortType              m_io_select;
     
     char                    *put_ptr;
