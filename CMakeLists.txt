@@ -723,6 +723,16 @@ SET_SOURCE_FILES_PROPERTIES(
            data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
 SET_SOURCE_FILES_PROPERTIES(
+           data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
+
+FILE(GLOB DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/OpenCPN User Manual_files/*.png")
+FOREACH (_currentDocFile ${DOC_FILES})
+  SET_SOURCE_FILES_PROPERTIES(
+           ${_currentDocFile}
+           PROPERTIES MACOSX_PACKAGE_LOCATION "SharedSupport/doc/OpenCPN User Manual_files" )
+ENDFOREACH (_currentDocFile )
+
+SET_SOURCE_FILES_PROPERTIES(
            buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 
 SET_SOURCE_FILES_PROPERTIES(
@@ -740,6 +750,8 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       data/license.txt
       ${SOUND_FILES}
       data/doc/help_web.html
+      data/doc/help_en_US.html
+      ${DOC_FILES}
       buildosx/opencpn.icns
       buildosx/MainMenu.xib
       )
