@@ -333,7 +333,7 @@ SET(HDRS
 		include/routemanagerdialog.h
 		include/routeprop.h
 		include/routeprintout.h
-		include/printtable.h		
+		include/printtable.h
 		include/statwin.h
 		include/tcmgr.h
 		include/thumbwin.h
