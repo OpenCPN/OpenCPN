@@ -190,6 +190,35 @@ WX_DEFINE_OBJARRAY(ArrayOfDirCtrls);
 
 IMPLEMENT_DYNAMIC_CLASS( options, wxDialog )
 
+// sort callback for Connections list  Sort by priority.
+#if wxCHECK_VERSION(2, 9, 0)
+int wxCALLBACK SortConnectionOnPriority(long item1, long item2, wxIntPtr list)
+#else
+int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
+#endif
+
+{
+    wxListCtrl *lc = (wxListCtrl*)list;
+    
+    wxListItem it1, it2;
+    it1.SetId(lc->FindItem(-1, item1));
+    it1.SetColumn(3);
+    it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
+    
+    it2.SetId(lc->FindItem(-1, item2));
+    it2.SetColumn(3);
+    it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
+    
+    lc->GetItem(it1);
+    lc->GetItem(it2);
+    
+    return it2.GetText().CmpNoCase(it1.GetText());
+}
+
+
+
+
+
 BEGIN_EVENT_TABLE( options, wxDialog )
     EVT_CHECKBOX( ID_DEBUGCHECKBOX1, options::OnDebugcheckbox1Click )
     EVT_BUTTON( ID_BUTTONADD, options::OnButtonaddClick )
@@ -495,7 +524,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     wxBoxSizer* bSizer17;
     bSizer17 = new wxBoxSizer( wxHORIZONTAL );
 
-    m_lcSources = new wxListCtrl( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxSize(-1, 150), wxLC_REPORT|wxLC_SINGLE_SEL );
+    m_lcSources = new wxListCtrl( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxSize(-1, 150), wxLC_REPORT|wxLC_SINGLE_SEL | wxLC_SORT_DESCENDING);
     bSizer17->Add( m_lcSources, 1, wxALL|wxEXPAND, 5 );
 
     wxBoxSizer* bSizer18;
@@ -755,18 +784,23 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     wxListItem col3;
     col3.SetId(3);
-    col3.SetText( _("Parameters") );
+    col3.SetText( _("Priority") );
     m_lcSources->InsertColumn(3, col3);
 
     wxListItem col4;
     col4.SetId(4);
-    col4.SetText( _("Output") );
+    col4.SetText( _("Parameters") );
     m_lcSources->InsertColumn(4, col4);
 
     wxListItem col5;
     col5.SetId(5);
-    col5.SetText( _("Filters") );
+    col5.SetText( _("Output") );
     m_lcSources->InsertColumn(5, col5);
+    
+    wxListItem col6;
+    col6.SetId(6);
+    col6.SetText( _("Filters") );
+    m_lcSources->InsertColumn(6, col6);
     
     //  Build the image list
     wxBitmap unchecked_bmp(16, 16), checked_bmp(16, 16);
@@ -3870,9 +3904,12 @@ void options::FillSourceList()
         
         m_lcSources->SetItem(itemIndex, 1, g_pConnectionParams->Item(i)->GetSourceTypeStr());
         m_lcSources->SetItem(itemIndex, 2, g_pConnectionParams->Item(i)->GetAddressStr());
-        m_lcSources->SetItem(itemIndex, 3, g_pConnectionParams->Item(i)->GetParametersStr());
-        m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetOutputValueStr());
-        m_lcSources->SetItem(itemIndex, 5, g_pConnectionParams->Item(i)->GetFiltersStr());
+        wxString prio_str;
+        prio_str.Printf(_T("%d"), g_pConnectionParams->Item(i)->Priority ); 
+        m_lcSources->SetItem(itemIndex, 3, prio_str);
+        m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetParametersStr());
+        m_lcSources->SetItem(itemIndex, 5, g_pConnectionParams->Item(i)->GetOutputValueStr());
+        m_lcSources->SetItem(itemIndex, 6, g_pConnectionParams->Item(i)->GetFiltersStr());
     }
 
 #ifdef __WXOSX__
@@ -3882,14 +3919,18 @@ void options::FillSourceList()
     m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE );
     m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE );
     m_lcSources->SetColumnWidth( 5, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 6, wxLIST_AUTOSIZE );
 #else
     m_lcSources->SetColumnWidth( 0, wxLIST_AUTOSIZE_USEHEADER );
     m_lcSources->SetColumnWidth( 1, wxLIST_AUTOSIZE_USEHEADER );
     m_lcSources->SetColumnWidth( 2, wxLIST_AUTOSIZE );
     m_lcSources->SetColumnWidth( 3, wxLIST_AUTOSIZE_USEHEADER );
     m_lcSources->SetColumnWidth( 4, wxLIST_AUTOSIZE_USEHEADER );
-    m_lcSources->SetColumnWidth( 5, wxLIST_AUTOSIZE );
+    m_lcSources->SetColumnWidth( 5, wxLIST_AUTOSIZE_USEHEADER );
+    m_lcSources->SetColumnWidth( 6, wxLIST_AUTOSIZE );
 #endif
+
+    m_lcSources->SortItems( SortConnectionOnPriority, (long) m_lcSources );
     
 }
 
