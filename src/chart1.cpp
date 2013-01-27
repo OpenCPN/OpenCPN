@@ -7230,6 +7230,11 @@ void MyPrintout::DrawPageOne( wxDC *dc )
 
 #ifdef __WXGTK__
 extern "C" int wait(int *);                     // POSIX wait() for process
+
+#include <termios.h>
+#include <sys/ioctl.h>
+#include <linux/serial.h>
+
 #endif
 
 // ****************************************
@@ -7291,6 +7296,28 @@ int paternFilter (const struct dirent * dir) {
   perror (devname);
   return 0;
 }
+
+int isTTYreal(const char *dev) 
+{
+    struct serial_struct serinfo;
+    int ret = 0;
+    
+    int fd = open(dev, O_RDWR | O_NONBLOCK | O_NOCTTY);
+    
+    // device name is pointing to a real device
+    if(fd > 0) {
+        if (ioctl(fd, TIOCGSERIAL, &serinfo)==0) {
+            // If device type is no PORT_UNKNOWN we accept the port
+            if (serinfo.type != PORT_UNKNOWN) 
+                ret = 1;
+        }
+        close (fd);
+    }
+    
+    return ret;
+}
+    
+    
 #endif
 
 wxArrayString *EnumerateSerialPorts( void )
@@ -7325,9 +7352,14 @@ wxArrayString *EnumerateSerialPorts( void )
        free(filelist[ind]);
       }
 
-//        We add two more, arbitrarily, for those systems that have fixed, traditional COM ports
-      preturn->Add( _T("/dev/ttyS0") );
-      preturn->Add( _T("/dev/ttyS1") );
+      
+//        We try to add a few more, arbitrarily, for those systems that have fixed, traditional COM ports
+    
+    if( isTTYreal("/dev/ttyS0") ) 
+        preturn->Add( _T("/dev/ttyS0") );
+
+    if( isTTYreal("/dev/ttyS1") ) 
+        preturn->Add( _T("/dev/ttyS1") );
 
    
 #endif
@@ -8001,7 +8033,8 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
     int ret = dlg.ShowModal();
 
 #ifdef __WXOSX__
-    gFrame->SurfaceToolbar();
+    if(gFrame)
+        gFrame->SurfaceToolbar();
 
     if( g_FloatingCompassDialog )
         g_FloatingCompassDialog->Show();
