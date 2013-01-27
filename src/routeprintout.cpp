@@ -140,28 +140,28 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
         RoutePoint* point = myRoute->GetPoint( n );
 
         if ( toPrintOut[ PRINT_WP_NAME ] ) {
-            string cell( point->GetName().fn_str() );
+            string cell( point->GetName().mb_str() );
             table << cell;
         }
         if ( toPrintOut[ PRINT_WP_POSITION ] ) {
             wxString point_position = toSDMM( 1, point->m_lat, point->m_bIsInTrack ) + _T( "\n" ) + toSDMM( 2, point->m_lon, point->m_bIsInTrack );
-            string   cell( point_position.fn_str() );
+            string   cell( point_position.mb_str() );
             table << cell;
         }
         if ( toPrintOut[ PRINT_WP_COURSE ] ) {
             wxString point_course;
             point_course.Printf( _T( "%03.0f Deg" ), point->GetCourse() );
-            string   cell( point_course.fn_str() );
+            string   cell( point_course.mb_str() );
             table << cell;
         }
         if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
             wxString point_distance;
             point_distance.Printf( _T( "%6.2f NM" ), point->GetDistance() );
-            string   cell( point_distance.fn_str() );
+            string   cell( point_distance.mb_str() );
             table << cell;
         }
         if ( toPrintOut[ PRINT_WP_DESCRIPTION ] ) {
-            string cell( point->GetDescription().fn_str() );
+            string cell( point->GetDescription().mb_str() );
             table << cell;
         }
         table << "\n";

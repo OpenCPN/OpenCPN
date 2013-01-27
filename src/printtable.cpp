@@ -114,7 +114,7 @@ void PrintCell::Adjust()
     }
 
     for ( size_t i = 0; i < list.size() - 1; i++ ) {
-        modified_content = modified_content + list[ i ] + '\n';
+        modified_content = modified_content + list[ i ] + _T('\n');
     }
     // now add last element without new line
     modified_content = modified_content + list[ list.size() - 1 ];

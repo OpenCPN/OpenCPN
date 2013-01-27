@@ -71,8 +71,8 @@ enum TableState { TABLE_SETUP_WIDTHS = 0, TABLE_FILL_DATA, TABLE_FILL_HEADER };
  */
 class Table {
 protected:
-    uint32_t nrows;
-    uint32_t ncols;
+    int nrows;
+    int ncols;
 
     bool create_next_row;
 
@@ -81,11 +81,9 @@ protected:
     vector< wxString > header;
     TableState state;
 
-    void
-    Start();
+    void Start();
 
-    void
-    NewRow();
+    void NewRow();
 
 public:
     Table();
