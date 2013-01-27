@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Project:  OpenCP
+ * Project:  OpenCPN
  * Purpose:  Console Canvas
  * Author:   David Register
  *
