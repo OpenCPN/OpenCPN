@@ -5,7 +5,7 @@
 * Author:   David Register
 *
 ***************************************************************************
-*   Copyright (C) 2010 by David S. Register   *
+*   Copyright (C) 2010 by David S. Register                               *
 *                                                                         *
 *   This program is free software; you can redistribute it and/or modify  *
 *   it under the terms of the GNU General Public License as published by  *
@@ -20,7 +20,7 @@
 *   You should have received a copy of the GNU General Public License     *
 *   along with this program; if not, write to the                         *
 *   Free Software Foundation, Inc.,                                       *
-*   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+*   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 ***************************************************************************
 *
 */
@@ -605,11 +605,11 @@ void RouteProp::OnRoutepropSplitClick( wxCommandEvent& event )
 // slot on pressed button "Print Route" with selection of the route properties to print
 void RouteProp::OnRoutepropPrintClick( wxCommandEvent& event )
 {
-  
+
   if (pRoutePrintSelection == NULL)
     pRoutePrintSelection = new RoutePrintSelection( GetParent(), m_pRoute );
 
-  if( !pRoutePrintSelection->IsShown() ) pRoutePrintSelection->ShowModal(); 
+  if( !pRoutePrintSelection->IsShown() ) pRoutePrintSelection->ShowModal();
     delete pRoutePrintSelection;
   pRoutePrintSelection=NULL;
 }
@@ -817,7 +817,7 @@ RouteProp::~RouteProp()
     //	delete pDispTz;
 
     delete m_wpList;
-    
+
     // delete global print route selection dialog
     delete pRoutePrintSelection;
 }
@@ -1000,9 +1000,9 @@ void RouteProp::CreateControls()
      m_PrintButton = new wxButton( itemDialog1, ID_ROUTEPROP_PRINT, _("Print Route"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer16->Add( m_PrintButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
-    m_PrintButton->Enable( true );   
-    
-    
+    m_PrintButton->Enable( true );
+
+
     m_ExtendButton = new wxButton( itemDialog1, ID_ROUTEPROP_EXTEND, _("Extend Route"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemBoxSizer16->Add( m_ExtendButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -1057,10 +1057,10 @@ void RouteProp::CreateControls()
     m_wpTrackList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, 85 );
     m_wpTrackList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, 90 );
     m_wpTrackList->InsertColumn( 6, _("Timestamp"), wxLIST_FORMAT_LEFT, 135 );
-    m_wpTrackList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 100 ); 
+    m_wpTrackList->InsertColumn( 7, _("Speed (Kts)"), wxLIST_FORMAT_CENTER, 100 );
     m_wpTrackList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, 100 );
-    m_wpTrackList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_CENTER, 100 );    // additional columt with WP description  
-    m_wpTrackList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_CENTER, 70 );        // additional columt with WP new course. Is it same like "bearing" of the next WP.       
+    m_wpTrackList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_CENTER, 100 );    // additional columt with WP description
+    m_wpTrackList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_CENTER, 70 );        // additional columt with WP new course. Is it same like "bearing" of the next WP.
     m_wpTrackList->Hide();
 
     Connect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK,
@@ -1500,7 +1500,7 @@ bool RouteProp::UpdateProperties()
             if( arrival ) m_wpList->SetItem( item_line_index, 1, prp->GetName() );
 	    // Store Dewcription
             if( arrival ) m_wpList->SetItem( item_line_index, 9, prp->GetDescription() );
-	    
+
             //  Distance
             //  Note that Distance/Bearing for Leg 000 is as from current position
 
@@ -1533,7 +1533,7 @@ bool RouteProp::UpdateProperties()
 
 	    // calculation of course at current WayPoint.
 	    double course=10, tmp_leg_dist=23;
-	    wxRoutePointListNode *next_node = node->GetNext(); 
+	    wxRoutePointListNode *next_node = node->GetNext();
 	    RoutePoint * _next_prp = (next_node)? next_node->GetData(): NULL;
 	    if (_next_prp )
 	    {
@@ -1543,11 +1543,11 @@ bool RouteProp::UpdateProperties()
 	      course = 0.0;
 	      tmp_leg_dist = 0.0;
 	    }
-	    
+
 	    prp->SetCourse(course); // save the course to the next waypoint for printing.
 	    // end of calculation
-	    
-	    
+
+
             t.Printf( _T("%6.2f NM"), leg_dist );
             if( arrival ) m_wpList->SetItem( item_line_index, 2, t );
             if( !enroute ) m_wpList->SetItem( item_line_index, 2, nullify );
@@ -1557,7 +1557,7 @@ bool RouteProp::UpdateProperties()
             t.Printf( _T("%03.0f Deg. T"), brg );
             if( arrival ) m_wpList->SetItem( item_line_index, 3, t );
             if( !enroute ) m_wpList->SetItem( item_line_index, 3, nullify );
-	    
+
 	    // Course (bearing of next )
 	    if (_next_prp)
 	    {
@@ -1575,7 +1575,7 @@ bool RouteProp::UpdateProperties()
             wxString tlon = toSDMM( 2, prp->m_lon, prp->m_bIsInTrack );
             if( arrival ) m_wpList->SetItem( item_line_index, 5, tlon );
 
-	    
+
             tide_form = _T("");
 
             LMT_Offset = long( ( prp->m_lon ) * 3600. / 15. );
@@ -1949,7 +1949,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 #ifdef __WXOSX__
     wstyle |= wxSTAY_ON_TOP;
 #endif
-    
+
     Create( parent, id, title, pos, size, wstyle );
 
     SetSizeHints( wxDefaultSize, wxDefaultSize );
@@ -3024,12 +3024,12 @@ bool PositionParser::FindSeparator( wxString src )
     // GPX format <wpt lat="<lat>" lon="<lon>" /> tag among others.
 
     wxRegEx regex;
-    
+
     int re_compile_flags = wxRE_ICASE;
 #ifdef wxHAS_REGEX_ADVANCED
     re_compile_flags |= wxRE_ADVANCED;
 #endif
-    
+
     regex.Compile(
             _T( "<[a-z,A-Z]*\\s*[a-z,A-Z]*=\"([0-9,.]*)\"\\s*[a-z,A-Z]*=\"([-,0-9,.]*)\"\\s*/*>" ),
                   re_compile_flags );

@@ -406,7 +406,7 @@ void about::OnCopyClick( wxCommandEvent& event )
     }
 
     ::wxBeginBusyCursor();
-      
+
     if( wxTheClipboard->Open() ) {
         wxTextDataObject* data = new wxTextDataObject;
         data->SetText( fileContent );

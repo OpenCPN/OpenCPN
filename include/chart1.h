@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Project:  OpenCP
- * Purpose:  OpenCP Main wxWidgets Program
+ * Project:  OpenCPN
+ * Purpose:  OpenCPN Main wxWidgets Program
  * Author:   David Register
  *
  ***************************************************************************
@@ -346,7 +346,7 @@ class MyFrame: public wxFrame
     void ScrubGroupArray();
     wxString GetGroupName(int igroup);
     void LoadHarmonics();
-    
+
     bool EvalPriority( wxString message, wxString stream_name, int stream_priority );
 
     int                 m_StatusBarFieldCount;
@@ -417,10 +417,10 @@ class MyPrintout: public wxPrintout
   void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo);
 
   void DrawPageOne(wxDC *dc);
-  
 
-  
-  
+
+
+
 };
 
 
