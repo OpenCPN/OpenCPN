@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
  *
@@ -80,6 +80,7 @@ class   HyperlinkList;
 #define ID_ROUTEPROP_SPLIT     7107
 #define ID_ROUTEPROP_EXTEND    7207
 #define ID_ROUTEPROP_COPYTXT   7307
+#define ID_ROUTEPROP_PRINT     7407
 #define ID_PLANSPEEDCTL        7008
 #define ID_TEXTCTRL4           7009
 #define ID_TEXTCTRLDESC        7010
@@ -96,7 +97,7 @@ class   HyperlinkList;
 
 #define ID_MARKPROP 8000
 #define SYMBOL_MARKPROP_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
-#define SYMBOL_MARKPROP_TITLE _("Mark Properties")
+#define SYMBOL_MARKPROP_TITLE _("Waypoint Properties")
 #define SYMBOL_MARKPROP_IDNAME ID_MARKPROP
 #define SYMBOL_MARKPROP_SIZE wxSize(200, 300)
 #define SYMBOL_MARKPROP_POSITION wxDefaultPosition
@@ -159,6 +160,7 @@ public:
     void OnRoutepropListClick( wxListEvent& event );
     void OnRoutepropSplitClick( wxCommandEvent& event );
     void OnRoutepropExtendClick( wxCommandEvent& event );
+    void OnRoutepropPrintClick( wxCommandEvent& event );
     void OnRoutepropCopyTxtClick( wxCommandEvent& event );
     void OnRoutePropRightClick( wxListEvent &event );
     void OnRoutePropMenuSelected( wxCommandEvent &event );
@@ -196,6 +198,7 @@ public:
     wxButton*     m_CancelButton;
     wxButton*     m_OKButton;
     wxButton*     m_CopyTxtButton;
+    wxButton*     m_PrintButton;
     wxButton*     m_ExtendButton;
     wxButton*     m_SplitButton;
 
@@ -311,7 +314,7 @@ class MarkInfoDef : public wxDialog
 
 	public:
 
-		MarkInfoDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Mark Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 450,550 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
+		MarkInfoDef( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 450,550 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
 		~MarkInfoDef();
 
 		void m_hyperlink17OnContextMenu( wxMouseEvent &event )
@@ -365,7 +368,7 @@ public :
       void InitialFocus(void);
       void OnRightClick( wxCommandEvent& event );
 
-      MarkInfoImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Mark Information"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 450,550 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
+      MarkInfoImpl( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Waypoint Information"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 450,550 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER );
       ~MarkInfoImpl();
 
       void m_hyperlinkContextMenu( wxMouseEvent &event );

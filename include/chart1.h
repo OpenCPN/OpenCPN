@@ -1,7 +1,7 @@
 /******************************************************************************
  *
- * Project:  OpenCP
- * Purpose:  OpenCP Main wxWidgets Program
+ * Project:  OpenCPN
+ * Purpose:  OpenCPN Main wxWidgets Program
  * Author:   David Register
  *
  ***************************************************************************
@@ -346,7 +346,7 @@ class MyFrame: public wxFrame
     void ScrubGroupArray();
     wxString GetGroupName(int igroup);
     void LoadHarmonics();
-    
+
     bool EvalPriority( wxString message, wxString stream_name, int stream_priority );
 
     int                 m_StatusBarFieldCount;
@@ -406,13 +406,21 @@ void *x_malloc(size_t t);
 class MyPrintout: public wxPrintout
 {
  public:
-  MyPrintout(const wxChar *title = _T("My printout")):wxPrintout(title) {}
+  MyPrintout(const wxChar *title = _T("My printout")):wxPrintout(title){}
+  virtual
   bool OnPrintPage(int page);
+  virtual
   bool HasPage(int page);
+  virtual
   bool OnBeginDocument(int startPage, int endPage);
+  virtual
   void GetPageInfo(int *minPage, int *maxPage, int *selPageFrom, int *selPageTo);
 
   void DrawPageOne(wxDC *dc);
+
+
+
+
 };
 
 

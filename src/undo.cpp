@@ -88,6 +88,9 @@ wxString UndoAction::Description()
         case Undo_AppendWaypoint:
             descr = _("Append Waypoint");
             break;
+	default:
+            descr = _T("");
+	    break;
     }
     return descr;
 }

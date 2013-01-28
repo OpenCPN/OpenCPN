@@ -1157,8 +1157,6 @@ bool dashboard_pi::LoadConfig( void )
                 pConf->Read( _T("Caption"), &caption, _("Dashboard") );
                 wxString orient;
                 pConf->Read( _T("Orientation"), &orient, _T("V") );
-                int b_viz;
-                pConf->Read( _T("Visible"), &b_viz, 1 );
                 int i_cnt;
                 pConf->Read( _T("InstrumentCount"), &i_cnt, -1 );
 
@@ -1169,10 +1167,9 @@ bool dashboard_pi::LoadConfig( void )
                     if( id != -1 ) ar.Add( id );
                 }
 // TODO: Do not add if GetCount == 0
-                DashboardWindowContainer *cont = new DashboardWindowContainer( NULL, name, caption, orient, ar );
-                cont->m_bIsVisible = b_viz;
+                m_ArrayOfDashboardWindow.Add(
+                        new DashboardWindowContainer( NULL, name, caption, orient, ar ) );
 
-                m_ArrayOfDashboardWindow.Add( cont );
             }
         }
 
@@ -1200,7 +1197,6 @@ bool dashboard_pi::SaveConfig( void )
             pConf->Write( _T("Name"), cont->m_sName );
             pConf->Write( _T("Caption"), cont->m_sCaption );
             pConf->Write( _T("Orientation"), cont->m_sOrientation );
-            pConf->Write( _T("Visible"), cont->m_bIsVisible );
 
             pConf->Write( _T("InstrumentCount"), (int) cont->m_aInstrumentList.GetCount() );
             for( size_t j = 0; j < cont->m_aInstrumentList.GetCount(); j++ )
@@ -1515,7 +1511,17 @@ void DashboardPreferencesDialog::UpdateDashboardButtonsState()
     item = m_pListCtrlDashboards->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     bool enable = ( item != -1 );
 
-    m_pButtonDeleteDashboard->Enable( enable );
+    //  Disable the Dashboard Delete button if the parent(Dashboard) of this dialog is selected.
+    bool delete_enable = enable;
+    if( item != -1 ) {
+        int sel = m_pListCtrlDashboards->GetItemData( item );
+        DashboardWindowContainer *cont = m_Config.Item( sel );
+        DashboardWindow *dash_sel = cont->m_pDashboardWindow;
+        if(dash_sel == GetParent())
+            delete_enable = false;
+    }
+    m_pButtonDeleteDashboard->Enable( delete_enable );
+
     m_pPanelDashboard->Enable( enable );
 
     if( item != -1 ) {

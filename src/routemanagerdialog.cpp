@@ -401,11 +401,11 @@ void RouteManagerDialog::OnTabSwitch( wxNotebookEvent &event )
     int current_page = m_pNotebook->GetSelection();
     if( current_page == 3 ) {
         if( btnImport ) btnImport->Enable( false );
-        if( btnExport ) btnExport->Enable( false );
+//        if( btnExport ) btnExport->Enable( false );
         if( btnExportViz ) btnExportViz->Enable( false );
     } else {
         if( btnImport ) btnImport->Enable( true );
-        if( btnExport ) btnExport->Enable( true );
+//        if( btnExport ) btnExport->Enable( true );
         if( btnExportViz ) btnExportViz->Enable( true );
         
     }
@@ -462,7 +462,7 @@ void RouteManagerDialog::Create()
 
     // Setup GUI
     m_pRouteListCtrl = new wxListCtrl( m_pPanelRte, -1, wxDefaultPosition, wxSize( 400, -1 ),
-            wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING | wxLC_HRULES
+            wxLC_REPORT  | wxLC_SORT_ASCENDING | wxLC_HRULES
                     | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     m_pRouteListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
             wxListEventHandler(RouteManagerDialog::OnRteSelected), NULL, this );
@@ -617,8 +617,7 @@ void RouteManagerDialog::Create()
     m_pNotebook->AddPage( m_pPanelWpt, _("Waypoints") );
 
     m_pWptListCtrl = new wxListCtrl( m_pPanelWpt, -1, wxDefaultPosition, wxSize( 400, -1 ),
-            wxLC_REPORT | wxLC_SINGLE_SEL | wxLC_SORT_ASCENDING | wxLC_HRULES
-                    | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
+            wxLC_REPORT | wxLC_SORT_ASCENDING | wxLC_HRULES | wxBORDER_SUNKEN/*|wxLC_VRULES*/);
     m_pWptListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_SELECTED,
             wxListEventHandler(RouteManagerDialog::OnWptSelected), NULL, this );
     m_pWptListCtrl->Connect( wxEVT_COMMAND_LIST_ITEM_DESELECTED,
@@ -633,7 +632,7 @@ void RouteManagerDialog::Create()
 
     m_pWptListCtrl->InsertColumn( colWPTICON, _("Icon"), wxLIST_FORMAT_LEFT, 44 );
     m_pWptListCtrl->InsertColumn( colWPTNAME, _("Waypoint Name"), wxLIST_FORMAT_LEFT, 180 );
-    m_pWptListCtrl->InsertColumn( colWPTDIST, _("Distance"), wxLIST_FORMAT_LEFT, 180 );
+    m_pWptListCtrl->InsertColumn( colWPTDIST, _("Distance from Ownship"), wxLIST_FORMAT_LEFT, 180 );
 
     wxBoxSizer *bsWptButtons = new wxBoxSizer( wxVERTICAL );
     itemBoxSizer4->Add( bsWptButtons, 0, wxALIGN_RIGHT );
@@ -690,10 +689,12 @@ void RouteManagerDialog::Create()
     itemBoxSizer6->Add( btnImport, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnImport->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnImportClick), NULL, this );
+/*    
     btnExport = new wxButton( this, -1, _("E&xport All...") );
     itemBoxSizer6->Add( btnExport, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnExport->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnExportClick), NULL, this );
+*/            
     btnExportViz = new wxButton( this, -1, _("Export All Visible...") );
     itemBoxSizer6->Add( btnExportViz, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnExportViz->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
@@ -904,11 +905,11 @@ void RouteManagerDialog::UpdateRteButtons()
     // enable/disable buttons
     long selected_index_index = m_pRouteListCtrl->GetNextItem( -1, wxLIST_NEXT_ALL,
             wxLIST_STATE_SELECTED );
-    bool enable = !( selected_index_index < 0 );
+    bool enable =  m_pRouteListCtrl->GetSelectedItemCount() == 1; //!( selected_index_index < 0 );
 
     m_lastRteItem = selected_index_index;
 
-    btnRteDelete->Enable( enable );
+    btnRteDelete->Enable( m_pRouteListCtrl->GetSelectedItemCount() > 0 );
     btnRteZoomto->Enable( enable ); // && !cc1->m_bFollow);
     btnRteProperties->Enable( enable );
     btnRteReverse->Enable( enable );
@@ -988,32 +989,48 @@ void RouteManagerDialog::ZoomtoRoute( Route *route )
 //BEGIN Event handlers
 void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
 {
+    RouteList list;
+    
+    bool busy = false;
+    if( m_pRouteListCtrl->GetSelectedItemCount() ) {
+        ::wxBeginBusyCursor();
+        cc1->CancelMouseRoute();
+        m_bNeedConfigFlush = true;
+        busy = true;
+    }
+    
     long item = -1;
-    item = m_pRouteListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
-    if( item == -1 ) return;
+    for ( ;; )
+    {
+        item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if ( item == -1 )
+            break;
+        
+        Route *proute_to_delete = pRouteList->Item( m_pRouteListCtrl->GetItemData( item ) )->GetData();
 
-    Route *proute_to_delete = pRouteList->Item( m_pRouteListCtrl->GetItemData( item ) )->GetData();
-
-    if( !proute_to_delete ) return;
-
-    ::wxBeginBusyCursor();
-
-    cc1->CancelMouseRoute();
-
-    pConfig->DeleteConfigRoute( proute_to_delete );
-
-    g_pRouteMan->DeleteRoute( proute_to_delete );
-
-    ::wxEndBusyCursor();
-
-    UpdateRouteListCtrl();
-
-    //    Also need to update the track list control, since routes and tracks share a common global list (pRouteList)
-    UpdateTrkListCtrl();
-
-    cc1->Refresh();
-
-    m_bNeedConfigFlush = true;
+        if( proute_to_delete ) 
+            list.Append( proute_to_delete );
+    }
+    
+    if( busy ) {
+        
+        for(unsigned int i=0 ; i < list.GetCount() ; i++) {
+            Route *route = list.Item(i)->GetData();
+            if( route ) {
+                pConfig->DeleteConfigRoute( route );
+                g_pRouteMan->DeleteRoute( route );
+            }
+        }
+            
+        m_lastRteItem = -1;
+        UpdateRouteListCtrl();
+        UpdateTrkListCtrl();
+        
+        cc1->undo->InvalidateUndo();
+        cc1->Refresh();
+        ::wxEndBusyCursor();
+    }
+    
 }
 
 void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
@@ -1568,7 +1585,7 @@ void RouteManagerDialog::UpdateTrkButtons()
     m_lastTrkItem = item;
 
     btnTrkProperties->Enable( items == 1 );
-    btnTrkDelete->Enable( items == 1 );
+    btnTrkDelete->Enable( items >= 1 );
     btnTrkExport->Enable( items == 1 );
     btnTrkRouteFromTrack->Enable( items == 1 );
 }
@@ -1634,41 +1651,45 @@ void RouteManagerDialog::OnTrkPropertiesClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
 {
-
+    RouteList list;
+    
+    bool busy = false;
+    if( m_pTrkListCtrl->GetSelectedItemCount() ) {
+        ::wxBeginBusyCursor();
+        m_bNeedConfigFlush = true;
+        busy = true;
+    }
+    
     long item = -1;
-    item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
-    if( item == -1 ) return;
-
-    Track *track = (Track *) pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
-
-//TODO Seth
-//                    if(track == g_pActiveTrack)
-//                        parent_frame->TrackOff();
-    if( !track ) return;
-
-    pConfig->DeleteConfigRoute( track );
-
-    g_pRouteMan->DeleteTrack( track );
-
-//                    m_pSelectedRoute = NULL;
-//                    m_pSelectedTrack = NULL;
-//                    m_pFoundRoutePoint = NULL;
-//                    m_pFoundRoutePointSecond = NULL;
-//
-//                    if ( pRoutePropDialog )
-//                    {
-//                          pRoutePropDialog->SetRouteAndUpdate ( track );
-//                          pRoutePropDialog->UpdateProperties();
-//                    }
-
-    UpdateTrkListCtrl();
-
-    //    Also need to update the route list control, since routes and tracks share a common global list (pRouteList)
-    UpdateRouteListCtrl();
-
-    cc1->Refresh();
-
-    m_bNeedConfigFlush = true;
+    for ( ;; )
+    {
+        item = m_pTrkListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if ( item == -1 )
+            break;
+        
+        Route *ptrack_to_delete = pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+        
+        if( ptrack_to_delete ) 
+            list.Append( ptrack_to_delete );
+    }
+    
+    if( busy ) {
+        for(unsigned int i=0 ; i < list.GetCount() ; i++) {
+            Track *track = (Track *)(list.Item(i)->GetData());
+            if( track ) {
+                pConfig->DeleteConfigRoute( track );
+                g_pRouteMan->DeleteTrack( track );
+            }
+        }
+        
+        m_lastTrkItem = -1;
+        UpdateRouteListCtrl();
+        UpdateTrkListCtrl();
+        
+        cc1->undo->InvalidateUndo();
+        cc1->Refresh();
+        ::wxEndBusyCursor();
+    }
 }
 
 void RouteManagerDialog::OnTrkExportClick( wxCommandEvent &event )
@@ -1845,16 +1866,38 @@ void RouteManagerDialog::UpdateWptButtons()
 {
     long item = -1;
     item = m_pWptListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
-    bool enable = ( item != -1 );
+    bool enable1 = ( m_pWptListCtrl->GetSelectedItemCount() == 1 );
 
-    if( enable ) m_lastWptItem = item;
+    if( enable1 )
+        m_lastWptItem = item;
+    else
+        m_lastWptItem = -1;
 
-    btnWptProperties->Enable( enable );
-    btnWptZoomto->Enable( enable );
-    btnWptDelete->Enable( enable );
-    btnWptGoTo->Enable( enable );
-    btnWptExport->Enable( enable );
-    btnWptSendToGPS->Enable( enable );
+    //  Check selection to see if it is in a layer
+    //  If so, disable the "delete" button    
+    bool b_delete_enable = true;
+    item = -1;
+    for ( ;; )
+    {
+        item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if ( item == -1 )
+            break;
+        
+        RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( item );
+        
+        if( wp && wp->m_bIsInLayer) {
+            b_delete_enable = false;
+            break;
+        }
+    }
+    
+
+    btnWptProperties->Enable( enable1 );
+    btnWptZoomto->Enable( enable1 );
+    btnWptDelete->Enable( b_delete_enable && m_pWptListCtrl->GetSelectedItemCount() > 0 );
+    btnWptGoTo->Enable( enable1 );
+    btnWptExport->Enable( enable1 );
+    btnWptSendToGPS->Enable( enable1 );
 }
 
 void RouteManagerDialog::OnWptToggleVisibility( wxMouseEvent &event )
@@ -1926,11 +1969,11 @@ void RouteManagerDialog::WptShowPropertiesDialog( RoutePoint* wp, wxWindow* pare
     pMarkPropDialog->SetRoutePoint( wp );
     pMarkPropDialog->UpdateProperties();
     if( wp->m_bIsInLayer ) {
-        wxString caption( _T("Mark Properties, Layer: ") );
+        wxString caption( _("Waypoint Properties, Layer: ") );
         caption.Append( GetLayerName( wp->m_LayerID ) );
         pMarkPropDialog->SetDialogTitle( caption );
     } else
-        pMarkPropDialog->SetDialogTitle( _T("Mark Properties") );
+        pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
 
     if( !pMarkPropDialog->IsShown() ) pMarkPropDialog->ShowModal();
 
@@ -1955,34 +1998,67 @@ void RouteManagerDialog::OnWptZoomtoClick( wxCommandEvent &event )
 
 void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
 {
+    RoutePointList list;
+    
+    bool busy = false;
+    if( m_pWptListCtrl->GetSelectedItemCount() ) {
+        ::wxBeginBusyCursor();
+        m_bNeedConfigFlush = true;
+        busy = true;
+    }
+    
     long item = -1;
-    item = m_pWptListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
-    if( item == -1 ) return;
-
-    RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( item );
-    if( !wp ) return;
-    if( wp->m_bIsInLayer ) return;
-
-    long item_next = m_pWptListCtrl->GetNextItem( item );         // next in list
-    RoutePoint *wp_next = NULL;
-    if( item_next > -1 ) wp_next = (RoutePoint *) m_pWptListCtrl->GetItemData( item_next );
-
-    if ( wp->m_bIsInRoute || wp->m_bIsInTrack )
+    long item_last_selected = -1;
+    for ( ;; )
     {
-        if ( wxYES == wxMessageBox( _( "The waypoint you want to delete is used in a route, do you really want to delete it?" ), _( "OpenCPN Alert" ), wxYES_NO ))
-            pWayPointMan->DestroyWaypoint( wp );
+        item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
+        if ( item == -1 )
+            break;
+        
+        item_last_selected = item;
+        RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( item );
+        
+        if( wp && !wp->m_bIsInLayer) 
+            list.Append( wp );
     }
-    else
-        pWayPointMan->DestroyWaypoint( wp );
+    
+    if( busy ) {
+        for(unsigned int i=0 ; i < list.GetCount() ; i++) {
+            RoutePoint *wp = list.Item(i)->GetData();
+            if( wp ) {
+                
+                if ( wp->m_bIsInRoute || wp->m_bIsInTrack )
+                {
+                    if ( wxYES == wxMessageBox( _( "The waypoint you want to delete is used in a route, do you really want to delete it?" ), _( "OpenCPN Alert" ), wxYES_NO ))
+                        pWayPointMan->DestroyWaypoint( wp );
+                }
+                else
+                    pWayPointMan->DestroyWaypoint( wp );
+                
+            }
+        }
 
-    if( pMarkPropDialog ) {
-        pMarkPropDialog->SetRoutePoint( NULL );
-        pMarkPropDialog->UpdateProperties();
+        long item_next = m_pWptListCtrl->GetNextItem( item_last_selected );         // next in list
+        RoutePoint *wp_next = NULL;
+        if( item_next > -1 )
+            wp_next = (RoutePoint *) m_pWptListCtrl->GetItemData( item_next );
+        
+        m_lastWptItem = item_next;
+        
+        UpdateRouteListCtrl();
+        UpdateTrkListCtrl();
+        UpdateWptListCtrl( wp_next, true );
+
+        if( pMarkPropDialog ) {
+            pMarkPropDialog->SetRoutePoint( NULL );
+            pMarkPropDialog->UpdateProperties();
+        }
+        
+        cc1->undo->InvalidateUndo();
+        cc1->Refresh();
+        ::wxEndBusyCursor();
     }
-
-    UpdateWptListCtrl( wp_next, true );
-    UpdateRouteListCtrl();
-    cc1->Refresh();
+    
 }
 
 void RouteManagerDialog::OnWptGoToClick( wxCommandEvent &event )

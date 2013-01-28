@@ -83,6 +83,7 @@
 #include "compasswin.h"
 #include "datastream.h"
 #include "multiplexer.h"
+#include "routeprintout.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"
@@ -561,6 +562,8 @@ wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
 bool                      g_blocale_changed;
+
+RoutePrintSelection       *pRoutePrintSelection;
 
 wxMenu                    *g_FloatingToolbarConfigMenu;
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
@@ -1091,6 +1094,8 @@ bool MyApp::OnInit()
 
 //      Init the Selectable Tide/Current Items List
     pSelectTC = new Select();
+    //  Increase the select radius for tide/current stations
+    pSelectTC->SetSelectPixelRadius(25);
 
 //      Init the Selectable AIS Target List
     pSelectAIS = new Select();
@@ -7228,6 +7233,94 @@ void MyPrintout::DrawPageOne( wxDC *dc )
 
 #ifdef __WXGTK__
 extern "C" int wait(int *);                     // POSIX wait() for process
+
+#include <termios.h>
+#include <sys/ioctl.h>
+#include <linux/serial.h>
+
+#endif
+
+// ****************************************
+// Fulup devices selection with scandir
+// ****************************************
+
+// reserve 4 pattern for plugins
+char* devPatern[] = {
+  NULL,NULL,NULL,NULL,
+  NULL,NULL,NULL,NULL, (char*)-1};
+
+
+// This function allow external plugin to search for a special device name
+// ------------------------------------------------------------------------
+int paternAdd (const char* patern) {
+  int ind;
+
+  // snan table for a free slot inside devpatern table
+  for (ind=0; devPatern[ind] != (char*)-1; ind++) 
+       if (devPatern[ind] == NULL) break;
+
+  // table if full
+  if  (devPatern [ind] == (char*) -1) return -1;
+
+  // store a copy of the patern in case calling routine had it on its stack
+  devPatern [ind]  = strdup (patern);
+  return 0;
+}
+
+
+#ifdef __WXGTK__
+// This filter verify is device is withing searched patern and verify it is openable
+// -----------------------------------------------------------------------------------
+int paternFilter (const struct dirent * dir) {
+ char* res = NULL;
+ char  devname [255];
+ int   fd, ind;
+
+  // search if devname fits with searched paterns
+  for (ind=0; devPatern [ind] != (char*)-1; ind++) {
+     if (devPatern [ind] != NULL) res=(char*)strcasestr(dir->d_name,devPatern [ind]);
+     if (res != NULL) break;
+  }
+  
+  // File does not fit researched patern
+  if (res == NULL) return 0;
+
+  // Check if we may open this file
+  snprintf (devname, sizeof (devname), "/dev/%s", dir->d_name);
+  fd = open(devname, O_RDWR|O_NDELAY|O_NOCTTY);
+
+  // device name is pointing to a real device
+  if(fd > 0) {
+    close (fd);
+    return 1;
+  }
+
+  // file is not valid
+  perror (devname);
+  return 0;
+}
+
+int isTTYreal(const char *dev) 
+{
+    struct serial_struct serinfo;
+    int ret = 0;
+    
+    int fd = open(dev, O_RDWR | O_NONBLOCK | O_NOCTTY);
+    
+    // device name is pointing to a real device
+    if(fd > 0) {
+        if (ioctl(fd, TIOCGSERIAL, &serinfo)==0) {
+            // If device type is no PORT_UNKNOWN we accept the port
+            if (serinfo.type != PORT_UNKNOWN) 
+                ret = 1;
+        }
+        close (fd);
+    }
+    
+    return ret;
+}
+    
+    
 #endif
 
 wxArrayString *EnumerateSerialPorts( void )
@@ -7236,59 +7329,42 @@ wxArrayString *EnumerateSerialPorts( void )
 
 #ifdef __WXGTK__
 
-    //    Looking for user privilege openable devices in /dev
-
-    wxString sdev;
-
-    for(int idev=0; idev < 8; idev++)
-    {
-        sdev.Printf(_T("/dev/ttyS%1d"), idev);
-
-        int fd = open(sdev.mb_str(), O_RDWR|O_NDELAY|O_NOCTTY);
-        if(fd > 0)
-        {
-            /*  add to the output array  */
-            preturn->Add(wxString(sdev));
-            close(fd);
-        }
+    //Initialize the pattern table
+    if( devPatern[0] == NULL ) {
+        paternAdd ( "ttyUSB" );
+        paternAdd ( "ttyACM" );
+        paternAdd ( "ttyGPS" );
+        paternAdd ( "refcom" );
     }
+    
+ //  Looking for user privilege openable devices in /dev
+ //  Fulup use scandir to improve user experience and support new generation of AIS devices.
 
-    for(int idev=0; idev < 8; idev++)
-    {
-        sdev.Printf(_T("/dev/ttyUSB%1d"), idev);
+      wxString sdev;
+      int ind, fcount;
+      struct dirent **filelist = {0};
+     
+      // scan directory filter is applied automatically by this call
+      fcount = scandir("/dev", &filelist, paternFilter, alphasort);
+  
+      for(ind = 0; ind < fcount; ind++)  {
+       wxString sdev (filelist[ind]->d_name, wxConvUTF8);
+       sdev.Prepend (_T("/dev/"));
 
-        int fd = open(sdev.mb_str(), O_RDWR|O_NDELAY|O_NOCTTY);
-        if(fd > 0)
-        {
-            /*  add to the output array  */
-            preturn->Add(wxString(sdev));
-            close(fd);
-        }
-    }
+       preturn->Add (sdev);
+       free(filelist[ind]);
+      }
 
-    //    Looking for BlueTooth GPS devices
-    for(int idev=0; idev < 8; idev++)
-    {
-        sdev.Printf(_T("/dev/rfcomm%1d"), idev);
+      
+//        We try to add a few more, arbitrarily, for those systems that have fixed, traditional COM ports
+    
+    if( isTTYreal("/dev/ttyS0") ) 
+        preturn->Add( _T("/dev/ttyS0") );
 
-        int fd = open(sdev.mb_str(), O_RDWR|O_NDELAY|O_NOCTTY);
-        if(fd > 0)
-        {
-            /*  add to the output array  */
-            preturn->Add(wxString(sdev));
-            close(fd);
-        }
-    }
+    if( isTTYreal("/dev/ttyS1") ) 
+        preturn->Add( _T("/dev/ttyS1") );
 
-    //    A Fallback position, in case udev has failed or something.....
-    if(preturn->IsEmpty())
-    {
-        preturn->Add( _T("/dev/ttyS0"));
-        preturn->Add( _T("/dev/ttyS1"));
-        preturn->Add( _T("/dev/ttyUSB0"));
-        preturn->Add( _T("/dev/ttyUSB1"));
-    }
-
+   
 #endif
 
 #ifdef PROBE_PORTS__WITH_HELPER
@@ -7960,7 +8036,8 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
     int ret = dlg.ShowModal();
 
 #ifdef __WXOSX__
-    gFrame->SurfaceToolbar();
+    if(gFrame)
+        gFrame->SurfaceToolbar();
 
     if( g_FloatingCompassDialog )
         g_FloatingCompassDialog->Show();

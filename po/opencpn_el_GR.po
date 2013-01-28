@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 21:24-0500\n"
+"POT-Creation-Date: 2013-01-28 00:15-0500\n"
 "PO-Revision-Date: 2013-01-10 10:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC Sailing team <sailingteam@isc.tuc.gr>\n"
@@ -1172,6 +1172,10 @@ msgstr "Απόσταση ανάμεσα στους δακτύλιους"
 msgid "Distance Unit"
 msgstr "Μονάδα απόστασης"
 #
+#, fuzzy
+msgid "Distance from Ownship"
+msgstr "Μονάδα απόστασης"
+#
 msgid "Distress"
 msgstr "Κατάσταση κινδύνου"
 #
@@ -1247,9 +1251,6 @@ msgstr "Παράλειψε τα δεδομένα"
 #
 msgid "Drop sentences"
 msgstr "Παράλειψε τα δεδομένα"
-#
-msgid "E&xport All..."
-msgstr "Ε&ξαγωγή ολων..."
 #
 msgid "ETA"
 msgstr "Εκτ. Ώρα Άφιξης"
@@ -1773,15 +1774,6 @@ msgstr "Στάνταρ ναυτικών"
 msgid "Mariners Standard"
 msgstr "Στάνταρ ναυτικών"
 #
-msgid "Mark Information"
-msgstr "Πληροφορίες σημαδιού"
-#
-msgid "Mark Properties"
-msgstr "Ιδιότητες σημαδιού"
-#
-msgid "Mark Properties, Layer: "
-msgstr "Ιδιότητες σημαδιού, ταξίδι: "
-#
 msgid "Mark targets as lost after (min)"
 msgstr "Θεώρησε τους στόχους ως χαμένους μετά από (min)"
 #
@@ -2194,6 +2186,10 @@ msgstr "Προεπισκόπηση:"
 msgid "Print Chart"
 msgstr "Εκτύπωση χάρτη"
 #
+#, fuzzy
+msgid "Print Route"
+msgstr "Χωρισμός διαδρομής"
+#
 msgid "Priority"
 msgstr "Προτεραιότητα"
 #
@@ -2557,8 +2553,8 @@ msgid "Send To GPS..."
 msgstr "Στείλε στο GPS..."
 #
 #, fuzzy
-msgid "Send to GPS ( "
-msgstr "Στείλε στο GPS"
+msgid "Send to GPS"
+msgstr "&Στείλε στο GPS"
 #
 msgid "Sentence Filter"
 msgstr "Φίλτρο δεδομένων"
@@ -3115,8 +3111,20 @@ msgstr "Ειδοποίηση αν το CPA είναι μικρότερο από 
 msgid "Waypoint"
 msgstr "Σημείο πορείας"
 #
+#, fuzzy
+msgid "Waypoint Information"
+msgstr "Πληροφορίες σημαδιού"
+#
 msgid "Waypoint Name"
 msgstr "Όνομα σημείου πορείας"
+#
+#, fuzzy
+msgid "Waypoint Properties"
+msgstr "&Ιδιότητες σημείου πορείας..."
+#
+#, fuzzy
+msgid "Waypoint Properties, Layer: "
+msgstr "Ιδιότητες σημαδιού, ταξίδι: "
 #
 msgid "Waypoint(s) Uploaded successfully."
 msgstr "Τα σημεία φορτώθηκαν επιτυχώς"
@@ -3231,16 +3239,32 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Can't send waypoint. Found no serial data port with output defined."
 #~ msgstr ""
 #~ "Δεν μπορώ να στείλω το σημείο πορείας. Δεν βρέθηκε σειριακή θύρα "
 #~ "προγραμματισμένη για αποδοχή."
 #
 #
+#~ msgid "E&xport All..."
+#~ msgstr "Ε&ξαγωγή ολων..."
+#
+#
+#~ msgid "Mark Properties"
+#~ msgstr "Ιδιότητες σημαδιού"
+#
+#
+#
 #
 # , c-format
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "HPGL: Η εντολή '%s' δεν μπορεί να εφαρμοσθεί."
+#
+#
+#, fuzzy
+#~ msgid "Send to GPS ( "
+#~ msgstr "Στείλε στο GPS"
+#
 #
 #
 #

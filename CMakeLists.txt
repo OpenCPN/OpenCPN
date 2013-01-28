@@ -67,7 +67,7 @@ IF (NOT WIN32)
   SET (LIB_INSTALL_DIR "lib")
   IF (EXISTS /etc/debian_version)
     SET (PACKAGE_FORMAT "DEB")
-    SET (PACKAGE_DEPS "libc6, libwxgtk2.8-0 (>= 2.8.7.1), libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.5.3, libportaudio2")
+    SET (PACKAGE_DEPS "libc6, libwxgtk2.8-0 (>= 2.8.7.1), libglu1-mesa (>= 7.0.0), libgl1-mesa-glx (>= 7.0.0), zlib1g, bzip2, libtinyxml2.6.2, libportaudio2")
     SET (PACKAGE_RECS "xcalib")
     SET (LIB_INSTALL_DIR "lib")
     IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
@@ -332,6 +332,8 @@ SET(HDRS
 		include/routeman.h
 		include/routemanagerdialog.h
 		include/routeprop.h
+		include/routeprintout.h
+		include/printtable.h
 		include/statwin.h
 		include/tcmgr.h
 		include/thumbwin.h
@@ -373,6 +375,8 @@ SET(SRCS
 		src/routeman.cpp
 		src/routemanagerdialog.cpp
 		src/routeprop.cpp
+		src/routeprintout.cpp
+		src/printtable.cpp
 		src/statwin.cpp
 		src/tcmgr.cpp
 		src/thumbwin.cpp
@@ -723,6 +727,16 @@ SET_SOURCE_FILES_PROPERTIES(
            data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
 SET_SOURCE_FILES_PROPERTIES(
+           data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
+
+FILE(GLOB DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/OpenCPN User Manual_files/*")
+FOREACH (_currentDocFile ${DOC_FILES})
+  SET_SOURCE_FILES_PROPERTIES(
+           ${_currentDocFile}
+           PROPERTIES MACOSX_PACKAGE_LOCATION "SharedSupport/doc/OpenCPN User Manual_files" )
+ENDFOREACH (_currentDocFile )
+
+SET_SOURCE_FILES_PROPERTIES(
            buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
 
 SET_SOURCE_FILES_PROPERTIES(
@@ -740,6 +754,8 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       data/license.txt
       ${SOUND_FILES}
       data/doc/help_web.html
+      data/doc/help_en_US.html
+      ${DOC_FILES}
       buildosx/opencpn.icns
       buildosx/MainMenu.xib
       )
@@ -1075,6 +1091,7 @@ IF(UNIX AND NOT APPLE)
     SET(CPACK_RPM_PACKAGE_VERSION "${CPACK_PACKAGE_VERSION}")
     SET(CPACK_RPM_PACKAGE_ARCHITECTURE  ${ARCH})
     SET(CPACK_RPM_PACKAGE_REQUIRES  ${PACKAGE_DEPS})
+    SET(CPACK_RPM_USER_BINARY_SPECFILE "${CMAKE_SOURCE_DIR}/opencpn.spec.in")
     SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenSource Chart Plotter/Navigator")
     SET(CPACK_PACKAGE_DESCRIPTION "OpenCPN is a concise ChartPlotter/Navigator. The application supports: GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart Display, AIS Input Decoding, Waypoint Autopilot Navigation .")
     SET(CPACK_SET_DESTDIR ON)

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Project:  OpenCP
+ * Project:  OpenCPN
  * Purpose:  Extern C Linked Utilities
  * Author:   David Register
  *

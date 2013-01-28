@@ -44,6 +44,8 @@
 #include "chart1.h"
 #include "chcanv.h"
 #include "styles.h"
+#include "version.h"
+
 
 wxString str_version_start = wxT("\n      Version ");
 wxString str_version_major = wxString::Format(wxT("%i"),VERSION_MAJOR);
@@ -59,7 +61,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 char AboutText[] =
 {
   "\n                                         OpenCPN\n\n\
-                       (c) 2000-2011 The OpenCPN Authors\n"
+                       (c) 2000-2013 The OpenCPN Authors\n"
 };
 
 char OpenCPNInfo[] = {"\n\n\
@@ -404,7 +406,7 @@ void about::OnCopyClick( wxCommandEvent& event )
     }
 
     ::wxBeginBusyCursor();
-      
+
     if( wxTheClipboard->Open() ) {
         wxTextDataObject* data = new wxTextDataObject;
         data->SetText( fileContent );
