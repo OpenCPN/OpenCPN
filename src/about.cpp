@@ -61,7 +61,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 char AboutText[] =
 {
   "\n                                         OpenCPN\n\n\
-                       (c) 2000-2011 The OpenCPN Authors\n"
+                       (c) 2000-2013 The OpenCPN Authors\n"
 };
 
 char OpenCPNInfo[] = {"\n\n\
