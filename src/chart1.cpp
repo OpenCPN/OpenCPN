@@ -83,6 +83,7 @@
 #include "compasswin.h"
 #include "datastream.h"
 #include "multiplexer.h"
+#include "routeprintout.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"
@@ -561,6 +562,8 @@ wxAuiManager              *g_pauimgr;
 wxAuiDefaultDockArt       *g_pauidockart;
 
 bool                      g_blocale_changed;
+
+RoutePrintSelection       *pRoutePrintSelection;
 
 wxMenu                    *g_FloatingToolbarConfigMenu;
 wxString                  g_toolbarConfig = _T("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX");

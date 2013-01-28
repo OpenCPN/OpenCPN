@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,7 +20,7 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
  *
  *
@@ -103,6 +103,8 @@ public:
       void SetPropFromString(const wxString &prop_string);
 
       void SetPosition(double lat, double lon);
+      double GetLatitude()  { return m_lat; };
+      double GetLongitude() { return m_lon; };
       void CalculateDCRect(wxDC& dc, wxRect *prect);
 
       bool IsSame(RoutePoint *pOtherRP);        // toh, 2009.02.11
@@ -113,9 +115,16 @@ public:
       void SetListed(bool viz = true){ m_bIsListed = viz; }
       void SetNameShown(bool viz = true) { m_bShowName = viz; }
       wxString GetName(void){ return m_MarkName; }
+      wxString GetDescription(void) { return m_MarkDescription; }
 
       void SetName(wxString name);
       void CalculateNameExtents(void);
+
+      void SetCourse( double course) { m_routeprop_course = course; };
+      double GetCourse() { return m_routeprop_course; };
+      void SetDistance( double distance) { m_routeprop_distance = distance; };
+      double GetDistance() { return m_routeprop_distance; };
+
 
       bool SendToGPS ( wxString& com_name, wxGauge *pProgress );
 
@@ -164,6 +173,9 @@ public:
       int               m_GPXTrkSegNo;
       bool              m_bIsInLayer;
       int               m_LayerID;
+
+      double            m_routeprop_course;         // course from this waypoint to the next waypoint if in a route.
+      double            m_routeprop_distance;       // distance from this waypoint to the next waypoint if in a route.
 
       HyperlinkList     *m_HyperlinkList;
 
@@ -515,7 +527,7 @@ class Select {
 public:
     Select();
     ~Select();
-    
+
     void SetSelectPixelRadius(int radius){ pixelRadius = radius; }
 
     bool AddSelectableRoutePoint( float slat, float slon, RoutePoint *pRoutePointAdd );
@@ -827,7 +839,7 @@ class OCPNSoundData
 public:
     OCPNSoundData() : m_dataWithHeader(NULL) {}
     ~OCPNSoundData() {};
-    
+
     // .wav header information:
     unsigned m_channels;       // num of channels (mono:1, stereo:2)
     unsigned m_samplingRate;
@@ -835,11 +847,11 @@ public:
     // samples (wxUint8), if 16 then signed 16bit
     // (wxInt16)
     unsigned m_samples;        // length in samples:
-    
+
     // wave data:
     size_t   m_dataBytes;
     wxUint8 *m_data;           // m_dataBytes bytes of data
-    
+
     wxUint8 *m_dataWithHeader; // ditto, but prefixed with .wav header
 };
 
@@ -851,24 +863,24 @@ class OCPN_Sound: public wxSound
 public:
     OCPN_Sound();
     ~OCPN_Sound();
-    
+
     bool IsOk() const;
     bool Create(const wxString& fileName, bool isResource = false);
     bool Play(unsigned flags = wxSOUND_ASYNC) const;
     bool IsPlaying() const;
     void Stop();
-    
+
 private:
     bool m_OK;
-    
+
 #ifdef OCPN_USE_PORTAUDIO
     bool LoadWAV(const wxUint8 *data, size_t length, bool copyData);
     void FreeMem(void);
-    
+
     OCPNSoundData *m_osdata;
     PaStream *m_stream;
-#endif    
-    
+#endif
+
 };
 
 
