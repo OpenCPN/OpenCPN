@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 21:24-0500\n"
+"POT-Creation-Date: 2013-01-28 00:15-0500\n"
 "PO-Revision-Date: 2012-12-29 13:02+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigiszabolcs@gmail.com>\n"
@@ -1382,6 +1382,11 @@ msgid "Distance Unit"
 msgstr "Távolság egység"
 #
 #
+#, fuzzy
+msgid "Distance from Ownship"
+msgstr "Távolság egység"
+#
+#
 msgid "Distress"
 msgstr "Vészhelyzet"
 #
@@ -1462,10 +1467,6 @@ msgstr "Mondatok eldobása"
 #
 msgid "Drop sentences"
 msgstr "Mondatok eldobása"
-#
-#
-msgid "E&xport All..."
-msgstr "Minden exportálása..."
 #
 #
 msgid "ETA"
@@ -2102,18 +2103,6 @@ msgid "Mariners Standard"
 msgstr ""
 #
 #
-msgid "Mark Information"
-msgstr "Jel információ"
-#
-#
-msgid "Mark Properties"
-msgstr "Jel tulajdonságok"
-#
-#
-msgid "Mark Properties, Layer: "
-msgstr "Jel tulajdonságok, réteg: "
-#
-#
 msgid "Mark targets as lost after (min)"
 msgstr "Célpont eltűntnek nyilvánítása ennyi idő után (perc)"
 #
@@ -2636,6 +2625,11 @@ msgstr "Előnézet:"
 msgid "Print Chart"
 msgstr "Térkép nyomtatása"
 #
+#
+#, fuzzy
+msgid "Print Route"
+msgstr "Útvonal felbontása"
+#
 msgid "Priority"
 msgstr "Prioritás"
 #
@@ -3073,7 +3067,7 @@ msgstr "GPS-re küldés..."
 #
 #
 #, fuzzy
-msgid "Send to GPS ( "
+msgid "Send to GPS"
 msgstr "GPS-re küldés"
 #
 #
@@ -3773,8 +3767,23 @@ msgid "Waypoint"
 msgstr "Útpont"
 #
 #
+#, fuzzy
+msgid "Waypoint Information"
+msgstr "Jel információ"
+#
+#
 msgid "Waypoint Name"
 msgstr "Útpont neve"
+#
+#
+#, fuzzy
+msgid "Waypoint Properties"
+msgstr "Útpont tulajdonságok..."
+#
+#
+#, fuzzy
+msgid "Waypoint Properties, Layer: "
+msgstr "Jel tulajdonságok, réteg: "
 #
 #
 msgid "Waypoint(s) Uploaded successfully."
@@ -3911,8 +3920,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
+#
 #
 #
 #
@@ -3931,8 +3942,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Maximális sebesség vesztegléshez (csomó):"
+#
 #
 #
 #
@@ -3947,8 +3960,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Térképi vetület ismeretlen, feltétlezem a Mercator vetületet: "
+#
 #
 #
 #
@@ -3963,6 +3978,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "  Could not open serial port '"
 #~ msgstr "  Nem lehet megnyitni a soros portot '"
 #
@@ -3971,8 +3987,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " COG: %03d Deg."
 #~ msgstr " COG: %03d fok"
+#
 #
 #
 #
@@ -4000,8 +4018,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "Térkép kapcsolása"
+#
 #
 #
 #
@@ -4020,6 +4040,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ "Suggestion: Try closing other applications."
@@ -4032,8 +4053,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ":               "
 #~ msgstr ":               "
+#
 #
 #
 #
@@ -4053,14 +4076,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "<--Remove"
 #~ msgstr "<--Eltávolít"
 #
 #
 #
 #
+#
 #~ msgid "AIS Port (Shared)"
 #~ msgstr "AIS Port (megosztott)"
+#
 #
 #
 #
@@ -4075,8 +4101,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Activate CM93 Offset"
 #~ msgstr "CM93 eltolás bekapcsolása"
+#
 #
 #
 #
@@ -4091,8 +4119,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Útvonal aktiválása"
+#
 #
 #
 #
@@ -4107,8 +4137,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Térkép összefűzéshez adása."
+#
 #
 #
 #
@@ -4122,14 +4154,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "További információ"
 #
 #
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Mind, kivéve"
+#
 #
 #
 #
@@ -4144,8 +4179,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Autopilot Output Port"
 #~ msgstr "Autopilot port"
+#
 #
 #
 #
@@ -4160,8 +4197,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Iránylat:                %03d fok\n"
+#
 #
 #
 #
@@ -4176,8 +4215,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -4192,8 +4233,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CM93 Offsets"
 #~ msgstr "CM93 eltolás"
+#
 #
 #
 #
@@ -4208,8 +4251,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f tmf\n"
+#
 #
 #
 #
@@ -4232,14 +4277,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "Hívójel:             "
 #
 #
 #
 #
+#
 #~ msgid "Can't send waypoint. Found no serial data port with output defined."
 #~ msgstr "Az útpont nem küldhető el. Nincs kimenetként definiált soros port."
+#
 #
 #
 #
@@ -4254,8 +4302,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "Térkép megjelenítés szűrése"
+#
 #
 #
 #
@@ -4269,8 +4319,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Chart Groups..."
 #~ msgstr "Térkép csoportok..."
+#
 #
 #
 #
@@ -4284,14 +4336,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Class:                "
 #~ msgstr "Osztály:                "
 #
 #
 #
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Másolás"
+#
 #
 #
 #
@@ -4306,8 +4361,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Course:                 %03d Deg.\n"
 #~ msgstr "Irány:                 %03d fok\n"
+#
 #
 #
 #
@@ -4322,8 +4379,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Course:                 Unavailable\n"
 #~ msgstr "Irány:                 Nem áll rendelkezésre\n"
+#
 #
 #
 #
@@ -4338,8 +4397,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Deactivate Route"
 #~ msgstr "Útvonal inaktiválása"
+#
 #
 #
 #
@@ -4354,8 +4415,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Deg"
 #~ msgstr "fok"
+#
 #
 #
 #
@@ -4370,8 +4433,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Delete Route"
 #~ msgstr "Útvonal törlése"
+#
 #
 #
 #
@@ -4386,6 +4451,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Depth Settings"
 #~ msgstr "Mélység beállítások"
 #
@@ -4394,8 +4460,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Célállomás:          "
+#
+#
+#
+#~ msgid "E&xport All..."
+#~ msgstr "Minden exportálása..."
+#
 #
 #
 #
@@ -4410,8 +4483,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Enable CM93 Detail Slider"
 #~ msgstr "CM93 részletesség csúszka engedélyezése"
+#
 #
 #
 #
@@ -4426,8 +4501,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "Nagyítás egérgörgővel"
+#
 #
 #
 #
@@ -4455,8 +4532,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Kilépés az OpenCPN-ből"
+#
 #
 #
 #
@@ -4471,8 +4550,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD adat kiszolgáló"
+#
 #
 #
 #
@@ -4486,8 +4567,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Groups"
 #~ msgstr "Csoportok"
+#
 #
 #
 #
@@ -4500,8 +4583,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Iránylat:                %03d fok\n"
+#
 #
 #
 #
@@ -4529,8 +4614,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Import new layer"
 #~ msgstr "Új réteg importálása"
+#
 #
 #
 #
@@ -4545,8 +4632,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Ugrás"
+#
 #
 #
 #
@@ -4561,14 +4650,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Pozícióra ugrás..."
 #
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Csak"
+#
 #
 #
 #
@@ -4583,8 +4675,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Utolsó pozíció jelentési idő:  "
+#
 #
 #
 #
@@ -4597,6 +4691,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Loaded legacy PLIB data: "
 #~ msgstr "Örökölt PLIB adat betöltése: "
 #
@@ -4605,8 +4700,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "META objektumok"
+#
 #
 #
 #
@@ -4622,6 +4719,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Jelölés képe"
 #
@@ -4630,8 +4728,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Mark Name"
 #~ msgstr "Jel neve"
+#
+#
+#
+#~ msgid "Mark Properties"
+#~ msgstr "Jel tulajdonságok"
+#
 #
 #
 #
@@ -4646,8 +4751,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Mérés....."
+#
 #
 #
 #
@@ -4662,8 +4769,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA adatforrás"
+#
 #
 #
 #
@@ -4678,8 +4787,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Name:  "
 #~ msgstr "Név:  "
+#
 #
 #
 #
@@ -4694,14 +4805,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "Navigációs státus:  "
 #
 #
 #
 #
+#
 #~ msgid "Network LIBGPS"
 #~ msgstr "Hálózati LIBGPS"
+#
 #
 #
 #
@@ -4719,8 +4833,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Number of radar rings shown"
 #~ msgstr "Radar gyűrűk száma"
+#
 #
 #
 #
@@ -4735,8 +4851,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "OwnShip Display Options"
 #~ msgstr "Saját hajó megjelenítés beállításai"
+#
 #
 #
 #
@@ -4751,8 +4869,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Place Trackpoints at time interval (Seconds):"
 #~ msgstr "Nyomvonalpontok időbeli sűrűsége (mp):"
+#
 #
 #
 #
@@ -4775,8 +4895,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Position:               "
 #~ msgstr "Pozíció:"
+#
 #
 #
 #
@@ -4799,8 +4921,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Printing"
 #~ msgstr "Nyomtatás"
+#
 #
 #
 #
@@ -4815,8 +4939,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Range:                  Unavailable\n"
 #~ msgstr "Távolság:                  Nem áll rendelkezésre\n"
+#
 #
 #
 #
@@ -4831,8 +4957,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Raszter"
+#
 #
 #
 #
@@ -4847,8 +4975,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Fordulás sebessége:            %3d fok/perc. Jobbra\n"
+#
 #
 #
 #
@@ -4863,6 +4993,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Fordulás sebessége:       > 5 fok/30 sec. Balrara\n"
 #
@@ -4871,8 +5002,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 #~ msgstr "Fordulás sebessége:       > 5 fok/30 sec. Jobbra\n"
+#
 #
 #
 #
@@ -4904,14 +5037,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Térkép kivétele az összefűzésből."
 #
 #
 #
 #
+#
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "RenderHPGL: '%s' utasítás nincs megvalósítva."
+#
 #
 #
 #
@@ -4926,6 +5062,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Route Distance: "
 #~ msgstr "Útvonal táv: "
 #
@@ -4934,8 +5071,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "Válaszd ki az összefűzendő térkép típusokat"
+#
+#
+#
+#, fuzzy
+#~ msgid "Send to GPS ( "
+#~ msgstr "GPS-re küldés"
+#
 #
 #
 #
@@ -4950,8 +5095,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Settings"
 #~ msgstr "Beállítások"
+#
 #
 #
 #
@@ -4966,8 +5113,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show Printing Icon"
 #~ msgstr "Nyomtatási ikon mutatása"
+#
 #
 #
 #
@@ -4982,8 +5131,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "Rétegek mutatása induláskor"
+#
 #
 #
 #
@@ -4996,6 +5147,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Méret:                 %dm x %dm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5025,12 +5177,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Méret:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5049,12 +5203,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Méret:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5073,12 +5229,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Méret:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5097,8 +5255,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Speed:                  Unavailable\n"
 #~ msgstr "Sebesség:                  Nem elérhető\n"
+#
 #
 #
 #
@@ -5113,8 +5273,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi adatkiszolgáló"
+#
 #
 #
 #
@@ -5129,8 +5291,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Text Element"
 #~ msgstr "Szöveg elem"
+#
 #
 #
 #
@@ -5145,8 +5309,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Valós méretarány: %8.0f             "
+#
 #
 #
 #
@@ -5161,8 +5327,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "UN Ship Type:         "
 #~ msgstr "UN hajó típus:         "
+#
 #
 #
 #
@@ -5183,8 +5351,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Unable to load libgps"
 #~ msgstr "Libgps betöltése sikertelen"
+#
 #
 #
 #
@@ -5199,8 +5369,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Units"
 #~ msgstr "Mértékegységek"
+#
 #
 #
 #
@@ -5215,8 +5387,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Use SCAMIN"
 #~ msgstr "SCAMIN használata"
+#
 #
 #
 #
@@ -5231,8 +5405,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WiFi Options"
 #~ msgstr "WiFi beállítások"
+#
 #
 #
 #
@@ -5247,6 +5423,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
 #~ msgstr "Y eltolás (Pozitív érték északra mozgatja a térképet) (tmf) :"
 #
@@ -5255,8 +5432,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "cm93 Detail"
 #~ msgstr "cm93 részletesség"
+#
 #
 #
 #

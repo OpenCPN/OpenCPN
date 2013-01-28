@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 21:24-0500\n"
+"POT-Creation-Date: 2013-01-28 00:15-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom  avec les précieux conseils de Pythéas54 "
 "<contact@gilletarom.fr>\n"
@@ -1287,6 +1287,10 @@ msgstr "Intervalle entre deux cercles :"
 msgid "Distance Unit"
 msgstr "Unité de la distance entre deux cercles"
 #
+#, fuzzy
+msgid "Distance from Ownship"
+msgstr "Unité de la distance entre deux cercles"
+#
 msgid "Distress"
 msgstr "Détresse"
 #
@@ -1380,9 +1384,6 @@ msgstr "Rejeter les phrases"
 # Pytheas54: OK
 msgid "Drop sentences"
 msgstr "Phrases non envoyées"
-#
-msgid "E&xport All..."
-msgstr "Exporter tout ..."
 #
 msgid "ETA"
 msgstr "Date est. d'arrivée :"
@@ -1993,18 +1994,6 @@ msgstr "Objets affichables"
 msgid "Mariners Standard"
 msgstr "Objets affichables : Choisir"
 #
-# arque :
-msgid "Mark Information"
-msgstr "Waypoint/marque : Propriétés"
-#
-# Menu contextuel : Waypoint/marque
-msgid "Mark Properties"
-msgstr "Waypoint/marque : Propriétés ..."
-#
-# Menu contextuel : Waypoint/marque
-msgid "Mark Properties, Layer: "
-msgstr "Waypoint/marque, couches : Les propriétés"
-#
 msgid "Mark targets as lost after (min)"
 msgstr "Marquer les cibles comme perdues après ... minutes :"
 #
@@ -2465,6 +2454,10 @@ msgstr "Pré-visualisation :"
 msgid "Print Chart"
 msgstr "Imprimer la carte"
 #
+#, fuzzy
+msgid "Print Route"
+msgstr "Route : Fractionner"
+#
 msgid "Priority"
 msgstr "Priorité"
 #
@@ -2900,8 +2893,9 @@ msgstr "Route : Envoyer au GPS"
 msgid "Send To GPS..."
 msgstr "Envoyer au GPS ..."
 #
-msgid "Send to GPS ( "
-msgstr "Envoyer au GPS ( "
+#, fuzzy
+msgid "Send to GPS"
+msgstr "Envoyer au GPS"
 #
 msgid "Sentence Filter"
 msgstr "Filtre de phrases"
@@ -3548,8 +3542,22 @@ msgstr "Déclencher un avertissement si le CPA est inférieur à... (milles) :"
 msgid "Waypoint"
 msgstr "Waypoint"
 #
+# arque :
+#, fuzzy
+msgid "Waypoint Information"
+msgstr "Waypoint/marque : Propriétés"
+#
 msgid "Waypoint Name"
 msgstr "Nom :"
+#
+#, fuzzy
+msgid "Waypoint Properties"
+msgstr "Waypoint : Propriétés ..."
+#
+# Menu contextuel : Waypoint/marque
+#, fuzzy
+msgid "Waypoint Properties, Layer: "
+msgstr "Waypoint/marque, couches : Les propriétés"
 #
 # Expérimentalement (commande "Send to GPS") , le pluriel ne semble pas logique car il n'est jamais possible de sélectionner plusieurs WP dans le manager de waypoint. D'autre part, nous nous heurtons au problème du pluriel de waypoint .. Sytématiquement, dans mes traductions :" les waypoint" et non pas "les waypoints".
 # ----
@@ -3685,24 +3693,40 @@ msgstr "WGS Y"
 msgid "wxFB Website"
 msgstr "Site web wxFB"
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Mosaïque des cartes : Ajouter cette carte"
 #
+#
 #~ msgid "All but"
 #~ msgstr " Tout mais "
+#
 #
 #~ msgid "Can't send waypoint. Found no serial data port with output defined."
 #~ msgstr ""
 #~ "Impossible d'envoyer le waypoint. Aucun port de sortie n'a été défini."
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Copier"
+#
+#
+#~ msgid "E&xport All..."
+#~ msgstr "Exporter tout ..."
+#
 #
 #~ msgid "Just "
 #~ msgstr " Seulement"
 #
+#
+# Menu contextuel : Waypoint/marque
+#~ msgid "Mark Properties"
+#~ msgstr "Waypoint/marque : Propriétés ..."
+#
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Mosaïque des cartes : Retirer cette carte"
+#
 #
 # Ok.    ....  Gachis de travail. L'item sera supprimé dans la prochaine version.
 # ---
@@ -3710,6 +3734,11 @@ msgstr "Site web wxFB"
 #, fuzzy
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "RenderHPGL: L'instruction '%s' n'est pas implémenté."
+#
+#
+#~ msgid "Send to GPS ( "
+#~ msgstr "Envoyer au GPS ( "
+#
 #
 #~ msgid "Unavailable"
 #~ msgstr "Indisponible"

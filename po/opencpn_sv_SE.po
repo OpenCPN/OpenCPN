@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-18 21:24-0500\n"
+"POT-Creation-Date: 2013-01-28 00:15-0500\n"
 "PO-Revision-Date: 2012-11-29 18:35-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -1396,6 +1396,11 @@ msgid "Distance Unit"
 msgstr "Enhet för avstånd"
 #
 #
+#, fuzzy
+msgid "Distance from Ownship"
+msgstr "Enhet för avstånd"
+#
+#
 msgid "Distress"
 msgstr "I nöd"
 #
@@ -1477,10 +1482,6 @@ msgstr "Ignorera kommandon"
 #
 msgid "Drop sentences"
 msgstr "Ignorera kommandon"
-#
-#
-msgid "E&xport All..."
-msgstr "E&xportera alla..."
 #
 #
 msgid "ETA"
@@ -2124,18 +2125,6 @@ msgid "Mariners Standard"
 msgstr "Marinstandard"
 #
 #
-msgid "Mark Information"
-msgstr "Waypointsymbol"
-#
-#
-msgid "Mark Properties"
-msgstr "Waypointegenskaper"
-#
-#
-msgid "Mark Properties, Layer: "
-msgstr "Waypointegenskaper, lager: "
-#
-#
 msgid "Mark targets as lost after (min)"
 msgstr "Markera AIS-fartyg som borttappade efter (min)"
 #
@@ -2658,6 +2647,11 @@ msgstr "Förhandsgranska:"
 msgid "Print Chart"
 msgstr "Skriv ut sjökort"
 #
+#
+#, fuzzy
+msgid "Print Route"
+msgstr "Dela rutt"
+#
 msgid "Priority"
 msgstr "Prioritet"
 #
@@ -3102,7 +3096,7 @@ msgstr "Skicka till GPS"
 #
 #
 #, fuzzy
-msgid "Send to GPS ( "
+msgid "Send to GPS"
 msgstr "Skicka till GPS"
 #
 #
@@ -3813,8 +3807,23 @@ msgid "Waypoint"
 msgstr "Waypoint"
 #
 #
+#, fuzzy
+msgid "Waypoint Information"
+msgstr "Waypointsymbol"
+#
+#
 msgid "Waypoint Name"
 msgstr "Waypointnamn"
+#
+#
+#, fuzzy
+msgid "Waypoint Properties"
+msgstr "Egenskaper för &waypoint..."
+#
+#
+#, fuzzy
+msgid "Waypoint Properties, Layer: "
+msgstr "Waypointegenskaper, lager: "
 #
 #
 msgid "Waypoint(s) Uploaded successfully."
@@ -3953,6 +3962,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Alla utom"
 #
@@ -3963,8 +3973,15 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Kopiera"
+#
+#
+#
+#~ msgid "E&xport All..."
+#~ msgstr "E&xportera alla..."
+#
 #
 #
 #
@@ -3979,9 +3996,22 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#~ msgid "Mark Properties"
+#~ msgstr "Waypointegenskaper"
+#
+#
+#
+#
 #
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
+#
+#
+#
+#, fuzzy
+#~ msgid "Send to GPS ( "
+#~ msgstr "Skicka till GPS"
+#
 #
 #
 #
