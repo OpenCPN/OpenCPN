@@ -44,6 +44,8 @@
 #include "chart1.h"
 #include "chcanv.h"
 #include "styles.h"
+#include "version.h"
+
 
 wxString str_version_start = wxT("\n      Version ");
 wxString str_version_major = wxString::Format(wxT("%i"),VERSION_MAJOR);
@@ -404,7 +406,7 @@ void about::OnCopyClick( wxCommandEvent& event )
     }
 
     ::wxBeginBusyCursor();
-      
+
     if( wxTheClipboard->Open() ) {
         wxTextDataObject* data = new wxTextDataObject;
         data->SetText( fileContent );
