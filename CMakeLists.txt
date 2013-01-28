@@ -729,7 +729,7 @@ SET_SOURCE_FILES_PROPERTIES(
 SET_SOURCE_FILES_PROPERTIES(
            data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
-FILE(GLOB DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/OpenCPN User Manual_files/*.png")
+FILE(GLOB DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/OpenCPN User Manual_files/*")
 FOREACH (_currentDocFile ${DOC_FILES})
   SET_SOURCE_FILES_PROPERTIES(
            ${_currentDocFile}
