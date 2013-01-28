@@ -8778,11 +8778,11 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     pMarkPropDialog->SetRoutePoint( markPoint );
     pMarkPropDialog->UpdateProperties();
     if( markPoint->m_bIsInLayer ) {
-        wxString caption( _("Mark Properties, Layer: ") );
+        wxString caption( _("Waypoint Properties, Layer: ") );
         caption.Append( GetLayerName( markPoint->m_LayerID ) );
         pMarkPropDialog->SetDialogTitle( caption );
     } else
-        pMarkPropDialog->SetDialogTitle( _("Mark Properties") );
+        pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
 
     pMarkPropDialog->Show();
     pMarkPropDialog->InitialFocus();
