@@ -189,29 +189,22 @@ void MyRoutePrintout::OnPreparePrinting()
     int w, h;
     dc->GetSize( &w, &h );
     
- //   float maxX = 1024;
- //   float maxY = 768;
+    // We don't know before hand what size the Print DC will be, in pixels.  Varies by host.
+    // So, if the dc size is greater than 1000 pixels, we scale accordinly.
     
-    int maxX = w;
-    int maxY = h;
+    int maxX = wxMin(w, 1000);
+    int maxY = wxMin(h, 1000);
     
     // Calculate a suitable scaling factor
-    float scaleX = ( float )( w / maxX );
-    float scaleY = ( float )( h / maxY );
+    double scaleX = ( double )( w / maxX );
+    double scaleY = ( double )( h / maxY );
     
     // Use x or y scaling factor, whichever fits on the DC
-    float actualScale = wxMin( scaleX, scaleY );
-    
-    // Calculate the position on the DC for centring the graphic
-    float posX = ( float )( ( w - ( maxX * actualScale ) ) / 2.0 );
-    float posY = ( float )( ( h - ( maxY * actualScale ) ) / 2.0 );
-    
-    posX = wxMax( posX, marginX );
-    posY = wxMax( posY, marginY );
+    double actualScale = wxMin( scaleX, scaleY );
     
     // Set the scale and origin
     dc->SetUserScale( actualScale, actualScale );
-    dc->SetDeviceOrigin( ( long )posX, ( long )posY );
+    dc->SetDeviceOrigin( ( long )marginX, ( long )marginY );
     
     table.AdjustCells( dc, marginX, marginY );
     numberOfPages = table.GetNumberPages();
@@ -237,35 +230,6 @@ bool MyRoutePrintout::OnPrintPage( int page )
 void MyRoutePrintout::DrawPage( wxDC* dc )
 {
     
-/*    
-    // Get the size of the DC in pixels
-    int w, h;
-    dc->GetSize( &w, &h );
-
-    float maxX = 1024;
-    float maxY = 768;
-    
-//    int maxX = w;
-//    int maxY = h;
-
-    // Calculate a suitable scaling factor
-    float scaleX = ( float )( w / maxX );
-    float scaleY = ( float )( h / maxY );
-
-    // Use x or y scaling factor, whichever fits on the DC
-    float actualScale = wxMin( scaleX, scaleY );
-
-    // Calculate the position on the DC for centring the graphic
-    float posX = ( float )( ( w - ( maxX * actualScale ) ) / 2.0 );
-    float posY = ( float )( ( h - ( maxY * actualScale ) ) / 2.0 );
-
-    posX = wxMax( posX, marginX );
-    posY = wxMax( posY, marginY );
-
-    // Set the scale and origin
-    dc->SetUserScale( actualScale, actualScale );
-    dc->SetDeviceOrigin( ( long )posX, ( long )posY );
-*/
 
     wxFont routePrintFont_bold( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     dc->SetFont( routePrintFont_bold );
@@ -297,8 +261,10 @@ void MyRoutePrintout::DrawPage( wxDC* dc )
         for ( size_t j = 0; j < content_row.size(); j++ ) {
             PrintCell& cell = content_row[ j ];
             if ( cell.GetPage() == pageToPrint ) {
-                dc->DrawRectangle( currentX, currentY, cell.GetWidth(), cell.GetHeight() );
-                dc->DrawText( cell.GetText(),  currentX + textOffsetX, currentY + textOffsetY );
+                wxRect r( currentX, currentY, cell.GetWidth(), cell.GetHeight() );
+                dc->DrawRectangle( r );
+                r.Offset( textOffsetX, textOffsetY );
+                dc->DrawLabel(cell.GetText(), r);
                 currentX     += cell.GetWidth();
                 currentHeight = cell.GetHeight();
             }
