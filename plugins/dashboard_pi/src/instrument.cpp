@@ -186,6 +186,7 @@ wxSize DashboardInstrument_Single::GetSize( int orient, wxSize hint )
 void DashboardInstrument_Single::Draw(wxGCDC* dc)
 {
       wxColour cl;
+#ifdef __WXMSW__
       wxBitmap tbm( dc->GetSize().x, m_DataHeight, -1 );
       wxMemoryDC tdc( tbm );
       wxColour c2;
@@ -202,6 +203,14 @@ void DashboardInstrument_Single::Draw(wxGCDC* dc)
       tdc.SelectObject( wxNullBitmap );
 
       dc->DrawBitmap(tbm, 0, m_TitleHeight, false);
+#else
+      dc->SetFont(*g_pFontData );
+      GetGlobalColor( _T("DASHF"), &cl );
+      dc->SetTextForeground( cl );
+
+      dc->DrawText(m_data, 10, m_TitleHeight);
+
+#endif
 
 }
 
@@ -272,6 +281,7 @@ void DashboardInstrument_Position::Draw(wxGCDC* dc)
 {
       wxColour cl;
 
+#ifdef __WXMSW__
       wxBitmap tbm( dc->GetSize().x, m_DataHeight * 2, -1 );
       wxMemoryDC tdc( tbm );
       wxColour c2;
@@ -289,6 +299,15 @@ void DashboardInstrument_Position::Draw(wxGCDC* dc)
       tdc.SelectObject( wxNullBitmap );
 
       dc->DrawBitmap(tbm, 0, m_TitleHeight, false);
+#else
+      dc->SetFont(*g_pFontData );
+      GetGlobalColor( _T("DASHF"), &cl );
+      dc->SetTextForeground( cl );
+
+      dc->DrawText(m_data1, 10, m_TitleHeight);
+      dc->DrawText(m_data2, 10, m_TitleHeight + m_DataHeight);
+#endif
+
 
 }
 
@@ -297,6 +316,7 @@ void DashboardInstrument_Position::SetData(int st, double data, wxString unit)
       if (st == m_cap_flag1)
       {
             m_data1 = toSDMM(1, data);
+            m_data1[0] = ' ';
       }
       else if (st == m_cap_flag2)
       {
