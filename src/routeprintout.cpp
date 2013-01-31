@@ -334,7 +334,7 @@ bool RoutePrintSelection::Create( wxWindow* parent, wxWindowID id, const wxStrin
     style |= wxSTAY_ON_TOP;
 #endif
     
-    wxDialog::Create( parent, id, caption, pos, size, style );
+    wxDialog::Create( parent, id, _("Print Route Selection"), pos, size, style );
 
     CreateControls();
 
@@ -385,7 +385,7 @@ void RoutePrintSelection::CreateControls()
                                                  wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT );
     m_checkBoxWPDistanceToNext->SetValue( true );
     fgSizer2->Add( m_checkBoxWPDistanceToNext, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
-    wxStaticText* label4 = new  wxStaticText( itemDialog1, wxID_ANY, _( "Show Distance from each Waypoint the the next one." ), wxDefaultPosition, wxDefaultSize );
+    wxStaticText* label4 = new  wxStaticText( itemDialog1, wxID_ANY, _( "Show Distance from each Waypoint to the next one." ), wxDefaultPosition, wxDefaultSize );
     fgSizer2->Add( label4, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
 
     m_checkBoxWPDescription = new wxCheckBox( itemDialog1, wxID_ANY, _( "Description" ),

@@ -172,3 +172,5 @@ src/toolbar.cpp
 src/styles.cpp
 src/kml.cpp
 src/undo.cpp
+src/routeprintout.cpp
+

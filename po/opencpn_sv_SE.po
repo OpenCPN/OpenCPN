@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-28 00:15-0500\n"
+"POT-Creation-Date: 2013-01-30 19:56-0500\n"
 "PO-Revision-Date: 2012-11-29 18:35-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -1506,6 +1506,9 @@ msgstr "Ändra"
 msgid "Elapsed time : "
 msgstr "Förfluten tid : "
 #
+msgid "Elements to print..."
+msgstr ""
+#
 #
 msgid "Enable"
 msgstr "Aktivera"
@@ -2652,6 +2655,11 @@ msgstr "Skriv ut sjökort"
 msgid "Print Route"
 msgstr "Dela rutt"
 #
+#
+#, fuzzy
+msgid "Print Route Selection"
+msgstr "Dela rutt"
+#
 msgid "Priority"
 msgstr "Prioritet"
 #
@@ -2951,6 +2959,11 @@ msgid "Route Name"
 msgstr "Ruttnamn"
 #
 #
+#, fuzzy
+msgid "Route Print"
+msgstr "Ruttegenskaper"
+#
+#
 msgid "Route Properties"
 msgstr "Ruttegenskaper"
 #
@@ -3173,6 +3186,9 @@ msgstr "Visa strömmar"
 msgid "Show Depth Units"
 msgstr "Visa sjökortets djupenhet"
 #
+msgid "Show Distance from each Waypoint to the next one."
+msgstr ""
+#
 #
 msgid "Show ENC Text"
 msgstr "Visa ENC-text"
@@ -3224,8 +3240,26 @@ msgstr "Visa verktygslisten i fullskärmsläge"
 msgid "Show WPT names"
 msgstr "Visa namn på waypoints"
 #
+#
+#, fuzzy
+msgid "Show Waypoint description."
+msgstr "Beskrivning"
+#
+#
+#, fuzzy
+msgid "Show Waypoint name."
+msgstr "Waypointnamn"
+#
+#
+#, fuzzy
+msgid "Show Waypoint position."
+msgstr "Waypointsymbol"
+#
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Visa områdesupplysningar (från AIS datameddelanden)"
+#
+msgid "Show course from each Waypoint to the next one. "
+msgstr ""
 #
 #
 msgid "Show name"
@@ -3963,6 +3997,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr "Alla utom"
 #
@@ -3974,8 +4009,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Kopiera"
+#
 #
 #
 #
@@ -3991,8 +4028,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Endast"
+#
 #
 #
 #
@@ -4003,14 +4042,17 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
+#
 #
 #
 #
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "Skicka till GPS"
+#
 #
 #
 #

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-28 00:15-0500\n"
+"POT-Creation-Date: 2013-01-30 19:56-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom  avec les précieux conseils de Pythéas54 "
 "<contact@gilletarom.fr>\n"
@@ -1404,6 +1404,9 @@ msgstr "Editer"
 msgid "Elapsed time : "
 msgstr "Durée écoulée :  "
 #
+msgid "Elements to print..."
+msgstr ""
+#
 msgid "Enable"
 msgstr "Activer"
 #
@@ -2458,6 +2461,10 @@ msgstr "Imprimer la carte"
 msgid "Print Route"
 msgstr "Route : Fractionner"
 #
+#, fuzzy
+msgid "Print Route Selection"
+msgstr "Route : Fractionner"
+#
 msgid "Priority"
 msgstr "Priorité"
 #
@@ -2760,6 +2767,11 @@ msgid "Route Name"
 msgstr "Nom :"
 #
 # Menu contextuel : Route
+#, fuzzy
+msgid "Route Print"
+msgstr "Route : Propriétés ..."
+#
+# Menu contextuel : Route
 msgid "Route Properties"
 msgstr "Route : Propriétés ..."
 #
@@ -2965,6 +2977,9 @@ msgstr "Afficher les courants"
 msgid "Show Depth Units"
 msgstr "Profondeur : Afficher l'unité"
 #
+msgid "Show Distance from each Waypoint to the next one."
+msgstr ""
+#
 msgid "Show ENC Text"
 msgstr "Afficher les textes des cartes ENC"
 #
@@ -3009,8 +3024,24 @@ msgstr "Barre d'icônes : La montrer en mode plein écran"
 msgid "Show WPT names"
 msgstr "WP : Montrer les noms"
 #
+#, fuzzy
+msgid "Show Waypoint description."
+msgstr "Description du lien"
+#
+#, fuzzy
+msgid "Show Waypoint name."
+msgstr "Nom :"
+#
+# arque :
+#, fuzzy
+msgid "Show Waypoint position."
+msgstr "Waypoint/marque : Propriétés"
+#
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Afficher les avis de la zone (à partir des données AIS)"
+#
+msgid "Show course from each Waypoint to the next one. "
+msgstr ""
 #
 msgid "Show name"
 msgstr "Afficher le nom"
@@ -3694,12 +3725,15 @@ msgid "wxFB Website"
 msgstr "Site web wxFB"
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Mosaïque des cartes : Ajouter cette carte"
 #
 #
+#
 #~ msgid "All but"
 #~ msgstr " Tout mais "
+#
 #
 #
 #~ msgid "Can't send waypoint. Found no serial data port with output defined."
@@ -3707,16 +3741,20 @@ msgstr "Site web wxFB"
 #~ "Impossible d'envoyer le waypoint. Aucun port de sortie n'a été défini."
 #
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Copier"
+#
 #
 #
 #~ msgid "E&xport All..."
 #~ msgstr "Exporter tout ..."
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr " Seulement"
+#
 #
 #
 # Menu contextuel : Waypoint/marque
@@ -3724,8 +3762,10 @@ msgstr "Site web wxFB"
 #~ msgstr "Waypoint/marque : Propriétés ..."
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Mosaïque des cartes : Retirer cette carte"
+#
 #
 #
 # Ok.    ....  Gachis de travail. L'item sera supprimé dans la prochaine version.
@@ -3736,8 +3776,10 @@ msgstr "Site web wxFB"
 #~ msgstr "RenderHPGL: L'instruction '%s' n'est pas implémenté."
 #
 #
+#
 #~ msgid "Send to GPS ( "
 #~ msgstr "Envoyer au GPS ( "
+#
 #
 #
 #~ msgid "Unavailable"

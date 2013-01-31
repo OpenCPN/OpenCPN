@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-28 00:15-0500\n"
+"POT-Creation-Date: 2013-01-30 19:56-0500\n"
 "PO-Revision-Date: 2013-01-10 10:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC Sailing team <sailingteam@isc.tuc.gr>\n"
@@ -1270,6 +1270,9 @@ msgstr "Επεξεργασία"
 msgid "Elapsed time : "
 msgstr "Παρελθών χρόνος: "
 #
+msgid "Elements to print..."
+msgstr ""
+#
 msgid "Enable"
 msgstr "Επίτρεψε"
 #
@@ -2190,6 +2193,10 @@ msgstr "Εκτύπωση χάρτη"
 msgid "Print Route"
 msgstr "Χωρισμός διαδρομής"
 #
+#, fuzzy
+msgid "Print Route Selection"
+msgstr "Χωρισμός διαδρομής"
+#
 msgid "Priority"
 msgstr "Προτεραιότητα"
 #
@@ -2431,6 +2438,10 @@ msgstr "Ρυθμίσεις διαδρομής"
 msgid "Route Name"
 msgstr "Όνομα διαδρομής"
 #
+#, fuzzy
+msgid "Route Print"
+msgstr "Ιδιότητες διαδρομής"
+#
 msgid "Route Properties"
 msgstr "Ιδιότητες διαδρομής"
 #
@@ -2613,6 +2624,9 @@ msgstr "Εμφάνιση ρευμάτων"
 msgid "Show Depth Units"
 msgstr "Δείξε βαθυμετρικές μονάδες"
 #
+msgid "Show Distance from each Waypoint to the next one."
+msgstr ""
+#
 msgid "Show ENC Text"
 msgstr "Εμφάνιση κειμένου ENC"
 #
@@ -2652,8 +2666,23 @@ msgstr "Δείξε τη μπάρα εργαλείων σε λειτουργία 
 msgid "Show WPT names"
 msgstr "Δείξε τα ονόματα των σημείων πορείας"
 #
+#, fuzzy
+msgid "Show Waypoint description."
+msgstr "Περιγραφή συνδέσμου"
+#
+#, fuzzy
+msgid "Show Waypoint name."
+msgstr "Όνομα σημείου πορείας"
+#
+#, fuzzy
+msgid "Show Waypoint position."
+msgstr "Πληροφορίες σημαδιού"
+#
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Δείχνε τοπικές ανακοινώσεις (από μηνύματα AIS)"
+#
+msgid "Show course from each Waypoint to the next one. "
+msgstr ""
 #
 msgid "Show name"
 msgstr "Δείξε το όνομα"
@@ -3240,18 +3269,22 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Can't send waypoint. Found no serial data port with output defined."
 #~ msgstr ""
 #~ "Δεν μπορώ να στείλω το σημείο πορείας. Δεν βρέθηκε σειριακή θύρα "
 #~ "προγραμματισμένη για αποδοχή."
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "Ε&ξαγωγή ολων..."
 #
 #
+#
 #~ msgid "Mark Properties"
 #~ msgstr "Ιδιότητες σημαδιού"
+#
 #
 #
 #
@@ -3261,9 +3294,11 @@ msgstr "wxFB Website"
 #~ msgstr "HPGL: Η εντολή '%s' δεν μπορεί να εφαρμοσθεί."
 #
 #
+#
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "Στείλε στο GPS"
+#
 #
 #
 #

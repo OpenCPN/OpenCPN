@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 3.1.1319\n"
+"Project-Id-Version: opencpn 3.1.1328\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-28 00:15-0500\n"
+"POT-Creation-Date: 2013-01-30 19:56-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -346,7 +346,7 @@ msgstr ""
 msgid "Chart Print"
 msgstr ""
 
-#: src/chart1.cpp:6250
+#: src/chart1.cpp:6250 src/routeprintout.cpp:470
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
@@ -401,7 +401,7 @@ msgid "User Y Offset (Metres)"
 msgstr ""
 
 #: src/cm93.cpp:6471 src/chcanv.cpp:13711 src/chcanv.cpp:15388
-#: src/routeprop.cpp:1020
+#: src/routeprop.cpp:1020 src/routeprintout.cpp:407
 msgid "OK"
 msgstr ""
 
@@ -1018,7 +1018,7 @@ msgstr ""
 msgid "TideCurrentGraphRollover"
 msgstr ""
 
-#: src/chcanv.cpp:15355 src/ais.cpp:709
+#: src/chcanv.cpp:15355 src/ais.cpp:709 src/routeprintout.cpp:370
 msgid "Position"
 msgstr ""
 
@@ -1033,6 +1033,7 @@ msgid "Longitude"
 msgstr ""
 
 #: src/chcanv.cpp:15384 src/routeprop.cpp:1016 src/routeman.cpp:981
+#: src/routeprintout.cpp:403
 msgid "Cancel"
 msgstr ""
 
@@ -1208,7 +1209,7 @@ msgid "_plus"
 msgstr ""
 
 #: src/routeprop.cpp:662 src/routeprop.cpp:860 src/routeprop.cpp:1991
-#: src/ais.cpp:3439
+#: src/ais.cpp:3439 src/routeprintout.cpp:362
 msgid "Name"
 msgstr ""
 
@@ -1428,7 +1429,7 @@ msgstr ""
 msgid "To Waypoint"
 msgstr ""
 
-#: src/routeprop.cpp:1038 src/routeprop.cpp:1055
+#: src/routeprop.cpp:1038 src/routeprop.cpp:1055 src/routeprintout.cpp:384
 msgid "Distance"
 msgstr ""
 
@@ -1445,11 +1446,12 @@ msgid "Next tide event"
 msgstr ""
 
 #: src/routeprop.cpp:1045 src/routeprop.cpp:1062 src/routeprop.cpp:2048
-#: src/routeprop.cpp:2148
+#: src/routeprop.cpp:2148 src/routeprintout.cpp:391
 msgid "Description"
 msgstr ""
 
 #: src/routeprop.cpp:1046 src/routeprop.cpp:1063 src/ais.cpp:794
+#: src/routeprintout.cpp:377
 msgid "Course"
 msgstr ""
 
@@ -4175,4 +4177,36 @@ msgstr ""
 
 #: src/undo.cpp:86
 msgid "Move Waypoint"
+msgstr ""
+
+#: src/routeprintout.cpp:337
+msgid "Print Route Selection"
+msgstr ""
+
+#: src/routeprintout.cpp:354
+msgid "Elements to print..."
+msgstr ""
+
+#: src/routeprintout.cpp:367
+msgid "Show Waypoint name."
+msgstr ""
+
+#: src/routeprintout.cpp:374
+msgid "Show Waypoint position."
+msgstr ""
+
+#: src/routeprintout.cpp:381
+msgid "Show course from each Waypoint to the next one. "
+msgstr ""
+
+#: src/routeprintout.cpp:388
+msgid "Show Distance from each Waypoint to the next one."
+msgstr ""
+
+#: src/routeprintout.cpp:395
+msgid "Show Waypoint description."
+msgstr ""
+
+#: src/routeprintout.cpp:460
+msgid "Route Print"
 msgstr ""
