@@ -456,6 +456,13 @@ ret_point:
                                                baud,
                                                DS_TYPE_INPUT_OUTPUT,
                                                0 );
+
+            //  Wait up to 1 seconds for Datastream secondary thread to come up
+            int timeout = 0;
+            while( !dstr-> IsSecThreadActive()  && (timeout < 10)) {
+                wxMilliSleep(100);
+                timeout++;
+            }
             
             SENTENCE snt;
             NMEA0183 oNMEA0183;
@@ -964,6 +971,14 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
                                        baud,
                                        DS_TYPE_INPUT_OUTPUT,
                                        0 );
+    
+    
+    //  Wait up to 1 seconds for Datastream secondary thread to come up
+    int timeout = 0;
+    while( !dstr-> IsSecThreadActive()  && (timeout < 10)) {
+        wxMilliSleep(100);
+        timeout++;
+    }
     
         SENTENCE snt;
         NMEA0183 oNMEA0183;

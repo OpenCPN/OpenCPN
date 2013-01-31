@@ -2202,8 +2202,13 @@ void Route::RenameRoutePoints( void )
 bool Route::SendToGPS( wxString& com_name, bool bsend_waypoints, wxGauge *pProgress )
 {
     bool result = false;
-    if( g_pMUX ) result = g_pMUX->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
-
+    
+    if( g_pMUX ) {
+        ::wxBeginBusyCursor();
+         result = g_pMUX->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
+        ::wxEndBusyCursor();
+    }
+    
     wxString msg;
     if( result ) msg = _("Route Uploaded successfully.");
     else
