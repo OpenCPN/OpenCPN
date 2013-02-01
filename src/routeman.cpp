@@ -598,7 +598,55 @@ bool Routeman::UpdateAutopilot()
             g_pMUX->SendNMEAMessage( snt.Sentence );
         }
 
+        // APB
+        {
+            m_NMEA0183.TalkerID = _T("EC");
+            
+            SENTENCE snt;
+             
+            m_NMEA0183.Apb.IsLoranBlinkOK = NTrue;
+            m_NMEA0183.Apb.IsLoranCCycleLockOK = NTrue;
+            
+            m_NMEA0183.Apb.CrossTrackErrorMagnitude = CurrentXTEToActivePoint;
+            
+            if( XTEDir < 0 ) m_NMEA0183.Apb.DirectionToSteer = Left;
+            else
+                m_NMEA0183.Apb.DirectionToSteer = Right;
+            
+            m_NMEA0183.Apb.CrossTrackUnits = _T("N");
 
+            if( m_bArrival )
+                m_NMEA0183.Apb.IsArrivalCircleEntered = NTrue;
+            else
+                m_NMEA0183.Apb.IsArrivalCircleEntered = NFalse;
+ 
+            //  We never pass the perpendicular, since we declare arrival before reaching this point
+            m_NMEA0183.Apb.IsPerpendicular = NFalse;
+            
+            double brg1, dist1;
+            DistanceBearingMercator( pActivePoint->m_lat, pActivePoint->m_lon,
+                                     pActiveRouteSegmentBeginPoint->m_lat, pActiveRouteSegmentBeginPoint->m_lon,
+                                     &brg1,
+                                     &dist1 );
+            
+            m_NMEA0183.Apb.BearingOriginToDestination = brg1;
+            m_NMEA0183.Apb.BearingOriginToDestinationUnits = _("T");
+
+            m_NMEA0183.Apb.To = pActivePoint->GetName().Truncate( 6 );
+            
+            m_NMEA0183.Apb.BearingPresentPositionToDestination = CurrentBrgToActivePoint;
+            m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _("T");
+            
+            m_NMEA0183.Apb.To = pActivePoint->GetName().Truncate( 6 );
+
+            m_NMEA0183.Apb.HeadingToSteer = CurrentBrgToActivePoint;
+            m_NMEA0183.Apb.HeadingToSteerUnits = _("T");
+            
+            m_NMEA0183.Apb.Write( snt );
+            g_pMUX->SendNMEAMessage( snt.Sentence );
+        }
+        
+        
     return true;
 }
 
