@@ -459,8 +459,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
     if( m_NMEA0183.PreParse() ) {
         if( m_NMEA0183.LastSentenceIDReceived == _T("DBT") ) {
             if( m_NMEA0183.Parse() ) {
-                if( mPriDepth >= 1 ) {
-                    mPriDepth = 1;
+                if( mPriDepth >= 2 ) {
+                    mPriDepth = 2;
 
                     /*
                      double m_NMEA0183.Dbt.DepthFeet;
@@ -480,15 +480,17 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 
         else if( m_NMEA0183.LastSentenceIDReceived == _T("DPT") ) {
             if( m_NMEA0183.Parse() ) {
-                if( mPriDepth >= 2 ) {
-                    mPriDepth = 2;
+                if( mPriDepth >= 1 ) {
+                    mPriDepth = 1;
 
                     /*
                      double m_NMEA0183.Dpt.DepthMeters
                      double m_NMEA0183.Dpt.OffsetFromTransducerMeters
                      */
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_DPT, m_NMEA0183.Dpt.DepthMeters,
-                            _T("m") );
+                    double depth = 999.;
+                    if( m_NMEA0183.Dpt.DepthMeters != 999. ) depth = m_NMEA0183.Dpt.DepthMeters;
+                    if( m_NMEA0183.Dpt.OffsetFromTransducerMeters != 999. ) depth += m_NMEA0183.Dpt.OffsetFromTransducerMeters;
+                    SendSentenceToAllInstruments( OCPN_DBP_STC_DPT, depth, _T("m") );
                 }
             }
         }
