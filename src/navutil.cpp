@@ -3389,6 +3389,11 @@ int MyConfig::LoadMyConfig( int iteration )
     }
 
     //  Automatically handle the upgrade to DataSources architecture...
+    //  Capture Garmin host configuration
+    SetPath( _T ( "/Settings" ) );
+    int b_garmin_host;
+    Read ( _T ( "UseGarminHost" ), &b_garmin_host );
+
     //  Is there an existing NMEADataSource definition?
     SetPath( _T ( "/Settings/NMEADataSource" ) );
     wxString xSource;
@@ -3418,8 +3423,11 @@ int MyConfig::LoadMyConfig( int iteration )
                 ConnectionParams * prm = new ConnectionParams();
                 prm->Baudrate = wxAtoi(xRate);
                 prm->Port = port;
+                prm->Garmin = (b_garmin_host == 1);
                 
                 g_pConnectionParams->Add(prm);
+                
+                g_bGarminHostUpload = b_garmin_host;
             }
         }
         if( iteration == 1 ) {
