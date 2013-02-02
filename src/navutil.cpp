@@ -4870,24 +4870,27 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
             if( answer != wxID_YES ) return;
         }
 
+        ::wxBeginBusyCursor();
         GpxDocument *gpx = new GpxDocument();
         GpxRootElement *gpxroot = (GpxRootElement *) gpx->RootElement();
+        
         //WPTs
         wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
         RoutePoint *pr;
         while( node ) {
             pr = node->GetData();
 
-            bool b_add = pr->m_bKeepXRoute || !WptIsInRouteList( pr );
-            
+            bool b_add = true;
+
             if( bviz_only && !pr->m_bIsVisible )
                 b_add = false;
             
             if( pr->m_bIsInLayer && !blayer )
-                    b_add = false;
-
-            if( b_add ) 
-                gpxroot->AddWaypoint( CreateGPXWpt( pr, GPX_WPT_WAYPOINT ) );
+                b_add = false;
+            if( b_add) {
+                if( pr->m_bKeepXRoute || !WptIsInRouteList( pr ) )
+                    gpxroot->AddWaypoint( CreateGPXWpt( pr, GPX_WPT_WAYPOINT ) );
+            }
 
             node = node->GetNext();
         }
@@ -4916,6 +4919,8 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         gpx->SaveFile( fn.GetFullPath() );
         gpx->Clear();
         delete gpx;
+        
+        ::wxEndBusyCursor();
     }
 }
 
