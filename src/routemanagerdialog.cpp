@@ -915,6 +915,7 @@ void RouteManagerDialog::UpdateRteButtons()
     btnRteReverse->Enable( enable );
     btnRteExport->Enable( enable );
     btnRteSendToGPS->Enable( enable );
+    btnRteDeleteAll->Enable( enable );
 
     // set activate button text
     Route *route = NULL;
@@ -1588,6 +1589,7 @@ void RouteManagerDialog::UpdateTrkButtons()
     btnTrkDelete->Enable( items >= 1 );
     btnTrkExport->Enable( items == 1 );
     btnTrkRouteFromTrack->Enable( items == 1 );
+    btnTrkDeleteAll->Enable( items == 1 );
 }
 
 void RouteManagerDialog::OnTrkToggleVisibility( wxMouseEvent &event )
@@ -1894,6 +1896,8 @@ void RouteManagerDialog::UpdateWptButtons()
 
     btnWptProperties->Enable( enable1 );
     btnWptZoomto->Enable( enable1 );
+    btnWptNew->Enable( enable1 );
+    btnWptDeleteAll->Enable( enable1 );
     btnWptDelete->Enable( b_delete_enable && m_pWptListCtrl->GetSelectedItemCount() > 0 );
     btnWptGoTo->Enable( enable1 );
     btnWptExport->Enable( enable1 );
