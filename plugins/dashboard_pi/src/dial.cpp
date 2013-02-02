@@ -361,8 +361,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
            text = _T("---");
 
       int width, height;
-      wxScreenDC sdc;
-      sdc.GetMultiLineTextExtent(text, &width, &height, NULL, g_pFontLabel);
+      dc->GetMultiLineTextExtent(text, &width, &height, NULL, g_pFontLabel);
 
       wxRect TextPoint;
       TextPoint.width = width;
@@ -416,7 +415,7 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
 
       token = tkz.GetNextToken();
       while(token.Length()) {
-        sdc.GetTextExtent(token, &width, &height, NULL, NULL, g_pFontLabel);
+        dc->GetTextExtent(token, &width, &height, NULL, NULL, g_pFontLabel);
 
 #ifdef __WXMSW__
         if( g_pFontLabel->GetPointSize() <= 12 ) {
