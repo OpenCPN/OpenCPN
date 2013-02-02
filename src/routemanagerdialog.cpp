@@ -1896,7 +1896,6 @@ void RouteManagerDialog::UpdateWptButtons()
 
     btnWptProperties->Enable( enable1 );
     btnWptZoomto->Enable( enable1 );
-    btnWptNew->Enable( enable1 );
     btnWptDeleteAll->Enable( enable1 );
     btnWptDelete->Enable( b_delete_enable && m_pWptListCtrl->GetSelectedItemCount() > 0 );
     btnWptGoTo->Enable( enable1 );
