@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1328\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-30 19:56-0500\n"
+"POT-Creation-Date: 2013-02-02 14:06-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,12 +18,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: include/routeprop.h:68 src/chcanv.cpp:7186 src/chcanv.cpp:9544
-#: src/routemanagerdialog.cpp:1082
+#: src/routemanagerdialog.cpp:1083
 msgid "Route Properties"
 msgstr ""
 
 #: include/routeprop.h:100 include/routeprop.h:317 src/chcanv.cpp:8785
-#: src/routemanagerdialog.cpp:1976
+#: src/routemanagerdialog.cpp:1979
 msgid "Waypoint Properties"
 msgstr ""
 
@@ -156,7 +156,7 @@ msgid "Welcome to OpenCPN"
 msgstr ""
 
 #: src/chart1.cpp:985 src/chart1.cpp:1780 src/chart1.cpp:3926
-#: src/navutil.cpp:1268 src/navutil.cpp:2212
+#: src/navutil.cpp:1268 src/navutil.cpp:2217
 msgid "OpenCPN Info"
 msgstr ""
 
@@ -509,7 +509,7 @@ msgstr ""
 msgid "Drop"
 msgstr ""
 
-#: src/datastream.cpp:1642 src/routeman.cpp:985
+#: src/datastream.cpp:1642 src/routeman.cpp:1033
 msgid "Send"
 msgstr ""
 
@@ -610,7 +610,7 @@ msgstr ""
 msgid "Scale %4.0f"
 msgstr ""
 
-#: src/chcanv.cpp:7196 src/chcanv.cpp:9549 src/routemanagerdialog.cpp:1638
+#: src/chcanv.cpp:7196 src/chcanv.cpp:9549 src/routemanagerdialog.cpp:1640
 msgid "Track Properties"
 msgstr ""
 
@@ -771,12 +771,12 @@ msgstr ""
 msgid "Activate Next Waypoint"
 msgstr ""
 
-#: src/chcanv.cpp:8412 src/chcanv.cpp:8427 src/routemanagerdialog.cpp:932
+#: src/chcanv.cpp:8412 src/chcanv.cpp:8427 src/routemanagerdialog.cpp:933
 msgid "Deactivate"
 msgstr ""
 
 #: src/chcanv.cpp:8415 src/chcanv.cpp:8430 src/chcanv.cpp:8484
-#: src/chcanv.cpp:8490 src/routemanagerdialog.cpp:926
+#: src/chcanv.cpp:8490 src/routemanagerdialog.cpp:927
 msgid "Activate"
 msgstr ""
 
@@ -825,7 +825,7 @@ msgid "Copy as KML"
 msgstr ""
 
 #: src/chcanv.cpp:8506 src/chcanv.cpp:8541 src/routeprop.cpp:2087
-#: src/options.cpp:4074
+#: src/options.cpp:4075
 msgid "Delete"
 msgstr ""
 
@@ -857,7 +857,7 @@ msgstr ""
 msgid "ObjectQuery"
 msgstr ""
 
-#: src/chcanv.cpp:8781 src/routemanagerdialog.cpp:1972
+#: src/chcanv.cpp:8781 src/routemanagerdialog.cpp:1975
 msgid "Waypoint Properties, Layer: "
 msgstr ""
 
@@ -895,7 +895,7 @@ msgstr ""
 msgid "Temporary GOTO Route"
 msgstr ""
 
-#: src/chcanv.cpp:9083 src/chcanv.cpp:9134 src/routemanagerdialog.cpp:2091
+#: src/chcanv.cpp:9083 src/chcanv.cpp:9134 src/routemanagerdialog.cpp:2094
 msgid "Here"
 msgstr ""
 
@@ -903,16 +903,16 @@ msgstr ""
 msgid "There"
 msgstr ""
 
-#: src/chcanv.cpp:9130 src/routemanagerdialog.cpp:1800
-#: src/routemanagerdialog.cpp:2087
+#: src/chcanv.cpp:9130 src/routemanagerdialog.cpp:1802
+#: src/routemanagerdialog.cpp:2090
 msgid "(Unnamed Waypoint)"
 msgstr ""
 
-#: src/chcanv.cpp:9131 src/routemanagerdialog.cpp:2088
+#: src/chcanv.cpp:9131 src/routemanagerdialog.cpp:2091
 msgid "Go to "
 msgstr ""
 
-#: src/chcanv.cpp:9324 src/routemanagerdialog.cpp:1135
+#: src/chcanv.cpp:9324 src/routemanagerdialog.cpp:1136
 msgid "Rename Waypoints?"
 msgstr ""
 
@@ -924,8 +924,8 @@ msgstr ""
 msgid "OpenCPN Route Delete"
 msgstr ""
 
-#: src/chcanv.cpp:9464 src/chcanv.cpp:9478 src/routemanagerdialog.cpp:1309
-#: src/routemanagerdialog.cpp:2132
+#: src/chcanv.cpp:9464 src/chcanv.cpp:9478 src/routemanagerdialog.cpp:1310
+#: src/routemanagerdialog.cpp:2135
 msgid "Send To GPS..."
 msgstr ""
 
@@ -1032,7 +1032,7 @@ msgstr ""
 msgid "Longitude"
 msgstr ""
 
-#: src/chcanv.cpp:15384 src/routeprop.cpp:1016 src/routeman.cpp:981
+#: src/chcanv.cpp:15384 src/routeprop.cpp:1016 src/routeman.cpp:1029
 #: src/routeprintout.cpp:403
 msgid "Cancel"
 msgstr ""
@@ -1054,128 +1054,128 @@ msgstr ""
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr ""
 
-#: src/navutil.cpp:2208
+#: src/navutil.cpp:2213
 msgid "Route Uploaded successfully."
 msgstr ""
 
-#: src/navutil.cpp:2210
+#: src/navutil.cpp:2215
 msgid "Error on Route Upload.  Please check logfiles..."
 msgstr ""
 
-#: src/navutil.cpp:4774 src/navutil.cpp:4814 src/navutil.cpp:4850
+#: src/navutil.cpp:4787 src/navutil.cpp:4827 src/navutil.cpp:4863
 msgid "Export GPX file"
 msgstr ""
 
-#: src/navutil.cpp:4787 src/navutil.cpp:4827 src/navutil.cpp:4863
+#: src/navutil.cpp:4800 src/navutil.cpp:4840 src/navutil.cpp:4876
 msgid "Overwrite existing file?"
 msgstr ""
 
-#: src/navutil.cpp:5095
+#: src/navutil.cpp:5113
 msgid "Import GPX file"
 msgstr ""
 
-#: src/navutil.cpp:7153
+#: src/navutil.cpp:7171
 msgid "&Font family:"
 msgstr ""
 
-#: src/navutil.cpp:7159 src/navutil.cpp:7161
+#: src/navutil.cpp:7177 src/navutil.cpp:7179
 msgid "The font family."
 msgstr ""
 
-#: src/navutil.cpp:7166
+#: src/navutil.cpp:7184
 msgid "&Style:"
 msgstr ""
 
-#: src/navutil.cpp:7170 src/navutil.cpp:7172
+#: src/navutil.cpp:7188 src/navutil.cpp:7190
 msgid "The font style."
 msgstr ""
 
-#: src/navutil.cpp:7177
+#: src/navutil.cpp:7195
 msgid "&Weight:"
 msgstr ""
 
-#: src/navutil.cpp:7181 src/navutil.cpp:7183
+#: src/navutil.cpp:7199 src/navutil.cpp:7201
 msgid "The font weight."
 msgstr ""
 
-#: src/navutil.cpp:7190
+#: src/navutil.cpp:7208
 msgid "C&olour:"
 msgstr ""
 
-#: src/navutil.cpp:7200 src/navutil.cpp:7202
+#: src/navutil.cpp:7218 src/navutil.cpp:7220
 msgid "The font colour."
 msgstr ""
 
-#: src/navutil.cpp:7208
+#: src/navutil.cpp:7226
 msgid "&Point size:"
 msgstr ""
 
-#: src/navutil.cpp:7213 src/navutil.cpp:7215
+#: src/navutil.cpp:7231 src/navutil.cpp:7233
 msgid "The font point size."
 msgstr ""
 
-#: src/navutil.cpp:7222
+#: src/navutil.cpp:7240
 msgid "&Underline"
 msgstr ""
 
-#: src/navutil.cpp:7225 src/navutil.cpp:7227
+#: src/navutil.cpp:7243 src/navutil.cpp:7245
 msgid "Whether the font is underlined."
 msgstr ""
 
-#: src/navutil.cpp:7234
+#: src/navutil.cpp:7252
 msgid "Preview:"
 msgstr ""
 
-#: src/navutil.cpp:7239 src/navutil.cpp:7241
+#: src/navutil.cpp:7257 src/navutil.cpp:7259
 msgid "Shows the font preview."
 msgstr ""
 
-#: src/navutil.cpp:7248 src/options.cpp:1757
+#: src/navutil.cpp:7266 src/options.cpp:1757
 msgid "&Cancel"
 msgstr ""
 
-#: src/navutil.cpp:7250
+#: src/navutil.cpp:7268
 msgid "Click to cancel the font selection."
 msgstr ""
 
-#: src/navutil.cpp:7253
+#: src/navutil.cpp:7271
 msgid "&OK"
 msgstr ""
 
-#: src/navutil.cpp:7255 src/navutil.cpp:7257
+#: src/navutil.cpp:7273 src/navutil.cpp:7275
 msgid "Click to confirm the font selection."
 msgstr ""
 
-#: src/navutil.cpp:7978
+#: src/navutil.cpp:7996
 msgid "Legend"
 msgstr ""
 
-#: src/navutil.cpp:7986 src/navutil.cpp:8059
+#: src/navutil.cpp:8004 src/navutil.cpp:8077
 msgid "Pause"
 msgstr ""
 
-#: src/navutil.cpp:8020
+#: src/navutil.cpp:8038
 msgid "Message accepted"
 msgstr ""
 
-#: src/navutil.cpp:8027
+#: src/navutil.cpp:8045
 msgid "Message filtered and dropped"
 msgstr ""
 
-#: src/navutil.cpp:8034
+#: src/navutil.cpp:8052
 msgid "Output Message"
 msgstr ""
 
-#: src/navutil.cpp:8053
+#: src/navutil.cpp:8071
 msgid "Resume"
 msgstr ""
 
-#: src/navutil.cpp:8259
+#: src/navutil.cpp:8277
 #, c-format
 msgid "Couldn't load sound data from '%s'."
 msgstr ""
 
-#: src/navutil.cpp:8266
+#: src/navutil.cpp:8284
 #, c-format
 msgid "Sound file '%s' is in unsupported format."
 msgstr ""
@@ -1539,7 +1539,7 @@ msgstr ""
 msgid "Add new"
 msgstr ""
 
-#: src/routeprop.cpp:2114 src/options.cpp:1260 src/options.cpp:4071
+#: src/routeprop.cpp:2114 src/options.cpp:1260 src/options.cpp:4072
 msgid "Add"
 msgstr ""
 
@@ -1552,7 +1552,7 @@ msgid "Basic"
 msgstr ""
 
 #: src/routeprop.cpp:2154 src/routemanagerdialog.cpp:747
-#: src/routemanagerdialog.cpp:2205 src/routemanagerdialog.cpp:2217
+#: src/routemanagerdialog.cpp:2208 src/routemanagerdialog.cpp:2220
 msgid "Show on chart"
 msgstr ""
 
@@ -1725,13 +1725,13 @@ msgstr ""
 msgid "Temporary layer"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:752 src/routemanagerdialog.cpp:2210
-#: src/routemanagerdialog.cpp:2218
+#: src/routemanagerdialog.cpp:752 src/routemanagerdialog.cpp:2213
+#: src/routemanagerdialog.cpp:2221
 msgid "Show WPT names"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:757 src/routemanagerdialog.cpp:2215
-#: src/routemanagerdialog.cpp:2219
+#: src/routemanagerdialog.cpp:757 src/routemanagerdialog.cpp:2218
+#: src/routemanagerdialog.cpp:2222
 msgid "List contents"
 msgstr ""
 
@@ -1739,119 +1739,119 @@ msgstr ""
 msgid "(Unnamed Route)"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:885 src/routemanagerdialog.cpp:1145
+#: src/routemanagerdialog.cpp:885 src/routemanagerdialog.cpp:1146
 msgid " - "
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1038
+#: src/routemanagerdialog.cpp:1039
 msgid "Are you sure you want to delete <ALL> routes?"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1039 src/routemanagerdialog.cpp:1744
-#: src/routemanagerdialog.cpp:2032 src/routemanagerdialog.cpp:2154
+#: src/routemanagerdialog.cpp:1040 src/routemanagerdialog.cpp:1746
+#: src/routemanagerdialog.cpp:2035 src/routemanagerdialog.cpp:2157
 #: src/toolbar.cpp:571 src/toolbar.cpp:1895
 msgid "OpenCPN Alert"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1221
+#: src/routemanagerdialog.cpp:1222
 msgid ""
 "Do you also want to toggle the visibility of shared waypoints being part of "
 "this route?"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1221
+#: src/routemanagerdialog.cpp:1222
 msgid "Question"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1330
+#: src/routemanagerdialog.cpp:1331
 msgid "&Merge Selected Tracks"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1332
+#: src/routemanagerdialog.cpp:1333
 msgid "Reduce Data..."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1334
+#: src/routemanagerdialog.cpp:1335
 msgid "&Copy as text"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1366
+#: src/routemanagerdialog.cpp:1367
 msgid ""
 "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1367
+#: src/routemanagerdialog.cpp:1368
 msgid "Reduce Data Precision"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1386
+#: src/routemanagerdialog.cpp:1387
 #, c-format
 msgid ""
 "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1388 src/options.cpp:2360
+#: src/routemanagerdialog.cpp:1389 src/options.cpp:2360
 msgid "OpenCPN info"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1491
+#: src/routemanagerdialog.cpp:1492
 msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1539
+#: src/routemanagerdialog.cpp:1540
 msgid "(Unnamed Track)"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1720
+#: src/routemanagerdialog.cpp:1722
 msgid "OpenCPN Converting Track to Route...."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1721
+#: src/routemanagerdialog.cpp:1723
 msgid "Processing Waypoints..."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1731
+#: src/routemanagerdialog.cpp:1733
 msgid "Done."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:1743
+#: src/routemanagerdialog.cpp:1745
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2032
+#: src/routemanagerdialog.cpp:2035
 msgid ""
 "The waypoint you want to delete is used in a route, do you really want to "
 "delete it?"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2144
+#: src/routemanagerdialog.cpp:2147
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2150
+#: src/routemanagerdialog.cpp:2153
 msgid ""
 "There are some waypoints used in routes or anchor alarms. Do you want to "
 "delete them as well? This will change the routes and disable the anchor "
 "alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2203
+#: src/routemanagerdialog.cpp:2206
 msgid "Hide from chart"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2208
+#: src/routemanagerdialog.cpp:2211
 msgid "Hide WPT names"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2213
+#: src/routemanagerdialog.cpp:2216
 msgid "Unlist contents"
 msgstr ""
 
-#: src/routemanagerdialog.cpp:2538
+#: src/routemanagerdialog.cpp:2541
 msgid "(Unnamed Layer)"
 msgstr ""
 
@@ -3532,11 +3532,11 @@ msgstr ""
 msgid "Mariner's Standard"
 msgstr ""
 
-#: src/options.cpp:1063 src/options.cpp:4063
+#: src/options.cpp:1063 src/options.cpp:4064
 msgid "Select All"
 msgstr ""
 
-#: src/options.cpp:1065 src/options.cpp:4066
+#: src/options.cpp:1065 src/options.cpp:4067
 msgid "Clear All"
 msgstr ""
 
@@ -4002,15 +4002,15 @@ msgstr ""
 msgid "Select Tide/Current Data"
 msgstr ""
 
-#: src/options.cpp:4211
+#: src/options.cpp:4212
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
 msgstr ""
 
-#: src/options.cpp:4211
+#: src/options.cpp:4212
 msgid "Enter the NMEA sentence"
 msgstr ""
 
-#: src/options.cpp:4220
+#: src/options.cpp:4221
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
 "also have a two letter prefix identifying the source, or TALKER, of the "
@@ -4019,23 +4019,23 @@ msgid ""
 "filter accepts just these three formats."
 msgstr ""
 
-#: src/options.cpp:4220
+#: src/options.cpp:4221
 msgid "Wrong length of the NMEA filter value"
 msgstr ""
 
-#: src/options.cpp:4271
+#: src/options.cpp:4272
 msgid "Accept Sentences"
 msgstr ""
 
-#: src/options.cpp:4273
+#: src/options.cpp:4274
 msgid "Ignore Sentences"
 msgstr ""
 
-#: src/options.cpp:4277
+#: src/options.cpp:4278
 msgid "Transmit Sentences"
 msgstr ""
 
-#: src/options.cpp:4279
+#: src/options.cpp:4280
 msgid "Drop Sentences"
 msgstr ""
 
@@ -4079,7 +4079,11 @@ msgstr ""
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr ""
 
-#: src/routeman.cpp:875
+#: src/routeman.cpp:633 src/routeman.cpp:638 src/routeman.cpp:643
+msgid "T"
+msgstr ""
+
+#: src/routeman.cpp:923
 msgid ""
 "Waypoints can be renamed to reflect the new order, the names will be '001', "
 "'002' etc.\n"
@@ -4087,15 +4091,15 @@ msgid ""
 "Do you want to rename the waypoints?"
 msgstr ""
 
-#: src/routeman.cpp:935
+#: src/routeman.cpp:983
 msgid "GPS/Plotter Port"
 msgstr ""
 
-#: src/routeman.cpp:965
+#: src/routeman.cpp:1013
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 msgstr ""
 
-#: src/routeman.cpp:969
+#: src/routeman.cpp:1017
 msgid "Progress..."
 msgstr ""
 

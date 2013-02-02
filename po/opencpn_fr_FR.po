@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-30 19:56-0500\n"
+"POT-Creation-Date: 2013-02-02 14:06-0500\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Gilletarom  avec les précieux conseils de Pythéas54 "
+"Last-Translator: Gilletarom  avec collaboration active de Sailor54 et AISEAG "
 "<contact@gilletarom.fr>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -154,8 +154,10 @@ msgid " - "
 msgstr " - "
 #
 # Pytheas54: ???
+# -----------
+# Aiseag : quelques chgt sur 2eme propal de traduction
 msgid " -- [Portable(-p) executing from "
-msgstr "[Version portable(-p) depuis"
+msgstr "  --[Version portable(-p) executée à partir de (ou depuis)"
 #
 msgid " </b>in<b> "
 msgstr " </b>en<b> "
@@ -224,6 +226,8 @@ msgstr " à "
 # Par cohérence avec l'item "All active charts" où je souhaite gagner de la place sur l'écran pour le menu contextuel..
 # ----
 # Pytheas54: OK
+# -------------
+# Aiseag : OK
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr ""
 "\" est vide. Activation automatique du groupe de cartes \"Toutes les cartes\"."
@@ -232,7 +236,7 @@ msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "      \"Nom du bateau\"  MMSI  ( Indicatif )"
 #
 msgid "&Acknowledge"
-msgstr "Acquitement"
+msgstr "Acquitter"
 #
 msgid "&Activate"
 msgstr "Activer"
@@ -296,6 +300,13 @@ msgid "&Properties..."
 msgstr "Propriétés ..."
 #
 # Ok.  Hum .. Pithéas ...tu pinailles .. Bon, c'est plus court  Ok.
+# ====
+# Gilletarom : A revoir encore
+# .
+# Apparait dans un menu contextuel dans la fen^tre de propriété d'une route si on clique sur une ligne de la liste des waypoint.
+# .
+#  En réalité, deux segments d'une route seront supprimés et remplacés par un segment direct. En pratique, le waypoint intermédiare sera déconnecté de la route sans être supprimé.. Ce qui est sélectionné est en fait un waypoint d'une route. et ce waypoint est déconnecté de la route.
+# D'où une nouvelle proposition : "Déconnecter ce waypoint de la route".
 msgid "&Remove Selected"
 msgstr "Supprimer la sélection"
 #
@@ -346,8 +357,10 @@ msgstr "(Marque sans nom)"
 # Ok
 # ----
 # Pytheas54: je préfère 'usage futur'...
+# ----
+# Gilletarom : Ok.
 msgid "(reserved for future use)"
-msgstr "(Réservé pour un futur usage)"
+msgstr "(Réservé pour un usage futur)"
 #
 # Couche
 msgid "(unnamed)"
@@ -495,7 +508,8 @@ msgstr "9600"
 #
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr ""
-"<font size=-2>Les secteurs sont des relèvements vrais vus de la mer</font><br>"
+"<font size=-2>Les secteurs sont des relèvements vrais à partir de la mer</"
+"font><br>"
 #
 msgid "?"
 msgstr "?"
@@ -597,6 +611,8 @@ msgstr "Aide à la navigation"
 # Objectif : gagner de la place sur l'écran dans le menu contextuel général.
 # ----
 # Pytheas54: OK
+# -----------
+# Aiseag : OK
 msgid "All Active Charts"
 msgstr "Toutes les cartes"
 #
@@ -676,12 +692,29 @@ msgstr "Êtes vous certain de vouloir effacer cette route ?"
 msgid "Are you sure you want to delete this track?"
 msgstr "Êtes vous certain de vouloir effacer cette trace ?"
 #
+# Gilletarom :
+# initialement :   Êtes vous sûr de vouloir effacer <CETTE> marque ?
+# ====
+# Gilletarom
+# J'ai mis longtemps à trouver où cet item apparaissait. Il faut cliquer droit sur une route et ouvrir sa fenêtre de propriété. On clique droit sur une des lignes dans la liste des waypoint et la commande est dans le menu contextuel qui apparait. En la mettant en oeuvre, le waypoint est déconnecté de la route et n'est pas supprimé.
+# "effacer" est inadapté.  "Retiré" ou mieux encore "déconnecté" est plus adapté ou encore :
+# "Voulez vous vraiment déconnecter ce waypoint ?" ou encore plus court :
+# "Déconnecter réellement ce waypoint ?
+# -----------
+# Pytheas54
+# Voulez-vous vraiment que la route ne passe plus par ce waypoint?
+# ----
+# Aiseag : ai un faible pour la traduction de Pytheas
+# ---
+# Gilletarom: Hum, alors, cela doit être meilleur.
 msgid "Are you sure you want to remove this waypoint?"
-msgstr "Êtes vous sûr de vouloir effacer <CETTE> marque ?"
+msgstr "Voulez-vous vraiment que la route ne passe plus par ce waypoint?"
 #
 # Ma foi why not.
 # ----
 # Pytheas54: pas trouvé mieux :-(
+# ----
+# Aiseag : OK
 msgid "Assumed 1 Mile Point"
 msgstr "Position estimée : 1 mille."
 #
@@ -765,8 +798,10 @@ msgstr "Relèvement"
 # Cet item va avec "GpsGate Buddy".  Le mot "Ami" voire même "Copain" serait sans doute adapté. Voir chez Franson ce qu'est GPSGate (il y a un logiciel serveur et un logiciel client)
 # ---
 # Pytheas54: 'ami' ou'copain' selon le choix dans "GpsGate Buddy"
+# ---------
+# Aiseag : meme remarque qu'en 2626
 msgid "Buddy"
-msgstr "Copain"
+msgstr "Buddy"
 #
 msgid "Bulk carrier maritime"
 msgstr "Vraquier maritime"
@@ -822,10 +857,11 @@ msgstr "Annuler"
 # Annulation : Annulation de la délimitation de zone dans un message de la même source
 # ----
 # Gilletarom : Je suis Ok pour cette dernière version.
+# ---------
+# Aiseag : meme en anglais ne semble pas simple
+# je propose : Annulation : Annuler la zone identifiée par le code du message associe
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
-msgstr ""
-"Annulation : Annulation de la délimitation de zone dans un message de la même "
-"source"
+msgstr "Annulation : Annuler la zone identifiée par le code du message associé"
 #
 msgid "Card. E"
 msgstr "Card. E"
@@ -1223,6 +1259,7 @@ msgstr "Degrés, Minutes, Secondes"
 msgid "Delete"
 msgstr "Supprimer"
 #
+#
 msgid "Delete All"
 msgstr "Supprimer tout"
 #
@@ -1287,9 +1324,12 @@ msgstr "Intervalle entre deux cercles :"
 msgid "Distance Unit"
 msgstr "Unité de la distance entre deux cercles"
 #
-#, fuzzy
+# Pytheas54
+# Distance depuis votre bateau
+# ----
+# Aiseag : d'accord avec Pytheas
 msgid "Distance from Ownship"
-msgstr "Unité de la distance entre deux cercles"
+msgstr "Distance depuis votre bateau"
 #
 msgid "Distress"
 msgstr "Détresse"
@@ -1315,8 +1355,17 @@ msgstr "Zone de détresse : Navire abordé"
 msgid "Distress Area: Vessel disabled and adrift"
 msgstr "Zone de détresse : Navire non manoeuvrant dérivant"
 #
+# A étudier
+# -------------
+# Pytheas54
+# Zone de détresse: Incendie/explosion à bord d'un navire
+# ----
+# Aiseag : pourquoi : Zone dangereuse: Navire en feu, risque d'explosion
+# -----
+# Pytheas54
+# Pourquoi pas, mais 'Vessel fire' n'est pas 'Vessel on fire'
 msgid "Distress Area: Vessel fire/explosion"
-msgstr "Zone de détresse : Navire en feu. Risque d'explosion."
+msgstr "Zone de détresse: Incendie/explosion à bord d'un navire"
 #
 msgid "Distress Area: Vessel flooding"
 msgstr "Zone de détresse : Navire prenant l'eau"
@@ -1344,11 +1393,13 @@ msgstr "Zone de détresse : Navire assailli"
 # Pytheas54: je préfère la mienne, c'est normal !
 # ---
 # Gilletarom : Ok pour celle de Pythéas54
+# -----------
+# Aiseag : la notion de points d'interet était nouvelle) - Waypoints avec un S ? en contradiction avec 1662
 msgid ""
 "Do you also want to toggle the visibility of shared waypoints being part of "
 "this route?"
 msgstr ""
-"Désirez vous également afficher/masquer les waypoints partagés faisant partie "
+"Désirez vous également afficher/masquer les waypoint partagés faisant partie "
 "de cette route ?"
 #
 msgid "Done."
@@ -1404,8 +1455,9 @@ msgstr "Editer"
 msgid "Elapsed time : "
 msgstr "Durée écoulée :  "
 #
+# Aiseag : semble trop simple
 msgid "Elements to print..."
-msgstr ""
+msgstr "Eléments à imprimer ..."
 #
 msgid "Enable"
 msgstr "Activer"
@@ -1440,7 +1492,7 @@ msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
 msgstr "Entrer le préfixe ou la phrase NMEA (2, 3 ou 5 caractères)"
 #
 msgid "Environmental Caution Area: Hazardous sea ice"
-msgstr "Prudence, environnement : Icebergs possibles"
+msgstr "Prudence, environnement hostile : Icebergs possibles"
 #
 msgid "Environmental Caution Area: Heavy icing"
 msgstr "Prudence, environnement hostile : Givrage important"
@@ -1484,6 +1536,13 @@ msgstr "Erreur !"
 msgid "Estimated time : "
 msgstr "Durée estimée :  "
 #
+# Gilletarom :
+# Texte du bouton apparu dans la version 1319 et situé en bas dans le gestionnaire de route et de trace.
+# Le titre de ce bouton vous convient il ?
+# -------------
+# Pytheas54: OK
+# ----
+# Aiseag : OK
 msgid "Export All Visible..."
 msgstr "Exporter tout ce qui est visible ..."
 #
@@ -1615,8 +1674,9 @@ msgstr "Aller au curseur (avec route)"
 # Pytheas54: j'ai pas plus d'infos là-dessus.
 # Ta dernière proposition est bien...
 # ----
+# Aiseag : et pourquoi ne pas laisser en GPSGate Buddy en attendant mieux, de mémoire, les explications sur le fil n'étaient pas convaincantes
 msgid "GpsGate Buddy"
-msgstr "Copain GpsGate"
+msgstr "GpsGate Buddy"
 #
 msgid "Green"
 msgstr "Vert"
@@ -1681,6 +1741,8 @@ msgstr "Grande"
 # Navire de plaisance
 # Navire à Grande Vitesse
 # Navire remorquant, grande longueur
+# ---------
+# Aiseag : J'opte pour Navire à Grande Vitesse
 msgid "High Speed Craft"
 msgstr "Navire à Grande Vitesse"
 #
@@ -1706,10 +1768,12 @@ msgstr "Icône"
 # Eventuellement, OCPN fabrique certaines phrases lui même, il fera le contrôle mais je suis persuadé qu'il n'y a pas besoin de lui dire de le faire.
 # ----
 # Pytheas54: OK
+# ---------
+# Aiseag : j'enleve le premier checksum (controle à partir d'un algorithme)
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr ""
-"En cas de contrôle du checksum, seules les phrases ayant un checked sum "
-"correct sont acceptées"
+"En cas de contrôle, seules les phrases ayant un checksum correct sont "
+"acceptées"
 #
 # Why not
 msgid "Ignore Sentences"
@@ -1916,6 +1980,8 @@ msgstr "Liens"
 # Le bouton "Editer" a deux roles ... C'est un bouton bascule. Le mot éditer est inadapté.
 # -----
 # Pytheas54: pas de problème
+# ----------
+# Aiseag : OK
 msgid "Links are opened for editing."
 msgstr "Faites un clic gauche sur tous les liens que vous voulez modifier."
 #
@@ -2195,6 +2261,8 @@ msgstr "Non maître de sa manoeuvre"
 msgid "OK"
 msgstr "OK"
 #
+# ---------
+# Aiseag : Query = interrogation
 msgid "Object Query"
 msgstr "Objets présents : Propriétés"
 #
@@ -2239,45 +2307,110 @@ msgstr "OpenCPN traite le dossier ..."
 msgid "OpenCPN Group Notice"
 msgstr "Avis du groupe OpenCPN"
 #
+# Initialement :
+# Information OpenCPN
+# ----
+# Pytheas54: pourquoi pas
+# ----
+# Aiseag : OK pour la forme active (volontaire)
 msgid "OpenCPN Info"
-msgstr "Informations OpenCPN "
+msgstr "OpenCPN vous informe."
 #
 # Menu contextuel : Route
+# ====
+# Gilletarom
+# Waypoint : Supprimé par OpenCPN
+# C'est le titre d'une fenêtre qui s'ouvre pour une vérification d'action.
+# On peut remplacer par "Waypoint : Déconnexion" ou par "Waypoint, déconnexion".
+# Le verbe "déconnecter" est plus adapté que le verbe "Supprimer" puisque le waypoint n'est pas définitivement supprimé. Il apparait alors dans le gestionnaire de waypoint.
+# -----------
+# Pytheas54: OK
+# ----
+# Aiseag : OK
 msgid "OpenCPN Remove Waypoint"
-msgstr "Waypoint : Supprimé par OpenCPN"
+msgstr "Waypoint : Déconnexion"
 #
-# Menu contextuel : Route
+# Gilletarom : La traduction actuelle me parait absurde.
+# Et je n'arrive pas à simuler l'apparition de cet item
+# ====
+# Pytheas54: pourquoi les deux points ?
+# Route créée par OpenCPN
+# ----
+# Aiseag : OK
+# ---
+# Gilletarom : Suite avis de Dave, on ne traduit pas.
 msgid "OpenCPN Route"
-msgstr "Route : Créée par OpenCPN"
+msgstr "OpenCPN Route"
 #
 # Menu contextuel : Route
 # Proposition de Pithéas54 :    Route à créer par OpenCPN
 # Un commentaire ancien dit que cela doit apparaitre dans le menu route. Maintenant celui ci porte un titre "Route :". Le mot route n'a plus besoin de figurer dans la traduction de l'item. Dans ce cas, on peut mettre "A créer par OpenCPN"
 # -----
 # Pytheas54: OK
+# ----------
+# Aiseag : OK
+# ----------
+# Gilletarom : A mon avis, cette traduction n'a aucun sens parce que l'item lui même est absurde.
+# ----
+# Aiseag : no comment
 msgid "OpenCPN Route Create"
-msgstr "A créer par OpenCPN"
+msgstr "OpenCPN, route"
 #
 # Menu contextuel : Route
+# ----------
+# Gilletarom :
+# C'est le titre d'une fenêtre qui s'ouvre pour nous laisser le choix d'effacer ou pas une route de façon à éviter d'effacer accidentellement une route.
+# On peut se contenter de traduire par "OpenCPN, Route :".
+# ----
+# Pytheas54: OK
+# ----
+# Aiseag : OK, ai mis le O en Majuscule
 msgid "OpenCPN Route Delete"
-msgstr "Route effacée par openCPN"
+msgstr "OpenCPN, route"
 #
 msgid "OpenCPN S57 SENC File Create..."
 msgstr "OpenCPN crée le fichier des cartes S57 ..."
 #
+# ====
+# Gilletarom : La traduction actuelle me parait absurde.
+# Et je n'arrive pas à simuler l'apparition de cet item
+# ====
+# Pytheas54: pourquoi les deux points ???
+# ----
+# Aiseag : d'accord avec Pytheas voir 5281
+# ---
+# Suite avis de Dave, on traduit pas
 msgid "OpenCPN Track"
-msgstr "Trace : Créée par OpenCPN"
+msgstr "OpenCPN Track"
 #
-#
+# Menu contextuel trace:
+# ====
+# Gilletarom
+# C'est le titre d'une fenêtre qui s'ouvre pour nous laisser le choix d'effacer ou pas une trace de façon à éviter d'effacer accidentellement une route.
+# On peut se contenter de traduire par "OpenCPN,trace :".
+# ----------
+# Pytheas54: OK
+# ----
+# Aiseag : OK
 msgid "OpenCPN Track Delete"
-msgstr "Trace effacée par OpenCPN"
+msgstr "OpenCPN, trace"
 #
 # Menu contextuel : Route
+# ====
+# Gilletarom : La traduction actuelle me parait absurde.
+# Et je n'arrive pas à simuler l'apparition de cet item
+# ====
+# Pytheas54: pourquoi les deux points ???
+# ----
+# Aiseag : idem que 5268
+# ----
+# Gilletarom
+# Suite avis de Dave, on ne traduit pas
 msgid "OpenCPN Waypoint"
-msgstr "Waypoint : Créé par OpenCPN"
+msgstr "OpenCPN Waypoint"
 #
 msgid "OpenCPN cannot start. "
-msgstr "OpenCPN ne peut pas démarer"
+msgstr "OpenCPN ne peut pas démarrer"
 #
 msgid "OpenCPN info"
 msgstr "Informations OpenCPN "
@@ -2286,7 +2419,7 @@ msgid "Options"
 msgstr "Options (Boite à outils) :"
 #
 msgid "Other"
-msgstr "Encore plus d'objets"
+msgstr "Plus encore"
 #
 # Proposition de Pithéas54 :   Autre - à définir dans le texte associé
 # Non, je pense, comme pour un item précédent, que la blabla dans le texte associé existe déja. Il n'est pas à définir.
@@ -2294,8 +2427,10 @@ msgstr "Encore plus d'objets"
 # Pytheas54: même réponse ;-)
 # ----
 # Gilletarom :Il va bien falloir que je dise amen, ne serait ce qu'en pensant à la qualité de mon anglais.
+# ---------
+# Aiseag : OK, cohérent avec 3265
 msgid "Other - Define in associated text field"
-msgstr "Autre : Voir description dans le texte associé"
+msgstr "Autre - à définir dans le texte associé"
 #
 msgid "Out"
 msgstr "  Sortie "
@@ -2457,13 +2592,21 @@ msgstr "Pré-visualisation :"
 msgid "Print Chart"
 msgstr "Imprimer la carte"
 #
-#, fuzzy
+# Cet item est le nom d'un nouveau bouton présent dans le gestionnaire de route et de trace.
+# ---------------
+# Pytheas54: OK
+# ----
+# Aiseag : OK
 msgid "Print Route"
-msgstr "Route : Fractionner"
+msgstr "Route/trace : Imprimer"
 #
-#, fuzzy
+# Cet item est le nom d'un nouveau bouton présent dans le gestionnaire de route et de trace.
+# ---------------
+# Pytheas54: OK
+# ----
+# Aiseag : OK
 msgid "Print Route Selection"
-msgstr "Route : Fractionner"
+msgstr "Route/trace : Imprimer"
 #
 msgid "Priority"
 msgstr "Priorité"
@@ -2597,8 +2740,10 @@ msgstr "Refaire --> "
 # Pytheas: si tu es sûr, OK...
 # ----
 # Gilletarom : Même méthode que pour le précédent item
+# ---------
+# Aiseag : S enlevé à precision
 msgid "Reduce Data Precision"
-msgstr "Réduire la précisions des données"
+msgstr "Réduire la précision des données"
 #
 # Why not.
 # Mais ni ce que tu proposes, ni ce que j'avais proposé ne me convient.
@@ -2608,8 +2753,19 @@ msgstr "Réduire la précisions des données"
 # ----
 # Gilletarom : Je vais fabriquer un fichier gpx et regarder ce qui ce passe après simplification d'une trace.
 # et on en reparle encore
+# -------
+# Aiseag : Data est générique - je vote pour données
+# ------
+# Gilletarom : A revoir
+# Effectivement, j'ai testé en choisissant d'abord de relever beaucoup de point de route dans une trace. Puis, avec cette commande, j'ai regardé le résutlat. Il y a clairement une réduction du nombre de point de route. C'est ce qui saute le plus au yeux de l'utilisateur devant l'écran.
+# ----------------
+# Pytheas54:
+# ' Réduire les données' est un peu trop vague.
+# La proposition de G. est plus claire...
+# ----
+# Aiseag : OK avec vos remarques
 msgid "Reduce Data..."
-msgstr "Réduire les données ..."
+msgstr "Réduire le nombre de points de trace ...\""
 #
 msgid "Reduced Detail at Small Scale"
 msgstr "Réduire les détails à petite échelle"
@@ -2671,10 +2827,13 @@ msgstr "Observationt de navire : Présence de glace"
 # Bon, je vais révéler ... Non, c'est pas une révélation ...C'est dans un message de Dave sur le CR ... J'ai traduit mais cela ne sert à rien. Finalement Dave ne veut pas faire apparaitre les traductions de ces messages la (message AIS)
 # Si vous ne savez pas de quoi il s'agit, j'ai mis un peu d'explication en haut de cette page :
 # http://opencpn.shoreline.fr/3_Essentiel/E_51_Utiliser_AIS/E_51_AIS_avec_3.1.xxxx.htm
+# ---------
+# Aiseag : OK
 msgid ""
 "Report from ship: Miscellaneous information - define in Associated text field"
 msgstr ""
-"Observation de navire : Diverses informations décrites dans le texte associé"
+"Observation de navire : Diverses informations - à décrire dans le texte "
+"associé"
 #
 # AIS
 msgid "Reserved 11"
@@ -2697,26 +2856,28 @@ msgstr "Reservé 14"
 # Zone à accès limité : Opérations militaires en cours
 # ----
 # Gilletarom : Du coup j'adapterai tous les autres items qui commence par "Restricted area"
+# ---------
+# Aiseag : OK
 msgid "Restricted Area: Active military OPAREA"
 msgstr "Zone à accès limité : Opérations militaires en cours"
 #
 msgid "Restricted Area: Drifting Mines"
-msgstr "Zone de restriction : Mines dérivantes"
+msgstr "Zone à accès limité :  Mines dérivantes"
 #
 msgid "Restricted Area: Entry approval required prior to transit"
-msgstr "Zone de restriction : Autorisation d'entrée requise"
+msgstr "Zone à accès limité :  Autorisation d'entrée requise"
 #
 msgid "Restricted Area: Entry prohibited"
-msgstr "Zone de restriction : Entrée interdite"
+msgstr "Zone à accès limité :  Entrée interdite"
 #
 msgid "Restricted Area: Firing - danger area."
-msgstr "Zone de restriction : Zone de tir"
+msgstr "Zone à accès limité :  Zone de tir"
 #
 msgid "Restricted Area: Fishing prohibited"
-msgstr "Zone de restriction : Pêche interdite"
+msgstr "Zone à accès limité : Pêche interdite"
 #
 msgid "Restricted Area: No anchoring."
-msgstr "Zone de restriction : Mouillage interdit"
+msgstr "Zone à accès limité : Mouillage interdit"
 #
 # AIS
 msgid "Restricted Manoeuvrability"
@@ -2753,6 +2914,8 @@ msgstr "Info par survol d'une cible."
 # Pytheas54: vu
 # ----
 # Gilletarom : Je mettrai un avertissemnt à l'intention de Dave dans le fil ad-hoc
+# ---------
+# Aiseag : OK
 msgid "Rouge or suspicious vessel"
 msgstr "Navire voyou ou suspect"
 #
@@ -2766,10 +2929,11 @@ msgstr "Gestionnaire de routes, traces, marques et couches."
 msgid "Route Name"
 msgstr "Nom :"
 #
-# Menu contextuel : Route
-#, fuzzy
+# Aiseag : Impression route
+# ----------
+# Pytheas54: OK
 msgid "Route Print"
-msgstr "Route : Propriétés ..."
+msgstr "Impression route"
 #
 # Menu contextuel : Route
 msgid "Route Properties"
@@ -2790,8 +2954,11 @@ msgstr "Route :"
 # Pytheas54: moi non plus....
 # ----
 # Alors help AISEAG
+# ---------
+# Aiseag :  itinéraire Bis mais le mot itinéraire se prete guere à la navigation :-(
+# garder cette traduction
 msgid "Route: Alternative route"
-msgstr "Route : Route alternative"
+msgstr "Route : autre Route"
 #
 msgid "Route: Recommended route"
 msgstr "Route : Route recommandée"
@@ -2877,6 +3044,7 @@ msgstr "Voyez le fichier log à :"
 msgid "Select Alert Sound"
 msgstr "Choisir l'alarme"
 #
+#
 msgid "Select All"
 msgstr "Tout sélectionner    "
 #
@@ -2905,7 +3073,6 @@ msgstr "Route : Envoyer au GPS"
 msgid "Send To GPS..."
 msgstr "Envoyer au GPS ..."
 #
-#, fuzzy
 msgid "Send to GPS"
 msgstr "Envoyer au GPS"
 #
@@ -2943,6 +3110,8 @@ msgstr "Passer à l'échelle inférieure"
 # Pytheas54: tout à fait, OK
 # ----
 # Gilletarom : Deux idées valent mieux qu'une. Je prends celle de Pitjhéas54 que j'ajoute à la mienne.
+# ---------
+# Aiseag : OK, d'autant que pour l'icone, il y a la taille minimale à l'ecran
 msgid "Ship Icon Type"
 msgstr "Caractéristiques et icône du bateau"
 #
@@ -2959,7 +3128,7 @@ msgid "Show AIS Targets"
 msgstr "Afficher les cibles"
 #
 msgid "Show AIS targets real size"
-msgstr "AIS : Afficher les cibles en taille réelle"
+msgstr "Afficher les cibles en taille réelle"
 #
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Afficher la fenêtre de dialogue pour ces alarmes"
@@ -2977,8 +3146,16 @@ msgstr "Afficher les courants"
 msgid "Show Depth Units"
 msgstr "Profondeur : Afficher l'unité"
 #
+# Aiseag :
+# show : prefere traduire par donne, volontairement, je ne traduis pas le mot each
+# "Donne la distance de ce Waypoint/marque au prochain"
+# -----
+# Pytheas54
+# Afficher la distance d'un waypoint au suivant ???
+# ---
+# "Gilletarom : "Imprimer" va mieux que Afficher ou Donner
 msgid "Show Distance from each Waypoint to the next one."
-msgstr ""
+msgstr "Imprimer la distance d'un waypoint au suivant."
 #
 msgid "Show ENC Text"
 msgstr "Afficher les textes des cartes ENC"
@@ -3024,24 +3201,53 @@ msgstr "Barre d'icônes : La montrer en mode plein écran"
 msgid "Show WPT names"
 msgstr "WP : Montrer les noms"
 #
-#, fuzzy
+# Aiseag;: proose 'descrition du waypoint/marque"
+# -----------
+# Pytheas54: OK
+#  sauf si Gérard a une bonne raison ;-)
+# ------
+# Gilletarom:
+# Il s'agit vraiement d'un point de route. pas d'une marque. J'enlève "marque". C'est ma bonne raison.
+# Et "Imprimer est axactement adapté.
 msgid "Show Waypoint description."
-msgstr "Description du lien"
+msgstr "Imprimer la descrition des waypoint."
 #
-#, fuzzy
+# aiseag : c'est court mais efficace
+# ---
+# Gilletarom
+# Non, le mot nom est déjà présent, à gauche de cet item dans une fenêtre. Le mot montrer devient important.
+# Mais le mot imprimer est exactement celui qui convient dans le contexte où cet item apparait (lorsqu'on utilise le bouton "Route/trace : Imprimer)"
 msgid "Show Waypoint name."
-msgstr "Nom :"
+msgstr "Imprimer le nom des waypoint"
 #
-# arque :
-#, fuzzy
+# ---------
+# Aiseag : pourquoi information est traduit par proprietes (cf 21)
+# ----
+# Pytheas54 ???
+# Traduction OK pour moi
+# ----
+# Aiseag : OK
+# ----
+# Gilletarom :
+# "Imprimer"
 msgid "Show Waypoint position."
-msgstr "Waypoint/marque : Propriétés"
+msgstr "Imprimer la position des waypoint"
 #
 msgid "Show area notices (from AIS binary messages)"
 msgstr "Afficher les avis de la zone (à partir des données AIS)"
 #
+# Aiseag :
+# volontairement, je ne traduis pas le mot each
+# "Montre le tracé de ce Waypoint/marque au prochain"
+# ----------
+# Pytheas54
+# Afficher le cap d'un waypoint au suivant ???
+# -----
+# Gilletarom
+# je préfère la version Pythéas (Ici, il s'agit bien de waypoint, c'est à dire de "point de route". Ce n'est pas une marque indépendante de la route.
+# et "imprimer"
 msgid "Show course from each Waypoint to the next one. "
-msgstr ""
+msgstr "Imprimer le cap d'un waypoint au suivant."
 #
 msgid "Show name"
 msgstr "Afficher le nom"
@@ -3135,6 +3341,11 @@ msgstr "Cibles mouillées ou amarrées : Ne pas déclencher d'alarme"
 #
 msgid "Symbolized"
 msgstr "Limites : Crénelées"
+#
+#
+#, fuzzy
+msgid "T"
+msgstr "De ...... à ......."
 #
 msgid "TCP"
 msgstr "TCP"
@@ -3266,6 +3477,8 @@ msgstr "Là"
 # Ce que je propose ici, n'est pas ce que j'avais mis avant. Et cela me parait mieux que la proposition de Pithéas54.
 # -----
 # Pytheas54: OK
+# ----------
+# Aiseag : OK
 msgid ""
 "There are existing waypoints at the same location as some of the ones you are "
 "pasting. Would you like to just merge the pasted data into them?\n"
@@ -3288,6 +3501,8 @@ msgstr ""
 # Je souhaite insister et maintenir "en un seul" à l'extrémité de l'item.
 # ----
 # Pytheas54: OK
+# ----------
+# Aiseag : OK
 msgid ""
 "There is an existing waypoint at the same location as the one you are "
 "pasting. Would you like to merge the pasted data with it?\n"
@@ -3504,8 +3719,23 @@ msgstr "Perso. : Y"
 msgid "User Y Offset (Metres)"
 msgstr "Réglage personnel Y (mètres)"
 #
+# AISAG :
+# A étudier
+# ====
+# Gilletarom :    VTS  = Vessel Traffic Service
+# en Français "Service d'assistance à la navigation"
+# Des explications ici :
+# .
+# http://en.wikipedia.org/wiki/Vessel_traffic_service
+# .
+# Donc une traduction ?  Je ne sais quoi dire.
+# =====
+# Pytheas54
+# Gardons VTS qui est le jargon classique. De toute façon, ça ne concerne pas les plaisanciers
+# ----
+# Aiseag : OK
 msgid "VTS active target"
-msgstr "Cible active VTS"
+msgstr "VTS active target"
 #
 msgid "Vector Charts"
 msgstr "Cartes vectorielles"
@@ -3537,8 +3767,16 @@ msgstr "Navire remorquant, grande longueur"
 # ----
 # Gilletarom : Mon anglais étant ce qu'il est, malgré mes progrès depuis 3 ans... je ne sais pas quoi dire. Sachant que ton anglais est bien meilleur, je te dirais volontier Ok.
 # Voyons ce que va dire AISEAG.
+# ----
+# Aisseag : je positive la phrase ne specifiant que l'assistance demandée n'est pas urgente => donc simple
+# ----
+# Pythéas54 ---> Ton dernier avis ?
+# -----
+# Pytheas54: OK
+# ---
+# Gilletarom : Ok
 msgid "Vessel requesting non-distress assistance"
-msgstr "Navire ne demandant pas d'assistance d'urgence"
+msgstr "Navire demandant une assistance simple."
 #
 # Ok
 msgid "Vessel, type unknown"
@@ -3573,32 +3811,58 @@ msgstr "Déclencher un avertissement si le CPA est inférieur à... (milles) :"
 msgid "Waypoint"
 msgstr "Waypoint"
 #
-# arque :
-#, fuzzy
+# ---------
+# Aiseag : pourquoi information est traduit par proprietes (cf 21)
+# ----
+# Pytheas54 ???
+# Traduction OK pour moi
+# ----
+# Aiseag : OK
 msgid "Waypoint Information"
-msgstr "Waypoint/marque : Propriétés"
+msgstr "Waypoint/marque : description"
 #
 msgid "Waypoint Name"
 msgstr "Nom :"
 #
-#, fuzzy
+# A étudier
+# ----
+# Pytheas54: OK
+# ---
+# Aiseag : OK
+# ---
+# Valider
 msgid "Waypoint Properties"
-msgstr "Waypoint : Propriétés ..."
+msgstr "Waypoint : Propriétés"
 #
 # Menu contextuel : Waypoint/marque
-#, fuzzy
+# ----
+# Gilletarom :
+# Waypoint/marque, couches : Les propriétés
+# ------------
+# Pytheas54
+# Pour route, on a
+# Couche: route
+# donc
+# Couche: Propriétés Waypoint/marque
+# ???
+# ----
+# Aiseag : Waypoint properties à ete traduit en #23, tout a fait OK pour cette traduct.
 msgid "Waypoint Properties, Layer: "
-msgstr "Waypoint/marque, couches : Les propriétés"
+msgstr "Couche: Propriétés Waypoint/marque "
 #
 # Expérimentalement (commande "Send to GPS") , le pluriel ne semble pas logique car il n'est jamais possible de sélectionner plusieurs WP dans le manager de waypoint. D'autre part, nous nous heurtons au problème du pluriel de waypoint .. Sytématiquement, dans mes traductions :" les waypoint" et non pas "les waypoints".
 # ----
 # Pytheas54: amen pour les deux remarques
+# ----------
+# Aiseag : OK
 msgid "Waypoint(s) Uploaded successfully."
 msgstr "Waypoint : Chargement réussi"
 #
 # Arg ... Non.  Jai traduit partout "waypoints" par "waypoint" ... ça l'fait pas.
 # ----
 # Pytheas54: Amen
+# -------
+# Aiseag : OK
 msgid "Waypoints"
 msgstr "Waypoint"
 #
@@ -3637,6 +3901,8 @@ msgstr "Avion à effet de sol (WIG)"
 # J'enlève le "s" à orthodromique; j'ajoute "la" devant "route"
 # -----
 # Pytheas54: OK
+# ----------
+# Aiseag : OK
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr ""
 "Voulez-vous inclure les points de la route orthodromique pour ce segment ?"
@@ -3655,6 +3921,8 @@ msgstr "Dév.      D"
 # Cela devrait être Ok.
 # ----
 # Pytheas54: vu
+# ---------
+# Aiseag : OK
 msgid "Yat"
 msgstr "Yacht"
 #
@@ -3672,12 +3940,13 @@ msgstr "Oui, cacher cette icône"
 # Pytheas54 : vu
 # ----
 # Gilletarom : je mettrai un message à Dave sur le fil 18n
-#, fuzzy
+# ---------
+# Aiseag : j'ajoute un s à icones
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make it inaccessible."
 msgstr ""
-"Vous ne pouvez pas cacher toutes les icône de la barre d'icônes.\n"
+"Vous ne pouvez pas cacher toutes les icônes de la barre d'icônes.\n"
 "Ceci rendrait la barre d'icônes inaccessible."
 #
 msgid "You must enter the address..."
@@ -3723,64 +3992,3 @@ msgstr "WGS Y"
 #
 msgid "wxFB Website"
 msgstr "Site web wxFB"
-#
-#
-#
-#~ msgid "Add this chart to quilt."
-#~ msgstr "Mosaïque des cartes : Ajouter cette carte"
-#
-#
-#
-#~ msgid "All but"
-#~ msgstr " Tout mais "
-#
-#
-#
-#~ msgid "Can't send waypoint. Found no serial data port with output defined."
-#~ msgstr ""
-#~ "Impossible d'envoyer le waypoint. Aucun port de sortie n'a été défini."
-#
-#
-#
-#~ msgid "Copy"
-#~ msgstr "Copier"
-#
-#
-#
-#~ msgid "E&xport All..."
-#~ msgstr "Exporter tout ..."
-#
-#
-#
-#~ msgid "Just "
-#~ msgstr " Seulement"
-#
-#
-#
-# Menu contextuel : Waypoint/marque
-#~ msgid "Mark Properties"
-#~ msgstr "Waypoint/marque : Propriétés ..."
-#
-#
-#
-#~ msgid "Remove this chart from quilt."
-#~ msgstr "Mosaïque des cartes : Retirer cette carte"
-#
-#
-#
-# Ok.    ....  Gachis de travail. L'item sera supprimé dans la prochaine version.
-# ---
-# Pytheas: OK
-#, fuzzy
-#~ msgid "RenderHPGL: The '%s' instruction is not implemented."
-#~ msgstr "RenderHPGL: L'instruction '%s' n'est pas implémenté."
-#
-#
-#
-#~ msgid "Send to GPS ( "
-#~ msgstr "Envoyer au GPS ( "
-#
-#
-#
-#~ msgid "Unavailable"
-#~ msgstr "Indisponible"
