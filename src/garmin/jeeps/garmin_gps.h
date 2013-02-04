@@ -43,7 +43,7 @@ extern "C"
 #define INPUT_ERROR -7
 
 #define MAX_GPS_PACKET_SIZE	1024
-#define GPS_TIME_OUT		5
+#define GPS_TIME_OUT		2
 
 #define gpsTrue  1
 #define gpsFalse 0
