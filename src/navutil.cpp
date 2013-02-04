@@ -3151,7 +3151,7 @@ int MyConfig::LoadMyConfig( int iteration )
     if( g_navobjbackups > 99 ) g_navobjbackups = 99;
     if( g_navobjbackups < 0 ) g_navobjbackups = 0;
 
-    g_NMEALogWindow_sx = Read( _T ( "NMEALogWindowSizeX" ), 400L );
+    g_NMEALogWindow_sx = Read( _T ( "NMEALogWindowSizeX" ), 600L );
     g_NMEALogWindow_sy = Read( _T ( "NMEALogWindowSizeY" ), 400L );
     g_NMEALogWindow_x = Read( _T ( "NMEALogWindowPosX" ), 10L );
     g_NMEALogWindow_y = Read( _T ( "NMEALogWindowPosY" ), 10L );
