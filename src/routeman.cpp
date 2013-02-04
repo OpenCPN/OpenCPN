@@ -33,6 +33,7 @@
 
 #include "wx/image.h"
 #include "wx/tokenzr.h"
+#include <wx/progdlg.h>
 
 #include "dychart.h"
 
@@ -831,15 +832,35 @@ void Routeman::DeleteTrack( Route *pRoute )
 
         ::wxBeginBusyCursor();
 
+        wxProgressDialog *pprog = NULL;
+        int count = pRoute->pRoutePointList->GetCount();
+        if( count > 200) {
+            pprog = new wxProgressDialog( _("OpenCPN Track Delete"), _T("0/0"), count, NULL, 
+                                          wxPD_APP_MODAL | wxPD_SMOOTH |
+                                          wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
+            pprog->SetSize( 400, wxDefaultCoord );
+            pprog->Centre();
+            
+        }
+                                          
         //    Remove the route from associated lists
         pSelect->DeleteAllSelectableTrackSegments( pRoute );
         pRouteList->DeleteObject( pRoute );
 
         // walk the route, tentatively deleting/marking points used only by this route
+        int ic = 0;
         wxRoutePointListNode *pnode = ( pRoute->pRoutePointList )->GetFirst();
         while( pnode ) {
+            if(pprog) {
+                wxString msg;
+                msg.Printf(_T("%d/%d"), ic, count);
+                pprog->Update( ic, msg );
+                ic++;
+            }
+                
             RoutePoint *prp = pnode->GetData();
 
+            
             // check all other routes to see if this point appears in any other route
             Route *pcontainer_route = NULL; //FindRouteContainingWaypoint(prp);
 
@@ -880,6 +901,8 @@ void Routeman::DeleteTrack( Route *pRoute )
 
         ::wxEndBusyCursor();
 
+        if( pprog)
+            delete pprog;
     }
 }
 
