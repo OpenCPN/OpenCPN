@@ -400,12 +400,12 @@ void RouteManagerDialog::OnTabSwitch( wxNotebookEvent &event )
     if( !m_pNotebook ) return;
     int current_page = m_pNotebook->GetSelection();
     if( current_page == 3 ) {
-        if( btnImport ) btnImport->Enable( false );
+//        if( btnImport ) btnImport->Enable( false );
 //        if( btnExport ) btnExport->Enable( false );
-        if( btnExportViz ) btnExportViz->Enable( false );
+//        if( btnExportViz ) btnExportViz->Enable( false );
     } else {
         if( btnImport ) btnImport->Enable( true );
-//        if( btnExport ) btnExport->Enable( true );
+        if( btnExport ) btnExport->Enable( true );
         if( btnExportViz ) btnExportViz->Enable( true );
         
     }
