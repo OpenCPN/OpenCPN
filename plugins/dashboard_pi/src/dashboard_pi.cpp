@@ -383,6 +383,9 @@ void dashboard_pi::Notify()
         SendSatInfoToAllInstruments( 0, 1, sats );
         SendSatInfoToAllInstruments( 0, 2, sats );
         SendSatInfoToAllInstruments( 0, 3, sats );
+
+        mSatsInView = 0;
+        SendSentenceToAllInstruments( OCPN_DBP_STC_SAT, 0, _T("") );
     }
 }
 
@@ -921,6 +924,8 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         mUTCDateTime = mUTCDateTime.ToUTC();
     }
     mSatsInView = pfix.nSats;
+//    SendSentenceToAllInstruments( OCPN_DBP_STC_SAT, mSatsInView, _T("") );
+
 }
 
 void dashboard_pi::SetCursorLatLon( double lat, double lon )

@@ -4632,6 +4632,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     gSAT_Watchdog--;
     if( gSAT_Watchdog <= 0 ) {
         g_bSatValid = false;
+        g_SatsInView = 0;
         if( g_nNMEADebug && ( gSAT_Watchdog == 0 ) ) wxLogMessage(
                 _T("   ***SAT Watchdog timeout...") );
     }
