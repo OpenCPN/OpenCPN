@@ -43,6 +43,7 @@
 #include "styles.h"
 #include "options.h"
 #include "multiplexer.h"
+#include "statwin.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
@@ -55,6 +56,7 @@ extern MyFrame         *gFrame;
 extern ocpnStyle::StyleManager* g_StyleManager;
 extern options         *g_pOptions;
 extern Multiplexer     *g_pMUX;
+extern StatWin         *stats;
 
 //    Some static helper funtions
 //    Scope is local to this module
@@ -1614,6 +1616,16 @@ bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, w
     }
         
     return false;
+}
+
+int GetChartbarHeight( void )
+{
+    if( stats && stats->IsShown() ){
+        wxSize s = stats->GetSize();
+        return s.GetHeight();
+    }
+    else
+        return 0;
 }
 
 //-----------------------------------------------------------------------------------------
