@@ -8,7 +8,7 @@ http://opencpn.org/ocpn/ocpn_manual_export/
 
 2 Run all pictures in the folder "OpenCPN User Manual_files" through "optipng"
 Open a commandline in the folder and run   $optipng -o7 *.png
-for max size reduction.Watch out for the possibility of corrupted pic!
+for max size reduction.Watch out for the possibility of corrupted pictures as a result from running the command.
 
 3 Links in the Documentation wiki, must follow a very precise format to work as internal links in the final document.
 The name of the link must be exactly the title of the page linked to. 
@@ -19,4 +19,9 @@ On occasion this will look a bit funny, but generally it's possible to adjust th
 These may not show in the wiki but use to be easy to spot in the produced single page.
 Test by setting all links to be colored or underlined.
 
-TH20130108
+5 When naming picture files, pick names that are unique, taking into account that Windows does not differ between cases.
+Test1.png is considered equal to test1.png. 
+
+6 No spaces in picture files names.
+
+TH20130127

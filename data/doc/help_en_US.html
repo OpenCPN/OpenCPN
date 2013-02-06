@@ -71,7 +71,12 @@
   <h1 id="Getting Started" class="book-heading">Getting Started</h1>
   <!-- google_ad_section_start --><p>Welcome!<br>
 <br>
-This is Beta Documentation, in preparation for the 3.2 stable release. It is <strong>not</strong> a reference for the July 2012, 3.0.2 stable release.<br>
+This is the Documentation, for the OpenCPN 3.2 stable release.<br>
+All serious users need to read through this document to fully understand
+ the scope of the program, as well as all the details. If you have 
+difficulties finding a particular subject, please use your browsers 
+built in search ability, often called just "find".<br>
+<br>
 Press <img src="OpenCPN%20User%20Manual_files/help.png" alt="" align="absMiddle"> and then the help tab to access this built in version of this document. Except for the table of contents, links in <em>italic</em> are internal to this document. Other links will need an Internet connection.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/About32.png" alt="" height="362" width="600"><br>
@@ -106,13 +111,13 @@ through the <a href="#Basic%20Features"><em>Basic Features</em> </a>and <a href=
  to really get a good grasp of what the program offers.  If you still 
 have questions or would just like to get in touch with other OpenCPN 
 users, there is also a fairly large community behind OpenCPN. You can 
-find us in this Cruiser's &gt;forum.<br>
+find us in this <a href="http://www.cruisersforum.com/forums/f134/">Cruisers Forum.</a><br>
 <br>
 * For advanced users we recommend the <a href="http://opencpn.org/ocpn/developers_manual">Developers Manual</a>.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/opencpn.png" alt="" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#Table%20Of%20Contents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  <div id="node-11" class="section-3">
   <h1 id="Installing OpenCPN" class="book-heading">Installing OpenCPN</h1>
-  <!-- google_ad_section_start --><strong>Windows XP SP3/Vista/7 </strong>
+  <!-- google_ad_section_start --><strong>Windows XP SP3/Vista/7/8 </strong>
 <ul>
 	<li>Download the installation package for Windows from <a href="http://opencpn.org/download">Download OpenCPN</a>.</li>
 	<li>Use the stable release for navigation en route, or if you just started using OpenCPN.</li>
@@ -144,7 +149,7 @@ preferences.</li>
 
 <h4 id="32/64 bit Ubuntu/Debian Distributions">32/64 bit Ubuntu/Debian Distributions</h4>
 
-<h4 id="32 bit Fedora / Cent OS">32 bit Fedora / Cent OS</h4>
+<h4 id="32/64 bit Fedora / Cent OS">32/64 bit Fedora / Cent OS</h4>
 <br>
 If you are installing OpenCPN for the first time on a computer with 
 Ubuntu, or any other Linux flavor, you have to go through a few steps to
@@ -182,6 +187,11 @@ For Fedora: # sudo yum install --nogpgcheck &lt;downloaded_file.rpm&gt;</pre>
 as /dev/ttyS0, make sure that you, as a user, belongs to the "dialout" 
 group. To find out, run the "$groups" command. If you're not in 
 "dialout", add yourself with "$sudo usermod -a -G dialout $USER"</li>
+	<li>If you are running Debian Squeeze and want to install OpenCPN from 
+the distribution.deb package, you will need to install with something 
+like this in order to satisfy install dependencies related to 
+libtinyxml:<br>
+	$sudo dpkg -i --force-depends opencpn_3.1.1327-1_i386.deb</li>
 </ul>
 
 <h4 id="Other 32, 64bits, the armhf architecture, Linux Distributions and the BSD operating systems">Other 32, 64bits, the armhf architecture, Linux Distributions and the BSD operating systems</h4>
@@ -3286,8 +3296,7 @@ Inter-coastal Waterway.  More here: <em><font color="#000000"><a href="#Auto%20F
  
 <h2 id="The Connections Tab"><strong><a name="#"></a>The Connections Tab</strong></h2>
 <br>
-<img src="OpenCPN%20User%20Manual_files/dataconnections2.png" alt="" height="789" width="600"><br>
-<br>
+<img src="OpenCPN%20User%20Manual_files/dataconnections4.png" alt="" height="879" width="600"><br>
 For a full explanation of this tab read  <a href="#Data%20Connections"><em>Data Connections</em></a> .<br>
 <br>
 <a href="#top"><em>Goto top of page</em></a><br>
@@ -3401,7 +3410,7 @@ Tracking" tool will - as before - turn tracking on and off. However, on
 turning it off, the accumulated track will be extended with the previous
  one, if it does not extend into yesterday. Disjoint segments are kept 
 separate, time-adjacent segments are merged into a single segment.<br>
-Disjointed track segments, can be joined through the rightclick menu, when they are selected in the Route Managers Tracks Tab.<br>
+Disjointed track segments, can be joined through the right-click menu, when they are selected in the Route Managers Tracks Tab.<br>
 Every Midnight the tracking is turned off and on again automatically, to ensure that the track does not span dates.<br>
 If Automatic Daily Tracking is selected during the day, when some tracks
  have already been created, only the last one will be merged with future
@@ -3458,7 +3467,7 @@ keeping the size small.<br>
  
 <h2 id="The User Interface Tab"><strong><a name="#"></a>The User Interface Tab</strong></h2>
 <br>
-<img src="OpenCPN%20User%20Manual_files/options-user.png" alt="" height="582" width="650"><br>
+<img src="OpenCPN%20User%20Manual_files/options-user2.png" alt=""><br>
 <br>
 <strong>Languages: </strong>The following languages are available in OpenCPN <strong>3.2</strong> :<br>
 Brazilian Portuguese<br>
@@ -3497,7 +3506,7 @@ support files installed on your computer (Linux). Default language is US
 display. Selecting the right size of font can have a dramatic impact on 
 how values are presented. It's well worth playing around with these 
 settings if you think that something is difficult to read for example. 
-Note that even the text displayed on vectorcharts, can be adjusted.<br>
+Note that even the text displayed on vector-charts, can be adjusted.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/font.png" alt="" height="285" width="300"><br>
  <br>
@@ -3543,6 +3552,8 @@ Compiz or GNOME Shell, to have a transparent toolbar.<br>
 visible.  Locks waypoints, and prevents accidental moving of them. This 
 box should normally be ticked  when under way.<br>
 <br>
+<strong>Confirm deletion of tracks and routes</strong>. A safeguard against deleting important data by misstake.<br>
+<br>
 <a href="#top"><em>Goto top of page</em></a><br>
  
 <h2 id="The Plugins Tab"><strong><a name="#"></a>The Plugins Tab</strong></h2>
@@ -3556,9 +3567,7 @@ The Plugin tab is treated on these pages<br>
 <br>
 <a href="#top"><em>Goto top of page</em></a><br>
 <br>
-<img src="OpenCPN%20User%20Manual_files/opencpn.png" alt="" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#Table%20Of%20Contents"><em>Table Of Contents</em></a><br>
-<br>
- <!-- google_ad_section_end -->  </div>
+<img src="OpenCPN%20User%20Manual_files/opencpn.png" alt="" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#Table%20Of%20Contents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  </div>
 <div id="node-226" class="section-3">
   <h1 id="Data Connections" class="book-heading">Data Connections</h1>
   <!-- google_ad_section_start --><br>
@@ -3580,7 +3589,7 @@ everything on the bus, subject to user specified output filtering. There
  is no specific  "shared" AIS and GPS port, as all ports are shared.</li>
 </ul>
 <br>
-<img src="OpenCPN%20User%20Manual_files/dataconnections2.png" alt="" height="877" width="656"><br>
+<img src="OpenCPN%20User%20Manual_files/dataconnections4.png" alt="" height="879" width="600"><br>
  
 <ul>
 	<li>The key point to keep in mind with this new setup is the complete 
@@ -3596,17 +3605,18 @@ get the message and act accordingly. Plugins also get all messages.</li>
 
 <ul>
 	<li>To get a taste of what can be done, we start with a lab scenario. 
-In the screen-shot above, four Data Ports are opened. GPSD on localhost 
-port 2947, /dev/ttyUSB1 as ais port, the San Fransisco AIS feed is next 
-and last is an output port to a computer on the local network. The 
-picture is from a Linux computer, but the receiving box is an Win XP. 
-Both boxes are configured to use the same broadcasting address 
-192.168.0.255(*) on the local network, using the default 10110 port. 
-Note that UDP, and not TCP, is used. OpenCPN on the XP box receives and 
-shows all info from the three first ports and even data from the VDR 
-plugin, if it's running. All input sources are merged together and 
-available to transmit to an external computer. Every computer on-board 
-can be used as a repeater to the main box!</li>
+In the screen-shot above, four Data Ports are enabled. GPSD on localhost
+ port 2947, /dev/ttyUSB1 as ais port, the San Fransisco AIS feed is next
+ and last is an output port to a computer on the local network. Note 
+that the connections are automatically sorted in order of the priority 
+setting  The picture is from a Linux computer, but the receiving box is 
+an Win XP. Both boxes are configured to use the same broadcasting 
+address 192.168.0.255(*) on the local network, using the default 10110 
+port. Note that UDP, and not TCP, is used. OpenCPN on the XP box 
+receives and shows all info from the three first ports and even data 
+from the VDR plugin, if it's running. All input sources are merged 
+together and available to transmit to an external computer. Every 
+computer on-board can be used as a repeater to the main box!</li>
 	<li>Note that it's important, in this scenario, that the real NMEA 
 sources have a higher priority than the UDP retransmit on te broadcast 
 address. The reason is that all hosts on the local network receives a 
@@ -4042,7 +4052,7 @@ Let's take a look at some of OpenCPN's advanced features.<br>
 <br><!-- google_ad_section_end -->  <div id="node-26" class="section-3">
   <h1 id="AIS" class="book-heading">AIS</h1>
   <!-- google_ad_section_start --><p>For a general introduction to AIS, <a href="http://en.wikipedia.org/wiki/Automatic_Identification_System">Wikipedia</a> is a good place to start.<br>
-The screendump below gives you a first feel for how AIS targets are presented and used in OpenCPN.<br>
+The screen-dump below gives you a first feel for how AIS targets are presented and used in OpenCPN.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/ais-alarm.png" alt="" height="640" width="800"><br>
 <br>
@@ -4060,33 +4070,39 @@ other, with present courses and speeds.</em><em> The meeting vessel is red, as i
 <br>
 There is a lot of information about the vessels that transmits AIS signals.<br>
  </p>
+
 <p class="rteleft"><img src="OpenCPN%20User%20Manual_files/ais11.png" alt="" height="452" width="368"></p>
+
 <p><br>
 <em>The cursor is on top of the the meeting vessel on a SW course. As we
  have not yet received full information, this can take a while, we don't
  get the name but an id number, the so called MMSI number, instead. 
 Exactly what is shown in the yellow popup is configured in the AIS tabs 
-Rollover heading.<br>
-<br>
-</em></p>
+Rollover heading.</em><br>
+ </p>
+
 <p class="rteleft"><img src="OpenCPN%20User%20Manual_files/ais2.png" alt="" height="308" width="356"></p>
+
 <p> </p>
-<p class="rteleft"><em>This vessel is identified by name, and has a green color, as it does not represent any danger to our navigation.<br>
-<br>
-</em></p>
+
+<p class="rteleft"><em>This vessel is identified by name, and has a green color, as it does not represent any danger to our navigation.</em><br>
+ </p>
+
 <p class="rtecenter"> </p>
+
 <p class="rteleft"><img src="OpenCPN%20User%20Manual_files/AISTargetQuery.png" alt="" height="402" width="328"></p>
+
 <p><em>If we instead of just hovering the cursor on an object, double 
 click it, the  dialog above pops up. A lot of relevant information is 
 displayed. TCPA is the time until CPA, how long before we are at the 
 closest point to the other vessel.</em><br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/aisfocus.png" alt="" height="135" width="183"><br>
-<em><br>
-Right-clicking a target brings up a dialog focused on AIS.<br>
 <br>
+<em>Right-clicking a target brings up a dialog focused on AIS.</em><br>
 <br>
-</em></p>
+ </p>
+
 <h3 id="The AIS Target List">The AIS Target List</h3>
 <br>
 <img src="OpenCPN%20User%20Manual_files/AIS-list.png" alt="" height="443" width="750"><br>
@@ -4095,63 +4111,72 @@ available through the right click menu.  Click on the header in a column
  to sort according to this criteria. For example, clicking "Range" sorts
  the targets with the nearest target on top. Click one more time to get 
 the target, furthest away on top.<br>
-Active Search And Rescue Target (<strong>SART</strong>) and Digital Selective Calling (<strong>DSC</strong>) distress targets, will always stay at the top of the list, even when sorting. <br>
-AIS targets  with Lat &gt; +/-85 deg will show brg "unavailable". OpenCPn is not suited for Polar Navigation.<br>
+Active Search And Rescue Target (<strong>SART</strong>) and Digital Selective Calling (<strong>DSC</strong>) distress targets, will always stay at the top of the list, even when sorting.<br>
+AIS targets  with Lat &gt; +/-85 deg will show brg "unavailable". OpenCPN is not suited for Polar Navigation.<br>
 <strong>Target Info</strong><em> </em>button<em>: </em>Click on a target to highlight it and then click the button  to display the information dialog.<br>
 <strong>Center View</strong> button: Highlight a target an click this button and the screen will center on the target.<br>
-<strong>Limit Range</strong>: The list will only show targets with a range less than, or equal to this value.  <br>
+<strong>Limit Range</strong>: The list will only show targets with a range less than, or equal to this value. <br>
 <strong>Target Count:</strong> Total number of AIS targets.<br>
-<em> <br>
-</em>
-<p> <br>
-<strong>AIS data port</strong><br>
-Select your AIS input port in the Connection Tab. When this is set to 
-anything but "None", the AIS button  appears in the ToolBar. This button
- appears different according to the  following conditions.<br>
+ 
+<h3 id="AIS Transponder">AIS Transponder</h3>
+
+<p>OpenCPN 3.2 does not show the ownship (i.e. AIVDO message) neither as
+ an AIS target, nor in the target list. AIVDO is processed only in the 
+main navigation thread. </p>
+
+<h3 id="AIS data port"><strong>AIS data port</strong></h3>
+
+<p>Select your AIS input port in the Connection Tab. The AIS button in 
+the ToolBar, appears different according to the following conditions.<br>
   <img src="OpenCPN%20User%20Manual_files/ais.png" alt="" height="32" width="32">
-  AIS Alive. The default AIS button. This icon appears as soon as an AIS
-  port is active in the tool-box. It is also the normal state with an 
-AIS  receiver working and with no targets of interest.<br>
+ AIS Alive. The default AIS button. This icon appears as soon as an AIS 
+port is active in the tool-box. It is also the normal state with an AIS 
+receiver working and with no targets of interest.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/ais_alive_active.png" alt="" height="32" width="32">AIS
-   Alive and Activity, a small green circle will illuminate in the lower
-  right  corner of the Ais buton. If there is at least one AIS message  
+ Alive and Activity, a small green circle will illuminate in the lower 
+right corner of the Ais buton. If there is at least one AIS message 
 every 4 seconds, the light will remain illuminated.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/ais_supressed.png" alt="" height="32" width="32">
-  AIS Suppressed. This icon indicates only that target suppression is  
+ AIS Suppressed. This icon indicates only that target suppression is 
 activated in the AIS tab in the ToolBox. Referring to the picture above 
- there are two sort of suppression: <br>
+there are two sort of suppression:<br>
 * Suppress display of all moored/anchored targets, max speed specified in dialog.<br>
 * Suppress Alerts for moored/anchored targets.<br>
 This icon will be over-ridden with the AIS alarm button if an alarm is, 
- or becomes, active according to the AIS tab alarms  settings in the  
+or becomes, active according to the AIS tab alarms settings in the 
 toolbox.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/ais_alarm.png" alt="" height="32" width="32">
-  AIS Alarm. A target exist that raises the alarm as defined in the AIS 
- tab in the ToolBox. It is the three settings "CPA Calculations", that  
+ AIS Alarm. A target exist that raises the alarm as defined in the AIS 
+tab in the ToolBox. It is the three settings "CPA Calculations", that 
 rules if and when an alarm is raised.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/ais_disabled.png" alt="" height="32" width="32">
-  AIS Disabled. No targets, if available, are shown on the screen. This 
- button toggles  with the other buttons. For example, if the AIS alarm  
-button is visible, click the button and it will change to the "AIS  
-Disabled" button, and all targets, alarms etc, disappears from the  
+ AIS Disabled. No targets, if available, are shown on the screen. This 
+button toggles with the other buttons. For example, if the AIS alarm 
+button is visible, click the button and it will change to the "AIS 
+Disabled" button, and all targets, alarms etc, disappears from the 
 display. Click again and the original button and AIS display comes back.</p>
+
 <p class="rteleft"> </p>
+
 <h3 id="The ToolBox AIS Tab">The ToolBox AIS Tab</h3>
-<br>
+ 
+
 <div class="rteleft"><img src="OpenCPN%20User%20Manual_files/Ships_aistargets.png" alt="" height="880" width="682"></div>
+
 <p class="rtecenter"> </p>
+
 <p class="rteleft">This tab controls the behavior of many thing in the 
 AIS display. There are no "best" settings. It all depend on where you 
 are, what kind of navigation you are into and what kind of vessel you 
-are on. It is your responsibility to evaluate this. <br>
+are on. It is your responsibility to evaluate this.<br>
 <br>
 <strong>CPA calculation</strong>: Rules for when the Closest Point of 
 Approach- CPA (when two vessels are nearest each other) is calculated 
-and when warnings are activated.  <br>
+and when warnings are activated. <br>
 There are three tick boxes, which can be activated with user set values.<br>
 <strong>1.</strong> If the vessel is far away it is less interesting to 
 calculate CPA. In a busy waterway this could cut down on clutter and 
@@ -4160,7 +4185,7 @@ processing speed if a reasonable value is set.<br>
 warning for minimum CPA distance is given. A warning can be both on the 
 screen and a sound. The CPA is shown on the screen when a warning is 
 active.<br>
-<strong>3.</strong> Similar to No 2 this controls the alarm based on a minimum time to CPA. <br>
+<strong>3.</strong> Similar to No 2 this controls the alarm based on a minimum time to CPA.<br>
 If a target is within the distance set in #1 and  without an active 
 warning, theCPA can bi shown anyway through rightclicking on the target.<br>
 <br>
@@ -4170,7 +4195,7 @@ warning, theCPA can bi shown anyway through rightclicking on the target.<br>
 <br>
 <a href="#More%20About%20Target%20CPA"><em>More About Target CPA</em></a>, a few more tricks are available.<br>
 <br>
-<strong>Lost Targets:</strong> Rules for how lost targets should be handled on the display. <br>
+<strong>Lost Targets:</strong> Rules for how lost targets should be handled on the display.<br>
 <strong>1.</strong> Target is regarded as lost if no transmission are 
 received for the number of minutes set here, the target will change on 
 the display and have a black bar across.<img src="OpenCPN%20User%20Manual_files/ais-lost.png" alt="" align="absMiddle" height="51" width="51"><br>
@@ -4186,18 +4211,20 @@ will be 1.5 nautical miles ahead of the vessel.<br>
 <strong>2.</strong> A track will be shown behind a target. This helps to judge the target vessels intentions.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/trail.png" alt="" height="213" width="600"><br>
-<strong><br>
-3.</strong> An anchored or moored target <img src="OpenCPN%20User%20Manual_files/ais-moor.png" alt="" align="absMiddle" height="50" width="50">
+<br>
+<strong>3.</strong> An anchored or moored target <img src="OpenCPN%20User%20Manual_files/ais-moor.png" alt="" align="absMiddle" height="50" width="50">
   will not be displayed if the speed is less than the value set here. 
 This "Navigational Staus" is set by the ships and may not be correct.<br>
 <strong>4.</strong> <strong>Show Area Notices</strong>. More about <a href="#AIS%20Area%20Messages"><em>AIS Area Messages</em></a> here.<br>
-<strong>5.</strong> <strong>Show AIS targets real size</strong>. Zooming in on a target will eventually show a rectangle using the real size , if available.  <br>
+<strong>5.</strong> <strong>Show AIS targets real size</strong>. Zooming in on a target will eventually show a rectangle using the real size , if available. <br>
 <img src="OpenCPN%20User%20Manual_files/real-size.png" alt="" height="410" width="700"><br>
 <br>
 <strong>Rollover:</strong> Tick the boxes for the kind of information 
 shown when hovering with the cursor over a target. This is what you get 
 with all the settings  ticked.</p>
+
 <p class="rtecenter"><img src="OpenCPN%20User%20Manual_files/rollover.png" alt="" height="214" width="466"></p>
+
 <p class="rteleft"><br>
 <strong>CPA/TCPA Alerts:</strong> When an alert is triggered, a jagged 
 circle in red is drawn around the target that set off the alarm. 
@@ -4217,15 +4244,20 @@ Files\OpenCPN\sounds on Windows XP.<br>
 <strong>Test Alert Sound.</strong> Test the selected sound and make sure this important feature is working<br>
 <br>
 <strong>Enable Target Alert Acknowledge timeout</strong>. Once a target alert is acknowledged, wait the set number of minutes before the alert comes up again (if still applicable).</p>
+
 <p class="rteleft">.</p>
+
 <h3 id="When exactly is an alarm activated?"><br>
 <strong>When exactly is an alarm activated?</strong></h3>
+
 <p class="rteleft">An alert is set off if your boat is approaching the 
-CPA, the blue dot on  the extension of the course line, and the 
-previously discussed set of  conditions are met. Once the distance to 
-the CPA increases, this happens  when the involved vessels has passed 
-each other, the alarm stops,  even if the other conditions still apply. </p>
+CPA, the blue dot on the extension of the course line, and the 
+previously discussed set of conditions are met. Once the distance to the
+ CPA increases, this happens when the involved vessels has passed each 
+other, the alarm stops, even if the other conditions still apply. </p>
+
 <p class="rtecenter">+++</p>
+
 <p class="rteleft"><br>
 <strong>Quick Reference for targets:</strong><br>
 Note that AIS targets reporting position unavailable will be rendered in grey colour.<br>
@@ -4245,13 +4277,15 @@ More about <a href="#AIS%20SART"><em>AIS SART</em></a>.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/ais-grey.png" alt="" align="absMiddle" height="51" width="48"> Ship which has lost fix - position unavailable. Displayed at the last known position.<br>
 <br>
-<img src="OpenCPN%20User%20Manual_files/notundcom.png" alt="" align="absMiddle" height="54" width="50"> Vessel not under command. <br>
+<img src="OpenCPN%20User%20Manual_files/notundcom.png" alt="" align="absMiddle" height="54" width="50"> Vessel not under command.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/restrman_1.png" alt="" align="absMiddle" height="50" width="51"> Vessel restricted in ability to manoeuvre.<br>
  </p>
+
 <pre class="line"><img src="OpenCPN%20User%20Manual_files/ifeahche_1.png" alt="" align="absMiddle" height="55" width="57"> Vessel constrained by draft.
 
  <img src="OpenCPN%20User%20Manual_files/aground.png" alt="" align="absMiddle" height="52" width="52"> Vessel aground.</pre>
+
 <p class="rteleft"><br>
 <img src="OpenCPN%20User%20Manual_files/fishing.png" alt="" align="absMiddle" height="51" width="58">  Vessel engaged in fishing.<br>
 <br>
@@ -4268,21 +4302,21 @@ is "at anchor". There is no guarantee that this status is correct, as it
  by this ship. Note the black line on the yellow circle. This indicate 
 that the vessel is turning to port (left), also illustrated by the lag 
 in the display update. ROT - Rate Of Turn is available in the "Ais 
-Target Query" dialog, through the right click menu. <br>
+Target Query" dialog, through the right click menu.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/classB.png" alt="" align="absMiddle" height="45" width="34">
  The V-shape stern indicates a Class B target. Tugboats and pilot boats 
- very often carry Class B transponders. These are often designed 
+very often carry Class B transponders. These are often designed 
 specifically for small commercial boats, fishing boats and pleasure 
 crafts.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/inland-blue.png" alt="" align="absMiddle" height="44" width="45">
  This "Inland Blue Flag" part of the European, Inland AIS standard, 
-"Blue Flag" signal, commonly seen on  inland waters indicates that the 
-vessel requests a "stbd-stbd" passage  or crossing. This Blue Signal is 
-manually switched on/off, by the target. <br>
+"Blue Flag" signal, commonly seen on inland waters indicates that the 
+vessel requests a "stbd-stbd" passage or crossing. This Blue Signal is 
+manually switched on/off, by the target.<br>
 <br>
-<img src="OpenCPN%20User%20Manual_files/aton_std.png" alt="" align="absMiddle" height="46" width="45"> Aton, Aid to Navigation, for example a Lighthouse or a Buoy with an AIS transmitter.   <br>
+<img src="OpenCPN%20User%20Manual_files/aton_std.png" alt="" align="absMiddle" height="46" width="45"> Aton, Aid to Navigation, for example a Lighthouse or a Buoy with an AIS transmitter.  <br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/aton_off.png" alt="" align="absMiddle" height="44" width="45"> Aton, Aid to Navigation, that is off it's suposed position. For example a buoy equiped with AIS that has come adrift.<br>
 <br>
@@ -4293,7 +4327,7 @@ manually switched on/off, by the target. <br>
 <br>
 The following tagets only displays if DSC messages and GpsGate mesages 
 are mixed in to the incomming AIS stream, by using, for example a 
-multiplexer. More on next page. <br>
+multiplexer. More on next page.<br>
 <br>
 <img src="OpenCPN%20User%20Manual_files/dsc-ok.png" alt="" align="absMiddle" height="44" width="45"> DSC Station<br>
 <br>
@@ -4636,6 +4670,7 @@ waypoint of the route</li>
 	<li>Marking a  line with the leg number and the destination Waypoint in
  the Properties Dialog also marks the Waypoint on the chart with a blue 
 square.<img src="OpenCPN%20User%20Manual_files/bluesquare.png" alt="" align="absMiddle" height="38" width="40"></li>
+	<li><img src="OpenCPN%20User%20Manual_files/printroute.png" alt="">  The  lower part of the Route properties dialog now has a <strong>Print Route</strong> button. It is possible to first select what features to print before being sent to the normal print routine.</li>
 	<li><strong>Extend Route</strong>:Extending is possible only when it is
  obvious, what should be joined with the current route (current = 
 visible in the Dialog). Eligible are all visible route points shared 
@@ -4663,7 +4698,9 @@ Test" Route now consists of two parts, that has been renamed.</li>
 	<li><strong>Activate/Deactivate</strong>: Activates/Deactivates a route marked in the left part of the window.</li>
 	<li><strong>Zoom to</strong>: Zooms in on a route marked in the left part of the window.</li>
 	<li><strong>Reverse</strong>: Reverses a selected route.</li>
-	<li><strong>Delete</strong>: Deletes selected route or track.</li>
+	<li><strong>Delete</strong>: Deletes selected route or track. Use the 
+Shift key to mark multiple routes for deletion. This also work in the 
+other Route manager tabs.</li>
 	<li><strong>Export Route</strong>: Save the route on your computer for later use (import)</li>
 	<li><strong>Send to GPS.</strong> Send the Route to your GPS. Pressing 
 the button activates a dialog were an output port is selected. This port
@@ -4781,6 +4818,7 @@ position to the mark and activates the route. A similar instant route is
 creating a mark. This instant route will be listed in the Route Tab.</li>
 	<li><strong>Export Wpt </strong>and <strong>Send to GPS</strong> buttons behaves similar to corresponding buttons for Routes.</li>
 	<li><strong>Delete All</strong>, does<strong> not </strong>delete any <strong>Man Over Board</strong> marks. All other marks are deleted.</li>
+	<li>Use the Shift key to mark multiple waypoints for deletion. This also work in the other Route manager tabs.</li>
 </ul>
 
 <h3 id=""> </h3>
@@ -4875,18 +4913,33 @@ Controls if the marked layer is visible. The same thing can be achieved
 by clicking the "eye" to the left of the layers name. A red X across the
  eye marks a hidden layer. See picture above. These settings are 
 persistent, they will be remembered after a restart.</li>
-	<li><strong>Hide WPT Names</strong> Shows a visible layer without waypoint names. This helps to unclutter layers, when zoomed out.</li>
+	<li><strong>Hide WPT Names</strong> Shows a visible layer without waypoint names. This helps to un-clutter layers, when zoomed out.</li>
 	<li><strong>List contents </strong>or <strong>Delist Contents  </strong>Listing is this context means showing the individual points in the layer as waypoints in the "Waypoints Tab"</li>
 	<li><strong>Import GPX..</strong> and <strong>Export All..</strong> <strong>Warning</strong>
  these buttons has nothing to do with Layers. They work as if you are in
  an other tab. For import use "Import New Layers". For export, create 
 layers as described above.</li>
-	<li><strong>Export All Visible</strong>, exports all visible layers, 
-routes and waypionts to a gpxfile. Use this button to create new layers,
- for example. Just save the gpxfile in the right place, described above.
- Note that "visible" in this context is the opposite to a layer, route 
-or waypoint being "hidden". This means that objects not visible on the 
-screen, may be included.</li>
+	<li><strong>Export All Visible</strong>.. exports all visible layers, 
+routes and waypoints to a gpx file. Use this button to create new 
+layers, for example. Just save the gpxfile in the right place, described
+ above. Note that "visible" in this context is the opposite to a layer, 
+route or waypoint being "hidden". This means that objects not visible on
+ the screen, may be included.</li>
+	<li>If a layer includes extended marks, linked to pictures, for 
+example, the pictures will not be exported, only the links to the 
+pictures. To "export" the whole layer to another computer, copy all the 
+pictures separately. Adjust all the links in the gpx file, to the new 
+computer, by doing a "search and replace" in a text editor on the new 
+computer.</li>
+</ul>
+
+<h3 id="Limits of the Layer feature">Limits of the Layer feature</h3>
+
+<ul>
+	<li>OpenCPN is presently not suited to handle very large permanent 
+layer files. Exporting and deleting such layers bogs down the program. A
+ few hundred Kb is OK, a 1 Mb file is barely acceptable, while a 10 Mb 
+gpx file, certainly is way to big.</li>
 </ul>
 
 <h3 id="Where to find ready made Layers?">Where to find ready made Layers?</h3>
@@ -5677,15 +5730,15 @@ Apparent WindAngle &amp; Speed(dial)<br>
 App. Wind speed(text)<br>
 App. Wind speed(dial)<br>
 True Wind Angle &amp; Speed(dial)<br>
-Depth(text)</div>
-Depth(dial)<br>
+Depth(text)*</div>
+Depth(dial)*<br>
 Water Temp(text)<br>
 VMG(text)- Velocity Made Good to a waypoint.<br>
 VMG(dial)<br>
 Rudder Angle(text)<br>
 Rudder Angle(dial)<br>
 GPS in view(text)- the number of satellites detected*<br>
-GPS status(dial)*<br>
+GPS status(dial)**<br>
 Cursor, shows the position of the cursor.<br>
 Clock<br>
 Sunrise/Sunset<br>
@@ -5700,7 +5753,8 @@ Magnetic Hdg<br>
 Compass<br>
 Wind History<br>
 <br>
-*Linux note: GPS satellite info is not available if using gpsd.<br>
+*The DPT sentence is used, and transducer offset will be added to depth value, if available.<br>
+**Linux note: GPS satellite info is not available if using gpsd.<br>
 The same informations is however available through the  "xgps" command.<br>
  
 <div class="rteleft"><strong>Delete</strong>. Highlight an entry in the Instrument Window to delete it.<br>
@@ -5779,8 +5833,7 @@ To make it visible again simply right click on an existing  standard-dashboard, 
 <img src="OpenCPN%20User%20Manual_files/WH1.png" alt="" height="134" width="162"><br>
 <br>
 <br>
-<img src="OpenCPN%20User%20Manual_files/opencpn.png" alt="" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#Table%20Of%20Contents"><em>Table Of Contents</em></a><br>
- <!-- google_ad_section_end -->  </div>
+<img src="OpenCPN%20User%20Manual_files/opencpn.png" alt="" align="absMiddle" height="48" width="48">  <em>Go to </em><a href="#Table%20Of%20Contents"><em>Table Of Contents</em></a><!-- google_ad_section_end -->  </div>
 <div id="node-40" class="section-3">
   <h1 id="Grib Weather Plugin" class="book-heading">Grib Weather Plugin</h1>
   <!-- google_ad_section_start -->OpenCPN has a lightweight grib weather
