@@ -44,6 +44,7 @@
 #include "options.h"
 #include "multiplexer.h"
 #include "statwin.h"
+#include "routeman.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
@@ -57,6 +58,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern options         *g_pOptions;
 extern Multiplexer     *g_pMUX;
 extern StatWin         *stats;
+extern Routeman        *g_pRouteMan;
 
 //    Some static helper funtions
 //    Scope is local to this module
@@ -1628,6 +1630,45 @@ int GetChartbarHeight( void )
         return 0;
 }
 
+
+bool GetRoutepointGPX( RoutePoint *pRoutePoint, char *buffer, unsigned int buffer_length)
+{
+    bool ret = false;
+    GpxDocument *gpx = new GpxDocument();
+    GpxRootElement *gpxroot = (GpxRootElement *) gpx->RootElement();
+    gpxroot->AddWaypoint( ::CreateGPXWpt( pRoutePoint, GPX_WPT_WAYPOINT ) );
+    
+    wxString gpxfilename = wxFileName::CreateTempFileName(wxT("gpx"));
+    gpx->SaveFile( gpxfilename );
+
+    gpx->Clear();
+    delete gpx;
+    
+    wxFFile gpxfile( gpxfilename );
+    
+    wxString s;
+    if( gpxfile.ReadAll( &s ) ) {
+        if(s.Length() < buffer_length) {
+            strncpy(buffer, (const char*)s.mb_str(wxConvUTF8), buffer_length -1);
+            ret = true;
+        }
+    }
+    
+    gpxfile.Close();
+    ::wxRemoveFile(gpxfilename);
+    
+    
+    return ret;
+}
+
+bool GetActiveRoutepointGPX( char *buffer, unsigned int buffer_length )
+{
+    if( g_pRouteMan->IsAnyRouteActive() )
+        return GetRoutepointGPX( g_pRouteMan->GetpActivePoint(), buffer, buffer_length);
+    else
+        return false;
+}
+        
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
 //-----------------------------------------------------------------------------------------

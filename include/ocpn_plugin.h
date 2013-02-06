@@ -537,7 +537,6 @@ extern "C" void fromSM_ECC(double x, double y, double lat0, double lon0, double 
 
 extern "C" DECL_EXP bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, wxString *acc );
 
-extern "C" DECL_EXP int GetChartbarHeight( void );
 
 /* API 1.9 */
 typedef enum OptionsParentPI
@@ -551,6 +550,9 @@ typedef enum OptionsParentPI
 }_OptionsParentPI;
 extern DECL_EXP wxScrolledWindow *AddOptionsPage( OptionsParentPI parent, wxString title ); 
 extern DECL_EXP bool DeleteOptionsPage( wxScrolledWindow* page );
+
+extern "C" DECL_EXP int GetChartbarHeight( void );
+extern "C" DECL_EXP bool GetActiveRoutepointGPX( char *buffer, unsigned int buffer_length );
 
 #endif            // _PLUGIN_H_
 
