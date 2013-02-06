@@ -2227,8 +2227,6 @@ MyFrame::~MyFrame()
     }
     delete pRouteList;
     delete g_FloatingToolbarConfigMenu;
-    g_pMUX->ClearStreams();
-    delete g_pMUX;
 }
 
 void MyFrame::OnEraseBackground( wxEraseEvent& event )
@@ -2790,6 +2788,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
 
     FrameTimer1.Stop();
 
+    g_pMUX->ClearStreams();
+    
     /*
      Automatically drop an anchorage waypoint, if enabled
      On following conditions:
@@ -2900,9 +2900,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_FloatingCompassDialog->Destroy();
     g_FloatingCompassDialog = NULL;
 
-    cc1->Destroy();
-    cc1 = NULL;
-
     //      Delete all open charts in the cache
     if( ChartData ) ChartData->PurgeCache();
 
@@ -2923,17 +2920,21 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pAIS = NULL;
     }
 
+    delete g_pMUX;
+    
     SetStatusBar( NULL );
     stats = NULL;
 
-//    delete pthumbwin;
+    cc1->Destroy();
+    cc1 = NULL;
+    
     pthumbwin = NULL;
 
-//    delete g_FloatingToolbarDialog;
     g_FloatingToolbarDialog = NULL;
 
     g_pauimgr->UnInit();
 
+    
     this->Destroy();
 
 }
@@ -4631,6 +4632,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     gSAT_Watchdog--;
     if( gSAT_Watchdog <= 0 ) {
         g_bSatValid = false;
+        g_SatsInView = 0;
         if( g_nNMEADebug && ( gSAT_Watchdog == 0 ) ) wxLogMessage(
                 _T("   ***SAT Watchdog timeout...") );
     }
@@ -6737,24 +6739,27 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 
                 gCog = gpd.kCog;
                 gSog = gpd.kSog;
-                
+ 
+/*                
                 gVar = gpd.kVar;
                 if( !wxIsNaN(gpd.kVar) ) {
                     g_bVAR_Rx = true;
                     gVAR_Watchdog = gps_watchdog_timeout_ticks;
                 }
-                
+*/                
                 gHdt = gpd.kHdt;
                 if( !wxIsNaN(gpd.kHdt) ) {
                     g_bHDT_Rx = true;
                     gHDT_Watchdog = gps_watchdog_timeout_ticks;
                 }
-                
+  
+/*  
                 gHdm = gpd.kHdm;
                 if( !wxIsNaN(gpd.kHdm) ) {
                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
                 }
-                
+*/
+
                 if( !wxIsNaN(gpd.kLat) && !wxIsNaN(gpd.kLon) ) { 
                     gGPS_Watchdog = gps_watchdog_timeout_ticks;
                     pos_valid = true;

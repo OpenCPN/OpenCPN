@@ -4039,6 +4039,7 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindo
     if(m_dir == FILTER_OUTPUT) {
         standard_sentences.Add(_T("ECRMB"));
         standard_sentences.Add(_T("ECRMC"));
+        standard_sentences.Add(_T("ECAPB"));
     }
     
     standard_sentences.Add(_T("AIVDM"));

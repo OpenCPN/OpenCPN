@@ -551,5 +551,8 @@ typedef enum OptionsParentPI
 extern DECL_EXP wxScrolledWindow *AddOptionsPage( OptionsParentPI parent, wxString title ); 
 extern DECL_EXP bool DeleteOptionsPage( wxScrolledWindow* page );
 
+extern "C" DECL_EXP int GetChartbarHeight( void );
+extern "C" DECL_EXP bool GetActiveRoutepointGPX( char *buffer, unsigned int buffer_length );
+
 #endif            // _PLUGIN_H_
 

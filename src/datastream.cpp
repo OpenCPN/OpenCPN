@@ -2434,6 +2434,7 @@ void *GARMIN_Serial_Thread::Entry()
     m_bconnected = false;
     
     bool not_done = true;
+    wxDateTime last_rx_time;
  
    
 #ifdef USE_GARMINHOST
@@ -2451,10 +2452,13 @@ void *GARMIN_Serial_Thread::Entry()
             //  Try to init the port once
             int v_init = Garmin_GPS_Init(m_port);
             if( v_init < 0 ){           //  Open failed, so sleep and try again
-                wxSleep(4);
-                
-                if(TestDestroy())
-                    goto thread_exit;
+                for( int i=0 ; i < 4 ; i++) {
+                    wxSleep(1);
+                    if(TestDestroy())
+                        goto thread_exit;
+                    if( !m_parent->m_Thread_run_flag )
+                        goto thread_exit;
+                }
             }
             else
                 m_bdetected = true;
@@ -2519,8 +2523,21 @@ void *GARMIN_Serial_Thread::Entry()
                             m_pMessageTarget->AddPendingEvent(Nevent);
                         }
                         
+                        last_rx_time = wxDateTime::Now();
+                        
                     }
-            }
+                }
+                else {
+                    wxDateTime now = wxDateTime::Now();
+                    if( last_rx_time.IsValid() ) {
+                        wxTimeSpan delta_time = now - last_rx_time;
+                        if( delta_time.GetSeconds() > 5 ) {
+                            m_bdetected = false;
+                            m_bconnected = false;
+                            Garmin_GPS_ClosePortVerify();
+                        }
+                    }
+                }
         }
     }                          // the big while...
             

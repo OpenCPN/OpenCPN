@@ -33,6 +33,7 @@
 
 #include "wx/image.h"
 #include "wx/tokenzr.h"
+#include <wx/progdlg.h>
 
 #include "dychart.h"
 
@@ -598,7 +599,55 @@ bool Routeman::UpdateAutopilot()
             g_pMUX->SendNMEAMessage( snt.Sentence );
         }
 
+        // APB
+        {
+            m_NMEA0183.TalkerID = _T("EC");
+            
+            SENTENCE snt;
+             
+            m_NMEA0183.Apb.IsLoranBlinkOK = NTrue;
+            m_NMEA0183.Apb.IsLoranCCycleLockOK = NTrue;
+            
+            m_NMEA0183.Apb.CrossTrackErrorMagnitude = CurrentXTEToActivePoint;
+            
+            if( XTEDir < 0 ) m_NMEA0183.Apb.DirectionToSteer = Left;
+            else
+                m_NMEA0183.Apb.DirectionToSteer = Right;
+            
+            m_NMEA0183.Apb.CrossTrackUnits = _T("N");
 
+            if( m_bArrival )
+                m_NMEA0183.Apb.IsArrivalCircleEntered = NTrue;
+            else
+                m_NMEA0183.Apb.IsArrivalCircleEntered = NFalse;
+ 
+            //  We never pass the perpendicular, since we declare arrival before reaching this point
+            m_NMEA0183.Apb.IsPerpendicular = NFalse;
+            
+            double brg1, dist1;
+            DistanceBearingMercator( pActivePoint->m_lat, pActivePoint->m_lon,
+                                     pActiveRouteSegmentBeginPoint->m_lat, pActiveRouteSegmentBeginPoint->m_lon,
+                                     &brg1,
+                                     &dist1 );
+            
+            m_NMEA0183.Apb.BearingOriginToDestination = brg1;
+            m_NMEA0183.Apb.BearingOriginToDestinationUnits = _("T");
+
+            m_NMEA0183.Apb.To = pActivePoint->GetName().Truncate( 6 );
+            
+            m_NMEA0183.Apb.BearingPresentPositionToDestination = CurrentBrgToActivePoint;
+            m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _("T");
+            
+            m_NMEA0183.Apb.To = pActivePoint->GetName().Truncate( 6 );
+
+            m_NMEA0183.Apb.HeadingToSteer = CurrentBrgToActivePoint;
+            m_NMEA0183.Apb.HeadingToSteerUnits = _("T");
+            
+            m_NMEA0183.Apb.Write( snt );
+            g_pMUX->SendNMEAMessage( snt.Sentence );
+        }
+        
+        
     return true;
 }
 
@@ -783,15 +832,35 @@ void Routeman::DeleteTrack( Route *pRoute )
 
         ::wxBeginBusyCursor();
 
+        wxProgressDialog *pprog = NULL;
+        int count = pRoute->pRoutePointList->GetCount();
+        if( count > 200) {
+            pprog = new wxProgressDialog( _("OpenCPN Track Delete"), _T("0/0"), count, NULL, 
+                                          wxPD_APP_MODAL | wxPD_SMOOTH |
+                                          wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
+            pprog->SetSize( 400, wxDefaultCoord );
+            pprog->Centre();
+            
+        }
+                                          
         //    Remove the route from associated lists
         pSelect->DeleteAllSelectableTrackSegments( pRoute );
         pRouteList->DeleteObject( pRoute );
 
         // walk the route, tentatively deleting/marking points used only by this route
+        int ic = 0;
         wxRoutePointListNode *pnode = ( pRoute->pRoutePointList )->GetFirst();
         while( pnode ) {
+            if(pprog) {
+                wxString msg;
+                msg.Printf(_T("%d/%d"), ic, count);
+                pprog->Update( ic, msg );
+                ic++;
+            }
+                
             RoutePoint *prp = pnode->GetData();
 
+            
             // check all other routes to see if this point appears in any other route
             Route *pcontainer_route = NULL; //FindRouteContainingWaypoint(prp);
 
@@ -832,6 +901,8 @@ void Routeman::DeleteTrack( Route *pRoute )
 
         ::wxEndBusyCursor();
 
+        if( pprog)
+            delete pprog;
     }
 }
 
