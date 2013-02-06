@@ -8,18 +8,6 @@ License:        @CPACK_RPM_PACKAGE_LICENSE@
 Group:          @CPACK_RPM_PACKAGE_GROUP@
 Vendor:         @CPACK_RPM_PACKAGE_VENDOR@
 @TMP_RPM_URL@
-BuildRequires:  cmake
-BuildRequires:  wxGTK-devel
-BuildRequires:  gcc-c++
-BuildRequires:  bzip2-devel
-BuildRequires:  tinyxml-devel
-BuildRequires:  gettext
-BuildRequires:  libstdc++-devel
-BuildRequires:  gtk2-devel
-BuildRequires:  mesa-libGLU-devel
-BuildRequires:  mesa-libGL-devel
-BuildRequires:  gpsd-devel
-BuildRequires:  desktop-file-utils
 @TMP_RPM_REQUIRES@
 @TMP_RPM_PROVIDES@
 @TMP_RPM_OBSOLETES@
