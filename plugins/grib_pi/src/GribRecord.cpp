@@ -209,6 +209,37 @@ GribRecord::GribRecord(const GribRecord &rec)
     }
 }
 
+//-------------------------------------------------------------------------------
+// Constructeur de interpolate
+//-------------------------------------------------------------------------------
+GribRecord::GribRecord(const GribRecord &rec1, const GribRecord &rec2, double d)
+{
+    *this = rec1;
+
+    /* TODO: for wave direction we need to do something else because 360 wraps will mess it up */
+    // recopie les champs de bits
+    if (rec1.data && rec2.data && rec1.Ni == rec2.Ni && rec1.Nj == rec2.Nj) {
+        int size = rec1.Ni*rec1.Nj;
+        this->data = new double[size];
+        for (int i=0; i<size; i++)
+            this->data[i] = (1-d)*rec1.data[i] + d*rec2.data[i];
+    } else
+        ok=false;
+
+    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) {
+        if(rec1.sectionSize3 == rec2.sectionSize3) {
+        int size = rec1.sectionSize3-6;
+        this->BMSbits = new zuchar[size];
+        for (int i=0; i<size; i++)
+            this->BMSbits[i] = rec1.BMSbits[i] & rec2.BMSbits[i];
+        } else
+            ok = false;
+    }
+    
+    /* should maybe update strCurDate ? */
+}
+
+
 //------------------------------------------------------------------------------
 void  GribRecord::setDataType(const zuchar t)
 {

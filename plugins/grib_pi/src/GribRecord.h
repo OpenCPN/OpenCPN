@@ -123,6 +123,7 @@ class GribRecord
     public:
         GribRecord(ZUFILE* file, int id_);
         GribRecord(const GribRecord &rec);
+        GribRecord(const GribRecord &rec1, const GribRecord &rec2, double d);
         ~GribRecord();
 
         bool  isOk()  const   {return ok;};

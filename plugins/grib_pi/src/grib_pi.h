@@ -42,7 +42,9 @@
 
 #include "../../../include/ocpn_plugin.h"
 
-#include "grib.h"
+#include "GribOverlayFactory.h"
+#include "GribUIDialog.h"
+
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
@@ -93,9 +95,10 @@ public:
       void SetGribDialogSizeY(int x){ m_grib_dialog_sy = x;}
       void SetColorScheme(PI_ColorScheme cs);
 
-      bool GetUseMS(void){ return m_bGRIBUseMS; }
       void OnGribDialogClose();
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
+
+      wxString         m_grib_dir;
 
 private:
       bool LoadConfig(void);
@@ -110,20 +113,15 @@ private:
       int              m_display_width, m_display_height;
       int              m_leftclick_tool_id;
 
-      bool             m_bShowGrib;
-
       int              m_grib_dialog_x, m_grib_dialog_y;
       int              m_grib_dialog_sx, m_grib_dialog_sy;
-      wxString         m_grib_dir;
 
       bool              m_bGRIBUseHiDef;
-      bool              m_bGRIBShowIcon;
-      bool              m_bGRIBUseMS;
+      bool              m_bGRIBUseGradualColors;
 
       //    Controls added to Preferences panel
-      wxCheckBox              *m_pGRIBShowIcon;
       wxCheckBox              *m_pGRIBUseHiDef;
-      wxCheckBox              *m_pGRIBUseMS;
+      wxCheckBox              *m_pGRIBUseGradualColors;
 
 };
 

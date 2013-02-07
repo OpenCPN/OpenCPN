@@ -161,19 +161,18 @@ double      round_msvc (double x)
 
 }
 
-
 //---------------------------------------------------------------
 IsoLine::IsoLine(double val, const GribRecord *rec_)
 {
     value = val;
 
     rec = rec_;
-    W = rec->getNi();
-    H = rec->getNj();
+    W = rec_->getNi();
+    H = rec_->getNj();
 
     //---------------------------------------------------------
     // Génère la liste des segments.
-    extractIsoLine(rec);
+    extractIsoLine(rec_);
 
     if(trace.size() == 0)
           return;
@@ -561,26 +560,14 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
 
 //---------------------------------------------------------------
 
-void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour text_color, wxColour back_color,
-                                PlugIn_ViewPort *vp, int density, int first, double coef)
+void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc,
+                                PlugIn_ViewPort *vp, int density, int first,
+                                wxImage &imageLabel)
+
 {
-///
-//#if 0
     std::list<Segment *>::iterator it;
     int nb = first;
     wxString label;
-
-    label.Printf(_T("%d"), (int)(value*coef+0.5));
-
-    wxPen penText(text_color);
-
-    int w, h;
-    dc.GetTextExtent(label, &w, &h);
-
-    dc.SetPen(penText);
-    dc.SetBrush(wxBrush(back_color));
-    dc.SetTextForeground(text_color);
-    dc.SetTextBackground(back_color);
 
     //---------------------------------------------------------
     // Ecrit les labels
@@ -588,31 +575,24 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour text
     for (it=trace.begin(); it!=trace.end(); it++,nb++)
     {
         if (nb % density == 0)
-		{
+        {
             Segment *seg = *it;
-
+            
 //            if(vp->vpBBox.PointInBox((seg->px1 + seg->px2)/2., (seg->py1 + seg->py2)/2., 0.))
             {
- //                 wxPoint ab = vp->GetMercatorPixFromLL(seg->py1, seg->px1);
- //                 wxPoint cd = vp->GetMercatorPixFromLL(seg->py2, seg->px2);
-			wxPoint ab;
-			GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
-			wxPoint cd;
-			GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
-
-			int label_offset = 6;
-                  int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
-                  int yd = (ab.y + cd.y - h)/2;
-
-
-                  dc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
-                  dc.DrawText(label, label_offset/2 + xd, yd-1);
+                wxPoint ab;
+                GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
+                wxPoint cd;
+                GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
+                
+                int label_offset = 6;
+                int xd = (ab.x + cd.x-(imageLabel.GetWidth()+label_offset * 2))/2;
+                int yd = (ab.y + cd.y - imageLabel.GetHeight())/2;
+                
+                dc.DrawBitmap(imageLabel, xd, yd, true);
             }
-
         }
     }
-//#endif
-///
 }
 
 
@@ -656,46 +636,13 @@ void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp, bool b
 
 }
 
-void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour text_color, wxColour back_color,
-                                PlugIn_ViewPort *vp, int density, int first, double coef)
+void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp, int density, int first,
+                                  wxImage &imageLabel)
 {
+      int label_offset = 10;
+
     std::list<Segment *>::iterator it;
     int nb = first;
-    wxString label;
-
-    label.Printf(_T("%d"), (int)(value*coef+0.5));
-
-    int w, h;
-
-    wxPen penText(text_color);
-    wxBrush backBrush(back_color);
-
-    int label_offset = 10;
-
-      if(!m_imageLabel.IsOk())
-      {
-            wxBitmap bm(100,100);          // big enough
-            wxMemoryDC mdc(bm);
-            mdc.Clear();
-
-            mdc.GetTextExtent(label, &w, &h);
-
-            mdc.SetPen(penText);
-            mdc.SetBrush(backBrush);
-            mdc.SetTextForeground(text_color);
-            mdc.SetTextBackground(back_color);
-
-            int xd = 0;
-            int yd = 0;
-//            mdc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
-            mdc.DrawRectangle(xd, yd, w+(label_offset * 2), h+2);
-            mdc.DrawText(label, label_offset/2 + xd, yd-1);
-
-            mdc.SelectObject(wxNullBitmap);
-
-            wxBitmap sub_BMLabel = bm.GetSubBitmap(wxRect(0,0,w+(label_offset * 2), h+2));
-            m_imageLabel = sub_BMLabel.ConvertToImage();
-      }
 
     //---------------------------------------------------------
     // Ecrit les labels
@@ -708,8 +655,8 @@ void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour text_color, 
 
 //            if(vp->vpBBox.PointInBox((seg->px1 + seg->px2)/2., (seg->py1 + seg->py2)/2., 0.))
             {
-                  int w = m_imageLabel.GetWidth();
-                  int h = m_imageLabel.GetHeight();
+                  int w = imageLabel.GetWidth();
+                  int h = imageLabel.GetHeight();
                   wxPoint ab;
                   GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
                   wxPoint cd;
@@ -720,7 +667,7 @@ void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour text_color, 
 
                   glRasterPos2i(xd, yd);
                   glPixelZoom(1, -1); /* draw data from top to bottom */
-                  glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, m_imageLabel.GetData());
+                  glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, imageLabel.GetData());
                   glPixelZoom(1, 1);
             }
         }
@@ -734,7 +681,7 @@ void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour text_color, 
 //==================================================================================
 Segment::Segment(int I, int J,
                 char c1, char c2, char c3, char c4,
-                const GribRecord *rec, double pressure)
+                 const GribRecord *rec, double pressure)
 {
     traduitCode(I,J, c1, i,j);
     traduitCode(I,J, c2, k,l);
@@ -746,7 +693,7 @@ Segment::Segment(int I, int J,
 }
 //-----------------------------------------------------------------------
 void Segment::intersectionAreteGrille(int i,int j, int k,int l, double *x, double *y,
-                const GribRecord *rec, double pressure)
+                                      const GribRecord *rec, double pressure)
 {
     double a,b, pa, pb, dec;
     pa = rec->getValue(i,j);
@@ -814,13 +761,13 @@ void IsoLine::extractIsoLine(const GribRecord *rec)
             //--------------------------------
             if     ((a<=value && b<=value && c<=value  && d>value)
                  || (a>value && b>value && c>value  && d<=value))
-                trace.push_back(new Segment(i,j, 'c','d',  'b','d', rec,value));
+                trace.push_back(new Segment(i,j, 'c','d',  'b','d', rec, value));
             else if ((a<=value && c<=value && d<=value  && b>value)
                  || (a>value && c>value && d>value  && b<=value))
-                trace.push_back(new Segment(i,j, 'a','b',  'b','d', rec,value));
+                trace.push_back(new Segment(i,j, 'a','b',  'b','d', rec, value));
             else if ((c<=value && d<=value && b<=value  && a>value)
                  || (c>value && d>value && b>value  && a<=value))
-                trace.push_back(new Segment(i,j, 'a','b',  'a','c', rec,value));
+                trace.push_back(new Segment(i,j, 'a','b',  'a','c', rec, value));
             else if ((a<=value && b<=value && d<=value  && c>value)
                  || (a>value && b>value && d>value  && c<=value))
                 trace.push_back(new Segment(i,j, 'a','c',  'c','d', rec,value));

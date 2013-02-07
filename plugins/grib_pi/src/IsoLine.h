@@ -79,8 +79,6 @@ extern "C"  ClipResult cohen_sutherland_line_clip_i (int *x0, int *y0, int *x1, 
 // c  d
 // Rejoint l'arête (i,j)-(k,l) à l'arête (m,n)-(o,p) (indices ds la grille GRIB)
 
-class GRIBOverlayFactory;
-
 class Segment
 {
     public:
@@ -112,23 +110,25 @@ class IsoLine
 
         void drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
 
-        void drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour text_color, wxColour back_color,
-                                PlugIn_ViewPort *vp, int density, int first, double coef);
+        void drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc,
+                               PlugIn_ViewPort *vp, int density, int first,
+                               wxImage &imageLabel);
 
         void drawGLIsoLine(GRIBOverlayFactory *pof, 
-                   PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
-        void drawGLIsoLineLabels(GRIBOverlayFactory *pof,wxColour text_color, wxColour back_color,
-                   PlugIn_ViewPort *vp, int density, int first, double coef);
+                           PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
+        void drawGLIsoLineLabels(GRIBOverlayFactory *pof,
+                                 PlugIn_ViewPort *vp, int density, int first,
+                                 wxImage &imageLabel);
 
         int getNbSegments()     {return trace.size();}
 
+        double getValue() {return value;}
     private:
         double value;
         int    W, H;     // taille de la grille
         const  GribRecord *rec;
 
         wxColour  isoLineColor;
-        wxImage   m_imageLabel;
         std::list<Segment *> trace;
 
 

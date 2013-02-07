@@ -76,8 +76,14 @@ FIND_PACKAGE(Gettext REQUIRED)
 SET(SRC_GRIB
             src/grib_pi.h
             src/grib_pi.cpp
-            src/grib.h 
-            src/grib.cpp
+            src/GribRecordTree.cpp
+            src/GribRecordTree.h
+            src/GribOverlayFactory.cpp
+            src/GribOverlayFactory.h
+            src/GribUIDialogBase.cpp
+            src/GribUIDialogBase.h
+            src/GribUIDialog.cpp
+            src/GribUIDialog.h
             src/icons.h 
             src/icons.cpp
             src/GribReader.cpp 
