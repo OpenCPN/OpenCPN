@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-02 14:06-0500\n"
-"PO-Revision-Date: 2012-08-20 12:08+0100\n"
+"POT-Creation-Date: 2013-02-07 12:44-0600\n"
+"PO-Revision-Date: 2013-02-07 12:54-0600\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
 "Language: cs_CZ\n"
@@ -17,49 +17,277 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #
-msgid ""
-"\n"
-" - your GPS offset from bow must be within your ship's length"
-msgstr ""
-"\n"
-" - tvůj GPS offset od příděmusí být mensí než délka lodě"
-
 #
-msgid ""
-"\n"
-" - your GPS offset from midship must be within your ship's beam"
-msgstr ""
-"\n"
-" - tvůj GPS offset od středu lodě musí být v šířce lodě"
-
 #
-msgid ""
-"\n"
-" - your minimum ship icon size must be between 1 and 100 mm"
-msgstr ""
-"\n"
-" - minimální velikost ikony lodě musí být mezi 1 a 100 mm"
-
 #
-msgid ""
-"\n"
-" - your ship's beam must be > 0"
-msgstr ""
-"\n"
-" - šířka lodě musí být > 0"
-
 #
-msgid ""
-"\n"
-" - your ship's length must be > 0"
-msgstr ""
-"\n"
-" - délka lodě musí být > 0"
+#: include/routeprop.h:68
+#: src/chcanv.cpp:7186
+#: src/chcanv.cpp:9544
+#: src/routemanagerdialog.cpp:1083
+msgid "Route Properties"
+msgstr "Vlastnosti trasy"
 
 #
 #
 #
 #
+#
+#: include/routeprop.h:100
+#: include/routeprop.h:317
+#: src/chcanv.cpp:8785
+#: src/routemanagerdialog.cpp:1979
+msgid "Waypoint Properties"
+msgstr "Vlastnosti trasového bodu"
+
+#
+#
+#
+#
+#
+#: include/routeprop.h:352
+#: include/routeprop.h:404
+msgid "Link Properties"
+msgstr "Vlastnosti odkazu"
+
+#
+#
+#
+#
+#
+#: include/routeprop.h:371
+msgid "Waypoint Information"
+msgstr "Info o trasovém bodu"
+
+#
+#
+#
+#
+#
+#: include/options.h:58
+#: src/chart1.cpp:2473
+#: src/chart1.cpp:3816
+msgid "Options"
+msgstr "Nastavení"
+
+#
+#
+#
+#
+#
+#: include/options.h:874
+msgid "Sentence Filter"
+msgstr "Filtr vět"
+
+#
+#
+#
+#
+#
+#: include/chcanv.h:770
+#: include/chcanv.h:782
+#: include/chcanv.h:971
+#: include/chcanv.h:981
+#: src/chcanv.cpp:8703
+msgid "Object Query"
+msgstr "Dotaz na objekt"
+
+#
+#: include/chcanv.h:886
+#: src/ais.cpp:3544
+msgid "Center View"
+msgstr "Vycentrovat pohled"
+
+#
+#
+#
+#
+#
+#: include/about.h:39
+#: src/chart1.cpp:2539
+msgid "About OpenCPN"
+msgstr "O OpenCPN"
+
+#
+#
+#
+#
+#
+#: include/ais.h:408
+#: src/ais.cpp:2701
+msgid "AIS Alert"
+msgstr "Výstraha AIS "
+
+#
+#
+#
+#
+#
+#: include/routeman.h:50
+msgid "Send Route To GPS"
+msgstr "Odeslat trasu do GPS"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:894
+msgid " ChartFile:  "
+msgstr " SouborMapy:"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:931
+msgid " Name:  "
+msgstr " Jméno:"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:959
+#: src/chartdbs.cpp:961
+#, c-format
+msgid " Scale:  1:%d"
+msgstr " Měřítko:  1:%d"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:971
+msgid " ID:  "
+msgstr " ID:"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:982
+msgid " Depth Units:  "
+msgstr "Jednotky hloubky:"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:993
+msgid " Soundings:  "
+msgstr " Hloubky:"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:1004
+msgid " Datum:  "
+msgstr " Datum:"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:1012
+msgid " Projection:  "
+msgstr " Projekce:"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:1014
+#: src/ais.cpp:160
+#: src/ais.cpp:612
+#: src/ais.cpp:880
+#: src/ais.cpp:1023
+msgid "Unknown"
+msgstr "Neznámý"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:1016
+msgid "Mercator"
+msgstr "Mercator"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:1018
+msgid "Transverse Mercator"
+msgstr "Transverse Mercator"
+
+#
+#
+#
+#
+#: src/chartdbs.cpp:1020
+msgid "Polyconic"
+msgstr "Polyconic"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:1029
+msgid " Source Edition:  "
+msgstr " Zdrojové vydání:"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:1040
+msgid " Updated:  "
+msgstr " Aktualizováno:"
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:1258
+msgid "OpenCPN Chart Scan...."
+msgstr "Sken map OpenCPN...."
+
+#
+#
+#
+#: src/chartdbs.cpp:1302
+msgid "OpenCPN Directory Scan...."
+msgstr "Sken složek OpenCPN...."
+
+#
+#
+#
+#
+#
+#: src/chartdbs.cpp:1637
+msgid "OpenCPN Chart Add...."
+msgstr "Přidávání map OpenCPN...."
+
+#
+#
+#
+#
+#: src/chart1.cpp:693
 msgid ""
 "\n"
 "OpenCPN is distributed in the hope that it will be useful,\n"
@@ -90,241 +318,54 @@ msgstr ""
 "Prosím klikni \"OK\" pro souhlas a pokračování, \"Zrušit\" pro konec.\n"
 
 #
-msgid "    Incompatible PlugIn detected:"
-msgstr "    Nalezen nekompatibilní doplněk:"
+#
+#
+#
+#
+#: src/chart1.cpp:707
+msgid "Welcome to OpenCPN"
+msgstr "Vítejte v OpenCPN"
 
 #
 #
 #
 #
 #
-msgid "   Chart File RLL data corrupt on chart "
-msgstr "  RLL data souboru s mapou poškozena na mapě "
+#: src/chart1.cpp:985
+#: src/chart1.cpp:1780
+#: src/chart1.cpp:3927
+#: src/navutil.cpp:1268
+#: src/navutil.cpp:2217
+msgid "OpenCPN Info"
+msgstr "Informace OpenCPN"
+
+#
+#: src/chart1.cpp:1170
+#: src/chart1.cpp:1174
+msgid "Failed to initialize the user interface. "
+msgstr "Nepodařilo se inicializovat uživatelské rozhraní."
 
 #
 #
 #
 #
 #
-msgid "   Chart File contains less than 3 PLY points: "
-msgstr " Mapový soubor obsahuje méně než 3 PLY body:"
+#: src/chart1.cpp:1171
+msgid "OpenCPN cannot start. "
+msgstr "OpenCPN nelze spustit."
 
 #
-#
-#
-#
-#
-msgid "   Chart File corrupt in PostInit() on chart "
-msgstr "  Soubor s mapou poškozen v PosInit() na mapě "
+#: src/chart1.cpp:1172
+msgid "The necessary configuration files were not found. "
+msgstr "Potřebné konfigurační soubory nebyly nalezeny."
 
 #
-#
-#
-#
-#
-msgid "   Chart file has no BSB header, cannot Init."
-msgstr "  Mapový soubor nemá žádnou BSB hlavičku, nelze inicializovat."
+#: src/chart1.cpp:1173
+msgid "See the log file at "
+msgstr "Podívej se do logu na"
 
 #
-#
-#
-#
-#
-#, c-format
-msgid "   Could not read first %d bytes of header for chart file: "
-msgstr "   Nemohu načíst prvních %d bytů hlavičky mapového souboru: "
-
-#
-#
-#
-#
-#
-msgid "   Error creating Line Index for chart "
-msgstr "  Chyba při vytváření indexu řádků mapy"
-
-#
-msgid "   External application \"xcalib\" not found. Screen brightness not changed."
-msgstr "   Externí aplikace \"xcalib\" nenalezena. Jas nezměněn."
-
-#
-#
-#
-#
-#
-msgid "   Line Index corrupt, recreating Index for chart "
-msgstr "  Index řádků je poškozen, znovuvytvářím index mapy."
-
-#
-#
-#
-#
-#
-msgid "   Result: OK, Internal georef solution used."
-msgstr "   Výsledek: OK, použito interní řešení georef."
-
-#
-#
-#
-#
-#
-msgid "   Trying again with internally calculated georef solution "
-msgstr "  Zkouším znovu s interně vypočítaným georef řešením"
-
-#
-#
-#
-#
-#
-msgid "   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
-msgstr "   VP konečná kontrola s interním georef: Georeference Chart_Error_Factor na mapě"
-
-#
-#
-#
-#
-#
-msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
-msgstr "   VP konečná kontrola: Georeference Chart_Error_Factor na mapě"
-
-#
-#
-#
-#
-#
-msgid " %D Days  %H Hours  %M Minutes"
-msgstr " %D Dnů  %H Hodin %M Minut"
-
-#
-#
-#
-#
-#
-msgid " %H Hours  %M Minutes"
-msgstr " %H Hodin  %M Minut"
-
-#
-msgid " (Ctrl-Space)"
-msgstr " (Ctrl-Mezerník)"
-
-#
-#
-msgid " (Last Known)"
-msgstr " (Poslední známý)"
-
-#
-#
-#
-#
-#
-msgid " - "
-msgstr " - "
-
-#
-msgid " -- [Portable(-p) executing from "
-msgstr " -- [Portable (-p) spuštění z "
-
-#
-msgid " </b>in<b> "
-msgstr " </b>za<b> "
-
-#
-#
-#
-#
-#
-msgid " COG Unavailable"
-msgstr "COG Není k dispozici"
-
-#
-#
-#
-#
-#
-msgid " ChartFile:  "
-msgstr " SouborMapy:"
-
-#
-#
-#
-#
-#
-msgid " Datum:  "
-msgstr " Datum:"
-
-#
-#
-#
-#
-#
-msgid " Depth Units:  "
-msgstr "Jednotky hloubky:"
-
-#
-#
-#
-#
-#
-msgid " ID:  "
-msgstr " ID:"
-
-#
-#
-#
-#
-#
-msgid " Name:  "
-msgstr " Jméno:"
-
-#
-#
-#
-#
-#
-msgid " Projection:  "
-msgstr " Projekce:"
-
-#
-#
-#
-#
-#
-#, c-format
-msgid " Scale:  1:%d"
-msgstr " Měřítko:  1:%d"
-
-#
-#
-#
-#
-#
-msgid " Ship "
-msgstr " Loď"
-
-#
-#
-#
-#
-#
-msgid " Soundings:  "
-msgstr " Hloubky:"
-
-#
-#
-#
-#
-#
-msgid " Source Edition:  "
-msgstr " Zdrojové vydání:"
-
-#
-#
-#
-#
-#
-msgid " Updated:  "
-msgstr " Aktualizováno:"
-
-#
+#: src/chart1.cpp:1173
 msgid " for details."
 msgstr " pro podrobnosti."
 
@@ -332,3447 +373,69 @@ msgstr " pro podrobnosti."
 #
 #
 #
-#
-#, c-format
-msgid " is %5g"
-msgstr " je %5g"
-
-#
-msgid ""
-" shorter than rhumbline.\n"
-"\n"
-msgstr ""
-" kratší než loxodroma.\n"
-"\n"
-
-#
-#
-#
-#
-msgid " to "
-msgstr " do "
-
-#
-msgid "\" is empty, switching to \"All Active Charts\" group."
-msgstr "\" je prázdná, přepínám na skupinu \"Všechny aktivní mapy\"."
-
-#
-#
-#
-#
-msgid "\"Ship Name\" MMSI (Call Sign)"
-msgstr "\"Jméno lodi\" MMSI (Volací znak)"
-
-#
-#
-#
-#
-#
-msgid "&Acknowledge"
-msgstr "&Potvrdit"
-
-#
-#
-#
-#
-#
-msgid "&Activate"
-msgstr "&Aktivovat"
-
-#
-#
-#
-#
-#
-msgid "&Cancel"
-msgstr "&Zrušit"
-
-#
-msgid "&Center View"
-msgstr "Vy&centrovat pohled"
-
-#
-msgid "&Copy all as text"
-msgstr "Kopírovat vše jako text"
-
-#
-msgid "&Copy as text"
-msgstr "Kopírovat jako text"
-
-#
-#
-#
-#
-#
-msgid "&Delete"
-msgstr "&Smazat"
-
-#
-#
-#
-#
-#
-msgid "&Delete All"
-msgstr "S&mazat vše"
-
-#
-#
-#
-#
-#
-msgid "&Export Route..."
-msgstr "&Export trasy...."
-
-#
-#
-#
-#
-#
-msgid "&Export Track..."
-msgstr "&Export stopy...."
-
-#
-#
-#
-#
-#
-msgid "&Export Wpt..."
-msgstr "&Export tras. bodu...."
-
-#
-#
-#
-#
-#
-msgid "&Font family:"
-msgstr "Rodina &fontů:"
-
-#
-#
-#
-#
-#
-msgid "&Go To"
-msgstr "Navi&govat na"
-
-#
-#
-#
-#
-#
-msgid "&Jump To"
-msgstr "&Skok na"
-
-#
-#
-#
-#
-#
-msgid "&Merge Selected Tracks"
-msgstr "Spojit &vybrané trasy"
-
-#
-#
-#
-#
-msgid "&New"
-msgstr "&Nový"
-
-#
-#
-#
-#
-#
-msgid "&OK"
-msgstr "&OK"
-
-#
-#
-#
-#
-#
-msgid "&Point size:"
-msgstr "Velik&ost bodů:"
-
-#
-#
-#
-#
-#
-msgid "&Properties"
-msgstr "Vlas&tnosti"
-
-#
-#
-#
-#
-#
-msgid "&Properties..."
-msgstr "&Vlastnosti"
-
-#
-#
-#
-#
-#
-msgid "&Remove Selected"
-msgstr "Odst&ranit vybrané"
-
-#
-#
-#
-#
-#
-msgid "&Reverse"
-msgstr "&Otočit"
-
-#
-#
-#
-#
-#
-msgid "&Send to GPS"
-msgstr "Ode&slat do GPS"
-
-#
-#
-#
-#
-#
-msgid "&Silence Alert"
-msgstr "Potlačit vý&strahu"
-
-#
-#
-#
-#
-#
-msgid "&Start Track"
-msgstr "Zahájit &stopu"
-
-#
-#
-#
-#
-#
-msgid "&Style:"
-msgstr "&Styl:"
-
-#
-#
-#
-#
-#
-msgid "&Underline"
-msgstr "Podtrhno&ut"
-
-#
-#
-#
-#
-#
-msgid "&Waypoint Properties..."
-msgstr "&Vlastnosti trasového body..."
-
-#
-#
-#
-#
-#
-msgid "&Weight:"
-msgstr "&Váha:"
-
-#
-#
-#
-#
-#
-msgid "(Unnamed Layer)"
-msgstr "(Nepojmenovaná vrstva)"
-
-#
-#
-#
-#
-#
-msgid "(Unnamed Route)"
-msgstr "(Nepojmenovaná trasa)"
-
-#
-#
-#
-#
-#
-msgid "(Unnamed Track)"
-msgstr "(Nepojmenovaná stopa)"
-
-#
-#
-#
-#
-#
-msgid "(Unnamed Waypoint)"
-msgstr "(Nepojmenovaný trasový bod)"
-
-#
-msgid "(reserved for future use)"
-msgstr "(rezervováno pro budoucí použití)"
-
-#
-#
-#
-#
-#
-msgid "(unnamed)"
-msgstr "(Nepojmenovaná)"
-
-#
-msgid ", Out: None"
-msgstr ", Ven: Nic"
-
-#
-#
-#
-#
-msgid "-"
-msgstr "-"
-
-#
-#
-#
-#
-msgid "--"
-msgstr "--"
-
-#
-#
-#
-#
-msgid "---"
-msgstr "---"
-
-#
-#
-#
-#
-#
-msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
-msgstr "---<<< Varování:  Přesnost georeferencování mapy je špatná. >>>---"
-
-#
-#
-#
-#
-#
-msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
-msgstr "---<<< Varování:  Přesnost georeferencování mapy je špatná. >>>---"
-
-#
-msgid "..."
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "...and TCPA is less than (min)"
-msgstr "...a TCPA je méně než (minut)"
-
-#
-msgid "0"
-msgstr ""
-
-#
-msgid "1"
-msgstr ""
-
-#
-msgid "1 pixel"
-msgstr ""
-
-#
-#
-#
-msgid "1.0 NM along COG"
-msgstr "1.0 NM podél COG"
-
-#
-msgid "10 pixels"
-msgstr "10 pixelů"
-
-#
-msgid "115200"
-msgstr ""
-
-#
-msgid "1200"
-msgstr ""
-
-#
-msgid "150"
-msgstr ""
-
-#
-msgid "19200"
-msgstr ""
-
-#
-msgid "2"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "2 Color"
-msgstr "2 barvy"
-
-#
-msgid "2 pixels"
-msgstr "2 pixely"
-
-#
-msgid "230400"
-msgstr ""
-
-#
-msgid "2400"
-msgstr ""
-
-#
-msgid "3"
-msgstr ""
-
-#
-msgid "3 pixels"
-msgstr "3 pixely"
-
-#
-msgid "300"
-msgstr ""
-
-#
-msgid "38400"
-msgstr ""
-
-#
-msgid "4"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "4 Color"
-msgstr "4 barvy"
-
-#
-msgid "4 pixels"
-msgstr "4 pixely"
-
-#
-msgid "460800"
-msgstr ""
-
-#
-msgid "4800"
-msgstr ""
-
-#
-msgid "5"
-msgstr ""
-
-#
-msgid "5 pixels"
-msgstr "5 pixelů"
-
-#
-msgid "57600"
-msgstr ""
-
-#
-msgid "6"
-msgstr ""
-
-#
-msgid "6 pixels"
-msgstr "6 pixelů"
-
-#
-msgid "600"
-msgstr ""
-
-#
-msgid "7"
-msgstr ""
-
-#
-msgid "7 pixels"
-msgstr "7 pixelů"
-
-#
-msgid "8"
-msgstr ""
-
-#
-msgid "8 pixels"
-msgstr "8 pixelů"
-
-#
-msgid "9"
-msgstr ""
-
-#
-msgid "9 pixels"
-msgstr "9 pixelů"
-
-#
-msgid "921600"
-msgstr ""
-
-#
-msgid "9600"
-msgstr ""
-
-#
-msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
-msgstr "<font size=-2>(Úhly sektorů jsou skutečné náměry z moře)</font><br>"
-
-#
-#
-#
-msgid "?"
-msgstr "?"
-
-#
-#
-#
-#
-msgid "A"
-msgstr "A"
-
-#
-#
-#
-#
-#
-msgid "AIS"
-msgstr "AIS"
-
-#
-#
-#
-#
-#
-msgid "AIS Alert"
-msgstr "Výstraha AIS "
-
-#
-#
-#
-#
-#
-msgid "AIS Target List..."
-msgstr "Seznam cílů AIS..."
-
-#
-#
-#
-#
-#
-msgid "AIS Target Query"
-msgstr "Dotaz na cíl AIS"
-
-#
-#
-#
-#
-#
-msgid "AIS Targets"
-msgstr "AIS cíle"
-
-#
-#
-#
-#
-#
-msgid "AIS target list"
-msgstr "Seznam cílů AIS"
-
-#
-#
-#
-#
-msgid "AISRollover"
-msgstr "AISRollover"
-
-#
-#
-#
-#
-#
-msgid "AISTargetAlert"
-msgstr "AISTargetAlert"
-
-#
-#
-#
-#
-#
-msgid "AISTargetQuery"
-msgstr "AISTargetQuery"
-
-#
-#
-#
-#
-#
-msgid "About"
-msgstr "O programu"
-
-#
-#
-#
-#
-#
-msgid "About OpenCPN"
-msgstr "O OpenCPN"
-
-#
-msgid "Accept"
-msgstr "Zahrnout"
-
-#
-msgid "Accept Sentences"
-msgstr "Zahrnout věty"
-
-#
-msgid "Accept only sentences"
-msgstr "Zahrnout jen věty"
-
-#
-#
-#
-#
-#
-msgid "Activate"
-msgstr "Aktivovat"
-
-#
-#
-#
-#
-#
-msgid "Activate Next Waypoint"
-msgstr "Aktivovat další trasový bod"
-
-#
-#
-#
-#
-#
-msgid "Active"
-msgstr "Aktivní"
-
-#
-#
-#
-#
-#
-msgid "Active Datasets"
-msgstr "Aktivní sady dat"
-
-#
-msgid "Add"
-msgstr "Přidat"
-
-#
-#
-#
-#
-#
-msgid "Add Connection"
-msgstr "Přidat spojení"
-
-#
-msgid "Add Dataset..."
-msgstr "Přidat datovou sadu..."
-
-#
-#
-#
-msgid "Add Directory..."
-msgstr "P5idat složku..."
-
-#
-msgid "Add a directory containing chart files"
-msgstr "Přidej složku s mapovými soubory"
-
-#
-msgid "Add new"
-msgstr "Přidat nový"
-
-#
-msgid "Address"
-msgstr "Adresa"
-
-#
-#
-#
-msgid "Aground"
-msgstr "Nasedlé"
-
-#
-#
-#
-#
-#
-msgid "Aid to Navigation"
-msgstr "Pomůcka pro navigaci"
-
-#
-#
-#
-#
-#
-msgid "All Active Charts"
-msgstr "Všechny aktivní mapy"
-
-#
-#
-#
-#
-#
-msgid "All Available Charts"
-msgstr "Všechny dostupné mapy"
-
-#
-#
-#
-#
-#
-msgid "All Charts"
-msgstr "Všechny mapy"
-
-#
-msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can also have a two letter prefix identifying the source, or TALKER, of the message (The whole sentences then looks like GPGGA or AITXT). You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.). The filter accepts just these three formats."
-msgstr "NMEA věta je většinou dlouhá 3 znaky (jako RMC, GGA atd.) Také může mít dvuznakový prefix identifikující zdroj, nebo TALKER, zprávy (celá věta pak vypadá jako GPGGA nebo AITXT). Můžeš odfiltrovat všechny věty s určitým TALKER prefixem (jako Gp, AI atd.). Filtr akceptuje jen tyto tři formáty."
-
-#
-msgid "Anchorage Area: Anchorage closed"
-msgstr "Oblast kotvení: Kotviště uzavřeno"
-
-#
-msgid "Anchorage Area: Anchorage open"
-msgstr "Oblast kotvení: Kotviště otevřeno"
-
-#
-msgid "Anchorage Area: Anchoring prohibited"
-msgstr "Oblast kotviště: Kotvení zakázáno"
-
-#
-msgid "Anchorage Area: Deep draft anchorage"
-msgstr "Oblast kotviště: Kotviště pro hluboký ponor"
-
-#
-msgid "Anchorage Area: Shallow draft anchorage"
-msgstr "Oblast kotviště: Kotviště pro mělký ponor"
-
-#
-msgid "Anchorage Area: Vessel transfer operations"
-msgstr "Oblast kotviště: Operace přemísťování lodí"
-
-#
-msgid "Anchorage created "
-msgstr "Kotviště vytvořeno"
-
-#
-msgid "Answering 'No' will create a new waypoint at the same location."
-msgstr "Odpověď 'Ne' vytvoří nový trasový bod na stejném místě."
-
-#
-msgid "Answering 'No' will create all new waypoints for this route."
-msgstr "Odpověď 'Ne' vytvoří pro tuto trasu všechny trasové body nově."
-
-#
-#
-#
-#
-#
-msgid "Append Waypoint"
-msgstr "Přidat trasový bod"
-
-#
-msgid "Apply"
-msgstr "Aplikovat"
-
-#
-#
-#
-#
-#
-msgid "Are you sure you want to delete <ALL> routes?"
-msgstr "Určitě chceš smazat <VŠECHNY> trasy?"
-
-#
-#
-#
-#
-#
-msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr "Určitě chceš smazat <VŠECHNY> stopy?"
-
-#
-#
-#
-#
-#
-msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr "Určitě chceš smazat <VŠECHNY> trasové body?"
-
-#
-#
-#
-#
-#
-msgid "Are you sure you want to delete this route?"
-msgstr "Určitě chceš smazat tuto trasu?"
-
-#
-#
-#
-#
-#
-msgid "Are you sure you want to delete this track?"
-msgstr "Určitě chceš smazat tuto stopu?"
-
-#
-#
-#
-#
-#
-msgid "Are you sure you want to remove this waypoint?"
-msgstr "Určitě chceš smazat tento trasový bod?"
-
-#
-#
-#
-msgid "Assumed 1 Mile Point"
-msgstr "Předpokládaný 1-mílový bod"
-
-#
-#
-#
-#
-#
-msgid "At Anchor"
-msgstr "Na kotvě"
-
-#
-#
-#
-#
-msgid "AtoN"
-msgstr "AdoN"
-
-#
-#
-#
-#
-#
-msgid "Authors"
-msgstr "Autoři"
-
-#
-#
-#
-#
-#
-msgid "Auto Follow"
-msgstr "Automaticky následovat"
-
-#
-#
-#
-msgid "Automatic Daily Tracks"
-msgstr "Automatické denní stopy"
-
-#
-#
-#
-msgid "Avg. speed (Kts)"
-msgstr "Průměrná rychlost (Kts)"
-
-#
-#
-#
-#
-msgid "B"
-msgstr "B"
-
-#
-#
-#
-msgid "Barge, tanker, chemical"
-msgstr "Prám, tanker, chemický"
-
-#
-#
-#
-#
-#
-msgid "Base"
-msgstr "Základní"
-
-#
-#
-#
-#
-#
-msgid "Base Station"
-msgstr "Základnová stanice"
-
-#
-#
-#
-#
-#
-msgid "Basic"
-msgstr "Základní"
-
-#
-#
-#
-#
-msgid "Baudrate"
-msgstr "Rychlost (baud)"
-
-#
-#
-#
-msgid "Beacon, Isolated Danger"
-msgstr "Znak, izolované nebezpečí"
-
-#
-#
-#
-msgid "Beacon, Port Hand"
-msgstr "Znak, levobok"
-
-#
-#
-#
-msgid "Beacon, Preferred Channel Port Hand"
-msgstr "Znak, hlavní kanál na levoboku"
-
-#
-#
-#
-msgid "Beacon, Preferred Channel Starboard Hand"
-msgstr "Znak, hlavní kanál na pravoboku"
-
-#
-#
-#
-msgid "Beacon, Safe Water"
-msgstr "Znak, Bezpečná voda"
-
-#
-#
-#
-msgid "Beacon, Special Mark"
-msgstr "Znak, speciální značka"
-
-#
-#
-#
-msgid "Beacon, Starboard Hand"
-msgstr "Znak, pravobok"
-
-#
-#
-#
-#
-#
-msgid "Bearing"
-msgstr "Kurs"
-
-#
-#
-msgid "Black"
-msgstr "Černá"
-
-#
-#
-msgid "Blue"
-msgstr "Modrá"
-
-#
-#
-#
-#
-#
-msgid "Boundaries"
-msgstr "Hranice"
-
-#
-#
-#
-#
-#
-msgid "Brg"
-msgstr "Kurs"
-
-#
-msgid "Buddy"
-msgstr "Kumpán"
-
-#
-#
-#
-msgid "Bulk carrier maritime"
-msgstr "Loď na sypké hmoty"
-
-#
-#
-#
-msgid "Bunkership"
-msgstr ""
-
-#
-msgid "Buoy/Light Labels"
-msgstr "Popisky bojí/světel"
-
-#
-#
-#
-#
-#
-msgid "C&olour:"
-msgstr "B&arva:"
-
-#
-#
-#
-#
-#
-msgid "CM93 Detail Level"
-msgstr "Úroveň detailu CM93"
-
-#
-#
-#
-msgid "CM93 Offset Dialog..."
-msgstr "Dialog posunu CM93..."
-
-#
-#
-#
-#
-#
-msgid "COG Predictor Length (min)"
-msgstr "Délka předpovědi COG (min):"
-
-#
-#
-#
-#
-msgid "CPA"
-msgstr "CPA"
-
-#
-#
-#
-#
-#
-msgid "CPA Calculation"
-msgstr "Výpočet CPA"
-
-#
-#
-#
-#
-#
-msgid "CPA TCPA"
-msgstr "CPA/TCPA"
-
-#
-#
-#
-#
-#
-msgid "CPA/TCPA Alerts"
-msgstr "CPA/TCPA výstrahy"
-
-#
-#
-#
-#
-#
-msgid "Call"
-msgstr "Volání"
-
-#
-#
-#
-#
-#
-msgid "Cancel"
-msgstr "Zrušit"
-
-#
-msgid "Cancellation - cancel area as identified by Message Linkage ID"
-msgstr "Zrušení - oblast zrušení je identifikována podle Message Linkage ID"
-
-#
-#
-#
-msgid "Card. E"
-msgstr "Kard. V"
-
-#
-#
-#
-msgid "Card. N"
-msgstr "Kard. S"
-
-#
-#
-#
-msgid "Card. S"
-msgstr "Kard. J"
-
-#
-#
-#
-msgid "Card. W"
-msgstr "Kard. Z"
-
-#
-#
-#
-msgid "Cardinal E Beacon"
-msgstr "V kardinální znak"
-
-#
-#
-#
-msgid "Cardinal Mark E"
-msgstr "V kardinální značka"
-
-#
-#
-#
-msgid "Cardinal Mark N"
-msgstr "S kardinální značka"
-
-#
-#
-#
-msgid "Cardinal Mark S"
-msgstr "J kardinální značka"
-
-#
-#
-#
-msgid "Cardinal Mark W"
-msgstr "Z kardinální značka"
-
-#
-#
-#
-msgid "Cardinal N Beacon"
-msgstr "S kardinální znak"
-
-#
-#
-#
-msgid "Cardinal S Beacon"
-msgstr "J kardinální znak"
-
-#
-#
-#
-msgid "Cardinal W Beacon"
-msgstr "Z kardinální znak"
-
-#
-#
-#
-msgid "Cargo Ship"
-msgstr "Nákladní loď"
-
-#
-msgid "Caution Area: Cluster of fishing vessels"
-msgstr "Oblast varování: Seskupení rybářských lodí"
-
-#
-msgid "Caution Area: Derelicts (drifting objects)"
-msgstr "Oblast varování: Trosky (driftující objekty)"
-
-#
-msgid "Caution Area: Divers down"
-msgstr "Oblast varování: Potápěči pod hladinou"
-
-#
-msgid "Caution Area: Dredge operations"
-msgstr "Oblast varování: Probíhající bagrování"
-
-#
-msgid "Caution Area: Fairway closed"
-msgstr "Oblast varování: Plavební dráha uzavřena"
-
-#
-msgid "Caution Area: Fishery - nets in water"
-msgstr "Oblast varování: Sítě ve vodě"
-
-#
-msgid "Caution Area: Harbour closed"
-msgstr "Oblast varování: Přístav uzavřen"
-
-#
-msgid "Caution Area: Marine event"
-msgstr "Oblast varování: Námořní událost"
-
-#
-msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
-msgstr "Oblast varování: Místo výskytu mořských savců (znamená to, že velryby NEJSOU pozorovány)"
-
-#
-msgid "Caution Area: Marine mammals in area - reduce speed"
-msgstr "Oblast varování: Mořští savci v oblasti - sniž rychlost"
-
-#
-msgid "Caution Area: Marine mammals in area - report sightings"
-msgstr "Oblast varování: Mořští savci v oblasti - ohlášena pozorování"
-
-#
-msgid "Caution Area: Marine mammals in area - stay clear"
-msgstr "Oblast varování: Mořští savci v oblasti - vyhni se"
-
-#
-msgid "Caution Area: Protected habitat - no fishing or anchoring"
-msgstr "Oblast varování: Chráněné místo výskytu - zákaz rybolovu a kotvení"
-
-#
-msgid "Caution Area: Protected habitat - reduce speed"
-msgstr "Oblast varování: Chráněné místo výskytu - sniž rychlost"
-
-#
-msgid "Caution Area: Protected habitat - stay clear"
-msgstr "Oblast varování: Chráněné místo výskytu - vyhni se"
-
-#
-msgid "Caution Area: Risk (define in Associated text field)"
-msgstr "Oblast varování: Nebezpečí (definováno v přidruženém textovém poli)"
-
-#
-msgid "Caution Area: Seaplane operations"
-msgstr "Oblast varování: Operace hydroplánů"
-
-#
-msgid "Caution Area: Survey operations"
-msgstr "Oblast varování: Průzkumné operace"
-
-#
-msgid "Caution Area: Swim area"
-msgstr "Oblast varování: Oblast pro plavce"
-
-#
-msgid "Caution Area: Traffic congestion"
-msgstr "Oblast varování: Zahlcení dopravou"
-
-#
-msgid "Caution Area: Underwater operation"
-msgstr "Oblast varování: Podvodní operace"
-
-#
-msgid "Caution Area: Underwater vehicle operation"
-msgstr "Oblast varování: Operace podvodních dopravních prostředků"
-
-#
-#
-#
-#
-#
-msgid "Cell"
-msgstr "Buňka"
-
-#
-#
-#
-msgid "Cell Scale"
-msgstr "Měřítko buňky"
-
-#
-msgid "Center View"
-msgstr "Vycentrovat pohled"
-
-#
-msgid "Center View..."
-msgstr "Vycentrovat pohled..."
-
-#
-#
-#
-#
-#
-msgid "Change Color Scheme"
-msgstr "Změň barevné schéma"
-
-#
-#
-#
-#
-#
-msgid "Chart Depth Units"
-msgstr "Jednotky hloubky na mapě"
-
-#
-#
-#
-#
-#
-msgid "Chart Display Options"
-msgstr "Volby mapového zobrazení"
-
-#
-msgid "Chart Feature: Bridge closed"
-msgstr "Mapový prvek: Most uzavřen"
-
-#
-msgid "Chart Feature: Bridge fully open"
-msgstr "Mapový prvek: Most plně otevřen"
-
-#
-msgid "Chart Feature: Bridge partially open"
-msgstr "Mapový prvek: Most částečně otevřen"
-
-#
-msgid "Chart Feature: Channel obstruction"
-msgstr "Mapový prvek: Překážka v kanálu"
-
-#
-msgid "Chart Feature: Reduced vertical clearance"
-msgstr "Mapový prvek: Snéžená podjezdná výška"
-
-#
-msgid "Chart Feature: Semi-submerged object"
-msgstr "Mapový prvek: Částečně ponořený objekt"
-
-#
-msgid "Chart Feature: Shoal area"
-msgstr "Mapový prvek: Mělčina"
-
-#
-msgid "Chart Feature: Shoal area due east"
-msgstr "Mapový prvek: Mělčina na východ"
-
-#
-msgid "Chart Feature: Shoal area due north"
-msgstr "Mapový prvek: Mělčina na sever"
-
-#
-msgid "Chart Feature: Shoal area due south"
-msgstr "Mapový prvek: Mělčina na jih"
-
-#
-msgid "Chart Feature: Shoal area due west"
-msgstr "Mapový prvek: Mělčina na západ"
-
-#
-msgid "Chart Feature: Submerged object"
-msgstr "Mapový prvek: Ponořený objekt"
-
-#
-msgid "Chart Feature: Sunken vessel"
-msgstr "Mapový prvek: Potopená loď"
-
-#
-#
-#
-#
-#
-msgid "Chart Groups"
-msgstr "Skupiny map"
-
-#
-#
-#
-#
-#
-msgid "Chart Information Objects"
-msgstr "Informační mapové objekty"
-
-#
-#
-#
-#
-#
-msgid "Chart Print"
-msgstr "Tisk mapy"
-
-#
-#
-#
-msgid "Chart Up Mode"
-msgstr "Mód mapa nahoru"
-
-#
-#
-#
-#
-#
-msgid "Chart1::Event...TCMgr Not Available"
-msgstr "Chart1::Event...TCMgr Není k dispozici"
-
-#
-#
-#
-#
-#
-msgid "ChartTexts"
-msgstr "Texty map"
-
-#
-#
-#
-#
-#
-msgid "Charts"
-msgstr "Mapy"
-
-#
-#
-#
-#
-#
-msgid "Choose Font..."
-msgstr "Vybrat font..."
-
-#
-msgid "Choose Format for Copy"
-msgstr "Vyber formát pro kopii"
-
-#
-#
-#
-#
-msgid "Choose a file"
-msgstr "Vyber soubor"
-
-#
-#
-#
-#
-#
-msgid "Class"
-msgstr "Třída"
-
-#
-#
-#
-#
-#
-msgid "Clear"
-msgstr "Vyčistit"
-
-#
-#
-#
-#
-#
-msgid "Clear All"
-msgstr "Vyčistit vše"
-
-#
-#
-#
-#
-#
-msgid "Clear Anchor Watch"
-msgstr "Smazat kotevní alarm"
-
-#
-msgid "Clearance granted - proceed to berth"
-msgstr "Povolení uděleno - pokračuj ke kotvišti"
-
-#
-#
-#
-#
-#
-msgid "Click to cancel the font selection."
-msgstr "Klikni pro zrušení výběru fontu."
-
-#
-#
-#
-#
-#
-msgid "Click to confirm the font selection."
-msgstr "Klikni pro potvrzení výběru fontu."
-
-#
-#
-#
-#
-#
-msgid "Close"
-msgstr "Zavřít"
-
-#
-#
-#
-#
-msgid "CoG"
-msgstr "CoG"
-
-#
-#
-#
-#
-#
-msgid "Color:"
-msgstr "Barva:"
-
-#
-#
-#
-#
-#
-msgid "Colors"
-msgstr "Barvy"
-
-#
-msgid "Combo!"
-msgstr ""
-
-#
-msgid "Confirm deletion of tracks and routes"
-msgstr "Potvrď smazání stop a tras"
-
-#
-#
-#
-#
-#
-msgid "Connections"
-msgstr "Připojení"
-
-#
-#
-#
-#
-msgid "Console Legend"
-msgstr "Legenda konzole"
-
-#
-#
-#
-#
-msgid "Console Value"
-msgstr "Hodnota konzole"
-
-#
-#
-#
-msgid "Constrained by draught"
-msgstr "Omezené ponorem"
-
-#
-#
-#
-msgid "Container vessel"
-msgstr "Kontejnerová loď"
-
-#
-msgid "Control checksum"
-msgstr "Kontroluj kontrolní součet"
-
-#
-msgid "Copy As KML"
-msgstr "Zkopíruj jako KML"
-
-#
-msgid "Copy Log File to Clipboard"
-msgstr "Zkopíruj soubor logu do schránky"
-
-#
-msgid "Copy Settings File to Clipboard"
-msgstr "Zkopíruj soubor nastavení do schránky"
-
-#
-msgid "Copy as KML"
-msgstr "Kopírovat jako KML"
-
-#
-msgid "Copy as KML..."
-msgstr "Kopírovat jako KML..."
-
-#
-#, c-format
-msgid "Couldn't load sound data from '%s'."
-msgstr "Nelze nahrát data zvuku z '%s'."
-
-#
-#
-#
-#
-#
-msgid "Course"
-msgstr "Kurs"
-
-#
-#
-#
-#
-#
-msgid "Course UP Mode"
-msgstr "Mód kurs nahoru"
-
-#
-#
-#
-#
-#
-msgid "Course Up Mode"
-msgstr "Mód kurs nahoru"
-
-#
-#
-msgid "Course-Up Mode Display Update Period (sec)"
-msgstr "Perioda aktualizace módu kurs nahoru (sek)"
-
-#
-#
-#
-#
-#
-msgid "Create Route"
-msgstr "Vytvořit trasu"
-
-#
-#
-#
-#
-#
-msgid "Create Waypoint"
-msgstr "Vytvořit trasový bod"
-
-#
-#
-#
-msgid "Cruise ship"
-msgstr "Výletní loď"
-
-#
-#
-#
-#
-#
-msgid "Current"
-msgstr "Proud"
-
-#
-#
-#
-#
-#
-msgid "Cyan"
-msgstr "Azurová"
-
-#
-#
-#
-msgid "D/V"
-msgstr ""
-
-#
-msgid "DSC"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "DSC Position Report"
-msgstr "Report pozice DSC"
-
-#
-#
-msgid "Dark Blue"
-msgstr "Tmavě modrá"
-
-#
-#
-msgid "Dark Cyan"
-msgstr "Tmavě azurová"
-
-#
-#
-msgid "Dark Gray"
-msgstr "Tmavě šedá"
-
-#
-#
-msgid "Dark Green"
-msgstr "Tmavě zelená"
-
-#
-#
-msgid "Dark Magenta"
-msgstr "Tmavě fialová"
-
-#
-#
-msgid "Dark Red"
-msgstr "Tmavě červená"
-
-#
-#
-msgid "Dark Yellow"
-msgstr "Tmavě žlutá"
-
-#
-#
-#
-#
-#
-msgid "Data Connections"
-msgstr "Datová spojení"
-
-#
-#
-#
-#
-#
-msgid "Data Source :"
-msgstr "Datový zdroj :"
-
-#
-#
-#
-#
-#
-#
-msgid "DataPort"
-msgstr "Datový port"
-
-#
-#
-#
-#
-#
-msgid "De-Cluttered Text"
-msgstr "Uspořádat text"
-
-#
-#
-#
-#
-#
-msgid "Deactivate"
-msgstr "Deaktivovat"
-
-#
-#
-msgid "Decimal Degrees"
-msgstr "Desetinné stupně"
-
-#
-#
-#
-#
-#
-msgid "Deep Depth"
-msgstr "Velká hloubka"
-
-#
-#
-#
-#
-#
-msgid "Default"
-msgstr "Výchozí"
-
-#
-#
-#
-#
-#
-msgid "Default color"
-msgstr "Standardní barva"
-
-#
-#
-msgid "Degrees, Decimal Minutes"
-msgstr "Stupně, desetinné minuty"
-
-#
-#
-msgid "Degrees, Minutes, Seconds"
-msgstr "Stupně, minuty, sekundy"
-
-#
-#
-#
-#
-#
-msgid "Delete"
-msgstr "Smazat"
-
-#
-#
-#
-#
-#
-msgid "Delete All"
-msgstr "Smazat vše"
-
-#
-#
-#
-#
-#
-msgid "Delete Group"
-msgstr "Smazat skupinu"
-
-#
-#
-#
-#
-#
-msgid "Delete Waypoint"
-msgstr "Smazat trasový bod"
-
-#
-#
-#
-#
-#
-msgid "Delete..."
-msgstr "Smazat..."
-
-#
-#
-#
-#
-#
-msgid "Depart From"
-msgstr "Odplutí z"
-
-#
-#
-#
-msgid "Departure Time (m/d/y h:m)"
-msgstr "Čas vyplutí (m/d/r h:m)"
-
-#
-#
-#
-#
-#
-msgid "Depth Settings(m)"
-msgstr "Nastavení hloubky(m)"
-
-#
-#
-#
-#
-#
-msgid "Depth Soundings"
-msgstr "Zobrazit hloubky"
-
-#
-#
-#
-#
-#
-msgid "Description"
-msgstr "Popis"
-
-#
-#
-#
-#
-#
-msgid "Destination"
-msgstr "Cíl"
-
-#
-#
-#
-#
-#
-msgid "Directories"
-msgstr "Složky"
-
-#
-#
-#
-#
-#
-msgid "Disable"
-msgstr "Deaktivovat"
-
-#
-#
-#
-#
-#
-msgid "Disable Full Screen Quilting"
-msgstr "Vypnout skládání map po celé obrazovce"
-
-#
-#
-#
-#
-#
-msgid "Display"
-msgstr "Zobrazení"
-
-#
-#
-#
-#
-#
-msgid "Display Category"
-msgstr "Kategorie zobrazení"
-
-#
-#
-#
-#
-#
-msgid "Display Options"
-msgstr "Volby zobrazení"
-
-#
-#
-#
-#
-#
-msgid "Distance"
-msgstr "Vzdálenost"
-
-#
-#
-#
-#
-#
-msgid "Distance Between Rings"
-msgstr "Vzdálenost mezi kruhy"
-
-#
-#
-#
-#
-#
-msgid "Distance Unit"
-msgstr "Jednotka vzdálenosti"
-
-#
-#
-#
-#
-#
-msgid "Distance from Ownship"
-msgstr "Vzdálenost od vlastní lodi"
-
-#
-#
-#
-#
-#
-msgid "Distress"
-msgstr "Nouze"
-
-#
-msgid "Distress Area: Person overboard"
-msgstr "Oblast nouze: Osoba přes palubu"
-
-#
-msgid "Distress Area: Pollution response area"
-msgstr "Oblast nouze: Oblast odpovědi na znečištění"
-
-#
-msgid "Distress Area: SAR area"
-msgstr "Oblast nouze: Oblast SAR"
-
-#
-msgid "Distress Area: Vessel abandoning ship"
-msgstr "Oblast nouze: Posádka opouští loď"
-
-#
-msgid "Distress Area: Vessel collision"
-msgstr "Oblast nouze: Kolize plavidel"
-
-#
-msgid "Distress Area: Vessel disabled and adrift"
-msgstr "Oblast nouze: Plavidlo bez pohonu a splouvá"
-
-#
-msgid "Distress Area: Vessel fire/explosion"
-msgstr "Oblast nouze: Požár/výbuch na plavidle "
-
-#
-msgid "Distress Area: Vessel flooding"
-msgstr "Oblast nouze: Plavidlo nabírá vodu"
-
-#
-msgid "Distress Area: Vessel grounding"
-msgstr "Oblast nouze: Plavidlo nasedlé"
-
-#
-msgid "Distress Area: Vessel listing/capsizing"
-msgstr "Oblast nouze: Plavidlo se naklání/převrací"
-
-#
-msgid "Distress Area: Vessel requests medical assistance"
-msgstr "Oblast nouze: Pravidlo žádá lékařskou asistenci"
-
-#
-msgid "Distress Area: Vessel sinking"
-msgstr "Oblast nouze: Plavidlo se potápí"
-
-#
-msgid "Distress Area: Vessel under assault"
-msgstr "Oblast nouze: Plavidlo čelí útoku"
-
-#
-msgid "Do you also want to toggle the visibility of shared waypoints being part of this route?"
-msgstr "Chceš také změnit viditelnost sdílených trasových bodů, které jsou součástí trasy?"
-
-#
-#
-#
-msgid "Done."
-msgstr "Hotovo."
-
-#
-msgid "Dot"
-msgstr "Tečkovaná"
-
-#
-msgid "Dot dash"
-msgstr "Čerchovaná"
-
-#
-#
-#
-msgid "Dredge"
-msgstr "Bagr"
-
-#
-#
-#
-#
-#
-msgid "Drop"
-msgstr "Zahodit"
-
-#
-#
-#
-#
-#
-msgid "Drop MOB Marker"
-msgstr "Umístit zde značku MOB"
-
-#
-#
-#
-#
-#
-msgid "Drop Mark"
-msgstr "Umístit značku"
-
-#
-msgid "Drop Sentences"
-msgstr "Zahodit věty"
-
-#
-msgid "Drop sentences"
-msgstr "Zahodit věty"
+#: src/chart1.cpp:1226
+msgid "Retrieving initial language selection from Windows Registry"
+msgstr "Získávám úvodní nastavení jazyka z registru Windows"
 
-#
 #
-#
-#
-msgid "ETA"
-msgstr "ETA"
+#: src/chart1.cpp:1571
+msgid " -- [Portable(-p) executing from "
+msgstr " -- [Portable (-p) spuštění z "
 
 #
 #
 #
 #
-#
-msgid "ETA          "
-msgstr "ETA"
+#: src/chart1.cpp:1704
+msgid "Retrieving initial Chart Directory set from Windows Registry"
+msgstr "Získávám úvodní nastavení složky map z registru Windows."
 
 #
 #
-msgid "ETE"
-msgstr ""
-
 #
 #
-msgid "ETE/ETD"
-msgstr ""
-
 #
-msgid "Edit"
-msgstr "Upravit"
+#: src/chart1.cpp:1755
+msgid "Rebuilding chart database from configuration file entries..."
+msgstr "Aktualizovat databázi map ze záznamů v konfiguračním souboru...."
 
 #
 #
 #
+#: src/chart1.cpp:1758
 msgid "Elapsed time : "
 msgstr "Uplutý čas :"
 
 #
-msgid "Elements to print..."
-msgstr "Prvky k tisku..."
-
 #
 #
-#
-#
-msgid "Enable"
-msgstr "Povolit"
-
-#
-#
-#
-#
-#
-msgid "Enable Chart Quilting"
-msgstr "Povolit skládání map"
-
-#
-#
-#
-#
-msgid "Enable Target Alert Acknowledge timeout (min)"
-msgstr "Povolit vypršení potvrzení upozornění na cíl (min)"
-
-#
-#
-msgid "Enable Transparent Toolbar"
-msgstr "Povolit průhlednou lištu"
-
-#
-#
-#
-#
-#
-msgid "End Route"
-msgstr "Ukončit trasu"
-
-#
-#
-#
-msgid "Engaged in Fishing"
-msgstr "Provádějící rybolov"
-
-#
-msgid "Enter Group Name"
-msgstr "Zadej název skupiny"
-
-#
-msgid "Enter the NMEA sentence"
-msgstr "Vlož NMEA větu"
-
-#
-msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
-msgstr "Vlož NMEA větu (2, 3 nebo 5 znaků)"
-
-#
-msgid "Environmental Caution Area: Hazardous sea ice"
-msgstr "Oblast varování prostředí: Nebezpečný mořský led"
-
-#
-msgid "Environmental Caution Area: Heavy icing"
-msgstr "Oblast varování prostředí: Tlustý led"
-
-#
-msgid "Environmental Caution Area: High waves"
-msgstr "Oblast varování prostředí: Vysoké vlny"
-
-#
-msgid "Environmental Caution Area: High wind"
-msgstr "Oblast varování prostředí: Silný vítr"
-
-#
-msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
-msgstr "Oblast varování prostředí: Snížená viditelnost (mlha, déšť atd.)"
-
-#
-#, fuzzy
-msgid "Environmental Caution Area: Storm front (line squall)"
-msgstr "Oblast varování prostředí: Bouřková fronta"
-
-#
-msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
-msgstr "Oblast varování prostředí: Varování před bouří (bouřková buňka nebo řada bouřek)"
-
-#
-msgid "Environmental Caution Area: Strong currents"
-msgstr "Oblast varování prostředí: Silný proud"
-
-#
-#
-#
-#
-msgid "Error on Route Upload.  Please check logfiles..."
-msgstr "Chyba při nahrávání trasy. Prosím zkontroluj log..."
-
-#
-#
-#
-#
-msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr "Chyba při nahrávání trasových bodů. Prosím zkontroluj log..."
-
-#
-msgid "Error!"
-msgstr "Chyba!"
-
-#
-#
-#
+#: src/chart1.cpp:1759
 msgid "Estimated time : "
 msgstr "Předpokládaný čas :"
 
 #
 #
 #
-#
-#
-msgid "Export All Visible..."
-msgstr "Exportovat vše viditelné...."
-
-#
-#
-#
-#
-#
-msgid "Export GPX file"
-msgstr "Exportuj GPX soubor"
-
-#
-#
-#
-#
-#
-msgid "Extend Route"
-msgstr "Rozšiř trasu"
-
-#
-#
-#
-#
-#
-msgid "Extend Track"
-msgstr "Prodloužit stopu"
-
-#
-#
-#
-#
-#
-msgid "Extended"
-msgstr "Rozšířený"
-
-#
-#
-#
-msgid "Extended Light Sectors"
-msgstr "Protažené sektory světel"
-
-#
-#
-#
-msgid "ExtendedTideIcon"
-msgstr "ExtendedTideIcon"
-
-#
-#
-#
-msgid "F/V"
-msgstr ""
-
-#
-msgid "Failed to initialize the user interface. "
-msgstr "Nepodařilo se inicializovat uživatelské rozhraní."
-
-#
-#
-#
-msgid "Fast ship"
-msgstr "Rychlý trajekt"
-
-#
-#
-#
-#
-#
-msgid "Fathoms"
-msgstr "Fathomy (Sáhy)"
-
-#
-#
-#
-#
-#
-msgid "Feet"
-msgstr "Stopy"
-
-#
-#
-#
-msgid "Ferry"
-msgstr "Trajekt"
-
-#
-#
-#
-msgid "Filter NMEA Course and Speed data"
-msgstr "Filtrovat NMEA data kurzu a rychlosti"
-
-#
-#
-#
-msgid "Filter period (sec)"
-msgstr "Perioda filtru (sek)"
-
-#
-#
-#
-#
-#
-msgid "Filters"
-msgstr "Filtry"
-
-#
-#
-#
-msgid "Fishing boat"
-msgstr "Rybářská loď"
-
-#
-#
-#
-msgid "Fix.Struct."
-msgstr "Pev.strukt."
-
-#
-#
-#
-msgid "Fixed Structure"
-msgstr "Pevná struktura"
-
-#
-msgid "Fonts"
-msgstr "Písma"
-
-#
-msgid "For this leg the Great Circle route is "
-msgstr "Pro toto rameno je trasa po velké kružnici "
-
-#
-#
-#
-#
-#
-msgid "Force Full Database Rebuild"
-msgstr "Vynutit uplné znovuvytvoření databáze"
-
-#
-msgid "Format uploads for Furuno GP3X"
-msgstr "Formátuj uploady pro Furuno GP3X"
-
-#
-#
-#
-msgid "Freightbarge"
-msgstr "Nákladní prám"
-
-#
-#
-#
-msgid "Freightbarge with containers"
-msgstr "Níkladní prám s kontejnery"
-
-#
-#
-#
-#
-#
-msgid "Full Route"
-msgstr "Úplná trasa"
-
-#
-msgid "GPS Offset from Bow (m)"
-msgstr "Offset GPS od přídě (m)"
-
-#
-msgid "GPS Offset from Midship (m)"
-msgstr "GPS offset od středu lodě (m)"
-
-#
-#
-#
-#
-#
-#
-msgid "GPS/Plotter Port"
-msgstr "Port GPS/Ploteru"
-
-#
-msgid "GPSD"
-msgstr ""
-
-#
-msgid "GPSGate Buddy"
-msgstr "GPSGate kumpán"
-
-#
-#
-#
-#
-#
-msgid "GPX"
-msgstr "GPX"
-
-#
-msgid "GUID"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "Gas tanker"
-msgstr "Plynový tanker"
-
-#
-#
-#
-#
-#
-#
-msgid "General"
-msgstr "Obecné"
-
-#
-#
-#
-#
-#
-msgid "General Options"
-msgstr "Obecné nastavení"
-
-#
-#
-#
-msgid "General cargo Vessel maritime"
-msgstr "Obecné nákladní plavidlo"
-
-#
-#
-#
-#
-#
-msgid "Go to "
-msgstr "Navigovat na"
-
-#
-msgid "GpsGate Buddy"
-msgstr "GPSGate kumpán"
-
-#
-#
-msgid "Green"
-msgstr "Zelená"
-
-#
-msgid "Group \""
-msgstr "Skupina  \""
-
-#
-#
-#
-msgid "HSC"
-msgstr ""
-
-#
-#
-#
-msgid "HW"
-msgstr "HW"
-
-#
-msgid "Heading"
-msgstr "Kurs"
-
-#
-#
-#
-#
-#
-msgid "Help"
-msgstr "Nápověda"
-
-#
-#
-#
-#
-#
-msgid "Here"
-msgstr "Tady"
-
-#
-#
-#
-#
-#
-msgid "Hide AIS Targets"
-msgstr "Schovat AIS cíle"
-
-#
-#
-#
-#
-#
-msgid "Hide Target CPA"
-msgstr "Skryj CPA cíle"
-
-#
-#
-#
-msgid "Hide This Chart"
-msgstr "Schovej tuto mapu"
-
-#
-#
-#
-msgid "Hide WPT names"
-msgstr "Schovej jména WPT"
-
-#
-#
-#
-#
-#
-msgid "Hide anchored/moored targets, speed max (kn)"
-msgstr "Potlačit zakotvené/vyvázané cíle, rychlost max (kn)"
-
-#
-#
-#
-msgid "Hide from chart"
-msgstr "Schovej z mapy"
-
-#
-msgid "High"
-msgstr "Vysoký"
-
-#
-#
-#
-msgid "High Speed Craft"
-msgstr "Vysokorychlostní plavidlo"
-
-#
-#
-#
-#
-#
-msgid "Highlight Tracks"
-msgstr "Zvýraznit stopy"
-
-#
-#
-#
-msgid "Hydrofoil"
-msgstr "Křídlová loď"
-
-#
-#
-#
-#
-#
-msgid "I&mport GPX..."
-msgstr "I&mport GPX..."
-
-#
-msgid "IMO"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "Icon"
-msgstr "Ikona"
-
-#
-msgid "If checked, only the sentences with a valid checksum are passed through"
-msgstr "Pokud je zaškrtnuto, jsou propuštěny pouze věty s platným kontrolním součtem"
-
-#
-msgid "Ignore Sentences"
-msgstr "Ignorovat věty"
-
-#
-msgid "Ignore sentences"
-msgstr "Ignorovat věty"
-
-#
-#
-#
-#
-#
-msgid "Import GPX file"
-msgstr "Importuj GPX soubor"
-
-#
-#
-#
-#
-#
-msgid "Important Text Only"
-msgstr "Pouze důležitý text"
-
-#
-#
-#
-#
-#
-msgid "In"
-msgstr "In"
-
-#
-msgid "In: None"
-msgstr "Dovnitř: Nic"
-
-#
-msgid "Information: Icebreaker waiting area"
-msgstr "Informace: Oblast vyčkávání ledoborce"
-
-#
-msgid "Information: Location of response units"
-msgstr "Informace: Umístění odpovídacích jednotek"
-
-#
-msgid "Information: Pilot boarding position"
-msgstr "Informace: Pozice nalodění pilota"
-
-#
-msgid "Information: Places of refuge"
-msgstr "Informace: Místa úniku"
-
-#
-msgid "Information: Position of icebreakers"
-msgstr "Informace: Pozice ledoborců"
-
-#
-#
-#
-#
-msgid "Inland Blue Flag"
-msgstr "Pozemní modrá vlajka"
-
-#
-msgid "Input filtering"
-msgstr "Filtrování vstupu"
-
-#
-#
-#
-#
-#
-msgid "Insert Waypoint"
-msgstr "Vložit trasový bod"
-
-#
-msgid "Instruction: Await instructions prior to proceeding beyond this point/juncture"
-msgstr "Instrukce: Vyčkej na instrukce před pokračováním za tento bod/křížení"
-
-#
-msgid "Instruction: Contact Port Administration at this point/juncture"
-msgstr "Instrukce: Kontaktuj správu přístavu na tomto bodě/křížení"
-
-#
-msgid "Instruction: Contact VTS at this point/juncture"
-msgstr "Instrukce: Kontaktuj VTS na tomto bodě/křížení"
-
-#
-msgid "Instruction: Do not proceed beyond this point/juncture"
-msgstr "Instrukce: Nepokračuj za tento bod/křížení"
-
-#
-#
-#
-msgid "Isol. Dngr"
-msgstr "Iz. nebezpečí"
-
-#
-#
-#
-#
-#
-msgid "Isolated Danger"
-msgstr "Izolované nebezpečí"
-
-#
-msgid "KML Standard (Google Earth and others)"
-msgstr "KML Standard (Google Earth a další)"
-
-#
-msgid "KML with extended waypoint data (QtVlm)"
-msgstr "KML s rozšířenými daty trasových bodů (QtVlm)"
-
-#
-#
-#
-#
-#
-msgid "Kilometers"
-msgstr "Kilometry"
-
-#
-msgid "Kts"
-msgstr ""
-
-#
-#
-#
-msgid "LE/V"
-msgstr ""
-
-#
-#
-#
-msgid "LMT @ Location"
-msgstr "LMT na místě"
-
-#
-#
-#
-msgid "LW"
-msgstr "LW"
-
-#
-#
-#
-#
-#
-msgid "Language"
-msgstr "Jazyk"
-
-#
-#
-#
-#
-#
-msgid "Latitude"
-msgstr "Zem. šířka"
-
-#
-#
-#
-msgid "Law Enforcement Vessel"
-msgstr "Fízlové"
-
-#
-#
-#
-#
-#
-msgid "Layer Name"
-msgstr "Jméno vrstvy"
-
-#
-#
-#
-#
-#
-msgid "Layer Route"
-msgstr "Trasa ve vrstvě"
-
-#
-#
-#
-#
-#
-msgid "Layer Route: "
-msgstr "Trasa ve vrstvě:"
-
-#
-msgid "Layer Routepoint"
-msgstr "Bod trasy ve vrstvě"
-
-#
-#
-#
-#
-#
-msgid "Layer Track"
-msgstr "Sopa ve vrstvě"
-
-#
-#
-#
-#
-#
-msgid "Layer Waypoint"
-msgstr "Trasový bod ve vrstvě"
-
-#
-#
-#
-msgid "Layers"
-msgstr "Vrstvy"
-
-#
-#
-#
-msgid "Ldg Lt Front"
-msgstr "Příďové světlo"
-
-#
-#
-#
-msgid "Ldg Lt Rear"
-msgstr "Záďové světlo"
-
-#
-#
-#
-msgid "Leading Light Front"
-msgstr "Přední naváděcí světlo"
-
-#
-#
-#
-msgid "Leading Light Rear"
-msgstr "Zadní naváděcí světlo"
-
-#
-msgid "Left"
-msgstr "Vlevo"
-
-#
-#
-#
-#
-#
-msgid "Leg"
-msgstr "Úsek"
-
-#
-#
-#
-#
-#
-msgid "Leg: from "
-msgstr "Úsek: z"
-
-#
-#
-#
-#
-msgid "Legend"
-msgstr "Legenda"
-
-#
-#
-#
-#
-#
-msgid "Length"
-msgstr "Délka"
-
-#
-msgid "Length Over All (m)"
-msgstr "Celková délka (m)"
-
-#
-#
-#
-#
-#
-msgid "License"
-msgstr "Licence"
-
-#
-#
-#
-#
-#
-msgid "Light"
-msgstr "Světlo"
-
-#
-#
-#
-#
-#
-msgid "Light Descriptions"
-msgstr "Popisy světel"
-
-#
-#
-#
-#
-#
-msgid "Light Gray"
-msgstr "Světle šedá"
-
-#
-#
-#
-msgid "Light Vessel/Rig"
-msgstr "Plovoucí světlo"
-
-#
-#
-#
-msgid "Light w/Sectors"
-msgstr "Sektorové světlo"
-
-#
-#
-#
-msgid "Limit range: NM"
-msgstr "Omezit rozsah: NM"
-
-#
-#
-#
-#
-#
-msgid "Link"
-msgstr "Odkaz"
-
-#
-#
-#
-#
-#
-msgid "Link Properties"
-msgstr "Vlastnosti odkazu"
-
-#
-#
-#
-#
-#
-msgid "Link description"
-msgstr "Popis odkazu"
-
-#
-msgid "Link not complete, can't be saved."
-msgstr "Odkaz není kompletní, nemůže být uložen."
-
-#
-#
-#
-#
-#
-msgid "Links"
-msgstr "Odkazy"
-
-#
-msgid "Links are opened for editing."
-msgstr "Odkazy jsou otevírány pro úpravy."
-
-#
-msgid "Links are opened in the default browser."
-msgstr "Linky jsou otevírány ve výchozí aplikaci."
-
-#
-#
-#
-msgid "Liquified gas tanker"
-msgstr "Tanker s kapalným plynem"
-
-#
-#
-#
-#
-#
-msgid "List contents"
-msgstr "Vypiš obsah"
-
-#
-#
-#
-#
-#
-msgid "Loaded Charts"
-msgstr "Nahrané mapy"
-
-#
-#
-#
-msgid "Local @ PC"
-msgstr "Lokální na PC"
-
-#
-msgid "Local file..."
-msgstr "Lokální soubor..."
-
-#
-#
-#
-#
-#
-msgid "Lock Waypoints (Unless waypoint property dialog visible)"
-msgstr "Zamknout trasové body dokud není zobrazen dialog vlastností trasového bodu"
-
-#
-#
-#
-msgid "Long Tow"
-msgstr "Dlouhý vlek"
-
-#
-msgid "Long dash"
-msgstr "Dlouhé šrafy"
-
-#
-#
-#
-#
-#
-msgid "Longitude"
-msgstr "Zem. délka"
-
-#
-#
-#
-#
-#
-msgid "Look Ahead Mode"
-msgstr "Mód Pohled dopředu"
-
-#
-#
-#
-#
-#
-msgid "Lost Targets"
-msgstr "Ztracené cíle"
-
-#
-#
-#
-#
-#
-msgid "Low"
-msgstr "Nízký"
-
-#
-#
-#
-msgid "Lt"
-msgstr "Sv"
-
-#
-#
-#
-msgid "Lt sect."
-msgstr "Sv sekt."
-
-#
-#
-#
-msgid "LtV/Rig"
-msgstr ""
-
-#
-#
-#
-msgid "M/T"
-msgstr ""
-
-#
-#
-#
-msgid "M/V"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "MAN OVERBOARD"
-msgstr "MUŽ PŘES PALUBU"
-
-#
-#
-#
-#
-msgid "MMSI"
-msgstr "MMSI"
-
-#
-#
-#
-msgid "M_COVR ID"
-msgstr ""
-
-#
-#
-msgid "Magenta"
-msgstr "Fialová"
-
-#
-#
-#
-#
-#
-msgid "Mariner's Standard"
-msgstr "Mariner's Standard"
-
-#
-#
-#
-#
-#
-msgid "Mariners Standard"
-msgstr "Mariners Standard"
-
-#
-#
-#
-#
-#
-msgid "Mark targets as lost after (min)"
-msgstr "Označit cíle za ztracené po (min)"
-
-#
-#
-#
-#
-#
-msgid "Marks"
-msgstr "Značky"
-
-#
-#
-#
-#
-#
-msgid "Max Detail Here"
-msgstr "Maximální detail zde"
-
-#
-#
-#
-#
-#
-msgid "Measure"
-msgstr "Měření"
-
-#
-#
-#
-#
-#
-msgid "Measure Off"
-msgstr "Vypnout měření"
-
-#
-#
-#
-msgid "Med/V"
-msgstr ""
-
-#
-#
-#
-msgid "Medical Transport"
-msgstr "Lékařský transport"
-
-#
-msgid "Medium"
-msgstr "Střední"
-
-#
-#
-#
-#
-#
-msgid "Mercator"
-msgstr "Mercator"
-
-#
-#
-#
-#
-#
-msgid "Merge waypoint?"
-msgstr "Sloučit trasový bod?"
-
-#
-#
-#
-#
-#
-msgid "Merge waypoints?"
-msgstr "Sloučit trasové body?"
-
-#
-msgid "Message accepted"
-msgstr "Zpráva přijata"
-
-#
-msgid "Message filtered and dropped"
-msgstr "Zpráva odfiltrována a zahozena"
-
-#
-#
-#
-#
-#
-msgid "Meters"
-msgstr "Metry"
-
-#
-#
-#
-msgid "Mil/V"
-msgstr ""
-
-#
-#
-#
-msgid "Military Vessel"
-msgstr "Vojenské plavidlo"
-
-#
-msgid "Minimum Screen Size (mm)"
-msgstr "Nejmenší velikost obrazovky (mm)"
-
-#
-msgid "Miscellaneous Options"
-msgstr "Různá nastavení"
-
-#
-#
-#
-msgid "Moored"
-msgstr "Na kotvě"
-
-#
-#
-#
-msgid "Motor freighter"
-msgstr ""
-
-#
-#
-#
-msgid "Motor freighter pushing at least one tank-ship"
-msgstr ""
-
-#
-#
-#
-msgid "Motor freighter pushing one or more freighters"
-msgstr ""
-
-#
-#
-#
-msgid "Motor freighter with one or more ships alongside"
-msgstr ""
-
-#
-#
-#
-msgid "Motor freighter with tanker"
-msgstr ""
-
-#
-#
-#
-msgid "Motor freighter, tug"
-msgstr ""
-
-#
-#
-#
-msgid "Motor tanker"
-msgstr ""
-
-#
-#
-#
-msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
-msgstr ""
-
-#
-#
-#
-msgid "Motor tanker, liquid cargo, type C"
-msgstr ""
-
-#
-#
-#
-msgid "Motor tanker, liquid cargo, type N"
-msgstr ""
-
-#
-#
-#
-msgid "Motor tanker, tug"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "Move Boat Here"
-msgstr "Posunout sem loď"
-
-#
-#
-#
-#
-#
-msgid "Move Waypoint"
-msgstr "Posunout trasový bod"
-
-#
-msgid "NMEA"
-msgstr ""
-
-#
-msgid "NMEA 0183"
-msgstr ""
-
-#
-msgid "NMEA 2000"
-msgstr ""
-
-#
-msgid "NMEA Debug Window"
-msgstr ""
-
-#
-msgid "NMi"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "Name"
-msgstr "Jméno"
-
-#
-#
-#
-#
-#
-msgid "Nautical Miles"
-msgstr "Námořní míle"
-
-#
-#
-#
-#
-#
-msgid "Nav Status"
-msgstr "Nav status"
-
-#
-msgid "Navigate To Here"
-msgstr "Navigovat sem"
-
-#
-msgid "Navigate To This"
-msgstr "Navigovat sem"
-
-#
-#
-#
-#
-#
-msgid "Net"
-msgstr "Síť"
-
-#
-msgid "Network"
-msgstr "Síť"
-
-#
-#
-#
-#
-#
-msgid "New Chart Group"
-msgstr "Nová skupina map"
-
-#
-msgid "New Group..."
-msgstr "Nová skupina"
-
-#
-#
-#
-#
-#
-msgid "Next"
-msgstr "Další"
-
-#
-#
-#
-msgid "Next tide event"
-msgstr "Příští přílivová událost"
-
-#
-msgid "No"
-msgstr "Ne"
-
-#
-#
-#
-#
-#
-msgid "No CPA Calculation if target range is greater than (NMi)"
-msgstr "Žádný výpočet CPA, pokud vzdálenost cíle je větší než (nm)"
+#: src/chart1.cpp:1760
+msgid "Remaining time : "
+msgstr "Zbývající čas"
 
 #
 #
 #
 #
 #
-msgid "No Chart Available"
-msgstr "Žádná mapa není k dispozici"
+#: src/chart1.cpp:1761
+#: src/chart1.cpp:4176
+msgid "OpenCPN Chart Update"
+msgstr "Aktualizace map OpenCPN"
 
 #
 #
 #
 #
 #
+#: src/chart1.cpp:1778
 msgid ""
 "No Charts Installed.\n"
 "Please select chart folders in Options > Charts."
@@ -3781,1363 +444,39 @@ msgstr ""
 "Vyber prosím složky map v Nastavení->Mapy."
 
 #
-msgid "No, I don't want to hide it."
-msgstr "Ne, nechci to schovat."
-
-#
-msgid "No, and permanently remove the option to hide it."
-msgstr "Ne, a navždy odstraň možnost to schovat."
-
-#
-#
-#
-msgid "No. of items"
-msgstr "Počet kusů"
-
-#
-msgid "None"
-msgstr "Žádný"
-
-#
-#
-#
-msgid "North Up Mode"
-msgstr "Mód sever nahoru"
-
-#
-#
-#
-msgid "Not Under Command"
-msgstr "Neovladatelné"
-
-#
-#
-#
-#
-#
-msgid "OK"
-msgstr "OK"
-
-#
-#
-#
-#
-#
-msgid "Object Query"
-msgstr "Dotaz na objekt"
-
-#
-#
-#
-#
-#
-msgid "Object Query..."
-msgstr "Dotaz na objekt..."
-
-#
-#
-#
-msgid "Object, not otherwise specified"
-msgstr "Objekt, jinak nespecifikován"
-
-#
-#
-#
-msgid "Object, towed, not otherwise specified"
-msgstr "Objekt, tažený, jinak nespecifikován"
-
-#
-#
-#
-#
-#
-msgid "ObjectQuery"
-msgstr "Dotaz na objekt"
-
-#
-#
-#
-#
-#
-msgid "Ok"
-msgstr "Ok"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Alert"
-msgstr "Výstraha OpenCPN"
-
-#
-#
-#
-msgid "OpenCPN CM93 Cell Offset Adjustments"
-msgstr "OpenCPN Nastavení posunu buněk CM93"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Chart Add...."
-msgstr "Přidávání map OpenCPN...."
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Chart Scan...."
-msgstr "Sken map OpenCPN...."
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Chart Update"
-msgstr "Aktualizace map OpenCPN"
-
-#
-#
-#
-msgid "OpenCPN Converting Track to Route...."
-msgstr "OpenCPN převádí stopu na trasu...."
-
-#
-#
-#
-msgid "OpenCPN Directory Scan...."
-msgstr "Sken složek OpenCPN...."
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Group Notice"
-msgstr "OpenCPN skupinová zpráva"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Info"
-msgstr "Informace OpenCPN"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Remove Waypoint"
-msgstr "OpenCPN odstranit trasový bod"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Route"
-msgstr "OpenCPN Trasa"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Route Create"
-msgstr "Vytvořit OpenCPN Trasu"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Route Delete"
-msgstr "OpenCPN Smazat trasu"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN S57 SENC File Create..."
-msgstr "Vytváření souboru S57 SENC..."
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Track"
-msgstr "OpenCPN stopa"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Track Delete"
-msgstr "Smazat OpenCPN stopu"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN Waypoint"
-msgstr "OpenCPN Trasový bod"
-
-#
-#
-#
-#
-#
-msgid "OpenCPN cannot start. "
-msgstr "OpenCPN nelze spustit."
-
-#
-#
-#
-#
-#
-msgid "OpenCPN info"
-msgstr "OpenCPN Informace"
-
-#
-#
-#
-#
-#
-msgid "Options"
-msgstr "Nastavení"
-
-#
-#
-#
-#
-#
-msgid "Other"
-msgstr "Jiný"
-
-#
-msgid "Other - Define in associated text field"
-msgstr "Jiný - Definuj v přidruženém textovém poli"
-
-#
-msgid "Out"
-msgstr "Ven"
-
-#
-msgid "Output"
-msgstr "Výstup"
-
-#
-#
-#
-#
-#
-msgid "Output Message"
-msgstr "Výstupní zpráva"
-
-#
-msgid "Output filtering"
-msgstr "Filtrování výstupu"
-
-#
-msgid "Output on this port ( as Autopilot or NMEA Repeater)"
-msgstr "Výstup na tomto portu (jako autopilot nebo NMEA repeater)"
-
-#
-#
-#
-#
-#
-msgid "OverZoom"
-msgstr "OverZoom"
-
-#
-#
-#
-#
-#
-msgid "Overwrite existing file?"
-msgstr "Přepsat existující soubor?"
-
-#
-#
-#
-#
-#
-msgid "Own Ship"
-msgstr "Vlastní loď"
-
-#
-#
-#
-msgid "P/V"
-msgstr ""
-
-#
-#
-#
-msgid "PC/V"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "Paper Chart"
-msgstr "Papírová mapa"
-
-#
-#
-#
-#
-#
-msgid "Parameters"
-msgstr "Parametry"
-
-#
-#
-#
-msgid "Pass/V"
-msgstr ""
-
-#
-#
-#
-msgid "Passenger Ship"
-msgstr "Loď s pasažéry"
-
-#
-#
-#
-msgid "Passenger ship without accomodation"
-msgstr "Loď s pasažéry bez ubytování"
-
-#
-#
-#
-msgid "Passenger ship, ferry, cruise ship, red cross ship"
-msgstr "Loď s pasažéry, trajekt, výletní loď, loď červeného kříže"
-
-#
-#
-#
-#
-#
-msgid "Paste Route"
-msgstr "Vložit trasu"
-
-#
-#
-#
-#
-#
-msgid "Paste Track"
-msgstr "Vložit stopu"
-
-#
-#
-#
-#
-#
-msgid "Paste Waypoint"
-msgstr "Vložit trasový bod"
-
-#
-msgid "Pause"
-msgstr "Pozastavit"
-
-#
-#
-#
-msgid "Pilot Vessel"
-msgstr "Loď lodivoda"
-
-#
-#
-#
-#
-#
-msgid "Plain"
-msgstr "Obyčejný"
-
-#
-#
-#
-#
-#
-msgid "Plan Speed"
-msgstr "Plánovaná rychlost"
-
-#
-#
-#
-#
-#
-msgid "Plan speed (Kts)"
-msgstr "Plánovaná rychlost (Kts)"
-
-#
-#
-#
-#
-#
-msgid "Play Ships Bells"
-msgstr "Hraj lodní zvony"
-
-#
-#
-#
-#
-#
-msgid "Play Sound on CPA/TCPA Alerts"
-msgstr "Hrát zvuk pří výstraze CPA/TCPA"
-
-#
-#
-#
-#
-#
-msgid "Please restart OpenCPN to activate language or style changes."
-msgstr "Prosím restartuj OpenCPN pro aktivaci nového jazyka nebo stylu."
-
-#
-#
-#
-#
-#
-msgid "Pleasure craft"
-msgstr "Rekreační plavidlo"
-
-#
-#
-#
-msgid "Pleasure craft, longer than 20 metres"
-msgstr "Rekreační plavidlo, delší než 20m"
-
-#
-#
-#
-#
-msgid "Plugins"
-msgstr "Zásuvné moduly"
-
-#
-#
-#
-#
-#
-msgid "Points"
-msgstr "Body"
-
-#
-#
-#
-msgid "Pollution Control Vessel"
-msgstr "Plavidlo pro kontrolu znečištění"
-
-#
-#
-#
-#
-msgid "Polyconic"
-msgstr "Polyconic"
-
-#
-#
-#
-#
-#
-msgid "Port"
-msgstr "Levobok"
-
-#
-#
-#
-msgid "Port Hand"
-msgstr "Levobok"
-
-#
-#
-#
-msgid "Port Hand Mark"
-msgstr "Levoboční značka"
-
-#
-#
-#
-msgid "Port Tender"
-msgstr "Přístavní člun"
-
-#
-#
-#
-#
-#
-msgid "Position"
-msgstr "Pozice"
-
-#
-#
-#
-#
-#
-msgid "Position Report"
-msgstr "Report pozice      "
-
-#
-#
-#
-msgid "Pref. Chnl"
-msgstr "Hlav. kanál"
-
-#
-#
-#
-msgid "Preferences"
-msgstr "Preference"
-
-#
-#
-#
-msgid "Preferred Channel Port Hand"
-msgstr "Hlavní kanál na levoboku"
-
-#
-#
-#
-msgid "Preferred Channel Starboard Hand"
-msgstr "Hlavní kanál na pravoboku"
-
-#
-#
-#
-#
-#
-msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr "Připrav GPS pro Nahrání tras/trasových bodů a stiskni Poslat..."
-
-#
-#
-#
-#
-#
-msgid "Preserve Scale when Switching Charts"
-msgstr "Zachovat měřítko při změně mapy"
-
-#
-#
-#
-#
-#
-msgid "Prev"
-msgstr "Předchozí"
-
-#
-#
-#
-#
-#
-msgid "Preview:"
-msgstr "Náhled:"
-
-#
-#
-#
-#
-#
-msgid "Print Chart"
-msgstr "Vytiskni mapu"
-
-#
-#
-#
-#
-#
-msgid "Print Route"
-msgstr "Tiskni trasu"
-
-#
-#
-#
-#
-#
-msgid "Print Route Selection"
-msgstr "Výběr tisku trasy"
-
-#
-msgid "Priority"
-msgstr "Priorita"
-
-#
-msgid "Problem discovered"
-msgstr "Objeven problém"
-
-#
-msgid "Proceed to this location - await instructions"
-msgstr "Pokračuj na toto místo - vyčkej na instrukce"
-
-#
-#
-#
-#
-#
-msgid "Processing Waypoints..."
-msgstr "Zpracovávám trasové body..."
-
-#
-#
-#
-#
-#
-msgid "Progress..."
-msgstr "Průběh..."
-
-#
-#
-#
-#
-#
-msgid "Properties"
-msgstr "Vlastnosti"
-
-#
-#
-#
-#
-#
-msgid "Properties..."
-msgstr "Vlastnosti..."
-
-#
-msgid "Protocol"
-msgstr "Protokol"
-
-#
-#
-#
-msgid "Pushboat, single"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, eight barges at least one tanker or gas barge"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, eight cargo barges"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, five barges at least one tanker or gas barge"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, five cargo barges"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, four barges at least one tanker or gas barge"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, four cargo barges"
-msgstr ""
-
-#
-#
-msgid "Pushtow, nine or more barges"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, nine or more barges at least one tanker or gas barge"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, one cargo barge"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, one tank/gas barge"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, seven barges at least one tanker or gas barge"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, seven cargo barges"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, six barges at least one tanker or gas barge"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, six cargo barges"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, three barges at least one tanker or gas barge"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, three cargo barges"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, two barges at least one tanker or gas barge"
-msgstr ""
-
-#
-#
-#
-msgid "Pushtow, two cargo barges"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "Question"
-msgstr "Dotaz"
-
-#
-#
-#
-msgid "RACON"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "Range"
-msgstr "Rozsah"
-
-#
-#
-#
-msgid "Real"
-msgstr "Skutečný"
-
-#
-#
-#
-#
-#
-msgid "Real (On Position)"
-msgstr "Skutečný (Na pozici)"
-
-#
-msgid "Real Scale Bitmap"
-msgstr "Bitová mapa ve skutečném měřítku"
-
-#
-msgid "Real Scale Vector"
-msgstr "Vektor ve skutečném měřítku"
-
-#
-#
-#
-#
-#
-msgid "Real(Off Position)"
-msgstr "Skutečný (Mimo pozici)"
-
-#
-#
-#
-#
-#
-msgid "Rebuilding chart database from configuration file entries..."
-msgstr "Aktualizovat databázi map ze záznamů v konfiguračním souboru...."
-
-#
-#
-msgid "Red"
-msgstr "Červená"
-
-#
-#
-#
-msgid "Red cross ship"
-msgstr "Plavidlo červeného kříže"
-
-#
-msgid "Redo"
-msgstr "Vykonat znovu"
-
-#
-msgid "Reduce Data Precision"
-msgstr "Snížit přesnost dat"
-
-#
-msgid "Reduce Data..."
-msgstr "Redukovat data..."
-
-#
-msgid "Reduced Detail at Small Scale"
-msgstr "Snížit detail u malého měřítka"
-
-#
-#
-#
-msgid "Ref. Pt"
-msgstr "Ref. bod"
-
-#
-#
-#
-#
-#
-msgid "Reference Point"
-msgstr "Referenční bod"
-
-#
-#
-#
-#
-#
-msgid "Reference Station :"
-msgstr "Referenční stanice:"
-
-#
-msgid "Reject"
-msgstr "Odmítnout"
-
-#
-#
-#
-msgid "Remaining time : "
-msgstr "Zbývající čas"
-
-#
-#
-msgid "Remove Chart"
-msgstr "Odstranit mapu"
-
-#
-#
-#
-#
-#
-msgid "Remove Connection"
-msgstr "Odstranit spojení"
-
-#
-#
-#
-#
-#
-msgid "Remove Selected"
-msgstr "Odstranit vybrané"
-
-#
-#
-#
-#
-#
-msgid "Remove from Route"
-msgstr "Odstranit z trasy"
-
-#
-#
-#
-#
-#
-msgid "Remove lost targets after (min)"
-msgstr "Odstranit ztracené cíle po (min)"
-
-#
-#
-#
-#
-#
-msgid "Rename Waypoints?"
-msgstr "Přejmenovat trasové body"
-
-#
-msgid "Report Age"
-msgstr "Stáří reportu"
-
-#
-msgid "Report as of"
-msgstr "Report z"
-
-#
-msgid "Report from ship: Icing info"
-msgstr "Zpráva z lodě: Info o zalednění"
-
-#
-msgid "Report from ship: Miscellaneous information - define in Associated text field"
-msgstr "Zpráva z lodě: Různé informace: definuj v přidruženém textovém poli"
-
-#
-#
-#
-msgid "Reserved 11"
-msgstr "Rezervováno 11"
-
-#
-#
-#
-msgid "Reserved 12"
-msgstr "Rezervováno 12"
-
-#
-#
-#
-msgid "Reserved 13"
-msgstr "Rezervováno 13"
-
-#
-#
-#
-msgid "Reserved 14"
-msgstr "Rezervováno 14"
-
-#
-msgid "Restricted Area: Active military OPAREA"
-msgstr "Zákázaná oblast: Aktivní vojenská OPAREA"
-
-#
-msgid "Restricted Area: Drifting Mines"
-msgstr "Zákázaná oblast: Plovoucí miny"
-
-#
-msgid "Restricted Area: Entry approval required prior to transit"
-msgstr "Zákázaná oblast: Před proplutím je vyžadováno povolení vstupu"
-
-#
-msgid "Restricted Area: Entry prohibited"
-msgstr "Zákázaná oblast: Vplutí zakázáno"
-
-#
-msgid "Restricted Area: Firing - danger area."
-msgstr "Zákázaná oblast: Střelba - nebezpečná oblast"
-
-#
-msgid "Restricted Area: Fishing prohibited"
-msgstr "Zákázaná oblast: Zákaz rybolovu"
-
-#
-msgid "Restricted Area: No anchoring."
-msgstr "Zákázaná oblast: Zákaz kotvení"
-
-#
-#
-#
-msgid "Restricted Manoeuvrability"
-msgstr "Omezená manévrovatelnost"
-
-#
-msgid "Resume"
-msgstr "Obnovit"
-
-#
-#
-#
-#
-msgid "Retrieving initial Chart Directory set from Windows Registry"
-msgstr "Získávám úvodní nastavení složky map z registru Windows."
-
-#
-#
-#
-#
-msgid "Retrieving initial language selection from Windows Registry"
-msgstr "Získávám úvodní nastavení jazyka z registru Windows"
-
-#
-#
-#
-#
-#
-msgid "Reverse..."
-msgstr "Otočit..."
-
-#
-#
-#
-#
-#
-msgid "Right"
-msgstr "Vpravo"
-
-#
-#
-#
-#
-msgid "Rollover"
-msgstr "Rollover"
-
-#
-msgid "Rouge or suspicious vessel"
-msgstr "Lump nebo podezřelé plavidlo"
-
-#
-#
-#
-#
-#
-msgid "Route"
-msgstr "Trasa"
-
-#
-#
-#
-#
-#
-msgid "Route Manager"
-msgstr "Správce tras"
-
-#
-#
-#
-#
-#
-msgid "Route Name"
-msgstr "Název trasy"
-
-#
-#
-#
-#
-#
-msgid "Route Print"
-msgstr "Tisk trasy"
-
-#
-#
-#
-#
-#
-msgid "Route Properties"
-msgstr "Vlastnosti trasy"
-
-#
-#
-#
-#
-msgid "Route Uploaded successfully."
-msgstr "Trasa nahrána úspěšně."
-
-#
-#
-#
-#
-msgid "Route from Track"
-msgstr "Trasa ze stopy"
-
-#
-#
-#
-#
-#
-msgid "Route: "
-msgstr "Trasa:"
-
-#
-msgid "Route: Alternative route"
-msgstr "Trasa: Alternativní trasa"
-
-#
-msgid "Route: Recommended route"
-msgstr "Trasa: Doporučená trasa"
-
-#
-msgid "Route: Recommended route through ice"
-msgstr "Trasa: Doporučená trasa skrz led"
-
-#
-#
-#
-msgid "RouteLegInfoRollover"
-msgstr "RouteLegInfoRollover"
-
-#
-#
-#
-#
-#
-msgid "Routes"
-msgstr "Trasy"
-
-#
-#
-#
-msgid "S/V"
-msgstr ""
-
 #
 #
 #
-msgid "SAR/V"
-msgstr ""
-
-#
-msgid "SART"
-msgstr ""
-
-#
-#
-#
-#
-msgid "SOG COG"
-msgstr "SOG COG"
-
-#
-#
-#
-msgid "Safe Water"
-msgstr "Bezpečná voda"
-
-#
-msgid "Safety Broadcast Message"
-msgstr "Bezpečnostní hlášení"
-
-#
-#
-#
-#
-#
-msgid "Safety Depth"
-msgstr "Bezpečná hloubka"
-
-#
-#
-#
-msgid "Sailing Vessel"
-msgstr "Plachetnice"
-
-#
-#
-#
-#
-#
-#, c-format
-msgid "Scale %4.0f"
-msgstr "Měřítko %4.0f"
-
-#
-#
-#
-#
-#
-#, c-format
-msgid "Scale %4.0f (%1.1fx)"
-msgstr "Měřítko %4.0f (%1.1fx)"
-
-#
-#
-#
-#
-#
-#, c-format
-msgid "Scale %4.0f (%1.2fx)"
-msgstr "Měřítko %4.0f (%1.2fx)"
-
-#
-#
-#
-#
-#
-msgid "Scale In"
-msgstr "Přiblížit"
-
-#
-#
-#
-#
-#
-msgid "Scale Out"
-msgstr "Oddálit"
-
-#
-#
-msgid "Scan Charts and Update Database"
-msgstr "Projít mapy a aktualizovat databázi"
-
-#
-#
-#
-msgid "Search and Rescue Vessel"
-msgstr "SAR plavidlo"
-
-#
-msgid "Seatalk"
-msgstr ""
-
-#
-msgid "Security Alert - Level 1"
-msgstr "Bezpečnostní upozornění - Úroveň 1"
-
-#
-msgid "Security Alert - Level 2"
-msgstr "Bezpečnostní upozornění - Úroveň 2"
-
-#
-msgid "Security Alert - Level 3"
-msgstr "Bezpečnostní upozornění - Úroveň 3"
-
-#
-msgid "See the log file at "
-msgstr "Podívej se do logu na"
-
-#
-#
-#
-#
-#
-msgid "Select Alert Sound"
-msgstr "Vybrat zvuk výstrah"
-
-#
-#
-#
-#
-#
-msgid "Select All"
-msgstr "Vybrat vše"
-
-#
-#
-#
-#
-#
-msgid "Select Sound File"
-msgstr "Vybrat zvukový soubor"
-
-#
-msgid "Select Tide/Current Data"
-msgstr "Vyber data přílivu/proudu"
-
-#
-msgid ""
-"Select the maximum error allowed (in meters)\n"
-"after data reduction:"
-msgstr ""
-"Vyber maximální povolenou chybu (v metrech)\n"
-"po redukci dat:"
-
-#
-#
-#
-#
-#
-msgid "Send"
-msgstr "Poslat"
-
-#
-#
-#
-#
-#
-msgid "Send Route To GPS"
-msgstr "Odeslat trasu do GPS"
-
-#
-#
-#
-#
-#
-msgid "Send To GPS..."
-msgstr "Odeslat do GPS..."
-
-#
-#
-#
-#
-#
-msgid "Send to GPS"
-msgstr "Odeslat do GPS"
-
-#
-#
-#
-#
-#
-msgid "Sentence Filter"
-msgstr "Filtr vět"
-
-#
-msgid "Serial"
-msgstr "Sériový"
-
-#
-#
-#
-msgid "Service vessel, police patrol, port service"
-msgstr ""
-
 #
-msgid "Set"
-msgstr "Nastavit"
+#: src/chart1.cpp:2351
+#: src/chcanv.cpp:14971
+msgid "AIS Target Query"
+msgstr "Dotaz na cíl AIS"
 
 #
 #
 #
 #
 #
-msgid "Set Anchor Watch"
-msgstr "Nastavit kotevní alarm"
+#: src/chart1.cpp:2428
+msgid "Zoom In"
+msgstr "Zvětšit"
 
 #
 #
 #
 #
 #
-msgid "Shallow Depth"
-msgstr "Mělčina"
+#: src/chart1.cpp:2434
+msgid "Zoom Out"
+msgstr "Zmenšit"
 
 #
 #
 #
 #
 #
+#: src/chart1.cpp:2443
 msgid "Shift to Larger Scale Chart"
 msgstr "Posun na mapu většího měřítka"
 
@@ -5146,102 +485,34 @@ msgstr "Posun na mapu většího měřítka"
 #
 #
 #
+#: src/chart1.cpp:2451
 msgid "Shift to Smaller Scale Chart"
 msgstr "Posun na mapu menšího měřítka"
 
 #
-msgid "Ship Icon Type"
-msgstr "Typ ikony lodě"
+#
+#
+#
+#
+#: src/chart1.cpp:2459
+msgid "Create Route"
+msgstr "Vytvořit trasu"
 
 #
 #
 #
 #
 #
-msgid "Ships"
-msgstr "Lodě"
+#: src/chart1.cpp:2466
+msgid "Auto Follow"
+msgstr "Automaticky následovat"
 
 #
 #
 #
 #
 #
-msgid "Short dash"
-msgstr "Krátké šrafy"
-
-#
-#
-#
-#
-#
-msgid "Show"
-msgstr "Ukaž"
-
-#
-#
-#
-#
-#
-msgid "Show AIS Targets"
-msgstr "Zobrazit AIS cíle"
-
-#
-#
-#
-#
-#
-msgid "Show AIS targets real size"
-msgstr "Zobrazit skutečnou velikost AIS cílů"
-
-#
-#
-#
-#
-#
-msgid "Show CPA/TCPA Alert Dialog"
-msgstr "Zobrazit dialog výstrah CPA/TCPA"
-
-#
-#
-#
-#
-#
-msgid "Show Chart Outlines"
-msgstr "Zobrazit obrysy mapy"
-
-#
-#
-#
-#
-#
-msgid "Show Current Information"
-msgstr "Ukaž info o proudu"
-
-#
-#
-#
-#
-#
-msgid "Show Currents"
-msgstr "Ukaž proudy"
-
-#
-#
-#
-#
-#
-msgid "Show Depth Units"
-msgstr "Zobrazit jednotky hloubky"
-
-#
-msgid "Show Distance from each Waypoint to the next one."
-msgstr "Zobraz vzdálenost od každého trasového bodu k dalšímu."
-
-#
-#
-#
-#
-#
+#: src/chart1.cpp:2479
 msgid "Show ENC Text"
 msgstr "Ukaž ENC text"
 
@@ -5250,575 +521,207 @@ msgstr "Ukaž ENC text"
 #
 #
 #
-msgid "Show Grid"
-msgstr "Zobrazit mřížku"
-
-#
-msgid "Show Highway"
-msgstr "Ukaž dálnici"
-
-#
-#
-#
-#
-#
-msgid "Show Lat/Long as"
-msgstr "Zobrazit zem. šířku a délku jako"
+#: src/chart1.cpp:2487
+#: src/chart1.cpp:2567
+#: src/chart1.cpp:3249
+msgid "Hide AIS Targets"
+msgstr "Schovat AIS cíle"
 
 #
 #
 #
 #
 #
-msgid "Show NMEA Debug Window"
-msgstr "Zobrazit okno toku dat NMEA"
-
-#
-#
-#
-#
-msgid "Show Skewed Raster Charts as North-Up"
-msgstr "Zobrazit otočené rasterové mapy jako Sever-Nahoru"
+#: src/chart1.cpp:2494
+msgid "Show Currents"
+msgstr "Ukaž proudy"
 
 #
 #
 #
 #
 #
-msgid "Show Status Bar"
-msgstr "Zobrazit stavovou řádku"
-
-#
-#
-#
-#
-#
-msgid "Show Target CPA"
-msgstr "Zobrazit CPA cíle"
-
-#
-#
-#
-#
-#
-msgid "Show This Chart"
-msgstr "Ukaž tuto mapu"
-
-#
-#
-#
-#
-#
-msgid "Show Tide Information"
-msgstr "Ukaž info o přílivu"
-
-#
-#
-#
-#
-#
+#: src/chart1.cpp:2500
 msgid "Show Tides"
 msgstr "Ukaž přílivy"
 
 #
 #
 #
-msgid "Show Toolbar in Fullscreen Mode"
-msgstr "Zobraz toolbar v režimu celé obrazovky"
+#
+#
+#: src/chart1.cpp:2506
+msgid "Print Chart"
+msgstr "Vytiskni mapu"
 
 #
 #
 #
 #
 #
-msgid "Show WPT names"
-msgstr "Zobraz jména trasových bodů"
+#: src/chart1.cpp:2512
+#: src/routemanagerdialog.cpp:423
+msgid "Route Manager"
+msgstr "Správce tras"
 
 #
 #
 #
 #
 #
-msgid "Show Waypoint description."
-msgstr "Ukaž popis trasového bodu."
+#: src/chart1.cpp:2519
+msgid "Toggle Tracking"
+msgstr "Přepni záznam stopy"
 
 #
 #
 #
 #
 #
-msgid "Show Waypoint name."
-msgstr "Ukaž jméno trasového bodu."
+#: src/chart1.cpp:2526
+msgid "Change Color Scheme"
+msgstr "Změň barevné schéma"
 
 #
 #
 #
 #
 #
-msgid "Show Waypoint position."
-msgstr "Ukaž pozici trasového bodu."
+#: src/chart1.cpp:2533
+msgid "Drop MOB Marker"
+msgstr "Umístit zde značku MOB"
 
 #
-msgid "Show area notices (from AIS binary messages)"
-msgstr "Ukázat oblastní zprávy (z binárních AIS zpráv)"
-
-#
-msgid "Show course from each Waypoint to the next one. "
-msgstr "Ukaž kurs od každého trasového bodu k dalšímu."
-
-#
-#
-#
-#
-#
-msgid "Show name"
-msgstr "Zobraz jméno"
+#: src/chart1.cpp:2533
+msgid " (Ctrl-Space)"
+msgstr " (Ctrl-Mezerník)"
 
 #
 #
 #
 #
 #
-msgid "Show on chart"
-msgstr "Zobrazit na mapě"
+#: src/chart1.cpp:2571
+#: src/chart1.cpp:3251
+msgid "Show AIS Targets"
+msgstr "Zobrazit AIS cíle"
+
+#
+#: src/chart1.cpp:2839
+msgid "Anchorage created "
+msgstr "Kotviště vytvořeno"
 
 #
 #
 #
 #
 #
-msgid "Show radar rings"
-msgstr "Zobrazit radarové kruhy"
-
-#
-#
-#
-#
-#
-msgid "Show target COG predictor arrow, length (min)"
-msgstr "Ukázat šipky COG cílů v délce (min)"
-
-#
-#
-#
-#
-#
-msgid "Show target tracks, length (min)"
-msgstr "Ukázat stopy cílů v délce (min)"
-
-#
-#
-#
-#
-#
-msgid "Shows the font preview."
-msgstr "Ukázat náhled fontu."
-
-#
-#
-#
-#
-#
-msgid "Simplified"
-msgstr "Zjednodušený"
-
-#
-#
-msgid "Smooth Panning / Zooming"
-msgstr "Plynulé tažení a přibližování"
-
-#
-#
-#
-#
-msgid "SoG"
-msgstr "SoG"
-
-#
-#
-#
-#
-#
-msgid "Solid"
-msgstr "Plný"
-
-#
-#, c-format
-msgid "Sound file '%s' is in unsupported format."
-msgstr "Zvukový soubor '%s' je v nepodporovaném formátu."
-
-#
-#
-#
-#
-#
-msgid "Spare"
-msgstr "Rezerva"
-
-#
-#
-#
-msgid "Special"
-msgstr "Speciální"
-
-#
-#
-#
-#
-#
-msgid "Special Mark"
-msgstr "Speciální značka"
-
-#
-#
-#
-#
-#
-msgid "Speed"
-msgstr "Rychlost"
-
-#
-#
-#
-#
-#
-msgid "Speed (Kts)"
-msgstr "Rychlost (Kts)"
-
-#
-#
-#
-#
-#
-msgid "Split Route"
-msgstr "Rozdělit trasu"
-
-#
-#
-#
-#
-#
-msgid "Split Track"
-msgstr "Rozdělit stopu"
-
-#
-#
-#
-#
-#
-msgid "Standard"
-msgstr "Standardní"
-
-#
-#
-#
-msgid "Starboard Hand Mark"
-msgstr "Pravoboční značka"
-
-#
-#
-#
-#
-#
-msgid "Start"
-msgstr "Start"
-
-#
-#
-#
-#
-#
+#: src/chart1.cpp:3003
 msgid "StatusBar"
 msgstr "Stavová řádka"
 
 #
-#
-#
-msgid "Stbd"
-msgstr "Pravo"
+#: src/chart1.cpp:3141
+msgid "Group \""
+msgstr "Skupina  \""
 
 #
-#
-#
-msgid "Stbd Hand"
-msgstr "Pravobok"
-
-#
-#
-#
-#
-#
-msgid "Style:"
-msgstr "Styl:"
+#: src/chart1.cpp:3143
+msgid "\" is empty, switching to \"All Active Charts\" group."
+msgstr "\" je prázdná, přepínám na skupinu \"Všechny aktivní mapy\"."
 
 #
 #
 #
 #
 #
-msgid "Supress Alerts for anchored/moored targets"
-msgstr "Potlačit výstrahy pro zakotvené/vyvázané cíle"
+#: src/chart1.cpp:3145
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN skupinová zpráva"
 
 #
 #
 #
 #
 #
-msgid "Symbolized"
-msgstr "Symbolizovaný"
+#: src/chart1.cpp:3320
+msgid "Chart1::Event...TCMgr Not Available"
+msgstr "Chart1::Event...TCMgr Není k dispozici"
 
 #
 #
 #
 #
 #
-#, fuzzy
-msgid "T"
-msgstr "Do"
+#: src/chart1.cpp:3442
+#: src/chart1.cpp:3489
+msgid "MAN OVERBOARD"
+msgstr "MUŽ PŘES PALUBU"
+
 #
 #
 #
-#
-#
-#, fuzzy
-msgid "TCP"
-msgstr "TCP"
+#: src/chart1.cpp:3456
+msgid "1.0 NM along COG"
+msgstr "1.0 NM podél COG"
 
 #
 #
 #
 #
-#
-msgid "TCPA"
-msgstr "TCPA"
-
-#
-#
-#
-msgid "Tankbarge"
-msgstr ""
-
-#
-#
-#
-msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
-msgstr ""
-
-#
-#
-#
-msgid "Tankbarge, gas"
-msgstr ""
-
-#
-#
-#
-msgid "Tankbarge, liquid cargo, type C"
-msgstr ""
-
-#
-#
-#
-msgid "Tankbarge, liquid cargo, type N"
-msgstr ""
-
-#
-#
-#
-msgid "Tanker"
-msgstr ""
-
-#
-#
-#
-msgid "Target Count"
-msgstr "Počet cílů"
-
-#
-#
-#
-#
-#
-msgid "Target List..."
-msgstr "Seznam cílů..."
-
-#
-#
-#
-#
-#
-msgid "Target Query..."
-msgstr "Dotaz na cíl..."
-
-#
-#
-#
-msgid "Target info"
-msgstr "Info o cíli"
-
-#
-#
-#
-#
-msgid "Temporary GOTO Route"
-msgstr "Dočasná trasa"
-
-#
-#
-#
-#
+#: src/chart1.cpp:3467
 msgid "Temporary MOB Route"
 msgstr "Dočasná trasa k MOB"
 
 #
 #
 #
-#
-msgid "Temporary layer"
-msgstr "Dočasná vrstva"
+#: src/chart1.cpp:3468
+msgid "Assumed 1 Mile Point"
+msgstr "Předpokládaný 1-mílový bod"
 
 #
 #
 #
 #
 #
-msgid "Tender"
-msgstr "Člun"
+#: src/chart1.cpp:3926
+msgid "Please restart OpenCPN to activate language or style changes."
+msgstr "Prosím restartuj OpenCPN pro aktivaci nového jazyka nebo stylu."
 
 #
 #
 #
 #
 #
-msgid "Test Alert Sound"
-msgstr "Otestovat zvuk výstrahy"
+#: src/chart1.cpp:5999
+msgid "Show This Chart"
+msgstr "Ukaž tuto mapu"
+
+#
+#
+#
+#: src/chart1.cpp:6004
+#: src/chcanv.cpp:8334
+msgid "Hide This Chart"
+msgstr "Schovej tuto mapu"
 
 #
 #
 #
 #
 #
-msgid "Testing"
-msgstr "Testování"
-
-#
-msgid ""
-"The Man Over Board button could be an important safety feature.\n"
-"Are you sure you want to hide it?"
-msgstr ""
-"Tlačítko Man Over Board může bít důležitá bezpečnostní pomůcka.\n"
-"Určitě ho chceš skrýt?"
+#: src/chart1.cpp:6249
+msgid "Chart Print"
+msgstr "Tisk mapy"
 
 #
 #
 #
 #
 #
-msgid "The Open Source Chart Plotter/Navigator"
-msgstr "Open Source Chart Plotter/ Navigator"
-
-#
-#, c-format
-msgid ""
-"The amount of data used by the track\n"
-" was reduced by %d%%."
-msgstr ""
-"Množství dat použitých stopou\n"
-" bylo sníženo o %d%%."
-
-#
-msgid ""
-"The currently running Track was not merged.\n"
-"You can merge it later when it is completed."
-msgstr ""
-"Momentálně zaznamenávaná stopa nebyla spojena.\n"
-"Můžeš ji napojit později, až skončí."
-
-#
-#
-#
-#
-#
-msgid "The font colour."
-msgstr "Barva fontu."
-
-#
-#
-#
-#
-#
-msgid "The font family."
-msgstr "Rodina fontů."
-
-#
-#
-#
-#
-#
-msgid "The font point size."
-msgstr "Velikost fontu v bodech."
-
-#
-#
-#
-#
-#
-msgid "The font style."
-msgstr "Styl fontu"
-
-#
-#
-#
-#
-#
-msgid "The font weight."
-msgstr "Váha fontu."
-
-#
-msgid "The necessary configuration files were not found. "
-msgstr "Potřebné konfigurační soubory nebyly nalezeny."
-
-#
-msgid "The settings for own ship real size are not correct:"
-msgstr "Nastavené skutečné velikosti vlastní lodi není korektní:"
-
-#
-msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
-msgstr "Trasový bod, který chceš smazat je použit v trase, chceš ho skutečně odstranit?"
-
-#
-#
-#
-#
-#
-msgid "There"
-msgstr "Tam"
-
-#
-msgid ""
-"There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n"
-"\n"
-msgstr ""
-"Na místě, kam vkládáš trasové body již nějaké existují. Chceš k nim pouze připojit data, která vkládáš?\n"
-"\n"
-
-#
-msgid "There are some waypoints used in routes or anchor alarms. Do you want to delete them as well? This will change the routes and disable the anchor alarms. Answering No keeps the waypoints used in routes or alarms."
-msgstr "Některé body zíjmu jsou použity v trasách nebo pro kotevní alarmy. Chceš je také odstranit? To změní trasy a deaktivuje kotevní alarmy. Odpověď Ne zachoví body, které jsou použity v trasách nebo alarmech."
-
-#
-msgid ""
-"There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n"
-"\n"
-msgstr ""
-"Na místě, kam vkládáš již existuje trasový bod. Chceš k němu připojit vkládaná data?\n"
-"\n"
-
-#
-#
-#
-#
-#
+#: src/chart1.cpp:6252
+#: src/routeprintout.cpp:470
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
@@ -5831,390 +734,88 @@ msgstr ""
 #
 #
 #
-msgid "This Leg"
-msgstr "Tento úsek"
-
-#
-msgid "This waypoint is part of a layer and can't be edited"
-msgstr "Tento bod je součástí vrstvy a nemůže být upraven."
+#: src/chart1.cpp:6841
+msgid " Ship "
+msgstr " Loď"
 
 #
 #
 #
 #
 #
-msgid "Tide"
-msgstr "Příliv"
+#: src/s52plib.cpp:1622
+msgid "ChartTexts"
+msgstr "Texty map"
 
 #
 #
 #
-msgid "TideCurrentGraphRollover"
-msgstr "PrekryvnyGrafPrilivProudu"
-
-#
-#
-#
-#
-#
-msgid "Tides && Currents"
-msgstr "Přílivy a proudy"
+#: src/cm93.cpp:6414
+msgid "OpenCPN CM93 Cell Offset Adjustments"
+msgstr "OpenCPN Nastavení posunu buněk CM93"
 
 #
 #
 #
 #
 #
-msgid "Time Enroute"
-msgstr "Čas na cestě"
+#: src/cm93.cpp:6431
+msgid "Cell"
+msgstr "Buňka"
 
 #
 #
 #
-msgid "Times shown as"
-msgstr "Časy zobrazeny jako"
+#: src/cm93.cpp:6434
+msgid "M_COVR ID"
+msgstr "M_COVR ID"
 
 #
 #
 #
-#
-#
-msgid "Timestamp"
-msgstr "Časová značka"
+#: src/cm93.cpp:6437
+msgid "Cell Scale"
+msgstr "Měřítko buňky"
 
 #
 #
 #
-#
-#
-msgid "To"
-msgstr "Do"
+#: src/cm93.cpp:6440
+msgid "wgsox"
+msgstr "wgsox"
 
 #
 #
 #
-#
-#
-msgid "To Waypoint"
-msgstr "K trasovému bodu"
+#: src/cm93.cpp:6443
+msgid "wgsoy"
+msgstr "wgsoy"
 
 #
 #
 #
-#
-#
-msgid "Today"
-msgstr "Dnes"
-
-#
-#
-#
-#
-#
-msgid "Toggle Tracking"
-msgstr "Přepni záznam stopy"
-
-#
-#
-#
-#
-#
-msgid "Tomorrow"
-msgstr "Zítra"
-
-#
-#
-#
-#
-msgid "ToolTips"
-msgstr "ToolTipy"
-
-#
-msgid "Toolbar and Window Style"
-msgstr "Nástrojová lišta a styl okna"
-
-#
-#
-#
-#
-#
-msgid "Total Distance"
-msgstr "Celková vzdálenost"
-
-#
-#
-#
-#
-#
-msgid "Total Length: "
-msgstr "Celková délka:"
-
-#
-#
-#
-#
-#
-msgid "Tow"
-msgstr "Vlek"
-
-#
-#
-#
-#
-#
-msgid "Track"
-msgstr "Stopa"
-
-#
-#
-#
-#
-#
-msgid "Track Name"
-msgstr "Jméno trasy"
-
-#
-#
-#
-#
-#
-msgid "Track Properties"
-msgstr "Vlastnosti trasy"
-
-#
-#
-#
-#
-#
-msgid "Tracking Precision"
-msgstr "Přesnost záznamu stopy"
-
-#
-#
-#
-#
-#
-msgid "Tracks"
-msgstr "Stopy"
-
-#
-msgid "Transmit Sentences"
-msgstr "Přenést věty"
-
-#
-msgid "Transmit sentences"
-msgstr "Přenést věty"
-
-#
-#
-#
-#
-#
-msgid "Transverse Mercator"
-msgstr "Transverse Mercator"
-
-#
-#
-#
-msgid "Tug"
-msgstr ""
-
-#
-#
-#
-msgid "Tug freighter, coupled"
-msgstr ""
-
-#
-#
-#
-msgid "Tug, assisting a vessel or linked combination"
-msgstr ""
-
-#
-#
-#
-msgid "Tug, freighter"
-msgstr ""
-
-#
-#
-#
-msgid "Tug, freighter/tanker, coupled"
-msgstr ""
-
-#
-#
-#
-msgid "Tug, one or more tows"
-msgstr ""
-
-#
-#
-#
-msgid "Tug, single"
-msgstr ""
-
-#
-#
-#
-msgid "Tug, tanker"
-msgstr ""
-
-#
-msgid "Turn Rate"
-msgstr "Rychlost obratu"
-
-#
-#
-#
-#
-msgid "Type"
-msgstr "Typ"
-
-#
-msgid "UDP"
-msgstr ""
-
-#
-msgid "URL"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "UTC"
-msgstr "UTC"
-
-#
-#
-#
-#
-#
-msgid "Undefined"
-msgstr "Nedefinovaný"
-
-#
-#
-#
-#
-#
-msgid "Undefined (default)"
-msgstr "Nedefinovaný (výchozí)"
-
-#
-#
-#
-msgid "Under way sailing"
-msgstr "Pod plachtami"
-
-#
-#
-#
-msgid "Underway"
-msgstr "V pohybu"
-
-#
-msgid "Undo"
-msgstr "Vrátit zpět"
-
-#
-#
-#
-msgid "Unit carrier maritime"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "Unk"
-msgstr "Neznámý"
-
-#
-#
-#
-#
-#
-msgid "Unknown"
-msgstr "Neznámý"
-
-#
-#
-#
-msgid "Unlist contents"
-msgstr "Odstraň obsah"
-
-#
-#
-#
-#
-#
-msgid "Unspecified"
-msgstr "Nedefinovaný"
-
-#
-#
-#
-#
-#
-msgid "Update Control"
-msgstr "Aktualizovat ovládací prvek"
-
-#
-msgid "Use Accelerated Graphics (OpenGL)"
-msgstr "Použít akcelerovanou grafiku (OpenGL)"
-
-#
-#
-#
-#
-msgid "Use Garmin (GRMN) mode for input"
-msgstr "Použít Garmin GRMN mód pro vstup"
-
-#
-#
-#
-#
-msgid "Use Garmin GRMN (Host) mode for uploads"
-msgstr "Použít Garmin GRMN (Host) mód uploady"
-
-#
-#
-#
-#
-#
-msgid "Use nearby waypoint?"
-msgstr "Použít blízký trasový bod?"
-
-#
-msgid "User Interface"
-msgstr "Uživatelské rozhraní"
-
-#
-#
-#
+#: src/cm93.cpp:6446
 msgid "User X Offset"
 msgstr "Uživatelský posu X"
 
 #
 #
 #
-msgid "User X Offset (Metres)"
-msgstr "Uživatelský posun X (metry)"
-
-#
-#
-#
+#: src/cm93.cpp:6449
 msgid "User Y Offset"
 msgstr "Uživatelský posu Y"
 
 #
 #
 #
+#: src/cm93.cpp:6457
+msgid "User X Offset (Metres)"
+msgstr "Uživatelský posun X (metry)"
+
+#
+#
+#
+#: src/cm93.cpp:6464
 msgid "User Y Offset (Metres)"
 msgstr "Uživatelský posun Y (metry)"
 
@@ -6223,106 +824,490 @@ msgstr "Uživatelský posun Y (metry)"
 #
 #
 #
-msgid "VTS active target"
-msgstr "VTS aktivní cíl"
+#: src/cm93.cpp:6471
+#: src/chcanv.cpp:13711
+#: src/chcanv.cpp:15388
+#: src/routeprop.cpp:1020
+#: src/routeprintout.cpp:407
+msgid "OK"
+msgstr "OK"
 
 #
 #
 #
 #
 #
-msgid "Vector Charts"
-msgstr "Vektorové mapy"
+#: src/chartimg.cpp:217
+msgid "No Chart Available"
+msgstr "Žádná mapa není k dispozici"
 
 #
 #
 #
-msgid "Vessel Diving"
-msgstr "Potápěč ve vodě"
+#
+#
+#: src/chartimg.cpp:710
+#: src/chartimg.cpp:1329
+msgid "   Chart File contains less than 3 PLY points: "
+msgstr " Mapový soubor obsahuje méně než 3 PLY body:"
 
 #
 #
 #
-msgid "Vessel Dredging"
-msgstr "Plavidlo bagruje"
+#
+#
+#: src/chartimg.cpp:822
+#, c-format
+msgid "   Could not read first %d bytes of header for chart file: "
+msgstr "   Nemohu načíst prvních %d bytů hlavičky mapového souboru: "
 
 #
 #
 #
-msgid "Vessel Fishing"
-msgstr "Plavidlo rybaří"
+#
+#
+#: src/chartimg.cpp:845
+msgid "   Chart file has no BSB header, cannot Init."
+msgstr "  Mapový soubor nemá žádnou BSB hlavičku, nelze inicializovat."
 
 #
 #
 #
-msgid "Vessel Towing"
-msgstr "Plavidlo vleče"
+#
+#
+#: src/chartimg.cpp:1385
+msgid "   Chart File RLL data corrupt on chart "
+msgstr "  RLL data souboru s mapou poškozena na mapě "
 
 #
 #
 #
-msgid "Vessel Towing, Long"
-msgstr "Plavidlo vleče, dlouhý vlek"
+#
+#
+#: src/chartimg.cpp:1729
+#: src/chartimg.cpp:1740
+msgid "   Chart File corrupt in PostInit() on chart "
+msgstr "  Soubor s mapou poškozen v PosInit() na mapě "
 
 #
-msgid "Vessel requesting non-distress assistance"
+#
+#
+#
+#
+#: src/chartimg.cpp:1798
+msgid "   Line Index corrupt, recreating Index for chart "
+msgstr "  Index řádků je poškozen, znovuvytvářím index mapy."
+
+#
+#
+#
+#
+#
+#: src/chartimg.cpp:1803
+msgid "   Error creating Line Index for chart "
+msgstr "  Chyba při vytváření indexu řádků mapy"
+
+#
+#
+#
+#
+#
+#: src/chartimg.cpp:4667
+msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
+msgstr "---<<< Varování:  Přesnost georeferencování mapy je špatná. >>>---"
+
+#
+#
+#
+#
+#
+#: src/chartimg.cpp:4733
+msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
+msgstr "   VP konečná kontrola: Georeference Chart_Error_Factor na mapě"
+
+#
+#
+#
+#
+#
+#: src/chartimg.cpp:4741
+#: src/chartimg.cpp:4805
+msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
+msgstr "---<<< Varování:  Přesnost georeferencování mapy je špatná. >>>---"
+
+#
+#
+#
+#
+#
+#: src/chartimg.cpp:4748
+msgid "   Trying again with internally calculated georef solution "
+msgstr "  Zkouším znovu s interně vypočítaným georef řešením"
+
+#
+#
+#
+#
+#
+#: src/chartimg.cpp:4797
+msgid "   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart "
+msgstr "   VP konečná kontrola s interním georef: Georeference Chart_Error_Factor na mapě"
+
+#
+#
+#
+#
+#
+#: src/chartimg.cpp:4800
+#, c-format
+msgid " is %5g"
+msgstr " je %5g"
+
+#
+#
+#
+#
+#
+#: src/chartimg.cpp:4809
+msgid "   Result: OK, Internal georef solution used."
+msgstr "   Výsledek: OK, použito interní řešení georef."
+
+#
+#: src/datastream.cpp:1596
+#: src/options.cpp:556
+msgid "Serial"
+msgstr "Sériový"
+
+#
+#
+#
+#
+#
+#: src/datastream.cpp:1598
+msgid "Net"
+msgstr "Síť"
+
+#
+#
+#
+#
+#
+#: src/datastream.cpp:1615
+#: src/options.cpp:575
+msgid "TCP"
+msgstr "TCP"
+
+#
+#: src/datastream.cpp:1617
+#: src/options.cpp:580
+msgid "UDP"
+msgstr "UDP"
+
+#
+#: src/datastream.cpp:1619
+#: src/options.cpp:585
+msgid "GPSD"
+msgstr "GPSD"
+
+#
+#: src/datastream.cpp:1625
+msgid "Yes"
+msgstr "Ano"
+
+#
+#: src/datastream.cpp:1627
+msgid "No"
+msgstr "Ne"
+
+#
+#: src/datastream.cpp:1634
+msgid "Reject"
+msgstr "Odmítnout"
+
+#
+#: src/datastream.cpp:1636
+msgid "Accept"
+msgstr "Zahrnout"
+
+#
+#
+#
+#
+#
+#: src/datastream.cpp:1640
+msgid "Drop"
+msgstr "Zahodit"
+
+#
+#
+#
+#
+#
+#: src/datastream.cpp:1642
+#: src/routeman.cpp:1056
+msgid "Send"
+msgstr "Poslat"
+
+#
+#
+#
+#
+#
+#: src/datastream.cpp:1664
+msgid "In"
+msgstr "In"
+
+#
+#: src/datastream.cpp:1669
+msgid "In: None"
+msgstr "Dovnitř: Nic"
+
+#
+#: src/datastream.cpp:1673
+msgid "Out"
+msgstr "Ven"
+
+#
+#: src/datastream.cpp:1678
+msgid ", Out: None"
+msgstr ", Ven: Nic"
+
+#
+#
+#
+#
+#
+#: src/concanv.cpp:94
+#: src/concanv.cpp:191
+#: src/concanv.cpp:199
+msgid "This Leg"
+msgstr "Tento úsek"
+
+#
+#
+#
+#
+#: src/concanv.cpp:104
+#: src/concanv.cpp:108
+#: src/concanv.cpp:112
+#: src/concanv.cpp:116
+#: src/concanv.cpp:120
+msgid "Console Legend"
+msgstr "Legenda konzole"
+
+#
+#
+#
+#
+#: src/concanv.cpp:104
+#: src/concanv.cpp:108
+#: src/concanv.cpp:112
+#: src/concanv.cpp:116
+#: src/concanv.cpp:120
+msgid "Console Value"
+msgstr "Hodnota konzole"
+
+#
+#
+#
+#
+#
+#: src/concanv.cpp:189
+#: src/chcanv.cpp:8156
+msgid "Route"
+msgstr "Trasa"
+
+#
+#
+#
+#
+#
+#: src/concanv.cpp:200
+msgid "Full Route"
+msgstr "Úplná trasa"
+
+#
+#: src/concanv.cpp:201
+msgid "Show Highway"
+msgstr "Ukaž dálnici"
+
+#
+#
+#
+#
+#
+#: src/concanv.cpp:278
+msgid "XTE         L"
+msgstr "XTE         L"
+
+#
+#
+#
+#
+#
+#: src/concanv.cpp:280
+msgid "XTE         R"
+msgstr "XTE         P"
+
+#
+#
+#
+#
+#
+#: src/concanv.cpp:365
+msgid "ETA          "
+msgstr "ETA"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:4002
+#: src/options.cpp:1166
+msgid "CM93 Detail Level"
+msgstr "Úroveň detailu CM93"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:4334
+#: src/chcanv.cpp:10052
+msgid "Route: "
+msgstr "Trasa:"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:4336
+#: src/chcanv.cpp:10054
+msgid "Layer Route: "
+msgstr "Trasa ve vrstvě:"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:4338
+msgid "(unnamed)"
+msgstr "(Nepojmenovaná)"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:4342
+msgid "Total Length: "
+msgstr "Celková délka:"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:4343
+msgid "Leg: from "
+msgstr "Úsek: z"
+
+#
+#
+#
+#
+#: src/chcanv.cpp:4344
+msgid " to "
+msgstr " do "
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:5114
+#, c-format
+msgid "Scale %4.0f (%1.1fx)"
+msgstr "Měřítko %4.0f (%1.1fx)"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:5117
+#, c-format
+msgid "Scale %4.0f (%1.2fx)"
+msgstr "Měřítko %4.0f (%1.2fx)"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:5120
+#, c-format
+msgid "Scale %4.0f"
+msgstr "Měřítko %4.0f"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:7196
+#: src/chcanv.cpp:9549
+#: src/routemanagerdialog.cpp:1640
+msgid "Track Properties"
+msgstr "Vlastnosti trasy"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:7451
+msgid "Use nearby waypoint?"
+msgstr "Použít blízký trasový bod?"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:7452
+#: src/chcanv.cpp:7499
+msgid "OpenCPN Route Create"
+msgstr "Vytvořit OpenCPN Trasu"
+
+#
+#: src/chcanv.cpp:7495
+msgid "For this leg the Great Circle route is "
+msgstr "Pro toto rameno je trasa po velké kružnici "
+
+#
+#: src/chcanv.cpp:7496
+msgid ""
+" shorter than rhumbline.\n"
+"\n"
 msgstr ""
+" kratší než loxodroma.\n"
+"\n"
 
 #
-#
-#
-msgid "Vessel, type unknown"
-msgstr "Plavidlo, neznámý typ"
-
-#
-#
-#
-msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
-msgstr ""
-
-#
-#
-#
-msgid "Virtual"
-msgstr "Virtuální"
-
-#
-#
-#
-msgid "Virtual (Off Position)"
-msgstr "Virtuální (Mimo pozici)"
-
-#
-#
-#
-msgid "Virtual (On Position)"
-msgstr "Virtuální (Na pozici)"
-
-#
-msgid "Visible buttons"
-msgstr "Viditelná tlačítka"
+#: src/chcanv.cpp:7497
+msgid "Would you like include the Great Circle routing points for this leg?"
+msgstr "Chceš zahrnout trasové body na velké kružnici do této etapy?"
 
 #
 #
 #
 #
 #
-msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
-msgstr "Soubory WAV(*.wav)|*.wav|Všechny soubory(*.*)|*.*"
-
-#
-#
-#
-#
-#
-msgid "Warn if CPA less than (NMi)"
-msgstr "Varuj, pokud CPA je méně než (nm)"
-
-#
-#
-#
-#
-#
+#: src/chcanv.cpp:8155
 msgid "Waypoint"
 msgstr "Trasový bod"
 
@@ -6331,37 +1316,877 @@ msgstr "Trasový bod"
 #
 #
 #
-msgid "Waypoint Information"
-msgstr "Info o trasovém bodu"
+#: src/chcanv.cpp:8157
+msgid "Track"
+msgstr "Stopa"
 
 #
 #
 #
 #
 #
-msgid "Waypoint Name"
-msgstr "Jméno tras. bodu"
+#: src/chcanv.cpp:8158
+msgid "AIS"
+msgstr "AIS"
 
 #
 #
 #
 #
 #
-msgid "Waypoint Properties"
-msgstr "Vlastnosti trasového bodu"
+#: src/chcanv.cpp:8183
+#: src/chcanv.cpp:8185
+msgid "End Route"
+msgstr "Ukončit trasu"
 
 #
 #
 #
 #
 #
+#: src/chcanv.cpp:8192
+#: src/chcanv.cpp:8194
+msgid "Measure Off"
+msgstr "Vypnout měření"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8197
+msgid "Measure"
+msgstr "Měření"
+
+#
+#: src/chcanv.cpp:8202
+msgid "Undo"
+msgstr "Vrátit zpět"
+
+#
+#: src/chcanv.cpp:8208
+msgid "Redo"
+msgstr "Vykonat znovu"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8264
+msgid "Max Detail Here"
+msgstr "Maximální detail zde"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8265
+#: src/chcanv.cpp:8279
+msgid "Scale In"
+msgstr "Přiblížit"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8266
+#: src/chcanv.cpp:8280
+msgid "Scale Out"
+msgstr "Oddálit"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8270
+#: src/chcanv.cpp:8276
+msgid "Object Query..."
+msgstr "Dotaz na objekt..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8285
+msgid "Drop Mark"
+msgstr "Umístit značku"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8287
+msgid "Move Boat Here"
+msgstr "Posunout sem loď"
+
+#
+#: src/chcanv.cpp:8290
+msgid "Navigate To Here"
+msgstr "Navigovat sem"
+
+#
+#: src/chcanv.cpp:8292
+msgid "Center View..."
+msgstr "Vycentrovat pohled..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8294
+msgid "Course Up Mode"
+msgstr "Mód kurs nahoru"
+
+#
+#
+#
+#: src/chcanv.cpp:8297
+msgid "Chart Up Mode"
+msgstr "Mód mapa nahoru"
+
+#
+#
+#
+#: src/chcanv.cpp:8299
+msgid "North Up Mode"
+msgstr "Mód sever nahoru"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8307
+msgid "Paste Waypoint"
+msgstr "Vložit trasový bod"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8311
+#: src/chcanv.cpp:8319
+msgid "Paste Route"
+msgstr "Vložit trasu"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8315
+#: src/chcanv.cpp:8320
+msgid "Paste Track"
+msgstr "Vložit stopu"
+
+#
+#
+#
+#: src/chcanv.cpp:8328
+msgid "CM93 Offset Dialog..."
+msgstr "Dialog posunu CM93..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8344
+#: src/options.cpp:1222
+#: src/options.cpp:1270
+#: src/options.cpp:3200
+msgid "Chart Groups"
+msgstr "Skupiny map"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8346
+msgid "All Active Charts"
+msgstr "Všechny aktivní mapy"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8381
+msgid "AIS Target List..."
+msgstr "Seznam cílů AIS..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8384
+msgid "Target Query..."
+msgstr "Dotaz na cíl..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8388
+msgid "Hide Target CPA"
+msgstr "Skryj CPA cíle"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8390
+msgid "Show Target CPA"
+msgstr "Zobrazit CPA cíle"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8392
+msgid "Target List..."
+msgstr "Seznam cílů..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8404
+msgid "Layer Route"
+msgstr "Trasa ve vrstvě"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8405
+#: src/chcanv.cpp:8420
+#: src/chcanv.cpp:8461
+#: src/chcanv.cpp:8464
+#: src/chcanv.cpp:8481
+#: src/chcanv.cpp:8487
+#: src/chcanv.cpp:8530
+#: src/chcanv.cpp:8533
+msgid "Properties..."
+msgstr "Vlastnosti..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8410
+#: src/chcanv.cpp:8425
+#: src/chcanv.cpp:8497
+msgid "Activate Next Waypoint"
+msgstr "Aktivovat další trasový bod"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8412
+#: src/chcanv.cpp:8427
+#: src/routemanagerdialog.cpp:933
+msgid "Deactivate"
+msgstr "Deaktivovat"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8415
+#: src/chcanv.cpp:8430
+#: src/chcanv.cpp:8484
+#: src/chcanv.cpp:8490
+#: src/routemanagerdialog.cpp:927
+msgid "Activate"
+msgstr "Aktivovat"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8433
+msgid "Insert Waypoint"
+msgstr "Vložit trasový bod"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8434
+#: src/undo.cpp:89
+msgid "Append Waypoint"
+msgstr "Přidat trasový bod"
+
+#
+#: src/chcanv.cpp:8435
+msgid "Copy as KML..."
+msgstr "Kopírovat jako KML..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8436
+#: src/chcanv.cpp:8466
+msgid "Delete..."
+msgstr "Smazat..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8437
+msgid "Reverse..."
+msgstr "Otočit..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8440
+#: src/chcanv.cpp:8510
+#: src/chcanv.cpp:8545
+msgid "Send to GPS"
+msgstr "Odeslat do GPS"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8460
+msgid "Layer Track"
+msgstr "Sopa ve vrstvě"
+
+#
+#: src/chcanv.cpp:8465
+msgid "Copy As KML"
+msgstr "Zkopíruj jako KML"
+
+#
+#: src/chcanv.cpp:8480
+msgid "Layer Routepoint"
+msgstr "Bod trasy ve vrstvě"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8501
+msgid "Remove from Route"
+msgstr "Odstranit z trasy"
+
+#
+#: src/chcanv.cpp:8503
+#: src/chcanv.cpp:8538
+msgid "Copy as KML"
+msgstr "Kopírovat jako KML"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8506
+#: src/chcanv.cpp:8541
+#: src/routeprop.cpp:2087
+#: src/options.cpp:4075
+msgid "Delete"
+msgstr "Smazat"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8529
+msgid "Layer Waypoint"
+msgstr "Trasový bod ve vrstvě"
+
+#
+#: src/chcanv.cpp:8536
+msgid "Navigate To This"
+msgstr "Navigovat sem"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8555
+msgid "Clear Anchor Watch"
+msgstr "Smazat kotevní alarm"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8565
+msgid "Set Anchor Watch"
+msgstr "Nastavit kotevní alarm"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8581
+msgid "Show Tide Information"
+msgstr "Ukaž info o přílivu"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8587
+msgid "Show Current Information"
+msgstr "Ukaž info o proudu"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8697
+msgid "ObjectQuery"
+msgstr "Dotaz na objekt"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8781
+#: src/routemanagerdialog.cpp:1975
 msgid "Waypoint Properties, Layer: "
 msgstr "Vlastnosti TB, Vrstva:"
 
 #
+#: src/chcanv.cpp:8825
+msgid ""
+"There is an existing waypoint at the same location as the one you are pasting. Would you like to merge the pasted data with it?\n"
+"\n"
+msgstr ""
+"Na místě, kam vkládáš již existuje trasový bod. Chceš k němu připojit vkládaná data?\n"
+"\n"
+
+#
+#: src/chcanv.cpp:8826
+msgid "Answering 'No' will create a new waypoint at the same location."
+msgstr "Odpověď 'Ne' vytvoří nový trasový bod na stejném místě."
+
 #
 #
 #
+#
+#
+#: src/chcanv.cpp:8827
+msgid "Merge waypoint?"
+msgstr "Sloučit trasový bod?"
+
+#
+#: src/chcanv.cpp:8885
+msgid ""
+"There are existing waypoints at the same location as some of the ones you are pasting. Would you like to just merge the pasted data into them?\n"
+"\n"
+msgstr ""
+"Na místě, kam vkládáš trasové body již nějaké existují. Chceš k nim pouze připojit data, která vkládáš?\n"
+"\n"
+
+#
+#: src/chcanv.cpp:8886
+msgid "Answering 'No' will create all new waypoints for this route."
+msgstr "Odpověď 'Ne' vytvoří pro tuto trasu všechny trasové body nově."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:8887
+msgid "Merge waypoints?"
+msgstr "Sloučit trasové body?"
+
+#
+#
+#
+#
+#: src/chcanv.cpp:9082
+msgid "Temporary GOTO Route"
+msgstr "Dočasná trasa"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:9083
+#: src/chcanv.cpp:9134
+#: src/routemanagerdialog.cpp:2094
+msgid "Here"
+msgstr "Tady"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:9085
+msgid "There"
+msgstr "Tam"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:9130
+#: src/routemanagerdialog.cpp:1802
+#: src/routemanagerdialog.cpp:2090
+msgid "(Unnamed Waypoint)"
+msgstr "(Nepojmenovaný trasový bod)"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:9131
+#: src/routemanagerdialog.cpp:2091
+msgid "Go to "
+msgstr "Navigovat na"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:9324
+#: src/routemanagerdialog.cpp:1136
+msgid "Rename Waypoints?"
+msgstr "Přejmenovat trasové body"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:9342
+msgid "Are you sure you want to delete this route?"
+msgstr "Určitě chceš smazat tuto trasu?"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:9343
+msgid "OpenCPN Route Delete"
+msgstr "OpenCPN Smazat trasu"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:9464
+#: src/chcanv.cpp:9478
+#: src/routemanagerdialog.cpp:1310
+#: src/routemanagerdialog.cpp:2135
+msgid "Send To GPS..."
+msgstr "Odeslat do GPS..."
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:9556
+msgid "Are you sure you want to delete this track?"
+msgstr "Určitě chceš smazat tuto stopu?"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:9557
+#: src/routeman.cpp:838
+msgid "OpenCPN Track Delete"
+msgstr "Smazat OpenCPN stopu"
+
+#
+#: src/chcanv.cpp:9935
+#: src/chcanv.cpp:9939
+#: src/chcanv.cpp:9943
+#: src/chcanv.cpp:9946
+msgid "NMi"
+msgstr "NMi"
+
+#
+#
+#
+#: src/chcanv.cpp:9952
+#: src/chcanv.cpp:10029
+#: src/chcanv.cpp:15139
+msgid "RouteLegInfoRollover"
+msgstr "RouteLegInfoRollover"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:11016
+#: src/options.cpp:1159
+msgid "Feet"
+msgstr "Stopy"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:11017
+#: src/options.cpp:1159
+msgid "Meters"
+msgstr "Metry"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:11018
+#: src/options.cpp:1159
+msgid "Fathoms"
+msgstr "Fathomy (Sáhy)"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:11036
+#: src/chcanv.cpp:11038
+msgid "OverZoom"
+msgstr "OverZoom"
+
+#
+#
+#
+#: src/chcanv.cpp:11408
+msgid "ExtendedTideIcon"
+msgstr "ExtendedTideIcon"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:13644
+msgid "Tide"
+msgstr "Příliv"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:13649
+msgid "Current"
+msgstr "Proud"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:13714
+msgid "Prev"
+msgstr "Předchozí"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:13724
+msgid "Next"
+msgstr "Další"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:13799
+msgid "Reference Station :"
+msgstr "Referenční stanice:"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:13815
+msgid "Data Source :"
+msgstr "Datový zdroj :"
+
+#
+#
+#
+#: src/chcanv.cpp:14012
+msgid "HW"
+msgstr "HW"
+
+#
+#
+#
+#: src/chcanv.cpp:14012
+msgid "LW"
+msgstr "LW"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:14190
+msgid "Today"
+msgstr "Dnes"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:14191
+#: src/chcanv.cpp:14196
+msgid "Tomorrow"
+msgstr "Zítra"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:14852
+#: src/chcanv.cpp:14910
+#: src/ais.cpp:2891
+msgid "AISTargetQuery"
+msgstr "AISTargetQuery"
+
+#
+#
+#
+#
+#: src/chcanv.cpp:15130
+msgid "AISRollover"
+msgstr "AISRollover"
+
+#
+#
+#
+#: src/chcanv.cpp:15134
+msgid "TideCurrentGraphRollover"
+msgstr "PrekryvnyGrafPrilivProudu"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:15355
+#: src/ais.cpp:709
+#: src/routeprintout.cpp:370
+msgid "Position"
+msgstr "Pozice"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:15361
+#: src/routeprop.cpp:1040
+#: src/routeprop.cpp:1057
+#: src/routeprop.cpp:2028
+msgid "Latitude"
+msgstr "Zem. šířka"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:15371
+#: src/routeprop.cpp:1041
+#: src/routeprop.cpp:1058
+#: src/routeprop.cpp:2037
+msgid "Longitude"
+msgstr "Zem. délka"
+
+#
+#
+#
+#
+#
+#: src/chcanv.cpp:15384
+#: src/routeprop.cpp:1016
+#: src/routeman.cpp:1052
+#: src/routeprintout.cpp:403
+msgid "Cancel"
+msgstr "Zrušit"
+
+#
+#: src/chcanv.cpp:15613
+msgid "   External application \"xcalib\" not found. Screen brightness not changed."
+msgstr "   Externí aplikace \"xcalib\" nenalezena. Jas nezměněn."
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:1169
+#: src/navutil.cpp:1170
+msgid "Marks"
+msgstr "Značky"
+
+#
+#
+#
+#
+#: src/navutil.cpp:1264
 msgid "Waypoint(s) Uploaded successfully."
 msgstr "Trasové body úspěšně nahrány."
 
@@ -6369,7 +2194,697 @@ msgstr "Trasové body úspěšně nahrány."
 #
 #
 #
+#: src/navutil.cpp:1266
+msgid "Error on Waypoint Upload.  Please check logfiles..."
+msgstr "Chyba při nahrávání trasových bodů. Prosím zkontroluj log..."
+
 #
+#
+#
+#
+#: src/navutil.cpp:2213
+msgid "Route Uploaded successfully."
+msgstr "Trasa nahrána úspěšně."
+
+#
+#
+#
+#
+#: src/navutil.cpp:2215
+msgid "Error on Route Upload.  Please check logfiles..."
+msgstr "Chyba při nahrávání trasy. Prosím zkontroluj log..."
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:4787
+#: src/navutil.cpp:4827
+#: src/navutil.cpp:4863
+#: src/navutil.cpp:4888
+msgid "Export GPX file"
+msgstr "Exportuj GPX soubor"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:4800
+#: src/navutil.cpp:4840
+#: src/navutil.cpp:4876
+msgid "Overwrite existing file?"
+msgstr "Přepsat existující soubor?"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:5136
+msgid "Import GPX file"
+msgstr "Importuj GPX soubor"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7194
+msgid "&Font family:"
+msgstr "Rodina &fontů:"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7200
+#: src/navutil.cpp:7202
+msgid "The font family."
+msgstr "Rodina fontů."
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7207
+msgid "&Style:"
+msgstr "&Styl:"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7211
+#: src/navutil.cpp:7213
+msgid "The font style."
+msgstr "Styl fontu"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7218
+msgid "&Weight:"
+msgstr "&Váha:"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7222
+#: src/navutil.cpp:7224
+msgid "The font weight."
+msgstr "Váha fontu."
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7231
+msgid "C&olour:"
+msgstr "B&arva:"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7241
+#: src/navutil.cpp:7243
+msgid "The font colour."
+msgstr "Barva fontu."
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7249
+msgid "&Point size:"
+msgstr "Velik&ost bodů:"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7254
+#: src/navutil.cpp:7256
+msgid "The font point size."
+msgstr "Velikost fontu v bodech."
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7263
+msgid "&Underline"
+msgstr "Podtrhno&ut"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7266
+#: src/navutil.cpp:7268
+msgid "Whether the font is underlined."
+msgstr "Zda je font podtržen"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7275
+msgid "Preview:"
+msgstr "Náhled:"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7280
+#: src/navutil.cpp:7282
+msgid "Shows the font preview."
+msgstr "Ukázat náhled fontu."
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7289
+#: src/options.cpp:1757
+msgid "&Cancel"
+msgstr "&Zrušit"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7291
+msgid "Click to cancel the font selection."
+msgstr "Klikni pro zrušení výběru fontu."
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7294
+msgid "&OK"
+msgstr "&OK"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:7296
+#: src/navutil.cpp:7298
+msgid "Click to confirm the font selection."
+msgstr "Klikni pro potvrzení výběru fontu."
+
+#
+#
+#
+#
+#: src/navutil.cpp:8019
+msgid "Legend"
+msgstr "Legenda"
+
+#
+#: src/navutil.cpp:8027
+#: src/navutil.cpp:8100
+msgid "Pause"
+msgstr "Pozastavit"
+
+#
+#: src/navutil.cpp:8061
+msgid "Message accepted"
+msgstr "Zpráva přijata"
+
+#
+#: src/navutil.cpp:8068
+msgid "Message filtered and dropped"
+msgstr "Zpráva odfiltrována a zahozena"
+
+#
+#
+#
+#
+#
+#: src/navutil.cpp:8075
+msgid "Output Message"
+msgstr "Výstupní zpráva"
+
+#
+#: src/navutil.cpp:8094
+msgid "Resume"
+msgstr "Obnovit"
+
+#
+#: src/navutil.cpp:8300
+#, c-format
+msgid "Couldn't load sound data from '%s'."
+msgstr "Nelze nahrát data zvuku z '%s'."
+
+#
+#: src/navutil.cpp:8307
+#, c-format
+msgid "Sound file '%s' is in unsupported format."
+msgstr "Zvukový soubor '%s' je v nepodporovaném formátu."
+
+#
+#
+#
+#
+#: src/routeprop.cpp:449
+msgid "--"
+msgstr "--"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:536
+msgid "&Waypoint Properties..."
+msgstr "&Vlastnosti trasového body..."
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:539
+msgid "&Remove Selected"
+msgstr "Odst&ranit vybrané"
+
+#
+#: src/routeprop.cpp:544
+msgid "&Copy all as text"
+msgstr "Kopírovat vše jako text"
+
+#
+#
+#
+#
+#: src/routeprop.cpp:559
+#: src/routeprop.cpp:564
+msgid "_A"
+msgstr "_A"
+
+#
+#
+#
+#
+#: src/routeprop.cpp:560
+#: src/routeprop.cpp:565
+msgid "_B"
+msgstr "_B"
+
+#
+#
+#
+#: src/routeprop.cpp:627
+#: src/routeprop.cpp:641
+msgid "_plus"
+msgstr "_plus"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:662
+#: src/routeprop.cpp:860
+#: src/routeprop.cpp:1991
+#: src/ais.cpp:3439
+#: src/routeprintout.cpp:362
+msgid "Name"
+msgstr "Jméno"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:663
+#: src/routeprop.cpp:873
+msgid "Depart From"
+msgstr "Odplutí z"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:664
+#: src/routeprop.cpp:878
+#: src/ais.cpp:725
+msgid "Destination"
+msgstr "Cíl"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:665
+#: src/routeprop.cpp:897
+msgid "Total Distance"
+msgstr "Celková vzdálenost"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:666
+#: src/routeprop.cpp:1043
+#: src/routeprop.cpp:1060
+msgid "Speed (Kts)"
+msgstr "Rychlost (Kts)"
+
+#
+#
+#
+#: src/routeprop.cpp:667
+#: src/routeprop.cpp:914
+msgid "Departure Time (m/d/y h:m)"
+msgstr "Čas vyplutí (m/d/r h:m)"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:668
+#: src/routeprop.cpp:908
+msgid "Time Enroute"
+msgstr "Čas na cestě"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:855
+#: src/routeprop.cpp:1968
+#: src/options.cpp:551
+msgid "Properties"
+msgstr "Vlastnosti"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:902
+msgid "Plan Speed"
+msgstr "Plánovaná rychlost"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:940
+msgid "UTC"
+msgstr "UTC"
+
+#
+#
+#
+#: src/routeprop.cpp:940
+msgid "Local @ PC"
+msgstr "Lokální na PC"
+
+#
+#
+#
+#: src/routeprop.cpp:940
+msgid "LMT @ Location"
+msgstr "LMT na místě"
+
+#
+#
+#
+#: src/routeprop.cpp:943
+msgid "Times shown as"
+msgstr "Časy zobrazeny jako"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:948
+msgid "Color:"
+msgstr "Barva:"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:953
+msgid "Default color"
+msgstr "Standardní barva"
+
+#
+#
+#: src/routeprop.cpp:953
+msgid "Black"
+msgstr "Černá"
+
+#
+#
+#: src/routeprop.cpp:953
+msgid "Dark Red"
+msgstr "Tmavě červená"
+
+#
+#
+#: src/routeprop.cpp:953
+msgid "Dark Green"
+msgstr "Tmavě zelená"
+
+#
+#
+#: src/routeprop.cpp:954
+msgid "Dark Yellow"
+msgstr "Tmavě žlutá"
+
+#
+#
+#: src/routeprop.cpp:954
+msgid "Dark Blue"
+msgstr "Tmavě modrá"
+
+#
+#
+#: src/routeprop.cpp:954
+msgid "Dark Magenta"
+msgstr "Tmavě fialová"
+
+#
+#
+#: src/routeprop.cpp:954
+msgid "Dark Cyan"
+msgstr "Tmavě azurová"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:955
+msgid "Light Gray"
+msgstr "Světle šedá"
+
+#
+#
+#: src/routeprop.cpp:955
+msgid "Dark Gray"
+msgstr "Tmavě šedá"
+
+#
+#
+#: src/routeprop.cpp:955
+msgid "Red"
+msgstr "Červená"
+
+#
+#
+#: src/routeprop.cpp:955
+msgid "Green"
+msgstr "Zelená"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:955
+msgid "Yellow"
+msgstr "Žlutá"
+
+#
+#
+#: src/routeprop.cpp:955
+msgid "Blue"
+msgstr "Modrá"
+
+#
+#
+#: src/routeprop.cpp:956
+msgid "Magenta"
+msgstr "Fialová"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:956
+msgid "Cyan"
+msgstr "Azurová"
+
+#
+#
+#: src/routeprop.cpp:956
+msgid "White"
+msgstr "Bílá"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:963
+msgid "Style:"
+msgstr "Styl:"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:968
+#: src/routeprop.cpp:981
+#: src/options.cpp:902
+msgid "Default"
+msgstr "Výchozí"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:968
+msgid "Solid"
+msgstr "Plný"
+
+#
+#: src/routeprop.cpp:968
+msgid "Dot"
+msgstr "Tečkovaná"
+
+#
+#: src/routeprop.cpp:968
+msgid "Long dash"
+msgstr "Dlouhé šrafy"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:969
+msgid "Short dash"
+msgstr "Krátké šrafy"
+
+#
+#: src/routeprop.cpp:969
+msgid "Dot dash"
+msgstr "Čerchovaná"
+
+#
+#: src/routeprop.cpp:976
+msgid "Width:"
+msgstr "Šířka:"
+
+#
+#: src/routeprop.cpp:981
+msgid "1 pixel"
+msgstr "1 pixel"
+
+#
+#: src/routeprop.cpp:981
+msgid "2 pixels"
+msgstr "2 pixely"
+
+#
+#: src/routeprop.cpp:981
+msgid "3 pixels"
+msgstr "3 pixely"
+
+#
+#: src/routeprop.cpp:982
+msgid "4 pixels"
+msgstr "4 pixely"
+
+#
+#: src/routeprop.cpp:982
+msgid "5 pixels"
+msgstr "5 pixelů"
+
+#
+#: src/routeprop.cpp:982
+msgid "6 pixels"
+msgstr "6 pixelů"
+
+#
+#: src/routeprop.cpp:982
+msgid "7 pixels"
+msgstr "7 pixelů"
+
+#
+#: src/routeprop.cpp:982
+msgid "8 pixels"
+msgstr "8 pixelů"
+
+#
+#: src/routeprop.cpp:983
+msgid "9 pixels"
+msgstr "9 pixelů"
+
+#
+#: src/routeprop.cpp:983
+msgid "10 pixels"
+msgstr "10 pixelů"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:993
+#: src/routemanagerdialog.cpp:617
 msgid "Waypoints"
 msgstr "Trasové body"
 
@@ -6378,6 +2893,4786 @@ msgstr "Trasové body"
 #
 #
 #
+#: src/routeprop.cpp:1000
+msgid "Print Route"
+msgstr "Tiskni trasu"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1006
+#: src/routeprop.cpp:1233
+msgid "Extend Route"
+msgstr "Rozšiř trasu"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1011
+#: src/routeprop.cpp:1234
+msgid "Split Route"
+msgstr "Rozdělit trasu"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1036
+#: src/routeprop.cpp:1053
+msgid "Leg"
+msgstr "Úsek"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1037
+#: src/routeprop.cpp:1054
+msgid "To Waypoint"
+msgstr "K trasovému bodu"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1038
+#: src/routeprop.cpp:1055
+#: src/routeprintout.cpp:384
+msgid "Distance"
+msgstr "Vzdálenost"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1039
+#: src/routeprop.cpp:1056
+#: src/ais.cpp:804
+msgid "Bearing"
+msgstr "Kurs"
+
+#
+#
+#: src/routeprop.cpp:1042
+msgid "ETE/ETD"
+msgstr ""
+
+#
+#
+#
+#: src/routeprop.cpp:1044
+#: src/routeprop.cpp:1061
+#: src/routeprop.cpp:1387
+msgid "Next tide event"
+msgstr "Příští přílivová událost"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1045
+#: src/routeprop.cpp:1062
+#: src/routeprop.cpp:2048
+#: src/routeprop.cpp:2148
+#: src/routeprintout.cpp:391
+msgid "Description"
+msgstr "Popis"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1046
+#: src/routeprop.cpp:1063
+#: src/ais.cpp:794
+#: src/routeprintout.cpp:377
+msgid "Course"
+msgstr "Kurs"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1059
+msgid "Timestamp"
+msgstr "Časová značka"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1133
+msgid "Are you sure you want to remove this waypoint?"
+msgstr "Určitě chceš smazat tento trasový bod?"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1134
+msgid "OpenCPN Remove Waypoint"
+msgstr "OpenCPN odstranit trasový bod"
+
+#
+#
+#
+#: src/routeprop.cpp:1225
+msgid "Avg. speed (Kts)"
+msgstr "Průměrná rychlost (Kts)"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1227
+msgid "Extend Track"
+msgstr "Prodloužit stopu"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1228
+msgid "Split Track"
+msgstr "Rozdělit stopu"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1231
+msgid "Plan speed (Kts)"
+msgstr "Plánovaná rychlost (Kts)"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1373
+#: src/routeprop.cpp:1458
+msgid " %D Days  %H Hours  %M Minutes"
+msgstr " %D Dnů  %H Hodin %M Minut"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1375
+#: src/routeprop.cpp:1460
+msgid " %H Hours  %M Minutes"
+msgstr " %H Hodin  %M Minut"
+
+#
+#
+#
+#
+#: src/routeprop.cpp:1402
+#: src/ais.cpp:727
+msgid "ETA"
+msgstr "ETA"
+
+#
+#
+#: src/routeprop.cpp:1404
+msgid "ETE"
+msgstr ""
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:1585
+msgid "Start"
+msgstr "Start"
+
+#
+#: src/routeprop.cpp:1981
+msgid "This waypoint is part of a layer and can't be edited"
+msgstr "Tento bod je součástí vrstvy a nemůže být upraven."
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:2010
+msgid "Show name"
+msgstr "Zobraz jméno"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:2014
+#: src/routemanagerdialog.cpp:633
+msgid "Icon"
+msgstr "Ikona"
+
+#
+#: src/routeprop.cpp:2019
+msgid "Combo!"
+msgstr "Combo!"
+
+#
+#: src/routeprop.cpp:2062
+#: src/options.cpp:695
+#: src/options.cpp:726
+msgid "..."
+msgstr "..."
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:2075
+msgid "Links"
+msgstr "Odkazy"
+
+#
+#: src/routeprop.cpp:2082
+msgid "wxFB Website"
+msgstr "Stránky wxFB"
+
+#
+#: src/routeprop.cpp:2092
+#: src/routeprop.cpp:2118
+msgid "Edit"
+msgstr "Upravit"
+
+#
+#: src/routeprop.cpp:2097
+msgid "Add new"
+msgstr "Přidat nový"
+
+#
+#: src/routeprop.cpp:2114
+#: src/options.cpp:1260
+#: src/options.cpp:4072
+msgid "Add"
+msgstr "Přidat"
+
+#
+#: src/routeprop.cpp:2123
+#: src/routeprop.cpp:2639
+msgid "Links are opened in the default browser."
+msgstr "Linky jsou otevírány ve výchozí aplikaci."
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:2135
+msgid "Basic"
+msgstr "Základní"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:2154
+#: src/routemanagerdialog.cpp:747
+#: src/routemanagerdialog.cpp:2208
+#: src/routemanagerdialog.cpp:2220
+msgid "Show on chart"
+msgstr "Zobrazit na mapě"
+
+#
+#: src/routeprop.cpp:2161
+msgid "GUID"
+msgstr "GUID"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:2172
+msgid "GPX"
+msgstr "GPX"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:2188
+msgid "Extended"
+msgstr "Rozšířený"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:2290
+msgid "Link"
+msgstr "Odkaz"
+
+#
+#
+#
+#
+#
+#: src/routeprop.cpp:2293
+msgid "Link description"
+msgstr "Popis odkazu"
+
+#
+#: src/routeprop.cpp:2302
+msgid "URL"
+msgstr "URL"
+
+#
+#: src/routeprop.cpp:2311
+msgid "Local file..."
+msgstr "Lokální soubor..."
+
+#
+#: src/routeprop.cpp:2637
+msgid "Links are opened for editing."
+msgstr "Odkazy jsou otevírány pro úpravy."
+
+#
+#
+#
+#
+#: src/routeprop.cpp:2998
+msgid "Choose a file"
+msgstr "Vyber soubor"
+
+#
+#: src/routeprop.cpp:3009
+msgid "Link not complete, can't be saved."
+msgstr "Odkaz není kompletní, nemůže být uložen."
+
+#
+#: src/routeprop.cpp:3009
+msgid "Problem discovered"
+msgstr "Objeven problém"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:452
+msgid "Routes"
+msgstr "Trasy"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:483
+#: src/routemanagerdialog.cpp:573
+msgid "Show"
+msgstr "Ukaž"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:484
+msgid "Route Name"
+msgstr "Název trasy"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:485
+msgid "To"
+msgstr "Do"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:501
+msgid "&Properties..."
+msgstr "&Vlastnosti"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:506
+msgid "&Activate"
+msgstr "&Aktivovat"
+
+#
+#: src/routemanagerdialog.cpp:513
+#: src/routemanagerdialog.cpp:650
+msgid "&Center View"
+msgstr "Vy&centrovat pohled"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:520
+msgid "&Reverse"
+msgstr "&Otočit"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:525
+#: src/routemanagerdialog.cpp:590
+#: src/routemanagerdialog.cpp:655
+#: src/routemanagerdialog.cpp:742
+msgid "&Delete"
+msgstr "&Smazat"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:530
+msgid "&Export Route..."
+msgstr "&Export trasy...."
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:535
+#: src/routemanagerdialog.cpp:670
+msgid "&Send to GPS"
+msgstr "Ode&slat do GPS"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:542
+#: src/routemanagerdialog.cpp:607
+msgid "&Delete All"
+msgstr "S&mazat vše"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:552
+#: src/options.cpp:962
+msgid "Tracks"
+msgstr "Stopy"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:574
+msgid "Track Name"
+msgstr "Jméno trasy"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:575
+msgid "Length"
+msgstr "Délka"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:580
+msgid "&Start Track"
+msgstr "Zahájit &stopu"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:585
+#: src/routemanagerdialog.cpp:645
+msgid "&Properties"
+msgstr "Vlas&tnosti"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:595
+msgid "&Export Track..."
+msgstr "&Export stopy...."
+
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:600
+msgid "Route from Track"
+msgstr "Trasa ze stopy"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:634
+msgid "Waypoint Name"
+msgstr "Jméno tras. bodu"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:635
+msgid "Distance from Ownship"
+msgstr "Vzdálenost od vlastní lodi"
+
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:640
+msgid "&New"
+msgstr "&Nový"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:660
+msgid "&Go To"
+msgstr "Navi&govat na"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:665
+msgid "&Export Wpt..."
+msgstr "&Export tras. bodu...."
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:677
+msgid "Delete All"
+msgstr "Smazat vše"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:688
+msgid "I&mport GPX..."
+msgstr "I&mport GPX..."
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:698
+msgid "Export All Visible..."
+msgstr "Exportovat vše viditelné...."
+
+#
+#
+#
+#: src/routemanagerdialog.cpp:708
+msgid "Layers"
+msgstr "Vrstvy"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:726
+msgid "Layer Name"
+msgstr "Jméno vrstvy"
+
+#
+#
+#
+#: src/routemanagerdialog.cpp:727
+msgid "No. of items"
+msgstr "Počet kusů"
+
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:732
+msgid "Temporary layer"
+msgstr "Dočasná vrstva"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:752
+#: src/routemanagerdialog.cpp:2213
+#: src/routemanagerdialog.cpp:2221
+msgid "Show WPT names"
+msgstr "Zobraz jména trasových bodů"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:757
+#: src/routemanagerdialog.cpp:2218
+#: src/routemanagerdialog.cpp:2222
+msgid "List contents"
+msgstr "Vypiš obsah"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:880
+msgid "(Unnamed Route)"
+msgstr "(Nepojmenovaná trasa)"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:885
+#: src/routemanagerdialog.cpp:1146
+msgid " - "
+msgstr " - "
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:1039
+msgid "Are you sure you want to delete <ALL> routes?"
+msgstr "Určitě chceš smazat <VŠECHNY> trasy?"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:1040
+#: src/routemanagerdialog.cpp:1746
+#: src/routemanagerdialog.cpp:2035
+#: src/routemanagerdialog.cpp:2157
+#: src/toolbar.cpp:571
+#: src/toolbar.cpp:1895
+msgid "OpenCPN Alert"
+msgstr "Výstraha OpenCPN"
+
+#
+#: src/routemanagerdialog.cpp:1222
+msgid "Do you also want to toggle the visibility of shared waypoints being part of this route?"
+msgstr "Chceš také změnit viditelnost sdílených trasových bodů, které jsou součástí trasy?"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:1222
+msgid "Question"
+msgstr "Dotaz"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:1331
+msgid "&Merge Selected Tracks"
+msgstr "Spojit &vybrané trasy"
+
+#
+#: src/routemanagerdialog.cpp:1333
+msgid "Reduce Data..."
+msgstr "Redukovat data..."
+
+#
+#: src/routemanagerdialog.cpp:1335
+msgid "&Copy as text"
+msgstr "Kopírovat jako text"
+
+#
+#: src/routemanagerdialog.cpp:1367
+msgid ""
+"Select the maximum error allowed (in meters)\n"
+"after data reduction:"
+msgstr ""
+"Vyber maximální povolenou chybu (v metrech)\n"
+"po redukci dat:"
+
+#
+#: src/routemanagerdialog.cpp:1368
+msgid "Reduce Data Precision"
+msgstr "Snížit přesnost dat"
+
+#
+#: src/routemanagerdialog.cpp:1387
+#, c-format
+msgid ""
+"The amount of data used by the track\n"
+" was reduced by %d%%."
+msgstr ""
+"Množství dat použitých stopou\n"
+" bylo sníženo o %d%%."
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:1389
+#: src/options.cpp:2360
+msgid "OpenCPN info"
+msgstr "OpenCPN Informace"
+
+#
+#: src/routemanagerdialog.cpp:1492
+msgid ""
+"The currently running Track was not merged.\n"
+"You can merge it later when it is completed."
+msgstr ""
+"Momentálně zaznamenávaná stopa nebyla spojena.\n"
+"Můžeš ji napojit později, až skončí."
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:1540
+msgid "(Unnamed Track)"
+msgstr "(Nepojmenovaná stopa)"
+
+#
+#
+#
+#: src/routemanagerdialog.cpp:1722
+msgid "OpenCPN Converting Track to Route...."
+msgstr "OpenCPN převádí stopu na trasu...."
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:1723
+msgid "Processing Waypoints..."
+msgstr "Zpracovávám trasové body..."
+
+#
+#
+#
+#: src/routemanagerdialog.cpp:1733
+msgid "Done."
+msgstr "Hotovo."
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:1745
+msgid "Are you sure you want to delete <ALL> tracks?"
+msgstr "Určitě chceš smazat <VŠECHNY> stopy?"
+
+#
+#: src/routemanagerdialog.cpp:2035
+msgid "The waypoint you want to delete is used in a route, do you really want to delete it?"
+msgstr "Trasový bod, který chceš smazat je použit v trase, chceš ho skutečně odstranit?"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:2147
+msgid "Are you sure you want to delete <ALL> waypoints?"
+msgstr "Určitě chceš smazat <VŠECHNY> trasové body?"
+
+#
+#: src/routemanagerdialog.cpp:2153
+msgid "There are some waypoints used in routes or anchor alarms. Do you want to delete them as well? This will change the routes and disable the anchor alarms. Answering No keeps the waypoints used in routes or alarms."
+msgstr "Některé body zíjmu jsou použity v trasách nebo pro kotevní alarmy. Chceš je také odstranit? To změní trasy a deaktivuje kotevní alarmy. Odpověď Ne zachoví body, které jsou použity v trasách nebo alarmech."
+
+#
+#
+#
+#: src/routemanagerdialog.cpp:2206
+msgid "Hide from chart"
+msgstr "Schovej z mapy"
+
+#
+#
+#
+#: src/routemanagerdialog.cpp:2211
+msgid "Hide WPT names"
+msgstr "Schovej jména WPT"
+
+#
+#
+#
+#: src/routemanagerdialog.cpp:2216
+msgid "Unlist contents"
+msgstr "Odstraň obsah"
+
+#
+#
+#
+#
+#
+#: src/routemanagerdialog.cpp:2541
+msgid "(Unnamed Layer)"
+msgstr "(Nepojmenovaná vrstva)"
+
+#
+#
+#
+#: src/ais.cpp:116
+msgid "Underway"
+msgstr "V pohybu"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:117
+msgid "At Anchor"
+msgstr "Na kotvě"
+
+#
+#
+#
+#: src/ais.cpp:118
+msgid "Not Under Command"
+msgstr "Neovladatelné"
+
+#
+#
+#
+#: src/ais.cpp:119
+msgid "Restricted Manoeuvrability"
+msgstr "Omezená manévrovatelnost"
+
+#
+#
+#
+#: src/ais.cpp:120
+msgid "Constrained by draught"
+msgstr "Omezené ponorem"
+
+#
+#
+#
+#: src/ais.cpp:121
+msgid "Moored"
+msgstr "Na kotvě"
+
+#
+#
+#
+#: src/ais.cpp:122
+msgid "Aground"
+msgstr "Nasedlé"
+
+#
+#
+#
+#: src/ais.cpp:123
+msgid "Engaged in Fishing"
+msgstr "Provádějící rybolov"
+
+#
+#
+#
+#: src/ais.cpp:124
+msgid "Under way sailing"
+msgstr "Pod plachtami"
+
+#
+#
+#
+#: src/ais.cpp:125
+#: src/ais.cpp:149
+msgid "High Speed Craft"
+msgstr "Vysokorychlostní plavidlo"
+
+#
+#
+#
+#: src/ais.cpp:126
+msgid "Wing In Ground Effect"
+msgstr "Letoun s přízemním efektem"
+
+#
+#
+#
+#: src/ais.cpp:127
+msgid "Reserved 11"
+msgstr "Rezervováno 11"
+
+#
+#
+#
+#: src/ais.cpp:128
+msgid "Reserved 12"
+msgstr "Rezervováno 12"
+
+#
+#
+#
+#: src/ais.cpp:129
+msgid "Reserved 13"
+msgstr "Rezervováno 13"
+
+#
+#
+#
+#: src/ais.cpp:130
+msgid "Reserved 14"
+msgstr "Rezervováno 14"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:131
+#: src/ais.cpp:626
+msgid "Undefined"
+msgstr "Nedefinovaný"
+
+#
+#
+#
+#: src/ais.cpp:132
+msgid "Virtual"
+msgstr "Virtuální"
+
+#
+#
+#
+#: src/ais.cpp:133
+msgid "Virtual (On Position)"
+msgstr "Virtuální (Na pozici)"
+
+#
+#
+#
+#: src/ais.cpp:134
+msgid "Virtual (Off Position)"
+msgstr "Virtuální (Mimo pozici)"
+
+#
+#
+#
+#: src/ais.cpp:135
+msgid "Real"
+msgstr "Skutečný"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:136
+msgid "Real (On Position)"
+msgstr "Skutečný (Na pozici)"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:137
+msgid "Real(Off Position)"
+msgstr "Skutečný (Mimo pozici)"
+
+#
+#
+#
+#: src/ais.cpp:141
+msgid "Vessel Fishing"
+msgstr "Plavidlo rybaří"
+
+#
+#
+#
+#: src/ais.cpp:142
+msgid "Vessel Towing"
+msgstr "Plavidlo vleče"
+
+#
+#
+#
+#: src/ais.cpp:143
+msgid "Vessel Towing, Long"
+msgstr "Plavidlo vleče, dlouhý vlek"
+
+#
+#
+#
+#: src/ais.cpp:144
+msgid "Vessel Dredging"
+msgstr "Plavidlo bagruje"
+
+#
+#
+#
+#: src/ais.cpp:145
+msgid "Vessel Diving"
+msgstr "Potápěč ve vodě"
+
+#
+#
+#
+#: src/ais.cpp:146
+msgid "Military Vessel"
+msgstr "Vojenské plavidlo"
+
+#
+#
+#
+#: src/ais.cpp:147
+msgid "Sailing Vessel"
+msgstr "Plachetnice"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:148
+msgid "Pleasure craft"
+msgstr "Rekreační plavidlo"
+
+#
+#
+#
+#: src/ais.cpp:150
+msgid "Pilot Vessel"
+msgstr "Loď lodivoda"
+
+#
+#
+#
+#: src/ais.cpp:151
+msgid "Search and Rescue Vessel"
+msgstr "SAR plavidlo"
+
+#
+#
+#
+#: src/ais.cpp:152
+#: src/ais.cpp:211
+msgid "Tug"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:153
+msgid "Port Tender"
+msgstr "Přístavní člun"
+
+#
+#
+#
+#: src/ais.cpp:154
+msgid "Pollution Control Vessel"
+msgstr "Plavidlo pro kontrolu znečištění"
+
+#
+#
+#
+#: src/ais.cpp:155
+msgid "Law Enforcement Vessel"
+msgstr "Fízlové"
+
+#
+#
+#
+#: src/ais.cpp:156
+msgid "Medical Transport"
+msgstr "Lékařský transport"
+
+#
+#
+#
+#: src/ais.cpp:157
+msgid "Passenger Ship"
+msgstr "Loď s pasažéry"
+
+#
+#
+#
+#: src/ais.cpp:158
+msgid "Cargo Ship"
+msgstr "Nákladní loď"
+
+#
+#
+#
+#: src/ais.cpp:159
+#: src/ais.cpp:1268
+msgid "Tanker"
+msgstr "Tanker"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:162
+msgid "Unspecified"
+msgstr "Nedefinovaný"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:163
+msgid "Reference Point"
+msgstr "Referenční bod"
+
+#
+#
+#
+#: src/ais.cpp:164
+#: src/ais.cpp:223
+msgid "RACON"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:165
+msgid "Fixed Structure"
+msgstr "Pevná struktura"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:166
+msgid "Spare"
+msgstr "Rezerva"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:167
+msgid "Light"
+msgstr "Světlo"
+
+#
+#
+#
+#: src/ais.cpp:168
+msgid "Light w/Sectors"
+msgstr "Sektorové světlo"
+
+#
+#
+#
+#: src/ais.cpp:169
+msgid "Leading Light Front"
+msgstr "Přední naváděcí světlo"
+
+#
+#
+#
+#: src/ais.cpp:170
+msgid "Leading Light Rear"
+msgstr "Zadní naváděcí světlo"
+
+#
+#
+#
+#: src/ais.cpp:171
+msgid "Cardinal N Beacon"
+msgstr "S kardinální znak"
+
+#
+#
+#
+#: src/ais.cpp:172
+msgid "Cardinal E Beacon"
+msgstr "V kardinální znak"
+
+#
+#
+#
+#: src/ais.cpp:173
+msgid "Cardinal S Beacon"
+msgstr "J kardinální znak"
+
+#
+#
+#
+#: src/ais.cpp:174
+msgid "Cardinal W Beacon"
+msgstr "Z kardinální znak"
+
+#
+#
+#
+#: src/ais.cpp:175
+msgid "Beacon, Port Hand"
+msgstr "Znak, levobok"
+
+#
+#
+#
+#: src/ais.cpp:176
+msgid "Beacon, Starboard Hand"
+msgstr "Znak, pravobok"
+
+#
+#
+#
+#: src/ais.cpp:177
+msgid "Beacon, Preferred Channel Port Hand"
+msgstr "Znak, hlavní kanál na levoboku"
+
+#
+#
+#
+#: src/ais.cpp:178
+msgid "Beacon, Preferred Channel Starboard Hand"
+msgstr "Znak, hlavní kanál na pravoboku"
+
+#
+#
+#
+#: src/ais.cpp:179
+msgid "Beacon, Isolated Danger"
+msgstr "Znak, izolované nebezpečí"
+
+#
+#
+#
+#: src/ais.cpp:180
+msgid "Beacon, Safe Water"
+msgstr "Znak, Bezpečná voda"
+
+#
+#
+#
+#: src/ais.cpp:181
+msgid "Beacon, Special Mark"
+msgstr "Znak, speciální značka"
+
+#
+#
+#
+#: src/ais.cpp:182
+msgid "Cardinal Mark N"
+msgstr "S kardinální značka"
+
+#
+#
+#
+#: src/ais.cpp:183
+msgid "Cardinal Mark E"
+msgstr "V kardinální značka"
+
+#
+#
+#
+#: src/ais.cpp:184
+msgid "Cardinal Mark S"
+msgstr "J kardinální značka"
+
+#
+#
+#
+#: src/ais.cpp:185
+msgid "Cardinal Mark W"
+msgstr "Z kardinální značka"
+
+#
+#
+#
+#: src/ais.cpp:186
+msgid "Port Hand Mark"
+msgstr "Levoboční značka"
+
+#
+#
+#
+#: src/ais.cpp:187
+msgid "Starboard Hand Mark"
+msgstr "Pravoboční značka"
+
+#
+#
+#
+#: src/ais.cpp:188
+msgid "Preferred Channel Port Hand"
+msgstr "Hlavní kanál na levoboku"
+
+#
+#
+#
+#: src/ais.cpp:189
+msgid "Preferred Channel Starboard Hand"
+msgstr "Hlavní kanál na pravoboku"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:190
+msgid "Isolated Danger"
+msgstr "Izolované nebezpečí"
+
+#
+#
+#
+#: src/ais.cpp:191
+#: src/ais.cpp:239
+#: src/ais.cpp:250
+msgid "Safe Water"
+msgstr "Bezpečná voda"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:192
+msgid "Special Mark"
+msgstr "Speciální značka"
+
+#
+#
+#
+#: src/ais.cpp:193
+msgid "Light Vessel/Rig"
+msgstr "Plovoucí světlo"
+
+#
+#: src/ais.cpp:194
+msgid "GpsGate Buddy"
+msgstr "GPSGate kumpán"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:195
+msgid "Position Report"
+msgstr "Report pozice      "
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:196
+#: src/ais.cpp:255
+msgid "Distress"
+msgstr "Nouze"
+
+#
+#
+#
+#: src/ais.cpp:200
+msgid "F/V"
+msgstr ""
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:201
+msgid "Tow"
+msgstr "Vlek"
+
+#
+#
+#
+#: src/ais.cpp:202
+msgid "Long Tow"
+msgstr "Dlouhý vlek"
+
+#
+#
+#
+#: src/ais.cpp:203
+msgid "Dredge"
+msgstr "Bagr"
+
+#
+#
+#
+#: src/ais.cpp:204
+msgid "D/V"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:205
+msgid "Mil/V"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:206
+msgid "S/V"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:207
+msgid "Yat"
+msgstr "Loď"
+
+#
+#
+#
+#: src/ais.cpp:208
+msgid "HSC"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:209
+msgid "P/V"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:210
+msgid "SAR/V"
+msgstr ""
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:212
+msgid "Tender"
+msgstr "Člun"
+
+#
+#
+#
+#: src/ais.cpp:213
+msgid "PC/V"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:214
+msgid "LE/V"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:215
+msgid "Med/V"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:216
+msgid "Pass/V"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:217
+msgid "M/V"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:218
+msgid "M/T"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:219
+#: src/ais.cpp:225
+msgid "?"
+msgstr "?"
+
+#
+#
+#
+#
+#: src/ais.cpp:221
+#: src/ais.cpp:1012
+msgid "AtoN"
+msgstr "AdoN"
+
+#
+#
+#
+#: src/ais.cpp:222
+msgid "Ref. Pt"
+msgstr "Ref. bod"
+
+#
+#
+#
+#: src/ais.cpp:224
+msgid "Fix.Struct."
+msgstr "Pev.strukt."
+
+#
+#
+#
+#: src/ais.cpp:226
+msgid "Lt"
+msgstr "Sv"
+
+#
+#
+#
+#: src/ais.cpp:227
+msgid "Lt sect."
+msgstr "Sv sekt."
+
+#
+#
+#
+#: src/ais.cpp:228
+msgid "Ldg Lt Front"
+msgstr "Příďové světlo"
+
+#
+#
+#
+#: src/ais.cpp:229
+msgid "Ldg Lt Rear"
+msgstr "Záďové světlo"
+
+#
+#
+#
+#: src/ais.cpp:230
+#: src/ais.cpp:241
+msgid "Card. N"
+msgstr "Kard. S"
+
+#
+#
+#
+#: src/ais.cpp:231
+#: src/ais.cpp:242
+msgid "Card. E"
+msgstr "Kard. V"
+
+#
+#
+#
+#: src/ais.cpp:232
+#: src/ais.cpp:243
+msgid "Card. S"
+msgstr "Kard. J"
+
+#
+#
+#
+#: src/ais.cpp:233
+#: src/ais.cpp:244
+msgid "Card. W"
+msgstr "Kard. Z"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:234
+msgid "Port"
+msgstr "Levobok"
+
+#
+#
+#
+#: src/ais.cpp:235
+msgid "Stbd"
+msgstr "Pravo"
+
+#
+#
+#
+#: src/ais.cpp:236
+#: src/ais.cpp:237
+#: src/ais.cpp:247
+#: src/ais.cpp:248
+msgid "Pref. Chnl"
+msgstr "Hlav. kanál"
+
+#
+#
+#
+#: src/ais.cpp:238
+#: src/ais.cpp:249
+msgid "Isol. Dngr"
+msgstr "Iz. nebezpečí"
+
+#
+#
+#
+#: src/ais.cpp:240
+#: src/ais.cpp:251
+msgid "Special"
+msgstr "Speciální"
+
+#
+#
+#
+#: src/ais.cpp:245
+msgid "Port Hand"
+msgstr "Levobok"
+
+#
+#
+#
+#: src/ais.cpp:246
+msgid "Stbd Hand"
+msgstr "Pravobok"
+
+#
+#
+#
+#: src/ais.cpp:252
+msgid "LtV/Rig"
+msgstr ""
+
+#
+#: src/ais.cpp:253
+#: src/ais.cpp:1016
+msgid "Buddy"
+msgstr "Kumpán"
+
+#
+#: src/ais.cpp:254
+#: src/ais.cpp:1018
+msgid "DSC"
+msgstr "DSC"
+
+#
+#: src/ais.cpp:259
+msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
+msgstr "Oblast varování: Místo výskytu mořských savců (znamená to, že velryby NEJSOU pozorovány)"
+
+#
+#: src/ais.cpp:260
+msgid "Caution Area: Marine mammals in area - reduce speed"
+msgstr "Oblast varování: Mořští savci v oblasti - sniž rychlost"
+
+#
+#: src/ais.cpp:261
+msgid "Caution Area: Marine mammals in area - stay clear"
+msgstr "Oblast varování: Mořští savci v oblasti - vyhni se"
+
+#
+#: src/ais.cpp:262
+msgid "Caution Area: Marine mammals in area - report sightings"
+msgstr "Oblast varování: Mořští savci v oblasti - ohlášena pozorování"
+
+#
+#: src/ais.cpp:263
+msgid "Caution Area: Protected habitat - reduce speed"
+msgstr "Oblast varování: Chráněné místo výskytu - sniž rychlost"
+
+#
+#: src/ais.cpp:264
+msgid "Caution Area: Protected habitat - stay clear"
+msgstr "Oblast varování: Chráněné místo výskytu - vyhni se"
+
+#
+#: src/ais.cpp:265
+msgid "Caution Area: Protected habitat - no fishing or anchoring"
+msgstr "Oblast varování: Chráněné místo výskytu - zákaz rybolovu a kotvení"
+
+#
+#: src/ais.cpp:266
+msgid "Caution Area: Derelicts (drifting objects)"
+msgstr "Oblast varování: Trosky (driftující objekty)"
+
+#
+#: src/ais.cpp:267
+msgid "Caution Area: Traffic congestion"
+msgstr "Oblast varování: Zahlcení dopravou"
+
+#
+#: src/ais.cpp:268
+msgid "Caution Area: Marine event"
+msgstr "Oblast varování: Námořní událost"
+
+#
+#: src/ais.cpp:269
+msgid "Caution Area: Divers down"
+msgstr "Oblast varování: Potápěči pod hladinou"
+
+#
+#: src/ais.cpp:270
+msgid "Caution Area: Swim area"
+msgstr "Oblast varování: Oblast pro plavce"
+
+#
+#: src/ais.cpp:271
+msgid "Caution Area: Dredge operations"
+msgstr "Oblast varování: Probíhající bagrování"
+
+#
+#: src/ais.cpp:272
+msgid "Caution Area: Survey operations"
+msgstr "Oblast varování: Průzkumné operace"
+
+#
+#: src/ais.cpp:273
+msgid "Caution Area: Underwater operation"
+msgstr "Oblast varování: Podvodní operace"
+
+#
+#: src/ais.cpp:274
+msgid "Caution Area: Seaplane operations"
+msgstr "Oblast varování: Operace hydroplánů"
+
+#
+#: src/ais.cpp:275
+msgid "Caution Area: Fishery - nets in water"
+msgstr "Oblast varování: Sítě ve vodě"
+
+#
+#: src/ais.cpp:276
+msgid "Caution Area: Cluster of fishing vessels"
+msgstr "Oblast varování: Seskupení rybářských lodí"
+
+#
+#: src/ais.cpp:277
+msgid "Caution Area: Fairway closed"
+msgstr "Oblast varování: Plavební dráha uzavřena"
+
+#
+#: src/ais.cpp:278
+msgid "Caution Area: Harbour closed"
+msgstr "Oblast varování: Přístav uzavřen"
+
+#
+#: src/ais.cpp:279
+msgid "Caution Area: Risk (define in Associated text field)"
+msgstr "Oblast varování: Nebezpečí (definováno v přidruženém textovém poli)"
+
+#
+#: src/ais.cpp:280
+msgid "Caution Area: Underwater vehicle operation"
+msgstr "Oblast varování: Operace podvodních dopravních prostředků"
+
+#
+#: src/ais.cpp:281
+#: src/ais.cpp:290
+#: src/ais.cpp:298
+#: src/ais.cpp:305
+#: src/ais.cpp:306
+#: src/ais.cpp:307
+#: src/ais.cpp:308
+#: src/ais.cpp:309
+#: src/ais.cpp:310
+#: src/ais.cpp:311
+#: src/ais.cpp:312
+#: src/ais.cpp:313
+#: src/ais.cpp:314
+#: src/ais.cpp:318
+#: src/ais.cpp:319
+#: src/ais.cpp:320
+#: src/ais.cpp:321
+#: src/ais.cpp:322
+#: src/ais.cpp:336
+#: src/ais.cpp:337
+#: src/ais.cpp:338
+#: src/ais.cpp:345
+#: src/ais.cpp:346
+#: src/ais.cpp:368
+#: src/ais.cpp:369
+#: src/ais.cpp:370
+#: src/ais.cpp:372
+#: src/ais.cpp:374
+#: src/ais.cpp:375
+#: src/ais.cpp:376
+#: src/ais.cpp:377
+#: src/ais.cpp:378
+#: src/ais.cpp:382
+#: src/ais.cpp:383
+msgid "(reserved for future use)"
+msgstr "(rezervováno pro budoucí použití)"
+
+#
+#: src/ais.cpp:282
+msgid "Environmental Caution Area: Storm front (line squall)"
+msgstr "Oblast varování prostředí: Bouřková fronta"
+
+#
+#: src/ais.cpp:283
+msgid "Environmental Caution Area: Hazardous sea ice"
+msgstr "Oblast varování prostředí: Nebezpečný mořský led"
+
+#
+#: src/ais.cpp:284
+msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
+msgstr "Oblast varování prostředí: Varování před bouří (bouřková buňka nebo řada bouřek)"
+
+#
+#: src/ais.cpp:285
+msgid "Environmental Caution Area: High wind"
+msgstr "Oblast varování prostředí: Silný vítr"
+
+#
+#: src/ais.cpp:286
+msgid "Environmental Caution Area: High waves"
+msgstr "Oblast varování prostředí: Vysoké vlny"
+
+#
+#: src/ais.cpp:287
+msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
+msgstr "Oblast varování prostředí: Snížená viditelnost (mlha, déšť atd.)"
+
+#
+#: src/ais.cpp:288
+msgid "Environmental Caution Area: Strong currents"
+msgstr "Oblast varování prostředí: Silný proud"
+
+#
+#: src/ais.cpp:289
+msgid "Environmental Caution Area: Heavy icing"
+msgstr "Oblast varování prostředí: Tlustý led"
+
+#
+#: src/ais.cpp:291
+msgid "Restricted Area: Fishing prohibited"
+msgstr "Zákázaná oblast: Zákaz rybolovu"
+
+#
+#: src/ais.cpp:292
+msgid "Restricted Area: No anchoring."
+msgstr "Zákázaná oblast: Zákaz kotvení"
+
+#
+#: src/ais.cpp:293
+msgid "Restricted Area: Entry approval required prior to transit"
+msgstr "Zákázaná oblast: Před proplutím je vyžadováno povolení vstupu"
+
+#
+#: src/ais.cpp:294
+msgid "Restricted Area: Entry prohibited"
+msgstr "Zákázaná oblast: Vplutí zakázáno"
+
+#
+#: src/ais.cpp:295
+msgid "Restricted Area: Active military OPAREA"
+msgstr "Zákázaná oblast: Aktivní vojenská OPAREA"
+
+#
+#: src/ais.cpp:296
+msgid "Restricted Area: Firing - danger area."
+msgstr "Zákázaná oblast: Střelba - nebezpečná oblast"
+
+#
+#: src/ais.cpp:297
+msgid "Restricted Area: Drifting Mines"
+msgstr "Zákázaná oblast: Plovoucí miny"
+
+#
+#: src/ais.cpp:299
+msgid "Anchorage Area: Anchorage open"
+msgstr "Oblast kotvení: Kotviště otevřeno"
+
+#
+#: src/ais.cpp:300
+msgid "Anchorage Area: Anchorage closed"
+msgstr "Oblast kotvení: Kotviště uzavřeno"
+
+#
+#: src/ais.cpp:301
+msgid "Anchorage Area: Anchoring prohibited"
+msgstr "Oblast kotviště: Kotvení zakázáno"
+
+#
+#: src/ais.cpp:302
+msgid "Anchorage Area: Deep draft anchorage"
+msgstr "Oblast kotviště: Kotviště pro hluboký ponor"
+
+#
+#: src/ais.cpp:303
+msgid "Anchorage Area: Shallow draft anchorage"
+msgstr "Oblast kotviště: Kotviště pro mělký ponor"
+
+#
+#: src/ais.cpp:304
+msgid "Anchorage Area: Vessel transfer operations"
+msgstr "Oblast kotviště: Operace přemísťování lodí"
+
+#
+#: src/ais.cpp:315
+msgid "Security Alert - Level 1"
+msgstr "Bezpečnostní upozornění - Úroveň 1"
+
+#
+#: src/ais.cpp:316
+msgid "Security Alert - Level 2"
+msgstr "Bezpečnostní upozornění - Úroveň 2"
+
+#
+#: src/ais.cpp:317
+msgid "Security Alert - Level 3"
+msgstr "Bezpečnostní upozornění - Úroveň 3"
+
+#
+#: src/ais.cpp:323
+msgid "Distress Area: Vessel disabled and adrift"
+msgstr "Oblast nouze: Plavidlo bez pohonu a splouvá"
+
+#
+#: src/ais.cpp:324
+msgid "Distress Area: Vessel sinking"
+msgstr "Oblast nouze: Plavidlo se potápí"
+
+#
+#: src/ais.cpp:325
+msgid "Distress Area: Vessel abandoning ship"
+msgstr "Oblast nouze: Posádka opouští loď"
+
+#
+#: src/ais.cpp:326
+msgid "Distress Area: Vessel requests medical assistance"
+msgstr "Oblast nouze: Pravidlo žádá lékařskou asistenci"
+
+#
+#: src/ais.cpp:327
+msgid "Distress Area: Vessel flooding"
+msgstr "Oblast nouze: Plavidlo nabírá vodu"
+
+#
+#: src/ais.cpp:328
+msgid "Distress Area: Vessel fire/explosion"
+msgstr "Oblast nouze: Požár/výbuch na plavidle "
+
+#
+#: src/ais.cpp:329
+msgid "Distress Area: Vessel grounding"
+msgstr "Oblast nouze: Plavidlo nasedlé"
+
+#
+#: src/ais.cpp:330
+msgid "Distress Area: Vessel collision"
+msgstr "Oblast nouze: Kolize plavidel"
+
+#
+#: src/ais.cpp:331
+msgid "Distress Area: Vessel listing/capsizing"
+msgstr "Oblast nouze: Plavidlo se naklání/převrací"
+
+#
+#: src/ais.cpp:332
+msgid "Distress Area: Vessel under assault"
+msgstr "Oblast nouze: Plavidlo čelí útoku"
+
+#
+#: src/ais.cpp:333
+msgid "Distress Area: Person overboard"
+msgstr "Oblast nouze: Osoba přes palubu"
+
+#
+#: src/ais.cpp:334
+msgid "Distress Area: SAR area"
+msgstr "Oblast nouze: Oblast SAR"
+
+#
+#: src/ais.cpp:335
+msgid "Distress Area: Pollution response area"
+msgstr "Oblast nouze: Oblast odpovědi na znečištění"
+
+#
+#: src/ais.cpp:339
+msgid "Instruction: Contact VTS at this point/juncture"
+msgstr "Instrukce: Kontaktuj VTS na tomto bodě/křížení"
+
+#
+#: src/ais.cpp:340
+msgid "Instruction: Contact Port Administration at this point/juncture"
+msgstr "Instrukce: Kontaktuj správu přístavu na tomto bodě/křížení"
+
+#
+#: src/ais.cpp:341
+msgid "Instruction: Do not proceed beyond this point/juncture"
+msgstr "Instrukce: Nepokračuj za tento bod/křížení"
+
+#
+#: src/ais.cpp:342
+msgid "Instruction: Await instructions prior to proceeding beyond this point/juncture"
+msgstr "Instrukce: Vyčkej na instrukce před pokračováním za tento bod/křížení"
+
+#
+#: src/ais.cpp:343
+msgid "Proceed to this location - await instructions"
+msgstr "Pokračuj na toto místo - vyčkej na instrukce"
+
+#
+#: src/ais.cpp:344
+msgid "Clearance granted - proceed to berth"
+msgstr "Povolení uděleno - pokračuj ke kotvišti"
+
+#
+#: src/ais.cpp:347
+msgid "Information: Pilot boarding position"
+msgstr "Informace: Pozice nalodění pilota"
+
+#
+#: src/ais.cpp:348
+msgid "Information: Icebreaker waiting area"
+msgstr "Informace: Oblast vyčkávání ledoborce"
+
+#
+#: src/ais.cpp:349
+msgid "Information: Places of refuge"
+msgstr "Informace: Místa úniku"
+
+#
+#: src/ais.cpp:350
+msgid "Information: Position of icebreakers"
+msgstr "Informace: Pozice ledoborců"
+
+#
+#: src/ais.cpp:351
+msgid "Information: Location of response units"
+msgstr "Informace: Umístění odpovídacích jednotek"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:352
+msgid "VTS active target"
+msgstr "VTS aktivní cíl"
+
+#
+#: src/ais.cpp:353
+msgid "Rouge or suspicious vessel"
+msgstr "Lump nebo podezřelé plavidlo"
+
+#
+#: src/ais.cpp:354
+msgid "Vessel requesting non-distress assistance"
+msgstr "Plavidlo požadující asistenci mimo nouzi"
+
+#
+#: src/ais.cpp:355
+msgid "Chart Feature: Sunken vessel"
+msgstr "Mapový prvek: Potopená loď"
+
+#
+#: src/ais.cpp:356
+msgid "Chart Feature: Submerged object"
+msgstr "Mapový prvek: Ponořený objekt"
+
+#
+#: src/ais.cpp:357
+msgid "Chart Feature: Semi-submerged object"
+msgstr "Mapový prvek: Částečně ponořený objekt"
+
+#
+#: src/ais.cpp:358
+msgid "Chart Feature: Shoal area"
+msgstr "Mapový prvek: Mělčina"
+
+#
+#: src/ais.cpp:359
+msgid "Chart Feature: Shoal area due north"
+msgstr "Mapový prvek: Mělčina na sever"
+
+#
+#: src/ais.cpp:360
+msgid "Chart Feature: Shoal area due east"
+msgstr "Mapový prvek: Mělčina na východ"
+
+#
+#: src/ais.cpp:361
+msgid "Chart Feature: Shoal area due south"
+msgstr "Mapový prvek: Mělčina na jih"
+
+#
+#: src/ais.cpp:362
+msgid "Chart Feature: Shoal area due west"
+msgstr "Mapový prvek: Mělčina na západ"
+
+#
+#: src/ais.cpp:363
+msgid "Chart Feature: Channel obstruction"
+msgstr "Mapový prvek: Překážka v kanálu"
+
+#
+#: src/ais.cpp:364
+msgid "Chart Feature: Reduced vertical clearance"
+msgstr "Mapový prvek: Snéžená podjezdná výška"
+
+#
+#: src/ais.cpp:365
+msgid "Chart Feature: Bridge closed"
+msgstr "Mapový prvek: Most uzavřen"
+
+#
+#: src/ais.cpp:366
+msgid "Chart Feature: Bridge partially open"
+msgstr "Mapový prvek: Most částečně otevřen"
+
+#
+#: src/ais.cpp:367
+msgid "Chart Feature: Bridge fully open"
+msgstr "Mapový prvek: Most plně otevřen"
+
+#
+#: src/ais.cpp:371
+msgid "Report from ship: Icing info"
+msgstr "Zpráva z lodě: Info o zalednění"
+
+#
+#: src/ais.cpp:373
+msgid "Report from ship: Miscellaneous information - define in Associated text field"
+msgstr "Zpráva z lodě: Různé informace: definuj v přidruženém textovém poli"
+
+#
+#: src/ais.cpp:379
+msgid "Route: Recommended route"
+msgstr "Trasa: Doporučená trasa"
+
+#
+#: src/ais.cpp:380
+msgid "Route: Alternative route"
+msgstr "Trasa: Alternativní trasa"
+
+#
+#: src/ais.cpp:381
+msgid "Route: Recommended route through ice"
+msgstr "Trasa: Doporučená trasa skrz led"
+
+#
+#: src/ais.cpp:384
+msgid "Other - Define in associated text field"
+msgstr "Jiný - Definuj v přidruženém textovém poli"
+
+#
+#: src/ais.cpp:385
+msgid "Cancellation - cancel area as identified by Message Linkage ID"
+msgstr "Zrušení - oblast zrušení je identifikována podle Message Linkage ID"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:386
+msgid "Undefined (default)"
+msgstr "Nedefinovaný (výchozí)"
+
+#
+#
+#
+#
+#: src/ais.cpp:574
+#: src/ais.cpp:583
+#: src/ais.cpp:3455
+msgid "MMSI"
+msgstr "MMSI"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:575
+#: src/ais.cpp:584
+#: src/ais.cpp:3463
+msgid "Class"
+msgstr "Třída"
+
+#
+#: src/ais.cpp:576
+msgid "IMO"
+msgstr "IMO"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:594
+#: src/ais.cpp:896
+#: src/ais.cpp:3099
+#: src/ais.cpp:3236
+#: src/ais.cpp:3248
+msgid "Active"
+msgstr "Aktivní"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:595
+#: src/ais.cpp:897
+#: src/ais.cpp:3100
+#: src/ais.cpp:3237
+#: src/ais.cpp:3249
+msgid "Testing"
+msgstr "Testování"
+
+#
+#: src/ais.cpp:635
+msgid "Safety Broadcast Message"
+msgstr "Bezpečnostní hlášení"
+
+#
+#
+#: src/ais.cpp:703
+msgid " (Last Known)"
+msgstr " (Poslední známý)"
+
+#
+#: src/ais.cpp:710
+msgid "Report Age"
+msgstr "Stáří reportu"
+
+#
+#: src/ais.cpp:720
+msgid "Report as of"
+msgstr "Report z"
+
+#
+#
+#
+#
+#: src/ais.cpp:733
+#: src/ais.cpp:743
+#: src/ais.cpp:756
+#: src/ais.cpp:774
+#: src/ais.cpp:781
+#: src/ais.cpp:788
+msgid "---"
+msgstr "---"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:765
+#: src/ais.cpp:768
+msgid "Right"
+msgstr "Vpravo"
+
+#
+#: src/ais.cpp:766
+#: src/ais.cpp:769
+msgid "Left"
+msgstr "Vlevo"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:793
+msgid "Speed"
+msgstr "Rychlost"
+
+#
+#: src/ais.cpp:795
+msgid "Heading"
+msgstr "Kurs"
+
+#
+#: src/ais.cpp:800
+msgid "Turn Rate"
+msgstr "Rychlost obratu"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:803
+#: src/ais.cpp:3495
+msgid "Range"
+msgstr "Rozsah"
+
+#
+#: src/ais.cpp:812
+msgid " </b>in<b> "
+msgstr " </b>za<b> "
+
+#
+#
+#
+#
+#: src/ais.cpp:815
+#: src/ais.cpp:924
+#: src/ais.cpp:3518
+msgid "CPA"
+msgstr "CPA"
+
+#
+#
+#
+#
+#: src/ais.cpp:822
+#: src/ais.cpp:825
+msgid "Inland Blue Flag"
+msgstr "Pozemní modrá vlajka"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:823
+msgid "Clear"
+msgstr "Vyčistit"
+
+#
+#: src/ais.cpp:826
+msgid "Set"
+msgstr "Nastavit"
+
+#
+#: src/ais.cpp:908
+#: src/ais.cpp:910
+msgid "Kts"
+msgstr "Kts"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:916
+#: src/ais.cpp:919
+msgid " COG Unavailable"
+msgstr "COG Není k dispozici"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:925
+msgid "in"
+msgstr "do"
+
+#
+#: src/ais.cpp:926
+msgid "min"
+msgstr "min"
+
+#
+#
+#
+#
+#: src/ais.cpp:1008
+msgid "A"
+msgstr "A"
+
+#
+#
+#
+#
+#: src/ais.cpp:1010
+msgid "B"
+msgstr "B"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:1012
+msgid "Aid to Navigation"
+msgstr "Pomůcka pro navigaci"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:1014
+#: src/options.cpp:1072
+msgid "Base"
+msgstr "Základní"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:1014
+msgid "Base Station"
+msgstr "Základnová stanice"
+
+#
+#: src/ais.cpp:1016
+msgid "GPSGate Buddy"
+msgstr "GPSGate kumpán"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:1018
+msgid "DSC Position Report"
+msgstr "Report pozice DSC"
+
+#
+#: src/ais.cpp:1020
+msgid "SART"
+msgstr "SART"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:1023
+msgid "Unk"
+msgstr "Neznámý"
+
+#
+#
+#
+#: src/ais.cpp:1205
+msgid "Vessel, type unknown"
+msgstr "Plavidlo, neznámý typ"
+
+#
+#
+#
+#: src/ais.cpp:1206
+msgid "Freightbarge"
+msgstr "Nákladní prám"
+
+#
+#
+#
+#: src/ais.cpp:1207
+msgid "Tankbarge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1208
+msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1209
+msgid "Service vessel, police patrol, port service"
+msgstr "Servisní plavidlo, policejní hlídka, přístavní služba"
+
+#
+#
+#
+#: src/ais.cpp:1210
+#: src/ais.cpp:1256
+msgid "Pushboat, single"
+msgstr "Tlačný remorkér, samostatný"
+
+#
+#
+#
+#: src/ais.cpp:1211
+msgid "Object, not otherwise specified"
+msgstr "Objekt, jinak nespecifikován"
+
+#
+#
+#
+#: src/ais.cpp:1212
+msgid "Object, towed, not otherwise specified"
+msgstr "Objekt, tažený, jinak nespecifikován"
+
+#
+#
+#
+#: src/ais.cpp:1213
+msgid "Bunkership"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1214
+msgid "Motor freighter"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1215
+msgid "Motor tanker"
+msgstr "Motorový tanker"
+
+#
+#
+#
+#: src/ais.cpp:1216
+msgid "Motor tanker, liquid cargo, type N"
+msgstr "Motorový tanker, tekutý náklad typu N"
+
+#
+#
+#
+#: src/ais.cpp:1217
+msgid "Motor tanker, liquid cargo, type C"
+msgstr "Motorový tanker, tekutý náklad typu C"
+
+#
+#
+#
+#: src/ais.cpp:1218
+msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
+msgstr "Motorový tanker, tuhý náklad podobné tekutině (např. cement)"
+
+#
+#
+#
+#: src/ais.cpp:1219
+msgid "Container vessel"
+msgstr "Kontejnerová loď"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:1220
+msgid "Gas tanker"
+msgstr "Plynový tanker"
+
+#
+#
+#
+#: src/ais.cpp:1221
+msgid "Motor freighter, tug"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1222
+msgid "Motor tanker, tug"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1223
+msgid "Motor freighter with one or more ships alongside"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1224
+msgid "Motor freighter with tanker"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1225
+msgid "Motor freighter pushing one or more freighters"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1226
+msgid "Motor freighter pushing at least one tank-ship"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1227
+msgid "Tug, freighter"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1228
+msgid "Tug, tanker"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1229
+msgid "Tug freighter, coupled"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1230
+msgid "Tug, freighter/tanker, coupled"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1231
+msgid "Tankbarge, liquid cargo, type N"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1232
+msgid "Tankbarge, liquid cargo, type C"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1233
+msgid "Freightbarge with containers"
+msgstr "Níkladní prám s kontejnery"
+
+#
+#
+#
+#: src/ais.cpp:1234
+msgid "Tankbarge, gas"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1235
+msgid "Pushtow, one cargo barge"
+msgstr "Tlačná souprava, jedna nákladní vana"
+
+#
+#
+#
+#: src/ais.cpp:1236
+msgid "Pushtow, two cargo barges"
+msgstr "Tlačná souprava, dvě nákladní vany"
+
+#
+#
+#
+#: src/ais.cpp:1237
+msgid "Pushtow, three cargo barges"
+msgstr "Tlačná souprava, tři nákladní vany"
+
+#
+#
+#
+#: src/ais.cpp:1238
+msgid "Pushtow, four cargo barges"
+msgstr "Tlačná souprava, čtyři nákladní vany"
+
+#
+#
+#
+#: src/ais.cpp:1239
+msgid "Pushtow, five cargo barges"
+msgstr "Tlačná souprava, pět nákladních van"
+
+#
+#
+#
+#: src/ais.cpp:1240
+msgid "Pushtow, six cargo barges"
+msgstr "Tlačná souprava, šest nákladních van"
+
+#
+#
+#
+#: src/ais.cpp:1241
+msgid "Pushtow, seven cargo barges"
+msgstr "Tlačná souprava, sedm nákladních van"
+
+#
+#
+#
+#: src/ais.cpp:1242
+msgid "Pushtow, eight cargo barges"
+msgstr "Tlačná souprava, osm nákladních van"
+
+#
+#
+#: src/ais.cpp:1243
+msgid "Pushtow, nine or more barges"
+msgstr "Tlačná souprava, devět či více nákladních van"
+
+#
+#
+#
+#: src/ais.cpp:1244
+msgid "Pushtow, one tank/gas barge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1245
+msgid "Pushtow, two barges at least one tanker or gas barge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1246
+msgid "Pushtow, three barges at least one tanker or gas barge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1247
+msgid "Pushtow, four barges at least one tanker or gas barge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1248
+msgid "Pushtow, five barges at least one tanker or gas barge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1249
+msgid "Pushtow, six barges at least one tanker or gas barge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1250
+msgid "Pushtow, seven barges at least one tanker or gas barge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1251
+msgid "Pushtow, eight barges at least one tanker or gas barge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1252
+msgid "Pushtow, nine or more barges at least one tanker or gas barge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1253
+msgid "Tug, single"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1254
+msgid "Tug, one or more tows"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1255
+msgid "Tug, assisting a vessel or linked combination"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1257
+msgid "Passenger ship, ferry, cruise ship, red cross ship"
+msgstr "Loď s pasažéry, trajekt, výletní loď, loď červeného kříže"
+
+#
+#
+#
+#: src/ais.cpp:1258
+msgid "Ferry"
+msgstr "Trajekt"
+
+#
+#
+#
+#: src/ais.cpp:1259
+msgid "Red cross ship"
+msgstr "Plavidlo červeného kříže"
+
+#
+#
+#
+#: src/ais.cpp:1260
+msgid "Cruise ship"
+msgstr "Výletní loď"
+
+#
+#
+#
+#: src/ais.cpp:1261
+msgid "Passenger ship without accomodation"
+msgstr "Loď s pasažéry bez ubytování"
+
+#
+#
+#
+#: src/ais.cpp:1262
+msgid "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, dredge"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1263
+msgid "Fishing boat"
+msgstr "Rybářská loď"
+
+#
+#
+#
+#: src/ais.cpp:1264
+msgid "Barge, tanker, chemical"
+msgstr "Prám, tanker, chemický"
+
+#
+#
+#
+#: src/ais.cpp:1265
+msgid "General cargo Vessel maritime"
+msgstr "Obecné nákladní plavidlo"
+
+#
+#
+#
+#: src/ais.cpp:1266
+msgid "Unit carrier maritime"
+msgstr ""
+
+#
+#
+#
+#: src/ais.cpp:1267
+msgid "Bulk carrier maritime"
+msgstr "Loď na sypké hmoty"
+
+#
+#
+#
+#: src/ais.cpp:1269
+msgid "Liquified gas tanker"
+msgstr "Tanker s kapalným plynem"
+
+#
+#
+#
+#: src/ais.cpp:1270
+msgid "Pleasure craft, longer than 20 metres"
+msgstr "Rekreační plavidlo, delší než 20m"
+
+#
+#
+#
+#: src/ais.cpp:1271
+msgid "Fast ship"
+msgstr "Rychlý trajekt"
+
+#
+#
+#
+#: src/ais.cpp:1272
+msgid "Hydrofoil"
+msgstr "Křídlová loď"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:2818
+msgid "AISTargetAlert"
+msgstr "AISTargetAlert"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:2852
+msgid "&Silence Alert"
+msgstr "Potlačit vý&strahu"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:2857
+msgid "&Acknowledge"
+msgstr "&Potvrdit"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:2862
+msgid "&Jump To"
+msgstr "&Skok na"
+
+#
+#
+#
+#
+#: src/ais.cpp:3063
+#: src/ais.cpp:3092
+#: src/ais.cpp:3106
+#: src/ais.cpp:3110
+#: src/ais.cpp:3122
+#: src/ais.cpp:3128
+#: src/ais.cpp:3140
+#: src/ais.cpp:3148
+#: src/ais.cpp:3156
+#: src/ais.cpp:3165
+#: src/ais.cpp:3241
+#: src/ais.cpp:3253
+msgid "-"
+msgstr "-"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:3447
+msgid "Call"
+msgstr "Volání"
+
+#
+#
+#
+#
+#: src/ais.cpp:3471
+#: src/options.cpp:781
+msgid "Type"
+msgstr "Typ"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:3479
+msgid "Nav Status"
+msgstr "Nav status"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:3487
+msgid "Brg"
+msgstr "Kurs"
+
+#
+#
+#
+#
+#: src/ais.cpp:3503
+msgid "CoG"
+msgstr "CoG"
+
+#
+#
+#
+#
+#: src/ais.cpp:3511
+msgid "SoG"
+msgstr "SoG"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:3525
+msgid "TCPA"
+msgstr "TCPA"
+
+#
+#
+#
+#: src/ais.cpp:3537
+msgid "Target info"
+msgstr "Info o cíli"
+
+#
+#
+#
+#: src/ais.cpp:3551
+msgid "Limit range: NM"
+msgstr "Omezit rozsah: NM"
+
+#
+#
+#
+#: src/ais.cpp:3565
+msgid "Target Count"
+msgstr "Počet cílů"
+
+#
+#
+#
+#
+#
+#: src/ais.cpp:3585
+msgid "AIS target list"
+msgstr "Seznam cílů AIS"
+
+#
+#: src/options.cpp:470
+msgid "NMEA"
+msgstr "NMEA"
+
+#
+#
+#
+#
+#
+#
+#: src/options.cpp:480
+msgid "General"
+msgstr "Obecné"
+
+#
+#
+#
+#: src/options.cpp:491
+msgid "Filter NMEA Course and Speed data"
+msgstr "Filtrovat NMEA data kurzu a rychlosti"
+
+#
+#
+#
+#: src/options.cpp:494
+msgid "Filter period (sec)"
+msgstr "Perioda filtru (sek)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:508
+msgid "Show NMEA Debug Window"
+msgstr "Zobrazit okno toku dat NMEA"
+
+#
+#: src/options.cpp:511
+msgid "Format uploads for Furuno GP3X"
+msgstr "Formátuj uploady pro Furuno GP3X"
+
+#
+#
+#
+#
+#: src/options.cpp:515
+msgid "Use Garmin GRMN (Host) mode for uploads"
+msgstr "Použít Garmin GRMN (Host) mód uploady"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:525
+msgid "Data Connections"
+msgstr "Datová spojení"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:537
+msgid "Add Connection"
+msgstr "Přidat spojení"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:540
+msgid "Remove Connection"
+msgstr "Odstranit spojení"
+
+#
+#: src/options.cpp:560
+msgid "Network"
+msgstr "Síť"
+
+#
+#: src/options.cpp:568
+#: src/options.cpp:633
+msgid "Protocol"
+msgstr "Protokol"
+
+#
+#: src/options.cpp:592
+msgid "Address"
+msgstr "Adresa"
+
+#
+#
+#
+#
+#
+#
+#: src/options.cpp:599
+#: src/options.cpp:616
+#: src/options.cpp:786
+msgid "DataPort"
+msgstr "Datový port"
+
+#
+#
+#
+#
+#: src/options.cpp:623
+msgid "Baudrate"
+msgstr "Rychlost (baud)"
+
+#
+#: src/options.cpp:627
+msgid "150"
+msgstr "150"
+
+#
+#: src/options.cpp:627
+msgid "300"
+msgstr "300"
+
+#
+#: src/options.cpp:627
+msgid "600"
+msgstr "600"
+
+#
+#: src/options.cpp:627
+msgid "1200"
+msgstr "1200"
+
+#
+#: src/options.cpp:627
+msgid "2400"
+msgstr "2400"
+
+#
+#: src/options.cpp:627
+msgid "4800"
+msgstr "4800"
+
+#
+#: src/options.cpp:627
+msgid "9600"
+msgstr "9600"
+
+#
+#: src/options.cpp:627
+msgid "19200"
+msgstr "19200"
+
+#
+#: src/options.cpp:627
+msgid "38400"
+msgstr "38400"
+
+#
+#: src/options.cpp:627
+msgid "57600"
+msgstr "57600"
+
+#
+#: src/options.cpp:627
+msgid "115200"
+msgstr "115200"
+
+#
+#: src/options.cpp:627
+msgid "230400"
+msgstr "230400"
+
+#
+#: src/options.cpp:627
+msgid "460800"
+msgstr "460800"
+
+#
+#: src/options.cpp:627
+msgid "921600"
+msgstr "921600"
+
+#
+#: src/options.cpp:637
+msgid "NMEA 0183"
+msgstr "NMEA 0183"
+
+#
+#: src/options.cpp:637
+msgid "NMEA 2000"
+msgstr "NMEA 2000"
+
+#
+#: src/options.cpp:637
+msgid "Seatalk"
+msgstr "Seatalk"
+
+#
+#: src/options.cpp:645
+#: src/options.cpp:791
+msgid "Priority"
+msgstr "Priorita"
+
+#
+#: src/options.cpp:649
+msgid "0"
+msgstr "0"
+
+#
+#: src/options.cpp:649
+msgid "1"
+msgstr "1"
+
+#
+#: src/options.cpp:649
+msgid "2"
+msgstr "2"
+
+#
+#: src/options.cpp:649
+msgid "3"
+msgstr "3"
+
+#
+#: src/options.cpp:649
+msgid "4"
+msgstr "4"
+
+#
+#: src/options.cpp:649
+msgid "5"
+msgstr "5"
+
+#
+#: src/options.cpp:649
+msgid "6"
+msgstr "6"
+
+#
+#: src/options.cpp:649
+msgid "7"
+msgstr "7"
+
+#
+#: src/options.cpp:649
+msgid "8"
+msgstr "8"
+
+#
+#: src/options.cpp:649
+msgid "9"
+msgstr "9"
+
+#
+#: src/options.cpp:663
+msgid "Control checksum"
+msgstr "Kontroluj kontrolní součet"
+
+#
+#: src/options.cpp:665
+msgid "If checked, only the sentences with a valid checksum are passed through"
+msgstr "Pokud je zaškrtnuto, jsou propuštěny pouze věty s platným kontrolním součtem"
+
+#
+#
+#
+#
+#: src/options.cpp:668
+msgid "Use Garmin (GRMN) mode for input"
+msgstr "Použít Garmin GRMN mód pro vstup"
+
+#
+#: src/options.cpp:675
+msgid "Input filtering"
+msgstr "Filtrování vstupu"
+
+#
+#: src/options.cpp:680
+msgid "Accept only sentences"
+msgstr "Zahrnout jen věty"
+
+#
+#: src/options.cpp:683
+msgid "Ignore sentences"
+msgstr "Ignorovat věty"
+
+#
+#: src/options.cpp:703
+msgid "Output on this port ( as Autopilot or NMEA Repeater)"
+msgstr "Výstup na tomto portu (jako autopilot nebo NMEA repeater)"
+
+#
+#: src/options.cpp:706
+msgid "Output filtering"
+msgstr "Filtrování výstupu"
+
+#
+#: src/options.cpp:711
+msgid "Transmit sentences"
+msgstr "Přenést věty"
+
+#
+#: src/options.cpp:714
+msgid "Drop sentences"
+msgstr "Zahodit věty"
+
+#
+#
+#
+#
+#: src/options.cpp:776
+#: src/pluginmanager.cpp:2094
+#: src/pluginmanager.cpp:2104
+msgid "Enable"
+msgstr "Povolit"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:796
+msgid "Parameters"
+msgstr "Parametry"
+
+#
+#: src/options.cpp:801
+msgid "Output"
+msgstr "Výstup"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:806
+msgid "Filters"
+msgstr "Filtry"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:879
+msgid "Own Ship"
+msgstr "Vlastní loď"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:885
+msgid "Display Options"
+msgstr "Volby zobrazení"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:893
+msgid "COG Predictor Length (min)"
+msgstr "Délka předpovědi COG (min):"
+
+#
+#: src/options.cpp:899
+msgid "Ship Icon Type"
+msgstr "Typ ikony lodě"
+
+#
+#: src/options.cpp:902
+msgid "Real Scale Bitmap"
+msgstr "Bitová mapa ve skutečném měřítku"
+
+#
+#: src/options.cpp:902
+msgid "Real Scale Vector"
+msgstr "Vektor ve skutečném měřítku"
+
+#
+#: src/options.cpp:911
+msgid "Length Over All (m)"
+msgstr "Celková délka (m)"
+
+#
+#: src/options.cpp:915
+msgid "Width Over All (m)"
+msgstr "Celková šířka (m)"
+
+#
+#: src/options.cpp:919
+msgid "GPS Offset from Bow (m)"
+msgstr "Offset GPS od přídě (m)"
+
+#
+#: src/options.cpp:923
+msgid "GPS Offset from Midship (m)"
+msgstr "GPS offset od středu lodě (m)"
+
+#
+#: src/options.cpp:927
+msgid "Minimum Screen Size (mm)"
+msgstr "Nejmenší velikost obrazovky (mm)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:937
+msgid "Show radar rings"
+msgstr "Zobrazit radarové kruhy"
+
+#
+#: src/options.cpp:940
+msgid "None"
+msgstr "Žádný"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:948
+msgid "Distance Between Rings"
+msgstr "Vzdálenost mezi kruhy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:954
+msgid "Distance Unit"
+msgstr "Jednotka vzdálenosti"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:957
+msgid "Nautical Miles"
+msgstr "Námořní míle"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:957
+msgid "Kilometers"
+msgstr "Kilometry"
+
+#
+#
+#
+#: src/options.cpp:966
+msgid "Automatic Daily Tracks"
+msgstr "Automatické denní stopy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:969
+msgid "Highlight Tracks"
+msgstr "Zvýraznit stopy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:976
+msgid "Tracking Precision"
+msgstr "Přesnost záznamu stopy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:979
+msgid "Low"
+msgstr "Nízký"
+
+#
+#: src/options.cpp:979
+msgid "Medium"
+msgstr "Střední"
+
+#
+#: src/options.cpp:979
+msgid "High"
+msgstr "Vysoký"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:989
+msgid "Loaded Charts"
+msgstr "Nahrané mapy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:994
+msgid "Directories"
+msgstr "Složky"
+
+#
+#
+#
+#: src/options.cpp:1018
+msgid "Add Directory..."
+msgstr "P5idat složku..."
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1021
+#: src/options.cpp:1202
+msgid "Remove Selected"
+msgstr "Odstranit vybrané"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1025
+msgid "Update Control"
+msgstr "Aktualizovat ovládací prvek"
+
+#
+#
+#: src/options.cpp:1031
+msgid "Scan Charts and Update Database"
+msgstr "Projít mapy a aktualizovat databázi"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1035
+msgid "Force Full Database Rebuild"
+msgstr "Vynutit uplné znovuvytvoření databáze"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1044
+msgid "Vector Charts"
+msgstr "Vektorové mapy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1052
+msgid "Mariner's Standard"
+msgstr "Mariner's Standard"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1063
+#: src/options.cpp:4064
+msgid "Select All"
+msgstr "Vybrat vše"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1065
+#: src/options.cpp:4067
+msgid "Clear All"
+msgstr "Vyčistit vše"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1072
+msgid "Standard"
+msgstr "Standardní"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1072
+msgid "Other"
+msgstr "Jiný"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1072
+msgid "Mariners Standard"
+msgstr "Mariners Standard"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1073
+msgid "Display Category"
+msgstr "Kategorie zobrazení"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1077
+msgid "Depth Soundings"
+msgstr "Zobrazit hloubky"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1081
+msgid "Chart Information Objects"
+msgstr "Informační mapové objekty"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1086
+msgid "Important Text Only"
+msgstr "Pouze důležitý text"
+
+#
+#: src/options.cpp:1090
+msgid "Reduced Detail at Small Scale"
+msgstr "Snížit detail u malého měřítka"
+
+#
+#: src/options.cpp:1094
+msgid "Buoy/Light Labels"
+msgstr "Popisky bojí/světel"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1098
+msgid "Light Descriptions"
+msgstr "Popisy světel"
+
+#
+#
+#
+#: src/options.cpp:1102
+msgid "Extended Light Sectors"
+msgstr "Protažené sektory světel"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1106
+msgid "De-Cluttered Text"
+msgstr "Uspořádat text"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1113
+msgid "Paper Chart"
+msgstr "Papírová mapa"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1113
+msgid "Simplified"
+msgstr "Zjednodušený"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1114
+msgid "Points"
+msgstr "Body"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1118
+msgid "Plain"
+msgstr "Obyčejný"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1118
+msgid "Symbolized"
+msgstr "Symbolizovaný"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1119
+msgid "Boundaries"
+msgstr "Hranice"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1123
+msgid "2 Color"
+msgstr "2 barvy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1123
+msgid "4 Color"
+msgstr "4 barvy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1124
+msgid "Colors"
+msgstr "Barvy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1128
+msgid "Depth Settings(m)"
+msgstr "Nastavení hloubky(m)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1132
+msgid "Shallow Depth"
+msgstr "Mělčina"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1141
+msgid "Safety Depth"
+msgstr "Bezpečná hloubka"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1150
+msgid "Deep Depth"
+msgstr "Velká hloubka"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1161
+msgid "Chart Depth Units"
+msgstr "Jednotky hloubky na mapě"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1181
+msgid "Tides && Currents"
+msgstr "Přílivy a proudy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1186
+msgid "Active Datasets"
+msgstr "Aktivní sady dat"
+
+#
+#: src/options.cpp:1201
+msgid "Add Dataset..."
+msgstr "Přidat datovou sadu..."
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1248
+msgid "All Available Charts"
+msgstr "Všechny dostupné mapy"
+
+#
+#
+#: src/options.cpp:1262
+msgid "Remove Chart"
+msgstr "Odstranit mapu"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1283
+msgid "All Charts"
+msgstr "Všechny mapy"
+
+#
+#: src/options.cpp:1299
+msgid "New Group..."
+msgstr "Nová skupina"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1300
+msgid "Delete Group"
+msgstr "Smazat skupinu"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1322
+#: src/options.cpp:1461
+#: src/options.cpp:1763
+msgid "Display"
+msgstr "Zobrazení"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1329
+msgid "Chart Display Options"
+msgstr "Volby mapového zobrazení"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1335
+msgid "Course UP Mode"
+msgstr "Mód kurs nahoru"
+
+#
+#
+#: src/options.cpp:1344
+msgid "Course-Up Mode Display Update Period (sec)"
+msgstr "Perioda aktualizace módu kurs nahoru (sek)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1353
+msgid "Look Ahead Mode"
+msgstr "Mód Pohled dopředu"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1357
+msgid "Show Grid"
+msgstr "Zobrazit mřížku"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1361
+msgid "Show Depth Units"
+msgstr "Zobrazit jednotky hloubky"
+
+#
+#: src/options.cpp:1365
+msgid "Use Accelerated Graphics (OpenGL)"
+msgstr "Použít akcelerovanou grafiku (OpenGL)"
+
+#
+#
+#: src/options.cpp:1370
+msgid "Smooth Panning / Zooming"
+msgstr "Plynulé tažení a přibližování"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1374
+msgid "Zoom to Cursor"
+msgstr "Zoom na kurzor"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1379
+msgid "Preserve Scale when Switching Charts"
+msgstr "Zachovat měřítko při změně mapy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1383
+msgid "Enable Chart Quilting"
+msgstr "Povolit skládání map"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1388
+msgid "Disable Full Screen Quilting"
+msgstr "Vypnout skládání map po celé obrazovce"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1392
+msgid "Show Chart Outlines"
+msgstr "Zobrazit obrysy mapy"
+
+#
+#
+#
+#
+#: src/options.cpp:1397
+msgid "Show Skewed Raster Charts as North-Up"
+msgstr "Zobrazit otočené rasterové mapy jako Sever-Nahoru"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1403
+msgid "AIS Targets"
+msgstr "AIS cíle"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1409
+msgid "CPA Calculation"
+msgstr "Výpočet CPA"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1418
+msgid "No CPA Calculation if target range is greater than (NMi)"
+msgstr "Žádný výpočet CPA, pokud vzdálenost cíle je větší než (nm)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1424
+msgid "Warn if CPA less than (NMi)"
+msgstr "Varuj, pokud CPA je méně než (nm)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1432
+msgid "...and TCPA is less than (min)"
+msgstr "...a TCPA je méně než (minut)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1439
+msgid "Lost Targets"
+msgstr "Ztracené cíle"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1447
+msgid "Mark targets as lost after (min)"
+msgstr "Označit cíle za ztracené po (min)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1454
+msgid "Remove lost targets after (min)"
+msgstr "Odstranit ztracené cíle po (min)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1469
+msgid "Show target COG predictor arrow, length (min)"
+msgstr "Ukázat šipky COG cílů v délce (min)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1475
+msgid "Show target tracks, length (min)"
+msgstr "Ukázat stopy cílů v délce (min)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1481
+msgid "Hide anchored/moored targets, speed max (kn)"
+msgstr "Potlačit zakotvené/vyvázané cíle, rychlost max (kn)"
+
+#
+#: src/options.cpp:1488
+msgid "Show area notices (from AIS binary messages)"
+msgstr "Ukázat oblastní zprávy (z binárních AIS zpráv)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1494
+msgid "Show AIS targets real size"
+msgstr "Zobrazit skutečnou velikost AIS cílů"
+
+#
+#
+#
+#
+#: src/options.cpp:1501
+msgid "Rollover"
+msgstr "Rollover"
+
+#
+#
+#
+#
+#: src/options.cpp:1505
+msgid "\"Ship Name\" MMSI (Call Sign)"
+msgstr "\"Jméno lodi\" MMSI (Volací znak)"
+
+#
+#
+#
+#
+#: src/options.cpp:1508
+msgid "[Class] Type (Status)"
+msgstr "[Třída] Typ (Stav)"
+
+#
+#
+#
+#
+#: src/options.cpp:1511
+msgid "SOG COG"
+msgstr "SOG COG"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1514
+msgid "CPA TCPA"
+msgstr "CPA/TCPA"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1518
+msgid "CPA/TCPA Alerts"
+msgstr "CPA/TCPA výstrahy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1527
+msgid "Show CPA/TCPA Alert Dialog"
+msgstr "Zobrazit dialog výstrah CPA/TCPA"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1531
+msgid "Select Alert Sound"
+msgstr "Vybrat zvuk výstrah"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1535
+msgid "Play Sound on CPA/TCPA Alerts"
+msgstr "Hrát zvuk pří výstraze CPA/TCPA"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1539
+msgid "Test Alert Sound"
+msgstr "Otestovat zvuk výstrahy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1543
+msgid "Supress Alerts for anchored/moored targets"
+msgstr "Potlačit výstrahy pro zakotvené/vyvázané cíle"
+
+#
+#
+#
+#
+#: src/options.cpp:1550
+msgid "Enable Target Alert Acknowledge timeout (min)"
+msgstr "Povolit vypršení potvrzení upozornění na cíl (min)"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1563
+msgid "General Options"
+msgstr "Obecné nastavení"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1573
+msgid "Language"
+msgstr "Jazyk"
+
+#
+#: src/options.cpp:1584
+msgid "Fonts"
+msgstr "Písma"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1605
+msgid "Choose Font..."
+msgstr "Vybrat font..."
+
+#
+#: src/options.cpp:1609
+msgid "Toolbar and Window Style"
+msgstr "Nástrojová lišta a styl okna"
+
+#
+#: src/options.cpp:1624
+msgid "Miscellaneous Options"
+msgstr "Různá nastavení"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1628
+msgid "Show Status Bar"
+msgstr "Zobrazit stavovou řádku"
+
+#
+#
+#
+#: src/options.cpp:1633
+msgid "Show Toolbar in Fullscreen Mode"
+msgstr "Zobraz toolbar v režimu celé obrazovky"
+
+#
+#
+#: src/options.cpp:1637
+msgid "Enable Transparent Toolbar"
+msgstr "Povolit průhlednou lištu"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1646
+msgid "Show Lat/Long as"
+msgstr "Zobrazit zem. šířku a délku jako"
+
+#
+#
+#: src/options.cpp:1650
+msgid "Degrees, Decimal Minutes"
+msgstr "Stupně, desetinné minuty"
+
+#
+#
+#: src/options.cpp:1650
+msgid "Decimal Degrees"
+msgstr "Desetinné stupně"
+
+#
+#
+#: src/options.cpp:1651
+msgid "Degrees, Minutes, Seconds"
+msgstr "Stupně, minuty, sekundy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1657
+msgid "Play Ships Bells"
+msgstr "Hraj lodní zvony"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1661
+msgid "Lock Waypoints (Unless waypoint property dialog visible)"
+msgstr "Zamknout trasové body dokud není zobrazen dialog vlastností trasového bodu"
+
+#
+#: src/options.cpp:1667
+msgid "Confirm deletion of tracks and routes"
+msgstr "Potvrď smazání stop a tras"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1753
+msgid "Ok"
+msgstr "Ok"
+
+#
+#: src/options.cpp:1760
+msgid "Apply"
+msgstr "Aplikovat"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1766
+msgid "Connections"
+msgstr "Připojení"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1769
+msgid "Charts"
+msgstr "Mapy"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:1776
+msgid "Ships"
+msgstr "Lodě"
+
+#
+#: src/options.cpp:1780
+msgid "User Interface"
+msgstr "Uživatelské rozhraní"
+
+#
+#
+#
+#
+#: src/options.cpp:1783
+#: src/options.cpp:1784
+msgid "Plugins"
+msgstr "Zásuvné moduly"
+
+#
+#: src/options.cpp:2086
+msgid "NMEA Debug Window"
+msgstr "Okno ladění NMEA"
+
+#
+#: src/options.cpp:2196
+msgid "Add a directory containing chart files"
+msgstr "Přidej složku s mapovými soubory"
+
+#
+#: src/options.cpp:2276
+msgid "You must select or enter the port..."
+msgstr "Musíš vybrat nebo vložit port..."
+
+#
+#: src/options.cpp:2276
+#: src/options.cpp:2285
+msgid "Error!"
+msgstr "Chyba!"
+
+#
+#: src/options.cpp:2285
+msgid "You must enter the address..."
+msgstr "Musíš zadat adresu..."
+
+#
+#: src/options.cpp:2349
+msgid ""
+"\n"
+" - your ship's length must be > 0"
+msgstr ""
+"\n"
+" - délka lodě musí být > 0"
+
+#
+#: src/options.cpp:2351
+msgid ""
+"\n"
+" - your ship's beam must be > 0"
+msgstr ""
+"\n"
+" - šířka lodě musí být > 0"
+
+#
+#: src/options.cpp:2353
+msgid ""
+"\n"
+" - your GPS offset from midship must be within your ship's beam"
+msgstr ""
+"\n"
+" - tvůj GPS offset od středu lodě musí být v šířce lodě"
+
+#
+#: src/options.cpp:2355
+msgid ""
+"\n"
+" - your GPS offset from bow must be within your ship's length"
+msgstr ""
+"\n"
+" - tvůj GPS offset od příděmusí být mensí než délka lodě"
+
+#
+#: src/options.cpp:2357
+msgid ""
+"\n"
+" - your minimum ship icon size must be between 1 and 100 mm"
+msgstr ""
+"\n"
+" - minimální velikost ikony lodě musí být mezi 1 a 100 mm"
+
+#
+#: src/options.cpp:2359
+msgid "The settings for own ship real size are not correct:"
+msgstr "Nastavené skutečné velikosti vlastní lodi není korektní:"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:3032
+msgid "Select Sound File"
+msgstr "Vybrat zvukový soubor"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:3033
+msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
+msgstr "Soubory WAV(*.wav)|*.wav|Všechny soubory(*.*)|*.*"
+
+#
+#: src/options.cpp:3429
+msgid "Enter Group Name"
+msgstr "Zadej název skupiny"
+
+#
+#
+#
+#
+#
+#: src/options.cpp:3430
+msgid "New Chart Group"
+msgstr "Nová skupina map"
+
+#
+#: src/options.cpp:3587
+msgid "Select Tide/Current Data"
+msgstr "Vyber data přílivu/proudu"
+
+#
+#: src/options.cpp:4212
+msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
+msgstr "Vlož NMEA větu (2, 3 nebo 5 znaků)"
+
+#
+#: src/options.cpp:4212
+msgid "Enter the NMEA sentence"
+msgstr "Vlož NMEA větu"
+
+#
+#: src/options.cpp:4221
+msgid "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can also have a two letter prefix identifying the source, or TALKER, of the message (The whole sentences then looks like GPGGA or AITXT). You may filter out all the sentences with certain TALKER prefix (like GP, AI etc.). The filter accepts just these three formats."
+msgstr "NMEA věta je většinou dlouhá 3 znaky (jako RMC, GGA atd.) Také může mít dvuznakový prefix identifikující zdroj, nebo TALKER, zprávy (celá věta pak vypadá jako GPGGA nebo AITXT). Můžeš odfiltrovat všechny věty s určitým TALKER prefixem (jako Gp, AI atd.). Filtr akceptuje jen tyto tři formáty."
+
+#
+#: src/options.cpp:4221
+msgid "Wrong length of the NMEA filter value"
+msgstr "Nesprávná délka hodnoty NMEA filtru"
+
+#
+#: src/options.cpp:4272
+msgid "Accept Sentences"
+msgstr "Zahrnout věty"
+
+#
+#: src/options.cpp:4274
+msgid "Ignore Sentences"
+msgstr "Ignorovat věty"
+
+#
+#: src/options.cpp:4278
+msgid "Transmit Sentences"
+msgstr "Přenést věty"
+
+#
+#: src/options.cpp:4280
+msgid "Drop Sentences"
+msgstr "Zahodit věty"
+
+#
+#
+#
+#
+#
+#: src/about.cpp:261
+msgid "The Open Source Chart Plotter/Navigator"
+msgstr "Open Source Chart Plotter/ Navigator"
+
+#
+#: src/about.cpp:269
+msgid "Copy Settings File to Clipboard"
+msgstr "Zkopíruj soubor nastavení do schránky"
+
+#
+#: src/about.cpp:272
+msgid "Copy Log File to Clipboard"
+msgstr "Zkopíruj soubor logu do schránky"
+
+#
+#
+#
+#
+#
+#: src/about.cpp:297
+msgid "About"
+msgstr "O programu"
+
+#
+#
+#
+#
+#
+#: src/about.cpp:311
+msgid "Authors"
+msgstr "Autoři"
+
+#
+#
+#
+#
+#
+#: src/about.cpp:325
+msgid "License"
+msgstr "Licence"
+
+#
+#
+#
+#
+#
+#: src/about.cpp:348
+msgid "Help"
+msgstr "Nápověda"
+
+#
+#
+#
+#
+#
+#: src/about.cpp:358
+msgid "Close"
+msgstr "Zavřít"
+
+#
+#
+#
+#
+#
+#: src/s57chart.cpp:3881
+msgid "OpenCPN S57 SENC File Create..."
+msgstr "Vytváření souboru S57 SENC..."
+
+#
+#: src/s57chart.cpp:6313
+msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
+msgstr "<font size=-2>(Úhly sektorů jsou skutečné náměry z moře)</font><br>"
+
+#
+#
+#
+#
+#
+#: src/routeman.cpp:634
+#: src/routeman.cpp:639
+#: src/routeman.cpp:644
+msgid "T"
+msgstr "T"
+
+#
+#
+#
+#
+#
+#: src/routeman.cpp:946
 msgid ""
 "Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n"
 "\n"
@@ -6392,83 +7687,52 @@ msgstr ""
 #
 #
 #
-msgid "Welcome to OpenCPN"
-msgstr "Vítejte v OpenCPN"
+#
+#: src/routeman.cpp:1006
+msgid "GPS/Plotter Port"
+msgstr "Port GPS/Ploteru"
 
 #
 #
 #
 #
 #
-msgid "Whether the font is underlined."
-msgstr "Zda je font podtržen"
-
-#
-#
-msgid "White"
-msgstr "Bílá"
-
-#
-msgid "Width Over All (m)"
-msgstr "Celková šířka (m)"
-
-#
-msgid "Width:"
-msgstr "Šířka:"
-
-#
-#
-#
-msgid "Wing In Ground Effect"
-msgstr "Letoun s přízemním efektem"
-
-#
-msgid "Would you like include the Great Circle routing points for this leg?"
-msgstr "Chceš zahrnout trasové body na velké kružnici do této etapy?"
-
-#
-msgid "Wrong length of the NMEA filter value"
-msgstr "Nesprávná délka hodnoty NMEA filtru"
+#: src/routeman.cpp:1036
+msgid "Prepare GPS for Route/Waypoint upload and press Send..."
+msgstr "Připrav GPS pro Nahrání tras/trasových bodů a stiskni Poslat..."
 
 #
 #
 #
 #
 #
-msgid "XTE         L"
-msgstr "XTE         L"
+#: src/routeman.cpp:1040
+msgid "Progress..."
+msgstr "Průběh..."
+
+#
+#: src/pluginmanager.cpp:210
+msgid "    Incompatible PlugIn detected:"
+msgstr "    Nalezen nekompatibilní doplněk:"
+
+#
+#
+#
+#: src/pluginmanager.cpp:2024
+msgid "Preferences"
+msgstr "Preference"
 
 #
 #
 #
 #
 #
-msgid "XTE         R"
-msgstr "XTE         P"
+#: src/pluginmanager.cpp:2102
+msgid "Disable"
+msgstr "Deaktivovat"
 
 #
-#
-#
-msgid "Yat"
-msgstr ""
-
-#
-#
-#
-#
-#
-msgid "Yellow"
-msgstr "Žlutá"
-
-#
-msgid "Yes"
-msgstr "Ano"
-
-#
-msgid "Yes, hide it."
-msgstr "Ano, schovej to."
-
-#
+#: src/toolbar.cpp:570
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make it inaccessible."
@@ -6477,91 +7741,170 @@ msgstr ""
 "protože by se stala nedostupnou."
 
 #
-msgid "You must enter the address..."
-msgstr "Musíš zadat adresu..."
+#
+#
+#
+#: src/toolbar.cpp:692
+msgid "ToolTips"
+msgstr "ToolTipy"
 
 #
-msgid "You must select or enter the port..."
-msgstr "Musíš vybrat nebo vložit port..."
+#: src/toolbar.cpp:1845
+msgid "Visible buttons"
+msgstr "Viditelná tlačítka"
 
 #
-#
-#
-#
-#
-msgid "Zoom In"
-msgstr "Zvětšit"
+#: src/toolbar.cpp:1902
+msgid "No, I don't want to hide it."
+msgstr "Ne, nechci to schovat."
 
 #
-#
-#
-#
-#
-msgid "Zoom Out"
-msgstr "Zmenšit"
+#: src/toolbar.cpp:1905
+msgid "No, and permanently remove the option to hide it."
+msgstr "Ne, a navždy odstraň možnost to schovat."
 
 #
-#
-#
-#
-#
-msgid "Zoom to Cursor"
-msgstr "Zoom na kurzor"
+#: src/toolbar.cpp:1908
+msgid "Yes, hide it."
+msgstr "Ano, schovej to."
 
 #
-#
-#
-#
-msgid "[Class] Type (Status)"
-msgstr "[Třída] Typ (Stav)"
-
-#
-#
-#
-#
-msgid "_A"
-msgstr "_A"
-
-#
-#
-#
-#
-msgid "_B"
-msgstr "_B"
-
-#
-#
-#
-msgid "_plus"
-msgstr "_plus"
-
-#
-#
-#
-#
-#
-msgid "in"
-msgstr "do"
-
-#
-msgid "min"
+#: src/toolbar.cpp:1914
+msgid ""
+"The Man Over Board button could be an important safety feature.\n"
+"Are you sure you want to hide it?"
 msgstr ""
+"Tlačítko Man Over Board může bít důležitá bezpečnostní pomůcka.\n"
+"Určitě ho chceš skrýt?"
 
 #
 #
 #
-msgid "wgsox"
-msgstr ""
+#
+#
+#: src/kml.cpp:442
+msgid "OpenCPN Route"
+msgstr "OpenCPN Trasa"
 
 #
 #
 #
-msgid "wgsoy"
-msgstr ""
+#
+#
+#: src/kml.cpp:489
+msgid "OpenCPN Track"
+msgstr "OpenCPN stopa"
 
 #
-msgid "wxFB Website"
-msgstr ""
+#
+#
+#
+#
+#: src/kml.cpp:546
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN Trasový bod"
+
+#
+#: src/kml.cpp:622
+msgid "Choose Format for Copy"
+msgstr "Vyber formát pro kopii"
+
+#
+#: src/kml.cpp:629
+msgid "KML Standard (Google Earth and others)"
+msgstr "KML Standard (Google Earth a další)"
+
+#
+#: src/kml.cpp:632
+msgid "KML with extended waypoint data (QtVlm)"
+msgstr "KML s rozšířenými daty trasových bodů (QtVlm)"
+
+#
+#
+#
+#
+#
+#: src/undo.cpp:80
+msgid "Create Waypoint"
+msgstr "Vytvořit trasový bod"
+
+#
+#
+#
+#
+#
+#: src/undo.cpp:83
+msgid "Delete Waypoint"
+msgstr "Smazat trasový bod"
+
+#
+#
+#
+#
+#
+#: src/undo.cpp:86
+msgid "Move Waypoint"
+msgstr "Posunout trasový bod"
+
+#
+#
+#
+#
+#
+#: src/routeprintout.cpp:337
+msgid "Print Route Selection"
+msgstr "Výběr tisku trasy"
+
+#
+#: src/routeprintout.cpp:354
+msgid "Elements to print..."
+msgstr "Prvky k tisku..."
+
+#
+#
+#
+#
+#
+#: src/routeprintout.cpp:367
+msgid "Show Waypoint name."
+msgstr "Ukaž jméno trasového bodu."
+
+#
+#
+#
+#
+#
+#: src/routeprintout.cpp:374
+msgid "Show Waypoint position."
+msgstr "Ukaž pozici trasového bodu."
+
+#
+#: src/routeprintout.cpp:381
+msgid "Show course from each Waypoint to the next one. "
+msgstr "Ukaž kurs od každého trasového bodu k dalšímu."
+
+#
+#: src/routeprintout.cpp:388
+msgid "Show Distance from each Waypoint to the next one."
+msgstr "Zobraz vzdálenost od každého trasového bodu k dalšímu."
+
+#
+#
+#
+#
+#
+#: src/routeprintout.cpp:395
+msgid "Show Waypoint description."
+msgstr "Ukaž popis trasového bodu."
+
+#
+#
+#
+#
+#
+#: src/routeprintout.cpp:460
+msgid "Route Print"
+msgstr "Tisk trasy"
 
 #
 #
