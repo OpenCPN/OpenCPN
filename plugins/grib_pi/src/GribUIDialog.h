@@ -74,15 +74,21 @@ enum { Idx_WIND_VX, Idx_WIND_VY, Idx_PRESS, Idx_HTSIGW, Idx_WVDIR,
 class GribRecordSet {
 public:
     GribRecordSet();
-    GribRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const);
-    ~GribRecordSet();
 
     time_t m_Reference_Time;
     GribRecord *m_GribRecordPtrArray[Idx_COUNT];
+};
+
+class GribTimelineRecordSet : public GribRecordSet{
+public:
+    GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const);
+    ~GribTimelineRecordSet();
 
     /* cache isobars here to speed up rendering */
-    wxArrayPtrVoid m_IsobarArray;
+    wxArrayPtrVoid *m_IsobarArray[Idx_COUNT];
 };
+
+
 
 //----------------------------------------------------------------------------------------------------------
 //    GRIB Selector/Control Dialog Specification
@@ -98,15 +104,17 @@ public:
 
     void SelectTreeControlGRS( GRIBFile *pgribfile );
     void PopulateTreeControlGRS( GRIBFile *pgribfile, int file_index );
-    void SetGribRecordSet( GribRecordSet *pGribRecordSet );
     void SelectGribRecordSet( GribRecordSet *pGribRecordSet );
-
+    void SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet);
     void SetCursorLatLon( double lat, double lon );
 
 private:
     void OnClose( wxCloseEvent& event );
     void OnMove( wxMoveEvent& event );
     void OnSize( wxSizeEvent& event );
+    void OnConfig( wxCommandEvent& event );
+    void OnPlayStop( wxCommandEvent& event );
+    void OnPlayStopTimer( wxTimerEvent & );
     void OnFileDirChange( wxFileDirPickerEvent &event );
     void UpdateTrackingControls( void );
     void PopulateTreeControl( void );
@@ -116,23 +124,30 @@ private:
     void OnTimeline( wxCommandEvent& event );
     void OnCBAny( wxCommandEvent& event );
 
+    // config options
+    bool m_bInterpolate;
+    bool m_bLoopMode;
+    int m_PlaybackSpeed;
+    double m_HourDivider;
+
     //    Data
     wxWindow *pParent;
     grib_pi *pPlugIn;
 
     wxFont *m_dFont;
 
+    wxTimer m_tPlayStop;
+
     wxTreeItemId m_RecordTree_root_id;
 
     int m_n_files;
-
-    GribRecordSet *m_pCurrentGribRecordSet;
 
     int m_sequence_active;
 
     double m_cursor_lat, m_cursor_lon;
 
-    ArrayOfGribRecordSets *m_timelineset, *m_timelinebase;
+    ArrayOfGribRecordSets *m_pTimelineBase;
+    GribTimelineRecordSet * m_pTimelineSet;
 };
 
 //----------------------------------------------------------------------------------------------------------

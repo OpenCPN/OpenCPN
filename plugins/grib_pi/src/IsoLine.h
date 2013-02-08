@@ -104,7 +104,7 @@ class Segment
 class IsoLine
 {
     public:
-        IsoLine(double val, const GribRecord *rec);
+        IsoLine(double val, double coeff, const GribRecord *rec);
         ~IsoLine();
 
 

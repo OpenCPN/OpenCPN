@@ -67,6 +67,9 @@ BEGIN_EVENT_TABLE ( GRIBUIDialog, GRIBUIDialogBase )
 EVT_CLOSE ( GRIBUIDialog::OnClose )
 EVT_MOVE ( GRIBUIDialog::OnMove )
 EVT_SIZE ( GRIBUIDialog::OnSize )
+EVT_BUTTON(ID_CONFIG, GRIBUIDialog::OnConfig )
+EVT_TOGGLEBUTTON(ID_PLAYSTOP, GRIBUIDialog::OnPlayStop )
+EVT_TIMER(ID_PLAYSTOP, GRIBUIDialog::OnPlayStopTimer )
 EVT_DIRPICKER_CHANGED ( ID_GRIBDIR, GRIBUIDialog::OnFileDirChange )
 EVT_SLIDER(ID_TIMELINE, GRIBUIDialog::OnTimeline)
 EVT_CHECKBOX(ID_CB_WIND_SPEED, GRIBUIDialog::OnCBAny)
@@ -84,8 +87,11 @@ GribRecordSet::GribRecordSet()
         m_GribRecordPtrArray[i] = NULL;
 }
 
-/* interpolating constructior */
-GribRecordSet::GribRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const)
+/* interpolating constructor
+   as a possible optimization, write this function to also
+   take latitude longitude boundaries so the resulting record can be
+   a subset of the input, but also would need to be recomputed when panning the screen */
+GribTimelineRecordSet::GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const)
 {
     for(int i=0; i<Idx_COUNT; i++) {
         GribRecord *GR1 = GRS1.m_GribRecordPtrArray[i];
@@ -96,22 +102,28 @@ GribRecordSet::GribRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double in
            GR1->getLatMin() == GR2->getLatMin() && GR1->getLonMin() == GR2->getLonMin() &&
            GR1->getLatMax() == GR2->getLatMax() && GR1->getLonMax() == GR2->getLonMax())
             m_GribRecordPtrArray[i] = new GribRecord(*GR1, *GR2, interp_const);
-        else
+        else 
             m_GribRecordPtrArray[i] = NULL;
+        m_IsobarArray[i] = NULL;
     }
+
+    m_Reference_Time = (1-interp_const)*GRS1.m_Reference_Time
+        + interp_const*GRS2.m_Reference_Time;
 }
 
-GribRecordSet::~GribRecordSet()
+GribTimelineRecordSet::~GribTimelineRecordSet()
 {
-#if 0 /* need to delete these for timeline only */
-    for(int i=0; i<Idx_COUNT; i++)
-        delete m_GribRecordPtrArray[i];
-#endif
-    
-    //    Clear out the cached isobars
-    for( unsigned int i = 0; i < m_IsobarArray.GetCount(); i++ ) {
-        IsoLine *piso = (IsoLine *) m_IsobarArray.Item( i );
-        delete piso;
+    for(int i=0; i<Idx_COUNT; i++) {
+        delete m_GribRecordPtrArray[i]; /* delete these for timeline */
+
+        if(m_IsobarArray[i]) {
+            //    Clear out the cached isobars
+            for( unsigned int j = 0; j < m_IsobarArray[i]->GetCount(); j++ ) {
+                IsoLine *piso = (IsoLine *) m_IsobarArray[i]->Item( j );
+                delete piso;
+            }
+            delete m_IsobarArray[i];
+        }
     }
 }
 
@@ -121,8 +133,8 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     pParent = parent;
     pPlugIn = ppi;
 
-    m_timelineset = NULL;
-    m_timelinebase = NULL;
+    m_pTimelineBase = NULL;
+    m_pTimelineSet = NULL;
 
     m_dirPicker->SetPath(ppi->m_grib_dir);
 
@@ -136,16 +148,29 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
 
     Fit();
     SetMinSize( GetBestSize() );
+
+    /* read config here */
+    wxFileConfig *pConf = GetOCPNConfigObject();;
+
+    if(!pConf)
+        return;
+
+    pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
+    pConf->Read ( _T ( "Interpolate" ), &m_bInterpolate, 1 );
+    pConf->Read ( _T ( "LoopMode" ), &m_bLoopMode, 0 );
+    pConf->Read ( _T ( "PlaybackSpeed" ), &m_PlaybackSpeed, 2);
+    pConf->Read ( _T ( "HourDivider" ), &m_HourDivider, 2);
 }
 
 GRIBUIDialog::~GRIBUIDialog()
 {
+    delete m_pTimelineSet;
 }
 
 void GRIBUIDialog::Init()
 {
     m_sequence_active = -1;
-    m_pCurrentGribRecordSet = NULL;
+    m_pTimelineSet = NULL;
     m_pRecordTree = NULL;
 }
 
@@ -168,8 +193,15 @@ void GRIBUIDialog::UpdateTrackingControls( void )
     m_tcCurrentVelocity->Clear();
     m_tcCurrentDirection->Clear();
 
-    if( m_pCurrentGribRecordSet ) {
-        GribRecord **RecordArray = m_pCurrentGribRecordSet->m_GribRecordPtrArray;
+    if( m_pTimelineSet ) {
+
+        wxDateTime t = m_pTimelineSet->m_Reference_Time;
+        t.MakeFromTimezone( wxDateTime::UTC );
+        if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
+        m_stDateTime->SetLabel(t.Format(_T("%Y-%m-%d %H:%M:%S "), wxDateTime::Local) + _T("Local - ") +
+                               t.Format(_T("%H:%M:%S "), wxDateTime::UTC) + _T("GMT"));
+
+        GribRecord **RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
         //    Update the wind control
         if( RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY] ) {
             double vx = RecordArray[Idx_WIND_VX]->
@@ -309,6 +341,61 @@ void GRIBUIDialog::OnSize( wxSizeEvent& event )
     event.Skip();
 }
 
+void GRIBUIDialog::OnConfig( wxCommandEvent& event )
+{
+    GRIBConfigDialog *dialog = new GRIBConfigDialog( this );
+    dialog->m_cInterpolate->SetValue(m_bInterpolate);
+    dialog->m_cLoopMode->SetValue(m_bLoopMode);
+    dialog->m_sPlaybackSpeed->SetValue(m_PlaybackSpeed);
+    dialog->m_sHourDivider->SetValue(m_HourDivider);
+
+    if(dialog->ShowModal() == wxID_OK)
+    {
+        m_bInterpolate = dialog->m_cInterpolate->GetValue();
+        m_bLoopMode = dialog->m_cLoopMode->GetValue();
+        m_PlaybackSpeed = dialog->m_sPlaybackSpeed->GetValue();
+        m_HourDivider = dialog->m_sHourDivider->GetValue();
+
+        /* save config here */
+        wxFileConfig *pConf = GetOCPNConfigObject();
+
+        if(!pConf)
+            return;
+
+        pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
+        pConf->Write ( _T ( "Interpolate" ), m_bInterpolate);
+        pConf->Write ( _T ( "LoopMode" ), m_bLoopMode );
+        pConf->Write ( _T ( "PlaybackSpeed" ), m_PlaybackSpeed);
+        pConf->Write ( _T ( "HourDivider" ), m_HourDivider);                       
+    }
+}
+
+void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
+{
+    if(m_tbPlayStop->GetValue()) {
+        m_tbPlayStop->SetLabel(_("Stop"));
+        m_tPlayStop.SetOwner( this, ID_PLAYSTOP );
+        m_tPlayStop.Start( 1000, wxTIMER_CONTINUOUS );
+    } else
+        m_tbPlayStop->SetLabel(_("Play"));
+}
+
+void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
+{
+    if(!m_tbPlayStop->GetValue())
+        m_tPlayStop.Stop();
+    else if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) {
+        if(m_bLoopMode) {
+            m_sTimeline->SetValue(0);
+            TimelineChanged();
+        } else
+            m_tPlayStop.Stop();
+    } else {
+        m_sTimeline->SetValue(m_sTimeline->GetValue() + m_PlaybackSpeed);
+        TimelineChanged();
+    }
+}
+
 void GRIBUIDialog::OnFileDirChange( wxFileDirPickerEvent &event )
 {
     m_pRecordTree->DeleteAllItems();
@@ -327,37 +414,35 @@ void GRIBUIDialog::OnFileDirChange( wxFileDirPickerEvent &event )
 
 void GRIBUIDialog::TimelineChanged()
 {
-    ArrayOfGribRecordSets *rsa = m_timelineset;
-    if(!rsa) {
-        rsa = m_timelineset = new ArrayOfGribRecordSets;
+    if(!m_pTimelineBase)
+        return;
 
-        GribRecordSet &first=m_timelinebase->Item(0);
-        wxDateTime firsttime = first.m_Reference_Time, curtime;
-        for(int hour = 0; hour < m_sTimeline->GetMax(); hour++) {
-            double nhour = (double)hour/12;
-            unsigned int i;
-            for(i=0; i<m_timelinebase->GetCount()-1; i++) {
-                GribRecordSet &cur=m_timelinebase->Item(i+1);
-                curtime = cur.m_Reference_Time;
-                if((curtime - firsttime).GetHours() >= nhour)
-                    break;
-            }
-
-            double hour2 = (curtime - firsttime).GetHours();
-            curtime = m_timelinebase->Item(i).m_Reference_Time;
-            double hour1 = (curtime - firsttime).GetHours();
-
-            if(hour2<=hour1 || hour < hour1)
-                break;
-
-            GribRecordSet &GRS1 = m_timelinebase->Item(i), &GRS2 = m_timelinebase->Item(i+1);
-            m_timelineset->push_back(new GribRecordSet(GRS1, GRS2, (nhour-hour1) / (hour2-hour1)));
-        }
+    double nhour = m_sTimeline->GetValue()/m_HourDivider;
+    
+    GribRecordSet &first=m_pTimelineBase->Item(0);
+    wxDateTime firsttime = first.m_Reference_Time, curtime;
+    unsigned int i;
+    for(i=0; i<m_pTimelineBase->GetCount()-1; i++) {
+        GribRecordSet &cur=m_pTimelineBase->Item(i+1);
+        curtime = cur.m_Reference_Time;
+        if((curtime - firsttime).GetHours() >= nhour)
+            break;
     }
+    
+    double hour2 = (curtime - firsttime).GetHours();
+    curtime = m_pTimelineBase->Item(i).m_Reference_Time;
+    double hour1 = (curtime - firsttime).GetHours();
+    
+    if(hour2<=hour1 || nhour < hour1)
+        return;
 
-    unsigned int idx = m_sTimeline->GetValue();
-    if(idx < rsa->GetCount())
-        SetGribRecordSet(&rsa->Item(idx));
+    double interp_const = (nhour-hour1) / (hour2-hour1);
+    
+    if(!m_bInterpolate)
+        interp_const = round(interp_const);
+
+    GribRecordSet &GRS1 = m_pTimelineBase->Item(i), &GRS2 = m_pTimelineBase->Item(i+1);
+    SetGribTimelineRecordSet(new GribTimelineRecordSet(GRS1, GRS2, interp_const));
 }
 
 void GRIBUIDialog::OnTimeline( wxCommandEvent& event )
@@ -419,7 +504,7 @@ void GRIBUIDialog::PopulateTreeControl()
     }
 
     //    No GRS is selected on first building the tree
-    SetGribRecordSet( NULL );
+    SetGribTimelineRecordSet( NULL );
 }
 
 void GRIBUIDialog::SelectTreeControlGRS( GRIBFile *pgribfile )
@@ -428,18 +513,13 @@ void GRIBUIDialog::SelectTreeControlGRS( GRIBFile *pgribfile )
     if(rsa->GetCount() < 2)
         return;
 
-    if(m_timelinebase != rsa) {
-        m_timelinebase = rsa;
-        delete m_timelineset;
-        m_timelineset = NULL;
-    }
-
     GribRecordSet &first=rsa->Item(0), &last = rsa->Item(rsa->GetCount()-1);
 
     wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
     int hours = span.GetHours();
 
-    m_sTimeline->SetMax(hours*12);
+    m_pTimelineBase = rsa;
+    m_sTimeline->SetMax(hours*m_HourDivider);
     m_sTimeline->Enable();
 }
 
@@ -457,7 +537,6 @@ void GRIBUIDialog::PopulateTreeControlGRS( GRIBFile *pgribfile, int file_index )
         wxDateTime t( rsa->Item( i ).m_Reference_Time );
         t.MakeFromTimezone( wxDateTime::UTC );
         if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
-//            wxString time_string = t.Format ( "%a %d-%b-%Y %H:%M:%S %Z", wxDateTime::UTC );
 
         // This is a hack because Windows is broke....
         wxString time_string = t.Format( _T("%a %d-%b-%Y %H:%M:%S "), wxDateTime::Local );
@@ -470,26 +549,9 @@ void GRIBUIDialog::PopulateTreeControlGRS( GRIBFile *pgribfile, int file_index )
     }
 }
 
-void GRIBUIDialog::SetGribRecordSet( GribRecordSet *pGribRecordSet )
-{
-
-    m_pCurrentGribRecordSet = pGribRecordSet;
-
-    if( pGribRecordSet ) {
-        //    Give the overlay factory the GribRecordSet
-        pPlugIn->GetGRIBOverlayFactory()->SetGribRecordSet(m_pCurrentGribRecordSet);
-
-        SetFactoryOptions();
-    }
-
-    RequestRefresh( pParent );
-
-    UpdateTrackingControls();
-}
-
 void GRIBUIDialog::SelectGribRecordSet( GribRecordSet *pGribRecordSet )
 {
-    ArrayOfGribRecordSets *rsa = m_timelinebase;
+    ArrayOfGribRecordSets *rsa = m_pTimelineBase;
 
     if(!rsa)
         return;
@@ -498,8 +560,24 @@ void GRIBUIDialog::SelectGribRecordSet( GribRecordSet *pGribRecordSet )
     wxDateTime firsttime = first.m_Reference_Time, curtime = pGribRecordSet->m_Reference_Time;
     double hour = (curtime - firsttime).GetHours();
 
-    m_sTimeline->SetValue(hour*12);
+    m_sTimeline->SetValue(hour*m_HourDivider);
     TimelineChanged();
+}
+
+void GRIBUIDialog::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)
+{
+    delete m_pTimelineSet;
+    m_pTimelineSet = pTimelineSet;
+
+    if(!pPlugIn->GetGRIBOverlayFactory())
+        return;
+
+    //    Give the overlay factory the GribRecordSet
+    pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(m_pTimelineSet);
+
+    SetFactoryOptions();
+    RequestRefresh( pParent );
+    UpdateTrackingControls();
 }
 
 void GRIBUIDialog::SetFactoryOptions()

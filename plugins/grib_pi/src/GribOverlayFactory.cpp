@@ -32,6 +32,8 @@
   #include <wx/glcanvas.h>
 #endif //precompiled headers
 
+#include <wx/progdlg.h>
+
 #include "GribUIDialog.h"
 
 // Calculates if two boxes intersect. If so, the function returns _ON.
@@ -70,7 +72,7 @@ bool PointInLLBox( PlugIn_ViewPort *vp, double x, double y )
 GRIBOverlayFactory::GRIBOverlayFactory( GRIBUIDialog &dlg )
     : m_dlg(dlg)
 {
-    m_pGribRecordSet = NULL;
+    m_pGribTimelineRecordSet = NULL;
     m_last_vp_scale = 0.;
 
     m_bReadyToRender = false;
@@ -91,7 +93,7 @@ GRIBOverlayFactory::~GRIBOverlayFactory()
 
 void GRIBOverlayFactory::Reset()
 {
-    m_pGribRecordSet = NULL;
+    m_pGribTimelineRecordSet = NULL;
 
     ClearCachedData();
 
@@ -99,12 +101,10 @@ void GRIBOverlayFactory::Reset()
 
 }
 
-void GRIBOverlayFactory::SetGribRecordSet( GribRecordSet *pGribRecordSet )
+void GRIBOverlayFactory::SetGribTimelineRecordSet( GribTimelineRecordSet *pGribTimelineRecordSet )
 {
     Reset();
-
-    m_pGribRecordSet = pGribRecordSet;
-
+    m_pGribTimelineRecordSet = pGribTimelineRecordSet;
     m_bReadyToRender = true;
 
 }
@@ -147,7 +147,7 @@ bool GRIBOverlayFactory::RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp )
 
 bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 {
-    if( !m_pGribRecordSet )
+    if( !m_pGribTimelineRecordSet )
         return false;
 
     //    If the scale has changed, clear out the cached bitmaps
@@ -157,14 +157,21 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     m_last_vp_scale = vp->view_scale_ppm;
 
     //     render each type of record
-    GribRecord **pGR = m_pGribRecordSet->m_GribRecordPtrArray;
+    GribRecord **pGR = m_pGribTimelineRecordSet->m_GribRecordPtrArray;
+    wxArrayPtrVoid **pIA = m_pGribTimelineRecordSet->m_IsobarArray;
     
     // Wind
     //    Actually need two records to draw the wind arrows
     RenderGribWind( pGR[Idx_WIND_VX], pGR[Idx_WIND_VY], vp );
 
     //Pressure
-    RenderGribPressure( pGR[Idx_PRESS], vp );
+//    RenderGribIsobar( pGR[Idx_PRESS], pIA[Idx_PRESS], vp );
+    if(pGR[Idx_WIND_VX] && pGR[Idx_WIND_VY])
+    {
+        GribRecord *gr = GribRecord::MagnitudeRecord(*pGR[Idx_WIND_VX], *pGR[Idx_WIND_VY]);
+        RenderGribIsobar( gr, pIA[Idx_WIND_VX], vp );
+        delete gr;
+    }
 
     // Significant Wave Height
     RenderGribWaveHeight( pGR[Idx_HTSIGW], vp );
@@ -207,10 +214,11 @@ bool GRIBOverlayFactory::RenderGribWind( GribRecord *pGRX, GribRecord *pGRY, Plu
 
     wxColour colour;
     GetGlobalColor( _T ( "YELO2" ), &colour );
-
     for( int i = 0; i < imax; i++ ) {
         double lonl = pGRX->getX( i );
-        double latl = pGRX->getY( 0 );
+        /* at midpoint of grib so as to avoid problems in projection on
+           gribs that go all the way to the north or south pole */
+        double latl = pGRX->getY( pGRX->getNj()/2 );
         wxPoint pl;
         GetCanvasPixLL( vp, &pl, latl, lonl );
 
@@ -245,7 +253,7 @@ bool GRIBOverlayFactory::RenderGribScatWind( GribRecord *pGRX, GribRecord *pGRY,
     if(!m_dlg.m_cbWind->GetValue() || !pGRX || !pGRY)
         return false;
 
-//    wxDateTime t( m_pGribRecordSet->m_Reference_Time );
+//    wxDateTime t( m_pGribTimelineRecordSet->m_Reference_Time );
 
     //    Get the the grid
     int imax = pGRX->getNi();                  // Longitude
@@ -753,8 +761,7 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
 
     wxString labels;
 
-    double coef = .01;
-    labels.Printf(_T("%d"), (int)(value*coef+0.5));
+    labels.Printf(_T("%d"), (int)(value+0.5));
 
     int w, h;
 
@@ -792,23 +799,42 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
     return m_labelCache[value];
 }
 
-bool GRIBOverlayFactory::RenderGribPressure( GribRecord *pGR, PlugIn_ViewPort *vp )
+bool GRIBOverlayFactory::RenderGribIsobar( GribRecord *pGR, wxArrayPtrVoid *&pIsobarArray, PlugIn_ViewPort *vp )
 {
     if(!m_dlg.m_cbPressure->GetValue() || !pGR)
         return false;
 
     //    Initialize the array of Isobars if necessary
-    if( !m_pGribRecordSet->m_IsobarArray.GetCount() ) {
+    if( !pIsobarArray ) {
+        pIsobarArray = new wxArrayPtrVoid;
         IsoLine *piso;
-        for( double press = 840; press < 1120; press += 2/*isobarsStep*/) {
-            piso = new IsoLine( press * 100, pGR );
-            m_pGribRecordSet->m_IsobarArray.Add( piso );
+//        for( double press = 840; press < 1120; press += 200) {
+
+        wxProgressDialog *progressdialog = NULL;
+        wxDateTime start = wxDateTime::Now();
+
+        for( double value = 0; value < 100; value += 10/*isobarsStep*/) {
+            if(progressdialog)
+                progressdialog->Update(value);
+            else {
+                wxDateTime now = wxDateTime::Now();
+                if((now-start).GetSeconds() > 3 && value < 50) {
+                    progressdialog = new wxProgressDialog(
+                        _("Building Isobar map"), _("Wind"), 100, NULL,
+                        wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_REMAINING_TIME);
+                }
+            }
+            //double nvalue = value * 100;
+            piso = new IsoLine( value, 1.852 / 3.6, pGR );
+
+            pIsobarArray->Add( piso );
         }
+        delete progressdialog;
     }
 
     //    Draw the Isobars
-    for( unsigned int i = 0; i < m_pGribRecordSet->m_IsobarArray.GetCount(); i++ ) {
-        IsoLine *piso = (IsoLine *) m_pGribRecordSet->m_IsobarArray.Item( i );
+    for( unsigned int i = 0; i < pIsobarArray->GetCount(); i++ ) {
+        IsoLine *piso = (IsoLine *) pIsobarArray->Item( i );
         if( m_pdc )
             piso->drawIsoLine( this, *m_pdc, vp, true, true ); //g_bGRIBUseHiDef
         else
@@ -826,43 +852,6 @@ bool GRIBOverlayFactory::RenderGribPressure( GribRecord *pGR, PlugIn_ViewPort *v
     }
     return true;
 }
-
-#if 0
-bool GRIBOverlayFactory::RenderGLGribPressure(GribRecord *pGR, wxGLContext *pcontext, PlugIn_ViewPort *vp)
-{
-
-    //    Initialize the array of Isobars if necessary
-    if(!m_IsobarArray.GetCount())
-    {
-        IsoLine *piso;
-        for (double press=840; press<1120; press += 2) // 2 = isobarsStep
-        {
-            piso = new IsoLine(press*100, pGR);
-            m_IsobarArray.Add(piso);
-        }
-    }
-
-    //    Draw the Isobars
-    for(unsigned int i = 0; i < m_IsobarArray.GetCount(); i++)
-    {
-        IsoLine *piso = (IsoLine *)m_IsobarArray.Item(i);
-        if(m_pdc)
-            piso->drawGLIsoLine(this, pcontext, vp, true, true); //g_bGRIBUseHiDef
-
-        // Draw Isobar labels
-        int gr = 80;
-        wxColour color = wxColour(gr,gr,gr);
-        int density = 40;//40;
-        int first = 0;
-
-        double coef = .01;
-        piso->drawGLIsoLineLabels(this, pcontext, color, vp, density, first, coef);
-
-    }
-    return true;
-}
-
-#endif
 
 void GRIBOverlayFactory::drawWaveArrow( int i, int j, double ang, wxColour arrowColor )
 {

@@ -240,6 +240,30 @@ GribRecord::GribRecord(const GribRecord &rec1, const GribRecord &rec2, double d)
 }
 
 
+GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1, const GribRecord &rec2)
+{
+    GribRecord *rec = new GribRecord(rec1);
+
+    /* generate a record which is the combined magnitude of two records */
+    if (rec1.data && rec2.data && rec1.Ni == rec2.Ni && rec1.Nj == rec2.Nj) {
+        int size = rec1.Ni*rec1.Nj;
+        for (int i=0; i<size; i++)
+            rec->data[i] = hypot(rec1.data[i], rec2.data[i]);
+    } else
+        rec->ok=false;
+
+    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) {
+        if(rec1.sectionSize3 == rec2.sectionSize3) {
+        int size = rec1.sectionSize3-6;
+        for (int i=0; i<size; i++)
+            rec->BMSbits[i] = rec1.BMSbits[i] & rec2.BMSbits[i];
+        } else
+            rec->ok = false;
+    }
+    
+    return rec;
+}
+
 //------------------------------------------------------------------------------
 void  GribRecord::setDataType(const zuchar t)
 {

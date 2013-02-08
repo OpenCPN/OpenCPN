@@ -19,28 +19,28 @@
 #include <wx/button.h>
 #include <wx/sizer.h>
 #include <wx/statbox.h>
-#include <wx/bitmap.h>
-#include <wx/image.h>
-#include <wx/icon.h>
-#include <wx/bmpbuttn.h>
+#include <wx/tglbtn.h>
 #include <wx/slider.h>
+#include <wx/stattext.h>
 #include "GribRecordTree.h"
 #include <wx/checkbox.h>
 #include <wx/textctrl.h>
 #include <wx/dialog.h>
-#include <wx/stattext.h>
+#include <wx/spinctrl.h>
 #include <wx/choice.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
 #define ID_GRIBDIR 1000
-#define ID_TIMELINE 1001
-#define ID_GRIBRECORDTREE 1002
-#define ID_CB_WIND_SPEED 1003
-#define ID_CB_SIG_WAVE_HEIGHT 1004
-#define ID_CB_CURRENT_VELOCITY 1005
-#define ID_CB_PRESSURE 1006
-#define ID_CB_SEA_TEMPERATURE 1007
+#define ID_CONFIG 1001
+#define ID_PLAYSTOP 1002
+#define ID_TIMELINE 1003
+#define ID_GRIBRECORDTREE 1004
+#define ID_CB_WIND_SPEED 1005
+#define ID_CB_SIG_WAVE_HEIGHT 1006
+#define ID_CB_CURRENT_VELOCITY 1007
+#define ID_CB_PRESSURE 1008
+#define ID_CB_SEA_TEMPERATURE 1009
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class GRIBUIDialogBase
@@ -52,7 +52,7 @@ class GRIBUIDialogBase : public wxDialog
 	protected:
 		wxDirPickerCtrl* m_dirPicker;
 		wxButton* m_bConfig;
-		wxBitmapButton* m_bbPlayPause;
+		wxToggleButton* m_tbPlayStop;
 		GribRecordTree *m_pRecordTree;
 		wxTextCtrl* m_tcWindSpeed;
 		wxTextCtrl* m_tcWindDirection;
@@ -65,6 +65,7 @@ class GRIBUIDialogBase : public wxDialog
 	
 	public:
 		wxSlider* m_sTimeline;
+		wxStaticText* m_stDateTime;
 		wxCheckBox* m_cbWind;
 		wxCheckBox* m_cbWave;
 		wxCheckBox* m_cbCurrent;
@@ -84,10 +85,8 @@ class GRIBConfigDialog : public wxDialog
 	private:
 	
 	protected:
-		wxCheckBox* m_checkBox10;
-		wxCheckBox* m_checkBox11;
 		wxStaticText* m_staticText5;
-		wxSlider* m_slider2;
+		wxStaticText* m_staticText4;
 		wxChoice* m_cDataType;
 		wxStaticText* m_staticText12;
 		wxChoice* m_cDataUnits;
@@ -100,6 +99,10 @@ class GRIBConfigDialog : public wxDialog
 		wxButton* m_sdbSizer1Cancel;
 	
 	public:
+		wxCheckBox* m_cInterpolate;
+		wxCheckBox* m_cLoopMode;
+		wxSlider* m_sPlaybackSpeed;
+		wxSpinCtrl* m_sHourDivider;
 		
 		GRIBConfigDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("GRIB Config"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
 		~GRIBConfigDialog();

@@ -59,7 +59,7 @@ public:
 
 class GRIBUIDialog;
 class GribRecord;
-class GribRecordSet;
+class GribTimelineRecordSet;
 
 class GRIBOverlayFactory {
 public:
@@ -73,7 +73,7 @@ public:
       ClearCachedData();
     }
 
-    void SetGribRecordSet( GribRecordSet *pGribRecordSet1 );
+    void SetGribTimelineRecordSet( GribTimelineRecordSet *pGribTimelineRecordSet1 );
     bool RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp );
     bool RenderGLGribOverlay( wxGLContext *pcontext, PlugIn_ViewPort *vp );
     bool IsReadyToRender()
@@ -83,7 +83,7 @@ public:
     void Reset();
     void ClearCachedData( void );
 
-    GribRecordSet *m_pGribRecordSet;
+    GribTimelineRecordSet *m_pGribTimelineRecordSet;
 
     void DrawGLLine( double x1, double y1, double x2, double y2, double width );
     void DrawOLBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask );
@@ -95,7 +95,7 @@ private:
 
     bool RenderGribWind( GribRecord *pGRX, GribRecord *pGRY, PlugIn_ViewPort *vp );
     wxImage &getLabel(double value);
-    bool RenderGribPressure( GribRecord *pGR, PlugIn_ViewPort *vp );
+    bool RenderGribIsobar( GribRecord *pGRA, wxArrayPtrVoid *&pIsobarArray, PlugIn_ViewPort *vp );
     bool RenderGribWaveHeight( GribRecord *pGR, PlugIn_ViewPort *vp );
     bool RenderGribWaveDirection( GribRecord *pGR, PlugIn_ViewPort *vp );
     bool RenderGribScatWind( GribRecord *pGRX, GribRecord *pGRY, PlugIn_ViewPort *vp );

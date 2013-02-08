@@ -25,7 +25,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_dirPicker = new wxDirPickerCtrl( this, ID_GRIBDIR, wxEmptyString, wxT("Select a GRIB Directory"), wxDefaultPosition, wxDefaultSize, wxDIRP_DEFAULT_STYLE );
 	sbSizer1->Add( m_dirPicker, 0, wxALL, 5 );
 	
-	m_bConfig = new wxButton( this, wxID_ANY, wxT("Config"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_bConfig = new wxButton( this, ID_CONFIG, wxT("Config"), wxDefaultPosition, wxDefaultSize, 0 );
 	sbSizer1->Add( m_bConfig, 0, wxALL, 5 );
 	
 	
@@ -37,14 +37,18 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	fgSizer5->SetFlexibleDirection( wxBOTH );
 	fgSizer5->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_bbPlayPause = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
-	fgSizer5->Add( m_bbPlayPause, 0, wxALL, 5 );
+	m_tbPlayStop = new wxToggleButton( this, ID_PLAYSTOP, wxT("Play"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer5->Add( m_tbPlayStop, 0, wxALL, 5 );
 	
-	m_sTimeline = new wxSlider( this, ID_TIMELINE, 0, 0, 0, wxDefaultPosition, wxSize( -1,-1 ), wxSL_HORIZONTAL );
+	m_sTimeline = new wxSlider( this, ID_TIMELINE, 2, 1, 10, wxDefaultPosition, wxSize( -1,-1 ), wxSL_HORIZONTAL );
 	fgSizer5->Add( m_sTimeline, 0, wxEXPAND, 5 );
 	
 	
 	fgSizer1->Add( fgSizer5, 1, wxEXPAND, 5 );
+	
+	m_stDateTime = new wxStaticText( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	m_stDateTime->Wrap( -1 );
+	fgSizer1->Add( m_stDateTime, 0, wxALL|wxEXPAND, 5 );
 	
 	m_pRecordTree = new GribRecordTree(this, ID_GRIBRECORDTREE);
 	m_pRecordTree->SetMinSize( wxSize( -1,120 ) );
@@ -143,19 +147,26 @@ GRIBConfigDialog::GRIBConfigDialog( wxWindow* parent, wxWindowID id, const wxStr
 	wxGridSizer* gSizer2;
 	gSizer2 = new wxGridSizer( 0, 2, 0, 0 );
 	
-	m_checkBox10 = new wxCheckBox( this, wxID_ANY, wxT("Interpolate between gribs"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_checkBox10->SetValue(true); 
-	gSizer2->Add( m_checkBox10, 0, 0, 5 );
+	m_cInterpolate = new wxCheckBox( this, wxID_ANY, wxT("Interpolate between gribs"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cInterpolate->SetValue(true); 
+	gSizer2->Add( m_cInterpolate, 0, 0, 5 );
 	
-	m_checkBox11 = new wxCheckBox( this, wxID_ANY, wxT("Loop Mode"), wxDefaultPosition, wxDefaultSize, 0 );
-	gSizer2->Add( m_checkBox11, 0, 0, 5 );
+	m_cLoopMode = new wxCheckBox( this, wxID_ANY, wxT("Loop Mode"), wxDefaultPosition, wxDefaultSize, 0 );
+	gSizer2->Add( m_cLoopMode, 0, 0, 5 );
 	
 	m_staticText5 = new wxStaticText( this, wxID_ANY, wxT("Playback Speed"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText5->Wrap( -1 );
 	gSizer2->Add( m_staticText5, 0, 0, 5 );
 	
-	m_slider2 = new wxSlider( this, wxID_ANY, 50, 0, 100, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
-	gSizer2->Add( m_slider2, 0, wxEXPAND, 5 );
+	m_sPlaybackSpeed = new wxSlider( this, wxID_ANY, 50, 0, 100, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
+	gSizer2->Add( m_sPlaybackSpeed, 0, wxEXPAND, 5 );
+	
+	m_staticText4 = new wxStaticText( this, wxID_ANY, wxT("Slices per hour"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText4->Wrap( -1 );
+	gSizer2->Add( m_staticText4, 0, wxALL, 5 );
+	
+	m_sHourDivider = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 20, 2 );
+	gSizer2->Add( m_sHourDivider, 0, wxALL, 5 );
 	
 	
 	sbSizer4->Add( gSizer2, 1, 0, 5 );

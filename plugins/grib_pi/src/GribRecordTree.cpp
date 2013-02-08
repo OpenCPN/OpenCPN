@@ -68,8 +68,8 @@ void GribRecordTree::OnItemSelectChange( wxTreeEvent& event )
     if( !pdata ) return;
 
     switch( pdata->m_type ){
-        case GRIB_FILE_TYPE: {
-
+        case GRIB_FILE_TYPE:
+        {
             //    Create and ingest the GRIB file object if needed
             if( !pdata->m_pGribFile ) {
                 GRIBFile *pgribfile = new GRIBFile( pdata->m_file_name );
@@ -83,12 +83,17 @@ void GribRecordTree::OnItemSelectChange( wxTreeEvent& event )
                 }
             }
 
-            if( pdata->m_pGribFile )
+            if( pdata->m_pGribFile ) {
                 parent->SelectTreeControlGRS( pdata->m_pGribFile );
+                ArrayOfGribRecordSets *rsa = pdata->m_pGribFile->GetRecordSetArrayPtr();
+                if( rsa->GetCount() > 0)
+                    parent->SelectGribRecordSet( &rsa->Item(0) );
+            }
             break;
         }
 
-        case GRIB_RECORD_SET_TYPE: {
+        case GRIB_RECORD_SET_TYPE:
+        {
             parent->SelectTreeControlGRS( pdata->m_pGribFile );
             parent->SelectGribRecordSet( pdata->m_pGribRecordSet );
             break;

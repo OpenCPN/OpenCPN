@@ -162,9 +162,9 @@ double      round_msvc (double x)
 }
 
 //---------------------------------------------------------------
-IsoLine::IsoLine(double val, const GribRecord *rec_)
+IsoLine::IsoLine(double val, double coeff, const GribRecord *rec_)
 {
-    value = val;
+    value = val*coeff;
 
     rec = rec_;
     W = rec_->getNi();
@@ -173,6 +173,8 @@ IsoLine::IsoLine(double val, const GribRecord *rec_)
     //---------------------------------------------------------
     // Génère la liste des segments.
     extractIsoLine(rec_);
+
+    value = val;
 
     if(trace.size() == 0)
           return;
@@ -616,6 +618,16 @@ void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp, bool b
     for (it=trace.begin(); it!=trace.end(); it++)
     {
         Segment *seg = *it;
+
+        /* skip segments that go the wrong way around the world */
+        if(seg->px1+180 < vp->clon && seg->px2+180 > vp->clon)
+            continue;
+        if(seg->px1+180 > vp->clon && seg->px2+180 < vp->clon)
+            continue;
+        if(seg->px1-180 < vp->clon && seg->px2-180 > vp->clon)
+            continue;
+        if(seg->px1-180 > vp->clon && seg->px2-180 < vp->clon)
+            continue;
 
         {
             wxPoint ab;

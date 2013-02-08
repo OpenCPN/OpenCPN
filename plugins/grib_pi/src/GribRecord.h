@@ -124,6 +124,7 @@ class GribRecord
         GribRecord(ZUFILE* file, int id_);
         GribRecord(const GribRecord &rec);
         GribRecord(const GribRecord &rec1, const GribRecord &rec2, double d);
+        static GribRecord *MagnitudeRecord(const GribRecord &rec1, const GribRecord &rec2);
         ~GribRecord();
 
         bool  isOk()  const   {return ok;};

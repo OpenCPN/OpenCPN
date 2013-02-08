@@ -36,7 +36,7 @@
 #include <wx/fileconf.h>
 
 #include "grib_pi.h"
-#include "GribUIDialog.h"
+//#include "GribUIDialog.h"
 
 
 // the class factories, used to create and destroy instances of the PlugIn
@@ -62,7 +62,6 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
 //---------------------------------------------------------------------------------------------------------
 
 #include "icons.h"
-
 
 
 //---------------------------------------------------------------------------------------------------------
@@ -125,12 +124,14 @@ int grib_pi::Init(void)
 
 bool grib_pi::DeInit(void)
 {
-//      printf("grib_pi DeInit()\n");
-      if(m_pGribDialog)
-            m_pGribDialog->Close();
+    if(m_pGribDialog) {
+        m_pGribDialog->Close();
+        delete m_pGribDialog;
+        m_pGribDialog = NULL;
+    }
 
-      delete m_pGRIBOverlayFactory;
-      m_pGRIBOverlayFactory = NULL;
+//      delete m_pGRIBOverlayFactory;
+//      m_pGRIBOverlayFactory = NULL;
 
       return true;
 }
@@ -259,7 +260,7 @@ void grib_pi::OnGribDialogClose()
     SetToolbarItemState( m_leftclick_tool_id, false );
 
     if(m_pGribDialog)
-      m_pGribDialog->Show(false);
+        m_pGribDialog->Show(false);
 
     SaveConfig();
 }
