@@ -470,12 +470,15 @@ ret_point:
 
             int nProg = pr->pRoutePointList->GetCount() + 1;
             if ( pProgress )
-            pProgress->SetRange ( 100 );
+                pProgress->SetRange ( 100 );
 
             int progress_stall = 500;
             if(pr->pRoutePointList->GetCount() > 10)
-                progress_stall = 500;
+                progress_stall = 200;
 
+            if(!pProgress)
+                progress_stall = 200;   // 80 chars at 4800 baud is ~160 msec
+            
             // Send out the waypoints, in order
             if ( bsend_waypoints )
             {
@@ -517,7 +520,10 @@ ret_point:
                         else
                             oNMEA0183.GPwpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
 
-                        oNMEA0183.GPwpl.To = prp->GetName().Truncate ( 8 );
+                        wxString name = prp->GetName();
+                        name += _T("000000");
+                        name.Truncate( 6 );
+                        oNMEA0183.GPwpl.To = name;
 
                         oNMEA0183.GPwpl.Write ( snt );
                     }
@@ -538,9 +544,9 @@ ret_point:
                         pProgress->Refresh();
                         pProgress->Update();
                     }
-
+                    
                     wxMilliSleep ( progress_stall );
-
+                    
                     node = node->GetNext();
 
                     ip++;
@@ -559,7 +565,7 @@ ret_point:
 
             if(g_GPS_Ident == _T("FurunoGP3X"))
             {
-                oNMEA0183.Rte.RouteName = _T ( "1" );
+                oNMEA0183.Rte.RouteName = _T ( "01" );
                 oNMEA0183.TalkerID = _T ( "GP" );
             }
 
@@ -575,8 +581,9 @@ ret_point:
 
                 if(g_GPS_Ident == _T("FurunoGP3X"))
                 {
-                      name = prp->GetName().Truncate ( 7 );
-                      name.Prepend(_T(" "));
+                    name = prp->GetName();
+                    name += _T("000000");
+                    name.Truncate( 6 );
                 }
 
                 oNMEA0183.Rte.AddWaypoint ( name );
@@ -585,7 +592,7 @@ ret_point:
 
             oNMEA0183.Rte.Write ( snt );
 
-            unsigned int max_length = 70;
+            unsigned int max_length = 76;
 
             if(snt.Sentence.Len() > max_length)
             {
@@ -604,25 +611,10 @@ ret_point:
                     else
                         tNMEA0183.Rte.RouteName = pr->m_RouteNameString;
 
-                    tNMEA0183.Rte.AddWaypoint ( _T("123456") );
                 }
                 else
                 {
-                    if (( pr->m_RouteNameString.IsNumber() ) &&
-                        ( pr->m_RouteNameString.Len() <= 2 ) ) {
-                            if( pr->m_RouteNameString.Len() == 2) {
-                                tNMEA0183.Rte.RouteName = pr->m_RouteNameString;
-                            }
-                            else {
-                                tNMEA0183.Rte.RouteName = _T("0");
-                                tNMEA0183.Rte.RouteName += pr->m_RouteNameString;
-                            }
-                        }
-                    else
-                    {
-                        tNMEA0183.Rte.RouteName = _T ( "01" );
-                    }
-                    tNMEA0183.Rte.AddWaypoint ( _T(" 1234567") );
+                    tNMEA0183.Rte.RouteName = _T ( "01" );
                 }
 
 
@@ -643,13 +635,13 @@ ret_point:
                     RoutePoint *prp = node->GetData();
                     unsigned int name_len = prp->GetName().Truncate ( 6 ).Len();
                     if(g_GPS_Ident == _T("FurunoGP3X"))
-                        name_len = 1 + prp->GetName().Truncate ( 7 ).Len();
+                        name_len = 6;           // six chars
 
 
                     if(bnew_sentence)
                     {
                         sent_len = tare_length;
-                        sent_len += name_len;
+                        sent_len += name_len + 1;        // with comma
                         bnew_sentence = false;
                         node = node->GetNext();
 
@@ -663,7 +655,7 @@ ret_point:
                         }
                         else
                         {
-                            sent_len += name_len;
+                            sent_len += name_len + 1;   // with comma
                             node = node->GetNext();
                         }
                     }
@@ -681,8 +673,9 @@ ret_point:
                     wxString name = prp->GetName().Truncate ( 6 );
                     if(g_GPS_Ident == _T("FurunoGP3X"))
                     {
-                        name = prp->GetName().Truncate ( 7 );
-                        name.Prepend(_T(" "));
+                        name = prp->GetName();
+                        name += _T("000000");
+                        name.Truncate( 6 );
                     }
 
                     unsigned int name_len = name.Len();
@@ -690,7 +683,7 @@ ret_point:
                     if(bnew_sentence)
                     {
                         sent_len = tare_length;
-                        sent_len += name_len;
+                        sent_len += name_len + 1;
                         bnew_sentence = false;
 
                         oNMEA0183.Rte.Empty();
@@ -704,19 +697,7 @@ ret_point:
                                     oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
                         }
                         else {
-                            if (( pr->m_RouteNameString.IsNumber() ) &&
-                                ( pr->m_RouteNameString.Len() <= 2 ) ) {
-                                    if( pr->m_RouteNameString.Len() == 2) {
-                                        oNMEA0183.Rte.RouteName = pr->m_RouteNameString;
-                                    }
-                                    else {
-                                        oNMEA0183.Rte.RouteName = _T("0");
-                                        oNMEA0183.Rte.RouteName += pr->m_RouteNameString;
-                                    }
-                                }
-                                else {
-                                    oNMEA0183.Rte.RouteName = _T ( "01" );
-                                }
+                            oNMEA0183.Rte.RouteName = _T ( "01" );
                         }
 
 
@@ -735,13 +716,12 @@ ret_point:
                             bnew_sentence = true;
 
                             oNMEA0183.Rte.Write ( snt );
-                    // printf("%s", snt.Sentence.mb_str());
 
                             sentence_array.Add(snt.Sentence);
                         }
                         else
                         {
-                            sent_len += name_len;
+                            sent_len += name_len + 1;
                             oNMEA0183.Rte.AddWaypoint ( name );
                             node = node->GetNext();
                         }
@@ -764,7 +744,7 @@ ret_point:
                     msg.Trim();
                     wxLogMessage(msg);
 
-                    wxMilliSleep ( 500 );
+                    wxMilliSleep ( progress_stall );
                 }
 
             }
@@ -804,7 +784,7 @@ ret_point:
                 pProgress->Update();
             }
 
-            wxMilliSleep ( 500 );
+            wxMilliSleep ( progress_stall );
 
             ret_bool = true;
             
@@ -1018,7 +998,11 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
                 oNMEA0183.GPwpl.Position.Longitude.Set ( prp->m_lon, _T ( "E" ) );
 
 
-            oNMEA0183.GPwpl.To = prp->GetName().Truncate ( 8 );
+            wxString name = prp->GetName();
+            name += _T("000000");
+            name.Truncate( 6 );
+            
+            oNMEA0183.GPwpl.To = name;
 
             oNMEA0183.GPwpl.Write ( snt );
         }
