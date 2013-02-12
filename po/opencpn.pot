@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 3.1.1328\n"
+"Project-Id-Version: opencpn 3.1.1405\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-02 14:06-0500\n"
+"POT-Creation-Date: 2013-02-07 12:44-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,7 +35,7 @@ msgstr ""
 msgid "Waypoint Information"
 msgstr ""
 
-#: include/options.h:58 src/chart1.cpp:2475 src/chart1.cpp:3815
+#: include/options.h:58 src/chart1.cpp:2473 src/chart1.cpp:3816
 msgid "Options"
 msgstr ""
 
@@ -52,7 +52,7 @@ msgstr ""
 msgid "Center View"
 msgstr ""
 
-#: include/about.h:39 src/chart1.cpp:2541
+#: include/about.h:39 src/chart1.cpp:2539
 msgid "About OpenCPN"
 msgstr ""
 
@@ -155,7 +155,7 @@ msgstr ""
 msgid "Welcome to OpenCPN"
 msgstr ""
 
-#: src/chart1.cpp:985 src/chart1.cpp:1780 src/chart1.cpp:3926
+#: src/chart1.cpp:985 src/chart1.cpp:1780 src/chart1.cpp:3927
 #: src/navutil.cpp:1268 src/navutil.cpp:2217
 msgid "OpenCPN Info"
 msgstr ""
@@ -208,7 +208,7 @@ msgstr ""
 msgid "Remaining time : "
 msgstr ""
 
-#: src/chart1.cpp:1761 src/chart1.cpp:4175
+#: src/chart1.cpp:1761 src/chart1.cpp:4176
 msgid "OpenCPN Chart Update"
 msgstr ""
 
@@ -218,75 +218,75 @@ msgid ""
 "Please select chart folders in Options > Charts."
 msgstr ""
 
-#: src/chart1.cpp:2353 src/chcanv.cpp:14971
+#: src/chart1.cpp:2351 src/chcanv.cpp:14971
 msgid "AIS Target Query"
 msgstr ""
 
-#: src/chart1.cpp:2430
+#: src/chart1.cpp:2428
 msgid "Zoom In"
 msgstr ""
 
-#: src/chart1.cpp:2436
+#: src/chart1.cpp:2434
 msgid "Zoom Out"
 msgstr ""
 
-#: src/chart1.cpp:2445
+#: src/chart1.cpp:2443
 msgid "Shift to Larger Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:2453
+#: src/chart1.cpp:2451
 msgid "Shift to Smaller Scale Chart"
 msgstr ""
 
-#: src/chart1.cpp:2461
+#: src/chart1.cpp:2459
 msgid "Create Route"
 msgstr ""
 
-#: src/chart1.cpp:2468
+#: src/chart1.cpp:2466
 msgid "Auto Follow"
 msgstr ""
 
-#: src/chart1.cpp:2481
+#: src/chart1.cpp:2479
 msgid "Show ENC Text"
 msgstr ""
 
-#: src/chart1.cpp:2489 src/chart1.cpp:2569 src/chart1.cpp:3248
+#: src/chart1.cpp:2487 src/chart1.cpp:2567 src/chart1.cpp:3249
 msgid "Hide AIS Targets"
 msgstr ""
 
-#: src/chart1.cpp:2496
+#: src/chart1.cpp:2494
 msgid "Show Currents"
 msgstr ""
 
-#: src/chart1.cpp:2502
+#: src/chart1.cpp:2500
 msgid "Show Tides"
 msgstr ""
 
-#: src/chart1.cpp:2508
+#: src/chart1.cpp:2506
 msgid "Print Chart"
 msgstr ""
 
-#: src/chart1.cpp:2514 src/routemanagerdialog.cpp:423
+#: src/chart1.cpp:2512 src/routemanagerdialog.cpp:423
 msgid "Route Manager"
 msgstr ""
 
-#: src/chart1.cpp:2521
+#: src/chart1.cpp:2519
 msgid "Toggle Tracking"
 msgstr ""
 
-#: src/chart1.cpp:2528
+#: src/chart1.cpp:2526
 msgid "Change Color Scheme"
 msgstr ""
 
-#: src/chart1.cpp:2535
+#: src/chart1.cpp:2533
 msgid "Drop MOB Marker"
 msgstr ""
 
-#: src/chart1.cpp:2535
+#: src/chart1.cpp:2533
 msgid " (Ctrl-Space)"
 msgstr ""
 
-#: src/chart1.cpp:2573 src/chart1.cpp:3250
+#: src/chart1.cpp:2571 src/chart1.cpp:3251
 msgid "Show AIS Targets"
 msgstr ""
 
@@ -294,65 +294,65 @@ msgstr ""
 msgid "Anchorage created "
 msgstr ""
 
-#: src/chart1.cpp:3002
+#: src/chart1.cpp:3003
 msgid "StatusBar"
 msgstr ""
 
-#: src/chart1.cpp:3140
+#: src/chart1.cpp:3141
 msgid "Group \""
 msgstr ""
 
-#: src/chart1.cpp:3142
+#: src/chart1.cpp:3143
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr ""
 
-#: src/chart1.cpp:3144
+#: src/chart1.cpp:3145
 msgid "OpenCPN Group Notice"
 msgstr ""
 
-#: src/chart1.cpp:3319
+#: src/chart1.cpp:3320
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr ""
 
-#: src/chart1.cpp:3441 src/chart1.cpp:3488
+#: src/chart1.cpp:3442 src/chart1.cpp:3489
 msgid "MAN OVERBOARD"
 msgstr ""
 
-#: src/chart1.cpp:3455
+#: src/chart1.cpp:3456
 msgid "1.0 NM along COG"
 msgstr ""
 
-#: src/chart1.cpp:3466
+#: src/chart1.cpp:3467
 msgid "Temporary MOB Route"
 msgstr ""
 
-#: src/chart1.cpp:3467
+#: src/chart1.cpp:3468
 msgid "Assumed 1 Mile Point"
 msgstr ""
 
-#: src/chart1.cpp:3925
+#: src/chart1.cpp:3926
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr ""
 
-#: src/chart1.cpp:5997
+#: src/chart1.cpp:5999
 msgid "Show This Chart"
 msgstr ""
 
-#: src/chart1.cpp:6002 src/chcanv.cpp:8334
+#: src/chart1.cpp:6004 src/chcanv.cpp:8334
 msgid "Hide This Chart"
 msgstr ""
 
-#: src/chart1.cpp:6247
+#: src/chart1.cpp:6249
 msgid "Chart Print"
 msgstr ""
 
-#: src/chart1.cpp:6250 src/routeprintout.cpp:470
+#: src/chart1.cpp:6252 src/routeprintout.cpp:470
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr ""
 
-#: src/chart1.cpp:6836
+#: src/chart1.cpp:6841
 msgid " Ship "
 msgstr ""
 
@@ -509,7 +509,7 @@ msgstr ""
 msgid "Drop"
 msgstr ""
 
-#: src/datastream.cpp:1642 src/routeman.cpp:1033
+#: src/datastream.cpp:1642 src/routeman.cpp:1056
 msgid "Send"
 msgstr ""
 
@@ -933,7 +933,7 @@ msgstr ""
 msgid "Are you sure you want to delete this track?"
 msgstr ""
 
-#: src/chcanv.cpp:9557
+#: src/chcanv.cpp:9557 src/routeman.cpp:838
 msgid "OpenCPN Track Delete"
 msgstr ""
 
@@ -1032,7 +1032,7 @@ msgstr ""
 msgid "Longitude"
 msgstr ""
 
-#: src/chcanv.cpp:15384 src/routeprop.cpp:1016 src/routeman.cpp:1029
+#: src/chcanv.cpp:15384 src/routeprop.cpp:1016 src/routeman.cpp:1052
 #: src/routeprintout.cpp:403
 msgid "Cancel"
 msgstr ""
@@ -1063,6 +1063,7 @@ msgid "Error on Route Upload.  Please check logfiles..."
 msgstr ""
 
 #: src/navutil.cpp:4787 src/navutil.cpp:4827 src/navutil.cpp:4863
+#: src/navutil.cpp:4888
 msgid "Export GPX file"
 msgstr ""
 
@@ -1070,112 +1071,112 @@ msgstr ""
 msgid "Overwrite existing file?"
 msgstr ""
 
-#: src/navutil.cpp:5113
+#: src/navutil.cpp:5136
 msgid "Import GPX file"
 msgstr ""
 
-#: src/navutil.cpp:7171
+#: src/navutil.cpp:7194
 msgid "&Font family:"
 msgstr ""
 
-#: src/navutil.cpp:7177 src/navutil.cpp:7179
+#: src/navutil.cpp:7200 src/navutil.cpp:7202
 msgid "The font family."
 msgstr ""
 
-#: src/navutil.cpp:7184
+#: src/navutil.cpp:7207
 msgid "&Style:"
 msgstr ""
 
-#: src/navutil.cpp:7188 src/navutil.cpp:7190
+#: src/navutil.cpp:7211 src/navutil.cpp:7213
 msgid "The font style."
 msgstr ""
 
-#: src/navutil.cpp:7195
+#: src/navutil.cpp:7218
 msgid "&Weight:"
 msgstr ""
 
-#: src/navutil.cpp:7199 src/navutil.cpp:7201
+#: src/navutil.cpp:7222 src/navutil.cpp:7224
 msgid "The font weight."
 msgstr ""
 
-#: src/navutil.cpp:7208
+#: src/navutil.cpp:7231
 msgid "C&olour:"
 msgstr ""
 
-#: src/navutil.cpp:7218 src/navutil.cpp:7220
+#: src/navutil.cpp:7241 src/navutil.cpp:7243
 msgid "The font colour."
 msgstr ""
 
-#: src/navutil.cpp:7226
+#: src/navutil.cpp:7249
 msgid "&Point size:"
 msgstr ""
 
-#: src/navutil.cpp:7231 src/navutil.cpp:7233
+#: src/navutil.cpp:7254 src/navutil.cpp:7256
 msgid "The font point size."
 msgstr ""
 
-#: src/navutil.cpp:7240
+#: src/navutil.cpp:7263
 msgid "&Underline"
 msgstr ""
 
-#: src/navutil.cpp:7243 src/navutil.cpp:7245
+#: src/navutil.cpp:7266 src/navutil.cpp:7268
 msgid "Whether the font is underlined."
 msgstr ""
 
-#: src/navutil.cpp:7252
+#: src/navutil.cpp:7275
 msgid "Preview:"
 msgstr ""
 
-#: src/navutil.cpp:7257 src/navutil.cpp:7259
+#: src/navutil.cpp:7280 src/navutil.cpp:7282
 msgid "Shows the font preview."
 msgstr ""
 
-#: src/navutil.cpp:7266 src/options.cpp:1757
+#: src/navutil.cpp:7289 src/options.cpp:1757
 msgid "&Cancel"
 msgstr ""
 
-#: src/navutil.cpp:7268
+#: src/navutil.cpp:7291
 msgid "Click to cancel the font selection."
 msgstr ""
 
-#: src/navutil.cpp:7271
+#: src/navutil.cpp:7294
 msgid "&OK"
 msgstr ""
 
-#: src/navutil.cpp:7273 src/navutil.cpp:7275
+#: src/navutil.cpp:7296 src/navutil.cpp:7298
 msgid "Click to confirm the font selection."
 msgstr ""
 
-#: src/navutil.cpp:7996
+#: src/navutil.cpp:8019
 msgid "Legend"
 msgstr ""
 
-#: src/navutil.cpp:8004 src/navutil.cpp:8077
+#: src/navutil.cpp:8027 src/navutil.cpp:8100
 msgid "Pause"
 msgstr ""
 
-#: src/navutil.cpp:8038
+#: src/navutil.cpp:8061
 msgid "Message accepted"
 msgstr ""
 
-#: src/navutil.cpp:8045
+#: src/navutil.cpp:8068
 msgid "Message filtered and dropped"
 msgstr ""
 
-#: src/navutil.cpp:8052
+#: src/navutil.cpp:8075
 msgid "Output Message"
 msgstr ""
 
-#: src/navutil.cpp:8071
+#: src/navutil.cpp:8094
 msgid "Resume"
 msgstr ""
 
-#: src/navutil.cpp:8277
+#: src/navutil.cpp:8300
 #, c-format
 msgid "Couldn't load sound data from '%s'."
 msgstr ""
 
-#: src/navutil.cpp:8284
+#: src/navutil.cpp:8307
 #, c-format
 msgid "Sound file '%s' is in unsupported format."
 msgstr ""
@@ -3388,7 +3389,7 @@ msgstr ""
 msgid "Drop sentences"
 msgstr ""
 
-#: src/options.cpp:776 src/pluginmanager.cpp:2041 src/pluginmanager.cpp:2051
+#: src/options.cpp:776 src/pluginmanager.cpp:2094 src/pluginmanager.cpp:2104
 msgid "Enable"
 msgstr ""
 
@@ -4079,11 +4080,11 @@ msgstr ""
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr ""
 
-#: src/routeman.cpp:633 src/routeman.cpp:638 src/routeman.cpp:643
+#: src/routeman.cpp:634 src/routeman.cpp:639 src/routeman.cpp:644
 msgid "T"
 msgstr ""
 
-#: src/routeman.cpp:923
+#: src/routeman.cpp:946
 msgid ""
 "Waypoints can be renamed to reflect the new order, the names will be '001', "
 "'002' etc.\n"
@@ -4091,27 +4092,27 @@ msgid ""
 "Do you want to rename the waypoints?"
 msgstr ""
 
-#: src/routeman.cpp:983
+#: src/routeman.cpp:1006
 msgid "GPS/Plotter Port"
 msgstr ""
 
-#: src/routeman.cpp:1013
+#: src/routeman.cpp:1036
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 msgstr ""
 
-#: src/routeman.cpp:1017
+#: src/routeman.cpp:1040
 msgid "Progress..."
 msgstr ""
 
-#: src/pluginmanager.cpp:206
+#: src/pluginmanager.cpp:210
 msgid "    Incompatible PlugIn detected:"
 msgstr ""
 
-#: src/pluginmanager.cpp:1971
+#: src/pluginmanager.cpp:2024
 msgid "Preferences"
 msgstr ""
 
-#: src/pluginmanager.cpp:2049
+#: src/pluginmanager.cpp:2102
 msgid "Disable"
 msgstr ""
 

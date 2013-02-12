@@ -2903,6 +2903,13 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     //      Delete all open charts in the cache
     if( ChartData ) ChartData->PurgeCache();
 
+    SetStatusBar( NULL );
+    stats = NULL;
+
+    cc1->Destroy();
+    cc1 = NULL;
+    
+
     //    Unload the PlugIns
     //      Note that we are waiting until after the canvas is destroyed,
     //      since some PlugIns may have created children of canvas.
@@ -2921,12 +2928,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
 
     delete g_pMUX;
-    
-    SetStatusBar( NULL );
-    stats = NULL;
-
-    cc1->Destroy();
-    cc1 = NULL;
     
     pthumbwin = NULL;
 

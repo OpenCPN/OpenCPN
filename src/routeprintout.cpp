@@ -101,19 +101,19 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
     table.StartFillHeader();
     // setup widths for columns
     if ( toPrintOut[ PRINT_WP_NAME ] ) {
-        table << (char *)::wxGetTranslation ((const wxChar *)"Name");
+        table << (const char *)wxString(_("Name")).mb_str();
     }
     if ( toPrintOut[ PRINT_WP_POSITION ] ) {
-        table << (char *)::wxGetTranslation ((const wxChar *)"Position");
+        table << (const char *)wxString(_("Position")).mb_str();
     }
     if ( toPrintOut[ PRINT_WP_COURSE ] ) {
-        table << (char *)::wxGetTranslation ((const wxChar *)"Course");
+        table << (const char *)wxString(_("Course")).mb_str();
     }
     if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
-        table << (char *)::wxGetTranslation ((const wxChar *)"Distance");
+        table << (const char *)wxString(_("Distance")).mb_str();
     }
     if ( toPrintOut[ PRINT_WP_DESCRIPTION ] ) {
-        table << (char *)::wxGetTranslation ((const wxChar *)"Description");
+        table << (const char *)wxString(_("Description")).mb_str();
     }
 
     table.StartFillWidths();
