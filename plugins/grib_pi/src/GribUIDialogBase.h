@@ -78,34 +78,51 @@ class GRIBUIDialogBase : public wxDialog
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Class GRIBConfigDialog
+/// Class GRIBConfigDialogBase
 ///////////////////////////////////////////////////////////////////////////////
-class GRIBConfigDialog : public wxDialog 
+class GRIBConfigDialogBase : public wxDialog 
 {
 	private:
 	
 	protected:
 		wxStaticText* m_staticText5;
+		wxSpinCtrl* m_sSlicesPerUpdate;
+		wxStaticText* m_staticText9;
+		wxSpinCtrl* m_sUpdatesPerSecond;
 		wxStaticText* m_staticText4;
 		wxChoice* m_cDataType;
 		wxStaticText* m_staticText12;
 		wxChoice* m_cDataUnits;
-		wxCheckBox* m_cbDirectionArrows;
+		wxCheckBox* m_cbBarbedArrows;
+		wxStaticText* m_staticText10;
+		wxStaticText* m_staticText11;
 		wxCheckBox* m_cbIsoBars;
+		wxStaticText* m_staticText6;
+		wxSpinCtrl* m_sIsoBarSpacing;
+		wxCheckBox* m_cbDirectionArrows;
+		wxStaticText* m_staticText51;
+		wxSpinCtrl* m_sDirectionArrowSize;
 		wxCheckBox* m_cbOverlayMap;
+		wxStaticText* m_staticText7;
+		wxChoice* m_cOverlayColors;
 		wxCheckBox* m_cbNumbers;
+		wxStaticText* m_staticText8;
+		wxSpinCtrl* m_sNumbersSpacing;
 		wxStdDialogButtonSizer* m_sdbSizer1;
 		wxButton* m_sdbSizer1OK;
 		wxButton* m_sdbSizer1Cancel;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnDataTypeChoice( wxCommandEvent& event ) { event.Skip(); }
+		
 	
 	public:
 		wxCheckBox* m_cInterpolate;
 		wxCheckBox* m_cLoopMode;
-		wxSlider* m_sPlaybackSpeed;
 		wxSpinCtrl* m_sHourDivider;
 		
-		GRIBConfigDialog( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("GRIB Config"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
-		~GRIBConfigDialog();
+		GRIBConfigDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("GRIB Config"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
+		~GRIBConfigDialogBase();
 	
 };
 

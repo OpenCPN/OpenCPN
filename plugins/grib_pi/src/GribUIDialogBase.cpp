@@ -132,7 +132,7 @@ GRIBUIDialogBase::~GRIBUIDialogBase()
 {
 }
 
-GRIBConfigDialog::GRIBConfigDialog( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+GRIBConfigDialogBase::GRIBConfigDialogBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
 	this->SetSizeHints( wxDefaultSize, wxSize( -1,-1 ) );
 	
@@ -154,12 +154,19 @@ GRIBConfigDialog::GRIBConfigDialog( wxWindow* parent, wxWindowID id, const wxStr
 	m_cLoopMode = new wxCheckBox( this, wxID_ANY, wxT("Loop Mode"), wxDefaultPosition, wxDefaultSize, 0 );
 	gSizer2->Add( m_cLoopMode, 0, 0, 5 );
 	
-	m_staticText5 = new wxStaticText( this, wxID_ANY, wxT("Playback Speed"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText5 = new wxStaticText( this, wxID_ANY, wxT("Slices per Update"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText5->Wrap( -1 );
 	gSizer2->Add( m_staticText5, 0, 0, 5 );
 	
-	m_sPlaybackSpeed = new wxSlider( this, wxID_ANY, 50, 0, 100, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
-	gSizer2->Add( m_sPlaybackSpeed, 0, wxEXPAND, 5 );
+	m_sSlicesPerUpdate = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100, 2 );
+	gSizer2->Add( m_sSlicesPerUpdate, 0, wxALL, 5 );
+	
+	m_staticText9 = new wxStaticText( this, wxID_ANY, wxT("Updates per Second"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText9->Wrap( -1 );
+	gSizer2->Add( m_staticText9, 0, wxALL, 5 );
+	
+	m_sUpdatesPerSecond = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 60, 4 );
+	gSizer2->Add( m_sUpdatesPerSecond, 0, wxALL, 5 );
 	
 	m_staticText4 = new wxStaticText( this, wxID_ANY, wxT("Slices per hour"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText4->Wrap( -1 );
@@ -180,7 +187,7 @@ GRIBConfigDialog::GRIBConfigDialog( wxWindow* parent, wxWindowID id, const wxStr
 	wxGridSizer* gSizer3;
 	gSizer3 = new wxGridSizer( 0, 3, 0, 0 );
 	
-	wxString m_cDataTypeChoices[] = { wxT("Wind"), wxT("Pressure"), wxT("Significant Wave"), wxT("Sea Surface Temp"), wxT("Current") };
+	wxString m_cDataTypeChoices[] = { wxT("Wind"), wxT("Pressure"), wxT("Wave"), wxT("Sea Temperature"), wxT("Current") };
 	int m_cDataTypeNChoices = sizeof( m_cDataTypeChoices ) / sizeof( wxString );
 	m_cDataType = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataTypeNChoices, m_cDataTypeChoices, 0 );
 	m_cDataType->SetSelection( 0 );
@@ -195,17 +202,59 @@ GRIBConfigDialog::GRIBConfigDialog( wxWindow* parent, wxWindowID id, const wxStr
 	m_cDataUnits->SetSelection( 0 );
 	gSizer3->Add( m_cDataUnits, 0, wxALL, 5 );
 	
-	m_cbDirectionArrows = new wxCheckBox( this, wxID_ANY, wxT("Direction Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
-	gSizer3->Add( m_cbDirectionArrows, 0, wxALL, 5 );
+	m_cbBarbedArrows = new wxCheckBox( this, wxID_ANY, wxT("Barbed Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
+	gSizer3->Add( m_cbBarbedArrows, 0, wxALL, 5 );
+	
+	m_staticText10 = new wxStaticText( this, wxID_ANY, wxT("Option"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText10->Wrap( -1 );
+	gSizer3->Add( m_staticText10, 0, wxALL, 5 );
+	
+	m_staticText11 = new wxStaticText( this, wxID_ANY, wxT("None"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText11->Wrap( -1 );
+	gSizer3->Add( m_staticText11, 0, wxALL, 5 );
 	
 	m_cbIsoBars = new wxCheckBox( this, wxID_ANY, wxT("Iso Bars"), wxDefaultPosition, wxDefaultSize, 0 );
 	gSizer3->Add( m_cbIsoBars, 0, wxALL, 5 );
 	
+	m_staticText6 = new wxStaticText( this, wxID_ANY, wxT("Spacing"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText6->Wrap( -1 );
+	gSizer3->Add( m_staticText6, 0, wxALL, 5 );
+	
+	m_sIsoBarSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 1000, 0 );
+	gSizer3->Add( m_sIsoBarSpacing, 0, wxALL, 5 );
+	
+	m_cbDirectionArrows = new wxCheckBox( this, wxID_ANY, wxT("Direction Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
+	gSizer3->Add( m_cbDirectionArrows, 0, wxALL, 5 );
+	
+	m_staticText51 = new wxStaticText( this, wxID_ANY, wxT("Size"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText51->Wrap( -1 );
+	gSizer3->Add( m_staticText51, 0, wxALL, 5 );
+	
+	m_sDirectionArrowSize = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 10, 0 );
+	gSizer3->Add( m_sDirectionArrowSize, 0, wxALL, 5 );
+	
 	m_cbOverlayMap = new wxCheckBox( this, wxID_ANY, wxT("OverlayMap"), wxDefaultPosition, wxDefaultSize, 0 );
 	gSizer3->Add( m_cbOverlayMap, 0, wxALL, 5 );
 	
+	m_staticText7 = new wxStaticText( this, wxID_ANY, wxT("Colors"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText7->Wrap( -1 );
+	gSizer3->Add( m_staticText7, 0, wxALL, 5 );
+	
+	wxString m_cOverlayColorsChoices[] = { wxT("Current"), wxT("Generic"), wxT("Quickscat"), wxT("SeaTemp"), wxT("CRain") };
+	int m_cOverlayColorsNChoices = sizeof( m_cOverlayColorsChoices ) / sizeof( wxString );
+	m_cOverlayColors = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cOverlayColorsNChoices, m_cOverlayColorsChoices, 0 );
+	m_cOverlayColors->SetSelection( 0 );
+	gSizer3->Add( m_cOverlayColors, 0, wxALL, 5 );
+	
 	m_cbNumbers = new wxCheckBox( this, wxID_ANY, wxT("Numbers"), wxDefaultPosition, wxDefaultSize, 0 );
 	gSizer3->Add( m_cbNumbers, 0, wxALL, 5 );
+	
+	m_staticText8 = new wxStaticText( this, wxID_ANY, wxT("Spacing"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText8->Wrap( -1 );
+	gSizer3->Add( m_staticText8, 0, wxALL, 5 );
+	
+	m_sNumbersSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, 50 );
+	gSizer3->Add( m_sNumbersSpacing, 0, wxALL, 5 );
 	
 	
 	sbSizer5->Add( gSizer3, 1, wxEXPAND, 5 );
@@ -228,8 +277,14 @@ GRIBConfigDialog::GRIBConfigDialog( wxWindow* parent, wxWindowID id, const wxStr
 	fgSizer4->Fit( this );
 	
 	this->Centre( wxBOTH );
+	
+	// Connect Events
+	m_cDataType->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBConfigDialogBase::OnDataTypeChoice ), NULL, this );
 }
 
-GRIBConfigDialog::~GRIBConfigDialog()
+GRIBConfigDialogBase::~GRIBConfigDialogBase()
 {
+	// Disconnect Events
+	m_cDataType->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBConfigDialogBase::OnDataTypeChoice ), NULL, this );
+	
 }

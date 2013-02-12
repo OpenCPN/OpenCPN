@@ -34,14 +34,15 @@
   #include <wx/glcanvas.h>
 #endif //precompiled headers
 
-#define     PLUGIN_VERSION_MAJOR    1
-#define     PLUGIN_VERSION_MINOR    4
+#define     PLUGIN_VERSION_MAJOR    2
+#define     PLUGIN_VERSION_MINOR    0
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    7
 
 #include "../../../include/ocpn_plugin.h"
 
+#include "GribConfigDialog.h"
 #include "GribOverlayFactory.h"
 #include "GribUIDialog.h"
 
@@ -88,7 +89,6 @@ public:
 
 // Other public methods
 
-      void SetGribDir(wxString grib_dir){ m_grib_dir = grib_dir;};
       void SetGribDialogX    (int x){ m_grib_dialog_x = x;};
       void SetGribDialogY    (int x){ m_grib_dialog_y = x;}
       void SetGribDialogSizeX(int x){ m_grib_dialog_sx = x;}
@@ -97,8 +97,6 @@ public:
 
       void OnGribDialogClose();
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
-
-      wxString         m_grib_dir;
 
 private:
       bool LoadConfig(void);

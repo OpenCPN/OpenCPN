@@ -36,7 +36,7 @@
 #include <wx/fileconf.h>
 
 #include "grib_pi.h"
-//#include "GribUIDialog.h"
+#include "GribConfigDialog.h"
 
 
 // the class factories, used to create and destroy instances of the PlugIn
@@ -311,9 +311,6 @@ bool grib_pi::LoadConfig(void)
     m_grib_dialog_x =  pConf->Read ( _T ( "GRIBDialogPosX" ), 20L );
     m_grib_dialog_y =  pConf->Read ( _T ( "GRIBDialogPosY" ), 170L );
 
-    pConf->SetPath ( _T ( "/Directories" ) );
-    pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir );
-
     return true;
 }
 
@@ -332,9 +329,6 @@ bool grib_pi::SaveConfig(void)
     pConf->Write ( _T ( "GRIBDialogSizeY" ),  m_grib_dialog_sy );
     pConf->Write ( _T ( "GRIBDialogPosX" ),   m_grib_dialog_x );
     pConf->Write ( _T ( "GRIBDialogPosY" ),   m_grib_dialog_y );
-
-    pConf->SetPath ( _T ( "/Directories" ) );
-    pConf->Write ( _T ( "GRIBDirectory" ), m_grib_dir );
     
     return true;
 }

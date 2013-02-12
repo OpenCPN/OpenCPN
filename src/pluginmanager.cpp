@@ -479,6 +479,16 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     {
         wxString msg(_T("   PlugInManager: Cannot load library: "));
         msg += plugin_file;
+        msg += _T(" ");
+#if !defined(__WXMSW__) && !defined(__WXOSX__)
+        /* give good error reporting on non windows non mac platforms */
+        dlopen(plugin_file.ToAscii(), RTLD_NOW);
+        char *s =  dlerror();
+        wxString c;
+        for(char *t = s; *t; t++)
+            c+=*t;
+        msg += c;
+#endif
         wxLogMessage(msg);
         delete plugin;
         delete pic;

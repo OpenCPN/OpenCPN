@@ -36,6 +36,7 @@
 #include <wx/glcanvas.h>
 
 #include "GribUIDialogBase.h"
+#include "GribConfigDialog.h"
 #include "GribReader.h"
 #include "GribRecord.h"
 #include "IsoLine.h"
@@ -46,11 +47,6 @@
 
 enum OVERLAP {
     _IN, _ON, _OUT
-};
-
-enum {
-  GENERIC_GRAPHIC_INDEX, CURRENT_GRAPHIC_INDEX, SEATEMP_GRAPHIC_INDEX,
-  CRAIN_GRAPHIC_INDEX, QUICKSCAT_GRAPHIC_INDEX
 };
 
 class GRIBFile;
@@ -79,16 +75,17 @@ public:
     GribRecord *m_GribRecordPtrArray[Idx_COUNT];
 };
 
-class GribTimelineRecordSet : public GribRecordSet{
+class GribTimelineRecordSet : public GribRecordSet
+{
 public:
     GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const);
     ~GribTimelineRecordSet();
 
+    void ClearCachedData();
+
     /* cache isobars here to speed up rendering */
     wxArrayPtrVoid *m_IsobarArray[Idx_COUNT];
 };
-
-
 
 //----------------------------------------------------------------------------------------------------------
 //    GRIB Selector/Control Dialog Specification
@@ -108,6 +105,7 @@ public:
     void SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet);
     void SetCursorLatLon( double lat, double lon );
 
+    GribOverlayConfig m_OverlayConfig;
 private:
     void OnClose( wxCloseEvent& event );
     void OnMove( wxMoveEvent& event );
@@ -123,12 +121,6 @@ private:
 
     void OnTimeline( wxCommandEvent& event );
     void OnCBAny( wxCommandEvent& event );
-
-    // config options
-    bool m_bInterpolate;
-    bool m_bLoopMode;
-    int m_PlaybackSpeed;
-    double m_HourDivider;
 
     //    Data
     wxWindow *pParent;
@@ -148,6 +140,9 @@ private:
 
     ArrayOfGribRecordSets *m_pTimelineBase;
     GribTimelineRecordSet * m_pTimelineSet;
+    int m_TimeLineHours;
+
+    wxString         m_grib_dir;
 };
 
 //----------------------------------------------------------------------------------------------------------
@@ -182,7 +177,6 @@ private:
     ArrayOfGribRecordSets m_GribRecordSetArray;
 
     int m_nGribRecords;
-
 };
 
 #endif

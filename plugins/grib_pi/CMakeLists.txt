@@ -82,6 +82,8 @@ SET(SRC_GRIB
             src/GribOverlayFactory.h
             src/GribUIDialogBase.cpp
             src/GribUIDialogBase.h
+            src/GribConfigDialog.cpp
+            src/GribConfigDialog.h
             src/GribUIDialog.cpp
             src/GribUIDialog.h
             src/icons.h 

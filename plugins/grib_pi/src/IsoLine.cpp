@@ -164,7 +164,7 @@ double      round_msvc (double x)
 //---------------------------------------------------------------
 IsoLine::IsoLine(double val, double coeff, const GribRecord *rec_)
 {
-    value = val*coeff;
+    value = val/coeff;
 
     rec = rec_;
     W = rec_->getNi();

@@ -26,6 +26,7 @@
 
 #include <map>
 
+
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Specification
 //----------------------------------------------------------------------------------------------------------
@@ -88,52 +89,42 @@ public:
     void DrawGLLine( double x1, double y1, double x2, double y2, double width );
     void DrawOLBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask );
     void DrawGLImage( wxImage *pimage, wxCoord x, wxCoord y, bool usemask );
-    void DrawMessageWindow( wxString msg, int x, int y );
+    void DrawMessageZoomOut( PlugIn_ViewPort *vp );
 
 private:
+
     bool DoRenderGribOverlay( PlugIn_ViewPort *vp );
+    void RenderGribBarbedArrows( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
+    void RenderGribIsobar( int config, GribRecord **pGR, wxArrayPtrVoid **pIsobarArray, PlugIn_ViewPort *vp );
+    void RenderGribDirectionArrows( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
+    void RenderGribOverlayMap( int config, GribRecord **pGR, PlugIn_ViewPort *vp);
+    void RenderGribNumbers( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
 
-    bool RenderGribWind( GribRecord *pGRX, GribRecord *pGRY, PlugIn_ViewPort *vp );
-    wxImage &getLabel(double value);
-    bool RenderGribIsobar( GribRecord *pGRA, wxArrayPtrVoid *&pIsobarArray, PlugIn_ViewPort *vp );
-    bool RenderGribWaveHeight( GribRecord *pGR, PlugIn_ViewPort *vp );
-    bool RenderGribWaveDirection( GribRecord *pGR, PlugIn_ViewPort *vp );
-    bool RenderGribScatWind( GribRecord *pGRX, GribRecord *pGRY, PlugIn_ViewPort *vp );
-    bool RenderGribCRAIN( GribRecord *pGR, PlugIn_ViewPort *vp );
-    bool RenderGribSeaTemperature( GribRecord *pGR, PlugIn_ViewPort *vp );
-    bool RenderGribCurrent( GribRecord *pGRX, GribRecord *pGRY, PlugIn_ViewPort *vp );
-
-    void drawWindArrowWithBarbs( int x, int y, double vx, double vy, bool south,
-            wxColour arrowColor );
+    void drawWindArrowWithBarbs( int x, int y, double vx, double vy,
+                                 bool polar, bool south, wxColour arrowColor );
     void drawWaveArrow( int i, int j, double dir, wxColour arrowColor );
     void drawSingleArrow( int i, int j, double dir, wxColour arrowColor, int width = 1 );
 
-    void drawTransformedLine( wxPen pen, double si, double co, int di, int dj, int i, int j, int k,
-            int l );
-
+    void drawTransformedLine( wxPen pen, double si, double co, int di, int dj,
+                              int i, int j, int k, int l );
     void drawPetiteBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
     void drawGrandeBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
     void drawTriangle( wxPen pen, bool south, double si, double co, int di, int dj, int b );
 
-    wxColour GetGraphicColor(double val, int colormap_index);
+    wxColour GetGraphicColor(int config, double val);
+    wxImage &getLabel(double value);
 
     void DrawGLTexture( GLuint texture, int width, int height, int xd, int yd, int grib_pixel_size );
     void DrawGLRGBA( unsigned char *pRGBA, int RGBA_width, int RGBA_height, int xd, int yd );
-    void CreateGribGLTexture( GribOverlay *pGO, GribRecord *pGRA, GribRecord *pGRB,
+    bool CreateGribGLTexture( GribOverlay *pGO, int config, GribRecord *pGR,
                               PlugIn_ViewPort *vp, int grib_pixel_size,
-                              int colormap_index, const wxPoint &porg );
-    wxImage CreateGribImage( GribRecord *pGRA, GribRecord *pGRB, PlugIn_ViewPort *vp,
-            int grib_pixel_size, int colormap_index, const wxPoint &porg );
-
-    bool RenderGribFieldOverlay( GribRecord *pGRA, GribRecord *pGRB, PlugIn_ViewPort *vp,
-            int grib_pixel_size, int colormap_index, GribOverlay **ppGO );
+                              const wxPoint &porg );
+    wxImage CreateGribImage( int config, GribRecord *pGR, PlugIn_ViewPort *vp,
+                             int grib_pixel_size, const wxPoint &porg );
 
     double m_last_vp_scale;
 
-    GribOverlay *m_pgob_sigwh;
-    GribOverlay *m_pgob_crain;
-    GribOverlay *m_pgob_seatemp;
-    GribOverlay *m_pgob_current;
+    GribOverlay *m_pOverlay[GribOverlayConfig::CONFIG_COUNT];
 
     wxDC *m_pdc;
     wxGraphicsContext *m_gdc;
@@ -145,4 +136,5 @@ private:
     std::map < double , wxImage > m_labelCache;
 
     GRIBUIDialog &m_dlg;
+    GribOverlayConfig &m_Config;
 };

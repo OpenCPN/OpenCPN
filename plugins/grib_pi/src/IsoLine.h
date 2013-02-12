@@ -100,6 +100,8 @@ class Segment
                 const GribRecord *rec, double pressure);
 };
 
+class GRIBOverlayFactory;
+
 //===============================================================
 class IsoLine
 {
