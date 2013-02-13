@@ -43,6 +43,17 @@
 
 #include <wx/arrimpl.cpp>
 
+#if defined (_WIN32)
+int round (double x) {
+	int i = (int) x;
+	if (x >= 0.0) {
+		return ((x-i) >= 0.5) ? (i + 1) : (i);
+	} else {
+		return (-x+i >= 0.5) ? (i - 1) : (i);
+	}
+}
+#endif
+
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordSets );
 
 //    Sort compare function for File Modification Time

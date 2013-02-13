@@ -214,8 +214,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     m_pGRIBUseHiDef = new wxCheckBox( dialog, -1, _("Use High Definition Graphics"));
     itemStaticBoxSizerGRIB->Add(m_pGRIBUseHiDef, 1, wxALIGN_LEFT|wxALL, border_size);
 
-    m_pGRIBUseGradualColors = new wxCheckBox( dialog, -1, _("Use gradual colors blended (wave "
-                                                            "height etc) instead of step at set heights."));
+    m_pGRIBUseGradualColors = new wxCheckBox( dialog, -1, _("Use gradual colors blended (wave height etc) instead of step at set heights."));
     itemStaticBoxSizerGRIB->Add(m_pGRIBUseGradualColors, 1, wxALIGN_LEFT|wxALL, border_size);
 
 
