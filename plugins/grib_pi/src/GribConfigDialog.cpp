@@ -28,7 +28,7 @@
 #include "grib_pi.h"
 
 static const wxString units0_names[] = {_("Knots"), _("M/S"), _("MPH"), _("KPH"), wxEmptyString};
-static const wxString units1_names[] = {_("MilliBars"), _("hPa"), wxEmptyString};
+static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), wxEmptyString};
 static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};
 static const wxString units3_names[] = {_("Celcius"), _("Farenheight"), wxEmptyString};
 static const wxString *unit_names[] = {units0_names, units1_names, units2_names, units3_names};
@@ -111,15 +111,15 @@ double GribOverlayConfig::CalibrationFactor(int config)
         case KNOTS:  return 3.6 / 1.852;
         case M_S:    return 1;
         case MPH:    return 3.6 / 1.852 * 1.15;
-        case KPH:    return 3.6 / 1.852 * 1.95;
+        case KPH:    return 3.6 / 1.852 * 1.85;
         } break;
     case 1: switch(Configs[config].m_Units) {
         case MILLIBARS: return 1 / 100.;
-        case HPA: return 0;
+        case MMHG: return 1 / 100. * 1.33;
         } break;
     case 2: switch(Configs[config].m_Units) {
         case METERS: return 1;
-        case FEET:   return 3.3;
+        case FEET:   return 3.28;
         } break;
     case 3: switch(Configs[config].m_Units) {
         case CELCIUS:     return 1;

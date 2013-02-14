@@ -54,7 +54,7 @@ struct GribOverlayConfig
     enum ConfigType {WIND, PRESSURE, WAVE,
                      SEA_TEMPERATURE, CURRENT, CONFIG_COUNT};
     enum Units0 {KNOTS, M_S, MPH, KPH};
-    enum Units1 {MILLIBARS, HPA};
+    enum Units1 {MILLIBARS, MMHG};
     enum Units2 {METERS, FEET};
     enum Units3 {CELCIUS, FARENHEIGHT};
 

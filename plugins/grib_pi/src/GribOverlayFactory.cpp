@@ -667,7 +667,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int config, GribRecord **pGR
                         } else {
                             double vx = pGRX->getValue( i,j ), vy = pGRY->getValue( i,j );
                             if( vx != GRIB_NOTDEF || vy != GRIB_NOTDEF )
-                                drawWaveArrow( p.x, p.y, atan2(vy, vx), colour );
+                                drawWaveArrow( p.x, p.y, atan2(vy, -vx), colour );
                         }
                     }
                 }
