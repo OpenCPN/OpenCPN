@@ -554,7 +554,7 @@ ret_point:
             }
 
             // Create the NMEA Rte sentence
-
+            // Try to create a single sentence, and then check the length to see if too long
             oNMEA0183.Rte.Empty();
             oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
 
@@ -584,6 +584,7 @@ ret_point:
                     name = prp->GetName();
                     name += _T("000000");
                     name.Truncate( 6 );
+                    name .Prepend( _T(" "));        // What Furuno calls "Skip Code", space means use the WP
                 }
 
                 oNMEA0183.Rte.AddWaypoint ( name );
@@ -594,9 +595,9 @@ ret_point:
 
             unsigned int max_length = 76;
 
-            if(snt.Sentence.Len() > max_length)
+            if(snt.Sentence.Len() > max_length)         // Do we need split sentences?
             {
-                // Make a route with one waypoint to get tare load.
+                // Make a route with zero waypoints to get tare load.
                 NMEA0183 tNMEA0183;
                 SENTENCE tsnt;
                 tNMEA0183.TalkerID = _T ( "EC" );
@@ -635,7 +636,7 @@ ret_point:
                     RoutePoint *prp = node->GetData();
                     unsigned int name_len = prp->GetName().Truncate ( 6 ).Len();
                     if(g_GPS_Ident == _T("FurunoGP3X"))
-                        name_len = 6;           // six chars
+                        name_len = 7;           // six chars, with leading space for "Skip Code"
 
 
                     if(bnew_sentence)
@@ -676,6 +677,7 @@ ret_point:
                         name = prp->GetName();
                         name += _T("000000");
                         name.Truncate( 6 );
+                        name .Prepend( _T(" "));        // What Furuno calls "Skip Code", space means use the WP
                     }
 
                     unsigned int name_len = name.Len();
@@ -683,7 +685,7 @@ ret_point:
                     if(bnew_sentence)
                     {
                         sent_len = tare_length;
-                        sent_len += name_len + 1;
+                        sent_len += name_len + 1;       // comma
                         bnew_sentence = false;
 
                         oNMEA0183.Rte.Empty();
@@ -721,7 +723,7 @@ ret_point:
                         }
                         else
                         {
-                            sent_len += name_len + 1;
+                            sent_len += name_len + 1;   // comma
                             oNMEA0183.Rte.AddWaypoint ( name );
                             node = node->GetNext();
                         }
