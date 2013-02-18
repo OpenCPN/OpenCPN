@@ -1890,7 +1890,8 @@ void options::SetInitialSettings()
     m_pOSWidth->SetValue( wxString::Format( _T("%.1f"), g_n_ownship_beam_meters ) );
     m_pOSGPSOffsetX->SetValue( wxString::Format( _T("%.1f"), g_n_gps_antenna_offset_x ) );
     m_pOSGPSOffsetY->SetValue( wxString::Format( _T("%.1f"), g_n_gps_antenna_offset_y ) );
-    m_pOSMinSize->SetValue( wxString::Format( _T("%d"), g_n_ownship_min_mm ) );
+    int ownship_min_mm = (int)g_n_ownship_min_mm;
+    m_pOSMinSize->SetValue( wxString::Format( _T("%d"), ownship_min_mm ) );
 
     wxString buf;
     if( g_iNavAidRadarRingsNumberVisible > 10 ) g_iNavAidRadarRingsNumberVisible = 10;
