@@ -568,7 +568,9 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc,
                 int xd = (ab.x + cd.x-(imageLabel.GetWidth()+label_offset * 2))/2;
                 int yd = (ab.y + cd.y - imageLabel.GetHeight())/2;
                 
-                dc.DrawBitmap(imageLabel, xd, yd, true);
+                /* don't use alpha for isobars, for some reason draw bitmap ignores it */
+                wxImage img(imageLabel.GetWidth(), imageLabel.GetHeight(), imageLabel.GetData(), true);
+                dc.DrawBitmap(img, xd, yd, false);
             }
         }
     }

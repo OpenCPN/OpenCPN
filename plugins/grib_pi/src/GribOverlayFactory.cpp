@@ -425,8 +425,16 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
 
     GetGlobalColor( _T ( "DILG0" ), &back_color );
     wxBrush backBrush(back_color);
-    wxMemoryDC mdc(bm);
-    mdc.Clear();
+
+    wxMemoryDC mdc(wxNullBitmap);
+
+    wxFont mfont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    mdc.SetFont( mfont );
+
+    mdc.SetPen(penText);
+    mdc.SetBrush(backBrush);
+    mdc.SetTextForeground(text_color);
+    mdc.SetTextBackground(back_color);
 
     int w, h;
     mdc.GetTextExtent(labels, &w, &h);
@@ -434,13 +442,9 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
     int label_offset = 5;
 
     wxBitmap bm(w +  label_offset*2, h + 2);
-
+    mdc.SelectObject(bm);
+    mdc.Clear();
           
-    mdc.SetPen(penText);
-    mdc.SetBrush(backBrush);
-    mdc.SetTextForeground(text_color);
-    mdc.SetTextBackground(back_color);
-
     int xd = 0;
     int yd = 0;
 //    mdc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h+2, -.25);
@@ -449,8 +453,7 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
           
     mdc.SelectObject(wxNullBitmap);
 
-    wxBitmap sub_BMLabel = bm.GetSubBitmap(wxRect(0,0,w+(label_offset * 2), h+2));
-    m_labelCache[value] = sub_BMLabel.ConvertToImage();
+    m_labelCache[value] = bm.ConvertToImage();
 
     m_labelCache[value].InitAlpha();
 
@@ -462,13 +465,13 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
     w = image.GetWidth(), h = image.GetHeight();
     for( int y = 0; y < h; y++ )
         for( int x = 0; x < w; x++ ) {
-            unsigned char r, g, b;
+            int r, g, b;
             int ioff = (y * w + x);
             r = d[ioff* 3 + 0];
             g = d[ioff* 3 + 1];
             b = d[ioff* 3 + 2];
 
-            a[ioff] = 255-r;
+            a[ioff] = 255-(r+g+b)/3;
         }
 
     return m_labelCache[value];
@@ -847,12 +850,14 @@ void GRIBOverlayFactory::RenderGribNumbers( int config, GribRecord **pGR, PlugIn
                                 for(int i=0; i<w*h; i++) {
                                     for(int c=0; c<3; c++)
                                         e[4*i+c] = d[3*i+c];
-                                    e[4*i+3] = d[3*i];
+                                    e[4*i+3] = a[3*i];
                                 }
 
                                 glRasterPos2i(p.x, p.y);
                                 glPixelZoom(1, -1); /* draw data from top to bottom */
 
+                                glEnable( GL_BLEND );
+                                glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
                                 glDrawPixels(label.GetWidth(), label.GetHeight(),
                                              GL_RGBA, GL_UNSIGNED_BYTE, e);
                                 glPixelZoom(1, 1);
@@ -860,6 +865,9 @@ void GRIBOverlayFactory::RenderGribNumbers( int config, GribRecord **pGR, PlugIn
                                 delete [] e;
 #else /* this way use opengl textures.. should be best */
                                 glEnable( GL_BLEND );
+                                glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+                                glColor4f(0, 0, 0, 1);
+                                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
                                 glBindTexture(GL_TEXTURE_RECTANGLE_ARB, 0);
                                 glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA,
                                              w, h, 0,
