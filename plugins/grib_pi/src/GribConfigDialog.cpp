@@ -33,9 +33,9 @@ static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};
 static const wxString units3_names[] = {_("Celcius"), _("Farenheight"), wxEmptyString};
 static const wxString *unit_names[] = {units0_names, units1_names, units2_names, units3_names};
 
-static const wxString name_from_index[] = {_T("Wind"), _T("Pressure"), _T("Wave"),
-                                           _T("SeaTemperature"), _T("Current")};
-static const int unittype[GribOverlayConfig::CONFIG_COUNT] = {0, 1, 2, 3, 0};
+static const wxString name_from_index[] = {_T("Wind"), _T("Wave"), _T("Current"),
+                                           _T("Pressure"), _T("Sea Temperature")};
+static const int unittype[GribOverlayConfig::CONFIG_COUNT] = {0, 2, 0, 1, 3};
 
 void GribOverlayConfig::Read()
 {
@@ -60,15 +60,21 @@ void GribOverlayConfig::Read()
         Configs[i].m_Units = (ConfigType)units;
 
         pConf->Read ( Name + _T ( "BarbedArrows" ), &Configs[i].m_bBarbedArrows, i==WIND);
+        int defrange[CONFIG_COUNT] = {100, 10, 10, 100, 10};
+        pConf->Read ( Name + _T ( "BarbedRange" ), &Configs[i].m_iBarbedRange, defrange[i]);
+
         pConf->Read ( Name + _T ( "IsoBars" ), &Configs[i].m_bIsoBars, i==PRESSURE);
         int defspacing[CONFIG_COUNT] = {10, 2, 1, 10, 1};
         pConf->Read ( Name + _T ( "IsoBarSpacing" ), &Configs[i].m_iIsoBarSpacing, defspacing[i]);
+
         pConf->Read ( Name + _T ( "DirectionArrows" ), &Configs[i].m_bDirectionArrows, i==CURRENT);
         pConf->Read ( Name + _T ( "DirectionArrowSize" ), &Configs[i].m_iDirectionArrowSize, 10);
+
         pConf->Read ( Name + _T ( "OverlayMap" ), &Configs[i].m_bOverlayMap, i!=WIND && i!=PRESSURE);
         int defcolor[CONFIG_COUNT] = {1, 1, 1, 3, 0};
         pConf->Read ( Name + _T ( "OverlayMapColors" ), &Configs[i].m_iOverlayMapColors, defcolor[i]);
-        pConf->Read ( Name + _T ( "Numbers" ), &Configs[i].m_bNumbers, i==SEA_TEMPERATURE);
+
+        pConf->Read ( Name + _T ( "Numbers" ), &Configs[i].m_bNumbers, 0);
         pConf->Read ( Name + _T ( "NumbersSpacing" ), &Configs[i].m_iNumbersSpacing, 50);
     }
 }
@@ -93,6 +99,7 @@ void GribOverlayConfig::Write()
 
         pConf->Write ( Name + _T ( "Units" ), (int)Configs[i].m_Units);
         pConf->Write ( Name + _T ( "BarbedArrows" ), Configs[i].m_bBarbedArrows);
+        pConf->Write ( Name + _T ( "BarbedRange" ), Configs[i].m_iBarbedRange);
         pConf->Write ( Name + _T ( "IsoBars" ), Configs[i].m_bIsoBars);
         pConf->Write ( Name + _T ( "IsoBarSpacing" ), Configs[i].m_iIsoBarSpacing);
         pConf->Write ( Name + _T ( "DirectionArrows" ), Configs[i].m_bDirectionArrows);
@@ -102,6 +109,18 @@ void GribOverlayConfig::Write()
         pConf->Write ( Name + _T ( "Numbers" ), Configs[i].m_bNumbers);
         pConf->Write ( Name + _T ( "NumbersSpacing" ), Configs[i].m_iNumbersSpacing);
     }
+}
+
+double GribOverlayConfig::CalibrationOffset(int config)
+{
+    switch(unittype[config]) {
+    case 3: switch(Configs[config].m_Units) { /* only have offset for temperature */
+        case CELCIUS:     return -273.15;
+        case FARENHEIGHT: return -273.15 + 32*5/9.0;
+        } break;
+    }
+        
+    return 0;
 }
 
 double GribOverlayConfig::CalibrationFactor(int config)
@@ -123,7 +142,7 @@ double GribOverlayConfig::CalibrationFactor(int config)
         } break;
     case 3: switch(Configs[config].m_Units) {
         case CELCIUS:     return 1;
-        case FARENHEIGHT: return 5/9. + 32;
+        case FARENHEIGHT: return 9./5;
         } break;
     }
         
@@ -135,10 +154,10 @@ double GribOverlayConfig::GetMin(int config)
     double min = 0;
     switch(config) {
     case WIND:            min = 0;       break; /* m/s */
-    case PRESSURE:        min = 84000;   break; /* 100's of millibars */
     case WAVE:            min = 0;       break; /* meters */
-    case SEA_TEMPERATURE: min = 273.15;  break; /* kelvin */
     case CURRENT:         min = 0;       break; /* m/s */
+    case PRESSURE:        min = 84000;   break; /* 100's of millibars */
+    case SEA_TEMPERATURE: min = 273.15;  break; /* kelvin */
     }
     return CalibrateValue(config, min);
 }
@@ -148,37 +167,36 @@ double GribOverlayConfig::GetMax(int config)
     double max = 0;
     switch(config) {
     case WIND:            max = 200;     break; /* m/s */
-    case PRESSURE:        max = 112000;  break; /* 100s of millibars */
     case WAVE:            max = 12;      break; /* meters */
-    case SEA_TEMPERATURE: max = 323.15;  break; /* kelvin */
     case CURRENT:         max = 20;      break; /* m/s */
+    case PRESSURE:        max = 112000;  break; /* 100s of millibars */
+    case SEA_TEMPERATURE: max = 323.15;  break; /* kelvin */
     }
     return CalibrateValue(config, max);
 }
 
-GRIBConfigDialog::GRIBConfigDialog(wxWindow *parent)
-  : GRIBConfigDialogBase(parent)
+GRIBConfigDialog::GRIBConfigDialog(GRIBUIDialog &parent, GribOverlayConfig &Config, int &lastdatatype)
+    : GRIBConfigDialogBase(&parent),
+      m_parent(parent), m_extConfig(Config), m_lastdatatype(lastdatatype)
 {
-    m_lastdatatype = 0;
-    PopulateUnits(m_lastdatatype);
-}
-
-/* set the dialog controls to the values of config */
-void GRIBConfigDialog::ReadConfig(GribOverlayConfig &Config)
-{
-    m_Config = Config;
-
+    m_Config = m_extConfig;
     m_cInterpolate->SetValue(m_Config.m_bInterpolate);
     m_cLoopMode->SetValue(m_Config.m_bLoopMode);
     m_sSlicesPerUpdate->SetValue(m_Config.m_SlicesPerUpdate);
     m_sUpdatesPerSecond->SetValue(m_Config.m_UpdatesPerSecond);
     m_sHourDivider->SetValue(m_Config.m_HourDivider);
 
-    ReadDataTypeConfig(0);
+    for(int i=0; i<GribOverlayConfig::CONFIG_COUNT; i++) {
+        wxString Name=name_from_index[i];
+        m_cDataType->Append(Name);
+    }
+    m_cDataType->SetSelection(m_lastdatatype);
+    PopulateUnits(m_lastdatatype);
+    ReadDataTypeConfig(m_lastdatatype);
 }
 
 /* set config to the dialog controls */
-void GRIBConfigDialog::WriteConfig(GribOverlayConfig &Config)
+void GRIBConfigDialog::WriteConfig()
 {
     m_Config.m_bInterpolate = m_cInterpolate->GetValue();
     m_Config.m_bLoopMode = m_cLoopMode->GetValue();
@@ -188,7 +206,7 @@ void GRIBConfigDialog::WriteConfig(GribOverlayConfig &Config)
 
     SetDataTypeConfig(m_lastdatatype);
 
-    Config = m_Config;
+    m_extConfig = m_Config;
 }
 
 void GRIBConfigDialog::SetDataTypeConfig(int config)
@@ -211,6 +229,7 @@ void GRIBConfigDialog::ReadDataTypeConfig(int config)
     GribOverlayConfig::OverlayDataConfig &odc = m_Config.Configs[config];
     m_cDataUnits->SetSelection(odc.m_Units);
     m_cbBarbedArrows->SetValue(odc.m_bBarbedArrows);
+    m_sBarbedRange->SetValue(odc.m_iBarbedRange);
     m_cbIsoBars->SetValue(odc.m_bIsoBars);
     m_sIsoBarSpacing->SetValue(odc.m_iIsoBarSpacing);
     m_cbDirectionArrows->SetValue(odc.m_bDirectionArrows);
@@ -234,4 +253,10 @@ void GRIBConfigDialog::OnDataTypeChoice( wxCommandEvent& event )
     m_lastdatatype = m_cDataType->GetSelection();
     PopulateUnits(m_lastdatatype);
     ReadDataTypeConfig(m_lastdatatype);
+}
+
+void GRIBConfigDialog::OnApply( wxCommandEvent& event )
+{
+    WriteConfig();
+    m_parent.SetFactoryOptions();
 }

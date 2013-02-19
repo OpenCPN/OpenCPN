@@ -106,18 +106,17 @@ class GRIBOverlayFactory;
 class IsoLine
 {
     public:
-        IsoLine(double val, double coeff, const GribRecord *rec);
+         IsoLine(double val, double coeff, double offset, const GribRecord *rec);
         ~IsoLine();
 
 
-        void drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
+        void drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp, bool bHiDef);
 
         void drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc,
                                PlugIn_ViewPort *vp, int density, int first,
                                wxImage &imageLabel);
 
-        void drawGLIsoLine(GRIBOverlayFactory *pof, 
-                           PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
+        void drawGLIsoLine(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp);
         void drawGLIsoLineLabels(GRIBOverlayFactory *pof,
                                  PlugIn_ViewPort *vp, int density, int first,
                                  wxImage &imageLabel);

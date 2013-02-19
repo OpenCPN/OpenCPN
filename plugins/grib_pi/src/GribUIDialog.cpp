@@ -168,8 +168,11 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
         pConf->Read( _T ( "SeaTemperaturePlot" ), &value, false );
         m_cbSeaTemperature->SetValue(value);
 
+        pConf->Read ( _T ( "lastdatatype" ), &m_lastdatatype, 0);
+
         pConf->SetPath ( _T ( "/Directories" ) );
         pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir );
+
     }
 
     m_dirPicker->SetPath(m_grib_dir);
@@ -201,6 +204,7 @@ GRIBUIDialog::~GRIBUIDialog()
         pConf->Write( _T ( "CurrentPlot" ), m_cbCurrent->GetValue());
         pConf->Write( _T ( "PressurePlot" ), m_cbPressure->GetValue());
         pConf->Write( _T ( "SeaTemperaturePlot" ), m_cbSeaTemperature->GetValue());
+        pConf->Write ( _T ( "lastdatatype" ), m_lastdatatype);
 
         pConf->SetPath ( _T ( "/Directories" ) );
         pConf->Write ( _T ( "GRIBDirectory" ), m_grib_dir );
@@ -358,7 +362,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
                 vx = m_OverlayConfig.CalibrateValue(GribOverlayConfig::CURRENT, vx);
                 vy = m_OverlayConfig.CalibrateValue(GribOverlayConfig::CURRENT, vy);
 
-                double vkn = sqrt( vx * vx + vy * vy ) * 3.6 / 1.852;
+                double vkn = sqrt( vx * vx + vy * vy );
                 double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
                 if( ang > 360. ) ang -= 360.;
                 if( ang < 0. ) ang += 360.;
@@ -401,20 +405,17 @@ void GRIBUIDialog::OnSize( wxSizeEvent& event )
 
 void GRIBUIDialog::OnConfig( wxCommandEvent& event )
 {
-    GRIBConfigDialog *dialog = new GRIBConfigDialog( this );
-
-    dialog->ReadConfig(m_OverlayConfig);
+    GribOverlayConfig initConfig = m_OverlayConfig;
+    GRIBConfigDialog *dialog = new GRIBConfigDialog( *this, m_OverlayConfig,  m_lastdatatype);
 
     if(dialog->ShowModal() == wxID_OK)
     {
-        dialog->WriteConfig(m_OverlayConfig);
+        dialog->WriteConfig();
         m_OverlayConfig.Write();
+    } else
+        m_OverlayConfig = initConfig;
 
-        m_sTimeline->SetMax(m_TimeLineHours*m_OverlayConfig.m_HourDivider);
-        if(m_pTimelineSet)
-            m_pTimelineSet->ClearCachedData();
-        SetFactoryOptions();
-    }
+    SetFactoryOptions();
 }
 
 void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
@@ -435,8 +436,11 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
         if(m_OverlayConfig.m_bLoopMode) {
             m_sTimeline->SetValue(0);
             TimelineChanged();
-        } else
+        } else {
+            m_tbPlayStop->SetValue(0);
+            m_tbPlayStop->SetLabel(_("Play"));
             m_tPlayStop.Stop();
+        }
     } else {
         m_sTimeline->SetValue(m_sTimeline->GetValue() + m_OverlayConfig.m_SlicesPerUpdate);
         TimelineChanged();
@@ -623,14 +627,17 @@ void GRIBUIDialog::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)
     pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(m_pTimelineSet);
 
     SetFactoryOptions();
-    RequestRefresh( pParent );
-    UpdateTrackingControls();
 }
 
 void GRIBUIDialog::SetFactoryOptions()
 {
+    m_sTimeline->SetMax(m_TimeLineHours*m_OverlayConfig.m_HourDivider);
+    if(m_pTimelineSet)
+        m_pTimelineSet->ClearCachedData();
+
     pPlugIn->GetGRIBOverlayFactory()->ClearCachedData();
 
+    UpdateTrackingControls();
     RequestRefresh( pParent );
 }
 

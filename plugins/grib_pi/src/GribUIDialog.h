@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  GRIB Plugin Freinds
+ * Purpose:  GRIB Plugin Friends
  * Author:   David Register
  *
  ***************************************************************************
@@ -104,8 +104,12 @@ public:
     void SelectGribRecordSet( GribRecordSet *pGribRecordSet );
     void SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet);
     void SetCursorLatLon( double lat, double lon );
+    void SetFactoryOptions();
 
     GribOverlayConfig m_OverlayConfig;
+
+    wxTimer m_tPlayStop;
+
 private:
     void OnClose( wxCloseEvent& event );
     void OnMove( wxMoveEvent& event );
@@ -116,7 +120,6 @@ private:
     void OnFileDirChange( wxFileDirPickerEvent &event );
     void UpdateTrackingControls( void );
     void PopulateTreeControl( void );
-    void SetFactoryOptions();
     void TimelineChanged();
 
     void OnTimeline( wxCommandEvent& event );
@@ -126,9 +129,7 @@ private:
     wxWindow *pParent;
     grib_pi *pPlugIn;
 
-    wxFont *m_dFont;
-
-    wxTimer m_tPlayStop;
+    int m_lastdatatype;
 
     wxTreeItemId m_RecordTree_root_id;
 

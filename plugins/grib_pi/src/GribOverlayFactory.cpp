@@ -172,10 +172,10 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
            (i == GribOverlayConfig::SEA_TEMPERATURE && !m_dlg.m_cbSeaTemperature->GetValue()))
             continue;
 
+        RenderGribOverlayMap( i, pGR, vp );
         RenderGribBarbedArrows( i, pGR, vp );
         RenderGribIsobar( i, pGR, pIA, vp );
         RenderGribDirectionArrows( i, pGR, vp );
-        RenderGribOverlayMap( i, pGR, vp );
         RenderGribNumbers( i, pGR, vp );
     }
 
@@ -407,6 +407,7 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int config, double val_in)
 
 }
 
+/* return cached wxImage for a given number, or create it if not in the cache */
 wxImage &GRIBOverlayFactory::getLabel(double value)
 {
     std::map <double, wxImage >::iterator it;
@@ -424,34 +425,57 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
 
     GetGlobalColor( _T ( "DILG0" ), &back_color );
     wxBrush backBrush(back_color);
-    wxBitmap bm(100,100);          // big enough
     wxMemoryDC mdc(bm);
     mdc.Clear();
 
     int w, h;
     mdc.GetTextExtent(labels, &w, &h);
+
+    int label_offset = 5;
+
+    wxBitmap bm(w +  label_offset*2, h + 2);
+
           
     mdc.SetPen(penText);
     mdc.SetBrush(backBrush);
     mdc.SetTextForeground(text_color);
     mdc.SetTextBackground(back_color);
 
-    int label_offset = 10;          
     int xd = 0;
     int yd = 0;
-//            mdc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
+//    mdc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h+2, -.25);
     mdc.DrawRectangle(xd, yd, w+(label_offset * 2), h+2);
-    mdc.DrawText(labels, label_offset/2 + xd, yd-1);
+    mdc.DrawText(labels, label_offset + xd, yd+1);
           
     mdc.SelectObject(wxNullBitmap);
 
     wxBitmap sub_BMLabel = bm.GetSubBitmap(wxRect(0,0,w+(label_offset * 2), h+2));
     m_labelCache[value] = sub_BMLabel.ConvertToImage();
+
+    m_labelCache[value].InitAlpha();
+
+    wxImage &image = m_labelCache[value];
+
+    unsigned char *d = image.GetData();
+    unsigned char *a = image.GetAlpha();
+
+    w = image.GetWidth(), h = image.GetHeight();
+    for( int y = 0; y < h; y++ )
+        for( int x = 0; x < w; x++ ) {
+            unsigned char r, g, b;
+            int ioff = (y * w + x);
+            r = d[ioff* 3 + 0];
+            g = d[ioff* 3 + 1];
+            b = d[ioff* 3 + 2];
+
+            a[ioff] = 255-r;
+        }
+
     return m_labelCache[value];
 }
 
 void GRIBOverlayFactory::RenderGribBarbedArrows( int config, GribRecord **pGR,
-                                                    PlugIn_ViewPort *vp )
+                                                 PlugIn_ViewPort *vp )
 {
     if(!m_Config.Configs[config].m_bBarbedArrows)
         return;
@@ -513,11 +537,12 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int config, GribRecord **pGR,
                         double vx =  pGRX->getValue( i, j );
                         double vy =  pGRY->getValue( i, j );
 
-                        vx = m_Config.CalibrateValue(config, vx);
-                        vy = m_Config.CalibrateValue(config, vy);
+                        if( vx != GRIB_NOTDEF && vy != GRIB_NOTDEF ) {
+                            vx = m_Config.CalibrateValue(config, vx);
+                            vy = m_Config.CalibrateValue(config, vy);
 
-                        if( vx != GRIB_NOTDEF && vy != GRIB_NOTDEF )
-                            drawWindArrowWithBarbs( p.x, p.y, vx, vy, polar, ( lat < 0. ), colour );
+                            drawWindArrowWithBarbs( config, p.x, p.y, vx, vy, polar, ( lat < 0. ), colour );
+                        }
                     }
                 }
             }
@@ -544,7 +569,7 @@ void GRIBOverlayFactory::RenderGribIsobar( int config, GribRecord **pGR,
         return;
 
     /* build magnitude from multiple record types like wind and current */
-    if(idy >= 0 && !polar) {
+    if(idy >= 0 && !polar && pGR[idy]) {
         pGRM = GribRecord::MagnitudeRecord(*pGR[idx], *pGR[idy]);
         pGRA = pGRM;
     }
@@ -573,7 +598,9 @@ void GRIBOverlayFactory::RenderGribIsobar( int config, GribRecord **pGR,
                 }
             }
 
-            piso = new IsoLine( press, m_Config.CalibrationFactor(config), pGRA );
+            piso = new IsoLine( press,
+                                m_Config.CalibrationFactor(config),
+                                m_Config.CalibrationOffset(config), pGRA );
 
             pIsobarArray[idx]->Add( piso );
         }
@@ -584,9 +611,9 @@ void GRIBOverlayFactory::RenderGribIsobar( int config, GribRecord **pGR,
     for( unsigned int i = 0; i < pIsobarArray[idx]->GetCount(); i++ ) {
         IsoLine *piso = (IsoLine *) pIsobarArray[idx]->Item( i );
         if( m_pdc )
-            piso->drawIsoLine( this, *m_pdc, vp, true, true ); //g_bGRIBUseHiDef
+            piso->drawIsoLine( this, *m_pdc, vp, true); //g_bGRIBUseHiDef
         else
-            piso->drawGLIsoLine( this, vp, true, true ); //g_bGRIBUseHiDef
+            piso->drawGLIsoLine( this, vp );
 
         // Draw Isobar labels
 
@@ -692,7 +719,7 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int config, GribRecord **pGR, Plu
     if(!pGRA)
         return;
 
-    if(idy >= 0 && !polar) {
+    if(idy >= 0 && !polar && pGR[idy]) {
         pGRM = GribRecord::MagnitudeRecord(*pGR[idx], *pGR[idy]);
         pGRA = pGRM;
     }
@@ -769,7 +796,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int config, GribRecord **pGR, PlugIn
         return;
 
     /* build magnitude from multiple record types like wind and current */
-    if(idy >= 0 && !polar) {
+    if(idy >= 0 && !polar && pGR[idy]) {
         pGRM = GribRecord::MagnitudeRecord(*pGR[idx], *pGR[idy]);
         pGRA = pGRM;
     }
@@ -813,11 +840,43 @@ void GRIBOverlayFactory::RenderGribNumbers( int config, GribRecord **pGR, PlugIn
                             if( m_pdc ) {
                                 m_pdc->DrawBitmap(label, p.x, p.y, true);
                             } else {
+                                int w = label.GetWidth(), h = label.GetHeight();
+#if 0 /* this way is more work on our part.. try it for debugging purposes */
+                                unsigned char *d = label.GetData(), *a = label.GetAlpha();
+                                unsigned char *e = new unsigned char[4*w*h];
+                                for(int i=0; i<w*h; i++) {
+                                    for(int c=0; c<3; c++)
+                                        e[4*i+c] = d[3*i+c];
+                                    e[4*i+3] = d[3*i];
+                                }
+
                                 glRasterPos2i(p.x, p.y);
                                 glPixelZoom(1, -1); /* draw data from top to bottom */
+
                                 glDrawPixels(label.GetWidth(), label.GetHeight(),
-                                             GL_RGB, GL_UNSIGNED_BYTE, label.GetData());
+                                             GL_RGBA, GL_UNSIGNED_BYTE, e);
                                 glPixelZoom(1, 1);
+
+                                delete [] e;
+#else /* this way use opengl textures.. should be best */
+                                glEnable( GL_BLEND );
+                                glBindTexture(GL_TEXTURE_RECTANGLE_ARB, 0);
+                                glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA,
+                                             w, h, 0,
+                                             GL_RGB, GL_UNSIGNED_BYTE, label.GetData());
+                                glTexSubImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0,
+                                                w, h,
+                                                GL_ALPHA, GL_UNSIGNED_BYTE, label.GetAlpha());
+
+                                glEnable(GL_TEXTURE_RECTANGLE_ARB);
+                                glBegin(GL_QUADS);
+                                glTexCoord2i(0, 0), glVertex2i(p.x,   p.y);
+                                glTexCoord2i(w, 0), glVertex2i(p.x+w, p.y);
+                                glTexCoord2i(w, h), glVertex2i(p.x+w, p.y+h);
+                                glTexCoord2i(0, h), glVertex2i(p.x,   p.y+h);
+                                glEnd();
+                                glDisable(GL_TEXTURE_RECTANGLE_ARB);
+#endif
                             }
                         }
                     }
@@ -833,7 +892,7 @@ void GRIBOverlayFactory::drawWaveArrow( int i, int j, double ang, wxColour arrow
 {
     double si = sin( ang ), co = cos( ang );
 
-    wxPen pen( arrowColor, 1 );
+    wxPen pen( arrowColor, 2 );
 
     if( m_pdc ) {
         m_pdc->SetPen( pen );
@@ -872,7 +931,7 @@ void GRIBOverlayFactory::drawSingleArrow( int i, int j, double ang, wxColour arr
 
 }
 
-void GRIBOverlayFactory::drawWindArrowWithBarbs( int i, int j, double vx, double vy,
+void GRIBOverlayFactory::drawWindArrowWithBarbs( int config, int i, int j, double vx, double vy,
                                                  bool polar, bool south, wxColour arrowColor )
 {
     double vkn, ang;
@@ -893,6 +952,9 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int i, int j, double vx, double
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
     }
+
+    /* normalize vkn to be from 0-100 instead of 0-m_Config.Configs[config].m_bBarbedRange */
+    vkn *= 100.0/m_Config.Configs[config].m_iBarbedRange;
 
     if( vkn < 1 ) {
         int r = 5;     // wind is very light, draw a circle

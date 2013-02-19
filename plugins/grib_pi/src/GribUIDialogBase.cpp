@@ -187,9 +187,8 @@ GRIBConfigDialogBase::GRIBConfigDialogBase( wxWindow* parent, wxWindowID id, con
 	wxGridSizer* gSizer3;
 	gSizer3 = new wxGridSizer( 0, 3, 0, 0 );
 	
-	wxString m_cDataTypeChoices[] = { wxT("Wind"), wxT("Pressure"), wxT("Wave"), wxT("Sea Temperature"), wxT("Current") };
-	int m_cDataTypeNChoices = sizeof( m_cDataTypeChoices ) / sizeof( wxString );
-	m_cDataType = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataTypeNChoices, m_cDataTypeChoices, 0 );
+	wxArrayString m_cDataTypeChoices;
+	m_cDataType = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataTypeChoices, 0 );
 	m_cDataType->SetSelection( 0 );
 	gSizer3->Add( m_cDataType, 0, wxALL, 5 );
 	
@@ -205,13 +204,12 @@ GRIBConfigDialogBase::GRIBConfigDialogBase( wxWindow* parent, wxWindowID id, con
 	m_cbBarbedArrows = new wxCheckBox( this, wxID_ANY, wxT("Barbed Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
 	gSizer3->Add( m_cbBarbedArrows, 0, wxALL, 5 );
 	
-	m_staticText10 = new wxStaticText( this, wxID_ANY, wxT("Option"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText10 = new wxStaticText( this, wxID_ANY, wxT("Range"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText10->Wrap( -1 );
 	gSizer3->Add( m_staticText10, 0, wxALL, 5 );
 	
-	m_staticText11 = new wxStaticText( this, wxID_ANY, wxT("None"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText11->Wrap( -1 );
-	gSizer3->Add( m_staticText11, 0, wxALL, 5 );
+	m_sBarbedRange = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 0, 100, 0 );
+	gSizer3->Add( m_sBarbedRange, 0, wxALL, 5 );
 	
 	m_cbIsoBars = new wxCheckBox( this, wxID_ANY, wxT("Iso Bars"), wxDefaultPosition, wxDefaultSize, 0 );
 	gSizer3->Add( m_cbIsoBars, 0, wxALL, 5 );
@@ -265,6 +263,8 @@ GRIBConfigDialogBase::GRIBConfigDialogBase( wxWindow* parent, wxWindowID id, con
 	m_sdbSizer1 = new wxStdDialogButtonSizer();
 	m_sdbSizer1OK = new wxButton( this, wxID_OK );
 	m_sdbSizer1->AddButton( m_sdbSizer1OK );
+	m_sdbSizer1Apply = new wxButton( this, wxID_APPLY );
+	m_sdbSizer1->AddButton( m_sdbSizer1Apply );
 	m_sdbSizer1Cancel = new wxButton( this, wxID_CANCEL );
 	m_sdbSizer1->AddButton( m_sdbSizer1Cancel );
 	m_sdbSizer1->Realize();
@@ -280,11 +280,13 @@ GRIBConfigDialogBase::GRIBConfigDialogBase( wxWindow* parent, wxWindowID id, con
 	
 	// Connect Events
 	m_cDataType->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBConfigDialogBase::OnDataTypeChoice ), NULL, this );
+	m_sdbSizer1Apply->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBConfigDialogBase::OnApply ), NULL, this );
 }
 
 GRIBConfigDialogBase::~GRIBConfigDialogBase()
 {
 	// Disconnect Events
 	m_cDataType->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GRIBConfigDialogBase::OnDataTypeChoice ), NULL, this );
+	m_sdbSizer1Apply->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBConfigDialogBase::OnApply ), NULL, this );
 	
 }

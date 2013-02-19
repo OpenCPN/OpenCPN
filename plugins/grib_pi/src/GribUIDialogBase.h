@@ -52,7 +52,6 @@ class GRIBUIDialogBase : public wxDialog
 	protected:
 		wxDirPickerCtrl* m_dirPicker;
 		wxButton* m_bConfig;
-		wxToggleButton* m_tbPlayStop;
 		GribRecordTree *m_pRecordTree;
 		wxTextCtrl* m_tcWindSpeed;
 		wxTextCtrl* m_tcWindDirection;
@@ -64,6 +63,7 @@ class GRIBUIDialogBase : public wxDialog
 		wxTextCtrl* m_tcSeaTemperature;
 	
 	public:
+		wxToggleButton* m_tbPlayStop;
 		wxSlider* m_sTimeline;
 		wxStaticText* m_stDateTime;
 		wxCheckBox* m_cbWind;
@@ -95,7 +95,7 @@ class GRIBConfigDialogBase : public wxDialog
 		wxChoice* m_cDataUnits;
 		wxCheckBox* m_cbBarbedArrows;
 		wxStaticText* m_staticText10;
-		wxStaticText* m_staticText11;
+		wxSpinCtrl* m_sBarbedRange;
 		wxCheckBox* m_cbIsoBars;
 		wxStaticText* m_staticText6;
 		wxSpinCtrl* m_sIsoBarSpacing;
@@ -110,10 +110,12 @@ class GRIBConfigDialogBase : public wxDialog
 		wxSpinCtrl* m_sNumbersSpacing;
 		wxStdDialogButtonSizer* m_sdbSizer1;
 		wxButton* m_sdbSizer1OK;
+		wxButton* m_sdbSizer1Apply;
 		wxButton* m_sdbSizer1Cancel;
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnDataTypeChoice( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnApply( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:

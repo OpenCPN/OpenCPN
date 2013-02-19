@@ -38,6 +38,7 @@ public:
         m_iTexture = 0;
         m_pDCBitmap = NULL, m_pRGBA = NULL;
     }
+
     ~GribOverlay( void )
     {
         if(m_iTexture)
@@ -100,7 +101,7 @@ private:
     void RenderGribOverlayMap( int config, GribRecord **pGR, PlugIn_ViewPort *vp);
     void RenderGribNumbers( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
 
-    void drawWindArrowWithBarbs( int x, int y, double vx, double vy,
+    void drawWindArrowWithBarbs( int config, int x, int y, double vx, double vy,
                                  bool polar, bool south, wxColour arrowColor );
     void drawWaveArrow( int i, int j, double dir, wxColour arrowColor );
     void drawSingleArrow( int i, int j, double dir, wxColour arrowColor, int width = 1 );

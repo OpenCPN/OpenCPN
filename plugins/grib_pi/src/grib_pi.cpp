@@ -36,7 +36,6 @@
 #include <wx/fileconf.h>
 
 #include "grib_pi.h"
-#include "GribConfigDialog.h"
 
 
 // the class factories, used to create and destroy instances of the PlugIn
@@ -230,7 +229,8 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     {
         m_bGRIBUseHiDef= m_pGRIBUseHiDef->GetValue();
         m_bGRIBUseGradualColors= m_pGRIBUseGradualColors->GetValue();
-        m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
+        if(m_pGRIBOverlayFactory)
+            m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
         SaveConfig();
     }
 }

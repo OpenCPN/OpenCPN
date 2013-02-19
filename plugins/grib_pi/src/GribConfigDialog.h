@@ -40,8 +40,10 @@ struct GribOverlayConfig
     void Read();
     void Write();
 
+    double CalibrationOffset(int config);
     double CalibrationFactor(int config);
-    double CalibrateValue(int config, double input) { return input*CalibrationFactor(config); }
+    double CalibrateValue(int config, double input)
+        { return (input+CalibrationOffset(config))*CalibrationFactor(config); }
     double GetMin(int config);
     double GetMax(int config);
     // config options
@@ -51,8 +53,8 @@ struct GribOverlayConfig
     int m_UpdatesPerSecond;
     double m_HourDivider;
 
-    enum ConfigType {WIND, PRESSURE, WAVE,
-                     SEA_TEMPERATURE, CURRENT, CONFIG_COUNT};
+    enum ConfigType {WIND, WAVE, CURRENT, PRESSURE,
+                     SEA_TEMPERATURE, CONFIG_COUNT};
     enum Units0 {KNOTS, M_S, MPH, KPH};
     enum Units1 {MILLIBARS, MMHG};
     enum Units2 {METERS, FEET};
@@ -61,6 +63,7 @@ struct GribOverlayConfig
     struct OverlayDataConfig {
         int m_Units;
         bool m_bBarbedArrows;
+        int m_iBarbedRange;
         bool m_bIsoBars;
         int m_iIsoBarSpacing;
         bool m_bDirectionArrows;
@@ -76,18 +79,20 @@ struct GribOverlayConfig
 class GRIBConfigDialog : public GRIBConfigDialogBase
 {
 public:
-    GRIBConfigDialog(wxWindow *parent);
-    void ReadConfig(GribOverlayConfig &Config);
-    void WriteConfig(GribOverlayConfig &Config);
+    GRIBConfigDialog(GRIBUIDialog &parent, GribOverlayConfig &extConfig, int &lastdatatype);
+    void WriteConfig();
 
 private:
     void SetDataTypeConfig(int config);
     void ReadDataTypeConfig(int config);
     void PopulateUnits(int config);
     void OnDataTypeChoice( wxCommandEvent& event );
+    void OnApply( wxCommandEvent& event );
 
-    GribOverlayConfig m_Config;
-    int m_lastdatatype;
+    GRIBUIDialog &m_parent;
+
+    GribOverlayConfig m_Config, &m_extConfig;
+    int &m_lastdatatype;
 };
 
 #endif

@@ -239,7 +239,6 @@ GribRecord::GribRecord(const GribRecord &rec1, const GribRecord &rec2, double d)
     /* should maybe update strCurDate ? */
 }
 
-
 GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1, const GribRecord &rec2)
 {
     GribRecord *rec = new GribRecord(rec1);
@@ -248,7 +247,10 @@ GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1, const GribRecord
     if (rec1.data && rec2.data && rec1.Ni == rec2.Ni && rec1.Nj == rec2.Nj) {
         int size = rec1.Ni*rec1.Nj;
         for (int i=0; i<size; i++)
-            rec->data[i] = hypot(rec1.data[i], rec2.data[i]);
+            if(rec1.data[i] == GRIB_NOTDEF || rec2.data[i] == GRIB_NOTDEF)
+                rec->data[i] = GRIB_NOTDEF;
+            else
+                rec->data[i] = hypot(rec1.data[i], rec2.data[i]);
     } else
         rec->ok=false;
 

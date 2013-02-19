@@ -62,6 +62,9 @@ void GribRecordTree::OnItemSelectChange( wxTreeEvent& event )
     if(!parent) return;
 
     /* set timeline to not be working */
+    parent->m_tPlayStop.Stop();
+    parent->m_tbPlayStop->SetValue(0);
+    parent->m_tbPlayStop->SetLabel(_("Play"));
     parent->m_sTimeline->Disable();
 
     GribTreeItemData *pdata = (GribTreeItemData *) GetItemData( event.GetItem() );

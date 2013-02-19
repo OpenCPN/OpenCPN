@@ -162,9 +162,9 @@ double      round_msvc (double x)
 }
 
 //---------------------------------------------------------------
-IsoLine::IsoLine(double val, double coeff, const GribRecord *rec_)
+IsoLine::IsoLine(double val, double coeff, double offset, const GribRecord *rec_)
 {
-    value = val/coeff;
+    value = val/coeff-offset;
 
     rec = rec_;
     W = rec_->getNi();
@@ -372,7 +372,7 @@ MySegList *IsoLine::BuildContinuousSegment(void)
 
 
 //---------------------------------------------------------------
-void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
+void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp, bool bHiDef)
 {
       int nsegs = trace.size();
       if(nsegs < 1)
@@ -514,31 +514,8 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
                                     {
                                           bDrawing = true;
                                           len = 0;
-#if 0
-                                          if(bShowLabels)
-                                          {
-                                                double label_angle = atan2((double)(lstart.y - point->y),
-                                                    (double)(point->x - lstart.x)) * 180. / PI;
-                                                wxString label;
-                                                label.Printf(_T("%d"), (int)(value*coef+0.5));
-
-                                                double xs = lstart.x - (m * sin(label_angle * PI / 180.));
-                                                double ys = lstart.y - (m * cos(label_angle * PI / 180.));
-                                                dc.DrawRotatedText(label, (int)xs, (int)ys, label_angle);
-                                          }
-#endif
                                     }
                               }
-
-#if 0
-//                              if(bDrawing || !bShowLabels)
-                              {
-                                    if(bHiDef)
-                                          dc.StrokeLine(point0->x, point0->y, point->x, point->y);
-                                    else
-                                          dc.DrawLine(point0->x, point0->y, point->x, point->y);
-                              }
-#endif
                         }
 
                         *point0 = *point;
@@ -598,7 +575,7 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc,
 }
 
 
-void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
+void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp)
 {
       int nsegs = trace.size();
       if(nsegs < 1)
