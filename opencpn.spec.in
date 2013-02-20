@@ -22,6 +22,10 @@ Vendor:         @CPACK_RPM_PACKAGE_VENDOR@
 %define _rpmfilename @CPACK_RPM_FILE_NAME@
 %define _unpackaged_files_terminate_build 0
 %define _topdir @CPACK_RPM_DIRECTORY@
+# This is a hack to change platform default path with our cmake/cpack ones
+%define _bindir @CPACK_OPENCPN_RPM_BINDIR@
+%define _libdir @CPACK_OPENCPN_RPM_LIBDIR@
+%define _datadir @CPACK_OPENCPN_RPM_DATADIR@
 @TMP_RPM_SPEC_INSTALL_POST@
 @CPACK_RPM_SPEC_MORE_DEFINE@
 @CPACK_RPM_COMPRESSION_TYPE_TMP@
