@@ -75,8 +75,6 @@ GRIBOverlayFactory::GRIBOverlayFactory( GRIBUIDialog &dlg )
     m_pGribTimelineRecordSet = NULL;
     m_last_vp_scale = 0.;
 
-    m_bReadyToRender = false;
-
     for(int i=0; i<GribOverlayConfig::CONFIG_COUNT; i++)
         m_pOverlay[i] = NULL;
 }
@@ -91,14 +89,12 @@ void GRIBOverlayFactory::Reset()
     m_pGribTimelineRecordSet = NULL;
 
     ClearCachedData();
-    m_bReadyToRender = false;
 }
 
 void GRIBOverlayFactory::SetGribTimelineRecordSet( GribTimelineRecordSet *pGribTimelineRecordSet )
 {
     Reset();
     m_pGribTimelineRecordSet = pGribTimelineRecordSet;
-    m_bReadyToRender = true;
 
 }
 

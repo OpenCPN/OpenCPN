@@ -78,10 +78,7 @@ public:
     void SetGribTimelineRecordSet( GribTimelineRecordSet *pGribTimelineRecordSet1 );
     bool RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp );
     bool RenderGLGribOverlay( wxGLContext *pcontext, PlugIn_ViewPort *vp );
-    bool IsReadyToRender()
-    {
-        return m_bReadyToRender;
-    }
+
     void Reset();
     void ClearCachedData( void );
 
@@ -130,7 +127,6 @@ private:
     wxDC *m_pdc;
     wxGraphicsContext *m_gdc;
 
-    bool m_bReadyToRender;
     bool m_hiDefGraphics;
     bool m_bGradualColors;
 

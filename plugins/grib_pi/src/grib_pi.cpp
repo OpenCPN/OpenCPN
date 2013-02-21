@@ -129,10 +129,10 @@ bool grib_pi::DeInit(void)
         m_pGribDialog = NULL;
     }
 
-//      delete m_pGRIBOverlayFactory;
-//      m_pGRIBOverlayFactory = NULL;
+    delete m_pGRIBOverlayFactory;
+    m_pGRIBOverlayFactory = NULL;
 
-      return true;
+    return true;
 }
 
 int grib_pi::GetAPIVersionMajor()
@@ -272,8 +272,7 @@ bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
 {
     if(!m_pGribDialog ||
        !m_pGribDialog->IsShown() ||
-       !m_pGRIBOverlayFactory ||
-       !m_pGRIBOverlayFactory->IsReadyToRender())
+       !m_pGRIBOverlayFactory)
         return false;
 
     m_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
@@ -284,8 +283,7 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 {
     if(!m_pGribDialog ||
        !m_pGribDialog->IsShown() ||
-       !m_pGRIBOverlayFactory ||
-       !m_pGRIBOverlayFactory->IsReadyToRender())
+       !m_pGRIBOverlayFactory)
         return false;
 
     m_pGRIBOverlayFactory->RenderGLGribOverlay ( pcontext, vp );
