@@ -613,21 +613,15 @@ void GRIBOverlayFactory::RenderGribIsobar( int config, GribRecord **pGR,
     //    Draw the Isobars
     for( unsigned int i = 0; i < pIsobarArray[idx]->GetCount(); i++ ) {
         IsoLine *piso = (IsoLine *) pIsobarArray[idx]->Item( i );
-        if( m_pdc )
-            piso->drawIsoLine( this, *m_pdc, vp, true); //g_bGRIBUseHiDef
-        else
-            piso->drawGLIsoLine( this, vp );
+        piso->drawIsoLine( this, m_pdc, vp, true); //g_bGRIBUseHiDef
 
         // Draw Isobar labels
 
         int density = 40;
         int first = 0;
 
-        if( m_pdc )
-            piso->drawIsoLineLabels( this, *m_pdc, vp, density,
-                                     first, getLabel(piso->getValue()) );
-        else
-            piso->drawGLIsoLineLabels( this, vp, density, first, getLabel(piso->getValue()));
+        piso->drawIsoLineLabels( this, m_pdc, vp, density,
+                                 first, getLabel(piso->getValue()) );
     }
 
     delete pGRM;

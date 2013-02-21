@@ -372,23 +372,34 @@ MySegList *IsoLine::BuildContinuousSegment(void)
 
 
 //---------------------------------------------------------------
-void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp, bool bHiDef)
+void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp, bool bHiDef)
 {
       int nsegs = trace.size();
       if(nsegs < 1)
             return;
 
       GetGlobalColor ( _T ( "UITX1" ), &isoLineColor );
-      wxPen ppISO ( isoLineColor, 2 );
 
 #if wxUSE_GRAPHICS_CONTEXT
-      wxMemoryDC *pmdc;
-      pmdc= wxDynamicCast(&dc, wxMemoryDC);
-      wxGraphicsContext *pgc = wxGraphicsContext::Create(*pmdc);
-      pgc->SetPen(ppISO);
+      wxGraphicsContext *pgc = NULL;
 #endif
 
-      dc.SetPen(ppISO);
+      if(dc) {
+          wxPen ppISO ( isoLineColor, 2 );
+
+#if wxUSE_GRAPHICS_CONTEXT
+          wxMemoryDC *pmdc;
+          pmdc= wxDynamicCast(dc, wxMemoryDC);
+          pgc = wxGraphicsContext::Create(*pmdc);
+          pgc->SetPen(ppISO);
+#endif
+
+          dc->SetPen(ppISO);
+      } else { /* opengl */
+
+          glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(),
+                     255/*isoLineColor.Alpha()*/);
+      }
 
       std::list<Segment *>::iterator it;
 
@@ -399,27 +410,36 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
     {
         Segment *seg = *it;
 
+        /* skip segments that go the wrong way around the world */
+        if(seg->px1+180 < vp->clon && seg->px2+180 > vp->clon)
+            continue;
+        if(seg->px1+180 > vp->clon && seg->px2+180 < vp->clon)
+            continue;
+        if(seg->px1-180 < vp->clon && seg->px2-180 > vp->clon)
+            continue;
+        if(seg->px1-180 > vp->clon && seg->px2-180 < vp->clon)
+            continue;
+
         {
             wxPoint ab;
             GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
             wxPoint cd;
             GetCanvasPixLL(vp, &cd, seg->py2, seg->px2);
 
-             {
+            if(dc) {
 #if wxUSE_GRAPHICS_CONTEXT
                   if(bHiDef && pgc)
                         pgc->StrokeLine(ab.x, ab.y, cd.x, cd.y);
                   else
-                        dc.DrawLine(ab.x, ab.y, cd.x, cd.y);
-#else
-                  dc.DrawLine(ab.x, ab.y, cd.x, cd.y);
 #endif
-             }
-
+                      dc->DrawLine(ab.x, ab.y, cd.x, cd.y);
+            } else { /* opengl */
+                pof->DrawGLLine(ab.x, ab.y, cd.x, cd.y, 2);
+            }
         }
     }
-//#endif
 
+#if 0
       int text_sx, text_sy;
       dc.GetTextExtent(_T("10000"), &text_sx, &text_sy);
 //      double m = text_sy / 2;
@@ -531,6 +551,8 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
 
       delete[] pPoints;
 
+#endif
+
 #if wxUSE_GRAPHICS_CONTEXT
       delete pgc;
 #endif
@@ -539,7 +561,7 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
 
 //---------------------------------------------------------------
 
-void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc,
+void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
                                 PlugIn_ViewPort *vp, int density, int first,
                                 wxImage &imageLabel)
 
@@ -564,107 +586,28 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc,
                 wxPoint cd;
                 GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
                 
+                int w = imageLabel.GetWidth();
+                int h = imageLabel.GetHeight();
+
                 int label_offset = 6;
-                int xd = (ab.x + cd.x-(imageLabel.GetWidth()+label_offset * 2))/2;
-                int yd = (ab.y + cd.y - imageLabel.GetHeight())/2;
+                int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
+                int yd = (ab.y + cd.y - h)/2;
                 
-                /* don't use alpha for isobars, for some reason draw bitmap ignores it */
-                wxImage img(imageLabel.GetWidth(), imageLabel.GetHeight(), imageLabel.GetData(), true);
-                dc.DrawBitmap(img, xd, yd, false);
+                if(dc) {
+                    /* don't use alpha for isobars, for some reason draw bitmap ignores
+                       the 4th argument (true or false has same result) */
+                    wxImage img(w, h, imageLabel.GetData(), true);
+                    dc->DrawBitmap(img, xd, yd, false);
+                } else { /* opengl */
+                    glRasterPos2i(xd, yd);
+                    glPixelZoom(1, -1); /* draw data from top to bottom */
+                    glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, imageLabel.GetData());
+                    glPixelZoom(1, 1);
+                }
             }
         }
     }
 }
-
-
-void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp)
-{
-      int nsegs = trace.size();
-      if(nsegs < 1)
-            return;
-
-     int width = 2;
-     GetGlobalColor ( _T ( "UITX1" ), &isoLineColor );
-
-     glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(), 255/*isoLineColor.Alpha()*/);
-     glLineWidth(width);
-
-     std::list<Segment *>::iterator it;
-
-    //---------------------------------------------------------
-    // Dessine les segments
-    //---------------------------------------------------------
-    for (it=trace.begin(); it!=trace.end(); it++)
-    {
-        Segment *seg = *it;
-
-        /* skip segments that go the wrong way around the world */
-        if(seg->px1+180 < vp->clon && seg->px2+180 > vp->clon)
-            continue;
-        if(seg->px1+180 > vp->clon && seg->px2+180 < vp->clon)
-            continue;
-        if(seg->px1-180 < vp->clon && seg->px2-180 > vp->clon)
-            continue;
-        if(seg->px1-180 > vp->clon && seg->px2-180 < vp->clon)
-            continue;
-
-        {
-            wxPoint ab;
-            GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
-            wxPoint cd;
-            GetCanvasPixLL(vp, &cd, seg->py2, seg->px2);
-
-
-///            ClipResult res = cohen_sutherland_line_clip_i ( &ab.x, &ab.y, &cd.x, &cd.y,
-///                         0, vp->pix_width, 0, vp->pix_height );
-///            if ( res != Invisible )
-             {
-                  pof->DrawGLLine(ab.x, ab.y, cd.x, cd.y, width);
-             }
-
-        }
-    }
-
-}
-
-void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp, int density, int first,
-                                  wxImage &imageLabel)
-{
-      int label_offset = 10;
-
-    std::list<Segment *>::iterator it;
-    int nb = first;
-
-    //---------------------------------------------------------
-    // Ecrit les labels
-    //---------------------------------------------------------
-    for (it=trace.begin(); it!=trace.end(); it++,nb++)
-    {
-        if (nb % density == 0)
-		{
-            Segment *seg = *it;
-
-//            if(vp->vpBBox.PointInBox((seg->px1 + seg->px2)/2., (seg->py1 + seg->py2)/2., 0.))
-            {
-                  int w = imageLabel.GetWidth();
-                  int h = imageLabel.GetHeight();
-                  wxPoint ab;
-                  GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
-                  wxPoint cd;
-                  GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
-
-                  int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
-                  int yd = (ab.y + cd.y - h)/2;
-
-                  glRasterPos2i(xd, yd);
-                  glPixelZoom(1, -1); /* draw data from top to bottom */
-                  glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, imageLabel.GetData());
-                  glPixelZoom(1, 1);
-            }
-        }
-    }
-}
-
 
 
 //==================================================================================
