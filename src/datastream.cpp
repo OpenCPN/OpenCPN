@@ -95,6 +95,8 @@ wxEvent* OCPN_DataStreamEvent::Clone() const
 BEGIN_EVENT_TABLE(DataStream, wxEvtHandler)
 
     EVT_SOCKET(DS_SOCKET_ID, DataStream::OnSocketEvent)
+    EVT_SOCKET(DS_SERVERSOCKET_ID, DataStream::OnServerSocketEvent)
+    EVT_SOCKET(DS_ACTIVESERVERSOCKET_ID, DataStream::OnActiveServerEvent)
     EVT_TIMER(TIMER_SOCKET, DataStream::OnTimerSocket)
 
   END_EVENT_TABLE()
@@ -135,6 +137,9 @@ void DataStream::Init(void)
     m_Thread_run_flag = -1;
     m_sock = 0;
     m_tsock = 0;
+    m_socket_server_active = 0;
+    m_socket_server = 0;
+    m_txenter = 0;
     
     m_socket_timer.SetOwner(this, TIMER_SOCKET);
     
@@ -237,9 +242,40 @@ void DataStream::Open(void)
             
             // Create the socket
             switch(m_net_protocol){
-                case GPSD:
-                case TCP:
+                case GPSD: {
                     m_sock = new wxSocketClient();
+                    m_sock->SetEventHandler(*this, DS_SOCKET_ID);
+                    m_sock->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
+                    m_sock->Notify(TRUE);
+                    m_sock->SetTimeout(1);              // Short timeout
+
+                    wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+                    tcp_socket->Connect(m_addr, FALSE);
+                    m_brx_connect_event = false;
+                    
+                    break;
+                }
+                case TCP:
+                        //  TCP Datastreams can be either input or output, but not both...
+                    if((m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT)) {
+                        m_socket_server = new wxSocketServer(m_addr, wxSOCKET_REUSEADDR );
+                        m_socket_server->SetEventHandler(*this, DS_SERVERSOCKET_ID);
+                        m_socket_server->SetNotify( wxSOCKET_CONNECTION_FLAG );
+                        m_socket_server->Notify(TRUE);
+                        m_socket_server->SetTimeout(1);              // Short timeout
+                    }
+                    else {
+                        m_sock = new wxSocketClient();
+                        m_sock->SetEventHandler(*this, DS_SOCKET_ID);
+                        m_sock->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
+                        m_sock->Notify(TRUE);
+                        m_sock->SetTimeout(1);              // Short timeout
+                        
+                        wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+                        tcp_socket->Connect(m_addr, FALSE);
+                        m_brx_connect_event = false;
+                    }
+                    
                     break;
                 case UDP:
                     //  We need a local (bindable) address to create the Datagram receive socket
@@ -261,31 +297,18 @@ void DataStream::Open(void)
                             bool bam = m_tsock->SetOption(SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
                         }
                     }
+                    
+                    m_sock->SetEventHandler(*this, DS_SOCKET_ID);
+                    
+                    m_sock->SetNotify(wxSOCKET_CONNECTION_FLAG |
+                    wxSOCKET_INPUT_FLAG |
+                    wxSOCKET_LOST_FLAG);
+                    m_sock->Notify(TRUE);
+                    m_sock->SetTimeout(1);              // Short timeout
+                    
                     break;
             }
 
-            // Setup the event handler and subscribe to most events
-            m_sock->SetEventHandler(*this, DS_SOCKET_ID);
-
-            m_sock->SetNotify(wxSOCKET_CONNECTION_FLAG |
-                wxSOCKET_INPUT_FLAG |
-                wxSOCKET_LOST_FLAG);
-            m_sock->Notify(TRUE);
-            m_sock->SetTimeout(1);              // Short timeout
-
-            switch(m_net_protocol){
-                case GPSD:
-                case TCP:{
-                    wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
-                    tcp_socket->Connect(m_addr, FALSE);
-                    m_brx_connect_event = false;
-                    break;
-                }
-                case UDP:{
-                    break;
-                }
-            }
-            
             m_bok = true;
         }
     }
@@ -338,6 +361,18 @@ void DataStream::Close()
     {
         m_tsock->Notify(FALSE);
         m_tsock->Destroy();
+    }
+    
+    if(m_socket_server)
+    {
+        m_socket_server->Notify(FALSE);
+        m_socket_server->Destroy();
+    }
+    
+    if(m_socket_server_active)
+    {
+        m_socket_server_active->Notify(FALSE);
+        m_socket_server_active->Destroy();
     }
     
     //  Kill off the Garmin handler, if alive
@@ -473,6 +508,51 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
 
 
 
+void DataStream::OnServerSocketEvent(wxSocketEvent& event)
+{
+    
+    switch(event.GetSocketEvent())
+    {
+        case wxSOCKET_CONNECTION :
+        {
+            m_socket_server_active = m_socket_server->Accept(false);
+ 
+            if( m_socket_server_active ) {
+                m_socket_server_active->SetEventHandler(*this, DS_ACTIVESERVERSOCKET_ID);
+                m_socket_server_active->SetNotify( wxSOCKET_LOST_FLAG );
+                m_socket_server_active->Notify(true);
+            }
+            
+            break;
+        }
+        
+        default :
+            break;
+    }
+}
+
+void DataStream::OnActiveServerEvent(wxSocketEvent& event)
+{
+    wxSocketBase *sock = event.GetSocket();
+    
+    switch(event.GetSocketEvent())
+    {
+         case wxSOCKET_LOST:
+        {
+            sock->Destroy();
+            m_socket_server_active = 0;
+            break;
+        }
+        
+        
+        default :
+            break;
+    }
+}
+
+
+
+
 
 bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection direction)
 {
@@ -574,30 +654,41 @@ bool DataStream::SendSentence( const wxString &sentence )
             }
             break;
         case NETWORK:
-            if( m_sock ) {
+            if(m_txenter)
+                return false;                 // do not allow recursion, could happen with non-blocking sockets
+            m_txenter++;
+
+            bool ret = true;
+            wxDatagramSocket* udp_socket;
                 switch(m_net_protocol){
-                    case GPSD:
-                    case TCP:{
-                        wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
-                        if( tcp_socket->IsDisconnected() )
-                            tcp_socket->Connect( m_addr, FALSE );
-                        else {
-                            tcp_socket->Write( payload.mb_str(), strlen( payload.mb_str() ) );
+                    case TCP:
+                        if( m_socket_server_active && m_socket_server_active->IsOk() ) {
+                            m_socket_server_active->Write( payload.mb_str(), strlen( payload.mb_str() ) );
                         }
-                    }
-                    break;
-                    case UDP:{
-                        wxDatagramSocket* udp_socket = dynamic_cast<wxDatagramSocket*>(m_tsock);
+                        else
+                            ret = false;
+                        break;
+                    case UDP:
+                        udp_socket = dynamic_cast<wxDatagramSocket*>(m_tsock);
                         if( udp_socket->IsOk() ) {
                             udp_socket->SendTo(m_addr, payload.mb_str(), payload.size() );
                             if( udp_socket->Error())
-                                return false;
+                                ret = false;
                         }
-                    }
-                }
+                        else
+                            ret = false;
+                        break;
+                    
+                    case GPSD:    
+                    default:
+                        ret = false;
+                        break;
             }
+            m_txenter--;
+            return ret;
             break;
     }
+    
     return true;
 }
 

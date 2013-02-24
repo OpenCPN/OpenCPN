@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-02 14:06-0500\n"
+"POT-Creation-Date: 2013-02-07 12:44-0600\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom  avec collaboration active de Sailor54 et AISEAG "
 "<contact@gilletarom.fr>\n"
@@ -19,13 +19,6 @@ msgstr ""
 msgid "Route Properties"
 msgstr "Route : Propriétés ..."
 
-# A étudier
-# ----
-# Pytheas54: OK
-# ---
-# Aiseag : OK
-# ---
-# Valider
 #: include/routeprop.h:100 include/routeprop.h:317 src/chcanv.cpp:8785
 #: src/routemanagerdialog.cpp:1979
 msgid "Waypoint Properties"
@@ -36,18 +29,11 @@ msgstr "Waypoint : Propriétés"
 msgid "Link Properties"
 msgstr "Propriétés du lien"
 
-# ---------
-# Aiseag : pourquoi information est traduit par proprietes (cf 21)
-# ----
-# Pytheas54 ???
-# Traduction OK pour moi
-# ----
-# Aiseag : OK
 #: include/routeprop.h:371
 msgid "Waypoint Information"
 msgstr "Waypoint/marque : description"
 
-#: include/options.h:58 src/chart1.cpp:2475 src/chart1.cpp:3815
+#: include/options.h:58 src/chart1.cpp:2473 src/chart1.cpp:3816
 msgid "Options"
 msgstr "Options (Boite à outils) :"
 
@@ -60,13 +46,13 @@ msgstr "Filtre de phrases"
 #: include/chcanv.h:770 include/chcanv.h:782 include/chcanv.h:971
 #: include/chcanv.h:981 src/chcanv.cpp:8703
 msgid "Object Query"
-msgstr "Objets présents : Propriétés"
+msgstr "Liste des objets :"
 
 #: include/chcanv.h:886 src/ais.cpp:3544
 msgid "Center View"
 msgstr "Centrer la vue"
 
-#: include/about.h:39 src/chart1.cpp:2541
+#: include/about.h:39 src/chart1.cpp:2539
 msgid "About OpenCPN"
 msgstr "A propos d'OpenCPN"
 
@@ -74,7 +60,6 @@ msgstr "A propos d'OpenCPN"
 msgid "AIS Alert"
 msgstr "Alarme AIS"
 
-# Menu contextuel : Route
 #: include/routeman.h:50
 msgid "Send Route To GPS"
 msgstr "Route : Envoyer au GPS"
@@ -83,26 +68,19 @@ msgstr "Route : Envoyer au GPS"
 msgid " ChartFile:  "
 msgstr " Fichier de carte : "
 
-#
-#
 #: src/chartdbs.cpp:931
 msgid " Name:  "
 msgstr " Zone couverte  : "
 
-#
 #: src/chartdbs.cpp:959 src/chartdbs.cpp:961
 #, c-format
 msgid " Scale:  1:%d"
 msgstr " Echelle              : 1:%d"
 
-#
-#
 #: src/chartdbs.cpp:971
 msgid " ID:  "
 msgstr " ID                     : "
 
-#
-#
 #: src/chartdbs.cpp:982
 msgid " Depth Units:  "
 msgstr " Unités de profondeur  : "
@@ -111,14 +89,10 @@ msgstr " Unités de profondeur  : "
 msgid " Soundings:  "
 msgstr " Datum des sondes     : "
 
-#
-#
 #: src/chartdbs.cpp:1004
 msgid " Datum:  "
 msgstr " Système géodésique : "
 
-#
-#
 #: src/chartdbs.cpp:1012
 msgid " Projection:  "
 msgstr " Projection                  : "
@@ -128,29 +102,22 @@ msgstr " Projection                  : "
 msgid "Unknown"
 msgstr "Inconnue"
 
-#
-#
 #: src/chartdbs.cpp:1016
 msgid "Mercator"
 msgstr "Mercator"
 
-#
 #: src/chartdbs.cpp:1018
 msgid "Transverse Mercator"
 msgstr "Mercator transverse"
 
-#
 #: src/chartdbs.cpp:1020
 msgid "Polyconic"
 msgstr "Polyconique"
 
-#
 #: src/chartdbs.cpp:1029
 msgid " Source Edition:  "
 msgstr " Edition de la source   : "
 
-#
-#
 #: src/chartdbs.cpp:1040
 msgid " Updated:  "
 msgstr " Mise à jour                 : "
@@ -204,13 +171,7 @@ msgstr ""
 msgid "Welcome to OpenCPN"
 msgstr "Bienvenue dans OpenCPN"
 
-# Initialement :
-# Information OpenCPN
-# ----
-# Pytheas54: pourquoi pas
-# ----
-# Aiseag : OK pour la forme active (volontaire)
-#: src/chart1.cpp:985 src/chart1.cpp:1780 src/chart1.cpp:3926
+#: src/chart1.cpp:985 src/chart1.cpp:1780 src/chart1.cpp:3927
 #: src/navutil.cpp:1268 src/navutil.cpp:2217
 msgid "OpenCPN Info"
 msgstr "OpenCPN vous informe."
@@ -241,9 +202,6 @@ msgstr ""
 "Récupération de la langue, initialement sélectionnée, dans le registre "
 "Windows."
 
-# Pytheas54: ???
-# -----------
-# Aiseag : quelques chgt sur 2eme propal de traduction
 #: src/chart1.cpp:1571
 msgid " -- [Portable(-p) executing from "
 msgstr "  --[Version portable(-p) executée à partir de (ou depuis)"
@@ -272,7 +230,7 @@ msgstr "Durée estimée :  "
 msgid "Remaining time : "
 msgstr "Durée restante : "
 
-#: src/chart1.cpp:1761 src/chart1.cpp:4175
+#: src/chart1.cpp:1761 src/chart1.cpp:4176
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN met à jour la liste des cartes"
 
@@ -286,81 +244,75 @@ msgstr ""
 "\"Cartes chargées\" de l'onglet \"Cartes/données\" dans les \"Options (Boite "
 "à outils)\"."
 
-#: src/chart1.cpp:2353 src/chcanv.cpp:14971
+#: src/chart1.cpp:2351 src/chcanv.cpp:14971
 msgid "AIS Target Query"
 msgstr "Informations émises par cette cible"
 
-#: src/chart1.cpp:2430
+#: src/chart1.cpp:2428
 msgid "Zoom In"
 msgstr "Zoomer"
 
-#
-#
-#: src/chart1.cpp:2436
+#: src/chart1.cpp:2434
 msgid "Zoom Out"
 msgstr "Dézoomer"
 
-#
-#
-#: src/chart1.cpp:2445
+#: src/chart1.cpp:2443
 msgid "Shift to Larger Scale Chart"
 msgstr "Passer à l'échelle supérieure"
 
-#: src/chart1.cpp:2453
+#: src/chart1.cpp:2451
 msgid "Shift to Smaller Scale Chart"
 msgstr "Passer à l'échelle inférieure"
 
-#: src/chart1.cpp:2461
+#: src/chart1.cpp:2459
 msgid "Create Route"
 msgstr "Route : Créer"
 
-#
-#
-#: src/chart1.cpp:2468
+#: src/chart1.cpp:2466
 msgid "Auto Follow"
 msgstr "Centrage automatique"
 
-#: src/chart1.cpp:2481
+#: src/chart1.cpp:2479
 msgid "Show ENC Text"
 msgstr "Afficher les textes des cartes ENC"
 
-#: src/chart1.cpp:2489 src/chart1.cpp:2569 src/chart1.cpp:3248
+#: src/chart1.cpp:2487 src/chart1.cpp:2567 src/chart1.cpp:3249
 msgid "Hide AIS Targets"
 msgstr "Cacher les cibles AIS"
 
-#: src/chart1.cpp:2496
+#: src/chart1.cpp:2494
 msgid "Show Currents"
 msgstr "Afficher les courants"
 
-#: src/chart1.cpp:2502
+#: src/chart1.cpp:2500
 msgid "Show Tides"
 msgstr "Afficher les marées"
 
-#: src/chart1.cpp:2508
+#: src/chart1.cpp:2506
 msgid "Print Chart"
 msgstr "Imprimer la carte"
 
-#: src/chart1.cpp:2514 src/routemanagerdialog.cpp:423
+#: src/chart1.cpp:2512 src/routemanagerdialog.cpp:423
 msgid "Route Manager"
 msgstr "Gestionnaire de routes, traces, marques et couches."
 
-#: src/chart1.cpp:2521
+#: src/chart1.cpp:2519
 msgid "Toggle Tracking"
 msgstr "Activer/désactiver le mode trace"
 
-#: src/chart1.cpp:2528
+#: src/chart1.cpp:2526
 msgid "Change Color Scheme"
 msgstr "Choisir l'affichage :  Jour / Crépuscule / Nuit"
 
-#: src/chart1.cpp:2535
+#: src/chart1.cpp:2533
 msgid "Drop MOB Marker"
 msgstr "Insérer un point MOB (Homme à la mer)"
 
-#: src/chart1.cpp:2535
+#: src/chart1.cpp:2533
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Space)"
 
-#: src/chart1.cpp:2573 src/chart1.cpp:3250
+#: src/chart1.cpp:2571 src/chart1.cpp:3251
 msgid "Show AIS Targets"
 msgstr "Afficher les cibles"
 
@@ -368,78 +320,61 @@ msgstr "Afficher les cibles"
 msgid "Anchorage created "
 msgstr "Mouillage créé"
 
-#: src/chart1.cpp:3002
+#: src/chart1.cpp:3003
 msgid "StatusBar"
 msgstr "Barre d'état"
 
-#
-#: src/chart1.cpp:3140
+#: src/chart1.cpp:3141
 msgid "Group \""
 msgstr "Groupe\""
 
-# Par cohérence avec l'item "All active charts" où je souhaite gagner de la place sur l'écran pour le menu contextuel..
-# ----
-# Pytheas54: OK
-# -------------
-# Aiseag : OK
-#: src/chart1.cpp:3142
+#: src/chart1.cpp:3143
 msgid "\" is empty, switching to \"All Active Charts\" group."
 msgstr ""
 "\" est vide. Activation automatique du groupe de cartes \"Toutes les cartes"
 "\"."
 
-# Menu contextuel : Route
-#: src/chart1.cpp:3144
+#: src/chart1.cpp:3145
 msgid "OpenCPN Group Notice"
 msgstr "Avis du groupe OpenCPN"
 
-#: src/chart1.cpp:3319
+#: src/chart1.cpp:3320
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Carte1::Evènement...TCMgr invalide"
 
-#
-#
-#: src/chart1.cpp:3441 src/chart1.cpp:3488
+#: src/chart1.cpp:3442 src/chart1.cpp:3489
 msgid "MAN OVERBOARD"
 msgstr "Homme à la mer (MOB)"
 
-#
-#: src/chart1.cpp:3455
+#: src/chart1.cpp:3456
 msgid "1.0 NM along COG"
 msgstr "1 NM sur le cap du COG"
 
-#: src/chart1.cpp:3466
+#: src/chart1.cpp:3467
 msgid "Temporary MOB Route"
 msgstr "Route de retour au MOB"
 
-# Ma foi why not.
-# ----
-# Pytheas54: pas trouvé mieux :-(
-# ----
-# Aiseag : OK
-#: src/chart1.cpp:3467
+#: src/chart1.cpp:3468
 msgid "Assumed 1 Mile Point"
 msgstr "Position estimée : 1 mille."
 
-#: src/chart1.cpp:3925
+#: src/chart1.cpp:3926
 msgid "Please restart OpenCPN to activate language or style changes."
 msgstr "Redémarrez OpenCPN pour mettre à jour la langue ou changer le style"
 
-# Couches
-#: src/chart1.cpp:5997
+#: src/chart1.cpp:5999
 msgid "Show This Chart"
 msgstr "Montrer cette carte"
 
-# Couches
-#: src/chart1.cpp:6002 src/chcanv.cpp:8334
+#: src/chart1.cpp:6004 src/chcanv.cpp:8334
 msgid "Hide This Chart"
 msgstr "Cacher cette carte"
 
-#: src/chart1.cpp:6247
+#: src/chart1.cpp:6249
 msgid "Chart Print"
 msgstr "Imprimer la carte"
 
-#: src/chart1.cpp:6250 src/routeprintout.cpp:470
+#: src/chart1.cpp:6252 src/routeprintout.cpp:470
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
@@ -447,7 +382,7 @@ msgstr ""
 "Problème d'impression.\n"
 "Votre imprimante actuelle est elle bienl configurée ?"
 
-#: src/chart1.cpp:6836
+#: src/chart1.cpp:6841
 msgid " Ship "
 msgstr " Bat. "
 
@@ -459,54 +394,42 @@ msgstr "Texte des cartes"
 msgid "OpenCPN CM93 Cell Offset Adjustments"
 msgstr "CM93 : Ajustement du réglage de la cellule"
 
-#
-#
 #: src/cm93.cpp:6431
 msgid "Cell"
 msgstr "Cellule"
 
-#
 #: src/cm93.cpp:6434
 msgid "M_COVR ID"
 msgstr "M_COVRD ID"
 
-#
 #: src/cm93.cpp:6437
 msgid "Cell Scale"
 msgstr "Echelle"
 
-#
 #: src/cm93.cpp:6440
 msgid "wgsox"
 msgstr "WGS X"
 
-#
 #: src/cm93.cpp:6443
 msgid "wgsoy"
 msgstr "WGS Y"
 
-#
 #: src/cm93.cpp:6446
 msgid "User X Offset"
 msgstr "Perso. : X"
 
-#
 #: src/cm93.cpp:6449
 msgid "User Y Offset"
 msgstr "Perso. : Y"
 
-#
 #: src/cm93.cpp:6457
 msgid "User X Offset (Metres)"
 msgstr "Réglage personnel X (mètres)"
 
-#
 #: src/cm93.cpp:6464
 msgid "User Y Offset (Metres)"
 msgstr "Réglage personnel Y (mètres)"
 
-#
-#
 #: src/cm93.cpp:6471 src/chcanv.cpp:13711 src/chcanv.cpp:15388
 #: src/routeprop.cpp:1020 src/routeprintout.cpp:407
 msgid "OK"
@@ -558,16 +481,12 @@ msgstr ""
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
 msgstr "   VP Contrôle final : Géoréfence Chart_Error_Factor sur la carte "
 
-#
-#
 #: src/chartimg.cpp:4741 src/chartimg.cpp:4805
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr ""
 "---<<< Alerte :  La qualité du géoréférencement de la carte est "
 "insuffisante. >>>---"
 
-#
-#
 #: src/chartimg.cpp:4748
 msgid "   Trying again with internally calculated georef solution "
 msgstr ""
@@ -581,15 +500,11 @@ msgstr ""
 "   VP Contrôle final avec le géoréférencement interne :  Géoréfence "
 "Chart_Error_Factor sur la carte "
 
-#
-#
 #: src/chartimg.cpp:4800
 #, c-format
 msgid " is %5g"
 msgstr " est %5g"
 
-#
-#
 #: src/chartimg.cpp:4809
 msgid "   Result: OK, Internal georef solution used."
 msgstr ""
@@ -639,7 +554,7 @@ msgid "Drop"
 msgstr "Ne pas envoyer"
 
 # Ok
-#: src/datastream.cpp:1642 src/routeman.cpp:1033
+#: src/datastream.cpp:1642 src/routeman.cpp:1056
 msgid "Send"
 msgstr "Envoyer"
 
@@ -659,19 +574,15 @@ msgstr "  Sortie "
 msgid ", Out: None"
 msgstr ", Sortie : Aucun filtrage"
 
-#
-#
 #: src/concanv.cpp:94 src/concanv.cpp:191 src/concanv.cpp:199
 msgid "This Leg"
 msgstr "Ce segment"
 
-#
 #: src/concanv.cpp:104 src/concanv.cpp:108 src/concanv.cpp:112
 #: src/concanv.cpp:116 src/concanv.cpp:120
 msgid "Console Legend"
 msgstr "Légende de la console"
 
-#
 #: src/concanv.cpp:104 src/concanv.cpp:108 src/concanv.cpp:112
 #: src/concanv.cpp:116 src/concanv.cpp:120
 msgid "Console Value"
@@ -689,20 +600,14 @@ msgstr "Route complète"
 msgid "Show Highway"
 msgstr "Montrer l'autoroute"
 
-#
-#
 #: src/concanv.cpp:278
 msgid "XTE         L"
 msgstr "Dév.      G"
 
-#
-#
 #: src/concanv.cpp:280
 msgid "XTE         R"
 msgstr "Dév.      D"
 
-#
-#
 #: src/concanv.cpp:365
 msgid "ETA          "
 msgstr "Arrivée à :                                           "
@@ -711,7 +616,6 @@ msgstr "Arrivée à :                                           "
 msgid "CM93 Detail Level"
 msgstr "CM93 : Niveau de détails"
 
-#
 #: src/chcanv.cpp:4334 src/chcanv.cpp:10052
 msgid "Route: "
 msgstr "Route :"
@@ -720,7 +624,6 @@ msgstr "Route :"
 msgid "Layer Route: "
 msgstr "Route (Couche) :"
 
-#
 # Couche
 #: src/chcanv.cpp:4338
 msgid "(unnamed)"
@@ -730,13 +633,10 @@ msgstr "(Sans nom)"
 msgid "Total Length: "
 msgstr "Longueur totale : "
 
-#
-#
 #: src/chcanv.cpp:4343
 msgid "Leg: from "
 msgstr "Segment : De "
 
-#
 #: src/chcanv.cpp:4344
 msgid " to "
 msgstr " à "
@@ -765,17 +665,6 @@ msgstr "Trace : Propriétés ...."
 msgid "Use nearby waypoint?"
 msgstr "Utiliser le waypoint situé à proximité ?"
 
-# Menu contextuel : Route
-# Proposition de Pithéas54 :    Route à créer par OpenCPN
-# Un commentaire ancien dit que cela doit apparaitre dans le menu route. Maintenant celui ci porte un titre "Route :". Le mot route n'a plus besoin de figurer dans la traduction de l'item. Dans ce cas, on peut mettre "A créer par OpenCPN"
-# -----
-# Pytheas54: OK
-# ----------
-# Aiseag : OK
-# ----------
-# Gilletarom : A mon avis, cette traduction n'a aucun sens parce que l'item lui même est absurde.
-# ----
-# Aiseag : no comment
 #: src/chcanv.cpp:7452 src/chcanv.cpp:7499
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN, route"
@@ -792,12 +681,6 @@ msgstr ""
 "plus court que la route loxodromique.\n"
 "\n"
 
-# Proposition de Pithéas54 :  Voulez-vous inclure les points de lroute orthodromiques pour ce segment?
-# J'enlève le "s" à orthodromique; j'ajoute "la" devant "route"
-# -----
-# Pytheas54: OK
-# ----------
-# Aiseag : OK
 #: src/chcanv.cpp:7497
 msgid "Would you like include the Great Circle routing points for this leg?"
 msgstr ""
@@ -836,8 +719,6 @@ msgstr "Défaire --> "
 msgid "Redo"
 msgstr "Refaire --> "
 
-#
-#
 #: src/chcanv.cpp:8264
 msgid "Max Detail Here"
 msgstr "Détails maximum ici"
@@ -846,7 +727,6 @@ msgstr "Détails maximum ici"
 msgid "Scale In"
 msgstr "Echelle : Augmenter"
 
-#
 #: src/chcanv.cpp:8266 src/chcanv.cpp:8280
 msgid "Scale Out"
 msgstr "Echelle : Diminuer"
@@ -905,11 +785,6 @@ msgstr "CM93 : Dialogue de compensation ..."
 msgid "Chart Groups"
 msgstr "Groupes de cartes"
 
-# Objectif : gagner de la place sur l'écran dans le menu contextuel général.
-# ----
-# Pytheas54: OK
-# -----------
-# Aiseag : OK
 #: src/chcanv.cpp:8346
 msgid "All Active Charts"
 msgstr "Toutes les cartes"
@@ -1014,7 +889,6 @@ msgstr "Déconnecter de la route"
 msgid "Copy as KML"
 msgstr "Copier au format KML"
 
-#
 #: src/chcanv.cpp:8506 src/chcanv.cpp:8541 src/routeprop.cpp:2087
 #: src/options.cpp:4075
 msgid "Delete"
@@ -1029,8 +903,6 @@ msgstr "Couche : Marque"
 msgid "Navigate To This"
 msgstr "Aller jusqu'ici"
 
-#
-#
 #: src/chcanv.cpp:8555
 msgid "Clear Anchor Watch"
 msgstr "Alarme de mouillage : Désactiver"
@@ -1039,13 +911,11 @@ msgstr "Alarme de mouillage : Désactiver"
 msgid "Set Anchor Watch"
 msgstr "Alarme de mouillage : Activer"
 
-#
 # Menu contextuel : WWaypoint/marque
 #: src/chcanv.cpp:8581
 msgid "Show Tide Information"
 msgstr "Marée : Montrer les informations"
 
-#
 # Menu contextuel : WWaypoint/marque
 #: src/chcanv.cpp:8587
 msgid "Show Current Information"
@@ -1057,17 +927,6 @@ msgstr "Afficher les propriétés de l'objet"
 
 # Menu contextuel : Waypoint/marque
 # ----
-# Gilletarom :
-# Waypoint/marque, couches : Les propriétés
-# ------------
-# Pytheas54
-# Pour route, on a
-# Couche: route
-# donc
-# Couche: Propriétés Waypoint/marque
-# ???
-# ----
-# Aiseag : Waypoint properties à ete traduit en #23, tout a fait OK pour cette traduct.
 #: src/chcanv.cpp:8781 src/routemanagerdialog.cpp:1975
 msgid "Waypoint Properties, Layer: "
 msgstr "Couche: Propriétés Waypoint/marque "
@@ -1096,14 +955,6 @@ msgstr "Répondre «Non» créera un nouveau waypoint à la même position."
 msgid "Merge waypoint?"
 msgstr "Fusionner le waypoint ?"
 
-# Proposition de Pithéas54 :
-# Il existe des waypoint aux mêmes positions que ceux que vous voulez créer. Voulez-vous fusionner les nouveaux waypoint avec les anciens ?\n
-# \n
-# Ce que je propose ici, n'est pas ce que j'avais mis avant. Et cela me parait mieux que la proposition de Pithéas54.
-# -----
-# Pytheas54: OK
-# ----------
-# Aiseag : OK
 #: src/chcanv.cpp:8885
 msgid ""
 "There are existing waypoints at the same location as some of the ones you "
@@ -1123,19 +974,14 @@ msgstr "Répondre «Non» créera tous les nouveaux waypoint de cette route."
 msgid "Merge waypoints?"
 msgstr "Fusionner les waypoint ?"
 
-#
 #: src/chcanv.cpp:9082
 msgid "Temporary GOTO Route"
 msgstr "Route temporaire"
 
-#
-#
 #: src/chcanv.cpp:9083 src/chcanv.cpp:9134 src/routemanagerdialog.cpp:2094
 msgid "Here"
 msgstr "Ici"
 
-#
-#
 #: src/chcanv.cpp:9085
 msgid "There"
 msgstr "Là"
@@ -1145,8 +991,6 @@ msgstr "Là"
 msgid "(Unnamed Waypoint)"
 msgstr "(Marque sans nom)"
 
-#
-#
 #: src/chcanv.cpp:9131 src/routemanagerdialog.cpp:2091
 msgid "Go to "
 msgstr "Aller au curseur (avec route)"
@@ -1159,15 +1003,6 @@ msgstr "Renommer les waypoint ?"
 msgid "Are you sure you want to delete this route?"
 msgstr "Êtes vous certain de vouloir effacer cette route ?"
 
-# Menu contextuel : Route
-# ----------
-# Gilletarom :
-# C'est le titre d'une fenêtre qui s'ouvre pour nous laisser le choix d'effacer ou pas une route de façon à éviter d'effacer accidentellement une route.
-# On peut se contenter de traduire par "OpenCPN, Route :".
-# ----
-# Pytheas54: OK
-# ----
-# Aiseag : OK, ai mis le O en Majuscule
 #: src/chcanv.cpp:9343
 msgid "OpenCPN Route Delete"
 msgstr "OpenCPN, route"
@@ -1177,69 +1012,43 @@ msgstr "OpenCPN, route"
 msgid "Send To GPS..."
 msgstr "Envoyer au GPS ..."
 
-#
-#
 #: src/chcanv.cpp:9556
 msgid "Are you sure you want to delete this track?"
 msgstr "Êtes vous certain de vouloir effacer cette trace ?"
 
-# Menu contextuel trace:
-# ====
-# Gilletarom
-# C'est le titre d'une fenêtre qui s'ouvre pour nous laisser le choix d'effacer ou pas une trace de façon à éviter d'effacer accidentellement une route.
-# On peut se contenter de traduire par "OpenCPN,trace :".
-# ----------
-# Pytheas54: OK
-# ----
-# Aiseag : OK
-#: src/chcanv.cpp:9557
+#: src/chcanv.cpp:9557 src/routeman.cpp:838
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN, trace"
 
-# Ok.
-# Milles . AIS : c'est plus long. Mais maintenant cela semble tenir. (format xx.x ou x.xx) Jamais xx.xx et xxx.x improbable.
 #: src/chcanv.cpp:9935 src/chcanv.cpp:9939 src/chcanv.cpp:9943
 #: src/chcanv.cpp:9946
 msgid "NMi"
 msgstr "Milles"
 
-#
-# Toolbox/Langue
 #: src/chcanv.cpp:9952 src/chcanv.cpp:10029 src/chcanv.cpp:15139
 msgid "RouteLegInfoRollover"
 msgstr "Info affichées par survol d'un segment de route"
 
-#
-#
 #: src/chcanv.cpp:11016 src/options.cpp:1159
 msgid "Feet"
 msgstr "Pieds"
 
-#
-#
 #: src/chcanv.cpp:11017 src/options.cpp:1159
 msgid "Meters"
 msgstr "Mètres"
 
-#
-#
 #: src/chcanv.cpp:11018 src/options.cpp:1159
 msgid "Fathoms"
 msgstr "Brasses"
 
-#
-#
 #: src/chcanv.cpp:11036 src/chcanv.cpp:11038
 msgid "OverZoom"
 msgstr "Zoom excessif."
 
-#
 #: src/chcanv.cpp:11408
 msgid "ExtendedTideIcon"
 msgstr "Hauteur de marée ( sous l'indicateur)"
 
-#
-#
 #: src/chcanv.cpp:13644
 msgid "Tide"
 msgstr "Marée"
@@ -1248,20 +1057,14 @@ msgstr "Marée"
 msgid "Current"
 msgstr "Afficher les courants"
 
-#
-#
 #: src/chcanv.cpp:13714
 msgid "Prev"
 msgstr "Préc."
 
-#
-#
 #: src/chcanv.cpp:13724
 msgid "Next"
 msgstr "Suiv."
 
-#
-#
 #: src/chcanv.cpp:13799
 msgid "Reference Station :"
 msgstr "Port de référence :"
@@ -1270,24 +1073,18 @@ msgstr "Port de référence :"
 msgid "Data Source :"
 msgstr "Source de données NMEA : "
 
-#
 #: src/chcanv.cpp:14012
 msgid "HW"
 msgstr "PM"
 
-#
 #: src/chcanv.cpp:14012
 msgid "LW"
 msgstr "BM"
 
-#
-#
 #: src/chcanv.cpp:14190
 msgid "Today"
 msgstr "Aujourd'hui"
 
-#
-#
 #: src/chcanv.cpp:14191 src/chcanv.cpp:14196
 msgid "Tomorrow"
 msgstr "Demain"
@@ -1297,13 +1094,11 @@ msgstr "Demain"
 msgid "AISTargetQuery"
 msgstr "Informations sur la cible"
 
-#
 # Toolbox/Langue
 #: src/chcanv.cpp:15130
 msgid "AISRollover"
 msgstr "Rollover : Cible AIS."
 
-#
 # Toolbox/Langue
 #: src/chcanv.cpp:15134
 msgid "TideCurrentGraphRollover"
@@ -1313,28 +1108,21 @@ msgstr "Info affichées par survol pour marées et courants"
 msgid "Position"
 msgstr "Position"
 
-#
-#
 #: src/chcanv.cpp:15361 src/routeprop.cpp:1040 src/routeprop.cpp:1057
 #: src/routeprop.cpp:2028
 msgid "Latitude"
 msgstr "Latitude"
 
-#
-#
 #: src/chcanv.cpp:15371 src/routeprop.cpp:1041 src/routeprop.cpp:1058
 #: src/routeprop.cpp:2037
 msgid "Longitude"
 msgstr "Longitude"
 
-#
-#
-#: src/chcanv.cpp:15384 src/routeprop.cpp:1016 src/routeman.cpp:1029
+#: src/chcanv.cpp:15384 src/routeprop.cpp:1016 src/routeman.cpp:1052
 #: src/routeprintout.cpp:403
 msgid "Cancel"
 msgstr "Annuler"
 
-#
 #: src/chcanv.cpp:15613
 msgid ""
 "   External application \"xcalib\" not found. Screen brightness not changed."
@@ -1342,17 +1130,10 @@ msgstr ""
 "  Application externe \"xcalib\" introuvable. La brillance de l'écran est "
 "inchangée"
 
-#
-#
 #: src/navutil.cpp:1169 src/navutil.cpp:1170
 msgid "Marks"
 msgstr "Marques"
 
-# Expérimentalement (commande "Send to GPS") , le pluriel ne semble pas logique car il n'est jamais possible de sélectionner plusieurs WP dans le manager de waypoint. D'autre part, nous nous heurtons au problème du pluriel de waypoint .. Sytématiquement, dans mes traductions :" les waypoint" et non pas "les waypoints".
-# ----
-# Pytheas54: amen pour les deux remarques
-# ----------
-# Aiseag : OK
 #: src/navutil.cpp:1264
 msgid "Waypoint(s) Uploaded successfully."
 msgstr "Waypoint : Chargement réussi"
@@ -1374,6 +1155,7 @@ msgstr ""
 "fichier opencpn.log ..."
 
 #: src/navutil.cpp:4787 src/navutil.cpp:4827 src/navutil.cpp:4863
+#: src/navutil.cpp:4888
 msgid "Export GPX file"
 msgstr "GPX : Exporter un fichier"
 
@@ -1381,132 +1163,113 @@ msgstr "GPX : Exporter un fichier"
 msgid "Overwrite existing file?"
 msgstr "Voulez vous remplacer le fichier existant ?"
 
-#: src/navutil.cpp:5113
+#: src/navutil.cpp:5136
 msgid "Import GPX file"
 msgstr "GPX : Importer un fichier"
 
-# Toolbox/Langue
-#: src/navutil.cpp:7171
+#: src/navutil.cpp:7194
 msgid "&Font family:"
 msgstr "Catégorie de polices :"
 
 # Toolbox/Langue
-#: src/navutil.cpp:7177 src/navutil.cpp:7179
+#: src/navutil.cpp:7200 src/navutil.cpp:7202
 msgid "The font family."
 msgstr "Catégorie de polices."
 
-# Toolbox/Langue
-#: src/navutil.cpp:7184
+#: src/navutil.cpp:7207
 msgid "&Style:"
 msgstr "Style :"
 
-# Toolbox/Langue
-#: src/navutil.cpp:7188 src/navutil.cpp:7190
+#: src/navutil.cpp:7211 src/navutil.cpp:7213
 msgid "The font style."
 msgstr "Style de police."
 
-# Toolbox/Langue
-#: src/navutil.cpp:7195
+#: src/navutil.cpp:7218
 msgid "&Weight:"
 msgstr "Taille :"
 
-# Toolbox/Langue
-#: src/navutil.cpp:7199 src/navutil.cpp:7201
+#: src/navutil.cpp:7222 src/navutil.cpp:7224
 msgid "The font weight."
 msgstr "Police: normal/gras."
 
-# Toolbox/Langue
-#: src/navutil.cpp:7208
+#: src/navutil.cpp:7231
 msgid "C&olour:"
 msgstr "Couleur :"
 
-# Toolbox/Langue
-#: src/navutil.cpp:7218 src/navutil.cpp:7220
+#: src/navutil.cpp:7241 src/navutil.cpp:7243
 msgid "The font colour."
 msgstr "Couleur de police"
 
-# Toolbox/Langue
-#: src/navutil.cpp:7226
+#: src/navutil.cpp:7249
 msgid "&Point size:"
 msgstr "Taille du point"
 
-# Toolbox/Langue
-#: src/navutil.cpp:7231 src/navutil.cpp:7233
+#: src/navutil.cpp:7254 src/navutil.cpp:7256
 msgid "The font point size."
 msgstr "Taille de police."
 
-# Toolbox/Langue
-#: src/navutil.cpp:7240
+#: src/navutil.cpp:7263
 msgid "&Underline"
 msgstr "Souligné"
 
-# Toolbox/Langue
-#: src/navutil.cpp:7243 src/navutil.cpp:7245
+#: src/navutil.cpp:7266 src/navutil.cpp:7268
 msgid "Whether the font is underlined."
 msgstr "Police soulignée ou non."
 
-# Toolbox/Langue
-#: src/navutil.cpp:7252
+#: src/navutil.cpp:7275
 msgid "Preview:"
 msgstr "Pré-visualisation :"
 
-# Ok. Oui, c'est bien plus simple.
-#: src/navutil.cpp:7257 src/navutil.cpp:7259
+#: src/navutil.cpp:7280 src/navutil.cpp:7282
 msgid "Shows the font preview."
 msgstr "Prévisualiser la police."
 
-#: src/navutil.cpp:7266 src/options.cpp:1757
+#: src/navutil.cpp:7289 src/options.cpp:1757
 msgid "&Cancel"
 msgstr "Annuler"
 
-# Toolbox/Langue
-#: src/navutil.cpp:7268
+#: src/navutil.cpp:7291
 msgid "Click to cancel the font selection."
 msgstr "Cliquer pour annuler la sélection de police."
 
-#: src/navutil.cpp:7271
+#: src/navutil.cpp:7294
 msgid "&OK"
 msgstr "OK"
 
-# Toolbox/Langue
-#: src/navutil.cpp:7273 src/navutil.cpp:7275
+#: src/navutil.cpp:7296 src/navutil.cpp:7298
 msgid "Click to confirm the font selection."
 msgstr "Cliquer pour confirmer la sélection de police."
 
-#: src/navutil.cpp:7996
+#: src/navutil.cpp:8019
 msgid "Legend"
 msgstr "Légende de la console"
 
-#: src/navutil.cpp:8004 src/navutil.cpp:8077
+#: src/navutil.cpp:8027 src/navutil.cpp:8100
 msgid "Pause"
 msgstr "Pause"
 
-#: src/navutil.cpp:8038
+#: src/navutil.cpp:8061
 msgid "Message accepted"
 msgstr "Message accepté"
 
-#: src/navutil.cpp:8045
+#: src/navutil.cpp:8068
 msgid "Message filtered and dropped"
 msgstr "Message filtré et exclu"
 
-#: src/navutil.cpp:8052
+#: src/navutil.cpp:8075
 msgid "Output Message"
 msgstr "Message envoyé"
 
-# Oui, "reprendre" au point où on avait arrêté. sinon "Recommencer" serait mieux.  Problème, je ne sais plus à quel moment cet item est utilisé.
-# ----
-# Pytheas: recommencer c'est plutôt 'redo'
-# Gilletarom : Ok.
-#: src/navutil.cpp:8071
+#: src/navutil.cpp:8094
 msgid "Resume"
 msgstr "Reprendre"
 
-#: src/navutil.cpp:8277
+#: src/navutil.cpp:8300
 #, c-format
 msgid "Couldn't load sound data from '%s'."
 msgstr "Impossible de charger les données de son depuis '%s'"
 
-#: src/navutil.cpp:8284
+#: src/navutil.cpp:8307
 #, c-format
 msgid "Sound file '%s' is in unsupported format."
 msgstr "Le format du fichier de son '%s' n'est pas supporté"
@@ -1519,14 +1282,6 @@ msgstr "--"
 msgid "&Waypoint Properties..."
 msgstr "Waypoint : Propriétés ..."
 
-# Ok.  Hum .. Pithéas ...tu pinailles .. Bon, c'est plus court  Ok.
-# ====
-# Gilletarom : A revoir encore
-# .
-# Apparait dans un menu contextuel dans la fen^tre de propriété d'une route si on clique sur une ligne de la liste des waypoint.
-# .
-#  En réalité, deux segments d'une route seront supprimés et remplacés par un segment direct. En pratique, le waypoint intermédiare sera déconnecté de la route sans être supprimé.. Ce qui est sélectionné est en fait un waypoint d'une route. et ce waypoint est déconnecté de la route.
-# D'où une nouvelle proposition : "Déconnecter ce waypoint de la route".
 #: src/routeprop.cpp:539
 msgid "&Remove Selected"
 msgstr "Supprimer la sélection"
@@ -1601,12 +1356,10 @@ msgstr "Heure du lieu"
 msgid "Times shown as"
 msgstr "Format de la date"
 
-# Toolbox/Langue
 #: src/routeprop.cpp:948
 msgid "Color:"
 msgstr "Couleur :"
 
-# Toolbox/Langue
 #: src/routeprop.cpp:953
 msgid "Default color"
 msgstr "Couleur par défaut"
@@ -1675,12 +1428,10 @@ msgstr "Cyan"
 msgid "White"
 msgstr "Blanc"
 
-# Toolbox/Langue
 #: src/routeprop.cpp:963
 msgid "Style:"
 msgstr "Style :"
 
-# Toolbox/Langue
 #: src/routeprop.cpp:968 src/routeprop.cpp:981 src/options.cpp:902
 msgid "Default"
 msgstr "Défaut"
@@ -1689,111 +1440,82 @@ msgstr "Défaut"
 msgid "Solid"
 msgstr "Trait plein"
 
-#
 #: src/routeprop.cpp:968
 msgid "Dot"
 msgstr "Pointillé"
 
-#
 #: src/routeprop.cpp:968
 msgid "Long dash"
 msgstr "Tiret long"
 
-#
 #: src/routeprop.cpp:969
 msgid "Short dash"
 msgstr "Tiret court"
 
-#
 #: src/routeprop.cpp:969
 msgid "Dot dash"
 msgstr "Trait mixte"
 
-#
 #: src/routeprop.cpp:976
 msgid "Width:"
 msgstr "Largeur :"
 
-#
 #: src/routeprop.cpp:981
 msgid "1 pixel"
 msgstr "1 pixel"
 
-#
 #: src/routeprop.cpp:981
 msgid "2 pixels"
 msgstr "2 pixels"
 
-#
 #: src/routeprop.cpp:981
 msgid "3 pixels"
 msgstr "3 pixels"
 
-#
 #: src/routeprop.cpp:982
 msgid "4 pixels"
 msgstr "4 pixels"
 
-#
 #: src/routeprop.cpp:982
 msgid "5 pixels"
 msgstr "5 pixels"
 
-#
 #: src/routeprop.cpp:982
 msgid "6 pixels"
 msgstr "6 pixels"
 
-#
 #: src/routeprop.cpp:982
 msgid "7 pixels"
 msgstr "7 pixels"
 
-#
 #: src/routeprop.cpp:982
 msgid "8 pixels"
 msgstr "8 pixels"
 
-#
 #: src/routeprop.cpp:983
 msgid "9 pixels"
 msgstr "9 pixels"
 
-#
 #: src/routeprop.cpp:983
 msgid "10 pixels"
 msgstr "10 pixels"
 
-# Arg ... Non.  Jai traduit partout "waypoints" par "waypoint" ... ça l'fait pas.
-# ----
-# Pytheas54: Amen
-# -------
-# Aiseag : OK
 #: src/routeprop.cpp:993 src/routemanagerdialog.cpp:617
 msgid "Waypoints"
 msgstr "Waypoint"
 
-# Cet item est le nom d'un nouveau bouton présent dans le gestionnaire de route et de trace.
-# ---------------
-# Pytheas54: OK
-# ----
-# Aiseag : OK
 #: src/routeprop.cpp:1000
 msgid "Print Route"
 msgstr "Route/trace : Imprimer"
 
-#
 #: src/routeprop.cpp:1006 src/routeprop.cpp:1233
 msgid "Extend Route"
 msgstr "Route : Etendre"
 
-#
 #: src/routeprop.cpp:1011 src/routeprop.cpp:1234
 msgid "Split Route"
 msgstr "Route : Fractionner"
 
-#
-#
 #: src/routeprop.cpp:1036 src/routeprop.cpp:1053
 msgid "Leg"
 msgstr "Segment"
@@ -1802,18 +1524,14 @@ msgstr "Segment"
 msgid "To Waypoint"
 msgstr "Vers le waypoint"
 
-#
-#
 #: src/routeprop.cpp:1038 src/routeprop.cpp:1055 src/routeprintout.cpp:384
 msgid "Distance"
 msgstr "Distance totale"
 
-#
 #: src/routeprop.cpp:1039 src/routeprop.cpp:1056 src/ais.cpp:804
 msgid "Bearing"
 msgstr "Relèvement"
 
-#
 #: src/routeprop.cpp:1042
 msgid "ETE/ETD"
 msgstr "ETE/ETD"
@@ -1832,41 +1550,14 @@ msgstr "Description"
 msgid "Course"
 msgstr "Cap"
 
-#
 #: src/routeprop.cpp:1059
 msgid "Timestamp"
 msgstr "ETE/Horodatage"
 
-# Gilletarom :
-# initialement :   Êtes vous sûr de vouloir effacer <CETTE> marque ?
-# ====
-# Gilletarom
-# J'ai mis longtemps à trouver où cet item apparaissait. Il faut cliquer droit sur une route et ouvrir sa fenêtre de propriété. On clique droit sur une des lignes dans la liste des waypoint et la commande est dans le menu contextuel qui apparait. En la mettant en oeuvre, le waypoint est déconnecté de la route et n'est pas supprimé.
-# "effacer" est inadapté.  "Retiré" ou mieux encore "déconnecté" est plus adapté ou encore :
-# "Voulez vous vraiment déconnecter ce waypoint ?" ou encore plus court :
-# "Déconnecter réellement ce waypoint ?
-# -----------
-# Pytheas54
-# Voulez-vous vraiment que la route ne passe plus par ce waypoint?
-# ----
-# Aiseag : ai un faible pour la traduction de Pytheas
-# ---
-# Gilletarom: Hum, alors, cela doit être meilleur.
 #: src/routeprop.cpp:1133
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "Voulez-vous vraiment que la route ne passe plus par ce waypoint?"
 
-# Menu contextuel : Route
-# ====
-# Gilletarom
-# Waypoint : Supprimé par OpenCPN
-# C'est le titre d'une fenêtre qui s'ouvre pour une vérification d'action.
-# On peut remplacer par "Waypoint : Déconnexion" ou par "Waypoint, déconnexion".
-# Le verbe "déconnecter" est plus adapté que le verbe "Supprimer" puisque le waypoint n'est pas définitivement supprimé. Il apparait alors dans le gestionnaire de waypoint.
-# -----------
-# Pytheas54: OK
-# ----
-# Aiseag : OK
 #: src/routeprop.cpp:1134
 msgid "OpenCPN Remove Waypoint"
 msgstr "Waypoint : Déconnexion"
@@ -1875,48 +1566,35 @@ msgstr "Waypoint : Déconnexion"
 msgid "Avg. speed (Kts)"
 msgstr "Vitesse moyenne (Noeuds)"
 
-#
 # Menu contextuel : Trace
 #: src/routeprop.cpp:1227
 msgid "Extend Track"
 msgstr "Trace : Etendre"
 
-# Ah oui ! (Je viens de me rendre compte que je n'ai jamais tester ça .)
-# Menu contextuel : Trace
 #: src/routeprop.cpp:1228
 msgid "Split Track"
 msgstr "Trace : Scinder"
 
-#
-#
 #: src/routeprop.cpp:1231
 msgid "Plan speed (Kts)"
 msgstr "Vitesse prévue (Noeuds)"
 
-#
-#
 #: src/routeprop.cpp:1373 src/routeprop.cpp:1458
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr " %D Jours  %H heures  %M minutes"
 
-#
-#
 #: src/routeprop.cpp:1375 src/routeprop.cpp:1460
 msgid " %H Hours  %M Minutes"
 msgstr " %H heures  %M minutes"
 
-#
 #: src/routeprop.cpp:1402 src/ais.cpp:727
 msgid "ETA"
 msgstr "Date est. d'arrivée :"
 
-#
 #: src/routeprop.cpp:1404
 msgid "ETE"
 msgstr "ETE"
 
-#
-#
 #: src/routeprop.cpp:1585
 msgid "Start"
 msgstr "Début"
@@ -1930,24 +1608,18 @@ msgstr ""
 msgid "Show name"
 msgstr "Afficher le nom"
 
-#
-#
 #: src/routeprop.cpp:2014 src/routemanagerdialog.cpp:633
 msgid "Icon"
 msgstr "Icône"
 
-#
 #: src/routeprop.cpp:2019
 msgid "Combo!"
 msgstr "Liste déroulante !"
 
-#
 #: src/routeprop.cpp:2062 src/options.cpp:695 src/options.cpp:726
 msgid "..."
 msgstr "..."
 
-#
-#
 #: src/routeprop.cpp:2075
 msgid "Links"
 msgstr "Liens"
@@ -1956,7 +1628,6 @@ msgstr "Liens"
 msgid "wxFB Website"
 msgstr "Site web wxFB"
 
-#
 #: src/routeprop.cpp:2092 src/routeprop.cpp:2118
 msgid "Edit"
 msgstr "Editer"
@@ -1974,33 +1645,27 @@ msgid "Links are opened in the default browser."
 msgstr ""
 "Un clic gauche ouvre chaque lien à l'aide du logiciel par défaut de ce PC."
 
-#
 #: src/routeprop.cpp:2135
 msgid "Basic"
 msgstr "Base"
 
-# Couches
 #: src/routeprop.cpp:2154 src/routemanagerdialog.cpp:747
 #: src/routemanagerdialog.cpp:2208 src/routemanagerdialog.cpp:2220
 msgid "Show on chart"
 msgstr "Montrer sur la carte"
 
-#
 #: src/routeprop.cpp:2161
 msgid "GUID"
 msgstr "GUID"
 
-#
 #: src/routeprop.cpp:2172
 msgid "GPX"
 msgstr "GPX"
 
-#
 #: src/routeprop.cpp:2188
 msgid "Extended"
 msgstr "Extension"
 
-#
 #: src/routeprop.cpp:2290
 msgid "Link"
 msgstr "Lien"
@@ -2009,44 +1674,30 @@ msgstr "Lien"
 msgid "Link description"
 msgstr "Description du lien"
 
-#
 #: src/routeprop.cpp:2302
 msgid "URL"
 msgstr "URL"
 
-#
 #: src/routeprop.cpp:2311
 msgid "Local file..."
 msgstr "Fichier local ..."
 
-# Proposition de Pithéas54 :  Liens ouverts pour édition      Qui ajoute des points d'interrogation
-# Je, propose cela. Parce que, à l'expérience, la traduction que tu proposes ne permet pas aux utilisateurs (même un peu habitués à OCPN) de comprendre ce qui se passe. Cet item ne correspond pas à une commande mais à une aide. L'aide consiste à dire ici, qu'il faut faire un clic gauche sur le lien pour l'éditer et pouvoir le modifier.  J'aurais bien tartiner une aide plus détaillée mais il n'y a pas assez de place sur l'écran.
-# Le bouton "Editer" a deux roles ... C'est un bouton bascule. Le mot éditer est inadapté.
-# -----
-# Pytheas54: pas de problème
-# ----------
-# Aiseag : OK
 #: src/routeprop.cpp:2637
 msgid "Links are opened for editing."
 msgstr "Faites un clic gauche sur tous les liens que vous voulez modifier."
 
-#
 #: src/routeprop.cpp:2998
 msgid "Choose a file"
 msgstr "Choisir un fichier"
 
-#
 #: src/routeprop.cpp:3009
 msgid "Link not complete, can't be saved."
 msgstr "Lien incomplet qui ne peut être sauvegardé"
 
-#
 #: src/routeprop.cpp:3009
 msgid "Problem discovered"
 msgstr "Problème découvert"
 
-#
-#
 #: src/routemanagerdialog.cpp:452
 msgid "Routes"
 msgstr "Routes"
@@ -2055,14 +1706,10 @@ msgstr "Routes"
 msgid "Show"
 msgstr "Montrer"
 
-#
-#
 #: src/routemanagerdialog.cpp:484
 msgid "Route Name"
 msgstr "Nom :"
 
-#
-#
 #: src/routemanagerdialog.cpp:485
 msgid "To"
 msgstr "De ...... à ......."
@@ -2100,26 +1747,18 @@ msgstr "Envoyer au GPS"
 msgid "&Delete All"
 msgstr "Supprimer tout"
 
-#
-#
 #: src/routemanagerdialog.cpp:552 src/options.cpp:962
 msgid "Tracks"
 msgstr "Traces"
 
-#
-#
 #: src/routemanagerdialog.cpp:574
 msgid "Track Name"
 msgstr "Nom :"
 
-#
-#
 #: src/routemanagerdialog.cpp:575
 msgid "Length"
 msgstr "Longueur"
 
-#
-#
 #: src/routemanagerdialog.cpp:580
 msgid "&Start Track"
 msgstr "Démarrer"
@@ -2132,7 +1771,6 @@ msgstr "Propriétés ..."
 msgid "&Export Track..."
 msgstr "Exporter ...."
 
-#
 #: src/routemanagerdialog.cpp:600
 msgid "Route from Track"
 msgstr "Trace -> Route"
@@ -2141,10 +1779,6 @@ msgstr "Trace -> Route"
 msgid "Waypoint Name"
 msgstr "Nom :"
 
-# Pytheas54
-# Distance depuis votre bateau
-# ----
-# Aiseag : d'accord avec Pytheas
 #: src/routemanagerdialog.cpp:635
 msgid "Distance from Ownship"
 msgstr "Distance depuis votre bateau"
@@ -2153,8 +1787,6 @@ msgstr "Distance depuis votre bateau"
 msgid "&New"
 msgstr "Nouveau"
 
-#
-#
 #: src/routemanagerdialog.cpp:660
 msgid "&Go To"
 msgstr "Aller à (+ route)"
@@ -2163,8 +1795,6 @@ msgstr "Aller à (+ route)"
 msgid "&Export Wpt..."
 msgstr "Exporter ..."
 
-#
-#
 #: src/routemanagerdialog.cpp:677
 msgid "Delete All"
 msgstr "Supprimer tout"
@@ -2173,13 +1803,6 @@ msgstr "Supprimer tout"
 msgid "I&mport GPX..."
 msgstr "Importer GPX ......"
 
-# Gilletarom :
-# Texte du bouton apparu dans la version 1319 et situé en bas dans le gestionnaire de route et de trace.
-# Le titre de ce bouton vous convient il ?
-# -------------
-# Pytheas54: OK
-# ----
-# Aiseag : OK
 #: src/routemanagerdialog.cpp:698
 msgid "Export All Visible..."
 msgstr "Exporter tout ce qui est visible ..."
@@ -2194,7 +1817,6 @@ msgstr "Couches"
 msgid "Layer Name"
 msgstr "Nom de la couche"
 
-#
 # Couche
 #: src/routemanagerdialog.cpp:727
 msgid "No. of items"
@@ -2204,28 +1826,22 @@ msgstr "Nombre d'objet(s)"
 msgid "Temporary layer"
 msgstr "Couche temporaire"
 
-#
 # Couche
 #: src/routemanagerdialog.cpp:752 src/routemanagerdialog.cpp:2213
 #: src/routemanagerdialog.cpp:2221
 msgid "Show WPT names"
 msgstr "WP : Montrer les noms"
 
-#
 # Couche
 #: src/routemanagerdialog.cpp:757 src/routemanagerdialog.cpp:2218
 #: src/routemanagerdialog.cpp:2222
 msgid "List contents"
 msgstr "---> Routes/Traces/WP"
 
-#
-#
 #: src/routemanagerdialog.cpp:880
 msgid "(Unnamed Route)"
 msgstr "(Route sans nom)"
 
-#
-#
 #: src/routemanagerdialog.cpp:885 src/routemanagerdialog.cpp:1146
 msgid " - "
 msgstr " - "
@@ -2240,14 +1856,6 @@ msgstr "Êtes vous certain de vouloir effacer <TOUTES> les routes ?"
 msgid "OpenCPN Alert"
 msgstr "Alerte déclenchée par OpenCPN"
 
-# Et dire que je m'étais torturé l'esprit pour proposer cela : "Désirez vous également basculer vers la visibilité des points d'intérêts publiés faisant partie de cette route ?"
-# Mais evidemment une traduction plus "mot à mot" est bonne d'autant plus que je n'ai jamais réussi à tester cet item.
-# ---
-# Pytheas54: je préfère la mienne, c'est normal !
-# ---
-# Gilletarom : Ok pour celle de Pythéas54
-# -----------
-# Aiseag : la notion de points d'interet était nouvelle) - Waypoints avec un S ? en contradiction avec 1662
 #: src/routemanagerdialog.cpp:1222
 msgid ""
 "Do you also want to toggle the visibility of shared waypoints being part of "
@@ -2260,33 +1868,15 @@ msgstr ""
 msgid "Question"
 msgstr "Question"
 
-# Menu contextuel : Trace
+# e
 #: src/routemanagerdialog.cpp:1331
 msgid "&Merge Selected Tracks"
-msgstr "Trace : Fusionner les traces sélectionnées"
+msgstr "Fusionner les traces sélectionnées"
 
-# Why not.
-# Mais ni ce que tu proposes, ni ce que j'avais proposé ne me convient.
-# Je mettrais bien quelque chose comme " Réduire le nombre de points de trace ..."
-# -----
-# Pytheas54: si tu es sûr, c'est bien...
-# ----
-# Gilletarom : Je vais fabriquer un fichier gpx et regarder ce qui ce passe après simplification d'une trace.
-# et on en reparle encore
-# -------
-# Aiseag : Data est générique - je vote pour données
-# ------
-# Gilletarom : A revoir
-# Effectivement, j'ai testé en choisissant d'abord de relever beaucoup de point de route dans une trace. Puis, avec cette commande, j'ai regardé le résutlat. Il y a clairement une réduction du nombre de point de route. C'est ce qui saute le plus au yeux de l'utilisateur devant l'écran.
-# ----------------
-# Pytheas54:
-# ' Réduire les données' est un peu trop vague.
-# La proposition de G. est plus claire...
-# ----
-# Aiseag : OK avec vos remarques
+# W
 #: src/routemanagerdialog.cpp:1333
 msgid "Reduce Data..."
-msgstr "Réduire le nombre de points de trace ...\""
+msgstr "Réduire le nombre de points de trace ..."
 
 #: src/routemanagerdialog.cpp:1335
 msgid "&Copy as text"
@@ -2300,15 +1890,6 @@ msgstr ""
 "Sélectionner l'erreur maximale permise (en mètres)\n"
 "après réduction des données :"
 
-# Why not ...
-# Ceci dit, ni ce que j'avais proposé, ni ce que tu proposes ne me convient. Je trouve que cela ne cadre pas bien avec le contexte dans lequel c'est employé.
-# Je mettrai bien quelque chose comme "Réduire le nombre de points de trace".
-# ----
-# Pytheas: si tu es sûr, OK...
-# ----
-# Gilletarom : Même méthode que pour le précédent item
-# ---------
-# Aiseag : S enlevé à precision
 #: src/routemanagerdialog.cpp:1368
 msgid "Reduce Data Precision"
 msgstr "Réduire la précision des données"
@@ -2320,8 +1901,8 @@ msgid ""
 "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr ""
-"Le nombre de données utilisées par la trace\n"
-"est réduit de %d%%."
+"Réduction du nombre de points de trace :\n"
+"                      %d%%."
 
 #: src/routemanagerdialog.cpp:1389 src/options.cpp:2360
 msgid "OpenCPN info"
@@ -2335,8 +1916,6 @@ msgstr ""
 "La trace  active sélectionnée n'a pas été fusionnée\n"
 "Vous pourrez la fusionner ultérieurement lorsqu'elle sera terminée."
 
-#
-#
 #: src/routemanagerdialog.cpp:1540
 msgid "(Unnamed Track)"
 msgstr "(Trace sans nom)"
@@ -2349,7 +1928,6 @@ msgstr "OpenCPN convertit la trace en route ...."
 msgid "Processing Waypoints..."
 msgstr "Traitement des waypoint"
 
-#
 #: src/routemanagerdialog.cpp:1733
 msgid "Done."
 msgstr "C'est fait"
@@ -2381,19 +1959,16 @@ msgstr ""
 "les alarmes de mouillage. Répondre non maintient les waypoint utilisés dans "
 "les routes ou les alarmes"
 
-#
 # Couches
 #: src/routemanagerdialog.cpp:2206
 msgid "Hide from chart"
 msgstr "Cacher sur la carte"
 
-#
 # Couche
 #: src/routemanagerdialog.cpp:2211
 msgid "Hide WPT names"
 msgstr "WP : Masquer les noms"
 
-#
 # Couches
 #: src/routemanagerdialog.cpp:2216
 msgid "Unlist contents"
@@ -2404,42 +1979,33 @@ msgstr "Annul. Routes/Traces/WP"
 msgid "(Unnamed Layer)"
 msgstr "(Couche sans nom)"
 
-#
 # AIS
 #: src/ais.cpp:116
 msgid "Underway"
 msgstr "Faisant route"
 
-#
-# AIS
 #: src/ais.cpp:117
 msgid "At Anchor"
 msgstr "Au mouillage"
 
-# Ok.
 #: src/ais.cpp:118
 msgid "Not Under Command"
 msgstr "Non maître de sa manoeuvre"
 
-#
 # AIS
 #: src/ais.cpp:119
 msgid "Restricted Manoeuvrability"
 msgstr "Manoeuvrabilité réduite"
 
-#
-# AIS
 #: src/ais.cpp:120
 msgid "Constrained by draught"
 msgstr "Handicapé par son tirant d'eau"
 
-#
 # AIS
 #: src/ais.cpp:121
 msgid "Moored"
 msgstr "Mouillé"
 
-#
 # AIS
 #: src/ais.cpp:122
 msgid "Aground"
@@ -2450,67 +2016,45 @@ msgstr "Echoué"
 msgid "Engaged in Fishing"
 msgstr "Pêche en cours"
 
-#
 # AIS
 #: src/ais.cpp:124
 msgid "Under way sailing"
 msgstr "A la voile"
 
-# Proposition de Pithéas54 :   Navire à grande Vitesse (NVG)
-# Mais c'est trop long. Sur les petits écrans, ilo faut élargir la colonne où cet item apparait dans la liste des cibles AIS
-# Ok.
-# ----
-# Pytheas54
-# Nav. Gd. Vitesse ????
-# ----
-# Gilletarom : Du coup j'ai regardé la longueur des autres items correspondant aux types de cibles. Voir lignes 2534, 2574, 2591.
-# En terme de longueur, on peut même mettre "Navire à Grande Vitesse (NVG)
-# Navire de plaisance
-# Navire à Grande Vitesse
-# Navire remorquant, grande longueur
-# ---------
-# Aiseag : J'opte pour Navire à Grande Vitesse
 #: src/ais.cpp:125 src/ais.cpp:149
 msgid "High Speed Craft"
 msgstr "Navire à Grande Vitesse"
 
-#
 # AIS
 #: src/ais.cpp:126
 msgid "Wing In Ground Effect"
 msgstr "Avion à effet de sol (WIG)"
 
-#
 # AIS
 #: src/ais.cpp:127
 msgid "Reserved 11"
 msgstr "Reservé 11"
 
-#
 # AIS
 #: src/ais.cpp:128
 msgid "Reserved 12"
 msgstr "Reservé 12"
 
-#
 # AIS
 #: src/ais.cpp:129
 msgid "Reserved 13"
 msgstr "Reservé 13"
 
-#
 # AIS
 #: src/ais.cpp:130
 msgid "Reserved 14"
 msgstr "Reservé 14"
 
-#
 # AIS
 #: src/ais.cpp:131 src/ais.cpp:626
 msgid "Undefined"
 msgstr "Non défini"
 
-#
 # AIS
 #: src/ais.cpp:132
 msgid "Virtual"
@@ -2525,7 +2069,6 @@ msgstr "Virtuel (Etat On)"
 msgid "Virtual (Off Position)"
 msgstr "Virtuel (Etat Off)"
 
-#
 # AIS
 #: src/ais.cpp:135
 msgid "Real"
@@ -2546,7 +2089,6 @@ msgstr "Réel (Etat Off)"
 msgid "Vessel Fishing"
 msgstr "Bateau en pêche"
 
-#
 # AIS
 #: src/ais.cpp:142
 msgid "Vessel Towing"
@@ -2557,31 +2099,26 @@ msgstr "Navire remorquant"
 msgid "Vessel Towing, Long"
 msgstr "Navire remorquant, grande longueur"
 
-#
 # AIS
 #: src/ais.cpp:144
 msgid "Vessel Dredging"
 msgstr "Navire draguant"
 
-#
 # AIS
 #: src/ais.cpp:145
 msgid "Vessel Diving"
 msgstr "Navire avec plongeurs"
 
-#
 # AIS
 #: src/ais.cpp:146
 msgid "Military Vessel"
 msgstr "Navire militaire"
 
-#
 # AIS
 #: src/ais.cpp:147
 msgid "Sailing Vessel"
 msgstr "Navire à voile"
 
-#
 # AIS
 #: src/ais.cpp:148
 msgid "Pleasure craft"
@@ -2597,7 +2134,6 @@ msgstr "Bateau pilote"
 msgid "Search and Rescue Vessel"
 msgstr "Navire de recherche et sauvetage en mer"
 
-#
 # AIS
 #: src/ais.cpp:152 src/ais.cpp:211
 msgid "Tug"
@@ -2613,100 +2149,80 @@ msgstr "Bateau de services de port"
 msgid "Pollution Control Vessel"
 msgstr "Navire de contrôle de pollution"
 
-#
 # AIS
 #: src/ais.cpp:155
 msgid "Law Enforcement Vessel"
 msgstr "Police maritime"
 
-#
 # AIS
 #: src/ais.cpp:156
 msgid "Medical Transport"
-msgstr "Transport sanitaires"
+msgstr "Transport sanitaire"
 
-#
 # AIS
 #: src/ais.cpp:157
 msgid "Passenger Ship"
 msgstr "Navire à passagers"
 
-#
 # AIS
 #: src/ais.cpp:158
 msgid "Cargo Ship"
 msgstr "Cargo"
 
-#
 # AIS
 #: src/ais.cpp:159 src/ais.cpp:1268
 msgid "Tanker"
 msgstr "Pétrolier"
 
-#
 # AIS
 #: src/ais.cpp:162
 msgid "Unspecified"
 msgstr "Non spécifié"
 
-#
 #: src/ais.cpp:163
 msgid "Reference Point"
 msgstr "Point de référence :"
 
-#
 #: src/ais.cpp:164 src/ais.cpp:223
 msgid "RACON"
 msgstr "RACON"
 
-#
 #: src/ais.cpp:165
 msgid "Fixed Structure"
 msgstr "Structure fixe"
 
-#
-#
 #: src/ais.cpp:166
 msgid "Spare"
 msgstr "Secours"
 
-#
-#
 #: src/ais.cpp:167
 msgid "Light"
 msgstr "Feu"
 
-#
 #: src/ais.cpp:168
 msgid "Light w/Sectors"
 msgstr "Feu à secteurs"
 
-#
 #: src/ais.cpp:169
 msgid "Leading Light Front"
 msgstr "Feu avant"
 
-#
 #: src/ais.cpp:170
 msgid "Leading Light Rear"
 msgstr "Feu arrière"
 
-#
 #: src/ais.cpp:171
 msgid "Cardinal N Beacon"
 msgstr "Balise cardinale N"
 
-#
 #: src/ais.cpp:172
 msgid "Cardinal E Beacon"
 msgstr "Balise cardinale E"
 
-#
 #: src/ais.cpp:173
 msgid "Cardinal S Beacon"
 msgstr "Balise cardinale S"
 
-#
 #: src/ais.cpp:174
 msgid "Cardinal W Beacon"
 msgstr "Balise cardinale O"
@@ -2721,43 +2237,36 @@ msgstr "Balise tribord"
 
 #: src/ais.cpp:177
 msgid "Beacon, Preferred Channel Port Hand"
-msgstr "Balise , chenal préférentiel babord"
+msgstr "Balise, chenal préférentiel babord"
 
 #: src/ais.cpp:178
 msgid "Beacon, Preferred Channel Starboard Hand"
 msgstr "Balise, chenal préférentiel tribord"
 
-#
 #: src/ais.cpp:179
 msgid "Beacon, Isolated Danger"
 msgstr "Balise, danger isolé"
 
-#
 #: src/ais.cpp:180
 msgid "Beacon, Safe Water"
 msgstr "Balise, eau libre"
 
-#
 #: src/ais.cpp:181
 msgid "Beacon, Special Mark"
 msgstr "Balise, marque spéciale"
 
-#
 #: src/ais.cpp:182
 msgid "Cardinal Mark N"
 msgstr "Marque cardinale N"
 
-#
 #: src/ais.cpp:183
 msgid "Cardinal Mark E"
 msgstr "Marque cardinale E"
 
-#
 #: src/ais.cpp:184
 msgid "Cardinal Mark S"
 msgstr "Marque cardinale S"
 
-#
 #: src/ais.cpp:185
 msgid "Cardinal Mark W"
 msgstr "Marque cardinale O"
@@ -2778,19 +2287,14 @@ msgstr "Chenal préféré babord"
 msgid "Preferred Channel Starboard Hand"
 msgstr "Chenal préféré tribord"
 
-#
-#
 #: src/ais.cpp:190
 msgid "Isolated Danger"
 msgstr "Danger isolé"
 
-#
 #: src/ais.cpp:191 src/ais.cpp:239 src/ais.cpp:250
 msgid "Safe Water"
 msgstr "Eau libre"
 
-#
-#
 #: src/ais.cpp:192
 msgid "Special Mark"
 msgstr "Marque spéciale"
@@ -2799,17 +2303,6 @@ msgstr "Marque spéciale"
 msgid "Light Vessel/Rig"
 msgstr "Bateau feu/Plate-forme"
 
-# Propposition de Pithéas54 :   "Msg. GpsGate buddy"
-# On en discute :
-# J'ai pas mal cherché concernant cette histoire de gpsgate. J'avais même mis un fil à ce sujet dans le cruisers forum.  Le problème, c'est qu'on ne sait pas comment cela fonctionne.
-# Je dirai même que je me demande ce que cela vient faire dans OpenCPN, du moins actuellement.
-# Sauf si toi tu as une expérience concrète et que tu m'expliques.
-# Tant qu'à mettre autre chose on pourrait mettre :  "Msg. d'un ami par GpsGate"
-# ----
-# Pytheas54: j'ai pas plus d'infos là-dessus.
-# Ta dernière proposition est bien...
-# ----
-# Aiseag : et pourquoi ne pas laisser en GPSGate Buddy en attendant mieux, de mémoire, les explications sur le fil n'étaient pas convaincantes
 #: src/ais.cpp:194
 msgid "GpsGate Buddy"
 msgstr "GpsGate Buddy"
@@ -2818,163 +2311,126 @@ msgstr "GpsGate Buddy"
 msgid "Position Report"
 msgstr "Rapport de position"
 
-#
 #: src/ais.cpp:196 src/ais.cpp:255
 msgid "Distress"
 msgstr "Détresse"
 
-#
 #: src/ais.cpp:200
 msgid "F/V"
 msgstr "Nav. pêc."
 
-#
-#
 #: src/ais.cpp:201
 msgid "Tow"
 msgstr "Remorquage"
 
-#
 #: src/ais.cpp:202
 msgid "Long Tow"
 msgstr "Remorquage long"
 
-#
 #: src/ais.cpp:203
 msgid "Dredge"
 msgstr "Drague"
 
-#
 #: src/ais.cpp:204
 msgid "D/V"
 msgstr "Plong."
 
-#
 #: src/ais.cpp:205
 msgid "Mil/V"
 msgstr "Nav Mil."
 
-#
 #: src/ais.cpp:206
 msgid "S/V"
 msgstr "Voil."
 
-# Cela devrait être Ok.
-# ----
-# Pytheas54: vu
-# ---------
-# Aiseag : OK
 #: src/ais.cpp:207
 msgid "Yat"
 msgstr "Yacht"
 
-#
 #: src/ais.cpp:208
 msgid "HSC"
 msgstr "grd. vit."
 
-#
 #: src/ais.cpp:209
 msgid "P/V"
 msgstr "Pil."
 
-#
 #: src/ais.cpp:210
 msgid "SAR/V"
 msgstr "Nav. sauv."
 
-#
-#
 #: src/ais.cpp:212
 msgid "Tender"
 msgstr "Annexe"
 
-#
 #: src/ais.cpp:213
 msgid "PC/V"
 msgstr "Cont. pol."
 
-#
 #: src/ais.cpp:214
 msgid "LE/V"
 msgstr "Pol. Mar."
 
-#
 #: src/ais.cpp:215
 msgid "Med/V"
 msgstr "Nav. sanit."
 
-#
 #: src/ais.cpp:216
 msgid "Pass/V"
 msgstr "Nav. Pas."
 
-#
 #: src/ais.cpp:217
 msgid "M/V"
 msgstr "Cargo"
 
-#
 #: src/ais.cpp:218
 msgid "M/T"
 msgstr "Pétr."
 
-#
 #: src/ais.cpp:219 src/ais.cpp:225
 msgid "?"
 msgstr "?"
 
-#
 #: src/ais.cpp:221 src/ais.cpp:1012
 msgid "AtoN"
 msgstr "AtoN"
 
-#
 #: src/ais.cpp:222
 msgid "Ref. Pt"
 msgstr "Point de réf."
 
-#
 #: src/ais.cpp:224
 msgid "Fix.Struct."
 msgstr "Struct. Fix."
 
-#
 #: src/ais.cpp:226
 msgid "Lt"
 msgstr "Feu"
 
-#
 #: src/ais.cpp:227
 msgid "Lt sect."
 msgstr "Feu à secteur"
 
-#
 #: src/ais.cpp:228
 msgid "Ldg Lt Front"
 msgstr "Feu avant"
 
-#
 #: src/ais.cpp:229
 msgid "Ldg Lt Rear"
 msgstr "Feu arrière"
 
-#
 #: src/ais.cpp:230 src/ais.cpp:241
 msgid "Card. N"
 msgstr "Card. N"
 
-#
 #: src/ais.cpp:231 src/ais.cpp:242
 msgid "Card. E"
 msgstr "Card. E"
 
-#
 #: src/ais.cpp:232 src/ais.cpp:243
 msgid "Card. S"
 msgstr "Card. S"
 
-#
 #: src/ais.cpp:233 src/ais.cpp:244
 msgid "Card. W"
 msgstr "Card. O"
@@ -2983,27 +2439,22 @@ msgstr "Card. O"
 msgid "Port"
 msgstr "Port"
 
-#
 #: src/ais.cpp:235
 msgid "Stbd"
 msgstr "Trib."
 
-#
 #: src/ais.cpp:236 src/ais.cpp:237 src/ais.cpp:247 src/ais.cpp:248
 msgid "Pref. Chnl"
 msgstr "Chnl préf."
 
-#
 #: src/ais.cpp:238 src/ais.cpp:249
 msgid "Isol. Dngr"
 msgstr "Dang. isol."
 
-#
 #: src/ais.cpp:240 src/ais.cpp:251
 msgid "Special"
 msgstr "Spécial"
 
-#
 #: src/ais.cpp:245
 msgid "Port Hand"
 msgstr "Babord"
@@ -3012,23 +2463,14 @@ msgstr "Babord"
 msgid "Stbd Hand"
 msgstr "Tribord"
 
-#
 #: src/ais.cpp:252
 msgid "LtV/Rig"
 msgstr "Bat.feu/P-form."
 
-# Proposition de Pithéas54 :  Buddy
-# On en discute :
-# Cet item va avec "GpsGate Buddy".  Le mot "Ami" voire même "Copain" serait sans doute adapté. Voir chez Franson ce qu'est GPSGate (il y a un logiciel serveur et un logiciel client)
-# ---
-# Pytheas54: 'ami' ou'copain' selon le choix dans "GpsGate Buddy"
-# ---------
-# Aiseag : meme remarque qu'en 2626
 #: src/ais.cpp:253 src/ais.cpp:1016
 msgid "Buddy"
 msgstr "Buddy"
 
-#
 #: src/ais.cpp:254 src/ais.cpp:1018
 msgid "DSC"
 msgstr "DSC"
@@ -3077,7 +2519,6 @@ msgstr "Prudence dans cette zone : Epave (Objets dérivants)"
 msgid "Caution Area: Traffic congestion"
 msgstr "Prudence dans cette zone : Traffic dense"
 
-# Ok.
 #: src/ais.cpp:268
 msgid "Caution Area: Marine event"
 msgstr "Prudence dans cette zone : Evénement maritime"
@@ -3094,7 +2535,6 @@ msgstr "Prudence dans cette zone : Zone de baignade"
 msgid "Caution Area: Dredge operations"
 msgstr "Prudence dans cette zone : Dragage en cours"
 
-# Why not.
 #: src/ais.cpp:272
 msgid "Caution Area: Survey operations"
 msgstr "Prudence dans cette zone : Mission hydrographique"
@@ -3127,20 +2567,10 @@ msgstr "Prudence dans cette zone : Port fermé"
 msgid "Caution Area: Risk (define in Associated text field)"
 msgstr "Prudence dans cette zone : Risque (Décrit dans le texte associé)"
 
-# Ok mais tu coupes les cheveux en 4.
-# ----
-# Pytheas54: comme tu veux, mais c'est sous-marin avec un tiret
-# ----
-# Gilletarom : Je m'incline.
 #: src/ais.cpp:280
 msgid "Caution Area: Underwater vehicle operation"
 msgstr "Prudence dans cette zone : Sous-marin présent"
 
-# Ok
-# ----
-# Pytheas54: je préfère 'usage futur'...
-# ----
-# Gilletarom : Ok.
 #: src/ais.cpp:281 src/ais.cpp:290 src/ais.cpp:298 src/ais.cpp:305
 #: src/ais.cpp:306 src/ais.cpp:307 src/ais.cpp:308 src/ais.cpp:309
 #: src/ais.cpp:310 src/ais.cpp:311 src/ais.cpp:312 src/ais.cpp:313
@@ -3207,13 +2637,6 @@ msgstr "Zone à accès limité :  Autorisation d'entrée requise"
 msgid "Restricted Area: Entry prohibited"
 msgstr "Zone à accès limité :  Entrée interdite"
 
-# Pytheas54
-# J'ai proposé
-# Zone à accès limité : Opérations militaires en cours
-# ----
-# Gilletarom : Du coup j'adapterai tous les autres items qui commence par "Restricted area"
-# ---------
-# Aiseag : OK
 #: src/ais.cpp:295
 msgid "Restricted Area: Active military OPAREA"
 msgstr "Zone à accès limité : Opérations militaires en cours"
@@ -3288,15 +2711,6 @@ msgstr "Zone de détresse : Navire demandant une assistance médicale"
 msgid "Distress Area: Vessel flooding"
 msgstr "Zone de détresse : Navire prenant l'eau"
 
-# A étudier
-# -------------
-# Pytheas54
-# Zone de détresse: Incendie/explosion à bord d'un navire
-# ----
-# Aiseag : pourquoi : Zone dangereuse: Navire en feu, risque d'explosion
-# -----
-# Pytheas54
-# Pourquoi pas, mais 'Vessel fire' n'est pas 'Vessel on fire'
 #: src/ais.cpp:328
 msgid "Distress Area: Vessel fire/explosion"
 msgstr "Zone de détresse: Incendie/explosion à bord d'un navire"
@@ -3338,7 +2752,6 @@ msgstr ""
 "Instruction : Contactez l'autorité de contrôle du traffic à ce point/cette "
 "jonction "
 
-# Ok
 #: src/ais.cpp:340
 msgid "Instruction: Contact Port Administration at this point/juncture"
 msgstr "Instruction : Contactez l'autorité du port à ce point/ cette jonction"
@@ -3347,7 +2760,6 @@ msgstr "Instruction : Contactez l'autorité du port à ce point/ cette jonction"
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr "Instruction : Ne dépasser pas ce point/ cette jonction"
 
-# Ok
 #: src/ais.cpp:342
 msgid ""
 "Instruction: Await instructions prior to proceeding beyond this point/"
@@ -3356,12 +2768,10 @@ msgstr ""
 "Instruction : Attendez les consignes avant de dépasser ce point/ cette "
 "jonction"
 
-# Ok
 #: src/ais.cpp:343
 msgid "Proceed to this location - await instructions"
 msgstr "Faire route jusqu'à ce point - Attendre les instructions"
 
-# Ok
 #: src/ais.cpp:344
 msgid "Clearance granted - proceed to berth"
 msgstr "Autorisation accordée : Faites route pour accoster "
@@ -3386,51 +2796,15 @@ msgstr "Information : Emplacement des briseglaces"
 msgid "Information: Location of response units"
 msgstr "Information : Emplacement des unités d'intervention"
 
-# AISAG :
-# A étudier
-# ====
-# Gilletarom :    VTS  = Vessel Traffic Service
-# en Français "Service d'assistance à la navigation"
-# Des explications ici :
-# .
-# http://en.wikipedia.org/wiki/Vessel_traffic_service
-# .
-# Donc une traduction ?  Je ne sais quoi dire.
-# =====
-# Pytheas54
-# Gardons VTS qui est le jargon classique. De toute façon, ça ne concerne pas les plaisanciers
-# ----
-# Aiseag : OK
 #: src/ais.cpp:352
 msgid "VTS active target"
 msgstr "VTS active target"
 
-# Entièrement d'accord. Mismatch dans l'original : rogue au lieu de rouge. Voir le fil ad hoc dans le CR.
-# ----
-# Pytheas54: vu
-# ----
-# Gilletarom : Je mettrai un avertissemnt à l'intention de Dave dans le fil ad-hoc
-# ---------
-# Aiseag : OK
+# Mismatch dans l'original : rogue au lieu de rouge.
 #: src/ais.cpp:353
 msgid "Rouge or suspicious vessel"
 msgstr "Navire voyou ou suspect"
 
-# Proposition de Pithéas54 :  Navire demandant une assistance sans signaux de détresse
-# Mais je suis vraiment sceptique ???
-# ----
-# Pytheas54: c'est pourtant (je crois) le sens de l'anglais...
-# ----
-# Gilletarom : Mon anglais étant ce qu'il est, malgré mes progrès depuis 3 ans... je ne sais pas quoi dire. Sachant que ton anglais est bien meilleur, je te dirais volontier Ok.
-# Voyons ce que va dire AISEAG.
-# ----
-# Aisseag : je positive la phrase ne specifiant que l'assistance demandée n'est pas urgente => donc simple
-# ----
-# Pythéas54 ---> Ton dernier avis ?
-# -----
-# Pytheas54: OK
-# ---
-# Gilletarom : Ok
 #: src/ais.cpp:354
 msgid "Vessel requesting non-distress assistance"
 msgstr "Navire demandant une assistance simple."
@@ -3471,7 +2845,6 @@ msgstr "Complément à la carte : Haut-fond plein ouest"
 msgid "Chart Feature: Channel obstruction"
 msgstr "Complément à la carte : Chenal obstrué"
 
-# Ok
 #: src/ais.cpp:364
 msgid "Chart Feature: Reduced vertical clearance"
 msgstr "Complément à la carte : Tirant d'air réduit"
@@ -3492,18 +2865,6 @@ msgstr "Complément à la carte : Pont complètement ouvert"
 msgid "Report from ship: Icing info"
 msgstr "Observationt de navire : Présence de glace"
 
-# Proposition de Pithéas 54 :  Observation de navire : Informations diverses - à décrire dans le texte associé
-# Vraiment, je pense que les observations dont il est question sont "déjà décrites" et non pas "à décrire"
-# ----
-# Pytheas54: L'anglais à 'define' pas 'defined'
-# Mébon....
-# ----
-# Le problème, c'est qu'on ne peut pas tester vu que le système des messages AIS est expérimental. OCPN est en avance dans ce domaine.
-# Bon, je vais révéler ... Non, c'est pas une révélation ...C'est dans un message de Dave sur le CR ... J'ai traduit mais cela ne sert à rien. Finalement Dave ne veut pas faire apparaitre les traductions de ces messages la (message AIS)
-# Si vous ne savez pas de quoi il s'agit, j'ai mis un peu d'explication en haut de cette page :
-# http://opencpn.shoreline.fr/3_Essentiel/E_51_Utiliser_AIS/E_51_AIS_avec_3.1.xxxx.htm
-# ---------
-# Aiseag : OK
 #: src/ais.cpp:373
 msgid ""
 "Report from ship: Miscellaneous information - define in Associated text field"
@@ -3515,15 +2876,6 @@ msgstr ""
 msgid "Route: Recommended route"
 msgstr "Route : Route recommandée"
 
-# Proposition de Pithéas54 :  Route : Autre route possible
-# Why not ...   Mais je ne suis pas convaincu.
-# ----
-# Pytheas54: moi non plus....
-# ----
-# Alors help AISEAG
-# ---------
-# Aiseag :  itinéraire Bis mais le mot itinéraire se prete guere à la navigation :-(
-# garder cette traduction
 #: src/ais.cpp:380
 msgid "Route: Alternative route"
 msgstr "Route : autre Route"
@@ -3532,31 +2884,10 @@ msgstr "Route : autre Route"
 msgid "Route: Recommended route through ice"
 msgstr "Route : Route recommandée à travers les glaces"
 
-# Proposition de Pithéas54 :   Autre - à définir dans le texte associé
-# Non, je pense, comme pour un item précédent, que la blabla dans le texte associé existe déja. Il n'est pas à définir.
-# ----
-# Pytheas54: même réponse ;-)
-# ----
-# Gilletarom :Il va bien falloir que je dise amen, ne serait ce qu'en pensant à la qualité de mon anglais.
-# ---------
-# Aiseag : OK, cohérent avec 3265
 #: src/ais.cpp:384
 msgid "Other - Define in associated text field"
 msgstr "Autre - à définir dans le texte associé"
 
-# Proposition de Pithéas54 :   Annulation  - Annuler la zone décrite par l'ID de lien de message
-# Je m'étais creusé la cervelle sur cet item. Je n'étais pas content de moi. J'accepte volontier qu'on laisse "ID" dans le texte (au sens de "Identifiant" ).  Mais " ID de lien de message" ne me satisfait pas.
-# ----
-# Pytheas54:
-# Trouvé sur internet
-# "The Message Linkage ID can be used to link additional text (e.g., a separate text
-# message). However, both the Area Notice and additional Text Description message should be sent by the same source MMSI."
-# Annulation : Annulation de la délimitation de zone dans un message de la même source
-# ----
-# Gilletarom : Je suis Ok pour cette dernière version.
-# ---------
-# Aiseag : meme en anglais ne semble pas simple
-# je propose : Annulation : Annuler la zone identifiée par le code du message associe
 #: src/ais.cpp:385
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
 msgstr "Annulation : Annuler la zone identifiée par le code du message associé"
@@ -3566,13 +2897,10 @@ msgstr "Annulation : Annuler la zone identifiée par le code du message associé
 msgid "Undefined (default)"
 msgstr "Indéfini (par défaut)"
 
-#
 #: src/ais.cpp:574 src/ais.cpp:583 src/ais.cpp:3455
 msgid "MMSI"
 msgstr "MMSI"
 
-#
-#
 #: src/ais.cpp:575 src/ais.cpp:584 src/ais.cpp:3463
 msgid "Class"
 msgstr "Classe"
@@ -3581,13 +2909,11 @@ msgstr "Classe"
 msgid "IMO"
 msgstr "IMO"
 
-#
 #: src/ais.cpp:594 src/ais.cpp:896 src/ais.cpp:3099 src/ais.cpp:3236
 #: src/ais.cpp:3248
 msgid "Active"
 msgstr "Active"
 
-#
 #: src/ais.cpp:595 src/ais.cpp:897 src/ais.cpp:3100 src/ais.cpp:3237
 #: src/ais.cpp:3249
 msgid "Testing"
@@ -3606,7 +2932,6 @@ msgstr "(Dernier connu)"
 msgid "Report Age"
 msgstr "Age du rapport"
 
-# why not.
 #: src/ais.cpp:720
 msgid "Report as of"
 msgstr "Rapport daté du"
@@ -3636,8 +2961,6 @@ msgstr "Relevé"
 msgid "Turn Rate"
 msgstr "Vitesse de rotation"
 
-#
-#
 #: src/ais.cpp:803 src/ais.cpp:3495
 msgid "Range"
 msgstr "Distance"
@@ -3646,7 +2969,6 @@ msgstr "Distance"
 msgid " </b>in<b> "
 msgstr " </b>en<b> "
 
-#
 #: src/ais.cpp:815 src/ais.cpp:924 src/ais.cpp:3518
 msgid "CPA"
 msgstr "CPA"
@@ -3679,28 +3001,22 @@ msgstr "dans"
 msgid "min"
 msgstr "min"
 
-#
 #: src/ais.cpp:1008
 msgid "A"
 msgstr "A"
 
-#
 #: src/ais.cpp:1010
 msgid "B"
 msgstr "B"
 
-#
-#
 #: src/ais.cpp:1012
 msgid "Aid to Navigation"
 msgstr "Aide à la navigation"
 
-#
 #: src/ais.cpp:1014 src/options.cpp:1072
 msgid "Base"
 msgstr "Base"
 
-#
 #: src/ais.cpp:1014
 msgid "Base Station"
 msgstr "Station  fixe"
@@ -3713,13 +3029,10 @@ msgstr "GPSGate Buddy"
 msgid "DSC Position Report"
 msgstr "Rapport de position DSC"
 
-#
 #: src/ais.cpp:1020
 msgid "SART"
 msgstr "SART"
 
-#
-#
 #: src/ais.cpp:1023
 msgid "Unk"
 msgstr "Inc."
@@ -3733,12 +3046,10 @@ msgstr "Navire, type inconnu"
 msgid "Freightbarge"
 msgstr "Chaland de transport de fret"
 
-#
 #: src/ais.cpp:1207
 msgid "Tankbarge"
 msgstr "Chaland-citerne"
 
-#
 #: src/ais.cpp:1208
 msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 msgstr "Chaland-citerne, cargaison sèche traitée comme liquide (ex. ciment)"
@@ -3763,54 +3074,44 @@ msgstr "Objet, remorqué, non autrement défini"
 msgid "Bunkership"
 msgstr "Bateau ravitailleur"
 
-#
 #: src/ais.cpp:1214
 msgid "Motor freighter"
 msgstr "Péniche automotrice"
 
-#
 #: src/ais.cpp:1215
 msgid "Motor tanker"
 msgstr "Péniche-citerne automotrice"
 
-#
 #: src/ais.cpp:1216
 msgid "Motor tanker, liquid cargo, type N"
 msgstr "Péniche-citerne automotrice, vrac liquide, de type N"
 
-#
 #: src/ais.cpp:1217
 msgid "Motor tanker, liquid cargo, type C"
 msgstr "Péniche-citerne automotrice, vrac liquide, de type C"
 
-#
 #: src/ais.cpp:1218
 msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 msgstr ""
 "Péniche-citerne automotrice, cargaison sèche traitée comme liquide (ex. "
 "ciment)"
 
-#
 #: src/ais.cpp:1219
 msgid "Container vessel"
 msgstr "Porte-conteneurs"
 
-#
 #: src/ais.cpp:1220
 msgid "Gas tanker"
 msgstr "Navire gazier"
 
-#
 #: src/ais.cpp:1221
 msgid "Motor freighter, tug"
 msgstr "Péniche automotrice, remorqueur"
 
-#
 #: src/ais.cpp:1222
 msgid "Motor tanker, tug"
 msgstr "Péniche-citerne automoteur, remorqueur"
 
-#
 #: src/ais.cpp:1223
 msgid "Motor freighter with one or more ships alongside"
 msgstr "Péniche automotrice avec un ou plusieurs navires à couple"
@@ -3819,7 +3120,6 @@ msgstr "Péniche automotrice avec un ou plusieurs navires à couple"
 msgid "Motor freighter with tanker"
 msgstr "Péniche automotrice avec bateau-citerne"
 
-#
 #: src/ais.cpp:1225
 msgid "Motor freighter pushing one or more freighters"
 msgstr "Péniche automotrice poussant un ou plusieurs chalands"
@@ -3828,7 +3128,6 @@ msgstr "Péniche automotrice poussant un ou plusieurs chalands"
 msgid "Motor freighter pushing at least one tank-ship"
 msgstr "Péniche automotrice poussant au moins un bateau-citerne"
 
-#
 #: src/ais.cpp:1227
 msgid "Tug, freighter"
 msgstr "Péniche remorqueur"
@@ -3837,7 +3136,6 @@ msgstr "Péniche remorqueur"
 msgid "Tug, tanker"
 msgstr "Bateau-citerne remorqueur"
 
-#
 #: src/ais.cpp:1229
 msgid "Tug freighter, coupled"
 msgstr "Remorqueur, péniche a couple"
@@ -3846,127 +3144,102 @@ msgstr "Remorqueur, péniche a couple"
 msgid "Tug, freighter/tanker, coupled"
 msgstr "Remorqueur, bateau-citerne à couple"
 
-#
 #: src/ais.cpp:1231
 msgid "Tankbarge, liquid cargo, type N"
 msgstr "Chaland-citerne, vrac liquide, de type N"
 
-#
 #: src/ais.cpp:1232
 msgid "Tankbarge, liquid cargo, type C"
 msgstr "Chaland-citerne, vrac liquide, de type C"
 
-#
 #: src/ais.cpp:1233
 msgid "Freightbarge with containers"
 msgstr "Chaland porte-containeurs"
 
-#
 #: src/ais.cpp:1234
 msgid "Tankbarge, gas"
 msgstr "Chaland gazier"
 
-#
 #: src/ais.cpp:1235
 msgid "Pushtow, one cargo barge"
 msgstr "Pousseur, un chaland de marchandises diverses"
 
-#
 #: src/ais.cpp:1236
 msgid "Pushtow, two cargo barges"
 msgstr "Pousseur, deux chalands de marchandises diverses"
 
-#
 #: src/ais.cpp:1237
 msgid "Pushtow, three cargo barges"
 msgstr "Pousseur, trois chalands de marchandises diverses"
 
-#
 #: src/ais.cpp:1238
 msgid "Pushtow, four cargo barges"
 msgstr "Pousseur, quatre chalands de marchandises diverses"
 
-#
 #: src/ais.cpp:1239
 msgid "Pushtow, five cargo barges"
 msgstr "Pousseur, cinq chalands de marchandises diverses"
 
-#
 #: src/ais.cpp:1240
 msgid "Pushtow, six cargo barges"
 msgstr "Pousseur, six chalands de marchandises diversess"
 
-#
 #: src/ais.cpp:1241
 msgid "Pushtow, seven cargo barges"
 msgstr "Pousseur, sept chalands de marchandises diverses"
 
-#
 #: src/ais.cpp:1242
 msgid "Pushtow, eight cargo barges"
 msgstr "Pousseur, huit chalands de marchandises diverses"
 
-#
 #: src/ais.cpp:1243
 msgid "Pushtow, nine or more barges"
 msgstr "Pousseur, neuf chalands de marchandises diverses ou plus"
 
-#
 #: src/ais.cpp:1244
 msgid "Pushtow, one tank/gas barge"
 msgstr "Pousseur, un  chaland citerne ou gazier"
 
-#
 #: src/ais.cpp:1245
 msgid "Pushtow, two barges at least one tanker or gas barge"
 msgstr "Pousseur, deux chalands dont au moins une citerne ou un gazier"
 
-#
 #: src/ais.cpp:1246
 msgid "Pushtow, three barges at least one tanker or gas barge"
 msgstr "Pousseur, trois chalands dont au moins une citerne ou un gazier"
 
-#
 #: src/ais.cpp:1247
 msgid "Pushtow, four barges at least one tanker or gas barge"
 msgstr "Pousseur, quatre chalands dont au moins une citerne ou un gazier"
 
-#
 #: src/ais.cpp:1248
 msgid "Pushtow, five barges at least one tanker or gas barge"
 msgstr "Pousseur, cinq chalands dont au moins une citerne ou un gazier"
 
-#
 #: src/ais.cpp:1249
 msgid "Pushtow, six barges at least one tanker or gas barge"
 msgstr "Pousseur, six chalands dont au moins une citerne ou un gazier"
 
-#
 #: src/ais.cpp:1250
 msgid "Pushtow, seven barges at least one tanker or gas barge"
 msgstr "Pousseur, sept chalands dont au moins une citerne ou un gazier"
 
-#
 #: src/ais.cpp:1251
 msgid "Pushtow, eight barges at least one tanker or gas barge"
 msgstr "Pousseur, huit chalands dont au moins une citerne ou un gazier"
 
-#
 #: src/ais.cpp:1252
 msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 msgstr "Pousseur, neuf chalands ou plus dont au moins une citerne ou un gazier"
 
-#
 #: src/ais.cpp:1253
 msgid "Tug, single"
 msgstr "Remorqueur, seul"
 
-#
 #: src/ais.cpp:1254
 msgid "Tug, one or more tows"
 msgstr "Remorqueur, un ou plusieurs remorqués"
 
-#
 #: src/ais.cpp:1255
 msgid "Tug, assisting a vessel or linked combination"
 msgstr "Remorqueur assistant un navire ou en tandem"
@@ -3975,7 +3248,6 @@ msgstr "Remorqueur assistant un navire ou en tandem"
 msgid "Passenger ship, ferry, cruise ship, red cross ship"
 msgstr "Bateau de passagers, ferry, bateau de croisière, bateau-hôpital"
 
-#
 #: src/ais.cpp:1258
 msgid "Ferry"
 msgstr "Ferry"
@@ -3984,7 +3256,6 @@ msgstr "Ferry"
 msgid "Red cross ship"
 msgstr "Bateau-hôpital"
 
-#
 #: src/ais.cpp:1260
 msgid "Cruise ship"
 msgstr "Navire de croisière"
@@ -4003,27 +3274,22 @@ msgstr "Navire, bateau-atelier, derrick flottant, cablier, baliseur, drague"
 msgid "Fishing boat"
 msgstr "Bateau de pêche"
 
-#
 #: src/ais.cpp:1264
 msgid "Barge, tanker, chemical"
 msgstr "Chaland, citerne, chimiquier"
 
-#
 #: src/ais.cpp:1265
 msgid "General cargo Vessel maritime"
 msgstr "Cargo maritime, marchandises diverses"
 
-#
 #: src/ais.cpp:1266
 msgid "Unit carrier maritime"
 msgstr "Porte containers de haute mer"
 
-#
 #: src/ais.cpp:1267
 msgid "Bulk carrier maritime"
 msgstr "Vraquier maritime"
 
-#
 #: src/ais.cpp:1269
 msgid "Liquified gas tanker"
 msgstr "Navire-citerne pour gaz liquéfié"
@@ -4032,24 +3298,18 @@ msgstr "Navire-citerne pour gaz liquéfié"
 msgid "Pleasure craft, longer than 20 metres"
 msgstr "Bateau de plaisance, longueur > à 20 mètres"
 
-#
 #: src/ais.cpp:1271
 msgid "Fast ship"
 msgstr "Navire à Grande Vitesse (NGV)"
 
-#
 #: src/ais.cpp:1272
 msgid "Hydrofoil"
 msgstr "Hydroglisseur"
 
-#
-#
 #: src/ais.cpp:2818
 msgid "AISTargetAlert"
 msgstr "Fenêtre d'alarme AIS"
 
-#
-#
 #: src/ais.cpp:2852
 msgid "&Silence Alert"
 msgstr "Alarme sonore : &Stopper"
@@ -4062,15 +3322,12 @@ msgstr "Acquitter"
 msgid "&Jump To"
 msgstr "Aller à"
 
-#
 #: src/ais.cpp:3063 src/ais.cpp:3092 src/ais.cpp:3106 src/ais.cpp:3110
 #: src/ais.cpp:3122 src/ais.cpp:3128 src/ais.cpp:3140 src/ais.cpp:3148
 #: src/ais.cpp:3156 src/ais.cpp:3165 src/ais.cpp:3241 src/ais.cpp:3253
 msgid "-"
 msgstr "-"
 
-#
-#
 #: src/ais.cpp:3447
 msgid "Call"
 msgstr "Indicatif"
@@ -4083,7 +3340,6 @@ msgstr "Type"
 msgid "Nav Status"
 msgstr "Statut de nav."
 
-#
 #: src/ais.cpp:3487
 msgid "Brg"
 msgstr "Relèvement"
@@ -4100,7 +3356,6 @@ msgstr "SOG"
 msgid "TCPA"
 msgstr "TCPA"
 
-#
 #: src/ais.cpp:3537
 msgid "Target info"
 msgstr "Infos sur la cible"
@@ -4296,13 +3551,6 @@ msgstr "9"
 msgid "Control checksum"
 msgstr "Contrôle du checksum"
 
-# Proposition de Pithéas54 :   Si coché, seules les phrases ayant un checksum correct sont transmises
-# "transmises" ne me convient pas. Les phrases arrivent du GPS ou de la VHF ou de ... et sont acceptées si le controle est Ok. La transmission vient éventuellement après.
-# Eventuellement, OCPN fabrique certaines phrases lui même, il fera le contrôle mais je suis persuadé qu'il n'y a pas besoin de lui dire de le faire.
-# ----
-# Pytheas54: OK
-# ---------
-# Aiseag : j'enleve le premier checksum (controle à partir d'un algorithme)
 #: src/options.cpp:665
 msgid "If checked, only the sentences with a valid checksum are passed through"
 msgstr ""
@@ -4337,16 +3585,11 @@ msgstr "Filtrage en sortie"
 msgid "Transmit sentences"
 msgstr "Phrases envoyées"
 
-# Proposition de Pythéas54 :     Phrases éliminées
-# "éliminées" ne me convient pas. Cela pourrait laisser entendre qu'elles sont supprimées. En fait, elle ne sont pas envoyées sur cette connexion la. Mais elles peuvent être envoyées sur une autre connexion.
-# Comme il y a de la place pour écrire un texte un peu plus long, "non envoyées" me plait plus. Et il fait pendant à l'item qui est juste à gauche sur l'écran qui est "Phrases envoyées".
-# ----
-# Pytheas54: OK
 #: src/options.cpp:714
 msgid "Drop sentences"
 msgstr "Phrases non envoyées"
 
-#: src/options.cpp:776 src/pluginmanager.cpp:2041 src/pluginmanager.cpp:2051
+#: src/options.cpp:776 src/pluginmanager.cpp:2094 src/pluginmanager.cpp:2104
 msgid "Enable"
 msgstr "Activer"
 
@@ -4377,16 +3620,6 @@ msgstr "Options d'affichage du bateau"
 msgid "COG Predictor Length (min)"
 msgstr "COG : Taille des flèches de prédiction de la route en minutes "
 
-# Proposition de Pythéas54 :   Bateau: Type d'icone
-# Cet item parle d'icône. C'est d'accord.
-# Mais, en fait, il faut faire comprendre à l'utilisateur qu'il doit donner les caractéristiques de son bateau sur les 5  lignes juste en dessous : longueur, largeur ...
-# Voila pourquoi, je propose de laisser "Caractéristiques du bateau" ???
-# ----
-# Pytheas54: tout à fait, OK
-# ----
-# Gilletarom : Deux idées valent mieux qu'une. Je prends celle de Pitjhéas54 que j'ajoute à la mienne.
-# ---------
-# Aiseag : OK, d'autant que pour l'icone, il y a la taille minimale à l'ecran
 #: src/options.cpp:899
 msgid "Ship Icon Type"
 msgstr "Caractéristiques et icône du bateau"
@@ -4445,12 +3678,10 @@ msgstr "Milles marins"
 msgid "Kilometers"
 msgstr "Kilomètres"
 
-#
 #: src/options.cpp:966
 msgid "Automatic Daily Tracks"
 msgstr "Trace journalière automatique : Activer"
 
-#
 # Menu contextuel : Trace
 #: src/options.cpp:969
 msgid "Highlight Tracks"
@@ -4485,7 +3716,6 @@ msgstr "Dossiers actifs des cartes"
 msgid "Add Directory..."
 msgstr "Ajout de dossier ..."
 
-# Menu contextuel : Trace
 #: src/options.cpp:1021 src/options.cpp:1202
 msgid "Remove Selected"
 msgstr "Supprimer la sélection"
@@ -4494,12 +3724,10 @@ msgstr "Supprimer la sélection"
 msgid "Update Control"
 msgstr "Contrôler la mise à jour"
 
-#
 #: src/options.cpp:1031
 msgid "Scan Charts and Update Database"
 msgstr "Analyser les dossiers et mettre à jour la base de données"
 
-#
 #: src/options.cpp:1035
 msgid "Force Full Database Rebuild"
 msgstr "Forcer la reconstruction de la base de données"
@@ -4512,20 +3740,14 @@ msgstr "Cartes vectorielles"
 msgid "Mariner's Standard"
 msgstr "Objets affichables"
 
-#
-#
 #: src/options.cpp:1063 src/options.cpp:4064
 msgid "Select All"
 msgstr "Tout sélectionner    "
 
-#
-#
 #: src/options.cpp:1065 src/options.cpp:4067
 msgid "Clear All"
 msgstr "Ne rien sélectionner"
 
-#
-#
 #: src/options.cpp:1072
 msgid "Standard"
 msgstr "Standard"
@@ -4538,8 +3760,6 @@ msgstr "Plus encore"
 msgid "Mariners Standard"
 msgstr "Objets affichables : Choisir"
 
-#
-#
 #: src/options.cpp:1073
 msgid "Display Category"
 msgstr "Contenu affiché"
@@ -4577,14 +3797,10 @@ msgstr "Feux : Afficher les secteurs par rollover."
 msgid "De-Cluttered Text"
 msgstr "Désencombrer le texte"
 
-#
-#
 #: src/options.cpp:1113
 msgid "Paper Chart"
 msgstr "Carte papier"
 
-#
-#
 #: src/options.cpp:1113
 msgid "Simplified"
 msgstr "Simplifiés"
@@ -4593,12 +3809,10 @@ msgstr "Simplifiés"
 msgid "Points"
 msgstr "Visuels de signalisation :"
 
-#
 #: src/options.cpp:1118
 msgid "Plain"
 msgstr "Limites : Pointillées"
 
-#
 #: src/options.cpp:1118
 msgid "Symbolized"
 msgstr "Limites : Crénelées"
@@ -4607,36 +3821,26 @@ msgstr "Limites : Crénelées"
 msgid "Boundaries"
 msgstr "Limites de zones de cartes"
 
-#
 #: src/options.cpp:1123
 msgid "2 Color"
 msgstr "Couleurs : 2"
 
-#
 #: src/options.cpp:1123
 msgid "4 Color"
 msgstr "Couleurs : 4"
 
-#
-#
 #: src/options.cpp:1124
 msgid "Colors"
 msgstr "Nombre de zones colorées"
 
-#
-#
 #: src/options.cpp:1128
 msgid "Depth Settings(m)"
 msgstr "Profondeurs ( mètres )"
 
-#
-#
 #: src/options.cpp:1132
 msgid "Shallow Depth"
 msgstr "Faible profondeur"
 
-#
-#
 #: src/options.cpp:1141
 msgid "Safety Depth"
 msgstr "Profondeur de sécurité"
@@ -4649,7 +3853,6 @@ msgstr "Eaux profondes"
 msgid "Chart Depth Units"
 msgstr "unités de profondeur"
 
-#
 #: src/options.cpp:1181
 msgid "Tides && Currents"
 msgstr "Marées et courants"
@@ -4674,12 +3877,10 @@ msgstr "Enlever ce dossier du groupe sélectionné"
 msgid "All Charts"
 msgstr "Toutes les cartes"
 
-#
 #: src/options.cpp:1299
 msgid "New Group..."
 msgstr "Nouveau groupe"
 
-#
 # Menu contextuel : Route
 #: src/options.cpp:1300
 msgid "Delete Group"
@@ -4736,8 +3937,6 @@ msgstr "Echelle : Ne pas changer lors d'un changement de cartes"
 msgid "Enable Chart Quilting"
 msgstr "Cartes : Activer l'affichage en mosaïque"
 
-#
-#
 #: src/options.cpp:1388
 msgid "Disable Full Screen Quilting"
 msgstr "Mosaïque : Désactiver le plein écran"
@@ -4754,8 +3953,6 @@ msgstr "Cartes rasters obliques : Afficher nord vers le haut."
 msgid "AIS Targets"
 msgstr "Cibles AIS"
 
-#
-#
 #: src/options.cpp:1409
 msgid "CPA Calculation"
 msgstr "CPA : Calcul du point d'abordage le plus proche"
@@ -4770,9 +3967,8 @@ msgstr "Déclencher un avertissement si le CPA est inférieur à... (milles) :"
 
 #: src/options.cpp:1432
 msgid "...and TCPA is less than (min)"
-msgstr " ... et le temps vers le CPA (TCPA) est inférieur à ... (minutes) :"
+msgstr " ... ou le temps vers le CPA (TCPA) est inférieur à ... (minutes) :"
 
-#
 #: src/options.cpp:1439
 msgid "Lost Targets"
 msgstr "Cibles perdues"
@@ -4806,7 +4002,6 @@ msgstr "Afficher les avis de la zone (à partir des données AIS)"
 msgid "Show AIS targets real size"
 msgstr "Afficher les cibles en taille réelle"
 
-#
 #: src/options.cpp:1501
 msgid "Rollover"
 msgstr "Info par survol d'une cible."
@@ -4815,7 +4010,6 @@ msgstr "Info par survol d'une cible."
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "      \"Nom du bateau\"  MMSI  ( Indicatif )"
 
-#
 #: src/options.cpp:1508
 msgid "[Class] Type (Status)"
 msgstr "[Classe] Type (Statut)"
@@ -4824,8 +4018,6 @@ msgstr "[Classe] Type (Statut)"
 msgid "SOG COG"
 msgstr "SOG / COG  (vitesse/cap fond )"
 
-#
-#
 #: src/options.cpp:1514
 msgid "CPA TCPA"
 msgstr "CPA / TCPA"
@@ -4906,7 +4098,6 @@ msgstr "Degrés, Minutes décimales"
 msgid "Decimal Degrees"
 msgstr "Degrés décimaux"
 
-#
 #: src/options.cpp:1651
 msgid "Degrees, Minutes, Seconds"
 msgstr "Degrés, Minutes, Secondes"
@@ -4925,8 +4116,6 @@ msgstr ""
 msgid "Confirm deletion of tracks and routes"
 msgstr "Confirmer la suppression des routes et des traces"
 
-#
-#
 #: src/options.cpp:1753
 msgid "Ok"
 msgstr "Ok"
@@ -5022,14 +4211,10 @@ msgid "The settings for own ship real size are not correct:"
 msgstr ""
 "Les données pour la taille réelle de votre bateau ne sont pas correctes :"
 
-#
-#
 #: src/options.cpp:3032
 msgid "Select Sound File"
 msgstr "Sélectionner l'alarme sonore"
 
-#
-#
 #: src/options.cpp:3033
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Fichiers WAV (*.wav)|*.wav|Tous les fichiers (*.*)|*.*"
@@ -5054,7 +4239,6 @@ msgstr "Entrer le préfixe ou la phrase NMEA (2, 3 ou 5 caractères)"
 msgid "Enter the NMEA sentence"
 msgstr "Entrer la phrase NMEA"
 
-# Ok, c'est plus précis.
 #: src/options.cpp:4221
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -5107,31 +4291,22 @@ msgstr "Copier le fichier d'initialisation dans le presse-papier"
 msgid "Copy Log File to Clipboard"
 msgstr "Copier le fichier log dans le presse papier"
 
-#
 #: src/about.cpp:297
 msgid "About"
 msgstr "A propos de "
 
-#
-#
 #: src/about.cpp:311
 msgid "Authors"
 msgstr "Auteurs"
 
-#
-#
 #: src/about.cpp:325
 msgid "License"
 msgstr "Licence"
 
-#
-#
 #: src/about.cpp:348
 msgid "Help"
 msgstr "Aide"
 
-#
-#
 #: src/about.cpp:358
 msgid "Close"
 msgstr "Fermer"
@@ -5146,11 +4321,11 @@ msgstr ""
 "<font size=-2>Les secteurs sont des relèvements vrais à partir de la mer</"
 "font><br>"
 
-#: src/routeman.cpp:633 src/routeman.cpp:638 src/routeman.cpp:643
+#: src/routeman.cpp:634 src/routeman.cpp:639 src/routeman.cpp:644
 msgid "T"
 msgstr "T"
 
-#: src/routeman.cpp:923
+#: src/routeman.cpp:946
 msgid ""
 "Waypoints can be renamed to reflect the new order, the names will be '001', "
 "'002' etc.\n"
@@ -5162,45 +4337,32 @@ msgstr ""
 "\n"
 "Voulez vous renommer les waypoint ?"
 
-#: src/routeman.cpp:983
+#: src/routeman.cpp:1006
 msgid "GPS/Plotter Port"
 msgstr "Port du GPS/traceur"
 
-#: src/routeman.cpp:1013
+#: src/routeman.cpp:1036
 msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 msgstr ""
 "Configurer le GPS pour recevoir des routes/waypoint puis cliquer sur "
 "\"Envoyer\" ..."
 
-#
-#
-#: src/routeman.cpp:1017
+#: src/routeman.cpp:1040
 msgid "Progress..."
 msgstr "Chargement..."
 
-#
-#: src/pluginmanager.cpp:206
+#: src/pluginmanager.cpp:210
 msgid "    Incompatible PlugIn detected:"
 msgstr "    Complément incompatible détecté :"
 
-#
-#: src/pluginmanager.cpp:1971
+#: src/pluginmanager.cpp:2024
 msgid "Preferences"
 msgstr "Préférences"
 
-#
-#
-#: src/pluginmanager.cpp:2049
+#: src/pluginmanager.cpp:2102
 msgid "Disable"
 msgstr "Désactiver"
 
-# Vu "it" au lieu de "is" mais nous ne pouvons agir sur l'original.
-# -----
-# Pytheas54 : vu
-# ----
-# Gilletarom : je mettrai un message à Dave sur le fil 18n
-# ---------
-# Aiseag : j'ajoute un s à icones
 #: src/toolbar.cpp:570
 msgid ""
 "You can't hide the last tool from the toolbar\n"
@@ -5209,7 +4371,6 @@ msgstr ""
 "Vous ne pouvez pas cacher toutes les icônes de la barre d'icônes.\n"
 "Ceci rendrait la barre d'icônes inaccessible."
 
-#
 #: src/toolbar.cpp:692
 msgid "ToolTips"
 msgstr "Outils de renseignement"
@@ -5252,30 +4413,10 @@ msgstr ""
 msgid "OpenCPN Route"
 msgstr "OpenCPN Route"
 
-# ====
-# Gilletarom : La traduction actuelle me parait absurde.
-# Et je n'arrive pas à simuler l'apparition de cet item
-# ====
-# Pytheas54: pourquoi les deux points ???
-# ----
-# Aiseag : d'accord avec Pytheas voir 5281
-# ---
-# Suite avis de Dave, on traduit pas
 #: src/kml.cpp:489
 msgid "OpenCPN Track"
 msgstr "OpenCPN Track"
 
-# Menu contextuel : Route
-# ====
-# Gilletarom : La traduction actuelle me parait absurde.
-# Et je n'arrive pas à simuler l'apparition de cet item
-# ====
-# Pytheas54: pourquoi les deux points ???
-# ----
-# Aiseag : idem que 5268
-# ----
-# Gilletarom
-# Suite avis de Dave, on ne traduit pas
 #: src/kml.cpp:546
 msgid "OpenCPN Waypoint"
 msgstr "OpenCPN Waypoint"
@@ -5284,7 +4425,6 @@ msgstr "OpenCPN Waypoint"
 msgid "Choose Format for Copy"
 msgstr "Choisissez le format de copie"
 
-# Ok
 #: src/kml.cpp:629
 msgid "KML Standard (Google Earth and others)"
 msgstr "KML standard (Google Earth et autres)"
@@ -5293,12 +4433,10 @@ msgstr "KML standard (Google Earth et autres)"
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "KML avec les données étendues (QtVlm)"
 
-# Menu contextuel : Waypoint
 #: src/undo.cpp:80
 msgid "Create Waypoint"
 msgstr "Waypoint : Créer"
 
-# Menu contextuel : Waypoint
 #: src/undo.cpp:83
 msgid "Delete Waypoint"
 msgstr "Waypoint : Supprimer"
@@ -5307,84 +4445,34 @@ msgstr "Waypoint : Supprimer"
 msgid "Move Waypoint"
 msgstr "Waypoint : Déplacer"
 
-# Cet item est le nom d'un nouveau bouton présent dans le gestionnaire de route et de trace.
-# ---------------
-# Pytheas54: OK
-# ----
-# Aiseag : OK
 #: src/routeprintout.cpp:337
 msgid "Print Route Selection"
 msgstr "Route/trace : Imprimer"
 
-# Aiseag : semble trop simple
 #: src/routeprintout.cpp:354
 msgid "Elements to print..."
 msgstr "Eléments à imprimer ..."
 
-# aiseag : c'est court mais efficace
-# ---
-# Gilletarom
-# Non, le mot nom est déjà présent, à gauche de cet item dans une fenêtre. Le mot montrer devient important.
-# Mais le mot imprimer est exactement celui qui convient dans le contexte où cet item apparait (lorsqu'on utilise le bouton "Route/trace : Imprimer)"
 #: src/routeprintout.cpp:367
 msgid "Show Waypoint name."
 msgstr "Imprimer le nom des waypoint"
 
-# ---------
-# Aiseag : pourquoi information est traduit par proprietes (cf 21)
-# ----
-# Pytheas54 ???
-# Traduction OK pour moi
-# ----
-# Aiseag : OK
-# ----
-# Gilletarom :
-# "Imprimer"
 #: src/routeprintout.cpp:374
 msgid "Show Waypoint position."
 msgstr "Imprimer la position des waypoint"
 
-# Aiseag :
-# volontairement, je ne traduis pas le mot each
-# "Montre le tracé de ce Waypoint/marque au prochain"
-# ----------
-# Pytheas54
-# Afficher le cap d'un waypoint au suivant ???
-# -----
-# Gilletarom
-# je préfère la version Pythéas (Ici, il s'agit bien de waypoint, c'est à dire de "point de route". Ce n'est pas une marque indépendante de la route.
-# et "imprimer"
 #: src/routeprintout.cpp:381
 msgid "Show course from each Waypoint to the next one. "
 msgstr "Imprimer le cap d'un waypoint au suivant."
 
-# Aiseag :
-# show : prefere traduire par donne, volontairement, je ne traduis pas le mot each
-# "Donne la distance de ce Waypoint/marque au prochain"
-# -----
-# Pytheas54
-# Afficher la distance d'un waypoint au suivant ???
-# ---
-# "Gilletarom : "Imprimer" va mieux que Afficher ou Donner
 #: src/routeprintout.cpp:388
 msgid "Show Distance from each Waypoint to the next one."
 msgstr "Imprimer la distance d'un waypoint au suivant."
 
-# Aiseag;: proose 'descrition du waypoint/marque"
-# -----------
-# Pytheas54: OK
-#  sauf si Gérard a une bonne raison ;-)
-# ------
-# Gilletarom:
-# Il s'agit vraiement d'un point de route. pas d'une marque. J'enlève "marque". C'est ma bonne raison.
-# Et "Imprimer est axactement adapté.
 #: src/routeprintout.cpp:395
 msgid "Show Waypoint description."
 msgstr "Imprimer la descrition des waypoint."
 
-# Aiseag : Impression route
-# ----------
-# Pytheas54: OK
 #: src/routeprintout.cpp:460
 msgid "Route Print"
 msgstr "Impression route"

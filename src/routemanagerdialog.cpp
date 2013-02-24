@@ -1387,6 +1387,10 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             wxString msg = wxString::Format( _("The amount of data used by the track\n was reduced by %d%%."),
                     reduction );
             OCPNMessageBox( this, msg, _("OpenCPN info"), wxICON_INFORMATION | wxOK );
+            
+            UpdateTrkListCtrl();
+            UpdateRouteListCtrl();
+            
             break;
         }
 

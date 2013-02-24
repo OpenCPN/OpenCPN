@@ -15959,6 +15959,15 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
     else
         ctrl->SetBackgroundColour( wxNullColour );
 
+#ifdef __WXMAC__
+#if wxCHECK_VERSION(2,9,0)
+    if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
+        ctrl->SetBackgroundColour( back_color );
+    else
+        ctrl->SetBackgroundColour( wxColour( 0xff, 0xff, 0xff ));
+#endif    
+#endif
+        
     wxWindowList kids = ctrl->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
         wxWindowListNode *node = kids.Item( i );
