@@ -1576,7 +1576,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 
     langStyleBox->Add( itemLangStaticBoxSizer, 1, wxEXPAND | wxALL, border_size );
 
-    m_itemLangListBox = new wxComboBox( itemPanelFont, ID_CHOICE_LANG );
+    m_itemLangListBox = new wxChoice( itemPanelFont, ID_CHOICE_LANG );
 
     itemLangStaticBoxSizer->Add( m_itemLangListBox, 0, wxEXPAND | wxALL, border_size );
 
@@ -1586,7 +1586,7 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
             wxHORIZONTAL );
     m_itemBoxSizerFontPanel->Add( itemFontStaticBoxSizer, 0, wxEXPAND | wxALL, border_size );
 
-    m_itemFontElementListBox = new wxComboBox( itemPanelFont, ID_CHOICE_FONTELEMENT );
+    m_itemFontElementListBox = new wxChoice( itemPanelFont, ID_CHOICE_FONTELEMENT );
 
     int nFonts = pFontMgr->GetNumFonts();
     for( int it = 0; it < nFonts; it++ ) {
@@ -1611,14 +1611,14 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
             wxVERTICAL );
     langStyleBox->Add( itemStyleStaticBoxSizer, 1, wxEXPAND | wxALL, border_size );
 
-    m_itemStyleListBox = new wxComboBox( itemPanelFont, ID_STYLESCOMBOBOX );
+    m_itemStyleListBox = new wxChoice( itemPanelFont, ID_STYLESCOMBOBOX );
 
     wxArrayPtrVoid styles = g_StyleManager->GetArrayOfStyles();
     for( unsigned int i = 0; i < styles.Count(); i++ ) {
         ocpnStyle::Style* style = (ocpnStyle::Style*) ( styles.Item( i ) );
         m_itemStyleListBox->Append( style->name );
     }
-    m_itemStyleListBox->SetValue( g_StyleManager->GetCurrentStyle()->name );
+    m_itemStyleListBox->SetStringSelection( g_StyleManager->GetCurrentStyle()->name );
     itemStyleStaticBoxSizer->Add( m_itemStyleListBox, 1, wxEXPAND | wxALL, border_size );
 
     wxStaticBox* miscOptionsBox = new wxStaticBox( itemPanelFont, wxID_ANY, _("Miscellaneous Options") );
@@ -2667,7 +2667,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 //    User Interface Panel
     if( m_bVisitLang ) {
         wxString new_canon = _T("en_US");
-        wxString lang_sel = m_itemLangListBox->GetValue();
+        wxString lang_sel = m_itemLangListBox->GetStringSelection();
 
         int nLang = sizeof( lang_list ) / sizeof(int);
         for( int it = 0; it < nLang; it++ ) {
@@ -2685,7 +2685,7 @@ void options::OnApplyClick( wxCommandEvent& event )
         if( g_locale != locale_old ) m_returnChanges |= LOCALE_CHANGED;
 
         wxString oldStyle = g_StyleManager->GetCurrentStyle()->name;
-        g_StyleManager->SetStyleNextInvocation( m_itemStyleListBox->GetValue() );
+        g_StyleManager->SetStyleNextInvocation( m_itemStyleListBox->GetStringSelection() );
         if( g_StyleManager->GetStyleNextInvocation() != oldStyle ) {
             m_returnChanges |= STYLE_CHANGED;
         }
