@@ -92,6 +92,10 @@ SET(SRC_GRIB
             src/GribRecord.cpp  
             src/zuFile.cpp 
             src/IsoLine.cpp
+
+            ../../src/wxJSON/jsonval.cpp
+            ../../src/wxJSON/jsonreader.cpp
+            ../../src/wxJSON/jsonwriter.cpp
 )
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 

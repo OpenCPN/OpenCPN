@@ -45,10 +45,6 @@
 #define PI        3.1415926535897931160E0      /* pi */
 #endif
 
-enum OVERLAP {
-    _IN, _ON, _OUT
-};
-
 class GRIBFile;
 class GRIBRecord;
 class GribRecordTree;
@@ -99,6 +95,7 @@ public:
     ~GRIBUIDialog();
     void Init();
 
+    void SetFilename( wxString file_name ) { m_file_name = file_name; }
     void SelectTreeControlGRS( GRIBFile *pgribfile );
     void PopulateTreeControlGRS( GRIBFile *pgribfile, int file_index );
     void SelectGribRecordSet( GribRecordSet *pGribRecordSet );
@@ -110,6 +107,12 @@ public:
 
     wxTimer m_tPlayStop;
 
+    wxDateTime TimelineTime();
+    wxDateTime MinTime();
+    wxDateTime MaxTime();
+    GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
+    void TimelineChanged();
+
 private:
     void OnClose( wxCloseEvent& event );
     void OnMove( wxMoveEvent& event );
@@ -120,7 +123,6 @@ private:
     void OnFileDirChange( wxFileDirPickerEvent &event );
     void UpdateTrackingControls( void );
     void PopulateTreeControl( void );
-    void TimelineChanged();
 
     void OnTimeline( wxCommandEvent& event );
     void OnCBAny( wxCommandEvent& event );
@@ -140,9 +142,10 @@ private:
     double m_cursor_lat, m_cursor_lon;
 
     ArrayOfGribRecordSets *m_pTimelineBase;
-    GribTimelineRecordSet * m_pTimelineSet;
+    GribTimelineRecordSet *m_pTimelineSet;
     int m_TimeLineHours;
 
+    wxString         m_file_name;   /* selected file */
     wxString         m_grib_dir;
 };
 

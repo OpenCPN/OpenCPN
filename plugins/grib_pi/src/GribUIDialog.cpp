@@ -170,10 +170,14 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
 
         pConf->Read ( _T ( "lastdatatype" ), &m_lastdatatype, 0);
 
+        pConf->Read ( _T ( "Filename" ), &m_file_name );
+
         pConf->SetPath ( _T ( "/Directories" ) );
         pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir );
 
     }
+
+    m_OverlayConfig.Read();
 
     m_dirPicker->SetPath(m_grib_dir);
 
@@ -181,9 +185,6 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
 
     PopulateTreeControl();
     m_pRecordTree->Expand( m_RecordTree_root_id );
-    m_pRecordTree->SelectItem( m_RecordTree_root_id );
-
-    m_OverlayConfig.Read();
 
     DimeWindow( this );
 
@@ -205,6 +206,8 @@ GRIBUIDialog::~GRIBUIDialog()
         pConf->Write( _T ( "PressurePlot" ), m_cbPressure->GetValue());
         pConf->Write( _T ( "SeaTemperaturePlot" ), m_cbSeaTemperature->GetValue());
         pConf->Write ( _T ( "lastdatatype" ), m_lastdatatype);
+
+        pConf->Write ( _T ( "Filename" ), m_file_name );
 
         pConf->SetPath ( _T ( "/Directories" ) );
         pConf->Write ( _T ( "GRIBDirectory" ), m_grib_dir );
@@ -468,32 +471,62 @@ void GRIBUIDialog::TimelineChanged()
     if(!m_pTimelineBase)
         return;
 
-    double nhour = m_sTimeline->GetValue()/m_OverlayConfig.m_HourDivider;
-    
-    GribRecordSet &first=m_pTimelineBase->Item(0);
-    wxDateTime firsttime = first.m_Reference_Time, curtime;
-    unsigned int i;
+    SetGribTimelineRecordSet(GetTimeLineRecordSet(TimelineTime()));
+
+    pPlugIn->SendTimelineMessage();
+}
+
+wxDateTime GRIBUIDialog::TimelineTime()
+{
+    return MinTime() + wxTimeSpan(m_sTimeline->GetValue()/m_OverlayConfig.m_HourDivider);
+}
+
+wxDateTime GRIBUIDialog::MinTime()
+{
+    if(m_pTimelineBase && m_pTimelineBase->GetCount()) {
+        GribRecordSet &first=m_pTimelineBase->Item(0);
+        return first.m_Reference_Time;
+    }
+    return wxDateTime(0.0);
+}
+
+wxDateTime GRIBUIDialog::MaxTime()
+{
+    return MinTime() + wxTimeSpan(m_sTimeline->GetMax()/m_OverlayConfig.m_HourDivider);
+}
+
+GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
+{
+    unsigned int i, ip1=0;
+    wxDateTime curtime;
     for(i=0; i<m_pTimelineBase->GetCount()-1; i++) {
-        GribRecordSet &cur=m_pTimelineBase->Item(i+1);
+        ip1 = i+1;
+        GribRecordSet &cur=m_pTimelineBase->Item(ip1);
         curtime = cur.m_Reference_Time;
-        if((curtime - firsttime).GetHours() >= nhour)
+        if(curtime >= time)
             break;
     }
     
-    double hour2 = (curtime - firsttime).GetHours();
+    wxDateTime mintime = MinTime();
+    double hour2 = (curtime - mintime).GetHours();
     curtime = m_pTimelineBase->Item(i).m_Reference_Time;
-    double hour1 = (curtime - firsttime).GetHours();
+    double hour1 = (curtime - mintime).GetHours();
+    double nhour = (time - mintime).GetHours();
     
-    if(hour2<=hour1 || nhour < hour1)
-        return;
+    if(hour2<hour1 || nhour < hour1 || nhour > hour2)
+        return NULL;
 
-    double interp_const = (nhour-hour1) / (hour2-hour1);
+    double interp_const;
+    if(hour1 == hour2)
+        interp_const = 0;
+    else 
+        interp_const = (nhour-hour1) / (hour2-hour1);
     
     if(!m_OverlayConfig.m_bInterpolate)
         interp_const = round(interp_const);
 
-    GribRecordSet &GRS1 = m_pTimelineBase->Item(i), &GRS2 = m_pTimelineBase->Item(i+1);
-    SetGribTimelineRecordSet(new GribTimelineRecordSet(GRS1, GRS2, interp_const));
+    GribRecordSet &GRS1 = m_pTimelineBase->Item(i), &GRS2 = m_pTimelineBase->Item(ip1);
+    return new GribTimelineRecordSet(GRS1, GRS2, interp_const);
 }
 
 void GRIBUIDialog::OnTimeline( wxCommandEvent& event )
@@ -531,6 +564,7 @@ void GRIBUIDialog::PopulateTreeControl()
         wxFileName fn( file_array[i] );
         m_pRecordTree->m_file_id_array[i] = m_pRecordTree->AppendItem( m_RecordTree_root_id,
                 fn.GetFullName(), -1, -1, pmtid );
+
 //      m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[i], GetGlobalColor ( _T ( "UBLCK")));
     }
 
@@ -554,8 +588,17 @@ void GRIBUIDialog::PopulateTreeControl()
         }
     }
 
-    //    No GRS is selected on first building the tree
-    SetGribTimelineRecordSet( NULL );
+    /* select configured filename */
+    wxTreeItemId &item = m_RecordTree_root_id;
+    for( int i = 0; i < m_n_files; i++ ) {
+        GribTreeItemData *pdata = (GribTreeItemData *) m_pRecordTree->GetItemData(
+            m_pRecordTree->m_file_id_array[i] );
+
+        if(pdata->m_file_name == m_file_name) /* select specified file */
+            item = m_pRecordTree->m_file_id_array[i];
+    }
+
+    m_pRecordTree->SelectItem(item);
 }
 
 void GRIBUIDialog::SelectTreeControlGRS( GRIBFile *pgribfile )
@@ -607,9 +650,8 @@ void GRIBUIDialog::SelectGribRecordSet( GribRecordSet *pGribRecordSet )
     if(!rsa)
         return;
 
-    GribRecordSet &first=rsa->Item(0);
-    wxDateTime firsttime = first.m_Reference_Time, curtime = pGribRecordSet->m_Reference_Time;
-    double hour = (curtime - firsttime).GetHours();
+    wxDateTime mintime = MinTime(), curtime = pGribRecordSet->m_Reference_Time;
+    double hour = (curtime - mintime).GetHours();
 
     m_sTimeline->SetValue(hour*m_OverlayConfig.m_HourDivider);
     TimelineChanged();

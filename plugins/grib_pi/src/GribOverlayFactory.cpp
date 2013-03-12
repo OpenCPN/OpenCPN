@@ -35,13 +35,16 @@
 #include <wx/progdlg.h>
 
 #include "GribUIDialog.h"
+#include "GribOverlayFactory.h"
+
+enum OVERLAP { _IN, _ON, _OUT };
 
 // Calculates if two boxes intersect. If so, the function returns _ON.
 // If they do not intersect, two scenario's are possible:
 // other is outside this -> return _OUT
 // other is inside this -> return _IN
 OVERLAP Intersect( PlugIn_ViewPort *vp, double lat_min, double lat_max, double lon_min,
-        double lon_max, double Marge )
+                   double lon_max, double Marge )
 {
 
     if( ( ( vp->lon_min - Marge ) > ( lon_max + Marge ) )
@@ -961,6 +964,8 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int config, int i, int j, doubl
         else {
             double w = pen.GetWidth(), s = 2 * M_PI / 10;
             if( m_hiDefGraphics ) w *= 0.75;
+            wxColour c = pen.GetColour();
+            glColor4ub( c.Red(), c.Green(), c.Blue(), 255);
             for( double a = 0; a < 2 * M_PI; a += s )
                 DrawGLLine( i + r*sin(a), j + r*cos(a), i + r*sin(a+s), j + r*cos(a+s), w );
         }

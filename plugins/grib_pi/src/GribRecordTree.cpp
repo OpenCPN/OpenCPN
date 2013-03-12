@@ -87,6 +87,7 @@ void GribRecordTree::OnItemSelectChange( wxTreeEvent& event )
             }
 
             if( pdata->m_pGribFile ) {
+                parent->SetFilename( pdata->m_file_name );
                 parent->SelectTreeControlGRS( pdata->m_pGribFile );
                 ArrayOfGribRecordSets *rsa = pdata->m_pGribFile->GetRecordSetArrayPtr();
                 if( rsa->GetCount() > 0)
@@ -97,6 +98,7 @@ void GribRecordTree::OnItemSelectChange( wxTreeEvent& event )
 
         case GRIB_RECORD_SET_TYPE:
         {
+            parent->SetFilename( pdata->m_file_name );
             parent->SelectTreeControlGRS( pdata->m_pGribFile );
             parent->SelectGribRecordSet( pdata->m_pGribRecordSet );
             break;

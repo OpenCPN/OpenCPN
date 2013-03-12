@@ -35,17 +35,19 @@
 #endif //precompiled headers
 
 #define     PLUGIN_VERSION_MAJOR    2
-#define     PLUGIN_VERSION_MINOR    0
+#define     PLUGIN_VERSION_MINOR    1
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    7
 
 #include "../../../include/ocpn_plugin.h"
 
+#include "../../../include/wx/jsonreader.h"
+#include "../../../include/wx/jsonwriter.h"
+
 #include "GribConfigDialog.h"
 #include "GribOverlayFactory.h"
 #include "GribUIDialog.h"
-
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
@@ -75,8 +77,10 @@ public:
 //    The override PlugIn Methods
       bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
       void SetCursorLatLon(double lat, double lon);
+      void SetPluginMessage(wxString &message_id, wxString &message_body);
       bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
+      void SendTimelineMessage();
 
       void SetDefaults(void);
 
@@ -121,6 +125,7 @@ private:
       wxCheckBox              *m_pGRIBUseHiDef;
       wxCheckBox              *m_pGRIBUseGradualColors;
 
+      GribTimelineRecordSet *m_pLastTimelineSet;
 };
 
 #endif

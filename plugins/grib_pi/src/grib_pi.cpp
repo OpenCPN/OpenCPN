@@ -50,10 +50,6 @@ extern "C" DECL_EXP void destroy_pi(opencpn_plugin* p)
     delete p;
 }
 
-
-
-
-
 //---------------------------------------------------------------------------------------------------------
 //
 //    Grib PlugIn Implementation
@@ -74,13 +70,14 @@ grib_pi::grib_pi(void *ppimgr)
 {
       // Create the PlugIn icons
       initialize_images();
-
+      m_pLastTimelineSet = NULL;
 }
 
 grib_pi::~grib_pi(void)
 {
       delete _img_grib_pi;
       delete _img_grib;
+      delete m_pLastTimelineSet;
 }
 
 int grib_pi::Init(void)
@@ -112,12 +109,13 @@ int grib_pi::Init(void)
                                               GRIB_TOOL_POSITION, 0, this);
 
       return (WANTS_OVERLAY_CALLBACK |
-           WANTS_OPENGL_OVERLAY_CALLBACK |
-           WANTS_CURSOR_LATLON       |
-           WANTS_TOOLBAR_CALLBACK    |
-           INSTALLS_TOOLBAR_TOOL     |
-           WANTS_CONFIG              |
-           WANTS_PREFERENCES
+              WANTS_OPENGL_OVERLAY_CALLBACK |
+              WANTS_CURSOR_LATLON       |
+              WANTS_TOOLBAR_CALLBACK    |
+              INSTALLS_TOOLBAR_TOOL     |
+              WANTS_CONFIG              |
+              WANTS_PREFERENCES         |
+              WANTS_PLUGIN_MESSAGING
             );
 }
 
@@ -245,6 +243,8 @@ void grib_pi::OnToolbarToolCallback(int id)
         // Create the drawing factory
         m_pGRIBOverlayFactory = new GRIBOverlayFactory( *m_pGribDialog );
         m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
+
+        m_pGribDialog->TimelineChanged();
     }
 
     m_pGribDialog->Show(!m_pGribDialog->IsShown());
@@ -296,6 +296,51 @@ void grib_pi::SetCursorLatLon(double lat, double lon)
         m_pGribDialog->SetCursorLatLon(lat, lon);
 }
 
+void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
+{
+    if(message_id == _T("GRIB_VERSION_REQUEST")) 
+    {
+        wxJSONValue v;
+        v[_T("GribVersionMinor")] = GetAPIVersionMinor();
+        v[_T("GribVersionMajor")] = GetAPIVersionMajor();
+
+        wxJSONWriter w;
+        wxString out;
+        w.Write(v, out);
+        SendPluginMessage(wxString(_T("GRIB_VERSION")), out);
+    }
+    if(message_id == _T("GRIB_TIMELINE_REQUEST"))
+    {
+        SendTimelineMessage();
+    }
+    if(message_id == _T("GRIB_TIMELINE_RECORD_REQUEST"))
+    {
+        wxJSONReader r;
+        wxJSONValue v;
+        r.Parse(message_body, &v);
+        wxDateTime time(v[_T("Day")].AsInt(),
+                        (wxDateTime::Month)v[_T("Month")].AsInt(),
+                        v[_T("Year")].AsInt(),
+                        v[_T("Hour")].AsInt(),
+                        v[_T("Minute")].AsInt(),
+                        v[_T("Second")].AsInt());
+
+        GribTimelineRecordSet *set = m_pGribDialog ? m_pGribDialog->GetTimeLineRecordSet(time) : NULL;
+
+        char ptr[64];
+        snprintf(ptr, sizeof ptr, "%p", set);
+
+        v[_T("TimelineSetPtr")] = wxString::From8BitData(ptr);
+
+        wxJSONWriter w;
+        wxString out;
+        w.Write(v, out);
+        SendPluginMessage(wxString(_T("GRIB_TIMELINE_RECORD")), out);
+        delete m_pLastTimelineSet;
+        m_pLastTimelineSet = set;
+    }
+}
+
 bool grib_pi::LoadConfig(void)
 {
     wxFileConfig *pConf = (wxFileConfig *)m_pconfig;
@@ -337,4 +382,24 @@ bool grib_pi::SaveConfig(void)
 void grib_pi::SetColorScheme(PI_ColorScheme cs)
 {
     DimeWindow(m_pGribDialog);
+}
+
+void grib_pi::SendTimelineMessage()
+{
+    if(!m_pGribDialog)
+        return;
+
+    wxJSONValue v;
+    wxDateTime time = m_pGribDialog->TimelineTime();
+    v[_T("Day")] = time.GetDay();
+    v[_T("Month")] = time.GetMonth();
+    v[_T("Year")] = time.GetYear();
+    v[_T("Hour")] = time.GetHour();
+    v[_T("Minute")] = time.GetMinute();
+    v[_T("Second")] = time.GetSecond();
+    
+    wxJSONWriter w;
+    wxString out;
+    w.Write(v, out);
+    SendPluginMessage(wxString(_T("GRIB_TIMELINE")), out);
 }
