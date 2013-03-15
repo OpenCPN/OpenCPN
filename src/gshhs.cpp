@@ -365,7 +365,8 @@ void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx,
             }
         }
 
-        pnt.DrawPolygonTessellated( pointCount, poly_pt, 0, 0 );
+        if(pointCount>1)
+            pnt.DrawPolygonTessellated( pointCount, poly_pt, 0, 0 );
         delete[] poly_pt;
     }
 }
