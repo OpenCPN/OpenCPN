@@ -7826,7 +7826,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }
     }
 
-    if( event.RightDown() ) {
+    if( event.RightDown() || (event.LeftDown() && event.ControlDown()) ) {
         last_drag.x = mx;
         last_drag.y = my;
 

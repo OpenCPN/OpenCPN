@@ -522,6 +522,60 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
+bool GshhsPolyReader::crossing2( QLineF trajectWorld )
+{
+    if( !proj || proj == NULL ) return false;
+
+    int cxmin, cxmax, cymax, cymin;
+    cxmin = (int) floor( wxMin( trajectWorld.p1().x, trajectWorld.p2().x ) );
+    cxmax = (int) ceil( wxMax( trajectWorld.p1().x, trajectWorld.p2().x ) );
+
+    if(cxmin < 0) {
+        cxmin += 360;
+        cxmax += 360;
+    }
+
+    if(cxmax - cxmin > 180) /* dont go long way around world */
+        cxmax -= 360;
+
+    cymin = (int) floor( wxMin( trajectWorld.p1().y, trajectWorld.p2().y ) );
+    cymax = (int) ceil( wxMax( trajectWorld.p1().y, trajectWorld.p2().y ) );
+    int cx, cxx, cy;
+    GshhsPolyCell *cel;
+
+    for( cx = cxmin; cx < cxmax; cx++ ) {
+        cxx = cx;
+        while( cxx < 0 )
+            cxx += 360;
+        while( cxx >= 360 )
+            cxx -= 360;
+
+        for( cy = cymin; cy < cymax; cy++ ) {
+            if( cxx >= 0 && cxx <= 359 && cy >= -90 && cy <= 89 ) {
+                if( allCells[cxx][cy + 90] == NULL ) {
+                    cel = new GshhsPolyCell( fpoly, cxx, cy, proj, &polyHeader );
+                    assert( cel );
+                    allCells[cxx][cy + 90] = cel;
+                } else
+                    cel = allCells[cxx][cy + 90];
+
+                contour_list &poly1 = cel->getPoly1();
+                for( unsigned int pi = 0; pi < poly1.size(); pi++ ) {
+                    contour c = poly1[pi];
+                    double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
+                    for( unsigned int pj = 0; pj < c.size(); pj++ ) {
+                        QLineF l(lx, ly, c[pj].x, c[pj].y);
+                        if( my_intersects( trajectWorld, l ) )
+                            return true;
+                        lx = c[pj].x, ly = c[pj].y;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
 void GshhsPolyReader::readPolygonFileHeader( FILE *polyfile, PolygonFileHeader *header )
 {
 //    int FReadResult = 0;

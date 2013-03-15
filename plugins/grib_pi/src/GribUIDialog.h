@@ -65,7 +65,10 @@ enum { Idx_WIND_VX, Idx_WIND_VY, Idx_PRESS, Idx_HTSIGW, Idx_WVDIR,
 
 class GribRecordSet {
 public:
-    GribRecordSet();
+    GribRecordSet() {
+        for(int i=0; i<Idx_COUNT; i++)
+            m_GribRecordPtrArray[i] = NULL;
+    }
 
     time_t m_Reference_Time;
     GribRecord *m_GribRecordPtrArray[Idx_COUNT];

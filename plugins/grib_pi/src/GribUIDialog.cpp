@@ -89,13 +89,6 @@ EVT_CHECKBOX(ID_CB_CURRENT_VELOCITY, GRIBUIDialog::OnCBAny)
 
 END_EVENT_TABLE()
 
-
-GribRecordSet::GribRecordSet()
-{
-    for(int i=0; i<Idx_COUNT; i++)
-        m_GribRecordPtrArray[i] = NULL;
-}
-
 /* interpolating constructor
    as a possible optimization, write this function to also
    take latitude longitude boundaries so the resulting record can be
@@ -366,7 +359,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
                 vy = m_OverlayConfig.CalibrateValue(GribOverlayConfig::CURRENT, vy);
 
                 double vkn = sqrt( vx * vx + vy * vy );
-                double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
+                double ang = 90. + ( atan2( -vy, vx ) * 180. / PI );
                 if( ang > 360. ) ang -= 360.;
                 if( ang < 0. ) ang += 360.;
 

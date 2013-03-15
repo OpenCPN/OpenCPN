@@ -139,6 +139,7 @@ public:
 
     void drawSeaBorderLines( ocpnDC &pnt, double dx, Projection *proj );
     std::vector<QLineF> * getCoasts() { return &coasts; }
+    contour_list &getPoly1() { return poly1; }
 
 private:
     int nbpoints;
@@ -172,6 +173,7 @@ public:
 
     void InitializeLoadQuality( int quality ); // 5 levels: 0=low ... 4=full
     bool crossing( QLineF traject, QLineF trajectWorld ) const;
+    bool crossing2( QLineF trajectWorld );
     int currentQuality;
     void setProj( Projection * p )
     {
@@ -233,6 +235,7 @@ inline bool GshhsPolyReader::crossing( QLineF traject, QLineF trajectWorld ) con
     }
     return false;
 }
+
 inline bool GshhsPolyReader::my_intersects( QLineF line1, QLineF line2 ) const
 {
     // implementation is based on Graphics Gems III's "Faster Line Segment Intersection"
@@ -334,6 +337,7 @@ public:
     int getQuality() { return quality; }
 
     bool crossing( QLineF traject, QLineF trajectWorld ) const;
+    bool crossing2( QLineF trajectWorld );
     void setProj( Projection * p ) { this->gshhsPoly_reader->setProj( p ); }
     int ReadPolyVersion();
     bool qualityAvailable[6];
@@ -364,6 +368,11 @@ private:
 inline bool GshhsReader::crossing( QLineF traject, QLineF trajectWorld ) const
 {
     return this->gshhsPoly_reader->crossing( traject, trajectWorld );
+}
+
+inline bool GshhsReader::crossing2(QLineF trajectWorld )
+{
+    return this->gshhsPoly_reader->crossing2(trajectWorld );
 }
 
 //-------------------------------------------------------------------------------
