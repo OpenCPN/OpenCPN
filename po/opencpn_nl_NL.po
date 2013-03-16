@@ -7280,7 +7280,7 @@ msgstr "OK"
 #
 #: src/options.cpp:1760
 msgid "Apply"
-msgstr "Toevoegen"
+msgstr "Toepassen"
 
 #
 #
