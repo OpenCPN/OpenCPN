@@ -38,7 +38,7 @@
 #include "GribUIDialogBase.h"
 #include "GribConfigDialog.h"
 #include "GribReader.h"
-#include "GribRecord.h"
+#include "GribRecordSet.h"
 #include "IsoLine.h"
 
 #ifndef PI
@@ -56,23 +56,6 @@ class grib_pi;
 class wxGraphicsContext;
 
 WX_DECLARE_OBJARRAY( GribRecordSet, ArrayOfGribRecordSets );
-WX_DECLARE_OBJARRAY( GribRecord *, ArrayOfGribRecordPtrs );
-
-    // These are indexes into the array
-enum { Idx_WIND_VX, Idx_WIND_VY, Idx_PRESS, Idx_HTSIGW, Idx_WVDIR,
-       Idx_WINDSCAT_VY, Idx_WINDSCAT_VX, Idx_SEATEMP, Idx_SEACURRENT_VX,
-       Idx_SEACURRENT_VY, Idx_COUNT };
-
-class GribRecordSet {
-public:
-    GribRecordSet() {
-        for(int i=0; i<Idx_COUNT; i++)
-            m_GribRecordPtrArray[i] = NULL;
-    }
-
-    time_t m_Reference_Time;
-    GribRecord *m_GribRecordPtrArray[Idx_COUNT];
-};
 
 class GribTimelineRecordSet : public GribRecordSet
 {
