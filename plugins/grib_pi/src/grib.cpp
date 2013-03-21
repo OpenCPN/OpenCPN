@@ -41,33 +41,18 @@
 
 #include "grib_pi.h"
 
-/*
- extern FontMgr          *pFontMgr;
- extern ColorScheme      global_color_scheme;
-
- extern GRIBUIDialog     *g_pGribDialog;
- extern int              g_grib_dialog_x, g_grib_dialog_y;
- extern int              g_grib_dialog_sx, g_grib_dialog_sy;
- extern wxString         g_grib_dir;
-
- extern ChartCanvas     *cc1;
- */
-//extern bool             g_bGRIBUseHiDef;
-
 #include "folder.xpm"
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordSets );
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordPtrs );
 
-//static GRIBOverlayFactory   *s_pGRIBOverlayFactory;
-/*
- static bool GRIBOverlayFactory_RenderGribOverlay_Static_Wrapper ( wxDC *dc, PlugIn_ViewPort *vp )
- {
- return s_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
+enum {
+    ID_GRIBNEXTRECORD = 10001, ID_GRIBPREVRECORD, ID_GRIBNOWRECORD, ID_CHOOSEGRIBDATA, ID_CHOOSEGRIBFILE,
+    ID_GRIBSETDATA, ID_GRIBREQUEST
+};
 
- }
- */
+const wxString model[] = { wxT("NOAA_GFS"), wxT("NOAA_COAMPS") ,wxT("NOAA_RTOFS") };
 
 //    Sort compare function for File Modification Time
 static int CompareFileStringTime( const wxString& first, const wxString& second )
@@ -76,9 +61,120 @@ static int CompareFileStringTime( const wxString& first, const wxString& second 
     wxFileName s( second );
     wxTimeSpan sp = s.GetModificationTime() - f.GetModificationTime();
     return sp.GetMinutes();
-
-//      return ::wxFileModificationTime(first) - ::wxFileModificationTime(second);
 }
+
+//date/time in the desired time zone format
+static wxString TToString( const wxDateTime date_time, const int time_zone )
+{  
+    wxDateTime t( date_time );
+    t.MakeFromTimezone( wxDateTime::UTC );
+    if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
+    switch( time_zone ) {
+        case 0: return t.Format( _T(" %a %d-%b-%Y  %H:%M "), wxDateTime::Local ) + _T("LOC");//:%S
+        case 1: 
+        default: return t.Format( _T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC ) + _T("UTC");
+    }
+}
+
+//speed in the desired unit
+static wxString SToString(  double val, const int unit )
+{
+    switch( unit ) {
+    case 0:
+       if( val < 1 ) return wxString::Format( _T("%3.2f m/s"), val ); else return wxString::Format( _T("%3.1f m/s"), val );
+    case 1:
+    default:
+        val *= 1.943845;             // ( 1.943845 = ( 3.6 / 1.852 )   translated in kts
+        if( val < 2 ) return wxString::Format( _T("%3.2f kts"), val ); else return wxString::Format( _T("%3.1f kts"), val );
+    }
+}
+
+static wxString MToString( int DataCenterModel )
+{
+    switch( DataCenterModel ) {
+    case NOAA_GFS: return  _T("NOAA_GFS");
+    case NOAA_NCEP_WW3: return  _T("NOAA_NCEP_WW3");
+    case NOAA_NCEP_SST: return  _T("NOAA_NCEP_SST");
+    case NOAA_RTOFS: return  _T("NOAA_RTOFS");
+    case FNMOC_WW3_GLB: return  _T("FNMOC_WW3");
+    case FNMOC_WW3_MED: return  _T("FNMOC_WW3");
+    case NORWAY_METNO: return  _T("NORWAY_METNO");
+    default : return  _T("OTHER_DATA_CENTER");
+    }
+}
+
+static wxString DToString( int Data )
+{
+    switch( Data ) {
+    case ID_CB_NOMAP:  return _("No other graphic display");
+    case ID_CB_WINDSP: return _("Wind Speed(10m)");
+    case ID_CB_WINDIR: return _("Wind Direction(10m)");
+    case ID_CB_WINDM:  return  _("Wind Speed and Direction(10m)");
+    case ID_CB_WIGUSM:
+    case ID_CB_WIGUST: return  _("Wind Gust(Surface)");
+    case ID_CB_SIWAVD:
+    case ID_CB_SIWAVM:
+        return  _("Sign. Wave Height");
+    case ID_CB_PRESS:
+    case ID_CB_PRESSD:
+    case ID_CB_PRESSM:
+        return _("Pressure (MSL)");
+    case ID_CB_PRETOD:
+    case ID_CB_PRETOM: 
+        return  _("Total Rainfall");
+    case ID_CB_CLOCVD:
+    case ID_CB_CLOCVM: 
+        return  _("Cloud Cover");
+    case ID_CB_ATEM2D:
+    case ID_CB_ATEM2M: 
+        return  _("Air Temp.(2m)");
+    case ID_CB_SEATED:
+    case ID_CB_SEATEM: 
+        return  _("Sea Surface Temp.");
+    case ID_CB_CURRED:
+    case ID_CB_CURREM:
+        return  _("Current Velocity");
+    default : return  _("Unnown");
+    }
+}
+
+wxString toSAILDOC ( int NEflag, int MMflag, double a )
+{
+    //saildoc needs value in degré (without decimal) so translate doube value in integer and if necessary tacking one degré more 
+    //to be sure all the screen is covered
+    short neg = 0;
+    if ( a < 0.0 ) {
+        a = -a;
+        neg = 1;
+    }
+    char c;
+    switch(NEflag) {
+        case 1: {
+            if ( !neg ) {
+                if( MMflag == 1 ) a += 1.;
+                c = 'N';
+            } else {
+                if( MMflag == 2 ) a += 1.;
+                c = 'S';                               
+            }
+            break;
+        }
+        case 2: {
+            if ( !neg ) {
+                if( MMflag == 1 ) a += 1.; 
+                c = 'E';
+            } else {
+                if( MMflag == 2 ) a += 1.;
+                c = 'W';                                  
+            }
+        }
+    }
+    wxString s;
+    s.Printf ( _T ( "%01d%c" ), (int) a, c );
+    return s;
+}
+
+
 //---------------------------------------------------------------------------------------
 //          GRIB Selector/Control Dialog Implementation
 //---------------------------------------------------------------------------------------
@@ -87,22 +183,21 @@ IMPLEMENT_CLASS ( GRIBUIDialog, wxDialog )
 BEGIN_EVENT_TABLE ( GRIBUIDialog, wxDialog )
 
 EVT_CLOSE ( GRIBUIDialog::OnClose )
-//            EVT_BUTTON ( ID_OK, GRIBUIDialog::OnIdOKClick )
 EVT_MOVE ( GRIBUIDialog::OnMove )
 EVT_SIZE ( GRIBUIDialog::OnSize )
-EVT_BUTTON ( ID_CHOOSEGRIBDIR, GRIBUIDialog::OnChooseDirClick )
-EVT_CHECKBOX(ID_CB_WINDSPEED, GRIBUIDialog::OnCBWindspeedClick)
-EVT_CHECKBOX(ID_CB_WINDDIR, GRIBUIDialog::OnCBWinddirClick)
-EVT_CHECKBOX(ID_CB_PRESS, GRIBUIDialog::OnCBPressureClick)
-EVT_CHECKBOX(ID_CB_SIGHW, GRIBUIDialog::OnCBSigHwClick)
-EVT_CHECKBOX(ID_CB_SEATMP, GRIBUIDialog::OnCBSeatempClick)
-EVT_CHECKBOX(ID_CB_SEACURRENT, GRIBUIDialog::OnCBSeaCurrentClick)
-
+EVT_TIMER ( GRIB_FORECAST_TIMER, GRIBUIDialog::OnGRIBForecastTimerEvent )
+EVT_TIMER ( CANVAS_REFRESH_TIMER, GRIBUIDialog::OnCanvasRefreshTimerEvent )
+EVT_BUTTON( ID_CHOOSEGRIBFILE, GRIBUIDialog::OnButtonOpenFileClick )
+EVT_COMBOBOX( ID_CHOOSEGRIBDATA, GRIBUIDialog::OnGRIBForecastChange )
+EVT_BUTTON ( ID_GRIBNEXTRECORD, GRIBUIDialog::OnButtonNextClick )
+EVT_BUTTON ( ID_GRIBPREVRECORD, GRIBUIDialog::OnButtonPrevClick )
+EVT_BUTTON ( ID_GRIBNOWRECORD, GRIBUIDialog::OnButtonNowClick )
+EVT_BUTTON (ID_GRIBSETDATA,GRIBUIDialog::OnButtonSettingClick)
+EVT_BUTTON (ID_GRIBREQUEST,GRIBUIDialog::OnGribRequestClick)
 END_EVENT_TABLE()
 
 GRIBUIDialog::GRIBUIDialog()
 {
-//      printf("GRIBUIDialog ctor\n");
     Init();
 }
 
@@ -112,27 +207,26 @@ GRIBUIDialog::~GRIBUIDialog()
 
 void GRIBUIDialog::Init()
 {
-    m_sequence_active = -1;
+    m_bGRIBActiveFile = NULL;
     m_pCurrentGribRecordSet = NULL;
-    m_pRecordTree = NULL;
-
-    m_pWindSpeedTextCtrl = NULL;
-    m_pWindDirTextCtrl = NULL;
-    m_pPressureTextCtrl = NULL;
-    m_pSigWHTextCtrl = NULL;
-    m_pSeaTmpTextCtrl = NULL;
-    m_pSeaCurrentTextCtrl = NULL;
+    m_pRecordForecast = NULL;
 }
 
 bool GRIBUIDialog::Create( wxWindow *parent, grib_pi *ppi, wxWindowID id, const wxString& caption,
-        const wxString initial_grib_dir, const wxPoint& pos, const wxSize& size, long style )
+        const wxPoint& pos, const wxSize& size, long style )
 {
-//      printf("GRIBUIDialog::Create\n");
-
     pParent = parent;
     pPlugIn = ppi;
 
-    m_currentGribDir = initial_grib_dir;
+    m_DataDisplayConfig = pPlugIn->GetGRIBDataConfig();
+    m_NumberDataShown = GetNumberDataShown();
+
+     m_pPrev_bitmap = new wxBitmap( prev );   // comes from XPM include
+     m_pNext_bitmap = new wxBitmap( next );
+     m_pNow_bitmap = new wxBitmap( now );
+     m_pOpen_bitmap = new wxBitmap( openfile );
+     m_pPref_bitmap = new wxBitmap( setting );
+     m_pRequ_bitmap = new wxBitmap( request );
 
     //    As a display optimization....
     //    if current color scheme is other than DAY,
@@ -140,15 +234,13 @@ bool GRIBUIDialog::Create( wxWindow *parent, grib_pi *ppi, wxWindowID id, const 
     //    This way, any window decorations set by external themes, etc
     //    will not detract from night-vision
 
-    long wstyle = wxDEFAULT_FRAME_STYLE;
+    long wstyle = wxRESIZE_BORDER | wxSYSTEM_MENU | wxCAPTION | wxCLOSE_BOX | wxCLIP_CHILDREN;
 //      if ( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY ) && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) )
 //            wstyle |= ( wxNO_BORDER );
 
-    wxSize size_min = size;
+ //   wxSize size_min = size;
 //      size_min.IncTo ( wxSize ( 500,600 ) );
-    if( !wxDialog::Create( parent, id, caption, pos, size_min, wstyle ) ) return false;
-
-    m_pfolder_bitmap = new wxBitmap( folder );   // comes from XPM include
+    if( !wxDialog::Create( parent, id, caption, pos, size, wstyle ) ) return false;
 
     CreateControls();
 
@@ -162,9 +254,14 @@ bool GRIBUIDialog::Create( wxWindow *parent, grib_pi *ppi, wxWindowID id, const 
 
 void GRIBUIDialog::CreateControls()
 {
-    int border_size = 4;
-//      int check_spacing = 4;
-    int group_item_spacing = 1;           // use for items within one group, with Add(...wxALL)
+    int border_size = 0;
+    int item_spacing = 0;
+    int button_spacing = 3;           // used for align buttons and text
+
+    wxFont *dFont_For = new wxFont( 11, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    wxFont *dFont_Lab = new wxFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    wxFont *dFont_val = new wxFont( 9, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
+    //SetOwnFont(*dFont_For);
 
 // A top-level sizer
     wxBoxSizer* topSizer = new wxBoxSizer( wxVERTICAL );
@@ -172,126 +269,135 @@ void GRIBUIDialog::CreateControls()
 
 // A second box sizer to give more space around the controls
     wxBoxSizer* boxSizer = new wxBoxSizer( wxVERTICAL );
-    topSizer->Add( boxSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 2 );
+    topSizer->Add( boxSizer, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 1 );
 
-//    The GRIB directory
-    wxStaticBox* itemStaticBoxSizer11Static = new wxStaticBox( this, wxID_ANY,
-            _ ( "GRIB File Directory" ) );
-    wxStaticBoxSizer *itemStaticBoxSizer11 = new wxStaticBoxSizer( itemStaticBoxSizer11Static,
-            wxHORIZONTAL );
-    boxSizer->Add( itemStaticBoxSizer11, 0, wxEXPAND );
+//    The GRIB File and Forecast selection
+    wxFlexGridSizer *pFileGrid = new wxFlexGridSizer( 7 );
+    topSizer->Add( pFileGrid, 0, wxALL | wxEXPAND, border_size );
 
-    m_pitemCurrentGribDirectoryCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition,
-            wxDefaultSize, wxTE_READONLY );
-    itemStaticBoxSizer11->Add( m_pitemCurrentGribDirectoryCtrl, 1, wxALIGN_LEFT | wxALL, 5 );
+    m_pButtonPrev = new wxBitmapButton( this, ID_GRIBPREVRECORD, *m_pPrev_bitmap , wxDefaultPosition, wxDefaultSize);
+    pFileGrid->Add( m_pButtonPrev, 0,  wxLEFT | wxRIGHT, button_spacing  );
 
-    m_pitemCurrentGribDirectoryCtrl->AppendText( m_currentGribDir );
+    m_pRecordForecast = new wxComboBox(this, ID_CHOOSEGRIBDATA, _T(""), wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
+    pFileGrid->Add( m_pRecordForecast, 2,  wxTOP | wxEXPAND, 3 );
+    m_pRecordForecast->SetFont( *dFont_For );
 
-    wxButton* bChooseDir = new wxBitmapButton( this, ID_CHOOSEGRIBDIR, *m_pfolder_bitmap );
-    itemStaticBoxSizer11->Add( bChooseDir, 0, wxALIGN_RIGHT | wxALL, 5 );
+    m_pButtonNext = new wxBitmapButton( this, ID_GRIBNEXTRECORD, *m_pNext_bitmap, wxDefaultPosition, wxDefaultSize);
+    pFileGrid->Add( m_pButtonNext, 0,  wxLEFT | wxRIGHT, button_spacing  );
 
-//  The Tree control
-    m_pRecordTree = new GribRecordTree( this, ID_GRIBRECORDREECTRL, wxDefaultPosition,
-            wxSize( -1, 200 ), wxTR_HAS_BUTTONS );
-    boxSizer->Add( m_pRecordTree, 0, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 2 );
+    m_pButtonNow = new wxBitmapButton( this, ID_GRIBNOWRECORD, *m_pNow_bitmap, wxDefaultPosition, wxDefaultSize);
+    pFileGrid->Add( m_pButtonNow, 0,  wxLEFT | wxRIGHT, button_spacing  );
 
-    m_RecordTree_root_id = m_pRecordTree->AddRoot( _T ( "GRIBs" ) );
-    PopulateTreeControl();
-    m_pRecordTree->Expand( m_RecordTree_root_id );
-    m_pRecordTree->SelectItem( m_RecordTree_root_id );
+    m_pButtonOpen = new wxBitmapButton( this, ID_CHOOSEGRIBFILE, *m_pOpen_bitmap, wxDefaultPosition, wxDefaultSize);
+    pFileGrid->Add( m_pButtonOpen, 0,  wxLEFT, 20  );
 
-//      Data Box
-    wxStaticBox* itemStaticBoxData = new wxStaticBox( this, wxID_ANY, _("GRIB Data") );
-    wxStaticBoxSizer* itemStaticBoxSizerData = new wxStaticBoxSizer( itemStaticBoxData,
+    m_pButtonPref = new wxBitmapButton( this, ID_GRIBSETDATA, *m_pPref_bitmap, wxDefaultPosition, wxDefaultSize);
+    pFileGrid->Add( m_pButtonPref, 0,  wxLEFT | wxRIGHT, 20 );
+
+    m_pButtonRequ = new wxBitmapButton( this, ID_GRIBREQUEST, *m_pRequ_bitmap, wxDefaultPosition, wxDefaultSize);
+    pFileGrid->Add( m_pButtonRequ, 0,  wxRIGHT, 2 );
+
+        //Data Box
+        wxStaticBox* itemStaticBoxData = new wxStaticBox( this, wxID_ANY, _T("") );
+        wxStaticBoxSizer* itemStaticBoxSizerData = new wxStaticBoxSizer( itemStaticBoxData,
             wxVERTICAL );
-    boxSizer->Add( itemStaticBoxSizerData, 0, wxALL | wxEXPAND, border_size );
+        topSizer->Add( itemStaticBoxSizerData, 0, wxALL | wxEXPAND, border_size );
 
-    wxFlexGridSizer *pDataGrid = new wxFlexGridSizer( 3 );
-    pDataGrid->AddGrowableCol( 1 );
-    itemStaticBoxSizerData->Add( pDataGrid, 0, wxALL | wxEXPAND, border_size );
+        wxFlexGridSizer *pDataGrid = new wxFlexGridSizer( 6 );
+        itemStaticBoxSizerData->Add( pDataGrid, 0, wxALL | wxEXPAND, border_size );
 
-    m_cbWindSpeed.Create( this, ID_CB_WINDSPEED, _T("") );
-    m_cbWindSpeed.SetValue( true );
-    pDataGrid->Add( &m_cbWindSpeed, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
-
-    wxString wind_speed_str = _("Wind Speed, Kts.");
-    if( pPlugIn->GetUseMS() ) wind_speed_str = _("Wind Speed, m/sec.");
-
-    wxStaticText *ps1 = new wxStaticText( this, wxID_ANY, wind_speed_str );
-    pDataGrid->Add( ps1, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
-
-    m_pWindSpeedTextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxDefaultSize,
+        m_pT0StaticText = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize );
+        pDataGrid->Add( m_pT0StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
+        m_pT0StaticText->SetFont( *dFont_Lab );
+         
+        m_pT0TextCtrl = new wxTextCtrl( this, -1,  _T(""), wxDefaultPosition, wxSize( 75, -1 ),
             wxTE_READONLY );
-    pDataGrid->Add( m_pWindSpeedTextCtrl, 0, wxALIGN_RIGHT, group_item_spacing );
+        pDataGrid->Add( m_pT0TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
+        m_pT0TextCtrl->SetFont( *dFont_val );
 
-    m_cbWindDir.Create( this, ID_CB_WINDDIR, _T("") );
-    m_cbWindDir.SetValue( true );
-    pDataGrid->Add( &m_cbWindDir, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
+        m_pT1StaticText = new wxStaticText( this, wxID_ANY,  _T(""), wxDefaultPosition, wxDefaultSize );
+        pDataGrid->Add( m_pT1StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
+        m_pT1StaticText->SetFont( *dFont_Lab );
 
-    wxStaticText *ps2 = new wxStaticText( this, wxID_ANY, _("Wind Direction") );
-    pDataGrid->Add( ps2, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
-
-    m_pWindDirTextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxDefaultSize,
+        m_pT1TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
             wxTE_READONLY );
-    pDataGrid->Add( m_pWindDirTextCtrl, 0, wxALIGN_RIGHT, group_item_spacing );
+        pDataGrid->Add( m_pT1TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
+        m_pT1TextCtrl->SetFont( *dFont_val );
 
-    m_cbPress.Create( this, ID_CB_PRESS, _T("") );
-    m_cbPress.SetValue( true );
-    pDataGrid->Add( &m_cbPress, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
+        m_pT2StaticText = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize );
+        pDataGrid->Add( m_pT2StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
+        m_pT2StaticText->SetFont( *dFont_Lab );
 
-    wxStaticText *ps3 = new wxStaticText( this, wxID_ANY, _("Pressure, mBar") );
-    pDataGrid->Add( ps3, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
-
-    m_pPressureTextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxDefaultSize,
+        m_pT2TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
             wxTE_READONLY );
-    pDataGrid->Add( m_pPressureTextCtrl, 0, wxALIGN_RIGHT, group_item_spacing );
+        pDataGrid->Add( m_pT2TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
+        m_pT2TextCtrl->SetFont( *dFont_val );
 
-    m_cbSigHw.Create( this, ID_CB_SIGHW, _T("") );
-    m_cbSigHw.SetValue( true );
-    pDataGrid->Add( &m_cbSigHw, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
+        if( m_NumberDataShown > 3 ) {
+            m_pT3StaticText = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize );
+            pDataGrid->Add( m_pT3StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
+            m_pT3StaticText->SetFont( *dFont_Lab );
 
-    wxStaticText *ps4 = new wxStaticText( this, wxID_ANY, _("Significant Wave Height, m") );
-    pDataGrid->Add( ps4, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
+            m_pT3TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+                wxTE_READONLY );
+            pDataGrid->Add( m_pT3TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
+            m_pT3TextCtrl->SetFont( *dFont_val );
 
-    m_pSigWHTextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxDefaultSize,
-            wxTE_READONLY );
-    pDataGrid->Add( m_pSigWHTextCtrl, 0, wxALIGN_RIGHT, group_item_spacing );
+            m_pT4StaticText = new wxStaticText( this, wxID_ANY,  _T(""), wxDefaultPosition, wxDefaultSize );
+            pDataGrid->Add( m_pT4StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
+            m_pT4StaticText->SetFont( *dFont_Lab );
 
-    m_cbSeaTmp.Create( this, ID_CB_SEATMP, _T("") );
-    m_cbSeaTmp.SetValue( true );
-    pDataGrid->Add( &m_cbSeaTmp, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
+            m_pT4TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+                wxTE_READONLY );
+            pDataGrid->Add( m_pT4TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
+            m_pT4TextCtrl->SetFont( *dFont_val );
 
-    wxStaticText *ps5 = new wxStaticText( this, wxID_ANY, _("Sea Surface Temp, C") );
-    pDataGrid->Add( ps5, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
+            m_pT5StaticText = new wxStaticText( this, wxID_ANY,  _T(""), wxDefaultPosition, wxDefaultSize );
+            pDataGrid->Add( m_pT5StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
+            m_pT5StaticText->SetFont( *dFont_Lab );
 
-    m_pSeaTmpTextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxDefaultSize,
-            wxTE_READONLY );
-    pDataGrid->Add( m_pSeaTmpTextCtrl, 0, wxALIGN_RIGHT, group_item_spacing );
+            m_pT5TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+                wxTE_READONLY );
+            pDataGrid->Add( m_pT5TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
+            m_pT5TextCtrl->SetFont( *dFont_val );
+        }
+        if( m_NumberDataShown > 6 ) {
+            m_pT6StaticText = new wxStaticText( this, wxID_ANY, _T(""), wxDefaultPosition, wxDefaultSize );
+            pDataGrid->Add( m_pT6StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
+            m_pT6StaticText->SetFont( *dFont_Lab );
 
-    m_cbSeaCurrent.Create( this, ID_CB_SEACURRENT, _T("") );
-    m_cbSeaCurrent.SetValue( true );
-    pDataGrid->Add( &m_cbSeaCurrent, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
+            m_pT6TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+                wxTE_READONLY );
+            pDataGrid->Add( m_pT6TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
+             m_pT6TextCtrl->SetFont( *dFont_val );
 
-    wxStaticText *ps6 = new wxStaticText( this, wxID_ANY, _("Current Velocity, Kts.") );
-    pDataGrid->Add( ps6, 0, wxALIGN_LEFT | wxALL, group_item_spacing );
+            m_pT7StaticText = new wxStaticText( this, wxID_ANY,  _T(""), wxDefaultPosition, wxDefaultSize );
+            pDataGrid->Add( m_pT7StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
+            m_pT7StaticText->SetFont( *dFont_Lab );
 
-    m_pSeaCurrentTextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxDefaultSize,
-            wxTE_READONLY );
-    pDataGrid->Add( m_pSeaCurrentTextCtrl, 0, wxALIGN_RIGHT, group_item_spacing );
+            m_pT7TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+                wxTE_READONLY );
+            pDataGrid->Add( m_pT7TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
+             m_pT7TextCtrl->SetFont( *dFont_val );
 
-// A horizontal box sizer to contain OK
-    wxBoxSizer* AckBox = new wxBoxSizer( wxHORIZONTAL );
-    boxSizer->Add( AckBox, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5 );
+            m_pT8StaticText = new wxStaticText( this, wxID_ANY,  _T(""), wxDefaultPosition, wxDefaultSize );
+            pDataGrid->Add( m_pT8StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT| wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
+            m_pT8StaticText->SetFont( *dFont_Lab );
 
-//    Button color
-//      wxColour button_color = GetGlobalColor ( _T ( "UIBCK" ) );;
+            m_pT8TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+                wxTE_READONLY );
+            pDataGrid->Add( m_pT8TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
+            m_pT8TextCtrl->SetFont( *dFont_val );
+        } 
 
-// The OK button
-    /*
-     wxButton* bOK = new wxButton ( this, ID_OK, _( "&Close" ),
-     wxDefaultPosition, wxDefaultSize, 0 );
-     AckBox->Add ( bOK, 0, wxALIGN_CENTER_VERTICAL|wxALL, 5 );
-     */
+    m_pGribForecastTimer.SetOwner( this, GRIB_FORECAST_TIMER );
+
+    UpdateTrackingLabels();
+
+    Fit();
+
+    m_pCanvasRefreshTimer.SetOwner( this, CANVAS_REFRESH_TIMER );
+    m_pCanvasRefreshTimer.Start( CANVAS_REFRESH_100MS ) ;
 }
 
 void GRIBUIDialog::SetCursorLatLon( double lat, double lon )
@@ -302,17 +408,14 @@ void GRIBUIDialog::SetCursorLatLon( double lat, double lon )
     UpdateTrackingControls();
 }
 
-void GRIBUIDialog::UpdateTrackingControls( void )
+void GRIBUIDialog::UpdateTrackingControls()
 {
-    if( m_pWindSpeedTextCtrl ) m_pWindSpeedTextCtrl->Clear();
-    if( m_pWindDirTextCtrl ) m_pWindDirTextCtrl->Clear();
-    if( m_pPressureTextCtrl ) m_pPressureTextCtrl->Clear();
-    if( m_pSigWHTextCtrl ) m_pSigWHTextCtrl->Clear();
-    if( m_pSeaTmpTextCtrl ) m_pSeaTmpTextCtrl->Clear();
-    if( m_pSeaCurrentTextCtrl ) m_pSeaCurrentTextCtrl->Clear();
-
     if( m_pCurrentGribRecordSet ) {
-        //    Update the wind control
+        //Update the wind control
+        wxArrayString val;
+        int i = 1;             //index 0 & 1 are systematicaly used by wind speed and dir
+        val.Add( _T(""), m_DataDisplayConfig.Len() -1 );   //open as position as panel data existing
+
         if( ( m_RS_Idx_WIND_VX != -1 ) && ( m_RS_Idx_WIND_VY != -1 ) ) {
             double vx =
                     m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_WIND_VX )->getInterpolatedValue(
@@ -322,46 +425,16 @@ void GRIBUIDialog::UpdateTrackingControls( void )
                             m_cursor_lon, m_cursor_lat, true );
 
             if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-                double vkn = sqrt( vx * vx + vy * vy ) * 3.6 / 1.852;
+                double vkn = sqrt( vx * vx + vy * vy ); //* 3.6 / 1.852;            kept in m/s
                 double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
                 if( ang > 360. ) ang -= 360.;
                 if( ang < 0. ) ang += 360.;
-                if( pPlugIn->GetUseMS() ) vkn *= .5144;
 
-                wxString t;
-                t.Printf( _T("%2d"), (int) vkn );
-                if( m_pWindSpeedTextCtrl ) m_pWindSpeedTextCtrl->AppendText( t );
+                val[0] = SToString( vkn , pPlugIn->GetSpeedUnit() );
 
-                t.Printf( _T("%03d"), (int) ( ang ) );
-                if( m_pWindDirTextCtrl ) m_pWindDirTextCtrl->AppendText( t );
-
+                val[1].Printf( _T("%03d Deg"), (int) ( ang ) );
             }
         }
-
-        //    Update the Pressure control
-        if( m_RS_Idx_PRESS != -1 ) {
-            double press =
-                    m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_PRESS )->getInterpolatedValue(
-                            m_cursor_lon, m_cursor_lat, true );
-            if( press != GRIB_NOTDEF ) {
-                wxString t;
-                t.Printf( _T("%2d"), (int) ( press / 100. ) );
-                if( m_pPressureTextCtrl ) m_pPressureTextCtrl->AppendText( t );
-            }
-        }
-
-        //    Update the Sig Wave Height
-        if( m_RS_Idx_HTSIGW != -1 ) {
-            double height =
-                    m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_HTSIGW )->getInterpolatedValue(
-                            m_cursor_lon, m_cursor_lat, true );
-            if( height != GRIB_NOTDEF ) {
-                wxString t;
-                t.Printf( _T("%4.1f"), height );
-                if( m_pSigWHTextCtrl ) m_pSigWHTextCtrl->AppendText( t );
-            }
-        }
-
         //    Update the QuickScat (aka Wind) control
         if( ( m_RS_Idx_WINDSCAT_VX != -1 ) && ( m_RS_Idx_WINDSCAT_VY != -1 ) ) {
             double vx =
@@ -372,86 +445,184 @@ void GRIBUIDialog::UpdateTrackingControls( void )
                             m_cursor_lon, m_cursor_lat, true );
 
             if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-                double vkn = sqrt( vx * vx + vy * vy ) * 3.6 / 1.852;
+                double vkn = sqrt( vx * vx + vy * vy ); //* 3.6 / 1.852;             //kept in m/s
                 double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
                 if( ang > 360. ) ang -= 360.;
                 if( ang < 0. ) ang += 360.;
 
-                wxString t;
-                t.Printf( _T("%2d"), (int) vkn );
-                if( m_pWindSpeedTextCtrl ) m_pWindSpeedTextCtrl->AppendText( t );
+                val[0] = SToString( vkn , pPlugIn->GetSpeedUnit() );
 
-                t.Printf( _T("%03d"), (int) ( ang ) );
-                if( m_pWindDirTextCtrl ) m_pWindDirTextCtrl->AppendText( t );
-
+                val[1].Printf( _T("%03d Deg"), (int) ( ang ) );      
             }
         }
-
-        //    Update the SEATEMP
-        if( m_RS_Idx_SEATEMP != -1 ) {
-            double temp =
+        //    Update Wind gusts control
+        if( m_DataDisplayConfig.GetChar( ID_CB_WIGUST ) == _T('X') ) {
+            i++;
+            if( m_RS_Idx_WIND_GUST != -1 ) {
+                double vgkn =
+                    m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_WIND_GUST )->getInterpolatedValue(
+                    m_cursor_lon, m_cursor_lat, true );
+                if( vgkn != GRIB_NOTDEF ) {
+                val[i] = SToString( vgkn , pPlugIn->GetSpeedUnit() );
+                }
+            }
+        }
+         //    Update the Pressure control
+        if( m_DataDisplayConfig.GetChar( ID_CB_PRESSD ) == _T('X') ) {
+            i++;
+            if( m_RS_Idx_PRESS != -1 ) {
+                double press =
+                    m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_PRESS )->getInterpolatedValue(
+                    m_cursor_lon, m_cursor_lat, true );
+                if( press != GRIB_NOTDEF ) {
+                    val[i].Printf( _T("%2d mBa"), (int) ( press / 100. ) );
+                }
+            }
+        }
+        //    Update the Sig Wave Height
+        if( m_DataDisplayConfig.GetChar( ID_CB_SIWAVD ) == _T('X') ) {
+            i++;
+            if( m_RS_Idx_HTSIGW != -1 ) {
+                double height =
+                    m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_HTSIGW )->getInterpolatedValue(
+                    m_cursor_lon, m_cursor_lat, true );
+                if( height != GRIB_NOTDEF ) {
+                    val[i].Printf( _T("%3.1f m"), height );
+                    if( m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_HTSIGW )->isDuplicated() )
+                        val[i].Prepend( _T("D ") );
+                }       
+            }
+        }
+        //    Update total rainfall control
+        if( m_DataDisplayConfig.GetChar( ID_CB_PRETOD ) == _T('X') ) {
+            i++;
+            if( m_RS_Idx_PRECIP_TOT != -1 ) {
+                double pretot =
+                    m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_PRECIP_TOT )->getInterpolatedValue(
+                    m_cursor_lon, m_cursor_lat, true );
+                if( pretot != GRIB_NOTDEF ) {
+                    pretot < 10. ? val[i].Printf( _T("%3.2f mm/h"), pretot ) : val[i].Printf( _T("%3.1f mm/h"), pretot );
+                    if( m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_PRECIP_TOT )->isDuplicated() )
+                        val[i].Prepend( _T("D ") );
+                }
+            }
+        }
+        //    Update Cloud Cover control
+        if( m_DataDisplayConfig.GetChar( ID_CB_CLOCVD ) == _T('X') ) {
+            i++;
+            if( m_RS_Idx_CLOUD_TOT != -1 ) {
+                double clocv =
+                    m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_CLOUD_TOT )->getInterpolatedValue(
+                    m_cursor_lon, m_cursor_lat, true );
+                if( clocv != GRIB_NOTDEF ){
+                    val[i].Printf( _T("%3.0f"), clocv );
+                    val[i].Append( _T(" %") );
+                    if( m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_CLOUD_TOT )->isDuplicated() )
+                        val[i].Prepend( _T("D ") );
+                }
+            }
+        }
+        //update air temperature at 2m
+        if( m_DataDisplayConfig.GetChar( ID_CB_ATEM2D ) == _T('X') ) {
+            i++;
+            if( m_RS_Idx_AIR_TEMP_2M != -1 ) {
+                double atemp2 =
+                    m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_AIR_TEMP_2M )->getInterpolatedValue(
+                    m_cursor_lon, m_cursor_lat, true );
+                if( atemp2 != GRIB_NOTDEF ){
+                    atemp2 -= 273.15;
+                    val[i].Printf( _T("%3.1f C"), atemp2 );
+                    if( m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_AIR_TEMP_2M )->isDuplicated() )
+                        val[i].Prepend( _("D ") );
+                }
+            }
+        }
+        //update sea surface temperature
+        if( m_DataDisplayConfig.GetChar( ID_CB_SEATED ) == _T('X') ) {
+            i++;
+            if( m_RS_Idx_SEATEMP != -1 ) {
+                double temp =
                     m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_SEATEMP )->getInterpolatedValue(
-                            m_cursor_lon, m_cursor_lat, true );
-
-            if( temp != GRIB_NOTDEF ) {
-                temp -= 273.15;
-//                        std::cout << "temp";
-                wxString t;
-                t.Printf( _T("%6.2f"), temp );
-                if( m_pSeaTmpTextCtrl ) m_pSeaTmpTextCtrl->AppendText( t );
+                    m_cursor_lon, m_cursor_lat, true );
+                if( temp != GRIB_NOTDEF ) {
+                    temp -= 273.15;
+//                      std::cout << "temp";
+                    val[i].Printf( _T("%2.2f C"), temp );
+                }
             }
         }
-
         //    Update the Current control
-        if( ( m_RS_Idx_SEACURRENT_VX != -1 ) && ( m_RS_Idx_SEACURRENT_VY != -1 ) ) {
-            double vx =
+        if( m_DataDisplayConfig.GetChar( ID_CB_CURRED ) == _T('X') ) {
+            i++;
+            if( ( m_RS_Idx_SEACURRENT_VX != -1 ) && ( m_RS_Idx_SEACURRENT_VY != -1 ) ) {
+                double vx =
                     m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_SEACURRENT_VX )->getInterpolatedValue(
-                            m_cursor_lon, m_cursor_lat, true );
-            double vy =
+                    m_cursor_lon, m_cursor_lat, true );
+                double vy =
                     m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_SEACURRENT_VY )->getInterpolatedValue(
-                            m_cursor_lon, m_cursor_lat, true );
+                    m_cursor_lon, m_cursor_lat, true );
 
-            if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-                double vkn = sqrt( vx * vx + vy * vy ) * 3.6 / 1.852;
-                double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
-                if( ang > 360. ) ang -= 360.;
-                if( ang < 0. ) ang += 360.;
+                if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
+                    double vkn = sqrt( vx * vx + vy * vy );// * 3.6 / 1.852;
+                    double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
+                    if( ang > 360. ) ang -= 360.;
+                    if( ang < 0. ) ang += 360.;
 
-                wxString t;
-                t.Printf( _T("%5.2f"), vkn );
-                if( m_pWindSpeedTextCtrl ) m_pSeaCurrentTextCtrl->AppendText( t );
+                    val[i] = SToString( vkn , pPlugIn->GetSpeedUnit() );
 
-                //                       t.Printf(_T("%03d"), (int)(ang));
-                //                       if(m_pWindDirTextCtrl)
-                //                             m_pWindDirTextCtrl->AppendText(t);
-
+                }
             }
+            //t.Printf(_T("%03d Deg"), (int)(ang));
+            //val[i+1] = t;
         }
 
+        //update controls values
+        m_pT0TextCtrl->SetLabel( val[0] );
+        m_pT1TextCtrl->SetLabel( val[1] );
+        m_pT2TextCtrl->SetLabel( val[2] );
+        if( m_NumberDataShown > 3 ) {
+        m_pT3TextCtrl->SetLabel( val[3] );
+        m_pT4TextCtrl->SetLabel( val[4] );
+        m_pT5TextCtrl->SetLabel( val[5] );
+        }
+        if( m_NumberDataShown > 6) {
+        m_pT6TextCtrl->SetLabel( val[6] );
+        m_pT7TextCtrl->SetLabel( val[7] );
+        m_pT8TextCtrl->SetLabel( val[8] );
+        }
+    }
+}
+
+void GRIBUIDialog::UpdateTrackingLabels( void )
+{
+    wxArrayString label;
+    label.Add( _T(""), m_NumberDataShown );   //alloc numeric data shown number
+    int j = 2;                                //label positions 0,1 are systematicaly used for wind so let's start at position 2
+    for( size_t i = 3 ; i < m_DataDisplayConfig.Len() ; i++ ) { //config position 0,1,2 are used for graphic so let's start at pos 3
+        if( m_DataDisplayConfig.GetChar( i ) == _T('X') ) {
+            label[j].Printf( DToString( i + 96 ) );
+            if( j == m_NumberDataShown -1 ) break;
+            j++;
+        }
+    }
+    m_pT0StaticText->SetLabel( DToString(ID_CB_WINDSP) );
+    m_pT1StaticText->SetLabel( DToString(ID_CB_WINDIR) );
+    m_pT2StaticText->SetLabel( label[2] );
+    if( m_NumberDataShown > 3 ) {
+    m_pT3StaticText->SetLabel( label[3] );
+    m_pT4StaticText->SetLabel( label[4] );
+    m_pT5StaticText->SetLabel( label[5] );
+    }
+    if( m_NumberDataShown > 6 ) {
+    m_pT6StaticText->SetLabel( label[6] );
+    m_pT7StaticText->SetLabel( label[7] ); 
+    m_pT8StaticText->SetLabel( label[8] );
     }
 }
 
 void GRIBUIDialog::OnClose( wxCloseEvent& event )
 {
-    /*
-     pPlugIn->SetGribDir(m_currentGribDir);
-
-
-     RequestRefresh(pParent);
-
-     delete m_pRecordTree;
-
-     delete m_pfolder_bitmap;
-     delete m_pitemCurrentGribDirectoryCtrl;
-
-     Destroy();
-     */
     pPlugIn->OnGribDialogClose();
-}
-
-void GRIBUIDialog::OnIdOKClick( wxCommandEvent& event )
-{
-    Close();
 }
 
 void GRIBUIDialog::OnMove( wxMoveEvent& event )
@@ -474,151 +645,462 @@ void GRIBUIDialog::OnSize( wxSizeEvent& event )
     event.Skip();
 }
 
-void GRIBUIDialog::OnChooseDirClick( wxCommandEvent& event )
+void GRIBUIDialog::OnButtonSettingClick( wxCommandEvent& event )
 {
-    wxString new_dir = ::wxDirSelector( _( "Select GRIB Directory" ), m_currentGribDir );
-    if( !new_dir.empty() ) {
-        m_currentGribDir = new_dir;
-        m_pitemCurrentGribDirectoryCtrl->SetValue( m_currentGribDir );
-        m_pitemCurrentGribDirectoryCtrl->SetInsertionPoint( 0 );
+    wxDialog *dialog = new wxDialog( this, wxID_ANY, _("Data Display Preferences"), wxDefaultPosition,
+        wxDefaultSize, wxDEFAULT_DIALOG_STYLE );
 
-        if( m_pRecordTree ) {
-            m_pRecordTree->DeleteAllItems();
-            delete m_pRecordTree->m_file_id_array;
+    int border_size = 4;
 
-            m_RecordTree_root_id = m_pRecordTree->AddRoot( _T ( "GRIBs" ) );
-            PopulateTreeControl();
-            m_pRecordTree->Expand( m_RecordTree_root_id );
+    wxBoxSizer* itemBoxSizerDataSelPanel = new wxBoxSizer(wxVERTICAL);
+    dialog->SetSizer(itemBoxSizerDataSelPanel);
+
+    //  Grib toolbox icon checkbox
+    wxStaticBox* itemStaticBoxSizerGRIBStatic = new wxStaticBox(dialog, wxID_ANY, _("Numeric Data to show in Panel"));
+    wxStaticBoxSizer* itemStaticBoxSizerGRIB = new wxStaticBoxSizer(itemStaticBoxSizerGRIBStatic, wxVERTICAL);
+    itemBoxSizerDataSelPanel->Add(itemStaticBoxSizerGRIB, 0, wxGROW|wxALL, border_size);
+
+    wxFlexGridSizer *paneldata = new wxFlexGridSizer( 2 );
+    itemStaticBoxSizerGRIB->Add( paneldata, 0, wxALL | wxEXPAND, border_size );
+
+    wxCheckBox* m_WindSpeed = new wxCheckBox( dialog, -1, DToString(ID_CB_WINDSP) );
+    paneldata->Add(m_WindSpeed, 1, wxALIGN_LEFT|wxALL, border_size);
+    m_WindSpeed->SetValue( true );          //always shown
+    m_WindSpeed->Disable();
+
+    wxCheckBox* m_WindDir = new wxCheckBox( dialog, -1, DToString(ID_CB_WINDIR) );
+    paneldata->Add(m_WindDir, 1, wxALIGN_LEFT|wxALL, border_size);
+    m_WindDir->SetValue( true );            //always shown
+    m_WindDir->Disable();
+
+    wxCheckBox* m_WindGust = new wxCheckBox( dialog, -1, DToString(ID_CB_WIGUST) );
+    paneldata->Add(m_WindGust, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxCheckBox* m_Pressure = new wxCheckBox( dialog, -1, DToString(ID_CB_PRESSD) );
+    paneldata->Add(m_Pressure, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxCheckBox* m_SigWave = new wxCheckBox( dialog, -1, DToString(ID_CB_SIWAVD) );
+    paneldata->Add(m_SigWave, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxCheckBox* m_TRainfall = new wxCheckBox( dialog, -1, DToString(ID_CB_PRETOD) );
+    paneldata->Add(m_TRainfall, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxCheckBox* m_CloudCover = new wxCheckBox( dialog, -1, DToString(ID_CB_CLOCVD) );
+    paneldata->Add(m_CloudCover, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxCheckBox* m_AirTemp2 = new wxCheckBox( dialog, -1, DToString(ID_CB_ATEM2D) );
+    paneldata->Add(m_AirTemp2, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxCheckBox* m_SeaSurfTemp = new wxCheckBox( dialog, -1, DToString(ID_CB_SEATED) );
+    paneldata->Add(m_SeaSurfTemp, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxCheckBox* m_CurrVeloc = new wxCheckBox( dialog, -1, DToString(ID_CB_CURRED) );
+    paneldata->Add(m_CurrVeloc, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    //Graphic data
+    wxStaticBox* itemStaticBoxSizerGraphStatic = new wxStaticBox( dialog, wxID_ANY, _("Graphic Data to show in Map"));
+    wxStaticBoxSizer* itemStaticBoxSizerGraph = new wxStaticBoxSizer(itemStaticBoxSizerGraphStatic, wxVERTICAL);
+    itemBoxSizerDataSelPanel->Add(itemStaticBoxSizerGraph, 0, wxGROW|wxALL, border_size);
+
+    wxFlexGridSizer *graphdata = new wxFlexGridSizer( 1 );
+    itemStaticBoxSizerGraph->Add( graphdata, 0, wxALL | wxEXPAND, border_size );
+
+    wxCheckBox *m_Windgraph = new wxCheckBox( dialog, -1, DToString(ID_CB_WINDM) );
+    graphdata->Add(m_Windgraph, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxCheckBox *m_Presgraph = new wxCheckBox( dialog, -1, DToString(ID_CB_PRESSM) );
+    graphdata->Add(m_Presgraph, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxArrayString nmap;
+    for( size_t i = 0 ; i < 7 ; i++ ) {
+        nmap.Add( DToString( i + ( i == 0 ? 0 : 100 ) ) );
+    }
+    wxRadioBox *m_GraphMap = new wxRadioBox( dialog, -1, _(""), wxDefaultPosition, wxSize(-1, -1),
+         nmap, 1, wxRA_SPECIFY_COLS );
+    graphdata->Add(m_GraphMap, 1, wxALIGN_LEFT|wxALL, border_size);
+
+    wxStdDialogButtonSizer* DialogButtonSizer = dialog->CreateStdDialogButtonSizer(wxOK|wxCANCEL);
+    itemBoxSizerDataSelPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, 5);
+
+    m_WindGust->SetValue( m_DataDisplayConfig.GetChar( ID_CB_WIGUST ) == _T('X') );
+    m_Pressure->SetValue( m_DataDisplayConfig.GetChar( ID_CB_PRESSD ) == _T('X') );
+    m_SigWave->SetValue( m_DataDisplayConfig.GetChar( ID_CB_SIWAVD ) == _T('X') );
+    m_TRainfall->SetValue( m_DataDisplayConfig.GetChar( ID_CB_PRETOD ) == _T('X') );
+    m_CloudCover->SetValue( m_DataDisplayConfig.GetChar( ID_CB_CLOCVD ) == _T('X') );
+    m_AirTemp2->SetValue( m_DataDisplayConfig.GetChar( ID_CB_ATEM2D ) == _T('X') );
+    m_SeaSurfTemp->SetValue( m_DataDisplayConfig.GetChar( ID_CB_SEATED ) == _T('X') );
+    m_CurrVeloc->SetValue( m_DataDisplayConfig.GetChar( ID_CB_CURRED ) == _T('X') );
+
+    m_Windgraph->SetValue( m_DataDisplayConfig.GetChar( ID_CB_WINDM ) == _T('X') );
+    m_Presgraph->SetValue( m_DataDisplayConfig.GetChar( ID_CB_PRESSM ) == _T('X') );
+
+    wxString s(m_DataDisplayConfig.GetChar( 0 ) );
+    long i;s.ToLong( &i );               
+    m_GraphMap->SetSelection( i );
+
+    dialog->Fit();
+    
+    if(dialog->ShowModal() == wxID_OK) {
+        m_WindGust->IsChecked() ? m_DataDisplayConfig.SetChar( ID_CB_WIGUST,_T('X') ) :
+            m_DataDisplayConfig.SetChar( ID_CB_WIGUST,_T('.') );
+        m_Pressure->IsChecked() ? m_DataDisplayConfig.SetChar( ID_CB_PRESSD,_T('X') ) :
+            m_DataDisplayConfig.SetChar( ID_CB_PRESSD,_T('.') );
+        m_SigWave->IsChecked() ? m_DataDisplayConfig.SetChar( ID_CB_SIWAVD,_T('X') ) :
+            m_DataDisplayConfig.SetChar( ID_CB_SIWAVD,_T('.') );
+        m_TRainfall->IsChecked() ? m_DataDisplayConfig.SetChar( ID_CB_PRETOD,_T('X') ) :
+            m_DataDisplayConfig.SetChar( ID_CB_PRETOD,_T('.') );
+        m_CloudCover->IsChecked() ? m_DataDisplayConfig.SetChar( ID_CB_CLOCVD,_T('X') ) :
+            m_DataDisplayConfig.SetChar( ID_CB_CLOCVD,_T('.') );
+        m_AirTemp2->IsChecked() ? m_DataDisplayConfig.SetChar( ID_CB_ATEM2D,_T('X') ) :
+            m_DataDisplayConfig.SetChar( ID_CB_ATEM2D,_T('.') );
+        m_SeaSurfTemp->IsChecked() ? m_DataDisplayConfig.SetChar( ID_CB_SEATED,_T('X') ) :
+            m_DataDisplayConfig.SetChar( ID_CB_SEATED,_T('.') );
+        m_CurrVeloc->IsChecked() ? m_DataDisplayConfig.SetChar( ID_CB_CURRED,_T('X') ) :
+            m_DataDisplayConfig.SetChar( ID_CB_CURRED,_T('.') );
+
+        m_Windgraph->IsChecked() ? m_DataDisplayConfig.SetChar( ID_CB_WINDM,_T('X') ) :
+            m_DataDisplayConfig.SetChar( ID_CB_WINDM,_T('.') );
+        m_Presgraph->IsChecked() ? m_DataDisplayConfig.SetChar( ID_CB_PRESSM,_T('X') ) :
+            m_DataDisplayConfig.SetChar( ID_CB_PRESSM,_T('.') );
+
+        m_DataDisplayConfig.SetChar( 0, (char) ( m_GraphMap->GetSelection() +'0') );
+
+        pPlugIn->SetGRIBDataConfig( m_DataDisplayConfig );
+
+        if( GetNumberDataShown() != m_NumberDataShown ) {
+            pPlugIn->CreateGribDialog( m_pRecordForecast->GetCurrentSelection(),                
+            m_bGRIBActiveFile->GetFileName(), false );
+        }
+        else {
+            UpdateTrackingLabels();
+            UpdateTrackingControls();
         }
 
-        pPlugIn->GetGRIBOverlayFactory()->Reset();
-
-        Refresh();
-
-        pPlugIn->SetGribDir( m_currentGribDir );
-
+        SetFactoryOptions();                     // Reload the visibility options
+ 
     }
 }
 
-void GRIBUIDialog::OnCBWindspeedClick( wxCommandEvent& event )
+void GRIBUIDialog::OnButtonOpenFileClick( wxCommandEvent& event )
 {
-    m_cbWindDir.SetValue( event.IsChecked() );
-    SetFactoryOptions();                     // Reload the visibility options
-}
+    m_pGribForecastTimer.Stop();
+       
+    wxFileDialog *dialog = new wxFileDialog(this, _("Select a GRIB file"), pPlugIn->GetGribDirectory(), 
+        _T(""), wxT ( "Grib files (*.grb;*.grb.bz2| *.grb;*.grb.bz2"), wxFD_OPEN, wxDefaultPosition,
+        wxDefaultSize, _T("File Dialog") ); 
 
-void GRIBUIDialog::OnCBWinddirClick( wxCommandEvent& event )
-{
-    m_cbWindSpeed.SetValue( event.IsChecked() );
-    SetFactoryOptions();                     // Reload the visibility options
-}
+    if( dialog->ShowModal() == wxID_OK ) {
+        m_pRecordForecast->Clear();
+        m_bGRIBActiveFile = NULL;
+        pPlugIn->SetGribDirectory( dialog->GetDirectory() );
 
-void GRIBUIDialog::OnCBPressureClick( wxCommandEvent& event )
-{
-    SetFactoryOptions();                     // Reload the visibility options
-}
+        m_bGRIBActiveFile = new GRIBFile( dialog->GetPath(),
+            pPlugIn->GetCopyFirstCumRec(), pPlugIn->GetCopyMissWaveRec() );
 
-void GRIBUIDialog::OnCBSigHwClick( wxCommandEvent& event )
-{
-    SetFactoryOptions();                     // Reload the visibility options
-}
+        wxFileName fn( dialog->GetPath() );
+        SetLabel( fn.GetFullName() );
 
-void GRIBUIDialog::OnCBSeatempClick( wxCommandEvent& event )
-{
-    SetFactoryOptions();                     // Reload the visibility options
-}
+        if( m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK() ) { 
+            PopulateComboDataList( 0 );
+            ComputeBestForecastForNow();
+        } else 
+            pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
 
-void GRIBUIDialog::OnCBSeaCurrentClick( wxCommandEvent& event )
-{
-    SetFactoryOptions();                     // Reload the visibility options
-}
-
-void GRIBUIDialog::PopulateTreeControl()
-{
-    if( !wxDir::Exists( m_currentGribDir ) ) return;
-
-    //    Get an array of GRIB file names in the target directory, not descending into subdirs
-    wxArrayString file_array;
-
-    m_n_files = wxDir::GetAllFiles( m_currentGribDir, &file_array, _T ( "*.grb" ), wxDIR_FILES );
-    m_n_files += wxDir::GetAllFiles( m_currentGribDir, &file_array, _T ( "*.grb.bz2" ),
-            wxDIR_FILES );
-//      m_n_files = wxDir::GetAllFiles ( m_currentGribDir, &file_array, _T ( "*" ), wxDIR_FILES );
-
-    //    Sort the files by File Modification Date
-    file_array.Sort( CompareFileStringTime );
-
-    //    Add the files to the tree at the root
-    m_pRecordTree->m_file_id_array = new wxTreeItemId[m_n_files];
-
-    for( int i = 0; i < m_n_files; i++ ) {
-        GribTreeItemData *pmtid = new GribTreeItemData( GRIB_FILE_TYPE );
-        pmtid->m_file_name = file_array[i];
-        pmtid->m_file_index = i;
-
-        wxFileName fn( file_array[i] );
-        m_pRecordTree->m_file_id_array[i] = m_pRecordTree->AppendItem( m_RecordTree_root_id,
-                fn.GetFullName(), -1, -1, pmtid );
-
-//            m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[i], GetGlobalColor ( _T ( "UBLCK")));
+        DisplayDataGRS();
     }
+}
 
-    //    Will this be too slow?
-    //    Parse and show at most "n" files, maybe move to config?
-    int n_parse = wxMin(5, m_n_files);
+void GRIBUIDialog::OnGRIBForecastChange( wxCommandEvent& event )
+{
+    m_pGribForecastTimer.Stop();
+    DisplayDataGRS( );
+}
 
-    for( int i = 0; i < n_parse; i++ ) {
-        GribTreeItemData *pdata = (GribTreeItemData *) m_pRecordTree->GetItemData(
-                m_pRecordTree->m_file_id_array[i] );
+void GRIBUIDialog::OnButtonNextClick( wxCommandEvent& event )
+{
+    if( m_pRecordForecast->GetCurrentSelection() == m_pRecordForecast->GetCount() - 1 ) return; //end of list
 
-        //    Create and ingest the GRIB file object if needed
-        if( NULL == pdata->m_pGribFile ) {
-            GRIBFile *pgribfile = new GRIBFile( pdata->m_file_name );
-            if( pgribfile ) {
-                if( pgribfile->IsOK() ) {
-                    pdata->m_pGribFile = pgribfile;
-                    PopulateTreeControlGRS( pgribfile, pdata->m_file_index );
+    m_pGribForecastTimer.Stop();
+    m_pRecordForecast->SetSelection( m_pRecordForecast->GetCurrentSelection() + 1 );
+    DisplayDataGRS( );
+}
 
-                }
+void GRIBUIDialog::OnButtonPrevClick( wxCommandEvent& event )
+{
+    if( m_pRecordForecast->GetCurrentSelection() == 0 ) return;                 //start of list
+
+    m_pGribForecastTimer.Stop();
+    m_pRecordForecast->SetSelection( m_pRecordForecast->GetCurrentSelection() - 1 );
+    DisplayDataGRS( );
+}
+
+void GRIBUIDialog::OnGRIBForecastTimerEvent( wxTimerEvent& event )
+{
+    ComputeBestForecastForNow();
+    DisplayDataGRS();
+}
+
+void GRIBUIDialog::OnCanvasRefreshTimerEvent( wxTimerEvent& event )
+{
+    if( m_height != GetChartbarHeight() ) {
+        RequestRefresh( pParent );
+        m_height = GetChartbarHeight();
+    }
+}
+
+void GRIBUIDialog::OnButtonNowClick( wxCommandEvent& event )
+{
+    ComputeBestForecastForNow();
+    DisplayDataGRS();
+}
+
+void GRIBUIDialog::OnGribRequestClick(  wxCommandEvent& event )
+{
+    double lonmax=m_vp->lon_max;
+    double lonmin=m_vp->lon_min;
+    if( ( fabs( m_vp->lat_max ) < 90. ) && ( fabs( lonmax ) < 360. ) ) {
+           if( lonmax < -180. ) lonmax += 360.;
+           if( lonmax > 180. ) lonmax -= 360.;
+    }
+    if( ( fabs( m_vp->lat_min ) < 90. ) && ( fabs( lonmin ) < 360. ) ) {
+            if( lonmin < -180. ) lonmin += 360.;
+            if( lonmin > 180. ) lonmin -= 360.;
+    }
+    wxString zone( 
+        toSAILDOC( 1, 1, m_vp->lat_max ) + wxT(",") +
+        toSAILDOC( 1, 2, m_vp->lat_min ) + wxT(",") +
+        toSAILDOC( 2, 2, lonmin ) + wxT(",") +
+        toSAILDOC( 2, 1, lonmax ) );
+    ShowSendRequest( zone );
+}
+
+void GRIBUIDialog::ShowSendRequest( wxString r_zone )
+{
+    wxString config = pPlugIn->GetMailRequestConfig();
+    wxString r_action = wxT("send");
+    wxString r_model,r_resolution,r_intervall,r_period,r_parameters;
+    if( config.GetChar( 1 ) == '0' ) {                          //GFS
+        r_model = wxT("GFS:");
+        if( config.GetChar( 2 ) == '0' )
+            r_resolution = wxT("0.5,0.5");
+        else if( config.GetChar( 2 ) == '1' )
+            r_resolution = wxT("1.0,1.0");
+        else if( config.GetChar( 2 ) == '2' )
+            r_resolution = wxT("1.5,1.5");
+        else if( config.GetChar( 2 ) == '3' )
+            r_resolution = wxT("2.0,2.0");
+        r_parameters = wxT("WIND,PRESS");
+        if( config.GetChar( 7 ) == 'X' )
+            r_parameters.Append( wxT(",WAVES") );
+        if( config.GetChar( 8 ) == 'X' )
+            r_parameters.Append( wxT(",APCP") );
+        if( config.GetChar( 9 ) == 'X' )
+            r_parameters.Append( wxT(",TCDC") );
+        if( config.GetChar( 10 ) == 'X' )
+            r_parameters.Append( wxT(",AIRTMP") );
+        if( config.GetChar( 11 ) == 'X' )
+            r_parameters.Append( wxT(",SEATMP") );
+    } else if( config.GetChar( 1 ) == '1' ) {                   //COAMPS
+        r_model = wxT("COAMPS:");
+        if( config.GetChar( 2 ) == '0' )
+            r_resolution = wxT("0.2,0.2");
+        else if( config.GetChar( 2 ) == '1' )
+            r_resolution = wxT("0.6,0.6");
+        else if( config.GetChar( 2 ) == '2' )
+            r_resolution = wxT("1.2,1.2");
+        else if( config.GetChar( 2 ) == '3' )
+            r_resolution = wxT("2.0,2.0");
+        r_parameters = wxT("WIND,PRMSL");
+    } else if( config.GetChar( 1 ) == '2' ) {                   //RTOFS
+        r_model = wxT("RTOFS:");
+        r_parameters = wxT("CUR,WTMP");
+    }
+    if( config.GetChar( 3 ) == '0' )                            //ALL
+        r_intervall = wxT("0,3,6");
+    else if( config.GetChar( 3 ) == '1' )
+        r_intervall = wxT("0,6,12");
+    else if( config.GetChar( 3 ) == '2' )
+        r_intervall = wxT("0,12,24");
+    if( config.GetChar( 4 ) == '0' ) 
+        r_period = wxT("..96");
+    else if( config.GetChar( 4 ) == '1' ) 
+        r_period = wxT("..144");
+    else if( config.GetChar( 4 ) == '2' ) 
+        r_period = wxT("..192");
+
+    wxString r_separator = wxT("|");
+    wxString r_return = wxT("|=\n");
+
+    //display request profile
+    wxString r_info,i;
+    double v;
+    r_info.Append( _("To: ") );
+    r_info.Append( pPlugIn->GetSaildocAdresse() );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Action: ") );
+    r_info.Append( wxT("send") );
+    r_info.Append( _("\nModel: ") );
+    r_info.Append( r_model );
+    r_info.Append( _("\nZone: ") );
+    r_info.Append( r_zone ); 
+    r_info.Append( _("\nResolution: ") );
+    r_info.Append( r_resolution.BeforeFirst( ',' ) + _(" Deg") );
+    r_info.Append( _("\nIntervall: ") );
+    i = r_intervall.AfterFirst( ',' );
+    r_info.Append( i.BeforeLast( ',' ) + _(" h") );
+    r_info.Append( _("\nPeriod: ") );
+    r_period.AfterLast( '.' ).ToDouble( &v );
+    i.Printf( _T("%.0f days"), v/24. );
+    r_info.Append( i );
+    r_info.Append( _("\nParameters: ") );
+    r_info.Append( r_parameters );
+    
+     GribPofileDisplay *r_dialog = new GribPofileDisplay(this, wxID_ANY, r_info );
+     int choice = r_dialog->ShowModal();
+        if( choice == wxID_OK ) {               //print and send request mail
+
+            wxMailMessage *message = new wxMailMessage( 
+            wxT("Grib-Request"),
+            pPlugIn->GetSaildocAdresse(),       //to ( saildoc request adresse )
+            wxT("send ") + r_model + r_zone + r_separator + r_resolution
+            + r_separator + r_intervall + r_period + r_return + r_parameters,                    //message
+            wxT("")
+            );
+            wxEmail mail ;
+            if(mail.Send( *message ) ) {
+                wxMessageDialog *dialog = new wxMessageDialog(this,
+                    _("Your request is ready. An eMail is prepared in your eMail environment.\nYou have just to click 'send' to send it.\nOK to continue ...")
+                    ,_("eMail"),wxOK );
+                dialog->ShowModal();
             }
         }
-    }
+        else if( choice == wxID_SAVE ) ShowGribReqPrefDialog( r_zone );             //modify request
 
-    //    No GRS is selected on first building the tree
-    SetGribRecordSet( NULL );
-
+        r_dialog->Destroy();
 }
 
-void GRIBUIDialog::PopulateTreeControlGRS( GRIBFile *pgribfile, int file_index )
+void GRIBUIDialog::ShowGribReqPrefDialog( wxString zone )
 {
-    //    Get the array of GribRecordSets, and add one-by-one to the tree,
-    //    each under the proper file item.
-    ArrayOfGribRecordSets *rsa = pgribfile->GetRecordSetArrayPtr();
+    GribReqPrefDialog *req_Dialog = new GribReqPrefDialog( pParent, wxID_ANY, pPlugIn->GetMailRequestConfig() );
+    
+    if( req_Dialog->ShowModal() == wxID_OK ) {
+        wxString config = pPlugIn->GetMailRequestConfig();
+        config.SetChar( 1, (char) ( req_Dialog->GetModel() + '0') );
+        config.SetChar( 2, (char) ( req_Dialog->GetResolution() + '0') );
+        config.SetChar( 3, (char) ( req_Dialog->GetInterval() + '0') );
+        config.SetChar( 4, (char) ( req_Dialog->GetHorizon() + '0') );
+        config.SetChar( 5, 'X' ); 
+        config.SetChar( 6, 'X' ); 
+        req_Dialog->GetWaves() ? config.SetChar( 7, 'X' ) : config.SetChar( 7, '.' );
+        req_Dialog->GetRain() ? config.SetChar( 8, 'X' ) : config.SetChar( 8, '.' );
+        req_Dialog->GetClouds() ? config.SetChar( 9, 'X' ) : config.SetChar( 9, '.' );
+        req_Dialog->GetAirTemp() ? config.SetChar( 10, 'X' ) : config.SetChar( 10, '.' );
+        req_Dialog->GetSeaTemp() ? config.SetChar( 11, 'X' ) : config.SetChar( 11, '.' );
 
-//      if(rsa->GetCount() == 0)
-//            m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[file_index], GetGlobalColor ( _T ( "DILG1")));
-//      else
-//            m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[file_index], GetGlobalColor ( _T ( "BLUE2")));
+        pPlugIn->SetMailRequestConfig( config );
 
-    for( unsigned int i = 0; i < rsa->GetCount(); i++ ) {
-        GribTreeItemData *pmtid = new GribTreeItemData( GRIB_RECORD_SET_TYPE );
-        pmtid->m_pGribRecordSet = &rsa->Item( i );
+        ShowSendRequest( zone );
 
+    }
+}
+
+void GRIBUIDialog::CreateActiveFileFromName( wxString filename )
+{
+    if( !filename.IsEmpty() ) {
+        m_bGRIBActiveFile = NULL;
+        m_bGRIBActiveFile = new GRIBFile( filename , pPlugIn->GetCopyFirstCumRec(), pPlugIn->GetCopyMissWaveRec() );
+    }
+}
+void GRIBUIDialog::GetFirstrFileInDirectory()
+{
+    //reinitialise data containers
+     m_pRecordForecast->Clear();
+     m_bGRIBActiveFile = NULL;
+     if( !wxDir::Exists( pPlugIn->GetGribDirectory() ) ) {
+         wxStandardPaths path;
+         pPlugIn->SetGribDirectory( path.GetDocumentsDir() );
+    }
+    //    Get an array of GRIB file names in the target directory, not descending into subdirs
+    wxArrayString file_array;
+    int m_n_files = 0;
+    m_n_files = wxDir::GetAllFiles( pPlugIn->GetGribDirectory(), &file_array, _T ( "*.grb" ), wxDIR_FILES );
+    m_n_files += wxDir::GetAllFiles( pPlugIn->GetGribDirectory(), &file_array, _T ( "*.grb.bz2" ),
+        wxDIR_FILES );
+    if( m_n_files ) {
+        file_array.Sort( CompareFileStringTime );              //sort the files by File Modification Date  
+
+        m_bGRIBActiveFile = new GRIBFile( file_array[0] ,      //take the younger
+            pPlugIn->GetCopyFirstCumRec(), pPlugIn->GetCopyMissWaveRec() );
+
+        wxFileName fn( file_array[0] );
+        SetLabel( fn.GetFullName() );
+
+        if( m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK() ) {
+            PopulateComboDataList(0);
+            ComputeBestForecastForNow();
+        } else 
+            pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
+    } else {
+         pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("GRIBFile warning :  This directory is Empty!") );
+         SetLabel( pPlugIn->GetGribDirectory() );
+    }
+}
+
+void GRIBUIDialog::PopulateComboDataList( int index )
+{
+    m_pRecordForecast->Clear();
+
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+
+    for( size_t i = 0; i < rsa->GetCount(); i++ ) {
+        wxDateTime t( rsa->Item( i ).m_Reference_Time );
+
+        m_pRecordForecast->Append( TToString( t, pPlugIn->GetTimeZone() ) );
+    }
+    m_pRecordForecast->SetSelection( index );
+}
+
+int  GRIBUIDialog::GetNumberDataShown()
+{
+    int checked_item = 2;         //wind speed and dir are always shown so a minimum of 2 data displayed
+    //the 0,1,2 config positions are used for graphic data so let's start at position 3
+    for( size_t i = 3; i < m_DataDisplayConfig.Len(); i++ ) {
+        if( m_DataDisplayConfig.GetChar( i ) == _T('X') ) checked_item++ ;
+    }
+    checked_item = abs( (checked_item + 2) / 3 ) * 3;     //must be rounded at 3,6,9.. ( as multiple of lines nb )
+    return checked_item;                     
+}
+
+void GRIBUIDialog::ComputeBestForecastForNow()
+{
+    if( !HasValidData() ) return;                        //no data
+
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    wxDateTime t1( rsa->Item( 1 ).m_Reference_Time ) ;              //calculate forecast time interval
+    wxDateTime t0( rsa->Item( 0 ).m_Reference_Time ) ;
+    int d = t1.Subtract(t0).GetMinutes() / 4;                       //get a quarter of the forecast time interval
+
+    for( size_t i = 0; i < rsa->GetCount(); i++ ) {                 //get the more interesting forecast for now
         wxDateTime t( rsa->Item( i ).m_Reference_Time );
         t.MakeFromTimezone( wxDateTime::UTC );
         if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
-//            wxString time_string = t.Format ( "%a %d-%b-%Y %H:%M:%S %Z", wxDateTime::UTC );
-
-        // This is a hack because Windows is broke....
-        wxString time_string = t.Format( _T("%a %d-%b-%Y %H:%M:%S "), wxDateTime::Local );
-        time_string.Append( _T("Local - ") );
-        time_string.Append( t.Format( _T("%a %d-%b-%Y %H:%M:%S "), wxDateTime::UTC ) );
-        time_string.Append( _T("GMT") );
-
-        m_pRecordTree->AppendItem( m_pRecordTree->m_file_id_array[file_index], time_string, -1, -1,
-                pmtid );
+        if( (t.Add(wxTimeSpan( 0, d, 0, 0 )).IsEarlierThan( wxDateTime::Now() ) ) ) 
+            if( i != ( rsa->GetCount() -1 ) ) continue;             //keep the desired list item 
+        m_pRecordForecast->SetSelection( i );
+        break;
     }
-
+    m_pGribForecastTimer.Start( FORECAST_TIMER_10MN, wxTIMER_ONE_SHOT );
 }
+
+void GRIBUIDialog::DisplayDataGRS()
+{
+    if( m_bGRIBActiveFile &&  m_bGRIBActiveFile->IsOK() ) {
+        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+        GribRecordSet *record = &rsa->Item( m_pRecordForecast->GetCurrentSelection() );
+        SetGribRecordSet( record );
+    } else 
+        SetGribRecordSet( NULL );
+ }
 
 void GRIBUIDialog::SetGribRecordSet( GribRecordSet *pGribRecordSet )
 {
@@ -627,15 +1109,19 @@ void GRIBUIDialog::SetGribRecordSet( GribRecordSet *pGribRecordSet )
     //    Clear all the flags
     m_RS_Idx_WIND_VX = -1;
     m_RS_Idx_WIND_VY = -1;
+    m_RS_Idx_WIND_GUST = -1;
     m_RS_Idx_PRESS = -1;
     m_RS_Idx_HTSIGW = -1;
+    m_RS_Idx_PRECIP_TOT = -1;
+    m_RS_Idx_CLOUD_TOT = -1;
+    m_RS_Idx_AIR_TEMP_2M = -1;
     m_RS_Idx_WINDSCAT_VX = -1;
     m_RS_Idx_WINDSCAT_VY = -1;
     m_RS_Idx_SEATEMP = -1;
     m_RS_Idx_SEACURRENT_VX = -1;
     m_RS_Idx_SEACURRENT_VY = -1;
 
-    if( pGribRecordSet ) {
+    if( pGribRecordSet && pGribRecordSet != NULL ) {
         //    Inventory this record set
         //          Walk thru the GribRecordSet, flagging existence of various record types
         for( unsigned int i = 0; i < m_pCurrentGribRecordSet->m_GribRecordPtrArray.GetCount();
@@ -644,10 +1130,11 @@ void GRIBUIDialog::SetGribRecordSet( GribRecordSet *pGribRecordSet )
 
             // Wind
             //    Actually need two records to draw the wind arrows
-
-            if( pGR->getDataType() == GRB_WIND_VX ) m_RS_Idx_WIND_VX = i;
-
+            if( pGR->getDataType() == GRB_WIND_VX ) m_RS_Idx_WIND_VX = i;       
             if( pGR->getDataType() == GRB_WIND_VY ) m_RS_Idx_WIND_VY = i;
+
+            //Wind gust
+            if( pGR->getDataType() == GRB_WIND_GUST ) m_RS_Idx_WIND_GUST = i;
 
             //Pressure
             if( pGR->getDataType() == GRB_PRESSURE ) m_RS_Idx_PRESS = i;
@@ -655,53 +1142,56 @@ void GRIBUIDialog::SetGribRecordSet( GribRecordSet *pGribRecordSet )
             // Significant Wave Height
             if( pGR->getDataType() == GRB_HTSGW ) m_RS_Idx_HTSIGW = i;
 
+            //Total rainfall
+            if( pGR->getDataType() == GRB_PRECIP_TOT ) m_RS_Idx_PRECIP_TOT = i;
+             
+            //Total cloud cover
+            if( pGR->getDataType() == GRB_CLOUD_TOT ) m_RS_Idx_CLOUD_TOT = i;
+
+            //air temperature(2m)
+            if( pGR->getDataType() == GRB_TEMP ) m_RS_Idx_AIR_TEMP_2M = i;
+
             // QuickScat Winds
             if( pGR->getDataType() == GRB_USCT ) m_RS_Idx_WINDSCAT_VX = i;
 
             if( pGR->getDataType() == GRB_VSCT ) m_RS_Idx_WINDSCAT_VY = i;
 
-            // GFS SEATMP
-//                  if (pGR->getDataType()==GRB_TEMP )
-//                        m_RS_Idx_SEATEMP = i;
-
             // RTOFS SEATMP
             if( pGR->getDataType() == GRB_WTMP ) m_RS_Idx_SEATEMP = i;
 
-            // RTOFS Sea Current
+            // RTOFS Sea Current Actually need two records to draw 
             if( pGR->getDataType() == GRB_UOGRD ) m_RS_Idx_SEACURRENT_VX = i;
-
             if( pGR->getDataType() == GRB_VOGRD ) m_RS_Idx_SEACURRENT_VY = i;
 
         }
     }
 
-    if( pGribRecordSet ) {
+    UpdateTrackingControls();
+
+    if( pGribRecordSet || NULL == pGribRecordSet ) {
         //    Give the overlay factory the GribRecordSet
         pPlugIn->GetGRIBOverlayFactory()->SetGribRecordSet( pGribRecordSet );
-
+    
         SetFactoryOptions();
     }
 
 //      printf("GRIBUI: Requesting Refresh\n");
-    RequestRefresh( pParent );
-
-    UpdateTrackingControls();
+    //RequestRefresh( pParent );
 }
 
 void GRIBUIDialog::SetFactoryOptions()
 {
     //    Set the visibility options
-    pPlugIn->GetGRIBOverlayFactory()->EnableRenderWind( m_cbWindSpeed.GetValue() );
-    pPlugIn->GetGRIBOverlayFactory()->EnableRenderPressure( m_cbPress.GetValue() );
-    pPlugIn->GetGRIBOverlayFactory()->EnableRenderSigHw( m_cbSigHw.GetValue() );
-    pPlugIn->GetGRIBOverlayFactory()->EnableRenderQuickscat( m_cbWindSpeed.GetValue() ); // Note that Quickscat display shares with Wind Speed/Dir forecast
-    pPlugIn->GetGRIBOverlayFactory()->EnableRenderSeatmp( m_cbSeaTmp.GetValue() );
-    pPlugIn->GetGRIBOverlayFactory()->EnableRenderSeaCurrent( m_cbSeaCurrent.GetValue() );
-
+   // pPlugIn->GetGRIBOverlayFactory()->SetTimeZone( pPlugIn->GetTimeZone() );
+    pPlugIn->GetGRIBOverlayFactory()->EnableRenderWind(  m_DataDisplayConfig.GetChar( ID_CB_WINDM ) == _T('X') );
+    pPlugIn->GetGRIBOverlayFactory()->EnableRenderQuickscat(  m_DataDisplayConfig.GetChar( ID_CB_WINDM ) == _T('X') ); // Note that Quickscat display shares with Wind Speed/Dir forecast
+    pPlugIn->GetGRIBOverlayFactory()->EnableRenderPressure(  m_DataDisplayConfig.GetChar( ID_CB_PRESSM ) == _T('X') );
+    wxString s(m_DataDisplayConfig.GetChar( 0 ) );
+    long i;s.ToLong( &i );i += 100;                                   //Graphic data map constants start at 100
+    pPlugIn->GetGRIBOverlayFactory()->EnableRenderGMap( i ); 
     pPlugIn->GetGRIBOverlayFactory()->ClearCachedData();
 
     RequestRefresh( pParent );
-
 }
 
 //----------------------------------------------------------------------------------------------------------
@@ -710,11 +1200,16 @@ void GRIBUIDialog::SetFactoryOptions()
 GRIBOverlayFactory::GRIBOverlayFactory( bool hiDefGraphics )
 {
     m_hiDefGraphics = hiDefGraphics;
+    m_dFont_map = new wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    m_dFont_war = new wxFont( 16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
     m_pGribRecordSet = NULL;
     m_last_vp_scale = 0.;
 
     m_pgob_sigwh = NULL;
     m_pgob_crain = NULL;
+    m_pgob_train = NULL;
+    m_pgob_clocv = NULL;
+    m_pgob_atemp2 = NULL;
     m_pgob_seatemp = NULL;
     m_pgob_current = NULL;
 
@@ -725,6 +1220,9 @@ GRIBOverlayFactory::~GRIBOverlayFactory()
 {
     delete m_pgob_sigwh;
     delete m_pgob_crain;
+    delete m_pgob_train;
+    delete m_pgob_clocv;
+    delete m_pgob_atemp2;
     delete m_pgob_seatemp;
     delete m_pgob_current;
 
@@ -770,6 +1268,15 @@ void GRIBOverlayFactory::ClearCachedData( void )
     delete m_pgob_crain;
     m_pgob_crain = NULL;
 
+    delete m_pgob_train;
+    m_pgob_train = NULL;
+
+    delete m_pgob_clocv;
+    m_pgob_clocv = NULL;
+
+    delete m_pgob_atemp2;
+    m_pgob_atemp2 = NULL;
+
     delete m_pgob_seatemp;
     m_pgob_seatemp = NULL;
 
@@ -784,6 +1291,7 @@ bool GRIBOverlayFactory::RenderGLGribOverlay( wxGLContext *pcontext, PlugIn_View
     return DoRenderGribOverlay( vp );
 }
 
+
 bool GRIBOverlayFactory::RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp )
 {
 #if wxUSE_GRAPHICS_CONTEXT
@@ -796,11 +1304,15 @@ bool GRIBOverlayFactory::RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp )
     m_pdc = &dc;
 #endif
     return DoRenderGribOverlay( vp );
+
 }
 
 bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 {
-    if( !m_pGribRecordSet ) return false;
+    if( !m_pGribRecordSet ) {//return false;
+        DrawMessageWindow( ( m_Message ), vp->pix_width, vp->pix_height, m_dFont_war );
+        return false;
+    }
 
     //    If the scale has changed, clear out the cached bitmaps
     if( vp->view_scale_ppm != m_last_vp_scale ) ClearCachedData();
@@ -813,60 +1325,113 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     GribRecord *pGRCurrentVX = NULL;
     GribRecord *pGRCurrentVY = NULL;
 
+    GribRecord *pGRPressure = NULL;
+
+    int ref_mod = -1;
+    int map_mod = -1;
+    wxString string_ref;
+    wxString string_map;
+
+    m_SecString.Empty();
+
     //          Walk thru the GribRecordSet, and render each type of record
     for( unsigned int i = 0; i < m_pGribRecordSet->m_GribRecordPtrArray.GetCount(); i++ ) {
         GribRecord *pGR = m_pGribRecordSet->m_GribRecordPtrArray.Item( i );
 
+        //search for the main data center model in wind and pressure 
+        if( pGR->getDataType() == GRB_WIND_VX || pGR->getDataType() == GRB_WIND_VX 
+            || pGR->getDataType() == GRB_PRESSURE ) {
+            ref_mod = pGR->getDataCenterModel();
+            string_ref.Printf( _("Ref : ") + MToString( ref_mod ) + TToString( pGR->getRecordRefDate(), m_TimeZone ) );
+        }
+
         // Wind
         //    Actually need two records to draw the wind arrows
-
-        if( m_ben_Wind && ( pGR->getDataType() == GRB_WIND_VX ) ) {
-            if( pGRWindVY ) RenderGribWind( pGR, pGRWindVY, vp );
-            else
-                pGRWindVX = pGR;
-        }
-
-        else if( m_ben_Wind && ( pGR->getDataType() == GRB_WIND_VY ) ) {
-            if( pGRWindVX ) RenderGribWind( pGRWindVX, pGR, vp );
-            else
-                pGRWindVY = pGR;
-        }
-
+        if( m_ben_Wind && ( pGR->getDataType() == GRB_WIND_VX ) ) pGRWindVX = pGR;
+     
+        else if( m_ben_Wind && ( pGR->getDataType() == GRB_WIND_VY ) ) pGRWindVY = pGR;
+    
         //Pressure
-        if( m_ben_Pressure && ( pGR->getDataType() == GRB_PRESSURE ) ) {
-            RenderGribPressure( pGR, vp );
+        if( m_ben_Pressure && ( pGR->getDataType() == GRB_PRESSURE ) ) pGRPressure = pGR;
+  
+        // Significant Wave Height
+        if( m_ben_GMap == ID_CB_SIWAVM && ( pGR->getDataType() == GRB_HTSGW ) ) {
+            RenderGribSigWh( pGR, vp );
+            map_mod = pGR->getDataCenterModel();
+            string_map = GetRefString( pGR, m_ben_GMap );
+        }
+        // Wind wave direction
+        if( m_ben_GMap == ID_CB_SIWAVM && ( pGR->getDataType() == GRB_WVDIR ) ) {
+            RenderGribWvDir( pGR, vp );
+            map_mod = pGR->getDataCenterModel();
+            string_map = GetRefString( pGR, m_ben_GMap );
         }
 
-        // Significant Wave Height
-        if( m_ben_SigHw && ( pGR->getDataType() == GRB_HTSGW ) ) RenderGribSigWh( pGR, vp );
-
-        // Wind wave direction
-        if( m_ben_SigHw && ( pGR->getDataType() == GRB_WVDIR ) ) RenderGribWvDir( pGR, vp );
-
-        // GFS SEATEMP
-//            if ( m_ben_Seatmp && (pGR->getDataType()==GRB_TEMP ))
-//                  RenderGribSeaTemp(pGR, dc, vp);
-
-        // RTOFS SEATEMP
-        if( m_ben_Seatmp && ( pGR->getDataType() == GRB_WTMP ) ) RenderGribSeaTemp( pGR, vp );
-
+        // total rainfall
+        if( m_ben_GMap == ID_CB_PRETOM && ( pGR->getDataType() == GRB_PRECIP_TOT ) ) {
+            RenderGribTRAIN( pGR, vp );
+            map_mod = pGR->getDataCenterModel();
+            string_map = GetRefString( pGR, m_ben_GMap );
+        }
+        // cloud cover
+        if( m_ben_GMap == ID_CB_CLOCVM && ( pGR->getDataType() == GRB_CLOUD_TOT ) ) {
+            RenderGribCloudCover( pGR, vp );
+            map_mod = pGR->getDataCenterModel();
+            string_map = GetRefString( pGR, m_ben_GMap );
+        }
+        // air temperature (2m)
+        if( m_ben_GMap == ID_CB_ATEM2M && ( pGR->getDataType() == GRB_TEMP ) ) {
+            RenderGribAirTemp2m( pGR, vp );
+            map_mod = pGR->getDataCenterModel();
+            string_map = GetRefString( pGR, m_ben_GMap );
+        }
+        //SEATEMP
+        if( m_ben_GMap == ID_CB_SEATEM && ( pGR->getDataType() == GRB_WTMP ) ) {
+            RenderGribSeaTemp( pGR, vp );
+            map_mod = pGR->getDataCenterModel();
+            string_map = GetRefString( pGR, m_ben_GMap );
+        }
         // RTOFS Current
         //    Actually need two records to render the current speed
 
-        if( m_ben_SeaCurrent && ( pGR->getDataType() == GRB_UOGRD ) ) {
+        if( m_ben_GMap == ID_CB_CURREM && ( pGR->getDataType() == GRB_UOGRD ) ) {
+            map_mod = pGR->getDataCenterModel();
+            string_map = GetRefString( pGR, m_ben_GMap );
             if( pGRCurrentVY ) RenderGribCurrent( pGR, pGRCurrentVY, vp );
             else
                 pGRCurrentVX = pGR;
         }
-
-        else if( m_ben_SeaCurrent && ( pGR->getDataType() == GRB_VOGRD ) ) {
-            if( pGRCurrentVX ) RenderGribCurrent( pGRCurrentVX, pGR, vp );
-            else
-                pGRCurrentVY = pGR;
+            else if( m_ben_GMap == ID_CB_CURREM && ( pGR->getDataType() == GRB_VOGRD ) ) {
+                if( pGRCurrentVX ) RenderGribCurrent( pGRCurrentVX, pGR, vp );
+                else
+                    pGRCurrentVY = pGR;
         }
+    }
+        //wind and pressure rendering has been postponed after graphic maps to ensure a better rendering
+    if( m_ben_Wind && pGRWindVX && pGRWindVY )
+        RenderGribWind( pGRWindVX, pGRWindVY, vp );
 
+    if( m_ben_Pressure && pGRPressure )
+        RenderGribPressure( pGRPressure , vp );
+
+    //display references
+    if( ref_mod == -1 && map_mod == -1 ) {
+        DrawMessageWindow( ( _("No Reference. Try another Graphic Data Selection") ),
+            vp->pix_width, vp->pix_height, m_dFont_map );
+        return false;
     }
 
+    if( !m_SecString.IsEmpty() )
+        DrawMessageWindow( m_SecString, vp->pix_width, vp->pix_height, m_dFont_war );
+    else {
+        if( ref_mod == map_mod || string_map.IsEmpty() ) 
+            DrawMessageWindow(  ( string_ref ), vp->pix_width, vp->pix_height, m_dFont_map );
+        else {
+            if( !string_ref.IsEmpty() ) string_map.Prepend( wxT("\n") );
+            DrawMessageWindow( ( string_ref + string_map ), vp->pix_width, vp->pix_height, m_dFont_map );
+        }
+    }
+ 
     return true;
 }
 
@@ -984,9 +1549,10 @@ bool GRIBOverlayFactory::RenderGribSigWh( GribRecord *pGR, PlugIn_ViewPort *vp )
 {
 
     bool b_drawn = RenderGribFieldOverlay( pGR, NULL, vp, 4, GENERIC_GRAPHIC_INDEX, &m_pgob_sigwh );
-    if( !b_drawn ) DrawMessageWindow(
-            wxString( _("Please Zoom or Scale Out to view suppressed HTSGW GRIB") ),
-            vp->pix_width / 2, vp->pix_height / 2 );
+
+    if( !b_drawn )
+        m_SecString =  _("Please Zoom or Scale Out to view suppressed HTSGW GRIB");
+
     return true;
 }
 
@@ -1035,28 +1601,52 @@ bool GRIBOverlayFactory::RenderGribWvDir( GribRecord *pGR, PlugIn_ViewPort *vp )
 
     return true;
 }
-
+/*
 bool GRIBOverlayFactory::RenderGribCRAIN( GribRecord *pGR, PlugIn_ViewPort *vp )
 {
     bool b_drawn = RenderGribFieldOverlay( pGR, NULL, vp, 4, CRAIN_GRAPHIC_INDEX, &m_pgob_crain );
 
-    if( !b_drawn ) {
-        DrawMessageWindow( wxString( _("Please Zoom or Scale Out to view suppressed CRAIN GRIB") ),
-                vp->pix_width / 2, vp->pix_height / 2 );
-    }
+    if( !b_drawn ) m_SecString = _("Please Zoom or Scale Out to view suppressed CRAIN GRIB");
+
+    return true;
+}
+*/
+bool GRIBOverlayFactory::RenderGribTRAIN( GribRecord *pGR, PlugIn_ViewPort *vp )
+{
+    bool b_drawn = RenderGribFieldOverlay( pGR, NULL, vp, 4, TRAIN_GRAPHIC_INDEX, &m_pgob_train );
+
+    if( !b_drawn )
+        m_SecString =  _("Please Zoom or Scale Out to view suppressed Total Rainfall GRIB");
+
+    return true;
+}
+
+bool GRIBOverlayFactory::RenderGribCloudCover( GribRecord *pGR, PlugIn_ViewPort *vp )
+{
+    bool b_drawn = RenderGribFieldOverlay( pGR, NULL, vp, 4, CLOCV_GRAPHIC_INDEX, &m_pgob_clocv );
+
+    if( !b_drawn )
+        m_SecString =  _("Please Zoom or Scale Out to view suppressed HTSGW GRIB");
+    
+    return true;
+}
+
+bool GRIBOverlayFactory::RenderGribAirTemp2m( GribRecord *pGR, PlugIn_ViewPort *vp )
+{
+    bool b_drawn = RenderGribFieldOverlay( pGR, NULL, vp, 4, ATEMP2_GRAPHIC_INDEX, &m_pgob_atemp2 );
+
+    if( !b_drawn ) 
+        m_SecString = _("Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB");
+   
     return true;
 }
 
 bool GRIBOverlayFactory::RenderGribSeaTemp( GribRecord *pGR, PlugIn_ViewPort *vp )
 {
-    bool b_drawn = RenderGribFieldOverlay( pGR, NULL, vp, 4, SEATEMP_GRAPHIC_INDEX,
-            &m_pgob_seatemp );
+    bool b_drawn = RenderGribFieldOverlay( pGR, NULL, vp, 4, SEATEMP_GRAPHIC_INDEX, &m_pgob_seatemp );
 
-    if( !b_drawn ) {
-        DrawMessageWindow(
-                wxString( _("Please Zoom or Scale Out to view suppressed SEATEMP GRIB") ),
-                vp->pix_width / 2, vp->pix_height / 2 );
-    }
+    if( !b_drawn ) 
+        m_SecString = _("Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB");
 
     return true;
 }
@@ -1067,7 +1657,8 @@ bool GRIBOverlayFactory::RenderGribCurrent( GribRecord *pGRX, GribRecord *pGRY,
     bool b_drawn = RenderGribFieldOverlay( pGRX, pGRY, vp, 4, CURRENT_GRAPHIC_INDEX,
             &m_pgob_current );
 
-    if( b_drawn ) {
+    if( b_drawn ){
+
         //    Draw little arrows for current direction
         {
             int width, height;
@@ -1104,18 +1695,14 @@ bool GRIBOverlayFactory::RenderGribCurrent( GribRecord *pGRX, GribRecord *pGRY,
         }
     }
 
-    if( !b_drawn ) {
-        DrawMessageWindow(
-                wxString( _("Please Zoom or Scale Out to view suppressed CURRENT GRIB") ),
-                vp->pix_width / 2, vp->pix_height / 2 );
-    }
+    if( !b_drawn )  m_SecString = _("Please Zoom or Scale Out to view suppressed CURRENT GRIB");
+
     return true;
 }
 
 bool GRIBOverlayFactory::RenderGribFieldOverlay( GribRecord *pGRA, GribRecord *pGRB,
         PlugIn_ViewPort *vp, int grib_pixel_size, int colormap_index, GribOverlayBitmap **ppGOB )
 {
-
     wxPoint porg;
     GetCanvasPixLL( vp, &porg, pGRA->getLatMax(), pGRA->getLonMin() );
 
@@ -1123,9 +1710,9 @@ bool GRIBOverlayFactory::RenderGribFieldOverlay( GribRecord *pGRA, GribRecord *p
     //    TODO Make a better Intersect method
     bool bdraw = false;
     if( Intersect( vp, pGRA->getLatMin(), pGRA->getLatMax(), pGRA->getLonMin(), pGRA->getLonMax(),
-            0. ) != _OUT ) bdraw = true;
+            30. ) != _OUT ) bdraw = true;
     if( Intersect( vp, pGRA->getLatMin(), pGRA->getLatMax(), pGRA->getLonMin() - 360.,
-            pGRA->getLonMax() - 360., 0. ) != _OUT ) bdraw = true;
+            pGRA->getLonMax() - 360., 30. ) != _OUT ) bdraw = true;
 
     if( bdraw ) {
         // If needed, create the bitmap
@@ -1221,10 +1808,16 @@ wxImage GRIBOverlayFactory::CreateGribImage( GribRecord *pGRA, GribRecord *pGRB,
                     wxColour c;
                     if( colormap_index == CURRENT_GRAPHIC_INDEX ) c = GetSeaCurrentGraphicColor(
                             vkn );
-                    else if( colormap_index == SEATEMP_GRAPHIC_INDEX ) c = GetSeaTempGraphicColor(
-                            vkn );
+                    else if( colormap_index == SEATEMP_GRAPHIC_INDEX ) c = GetTempGraphicColor(
+                            vkn );                
                     else if( colormap_index == CRAIN_GRAPHIC_INDEX ) c = wxColour(
                             (unsigned char) vkn * 255, 0, 0 );
+                    else if( colormap_index == TRAIN_GRAPHIC_INDEX ) c = GetTotRainGraphicColor(
+                            vkn );
+                    else if( colormap_index == CLOCV_GRAPHIC_INDEX ) c = GetCloudCoverGraphicColor(
+                            vkn );
+                    else if( colormap_index == ATEMP2_GRAPHIC_INDEX ) c = GetTempGraphicColor(
+                            vkn );
                     else
                         c = GetGenericGraphicColor( vkn );
 
@@ -1235,7 +1828,7 @@ wxImage GRIBOverlayFactory::CreateGribImage( GribRecord *pGRA, GribRecord *pGRB,
                     for( int xp = 0; xp < grib_pixel_size; xp++ )
                         for( int yp = 0; yp < grib_pixel_size; yp++ ) {
                             gr_image.SetRGB( ipix + xp, jpix + yp, r, g, b );
-                            gr_image.SetAlpha( ipix + xp, jpix + yp, 220 );
+                            gr_image.SetAlpha( ipix + xp, jpix + yp, 180 );
                         }
                 } else {
                     for( int xp = 0; xp < grib_pixel_size; xp++ )
@@ -1250,6 +1843,18 @@ wxImage GRIBOverlayFactory::CreateGribImage( GribRecord *pGRA, GribRecord *pGRB,
         return bl_image;
     } else
         return wxNullImage;
+}
+
+wxString GRIBOverlayFactory::GetRefString( GribRecord *rec, int map )
+{
+        wxString string = DToString( map );
+        if( rec->isDuplicated() ) string.Append(_(" (Dup)") );
+        string.Append( _T(" ") );
+        string.Append( _("Ref : ") );
+        string.Append( MToString( rec->getDataCenterModel() ) );
+        string.Append( TToString( rec->getRecordRefDate(), m_TimeZone ) );
+
+        return string;
 }
 
 wxColour GRIBOverlayFactory::GetGenericGraphicColor( double val )
@@ -1305,13 +1910,14 @@ wxColour GRIBOverlayFactory::GetQuickscatColor( double val )
 
     return c;
 }
-
+/*
 wxColour GRIBOverlayFactory::GetSeaTempGraphicColor( double val_in )
 {
 
     //    HTML colors taken from NOAA WW3 Web representation
 
     double val = val_in - 273.0;
+
     val -= 15.;
 
     val *= 50. / 15.;
@@ -1336,7 +1942,47 @@ wxColour GRIBOverlayFactory::GetSeaTempGraphicColor( double val_in )
     else if( ( val >= 30 ) && ( val < 36 ) ) c.Set( _T("#870000") );
     else if( ( val >= 36 ) && ( val < 42 ) ) c.Set( _T("#690000") );
     else if( ( val >= 42 ) && ( val < 48 ) ) c.Set( _T("#550000") );
-    else if( val >= 48 ) c.Set( _T("#410000") );
+    else if( val >= 48 )                     c.Set( _T("#410000") );
+
+    return c;
+}
+*/
+wxColour GRIBOverlayFactory::GetTempGraphicColor( double val_in )
+{
+
+    //    HTML colors taken from zygrib representation
+     
+    double val = val_in - 273.15;
+    wxColour c;
+    if(         val < -50 )                    c.Set( _T("#283282") );
+    else if( ( val >= -50 ) && ( val < -45 ) ) c.Set( _T("#273c8c") );
+    else if( ( val >= -45 ) && ( val < -40 ) ) c.Set( _T("#264696") );
+    else if( ( val >= -40 ) && ( val < -36 ) ) c.Set( _T("#2350a0") );
+    else if( ( val >= -36 ) && ( val < -32 ) ) c.Set( _T("#1f5aaa") );
+    else if( ( val >= -32 ) && ( val < -28 ) ) c.Set( _T("#1a64b4") );
+    else if( ( val >= -28 ) && ( val < -24 ) ) c.Set( _T("#136ec8") );
+    else if( ( val >= -24 ) && ( val < -21 ) ) c.Set( _T("#0c78e1") );
+    else if( ( val >= -21 ) && ( val < -18 ) ) c.Set( _T("#0382e6") );
+    else if( ( val >= -18 ) && ( val < -15 ) ) c.Set( _T("#0091e6") );
+    else if( ( val >= -15 ) && ( val < -12 ) ) c.Set( _T("#009ee1") );
+    else if( ( val >= -12 ) && ( val < -9  ) ) c.Set( _T("#00a6dc") );
+    else if( ( val >= -9  ) && ( val < -6  ) ) c.Set( _T("#00b2d7") );
+    else if( ( val >= -6  ) && ( val < -3  ) ) c.Set( _T("#00bed2") );
+    else if( ( val >= -3  ) && ( val < 0   ) ) c.Set( _T("#28c8c8") );
+    else if( ( val >= 0   ) && ( val < 3   ) ) c.Set( _T("#78d2aa") );
+    else if( ( val >= 3   ) && ( val < 6   ) ) c.Set( _T("#8cdc78") );
+    else if( ( val >= 6   ) && ( val < 9   ) ) c.Set( _T("#a0eb5f") );
+    else if( ( val >= 9   ) && ( val < 12  ) ) c.Set( _T("#c8f550") );
+    else if( ( val >= 12  ) && ( val < 15  ) ) c.Set( _T("#f3fb02") );
+    else if( ( val >= 15  ) && ( val < 18  ) ) c.Set( _T("#ffed00") );
+    else if( ( val >= 18  ) && ( val < 21  ) ) c.Set( _T("#ffdd00") );
+    else if( ( val >= 21  ) && ( val < 24  ) ) c.Set( _T("#ffc900") );
+    else if( ( val >= 24  ) && ( val < 28  ) ) c.Set( _T("#ffab00") );
+    else if( ( val >= 28  ) && ( val < 32  ) ) c.Set( _T("#ff8100") );
+    else if( ( val >= 32  ) && ( val < 36  ) ) c.Set( _T("#f1780c") );
+    else if( ( val >= 36  ) && ( val < 40  ) ) c.Set( _T("#e26a23") );
+    else if( ( val >= 40  ) && ( val < 45  ) ) c.Set( _T("#d5453c") );
+    else if( val >= 45    )                    c.Set( _T("#b53c59") );
 
     return c;
 }
@@ -1369,6 +2015,53 @@ wxColour GRIBOverlayFactory::GetSeaCurrentGraphicColor( double val_in )
     else if( ( val >= 36 ) && ( val < 42 ) ) c.Set( _T("#690000") );
     else if( ( val >= 42 ) && ( val < 48 ) ) c.Set( _T("#550000") );
     else if( val >= 48 ) c.Set( _T("#410000") );
+
+    return c;
+}
+
+wxColour GRIBOverlayFactory::GetTotRainGraphicColor( double val )
+{
+
+    //    HTML colors taken from ZyGrib representation
+
+    wxColour c;
+    if       ( val <  0.01 )                     c.Set( _T("#ffffff") );
+    else if( ( val >= 0.01 ) && ( val < 0.02 ) ) c.Set( _T("#c8f0ff") );
+    else if( ( val >= 0.02 ) && ( val < 0.05 ) ) c.Set( _T("#b4e6ff") );
+    else if( ( val >= 0.05 ) && ( val < 0.07 ) ) c.Set( _T("#8cd3ff") );
+    else if( ( val >= 0.07 ) && ( val < 0.1  ) ) c.Set( _T("#78caff") );
+    else if( ( val >= 0.1  ) && ( val < 0.2  ) ) c.Set( _T("#6ec1ff") );
+    else if( ( val >= 0.2  ) && ( val < 0.5  ) ) c.Set( _T("#64b8ff") );
+    else if( ( val >= 0.5  ) && ( val < 0.7  ) ) c.Set( _T("#50a6ff") );
+    else if( ( val >= 0.7  ) && ( val < 1.0  ) ) c.Set( _T("#469eff") );
+    else if( ( val >= 1.0  ) && ( val < 2.0  ) ) c.Set( _T("#3c96ff") );
+    else if( ( val >= 2.0  ) && ( val < 5.0  ) ) c.Set( _T("#328eff") );
+    else if( ( val >= 5.0  ) && ( val < 7.0  ) ) c.Set( _T("#1e7eff") );
+    else if( ( val >= 7.0  ) && ( val < 10.0 ) ) c.Set( _T("#1476f0") );
+    else if( ( val >= 10.0 ) && ( val < 20.0 ) ) c.Set( _T("#0a6edc") );
+    else if( ( val >= 20.0 ) && ( val < 50.0 ) ) c.Set( _T("#0064c8") );
+    else if(   val >= 50   )                     c.Set( _T("#0052aa") );
+
+    return c;
+}
+
+wxColour GRIBOverlayFactory::GetCloudCoverGraphicColor( double val )
+{
+
+    //    HTML colors taken from black ZyGrib representation
+
+    wxColour c;
+    if     (   val <= 0  )                   c.Set( _T("#ffffff") );
+    else if( ( val > 0   ) && ( val < 10 ) ) c.Set( _T("#f0f0e6") );
+    else if( ( val >= 10 ) && ( val < 20 ) ) c.Set( _T("#e6e6dc") );
+    else if( ( val >= 20 ) && ( val < 30 ) ) c.Set( _T("#dcdcd2") );
+    else if( ( val >= 30 ) && ( val < 40 ) ) c.Set( _T("#c8c8b4") );
+    else if( ( val >= 40 ) && ( val < 50 ) ) c.Set( _T("#aaaa8c") );
+    else if( ( val >= 50 ) && ( val < 60 ) ) c.Set( _T("#969678") );
+    else if( ( val >= 60 ) && ( val < 70 ) ) c.Set( _T("#787864") );
+    else if( ( val >= 70 ) && ( val < 80 ) ) c.Set( _T("#646450") );
+    else if( ( val >= 80 ) && ( val < 90 ) ) c.Set( _T("#5a5a46") );
+    else if(   val >= 90 )                   c.Set( _T("#505036") );
 
     return c;
 }
@@ -1846,30 +2539,32 @@ void GRIBOverlayFactory::DrawGLRGBA( unsigned char *pRGBA, int RGBA_width, int R
 
 }
 
-void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y )
+void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont)
 {
     wxMemoryDC mdc;
     wxBitmap bm( 1000, 1000 );
     mdc.SelectObject( bm );
     mdc.Clear();
 
-    wxFont mfont( 15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
-    mdc.SetFont( mfont );
-    mdc.SetPen( *wxBLACK_PEN);
-    mdc.SetBrush( *wxWHITE_BRUSH);
-
+    //wxFont mfont( 15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
+    mdc.SetFont( *mfont );
+    mdc.SetPen( *wxTRANSPARENT_PEN);
+   // mdc.SetBrush( *wxLIGHT_GREY_BRUSH );
+    mdc.SetBrush( wxColour(243, 229, 47 ) );
     int w, h;
-    mdc.GetTextExtent( msg, &w, &h );
-
+    mdc.GetMultiLineTextExtent( msg, &w, &h );
+    h += 2;
     int label_offset = 10;
     int wdraw = w + ( label_offset * 2 );
-    mdc.DrawRectangle( 0, 0, wdraw, h + 2 );
-    mdc.DrawText( msg, label_offset / 2, -1 );
+    mdc.DrawRectangle( 0, 0, wdraw, h );
 
+    mdc.DrawLabel( msg, wxRect( label_offset, 0, wdraw, h ), wxALIGN_LEFT| wxALIGN_CENTRE_VERTICAL);
     mdc.SelectObject( wxNullBitmap );
 
-    wxBitmap sbm = bm.GetSubBitmap( wxRect( 0, 0, wdraw, h + 2 ) );
-    DrawOLBitmap( sbm, x - wdraw / 2, y, false );
+    wxBitmap sbm = bm.GetSubBitmap( wxRect( 0, 0, wdraw, h ) );
+
+    DrawOLBitmap( sbm, 0, y - ( GetChartbarHeight() + h ), false );
+    
 }
 
 void GRIBOverlayFactory::CreateRGBAfromImage( wxImage *pimage, GribOverlayBitmap *pGOB )
@@ -1904,104 +2599,17 @@ void GRIBOverlayFactory::CreateRGBAfromImage( wxImage *pimage, GribOverlayBitmap
         }
 
 }
-//---------------------------------------------------------------------------------------
-//          GRIB File/Record selector Tree Control Implementation
-//---------------------------------------------------------------------------------------
-IMPLEMENT_CLASS ( GribRecordTree, wxTreeCtrl )
-
-// GribRecordTree event table definition
-
-BEGIN_EVENT_TABLE ( GribRecordTree, wxTreeCtrl ) EVT_TREE_ITEM_EXPANDING ( ID_GRIBRECORDREECTRL, GribRecordTree::OnItemExpanding )
-EVT_TREE_SEL_CHANGED ( ID_GRIBRECORDREECTRL, GribRecordTree::OnItemSelectChange )
-END_EVENT_TABLE()
-
-GribRecordTree::GribRecordTree()
-{
-    Init();
-}
-
-GribRecordTree::GribRecordTree( GRIBUIDialog* parent, wxWindowID id, const wxPoint& pos,
-        const wxSize& size, long style )
-{
-    Init();
-    m_parent = parent;
-    Create( parent, id, pos, size, style );
-}
-
-GribRecordTree::~GribRecordTree()
-{
-    delete m_file_id_array;
-}
-
-void GribRecordTree::Init()
-{
-    m_file_id_array = NULL;
-}
-
-void GribRecordTree::OnItemExpanding( wxTreeEvent& event )
-{
-}
-
-void GribRecordTree::OnItemSelectChange( wxTreeEvent& event )
-{
-    GribTreeItemData *pdata = (GribTreeItemData *) GetItemData( event.GetItem() );
-
-    if( !pdata ) return;
-
-    switch( pdata->m_type ){
-        case GRIB_FILE_TYPE: {
-            m_parent->SetGribRecordSet( NULL );                  // turn off any current display
-
-            //    Create and ingest the GRIB file object if needed
-            if( NULL == pdata->m_pGribFile ) {
-                GRIBFile *pgribfile = new GRIBFile( pdata->m_file_name );
-                if( pgribfile ) {
-                    if( pgribfile->IsOK() ) {
-                        pdata->m_pGribFile = pgribfile;
-                        m_parent->PopulateTreeControlGRS( pgribfile, pdata->m_file_index );
-
-                    } else {
-                        wxLogMessage( pgribfile->GetLastErrorMessage() );
-                    }
-                }
-            }
-            break;
-        }
-
-        case GRIB_RECORD_SET_TYPE: {
-            m_parent->SetGribRecordSet( pdata->m_pGribRecordSet );
-            break;
-        }
-    }
-}
-
-//---------------------------------------------------------------------------------------
-//          GRIB Tree Item Data Implementation
-//---------------------------------------------------------------------------------------
-
-GribTreeItemData::GribTreeItemData( const GribTreeItemType type )
-{
-    m_pGribFile = NULL;
-    m_pGribRecordSet = NULL;
-
-    m_type = type;
-}
-
-GribTreeItemData::~GribTreeItemData()
-{
-    delete m_pGribFile;
-}
 
 //----------------------------------------------------------------------------------------------------------
 //          GRIBFile Object Implementation
 //----------------------------------------------------------------------------------------------------------
 
-GRIBFile::GRIBFile( const wxString file_name )
+GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
 {
     m_bOK = true;           // Assume ok until proven otherwise
 
     if( !::wxFileExists( file_name ) ) {
-        m_last_error_message = _T ( "   GRIBFile Error:  File does not exist." );
+        m_last_message = _T ( "GRIBFile Error:  File does not exist!" );
         m_bOK = false;
         return;
     }
@@ -2012,6 +2620,17 @@ GRIBFile::GRIBFile( const wxString file_name )
 
     //    Read and ingest the entire GRIB file.......
     m_pGribReader->openFile( file_name );
+
+    if( !m_pGribReader->isOk() ) {
+        m_last_message = _( "GRIBFile Error:  Can't read this File!" );
+        m_bOK = false;
+        return;
+    }
+
+    m_FileName = file_name;
+    
+    if( CumRec ) m_pGribReader->copyFirstCumulativeRecord();            //add missing records if option selected
+    if( WaveRec ) m_pGribReader->copyMissingWaveRecords ();             //  ""                   ""
 
     m_nGribRecords = m_pGribReader->getTotalNumberOfGribRecords();
 
@@ -2040,7 +2659,6 @@ GRIBFile::GRIBFile( const wxString file_name )
         std::vector<GribRecord *> *ls = ( *it ).second;
         for( zuint i = 0; i < ls->size(); i++ ) {
             pRec = ls->at( i );
-
             time_t thistime = pRec->getRecordCurrentDate();
 
             //   Search the GribRecordSet array for a GribRecordSet with matching time
@@ -2087,4 +2705,220 @@ bool PointInLLBox( PlugIn_ViewPort *vp, double x, double y )
     if( x >= ( vp->lon_min ) && x <= ( vp->lon_max ) && y >= ( vp->lat_min )
             && y <= ( vp->lat_max ) ) return TRUE;
     return FALSE;
+}
+
+//-------------------------------------------------------------------------------------------------------
+//Request Profile Display implementation
+//---------------------------------------------------------------------------------------------------------
+GribPofileDisplay::GribPofileDisplay( wxWindow *parent, wxWindowID id, wxString profile ):
+    wxDialog( parent, id, _("Request Pofile"), wxDefaultPosition,  wxSize( 200, 200 ),
+        wxCAPTION )
+{
+    int border_size = 5;
+
+    wxBoxSizer* itemBoxSizerDisplay = new wxBoxSizer(wxVERTICAL);
+    this->SetSizer(itemBoxSizerDisplay);
+
+    wxStaticBox* itemStaticBoxSizerDisplayStatic = new wxStaticBox(this, wxID_ANY, wxT("") );
+    wxStaticBoxSizer* itemStaticBoxSizerDisplay = new wxStaticBoxSizer(itemStaticBoxSizerDisplayStatic, wxVERTICAL);
+    itemBoxSizerDisplay->Add(itemStaticBoxSizerDisplay, 0, wxGROW|wxALL, border_size);
+
+    wxStaticText *pProfile = new wxStaticText( this, wxID_ANY, _T("Model"), wxDefaultPosition, wxSize( -1, -1), wxALIGN_LEFT );
+    itemStaticBoxSizerDisplay->Add( pProfile, 0, wxTOP, border_size );
+    pProfile->SetLabel( profile );
+
+    wxStaticBox* itemStaticBoxSizerButtonStatic = new wxStaticBox(this, wxID_ANY, wxT("") );
+    wxStaticBoxSizer* itemStaticBoxSizerButton = new wxStaticBoxSizer(itemStaticBoxSizerButtonStatic, wxVERTICAL);
+    itemBoxSizerDisplay->Add(itemStaticBoxSizerButton, 0, wxGROW|wxALL, border_size);
+
+    wxButton *pModify = new wxButton( this, wxID_SAVE, _("Modify"), wxDefaultPosition, wxDefaultSize, 0);
+    pModify->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GribPofileDisplay::OnModifyButtonClick), NULL, this );
+
+    wxButton *pSend = new wxButton( this, wxID_OK, _("Send"), wxDefaultPosition, wxDefaultSize, 0);
+
+    wxStdDialogButtonSizer* DialogButtonSizer = this->CreateStdDialogButtonSizer(wxCANCEL);
+    DialogButtonSizer->SetAffirmativeButton( pSend );
+    DialogButtonSizer->Realize();
+    DialogButtonSizer->Add(pModify);
+    itemStaticBoxSizerButton->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, border_size);
+
+    Fit();
+}
+
+void GribPofileDisplay::OnModifyButtonClick( wxCommandEvent &event )
+{
+    EndModal( wxID_SAVE );
+}
+
+
+//-------------------------------------------------------------------------------------------------------
+//Request Preferences Dialog implementation
+//---------------------------------------------------------------------------------------------------------
+GribReqPrefDialog::GribReqPrefDialog( wxWindow *parent, wxWindowID id, wxString config ):
+    wxDialog( parent, id, _("Request Preferences"), wxDefaultPosition, wxSize( -1, -1),
+        wxCAPTION )
+{
+    int border_size = 5;
+    long i;
+    wxString s;
+    m_DataRequestConfig = config;
+    wxBoxSizer* itemBoxSizerRGRIBPanel = new wxBoxSizer(wxVERTICAL);
+    this->SetSizer(itemBoxSizerRGRIBPanel);
+
+     //  General request Setting
+    wxStaticBox* itemStaticBoxSizerRGRIBStatic = new wxStaticBox(this, wxID_ANY, _("Request Profile Setting"));
+    wxStaticBoxSizer* itemStaticBoxSizerRGRIB = new wxStaticBoxSizer(itemStaticBoxSizerRGRIBStatic, wxVERTICAL);
+    itemBoxSizerRGRIBPanel->Add(itemStaticBoxSizerRGRIB, 0, wxGROW|wxALL, border_size);
+
+    m_pTopSizer = new wxFlexGridSizer(2);
+    itemStaticBoxSizerRGRIB->Add( m_pTopSizer, 0, wxALL | wxEXPAND, border_size );
+
+    wxStaticText* m_model_text = new wxStaticText( this, wxID_ANY, _("Forecast Model   "), wxDefaultPosition, wxSize(-1, -1) );
+    m_pTopSizer->Add( m_model_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
+
+   // const wxString model[] = { wxT("NOAA_GFS"), wxT("NOAA_COAMPS") ,wxT("NOAA_RTOFS") };
+    m_pModel = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 3, model, wxALIGN_LEFT );
+    m_pModel->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(GribReqPrefDialog::OnChoiceChange), NULL, this );
+    m_pTopSizer->Add( m_pModel, 0, wxTOP, border_size );
+    s = config.GetChar(1);
+    s.ToLong( &i );
+    m_pModel->SetSelection( i );
+
+    wxStaticText* m_Resolution_text = new wxStaticText( this, wxID_ANY, _("Resolution"), wxDefaultPosition, wxSize(-1, -1) );
+    m_pTopSizer->Add( m_Resolution_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
+
+    const wxString resolution1[] = { _("0.5 Deg"), _("1.0 Deg"), _("1.5 Deg"), _("2.0 Deg") };
+    const wxString resolution2[] = { _("0.2 Deg"), _("0.6 Deg"), _("1.2 Deg"), _("2.0 Deg") };
+    if( i == 1 )
+        m_pResolution = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, resolution2, wxALIGN_LEFT );
+    else
+        m_pResolution = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, resolution1, wxALIGN_LEFT );
+    //m_pTopSizer->Add( m_pResolution , 0, wxTOP, border_size );
+    if( i == 2 ) {
+        m_pResolution->SetSelection( 0 );
+        m_pResolution->Enable( false );
+    } else {
+        s = config.GetChar(2);
+        s.ToLong( &i );
+        m_pResolution->SetSelection( i );
+    }
+    m_pTopSizer->Add( m_pResolution , 0, wxTOP, border_size );
+
+    wxStaticText* m_Interval_text = new wxStaticText( this, wxID_ANY, _("Interval"), wxDefaultPosition, wxSize(-1, -1) );
+    m_pTopSizer->Add( m_Interval_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
+
+    const wxString interval[] = { _("3 h"), _("6 h"), _("12 h"), _("24 h") };
+    m_pInterval = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, interval, wxALIGN_LEFT );
+    m_pTopSizer->Add( m_pInterval, 0, wxTOP, border_size );
+   s = config.GetChar(3);
+    s.ToLong( &i );
+    m_pInterval->SetSelection( i );
+
+    wxStaticText* m_Horizon_text = new wxStaticText( this, wxID_ANY, _T("Horizon"), wxDefaultPosition, wxSize(-1, -1) );
+    m_pTopSizer->Add( m_Horizon_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
+
+    const wxString horizon[] = { _("4 days"), _("6 days"), _("8 days") };
+    m_pHorizon = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 3, horizon, wxALIGN_LEFT );
+    m_pTopSizer->Add( m_pHorizon, 0, wxTOP, border_size );
+    s = config.GetChar(4);
+    s.ToLong( &i );
+    m_pHorizon->SetSelection( i );
+
+    //  data request Setting
+    wxStaticBox* itemStaticBoxSizerRGRIB2Static = new wxStaticBox(this, wxID_ANY, _("Data Requested"));
+    wxStaticBoxSizer* itemStaticBoxSizerRGRIB2 = new wxStaticBoxSizer(itemStaticBoxSizerRGRIB2Static, wxVERTICAL);
+    itemBoxSizerRGRIBPanel->Add(itemStaticBoxSizerRGRIB2, 0, wxGROW|wxALL, border_size);
+
+    wxFlexGridSizer *pTopSizer2 = new wxFlexGridSizer( 2 );
+    itemStaticBoxSizerRGRIB2->Add( pTopSizer2, 0, wxALL | wxEXPAND, border_size );
+
+    m_pWind = new wxCheckBox( this, -1, _("Wind"));
+    pTopSizer2->Add( m_pWind, 1, wxALIGN_LEFT|wxALL, border_size );
+    m_pWind->SetValue( true );
+    m_pWind->Enable( false );
+
+    m_pPress = new wxCheckBox( this, -1, _("Pressure"));
+    pTopSizer2->Add( m_pPress, 1, wxALIGN_LEFT|wxALL, border_size );
+    m_pPress->SetValue( true );
+    m_pPress->Enable( false );
+  
+    m_pWaves = new wxCheckBox( this, -1, _("Waves"));
+    pTopSizer2->Add( m_pWaves, 1, wxALIGN_LEFT|wxALL, border_size );
+    m_pWaves->SetValue( config.GetChar(7) == 'X' );
+    if( m_pModel->GetCurrentSelection() == 1 || m_pModel->GetCurrentSelection() == 2 ) m_pWaves->Enable( false );
+
+    m_pRainfall = new wxCheckBox( this, -1, _("Rainfall"));
+    pTopSizer2->Add( m_pRainfall, 1, wxALIGN_LEFT|wxALL, border_size );
+    m_pRainfall->SetValue( config.GetChar(8) == 'X' );
+    if( m_pModel->GetCurrentSelection() == 1 || m_pModel->GetCurrentSelection() == 2 ) m_pRainfall->Enable( false );
+
+    m_pCloudCover = new wxCheckBox( this, -1, _("Clouds Cover"));
+    pTopSizer2->Add( m_pCloudCover, 1, wxALIGN_LEFT|wxALL, border_size );
+    m_pCloudCover->SetValue( config.GetChar(9) == 'X' );
+    if( m_pModel->GetCurrentSelection() == 1 || m_pModel->GetCurrentSelection() == 2 ) m_pCloudCover->Enable( false );
+
+    m_pAirTemp = new wxCheckBox( this, -1, _("Air Temperature"));
+    pTopSizer2->Add( m_pAirTemp, 1, wxALIGN_LEFT|wxALL, border_size );
+    m_pAirTemp->SetValue( config.GetChar(10) == 'X' );
+    if( m_pModel->GetCurrentSelection() == 1 || m_pModel->GetCurrentSelection() == 2 ) m_pAirTemp->Enable( false );
+
+    m_pSeaTemp = new wxCheckBox( this, -1, _("Sea Temperature"));
+    pTopSizer2->Add( m_pSeaTemp, 1, wxALIGN_LEFT|wxALL, border_size );
+    m_pSeaTemp->SetValue( config.GetChar(11) == 'X' );
+    if( m_pModel->GetCurrentSelection() == 1 || m_pModel->GetCurrentSelection() == 2 ) m_pSeaTemp->Enable( false );
+
+    wxStaticBox* itemStaticBoxSizerButtonStatic = new wxStaticBox(this, wxID_ANY, wxT("") );
+    wxStaticBoxSizer* itemStaticBoxSizerButton = new wxStaticBoxSizer(itemStaticBoxSizerButtonStatic, wxVERTICAL);
+    itemBoxSizerRGRIBPanel->Add(itemStaticBoxSizerButton, 0, wxGROW|wxALL, border_size);
+
+    wxStdDialogButtonSizer* DialogButtonSizer = this->CreateStdDialogButtonSizer(wxOK|wxCANCEL);
+    itemStaticBoxSizerButton->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, border_size);
+
+    Fit();
+}
+
+void GribReqPrefDialog::OnChoiceChange(wxCommandEvent &event)
+{
+    int choice = m_pResolution->GetCurrentSelection();
+    if( m_pModel->GetSelection() == 1 ) {
+        m_pResolution->SetString(0,wxT("0.2 Deg"));
+        m_pResolution->SetString(1,wxT("0.6 Deg"));
+        m_pResolution->SetString(2,wxT("1.2 Deg"));
+        m_pResolution->SetString(3,wxT("2.0 Deg"));
+    } else {
+        m_pResolution->SetString(0,wxT("0.5 Deg"));
+        m_pResolution->SetString(1,wxT("1.0 Deg"));
+        m_pResolution->SetString(2,wxT("1.5 Deg"));
+        m_pResolution->SetString(3,wxT("2.0 Deg"));
+    }
+    if( m_pModel->GetSelection() == 2 ) {
+        m_pResolution->SetSelection( 0 );
+        m_pResolution->Enable( false );
+    } else {
+        m_pResolution->SetSelection( choice );
+        m_pResolution->Enable( true );
+    }
+    if( m_pModel->GetSelection() == 1 || m_pModel->GetSelection() == 2 ) {
+        m_pWaves->SetValue( false );
+        m_pWaves->Enable( false );
+        m_pRainfall->SetValue( false );
+        m_pRainfall->Enable( false );
+        m_pCloudCover->SetValue( false );
+        m_pCloudCover->Enable( false );
+        m_pAirTemp->SetValue( false );
+        m_pAirTemp->Enable( false );
+        m_pSeaTemp->SetValue( false );
+        m_pSeaTemp->Enable( false );
+    } else {
+        m_pWaves->SetValue( m_DataRequestConfig.GetChar( 7 ) == 'X' );
+        m_pWaves->Enable( true );
+        m_pRainfall->SetValue( m_DataRequestConfig.GetChar( 8 ) == 'X' );
+        m_pRainfall->Enable( true );
+        m_pCloudCover->SetValue( m_DataRequestConfig.GetChar( 9 ) == 'X' );
+        m_pCloudCover->Enable( true );
+        m_pAirTemp->SetValue( m_DataRequestConfig.GetChar( 10 ) == 'X' );
+        m_pAirTemp->Enable( true );
+        m_pSeaTemp->SetValue( m_DataRequestConfig.GetChar( 11 ) == 'X' );
+        m_pSeaTemp->Enable( true );
+    }
 }

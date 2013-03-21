@@ -32,7 +32,6 @@
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
-#include <wx/treectrl.h>
 #include <wx/fileconf.h>
 #include <wx/notebook.h>
 #include <wx/glcanvas.h>
@@ -41,29 +40,41 @@
 #include "GribRecord.h"
 #include "IsoLine.h"
 
-#define ID_OK                       10001
-#define ID_GRIBRECORDREECTRL        10002
-#define ID_CHOOSEGRIBDIR            10003
+#include <wx/stdpaths.h>
+
+#include <wx/net/email.h>
+
+//Timer Constants
+#define GRIB_FORECAST_TIMER         10100
+#define CANVAS_REFRESH_TIMER        10101
+#define FORECAST_TIMER_10MN         600000      //10 mn
+#define CANVAS_REFRESH_100MS         100         //100 ms
+
+//Config constants
+enum {          //numeric data display ( includes wind barbs and isobards )
+    ID_CB_NOMAP = 0,ID_CB_WINDM, ID_CB_PRESSM, ID_CB_WIGUST, ID_CB_PRESSD, ID_CB_SIWAVD, ID_CB_PRETOD, ID_CB_CLOCVD,
+    ID_CB_ATEM2D, ID_CB_SEATED, ID_CB_CURRED
+};
+enum {          //graphic colored data maps display 
+    ID_CB_WINDSP = 97, ID_CB_WINDIR, ID_CB_WIGUSM, ID_CB_PRESS, ID_CB_SIWAVM, ID_CB_PRETOM, ID_CB_CLOCVM,
+    ID_CB_ATEM2M, ID_CB_SEATEM, ID_CB_CURREM
+};
 
 #ifndef PI
 #define PI        3.1415926535897931160E0      /* pi */
 #endif
 
-enum {
-    ID_CB_WINDSPEED = 11000, ID_CB_WINDDIR, ID_CB_PRESS, ID_CB_SIGHW, ID_CB_SEATMP, ID_CB_SEACURRENT
-};
-
 enum OVERLAP {
     _IN, _ON, _OUT
 };
 
-enum {
-    GENERIC_GRAPHIC_INDEX, CURRENT_GRAPHIC_INDEX, SEATEMP_GRAPHIC_INDEX, CRAIN_GRAPHIC_INDEX
+enum COLORINDEX {
+    GENERIC_GRAPHIC_INDEX, CURRENT_GRAPHIC_INDEX, SEATEMP_GRAPHIC_INDEX, CRAIN_GRAPHIC_INDEX,
+    TRAIN_GRAPHIC_INDEX, CLOCV_GRAPHIC_INDEX, ATEMP2_GRAPHIC_INDEX
 };
 
 class GRIBFile;
 class GRIBRecord;
-class GribRecordTree;
 class GRIBOverlayFactory;
 class GribRecordSet;
 
@@ -84,9 +95,6 @@ public:
     ArrayOfGribRecordPtrs m_GribRecordPtrArray;          // all GribRecords at this time
 };
 
-enum GribTreeItemType {
-    GRIB_FILE_TYPE, GRIB_RECORD_SET_TYPE
-};
 //----------------------------------------------------------------------------------------------------------
 //    GRIB Selector/Control Dialog Specification
 //----------------------------------------------------------------------------------------------------------
@@ -99,73 +107,112 @@ public:
     ~GRIBUIDialog();
     void Init();
 
+    GRIBFile        *m_bGRIBActiveFile;
+
     bool Create( wxWindow *parent, grib_pi *ppi, wxWindowID id = wxID_ANY, const wxString& caption =
-            _("GRIB Display Control"), const wxString initial_grib_dir = wxT(""),
-            const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize,
+            wxT(""), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, 
             long style = wxCAPTION | wxRESIZE_BORDER | wxSYSTEM_MENU );
 
     void CreateControls();
 
-    void PopulateTreeControlGRS( GRIBFile *pgribfile, int file_index );
-    void SetGribRecordSet( GribRecordSet *pGribRecordSet ); // a "notification" from Record Tree control
-
+    void GetFirstrFileInDirectory();
+    void PopulateComboDataList( int index );
+    void CreateActiveFileFromName( wxString filename );
+    void DisplayDataGRS( void );
+    void SetGribRecordSet( GribRecordSet *pGribRecordSet );
+    void ComputeBestForecastForNow( void );
     void SetCursorLatLon( double lat, double lon );
-
+    void UpdateTrackingControls( void );
+    void UpdateTrackingLabels( void );
+    bool HasValidData(void) { return  m_pRecordForecast->GetCount() != 0; }
+    int  GetActiveForecastIndex( void ) { return m_pRecordForecast->GetCurrentSelection(); }
+    //wxString GetFileName(void) {return m_bGRIBActiveFile->GetFileName();}
+    void SetViewPort( PlugIn_ViewPort *vp ) { m_vp = new PlugIn_ViewPort(*vp); }
+    void StartRefreshTimer( void ) { m_pCanvasRefreshTimer.Start( CANVAS_REFRESH_100MS, wxTIMER_ONE_SHOT ); }
 private:
     void OnClose( wxCloseEvent& event );
-    void OnIdOKClick( wxCommandEvent& event );
     void OnMove( wxMoveEvent& event );
     void OnSize( wxSizeEvent& event );
-    void OnChooseDirClick( wxCommandEvent& event );
-    void UpdateTrackingControls( void );
-    void PopulateTreeControl( void );
     void SetFactoryOptions();
-
-    void OnCBWindspeedClick( wxCommandEvent& event );
-    void OnCBWinddirClick( wxCommandEvent& event );
-    void OnCBPressureClick( wxCommandEvent& event );
-    void OnCBSigHwClick( wxCommandEvent& event );
-    void OnCBSeatempClick( wxCommandEvent& event );
-    void OnCBSeaCurrentClick( wxCommandEvent& event );
+    int  GetNumberDataShown();
+    void ShowSendRequest( wxString zone );
+    void ShowGribReqPrefDialog( wxString zone );
+    void OnGRIBForecastTimerEvent( wxTimerEvent& event );
+    void OnCanvasRefreshTimerEvent( wxTimerEvent& event );
+    void OnGRIBForecastChange( wxCommandEvent& event );
+    void OnButtonOpenFileClick( wxCommandEvent& event );
+    void OnButtonSettingClick( wxCommandEvent& event );
+    void OnButtonNextClick( wxCommandEvent& event );
+    void OnButtonPrevClick( wxCommandEvent& event );
+    void OnButtonNowClick( wxCommandEvent& event );
+    void OnGribRequestClick(  wxCommandEvent& event );
 
     //    Data
-    wxWindow *pParent;
-    grib_pi *pPlugIn;
+    wxWindow        *pParent;
+    grib_pi         *pPlugIn;
+    //GRIBFile        *m_bGRIBActiveFile;
+    PlugIn_ViewPort  *m_vp;
+    wxString        m_DataDisplayConfig;
 
-    wxFont *m_dFont;
+    wxTimer         m_pGribForecastTimer;
+    wxTimer         m_pCanvasRefreshTimer;
 
-    GribRecordTree *m_pRecordTree;
-    wxTreeItemId m_RecordTree_root_id;
+    wxComboBox      *m_pRecordForecast;
+   
+    wxTextCtrl      *m_pT0TextCtrl;
+    wxTextCtrl      *m_pT1TextCtrl;
+    wxTextCtrl      *m_pT2TextCtrl;
+    wxTextCtrl      *m_pT3TextCtrl;
+    wxTextCtrl      *m_pT4TextCtrl;
+    wxTextCtrl      *m_pT5TextCtrl;
+    wxTextCtrl      *m_pT6TextCtrl;
+    wxTextCtrl      *m_pT7TextCtrl;
+    wxTextCtrl      *m_pT8TextCtrl;
 
-    wxTextCtrl *m_pWindSpeedTextCtrl;
-    wxTextCtrl *m_pWindDirTextCtrl;
-    wxTextCtrl *m_pPressureTextCtrl;
-    wxTextCtrl *m_pSigWHTextCtrl;
-    wxTextCtrl *m_pSeaTmpTextCtrl;
-    wxTextCtrl *m_pSeaCurrentTextCtrl;
+    wxStaticText    *m_pT0StaticText;
+    wxStaticText    *m_pT1StaticText;
+    wxStaticText    *m_pT2StaticText;
+    wxStaticText    *m_pT3StaticText;
+    wxStaticText    *m_pT4StaticText;
+    wxStaticText    *m_pT5StaticText;
+    wxStaticText    *m_pT6StaticText;
+    wxStaticText    *m_pT7StaticText;
+    wxStaticText    *m_pT8StaticText;
 
-    wxCheckBox m_cbWindSpeed;
-    wxCheckBox m_cbWindDir;
-    wxCheckBox m_cbPress;
-    wxCheckBox m_cbSigHw;
-    wxCheckBox m_cbSeaTmp;
-    wxCheckBox m_cbSeaCurrent;
+    wxBitmapButton  *m_pButtonNext;
+    wxBitmapButton  *m_pButtonPrev;
+    wxBitmapButton  *m_pButtonNow;
+    wxBitmapButton  *m_pButtonOpen;
+    wxBitmapButton  *m_pButtonPref;
+    wxBitmapButton  *m_pButtonRequ;
 
-    int m_n_files;
+    int             m_NumberDataShown;
+    int             m_height;
+    bool            m_cbWindSpeed;
+    bool            m_cbPress;
+    bool            m_cbSigHw;
+    bool            m_cbSeaTmp;
+    bool            m_cbSeaCurrent;
+    
+    wxBitmap        *m_pNext_bitmap;
+    wxBitmap        *m_pPrev_bitmap;
+    wxBitmap        *m_pNow_bitmap;
+    wxBitmap        *m_pOpen_bitmap;
+    wxBitmap        *m_pPref_bitmap;
+    wxBitmap        *m_pRequ_bitmap;
 
-    wxTextCtrl *m_pitemCurrentGribDirectoryCtrl;
-    wxString m_currentGribDir;
-    wxBitmap *m_pfolder_bitmap;
-    GribRecordSet *m_pCurrentGribRecordSet;
-
-    int m_sequence_active;
+    GribRecordSet   *m_pCurrentGribRecordSet;
 
     double m_cursor_lat, m_cursor_lon;
 
     int m_RS_Idx_WIND_VX;             // These are indexes into the m_pCurrentGribRecordSet
     int m_RS_Idx_WIND_VY;
+    int m_RS_Idx_WIND_GUST;
     int m_RS_Idx_PRESS;
     int m_RS_Idx_HTSIGW;
+    int m_RS_Idx_PRECIP_TOT;
+    int m_RS_Idx_CLOUD_TOT;
+    int m_RS_Idx_AIR_TEMP_2M;
     int m_RS_Idx_WINDSCAT_VY;
     int m_RS_Idx_WINDSCAT_VX;
     int m_RS_Idx_SEATEMP;
@@ -211,6 +258,8 @@ public:
 
     GribRecordSet *m_pGribRecordSet;
 
+    void SetMessage( wxString message ) { m_Message = message; }
+    void SetTimeZone( int TimeZone ) { m_TimeZone = TimeZone; }
     void EnableRenderWind( bool b_rend )
     {
         m_ben_Wind = b_rend;
@@ -218,28 +267,19 @@ public:
     void EnableRenderPressure( bool b_rend )
     {
         m_ben_Pressure = b_rend;
-    }
-    void EnableRenderSigHw( bool b_rend )
+    } 
+    void EnableRenderGMap( int b_rend )
     {
-        m_ben_SigHw = b_rend;
+        m_ben_GMap = b_rend;
     }
     void EnableRenderQuickscat( bool b_rend )
     {
         m_ben_Quickscat = b_rend;
     }
-    void EnableRenderSeatmp( bool b_rend )
-    {
-        m_ben_Seatmp = b_rend;
-    }
-    void EnableRenderSeaCurrent( bool b_rend )
-    {
-        m_ben_SeaCurrent = b_rend;
-    }
-
     void DrawGLLine( double x1, double y1, double x2, double y2, double width );
     void DrawOLBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask );
     void DrawGLImage( wxImage *pimage, wxCoord x, wxCoord y, bool usemask );
-    void DrawMessageWindow( wxString msg, int x, int y );
+    void DrawMessageWindow( wxString msg, int x, int y , wxFont *font);
 
 private:
     bool DoRenderGribOverlay( PlugIn_ViewPort *vp );
@@ -249,7 +289,10 @@ private:
     bool RenderGribSigWh( GribRecord *pGR, PlugIn_ViewPort *vp );
     bool RenderGribWvDir( GribRecord *pGR, PlugIn_ViewPort *vp );
     bool RenderGribScatWind( GribRecord *pGRX, GribRecord *pGRY, PlugIn_ViewPort *vp );
-    bool RenderGribCRAIN( GribRecord *pGR, PlugIn_ViewPort *vp );
+    //bool RenderGribCRAIN( GribRecord *pGR, PlugIn_ViewPort *vp );
+    bool RenderGribTRAIN( GribRecord *pGR, PlugIn_ViewPort *vp );
+    bool RenderGribCloudCover( GribRecord *pGR, PlugIn_ViewPort *vp );
+    bool RenderGribAirTemp2m( GribRecord *pGR, PlugIn_ViewPort *vp );
     bool RenderGribSeaTemp( GribRecord *pGR, PlugIn_ViewPort *vp );
     bool RenderGribCurrent( GribRecord *pGRX, GribRecord *pGRY, PlugIn_ViewPort *vp );
 
@@ -265,10 +308,15 @@ private:
     void drawGrandeBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
     void drawTriangle( wxPen pen, bool south, double si, double co, int di, int dj, int b );
 
+    wxString GetRefString( GribRecord *rec, int map );
+
     wxColour GetGenericGraphicColor( double val );
     wxColour GetQuickscatColor( double val );
     wxColour GetSeaCurrentGraphicColor( double val_in );
-    wxColour GetSeaTempGraphicColor( double val );
+   // wxColour GetSeaTempGraphicColor( double val );
+    wxColour GetTotRainGraphicColor( double val );
+    wxColour GetCloudCoverGraphicColor( double val );
+    wxColour GetTempGraphicColor( double val_in );
 
     void CreateRGBAfromImage( wxImage *pimage, GribOverlayBitmap *pGOB );
     void DrawGLRGBA( unsigned char *pRGBA, int RGBA_width, int RGBA_height, int xd, int yd );
@@ -283,64 +331,29 @@ private:
 
     GribOverlayBitmap *m_pgob_sigwh;
     GribOverlayBitmap *m_pgob_crain;
+    GribOverlayBitmap *m_pgob_train;
+    GribOverlayBitmap *m_pgob_clocv;
+    GribOverlayBitmap *m_pgob_atemp2;
     GribOverlayBitmap *m_pgob_seatemp;
     GribOverlayBitmap *m_pgob_current;
 
     wxDC *m_pdc;
     wxGraphicsContext *m_gdc;
 
+    wxFont *m_dFont_map;
+    wxFont *m_dFont_war;
+
     bool m_ben_Wind;
     bool m_ben_Pressure;
-    bool m_ben_SigHw;
     bool m_ben_Quickscat;
-    bool m_ben_Seatmp;
-    bool m_ben_SeaCurrent;
+    int  m_ben_GMap;
 
     bool m_bReadyToRender;
     bool m_hiDefGraphics;
-};
-
-//----------------------------------------------------------------------------------------------------------
-//    Grib File/Record selector Tree Control Specification
-//----------------------------------------------------------------------------------------------------------
-
-class GribRecordTree: public wxTreeCtrl {
-DECLARE_CLASS( GribRecordTree )DECLARE_EVENT_TABLE()
-public:
-    // Constructors
-    GribRecordTree();
-    GribRecordTree( GRIBUIDialog* parent, wxWindowID id = wxID_ANY, const wxPoint& pos =
-            wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxTR_HAS_BUTTONS );
-
-    ~GribRecordTree();
-
-    void Init();
-
-    //  Override events
-    void OnItemExpanding( wxTreeEvent& event );
-    void OnItemSelectChange( wxTreeEvent& event );
-
-    //    Data
-    GRIBUIDialog *m_parent;
-    wxTreeItemId *m_file_id_array;             // an array of wxTreeItemIDs
-
-};
-
-class GribTreeItemData: public wxTreeItemData {
-public:
-    GribTreeItemData( const GribTreeItemType type );
-    ~GribTreeItemData();
-
-    GribTreeItemType m_type;
-
-    //    Data for type GRIB_FILE
-    wxString m_file_name;
-    GRIBFile *m_pGribFile;
-    int m_file_index;
-
-    //    Data for type GRIB_RECORD
-    GribRecordSet *m_pGribRecordSet;
-
+   
+    int  m_TimeZone;
+    wxString m_SecString;
+    wxString m_Message;
 };
 
 //----------------------------------------------------------------------------------------------------------
@@ -349,16 +362,20 @@ public:
 class GRIBFile {
 public:
 
-    GRIBFile( const wxString file_name );
+    GRIBFile( const wxString file_name, bool CumRec, bool WaveRec );
     ~GRIBFile();
 
     bool IsOK( void )
     {
         return m_bOK;
     }
-    wxString GetLastErrorMessage( void )
+    wxString GetFileName( void )
     {
-        return m_last_error_message;
+        return m_FileName;
+    }
+    wxString GetLastMessage( void )
+    {
+        return m_last_message;
     }
     ArrayOfGribRecordSets *GetRecordSetArrayPtr( void )
     {
@@ -368,7 +385,8 @@ public:
 private:
 
     bool m_bOK;
-    wxString m_last_error_message;
+    wxString m_last_message;
+    wxString m_FileName;
     GribReader *m_pGribReader;
 
     //    An array of GribRecordSets found in this GRIB file
@@ -378,5 +396,59 @@ private:
 
 };
 
+//----------------------------------------------------------------------------------------
+// Request Profile display definition
+//----------------------------------------------------------------------------------------
+
+class GribPofileDisplay : public wxDialog
+{
+public:
+      GribPofileDisplay( wxWindow *parent, wxWindowID id, wxString profile );
+      ~GribPofileDisplay() {}
+      
+private:
+    void OnModifyButtonClick(wxCommandEvent &event);
+};
+
+//----------------------------------------------------------------------------------------
+// Request Prefrences dialog definition
+//----------------------------------------------------------------------------------------
+
+class GribReqPrefDialog : public wxDialog
+{
+public:
+      GribReqPrefDialog( wxWindow *pparent, wxWindowID id, wxString config );
+      ~GribReqPrefDialog() {}
+
+    int  GetModel() { return  m_pModel->GetCurrentSelection();}
+    int  GetResolution() { return  m_pResolution->GetCurrentSelection();}
+    int  GetInterval() { return  m_pInterval->GetCurrentSelection();}
+    int  GetHorizon() { return  m_pHorizon->GetCurrentSelection();}
+    bool  GetWaves() { return  m_pWaves->GetValue();}
+    bool  GetRain() { return  m_pRainfall->GetValue();}
+    bool  GetClouds() { return  m_pCloudCover->GetValue();}
+    bool  GetAirTemp() { return  m_pAirTemp->GetValue();}
+    bool  GetSeaTemp() { return  m_pSeaTemp->GetValue();}
+
+private:
+    void OnChoiceChange(wxCommandEvent &event);
+
+    wxFlexGridSizer     *m_pTopSizer;
+    wxString            m_DataRequestConfig;
+
+    wxChoice            *m_pModel;
+    wxChoice            *m_pResolution;
+    wxChoice            *m_pInterval;
+    wxChoice            *m_pHorizon;
+
+    wxCheckBox          *m_pWind;
+    wxCheckBox          *m_pPress;
+    wxCheckBox          *m_pWaves;
+    wxCheckBox          *m_pRainfall;
+    wxCheckBox          *m_pCloudCover;
+    wxCheckBox          *m_pAirTemp;
+    wxCheckBox          *m_pSeaTemp;
+
+};
 #endif
 

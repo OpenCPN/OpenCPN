@@ -86,15 +86,28 @@ public:
 
 // Other public methods
 
-      void SetGribDir(wxString grib_dir){ m_grib_dir = grib_dir;};
       void SetGribDialogX    (int x){ m_grib_dialog_x = x;};
       void SetGribDialogY    (int x){ m_grib_dialog_y = x;}
       void SetGribDialogSizeX(int x){ m_grib_dialog_sx = x;}
       void SetGribDialogSizeY(int x){ m_grib_dialog_sy = x;}
       void SetColorScheme(PI_ColorScheme cs);
 
-      bool GetUseMS(void){ return m_bGRIBUseMS; }
       void OnGribDialogClose();
+      void CreateGribDialog( int index, wxString filename, bool newfile );
+        
+      void SetGRIBDataConfig ( wxString conf ){m_grib_DataConfig = conf; }
+      void SetMailRequestConfig ( wxString conf ){m_grib_RequestConfig = conf; }
+      void SetGribDirectory( wxString dir ) { m_grib_dir = dir; }
+
+      wxString GetGribDirectory() { return m_grib_dir; }
+      wxString GetGRIBDataConfig(){ return m_grib_DataConfig; }
+      wxString GetMailRequestConfig(){ return m_grib_RequestConfig; }
+      int  GetSpeedUnit() { return m_bSpeedUnit; }
+      int  GetTimeZone() { return m_bTimeZone; }
+      bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
+      bool GetCopyMissWaveRec() { return  m_bCopyMissWaveRec; }
+      wxString GetSaildocAdresse() { return m_bMailAdresse; }
+
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
 
 private:
@@ -116,15 +129,47 @@ private:
       int              m_grib_dialog_sx, m_grib_dialog_sy;
       wxString         m_grib_dir;
 
-      bool              m_bGRIBUseHiDef;
-      bool              m_bGRIBShowIcon;
-      bool              m_bGRIBUseMS;
+      // preference data
+      int              m_bTimeZone;
+      int              m_bSpeedUnit;
+      bool             m_bGRIBUseHiDef;
+      bool             m_bCopyFirstCumRec;
+      bool             m_bCopyMissWaveRec;
 
-      //    Controls added to Preferences panel
-      wxCheckBox              *m_pGRIBShowIcon;
+      wxString         m_grib_DataConfig;
+      wxString         m_grib_RequestConfig;
+
+      wxString         m_bMailAdresse;
+      
+      bool             m_bGRIBShowIcon;
+
+      int              m_height;
+};
+
+//----------------------------------------------------------------------------------------
+// Prefrence dialog definition
+//----------------------------------------------------------------------------------------
+
+class GribPreferencesDialog : public wxDialog
+{
+public:
+      GribPreferencesDialog( wxWindow *pparent, wxWindowID id, bool HiDef,
+          bool CumRec, bool WaveRec, int SpeedUnit, int TimeFormat, wxString MailAdresse );
+      ~GribPreferencesDialog() {}
+      
+      bool GetGRIBUseHiDef() { return  m_pGRIBUseHiDef->GetValue();}
+      bool GetCopyFirstCumRec() { return  m_pCopyFirstCumRec->GetValue();}
+      bool GetCopyMissWaveRec() { return  m_pCopyMissWaveRec->GetValue();}
+      int  GetSpeedUnit() { return  m_pSpeedUnit->GetSelection();}
+      int  GetTimeZone() { return  m_pTimeZone->GetSelection();}
+
+private:
+      void OnDirectoryChange( wxCommandEvent& event );
+      wxRadioBox              *m_pTimeZone;
+      wxRadioBox              *m_pSpeedUnit;
       wxCheckBox              *m_pGRIBUseHiDef;
-      wxCheckBox              *m_pGRIBUseMS;
-
+      wxCheckBox              *m_pCopyFirstCumRec;
+      wxCheckBox              *m_pCopyMissWaveRec;
 };
 
 #endif

@@ -205,10 +205,25 @@ void GribReader::readAllGribRecords()
                               storeRecordInMap(rec);
 
                         }
+                        else if( (rec->getDataType()==GRB_WIND_GUST
+                            && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) )
+                            storeRecordInMap(rec);
 
                         else if( (rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)
                                   && rec->getLevelType()==LV_GND_SURF)
                               storeRecordInMap(rec);
+
+                        else if( rec->getDataType()==GRB_TEMP	                 //Air temperature at 2m
+                            && rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==2 )
+                            storeRecordInMap(rec);
+
+                        else if(rec->getDataType()==GRB_PRECIP_TOT               //total rainfall
+                            && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0 )
+                            storeRecordInMap(rec);
+
+                        else if(rec->getDataType()==GRB_CLOUD_TOT                //cloud cover
+                            && rec->getLevelType()==LV_ATMOS_ALL && rec->getLevelValue()==0 )                          
+                            storeRecordInMap(rec);
 
                         else if( rec->getDataType() == GRB_HTSGW )               // Significant Wave Height
                               storeRecordInMap(rec);
@@ -225,11 +240,11 @@ void GribReader::readAllGribRecords()
                         else if( rec->getDataType() == GRB_CRAIN )               // Catagorical Rain  1/0
                               storeRecordInMap(rec);
 
-                        else if ((rec->getDataType()==GRB_TEMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0)) //
-                              storeRecordInMap(rec);                             // gfs SEATMP                                      //
+                        //else if ((rec->getDataType()==GRB_TEMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0))
+                             // storeRecordInMap(rec);                              // gfs SEATMP
 
                         else if ((rec->getDataType()==GRB_WTMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0))
-                              storeRecordInMap(rec);                             // rtofs Water Temp
+                              storeRecordInMap(rec);                             // rtofs Water Temp + translated gfs Water Temp  
 
                         else if( (rec->getDataType()==GRB_UOGRD || rec->getDataType()==GRB_VOGRD))          // rtofs model sea current current
                               storeRecordInMap(rec);
@@ -271,8 +286,10 @@ void  GribReader::copyFirstCumulativeRecord (int dataType,int levelType,int leve
 				storeRecordInMap(r2);
 			}
 		}
+
 	}
 }
+/*
 //---------------------------------------------------------------------------------
 void  GribReader::removeFirstCumulativeRecord (int dataType,int levelType,int levelValue)
 {
@@ -293,17 +310,40 @@ void  GribReader::removeFirstCumulativeRecord (int dataType,int levelType,int le
 		}
 	}
 }
+*/
+void  GribReader::copyMissingWaveRecords (int dataType, int levelType, int levelValue)
+{
+	std::set<time_t>  setdates = getListDates();
+	std::set<time_t>::iterator itd, itd2;
+	for (itd=setdates.begin(); itd!=setdates.end(); itd++) {
+		time_t date = *itd;
+		GribRecord *rec = getGribRecord( dataType, levelType, levelValue,date );
+		if ( rec == NULL ) {
+			itd2 = itd;
+			itd2 ++;	// next date
+			if (itd2 != setdates.end()) {
+				time_t date2 = *itd2;
+				GribRecord *rec2 = getGribRecord( dataType, levelType, levelValue, date2 );
+				if (rec2 && rec2->isOk() ) {
+					// create a copied record from date2
+					GribRecord *r2 = new GribRecord (*rec2);
+					if (r2 != NULL) {
+						r2->setRecordCurrentDate (date);
+						storeRecordInMap (r2);
+					}
+				}
+			}
+		}
+	}
+}
+
 //---------------------------------------------------------------------------------
 void  GribReader::copyFirstCumulativeRecord()
 {
-	copyFirstCumulativeRecord(GRB_TMIN, LV_ABOV_GND, 2);
-	copyFirstCumulativeRecord(GRB_TMAX, LV_ABOV_GND, 2);
     copyFirstCumulativeRecord(GRB_CLOUD_TOT,   LV_ATMOS_ALL, 0);
 	copyFirstCumulativeRecord(GRB_PRECIP_TOT,  LV_GND_SURF, 0);
-	copyFirstCumulativeRecord(GRB_PRECIP_RATE, LV_GND_SURF, 0);
-	copyFirstCumulativeRecord(GRB_SNOW_CATEG,  LV_GND_SURF, 0);
-	copyFirstCumulativeRecord(GRB_FRZRAIN_CATEG, LV_GND_SURF, 0);
 }
+/*
 //---------------------------------------------------------------------------------
 void  GribReader::removeFirstCumulativeRecord()
 {
@@ -314,6 +354,12 @@ void  GribReader::removeFirstCumulativeRecord()
 	removeFirstCumulativeRecord(GRB_PRECIP_RATE, LV_GND_SURF, 0);
 	removeFirstCumulativeRecord(GRB_SNOW_CATEG,  LV_GND_SURF, 0);
 	removeFirstCumulativeRecord(GRB_FRZRAIN_CATEG, LV_GND_SURF, 0);
+}
+*/
+void  GribReader::copyMissingWaveRecords ()
+{
+	copyMissingWaveRecords (GRB_HTSGW, LV_GND_SURF, 0);
+	copyMissingWaveRecords (GRB_WVDIR, LV_GND_SURF,0);
 }
 
 //---------------------------------------------------------------------------------
