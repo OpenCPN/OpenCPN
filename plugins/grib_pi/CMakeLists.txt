@@ -82,8 +82,10 @@ SET(SRC_GRIB
             src/msg.h
             src/email.h
             src/email.cpp
+IF(NOT WIN32)
             src/smapi.h
             src/smapi.cpp
+ENDIF(NOT WIN32)
             src/icons.cpp
             src/GribReader.cpp 
             src/GribRecord.cpp  
