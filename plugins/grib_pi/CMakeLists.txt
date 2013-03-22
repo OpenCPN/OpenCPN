@@ -78,9 +78,12 @@ SET(SRC_GRIB
             src/grib_pi.cpp
             src/grib.h 
             src/grib.cpp
-            src/icons.h 
-		src/email.cpp
-		src/smapi.cpp
+            src/icons.h
+            src/msg.h
+            src/email.h
+            src/email.cpp
+            src/smapi.h
+            src/smapi.cpp
             src/icons.cpp
             src/GribReader.cpp 
             src/GribRecord.cpp  
