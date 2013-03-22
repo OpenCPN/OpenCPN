@@ -82,16 +82,16 @@ SET(SRC_GRIB
             src/msg.h
             src/email.h
             src/email.cpp
-IF(NOT WIN32)
-            src/smapi.h
-            src/smapi.cpp
-ENDIF(NOT WIN32)
             src/icons.cpp
             src/GribReader.cpp 
             src/GribRecord.cpp  
             src/zuFile.cpp 
             src/IsoLine.cpp
 )
+IF(WIN32)
+           SET(SRC_GRIB ${SRC_GRIB} src/smapi.h)
+           SET(SRC_GRIB ${SRC_GRIB} src/smapi.cpp)
+ENDIF(WIN32)
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 
 IF(NOT UNIX)

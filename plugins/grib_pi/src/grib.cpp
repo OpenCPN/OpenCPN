@@ -969,7 +969,11 @@ void GRIBUIDialog::ShowSendRequest( wxString r_zone )
             wxEmail mail ;
             if(mail.Send( *message ) ) {
                 wxMessageDialog *dialog = new wxMessageDialog(this,
+#ifdef __WXMSW__
                     _("Your request is ready. An eMail is prepared in your eMail environment.\nYou have just to click 'send' to send it.\nOK to continue ...")
+#else
+                    _("Your request was sent (if your system has an MTA configured and is able to send mail).\nOK to continue ...")
+#endif
                     ,_("eMail"),wxOK );
                 dialog->ShowModal();
             }
