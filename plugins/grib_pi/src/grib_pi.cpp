@@ -541,10 +541,6 @@ GribPreferencesDialog::GribPreferencesDialog( wxWindow *pparent, wxWindowID id, 
          2, zone, 1, wxRA_SPECIFY_ROWS );
     itemStaticBoxSizerUnit->Add(m_pTimeZone, 1, wxALIGN_LEFT|wxALL, border_size);
 
-    wxStaticBox* itemStaticBoxSizerRequestStatic = new wxStaticBox(this, wxID_ANY, _("Grib Request"));
-    wxStaticBoxSizer* itemStaticBoxSizerRequest = new wxStaticBoxSizer(itemStaticBoxSizerRequestStatic, wxVERTICAL);
-    itemBoxSizerGRIBPanel->Add(itemStaticBoxSizerRequest, 0, wxGROW|wxALL, border_size);
-
     m_pTimeZone->SetSelection( init_TimeFormat );
     m_pGRIBUseHiDef->SetValue( init_HiDef );
     m_pSpeedUnit->SetSelection( init_SpeedUnit );
