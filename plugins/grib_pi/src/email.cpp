@@ -21,10 +21,10 @@
 #endif
 
 #include "wx/string.h"
-#include "wx/net/email.h"
+#include "email.h"
 
 #ifdef __WXMSW__
-#include "wx/net/smapi.h"
+#include "smapi.h"
 #endif
 
 #ifdef __UNIX__

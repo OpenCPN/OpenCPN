@@ -42,7 +42,7 @@
 
 #include <wx/stdpaths.h>
 
-#include <wx/net/email.h>
+#include "email.h"
 
 //Timer Constants
 #define GRIB_FORECAST_TIMER         10100
