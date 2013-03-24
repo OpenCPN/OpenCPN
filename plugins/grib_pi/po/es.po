@@ -7,42 +7,131 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-22 22:21-0400\n"
+"POT-Creation-Date: 2013-03-24 19:14+0100\n"
 "PO-Revision-Date: 2013-01-10 15:09+0100\n"
 "Last-Translator: opencpn.es <opencpn.es@gmx.com>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
-"Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: es_ES\n"
 "X-Generator: Poedit 1.5.4\n"
-
+#
+msgid " (Dup)"
+msgstr ""
+#
+msgid " Deg"
+msgstr ""
+#
+msgid " h"
+msgstr ""
+#
+msgid "0.2 Deg"
+msgstr ""
+#
+msgid "0.6 Deg"
+msgstr ""
+#
+msgid "1.0 Deg"
+msgstr ""
+#
+msgid "1.2 Deg"
+msgstr ""
+#
+msgid "1.5 Deg"
+msgstr ""
+#
+msgid "12 h"
+msgstr ""
+#
+msgid "2.0 Deg"
+msgstr ""
+#
+msgid "24 h"
+msgstr ""
+#
+msgid "3 h"
+msgstr ""
+#
+msgid "4 days"
+msgstr ""
+#
+msgid "6 days"
+msgstr ""
+#
+msgid "6 h"
+msgstr ""
+#
+msgid "8 days"
+msgstr ""
+#
+msgid "Action"
+msgstr ""
+#
+msgid "Air Temp.(2m)"
+msgstr ""
+#
+msgid "Air Temperature(2m)"
+msgstr ""
+#
+msgid "Clouds Cover"
+msgstr ""
+#
+msgid "Copy first Cumulative missing Record"
+msgstr ""
+#
+msgid "Copy missing Wave Records"
+msgstr ""
 #
 #
 #
-#: src/grib.h:124 src/grib_pi.cpp:277 src/grib_pi.cpp:346
-msgid "GRIB Display Control"
-msgstr "Control Visualización GRIB"
-
-#
-#: src/grib_pi.cpp:118 src/grib_pi.cpp:208 src/grib_pi.cpp:261
-msgid "Grib"
-msgstr "Grib"
-
+#, fuzzy
+msgid "Current Velocity"
+msgstr "Velocidad Actual, Nds."
 #
 #
 #
-#: src/grib_pi.cpp:177 src/grib_pi.cpp:230
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Data"
+msgstr "Datos GRIB"
+#
+#, fuzzy
+msgid "Data Display Preferences"
+msgstr "Preferencias GRIB"
+#
+msgid "Days"
+msgstr ""
+#
+msgid "Error:  Can't read this File!"
+msgstr ""
+#
+msgid "Forecast Model   "
+msgstr ""
+#
+#
+#
 msgid "GRIB"
 msgstr "GRIB"
-
 #
-#: src/grib_pi.cpp:183
+#
+#
+msgid "GRIB Display Control"
+msgstr "Control Visualización GRIB"
+#
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "PlugIn GRIB para OpenCPN"
-
 #
-#: src/grib_pi.cpp:189
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
@@ -54,132 +143,335 @@ msgid ""
 "- surface current direction and speed."
 msgstr ""
 "PlugIn GRIB para OpenCPN\n"
-"Proporciona capacidades básicas de superposición de archivos GRIB para "
-"varios tipos de archivos GRIB.\n"
+"Proporciona capacidades básicas de superposición de archivos GRIB para varios "
+"tipos de archivos GRIB.\n"
 "\n"
 "Entre los archivos GRIB soportados se incluyen:\n"
 "- velocidad y dirección del viento\n"
 "- altura de ola significativa\n"
 "- temperatura superficial del mar\n"
 "- dirección y velocidad de corrientes superficiales."
-
 #
-#: src/grib_pi.cpp:221
 msgid "GRIB Preferences"
 msgstr "Preferencias GRIB"
-
+#
+msgid "Graphic Data to show in Map"
+msgstr ""
+#
+msgid "Grib"
+msgstr "Grib"
+#
+msgid "Interval"
+msgstr ""
+#
+msgid "Local Time"
+msgstr ""
+#
+msgid "Model"
+msgstr ""
+#
+msgid "Modify"
+msgstr ""
+#
+msgid "No Reference. Try another Graphic Data Selection"
+msgstr ""
+#
+msgid "No other graphic display"
+msgstr ""
+#
+msgid "Numeric Data to show in Panel"
+msgstr ""
+#
+msgid "Parameters"
+msgstr ""
+#
+msgid "Period"
+msgstr ""
 #
 #
 #
-#: src/grib_pi.cpp:234
-msgid "Show GRIB icon"
-msgstr "Mostrar Icono GRIB"
-
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
+msgstr "Ajuste Zoom o Escala para ver SEATEMP GRIB eliminado"
 #
 #
 #
-#: src/grib_pi.cpp:237
-msgid "Use High Definition Graphics"
-msgstr "Usar Gráficos Alta Definición"
-
-#: src/grib_pi.cpp:240
-msgid "Show metres/sec for Wind Speed"
-msgstr "Mostrar metros/seg para Velocidad Viento"
-
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
+msgstr "Ajuste Zoom o Escala para ver CRAIN GRIB eliminado"
 #
 #
 #
-#: src/grib.cpp:195
-msgid "GRIB File Directory"
-msgstr "Carpeta Ficheros GRIB"
-
-#
-#
-#
-#: src/grib.cpp:221
-msgid "GRIB Data"
-msgstr "Datos GRIB"
-
-#
-#
-#
-#: src/grib.cpp:234
-msgid "Wind Speed, Kts."
-msgstr "Velocidad Viento, Kts."
-
-#
-#
-#
-#: src/grib.cpp:236
-msgid "Wind Speed, m/sec."
-msgstr "Velocidad Viento, m/seg."
-
-#
-#
-#
-#: src/grib.cpp:248
-msgid "Wind Direction"
-msgstr "Dirección Viento"
-
-#
-#
-#
-#: src/grib.cpp:258
-msgid "Pressure, mBar"
-msgstr "Presión, mBar"
-
-#
-#
-#
-#: src/grib.cpp:268
-msgid "Significant Wave Height, m"
-msgstr "Altura de Ola Significativa, m"
-
-#
-#
-#
-#: src/grib.cpp:279
-msgid "Sea Surface Temp, C"
-msgstr "Temperatura Superficie Mar, C"
-
-#
-#
-#
-#: src/grib.cpp:289
-msgid "Current Velocity, Kts."
-msgstr "Velocidad Actual, Nds."
-
-#
-#
-#
-#: src/grib.cpp:304
-msgid "&Close"
-msgstr "&Cerrar"
-
-#
-#
-#
-#: src/grib.cpp:510
-msgid "Select GRIB Directory"
-msgstr "Seleccionar Carpeta GRIB"
-
-#
-#
-#
-#: src/grib.cpp:1092
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Ajuste Zoom o Escala para ver HTSGW GRIB eliminado"
-
 #
 #
 #
-#: src/grib.cpp:1156
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Ajuste Zoom o Escala para ver CRAIN GRIB eliminado"
-
-#
-#
-#
-#: src/grib.cpp:1168 src/grib.cpp:1225
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
 msgstr "Ajuste Zoom o Escala para ver SEATEMP GRIB eliminado"
+#
+#
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
+msgstr "Ajuste Zoom o Escala para ver CRAIN GRIB eliminado"
+#
+#
+#
+#, fuzzy
+msgid "Pressure"
+msgstr "Presión, mBar"
+#
+#
+#
+#, fuzzy
+msgid "Pressure (MSL)"
+msgstr "Presión, mBar"
+#
+msgid "Profil"
+msgstr ""
+#
+msgid "Rainfall"
+msgstr ""
+#
+msgid "Ref : "
+msgstr ""
+#
+msgid "Request Pofile"
+msgstr ""
+#
+msgid "Request Setting"
+msgstr ""
+#
+msgid "Resolution"
+msgstr ""
+#
+msgid "Sea Temp.(Surf)"
+msgstr ""
+#
+msgid "Sea Temperature(surf)"
+msgstr ""
+#
+#
+#
+#, fuzzy
+msgid "Select a GRIB file"
+msgstr "Seleccionar Carpeta GRIB"
+#
+msgid "Send"
+msgstr ""
+#
+#
+#
+#, fuzzy
+msgid "Sign. Wave Height"
+msgstr "Altura de Ola Significativa, m"
+#
+msgid "Speed unit"
+msgstr ""
+#
+msgid "Time Zone"
+msgstr ""
+#
+msgid "Total Rainfall"
+msgstr ""
+#
+msgid "UTC"
+msgstr ""
+#
+msgid "Units"
+msgstr ""
+#
+msgid "Unnown"
+msgstr ""
+#
+#
+#
+msgid "Use High Definition Graphics"
+msgstr "Usar Gráficos Alta Definición"
+#
+msgid "Warning :  This directory is Empty!"
+msgstr ""
+#
+msgid "Waves"
+msgstr ""
+#
+msgid "Wind"
+msgstr ""
+#
+#
+#
+#, fuzzy
+msgid "Wind Direction(10m)"
+msgstr "Dirección Viento"
+#
+msgid "Wind Gust(Surface)"
+msgstr ""
+#
+#
+#
+#, fuzzy
+msgid "Wind Speed and Direction(10m)"
+msgstr "Dirección Viento"
+#
+#
+#
+#, fuzzy
+msgid "Wind Speed(10m)"
+msgstr "Velocidad Viento, m/seg."
+#
+msgid ""
+"Your request is ready. An eMail is prepared in your eMail environment.\n"
+"You have just to click 'send' to send it.\n"
+"OK to continue ..."
+msgstr ""
+#
+msgid ""
+"Your request was sent (if your system has an MTA configured and is able to "
+"send mail).\n"
+"OK to continue ..."
+msgstr ""
+#
+msgid "Zone"
+msgstr ""
+#
+msgid "eMail"
+msgstr ""
+#
+msgid "eMail To"
+msgstr ""
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "&Close"
+#~ msgstr "&Cerrar"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "GRIB File Directory"
+#~ msgstr "Carpeta Ficheros GRIB"
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Request Preferences"
+#~ msgstr "Preferencias GRIB"
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Sea Surface Temp."
+#~ msgstr "Temperatura Superficie Mar, C"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Show GRIB icon"
+#~ msgstr "Mostrar Icono GRIB"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Show metres/sec for Wind Speed"
+#~ msgstr "Mostrar metros/seg para Velocidad Viento"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Wind Speed, Kts."
+#~ msgstr "Velocidad Viento, Kts."

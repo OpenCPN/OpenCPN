@@ -117,7 +117,7 @@ void wxMapiSession::Initialise()
     }
     else {
         //wxLogDebug(_T("Mapi is not installed on this computer\n"));
-        wxMessageDialog *m = new wxMessageDialog( NULL, _("Mapi is not installed or invalid on this computer"), _("eMail error"), wxOK );
+        wxMessageDialog *m = new wxMessageDialog( NULL, _("Mapi is not installed or invalid on this computer"), _("Error"), wxOK );
         m->ShowModal();
     }
 }

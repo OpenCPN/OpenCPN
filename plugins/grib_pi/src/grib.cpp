@@ -52,7 +52,8 @@ enum {
     ID_GRIBSETDATA, ID_GRIBREQUEST
 };
 
-const wxString model[] = { wxT("NOAA_GFS"), wxT("NOAA_COAMPS") ,wxT("NOAA_RTOFS") };
+const wxString resolution1[] = { _T("0.5 Deg"), _("1.0 Deg"), _("1.5 Deg"), _("2.0 Deg") };
+const wxString resolution2[] = { _("0.2 Deg"), _("0.6 Deg"), _("1.2 Deg"), _("2.0 Deg") };
 
 //    Sort compare function for File Modification Time
 static int CompareFileStringTime( const wxString& first, const wxString& second )
@@ -77,7 +78,7 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
 }
 
 //speed in the desired unit
-static wxString SToString(  double val, const int unit )
+static wxString SUToString(  double val, const int unit )
 {
     switch( unit ) {
     case 0:
@@ -124,13 +125,13 @@ static wxString DToString( int Data )
         return  _("Total Rainfall");
     case ID_CB_CLOCVD:
     case ID_CB_CLOCVM: 
-        return  _("Cloud Cover");
+        return  _("Clouds Cover");
     case ID_CB_ATEM2D:
     case ID_CB_ATEM2M: 
         return  _("Air Temp.(2m)");
     case ID_CB_SEATED:
     case ID_CB_SEATEM: 
-        return  _("Sea Surface Temp.");
+        return  _("Sea Temp.(Surf)");
     case ID_CB_CURRED:
     case ID_CB_CURREM:
         return  _("Current Velocity");
@@ -430,7 +431,7 @@ void GRIBUIDialog::UpdateTrackingControls()
                 if( ang > 360. ) ang -= 360.;
                 if( ang < 0. ) ang += 360.;
 
-                val[0] = SToString( vkn , pPlugIn->GetSpeedUnit() );
+                val[0] = SUToString( vkn , pPlugIn->GetSpeedUnit() );
 
                 val[1].Printf( _T("%03d Deg"), (int) ( ang ) );
             }
@@ -450,7 +451,7 @@ void GRIBUIDialog::UpdateTrackingControls()
                 if( ang > 360. ) ang -= 360.;
                 if( ang < 0. ) ang += 360.;
 
-                val[0] = SToString( vkn , pPlugIn->GetSpeedUnit() );
+                val[0] = SUToString( vkn , pPlugIn->GetSpeedUnit() );
 
                 val[1].Printf( _T("%03d Deg"), (int) ( ang ) );      
             }
@@ -463,7 +464,7 @@ void GRIBUIDialog::UpdateTrackingControls()
                     m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_WIND_GUST )->getInterpolatedValue(
                     m_cursor_lon, m_cursor_lat, true );
                 if( vgkn != GRIB_NOTDEF ) {
-                val[i] = SToString( vgkn , pPlugIn->GetSpeedUnit() );
+                val[i] = SUToString( vgkn , pPlugIn->GetSpeedUnit() );
                 }
             }
         }
@@ -533,7 +534,7 @@ void GRIBUIDialog::UpdateTrackingControls()
                     atemp2 -= 273.15;
                     val[i].Printf( _T("%3.1f C"), atemp2 );
                     if( m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_AIR_TEMP_2M )->isDuplicated() )
-                        val[i].Prepend( _("D ") );
+                        val[i].Prepend( _T("D ") );
                 }
             }
         }
@@ -568,7 +569,7 @@ void GRIBUIDialog::UpdateTrackingControls()
                     if( ang > 360. ) ang -= 360.;
                     if( ang < 0. ) ang += 360.;
 
-                    val[i] = SToString( vkn , pPlugIn->GetSpeedUnit() );
+                    val[i] = SUToString( vkn , pPlugIn->GetSpeedUnit() );
 
                 }
             }
@@ -715,7 +716,7 @@ void GRIBUIDialog::OnButtonSettingClick( wxCommandEvent& event )
     for( size_t i = 0 ; i < 7 ; i++ ) {
         nmap.Add( DToString( i + ( i == 0 ? 0 : 100 ) ) );
     }
-    wxRadioBox *m_GraphMap = new wxRadioBox( dialog, -1, _(""), wxDefaultPosition, wxSize(-1, -1),
+    wxRadioBox *m_GraphMap = new wxRadioBox( dialog, -1, _T(""), wxDefaultPosition, wxSize(-1, -1),
          nmap, 1, wxRA_SPECIFY_COLS );
     graphdata->Add(m_GraphMap, 1, wxALIGN_LEFT|wxALL, border_size);
 
@@ -878,7 +879,7 @@ void GRIBUIDialog::ShowSendRequest( wxString r_zone )
 {
     wxString config = pPlugIn->GetMailRequestConfig();
     wxString r_action = wxT("send");
-    wxString r_model,r_resolution,r_intervall,r_period,r_parameters;
+    wxString r_model,r_resolution,r_interval,r_period,r_parameters;
     if( config.GetChar( 1 ) == '0' ) {                          //GFS
         r_model = wxT("GFS:");
         if( config.GetChar( 2 ) == '0' )
@@ -913,14 +914,15 @@ void GRIBUIDialog::ShowSendRequest( wxString r_zone )
         r_parameters = wxT("WIND,PRMSL");
     } else if( config.GetChar( 1 ) == '2' ) {                   //RTOFS
         r_model = wxT("RTOFS:");
+        r_resolution = wxT("0.5,0.5");
         r_parameters = wxT("CUR,WTMP");
     }
     if( config.GetChar( 3 ) == '0' )                            //ALL
-        r_intervall = wxT("0,3,6");
+        r_interval = wxT("0,3,6");
     else if( config.GetChar( 3 ) == '1' )
-        r_intervall = wxT("0,6,12");
+        r_interval = wxT("0,6,12");
     else if( config.GetChar( 3 ) == '2' )
-        r_intervall = wxT("0,12,24");
+        r_interval = wxT("0,12,24");
     if( config.GetChar( 4 ) == '0' ) 
         r_period = wxT("..96");
     else if( config.GetChar( 4 ) == '1' ) 
@@ -930,29 +932,37 @@ void GRIBUIDialog::ShowSendRequest( wxString r_zone )
 
     wxString r_separator = wxT("|");
     wxString r_return = wxT("|=\n");
+    wxString r_colon = wxT(": ");
 
     //display request profile
     wxString r_info,i;
     double v;
-    r_info.Append( _("To: ") );
+    r_info.Append( _("eMail To") + r_colon );
     r_info.Append( pPlugIn->GetSaildocAdresse() );
     r_info.Append( wxT("\n") );
-    r_info.Append( _("Action: ") );
-    r_info.Append( wxT("send") );
-    r_info.Append( _("\nModel: ") );
+    r_info.Append( _("Action") + r_colon );
+    r_info.Append( _("Send") );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Model") + r_colon );
     r_info.Append( r_model );
-    r_info.Append( _("\nZone: ") );
-    r_info.Append( r_zone ); 
-    r_info.Append( _("\nResolution: ") );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Zone") + r_colon );
+    r_info.Append( r_zone );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Resolution") + r_colon );
     r_info.Append( r_resolution.BeforeFirst( ',' ) + _(" Deg") );
-    r_info.Append( _("\nIntervall: ") );
-    i = r_intervall.AfterFirst( ',' );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Interval") + r_colon );
+    i = r_interval.AfterFirst( ',' );
     r_info.Append( i.BeforeLast( ',' ) + _(" h") );
-    r_info.Append( _("\nPeriod: ") );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Period") + r_colon );
     r_period.AfterLast( '.' ).ToDouble( &v );
-    i.Printf( _T("%.0f days"), v/24. );
+    i.Printf( _T("%.0f " ), v/24. );
     r_info.Append( i );
-    r_info.Append( _("\nParameters: ") );
+    r_info.Append( _("Days") );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Parameters") + r_colon );
     r_info.Append( r_parameters );
     
      GribPofileDisplay *r_dialog = new GribPofileDisplay(this, wxID_ANY, r_info );
@@ -963,7 +973,7 @@ void GRIBUIDialog::ShowSendRequest( wxString r_zone )
             wxT("Grib-Request"),
             pPlugIn->GetSaildocAdresse(),       //to ( saildoc request adresse )
             wxT("send ") + r_model + r_zone + r_separator + r_resolution
-            + r_separator + r_intervall + r_period + r_return + r_parameters,                    //message
+            + r_separator + r_interval + r_period + r_return + r_parameters,                    //message
             wxT("")
             );
             wxEmail mail ;
@@ -1045,7 +1055,7 @@ void GRIBUIDialog::GetFirstrFileInDirectory()
         } else 
             pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
     } else {
-         pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("GRIBFile warning :  This directory is Empty!") );
+         pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning :  This directory is Empty!") );
          SetLabel( pPlugIn->GetGribDirectory() );
     }
 }
@@ -2613,7 +2623,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
     m_bOK = true;           // Assume ok until proven otherwise
 
     if( !::wxFileExists( file_name ) ) {
-        m_last_message = _T ( "GRIBFile Error:  File does not exist!" );
+        m_last_message = _T ( "Error:  File does not exist!" );
         m_bOK = false;
         return;
     }
@@ -2626,7 +2636,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
     m_pGribReader->openFile( file_name );
 
     if( !m_pGribReader->isOk() ) {
-        m_last_message = _( "GRIBFile Error:  Can't read this File!" );
+        m_last_message = _( "Error:  Can't read this File!" );
         m_bOK = false;
         return;
     }
@@ -2759,7 +2769,7 @@ void GribPofileDisplay::OnModifyButtonClick( wxCommandEvent &event )
 //Request Preferences Dialog implementation
 //---------------------------------------------------------------------------------------------------------
 GribReqPrefDialog::GribReqPrefDialog( wxWindow *parent, wxWindowID id, wxString config ):
-    wxDialog( parent, id, _("Request Preferences"), wxDefaultPosition, wxSize( -1, -1),
+    wxDialog( parent, id, _("Request Setting"), wxDefaultPosition, wxSize( -1, -1),
         wxCAPTION )
 {
     int border_size = 5;
@@ -2770,7 +2780,7 @@ GribReqPrefDialog::GribReqPrefDialog( wxWindow *parent, wxWindowID id, wxString 
     this->SetSizer(itemBoxSizerRGRIBPanel);
 
      //  General request Setting
-    wxStaticBox* itemStaticBoxSizerRGRIBStatic = new wxStaticBox(this, wxID_ANY, _("Request Profile Setting"));
+    wxStaticBox* itemStaticBoxSizerRGRIBStatic = new wxStaticBox(this, wxID_ANY, _("Profil"));
     wxStaticBoxSizer* itemStaticBoxSizerRGRIB = new wxStaticBoxSizer(itemStaticBoxSizerRGRIBStatic, wxVERTICAL);
     itemBoxSizerRGRIBPanel->Add(itemStaticBoxSizerRGRIB, 0, wxGROW|wxALL, border_size);
 
@@ -2780,7 +2790,7 @@ GribReqPrefDialog::GribReqPrefDialog( wxWindow *parent, wxWindowID id, wxString 
     wxStaticText* m_model_text = new wxStaticText( this, wxID_ANY, _("Forecast Model   "), wxDefaultPosition, wxSize(-1, -1) );
     m_pTopSizer->Add( m_model_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
 
-   // const wxString model[] = { wxT("NOAA_GFS"), wxT("NOAA_COAMPS") ,wxT("NOAA_RTOFS") };
+    const wxString model[] = { wxT("NOAA_GFS"), wxT("NOAA_COAMPS") ,wxT("NOAA_RTOFS") };
     m_pModel = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 3, model, wxALIGN_LEFT );
     m_pModel->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(GribReqPrefDialog::OnChoiceChange), NULL, this );
     m_pTopSizer->Add( m_pModel, 0, wxTOP, border_size );
@@ -2791,13 +2801,11 @@ GribReqPrefDialog::GribReqPrefDialog( wxWindow *parent, wxWindowID id, wxString 
     wxStaticText* m_Resolution_text = new wxStaticText( this, wxID_ANY, _("Resolution"), wxDefaultPosition, wxSize(-1, -1) );
     m_pTopSizer->Add( m_Resolution_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
 
-    const wxString resolution1[] = { _("0.5 Deg"), _("1.0 Deg"), _("1.5 Deg"), _("2.0 Deg") };
-    const wxString resolution2[] = { _("0.2 Deg"), _("0.6 Deg"), _("1.2 Deg"), _("2.0 Deg") };
     if( i == 1 )
         m_pResolution = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, resolution2, wxALIGN_LEFT );
     else
         m_pResolution = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, resolution1, wxALIGN_LEFT );
-    //m_pTopSizer->Add( m_pResolution , 0, wxTOP, border_size );
+    
     if( i == 2 ) {
         m_pResolution->SetSelection( 0 );
         m_pResolution->Enable( false );
@@ -2829,7 +2837,7 @@ GribReqPrefDialog::GribReqPrefDialog( wxWindow *parent, wxWindowID id, wxString 
     m_pHorizon->SetSelection( i );
 
     //  data request Setting
-    wxStaticBox* itemStaticBoxSizerRGRIB2Static = new wxStaticBox(this, wxID_ANY, _("Data Requested"));
+    wxStaticBox* itemStaticBoxSizerRGRIB2Static = new wxStaticBox(this, wxID_ANY, _("Data"));
     wxStaticBoxSizer* itemStaticBoxSizerRGRIB2 = new wxStaticBoxSizer(itemStaticBoxSizerRGRIB2Static, wxVERTICAL);
     itemBoxSizerRGRIBPanel->Add(itemStaticBoxSizerRGRIB2, 0, wxGROW|wxALL, border_size);
 
@@ -2861,12 +2869,12 @@ GribReqPrefDialog::GribReqPrefDialog( wxWindow *parent, wxWindowID id, wxString 
     m_pCloudCover->SetValue( config.GetChar(9) == 'X' );
     if( m_pModel->GetCurrentSelection() == 1 || m_pModel->GetCurrentSelection() == 2 ) m_pCloudCover->Enable( false );
 
-    m_pAirTemp = new wxCheckBox( this, -1, _("Air Temperature"));
+    m_pAirTemp = new wxCheckBox( this, -1, _("Air Temperature(2m)"));
     pTopSizer2->Add( m_pAirTemp, 1, wxALIGN_LEFT|wxALL, border_size );
     m_pAirTemp->SetValue( config.GetChar(10) == 'X' );
     if( m_pModel->GetCurrentSelection() == 1 || m_pModel->GetCurrentSelection() == 2 ) m_pAirTemp->Enable( false );
 
-    m_pSeaTemp = new wxCheckBox( this, -1, _("Sea Temperature"));
+    m_pSeaTemp = new wxCheckBox( this, -1, _("Sea Temperature(surf)"));
     pTopSizer2->Add( m_pSeaTemp, 1, wxALIGN_LEFT|wxALL, border_size );
     m_pSeaTemp->SetValue( config.GetChar(11) == 'X' );
     if( m_pModel->GetCurrentSelection() == 1 || m_pModel->GetCurrentSelection() == 2 ) m_pSeaTemp->Enable( false );
@@ -2885,15 +2893,13 @@ void GribReqPrefDialog::OnChoiceChange(wxCommandEvent &event)
 {
     int choice = m_pResolution->GetCurrentSelection();
     if( m_pModel->GetSelection() == 1 ) {
-        m_pResolution->SetString(0,wxT("0.2 Deg"));
-        m_pResolution->SetString(1,wxT("0.6 Deg"));
-        m_pResolution->SetString(2,wxT("1.2 Deg"));
-        m_pResolution->SetString(3,wxT("2.0 Deg"));
+        for( int i = 0; i<4; i++ ){
+            m_pResolution->SetString(i,resolution2[i]);
+        }
     } else {
-        m_pResolution->SetString(0,wxT("0.5 Deg"));
-        m_pResolution->SetString(1,wxT("1.0 Deg"));
-        m_pResolution->SetString(2,wxT("1.5 Deg"));
-        m_pResolution->SetString(3,wxT("2.0 Deg"));
+        for( int i = 0; i<4; i++ ){
+            m_pResolution->SetString(i,resolution1[i]);
+        }
     }
     if( m_pModel->GetSelection() == 2 ) {
         m_pResolution->SetSelection( 0 );

@@ -352,10 +352,8 @@ bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
       {
             if(m_pGRIBOverlayFactory->IsReadyToRender())
             {
-                //::wxBeginBusyCursor();
                 m_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
-                ::wxEndBusyCursor();
-                  return true;
+                return true;
             }
             else
                   return false;
@@ -371,11 +369,8 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
       {
             if(m_pGRIBOverlayFactory->IsReadyToRender())
             {
-                //::wxBeginBusyCursor();
                 m_pGRIBOverlayFactory->RenderGLGribOverlay ( pcontext, vp );
-                ::wxEndBusyCursor();
-
-                  return true;
+                return true;
             }
             else
                   return false;

@@ -2,12 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1207\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:28-0400\n"
+"POT-Creation-Date: 2013-03-24 19:14+0100\n"
 "PO-Revision-Date: 2010-12-20 18:23+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -15,23 +15,109 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 #
-msgid "&Close"
-msgstr "&Κλείσιμο"
+msgid " (Dup)"
+msgstr ""
 #
-msgid "Current Velocity, Kts."
+msgid " Deg"
+msgstr ""
+#
+msgid " h"
+msgstr ""
+#
+msgid "0.2 Deg"
+msgstr ""
+#
+msgid "0.6 Deg"
+msgstr ""
+#
+msgid "1.0 Deg"
+msgstr ""
+#
+msgid "1.2 Deg"
+msgstr ""
+#
+msgid "1.5 Deg"
+msgstr ""
+#
+msgid "12 h"
+msgstr ""
+#
+msgid "2.0 Deg"
+msgstr ""
+#
+msgid "24 h"
+msgstr ""
+#
+msgid "3 h"
+msgstr ""
+#
+msgid "4 days"
+msgstr ""
+#
+msgid "6 days"
+msgstr ""
+#
+msgid "6 h"
+msgstr ""
+#
+msgid "8 days"
+msgstr ""
+#
+msgid "Action"
+msgstr ""
+#
+msgid "Air Temp.(2m)"
+msgstr ""
+#
+msgid "Air Temperature(2m)"
+msgstr ""
+#
+msgid "Clouds Cover"
+msgstr ""
+#
+msgid "Copy first Cumulative missing Record"
+msgstr ""
+#
+msgid "Copy missing Wave Records"
+msgstr ""
+#
+#, fuzzy
+msgid "Current Velocity"
 msgstr "Τρέχουσα Ταχύτητα, Kts. "
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Data"
+msgstr "Στοιχεία GRIB"
+#
+#, fuzzy
+msgid "Data Display Preferences"
+msgstr "Ιδιότητες GRIB"
+#
+msgid "Days"
+msgstr ""
+#
+msgid "Error:  Can't read this File!"
+msgstr ""
+#
+msgid "Forecast Model   "
+msgstr ""
 #
 msgid "GRIB"
 msgstr "GRIB"
 #
-msgid "GRIB Data"
-msgstr "Στοιχεία GRIB"
-#
 msgid "GRIB Display Control"
 msgstr "Έλεγχος Εμφάνησης GRIB"
-#
-msgid "GRIB File Directory"
-msgstr "Φάκελος Αρχείων GRIB"
 #
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "Επιπρόσθετο GRIB για το OpenCPN"
@@ -58,46 +144,291 @@ msgstr ""
 msgid "GRIB Preferences"
 msgstr "Ιδιότητες GRIB"
 #
+msgid "Graphic Data to show in Map"
+msgstr ""
+#
 msgid "Grib"
 msgstr "Grib"
 #
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα CRAIN GRIB"
+msgid "Interval"
+msgstr ""
+#
+msgid "Local Time"
+msgstr ""
+#
+msgid "Model"
+msgstr ""
+#
+msgid "Modify"
+msgstr ""
+#
+msgid "No Reference. Try another Graphic Data Selection"
+msgstr ""
+#
+msgid "No other graphic display"
+msgstr ""
+#
+msgid "Numeric Data to show in Panel"
+msgstr ""
+#
+msgid "Parameters"
+msgstr ""
+#
+msgid "Period"
+msgstr ""
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
+msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα SEATEMP GRIB"
+#
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
+msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα OCEAN CURRENT GRIB"
 #
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα HTSGW GRIB"
 #
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα OCEAN CURRENT GRIB"
-#
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
 msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα SEATEMP GRIB"
 #
-msgid "Pressure, mBar"
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
+msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα CRAIN GRIB"
+#
+#, fuzzy
+msgid "Pressure"
 msgstr "Ατμ. Πίεση, mBar"
 #
-msgid "Sea Surface Temp, C"
-msgstr "Θερμοκρασία Επιφανείας, C "
+#, fuzzy
+msgid "Pressure (MSL)"
+msgstr "Ατμ. Πίεση, mBar"
 #
-msgid "Select GRIB Directory"
+msgid "Profil"
+msgstr ""
+#
+msgid "Rainfall"
+msgstr ""
+#
+msgid "Ref : "
+msgstr ""
+#
+msgid "Request Pofile"
+msgstr ""
+#
+msgid "Request Setting"
+msgstr ""
+#
+msgid "Resolution"
+msgstr ""
+#
+msgid "Sea Temp.(Surf)"
+msgstr ""
+#
+msgid "Sea Temperature(surf)"
+msgstr ""
+#
+#, fuzzy
+msgid "Select a GRIB file"
 msgstr "Διάλεξε φάκελο αρχείων GRIB"
 #
-msgid "Show GRIB icon"
-msgstr "Δείξε εικόνα GRIB"
+msgid "Send"
+msgstr ""
 #
-msgid "Significant Wave Height, m"
+#, fuzzy
+msgid "Sign. Wave Height"
 msgstr "Διακριτό ύψος Κύματος, m(μέτρα) "
+#
+msgid "Speed unit"
+msgstr ""
+#
+msgid "Time Zone"
+msgstr ""
+#
+msgid "Total Rainfall"
+msgstr ""
+#
+msgid "UTC"
+msgstr ""
+#
+msgid "Units"
+msgstr ""
+#
+msgid "Unnown"
+msgstr ""
 #
 msgid "Use High Definition Graphics"
 msgstr "Χρησιμοποίησε Γραφικά Υψηλής Ευκρίνιας"
 #
-#, c-format
-msgid "WARNING:  QuickScat GRIB data is %d hours old."
+msgid "Warning :  This directory is Empty!"
 msgstr ""
-"ΠΡΟΣΟΧΗ:  Τα στοιχεία του αρχείου GRIB από το QuickScat είναι  %d  Ώρες παλιά."
 #
-msgid "Wind Direction"
+msgid "Waves"
+msgstr ""
+#
+msgid "Wind"
+msgstr ""
+#
+#, fuzzy
+msgid "Wind Direction(10m)"
 msgstr "Διεύθυνση Ανέμου"
 #
-msgid "Wind Speed, Kts."
+msgid "Wind Gust(Surface)"
+msgstr ""
+#
+#, fuzzy
+msgid "Wind Speed and Direction(10m)"
+msgstr "Διεύθυνση Ανέμου"
+#
+#, fuzzy
+msgid "Wind Speed(10m)"
 msgstr "Ταχύτητα Ανέμου, Kts"
+#
+msgid ""
+"Your request is ready. An eMail is prepared in your eMail environment.\n"
+"You have just to click 'send' to send it.\n"
+"OK to continue ..."
+msgstr ""
+#
+msgid ""
+"Your request was sent (if your system has an MTA configured and is able to "
+"send mail).\n"
+"OK to continue ..."
+msgstr ""
+#
+msgid "Zone"
+msgstr ""
+#
+msgid "eMail"
+msgstr ""
+#
+msgid "eMail To"
+msgstr ""
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "&Close"
+#~ msgstr "&Κλείσιμο"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "GRIB File Directory"
+#~ msgstr "Φάκελος Αρχείων GRIB"
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Request Preferences"
+#~ msgstr "Ιδιότητες GRIB"
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Sea Surface Temp."
+#~ msgstr "Θερμοκρασία Επιφανείας, C "
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Show GRIB icon"
+#~ msgstr "Δείξε εικόνα GRIB"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
+#~ msgstr ""
+#~ "ΠΡΟΣΟΧΗ:  Τα στοιχεία του αρχείου GRIB από το QuickScat είναι  %d  Ώρες "
+#~ "παλιά."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Wind Speed, Kts."
+#~ msgstr "Ταχύτητα Ανέμου, Kts"
