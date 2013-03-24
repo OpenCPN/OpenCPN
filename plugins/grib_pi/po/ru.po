@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2010-03-31 01:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
@@ -198,6 +198,14 @@ msgstr "Уменьшите масштаб для просмотра скртых
 #
 #
 #
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Уменьшите масштаб для просмотра скртых меток CRAIN GRIB"
+#
+#
+#
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
 #
@@ -205,7 +213,7 @@ msgstr "Уменьшите масштаб для просмотра скртых
 #
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
 #
 #
@@ -247,10 +255,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #
@@ -267,7 +275,7 @@ msgstr ""
 #
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Характерная высота волны, м"
 #
 msgid "Speed unit"
@@ -310,7 +318,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "Направление ветра"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #
@@ -369,6 +377,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Закрыть"
@@ -394,8 +406,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
+#
+#
+#
 #
 #
 #
@@ -443,8 +463,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ВНИМАНИЕ: данные QuickScat GRIB актуальны на %d часов назад"
+#
+#
+#
+#
 #
 #
 #

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -199,13 +199,20 @@ msgstr "Zoom out o riduci scala per vedere OCEAN CURRENT soppressi"
 #
 #
 #
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Zoom out o riduci scala per vedere OCEAN CURRENT soppressi"
+#
+#
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Zoom out o riduci scala per vedere HTSGW GRIB soppressi"
 #
 #
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr "Zoom out o riduci scala per vedere SEATEMP soppressi"
 #
 #
@@ -244,10 +251,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #
@@ -262,7 +269,7 @@ msgstr ""
 #
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Onda, Altezza Signific. (m)"
 #
 msgid "Speed unit"
@@ -303,7 +310,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "Direzione Vento (gradi)"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #
@@ -359,8 +366,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Chiudi"
+#
+#
+#
+#
 #
 #
 #
@@ -392,6 +407,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Preferenze GRIB"
@@ -402,9 +421,17 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Sea Surface Temp."
 #~ msgstr "Temperatura Acqua (°C)"
+#
+#
+#
+#
 #
 #
 #
@@ -450,8 +477,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "Attenzione:  Dati QuickScat GRIB sono vecchi di %d ore."
+#
+#
+#
+#
 #
 #
 #

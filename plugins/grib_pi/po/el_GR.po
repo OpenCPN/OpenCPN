@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1207\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2010-12-20 18:23+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -186,11 +186,16 @@ msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δε
 msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα OCEAN CURRENT GRIB"
 #
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα OCEAN CURRENT GRIB"
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα HTSGW GRIB"
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα SEATEMP GRIB"
 #
 #, fuzzy
@@ -223,10 +228,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -237,7 +242,7 @@ msgid "Send"
 msgstr ""
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Διακριτό ύψος Κύματος, m(μέτρα) "
 #
 msgid "Speed unit"
@@ -274,7 +279,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "Διεύθυνση Ανέμου"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -324,8 +329,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Κλείσιμο"
+#
+#
+#
+#
 #
 #
 #
@@ -355,6 +368,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Ιδιότητες GRIB"
@@ -363,9 +380,17 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Sea Surface Temp."
 #~ msgstr "Θερμοκρασία Επιφανείας, C "
+#
+#
+#
+#
 #
 #
 #
@@ -407,10 +432,18 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr ""
 #~ "ΠΡΟΣΟΧΗ:  Τα στοιχεία του αρχείου GRIB από το QuickScat είναι  %d  Ώρες "
 #~ "παλιά."
+#
+#
+#
+#
 #
 #
 #

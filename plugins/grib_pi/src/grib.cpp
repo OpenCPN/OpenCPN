@@ -112,10 +112,10 @@ static wxString DToString( int Data )
     case ID_CB_WINDIR: return _("Wind Direction(10m)");
     case ID_CB_WINDM:  return  _("Wind Speed and Direction(10m)");
     case ID_CB_WIGUSM:
-    case ID_CB_WIGUST: return  _("Wind Gust(Surface)");
+    case ID_CB_WIGUST: return  _("Wind Gust(Surf.)");
     case ID_CB_SIWAVD:
     case ID_CB_SIWAVM:
-        return  _("Sign. Wave Height");
+        return  _("Sign.Wave Height");
     case ID_CB_PRESS:
     case ID_CB_PRESSD:
     case ID_CB_PRESSM:
@@ -131,7 +131,7 @@ static wxString DToString( int Data )
         return  _("Air Temp.(2m)");
     case ID_CB_SEATED:
     case ID_CB_SEATEM: 
-        return  _("Sea Temp.(Surf)");
+        return  _("Sea Temp.(Surf.)");
     case ID_CB_CURRED:
     case ID_CB_CURREM:
         return  _("Current Velocity");
@@ -1640,7 +1640,7 @@ bool GRIBOverlayFactory::RenderGribCloudCover( GribRecord *pGR, PlugIn_ViewPort 
     bool b_drawn = RenderGribFieldOverlay( pGR, NULL, vp, 4, CLOCV_GRAPHIC_INDEX, &m_pgob_clocv );
 
     if( !b_drawn )
-        m_SecString =  _("Please Zoom or Scale Out to view suppressed HTSGW GRIB");
+        m_SecString =  _("Please Zoom or Scale Out to view suppressed Clouds Cover GRIB");
     
     return true;
 }
@@ -1660,7 +1660,7 @@ bool GRIBOverlayFactory::RenderGribSeaTemp( GribRecord *pGR, PlugIn_ViewPort *vp
     bool b_drawn = RenderGribFieldOverlay( pGR, NULL, vp, 4, SEATEMP_GRAPHIC_INDEX, &m_pgob_seatemp );
 
     if( !b_drawn ) 
-        m_SecString = _("Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB");
+        m_SecString = _("Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB");
 
     return true;
 }
@@ -2874,7 +2874,7 @@ GribReqPrefDialog::GribReqPrefDialog( wxWindow *parent, wxWindowID id, wxString 
     m_pAirTemp->SetValue( config.GetChar(10) == 'X' );
     if( m_pModel->GetCurrentSelection() == 1 || m_pModel->GetCurrentSelection() == 2 ) m_pAirTemp->Enable( false );
 
-    m_pSeaTemp = new wxCheckBox( this, -1, _("Sea Temperature(surf)"));
+    m_pSeaTemp = new wxCheckBox( this, -1, _("Sea Temperature(surf.)"));
     pTopSizer2->Add( m_pSeaTemp, 1, wxALIGN_LEFT|wxALL, border_size );
     m_pSeaTemp->SetValue( config.GetChar(11) == 'X' );
     if( m_pModel->GetCurrentSelection() == 1 || m_pModel->GetCurrentSelection() == 2 ) m_pSeaTemp->Enable( false );

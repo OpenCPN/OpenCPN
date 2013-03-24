@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2010-03-29 20:29+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -199,6 +199,16 @@ msgstr ""
 #
 #
 #
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr ""
+"Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot. opadów "
+"deszczu"
+#
+#
+#
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr ""
 "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot."
@@ -208,7 +218,7 @@ msgstr ""
 #
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr ""
 "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot."
 "wysokości fali znacznej"
@@ -254,10 +264,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #
@@ -274,7 +284,7 @@ msgstr ""
 #
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Wysokość fali znacznej, m"
 #
 msgid "Speed unit"
@@ -317,7 +327,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "Kierunek wiatru"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #
@@ -376,6 +386,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Zamknij"
@@ -401,8 +415,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Katalog plików GRIB"
+#
+#
+#
+#
 #
 #
 #
@@ -450,8 +472,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "UWAGA: Dane QuickScat GRIB pochodzą sprzed %d godzin."
+#
+#
+#
+#
 #
 #
 #

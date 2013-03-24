@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2011-04-29 10:48+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -189,11 +189,16 @@ msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
 msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
 #
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "請放大畫面以顯示 suppressed HTSGW GRIB"
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
 #
 #, fuzzy
@@ -226,10 +231,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -240,7 +245,7 @@ msgid "Send"
 msgstr ""
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Significant波高, m"
 #
 msgid "Speed unit"
@@ -277,7 +282,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "風向"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -327,8 +332,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "關閉(&C)"
+#
+#
+#
+#
 #
 #
 #
@@ -358,6 +371,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB 偏好設定"
@@ -366,9 +383,17 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Sea Surface Temp."
 #~ msgstr "海面溫度, C"
+#
+#
+#
+#
 #
 #
 #
@@ -410,8 +435,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "警告:  QuickScat GRIB 資料為 %d 小時前資料."
+#
+#
+#
+#
 #
 #
 #

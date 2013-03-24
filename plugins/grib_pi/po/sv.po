@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2012-06-02 22:59+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
@@ -188,11 +188,15 @@ msgstr "Zooma ut eller öka skalan för att visa GRIB yttemperatur"
 msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 msgstr "Zooma ut eller öka skalan för att visa GRIB regninformation"
 #
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Zooma ut eller öka skalan för att visa GRIB regninformation"
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Zooma ut eller öka skalan för att visa GRIB signifikant våghöjd"
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr "Zooma ut eller öka skalan för att visa GRIB yttemperatur"
 #
 #, fuzzy
@@ -225,10 +229,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -239,7 +243,7 @@ msgid "Send"
 msgstr ""
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Signifikant våghöjd, m"
 #
 msgid "Speed unit"
@@ -276,7 +280,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "Vindriktning"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -326,8 +330,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "Stäng"
+#
+#
+#
+#
 #
 #
 #
@@ -357,6 +369,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB Inställningar"
@@ -365,9 +381,17 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Sea Surface Temp."
 #~ msgstr "Yttemperatur, C"
+#
+#
+#
+#
 #
 #
 #
@@ -408,8 +432,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Visa m/s för vindstyrka"
+#
+#
+#
+#
 #
 #
 #

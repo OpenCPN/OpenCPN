@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2012-12-23 10:31+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: rider2@kpnmail.nl\n"
@@ -195,12 +195,17 @@ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
 #
 #
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+#
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Zoom uit of verklein schaal om onderdrukte HTSGW GRIB te zien."
 #
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
 #
 #
@@ -236,10 +241,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #
@@ -252,7 +257,7 @@ msgstr ""
 #
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "significante golfhoogte (m)"
 #
 msgid "Speed unit"
@@ -291,7 +296,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "windrichting"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #
@@ -344,8 +349,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Sluiten"
+#
+#
+#
+#
 #
 #
 #
@@ -376,6 +389,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB voorkeuren"
@@ -385,9 +402,17 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Sea Surface Temp."
 #~ msgstr "zeewatertemperatuur (°C)"
+#
+#
+#
+#
 #
 #
 #
@@ -429,8 +454,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Toon windsnelheid in m/sec"
+#
+#
+#
+#
 #
 #
 #

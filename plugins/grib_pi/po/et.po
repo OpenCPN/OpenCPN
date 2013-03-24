@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2011-01-09 19:25+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -194,12 +194,18 @@ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 msgstr "Palun vähenda mõõtkava nägemaks peidetud OOKEANI MOMENDI ILMA"
 #
 #
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Palun vähenda mõõtkava nägemaks peidetud OOKEANI MOMENDI ILMA"
+#
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Palun vähenda mõõtkava nägemaks peidetud HTSGW ILMA"
 #
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr "Palun vähenda mõõtkava nägemaks peidetud MERETEMPERATUURI"
 #
 #
@@ -235,10 +241,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #
@@ -251,7 +257,7 @@ msgstr ""
 #
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Oluline laine kõrgus, m"
 #
 msgid "Speed unit"
@@ -290,7 +296,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "Tuule suund"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #
@@ -343,8 +349,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Sulge"
+#
+#
+#
+#
 #
 #
 #
@@ -375,6 +389,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIP Seaded"
@@ -384,9 +402,17 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Sea Surface Temp."
 #~ msgstr "Veepinna temperatuur, C"
+#
+#
+#
+#
 #
 #
 #
@@ -430,8 +456,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "HOIATUS: GRIB-i andmed on %d tundi vanad."
+#
+#
+#
+#
 #
 #
 #

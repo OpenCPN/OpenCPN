@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -121,11 +121,11 @@ msgid "Wind Speed and Direction(10m)"
 msgstr ""
 
 #: src/grib.cpp:115
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 
 #: src/grib.cpp:118
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr ""
 
 #: src/grib.cpp:122
@@ -145,7 +145,7 @@ msgid "Air Temp.(2m)"
 msgstr ""
 
 #: src/grib.cpp:134
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 
 #: src/grib.cpp:137
@@ -250,7 +250,7 @@ msgstr ""
 msgid "No Reference. Try another Graphic Data Selection"
 msgstr ""
 
-#: src/grib.cpp:1568 src/grib.cpp:1643
+#: src/grib.cpp:1568
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr ""
 
@@ -258,12 +258,16 @@ msgstr ""
 msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 msgstr ""
 
+#: src/grib.cpp:1643
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr ""
+
 #: src/grib.cpp:1653
 msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 msgstr ""
 
 #: src/grib.cpp:1663
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr ""
 
 #: src/grib.cpp:1712
@@ -351,5 +355,5 @@ msgid "Air Temperature(2m)"
 msgstr ""
 
 #: src/grib.cpp:2877
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: JPJoubert <joubert.jeanpierre@wanadoo.fr>\n"
 "Language-Team: \n"
@@ -86,11 +86,11 @@ msgstr "Temp. Air(2m)"
 
 #
 msgid "Air Temperature(2m)"
-msgstr "Temperature de l'air(2m)"
+msgstr "Température de l'air(2m)"
 
 #
 msgid "Clouds Cover"
-msgstr "Nebulosité"
+msgstr "Nébulosité"
 
 #
 msgid "Copy first Cumulative missing Record"
@@ -98,7 +98,7 @@ msgstr "Copier le premier enregistrement cumulatif manquant"
 
 #
 msgid "Copy missing Wave Records"
-msgstr "Copier le données vagues  manquantes"
+msgstr "Copier les enregistrements vagues  manquants"
 
 #
 #
@@ -180,7 +180,7 @@ msgstr "Heure Locale"
 
 #
 msgid "Model"
-msgstr "Modele"
+msgstr "Modèle"
 
 #
 msgid "Modify"
@@ -196,7 +196,7 @@ msgstr "Pas d'autre affichage graphique"
 
 #
 msgid "Numeric Data to show in Panel"
-msgstr "Données numeriques à afficher"
+msgstr "Données numériques à afficher"
 
 #
 msgid "Parameters"
@@ -204,30 +204,35 @@ msgstr "Parametres"
 
 #
 msgid "Period"
-msgstr "Periode"
+msgstr "Période"
 
 #
 msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les températures de l'air non visibles"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Temperature de l'air(2m)."
 
 #
 #
 msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les courants non visibles"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Courants"
+
+#
+#
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Nebulosité"
 
 #
 #
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les hauteurs de vagues non visibles"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Hauteur signif. des Vagues"
 
 #
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les températures de l'eau non visibles"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Température de l'eau"
 
 #
 #
 msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les précipitations non visibles"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Précipitations"
 
 #
 #
@@ -264,12 +269,12 @@ msgid "Resolution"
 msgstr "Resolution"
 
 #
-msgid "Sea Temp.(Surf)"
-msgstr "Temp. eau(Surf)"
+msgid "Sea Temp.(Surf.)"
+msgstr "Temp. eau(Surf.)"
 
 #
-msgid "Sea Temperature(surf)"
-msgstr "Temperature de l'eau(Surf)"
+msgid "Sea Temperature(surf.)"
+msgstr "Température de l'eau(Surf.)"
 
 #
 #
@@ -282,7 +287,7 @@ msgstr "Envoyer"
 
 #
 #
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Haut. sign. Vagues"
 
 #
@@ -332,8 +337,8 @@ msgid "Wind Direction(10m)"
 msgstr "Direction vent(10 m)"
 
 #
-msgid "Wind Gust(Surface)"
-msgstr "Rafales (Surface)"
+msgid "Wind Gust(Surf.)"
+msgstr "Rafales (Surf.)"
 
 #
 #
@@ -342,7 +347,7 @@ msgstr "Vitesse et Direction du vent(10m)"
 
 #
 msgid "Wind Speed(10m)"
-msgstr "Vitesse Vent(10m)"
+msgstr "Vitesse vent(10m)"
 
 #
 msgid ""
@@ -351,7 +356,7 @@ msgid ""
 "OK to continue ..."
 msgstr ""
 "Votre demande est prete. Un Mail est preparé dans votre logiciel mail.\n"
-"Il vous reste à cliquer sut 'envoyer' .\n"
+"Il vous reste à cliquer sur  'envoyer' .\n"
 "OK pour continuer..."
 
 #
@@ -360,7 +365,7 @@ msgid ""
 "OK to continue ..."
 msgstr ""
 "Votre demande a été envoyée (si votre systeme a un MTA configuré et capable d'envoyer des mails).\n"
-"OK pour continuer"
+"OK pour continuer..."
 
 #
 msgid "Zone"

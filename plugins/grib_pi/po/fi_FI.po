@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2010-12-09 22:34+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaite@netti.fi>\n"
@@ -189,11 +189,16 @@ msgstr "Zoomaa ulos nähdäksesi GRIB pintalämpötilan"
 msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 msgstr "Zoomaa ulos nähdäksesi GRIB virtatiedot"
 #
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Zoomaa ulos nähdäksesi GRIB virtatiedot"
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Zoomaa ulos nähdäksesi GRIB merkitsevän aallonkorkeuden"
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr "Zoomaa ulos nähdäksesi GRIB pintalämpötilan"
 #
 #, fuzzy
@@ -226,10 +231,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -240,7 +245,7 @@ msgid "Send"
 msgstr ""
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Merkitsevä aallonkorkeus, m"
 #
 msgid "Speed unit"
@@ -277,7 +282,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "Tuulen suunta"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -327,8 +332,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "&Sulje"
+#
+#
+#
+#
 #
 #
 #
@@ -358,6 +371,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB asetukset"
@@ -366,9 +383,17 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Sea Surface Temp."
 #~ msgstr "Meriveden pintalämpötila, C"
+#
+#
+#
+#
 #
 #
 #
@@ -410,8 +435,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROITUS:  QuickScat GRIB data on %d tuntia vanhaa."
+#
+#
+#
+#
 #
 #
 #

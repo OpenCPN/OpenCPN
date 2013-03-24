@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2012-12-25 11:00+0100\n"
 "Last-Translator: CarCode <carcode@me.com>\n"
 "Language-Team: Gerhard Mueller <carcode@me.com>\n"
@@ -194,13 +194,19 @@ msgstr ""
 "Zur Anzeige der ausgeblendeten GRIB Ozean-Strömung bitte herauszoom oder "
 "Maßstab verkleinern."
 #
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr ""
+"Zur Anzeige der ausgeblendeten GRIB Ozean-Strömung bitte herauszoom oder "
+"Maßstab verkleinern."
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr ""
 "Zur Anzeige der ausgeblendeten HTSGW GRIB-Daten bitte herauszoom oder Maßstab "
 "verkleinern."
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr ""
 "Zur Anzeige der ausgeblendeten GRIB Wassertemperatur bitte herauszoom oder "
 "Maßstab verkleinern."
@@ -237,10 +243,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -251,7 +257,7 @@ msgid "Send"
 msgstr ""
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Signifik. Wellenhöhe, m"
 #
 msgid "Speed unit"
@@ -288,7 +294,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "Windrichtung"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -338,8 +344,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "Schließen"
+#
+#
+#
+#
 #
 #
 #
@@ -369,6 +383,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB Einstellungen"
@@ -377,9 +395,17 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Sea Surface Temp."
 #~ msgstr "Wassertemp. (Oberfl.), °C"
+#
+#
+#
+#
 #
 #
 #
@@ -420,8 +446,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "WARNUNG:  Die QuickScat GRIB-Daten sind %d Stunden alt."
+#
+#
+#
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 19:14+0100\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2012-12-29 13:16+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: \n"
@@ -192,13 +192,19 @@ msgstr ""
 "Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
 "megjelenítéséhez"
 #
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr ""
+"Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
+"megjelenítéséhez"
+#
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr ""
 "Zoomolj, vagy válts nagyobb méretarányra az elnyomott HTSGW GRIB "
 "megjelenítéséhez"
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf. Temp. GRIB"
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr ""
 "Zoomolj, vagy válts nagyobb méretarányra az elnyomott SEATEMP GRIB "
 "megjelenítéséhez"
@@ -235,10 +241,10 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf)"
+msgid "Sea Temp.(Surf.)"
 msgstr ""
 #
-msgid "Sea Temperature(surf)"
+msgid "Sea Temperature(surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -249,7 +255,7 @@ msgid "Send"
 msgstr ""
 #
 #, fuzzy
-msgid "Sign. Wave Height"
+msgid "Sign.Wave Height"
 msgstr "Hullám magasság, m"
 #
 msgid "Speed unit"
@@ -286,7 +292,7 @@ msgstr ""
 msgid "Wind Direction(10m)"
 msgstr "Szél irány"
 #
-msgid "Wind Gust(Surface)"
+msgid "Wind Gust(Surf.)"
 msgstr ""
 #
 #, fuzzy
@@ -336,8 +342,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "Bezár"
+#
+#
+#
+#
 #
 #
 #
@@ -367,6 +381,10 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "BRIB beállítások"
@@ -375,9 +393,17 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Sea Surface Temp."
 #~ msgstr "Tenger felszín hőmérséklete, C"
+#
+#
+#
+#
 #
 #
 #
@@ -418,8 +444,16 @@ msgstr ""
 #
 #
 #
+#
+#
+#
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Szélsebesség méter/sec-ben mutatása"
+#
+#
+#
+#
 #
 #
 #
