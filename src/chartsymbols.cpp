@@ -260,7 +260,7 @@ void ChartSymbols::BuildLookup( Lookup &lookup )
     LUP->DPRI = lookup.displayPrio;
     LUP->RPRI = lookup.radarPrio;
     LUP->TNAM = lookup.tableName;
-    LUP->OBCL[7] = 0;
+    LUP->OBCL[6] = 0;
     strncpy( LUP->OBCL, lookup.name.mb_str(), 7 );
 
     LUP->ATTCArray = lookup.attributeCodeArray;
