@@ -289,10 +289,19 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
                 if( !strncmp( buf, "HDRLEN", 6 ) ) {
                     hdr_len = atoi( buf + 7 );
+		    char * tmp = hdr_buf;
                     hdr_buf = (char *) realloc( hdr_buf, hdr_len );
-                    pfpx->Read( hdr_buf, hdr_len );
-                    mybuf_ptr = hdr_buf;
-                    hdr_end = hdr_buf + hdr_len;
+                    if (NULL == hdr_buf)
+                    {
+                        free ( tmp );
+                        tmp = NULL;
+                    }
+                    else
+                    {
+                        pfpx->Read( hdr_buf, hdr_len );
+                        mybuf_ptr = hdr_buf;
+                        hdr_end = hdr_buf + hdr_len;
+                    }
                 }
 
                 else if( !strncmp( buf, geoMatch, 6 ) ) {
@@ -4016,7 +4025,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 
             nProg = iObj;
             if( nProg > m_nGeoRecords - 1 ) nProg = m_nGeoRecords - 1;
-            if( s_ProgDialog ) bcont = s_ProgDialog->Update( nProg, sobj );
+            if( s_ProgDialog && nProg % 10 == 0 ) bcont = s_ProgDialog->Update( nProg, sobj ); //We update just every 10th object to improve performance as updating the dialog is very expensive...
 
             geoType = wkbUnknown;
 //      This test should not be necessary for real (i.e not C_AGGR) features

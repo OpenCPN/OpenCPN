@@ -371,8 +371,8 @@ SET(SRCS
 		src/chartimg.cpp
 		src/chcanv.cpp
 		src/concanv.cpp
-		src/cutil.c
-		src/georef.c
+		src/cutil.cpp
+		src/georef.cpp
 		src/navutil.cpp
 		src/routeman.cpp
 		src/routemanagerdialog.cpp
