@@ -253,7 +253,7 @@ void toDMS(double a, char *bufp, int bufplen)
     int n = (int) ((a - (int) a) * 36000.0);
     int m = n / 600;
     int s = n % 600;
-    sprintf(bufp, "%d%02d'%02d.%01d\"", (int) neg ? -a : a, m, s / 10, s % 10);
+    sprintf(bufp, "%d%02d'%02d.%01d\"", (int) (neg ? -a : a), m, s / 10, s % 10);
 }
 
 
@@ -290,16 +290,16 @@ void todmm(int flag, double a, char *bufp, int bufplen)
     int m = (int) ((a - (int) a) * 60000.0);
 
     if(!flag)
-        snprintf(bufp, bufplen, "%d %02ld.%03ld'", (int) a, m / 1000, m % 1000);
+        snprintf(bufp, bufplen, "%d %02d.%03d'", (int) a, m / 1000, m % 1000);
     else
     {
         if(flag == 1)
         {
-            snprintf(bufp, bufplen, "%02d %02ld.%03ld %c", (int) a, m / 1000, (m % 1000), bNeg ? 'S' : 'N');
+            snprintf(bufp, bufplen, "%02d %02d.%03d %c", (int) a, m / 1000, (m % 1000), bNeg ? 'S' : 'N');
         }
         else if(flag == 2)
         {
-            snprintf(bufp, bufplen, "%03d %02ld.%03ld %c", (int) a, m / 1000, (m % 1000), bNeg ? 'W' : 'E');
+            snprintf(bufp, bufplen, "%03d %02d.%03d %c", (int) a, m / 1000, (m % 1000), bNeg ? 'W' : 'E');
         }
     }
 }
@@ -1392,7 +1392,7 @@ void lm_minimize( int m_dat, int n_par, double* par,
 
 // ***** the following messages are referenced by the variable info.
 
-char *lm_infmsg[] = {
+const char *lm_infmsg[] = {
     "improper input parameters",
     "the relative error in the sum of squares is at most tol",
     "the relative error between x and the solution is at most tol",
@@ -1406,7 +1406,7 @@ char *lm_infmsg[] = {
     "break requested within function evaluation"
 };
 
-char *lm_shortmsg[] = {
+const char *lm_shortmsg[] = {
     "invalid input",
     "success (f)",
     "success (p)",
