@@ -103,6 +103,7 @@ public:
       wxString GetGRIBDataConfig(){ return m_grib_DataConfig; }
       wxString GetMailRequestConfig(){ return m_grib_RequestConfig; }
       int  GetSpeedUnit() { return m_bSpeedUnit; }
+      int  GetPressUnit() { return m_bPressUnit; }
       int  GetTimeZone() { return m_bTimeZone; }
       bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
       bool GetCopyMissWaveRec() { return  m_bCopyMissWaveRec; }
@@ -132,6 +133,7 @@ private:
       // preference data
       int              m_bTimeZone;
       int              m_bSpeedUnit;
+      int              m_bPressUnit;
       bool             m_bGRIBUseHiDef;
       bool             m_bCopyFirstCumRec;
       bool             m_bCopyMissWaveRec;
@@ -154,19 +156,21 @@ class GribPreferencesDialog : public wxDialog
 {
 public:
       GribPreferencesDialog( wxWindow *pparent, wxWindowID id, bool HiDef,
-          bool CumRec, bool WaveRec, int SpeedUnit, int TimeFormat, wxString MailAdresse );
+          bool CumRec, bool WaveRec, int SpeedUnit, int PressUnit, int TimeFormat, wxString MailAdresse );
       ~GribPreferencesDialog() {}
       
       bool GetGRIBUseHiDef() { return  m_pGRIBUseHiDef->GetValue();}
       bool GetCopyFirstCumRec() { return  m_pCopyFirstCumRec->GetValue();}
       bool GetCopyMissWaveRec() { return  m_pCopyMissWaveRec->GetValue();}
-      int  GetSpeedUnit() { return  m_pSpeedUnit->GetSelection();}
+      int  GetSpeedUnit() { return  m_pPressUnit->GetSelection();}
+      int  GetPressUnit() { return  m_pPressUnit->GetSelection();}
       int  GetTimeZone() { return  m_pTimeZone->GetSelection();}
 
 private:
       void OnDirectoryChange( wxCommandEvent& event );
       wxRadioBox              *m_pTimeZone;
       wxRadioBox              *m_pSpeedUnit;
+      wxRadioBox              *m_pPressUnit;
       wxCheckBox              *m_pGRIBUseHiDef;
       wxCheckBox              *m_pCopyFirstCumRec;
       wxCheckBox              *m_pCopyMissWaveRec;

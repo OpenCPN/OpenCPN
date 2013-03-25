@@ -212,13 +212,17 @@ int grib_pi::GetToolbarToolCount(void)
 void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 {
      GribPreferencesDialog *Pref_Dialog = new GribPreferencesDialog( parent, wxID_ANY,
-         m_bGRIBUseHiDef, m_bCopyFirstCumRec, m_bCopyMissWaveRec, m_bSpeedUnit, m_bTimeZone, m_bMailAdresse );
+         m_bGRIBUseHiDef, m_bCopyFirstCumRec, m_bCopyMissWaveRec, m_bSpeedUnit, m_bPressUnit, m_bTimeZone, m_bMailAdresse );
         
 
      if( Pref_Dialog->ShowModal() == wxID_OK ) {
          int updatelevel = 0;
          if( m_bSpeedUnit != Pref_Dialog->GetSpeedUnit() ) {
              m_bSpeedUnit = Pref_Dialog->GetSpeedUnit();
+             updatelevel = 1;
+         }
+         if( m_bPressUnit != Pref_Dialog->GetPressUnit() ) {
+             m_bPressUnit = Pref_Dialog->GetPressUnit();
              updatelevel = 1;
          }
       if( m_bTimeZone != Pref_Dialog->GetTimeZone() ) {
@@ -401,7 +405,8 @@ bool grib_pi::LoadConfig(void)
             pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
             pConf->Read ( _T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1 );
             pConf->Read ( _T( "GRIBUseHiDef" ), &m_bGRIBUseHiDef, 0 );
-            pConf->Read ( _T( "GRIBSpeedUnit" ), &m_bSpeedUnit, 1 );
+            pConf->Read ( _T( "GRIBSpeedUnit" ), &m_bSpeedUnit, 2 );
+            pConf->Read ( _T( "GRIBPressureUnit" ), &m_bPressUnit, 1 );
             pConf->Read ( _T( "GRIBTimeZone" ), &m_bTimeZone, 1 );
             pConf->Read ( _T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1 );
             pConf->Read ( _T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1 );
@@ -444,6 +449,7 @@ bool grib_pi::SaveConfig(void)
             pConf->Write ( _T ( "ShowGRIBIcon" ), m_bGRIBShowIcon );
             pConf->Write ( _T ( "GRIBUseHiDef" ), m_bGRIBUseHiDef );
             pConf->Write ( _T ( "GRIBSpeedUnit" ), m_bSpeedUnit );
+            pConf->Write ( _T ( "GRIBPressureUnit" ), m_bPressUnit );
             pConf->Write ( _T ( "GRIBTimeZone" ), m_bTimeZone );
             pConf->Write ( _T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec );
             pConf->Write ( _T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec );
@@ -498,7 +504,7 @@ void grib_pi::CreateGribDialog( int index, wxString filename, bool newfile )
 //Preferences Dialog implementation
 //---------------------------------------------------------------------------------------------------------
 GribPreferencesDialog::GribPreferencesDialog( wxWindow *pparent, wxWindowID id, bool init_HiDef,
-    bool init_CumRec, bool init_WaveRec, int init_SpeedUnit, int init_TimeFormat, wxString init_MailAdresse ):
+    bool init_CumRec, bool init_WaveRec, int init_SpeedUnit, int init_PressUnit, int init_TimeFormat, wxString init_MailAdresse ):
     wxDialog( pparent, id, _("GRIB Preferences"), wxDefaultPosition, wxDefaultSize,
         wxDEFAULT_DIALOG_STYLE )
 {
@@ -526,10 +532,15 @@ GribPreferencesDialog::GribPreferencesDialog( wxWindow *pparent, wxWindowID id, 
     wxStaticBoxSizer* itemStaticBoxSizerUnit = new wxStaticBoxSizer(itemStaticBoxSizerUnitStatic, wxVERTICAL);
     itemBoxSizerGRIBPanel->Add(itemStaticBoxSizerUnit, 0, wxGROW|wxALL, border_size);
 
-    wxString unit[] = { _T("m/s"), _T("km/h"), _T("kts") };
+    wxString unit_s[] = { _T("m/s"), _T("km/h"), _T("kts") };
     m_pSpeedUnit = new wxRadioBox( this, -1, _("Speed unit"), wxDefaultPosition, wxSize(-1, -1),
-        3, unit, 1, wxRA_SPECIFY_ROWS );
+        3, unit_s, 1, wxRA_SPECIFY_ROWS );
     itemStaticBoxSizerUnit->Add(m_pSpeedUnit, 1, wxALIGN_LEFT|wxALL, border_size );
+
+    wxString unit_p[] = { _T("mmHg"), _T("mBa") };
+    m_pPressUnit = new wxRadioBox( this, -1, _("Pressure unit"), wxDefaultPosition, wxSize(-1, -1),
+        2, unit_p, 1, wxRA_SPECIFY_ROWS );
+    itemStaticBoxSizerUnit->Add(m_pPressUnit, 1, wxALIGN_LEFT|wxALL, border_size );
 
     wxString zone[] = { _("Local Time"), _("UTC"), };
     m_pTimeZone = new wxRadioBox( this, -1, _("Time Zone"), wxDefaultPosition, wxSize(-1, -1),
@@ -539,6 +550,7 @@ GribPreferencesDialog::GribPreferencesDialog( wxWindow *pparent, wxWindowID id, 
     m_pTimeZone->SetSelection( init_TimeFormat );
     m_pGRIBUseHiDef->SetValue( init_HiDef );
     m_pSpeedUnit->SetSelection( init_SpeedUnit );
+    m_pPressUnit->SetSelection( init_PressUnit );
     m_pCopyFirstCumRec->SetValue( init_CumRec );
     m_pCopyMissWaveRec->SetValue( init_WaveRec );
 

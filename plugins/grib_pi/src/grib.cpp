@@ -314,7 +314,7 @@ void GRIBUIDialog::CreateControls()
         pDataGrid->Add( m_pT0StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
         m_pT0StaticText->SetFont( *dFont_Lab );
          
-        m_pT0TextCtrl = new wxTextCtrl( this, -1,  _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+        m_pT0TextCtrl = new wxTextCtrl( this, -1,  _T(""), wxDefaultPosition, wxSize( 85, -1 ),
             wxTE_READONLY );
         pDataGrid->Add( m_pT0TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
         m_pT0TextCtrl->SetFont( *dFont_val );
@@ -323,7 +323,7 @@ void GRIBUIDialog::CreateControls()
         pDataGrid->Add( m_pT1StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
         m_pT1StaticText->SetFont( *dFont_Lab );
 
-        m_pT1TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+        m_pT1TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 85, -1 ),
             wxTE_READONLY );
         pDataGrid->Add( m_pT1TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
         m_pT1TextCtrl->SetFont( *dFont_val );
@@ -332,7 +332,7 @@ void GRIBUIDialog::CreateControls()
         pDataGrid->Add( m_pT2StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
         m_pT2StaticText->SetFont( *dFont_Lab );
 
-        m_pT2TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+        m_pT2TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 85, -1 ),
             wxTE_READONLY );
         pDataGrid->Add( m_pT2TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
         m_pT2TextCtrl->SetFont( *dFont_val );
@@ -342,7 +342,7 @@ void GRIBUIDialog::CreateControls()
             pDataGrid->Add( m_pT3StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
             m_pT3StaticText->SetFont( *dFont_Lab );
 
-            m_pT3TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+            m_pT3TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 85, -1 ),
                 wxTE_READONLY );
             pDataGrid->Add( m_pT3TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
             m_pT3TextCtrl->SetFont( *dFont_val );
@@ -351,7 +351,7 @@ void GRIBUIDialog::CreateControls()
             pDataGrid->Add( m_pT4StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
             m_pT4StaticText->SetFont( *dFont_Lab );
 
-            m_pT4TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+            m_pT4TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 85, -1 ),
                 wxTE_READONLY );
             pDataGrid->Add( m_pT4TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
             m_pT4TextCtrl->SetFont( *dFont_val );
@@ -360,7 +360,7 @@ void GRIBUIDialog::CreateControls()
             pDataGrid->Add( m_pT5StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
             m_pT5StaticText->SetFont( *dFont_Lab );
 
-            m_pT5TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+            m_pT5TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 85, -1 ),
                 wxTE_READONLY );
             pDataGrid->Add( m_pT5TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
             m_pT5TextCtrl->SetFont( *dFont_val );
@@ -370,7 +370,7 @@ void GRIBUIDialog::CreateControls()
             pDataGrid->Add( m_pT6StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
             m_pT6StaticText->SetFont( *dFont_Lab );
 
-            m_pT6TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+            m_pT6TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 85, -1 ),
                 wxTE_READONLY );
             pDataGrid->Add( m_pT6TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
              m_pT6TextCtrl->SetFont( *dFont_val );
@@ -379,7 +379,7 @@ void GRIBUIDialog::CreateControls()
             pDataGrid->Add( m_pT7StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT | wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
             m_pT7StaticText->SetFont( *dFont_Lab );
 
-            m_pT7TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+            m_pT7TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 85, -1 ),
                 wxTE_READONLY );
             pDataGrid->Add( m_pT7TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
              m_pT7TextCtrl->SetFont( *dFont_val );
@@ -388,7 +388,7 @@ void GRIBUIDialog::CreateControls()
             pDataGrid->Add( m_pT8StaticText, 0, wxALIGN_LEFT | wxLEFT | wxRIGHT| wxALIGN_CENTER_VERTICAL | wxEXPAND, 2 );
             m_pT8StaticText->SetFont( *dFont_Lab );
 
-            m_pT8TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 75, -1 ),
+            m_pT8TextCtrl = new wxTextCtrl( this, -1, _T(""), wxDefaultPosition, wxSize( 85, -1 ),
                 wxTE_READONLY );
             pDataGrid->Add( m_pT8TextCtrl, 0, wxALIGN_RIGHT, item_spacing );
             m_pT8TextCtrl->SetFont( *dFont_val );
@@ -479,7 +479,14 @@ void GRIBUIDialog::UpdateTrackingControls()
                     m_pCurrentGribRecordSet->m_GribRecordPtrArray.Item( m_RS_Idx_PRESS )->getInterpolatedValue(
                     m_cursor_lon, m_cursor_lat, true );
                 if( press != GRIB_NOTDEF ) {
-                    val[i].Printf( _T("%2d mBa"), (int) ( press / 100. ) );
+                    switch( pPlugIn->GetPressUnit() ) {
+                    case 0:
+                        val[i].Printf( _T("%3.1f mmHg"), press / 133.22 );      //convert to mmHg
+                        break;
+                    case 1:
+                    default:
+                        val[i].Printf( _T("%2d mBa"), (int) ( press / 100. ) );         //convert to mBa
+                    }
                 }
             }
         }
