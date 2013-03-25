@@ -101,7 +101,7 @@ struct DATUM const gDatum[] = {
       { "Geodetic Datum  49",    14,     84,    -22,    209 },    // 32
       { "Guam 1963",              4,   -100,   -248,    259 },    // 33
       { "GUX 1 Astro",           14,    252,   -209,   -751 },    // 34
-	  { "Hermannskogel Datum",    3,    682,   -203,    480 },    // 35
+      { "Hermannskogel Datum",    3,    682,   -203,    480 },    // 35
       { "Hjorsey 1955",          14,    -73,     46,    -86 },    // 36
       { "Hong Kong 1963",        14,   -156,   -271,   -189 },    // 37
       { "Indian Bangladesh",      6,    289,    734,    257 },    // 38

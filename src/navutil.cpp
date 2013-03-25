@@ -3429,7 +3429,7 @@ int MyConfig::LoadMyConfig( int iteration )
                 
                 g_pConnectionParams->Add(prm);
                 
-                g_bGarminHostUpload = b_garmin_host;
+                g_bGarminHostUpload = (b_garmin_host == 1);
             }
         }
         if( iteration == 1 ) {
