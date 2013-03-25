@@ -526,9 +526,9 @@ GribPreferencesDialog::GribPreferencesDialog( wxWindow *pparent, wxWindowID id, 
     wxStaticBoxSizer* itemStaticBoxSizerUnit = new wxStaticBoxSizer(itemStaticBoxSizerUnitStatic, wxVERTICAL);
     itemBoxSizerGRIBPanel->Add(itemStaticBoxSizerUnit, 0, wxGROW|wxALL, border_size);
 
-    wxString unit[] = { _T("m/s"), _T("kts") };
+    wxString unit[] = { _T("m/s"), _T("km/h"), _T("kts") };
     m_pSpeedUnit = new wxRadioBox( this, -1, _("Speed unit"), wxDefaultPosition, wxSize(-1, -1),
-        2, unit, 1, wxRA_SPECIFY_ROWS );
+        3, unit, 1, wxRA_SPECIFY_ROWS );
     itemStaticBoxSizerUnit->Add(m_pSpeedUnit, 1, wxALIGN_LEFT|wxALL, border_size );
 
     wxString zone[] = { _("Local Time"), _("UTC"), };

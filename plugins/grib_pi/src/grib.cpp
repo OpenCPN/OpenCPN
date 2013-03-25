@@ -82,10 +82,13 @@ static wxString SUToString(  double val, const int unit )
 {
     switch( unit ) {
     case 0:
-       if( val < 1 ) return wxString::Format( _T("%3.2f m/s"), val ); else return wxString::Format( _T("%3.1f m/s"), val );
+        if( val < 1 ) return wxString::Format( _T("%3.2f m/s"), val ); else return wxString::Format( _T("%3.1f m/s"), val );
     case 1:
+        val *= 3.6;             // ( 3.6 = ( 3.600 / 1,000 )   translated in km/h
+        if( val < 4 ) return wxString::Format( _T("%3.2f km/h"), val ); else return wxString::Format( _T("%3.1f km/h"), val );
+    case 2:
     default:
-        val *= 1.943845;             // ( 1.943845 = ( 3.6 / 1.852 )   translated in kts
+        val *= 1.943845;        // ( 1.943845 = ( 3.600 / 1,852 )   translated in kts
         if( val < 2 ) return wxString::Format( _T("%3.2f kts"), val ); else return wxString::Format( _T("%3.1f kts"), val );
     }
 }
@@ -1065,7 +1068,6 @@ void GRIBUIDialog::PopulateComboDataList( int index )
     m_pRecordForecast->Clear();
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-
     for( size_t i = 0; i < rsa->GetCount(); i++ ) {
         wxDateTime t( rsa->Item( i ).m_Reference_Time );
 
@@ -1090,6 +1092,7 @@ void GRIBUIDialog::ComputeBestForecastForNow()
     if( !HasValidData() ) return;                        //no data
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    if( ! rsa || rsa->GetCount() <= 1 ) return;                     //not enought data
     wxDateTime t1( rsa->Item( 1 ).m_Reference_Time ) ;              //calculate forecast time interval
     wxDateTime t0( rsa->Item( 0 ).m_Reference_Time ) ;
     int d = t1.Subtract(t0).GetMinutes() / 4;                       //get a quarter of the forecast time interval
