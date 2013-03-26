@@ -45,6 +45,7 @@
 #include "styles.h"
 #include "datastream.h"
 #include "Select.h"
+#include "TTYWindow.h"
 
 extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;

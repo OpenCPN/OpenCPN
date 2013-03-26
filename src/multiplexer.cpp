@@ -27,6 +27,7 @@
 
 #include "multiplexer.h"
 #include "navutil.h"                    // for NMEALogWindow
+#include "TTYWindow.h"
 #include "garmin/jeeps/garmin_wrapper.h"
 
 

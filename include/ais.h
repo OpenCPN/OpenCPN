@@ -45,6 +45,7 @@
 #include "chart1.h"
 #include "datastream.h"         // For GenericPosDatEx
 #include "navutil.h"
+#include "OCPN_Sound.h"
 
 //    Constants
 #ifndef PI

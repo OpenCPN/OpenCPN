@@ -349,6 +349,10 @@ SET(HDRS
 		include/FontMgr.h
 		include/FontDesc.h
 		include/vector2D.h
+		include/OCPNSoundData.h
+		include/OCPN_Sound.h
+		include/TTYWindow.h
+		include/TTYScroll.h
 		include/concanv.h
 		include/cutil.h
 		include/georef.h
@@ -409,6 +413,10 @@ SET(SRCS
 		src/Select.cpp
 		src/FontMgr.cpp
 		src/FontDesc.cpp
+		src/OCPNSoundData.cpp
+		src/OCPN_Sound.cpp
+		src/TTYWindow.cpp
+		src/TTYScroll.cpp
 		src/concanv.cpp
 		src/cutil.cpp
 		src/georef.cpp

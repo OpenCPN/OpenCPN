@@ -86,6 +86,7 @@
 #include "routeprintout.h"
 #include "Select.h"
 #include "FontMgr.h"
+#include "TTYWindow.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"

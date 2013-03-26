@@ -2,3 +2,4 @@ cscope.files
 tags
 index.sh
 include/version.h
+build
