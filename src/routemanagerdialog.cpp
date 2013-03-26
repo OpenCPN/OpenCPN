@@ -106,7 +106,7 @@ static const char *eyex[]={
     "##..############..##",
     "#..##############..#",
     "..################.."};
-    
+
 enum { rmVISIBLE = 0, rmROUTENAME, rmROUTEDESC };// RMColumns;
 enum { colTRKVISIBLE = 0, colTRKNAME, colTRKLENGTH };
 enum { colLAYVISIBLE = 0, colLAYNAME, colLAYITEMS };
@@ -407,7 +407,7 @@ void RouteManagerDialog::OnTabSwitch( wxNotebookEvent &event )
         if( btnImport ) btnImport->Enable( true );
         if( btnExport ) btnExport->Enable( true );
         if( btnExportViz ) btnExportViz->Enable( true );
-        
+
     }
     event.Skip(); // remove if using event table... why?
 }
@@ -426,7 +426,7 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
     m_lastWptItem = -1;
     m_lastTrkItem = -1;
     m_lastRteItem = -1;
-    
+
     btnImport = NULL;
     btnExport = NULL;
     btnExportViz = NULL;
@@ -689,17 +689,17 @@ void RouteManagerDialog::Create()
     itemBoxSizer6->Add( btnImport, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnImport->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnImportClick), NULL, this );
-/*    
+/*
     btnExport = new wxButton( this, -1, _("E&xport All...") );
     itemBoxSizer6->Add( btnExport, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnExport->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler(RouteManagerDialog::OnExportClick), NULL, this );
-*/            
+*/
     btnExportViz = new wxButton( this, -1, _("Export All Visible...") );
     itemBoxSizer6->Add( btnExportViz, 0, wxALL | wxALIGN_LEFT, DIALOG_MARGIN );
     btnExportViz->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
                         wxCommandEventHandler(RouteManagerDialog::OnExportVizClick), NULL, this );
-    
+
     //  Create "Layers" panel
     m_pPanelLay = new wxPanel( m_pNotebook, wxID_ANY, wxDefaultPosition, wxDefaultSize,
             wxNO_BORDER | wxTAB_TRAVERSAL );
@@ -829,7 +829,10 @@ RouteManagerDialog::~RouteManagerDialog()
     delete btnImport;
     delete btnExport;
     delete btnExportViz;
-    
+    btnImport = NULL;
+    btnExport = NULL;
+    btnExportViz = NULL;
+
     delete m_pNotebook;
 
     //    Does not need to be done here at all, since this dialog is autommatically deleted as a child of the frame.
@@ -991,7 +994,7 @@ void RouteManagerDialog::ZoomtoRoute( Route *route )
 void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
 {
     RouteList list;
-    
+
     bool busy = false;
     if( m_pRouteListCtrl->GetSelectedItemCount() ) {
         ::wxBeginBusyCursor();
@@ -999,22 +1002,22 @@ void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
         m_bNeedConfigFlush = true;
         busy = true;
     }
-    
+
     long item = -1;
     for ( ;; )
     {
         item = m_pRouteListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
         if ( item == -1 )
             break;
-        
+
         Route *proute_to_delete = pRouteList->Item( m_pRouteListCtrl->GetItemData( item ) )->GetData();
 
-        if( proute_to_delete ) 
+        if( proute_to_delete )
             list.Append( proute_to_delete );
     }
-    
+
     if( busy ) {
-        
+
         for(unsigned int i=0 ; i < list.GetCount() ; i++) {
             Route *route = list.Item(i)->GetData();
             if( route ) {
@@ -1022,16 +1025,16 @@ void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
                 g_pRouteMan->DeleteRoute( route );
             }
         }
-            
+
         m_lastRteItem = -1;
         UpdateRouteListCtrl();
         UpdateTrkListCtrl();
-        
+
         cc1->undo->InvalidateUndo();
         cc1->Refresh();
         ::wxEndBusyCursor();
     }
-    
+
 }
 
 void RouteManagerDialog::OnRteDeleteAllClick( wxCommandEvent &event )
@@ -1216,9 +1219,9 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
     if( clicked_index > -1 && event.GetX() < m_pRouteListCtrl->GetColumnWidth( rmVISIBLE ) ) {
         // Process the clicked item
         Route *route = pRouteList->Item( m_pRouteListCtrl->GetItemData( clicked_index ) )->GetData();
-                
+
         int wpts_set_viz = wxYES;
-        if( g_pRouteMan->DoesRouteContainSharedPoints(route) ) {        
+        if( g_pRouteMan->DoesRouteContainSharedPoints(route) ) {
             wpts_set_viz = wxMessageBox( _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
         }
         route->SetVisible( !route->IsVisible(), (wpts_set_viz == wxYES) );
@@ -1387,10 +1390,10 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
             wxString msg = wxString::Format( _("The amount of data used by the track\n was reduced by %d%%."),
                     reduction );
             OCPNMessageBox( this, msg, _("OpenCPN info"), wxICON_INFORMATION | wxOK );
-            
+
             UpdateTrkListCtrl();
             UpdateRouteListCtrl();
-            
+
             break;
         }
 
@@ -1658,27 +1661,27 @@ void RouteManagerDialog::OnTrkPropertiesClick( wxCommandEvent &event )
 void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
 {
     RouteList list;
-    
+
     bool busy = false;
     if( m_pTrkListCtrl->GetSelectedItemCount() ) {
         ::wxBeginBusyCursor();
         m_bNeedConfigFlush = true;
         busy = true;
     }
-    
+
     long item = -1;
     for ( ;; )
     {
         item = m_pTrkListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
         if ( item == -1 )
             break;
-        
+
         Route *ptrack_to_delete = pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
-        
-        if( ptrack_to_delete ) 
+
+        if( ptrack_to_delete )
             list.Append( ptrack_to_delete );
     }
-    
+
     if( busy ) {
         for(unsigned int i=0 ; i < list.GetCount() ; i++) {
             Track *track = (Track *)(list.Item(i)->GetData());
@@ -1687,11 +1690,11 @@ void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
                 g_pRouteMan->DeleteTrack( track );
             }
         }
-        
+
         m_lastTrkItem = -1;
         UpdateRouteListCtrl();
         UpdateTrkListCtrl();
-        
+
         cc1->undo->InvalidateUndo();
         cc1->Refresh();
         ::wxEndBusyCursor();
@@ -1755,7 +1758,7 @@ void RouteManagerDialog::OnTrkDeleteAllClick( wxCommandEvent &event )
 
     m_lastTrkItem = -1;
     m_lastRteItem = -1;
-    
+
     UpdateTrkListCtrl();
 
     //    Also need to update the route list control, since routes and tracks share a common global list (pRouteList)
@@ -1880,7 +1883,7 @@ void RouteManagerDialog::UpdateWptButtons()
         m_lastWptItem = -1;
 
     //  Check selection to see if it is in a layer
-    //  If so, disable the "delete" button    
+    //  If so, disable the "delete" button
     bool b_delete_enable = true;
     item = -1;
     for ( ;; )
@@ -1888,15 +1891,15 @@ void RouteManagerDialog::UpdateWptButtons()
         item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
         if ( item == -1 )
             break;
-        
+
         RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( item );
-        
+
         if( wp && wp->m_bIsInLayer) {
             b_delete_enable = false;
             break;
         }
     }
-    
+
 
     btnWptProperties->Enable( enable1 );
     btnWptZoomto->Enable( enable1 );
@@ -2006,14 +2009,14 @@ void RouteManagerDialog::OnWptZoomtoClick( wxCommandEvent &event )
 void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
 {
     RoutePointList list;
-    
+
     bool busy = false;
     if( m_pWptListCtrl->GetSelectedItemCount() ) {
         ::wxBeginBusyCursor();
         m_bNeedConfigFlush = true;
         busy = true;
     }
-    
+
     long item = -1;
     long item_last_selected = -1;
     for ( ;; )
@@ -2021,19 +2024,19 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
         item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
         if ( item == -1 )
             break;
-        
+
         item_last_selected = item;
         RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( item );
-        
-        if( wp && !wp->m_bIsInLayer) 
+
+        if( wp && !wp->m_bIsInLayer)
             list.Append( wp );
     }
-    
+
     if( busy ) {
         for(unsigned int i=0 ; i < list.GetCount() ; i++) {
             RoutePoint *wp = list.Item(i)->GetData();
             if( wp ) {
-                
+
                 if ( wp->m_bIsInRoute || wp->m_bIsInTrack )
                 {
                     if ( wxYES == wxMessageBox( _( "The waypoint you want to delete is used in a route, do you really want to delete it?" ), _( "OpenCPN Alert" ), wxYES_NO ))
@@ -2041,7 +2044,7 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
                 }
                 else
                     pWayPointMan->DestroyWaypoint( wp );
-                
+
             }
         }
 
@@ -2049,9 +2052,9 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
         RoutePoint *wp_next = NULL;
         if( item_next > -1 )
             wp_next = (RoutePoint *) m_pWptListCtrl->GetItemData( item_next );
-        
+
         m_lastWptItem = item_next;
-        
+
         UpdateRouteListCtrl();
         UpdateTrkListCtrl();
         UpdateWptListCtrl( wp_next, true );
@@ -2060,12 +2063,12 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
             pMarkPropDialog->SetRoutePoint( NULL );
             pMarkPropDialog->UpdateProperties();
         }
-        
+
         cc1->undo->InvalidateUndo();
         cc1->Refresh();
         ::wxEndBusyCursor();
     }
-    
+
 }
 
 void RouteManagerDialog::OnWptGoToClick( wxCommandEvent &event )
