@@ -327,6 +327,18 @@ SET(HDRS
 		include/chartdbs.h
 		include/chartimg.h
 		include/chcanv.h
+		include/timers.h
+		include/AISTargetQueryDialog.h
+		include/CM93DSlide.h
+		include/GoToPositionDialog.h
+		include/RolloverWin.h
+		include/S57QueryDialog.h
+		include/TCWin.h
+		include/glTextureDescriptor.h
+		include/tide_time.h
+		include/glChartCanvas.h
+		include/ChInfoWin.h
+		include/ocpCursor.h
 		include/concanv.h
 		include/cutil.h
 		include/georef.h
@@ -370,6 +382,16 @@ SET(SRCS
 		src/chartdbs.cpp
 		src/chartimg.cpp
 		src/chcanv.cpp
+		src/ocpCursor.cpp
+		src/TCWin.cpp
+		src/S57QueryDialog.cpp
+		src/GoToPositionDialog.cpp
+		src/CM93DSlide.cpp
+		src/RolloverWin.cpp
+		src/glChartCanvas.cpp
+		src/glTextureDescriptor.cpp
+		src/ChInfoWin.cpp
+		src/AISTargetQueryDialog.cpp
 		src/concanv.cpp
 		src/cutil.cpp
 		src/georef.cpp
