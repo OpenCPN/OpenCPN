@@ -162,7 +162,7 @@ public:
       bool GetGRIBUseHiDef() { return  m_pGRIBUseHiDef->GetValue();}
       bool GetCopyFirstCumRec() { return  m_pCopyFirstCumRec->GetValue();}
       bool GetCopyMissWaveRec() { return  m_pCopyMissWaveRec->GetValue();}
-      int  GetSpeedUnit() { return  m_pPressUnit->GetSelection();}
+      int  GetSpeedUnit() { return  m_pSpeedUnit->GetSelection();}
       int  GetPressUnit() { return  m_pPressUnit->GetSelection();}
       int  GetTimeZone() { return  m_pTimeZone->GetSelection();}
 
