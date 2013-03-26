@@ -339,6 +339,7 @@ SET(HDRS
 		include/glChartCanvas.h
 		include/ChInfoWin.h
 		include/ocpCursor.h
+		include/Quilt.h
 		include/concanv.h
 		include/cutil.h
 		include/georef.h
@@ -392,6 +393,7 @@ SET(SRCS
 		src/glTextureDescriptor.cpp
 		src/ChInfoWin.cpp
 		src/AISTargetQueryDialog.cpp
+		src/Quilt.cpp
 		src/concanv.cpp
 		src/cutil.cpp
 		src/georef.cpp
