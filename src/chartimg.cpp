@@ -4098,18 +4098,37 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
       if((bUseLineCache && !pt->bValid) || (!bUseLineCache))
       {
           if(pline_table[y] == 0)
+          {
+              free (xtemp_line);
               return 0;
+          }
 
           if(pline_table[y+1] == 0)
+          {
+              free (xtemp_line);
               return 0;
+          }
 
             int thisline_size = pline_table[y+1] - pline_table[y] ;
 
             if(thisline_size > ifs_bufsize)
+            {
+                unsigned char * tmp = ifs_buf;
                 ifs_buf = (unsigned char *)realloc(ifs_buf, thisline_size);
+                if (NULL == ifs_buf)
+                {
+                    free(tmp);
+                    tmp = NULL;
+                    free (xtemp_line);
+                    return 0;
+                }
+            }
 
             if( wxInvalidOffset == ifs_bitmap->SeekI(pline_table[y], wxFromStart))
-                  return 0;
+            {
+                free (xtemp_line);
+                return 0;
+            }
 
             ifs_bitmap->Read(ifs_buf, thisline_size);
             lp = ifs_buf;

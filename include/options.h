@@ -446,9 +446,9 @@ public:
 
 //    For Fonts page
     wxBoxSizer              *m_itemBoxSizerFontPanel;
-    wxComboBox              *m_itemFontElementListBox;
-    wxComboBox              *m_itemStyleListBox;
-    wxComboBox              *m_itemLangListBox;
+    wxChoice                *m_itemFontElementListBox;
+    wxChoice                *m_itemStyleListBox;
+    wxChoice                *m_itemLangListBox;
     bool                    m_bVisitLang;
 
 //    For "AIS Options"

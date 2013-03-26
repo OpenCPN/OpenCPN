@@ -40,7 +40,7 @@
 
 //------------------------
 struct DATUM {
-        char *name;
+        const char *name;
         short ellipsoid;
         double dx;
         double dy;
@@ -48,7 +48,7 @@ struct DATUM {
 };
 
 struct ELLIPSOID {
-        char *name;             // name of ellipsoid
+        const char *name;             // name of ellipsoid
         double a;               // semi-major axis, meters
         double invf;            // 1/f
 };
@@ -210,8 +210,8 @@ void lm_lmdif( int m, int n, double* x, double* fvec, double ftol, double xtol,
 
 
 #ifndef _LMDIF
-extern char *lm_infmsg[];
-extern char *lm_shortmsg[];
+extern const char *lm_infmsg[];
+extern const char *lm_shortmsg[];
 #endif
 
 //      This is an opaque (to lmfit) structure set up before the call to lmfit()

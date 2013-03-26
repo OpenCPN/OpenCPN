@@ -2690,7 +2690,13 @@ Extended_Geometry *cm93chart::BuildGeom ( Object *pobject, wxFileOutputStream *p
                               if ( ncontours > m_ncontour_alloc - 1 )
                               {
                                     m_ncontour_alloc *= 2;
+                                    int * tmp = m_pcontour_array;
                                     m_pcontour_array = ( int * ) realloc ( m_pcontour_array, m_ncontour_alloc * sizeof ( int ) );
+                                    if (NULL == tmp)
+                                    {
+                                        free (tmp);
+                                        tmp = NULL;
+                                    }
                               }
                               m_pcontour_array[ncontours] = nRingVertex;               // store the vertex count
 
@@ -4417,8 +4423,15 @@ wxPoint *cm93chart::GetDrawBuffer ( int nSize )
 //    Reallocate the cm93chart DrawBuffer if it is currently too small
       if ( nSize > m_nDrawBufferSize )
       {
+            wxPoint * tmp = m_pDrawBuffer;
             m_pDrawBuffer = ( wxPoint * ) realloc ( m_pDrawBuffer, sizeof ( wxPoint ) * ( nSize + 1 ) );
-            m_nDrawBufferSize = nSize + 1;
+            if (NULL == m_pDrawBuffer)
+            {
+                free (tmp);
+                tmp = NULL;
+            }
+            else
+                m_nDrawBufferSize = nSize + 1;
       }
       return m_pDrawBuffer;
 }

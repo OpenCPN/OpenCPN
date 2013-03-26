@@ -1192,6 +1192,7 @@ AIS_Decoder::~AIS_Decoder( void )
     }
 
     delete current_targets;
+    delete AIS_AreaNotice_Sources;
 
 #ifdef AIS_DEBUG
     printf("First message[1, 2] ticks: %d  Last Message [1,2]ticks %d  Difference:  %d\n", first_rx_ticks, rx_ticks, rx_ticks - first_rx_ticks);
