@@ -51,6 +51,7 @@
 #include "glChartCanvas.h"
 #include "TCWin.h"
 #include "timers.h"
+#include "emboss_data.h"
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
@@ -119,20 +120,6 @@ typedef enum ownship_state_t
 enum {
       ID_S57QUERYTREECTRL =            10000,
       ID_AISDIALOGOK
-};
-
-class emboss_data
-{
-      public:
-            emboss_data(){ pmap = NULL; gltexind = 0; }
-            ~emboss_data(){ free(pmap); }
-
-            int         *pmap;
-            int         width;
-            int         height;
-
-            GLuint      gltexind;
-      private:
 };
 
 //----------------------------------------------------------------------------

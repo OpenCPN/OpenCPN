@@ -10,6 +10,7 @@
 #include "timers.h"
 #include "chart1.h"
 #include "navutil.h"
+#include "FontMgr.h"
 
 extern FontMgr* pFontMgr;
 

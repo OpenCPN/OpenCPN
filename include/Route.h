@@ -1,0 +1,110 @@
+#ifndef __ROUTE_H__
+#define __ROUTE_H__
+
+#include <wx/object.h>
+#include <wx/list.h>
+
+#include "RoutePoint.h"
+#include "ocpn_types.h"
+
+#define STYLE_UNDEFINED -1
+
+class ocpnDC;
+
+class Route : public wxObject
+{
+public:
+      Route(void);
+      ~Route(void);
+
+      void AddPoint(RoutePoint *pNewPoint,
+                    bool b_rename_in_sequence = true,
+                    bool b_deferBoxCalc = false);
+
+      void AddTentativePoint(const wxString& GUID);
+      RoutePoint *GetPoint(int nPoint);
+      RoutePoint *GetPoint ( const wxString &guid );
+      int GetIndexOf(RoutePoint *prp);
+      RoutePoint *InsertPointBefore(RoutePoint *pRP, double rlat, double rlon, bool bRenamePoints = false);
+      void DrawPointWhich(ocpnDC& dc, int iPoint, wxPoint *rpn);
+      void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow);
+      virtual void Draw(ocpnDC& dc, ViewPort &pVP);
+      RoutePoint *GetLastPoint();
+      void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
+      void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
+      void DeSelectRoute();
+      void CalculateBBox();
+      void UpdateSegmentDistances(double planspeed = -1.0);
+      void CalculateDCRect(wxDC& dc_route, wxRect *prect, ViewPort &VP);
+      int GetnPoints(void){ return m_nPoints; }
+      void SetnPoints(void){ m_nPoints = pRoutePointList->GetCount(); }
+      void Reverse(bool bRenamePoints = false);
+      void RebuildGUIDList(void);
+      void RenameRoutePoints();
+      void ReloadRoutePointIcons();
+      wxString GetNewMarkSequenced(void);
+      void AssembleRoute();
+      bool IsEqualTo(Route *ptargetroute);
+      void CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix);
+      void CloneTrack(Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix);
+      void CloneAddedTrackPoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
+      void CloneAddedRoutePoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
+      void ClearHighlights(void);
+      void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
+
+      bool CrossesIDL(){ return m_bcrosses_idl; }
+      void SetVisible(bool visible = true, bool includeWpts = true);
+      void SetListed(bool visible = true);
+      bool IsVisible() { return m_bVisible; }
+      bool IsListed() { return m_bListed; }
+      bool IsActive() { return m_bRtIsActive; }
+      bool IsSelected() { return m_bRtIsSelected; }
+      bool IsTrack(){ return m_bIsTrack; }
+
+      bool SendToGPS(wxString& com_name, bool bsend_waypoints, wxGauge *pProgress);
+
+      double GetRouteArrivalRadius(void){ return m_ArrivalRadius;}
+      void SetRouteArrivalRadius(double radius){m_ArrivalRadius = radius;}
+
+      int         m_ConfigRouteNum;
+      bool        m_bRtIsSelected;
+      bool        m_bRtIsActive;
+      RoutePoint  *m_pRouteActivePoint;
+      bool        m_bIsBeingCreated;
+      bool        m_bIsBeingEdited;
+      double      m_route_length;
+      double      m_route_time;
+      wxString    m_RouteNameString;
+      wxString    m_RouteStartString;
+      wxString    m_RouteEndString;
+      bool        m_bIsTrack;             //TODO should use class type instead
+      RoutePoint  *m_pLastAddedPoint;
+      bool        m_bDeleteOnArrival;
+      wxString    m_GUID;
+      bool        m_bIsInLayer;
+      int         m_LayerID;
+      int         m_width;
+      int         m_style;
+      int         m_lastMousePointIndex;
+      bool        m_NextLegGreatCircle;
+
+      wxArrayString      RoutePointGUIDList;
+      RoutePointList     *pRoutePointList;
+
+      wxBoundingBox     RBBox;
+      wxRect      active_pt_rect;
+      wxString    m_Colour;
+
+private:
+      bool        CalculateCrossesIDL();
+      int         m_nPoints;
+      int         m_nm_sequence;
+      bool        m_bVisible; // should this route be drawn?
+      bool        m_bListed;
+      double      m_ArrivalRadius;
+      bool        m_bcrosses_idl;
+};
+
+WX_DECLARE_LIST(Route, RouteList); // establish class Route as list member
+
+#endif

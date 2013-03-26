@@ -32,7 +32,8 @@
 
 #include "chart1.h"                 // for ColorScheme definition
 #include <wx/imaglist.h>
-
+#include "styles.h"
+#include "Select.h"
 #include "nmea0183.h"
 
 //----------------------------------------------------------------------------

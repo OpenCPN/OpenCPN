@@ -45,6 +45,7 @@
 #include "multiplexer.h"
 #include "statwin.h"
 #include "routeman.h"
+#include "FontMgr.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;

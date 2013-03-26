@@ -84,6 +84,8 @@
 #include "datastream.h"
 #include "multiplexer.h"
 #include "routeprintout.h"
+#include "Select.h"
+#include "FontMgr.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"

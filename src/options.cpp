@@ -50,6 +50,7 @@
 #include "styles.h"
 #include "datastream.h"
 #include "multiplexer.h"
+#include "FontMgr.h"
 
 #include "navutil.h"
 

@@ -40,6 +40,7 @@
 #include "toolbar.h"
 #include "chart1.h"
 #include "pluginmanager.h"
+#include "FontMgr.h"
 
 extern FontMgr*                   pFontMgr;
 extern ocpnFloatingToolbarDialog* g_FloatingToolbarDialog;

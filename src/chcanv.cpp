@@ -70,6 +70,9 @@
 #include "glTextureDescriptor.h"
 #include "ChInfoWin.h"
 #include "Quilt.h"
+#include "SelectItem.h"
+#include "Select.h"
+#include "FontMgr.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw

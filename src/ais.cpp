@@ -36,7 +36,7 @@
 #include <time.h>
 
 #include "dychart.h"
-
+#include "FontMgr.h"
 #include "ais.h"
 #include "chart1.h"
 #include "navutil.h"        // for Select
@@ -44,6 +44,7 @@
 #include "pluginmanager.h"  // for PlugInManager
 #include "styles.h"
 #include "datastream.h"
+#include "Select.h"
 
 extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;

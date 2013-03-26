@@ -328,6 +328,7 @@ SET(HDRS
 		include/chartimg.h
 		include/chcanv.h
 		include/timers.h
+		include/emboss_data.h
 		include/AISTargetQueryDialog.h
 		include/CM93DSlide.h
 		include/GoToPositionDialog.h
@@ -340,6 +341,14 @@ SET(HDRS
 		include/ChInfoWin.h
 		include/ocpCursor.h
 		include/Quilt.h
+		include/Hyperlink.h
+		include/RoutePoint.h
+		include/Route.h
+		include/SelectItem.h
+		include/Select.h
+		include/FontMgr.h
+		include/FontDesc.h
+		include/vector2D.h
 		include/concanv.h
 		include/cutil.h
 		include/georef.h
@@ -394,6 +403,12 @@ SET(SRCS
 		src/ChInfoWin.cpp
 		src/AISTargetQueryDialog.cpp
 		src/Quilt.cpp
+		src/RoutePoint.cpp
+		src/Route.cpp
+		src/SelectItem.cpp
+		src/Select.cpp
+		src/FontMgr.cpp
+		src/FontDesc.cpp
 		src/concanv.cpp
 		src/cutil.cpp
 		src/georef.cpp

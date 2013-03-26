@@ -7,6 +7,7 @@
 #include "chcanv.h"
 #include "navutil.h"
 #include "ais.h"
+#include "FontMgr.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;
