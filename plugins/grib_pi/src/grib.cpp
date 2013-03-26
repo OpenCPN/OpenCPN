@@ -797,7 +797,7 @@ void GRIBUIDialog::OnButtonOpenFileClick( wxCommandEvent& event )
     m_pGribForecastTimer.Stop();
        
     wxFileDialog *dialog = new wxFileDialog(this, _("Select a GRIB file"), pPlugIn->GetGribDirectory(), 
-        _T(""), wxT ( "Grib files (*.grb;*.grb.bz2| *.grb;*.grb.bz2"), wxFD_OPEN, wxDefaultPosition,
+        _T(""), wxT ( "Grib files (*.grb;*.grb.bz2|*.grb;*.grb.bz2"), wxFD_OPEN, wxDefaultPosition,
         wxDefaultSize, _T("File Dialog") ); 
 
     if( dialog->ShowModal() == wxID_OK ) {
