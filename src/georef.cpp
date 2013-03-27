@@ -1032,7 +1032,7 @@ void DistanceBearingMercator(double lat0, double lon0, double lat1, double lon1,
           if (brgt < 0)
               *brg = brgt + 360.;
           else if (brgt > 360.)
-              *brg = brgt - 360;
+              *brg = brgt - 360.;
           else
               *brg = brgt;
       }
