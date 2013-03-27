@@ -89,6 +89,9 @@
 #include "TTYWindow.h"
 #include "Layer.h"
 #include "NavObjectCollection.h"
+#include "AISTargetListDialog.h"
+#include "AISTargetAlertDialog.h"
+#include "AIS_Decoder.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"

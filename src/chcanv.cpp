@@ -73,6 +73,9 @@
 #include "SelectItem.h"
 #include "Select.h"
 #include "FontMgr.h"
+#include "AIS_Decoder.h"
+#include "AIS_Target_Data.h"
+#include "AISTargetAlertDialog.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw

@@ -1,6 +1,5 @@
 /******************************************************************************
  *
- *
  * Project:  OpenCPN
  * Purpose:  PlugIn Manager Object
  * Author:   David Register
@@ -23,8 +22,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
- *
  */
+
 #include <wx/wx.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -46,6 +45,8 @@
 #include "statwin.h"
 #include "routeman.h"
 #include "FontMgr.h"
+#include "AIS_Decoder.h"
+#include "AIS_Target_Data.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;

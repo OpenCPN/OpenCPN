@@ -330,6 +330,12 @@ SET(HDRS
 		include/timers.h
 		include/emboss_data.h
 		include/AISTargetQueryDialog.h
+		include/AIS_Bitstring.h
+		include/AISTargetListDialog.h
+		include/OCPNListCtrl.h
+		include/AISTargetAlertDialog.h
+		include/AIS_Decoder.h
+		include/AIS_Target_Data.h
 		include/CM93DSlide.h
 		include/GoToPositionDialog.h
 		include/RolloverWin.h
@@ -408,6 +414,12 @@ SET(SRCS
 		src/glTextureDescriptor.cpp
 		src/ChInfoWin.cpp
 		src/AISTargetQueryDialog.cpp
+		src/AIS_Bitstring.cpp
+		src/AISTargetListDialog.cpp
+		src/AISTargetAlertDialog.cpp
+		src/AIS_Decoder.cpp
+		src/AIS_Target_Data.cpp
+		src/OCPNListCtrl.cpp
 		src/Quilt.cpp
 		src/Hyperlink.cpp
 		src/NavObjectCollection.cpp

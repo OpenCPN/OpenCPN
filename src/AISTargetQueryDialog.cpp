@@ -31,6 +31,8 @@
 #include "navutil.h"
 #include "ais.h"
 #include "FontMgr.h"
+#include "AIS_Target_Data.h"
+#include "AIS_Decoder.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;
