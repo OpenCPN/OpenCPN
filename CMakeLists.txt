@@ -340,6 +340,10 @@ SET(HDRS
 		include/GoToPositionDialog.h
 		include/RolloverWin.h
 		include/S57QueryDialog.h
+		include/S57ObjectDesc.h
+		include/S57Light.h
+		include/s57RegistrarMgr.h
+		include/S57ClassRegistrar.h
 		include/TCWin.h
 		include/glTextureDescriptor.h
 		include/tide_time.h
@@ -407,6 +411,7 @@ SET(SRCS
 		src/ocpCursor.cpp
 		src/TCWin.cpp
 		src/S57QueryDialog.cpp
+		src/s57RegistrarMgr.cpp
 		src/GoToPositionDialog.cpp
 		src/CM93DSlide.cpp
 		src/RolloverWin.cpp

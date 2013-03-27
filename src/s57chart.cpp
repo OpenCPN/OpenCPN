@@ -6592,48 +6592,6 @@ const char *MyCSVGetField( const char * pszFilename, const char * pszKeyFieldNam
 }
 
 //------------------------------------------------------------------------
-//  s57RegistrarMgr Implementation
-//  This is a class holding the ctor and dtor for the global registrar
-//------------------------------------------------------------------------
-
-s57RegistrarMgr::s57RegistrarMgr( const wxString& csv_dir, FILE *flog )
-{
-    s57_initialize( csv_dir, flog );
-}
-
-s57RegistrarMgr::~s57RegistrarMgr()
-{
-    delete g_poRegistrar;
-    g_poRegistrar = NULL;
-}
-
-//------------------------------------------------------------------------
-//  Initialize GDAL/OGR S57ENC support
-//------------------------------------------------------------------------
-
-int s57_initialize( const wxString& csv_dir, FILE *flog )
-{
-
-    //      Get one instance of the s57classregistrar,
-    //      And be prepared to give it to any module that needs it
-
-    if( g_poRegistrar == NULL ) {
-        g_poRegistrar = new S57ClassRegistrar();
-
-        if( !g_poRegistrar->LoadInfo( csv_dir.mb_str(), FALSE ) ) {
-            wxString msg( _T("   Error: Could not load S57 ClassInfo from ") );
-            msg.Append( csv_dir );
-            wxLogMessage( msg );
-
-            delete g_poRegistrar;
-            g_poRegistrar = NULL;
-        }
-    }
-
-    return 0;
-}
-
-//------------------------------------------------------------------------
 //
 //          Some s57 Utilities
 //          Meant to be called "bare", usually with no class instance.
