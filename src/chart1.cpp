@@ -87,6 +87,8 @@
 #include "Select.h"
 #include "FontMgr.h"
 #include "TTYWindow.h"
+#include "Layer.h"
+#include "NavObjectCollection.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"

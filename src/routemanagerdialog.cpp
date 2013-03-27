@@ -41,6 +41,7 @@
 #include "routeman.h"
 #include "georef.h"
 #include "chartbase.h"
+#include "Layer.h"
 
 #define DIALOG_MARGIN 3
 

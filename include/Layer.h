@@ -3,7 +3,7 @@
  * Project:  OpenCPN
  *
  ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,26 +22,38 @@
  ***************************************************************************
  */
 
-#include "SelectItem.h"
+#ifndef __LAYER_H__
+#define __LAYER_H__
 
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST ( SelectableItemList );
+#include <wx/string.h>
+#include <wx/list.h>
+#include <wx/datetime.h>
 
-SelectItem::SelectItem()
+class Layer
 {
-}
+public:
+      Layer(void);
+      ~Layer(void);
+      wxString CreatePropString(void) { return m_LayerFileName; }
+      bool IsVisibleOnChart() { return m_bIsVisibleOnChart; }
+      void SetVisibleOnChart(bool viz = true){ m_bIsVisibleOnChart = viz; }
+      bool IsVisibleOnListing() { return m_bIsVisibleOnListing; }
+      void SetVisibleOnListing(bool viz = true){ m_bIsVisibleOnListing = viz; }
+      bool HasVisibleNames() { return m_bHasVisibleNames; }
+      void SetVisibleNames(bool viz = true){ m_bHasVisibleNames = viz; }
 
-SelectItem::~SelectItem()
-{
-}
+      bool m_bIsVisibleOnChart;
+      bool m_bIsVisibleOnListing;
+      bool m_bHasVisibleNames;
+      long m_NoOfItems;
+      int m_LayerID;
 
-int SelectItem::GetUserData(void)
-{
-    return m_Data4;
-}
+      wxString          m_LayerName;
+      wxString          m_LayerFileName;
+      wxString          m_LayerDescription;
+      wxDateTime        m_CreateTime;
+};
 
-void SelectItem::SetUserData(int data)
-{
-    m_Data4 = data;
-}
+WX_DECLARE_LIST(Layer, LayerList);// establish class as list member
 
+#endif

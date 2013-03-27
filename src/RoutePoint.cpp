@@ -44,6 +44,9 @@ extern Multiplexer *g_pMUX;
 extern MyFrame *gFrame;
 extern FontMgr *pFontMgr;
 
+#include <wx/listimpl.cpp>
+WX_DEFINE_LIST ( RoutePointList );
+
 RoutePoint::RoutePoint()
 {
     m_pbmIcon = NULL;

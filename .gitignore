@@ -3,3 +3,4 @@ tags
 index.sh
 include/version.h
 build
+cscope.out

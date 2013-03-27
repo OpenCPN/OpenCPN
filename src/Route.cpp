@@ -42,6 +42,9 @@ extern Select *pSelect;
 extern MyConfig *pConfig;
 extern Multiplexer *g_pMUX;
 
+#include <wx/listimpl.cpp>
+WX_DEFINE_LIST ( RouteList );
+
 Route::Route( void )
 {
     m_bRtIsSelected = false;

@@ -69,8 +69,6 @@ class NavObjectCollection;
 class wxProgressDialog;
 class ocpnDC;
 
-#define TIMER_TRACK1           778
-
 //----------------------------------------------------------------------------
 //    Track
 //----------------------------------------------------------------------------
@@ -131,38 +129,6 @@ class Track : public wxEvtHandler, public Route
 
 DECLARE_EVENT_TABLE()
 };
-
-//----------------------------------------------------------------------------
-//    Layer
-//----------------------------------------------------------------------------
-
-class Layer
-{
-public:
-      Layer(void);
-      ~Layer(void);
-      wxString CreatePropString(void) { return m_LayerFileName; }
-      bool IsVisibleOnChart() { return m_bIsVisibleOnChart; }
-      void SetVisibleOnChart(bool viz = true){ m_bIsVisibleOnChart = viz; }
-      bool IsVisibleOnListing() { return m_bIsVisibleOnListing; }
-      void SetVisibleOnListing(bool viz = true){ m_bIsVisibleOnListing = viz; }
-      bool HasVisibleNames() { return m_bHasVisibleNames; }
-      void SetVisibleNames(bool viz = true){ m_bHasVisibleNames = viz; }
-
-      bool m_bIsVisibleOnChart;
-      bool m_bIsVisibleOnListing;
-      bool m_bHasVisibleNames;
-      long m_NoOfItems;
-      int m_LayerID;
-
-      wxString          m_LayerName;
-      wxString          m_LayerFileName;
-      wxString          m_LayerDescription;
-      wxDateTime        m_CreateTime;
-
-};
-
-WX_DECLARE_LIST(Layer, LayerList);// establish class as list member
 
 //----------------------------------------------------------------------------
 //    Static XML Helpers
@@ -247,28 +213,6 @@ public:
 
 };
 
-
-
-//---------------------------------------------------------------------------------
-//          XML Based NavObjectSet
-//---------------------------------------------------------------------------------
-
-class NavObjectCollection : public GpxDocument
-{
-      public:
-            NavObjectCollection();
-            ~NavObjectCollection();
-
-            bool CreateNavObjGPXPoints(void);
-            bool CreateNavObjGPXRoutes(void);
-            bool CreateNavObjGPXTracks(void);
-
-            bool LoadAllGPXObjects(void);
-
-      private:
-            GpxRootElement   *m_pXMLrootnode;
-            TiXmlNode   *m_proot_next;
-};
 
 /*
 #include <wx/fontdlg.h>

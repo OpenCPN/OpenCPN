@@ -3,7 +3,7 @@
  * Project:  OpenCPN
  *
  ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,26 +22,28 @@
  ***************************************************************************
  */
 
-#include "SelectItem.h"
+#ifndef __NAVOBJECTCOLLECTION_H__
+#define __NAVOBJECTCOLLECTION_H__
 
-#include <wx/listimpl.cpp>
-WX_DEFINE_LIST ( SelectableItemList );
+#include "gpxdocument.h"
 
-SelectItem::SelectItem()
+class TiXmlNode;
+
+class NavObjectCollection : public GpxDocument
 {
-}
+      public:
+            NavObjectCollection();
+            ~NavObjectCollection();
 
-SelectItem::~SelectItem()
-{
-}
+            bool CreateNavObjGPXPoints(void);
+            bool CreateNavObjGPXRoutes(void);
+            bool CreateNavObjGPXTracks(void);
 
-int SelectItem::GetUserData(void)
-{
-    return m_Data4;
-}
+            bool LoadAllGPXObjects(void);
 
-void SelectItem::SetUserData(int data)
-{
-    m_Data4 = data;
-}
+      private:
+            GpxRootElement   *m_pXMLrootnode;
+            TiXmlNode   *m_proot_next;
+};
 
+#endif

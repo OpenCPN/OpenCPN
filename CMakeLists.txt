@@ -342,6 +342,7 @@ SET(HDRS
 		include/ocpCursor.h
 		include/Quilt.h
 		include/Hyperlink.h
+		include/NavObjectCollection.h
 		include/RoutePoint.h
 		include/Route.h
 		include/SelectItem.h
@@ -353,6 +354,7 @@ SET(HDRS
 		include/OCPN_Sound.h
 		include/TTYWindow.h
 		include/TTYScroll.h
+		include/Layer.h
 		include/concanv.h
 		include/cutil.h
 		include/georef.h
@@ -407,6 +409,8 @@ SET(SRCS
 		src/ChInfoWin.cpp
 		src/AISTargetQueryDialog.cpp
 		src/Quilt.cpp
+		src/Hyperlink.cpp
+		src/NavObjectCollection.cpp
 		src/RoutePoint.cpp
 		src/Route.cpp
 		src/SelectItem.cpp
@@ -417,6 +421,7 @@ SET(SRCS
 		src/OCPN_Sound.cpp
 		src/TTYWindow.cpp
 		src/TTYScroll.cpp
+		src/Layer.cpp
 		src/concanv.cpp
 		src/cutil.cpp
 		src/georef.cpp

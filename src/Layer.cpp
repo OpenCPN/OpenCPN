@@ -3,7 +3,7 @@
  * Project:  OpenCPN
  *
  ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,26 +22,32 @@
  ***************************************************************************
  */
 
-#include "SelectItem.h"
+#include "Layer.h"
 
 #include <wx/listimpl.cpp>
-WX_DEFINE_LIST ( SelectableItemList );
+WX_DEFINE_LIST(LayerList);
 
-SelectItem::SelectItem()
+extern bool g_bShowLayers;
+extern LayerList *pLayerList;
+
+Layer::Layer( void )
 {
+    m_bIsVisibleOnChart = g_bShowLayers;
+    m_bIsVisibleOnListing = false;
+    m_bHasVisibleNames = true;
+    m_NoOfItems = 0;
+
+    m_LayerName = _T("");
+    m_LayerFileName = _T("");
+    m_LayerDescription = _T("");
+    m_CreateTime = wxDateTime::Now();
 }
 
-SelectItem::~SelectItem()
+Layer::~Layer( void )
 {
+//  Remove this layer from the global layer list
+    if( NULL != pLayerList ) pLayerList->DeleteObject( this );
+
 }
 
-int SelectItem::GetUserData(void)
-{
-    return m_Data4;
-}
-
-void SelectItem::SetUserData(int data)
-{
-    m_Data4 = data;
-}
 

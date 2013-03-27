@@ -72,6 +72,8 @@
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
 #include "TTYWindow.h"
+#include "Layer.h"
+#include "NavObjectCollection.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -316,18 +318,12 @@ extern wxString         g_TCData_Dir;
 extern Multiplexer      *g_pMUX;
 extern bool             portaudio_initialized;
 
-//------------------------------------------------------------------------------
-// Some wxWidgets macros for useful classes
-//------------------------------------------------------------------------------
-WX_DEFINE_LIST ( RouteList );
-WX_DEFINE_LIST ( SelectableItemList );
-WX_DEFINE_LIST ( RoutePointList );
-WX_DEFINE_LIST ( HyperlinkList );         // toh, 2009.02.22
-WX_DEFINE_LIST ( LayerList );
-
 //---------------------------------------------------------------------------------
 //    Track Implementation
 //---------------------------------------------------------------------------------
+
+#define TIMER_TRACK1           778
+
 BEGIN_EVENT_TABLE ( Track, wxEvtHandler )
     EVT_TIMER ( TIMER_TRACK1, Track::OnTimerTrack )
 END_EVENT_TABLE()
@@ -973,30 +969,6 @@ double Track::GetXTE( RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to )
     if( fm2 == to ) return 0.0;
     return GetXTE( fm1->m_lat, fm1->m_lon, fm2->m_lat, fm2->m_lon, to->m_lat, to->m_lon );
 ;
-}
-
-//-----------------------------------------------------------------------------
-//          Layer Implementation
-//-----------------------------------------------------------------------------
-
-Layer::Layer( void )
-{
-    m_bIsVisibleOnChart = g_bShowLayers;
-    m_bIsVisibleOnListing = false;
-    m_bHasVisibleNames = true;
-    m_NoOfItems = 0;
-
-    m_LayerName = _T("");
-    m_LayerFileName = _T("");
-    m_LayerDescription = _T("");
-    m_CreateTime = wxDateTime::Now();
-}
-
-Layer::~Layer( void )
-{
-//  Remove this layer from the global layer list
-    if( NULL != pLayerList ) pLayerList->DeleteObject( this );
-
 }
 
 // Layer helper function
@@ -4614,119 +4586,6 @@ void GPXLoadRoute( GpxRteElement* rtenode, int routenum, bool b_fullviz )
             delete pTentRoute;
         }
     }
-}
-
-//---------------------------------------------------------------------------------
-//    XML Support for Navigation Objects
-//---------------------------------------------------------------------------------
-
-NavObjectCollection::NavObjectCollection() :
-        GpxDocument()
-{
-    m_pXMLrootnode = (GpxRootElement *) RootElement();
-}
-
-NavObjectCollection::~NavObjectCollection()
-{
-//     delete m_pXMLrootnode;            // done in base class
-}
-
-bool NavObjectCollection::CreateNavObjGPXPoints( void )
-{
-
-    //    Iterate over the Routepoint list, creating Nodes for
-    //    Routepoints that are not in any Route
-    //    as indicated by m_bIsolatedMark == false
-
-    wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
-
-    RoutePoint *pr;
-
-    while( node ) {
-        pr = node->GetData();
-
-        if( ( pr->m_bIsolatedMark ) && !( pr->m_bIsInLayer ) )      //( !WptIsInRouteList ( pr ) )
-                {
-            m_pXMLrootnode->AddWaypoint( CreateGPXWpt( pr, GPX_WPT_WAYPOINT ) );
-        }
-        node = node->GetNext();
-    }
-
-    return true;
-}
-
-bool NavObjectCollection::CreateNavObjGPXRoutes( void )
-{
-    // Routes
-    wxRouteListNode *node1 = pRouteList->GetFirst();
-    while( node1 ) {
-        Route *pRoute = node1->GetData();
-
-        if( !pRoute->m_bIsTrack && !( pRoute->m_bIsInLayer ) )                         // Not tracks
-                {
-            m_pXMLrootnode->AddRoute( CreateGPXRte( pRoute ) );
-        }
-        node1 = node1->GetNext();
-    }
-
-    return true;
-}
-
-bool NavObjectCollection::CreateNavObjGPXTracks( void )
-{
-    // Tracks
-    wxRouteListNode *node1 = pRouteList->GetFirst();
-    while( node1 ) {
-        Route *pRoute = node1->GetData();
-        RoutePointList *pRoutePointList = pRoute->pRoutePointList;             //->GetCount(); do if
-
-        if( pRoutePointList->GetCount() ) {
-            if( pRoute->m_bIsTrack && !( pRoute->m_bIsInLayer ) )                     // Tracks only
-                    {
-                //Redundant - RoutePointList *pRoutePointList = pRoute->pRoutePointList;
-                m_pXMLrootnode->AddTrack( CreateGPXTrk( pRoute ) );
-            }
-        }
-        node1 = node1->GetNext();
-    }
-
-    return true;
-}
-
-bool NavObjectCollection::LoadAllGPXObjects()
-{
-    //FIXME: unite with MyConfig::ImportGPX
-    TiXmlNode *root = RootElement();
-
-    wxString RootName = wxString::FromUTF8( root->Value() );
-    if( RootName == _T ( "gpx" ) ) {
-        TiXmlNode *child;
-        for( child = root->FirstChild(); child != 0; child = child->NextSibling() ) {
-            wxString ChildName = wxString::FromUTF8( child->Value() );
-            if( ChildName == _T ( "trk" ) ) ::GPXLoadTrack( (GpxTrkElement *) child );
-            else
-                if( ChildName == _T ( "rte" ) ) {
-                    int m_NextRouteNum = 0; //FIXME: we do not need it for GPX
-                    ::GPXLoadRoute( (GpxRteElement *) child, m_NextRouteNum );
-                } else
-                    if( ChildName == _T ( "wpt" ) ) {
-                        int m_NextWPNum = 0; //FIXME: we do not need it for GPX
-                        RoutePoint *pWp = ::LoadGPXWaypoint( (GpxWptElement *) child,
-                                _T("circle") );
-                        RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat,
-                                pWp->m_lon );
-                        if( !pExisting ) {
-                            if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->Append( pWp );
-                            pWp->m_bIsolatedMark = true;      // This is an isolated mark
-                            pSelect->AddSelectableRoutePoint( pWp->m_lat, pWp->m_lon, pWp );
-                            pWp->m_ConfigWPNum = m_NextWPNum;
-                            m_NextWPNum++;
-                        }
-                    }
-        }
-    }
-
-    return true;
 }
 
 //---------------------------------------------------------------------------------
