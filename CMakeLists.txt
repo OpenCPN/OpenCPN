@@ -344,6 +344,8 @@ SET(HDRS
 		include/S57Light.h
 		include/s57RegistrarMgr.h
 		include/S57ClassRegistrar.h
+		include/MarkIcon.h
+		include/SendToGpsDlg.h
 		include/TCWin.h
 		include/glTextureDescriptor.h
 		include/tide_time.h
@@ -439,6 +441,7 @@ SET(SRCS
 		src/OCPN_Sound.cpp
 		src/TTYWindow.cpp
 		src/TTYScroll.cpp
+		src/SendToGpsDlg.cpp
 		src/Layer.cpp
 		src/concanv.cpp
 		src/cutil.cpp

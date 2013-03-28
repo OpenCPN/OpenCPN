@@ -42,6 +42,7 @@
 #include "georef.h"
 #include "chartbase.h"
 #include "Layer.h"
+#include "SendToGpsDlg.h"
 
 #define DIALOG_MARGIN 3
 
