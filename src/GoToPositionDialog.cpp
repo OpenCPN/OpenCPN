@@ -30,6 +30,7 @@
 #include <wx/clipbrd.h>
 
 #include "GoToPositionDialog.h"
+#include "PositionParser.h"
 #include "routeprop.h"
 #include "navutil.h"
 

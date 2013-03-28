@@ -373,6 +373,7 @@ SET(HDRS
 		include/routemanagerdialog.h
 		include/routeprop.h
 		include/routeprintout.h
+		include/PositionParser.h
 		include/printtable.h
 		include/statwin.h
 		include/tcmgr.h
@@ -447,6 +448,7 @@ SET(SRCS
 		src/routemanagerdialog.cpp
 		src/routeprop.cpp
 		src/routeprintout.cpp
+		src/PositionParser.cpp
 		src/printtable.cpp
 		src/statwin.cpp
 		src/tcmgr.cpp
