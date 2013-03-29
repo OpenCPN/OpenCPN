@@ -84,7 +84,9 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
     }
 
     wxBitmap bm( size.x, size.y, 32 );
+#if !wxCHECK_VERSION(2,9,4)
     bm.UseAlpha();
+#endif
     wxMemoryDC mdc( bm );
     wxGCDC dc( mdc );
     wxColour cl;

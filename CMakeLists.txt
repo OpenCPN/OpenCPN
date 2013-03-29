@@ -145,7 +145,7 @@ ENDIF(OPENGL_GLU_FOUND)
 
 # Find wxWidgets here, and the setting get inherited by all plugins.
 # These options can be used to set the linux widgets build type
-SET( wxWidgets_USE_DEBUG OFF)
+SET( wxWidgets_USE_DEBUG ON)
 SET( wxWidgets_USE_UNICODE ON)
 SET( wxWidgets_USE_UNIVERSAL OFF)
 SET( wxWidgets_USE_STATIC OFF)
@@ -162,7 +162,7 @@ STRING(REGEX MATCHALL "2.9" wx_Version "${wxWidgets_INCLUDE_DIRS}")
 MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 
-#SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_BUILD_TYPE Debug)
 
 IF (PREFIX)
 	SET(CMAKE_INSTALL_PREFIX ${PREFIX})
