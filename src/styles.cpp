@@ -54,10 +54,9 @@ void bmdump( wxBitmap bm, wxString name )
 wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset )
 {
     wxBitmap merged( back.GetWidth(), back.GetHeight(), back.GetDepth() );
-#if (defined(__WXGTK__) || defined(__WXMAC__))
+#if (!wxCHECK_VERSION(2,9,4) && (defined(__WXGTK__) || defined(__WXMAC__)))
 
     // Manual alpha blending for broken wxWidgets platforms.
-
     merged.UseAlpha();
     back.UseAlpha();
     front.UseAlpha();
@@ -136,7 +135,9 @@ wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front ) {
     if( front.GetDepth() == 24 ) return front;
 
     wxBitmap result( front.GetWidth(), front.GetHeight(), 24 );
+#if !wxCHECK_VERSION(2,9,4)
     front.UseAlpha();
+#endif
 
     wxImage im_front = front.ConvertToImage();
     wxImage im_result = result.ConvertToImage();
