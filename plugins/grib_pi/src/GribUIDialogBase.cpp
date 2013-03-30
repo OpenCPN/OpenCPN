@@ -14,7 +14,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 	
 	wxFlexGridSizer* fgSizer1;
-	fgSizer1 = new wxFlexGridSizer( 4, 1, 0, 0 );
+	fgSizer1 = new wxFlexGridSizer( 0, 1, 0, 0 );
 	fgSizer1->AddGrowableRow( 2 );
 	fgSizer1->SetFlexibleDirection( wxVERTICAL );
 	fgSizer1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
