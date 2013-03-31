@@ -261,6 +261,8 @@ void grib_pi::OnToolbarToolCallback(int id)
         m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
         m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
         m_pGribDialog->TimelineChanged();
+
+        m_pGribDialog->OpenFile();
     }
 
       // Qualify the GRIB dialog position
@@ -304,12 +306,6 @@ void grib_pi::OnToolbarToolCallback(int id)
 
       //Toggle GRIB overlay display
       m_bShowGrib = !m_bShowGrib;
-
-      //Eventually create the GRIB dialog
-      if(NULL == m_pGribDialog)
-      {
-           CreateGribDialog( 0, wxT(""), true );                               //create new dialog with 'zero' index ( younger file ) and
-      }                                                                  //best forecast
 
       //    Toggle dialog?
       if(m_bShowGrib) {
@@ -453,10 +449,6 @@ bool grib_pi::LoadConfig(void)
     m_grib_dialog_x =  pConf->Read ( _T ( "GRIBDialogPosX" ), 20L );
     m_grib_dialog_y =  pConf->Read ( _T ( "GRIBDialogPosY" ), 170L );
 
-    wxStandardPaths spath;
-    pConf->SetPath ( _T ( "/Directories" ) );
-    pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir , spath.GetDocumentsDir() );
-
     return true;
 }
 
@@ -511,24 +503,4 @@ void grib_pi::SendTimelineMessage()
     wxString out;
     w.Write(v, out);
     SendPluginMessage(wxString(_T("GRIB_TIMELINE")), out);
-}
-
-void grib_pi::CreateGribDialog( int index, wxString filename, bool newfile )
-{
-    if( m_pGribDialog ) m_pGribDialog->Destroy();
- 
-    m_pGribDialog = new GRIBUIDialog(m_parent_window, this);
-    m_pGribDialog->SetSize(wxSize( m_grib_dialog_sx, m_grib_dialog_sy));
-
-    if( newfile ) {
-        //find younger file , build data list and get best forecast for "now
-        m_pGribDialog->GetFirstrFileInDirectory();               
-    }
-    else {
-        //only recreate the same file and rebuilt data list with current index
-        m_pGribDialog->CreateActiveFileFromName( filename );      
-        m_pGribDialog->PopulateComboDataList( index );
-    }
-    m_pGribDialog->DisplayDataGRS();                                        
-    m_pGribDialog->Show();
 }

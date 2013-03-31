@@ -155,6 +155,39 @@ GribTimelineRecordSet::~GribTimelineRecordSet()
     ClearCachedData();
 }
 
+void GRIBUIDialog::OpenFile()
+{
+    m_cRecordForecast->Clear();
+    delete m_bGRIBActiveFile;
+    m_bGRIBActiveFile = new GRIBFile( m_file_name,
+                                      pPlugIn->GetCopyFirstCumRec(),
+                                      pPlugIn->GetCopyMissWaveRec() );
+    
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    if(rsa->GetCount() < 2)
+        m_TimeLineHours = 0;
+    else {
+        GribRecordSet &first=rsa->Item(0), &last = rsa->Item(rsa->GetCount()-1);
+        
+        wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
+        m_TimeLineHours = span.GetHours();
+    }
+    
+    wxFileName fn( m_file_name );
+    SetLabel( fn.GetFullName() );
+    
+    if( m_bGRIBActiveFile ) {
+        if( m_bGRIBActiveFile->IsOK() ) { 
+            PopulateComboDataList( 0 );
+            ComputeBestForecastForNow();
+
+            DisplayDataGRS();
+            PopulateTrackingControls();
+        } else 
+            pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
+    }    
+}
+
 void GribTimelineRecordSet::ClearCachedData()
 {
     for(int i=0; i<Idx_COUNT; i++) {
@@ -208,9 +241,9 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
 
         pConf->Read ( _T ( "Filename" ), &m_file_name );
 
+        wxStandardPaths spath;
         pConf->SetPath ( _T ( "/Directories" ) );
-        pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir );
-
+        pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir, spath.GetDocumentsDir()  );
     }
 
 #if !wxCHECK_VERSION(2,9,4) /* to work with wx 2.8 */
@@ -236,7 +269,6 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     Fit();
     SetMinSize( GetBestSize() );
 }
-
 
 GRIBUIDialog::~GRIBUIDialog()
 {
@@ -833,39 +865,14 @@ void GRIBUIDialog::OnOpenFile( wxCommandEvent& event )
 {
     //    m_pGribForecastTimer.Stop();
        
-    wxFileDialog *dialog = new wxFileDialog(this, _("Select a GRIB file"), pPlugIn->GetGribDirectory(), 
+    wxFileDialog *dialog = new wxFileDialog(this, _("Select a GRIB file"), m_grib_dir, 
         _T(""), wxT ( "Grib files (*.grb;*.grb.bz2|*.grb;*.grb.bz2"), wxFD_OPEN, wxDefaultPosition,
         wxDefaultSize, _T("File Dialog") ); 
 
     if( dialog->ShowModal() == wxID_OK ) {
-        m_cRecordForecast->Clear();
-        m_bGRIBActiveFile = NULL;
-        pPlugIn->SetGribDirectory( dialog->GetDirectory() );
-
-        m_bGRIBActiveFile = new GRIBFile( dialog->GetPath(),
-            pPlugIn->GetCopyFirstCumRec(), pPlugIn->GetCopyMissWaveRec() );
-
-        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-        if(rsa->GetCount() < 2)
-            m_TimeLineHours = 0;
-        else {
-            GribRecordSet &first=rsa->Item(0), &last = rsa->Item(rsa->GetCount()-1);
-
-            wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
-            m_TimeLineHours = span.GetHours();
-        }
-
-        wxFileName fn( dialog->GetPath() );
-        SetLabel( fn.GetFullName() );
-
-        if( m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK() ) { 
-            PopulateComboDataList( 0 );
-            ComputeBestForecastForNow();
-        } else 
-            pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
-
-        DisplayDataGRS();
-        PopulateTrackingControls();
+        m_grib_dir = dialog->GetDirectory();
+        m_file_name = dialog->GetPath();
+        OpenFile();
     }
 }
 
@@ -883,15 +890,15 @@ void GRIBUIDialog::GetFirstrFileInDirectory()
     //reinitialise data containers
      m_cRecordForecast->Clear();
      m_bGRIBActiveFile = NULL;
-     if( !wxDir::Exists( pPlugIn->GetGribDirectory() ) ) {
+     if( !wxDir::Exists( m_grib_dir ) ) {
          wxStandardPaths path;
-         pPlugIn->SetGribDirectory( path.GetDocumentsDir() );
+         m_grib_dir = path.GetDocumentsDir();
     }
     //    Get an array of GRIB file names in the target directory, not descending into subdirs
     wxArrayString file_array;
     int m_n_files = 0;
-    m_n_files = wxDir::GetAllFiles( pPlugIn->GetGribDirectory(), &file_array, _T ( "*.grb" ), wxDIR_FILES );
-    m_n_files += wxDir::GetAllFiles( pPlugIn->GetGribDirectory(), &file_array, _T ( "*.grb.bz2" ),
+    m_n_files = wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grb" ), wxDIR_FILES );
+    m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grb.bz2" ),
         wxDIR_FILES );
     if( m_n_files ) {
         file_array.Sort( CompareFileStringTime );              //sort the files by File Modification Date  
@@ -909,7 +916,7 @@ void GRIBUIDialog::GetFirstrFileInDirectory()
             pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
     } else {
          pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning :  This directory is Empty!") );
-         SetLabel( pPlugIn->GetGribDirectory() );
+         SetLabel( m_grib_dir );
     }
 }
 

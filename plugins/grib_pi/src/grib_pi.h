@@ -100,13 +100,10 @@ public:
       void SetColorScheme(PI_ColorScheme cs);
 
       void OnGribDialogClose();
-      void CreateGribDialog( int index, wxString filename, bool newfile );
 
       void SetGRIBDataConfig ( wxString conf ){ m_grib_DataConfig = conf; }
       void SetMailRequestConfig ( wxString conf ){ m_grib_RequestConfig = conf; }
-      void SetGribDirectory( wxString dir ) { m_grib_dir = dir; }
 
-      wxString GetGribDirectory() { return m_grib_dir; }
       wxString GetGRIBDataConfig(){ return m_grib_DataConfig; }
       wxString GetMailRequestConfig(){ return m_grib_RequestConfig; }
 
@@ -132,8 +129,6 @@ private:
 
       int              m_grib_dialog_x, m_grib_dialog_y;
       int              m_grib_dialog_sx, m_grib_dialog_sy;
-
-      wxString         m_grib_dir;
 
       //    Controls added to Preferences panel
       wxCheckBox              *m_pGRIBUseHiDef;

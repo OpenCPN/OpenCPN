@@ -76,8 +76,9 @@ class GRIBUIDialog: public GRIBUIDialogBase {
 public:
 
     GRIBUIDialog(wxWindow *parent, grib_pi *ppi);
-
     ~GRIBUIDialog();
+
+    void OpenFile();
 
     void SetFilename( wxString file_name ) { m_file_name = file_name; }
     void SelectTreeControlGRS( GRIBFile *pgribfile );
