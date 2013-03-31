@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <wx/graphics.h>
 
 #include "IsoLine.h"
-#include "GribConfigDialog.h"
+#include "GribSettingsDialog.h"
 #include "GribOverlayFactory.h"
 
 static void GenerateSpline(int n, wxPoint points[]);

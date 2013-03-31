@@ -32,11 +32,10 @@
   #include <wx/glcanvas.h>
 #endif //precompiled headers
 
-#include <wx/treectrl.h>
 #include <wx/fileconf.h>
+#include <wx/stdpaths.h>
 
 #include "grib_pi.h"
-
 
 // the class factories, used to create and destroy instances of the PlugIn
 
@@ -103,10 +102,12 @@ int grib_pi::Init(void)
       // Get a pointer to the opencpn display canvas, to use as a parent for the GRIB dialog
       m_parent_window = GetOCPNCanvasWindow();
 
+//      int m_height = GetChartbarHeight();
       //    This PlugIn needs a toolbar icon, so request its insertion if enabled locally
-      m_leftclick_tool_id  = InsertPlugInTool(_T(""), _img_grib, _img_grib, wxITEM_CHECK,
-                                              _("Grib"), _T(""), NULL,
-                                              GRIB_TOOL_POSITION, 0, this);
+      if(m_bGRIBShowIcon)
+          m_leftclick_tool_id = InsertPlugInTool(_T(""), _img_grib, _img_grib, wxITEM_CHECK,
+                                                 _("Grib"), _T(""), NULL,
+                                                 GRIB_TOOL_POSITION, 0, this);
 
       return (WANTS_OVERLAY_CALLBACK |
               WANTS_OPENGL_OVERLAY_CALLBACK |
@@ -195,42 +196,57 @@ int grib_pi::GetToolbarToolCount(void)
 
 void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 {
-      wxDialog *dialog = new wxDialog( parent, wxID_ANY, _("GRIB Preferences"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE );
+    GribPreferencesDialog *Pref = new GribPreferencesDialog(parent);
 
-    //      Build GRIB. Page for Toolbox
-    int border_size = 4;
+    Pref->m_cbUseHiDef->SetValue(m_bGRIBUseHiDef);
+    Pref->m_cbUseGradualColors->SetValue(m_bGRIBUseGradualColors);
+    Pref->m_cbCopyFirstCumulativeRecord->SetValue(m_bCopyFirstCumRec);
+    Pref->m_cbCopyMissingWaveRecord->SetValue(m_bCopyMissWaveRec);
+    Pref->m_rbUTC->SetValue(m_bTimeZone);
 
-    wxBoxSizer* itemBoxSizerGRIBPanel = new wxBoxSizer(wxVERTICAL);
-    dialog->SetSizer(itemBoxSizerGRIBPanel);
+    // TODO: update m_bMailAdresse
 
-    //  Grib toolbox icon checkbox
-    wxStaticBox* itemStaticBoxSizerGRIBStatic = new wxStaticBox(dialog, wxID_ANY, _("GRIB"));
-    wxStaticBoxSizer* itemStaticBoxSizerGRIB = new wxStaticBoxSizer(itemStaticBoxSizerGRIBStatic, wxVERTICAL);
-    itemBoxSizerGRIBPanel->Add(itemStaticBoxSizerGRIB, 0, wxGROW|wxALL, border_size);
+     if( Pref->ShowModal() == wxID_OK ) {
+         m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
+         m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
 
-    m_pGRIBUseHiDef = new wxCheckBox( dialog, -1, _("Use High Definition Graphics"));
-    itemStaticBoxSizerGRIB->Add(m_pGRIBUseHiDef, 1, wxALIGN_LEFT|wxALL, border_size);
+         int updatelevel = 0;
+         int timezone = Pref->m_rbUTC->GetValue();
 
-    m_pGRIBUseGradualColors = new wxCheckBox( dialog, -1, _("Use gradual colors blended (wave height etc) instead of step at set heights."));
-    itemStaticBoxSizerGRIB->Add(m_pGRIBUseGradualColors, 1, wxALIGN_LEFT|wxALL, border_size);
+         if( m_bTimeZone != timezone ) {
+             m_bTimeZone = timezone;
+             m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
+             updatelevel = 2;
+         }
 
+         bool copyrec = Pref->m_cbCopyFirstCumulativeRecord->GetValue();
+         bool copywave = Pref->m_cbCopyMissingWaveRecord->GetValue();
+         if( m_bCopyFirstCumRec != copyrec || m_bCopyMissWaveRec != copywave ) {
+             m_bCopyFirstCumRec = copyrec;
+             m_bCopyMissWaveRec = copywave;
+             updatelevel = 3;
+         }
 
-    m_pGRIBUseHiDef->SetValue(m_bGRIBUseHiDef);
-    m_pGRIBUseGradualColors->SetValue(m_bGRIBUseGradualColors);
+         if(m_pGribDialog ) {
+             switch( updatelevel ) {
+             case 0:
+                 break;                                          
+             case 3:
+                 //rebuild current activefile with new parameters and rebuil data list with current index
+                 m_pGribDialog->CreateActiveFileFromName( m_pGribDialog->m_bGRIBActiveFile->GetFileName() );  
+                 m_pGribDialog->PopulateComboDataList( 0/*m_pGribDialog->GetActiveForecastIndex()*/ );
+                 m_pGribDialog->DisplayDataGRS();
+                 break;
+             case 2 :
+                 //only rebuild  data list with current index and new timezone
+                 m_pGribDialog->PopulateComboDataList( 0/*m_pGribDialog->GetActiveForecastIndex()*/ );
+                 m_pGribDialog->DisplayDataGRS();
+                 break;
+             }
+         }
 
-    wxStdDialogButtonSizer* DialogButtonSizer = dialog->CreateStdDialogButtonSizer(wxOK|wxCANCEL);
-    itemBoxSizerGRIBPanel->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, 5);
-
-    dialog->Fit();
-
-    if(dialog->ShowModal() == wxID_OK)
-    {
-        m_bGRIBUseHiDef= m_pGRIBUseHiDef->GetValue();
-        m_bGRIBUseGradualColors= m_pGRIBUseGradualColors->GetValue();
-        if(m_pGRIBOverlayFactory)
-            m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
-        SaveConfig();
-    }
+         SaveConfig();
+     }
 }
 
 void grib_pi::OnToolbarToolCallback(int id)
@@ -242,10 +258,70 @@ void grib_pi::OnToolbarToolCallback(int id)
 
         // Create the drawing factory
         m_pGRIBOverlayFactory = new GRIBOverlayFactory( *m_pGribDialog );
+        m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
         m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
-
         m_pGribDialog->TimelineChanged();
     }
+
+      // Qualify the GRIB dialog position
+            bool b_reset_pos = false;
+
+#ifdef __WXMSW__
+        //  Support MultiMonitor setups which an allow negative window positions.
+        //  If the requested window does not intersect any installed monitor,
+        //  then default to simple primary monitor positioning.
+            RECT frame_title_rect;
+            frame_title_rect.left =   m_grib_dialog_x;
+            frame_title_rect.top =    m_grib_dialog_y;
+            frame_title_rect.right =  m_grib_dialog_x + m_grib_dialog_sx;
+            frame_title_rect.bottom = m_grib_dialog_y + 30;
+
+
+            if(NULL == MonitorFromRect(&frame_title_rect, MONITOR_DEFAULTTONULL))
+                  b_reset_pos = true;
+#else
+       //    Make sure drag bar (title bar) of window on Client Area of screen, with a little slop...
+            wxRect window_title_rect;                    // conservative estimate
+            window_title_rect.x = m_grib_dialog_x;
+            window_title_rect.y = m_grib_dialog_y;
+            window_title_rect.width = m_grib_dialog_sx;
+            window_title_rect.height = 30;
+
+            wxRect ClientRect = wxGetClientDisplayRect();
+            ClientRect.Deflate(60, 60);      // Prevent the new window from being too close to the edge
+            if(!ClientRect.Intersects(window_title_rect))
+                  b_reset_pos = true;
+
+#endif
+
+            if(b_reset_pos)
+            {
+                  m_grib_dialog_x = 20;
+                  m_grib_dialog_y = 170;
+                  m_grib_dialog_sx = 300;
+                  m_grib_dialog_sy = 540;
+            }
+
+      //Toggle GRIB overlay display
+      m_bShowGrib = !m_bShowGrib;
+
+      //Eventually create the GRIB dialog
+      if(NULL == m_pGribDialog)
+      {
+           CreateGribDialog( 0, wxT(""), true );                               //create new dialog with 'zero' index ( younger file ) and
+      }                                                                  //best forecast
+
+      //    Toggle dialog?
+      if(m_bShowGrib) {
+          m_pGribDialog->Show();
+          m_pGribDialog->DisplayDataGRS();   
+      } else 
+          m_pGribDialog->Close();
+
+      // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
+      // to actual status to ensure correct status upon toolbar rebuild
+      SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
+
 
     m_pGribDialog->Show(!m_pGribDialog->IsShown());
 
@@ -263,9 +339,14 @@ void grib_pi::OnGribDialogClose()
     SetToolbarItemState( m_leftclick_tool_id, false );
 
     if(m_pGribDialog)
-        m_pGribDialog->Show(false);
+        m_pGribDialog->Hide();
 
     SaveConfig();
+//      m_pGribDialog->SetGribRecordSet( NULL );          //clear the screen
+
+      m_bShowGrib = false;
+
+      SaveConfig();
 }
 
 bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
@@ -275,6 +356,7 @@ bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
        !m_pGRIBOverlayFactory)
         return false;
 
+    m_pGribDialog->SetViewPort( vp );
     m_pGRIBOverlayFactory->RenderGribOverlay ( dc, vp );
     return true;
 }
@@ -286,6 +368,7 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
        !m_pGRIBOverlayFactory)
         return false;
 
+    m_pGribDialog->SetViewPort( vp );
     m_pGRIBOverlayFactory->RenderGLGribOverlay ( pcontext, vp );
     return true;
 }
@@ -348,14 +431,31 @@ bool grib_pi::LoadConfig(void)
     if(!pConf)
         return false;
 
-    pConf->SetPath ( _T( "/Settings" ) );
+    pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
     pConf->Read ( _T( "GRIBUseHiDef" ),  &m_bGRIBUseHiDef, 0 );
     pConf->Read ( _T( "GRIBUseGradualColors" ),     &m_bGRIBUseGradualColors, 0 );
+
+    pConf->Read ( _T( "ShowGRIBIcon" ), &m_bGRIBShowIcon, 1 );
+    pConf->Read ( _T( "GRIBTimeZone" ), &m_bTimeZone, 1 );
+    pConf->Read ( _T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1 );
+    pConf->Read ( _T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1 );
+    pConf->Read ( _T( "GRIBdataConfig" ), &m_grib_DataConfig, _T( "0XXXXXXXXXX" ) );
+    pConf->Read ( _T( "MailRequestConfig" ), &m_grib_RequestConfig, _T( "00220XX....." ) );
+    pConf->Read ( _T( "MailRequestAdesse" ), &m_bMailAdresse, _T("query@saildocs.com") );
+
+
+    //if GriDataConfig has been corrupted , take the standard one to fix a crash
+    if( m_grib_DataConfig.Len() != wxString (_T( "0XXXXXXXXXX" ) ).Len() )
+        m_grib_DataConfig = _T( "0XXXXXXXXXX" );
 
     m_grib_dialog_sx = pConf->Read ( _T ( "GRIBDialogSizeX" ), 300L );
     m_grib_dialog_sy = pConf->Read ( _T ( "GRIBDialogSizeY" ), 540L );
     m_grib_dialog_x =  pConf->Read ( _T ( "GRIBDialogPosX" ), 20L );
     m_grib_dialog_y =  pConf->Read ( _T ( "GRIBDialogPosY" ), 170L );
+
+    wxStandardPaths spath;
+    pConf->SetPath ( _T ( "/Directories" ) );
+    pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir , spath.GetDocumentsDir() );
 
     return true;
 }
@@ -367,9 +467,18 @@ bool grib_pi::SaveConfig(void)
     if(!pConf)
         return false;
 
-    pConf->SetPath ( _T ( "/Settings" ) );
+    pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
+
+    pConf->Write ( _T ( "ShowGRIBIcon" ), m_bGRIBShowIcon );
     pConf->Write ( _T ( "GRIBUseHiDef" ), m_bGRIBUseHiDef );
     pConf->Write ( _T ( "GRIBUseGradualColors" ),    m_bGRIBUseGradualColors );
+    pConf->Write ( _T ( "GRIBTimeZone" ), m_bTimeZone );
+    pConf->Write ( _T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec );
+    pConf->Write ( _T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec );
+    pConf->Write ( _T ( "GRIBdataConfig" ), m_grib_DataConfig );
+    pConf->Write ( _T ( "MailRequestConfig" ), m_grib_RequestConfig );
+    pConf->Write ( _T( "MailRequestAdesse" ), m_bMailAdresse );
+
 
     pConf->Write ( _T ( "GRIBDialogSizeX" ),  m_grib_dialog_sx );
     pConf->Write ( _T ( "GRIBDialogSizeY" ),  m_grib_dialog_sy );
@@ -402,4 +511,24 @@ void grib_pi::SendTimelineMessage()
     wxString out;
     w.Write(v, out);
     SendPluginMessage(wxString(_T("GRIB_TIMELINE")), out);
+}
+
+void grib_pi::CreateGribDialog( int index, wxString filename, bool newfile )
+{
+    if( m_pGribDialog ) m_pGribDialog->Destroy();
+ 
+    m_pGribDialog = new GRIBUIDialog(m_parent_window, this);
+    m_pGribDialog->SetSize(wxSize( m_grib_dialog_sx, m_grib_dialog_sy));
+
+    if( newfile ) {
+        //find younger file , build data list and get best forecast for "now
+        m_pGribDialog->GetFirstrFileInDirectory();               
+    }
+    else {
+        //only recreate the same file and rebuilt data list with current index
+        m_pGribDialog->CreateActiveFileFromName( filename );      
+        m_pGribDialog->PopulateComboDataList( index );
+    }
+    m_pGribDialog->DisplayDataGRS();                                        
+    m_pGribDialog->Show();
 }

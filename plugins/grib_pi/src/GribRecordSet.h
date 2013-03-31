@@ -29,9 +29,12 @@
 WX_DECLARE_OBJARRAY( GribRecord *, ArrayOfGribRecordPtrs );
 
     // These are indexes into the array
-enum { Idx_WIND_VX, Idx_WIND_VY, Idx_PRESS, Idx_HTSIGW, Idx_WVDIR,
-       Idx_WINDSCAT_VY, Idx_WINDSCAT_VX, Idx_SEATEMP, Idx_SEACURRENT_VX,
-       Idx_SEACURRENT_VY, Idx_COUNT };
+enum { Idx_WIND_VX, Idx_WIND_VY, Idx_WIND_GUST, Idx_PRESSURE, Idx_HTSIGW, Idx_WVDIR,
+       Idx_WINDSCAT_VY, Idx_WINDSCAT_VX,
+       Idx_SEACURRENT_VX, Idx_SEACURRENT_VY,
+       Idx_PRECIP_TOT, Idx_CLOUD_TOT,
+       Idx_AIR_TEMP_2M, Idx_SEA_TEMP,
+       Idx_COUNT };
 
 class GribRecordSet {
 public:

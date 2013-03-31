@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 2.6.1718\n"
+"Project-Id-Version: grib_pi 3.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-22 22:21-0400\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 4"Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,23 +16,19 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/grib.h:124 src/grib_pi.cpp:277 src/grib_pi.cpp:346
-msgid "GRIB Display Control"
-msgstr ""
-
-#: src/grib_pi.cpp:118 src/grib_pi.cpp:208 src/grib_pi.cpp:261
+#: src/grib_pi.cpp:111 src/grib_pi.cpp:201
 msgid "Grib"
 msgstr ""
 
-#: src/grib_pi.cpp:177 src/grib_pi.cpp:230
+#: src/grib_pi.cpp:170 src/grib_pi.cpp:511
 msgid "GRIB"
 msgstr ""
 
-#: src/grib_pi.cpp:183
+#: src/grib_pi.cpp:176
 msgid "GRIB PlugIn for OpenCPN"
 msgstr ""
 
-#: src/grib_pi.cpp:189
+#: src/grib_pi.cpp:182
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
@@ -44,74 +40,320 @@ msgid ""
 "- surface current direction and speed."
 msgstr ""
 
-#: src/grib_pi.cpp:221
+#: src/grib_pi.cpp:481
+msgid "GRIB Display Control"
+msgstr ""
+
+#: src/grib_pi.cpp:502
 msgid "GRIB Preferences"
 msgstr ""
 
-#: src/grib_pi.cpp:234
-msgid "Show GRIB icon"
-msgstr ""
-
-#: src/grib_pi.cpp:237
+#: src/grib_pi.cpp:515
 msgid "Use High Definition Graphics"
 msgstr ""
 
-#: src/grib_pi.cpp:240
-msgid "Show metres/sec for Wind Speed"
+#: src/grib_pi.cpp:518
+msgid "Copy first Cumulative missing Record"
 msgstr ""
 
-#: src/grib.cpp:195
-msgid "GRIB File Directory"
+#: src/grib_pi.cpp:521
+msgid "Copy missing Wave Records"
 msgstr ""
 
-#: src/grib.cpp:221
-msgid "GRIB Data"
+#: src/grib_pi.cpp:525
+msgid "Units"
 msgstr ""
 
-#: src/grib.cpp:234
-msgid "Wind Speed, Kts."
+#: src/grib_pi.cpp:530
+msgid "Speed unit"
 msgstr ""
 
-#: src/grib.cpp:236
-msgid "Wind Speed, m/sec."
+#: src/grib_pi.cpp:534
+msgid "Local Time"
 msgstr ""
 
-#: src/grib.cpp:248
-msgid "Wind Direction"
+#: src/grib_pi.cpp:534
+msgid "UTC"
 msgstr ""
 
-#: src/grib.cpp:258
-msgid "Pressure, mBar"
+#: src/grib_pi.cpp:535
+msgid "Time Zone"
 msgstr ""
 
-#: src/grib.cpp:268
-msgid "Significant Wave Height, m"
+#: src/grib.cpp:55
+msgid "1.0 Deg"
 msgstr ""
 
-#: src/grib.cpp:279
-msgid "Sea Surface Temp, C"
+#: src/grib.cpp:55
+msgid "1.5 Deg"
 msgstr ""
 
-#: src/grib.cpp:289
-msgid "Current Velocity, Kts."
+#: src/grib.cpp:55 src/grib.cpp:56
+msgid "2.0 Deg"
 msgstr ""
 
-#: src/grib.cpp:304
-msgid "&Close"
+#: src/grib.cpp:56
+msgid "0.2 Deg"
 msgstr ""
 
-#: src/grib.cpp:510
-msgid "Select GRIB Directory"
+#: src/grib.cpp:56
+msgid "0.6 Deg"
 msgstr ""
 
-#: src/grib.cpp:1092
+#: src/grib.cpp:56
+msgid "1.2 Deg"
+msgstr ""
+
+#: src/grib.cpp:110
+msgid "No other graphic display"
+msgstr ""
+
+#: src/grib.cpp:111
+msgid "Wind Speed(10m)"
+msgstr ""
+
+#: src/grib.cpp:112
+msgid "Wind Direction(10m)"
+msgstr ""
+
+#: src/grib.cpp:113
+msgid "Wind Speed and Direction(10m)"
+msgstr ""
+
+#: src/grib.cpp:115
+msgid "Wind Gust(Surf.)"
+msgstr ""
+
+#: src/grib.cpp:118
+msgid "Sign.Wave Height"
+msgstr ""
+
+#: src/grib.cpp:122
+msgid "Pressure (MSL)"
+msgstr ""
+
+#: src/grib.cpp:125
+msgid "Total Rainfall"
+msgstr ""
+
+#: src/grib.cpp:128 src/grib.cpp:2867
+msgid "Clouds Cover"
+msgstr ""
+
+#: src/grib.cpp:131
+msgid "Air Temp.(2m)"
+msgstr ""
+
+#: src/grib.cpp:134
+msgid "Sea Temp.(Surf.)"
+msgstr ""
+
+#: src/grib.cpp:137
+msgid "Current Velocity"
+msgstr ""
+
+#: src/grib.cpp:138
+msgid "Unnown"
+msgstr ""
+
+#: src/grib.cpp:651
+msgid "Data Display Preferences"
+msgstr ""
+
+#: src/grib.cpp:660
+msgid "Numeric Data to show in Panel"
+msgstr ""
+
+#: src/grib.cpp:702
+msgid "Graphic Data to show in Map"
+msgstr ""
+
+#: src/grib.cpp:789
+msgid "Select a GRIB file"
+msgstr ""
+
+#: src/grib.cpp:940
+msgid "eMail To"
+msgstr ""
+
+#: src/grib.cpp:943
+msgid "Action"
+msgstr ""
+
+#: src/grib.cpp:944 src/grib.cpp:2751
+msgid "Send"
+msgstr ""
+
+#: src/grib.cpp:946
+msgid "Model"
+msgstr ""
+
+#: src/grib.cpp:949
+msgid "Zone"
+msgstr ""
+
+#: src/grib.cpp:952 src/grib.cpp:2801
+msgid "Resolution"
+msgstr ""
+
+#: src/grib.cpp:953
+msgid " Deg"
+msgstr ""
+
+#: src/grib.cpp:955 src/grib.cpp:2819
+msgid "Interval"
+msgstr ""
+
+#: src/grib.cpp:957
+msgid " h"
+msgstr ""
+
+#: src/grib.cpp:959
+msgid "Period"
+msgstr ""
+
+#: src/grib.cpp:963
+msgid "Days"
+msgstr ""
+
+#: src/grib.cpp:965
+msgid "Parameters"
+msgstr ""
+
+#: src/grib.cpp:983
+msgid ""
+"Your request is ready. An eMail is prepared in your eMail environment.\n"
+"You have just to click 'send' to send it.\n"
+"OK to continue ..."
+msgstr ""
+
+#: src/grib.cpp:985
+msgid ""
+"Your request was sent (if your system has an MTA configured and is able to "
+"send mail).\n"
+"OK to continue ..."
+msgstr ""
+
+#: src/grib.cpp:987
+msgid "eMail"
+msgstr ""
+
+#: src/grib.cpp:1058
+msgid "Warning :  This directory is Empty!"
+msgstr ""
+
+#: src/grib.cpp:1359 src/grib.cpp:1867
+msgid "Ref : "
+msgstr ""
+
+#: src/grib.cpp:1433
+msgid "No Reference. Try another Graphic Data Selection"
+msgstr ""
+
+#: src/grib.cpp:1568
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr ""
 
-#: src/grib.cpp:1156
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#: src/grib.cpp:1633
+msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 msgstr ""
 
-#: src/grib.cpp:1168 src/grib.cpp:1225
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#: src/grib.cpp:1643
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr ""
+
+#: src/grib.cpp:1653
+msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
+msgstr ""
+
+#: src/grib.cpp:1663
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
+msgstr ""
+
+#: src/grib.cpp:1712
+msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
+msgstr ""
+
+#: src/grib.cpp:1865
+msgid " (Dup)"
+msgstr ""
+
+#: src/grib.cpp:2639
+msgid "Error:  Can't read this File!"
+msgstr ""
+
+#: src/grib.cpp:2728
+msgid "Request Pofile"
+msgstr ""
+
+#: src/grib.cpp:2748
+msgid "Modify"
+msgstr ""
+
+#: src/grib.cpp:2772
+msgid "Request Setting"
+msgstr ""
+
+#: src/grib.cpp:2783
+msgid "Profil"
+msgstr ""
+
+#: src/grib.cpp:2790
+msgid "Forecast Model   "
+msgstr ""
+
+#: src/grib.cpp:2822
+msgid "3 h"
+msgstr ""
+
+#: src/grib.cpp:2822
+msgid "6 h"
+msgstr ""
+
+#: src/grib.cpp:2822
+msgid "12 h"
+msgstr ""
+
+#: src/grib.cpp:2822
+msgid "24 h"
+msgstr ""
+
+#: src/grib.cpp:2832
+msgid "4 days"
+msgstr ""
+
+#: src/grib.cpp:2832
+msgid "6 days"
+msgstr ""
+
+#: src/grib.cpp:2832
+msgid "8 days"
+msgstr ""
+
+#: src/grib.cpp:2840
+msgid "Data"
+msgstr ""
+
+#: src/grib.cpp:2847
+msgid "Wind"
+msgstr ""
+
+#: src/grib.cpp:2852
+msgid "Pressure"
+msgstr ""
+
+#: src/grib.cpp:2857
+msgid "Waves"
+msgstr ""
+
+#: src/grib.cpp:2862
+msgid "Rainfall"
+msgstr ""
+
+#: src/grib.cpp:2872
+msgid "Air Temperature(2m)"
+msgstr ""
+
+#: src/grib.cpp:2877
+msgid "Sea Temperature(surf.)"
 msgstr ""

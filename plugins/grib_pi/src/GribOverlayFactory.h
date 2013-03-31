@@ -75,6 +75,9 @@ public:
       ClearCachedData();
     }
 
+    void SetMessage( wxString message ) { m_Message = message; }
+    void SetTimeZone( int TimeZone ) { m_TimeZone = TimeZone; }
+
     void SetGribTimelineRecordSet( GribTimelineRecordSet *pGribTimelineRecordSet1 );
     bool RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp );
     bool RenderGLGribOverlay( wxGLContext *pcontext, PlugIn_ViewPort *vp );
@@ -97,6 +100,9 @@ private:
     void RenderGribDirectionArrows( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
     void RenderGribOverlayMap( int config, GribRecord **pGR, PlugIn_ViewPort *vp);
     void RenderGribNumbers( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
+
+    wxString GetRefString( GribRecord *rec, int map );
+    void DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont);
 
     void drawWindArrowWithBarbs( int config, int x, int y, double vx, double vy,
                                  bool polar, bool south, wxColour arrowColor );
@@ -122,10 +128,16 @@ private:
 
     double m_last_vp_scale;
 
-    GribOverlay *m_pOverlay[GribOverlayConfig::CONFIG_COUNT];
+    GribOverlay *m_pOverlay[GribOverlaySettings::SETTINGS_COUNT];
+
+    wxString m_Message;
+    int  m_TimeZone;
 
     wxDC *m_pdc;
     wxGraphicsContext *m_gdc;
+
+    wxFont *m_dFont_map;
+    wxFont *m_dFont_war;
 
     bool m_hiDefGraphics;
     bool m_bGradualColors;
@@ -133,5 +145,5 @@ private:
     std::map < double , wxImage > m_labelCache;
 
     GRIBUIDialog &m_dlg;
-    GribOverlayConfig &m_Config;
+    GribOverlaySettings &m_Settings;
 };

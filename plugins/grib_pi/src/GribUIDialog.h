@@ -36,7 +36,7 @@
 #include <wx/glcanvas.h>
 
 #include "GribUIDialogBase.h"
-#include "GribConfigDialog.h"
+#include "GribSettingsDialog.h"
 #include "GribReader.h"
 #include "GribRecordSet.h"
 #include "IsoLine.h"
@@ -73,13 +73,11 @@ public:
 //    GRIB Selector/Control Dialog Specification
 //----------------------------------------------------------------------------------------------------------
 class GRIBUIDialog: public GRIBUIDialogBase {
-DECLARE_CLASS( GRIBUIDialog )DECLARE_EVENT_TABLE()
 public:
 
     GRIBUIDialog(wxWindow *parent, grib_pi *ppi);
 
     ~GRIBUIDialog();
-    void Init();
 
     void SetFilename( wxString file_name ) { m_file_name = file_name; }
     void SelectTreeControlGRS( GRIBFile *pgribfile );
@@ -89,45 +87,60 @@ public:
     void SetCursorLatLon( double lat, double lon );
     void SetFactoryOptions();
 
-    GribOverlayConfig m_OverlayConfig;
-
-    wxTimer m_tPlayStop;
-
     wxDateTime TimelineTime();
     wxDateTime MinTime();
     wxDateTime MaxTime();
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
     void TimelineChanged();
 
+    void CreateActiveFileFromName( wxString filename );
+    void GetFirstrFileInDirectory();
+
+    void PopulateComboDataList( int index );
+
+    void ComputeBestForecastForNow();
+    void DisplayDataGRS();
+    void SetViewPort( PlugIn_ViewPort *vp ) { m_vp = new PlugIn_ViewPort(*vp); }
+
+    GribOverlaySettings m_OverlaySettings;
+
+    wxTimer m_tPlayStop;
+
+    GRIBFile        *m_bGRIBActiveFile;
+
 private:
     void OnClose( wxCloseEvent& event );
     void OnMove( wxMoveEvent& event );
     void OnSize( wxSizeEvent& event );
-    void OnConfig( wxCommandEvent& event );
+    void OnSettings( wxCommandEvent& event );
     void OnPlayStop( wxCommandEvent& event );
     void OnPlayStopTimer( wxTimerEvent & );
-    void OnFileDirChange( wxFileDirPickerEvent &event );
-    void UpdateTrackingControls( void );
-    void PopulateTreeControl( void );
 
-    void OnTimeline( wxCommandEvent& event );
+    void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show );
+    void PopulateTrackingControls( void );
+    void UpdateTrackingControls( void );
+
+    void OnPrev( wxCommandEvent& event );
+    void OnRecordForecast( wxCommandEvent& event ) { DisplayDataGRS(); }
+    void OnNext( wxCommandEvent& event );
+    void OnNow( wxCommandEvent& event ) { ComputeBestForecastForNow(); }
+    void OnOpenFile( wxCommandEvent& event );
+    void OnRequest(  wxCommandEvent& event );
+
+    void OnTimeline( wxScrollEvent& event );
     void OnCBAny( wxCommandEvent& event );
+
+    void ShowSendRequest( wxString r_zone );
 
     //    Data
     wxWindow *pParent;
     grib_pi *pPlugIn;
 
+    PlugIn_ViewPort  *m_vp;
     int m_lastdatatype;
-
-    wxTreeItemId m_RecordTree_root_id;
-
-    int m_n_files;
-
-    int m_sequence_active;
 
     double m_cursor_lat, m_cursor_lon;
 
-    ArrayOfGribRecordSets *m_pTimelineBase;
     GribTimelineRecordSet *m_pTimelineSet;
     int m_TimeLineHours;
 
@@ -141,16 +154,20 @@ private:
 class GRIBFile {
 public:
 
-    GRIBFile( const wxString file_name );
+    GRIBFile( const wxString file_name, bool CumRec, bool WaveRec );
     ~GRIBFile();
 
     bool IsOK( void )
     {
         return m_bOK;
     }
-    wxString GetLastErrorMessage( void )
+    wxString GetFileName( void )
     {
-        return m_last_error_message;
+        return m_FileName;
+    }
+    wxString GetLastMessage( void )
+    {
+        return m_last_message;
     }
     ArrayOfGribRecordSets *GetRecordSetArrayPtr( void )
     {
@@ -160,7 +177,8 @@ public:
 private:
 
     bool m_bOK;
-    wxString m_last_error_message;
+    wxString m_last_message;
+    wxString m_FileName;
     GribReader *m_pGribReader;
 
     //    An array of GribRecordSets found in this GRIB file
@@ -168,6 +186,21 @@ private:
 
     int m_nGribRecords;
 };
+
+class GribPofileDisplay : public GribPofileDisplayBase
+{
+public:
+      GribPofileDisplay( wxWindow *parent, wxString profile )
+          : GribPofileDisplayBase(parent)
+    {    m_stProfile->SetLabel( profile ); }
+
+      ~GribPofileDisplay() {}
+      
+private:
+      void OnSend(wxCommandEvent &event) { EndModal( wxID_OK ); }
+      void OnModify(wxCommandEvent &event) { EndModal( wxID_SAVE ); }
+};
+
 
 #endif
 

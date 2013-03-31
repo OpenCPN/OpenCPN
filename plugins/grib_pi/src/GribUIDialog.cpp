@@ -35,11 +35,15 @@
 #include <wx/debug.h>
 #include <wx/graphics.h>
 
+#include <wx/stdpaths.h>
+
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
 
 #include "grib_pi.h"
+#include "email.h"
+#include "folder.xpm"
 
 #include <wx/arrimpl.cpp>
 
@@ -66,28 +70,59 @@ static int CompareFileStringTime( const wxString& first, const wxString& second 
 
 //      return ::wxFileModificationTime(first) - ::wxFileModificationTime(second);
 }
+
+//date/time in the desired time zone format
+static wxString TToString( const wxDateTime date_time, const int time_zone )
+{  
+    wxDateTime t( date_time );
+    t.MakeFromTimezone( wxDateTime::UTC );
+    if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
+    switch( time_zone ) {
+        case 0: return t.Format( _T(" %a %d-%b-%Y  %H:%M "), wxDateTime::Local ) + _T("LOC");//:%S
+        case 1: 
+        default: return t.Format( _T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC ) + _T("UTC");
+    }
+}
+
+wxString toSAILDOC ( int NEflag, int MMflag, double a )
+{
+    //saildoc needs value in degré (without decimal) so translate doube value in integer and if necessary tacking one degré more 
+    //to be sure all the screen is covered
+    short neg = 0;
+    if ( a < 0.0 ) {
+        a = -a;
+        neg = 1;
+    }
+    char c;
+    switch(NEflag) {
+        case 1: {
+            if ( !neg ) {
+                if( MMflag == 1 ) a += 1.;
+                c = 'N';
+            } else {
+                if( MMflag == 2 ) a += 1.;
+                c = 'S';                               
+            }
+            break;
+        }
+        case 2: {
+            if ( !neg ) {
+                if( MMflag == 1 ) a += 1.; 
+                c = 'E';
+            } else {
+                if( MMflag == 2 ) a += 1.;
+                c = 'W';                                  
+            }
+        }
+    }
+    wxString s;
+    s.Printf ( _T ( "%01d%c" ), (int) a, c );
+    return s;
+}
+
 //---------------------------------------------------------------------------------------
 //          GRIB Selector/Control Dialog Implementation
 //---------------------------------------------------------------------------------------
-IMPLEMENT_CLASS ( GRIBUIDialog, GRIBUIDialogBase )
-
-BEGIN_EVENT_TABLE ( GRIBUIDialog, GRIBUIDialogBase )
-
-EVT_CLOSE ( GRIBUIDialog::OnClose )
-EVT_MOVE ( GRIBUIDialog::OnMove )
-EVT_SIZE ( GRIBUIDialog::OnSize )
-EVT_BUTTON(ID_CONFIG, GRIBUIDialog::OnConfig )
-EVT_TOGGLEBUTTON(ID_PLAYSTOP, GRIBUIDialog::OnPlayStop )
-EVT_TIMER(ID_PLAYSTOP, GRIBUIDialog::OnPlayStopTimer )
-EVT_DIRPICKER_CHANGED ( ID_GRIBDIR, GRIBUIDialog::OnFileDirChange )
-EVT_SLIDER(ID_TIMELINE, GRIBUIDialog::OnTimeline)
-EVT_CHECKBOX(ID_CB_WIND_SPEED, GRIBUIDialog::OnCBAny)
-EVT_CHECKBOX(ID_CB_PRESSURE, GRIBUIDialog::OnCBAny)
-EVT_CHECKBOX(ID_CB_SIG_WAVE_HEIGHT, GRIBUIDialog::OnCBAny)
-EVT_CHECKBOX(ID_CB_SEA_TEMPERATURE, GRIBUIDialog::OnCBAny)
-EVT_CHECKBOX(ID_CB_CURRENT_VELOCITY, GRIBUIDialog::OnCBAny)
-
-END_EVENT_TABLE()
 
 /* interpolating constructor
    as a possible optimization, write this function to also
@@ -141,10 +176,10 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     pParent = parent;
     pPlugIn = ppi;
 
-    m_pTimelineBase = NULL;
+    m_bGRIBActiveFile = NULL;
     m_pTimelineSet = NULL;
 
-    wxFileConfig *pConf = GetOCPNConfigObject();;
+    wxFileConfig *pConf = GetOCPNConfigObject();
 
     if(pConf) {
         pConf->SetPath ( _T ( "/Settings/GRIB" ) );
@@ -152,12 +187,20 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
         bool value;
         pConf->Read( _T ( "WindPlot" ), &value, true );
         m_cbWind->SetValue(value);
+        pConf->Read( _T ( "WindGustPlot" ), &value, true );
+        m_cbWindGust->SetValue(value);
+        pConf->Read( _T ( "PressurePlot" ), &value, true );
+        m_cbPressure->SetValue(value);
         pConf->Read( _T ( "WavePlot" ), &value, false );
         m_cbWave->SetValue(value);
         pConf->Read( _T ( "CurrentPlot" ), &value, false );
         m_cbCurrent->SetValue(value);
-        pConf->Read( _T ( "PressurePlot" ), &value, true );
-        m_cbPressure->SetValue(value);
+        pConf->Read( _T ( "PrecipitationPlot" ), &value, false );
+        m_cbPrecipitation->SetValue(value);
+        pConf->Read( _T ( "CloudPlot" ), &value, false );
+        m_cbCloud->SetValue(value);
+        pConf->Read( _T ( "AirTemperaturePlot" ), &value, false );
+        m_cbAirTemperature->SetValue(value);
         pConf->Read( _T ( "SeaTemperaturePlot" ), &value, false );
         m_cbSeaTemperature->SetValue(value);
 
@@ -170,16 +213,25 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
 
     }
 
-    m_OverlayConfig.Read();
+#if !wxCHECK_VERSION(2,9,4) /* to work with wx 2.8 */
+#define SetBitmap SetLabel
+#endif
 
-    m_dirPicker->SetPath(m_grib_dir);
+    m_bpPrev->SetBitmap(wxBitmap( prev ));
+    m_bpNext->SetBitmap(wxBitmap( next ));
+    m_bpNow->SetBitmap(wxBitmap( now ));
+    m_bpOpenFile->SetBitmap(wxBitmap( openfile ));
+    m_bpSettings->SetBitmap(wxBitmap( setting ));
+    m_bpRequest->SetBitmap(wxBitmap( request ));
 
-    m_RecordTree_root_id = m_pRecordTree->AddRoot( _T ( "GRIBs" ) );
+    m_tPlayStop.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBUIDialog::OnPlayStopTimer ), NULL, this);
 
-    PopulateTreeControl();
-    m_pRecordTree->Expand( m_RecordTree_root_id );
+    m_OverlaySettings.Read();
 
     DimeWindow( this );
+
+    m_pTimelineSet = NULL;
+    PopulateTrackingControls();
 
     Fit();
     SetMinSize( GetBestSize() );
@@ -194,11 +246,15 @@ GRIBUIDialog::~GRIBUIDialog()
         pConf->SetPath ( _T ( "/Settings/GRIB" ) );
 
         pConf->Write( _T ( "WindPlot" ), m_cbWind->GetValue());
+        pConf->Write( _T ( "WindGustPlot" ), m_cbWindGust->GetValue());
+        pConf->Write( _T ( "PressurePlot" ), m_cbPressure->GetValue());
         pConf->Write( _T ( "WavePlot" ), m_cbWave->GetValue());
         pConf->Write( _T ( "CurrentPlot" ), m_cbCurrent->GetValue());
-        pConf->Write( _T ( "PressurePlot" ), m_cbPressure->GetValue());
+        pConf->Write( _T ( "PrecipitationPlot" ), m_cbPrecipitation->GetValue());
+        pConf->Write( _T ( "CloudPlot" ), m_cbCloud->GetValue());
+        pConf->Write( _T ( "AirTemperaturePlot" ), m_cbAirTemperature->GetValue());
         pConf->Write( _T ( "SeaTemperaturePlot" ), m_cbSeaTemperature->GetValue());
-        pConf->Write ( _T ( "lastdatatype" ), m_lastdatatype);
+        pConf->Write( _T ( "lastdatatype" ), m_lastdatatype);
 
         pConf->Write ( _T ( "Filename" ), m_file_name );
 
@@ -209,13 +265,6 @@ GRIBUIDialog::~GRIBUIDialog()
     delete m_pTimelineSet;
 }
 
-void GRIBUIDialog::Init()
-{
-    m_sequence_active = -1;
-    m_pTimelineSet = NULL;
-    m_pRecordTree = NULL;
-}
-
 void GRIBUIDialog::SetCursorLatLon( double lat, double lon )
 {
     m_cursor_lon = lon;
@@ -224,154 +273,238 @@ void GRIBUIDialog::SetCursorLatLon( double lat, double lon )
     UpdateTrackingControls();
 }
 
+void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show )
+{
+    if(show) {
+        m_fgTrackingControls->Add(ctrl1, 0, wxALL, 5);
+        ctrl1->Show();
+        if(ctrl2) {
+            m_fgTrackingControls->Add(ctrl2, 0, wxALL, 5);
+            ctrl2->Show();
+        } else
+              m_fgTrackingControls->Add(0, 0, 1, wxEXPAND, 5); /* spacer */
+        
+        if(ctrl3) {
+            m_fgTrackingControls->Add(ctrl3, 0, wxALL, 5);
+            ctrl3->Show();
+        } else
+            m_fgTrackingControls->Add(0, 0, 1, wxEXPAND, 5); /* spacer */
+    } else {
+        ctrl1->Hide();
+        if(ctrl2)
+            ctrl2->Hide();
+        if(ctrl3)
+            ctrl3->Hide();
+    }
+}
+    
+void GRIBUIDialog::PopulateTrackingControls( void )
+{
+    m_fgTrackingControls->Clear();
+
+    GribRecord **RecordArray;
+    if( m_pTimelineSet )
+        RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
+
+    AddTrackingControl(m_cbWind, m_tcWindSpeed, m_tcWindDirection,
+                       m_pTimelineSet && RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY]);
+    AddTrackingControl(m_cbWindScat, m_tcWindScatSpeed, m_tcWindScatDirection,
+                       m_pTimelineSet && RecordArray[Idx_WINDSCAT_VX] && RecordArray[Idx_WINDSCAT_VY]);
+    AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet && RecordArray[Idx_WIND_GUST]);
+    AddTrackingControl(m_cbPressure, m_tcPressure, 0, m_pTimelineSet && RecordArray[Idx_PRESSURE]);
+
+    /* tracking for wave is funky */
+    if(m_pTimelineSet && RecordArray[Idx_HTSIGW]) {
+        if(RecordArray[Idx_WVDIR])
+            AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, true);
+        else {
+            AddTrackingControl(m_cbWave, m_tcWaveHeight, 0, true);
+            m_tcWaveDirection->Hide();
+        }
+    } else
+        if(m_pTimelineSet && RecordArray[Idx_WVDIR]) {
+            AddTrackingControl(m_cbWave, 0, m_tcWaveDirection, true);
+            m_tcWaveHeight->Hide();
+        } else
+            AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, false);
+
+    AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection,
+                       m_pTimelineSet && RecordArray[Idx_SEACURRENT_VX] && RecordArray[Idx_SEACURRENT_VY]);
+    AddTrackingControl(m_cbPrecipitation, m_tcPrecipitation, 0,
+                       m_pTimelineSet && RecordArray[Idx_PRECIP_TOT]);
+    AddTrackingControl(m_cbCloud, m_tcCloud, 0,
+                       m_pTimelineSet && RecordArray[Idx_CLOUD_TOT]);
+    AddTrackingControl(m_cbAirTemperature, m_tcAirTemperature, 0,
+                       m_pTimelineSet && RecordArray[Idx_AIR_TEMP_2M]);
+    AddTrackingControl(m_cbSeaTemperature, m_tcSeaTemperature, 0,
+                       m_pTimelineSet && RecordArray[Idx_SEA_TEMP]);
+
+    Fit();
+    Refresh();
+}
+
 void GRIBUIDialog::UpdateTrackingControls( void )
 {
-    m_tcWindSpeed->Clear();
-    m_tcWindDirection->Clear();
-    m_tcPressure->Clear();
-    m_tcWaveHeight->Clear();
-    m_tcWaveDirection->Clear();
-    m_tcSeaTemperature->Clear();
-    m_tcCurrentVelocity->Clear();
-    m_tcCurrentDirection->Clear();
+    if( !m_pTimelineSet )
+        return;
 
-    if( m_pTimelineSet ) {
-
-        wxDateTime t = m_pTimelineSet->m_Reference_Time;
-        t.MakeFromTimezone( wxDateTime::UTC );
-        if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
-        m_stDateTime->SetLabel(t.Format(_T("%Y-%m-%d %H:%M:%S "), wxDateTime::Local) + _T("Local - ") +
-                               t.Format(_T("%H:%M:%S "), wxDateTime::UTC) + _T("GMT"));
-
-        GribRecord **RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
-        //    Update the wind control
-        if( RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY] ) {
-            double vx = RecordArray[Idx_WIND_VX]->
-                getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-            double vy = RecordArray[Idx_WIND_VY]->
-                getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+    wxDateTime t = m_pTimelineSet->m_Reference_Time;
+    t.MakeFromTimezone( wxDateTime::UTC );
+    if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
+    m_cRecordForecast->SetLabel(t.Format(_T("%Y-%m-%d %H:%M:%S "), wxDateTime::Local) + _T("Local - ") +
+                                t.Format(_T("%H:%M:%S "), wxDateTime::UTC) + _T("GMT"));
+    
+    GribRecord **RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
+    //    Update the wind control
+    if( RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY] ) {
+        double vx = RecordArray[Idx_WIND_VX]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+        double vy = RecordArray[Idx_WIND_VY]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+        
+        if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
+            vx = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vx);
+            vy = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vy);
             
-            if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-                vx = m_OverlayConfig.CalibrateValue(GribOverlayConfig::WIND, vx);
-                vy = m_OverlayConfig.CalibrateValue(GribOverlayConfig::WIND, vy);
-
-                double vkn = sqrt( vx * vx + vy * vy );
-                double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
-                if( ang > 360. ) ang -= 360.;
-                if( ang < 0. ) ang += 360.;
-
-                wxString t;
-                t.Printf( _T("%2d"), (int) vkn );
-                m_tcWindSpeed->AppendText( t );
-
-                t.Printf( _T("%03d"), (int) ( ang ) );
-                m_tcWindDirection->AppendText( t );
-            }
-        }
-
-        //    Update the Pressure control
-        if( RecordArray[Idx_PRESS] ) {
-            double press = RecordArray[Idx_PRESS]->
-                getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-
-            if( press != GRIB_NOTDEF ) {
-                press = m_OverlayConfig.CalibrateValue(GribOverlayConfig::PRESSURE, press);
-
-                wxString t;
-                t.Printf( _T("%2d"), (int) ( press ) );
-                m_tcPressure->AppendText( t );
-            }
-        }
-
-        //    Update the Sig Wave Height
-        if( RecordArray[Idx_HTSIGW] ) {
-            double height = RecordArray[Idx_HTSIGW]->
-                getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-
-            if( height != GRIB_NOTDEF ) {
-                height = m_OverlayConfig.CalibrateValue(GribOverlayConfig::WAVE, height);
-
-                wxString t;
-                t.Printf( _T("%4.1f"), height );
-                m_tcWaveHeight->AppendText( t );
-            }
-        }
-
-        if( RecordArray[Idx_WVDIR] ) {
-            double direction = RecordArray[Idx_WVDIR]->
-                getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-            if( direction != GRIB_NOTDEF ) {
-                wxString t;
-                t.Printf( _T("%03d"), (int)direction );
-                m_tcWaveDirection->AppendText( t );
-            }
-        }
-
-#if 0
-        //    Update the QuickScat (aka Wind) control
-        if( RecordArray[Idx_WINDSCAT_VX] && RecordArray[Idx_WINDSCAT_VY] ) {
-            double vx = RecordArray[Idx_WINDSCAT_VX]->
-                getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-            double vy = RecordArray[Idx_WINDSCAT_VY]->
-                getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-
-            if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-                vx = m_OverlayConfig.CalibrateValue(GribOverlayConfig::WIND, vx);
-                vy = m_OverlayConfig.CalibrateValue(GribOverlayConfig::WIND, vy);
-
-                double vkn = sqrt( vx * vx + vy * vy ) * 3.6 / 1.852;
-                double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
-                if( ang > 360. ) ang -= 360.;
-                if( ang < 0. ) ang += 360.;
-
-                wxString t;
-                t.Printf( _T("%2d"), (int) vkn );
-                m_tcWindSpeed->AppendText( t );
-
-                t.Printf( _T("%03d"), (int) ( ang ) );
-                m_tcWindDirection->AppendText( t );
-            }
-        }
-#endif
-
-        //    Update the SEATEMP
-        if( RecordArray[Idx_SEATEMP] ) {
-            double temp = RecordArray[Idx_SEATEMP]->
-                getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
-
-            if( temp != GRIB_NOTDEF ) {
-                temp = m_OverlayConfig.CalibrateValue(GribOverlayConfig::SEA_TEMPERATURE, temp);
-                wxString t;
-                t.Printf( _T("%6.2f"), temp );
-                m_tcSeaTemperature->AppendText( t );
-            }
-        }
-
-        //    Update the Current control
-        if( RecordArray[Idx_SEACURRENT_VX] && RecordArray[Idx_SEACURRENT_VY] ) {
-            double vx = RecordArray[Idx_SEACURRENT_VX]->
-                getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-            double vy = RecordArray[Idx_SEACURRENT_VY]->
-                getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-
-            if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-                vx = m_OverlayConfig.CalibrateValue(GribOverlayConfig::CURRENT, vx);
-                vy = m_OverlayConfig.CalibrateValue(GribOverlayConfig::CURRENT, vy);
-
-                double vkn = sqrt( vx * vx + vy * vy );
-                double ang = 90. + ( atan2( -vy, vx ) * 180. / PI );
-                if( ang > 360. ) ang -= 360.;
-                if( ang < 0. ) ang += 360.;
-
-                wxString t;
-                t.Printf( _T("%5.2f"), vkn );
-                m_tcCurrentVelocity->AppendText( t );
-
-                t.Printf( _T("%03d"), (int) ( ang ) );
-                m_tcCurrentDirection->AppendText( t );
-            }
+            double vkn = sqrt( vx * vx + vy * vy );
+            m_tcWindSpeed->SetValue( wxString::Format( _T("%2d"), (int) vkn ));
+            
+            double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
+            if( ang > 360. ) ang -= 360.;
+            if( ang < 0. ) ang += 360.;
+            m_tcWindDirection->SetValue( wxString::Format( _T("%03d"), (int) ( ang ) ));
         }
     }
+    
+    //    Update the QuickScat (aka Wind) control
+    if( RecordArray[Idx_WINDSCAT_VX] && RecordArray[Idx_WINDSCAT_VY] ) {
+        double vx = RecordArray[Idx_WINDSCAT_VX]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+        double vy = RecordArray[Idx_WINDSCAT_VY]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+        
+        if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
+            vx = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vx);
+            vy = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vy);
+            
+            double vkn = sqrt( vx * vx + vy * vy );
+            m_tcWindScatSpeed->SetValue( wxString::Format( _T("%2d"), (int) vkn ) );
+            
+            double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
+            if( ang > 360. ) ang -= 360.;
+            if( ang < 0. ) ang += 360.;
+            m_tcWindScatDirection->SetValue( wxString::Format( _T("%03d"), (int) ( ang ) ) );
+        }
+    }
+    
+    //    Update the Wind gusts control
+    if( RecordArray[Idx_WIND_GUST] ) {
+        double vkn = RecordArray[Idx_WIND_GUST]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+        
+        if( vkn != GRIB_NOTDEF ) {
+            vkn = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND_GUST, vkn);
+            m_tcWindGust->SetValue( wxString::Format(_T("%2d"), (int) ( vkn )) );
+        }
+    }
+    
+    //    Update the Pressure control
+    if( RecordArray[Idx_PRESSURE] ) {
+        double press = RecordArray[Idx_PRESSURE]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+        
+        if( press != GRIB_NOTDEF ) {
+            press = m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRESSURE, press);
+            m_tcPressure->SetValue( wxString::Format(_T("%2d"), (int) ( press )) );
+        }
+    }
+
+    //    Update the Sig Wave Height
+    if( RecordArray[Idx_HTSIGW] ) {
+        double height = RecordArray[Idx_HTSIGW]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+        
+        if( height != GRIB_NOTDEF ) {
+            height = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WAVE, height);
+            m_tcWaveHeight->SetValue( wxString::Format( _T("%4.1f"), height ));
+        }
+    }
+    
+    // Update the Wave direction
+    if( RecordArray[Idx_WVDIR] ) {
+        double direction = RecordArray[Idx_WVDIR]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+        if( direction != GRIB_NOTDEF )
+            m_tcWaveDirection->SetValue( wxString::Format( _T("%03d"), (int)direction ));
+    }
+    
+    
+    //    Update the Current control
+    if( RecordArray[Idx_SEACURRENT_VX] && RecordArray[Idx_SEACURRENT_VY] ) {
+        double vx = RecordArray[Idx_SEACURRENT_VX]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+        double vy = RecordArray[Idx_SEACURRENT_VY]->
+            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+        
+        if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
+            vx = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vx);
+            vy = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vy);
+            
+            double vkn = sqrt( vx * vx + vy * vy );
+            m_tcCurrentVelocity->SetValue( wxString::Format( _T("%5.2f"), vkn ) );
+            
+            double ang = 90. + ( atan2( -vy, vx ) * 180. / PI );
+            if( ang > 360. ) ang -= 360.;
+            if( ang < 0. ) ang += 360.;
+            m_tcCurrentDirection->SetValue( wxString::Format( _T("%03d"), (int) ( ang ) ) );            
+        }
+    }
+    
+    //    Update total rainfall control
+    if( RecordArray[Idx_PRECIP_TOT] ) {
+        double precip = RecordArray[Idx_PRECIP_TOT]->
+            getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
+        
+        if( precip != GRIB_NOTDEF ) {
+            precip = m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRECIPITATION, precip);
+            m_tcPrecipitation->SetValue( wxString::Format( _T("%6.2f"), precip ) );
+        }
+    }
+    
+    //    Update total cloud control
+    if( RecordArray[Idx_CLOUD_TOT] ) {
+        double cloud = RecordArray[Idx_CLOUD_TOT]->
+            getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
+        
+        if( cloud != GRIB_NOTDEF ) {
+            cloud = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CLOUD, cloud);
+            m_tcCloud->SetValue( wxString::Format( _T("%6.2f"), cloud ) );
+        }
+    }
+    
+    //    Update the Air Temperature
+    if( RecordArray[Idx_AIR_TEMP_2M] ) {
+        double temp = RecordArray[Idx_AIR_TEMP_2M]->
+            getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
+        
+        if( temp != GRIB_NOTDEF ) {
+            temp = m_OverlaySettings.CalibrateValue(GribOverlaySettings::AIR_TEMPERATURE, temp);
+            m_tcAirTemperature->SetValue( wxString::Format( _T("%6.2f"), temp ) );
+        }
+    }
+    
+    //    Update the Sea Surface Temperature
+    if( RecordArray[Idx_SEA_TEMP] ) {
+        double temp = RecordArray[Idx_SEA_TEMP]->
+            getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
+        
+        if( temp != GRIB_NOTDEF ) {
+            temp = m_OverlaySettings.CalibrateValue(GribOverlaySettings::SEA_TEMPERATURE, temp);
+            m_tcSeaTemperature->SetValue( wxString::Format( _T("%6.2f"), temp ) );
+        }
+    }
+
+    Fit();
 }
 
 void GRIBUIDialog::OnClose( wxCloseEvent& event )
@@ -399,17 +532,155 @@ void GRIBUIDialog::OnSize( wxSizeEvent& event )
     event.Skip();
 }
 
-void GRIBUIDialog::OnConfig( wxCommandEvent& event )
-{
-    GribOverlayConfig initConfig = m_OverlayConfig;
-    GRIBConfigDialog *dialog = new GRIBConfigDialog( *this, m_OverlayConfig,  m_lastdatatype);
 
+void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
+{
+    double lonmax=m_vp->lon_max;
+    double lonmin=m_vp->lon_min;
+    if( ( fabs( m_vp->lat_max ) < 90. ) && ( fabs( lonmax ) < 360. ) ) {
+           if( lonmax < -180. ) lonmax += 360.;
+           if( lonmax > 180. ) lonmax -= 360.;
+    }
+    if( ( fabs( m_vp->lat_min ) < 90. ) && ( fabs( lonmin ) < 360. ) ) {
+            if( lonmin < -180. ) lonmin += 360.;
+            if( lonmin > 180. ) lonmin -= 360.;
+    }
+    wxString zone( 
+        toSAILDOC( 1, 1, m_vp->lat_max ) + wxT(",") +
+        toSAILDOC( 1, 2, m_vp->lat_min ) + wxT(",") +
+        toSAILDOC( 2, 2, lonmin ) + wxT(",") +
+        toSAILDOC( 2, 1, lonmax ) );
+    ShowSendRequest( zone );
+}
+
+void GRIBUIDialog::ShowSendRequest( wxString r_zone )
+{
+    wxString config = pPlugIn->GetMailRequestConfig();
+    wxString r_action = wxT("send");
+    wxString r_model,r_resolution,r_interval,r_period,r_parameters;
+    if( config.GetChar( 1 ) == '0' ) {                          //GFS
+        r_model = wxT("GFS:");
+        if( config.GetChar( 2 ) == '0' )
+            r_resolution = wxT("0.5,0.5");
+        else if( config.GetChar( 2 ) == '1' )
+            r_resolution = wxT("1.0,1.0");
+        else if( config.GetChar( 2 ) == '2' )
+            r_resolution = wxT("1.5,1.5");
+        else if( config.GetChar( 2 ) == '3' )
+            r_resolution = wxT("2.0,2.0");
+        r_parameters = wxT("WIND,PRESS");
+        if( config.GetChar( 7 ) == 'X' )
+            r_parameters.Append( wxT(",WAVES") );
+        if( config.GetChar( 8 ) == 'X' )
+            r_parameters.Append( wxT(",APCP") );
+        if( config.GetChar( 9 ) == 'X' )
+            r_parameters.Append( wxT(",TCDC") );
+        if( config.GetChar( 10 ) == 'X' )
+            r_parameters.Append( wxT(",AIRTMP") );
+        if( config.GetChar( 11 ) == 'X' )
+            r_parameters.Append( wxT(",SEATMP") );
+    } else if( config.GetChar( 1 ) == '1' ) {                   //COAMPS
+        r_model = wxT("COAMPS:");
+        if( config.GetChar( 2 ) == '0' )
+            r_resolution = wxT("0.2,0.2");
+        else if( config.GetChar( 2 ) == '1' )
+            r_resolution = wxT("0.6,0.6");
+        else if( config.GetChar( 2 ) == '2' )
+            r_resolution = wxT("1.2,1.2");
+        else if( config.GetChar( 2 ) == '3' )
+            r_resolution = wxT("2.0,2.0");
+        r_parameters = wxT("WIND,PRMSL");
+    } else if( config.GetChar( 1 ) == '2' ) {                   //RTOFS
+        r_model = wxT("RTOFS:");
+        r_resolution = wxT("0.5,0.5");
+        r_parameters = wxT("CUR,WTMP");
+    }
+    if( config.GetChar( 3 ) == '0' )                            //ALL
+        r_interval = wxT("0,3,6");
+    else if( config.GetChar( 3 ) == '1' )
+        r_interval = wxT("0,6,12");
+    else if( config.GetChar( 3 ) == '2' )
+        r_interval = wxT("0,12,24");
+    if( config.GetChar( 4 ) == '0' ) 
+        r_period = wxT("..96");
+    else if( config.GetChar( 4 ) == '1' ) 
+        r_period = wxT("..144");
+    else if( config.GetChar( 4 ) == '2' ) 
+        r_period = wxT("..192");
+
+    wxString r_separator = wxT("|");
+    wxString r_return = wxT("|=\n");
+    wxString r_colon = wxT(": ");
+
+    //display request profile
+    wxString r_info,i;
+    double v;
+    r_info.Append( _("eMail To") + r_colon );
+    r_info.Append( pPlugIn->GetSaildocAdresse() );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Action") + r_colon );
+    r_info.Append( _("Send") );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Model") + r_colon );
+    r_info.Append( r_model );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Zone") + r_colon );
+    r_info.Append( r_zone );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Resolution") + r_colon );
+    r_info.Append( r_resolution.BeforeFirst( ',' ) + _(" Deg") );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Interval") + r_colon );
+    i = r_interval.AfterFirst( ',' );
+    r_info.Append( i.BeforeLast( ',' ) + _(" h") );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Period") + r_colon );
+    r_period.AfterLast( '.' ).ToDouble( &v );
+    i.Printf( _T("%.0f " ), v/24. );
+    r_info.Append( i );
+    r_info.Append( _("Days") );
+    r_info.Append( wxT("\n") );
+    r_info.Append( _("Parameters") + r_colon );
+    r_info.Append( r_parameters );
+    
+     GribPofileDisplay *r_dialog = new GribPofileDisplay(this, r_info );
+     r_dialog->Fit();
+     int choice = r_dialog->ShowModal();
+        if( choice == wxID_OK ) {               //print and send request mail
+
+            wxMailMessage *message = new wxMailMessage( 
+            wxT("Grib-Request"),
+            pPlugIn->GetSaildocAdresse(),       //to ( saildoc request adresse )
+            wxT("send ") + r_model + r_zone + r_separator + r_resolution
+            + r_separator + r_interval + r_period + r_return + r_parameters,                    //message
+            wxT("")
+            );
+            wxEmail mail ;
+            if(mail.Send( *message ) ) {
+                wxMessageDialog *dialog = new wxMessageDialog(this,
+#ifdef __WXMSW__
+                    _("Your request is ready. An eMail is prepared in your eMail environment.\nYou have just to click 'send' to send it.\nOK to continue ...")
+#else
+                    _("Your request was sent (if your system has an MTA configured and is able to send mail).\nOK to continue ...")
+#endif
+                    ,_("eMail"),wxOK );
+                dialog->ShowModal();
+            }
+        }
+
+        r_dialog->Destroy();
+}
+
+void GRIBUIDialog::OnSettings( wxCommandEvent& event )
+{
+    GribOverlaySettings initSettings = m_OverlaySettings;
+    GribSettingsDialog *dialog = new GribSettingsDialog( *this, m_OverlaySettings,  m_lastdatatype);
     if(dialog->ShowModal() == wxID_OK)
     {
-        dialog->WriteConfig();
-        m_OverlayConfig.Write();
+        dialog->WriteSettings();
+        m_OverlaySettings.Write();
     } else
-        m_OverlayConfig = initConfig;
+        m_OverlaySettings = initSettings;
 
     SetFactoryOptions();
 }
@@ -418,8 +689,7 @@ void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
 {
     if(m_tbPlayStop->GetValue()) {
         m_tbPlayStop->SetLabel(_("Stop"));
-        m_tPlayStop.SetOwner( this, ID_PLAYSTOP );
-        m_tPlayStop.Start( 1000/m_OverlayConfig.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
+        m_tPlayStop.Start( 1000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
     } else
         m_tbPlayStop->SetLabel(_("Play"));
 }
@@ -429,7 +699,7 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
     if(!m_tbPlayStop->GetValue())
         m_tPlayStop.Stop();
     else if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) {
-        if(m_OverlayConfig.m_bLoopMode) {
+        if(m_OverlaySettings.m_bLoopMode) {
             m_sTimeline->SetValue(0);
             TimelineChanged();
         } else {
@@ -438,11 +708,12 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
             m_tPlayStop.Stop();
         }
     } else {
-        m_sTimeline->SetValue(m_sTimeline->GetValue() + m_OverlayConfig.m_SlicesPerUpdate);
+        m_sTimeline->SetValue(m_sTimeline->GetValue() + m_OverlaySettings.m_SlicesPerUpdate);
         TimelineChanged();
     }
 }
 
+#if 0
 void GRIBUIDialog::OnFileDirChange( wxFileDirPickerEvent &event )
 {
     m_pRecordTree->DeleteAllItems();
@@ -458,26 +729,51 @@ void GRIBUIDialog::OnFileDirChange( wxFileDirPickerEvent &event )
 
     m_grib_dir = event.GetPath();
 }
+#endif
 
 void GRIBUIDialog::TimelineChanged()
 {
-    if(!m_pTimelineBase)
+    if(!m_bGRIBActiveFile)
         return;
 
-    SetGribTimelineRecordSet(GetTimeLineRecordSet(TimelineTime()));
+    wxDateTime time = TimelineTime();
+    SetGribTimelineRecordSet(GetTimeLineRecordSet(time));
 
+    /* get closest index to update combo box */
+    unsigned int i;
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    wxDateTime itime, ip1time;
+    for(i=0; i<rsa->GetCount()-1; i++) {
+        itime = rsa->Item(i).m_Reference_Time;
+        ip1time = rsa->Item(i+1).m_Reference_Time;
+        if(ip1time >= time)
+            break;
+    }
+
+    if(time - itime < ip1time - time)
+        m_cRecordForecast->SetSelection(i);
+    else
+        m_cRecordForecast->SetSelection(i+1);
+
+    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
+    m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
+    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
+    
     pPlugIn->SendTimelineMessage();
 }
 
 wxDateTime GRIBUIDialog::TimelineTime()
 {
-    return MinTime() + wxTimeSpan(m_sTimeline->GetValue()/m_OverlayConfig.m_HourDivider);
+    return MinTime() + wxTimeSpan(m_sTimeline->GetValue()/m_OverlaySettings.m_HourDivider,
+                                  (m_sTimeline->GetValue()%m_OverlaySettings.m_HourDivider)
+                                  *60/m_OverlaySettings.m_HourDivider);
 }
 
 wxDateTime GRIBUIDialog::MinTime()
 {
-    if(m_pTimelineBase && m_pTimelineBase->GetCount()) {
-        GribRecordSet &first=m_pTimelineBase->Item(0);
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    if(rsa && rsa->GetCount()) {
+        GribRecordSet &first = rsa->Item(0);
         return first.m_Reference_Time;
     }
     return wxDateTime(0.0);
@@ -485,16 +781,17 @@ wxDateTime GRIBUIDialog::MinTime()
 
 wxDateTime GRIBUIDialog::MaxTime()
 {
-    return MinTime() + wxTimeSpan(m_sTimeline->GetMax()/m_OverlayConfig.m_HourDivider);
+    return MinTime() + wxTimeSpan(m_sTimeline->GetMax()/m_OverlaySettings.m_HourDivider);
 }
 
 GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
 {
     unsigned int i, ip1=0;
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
     wxDateTime curtime;
-    for(i=0; i<m_pTimelineBase->GetCount()-1; i++) {
+    for(i=0; i<rsa->GetCount()-1; i++) {
         ip1 = i+1;
-        GribRecordSet &cur=m_pTimelineBase->Item(ip1);
+        GribRecordSet &cur=rsa->Item(ip1);
         curtime = cur.m_Reference_Time;
         if(curtime >= time)
             break;
@@ -502,7 +799,7 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
     
     wxDateTime mintime = MinTime();
     double hour2 = (curtime - mintime).GetHours();
-    curtime = m_pTimelineBase->Item(i).m_Reference_Time;
+    curtime = rsa->Item(i).m_Reference_Time;
     double hour1 = (curtime - mintime).GetHours();
     double nhour = (time - mintime).GetHours();
     
@@ -515,14 +812,14 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
     else 
         interp_const = (nhour-hour1) / (hour2-hour1);
     
-    if(!m_OverlayConfig.m_bInterpolate)
+    if(!m_OverlaySettings.m_bInterpolate)
         interp_const = round(interp_const);
 
-    GribRecordSet &GRS1 = m_pTimelineBase->Item(i), &GRS2 = m_pTimelineBase->Item(ip1);
+    GribRecordSet &GRS1 = rsa->Item(i), &GRS2 = rsa->Item(ip1);
     return new GribTimelineRecordSet(GRS1, GRS2, interp_const);
 }
 
-void GRIBUIDialog::OnTimeline( wxCommandEvent& event )
+void GRIBUIDialog::OnTimeline( wxScrollEvent& event )
 {
     TimelineChanged();
 }
@@ -532,121 +829,154 @@ void GRIBUIDialog::OnCBAny( wxCommandEvent& event )
     SetFactoryOptions();                     // Reload the visibility options
 }
 
-void GRIBUIDialog::PopulateTreeControl()
+void GRIBUIDialog::OnOpenFile( wxCommandEvent& event )
 {
-    wxString currentGribDir = m_dirPicker->GetPath();
-    if( !wxDir::Exists( currentGribDir ) ) return;
+    //    m_pGribForecastTimer.Stop();
+       
+    wxFileDialog *dialog = new wxFileDialog(this, _("Select a GRIB file"), pPlugIn->GetGribDirectory(), 
+        _T(""), wxT ( "Grib files (*.grb;*.grb.bz2|*.grb;*.grb.bz2"), wxFD_OPEN, wxDefaultPosition,
+        wxDefaultSize, _T("File Dialog") ); 
 
+    if( dialog->ShowModal() == wxID_OK ) {
+        m_cRecordForecast->Clear();
+        m_bGRIBActiveFile = NULL;
+        pPlugIn->SetGribDirectory( dialog->GetDirectory() );
+
+        m_bGRIBActiveFile = new GRIBFile( dialog->GetPath(),
+            pPlugIn->GetCopyFirstCumRec(), pPlugIn->GetCopyMissWaveRec() );
+
+        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+        if(rsa->GetCount() < 2)
+            m_TimeLineHours = 0;
+        else {
+            GribRecordSet &first=rsa->Item(0), &last = rsa->Item(rsa->GetCount()-1);
+
+            wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
+            m_TimeLineHours = span.GetHours();
+        }
+
+        wxFileName fn( dialog->GetPath() );
+        SetLabel( fn.GetFullName() );
+
+        if( m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK() ) { 
+            PopulateComboDataList( 0 );
+            ComputeBestForecastForNow();
+        } else 
+            pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
+
+        DisplayDataGRS();
+        PopulateTrackingControls();
+    }
+}
+
+void GRIBUIDialog::CreateActiveFileFromName( wxString filename )
+{
+    if( !filename.IsEmpty() ) {
+        m_bGRIBActiveFile = NULL;
+        m_bGRIBActiveFile = new GRIBFile( filename , pPlugIn->GetCopyFirstCumRec(),
+                                          pPlugIn->GetCopyMissWaveRec() );
+    }
+}
+
+void GRIBUIDialog::GetFirstrFileInDirectory()
+{
+    //reinitialise data containers
+     m_cRecordForecast->Clear();
+     m_bGRIBActiveFile = NULL;
+     if( !wxDir::Exists( pPlugIn->GetGribDirectory() ) ) {
+         wxStandardPaths path;
+         pPlugIn->SetGribDirectory( path.GetDocumentsDir() );
+    }
     //    Get an array of GRIB file names in the target directory, not descending into subdirs
     wxArrayString file_array;
+    int m_n_files = 0;
+    m_n_files = wxDir::GetAllFiles( pPlugIn->GetGribDirectory(), &file_array, _T ( "*.grb" ), wxDIR_FILES );
+    m_n_files += wxDir::GetAllFiles( pPlugIn->GetGribDirectory(), &file_array, _T ( "*.grb.bz2" ),
+        wxDIR_FILES );
+    if( m_n_files ) {
+        file_array.Sort( CompareFileStringTime );              //sort the files by File Modification Date  
 
-    m_n_files = wxDir::GetAllFiles( currentGribDir, &file_array, _T ( "*.grb" ), wxDIR_FILES );
-    m_n_files += wxDir::GetAllFiles( currentGribDir, &file_array, _T ( "*.grb.bz2" ), wxDIR_FILES );
+        m_bGRIBActiveFile = new GRIBFile( file_array[0] ,      //take the younger
+            pPlugIn->GetCopyFirstCumRec(), pPlugIn->GetCopyMissWaveRec() );
 
-    //    Sort the files by File Modification Date
-    file_array.Sort( CompareFileStringTime );
+        wxFileName fn( file_array[0] );
+        SetLabel( fn.GetFullName() );
 
-    //    Add the files to the tree at the root
-    m_pRecordTree->m_file_id_array = new wxTreeItemId[m_n_files];
-
-    for( int i = 0; i < m_n_files; i++ ) {
-        GribTreeItemData *pmtid = new GribTreeItemData( GRIB_FILE_TYPE );
-        pmtid->m_file_name = file_array[i];
-        pmtid->m_file_index = i;
-
-        wxFileName fn( file_array[i] );
-        m_pRecordTree->m_file_id_array[i] = m_pRecordTree->AppendItem( m_RecordTree_root_id,
-                fn.GetFullName(), -1, -1, pmtid );
-
-//      m_pRecordTree->SetItemTextColour(m_pRecordTree->m_file_id_array[i], GetGlobalColor ( _T ( "UBLCK")));
+        if( m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK() ) {
+            PopulateComboDataList(0);
+            ComputeBestForecastForNow();
+        } else 
+            pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
+    } else {
+         pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning :  This directory is Empty!") );
+         SetLabel( pPlugIn->GetGribDirectory() );
     }
-
-    //    Will this be too slow?
-    //    Parse and show at most "n" files, maybe move to config?
-    int n_parse = wxMin(5, m_n_files);
-
-    for( int i = 0; i < n_parse; i++ ) {
-        GribTreeItemData *pdata = (GribTreeItemData *) m_pRecordTree->GetItemData(
-                m_pRecordTree->m_file_id_array[i] );
-
-        //    Create and ingest the GRIB file object if needed
-        if( NULL == pdata->m_pGribFile ) {
-            GRIBFile *pgribfile = new GRIBFile( pdata->m_file_name );
-            if( pgribfile ) {
-                if( pgribfile->IsOK() ) {
-                    pdata->m_pGribFile = pgribfile;
-                    PopulateTreeControlGRS( pgribfile, pdata->m_file_index );
-                }
-            }
-        }
-    }
-
-    /* select configured filename */
-    wxTreeItemId &item = m_RecordTree_root_id;
-    for( int i = 0; i < m_n_files; i++ ) {
-        GribTreeItemData *pdata = (GribTreeItemData *) m_pRecordTree->GetItemData(
-            m_pRecordTree->m_file_id_array[i] );
-
-        if(pdata->m_file_name == m_file_name) /* select specified file */
-            item = m_pRecordTree->m_file_id_array[i];
-    }
-
-    m_pRecordTree->SelectItem(item);
 }
 
-void GRIBUIDialog::SelectTreeControlGRS( GRIBFile *pgribfile )
+void GRIBUIDialog::PopulateComboDataList( int index )
 {
-    ArrayOfGribRecordSets *rsa = pgribfile->GetRecordSetArrayPtr();
-    if(rsa->GetCount() < 2)
-        return;
+    m_cRecordForecast->Clear();
 
-    GribRecordSet &first=rsa->Item(0), &last = rsa->Item(rsa->GetCount()-1);
-
-    wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
-    m_TimeLineHours = span.GetHours();
-
-    m_pTimelineBase = rsa;
-    m_sTimeline->SetMax(m_TimeLineHours*m_OverlayConfig.m_HourDivider);
-    m_sTimeline->Enable();
-}
-
-void GRIBUIDialog::PopulateTreeControlGRS( GRIBFile *pgribfile, int file_index )
-{
-    //    Get the array of GribRecordSets, and add one-by-one to the tree,
-    //    each under the proper file item.
-    ArrayOfGribRecordSets *rsa = pgribfile->GetRecordSetArrayPtr();
-
-    for( unsigned int i = 0; i < rsa->GetCount(); i++ ) {
-        GribTreeItemData *pmtid = new GribTreeItemData( GRIB_RECORD_SET_TYPE );
-        pmtid->m_pGribFile = pgribfile;
-        pmtid->m_pGribRecordSet = &rsa->Item( i );
-
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    for( size_t i = 0; i < rsa->GetCount(); i++ ) {
         wxDateTime t( rsa->Item( i ).m_Reference_Time );
-        t.MakeFromTimezone( wxDateTime::UTC );
-        if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
 
-        // This is a hack because Windows is broke....
-        wxString time_string = t.Format( _T("%a %d-%b-%Y %H:%M:%S "), wxDateTime::Local );
-        time_string.Append( _T("Local - ") );
-        time_string.Append( t.Format( _T("%a %d-%b-%Y %H:%M:%S "), wxDateTime::UTC ) );
-        time_string.Append( _T("GMT") );
-
-        m_pRecordTree->AppendItem( m_pRecordTree->m_file_id_array[file_index],
-                                   time_string, -1, -1, pmtid );
+        m_cRecordForecast->Append( TToString( t, pPlugIn->GetTimeZone() ) );
     }
+    m_cRecordForecast->SetSelection( index );
+}
+
+void GRIBUIDialog::OnPrev( wxCommandEvent& event )
+{
+//    m_pGribForecastTimer.Stop();
+    int selection = m_cRecordForecast->GetCurrentSelection() - 1;
+    if(selection < 0)
+        selection = 0;
+    m_cRecordForecast->SetSelection( selection );
+    DisplayDataGRS( );
+}
+
+void GRIBUIDialog::OnNext( wxCommandEvent& event )
+{
+    if( m_cRecordForecast->GetCurrentSelection() == (int)m_cRecordForecast->GetCount() - 1 ) return; //end of list
+
+//    m_pGribForecastTimer.Stop();
+    m_cRecordForecast->SetSelection( m_cRecordForecast->GetCurrentSelection() + 1 );
+    DisplayDataGRS( );
+}
+
+void GRIBUIDialog::ComputeBestForecastForNow()
+{
+    wxTimeSpan span = wxDateTime::Now() - MinTime();
+    m_sTimeline->SetValue(span.GetHours()*m_OverlaySettings.m_HourDivider);
+
+    TimelineChanged();
+}
+
+void GRIBUIDialog::DisplayDataGRS()
+{
+    if( m_bGRIBActiveFile &&  m_bGRIBActiveFile->IsOK() ) {
+        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+        int selection = m_cRecordForecast->GetCurrentSelection();
+        if(selection >=0) {
+            GribRecordSet *record = &rsa->Item( selection );
+            SelectGribRecordSet( record );
+        }
+    } else 
+        SelectGribRecordSet( NULL );
 }
 
 void GRIBUIDialog::SelectGribRecordSet( GribRecordSet *pGribRecordSet )
 {
-    ArrayOfGribRecordSets *rsa = m_pTimelineBase;
-
-    if(!rsa)
+    if(!pGribRecordSet) {
+        pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
         return;
+    }
 
     wxDateTime mintime = MinTime(), curtime = pGribRecordSet->m_Reference_Time;
     double hour = (curtime - mintime).GetHours();
 
-    m_sTimeline->SetValue(hour*m_OverlayConfig.m_HourDivider);
+    m_sTimeline->SetValue(hour*m_OverlaySettings.m_HourDivider);
     TimelineChanged();
 }
 
@@ -657,16 +987,14 @@ void GRIBUIDialog::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)
 
     if(!pPlugIn->GetGRIBOverlayFactory())
         return;
-
-    //    Give the overlay factory the GribRecordSet
+    
     pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(m_pTimelineSet);
-
-    SetFactoryOptions();
+    SetFactoryOptions(); /* not sure if needed here */
 }
 
 void GRIBUIDialog::SetFactoryOptions()
 {
-    m_sTimeline->SetMax(m_TimeLineHours*m_OverlayConfig.m_HourDivider);
+    m_sTimeline->SetMax(m_TimeLineHours*m_OverlaySettings.m_HourDivider);
     if(m_pTimelineSet)
         m_pTimelineSet->ClearCachedData();
 
@@ -680,12 +1008,12 @@ void GRIBUIDialog::SetFactoryOptions()
 //          GRIBFile Object Implementation
 //----------------------------------------------------------------------------------------------------------
 
-GRIBFile::GRIBFile( const wxString file_name )
+GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
 {
     m_bOK = true;           // Assume ok until proven otherwise
 
     if( !::wxFileExists( file_name ) ) {
-        m_last_error_message = _T ( "   GRIBFile Error:  File does not exist." );
+        m_last_message = _( "Error:  File does not exist!" );
         m_bOK = false;
         return;
     }
@@ -696,6 +1024,17 @@ GRIBFile::GRIBFile( const wxString file_name )
 
     //    Read and ingest the entire GRIB file.......
     m_pGribReader->openFile( file_name );
+
+    if( !m_pGribReader->isOk() ) {
+        m_last_message = _( "Error:  Can't read this File!" );
+        m_bOK = false;
+        return;
+    }
+
+    m_FileName = file_name;
+    
+    if( CumRec ) m_pGribReader->copyFirstCumulativeRecord();            //add missing records if option selected
+    if( WaveRec ) m_pGribReader->copyMissingWaveRecords ();             //  ""                   ""
 
     m_nGribRecords = m_pGribReader->getTotalNumberOfGribRecords();
 
@@ -733,15 +1072,18 @@ GRIBFile::GRIBFile( const wxString file_name )
                     switch(pRec->getDataType()) {
                     case GRB_WIND_VX:  idx = Idx_WIND_VX; break;
                     case GRB_WIND_VY:  idx = Idx_WIND_VY; break;
-                    case GRB_PRESSURE: idx = Idx_PRESS;   break;
+                    case GRB_WIND_GUST: idx = Idx_WIND_GUST; break;
+                    case GRB_PRESSURE: idx = Idx_PRESSURE;   break;
                     case GRB_HTSGW:    idx = Idx_HTSIGW;  break;
                     case GRB_WVDIR:    idx = Idx_WVDIR;   break;
                     case GRB_USCT:     idx = Idx_WINDSCAT_VX; break;
                     case GRB_VSCT:     idx = Idx_WINDSCAT_VY; break;
-//                    case GRB_TEMP:     idx = Idx_SEATEMP break;  // GFS SEATMP
-                    case GRB_WTMP:     idx = Idx_SEATEMP; break;
                     case GRB_UOGRD:    idx = Idx_SEACURRENT_VX; break;
                     case GRB_VOGRD:    idx = Idx_SEACURRENT_VY; break;
+                    case GRB_PRECIP_TOT: idx = Idx_PRECIP_TOT; break;
+                    case GRB_CLOUD_TOT:  idx = Idx_CLOUD_TOT; break;
+                    case GRB_TEMP:     idx = Idx_AIR_TEMP_2M; break;
+                    case GRB_WTMP:     idx = Idx_SEA_TEMP; break;
                     }
 
                     if(idx != -1)

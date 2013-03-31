@@ -70,16 +70,45 @@ bool PointInLLBox( PlugIn_ViewPort *vp, double x, double y )
     return FALSE;
 }
 
+static wxString MToString( int DataCenterModel )
+{
+    switch( DataCenterModel ) {
+    case NOAA_GFS: return  _T("NOAA_GFS");
+    case NOAA_NCEP_WW3: return  _T("NOAA_NCEP_WW3");
+    case NOAA_NCEP_SST: return  _T("NOAA_NCEP_SST");
+    case NOAA_RTOFS: return  _T("NOAA_RTOFS");
+    case FNMOC_WW3_GLB: return  _T("FNMOC_WW3");
+    case FNMOC_WW3_MED: return  _T("FNMOC_WW3");
+    case NORWAY_METNO: return  _T("NORWAY_METNO");
+    default : return  _T("OTHER_DATA_CENTER");
+    }
+}
+
+static wxString TToString( const wxDateTime date_time, const int time_zone )
+{  
+    wxDateTime t( date_time );
+    t.MakeFromTimezone( wxDateTime::UTC );
+    if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
+    switch( time_zone ) {
+        case 0: return t.Format( _T(" %a %d-%b-%Y  %H:%M "), wxDateTime::Local ) + _T("LOC");//:%S
+        case 1: 
+        default: return t.Format( _T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC ) + _T("UTC");
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Factory Implementation
 //----------------------------------------------------------------------------------------------------------
 GRIBOverlayFactory::GRIBOverlayFactory( GRIBUIDialog &dlg )
-    : m_dlg(dlg), m_Config(dlg.m_OverlayConfig)
+    : m_dlg(dlg), m_Settings(dlg.m_OverlaySettings)
 {
+    m_dFont_map = new wxFont( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    m_dFont_war = new wxFont( 16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
+
     m_pGribTimelineRecordSet = NULL;
     m_last_vp_scale = 0.;
 
-    for(int i=0; i<GribOverlayConfig::CONFIG_COUNT; i++)
+    for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++)
         m_pOverlay[i] = NULL;
 }
 
@@ -105,7 +134,7 @@ void GRIBOverlayFactory::SetGribTimelineRecordSet( GribTimelineRecordSet *pGribT
 void GRIBOverlayFactory::ClearCachedData( void )
 {
     //    Clear out the cached bitmaps
-    for(int i=0; i<GribOverlayConfig::CONFIG_COUNT; i++) {
+    for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++) {
         delete m_pOverlay[i];
         m_pOverlay[i] = NULL;
     }
@@ -131,28 +160,38 @@ bool GRIBOverlayFactory::RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp )
     return DoRenderGribOverlay( vp );
 }
 
-void ConfigIdToGribId(int i, int &idx, int &idy, bool &polar)
+void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar)
 {
     idx = idy = -1;
     polar = false;
     switch(i) {
-    case GribOverlayConfig::WIND:
+    case GribOverlaySettings::WIND:
         idx = Idx_WIND_VX, idy = Idx_WIND_VY; break;
-    case GribOverlayConfig::PRESSURE:
-        idx = Idx_PRESS; break;
-    case GribOverlayConfig::WAVE:
+    case GribOverlaySettings::WIND_GUST:
+        idx = Idx_WIND_GUST; break;
+    case GribOverlaySettings::PRESSURE:
+        idx = Idx_PRESSURE; break;
+    case GribOverlaySettings::WAVE:
         idx = Idx_HTSIGW, idy = Idx_WVDIR; polar = true; break;
-    case GribOverlayConfig::SEA_TEMPERATURE:
-        idx = Idx_SEATEMP; break;
-    case GribOverlayConfig::CURRENT:
+    case GribOverlaySettings::CURRENT:
         idx = Idx_SEACURRENT_VX, idy = Idx_SEACURRENT_VY; break;
+    case GribOverlaySettings::PRECIPITATION:
+        idx = Idx_PRECIP_TOT; break;
+    case GribOverlaySettings::CLOUD:
+        idx = Idx_CLOUD_TOT; break;
+    case GribOverlaySettings::AIR_TEMPERATURE:
+        idx = Idx_AIR_TEMP_2M; break;
+    case GribOverlaySettings::SEA_TEMPERATURE:
+        idx = Idx_SEA_TEMP; break;
     }
 }
 
 bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 {
-    if( !m_pGribTimelineRecordSet )
+    if( !m_pGribTimelineRecordSet ) {
+        DrawMessageWindow( ( m_Message ), vp->pix_width, vp->pix_height, m_dFont_war );
         return false;
+    }
 
     //    If the scale has changed, clear out the cached bitmaps
     if( vp->view_scale_ppm != m_last_vp_scale )
@@ -164,25 +203,33 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     GribRecord **pGR = m_pGribTimelineRecordSet->m_GribRecordPtrArray;
     wxArrayPtrVoid **pIA = m_pGribTimelineRecordSet->m_IsobarArray;
     
-    for(int i=0; i<GribOverlayConfig::CONFIG_COUNT; i++) {
-        if((i == GribOverlayConfig::WIND            && !m_dlg.m_cbWind->GetValue()) ||
-           (i == GribOverlayConfig::WAVE            && !m_dlg.m_cbWave->GetValue()) ||
-           (i == GribOverlayConfig::CURRENT         && !m_dlg.m_cbCurrent->GetValue()) ||
-           (i == GribOverlayConfig::PRESSURE        && !m_dlg.m_cbPressure->GetValue()) ||
-           (i == GribOverlayConfig::SEA_TEMPERATURE && !m_dlg.m_cbSeaTemperature->GetValue()))
+    for(int overlay = 1; overlay >= 0; overlay--)
+    for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++) {
+        if((i == GribOverlaySettings::WIND            && !m_dlg.m_cbWind->GetValue()) ||
+           (i == GribOverlaySettings::WIND_GUST       && !m_dlg.m_cbWindGust->GetValue()) ||
+           (i == GribOverlaySettings::PRESSURE        && !m_dlg.m_cbPressure->GetValue()) ||
+           (i == GribOverlaySettings::WAVE            && !m_dlg.m_cbWave->GetValue()) ||
+           (i == GribOverlaySettings::CURRENT         && !m_dlg.m_cbCurrent->GetValue()) ||
+           (i == GribOverlaySettings::PRECIPITATION   && !m_dlg.m_cbPrecipitation->GetValue()) ||
+           (i == GribOverlaySettings::CLOUD           && !m_dlg.m_cbCloud->GetValue()) ||
+           (i == GribOverlaySettings::AIR_TEMPERATURE && !m_dlg.m_cbAirTemperature->GetValue()) ||
+           (i == GribOverlaySettings::SEA_TEMPERATURE && !m_dlg.m_cbSeaTemperature->GetValue()))
             continue;
 
-        RenderGribOverlayMap( i, pGR, vp );
-        RenderGribBarbedArrows( i, pGR, vp );
-        RenderGribIsobar( i, pGR, pIA, vp );
-        RenderGribDirectionArrows( i, pGR, vp );
-        RenderGribNumbers( i, pGR, vp );
+        if(overlay) /* render overlays first */
+            RenderGribOverlayMap( i, pGR, vp );
+        else {
+            RenderGribBarbedArrows( i, pGR, vp );
+            RenderGribIsobar( i, pGR, pIA, vp );
+            RenderGribDirectionArrows( i, pGR, vp );
+            RenderGribNumbers( i, pGR, vp );
+        }
     }
 
     return true;
 }
 
-bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int config, GribRecord *pGR,
+bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR,
                                               PlugIn_ViewPort *vp, int grib_pixel_size,
                                               const wxPoint &porg )
 {
@@ -212,8 +259,8 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int config, Grib
             double v = pGR->getInterpolatedValue(lon, lat);
             unsigned char r, g, b, a;
             if( v != GRIB_NOTDEF ) {
-                v = m_Config.CalibrateValue(config, v);
-                wxColour c = GetGraphicColor(config, v);
+                v = m_Settings.CalibrateValue(settings, v);
+                wxColour c = GetGraphicColor(settings, v);
                 r = c.Red();
                 g = c.Green();
                 b = c.Blue();
@@ -260,7 +307,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int config, Grib
     return true;
 }
 
-wxImage GRIBOverlayFactory::CreateGribImage( int config, GribRecord *pGR,
+wxImage GRIBOverlayFactory::CreateGribImage( int settings, GribRecord *pGR,
                                              PlugIn_ViewPort *vp, int grib_pixel_size,
                                              const wxPoint &porg )
 {
@@ -290,8 +337,8 @@ wxImage GRIBOverlayFactory::CreateGribImage( int config, GribRecord *pGR,
             
             double v = pGR->getInterpolatedValue(lon, lat);
             if( v != GRIB_NOTDEF ) {
-                v = m_Config.CalibrateValue(config, v);
-                wxColour c = GetGraphicColor(config, v);
+                v = m_Settings.CalibrateValue(settings, v);
+                wxColour c = GetGraphicColor(settings, v);
                 
                 unsigned char r = c.Red();
                 unsigned char g = c.Green();
@@ -314,7 +361,7 @@ wxImage GRIBOverlayFactory::CreateGribImage( int config, GribRecord *pGR,
 }
 
 struct ColorMap {
-    int val;
+    double val;
     wxString text;
 };
 
@@ -337,6 +384,17 @@ ColorMap QuickscatMap[] =
  {20, _T("#00d900")}, {25, _T("#d9d900")}, {30, _T("#d95700")}, {35, _T("#ae0000")},
  {40, _T("#870000")}, {45, _T("#414100")}};
 
+//    HTML colors taken from zygrib representation
+ColorMap AirTempMap[] =
+{{-90, _T("#283282")}, {-50, _T("#273c8c")}, {-45, _T("#264696")}, {-40, _T("#2350a0")},
+ {-36, _T("#1f5aaa")}, {-32, _T("#1a64b4")}, {-28, _T("#136ec8")}, {-24, _T("#0c78e1")},
+ {-21, _T("#0382e6")}, {-18, _T("#0091e6")}, {-15, _T("#009ee1")}, {-12, _T("#00a6dc")},
+ {-9 , _T("#00b2d7")}, {-6 , _T("#00bed2")}, {-3 , _T("#28c8c8")}, {0  , _T("#78d2aa")},
+ { 3 , _T("#8cdc78")}, { 6 , _T("#a0eb5f")}, { 9 , _T("#c8f550")}, {12 , _T("#f3fb02")},
+ {15 , _T("#ffed00")}, {18 , _T("#ffdd00")}, { 21, _T("#ffc900")}, {24 , _T("#ffab00")},
+ {28 , _T("#ff8100")}, {32 , _T("#f1780c")}, { 36, _T("#e26a23")}, {40 , _T("#d5453c")},
+ {45 , _T("#b53c59")}};
+
 ColorMap SeaTempMap[] =
 {{0, _T("#0000d9")},  {1, _T("#002ad9")},  {2, _T("#006ed9")},  {3, _T("#00b2d9")},
  {4, _T("#00d4d4")},  {5, _T("#00d9a6")},  {7, _T("#00d900")},  {9, _T("#95d900")},
@@ -344,21 +402,34 @@ ColorMap SeaTempMap[] =
  {24, _T("#d90000")}, {27, _T("#ae0000")}, {30, _T("#8c0000")}, {36, _T("#870000")},
  {42, _T("#690000")}, {48, _T("#550000")}, {56, _T("#410000")}};
 
-ColorMap *ColorMaps[4] = {CurrentMap, GenericMap, QuickscatMap, SeaTempMap};
+    //    HTML colors taken from ZyGrib representation
+ColorMap PrecipitationMap[] =
+{{0,   _T("#ffffff")}, {.01, _T("#c8f0ff")}, {.02, _T("#b4e6ff")}, {.05, _T("#8cd3ff")},
+ {.07, _T("#78caff")}, {.1 , _T("#6ec1ff")}, {.2 , _T("#64b8ff")}, {.5 , _T("#50a6ff")},
+ {.7 , _T("#469eff")}, {1.0, _T("#3c96ff")}, {2.0, _T("#328eff")}, {5.0, _T("#1e7eff")},
+ {7.0, _T("#1476f0")}, {10 , _T("#0a6edc")}, {20 , _T("#0064c8")}, {50, _T("#0052aa")}};
+
+    //    HTML colors taken from ZyGrib representation
+ColorMap CloudMap[] =
+{{0,  _T("#ffffff")}, {1,  _T("#f0f0e6")}, {10, _T("#e6e6dc")}, {20, _T("#dcdcd2")},
+ {30, _T("#c8c8b4")}, {40, _T("#aaaa8c")}, {50, _T("#969678")}, {60, _T("#787864")},
+ {70, _T("#646450")}, {80, _T("#5a5a46")}, {90, _T("#505036")}};
+
+ColorMap *ColorMaps[] = {CurrentMap, GenericMap, QuickscatMap, SeaTempMap, PrecipitationMap, CloudMap};
 
 enum {
     CURRENT_GRAPHIC_INDEX, GENERIC_GRAPHIC_INDEX, QUICKSCAT_GRAPHIC_INDEX,
-    SEATEMP_GRAPHIC_INDEX, CRAIN_GRAPHIC_INDEX
+    SEATEMP_GRAPHIC_INDEX, PRECIPITATION_GRAPHIC_INDEX, CLOUD_GRAPHIC_INDEX
 };
 
-wxColour GRIBOverlayFactory::GetGraphicColor(int config, double val_in)
+wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
 {
-    int colormap_index = m_Config.Configs[config].m_iOverlayMapColors;
+    int colormap_index = m_Settings.Settings[settings].m_iOverlayMapColors;
     ColorMap *map;
     int maplen;
 
     /* normalize input value */
-    double min = m_Config.GetMin(config), max = m_Config.GetMax(config);
+    double min = m_Settings.GetMin(settings), max = m_Settings.GetMax(settings);
 
     val_in -= min;
     val_in /= max-min;
@@ -380,8 +451,14 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int config, double val_in)
         map = SeaTempMap;
         maplen = (sizeof SeaTempMap) / (sizeof *SeaTempMap);
         break;
-    case CRAIN_GRAPHIC_INDEX:
-        return wxColour((unsigned char) val_in * 255, 0, 0 );  break;
+    case PRECIPITATION_GRAPHIC_INDEX:
+        map = PrecipitationMap;
+        maplen = (sizeof PrecipitationMap) / (sizeof *PrecipitationMap);
+        break;
+    case CLOUD_GRAPHIC_INDEX:
+        map = CloudMap;
+        maplen = (sizeof CloudMap) / (sizeof *CloudMap);
+        break;
     }
 
     /* normalize map from 0 to 1 */
@@ -404,7 +481,6 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int config, double val_in)
         }
     }
     return wxColour(0, 0, 0); /* unreachable */
-
 }
 
 /* return cached wxImage for a given number, or create it if not in the cache */
@@ -431,11 +507,6 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
     wxFont mfont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
     mdc.SetFont( mfont );
 
-    mdc.SetPen(penText);
-    mdc.SetBrush(backBrush);
-    mdc.SetTextForeground(text_color);
-    mdc.SetTextBackground(back_color);
-
     int w, h;
     mdc.GetTextExtent(labels, &w, &h);
 
@@ -444,6 +515,11 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
     wxBitmap bm(w +  label_offset*2, h + 2);
     mdc.SelectObject(bm);
     mdc.Clear();
+
+    mdc.SetPen(penText);
+    mdc.SetBrush(backBrush);
+    mdc.SetTextForeground(text_color);
+    mdc.SetTextBackground(back_color);
           
     int xd = 0;
     int yd = 0;
@@ -477,17 +553,17 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
     return m_labelCache[value];
 }
 
-void GRIBOverlayFactory::RenderGribBarbedArrows( int config, GribRecord **pGR,
+void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
                                                  PlugIn_ViewPort *vp )
 {
-    if(!m_Config.Configs[config].m_bBarbedArrows)
+    if(!m_Settings.Settings[settings].m_bBarbedArrows)
         return;
 
     //  Need two records to draw the barbed arrows
     GribRecord *pGRX, *pGRY;
     int idx, idy;
     bool polar;
-    ConfigIdToGribId(config, idx, idy, polar);
+    SettingsIdToGribId(settings, idx, idy, polar);
     if(idx < 0 || idy < 0)
         return;
 
@@ -541,10 +617,10 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int config, GribRecord **pGR,
                         double vy =  pGRY->getValue( i, j );
 
                         if( vx != GRIB_NOTDEF && vy != GRIB_NOTDEF ) {
-                            vx = m_Config.CalibrateValue(config, vx);
-                            vy = m_Config.CalibrateValue(config, vy);
+                            vx = m_Settings.CalibrateValue(settings, vx);
+                            vy = m_Settings.CalibrateValue(settings, vy);
 
-                            drawWindArrowWithBarbs( config, p.x, p.y, vx, vy, polar, ( lat < 0. ), colour );
+                            drawWindArrowWithBarbs( settings, p.x, p.y, vx, vy, polar, ( lat < 0. ), colour );
                         }
                     }
                 }
@@ -553,16 +629,16 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int config, GribRecord **pGR,
     }
 }
 
-void GRIBOverlayFactory::RenderGribIsobar( int config, GribRecord **pGR,
+void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
                                            wxArrayPtrVoid **pIsobarArray, PlugIn_ViewPort *vp )
 {
-    if(!m_Config.Configs[config].m_bIsoBars)
+    if(!m_Settings.Settings[settings].m_bIsoBars)
         return;
 
     //  Need magnitude to draw isobars
     int idx, idy;
     bool polar;
-    ConfigIdToGribId(config, idx, idy, polar);
+    SettingsIdToGribId(settings, idx, idy, polar);
     if(idx < 0)
         return;
 
@@ -585,25 +661,25 @@ void GRIBOverlayFactory::RenderGribIsobar( int config, GribRecord **pGR,
         wxProgressDialog *progressdialog = NULL;
         wxDateTime start = wxDateTime::Now();
 
-        double min = m_Config.GetMin(config);
-        double max = m_Config.GetMax(config);
+        double min = m_Settings.GetMin(settings);
+        double max = m_Settings.GetMax(settings);
 
         /* convert min and max to units being used */
-        for( double press = min; press <= max; press += m_Config.Configs[config].m_iIsoBarSpacing) {
+        for( double press = min; press <= max; press += m_Settings.Settings[settings].m_iIsoBarSpacing) {
             if(progressdialog)
-                progressdialog->Update(press);
+                progressdialog->Update(press-min);
             else {
                 wxDateTime now = wxDateTime::Now();
-                if((now-start).GetSeconds() > 3 && press < max/2) {
+                if((now-start).GetSeconds() > 3 && press-min < (max-min)/2) {
                     progressdialog = new wxProgressDialog(
-                        _("Building Isobar map"), _("Wind"), 100, NULL,
+                        _("Building Isobar map"), _("Wind"), max-min+1, NULL,
                         wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_REMAINING_TIME);
                 }
             }
 
             piso = new IsoLine( press,
-                                m_Config.CalibrationFactor(config),
-                                m_Config.CalibrationOffset(config), pGRA );
+                                m_Settings.CalibrationFactor(settings),
+                                m_Settings.CalibrationOffset(settings), pGRA );
 
             pIsobarArray[idx]->Add( piso );
         }
@@ -627,17 +703,17 @@ void GRIBOverlayFactory::RenderGribIsobar( int config, GribRecord **pGR,
     delete pGRM;
 }
 
-void GRIBOverlayFactory::RenderGribDirectionArrows( int config, GribRecord **pGR,
+void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **pGR,
                                                     PlugIn_ViewPort *vp )
 {
-    if(!m_Config.Configs[config].m_bDirectionArrows)
+    if(!m_Settings.Settings[settings].m_bDirectionArrows)
         return;
 
     //   need two records or a polar record to draw arrows
     GribRecord *pGRX, *pGRY;
     int idx, idy;
     bool polar;
-    ConfigIdToGribId(config, idx, idy, polar);
+    SettingsIdToGribId(settings, idx, idy, polar);
     if(idx < 0 || idy < 0)
         return;
 
@@ -700,15 +776,15 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int config, GribRecord **pGR
     }
 }
 
-void GRIBOverlayFactory::RenderGribOverlayMap( int config, GribRecord **pGR, PlugIn_ViewPort *vp)
+void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, PlugIn_ViewPort *vp)
 {
-    if(!m_Config.Configs[config].m_bOverlayMap)
+    if(!m_Settings.Settings[settings].m_bOverlayMap)
         return;
 
     const int grib_pixel_size = 4;
     bool polar;
     int idx, idy;
-    ConfigIdToGribId(config, idx, idy, polar);
+    SettingsIdToGribId(settings, idx, idy, polar);
     if(idx < 0 || !pGR[idx])
         return;
 
@@ -736,27 +812,29 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int config, GribRecord **pGR, Plu
 
     if( bdraw ) {
         // If needed, create the overlay
-        if( !m_pOverlay[config] )
-            m_pOverlay[config] = new GribOverlay;
+        if( !m_pOverlay[settings] )
+            m_pOverlay[settings] = new GribOverlay;
 
-        GribOverlay *pGO = m_pOverlay[config];
+        GribOverlay *pGO = m_pOverlay[settings];
 
         if( !m_pdc )       //OpenGL mode
         {
             if( !pGO->m_iTexture )
-                CreateGribGLTexture( pGO, config, pGRA, vp,
+                CreateGribGLTexture( pGO, settings, pGRA, vp,
                                      grib_pixel_size, porg);
 
             if( pGO->m_iTexture )
                 DrawGLTexture( pGO->m_iTexture, pGO->m_width, pGO->m_height,
                                porg.x, porg.y, grib_pixel_size );
             else
-                DrawMessageZoomOut(vp);
+                DrawMessageWindow( _("Please Zoom or Scale Out to view suppressed ")
+                                   + GribOverlaySettings::NameFromIndex(settings) + _(" data"),
+                                   vp->pix_width, vp->pix_height, m_dFont_map );
         }
         else        //DC mode
         {
             if( !pGO->m_pDCBitmap ) {
-                wxImage bl_image = CreateGribImage( config, pGRA, vp, grib_pixel_size, porg );
+                wxImage bl_image = CreateGribImage( settings, pGRA, vp, grib_pixel_size, porg );
                 if( bl_image.IsOk() ) {
                     //    Create a Bitmap
                     pGO->m_pDCBitmap = new wxBitmap( bl_image );
@@ -768,22 +846,24 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int config, GribRecord **pGR, Plu
             if( pGO->m_pDCBitmap )
                 m_pdc->DrawBitmap( *( pGO->m_pDCBitmap ), porg.x, porg.y, true );
             else
-                DrawMessageZoomOut(vp);
+                DrawMessageWindow( _("Please Zoom or Scale Out to view suppressed ")
+                                   + GribOverlaySettings::NameFromIndex(settings) + _(" data"),
+                                   vp->pix_width, vp->pix_height, m_dFont_map );
         }
     }
 
     delete pGRM;
 }
 
-void GRIBOverlayFactory::RenderGribNumbers( int config, GribRecord **pGR, PlugIn_ViewPort *vp )
+void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, PlugIn_ViewPort *vp )
 {
-    if(!m_Config.Configs[config].m_bNumbers)
+    if(!m_Settings.Settings[settings].m_bNumbers)
         return;
 
     //  Need magnitude to draw numbers
     int idx, idy;
     bool polar;
-    ConfigIdToGribId(config, idx, idy, polar);
+    SettingsIdToGribId(settings, idx, idy, polar);
     if(idx < 0)
         return;
 
@@ -803,7 +883,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int config, GribRecord **pGR, PlugIn
     int jmax = pGRA->getNj();                  // Latitude
 
     //    Set minimum spacing between arrows
-    int space = m_Config.Configs[config].m_iNumbersSpacing;
+    int space = m_Settings.Settings[settings].m_iNumbersSpacing;
 
     int oldx = -1000;
     int oldy = -1000;
@@ -832,7 +912,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int config, GribRecord **pGR, PlugIn
                         double mag = pGRA->getValue( i, j );
 
                         if( mag != GRIB_NOTDEF ) {
-                            double value = m_Config.CalibrateValue(config, mag);
+                            double value = m_Settings.CalibrateValue(settings, mag);
                             wxImage &label = getLabel(value);
                             if( m_pdc ) {
                                 m_pdc->DrawBitmap(label, p.x, p.y, true);
@@ -890,6 +970,49 @@ void GRIBOverlayFactory::RenderGribNumbers( int config, GribRecord **pGR, PlugIn
     delete pGRM;
 }
 
+wxString GRIBOverlayFactory::GetRefString( GribRecord *rec, int map )
+{
+    wxString string = GribOverlaySettings::NameFromIndex(map);
+    if( rec->isDuplicated() )
+        string.Append(_(" (Dup)") );
+    string.Append( _T(" ") );
+    string.Append( _("Ref : ") );
+    string.Append( MToString( rec->getDataCenterModel() ) );
+    string.Append( TToString( rec->getRecordRefDate(), m_TimeZone ) );
+    
+    return string;
+}
+
+void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont)
+{
+    if(msg.empty())
+        return;
+
+    wxMemoryDC mdc;
+    wxBitmap bm( 1000, 1000 );
+    mdc.SelectObject( bm );
+    mdc.Clear();
+
+    //wxFont mfont( 15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
+    mdc.SetFont( *mfont );
+    mdc.SetPen( *wxTRANSPARENT_PEN);
+   // mdc.SetBrush( *wxLIGHT_GREY_BRUSH );
+    mdc.SetBrush( wxColour(243, 229, 47 ) );
+    int w, h;
+    mdc.GetMultiLineTextExtent( msg, &w, &h );
+    h += 2;
+    int label_offset = 10;
+    int wdraw = w + ( label_offset * 2 );
+    mdc.DrawRectangle( 0, 0, wdraw, h );
+
+    mdc.DrawLabel( msg, wxRect( label_offset, 0, wdraw, h ), wxALIGN_LEFT| wxALIGN_CENTRE_VERTICAL);
+    mdc.SelectObject( wxNullBitmap );
+
+    wxBitmap sbm = bm.GetSubBitmap( wxRect( 0, 0, wdraw, h ) );
+
+    DrawOLBitmap( sbm, 0, y - ( GetChartbarHeight() + h ), false );
+}
+
 void GRIBOverlayFactory::drawWaveArrow( int i, int j, double ang, wxColour arrowColor )
 {
     double si = sin( ang ), co = cos( ang );
@@ -933,7 +1056,7 @@ void GRIBOverlayFactory::drawSingleArrow( int i, int j, double ang, wxColour arr
 
 }
 
-void GRIBOverlayFactory::drawWindArrowWithBarbs( int config, int i, int j, double vx, double vy,
+void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int i, int j, double vx, double vy,
                                                  bool polar, bool south, wxColour arrowColor )
 {
     double vkn, ang;
@@ -955,8 +1078,8 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int config, int i, int j, doubl
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
     }
 
-    /* normalize vkn to be from 0-100 instead of 0-m_Config.Configs[config].m_bBarbedRange */
-    vkn *= 100.0/m_Config.Configs[config].m_iBarbedRange;
+    /* normalize vkn to be from 0-100 instead of 0-m_Settings.Settings[settings].m_bBarbedRange */
+    vkn *= 100.0/m_Settings.Settings[settings].m_iBarbedRange;
 
     if( vkn < 1 ) {
         int r = 5;     // wind is very light, draw a circle
@@ -1293,36 +1416,4 @@ void GRIBOverlayFactory::DrawGLRGBA( unsigned char *pRGBA, int width, int height
 
     glPopClientAttrib();
 
-}
-
-void GRIBOverlayFactory::DrawMessageZoomOut( PlugIn_ViewPort *vp )
-{
-
-    wxString msg = _("Please Zoom or Scale Out to view suppressed GRIB Overlay");
-
-    int x = vp->pix_width / 2, y = vp->pix_height / 2;
-
-
-    wxMemoryDC mdc;
-    wxBitmap bm( 1000, 1000 );
-    mdc.SelectObject( bm );
-    mdc.Clear();
-
-    wxFont mfont( 15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
-    mdc.SetFont( mfont );
-    mdc.SetPen( *wxBLACK_PEN);
-    mdc.SetBrush( *wxWHITE_BRUSH);
-
-    int w, h;
-    mdc.GetTextExtent( msg, &w, &h );
-
-    int label_offset = 10;
-    int wdraw = w + ( label_offset * 2 );
-    mdc.DrawRectangle( 0, 0, wdraw, h + 2 );
-    mdc.DrawText( msg, label_offset / 2, -1 );
-
-    mdc.SelectObject( wxNullBitmap );
-
-    wxBitmap sbm = bm.GetSubBitmap( wxRect( 0, 0, wdraw, h + 2 ) );
-    DrawOLBitmap( sbm, x - wdraw / 2, y, false );
 }

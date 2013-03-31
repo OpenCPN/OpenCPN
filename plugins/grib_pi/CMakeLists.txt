@@ -76,17 +76,18 @@ FIND_PACKAGE(Gettext REQUIRED)
 SET(SRC_GRIB
             src/grib_pi.h
             src/grib_pi.cpp
-            src/GribRecordTree.cpp
-            src/GribRecordTree.h
             src/GribOverlayFactory.cpp
             src/GribOverlayFactory.h
             src/GribUIDialogBase.cpp
             src/GribUIDialogBase.h
-            src/GribConfigDialog.cpp
-            src/GribConfigDialog.h
             src/GribUIDialog.cpp
             src/GribUIDialog.h
+            src/GribSettingsDialog.cpp
+            src/GribSettingsDialog.h
             src/icons.h 
+            src/msg.h
+            src/email.h
+            src/email.cpp
             src/icons.cpp
             src/GribReader.cpp 
             src/GribRecord.cpp  
@@ -97,6 +98,10 @@ SET(SRC_GRIB
             ../../src/wxJSON/jsonreader.cpp
             ../../src/wxJSON/jsonwriter.cpp
 )
+IF(WIN32)
+           SET(SRC_GRIB ${SRC_GRIB} src/smapi.h)
+           SET(SRC_GRIB ${SRC_GRIB} src/smapi.cpp)
+ENDIF(WIN32)
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 
 IF(NOT UNIX)

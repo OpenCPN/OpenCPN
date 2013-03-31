@@ -36,7 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void  GribRecord::translateDataType()
 {
 	this->knownData = true;
-
 	//------------------------
 	// NOAA GFS
 	//------------------------
@@ -44,6 +43,7 @@ void  GribRecord::translateDataType()
 		&& (idModel==96 || idModel==81)		// NOAA
 		&& (idGrid==4 || idGrid==255))		// Saildocs
 	{
+        dataCenterModel = NOAA_GFS;
 		if (dataType == GRB_PRECIP_TOT) {	// mm/period -> mm/h
 			if (periodP2 > periodP1)
 				multiplyAllData( 1.0/(periodP2-periodP1) );
@@ -51,15 +51,18 @@ void  GribRecord::translateDataType()
 		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
 			if (periodP2 > periodP1)
 				multiplyAllData( 3600.0 );
-		}
-
+        }
+        if (dataType == GRB_TEMP                        //gfs Water surface Temperature
+            && levelType == LV_GND_SURF 
+            && levelValue == 0) dataType = GRB_WTMP;
 
 	}
 	//------------------------
 	// WRF NMM grib.meteorologic.net
 	//------------------------
 	else if (idCenter==7 && idModel==89 && idGrid==255)
-	{
+    {
+        // dataCenterModel ??
 		if (dataType == GRB_PRECIP_TOT) {	// mm/period -> mm/h
 			if (periodP2 > periodP1)
 				multiplyAllData( 1.0/(periodP2-periodP1) );
@@ -71,11 +74,43 @@ void  GribRecord::translateDataType()
 
 
 	}
+    else if ( idCenter==7 && idModel==88 && idGrid==255 ) {  // saildocs
+		dataCenterModel = NOAA_NCEP_WW3;
+	}
+    //----------------------------
+    //NOAA RTOFS
+    //--------------------------------
+    else if(idCenter==7 && idModel==45 && idGrid==255) {
+        dataCenterModel = NOAA_RTOFS;
+    }
+    //----------------------------------------------
+    // NCEP sea surface temperature
+    //----------------------------------------------
+    else if ((idCenter==7 && idModel==44 && idGrid==173)
+        || (idCenter==7 && idModel==44 && idGrid==235))
+    {
+        dataCenterModel = NOAA_NCEP_SST;
+    }
+    //----------------------------------------------
+    // FNMOC WW3 mediterranean sea
+    //----------------------------------------------
+    else if (idCenter==58 && idModel==111 && idGrid==179)
+    {
+        dataCenterModel = FNMOC_WW3_MED;
+    }
+    //----------------------------------------------
+    // FNMOC WW3
+    //----------------------------------------------
+    else if (idCenter==58 && idModel==110 && idGrid==240)
+    {
+        dataCenterModel = FNMOC_WW3_GLB;
+    }
 	//------------------------
-	// Meteorem
+	// Meteorem (Scannav)
 	//------------------------
 	else if (idCenter==59 && idModel==78 && idGrid==255)
 	{
+        //dataCenterModel = ??
 		if ( (getDataType()==GRB_WIND_VX || getDataType()==GRB_WIND_VY)
 			&& getLevelType()==LV_MSL
 			&& getLevelValue()==0)
@@ -101,7 +136,16 @@ void  GribRecord::translateDataType()
 //		this->knownData = false;
 
 	}
-		//this->print();
+    //translate significant wave height and dir
+    if (this->knownData) {
+        switch (getDataType()) {
+            case GRB_HTSGW:
+            case GRB_WVDIR:
+                levelType  = LV_GND_SURF;
+                levelValue = 0;
+                break;
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -124,7 +168,7 @@ GribRecord::GribRecord(ZUFILE* file, int id_)
     BMSbits = NULL;
     eof     = false;
     knownData = true;
-
+    IsDuplicated = false;
 
     //      Pre read 4 bytes to check for length adder needed for some GRIBS (like WRAMS and NAM)
     char strgrib[5];
@@ -194,6 +238,7 @@ GribRecord::GribRecord(ZUFILE* file, int id_)
 GribRecord::GribRecord(const GribRecord &rec)
 {
     *this = rec;
+    IsDuplicated = true;
     // recopie les champs de bits
     if (rec.data != NULL) {
         int size = rec.Ni*rec.Nj;

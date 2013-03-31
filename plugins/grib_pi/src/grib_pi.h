@@ -35,7 +35,7 @@
 #endif //precompiled headers
 
 #define     PLUGIN_VERSION_MAJOR    2
-#define     PLUGIN_VERSION_MINOR    1
+#define     PLUGIN_VERSION_MINOR    2
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    7
@@ -45,7 +45,7 @@
 #include "../../../include/wx/jsonreader.h"
 #include "../../../include/wx/jsonwriter.h"
 
-#include "GribConfigDialog.h"
+#include "GribSettingsDialog.h"
 #include "GribOverlayFactory.h"
 #include "GribUIDialog.h"
 
@@ -100,6 +100,21 @@ public:
       void SetColorScheme(PI_ColorScheme cs);
 
       void OnGribDialogClose();
+      void CreateGribDialog( int index, wxString filename, bool newfile );
+
+      void SetGRIBDataConfig ( wxString conf ){ m_grib_DataConfig = conf; }
+      void SetMailRequestConfig ( wxString conf ){ m_grib_RequestConfig = conf; }
+      void SetGribDirectory( wxString dir ) { m_grib_dir = dir; }
+
+      wxString GetGribDirectory() { return m_grib_dir; }
+      wxString GetGRIBDataConfig(){ return m_grib_DataConfig; }
+      wxString GetMailRequestConfig(){ return m_grib_RequestConfig; }
+
+      int  GetTimeZone() { return m_bTimeZone; }
+      bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
+      bool GetCopyMissWaveRec() { return  m_bCopyMissWaveRec; }
+      wxString GetSaildocAdresse() { return m_bMailAdresse; }
+
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
 
 private:
@@ -118,17 +133,43 @@ private:
       int              m_grib_dialog_x, m_grib_dialog_y;
       int              m_grib_dialog_sx, m_grib_dialog_sy;
 
-      bool              m_bGRIBUseHiDef;
-      bool              m_bGRIBUseGradualColors;
+      wxString         m_grib_dir;
 
       //    Controls added to Preferences panel
       wxCheckBox              *m_pGRIBUseHiDef;
       wxCheckBox              *m_pGRIBUseGradualColors;
 
       GribTimelineRecordSet *m_pLastTimelineSet;
+
+      // preference data
+      bool              m_bGRIBUseHiDef;
+      bool              m_bGRIBUseGradualColors;
+      int              m_bTimeZone;
+      bool             m_bCopyFirstCumRec;
+      bool             m_bCopyMissWaveRec;
+
+      wxString         m_grib_DataConfig;
+      wxString         m_grib_RequestConfig;
+
+      wxString         m_bMailAdresse;
+      
+      bool             m_bGRIBShowIcon;
+
+      int              m_height;
+
+      bool        m_bShowGrib;
+};
+
+//----------------------------------------------------------------------------------------
+// Prefrence dialog definition
+//----------------------------------------------------------------------------------------
+
+class GribPreferencesDialog : public GribPreferencesDialogBase
+{
+public:
+    GribPreferencesDialog( wxWindow *pparent)
+    : GribPreferencesDialogBase(pparent) {}
+    ~GribPreferencesDialog() {}
 };
 
 #endif
-
-
-
