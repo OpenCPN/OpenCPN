@@ -1474,7 +1474,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
             token = tkz.GetNextToken();       // address i.e. mmsi*10 for received msg, or area spec
             token.ToDouble( &dsc_addr );
-            dsc_mmsi = (int) ( dsc_addr / 10 ); // as per NMEA 0183 3.01
+            dsc_mmsi = 0 - (int) ( dsc_addr / 10 ); // as per NMEA 0183 3.01 
 
             token = tkz.GetNextToken();         // category
             token = tkz.GetNextToken();         // nature of distress or telecommand1
@@ -1516,7 +1516,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             token = tkz.GetNextToken();         // query/rely flag
             token = tkz.GetNextToken();         // vessel MMSI
             token.ToDouble( &dse_addr );
-            dse_mmsi = (int) ( dse_addr / 10 ); // as per NMEA 0183 3.01
+            dse_mmsi = 0 - (int) ( dse_addr / 10 ); // as per NMEA 0183 3.01
 
             token = tkz.GetNextToken();         // code field
             token = tkz.GetNextToken();         // data field - position - 2*4 digits latlon .mins
