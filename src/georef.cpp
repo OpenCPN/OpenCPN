@@ -440,7 +440,7 @@ toPOLY(double lat, double lon, double lat0, double lon0, double *x, double *y)
           const double cot = 1. / tan(lat * DEGREE);
           *x = sin(E * sin((lat * DEGREE))) * cot;
           *y = (lat * DEGREE) - (lat0 * DEGREE) + cot * (1. - cos(E));
-          
+
           *x *= z;
           *y *= z;
       }
@@ -862,7 +862,7 @@ void  geod_for(void)
       const double sinds = g_signS ? -sin(ds) : sin(ds);
 
       double de;
-      g_al21 = g_N * cosds - g_sinth1 * sinds;      
+      g_al21 = g_N * cosds - g_sinth1 * sinds;
       if (g_merid) {
             g_phi2 = atan( tan(HALFPI + g_s1 - ds) / g_onef);
             if (g_al21 > 0.) {
@@ -1026,13 +1026,15 @@ void DistanceBearingMercator(double lat0, double lon0, double lat1, double lon1,
       {
           double east, north;
           toSM_ECC(lat1, lon1x, lat0, lon0x, &east, &north);
-          
+
           const double C = atan2(east, north);
           const double brgt = 180. + (C * 180. / PI);
           if (brgt < 0)
               *brg = brgt + 360.;
-          if (brgt > 360.)
-              *brg = brgt - 360;
+          else if (brgt > 360.)
+              *brg = brgt - 360.;
+          else
+              *brg = brgt;
       }
 }
 
@@ -1305,7 +1307,7 @@ void lm_print_default( int n_par, double* par, int m_dat, double* fvec,
         *       iter  : outer loop counter
         *       nfev  : number of calls to *evaluate
  */
-{    
+{
     lm_data_type *mydata = (lm_data_type*)data;
 
     if(mydata->print_flag)
@@ -1645,7 +1647,7 @@ void lm_lmdif( int m, int n, double* x, double* fvec, double ftol, double xtol,
     */
 
     *nfev = 0; // function evaluation counter
-    
+
     // *** check the input parameters for errors.
 
     if ( (n <= 0) || (m < n) || (ftol < 0.)
@@ -1675,7 +1677,7 @@ void lm_lmdif( int m, int n, double* x, double* fvec, double ftol, double xtol,
     *info = 0;
     (*evaluate)( x, m, fvec, data, info );
     (*printout)( n, x, m, fvec, data, 0, 0, ++(*nfev) );
-    if ( *info < 0 ) return;   
+    if ( *info < 0 ) return;
 
     // *** the outer loop.
     int iter = 1;  // outer loop counter
@@ -1871,7 +1873,7 @@ void lm_lmdif( int m, int n, double* x, double* fvec, double ftol, double xtol,
             const double kP5 = 0.5;
             const double kP25 = 0.25;
             const double kP75 = 0.75;
-            
+
             if (ratio <= kP25)
             {
                 double temp = actred >= 0.0 ? kP5 : kP5*dirder/(dirder + kP5*actred);
@@ -1886,7 +1888,7 @@ void lm_lmdif( int m, int n, double* x, double* fvec, double ftol, double xtol,
                 par *= kP5;
             }
 
-            // OI* test for successful iteration...            
+            // OI* test for successful iteration...
             if (ratio >= kP0001)
             {
 
@@ -2107,7 +2109,7 @@ void lm_lmpar(int n, double* r, int ldr, int* ipvt, double* diag, double* qtb,
         wa1[j] = sum/diag[ ipvt[j] ];
     }
     const double gnorm = lm_enorm(n,wa1);
-    double paru = gnorm/delta == 0.0 ? LM_DWARF/MIN(delta,kP1) : gnorm / delta; 
+    double paru = gnorm/delta == 0.0 ? LM_DWARF/MIN(delta,kP1) : gnorm / delta;
 
     // *** if the input par lies outside of the interval (parl,paru),
     //     set par to the closer endpoint.
@@ -2397,7 +2399,7 @@ void lm_qrsolv(int n, double* r, int ldr, int* ipvt, double* diag,
     *
     *    wa is a work array of length n.
     *
-    */   
+    */
 
     // *** copy r and (q transpose)*b to preserve input and initialize s.
     //     in particular, save the diagonal elements of r in x.
@@ -2443,7 +2445,7 @@ void lm_qrsolv(int n, double* r, int ldr, int* ipvt, double* diag,
 
             if (sdiag[k] == 0.)
                 continue;
-            const int kk = k + ldr * k; // <! keep this shorthand !>            
+            const int kk = k + ldr * k; // <! keep this shorthand !>
             double sin, cos; // these are local variables, not functions
 
             if ( fabs(r[kk]) < fabs(sdiag[k]) )
