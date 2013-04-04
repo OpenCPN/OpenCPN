@@ -914,7 +914,7 @@ int Track::Simplify( double maxDelta ) {
 
     SetnPoints();
     pSelect->AddAllSelectableTrackSegments( this );
-    
+
     UpdateSegmentDistances();
     ::wxEndBusyCursor();
     return reduction;
@@ -1079,7 +1079,7 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic") );
     Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload, 0 );
-    
+
     Read( _T ( "UseNMEA_RMC" ), &g_bUseRMC, 1 );
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
@@ -1164,7 +1164,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
     Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
     Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection, _T("") );
-    
+
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
@@ -1175,7 +1175,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0 );
     Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 1 );
     g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
-    
+
     Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
 
     Read( _T ( "StartWithTrackActive" ), &g_bTrackCarryOver, 0 );
@@ -1205,10 +1205,10 @@ int MyConfig::LoadMyConfig( int iteration )
     g_NMEALogWindow_sy = Read( _T ( "NMEALogWindowSizeY" ), 400L );
     g_NMEALogWindow_x = Read( _T ( "NMEALogWindowPosX" ), 10L );
     g_NMEALogWindow_y = Read( _T ( "NMEALogWindowPosY" ), 10L );
-    
+
     if( ( g_NMEALogWindow_x < 0 ) || ( g_NMEALogWindow_x > display_width ) ) g_NMEALogWindow_x = 5;
     if( ( g_NMEALogWindow_y < 0 ) || ( g_NMEALogWindow_y > display_height ) ) g_NMEALogWindow_y = 5;
-                              
+
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
 
@@ -1427,7 +1427,7 @@ int MyConfig::LoadMyConfig( int iteration )
     global_color_scheme = (ColorScheme) read_int;
 
     SetPath( _T ( "/Settings/NMEADataSource" ) );
-    
+
     wxString connectionconfigs;
     Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
     wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
@@ -1456,10 +1456,10 @@ int MyConfig::LoadMyConfig( int iteration )
             port = xSource.Mid(7);
         else
             port = _T("");
-        
+
         if( port.Len() && (port != _T("None")) && (port != _T("AIS Port (Shared)")) ) {
         //  Look in the ConnectionParams array to see if this port has been defined in the newer style
-            bool bfound = false;    
+            bool bfound = false;
             for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
             {
                 ConnectionParams *cp = g_pConnectionParams->Item(i);
@@ -1468,24 +1468,24 @@ int MyConfig::LoadMyConfig( int iteration )
                     break;
                 }
             }
-            
+
             if(!bfound) {
                 ConnectionParams * prm = new ConnectionParams();
                 prm->Baudrate = wxAtoi(xRate);
                 prm->Port = port;
                 prm->Garmin = (b_garmin_host == 1);
-                
+
                 g_pConnectionParams->Add(prm);
-                
+
                 g_bGarminHostUpload = (b_garmin_host == 1);
             }
         }
         if( iteration == 1 ) {
             Write ( _T ( "Source" ), _T("") );          // clear the old tag
-            Write ( _T ( "BaudRate" ), _T("") ); 
+            Write ( _T ( "BaudRate" ), _T("") );
         }
     }
-             
+
    //  Is there an existing AISPort definition?
     SetPath( _T ( "/Settings/AISPort" ) );
     wxString aSource;
@@ -1498,10 +1498,10 @@ int MyConfig::LoadMyConfig( int iteration )
             port = aSource.Mid(7);
         else
             port = _T("");
-        
+
         if(port.Len() && port != _T("None") ) {
             //  Look in the ConnectionParams array to see if this port has been defined in the newer style
-            bool bfound = false;    
+            bool bfound = false;
             for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
             {
                 ConnectionParams *cp = g_pConnectionParams->Item(i);
@@ -1510,7 +1510,7 @@ int MyConfig::LoadMyConfig( int iteration )
                     break;
                 }
             }
-            
+
             if(!bfound) {
                 ConnectionParams * prm = new ConnectionParams();
                 if( aRate.Len() )
@@ -1518,17 +1518,17 @@ int MyConfig::LoadMyConfig( int iteration )
                 else
                     prm->Baudrate = 38400;              // default for most AIS receivers
                 prm->Port = port;
-                
+
                 g_pConnectionParams->Add(prm);
             }
         }
 
         if( iteration == 1 ) {
             Write ( _T ( "Port" ), _T("") );          // clear the old tag
-            Write ( _T ( "BaudRate" ), _T("") ); 
+            Write ( _T ( "BaudRate" ), _T("") );
         }
     }
-             
+
     //  Is there an existing NMEAAutoPilotPort definition?
     SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
     Read ( _T ( "Port" ), &xSource );
@@ -1538,7 +1538,7 @@ int MyConfig::LoadMyConfig( int iteration )
             port = xSource.Mid(7);
         else
             port = _T("");
-        
+
         if(port.Len() && port != _T("None") ) {
             //  Look in the ConnectionParams array to see if this port has been defined in the newer style
             bool bfound = false;
@@ -1551,14 +1551,14 @@ int MyConfig::LoadMyConfig( int iteration )
                     break;
                 }
             }
-            
+
             if(!bfound) {
                 ConnectionParams * prm = new ConnectionParams();
                 prm->Port = port;
                 prm->OutputSentenceListType = WHITELIST;
                 prm->OutputSentenceList.Add( _T("RMB") );
                 prm->Output = true;
-                
+
                 g_pConnectionParams->Add(prm);
             }
             else {                                  // port was found, so make sure it is set for output
@@ -1567,11 +1567,11 @@ int MyConfig::LoadMyConfig( int iteration )
                 cp->OutputSentenceList.Add( _T("RMB") );
             }
         }
-        
+
         if( iteration == 1 )
             Write ( _T ( "Port" ), _T("") );          // clear the old tag
     }
-             
+
 //    Reasonable starting point
     vLat = START_LAT;                   // display viewpoint
     vLon = START_LON;
@@ -2103,13 +2103,13 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
     //  Support Version 3.0 and prior config setting for Radar Rings
-    bool b300RadarRings= true;   
+    bool b300RadarRings= true;
     Read ( _T ( "ShowRadarRings" ), &b300RadarRings );
     if(!b300RadarRings)
         g_iNavAidRadarRingsNumberVisible = 0;
-        
+
     Read( _T ( "ConfirmObjectDeletion" ), &g_bConfirmObjectDelete, true );
-    
+
     // Waypoint dragging with mouse
     g_bWayPointPreventDragging = false;
     Read( _T ( "WaypointPreventDragging" ), &g_bWayPointPreventDragging );
@@ -2512,7 +2512,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
     Write( _T ( "MostRecentGPSUploadConnection" ), g_uploadConnection );
-    
+
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
@@ -2572,7 +2572,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "GPSIdent" ), g_GPS_Ident );
     Write( _T ( "UseGarminHostUpload" ), g_bGarminHostUpload );
-    
+
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
@@ -2673,7 +2673,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bAISAlertSuppressMoored" ), g_bAIS_CPA_Alert_Suppress_Moored );
     Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );
     Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
-    
+
     Write( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
     Write( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );
     Write( _T ( "AlertDialogPosX" ), g_ais_alert_dialog_x );
@@ -2787,7 +2787,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
 
     Write( _T ( "ConfirmObjectDeletion" ), g_bConfirmObjectDelete );
-    
+
     // Waypoint dragging with mouse; toh, 2009.02.24
     Write( _T ( "WaypointPreventDragging" ), g_bWayPointPreventDragging );
 
@@ -2941,10 +2941,10 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
             pprog->SetSize( 400, wxDefaultCoord );
             pprog->Centre();
         }
-        
+
         //WPTs
         int ic = 0;
-        
+
         wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
         RoutePoint *pr;
         while( node ) {
@@ -2954,14 +2954,14 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
                 pprog->Update( ic, msg );
                 ic++;
             }
-            
+
             pr = node->GetData();
 
             bool b_add = true;
 
             if( bviz_only && !pr->m_bIsVisible )
                 b_add = false;
-            
+
             if( pr->m_bIsInLayer && !blayer )
                 b_add = false;
             if( b_add) {
@@ -2975,17 +2975,17 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         wxRouteListNode *node1 = pRouteList->GetFirst();
         while( node1 ) {
             Route *pRoute = node1->GetData();
-            
+
             bool b_add = true;
-            
+
             if( bviz_only && !pRoute->IsVisible() )
                 b_add = false;
-            
-            if(  pRoute->m_bIsInLayer && !blayer ) 
+
+            if(  pRoute->m_bIsInLayer && !blayer )
                 b_add = false;
-                
+
             if( b_add ) {
-                if( !pRoute->m_bIsTrack ) 
+                if( !pRoute->m_bIsTrack )
                     gpxroot->AddRoute( CreateGPXRte( pRoute ) );
                 else
                     gpxroot->AddTrack( CreateGPXTrk( pRoute ) );
@@ -2996,12 +2996,12 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         gpx->SaveFile( fn.GetFullPath() );
         gpx->Clear();
         delete gpx;
-        
+
         ::wxEndBusyCursor();
-        
+
         if( pprog)
             delete pprog;
-        
+
     }
 }
 

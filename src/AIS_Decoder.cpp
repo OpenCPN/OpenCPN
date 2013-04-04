@@ -223,38 +223,38 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
     //  Make some simple tests for validity
     if( str.Len() > 100 )
         return AIS_NMEAVDX_TOO_LONG;
-    
+
     if( !NMEACheckSumOK( str ) )
         return AIS_NMEAVDX_CHECKSUM_BAD;
 
     if( !pos )
         return AIS_GENERIC_ERROR;
-    
+
     if( !accumulator )
         return AIS_GENERIC_ERROR;
-    
+
     //  We only process AIVDO messages
     if( !str.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) )
         return AIS_GENERIC_ERROR;
 
     //  Use a tokenizer to pull out the first 4 fields
     wxStringTokenizer tkz( str, _T(",") );
-        
+
     wxString token;
     token = tkz.GetNextToken();         // !xxVDx
-        
+
     token = tkz.GetNextToken();
     int nsentences = atoi( token.mb_str() );
-        
+
     token = tkz.GetNextToken();
     int isentence = atoi( token.mb_str() );
-        
+
     token = tkz.GetNextToken();         // skip 2 fields
     token = tkz.GetNextToken();
-    
+
     wxString string_to_parse;
     string_to_parse.Clear();
-    
+
     //  Fill the output structure with all NANs
     pos->kLat = NAN;
     pos->kLon = NAN;
@@ -263,39 +263,39 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
     pos->kHdt = NAN;
     pos->kVar = NAN;
     pos->kHdm = NAN;
-        
+
     //  Simple case first
     //  First and only part of a one-part sentence
     if( ( 1 == nsentences ) && ( 1 == isentence ) ) {
         string_to_parse = tkz.GetNextToken();         // the encapsulated data
     }
-    
+
     else if( nsentences > 1 ) {
         if( 1 == isentence ) {
             *accumulator = tkz.GetNextToken();         // the encapsulated data
         }
-        
+
         else {
             accumulator->Append(tkz.GetNextToken() );
         }
-        
+
         if( isentence == nsentences ) {         // ready to parse
             string_to_parse = *accumulator;
         }
     }
-    
+
     if( string_to_parse.IsEmpty() && (nsentences > 1) ) {      // not ready, so return with NAN
         return AIS_INCOMPLETE_MULTIPART;                       // and non-zero return
     }
-                    
-        
+
+
     //  Create the bit accessible string
     AIS_Bitstring strbit( string_to_parse.mb_str() );
-    
+
     AIS_Target_Data *pTargetData = new AIS_Target_Data;
 
     bool bdecode_result = Parse_VDXBitstring( &strbit, pTargetData );
-    
+
     if(bdecode_result) {
         switch(pTargetData->MID)
         {
@@ -312,23 +312,23 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
                     pos->kLat = NAN;
                     pos->kLon = NAN;
                 }
-                
+
                 if(pTargetData->COG == 360.0)
                     pos->kCog = NAN;
                 else
                     pos->kCog = pTargetData->COG;
-                
-                
+
+
                 if(pTargetData->SOG > 102.2)
                     pos->kSog = NAN;
                 else
                     pos->kSog = pTargetData->SOG;
-                
+
                 if((int)pTargetData->HDG == 511)
                     pos->kHdt = NAN;
                 else
                     pos->kHdt = pTargetData->HDG;
-                
+
                 //  VDO messages do not contain variation or magnetic heading
                 pos->kVar = NAN;
                 pos->kHdm = NAN;
@@ -337,7 +337,7 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
             default:
                 return AIS_GENERIC_ERROR;       // unrecognised sentence
         }
-        
+
         return AIS_NoError;
     }
     else
@@ -410,7 +410,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             token = tkz.GetNextToken();         // acknowledgement
             token = tkz.GetNextToken();         // expansion indicator
 
-            dsc_quadrant = (int) dsc_tmp / 1000000000.0;
+            dsc_quadrant = (int) (dsc_tmp / 1000000000.0);
 
             dsc_lat = (int) ( dsc_tmp / 100000.0 );
             dsc_lon = dsc_tmp - dsc_lat * 100000.0;

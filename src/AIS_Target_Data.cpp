@@ -300,12 +300,12 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
     if( Class == AIS_SART ) {
         html << _T("<tr><td colspan=2>") << _T("<b>") << AISTypeStr;
-        if( sart_sub_type.Length() ) 
+        if( sart_sub_type.Length() )
             html << _T(" (") << sart_sub_type << _T("), ");
         html << navStatStr;
         html << rowEnd << _T("<tr><td colspan=2>") << _T("<b>") << sizeString << rowEnd;
     }
-    
+
     else if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
         html << _T("<tr><td colspan=2>") << _T("<b>") << AISTypeStr;
         if( navStatStr.Length() )

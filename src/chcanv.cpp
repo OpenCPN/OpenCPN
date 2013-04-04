@@ -1933,9 +1933,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     if( !pPanKeyTimer->IsRunning() && ( m_panx || m_pany ) ) pPanKeyTimer->Start( 1,
                 wxTIMER_ONE_SHOT );
 
-#ifndef __WXMAC__    
+#ifndef __WXMAC__
     event.Skip();
-#endif    
+#endif
 }
 
 void ChartCanvas::OnKeyUp( wxKeyEvent &event )
@@ -5767,7 +5767,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             (RoutePoint *) pFindRouteSeg->m_pData1;
                     m_pFoundRoutePointSecond = (RoutePoint *) pFindRouteSeg->m_pData2;
 
-                    m_pSelectedRoute->m_bRtIsSelected = !(seltype && SELTYPE_ROUTEPOINT);
+                    m_pSelectedRoute->m_bRtIsSelected = !(seltype & SELTYPE_ROUTEPOINT);
                     if( m_pSelectedRoute->m_bRtIsSelected )
                         m_pSelectedRoute->Draw( dc, GetVP() );
                     seltype |= SELTYPE_ROUTESEGMENT;
@@ -9143,10 +9143,6 @@ double ChartCanvas::GetAnchorWatchRadiusPixels( RoutePoint *pAnchorWatchPoint )
 }
 
 //------------------------------------------------------------------------------------------
-//    Tides and Current Chart Canvas Interface
-//------------------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------------------
 //    Tides Support
 //------------------------------------------------------------------------------------------
 
@@ -10181,9 +10177,9 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
         ctrl->SetBackgroundColour( back_color );
     else
         ctrl->SetBackgroundColour( wxColour( 0xff, 0xff, 0xff ));
-#endif    
 #endif
-        
+#endif
+
     wxWindowList kids = ctrl->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
         wxWindowListNode *node = kids.Item( i );

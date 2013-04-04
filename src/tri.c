@@ -2916,14 +2916,14 @@ inline static int int_is_left_of(int segnum, ipoint_t *v)
 
       if (int_greater_than(&s->v1, &s->v0)) /* seg. going upwards */
       {
-            if ((s->v1.y == v->y))
+            if (s->v1.y == v->y)
             {
                   if (v->x < s->v1.x)
                         area = 1.0;
                   else
                         area = -1.0;
             }
-            else if ((s->v0.y == v->y))
+            else if (s->v0.y == v->y)
             {
                   if (v->x < s->v0.x)
                         area = 1.0;
@@ -2936,14 +2936,14 @@ inline static int int_is_left_of(int segnum, ipoint_t *v)
       }
       else                          /* v0 > v1 */
       {
-            if ((s->v1.y == v->y))
+            if (s->v1.y == v->y)
             {
                   if (v->x < s->v1.x)
                         area = 1.0;
                   else
                         area = -1.0;
             }
-            else if ((s->v0.y == v->y))
+            else if (s->v0.y == v->y)
             {
                   if (v->x < s->v0.x)
                         area = 1.0;
@@ -3193,7 +3193,7 @@ inline int int_locate_endpoint_a(ipoint_t *v, ipoint_t *vo, int r)
                         if (int_equal_to(v, &iseg[rptr->segnum].v0) ||
                             int_equal_to(v, &iseg[rptr->segnum].v1))
                         {
-                              if ((v->y == vo->y)) /* horizontal segment */
+                              if (v->y == vo->y) /* horizontal segment */
                               {
                                     if (vo->x < v->x)
                                     {
@@ -3304,7 +3304,7 @@ inline int int_locate_endpoint(ipoint_t *v, ipoint_t *vo, int r)
                   if (int_equal_to(v, &iseg[rptr->segnum].v0) ||
                       int_equal_to(v, &iseg[rptr->segnum].v1))
                   {
-                        if ((v->y == vo->y)) /* horizontal segment */
+                        if (v->y == vo->y) /* horizontal segment */
                         {
                               if (vo->x < v->x)
                               {
@@ -3913,7 +3913,7 @@ static int int_add_segment(int segnum)
               tpt.y = (double)itr[t].lo.y;
 
               i_d0 = i_d1 = FALSE;
-              if ((itr[t].lo.y == s.v0.y))
+              if (itr[t].lo.y == s.v0.y)
               {
                     if (itr[t].lo.x > s.v0.x)
                           i_d0 = TRUE;

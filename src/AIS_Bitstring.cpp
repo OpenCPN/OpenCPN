@@ -41,7 +41,6 @@ int AIS_Bitstring::GetBitCount()
     return byte_length * 6;
 }
 
-
 //  Convert printable characters to IEC 6 bit representation
 //  according to rules in IEC AIS Specification
 unsigned char AIS_Bitstring::to_6bit(const char c)

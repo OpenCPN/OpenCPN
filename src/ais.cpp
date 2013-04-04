@@ -105,8 +105,6 @@ extern PlugInManager    *g_pi_manager;
 extern TTYWindow        *g_NMEALogWindow;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
-AIS_Decoder *g_p_sort_decoder;
-
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double*)&lNaN)
@@ -403,7 +401,6 @@ wxString ais8_001_22_notice_names[] = { // 128] = {
     _("Cancellation - cancel area as identified by Message Linkage ID"), // 126
     _("Undefined (default)") //, // 127
 };
-
 
 wxString trimAISField( char *data )
 {

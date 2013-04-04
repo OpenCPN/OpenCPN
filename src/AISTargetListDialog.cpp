@@ -33,7 +33,8 @@
 #include "OCPNListCtrl.h"
 #include "styles.h"
 
-extern AIS_Decoder *g_p_sort_decoder;
+static AIS_Decoder *s_p_sort_decoder;
+
 extern int g_AisTargetList_count;
 extern bool g_bAisTargetList_sortReverse;
 extern int g_AisTargetList_sortColumn;
@@ -243,9 +244,9 @@ static int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarge
 
 static int ArrayItemCompareMMSI( int MMSI1, int MMSI2 )
 {
-    if( g_p_sort_decoder ) {
-        AIS_Target_Data *pAISTarget1 = g_p_sort_decoder->Get_Target_Data_From_MMSI( MMSI1 );
-        AIS_Target_Data *pAISTarget2 = g_p_sort_decoder->Get_Target_Data_From_MMSI( MMSI2 );
+    if( s_p_sort_decoder ) {
+        AIS_Target_Data *pAISTarget1 = s_p_sort_decoder->Get_Target_Data_From_MMSI( MMSI1 );
+        AIS_Target_Data *pAISTarget2 = s_p_sort_decoder->Get_Target_Data_From_MMSI( MMSI2 );
 
         if( pAISTarget1 && pAISTarget2 ) return ItemCompare( pAISTarget1, pAISTarget2 );
         else
@@ -262,7 +263,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     m_pAuiManager = auimgr;
     m_pdecoder = pdecoder;
 
-    g_p_sort_decoder = pdecoder;
+    s_p_sort_decoder = pdecoder;
     m_pMMSI_array = new ArrayOfMMSI( ArrayItemCompareMMSI );
 
     wxBoxSizer* topSizer = new wxBoxSizer( wxHORIZONTAL );
