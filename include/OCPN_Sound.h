@@ -28,7 +28,8 @@
 #include <wx/sound.h>
 
 #ifdef OCPN_USE_PORTAUDIO
-	#include "OCPNSoundData.h"
+    #include "OCPNSoundData.h"
+    #include "portaudio.h"
 #endif
 
 class OCPN_Sound: public wxSound

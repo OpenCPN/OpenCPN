@@ -23,6 +23,7 @@
  */
 
 #include "OCPN_Sound.h"
+#include <wx/file.h>
 
 #ifdef OCPN_USE_PORTAUDIO
 
@@ -31,6 +32,8 @@ void *sdata;
 int sindex;
 int smax_samples;
 bool splaying;
+
+extern bool portaudio_initialized;
 
 /* This routine will be called by the PortAudio engine when audio is needed.
  * It may called at interrupt level on some machines so don't do anything

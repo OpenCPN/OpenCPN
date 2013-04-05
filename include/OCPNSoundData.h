@@ -27,6 +27,11 @@
 
 #ifdef OCPN_USE_PORTAUDIO
 
+#include "wx/wxprec.h"
+#ifndef  WX_PRECOMP
+#include "wx/wx.h"
+#endif //precompiled headers
+
 /// Sound data, as loaded from .wav file:
 class OCPNSoundData
 {
