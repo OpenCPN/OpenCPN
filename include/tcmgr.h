@@ -35,6 +35,7 @@
 
 #include "Station_Data.h"
 #include "IDX_entry.h"
+#include "TC_Error_Code.h"
 
 // ----------------------------------------------------------------------------
 // external C linkages
@@ -125,20 +126,6 @@ public:
     wxString    short_s;
     wxString    long_s;
 };
-
-
-
-
-typedef enum {
-    TC_NO_ERROR,
-    TC_GENERIC_ERROR,
-    TC_FILE_NOT_FOUND,
-    TC_INDEX_FILE_CORRUPT,
-    TC_INDEX_ENTRY_BAD,
-    TC_HARM_FILE_CORRUPT,
-    TC_MASTER_HARMONICS_NOT_FOUND,
-    TC_TCD_FILE_CORRUPT
-} TC_Error_Code;
 
 
 WX_DECLARE_OBJARRAY( abbr_entry, ArrayOfAbbrEntry);

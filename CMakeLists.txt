@@ -381,6 +381,7 @@ SET(HDRS
 		include/tcmgr.h
 		include/Station_Data.h
 		include/IDX_entry.h
+		include/TC_Error_Code.h
 		include/thumbwin.h
 		include/options.h
 		include/gshhs.h
