@@ -1,11 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Tide and Current Manager
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,40 +20,23 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  ***************************************************************************
- *
- *
  */
 
-
-
 #include "wx/wxprec.h"
-
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
-
-#include "dychart.h"
+#include <wx/datetime.h>
 
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
 
-#include <wx/listimpl.cpp>
-#include <wx/datetime.h>
-#include <wx/textfile.h>
-#include <wx/tokenzr.h>
-#include <wx/filename.h>
-
+#include "dychart.h"
 #include "tcmgr.h"
 #include "georef.h"
-
-#ifndef PI
-#define PI        3.1415926535897931160E0      /* pi */
-#endif
-
-extern wxArrayString TideCurrentDataSet;
 
 //-----------------------------------------------------------------------------------
 //    TIDELIB
