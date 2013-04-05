@@ -46,6 +46,7 @@
 #include "styles.h"
 #include "routeman.h"
 #include "navutil.h"
+#include "FontMgr.h"
 
 extern Routeman         *g_pRouteMan;
 extern FontMgr          *pFontMgr;

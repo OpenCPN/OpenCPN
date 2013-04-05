@@ -327,6 +327,46 @@ SET(HDRS
 		include/chartdbs.h
 		include/chartimg.h
 		include/chcanv.h
+		include/timers.h
+		include/emboss_data.h
+		include/AISTargetQueryDialog.h
+		include/AIS_Bitstring.h
+		include/AISTargetListDialog.h
+		include/OCPNListCtrl.h
+		include/AISTargetAlertDialog.h
+		include/AIS_Decoder.h
+		include/AIS_Target_Data.h
+		include/CM93DSlide.h
+		include/GoToPositionDialog.h
+		include/RolloverWin.h
+		include/S57QueryDialog.h
+		include/S57ObjectDesc.h
+		include/S57Light.h
+		include/s57RegistrarMgr.h
+		include/S57ClassRegistrar.h
+		include/MarkIcon.h
+		include/SendToGpsDlg.h
+		include/TCWin.h
+		include/glTextureDescriptor.h
+		include/tide_time.h
+		include/glChartCanvas.h
+		include/ChInfoWin.h
+		include/ocpCursor.h
+		include/Quilt.h
+		include/Hyperlink.h
+		include/NavObjectCollection.h
+		include/RoutePoint.h
+		include/Route.h
+		include/SelectItem.h
+		include/Select.h
+		include/FontMgr.h
+		include/FontDesc.h
+		include/vector2D.h
+		include/OCPNSoundData.h
+		include/OCPN_Sound.h
+		include/TTYWindow.h
+		include/TTYScroll.h
+		include/Layer.h
 		include/concanv.h
 		include/cutil.h
 		include/georef.h
@@ -335,9 +375,17 @@ SET(HDRS
 		include/routemanagerdialog.h
 		include/routeprop.h
 		include/routeprintout.h
+		include/PositionParser.h
 		include/printtable.h
 		include/statwin.h
 		include/tcmgr.h
+		include/Station_Data.h
+		include/IDX_entry.h
+		include/TC_Error_Code.h
+		include/TCDataFactory.h
+		include/TCDS_Ascii_Harmonic.h
+		include/TCDS_Binary_Harmonic.h
+		include/TCDataSource.h
 		include/thumbwin.h
 		include/options.h
 		include/gshhs.h
@@ -370,6 +418,38 @@ SET(SRCS
 		src/chartdbs.cpp
 		src/chartimg.cpp
 		src/chcanv.cpp
+		src/ocpCursor.cpp
+		src/TCWin.cpp
+		src/S57QueryDialog.cpp
+		src/s57RegistrarMgr.cpp
+		src/GoToPositionDialog.cpp
+		src/CM93DSlide.cpp
+		src/RolloverWin.cpp
+		src/glChartCanvas.cpp
+		src/glTextureDescriptor.cpp
+		src/ChInfoWin.cpp
+		src/AISTargetQueryDialog.cpp
+		src/AIS_Bitstring.cpp
+		src/AISTargetListDialog.cpp
+		src/AISTargetAlertDialog.cpp
+		src/AIS_Decoder.cpp
+		src/AIS_Target_Data.cpp
+		src/OCPNListCtrl.cpp
+		src/Quilt.cpp
+		src/Hyperlink.cpp
+		src/NavObjectCollection.cpp
+		src/RoutePoint.cpp
+		src/Route.cpp
+		src/SelectItem.cpp
+		src/Select.cpp
+		src/FontMgr.cpp
+		src/FontDesc.cpp
+		src/OCPNSoundData.cpp
+		src/OCPN_Sound.cpp
+		src/TTYWindow.cpp
+		src/TTYScroll.cpp
+		src/SendToGpsDlg.cpp
+		src/Layer.cpp
 		src/concanv.cpp
 		src/cutil.cpp
 		src/georef.cpp
@@ -378,9 +458,16 @@ SET(SRCS
 		src/routemanagerdialog.cpp
 		src/routeprop.cpp
 		src/routeprintout.cpp
+		src/PositionParser.cpp
 		src/printtable.cpp
 		src/statwin.cpp
 		src/tcmgr.cpp
+		src/Station_Data.cpp
+		src/IDX_entry.cpp
+		src/TCDataFactory.cpp
+		src/TCDS_Ascii_Harmonic.cpp
+		src/TCDS_Binary_Harmonic.cpp
+		src/TCDataSource.cpp
 		src/thumbwin.cpp
 		src/options.cpp
 		src/gshhs.cpp

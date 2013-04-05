@@ -50,6 +50,9 @@
 #include "styles.h"
 #include "datastream.h"
 #include "multiplexer.h"
+#include "FontMgr.h"
+#include "OCPN_Sound.h"
+#include "TTYWindow.h"
 
 #include "navutil.h"
 

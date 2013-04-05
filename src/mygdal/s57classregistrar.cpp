@@ -32,6 +32,7 @@
 #include "s57.h"
 #include "cpl_conv.h"
 #include "cpl_string.h"
+#include "S57ClassRegistrar.h"
 
 
 #ifdef S57_BUILTIN_CLASSES

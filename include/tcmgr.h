@@ -33,6 +33,12 @@
 #ifndef __TCMGR_H__
 #define __TCMGR_H__
 
+#include <wx/arrstr.h>
+
+#include "Station_Data.h"
+#include "IDX_entry.h"
+#include "TC_Error_Code.h"
+#include "TCDataSource.h"
 
 // ----------------------------------------------------------------------------
 // external C linkages
@@ -41,17 +47,7 @@
 //----------------------------------------------------------------------------
 //   constants
 //----------------------------------------------------------------------------
-typedef enum {LENGTH, VELOCITY, BOGUS} unit_type;
-typedef struct {
-    char *name;
-    char *abbrv;
-    unit_type type;
-    double conv_factor;
-} unit;
 
-#define NUMUNITS 4
-
-#define MAXNAMELEN 90
 #define USF_REMOVE 1
 #define USF_UPDATE 2
 #define USF_WRITE  3
@@ -59,8 +55,6 @@ typedef struct {
 #ifndef M_PI
 #define M_PI 3.141592654
 #endif
-
-#define linelen 300
 
 #define TIDE_MAX_DERIV (2)      // Maximum derivative supported
 /* TIDE_TIME_PREC
@@ -82,157 +76,14 @@ typedef struct {
 #define TIDE_BAD_TIME   ((time_t) -1)
 
 
-//    class/struct declarations
-
-class Station_Data;
-
-typedef struct {
-    int   type;
-    char *short_s;
-    char *long_s;
-} abbreviation_entry;
-
-#define REGION 1
-#define COUNTRY 2
-#define STATE 3
-
-typedef struct {
-    void     *next;
-    short int rec_start;
-    char     *name;
-} harmonic_file_entry;
-
-
 //----------------------------------------------------------------------------
 //   Reference Station Data
 //----------------------------------------------------------------------------
-
-class Station_Data
-{
-public:
-    Station_Data();
-    ~Station_Data();
-    char        *station_name;
-    wxChar      station_type;            // T or C
-    double      *amplitude;
-    double      *epoch;
-    double      DATUM;
-    int         meridian;               // **UNUSED**
-    double      zone_offset;
-    char        tzfile[40];
-    char        unit[40];
-    char        units_conv[40];         // printable converted units
-    char        units_abbrv[20];        // and abbreviation
-    int         have_BOGUS;
-};
-
 
 typedef struct {
     Station_Data      *sta_data;
     void        *next;
 } mru_entry;
-
-
-
-class TCDataFactory;
-class TCDataSource;
-class TCDS_Ascii_Harmonic;
-class TCDS_Binary_Harmonic;
-
-class abbr_entry
-{
-public:
-    int         type;
-    wxString    short_s;
-    wxString    long_s;
-};
-
-
-
-
-typedef enum {
-    TC_NO_ERROR,
-    TC_GENERIC_ERROR,
-    TC_FILE_NOT_FOUND,
-    TC_INDEX_FILE_CORRUPT,
-    TC_INDEX_ENTRY_BAD,
-    TC_HARM_FILE_CORRUPT,
-    TC_MASTER_HARMONICS_NOT_FOUND,
-    TC_TCD_FILE_CORRUPT
-} TC_Error_Code;
-
-typedef enum {
-    SOURCE_TYPE_UNKNOWN,
-    SOURCE_TYPE_ASCII_HARMONIC,
-    SOURCE_TYPE_BINARY_HARMONIC,
-} source_data_t;
-
-class IDX_entry
-{
-public:
-    IDX_entry();
-    ~IDX_entry();
-
-    source_data_t       source_data_type;
-    TCDataSource        *pDataSource;
-    char                source_ident[MAXNAMELEN];       // actually, the file name
-    
-    int       IDX_rec_num;                   // Keeps track of multiple entries w/same name
-    char      IDX_type;                      // Entry "TCtcIUu" identifier
-    char      IDX_zone[40];                  // Alpha region/country/state ID
-    char      IDX_station_name[MAXNAMELEN];  // Name of station
-    double    IDX_lon;                       // Longitude (+East)
-    double    IDX_lat;                       // Latitude (+North)
-    int       IDX_ht_time_off;               // High tide offset in minutes
-    float     IDX_ht_mpy;                    // High tide multiplier (nom 1.0)
-    float     IDX_ht_off;                    // High tide level offset (feet?)
-    int       IDX_lt_time_off;               // Low tide offset in minutes
-    float     IDX_lt_mpy;                    // Low tide multiplier (nom 1.0)
-    float     IDX_lt_off;                    // Low tide level offset (feet?)
-    int       IDX_sta_num;                   // Subordinate station number, **UNUSED**
-    int       IDX_flood_dir;                 // Added DSR opencpn
-    int       IDX_ebb_dir;
-    int       IDX_Useable;
-    int       Valid15;
-    float     Value15;
-    float     Dir15;
-    bool      Ret15;
-    char     *IDX_tzname;                    // Timezone name
-    int       IDX_ref_file_num;              // # of reference file where reference station is
-    char      IDX_reference_name[MAXNAMELEN];// Name of reference station
-    int       IDX_ref_dbIndex;               // tcd index of reference station
-    double    max_amplitude;
-    int       have_offsets;
-    int       station_tz_offset;             // Offset in seconds to convert from harmonic data (epochs) to
-                                             // the station time zone.  Depends on Master Station reference only.
-                                             // For ASCII data, typically 0
-                                             // For Binary data, probably -(IDX_time_zone * 60)-(tiderec->zone_offset * 3600)
-    int       IDX_time_zone;                 // Station location minutes offset from UTC
-    
-
-    Station_Data   *pref_sta_data;           // Pointer to the Reference Station Data
-
-    int         num_nodes;                   // These are copies of relevant data pointers
-    int         num_csts;                    // allocated during invariant harmonic loading
-    int         num_epochs;                  // and owned by the DataSource
-    double      *m_cst_speeds;
-    double      **m_cst_nodes;
-    double      **m_cst_epochs;
-    double      *m_work_buffer;
-    int         first_year;
-    time_t      epoch;
-    int         epoch_year;
-
-};
-
-
-
-
-WX_DECLARE_OBJARRAY( abbr_entry, ArrayOfAbbrEntry);
-WX_DECLARE_OBJARRAY( IDX_entry, ArrayOfIDXEntry);
-WX_DECLARE_OBJARRAY( TCDataSource, ArrayOfTCDSources);
-WX_DECLARE_OBJARRAY( Station_Data, ArrayOfStationData);
-
 
 
 //----------------------------------------------------------------------------
@@ -287,145 +138,6 @@ private:
     ArrayOfIDXEntry     m_Combined_IDX_array;
 
 };
-
-
-//      TCDataSource Definition
-class TCDataSource
-{
-public:
-    TCDataSource();
-    ~TCDataSource();
-
-    TC_Error_Code LoadData(wxString &data_file_path);
-
-    int GetMaxIndex(void);
-    IDX_entry *GetIndexEntry(int n_index);
-    TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
-
-private:
-    wxString             m_data_source_path;
-    
-    TCDataFactory        *m_pfactory;
-    TCDS_Ascii_Harmonic  *pTCDS_Ascii_Harmonic;
-    TCDS_Binary_Harmonic *pTCDS_Binary_Harmonic;
-
-};
-
-//      TCDataFactory Definition
-class TCDataFactory
-{
-public:
-    TCDataFactory();
-    virtual ~TCDataFactory();
-
-    virtual TC_Error_Code LoadData(wxString &data_file_path) = 0;
-
-    virtual int GetMaxIndex(void) = 0;
-    virtual IDX_entry *GetIndexEntry(int n_index) = 0;
-
-    int findunit (const char *unit);
-    unit  known_units[NUMUNITS];
-    
-    wxString source_ident;
-    
-private:
-    
-    
-};
-
-
-//      TCDS_Ascii_Harmonic Definition
-class TCDS_Ascii_Harmonic : public TCDataFactory
-{
-public:
-    TCDS_Ascii_Harmonic();
-    ~TCDS_Ascii_Harmonic();
-
-    TC_Error_Code LoadData(wxString &data_file_path);
-
-    int GetMaxIndex(void) {
-        return num_IDX;
-    };
-    IDX_entry *GetIndexEntry(int n_index);
-    TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
-    int pIDX_Ref;
-
-private:
-    long IndexFileIO(int func, long value);
-    TC_Error_Code init_index_file();
-    TC_Error_Code build_IDX_entry(IDX_entry *pIDX );
-    TC_Error_Code LoadHarmonicConstants(wxString &data_file_path);
-    int read_next_line (FILE *fp, char linrec[linelen], int end_ok);
-    int skipnl (FILE *fp);
-    char *nojunk (char *line);
-    int slackcmp (char *a, char *b);
-
-    void free_cst();
-    void free_nodes();
-    void free_epochs();
-    void free_data();
-
-    ArrayOfStationData  m_msd_array;
-
-    wxString            m_indexfile_name;
-    wxString            m_harmfile_name;
-    wxString            m_last_reference_not_found;
-
-    char                index_line_buffer[1024];
-    FILE                *m_IndexFile;
-    ArrayOfAbbrEntry    m_abbreviation_array;
-    ArrayOfIDXEntry     m_IDX_array;
-
-
-    int         num_IDX;
-    int         num_nodes;
-    int         num_csts;
-    int         num_epochs;
-    double      *m_cst_speeds;
-    double      **m_cst_nodes;
-    double      **m_cst_epochs;
-    double      *m_work_buffer;
-    int         m_first_year;
-
-
-};
-
-//      TCDS_Binary_Harmonic Definition
-class TCDS_Binary_Harmonic : public TCDataFactory
-{
-public:
-    TCDS_Binary_Harmonic();
-    ~TCDS_Binary_Harmonic();
-
-    TC_Error_Code LoadData(wxString &data_file_path);
-   
-    int GetMaxIndex(void) {
-        return num_IDX;
-    };
-    IDX_entry *GetIndexEntry(int n_index);
-    TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
-
-private:
-    ArrayOfStationData  m_msd_array;
-    
-    wxString            m_last_reference_not_found;
-    
-    ArrayOfAbbrEntry    m_abbreviation_array;
-    ArrayOfIDXEntry     m_IDX_array;
-    
-    int         num_IDX;
-    int         num_nodes;
-    int         num_csts;
-    int         num_epochs;
-    double      *m_cst_speeds;
-    double      **m_cst_nodes;
-    double      **m_cst_epochs;
-    double      *m_work_buffer;
-    int         m_first_year;
-    
-
-};
-
 
 /* $Id: tcd.h.in 3744 2010-08-17 22:34:46Z flaterco $ */
 /* tcd.h.  Generated from tcd.h.in by configure. */

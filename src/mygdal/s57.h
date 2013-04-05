@@ -36,6 +36,7 @@
 
 #include "ogr_feature.h"
 #include "iso8211.h"
+#include "S57ClassRegistrar.h"
 
 class S57Reader;
 
@@ -92,78 +93,6 @@ char **S57FileCollector( const char * pszDataset );
 
 #define MAX_CLASSES 23000
 #define MAX_ATTRIBUTES 25000
-
-class S57ClassRegistrar
-{
-    // Class information:
-    int         nClasses;
-
-    int         iCurrentClass;
-
-    char      **papszCurrentFields;
-
-    char      **papszTempResult;
-
-    int        *pnClassesOBJL;
-    char     ***papapszClassesTokenized;
-
-    // Attribute Information:
-    int         nAttrMax;
-    int         nAttrCount;
-    char      **papszAttrNames;
-    char      **papszAttrAcronym;
-    char     ***papapszAttrValues;
-    char       *pachAttrType;
-    char       *pachAttrClass;
-    int        *panAttrIndex; // sorted by acronym.
-
-    int         FindFile( const char *pszTarget, const char *pszDirectory,
-                          int bReportErr, FILE **fp );
-
-    const char *ReadLine( FILE * fp );
-    char      **papszNextLine;
-    void        DestroySparseStringlist(char **papszStrList);
-
-public:
-                S57ClassRegistrar();
-               ~S57ClassRegistrar();
-
-    int         LoadInfo( const char *, int );
-
-    // class table methods.
-    int         SelectClassByIndex( int );
-    int         SelectClass( int );
-    int         SelectClass( const char * );
-
-    int         Rewind() { return SelectClassByIndex(0); }
-    int         NextClass() { return SelectClassByIndex(iCurrentClass+1); }
-
-    int         GetOBJL();
-    const char *GetDescription();
-    const char *GetAcronym();
-
-    char      **GetAttributeList( const char * = NULL );
-
-    char        GetClassCode();
-    char      **GetPrimitives();
-
-    // attribute table methods.
-    int         GetMaxAttrIndex() { return nAttrMax; }
-    const char *GetAttrName( int i ) { return papszAttrNames[i]; }
-    const char *GetAttrAcronym( int i ) { return papszAttrAcronym[i]; }
-    char      **GetAttrValues( int i ) { return papapszAttrValues[i]; }
-    char        GetAttrType( int i ) { return pachAttrType[i]; }
-#define SAT_ENUM        'E'
-#define SAT_LIST        'L'
-#define SAT_FLOAT       'F'
-#define SAT_INT         'I'
-#define SAT_CODE_STRING 'A'
-#define SAT_FREE_TEXT   'S'
-
-    char        GetAttrClass( int i ) { return pachAttrClass[i]; }
-    int         FindAttrByAcronym( const char * );
-
-};
 
 
 

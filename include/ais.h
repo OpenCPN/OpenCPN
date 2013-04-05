@@ -25,6 +25,9 @@
  *
  */
 
+#ifndef __AIS_H__
+#define __AIS_H__
+
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
@@ -45,6 +48,9 @@
 #include "chart1.h"
 #include "datastream.h"         // For GenericPosDatEx
 #include "navutil.h"
+#include "OCPN_Sound.h"
+#include "AIS_Bitstring.h"
+#include "AISTargetListDialog.h"
 
 //    Constants
 #ifndef PI
@@ -60,6 +66,21 @@
 #define ID_SILENCE            10002
 #define ID_AIS_TARGET_LIST    10003
 #define ID_JUMPTO             10004
+
+enum {
+    tlNAME = 0,
+    tlCALL,
+    tlMMSI,
+    tlCLASS,
+    tlTYPE,
+    tlNAVSTATUS,
+    tlBRG,
+    tlRNG,
+    tlCOG,
+    tlSOG,
+    tlCPA,
+    tlTCPA
+};// AISTargetListCtrl Columns;
 
 typedef enum AIS_Error
 {
@@ -200,289 +221,16 @@ WX_DECLARE_HASH_MAP( int, Ais8_001_22, wxIntegerHash, wxIntegerEqual, AIS_Area_N
 //  AIS_Decoder Helpers
 //
 //---------------------------------------------------------------------------------
-class AIS_Target_Data
-{
-public:
-
-    AIS_Target_Data();
-    ~AIS_Target_Data();
-
-    wxString BuildQueryResult(void);
-    wxString GetRolloverString(void);
-    wxString Get_vessel_type_string(bool b_short = false);
-    wxString Get_class_string(bool b_short = false);
-	void Toggle_AIS_CPA(void); //TR 2012.06.28: Show AIS-CPA
-
-
-    int                       MID;
-    int                       MMSI;
-    ais_transponder_class     Class;
-    int                       NavStatus;
-    int                       SyncState;
-    int                       SlotTO;
-    double                    SOG;
-    double                    COG;
-    double                    HDG;
-    double                    Lon;
-    double                    Lat;
-    int                       ROTAIS;
-    int                       ROTIND;
-    char                      CallSign[8];                // includes terminator
-    char                      ShipName[21];
-    char                      ShipNameExtension[15];
-    unsigned char             ShipType;
-    int                       IMO;
-
-    int                       DimA;
-    int                       DimB;
-    int                       DimC;
-    int                       DimD;
-
-    double                    Euro_Length;            // Extensions for European Inland AIS
-    double                    Euro_Beam;
-    double                    Euro_Draft;
-    char                      Euro_VIN[8];
-    int                       UN_shiptype;
-    bool                      b_isEuroInland;
-    bool                      b_blue_paddle;
-    int                       blue_paddle;
-
-    int                       ETA_Mo;
-    int                       ETA_Day;
-    int                       ETA_Hr;
-    int                       ETA_Min;
-
-    double                    Draft;
-
-    char                      Destination[21];
-
-    time_t                    PositionReportTicks;
-    time_t                    StaticReportTicks;
-
-    int                       RecentPeriod;
-    bool                      b_active;
-    bool                      b_lost;
-    ais_alarm_type            n_alarm_state;
-    bool                      b_suppress_audio;
-    bool                      b_positionDoubtful;
-    bool                      b_positionOnceValid;
-    bool                      b_nameValid;
-    bool                      b_OwnShip;
-
-    int                       m_utc_hour;
-    int                       m_utc_min;
-    int                       m_utc_sec;
-    wxDateTime                m_ack_time;
-    bool                      b_in_ack_timeout;
-
-    double                    Range_NM;
-    double                    Brg;
-
-    wxString                  MSG_14_text;
-
-    //      Per target collision parameters
-    bool                      bCPA_Valid;
-    double                    TCPA;                     // Minutes
-    double                    CPA;                      // Nautical Miles
-
-    bool                      b_show_AIS_CPA;           //TR 2012.06.28: Show AIS-CPA
-
-    AISTargetTrackList        *m_ptrack;
-
-    AIS_Area_Notice_Hash     area_notices;
-};
-
 WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
-WX_DEFINE_SORTED_ARRAY_INT(int, ArrayOfMMSI);
-
-
-#define AIS_MAX_MESSAGE_LEN (10 * 82)           // AIS Spec allows up to 9 sentences per message, 82 bytes each
-class AIS_Bitstring
-{
-public:
-
-    AIS_Bitstring(const char *str);
-    unsigned char to_6bit(const char c);
-
-    /// sp is starting bit, 1-based
-    int GetInt(int sp, int len, bool signed_flag = false);
-    int GetStr(int sp, int bit_len, char *dest, int max_len);
-    int GetBitCount();
-
-
-private:
-
-    unsigned char bitbytes[AIS_MAX_MESSAGE_LEN];
-    int byte_length;
-};
-
-
 
 
 //      Implement the AISTargetList as a wxHashMap
 
 WX_DECLARE_HASH_MAP( int, AIS_Target_Data*, wxIntegerHash, wxIntegerEqual, AIS_Target_Hash );
 
-//---------------------------------------------------------------------------------
-//
-//  AIS_Decoder Definition
-//
-//---------------------------------------------------------------------------------
+wxString trimAISField( char *data );
+wxString ais_get_status(int index);
+wxString ais_get_type(int index);
+wxString ais_get_short_type(int index);
 
-class AIS_Decoder : public wxEvtHandler
-{
-
-public:
-    AIS_Decoder(wxFrame *parent);
-
-    ~AIS_Decoder(void);
-
-    void OnEvtAIS(OCPN_DataStreamEvent& event);
-    AIS_Error Decode(const wxString& str);
-    AIS_Target_Hash *GetTargetList(void) {return AISTargetList;}
-    AIS_Target_Hash *GetAreaNoticeSourcesList(void) {return AIS_AreaNotice_Sources;}
-    AIS_Target_Data *Get_Target_Data_From_MMSI(int mmsi);
-    int GetNumTargets(void){ return m_n_targets;}
-    bool IsAISSuppressed(void){ return m_bSuppressed; }
-    bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
-    AIS_Error DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos, wxString *acc );
-    
-private:
-    void OnActivate(wxActivateEvent& event);
-    void OnTimerAIS(wxTimerEvent& event);
-    void OnTimerAISAudio(wxTimerEvent& event);
-
-    bool NMEACheckSumOK(const wxString& str);
-    bool Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd);
-    void UpdateAllCPA(void);
-    void UpdateOneCPA(AIS_Target_Data *ptarget);
-    void UpdateAllAlarms(void);
-    void UpdateAllTracks(void);
-    void UpdateOneTrack(AIS_Target_Data *ptarget);
-    void BuildERIShipTypeHash(void);
-
-    AIS_Target_Hash *AISTargetList;
-    AIS_Target_Hash *AIS_AreaNotice_Sources;
-
-    bool              m_busy;
-    wxTimer           TimerAIS;
-    wxFrame           *m_parent_frame;
-
-    int               nsentences;
-    int               isentence;
-    wxString          sentence_accumulator;
-    bool              m_OK;
-
-    AIS_Target_Data   *m_pLatestTargetData;
-
-    bool             m_bAIS_Audio_Alert_On;
-    wxTimer          m_AIS_Audio_Alert_Timer;
-    OCPN_Sound       m_AIS_Sound;
-    int              m_n_targets;
-    bool             m_bSuppressed;
-    bool             m_bGeneralAlert;
-
-DECLARE_EVENT_TABLE()
-};
-
-class AISInfoWin;
-//----------------------------------------------------------------------------------------------------------
-//    AISTargetAlertDialog Specification
-//----------------------------------------------------------------------------------------------------------
-class AISTargetAlertDialog: public wxDialog
-{
-      DECLARE_CLASS( AISTargetAlertDialog )
-                  DECLARE_EVENT_TABLE()
-      public:
-
-           AISTargetAlertDialog( );
-
-            ~AISTargetAlertDialog( );
-            void Init();
-
-            bool Create( int target_mmsi,
-                         wxWindow *parent,
-                         AIS_Decoder *pdecoder,
-                         bool b_jumpto,
-                         wxWindowID id = wxID_ANY,
-                         const wxString& caption = _("AIS Alert"),
-                         const wxPoint& pos = wxDefaultPosition,
-                         const wxSize& size = wxDefaultSize,
-                         long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
-
-           void CreateControls();
-
-           int Get_Dialog_MMSI(void){ return m_target_mmsi; }
-           void UpdateText();
-
-      private:
-            bool GetAlertText(void);
-            void OnClose(wxCloseEvent& event);
-            void OnIdAckClick( wxCommandEvent& event );
-            void OnMove( wxMoveEvent& event );
-            void OnSize( wxSizeEvent& event );
-            void OnIdSilenceClick( wxCommandEvent& event );
-            void OnIdJumptoClick( wxCommandEvent& event );
-
-
-            wxHtmlWindow      *m_pAlertTextCtl;
-            int               m_target_mmsi;
-            AIS_Decoder       *m_pdecoder;
-            wxWindow          *m_pparent;
-            wxFont            *m_pFont;
-            wxString          m_alert_text;
-            bool              m_bjumpto;
-
-};
-
-class OCPNListCtrl;
-//----------------------------------------------------------------------------------------------------------
-//    AISTargetListDialog Specification
-//----------------------------------------------------------------------------------------------------------
-class AISTargetListDialog: public wxPanel
-{
-      DECLARE_CLASS( AISTargetListDialog )
-
-      public:
-            AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr, AIS_Decoder *pdecoder );
-           ~AISTargetListDialog( );
-
-            void OnClose(wxCloseEvent &event);
-            void Disconnect_decoder();
-
-            void SetColorScheme( );
-            void UpdateAISTargetList( );     // Rebuild AIS target list
-            AIS_Target_Data   *GetpTarget(unsigned int list_item);
-
-            OCPNListCtrl      *m_pListCtrlAISTargets;
-            AIS_Decoder       *m_pdecoder;
-
-            ArrayOfMMSI       *m_pMMSI_array;
-
-      private:
-            void OnPaneClose( wxAuiManagerEvent& event );
-            void UpdateButtons();
-            void OnTargetSelected( wxListEvent &event );
-            void DoTargetQuery( int mmsi );
-            void OnTargetDefaultAction( wxListEvent& event );
-            void OnTargetQuery( wxCommandEvent& event );
-            void OnTargetListColumnClicked( wxListEvent &event );
-            void OnTargetScrollTo( wxCommandEvent& event );
-            void OnLimitRange( wxCommandEvent& event );
-
-            wxWindow          *m_pparent;
-            wxAuiManager      *m_pAuiManager;
-            wxButton          *m_pButtonInfo;
-            wxButton          *m_pButtonJumpTo;
-            wxStaticText      *m_pStaticTextRange;
-            wxSpinCtrl        *m_pSpinCtrlRange;
-            wxStaticText      *m_pStaticTextCount;
-            wxTextCtrl        *m_pTextTargetCount;
-
-            DECLARE_EVENT_TABLE()
-
-};
-
-
-
-
+#endif
