@@ -43,6 +43,7 @@ public:
     bool Play(unsigned flags = wxSOUND_ASYNC) const;
     bool IsPlaying() const;
     void Stop();
+    void UnLoad(void);
 
 private:
     bool m_OK;
