@@ -382,6 +382,7 @@ SET(HDRS
 		include/Station_Data.h
 		include/IDX_entry.h
 		include/TC_Error_Code.h
+		include/TCDataFactory.h
 		include/thumbwin.h
 		include/options.h
 		include/gshhs.h
@@ -460,6 +461,7 @@ SET(SRCS
 		src/tcmgr.cpp
 		src/Station_Data.cpp
 		src/IDX_entry.cpp
+		src/TCDataFactory.cpp
 		src/thumbwin.cpp
 		src/options.cpp
 		src/gshhs.cpp

@@ -36,6 +36,7 @@
 #include "Station_Data.h"
 #include "IDX_entry.h"
 #include "TC_Error_Code.h"
+#include "TCDataFactory.h"
 
 // ----------------------------------------------------------------------------
 // external C linkages
@@ -44,15 +45,6 @@
 //----------------------------------------------------------------------------
 //   constants
 //----------------------------------------------------------------------------
-typedef enum {LENGTH, VELOCITY, BOGUS} unit_type;
-typedef struct {
-    char *name;
-    char *abbrv;
-    unit_type type;
-    double conv_factor;
-} unit;
-
-#define NUMUNITS 4
 
 #define USF_REMOVE 1
 #define USF_UPDATE 2
@@ -114,7 +106,6 @@ typedef struct {
 
 
 
-class TCDataFactory;
 class TCDataSource;
 class TCDS_Ascii_Harmonic;
 class TCDS_Binary_Harmonic;
@@ -206,28 +197,6 @@ private:
     TCDS_Ascii_Harmonic  *pTCDS_Ascii_Harmonic;
     TCDS_Binary_Harmonic *pTCDS_Binary_Harmonic;
 
-};
-
-//      TCDataFactory Definition
-class TCDataFactory
-{
-public:
-    TCDataFactory();
-    virtual ~TCDataFactory();
-
-    virtual TC_Error_Code LoadData(wxString &data_file_path) = 0;
-
-    virtual int GetMaxIndex(void) = 0;
-    virtual IDX_entry *GetIndexEntry(int n_index) = 0;
-
-    int findunit (const char *unit);
-    unit  known_units[NUMUNITS];
-    
-    wxString source_ident;
-    
-private:
-    
-    
 };
 
 
