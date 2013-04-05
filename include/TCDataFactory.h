@@ -26,9 +26,14 @@
 #define __TCDATAFACTORY_H__
 
 #include <wx/string.h>
+#include <wx/dynarray.h>
 #include "TC_Error_Code.h"
 
 #define NUMUNITS 4
+
+#define REGION 1
+#define COUNTRY 2
+#define STATE 3
 
 class IDX_entry;
 
@@ -40,6 +45,14 @@ typedef struct {
     unit_type type;
     double conv_factor;
 } unit;
+
+class abbr_entry
+{
+public:
+    int         type;
+    wxString    short_s;
+    wxString    long_s;
+};
 
 class TCDataFactory
 {
@@ -57,5 +70,7 @@ public:
 
     wxString source_ident;
 };
+
+WX_DECLARE_OBJARRAY(abbr_entry, ArrayOfAbbrEntry);
 
 #endif

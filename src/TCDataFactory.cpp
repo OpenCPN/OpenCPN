@@ -24,6 +24,9 @@
 
 #include "TCDataFactory.h"
 
+#include <wx/arrimpl.cpp>
+WX_DEFINE_OBJARRAY(ArrayOfAbbrEntry);
+
 TCDataFactory::TCDataFactory()
 {
     //  Build the units array
