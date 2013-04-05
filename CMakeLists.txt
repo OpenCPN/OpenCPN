@@ -380,6 +380,7 @@ SET(HDRS
 		include/statwin.h
 		include/tcmgr.h
 		include/Station_Data.h
+		include/IDX_entry.h
 		include/thumbwin.h
 		include/options.h
 		include/gshhs.h
@@ -457,6 +458,7 @@ SET(SRCS
 		src/statwin.cpp
 		src/tcmgr.cpp
 		src/Station_Data.cpp
+		src/IDX_entry.cpp
 		src/thumbwin.cpp
 		src/options.cpp
 		src/gshhs.cpp

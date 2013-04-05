@@ -55,7 +55,6 @@
 
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY(ArrayOfAbbrEntry);
-WX_DEFINE_OBJARRAY(ArrayOfIDXEntry);
 WX_DEFINE_OBJARRAY(ArrayOfTCDSources);
 
 extern wxArrayString             TideCurrentDataSet;
@@ -739,16 +738,6 @@ void happy_new_year (IDX_entry *pIDX, int new_year)
     pIDX->epoch_year = new_year;
     figure_multipliers ( pIDX, new_year );
     set_epoch ( pIDX, new_year );
-}
-
-//      IDX_entry Implementation
-IDX_entry::IDX_entry()
-{
-    memset(this, 0, sizeof(IDX_entry));
-}
-
-IDX_entry::~IDX_entry()
-{
 }
 
 //      TCMgr Implementation
