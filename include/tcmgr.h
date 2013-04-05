@@ -33,11 +33,14 @@
 #ifndef __TCMGR_H__
 #define __TCMGR_H__
 
+#include <wx/arrstr.h>
+
 #include "Station_Data.h"
 #include "IDX_entry.h"
 #include "TC_Error_Code.h"
 #include "TCDataFactory.h"
 #include "TCDS_Ascii_Harmonic.h"
+#include "TCDS_Binary_Harmonic.h"
 
 // ----------------------------------------------------------------------------
 // external C linkages
@@ -164,43 +167,6 @@ private:
     TCDataFactory        *m_pfactory;
     TCDS_Ascii_Harmonic  *pTCDS_Ascii_Harmonic;
     TCDS_Binary_Harmonic *pTCDS_Binary_Harmonic;
-
-};
-
-
-//      TCDS_Binary_Harmonic Definition
-class TCDS_Binary_Harmonic : public TCDataFactory
-{
-public:
-    TCDS_Binary_Harmonic();
-    ~TCDS_Binary_Harmonic();
-
-    TC_Error_Code LoadData(wxString &data_file_path);
-   
-    int GetMaxIndex(void) {
-        return num_IDX;
-    };
-    IDX_entry *GetIndexEntry(int n_index);
-    TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
-
-private:
-    ArrayOfStationData  m_msd_array;
-    
-    wxString            m_last_reference_not_found;
-    
-    ArrayOfAbbrEntry    m_abbreviation_array;
-    ArrayOfIDXEntry     m_IDX_array;
-    
-    int         num_IDX;
-    int         num_nodes;
-    int         num_csts;
-    int         num_epochs;
-    double      *m_cst_speeds;
-    double      **m_cst_nodes;
-    double      **m_cst_epochs;
-    double      *m_work_buffer;
-    int         m_first_year;
-    
 
 };
 
