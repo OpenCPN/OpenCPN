@@ -407,26 +407,4 @@ private :
       void OnOkClick( wxCommandEvent& event );
 };
 
-class PositionParser {
-public:
-    PositionParser( wxString& src );
-    wxString GetSeparator() { return separator; }
-    wxString GetLatitudeString() { return latitudeString; }
-    wxString GetLongitudeString() { return longitudeString; }
-    double GetLatitude() { return latitude; }
-    double GetLongitude() { return longitude; }
-    bool FindSeparator( wxString src );
-    bool IsOk() { return parsedOk; }
-
-private:
-    wxString source;
-    wxString separator;
-    wxString latitudeString;
-    wxString longitudeString;
-    double latitude;
-    double longitude;
-    bool parsedOk;
-};
-
-
 #endif // _ROUTEPROP_H_

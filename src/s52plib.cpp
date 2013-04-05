@@ -49,6 +49,7 @@
 #include "ocpn_pixel.h"
 #include "chartsymbols.h"
 #include "razdsparser.h"
+#include "FontMgr.h"
 
 #include <wx/image.h>
 #include <wx/tokenzr.h>

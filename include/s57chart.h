@@ -45,6 +45,9 @@
 #include "iso8211.h"
 
 #include "gdal.h"
+#include "s57RegistrarMgr.h"
+#include "S57ClassRegistrar.h"
+#include "S57Light.h"
 
 #include "s52s57.h"                 //types
 #include "chcanv.h"                // for Viewport
@@ -57,7 +60,6 @@
 // ----------------------------------------------------------------------------
 // S57 Utility Prototypes
 // ----------------------------------------------------------------------------
-extern "C" int  s57_initialize(const wxString& csv_dir, FILE *flog);
 extern "C" bool s57_GetChartExtent(const wxString& FullPath, Extent *pext);
 
 void s57_DrawExtendedLightSectors( ocpnDC& temp_dc, ViewPort& VPoint, std::vector<s57Sector_t>& sectorlegs );
@@ -313,38 +315,6 @@ private:
       long        m_plib_state_hash;
       bool        m_btex_mem;
       char        m_usage_char;
-};
-
-//----------------------------------------------------------------------------
-//    This class encapsulates the results (per object) of an S57 object query
-//----------------------------------------------------------------------------
-//
-class S57ObjectDesc
-{
-public:
-      wxString    S57ClassName;
-      wxString    S57ClassDesc;
-      wxString    Attributes;
-};
-
-class S57Light {
-public:
-      wxArrayString attributeNames;
-      wxArrayString attributeValues;
-      wxString position;
-      bool hasSectors;
-};
-
-//------------------------------------------------------------------------
-//  s57RegistrarMgr Definition
-//  This is a class holding the ctor and dtor for the global registrar
-//------------------------------------------------------------------------
-
-class s57RegistrarMgr
-{
-      public:
-            s57RegistrarMgr(const wxString& csv_dir, FILE *flog);
-            ~s57RegistrarMgr();
 };
 
 #endif
