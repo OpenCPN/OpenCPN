@@ -1245,8 +1245,6 @@ void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
                 gFrame->Raise();
             }
         }
-
-        m_one_shot = 10;
     }
 }
 
@@ -1254,10 +1252,6 @@ int s_dragx, s_dragy;
 
 void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 {
-
-    if( event.Leaving() ) m_one_shot = 500;                   // inital value
-    if( event.Entering() ) m_one_shot = 500;
-
     wxCoord x, y;
     event.GetPosition( &x, &y );
     ocpnToolBarTool *tool = (ocpnToolBarTool *) FindToolForPosition( x, y );
@@ -1272,7 +1266,6 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 
     if( tool && tool->IsButton() && IsShown() ) {
 
-#ifndef __WXOSX__
         //    ToolTips
         if( NULL == m_pToolTipWin ) {
             m_pToolTipWin = new ToolTipWin( GetParent() );
@@ -1285,7 +1278,6 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         if( !m_pToolTipWin->IsShown() ) {
             m_tooltip_timer.Start( m_one_shot, wxTIMER_ONE_SHOT );
         }
-#endif
 
         //    Tool Rollover highlighting
         if( tool != m_last_ro_tool ) {
