@@ -33,6 +33,7 @@
 #ifndef __TCMGR_H__
 #define __TCMGR_H__
 
+#include "Station_Data.h"
 
 // ----------------------------------------------------------------------------
 // external C linkages
@@ -84,8 +85,6 @@ typedef struct {
 
 //    class/struct declarations
 
-class Station_Data;
-
 typedef struct {
     int   type;
     char *short_s;
@@ -106,26 +105,6 @@ typedef struct {
 //----------------------------------------------------------------------------
 //   Reference Station Data
 //----------------------------------------------------------------------------
-
-class Station_Data
-{
-public:
-    Station_Data();
-    ~Station_Data();
-    char        *station_name;
-    wxChar      station_type;            // T or C
-    double      *amplitude;
-    double      *epoch;
-    double      DATUM;
-    int         meridian;               // **UNUSED**
-    double      zone_offset;
-    char        tzfile[40];
-    char        unit[40];
-    char        units_conv[40];         // printable converted units
-    char        units_abbrv[20];        // and abbreviation
-    int         have_BOGUS;
-};
-
 
 typedef struct {
     Station_Data      *sta_data;
@@ -231,7 +210,6 @@ public:
 WX_DECLARE_OBJARRAY( abbr_entry, ArrayOfAbbrEntry);
 WX_DECLARE_OBJARRAY( IDX_entry, ArrayOfIDXEntry);
 WX_DECLARE_OBJARRAY( TCDataSource, ArrayOfTCDSources);
-WX_DECLARE_OBJARRAY( Station_Data, ArrayOfStationData);
 
 
 

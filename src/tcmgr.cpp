@@ -57,7 +57,6 @@
 WX_DEFINE_OBJARRAY(ArrayOfAbbrEntry);
 WX_DEFINE_OBJARRAY(ArrayOfIDXEntry);
 WX_DEFINE_OBJARRAY(ArrayOfTCDSources);
-WX_DEFINE_OBJARRAY(ArrayOfStationData);
 
 extern wxArrayString             TideCurrentDataSet;
 
@@ -741,25 +740,6 @@ void happy_new_year (IDX_entry *pIDX, int new_year)
     figure_multipliers ( pIDX, new_year );
     set_epoch ( pIDX, new_year );
 }
-
-
-
-//      Station_Data Implementation
-
-Station_Data::Station_Data()
-{
-    station_name = NULL;
-    amplitude = NULL;
-    epoch = NULL;
-}
-
-Station_Data::~Station_Data()
-{
-    free( station_name );
-    free( amplitude );
-    free( epoch );
-}
-
 
 //      IDX_entry Implementation
 IDX_entry::IDX_entry()
