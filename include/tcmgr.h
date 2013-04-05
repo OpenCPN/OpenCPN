@@ -38,9 +38,7 @@
 #include "Station_Data.h"
 #include "IDX_entry.h"
 #include "TC_Error_Code.h"
-#include "TCDataFactory.h"
-#include "TCDS_Ascii_Harmonic.h"
-#include "TCDS_Binary_Harmonic.h"
+#include "TCDataSource.h"
 
 // ----------------------------------------------------------------------------
 // external C linkages
@@ -87,12 +85,6 @@ typedef struct {
     void        *next;
 } mru_entry;
 
-
-
-class TCDataSource;
-class TCDS_Binary_Harmonic;
-
-WX_DECLARE_OBJARRAY( TCDataSource, ArrayOfTCDSources);
 
 //----------------------------------------------------------------------------
 //   TCMgr
@@ -146,30 +138,6 @@ private:
     ArrayOfIDXEntry     m_Combined_IDX_array;
 
 };
-
-
-//      TCDataSource Definition
-class TCDataSource
-{
-public:
-    TCDataSource();
-    ~TCDataSource();
-
-    TC_Error_Code LoadData(wxString &data_file_path);
-
-    int GetMaxIndex(void);
-    IDX_entry *GetIndexEntry(int n_index);
-    TC_Error_Code LoadHarmonicData(IDX_entry *pIDX);
-
-private:
-    wxString             m_data_source_path;
-    
-    TCDataFactory        *m_pfactory;
-    TCDS_Ascii_Harmonic  *pTCDS_Ascii_Harmonic;
-    TCDS_Binary_Harmonic *pTCDS_Binary_Harmonic;
-
-};
-
 
 /* $Id: tcd.h.in 3744 2010-08-17 22:34:46Z flaterco $ */
 /* tcd.h.  Generated from tcd.h.in by configure. */

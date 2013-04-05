@@ -385,6 +385,7 @@ SET(HDRS
 		include/TCDataFactory.h
 		include/TCDS_Ascii_Harmonic.h
 		include/TCDS_Binary_Harmonic.h
+		include/TCDataSource.h
 		include/thumbwin.h
 		include/options.h
 		include/gshhs.h
@@ -466,6 +467,7 @@ SET(SRCS
 		src/TCDataFactory.cpp
 		src/TCDS_Ascii_Harmonic.cpp
 		src/TCDS_Binary_Harmonic.cpp
+		src/TCDataSource.cpp
 		src/thumbwin.cpp
 		src/options.cpp
 		src/gshhs.cpp
