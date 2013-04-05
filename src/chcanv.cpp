@@ -10199,7 +10199,8 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
 
         else if( win->IsKindOf( CLASSINFO(wxBitmapComboBox) ) ) {
 #if wxCHECK_VERSION(2,9,0)
-            ((wxBitmapComboBox*)win)->GetTextCtrl()->SetBackgroundColour(col);
+            if( ( ( wxBitmapComboBox*) win )->GetTextCtrl() )
+                ( (wxBitmapComboBox*) win )->GetTextCtrl()->SetBackgroundColour(col);
 #else
             ( (wxBitmapComboBox*) win )->SetBackgroundColour( col );
 #endif
