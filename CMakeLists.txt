@@ -406,6 +406,7 @@ SET(HDRS
 		include/compasswin.h
 		include/geodesic.h
 		include/datastream.h
+		include/OCPN_DataStreamEvent.h
         include/multiplexer.h
 )
 
@@ -487,6 +488,7 @@ SET(SRCS
 		src/compasswin.cpp
 		src/geodesic.cpp
 		src/datastream.cpp
+		src/OCPN_DataStreamEvent.cpp
         src/multiplexer.cpp
     )
 

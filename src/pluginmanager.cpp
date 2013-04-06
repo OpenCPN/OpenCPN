@@ -47,6 +47,7 @@
 #include "FontMgr.h"
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
+#include "OCPN_DataStreamEvent.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
@@ -1484,9 +1485,9 @@ void PushNMEABuffer( wxString buf )
     OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
     std::string s = std::string( buf.mb_str() );
     event.SetNMEAString( s );
-    event.SetStreamName("PlugIn Virtual");        
-    event.SetPriority( 0 );        
-    
+    event.SetStreamName("PlugIn Virtual");
+    event.SetPriority( 0 );
+
     g_pMUX->AddPendingEvent( event );
 }
 

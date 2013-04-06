@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  NMEA Data Multiplexer Object
@@ -29,7 +29,7 @@
 #include "navutil.h"                    // for NMEALogWindow
 #include "TTYWindow.h"
 #include "garmin/jeeps/garmin_wrapper.h"
-
+#include "OCPN_DataStreamEvent.h"
 
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
@@ -87,7 +87,7 @@ void Multiplexer::StopAndRemoveStream( DataStream *stream )
 {
     if( stream )
         stream->Close();
-    
+
     if( m_pdatastreams ) {
         int index = m_pdatastreams->Index( stream );
         if( wxNOT_FOUND != index )
@@ -106,7 +106,7 @@ void Multiplexer::LogOutputMessageColor( wxString &msg, wxString stream_name, wx
         ss.Append( _T(") ") );
         ss.Append( msg );
         ss.Prepend( color );
-        
+
         g_NMEALogWindow->Add( ss );
 //        g_NMEALogWindow->Refresh( false );
     }
@@ -120,7 +120,6 @@ void Multiplexer::LogOutputMessage( wxString &msg, wxString stream_name, bool b_
         LogOutputMessageColor( msg, stream_name, _T("<AMBER>") );
     else
         LogOutputMessageColor( msg, stream_name, _T("<BLUE>") );
-    
 }
 
 void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_filter )
@@ -136,7 +135,7 @@ void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_f
             ss.Prepend( _T("<AMBER>") );
         else
             ss.Prepend( _T("<GREEN>") );
-        
+
         g_NMEALogWindow->Add( ss );
 //        g_NMEALogWindow->Refresh( false );
     }
@@ -156,7 +155,7 @@ void Multiplexer::SendNMEAMessage( wxString &msg )
             if(s->SentencePassesFilter( msg, FILTER_OUTPUT ) ) {
                 bxmit_ok = s->SendSentence(msg);
                 bout_filter = false;
-            }    
+            }
             //Send to the Debug Window, if open
             if( !bout_filter ) {
                 if( bxmit_ok )
@@ -167,7 +166,6 @@ void Multiplexer::SendNMEAMessage( wxString &msg )
             else
                 LogOutputMessageColor( msg, s->GetPort(), _T("<AMBER>") );
         }
-        
     }
     //Send to plugins
     if ( g_pi_manager )
@@ -197,7 +195,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         bool bpass = true;
         if( stream )
             bpass = stream->SentencePassesFilter( message, FILTER_INPUT );
-            
+
         if( bpass ) {
             if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
                 message.Mid(1,5).IsSameAs(_T("FRPOS")) ||
@@ -215,11 +213,11 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 
             //Send to the Debug Window, if open
         LogInputMessage( message, port, !bpass );
-            
+
         //Send to plugins
         if ( g_pi_manager )
             g_pi_manager->SendNMEASentenceToAllPlugIns( message );
-            
+
        //Send to all the other outputs
         for (size_t i = 0; i < m_pdatastreams->Count(); i++)
         {
@@ -228,7 +226,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                 if((s->GetConnectionType() == SERIAL)  || (s->GetPort() != port)) {
                     if ( s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT ) {
                         bool bout_filter = true;
-                       
+
                         bool bxmit_ok = true;
                         if(s->SentencePassesFilter( message, FILTER_OUTPUT ) ) {
                             bxmit_ok = s->SendSentence(message);
@@ -244,7 +242,6 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
                         }
                         else
                             LogOutputMessageColor( message, s->GetPort(), _T("<AMBER>") );
-                        
                     }
                 }
             }
@@ -265,7 +262,6 @@ void Multiplexer::SaveStreamProperties( DataStream *stream )
         output_sentence_list_type_save = stream->GetOutputSentenceListType();
         bchecksum_check_save = stream->GetChecksumCheck();
         bGarmin_GRMN_mode_save = stream->GetGarminMode();
-        
     }
 }
 
@@ -283,11 +279,10 @@ bool Multiplexer::CreateAndRestoreSavedStreamProperties()
     dstr->SetOutputFilter(output_sentence_list_save);
     dstr->SetOutputFilterType(output_sentence_list_type_save);
     dstr->SetChecksumCheck(bchecksum_check_save);
-    
+
     AddStream(dstr);
-    
+
     return true;
-    
 }
 
 
@@ -298,9 +293,8 @@ bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypo
     if( old_stream ) {
         SaveStreamProperties( old_stream );
         StopAndRemoveStream( old_stream );
-    }      
-        
-    
+    }
+
 #ifdef USE_GARMINHOST
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
@@ -440,7 +434,7 @@ ret_point:
 
     {
         { // Standard NMEA mode
-        
+
             //  If the port was temporarily closed, reopen as I/O type
             //  Otherwise, open another port using default properties
             wxString baud;
@@ -451,7 +445,7 @@ ret_point:
             else {
                 baud = _T("4800");
             }
-            
+
             DataStream *dstr = new DataStream( this,
                                                com_name,
                                                baud,
@@ -464,7 +458,7 @@ ret_point:
                 wxMilliSleep(100);
                 timeout++;
             }
-            
+
             SENTENCE snt;
             NMEA0183 oNMEA0183;
             oNMEA0183.TalkerID = _T ( "EC" );
@@ -479,7 +473,7 @@ ret_point:
 
             if(!pProgress)
                 progress_stall = 200;   // 80 chars at 4800 baud is ~160 msec
-            
+
             // Send out the waypoints, in order
             if ( bsend_waypoints )
             {
@@ -531,7 +525,7 @@ ret_point:
 
                     if( dstr->SendSentence( snt.Sentence ) )
                         LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
-                    
+
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
                     msg += _T(" Sentence: ");
@@ -545,9 +539,9 @@ ret_point:
                         pProgress->Refresh();
                         pProgress->Update();
                     }
-                    
+
                     wxMilliSleep ( progress_stall );
-                    
+
                     node = node->GetNext();
 
                     ip++;
@@ -739,7 +733,7 @@ ret_point:
                 {
                     if(dstr->SendSentence( sentence_array.Item(ii) ) )
                         LogOutputMessage( sentence_array.Item(ii), dstr->GetPort(), false );
-                    
+
                     wxString msg(_T("-->GPS Port:"));
                     msg += com_name;
                     msg += _T(" Sentence: ");
@@ -755,7 +749,7 @@ ret_point:
             {
                 if( dstr->SendSentence( snt.Sentence ) )
                     LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
-                
+
                 wxString msg(_T("-->GPS Port:"));
                 msg += com_name;
                 msg += _T(" Sentence: ");
@@ -771,7 +765,7 @@ ret_point:
 
                 if( dstr->SendSentence( term ) )
                     LogOutputMessage( term, dstr->GetPort(), false );
-                
+
                 wxString msg(_T("-->GPS Port:"));
                 msg += com_name;
                 msg += _T(" Sentence: ");
@@ -790,7 +784,7 @@ ret_point:
             wxMilliSleep ( progress_stall );
 
             ret_bool = true;
-            
+
             //  All finished with the temp port
             dstr->Close();
         }
@@ -800,7 +794,7 @@ ret_point_1:
 
     if( old_stream )
         CreateAndRestoreSavedStreamProperties();
-    
+
     return ret_bool;
 }
 
@@ -812,8 +806,8 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
     if( old_stream ) {
         SaveStreamProperties( old_stream );
         StopAndRemoveStream( old_stream );
-    }      
-    
+    }
+
 #ifdef USE_GARMINHOST
 #ifdef __WXMSW__
     if(com_name.Upper().Matches(_T("*GARMIN*"))) // Garmin USB Mode
@@ -937,32 +931,32 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
 #endif //USE_GARMINHOST
 
     { // Standard NMEA mode
-    
+
     //  If the port was temporarily closed, reopen as I/O type
     //  Otherwise, open another port using default properties
     wxString baud;
-    
+
     if( old_stream ) {
         baud = baud_rate_save;
     }
     else {
         baud = _T("4800");
     }
-    
+
     DataStream *dstr = new DataStream( this,
                                        com_name,
                                        baud,
                                        DS_TYPE_INPUT_OUTPUT,
                                        0 );
-    
-    
+
+
     //  Wait up to 1 seconds for Datastream secondary thread to come up
     int timeout = 0;
     while( !dstr-> IsSecThreadActive()  && (timeout < 10)) {
         wxMilliSleep(100);
         timeout++;
     }
-    
+
         SENTENCE snt;
         NMEA0183 oNMEA0183;
         oNMEA0183.TalkerID = _T ( "EC" );
@@ -1004,7 +998,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
             wxString name = prp->GetName();
             name += _T("000000");
             name.Truncate( 6 );
-            
+
             oNMEA0183.GPwpl.To = name;
 
             oNMEA0183.GPwpl.Write ( snt );
@@ -1012,7 +1006,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
 
         if( dstr->SendSentence( snt.Sentence ) )
             LogOutputMessage( snt.Sentence, dstr->GetPort(), false );
-        
+
         wxString msg(_T("-->GPS Port:"));
         msg += com_name;
         msg += _T(" Sentence: ");
@@ -1027,7 +1021,7 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
 
             if( dstr->SendSentence( term ) )
                 LogOutputMessage( term, dstr->GetPort(), false );
-            
+
             wxString msg(_T("-->GPS Port:"));
             msg += com_name;
             msg += _T(" Sentence: ");
@@ -1047,17 +1041,15 @@ bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge
 
         //  All finished with the temp port
         dstr->Close();
-        
+
         ret_bool = true;
     }
 
 ret_point:
-    
+
     if( old_stream )
         CreateAndRestoreSavedStreamProperties();
-    
-    
+
     return ret_bool;
-    
 }
 

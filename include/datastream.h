@@ -171,40 +171,7 @@ class OCP_DataStreamInput_Thread;
 class DataStream;
 class GarminProtocolHandler;
 
-//----------------------------------------------------------------------------
-// OCPN_DataStreamEvent
-//----------------------------------------------------------------------------
-
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
-
-class OCPN_DataStreamEvent: public wxEvent
-{
-public:
-    OCPN_DataStreamEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
-    ~OCPN_DataStreamEvent( );
-
-    // accessors
-    void SetNMEAString(std::string string) { m_NMEAstring = string; }
-    void SetStreamName(std::string string) { m_StreamName = string; }
-    void SetPriority( int prio ) { m_priority = prio; }
-
-    std::string GetNMEAString() { return m_NMEAstring; }
-    std::string GetStreamName() { return m_StreamName; }
-    int GetStreamPriority() { return m_priority; }
-
-    // required for sending with wxPostEvent()
-    wxEvent *Clone() const;
-
-private:
-    std::string m_NMEAstring;
-    std::string m_StreamName;
-    int m_priority;
-
-};
-
-
-
-
 
 //----------------------------------------------------------------------------
 // DataStream

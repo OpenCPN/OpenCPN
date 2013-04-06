@@ -82,6 +82,7 @@
 #include "toolbar.h"
 #include "compasswin.h"
 #include "datastream.h"
+#include "OCPN_DataStreamEvent.h"
 #include "multiplexer.h"
 #include "routeprintout.h"
 #include "Select.h"

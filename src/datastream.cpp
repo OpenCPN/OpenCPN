@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  NMEA Data Stream Object
@@ -45,6 +45,7 @@
 #include "dychart.h"
 
 #include "datastream.h"
+#include "OCPN_DataStreamEvent.h"
 #include "garmin/jeeps/garmin_wrapper.h"
 
 #include <vector>
@@ -62,31 +63,7 @@ static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double*)&lNaN)
 #endif
 
-//------------------------------------------------------------------------------
-//    OCPN_DataStreamEvent Event Implementation
-//------------------------------------------------------------------------------
-
 const wxEventType wxEVT_OCPN_DATASTREAM = wxNewEventType();
-
-OCPN_DataStreamEvent::OCPN_DataStreamEvent( wxEventType commandType, int id )
-      :wxEvent(id, commandType)
-{
-}
-
-
-OCPN_DataStreamEvent::~OCPN_DataStreamEvent( )
-{
-}
-
-wxEvent* OCPN_DataStreamEvent::Clone() const
-{
-    OCPN_DataStreamEvent *newevent=new OCPN_DataStreamEvent(*this);
-    newevent->m_NMEAstring=this->m_NMEAstring;
-    newevent->m_StreamName=this->m_StreamName;
-    newevent->m_priority=this->m_priority;
-    return newevent;
-}
-
 
 //------------------------------------------------------------------------------
 //    DataStream Implementation
