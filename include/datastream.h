@@ -70,6 +70,7 @@
 #endif
 
 #include <string>
+#include "ConnectionParams.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -106,39 +107,6 @@ enum {
     DS_HANDSHAKE_NONE,
     DS_HANDSHAKE_XON_XOFF
 };
-
-//Type definitions for connection parameters
-typedef enum
-{
-    SERIAL = 0,
-    NETWORK = 1
-} ConnectionType;
-
-typedef enum
-{
-    TCP = 0,
-    UDP = 1,
-    GPSD = 2
-} NetworkProtocol;
-
-typedef enum
-{
-    WHITELIST = 0,
-    BLACKLIST = 1
-} ListType;
-
-typedef enum
-{
-    FILTER_INPUT = 0,
-    FILTER_OUTPUT = 1
-} FilterDirection;
-
-typedef enum
-{
-    PROTO_NMEA0183 = 0,
-    PROTO_SEATALK = 1,
-    PROTO_NMEA2000 = 2
-} DataProtocol;
 
 #define DS_SOCKET_ID             5001
 #define DS_SERVERSOCKET_ID       5002
@@ -386,52 +354,6 @@ private:
 
 };
 
-//----------------------------------------------------------------------------------------------------------
-//    Connection parameters class
-//----------------------------------------------------------------------------------------------------------
-class ConnectionParams
-{
-public:
-    ConnectionParams();
-    ConnectionParams(wxString &configStr);
-
-    ConnectionType  Type;
-    NetworkProtocol NetProtocol;
-    wxString        NetworkAddress;
-    int             NetworkPort;
-
-    DataProtocol    Protocol;
-    wxString        Port;
-    int             Baudrate;
-    bool            ChecksumCheck;
-    bool            Garmin;
-    bool            GarminUpload;
-    bool            FurunoGP3X;
-    bool            Output;
-    ListType        InputSentenceListType;
-    wxArrayString   InputSentenceList;
-    ListType        OutputSentenceListType;
-    wxArrayString   OutputSentenceList;
-    int             Priority;
-    bool            bEnabled;
-
-    wxString        Serialize();
-    void            Deserialize(wxString &configStr);
-
-    wxString GetSourceTypeStr();
-    wxString GetAddressStr();
-    wxString GetParametersStr();
-    wxString GetOutputValueStr();
-    wxString GetFiltersStr();
-    wxString GetDSPort();
-
-    bool            Valid;
-private:
-    wxString FilterTypeToStr(ListType type, FilterDirection dir);
-};
-
-WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
-
 //----------------------------------------------------------------------------
 // Garmin Device Management
 // Handle USB and Serial Port Garmin PVT protocol data interface.
@@ -466,8 +388,6 @@ DEFINE_GUID(GARMIN_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b, 0x
 
 #define GUSB_RESPONSE_PVT  51   /* PVT Data Packet */
 #define GUSB_RESPONSE_SDR  114  /* Satellite Data Record Packet */
-
-
 
 
 typedef

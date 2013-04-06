@@ -407,6 +407,7 @@ SET(HDRS
 		include/geodesic.h
 		include/datastream.h
 		include/OCPN_DataStreamEvent.h
+		include/ConnectionParams.h
         include/multiplexer.h
 )
 
@@ -489,6 +490,7 @@ SET(SRCS
 		src/geodesic.cpp
 		src/datastream.cpp
 		src/OCPN_DataStreamEvent.cpp
+		src/ConnectionParams.cpp
         src/multiplexer.cpp
     )
 
