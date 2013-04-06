@@ -383,10 +383,6 @@ PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  s_glCheckFramebufferStatusEXT;
 PFNGLDELETEFRAMEBUFFERSEXTPROC      s_glDeleteFramebuffersEXT;
 PFNGLDELETERENDERBUFFERSEXTPROC     s_glDeleteRenderbuffersEXT;
 
-#ifdef __WXMSW__
-HINSTANCE s_hGL_DLL;                   // Handle to DLL
-#endif
-
 //------------------------------------------------------------------------------
 //    ViewPort Implementation
 //------------------------------------------------------------------------------

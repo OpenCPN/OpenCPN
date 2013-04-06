@@ -25,6 +25,11 @@
 #ifndef __OCPCURSOR_H__
 #define __OCPCURSOR_H__
 
+#include "wx/wxprec.h"
+#ifndef  WX_PRECOMP
+#include "wx/wx.h"
+#endif //precompiled headers
+
 #include <wx/cursor.h>
 
 class wxCursorRefData;

@@ -29,6 +29,10 @@
 
 #include "TCDS_Ascii_Harmonic.h"
 
+#ifndef M_PI
+#define M_PI    ((2)*(acos(0.0)))
+#endif
+
 #define IFF_OPEN  0
 #define IFF_CLOSE 1
 #define IFF_SEEK  2

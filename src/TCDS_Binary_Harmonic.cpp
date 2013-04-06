@@ -91,7 +91,8 @@ typedef struct _TIME_ZONE_INFORMATION {
     SYSTEMTIME DaylightDate;
     LONG       DaylightBias;
 } TIME_ZONE_INFORMATION, *PTIME_ZONE_INFORMATION;
-
+#else
+#include <Windows.h>
 #endif
 
 /*-----------------9/24/2002 4:30PM-----------------

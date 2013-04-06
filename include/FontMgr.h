@@ -25,6 +25,11 @@
 #ifndef __FONTMGR_H__
 #define __FONTMGR_H__
 
+#include "wx/wxprec.h"
+#ifndef  WX_PRECOMP
+#include "wx/wx.h"
+#endif //precompiled headers
+
 #include "FontDesc.h"
 
 class FontMgr

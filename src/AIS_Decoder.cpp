@@ -28,6 +28,11 @@
 #include "Select.h"
 #include "georef.h"
 
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+#endif
+
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern Select *pSelectAIS;
 extern MyFrame *gFrame;

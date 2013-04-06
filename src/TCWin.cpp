@@ -9,6 +9,7 @@
 #include "tide_time.h"
 #include "tcmgr.h"
 #include "dychart.h"
+#include "cutil.h"
 
 extern ColorScheme global_color_scheme;
 extern IDX_entry *gpIDX;

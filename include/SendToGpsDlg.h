@@ -25,6 +25,11 @@
 #ifndef __SENDTOGPSDLG_H__
 #define __SENDTOGPSDLG_H__
 
+#include "wx/wxprec.h"
+#ifndef  WX_PRECOMP
+#include "wx/wx.h"
+#endif //precompiled headers
+
 #include <wx/dialog.h>
 
 //    Constants for SendToGps... Dialog
@@ -43,9 +48,9 @@ enum {
 
 class Route;
 class RoutePoint;
-class wxButton;
-class wxGauge;
-class wxComboBox;
+//class wxButton;
+//class wxGauge;
+//class wxComboBox;
 
 /**
  * Route "Send to GPS..." Dialog Definition

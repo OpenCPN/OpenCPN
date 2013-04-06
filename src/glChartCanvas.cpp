@@ -66,6 +66,10 @@ extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  s_glCheckFramebufferStatusEXT;
 extern PFNGLDELETEFRAMEBUFFERSEXTPROC      s_glDeleteFramebuffersEXT;
 extern PFNGLDELETERENDERBUFFERSEXTPROC     s_glDeleteRenderbuffersEXT;
 
+#ifdef __WXMSW__
+HINSTANCE s_hGL_DLL;                   // Handle to DLL
+#endif
+
 #include <wx/arrimpl.cpp>
 WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
