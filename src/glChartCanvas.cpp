@@ -23,6 +23,7 @@
  */
 
 #include "wx/wxprec.h"
+#include "GL/gl.h"
 
 #include "glChartCanvas.h"
 #include "glTextureDescriptor.h"

@@ -121,7 +121,7 @@ void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp ) {
     if( ! reader ) {
         reader = new GshhsReader( proj );
         if( reader->GetPolyVersion() < 210 || reader->GetPolyVersion() > 220 ) {
-            wxLogMessage( _T("GSHHS World chart files have wrong version. Found %d, expected 210-220."),
+            wxLogMessage( _T("GSHHS World chart files have wrong version. Found %ld, expected 210-220."),
                     reader->GetPolyVersion() );
         } else {
             wxLogMessage(
@@ -365,7 +365,8 @@ void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx,
             }
         }
 
-        pnt.DrawPolygonTessellated( pointCount, poly_pt, 0, 0 );
+        if(pointCount>1)
+            pnt.DrawPolygonTessellated( pointCount, poly_pt, 0, 0 );
         delete[] poly_pt;
     }
 }
@@ -891,7 +892,7 @@ void GshhsReader::LoadQuality( int newQuality ) // 5 levels: 0=low ... 4=full
         }
     }
 
-    wxLogMessage( _T("Loading World Chart Q=%ld in %d ms."), quality,perftimer.Time());
+    wxLogMessage( _T("Loading World Chart Q=%d in %ld ms."), quality, perftimer.Time());
 
 }
 
