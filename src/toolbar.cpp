@@ -70,6 +70,7 @@ GrabberWin::GrabberWin( wxWindow *parent )
     Create( parent, -1 );
 
     SetSize( wxSize( m_pbitmap.GetWidth(), m_pbitmap.GetHeight() ) );
+    SetMinSize( wxSize( m_pbitmap.GetWidth(), m_pbitmap.GetHeight() ) );
 
     m_bLeftDown = false;
     m_bRightDown = false;
