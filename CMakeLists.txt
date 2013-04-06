@@ -408,6 +408,8 @@ SET(HDRS
 		include/datastream.h
 		include/OCPN_DataStreamEvent.h
 		include/ConnectionParams.h
+		include/OCP_DataStreamInput_Thread.h
+		include/dsPortType.h
         include/multiplexer.h
 )
 
@@ -491,6 +493,7 @@ SET(SRCS
 		src/datastream.cpp
 		src/OCPN_DataStreamEvent.cpp
 		src/ConnectionParams.cpp
+		src/OCP_DataStreamInput_Thread.cpp
         src/multiplexer.cpp
     )
 

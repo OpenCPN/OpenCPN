@@ -41,9 +41,6 @@
 
 #include <wx/datetime.h>
 
-#ifdef __POSIX__
-#include <sys/termios.h>
-#endif
 
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
@@ -71,6 +68,7 @@
 
 #include <string>
 #include "ConnectionParams.h"
+#include "dsPortType.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -80,14 +78,6 @@
 #endif
 
 #define TIMER_SOCKET   7006
-
-//      Port I/O type
-typedef enum {
-    DS_TYPE_INPUT,
-    DS_TYPE_OUTPUT,
-    DS_TYPE_INPUT_OUTPUT
-}dsPortType;
-
 
 //      Error codes, returned by GetLastError()
 enum {
@@ -264,95 +254,7 @@ DECLARE_EVENT_TABLE()
 };
 
 
-
-//-------------------------------------------------------------------------------------------------------------
-//
-//    DataStream Input Thread
-//
-//    This thread manages reading the NMEA data stream from the declared source
-//
-//-------------------------------------------------------------------------------------------------------------
-
-#ifdef __WXMSW__
-#include <windows.h>
-#include <winioctl.h>
-#include <initguid.h>
-#include "setupapi.h"                   // presently stored in opencpn/src
-#endif
-
-//    Constants
-typedef enum DS_ENUM_BUFFER_STATE
-{
-      DS_RX_BUFFER_EMPTY,
-      DS_RX_BUFFER_FULL
-}_DS_ENUM_BUFFER_STATE;
-
-#define DS_RX_BUFFER_SIZE 4096
-
-#define OUT_QUEUE_LENGTH        20
-
-//          Inter-thread communication event declaration
-
 extern const wxEventType EVT_THREADMSG;
-
-
-class OCP_DataStreamInput_Thread: public wxThread
-{
-public:
-
-    OCP_DataStreamInput_Thread(DataStream *Launcher,
-                                  wxEvtHandler *MessageTarget,
-                                  const wxString& PortName,
-                                  const wxString& strBaudRate,
-                                  wxMutex *out_mutex,
-                                  dsPortType io_select
-                              );
-
-    ~OCP_DataStreamInput_Thread(void);
-    void *Entry();
-    bool SetOutMsg(wxString msg);
-    void OnExit(void);
-
-private:
-    void ThreadMessage(const wxString &msg);
-    void Parse_And_Send_Posn(wxString &str_temp_buf);
-    int OpenComPortPhysical(wxString &com_name, int baud_rate);
-    int CloseComPortPhysical(int fd);
-    int WriteComPortPhysical(int port_descriptor, const wxString& string);
-    int WriteComPortPhysical(int port_descriptor, unsigned char *msg, int count);
-    int ReadComPortPhysical(int port_descriptor, int count, unsigned char *p);
-    bool CheckComPortPhysical(int port_descriptor);
-
-    wxMutex                 *m_pout_mutex;
-    wxEvtHandler            *m_pMessageTarget;
-    DataStream              *m_launcher;
-    wxString                m_PortName;
-    wxString                m_FullPortName;
-
-    dsPortType              m_io_select;
-
-    char                    *put_ptr;
-    char                    *tak_ptr;
-
-    char                    *rx_buffer;
-    char                    *temp_buf;
-
-    unsigned long           error;
-
-    int                     m_gps_fd;
-    int                     m_baud;
-    int                     m_n_timeout;
-
-    int                     m_takIndex;
-    int                     m_putIndex;
-    wxArrayString           m_outQueue;
-
-
-#ifdef __WXMSW__
-    HANDLE                  m_hSerialComm;
-#endif
-
-};
 
 //----------------------------------------------------------------------------
 // Garmin Device Management
