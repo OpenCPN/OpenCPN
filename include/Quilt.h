@@ -28,7 +28,7 @@
 #include "ocpn_types.h"
 #include "chart1.h"
 
-class ChartTableEntry;
+struct ChartTableEntry;
 
 class QuiltPatch
 {
