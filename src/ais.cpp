@@ -366,7 +366,7 @@ wxString ais8_001_22_notice_names[] = { // 128] = {
     _("Information: Position of icebreakers"), // 91
     _("Information: Location of response units"), // 92
     _("VTS active target"), // 93
-    _("Rouge or suspicious vessel"), // 94
+    _("Rogue or suspicious vessel"), // 94
     _("Vessel requesting non-distress assistance"), // 95
     _("Chart Feature: Sunken vessel"), // 96
     _("Chart Feature: Submerged object"), // 97
