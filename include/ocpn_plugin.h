@@ -525,15 +525,15 @@ extern "C"  DECL_EXP void JumpToPosition(double lat, double lon, double scale);
 /* API 1.9  adds some common cartographic fucntions to avoid unnecessary code duplication */
 /* Study the original OpenCPN source (georef.c) for functional definitions  */
 
-extern "C" void DistanceBearingMercator(double lat0, double lon0, double lat1, double lon1, double *brg, double *dist);
-extern "C" double DistGreatCircle(double slat, double slon, double dlat, double dlon);
+extern "C" DECL_EXP void DistanceBearingMercator_Plugin(double lat0, double lon0, double lat1, double lon1, double *brg, double *dist);
+extern "C" DECL_EXP double DistGreatCircle_Plugin(double slat, double slon, double dlat, double dlon);
 
-extern "C" void toTM(float lat, float lon, float lat0, float lon0, double *x, double *y);
-extern "C" void fromTM(double x, double y, double lat0, double lon0, double *lat, double *lon);
-extern "C" void toSM(double lat, double lon, double lat0, double lon0, double *x, double *y);
-extern "C" void fromSM(double x, double y, double lat0, double lon0, double *lat, double *lon);
-extern "C" void toSM_ECC(double lat, double lon, double lat0, double lon0, double *x, double *y);
-extern "C" void fromSM_ECC(double x, double y, double lat0, double lon0, double *lat, double *lon);
+extern "C" DECL_EXP void toTM_Plugin(float lat, float lon, float lat0, float lon0, double *x, double *y);
+extern "C" DECL_EXP void fromTM_Plugin(double x, double y, double lat0, double lon0, double *lat, double *lon);
+extern "C" DECL_EXP void toSM_Plugin(double lat, double lon, double lat0, double lon0, double *x, double *y);
+extern "C" DECL_EXP void fromSM_Plugin(double x, double y, double lat0, double lon0, double *lat, double *lon);
+extern "C" DECL_EXP void toSM_ECC_Plugin(double lat, double lon, double lat0, double lon0, double *x, double *y);
+extern "C" DECL_EXP void fromSM_ECC_Plugin(double x, double y, double lat0, double lon0, double *lat, double *lon);
 
 extern "C" DECL_EXP bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, wxString *acc );
 

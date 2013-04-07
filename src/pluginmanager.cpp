@@ -48,6 +48,7 @@
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
 #include "OCPN_DataStreamEvent.h"
+#include "georef.h"
 
 extern MyConfig        *pConfig;
 extern FontMgr         *pFontMgr;
@@ -1671,7 +1672,50 @@ bool GetActiveRoutepointGPX( char *buffer, unsigned int buffer_length )
     else
         return false;
 }
-        
+
+
+void DistanceBearingMercator_Plugin(double lat0, double lon0, double lat1, double lon1, double *brg, double *dist)
+{
+    DistanceBearingMercator( lat0, lon0, lat1, lon1, brg, dist);
+}
+
+double DistGreatCircle_Plugin(double slat, double slon, double dlat, double dlon)
+{
+    return DistGreatCircle(slat, slon, dlat, dlon);
+}
+
+void toTM_Plugin(float lat, float lon, float lat0, float lon0, double *x, double *y)
+{
+    toTM(lat, lon, lat0, lon0, x, y);
+}
+
+void fromTM_Plugin(double x, double y, double lat0, double lon0, double *lat, double *lon)
+{
+    fromTM(x, y, lat0, lon0, lat, lon);
+}
+
+void toSM_Plugin(double lat, double lon, double lat0, double lon0, double *x, double *y)
+{
+    toSM(lat, lon, lat0, lon0, x, y);
+}
+
+void fromSM_Plugin(double x, double y, double lat0, double lon0, double *lat, double *lon)
+{
+    fromSM(x, y, lat0, lon0, lat, lon);
+}
+
+void toSM_ECC_Plugin(double lat, double lon, double lat0, double lon0, double *x, double *y)
+{
+    toSM_ECC(lat, lon, lat0, lon0, x, y);
+}
+
+void fromSM_ECC_Plugin(double x, double y, double lat0, double lon0, double *lat, double *lon)
+{
+    fromSM_ECC(x, y, lat0, lon0, lat, lon);
+}
+
+
+
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
 //-----------------------------------------------------------------------------------------
