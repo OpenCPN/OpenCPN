@@ -211,6 +211,20 @@ void OCPN_Sound::Stop()
     splaying = false;
 }
 
+void OCPN_Sound::UnLoad(void)
+{
+    if(m_stream) {
+        Pa_StopStream( m_stream );
+        Pa_CloseStream( m_stream );
+        m_stream = NULL;
+    }
+    
+    FreeMem();
+    
+    m_OK = false;
+}
+
+
 typedef struct
 {
     wxUint32      uiSize;
@@ -322,20 +336,30 @@ void OCPN_Sound::FreeMem(void)
 OCPN_Sound::OCPN_Sound()
 {
 //    wxSound::wxSound();
+    m_OK = false;
 }
 
 OCPN_Sound::~OCPN_Sound()
 {
+    Stop();
 }
 
 bool OCPN_Sound::IsOk() const
 {
-    return wxSound::IsOk();
+    return m_OK;
 }
 
 bool OCPN_Sound::Create(const wxString& fileName, bool isResource)
 {
-    return wxSound::Create(fileName, isResource);
+    m_OK = wxSound::Create(fileName, isResource);
+    return m_OK;
+}
+
+void OCPN_Sound::UnLoad(void)
+{
+    Stop();
+    m_OK = false;
+    
 }
 
 bool OCPN_Sound::Play(unsigned flags) const

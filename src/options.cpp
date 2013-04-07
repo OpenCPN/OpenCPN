@@ -166,6 +166,8 @@ extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
 
 extern wxLocale         *plocale_def_lang;
+extern OCPN_Sound        g_anchorwatch_sound;
+
 
 #ifdef USE_S57
 extern s52plib          *ps52plib;
@@ -3038,6 +3040,7 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
     int response = openDialog->ShowModal();
     if( response == wxID_OK ) {
         g_sAIS_Alert_Sound_File = openDialog->GetPath();
+        g_anchorwatch_sound.UnLoad();
     }
 
 }
