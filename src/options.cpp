@@ -2208,7 +2208,8 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     dirname = wxFileName( selDir );
 
     pInit_Chart_Dir->Empty();
-    pInit_Chart_Dir->Append( dirname.GetPath() );
+    if( !g_bportable ) 
+        pInit_Chart_Dir->Append( dirname.GetPath() );
 
     if( g_bportable ) {
         wxFileName f( selDir );
@@ -3607,7 +3608,15 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
 
         //    Record the currently selected directory for later use
         wxFileName fn( sel_file );
-        g_TCData_Dir = fn.GetPath();
+        wxString data_dir = fn.GetPath();
+        if( g_bportable ) {
+            wxFileName f( data_dir );
+            f.MakeRelativeTo( *pHome_Locn );
+            g_TCData_Dir = f.GetFullPath();
+        }
+        else
+            g_TCData_Dir = data_dir;
+        
     }
 }
 

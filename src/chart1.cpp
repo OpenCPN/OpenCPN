@@ -1442,7 +1442,8 @@ if( 0 == g_memCacheLimit )
 
 //      Establish guessed location of chart tree
     if( pInit_Chart_Dir->IsEmpty() ) {
-        pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
+        if( !g_bportable ) 
+            pInit_Chart_Dir->Append( std_path.GetDocumentsDir() );
     }
 
 //      Establish the GSHHS Dataset location
@@ -1503,13 +1504,21 @@ if( 0 == g_memCacheLimit )
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
-    if(!TideCurrentDataSet.GetCount())
-        TideCurrentDataSet.Add( g_SData_Locn +
-            _T("tcdata") +
+    wxString default_tcdata;
+    if(!TideCurrentDataSet.GetCount()) {
+        wxString default_tcdata =  ( g_SData_Locn + _T("tcdata") +
             wxFileName::GetPathSeparator() +
             _T("HARMONIC.IDX"));
 
-
+        if( g_bportable ) {
+            wxFileName f( default_tcdata );
+            f.MakeRelativeTo( g_PrivateDataDir );
+            TideCurrentDataSet.Add( f.GetFullPath() );
+        }
+        else
+            TideCurrentDataSet.Add( default_tcdata );
+    }
+        
 
     g_StartTime = wxInvalidDateTime;
     g_StartTimeTZ = 1;				// start with local times
