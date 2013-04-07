@@ -93,6 +93,7 @@
 #include "AISTargetListDialog.h"
 #include "AISTargetAlertDialog.h"
 #include "AIS_Decoder.h"
+#include "OCP_DataStreamInput_Thread.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"

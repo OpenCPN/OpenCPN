@@ -36,6 +36,11 @@
 
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 
+#ifdef __WXMSW__
+extern int g_total_NMEAerror_messages;
+extern int g_nNMEADebug;
+#endif
+
 typedef enum DS_ENUM_BUFFER_STATE
 {
       DS_RX_BUFFER_EMPTY,
