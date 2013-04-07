@@ -1798,6 +1798,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                     stats->Show();
                     gFrame->Raise();
                 }
+                Refresh();
             }
             break;
 
