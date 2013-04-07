@@ -3040,10 +3040,15 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
             _("WAV files (*.wav)|*.wav|All files (*.*)|*.*"), wxFD_OPEN );
     int response = openDialog->ShowModal();
     if( response == wxID_OK ) {
-        g_sAIS_Alert_Sound_File = openDialog->GetPath();
+        if( g_bportable ) {
+            wxFileName f( openDialog->GetPath() );
+            f.MakeRelativeTo( *pHome_Locn );
+            g_sAIS_Alert_Sound_File = f.GetFullPath();
+        } else
+            g_sAIS_Alert_Sound_File = openDialog->GetPath();
+        
         g_anchorwatch_sound.UnLoad();
     }
-
 }
 
 void options::OnButtonTestSound( wxCommandEvent& event )

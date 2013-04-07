@@ -1504,7 +1504,6 @@ if( 0 == g_memCacheLimit )
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
-    wxString default_tcdata;
     if(!TideCurrentDataSet.GetCount()) {
         wxString default_tcdata =  ( g_SData_Locn + _T("tcdata") +
             wxFileName::GetPathSeparator() +
@@ -1520,6 +1519,23 @@ if( 0 == g_memCacheLimit )
     }
         
 
+    //  Check the global AIS alarm sound file
+    //  If empty, preset default
+    if(g_sAIS_Alert_Sound_File.IsEmpty()) {
+        wxString default_sound =  ( g_SData_Locn + _T("sounds") +
+        wxFileName::GetPathSeparator() +
+        _T("2bells.wav"));
+        
+        if( g_bportable ) {
+            wxFileName f( default_sound );
+            f.MakeRelativeTo( g_PrivateDataDir );
+            g_sAIS_Alert_Sound_File = f.GetFullPath();
+        }
+        else
+            g_sAIS_Alert_Sound_File = default_sound ;
+    }
+        
+        
     g_StartTime = wxInvalidDateTime;
     g_StartTimeTZ = 1;				// start with local times
     gpIDX = NULL;
