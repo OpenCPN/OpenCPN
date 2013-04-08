@@ -73,6 +73,10 @@ bool S57QueryDialog::Create( wxWindow* parent, wxWindowID id, const wxString& ca
     //    will not detract from night-vision
 
     long wstyle = wxDEFAULT_FRAME_STYLE;
+#ifdef __WXOSX__
+    wstyle |= wxSTAY_ON_TOP;
+#endif
+    
     if( ( global_color_scheme != GLOBAL_COLOR_SCHEME_DAY )
             && ( global_color_scheme != GLOBAL_COLOR_SCHEME_RGB ) ) wstyle |= ( wxNO_BORDER );
 
