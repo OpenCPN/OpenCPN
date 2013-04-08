@@ -6121,7 +6121,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
     wxString lightsHtml;
     wxString positionString;
     wxArrayPtrVoid lights;
-    S57Light* curLight;
+    S57Light* curLight = NULL;
 
     for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
         ObjRazRules *current = node->GetData();

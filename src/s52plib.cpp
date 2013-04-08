@@ -5073,7 +5073,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     double z_clip_geom = 1.0;
     double z_tex_geom = 0.;
 
-    GLuint clip_list;
+    GLuint clip_list = 0;
 
     wxBoundingBox BBView = vp->GetBBox();
     //  Allow a little slop in calculating whether a triangle
