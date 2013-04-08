@@ -6632,7 +6632,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
     if( sectorlegs.size() > 0 ) {
         std::vector<int> sectorangles;
         for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
-            if( fabs( sectorlegs[i].sector1 - sectorlegs[i].sector2 ) < 1.0 )
+            if( fabs( sectorlegs[i].sector1 - sectorlegs[i].sector2 ) < 0.5 )
                 continue;
             
             double endx, endy;
