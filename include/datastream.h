@@ -41,9 +41,6 @@
 
 #include <wx/datetime.h>
 
-#ifdef __POSIX__
-#include <sys/termios.h>
-#endif
 
 #ifdef __WXGTK__
 // newer versions of glib define its own GSocket but we unfortunately use this
@@ -70,6 +67,8 @@
 #endif
 
 #include <string>
+#include "ConnectionParams.h"
+#include "dsPortType.h"
 
 //----------------------------------------------------------------------------
 //   constants
@@ -79,14 +78,6 @@
 #endif
 
 #define TIMER_SOCKET   7006
-
-//      Port I/O type
-typedef enum {
-    DS_TYPE_INPUT,
-    DS_TYPE_OUTPUT,
-    DS_TYPE_INPUT_OUTPUT
-}dsPortType;
-
 
 //      Error codes, returned by GetLastError()
 enum {
@@ -106,39 +97,6 @@ enum {
     DS_HANDSHAKE_NONE,
     DS_HANDSHAKE_XON_XOFF
 };
-
-//Type definitions for connection parameters
-typedef enum
-{
-    SERIAL = 0,
-    NETWORK = 1
-} ConnectionType;
-
-typedef enum
-{
-    TCP = 0,
-    UDP = 1,
-    GPSD = 2
-} NetworkProtocol;
-
-typedef enum
-{
-    WHITELIST = 0,
-    BLACKLIST = 1
-} ListType;
-
-typedef enum
-{
-    FILTER_INPUT = 0,
-    FILTER_OUTPUT = 1
-} FilterDirection;
-
-typedef enum
-{
-    PROTO_NMEA0183 = 0,
-    PROTO_SEATALK = 1,
-    PROTO_NMEA2000 = 2
-} DataProtocol;
 
 #define DS_SOCKET_ID             5001
 #define DS_SERVERSOCKET_ID       5002
@@ -171,40 +129,7 @@ class OCP_DataStreamInput_Thread;
 class DataStream;
 class GarminProtocolHandler;
 
-//----------------------------------------------------------------------------
-// OCPN_DataStreamEvent
-//----------------------------------------------------------------------------
-
 extern  const wxEventType wxEVT_OCPN_DATASTREAM;
-
-class OCPN_DataStreamEvent: public wxEvent
-{
-public:
-    OCPN_DataStreamEvent( wxEventType commandType = wxEVT_NULL, int id = 0 );
-    ~OCPN_DataStreamEvent( );
-
-    // accessors
-    void SetNMEAString(std::string string) { m_NMEAstring = string; }
-    void SetStreamName(std::string string) { m_StreamName = string; }
-    void SetPriority( int prio ) { m_priority = prio; }
-
-    std::string GetNMEAString() { return m_NMEAstring; }
-    std::string GetStreamName() { return m_StreamName; }
-    int GetStreamPriority() { return m_priority; }
-
-    // required for sending with wxPostEvent()
-    wxEvent *Clone() const;
-
-private:
-    std::string m_NMEAstring;
-    std::string m_StreamName;
-    int m_priority;
-
-};
-
-
-
-
 
 //----------------------------------------------------------------------------
 // DataStream
@@ -329,141 +254,7 @@ DECLARE_EVENT_TABLE()
 };
 
 
-
-//-------------------------------------------------------------------------------------------------------------
-//
-//    DataStream Input Thread
-//
-//    This thread manages reading the NMEA data stream from the declared source
-//
-//-------------------------------------------------------------------------------------------------------------
-
-#ifdef __WXMSW__
-#include <windows.h>
-#include <winioctl.h>
-#include <initguid.h>
-#include "setupapi.h"                   // presently stored in opencpn/src
-#endif
-
-//    Constants
-typedef enum DS_ENUM_BUFFER_STATE
-{
-      DS_RX_BUFFER_EMPTY,
-      DS_RX_BUFFER_FULL
-}_DS_ENUM_BUFFER_STATE;
-
-#define DS_RX_BUFFER_SIZE 4096
-
-#define OUT_QUEUE_LENGTH        20
-
-//          Inter-thread communication event declaration
-
 extern const wxEventType EVT_THREADMSG;
-
-
-class OCP_DataStreamInput_Thread: public wxThread
-{
-public:
-
-    OCP_DataStreamInput_Thread(DataStream *Launcher,
-                                  wxEvtHandler *MessageTarget,
-                                  const wxString& PortName,
-                                  const wxString& strBaudRate,
-                                  wxMutex *out_mutex,
-                                  dsPortType io_select
-                              );
-
-    ~OCP_DataStreamInput_Thread(void);
-    void *Entry();
-    bool SetOutMsg(wxString msg);
-    void OnExit(void);
-
-private:
-    void ThreadMessage(const wxString &msg);
-    void Parse_And_Send_Posn(wxString &str_temp_buf);
-    int OpenComPortPhysical(wxString &com_name, int baud_rate);
-    int CloseComPortPhysical(int fd);
-    int WriteComPortPhysical(int port_descriptor, const wxString& string);
-    int WriteComPortPhysical(int port_descriptor, unsigned char *msg, int count);
-    int ReadComPortPhysical(int port_descriptor, int count, unsigned char *p);
-    bool CheckComPortPhysical(int port_descriptor);
-
-    wxMutex                 *m_pout_mutex;
-    wxEvtHandler            *m_pMessageTarget;
-    DataStream              *m_launcher;
-    wxString                m_PortName;
-    wxString                m_FullPortName;
-
-    dsPortType              m_io_select;
-
-    char                    *put_ptr;
-    char                    *tak_ptr;
-
-    char                    *rx_buffer;
-    char                    *temp_buf;
-
-    unsigned long           error;
-
-    int                     m_gps_fd;
-    int                     m_baud;
-    int                     m_n_timeout;
-
-    int                     m_takIndex;
-    int                     m_putIndex;
-    wxArrayString           m_outQueue;
-
-
-#ifdef __WXMSW__
-    HANDLE                  m_hSerialComm;
-#endif
-
-};
-
-//----------------------------------------------------------------------------------------------------------
-//    Connection parameters class
-//----------------------------------------------------------------------------------------------------------
-class ConnectionParams
-{
-public:
-    ConnectionParams();
-    ConnectionParams(wxString &configStr);
-
-    ConnectionType  Type;
-    NetworkProtocol NetProtocol;
-    wxString        NetworkAddress;
-    int             NetworkPort;
-
-    DataProtocol    Protocol;
-    wxString        Port;
-    int             Baudrate;
-    bool            ChecksumCheck;
-    bool            Garmin;
-    bool            GarminUpload;
-    bool            FurunoGP3X;
-    bool            Output;
-    ListType        InputSentenceListType;
-    wxArrayString   InputSentenceList;
-    ListType        OutputSentenceListType;
-    wxArrayString   OutputSentenceList;
-    int             Priority;
-    bool            bEnabled;
-
-    wxString        Serialize();
-    void            Deserialize(wxString &configStr);
-
-    wxString GetSourceTypeStr();
-    wxString GetAddressStr();
-    wxString GetParametersStr();
-    wxString GetOutputValueStr();
-    wxString GetFiltersStr();
-    wxString GetDSPort();
-
-    bool            Valid;
-private:
-    wxString FilterTypeToStr(ListType type, FilterDirection dir);
-};
-
-WX_DEFINE_ARRAY(ConnectionParams *, wxArrayOfConnPrm);
 
 //----------------------------------------------------------------------------
 // Garmin Device Management
@@ -499,8 +290,6 @@ DEFINE_GUID(GARMIN_GUID, 0x2c9c45c2L, 0x8e7d, 0x4c08, 0xa1, 0x2d, 0x81, 0x6b, 0x
 
 #define GUSB_RESPONSE_PVT  51   /* PVT Data Packet */
 #define GUSB_RESPONSE_SDR  114  /* Satellite Data Record Packet */
-
-
 
 
 typedef

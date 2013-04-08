@@ -82,6 +82,7 @@
 #include "toolbar.h"
 #include "compasswin.h"
 #include "datastream.h"
+#include "OCPN_DataStreamEvent.h"
 #include "multiplexer.h"
 #include "routeprintout.h"
 #include "Select.h"
@@ -92,6 +93,7 @@
 #include "AISTargetListDialog.h"
 #include "AISTargetAlertDialog.h"
 #include "AIS_Decoder.h"
+#include "OCP_DataStreamInput_Thread.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"
