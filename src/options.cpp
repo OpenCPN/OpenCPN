@@ -55,7 +55,7 @@
 #include "multiplexer.h"
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
-#include "TTYWindow.h"
+#include "NMEALogWindow.h"
 
 #include "navutil.h"
 
@@ -144,10 +144,6 @@ extern int              g_iSDMMFormat;
 
 extern int              g_cm93_zoom_factor;
 
-extern TTYWindow        *g_NMEALogWindow;
-extern int              g_NMEALogWindow_x, g_NMEALogWindow_y;
-extern int              g_NMEALogWindow_sx, g_NMEALogWindow_sy;
-
 extern int              g_COGAvgSec;
 
 extern bool             g_bCourseUp;
@@ -207,24 +203,24 @@ int wxCALLBACK SortConnectionOnPriority(long item1, long item2, long list)
 
 {
     wxListCtrl *lc = (wxListCtrl*)list;
-    
+
     wxListItem it1, it2;
     it1.SetId(lc->FindItem(-1, item1));
     it1.SetColumn(3);
     it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
-    
+
     it2.SetId(lc->FindItem(-1, item2));
     it2.SetColumn(3);
     it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
-    
+
     lc->GetItem(it1);
     lc->GetItem(it2);
-    
+
 #ifdef __WXOSX__
     return it1.GetText().CmpNoCase(it2.GetText());
 #else
     return it2.GetText().CmpNoCase(it1.GetText());
-#endif    
+#endif
 }
 
 
@@ -519,11 +515,11 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbFurunoGP3X = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Format uploads for Furuno GP3X"), wxDefaultPosition, wxDefaultSize, 0 );
     m_cbFurunoGP3X->SetValue(g_GPS_Ident == _T("FurunoGP3X"));
     bSizer161->Add( m_cbFurunoGP3X, 0, wxALL, 3 );
-    
+
     m_cbGarminUploadHost = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use Garmin GRMN (Host) mode for uploads"), wxDefaultPosition, wxDefaultSize, 0 );
     m_cbGarminUploadHost->SetValue(g_bGarminHostUpload);
     bSizer161->Add( m_cbGarminUploadHost, 0, wxALL, 3 );
-    
+
     bSizer151->Add( bSizer161, 1, wxEXPAND, 5 );
     sbSizerGeneral->Add( bSizer151, 1, wxEXPAND, 5 );
     bSizerOuterContainer->Add( sbSizerGeneral, 0, wxALL|wxEXPAND, 5 );
@@ -778,12 +774,12 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
 
     m_lcSources->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConnectionToggleEnable), NULL, this );
-    
+
     wxListItem col0;
     col0.SetId(0);
     col0.SetText( _("Enable") );
     m_lcSources->InsertColumn(0, col0);
-    
+
     wxListItem col1;
     col1.SetId(1);
     col1.SetText( _("Type") );
@@ -808,36 +804,36 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     col5.SetId(5);
     col5.SetText( _("Output") );
     m_lcSources->InsertColumn(5, col5);
-    
+
     wxListItem col6;
     col6.SetId(6);
     col6.SetText( _("Filters") );
     m_lcSources->InsertColumn(6, col6);
-    
+
     //  Build the image list
     wxBitmap unchecked_bmp(16, 16), checked_bmp(16, 16);
-    
+
     {
         wxMemoryDC renderer_dc;
-        
+
         // Unchecked
         renderer_dc.SelectObject(unchecked_bmp);
         renderer_dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxSOLID));
         renderer_dc.Clear();
         wxRendererNative::Get().DrawCheckBox(this, renderer_dc, wxRect(0, 0, 16, 16), 0);
-        
+
         // Checked
         renderer_dc.SelectObject(checked_bmp);
         renderer_dc.SetBackground(*wxTheBrushList->FindOrCreateBrush(GetBackgroundColour(), wxSOLID));
         renderer_dc.Clear();
         wxRendererNative::Get().DrawCheckBox(this, renderer_dc, wxRect(0, 0, 16, 16), wxCONTROL_CHECKED);
     }
- 
+
     wxImageList *imglist = new wxImageList( 16, 16, true, 1 );
     imglist->Add( unchecked_bmp );
     imglist->Add( checked_bmp );
     m_lcSources->AssignImageList( imglist, wxIMAGE_LIST_SMALL );
- 
+
     m_lcSources->Refresh();
 
     m_stcdialog_in = new SentenceListDlg(FILTER_INPUT, this);
@@ -860,7 +856,7 @@ void options::OnConnectionToggleEnable( wxMouseEvent &event )
     wxPoint pos = event.GetPosition();
     int flags = 0;
     long clicked_index = m_lcSources->HitTest( pos, flags );
-    
+
     //    Clicking Enable Checkbox (full column)?
     if( clicked_index > -1 && event.GetX() < m_lcSources->GetColumnWidth( 0 ) ) {
         // Process the clicked item
@@ -868,7 +864,7 @@ void options::OnConnectionToggleEnable( wxMouseEvent &event )
         conn->bEnabled = !conn->bEnabled;
         m_connection_enabled = conn->bEnabled;
         m_lcSources->SetItemImage( clicked_index, conn->bEnabled ? 1 : 0 );
-        
+
         cc1->Refresh();
     }
     else if( clicked_index == -1 ) {
@@ -1214,7 +1210,6 @@ void options::CreatePanel_TidesCurrents( size_t parent, int border_size, int gro
 
     btnSizer->Add( insertButton, 1, wxALL | wxEXPAND, group_item_spacing );
     btnSizer->Add( removeButton, 1, wxALL | wxEXPAND, group_item_spacing );
-    
 }
 
 void options::CreatePanel_ChartGroups( size_t parent, int border_size, int group_item_spacing,
@@ -1675,8 +1670,6 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
                                                _("Confirm deletion of tracks and routes") );
     pConfirmObjectDeletion->SetValue( FALSE );
     miscOptions->Add( pConfirmObjectDeletion, 0, wxALL, border_size );
-                                               
-                                               
 }
 
 void options::CreateControls()
@@ -1856,7 +1849,7 @@ void options::SetInitialSettings()
 
     if( m_pConfig ) pSettingsCB1->SetValue( m_pConfig->m_bShowDebugWindows );
 
-    if( g_NMEALogWindow ) m_cbNMEADebug->SetValue( true );
+    m_cbNMEADebug->SetValue(NMEALogWindow::Active());
 /*TODO
     if( g_bGarminHost ) pGarminHost->SetValue( true );
 */
@@ -1910,7 +1903,7 @@ void options::SetInitialSettings()
 
     pWayPointPreventDragging->SetValue( g_bWayPointPreventDragging );
     pConfirmObjectDeletion->SetValue( g_bConfirmObjectDelete );
-    
+
     pEnableZoomToCursor->SetValue( g_bEnableZoomToCursor );
     if( pEnableZoomToCursor->GetValue() ) {
         pSmoothPanZoom->Disable();
@@ -2088,20 +2081,9 @@ void options::SetInitialSettings()
 void options::OnShowGpsWindowCheckboxClick( wxCommandEvent& event )
 {
     if( !m_cbNMEADebug->GetValue() ) {
-        if( g_NMEALogWindow ) g_NMEALogWindow->Destroy();
+        NMEALogWindow::Destroy();
     } else {
-        g_NMEALogWindow = new TTYWindow( pParent, 35 );
-        wxString com_string = _("NMEA Debug Window");
-        g_NMEALogWindow->SetTitle( com_string );
-
-        //    Make sure the window is well on the screen
-        g_NMEALogWindow_x = wxMax(g_NMEALogWindow_x, 40);
-        g_NMEALogWindow_y = wxMax(g_NMEALogWindow_y, 40);
-
-        g_NMEALogWindow->SetSize( g_NMEALogWindow_x, g_NMEALogWindow_y, g_NMEALogWindow_sx,
-                g_NMEALogWindow_sy );
-        g_NMEALogWindow->Show();
-        
+        NMEALogWindow::Create(pParent, 35);
         Raise();
     }
 }
@@ -2194,7 +2176,7 @@ void options::OnCharHook( wxKeyEvent& event ) {
             GetEventHandler()->AddPendingEvent( okEvent );
         }
     }
-	event.Skip();
+    event.Skip();
 }
 
 void options::OnButtonaddClick( wxCommandEvent& event )
@@ -2210,7 +2192,7 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     dirname = wxFileName( selDir );
 
     pInit_Chart_Dir->Empty();
-    if( !g_bportable ) 
+    if( !g_bportable )
         pInit_Chart_Dir->Append( dirname.GetPath() );
 
     if( g_bportable ) {
@@ -2279,7 +2261,7 @@ ConnectionParams * options::SaveConnectionParams()
     //  Special encoding for deleted connection
     if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == _T("Deleted" ))
         return NULL;
-        
+
     if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString )
     {
         wxMessageBox( _("You must select or enter the port..."), _("Error!") );
@@ -2297,7 +2279,7 @@ ConnectionParams * options::SaveConnectionParams()
     }
 
     ConnectionParams * m_pConnectionParams = new ConnectionParams();
-    
+
     m_pConnectionParams->Valid = true;
     if ( m_rbTypeSerial->GetValue() )
         m_pConnectionParams->Type = SERIAL;
@@ -2329,7 +2311,7 @@ ConnectionParams * options::SaveConnectionParams()
         m_pConnectionParams->OutputSentenceListType = BLACKLIST;
     m_pConnectionParams->Port = m_comboPort->GetValue();
     m_pConnectionParams->Protocol = PROTO_NMEA0183;
-    
+
     m_pConnectionParams->bEnabled = m_connection_enabled;
     return m_pConnectionParams;
 }
@@ -2395,7 +2377,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     }
     groupsPanel->SetDBDirs( *m_pWorkDirList );          // update the Groups tab
     groupsPanel->m_treespopulated = false;
-    
+
     int k_force = FORCE_UPDATE;
     if( pUpdateCheckBox ) {
         if( !pUpdateCheckBox->GetValue() ) k_force = 0;
@@ -2466,7 +2448,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_pNavAidRadarRingsStepUnits = m_itemRadarRingsUnits->GetSelection();
     g_bWayPointPreventDragging = pWayPointPreventDragging->GetValue();
     g_bConfirmObjectDelete = pConfirmObjectDeletion->GetValue();
-    
+
     g_bPreserveScaleOnX = pPreserveScale->GetValue();
 
     g_bPlayShipsBells = pPlayShipsBells->GetValue();
@@ -2508,7 +2490,7 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
     g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
-    
+
     //      Alert
     g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
     g_bAIS_CPA_Alert_Audio = m_pCheck_AlertAudio->GetValue();
@@ -2571,18 +2553,17 @@ void options::OnApplyClick( wxCommandEvent& event )
             dstr->SetOutputFilter(cp->OutputSentenceList);
             dstr->SetOutputFilterType(cp->OutputSentenceListType);
             dstr->SetChecksumCheck(cp->ChecksumCheck);
-        
+
             g_pMUX->AddStream(dstr);
         }
     }
-    
+
     g_bGarminHostUpload = m_cbGarminUploadHost->GetValue();
     if( m_cbFurunoGP3X->GetValue() )
         g_GPS_Ident = _T("FurunoGP3X");
     else
         g_GPS_Ident = _T("Generic");
-    
-    
+
 #ifdef USE_S57
     //    Handle Vector Charts Tab
 
@@ -2753,17 +2734,17 @@ void options::OnXidOkClick( wxCommandEvent& event )
     for (size_t i = 0; i < m_pListbook->GetPageCount(); i++)
     {
         wxNotebookPage* pg = m_pListbook->GetPage( i );
-            
+
         if( pg->IsKindOf( CLASSINFO(wxNotebook))) {
                 wxNotebook *nb = ((wxNotebook *)pg);
                 nb->ChangeSelection(0);
         }
     }
-                            
+
     delete pActiveChartsList;
     delete ps57CtlListBox;
     delete tcDataSelected;
-    
+
     lastWindowPos = GetPosition();
     lastWindowSize = GetSize();
     EndModal( m_returnChanges );
@@ -2798,7 +2779,7 @@ void options::OnButtondeleteClick( wxCommandEvent& event )
     k_charts |= CHANGE_CHARTS;
 
     pScanCheckBox->Disable();
-    
+
     event.Skip();
 }
 
@@ -3048,7 +3029,7 @@ void options::OnButtonSelectSound( wxCommandEvent& event )
             g_sAIS_Alert_Sound_File = f.GetFullPath();
         } else
             g_sAIS_Alert_Sound_File = openDialog->GetPath();
-        
+
         g_anchorwatch_sound.UnLoad();
     }
 }
@@ -3253,12 +3234,10 @@ void ChartGroupsUI::PopulateTrees()
         wxString dirname = m_db_dirs.Item( i ).fullpath;
         if( !dirname.IsEmpty() ) dir_array.Add( dirname );
     }
-    
-    
+
     PopulateTreeCtrl( allAvailableCtl->GetTreeCtrl(), dir_array, wxColour( 0, 0, 0 ) );
     m_pActiveChartsTree = allAvailableCtl->GetTreeCtrl();
-    
-    
+
     //    Fill in the Page 0 tree control
     //    from the options dialog "Active Chart Directories" list
     wxArrayString dir_array0;
@@ -3269,7 +3248,6 @@ void ChartGroupsUI::PopulateTrees()
     }
     PopulateTreeCtrl( defaultAllCtl->GetTreeCtrl(), dir_array0, wxColour( 128, 128, 128 ),
                       iFont );
-    
 }
 
 
@@ -3306,7 +3284,7 @@ void ChartGroupsUI::PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_
         if( !dirname.IsEmpty() ) {
             wxDirItemData *dir_item = new wxDirItemData( dirname, dirname, true );
             wxTreeItemId id = ptc->AppendItem( m_rootId, dirname, 0, -1, dir_item );
-            
+
             //wxWidgets bug workaraound (Ticket #10085)
             ptc->SetItemText(id, dirname);
             if( pFont ) ptc->SetItemFont( id, *pFont );
@@ -3623,7 +3601,6 @@ void options::OnInsertTideDataLocation( wxCommandEvent &event )
         }
         else
             g_TCData_Dir = data_dir;
-        
     }
 }
 
@@ -3713,7 +3690,7 @@ void options::ShowNMEACommon(bool visible)
         sbSizerInFilter->SetDimension(0,0,0,0);
         sbSizerConnectionProps->SetDimension(0,0,0,0);
     }
-    
+
     m_bNMEAParams_shown = visible;
 }
 
@@ -3803,7 +3780,7 @@ void options::ClearNMEAForm()
     Fit();
     Layout();
 }
-    
+
 wxString StringArrayToString(wxArrayString arr)
 {
     wxString ret = wxEmptyString;
@@ -3868,19 +3845,19 @@ void options::SetConnectionParams(ConnectionParams *cp)
     m_choicePriority->Select(m_choicePriority->FindString(wxString::Format(_T("%d"),cp->Priority)));
 
     m_tNetAddress->SetValue(cp->NetworkAddress);
-    
+
     if( cp->NetworkPort == 0)
         m_tNetPort->SetValue(_T(""));
     else
         m_tNetPort->SetValue(wxString::Format(wxT("%i"), cp->NetworkPort));
-    
+
     if(cp->NetProtocol == TCP)
         m_rbNetProtoTCP->SetValue(true);
     else if (cp->NetProtocol == UDP)
         m_rbNetProtoUDP->SetValue(true);
-    else 
+    else
         m_rbNetProtoGPSD->SetValue(true);
-    
+
     if ( cp->Type == SERIAL )
     {
         m_rbTypeSerial->SetValue( true );
@@ -3891,9 +3868,8 @@ void options::SetConnectionParams(ConnectionParams *cp)
         m_rbTypeNet->SetValue( true );
         SetNMEAFormToNet();
     }
-    
+
     m_connection_enabled = cp->bEnabled;
-    
 }
 
 void options::OnAddDatasourceClick( wxCommandEvent& event )
@@ -3919,21 +3895,19 @@ void options::FillSourceList()
 {
     m_buttonRemove->Enable(false);
     m_lcSources->DeleteAllItems();
-    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
-    {
- 
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
         wxListItem li;
         li.SetId( i );
         li.SetImage( g_pConnectionParams->Item(i)->bEnabled ? 1 : 0  );
         li.SetData( i );
         li.SetText( _T("") );
-        
+
         long itemIndex = m_lcSources->InsertItem( li );
-        
+
         m_lcSources->SetItem(itemIndex, 1, g_pConnectionParams->Item(i)->GetSourceTypeStr());
         m_lcSources->SetItem(itemIndex, 2, g_pConnectionParams->Item(i)->GetAddressStr());
         wxString prio_str;
-        prio_str.Printf(_T("%d"), g_pConnectionParams->Item(i)->Priority ); 
+        prio_str.Printf(_T("%d"), g_pConnectionParams->Item(i)->Priority );
         m_lcSources->SetItem(itemIndex, 3, prio_str);
         m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetParametersStr());
         m_lcSources->SetItem(itemIndex, 5, g_pConnectionParams->Item(i)->GetOutputValueStr());
@@ -3959,7 +3933,6 @@ void options::FillSourceList()
 #endif
 
     m_lcSources->SortItems( SortConnectionOnPriority, (long) m_lcSources );
-    
 }
 
 void options::OnRemoveDatasourceClick( wxCommandEvent& event )
@@ -3970,12 +3943,12 @@ void options::OnRemoveDatasourceClick( wxCommandEvent& event )
         itemIndex = m_lcSources->GetNextItem( itemIndex, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
         if ( itemIndex == -1 )
             break;
-        
+
         int params_index = m_lcSources->GetItemData(itemIndex);
         if( params_index != -1 )
             g_pConnectionParams->RemoveAt( params_index );
 
-        //  Mark connection deleted  
+        //  Mark connection deleted
         m_rbTypeSerial->SetValue(true);
         m_comboPort->SetValue( _T("Deleted") );
     }
@@ -4024,8 +3997,7 @@ void options::OnNetProtocolSelected( wxCommandEvent& event )
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("10110"));
     }
-    
-    
+
     SetDSFormRWStates();
     OnConnValChange(event);
 }
@@ -4064,12 +4036,12 @@ SentenceListDlg::SentenceListDlg( FilterDirection dir, wxWindow* parent, wxWindo
         standard_sentences.Add(_T("ECRMC"));
         standard_sentences.Add(_T("ECAPB"));
     }
-    
+
     standard_sentences.Add(_T("AIVDM"));
     standard_sentences.Add(_T("AIVDO"));
     standard_sentences.Add(_T("FRPOS"));
     standard_sentences.Add(_T("CD"));
-    
+
     m_pclbBox = new wxStaticBox( this,  wxID_ANY, _T("")) ;
 
     wxStaticBoxSizer* sbSizerclb;

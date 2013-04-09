@@ -27,28 +27,28 @@
 #include "TTYScroll.h"
 
 TTYScroll::TTYScroll(wxWindow *parent, int n_lines)
-	: wxScrolledWindow(parent), m_nLines( n_lines )
+    : wxScrolledWindow(parent), m_nLines( n_lines )
 {
-	bpause = false;
-	wxClientDC dc(this);
-	dc.GetTextExtent(_T("Line Height"), NULL, &m_hLine);
+    bpause = false;
+    wxClientDC dc(this);
+    dc.GetTextExtent(_T("Line Height"), NULL, &m_hLine);
 
-	SetScrollRate( 0, m_hLine );
-	SetVirtualSize( -1, ( m_nLines + 1 ) * m_hLine );
-	m_plineArray = new wxArrayString;
-	for(unsigned int i=0 ; i < m_nLines ; i++)
-		m_plineArray->Add(_T(""));
+    SetScrollRate( 0, m_hLine );
+    SetVirtualSize( -1, ( m_nLines + 1 ) * m_hLine );
+    m_plineArray = new wxArrayString;
+    for(unsigned int i=0 ; i < m_nLines ; i++)
+        m_plineArray->Add(_T(""));
 }
 
 TTYScroll::~TTYScroll()
 {
-	delete m_plineArray;
+    delete m_plineArray;
 }
 
-void TTYScroll::Add( wxString &line )
+void TTYScroll::Add(const wxString &line)
 {
     if(!bpause) {
-        if( m_plineArray->GetCount() > m_nLines - 1 ) {                       // shuffle the arraystring
+        if( m_plineArray->GetCount() > m_nLines - 1 ) { // shuffle the arraystring
             wxArrayString *p_newArray = new wxArrayString;
 
             for( unsigned int i = 1; i < m_plineArray->GetCount(); i++ )
@@ -58,8 +58,8 @@ void TTYScroll::Add( wxString &line )
             m_plineArray = p_newArray;
         }
 
-    m_plineArray->Add( line );
-    Refresh( true );
+        m_plineArray->Add( line );
+        Refresh( true );
     }
 }
 

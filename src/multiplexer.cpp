@@ -26,14 +26,13 @@
 #include "wx/wx.h"
 
 #include "multiplexer.h"
-#include "navutil.h"                    // for NMEALogWindow
-#include "TTYWindow.h"
+#include "navutil.h"
+#include "NMEALogWindow.h"
 #include "garmin/jeeps/garmin_wrapper.h"
 #include "OCPN_DataStreamEvent.h"
 
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
-extern TTYWindow        *g_NMEALogWindow;
 extern bool             g_bGarminHostUpload;
 
 Multiplexer::Multiplexer()
@@ -97,7 +96,7 @@ void Multiplexer::StopAndRemoveStream( DataStream *stream )
 
 void Multiplexer::LogOutputMessageColor( wxString &msg, wxString stream_name, wxString color )
 {
-    if( g_NMEALogWindow) {
+    if (NMEALogWindow::Active()) {
         wxDateTime now = wxDateTime::Now();
         wxString ss = now.FormatISOTime();
         ss.Prepend(_T("--> "));
@@ -107,8 +106,7 @@ void Multiplexer::LogOutputMessageColor( wxString &msg, wxString stream_name, wx
         ss.Append( msg );
         ss.Prepend( color );
 
-        g_NMEALogWindow->Add( ss );
-//        g_NMEALogWindow->Refresh( false );
+        NMEALogWindow::Add(ss);
     }
 }
 
@@ -124,7 +122,7 @@ void Multiplexer::LogOutputMessage( wxString &msg, wxString stream_name, bool b_
 
 void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_filter )
 {
-    if( g_NMEALogWindow) {
+    if (NMEALogWindow::Active()) {
         wxDateTime now = wxDateTime::Now();
         wxString ss = now.FormatISOTime();
         ss.Append( _T(" (") );
@@ -136,8 +134,7 @@ void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_f
         else
             ss.Prepend( _T("<GREEN>") );
 
-        g_NMEALogWindow->Add( ss );
-//        g_NMEALogWindow->Refresh( false );
+        NMEALogWindow::Add( ss );
     }
 }
 

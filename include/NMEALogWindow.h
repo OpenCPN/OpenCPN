@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -22,29 +22,47 @@
  ***************************************************************************
  */
 
-#ifndef __TTYSCROLL_H__
-#define __TTYSCROLL_H__
+#ifndef __NMEALOGWINDOW_H__
+#define __NMEALOGWINDOW_H__
 
-#include <wx/scrolwin.h>
+class wxWindow;
+class wxString;
+class wxSize;
+class wxPoint;
+class TTYWindow;
 
-//    Scrolled TTY-like window for logging, etc....
-class TTYScroll : public wxScrolledWindow
+/**
+ * This class provides access to the NMEA log/debug window.
+ *
+ * This provides everything needed to use the single NMEA log window.
+ */
+class NMEALogWindow
 {
     public:
-        TTYScroll(wxWindow *parent, int n_lines);
-        virtual ~TTYScroll();
-        virtual void OnDraw(wxDC& dc);
-        virtual void Add(const wxString &line);
-        void OnSize(wxSizeEvent& event);
-        void Pause(bool pause) { bpause = pause; }
-
-    protected:
-
-        wxCoord m_hLine;  // the height of one line on screen
-        size_t m_nLines;  // the number of lines we draw
-
-        wxArrayString *m_plineArray;
-        bool           bpause;
+        static bool Active();
+        static void Create(wxWindow * parent, int num_lines = 35);
+        static void Destroy();
+        static void Add(const wxString & s);
+        static void Refresh(bool do_refresh = false);
+        static int GetSizeW();
+        static int GetSizeH();
+        static int GetPosX();
+        static int GetPosY();
+        static void SetSize(int w, int h);
+        static void SetSize(const wxSize & size);
+        static void SetPos(int x, int y);
+        static void SetPos(const wxPoint & pos);
+        static void CheckPos(int display_width, int display_height);
+    private: // prevent class from being copied
+        NMEALogWindow(const NMEALogWindow &) {}
+        ~NMEALogWindow() {}
+        NMEALogWindow & operator=(const NMEALogWindow &) { return *this; }
+    private:
+        static TTYWindow * window;
+        static int width;
+        static int height;
+        static int pos_x;
+        static int pos_y;
 };
 
 #endif

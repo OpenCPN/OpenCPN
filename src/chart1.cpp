@@ -87,7 +87,7 @@
 #include "routeprintout.h"
 #include "Select.h"
 #include "FontMgr.h"
-#include "TTYWindow.h"
+#include "NMEALogWindow.h"
 #include "Layer.h"
 #include "NavObjectCollection.h"
 #include "AISTargetListDialog.h"
@@ -537,10 +537,6 @@ wxPlatformInfo            *g_pPlatform;
 wxLocale                  *plocale_def_lang;
 wxString                  g_locale;
 bool                      g_b_assume_azerty;
-
-TTYWindow                 *g_NMEALogWindow;
-int                       g_NMEALogWindow_x, g_NMEALogWindow_y;
-int                       g_NMEALogWindow_sx, g_NMEALogWindow_sy;
 
 bool                      g_bUseRaster;
 bool                      g_bUseVector;
@@ -6421,15 +6417,15 @@ bool MyFrame::EvalPriority( wxString message, wxString stream_name, int stream_p
                                             pcontainer->current_priority);
             wxLogMessage(logmsg );
             
-            if( g_NMEALogWindow) {
+            if (NMEALogWindow::Active()) {
                 wxDateTime now = wxDateTime::Now();
                 wxString ss = now.FormatISOTime();
                 ss.Append( _T(" ") );
                 ss.Append( logmsg );
                 ss.Prepend( _T("<RED>") );
                 
-                g_NMEALogWindow->Add( ss );
-                g_NMEALogWindow->Refresh( false );
+                NMEALogWindow::Add(ss);
+                NMEALogWindow::Refresh(false);
             }
             
         }
