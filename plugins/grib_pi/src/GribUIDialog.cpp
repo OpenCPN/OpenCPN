@@ -158,7 +158,7 @@ GribTimelineRecordSet::~GribTimelineRecordSet()
 void GRIBUIDialog::OpenFile()
 {
     m_cRecordForecast->Clear();
-    delete m_bGRIBActiveFile;
+//    delete m_bGRIBActiveFile;
     m_bGRIBActiveFile = new GRIBFile( m_file_name,
                                       pPlugIn->GetCopyFirstCumRec(),
                                       pPlugIn->GetCopyMissWaveRec() );
@@ -805,9 +805,9 @@ void GRIBUIDialog::TimelineChanged()
     else
         m_cRecordForecast->SetSelection(i+1);
 
-    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
+//    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
     m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
-    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
+//    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
     
     pPlugIn->SendTimelineMessage();
 }

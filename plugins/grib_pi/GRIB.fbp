@@ -103,14 +103,14 @@
                     <property name="flag">wxEXPAND</property>
                     <property name="proportion">1</property>
                     <object class="wxFlexGridSizer" expanded="0">
-                        <property name="cols">0</property>
-                        <property name="flexible_direction">wxBOTH</property>
-                        <property name="growablecols">1</property>
+                        <property name="cols">7</property>
+                        <property name="flexible_direction">wxHORIZONTAL</property>
+                        <property name="growablecols"></property>
                         <property name="growablerows"></property>
                         <property name="hgap">0</property>
                         <property name="minimum_size"></property>
                         <property name="name">fgSizer51</property>
-                        <property name="non_flexible_grow_mode">wxFLEX_GROWMODE_SPECIFIED</property>
+                        <property name="non_flexible_grow_mode">wxFLEX_GROWMODE_NONE</property>
                         <property name="permission">none</property>
                         <property name="rows">1</property>
                         <property name="vgap">0</property>
@@ -258,7 +258,7 @@
                                 <property name="selection">-1</property>
                                 <property name="show">1</property>
                                 <property name="size"></property>
-                                <property name="style">wxCB_READONLY</property>
+                                <property name="style"></property>
                                 <property name="subclass"></property>
                                 <property name="toolbar_pane">0</property>
                                 <property name="tooltip"></property>
