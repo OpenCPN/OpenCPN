@@ -70,6 +70,7 @@ grib_pi::grib_pi(void *ppimgr)
       // Create the PlugIn icons
       initialize_images();
       m_pLastTimelineSet = NULL;
+      m_bShowGrib = false;
 }
 
 grib_pi::~grib_pi(void)
@@ -312,18 +313,18 @@ void grib_pi::OnToolbarToolCallback(int id)
           m_pGribDialog->Show();
           m_pGribDialog->DisplayDataGRS();   
       } else 
-          m_pGribDialog->Close();
+          m_pGribDialog->Hide();
 
       // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
       // to actual status to ensure correct status upon toolbar rebuild
       SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
 
 
-    m_pGribDialog->Show(!m_pGribDialog->IsShown());
+//    m_pGribDialog->Show(!m_pGribDialog->IsShown());
 
     // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
     // to actual status to ensure correct status upon toolbar rebuild
-    SetToolbarItemState( m_leftclick_tool_id, m_pGribDialog->IsShown() );
+//    SetToolbarItemState( m_leftclick_tool_id, m_pGribDialog->IsShown() );
 
     wxPoint p = m_pGribDialog->GetPosition();
     m_pGribDialog->Move(0,0);        // workaround for gtk autocentre dialog behavior

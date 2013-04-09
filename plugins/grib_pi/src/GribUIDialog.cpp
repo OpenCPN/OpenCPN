@@ -405,6 +405,9 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             if( ang > 360. ) ang -= 360.;
             if( ang < 0. ) ang += 360.;
             m_tcWindDirection->SetValue( wxString::Format( _T("%03d"), (int) ( ang ) ));
+        } else {
+            m_tcWindSpeed->SetValue( _("N/A") );
+            m_tcWindDirection->SetValue(  _("N/A") );
         }
     }
     
@@ -426,6 +429,9 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             if( ang > 360. ) ang -= 360.;
             if( ang < 0. ) ang += 360.;
             m_tcWindScatDirection->SetValue( wxString::Format( _T("%03d"), (int) ( ang ) ) );
+        } else {
+            m_tcWindScatSpeed->SetValue( _("N/A") );
+            m_tcWindScatDirection->SetValue( _("N/A") );
         }
     }
     
@@ -437,7 +443,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         if( vkn != GRIB_NOTDEF ) {
             vkn = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND_GUST, vkn);
             m_tcWindGust->SetValue( wxString::Format(_T("%2d"), (int) ( vkn )) );
-        }
+        } else
+            m_tcWindGust->SetValue( _("N/A") );
     }
     
     //    Update the Pressure control
@@ -448,7 +455,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         if( press != GRIB_NOTDEF ) {
             press = m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRESSURE, press);
             m_tcPressure->SetValue( wxString::Format(_T("%2d"), (int) ( press )) );
-        }
+        } else
+            m_tcPressure->SetValue( _("N/A") );
     }
 
     //    Update the Sig Wave Height
@@ -459,7 +467,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         if( height != GRIB_NOTDEF ) {
             height = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WAVE, height);
             m_tcWaveHeight->SetValue( wxString::Format( _T("%4.1f"), height ));
-        }
+        } else
+            m_tcWaveHeight->SetValue( _("N/A") );
     }
     
     // Update the Wave direction
@@ -468,6 +477,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
         if( direction != GRIB_NOTDEF )
             m_tcWaveDirection->SetValue( wxString::Format( _T("%03d"), (int)direction ));
+        else
+            m_tcWaveDirection->SetValue( _("N/A") );
     }
     
     
@@ -489,6 +500,9 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             if( ang > 360. ) ang -= 360.;
             if( ang < 0. ) ang += 360.;
             m_tcCurrentDirection->SetValue( wxString::Format( _T("%03d"), (int) ( ang ) ) );            
+        } else {
+            m_tcCurrentDirection->SetValue( _("N/A") );
+            m_tcCurrentDirection->SetValue( _("N/A") );
         }
     }
     
@@ -500,7 +514,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         if( precip != GRIB_NOTDEF ) {
             precip = m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRECIPITATION, precip);
             m_tcPrecipitation->SetValue( wxString::Format( _T("%6.2f"), precip ) );
-        }
+        } else
+            m_tcPrecipitation->SetValue( _("N/A") );
     }
     
     //    Update total cloud control
@@ -511,7 +526,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         if( cloud != GRIB_NOTDEF ) {
             cloud = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CLOUD, cloud);
             m_tcCloud->SetValue( wxString::Format( _T("%6.2f"), cloud ) );
-        }
+        } else
+            m_tcCloud->SetValue( _("N/A") );
     }
     
     //    Update the Air Temperature
@@ -522,7 +538,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         if( temp != GRIB_NOTDEF ) {
             temp = m_OverlaySettings.CalibrateValue(GribOverlaySettings::AIR_TEMPERATURE, temp);
             m_tcAirTemperature->SetValue( wxString::Format( _T("%6.2f"), temp ) );
-        }
+        } else
+            m_tcAirTemperature->SetValue( _("N/A") );
     }
     
     //    Update the Sea Surface Temperature
@@ -533,7 +550,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         if( temp != GRIB_NOTDEF ) {
             temp = m_OverlaySettings.CalibrateValue(GribOverlaySettings::SEA_TEMPERATURE, temp);
             m_tcSeaTemperature->SetValue( wxString::Format( _T("%6.2f"), temp ) );
-        }
+        } else
+            m_tcSeaTemperature->SetValue( _("N/A") );
     }
 
     Fit();
