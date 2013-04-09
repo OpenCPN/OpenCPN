@@ -31,8 +31,6 @@
 #define _OCPN_PIXEL_H_
 
 #include "dychart.h"                // for configuration stuff
-void *x_malloc(size_t t);
-
 
 wxImage Image_Rotate(wxImage &base_image, double angle, const wxPoint & centre_of_rotation, bool interpolating, wxPoint * offset_after_rotation);
 
