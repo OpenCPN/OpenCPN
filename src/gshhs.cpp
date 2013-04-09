@@ -141,7 +141,7 @@ void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp ) {
 
 //-------------------------------------------------------------------------
 
-Projection::Projection() :
+DECL_EXP Projection::Projection() :
         W( 0 ), H( 0 ), CX( 0 ), CY( 0 ), xW( -90 ), xE( 90 ), yN( 90 ), yS( -90 ), PX( 0 ), PY( 0 )
 {
     frozen = false;

@@ -158,6 +158,8 @@ GribTimelineRecordSet::~GribTimelineRecordSet()
 void GRIBUIDialog::OpenFile()
 {
     m_cRecordForecast->Clear();
+    /* this should be un-commented to avoid a memory leak,
+       but for some reason it crbashes windows */
 //    delete m_bGRIBActiveFile;
     m_bGRIBActiveFile = new GRIBFile( m_file_name,
                                       pPlugIn->GetCopyFirstCumRec(),

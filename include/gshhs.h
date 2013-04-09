@@ -55,9 +55,9 @@
 #define M_PI_4     0.785398163397448309616
 #endif
 
-class Projection {
+class DECL_EXP Projection {
 public:
-	Projection();
+    Projection();
     Projection(int w, int h, double cx, double cy);
     void SetScreenSize(int w, int h);
     void SetCenterInMap(double x, double y);
@@ -314,7 +314,7 @@ protected:
 
 //==========================================================
 
-class GshhsReader {
+class DECL_EXP GshhsReader {
 public:
     GshhsReader( Projection* proj );
     ~GshhsReader();
