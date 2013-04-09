@@ -319,16 +319,11 @@ void grib_pi::OnToolbarToolCallback(int id)
       // to actual status to ensure correct status upon toolbar rebuild
       SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
 
+      wxPoint p = m_pGribDialog->GetPosition();
+      m_pGribDialog->Move(0,0);        // workaround for gtk autocentre dialog behavior
+      m_pGribDialog->Move(p);
 
-//    m_pGribDialog->Show(!m_pGribDialog->IsShown());
-
-    // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
-    // to actual status to ensure correct status upon toolbar rebuild
-//    SetToolbarItemState( m_leftclick_tool_id, m_pGribDialog->IsShown() );
-
-    wxPoint p = m_pGribDialog->GetPosition();
-    m_pGribDialog->Move(0,0);        // workaround for gtk autocentre dialog behavior
-    m_pGribDialog->Move(p);
+      RequestRefresh(m_parent_window); // refresh mainn window
 }
 
 void grib_pi::OnGribDialogClose()
