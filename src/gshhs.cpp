@@ -522,7 +522,7 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
-bool GshhsPolyReader::crossing2( QLineF trajectWorld )
+bool DECL_EXP GshhsPolyReader::crossing2( QLineF trajectWorld )
 {
     if( !proj || proj == NULL ) return false;
 
@@ -763,7 +763,7 @@ GshhsPolygon::~GshhsPolygon()
 
 //==========================================================
 
-GshhsReader::GshhsReader( Projection* proj )
+DECL_EXP GshhsReader::GshhsReader( Projection* proj )
 {
     int maxQualityAvailable = -1;
     int minQualityAvailable = -1;
