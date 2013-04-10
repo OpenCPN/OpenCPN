@@ -173,7 +173,7 @@ public:
 
     void InitializeLoadQuality( int quality ); // 5 levels: 0=low ... 4=full
     bool crossing( QLineF traject, QLineF trajectWorld ) const;
-    bool crossing2( QLineF trajectWorld );
+    bool crossing1( QLineF trajectWorld );
     int currentQuality;
     void setProj( Projection * p )
     {
@@ -337,7 +337,7 @@ public:
     int getQuality() { return quality; }
 
     bool crossing( QLineF traject, QLineF trajectWorld ) const;
-    bool crossing2( QLineF trajectWorld );
+    bool crossing1( QLineF trajectWorld );
     void setProj( Projection * p ) { this->gshhsPoly_reader->setProj( p ); }
     int ReadPolyVersion();
     bool qualityAvailable[6];
@@ -370,9 +370,9 @@ inline bool GshhsReader::crossing( QLineF traject, QLineF trajectWorld ) const
     return this->gshhsPoly_reader->crossing( traject, trajectWorld );
 }
 
-inline bool GshhsReader::crossing2(QLineF trajectWorld )
+inline bool GshhsReader::crossing1(QLineF trajectWorld )
 {
-    return this->gshhsPoly_reader->crossing2(trajectWorld );
+    return this->gshhsPoly_reader->crossing1(trajectWorld );
 }
 
 //-------------------------------------------------------------------------------

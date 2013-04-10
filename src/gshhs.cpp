@@ -522,7 +522,7 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
-bool GshhsPolyReader::crossing2( QLineF trajectWorld )
+bool GshhsPolyReader::crossing1( QLineF trajectWorld )
 {
     if( !proj || proj == NULL ) return false;
 
@@ -1142,6 +1142,7 @@ int GshhsReader::selectBestQuality( Projection *proj )
     return bestQuality;
 }
 
+/* so plugins can determine if a line segment crosses land */
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2)
 {
     static GshhsReader *reader;
@@ -1149,8 +1150,11 @@ bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2)
     if(reader == NULL)
         reader = new GshhsReader(&proj);
 
-    QLineF trajectWorld(positive_degrees(lon1), lat2,
-                        positive_degrees(lon2), lat2);
+    if(lon1 < 0)
+        lon1 += 360;
+    if(lon2 < 0)
+        lon2 += 360;
 
-    return reader->crossing2(trajectWorld);
+    QLineF trajectWorld(lon1, lat1, lon2, lat2);
+    return reader->crossing1(trajectWorld);
 }
