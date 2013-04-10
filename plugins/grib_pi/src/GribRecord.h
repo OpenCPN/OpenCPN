@@ -344,10 +344,17 @@ inline bool GribRecord::isXInMap(double x) const
 {
 //    return x>=Lo1 && x<=Lo1+(Ni-1)*Di;
 //printf ("%f %f %f\n", Lo1, Lo2, x);
-    if (Di > 0)
-        return x>=Lo1 && x<=Lo2;
-    else
-        return x>=Lo2 && x<=Lo1;
+    if (Di > 0) {
+        double maxLo = Lo2;
+        if(Lo2+Di >= 360) /* grib that covers the whole world */
+            maxLo += Di;
+        return x>=Lo1 && x<=maxLo;
+    } else {
+        double maxLo = Lo1;
+        if(Lo2+Di >= 360) /* grib that covers the whole world */
+            maxLo += Di;
+        return x>=Lo2 && x<=maxLo;
+    }
 }
 //-----------------------------------------------------------------
 inline bool GribRecord::isYInMap(double y) const
