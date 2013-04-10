@@ -535,8 +535,10 @@ bool DECL_EXP GshhsPolyReader::crossing2( QLineF trajectWorld )
         cxmax += 360;
     }
 
-    if(cxmax - cxmin > 180) /* dont go long way around world */
-        cxmax -= 360;
+    if(cxmax - cxmin > 180) { /* dont go long way around world */
+        cxmin = (int) floor( wxMax( trajectWorld.p1().x, trajectWorld.p2().x ) ) - 360;
+        cxmax = (int) ceil( wxMin( trajectWorld.p1().x, trajectWorld.p2().x ) );
+    }
 
     cymin = (int) floor( wxMin( trajectWorld.p1().y, trajectWorld.p2().y ) );
     cymax = (int) ceil( wxMax( trajectWorld.p1().y, trajectWorld.p2().y ) );
@@ -549,6 +551,17 @@ bool DECL_EXP GshhsPolyReader::crossing2( QLineF trajectWorld )
             cxx += 360;
         while( cxx >= 360 )
             cxx -= 360;
+
+        double p1x=trajectWorld.p1().x, p2x = trajectWorld.p2().x;
+        if(cxx < 180) {
+            if(p1x > 180) p1x -= 360;
+            if(p2x > 180) p2x -= 360;
+        } else {
+            if(p1x < 180) p1x += 360;
+            if(p2x < 180) p2x += 360;
+        }
+
+        QLineF rtrajectWorld(p1x, trajectWorld.p1().y, p2x, trajectWorld.p2().y);                
 
         for( cy = cymin; cy < cymax; cy++ ) {
             if( cxx >= 0 && cxx <= 359 && cy >= -90 && cy <= 89 ) {
@@ -565,7 +578,7 @@ bool DECL_EXP GshhsPolyReader::crossing2( QLineF trajectWorld )
                     double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
                     for( unsigned int pj = 0; pj < c.size(); pj++ ) {
                         QLineF l(lx, ly, c[pj].x, c[pj].y);
-                        if( my_intersects( trajectWorld, l ) )
+                        if( my_intersects( rtrajectWorld, l ) )
                             return true;
                         lx = c[pj].x, ly = c[pj].y;
                     }
