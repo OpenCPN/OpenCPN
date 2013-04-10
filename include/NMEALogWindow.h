@@ -25,6 +25,8 @@
 #ifndef __NMEALOGWINDOW_H__
 #define __NMEALOGWINDOW_H__
 
+#include "WindowDestroyListener.h"
+
 class wxWindow;
 class wxString;
 class wxSize;
@@ -37,30 +39,35 @@ class TTYWindow;
  * This provides everything needed to use the single NMEA log window.
  *
  * Singleton.
+ *
+ * Reading geometry information from the window will cache them
+ * inside this class. This is used to store them permanently in
+ * the configuration file.
  */
-class NMEALogWindow
+class NMEALogWindow : public WindowDestroyListener
 {
     public:
         static NMEALogWindow & Get();
-        bool Active();
+        bool Active() const;
         void Create(wxWindow * parent, int num_lines = 35);
-        void Destroy();
         void Add(const wxString & s);
         void Refresh(bool do_refresh = false);
-        int GetSizeW() const;
-        int GetSizeH() const;
-        int GetPosX() const;
-        int GetPosY() const;
+        int GetSizeW();
+        int GetSizeH();
+        int GetPosX();
+        int GetPosY();
         void SetSize(int w, int h);
         void SetSize(const wxSize & size);
         void SetPos(int x, int y);
         void SetPos(const wxPoint & pos);
         void CheckPos(int display_width, int display_height);
+        virtual void DestroyWindow();
     private: // prevent class from being copied, needed by singleton
         NMEALogWindow();
         NMEALogWindow(const NMEALogWindow &) {}
         ~NMEALogWindow() {};
         NMEALogWindow & operator=(const NMEALogWindow &) { return *this; }
+        void UpdateGeometry();
     private:
         static NMEALogWindow * instance;
         TTYWindow * window;

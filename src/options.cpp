@@ -2081,7 +2081,7 @@ void options::SetInitialSettings()
 void options::OnShowGpsWindowCheckboxClick( wxCommandEvent& event )
 {
     if( !m_cbNMEADebug->GetValue() ) {
-        NMEALogWindow::Get().Destroy();
+        NMEALogWindow::Get().DestroyWindow();
     } else {
         NMEALogWindow::Get().Create(pParent, 35);
         Raise();

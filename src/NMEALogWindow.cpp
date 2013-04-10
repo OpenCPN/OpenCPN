@@ -43,7 +43,7 @@ NMEALogWindow::NMEALogWindow()
     , pos_y(0)
 {}
 
-bool NMEALogWindow::Active()
+bool NMEALogWindow::Active() const
 {
     return window != NULL;
 }
@@ -51,7 +51,7 @@ bool NMEALogWindow::Active()
 void NMEALogWindow::Create(wxWindow * parent, int num_lines)
 {
     if (window == NULL) {
-        window = new TTYWindow(parent, num_lines);
+        window = new TTYWindow(parent, num_lines, this);
         window->SetTitle(_("NMEA Debug Window"));
 
         // Make sure the window is well on the screen
@@ -61,14 +61,6 @@ void NMEALogWindow::Create(wxWindow * parent, int num_lines)
         window->SetSize(pos_x, pos_y, width, height);
     }
     window->Show();
-}
-
-void NMEALogWindow::Destroy()
-{
-    if (window) {
-        window->Destroy();
-        window = NULL;
-    }
 }
 
 void NMEALogWindow::Add(const wxString & s)
@@ -95,23 +87,27 @@ void NMEALogWindow::SetPos(const wxPoint & pos)
     pos_y = pos.y;
 }
 
-int NMEALogWindow::GetSizeW() const
+int NMEALogWindow::GetSizeW()
 {
+    UpdateGeometry();
     return width;
 }
 
-int NMEALogWindow::GetSizeH() const
+int NMEALogWindow::GetSizeH()
 {
+    UpdateGeometry();
     return height;
 }
 
-int NMEALogWindow::GetPosX() const
+int NMEALogWindow::GetPosX()
 {
+    UpdateGeometry();
     return pos_x;
 }
 
-int NMEALogWindow::GetPosY() const
+int NMEALogWindow::GetPosY()
 {
+    UpdateGeometry();
     return pos_y;
 }
 
@@ -133,5 +129,29 @@ void NMEALogWindow::CheckPos(int display_width, int display_height)
         pos_x = 5;
     if ((pos_y < 0) || (pos_y > display_height))
         pos_y = 5;
+}
+
+void NMEALogWindow::DestroyWindow()
+{
+    if (window) {
+        UpdateGeometry();
+        window->Destroy();
+        window = NULL;
+    }
+}
+
+/**
+ * Update of cached geometry values. This is necessary because
+ * the configuration file will store geometry information, which will
+ * be the cached values (size, position).
+ * Using this mechanism prevents to cache values on every move/resize
+ * of the window.
+ */
+void NMEALogWindow::UpdateGeometry()
+{
+    if (window) {
+        SetSize(window->GetSize());
+        SetPos(window->GetPosition());
+    }
 }
 

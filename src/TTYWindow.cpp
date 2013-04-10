@@ -29,22 +29,24 @@
 
 #include "TTYWindow.h"
 #include "TTYScroll.h"
-#include "NMEALogWindow.h"
+#include "WindowDestroyListener.h"
 #include "chart1.h"
 
 IMPLEMENT_DYNAMIC_CLASS( TTYWindow, wxDialog )
 
 BEGIN_EVENT_TABLE( TTYWindow, wxDialog )
     EVT_CLOSE(TTYWindow::OnCloseWindow)
-    EVT_MOVE( TTYWindow::OnMove )
-    EVT_SIZE( TTYWindow::OnSize )
 END_EVENT_TABLE()
 
 TTYWindow::TTYWindow()
+    : m_window_destroy_listener(NULL)
+    , m_pScroll(NULL)
 {
 }
 
-TTYWindow::TTYWindow(wxWindow *parent, int n_lines)
+TTYWindow::TTYWindow(wxWindow *parent, int n_lines, WindowDestroyListener * listener)
+    : m_window_destroy_listener(listener)
+    , m_pScroll(NULL)
 {
     wxDialog::Create( parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
 
@@ -78,7 +80,10 @@ TTYWindow::TTYWindow(wxWindow *parent, int n_lines)
 
 TTYWindow::~TTYWindow()
 {
-    delete m_pScroll;
+    if (m_pScroll) {
+        delete m_pScroll;
+        m_pScroll = NULL;
+    }
 }
 
 void TTYWindow::CreateLegendBitmap()
@@ -136,19 +141,11 @@ void TTYWindow::OnPauseClick( wxCommandEvent& event )
 
 void TTYWindow::OnCloseWindow( wxCloseEvent& event )
 {
-    NMEALogWindow::Get().Destroy();
-}
-
-void TTYWindow::OnSize( wxSizeEvent& event )
-{
-    NMEALogWindow::Get().SetSize(event.GetSize()); // Record the dialog size
-    event.Skip();
-}
-
-void TTYWindow::OnMove( wxMoveEvent& event )
-{
-    NMEALogWindow::Get().SetPos(event.GetPosition()); // Record the dialog position
-    event.Skip();
+    if (m_window_destroy_listener) {
+        m_window_destroy_listener->DestroyWindow();
+    } else {
+        Destroy();
+    }
 }
 
 void TTYWindow::Add(const wxString &line)
