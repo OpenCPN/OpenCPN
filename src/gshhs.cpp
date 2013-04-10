@@ -141,7 +141,7 @@ void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp ) {
 
 //-------------------------------------------------------------------------
 
-DECL_EXP Projection::Projection() :
+Projection::Projection() :
         W( 0 ), H( 0 ), CX( 0 ), CY( 0 ), xW( -90 ), xE( 90 ), yN( 90 ), yS( -90 ), PX( 0 ), PY( 0 )
 {
     frozen = false;
@@ -522,7 +522,7 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
-bool DECL_EXP GshhsPolyReader::crossing2( QLineF trajectWorld )
+bool GshhsPolyReader::crossing2( QLineF trajectWorld )
 {
     if( !proj || proj == NULL ) return false;
 
@@ -776,7 +776,7 @@ GshhsPolygon::~GshhsPolygon()
 
 //==========================================================
 
-DECL_EXP GshhsReader::GshhsReader( Projection* proj )
+GshhsReader::GshhsReader( Projection* proj )
 {
     int maxQualityAvailable = -1;
     int minQualityAvailable = -1;
@@ -1140,4 +1140,17 @@ int GshhsReader::selectBestQuality( Projection *proj )
             if( qualityAvailable[i] ) bestQuality = i;
 
     return bestQuality;
+}
+
+bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2)
+{
+    static GshhsReader *reader;
+    static Projection proj;
+    if(reader == NULL)
+        reader = new GshhsReader(&proj);
+
+    QLineF trajectWorld(positive_degrees(lon1), lat2,
+                        positive_degrees(lon2), lat2);
+
+    return reader->crossing2(trajectWorld);
 }

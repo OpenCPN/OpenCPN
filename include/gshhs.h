@@ -55,7 +55,7 @@
 #define M_PI_4     0.785398163397448309616
 #endif
 
-class DECL_EXP Projection {
+class Projection {
 public:
     Projection();
     Projection(int w, int h, double cx, double cy);
@@ -390,5 +390,7 @@ private:
     wxColor land;
     wxColor water;
 };
+
+bool DECL_EXP gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2);
 
 #endif
