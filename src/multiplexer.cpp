@@ -96,7 +96,7 @@ void Multiplexer::StopAndRemoveStream( DataStream *stream )
 
 void Multiplexer::LogOutputMessageColor( wxString &msg, wxString stream_name, wxString color )
 {
-    if (NMEALogWindow::Active()) {
+    if (NMEALogWindow::Get().Active()) {
         wxDateTime now = wxDateTime::Now();
         wxString ss = now.FormatISOTime();
         ss.Prepend(_T("--> "));
@@ -106,7 +106,7 @@ void Multiplexer::LogOutputMessageColor( wxString &msg, wxString stream_name, wx
         ss.Append( msg );
         ss.Prepend( color );
 
-        NMEALogWindow::Add(ss);
+        NMEALogWindow::Get().Add(ss);
     }
 }
 
@@ -122,7 +122,7 @@ void Multiplexer::LogOutputMessage( wxString &msg, wxString stream_name, bool b_
 
 void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_filter )
 {
-    if (NMEALogWindow::Active()) {
+    if (NMEALogWindow::Get().Active()) {
         wxDateTime now = wxDateTime::Now();
         wxString ss = now.FormatISOTime();
         ss.Append( _T(" (") );
@@ -134,7 +134,7 @@ void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_f
         else
             ss.Prepend( _T("<GREEN>") );
 
-        NMEALogWindow::Add( ss );
+        NMEALogWindow::Get().Add( ss );
     }
 }
 

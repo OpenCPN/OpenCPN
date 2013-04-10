@@ -1197,9 +1197,9 @@ int MyConfig::LoadMyConfig( int iteration )
     if( g_navobjbackups > 99 ) g_navobjbackups = 99;
     if( g_navobjbackups < 0 ) g_navobjbackups = 0;
 
-    NMEALogWindow::SetSize(Read(_T("NMEALogWindowSizeX"), 600L), Read(_T("NMEALogWindowSizeY"), 400L));
-    NMEALogWindow::SetPos(Read(_T("NMEALogWindowPosX"), 10L), Read(_T("NMEALogWindowPosY"), 10L));
-    NMEALogWindow::CheckPos(display_width, display_height);
+    NMEALogWindow::Get().SetSize(Read(_T("NMEALogWindowSizeX"), 600L), Read(_T("NMEALogWindowSizeY"), 400L));
+    NMEALogWindow::Get().SetPos(Read(_T("NMEALogWindowPosX"), 10L), Read(_T("NMEALogWindowPosY"), 10L));
+    NMEALogWindow::Get().CheckPos(display_width, display_height);
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
@@ -2539,10 +2539,10 @@ void MyConfig::UpdateSettings()
 
     if( cc1 ) Write( _T ( "ChartQuiltingInitial" ), cc1->GetQuiltMode() );
 
-    Write( _T ( "NMEALogWindowSizeX" ), NMEALogWindow::GetSizeW());
-    Write( _T ( "NMEALogWindowSizeY" ), NMEALogWindow::GetSizeH());
-    Write( _T ( "NMEALogWindowPosX" ), NMEALogWindow::GetPosX());
-    Write( _T ( "NMEALogWindowPosY" ), NMEALogWindow::GetPosY());
+    Write( _T ( "NMEALogWindowSizeX" ), NMEALogWindow::Get().GetSizeW());
+    Write( _T ( "NMEALogWindowSizeY" ), NMEALogWindow::Get().GetSizeH());
+    Write( _T ( "NMEALogWindowPosX" ), NMEALogWindow::Get().GetPosX());
+    Write( _T ( "NMEALogWindowPosY" ), NMEALogWindow::Get().GetPosY());
 
     Write( _T ( "PreserveScaleOnX" ), g_bPreserveScaleOnX );
 

@@ -25,11 +25,23 @@
 #include "NMEALogWindow.h"
 #include "TTYWindow.h"
 
-TTYWindow * NMEALogWindow::window = NULL;
-int NMEALogWindow::width = 0;
-int NMEALogWindow::height = 0;
-int NMEALogWindow::pos_x = 0;
-int NMEALogWindow::pos_y = 0;
+NMEALogWindow * NMEALogWindow::instance = NULL;
+
+NMEALogWindow & NMEALogWindow::Get()
+{
+    if (instance == NULL) {
+        instance = new NMEALogWindow;
+    }
+    return *instance;
+}
+
+NMEALogWindow::NMEALogWindow()
+    : window(NULL)
+    , width(0)
+    , height(0)
+    , pos_x(0)
+    , pos_y(0)
+{}
 
 bool NMEALogWindow::Active()
 {
@@ -83,22 +95,22 @@ void NMEALogWindow::SetPos(const wxPoint & pos)
     pos_y = pos.y;
 }
 
-int NMEALogWindow::GetSizeW()
+int NMEALogWindow::GetSizeW() const
 {
     return width;
 }
 
-int NMEALogWindow::GetSizeH()
+int NMEALogWindow::GetSizeH() const
 {
     return height;
 }
 
-int NMEALogWindow::GetPosX()
+int NMEALogWindow::GetPosX() const
 {
     return pos_x;
 }
 
-int NMEALogWindow::GetPosY()
+int NMEALogWindow::GetPosY() const
 {
     return pos_y;
 }

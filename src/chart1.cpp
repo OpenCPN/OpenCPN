@@ -6404,32 +6404,28 @@ bool MyFrame::EvalPriority( wxString message, wxString stream_name, int stream_p
         else
             bret = false;
     }
- 
+
     wxString new_port = pcontainer->stream_name;
- 
+
     //  If the data source or priority has changed for this message type, emit a log entry
-    if (pcontainer->current_priority != old_priority ||
-        new_port != old_port )
-        {
-            wxString logmsg = wxString::Format(_T("Changing NMEA Datasource for %s to %s (Priority: %i)"),
+    if (pcontainer->current_priority != old_priority || new_port != old_port ) {
+         wxString logmsg = wxString::Format(_T("Changing NMEA Datasource for %s to %s (Priority: %i)"),
                                             msg_type.c_str(),
                                             new_port.c_str(),
                                             pcontainer->current_priority);
-            wxLogMessage(logmsg );
-            
-            if (NMEALogWindow::Active()) {
-                wxDateTime now = wxDateTime::Now();
-                wxString ss = now.FormatISOTime();
-                ss.Append( _T(" ") );
-                ss.Append( logmsg );
-                ss.Prepend( _T("<RED>") );
-                
-                NMEALogWindow::Add(ss);
-                NMEALogWindow::Refresh(false);
-            }
-            
-        }
-        
+         wxLogMessage(logmsg );
+
+         if (NMEALogWindow::Get().Active()) {
+             wxDateTime now = wxDateTime::Now();
+             wxString ss = now.FormatISOTime();
+             ss.Append( _T(" ") );
+             ss.Append( logmsg );
+             ss.Prepend( _T("<RED>") );
+
+             NMEALogWindow::Get().Add(ss);
+             NMEALogWindow::Get().Refresh(false);
+         }
+    }
     return bret;
 }
 

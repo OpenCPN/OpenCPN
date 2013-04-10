@@ -35,34 +35,39 @@ class TTYWindow;
  * This class provides access to the NMEA log/debug window.
  *
  * This provides everything needed to use the single NMEA log window.
+ *
+ * Singleton.
  */
 class NMEALogWindow
 {
     public:
-        static bool Active();
-        static void Create(wxWindow * parent, int num_lines = 35);
-        static void Destroy();
-        static void Add(const wxString & s);
-        static void Refresh(bool do_refresh = false);
-        static int GetSizeW();
-        static int GetSizeH();
-        static int GetPosX();
-        static int GetPosY();
-        static void SetSize(int w, int h);
-        static void SetSize(const wxSize & size);
-        static void SetPos(int x, int y);
-        static void SetPos(const wxPoint & pos);
-        static void CheckPos(int display_width, int display_height);
-    private: // prevent class from being copied
+        static NMEALogWindow & Get();
+        bool Active();
+        void Create(wxWindow * parent, int num_lines = 35);
+        void Destroy();
+        void Add(const wxString & s);
+        void Refresh(bool do_refresh = false);
+        int GetSizeW() const;
+        int GetSizeH() const;
+        int GetPosX() const;
+        int GetPosY() const;
+        void SetSize(int w, int h);
+        void SetSize(const wxSize & size);
+        void SetPos(int x, int y);
+        void SetPos(const wxPoint & pos);
+        void CheckPos(int display_width, int display_height);
+    private: // prevent class from being copied, needed by singleton
+        NMEALogWindow();
         NMEALogWindow(const NMEALogWindow &) {}
-        ~NMEALogWindow() {}
+        ~NMEALogWindow() {};
         NMEALogWindow & operator=(const NMEALogWindow &) { return *this; }
     private:
-        static TTYWindow * window;
-        static int width;
-        static int height;
-        static int pos_x;
-        static int pos_y;
+        static NMEALogWindow * instance;
+        TTYWindow * window;
+        int width;
+        int height;
+        int pos_x;
+        int pos_y;
 };
 
 #endif

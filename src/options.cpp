@@ -1849,7 +1849,7 @@ void options::SetInitialSettings()
 
     if( m_pConfig ) pSettingsCB1->SetValue( m_pConfig->m_bShowDebugWindows );
 
-    m_cbNMEADebug->SetValue(NMEALogWindow::Active());
+    m_cbNMEADebug->SetValue(NMEALogWindow::Get().Active());
 /*TODO
     if( g_bGarminHost ) pGarminHost->SetValue( true );
 */
@@ -2081,9 +2081,9 @@ void options::SetInitialSettings()
 void options::OnShowGpsWindowCheckboxClick( wxCommandEvent& event )
 {
     if( !m_cbNMEADebug->GetValue() ) {
-        NMEALogWindow::Destroy();
+        NMEALogWindow::Get().Destroy();
     } else {
-        NMEALogWindow::Create(pParent, 35);
+        NMEALogWindow::Get().Create(pParent, 35);
         Raise();
     }
 }

@@ -136,18 +136,18 @@ void TTYWindow::OnPauseClick( wxCommandEvent& event )
 
 void TTYWindow::OnCloseWindow( wxCloseEvent& event )
 {
-    NMEALogWindow::Destroy();
+    NMEALogWindow::Get().Destroy();
 }
 
 void TTYWindow::OnSize( wxSizeEvent& event )
 {
-    NMEALogWindow::SetSize(event.GetSize()); // Record the dialog size
+    NMEALogWindow::Get().SetSize(event.GetSize()); // Record the dialog size
     event.Skip();
 }
 
 void TTYWindow::OnMove( wxMoveEvent& event )
 {
-    NMEALogWindow::SetPos(event.GetPosition()); // Record the dialog position
+    NMEALogWindow::Get().SetPos(event.GetPosition()); // Record the dialog position
     event.Skip();
 }
 
