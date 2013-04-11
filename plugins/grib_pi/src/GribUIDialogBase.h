@@ -103,7 +103,7 @@ class GRIBUIDialogBase : public wxDialog
 		wxCheckBox* m_cbAirTemperature;
 		wxCheckBox* m_cbSeaTemperature;
 		
-		GRIBUIDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("GRIB Display Control"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxCAPTION|wxDIALOG_NO_PARENT|wxSYSTEM_MENU ); 
+		GRIBUIDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("GRIB Display Control"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxCAPTION|wxDIALOG_NO_PARENT|wxRESIZE_BORDER|wxSYSTEM_MENU ); 
 		~GRIBUIDialogBase();
 	
 };

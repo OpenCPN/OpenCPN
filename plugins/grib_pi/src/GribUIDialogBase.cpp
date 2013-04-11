@@ -21,6 +21,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	
 	wxFlexGridSizer* fgSizer51;
 	fgSizer51 = new wxFlexGridSizer( 1, 7, 0, 0 );
+	fgSizer51->AddGrowableCol( 1 );
 	fgSizer51->SetFlexibleDirection( wxHORIZONTAL );
 	fgSizer51->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_NONE );
 	
@@ -30,7 +31,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	fgSizer51->Add( m_bpPrev, 0, wxALL, 5 );
 	
 	m_cRecordForecast = new wxComboBox( this, wxID_ANY, wxT("Combo!"), wxDefaultPosition, wxDefaultSize, 0, NULL, 0 ); 
-	fgSizer51->Add( m_cRecordForecast, 0, wxALL, 5 );
+	fgSizer51->Add( m_cRecordForecast, 0, wxALL|wxEXPAND, 5 );
 	
 	m_bpNext = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpNext->SetToolTip( wxT("Next") );
