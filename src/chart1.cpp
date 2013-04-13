@@ -3178,7 +3178,7 @@ void MyFrame::SetGroupIndex( int index )
         msg += GetGroupName( old_group_index );
         msg += _("\" is empty, switching to \"All Active Charts\" group.");
 
-        wxMessageBox( msg, _("OpenCPN Group Notice"), wxOK, this );
+        OCPNMessageBox( this, msg, _("OpenCPN Group Notice"), wxOK );
     }
 }
 
@@ -8078,7 +8078,7 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 #endif
     wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
     int ret = dlg.ShowModal();
-
+    
 #ifdef __WXOSX__
     if(gFrame)
         gFrame->SurfaceToolbar();
