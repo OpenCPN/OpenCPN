@@ -1165,7 +1165,43 @@ wxImageList *WayPointman::Getpmarkicon_image_list( void )
 
         pmarkicon_image_list->Add( icon_larger );
     }
+    
+    m_markicon_image_list_base_count = pmarkicon_image_list->GetImageCount(); 
 
+    // Create and add "x-ed out" icons,
+    // Being careful to preserve (some) transparency
+    for( unsigned int ii = 0; ii < m_pIconArray->GetCount(); ii++ ) {
+
+        wxImage img = pmarkicon_image_list->GetBitmap( ii ).ConvertToImage() ;
+        img.ConvertAlphaToMask( 128 );
+
+        unsigned char r,g,b;
+        img.GetOrFindMaskColour(&r, &g, &b);
+        wxColour unused_color(r,g,b);
+
+        wxBitmap bmp0( img );
+    
+        wxBitmap bmp(w, h, -1 );
+        wxMemoryDC mdc( bmp );
+        mdc.SetBackground( wxBrush( unused_color) );
+        mdc.Clear();
+        mdc.DrawBitmap( bmp0, 0, 0 );
+        wxPen red(GetGlobalColor(_T( "URED" )), 2 );
+        mdc.SetPen( red );
+        int xm = bmp.GetWidth();
+        int ym = bmp.GetHeight();
+        mdc.DrawLine( 2, 2, xm-2, ym-2 );
+        mdc.DrawLine( xm-2, 2, 2, ym-2 );
+        mdc.SelectObject( wxNullBitmap );
+        
+        wxMask *pmask = new wxMask(bmp, unused_color);
+        bmp.SetMask( pmask );
+
+        pmarkicon_image_list->Add( bmp );
+    }
+        
+        
+        
     return pmarkicon_image_list;
 }
 
@@ -1289,8 +1325,21 @@ int WayPointman::GetIconIndex( const wxBitmap *pbm )
         if( pmi->picon_bitmap == pbm ) break;
     }
 
-    return i;
+    return i;                                           // index of base icon in the image list
 
+}
+
+int WayPointman::GetXIconIndex( const wxBitmap *pbm )
+{
+    unsigned int i;
+    
+    for( i = 0; i < m_pIconArray->GetCount(); i++ ) {
+        MarkIcon *pmi = (MarkIcon *) m_pIconArray->Item( i );
+        if( pmi->picon_bitmap == pbm ) break;
+    }
+    
+    return i + m_markicon_image_list_base_count;        // index of "X-ed out" icon in the image list
+    
 }
 
 //  Create the unique identifier

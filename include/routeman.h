@@ -161,6 +161,7 @@ public:
       ~WayPointman();
       wxBitmap *GetIconBitmap(const wxString& icon_key);
       int GetIconIndex(const wxBitmap *pbm);
+      int GetXIconIndex(const wxBitmap *pbm);
       int GetNumIcons(void){ return m_pIconArray->Count(); }
       wxString CreateGUID(RoutePoint *pRP);
       RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);
@@ -188,7 +189,7 @@ private:
       wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 
       wxImageList       *pmarkicon_image_list;        // Current wxImageList, updated on colorscheme change
-
+      int               m_markicon_image_list_base_count;
       wxArrayPtrVoid    *m_pIconArray;
 
       int         m_nGUID;
