@@ -3822,7 +3822,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         ais_quad_icon[3].x = 0;
         ais_quad_icon[3].y = -6;
 
-        wxPoint ais_real_size[5];
+        wxPoint ais_real_size[6];
         bool bcan_draw_size = true;
         if (g_bDrawAISSize)
         {
@@ -3852,7 +3852,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 ais_real_size[4].y = td->DimA * ppm - offlen;
                 ais_real_size[5].x = td->DimC * ppm;
                 ais_real_size[5].y = -td->DimB * ppm;
-                if (ais_real_size[3].x - ais_real_size[0].x < 16 || ais_real_size[2].y - ais_real_size[0].y < 30)
+                if (ais_real_size[4].x - ais_real_size[0].x < 16 || ais_real_size[2].y - ais_real_size[0].y < 30)
                     bcan_draw_size = false; //drawing too small does not make sense
                 else
                     bcan_draw_size = true;
