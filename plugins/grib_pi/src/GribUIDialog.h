@@ -93,12 +93,8 @@ public:
     wxDateTime MaxTime();
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
     void TimelineChanged();
-
     void CreateActiveFileFromName( wxString filename );
-    void GetFirstrFileInDirectory();
-
     void PopulateComboDataList( int index );
-
     void ComputeBestForecastForNow();
     void DisplayDataGRS();
     void SetViewPort( PlugIn_ViewPort *vp ) { m_vp = new PlugIn_ViewPort(*vp); }

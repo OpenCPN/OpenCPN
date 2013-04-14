@@ -386,7 +386,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
     }
     if(message_id == _T("GRIB_TIMELINE_REQUEST"))
     {
-        SendTimelineMessage();
+        SendTimelineMessage(m_pGribDialog->TimelineTime());
     }
     if(message_id == _T("GRIB_TIMELINE_RECORD_REQUEST"))
     {
@@ -481,13 +481,12 @@ void grib_pi::SetColorScheme(PI_ColorScheme cs)
     DimeWindow(m_pGribDialog);
 }
 
-void grib_pi::SendTimelineMessage()
+void grib_pi::SendTimelineMessage(wxDateTime time)
 {
     if(!m_pGribDialog)
         return;
 
     wxJSONValue v;
-    wxDateTime time = m_pGribDialog->TimelineTime();
     v[_T("Day")] = time.GetDay();
     v[_T("Month")] = time.GetMonth();
     v[_T("Year")] = time.GetYear();

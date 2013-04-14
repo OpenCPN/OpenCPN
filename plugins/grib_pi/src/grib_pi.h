@@ -79,20 +79,13 @@ public:
       void SetCursorLatLon(double lat, double lon);
       void SetPluginMessage(wxString &message_id, wxString &message_body);
       bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
-
-      void SendTimelineMessage();
-
+      void SendTimelineMessage(wxDateTime time);
       void SetDefaults(void);
-
       int GetToolbarToolCount(void);
-
       void ShowPreferencesDialog( wxWindow* parent );
-
       void OnToolbarToolCallback(int id);
 
-
 // Other public methods
-
       void SetGribDialogX    (int x){ m_grib_dialog_x = x;};
       void SetGribDialogY    (int x){ m_grib_dialog_y = x;}
       void SetGribDialogSizeX(int x){ m_grib_dialog_sx = x;}

@@ -70,7 +70,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_tbPlayStop = new wxToggleButton( this, ID_PLAYSTOP, wxT("Play"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer5->Add( m_tbPlayStop, 0, wxALL, 5 );
 	
-	m_sTimeline = new wxSlider( this, ID_TIMELINE, 2, 1, 10, wxDefaultPosition, wxSize( -1,-1 ), wxSL_HORIZONTAL );
+	m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( -1,-1 ), wxSL_HORIZONTAL );
 	fgSizer5->Add( m_sTimeline, 0, wxEXPAND, 5 );
 	
 	

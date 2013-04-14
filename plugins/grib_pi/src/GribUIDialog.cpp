@@ -163,17 +163,20 @@ void GRIBUIDialog::OpenFile()
 //    delete m_bGRIBActiveFile;
     m_bGRIBActiveFile = new GRIBFile( m_file_name,
                                       pPlugIn->GetCopyFirstCumRec(),
-                                      pPlugIn->GetCopyMissWaveRec() );
-    
+                                      pPlugIn->GetCopyMissWaveRec() );    
+
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-    if(rsa->GetCount() < 2)
+    if(rsa->GetCount() < 2) {
         m_TimeLineHours = 0;
-    else {
+        m_sTimeline->Disable();
+    } else {
         GribRecordSet &first=rsa->Item(0), &last = rsa->Item(rsa->GetCount()-1);
         
         wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
         m_TimeLineHours = span.GetHours();
+        m_sTimeline->Enable();
     }
+    m_sTimeline->SetValue(0);
     
     wxFileName fn( m_file_name );
     SetLabel( fn.GetFullName() );
@@ -181,8 +184,7 @@ void GRIBUIDialog::OpenFile()
     if( m_bGRIBActiveFile ) {
         if( m_bGRIBActiveFile->IsOK() ) { 
             PopulateComboDataList( 0 );
-            ComputeBestForecastForNow();
-
+            SetFactoryOptions();
             DisplayDataGRS();
             PopulateTrackingControls();
         } else 
@@ -503,7 +505,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             if( ang < 0. ) ang += 360.;
             m_tcCurrentDirection->SetValue( wxString::Format( _T("%03d"), (int) ( ang ) ) );            
         } else {
-            m_tcCurrentDirection->SetValue( _("N/A") );
+            m_tcCurrentVelocity->SetValue( _("N/A") );
             m_tcCurrentDirection->SetValue( _("N/A") );
         }
     }
@@ -811,14 +813,15 @@ void GRIBUIDialog::TimelineChanged()
     m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
 //    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
     
-    pPlugIn->SendTimelineMessage();
+    pPlugIn->SendTimelineMessage(time);
 }
 
 wxDateTime GRIBUIDialog::TimelineTime()
 {
-    return MinTime() + wxTimeSpan(m_sTimeline->GetValue()/m_OverlaySettings.m_HourDivider,
-                                  (m_sTimeline->GetValue()%m_OverlaySettings.m_HourDivider)
-                                  *60/m_OverlaySettings.m_HourDivider);
+    int tl = (m_TimeLineHours == 0) ? 0 : m_sTimeline->GetValue();
+    int hours = tl/m_OverlaySettings.m_HourDivider;
+    int minutes = (tl%m_OverlaySettings.m_HourDivider)*60/m_OverlaySettings.m_HourDivider;
+    return MinTime() + wxTimeSpan(hours, minutes);
 }
 
 wxDateTime GRIBUIDialog::MinTime()
@@ -838,22 +841,26 @@ wxDateTime GRIBUIDialog::MaxTime()
 
 GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
 {
-    unsigned int i, ip1=0;
+    unsigned int i, im1;
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+
     wxDateTime curtime;
-    for(i=0; i<rsa->GetCount()-1; i++) {
-        ip1 = i+1;
-        GribRecordSet &cur=rsa->Item(ip1);
+    for(i=0; i<rsa->GetCount(); i++) {
+        GribRecordSet &cur=rsa->Item(i);
         curtime = cur.m_Reference_Time;
         if(curtime >= time)
             break;
     }
+    im1 = i-1;
+    if(i == 0)
+        im1 = 0;
     
     wxDateTime mintime = MinTime();
     double hour2 = (curtime - mintime).GetHours();
-    curtime = rsa->Item(i).m_Reference_Time;
+    curtime = rsa->Item(im1).m_Reference_Time;
     double hour1 = (curtime - mintime).GetHours();
-    double nhour = (time - mintime).GetHours();
+    wxTimeSpan span = time - mintime;
+    double nhour = span.GetMinutes()/60.0;
     
     if(hour2<hour1 || nhour < hour1 || nhour > hour2)
         return NULL;
@@ -867,7 +874,7 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
     if(!m_OverlaySettings.m_bInterpolate)
         interp_const = round(interp_const);
 
-    GribRecordSet &GRS1 = rsa->Item(i), &GRS2 = rsa->Item(ip1);
+    GribRecordSet &GRS1 = rsa->Item(im1), &GRS2 = rsa->Item(i);
     return new GribTimelineRecordSet(GRS1, GRS2, interp_const);
 }
 
@@ -902,41 +909,6 @@ void GRIBUIDialog::CreateActiveFileFromName( wxString filename )
         m_bGRIBActiveFile = NULL;
         m_bGRIBActiveFile = new GRIBFile( filename , pPlugIn->GetCopyFirstCumRec(),
                                           pPlugIn->GetCopyMissWaveRec() );
-    }
-}
-
-void GRIBUIDialog::GetFirstrFileInDirectory()
-{
-    //reinitialise data containers
-     m_cRecordForecast->Clear();
-     m_bGRIBActiveFile = NULL;
-     if( !wxDir::Exists( m_grib_dir ) ) {
-         wxStandardPaths path;
-         m_grib_dir = path.GetDocumentsDir();
-    }
-    //    Get an array of GRIB file names in the target directory, not descending into subdirs
-    wxArrayString file_array;
-    int m_n_files = 0;
-    m_n_files = wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grb" ), wxDIR_FILES );
-    m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grb.bz2" ),
-        wxDIR_FILES );
-    if( m_n_files ) {
-        file_array.Sort( CompareFileStringTime );              //sort the files by File Modification Date  
-
-        m_bGRIBActiveFile = new GRIBFile( file_array[0] ,      //take the younger
-            pPlugIn->GetCopyFirstCumRec(), pPlugIn->GetCopyMissWaveRec() );
-
-        wxFileName fn( file_array[0] );
-        SetLabel( fn.GetFullName() );
-
-        if( m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK() ) {
-            PopulateComboDataList(0);
-            ComputeBestForecastForNow();
-        } else 
-            pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
-    } else {
-         pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning :  This directory is Empty!") );
-         SetLabel( m_grib_dir );
     }
 }
 
@@ -1016,7 +988,6 @@ void GRIBUIDialog::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)
         return;
     
     pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(m_pTimelineSet);
-    SetFactoryOptions(); /* not sure if needed here */
 }
 
 void GRIBUIDialog::SetFactoryOptions()
