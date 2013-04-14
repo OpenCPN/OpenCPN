@@ -186,8 +186,8 @@ public:
       void ExportGPX(wxWindow* parent, bool bviz_only = false, bool blayer = false);
       void ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true);
 
-      bool ExportGPXRoute(wxWindow* parent, Route *pRoute);
-      bool ExportGPXWaypoint(wxWindow* parent, RoutePoint *pRoutePoint);
+      bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes);
+      bool ExportGPXWaypoints(wxWindow* parent, RoutePointList *pRoutePoints);
 
       void CreateRotatingNavObjBackup();
 

@@ -626,21 +626,21 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
 
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp = node->GetData();
-    
+
     //  Establish basic colour
     wxColour basic_colour;
-    if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {     
+    if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {
             basic_colour = GetGlobalColor( _T ( "URED" ) );
     } else
-        if( prp->m_IconName.StartsWith( _T("xmblue") ) ) {            
+        if( prp->m_IconName.StartsWith( _T("xmblue") ) ) {
                 basic_colour = GetGlobalColor( _T ( "BLUE3" ) );
         } else
-            if( prp->m_IconName.StartsWith( _T("xmgreen") ) ) {        
+            if( prp->m_IconName.StartsWith( _T("xmgreen") ) ) {
                     basic_colour = GetGlobalColor( _T ( "UGREN" ) );
-            } else {                                                   
+            } else {
                     basic_colour = GetGlobalColor( _T ( "CHMGD" ) );
             }
-            
+
     int style = wxSOLID;
     int width = g_route_line_width;
     wxColour col;
@@ -664,13 +664,13 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
     //  Draw the first point
     wxPoint rpt, rptn;
     DrawPointWhich( dc, 1, &rpt );
-    
+
     node = node->GetNext();
     while( node ) {
         RoutePoint *prp = node->GetData();
         unsigned short int ToSegNo = prp->m_GPXTrkSegNo;
 
-/*        
+/*
         if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {         // pjotrc 2010.02.26
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ) ) );
             wxPen dPen( GetGlobalColor( _T ( "URED" ) ), g_track_line_width );
@@ -690,17 +690,17 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
                     wxPen dPen( GetGlobalColor( _T ( "CHMGD" ) ), g_track_line_width );
                     dc.SetPen( dPen );
                 }
-*/                
+*/
 
         prp->Draw( dc, &rptn );
 
-        if( ToSegNo == FromSegNo )                  
+        if( ToSegNo == FromSegNo )
             RenderSegment( dc, rpt.x, rpt.y, rptn.x, rptn.y, VP, false, (int) radius ); // no arrows, with hilite
 
         rpt = rptn;
 
         node = node->GetNext();
-        FromSegNo = ToSegNo;          
+        FromSegNo = ToSegNo;
 
     }
 
@@ -2831,10 +2831,10 @@ void MyConfig::StoreNavObjChanges( void )
     m_pNavObjectChangesSet->SaveFile( m_sNavObjSetChangesFile );
 }
 
-bool MyConfig::ExportGPXRoute( wxWindow* parent, Route *pRoute )
+bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes )
 {
     //FIXME: get rid of the Dialogs and unite with the other
-    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, pRoute->m_RouteNameString,
+    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, _T("routes"),
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
     int response = saveDialog.ShowModal();
@@ -2854,11 +2854,16 @@ bool MyConfig::ExportGPXRoute( wxWindow* parent, Route *pRoute )
 
         GpxDocument *gpx = new GpxDocument();
         GpxRootElement *gpxroot = (GpxRootElement *) gpx->RootElement();
-        // TODO this is awkward
-        if( !pRoute->m_bIsTrack ) {
-            gpxroot->AddRoute( CreateGPXRte( pRoute ) );
-        } else {
-            gpxroot->AddTrack( CreateGPXTrk( pRoute ) );
+        wxRouteListNode* pRoute = pRoutes->GetFirst();
+        while (pRoute) {
+            Route* pRData = pRoute->GetData();
+            // TODO this is awkward
+            if( !pRData->m_bIsTrack ) {
+                gpxroot->AddRoute( CreateGPXRte( pRData ) );
+            } else {
+                gpxroot->AddTrack( CreateGPXTrk( pRData ) );
+            }
+            pRoute = pRoute->GetNext();
         }
 
         gpx->SaveFile( fn.GetFullPath() );
@@ -2869,7 +2874,7 @@ bool MyConfig::ExportGPXRoute( wxWindow* parent, Route *pRoute )
         return false;
 }
 
-bool MyConfig::ExportGPXWaypoint( wxWindow* parent, RoutePoint *pRoutePoint )
+bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints )
 {
     //if (pRoutePoint->m_bIsInLayer) return true;
 
@@ -2895,8 +2900,13 @@ bool MyConfig::ExportGPXWaypoint( wxWindow* parent, RoutePoint *pRoutePoint )
         GpxDocument *gpx = new GpxDocument();
         GpxRootElement *gpxroot = (GpxRootElement *) gpx->RootElement();
 //          This should not be necessary
-        if( !WptIsInRouteList( pRoutePoint ) || pRoutePoint->m_bKeepXRoute ) {
-            gpxroot->AddWaypoint( ::CreateGPXWpt( pRoutePoint, GPX_WPT_WAYPOINT ) );
+        wxRoutePointListNode* pRoutePoint = pRoutePoints->GetFirst();
+        while (pRoutePoint) {
+            RoutePoint* pRPData = pRoutePoint->GetData();
+            if( !WptIsInRouteList( pRPData ) || pRPData->m_bKeepXRoute ) {
+                gpxroot->AddWaypoint( ::CreateGPXWpt( pRPData, GPX_WPT_WAYPOINT ) );
+            }
+            pRoutePoint = pRoutePoint->GetNext();
         }
         gpx->SaveFile( fn.GetFullPath() );
 
@@ -2935,7 +2945,7 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         wxProgressDialog *pprog = NULL;
         int count = pWayPointMan->m_pWayPointList->GetCount();
         if( count > 200) {
-            pprog = new wxProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL, 
+            pprog = new wxProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL,
                                           wxPD_APP_MODAL | wxPD_SMOOTH |
                                           wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
             pprog->SetSize( 400, wxDefaultCoord );
