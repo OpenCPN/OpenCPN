@@ -50,7 +50,9 @@
 #define PTG_TRIANGLE_FAN                   0x0006
 
 //  Error Return Codes
+#define ERROR_NONE              0
 #define ERROR_NO_DLL            1
+#define ERROR_BAD_OGRPOLY       2
 
 //  Some external prototypes
 
