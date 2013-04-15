@@ -5206,11 +5206,15 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
                     && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
             {
-                int dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
+                int dlg_return;
+#ifndef __WXOSX__
+                dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                   _("OpenCPN Route Create"),
                                                   (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-//                int dlg_return = near_point_dlg.ShowModal();
-
+#else
+                dlg_return = wxID_YES;
+#endif
+                
                 if( dlg_return == wxID_YES ) {
                     pMousePoint = pNearbyPoint;
 
