@@ -813,8 +813,12 @@ bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
 
-//    bells_sound[0].Create(_T("/home/dsr/2bells.wav"));
-//    bells_sound[0].Play();
+    //  We allow only one instance unless the portable option is used
+    m_checker = new wxSingleInstanceChecker(_T("OpenCPN"));
+    if(!g_bportable) {
+        if ( m_checker->IsAnotherRunning() ) 
+            return false;               // exit quietly
+    }
     
     g_pPlatform = new wxPlatformInfo;
 
@@ -2088,6 +2092,9 @@ int MyApp::OnExit()
     delete g_pauimgr;
 
     delete plocale_def_lang;
+    
+    delete m_checker;
+    
     return TRUE;
 }
 
