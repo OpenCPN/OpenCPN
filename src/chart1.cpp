@@ -493,6 +493,7 @@ bool                      g_bShowAreaNotices;
 bool                      g_bDrawAISSize;
 bool                      g_bShowAISName;
 int                       g_Show_Target_Name_Scale;
+bool                      g_bWplIsAprsPosition;
 
 wxToolBarToolBase         *m_pAISTool;
 

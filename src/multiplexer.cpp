@@ -34,6 +34,7 @@
 extern PlugInManager    *g_pi_manager;
 extern wxString         g_GPS_Ident;
 extern bool             g_bGarminHostUpload;
+extern bool             g_bWplIsAprsPosition;
 
 Multiplexer::Multiplexer()
 {
@@ -200,7 +201,11 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
         if( bpass ) {
             if( message.Mid(3,3).IsSameAs(_T("VDM")) ||
                 message.Mid(1,5).IsSameAs(_T("FRPOS")) ||
-                message.Mid(1,2).IsSameAs(_T("CD")) )
+                message.Mid(1,2).IsSameAs(_T("CD")) ||
+                message.Mid(3,3).IsSameAs(_T("TLL")) ||
+                message.Mid(3,3).IsSameAs(_T("TTM")) ||
+                message.Mid(3,3).IsSameAs(_T("OSD")) ||
+                ( g_bWplIsAprsPosition && message.Mid(3,3).IsSameAs(_T("WPL")) ) )
             {
                 if( m_aisconsumer )
                     m_aisconsumer->AddPendingEvent(event);

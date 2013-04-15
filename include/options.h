@@ -434,6 +434,7 @@ public:
     wxCheckBox                *m_pCheck_Draw_Target_Size;
     wxCheckBox                *m_pCheck_Show_Target_Name;
     wxTextCtrl                *m_pText_Show_Target_Name_Scale;
+    wxCheckBox                *m_pCheck_Wpl_Aprs;
     wxCheckBox                *m_pCheck_ShowAllCPA;
 //    For Ship page
     wxFlexGridSizer*        realSizes;

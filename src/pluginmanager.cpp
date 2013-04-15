@@ -1768,21 +1768,21 @@ bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2
 {
     return gshhsCrossesLand(lat1, lon1, lat2, lon2);
 }
-    
+
 
 void PlugInPlaySound( wxString &sound_file )
 {
     if(g_pi_manager) {
         g_pi_manager->m_plugin_sound.Stop();
         g_pi_manager->m_plugin_sound.UnLoad();
-    
+
         g_pi_manager->m_plugin_sound.Create( sound_file );
-        
+
         if( g_pi_manager->m_plugin_sound.IsOk() )
             g_pi_manager->m_plugin_sound.Play();
     }
 }
-    
+
 // API 1.10 Route and Waypoint Support
 //wxBitmap *FindSystemWaypointIcon( wxString& icon_name );
 
@@ -1821,7 +1821,7 @@ PlugIn_Route::~PlugIn_Route(void )
 {
     pWaypointList->DeleteContents( false );            // do not delete Waypoints
     pWaypointList->Clear();
-    
+
     delete pWaypointList;
 }
 
@@ -1835,7 +1835,7 @@ PlugIn_Track::~PlugIn_Track(void )
 {
     pWaypointList->DeleteContents( false );            // do not delete Waypoints
     pWaypointList->Clear();
-    
+
     delete pWaypointList;
 }
 
@@ -1856,30 +1856,30 @@ bool AddCustomWaypointIcon( wxBitmap *pimage, wxString key, wxString description
 bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent)
 {
     //  Validate the waypoint parameters a little bit
-    
+
     //  GUID
     //  Make sure that this GUID is indeed unique in the Routepoint list
     bool b_unique = true;
     wxRoutePointListNode *prpnode = pWayPointMan->m_pWayPointList->GetFirst();
     while( prpnode ) {
         RoutePoint *prp = prpnode->GetData();
-        
+
         if( prp->m_GUID == pwaypoint->m_GUID ) {
             b_unique = false;
             break;
         }
         prpnode = prpnode->GetNext(); //RoutePoint
     }
-    
+
     if( !b_unique )
         return false;
-    
+
     RoutePoint *pWP = new RoutePoint( pwaypoint->m_lat, pwaypoint->m_lon,
                                       pwaypoint->m_IconName, pwaypoint->m_MarkName,
                                       pwaypoint->m_GUID );
-    
+
     pWP->m_bIsolatedMark = true;                      // This is an isolated mark
-    
+
 
     //  Transcribe (clone) the html HyperLink List, if present
     if( pwaypoint->m_HyperlinkList ) {
@@ -1887,29 +1887,29 @@ bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent)
             wxPlugin_HyperlinkListNode *linknode = pwaypoint->m_HyperlinkList->GetFirst();
             while( linknode ) {
                 Plugin_Hyperlink *link = linknode->GetData();
-            
+
                 Hyperlink* h = new Hyperlink();
                 h->DescrText = link->DescrText;
                 h->Link = link->Link;
                 h->LType = link->Type;
             
                 pWP->m_HyperlinkList->Append( h );
-            
+
                 linknode = linknode->GetNext();
             }
         }
     }
-    
+
     pWP->m_MarkDescription = pwaypoint->m_MarkDescription;
     pWP->m_btemp = (b_permanent == false);
-    
+
     pSelect->AddSelectableRoutePoint( pwaypoint->m_lat, pwaypoint->m_lon, pWP );
     if(b_permanent)
         pConfig->AddNewWayPoint( pWP, -1 );
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateWptListCtrl();
-        
+
     return true;
 }
 
@@ -1918,17 +1918,17 @@ bool DeleteSingleWaypoint( wxString &GUID )
     //  Find the RoutePoint
     bool b_found = false;
     RoutePoint *prp = pWayPointMan->FindRoutePointByGUID( GUID );
-    
+
     if(prp)
         b_found = true;
-    
+
     if( b_found ) {
         pWayPointMan->DestroyWaypoint( prp );
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
             pRouteManagerDialog->UpdateWptListCtrl();
     }
-        
-    return b_found;        
+
+    return b_found;
 }
 
 
@@ -1937,54 +1937,54 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
     //  Find the RoutePoint
     bool b_found = false;
     RoutePoint *prp = pWayPointMan->FindRoutePointByGUID( pwaypoint->m_GUID );
-    
+
     if(prp)
         b_found = true;
 
     if( b_found ) {
         double lat_save = prp->m_lat;
         double lon_save = prp->m_lon;
-        
+
         prp->m_lat = pwaypoint->m_lat;
         prp->m_lon = pwaypoint->m_lon;
         prp->m_IconName = pwaypoint->m_IconName;
         prp->SetName( pwaypoint->m_MarkName );
         prp->m_MarkDescription = pwaypoint->m_MarkDescription;
-        
+
         //  Transcribe (clone) the html HyperLink List, if present
-        
+
         if( pwaypoint->m_HyperlinkList ) {
             prp->m_HyperlinkList->Clear();
             if( pwaypoint->m_HyperlinkList->GetCount() > 0 ) {
                 wxPlugin_HyperlinkListNode *linknode = pwaypoint->m_HyperlinkList->GetFirst();
                 while( linknode ) {
                     Plugin_Hyperlink *link = linknode->GetData();
-                    
+
                     Hyperlink* h = new Hyperlink();
                     h->DescrText = link->DescrText;
                     h->Link = link->Link;
                     h->LType = link->Type;
                     
                     prp->m_HyperlinkList->Append( h );
-                    
+
                     linknode = linknode->GetNext();
                 }
             }
         }
-        
+
         SelectItem *pFind = pSelect->FindSelection( lat_save, lon_save, SELTYPE_ROUTEPOINT );
         if( pFind ) {
             pFind->m_slat = pwaypoint->m_lat;             // update the SelectList entry
             pFind->m_slon = pwaypoint->m_lon;
         }
-            
+
         if(!prp->m_btemp)
             pConfig->UpdateWayPoint( prp );
-        
+
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
             pRouteManagerDialog->UpdateWptListCtrl();
     }
-    
+
     return b_found;
 }
 
@@ -1992,11 +1992,11 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
 bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
 {
     Route *route = new Route();
-    
+
     PlugIn_Waypoint *pwp;
     RoutePoint *pWP_src;
     int ip = 0;
-    
+
     wxPlugin_WaypointListNode *pwpnode = proute->pWaypointList->GetFirst();
     while( pwpnode ) {
         pwp = pwpnode->GetData();
@@ -2004,33 +2004,33 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
         RoutePoint *pWP = new RoutePoint( pwp->m_lat, pwp->m_lon,
                                           pwp->m_IconName, pwp->m_MarkName,
                                           pwp->m_GUID );
-        
+
         //  Transcribe (clone) the html HyperLink List, if present
         if( pwp->m_HyperlinkList ) {
             if( pwp->m_HyperlinkList->GetCount() > 0 ) {
                 wxPlugin_HyperlinkListNode *linknode = pwp->m_HyperlinkList->GetFirst();
                 while( linknode ) {
                     Plugin_Hyperlink *link = linknode->GetData();
-                    
+
                     Hyperlink* h = new Hyperlink();
                     h->DescrText = link->DescrText;
                     h->Link = link->Link;
                     h->LType = link->Type;
                     
                     pWP->m_HyperlinkList->Append( h );
-                    
+
                     linknode = linknode->GetNext();
                 }
             }
         }
-        
+
         pWP->m_MarkDescription = pwp->m_MarkDescription;
         pWP->m_bShowName = false;
         pWP->SetCreateTime(pwp->m_CreateTime);
         
         route->AddPoint( pWP );
-        
-        
+
+
         pSelect->AddSelectableRoutePoint( pWP->m_lat, pWP->m_lon, pWP );
 
         if(ip > 0)
@@ -2038,7 +2038,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
                                             pWP->m_lon, pWP_src, pWP, route );
         ip++;
         pWP_src = pWP;
-        
+
         pwpnode = pwpnode->GetNext(); //PlugInWaypoint
     }
 
@@ -2047,7 +2047,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
     route->m_RouteEndString = proute->m_EndString;
     route->m_GUID = proute->m_GUID;
     route->m_btemp = (b_permanent == false);
-    
+
     pRouteList->Append( route );
 
     if(b_permanent)
@@ -2055,7 +2055,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateRouteListCtrl();
-    
+
     return true;
 }
 
@@ -2064,7 +2064,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
 bool DeletePluginRoute( wxString& GUID )
 {
     bool b_found = false;
-    
+
     //  Find the Route
     Route *pRoute = g_pRouteMan->FindRouteByGUID( GUID );
     if(pRoute) {
@@ -2077,19 +2077,19 @@ bool DeletePluginRoute( wxString& GUID )
 bool UpdatePlugInRoute ( PlugIn_Route *proute )
 {
     bool b_found = false;
-    
+
     //  Find the Route
     Route *pRoute = g_pRouteMan->FindRouteByGUID( proute->m_GUID );
-    if(pRoute) 
+    if(pRoute)
         b_found = true;
 
     if(b_found) {
         bool b_permanent = (pRoute->m_btemp == false);
         g_pRouteMan->DeleteRoute( pRoute );
-        
+
         b_found = AddPlugInRoute( proute, b_permanent );
     }
-    
+
     return b_found;
 }
 
@@ -2097,51 +2097,51 @@ bool UpdatePlugInRoute ( PlugIn_Route *proute )
 bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
 {
     Track *track = new Track();
-    
+
     PlugIn_Waypoint *pwp;
     RoutePoint *pWP_src;
     int ip = 0;
-    
+
     wxPlugin_WaypointListNode *pwpnode = ptrack->pWaypointList->GetFirst();
     while( pwpnode ) {
         pwp = pwpnode->GetData();
-        
+
         RoutePoint *pWP = new RoutePoint( pwp->m_lat, pwp->m_lon,
                                           pwp->m_IconName, pwp->m_MarkName,
                                           pwp->m_GUID );
-        
-        
+
+
         pWP->m_MarkDescription = pwp->m_MarkDescription;
         pWP->m_bShowName = false;
         pWP->SetCreateTime( pwp->m_CreateTime );
         
         track->AddPoint( pWP );
-        
+
         pSelect->AddSelectableRoutePoint( pWP->m_lat, pWP->m_lon, pWP );
-        
+
         if(ip > 0)
             pSelect->AddSelectableRouteSegment( pWP_src->m_lat, pWP_src->m_lon, pWP->m_lat,
                                                 pWP->m_lon, pWP_src, pWP, track );
         ip++;
         pWP_src = pWP;
-        
+
         pwpnode = pwpnode->GetNext(); //PlugInWaypoint
     }
-    
+
     track->m_RouteNameString = ptrack->m_NameString;
     track->m_RouteStartString = ptrack->m_StartString;
     track->m_RouteEndString = ptrack->m_EndString;
     track->m_GUID = ptrack->m_GUID;
     track->m_btemp = (b_permanent == false);
-    
+
     pRouteList->Append( track );
-    
+
     if(b_permanent)
         pConfig->AddNewRoute( track );
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateTrkListCtrl();
-    
+
     return true;
 }
 
@@ -2150,7 +2150,7 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
 bool DeletePluginTrack( wxString& GUID )
 {
     bool b_found = false;
-    
+
     //  Find the Route
     Route *pRoute = g_pRouteMan->FindRouteByGUID( GUID );
     if(pRoute) {
@@ -2160,26 +2160,26 @@ bool DeletePluginTrack( wxString& GUID )
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateRouteListCtrl();
-    
+
     return b_found;
  }
 
 bool UpdatePlugInTrack ( PlugIn_Track *ptrack )
 {
     bool b_found = false;
-    
+
     //  Find the Track
     Route *pRoute = g_pRouteMan->FindRouteByGUID( ptrack->m_GUID );
-    if(pRoute) 
+    if(pRoute)
         b_found = true;
-    
+
     if(b_found) {
         bool b_permanent = (pRoute->m_btemp == false);
         g_pRouteMan->DeleteTrack( (Track *)pRoute );
-        
+
         b_found = AddPlugInTrack( ptrack, b_permanent );
     }
-    
+
     return b_found;
 }
 

@@ -67,6 +67,7 @@ extern bool     g_bShowAreaNotices;
 extern bool     g_bDrawAISSize;
 extern bool     g_bShowAISName;
 extern int      g_Show_Target_Name_Scale;
+extern bool     g_bWplIsAprsPosition;
 extern double gLat;
 extern double gLon;
 extern double gCog;
@@ -90,6 +91,7 @@ static int n_newname;
 static bool b_firstrx;
 static int first_rx_ticks;
 static int rx_ticks;
+static double arpa_ref_hdg = NAN;
 
 AIS_Decoder::AIS_Decoder( wxFrame *parent )
 {
@@ -215,7 +217,11 @@ void AIS_Decoder::OnEvtAIS( OCPN_DataStreamEvent& event )
         if( message.Mid( 3, 3 ).IsSameAs( _T("VDM") ) ||
             message.Mid( 3, 3 ).IsSameAs( _T("VDO") ) ||
             message.Mid( 1, 5 ).IsSameAs( _T("FRPOS") ) ||
-            message.Mid( 1, 2 ).IsSameAs( _T("CD") ) )
+            message.Mid( 1, 2 ).IsSameAs( _T("CD") ) ||
+            message.Mid( 3, 3 ).IsSameAs( _T("TLL") ) ||
+            message.Mid( 3, 3 ).IsSameAs( _T("TTM") ) ||
+            message.Mid( 3, 3 ).IsSameAs( _T("OSD") ) ||
+            ( g_bWplIsAprsPosition && message.Mid( 3, 3 ).IsSameAs( _T("WPL") ) ) )
         {
                 nr = Decode( message );
                 gFrame->TouchAISActive();
@@ -353,9 +359,9 @@ AIS_Error AIS_Decoder::DecodeSingleVDO( const wxString& str, GenericPosDatEx *po
 }
 
 
-//----------------------------------------------------------------------------------
-//      Decode NMEA VDM/VDO/FRPOS/DSCDSE sentence to AIS Target(s)
-//----------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------
+//      Decode NMEA VDM/VDO/FRPOS/DSCDSE/TTM/TLL/OSD/RSD/TLB/WPL sentence to AIS Target(s)
+//----------------------------------------------------------------------------------------
 AIS_Error AIS_Decoder::Decode( const wxString& str )
 {
     AIS_Error ret;
@@ -373,13 +379,43 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     double dsc_mins, dsc_degs, dsc_tmp, dsc_addr;
     double dse_tmp, dse_addr;
     double dse_lat = 0.;
-    double dse_lon = 0;
+    double dse_lon = 0.;
     long dsc_fmt, dsc_quadrant;
 
     int gpsg_mmsi = 0;
     int dsc_mmsi = 0;
     int dse_mmsi = 0;
+    int arpa_mmsi = 0;
+    int aprs_mmsi = 0;
     int mmsi = 0;
+
+    long arpa_tgt_num = 0;
+    double arpa_sog = 0.;
+    double arpa_cog = 0.;
+    double arpa_lat = 0.;
+    double arpa_lon = 0.;
+    double arpa_dist = 0.;
+    double arpa_brg = 0.;
+    wxString arpa_brgunit;
+    wxString arpa_status;
+    wxString arpa_distunit;
+    wxString arpa_cogunit;
+    wxString arpa_reftarget;
+    double arpa_mins, arpa_degs;
+    double arpa_utc_time;
+    int arpa_utc_hour = 0;
+    int arpa_utc_min = 0;
+    int arpa_utc_sec = 0;
+    char arpa_name_str[21];
+    bool arpa_lost = true;
+    bool arpa_nottracked = false;
+
+    double aprs_sog = 0.;
+    double aprs_cog = 0.;
+    double aprs_lat = 0.;
+    double aprs_lon = 0.;
+    char aprs_name_str[21];
+    double aprs_mins, aprs_degs;
 
     //  Make some simple tests for validity
 
@@ -457,6 +493,184 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
 
             mmsi = (int) dse_mmsi;
         }
+    } else if( str.Mid( 3, 3 ).IsSameAs( _T("TTM") ) ) {
+    //$--TTM,xx,x.x,x.x,a,x.x,x.x,a,x.x,x.x,a,c--c,a,a*hh <CR><LF>
+    //or
+    //$--TTM,xx,x.x,x.x,a,x.x,x.x,a,x.x,x.x,a,c--c,a,a,hhmmss.ss,a*hh<CR><LF>
+        wxString string( str );
+        wxStringTokenizer tkz( string, _T(",*") );
+
+        wxString token;
+        token = tkz.GetNextToken(); //Sentence (xxTTM)
+        token = tkz.GetNextToken(); //1) Target Number
+        token.ToLong( &arpa_tgt_num );
+        token = tkz.GetNextToken(); // 2)Target Distance
+        token.ToDouble( &arpa_dist );
+        token = tkz.GetNextToken(); //3) Bearing from own ship
+        token.ToDouble( &arpa_brg );
+        arpa_brgunit = tkz.GetNextToken(); //4) Bearing Units
+        if ( arpa_brgunit == _T("R") )
+        {
+            if ( arpa_ref_hdg != NAN )
+            {
+                if ( gHdt != NAN )
+                    arpa_brg += gHdt;
+                else
+                    arpa_brg += gCog;
+            }
+            if ( arpa_brg >= 360. )
+                arpa_brg -= 360.;
+        }
+        token = tkz.GetNextToken(); //5) Target speed
+        token.ToDouble( &arpa_sog );
+        token = tkz.GetNextToken(); //6) Target Course
+        token.ToDouble( &arpa_cog );
+        arpa_cogunit = tkz.GetNextToken(); //7) Course Units
+        if ( arpa_cogunit == _T("R") )
+        {
+            if ( arpa_ref_hdg != NAN )
+            {
+                if ( gHdt != NAN )
+                    arpa_cog += gHdt;
+                else
+                    arpa_cog += gCog;
+            }
+            if ( arpa_cog >= 360. )
+                arpa_cog -= 360.;
+        }
+        token = tkz.GetNextToken(); //8) Distance of closest-point-of-approach
+        token = tkz.GetNextToken(); //9) Time until closest-point-of-approach "-" means increasing
+        arpa_distunit = tkz.GetNextToken(); //10)Speed/ dist unit
+        token = tkz.GetNextToken(); //11) Target name
+        if ( token == wxEmptyString )
+            token = wxString::Format( _T("ARPA %d"), arpa_tgt_num );
+        int len = token.Length();
+        strncpy( arpa_name_str, token.mb_str(), len );
+        arpa_name_str[len] = 0;
+        arpa_status = tkz.GetNextToken(); //12) Target Status
+        if (arpa_status != _T("L"))
+            arpa_lost = false;
+        arpa_reftarget = tkz.GetNextToken(); //13) Reference Target
+        if ( tkz.HasMoreTokens() )
+        {
+            token = tkz.GetNextToken();
+            token.ToDouble( &arpa_utc_time );
+            arpa_utc_hour = (int) ( arpa_utc_time / 10000.0 );
+            arpa_utc_min = (int) ( arpa_utc_time / 100.0 ) - arpa_utc_hour * 100;
+            arpa_utc_sec = (int) arpa_utc_time - arpa_utc_hour * 10000 - arpa_utc_min * 100;
+        } else {
+            arpa_utc_hour = wxDateTime::Now().ToUTC().GetHour();
+            arpa_utc_min = wxDateTime::Now().ToUTC().GetMinute();
+            arpa_utc_sec = wxDateTime::Now().ToUTC().GetSecond();
+        }
+
+        if( arpa_distunit == _T("K") )
+        {
+            arpa_dist = fromUsrDistance( arpa_dist, DISTANCE_KM );
+            arpa_sog = fromUsrSpeed(arpa_sog, SPEED_KMH);
+        } else if( arpa_distunit == _T("S") ) {
+            arpa_dist = fromUsrDistance( arpa_dist, DISTANCE_MI );
+            arpa_sog = fromUsrSpeed(arpa_sog, SPEED_MPH);
+        }
+
+        mmsi = arpa_mmsi = 199200000 + arpa_tgt_num; // 199 is INMARSAT-A MID, should not occur ever in AIS stream + we make sure we are out of the hashes for GPSGate buddies by being above 1992*
+    } else if( str.Mid( 3, 3 ).IsSameAs( _T("TLL") ) ) {
+    //$--TLL,xx,llll.lll,a,yyyyy.yyy,a,c--c,hhmmss.ss,a,a*hh<CR><LF>
+    //"$RATLL,01,5603.370,N,01859.976,E,ALPHA,015200.36,T,*75\r\n"
+        wxString string( str );
+        wxStringTokenizer tkz( string, _T(",*") );
+
+        wxString token;
+        token = tkz.GetNextToken(); //Sentence (xxTLL)
+        token = tkz.GetNextToken(); //1) Target number 00 - 99
+        token.ToLong( &arpa_tgt_num );
+        token = tkz.GetNextToken(); //2) Latitude, N/S
+        token.ToDouble( &arpa_lat );
+        arpa_degs = (int) ( arpa_lat / 100.0 );
+        arpa_mins = arpa_lat - arpa_degs * 100.0;
+        arpa_lat = arpa_degs + arpa_mins / 60.0;
+        token = tkz.GetNextToken();            //  hemisphere N or S
+        if( token.Mid( 1, 1 ).Contains( _T("Ss") ) )
+            arpa_lat = 0. - arpa_lat;
+        token = tkz.GetNextToken(); //3) Longitude, E/W
+        token.ToDouble( &arpa_lon );
+        arpa_degs = (int) ( arpa_lon / 100.0 );
+        arpa_mins = arpa_lon - arpa_degs * 100.0;
+        arpa_lon = arpa_degs + arpa_mins / 60.0;
+        token = tkz.GetNextToken();            //  hemisphere E or W
+        if( token.Mid( 1, 1 ).Contains( _T("Ww") ) )
+            arpa_lon = 0. - arpa_lon;
+        token = tkz.GetNextToken(); //4) Target name
+        if ( token == wxEmptyString )
+            token = wxString::Format( _T("ARPA %d"), arpa_tgt_num );
+        int len = token.Length();
+        strncpy( arpa_name_str, token.mb_str(), len );
+        arpa_name_str[len] = 0;
+        token = tkz.GetNextToken(); //5) UTC of data
+        token.ToDouble( &arpa_utc_time );
+        arpa_utc_hour = (int) ( arpa_utc_time / 10000.0 );
+        arpa_utc_min = (int) ( arpa_utc_time / 100.0 ) - arpa_utc_hour * 100;
+        arpa_utc_sec = (int) arpa_utc_time - arpa_utc_hour * 10000 - arpa_utc_min * 100;
+        arpa_status = tkz.GetNextToken(); //6) Target status: L = lost,tracked target has beenlost Q = query,target in the process of acquisition T = tracking
+        if( arpa_status != _T("L") )
+            arpa_lost = false;
+        else if ( arpa_status != wxEmptyString )
+            arpa_nottracked = true;
+        arpa_reftarget = tkz.GetNextToken(); //7) Reference target=R,null otherwise
+        mmsi = arpa_mmsi = 199200000 + arpa_tgt_num; // 199 is INMARSAT-A MID, should not occur ever in AIS stream + we make sure we are out of the hashes for GPSGate buddies by being above 1992*
+    } else if( str.Mid( 3, 3 ).IsSameAs( _T("OSD") ) ) {
+    //$--OSD,x.x,A,x.x,a,x.x,a,x.x,x.x,a*hh <CR><LF>
+        wxString string( str );
+        wxStringTokenizer tkz( string, _T(",*") );
+
+        wxString token;
+        token = tkz.GetNextToken(); //Sentence (xxOSD)
+        token = tkz.GetNextToken(); //1) Heading (true)
+        token.ToDouble( &arpa_ref_hdg );
+        //2) speed
+        //3) Vessel Course, degrees True
+        //4) Course Reference, B/M/W/R/P (see note)
+        //5) Vessel Speed
+        //6) Speed Reference, B/M/W/R/P (see note)
+        //7) Vessel Set, degrees True - Manually entered
+        //8) Vessel drift (speed) - Manually entered
+        //9) Speed Units K = km/h; N = Knots; S = statute miles/h
+    } else if( str.Mid( 3, 3 ).IsSameAs( _T("WPL") ) ) {
+    //** $--WPL,llll.ll,a,yyyyy.yy,a,c--c*hh<CR><LF>
+        wxString string( str );
+        wxStringTokenizer tkz( string, _T(",*") );
+
+        wxString token;
+        token = tkz.GetNextToken(); //Sentence (xxWPL)
+        token = tkz.GetNextToken(); //1) Latitude, N/S
+        token.ToDouble( &aprs_lat );
+        aprs_degs = (int) ( aprs_lat / 100.0 );
+        aprs_mins = aprs_lat - aprs_degs * 100.0;
+        aprs_lat = aprs_degs + aprs_mins / 60.0;
+        token = tkz.GetNextToken();            //2) hemisphere N or S
+        if( token.Mid( 1, 1 ).Contains( _T("Ss") ) )
+            aprs_lat = 0. - aprs_lat;
+        token = tkz.GetNextToken(); //3) Longitude, E/W
+        token.ToDouble( &aprs_lon );
+        aprs_degs = (int) ( aprs_lon / 100.0 );
+        aprs_mins = aprs_lon - aprs_degs * 100.0;
+        aprs_lon = aprs_degs + aprs_mins / 60.0;
+        token = tkz.GetNextToken();            //4) hemisphere E or W
+        if( token.Mid( 1, 1 ).Contains( _T("Ww") ) )
+            aprs_lon = 0. - aprs_lon;
+        token = tkz.GetNextToken(); //5) Target name
+        int len = token.Length();
+        int i, hash = 0;
+        strncpy( aprs_name_str, token.mb_str(), len );
+        aprs_name_str[len] = 0;
+        hash = 0;
+        for( i = 0; i < len; i++ ) {
+            hash = hash * 10;
+            hash += (int) ( aprs_name_str[i] );
+            while( hash >= 100000 )
+                hash = hash / 100000;
+        }
+        mmsi = aprs_mmsi = 199300000 + hash; // 199 is INMARSAT-A MID, should not occur ever in AIS stream + we make sure we are out of the hashes for GPSGate buddies and ARPA by being above 1993*
     } else if( str.Mid( 1, 5 ).IsSameAs( _T("FRPOS") ) ) {
         // parse a GpsGate Position message            $FRPOS,.....
 
@@ -474,7 +688,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         gpsg_lat = gpsg_degs + gpsg_mins / 60.0;
 
         token = tkz.GetNextToken();            //  hemisphere N or S
-        if( token.Mid( 1, 1 ).Contains( _T("Ss") ) ) gpsg_lat = 0 - gpsg_lat;
+        if( token.Mid( 1, 1 ).Contains( _T("Ss") ) ) gpsg_lat = 0. - gpsg_lat;
 
         token = tkz.GetNextToken();            // longitude DDDMM.MMMM
         token.ToDouble( &gpsg_lon );
@@ -483,7 +697,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         gpsg_lon = gpsg_degs + gpsg_mins / 60.0;
 
         token = tkz.GetNextToken();            // hemisphere E or W
-        if( token.Mid( 1, 1 ).Contains( _T("Ww") ) ) gpsg_lon = 0 - gpsg_lon;
+        if( token.Mid( 1, 1 ).Contains( _T("Ww") ) ) gpsg_lon = 0. - gpsg_lon;
 
         token = tkz.GetNextToken();            //    altitude AA.a
         //    token.toDouble(&gpsg_alt);
@@ -658,6 +872,71 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             pTargetData->ShipType = 52; // buddy
             pTargetData->Class = AIS_GPSG_BUDDY;
             strncpy( pTargetData->ShipName, gpsg_name_str, strlen( gpsg_name_str ) + 1 );
+            pTargetData->b_nameValid = true;
+            pTargetData->b_active = true;
+            pTargetData->b_lost = false;
+
+            bdecode_result = true;
+        } else if( arpa_mmsi ) {
+            pTargetData->m_utc_hour = arpa_utc_hour;
+            pTargetData->m_utc_min = arpa_utc_min;
+            pTargetData->m_utc_sec = arpa_utc_sec;
+            pTargetData->MMSI = arpa_mmsi;
+            pTargetData->NavStatus = 15; // undefined
+            if( str.Mid( 3, 3 ).IsSameAs( _T("TLL") ) ) {
+                if( !bnewtarget ) {
+                    int age_of_last = ( now.GetTicks() - pTargetData->PositionReportTicks );
+                    if ( age_of_last > 0 ) {
+                        ll_gc_ll_reverse( pTargetData->Lat, pTargetData->Lon, arpa_lat, arpa_lon, &pTargetData->COG, &pTargetData->SOG );
+                        pTargetData->SOG = pTargetData->SOG * 3600 / age_of_last;
+                    }
+                }
+                pTargetData->Lat = arpa_lat;
+                pTargetData->Lon = arpa_lon;
+            } else if( str.Mid( 3, 3 ).IsSameAs( _T("TTM") ) ) {
+                if( arpa_dist != 0. ) //Not a new or turned off target
+                    ll_gc_ll( gLat, gLon, arpa_brg, arpa_dist, &pTargetData->Lat, &pTargetData->Lon );
+                else
+                    arpa_lost = true;
+                pTargetData->COG = arpa_cog;
+                pTargetData->SOG = arpa_sog;
+            }
+            pTargetData->PositionReportTicks = now.GetTicks();
+            pTargetData->StaticReportTicks = now.GetTicks();
+            pTargetData->b_positionOnceValid = true;
+            pTargetData->ShipType = 55; // arpa
+            pTargetData->Class = AIS_ARPA;
+
+            strncpy( pTargetData->ShipName, arpa_name_str, strlen( arpa_name_str ) + 1 );
+            if( arpa_status != _T("Q") )
+                pTargetData->b_nameValid = true;
+            else
+                pTargetData->b_nameValid = false;
+            pTargetData->b_active = !arpa_lost;
+            pTargetData->b_lost = arpa_nottracked;
+
+            bdecode_result = true;
+        } else if( aprs_mmsi ) {
+            pTargetData->m_utc_hour = now.GetHour();
+            pTargetData->m_utc_min = now.GetMinute();
+            pTargetData->m_utc_sec = now.GetSecond();
+            pTargetData->MMSI = aprs_mmsi;
+            pTargetData->NavStatus = 15; // undefined
+            if( !bnewtarget ) {
+                int age_of_last = (now.GetTicks() - pTargetData->PositionReportTicks);
+                if ( age_of_last > 0 ) {
+                    ll_gc_ll_reverse( pTargetData->Lat, pTargetData->Lon, aprs_lat, aprs_lon, &pTargetData->COG, &pTargetData->SOG );
+                    pTargetData->SOG = pTargetData->SOG * 3600 / age_of_last;
+                }
+            }
+            pTargetData->PositionReportTicks = now.GetTicks();
+            pTargetData->StaticReportTicks = now.GetTicks();
+            pTargetData->Lat = aprs_lat;
+            pTargetData->Lon = aprs_lon;
+            pTargetData->b_positionOnceValid = true;
+            pTargetData->ShipType = 56; // aprs
+            pTargetData->Class = AIS_APRS;
+            strncpy( pTargetData->ShipName, aprs_name_str, strlen( aprs_name_str ) + 1 );
             pTargetData->b_nameValid = true;
             pTargetData->b_active = true;
             pTargetData->b_lost = false;

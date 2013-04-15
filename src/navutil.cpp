@@ -188,6 +188,7 @@ extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
 extern bool             g_bShowAISName;
 extern int              g_Show_Target_Name_Scale;
+extern bool             g_bWplIsAprsPosition;
 
 extern int              g_S57_dialog_sx, g_S57_dialog_sy;
 
@@ -1266,6 +1267,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "bAISAlertDialog" ), &g_bAIS_CPA_Alert );
     g_Show_Target_Name_Scale = Read( _T ( "ShowAISTargetNameScale" ), 250000L );
     g_Show_Target_Name_Scale = wxMax( 5000, g_Show_Target_Name_Scale );
+    Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplIsAprsPosition, 1 );
 
     Read( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );
     Read( _T ( "AISAlertAudioFile" ), &g_sAIS_Alert_Sound_File );
@@ -2356,6 +2358,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
     Write( _T ( "bShowAISName" ), g_bShowAISName );
     Write( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
+    Write( _T ( "bWplIsAprsPositionReport" ), g_bWplIsAprsPosition );
 
     Write( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
     Write( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );

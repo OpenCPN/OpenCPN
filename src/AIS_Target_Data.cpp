@@ -256,7 +256,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
        //  Dimensions
 
-        if( NavStatus != ATON_VIRTUAL ) {
+        if( NavStatus != ATON_VIRTUAL && Class != AIS_ARPA && Class != AIS_APRS ) {
             if( ( Class == AIS_CLASS_B ) || ( Class == AIS_ATON ) ) {
                 sizeString = wxString::Format( _T("%dm x %dm"), ( DimA + DimB ), ( DimC + DimD ) );
             } else {
@@ -361,7 +361,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             html << rowEnd;
         }
 
-        if( ( Class == AIS_CLASS_A ) || ( Class == AIS_CLASS_B ) ) {
+        if( Class == AIS_CLASS_A || Class == AIS_CLASS_B || Class == AIS_ARPA || Class == AIS_APRS ) {
             int crs = wxRound( COG );
             if( crs < 360 ) courseStr = wxString::Format( _T("%03d&deg;"), crs );
             else if( COG == 360.0 ) courseStr = _T("---");
@@ -610,10 +610,17 @@ wxString AIS_Target_Data::Get_vessel_type_string( bool b_short )
         if( ( ShipType >= 70 ) && ( ShipType < 80 ) ) i = 17;
 
         if( ( ShipType >= 80 ) && ( ShipType < 90 ) ) i = 18;
-    } else if( Class == AIS_GPSG_BUDDY ) i = 52;
-    else if( Class == AIS_DSC ) i = ( ShipType == 12 ) ? 54 : 53;  // 12 is distress
+    } else if( Class == AIS_GPSG_BUDDY )
+        i = 52;
+    else if( Class == AIS_ARPA )
+        i = 55;
+    else if( Class == AIS_APRS )
+        i = 56;
+    else if( Class == AIS_DSC )
+        i = ( ShipType == 12 ) ? 54 : 53;  // 12 is distress
 
-    if( !b_short ) return ais_get_type(i);
+    if( !b_short )
+        return ais_get_type(i);
     else
         return ais_get_short_type(i);
 }
@@ -635,6 +642,10 @@ wxString AIS_Target_Data::Get_class_string( bool b_short )
             return b_short ? _("DSC") : _("DSC Position Report");
         case AIS_SART:
             return b_short ? _("SART") : _("SART");
+        case AIS_ARPA:
+            return b_short ? _("ARPA") : _("ARPA");
+        case AIS_APRS:
+            return b_short ? _("APRS") : _("APRS Position Report");
 
         default:
             return b_short ? _("Unk") : _("Unknown");

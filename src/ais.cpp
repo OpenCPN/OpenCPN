@@ -112,28 +112,28 @@ WX_DEFINE_LIST(AISTargetTrackList);
 wxString ais_get_status(int index)
 {
 	static const wxString ais_status[] = {
-      _("Underway"),
-      _("At Anchor"),
-      _("Not Under Command"),
-      _("Restricted Manoeuvrability"),
-      _("Constrained by draught"),
-      _("Moored"),
-      _("Aground"),
-      _("Engaged in Fishing"),
-      _("Under way sailing"),
-      _("High Speed Craft"),
-      _("Wing In Ground Effect"),
-      _("Reserved 11"),
-      _("Reserved 12"),
-      _("Reserved 13"),
-      _("Reserved 14"),
-      _("Undefined"),
-      _("Virtual"),
-      _("Virtual (On Position)"),
-      _("Virtual (Off Position)"),
-      _("Real"),
-      _("Real (On Position)"),
-      _("Real(Off Position)")
+        _("Underway"),
+        _("At Anchor"),
+        _("Not Under Command"),
+        _("Restricted Manoeuvrability"),
+        _("Constrained by draught"),
+        _("Moored"),
+        _("Aground"),
+        _("Engaged in Fishing"),
+        _("Under way sailing"),
+        _("High Speed Craft"),
+        _("Wing In Ground Effect"),
+        _("Reserved 11"),
+        _("Reserved 12"),
+        _("Reserved 13"),
+        _("Reserved 14"),
+        _("Undefined"),
+        _("Virtual"),
+        _("Virtual (On Position)"),
+        _("Virtual (Off Position)"),
+        _("Real"),
+        _("Real (On Position)"),
+        _("Real(Off Position)")
 	};
 
 	return ais_status[index];
@@ -142,62 +142,63 @@ wxString ais_get_status(int index)
 wxString ais_get_type(int index)
 {
 	static const wxString ais_type[] = {
-      _("Vessel Fishing"),             //30        0
-      _("Vessel Towing"),              //31        1
-      _("Vessel Towing, Long"),        //32        2
-      _("Vessel Dredging"),            //33        3
-      _("Vessel Diving"),              //34        4
-      _("Military Vessel"),            //35        5
-      _("Sailing Vessel"),             //36        6
-      _("Pleasure craft"),             //37        7
-      _("High Speed Craft"),           //4x        8
-      _("Pilot Vessel"),               //50        9
-      _("Search and Rescue Vessel"),   //51        10
-      _("Tug"),                        //52        11
-      _("Port Tender"),                //53        12
-      _("Pollution Control Vessel"),   //54        13
-      _("Law Enforcement Vessel"),     //55        14
-      _("Medical Transport"),          //58        15
-      _("Passenger Ship"),             //6x        16
-      _("Cargo Ship"),                 //7x        17
-      _("Tanker"),                     //8x        18
-      _("Unknown"),                    //          19
-
-      _("Unspecified"),                //00        20
-      _("Reference Point"),            //01        21
-      _("RACON"),                      //02        22
-      _("Fixed Structure"),            //03        23
-      _("Spare"),                      //04        24
-      _("Light"),                      //05        25
-      _("Light w/Sectors"),            //06        26
-      _("Leading Light Front"),        //07        27
-      _("Leading Light Rear"),         //08        28
-      _("Cardinal N Beacon"),          //09        29
-      _("Cardinal E Beacon"),          //10        30
-      _("Cardinal S Beacon"),          //11        31
-      _("Cardinal W Beacon"),          //12        32
-      _("Beacon, Port Hand"),          //13        33
-      _("Beacon, Starboard Hand"),     //14        34
-      _("Beacon, Preferred Channel Port Hand"),         //15        35
-      _("Beacon, Preferred Channel Starboard Hand"),    //16        36
-      _("Beacon, Isolated Danger"),    //17        37
-      _("Beacon, Safe Water"),         //18        38
-      _("Beacon, Special Mark"),       //19        39
-      _("Cardinal Mark N"),            //20        40
-      _("Cardinal Mark E"),            //21        41
-      _("Cardinal Mark S"),            //22        42
-      _("Cardinal Mark W"),            //23        43
-      _("Port Hand Mark"),             //24        44
-      _("Starboard Hand Mark"),        //25        45
-      _("Preferred Channel Port Hand"),      //26        46
-      _("Preferred Channel Starboard Hand"), //27        47
-      _("Isolated Danger"),            //28        48
-      _("Safe Water"),                 //29        49
-      _("Special Mark"),               //30        50
-      _("Light Vessel/Rig"),           //31        51
-      _("GpsGate Buddy"),              //xx           52
-      _("Position Report"),            //xx        53
-      _("Distress")                    //xx        54
+        _("Vessel Fishing"),             //30        0
+        _("Vessel Towing"),              //31        1
+        _("Vessel Towing, Long"),        //32        2
+        _("Vessel Dredging"),            //33        3
+        _("Vessel Diving"),              //34        4
+        _("Military Vessel"),            //35        5
+        _("Sailing Vessel"),             //36        6
+        _("Pleasure craft"),             //37        7
+        _("High Speed Craft"),           //4x        8
+        _("Pilot Vessel"),               //50        9
+        _("Search and Rescue Vessel"),   //51        10
+        _("Tug"),                        //52        11
+        _("Port Tender"),                //53        12
+        _("Pollution Control Vessel"),   //54        13
+        _("Law Enforcement Vessel"),     //55        14
+        _("Medical Transport"),          //58        15
+        _("Passenger Ship"),             //6x        16
+        _("Cargo Ship"),                 //7x        17
+        _("Tanker"),                     //8x        18
+        _("Unknown"),                    //          19
+        _("Unspecified"),                //00        20
+        _("Reference Point"),            //01        21
+        _("RACON"),                      //02        22
+        _("Fixed Structure"),            //03        23
+        _("Spare"),                      //04        24
+        _("Light"),                      //05        25
+        _("Light w/Sectors"),            //06        26
+        _("Leading Light Front"),        //07        27
+        _("Leading Light Rear"),         //08        28
+        _("Cardinal N Beacon"),          //09        29
+        _("Cardinal E Beacon"),          //10        30
+        _("Cardinal S Beacon"),          //11        31
+        _("Cardinal W Beacon"),          //12        32
+        _("Beacon, Port Hand"),          //13        33
+        _("Beacon, Starboard Hand"),     //14        34
+        _("Beacon, Preferred Channel Port Hand"),         //15        35
+        _("Beacon, Preferred Channel Starboard Hand"),    //16        36
+        _("Beacon, Isolated Danger"),    //17        37
+        _("Beacon, Safe Water"),         //18        38
+        _("Beacon, Special Mark"),       //19        39
+        _("Cardinal Mark N"),            //20        40
+        _("Cardinal Mark E"),            //21        41
+        _("Cardinal Mark S"),            //22        42
+        _("Cardinal Mark W"),            //23        43
+        _("Port Hand Mark"),             //24        44
+        _("Starboard Hand Mark"),        //25        45
+        _("Preferred Channel Port Hand"),      //26        46
+        _("Preferred Channel Starboard Hand"), //27        47
+        _("Isolated Danger"),            //28        48
+        _("Safe Water"),                 //29        49
+        _("Special Mark"),               //30        50
+        _("Light Vessel/Rig"),           //31        51
+        _("GpsGate Buddy"),              //xx        52
+        _("Position Report"),            //xx        53
+        _("Distress"),                   //xx        54
+        _("ARPA radar target"),          //xx        55
+        _("APRS Position Report")        //xx        56
 	};
 
 	return ais_type[index];
@@ -205,63 +206,65 @@ wxString ais_get_type(int index)
 
 wxString ais_get_short_type(int index)
 {
-	static const wxString short_ais_type[] = {
-      _("F/V"),                  //30        0
-      _("Tow"),                  //31        1
-      _("Long Tow"),             //32        2
-      _("Dredge"),               //33        3
-      _("D/V"),                  //34        4
-      _("Mil/V"),                //35        5
-      _("S/V"),                  //36        6
-      _("Yat"),                  //37        7
-      _("HSC"),                  //4x        8
-      _("P/V"),                  //50        9
-      _("SAR/V"),                //51        10
-      _("Tug"),                  //52        11
-      _("Tender"),               //53        12
-      _("PC/V"),                 //54        13
-      _("LE/V"),                 //55        14
-      _("Med/V"),                //58        15
-      _("Pass/V"),               //6x        16
-      _("M/V"),                  //7x        17
-      _("M/T"),                  //8x        18
-      _("?"),                    //          19
+    static const wxString short_ais_type[] = {
+        _("F/V"),                  //30        0
+        _("Tow"),                  //31        1
+        _("Long Tow"),             //32        2
+        _("Dredge"),               //33        3
+        _("D/V"),                  //34        4
+        _("Mil/V"),                //35        5
+        _("S/V"),                  //36        6
+        _("Yat"),                  //37        7
+        _("HSC"),                  //4x        8
+        _("P/V"),                  //50        9
+        _("SAR/V"),                //51        10
+        _("Tug"),                  //52        11
+        _("Tender"),               //53        12
+        _("PC/V"),                 //54        13
+        _("LE/V"),                 //55        14
+        _("Med/V"),                //58        15
+        _("Pass/V"),               //6x        16
+        _("M/V"),                  //7x        17
+        _("M/T"),                  //8x        18
+        _("?"),                    //          19
 
-    _("AtoN"),                 //00        20
-    _("Ref. Pt"),              //01        21
-    _("RACON"),                //02        22
-    _("Fix.Struct."),          //03        23
-    _("?"),                    //04        24
-    _("Lt"),                   //05        25
-    _("Lt sect."),             //06        26
-    _("Ldg Lt Front"),         //07        27
-    _("Ldg Lt Rear"),          //08        28
-    _("Card. N"),              //09        29
-    _("Card. E"),              //10        30
-    _("Card. S"),              //11        31
-    _("Card. W"),              //12        32
-    _("Port"),                 //13        33
-    _("Stbd"),                 //14        34
-    _("Pref. Chnl"),           //15        35
-    _("Pref. Chnl"),           //16        36
-    _("Isol. Dngr"),           //17        37
-    _("Safe Water"),           //18        38
-    _("Special"),              //19        39
-    _("Card. N"),              //20        40
-    _("Card. E"),              //21        41
-    _("Card. S"),              //22        42
-    _("Card. W"),              //23        43
-    _("Port Hand"),            //24        44
-    _("Stbd Hand"),            //25        45
-    _("Pref. Chnl"),           //26        46
-    _("Pref. Chnl"),           //27        47
-    _("Isol. Dngr"),           //28        48
-    _("Safe Water"),           //29        49
-    _("Special"),              //30        50
-    _("LtV/Rig"),              //31        51
-    _("Buddy"),                //xx        52
-    _("DSC"),                  //xx        53
-    _("Distress")              //xx        54
+        _("AtoN"),                 //00        20
+        _("Ref. Pt"),              //01        21
+        _("RACON"),                //02        22
+        _("Fix.Struct."),          //03        23
+        _("?"),                    //04        24
+        _("Lt"),                   //05        25
+        _("Lt sect."),             //06        26
+        _("Ldg Lt Front"),         //07        27
+        _("Ldg Lt Rear"),          //08        28
+        _("Card. N"),              //09        29
+        _("Card. E"),              //10        30
+        _("Card. S"),              //11        31
+        _("Card. W"),              //12        32
+        _("Port"),                 //13        33
+        _("Stbd"),                 //14        34
+        _("Pref. Chnl"),           //15        35
+        _("Pref. Chnl"),           //16        36
+        _("Isol. Dngr"),           //17        37
+        _("Safe Water"),           //18        38
+        _("Special"),              //19        39
+        _("Card. N"),              //20        40
+        _("Card. E"),              //21        41
+        _("Card. S"),              //22        42
+        _("Card. W"),              //23        43
+        _("Port Hand"),            //24        44
+        _("Stbd Hand"),            //25        45
+        _("Pref. Chnl"),           //26        46
+        _("Pref. Chnl"),           //27        47
+        _("Isol. Dngr"),           //28        48
+        _("Safe Water"),           //29        49
+        _("Special"),              //30        50
+        _("LtV/Rig"),              //31        51
+        _("Buddy"),                //xx        52
+        _("DSC"),                  //xx        53
+        _("Distress"),             //xx        54
+        _("ARPA"),                 //xx        55
+        _("APRS")                  //xx        56
 	};
 
 	return short_ais_type[index];
