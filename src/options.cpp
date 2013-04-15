@@ -127,7 +127,7 @@ extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
 extern double           g_n_gps_antenna_offset_y;
 extern double           g_n_gps_antenna_offset_x;
-extern long             g_n_ownship_min_mm;
+extern int              g_n_ownship_min_mm;
 
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bTrackDaily;
@@ -1895,8 +1895,7 @@ void options::SetInitialSettings()
     m_pOSWidth->SetValue( wxString::Format( _T("%.1f"), g_n_ownship_beam_meters ) );
     m_pOSGPSOffsetX->SetValue( wxString::Format( _T("%.1f"), g_n_gps_antenna_offset_x ) );
     m_pOSGPSOffsetY->SetValue( wxString::Format( _T("%.1f"), g_n_gps_antenna_offset_y ) );
-    int ownship_min_mm = (int)g_n_ownship_min_mm;
-    m_pOSMinSize->SetValue( wxString::Format( _T("%d"), ownship_min_mm ) );
+    m_pOSMinSize->SetValue( wxString::Format( _T("%d"), g_n_ownship_min_mm ) );
 
     wxString buf;
     if( g_iNavAidRadarRingsNumberVisible > 10 ) g_iNavAidRadarRingsNumberVisible = 10;
@@ -2373,7 +2372,7 @@ void options::OnApplyClick( wxCommandEvent& event )
         g_n_ownship_beam_meters = n_ownship_beam_meters;
         g_n_gps_antenna_offset_y = n_gps_antenna_offset_y;
         g_n_gps_antenna_offset_x = n_gps_antenna_offset_x;
-        g_n_ownship_min_mm = n_ownship_min_mm;
+        g_n_ownship_min_mm = (int)n_ownship_min_mm;
     }
     g_OwnShipIconType = m_pShipIconType->GetSelection();
 
