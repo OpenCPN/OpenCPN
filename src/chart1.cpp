@@ -2167,6 +2167,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     gVar = NAN;
     gSog = NAN;
     gCog = NAN;
+    m_fixtime = 0;
     
     m_bpersistent_quilt = false;
 
@@ -4688,8 +4689,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             GPSData.kHdt = gHdt;
             GPSData.nSats = g_SatsInView;
             
-            wxDateTime now = wxDateTime::Now();
-            GPSData.FixTime = now.GetTicks();
+            GPSData.FixTime = m_fixtime;
             
             if(g_pi_manager)
                 g_pi_manager->SendPositionFixToAllPlugIns( &GPSData );
@@ -6549,8 +6549,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
                         sfixtime = m_NMEA0183.Rmc.UTCTime;
 
-                        if(ll_valid )
+                        if(ll_valid ) {
                             gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                            wxDateTime now = wxDateTime::Now();
+                            m_fixtime = now.GetTicks();
+                        }
                         pos_valid = ll_valid;
                     }
                 } else
@@ -6697,8 +6700,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                 
                                                 sfixtime = m_NMEA0183.Gll.UTCTime;
 
-                                                if(ll_valid)
+                                                if(ll_valid) {
                                                     gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                                                    wxDateTime now = wxDateTime::Now();
+                                                    m_fixtime = now.GetTicks();
+                                                }
                                                 pos_valid = ll_valid;
                                             }
                                         } else
@@ -6743,8 +6749,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                     
                                                     sfixtime = m_NMEA0183.Gga.UTCTime;
 
-                                                    if(ll_valid)
+                                                    if(ll_valid) {
                                                         gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                                                        wxDateTime now = wxDateTime::Now();
+                                                        m_fixtime = now.GetTicks();
+                                                    }
                                                     pos_valid = ll_valid;
                                                     
                                                     g_SatsInView =
@@ -6779,28 +6788,17 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 gCog = gpd.kCog;
                 gSog = gpd.kSog;
  
-/*                
-                gVar = gpd.kVar;
-                if( !wxIsNaN(gpd.kVar) ) {
-                    g_bVAR_Rx = true;
-                    gVAR_Watchdog = gps_watchdog_timeout_ticks;
-                }
-*/                
                 gHdt = gpd.kHdt;
                 if( !wxIsNaN(gpd.kHdt) ) {
                     g_bHDT_Rx = true;
                     gHDT_Watchdog = gps_watchdog_timeout_ticks;
                 }
   
-/*  
-                gHdm = gpd.kHdm;
-                if( !wxIsNaN(gpd.kHdm) ) {
-                    gHDx_Watchdog = gps_watchdog_timeout_ticks;
-                }
-*/
-
                 if( !wxIsNaN(gpd.kLat) && !wxIsNaN(gpd.kLon) ) { 
                     gGPS_Watchdog = gps_watchdog_timeout_ticks;
+                    wxDateTime now = wxDateTime::Now();
+                    m_fixtime = now.GetTicks();
+                    
                     pos_valid = true;
                 }
                 
