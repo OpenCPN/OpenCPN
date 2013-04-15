@@ -232,7 +232,7 @@ extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
 extern double           g_n_gps_antenna_offset_y;
 extern double           g_n_gps_antenna_offset_x;
-extern long             g_n_ownship_min_mm;
+extern int              g_n_ownship_min_mm;
 
 extern bool             g_bPreserveScaleOnX;
 
