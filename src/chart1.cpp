@@ -6842,6 +6842,7 @@ void MyFrame::PostProcessNNEA( bool pos_valid, wxString &sfixtime )
     if( !g_bHDT_Rx ) {
         if( !wxIsNaN(gVar) && !wxIsNaN(gHdm)) {
             gHdt = gHdm + gVar;
+            gHDT_Watchdog = gps_watchdog_timeout_ticks;
         }
     }
 
