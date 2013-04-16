@@ -29,6 +29,8 @@
 #include "s52plib.h"
 #include "chcanv.h"
 #include "s57chart.h"
+#include "ocpn_pixel.h"                         // for ocpnUSE_DIBSECTION
+
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST( PatchList );
