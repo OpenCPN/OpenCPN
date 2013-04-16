@@ -61,20 +61,19 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	
 	fgSizer1->Add( fgSizer51, 1, wxEXPAND, 5 );
 	
-	wxFlexGridSizer* fgSizer5;
-	fgSizer5 = new wxFlexGridSizer( 1, 0, 0, 0 );
-	fgSizer5->AddGrowableCol( 1 );
-	fgSizer5->SetFlexibleDirection( wxBOTH );
-	fgSizer5->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	m_fgTimelineControls = new wxFlexGridSizer( 1, 0, 0, 0 );
+	m_fgTimelineControls->AddGrowableCol( 1 );
+	m_fgTimelineControls->SetFlexibleDirection( wxBOTH );
+	m_fgTimelineControls->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	m_tbPlayStop = new wxToggleButton( this, ID_PLAYSTOP, wxT("Play"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer5->Add( m_tbPlayStop, 0, wxALL, 5 );
+	m_fgTimelineControls->Add( m_tbPlayStop, 0, wxALL, 5 );
 	
 	m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( -1,-1 ), wxSL_HORIZONTAL );
-	fgSizer5->Add( m_sTimeline, 0, wxEXPAND, 5 );
+	m_fgTimelineControls->Add( m_sTimeline, 0, wxEXPAND, 5 );
 	
 	
-	fgSizer1->Add( fgSizer5, 1, wxEXPAND, 5 );
+	fgSizer1->Add( m_fgTimelineControls, 1, wxEXPAND, 5 );
 	
 	wxStaticBoxSizer* sbSizer2;
 	sbSizer2 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("GRIB Data at Cursor") ), wxVERTICAL );

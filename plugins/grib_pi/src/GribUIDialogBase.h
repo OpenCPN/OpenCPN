@@ -58,6 +58,7 @@ class GRIBUIDialogBase : public wxDialog
 		wxBitmapButton* m_bpOpenFile;
 		wxBitmapButton* m_bpSettings;
 		wxBitmapButton* m_bpRequest;
+		wxFlexGridSizer* m_fgTimelineControls;
 		wxFlexGridSizer* m_fgTrackingControls;
 		wxTextCtrl* m_tcWindSpeed;
 		wxTextCtrl* m_tcWindDirection;

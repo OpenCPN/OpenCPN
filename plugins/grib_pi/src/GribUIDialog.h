@@ -92,7 +92,7 @@ public:
     wxDateTime MinTime();
     wxDateTime MaxTime();
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
-    void TimelineChanged();
+    void TimelineChanged(bool sync=false);
     void CreateActiveFileFromName( wxString filename );
     void PopulateComboDataList( int index );
     void ComputeBestForecastForNow();

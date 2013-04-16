@@ -157,6 +157,9 @@ GribTimelineRecordSet::~GribTimelineRecordSet()
 
 void GRIBUIDialog::OpenFile()
 {
+    m_tbPlayStop->SetValue(false);
+    m_tPlayStop.Stop();
+
     m_cRecordForecast->Clear();
     /* this should be un-commented to avoid a memory leak,
        but for some reason it crbashes windows */
@@ -166,10 +169,9 @@ void GRIBUIDialog::OpenFile()
                                       pPlugIn->GetCopyMissWaveRec() );    
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-    if(rsa->GetCount() < 2) {
+    if(rsa->GetCount() < 2)
         m_TimeLineHours = 0;
-        m_sTimeline->Disable();
-    } else {
+    else {
         GribRecordSet &first=rsa->Item(0), &last = rsa->Item(rsa->GetCount()-1);
         
         wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
@@ -336,6 +338,25 @@ void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxC
     
 void GRIBUIDialog::PopulateTrackingControls( void )
 {
+    m_fgTimelineControls->Clear();
+    if(m_pTimelineSet && m_TimeLineHours) {
+        m_fgTimelineControls->Add(m_tbPlayStop, 0, wxALL, 5);
+        m_tbPlayStop->Show();
+        m_fgTimelineControls->Add(m_sTimeline, 0, wxEXPAND, 5);
+        m_sTimeline->Show();
+
+        m_bpPrev->Enable();
+        m_bpNext->Enable();
+        m_bpNow->Enable();
+    } else {
+        m_tbPlayStop->Hide();
+        m_sTimeline->Hide();
+
+        m_bpPrev->Disable();
+        m_bpNext->Disable();
+        m_bpNow->Disable();
+    }
+
     m_fgTrackingControls->Clear();
 
     GribRecord **RecordArray;
@@ -733,6 +754,7 @@ void GRIBUIDialog::OnSettings( wxCommandEvent& event )
     {
         dialog->WriteSettings();
         m_OverlaySettings.Write();
+        TimelineChanged(true);
     } else
         m_OverlaySettings = initSettings;
 
@@ -785,7 +807,7 @@ void GRIBUIDialog::OnFileDirChange( wxFileDirPickerEvent &event )
 }
 #endif
 
-void GRIBUIDialog::TimelineChanged()
+void GRIBUIDialog::TimelineChanged(bool sync)
 {
     if(!m_bGRIBActiveFile)
         return;
@@ -809,11 +831,15 @@ void GRIBUIDialog::TimelineChanged()
     else
         m_cRecordForecast->SetSelection(i+1);
 
+    if(sync)
+        return;
+
 //    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
-    m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
+        m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
 //    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
     
     pPlugIn->SendTimelineMessage(time);
+    RequestRefresh( pParent );
 }
 
 wxDateTime GRIBUIDialog::TimelineTime()
@@ -856,20 +882,19 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
         im1 = 0;
     
     wxDateTime mintime = MinTime();
-    double hour2 = (curtime - mintime).GetHours();
+    double minute2 = (curtime - mintime).GetMinutes();
     curtime = rsa->Item(im1).m_Reference_Time;
-    double hour1 = (curtime - mintime).GetHours();
-    wxTimeSpan span = time - mintime;
-    double nhour = span.GetMinutes()/60.0;
+    double minute1 = (curtime - mintime).GetMinutes();
+    double nminute = (time - mintime).GetMinutes();
     
-    if(hour2<hour1 || nhour < hour1 || nhour > hour2)
+    if(minute2<minute1 || nminute < minute1 || nminute > minute2)
         return NULL;
 
     double interp_const;
-    if(hour1 == hour2)
+    if(minute1 == minute2)
         interp_const = 0;
     else 
-        interp_const = (nhour-hour1) / (hour2-hour1);
+        interp_const = (nminute-minute1) / (minute2-minute1);
     
     if(!m_OverlaySettings.m_bInterpolate)
         interp_const = round(interp_const);
@@ -927,6 +952,9 @@ void GRIBUIDialog::PopulateComboDataList( int index )
 
 void GRIBUIDialog::OnPrev( wxCommandEvent& event )
 {
+    if(m_cRecordForecast->GetCurrentSelection() == -1) /* set to interpolated entry */
+        TimelineChanged(true);
+
 //    m_pGribForecastTimer.Stop();
     int selection = m_cRecordForecast->GetCurrentSelection() - 1;
     if(selection < 0)
@@ -937,6 +965,9 @@ void GRIBUIDialog::OnPrev( wxCommandEvent& event )
 
 void GRIBUIDialog::OnNext( wxCommandEvent& event )
 {
+    if(m_cRecordForecast->GetCurrentSelection() == -1) /* set to interpolated entry */
+        TimelineChanged(true);
+
     if( m_cRecordForecast->GetCurrentSelection() == (int)m_cRecordForecast->GetCount() - 1 ) return; //end of list
 
 //    m_pGribForecastTimer.Stop();
@@ -947,7 +978,7 @@ void GRIBUIDialog::OnNext( wxCommandEvent& event )
 void GRIBUIDialog::ComputeBestForecastForNow()
 {
     wxTimeSpan span = wxDateTime::Now() - MinTime();
-    m_sTimeline->SetValue(span.GetHours()*m_OverlaySettings.m_HourDivider);
+    m_sTimeline->SetValue(span.GetMinutes()/60.0*m_OverlaySettings.m_HourDivider);
 
     TimelineChanged();
 }
@@ -973,7 +1004,7 @@ void GRIBUIDialog::SelectGribRecordSet( GribRecordSet *pGribRecordSet )
     }
 
     wxDateTime mintime = MinTime(), curtime = pGribRecordSet->m_Reference_Time;
-    double hour = (curtime - mintime).GetHours();
+    double hour = (curtime - mintime).GetMinutes()/60.0;
 
     m_sTimeline->SetValue(hour*m_OverlaySettings.m_HourDivider);
     TimelineChanged();
