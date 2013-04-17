@@ -33,6 +33,12 @@
 //#include "c:\\Program Files\\visual leak detector\\include\\vld.h"
 #endif
 
+
+// Include CrashRpt Header 
+#ifdef OCPN_USE_CRASHRPT    
+#include "CrashRpt.h"
+#endif    
+
 #include "wx/print.h"
 #include "wx/printdlg.h"
 #include "wx/artprov.h"
@@ -719,6 +725,39 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
     return ( odlg.ShowModal() );
 }
 
+#ifdef OCPN_USE_CRASHRPT    
+
+// Define the crash callback
+int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
+{    
+     
+   // We want to continue program execution after crash report generation
+   pInfo->bContinueExecution = TRUE;
+   switch(pInfo->nStage)
+   {
+       case CR_CB_STAGE_PREPARE:
+
+           //  Flush the config file
+ //          if( pConfig )
+ //              pConfig->Flush();
+           
+           //  Flush log file
+ //          if( logger)
+ //              logger->Flush();
+           
+           break;
+       case CR_CB_STAGE_FINISH:
+             // do something
+           break;
+   }
+     // Proceed to the next stage. 
+   return CR_CB_NOTIFY_NEXT_STAGE;
+}
+
+#endif
+
+
+
 // `Main program' equivalent, creating windows and returning main app frame
 //------------------------------------------------------------------------------
 // MyApp
@@ -819,6 +858,69 @@ bool MyApp::OnInit()
         if ( m_checker->IsAnotherRunning() ) 
             return false;               // exit quietly
     }
+
+#ifdef OCPN_USE_CRASHRPT    
+    // Install Windows crash reporting
+    
+    CR_INSTALL_INFO info;
+    memset(&info, 0, sizeof(CR_INSTALL_INFO));
+    info.cb = sizeof(CR_INSTALL_INFO);  
+    info.pszAppName = _T("OpenCPN"); 
+    
+    wxString version_crash = str_version_major + _T(".") + str_version_minor + _T(".") + str_version_patch;
+    info.pszAppVersion = version_crash.c_str(); 
+
+//    info.pszErrorReportSaveDir = _T("C:\\Crash");
+    
+    // URL for sending error reports over HTTP.
+    info.pszEmailTo = _T("opencpn@bigdumboat.com");    
+    //    info.pszUrl = _T("http://myapp.com/tools/crashrpt.php");  
+    info.uPriorities[CR_HTTP] = CR_NEGATIVE_PRIORITY; //3;  // First try send report over HTTP 
+    info.uPriorities[CR_SMTP] = 3;  // Second try send report over SMTP  
+    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI    
+
+    // Install all available exception handlers.
+    info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS; 
+    
+    // Use binary encoding for HTTP uploads (recommended).
+    info.dwFlags |= CR_INST_HTTP_BINARY_ENCODING;
+    
+    // Provide privacy policy URL
+    wxStandardPathsBase& std_path_crash = wxApp::GetTraits()->GetStandardPaths();
+    std_path_crash.Get();
+    wxFileName exec_path_crash( std_path_crash.GetExecutablePath() );
+    wxString policy_file =  exec_path_crash.GetPath( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
+    policy_file += _T("PrivacyPolicy.txt");
+    policy_file.Prepend(_T("file:"));
+    
+    info.pszPrivacyPolicyURL = policy_file.c_str();;
+    
+    int nResult = crInstall(&info);
+    if(nResult!=0) {
+         TCHAR buff[256];
+         crGetLastErrorMsg(buff, 256);
+         MessageBox(NULL, buff, _T("crInstall error, Crash Reporting disabled."), MB_OK);
+     }
+ 
+    // Establish the crash callback function
+//    crSetCrashCallback( CrashCallback, NULL );  
+    
+    // Take screenshot of the app window at the moment of crash
+    crAddScreenshot2(CR_AS_PROCESS_WINDOWS|CR_AS_USE_JPEG_FORMAT, 95);
+ 
+    //  Mark some files to add to the crash report
+    wxString home_data_crash = std_path_crash.GetConfigDir();
+    if( g_bportable ) {
+        wxFileName f( std_path_crash.GetExecutablePath() );
+        home_data_crash = f.GetPath();
+    }
+    appendOSDirSlash( &home_data_crash );
+    
+    wxString config_crash = _T("opencpn.ini");
+    config_crash.Prepend( home_data_crash );
+    crAddFile2( config_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
+    
+#endif
     
     g_pPlatform = new wxPlatformInfo;
 
@@ -2094,6 +2196,11 @@ int MyApp::OnExit()
     delete plocale_def_lang;
     
     delete m_checker;
+    
+#ifdef OCPN_USE_CRASHRPT    
+    // Uninstall Windows crash reporting
+    crUninstall();
+#endif    
     
     return TRUE;
 }
