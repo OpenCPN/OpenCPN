@@ -995,7 +995,7 @@ bool MyApp::OnInit()
         if( wxFileName::GetSize( glog_file ) > 1000000 ) {
             wxString oldlog = glog_file;                      // pjotrc 2010.02.09
             oldlog.Append( _T(".log") );
-            wxString msg1( _T("Old log will be moved to opencpn.log.log") );
+            wxString msg1( _("Old log will be moved to opencpn.log.log") );
             OCPNMessageBox ( NULL, msg1, wxString( _("OpenCPN Info") ),
                     wxICON_INFORMATION | wxOK );
 //            int dlg_ret;
