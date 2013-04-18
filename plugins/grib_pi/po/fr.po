@@ -2,36 +2,143 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-22 22:21-0400\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
+"Last-Translator: JPJoubert <joubert.jeanpierre@wanadoo.fr>\n"
 "Language-Team: \n"
-"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fr_FR\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: src/grib.h:124 src/grib_pi.cpp:277 src/grib_pi.cpp:346
+#
+msgid " (Dup)"
+msgstr "(Dup)"
+
+#
+msgid " Deg"
+msgstr " Deg"
+
+#
+msgid " h"
+msgstr " h"
+
+#
+msgid "0.2 Deg"
+msgstr "0.2 Deg"
+
+#
+msgid "0.6 Deg"
+msgstr "0.6 Deg"
+
+#
+msgid "1.0 Deg"
+msgstr "1.0 Deg"
+
+#
+msgid "1.2 Deg"
+msgstr "1.2 Deg"
+
+#
+msgid "1.5 Deg"
+msgstr "1.5 Deg"
+
+#
+msgid "12 h"
+msgstr "12 h"
+
+#
+msgid "2.0 Deg"
+msgstr "2.0 Deg"
+
+#
+msgid "24 h"
+msgstr "24 h"
+
+#
+msgid "3 h"
+msgstr "3 h"
+
+#
+msgid "4 days"
+msgstr "4 jours"
+
+#
+msgid "6 days"
+msgstr "6 jours"
+
+#
+msgid "6 h"
+msgstr "6 h"
+
+#
+msgid "8 days"
+msgstr "8 jours"
+
+#
+msgid "Action"
+msgstr "Action"
+
+#
+msgid "Air Temp.(2m)"
+msgstr "Temp. Air(2m)"
+
+#
+msgid "Air Temperature(2m)"
+msgstr "Température de l'air(2m)"
+
+#
+msgid "Clouds Cover"
+msgstr "Nébulosité"
+
+#
+msgid "Copy first Cumulative missing Record"
+msgstr "Copier le premier enregistrement cumulatif manquant"
+
+#
+msgid "Copy missing Wave Records"
+msgstr "Copier les enregistrements vagues  manquants"
+
+#
+#
+msgid "Current Velocity"
+msgstr "Vitesse Courant"
+
+#
+msgid "Data"
+msgstr "Données"
+
+#
+msgid "Data Display Preferences"
+msgstr "Préférences d'affichage"
+
+#
+msgid "Days"
+msgstr "jours"
+
+#
+msgid "Error:  Can't read this File!"
+msgstr "Error : Impossible de lire ce fichier!"
+
+#
+msgid "Forecast Model   "
+msgstr "Model des prévisions"
+
+#
+#
+msgid "GRIB"
+msgstr "GRIB"
+
+#
 msgid "GRIB Display Control"
 msgstr "Gestionnaire d'affichage GRIB"
 
 #
-#: src/grib_pi.cpp:118 src/grib_pi.cpp:208 src/grib_pi.cpp:261
-msgid "Grib"
-msgstr "GRIB"
-
-#
-#
-#: src/grib_pi.cpp:177 src/grib_pi.cpp:230
-msgid "GRIB"
-msgstr "Affichage"
-
-#: src/grib_pi.cpp:183
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "Complément \"Météo\" d'affichage des fichiers GRIB pour OpenCPN"
 
-#: src/grib_pi.cpp:189
+#
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
@@ -43,8 +150,7 @@ msgid ""
 "- surface current direction and speed."
 msgstr ""
 "Complément \"Météo\" pour l'affichage des fichiers GRIB par OpenCPN\n"
-"Fournit un affichage de base des fichiers GRIB pour plusieurs types de "
-"fichiers.\n"
+"Fournit un affichage de base des fichiers GRIB pour plusieurs types de fichiers.\n"
 "\n"
 "Supporte les types de fichiers GRIB suivants :\n"
 "- Vent : Direction et vitesse\n"
@@ -53,106 +159,223 @@ msgstr ""
 "- Courant de surface : Direction et vitesse."
 
 #
-#: src/grib_pi.cpp:221
 msgid "GRIB Preferences"
 msgstr "Préférences"
 
 #
+msgid "Graphic Data to show in Map"
+msgstr "Données graphiques à afficher sur la carte"
+
 #
-#: src/grib_pi.cpp:234
-msgid "Show GRIB icon"
-msgstr "Afficher l'icône GRIB "
+msgid "Grib"
+msgstr "Grib"
+
+#
+msgid "Interval"
+msgstr "Intervalle"
+
+#
+msgid "Local Time"
+msgstr "Heure Locale"
+
+#
+msgid "Model"
+msgstr "Modèle"
+
+#
+msgid "Modify"
+msgstr "Modifier"
+
+#
+msgid "No Reference. Try another Graphic Data Selection"
+msgstr "Pas de reference. Essayez une autre selection de données"
+
+#
+msgid "No other graphic display"
+msgstr "Pas d'autre affichage graphique"
+
+#
+msgid "Numeric Data to show in Panel"
+msgstr "Données numériques à afficher"
+
+#
+msgid "Parameters"
+msgstr "Parametres"
+
+#
+msgid "Period"
+msgstr "Période"
+
+#
+msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Temperature de l'air(2m)."
 
 #
 #
-#: src/grib_pi.cpp:237
+msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Courants"
+
+#
+#
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Nebulosité"
+
+#
+#
+msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Hauteur signif. des Vagues"
+
+#
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Température de l'eau"
+
+#
+#
+msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
+msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Précipitations"
+
+#
+#
+msgid "Pressure"
+msgstr "Pression"
+
+#
+#
+msgid "Pressure (MSL)"
+msgstr "Pression (MSL)"
+
+#
+msgid "Profil"
+msgstr "Profile"
+
+#
+msgid "Rainfall"
+msgstr "Précipitations"
+
+#
+msgid "Ref : "
+msgstr "Ref : "
+
+#
+msgid "Request Pofile"
+msgstr "Profile de la demande"
+
+#
+msgid "Request Setting"
+msgstr "Parametrage de la demande"
+
+#
+msgid "Resolution"
+msgstr "Resolution"
+
+#
+msgid "Sea Temp.(Surf.)"
+msgstr "Temp. eau(Surf.)"
+
+#
+msgid "Sea Temperature(surf.)"
+msgstr "Température de l'eau(Surf.)"
+
+#
+#
+msgid "Select a GRIB file"
+msgstr "Sélectionnez un fichier GRIB"
+
+#
+msgid "Send"
+msgstr "Envoyer"
+
+#
+#
+msgid "Sign.Wave Height"
+msgstr "Haut. sign. Vagues"
+
+#
+msgid "Speed unit"
+msgstr "Unité de vitesse"
+
+#
+msgid "Time Zone"
+msgstr "Zone horaire"
+
+#
+msgid "Total Rainfall"
+msgstr "Précipitations"
+
+#
+msgid "UTC"
+msgstr "UTC"
+
+#
+msgid "Units"
+msgstr "Unités"
+
+#
+msgid "Unnown"
+msgstr "Inconnu"
+
+#
+#
 msgid "Use High Definition Graphics"
 msgstr "Utiliser le graphisme haute définition"
 
-#: src/grib_pi.cpp:240
-msgid "Show metres/sec for Wind Speed"
-msgstr "Afficher la vitesse du vent en mètres/sec"
+#
+msgid "Warning :  This directory is Empty!"
+msgstr "Attention : Ce repertoire est vide!"
+
+#
+msgid "Waves"
+msgstr "Vagues"
+
+#
+msgid "Wind"
+msgstr "Vent"
 
 #
 #
-#: src/grib.cpp:195
-msgid "GRIB File Directory"
-msgstr "Dossier des fichiers GRIB"
+msgid "Wind Direction(10m)"
+msgstr "Direction vent(10 m)"
+
+#
+msgid "Wind Gust(Surf.)"
+msgstr "Rafales (Surf.)"
 
 #
 #
-#: src/grib.cpp:221
-msgid "GRIB Data"
-msgstr "Données GRIB"
+msgid "Wind Speed and Direction(10m)"
+msgstr "Vitesse et Direction du vent(10m)"
 
 #
-#
-#: src/grib.cpp:234
-msgid "Wind Speed, Kts."
-msgstr "Vitesse du vent, Noeuds "
-
-#: src/grib.cpp:236
-msgid "Wind Speed, m/sec."
-msgstr "Vitesse du vent, m/sec"
+msgid "Wind Speed(10m)"
+msgstr "Vitesse vent(10m)"
 
 #
-#
-#: src/grib.cpp:248
-msgid "Wind Direction"
-msgstr "Direction du vent"
-
-#
-#
-#: src/grib.cpp:258
-msgid "Pressure, mBar"
-msgstr "Pression, hPa"
-
-#
-#
-#: src/grib.cpp:268
-msgid "Significant Wave Height, m"
-msgstr "Haut. signif. vagues, m"
-
-#
-#
-#: src/grib.cpp:279
-msgid "Sea Surface Temp, C"
-msgstr "Temp.de surface de la mer, °C"
-
-#
-#
-#: src/grib.cpp:289
-msgid "Current Velocity, Kts."
-msgstr "Vitesse du courant, noeuds."
-
-#: src/grib.cpp:304
-msgid "&Close"
-msgstr "F&ermer"
-
-#
-#
-#: src/grib.cpp:510
-msgid "Select GRIB Directory"
-msgstr "Sélectionner le dossier des fichiers GRIB"
-
-#
-#
-#: src/grib.cpp:1092
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgid ""
+"Your request is ready. An eMail is prepared in your eMail environment.\n"
+"You have just to click 'send' to send it.\n"
+"OK to continue ..."
 msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les hauteurs de vagues "
-"non visibles"
+"Votre demande est prete. Un Mail est preparé dans votre logiciel mail.\n"
+"Il vous reste à cliquer sur  'envoyer' .\n"
+"OK pour continuer..."
 
 #
-#
-#: src/grib.cpp:1156
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+msgid ""
+"Your request was sent (if your system has an MTA configured and is able to send mail).\n"
+"OK to continue ..."
 msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les précipitations non "
-"visibles"
+"Votre demande a été envoyée (si votre systeme a un MTA configuré et capable d'envoyer des mails).\n"
+"OK pour continuer..."
 
-#: src/grib.cpp:1168 src/grib.cpp:1225
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
-msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les températures de "
-"l'eau non visibles"
+#
+msgid "Zone"
+msgstr "Zone"
+
+#
+msgid "eMail"
+msgstr "Mail"
+
+#
+msgid "eMail To"
+msgstr "Mail pour"
+

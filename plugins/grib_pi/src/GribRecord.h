@@ -80,7 +80,7 @@ Elément de base d'un fichier GRIB
 #define GRB_CAPE 		  157   /* J/kg   */
 
 #define GRB_TSEC          171   /* "Seconds prior to initial reference time (defined in bytes 18-20)" */
-
+#define GRB_WIND_GUST     180   /* m/s "wind gust */
 #define GRB_USCT          190   /* Scatterometer estimated U Wind, NCEP Center 7  */
 #define GRB_VSCT          191   /* Scatterometer estimated V Wind, NCEP Center 7  */
 
@@ -97,7 +97,17 @@ Elément de base d'un fichier GRIB
 #define LV_ABOV_GND  105
 #define LV_SIGMA     107
 #define LV_ATMOS_ALL 200
-
+//---------------------------------------------------------
+enum DataCenterModel {
+    NOAA_GFS,
+    NOAA_NCEP_WW3,
+    NOAA_NCEP_SST,
+    NOAA_RTOFS,
+    FNMOC_WW3_GLB,
+    FNMOC_WW3_MED,
+    NORWAY_METNO,
+    OTHER_DATA_CENTER
+};
 
 //----------------------------------------------
 class GribCode
@@ -123,19 +133,21 @@ class GribRecord
     public:
         GribRecord(ZUFILE* file, int id_);
         GribRecord(const GribRecord &rec);
+        GribRecord(const GribRecord &rec1, const GribRecord &rec2, double d);
+        static GribRecord *MagnitudeRecord(const GribRecord &rec1, const GribRecord &rec2);
         ~GribRecord();
 
         bool  isOk()  const   {return ok;};
         bool  isDataKnown()  const   {return knownData;};
         bool  isEof() const   {return eof;};
-
+        bool  isDuplicated()  const   {return IsDuplicated;};                                          
         //-----------------------------------------
         zuchar  getDataType() const         { return dataType; }
         void    setDataType(const zuchar t);
 
         zuchar  getLevelType() const   { return levelType; }
         zuint   getLevelValue() const  { return levelValue; }
-
+        zuint   getDataCenterModel() const { return dataCenterModel; }
         //-----------------------------------------
         void    translateDataType();  // adapte les codes des différents centres météo
         //-----------------------------------------
@@ -192,18 +204,17 @@ class GribRecord
         time_t getRecordCurrentDate () const     { return curDate; }
         const char* getStrRecordCurDate () const { return strCurDate; }
         void  setRecordCurrentDate (time_t t);
-
-
-
     private:
         int    id;    // unique identifiant
         bool   ok;    // valid?
         bool   knownData;     // type de donnée connu
+        bool   waveData;
+        bool   IsDuplicated;
         bool   eof;
         std::string dataKey;
         char   strRefDate [32];
         char   strCurDate [32];
-
+        int    dataCenterModel;
         //---------------------------------------------
         // SECTION 0: THE INDICATOR SECTION (IS)
         //---------------------------------------------
@@ -333,10 +344,17 @@ inline bool GribRecord::isXInMap(double x) const
 {
 //    return x>=Lo1 && x<=Lo1+(Ni-1)*Di;
 //printf ("%f %f %f\n", Lo1, Lo2, x);
-    if (Di > 0)
-        return x>=Lo1 && x<=Lo2;
-    else
-        return x>=Lo2 && x<=Lo1;
+    if (Di > 0) {
+        double maxLo = Lo2;
+        if(Lo2+Di >= 360) /* grib that covers the whole world */
+            maxLo += Di;
+        return x>=Lo1 && x<=maxLo;
+    } else {
+        double maxLo = Lo1;
+        if(Lo2+Di >= 360) /* grib that covers the whole world */
+            maxLo += Di;
+        return x>=Lo2 && x<=maxLo;
+    }
 }
 //-----------------------------------------------------------------
 inline bool GribRecord::isYInMap(double y) const

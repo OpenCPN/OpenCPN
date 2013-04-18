@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 2.6.1718\n"
+"Project-Id-Version: grib_pi 3.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-22 22:21-0400\n"
+"POT-Creation-Date: 2013-04-16 13:47+1200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,23 +16,241 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/grib.h:124 src/grib_pi.cpp:277 src/grib_pi.cpp:346
-msgid "GRIB Display Control"
+#: src/GribUIDialog.cpp:413 src/GribUIDialog.cpp:414 src/GribUIDialog.cpp:437
+#: src/GribUIDialog.cpp:438 src/GribUIDialog.cpp:451 src/GribUIDialog.cpp:463
+#: src/GribUIDialog.cpp:475 src/GribUIDialog.cpp:485 src/GribUIDialog.cpp:508
+#: src/GribUIDialog.cpp:509 src/GribUIDialog.cpp:522 src/GribUIDialog.cpp:534
+#: src/GribUIDialog.cpp:546 src/GribUIDialog.cpp:558
+msgid "N/A"
 msgstr ""
 
-#: src/grib_pi.cpp:118 src/grib_pi.cpp:208 src/grib_pi.cpp:261
+#: src/GribUIDialog.cpp:672
+msgid "eMail To"
+msgstr ""
+
+#: src/GribUIDialog.cpp:675
+msgid "Action"
+msgstr ""
+
+#: src/GribUIDialog.cpp:676
+msgid "Send"
+msgstr ""
+
+#: src/GribUIDialog.cpp:678
+msgid "Model"
+msgstr ""
+
+#: src/GribUIDialog.cpp:681
+msgid "Zone"
+msgstr ""
+
+#: src/GribUIDialog.cpp:684
+msgid "Resolution"
+msgstr ""
+
+#: src/GribUIDialog.cpp:685
+msgid " Deg"
+msgstr ""
+
+#: src/GribUIDialog.cpp:687
+msgid "Interval"
+msgstr ""
+
+#: src/GribUIDialog.cpp:689
+msgid " h"
+msgstr ""
+
+#: src/GribUIDialog.cpp:691
+msgid "Period"
+msgstr ""
+
+#: src/GribUIDialog.cpp:695
+msgid "Days"
+msgstr ""
+
+#: src/GribUIDialog.cpp:697
+msgid "Parameters"
+msgstr ""
+
+#: src/GribUIDialog.cpp:716
+msgid ""
+"Your request is ready. An eMail is prepared in your eMail environment.\n"
+"You have just to click 'send' to send it.\n"
+"OK to continue ..."
+msgstr ""
+
+#: src/GribUIDialog.cpp:718
+msgid ""
+"Your request was sent (if your system has an MTA configured and is able to "
+"send mail).\n"
+"OK to continue ..."
+msgstr ""
+
+#: src/GribUIDialog.cpp:720
+msgid "eMail"
+msgstr ""
+
+#: src/GribUIDialog.cpp:745
+msgid "Stop"
+msgstr ""
+
+#: src/GribUIDialog.cpp:748 src/GribUIDialog.cpp:761
+msgid "Play"
+msgstr ""
+
+#: src/GribUIDialog.cpp:895
+msgid "Select a GRIB file"
+msgstr ""
+
+#: src/GribUIDialog.cpp:1014
+msgid "Error:  File does not exist!"
+msgstr ""
+
+#: src/GribUIDialog.cpp:1027
+msgid "Error:  Can't read this File!"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:30
+msgid "Knots"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:30
+msgid "M/S"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:30
+msgid "MPH"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:30
+msgid "KPH"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:31
+msgid "MilliBars"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:31
+msgid "mmHG"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:32
+msgid "Meters"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:32
+msgid "Feet"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Celcius"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Farenheight"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Millimeters"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Inches"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Percentage"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:43 src/GribOverlayFactory.cpp:675
+msgid "Wind"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:43
+msgid "Wind Gust"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:43
+msgid "Pressure"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:44
+msgid "Wave"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:44
+msgid "Current"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:45
+msgid "Precipitation"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:45
+msgid "Cloud Cover"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:46
+msgid "Air Temperature"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:46
+msgid "Sea Temperature"
+msgstr ""
+
+#: src/smapi.cpp:120
+msgid "Mapi is not installed or invalid on this computer"
+msgstr ""
+
+#: src/smapi.cpp:120
+msgid "Error"
+msgstr ""
+
+#: src/smapi.cpp:206
+msgid "OpenCpn failed to logon! Please verify your eMail environment"
+msgstr ""
+
+#: src/smapi.cpp:207 src/smapi.cpp:469
+msgid "eMail error"
+msgstr ""
+
+#: src/smapi.cpp:469
+msgid "Failed to send mail message"
+msgstr ""
+
+#: src/GribOverlayFactory.cpp:675
+msgid "Building Isobar map"
+msgstr ""
+
+#: src/GribOverlayFactory.cpp:830 src/GribOverlayFactory.cpp:849
+msgid "Please Zoom or Scale Out to view suppressed "
+msgstr ""
+
+#: src/GribOverlayFactory.cpp:831 src/GribOverlayFactory.cpp:850
+msgid " data"
+msgstr ""
+
+#: src/GribOverlayFactory.cpp:977
+msgid " (Dup)"
+msgstr ""
+
+#: src/GribOverlayFactory.cpp:979
+msgid "Ref : "
+msgstr ""
+
+#: src/grib_pi.cpp:110
 msgid "Grib"
 msgstr ""
 
-#: src/grib_pi.cpp:177 src/grib_pi.cpp:230
+#: src/grib_pi.cpp:165
 msgid "GRIB"
 msgstr ""
 
-#: src/grib_pi.cpp:183
+#: src/grib_pi.cpp:171
 msgid "GRIB PlugIn for OpenCPN"
 msgstr ""
 
-#: src/grib_pi.cpp:189
+#: src/grib_pi.cpp:177
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
@@ -42,76 +260,4 @@ msgid ""
 "- significant wave height\n"
 "- sea surface temperature\n"
 "- surface current direction and speed."
-msgstr ""
-
-#: src/grib_pi.cpp:221
-msgid "GRIB Preferences"
-msgstr ""
-
-#: src/grib_pi.cpp:234
-msgid "Show GRIB icon"
-msgstr ""
-
-#: src/grib_pi.cpp:237
-msgid "Use High Definition Graphics"
-msgstr ""
-
-#: src/grib_pi.cpp:240
-msgid "Show metres/sec for Wind Speed"
-msgstr ""
-
-#: src/grib.cpp:195
-msgid "GRIB File Directory"
-msgstr ""
-
-#: src/grib.cpp:221
-msgid "GRIB Data"
-msgstr ""
-
-#: src/grib.cpp:234
-msgid "Wind Speed, Kts."
-msgstr ""
-
-#: src/grib.cpp:236
-msgid "Wind Speed, m/sec."
-msgstr ""
-
-#: src/grib.cpp:248
-msgid "Wind Direction"
-msgstr ""
-
-#: src/grib.cpp:258
-msgid "Pressure, mBar"
-msgstr ""
-
-#: src/grib.cpp:268
-msgid "Significant Wave Height, m"
-msgstr ""
-
-#: src/grib.cpp:279
-msgid "Sea Surface Temp, C"
-msgstr ""
-
-#: src/grib.cpp:289
-msgid "Current Velocity, Kts."
-msgstr ""
-
-#: src/grib.cpp:304
-msgid "&Close"
-msgstr ""
-
-#: src/grib.cpp:510
-msgid "Select GRIB Directory"
-msgstr ""
-
-#: src/grib.cpp:1092
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr ""
-
-#: src/grib.cpp:1156
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr ""
-
-#: src/grib.cpp:1168 src/grib.cpp:1225
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 msgstr ""

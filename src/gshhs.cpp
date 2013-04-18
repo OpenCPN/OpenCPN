@@ -523,6 +523,73 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
+bool GshhsPolyReader::crossing1( QLineF trajectWorld )
+{
+    if( !proj || proj == NULL ) return false;
+
+    int cxmin, cxmax, cymax, cymin;
+    cxmin = (int) floor( wxMin( trajectWorld.p1().x, trajectWorld.p2().x ) );
+    cxmax = (int) ceil( wxMax( trajectWorld.p1().x, trajectWorld.p2().x ) );
+
+    if(cxmin < 0) {
+        cxmin += 360;
+        cxmax += 360;
+    }
+
+    if(cxmax - cxmin > 180) { /* dont go long way around world */
+        cxmin = (int) floor( wxMax( trajectWorld.p1().x, trajectWorld.p2().x ) ) - 360;
+        cxmax = (int) ceil( wxMin( trajectWorld.p1().x, trajectWorld.p2().x ) );
+    }
+
+    cymin = (int) floor( wxMin( trajectWorld.p1().y, trajectWorld.p2().y ) );
+    cymax = (int) ceil( wxMax( trajectWorld.p1().y, trajectWorld.p2().y ) );
+    int cx, cxx, cy;
+    GshhsPolyCell *cel;
+
+    for( cx = cxmin; cx < cxmax; cx++ ) {
+        cxx = cx;
+        while( cxx < 0 )
+            cxx += 360;
+        while( cxx >= 360 )
+            cxx -= 360;
+
+        double p1x=trajectWorld.p1().x, p2x = trajectWorld.p2().x;
+        if(cxx < 180) {
+            if(p1x > 180) p1x -= 360;
+            if(p2x > 180) p2x -= 360;
+        } else {
+            if(p1x < 180) p1x += 360;
+            if(p2x < 180) p2x += 360;
+        }
+
+        QLineF rtrajectWorld(p1x, trajectWorld.p1().y, p2x, trajectWorld.p2().y);                
+
+        for( cy = cymin; cy < cymax; cy++ ) {
+            if( cxx >= 0 && cxx <= 359 && cy >= -90 && cy <= 89 ) {
+                if( allCells[cxx][cy + 90] == NULL ) {
+                    cel = new GshhsPolyCell( fpoly, cxx, cy, proj, &polyHeader );
+                    assert( cel );
+                    allCells[cxx][cy + 90] = cel;
+                } else
+                    cel = allCells[cxx][cy + 90];
+
+                contour_list &poly1 = cel->getPoly1();
+                for( unsigned int pi = 0; pi < poly1.size(); pi++ ) {
+                    contour c = poly1[pi];
+                    double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
+                    for( unsigned int pj = 0; pj < c.size(); pj++ ) {
+                        QLineF l(lx, ly, c[pj].x, c[pj].y);
+                        if( my_intersects( rtrajectWorld, l ) )
+                            return true;
+                        lx = c[pj].x, ly = c[pj].y;
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
 void GshhsPolyReader::readPolygonFileHeader( FILE *polyfile, PolygonFileHeader *header )
 {
 //    int FReadResult = 0;
@@ -1074,4 +1141,21 @@ int GshhsReader::selectBestQuality( Projection *proj )
             if( qualityAvailable[i] ) bestQuality = i;
 
     return bestQuality;
+}
+
+/* so plugins can determine if a line segment crosses land */
+bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2)
+{
+    static GshhsReader *reader;
+    static Projection proj;
+    if(reader == NULL)
+        reader = new GshhsReader(&proj);
+
+    if(lon1 < 0)
+        lon1 += 360;
+    if(lon2 < 0)
+        lon2 += 360;
+
+    QLineF trajectWorld(lon1, lat1, lon2, lat2);
+    return reader->crossing1(trajectWorld);
 }

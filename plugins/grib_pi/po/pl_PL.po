@@ -7,32 +7,118 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:28-0400\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2010-11-28 17:53+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
 #
-msgid "&Close"
-msgstr "&Zamknij"
+msgid " (Dup)"
+msgstr ""
 #
-msgid "Current Velocity, Kts."
+msgid " Deg"
+msgstr ""
+#
+msgid " h"
+msgstr ""
+#
+msgid "0.2 Deg"
+msgstr ""
+#
+msgid "0.6 Deg"
+msgstr ""
+#
+msgid "1.0 Deg"
+msgstr ""
+#
+msgid "1.2 Deg"
+msgstr ""
+#
+msgid "1.5 Deg"
+msgstr ""
+#
+msgid "12 h"
+msgstr ""
+#
+msgid "2.0 Deg"
+msgstr ""
+#
+msgid "24 h"
+msgstr ""
+#
+msgid "3 h"
+msgstr ""
+#
+msgid "4 days"
+msgstr ""
+#
+msgid "6 days"
+msgstr ""
+#
+msgid "6 h"
+msgstr ""
+#
+msgid "8 days"
+msgstr ""
+#
+msgid "Action"
+msgstr ""
+#
+msgid "Air Temp.(2m)"
+msgstr ""
+#
+msgid "Air Temperature(2m)"
+msgstr ""
+#
+msgid "Clouds Cover"
+msgstr ""
+#
+msgid "Copy first Cumulative missing Record"
+msgstr ""
+#
+msgid "Copy missing Wave Records"
+msgstr ""
+#
+#, fuzzy
+msgid "Current Velocity"
 msgstr "Prędkość prądu, w."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Data"
+msgstr "Dane GRIB"
+#
+#, fuzzy
+msgid "Data Display Preferences"
+msgstr "Preferencje GRIB"
+#
+msgid "Days"
+msgstr ""
+#
+msgid "Error:  Can't read this File!"
+msgstr ""
+#
+msgid "Forecast Model   "
+msgstr ""
 #
 msgid "GRIB"
 msgstr "GRIB"
 #
-msgid "GRIB Data"
-msgstr "Dane GRIB"
-#
 msgid "GRIB Display Control"
 msgstr "Ustawienia wyświetlania GRIB"
-#
-msgid "GRIB File Directory"
-msgstr "Katalog plików GRIB"
 #
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "Wtyczka do wyświetlania GRIB w OpenCPN"
@@ -59,45 +145,322 @@ msgstr ""
 msgid "GRIB Preferences"
 msgstr "Preferencje GRIB"
 #
+msgid "Graphic Data to show in Map"
+msgstr ""
+#
 msgid "Grib"
 msgstr "Grib"
 #
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
-msgstr "Zmniejsz skalę lub powiększenie by zobaczyć CRAIN"
+msgid "Interval"
+msgstr ""
+#
+msgid "Local Time"
+msgstr ""
+#
+msgid "Model"
+msgstr ""
+#
+msgid "Modify"
+msgstr ""
+#
+msgid "No Reference. Try another Graphic Data Selection"
+msgstr ""
+#
+msgid "No other graphic display"
+msgstr ""
+#
+msgid "Numeric Data to show in Panel"
+msgstr ""
+#
+msgid "Parameters"
+msgstr ""
+#
+msgid "Period"
+msgstr ""
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
+msgstr "Zmniejsz skalę lub powiększenie by zobaczyć SEATEMP"
+#
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
+msgstr "Zmniejsz skalę lub powiększenie by zobaczyć OCEAN CURRENT"
+#
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Zmniejsz skalę lub powiększenie by zobaczyć OCEAN CURRENT"
 #
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Zmniejsz skalę lub powiększenie by zobaczyć HTSGW"
 #
-msgid "Please Zoom or Scale Out to view suppressed OCEAN CURRENT GRIB"
-msgstr "Zmniejsz skalę lub powiększenie by zobaczyć OCEAN CURRENT"
-#
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr "Zmniejsz skalę lub powiększenie by zobaczyć SEATEMP"
 #
-msgid "Pressure, mBar"
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
+msgstr "Zmniejsz skalę lub powiększenie by zobaczyć CRAIN"
+#
+#, fuzzy
+msgid "Pressure"
 msgstr "Ciśnienie, mbar"
 #
-msgid "Sea Surface Temp, C"
-msgstr "Temp. powierzchni morza, C"
+#, fuzzy
+msgid "Pressure (MSL)"
+msgstr "Ciśnienie, mbar"
 #
-msgid "Select GRIB Directory"
+msgid "Profil"
+msgstr ""
+#
+msgid "Rainfall"
+msgstr ""
+#
+msgid "Ref : "
+msgstr ""
+#
+msgid "Request Pofile"
+msgstr ""
+#
+msgid "Request Setting"
+msgstr ""
+#
+msgid "Resolution"
+msgstr ""
+#
+msgid "Sea Temp.(Surf.)"
+msgstr ""
+#
+msgid "Sea Temperature(surf.)"
+msgstr ""
+#
+#, fuzzy
+msgid "Select a GRIB file"
 msgstr "Wybierz katalog GRIB"
 #
-msgid "Show GRIB icon"
-msgstr "Pokaż ikonę GRIB"
+msgid "Send"
+msgstr ""
 #
-msgid "Significant Wave Height, m"
+#, fuzzy
+msgid "Sign.Wave Height"
 msgstr "Wysokość fali znacznej, m"
+#
+msgid "Speed unit"
+msgstr ""
+#
+msgid "Time Zone"
+msgstr ""
+#
+msgid "Total Rainfall"
+msgstr ""
+#
+msgid "UTC"
+msgstr ""
+#
+msgid "Units"
+msgstr ""
+#
+msgid "Unnown"
+msgstr ""
 #
 msgid "Use High Definition Graphics"
 msgstr "Użyj grafili wysokuej rozdzielczości"
 #
-#, c-format
-msgid "WARNING:  QuickScat GRIB data is %d hours old."
-msgstr "UWAGA: Dane GRIB QuickScat są sprzed %d godzin."
+msgid "Warning :  This directory is Empty!"
+msgstr ""
 #
-msgid "Wind Direction"
+msgid "Waves"
+msgstr ""
+#
+msgid "Wind"
+msgstr ""
+#
+#, fuzzy
+msgid "Wind Direction(10m)"
 msgstr "Kierunek wiatru"
 #
-msgid "Wind Speed, Kts."
+msgid "Wind Gust(Surf.)"
+msgstr ""
+#
+#, fuzzy
+msgid "Wind Speed and Direction(10m)"
+msgstr "Kierunek wiatru"
+#
+#, fuzzy
+msgid "Wind Speed(10m)"
 msgstr "Prędkość wiatru, w."
+#
+msgid ""
+"Your request is ready. An eMail is prepared in your eMail environment.\n"
+"You have just to click 'send' to send it.\n"
+"OK to continue ..."
+msgstr ""
+#
+msgid ""
+"Your request was sent (if your system has an MTA configured and is able to "
+"send mail).\n"
+"OK to continue ..."
+msgstr ""
+#
+msgid "Zone"
+msgstr ""
+#
+msgid "eMail"
+msgstr ""
+#
+msgid "eMail To"
+msgstr ""
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "&Close"
+#~ msgstr "&Zamknij"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "GRIB File Directory"
+#~ msgstr "Katalog plików GRIB"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Request Preferences"
+#~ msgstr "Preferencje GRIB"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Sea Surface Temp."
+#~ msgstr "Temp. powierzchni morza, C"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Show GRIB icon"
+#~ msgstr "Pokaż ikonę GRIB"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
+#~ msgstr "UWAGA: Dane GRIB QuickScat są sprzed %d godzin."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Wind Speed, Kts."
+#~ msgstr "Prędkość wiatru, w."

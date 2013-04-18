@@ -85,9 +85,11 @@ class GribReader
       enum GribFileDataStatus {DATA_IN_FILE, NO_DATA_IN_FILE, COMPUTED_DATA};
 
       void  copyFirstCumulativeRecord   ();
-      void  removeFirstCumulativeRecord ();
+      //void  removeFirstCumulativeRecord ();
+      void  copyMissingWaveRecords ();
       void  copyFirstCumulativeRecord   (int dataType,int levelType,int levelValue);
-      void  removeFirstCumulativeRecord (int dataType,int levelType,int levelValue);
+      //void  removeFirstCumulativeRecord (int dataType,int levelType,int levelValue);
+      void  copyMissingWaveRecords (int dataType,int levelType,int levelValue);
 
       std::map < std::string, std::vector<GribRecord *>* > * getGribMap(){ return  &mapGribRecords; }              //dsr
 

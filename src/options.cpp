@@ -42,6 +42,9 @@
 #include <wx/display.h>
 #include <wx/choice.h>
 #include <wx/dirdlg.h>
+#if wxCHECK_VERSION(2,9,4) /* does this work in 2.8 too.. do we need a test? */
+#include <wx/renderer.h>
+#endif
 
 #include "dychart.h"
 #include "chart1.h"

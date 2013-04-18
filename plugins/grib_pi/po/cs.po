@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-23 06:51+0200\n"
+"POT-Creation-Date: 2013-03-24 22:17+0100\n"
 "PO-Revision-Date: 2012-05-23 07:03+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <LL@li.org>\n"
@@ -17,47 +17,121 @@ msgstr ""
 "Language: \n"
 "X-Poedit-Language: Czech\n"
 "X-Poedit-Country: CZECH REPUBLIC\n"
-
+#
+msgid " (Dup)"
+msgstr ""
+#
+msgid " Deg"
+msgstr ""
+#
+msgid " h"
+msgstr ""
+#
+msgid "0.2 Deg"
+msgstr ""
+#
+msgid "0.6 Deg"
+msgstr ""
+#
+msgid "1.0 Deg"
+msgstr ""
+#
+msgid "1.2 Deg"
+msgstr ""
+#
+msgid "1.5 Deg"
+msgstr ""
+#
+msgid "12 h"
+msgstr ""
+#
+msgid "2.0 Deg"
+msgstr ""
+#
+msgid "24 h"
+msgstr ""
+#
+msgid "3 h"
+msgstr ""
+#
+msgid "4 days"
+msgstr ""
+#
+msgid "6 days"
+msgstr ""
+#
+msgid "6 h"
+msgstr ""
+#
+msgid "8 days"
+msgstr ""
+#
+msgid "Action"
+msgstr ""
+#
+msgid "Air Temp.(2m)"
+msgstr ""
+#
+msgid "Air Temperature(2m)"
+msgstr ""
+#
+msgid "Clouds Cover"
+msgstr ""
+#
+msgid "Copy first Cumulative missing Record"
+msgstr ""
+#
+msgid "Copy missing Wave Records"
+msgstr ""
 #
 #
 #
-msgid "&Close"
-msgstr "&Zavřít"
-
-#
-#
-#
-msgid "Current Velocity, Kts."
+#, fuzzy
+msgid "Current Velocity"
 msgstr "Rychlost proudu, Kts."
-
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Data"
+msgstr "Data GRIB"
+#
+#, fuzzy
+msgid "Data Display Preferences"
+msgstr "Nastavení GRIBu"
+#
+msgid "Days"
+msgstr ""
+#
+msgid "Error:  Can't read this File!"
+msgstr ""
+#
+msgid "Forecast Model   "
+msgstr ""
 #
 #
 #
 msgid "GRIB"
 msgstr "GRIB"
-
-#
-#
-#
-msgid "GRIB Data"
-msgstr "Data GRIB"
-
 #
 #
 #
 msgid "GRIB Display Control"
 msgstr "Ovládání zobrazení GRIB"
-
-#
-#
-#
-msgid "GRIB File Directory"
-msgstr "Složka souborů GRIB"
-
 #
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "Doplněk GRIB pro OpenCPN"
-
 #
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
@@ -70,95 +144,369 @@ msgid ""
 "- surface current direction and speed."
 msgstr ""
 "Doplněk GRIB pro OpenCPN\n"
-"Poskytuje základní možnosti překryvného zobrazení GRIB souborů několika typů.\n"
+"Poskytuje základní možnosti překryvného zobrazení GRIB souborů několika "
+"typů.\n"
 "\n"
 "Podporované typy GRIB souborů obsahují:\n"
 "- rychlost a sílu větru\n"
 "- signifikantní výšku vlny\n"
 "- teplotu povrchu moře\n"
 "- rychlost a směr povrchových proudů."
-
 #
 msgid "GRIB Preferences"
 msgstr "Nastavení GRIBu"
-
+#
+msgid "Graphic Data to show in Map"
+msgstr ""
 #
 msgid "Grib"
 msgstr ""
-
+#
+msgid "Interval"
+msgstr ""
+#
+msgid "Local Time"
+msgstr ""
+#
+msgid "Model"
+msgstr ""
+#
+msgid "Modify"
+msgstr ""
+#
+msgid "No Reference. Try another Graphic Data Selection"
+msgstr ""
+#
+msgid "No other graphic display"
+msgstr ""
+#
+msgid "Numeric Data to show in Panel"
+msgstr ""
+#
+msgid "Parameters"
+msgstr ""
+#
+msgid "Period"
+msgstr ""
 #
 #
 #
-msgid "Please Zoom or Scale Out to view suppressed CRAIN GRIB"
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
+msgstr "Prosím zmenši měřítko pro zobrazení SEATEMP GRIB"
+#
+#
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
-
+#
+#
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
 #
 #
 #
 msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení HTSGW GRIB"
-
 #
 #
 #
-msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 msgstr "Prosím zmenši měřítko pro zobrazení SEATEMP GRIB"
-
 #
 #
 #
-msgid "Pressure, mBar"
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
+msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
+#
+#
+#
+#, fuzzy
+msgid "Pressure"
 msgstr "Tlak, mBar"
-
 #
 #
 #
-msgid "Sea Surface Temp, C"
-msgstr "Povrchová teplota moře, C"
-
+#, fuzzy
+msgid "Pressure (MSL)"
+msgstr "Tlak, mBar"
+#
+msgid "Profil"
+msgstr ""
+#
+msgid "Rainfall"
+msgstr ""
+#
+msgid "Ref : "
+msgstr ""
+#
+msgid "Request Pofile"
+msgstr ""
+#
+msgid "Request Setting"
+msgstr ""
+#
+msgid "Resolution"
+msgstr ""
+#
+msgid "Sea Temp.(Surf.)"
+msgstr ""
+#
+msgid "Sea Temperature(surf.)"
+msgstr ""
 #
 #
 #
-msgid "Select GRIB Directory"
+#, fuzzy
+msgid "Select a GRIB file"
 msgstr "Složka souborů GRIB"
-
+#
+msgid "Send"
+msgstr ""
 #
 #
 #
-msgid "Show GRIB icon"
-msgstr "Zobrazit ikonu GRIB"
-
-#
-msgid "Show metres/sec for Wind Speed"
-msgstr "Ukaž  m/s pro rychlost větru"
-
-#
-#
-#
-msgid "Significant Wave Height, m"
+#, fuzzy
+msgid "Sign.Wave Height"
 msgstr "Signifikantní výška vln, m"
-
+#
+msgid "Speed unit"
+msgstr ""
+#
+msgid "Time Zone"
+msgstr ""
+#
+msgid "Total Rainfall"
+msgstr ""
+#
+msgid "UTC"
+msgstr ""
+#
+msgid "Units"
+msgstr ""
+#
+msgid "Unnown"
+msgstr ""
 #
 #
 #
 msgid "Use High Definition Graphics"
 msgstr "Použít grafiku ve velkém rozlišení"
-
+#
+msgid "Warning :  This directory is Empty!"
+msgstr ""
+#
+msgid "Waves"
+msgstr ""
+#
+msgid "Wind"
+msgstr ""
 #
 #
 #
-msgid "Wind Direction"
+#, fuzzy
+msgid "Wind Direction(10m)"
 msgstr "Směr větru"
-
+#
+msgid "Wind Gust(Surf.)"
+msgstr ""
 #
 #
 #
-msgid "Wind Speed, Kts."
-msgstr "Rychlost větru, Uzly"
-
+#, fuzzy
+msgid "Wind Speed and Direction(10m)"
+msgstr "Směr větru"
 #
 #
 #
-msgid "Wind Speed, m/sec."
+#, fuzzy
+msgid "Wind Speed(10m)"
 msgstr "Rychlost větru, m/s"
-
+#
+msgid ""
+"Your request is ready. An eMail is prepared in your eMail environment.\n"
+"You have just to click 'send' to send it.\n"
+"OK to continue ..."
+msgstr ""
+#
+msgid ""
+"Your request was sent (if your system has an MTA configured and is able to "
+"send mail).\n"
+"OK to continue ..."
+msgstr ""
+#
+msgid "Zone"
+msgstr ""
+#
+msgid "eMail"
+msgstr ""
+#
+msgid "eMail To"
+msgstr ""
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "&Close"
+#~ msgstr "&Zavřít"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "GRIB File Directory"
+#~ msgstr "Složka souborů GRIB"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Request Preferences"
+#~ msgstr "Nastavení GRIBu"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Sea Surface Temp."
+#~ msgstr "Povrchová teplota moře, C"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Show GRIB icon"
+#~ msgstr "Zobrazit ikonu GRIB"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Show metres/sec for Wind Speed"
+#~ msgstr "Ukaž  m/s pro rychlost větru"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid "Wind Speed, Kts."
+#~ msgstr "Rychlost větru, Uzly"

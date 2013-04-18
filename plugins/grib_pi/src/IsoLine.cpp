@@ -29,6 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <wx/graphics.h>
 
 #include "IsoLine.h"
+#include "GribSettingsDialog.h"
+#include "GribOverlayFactory.h"
 
 static void GenerateSpline(int n, wxPoint points[]);
 static void ClearSplineList();
@@ -161,19 +163,20 @@ double      round_msvc (double x)
 
 }
 
-
 //---------------------------------------------------------------
-IsoLine::IsoLine(double val, const GribRecord *rec_)
+IsoLine::IsoLine(double val, double coeff, double offset, const GribRecord *rec_)
 {
-    value = val;
+    value = val/coeff-offset;
 
     rec = rec_;
-    W = rec->getNi();
-    H = rec->getNj();
+    W = rec_->getNi();
+    H = rec_->getNj();
 
     //---------------------------------------------------------
     // Génère la liste des segments.
-    extractIsoLine(rec);
+    extractIsoLine(rec_);
+
+    value = val;
 
     if(trace.size() == 0)
           return;
@@ -371,23 +374,34 @@ MySegList *IsoLine::BuildContinuousSegment(void)
 
 
 //---------------------------------------------------------------
-void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
+void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp, bool bHiDef)
 {
       int nsegs = trace.size();
       if(nsegs < 1)
             return;
 
       GetGlobalColor ( _T ( "UITX1" ), &isoLineColor );
-      wxPen ppISO ( isoLineColor, 2 );
 
 #if wxUSE_GRAPHICS_CONTEXT
-      wxMemoryDC *pmdc;
-      pmdc= wxDynamicCast(&dc, wxMemoryDC);
-      wxGraphicsContext *pgc = wxGraphicsContext::Create(*pmdc);
-      pgc->SetPen(ppISO);
+      wxGraphicsContext *pgc = NULL;
 #endif
 
-      dc.SetPen(ppISO);
+      if(dc) {
+          wxPen ppISO ( isoLineColor, 2 );
+
+#if wxUSE_GRAPHICS_CONTEXT
+          wxMemoryDC *pmdc;
+          pmdc= wxDynamicCast(dc, wxMemoryDC);
+          pgc = wxGraphicsContext::Create(*pmdc);
+          pgc->SetPen(ppISO);
+#endif
+
+          dc->SetPen(ppISO);
+      } else { /* opengl */
+
+          glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(),
+                     255/*isoLineColor.Alpha()*/);
+      }
 
       std::list<Segment *>::iterator it;
 
@@ -398,27 +412,36 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
     {
         Segment *seg = *it;
 
+        /* skip segments that go the wrong way around the world */
+        if(seg->px1+180 < vp->clon && seg->px2+180 > vp->clon)
+            continue;
+        if(seg->px1+180 > vp->clon && seg->px2+180 < vp->clon)
+            continue;
+        if(seg->px1-180 < vp->clon && seg->px2-180 > vp->clon)
+            continue;
+        if(seg->px1-180 > vp->clon && seg->px2-180 < vp->clon)
+            continue;
+
         {
             wxPoint ab;
             GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
             wxPoint cd;
             GetCanvasPixLL(vp, &cd, seg->py2, seg->px2);
 
-             {
+            if(dc) {
 #if wxUSE_GRAPHICS_CONTEXT
                   if(bHiDef && pgc)
                         pgc->StrokeLine(ab.x, ab.y, cd.x, cd.y);
                   else
-                        dc.DrawLine(ab.x, ab.y, cd.x, cd.y);
-#else
-                  dc.DrawLine(ab.x, ab.y, cd.x, cd.y);
 #endif
-             }
-
+                      dc->DrawLine(ab.x, ab.y, cd.x, cd.y);
+            } else { /* opengl */
+                pof->DrawGLLine(ab.x, ab.y, cd.x, cd.y, 2);
+            }
         }
     }
-//#endif
 
+#if 0
       int text_sx, text_sy;
       dc.GetTextExtent(_T("10000"), &text_sx, &text_sy);
 //      double m = text_sy / 2;
@@ -513,31 +536,8 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
                                     {
                                           bDrawing = true;
                                           len = 0;
-#if 0
-                                          if(bShowLabels)
-                                          {
-                                                double label_angle = atan2((double)(lstart.y - point->y),
-                                                    (double)(point->x - lstart.x)) * 180. / PI;
-                                                wxString label;
-                                                label.Printf(_T("%d"), (int)(value*coef+0.5));
-
-                                                double xs = lstart.x - (m * sin(label_angle * PI / 180.));
-                                                double ys = lstart.y - (m * cos(label_angle * PI / 180.));
-                                                dc.DrawRotatedText(label, (int)xs, (int)ys, label_angle);
-                                          }
-#endif
                                     }
                               }
-
-#if 0
-//                              if(bDrawing || !bShowLabels)
-                              {
-                                    if(bHiDef)
-                                          dc.StrokeLine(point0->x, point0->y, point->x, point->y);
-                                    else
-                                          dc.DrawLine(point0->x, point0->y, point->x, point->y);
-                              }
-#endif
                         }
 
                         *point0 = *point;
@@ -553,6 +553,8 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
 
       delete[] pPoints;
 
+#endif
+
 #if wxUSE_GRAPHICS_CONTEXT
       delete pgc;
 #endif
@@ -561,26 +563,14 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp
 
 //---------------------------------------------------------------
 
-void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour text_color, wxColour back_color,
-                                PlugIn_ViewPort *vp, int density, int first, double coef)
+void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
+                                PlugIn_ViewPort *vp, int density, int first,
+                                wxImage &imageLabel)
+
 {
-///
-//#if 0
     std::list<Segment *>::iterator it;
     int nb = first;
     wxString label;
-
-    label.Printf(_T("%d"), (int)(value*coef+0.5));
-
-    wxPen penText(text_color);
-
-    int w, h;
-    dc.GetTextExtent(label, &w, &h);
-
-    dc.SetPen(penText);
-    dc.SetBrush(wxBrush(back_color));
-    dc.SetTextForeground(text_color);
-    dc.SetTextBackground(back_color);
 
     //---------------------------------------------------------
     // Ecrit les labels
@@ -588,145 +578,38 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour text
     for (it=trace.begin(); it!=trace.end(); it++,nb++)
     {
         if (nb % density == 0)
-		{
-            Segment *seg = *it;
-
-//            if(vp->vpBBox.PointInBox((seg->px1 + seg->px2)/2., (seg->py1 + seg->py2)/2., 0.))
-            {
- //                 wxPoint ab = vp->GetMercatorPixFromLL(seg->py1, seg->px1);
- //                 wxPoint cd = vp->GetMercatorPixFromLL(seg->py2, seg->px2);
-			wxPoint ab;
-			GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
-			wxPoint cd;
-			GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
-
-			int label_offset = 6;
-                  int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
-                  int yd = (ab.y + cd.y - h)/2;
-
-
-                  dc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
-                  dc.DrawText(label, label_offset/2 + xd, yd-1);
-            }
-
-        }
-    }
-//#endif
-///
-}
-
-
-void IsoLine::drawGLIsoLine(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef)
-{
-      int nsegs = trace.size();
-      if(nsegs < 1)
-            return;
-
-     int width = 2;
-     GetGlobalColor ( _T ( "UITX1" ), &isoLineColor );
-
-     glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(), 255/*isoLineColor.Alpha()*/);
-     glLineWidth(width);
-
-     std::list<Segment *>::iterator it;
-
-    //---------------------------------------------------------
-    // Dessine les segments
-    //---------------------------------------------------------
-    for (it=trace.begin(); it!=trace.end(); it++)
-    {
-        Segment *seg = *it;
-
         {
-            wxPoint ab;
-            GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
-            wxPoint cd;
-            GetCanvasPixLL(vp, &cd, seg->py2, seg->px2);
-
-
-///            ClipResult res = cohen_sutherland_line_clip_i ( &ab.x, &ab.y, &cd.x, &cd.y,
-///                         0, vp->pix_width, 0, vp->pix_height );
-///            if ( res != Invisible )
-             {
-                  pof->DrawGLLine(ab.x, ab.y, cd.x, cd.y, width);
-             }
-
-        }
-    }
-
-}
-
-void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour text_color, wxColour back_color,
-                                PlugIn_ViewPort *vp, int density, int first, double coef)
-{
-    std::list<Segment *>::iterator it;
-    int nb = first;
-    wxString label;
-
-    label.Printf(_T("%d"), (int)(value*coef+0.5));
-
-    int w, h;
-
-    wxPen penText(text_color);
-    wxBrush backBrush(back_color);
-
-    int label_offset = 10;
-
-      if(!m_imageLabel.IsOk())
-      {
-            wxBitmap bm(100,100);          // big enough
-            wxMemoryDC mdc(bm);
-            mdc.Clear();
-
-            mdc.GetTextExtent(label, &w, &h);
-
-            mdc.SetPen(penText);
-            mdc.SetBrush(backBrush);
-            mdc.SetTextForeground(text_color);
-            mdc.SetTextBackground(back_color);
-
-            int xd = 0;
-            int yd = 0;
-//            mdc.DrawRoundedRectangle(xd, yd, w+(label_offset * 2), h, -.25);
-            mdc.DrawRectangle(xd, yd, w+(label_offset * 2), h+2);
-            mdc.DrawText(label, label_offset/2 + xd, yd-1);
-
-            mdc.SelectObject(wxNullBitmap);
-
-            wxBitmap sub_BMLabel = bm.GetSubBitmap(wxRect(0,0,w+(label_offset * 2), h+2));
-            m_imageLabel = sub_BMLabel.ConvertToImage();
-      }
-
-    //---------------------------------------------------------
-    // Ecrit les labels
-    //---------------------------------------------------------
-    for (it=trace.begin(); it!=trace.end(); it++,nb++)
-    {
-        if (nb % density == 0)
-		{
             Segment *seg = *it;
-
+            
 //            if(vp->vpBBox.PointInBox((seg->px1 + seg->px2)/2., (seg->py1 + seg->py2)/2., 0.))
             {
-                  int w = m_imageLabel.GetWidth();
-                  int h = m_imageLabel.GetHeight();
-                  wxPoint ab;
-                  GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
-                  wxPoint cd;
-                  GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
+                wxPoint ab;
+                GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
+                wxPoint cd;
+                GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
+                
+                int w = imageLabel.GetWidth();
+                int h = imageLabel.GetHeight();
 
-                  int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
-                  int yd = (ab.y + cd.y - h)/2;
-
-                  glRasterPos2i(xd, yd);
-                  glPixelZoom(1, -1); /* draw data from top to bottom */
-                  glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, m_imageLabel.GetData());
-                  glPixelZoom(1, 1);
+                int label_offset = 6;
+                int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
+                int yd = (ab.y + cd.y - h)/2;
+                
+                if(dc) {
+                    /* don't use alpha for isobars, for some reason draw bitmap ignores
+                       the 4th argument (true or false has same result) */
+                    wxImage img(w, h, imageLabel.GetData(), true);
+                    dc->DrawBitmap(img, xd, yd, false);
+                } else { /* opengl */
+                    glRasterPos2i(xd, yd);
+                    glPixelZoom(1, -1); /* draw data from top to bottom */
+                    glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, imageLabel.GetData());
+                    glPixelZoom(1, 1);
+                }
             }
         }
     }
 }
-
 
 
 //==================================================================================
@@ -734,7 +617,7 @@ void IsoLine::drawGLIsoLineLabels(GRIBOverlayFactory *pof, wxColour text_color, 
 //==================================================================================
 Segment::Segment(int I, int J,
                 char c1, char c2, char c3, char c4,
-                const GribRecord *rec, double pressure)
+                 const GribRecord *rec, double pressure)
 {
     traduitCode(I,J, c1, i,j);
     traduitCode(I,J, c2, k,l);
@@ -746,7 +629,7 @@ Segment::Segment(int I, int J,
 }
 //-----------------------------------------------------------------------
 void Segment::intersectionAreteGrille(int i,int j, int k,int l, double *x, double *y,
-                const GribRecord *rec, double pressure)
+                                      const GribRecord *rec, double pressure)
 {
     double a,b, pa, pb, dec;
     pa = rec->getValue(i,j);
@@ -814,13 +697,13 @@ void IsoLine::extractIsoLine(const GribRecord *rec)
             //--------------------------------
             if     ((a<=value && b<=value && c<=value  && d>value)
                  || (a>value && b>value && c>value  && d<=value))
-                trace.push_back(new Segment(i,j, 'c','d',  'b','d', rec,value));
+                trace.push_back(new Segment(i,j, 'c','d',  'b','d', rec, value));
             else if ((a<=value && c<=value && d<=value  && b>value)
                  || (a>value && c>value && d>value  && b<=value))
-                trace.push_back(new Segment(i,j, 'a','b',  'b','d', rec,value));
+                trace.push_back(new Segment(i,j, 'a','b',  'b','d', rec, value));
             else if ((c<=value && d<=value && b<=value  && a>value)
                  || (c>value && d>value && b>value  && a<=value))
-                trace.push_back(new Segment(i,j, 'a','b',  'a','c', rec,value));
+                trace.push_back(new Segment(i,j, 'a','b',  'a','c', rec, value));
             else if ((a<=value && b<=value && d<=value  && c>value)
                  || (a>value && b>value && d>value  && c<=value))
                 trace.push_back(new Segment(i,j, 'a','c',  'c','d', rec,value));

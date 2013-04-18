@@ -36,7 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void  GribRecord::translateDataType()
 {
 	this->knownData = true;
-
 	//------------------------
 	// NOAA GFS
 	//------------------------
@@ -44,6 +43,7 @@ void  GribRecord::translateDataType()
 		&& (idModel==96 || idModel==81)		// NOAA
 		&& (idGrid==4 || idGrid==255))		// Saildocs
 	{
+        dataCenterModel = NOAA_GFS;
 		if (dataType == GRB_PRECIP_TOT) {	// mm/period -> mm/h
 			if (periodP2 > periodP1)
 				multiplyAllData( 1.0/(periodP2-periodP1) );
@@ -51,15 +51,18 @@ void  GribRecord::translateDataType()
 		if (dataType == GRB_PRECIP_RATE) {	// mm/s -> mm/h
 			if (periodP2 > periodP1)
 				multiplyAllData( 3600.0 );
-		}
-
+        }
+        if (dataType == GRB_TEMP                        //gfs Water surface Temperature
+            && levelType == LV_GND_SURF 
+            && levelValue == 0) dataType = GRB_WTMP;
 
 	}
 	//------------------------
 	// WRF NMM grib.meteorologic.net
 	//------------------------
 	else if (idCenter==7 && idModel==89 && idGrid==255)
-	{
+    {
+        // dataCenterModel ??
 		if (dataType == GRB_PRECIP_TOT) {	// mm/period -> mm/h
 			if (periodP2 > periodP1)
 				multiplyAllData( 1.0/(periodP2-periodP1) );
@@ -71,11 +74,43 @@ void  GribRecord::translateDataType()
 
 
 	}
+    else if ( idCenter==7 && idModel==88 && idGrid==255 ) {  // saildocs
+		dataCenterModel = NOAA_NCEP_WW3;
+	}
+    //----------------------------
+    //NOAA RTOFS
+    //--------------------------------
+    else if(idCenter==7 && idModel==45 && idGrid==255) {
+        dataCenterModel = NOAA_RTOFS;
+    }
+    //----------------------------------------------
+    // NCEP sea surface temperature
+    //----------------------------------------------
+    else if ((idCenter==7 && idModel==44 && idGrid==173)
+        || (idCenter==7 && idModel==44 && idGrid==235))
+    {
+        dataCenterModel = NOAA_NCEP_SST;
+    }
+    //----------------------------------------------
+    // FNMOC WW3 mediterranean sea
+    //----------------------------------------------
+    else if (idCenter==58 && idModel==111 && idGrid==179)
+    {
+        dataCenterModel = FNMOC_WW3_MED;
+    }
+    //----------------------------------------------
+    // FNMOC WW3
+    //----------------------------------------------
+    else if (idCenter==58 && idModel==110 && idGrid==240)
+    {
+        dataCenterModel = FNMOC_WW3_GLB;
+    }
 	//------------------------
-	// Meteorem
+	// Meteorem (Scannav)
 	//------------------------
 	else if (idCenter==59 && idModel==78 && idGrid==255)
 	{
+        //dataCenterModel = ??
 		if ( (getDataType()==GRB_WIND_VX || getDataType()==GRB_WIND_VY)
 			&& getLevelType()==LV_MSL
 			&& getLevelValue()==0)
@@ -101,7 +136,16 @@ void  GribRecord::translateDataType()
 //		this->knownData = false;
 
 	}
-		//this->print();
+    //translate significant wave height and dir
+    if (this->knownData) {
+        switch (getDataType()) {
+            case GRB_HTSGW:
+            case GRB_WVDIR:
+                levelType  = LV_GND_SURF;
+                levelValue = 0;
+                break;
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------
@@ -124,7 +168,7 @@ GribRecord::GribRecord(ZUFILE* file, int id_)
     BMSbits = NULL;
     eof     = false;
     knownData = true;
-
+    IsDuplicated = false;
 
     //      Pre read 4 bytes to check for length adder needed for some GRIBS (like WRAMS and NAM)
     char strgrib[5];
@@ -194,6 +238,7 @@ GribRecord::GribRecord(ZUFILE* file, int id_)
 GribRecord::GribRecord(const GribRecord &rec)
 {
     *this = rec;
+    IsDuplicated = true;
     // recopie les champs de bits
     if (rec.data != NULL) {
         int size = rec.Ni*rec.Nj;
@@ -207,6 +252,63 @@ GribRecord::GribRecord(const GribRecord &rec)
         for (int i=0; i<size; i++)
             this->BMSbits[i] = rec.BMSbits[i];
     }
+}
+
+//-------------------------------------------------------------------------------
+// Constructeur de interpolate
+//-------------------------------------------------------------------------------
+GribRecord::GribRecord(const GribRecord &rec1, const GribRecord &rec2, double d)
+{
+    *this = rec1;
+
+    /* TODO: for wave direction we need to do something else because 360 wraps will mess it up */
+    // recopie les champs de bits
+    if (rec1.data && rec2.data && rec1.Ni == rec2.Ni && rec1.Nj == rec2.Nj) {
+        int size = rec1.Ni*rec1.Nj;
+        this->data = new double[size];
+        for (int i=0; i<size; i++)
+            this->data[i] = (1-d)*rec1.data[i] + d*rec2.data[i];
+    } else
+        ok=false;
+
+    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) {
+        if(rec1.sectionSize3 == rec2.sectionSize3) {
+        int size = rec1.sectionSize3-6;
+        this->BMSbits = new zuchar[size];
+        for (int i=0; i<size; i++)
+            this->BMSbits[i] = rec1.BMSbits[i] & rec2.BMSbits[i];
+        } else
+            ok = false;
+    }
+    
+    /* should maybe update strCurDate ? */
+}
+
+GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1, const GribRecord &rec2)
+{
+    GribRecord *rec = new GribRecord(rec1);
+
+    /* generate a record which is the combined magnitude of two records */
+    if (rec1.data && rec2.data && rec1.Ni == rec2.Ni && rec1.Nj == rec2.Nj) {
+        int size = rec1.Ni*rec1.Nj;
+        for (int i=0; i<size; i++)
+            if(rec1.data[i] == GRIB_NOTDEF || rec2.data[i] == GRIB_NOTDEF)
+                rec->data[i] = GRIB_NOTDEF;
+            else
+                rec->data[i] = hypot(rec1.data[i], rec2.data[i]);
+    } else
+        rec->ok=false;
+
+    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) {
+        if(rec1.sectionSize3 == rec2.sectionSize3) {
+        int size = rec1.sectionSize3-6;
+        for (int i=0; i<size; i++)
+            rec->BMSbits[i] = rec1.BMSbits[i] & rec2.BMSbits[i];
+        } else
+            rec->ok = false;
+    }
+    
+    return rec;
 }
 
 //------------------------------------------------------------------------------
@@ -825,15 +927,19 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
     int i0 = (int) pi;  // point 00
     int j0 = (int) pj;
 
+    int i1 = pi+1, j1 = pj+1;
+    if(i1 >= Ni)
+        i1 -= Ni;
+
     bool h00,h01,h10,h11;
     int nbval = 0;     // how many values in grid ?
-    if ((h00=hasValue(i0,   j0)))
+    if ((h00=hasValue(i0, j0)))
         nbval ++;
-    if ((h10=hasValue(i0+1, j0)))
+    if ((h10=hasValue(i1, j0)))
         nbval ++;
-    if ((h01=hasValue(i0,   j0+1)))
+    if ((h01=hasValue(i0, j1)))
         nbval ++;
-    if ((h11=hasValue(i0+1, j0+1)))
+    if ((h11=hasValue(i1, j1)))
         nbval ++;
 
     if (nbval <3) {
@@ -850,13 +956,13 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
 			if (dy < 0.5)
 				val = getValue(i0,   j0);
 			else
-				val = getValue(i0,   j0+1);
+				val = getValue(i0,   j1);
 		}
 		else {
 			if (dy < 0.5)
-				val = getValue(i0+1,   j0);
+				val = getValue(i0,   j0);
 			else
-				val = getValue(i0+1,   j0+1);
+				val = getValue(i0,   j0);
 		}
 		return val;
 	}
@@ -872,10 +978,10 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
     // ky = distance(xa,y)
     if (nbval == 4)
     {
-        double x00 = getValue(i0,   j0);
-        double x01 = getValue(i0,   j0+1);
-        double x10 = getValue(i0+1, j0);
-        double x11 = getValue(i0+1, j0+1);
+        double x00 = getValue(i0, j0);
+        double x01 = getValue(i0, j1);
+        double x10 = getValue(i1, j0);
+        double x11 = getValue(i1, j1);
         double x1 = (1.0-dx)*x00 + dx*x10;
         double x2 = (1.0-dx)*x01 + dx*x11;
         val =  (1.0-dy)*x1 + dy*x2;
@@ -885,33 +991,33 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
         // here nbval==3, check the corner without data
         if (!h00) {
             //printf("! h00  %f %f\n", dx,dy);
-            xa = getValue(i0+1, j0+1);   // A = point 11
-            xb = getValue(i0,   j0+1);   // B = point 01
-            xc = getValue(i0+1, j0);     // C = point 10
+            xa = getValue(i1, j1);   // A = point 11
+            xb = getValue(i0, j1);   // B = point 01
+            xc = getValue(i1, j0);   // C = point 10
             kx = 1-dx;
             ky = 1-dy;
         }
         else if (!h01) {
             //printf("! h01  %f %f\n", dx,dy);
-            xa = getValue(i0+1, j0);     // A = point 10
-            xb = getValue(i0+1, j0+1);   // B = point 11
-            xc = getValue(i0,   j0);     // C = point 00
+            xa = getValue(i1, j0);     // A = point 10
+            xb = getValue(i1, j1);   // B = point 11
+            xc = getValue(i0, j0);     // C = point 00
             kx = dy;
             ky = 1-dx;
         }
         else if (!h10) {
             //printf("! h10  %f %f\n", dx,dy);
-            xa = getValue(i0,   j0+1);     // A = point 01
-            xb = getValue(i0,   j0);       // B = point 00
-            xc = getValue(i0+1, j0+1);     // C = point 11
+            xa = getValue(i0, j1);     // A = point 01
+            xb = getValue(i0, j0);       // B = point 00
+            xc = getValue(i1, j1);     // C = point 11
             kx = 1-dy;
             ky = dx;
         }
         else {
             //printf("! h11  %f %f\n", dx,dy);
-            xa = getValue(i0,   j0);    // A = point 00
-            xb = getValue(i0+1, j0);    // B = point 10
-            xc = getValue(i0,   j0+1);  // C = point 01
+            xa = getValue(i0, j0);  // A = point 00
+            xb = getValue(i1, j0);  // B = point 10
+            xc = getValue(i0, j1);  // C = point 01
             kx = dx;
             ky = dy;
         }

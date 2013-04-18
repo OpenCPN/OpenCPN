@@ -29,8 +29,9 @@ Dessin des données GRIB (avec QT)
 #include <list>
 #include <set>
 
+#include "../../../include/ocpn_plugin.h"
+
 #include "GribReader.h"
-#include "grib_pi.h"
 
 class ViewPort;
 class wxDC;
@@ -79,8 +80,6 @@ extern "C"  ClipResult cohen_sutherland_line_clip_i (int *x0, int *y0, int *x1, 
 // c  d
 // Rejoint l'arête (i,j)-(k,l) à l'arête (m,n)-(o,p) (indices ds la grille GRIB)
 
-class GRIBOverlayFactory;
-
 class Segment
 {
     public:
@@ -102,33 +101,31 @@ class Segment
                 const GribRecord *rec, double pressure);
 };
 
+class GRIBOverlayFactory;
+
 //===============================================================
 class IsoLine
 {
     public:
-        IsoLine(double val, const GribRecord *rec);
+         IsoLine(double val, double coeff, double offset, const GribRecord *rec);
         ~IsoLine();
 
 
-        void drawIsoLine(GRIBOverlayFactory *pof, wxDC &dc, PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
+        void drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp, bool bHiDef);
 
-        void drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC &dc, wxColour text_color, wxColour back_color,
-                                PlugIn_ViewPort *vp, int density, int first, double coef);
-
-        void drawGLIsoLine(GRIBOverlayFactory *pof, 
-                   PlugIn_ViewPort *vp, bool bShowLabels, bool bHiDef);
-        void drawGLIsoLineLabels(GRIBOverlayFactory *pof,wxColour text_color, wxColour back_color,
-                   PlugIn_ViewPort *vp, int density, int first, double coef);
+        void drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
+                               PlugIn_ViewPort *vp, int density, int first,
+                               wxImage &imageLabel);
 
         int getNbSegments()     {return trace.size();}
 
+        double getValue() {return value;}
     private:
         double value;
         int    W, H;     // taille de la grille
         const  GribRecord *rec;
 
         wxColour  isoLineColor;
-        wxImage   m_imageLabel;
         std::list<Segment *> trace;
 
 

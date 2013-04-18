@@ -34,15 +34,20 @@
   #include <wx/glcanvas.h>
 #endif //precompiled headers
 
-#define     PLUGIN_VERSION_MAJOR    1
-#define     PLUGIN_VERSION_MINOR    4
+#define     PLUGIN_VERSION_MAJOR    2
+#define     PLUGIN_VERSION_MINOR    2
 
 #define     MY_API_VERSION_MAJOR    1
 #define     MY_API_VERSION_MINOR    7
 
 #include "../../../include/ocpn_plugin.h"
 
-#include "grib.h"
+#include "../../../include/wx/jsonreader.h"
+#include "../../../include/wx/jsonwriter.h"
+
+#include "GribSettingsDialog.h"
+#include "GribOverlayFactory.h"
+#include "GribUIDialog.h"
 
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn Class Definition
@@ -72,29 +77,34 @@ public:
 //    The override PlugIn Methods
       bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
       void SetCursorLatLon(double lat, double lon);
+      void SetPluginMessage(wxString &message_id, wxString &message_body);
       bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
-
-
+      void SendTimelineMessage(wxDateTime time);
       void SetDefaults(void);
-
       int GetToolbarToolCount(void);
-
       void ShowPreferencesDialog( wxWindow* parent );
-
       void OnToolbarToolCallback(int id);
 
-
 // Other public methods
-
-      void SetGribDir(wxString grib_dir){ m_grib_dir = grib_dir;};
       void SetGribDialogX    (int x){ m_grib_dialog_x = x;};
       void SetGribDialogY    (int x){ m_grib_dialog_y = x;}
       void SetGribDialogSizeX(int x){ m_grib_dialog_sx = x;}
       void SetGribDialogSizeY(int x){ m_grib_dialog_sy = x;}
       void SetColorScheme(PI_ColorScheme cs);
 
-      bool GetUseMS(void){ return m_bGRIBUseMS; }
       void OnGribDialogClose();
+
+      void SetGRIBDataConfig ( wxString conf ){ m_grib_DataConfig = conf; }
+      void SetMailRequestConfig ( wxString conf ){ m_grib_RequestConfig = conf; }
+
+      wxString GetGRIBDataConfig(){ return m_grib_DataConfig; }
+      wxString GetMailRequestConfig(){ return m_grib_RequestConfig; }
+
+      int  GetTimeZone() { return m_bTimeZone; }
+      bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
+      bool GetCopyMissWaveRec() { return  m_bCopyMissWaveRec; }
+      wxString GetSaildocAdresse() { return m_bMailAdresse; }
+
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
 
 private:
@@ -110,24 +120,44 @@ private:
       int              m_display_width, m_display_height;
       int              m_leftclick_tool_id;
 
-      bool             m_bShowGrib;
-
       int              m_grib_dialog_x, m_grib_dialog_y;
       int              m_grib_dialog_sx, m_grib_dialog_sy;
-      wxString         m_grib_dir;
-
-      bool              m_bGRIBUseHiDef;
-      bool              m_bGRIBShowIcon;
-      bool              m_bGRIBUseMS;
 
       //    Controls added to Preferences panel
-      wxCheckBox              *m_pGRIBShowIcon;
       wxCheckBox              *m_pGRIBUseHiDef;
-      wxCheckBox              *m_pGRIBUseMS;
+      wxCheckBox              *m_pGRIBUseGradualColors;
 
+      GribTimelineRecordSet *m_pLastTimelineSet;
+
+      // preference data
+      bool              m_bGRIBUseHiDef;
+      bool              m_bGRIBUseGradualColors;
+      int              m_bTimeZone;
+      bool             m_bCopyFirstCumRec;
+      bool             m_bCopyMissWaveRec;
+
+      wxString         m_grib_DataConfig;
+      wxString         m_grib_RequestConfig;
+
+      wxString         m_bMailAdresse;
+      
+      bool             m_bGRIBShowIcon;
+
+      int              m_height;
+
+      bool        m_bShowGrib;
+};
+
+//----------------------------------------------------------------------------------------
+// Prefrence dialog definition
+//----------------------------------------------------------------------------------------
+
+class GribPreferencesDialog : public GribPreferencesDialogBase
+{
+public:
+    GribPreferencesDialog( wxWindow *pparent)
+    : GribPreferencesDialogBase(pparent) {}
+    ~GribPreferencesDialog() {}
 };
 
 #endif
-
-
-
