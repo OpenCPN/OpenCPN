@@ -1218,7 +1218,7 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
         Route *route = pRouteList->Item( m_pRouteListCtrl->GetItemData( clicked_index ) )->GetData();
                 
         int wpts_set_viz = wxYES;
-        if( g_pRouteMan->DoesRouteContainSharedPoints(route) ) {        
+        if( g_pRouteMan->DoesRouteContainSharedPoints(route)  && route->IsVisible() ) {        
             wpts_set_viz = wxMessageBox( _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
         }
         route->SetVisible( !route->IsVisible(), (wpts_set_viz == wxYES) );
