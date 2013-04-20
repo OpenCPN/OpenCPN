@@ -1137,6 +1137,7 @@ INCLUDE(CPack)
 IF(APPLE)
 # -- Run the BundleUtilities cmake code
   SET(CPACK_BUNDLE_PLIST "${CMAKE_SOURCE_DIR}/buildosx/Info.plist")
+  SET(MACOSX_BUNDLE_BUNDLE_NAME "OpenCPN")
 
   SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/OpenCPN.app")
   SET(DIRS "")
