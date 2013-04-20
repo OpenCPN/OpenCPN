@@ -1219,7 +1219,7 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
                 
         int wpts_set_viz = wxYES;
         if( g_pRouteMan->DoesRouteContainSharedPoints(route)  && route->IsVisible() ) {        
-            wpts_set_viz = wxMessageBox( _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
+            wpts_set_viz = OCPNMessageBox( this, _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
         }
         route->SetVisible( !route->IsVisible(), (wpts_set_viz == wxYES) );
         m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
@@ -2036,7 +2036,7 @@ void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
                 
                 if ( wp->m_bIsInRoute || wp->m_bIsInTrack )
                 {
-                    if ( wxYES == wxMessageBox( _( "The waypoint you want to delete is used in a route, do you really want to delete it?" ), _( "OpenCPN Alert" ), wxYES_NO ))
+                    if ( wxYES == OCPNMessageBox( this, _( "The waypoint you want to delete is used in a route, do you really want to delete it?" ), _( "OpenCPN Alert" ), wxYES_NO ))
                         pWayPointMan->DestroyWaypoint( wp );
                 }
                 else
