@@ -2987,19 +2987,18 @@ bool s57chart::CreateHeaderDataFromENC( void )
 
                         pfr += 2;
                     }
+
+                    if( catcov == 1 ) {
+                        pAuxPtrArray->Add( pf );
+                        pAuxCntArray->Add( npt );
+                    }
+                    else if( catcov == 2 ){
+                        pNoCovrPtrArray->Add( pf );
+                        pNoCovrCntArray->Add( npt );
+                    }
                 }
 
             delete pFeat;
-
-            if( catcov == 1 ) {
-                pAuxPtrArray->Add( pf );
-                pAuxCntArray->Add( npt );
-            }
-            else if( catcov == 2 ){
-                pNoCovrPtrArray->Add( pf );
-                pNoCovrCntArray->Add( npt );
-            }
-
             pFeat = GetChartNextM_COVR( catcov );
         }         // while
 
@@ -5177,67 +5176,68 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
 
                 //    Capture the Vector Table geometry indices
 
-                int *pNAME_RCID;
-                int nEdgeVectorRecords;
-                OGRFeature *pEdgeVectorRecordFeature;
+                if(!error_code){
+                    int *pNAME_RCID;
+                    int nEdgeVectorRecords;
+                    OGRFeature *pEdgeVectorRecordFeature;
 
-                pNAME_RCID = (int *) pFeature->GetFieldAsIntegerList( "NAME_RCID",
-                        &nEdgeVectorRecords );
+                    pNAME_RCID = (int *) pFeature->GetFieldAsIntegerList( "NAME_RCID",
+                            &nEdgeVectorRecords );
 
-                fprintf( fpOut, "LSINDEXLIST %d\n", nEdgeVectorRecords );
+                    fprintf( fpOut, "LSINDEXLIST %d\n", nEdgeVectorRecords );
 
-                //  Set up the options, adding RETURN_PRIMITIVES
-                char ** papszReaderOptions = NULL;
-                papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_UPDATES, "ON" );
-                papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_LINKAGES,
-                        "ON" );
-                papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,
-                        "ON" );
-                poReader->SetOptions( papszReaderOptions );
+                    //  Set up the options, adding RETURN_PRIMITIVES
+                    char ** papszReaderOptions = NULL;
+                    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_UPDATES, "ON" );
+                    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_LINKAGES,
+                            "ON" );
+                    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,
+                            "ON" );
+                    poReader->SetOptions( papszReaderOptions );
 
-//    Capture the beginning and end point connected nodes for each edge vector record
-                for( i = 0; i < nEdgeVectorRecords; i++ ) {
-                    int start_rcid, end_rcid;
-                    /*
-                     //  Filter out absurd RCIDs, found first on cell IT300017.000
-                     if((pNAME_RCID[i] >= 0) && (pNAME_RCID[i] <= m_nvector_table_size))
-                     {
-                     int target_record_feid = m_pVectorEdgeHelperTable[pNAME_RCID[i]];
-                     pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
-                     }
-                     else
-                     pEdgeVectorRecordFeature = NULL;
-                     */
-                    int target_record_feid = m_vector_helper_hash[pNAME_RCID[i]];
-                    pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
+    //    Capture the beginning and end point connected nodes for each edge vector record
+                    for( i = 0; i < nEdgeVectorRecords; i++ ) {
+                        int start_rcid, end_rcid;
+                        /*
+                        //  Filter out absurd RCIDs, found first on cell IT300017.000
+                        if((pNAME_RCID[i] >= 0) && (pNAME_RCID[i] <= m_nvector_table_size))
+                        {
+                        int target_record_feid = m_pVectorEdgeHelperTable[pNAME_RCID[i]];
+                        pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
+                        }
+                        else
+                        pEdgeVectorRecordFeature = NULL;
+                        */
+                        int target_record_feid = m_vector_helper_hash[pNAME_RCID[i]];
+                        pEdgeVectorRecordFeature = poReader->ReadVector( target_record_feid, RCNM_VE );
 
-                    if( NULL != pEdgeVectorRecordFeature ) {
-                        start_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_0" );
-                        end_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_1" );
+                        if( NULL != pEdgeVectorRecordFeature ) {
+                            start_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_0" );
+                            end_rcid = pEdgeVectorRecordFeature->GetFieldAsInteger( "NAME_RCID_1" );
 
-                        fwrite( &start_rcid, 1, sizeof(int), fpOut );
-                        fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
-                        fwrite( &end_rcid, 1, sizeof(int), fpOut );
+                            fwrite( &start_rcid, 1, sizeof(int), fpOut );
+                            fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
+                            fwrite( &end_rcid, 1, sizeof(int), fpOut );
 
-                        delete pEdgeVectorRecordFeature;
-                    } else {
-                        start_rcid = -1;                                    // error indication
-                        end_rcid = -2;
+                            delete pEdgeVectorRecordFeature;
+                        } else {
+                            start_rcid = -1;                                    // error indication
+                            end_rcid = -2;
 
-                        fwrite( &start_rcid, 1, sizeof(int), fpOut );
-                        fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
-                        fwrite( &end_rcid, 1, sizeof(int), fpOut );
+                            fwrite( &start_rcid, 1, sizeof(int), fpOut );
+                            fwrite( &pNAME_RCID[i], 1, sizeof(int), fpOut );
+                            fwrite( &end_rcid, 1, sizeof(int), fpOut );
+                        }
                     }
+
+                    fprintf( fpOut, "\n" );
+
+                    //  Reset the options
+                    papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,
+                            "OFF" );
+                    poReader->SetOptions( papszReaderOptions );
+                    CSLDestroy( papszReaderOptions );
                 }
-
-                fprintf( fpOut, "\n" );
-
-                //  Reset the options
-                papszReaderOptions = CSLSetNameValue( papszReaderOptions, S57O_RETURN_PRIMITIVES,
-                        "OFF" );
-                poReader->SetOptions( papszReaderOptions );
-                CSLDestroy( papszReaderOptions );
-
                 break;
             }
 

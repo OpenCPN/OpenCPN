@@ -445,6 +445,29 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
 int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon)
 {
 
+    //  Make a quick sanity check of the polygon coherence
+    bool b_ok = true;
+    OGRLineString *tls = poly->getExteriorRing();
+    if(!tls) {
+        b_ok = false;
+    }
+    else {
+        int tnpta  = poly->getExteriorRing()->getNumPoints();
+        if(tnpta < 3 )
+            b_ok = false;
+    }
+    
+    for( int iir=0 ; iir < poly->getNumInteriorRings() ; iir++)
+    {
+        int tnptr = poly->getInteriorRing(iir)->getNumPoints();
+        if( tnptr < 3 )
+            b_ok = false;
+    }
+    
+    if( !b_ok )
+        return 2;
+    
+    
     m_pxgeom = NULL;
 
     int iir, ip;
@@ -1120,6 +1143,29 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
     wxString    sout1;
     wxString    stemp;
 
+    //  Make a quick sanity check of the polygon coherence
+    bool b_ok = true;
+    OGRLineString *tls = poly->getExteriorRing();
+    if(!tls) {
+        b_ok = false;
+    }
+    else {
+        int tnpta  = poly->getExteriorRing()->getNumPoints();
+        if(tnpta < 3 )
+        b_ok = false;
+    }
+      
+    for( iir=0 ; iir < poly->getNumInteriorRings() ; iir++)
+    {
+        int tnptr = poly->getInteriorRing(iir)->getNumPoints();
+        if( tnptr < 3 )
+        b_ok = false;
+    }
+     
+    if( !b_ok )
+       return 2;
+     
+                
 
 #ifdef __WXMSW__
 //  If using the OpenGL dlls provided with Windows,
