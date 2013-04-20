@@ -1488,8 +1488,8 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             token = tkz.GetNextToken();         // acknowledgement
             token = tkz.GetNextToken();         // expansion indicator
 
-            dsc_quadrant = (int) dsc_tmp / 1000000000.0;
-
+            dsc_quadrant = (int) (dsc_tmp / 1000000000.0);
+            
             dsc_lat = (int) ( dsc_tmp / 100000.0 );
             dsc_lon = dsc_tmp - dsc_lat * 100000.0;
             dsc_lat = dsc_lat - dsc_quadrant * 10000;
