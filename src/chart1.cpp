@@ -806,6 +806,15 @@ bool MyApp::OnInit()
 //    bells_sound[0].Create(_T("/home/dsr/2bells.wav"));
 //    bells_sound[0].Play();
 
+   //  On Windows, we allow only one instance unless the portable option is used
+#ifdef __WXMSW__    
+    m_checker = new wxSingleInstanceChecker(_T("OpenCPN"));
+    if(!g_bportable) {
+        if ( m_checker->IsAnotherRunning() ) 
+            return false;               // exit quietly
+    }
+#endif
+
     g_pPlatform = new wxPlatformInfo;
 
     //    On MSW, force the entire process to run on one CPU core only
@@ -2066,6 +2075,11 @@ int MyApp::OnExit()
     delete g_pauimgr;
 
     delete plocale_def_lang;
+    
+#ifdef __WXMSW__    
+    delete m_checker;
+#endif    
+    
     return TRUE;
 }
 

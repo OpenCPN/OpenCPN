@@ -32,6 +32,7 @@
 #include "wx/print.h"
 #include "wx/datetime.h"
 #include <wx/cmdline.h>
+#include <wx/snglinst.h>
 
 #ifdef __WXMSW__
 #include "wx/msw/private.h"
@@ -189,6 +190,8 @@ class MyApp: public wxApp
     void OnActivateApp(wxActivateEvent& event);
 
     void TrackOff(void);
+    
+    wxSingleInstanceChecker m_checker;
 
     DECLARE_EVENT_TABLE()
 
