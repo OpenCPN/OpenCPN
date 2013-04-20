@@ -8625,7 +8625,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(wxString &data_file_path)
             psd->zone_offset = zone_offset;
 
             // Get units
-            strncpy (psd->unit, get_level_units (ptiderec->level_units), ONELINER_LENGTH);
+            strncpy (psd->unit, get_level_units (ptiderec->level_units), 40);
             
             psd->have_BOGUS = (findunit(psd->unit) != -1) && (known_units[findunit(psd->unit)].type == BOGUS);
             
