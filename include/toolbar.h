@@ -69,7 +69,7 @@ public:
 
       ocpnToolBarSimple( wxWindow *parent, wxWindowID winid, const wxPoint& pos = wxDefaultPosition,
                   const wxSize& size = wxDefaultSize, long style = wxNO_BORDER | wxTB_HORIZONTAL,
-                  const wxString& name = wxToolBarNameStr ) {
+                  const wxString& name = wxToolBarNameStr ) : m_one_shot(500) {
             Init();
 
             Create( parent, winid, pos, size, style, name );
