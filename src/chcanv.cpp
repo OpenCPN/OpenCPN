@@ -2160,6 +2160,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    Mark the quilt to indicate need for background clear if the region is not fully covered
     m_bneed_clear = !unrendered_region.IsEmpty();
     m_back_region = unrendered_region;
+    
+    cc1->StopAutoPan();
 
     //    Finally, iterate thru the quilt and preload all of the required charts.
     //    For dynamic S57 SENC creation, this is where SENC creation happens first.....
@@ -2169,6 +2171,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
                     FULL_INIT );
     }
 
+    cc1->StopAutoPan();
+    
     //    Build and maintain the array of indexes in this quilt
 
     m_last_index_array = m_index_array;       //save the last one for delta checks
@@ -3807,6 +3811,9 @@ ViewPort &ChartCanvas::GetVP()
 
 void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
+    m_panx = 0;
+    m_pany = 0;
+    
     m_modkeys = event.GetModifiers();
 
     if( event.GetKeyCode() == WXK_CONTROL ) m_bmouse_key_mod = true;
@@ -4201,6 +4208,15 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
     }
     event.Skip();
 }
+
+void ChartCanvas::StopAutoPan(void)
+{
+    pPanKeyTimer->Stop();
+    m_panx = 0;
+    m_pany = 0;
+    m_panspeed = 0;
+}
+
 
 void ChartCanvas::Do_Pankeys( wxTimerEvent& event )
 {

@@ -172,7 +172,8 @@ public:
       void CancelMouseRoute();
 
       void Do_Pankeys(wxTimerEvent& event);
-
+      void StopAutoPan(void);
+      
       bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust = true);
       bool SetVPScale(double sc);
       bool SetViewPoint ( double lat, double lon);
