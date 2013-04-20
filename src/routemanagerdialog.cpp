@@ -829,6 +829,9 @@ RouteManagerDialog::~RouteManagerDialog()
     delete btnImport;
     delete btnExport;
     delete btnExportViz;
+    btnImport = NULL;
+    btnExport = NULL;
+    btnExportViz = NULL;
     
     delete m_pNotebook;
 
