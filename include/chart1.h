@@ -191,7 +191,7 @@ class MyApp: public wxApp
 
     void TrackOff(void);
     
-    wxSingleInstanceChecker m_checker;
+    wxSingleInstanceChecker *m_checker;
 
     DECLARE_EVENT_TABLE()
 
