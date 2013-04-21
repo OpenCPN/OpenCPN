@@ -7468,11 +7468,14 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( pNearbyPoint && ( pNearbyPoint != m_prev_pMousePoint )
                     && !pNearbyPoint->m_bIsInTrack && !pNearbyPoint->m_bIsInLayer )
             {
-                int dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
+                int dlg_return = wxID_YES;
+#ifndef __WXOSX__
+                // For some reason, on MAC this Message box (inside the MouseEvent Handler) cannot get focus...
+                // So, we default to "Yes" on the dialog
+                dlg_return = OCPNMessageBox( this, _("Use nearby waypoint?"),
                                                   _("OpenCPN Route Create"),
                                                   (long) wxYES_NO | wxCANCEL | wxYES_DEFAULT );
-//                int dlg_return = near_point_dlg.ShowModal();
-
+#endif
                 if( dlg_return == wxID_YES ) {
                     pMousePoint = pNearbyPoint;
 
