@@ -1220,11 +1220,11 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
         // Process the clicked item
         Route *route = pRouteList->Item( m_pRouteListCtrl->GetItemData( clicked_index ) )->GetData();
                 
-        int wpts_set_viz = wxYES;
+        int wpts_set_viz = wxID_YES;
         bool togglesharedwpts = true;
         if( g_pRouteMan->DoesRouteContainSharedPoints(route) && route->IsVisible() ) {
             wpts_set_viz = OCPNMessageBox(  this, _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
-            togglesharedwpts = (wpts_set_viz == wxYES);
+            togglesharedwpts = (wpts_set_viz == wxID_YES);
         }
         route->SetVisible( !route->IsVisible(), togglesharedwpts );
         m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
@@ -1278,7 +1278,9 @@ void RouteManagerDialog::OnRteSelected( wxListEvent &event )
 //    route->SetVisible(!route->IsVisible());
     m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 //    pConfig->UpdateRoute(route);
-    cc1->Refresh();
+    
+    if( cc1 )
+        cc1->Refresh();
 
     UpdateRteButtons();
 
