@@ -114,6 +114,8 @@ extern wxString         g_sAIS_Alert_Sound_File;
 extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
+extern bool             g_bShowAISName;
+extern int              g_Show_Target_Name_Scale;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -1497,6 +1499,15 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     m_pCheck_Draw_Target_Size = new wxCheckBox( panelAIS, -1, _("Show AIS targets real size") );
     pDisplayGrid->Add( m_pCheck_Draw_Target_Size, 1, wxALL, group_item_spacing );
 
+    wxStaticText *pStatic_Dummy6 = new wxStaticText( panelAIS, -1, _T("") );
+    pDisplayGrid->Add( pStatic_Dummy6, 1, wxALL | wxALL, group_item_spacing );
+
+    m_pCheck_Show_Target_Name = new wxCheckBox( panelAIS, -1, _("Show names with AIS targets at scale greater than 1:") );
+    pDisplayGrid->Add( m_pCheck_Show_Target_Name, 1, wxALL, group_item_spacing );
+
+    m_pText_Show_Target_Name_Scale = new wxTextCtrl( panelAIS, -1 );
+    pDisplayGrid->Add( m_pText_Show_Target_Name_Scale, 1, wxALL | wxALIGN_RIGHT, group_item_spacing );
+
     wxStaticText *pStatic_Dummy5a = new wxStaticText( panelAIS, -1, _T("") );
     pDisplayGrid->Add( pStatic_Dummy5a, 1, wxALL | wxALL, group_item_spacing );
 
@@ -1969,6 +1980,11 @@ void options::SetInitialSettings()
     m_pCheck_Show_Area_Notices->SetValue( g_bShowAreaNotices );
 
     m_pCheck_Draw_Target_Size->SetValue( g_bDrawAISSize );
+
+    m_pCheck_Show_Target_Name->SetValue( g_bShowAISName );
+
+    s.Printf( _T("%d"), g_Show_Target_Name_Scale );
+    m_pText_Show_Target_Name_Scale->SetValue( s );
 
     //      Alerts
     m_pCheck_AlertDialog->SetValue( g_bAIS_CPA_Alert );
@@ -2490,6 +2506,10 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     g_bShowAreaNotices = m_pCheck_Show_Area_Notices->GetValue();
     g_bDrawAISSize = m_pCheck_Draw_Target_Size->GetValue();
+    g_bShowAISName = m_pCheck_Show_Target_Name->GetValue();
+    long ais_name_scale = 5000;
+    m_pText_Show_Target_Name_Scale->GetValue().ToLong( &ais_name_scale );
+    g_Show_Target_Name_Scale = (int)wxMax( 5000, ais_name_scale );
 
     //      Alert
     g_bAIS_CPA_Alert = m_pCheck_AlertDialog->GetValue();
@@ -3895,7 +3915,8 @@ void options::FillSourceList()
 {
     m_buttonRemove->Enable(false);
     m_lcSources->DeleteAllItems();
-    for (size_t i = 0; i < g_pConnectionParams->Count(); i++) {
+    for (size_t i = 0; i < g_pConnectionParams->Count(); i++)
+    {
         wxListItem li;
         li.SetId( i );
         li.SetImage( g_pConnectionParams->Item(i)->bEnabled ? 1 : 0  );

@@ -65,6 +65,8 @@ extern bool     g_bAIS_ACK_Timeout;
 extern double   g_AckTimeout_Mins;
 extern bool     g_bShowAreaNotices;
 extern bool     g_bDrawAISSize;
+extern bool     g_bShowAISName;
+extern int      g_Show_Target_Name_Scale;
 extern double gLat;
 extern double gLon;
 extern double gCog;

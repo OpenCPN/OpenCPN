@@ -201,6 +201,8 @@ extern double           g_ShowMoored_Kts;
 extern bool             g_bAISShowTracks;
 extern bool             g_bShowAreaNotices;
 extern bool             g_bDrawAISSize;
+extern bool             g_bShowAISName;
+extern int              g_Show_Target_Name_Scale;
 
 extern int              g_iNavAidRadarRingsNumberVisible;
 extern float            g_fNavAidRadarRingsStep;
@@ -4258,6 +4260,30 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             }
         }
 
+        if (g_bShowAISName) {
+            double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
+            if( true_scale_display < g_Show_Target_Name_Scale ) { // from which scale to display name
+
+                wxString tgt_name =wxString::FromUTF8( td->ShipName );
+                tgt_name = tgt_name.substr( 0, tgt_name.find( _T ( "@" ), 0 ) );
+                tgt_name = tgt_name.substr( 0, tgt_name.find( _T ( "Unknown" ), 0) );
+
+                if ( tgt_name != wxEmptyString ) {
+                    dc.SetFont( *pFontMgr->GetFont( _( "AIS Target Name" ), 12 ) );
+                    dc.SetTextForeground( pFontMgr->GetFontColor( _T( "AIS Target Name" ) ) );
+
+                    int w, h;
+                    dc.GetTextExtent( tgt_name, &w, &h );
+
+                    if ( ( td->COG > 90 ) && ( td->COG < 180 ) )
+                        dc.DrawText( tgt_name, TargetPoint.x+10, TargetPoint.y-h );
+                    else
+                        dc.DrawText( tgt_name, TargetPoint.x+10, TargetPoint.y+0.5*h );
+
+                } //If name do not empty
+            } // if scale
+        }
+
         //  Draw tracks if enabled
         if( g_bAISShowTracks ) {
             wxPoint TrackPointA;
@@ -5237,7 +5263,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 #else
                 dlg_return = wxID_YES;
 #endif
-                
+
                 if( dlg_return == wxID_YES ) {
                     pMousePoint = pNearbyPoint;
 
