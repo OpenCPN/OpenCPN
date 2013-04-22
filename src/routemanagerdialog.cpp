@@ -1287,7 +1287,9 @@ void RouteManagerDialog::OnRteSelected( wxListEvent &event )
 //    route->SetVisible(!route->IsVisible());
     m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 //    pConfig->UpdateRoute(route);
-    cc1->Refresh();
+   
+    if( cc1 )
+        cc1->Refresh();
 
     UpdateRteButtons();
 
