@@ -818,13 +818,16 @@ bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
 
+    //  On Windows
     //  We allow only one instance unless the portable option is used
+#ifdef __WXMSW__    
     m_checker = new wxSingleInstanceChecker(_T("OpenCPN"));
     if(!g_bportable) {
         if ( m_checker->IsAnotherRunning() ) 
             return false;               // exit quietly
     }
-    
+#endif
+
     g_pPlatform = new wxPlatformInfo;
 
     //    On MSW, force the entire process to run on one CPU core only
@@ -2098,7 +2101,9 @@ int MyApp::OnExit()
 
     delete plocale_def_lang;
     
+#ifdef __WXMSW__    
     delete m_checker;
+#endif
     
     return TRUE;
 }
