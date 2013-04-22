@@ -364,6 +364,8 @@ SET(HDRS
 		include/vector2D.h
 		include/OCPNSoundData.h
 		include/OCPN_Sound.h
+		include/NMEALogWindow.h
+		include/WindowDestroyListener.h
 		include/TTYWindow.h
 		include/TTYScroll.h
 		include/Layer.h
@@ -450,6 +452,7 @@ SET(SRCS
 		src/FontDesc.cpp
 		src/OCPNSoundData.cpp
 		src/OCPN_Sound.cpp
+		src/NMEALogWindow.cpp
 		src/TTYWindow.cpp
 		src/TTYScroll.cpp
 		src/SendToGpsDlg.cpp

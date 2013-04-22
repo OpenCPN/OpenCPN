@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -22,38 +22,13 @@
  ***************************************************************************
  */
 
-#ifndef __TTYWINDOW_H__
-#define __TTYWINDOW_H__
+#ifndef __WINDOWDESTROYLISTENER_H__
+#define __WINDOWDESTROYLISTENER_H__
 
-#include <wx/dialog.h>
-#include <wx/bitmap.h>
-
-class wxButton;
-class TTYScroll;
-class WindowDestroyListener;
-
-class TTYWindow : public wxDialog
+class WindowDestroyListener
 {
-    DECLARE_DYNAMIC_CLASS( TTYWindow )
-    DECLARE_EVENT_TABLE()
-
     public:
-        TTYWindow();
-        TTYWindow(wxWindow *parent, int n_lines, WindowDestroyListener * listener = NULL);
-        virtual ~TTYWindow();
-
-        void Add(const wxString &line);
-        void OnCloseWindow(wxCloseEvent& event);
-        void Close();
-        void OnPauseClick( wxCommandEvent& event );
-
-    protected:
-        void CreateLegendBitmap();
-        WindowDestroyListener * m_window_destroy_listener;
-        TTYScroll   *m_pScroll;
-        wxButton    *m_buttonPause;
-        bool        bpause;
-        wxBitmap    m_bm_legend;
+        virtual void DestroyWindow() = 0;
 };
 
 #endif

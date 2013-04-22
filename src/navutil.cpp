@@ -71,9 +71,9 @@
 #include "Select.h"
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
-#include "TTYWindow.h"
 #include "Layer.h"
 #include "NavObjectCollection.h"
+#include "NMEALogWindow.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -238,10 +238,6 @@ extern bool             g_bPreserveScaleOnX;
 
 extern bool             g_bUseRMC;
 extern bool             g_bUseGLL;
-
-extern TTYWindow        *g_NMEALogWindow;
-extern int              g_NMEALogWindow_x, g_NMEALogWindow_y;
-extern int              g_NMEALogWindow_sx, g_NMEALogWindow_sy;
 
 extern wxString         g_locale;
 
@@ -1201,13 +1197,9 @@ int MyConfig::LoadMyConfig( int iteration )
     if( g_navobjbackups > 99 ) g_navobjbackups = 99;
     if( g_navobjbackups < 0 ) g_navobjbackups = 0;
 
-    g_NMEALogWindow_sx = Read( _T ( "NMEALogWindowSizeX" ), 600L );
-    g_NMEALogWindow_sy = Read( _T ( "NMEALogWindowSizeY" ), 400L );
-    g_NMEALogWindow_x = Read( _T ( "NMEALogWindowPosX" ), 10L );
-    g_NMEALogWindow_y = Read( _T ( "NMEALogWindowPosY" ), 10L );
-
-    if( ( g_NMEALogWindow_x < 0 ) || ( g_NMEALogWindow_x > display_width ) ) g_NMEALogWindow_x = 5;
-    if( ( g_NMEALogWindow_y < 0 ) || ( g_NMEALogWindow_y > display_height ) ) g_NMEALogWindow_y = 5;
+    NMEALogWindow::Get().SetSize(Read(_T("NMEALogWindowSizeX"), 600L), Read(_T("NMEALogWindowSizeY"), 400L));
+    NMEALogWindow::Get().SetPos(Read(_T("NMEALogWindowPosX"), 10L), Read(_T("NMEALogWindowPosY"), 10L));
+    NMEALogWindow::Get().CheckPos(display_width, display_height);
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
@@ -1980,7 +1972,7 @@ int MyConfig::LoadMyConfig( int iteration )
 
         if( ::wxFileExists( m_sNavObjSetFile ) ) {
             if( m_pNavObjectInputSet->LoadFile( m_sNavObjSetFile ) )
-				m_pNavObjectInputSet->LoadAllGPXObjects();
+                m_pNavObjectInputSet->LoadAllGPXObjects();
         }
 
         m_pNavObjectInputSet->Clear();
@@ -2547,10 +2539,10 @@ void MyConfig::UpdateSettings()
 
     if( cc1 ) Write( _T ( "ChartQuiltingInitial" ), cc1->GetQuiltMode() );
 
-    Write( _T ( "NMEALogWindowSizeX" ), g_NMEALogWindow_sx );
-    Write( _T ( "NMEALogWindowSizeY" ), g_NMEALogWindow_sy );
-    Write( _T ( "NMEALogWindowPosX" ), g_NMEALogWindow_x );
-    Write( _T ( "NMEALogWindowPosY" ), g_NMEALogWindow_y );
+    Write( _T ( "NMEALogWindowSizeX" ), NMEALogWindow::Get().GetSizeW());
+    Write( _T ( "NMEALogWindowSizeY" ), NMEALogWindow::Get().GetSizeH());
+    Write( _T ( "NMEALogWindowPosX" ), NMEALogWindow::Get().GetPosX());
+    Write( _T ( "NMEALogWindowPosY" ), NMEALogWindow::Get().GetPosY());
 
     Write( _T ( "PreserveScaleOnX" ), g_bPreserveScaleOnX );
 
