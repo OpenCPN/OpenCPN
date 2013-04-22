@@ -32,7 +32,6 @@
 #endif
 
 #define DS_RX_BUFFER_SIZE 4096
-#define OUT_QUEUE_LENGTH    20
 
 extern const wxEventType wxEVT_OCPN_DATASTREAM;
 
@@ -77,9 +76,10 @@ OCP_DataStreamInput_Thread::OCP_DataStreamInput_Thread(DataStream *Launcher,
     if(strBaudRate.ToLong(&lbaud))
         m_baud = (int)lbaud;
 
-    // Preload the output queue
-    for(int i=0 ; i  < OUT_QUEUE_LENGTH ; i++)
-        m_outQueue.Add( _T(""));
+    // Allocate the static output queue
+    for(int i=0 ; i  < OUT_QUEUE_LENGTH ; i++){
+        m_poutQueue[i] = (char *)malloc(MAX_OUT_QUEUE_MESSAGE_LENGTH);
+    }
     m_takIndex = -1;
     m_putIndex = -1;
 
@@ -238,35 +238,43 @@ void *OCP_DataStreamInput_Thread::Entry()
         //      Check for any pending output message
 
         if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->TryLock()) ){
-
             bool b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
-
+            
             while(b_qdata){
                 if(m_takIndex < OUT_QUEUE_LENGTH) {
-                    wxString msg = m_outQueue.Item(m_takIndex);
-
+                    
+                    //  Take a copy of message
+                    char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
+                    strncpy( msg, m_poutQueue[m_takIndex], MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
+                    
+                    //  Update and release the taker index
+                    if(m_takIndex==m_putIndex)
+                        m_takIndex=m_putIndex=(-1);
+                    else if(m_takIndex == (OUT_QUEUE_LENGTH-1) )
+                        m_takIndex=0;
+                    else
+                        m_takIndex++;
+                    
+                    
                     m_pout_mutex->Unlock();
                     WriteComPortPhysical(m_gps_fd, msg);
-                    if( wxMUTEX_NO_ERROR != m_pout_mutex->Lock() )
-                        goto bail_output;           // lock failed.
+                    
+                    if( wxMUTEX_NO_ERROR == m_pout_mutex->TryLock() )
+                        b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
+                    else
+                        b_qdata = false;
                 }
-                else {
-                    m_takIndex = -1;
-                    m_putIndex = -1;            // reset
+                else {                                  // some index error
+                    m_takIndex = (-1);
+                    m_putIndex = (-1);
+                    b_qdata = false;
                 }
-
-                if(m_takIndex==m_putIndex)
-                    m_takIndex=m_putIndex=(-1);
-                else if(m_takIndex == (OUT_QUEUE_LENGTH-1) )//  && m_putIndex == (OUT_QUEUE_LENGTH-1))
-                    m_takIndex=0;
-                else
-                    m_takIndex++;
-
-                b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
-            } //while out queue
-
+                
+                
+            } //while b_qdata
             m_pout_mutex->Unlock();
         }
+        
  bail_output:
     bool bail = true;
     }                          // the big while...
@@ -398,43 +406,44 @@ void *OCP_DataStreamInput_Thread::Entry()
         int t = now.GetTicks();                 // set a separate timer not controlled by serial port
         ic=0;
         while( b_inner ) {
-
-            //      Check for any pending output message
-
             if( m_pout_mutex && (wxMUTEX_NO_ERROR == m_pout_mutex->TryLock()) ){
-
                 bool b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
-
+                
                 while(b_qdata){
                     if(m_takIndex < OUT_QUEUE_LENGTH) {
-                        wxString msg = m_outQueue.Item(m_takIndex);
-
+                        
+                        //  Take a copy of message
+                        char msg[MAX_OUT_QUEUE_MESSAGE_LENGTH];
+                        strncpy( msg, m_poutQueue[m_takIndex], MAX_OUT_QUEUE_MESSAGE_LENGTH-1 );
+                        
+                        //  Update and release the taker index
+                        if(m_takIndex==m_putIndex)
+                            m_takIndex=m_putIndex=(-1);
+                        else if(m_takIndex == (OUT_QUEUE_LENGTH-1) )
+                            m_takIndex=0;
+                        else
+                            m_takIndex++;
+                        
+                        
                         m_pout_mutex->Unlock();
-                        //  This call will block this thread if the port output buffer is full
-                        if( WriteComPortPhysical(m_gps_fd, msg) )
-                            n_timeout = 0;              // port is evidently OK
-
-                        if( wxMUTEX_NO_ERROR != m_pout_mutex->Lock() )
-                            goto bail_output;           // lock failed.
+                        WriteComPortPhysical(m_gps_fd, msg);
+                        
+                        if( wxMUTEX_NO_ERROR == m_pout_mutex->TryLock() )
+                            b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
+                        else
+                            b_qdata = false;
                     }
-                    else {
-                        m_takIndex = -1;
-                        m_putIndex = -1;            // reset
+                    else {                                  // some index error
+                    m_takIndex = (-1);
+                    m_putIndex = (-1);
+                    b_qdata = false;
                     }
-
-                    if(m_takIndex==m_putIndex)
-                        m_takIndex=m_putIndex=(-1);
-                    else if(m_takIndex == (OUT_QUEUE_LENGTH-1) )// && m_putIndex == (OUT_QUEUE_LENGTH-1))
-                        m_takIndex=0;
-                    else
-                        m_takIndex++;
-
-                    b_qdata = (m_takIndex != (-1) || m_putIndex != (-1));
-                } //while out queue
-
+                    
+                    
+                } //while b_qdata
                 m_pout_mutex->Unlock();
-            }
-bail_output:
+            }           // Mutex lock
+            
 
             if( b_sleep )                       // we need a sleep if the serial port does not honor commtimeouts
                 wxSleep(1);
@@ -644,7 +653,7 @@ bool OCP_DataStreamInput_Thread::SetOutMsg(wxString msg)
 
         //      Error backstop....
         if(m_putIndex <= OUT_QUEUE_LENGTH)
-            m_outQueue.Item(m_putIndex) = msg;
+            strncpy(m_poutQueue[m_putIndex], msg.mb_str(), MAX_OUT_QUEUE_MESSAGE_LENGTH-1);
         else {
             m_takIndex = -1;
             m_putIndex = -1;
@@ -758,10 +767,10 @@ int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, const 
     return status;
 }
 
-int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, unsigned char *msg, int count)
+int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, char *msg)
 {
     ssize_t status;
-    status = write(port_descriptor, msg, count);
+    status = write(port_descriptor, msg, strlen(msg));
     return status;
 }
 
@@ -903,9 +912,18 @@ int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, const 
     return fRes;
 }
 
-int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, unsigned char *msg, int count)
+int OCP_DataStreamInput_Thread::WriteComPortPhysical(int port_descriptor, char *msg)
 {
-    return 0;
+    DWORD dwWritten;
+    int fRes;
+    
+    // Issue write.
+    if (!WriteFile((HANDLE)port_descriptor, msg, strlen(msg), &dwWritten, NULL))
+        fRes = 0;         // WriteFile failed, . Report error and abort.
+    else
+        fRes = dwWritten;      // WriteFile completed immediately.
+            
+    return fRes;
 }
 
 int OCP_DataStreamInput_Thread::ReadComPortPhysical(int port_descriptor, int count, unsigned char *p)
