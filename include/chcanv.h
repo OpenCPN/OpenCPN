@@ -216,7 +216,8 @@ public:
       bool DoZoomCanvasOut(double factor);
 
       bool PanCanvas(int dx, int dy);
-
+      void StopAutoPan(void);
+      
       void ShowAISTargetList(void);
 
       void ShowGoToPosition(void);
@@ -247,8 +248,8 @@ public:
       //Todo build more accessors
       bool        m_bFollow;
       wxCursor    *pCursorPencil;
-	  wxCursor    *pCursorArrow;
-	  wxCursor    *pCursorCross;
+      wxCursor    *pCursorArrow;
+      wxCursor    *pCursorCross;
       TCWin       *pCwin;
       wxBitmap    *pscratch_bm;
       double      m_cursor_lon, m_cursor_lat;

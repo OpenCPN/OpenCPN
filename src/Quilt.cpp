@@ -1409,6 +1409,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     m_bneed_clear = !unrendered_region.IsEmpty();
     m_back_region = unrendered_region;
 
+    cc1->StopAutoPan();
+    
     //    Finally, iterate thru the quilt and preload all of the required charts.
     //    For dynamic S57 SENC creation, this is where SENC creation happens first.....
     for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
@@ -1416,7 +1418,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         if( ( pqc->b_include ) && ( !pqc->b_eclipsed ) ) ChartData->OpenChartFromDB( pqc->dbIndex,
                     FULL_INIT );
     }
-
+    cc1->StopAutoPan();
+    
     //    Build and maintain the array of indexes in this quilt
 
     m_last_index_array = m_index_array;       //save the last one for delta checks
