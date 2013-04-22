@@ -4481,9 +4481,11 @@ Route *LoadGPXRoute( GpxRteElement *rtenode, int routenum, bool b_fullviz )
                     }
                 }
     }
-    if( g_bIsNewLayer ) pTentRoute->SetVisible( g_bLayerViz, false );
+    if( g_bIsNewLayer ) 
+        pTentRoute->SetVisible( g_bLayerViz, true );
     else
-        if( b_propviz ) pTentRoute->SetVisible( b_viz, false );
+        if( b_propviz )
+            pTentRoute->SetVisible( b_viz, false );
         else
             if( b_fullviz ) pTentRoute->SetVisible( true, false );
 
