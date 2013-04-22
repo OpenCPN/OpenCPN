@@ -780,17 +780,26 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
     else
     {
 //        printf("App Activate\n");
+        gFrame->SubmergeToolbar();              // This is needed to reset internal wxWidgets logic
+                                                // Also required for other TopLevelWindows here
+                                                // reportedly not required for wx 2.9
         gFrame->SurfaceToolbar();
 
-        if(g_FloatingCompassDialog)
+        if(g_FloatingCompassDialog){
+            g_FloatingCompassDialog->Hide();
             g_FloatingCompassDialog->Show();
+        }
 
-        if(stats)
+        if(stats){
+            stats->Hide();
             stats->Show();
+        }
 
         if(console) {
-            if( g_pRouteMan->IsAnyRouteActive() )
+            if( g_pRouteMan->IsAnyRouteActive() ){
+                console->Hide();
                 console->Show();
+            }
         }
         
         gFrame->Raise();
