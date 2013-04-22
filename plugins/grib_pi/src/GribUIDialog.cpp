@@ -405,12 +405,12 @@ void GRIBUIDialog::UpdateTrackingControls( void )
     if( !m_pTimelineSet )
         return;
 
-    wxDateTime t = m_pTimelineSet->m_Reference_Time;
+  /*  wxDateTime t = m_pTimelineSet->m_Reference_Time;
     t.MakeFromTimezone( wxDateTime::UTC );
     if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
     m_cRecordForecast->SetLabel(t.Format(_T("%Y-%m-%d %H:%M:%S "), wxDateTime::Local) + _T("Local - ") +
                                 t.Format(_T("%H:%M:%S "), wxDateTime::UTC) + _T("GMT"));
-    
+    */
     GribRecord **RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
     //    Update the wind control
     if( RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY] ) {
