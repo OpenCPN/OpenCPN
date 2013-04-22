@@ -354,7 +354,8 @@ typedef enum DS_ENUM_BUFFER_STATE
 
 #define DS_RX_BUFFER_SIZE 4096
 
-#define OUT_QUEUE_LENGTH        20
+#define OUT_QUEUE_LENGTH                20
+#define MAX_OUT_QUEUE_MESSAGE_LENGTH    100
 
 //          Inter-thread communication event declaration
 
@@ -384,7 +385,7 @@ private:
     int OpenComPortPhysical(wxString &com_name, int baud_rate);
     int CloseComPortPhysical(int fd);
     int WriteComPortPhysical(int port_descriptor, const wxString& string);
-    int WriteComPortPhysical(int port_descriptor, unsigned char *msg, int count);
+    int WriteComPortPhysical(int port_descriptor, char *msg);
     int ReadComPortPhysical(int port_descriptor, int count, unsigned char *p);
     bool CheckComPortPhysical(int port_descriptor);
 
@@ -410,7 +411,7 @@ private:
 
     int                     m_takIndex;
     int                     m_putIndex;
-    wxArrayString           m_outQueue;
+    char                    *m_poutQueue[OUT_QUEUE_LENGTH];
 
 
 #ifdef __WXMSW__
