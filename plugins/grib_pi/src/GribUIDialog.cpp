@@ -253,7 +253,7 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     }
 
 #if !wxCHECK_VERSION(2,9,4) /* to work with wx 2.8 */
-#define SetBitmap SetLabel
+#define SetBitmap SetBitmapLabel
 #endif
 
     m_bpPrev->SetBitmap(wxBitmap( prev ));
