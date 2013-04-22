@@ -818,6 +818,12 @@ void GRIBUIDialog::TimelineChanged(bool sync)
     /* get closest index to update combo box */
     unsigned int i;
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+
+    if(rsa->GetCount() < 2) {
+        m_cRecordForecast->SetSelection(0);
+        return;
+    }
+
     wxDateTime itime, ip1time;
     for(i=0; i<rsa->GetCount()-1; i++) {
         itime = rsa->Item(i).m_Reference_Time;
