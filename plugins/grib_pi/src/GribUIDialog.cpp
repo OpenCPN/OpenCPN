@@ -825,14 +825,11 @@ void GRIBUIDialog::TimelineChanged(bool sync)
         if(ip1time >= time)
             break;
     }
-    if( i == 0)
+
+    if(time - itime < ip1time - time)
         m_cRecordForecast->SetSelection(i);
-    else {
-        if(time - itime < ip1time - time)
-            m_cRecordForecast->SetSelection(i);
-        else
-            m_cRecordForecast->SetSelection(i+1);
-    }
+    else
+        m_cRecordForecast->SetSelection(i+1);
 
     if(sync)
         return;
