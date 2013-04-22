@@ -87,7 +87,7 @@
 #include "routeprintout.h"
 #include "Select.h"
 #include "FontMgr.h"
-#include "TTYWindow.h"
+#include "NMEALogWindow.h"
 #include "Layer.h"
 #include "NavObjectCollection.h"
 #include "AISTargetListDialog.h"
@@ -537,10 +537,6 @@ wxPlatformInfo            *g_pPlatform;
 wxLocale                  *plocale_def_lang;
 wxString                  g_locale;
 bool                      g_b_assume_azerty;
-
-TTYWindow                 *g_NMEALogWindow;
-int                       g_NMEALogWindow_x, g_NMEALogWindow_y;
-int                       g_NMEALogWindow_sx, g_NMEALogWindow_sy;
 
 bool                      g_bUseRaster;
 bool                      g_bUseVector;
@@ -6321,58 +6317,6 @@ void MyFrame::DoPrint( void )
      */
 
 }
-//---------------------------------------------------------------------------------------------------------
-//
-//              Private Memory Management
-//
-//---------------------------------------------------------------------------------------------------------
-
-void *x_malloc( size_t t )
-{
-    void *pr = malloc( t );
-
-    //      malloc fails
-    if( NULL == pr ) {
-        wxLogMessage( _T("x_malloc...malloc fails with request of %d bytes."), t );
-
-        // Cat the /proc/meminfo file
-
-        char *p;
-        char buf[2000];
-        int len;
-
-        int fd = open( "/proc/meminfo", O_RDONLY );
-
-        if( fd == -1 ) exit( 1 );
-
-        len = read( fd, buf, sizeof( buf ) - 1 );
-        if( len <= 0 ) {
-            close( fd );
-            exit( 1 );
-        }
-        close( fd );
-        buf[len] = 0;
-
-        p = buf;
-        while( *p ) {
-//                        printf("%c", *p++);
-        }
-
-        exit( 0 );
-        return NULL;                            // for MSVC
-    }
-
-    else {
-        if( t > malloc_max ) {
-            malloc_max = t;
-//                      wxLogMessage(_T("New malloc_max: %d", malloc_max));
-        }
-
-        return pr;                                      // good return
-    }
-
-}
-
 
 void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
 {
@@ -6460,32 +6404,28 @@ bool MyFrame::EvalPriority( wxString message, wxString stream_name, int stream_p
         else
             bret = false;
     }
- 
+
     wxString new_port = pcontainer->stream_name;
- 
+
     //  If the data source or priority has changed for this message type, emit a log entry
-    if (pcontainer->current_priority != old_priority ||
-        new_port != old_port )
-        {
-            wxString logmsg = wxString::Format(_T("Changing NMEA Datasource for %s to %s (Priority: %i)"),
+    if (pcontainer->current_priority != old_priority || new_port != old_port ) {
+         wxString logmsg = wxString::Format(_T("Changing NMEA Datasource for %s to %s (Priority: %i)"),
                                             msg_type.c_str(),
                                             new_port.c_str(),
                                             pcontainer->current_priority);
-            wxLogMessage(logmsg );
-            
-            if( g_NMEALogWindow) {
-                wxDateTime now = wxDateTime::Now();
-                wxString ss = now.FormatISOTime();
-                ss.Append( _T(" ") );
-                ss.Append( logmsg );
-                ss.Prepend( _T("<RED>") );
-                
-                g_NMEALogWindow->Add( ss );
-                g_NMEALogWindow->Refresh( false );
-            }
-            
-        }
-        
+         wxLogMessage(logmsg );
+
+         if (NMEALogWindow::Get().Active()) {
+             wxDateTime now = wxDateTime::Now();
+             wxString ss = now.FormatISOTime();
+             ss.Append( _T(" ") );
+             ss.Append( logmsg );
+             ss.Prepend( _T("<RED>") );
+
+             NMEALogWindow::Get().Add(ss);
+             NMEALogWindow::Get().Refresh(false);
+         }
+    }
     return bret;
 }
 

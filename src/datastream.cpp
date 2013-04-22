@@ -51,14 +51,6 @@
 
 #include <vector>
 
-
-extern int              g_nNMEADebug;
-extern bool             g_bGPSAISMux;
-extern int              g_total_NMEAerror_messages;
-
-
-
-
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
 #define NAN (*(double*)&lNaN)
