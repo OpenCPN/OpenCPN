@@ -3314,13 +3314,13 @@ void MyConfig::ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, bool
 RoutePoint *WaypointExists( const wxString& name, double lat, double lon )
 {
     RoutePoint *pret = NULL;
-    if( g_bIsNewLayer ) return NULL;
+//    if( g_bIsNewLayer ) return NULL;
     wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
     bool Exists = false;
     while( node ) {
         RoutePoint *pr = node->GetData();
 
-        if( pr->m_bIsInLayer ) return NULL;
+//        if( pr->m_bIsInLayer ) return NULL;
 
         if( name == pr->GetName() ) {
             if( fabs( lat - pr->m_lat ) < 1.e-6 && fabs( lon - pr->m_lon ) < 1.e-6 ) {
@@ -3337,12 +3337,12 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon )
 
 RoutePoint *WaypointExists( const wxString& guid )
 {
-    if( g_bIsNewLayer ) return NULL;
+//    if( g_bIsNewLayer ) return NULL;
     wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
     while( node ) {
         RoutePoint *pr = node->GetData();
 
-        if( pr->m_bIsInLayer ) return NULL;
+//        if( pr->m_bIsInLayer ) return NULL;
 
         if( guid == pr->m_GUID ) {
             return pr;
