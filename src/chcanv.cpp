@@ -1564,6 +1564,9 @@ ViewPort &ChartCanvas::GetVP()
 
 void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
+    m_panx = 0;                         //  Stop any autopanning
+    m_pany = 0;
+    
     m_modkeys = event.GetModifiers();
 
     if( event.GetKeyCode() == WXK_CONTROL ) m_bmouse_key_mod = true;
@@ -4776,6 +4779,14 @@ void ChartCanvas::PanTimerEvent( wxTimerEvent& event )
 
 }
 
+void ChartCanvas::StopAutoPan(void)
+{
+    pPanKeyTimer->Stop();
+    m_panx = 0;
+    m_pany = 0;
+    m_panspeed = 0;
+}
+    
 bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging )
 {
     bool bft = false;

@@ -29,27 +29,24 @@
 
 #include "TTYWindow.h"
 #include "TTYScroll.h"
+#include "WindowDestroyListener.h"
 #include "chart1.h"
-
-extern TTYWindow *g_NMEALogWindow;
-extern int g_NMEALogWindow_sx;
-extern int g_NMEALogWindow_sy;
-extern int g_NMEALogWindow_x;
-extern int g_NMEALogWindow_y;
 
 IMPLEMENT_DYNAMIC_CLASS( TTYWindow, wxDialog )
 
 BEGIN_EVENT_TABLE( TTYWindow, wxDialog )
-	EVT_CLOSE(TTYWindow::OnCloseWindow)
-	EVT_MOVE( TTYWindow::OnMove )
-	EVT_SIZE( TTYWindow::OnSize )
+    EVT_CLOSE(TTYWindow::OnCloseWindow)
 END_EVENT_TABLE()
 
 TTYWindow::TTYWindow()
+    : m_window_destroy_listener(NULL)
+    , m_pScroll(NULL)
 {
 }
 
-TTYWindow::TTYWindow(wxWindow *parent, int n_lines)
+TTYWindow::TTYWindow(wxWindow *parent, int n_lines, WindowDestroyListener * listener)
+    : m_window_destroy_listener(listener)
+    , m_pScroll(NULL)
 {
     wxDialog::Create( parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
 
@@ -83,8 +80,10 @@ TTYWindow::TTYWindow(wxWindow *parent, int n_lines)
 
 TTYWindow::~TTYWindow()
 {
-    delete m_pScroll;
-    g_NMEALogWindow = NULL;
+    if (m_pScroll) {
+        delete m_pScroll;
+        m_pScroll = NULL;
+    }
 }
 
 void TTYWindow::CreateLegendBitmap()
@@ -126,9 +125,6 @@ void TTYWindow::CreateLegendBitmap()
     dc.SelectObject( wxNullBitmap );
 }
 
-
-
-
 void TTYWindow::OnPauseClick( wxCommandEvent& event )
 {
     if(!bpause) {
@@ -143,34 +139,16 @@ void TTYWindow::OnPauseClick( wxCommandEvent& event )
     }
 }
 
-
 void TTYWindow::OnCloseWindow( wxCloseEvent& event )
-
 {
-    Destroy();
+    if (m_window_destroy_listener) {
+        m_window_destroy_listener->DestroyWindow();
+    } else {
+        Destroy();
+    }
 }
 
-void TTYWindow::OnSize( wxSizeEvent& event )
-{
-    //    Record the dialog size
-    wxSize p = event.GetSize();
-    g_NMEALogWindow_sx = p.x;
-    g_NMEALogWindow_sy = p.y;
-
-    event.Skip();
-}
-
-void TTYWindow::OnMove( wxMoveEvent& event )
-{
-    //    Record the dialog position
-    wxPoint p = event.GetPosition();
-    g_NMEALogWindow_x = p.x;
-    g_NMEALogWindow_y = p.y;
-
-    event.Skip();
-}
-
-void TTYWindow::Add( wxString &line )
+void TTYWindow::Add(const wxString &line)
 {
     if( m_pScroll ) m_pScroll->Add( line );
 }

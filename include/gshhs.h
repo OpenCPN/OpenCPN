@@ -45,6 +45,10 @@
 #include "ocpn_types.h"
 #include "ocpndc.h"
 
+#ifdef __WXMSW__
+#pragma warning(disable: 4251)   // relates to std::string fpath
+#endif
+
 //-------------------------------------------------------------------------
 // Subset of original Projection, only whats needed for GSHHS.
 
