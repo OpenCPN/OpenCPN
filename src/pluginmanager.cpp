@@ -116,7 +116,7 @@ wxEvent* OCPN_MsgEvent::Clone() const
 {
     OCPN_MsgEvent *newevent=new OCPN_MsgEvent(*this);
     newevent->m_MessageID=this->m_MessageID.c_str();  // this enforces a deep copy of the string data
-    newevent->m_MessageText=this->m_MessageText.c_str();  
+    newevent->m_MessageText=this->m_MessageText.c_str();
     return newevent;
 }
 
@@ -1060,7 +1060,7 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bm
     } else {
         pttc->bitmap_day = new wxBitmap(*bitmap);
     }
-    
+
     pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
     pttc->bitmap_night = BuildDimmedToolBitmap(pttc->bitmap_day, 32);
     pttc->bitmap_Rollover = new wxBitmap(*pttc->bitmap_day);
@@ -1155,7 +1155,7 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *
                 } else {
                     pttc->bitmap_day = new wxBitmap(*bitmap);
                 }
-                
+
                 pttc->bitmap_dusk = BuildDimmedToolBitmap(bitmap, 128);
                 pttc->bitmap_night = BuildDimmedToolBitmap(bitmap, 32);
                 pttc->bitmap_Rollover = new wxBitmap(*bmpRollover);
@@ -1205,7 +1205,7 @@ wxBitmap *PlugInManager::BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned c
     wxImage img_dup = pbmp_normal->ConvertToImage();
 
     if( !img_dup.IsOk() ) return NULL;
-    
+
     if(dim_ratio < 200)
     {
         //  Create a dimmed version of the image/bitmap
@@ -1497,7 +1497,7 @@ void PushNMEABuffer( wxString buf )
     std::string s = std::string( buf.mb_str() );
     event.SetNMEAString( s );
     event.SetStream( NULL );
-    
+
     g_pMUX->AddPendingEvent( event );
 }
 
@@ -1542,17 +1542,17 @@ wxArrayString GetChartDBDirArrayString()
 void SendPluginMessage( wxString message_id, wxString message_body )
 {
     s_ppim->SendMessageToAllPlugins(message_id, message_body);
-    
+
     //  We will send an event to the main application frame (gFrame)
     //  for informational purposes.
-    //  Of course, gFrame is encouraged to use any or all the 
+    //  Of course, gFrame is encouraged to use any or all the
     //  data flying by if judged useful and dependable....
-    
+
     OCPN_MsgEvent Nevent(wxEVT_OCPN_MSG, 0);
     Nevent.SetID(message_id);
     Nevent.SetJSONText(message_body);
     gFrame->GetEventHandler()->AddPendingEvent( Nevent );
-    
+
 }
 
 void DimeWindow(wxWindow *win)
@@ -1609,10 +1609,10 @@ bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, w
 {
     if(!pos)
         return false;
-    
+
     GenericPosDatEx gpd;
     AIS_Error nerr = AIS_GENERIC_ERROR;
-    if(g_pAIS) 
+    if(g_pAIS)
         nerr = g_pAIS->DecodeSingleVDO(str, &gpd, accumulator);
     if(nerr == AIS_NoError){
         pos->Lat = gpd.kLat;
@@ -1620,16 +1620,16 @@ bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, w
         pos->Cog = gpd.kCog;
         pos->Sog = gpd.kSog;
         pos->Hdt = gpd.kHdt;
-        
+
         //  Fill in the dummy values
         pos->FixTime = 0;
         pos->Hdm = 1000;
         pos->Var = 1000;
         pos->nSats = 0;
-        
+
         return true;
     }
-        
+
     return false;
 }
 
@@ -1650,15 +1650,15 @@ bool GetRoutepointGPX( RoutePoint *pRoutePoint, char *buffer, unsigned int buffe
     GpxDocument *gpx = new GpxDocument();
     GpxRootElement *gpxroot = (GpxRootElement *) gpx->RootElement();
     gpxroot->AddWaypoint( ::CreateGPXWpt( pRoutePoint, GPX_WPT_WAYPOINT ) );
-    
+
     wxString gpxfilename = wxFileName::CreateTempFileName(wxT("gpx"));
     gpx->SaveFile( gpxfilename );
 
     gpx->Clear();
     delete gpx;
-    
+
     wxFFile gpxfile( gpxfilename );
-    
+
     wxString s;
     if( gpxfile.ReadAll( &s ) ) {
         if(s.Length() < buffer_length) {
@@ -1666,11 +1666,11 @@ bool GetRoutepointGPX( RoutePoint *pRoutePoint, char *buffer, unsigned int buffe
             ret = true;
         }
     }
-    
+
     gpxfile.Close();
     ::wxRemoveFile(gpxfilename);
-    
-    
+
+
     return ret;
 }
 
