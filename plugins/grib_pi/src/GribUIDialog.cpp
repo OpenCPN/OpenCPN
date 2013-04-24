@@ -120,6 +120,10 @@ wxString toSAILDOC ( int NEflag, int MMflag, double a )
     return s;
 }
 
+#if !wxCHECK_VERSION(2,9,4) /* to work with wx 2.8 */
+#define SetBitmap SetBitmapLabel
+#endif
+
 //---------------------------------------------------------------------------------------
 //          GRIB Selector/Control Dialog Implementation
 //---------------------------------------------------------------------------------------
@@ -157,7 +161,8 @@ GribTimelineRecordSet::~GribTimelineRecordSet()
 
 void GRIBUIDialog::OpenFile()
 {
-    m_tbPlayStop->SetValue(false);
+    m_bpPlay->SetBitmap(*m_bPlay);
+    m_bpPlay->SetToolTip(_("Play"));
     m_tPlayStop.Stop();
 
     m_cRecordForecast->Clear();
@@ -191,7 +196,7 @@ void GRIBUIDialog::OpenFile()
             PopulateTrackingControls();
         } else 
             pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
-    }    
+    }
 }
 
 void GribTimelineRecordSet::ClearCachedData()
@@ -252,13 +257,11 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
         pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir, spath.GetDocumentsDir()  );
     }
 
-#if !wxCHECK_VERSION(2,9,4) /* to work with wx 2.8 */
-#define SetBitmap SetBitmapLabel
-#endif
-
     m_bpPrev->SetBitmap(wxBitmap( prev ));
     m_bpNext->SetBitmap(wxBitmap( next ));
     m_bpNow->SetBitmap(wxBitmap( now ));
+    m_bPlay = new wxBitmap( play );
+    m_bpPlay->SetBitmap(*m_bPlay );
     m_bpOpenFile->SetBitmap(wxBitmap( openfile ));
     m_bpSettings->SetBitmap(wxBitmap( setting ));
     m_bpRequest->SetBitmap(wxBitmap( request ));
@@ -314,19 +317,19 @@ void GRIBUIDialog::SetCursorLatLon( double lat, double lon )
 void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show )
 {
     if(show) {
-        m_fgTrackingControls->Add(ctrl1, 0, wxALL, 5);
+        m_fgTrackingControls->Add(ctrl1, 0, wxALL, 1);
         ctrl1->Show();
         if(ctrl2) {
-            m_fgTrackingControls->Add(ctrl2, 0, wxALL, 5);
+            m_fgTrackingControls->Add(ctrl2, 0, wxALL, 1);
             ctrl2->Show();
         } else
-              m_fgTrackingControls->Add(0, 0, 1, wxEXPAND, 5); /* spacer */
+              m_fgTrackingControls->Add(0, 0, 1, wxEXPAND, 1); /* spacer */
         
         if(ctrl3) {
-            m_fgTrackingControls->Add(ctrl3, 0, wxALL, 5);
+            m_fgTrackingControls->Add(ctrl3, 0, wxALL, 1);
             ctrl3->Show();
         } else
-            m_fgTrackingControls->Add(0, 0, 1, wxEXPAND, 5); /* spacer */
+            m_fgTrackingControls->Add(0, 0, 1, wxEXPAND, 1); /* spacer */
     } else {
         ctrl1->Hide();
         if(ctrl2)
@@ -338,19 +341,16 @@ void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxC
     
 void GRIBUIDialog::PopulateTrackingControls( void )
 {
-    m_fgTimelineControls->Clear();
     if(m_pTimelineSet && m_TimeLineHours) {
-        m_fgTimelineControls->Add(m_tbPlayStop, 0, wxALL, 5);
-        m_tbPlayStop->Show();
-        m_fgTimelineControls->Add(m_sTimeline, 0, wxEXPAND, 5);
         m_sTimeline->Show();
+        m_bpPlay->Show();
 
         m_bpPrev->Enable();
         m_bpNext->Enable();
         m_bpNow->Enable();
     } else {
-        m_tbPlayStop->Hide();
         m_sTimeline->Hide();
+        m_bpPlay->Hide();
 
         m_bpPrev->Disable();
         m_bpNext->Disable();
@@ -763,24 +763,27 @@ void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 
 void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
 {
-    if(m_tbPlayStop->GetValue()) {
-        m_tbPlayStop->SetLabel(_("Stop"));
+   if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
+        m_bpPlay->SetBitmap(wxBitmap( stop ));
+        m_bpPlay->SetToolTip( _("Stop") );
         m_tPlayStop.Start( 1000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
-    } else
-        m_tbPlayStop->SetLabel(_("Play"));
+    } else {
+        m_bpPlay->SetBitmap(*m_bPlay );
+        m_bpPlay->SetToolTip( _("Play") );
+    }
 }
 
 void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
 {
-    if(!m_tbPlayStop->GetValue())
+    if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) )  
         m_tPlayStop.Stop();
     else if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) {
         if(m_OverlaySettings.m_bLoopMode) {
             m_sTimeline->SetValue(0);
             TimelineChanged();
         } else {
-            m_tbPlayStop->SetValue(0);
-            m_tbPlayStop->SetLabel(_("Play"));
+            m_bpPlay->SetBitmap(*m_bPlay );
+            m_bpPlay->SetToolTip( _("Play") );
             m_tPlayStop.Stop();
         }
     } else {
