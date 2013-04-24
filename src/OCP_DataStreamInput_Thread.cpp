@@ -229,7 +229,7 @@ void *OCP_DataStreamInput_Thread::Entry()
 
                 //    Message is ready to parse and send out
                     wxString str_temp_buf(temp_buf, wxConvUTF8);
-                    Parse_And_Send_Posn(str_temp_buf);
+                    Parse_And_Send_Posn(temp_buf);
                 }
 
             }                   //if nl
@@ -570,7 +570,7 @@ HandleASuccessfulRead:
 
                     // parse and send the message
                     wxString str_temp_buf(temp_buf, wxConvUTF8);
-                    Parse_And_Send_Posn(str_temp_buf);
+                    Parse_And_Send_Posn(temp_buf);
                 }
                 else
                 {
@@ -597,16 +597,15 @@ thread_exit:
 
 #endif            // __WXMSW__
 
-void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(wxString &str_temp_buf)
+void OCP_DataStreamInput_Thread::Parse_And_Send_Posn(const char *buf)
 {
-    OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-    std::string s = std::string(str_temp_buf.mb_str());
-    Nevent.SetNMEAString(s);
-    Nevent.SetStreamName(std::string( m_FullPortName.mb_str() ));
-    Nevent.SetPriority(m_launcher->GetPriority());
+    if( m_pMessageTarget ) {
+        OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+        Nevent.SetNMEAString( buf );
+        Nevent.SetStream( m_launcher );
 
-    if( m_pMessageTarget )
         m_pMessageTarget->AddPendingEvent(Nevent);
+    }
 
     return;
 }

@@ -190,6 +190,7 @@ IF(WIN32)
     ADD_DEFINITIONS(-DOCPN_USE_CRASHRPT)
     INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/buildwin/crashrpt)
     SET(EXTRA_LIBS ${EXTRA_LIBS} ${CMAKE_SOURCE_DIR}/buildwin/crashrpt/CrashRpt1401.lib)
+    SET(CMAKE_EXE_LINKER_FLAGS /DEBUG)
 ENDIF(WIN32)
 
 # Add some definitions to satisfy MS

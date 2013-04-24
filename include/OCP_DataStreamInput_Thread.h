@@ -65,7 +65,7 @@ public:
 
 private:
     void ThreadMessage(const wxString &msg);
-    void Parse_And_Send_Posn(wxString &str_temp_buf);
+    void Parse_And_Send_Posn(const char *s);
     int OpenComPortPhysical(wxString &com_name, int baud_rate);
     int CloseComPortPhysical(int fd);
     int WriteComPortPhysical(int port_descriptor, const wxString& string);

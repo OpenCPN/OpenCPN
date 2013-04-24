@@ -730,32 +730,14 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
 // Define the crash callback
 int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
 {    
-     
-   // We want to continue program execution after crash report generation
-   pInfo->bContinueExecution = TRUE;
-   switch(pInfo->nStage)
-   {
-       case CR_CB_STAGE_PREPARE:
-
-           //  Flush the config file
- //          if( pConfig )
- //              pConfig->Flush();
-           
-           //  Flush log file
- //          if( logger)
- //              logger->Flush();
-           
-           break;
-       case CR_CB_STAGE_FINISH:
-             // do something
-           break;
-   }
-     // Proceed to the next stage. 
-   return CR_CB_NOTIFY_NEXT_STAGE;
+  //  Flush log file
+    if( logger)
+        logger->Flush();
+    
+    return CR_CB_DODEFAULT;
 }
 
 #endif
-
 
 
 // `Main program' equivalent, creating windows and returning main app frame
@@ -859,7 +841,8 @@ bool MyApp::OnInit()
             return false;               // exit quietly
     }
 
-#ifdef OCPN_USE_CRASHRPT    
+#ifdef OCPN_USE_CRASHRPT
+#ifndef _DEBUG
     // Install Windows crash reporting
     
     CR_INSTALL_INFO info;
@@ -870,8 +853,6 @@ bool MyApp::OnInit()
     wxString version_crash = str_version_major + _T(".") + str_version_minor + _T(".") + str_version_patch;
     info.pszAppVersion = version_crash.c_str(); 
 
-//    info.pszErrorReportSaveDir = _T("C:\\Crash");
-    
     // URL for sending error reports over HTTP.
     info.pszEmailTo = _T("opencpn@bigdumboat.com");    
     //    info.pszUrl = _T("http://myapp.com/tools/crashrpt.php");  
@@ -903,7 +884,7 @@ bool MyApp::OnInit()
      }
  
     // Establish the crash callback function
-//    crSetCrashCallback( CrashCallback, NULL );  
+    crSetCrashCallback( CrashCallback, NULL );  
     
     // Take screenshot of the app window at the moment of crash
     crAddScreenshot2(CR_AS_PROCESS_WINDOWS|CR_AS_USE_JPEG_FORMAT, 95);
@@ -920,6 +901,11 @@ bool MyApp::OnInit()
     config_crash.Prepend( home_data_crash );
     crAddFile2( config_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
     
+    wxString log_crash = _T("opencpn.log");
+    log_crash.Prepend( home_data_crash );
+    crAddFile2( log_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
+    
+#endif    
 #endif
     
     g_pPlatform = new wxPlatformInfo;
@@ -2197,9 +2183,11 @@ int MyApp::OnExit()
     
     delete m_checker;
     
-#ifdef OCPN_USE_CRASHRPT    
+#ifdef OCPN_USE_CRASHRPT
+#ifndef _DEBUG    
     // Uninstall Windows crash reporting
     crUninstall();
+#endif    
 #endif    
     
     return TRUE;
@@ -6522,10 +6510,17 @@ void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
 }
 
 
-bool MyFrame::EvalPriority( wxString message, wxString stream_name, int stream_priority )
+bool MyFrame::EvalPriority( wxString message, DataStream *pDS )
 {
     bool bret = true;
     wxString msg_type = message.Mid(1, 5);
+    
+    wxString stream_name;
+    int stream_priority = 0;
+    if( pDS ){
+        stream_priority = pDS->GetPriority();
+        stream_name = pDS->GetPort();
+    }
     
     //  If the message type has never been seen before...
     if( NMEA_Msg_Hash.find( msg_type ) == NMEA_Msg_Hash.end() ) {
@@ -6604,7 +6599,6 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     bool ll_valid = true;
 
     wxString str_buf = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
-    wxString stream_name = wxString(event.GetStreamName().c_str(), wxConvUTF8);
     
     if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
         g_total_NMEAerror_messages++;
@@ -6616,8 +6610,20 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     //  The message must be at least reasonably formed...
     if( (str_buf[0] != '$')  &&  (str_buf[0] != '!') )
         return;
-    
-    bool b_accept = EvalPriority( str_buf, stream_name, event.GetStreamPriority() );
+ 
+    if( event.GetStream() ) {
+        if(!event.GetStream()->ChecksumOK(str_buf) ){
+            if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
+                g_total_NMEAerror_messages++;
+                wxString msg( _T(">>>>>>NMEA Sentence Checksum Bad...") );
+                msg.Append( str_buf );
+                wxLogMessage( msg );
+            }
+            return;
+        }
+    }
+       
+    bool b_accept = EvalPriority( str_buf, event.GetStream() );
     if( b_accept ) {
         m_NMEA0183 << str_buf;
         if( m_NMEA0183.PreParse() ) {

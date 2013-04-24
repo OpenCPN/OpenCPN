@@ -185,8 +185,12 @@ void Multiplexer::SetGPSHandler(wxEvtHandler *handler)
 void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
 {
     wxString message = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
-    wxString port = wxString(event.GetStreamName().c_str(), wxConvUTF8);
-    DataStream *stream = FindStream(port);
+
+    DataStream *stream = event.GetStream();
+    wxString port(_T("Virtual:"));
+    if( stream )
+        port = wxString(stream->GetPort());
+    
     if( !message.IsEmpty() )
     {
         //Send to core consumers
