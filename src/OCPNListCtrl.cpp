@@ -151,7 +151,7 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
                 if( ( pAISTarget->SOG > 100. ) || ( pAISTarget->Class == AIS_ATON )
                         || ( pAISTarget->Class == AIS_BASE ) ) ret = _("-");
                 else
-                    ret.Printf( _T("%5.1f"), pAISTarget->SOG );
+                    ret.Printf( _T("%5.1f"), toUsrSpeed( pAISTarget->SOG ) );
                 break;
             }
             case tlCPA:
@@ -159,7 +159,7 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
                 if( ( !pAISTarget->bCPA_Valid ) || ( pAISTarget->Class == AIS_ATON )
                         || ( pAISTarget->Class == AIS_BASE ) ) ret = _("-");
                 else
-                    ret.Printf( _T("%5.2f"), pAISTarget->CPA );
+                    ret.Printf( _T("%5.2f"), toUsrDistance( pAISTarget->CPA ) );
                 break;
             }
             case tlTCPA:
@@ -172,7 +172,7 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
             }
             case tlRNG: {
                 if( pAISTarget->b_positionOnceValid && bGPSValid && ( pAISTarget->Range_NM >= 0. ) ) ret.Printf(
-                        _T("%5.2f"), pAISTarget->Range_NM );
+                        _T("%5.2f"), toUsrDistance( pAISTarget->Range_NM ) );
                 else
                     ret = _("-");
                 break;

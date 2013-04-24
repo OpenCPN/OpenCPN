@@ -278,6 +278,8 @@ bool                      g_bTransparentToolbar;
 bool                      g_bPermanentMOBIcon;
 
 int                       g_iSDMMFormat;
+int                       g_iDistanceFormat;
+int                       g_iSpeedFormat;
 
 int                       g_iNavAidRadarRingsNumberVisible;
 float                     g_fNavAidRadarRingsStep;
@@ -843,7 +845,7 @@ bool MyApp::OnInit()
 
     //  On Windows
     //  We allow only one instance unless the portable option is used
-#ifdef __WXMSW__    
+#ifdef __WXMSW__
     m_checker = new wxSingleInstanceChecker(_T("OpenCPN"));
     if(!g_bportable) {
         if ( m_checker->IsAnotherRunning() ) 
@@ -2104,7 +2106,7 @@ int MyApp::OnExit()
         wxString sog;
         if( wxIsNaN(gSog) ) sog.Printf( _T("SOG -----  ") );
         else
-            sog.Printf( _T("SOG %6.2f"), gSog );
+            sog.Printf( _T("SOG %6.2f ") + getUsrSpeedUnit(), toUsrSpeed( gSog ) );
 
         navmsg += cog;
         navmsg += sog;
@@ -2191,8 +2193,8 @@ int MyApp::OnExit()
     delete g_pauimgr;
 
     delete plocale_def_lang;
-    
-#ifdef __WXMSW__    
+
+#ifdef __WXMSW__
     delete m_checker;
 #endif
 
@@ -4884,7 +4886,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 wxString sog;
                 if( wxIsNaN(gSog) ) sog.Printf( _T("SOG -----  ") );
                 else
-                    sog.Printf( _T("SOG %6.2f"), gSog );
+                    sog.Printf( _T("SOG %6.2f ") + getUsrSpeedUnit(), toUsrSpeed( gSog ) );
 
                 navmsg += cog;
                 navmsg += sog;
@@ -4921,7 +4923,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
 //      Update the Toolbar Status windows and lower status bar the first time watchdog times out
     if( ( gGPS_Watchdog == 0 ) || ( gSAT_Watchdog == 0 ) ) {
-        wxString sogcog( wxString("SOG --- kts  COG ---°", wxConvUTF8 ) );
+        wxString sogcog( _T("SOG --- ") + getUsrSpeedUnit() + _T(" COG ---°") );
         if( GetStatusBar() ) SetStatusText( sogcog, STAT_FIELD_SOGCOG );
 
         gCog = 0.0;                                 // say speed is zero to kill ownship predictor
@@ -6962,9 +6964,9 @@ void MyFrame::PostProcessNNEA( bool pos_valid, wxString &sfixtime )
         SetStatusText( s1, STAT_FIELD_TICK );
 
         wxString sogcog;
-        if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- kts  ") );
+        if( wxIsNaN(gSog) ) sogcog.Printf( _T("SOG --- ") + getUsrSpeedUnit() + _T("  ") );
         else
-            sogcog.Printf( _T("SOG %2.2f kts  "), gSog );
+            sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
 
         wxString cogs;
         if( wxIsNaN(gCog) ) cogs.Printf( wxString( "COG ---°", wxConvUTF8 ) );

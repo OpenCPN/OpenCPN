@@ -368,7 +368,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             else if( crs == 360 ) courseStr = _T("0&deg;");
 
             if( SOG <= 102.2 )
-                sogStr = wxString::Format( _T("%5.2f Kts"), SOG );
+                sogStr = wxString::Format( _T("%5.2f ") + getUsrSpeedUnit(), toUsrSpeed( SOG ) );
             else
                 sogStr = _("---");
 

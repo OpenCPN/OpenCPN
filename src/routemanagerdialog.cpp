@@ -1287,7 +1287,7 @@ void RouteManagerDialog::OnRteSelected( wxListEvent &event )
 //    route->SetVisible(!route->IsVisible());
     m_pRouteListCtrl->SetItemImage( clicked_index, route->IsVisible() ? 0 : 1 );
 //    pConfig->UpdateRoute(route);
-   
+
     if( cc1 )
         cc1->Refresh();
 
@@ -1832,7 +1832,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
             double dst;
             DistanceBearingMercator( rp->m_lat, rp->m_lon, gLat, gLon, NULL, &dst );
             wxString dist;
-            dist.Printf( _T("%5.2f Nm"), dst );
+            dist.Printf( _T("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( dst ) );
             m_pWptListCtrl->SetItem( idx, colWPTDIST, dist );
 
             if( rp == rp_select ) selected_id = (long) rp_select; //index; //m_pWptListCtrl->GetItemData(item);

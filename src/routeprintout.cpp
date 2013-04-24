@@ -156,7 +156,7 @@ MyRoutePrintout::MyRoutePrintout( std::vector<bool> _toPrintOut,
         }
         if ( toPrintOut[ PRINT_WP_DISTANCE ] ) {
             wxString point_distance;
-            point_distance.Printf( _T( "%6.2f NM" ), point->GetDistance() );
+            point_distance.Printf( _T( "%6.2f" + getUsrDistanceUnit() ), toUsrDistance( point->GetDistance() ) );
             string   cell( point_distance.mb_str() );
             table << cell;
         }
@@ -188,24 +188,24 @@ void MyRoutePrintout::OnPreparePrinting()
     // Get the size of the DC in pixels
     int w, h;
     dc->GetSize( &w, &h );
-    
+
     // We don't know before hand what size the Print DC will be, in pixels.  Varies by host.
     // So, if the dc size is greater than 1000 pixels, we scale accordinly.
-    
+
     int maxX = wxMin(w, 1000);
     int maxY = wxMin(h, 1000);
-    
+
     // Calculate a suitable scaling factor
     double scaleX = ( double )( w / maxX );
     double scaleY = ( double )( h / maxY );
-    
+
     // Use x or y scaling factor, whichever fits on the DC
     double actualScale = wxMin( scaleX, scaleY );
-    
+
     // Set the scale and origin
     dc->SetUserScale( actualScale, actualScale );
     dc->SetDeviceOrigin( ( long )marginX, ( long )marginY );
-    
+
     table.AdjustCells( dc, marginX, marginY );
     numberOfPages = table.GetNumberPages();
 }
@@ -224,12 +224,12 @@ bool MyRoutePrintout::OnPrintPage( int page )
             return false;
     } else
         return false;
-    
+
 }
 
 void MyRoutePrintout::DrawPage( wxDC* dc )
 {
-    
+
 
     wxFont routePrintFont_bold( 10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
     dc->SetFont( routePrintFont_bold );
@@ -238,7 +238,7 @@ void MyRoutePrintout::DrawPage( wxDC* dc )
 
     int header_textOffsetX = 2;
     int header_textOffsetY = 2;
-    
+
     int currentX = marginX;
     int currentY = marginY;
     vector< PrintCell >& header_content = table.GetHeader();
@@ -333,7 +333,7 @@ bool RoutePrintSelection::Create( wxWindow* parent, wxWindowID id, const wxStrin
 #ifdef __WXOSX__
     style |= wxSTAY_ON_TOP;
 #endif
-    
+
     wxDialog::Create( parent, id, _("Print Route Selection"), pos, size, style );
 
     CreateControls();

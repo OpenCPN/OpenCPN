@@ -127,6 +127,8 @@ enum {
     ID_SCAMINCHECKBOX,
     ID_SCANCHECKBOX,
     ID_SDMMFORMATCHOICE,
+    ID_DISTANCEFORMATCHOICE,
+    ID_SPEEDFORMATCHOICE,
     ID_SELECTLIST,
     ID_SHOWDEPTHUNITSBOX1,
     ID_SHOWGPSWINDOW,
@@ -472,6 +474,8 @@ public:
     wxCheckBox              *pFullScreenToolbar;
     wxCheckBox              *pTransparentToolbar;
     wxChoice                *pSDMMFormat;
+    wxChoice                *pDistanceFormat;
+    wxChoice                *pSpeedFormat;
 
     wxCheckBox              *pTrackShowIcon;
     wxCheckBox              *pTrackDaily;

@@ -141,6 +141,8 @@ extern int              g_nAWMax;
 extern int              g_nTrackPrecision;
 
 extern int              g_iSDMMFormat;
+extern int              g_iDistanceFormat;
+extern int              g_iSpeedFormat;
 
 extern int              g_nframewin_x;
 extern int              g_nframewin_y;
@@ -1164,6 +1166,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection, _T("") );
 
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
+    Read( _T ( "DistanceFormat" ), &g_iDistanceFormat, 0 ); //0 = "Nautical miles"), 1 = "Statute miles", 2 = "Kilometers", 3 = "Meters"
+    Read( _T ( "SpeedFormat" ), &g_iSpeedFormat, 0 ); //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
     Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType, 0 );
@@ -2508,6 +2512,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowChartOutlines" ), g_bShowOutlines );
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
+    Write( _T ( "DistanceFormat" ), g_iDistanceFormat );
+    Write( _T ( "SpeedFormat" ), g_iSpeedFormat );
     Write( _T ( "MostRecentGPSUploadConnection" ), g_uploadConnection );
 
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
@@ -4488,7 +4494,7 @@ Route *LoadGPXRoute( GpxRteElement *rtenode, int routenum, bool b_fullviz )
                     }
                 }
     }
-    if( g_bIsNewLayer ) 
+    if( g_bIsNewLayer )
         pTentRoute->SetVisible( g_bLayerViz, true );
     else
         if( b_propviz )
@@ -5404,6 +5410,158 @@ bool LogMessageOnce( wxString &msg )
 /**************************************************************************/
 /*          Some assorted utilities                                       */
 /**************************************************************************/
+
+/**************************************************************************/
+/*          Converts the distance to the units selected by user           */
+/**************************************************************************/
+double toUsrDistance( double nm_distance, int unit  )
+{
+    double ret;
+    if ( unit == -1 )
+        unit = g_iDistanceFormat;
+    switch( unit ){
+        case DISTANCE_NMI: //Nautical miles
+            ret = nm_distance;
+            break;
+        case DISTANCE_MI: //Statute miles
+            ret = nm_distance * 1.15078;
+            break;
+        case DISTANCE_KM:
+            ret = nm_distance * 1.852;
+            break;
+        case DISTANCE_M:
+            ret = nm_distance * 1852;
+            break;
+    }
+    return ret;
+}
+
+/**************************************************************************/
+/*          Converts the distance from the units selected by user to NMi  */
+/**************************************************************************/
+double fromUsrDistance( double usr_distance, int unit )
+{
+    double ret;
+    if ( unit == -1 )
+        unit = g_iDistanceFormat;
+    switch( unit ){
+        case DISTANCE_NMI: //Nautical miles
+            ret = usr_distance;
+            break;
+        case DISTANCE_MI: //Statute miles
+            ret = usr_distance / 1.15078;
+            break;
+        case DISTANCE_KM:
+            ret = usr_distance / 1.852;
+            break;
+        case DISTANCE_M:
+            ret = usr_distance / 1852;
+            break;
+    }
+    return ret;
+}
+
+/**************************************************************************/
+/*          Returns the abbreviation of user selected distance unit       */
+/**************************************************************************/
+wxString getUsrDistanceUnit( int unit )
+{
+    wxString ret;
+    if ( unit == -1 )
+        unit = g_iDistanceFormat;
+    switch( unit ){
+        case DISTANCE_NMI: //Nautical miles
+            ret = _("NMi");
+            break;
+        case DISTANCE_MI: //Statute miles
+            ret = _("mi");
+            break;
+        case DISTANCE_KM:
+            ret = _("km");
+            break;
+        case DISTANCE_M:
+            ret = _("m");
+            break;
+    }
+    return ret;
+}
+
+/**************************************************************************/
+/*          Converts the speed to the units selected by user              */
+/**************************************************************************/
+double toUsrSpeed( double kts_speed, int unit )
+{
+    double ret;
+    if ( unit == -1 )
+        unit = g_iSpeedFormat;
+    switch( unit )
+    {
+        case SPEED_KTS: //kts
+            ret = kts_speed;
+            break;
+        case SPEED_MPH: //mph
+            ret = kts_speed * 1.15078;
+            break;
+        case SPEED_KMH: //km/h
+            ret = kts_speed * 1.852;
+            break;
+        case SPEED_MS: //m/s
+            ret = kts_speed * 0.514444444;
+            break;
+    }
+    return ret;
+}
+
+/**************************************************************************/
+/*          Converts the speed from the units selected by user to knots   */
+/**************************************************************************/
+double fromUsrSpeed( double usr_speed, int unit )
+{
+    double ret;
+    if ( unit == -1 )
+        unit = g_iSpeedFormat;
+    switch( unit )
+    {
+        case SPEED_KTS: //kts
+            ret = usr_speed;
+            break;
+        case SPEED_MPH: //mph
+            ret = usr_speed / 1.15078;
+            break;
+        case SPEED_KMH: //km/h
+            ret = usr_speed / 1.852;
+            break;
+        case SPEED_MS: //m/s
+            ret = usr_speed / 0.514444444;
+            break;
+    }
+    return ret;
+}
+
+/**************************************************************************/
+/*          Returns the abbreviation of user selected speed unit          */
+/**************************************************************************/
+wxString getUsrSpeedUnit( int unit )
+{
+    wxString ret;
+    if ( unit == -1 )
+        unit = g_iSpeedFormat;
+    switch( unit ){
+        case SPEED_KTS: //kts
+            ret = _("kts");
+            break;
+        case SPEED_MPH: //mph
+            ret = _("mph");
+            break;
+        case SPEED_KMH:
+            ret = _("km/h");
+            break;
+        case SPEED_MS:
+            ret = _("m/s");
+            break;
+    }
+    return ret;
+}
 
 /**************************************************************************/
 /*          Formats the coordinates to string                             */

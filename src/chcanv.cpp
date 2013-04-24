@@ -1568,7 +1568,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
     m_panx = 0;                         //  Stop any autopanning
     m_pany = 0;
-    
+
     m_modkeys = event.GetModifiers();
 
     if( event.GetKeyCode() == WXK_CONTROL ) m_bmouse_key_mod = true;
@@ -4815,7 +4815,7 @@ void ChartCanvas::StopAutoPan(void)
     m_pany = 0;
     m_panspeed = 0;
 }
-    
+
 bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging )
 {
     bool bft = false;
@@ -7745,18 +7745,18 @@ wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
         return result;
     }
     if( distance < 5.0 ) {
-        result << wxString::Format(_T("%1.2f "), distance ) << _("NMi");
+        result << wxString::Format(_T("%1.2f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
         return result;
     }
     if( distance < 100.0 ) {
-        result << wxString::Format(_T("%2.1f "), distance ) << _("NMi");
+        result << wxString::Format(_T("%2.1f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
         return result;
     }
     if( distance < 1000.0 ) {
-        result << wxString::Format(_T("%3.0f "), distance ) << _("NMi");
+        result << wxString::Format(_T("%3.0f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
         return result;
     }
-    result << wxString::Format(_T("%4.0f "), distance ) << _("NMi");
+    result << wxString::Format(_T("%4.0f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
     return result;
 }
 

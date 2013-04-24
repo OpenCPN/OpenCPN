@@ -143,6 +143,8 @@ extern double           g_TrackDeltaDistance;
 extern int              g_nTrackPrecision;
 
 extern int              g_iSDMMFormat;
+extern int              g_iDistanceFormat;
+extern int              g_iSpeedFormat;
 
 extern int              g_cm93_zoom_factor;
 
@@ -1668,6 +1670,31 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
             wxDefaultSize, m_SDMMFormatsNChoices, pSDMMFormats );
     pFormatGrid->Add( pSDMMFormat, 0, wxALIGN_RIGHT, 2 );
 
+    wxStaticText* itemStaticTextDistanceFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
+            _("Show distance as") );
+    pFormatGrid->Add( itemStaticTextDistanceFormat, 0,
+            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+
+    wxString pDistanceFormats[] = { _("Nautical miles"), _("Statute miles"),
+            _("Kilometers"), _("Meters") };
+    int m_DistanceFormatsNChoices = sizeof( pDistanceFormats ) / sizeof(wxString);
+    pDistanceFormat = new wxChoice( itemPanelFont, ID_DISTANCEFORMATCHOICE, wxDefaultPosition,
+            wxDefaultSize, m_DistanceFormatsNChoices, pDistanceFormats );
+    pFormatGrid->Add( pDistanceFormat, 0, wxALIGN_RIGHT, 2 );
+
+    wxStaticText* itemStaticTextSpeedFormat = new wxStaticText( itemPanelFont, wxID_STATIC,
+            _("Show speed as") );
+    pFormatGrid->Add( itemStaticTextSpeedFormat, 0,
+            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, border_size );
+
+    wxString pSpeedFormats[] = { _("Knots"), _("Mph"),
+            _("km/h"), _("m/s") };
+    int m_SpeedFormatsNChoices = sizeof( pSpeedFormats ) / sizeof(wxString);
+    pSpeedFormat = new wxChoice( itemPanelFont, ID_SPEEDFORMATCHOICE, wxDefaultPosition,
+            wxDefaultSize, m_SpeedFormatsNChoices, pSpeedFormats );
+    pFormatGrid->Add( pSpeedFormat, 0, wxALIGN_RIGHT, 2 );
+
+
     pPlayShipsBells = new wxCheckBox( itemPanelFont, ID_BELLSCHECKBOX, _("Play Ships Bells"));
     miscOptions->Add( pPlayShipsBells, 0, wxALIGN_LEFT|wxALL, border_size);
 
@@ -1927,6 +1954,8 @@ void options::SetInitialSettings()
     pFullScreenToolbar->SetValue( g_bFullscreenToolbar );
     pTransparentToolbar->SetValue( g_bTransparentToolbar );
     pSDMMFormat->Select( g_iSDMMFormat );
+    pDistanceFormat->Select( g_iDistanceFormat );
+    pSpeedFormat->Select( g_iSpeedFormat );
 
     pTrackDaily->SetValue( g_bTrackDaily );
     pTrackHighlite->SetValue( g_bHighliteTracks );
@@ -2471,6 +2500,8 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bFullscreenToolbar = pFullScreenToolbar->GetValue();
     g_bTransparentToolbar = pTransparentToolbar->GetValue();
     g_iSDMMFormat = pSDMMFormat->GetSelection();
+    g_iDistanceFormat = pDistanceFormat->GetSelection();
+    g_iSpeedFormat = pSpeedFormat->GetSelection();
 
     g_nTrackPrecision = pTrackPrecision->GetSelection();
 
