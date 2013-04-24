@@ -2,12 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.3.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 22:17+0100\n"
+"POT-Creation-Date: 2013-04-24 14:34+1200\n"
 "PO-Revision-Date: 2011-04-29 10:48+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -18,113 +18,134 @@ msgstr ""
 "X-Poedit-Country: TAIWAN\n"
 "X-Poedit-SourceCharset: utf-8\n"
 #
+# 
 msgid " (Dup)"
 msgstr ""
 #
+# 
 msgid " Deg"
 msgstr ""
 #
-msgid " h"
-msgstr ""
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid " data"
+msgstr "GRIB 資料"
 #
-msgid "0.2 Deg"
-msgstr ""
-#
-msgid "0.6 Deg"
-msgstr ""
-#
-msgid "1.0 Deg"
-msgstr ""
-#
-msgid "1.2 Deg"
-msgstr ""
-#
-msgid "1.5 Deg"
-msgstr ""
-#
-msgid "12 h"
-msgstr ""
-#
-msgid "2.0 Deg"
-msgstr ""
-#
-msgid "24 h"
-msgstr ""
-#
-msgid "3 h"
-msgstr ""
-#
-msgid "4 days"
-msgstr ""
-#
-msgid "6 days"
-msgstr ""
-#
-msgid "6 h"
-msgstr ""
-#
-msgid "8 days"
-msgstr ""
-#
+# 
 msgid "Action"
 msgstr ""
 #
-msgid "Air Temp.(2m)"
+msgid "Air Temp"
 msgstr ""
 #
-msgid "Air Temperature(2m)"
+msgid "Air Temperature"
 msgstr ""
 #
-msgid "Clouds Cover"
+msgid "Barbed Arrows"
 msgstr ""
 #
-msgid "Copy first Cumulative missing Record"
+msgid "Building Isobar map"
 msgstr ""
 #
-msgid "Copy missing Wave Records"
+msgid "Celcius"
 msgstr ""
 #
+msgid "Cloud"
+msgstr ""
+#
+msgid "Cloud Cover"
+msgstr ""
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
 #, fuzzy
-msgid "Current Velocity"
+msgid "Colors"
+msgstr "關閉(&C)"
+#
+msgid "Copy First Cumulative Missing Record"
+msgstr ""
+#
+msgid "Copy Missing Wave Records"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Current"
 msgstr "流速, Kts."
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Data"
-msgstr "GRIB 資料"
-#
-#, fuzzy
-msgid "Data Display Preferences"
-msgstr "GRIB 偏好設定"
-#
+# 
 msgid "Days"
 msgstr ""
 #
+msgid "Direction Arrows"
+msgstr ""
+#
+msgid "Display"
+msgstr ""
+#
+msgid "Error"
+msgstr ""
+#
+# 
 msgid "Error:  Can't read this File!"
 msgstr ""
 #
-msgid "Forecast Model   "
+msgid "Error:  File does not exist!"
 msgstr ""
 #
-msgid "GRIB"
-msgstr "GRIB"
+msgid "Fahrenheit"
+msgstr ""
 #
+msgid "Failed to send mail message"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
+#
+msgid "GRIB Data at Cursor"
+msgstr ""
+#
+# 
 msgid "GRIB Display Control"
 msgstr "GRIB 顯示控制"
 #
+# 
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "OpenCPN GRIB 插件"
 #
+# 
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
@@ -144,325 +165,470 @@ msgstr ""
 "- 海平面溫度\n"
 "- 海面流向與流速."
 #
-msgid "GRIB Preferences"
-msgstr "GRIB 偏好設定"
-#
-msgid "Graphic Data to show in Map"
+msgid "Generic"
 msgstr ""
 #
+# 
 msgid "Grib"
 msgstr "Grib"
 #
+# 
+#, fuzzy
+msgid "Grib Preferences"
+msgstr "GRIB 偏好設定"
+#
+msgid "Grib Settings"
+msgstr ""
+#
+msgid "Inches"
+msgstr ""
+#
+msgid "Interpolate between gribs"
+msgstr ""
+#
+# 
 msgid "Interval"
 msgstr ""
 #
+msgid "Iso Bars"
+msgstr ""
+#
+msgid "KPH"
+msgstr ""
+#
+msgid "Knots"
+msgstr ""
+#
+# 
 msgid "Local Time"
 msgstr ""
 #
+msgid "Loop Mode"
+msgstr ""
+#
+msgid "M/S"
+msgstr ""
+#
+msgid "MPH"
+msgstr ""
+#
+msgid "Mapi is not installed or invalid on this computer"
+msgstr ""
+#
+msgid "Meters"
+msgstr ""
+#
+msgid "MilliBars"
+msgstr ""
+#
+msgid "Millimeters"
+msgstr ""
+#
+# 
 msgid "Model"
 msgstr ""
 #
-msgid "Modify"
+msgid "MyLabel"
 msgstr ""
 #
-msgid "No Reference. Try another Graphic Data Selection"
+msgid "N/A"
 msgstr ""
 #
-msgid "No other graphic display"
+msgid "Next"
 msgstr ""
 #
-msgid "Numeric Data to show in Panel"
+msgid "Now"
 msgstr ""
 #
+msgid "Numbers"
+msgstr ""
+#
+msgid "Open File"
+msgstr ""
+#
+msgid "OpenCpn failed to logon! Please verify your eMail environment"
+msgstr ""
+#
+msgid "OverlayMap"
+msgstr ""
+#
+# 
 msgid "Parameters"
 msgstr ""
 #
+msgid "Percentage"
+msgstr ""
+#
+# 
 msgid "Period"
 msgstr ""
 #
+msgid "Play"
+msgstr ""
+#
+# 
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
-msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
-#
-#
-#, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
-msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
-#
-#
-#, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
-msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
-#
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgid "Please Zoom or Scale Out to view suppressed "
 msgstr "請放大畫面以顯示 suppressed HTSGW GRIB"
 #
-#, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
-msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
+msgid "Precipitation"
+msgstr ""
 #
-#, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
-msgstr "請放大畫面以顯示 suppressed CRAIN GRIB"
-#
+# 
 #, fuzzy
 msgid "Pressure"
 msgstr "氣壓, mBar"
 #
-#, fuzzy
-msgid "Pressure (MSL)"
-msgstr "氣壓, mBar"
-#
-msgid "Profil"
+msgid "Previous"
 msgstr ""
 #
-msgid "Rainfall"
+msgid "Quickscat"
 msgstr ""
 #
+msgid "Rain"
+msgstr ""
+#
+msgid "Range"
+msgstr ""
+#
+# 
 msgid "Ref : "
 msgstr ""
 #
+msgid "Request"
+msgstr ""
+#
+# 
 msgid "Request Pofile"
 msgstr ""
 #
-msgid "Request Setting"
-msgstr ""
-#
+# 
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf.)"
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Sea Temp"
+msgstr "海面溫度, C"
+#
+msgid "Sea Temperature"
 msgstr ""
 #
-msgid "Sea Temperature(surf.)"
+msgid "SeaTemp"
 msgstr ""
 #
+# 
 #, fuzzy
 msgid "Select a GRIB file"
 msgstr "選擇 GRIB 目錄"
 #
+# 
 msgid "Send"
 msgstr ""
 #
-#, fuzzy
-msgid "Sign.Wave Height"
-msgstr "Significant波高, m"
-#
-msgid "Speed unit"
+msgid "Settings"
 msgstr ""
 #
-msgid "Time Zone"
+msgid "Size"
 msgstr ""
 #
-msgid "Total Rainfall"
+msgid "Slices per Update"
 msgstr ""
 #
+msgid "Slices per hour"
+msgstr ""
+#
+msgid "Spacing"
+msgstr ""
+#
+msgid "Stop"
+msgstr ""
+#
+# 
 msgid "UTC"
 msgstr ""
 #
+# 
 msgid "Units"
 msgstr ""
 #
-msgid "Unnown"
+msgid "Updates per Second"
 msgstr ""
 #
+msgid "Use Gradual Colors"
+msgstr ""
+#
+# 
 msgid "Use High Definition Graphics"
 msgstr "使用高畫質圖形"
 #
-msgid "Warning :  This directory is Empty!"
+msgid "Wave"
 msgstr ""
 #
-msgid "Waves"
-msgstr ""
-#
+# 
 msgid "Wind"
 msgstr ""
 #
-#, fuzzy
-msgid "Wind Direction(10m)"
-msgstr "風向"
-#
-msgid "Wind Gust(Surf.)"
+msgid "Wind Gust"
 msgstr ""
 #
-#, fuzzy
-msgid "Wind Speed and Direction(10m)"
-msgstr "風向"
+msgid "Wind Scat"
+msgstr ""
 #
-#, fuzzy
-msgid "Wind Speed(10m)"
-msgstr "風速,  Kts."
-#
+# 
 msgid ""
 "Your request is ready. An eMail is prepared in your eMail environment.\n"
 "You have just to click 'send' to send it.\n"
 "OK to continue ..."
 msgstr ""
 #
+# 
 msgid ""
 "Your request was sent (if your system has an MTA configured and is able to "
 "send mail).\n"
 "OK to continue ..."
 msgstr ""
 #
+# 
 msgid "Zone"
 msgstr ""
 #
+# 
 msgid "eMail"
 msgstr ""
 #
+# 
 msgid "eMail To"
+msgstr ""
+#
+msgid "eMail error"
+msgstr ""
+#
+msgid "mmHG"
+msgstr ""
+#
+msgid "playback"
 msgstr ""
 #
 #
 #
+# 
+#, fuzzy
+#~ msgid "Data Display Preferences"
+#~ msgstr "GRIB 偏好設定"
+#
+#
+# 
+#~ msgid "GRIB"
+#~ msgstr "GRIB"
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "&Close"
-#~ msgstr "關閉(&C)"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB 檔案目錄"
 #
 #
 #
+# 
+#, fuzzy
+#~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
+#~ msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
 #
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
+#~ msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
 #
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+#~ msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
 #
 #
 #
+# 
+#, fuzzy
+#~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
+#~ msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
+#~ msgstr "請放大畫面以顯示 suppressed CRAIN GRIB"
+#
+#
+#
+# 
+#, fuzzy
+#~ msgid "Pressure (MSL)"
+#~ msgstr "氣壓, mBar"
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB 偏好設定"
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Sea Surface Temp."
-#~ msgstr "海面溫度, C"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
 #~ msgid "Show GRIB icon"
 #~ msgstr "顯示 GRIB 圖示"
 #
 #
 #
+# 
+#, fuzzy
+#~ msgid "Sign.Wave Height"
+#~ msgstr "Significant波高, m"
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "警告:  QuickScat GRIB 資料為 %d 小時前資料."
 #
 #
 #
+# 
+#, fuzzy
+#~ msgid "Wind Direction(10m)"
+#~ msgstr "風向"
 #
 #
 #
+# 
+#, fuzzy
+#~ msgid "Wind Speed and Direction(10m)"
+#~ msgstr "風向"
 #
 #
 #
+# 
+#, fuzzy
+#~ msgid "Wind Speed(10m)"
+#~ msgstr "風速,  Kts."
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
 #~ msgid "Wind Speed, Kts."
 #~ msgstr "風速,  Kts."

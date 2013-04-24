@@ -707,7 +707,7 @@ void GRIBUIDialog::ShowSendRequest( wxString r_zone )
     r_info.Append( wxT("\n") );
     r_info.Append( _("Interval") + r_colon );
     i = r_interval.AfterFirst( ',' );
-    r_info.Append( i.BeforeLast( ',' ) + _(" h") );
+    r_info.Append( i.BeforeLast( ',' ) + _T(" h") );
     r_info.Append( wxT("\n") );
     r_info.Append( _("Period") + r_colon );
     r_period.AfterLast( '.' ).ToDouble( &v );
@@ -818,6 +818,13 @@ void GRIBUIDialog::TimelineChanged(bool sync)
     /* get closest index to update combo box */
     unsigned int i;
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+
+    if(rsa->GetCount() < 2) { /* this case should be handled below instead,
+                                 but apparently the logic is wrong and sometimes crashes */
+        m_cRecordForecast->SetSelection(0);
+        return;
+    }
+
     wxDateTime itime, ip1time;
     for(i=0; i<rsa->GetCount()-1; i++) {
         itime = rsa->Item(i).m_Reference_Time;

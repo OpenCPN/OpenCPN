@@ -58,7 +58,7 @@ struct GribOverlaySettings
     enum Units0 {KNOTS, M_S, MPH, KPH};
     enum Units1 {MILLIBARS, MMHG};
     enum Units2 {METERS, FEET};
-    enum Units3 {CELCIUS, FARENHEIGHT};
+    enum Units3 {CELCIUS, FAHRENHEIT};
     enum Units4 {MILLIMETERS, INCHES};
     enum Units5 {PERCENTAGE};
 

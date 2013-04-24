@@ -162,7 +162,7 @@ wxBitmap *grib_pi::GetPlugInBitmap()
 
 wxString grib_pi::GetCommonName()
 {
-      return _("GRIB");
+      return _T("GRIB");
 }
 
 
@@ -386,7 +386,7 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
     }
     if(message_id == _T("GRIB_TIMELINE_REQUEST"))
     {
-        SendTimelineMessage(m_pGribDialog->TimelineTime());
+        SendTimelineMessage(m_pGribDialog ? m_pGribDialog->TimelineTime() : wxDateTime::Now());
     }
     if(message_id == _T("GRIB_TIMELINE_RECORD_REQUEST"))
     {

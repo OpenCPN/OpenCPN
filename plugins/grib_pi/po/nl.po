@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 22:17+0100\n"
+"POT-Creation-Date: 2013-04-24 14:34+1200\n"
 "PO-Revision-Date: 2012-12-23 10:31+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: rider2@kpnmail.nl\n"
@@ -24,103 +24,113 @@ msgstr ""
 msgid " Deg"
 msgstr ""
 #
-msgid " h"
-msgstr ""
 #
-msgid "0.2 Deg"
-msgstr ""
 #
-msgid "0.6 Deg"
-msgstr ""
 #
-msgid "1.0 Deg"
-msgstr ""
 #
-msgid "1.2 Deg"
-msgstr ""
 #
-msgid "1.5 Deg"
-msgstr ""
 #
-msgid "12 h"
-msgstr ""
 #
-msgid "2.0 Deg"
-msgstr ""
 #
-msgid "24 h"
-msgstr ""
 #
-msgid "3 h"
-msgstr ""
 #
-msgid "4 days"
-msgstr ""
 #
-msgid "6 days"
-msgstr ""
 #
-msgid "6 h"
-msgstr ""
-#
-msgid "8 days"
-msgstr ""
+#, fuzzy
+msgid " data"
+msgstr "GRIB gegevens"
 #
 msgid "Action"
 msgstr ""
 #
-msgid "Air Temp.(2m)"
+msgid "Air Temp"
 msgstr ""
 #
-msgid "Air Temperature(2m)"
+msgid "Air Temperature"
 msgstr ""
 #
-msgid "Clouds Cover"
+msgid "Barbed Arrows"
 msgstr ""
 #
-msgid "Copy first Cumulative missing Record"
+msgid "Building Isobar map"
 msgstr ""
 #
-msgid "Copy missing Wave Records"
+msgid "Celcius"
+msgstr ""
+#
+msgid "Cloud"
+msgstr ""
+#
+msgid "Cloud Cover"
+msgstr ""
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Colors"
+msgstr "&Sluiten"
+#
+msgid "Copy First Cumulative Missing Record"
+msgstr ""
+#
+msgid "Copy Missing Wave Records"
 msgstr ""
 #
 #
 #, fuzzy
-msgid "Current Velocity"
+msgid "Current"
 msgstr "stroomsnelheid (knopen)"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Data"
-msgstr "GRIB gegevens"
-#
-#, fuzzy
-msgid "Data Display Preferences"
-msgstr "GRIB voorkeuren"
-#
 msgid "Days"
+msgstr ""
+#
+msgid "Direction Arrows"
+msgstr ""
+#
+msgid "Display"
+msgstr ""
+#
+msgid "Error"
 msgstr ""
 #
 msgid "Error:  Can't read this File!"
 msgstr ""
 #
-msgid "Forecast Model   "
+msgid "Error:  File does not exist!"
 msgstr ""
 #
+msgid "Fahrenheit"
+msgstr ""
 #
-msgid "GRIB"
-msgstr "GRIB"
+msgid "Failed to send mail message"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
+#
+msgid "GRIB Data at Cursor"
+msgstr ""
 #
 #
 msgid "GRIB Display Control"
@@ -148,103 +158,154 @@ msgstr ""
 "- oppervlaktetemperatuur zeewater\n"
 "- stroomrichting en -snelheid."
 #
-msgid "GRIB Preferences"
-msgstr "GRIB voorkeuren"
-#
-msgid "Graphic Data to show in Map"
+msgid "Generic"
 msgstr ""
 #
 msgid "Grib"
 msgstr "Grib"
 #
+#, fuzzy
+msgid "Grib Preferences"
+msgstr "GRIB voorkeuren"
+#
+msgid "Grib Settings"
+msgstr ""
+#
+msgid "Inches"
+msgstr ""
+#
+msgid "Interpolate between gribs"
+msgstr ""
+#
 msgid "Interval"
+msgstr ""
+#
+msgid "Iso Bars"
+msgstr ""
+#
+msgid "KPH"
+msgstr ""
+#
+msgid "Knots"
 msgstr ""
 #
 msgid "Local Time"
 msgstr ""
 #
+msgid "Loop Mode"
+msgstr ""
+#
+msgid "M/S"
+msgstr ""
+#
+msgid "MPH"
+msgstr ""
+#
+msgid "Mapi is not installed or invalid on this computer"
+msgstr ""
+#
+msgid "Meters"
+msgstr ""
+#
+msgid "MilliBars"
+msgstr ""
+#
+msgid "Millimeters"
+msgstr ""
+#
 msgid "Model"
 msgstr ""
 #
-msgid "Modify"
+msgid "MyLabel"
 msgstr ""
 #
-msgid "No Reference. Try another Graphic Data Selection"
+msgid "N/A"
 msgstr ""
 #
-msgid "No other graphic display"
+msgid "Next"
 msgstr ""
 #
-msgid "Numeric Data to show in Panel"
+msgid "Now"
+msgstr ""
+#
+msgid "Numbers"
+msgstr ""
+#
+msgid "Open File"
+msgstr ""
+#
+msgid "OpenCpn failed to logon! Please verify your eMail environment"
+msgstr ""
+#
+msgid "OverlayMap"
 msgstr ""
 #
 msgid "Parameters"
 msgstr ""
 #
+msgid "Percentage"
+msgstr ""
+#
 msgid "Period"
+msgstr ""
+#
+msgid "Play"
 msgstr ""
 #
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
-#
-#
-#, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
-#
-#
-#, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
-#
-#
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
+msgid "Please Zoom or Scale Out to view suppressed "
 msgstr "Zoom uit of verklein schaal om onderdrukte HTSGW GRIB te zien."
 #
-#
-#, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
-#
-#
-#, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
-msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+msgid "Precipitation"
+msgstr ""
 #
 #
 #, fuzzy
 msgid "Pressure"
 msgstr "luchtdruk (hPa)"
 #
-#
-#, fuzzy
-msgid "Pressure (MSL)"
-msgstr "luchtdruk (hPa)"
-#
-msgid "Profil"
+msgid "Previous"
 msgstr ""
 #
-msgid "Rainfall"
+msgid "Quickscat"
+msgstr ""
+#
+msgid "Rain"
+msgstr ""
+#
+msgid "Range"
 msgstr ""
 #
 msgid "Ref : "
 msgstr ""
 #
-msgid "Request Pofile"
+msgid "Request"
 msgstr ""
 #
-msgid "Request Setting"
+msgid "Request Pofile"
 msgstr ""
 #
 msgid "Resolution"
 msgstr ""
 #
-msgid "Sea Temp.(Surf.)"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Sea Temp"
+msgstr "zeewatertemperatuur (°C)"
+#
+msgid "Sea Temperature"
 msgstr ""
 #
-msgid "Sea Temperature(surf.)"
+msgid "SeaTemp"
 msgstr ""
 #
 #
@@ -255,18 +316,22 @@ msgstr "Map voor GRIB bestand"
 msgid "Send"
 msgstr ""
 #
-#
-#, fuzzy
-msgid "Sign.Wave Height"
-msgstr "significante golfhoogte (m)"
-#
-msgid "Speed unit"
+msgid "Settings"
 msgstr ""
 #
-msgid "Time Zone"
+msgid "Size"
 msgstr ""
 #
-msgid "Total Rainfall"
+msgid "Slices per Update"
+msgstr ""
+#
+msgid "Slices per hour"
+msgstr ""
+#
+msgid "Spacing"
+msgstr ""
+#
+msgid "Stop"
 msgstr ""
 #
 msgid "UTC"
@@ -275,39 +340,27 @@ msgstr ""
 msgid "Units"
 msgstr ""
 #
-msgid "Unnown"
+msgid "Updates per Second"
+msgstr ""
+#
+msgid "Use Gradual Colors"
 msgstr ""
 #
 #
 msgid "Use High Definition Graphics"
 msgstr "Gebruik hoge grafische resolutie"
 #
-msgid "Warning :  This directory is Empty!"
-msgstr ""
-#
-msgid "Waves"
+msgid "Wave"
 msgstr ""
 #
 msgid "Wind"
 msgstr ""
 #
-#
-#, fuzzy
-msgid "Wind Direction(10m)"
-msgstr "windrichting"
-#
-msgid "Wind Gust(Surf.)"
+msgid "Wind Gust"
 msgstr ""
 #
-#
-#, fuzzy
-msgid "Wind Speed and Direction(10m)"
-msgstr "windrichting"
-#
-#
-#, fuzzy
-msgid "Wind Speed(10m)"
-msgstr "windsnelheid (m/sec)"
+msgid "Wind Scat"
+msgstr ""
 #
 msgid ""
 "Your request is ready. An eMail is prepared in your eMail environment.\n"
@@ -330,31 +383,29 @@ msgstr ""
 msgid "eMail To"
 msgstr ""
 #
+msgid "eMail error"
+msgstr ""
+#
+msgid "mmHG"
+msgstr ""
+#
+msgid "playback"
+msgstr ""
 #
 #
 #
 #
+#, fuzzy
+#~ msgid "Data Display Preferences"
+#~ msgstr "GRIB voorkeuren"
 #
 #
 #
+#~ msgid "GRIB"
+#~ msgstr "GRIB"
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "&Close"
-#~ msgstr "&Sluiten"
 #
 #
 #
@@ -386,6 +437,57 @@ msgstr ""
 #
 #
 #
+#, fuzzy
+#~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
+#~ msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
+#~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+#~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
+#~ msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
+#~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Pressure (MSL)"
+#~ msgstr "luchtdruk (hPa)"
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
@@ -399,16 +501,6 @@ msgstr ""
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Sea Surface Temp."
-#~ msgstr "zeewatertemperatuur (°C)"
 #
 #
 #
@@ -458,8 +550,46 @@ msgstr ""
 #
 #
 #
+#
+#
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Toon windsnelheid in m/sec"
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Sign.Wave Height"
+#~ msgstr "significante golfhoogte (m)"
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Wind Direction(10m)"
+#~ msgstr "windrichting"
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Wind Speed and Direction(10m)"
+#~ msgstr "windrichting"
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Wind Speed(10m)"
+#~ msgstr "windsnelheid (m/sec)"
+#
+#
+#
 #
 #
 #

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-24 22:17+0100\n"
+"POT-Creation-Date: 2013-04-24 14:34+1200\n"
 "PO-Revision-Date: \n"
 "Last-Translator: JPJoubert <joubert.jeanpierre@wanadoo.fr>\n"
 "Language-Team: \n"
@@ -11,133 +11,95 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr_FR\n"
 "X-Generator: Poedit 1.5.4\n"
-
 #
 msgid " (Dup)"
 msgstr "(Dup)"
-
 #
 msgid " Deg"
 msgstr " Deg"
-
 #
-msgid " h"
-msgstr " h"
-
-#
-msgid "0.2 Deg"
-msgstr "0.2 Deg"
-
-#
-msgid "0.6 Deg"
-msgstr "0.6 Deg"
-
-#
-msgid "1.0 Deg"
-msgstr "1.0 Deg"
-
-#
-msgid "1.2 Deg"
-msgstr "1.2 Deg"
-
-#
-msgid "1.5 Deg"
-msgstr "1.5 Deg"
-
-#
-msgid "12 h"
-msgstr "12 h"
-
-#
-msgid "2.0 Deg"
-msgstr "2.0 Deg"
-
-#
-msgid "24 h"
-msgstr "24 h"
-
-#
-msgid "3 h"
-msgstr "3 h"
-
-#
-msgid "4 days"
-msgstr "4 jours"
-
-#
-msgid "6 days"
-msgstr "6 jours"
-
-#
-msgid "6 h"
-msgstr "6 h"
-
-#
-msgid "8 days"
-msgstr "8 jours"
-
+#, fuzzy
+msgid " data"
+msgstr "Données"
 #
 msgid "Action"
 msgstr "Action"
-
 #
-msgid "Air Temp.(2m)"
+#, fuzzy
+msgid "Air Temp"
 msgstr "Temp. Air(2m)"
-
 #
-msgid "Air Temperature(2m)"
+#, fuzzy
+msgid "Air Temperature"
 msgstr "Température de l'air(2m)"
-
 #
-msgid "Clouds Cover"
+msgid "Barbed Arrows"
+msgstr ""
+#
+msgid "Building Isobar map"
+msgstr ""
+#
+msgid "Celcius"
+msgstr ""
+#
+msgid "Cloud"
+msgstr ""
+#
+#, fuzzy
+msgid "Cloud Cover"
 msgstr "Nébulosité"
-
 #
-msgid "Copy first Cumulative missing Record"
+msgid "Colors"
+msgstr ""
+#
+#, fuzzy
+msgid "Copy First Cumulative Missing Record"
 msgstr "Copier le premier enregistrement cumulatif manquant"
-
 #
-msgid "Copy missing Wave Records"
+#, fuzzy
+msgid "Copy Missing Wave Records"
 msgstr "Copier les enregistrements vagues  manquants"
-
 #
 #
-msgid "Current Velocity"
+#, fuzzy
+msgid "Current"
 msgstr "Vitesse Courant"
-
-#
-msgid "Data"
-msgstr "Données"
-
-#
-msgid "Data Display Preferences"
-msgstr "Préférences d'affichage"
-
 #
 msgid "Days"
 msgstr "jours"
-
+#
+msgid "Direction Arrows"
+msgstr ""
+#
+msgid "Display"
+msgstr ""
+#
+msgid "Error"
+msgstr ""
 #
 msgid "Error:  Can't read this File!"
 msgstr "Error : Impossible de lire ce fichier!"
-
 #
-msgid "Forecast Model   "
-msgstr "Model des prévisions"
-
+msgid "Error:  File does not exist!"
+msgstr ""
 #
+msgid "Fahrenheit"
+msgstr ""
 #
-msgid "GRIB"
-msgstr "GRIB"
-
+msgid "Failed to send mail message"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
+#
+msgid "GRIB Data at Cursor"
+msgstr ""
 #
 msgid "GRIB Display Control"
 msgstr "Gestionnaire d'affichage GRIB"
-
 #
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "Complément \"Météo\" d'affichage des fichiers GRIB pour OpenCPN"
-
 #
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
@@ -150,205 +112,219 @@ msgid ""
 "- surface current direction and speed."
 msgstr ""
 "Complément \"Météo\" pour l'affichage des fichiers GRIB par OpenCPN\n"
-"Fournit un affichage de base des fichiers GRIB pour plusieurs types de fichiers.\n"
+"Fournit un affichage de base des fichiers GRIB pour plusieurs types de "
+"fichiers.\n"
 "\n"
 "Supporte les types de fichiers GRIB suivants :\n"
 "- Vent : Direction et vitesse\n"
 "- Hauteur significative des vagues\n"
 "- Température de surface de la mer\n"
 "- Courant de surface : Direction et vitesse."
-
 #
-msgid "GRIB Preferences"
-msgstr "Préférences"
-
-#
-msgid "Graphic Data to show in Map"
-msgstr "Données graphiques à afficher sur la carte"
-
+msgid "Generic"
+msgstr ""
 #
 msgid "Grib"
 msgstr "Grib"
-
+#
+#, fuzzy
+msgid "Grib Preferences"
+msgstr "Préférences"
+#
+msgid "Grib Settings"
+msgstr ""
+#
+msgid "Inches"
+msgstr ""
+#
+msgid "Interpolate between gribs"
+msgstr ""
 #
 msgid "Interval"
 msgstr "Intervalle"
-
+#
+msgid "Iso Bars"
+msgstr ""
+#
+msgid "KPH"
+msgstr ""
+#
+#, fuzzy
+msgid "Knots"
+msgstr "Unités"
 #
 msgid "Local Time"
 msgstr "Heure Locale"
-
+#
+msgid "Loop Mode"
+msgstr ""
+#
+msgid "M/S"
+msgstr ""
+#
+msgid "MPH"
+msgstr ""
+#
+msgid "Mapi is not installed or invalid on this computer"
+msgstr ""
+#
+#, fuzzy
+msgid "Meters"
+msgstr "Parametres"
+#
+msgid "MilliBars"
+msgstr ""
+#
+msgid "Millimeters"
+msgstr ""
 #
 msgid "Model"
 msgstr "Modèle"
-
 #
-msgid "Modify"
-msgstr "Modifier"
-
+msgid "MyLabel"
+msgstr ""
 #
-msgid "No Reference. Try another Graphic Data Selection"
-msgstr "Pas de reference. Essayez une autre selection de données"
-
+msgid "N/A"
+msgstr ""
 #
-msgid "No other graphic display"
-msgstr "Pas d'autre affichage graphique"
-
+msgid "Next"
+msgstr ""
 #
-msgid "Numeric Data to show in Panel"
-msgstr "Données numériques à afficher"
-
+msgid "Now"
+msgstr ""
+#
+msgid "Numbers"
+msgstr ""
+#
+msgid "Open File"
+msgstr ""
+#
+msgid "OpenCpn failed to logon! Please verify your eMail environment"
+msgstr ""
+#
+msgid "OverlayMap"
+msgstr ""
 #
 msgid "Parameters"
 msgstr "Parametres"
-
+#
+msgid "Percentage"
+msgstr ""
 #
 msgid "Period"
 msgstr "Période"
-
 #
-msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Temperature de l'air(2m)."
-
+msgid "Play"
+msgstr ""
 #
 #
-msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Courants"
-
+#, fuzzy
+msgid "Please Zoom or Scale Out to view suppressed "
+msgstr ""
+"Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - "
+"Hauteur signif. des Vagues"
 #
-#
-msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Nebulosité"
-
-#
-#
-msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Hauteur signif. des Vagues"
-
-#
-msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Température de l'eau"
-
-#
-#
-msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
-msgstr "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles - Précipitations"
-
+msgid "Precipitation"
+msgstr ""
 #
 #
 msgid "Pressure"
 msgstr "Pression"
-
 #
+msgid "Previous"
+msgstr ""
 #
-msgid "Pressure (MSL)"
-msgstr "Pression (MSL)"
-
+msgid "Quickscat"
+msgstr ""
 #
-msgid "Profil"
-msgstr "Profile"
-
-#
-msgid "Rainfall"
+#, fuzzy
+msgid "Rain"
 msgstr "Précipitations"
-
+#
+msgid "Range"
+msgstr ""
 #
 msgid "Ref : "
 msgstr "Ref : "
-
+#
+#, fuzzy
+msgid "Request"
+msgstr "Profile de la demande"
 #
 msgid "Request Pofile"
 msgstr "Profile de la demande"
-
-#
-msgid "Request Setting"
-msgstr "Parametrage de la demande"
-
 #
 msgid "Resolution"
 msgstr "Resolution"
-
 #
-msgid "Sea Temp.(Surf.)"
+#, fuzzy
+msgid "Sea Temp"
 msgstr "Temp. eau(Surf.)"
-
 #
-msgid "Sea Temperature(surf.)"
+#, fuzzy
+msgid "Sea Temperature"
 msgstr "Température de l'eau(Surf.)"
-
+#
+#, fuzzy
+msgid "SeaTemp"
+msgstr "Temp. eau(Surf.)"
 #
 #
 msgid "Select a GRIB file"
 msgstr "Sélectionnez un fichier GRIB"
-
 #
 msgid "Send"
 msgstr "Envoyer"
-
 #
+#, fuzzy
+msgid "Settings"
+msgstr "Parametrage de la demande"
 #
-msgid "Sign.Wave Height"
-msgstr "Haut. sign. Vagues"
-
+msgid "Size"
+msgstr ""
 #
-msgid "Speed unit"
-msgstr "Unité de vitesse"
-
+msgid "Slices per Update"
+msgstr ""
 #
-msgid "Time Zone"
-msgstr "Zone horaire"
-
+msgid "Slices per hour"
+msgstr ""
 #
-msgid "Total Rainfall"
-msgstr "Précipitations"
-
+msgid "Spacing"
+msgstr ""
+#
+msgid "Stop"
+msgstr ""
 #
 msgid "UTC"
 msgstr "UTC"
-
 #
 msgid "Units"
 msgstr "Unités"
-
 #
-msgid "Unnown"
-msgstr "Inconnu"
-
+msgid "Updates per Second"
+msgstr ""
+#
+msgid "Use Gradual Colors"
+msgstr ""
 #
 #
 msgid "Use High Definition Graphics"
 msgstr "Utiliser le graphisme haute définition"
-
 #
-msgid "Warning :  This directory is Empty!"
-msgstr "Attention : Ce repertoire est vide!"
-
-#
-msgid "Waves"
+#, fuzzy
+msgid "Wave"
 msgstr "Vagues"
-
 #
 msgid "Wind"
 msgstr "Vent"
-
 #
-#
-msgid "Wind Direction(10m)"
-msgstr "Direction vent(10 m)"
-
-#
-msgid "Wind Gust(Surf.)"
+#, fuzzy
+msgid "Wind Gust"
 msgstr "Rafales (Surf.)"
-
 #
-#
-msgid "Wind Speed and Direction(10m)"
-msgstr "Vitesse et Direction du vent(10m)"
-
-#
-msgid "Wind Speed(10m)"
-msgstr "Vitesse vent(10m)"
-
+#, fuzzy
+msgid "Wind Scat"
+msgstr "Vent"
 #
 msgid ""
 "Your request is ready. An eMail is prepared in your eMail environment.\n"
@@ -358,24 +334,273 @@ msgstr ""
 "Votre demande est prete. Un Mail est preparé dans votre logiciel mail.\n"
 "Il vous reste à cliquer sur  'envoyer' .\n"
 "OK pour continuer..."
-
 #
 msgid ""
-"Your request was sent (if your system has an MTA configured and is able to send mail).\n"
+"Your request was sent (if your system has an MTA configured and is able to "
+"send mail).\n"
 "OK to continue ..."
 msgstr ""
-"Votre demande a été envoyée (si votre systeme a un MTA configuré et capable d'envoyer des mails).\n"
+"Votre demande a été envoyée (si votre systeme a un MTA configuré et capable "
+"d'envoyer des mails).\n"
 "OK pour continuer..."
-
 #
 msgid "Zone"
 msgstr "Zone"
-
 #
 msgid "eMail"
 msgstr "Mail"
-
 #
 msgid "eMail To"
 msgstr "Mail pour"
-
+#
+#, fuzzy
+msgid "eMail error"
+msgstr "Mail pour"
+#
+msgid "mmHG"
+msgstr ""
+#
+msgid "playback"
+msgstr ""
+#
+#
+#~ msgid " h"
+#~ msgstr " h"
+#
+#
+#
+#
+#~ msgid "0.2 Deg"
+#~ msgstr "0.2 Deg"
+#
+#
+#
+#
+#~ msgid "0.6 Deg"
+#~ msgstr "0.6 Deg"
+#
+#
+#
+#
+#~ msgid "1.0 Deg"
+#~ msgstr "1.0 Deg"
+#
+#
+#
+#
+#~ msgid "1.2 Deg"
+#~ msgstr "1.2 Deg"
+#
+#
+#
+#
+#~ msgid "1.5 Deg"
+#~ msgstr "1.5 Deg"
+#
+#
+#
+#
+#~ msgid "12 h"
+#~ msgstr "12 h"
+#
+#
+#
+#
+#~ msgid "2.0 Deg"
+#~ msgstr "2.0 Deg"
+#
+#
+#
+#
+#~ msgid "24 h"
+#~ msgstr "24 h"
+#
+#
+#
+#
+#~ msgid "3 h"
+#~ msgstr "3 h"
+#
+#
+#
+#
+#~ msgid "4 days"
+#~ msgstr "4 jours"
+#
+#
+#
+#
+#~ msgid "6 days"
+#~ msgstr "6 jours"
+#
+#
+#
+#
+#~ msgid "6 h"
+#~ msgstr "6 h"
+#
+#
+#
+#
+#~ msgid "8 days"
+#~ msgstr "8 jours"
+#
+#
+#
+#
+#~ msgid "Data Display Preferences"
+#~ msgstr "Préférences d'affichage"
+#
+#
+#
+#
+#~ msgid "Forecast Model   "
+#~ msgstr "Model des prévisions"
+#
+#
+#
+#~ msgid "GRIB"
+#~ msgstr "GRIB"
+#
+#
+#
+#
+#~ msgid "Graphic Data to show in Map"
+#~ msgstr "Données graphiques à afficher sur la carte"
+#
+#
+#
+#
+#~ msgid "Modify"
+#~ msgstr "Modifier"
+#
+#
+#
+#
+#~ msgid "No Reference. Try another Graphic Data Selection"
+#~ msgstr "Pas de reference. Essayez une autre selection de données"
+#
+#
+#
+#
+#~ msgid "No other graphic display"
+#~ msgstr "Pas d'autre affichage graphique"
+#
+#
+#
+#
+#~ msgid "Numeric Data to show in Panel"
+#~ msgstr "Données numériques à afficher"
+#
+#
+#
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
+#~ msgstr ""
+#~ "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles "
+#~ "- Temperature de l'air(2m)."
+#
+#
+#
+#
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
+#~ msgstr ""
+#~ "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles "
+#~ "- Courants"
+#
+#
+#
+#
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
+#~ msgstr ""
+#~ "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles "
+#~ "- Nebulosité"
+#
+#
+#
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
+#~ msgstr ""
+#~ "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles "
+#~ "- Température de l'eau"
+#
+#
+#
+#
+#
+#~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
+#~ msgstr ""
+#~ "Veuillez diminuer le zoom ou l'échelle pour afficher les GRIB non visibles "
+#~ "- Précipitations"
+#
+#
+#
+#
+#
+#~ msgid "Pressure (MSL)"
+#~ msgstr "Pression (MSL)"
+#
+#
+#
+#
+#~ msgid "Profil"
+#~ msgstr "Profile"
+#
+#
+#
+#
+#
+#~ msgid "Sign.Wave Height"
+#~ msgstr "Haut. sign. Vagues"
+#
+#
+#
+#
+#~ msgid "Speed unit"
+#~ msgstr "Unité de vitesse"
+#
+#
+#
+#
+#~ msgid "Time Zone"
+#~ msgstr "Zone horaire"
+#
+#
+#
+#
+#~ msgid "Total Rainfall"
+#~ msgstr "Précipitations"
+#
+#
+#
+#
+#~ msgid "Unnown"
+#~ msgstr "Inconnu"
+#
+#
+#
+#
+#~ msgid "Warning :  This directory is Empty!"
+#~ msgstr "Attention : Ce repertoire est vide!"
+#
+#
+#
+#
+#
+#~ msgid "Wind Direction(10m)"
+#~ msgstr "Direction vent(10 m)"
+#
+#
+#
+#
+#
+#~ msgid "Wind Speed and Direction(10m)"
+#~ msgstr "Vitesse et Direction du vent(10m)"
+#
+#
+#
+#
+#~ msgid "Wind Speed(10m)"
+#~ msgstr "Vitesse vent(10m)"
