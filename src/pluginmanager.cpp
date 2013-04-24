@@ -1496,9 +1496,8 @@ void PushNMEABuffer( wxString buf )
     OCPN_DataStreamEvent event( wxEVT_OCPN_DATASTREAM, 0 );
     std::string s = std::string( buf.mb_str() );
     event.SetNMEAString( s );
-    event.SetStreamName("PlugIn Virtual");
-    event.SetPriority( 0 );
-
+    event.SetStream( NULL );
+    
     g_pMUX->AddPendingEvent( event );
 }
 
@@ -2589,5 +2588,4 @@ void ChartPlugInWrapper::latlong_to_chartpix(double lat, double lon, double &pix
     if(m_ppicb)
         m_ppicb->latlong_to_chartpix(lat, lon, pixx, pixy);
 }
-
 

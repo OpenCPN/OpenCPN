@@ -28,6 +28,8 @@
 #include <wx/event.h>
 #include <string>
 
+class DataStream;
+
 class OCPN_DataStreamEvent: public wxEvent
 {
 public:
@@ -36,21 +38,16 @@ public:
 
     // accessors
     void SetNMEAString(std::string string) { m_NMEAstring = string; }
-    void SetStreamName(std::string string) { m_StreamName = string; }
-    void SetPriority( int prio ) { m_priority = prio; }
-
+    void SetStream( DataStream *pDS ) { m_pDataStream = pDS; }
     std::string GetNMEAString() { return m_NMEAstring; }
-    std::string GetStreamName() { return m_StreamName; }
-    int GetStreamPriority() { return m_priority; }
-
+    DataStream *GetStream() { return m_pDataStream; }
+    
     // required for sending with wxPostEvent()
     wxEvent *Clone() const;
 
 private:
     std::string m_NMEAstring;
-    std::string m_StreamName;
-    int m_priority;
-
+    DataStream *m_pDataStream;
 };
 
 #endif

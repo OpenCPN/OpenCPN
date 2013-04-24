@@ -415,12 +415,13 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                         nmea_line += _T("\r\n");        // Add cr/lf, possibly superfluous
                         if( m_consumer && ChecksumOK(nmea_line)){
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                            std::string s = std::string(nmea_line.mb_str());
-                            Nevent.SetNMEAString(s);
-                            Nevent.SetStreamName(std::string( GetPort().mb_str() ));
-                            Nevent.SetPriority(GetPriority());
+                            wxCharBuffer buffer=nmea_line.ToUTF8();
+                            if(buffer.data()) {
+                                Nevent.SetNMEAString( buffer.data() );
+                                Nevent.SetStream( this );
                             
-                            m_consumer->AddPendingEvent(Nevent);
+                                m_consumer->AddPendingEvent(Nevent);
+                            }
                         }
                     }
                 }
@@ -1478,12 +1479,13 @@ void *GARMIN_Serial_Thread::Entry()
 
                         if( m_pMessageTarget ) {
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                            std::string s = std::string(message.mb_str());
-                            Nevent.SetNMEAString(s);
-                            Nevent.SetStreamName(std::string( m_parent_stream->GetPort().mb_str() ));
-                            Nevent.SetPriority(m_parent_stream->GetPriority());
-                        
-                            m_pMessageTarget->AddPendingEvent(Nevent);
+                            wxCharBuffer buffer=message.ToUTF8();
+                            if(buffer.data()) {
+                                Nevent.SetNMEAString( buffer.data() );
+                                Nevent.SetStream( m_parent_stream );
+                                
+                                m_pMessageTarget->AddPendingEvent(Nevent);
+                            }
                         }
                         
                         last_rx_time = wxDateTime::Now();
@@ -1601,12 +1603,13 @@ void *GARMIN_USB_Thread::Entry()
 
                   if( m_pMessageTarget ) {
                     OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                    std::string s = std::string(message.mb_str());
-                    Nevent.SetNMEAString(s);
-                    Nevent.SetStreamName(std::string( m_parent_stream->GetPort().mb_str() ));
-                    Nevent.SetPriority(m_parent_stream->GetPriority());
-                  
-                    m_pMessageTarget->AddPendingEvent(Nevent);
+                    wxCharBuffer buffer=message.ToUTF8();
+                    if(buffer.data()) {
+                        Nevent.SetNMEAString( buffer.data() );
+                        Nevent.SetStream( m_parent_stream );
+                        
+                        m_pMessageTarget->AddPendingEvent(Nevent);
+                    }
                   }
                   
             }
@@ -1651,15 +1654,16 @@ void *GARMIN_USB_Thread::Entry()
 
                           if( m_pMessageTarget ) {
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                            std::string s = std::string(message.mb_str());
-                            Nevent.SetNMEAString(s);
-                            Nevent.SetStreamName(std::string( m_parent_stream->GetPort().mb_str() ));
-                            Nevent.SetPriority(m_parent_stream->GetPriority());
-                          
-                            m_pMessageTarget->AddPendingEvent(Nevent);
+                            wxCharBuffer buffer=message.ToUTF8();
+                            if(buffer.data()) {
+                                Nevent.SetNMEAString( buffer.data() );
+                                Nevent.SetStream( m_parent_stream );
+                                
+                                m_pMessageTarget->AddPendingEvent(Nevent);
+                            }
                           }
                           
-                          }
+                   }
                   
             }
 

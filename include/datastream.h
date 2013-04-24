@@ -165,7 +165,7 @@ public:
     dsPortType GetIoSelect(){ return m_io_select; }
     int GetPriority(){ return m_priority; }
     void *GetUserData(){ return m_user_data; }
-
+    
     bool SendSentence( const wxString &sentence );
 
     int GetLastError(){ return m_last_error; }

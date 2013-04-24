@@ -1672,6 +1672,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         break;
 
     case WXK_F12: {
+        if( m_modkeys == wxMOD_ALT )
+            m_nMeasureState = *(int *)(0);          // generate a fault for testing
+            
         parent_frame->ToggleChartOutlines();
         break;
     }
@@ -5263,7 +5266,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 #else
                 dlg_return = wxID_YES;
 #endif
-
                 if( dlg_return == wxID_YES ) {
                     pMousePoint = pNearbyPoint;
 

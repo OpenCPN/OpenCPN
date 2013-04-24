@@ -27,6 +27,7 @@
 OCPN_DataStreamEvent::OCPN_DataStreamEvent(wxEventType commandType, int id)
       :wxEvent(id, commandType)
 {
+    m_pDataStream = NULL;
 }
 
 OCPN_DataStreamEvent::~OCPN_DataStreamEvent()
@@ -37,8 +38,7 @@ wxEvent* OCPN_DataStreamEvent::Clone() const
 {
     OCPN_DataStreamEvent *newevent=new OCPN_DataStreamEvent(*this);
     newevent->m_NMEAstring=this->m_NMEAstring;
-    newevent->m_StreamName=this->m_StreamName;
-    newevent->m_priority=this->m_priority;
+    newevent->m_pDataStream = this->m_pDataStream;
     return newevent;
 }
 
