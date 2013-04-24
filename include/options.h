@@ -252,7 +252,7 @@ public:
     void OnRemoveTideDataLocation( wxCommandEvent &event );
     void OnCharHook( wxKeyEvent& event );
     void OnChartsPageChange( wxListbookEvent& event );
-    
+
     void UpdateWorkArrayFromTextCtl();
 
 // Should we show tooltips?
@@ -344,7 +344,7 @@ public:
 
     SentenceListDlg* m_stcdialog_in;
     SentenceListDlg* m_stcdialog_out;
-    
+
     // Virtual event handlers, overide them in your derived class
     void OnSelectDatasource( wxListEvent& event );
     void OnAddDatasourceClick( wxCommandEvent& event );
@@ -365,7 +365,7 @@ public:
     void OnValChange( wxCommandEvent& event );
     void OnUploadFormatChange( wxCommandEvent& event );
     void OnConnectionToggleEnable( wxMouseEvent &event );
-    
+
     bool connectionsaved;
     bool m_connection_enabled;
 
@@ -432,6 +432,8 @@ public:
     wxTextCtrl                *m_pText_ACK_Timeout;
     wxCheckBox                *m_pCheck_Show_Area_Notices;
     wxCheckBox                *m_pCheck_Draw_Target_Size;
+    wxCheckBox                *m_pCheck_Show_Target_Name;
+    wxTextCtrl                *m_pText_Show_Target_Name_Scale;
     wxCheckBox                *m_pCheck_ShowAllCPA;
 //    For Ship page
     wxFlexGridSizer*        realSizes;
@@ -525,8 +527,8 @@ private:
     void SetNMEAFormToNet();
     void ClearNMEAForm();
     bool m_bNMEAParams_shown;
-    
-    
+
+
     void SetConnectionParams(ConnectionParams *cp);
     void SetDSFormRWStates();
     void FillSourceList();
@@ -548,7 +550,7 @@ public:
     void SetInitialSettings();
     void CompleteInitialSettings();
     void PopulateTrees();
-    
+
     void PopulateTreeCtrl( wxTreeCtrl *ptc, const wxArrayString &dir_array, const wxColour &col,
             wxFont *pFont = NULL );
     wxTreeCtrl *AddEmptyGroupPage( const wxString& label );
@@ -569,8 +571,8 @@ public:
     bool m_UIcomplete;
     bool m_settingscomplete;
     bool m_treespopulated;
-    
-    
+
+
 private:
     int FindGroupBranch( ChartGroup *pGroup, wxTreeCtrl *ptree, wxTreeItemId item,
             wxString *pbranch_adder );
@@ -854,7 +856,7 @@ class SentenceListDlg : public wxDialog
         wxButton* m_sdbSizer4Cancel;
         wxArrayString standard_sentences;
         wxStaticBox *m_pclbBox;
-        
+
     // Virtual event handlers, overide them in your derived class
         void OnStcSelect( wxCommandEvent& event );
         void OnAddClick( wxCommandEvent& event );
@@ -865,7 +867,7 @@ class SentenceListDlg : public wxDialog
         void OnCLBToggle( wxCommandEvent& event );
         void OnCheckAllClick( wxCommandEvent& event );
         void OnClearAllClick( wxCommandEvent& event );
-        
+
     public:
 
     SentenceListDlg( FilterDirection dir,
