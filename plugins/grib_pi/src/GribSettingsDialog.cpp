@@ -30,7 +30,7 @@
 static const wxString units0_names[] = {_("Knots"), _("M/S"), _("MPH"), _("KPH"), wxEmptyString};
 static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), wxEmptyString};
 static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};
-static const wxString units3_names[] = {_("Celcius"), _("Farenheight"), wxEmptyString};
+static const wxString units3_names[] = {_("Celcius"), _("Fahrenheit"), wxEmptyString};
 static const wxString units4_names[] = {_("Millimeters"), _("Inches"), wxEmptyString};
 static const wxString units5_names[] = {_("Percentage"), wxEmptyString};
 static const wxString *unit_names[] = {units0_names, units1_names, units2_names,
@@ -130,8 +130,8 @@ double GribOverlaySettings::CalibrationOffset(int settings)
 {
     switch(unittype[settings]) {
     case 3: switch(Settings[settings].m_Units) { /* only have offset for temperature */
-        case CELCIUS:     return -273.15;
-        case FARENHEIGHT: return -273.15 + 32*5/9.0;
+        case CELCIUS:    return -273.15;
+        case FAHRENHEIT: return -273.15 + 32*5/9.0;
         } break;
     }
         
@@ -157,7 +157,7 @@ double GribOverlaySettings::CalibrationFactor(int settings)
         } break;
     case 3: switch(Settings[settings].m_Units) {
         case CELCIUS:     return 1;
-        case FARENHEIGHT: return 9./5;
+        case FAHRENHEIT: return 9./5;
         } break;
     case 4: switch(Settings[settings].m_Units) {
         case MILLIMETERS: return 1;
