@@ -15,12 +15,12 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	
 	wxFlexGridSizer* fgSizer1;
 	fgSizer1 = new wxFlexGridSizer( 0, 1, 0, 0 );
-	fgSizer1->AddGrowableRow( 2 );
+	fgSizer1->AddGrowableRow( 1 );
 	fgSizer1->SetFlexibleDirection( wxVERTICAL );
 	fgSizer1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
 	
 	wxFlexGridSizer* fgSizer51;
-	fgSizer51 = new wxFlexGridSizer( 1, 7, 0, 0 );
+	fgSizer51 = new wxFlexGridSizer( 1, 9, 0, 0 );
 	fgSizer51->AddGrowableCol( 1 );
 	fgSizer51->SetFlexibleDirection( wxHORIZONTAL );
 	fgSizer51->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_NONE );
@@ -28,52 +28,45 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_bpPrev = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpPrev->SetToolTip( _("Previous") );
 	
-	fgSizer51->Add( m_bpPrev, 0, wxALL, 5 );
+	fgSizer51->Add( m_bpPrev, 0, wxALL, 1 );
 	
 	m_cRecordForecast = new wxComboBox( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 ); 
-	fgSizer51->Add( m_cRecordForecast, 0, wxALL|wxEXPAND, 5 );
+	fgSizer51->Add( m_cRecordForecast, 0, wxALL|wxEXPAND, 1 );
 	
 	m_bpNext = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpNext->SetToolTip( _("Next") );
 	
-	fgSizer51->Add( m_bpNext, 0, wxALL, 5 );
+	fgSizer51->Add( m_bpNext, 0, wxALL, 1 );
 	
 	m_bpNow = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpNow->SetToolTip( _("Now") );
+
+    fgSizer51->Add( m_bpNow, 0, wxALL, 1 );
+
+    m_bpPlay = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_bpPlay->SetToolTip( _("Play") );
 	
-	fgSizer51->Add( m_bpNow, 0, wxALL, 5 );
-	
+	fgSizer51->Add( m_bpPlay, 0, wxALL, 1 );
+
+    m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( 80,-1 ), wxSL_HORIZONTAL );
+	fgSizer51->Add( m_sTimeline, 0, wxEXPAND, 1 );
+
 	m_bpOpenFile = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpOpenFile->SetToolTip( _("Open File") );
 	
-	fgSizer51->Add( m_bpOpenFile, 0, wxALL, 5 );
+	fgSizer51->Add( m_bpOpenFile, 0, wxALL, 1 );
 	
 	m_bpSettings = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpSettings->SetToolTip( _("Settings") );
 	
-	fgSizer51->Add( m_bpSettings, 0, wxALL, 5 );
+	fgSizer51->Add( m_bpSettings, 0, wxALL, 1 );
 	
 	m_bpRequest = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpRequest->SetToolTip( _("Request") );
 	
-	fgSizer51->Add( m_bpRequest, 0, wxALL, 5 );
-	
-	
-	fgSizer1->Add( fgSizer51, 1, wxEXPAND, 5 );
-	
-	m_fgTimelineControls = new wxFlexGridSizer( 1, 0, 0, 0 );
-	m_fgTimelineControls->AddGrowableCol( 1 );
-	m_fgTimelineControls->SetFlexibleDirection( wxBOTH );
-	m_fgTimelineControls->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	m_tbPlayStop = new wxToggleButton( this, ID_PLAYSTOP, _("Play"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTimelineControls->Add( m_tbPlayStop, 0, wxALL, 5 );
-	
-	m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( -1,-1 ), wxSL_HORIZONTAL );
-	m_fgTimelineControls->Add( m_sTimeline, 0, wxEXPAND, 5 );
-	
-	
-	fgSizer1->Add( m_fgTimelineControls, 1, wxEXPAND, 5 );
+	fgSizer51->Add( m_bpRequest, 0, wxALL, 1 );
+		
+	fgSizer1->Add( fgSizer51, 1, wxEXPAND, 1 );
 	
 	wxStaticBoxSizer* sbSizer2;
 	sbSizer2 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("GRIB Data at Cursor") ), wxVERTICAL );
@@ -87,102 +80,101 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	
 	m_tcWindSpeed = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
 	m_tcWindSpeed->SetMaxLength( 3 ); 
-	m_fgTrackingControls->Add( m_tcWindSpeed, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcWindSpeed, 0, wxALL, 1 );
 	
 	m_tcWindDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
 	m_tcWindDirection->SetMaxLength( 3 ); 
-	m_fgTrackingControls->Add( m_tcWindDirection, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcWindDirection, 0, wxALL, 1 );
 	
 	m_cbWindScat = new wxCheckBox( this, wxID_ANY, _("Wind Scat"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTrackingControls->Add( m_cbWindScat, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_cbWindScat, 0, wxALL, 1 );
 	
 	m_tcWindScatSpeed = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	m_fgTrackingControls->Add( m_tcWindScatSpeed, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcWindScatSpeed, 0, wxALL, 1 );
 	
 	m_tcWindScatDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	m_fgTrackingControls->Add( m_tcWindScatDirection, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcWindScatDirection, 0, wxALL, 1 );
 	
 	m_cbWave = new wxCheckBox( this, ID_CB_SIG_WAVE_HEIGHT, _("Wave"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTrackingControls->Add( m_cbWave, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_cbWave, 0, wxALL, 1 );
 	
 	m_tcWaveHeight = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
 	m_tcWaveHeight->SetMaxLength( 5 ); 
-	m_fgTrackingControls->Add( m_tcWaveHeight, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcWaveHeight, 0, wxALL, 1 );
 	
 	m_tcWaveDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
 	m_tcWaveDirection->SetMaxLength( 3 ); 
 	m_fgTrackingControls->Add( m_tcWaveDirection, 0, wxALL, 5 );
 	
 	m_cbCurrent = new wxCheckBox( this, ID_CB_CURRENT_VELOCITY, _("Current"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTrackingControls->Add( m_cbCurrent, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_cbCurrent, 0, wxALL, 1 );
 	
 	m_tcCurrentVelocity = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
 	m_tcCurrentVelocity->SetMaxLength( 5 ); 
-	m_fgTrackingControls->Add( m_tcCurrentVelocity, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcCurrentVelocity, 0, wxALL, 1 );
 	
 	m_tcCurrentDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
 	m_tcCurrentDirection->SetMaxLength( 5 ); 
-	m_fgTrackingControls->Add( m_tcCurrentDirection, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcCurrentDirection, 0, wxALL, 1 );
 	
 	m_cbWindGust = new wxCheckBox( this, wxID_ANY, _("Wind Gust"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTrackingControls->Add( m_cbWindGust, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_cbWindGust, 0, wxALL, 1 );
 	
 	m_tcWindGust = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_fgTrackingControls->Add( m_tcWindGust, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcWindGust, 0, wxALL, 1 );
 	
 	
-	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 1 );
 	
 	m_cbPressure = new wxCheckBox( this, ID_CB_PRESSURE, _("Pressure"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTrackingControls->Add( m_cbPressure, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_cbPressure, 0, wxALL, 1 );
 	
 	m_tcPressure = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
 	m_tcPressure->SetMaxLength( 5 ); 
-	m_fgTrackingControls->Add( m_tcPressure, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcPressure, 0, wxALL, 1 );
 	
 	
-	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 1 );
 	
 	m_cbPrecipitation = new wxCheckBox( this, wxID_ANY, _("Precipitation"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTrackingControls->Add( m_cbPrecipitation, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_cbPrecipitation, 0, wxALL, 1 );
 	
 	m_tcPrecipitation = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_fgTrackingControls->Add( m_tcPrecipitation, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcPrecipitation, 0, wxALL, 1 );
 	
 	
-	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 1 );
 	
 	m_cbCloud = new wxCheckBox( this, wxID_ANY, _("Cloud"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTrackingControls->Add( m_cbCloud, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_cbCloud, 0, wxALL, 1 );
 	
 	m_tcCloud = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_fgTrackingControls->Add( m_tcCloud, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcCloud, 0, wxALL, 1 );
 	
 	
-	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
+	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 1 );
 	
 	m_cbAirTemperature = new wxCheckBox( this, wxID_ANY, _("Air Temp"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTrackingControls->Add( m_cbAirTemperature, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_cbAirTemperature, 0, wxALL, 1 );
 	
 	m_tcAirTemperature = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_fgTrackingControls->Add( m_tcAirTemperature, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcAirTemperature, 0, wxALL, 1 );
 	
 	
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
 	
 	m_cbSeaTemperature = new wxCheckBox( this, ID_CB_SEA_TEMPERATURE, _("Sea Temp"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTrackingControls->Add( m_cbSeaTemperature, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_cbSeaTemperature, 0, wxALL, 1 );
 	
 	m_tcSeaTemperature = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
 	m_tcSeaTemperature->SetMaxLength( 5 ); 
-	m_fgTrackingControls->Add( m_tcSeaTemperature, 0, wxALL, 5 );
+	m_fgTrackingControls->Add( m_tcSeaTemperature, 0, wxALL, 1 );
 	
 	
-	sbSizer2->Add( m_fgTrackingControls, 1, wxEXPAND, 5 );
+	sbSizer2->Add( m_fgTrackingControls, 1, wxEXPAND, 1 );
 	
 	
-	fgSizer1->Add( sbSizer2, 1, wxFIXED_MINSIZE, 5 );
-	
+	fgSizer1->Add( sbSizer2, 1, wxEXPAND, 1 );	
 	
 	this->SetSizer( fgSizer1 );
 	this->Layout();
@@ -200,7 +192,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_bpOpenFile->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnOpenFile ), NULL, this );
 	m_bpSettings->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnSettings ), NULL, this );
 	m_bpRequest->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnRequest ), NULL, this );
-	m_tbPlayStop->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnPlayStop ), NULL, this );
+    m_bpPlay->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnPlayStop ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( GRIBUIDialogBase::OnTimeline ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( GRIBUIDialogBase::OnTimeline ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( GRIBUIDialogBase::OnTimeline ), NULL, this );
@@ -234,7 +226,7 @@ GRIBUIDialogBase::~GRIBUIDialogBase()
 	m_bpOpenFile->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnOpenFile ), NULL, this );
 	m_bpSettings->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnSettings ), NULL, this );
 	m_bpRequest->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnRequest ), NULL, this );
-	m_tbPlayStop->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnPlayStop ), NULL, this );
+    m_bpPlay->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnPlayStop ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_TOP, wxScrollEventHandler( GRIBUIDialogBase::OnTimeline ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( GRIBUIDialogBase::OnTimeline ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_LINEUP, wxScrollEventHandler( GRIBUIDialogBase::OnTimeline ), NULL, this );

@@ -56,6 +56,8 @@ class GRIBUIDialogBase : public wxDialog
 		wxComboBox* m_cRecordForecast;
 		wxBitmapButton* m_bpNext;
 		wxBitmapButton* m_bpNow;
+        wxBitmapButton* m_bpPlay;
+        wxBitmap* m_bPlay ;
 		wxBitmapButton* m_bpOpenFile;
 		wxBitmapButton* m_bpSettings;
 		wxBitmapButton* m_bpRequest;
@@ -93,7 +95,6 @@ class GRIBUIDialogBase : public wxDialog
 		
 	
 	public:
-		wxToggleButton* m_tbPlayStop;
 		wxSlider* m_sTimeline;
 		wxCheckBox* m_cbWind;
 		wxCheckBox* m_cbWave;
