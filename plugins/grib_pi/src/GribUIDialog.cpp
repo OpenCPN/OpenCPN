@@ -707,7 +707,7 @@ void GRIBUIDialog::ShowSendRequest( wxString r_zone )
     r_info.Append( wxT("\n") );
     r_info.Append( _("Interval") + r_colon );
     i = r_interval.AfterFirst( ',' );
-    r_info.Append( i.BeforeLast( ',' ) + _(" h") );
+    r_info.Append( i.BeforeLast( ',' ) + _T(" h") );
     r_info.Append( wxT("\n") );
     r_info.Append( _("Period") + r_colon );
     r_period.AfterLast( '.' ).ToDouble( &v );

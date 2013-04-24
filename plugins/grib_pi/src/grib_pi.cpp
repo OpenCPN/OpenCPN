@@ -162,7 +162,7 @@ wxBitmap *grib_pi::GetPlugInBitmap()
 
 wxString grib_pi::GetCommonName()
 {
-      return _("GRIB");
+      return _T("GRIB");
 }
 
 
