@@ -10,6 +10,7 @@
 
 #include <wx/artprov.h>
 #include <wx/xrc/xmlres.h>
+#include <wx/intl.h>
 #include <wx/bitmap.h>
 #include <wx/image.h>
 #include <wx/icon.h>
@@ -104,7 +105,7 @@ class GRIBUIDialogBase : public wxDialog
 		wxCheckBox* m_cbAirTemperature;
 		wxCheckBox* m_cbSeaTemperature;
 		
-		GRIBUIDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("GRIB Display Control"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxCAPTION|wxDIALOG_NO_PARENT|wxRESIZE_BORDER|wxSYSTEM_MENU ); 
+		GRIBUIDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("GRIB Display Control"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxCAPTION|wxDIALOG_NO_PARENT|wxRESIZE_BORDER|wxSYSTEM_MENU ); 
 		~GRIBUIDialogBase();
 	
 };
@@ -155,7 +156,7 @@ class GribSettingsDialogBase : public wxDialog
 		wxCheckBox* m_cLoopMode;
 		wxSpinCtrl* m_sHourDivider;
 		
-		GribSettingsDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Grib Settings"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
+		GribSettingsDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Grib Settings"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
 		~GribSettingsDialogBase();
 	
 };
@@ -180,7 +181,7 @@ class GribPreferencesDialogBase : public wxDialog
 		wxRadioButton* m_rbLocalTime;
 		wxRadioButton* m_rbUTC;
 		
-		GribPreferencesDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Grib Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
+		GribPreferencesDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Grib Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
 		~GribPreferencesDialogBase();
 	
 };
@@ -205,7 +206,7 @@ class GribPofileDisplayBase : public wxDialog
 	
 	public:
 		
-		GribPofileDisplayBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = wxT("Request Pofile"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
+		GribPofileDisplayBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Request Pofile"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
 		~GribPofileDisplayBase();
 	
 };
