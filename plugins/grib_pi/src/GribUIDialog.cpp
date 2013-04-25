@@ -169,6 +169,7 @@ void GRIBUIDialog::OpenFile()
     /* this should be un-commented to avoid a memory leak,
        but for some reason it crbashes windows */
 //    delete m_bGRIBActiveFile;
+    m_pTimelineSet = NULL;
     m_bGRIBActiveFile = new GRIBFile( m_file_name,
                                       pPlugIn->GetCopyFirstCumRec(),
                                       pPlugIn->GetCopyMissWaveRec() );    
@@ -187,15 +188,20 @@ void GRIBUIDialog::OpenFile()
     
     wxFileName fn( m_file_name );
     SetLabel( fn.GetFullName() );
-    
+
     if( m_bGRIBActiveFile ) {
         if( m_bGRIBActiveFile->IsOK() ) { 
-            PopulateComboDataList( 0 );
-            SetFactoryOptions();
-            DisplayDataGRS();
-            PopulateTrackingControls();
+            //there could be valid but empty file
+            if( rsa->GetCount() == 0 ) {
+                m_bGRIBActiveFile = NULL;
+                pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Error:  No valid data in this file!") );
+            } else
+                PopulateComboDataList( 0 );
         } else 
             pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
+    SetFactoryOptions();
+    DisplayDataGRS();
+    PopulateTrackingControls();
     }
 }
 
