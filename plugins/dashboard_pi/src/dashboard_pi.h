@@ -204,6 +204,9 @@ public:
       wxFontPickerCtrl             *m_pFontPickerData;
       wxFontPickerCtrl             *m_pFontPickerLabel;
       wxFontPickerCtrl             *m_pFontPickerSmall;
+      wxSpinCtrl                   *m_pSpinSpeedMax;
+      wxChoice                     *m_pChoiceSpeedUnit;
+      wxChoice                     *m_pChoiceWindSpeedUnit;
 
 private:
       void UpdateDashboardButtonsState(void);

@@ -522,7 +522,7 @@ extern "C"  DECL_EXP void DimeWindow(wxWindow *);
 
 extern "C"  DECL_EXP void JumpToPosition(double lat, double lon, double scale);
 
-/* API 1.9  adds some common cartographic fucntions to avoid unnecessary code duplication */
+/* API 1.9  adds some common cartographic functions to avoid unnecessary code duplication */
 /* Study the original OpenCPN source (georef.c) for functional definitions  */
 
 extern "C" DECL_EXP void DistanceBearingMercator_Plugin(double lat0, double lon0, double lat1, double lon1, double *brg, double *dist);
@@ -537,6 +537,14 @@ extern "C" DECL_EXP void fromSM_ECC_Plugin(double x, double y, double lat0, doub
 
 extern "C" DECL_EXP bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, wxString *acc );
 
+/* API 1.10  adds some common functions to avoid unnecessary code duplication */
+/* Study the original OpenCPN source for functional definitions  */
+extern "C" DECL_EXP double toUsrDistance_Plugin( double nm_distance, int unit = -1 );
+extern "C" DECL_EXP double fromUsrDistance_Plugin( double usr_distance, int unit = -1 );
+extern "C" DECL_EXP double toUsrSpeed_Plugin( double kts_speed, int unit = -1 );
+extern "C" DECL_EXP double fromUsrSpeed_Plugin( double usr_speed, int unit = -1 );
+extern "C" DECL_EXP wxString getUsrDistanceUnit_Plugin( int unit = -1 );
+extern "C" DECL_EXP wxString getUsrSpeedUnit_Plugin( int unit = -1 );
 
 /* API 1.9 */
 typedef enum OptionsParentPI
@@ -548,7 +556,7 @@ typedef enum OptionsParentPI
       PI_OPTIONS_PARENT_UI,
       PI_OPTIONS_PARENT_PLUGINS
 }_OptionsParentPI;
-extern DECL_EXP wxScrolledWindow *AddOptionsPage( OptionsParentPI parent, wxString title ); 
+extern DECL_EXP wxScrolledWindow *AddOptionsPage( OptionsParentPI parent, wxString title );
 extern DECL_EXP bool DeleteOptionsPage( wxScrolledWindow* page );
 
 extern "C" DECL_EXP int GetChartbarHeight( void );

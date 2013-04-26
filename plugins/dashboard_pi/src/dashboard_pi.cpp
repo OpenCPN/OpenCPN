@@ -38,6 +38,9 @@ wxFont *g_pFontTitle;
 wxFont *g_pFontData;
 wxFont *g_pFontLabel;
 wxFont *g_pFontSmall;
+int g_iDashSpeedMax;
+int g_iDashSpeedUnit;
+int g_iDashWindSpeedUnit;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -659,8 +662,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             _T("DegM") );
                 }
 
-                SendSentenceToAllInstruments( OCPN_DBP_STC_TWS2, m_NMEA0183.Mwd.WindSpeedKnots,
-                        _T("Kts") );
+                SendSentenceToAllInstruments( OCPN_DBP_STC_TWS2, toUsrSpeed_Plugin( m_NMEA0183.Mwd.WindSpeedKnots, g_iDashWindSpeedUnit ),
+                        getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
                 //m_NMEA0183.Mwd.WindSpeedms
             }
         }
@@ -721,7 +724,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         mPriCOGSOG = 3;
                         if( m_NMEA0183.Rmc.SpeedOverGroundKnots < 999. ) {
                             SendSentenceToAllInstruments( OCPN_DBP_STC_SOG,
-                                    m_NMEA0183.Rmc.SpeedOverGroundKnots, _T("Kts") );
+                                    toUsrSpeed_Plugin( m_NMEA0183.Rmc.SpeedOverGroundKnots, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
                         } else {
                             //->SetData(_T("---"));
                         }
@@ -778,8 +781,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             _T("DegM") );
                 }
                 if( m_NMEA0183.Vhw.Knots < 999. ) {
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_STW, m_NMEA0183.Vhw.Knots,
-                            _T("Kts") );
+                    SendSentenceToAllInstruments( OCPN_DBP_STC_STW, toUsrSpeed_Plugin( m_NMEA0183.Vhw.Knots, g_iDashSpeedUnit ),
+                            getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
                 }
 
                 if( !wxIsNaN(m_NMEA0183.Vhw.DegreesMagnetic) )
@@ -796,8 +799,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     mPriCOGSOG = 2;
                     //    Special check for unintialized values, as opposed to zero values
                     if( m_NMEA0183.Vtg.SpeedKnots < 999. ) {
-                        SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, m_NMEA0183.Vtg.SpeedKnots,
-                                _T("Kts") );
+                        SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( m_NMEA0183.Vtg.SpeedKnots, g_iDashSpeedUnit ),
+                                getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
                     } else {
                         //->SetData(_T("---"));
                     }
@@ -826,8 +829,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     awaunit = m_NMEA0183.Vwr.DirectionOfWind == Left ? _T("DegL") : _T("DegR");
                     SendSentenceToAllInstruments( OCPN_DBP_STC_AWA,
                             m_NMEA0183.Vwr.WindDirectionMagnitude, awaunit );
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_AWS, m_NMEA0183.Vwr.WindSpeedKnots,
-                            _T("Kts") );
+                    SendSentenceToAllInstruments( OCPN_DBP_STC_AWS, toUsrSpeed_Plugin( m_NMEA0183.Vwr.WindSpeedKnots, g_iDashWindSpeedUnit ),
+                            getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
                     /*
                      double m_NMEA0183.Vwr.WindSpeedms;
                      double m_NMEA0183.Vwr.WindSpeedKmh;
@@ -848,8 +851,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     vwtunit = m_NMEA0183.Vwt.DirectionOfWind == Left ? _T("DegL") : _T("DegR");
                     SendSentenceToAllInstruments( OCPN_DBP_STC_TWA,
                             m_NMEA0183.Vwt.WindDirectionMagnitude, vwtunit );
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_TWS, m_NMEA0183.Vwt.WindSpeedKnots,
-                            _T("Kts") );
+                    SendSentenceToAllInstruments( OCPN_DBP_STC_TWS, toUsrSpeed_Plugin( m_NMEA0183.Vwt.WindSpeedKnots, g_iDashWindSpeedUnit ),
+                            getUsrSpeedUnit_Plugin( g_iDashWindSpeedUnit ) );
                     /*
                      double           m_NMEA0183.Vwt.WindSpeedms;
                      double           m_NMEA0183.Vwt.WindSpeedKmh;
@@ -891,7 +894,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             if( !wxIsNaN(gpd.Lon) )
                 SendSentenceToAllInstruments( OCPN_DBP_STC_LON, gpd.Lon, _T("SDMM") );
 
-            SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, gpd.Sog, _T("Kts") );
+            SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( gpd.Sog, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
             SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("Deg") );
             SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("DegT") );
             if( !wxIsNaN(gpd.Hdt) )
@@ -910,7 +913,7 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
     }
     if( mPriCOGSOG >= 1 ) {
         mPriCOGSOG = 1;
-        SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, pfix.Sog, _T("Kts") );
+        SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( pfix.Sog, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
         SendSentenceToAllInstruments( OCPN_DBP_STC_COG, pfix.Cog, _T("Deg") );
     }
     if( mPriVar >= 1 ) {
@@ -1128,6 +1131,11 @@ bool dashboard_pi::LoadConfig( void )
         pConf->Read( _T("FontSmall"), &config, wxEmptyString );
         if( !config.IsEmpty() ) g_pFontSmall->SetNativeFontInfo( config );
 
+        pConf->Read( _T("SpeedometerMax"), &g_iDashSpeedMax, 12 );
+        pConf->Read( _T("SpeedUnit"), &g_iDashSpeedUnit, 0 );
+        pConf->Read( _T("WindSpeedUnit"), &g_iDashWindSpeedUnit, 0 );
+
+
         int d_cnt;
         pConf->Read( _T("DashboardCount"), &d_cnt, -1 );
         // TODO: Memory leak? We should destroy everything first
@@ -1196,6 +1204,10 @@ bool dashboard_pi::SaveConfig( void )
         pConf->Write( _T("FontData"), g_pFontData->GetNativeFontInfoDesc() );
         pConf->Write( _T("FontLabel"), g_pFontLabel->GetNativeFontInfoDesc() );
         pConf->Write( _T("FontSmall"), g_pFontSmall->GetNativeFontInfoDesc() );
+
+        pConf->Write( _T("SpeedometerMax"), g_iDashSpeedMax );
+        pConf->Write( _T("SpeedUnit"), g_iDashSpeedUnit );
+        pConf->Write( _T("WindSpeedUnit"), g_iDashWindSpeedUnit );
 
         pConf->Write( _T("DashboardCount" ), (int) m_ArrayOfDashboardWindow.GetCount() );
         for( size_t i = 0; i < m_ArrayOfDashboardWindow.GetCount(); i++ ) {
@@ -1469,6 +1481,35 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     itemFlexGridSizer03->Add( m_pFontPickerSmall, 0, wxALIGN_RIGHT | wxALL, 0 );
 //      wxColourPickerCtrl
 
+    wxStaticBox* itemStaticBox04 = new wxStaticBox( itemPanelNotebook02, wxID_ANY, _("Units, Ranges, Formats") );
+    wxStaticBoxSizer* itemStaticBoxSizer04 = new wxStaticBoxSizer( itemStaticBox04, wxHORIZONTAL );
+    itemBoxSizer05->Add( itemStaticBoxSizer04, 0, wxEXPAND | wxALL, border_size );
+    wxFlexGridSizer *itemFlexGridSizer04 = new wxFlexGridSizer( 2 );
+    itemFlexGridSizer04->AddGrowableCol( 1 );
+    itemStaticBoxSizer04->Add( itemFlexGridSizer04, 1, wxEXPAND | wxALL, 0 );
+    wxStaticText* itemStaticText08 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Speedometer max value:"),
+            wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer04->Add( itemStaticText08, 0, wxEXPAND | wxALL, border_size );
+    m_pSpinSpeedMax = new wxSpinCtrl( itemPanelNotebook02, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 10, 100, g_iDashSpeedMax );
+    itemFlexGridSizer04->Add( m_pSpinSpeedMax, 0, wxALIGN_RIGHT | wxALL, 0 );
+    wxStaticText* itemStaticText09 = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Boat speed units:"),
+            wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer04->Add( itemStaticText09, 0, wxEXPAND | wxALL, border_size );
+    wxString m_SpeedUnitChoices[] = { _T("Honor OpenCPN settings"), _T("Knots"), _T("mph"), _T("km/h"), _T("m/s") };
+	int m_SpeedUnitNChoices = sizeof( m_SpeedUnitChoices ) / sizeof( wxString );
+	m_pChoiceSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_SpeedUnitNChoices, m_SpeedUnitChoices, 0 );
+	m_pChoiceSpeedUnit->SetSelection( g_iDashSpeedUnit + 1 );
+    itemFlexGridSizer04->Add( m_pChoiceSpeedUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
+    wxStaticText* itemStaticText0a = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Wind speed units:"),
+            wxDefaultPosition, wxDefaultSize, 0 );
+    itemFlexGridSizer04->Add( itemStaticText0a, 0, wxEXPAND | wxALL, border_size );
+    wxString m_WSpeedUnitChoices[] = { _T("Kts"), _T("mph"), _T("km/h"), _T("m/s") };
+	int m_WSpeedUnitNChoices = sizeof( m_WSpeedUnitChoices ) / sizeof( wxString );
+	m_pChoiceWindSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_WSpeedUnitNChoices, m_WSpeedUnitChoices, 0 );
+	m_pChoiceWindSpeedUnit->SetSelection( g_iDashWindSpeedUnit );
+    itemFlexGridSizer04->Add( m_pChoiceWindSpeedUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
+
+
     wxStdDialogButtonSizer* DialogButtonSizer = CreateStdDialogButtonSizer( wxOK | wxCANCEL );
     itemBoxSizerMainPanel->Add( DialogButtonSizer, 0, wxALIGN_RIGHT | wxALL, 5 );
 
@@ -1494,6 +1535,9 @@ void DashboardPreferencesDialog::OnCloseDialog( wxCloseEvent& event )
 
 void DashboardPreferencesDialog::SaveDashboardConfig()
 {
+    g_iDashSpeedMax = m_pSpinSpeedMax->GetValue();
+    g_iDashSpeedUnit = m_pChoiceSpeedUnit->GetSelection() - 1;
+    g_iDashWindSpeedUnit = m_pChoiceWindSpeedUnit->GetSelection();
     if( curSel != -1 ) {
         DashboardWindowContainer *cont = m_Config.Item( curSel );
         cont->m_bIsVisible = m_pCheckBoxIsVisible->IsChecked();
@@ -1883,7 +1927,7 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 break;
             case ID_DBP_D_SOG:
                 instrument = new DashboardInstrument_Speedometer( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_SOG, 0, 12 );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_SOG, 0, g_iDashSpeedMax );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 1,
                         DIAL_LABEL_HORIZONTAL );
                 //(DashboardInstrument_Dial *)instrument->SetOptionMarker(0.1, DIAL_MARKER_SIMPLE, 5);
@@ -2008,7 +2052,7 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 break;
             case ID_DBP_D_VMG:
                 instrument = new DashboardInstrument_Speedometer( this, wxID_ANY,
-                        getInstrumentCaption( id ), OCPN_DBP_STC_VMG, 0, 12 );
+                        getInstrumentCaption( id ), OCPN_DBP_STC_VMG, 0, g_iDashSpeedMax );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 1,
                         DIAL_LABEL_HORIZONTAL );
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 0.5,

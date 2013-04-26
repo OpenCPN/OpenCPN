@@ -1723,7 +1723,35 @@ void fromSM_ECC_Plugin(double x, double y, double lat0, double lon0, double *lat
     fromSM_ECC(x, y, lat0, lon0, lat, lon);
 }
 
+double toUsrDistance_Plugin( double nm_distance, int unit )
+{
+    return toUsrDistance( nm_distance, unit );
+}
 
+double fromUsrDistance_Plugin( double usr_distance, int unit )
+{
+    return fromUsrDistance( usr_distance, unit );
+}
+
+double toUsrSpeed_Plugin( double kts_speed, int unit )
+{
+    return toUsrSpeed( kts_speed, unit );
+}
+
+double fromUsrSpeed_Plugin( double usr_speed, int unit )
+{
+    return fromUsrSpeed( usr_speed, unit );
+}
+
+wxString getUsrDistanceUnit_Plugin( int unit )
+{
+    return getUsrDistanceUnit( unit );
+}
+
+wxString getUsrSpeedUnit_Plugin( int unit )
+{
+    return getUsrSpeedUnit( unit );
+}
 
 //-----------------------------------------------------------------------------------------
 //    The opencpn_plugin base class implementation
