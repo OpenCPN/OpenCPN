@@ -1,11 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  OpenCPN Toolbar
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,10 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- *
- */
+ **************************************************************************/
 
 #include "wx/wxprec.h"
 
@@ -1869,11 +1866,11 @@ void ocpnToolBarSimple::OnMouseEnter( int id )
     (void) GetEventHandler()->ProcessEvent( event );
 }
 
-void ocpnToolBarSimple::SetToolNormalBitmapEx( wxToolBarToolBase *tool, wxString iconName )
+void ocpnToolBarSimple::SetToolNormalBitmapEx(wxToolBarToolBase *tool, const wxString & iconName)
 {
     if( tool ) {
         ocpnStyle::Style *style = g_StyleManager->GetCurrentStyle();
-        
+
         wxBitmap bmp = style->GetToolIcon( iconName, TOOLICON_NORMAL );
         tool->SetNormalBitmap( bmp );
         ocpnToolBarTool *otool = (ocpnToolBarTool *)tool;

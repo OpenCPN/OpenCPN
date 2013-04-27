@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  RouteProerties Support
@@ -21,10 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- *
- */
+ **************************************************************************/
 
 #ifndef _ROUTEPROP_H_
 #define _ROUTEPROP_H_
@@ -151,7 +148,7 @@ public:
     void CreateControls();
 
     void SetColorScheme(ColorScheme cs);
-    void SetDialogTitle(wxString title);
+    void SetDialogTitle(const wxString & title);
     void OnRoutepropCancelClick( wxCommandEvent& event );
     void OnRoutepropOkClick( wxCommandEvent& event );
     void OnPlanSpeedCtlUpdated( wxCommandEvent& event );
@@ -361,7 +358,7 @@ public :
       void OnMarkInfoOKClick( wxCommandEvent& event );
       void OnMarkInfoCancelClick( wxCommandEvent& event );
       void SetRoutePoint( RoutePoint *pRP );
-      void SetDialogTitle(wxString title) { SetTitle(title); }
+      void SetDialogTitle(const wxString & title) { SetTitle(title); }
       RoutePoint *GetRoutePoint(void) { return m_pRoutePoint; }
       bool UpdateProperties( bool positionOnly = false );
       void ValidateMark(void);

@@ -79,7 +79,7 @@ public:
       void        SetDBIndex(int stack_index, int db_index);
       bool        DoesStackContaindbIndex(int db_index);
       void        AddChart( int db_add );
-      
+
 private:
       int         DBIndex[MAXSTACK];
 
@@ -110,8 +110,8 @@ public:
       virtual ~ChartDB();
 
 
-      bool LoadBinary(wxString *filename, ArrayOfCDI& dir_array_check);
-      bool SaveBinary(wxString *filename) { return ChartDatabase::Write(*filename); }
+      bool LoadBinary(const wxString & filename, ArrayOfCDI& dir_array_check);
+      bool SaveBinary(const wxString & filename) { return ChartDatabase::Write(filename); }
 
       int  BuildChartStack(ChartStack * cstk, float lat, float lon);
       int  BuildChartStack(ChartStack * cstk, float lat, float lon, int db_add );
@@ -122,7 +122,7 @@ public:
       int  GetCSPlyPoint(ChartStack *ps, int stackindex, int plyindex, float *lat, float *lon);
       ChartTypeEnum GetCSChartType(ChartStack *ps, int stackindex);
       ChartFamilyEnum GetCSChartFamily(ChartStack *ps, int stackindex);
-      bool SearchForChartDir(wxString &dir);
+      bool SearchForChartDir(const wxString &dir);
       ChartBase *OpenStackChartConditional(ChartStack *ps, int start_index, bool bLargest, ChartTypeEnum New_Type, ChartFamilyEnum New_Family_Fallback);
 
       wxArrayPtrVoid *GetChartCache(void) { return pChartCache; }

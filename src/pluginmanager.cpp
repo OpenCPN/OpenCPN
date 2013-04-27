@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  PlugIn Manager Object
@@ -21,8 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include <wx/wx.h>
 #include <wx/dir.h>
@@ -168,7 +167,7 @@ PlugInManager::~PlugInManager()
 }
 
 
-bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
+bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
 {
     m_plugin_location = plugin_dir;
 
@@ -879,7 +878,7 @@ void PlugInManager::SetCanvasContextMenuItemGrey(int item, bool grey)
     }
 }
 
-void PlugInManager::SendNMEASentenceToAllPlugIns(wxString &sentence)
+void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence)
 {
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
@@ -892,7 +891,7 @@ void PlugInManager::SendNMEASentenceToAllPlugIns(wxString &sentence)
     }
 }
 
-void PlugInManager::SendJSONMessageToAllPlugins(wxString &message_id, wxJSONValue v)
+void PlugInManager::SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v)
 {
     wxJSONWriter w;
     wxString out;
@@ -902,7 +901,7 @@ void PlugInManager::SendJSONMessageToAllPlugins(wxString &message_id, wxJSONValu
 //   wxLogMessage(out);
 }
 
-void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &message_body)
+void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body)
 {
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
@@ -944,7 +943,7 @@ void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &mess
 }
 
 
-void PlugInManager::SendAISSentenceToAllPlugIns(wxString &sentence)
+void PlugInManager::SendAISSentenceToAllPlugIns(const wxString &sentence)
 {
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
@@ -1818,10 +1817,10 @@ PlugInManager created this base class");
 void opencpn_plugin::SetPositionFix(PlugIn_Position_Fix &pfix)
 {}
 
-void opencpn_plugin::SetNMEASentence(wxString &sentence)
+void opencpn_plugin::SetNMEASentence(const wxString &sentence)
 {}
 
-void opencpn_plugin::SetAISSentence(wxString &sentence)
+void opencpn_plugin::SetAISSentence(const wxString &sentence)
 {}
 
 int opencpn_plugin::GetToolbarToolCount(void)
@@ -1894,7 +1893,7 @@ bool opencpn_plugin_16::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
     return false;
 }
 
-void opencpn_plugin_16::SetPluginMessage(wxString &message_id, wxString &message_body)
+void opencpn_plugin_16::SetPluginMessage(const wxString &message_id, const wxString &message_body)
 {}
 
 //    Opencpn_Plugin_17 Implementation
@@ -1917,7 +1916,7 @@ bool opencpn_plugin_17::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *
     return false;
 }
 
-void opencpn_plugin_17::SetPluginMessage(wxString &message_id, wxString &message_body)
+void opencpn_plugin_17::SetPluginMessage(const wxString &message_id, const wxString &message_body)
 {}
 
 
@@ -1941,7 +1940,7 @@ bool opencpn_plugin_18::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *
     return false;
 }
 
-void opencpn_plugin_18::SetPluginMessage(wxString &message_id, wxString &message_body)
+void opencpn_plugin_18::SetPluginMessage(const wxString &message_id, const wxString &message_body)
 {}
 
 void opencpn_plugin_18::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix)
@@ -2297,7 +2296,7 @@ void PlugInChartBase::latlong_to_chartpix(double lat, double lon, double &pixx, 
 ChartPlugInWrapper::ChartPlugInWrapper()
 {}
 
-ChartPlugInWrapper::ChartPlugInWrapper(wxString &chart_class)
+ChartPlugInWrapper::ChartPlugInWrapper(const wxString &chart_class)
 {
     m_ppo = ::wxCreateDynamicObject(chart_class);
     m_ppicb = wxDynamicCast(m_ppo, PlugInChartBase);

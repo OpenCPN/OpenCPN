@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "wx/wxprec.h"
 
@@ -204,7 +203,7 @@ RoutePoint::~RoutePoint( void )
     }
 }
 
-void RoutePoint::SetName( wxString name )
+void RoutePoint::SetName(const wxString & name)
 {
     m_MarkName = name;
     CalculateNameExtents();
@@ -400,7 +399,7 @@ bool RoutePoint::IsSame( RoutePoint *pOtherRP )
     return IsSame;
 }
 
-bool RoutePoint::SendToGPS( wxString& com_name, wxGauge *pProgress )
+bool RoutePoint::SendToGPS(const wxString & com_name, wxGauge *pProgress)
 {
     bool result = false;
     if( g_pMUX ) result = g_pMUX->SendWaypointToGPS( this, com_name, pProgress );

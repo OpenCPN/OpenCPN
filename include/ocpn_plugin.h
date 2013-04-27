@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  PlugIn Object Definition/API
@@ -20,10 +20,9 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
- */
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
+
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
 
@@ -396,8 +395,8 @@ public:
       virtual void SetCurrentViewPort(PlugIn_ViewPort &vp);
 
       virtual void SetPositionFix(PlugIn_Position_Fix &pfix);
-      virtual void SetNMEASentence(wxString &sentence);
-      virtual void SetAISSentence(wxString &sentence);
+      virtual void SetNMEASentence(const wxString &sentence);
+      virtual void SetAISSentence(const wxString &sentence);
 
       virtual void ProcessParentResize(int x, int y);
       virtual void SetColorScheme(PI_ColorScheme cs);
@@ -424,7 +423,7 @@ public:
 
              virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
 
-             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+             virtual void SetPluginMessage(const wxString &message_id, const wxString &message_body);
 
  };
 
@@ -437,7 +436,7 @@ class DECL_EXP opencpn_plugin_17 : public opencpn_plugin
              virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
              virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
-             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+             virtual void SetPluginMessage(const wxString &message_id, const wxString &message_body);
 
 };
 
@@ -450,7 +449,7 @@ class DECL_EXP opencpn_plugin_18 : public opencpn_plugin
             virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
             virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
-            virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
+            virtual void SetPluginMessage(const wxString &message_id, const wxString &message_body);
             virtual void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
 
 };

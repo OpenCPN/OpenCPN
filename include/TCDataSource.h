@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __TCDATASOURCE_H__
 #define __TCDATASOURCE_H__
@@ -41,7 +40,7 @@ public:
     TCDataSource();
     ~TCDataSource();
 
-    TC_Error_Code LoadData(wxString &data_file_path);
+    TC_Error_Code LoadData(const wxString &data_file_path);
 
     int GetMaxIndex(void);
     IDX_entry *GetIndexEntry(int n_index);

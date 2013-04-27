@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  OpenCPN Main wxWidgets Program
@@ -21,9 +21,8 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
+ **************************************************************************/
+
 #include "wx/wxprec.h"
 
 #ifndef  WX_PRECOMP
@@ -1876,7 +1875,7 @@ if( 0 == g_memCacheLimit )
 
 //      Try to load the current chart list Data file
     ChartData = new ChartDB( gFrame );
-    if( !ChartData->LoadBinary( pChartListFileName, ChartDirArray ) ) {
+    if (!ChartData->LoadBinary(*pChartListFileName, ChartDirArray)) {
         bDBUpdateInProgress = true;
 
         if( ChartDirArray.GetCount() ) {
@@ -1903,7 +1902,7 @@ if( 0 == g_memCacheLimit )
                     wxPD_SMOOTH | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
 
             ChartData->Create( ChartDirArray, pprog );
-            ChartData->SaveBinary( pChartListFileName );
+            ChartData->SaveBinary(*pChartListFileName);
 
             delete pprog;
         }
@@ -2526,7 +2525,7 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 void MyFrame::ApplyGlobalColorSchemetoStatusBar( void )
 {
     if( m_pStatusBar != NULL ) {
-        m_pStatusBar->SetBackgroundColour( GetGlobalColor( _T("UIBDR") ) );    //UINFF
+        m_pStatusBar->SetBackgroundColour(GetGlobalColor(_T("UIBDR")));    //UINFF
         m_pStatusBar->ClearBackground();
 
         int styles[] = { wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT, wxSB_FLAT };
@@ -4317,7 +4316,7 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
 }
 
 bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bool b_prog,
-        wxString &ChartListFileName )
+        const wxString &ChartListFileName )
 {
     bool b_run = FrameTimer1.IsRunning();
     FrameTimer1.Stop();                  // stop other asynchronous activity
@@ -4352,7 +4351,7 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
     wxLogMessage( _T("   ") );
     wxLogMessage( _T("Starting chart database Update...") );
     ChartData->Update( DirArray, b_force, pprog );
-    ChartData->SaveBinary( &ChartListFileName );
+    ChartData->SaveBinary(ChartListFileName);
     wxLogMessage( _T("Finished chart database Update") );
     wxLogMessage( _T("   ") );
 
@@ -6477,7 +6476,7 @@ void MyFrame::OnEvtTHREADMSG( wxCommandEvent & event )
 }
 
 
-bool MyFrame::EvalPriority( wxString message, DataStream *pDS )
+bool MyFrame::EvalPriority(const wxString & message, DataStream *pDS )
 {
     bool bret = true;
     wxString msg_type = message.Mid(1, 5);
@@ -6910,7 +6909,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     }
 }
 
-void MyFrame::PostProcessNNEA( bool pos_valid, wxString &sfixtime )
+void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
 {
     FilterCogSog();
 
@@ -7781,7 +7780,7 @@ void appendOSDirSlash( wxString* pString )
  *
  *************************************************************************/
 
-wxColour GetGlobalColor( wxString colorName )
+wxColour GetGlobalColor(wxString colorName)
 {
     wxColour ret_color;
 

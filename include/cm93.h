@@ -1,11 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  CM93 Chart Object
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,9 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- */
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 #ifndef __CM93CHART_H__
 #define __CM93CHART_H__
@@ -233,7 +232,7 @@ class cm93_dictionary
             cm93_dictionary();
             ~cm93_dictionary();
 
-            bool LoadDictionary(wxString dictionary_dir);
+            bool LoadDictionary(const wxString & dictionary_dir);
             bool IsOk(void){ return m_ok; }
             wxString GetDictDir(void){ return m_dict_dir; }
 
@@ -275,7 +274,7 @@ class cm93manager
 public:
     cm93manager();
     ~cm93manager();
-    bool Loadcm93Dictionary(wxString name);
+    bool Loadcm93Dictionary(const wxString & name);
     cm93_dictionary *FindAndLoadDict(const wxString &file);
 
 
@@ -321,14 +320,14 @@ class cm93chart : public s57chart
             void GetPixPoint(int pixx, int pixy, double *plat, double *plon, ViewPort *vpt);
 
             void SetCM93Dict(cm93_dictionary *pDict){m_pDict = pDict;}
-            void SetCM93Prefix(wxString &prefix){m_prefix = prefix;}
+            void SetCM93Prefix(const wxString &prefix){m_prefix = prefix;}
             void SetCM93Manager(cm93manager *pManager){m_pManager = pManager;}
 
             bool UpdateCovrSet(ViewPort *vpt);
             bool IsPointInLoadedM_COVR(double xc, double yc);
             covr_set *GetCoverSet(){ return m_pcovr_set; }
 
-            wxString &GetLastFileName(void){ return m_LastFileName; }
+            const wxString & GetLastFileName(void) const { return m_LastFileName; }
 
             ArrayOfInts GetVPCellArray(const ViewPort &vpt);
 
@@ -351,7 +350,7 @@ class cm93chart : public s57chart
 
             void ProcessMCOVRObjects(int cell_index, char subcell);
 
-            void translate_colmar(wxString &sclass, S57attVal *pattValTmp);
+            void translate_colmar(const wxString &sclass, S57attVal *pattValTmp);
 
             int CreateObjChain(int cell_index, int subcell);
 

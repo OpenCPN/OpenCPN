@@ -21,8 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "wx/wxprec.h"
 #ifndef  WX_PRECOMP
@@ -726,7 +725,7 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
     //  Arrange for the index array to begin counting at "one"
     m_Combined_IDX_array.Add((IDX_entry *)(NULL));
     int num_IDX = 1;
-    
+
     for(unsigned int i=0 ; i < sources.GetCount() ; i++) {
         TCDataSource *s = new TCDataSource;
         TC_Error_Code r = s->LoadData(sources.Item(i));
@@ -760,7 +759,7 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
     return  TC_NO_ERROR ;
 }
 
-IDX_entry *TCMgr::GetIDX_entry(int index)
+const IDX_entry *TCMgr::GetIDX_entry(int index) const
 {
     if((unsigned int)index < m_Combined_IDX_array.GetCount())
         return &m_Combined_IDX_array.Item(index);
@@ -797,7 +796,7 @@ bool TCMgr::GetTideOrCurrent(time_t t, int idx, float &tcvalue, float& dir)
 
     pIDX->max_amplitude = 0.0;                // Force multiplier re-compute
     int yott = yearoftimet( t );
-    
+
     happy_new_year (pIDX, yott);              //Calculate new multipliers
 
     //    Finally, calculate the tide/current
@@ -1010,9 +1009,9 @@ int TCMgr::GetNextBigEvent(time_t *tm, int idx)
     return 0;
 }
 
-int TCMgr::GetStationIDXbyName(wxString prefix, double xlat, double xlon )
+int TCMgr::GetStationIDXbyName(const wxString & prefix, double xlat, double xlon) const
 {
-    IDX_entry *lpIDX;
+    const IDX_entry *lpIDX;
     int jx = 0;
     wxString locn;
     double distx = 100000.;
@@ -1039,9 +1038,9 @@ int TCMgr::GetStationIDXbyName(wxString prefix, double xlat, double xlon )
 }
 
 
-int TCMgr::GetStationIDXbyNameType(wxString prefix, double xlat, double xlon, char type)
+int TCMgr::GetStationIDXbyNameType(const wxString & prefix, double xlat, double xlon, char type) const
 {
-    IDX_entry *lpIDX;
+    const IDX_entry *lpIDX;
     int jx = 0;
     wxString locn;
     double distx = 100000.;
@@ -1074,16 +1073,16 @@ int TCMgr::GetStationIDXbyNameType(wxString prefix, double xlat, double xlon, ch
 
 
 
-/*****************************************************************************\
- * 
+/*****************************************************************************
+ *
  *                            DISTRIBUTION STATEMENT
- * 
+ *
  *    This source file is unclassified, distribution unlimited, public
  *    domain.  It is distributed in the hope that it will be useful, but
  *    WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * \*****************************************************************************/
+ *
+ ******************************************************************************/
 
 
 

@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __TCDS_ASCII_HARMONIC_H__
 #define __TCDS_ASCII_HARMONIC_H__
@@ -41,7 +40,7 @@ public:
     TCDS_Ascii_Harmonic();
     ~TCDS_Ascii_Harmonic();
 
-    TC_Error_Code LoadData(wxString &data_file_path);
+    TC_Error_Code LoadData(const wxString &data_file_path);
 
     int GetMaxIndex(void) {
         return num_IDX;
@@ -54,7 +53,7 @@ private:
     long IndexFileIO(int func, long value);
     TC_Error_Code init_index_file();
     TC_Error_Code build_IDX_entry(IDX_entry *pIDX );
-    TC_Error_Code LoadHarmonicConstants(wxString &data_file_path);
+    TC_Error_Code LoadHarmonicConstants(const wxString &data_file_path);
     int read_next_line (FILE *fp, char linrec[linelen], int end_ok);
     int skipnl (FILE *fp);
     char *nojunk (char *line);

@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __ROLLOVERWIN_H__
 #define __ROLLOVERWIN_H__
@@ -46,7 +45,7 @@ public:
     void OnPaint( wxPaintEvent& event );
 
     void SetColorScheme( ColorScheme cs );
-    void SetString( wxString &s ) { m_string = s; }
+    void SetString(const wxString &s) { m_string = s; }
     void SetPosition( wxPoint pt ) { m_position = pt; }
     void SetBitmap( int rollover );
     wxBitmap* GetBitmap() { return m_pbm; }

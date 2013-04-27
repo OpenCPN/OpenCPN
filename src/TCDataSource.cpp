@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include <wx/log.h>
 #include <wx/filename.h>
@@ -47,7 +46,7 @@ TCDataSource::~TCDataSource()
     delete pTCDS_Binary_Harmonic;
 }
 
-TC_Error_Code TCDataSource::LoadData(wxString &data_file_path)
+TC_Error_Code TCDataSource::LoadData(const wxString &data_file_path)
 {
     m_data_source_path = data_file_path;
     wxLogMessage(_T("Loading Tide/Current data source: %s"), m_data_source_path.c_str());
