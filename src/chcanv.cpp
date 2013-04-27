@@ -1641,7 +1641,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                 const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
                 wxRegion chart_region = GetChartQuiltRegion( cte, vp_local );
 
-                //    Special case for S57 ENC
+                //    Special case for  ENC
                 //    Add the chart only if the chart's fractional area exceeds n%
                 if( CHART_TYPE_S57 == reference_type ) {
                     //Get the fractional area of this chart
@@ -2165,18 +2165,25 @@ bool Quilt::Compose( const ViewPort &vp_in )
     m_bneed_clear = !unrendered_region.IsEmpty();
     m_back_region = unrendered_region;
     
-
     //    Finally, iterate thru the quilt and preload all of the required charts.
     //    For dynamic S57 SENC creation, this is where SENC creation happens first.....
+    bool b_stop_ap = false;
     for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
         QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
         if( ( pqc->b_include ) && ( !pqc->b_eclipsed ) )
-            if( !ChartData->IsChartInCache( pqc->dbIndex ) )
+            if( !ChartData->IsChartInCache( pqc->dbIndex ) ) {
                 cc1->StopAutoPan();
-        
+                b_stop_ap = true;
+            }
+
             ChartData->OpenChartFromDB( pqc->dbIndex, FULL_INIT );
     }
 
+    if(b_stop_ap) {
+        cc1->StopAutoPan();
+        cc1->StartAutoPan();
+    }
+    
     //    Build and maintain the array of indexes in this quilt
 
     m_last_index_array = m_index_array;       //save the last one for delta checks
@@ -3226,7 +3233,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     undo = new Undo;
 
     VPoint.Invalidate();
-
+    
+    m_bpan_enable = true;
+    
     m_glcc = new glChartCanvas(this);
 
 #if wxCHECK_VERSION(2, 9, 0)
@@ -4180,8 +4189,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         }           // switch
     }
 
-    if( !pPanKeyTimer->IsRunning() && ( m_panx || m_pany ) ) pPanKeyTimer->Start( 1,
-                wxTIMER_ONE_SHOT );
+    if( !pPanKeyTimer->IsRunning() && ( m_panx || m_pany ) && m_bpan_enable )
+        pPanKeyTimer->Start( 1, wxTIMER_ONE_SHOT );
 
 #ifndef __WXMAC__    
     event.Skip();
@@ -4219,12 +4228,21 @@ void ChartCanvas::StopAutoPan(void)
     m_panx = 0;
     m_pany = 0;
     m_panspeed = 0;
+    m_bpan_enable = false;
 }
 
+void ChartCanvas::StartAutoPan(void)
+{
+    m_bpan_enable = true;
+}
 
 void ChartCanvas::Do_Pankeys( wxTimerEvent& event )
 {
-    if( !( m_panx || m_pany ) ) return;
+    if( !m_bpan_enable)
+        return;
+    
+    if( !( m_panx || m_pany ) )
+        return;
 
     const int slowpan = 2, maxpan = 100;
     int repeat = 100;

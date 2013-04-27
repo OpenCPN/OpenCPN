@@ -173,6 +173,7 @@ public:
 
       void Do_Pankeys(wxTimerEvent& event);
       void StopAutoPan(void);
+      void StartAutoPan(void);
       
       bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust = true);
       bool SetVPScale(double sc);
@@ -556,7 +557,8 @@ private:
       int         m_zoomt;                // zoom timer constant, msec
       double      m_zoom_target_factor;
       double      m_zoom_current_factor;
-
+      bool        m_bpan_enable;
+     
 
 DECLARE_EVENT_TABLE()
 };
