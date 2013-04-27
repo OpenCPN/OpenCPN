@@ -543,8 +543,8 @@ extern "C" DECL_EXP double toUsrDistance_Plugin( double nm_distance, int unit = 
 extern "C" DECL_EXP double fromUsrDistance_Plugin( double usr_distance, int unit = -1 );
 extern "C" DECL_EXP double toUsrSpeed_Plugin( double kts_speed, int unit = -1 );
 extern "C" DECL_EXP double fromUsrSpeed_Plugin( double usr_speed, int unit = -1 );
-extern "C" DECL_EXP wxString getUsrDistanceUnit_Plugin( int unit = -1 );
-extern "C" DECL_EXP wxString getUsrSpeedUnit_Plugin( int unit = -1 );
+extern DECL_EXP wxString getUsrDistanceUnit_Plugin( int unit = -1 );
+extern DECL_EXP wxString getUsrSpeedUnit_Plugin( int unit = -1 );
 
 /* API 1.9 */
 typedef enum OptionsParentPI
