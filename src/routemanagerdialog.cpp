@@ -1232,7 +1232,7 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
         int wpts_set_viz = wxID_YES;
         bool togglesharedwpts = true;
         if( g_pRouteMan->DoesRouteContainSharedPoints(route) && route->IsVisible() ) {
-            wpts_set_viz = OCPNMessageBox(  this, _("Do you also want to toggle the visibility of shared waypoints being part of this route?"), _("Question"), wxYES_NO );
+            wpts_set_viz = OCPNMessageBox(  this, _("Do you also want to make the shared waypoints being part of this route invisible?"), _("Question"), wxYES_NO );
             togglesharedwpts = (wpts_set_viz == wxID_YES);
         }
         route->SetVisible( !route->IsVisible(), togglesharedwpts );
