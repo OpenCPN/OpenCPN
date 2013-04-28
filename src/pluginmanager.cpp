@@ -880,13 +880,14 @@ void PlugInManager::SetCanvasContextMenuItemGrey(int item, bool grey)
 
 void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence)
 {
+    wxString decouple_sentence(sentence); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
         if(pic->m_bEnabled && pic->m_bInitState)
         {
             if(pic->m_cap_flag & WANTS_NMEA_SENTENCES)
-                pic->m_pplugin->SetNMEASentence(sentence);
+                pic->m_pplugin->SetNMEASentence(decouple_sentence);
         }
     }
 }
@@ -903,6 +904,8 @@ void PlugInManager::SendJSONMessageToAllPlugins(const wxString &message_id, wxJS
 
 void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body)
 {
+    wxString decouple_message_id(message_id); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
+    wxString decouple_message_body(message_body); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
@@ -916,14 +919,14 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 {
                     opencpn_plugin_16 *ppi = dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
                     if(ppi)
-                        ppi->SetPluginMessage(message_id, message_body);
+                        ppi->SetPluginMessage(decouple_message_id, decouple_message_body);
                     break;
                 }
                 case 107:
                 {
                     opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
                     if(ppi)
-                        ppi->SetPluginMessage(message_id, message_body);
+                        ppi->SetPluginMessage(decouple_message_id, decouple_message_body);
                     break;
                 }
                 case 108:
@@ -931,7 +934,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
-                        ppi->SetPluginMessage(message_id, message_body);
+                        ppi->SetPluginMessage(decouple_message_id, decouple_message_body);
                     break;
                 }
                 default:
@@ -945,13 +948,14 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
 
 void PlugInManager::SendAISSentenceToAllPlugIns(const wxString &sentence)
 {
+    wxString decouple_sentence(sentence); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
         if(pic->m_bEnabled && pic->m_bInitState)
         {
             if(pic->m_cap_flag & WANTS_AIS_SENTENCES)
-                pic->m_pplugin->SetAISSentence(sentence);
+                pic->m_pplugin->SetAISSentence(decouple_sentence);
         }
     }
 }
@@ -1817,10 +1821,10 @@ PlugInManager created this base class");
 void opencpn_plugin::SetPositionFix(PlugIn_Position_Fix &pfix)
 {}
 
-void opencpn_plugin::SetNMEASentence(const wxString &sentence)
+void opencpn_plugin::SetNMEASentence(wxString &sentence)
 {}
 
-void opencpn_plugin::SetAISSentence(const wxString &sentence)
+void opencpn_plugin::SetAISSentence(wxString &sentence)
 {}
 
 int opencpn_plugin::GetToolbarToolCount(void)
@@ -1893,7 +1897,7 @@ bool opencpn_plugin_16::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
     return false;
 }
 
-void opencpn_plugin_16::SetPluginMessage(const wxString &message_id, const wxString &message_body)
+void opencpn_plugin_16::SetPluginMessage(wxString &message_id, wxString &message_body)
 {}
 
 //    Opencpn_Plugin_17 Implementation
@@ -1916,7 +1920,7 @@ bool opencpn_plugin_17::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *
     return false;
 }
 
-void opencpn_plugin_17::SetPluginMessage(const wxString &message_id, const wxString &message_body)
+void opencpn_plugin_17::SetPluginMessage(wxString &message_id, wxString &message_body)
 {}
 
 
@@ -1940,7 +1944,7 @@ bool opencpn_plugin_18::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *
     return false;
 }
 
-void opencpn_plugin_18::SetPluginMessage(const wxString &message_id, const wxString &message_body)
+void opencpn_plugin_18::SetPluginMessage(wxString &message_id, wxString &message_body)
 {}
 
 void opencpn_plugin_18::SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix)

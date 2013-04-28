@@ -5,7 +5,7 @@
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -395,8 +395,8 @@ public:
       virtual void SetCurrentViewPort(PlugIn_ViewPort &vp);
 
       virtual void SetPositionFix(PlugIn_Position_Fix &pfix);
-      virtual void SetNMEASentence(const wxString &sentence);
-      virtual void SetAISSentence(const wxString &sentence);
+      virtual void SetNMEASentence(wxString &sentence);
+      virtual void SetAISSentence(wxString &sentence);
 
       virtual void ProcessParentResize(int x, int y);
       virtual void SetColorScheme(PI_ColorScheme cs);
@@ -423,7 +423,7 @@ public:
 
              virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
 
-             virtual void SetPluginMessage(const wxString &message_id, const wxString &message_body);
+             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
 
  };
 
@@ -436,7 +436,7 @@ class DECL_EXP opencpn_plugin_17 : public opencpn_plugin
              virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
              virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
-             virtual void SetPluginMessage(const wxString &message_id, const wxString &message_body);
+             virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
 
 };
 
@@ -449,7 +449,7 @@ class DECL_EXP opencpn_plugin_18 : public opencpn_plugin
             virtual bool RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp);
             virtual bool RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp);
 
-            virtual void SetPluginMessage(const wxString &message_id, const wxString &message_body);
+            virtual void SetPluginMessage(wxString &message_id, wxString &message_body);
             virtual void SetPositionFixEx(PlugIn_Position_Fix_Ex &pfix);
 
 };
