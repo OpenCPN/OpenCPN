@@ -815,10 +815,10 @@ bool MyApp::OnInit()
 //    bells_sound[0].Play();
 
    //  On Windows, we allow only one instance unless the portable option is used
-#ifdef __WXMSW__    
+#ifdef __WXMSW__
     m_checker = new wxSingleInstanceChecker(_T("OpenCPN"));
     if(!g_bportable) {
-        if ( m_checker->IsAnotherRunning() ) 
+        if ( m_checker->IsAnotherRunning() )
             return false;               // exit quietly
     }
 #endif
@@ -1520,7 +1520,7 @@ if( 0 == g_memCacheLimit )
     //  If empty, preset default
     if(g_sAIS_Alert_Sound_File.IsEmpty()) {
         wxString default_sound =  ( g_SData_Locn + _T("sounds") + wxFileName::GetPathSeparator() + _T("2bells.wav"));
-        
+
         if( g_bportable ) {
             wxFileName f( default_sound );
             f.MakeRelativeTo( g_PrivateDataDir );
@@ -1529,7 +1529,7 @@ if( 0 == g_memCacheLimit )
         else
             g_sAIS_Alert_Sound_File = default_sound ;
     }
-     
+
 
     g_StartTime = wxInvalidDateTime;
     g_StartTimeTZ = 1;				// start with local times
@@ -2083,11 +2083,11 @@ int MyApp::OnExit()
     delete g_pauimgr;
 
     delete plocale_def_lang;
-    
-#ifdef __WXMSW__    
+
+#ifdef __WXMSW__
     delete m_checker;
-#endif    
-    
+#endif
+
     return TRUE;
 }
 
@@ -3842,7 +3842,9 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
 
     SetToolbarItemState( ID_FOLLOW, false );
 
-//      RequestNewToolbar();
+    if( g_pi_manager ) {
+        g_pi_manager->SendViewPortToRequestingPlugIns( cc1->GetVP() );
+    }
 }
 
 int MyFrame::DoOptionsDialog()
