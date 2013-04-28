@@ -34,10 +34,10 @@
 #endif
 
 
-// Include CrashRpt Header 
-#ifdef OCPN_USE_CRASHRPT    
+// Include CrashRpt Header
+#ifdef OCPN_USE_CRASHRPT
 #include "CrashRpt.h"
-#endif    
+#endif
 
 #include "wx/print.h"
 #include "wx/printdlg.h"
@@ -725,15 +725,15 @@ Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n") );
     return ( odlg.ShowModal() );
 }
 
-#ifdef OCPN_USE_CRASHRPT    
+#ifdef OCPN_USE_CRASHRPT
 
 // Define the crash callback
 int CALLBACK CrashCallback(CR_CRASH_CALLBACK_INFO* pInfo)
-{    
+{
   //  Flush log file
     if( logger)
         logger->Flush();
-    
+
     return CR_CB_DODEFAULT;
 }
 
@@ -848,7 +848,7 @@ bool MyApp::OnInit()
 #ifdef __WXMSW__
     m_checker = new wxSingleInstanceChecker(_T("OpenCPN"));
     if(!g_bportable) {
-        if ( m_checker->IsAnotherRunning() ) 
+        if ( m_checker->IsAnotherRunning() )
             return false;               // exit quietly
     }
 #endif
@@ -856,28 +856,28 @@ bool MyApp::OnInit()
 #ifdef OCPN_USE_CRASHRPT
 #ifndef _DEBUG
     // Install Windows crash reporting
-    
+
     CR_INSTALL_INFO info;
     memset(&info, 0, sizeof(CR_INSTALL_INFO));
-    info.cb = sizeof(CR_INSTALL_INFO);  
-    info.pszAppName = _T("OpenCPN"); 
-    
+    info.cb = sizeof(CR_INSTALL_INFO);
+    info.pszAppName = _T("OpenCPN");
+
     wxString version_crash = str_version_major + _T(".") + str_version_minor + _T(".") + str_version_patch;
-    info.pszAppVersion = version_crash.c_str(); 
+    info.pszAppVersion = version_crash.c_str();
 
     // URL for sending error reports over HTTP.
-    info.pszEmailTo = _T("opencpn@bigdumboat.com");    
-    //    info.pszUrl = _T("http://myapp.com/tools/crashrpt.php");  
-    info.uPriorities[CR_HTTP] = CR_NEGATIVE_PRIORITY; //3;  // First try send report over HTTP 
-    info.uPriorities[CR_SMTP] = 3;  // Second try send report over SMTP  
-    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI    
+    info.pszEmailTo = _T("opencpn@bigdumboat.com");
+    //    info.pszUrl = _T("http://myapp.com/tools/crashrpt.php");
+    info.uPriorities[CR_HTTP] = CR_NEGATIVE_PRIORITY; //3;  // First try send report over HTTP
+    info.uPriorities[CR_SMTP] = 3;  // Second try send report over SMTP
+    info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
 
     // Install all available exception handlers.
-    info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS; 
-    
+    info.dwFlags |= CR_INST_ALL_POSSIBLE_HANDLERS;
+
     // Use binary encoding for HTTP uploads (recommended).
     info.dwFlags |= CR_INST_HTTP_BINARY_ENCODING;
-    
+
     // Provide privacy policy URL
     wxStandardPathsBase& std_path_crash = wxApp::GetTraits()->GetStandardPaths();
     std_path_crash.Get();
@@ -885,22 +885,22 @@ bool MyApp::OnInit()
     wxString policy_file =  exec_path_crash.GetPath( wxPATH_GET_VOLUME | wxPATH_GET_SEPARATOR );
     policy_file += _T("PrivacyPolicy.txt");
     policy_file.Prepend(_T("file:"));
-    
+
     info.pszPrivacyPolicyURL = policy_file.c_str();;
-    
+
     int nResult = crInstall(&info);
     if(nResult!=0) {
          TCHAR buff[256];
          crGetLastErrorMsg(buff, 256);
          MessageBox(NULL, buff, _T("crInstall error, Crash Reporting disabled."), MB_OK);
      }
- 
+
     // Establish the crash callback function
-    crSetCrashCallback( CrashCallback, NULL );  
-    
+    crSetCrashCallback( CrashCallback, NULL );
+
     // Take screenshot of the app window at the moment of crash
     crAddScreenshot2(CR_AS_PROCESS_WINDOWS|CR_AS_USE_JPEG_FORMAT, 95);
- 
+
     //  Mark some files to add to the crash report
     wxString home_data_crash = std_path_crash.GetConfigDir();
     if( g_bportable ) {
@@ -908,18 +908,18 @@ bool MyApp::OnInit()
         home_data_crash = f.GetPath();
     }
     appendOSDirSlash( &home_data_crash );
-    
+
     wxString config_crash = _T("opencpn.ini");
     config_crash.Prepend( home_data_crash );
     crAddFile2( config_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
-    
+
     wxString log_crash = _T("opencpn.log");
     log_crash.Prepend( home_data_crash );
     crAddFile2( log_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
-    
-#endif    
+
 #endif
-    
+#endif
+
     g_pPlatform = new wxPlatformInfo;
 
     //    On MSW, force the entire process to run on one CPU core only
@@ -2199,12 +2199,12 @@ int MyApp::OnExit()
 #endif
 
 #ifdef OCPN_USE_CRASHRPT
-#ifndef _DEBUG    
+#ifndef _DEBUG
     // Uninstall Windows crash reporting
     crUninstall();
-#endif    
-#endif    
-    
+#endif
+#endif
+
     return TRUE;
 }
 
@@ -2332,7 +2332,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     Connect( wxEVT_OCPN_MSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtPlugInMessage );
 
     Connect( EVT_THREADMSG, (wxObjectEventFunction) (wxEventFunction) &MyFrame::OnEvtTHREADMSG );
-    
+
     //        Establish the system icons for the frame.
 
 #ifdef __WXMSW__
@@ -3962,7 +3962,9 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
 
     SetToolbarItemState( ID_FOLLOW, false );
 
-//      RequestNewToolbar();
+    if( g_pi_manager ) {
+        g_pi_manager->SendViewPortToRequestingPlugIns( cc1->GetVP() );
+    }
 }
 
 int MyFrame::DoOptionsDialog()
@@ -6479,14 +6481,14 @@ bool MyFrame::EvalPriority( wxString message, DataStream *pDS )
 {
     bool bret = true;
     wxString msg_type = message.Mid(1, 5);
-    
+
     wxString stream_name;
     int stream_priority = 0;
     if( pDS ){
         stream_priority = pDS->GetPriority();
         stream_name = pDS->GetPort();
     }
-    
+
     //  If the message type has never been seen before...
     if( NMEA_Msg_Hash.find( msg_type ) == NMEA_Msg_Hash.end() ) {
         NMEA_Msg_Container *pcontainer = new NMEA_Msg_Container;
@@ -6571,7 +6573,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     //  The message must be at least reasonably formed...
     if( (str_buf[0] != '$')  &&  (str_buf[0] != '!') )
         return;
- 
+
     if( event.GetStream() ) {
         if(!event.GetStream()->ChecksumOK(str_buf) ){
             if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
@@ -6583,7 +6585,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
             return;
         }
     }
-       
+
     bool b_accept = EvalPriority( str_buf, event.GetStream() );
     if( b_accept ) {
         m_NMEA0183 << str_buf;
@@ -8158,7 +8160,7 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 #endif
     wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
     int ret = dlg.ShowModal();
-    
+
 #ifdef __WXOSX__
     if(gFrame)
         gFrame->SurfaceToolbar();
