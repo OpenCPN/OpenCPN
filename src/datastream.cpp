@@ -1129,22 +1129,32 @@ void *OCP_DataStreamInput_Thread::Entry()
                     n_timeout++;;
                     if( n_timeout > max_timeout ) {
 
-                        bool b_close = true;
+                        //  If nothing has been input from the port for a long time (10 sec), it may be broken.
+                        //  So we probably want to reset the port.
                         
-                        //  If the port is input only, double check the timeout
-                        //  We do this since some virtual serial port emulators
-                        //  do not seem to honor SetCommTimeouts() function
-                        if( m_io_select == DS_TYPE_INPUT ) {
-                            wxDateTime then = wxDateTime::Now();
-                            int tt = then.GetTicks();
-                            if( (tt - t) <  (max_timeout * loop_timeout)/1000 ) {
-                                b_close = false;
-                                n_timeout = 0;
-                                b_sleep = true;
-                            }
+                        //  There are 2 cases to consider on timing
+                        //  1.  Read-only port
+                        //      COMMTIMEOUT(loop_timeout) is 2 seconds, max_timeout=5
+                        //   2.  Read/Write port
+                        //      COMMTIMEOUT(loop_timeout) is 2 msec, max_timeout=5000
+                        
+                        //  Some virtual port emulators (XPort, especially) do not honor COMMTIMEOUTS
+                        //  So, we must check the real time (in seconds) of the inactivity time.
+                        //  If it is much shorter than 10 secs, assume that COMMTIMEOUTS are not working
+                        //  In this case, abort the port reset, reset the counters,
+                        //  and signal a need for a Sleep() between read commands to avoid CPU saturation.
+
+                        bool b_need_reset = true;
+                        
+                        wxDateTime then = wxDateTime::Now();
+                        int dt = then.GetTicks() - t;
+                        if( (dt) <  ((max_timeout * loop_timeout)/1000)/2 ) {
+                            b_need_reset = false;
+                            n_timeout = 0;
+                            b_sleep = true;
                         }
                             
-                        if( b_close ) {
+                        if( b_need_reset ) {
                             b_inner = false;
                             CloseComPortPhysical(m_gps_fd);
                             m_gps_fd = NULL;
