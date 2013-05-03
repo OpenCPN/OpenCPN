@@ -864,8 +864,16 @@ int S57Obj::my_bufgetl( char *ib_read, char *ib_end, char *buf, int buf_len_max 
 wxString S57Obj::GetAttrValueAsString( char *AttrName )
 {
     wxString str;
-    char *tattList = (char *) calloc( attList->Len() + 1, 1 );
-    strncpy( tattList, attList->mb_str(), attList->Len() );
+    char *tattList = NULL;
+    
+    wxCharBuffer buffer=attList->ToUTF8();
+    if(buffer.data()) {
+        size_t len = strlen( buffer.data() );
+        tattList = (char *) calloc( len + 1, 1 );
+        strncpy( tattList, buffer.data(), len );
+    }
+    else
+        return str;
 
     char *patl = tattList;
     char *patr;
@@ -3256,15 +3264,22 @@ bool s57chart::CreateHeaderDataFromSENC( void )
 
     //   Decide on pub date to show
 
-    int d000 = atoi(
-            ( date_000/*(wxString((const wchar_t *)date_000, wxConvUTF8)*/.Mid( 0, 4 ) ).mb_str() );
-    int dupd = atoi(
-            ( date_upd/*(wxString((const wchar_t *)date_upd, wxConvUTF8)*/.Mid( 0, 4 ) ).mb_str() );
-
-    if( dupd > d000 ) m_PubYear = date_upd/*wxString((const wchar_t *)date_upd, wxConvUTF8)*/.Mid(
-            0, 4 );
+    int d000 = 0;
+    wxString sd000 =date_000.Mid( 0, 4 );
+    wxCharBuffer dbuffer=sd000.ToUTF8();
+    if(dbuffer.data())
+        d000 = atoi(dbuffer.data() );
+        
+    int dupd = 0;
+    wxString sdupd =date_upd.Mid( 0, 4 );
+    wxCharBuffer ubuffer = sdupd.ToUTF8();
+    if(ubuffer.data())
+        dupd = atoi(ubuffer.data() );
+    
+    if( dupd > d000 )
+        m_PubYear = sdupd;
     else
-        m_PubYear = date_000/*wxString((const wchar_t *)date_000, wxConvUTF8)*/.Mid( 0, 4 );
+        m_PubYear = sd000;
 
     wxDateTime dt;
     dt.ParseDate( date_000 );
@@ -3509,8 +3524,10 @@ int s57chart::GetUpdateFileArray( const wxFileName file000, wxArrayString *UpFil
             wxString FileToAdd( DirName000 );
             FileToAdd.Append( file.GetFullName() );
 
-            if( !filename.IsSameAs( _T("CATALOG.031"), false ) )           // don't process catalogs
-                    {
+            wxCharBuffer buffer=FileToAdd.ToUTF8();             // Check file namme for convertability
+                
+            if( buffer.data() && !filename.IsSameAs( _T("CATALOG.031"), false ) )           // don't process catalogs
+            {
 //          We must check the update file for validity
 //          1.  Is update field DSID:EDTN  equal to base .000 file DSID:EDTN?
 //          2.  Is update file DSID.ISDT greater than or equal to base .000 file DSID:ISDT
@@ -3589,7 +3606,9 @@ int s57chart::GetUpdateFileArray( const wxFileName file000, wxArrayString *UpFil
         wxString Last = dummy_array->Last();
         wxFileName fnl( Last );
         ext = fnl.GetExt();
-        retval = atoi( ext.mb_str() );
+        wxCharBuffer buffer=ext.ToUTF8();
+        if(buffer.data())            
+            retval = atoi( buffer.data() );
     }
 
     if( UpFiles == NULL ) delete dummy_array;
@@ -3841,9 +3860,6 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     const char *pp = "wb";
     fps57 = fopen( tmp_file.mb_str(), pp );
 
-    char t[200];
-    strcpy( t, tmp_file.mb_str() );
-
     if( fps57 == NULL ) {
         wxString msg( _T("   s57chart::BuildS57File  Unable to create temp SENC file ") );
         msg.Append( tfn.GetFullPath() );
@@ -3855,7 +3871,12 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 
     fprintf( fps57, "SENC Version= %d\n", CURRENT_SENC_FORMAT_VERSION );
 
-    strncpy( temp, nice_name.mb_str(), 200 );
+    wxCharBuffer buffer=nice_name.ToUTF8();
+    if(buffer.data()) 
+        strncpy( temp, buffer.data(), 200 );
+    else
+        strncpy( temp, "UTF8Error", 200 );
+    
     temp[200] = '\0';
     fprintf( fps57, "NAME=%s\n", temp );
 
@@ -3869,7 +3890,8 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     //      Record .000 file date and size for primitive detection of updates to .000 file
     wxDateTime ModTime000;
     wxString mt = _T("20000101");
-    if( file000.GetTimes( NULL, &ModTime000, NULL ) ) mt = ModTime000.Format( _T("%Y%m%d") );
+    if( file000.GetTimes( NULL, &ModTime000, NULL ) )
+        mt = ModTime000.Format( _T("%Y%m%d") );
     strncpy( temp, mt.mb_str(), 200 );
     fprintf( fps57, "FILEMOD000=%s\n", temp );
 
@@ -4394,16 +4416,23 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
     delete SENC_prog;
 
     //   Decide on pub date to show
+    int d000 = 0;
+    wxString sd000 =date_000.Mid( 0, 4 );
+    wxCharBuffer dbuffer=sd000.ToUTF8();
+    if(dbuffer.data())
+        d000 = atoi(dbuffer.data() );
 
-    int d000 = atoi(
-            ( date_000/*(wxString((const wchar_t *)date_000, wxConvUTF8)*/.Mid( 0, 4 ) ).mb_str() );
-    int dupd = atoi(
-            ( date_upd/*(wxString((const wchar_t *)date_upd, wxConvUTF8)*/.Mid( 0, 4 ) ).mb_str() );
+    int dupd = 0;
+    wxString sdupd =date_upd.Mid( 0, 4 );
+    wxCharBuffer ubuffer = sdupd.ToUTF8();
+    if(ubuffer.data())
+        dupd = atoi(ubuffer.data() );
 
-    if( dupd > d000 ) m_PubYear = date_upd/*wxString((const wchar_t *)date_upd, wxConvUTF8)*/.Mid(
-            0, 4 );
+    if( dupd > d000 )
+        m_PubYear = sdupd;
     else
-        m_PubYear = date_000/*wxString((const wchar_t *)date_000, wxConvUTF8)*/.Mid( 0, 4 );
+        m_PubYear = sd000;
+
 
     //    Set some base class values
     wxDateTime upd;
@@ -6106,7 +6135,6 @@ int s57chart::CompareLights( const void** l1ptr, const void** l2ptr )
 wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 {
     wxString ret_val;
-    char *curr_att;
     int attrCounter;
     wxString curAttrName, value;
     bool isLight = false;
@@ -6200,96 +6228,102 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
             }
         }
 
-        //    Get the Attributes and values
-
-        char *curr_att0 = (char *) calloc( current->obj->attList->Len() + 1, 1 );
-        strncpy( curr_att0, current->obj->attList->mb_str(), current->obj->attList->Len() );
-        curr_att = curr_att0;
-
-        attrCounter = 0;
-
-        wxString attribStr;
-        int noAttr = 0;
-        attribStr << _T("<table border=0 cellspacing=0 cellpadding=0>");
-
-        bool inDepthRange = false;
-
-        while( *curr_att ) {
-            //    Attribute name
-            curAttrName.Clear();
-            noAttr++;
-            while( ( *curr_att ) && ( *curr_att != '\037' ) ) {
-                char t = *curr_att++;
-                curAttrName.Append( t );
-            }
-
-            if( *curr_att == '\037' ) curr_att++;
-
-            // Sort out how some kinds of attibutes are displayed to get a more readable look.
-            // DEPARE gets just its range. Lights are grouped.
-
-            if( isLight ) {
-                curLight->attributeNames.Add( curAttrName );
-                if( curAttrName.StartsWith( _T("SECTR") ) ) curLight->hasSectors = true;
-            } else {
-                if( curAttrName == _T("DRVAL1") ) {
-                    attribStr << _T("<tr><td><font size=-1>");
-                    inDepthRange = true;
-                } else if( curAttrName == _T("DRVAL2") ) {
-                    attribStr << _T(" - ");
-                    inDepthRange = false;
-                } else {
-                    if( inDepthRange ) {
-                        attribStr << _T("</font></td></tr>\n");
-                        inDepthRange = false;
-                    }
-                    attribStr << _T("<tr><td valign=top><font size=-2>") << curAttrName;
-                    attribStr << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
-                }
-            }
-
-            // What we need to do...
-            // Change senc format, instead of (S), (I), etc, use the attribute types fetched from the S57attri...csv file
-            // This will be like (E), (L), (I), (F)
-            //  will affect lots of other stuff.  look for S57attVal.valType
-            // need to do this in creatsencrecord above, and update the senc format.
-
-            value = GetObjectAttributeValueAsString( current->obj, attrCounter, curAttrName );
-
-            if( isLight ) {
-                curLight->attributeValues.Add( value );
-            } else {
-                if( curAttrName == _T("INFORM") || curAttrName == _T("NINFOM") ) value.Replace(
-                        _T("|"), _T("<br>") );
-                attribStr << value;
-
-                if( !( curAttrName == _T("DRVAL1") ) ) {
-                    attribStr << _T("</font></td></tr>\n");
-                }
-            }
-
-            attrCounter++;
-
-        }             //while *curr_att
-
-        if( !isLight ) {
-            attribStr << _T("</table>\n");
-
-            objText += _T("<b>") + classDesc + _T("</b> <font size=-2>(") + className
-                    + _T(")</font>") + _T("<br>");
-
-            if( positionString.Length() ) objText << _T("<font size=-2>") << positionString
-                    << _T("</font><br>\n");
-
-            if( noAttr > 0 ) objText << attribStr;
-
-            if( node != rule_list->GetFirst() ) objText += _T("<hr noshade>");
-            objText += _T("<br>");
-            ret_val << objText;
+        //    Get the Attributes and values, making sure they can be converted from UTF8
+        char *curr_att0 = NULL;
+        wxCharBuffer buffer = current->obj->attList->ToUTF8();
+        if(buffer.data()) {
+            size_t len = strlen( buffer.data() );
+            curr_att0 = (char *) calloc( len + 1, 1 );
+            strncpy( curr_att0, buffer.data(), len );
         }
+        
+        if(curr_att0) {
+            char *curr_att = curr_att0;
 
-        free( curr_att0 );
+            attrCounter = 0;
 
+            wxString attribStr;
+            int noAttr = 0;
+            attribStr << _T("<table border=0 cellspacing=0 cellpadding=0>");
+
+            bool inDepthRange = false;
+
+            while( *curr_att ) {
+                //    Attribute name
+                curAttrName.Clear();
+                noAttr++;
+                while( ( *curr_att ) && ( *curr_att != '\037' ) ) {
+                    char t = *curr_att++;
+                    curAttrName.Append( t );
+                }
+
+                if( *curr_att == '\037' ) curr_att++;
+
+                // Sort out how some kinds of attibutes are displayed to get a more readable look.
+                // DEPARE gets just its range. Lights are grouped.
+
+                if( isLight ) {
+                    curLight->attributeNames.Add( curAttrName );
+                    if( curAttrName.StartsWith( _T("SECTR") ) ) curLight->hasSectors = true;
+                } else {
+                    if( curAttrName == _T("DRVAL1") ) {
+                        attribStr << _T("<tr><td><font size=-1>");
+                        inDepthRange = true;
+                    } else if( curAttrName == _T("DRVAL2") ) {
+                        attribStr << _T(" - ");
+                        inDepthRange = false;
+                    } else {
+                        if( inDepthRange ) {
+                            attribStr << _T("</font></td></tr>\n");
+                            inDepthRange = false;
+                        }
+                        attribStr << _T("<tr><td valign=top><font size=-2>") << curAttrName;
+                        attribStr << _T("</font></td><td>&nbsp;&nbsp;</td><td valign=top><font size=-1>");
+                    }
+                }
+
+                // What we need to do...
+                // Change senc format, instead of (S), (I), etc, use the attribute types fetched from the S57attri...csv file
+                // This will be like (E), (L), (I), (F)
+                //  will affect lots of other stuff.  look for S57attVal.valType
+                // need to do this in creatsencrecord above, and update the senc format.
+
+                value = GetObjectAttributeValueAsString( current->obj, attrCounter, curAttrName );
+
+                if( isLight ) {
+                    curLight->attributeValues.Add( value );
+                } else {
+                    if( curAttrName == _T("INFORM") || curAttrName == _T("NINFOM") ) value.Replace(
+                            _T("|"), _T("<br>") );
+                    attribStr << value;
+
+                    if( !( curAttrName == _T("DRVAL1") ) ) {
+                        attribStr << _T("</font></td></tr>\n");
+                    }
+                }
+
+                attrCounter++;
+
+            }             //while *curr_att
+
+            if( !isLight ) {
+                attribStr << _T("</table>\n");
+
+                objText += _T("<b>") + classDesc + _T("</b> <font size=-2>(") + className
+                        + _T(")</font>") + _T("<br>");
+
+                if( positionString.Length() ) objText << _T("<font size=-2>") << positionString
+                        << _T("</font><br>\n");
+
+                if( noAttr > 0 ) objText << attribStr;
+
+                if( node != rule_list->GetFirst() ) objText += _T("<hr noshade>");
+                objText += _T("<br>");
+                ret_val << objText;
+            }
+
+            free( curr_att0 );
+        }
     } // Object for loop
 
     if( lights.Count() > 0 ) {
@@ -6763,7 +6797,6 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
         for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
             ObjRazRules *current = node->GetData();
             S57Obj* light = current->obj;
-            char* curr_att;
             int attrCounter;
             double sectr1 = -1;
             double sectr2 = -1;
@@ -6773,75 +6806,84 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
 
             if( !strcmp( light->FeatureName, "LIGHTS" ) ) {
                 wxPoint2DDouble objPos( light->m_lat, light->m_lon );
-                if( lightPosD.m_x == 0 && lightPosD.m_y == 0.0 ) lightPosD = objPos;
+                if( lightPosD.m_x == 0 && lightPosD.m_y == 0.0 )
+                    lightPosD = objPos;
+                
                 if( lightPosD == objPos ) {
-                    char *curr_att0 = (char *) calloc( light->attList->Len() + 1, 1 );
-                    strncpy( curr_att0, light->attList->mb_str(), light->attList->Len() );
-                    curr_att = curr_att0;
-
-                    attrCounter = 0;
-                    int noAttr = 0;
-                    bool inDepthRange = false;
-                    s57Sector_t sector;
-
-                    while( *curr_att ) {
-                        curAttrName.Clear();
-                        noAttr++;
-                        while( ( *curr_att ) && ( *curr_att != '\037' ) ) {
-                            char t = *curr_att++;
-                            curAttrName.Append( t );
-                        }
-
-                        if( *curr_att == '\037' ) curr_att++;
-
-                        wxString value = chart->GetObjectAttributeValueAsString( light, attrCounter, curAttrName );
-                        int opacity = 100;
-                        if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ) opacity = 50;
-                        if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
-
-                        int yOpacity = (float)opacity*1.3; // Matched perception with red/green
-
-                        if( curAttrName == _T("SECTR1") ) value.ToDouble( &sectr1 );
-                        if( curAttrName == _T("SECTR2") ) value.ToDouble( &sectr2 );
-                        if( curAttrName == _T("VALNMR") ) value.ToDouble( &valnmr );
-                        if( curAttrName == _T("COLOUR") ) {
-                            sector.fillSector = true;
-                            color = wxColor( 255, 255, 0, yOpacity );
-                            if( value == _T("red(3)") ) {
-                                color = wxColor( 255, 0, 0, opacity );
-                                sector.fillSector = false;
-                            }
-                            if( value == _T("green(4)") ) {
-                                color = wxColor( 0, 255, 0, opacity );
-                                sector.fillSector = false;
-                            }
-                        }
-                        if( curAttrName == _T("EXCLIT") ) {
-                            if( value.Find( _T("(3)") ) ) valnmr = 1.0;  // Fog lights.
-                        }
-                        attrCounter++;
+                    char *curr_att0 = NULL;
+                    wxCharBuffer buffer=light->attList->ToUTF8();
+                    if(buffer.data()) {
+                        size_t len = strlen(buffer.data());
+                        curr_att0 = (char *) calloc( len + 1, 1 );
+                        strncpy( curr_att0, buffer.data(), len );
                     }
+                    if( curr_att0 ) {
+                        char *curr_att = curr_att0;
 
-                    free(curr_att0);
+                        attrCounter = 0;
+                        int noAttr = 0;
+                        bool inDepthRange = false;
+                        s57Sector_t sector;
 
-                    if( ( sectr1 >= 0 ) && ( sectr2 >= 0 ) ) {
-                        sector.pos.m_x = light->m_lon;
-                        sector.pos.m_y = light->m_lat;
+                        while( *curr_att ) {
+                            curAttrName.Clear();
+                            noAttr++;
+                            while( ( *curr_att ) && ( *curr_att != '\037' ) ) {
+                                char t = *curr_att++;
+                                curAttrName.Append( t );
+                            }
 
-                        sector.range = (valnmr > 0.0) ? valnmr : 2.5; // Short default range.
-                        sector.sector1 = sectr1;
-                        sector.sector2 = sectr2;
-                        sector.color = color;
+                            if( *curr_att == '\037' ) curr_att++;
 
-                        bool newsector = true;
-                        for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
-                            if( sectorlegs[i].pos == sector.pos &&
-                                sectorlegs[i].sector1 == sector.sector1 &&
-                                sectorlegs[i].sector2 == sector.sector2 ) newsector = false;
+                            wxString value = chart->GetObjectAttributeValueAsString( light, attrCounter, curAttrName );
+                            int opacity = 100;
+                            if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ) opacity = 50;
+                            if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
+
+                            int yOpacity = (float)opacity*1.3; // Matched perception with red/green
+
+                            if( curAttrName == _T("SECTR1") ) value.ToDouble( &sectr1 );
+                            if( curAttrName == _T("SECTR2") ) value.ToDouble( &sectr2 );
+                            if( curAttrName == _T("VALNMR") ) value.ToDouble( &valnmr );
+                            if( curAttrName == _T("COLOUR") ) {
+                                sector.fillSector = true;
+                                color = wxColor( 255, 255, 0, yOpacity );
+                                if( value == _T("red(3)") ) {
+                                    color = wxColor( 255, 0, 0, opacity );
+                                    sector.fillSector = false;
+                                }
+                                if( value == _T("green(4)") ) {
+                                    color = wxColor( 0, 255, 0, opacity );
+                                    sector.fillSector = false;
+                                }
+                            }
+                            if( curAttrName == _T("EXCLIT") ) {
+                                if( value.Find( _T("(3)") ) ) valnmr = 1.0;  // Fog lights.
+                            }
+                            attrCounter++;
                         }
-                        if( newsector ) {
-                            sectorlegs.push_back( sector );
-                            newSectorsNeedDrawing = true;
+
+                        free(curr_att0);
+
+                        if( ( sectr1 >= 0 ) && ( sectr2 >= 0 ) ) {
+                            sector.pos.m_x = light->m_lon;
+                            sector.pos.m_y = light->m_lat;
+
+                            sector.range = (valnmr > 0.0) ? valnmr : 2.5; // Short default range.
+                            sector.sector1 = sectr1;
+                            sector.sector2 = sectr2;
+                            sector.color = color;
+
+                            bool newsector = true;
+                            for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
+                                if( sectorlegs[i].pos == sector.pos &&
+                                    sectorlegs[i].sector1 == sector.sector1 &&
+                                    sectorlegs[i].sector2 == sector.sector2 ) newsector = false;
+                            }
+                            if( newsector ) {
+                                sectorlegs.push_back( sector );
+                                newSectorsNeedDrawing = true;
+                            }
                         }
                     }
                 }

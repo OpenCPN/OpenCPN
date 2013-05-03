@@ -241,109 +241,123 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
 
             wxString LATTC = LUPCandidate->ATTCArray->Item( iLUPAtt );
             wxString LATTValue( LATTC.Mid( 6 ) );
+            
+            //  Verify that attribute names and values will convert with UTF8
+            char *slatv = NULL;
+            wxCharBuffer vbuffer=LATTValue.ToUTF8();
+            if(vbuffer.data())
+                slatv = vbuffer.data();
+            
+            char *slatc = NULL;
+            wxCharBuffer buffer=LATTC.ToUTF8();
+            if(buffer.data())
+                slatc = buffer.data();
+ 
+            if( slatv && slatc ){
+                while( *currATT != '\0' ) {
+                    if( 0 == strncmp( slatc, currATT, 6 ) ) {
+                        //OK we have an attribute match
+                        //checking attribute value
+                        S57attVal *v;
 
-            while( *currATT != '\0' ) {
-                if( 0 == strncmp( LATTC.mb_str(), currATT, 6 ) ) {
-                    //OK we have an attribute match
-                    //checking attribute value
-                    S57attVal *v;
+                        bool attValMatch = false;
 
-                    bool attValMatch = false;
+                        // special case (i)
+                        if( LATTC.Mid( 6, 1 ) == ' ' ) // use any value
+                        attValMatch = true;
 
-                    // special case (i)
-                    if( LATTC.Mid( 6, 1 ) == ' ' ) // use any value
-                    attValMatch = true;
-
-                    // special case (ii)
-                    //TODO  Find an ENC with "UNKNOWN" DRVAL1 or DRVAL2 and debug this code
-                    /*
-                     if ( !strncmp ( LUPCandidate->OBCL, "DEPARE", 6 ) )
-                     {
-                     if ( LATTC[6] == '?' )  // match if value is unknown
-                     attValMatch = TRUE;
-                     }
-                     */
-                    v = ( objAttVal->Item( attIdx ) );
-
-                    switch( v->valType ){
-                        case OGR_INT: // S57 attribute type 'E' enumerated, 'I' integer
+                        // special case (ii)
+                        //TODO  Find an ENC with "UNKNOWN" DRVAL1 or DRVAL2 and debug this code
+                        /*
+                        if ( !strncmp ( LUPCandidate->OBCL, "DEPARE", 6 ) )
                         {
-                            int a;
-                            char ss[41];
-                            strncpy( ss, LATTValue.mb_str(), 39 );
-                            ss[40] = '\0';
-                            sscanf( ss, "%d", &a );
-                            if( a == *(int*) ( v->value ) ) attValMatch = true;
-                            break;
+                        if ( LATTC[6] == '?' )  // match if value is unknown
+                        attValMatch = TRUE;
                         }
+                        */
+                        v = ( objAttVal->Item( attIdx ) );
 
-                        case OGR_INT_LST: // S57 attribute type 'L' list: comma separated integer
-                        {
-                            int a;
-                            char ss[41];
-                            strncpy( ss, LATTValue.mb_str(), 39 );
-                            ss[40] = '\0';
-                            char *s = &ss[0];
-
-                            int *b = (int*) v->value;
-                            sscanf( s, "%d", &a );
-
-                            while( *s != '\0' ) {
-                                if( a == *b ) {
-                                    sscanf( ++s, "%d", &a );
-                                    b++;
+                        switch( v->valType ){
+                            case OGR_INT: // S57 attribute type 'E' enumerated, 'I' integer
+                            {
+                                int a;
+                                char ss[41];
+                                strncpy( ss, slatv, 39 );
+                                ss[40] = '\0';
+                                sscanf( ss, "%d", &a );
+                                if( a == *(int*) ( v->value ) )
                                     attValMatch = true;
-
-                                } else
-                                    attValMatch = false;
+                                break;
                             }
-                            break;
-                        }
-                        case OGR_REAL: // S57 attribute type'F' float
-                        {
-                            float a;
-                            if( LATTC.Mid( 6, 1 ) != '?' ) {
-                                if( LATTValue.Len() ) {
-                                    char ss[40];
-                                    strncpy( ss, LATTValue.mb_str(), 39 );
-                                    sscanf( ss, "%f", &a );
-                                    if( a == *(float*) ( v->value ) ) attValMatch = true;
+
+                            case OGR_INT_LST: // S57 attribute type 'L' list: comma separated integer
+                            {
+                                int a;
+                                char ss[41];
+                                strncpy( ss, slatv, 39 );
+                                ss[40] = '\0';
+                                char *s = &ss[0];
+
+                                int *b = (int*) v->value;
+                                sscanf( s, "%d", &a );
+
+                                while( *s != '\0' ) {
+                                    if( a == *b ) {
+                                        sscanf( ++s, "%d", &a );
+                                        b++;
+                                        attValMatch = true;
+
+                                    } else
+                                        attValMatch = false;
                                 }
+                                break;
                             }
-                            break;
+                            case OGR_REAL: // S57 attribute type'F' float
+                            {
+                                float a;
+                                if( LATTC.Mid( 6, 1 ) != '?' ) {
+                                    if( LATTValue.Len() ) {
+                                        char ss[40];
+                                        strncpy( ss, slatv, 39 );
+                                        sscanf( ss, "%f", &a );
+                                        if( a == *(float*) ( v->value ) ) attValMatch = true;
+                                    }
+                                }
+                                break;
+                            }
+
+                            case OGR_STR: // S57 attribute type'A' code string, 'S' free text
+                            {
+
+                                //    Strings must be exact match
+                                //    n.b. OGR_STR is used for S-57 attribute type 'L', comma-separated list
+
+                                wxString cs( (char *) v->value, wxConvUTF8 ); // Attribute from object
+                                if( LATTValue.Len() == cs.Len() ) if( LATTValue == cs ) attValMatch =
+                                        true;
+                                break;
+                            }
+
+                            default:
+                                break;
+                        } //switch
+
+                        // value match
+                        if( attValMatch ) {
+                            ++countATT;
                         }
 
-                        case OGR_STR: // S57 attribute type'A' code string, 'S' free text
-                        {
+                        goto next_LUP_Attr;
+                    } // if attribute match
 
-                            //    Strings must be exact match
-                            //    n.b. OGR_STR is used for S-57 attribute type 'L', comma-separated list
-
-                            wxString cs( (char *) v->value, wxConvUTF8 ); // Attribute from object
-                            if( LATTValue.Len() == cs.Len() ) if( LATTValue == cs ) attValMatch =
-                                    true;
-                            break;
-                        }
-
-                        default:
-                            break;
-                    } //switch
-
-                    // value match
-                    if( attValMatch ) {
-                        ++countATT;
-                    }
-
-                    goto next_LUP_Attr;
-                } // if attribute match
-
-                while( *currATT != '\037' )
+                    while( *currATT != '\037' )
+                        currATT++;
                     currATT++;
-                currATT++;
 
-                ++attIdx;
+                    ++attIdx;
 
-            } //while
+                } //while
+            } //if
 
             next_LUP_Attr:
 
@@ -402,9 +416,13 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
 
 Rules *s52plib::StringToRules( const wxString& str_in )
 {
-
-    char *str0 = (char *) calloc( str_in.Len() + 1, 1 );
-    strncpy( str0, str_in.mb_str(), str_in.Len() );
+    wxCharBuffer buffer=str_in.ToUTF8();
+    if(!buffer.data())
+        return NULL;
+        
+    size_t len = strlen( buffer.data() );
+    char *str0 = (char *) calloc( len + 1, 1 );
+    strncpy( str0, buffer.data(), len );
     char *str = str0;
 
     Rules *top;
@@ -995,19 +1013,13 @@ LUPrec *s52plib::S52_LUPLookup( LUPname LUP_Name, const char * objectName, S57Ob
         index++;
     }
 
-    char *temp;
+    if( ocnt ){
+        wxCharBuffer buffer=pObj->attList->ToUTF8();
+        if(buffer.data())
+            LUP = FindBestLUP( nameMatch, buffer.data(), pObj->attVal, bStrict );
+    }
 
-    if( ocnt == 0 ) goto BAILOUT;
-
-    temp = (char *) calloc( pObj->attList->Len() + 1, 1 );
-    strncpy( temp, pObj->attList->mb_str(), pObj->attList->Len() );
-
-    LUP = FindBestLUP( nameMatch, temp, pObj->attVal, bStrict );
-
-    free( temp );
-
-    BAILOUT: nameMatch->Clear();
-
+    nameMatch->Clear();
     delete nameMatch;
 
     return LUP;
@@ -1071,36 +1083,40 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 //  3- LUP default value.
 // Return pointer to the next field in the string (delim is ','), NULL to abort
 {
-    char *tmp = buf;
     wxString value;
     int defval = 0; // default value
     int len = 0;
+    char *ret_ptr = str;
+    char *tmp = buf;
+    
+    if(!buf)
+        return NULL;
 
     // parse constant parameter with concatenation operator "'"
     if( str != NULL ) {
-        if( *str == APOS ) {
-            str++;
-            while( *str != APOS ) {
-                *buf++ = *str++;
+        if( *ret_ptr == APOS ) {
+            ret_ptr++;
+            while( *ret_ptr != APOS &&  *ret_ptr != '\0' && len < ( bsz - 1 )) {
+                ++len;
+                *tmp++ = *ret_ptr++;
             }
-            *buf = '\0';
-            str++; // skip "'"
-            str++; // skip ","
+            *tmp = '\0';
+            ret_ptr++; // skip "'"
+            ret_ptr++; // skip ","
 
-            return str;
+            return ret_ptr;
         }
 
-        while( *str != ',' && *str != ')' && *str != '\0' && len < ( bsz - 1 ) ) {
-            *tmp++ = *str++;
+        while( *ret_ptr != ',' && *ret_ptr != ')' && *ret_ptr != '\0' && len < ( bsz - 1 ) ) {
+            *tmp++ = *ret_ptr++;
             ++len;
         }
-
-        if( len >= bsz ) printf( "ERROR: chopping input S52 line !? \n" );
-
         *tmp = '\0';
-        str++; // skip ',' or ')'
+        
+        ret_ptr++; // skip ',' or ')'
     }
-    if( len < 6 ) return str;
+    if( len < 6 )
+        return ret_ptr;
 
     // chop string if default value present
     if( len > 6 && *( buf + 6 ) == '=' ) {
@@ -1109,20 +1125,17 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
     }
 
     value = rzRules->obj->GetAttrValueAsString( buf );
-
-    if( value.IsNull() ) {
-        if( defval ) _getParamVal( rzRules, buf + 7, buf, bsz - 7 ); // default value --recursion
+    wxCharBuffer buffer=value.ToUTF8();
+    if(!buffer.data())
+        return ret_ptr;
+        
+    if( value.IsEmpty() ) {
+        if( defval )
+            _getParamVal( rzRules, buf + 7, buf, bsz - 7 ); // default value --recursion
         else {
-            // PRINTF("NOTE: skipping TEXT no value for attribute:%s\n", buf);
             return NULL; // abort
         }
     } else {
-        int vallen = value.Len();
-
-        if( vallen >= bsz ) {
-            vallen = bsz - 1;
-//            PRINTF("ERROR: chopping attribut value !? \n");
-        }
 
         //    Special case for conversion of some vertical (height) attributes to feet
         if( ( !strncmp( buf, "VERCLR", 6 ) ) || ( !strncmp( buf, "VERCCL", 6 ) ) ) {
@@ -1133,7 +1146,6 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
                     value.ToDouble( &ft_val );
                     ft_val = ft_val * 3 * 39.37 / 36; // feet
                     value.Printf( _T("%4.1f"), ft_val );
-                    vallen = value.Len();
                     break;
                 default:
                     break;
@@ -1150,30 +1162,35 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 
             int icomma = 0;
             while( tkz.HasMoreTokens() ) {
-                if( icomma ) result += _T ( "," );
+                if( icomma )
+                    result += _T ( "," );
 
                 wxString token = tkz.GetNextToken();
-                int i = atoi( token.mb_str() );
-                wxString nat = rzRules->chart->GetAttributeDecode( natsur_att, i );
-                if( !nat.IsEmpty() ) result += nat; // value from ENC
+                long i;
+                if( token.ToLong(&i) ){
+                    wxString nat = rzRules->chart->GetAttributeDecode( natsur_att, (int)i );
+                    if( !nat.IsEmpty() )
+                        result += nat; // value from ENC
+                    else
+                        result += _T ( "unk" );
+                }
                 else
                     result += _T ( "unk" );
 
                 icomma++;
             }
 
-            int count = result.Len();
-            if( count > bsz - 1 ) count = bsz - 1;
-            strncpy( buf, result.mb_str(), count );
-            buf[count] = 0;
-
-        } else {
-            strncpy( buf, value.mb_str(), vallen ); // value from ENC
-            buf[vallen] = '\0';
+            value = result;
         }
+        
+        wxCharBuffer buffer=value.ToUTF8();
+        if(buffer.data())
+            strncpy( buf, buffer.data(), wxMin(strlen(buffer.data()), bsz-1) );
+        else
+            *buf = 0;
     }
 
-    return str;
+    return ret_ptr;
 }
 
 char *_parseTEXT( ObjRazRules *rzRules, S52_TextC *text, char *str0 )
@@ -1188,7 +1205,7 @@ char *_parseTEXT( ObjRazRules *rzRules, S52_TextC *text, char *str0 )
         str = _getParamVal( rzRules, str, &text->space, MAXL ); // SPACE
 
         // CHARS
-        str = _getParamVal( rzRules, str, buf, 5 );
+        str = _getParamVal( rzRules, str, buf, MAXL );
         text->style = buf[0];
         text->weight = buf[1];
         text->width = buf[2];
@@ -3604,13 +3621,16 @@ bool s52plib::PreloadOBJLFromCSV(const wxString &csv_file)
             }
 
             if( !bdup ) {
-                OBJLElement *pOLE = (OBJLElement *) calloc( sizeof(OBJLElement), 1 );
-                strncpy( pOLE->OBJLName, token.mb_str(), 6 );
-                pOLE->nViz = 0;
+                wxCharBuffer buffer=token.ToUTF8();
+                if(buffer.data()) {
+                    OBJLElement *pOLE = (OBJLElement *) calloc( sizeof(OBJLElement), 1 );
+                    strncpy( pOLE->OBJLName, buffer.data(), 6 );
+                    pOLE->nViz = 0;
 
-                pOBJLArray->Add( (void *) pOLE );
+                    pOBJLArray->Add( (void *) pOLE );
 
-                OBJLDescriptions.push_back( description );
+                    OBJLDescriptions.push_back( description );
+                }
             }
         }
     }
@@ -5786,60 +5806,6 @@ void s52plib::GetAndAddCSRules( ObjRazRules *rzRules, Rules *rules )
         //sscanf(pBuf+11, "%d", &LUP->RCID);
 
         strncpy( NewLUP->OBCL, rzRules->LUP->OBCL, 6 ); // the object class name
-//  if(!strncmp(LUP->OBCL, "LNDARE", 6))
-//         int qewr = 9;
-
-//                        NewLUP->FTYP = (enum _Object_t)pBuf[25];
-//                        NewLUP->DPRI = (enum _DisPrio)pBuf[30];
-//                        NewLUP->RPRI = (enum _RadPrio)pBuf[31];
-//                        NewLUP->TNAM = (enum _LUPname)pBuf[36];
-
-// Parse the instant object's attribute name string and attribute values to the LUP
-// Attribute values are neede to ensure exact match
-
-        /*
-         wxString *pobj_attList = rzRules->obj->attList;
-         if ('\037' != pobj_attList[0])                                // could be empty!
-         {
-
-         wxString *LUPATTC = new wxString;
-
-         wxArrayString *pAS = new wxArrayString();
-         char *p = (char *)pobj_attList->mb_str();
-
-         wxString *st1 = new wxString;
-         int attIdx = 0;
-
-         while(*p)
-         {
-         while(*p != 0x1f)
-         {
-         st1->Append(*p);
-         p++;
-         }
-
-         S57attVal *v;
-         v = rzRules->obj->attVal->Item(attIdx);
-         wxString apf = AttValPrintf(v);
-         st1->Append(apf);
-
-         LUPATTC->Append(*st1);
-         LUPATTC->Append('\037');
-
-         pAS->Add(*st1);
-         st1->Clear();
-         p++;
-         attIdx++;
-         }
-
-         delete st1;
-
-         NewLUP->ATTCArray = pAS;
-         NewLUP->ATTC = LUPATTC;
-         }
-
-
-         */
 
 //      Add the complete CS string to the LUP
         wxString *pINST = new wxString( cs_string );
