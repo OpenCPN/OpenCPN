@@ -971,6 +971,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bzooming_in = false;;
     m_bzooming_out = false;;
 
+    EnableAutoPan(true);
+    
     undo = new Undo;
 
     VPoint.Invalidate();
@@ -1936,8 +1938,8 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         }           // switch
     }
 
-    if( !pPanKeyTimer->IsRunning() && ( m_panx || m_pany ) ) pPanKeyTimer->Start( 1,
-                wxTIMER_ONE_SHOT );
+    if( m_benable_autopan && !pPanKeyTimer->IsRunning() && ( m_panx || m_pany ) )
+        pPanKeyTimer->Start( 1, wxTIMER_ONE_SHOT );
 
 #ifndef __WXMAC__
     event.Skip();
@@ -1971,8 +1973,12 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 
 void ChartCanvas::Do_Pankeys( wxTimerEvent& event )
 {
-    if( !( m_panx || m_pany ) ) return;
+    if( !( m_panx || m_pany ) )
+        return;
 
+    if( !m_benable_autopan )
+        return;
+    
     const int slowpan = 2, maxpan = 100;
     int repeat = 100;
 
@@ -4805,14 +4811,20 @@ void ChartCanvas::PanTimerEvent( wxTimerEvent& event )
 
 }
 
-void ChartCanvas::StopAutoPan(void)
+void ChartCanvas::EnableAutoPan(bool b_enable )
 {
-    pPanKeyTimer->Stop();
-    m_panx = 0;
-    m_pany = 0;
-    m_panspeed = 0;
-}
-
+    if(b_enable) {
+        m_benable_autopan = true;
+    }
+    else {
+        m_benable_autopan = false;
+        pPanKeyTimer->Stop();
+        m_panx = 0;
+        m_pany = 0;
+        m_panspeed = 0;
+    }
+}  
+    
 bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging )
 {
     bool bft = false;

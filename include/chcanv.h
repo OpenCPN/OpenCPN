@@ -150,7 +150,8 @@ public:
       void CancelMouseRoute();
 
       void Do_Pankeys(wxTimerEvent& event);
-
+      void EnableAutoPan( bool b_enable );
+      
       bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust = true);
       bool SetVPScale(double sc);
       bool SetViewPoint ( double lat, double lon);
@@ -535,6 +536,7 @@ private:
       double      m_zoom_target_factor;
       double      m_zoom_current_factor;
 
+      bool        m_benable_autopan;
 
 DECLARE_EVENT_TABLE()
 };
