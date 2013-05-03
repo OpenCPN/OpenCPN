@@ -129,7 +129,8 @@ void ChartStack::AddChart( int db_add )
         nEntry = j;
         SetDBIndex(j-1, db_index);
     }
-             //    Remove exact duplicates, i.e. charts that have exactly the same file name and mod time
+             //    Remove exact duplicates, i.e. charts that have exactly the same file name and 
+            //     nearly the same mod time.
             //    These charts can be in the database due to having the exact same chart in different directories,
             //    as may be desired for some grouping schemes
             //    Note that if the target name is actually a directory, then windows fails to produce a valid
@@ -146,7 +147,7 @@ void ChartStack::AddChart( int db_add )
                         {
                             ChartTableEntry *pn = ChartData->GetpChartTableEntry(GetDBIndex(jd));
                             if( pm->GetFileTime() && pn->GetFileTime()) {
-                                if(pm->GetFileTime() == pn->GetFileTime()) {      // simple test
+                                if( abs(pm->GetFileTime() - pn->GetFileTime()) < 60 ) {           // simple test
                                     if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
                                         SetDBIndex(jd, -1);           // mark to remove
                                 }
@@ -469,7 +470,7 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
       cstk->nEntry = j;
 
 
-//    Remove exact duplicates, i.e. charts that have exactly the same file name and mod time
+//    Remove exact duplicates, i.e. charts that have exactly the same file name and nearly the same mod time
 //    These charts can be in the database due to having the exact same chart in different directories,
 //    as may be desired for some grouping schemes
 //    Note that if the target name is actually a directory, then windows fails to produce a valid
@@ -486,10 +487,10 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
                         {
                               ChartTableEntry *pn = GetpChartTableEntry(cstk->GetDBIndex(jd));
                               if( pm->GetFileTime() && pn->GetFileTime()) {
-                                if(pm->GetFileTime() == pn->GetFileTime()) {      // simple test
-                                    if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
-                                          cstk->SetDBIndex(jd, -1);           // mark to remove
-                                }
+                                    if( abs(pm->GetFileTime() - pn->GetFileTime()) < 60 ) {           // simple test
+                                        if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
+                                           cstk->SetDBIndex(jd, -1);           // mark to remove
+                                    }
                               }
                         }
                   }

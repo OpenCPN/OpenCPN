@@ -929,7 +929,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
                     if( !b_exists ) {
                         //      Check to be sure that this chart has not already been added
-                        //    i.e. charts that have exactly the same file name and mod time
+                        //    i.e. charts that have exactly the same file name and nearly the same mod time
                         //    These charts can be in the database due to having the exact same chart in different directories,
                         //    as may be desired for some grouping schemes
                         bool b_noadd = false;
@@ -938,7 +938,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                             if( m_extended_stack_array.Item( id ) != -1 ) {
                                 ChartTableEntry *pm = ChartData->GetpChartTableEntry( m_extended_stack_array.Item( id ) );
                                 if( pm->GetFileTime() && pn->GetFileTime()) {
-                                    if( pm->GetFileTime() == pn->GetFileTime() ) {           // simple test
+                                    if( abs(pm->GetFileTime() - pn->GetFileTime()) < 60 ) {           // simple test
                                         if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) )
                                             b_noadd = true;
                                     }
