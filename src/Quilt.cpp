@@ -1427,8 +1427,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
         }
         
     if(b_stop_ap) {
-        cc1->EnableAutoPan(true);
         cc1->EnableAutoPan(false);
+        cc1->EnableAutoPan(true);
     }
         
     //    Build and maintain the array of indexes in this quilt
