@@ -909,7 +909,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                     }
                     
                     //  Allow S57 charts that are near normal zoom, no matter what their fractional area coverage
-                    if( zoom_factor > 0.5)
+                    if( zoom_factor > 0.1)
                         b_add = true;
                 }
 
