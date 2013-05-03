@@ -263,10 +263,6 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
         pConf->Read ( _T ( "GRIBDirectory" ), &m_grib_dir, spath.GetDocumentsDir()  );
     }
 
-#if !wxCHECK_VERSION(2,9,4) /* to work with wx 2.8 */
-#define SetBitmap SetLabel
-#endif
-
     m_bpPrev->SetBitmap(wxBitmap( prev ));
     m_bpNext->SetBitmap(wxBitmap( next ));
     m_bpNow->SetBitmap(wxBitmap( now ));
