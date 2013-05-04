@@ -464,47 +464,150 @@ GribPreferencesDialogBase::~GribPreferencesDialogBase()
 {
 }
 
-GribPofileDisplayBase::GribPofileDisplayBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
-{
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	
-	wxFlexGridSizer* fgSizer8;
-	fgSizer8 = new wxFlexGridSizer( 0, 2, 0, 0 );
-	fgSizer8->SetFlexibleDirection( wxBOTH );
-	fgSizer8->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	m_staticText10 = new wxStaticText( this, wxID_ANY, _("Model"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText10->Wrap( -1 );
-	fgSizer8->Add( m_staticText10, 0, wxALL, 5 );
-	
-	m_stProfile = new wxStaticText( this, wxID_ANY, _("MyLabel"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_stProfile->Wrap( -1 );
-	fgSizer8->Add( m_stProfile, 0, wxALL, 5 );
-	
-	m_bSend = new wxButton( this, wxID_ANY, _("Send"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer8->Add( m_bSend, 0, wxALL, 5 );
-	
-	m_sdbSizer3 = new wxStdDialogButtonSizer();
-	m_sdbSizer3Cancel = new wxButton( this, wxID_CANCEL );
-	m_sdbSizer3->AddButton( m_sdbSizer3Cancel );
-	m_sdbSizer3->Realize();
-	
-	fgSizer8->Add( m_sdbSizer3, 1, wxEXPAND, 5 );
-	
-	
-	this->SetSizer( fgSizer8 );
-	this->Layout();
-	fgSizer8->Fit( this );
-	
-	this->Centre( wxBOTH );
-	
-	// Connect Events
-	m_bSend->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribPofileDisplayBase::OnSend ), NULL, this );
-}
 
-GribPofileDisplayBase::~GribPofileDisplayBase()
+//-------------------------------------------------------------------------------------------------------
+//Request Preferences Dialog implementation
+//---------------------------------------------------------------------------------------------------------
+GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
+    const wxString& title, const wxPoint& pos, const wxSize& size, long style) 
+    : wxDialog( parent, id, title, pos, size, style)
+{
+    int border_size = 5;
+
+    wxBoxSizer* bsRequest1 = new wxBoxSizer(wxVERTICAL);
+    this->SetSizer(bsRequest1);
+
+     // head request Setting
+    wxStaticBoxSizer* sbsRequest1;
+	sbsRequest1 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Profil") ), wxVERTICAL );
+	bsRequest1->Add( sbsRequest1, 0, wxGROW|wxALL, border_size );
+
+    wxFlexGridSizer *m_pTopSizer = new wxFlexGridSizer(4);
+    sbsRequest1->Add( m_pTopSizer, 0, wxALL | wxEXPAND, border_size );
+
+    wxStaticText* m_mailto_text = new wxStaticText( this, wxID_ANY, _("Mail To "), wxDefaultPosition, wxSize(-1, -1) );
+    m_pTopSizer->Add( m_mailto_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
+
+    const wxString dest[] = { _T("Saildocs") };
+    m_pMailTo = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 1, dest, wxALIGN_LEFT );
+    m_pTopSizer->Add( m_pMailTo, 0, wxTOP, border_size );
+    m_pMailTo->SetSelection( 0 );
+
+    m_pTopSizer->Add( 0, 0, 0, 0 );
+    m_pTopSizer->Add( 0, 0, 0, 0 );
+
+    wxStaticText* m_model_text = new wxStaticText( this, wxID_ANY, _("Forecast Model "), wxDefaultPosition, wxSize(-1, -1) );
+    m_pTopSizer->Add( m_model_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
+
+    const wxString model[] = { wxT("NOAA_GFS"), wxT("NOAA_COAMPS") ,wxT("NOAA_RTOFS") };
+    m_pModel = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 3, model, wxALIGN_LEFT );
+    m_pTopSizer->Add( m_pModel, 0, wxTOP, border_size );
+  
+    wxStaticText* m_Resolution_text = new wxStaticText( this, wxID_ANY, _("Resolution"), wxDefaultPosition, wxSize(-1, -1) );
+    m_pTopSizer->Add( m_Resolution_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
+
+    m_pResolution = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 4, resolution0, wxALIGN_LEFT );
+ 
+    m_pTopSizer->Add( m_pResolution , 0, wxTOP, border_size );
+
+    wxStaticText* m_Interval_text = new wxStaticText( this, wxID_ANY, _("Interval"), wxDefaultPosition, wxSize(-1, -1) );
+    m_pTopSizer->Add( m_Interval_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
+
+    const wxString interval[] = { _("3 h"), _("6 h"), _("12 h") };
+    m_pInterval = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 3, interval, wxALIGN_LEFT );
+    m_pTopSizer->Add( m_pInterval, 0, wxTOP, border_size );
+
+    wxStaticText* m_Range_text = new wxStaticText( this, wxID_ANY, _T("Time Range"), wxDefaultPosition, wxSize(-1, -1) );
+    m_pTopSizer->Add( m_Range_text, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
+
+    const wxString range[] = { _("4 days"), _("6 days"), _("8 days") };
+    m_pTimeRange = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 3, range, wxALIGN_LEFT );
+    m_pTopSizer->Add( m_pTimeRange, 0, wxTOP, border_size );
+  
+    // data request Setting
+    wxStaticBoxSizer* sbsRequest2;
+	sbsRequest2 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Data available in the selected forecast model") ), wxVERTICAL );
+	bsRequest1->Add( sbsRequest2, 0, wxGROW|wxALL, border_size );
+
+    wxFlexGridSizer *pTopSizer2 = new wxFlexGridSizer( 2 );
+    sbsRequest2->Add( pTopSizer2, 0, wxALL | wxEXPAND, border_size );
+
+    m_pWind = new wxCheckBox( this, -1, _("Wind"));
+    pTopSizer2->Add( m_pWind, 1, wxALIGN_LEFT|wxALL, border_size );
+
+    m_pPress = new wxCheckBox( this, -1, _("Pressure"));
+    pTopSizer2->Add( m_pPress, 1, wxALIGN_LEFT|wxALL, border_size );
+  
+    m_pWaves = new wxCheckBox( this, -1, _("Waves"));
+    pTopSizer2->Add( m_pWaves, 1, wxALIGN_LEFT|wxALL, border_size );
+    
+    m_pRainfall = new wxCheckBox( this, -1, _("Rainfall"));
+    pTopSizer2->Add( m_pRainfall, 1, wxALIGN_LEFT|wxALL, border_size );
+   
+    m_pCloudCover = new wxCheckBox( this, -1, _("Clouds Cover"));
+    pTopSizer2->Add( m_pCloudCover, 1, wxALIGN_LEFT|wxALL, border_size );
+    
+    m_pAirTemp = new wxCheckBox( this, -1, _("Air Temperature(2m)"));
+    pTopSizer2->Add( m_pAirTemp, 1, wxALIGN_LEFT|wxALL, border_size );
+    
+    m_pSeaTemp = new wxCheckBox( this, -1, _("Sea Temperature(surf.)"));
+    pTopSizer2->Add( m_pSeaTemp, 1, wxALIGN_LEFT|wxALL, border_size );
+
+    m_pCurrent = new wxCheckBox( this, -1, _("Current(Surf.)"));
+    pTopSizer2->Add( m_pCurrent, 1, wxALIGN_LEFT|wxALL, border_size );
+   
+    wxStaticBoxSizer* sbsRequest3;
+	sbsRequest3 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, wxT("Mail") ), wxVERTICAL );
+	bsRequest1->Add( sbsRequest3, 0, wxGROW|wxALL, border_size );
+
+    m_MailImage = new wxStaticText( this, wxID_ANY, _(""), wxDefaultPosition, wxSize(-1, -1) );
+    sbsRequest3->Add( m_MailImage, 0, wxALIGN_LEFT | wxALL | wxALIGN_CENTER_VERTICAL | wxEXPAND, border_size );
+
+    wxStdDialogButtonSizer* DialogButtonSizer = new wxStdDialogButtonSizer();
+    m_bSave = new wxButton( this, wxID_ANY, _("Save") );
+    DialogButtonSizer->SetNegativeButton( m_bSave );
+    m_bSend = new wxButton( this, wxID_ANY, _("Send") );
+    DialogButtonSizer->SetAffirmativeButton( m_bSend );
+    wxButton *m_Cancel = new wxButton( this, wxID_CANCEL );
+    DialogButtonSizer->AddButton( m_Cancel );
+    DialogButtonSizer->Realize();
+
+    bsRequest1->Add(DialogButtonSizer, 0, wxALIGN_RIGHT|wxALL, border_size);
+
+    Fit();
+
+    // Connect Events
+    m_pModel->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(GribRequestSettingBase::OnModelChange), NULL, this );
+    m_pResolution->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pInterval->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pTimeRange->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pWind->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pPress->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pWaves->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pRainfall->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pCloudCover->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pAirTemp->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pSeaTemp->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pCurrent->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_bSend->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this );
+    m_bSave->Connect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnSaveRequest), NULL, this );
+ }
+
+GribRequestSettingBase::~GribRequestSettingBase()
 {
 	// Disconnect Events
-	m_bSend->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribPofileDisplayBase::OnSend ), NULL, this );
-	
+	m_pModel->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(GribRequestSettingBase::OnModelChange), NULL, this );
+	m_pResolution->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pInterval->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pTimeRange->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pWind->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pPress->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pWaves->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pRainfall->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pCloudCover->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pAirTemp->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pSeaTemp->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_pCurrent->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnAnyChange), NULL, this );
+    m_bSend->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnSendMaiL), NULL, this );
+    m_bSave->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(GribRequestSettingBase::OnSaveRequest), NULL, this );
 }

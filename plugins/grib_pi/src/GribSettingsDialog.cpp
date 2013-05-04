@@ -36,10 +36,10 @@ static const wxString units5_names[] = {_("Percentage"), wxEmptyString};
 static const wxString *unit_names[] = {units0_names, units1_names, units2_names,
                                        units3_names, units4_names, units5_names};
 
-static const wxString name_from_index[] = {_T("Wind"), _T("WindGust"), _T("Pressure"),
-                                           _T("Wave"), _T("Current"),
-                                           _T("Precipitation"), _T("CloudCover"),
-                                           _T("AirTemperature"), _T("SeaTemperature")};
+static const wxString name_from_index[] = {_("Wind"), _("WindGust"), _("Pressure"),
+                                           _("Wave"), _("Current"),
+                                           _("Precipitation"), _("CloudCover"),
+                                           _("AirTemperature"), _("SeaTemperature")};
 static const wxString tname_from_index[] = {_("Wind"), _("Wind Gust"),  _("Pressure"),
                                             _("Wave"), _("Current"),
                                             _("Precipitation"), _("Cloud Cover"),
