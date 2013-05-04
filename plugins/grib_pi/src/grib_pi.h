@@ -94,11 +94,9 @@ public:
 
       void OnGribDialogClose();
 
-      void SetGRIBDataConfig ( wxString conf ){ m_grib_DataConfig = conf; }
-      void SetMailRequestConfig ( wxString conf ){ m_grib_RequestConfig = conf; }
-
-      wxString GetGRIBDataConfig(){ return m_grib_DataConfig; }
-      wxString GetMailRequestConfig(){ return m_grib_RequestConfig; }
+      void SetRequestConfig ( wxString conf ){ m_RequestConfig = conf; }
+      wxString GetRequestConfig(){ return m_RequestConfig; }
+      wxString GetMailAdresse(){ return m_bMailAdresse; }
 
       int  GetTimeZone() { return m_bTimeZone; }
       bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
@@ -136,9 +134,7 @@ private:
       bool             m_bCopyFirstCumRec;
       bool             m_bCopyMissWaveRec;
 
-      wxString         m_grib_DataConfig;
-      wxString         m_grib_RequestConfig;
-
+      wxString         m_RequestConfig;
       wxString         m_bMailAdresse;
       
       bool             m_bGRIBShowIcon;

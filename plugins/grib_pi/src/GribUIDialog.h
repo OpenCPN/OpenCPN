@@ -127,8 +127,6 @@ private:
     void OnTimeline( wxScrollEvent& event );
     void OnCBAny( wxCommandEvent& event );
 
-    void ShowSendRequest( wxString r_zone );
-
     //    Data
     wxWindow *pParent;
     grib_pi *pPlugIn;
@@ -184,18 +182,23 @@ private:
     int m_nGribRecords;
 };
 
-class GribPofileDisplay : public GribPofileDisplayBase
+class GribRequestSetting : public GribRequestSettingBase
 {
 public:
-      GribPofileDisplay( wxWindow *parent, wxString profile )
-          : GribPofileDisplayBase(parent)
-    {    m_stProfile->SetLabel( profile ); }
+      GribRequestSetting( wxWindow *parent, wxString config, wxString zone, wxString adress )
+          : GribRequestSettingBase(parent)
+      {m_RequestConfigBase = config; m_RequestZoneBase = zone; m_MailAdressBase = adress; InitRequestConfig();}
 
-      ~GribPofileDisplay() {}
+      ~GribRequestSetting() {}
       
 private:
-      void OnSend(wxCommandEvent &event) { EndModal( wxID_OK ); }
-      void OnModify(wxCommandEvent &event) { EndModal( wxID_SAVE ); }
+      void InitRequestConfig();
+      void ApplyRequestConfig( int sel1, int sel2 );
+      wxString WriteMail();
+
+      void OnModelChange(wxCommandEvent &event);
+      void OnAnyChange( wxCommandEvent& event );
+      void OnSendMaiL( wxCommandEvent& event );
 };
 
 

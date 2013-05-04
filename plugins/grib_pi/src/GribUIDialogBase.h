@@ -44,6 +44,9 @@
 #define ID_CB_PRESSURE 1005
 #define ID_CB_SEA_TEMPERATURE 1006
 
+const wxString resolution0[] = { _("0.5 Deg"), _("1.0 Deg"), _("1.5 Deg"), _("2.0 Deg") };
+const wxString resolution1[] = { _("0.2 Deg"), _("0.6 Deg"), _("1.2 Deg"), _("2.0 Deg") };
+
 ///////////////////////////////////////////////////////////////////////////////
 /// Class GRIBUIDialogBase
 ///////////////////////////////////////////////////////////////////////////////
@@ -188,28 +191,44 @@ class GribPreferencesDialogBase : public wxDialog
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-/// Class GribPofileDisplayBase
+/// Class GribRequestSettingBas
 ///////////////////////////////////////////////////////////////////////////////
-class GribPofileDisplayBase : public wxDialog 
+class GribRequestSettingBase : public wxDialog 
 {
-	private:
-	
-	protected:
-		wxStaticText* m_staticText10;
-		wxStaticText* m_stProfile;
-		wxButton* m_bSend;
-		wxStdDialogButtonSizer* m_sdbSizer3;
-		wxButton* m_sdbSizer3Cancel;
-		
-		// Virtual event handlers, overide them in your derived class
-		virtual void OnSend( wxCommandEvent& event ) { event.Skip(); }
-		
-	
-	public:
-		
-		GribPofileDisplayBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Request Pofile"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
-		~GribPofileDisplayBase();
-	
+    private:
+        void OnSaveRequest( wxCommandEvent& event ) { EndModal( wxID_SAVE ); }
+    protected:
+        virtual void OnModelChange( wxCommandEvent& event ) { event.Skip(); }
+        virtual void OnAnyChange( wxCommandEvent& event ) { event.Skip(); }
+        virtual void OnSendMaiL( wxCommandEvent& event ) { event.Skip(); }
+    public:
+        wxString m_RequestConfigBase;
+        wxString m_MailAdressBase;
+        wxString m_RequestZoneBase;
+        wxChoice *m_pMailTo;
+        wxChoice *m_pModel;
+        wxChoice *m_pResolution;
+        wxChoice *m_pInterval;
+        wxChoice *m_pTimeRange;
+
+        wxStaticText* m_MailImage;
+
+        wxCheckBox *m_pWind;
+        wxCheckBox *m_pPress;
+        wxCheckBox *m_pWaves;
+        wxCheckBox *m_pRainfall;
+        wxCheckBox *m_pCloudCover;
+        wxCheckBox *m_pAirTemp;
+        wxCheckBox *m_pSeaTemp;
+        wxCheckBox *m_pCurrent;
+
+        wxButton   *m_bSend;
+        wxButton   *m_bSave;
+
+        GribRequestSettingBase( wxWindow *parent, wxWindowID id = wxID_ANY, const wxString& title = _("Write and Send GRIB Request eMails"),
+            const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE);
+        ~GribRequestSettingBase();
+
 };
 
 #endif //__GRIBUIDIALOGBASE_H__

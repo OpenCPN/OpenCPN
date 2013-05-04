@@ -431,14 +431,13 @@ bool grib_pi::LoadConfig(void)
     pConf->Read ( _T( "GRIBTimeZone" ), &m_bTimeZone, 1 );
     pConf->Read ( _T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1 );
     pConf->Read ( _T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1 );
-    pConf->Read ( _T( "GRIBdataConfig" ), &m_grib_DataConfig, _T( "0XXXXXXXXXX" ) );
-    pConf->Read ( _T( "MailRequestConfig" ), &m_grib_RequestConfig, _T( "00220XX....." ) );
+    pConf->Read ( _T( "MailRequestConfig" ), &m_RequestConfig, _T( "000220XX......" ) );
     pConf->Read ( _T( "MailRequestAdesse" ), &m_bMailAdresse, _T("query@saildocs.com") );
 
 
     //if GriDataConfig has been corrupted , take the standard one to fix a crash
-    if( m_grib_DataConfig.Len() != wxString (_T( "0XXXXXXXXXX" ) ).Len() )
-        m_grib_DataConfig = _T( "0XXXXXXXXXX" );
+    if( m_RequestConfig.Len() != wxString (_T( "000220XX......" ) ).Len() )
+        m_RequestConfig = _T( "000220XX......" );
 
     m_grib_dialog_sx = pConf->Read ( _T ( "GRIBDialogSizeX" ), 300L );
     m_grib_dialog_sy = pConf->Read ( _T ( "GRIBDialogSizeY" ), 540L );
@@ -463,8 +462,7 @@ bool grib_pi::SaveConfig(void)
     pConf->Write ( _T ( "GRIBTimeZone" ), m_bTimeZone );
     pConf->Write ( _T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec );
     pConf->Write ( _T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec );
-    pConf->Write ( _T ( "GRIBdataConfig" ), m_grib_DataConfig );
-    pConf->Write ( _T ( "MailRequestConfig" ), m_grib_RequestConfig );
+    pConf->Write ( _T ( "MailRequestConfig" ), m_RequestConfig );
     pConf->Write ( _T( "MailRequestAdesse" ), m_bMailAdresse );
 
 
