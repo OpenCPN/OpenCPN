@@ -1227,7 +1227,7 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
             _("Your request is ready. An eMail is prepared in your eMail environment. \nYou have just to click 'send' to send it...\nSave or Cancel to finish...or new parameters for a new eMail ...") );
 #else
         m_MailImage->SetLabel(
-            _("Your request was sent \n(if your system has an MTA configured and is able to send eMail).\nSave or Cancel to finish...or new parameters for a new eMail ...");
+            _("Your request was sent \n(if your system has an MTA configured and is able to send eMail).\nSave or Cancel to finish...or new parameters for a new eMail ..."));
 #endif
     } else {
         m_MailImage->SetLabel(
