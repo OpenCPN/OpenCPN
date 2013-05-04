@@ -110,15 +110,13 @@ void wxMapiSession::Initialise()
                 m_data->m_lpfnMAPIResolveName == NULL ||
                 m_data->m_lpfnMAPIFreeBuffer == NULL)
             {
-                wxLogDebug(_T("Failed to get one of the functions pointer in MAPI32.DLL\n"));
+                wxLogMessage(_T("MAIL Error: Failed to get one of the functions pointer in MAPI32.DLL\n"));
                 Deinitialise();
             }
         }
     }
     else {
-        //wxLogDebug(_T("Mapi is not installed on this computer\n"));
-        wxMessageDialog *m = new wxMessageDialog( NULL, _("Mapi is not installed or invalid on this computer"), _("Error"), wxOK );
-        m->ShowModal();
+        wxLogMessage(_("MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"));
     }
 }
 
@@ -194,7 +192,7 @@ bool wxMapiSession::Logon(const wxString& sProfileName, const wxString& sPasswor
     if (nError != SUCCESS_SUCCESS && nError != MAPI_E_USER_ABORT)
     {
         //Failed to create a create mapi session, try to acquire a shared mapi session
-        wxLogDebug(_T("Failed to logon to MAPI using a new session, trying to acquire a shared one\n"));
+        //wxLogDebug(_T("Failed to logon to MAPI using a new session, trying to acquire a shared one\n"));
         nError = m_data->m_lpfnMAPILogon(nUIParam, NULL, NULL, 0, 0, &m_data->m_hSession);
         if (nError == SUCCESS_SUCCESS)
         {
@@ -203,10 +201,7 @@ bool wxMapiSession::Logon(const wxString& sProfileName, const wxString& sPasswor
         }
         else
         {
-            wxMessageDialog *m = new wxMessageDialog( NULL, _("OpenCpn failed to logon! Please verify your eMail environment"),
-                _("eMail error"), wxOK );
-            m->ShowModal();
-            //wxLogDebug(_T("Failed to logon to MAPI using a shared session, Error:%ld\n"), nError);
+            wxLogMessage(_T("MAIL Error: Failed to logon to MAPI using a shared session, Error:%ld\n"), nError);
             m_data->m_nLastError = nError;
         }
     }
@@ -215,6 +210,8 @@ bool wxMapiSession::Logon(const wxString& sProfileName, const wxString& sPasswor
         m_data->m_nLastError = SUCCESS_SUCCESS;
         bSuccess = TRUE;
     }
+
+    if(bSuccess) 
     
     return bSuccess;
 }
@@ -243,7 +240,7 @@ bool wxMapiSession::Logoff()
         ULONG nError = m_data->m_lpfnMAPILogoff(m_data->m_hSession, 0, 0, 0); 
         if (nError != SUCCESS_SUCCESS)
         {
-            wxLogDebug(_T("Failed in call to MapiLogoff, Error:%ld"), nError);
+            wxLogMessage(_T("MAIL Error: Failed in call to MapiLogoff, Error:%ld"), nError);
             m_data->m_nLastError = nError;
             bSuccess = TRUE;
         }
@@ -278,7 +275,7 @@ bool wxMapiSession::Resolve(const wxString& sName, void* lppRecip1)
     ULONG nError = m_data->m_lpfnMAPIResolveName(m_data->m_hSession, 0, lpszAsciiName, 0, 0, lppRecip);
     if (nError != SUCCESS_SUCCESS)
     {
-        wxLogDebug(_T("Failed to resolve the name: %s, Error:%ld\n"),
+        wxLogMessage(_T("MAIL Error: Failed to resolve the name: %s, Error:%ld\n"),
                    sName.c_str(), nError);
         m_data->m_nLastError = nError;
     }
@@ -466,9 +463,7 @@ bool wxMapiSession::Send(wxMailMessage& message)
     }
     else
     {
-        wxMessageDialog *m = new wxMessageDialog( NULL, _("Failed to send mail message"), _("eMail error"), wxOK );
-        m->ShowModal();
-        //wxLogDebug(_T("Failed to send mail message, Error:%ld\n"), nError);
+        wxLogMessage(_T("MAIL Error: Failed to send mail message, Error:%ld\n"), nError);
         m_data->m_nLastError = nError;
     }
     

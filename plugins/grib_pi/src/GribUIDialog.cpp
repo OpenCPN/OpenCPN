@@ -631,125 +631,32 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
         toSAILDOC( 1, 2, m_vp->lat_min ) + wxT(",") +
         toSAILDOC( 2, 2, lonmin ) + wxT(",") +
         toSAILDOC( 2, 1, lonmax ) );
-    ShowSendRequest( zone );
-}
 
-void GRIBUIDialog::ShowSendRequest( wxString r_zone )
-{
-    wxString config = pPlugIn->GetMailRequestConfig();
-    wxString r_action = wxT("send");
-    wxString r_model,r_resolution,r_interval,r_period,r_parameters;
-    if( config.GetChar( 1 ) == '0' ) {                          //GFS
-        r_model = wxT("GFS:");
-        if( config.GetChar( 2 ) == '0' )
-            r_resolution = wxT("0.5,0.5");
-        else if( config.GetChar( 2 ) == '1' )
-            r_resolution = wxT("1.0,1.0");
-        else if( config.GetChar( 2 ) == '2' )
-            r_resolution = wxT("1.5,1.5");
-        else if( config.GetChar( 2 ) == '3' )
-            r_resolution = wxT("2.0,2.0");
-        r_parameters = wxT("WIND,PRESS");
-        if( config.GetChar( 7 ) == 'X' )
-            r_parameters.Append( wxT(",WAVES") );
-        if( config.GetChar( 8 ) == 'X' )
-            r_parameters.Append( wxT(",APCP") );
-        if( config.GetChar( 9 ) == 'X' )
-            r_parameters.Append( wxT(",TCDC") );
-        if( config.GetChar( 10 ) == 'X' )
-            r_parameters.Append( wxT(",AIRTMP") );
-        if( config.GetChar( 11 ) == 'X' )
-            r_parameters.Append( wxT(",SEATMP") );
-    } else if( config.GetChar( 1 ) == '1' ) {                   //COAMPS
-        r_model = wxT("COAMPS:");
-        if( config.GetChar( 2 ) == '0' )
-            r_resolution = wxT("0.2,0.2");
-        else if( config.GetChar( 2 ) == '1' )
-            r_resolution = wxT("0.6,0.6");
-        else if( config.GetChar( 2 ) == '2' )
-            r_resolution = wxT("1.2,1.2");
-        else if( config.GetChar( 2 ) == '3' )
-            r_resolution = wxT("2.0,2.0");
-        r_parameters = wxT("WIND,PRMSL");
-    } else if( config.GetChar( 1 ) == '2' ) {                   //RTOFS
-        r_model = wxT("RTOFS:");
-        r_resolution = wxT("0.5,0.5");
-        r_parameters = wxT("CUR,WTMP");
-    }
-    if( config.GetChar( 3 ) == '0' )                            //ALL
-        r_interval = wxT("0,3,6");
-    else if( config.GetChar( 3 ) == '1' )
-        r_interval = wxT("0,6,12");
-    else if( config.GetChar( 3 ) == '2' )
-        r_interval = wxT("0,12,24");
-    if( config.GetChar( 4 ) == '0' ) 
-        r_period = wxT("..96");
-    else if( config.GetChar( 4 ) == '1' ) 
-        r_period = wxT("..144");
-    else if( config.GetChar( 4 ) == '2' ) 
-        r_period = wxT("..192");
-
-    wxString r_separator = wxT("|");
-    wxString r_return = wxT("|=\n");
-    wxString r_colon = wxT(": ");
-
-    //display request profile
-    wxString r_info,i;
-    double v;
-    r_info.Append( _("eMail To") + r_colon );
-    r_info.Append( pPlugIn->GetSaildocAdresse() );
-    r_info.Append( wxT("\n") );
-    r_info.Append( _("Action") + r_colon );
-    r_info.Append( _("Send") );
-    r_info.Append( wxT("\n") );
-    r_info.Append( _("Model") + r_colon );
-    r_info.Append( r_model );
-    r_info.Append( wxT("\n") );
-    r_info.Append( _("Zone") + r_colon );
-    r_info.Append( r_zone );
-    r_info.Append( wxT("\n") );
-    r_info.Append( _("Resolution") + r_colon );
-    r_info.Append( r_resolution.BeforeFirst( ',' ) + _(" Deg") );
-    r_info.Append( wxT("\n") );
-    r_info.Append( _("Interval") + r_colon );
-    i = r_interval.AfterFirst( ',' );
-    r_info.Append( i.BeforeLast( ',' ) + _T(" h") );
-    r_info.Append( wxT("\n") );
-    r_info.Append( _("Period") + r_colon );
-    r_period.AfterLast( '.' ).ToDouble( &v );
-    i.Printf( _T("%.0f " ), v/24. );
-    r_info.Append( i );
-    r_info.Append( _("Days") );
-    r_info.Append( wxT("\n") );
-    r_info.Append( _("Parameters") + r_colon );
-    r_info.Append( r_parameters );
+    GribRequestSetting *req_Dialog = new GribRequestSetting( this, pPlugIn->GetRequestConfig(), zone, pPlugIn->GetMailAdresse() );
     
-     GribPofileDisplay *r_dialog = new GribPofileDisplay(this, r_info );
-     r_dialog->Fit();
-     int choice = r_dialog->ShowModal();
-        if( choice == wxID_OK ) {               //print and send request mail
+    if( req_Dialog->ShowModal() == wxID_SAVE ) {
+        req_Dialog->m_RequestConfigBase.SetChar( 2, (char) ( req_Dialog->m_pModel->GetCurrentSelection() + '0' ) );
+        if( req_Dialog->m_pModel->GetCurrentSelection() == 0 ) {
+            req_Dialog->m_RequestConfigBase.SetChar( 3, (char) ( req_Dialog->m_pResolution->GetCurrentSelection() + '0' ) );
+            req_Dialog->m_pWaves->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 8, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 8, '.' );
+            req_Dialog->m_pRainfall->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 9, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 9, '.' );
+            req_Dialog->m_pCloudCover->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 10, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 10, '.' );
+            req_Dialog->m_pAirTemp->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 11, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 11, '.' );
+            req_Dialog->m_pSeaTemp->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 12, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 12, '.' );
+            req_Dialog->m_pCurrent->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 13, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 13, '.' );
+        } else if( req_Dialog->m_pModel->GetCurrentSelection() == 1 ) 
+            req_Dialog->m_RequestConfigBase.SetChar( 3, (char) ( req_Dialog->m_pResolution->GetCurrentSelection() + '0' ) );
 
-            wxMailMessage *message = new wxMailMessage( 
-            wxT("Grib-Request"),
-            pPlugIn->GetSaildocAdresse(),       //to ( saildoc request adresse )
-            wxT("send ") + r_model + r_zone + r_separator + r_resolution
-            + r_separator + r_interval + r_period + r_return + r_parameters,                    //message
-            wxT("")
-            );
-            wxEmail mail ;
-            if(mail.Send( *message ) ) {
-                wxMessageDialog *dialog = new wxMessageDialog(this,
-#ifdef __WXMSW__
-                    _("Your request is ready. An eMail is prepared in your eMail environment.\nYou have just to click 'send' to send it.\nOK to continue ...")
-#else
-                    _("Your request was sent (if your system has an MTA configured and is able to send mail).\nOK to continue ...")
-#endif
-                    ,_("eMail"),wxOK );
-                dialog->ShowModal();
-            }
-        }
+        req_Dialog->m_RequestConfigBase.SetChar( 6, 'X' );              //must be always selected
+        req_Dialog->m_RequestConfigBase.SetChar( 7, 'X' );
 
-        r_dialog->Destroy();
+        req_Dialog->m_RequestConfigBase.SetChar( 4, (char) ( req_Dialog->m_pInterval->GetCurrentSelection() + '0' ) );
+        req_Dialog->m_RequestConfigBase.SetChar( 5, (char) ( req_Dialog->m_pTimeRange->GetCurrentSelection() + '0' ) );
+
+        pPlugIn->SetRequestConfig( req_Dialog->m_RequestConfigBase );
+    }
+
+    req_Dialog->Destroy();
 }
 
 void GRIBUIDialog::OnSettings( wxCommandEvent& event )
@@ -1143,4 +1050,189 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
 GRIBFile::~GRIBFile()
 {
     delete m_pGribReader;
+}
+
+void GribRequestSetting::InitRequestConfig()
+{
+    long i,j;
+    ( (wxString) m_RequestConfigBase.GetChar(2) ).ToLong( &i );
+    ( (wxString) m_RequestConfigBase.GetChar(3) ).ToLong( &j );
+
+    ApplyRequestConfig( i, j );
+   
+    ( (wxString) m_RequestConfigBase.GetChar(4) ).ToLong( &j );
+    m_pInterval->SetSelection( j );
+
+    ( (wxString) m_RequestConfigBase.GetChar(5) ).ToLong( &j );
+    m_pTimeRange->SetSelection( j );
+
+    m_pWind->Enable( false );
+    m_pPress->Enable( false );
+
+    m_MailImage->SetLabel( WriteMail() );
+    Fit();
+
+}
+
+void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
+{
+    long j;
+    m_pModel->SetSelection( sel1 );
+    switch( sel1 ) {
+    case 0:
+        for( int i = 0; i<4; i++ ){
+            m_pResolution->SetString(i,resolution0[i]);
+        }
+        ( (wxString) m_RequestConfigBase.GetChar(3) ).ToLong( &j );
+        m_pResolution->SetSelection( j );
+        m_pResolution->Enable( true );
+
+        m_pWind->SetValue( true );
+        m_pPress->SetValue( true );
+
+        m_pWaves->SetValue( m_RequestConfigBase.GetChar(8) == 'X' );
+        m_pWaves->Enable( true );
+        m_pRainfall->SetValue( m_RequestConfigBase.GetChar(9) == 'X' );
+        m_pRainfall->Enable( true );
+        m_pCloudCover->SetValue( m_RequestConfigBase.GetChar(10) == 'X' );
+        m_pCloudCover->Enable( true );
+        m_pAirTemp->SetValue( m_RequestConfigBase.GetChar(11) == 'X' );
+        m_pAirTemp->Enable( true );
+        m_pSeaTemp->SetValue( m_RequestConfigBase.GetChar(12) == 'X' );
+        m_pSeaTemp->Enable( true );
+        break;
+    case 1:
+        for( int i = 0; i<4; i++ ){
+            m_pResolution->SetString(i,resolution1[i]);
+        }
+        
+        m_pResolution->SetSelection( sel2 );
+        m_pResolution->Enable( true );
+        m_pWind->SetValue( true );                          //default parameters wind and pression
+        m_pPress->SetValue( true );
+        m_pSeaTemp->Enable(false);                       
+        break;
+    case 2 :
+        for( int i = 0; i<4; i++ ){
+            m_pResolution->SetString(i, resolution0[i]);
+        }
+       
+        m_pResolution->SetSelection( 0 );                   //default resolution ("05,05")
+        m_pResolution->Enable( false );
+        m_pWind->SetValue( false );
+        m_pPress->SetValue( false );
+        m_pSeaTemp->SetValue( true );                       //default parameters current and sea temperature
+        m_pCurrent->SetValue( true );
+        m_pCurrent->Enable( false );
+        break;
+    }
+    
+    if( sel1 != 0 ) {
+        m_pWaves->SetValue( false );
+        m_pWaves->Enable( false );
+        m_pRainfall->SetValue( false );
+        m_pRainfall->Enable( false );
+        m_pCloudCover->SetValue( false );
+        m_pCloudCover->Enable( false );
+        m_pAirTemp->SetValue( false );
+        m_pAirTemp->Enable( false );
+        m_pSeaTemp->Enable( false );
+    }
+
+    if( sel1 != 2 ) {
+        m_pCurrent->SetValue( false );
+        m_pCurrent->Enable( false );
+    }
+
+}
+
+void GribRequestSetting::OnModelChange(wxCommandEvent &event)
+{
+    ApplyRequestConfig( m_pModel->GetCurrentSelection(), m_pResolution->GetCurrentSelection() );
+
+    //permit to send a new message
+    m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));
+    m_bSend->Show();
+
+    m_MailImage->SetLabel( WriteMail() );
+    Fit();
+}
+
+void GribRequestSetting::OnAnyChange(wxCommandEvent &event)
+{
+    //permit to send a new message
+    m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));
+    m_bSend->Show();
+
+    m_MailImage->SetLabel( WriteMail() );
+    Fit();
+}
+
+wxString GribRequestSetting::WriteMail()
+{
+    //some useful strings
+    const wxString s[] = { wxT("GFS"), wxT("COAMPS"), wxT("RTOFS"),wxT("|"), wxT("|=\n"), wxT(":") };
+    const wxString r[][4] = { wxT("0.5,0.5"), wxT("1.0,1.0"), wxT("1.5,1.5"), wxT("2.0,2.0"),
+        wxT("0.2,0.2"), wxT("0.6,0.6"), wxT("1.2,1.2"), wxT("2.0,2.0") };
+    const wxString i[] = { wxT("0,3,6"), wxT("0,6,12"), wxT("0,12,24") };
+    const wxString p[] = { wxT("..96"), wxT("..144"), wxT("..192") };
+
+    wxString r_action = wxT("send"),r_parameters;
+
+    int model = m_pModel->GetCurrentSelection();
+    switch( m_pModel->GetCurrentSelection() ) {               
+    case 0:                     //GFS
+        r_parameters = wxT("WIND,PRESS");                  // the default minimum request parameters
+        if( m_pWaves->GetValue() )
+            r_parameters.Append( wxT(",WAVES") );
+        if( m_pRainfall->GetValue() )
+            r_parameters.Append( wxT(",APCP") );
+        if( m_pCloudCover->GetValue() )
+            r_parameters.Append( wxT(",TCDC") );
+        if( m_pAirTemp->GetValue() )
+            r_parameters.Append( wxT(",AIRTMP") );
+        if( m_pSeaTemp->GetValue() )
+            r_parameters.Append( wxT(",SEATMP") );
+        break;
+    case 1:                    //COAMPS
+        r_parameters = wxT("WIND,PRMSL");                                 //the default parameters for this model
+        break;
+    case 2:                    //RTOFS
+        model = 0;                                                        // same resolution range as GFS
+        r_parameters = wxT("CUR,WTMP");                                   //the default parameters for this model
+    }
+    return wxString( 
+    wxT("send ") 
+    + s[m_pModel->GetCurrentSelection()] 
+    + s[5] + m_RequestZoneBase + s[3] 
+    + r[model][m_pResolution->GetCurrentSelection()] + s[3] 
+    + i[m_pInterval->GetCurrentSelection()] 
+    + p[m_pTimeRange->GetCurrentSelection()] 
+    + s[4] + r_parameters
+    );
+}
+
+void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
+{
+    wxMailMessage *message = new wxMailMessage( 
+    wxT("Grib-Request"),
+    m_MailAdressBase,               //to ( saildoc request adresse )
+    WriteMail()                     //message
+    );
+    wxEmail mail ;
+    m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
+    if(mail.Send( *message ) ) {
+#ifdef __WXMSW__
+        m_MailImage->SetLabel(
+            _("Your request is ready. An eMail is prepared in your eMail environment. \nYou have just to click 'send' to send it...\nSave or Cancel to finish...or new parameters for a new eMail ...") );
+#else
+        m_MailImage->SetLabel(
+            _("Your request was sent \n(if your system has an MTA configured and is able to send eMail).\nSave or Cancel to finish...or new parameters for a new eMail ...");
+#endif
+    } else {
+        m_MailImage->SetLabel(
+            _("Request can't be sent. Please verify your eMail systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."));
+    }
+    m_bSend->Hide();
+    Fit();
 }
