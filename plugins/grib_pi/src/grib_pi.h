@@ -133,7 +133,7 @@ private:
       int              m_bTimeZone;
       bool             m_bCopyFirstCumRec;
       bool             m_bCopyMissWaveRec;
-
+      int              m_bLoadLastOpenFile;
       wxString         m_RequestConfig;
       wxString         m_bMailAdresse;
       
