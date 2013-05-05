@@ -31,7 +31,6 @@
 #include "ocpn_types.h"
 
 extern ColorScheme global_color_scheme;
-extern FontMgr *pFontMgr;
 extern bool g_bopengl;
 extern AISTargetAlertDialog *g_pais_alert_dialog_active;
 extern MyFrame *gFrame;
@@ -91,7 +90,7 @@ bool AISTargetAlertDialog::Create( int target_mmsi, wxWindow *parent, AIS_Decode
     m_pparent = parent;
     m_pdecoder = pdecoder;
 
-    wxFont *dFont = pFontMgr->GetFont( _("AISTargetAlert"), 12 );
+    wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetAlert"), 12 );
     int font_size = wxMax(8, dFont->GetPointSize());
     wxString face = dFont->GetFaceName();
 #ifdef __WXGTK__
@@ -164,7 +163,7 @@ void AISTargetAlertDialog::UpdateText()
         wxColor bg = GetBackgroundColour();
         m_pAlertTextCtl->SetBackgroundColour( bg );
 
-        wxFont *dFont = pFontMgr->GetFont( _("AISTargetQuery"), 12 );
+        wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery"), 12 );
         wxString face = dFont->GetFaceName();
         int sizes[7];
         for( int i = -2; i < 5; i++ ) {

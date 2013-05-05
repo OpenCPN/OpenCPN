@@ -61,7 +61,6 @@
 extern s52plib *ps52plib;
 extern bool g_b_useStencil;
 extern wxString g_csv_locn;
-extern FontMgr *pFontMgr;
 extern double g_GLMinLineWidth;
 
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space );
@@ -1617,7 +1616,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                     else
                         fontweight = wxFONTWEIGHT_BOLD;
 
-                wxFont* templateFont = pFontMgr->GetFont( _("ChartTexts"), 24 );
+                wxFont* templateFont = FontMgr::Get().GetFont( _("ChartTexts"), 24 );
 
                 // NOAA ENC fles requests font size up to 20 points, which looks very
                 // disproportioned. Let's scale those sizes down to more reasonable values.

@@ -286,8 +286,6 @@ int                       g_pNavAidRadarRingsStepUnits;
 bool                      g_bWayPointPreventDragging;
 bool                      g_bConfirmObjectDelete;
 
-FontMgr                   *pFontMgr;
-
 ColorScheme               global_color_scheme;
 int                       Usercolortable_index;
 wxArrayPtrVoid            *UserColorTableArray;
@@ -1031,9 +1029,6 @@ bool MyApp::OnInit()
     wxFont temp_font( 10, wxDEFAULT, wxNORMAL, wxNORMAL, FALSE, wxString( _T("") ),
             wxFONTENCODING_SYSTEM );
     temp_font.SetDefaultEncoding( wxFONTENCODING_SYSTEM );
-
-//  Init my private font manager
-    pFontMgr = new FontMgr();
 
 //      Establish a "home" location
     wxStandardPathsBase& std_path = wxApp::GetTraits()->GetStandardPaths();
@@ -2144,8 +2139,6 @@ int MyApp::OnExit()
     delete pInit_Chart_Dir;
     delete pWorldMapLocation;
 
-    delete pFontMgr;
-
     delete g_pRouteMan;
     delete pWayPointMan;
 
@@ -3155,7 +3148,7 @@ void MyFrame::DoSetSize( void )
         font_size = wxMax(10, font_size);             // beats me...
 #endif
 
-        wxFont* templateFont = pFontMgr->GetFont( _("StatusBar"), 12 );
+        wxFont* templateFont = FontMgr::Get().GetFont( _("StatusBar"), 12 );
         font_size += templateFont->GetPointSize() - 10;
 
         font_size = wxMin( font_size, 12 );

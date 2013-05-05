@@ -38,7 +38,6 @@ extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;
 extern int g_ais_query_dialog_y;
 extern ColorScheme global_color_scheme;
-extern FontMgr* pFontMgr;
 extern AIS_Decoder *g_pAIS;
 
 #define xID_OK 10009
@@ -101,7 +100,7 @@ bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxStri
 
     if( !wxDialog::Create( parent, id, caption, pos, size, wstyle ) ) return false;
 
-    wxFont *dFont = pFontMgr->GetFont( _("AISTargetQuery"), 12 );
+    wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery"), 12 );
     int font_size = wxMax(8, dFont->GetPointSize());
     wxString face = dFont->GetFaceName();
 #ifdef __WXGTK__
@@ -159,7 +158,7 @@ void AISTargetQueryDialog::UpdateText()
     if( m_MMSI != 0 ) { //  Faulty MMSI could be reported as 0
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
         if( td ) {
-            wxFont *dFont = pFontMgr->GetFont( _("AISTargetQuery"), 12 );
+            wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery"), 12 );
             wxString face = dFont->GetFaceName();
             int sizes[7];
             for( int i=-2; i<5; i++ ) {

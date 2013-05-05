@@ -41,7 +41,6 @@ extern Routeman *g_pRouteMan;
 extern wxRect g_blink_rect;
 extern Multiplexer *g_pMUX;
 extern MyFrame *gFrame;
-extern FontMgr *pFontMgr;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RoutePointList );
@@ -310,8 +309,8 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 
     if( m_bShowName ) {
         if( 0 == m_pMarkFont ) {
-            m_pMarkFont = pFontMgr->GetFont( _( "Marks" ) );
-            m_FontColor = pFontMgr->GetFontColor( _("Marks") );
+            m_pMarkFont = FontMgr::Get().GetFont( _( "Marks" ) );
+            m_FontColor = FontMgr::Get().GetFontColor( _("Marks") );
             CalculateNameExtents();
         }
 

@@ -81,7 +81,6 @@
 
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
-extern FontMgr          *pFontMgr;
 
 extern double           g_ChartNotRenderScaleFactor;
 extern int              g_restore_stackindex;
@@ -1713,7 +1712,7 @@ int MyConfig::LoadMyConfig( int iteration )
                 str = FontMgr::GetFontConfigKey( oldKey );
             }
 
-            pFontMgr->LoadFontNative( &str, pval );
+            FontMgr::Get().LoadFontNative( &str, pval );
 
             bCont = GetNextEntry( str, dummy );
         }
@@ -2762,11 +2761,11 @@ void MyConfig::UpdateSettings()
 
     SetPath( font_path );
 
-    int nFonts = pFontMgr->GetNumFonts();
+    int nFonts = FontMgr::Get().GetNumFonts();
 
     for( int i = 0; i < nFonts; i++ ) {
-        wxString cfstring( *pFontMgr->GetConfigString( i ) );
-        wxString valstring = pFontMgr->GetFullConfigDesc( i );
+        wxString cfstring(FontMgr::Get().GetConfigString(i));
+        wxString valstring = FontMgr::Get().GetFullConfigDesc( i );
         Write( cfstring, valstring );
     }
 

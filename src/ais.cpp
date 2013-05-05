@@ -36,7 +36,6 @@
 #include <time.h>
 
 #include "dychart.h"
-#include "FontMgr.h"
 #include "ais.h"
 #include "chart1.h"
 #include "navutil.h"        // for Select
@@ -49,7 +48,6 @@
 extern  int             s_dns_test_flag;
 extern  Select          *pSelectAIS;
 extern  double          gLat, gLon, gSog, gCog;
-extern FontMgr          *pFontMgr;
 extern ChartCanvas      *cc1;
 extern MyFrame          *gFrame;
 extern MyConfig         *pConfig;

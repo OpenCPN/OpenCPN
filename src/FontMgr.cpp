@@ -30,9 +30,19 @@
 
 extern wxString g_locale;
 
-FontMgr::FontMgr()
-{
+FontMgr * FontMgr::instance = NULL;
 
+FontMgr & FontMgr::Get()
+{
+    if (!instance)
+        instance = new FontMgr;
+    return *instance;
+}
+
+FontMgr::FontMgr()
+    : m_fontlist(NULL)
+    , pDefFont(NULL)
+{
     //    Create the list of fonts
     m_fontlist = new FontList;
     m_fontlist->DeleteContents( true );
@@ -48,7 +58,7 @@ FontMgr::~FontMgr()
     delete m_fontlist;
 }
 
-wxColour FontMgr::GetFontColor( const wxString &TextElement )
+wxColour FontMgr::GetFontColor( const wxString &TextElement ) const
 {
     //    Look thru the font list for a match
     MyFontDesc *pmfd;
@@ -198,33 +208,30 @@ bool FontMgr::SetFont(const wxString &TextElement, wxFont *pFont, wxColour color
     return false;
 }
 
-int FontMgr::GetNumFonts( void )
+int FontMgr::GetNumFonts( void ) const
 {
     return m_fontlist->GetCount();
 }
 
-wxString *FontMgr::GetConfigString( int i )
+const wxString & FontMgr::GetConfigString( int i ) const
 {
-    MyFontDesc *pfd = (MyFontDesc *) ( m_fontlist->Item( i )->GetData() );
-    wxString *ret = &pfd->m_configstring;
-    return ret;
+    MyFontDesc * pfd = (MyFontDesc *) ( m_fontlist->Item( i )->GetData() );
+    return pfd->m_configstring;
 }
 
-wxString *FontMgr::GetDialogString( int i )
+const wxString & FontMgr::GetDialogString( int i ) const
 {
     MyFontDesc *pfd = (MyFontDesc *) ( m_fontlist->Item( i )->GetData() );
-    wxString *ret = &pfd->m_dialogstring;
-    return ret;
+    return pfd->m_dialogstring;
 }
 
-wxString *FontMgr::GetNativeDesc( int i )
+const wxString & FontMgr::GetNativeDesc( int i ) const
 {
     MyFontDesc *pfd = (MyFontDesc *) ( m_fontlist->Item( i )->GetData() );
-    wxString *ret = &pfd->m_nativeInfo;
-    return ret;
+    return pfd->m_nativeInfo;
 }
 
-wxString FontMgr::GetFullConfigDesc( int i )
+wxString FontMgr::GetFullConfigDesc( int i ) const
 {
     MyFontDesc *pfd = (MyFontDesc *) ( m_fontlist->Item( i )->GetData() );
     wxString ret = pfd->m_dialogstring;

@@ -39,7 +39,6 @@
 #include "pluginmanager.h"
 #include "FontMgr.h"
 
-extern FontMgr*                   pFontMgr;
 extern ocpnFloatingToolbarDialog* g_FloatingToolbarDialog;
 extern bool                       g_bTransparentToolbar;
 extern ChartCanvas*               cc1;
@@ -688,7 +687,7 @@ void ToolTipWin::SetBitmap()
 
     wxClientDC cdc( GetParent() );
 
-    wxFont *plabelFont = pFontMgr->GetFont( _("ToolTips") );
+    wxFont *plabelFont = FontMgr::Get().GetFont( _("ToolTips") );
     cdc.GetTextExtent( m_string, &w, &h, NULL, NULL, plabelFont );
 
     m_size.x = w + 8;
