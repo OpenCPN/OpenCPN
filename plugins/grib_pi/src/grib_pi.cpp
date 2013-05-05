@@ -203,19 +203,20 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_cbUseGradualColors->SetValue(m_bGRIBUseGradualColors);
     Pref->m_cbCopyFirstCumulativeRecord->SetValue(m_bCopyFirstCumRec);
     Pref->m_cbCopyMissingWaveRecord->SetValue(m_bCopyMissWaveRec);
-    Pref->m_rbUTC->SetValue(m_bTimeZone);
+    Pref->m_rbTimeFormat->SetSelection( m_bTimeZone );
+    Pref->m_rbStartOptions->SetSelection( m_bLoadLastOpenFile );
 
     // TODO: update m_bMailAdresse
 
      if( Pref->ShowModal() == wxID_OK ) {
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
+         m_bLoadLastOpenFile= Pref->m_rbStartOptions->GetSelection();
 
          int updatelevel = 0;
-         int timezone = Pref->m_rbUTC->GetValue();
 
-         if( m_bTimeZone != timezone ) {
-             m_bTimeZone = timezone;
+         if( m_bTimeZone != Pref->m_rbTimeFormat->GetSelection() ) {
+             m_bTimeZone = Pref->m_rbTimeFormat->GetSelection();
              m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
              updatelevel = 2;
          }
@@ -263,7 +264,7 @@ void grib_pi::OnToolbarToolCallback(int id)
         m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
         m_pGribDialog->TimelineChanged();
 
-        m_pGribDialog->OpenFile();
+        m_pGribDialog->OpenFile( m_bLoadLastOpenFile == 0 );
     }
 
       // Qualify the GRIB dialog position
@@ -424,6 +425,7 @@ bool grib_pi::LoadConfig(void)
         return false;
 
     pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
+    pConf->Read ( _T( "LoadLastOpenFile" ), &m_bLoadLastOpenFile, 0 );
     pConf->Read ( _T( "GRIBUseHiDef" ),  &m_bGRIBUseHiDef, 0 );
     pConf->Read ( _T( "GRIBUseGradualColors" ),     &m_bGRIBUseGradualColors, 0 );
 
@@ -456,6 +458,7 @@ bool grib_pi::SaveConfig(void)
 
     pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
 
+    pConf->Write ( _T ( "LoadLastOpenFile" ), m_bLoadLastOpenFile );
     pConf->Write ( _T ( "ShowGRIBIcon" ), m_bGRIBShowIcon );
     pConf->Write ( _T ( "GRIBUseHiDef" ), m_bGRIBUseHiDef );
     pConf->Write ( _T ( "GRIBUseGradualColors" ),    m_bGRIBUseGradualColors );

@@ -33,6 +33,7 @@
 #include <wx/spinctrl.h>
 #include <wx/choice.h>
 #include <wx/radiobut.h>
+#include <wx/radiobox.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -182,8 +183,8 @@ class GribPreferencesDialogBase : public wxDialog
 		wxCheckBox* m_cbUseGradualColors;
 		wxCheckBox* m_cbCopyFirstCumulativeRecord;
 		wxCheckBox* m_cbCopyMissingWaveRecord;
-		wxRadioButton* m_rbLocalTime;
-		wxRadioButton* m_rbUTC;
+        wxRadioBox* m_rbTimeFormat;
+        wxRadioBox* m_rbStartOptions;
 		
 		GribPreferencesDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Grib Preferences"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
 		~GribPreferencesDialogBase();
