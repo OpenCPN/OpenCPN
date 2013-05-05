@@ -209,10 +209,10 @@ void GRIBUIDialog::OpenFile(bool newestFile)
             }
             else
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
-        }
-    SetFactoryOptions();
-    DisplayDataGRS();
-    PopulateTrackingControls();
+	}
+        SetFactoryOptions();
+        DisplayDataGRS();
+        PopulateTrackingControls();
     }
 }
 
@@ -397,6 +397,8 @@ void GRIBUIDialog::PopulateTrackingControls( void )
     }
 
     m_fgTrackingControls->Clear();
+    int cols = (GetSize().x / 180) * 3;
+    m_fgTrackingControls->SetCols(cols);
 
     GribRecord **RecordArray;
     if( m_pTimelineSet )
@@ -642,6 +644,8 @@ void GRIBUIDialog::OnSize( wxSizeEvent& event )
     wxSize p = event.GetSize();
     pPlugIn->SetGribDialogSizeX( p.x );
     pPlugIn->SetGribDialogSizeY( p.y );
+
+    PopulateTrackingControls();
 
     event.Skip();
 }
