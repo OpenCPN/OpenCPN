@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __CONNECTIONPARAMS_H__
 #define __CONNECTIONPARAMS_H__
@@ -65,7 +64,7 @@ class ConnectionParams
 {
 public:
     ConnectionParams();
-    ConnectionParams(wxString &configStr);
+    ConnectionParams(const wxString &configStr);
 
     ConnectionType  Type;
     NetworkProtocol NetProtocol;
@@ -88,7 +87,7 @@ public:
     bool            bEnabled;
 
     wxString        Serialize();
-    void            Deserialize(wxString &configStr);
+    void            Deserialize(const wxString &configStr);
 
     wxString GetSourceTypeStr();
     wxString GetAddressStr();

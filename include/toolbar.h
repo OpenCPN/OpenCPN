@@ -1,11 +1,11 @@
-/******************************************************************************
+/****************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  OpenCPN Toolbar
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,12 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- *
- */
-
-wxColour GetGlobalColor( wxString colorName );
+ **************************************************************************/
 
 #include "wx/tbarbase.h"
 
@@ -131,8 +126,8 @@ public:
       int GetLineCount() { return m_LineCount; };
       int GetVisibleToolCount();
 
-      void SetToolNormalBitmapEx( wxToolBarToolBase *tool, wxString iconname );
-      
+      void SetToolNormalBitmapEx(wxToolBarToolBase *tool, const wxString & iconname);
+
       // get the control with the given id or return NULL
       virtual wxControl *FindControl( int toolid );
 

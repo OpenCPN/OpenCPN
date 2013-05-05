@@ -19,20 +19,19 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include <wx/tokenzr.h>
 #include <wx/intl.h>
 
 #include "ConnectionParams.h"
 
-ConnectionParams::ConnectionParams( wxString &configStr )
+ConnectionParams::ConnectionParams(const wxString &configStr )
 {
     Deserialize( configStr );
 }
 
-void ConnectionParams::Deserialize(wxString &configStr)
+void ConnectionParams::Deserialize(const wxString &configStr)
 {
     Valid = true;
     wxArrayString prms = wxStringTokenize( configStr, _T(";") );

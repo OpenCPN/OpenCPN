@@ -1,11 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  OpenCPN Main wxWidgets Program
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,13 +21,10 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
+ **************************************************************************/
 
-wxColour GetGlobalColor(wxString colorName);
-
-class ocpnFloatingCompassWindow: public wxDialog {
+class ocpnFloatingCompassWindow : public wxDialog
+{
 public:
       ocpnFloatingCompassWindow( wxWindow *parent );
       ~ocpnFloatingCompassWindow();
@@ -39,9 +36,9 @@ public:
       void OnToolLeftClick( wxCommandEvent& event );
       void MouseEvent( wxMouseEvent& event );
       void SetColorScheme( ColorScheme cs );
-      int GetXOffset(void){ return m_xoffset; }
-      int GetYOffset(void){ return m_yoffset; }
-      
+      int GetXOffset(void) const { return m_xoffset; }
+      int GetYOffset(void) const { return m_yoffset; }
+
 private:
       wxBitmap m_StatBmp;
       wxBitmap m_MaskBmp;

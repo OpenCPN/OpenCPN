@@ -1,11 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  cm93 Chart Object
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,11 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
- */
-
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -584,7 +581,7 @@ cm93_dictionary::cm93_dictionary()
 }
 
 
-bool cm93_dictionary::LoadDictionary ( wxString dictionary_dir )
+bool cm93_dictionary::LoadDictionary(const wxString & dictionary_dir)
 {
       int i, nline;
       wxString line;
@@ -3122,7 +3119,7 @@ wxString ParseTEXTA ( wxString& val )
 
 
 
-void cm93chart::translate_colmar ( wxString &sclass, S57attVal *pattValTmp )
+void cm93chart::translate_colmar(const wxString &sclass, S57attVal *pattValTmp)
 {
       int *pcur_attr = ( int * ) pattValTmp->value;
       int cur_attr = *pcur_attr;
@@ -3345,7 +3342,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         *pAVR = tf1;
 #else
                         *pAVR = *pf;
-#endif                        
+#endif
                         pattValTmp->valType = OGR_REAL;
                         pattValTmp->value   = pAVR;
                         break;
@@ -4463,7 +4460,7 @@ cm93manager::~cm93manager ( void )
       delete m_pcm93Dict;
 }
 
-bool cm93manager::Loadcm93Dictionary ( wxString name )
+bool cm93manager::Loadcm93Dictionary(const wxString & name)
 {
 
       //  Find and load cm93_dictionary

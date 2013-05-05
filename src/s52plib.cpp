@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  S52 Presentation Library
@@ -21,11 +21,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
- *
- */
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -159,7 +156,7 @@ s52plib::~s52plib()
     delete HPGL;
 }
 
-void s52plib::SetGLRendererString( wxString &renderer )
+void s52plib::SetGLRendererString(const wxString &renderer)
 {
     //    Some GL renderers do a poor job of Anti-aliasing very narrow line widths.
     //    Detect this case, and adjust the render parameters.
@@ -3569,7 +3566,7 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
     return 1;
 }
 
-bool s52plib::PreloadOBJLFromCSV( wxString &csv_file )
+bool s52plib::PreloadOBJLFromCSV(const wxString &csv_file)
 {
     wxTextFile file( csv_file );
     if( !file.Exists() ) return false;

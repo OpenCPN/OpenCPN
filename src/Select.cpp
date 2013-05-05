@@ -260,7 +260,7 @@ bool Select::UpdateSelectableRouteSegments( RoutePoint *prp )
     return ret;
 }
 
-SelectItem *Select::AddSelectablePoint( float slat, float slon, void *pdata, int fseltype )
+SelectItem *Select::AddSelectablePoint( float slat, float slon, const void *pdata, int fseltype )
 {
     SelectItem *pSelItem = new SelectItem;
     if( pSelItem ) {

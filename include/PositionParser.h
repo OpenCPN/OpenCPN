@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __positionparser_h__
 #define __positionparser_h__
@@ -30,14 +29,14 @@
 class PositionParser
 {
 public:
-    PositionParser( wxString& src );
-    wxString GetSeparator() { return separator; }
-    wxString GetLatitudeString() { return latitudeString; }
-    wxString GetLongitudeString() { return longitudeString; }
-    double GetLatitude() { return latitude; }
-    double GetLongitude() { return longitude; }
-    bool FindSeparator( wxString src );
-    bool IsOk() { return parsedOk; }
+    PositionParser(const wxString & src);
+    const wxString & GetSeparator() const { return separator; }
+    const wxString & GetLatitudeString() const { return latitudeString; }
+    const wxString & GetLongitudeString() const { return longitudeString; }
+    double GetLatitude() const { return latitude; }
+    double GetLongitude() const { return longitude; }
+    bool FindSeparator(const wxString & src);
+    bool IsOk() const { return parsedOk; }
 
 private:
     wxString source;
