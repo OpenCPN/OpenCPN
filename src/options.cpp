@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Options Dialog
@@ -21,10 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- *
- */
+ **************************************************************************/
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
@@ -381,7 +378,7 @@ wxWindow* options::GetContentWindow() const
     return NULL;
 }
 
-size_t options::CreatePanel( wxString title )
+size_t options::CreatePanel(const wxString & title)
 {
     size_t id = m_pListbook->GetPageCount();
     /* This is the default empty content for any top tab.
@@ -391,7 +388,7 @@ size_t options::CreatePanel( wxString title )
     return id;
 }
 
-wxScrolledWindow *options::AddPage( size_t parent, wxString title )
+wxScrolledWindow *options::AddPage( size_t parent, const wxString & title)
 {
     if( parent > m_pListbook->GetPageCount() - 1 ) {
         wxLogMessage(

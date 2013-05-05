@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include <wx/tokenzr.h>
 #include <wx/regex.h>
@@ -28,7 +27,7 @@
 #include "PositionParser.h"
 #include "navutil.h"
 
-PositionParser::PositionParser( wxString& src )
+PositionParser::PositionParser(const wxString & src)
 {
     parsedOk = false;
     if( FindSeparator( src ) ) {
@@ -38,7 +37,7 @@ PositionParser::PositionParser( wxString& src )
     }
 }
 
-bool PositionParser::FindSeparator( wxString src )
+bool PositionParser::FindSeparator(const wxString & src)
 {
     int length = src.Length();
     wxStringTokenizer t;

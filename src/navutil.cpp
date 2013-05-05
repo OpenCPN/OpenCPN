@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Navigation Utility Functions
@@ -21,10 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
-
+ **************************************************************************/
 
 #include "wx/wxprec.h"
 
@@ -5063,7 +5060,7 @@ void X11FontPicker::OnChangeFace ( wxCommandEvent& WXUNUSED ( event ) )
 
 }
 
-void X11FontPicker::SetChoiceOptionsFromFacename ( wxString &facename )
+void X11FontPicker::SetChoiceOptionsFromFacename (const wxString &facename)
 {
     //    Get a list of matching fonts
     char face[101];
@@ -5391,7 +5388,7 @@ double vVectorMagnitude( pVector2D v0 )
 /*          LogMessageOnce                                                */
 /**************************************************************************/
 
-bool LogMessageOnce( wxString &msg )
+bool LogMessageOnce(const wxString &msg)
 {
     //    Search the array for a match
 

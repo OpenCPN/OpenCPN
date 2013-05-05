@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Chart Symbols
@@ -21,9 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
+ **************************************************************************/
 
 #pragma once
 
@@ -107,13 +105,13 @@ class ChartSymbols
 public:
 	ChartSymbols(void);
 	~ChartSymbols(void);
-	bool LoadConfigFile( s52plib* plibArg, wxString path );
+	bool LoadConfigFile(s52plib* plibArg, const wxString & path);
 
 	static void InitializeGlobals( void );
 	static void DeleteGlobals( void );
 	static int LoadRasterFileForColorTable( int tableNo );
 	static wxArrayPtrVoid * GetColorTables();
-	static int FindColorTable( wxString& tableName );
+	static int FindColorTable(const wxString & tableName);
 	static S52color* GetColor( const char *colorName, int fromTable );
 	static wxColor GetwxColor( const wxString &colorName, int fromTable );
 	static wxColor GetwxColor( const char *colorName, int fromTable );

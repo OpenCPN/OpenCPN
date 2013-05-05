@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Navigation Utility Functions
@@ -21,11 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- *
- */
-
+ **************************************************************************/
 
 #ifndef __NAVUTIL__
 #define __NAVUTIL__
@@ -72,7 +68,7 @@ enum
     SPEED_MS
 };
 
-extern bool LogMessageOnce(wxString &msg);
+extern bool LogMessageOnce(const wxString &msg);
 extern double toUsrDistance( double nm_distance, int unit = -1 );
 extern double fromUsrDistance( double usr_distance, int unit = -1 );
 extern double toUsrSpeed( double kts_speed, int unit = -1 );
@@ -181,7 +177,6 @@ class MyConfig:public wxFileConfig
 {
 public:
 
-      MyConfig(wxString & appName);
       MyConfig(const wxString &appName, const wxString &vendorName,
                               const wxString &LocalFileName);
 
@@ -302,7 +297,7 @@ class WXDLLEXPORT X11FontPicker : public wxFontDialogBase
 
             virtual bool DoCreate(wxWindow *parent);
             void InitializeAllAvailableFonts();
-            void SetChoiceOptionsFromFacename(wxString &facename);
+            void SetChoiceOptionsFromFacename(const wxString &facename);
             void DoFontChange(void);
 
             wxFont dialogFont;

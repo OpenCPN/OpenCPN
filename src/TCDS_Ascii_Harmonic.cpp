@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include <wx/filename.h>
 #include <wx/tokenzr.h>
@@ -81,7 +80,7 @@ TCDS_Ascii_Harmonic::~TCDS_Ascii_Harmonic()
     m_msd_array.Clear();
 }
 
-TC_Error_Code TCDS_Ascii_Harmonic::LoadData(wxString &data_file_path)
+TC_Error_Code TCDS_Ascii_Harmonic::LoadData(const wxString &data_file_path)
 {
     if(m_IndexFile) IndexFileIO( IFF_CLOSE, 0 );
 
@@ -328,13 +327,13 @@ TC_Error_Code TCDS_Ascii_Harmonic::build_IDX_entry(IDX_entry *pIDX )
         pIDX->have_offsets = 1;
 
     pIDX->station_tz_offset = 0;            // ASCII Harmonic data is (always??) corrected to Ref Station TZ
-    
+
     return(TC_NO_ERROR);
 }
 
 
 //    Load the Harmonic Constant Invariants
-TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(wxString &data_file_path)
+TC_Error_Code TCDS_Ascii_Harmonic::LoadHarmonicConstants(const wxString &data_file_path)
 {
     FILE *fp;
     char linrec[linelen];

@@ -1,11 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Options Dialog
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,10 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- */
-
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 #ifndef _OPTIONS_H_
 #define _OPTIONS_H_
@@ -202,12 +200,12 @@ public:
     wxWindow* GetContentWindow() const;
 
     void CreateControls();
-    size_t CreatePanel( wxString title );
-    wxScrolledWindow *AddPage( size_t parent, wxString title );
+    size_t CreatePanel(const wxString & title);
+    wxScrolledWindow *AddPage(size_t parent, const wxString & title);
     bool DeletePage( wxScrolledWindow *page );
     void SetColorScheme( ColorScheme cs );
 
-    void SetInitChartDir( wxString &dir )
+    void SetInitChartDir(const wxString &dir)
     {
         m_init_chart_dir = dir;
     }

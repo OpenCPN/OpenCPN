@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Chart Symbols
@@ -22,16 +22,12 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
+ **************************************************************************/
 
 #pragma once
 #include <tinyxml.h>
 
 #include "ocpn_types.h"
-
-wxColour GetGlobalColor(wxString colorName);
 
 enum StyleToolIconTypes
 {
@@ -41,7 +37,7 @@ enum StyleToolIconTypes
       TOOLICON_ACTIVE
 };
 
-void bmdump( wxBitmap bm, wxString name );
+void bmdump(wxBitmap bm, wxString name);
 wxBitmap MergeBitmaps( wxBitmap back, wxBitmap front, wxSize offset );
 wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front );
 
@@ -110,32 +106,32 @@ public:
       wxBitmap GetToggledBG();
       wxBitmap GetToolbarStart();
       wxBitmap GetToolbarEnd();
-      bool HasBackground() { return hasBackground; }
+      bool HasBackground() const { return hasBackground; }
       void HasBackground( bool b ) { hasBackground = b; }
-      wxBitmap GetIcon( wxString name );
-      wxBitmap GetToolIcon( wxString toolname, int iconType = TOOLICON_NORMAL, bool rollover = false );
+      wxBitmap GetIcon(const wxString & name);
+      wxBitmap GetToolIcon(const wxString & toolname, int iconType = TOOLICON_NORMAL, bool rollover = false );
       wxBitmap BuildPluginIcon( const wxBitmap* bm, int iconType );
 
-      int GetTopMargin() { return toolMarginTop[currentOrientation]; }
-      int GetRightMargin() { return toolMarginRight[currentOrientation]; }
-      int GetBottomMargin() { return toolMarginBottom[currentOrientation]; }
-      int GetLeftMargin() { return toolMarginLeft[currentOrientation]; }
+      int GetTopMargin() const { return toolMarginTop[currentOrientation]; }
+      int GetRightMargin() const { return toolMarginRight[currentOrientation]; }
+      int GetBottomMargin() const { return toolMarginBottom[currentOrientation]; }
+      int GetLeftMargin() const { return toolMarginLeft[currentOrientation]; }
       int GetToolbarCornerRadius();
 
-      int GetCompassTopMargin() { return compassMarginTop; }
-      int GetCompassRightMargin() { return compassMarginRight; }
-      int GetCompassBottomMargin() { return compassMarginBottom; }
-      int GetCompassLeftMargin() { return compassMarginLeft; }
-      int GetCompassCornerRadius() { return compasscornerRadius; }
-      int GetCompassXOffset() { return compassXoffset; }
-      int GetCompassYOffset() { return compassYoffset; }
+      int GetCompassTopMargin() const { return compassMarginTop; }
+      int GetCompassRightMargin() const { return compassMarginRight; }
+      int GetCompassBottomMargin() const { return compassMarginBottom; }
+      int GetCompassLeftMargin() const { return compassMarginLeft; }
+      int GetCompassCornerRadius() const { return compasscornerRadius; }
+      int GetCompassXOffset() const { return compassXoffset; }
+      int GetCompassYOffset() const { return compassYoffset; }
 
-      int GetToolSeparation() { return toolSeparation[currentOrientation]; }
-      wxSize GetToolSize() { return toolSize[currentOrientation]; }
-      wxSize GetToggledToolSize() { return toggledBGSize[currentOrientation]; }
+      int GetToolSeparation() const { return toolSeparation[currentOrientation]; }
+      wxSize GetToolSize() const { return toolSize[currentOrientation]; }
+      wxSize GetToggledToolSize() const { return toggledBGSize[currentOrientation]; }
 
-      bool HasToolbarStart() { return toolbarStartLoc[currentOrientation] != wxPoint(0,0); }
-      bool HasToolbarEnd() { return toolbarEndLoc[currentOrientation] != wxPoint(0,0); }
+      bool HasToolbarStart() const { return toolbarStartLoc[currentOrientation] != wxPoint(0,0); }
+      bool HasToolbarEnd() const { return toolbarEndLoc[currentOrientation] != wxPoint(0,0); }
       void DrawToolbarLineStart( wxBitmap& bmp );
       void DrawToolbarLineEnd( wxBitmap& bmp );
 
@@ -206,13 +202,13 @@ class StyleManager {
 public:
       StyleManager(void);
       ~StyleManager(void);
-      StyleManager( wxString& configDir );
+      StyleManager(const wxString & configDir);
 
-      bool IsOK() { return isOK; }
-      void Init( wxString fromPath );
-      void SetStyle( wxString name );
-      void SetStyleNextInvocation( wxString name ) { nextInvocationStyle = name; }
-      wxString GetStyleNextInvocation() { return nextInvocationStyle; }
+      bool IsOK() const { return isOK; }
+      void Init(const wxString & fromPath);
+      void SetStyle(wxString name);
+      void SetStyleNextInvocation(const wxString & name) { nextInvocationStyle = name; }
+      const wxString & GetStyleNextInvocation() const { return nextInvocationStyle; }
       Style* GetCurrentStyle();
       wxArrayPtrVoid GetArrayOfStyles() { return styles; };
 

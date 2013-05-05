@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Tide and Current Manager
@@ -6,7 +6,7 @@
  * Todo add original author
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,14 +21,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
- **
- *
- */
-
-
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 #ifndef __TCMGR_H__
 #define __TCMGR_H__
@@ -113,17 +107,19 @@ public:
     int GetStationTimeOffset(IDX_entry *pIDX);
     int GetNextBigEvent(time_t *tm, int idx);
 
-    IDX_entry *GetIDX_entry(int index);
+    const IDX_entry *GetIDX_entry(int index) const;
 
-    int Get_max_IDX() {
+    int Get_max_IDX() const
+	{
         return m_Combined_IDX_array.GetCount()-1;
     }
-    int GetStationIDXbyName(wxString prefix, double xlat, double xlon);
-    int GetStationIDXbyNameType(wxString prefix, double xlat, double xlon, char type);
+
+    int GetStationIDXbyName(const wxString & prefix, double xlat, double xlon) const;
+    int GetStationIDXbyNameType(const wxString & prefix, double xlat, double xlon, char type) const;
 
 private:
     void PurgeData();
-    
+
     void LoadMRU(void);
     void SaveMRU(void);
     void AddMRU(Station_Data *psd);
@@ -146,22 +142,22 @@ private:
 #define __OAML_TIDES_H__
 
 
-/*****************************************************************************\
- * 
+/*****************************************************************************
+ *
  *                            DISTRIBUTION STATEMENT
- * 
+ *
  *    This source file is unclassified, distribution unlimited, public
  *    domain.  It is distributed in the hope that it will be useful, but
  *    WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * 
- * \*****************************************************************************/
+ *
+ ******************************************************************************/
 
 
 /*
  *  Data types for libtcd API
  *  Formerly nvtypes.h, NAVO Standard Data Type Definitions
- * 
+ *
  *  This section may appear slightly different from one platform to the
  *  next.  The build process for libtcd generates #includes and data
  *  type definitions as needed to provide integer types of specific

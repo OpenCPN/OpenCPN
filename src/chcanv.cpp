@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Chart Canvas
@@ -21,10 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
-
+ **************************************************************************/
 
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
@@ -6601,7 +6598,8 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     pMarkPropDialog->InitialFocus();
 }
 
-void ChartCanvas::ShowRoutePropertiesDialog( wxString title, Route* selected ) {
+void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
+{
     if( NULL == pRoutePropDialog )  // There is one global instance of the RouteProp Dialog
         pRoutePropDialog = new RouteProp( this );
 
@@ -9269,7 +9267,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuildSel
         double lon_last = 0.;
         double lat_last = 0.;
         for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
-            IDX_entry *pIDX = ptcmgr->GetIDX_entry( i );
+            const IDX_entry *pIDX = ptcmgr->GetIDX_entry( i );
 
             char type = pIDX->IDX_type;             // Entry "TCtcIUu" identifier
             if( ( type == 't' ) || ( type == 'T' ) )  // only Tides
@@ -9495,7 +9493,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuild
     {
 
         for( int i = 1; i < ptcmgr->Get_max_IDX() + 1; i++ ) {
-            IDX_entry *pIDX = ptcmgr->GetIDX_entry( i );
+            const IDX_entry *pIDX = ptcmgr->GetIDX_entry( i );
             double lon = pIDX->IDX_lon;
             double lat = pIDX->IDX_lat;
 

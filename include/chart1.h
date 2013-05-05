@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  OpenCPN Main wxWidgets Program
@@ -21,10 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- *
- */
+ **************************************************************************/
 
 #ifndef __CHART1_H__
 #define __CHART1_H__
@@ -322,7 +319,7 @@ class MyFrame: public wxFrame
     void UpdateGPSCompassStatusBox(bool b_force_new = false);
     bool UpdateChartDatabaseInplace(ArrayOfCDI &DirArray,
                                     bool b_force, bool b_prog,
-                                    wxString &ChartListFileName);
+                                    const wxString &ChartListFileName);
 
     bool                m_bdefer_resize;
     wxSize              m_defer_size;
@@ -344,13 +341,13 @@ class MyFrame: public wxFrame
     void SetChartUpdatePeriod(ViewPort &vp);
 
     void ApplyGlobalColorSchemetoStatusBar(void);
-    void PostProcessNNEA(bool pos_valid, wxString &sfixtime);
+    void PostProcessNNEA(bool pos_valid, const wxString &sfixtime);
 
     void ScrubGroupArray();
     wxString GetGroupName(int igroup);
     void LoadHarmonics();
 
-    bool EvalPriority( wxString message, DataStream *pDS );
+    bool EvalPriority(const wxString & message, DataStream *pDS );
 
     int                 m_StatusBarFieldCount;
 

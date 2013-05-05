@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __CHINFOWIN_H__
 #define __CHINFOWIN_H__
@@ -34,7 +33,7 @@ public:
     ChInfoWin( wxWindow *parent );
     ~ChInfoWin();
 
-    void SetString( wxString &s )
+    void SetString(const wxString &s)
     {
         m_string = s;
     }

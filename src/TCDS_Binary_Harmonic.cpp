@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "TCDS_Binary_Harmonic.h"
 #include "tcmgr.h"
@@ -320,7 +319,7 @@ TCDS_Binary_Harmonic::~TCDS_Binary_Harmonic()
 {
 }
 
-TC_Error_Code TCDS_Binary_Harmonic::LoadData(wxString &data_file_path)
+TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path)
 {
     if(!open_tide_db (data_file_path.mb_str())) return TC_TCD_FILE_CORRUPT;
 

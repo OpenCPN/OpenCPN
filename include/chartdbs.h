@@ -1,4 +1,4 @@
-/******************************************************************************
+/**************************************************************************
 *
 * Project:  ChartManager
 * Purpose:  Basic Chart Info Storage
@@ -20,10 +20,8 @@
 *   You should have received a copy of the GNU General Public License     *
 *   along with this program; if not, write to the                         *
 *   Free Software Foundation, Inc.,                                       *
-*   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
-***************************************************************************
-*
-*/
+*   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+**************************************************************************/
 
 #ifndef __CHARTDBS_H__
 #define __CHARTDBS_H__
@@ -56,18 +54,18 @@ struct ChartTableEntry_onDisk_17
     float       LatMin;
     float       LonMax;
     float       LonMin;
-    
+
     int         Scale;
     int         edition_date;
     int         file_date;
-    
+
     int         nPlyEntries;
     int         nAuxPlyEntries;
-    
+
     float       skew;
     int         ProjectionType;
     bool        bValid;
-    
+
     int         nNoCovrPlyEntries;
 };
 
@@ -264,7 +262,7 @@ public:
     bool Read(const wxString &filePath);
     bool Write(const wxString &filePath);
 
-    wxString &GetDBFileName(){ return m_DBFileName; }
+    const wxString & GetDBFileName() const { return m_DBFileName; }
     ArrayOfCDI& GetChartDirArray(){ return m_dir_array; }
     wxArrayString &GetChartDirArrayString(){ return m_chartDirs; }
 
@@ -308,7 +306,7 @@ private:
     int SearchDirAndAddCharts(wxString& dir_name_base, ChartClassDescriptor &chart_desc, wxProgressDialog *pprog);
 
     int TraverseDirAndAddCharts(ChartDirInfo& dir_info, wxProgressDialog *pprog, wxString& dir_magic, bool bForce);
-    bool DetectDirChange(wxString dir_path, wxString magic, wxString &new_magic, wxProgressDialog *pprog);
+    bool DetectDirChange(const wxString & dir_path, const wxString & magic, wxString &new_magic, wxProgressDialog *pprog);
 
     bool Check_CM93_Structure(wxString dir_name);
 
