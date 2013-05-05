@@ -60,7 +60,6 @@ int round (double x) {
 
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordSets );
 
-#if 0
 //    Sort compare function for File Modification Time
 static int CompareFileStringTime( const wxString& first, const wxString& second )
 {
@@ -71,7 +70,6 @@ static int CompareFileStringTime( const wxString& first, const wxString& second 
 
 //      return ::wxFileModificationTime(first) - ::wxFileModificationTime(second);
 }
-#endif
 
 //date/time in the desired time zone format
 static wxString TToString( const wxDateTime date_time, const int time_zone )
