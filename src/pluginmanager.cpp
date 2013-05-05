@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  PlugIn Manager Object
@@ -21,8 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include <wx/wx.h>
 #include <wx/dir.h>
@@ -168,7 +167,7 @@ PlugInManager::~PlugInManager()
 }
 
 
-bool PlugInManager::LoadAllPlugIns(wxString &plugin_dir)
+bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
 {
     m_plugin_location = plugin_dir;
 
@@ -879,20 +878,21 @@ void PlugInManager::SetCanvasContextMenuItemGrey(int item, bool grey)
     }
 }
 
-void PlugInManager::SendNMEASentenceToAllPlugIns(wxString &sentence)
+void PlugInManager::SendNMEASentenceToAllPlugIns(const wxString &sentence)
 {
+    wxString decouple_sentence(sentence); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
         if(pic->m_bEnabled && pic->m_bInitState)
         {
             if(pic->m_cap_flag & WANTS_NMEA_SENTENCES)
-                pic->m_pplugin->SetNMEASentence(sentence);
+                pic->m_pplugin->SetNMEASentence(decouple_sentence);
         }
     }
 }
 
-void PlugInManager::SendJSONMessageToAllPlugins(wxString &message_id, wxJSONValue v)
+void PlugInManager::SendJSONMessageToAllPlugins(const wxString &message_id, wxJSONValue v)
 {
     wxJSONWriter w;
     wxString out;
@@ -902,8 +902,10 @@ void PlugInManager::SendJSONMessageToAllPlugins(wxString &message_id, wxJSONValu
 //   wxLogMessage(out);
 }
 
-void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &message_body)
+void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wxString &message_body)
 {
+    wxString decouple_message_id(message_id); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
+    wxString decouple_message_body(message_body); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
@@ -917,14 +919,14 @@ void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &mess
                 {
                     opencpn_plugin_16 *ppi = dynamic_cast<opencpn_plugin_16 *>(pic->m_pplugin);
                     if(ppi)
-                        ppi->SetPluginMessage(message_id, message_body);
+                        ppi->SetPluginMessage(decouple_message_id, decouple_message_body);
                     break;
                 }
                 case 107:
                 {
                     opencpn_plugin_17 *ppi = dynamic_cast<opencpn_plugin_17 *>(pic->m_pplugin);
                     if(ppi)
-                        ppi->SetPluginMessage(message_id, message_body);
+                        ppi->SetPluginMessage(decouple_message_id, decouple_message_body);
                     break;
                 }
                 case 108:
@@ -932,7 +934,7 @@ void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &mess
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
-                        ppi->SetPluginMessage(message_id, message_body);
+                        ppi->SetPluginMessage(decouple_message_id, decouple_message_body);
                     break;
                 }
                 default:
@@ -944,15 +946,16 @@ void PlugInManager::SendMessageToAllPlugins(wxString &message_id, wxString &mess
 }
 
 
-void PlugInManager::SendAISSentenceToAllPlugIns(wxString &sentence)
+void PlugInManager::SendAISSentenceToAllPlugIns(const wxString &sentence)
 {
+    wxString decouple_sentence(sentence); // decouples 'const wxString &' and 'wxString &' to keep bin compat for plugins
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
         if(pic->m_bEnabled && pic->m_bInitState)
         {
             if(pic->m_cap_flag & WANTS_AIS_SENTENCES)
-                pic->m_pplugin->SetAISSentence(sentence);
+                pic->m_pplugin->SetAISSentence(decouple_sentence);
         }
     }
 }
@@ -2297,7 +2300,7 @@ void PlugInChartBase::latlong_to_chartpix(double lat, double lon, double &pixx, 
 ChartPlugInWrapper::ChartPlugInWrapper()
 {}
 
-ChartPlugInWrapper::ChartPlugInWrapper(wxString &chart_class)
+ChartPlugInWrapper::ChartPlugInWrapper(const wxString &chart_class)
 {
     m_ppo = ::wxCreateDynamicObject(chart_class);
     m_ppicb = wxDynamicCast(m_ppo, PlugInChartBase);

@@ -1,4 +1,4 @@
-/******************************************************************************
+/**************************************************************************
 *
 * Project:  OpenCPN
 * Purpose:  RouteProerties Support
@@ -21,9 +21,7 @@
 *   along with this program; if not, write to the                         *
 *   Free Software Foundation, Inc.,                                       *
 *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
-***************************************************************************
-*
-*/
+**************************************************************************/
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
@@ -1188,9 +1186,9 @@ bool RouteProp::ShowToolTips()
     return TRUE;
 }
 
-void RouteProp::SetDialogTitle( wxString title )
+void RouteProp::SetDialogTitle(const wxString & title)
 {
-    SetTitle( title );
+    SetTitle(title);
 }
 
 void RouteProp::SetRouteAndUpdate( Route *pR )

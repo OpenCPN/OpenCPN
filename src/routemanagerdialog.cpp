@@ -1321,8 +1321,6 @@ void RouteManagerDialog::OnRteSendToGPSClick( wxCommandEvent &event )
     pdlg->SetRoute( route );
 
     wxString source;
-//    if( g_pnmea ) g_pnmea->GetSource( source );
-
     pdlg->Create( NULL, -1, _( "Send To GPS..." ), source );
     pdlg->ShowModal();
 
@@ -2166,8 +2164,6 @@ void RouteManagerDialog::OnWptSendToGPSClick( wxCommandEvent &event )
     pdlg->SetWaypoint( wp );
 
     wxString source;
-//    if( g_pnmea ) g_pnmea->GetSource( source );
-
     pdlg->Create( NULL, -1, _( "Send To GPS..." ), source );
     pdlg->ShowModal();
 

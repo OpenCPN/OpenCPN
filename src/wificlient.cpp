@@ -1,11 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  NMEA Data Object
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,10 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- *
- */
+ **************************************************************************/
 
 #include "wx/wxprec.h"
 
@@ -488,7 +485,7 @@ void WIFIWindow::OnTimer1(wxTimerEvent& event)
 //    A simple thread to test host name resolution without blocking the main thread
 //
 //-------------------------------------------------------------------------------------------------------------
-WIFIDNSTestThread::WIFIDNSTestThread(wxString &name_or_ip)
+WIFIDNSTestThread::WIFIDNSTestThread(const wxString &name_or_ip)
 {
     m_pip = new wxString(name_or_ip);
 

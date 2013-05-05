@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "OCP_DataStreamInput_Thread.h"
 #include "OCPN_DataStreamEvent.h"
@@ -633,7 +632,7 @@ void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
         gFrame->AddPendingEvent(event);
 }
 
-bool OCP_DataStreamInput_Thread::SetOutMsg(wxString msg)
+bool OCP_DataStreamInput_Thread::SetOutMsg(const wxString & msg)
 {
     //  Assume that the caller already owns the mutex
 
@@ -669,7 +668,7 @@ bool OCP_DataStreamInput_Thread::SetOutMsg(wxString msg)
 
 #ifdef __POSIX__
 
-int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud_rate)
+int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, int baud_rate)
 {
 
     // Declare the termios data structures
@@ -809,7 +808,7 @@ bool OCP_DataStreamInput_Thread::CheckComPortPhysical(int port_descriptor)
 #endif            // __POSIX__
 
 #ifdef __WXMSW__
-int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud_rate)
+int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, int baud_rate)
 {
 
 //    Set up the serial port

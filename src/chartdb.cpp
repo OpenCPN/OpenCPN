@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Chart Database Object
@@ -20,10 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
- */
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 
 // For compilers that support precompilation, includes "wx.h".
@@ -248,10 +246,10 @@ ChartDB::~ChartDB()
       delete pChartCache;
 }
 
-bool ChartDB::LoadBinary(wxString *filename, ArrayOfCDI& dir_array_check)
+bool ChartDB::LoadBinary(const wxString & filename, ArrayOfCDI& dir_array_check)
 {
       m_dir_array = dir_array_check;
-      return ChartDatabase::Read(*filename);
+      return ChartDatabase::Read(filename);
 
       // Check chartDirs against dir_array_check
 }

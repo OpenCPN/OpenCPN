@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __TCDS_BINARY_HARMONIC_H__
 #define __TCDS_BINARY_HARMONIC_H__
@@ -37,7 +36,7 @@ public:
     TCDS_Binary_Harmonic();
     ~TCDS_Binary_Harmonic();
 
-    TC_Error_Code LoadData(wxString &data_file_path);
+    TC_Error_Code LoadData(const wxString &data_file_path);
 
     int GetMaxIndex(void) {
         return num_IDX;

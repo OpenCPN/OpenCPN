@@ -42,7 +42,7 @@ public:
       float m_slon2;
       int   m_seltype;
       bool  m_bIsSelected;
-      void  *m_pData1;
+      const void  *m_pData1;
       void  *m_pData2;
       void  *m_pData3;
       int   m_Data4;

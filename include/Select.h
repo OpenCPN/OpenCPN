@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __SELECT_H__
 #define __SELECT_H__
@@ -70,7 +69,7 @@ public:
 
     //    Generic Point Support
     //      e.g. Tides/Currents and AIS Targets
-    SelectItem *AddSelectablePoint( float slat, float slon, void *data, int fseltype );
+    SelectItem *AddSelectablePoint(float slat, float slon, const void *data, int fseltype);
     bool DeleteAllPoints( void );
     bool DeleteSelectablePoint( void *data, int SeltypeToDelete );
     bool ModifySelectablePoint( float slat, float slon, void *data, int fseltype );

@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  S52 Presentation Library
@@ -21,9 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
+ **************************************************************************/
 
 #ifndef _S52PLIB_H_
 #define _S52PLIB_H_
@@ -170,7 +168,7 @@ public:
 		return m_ColorScheme;
 	}
 
-      void SetGLRendererString(wxString &renderer);
+      void SetGLRendererString(const wxString &renderer);
 
 	bool ObjectRenderCheck( ObjRazRules *rzRules, ViewPort *vp );
 	bool ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp );
@@ -299,7 +297,7 @@ private:
       int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
 	bool S52_flush_Plib();
 
-	bool PreloadOBJLFromCSV( wxString &csv_file );
+	bool PreloadOBJLFromCSV(const wxString &csv_file);
 
 	int DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp );
 
