@@ -30,6 +30,7 @@
 #include "georef.h"
 #include "OCPN_DataStreamEvent.h"
 #include "chart1.h"
+#include "dychart.h"
 #include "AIS_Bitstring.h"
 
 #if !defined(NAN)
