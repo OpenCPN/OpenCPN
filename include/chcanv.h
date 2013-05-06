@@ -169,7 +169,7 @@ public:
       void UpdateAlerts();                          // pjotrc 2010.02.22
 
       void SetQuiltMode(bool b_quilt);
-      bool GetQuiltMode(void);
+      bool GetQuiltMode(void) const;
       ArrayOfInts GetQuiltIndexArray(void);
       bool IsQuiltDelta(void);
       void SetQuiltChartHiLiteIndex(int dbIndex);
@@ -180,16 +180,14 @@ public:
       void SetColorScheme(ColorScheme cs);
       ColorScheme GetColorScheme(){ return m_cs;}
 
-      wxString FormatDistanceAdaptive( double distance );
-
       //    Accessors
-      int GetCanvasWidth(){ return m_canvas_width;}
-      int GetCanvasHeight(){ return m_canvas_height;}
-      float GetVPScale(){return GetVP().view_scale_ppm;}
-      float GetVPChartScale(){return GetVP().chart_scale;}
-      double GetCanvasScaleFactor(){return m_canvas_scale_factor;}
-      double GetCanvasTrueScale(){return m_true_scale_ppm;}
-      double GetAbsoluteMinScalePpm(){ return m_absolute_min_scale_ppm; }
+      int GetCanvasWidth() const { return m_canvas_width;}
+      int GetCanvasHeight() const { return m_canvas_height;}
+      float GetVPScale() {return GetVP().view_scale_ppm;}
+      float GetVPChartScale() {return GetVP().chart_scale;}
+      double GetCanvasScaleFactor() const {return m_canvas_scale_factor;}
+      double GetCanvasTrueScale() const {return m_true_scale_ppm;}
+      double GetAbsoluteMinScalePpm() const { return m_absolute_min_scale_ppm; }
       ViewPort &GetVP();
       ChartBase* GetChartAtCursor();
       ChartBase* GetOverlayChartAtCursor();
@@ -215,7 +213,7 @@ public:
 
       bool PanCanvas(int dx, int dy);
       void StopAutoPan(void);
-      
+
       void ShowAISTargetList(void);
 
       void ShowGoToPosition(void);

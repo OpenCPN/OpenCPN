@@ -53,6 +53,7 @@
 #include "FontMgr.h"
 #include "OCPN_Sound.h"
 #include "NMEALogWindow.h"
+#include "OCPNMessageBox.h"
 
 #include "navutil.h"
 

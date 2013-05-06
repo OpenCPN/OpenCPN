@@ -99,6 +99,7 @@
 #include "AISTargetAlertDialog.h"
 #include "AIS_Decoder.h"
 #include "OCP_DataStreamInput_Thread.h"
+#include "OCPNMessageBox.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"
@@ -4944,7 +4945,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         DistanceBearingMercator( cursor_lat, cursor_lon, gLat, gLon, &brg, &dist );
         wxString s;
         s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int) brg );
-        s << cc1->FormatDistanceAdaptive( dist );
+        s << FormatDistanceAdaptive( dist );
         if( GetStatusBar() ) SetStatusText( s, STAT_FIELD_CURSOR_BRGRNG );
     }
 
@@ -8140,40 +8141,6 @@ void SetSystemColors( ColorScheme cs )
         RestoreSystemColors();
     }
 #endif
-}
-
-int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& caption, int style,
-        int x, int y )
-{
-
-#ifdef __WXOSX__
-    if(g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->Hide();
-
-    if( g_FloatingCompassDialog )
-        g_FloatingCompassDialog->Hide();
-
-    if( stats )
-        stats->Hide();
-#endif
-    wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
-    int ret = dlg.ShowModal();
-
-#ifdef __WXOSX__
-    if(gFrame)
-        gFrame->SurfaceToolbar();
-
-    if( g_FloatingCompassDialog )
-        g_FloatingCompassDialog->Show();
-
-    if( stats )
-        stats->Show();
-
-    if(parent)
-        parent->Raise();
-#endif
-
-    return ret;
 }
 
 //               A helper function to check for proper parameters of anchor watch

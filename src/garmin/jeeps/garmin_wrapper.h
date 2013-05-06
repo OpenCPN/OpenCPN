@@ -29,8 +29,8 @@
   #include "wx/wx.h"
 #endif //precompiled header
 
-#include "navutil.h"
-
+class RoutePointList;
+class Route;
 
 
 /*  Wrapped interface from higher level objects   */

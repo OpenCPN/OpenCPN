@@ -38,6 +38,7 @@
 #include "chart1.h"
 #include "pluginmanager.h"
 #include "FontMgr.h"
+#include "OCPNMessageBox.h"
 
 extern FontMgr*                   pFontMgr;
 extern ocpnFloatingToolbarDialog* g_FloatingToolbarDialog;

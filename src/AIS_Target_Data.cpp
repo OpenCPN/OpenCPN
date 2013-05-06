@@ -22,11 +22,9 @@
  **************************************************************************/
 
 #include "AIS_Target_Data.h"
-#include "chcanv.h"
 #include "navutil.h"
 
 extern bool bGPSValid;
-extern ChartCanvas *cc1;
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
@@ -394,7 +392,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     }
 
     if( b_positionOnceValid && bGPSValid && ( Range_NM >= 0. ) )
-        rngStr = cc1->FormatDistanceAdaptive( Range_NM );
+        rngStr = FormatDistanceAdaptive( Range_NM );
     else
         rngStr = _("---");
 
@@ -431,7 +429,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
     if( bCPA_Valid ) {
         html<< vertSpacer << rowStart << _("CPA") << rowEnd
-            << rowStartH << _T("<b>") << cc1->FormatDistanceAdaptive( CPA )
+            << rowStartH << _T("<b>") << FormatDistanceAdaptive( CPA )
             << tcpaStr << rowEnd;
     }
 
@@ -539,7 +537,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
 
     if( g_bAISRolloverShowCPA && bCPA_Valid ) {
         if( result.Len() ) result << _T("\n");
-        result << _("CPA") << _T(" ") << cc1->FormatDistanceAdaptive( CPA )
+        result << _("CPA") << _T(" ") << FormatDistanceAdaptive( CPA )
         << _T(" ") << _("in") << _T(" ")
         << wxString::Format( _T("%.0f"), TCPA ) << _T(" ") << _("min");
     }

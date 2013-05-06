@@ -75,6 +75,7 @@
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
 #include "AISTargetListDialog.h"
+#include "OCPNMessageBox.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -1435,7 +1436,7 @@ void ChartCanvas::SetQuiltMode( bool b_quilt )
     VPoint.b_FullScreenQuilt = g_bFullScreenQuilt;
 }
 
-bool ChartCanvas::GetQuiltMode( void )
+bool ChartCanvas::GetQuiltMode( void ) const
 {
     return VPoint.b_quilt;
 }
@@ -7702,28 +7703,6 @@ bool ChartCanvas::PurgeGLCanvasChartCache( ChartBase *pc )
 {
     if( g_bopengl && m_glcc ) m_glcc->PurgeChartTextures( pc );
     return true;
-}
-
-wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
-    wxString result;
-    if( distance < 0.1 ) {
-        result << wxString::Format(_T("%3.0f "), distance*1852.0 ) << _T("m");
-        return result;
-    }
-    if( distance < 5.0 ) {
-        result << wxString::Format(_T("%1.2f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-        return result;
-    }
-    if( distance < 100.0 ) {
-        result << wxString::Format(_T("%2.1f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-        return result;
-    }
-    if( distance < 1000.0 ) {
-        result << wxString::Format(_T("%3.0f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-        return result;
-    }
-    result << wxString::Format(_T("%4.0f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-    return result;
 }
 
 void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )

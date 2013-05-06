@@ -69,6 +69,7 @@ using namespace std;
 #endif
 
 #include "routeprintout.h"
+#include "OCPNMessageBox.h"
 #include "printtable.h"
 
 #define PRINT_WP_NAME 0

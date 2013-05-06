@@ -421,6 +421,7 @@ SET(HDRS
 		include/OCP_DataStreamInput_Thread.h
 		include/dsPortType.h
         include/multiplexer.h
+        include/OCPNMessageBox.h
 )
 
 SET(SRCS
@@ -506,6 +507,7 @@ SET(SRCS
 		src/ConnectionParams.cpp
 		src/OCP_DataStreamInput_Thread.cpp
         src/multiplexer.cpp
+        src/OCPNMessageBox.cpp
     )
 
 IF(wx_Version MATCHES "2.9")
