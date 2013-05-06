@@ -19,8 +19,9 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
+
+#include <wx/tokenzr.h>
 
 #include "AIS_Decoder.h"
 #include "AIS_Target_Data.h"
@@ -28,6 +29,8 @@
 #include "Select.h"
 #include "georef.h"
 #include "OCPN_DataStreamEvent.h"
+#include "chart1.h"
+#include "AIS_Bitstring.h"
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -42,7 +45,6 @@ extern int g_ais_alert_dialog_y;
 extern int g_ais_alert_dialog_sx;
 extern int g_ais_alert_dialog_sy;
 extern bool bGPSValid;
-extern bool     g_bShowAIS;
 extern bool     g_bCPAMax;
 extern double   g_CPAMax_NM;
 extern bool     g_bCPAWarn;
@@ -53,8 +55,6 @@ extern bool     g_bMarkLost;
 extern double   g_MarkLost_Mins;
 extern bool     g_bRemoveLost;
 extern double   g_RemoveLost_Mins;
-extern bool     g_bShowCOG;
-extern double   g_ShowCOG_Mins;
 extern bool     g_bAISShowTracks;
 extern double   g_AISShowTracks_Mins;
 extern bool     g_bShowMoored;
@@ -63,17 +63,10 @@ extern wxString g_sAIS_Alert_Sound_File;
 extern bool     g_bAIS_CPA_Alert_Suppress_Moored;
 extern bool     g_bAIS_ACK_Timeout;
 extern double   g_AckTimeout_Mins;
-extern bool     g_bShowAreaNotices;
-extern bool     g_bDrawAISSize;
-extern bool     g_bShowAISName;
-extern int      g_Show_Target_Name_Scale;
 extern double gLat;
 extern double gLon;
 extern double gCog;
 extern double gSog;
-extern double gHdt;
-extern double gHdm;
-extern double gVar;
 extern bool g_bAIS_CPA_Alert;
 extern bool g_bAIS_CPA_Alert_Audio;
 
@@ -1184,7 +1177,7 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
     return parse_result;
 }
 
-bool AIS_Decoder::NMEACheckSumOK( const wxString& str_in )
+bool AIS_Decoder::NMEACheckSumOK( const wxString& str_in ) const
 {
 
     unsigned char checksum_value = 0;

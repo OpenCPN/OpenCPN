@@ -19,13 +19,17 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __AIS_DECODER_H__
 #define __AIS_DECODER_H__
 
 #include "ais.h"
+#include "OCPN_Sound.h"
+#include "datastream.h"
+#include "OCPN_DataStreamEvent.h"
+
+class AIS_Bitstring;
 
 class AIS_Decoder : public wxEvtHandler
 {
@@ -40,9 +44,9 @@ public:
     AIS_Target_Hash *GetTargetList(void) {return AISTargetList;}
     AIS_Target_Hash *GetAreaNoticeSourcesList(void) {return AIS_AreaNotice_Sources;}
     AIS_Target_Data *Get_Target_Data_From_MMSI(int mmsi);
-    int GetNumTargets(void){ return m_n_targets;}
-    bool IsAISSuppressed(void){ return m_bSuppressed; }
-    bool IsAISAlertGeneral(void) { return m_bGeneralAlert; }
+    int GetNumTargets(void) const { return m_n_targets;}
+    bool IsAISSuppressed(void) const { return m_bSuppressed; }
+    bool IsAISAlertGeneral(void) const { return m_bGeneralAlert; }
     AIS_Error DecodeSingleVDO( const wxString& str, GenericPosDatEx *pos, wxString *acc );
 
 private:
@@ -50,7 +54,7 @@ private:
     void OnTimerAIS(wxTimerEvent& event);
     void OnTimerAISAudio(wxTimerEvent& event);
 
-    bool NMEACheckSumOK(const wxString& str);
+    bool NMEACheckSumOK(const wxString& str) const;
     bool Parse_VDXBitstring(AIS_Bitstring *bstr, AIS_Target_Data *ptd);
     void UpdateAllCPA(void);
     void UpdateOneCPA(AIS_Target_Data *ptarget);

@@ -1,11 +1,9 @@
-/******************************************************************************
+/****************************************************************************
  *
  * Project:  OpenCPN
- * Purpose:  AIS Decoder Object
- * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register                               *
+ *   Copyright (C) 2013 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,9 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
+ **************************************************************************/
 
 #ifndef __AIS_H__
 #define __AIS_H__
@@ -34,30 +30,12 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
-#include <wx/datetime.h>
-#include <wx/listctrl.h>
-#include <wx/spinctrl.h>
-#include <wx/aui/aui.h>
-#include <wx/wxhtml.h>
-
 #include <vector>
-
-#include "wx/sound.h"
-
-#include "dychart.h"
-#include "chart1.h"
-#include "datastream.h"         // For GenericPosDatEx
-#include "navutil.h"
-#include "OCPN_Sound.h"
-#include "AIS_Bitstring.h"
-#include "AISTargetListDialog.h"
 
 //    Constants
 #ifndef PI
 #define PI        3.1415926535897931160E0      /* pi */
 #endif
-
-
 
 #define TIMER_AIS_MSEC      998
 #define TIMER_AIS_AUDIO_MSEC 2000
@@ -158,14 +136,6 @@ class AISTargetTrackPoint
 
 WX_DECLARE_LIST(AISTargetTrackPoint, AISTargetTrackList);
 
-
-
-// IMO Circ. 289 Area Notices, based on libais
-const size_t AIS8_001_22_NUM_NAMES=128;
-const size_t AIS8_001_22_SUBAREA_SIZE=87;
-
-extern wxString ais8_001_22_notice_names[];
-
 enum Ais8_001_22_AreaShapeEnum
 {
     AIS8_001_22_SHAPE_ERROR = -1,
@@ -194,7 +164,6 @@ struct Ais8_001_22_SubArea
     wxString text;
 };
 
-//WX_DECLARE_LIST(Ais8_001_22_SubArea, Ais8_001_22_SubAreaList);
 typedef std::vector<Ais8_001_22_SubArea> Ais8_001_22_SubAreaList;
 
 struct Ais8_001_22
@@ -221,6 +190,7 @@ WX_DECLARE_HASH_MAP( int, Ais8_001_22, wxIntegerHash, wxIntegerEqual, AIS_Area_N
 //  AIS_Decoder Helpers
 //
 //---------------------------------------------------------------------------------
+class AIS_Target_Data;
 WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
 
 
@@ -229,8 +199,9 @@ WX_DEFINE_SORTED_ARRAY(AIS_Target_Data *, ArrayOfAISTarget);
 WX_DECLARE_HASH_MAP( int, AIS_Target_Data*, wxIntegerHash, wxIntegerEqual, AIS_Target_Hash );
 
 wxString trimAISField( char *data );
-wxString ais_get_status(int index);
-wxString ais_get_type(int index);
-wxString ais_get_short_type(int index);
+const wxString & ais_get_status(int index);
+const wxString & ais_get_type(int index);
+const wxString & ais_get_short_type(int index);
+const wxString & ais_get_ais8_001_22_notice_names(int notice_type);
 
 #endif

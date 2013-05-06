@@ -498,7 +498,6 @@ wxToolBarToolBase         *m_pAISTool;
 
 int                       g_nAIS_activity_timer;
 
-DummyTextCtrl             *g_pDummyTextCtrl;
 bool                      g_bEnableZoomToCursor;
 
 bool                      g_bTrackActive;

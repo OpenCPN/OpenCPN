@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "wx/wxprec.h"
 #include "GL/gl.h"
@@ -42,12 +41,13 @@ extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 #define GL_DEPTH_STENCIL_ATTACHMENT       0x821A
 #endif
 
+bool g_bDebugOGL;
+
 extern ChartCanvas *cc1;
 extern s52plib *ps52plib;
 extern bool g_bopengl;
 extern bool g_b_useStencil;
 extern int g_GPU_MemSize;
-extern bool g_bDebugOGL;
 extern PlugInManager* g_pi_manager;
 extern bool g_bskew_comp;
 extern int g_memCacheLimit;

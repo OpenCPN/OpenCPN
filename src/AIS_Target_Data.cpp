@@ -19,10 +19,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "AIS_Target_Data.h"
+#include "chcanv.h"
+#include "navutil.h"
 
 extern bool bGPSValid;
 extern ChartCanvas *cc1;
