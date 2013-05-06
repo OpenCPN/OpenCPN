@@ -124,6 +124,7 @@ extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
+extern bool             g_bdisable_opengl;
 extern bool             g_bsmoothpanzoom;
 
 extern bool             g_bShowOutlines;
@@ -2202,13 +2203,13 @@ void Route::RenameRoutePoints( void )
 bool Route::SendToGPS( wxString& com_name, bool bsend_waypoints, wxGauge *pProgress )
 {
     bool result = false;
-    
+
     if( g_pMUX ) {
         ::wxBeginBusyCursor();
          result = g_pMUX->SendRouteToGPS( this, com_name, bsend_waypoints, pProgress );
         ::wxEndBusyCursor();
     }
-    
+
     wxString msg;
     if( result ) msg = _("Route Uploaded successfully.");
     else
@@ -2554,21 +2555,21 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
 
     wxRoutePointListNode *node = pRoutePointList->GetFirst();
     RoutePoint *prp = node->GetData();
-    
+
     //  Establish basic colour
     wxColour basic_colour;
-    if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {     
+    if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {
             basic_colour = GetGlobalColor( _T ( "URED" ) );
     } else
-        if( prp->m_IconName.StartsWith( _T("xmblue") ) ) {            
+        if( prp->m_IconName.StartsWith( _T("xmblue") ) ) {
                 basic_colour = GetGlobalColor( _T ( "BLUE3" ) );
         } else
-            if( prp->m_IconName.StartsWith( _T("xmgreen") ) ) {        
+            if( prp->m_IconName.StartsWith( _T("xmgreen") ) ) {
                     basic_colour = GetGlobalColor( _T ( "UGREN" ) );
-            } else {                                                   
+            } else {
                     basic_colour = GetGlobalColor( _T ( "CHMGD" ) );
             }
-            
+
     int style = wxSOLID;
     int width = g_route_line_width;
     wxColour col;
@@ -2592,13 +2593,13 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
     //  Draw the first point
     wxPoint rpt, rptn;
     DrawPointWhich( dc, 1, &rpt );
-    
+
     node = node->GetNext();
     while( node ) {
         RoutePoint *prp = node->GetData();
         unsigned short int ToSegNo = prp->m_GPXTrkSegNo;
 
-/*        
+/*
         if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {         // pjotrc 2010.02.26
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ) ) );
             wxPen dPen( GetGlobalColor( _T ( "URED" ) ), g_track_line_width );
@@ -2618,17 +2619,17 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
                     wxPen dPen( GetGlobalColor( _T ( "CHMGD" ) ), g_track_line_width );
                     dc.SetPen( dPen );
                 }
-*/                
+*/
 
         prp->Draw( dc, &rptn );
 
-        if( ToSegNo == FromSegNo )                  
+        if( ToSegNo == FromSegNo )
             RenderSegment( dc, rpt.x, rpt.y, rptn.x, rptn.y, VP, false, (int) radius ); // no arrows, with hilite
 
         rpt = rptn;
 
         node = node->GetNext();
-        FromSegNo = ToSegNo;          
+        FromSegNo = ToSegNo;
 
     }
 
@@ -2842,7 +2843,7 @@ int Track::Simplify( double maxDelta ) {
 
     SetnPoints();
     pSelect->AddAllSelectableTrackSegments( this );
-    
+
     UpdateSegmentDistances();
     ::wxEndBusyCursor();
     return reduction;
@@ -3031,7 +3032,7 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "GPSIdent" ), &g_GPS_Ident, wxT("Generic") );
     Read( _T ( "UseGarminHostUpload" ),  &g_bGarminHostUpload, 0 );
-    
+
     Read( _T ( "UseNMEA_RMC" ), &g_bUseRMC, 1 );
     Read( _T ( "UseNMEA_GLL" ), &g_bUseGLL, 1 );
     Read( _T ( "UseBigRedX" ), &g_bbigred, 0 );
@@ -3062,6 +3063,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "LookAheadMode" ), &g_bLookAhead, 0 );
     Read( _T ( "SkewToNorthUp" ), &g_bskew_comp, 0 );
     Read( _T ( "OpenGL" ), &g_bopengl, 0 );
+    if (g_bdisable_opengl)
+        g_bopengl = false;
 
 //#ifdef __WXMAC__
 //      g_bopengl = 0;
@@ -3116,7 +3119,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "ShowChartOutlines" ), &g_bShowOutlines, 0 );
     Read( _T ( "ShowActiveRouteHighway" ), &g_bShowActiveRouteHighway, 1 );
     Read( _T ( "MostRecentGPSUploadConnection" ), &g_uploadConnection, _T("") );
-    
+
     Read( _T ( "SDMMFormat" ), &g_iSDMMFormat, 0 ); //0 = "Degrees, Decimal minutes"), 1 = "Decimal degrees", 2 = "Degrees,Minutes, Seconds"
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
@@ -3127,7 +3130,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "OwnShipGPSOffsetY" ), &g_n_gps_antenna_offset_y, 0 );
     Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 1 );
     g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
-    
+
     Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
 
     Read( _T ( "StartWithTrackActive" ), &g_bTrackCarryOver, 0 );
@@ -3157,10 +3160,10 @@ int MyConfig::LoadMyConfig( int iteration )
     g_NMEALogWindow_sy = Read( _T ( "NMEALogWindowSizeY" ), 400L );
     g_NMEALogWindow_x = Read( _T ( "NMEALogWindowPosX" ), 10L );
     g_NMEALogWindow_y = Read( _T ( "NMEALogWindowPosY" ), 10L );
-    
+
     if( ( g_NMEALogWindow_x < 0 ) || ( g_NMEALogWindow_x > display_width ) ) g_NMEALogWindow_x = 5;
     if( ( g_NMEALogWindow_y < 0 ) || ( g_NMEALogWindow_y > display_height ) ) g_NMEALogWindow_y = 5;
-                              
+
     SetPath( _T ( "/Settings/GlobalState" ) );
     Read( _T ( "bFollow" ), &st_bFollow );
 
@@ -3379,7 +3382,7 @@ int MyConfig::LoadMyConfig( int iteration )
     global_color_scheme = (ColorScheme) read_int;
 
     SetPath( _T ( "/Settings/NMEADataSource" ) );
-    
+
     wxString connectionconfigs;
     Read ( _T( "DataConnections" ),  &connectionconfigs, wxEmptyString );
     wxArrayString confs = wxStringTokenize(connectionconfigs, _T("|"));
@@ -3408,10 +3411,10 @@ int MyConfig::LoadMyConfig( int iteration )
             port = xSource.Mid(7);
         else
             port = _T("");
-        
+
         if( port.Len() && (port != _T("None")) && (port != _T("AIS Port (Shared)")) ) {
         //  Look in the ConnectionParams array to see if this port has been defined in the newer style
-            bool bfound = false;    
+            bool bfound = false;
             for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
             {
                 ConnectionParams *cp = g_pConnectionParams->Item(i);
@@ -3420,24 +3423,24 @@ int MyConfig::LoadMyConfig( int iteration )
                     break;
                 }
             }
-            
+
             if(!bfound) {
                 ConnectionParams * prm = new ConnectionParams();
                 prm->Baudrate = wxAtoi(xRate);
                 prm->Port = port;
                 prm->Garmin = (b_garmin_host == 1);
-                
+
                 g_pConnectionParams->Add(prm);
-                
+
                 g_bGarminHostUpload = b_garmin_host;
             }
         }
         if( iteration == 1 ) {
             Write ( _T ( "Source" ), _T("") );          // clear the old tag
-            Write ( _T ( "BaudRate" ), _T("") ); 
+            Write ( _T ( "BaudRate" ), _T("") );
         }
     }
-             
+
    //  Is there an existing AISPort definition?
     SetPath( _T ( "/Settings/AISPort" ) );
     wxString aSource;
@@ -3450,10 +3453,10 @@ int MyConfig::LoadMyConfig( int iteration )
             port = aSource.Mid(7);
         else
             port = _T("");
-        
+
         if(port.Len() && port != _T("None") ) {
             //  Look in the ConnectionParams array to see if this port has been defined in the newer style
-            bool bfound = false;    
+            bool bfound = false;
             for ( size_t i = 0; i < g_pConnectionParams->Count(); i++ )
             {
                 ConnectionParams *cp = g_pConnectionParams->Item(i);
@@ -3462,7 +3465,7 @@ int MyConfig::LoadMyConfig( int iteration )
                     break;
                 }
             }
-            
+
             if(!bfound) {
                 ConnectionParams * prm = new ConnectionParams();
                 if( aRate.Len() )
@@ -3470,17 +3473,17 @@ int MyConfig::LoadMyConfig( int iteration )
                 else
                     prm->Baudrate = 38400;              // default for most AIS receivers
                 prm->Port = port;
-                
+
                 g_pConnectionParams->Add(prm);
             }
         }
 
         if( iteration == 1 ) {
             Write ( _T ( "Port" ), _T("") );          // clear the old tag
-            Write ( _T ( "BaudRate" ), _T("") ); 
+            Write ( _T ( "BaudRate" ), _T("") );
         }
     }
-             
+
     //  Is there an existing NMEAAutoPilotPort definition?
     SetPath( _T ( "/Settings/NMEAAutoPilotPort" ) );
     Read ( _T ( "Port" ), &xSource );
@@ -3490,7 +3493,7 @@ int MyConfig::LoadMyConfig( int iteration )
             port = xSource.Mid(7);
         else
             port = _T("");
-        
+
         if(port.Len() && port != _T("None") ) {
             //  Look in the ConnectionParams array to see if this port has been defined in the newer style
             bool bfound = false;
@@ -3503,14 +3506,14 @@ int MyConfig::LoadMyConfig( int iteration )
                     break;
                 }
             }
-            
+
             if(!bfound) {
                 ConnectionParams * prm = new ConnectionParams();
                 prm->Port = port;
                 prm->OutputSentenceListType = WHITELIST;
                 prm->OutputSentenceList.Add( _T("RMB") );
                 prm->Output = true;
-                
+
                 g_pConnectionParams->Add(prm);
             }
             else {                                  // port was found, so make sure it is set for output
@@ -3519,11 +3522,11 @@ int MyConfig::LoadMyConfig( int iteration )
                 cp->OutputSentenceList.Add( _T("RMB") );
             }
         }
-        
+
         if( iteration == 1 )
             Write ( _T ( "Port" ), _T("") );          // clear the old tag
     }
-             
+
 //    Reasonable starting point
     vLat = START_LAT;                   // display viewpoint
     vLon = START_LON;
@@ -4055,13 +4058,13 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "RadarRingsStepUnits" ), &g_pNavAidRadarRingsStepUnits );
 
     //  Support Version 3.0 and prior config setting for Radar Rings
-    bool b300RadarRings= true;   
+    bool b300RadarRings= true;
     Read ( _T ( "ShowRadarRings" ), &b300RadarRings );
     if(!b300RadarRings)
         g_iNavAidRadarRingsNumberVisible = 0;
-        
+
     Read( _T ( "ConfirmObjectDeletion" ), &g_bConfirmObjectDelete, true );
-    
+
     // Waypoint dragging with mouse
     g_bWayPointPreventDragging = false;
     Read( _T ( "WaypointPreventDragging" ), &g_bWayPointPreventDragging );
@@ -4464,7 +4467,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "ShowActiveRouteHighway" ), g_bShowActiveRouteHighway );
     Write( _T ( "SDMMFormat" ), g_iSDMMFormat );
     Write( _T ( "MostRecentGPSUploadConnection" ), g_uploadConnection );
-    
+
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
@@ -4524,7 +4527,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "GPSIdent" ), g_GPS_Ident );
     Write( _T ( "UseGarminHostUpload" ), g_bGarminHostUpload );
-    
+
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
@@ -4625,7 +4628,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bAISAlertSuppressMoored" ), g_bAIS_CPA_Alert_Suppress_Moored );
     Write( _T ( "bShowAreaNotices" ), g_bShowAreaNotices );
     Write( _T ( "bDrawAISSize" ), g_bDrawAISSize );
-    
+
     Write( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
     Write( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );
     Write( _T ( "AlertDialogPosX" ), g_ais_alert_dialog_x );
@@ -4739,7 +4742,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "RadarRingsStepUnits" ), g_pNavAidRadarRingsStepUnits );
 
     Write( _T ( "ConfirmObjectDeletion" ), g_bConfirmObjectDelete );
-    
+
     // Waypoint dragging with mouse; toh, 2009.02.24
     Write( _T ( "WaypointPreventDragging" ), g_bWayPointPreventDragging );
 
@@ -4887,16 +4890,16 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         wxProgressDialog *pprog = NULL;
         int count = pWayPointMan->m_pWayPointList->GetCount();
         if( count > 200) {
-            pprog = new wxProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL, 
+            pprog = new wxProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL,
                                           wxPD_APP_MODAL | wxPD_SMOOTH |
                                           wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME );
             pprog->SetSize( 400, wxDefaultCoord );
             pprog->Centre();
         }
-        
+
         //WPTs
         int ic = 0;
-        
+
         wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
         RoutePoint *pr;
         while( node ) {
@@ -4906,14 +4909,14 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
                 pprog->Update( ic, msg );
                 ic++;
             }
-            
+
             pr = node->GetData();
 
             bool b_add = true;
 
             if( bviz_only && !pr->m_bIsVisible )
                 b_add = false;
-            
+
             if( pr->m_bIsInLayer && !blayer )
                 b_add = false;
             if( b_add) {
@@ -4927,17 +4930,17 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         wxRouteListNode *node1 = pRouteList->GetFirst();
         while( node1 ) {
             Route *pRoute = node1->GetData();
-            
+
             bool b_add = true;
-            
+
             if( bviz_only && !pRoute->IsVisible() )
                 b_add = false;
-            
-            if(  pRoute->m_bIsInLayer && !blayer ) 
+
+            if(  pRoute->m_bIsInLayer && !blayer )
                 b_add = false;
-                
+
             if( b_add ) {
-                if( !pRoute->m_bIsTrack ) 
+                if( !pRoute->m_bIsTrack )
                     gpxroot->AddRoute( CreateGPXRte( pRoute ) );
                 else
                     gpxroot->AddTrack( CreateGPXTrk( pRoute ) );
@@ -4948,12 +4951,12 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         gpx->SaveFile( fn.GetFullPath() );
         gpx->Clear();
         delete gpx;
-        
+
         ::wxEndBusyCursor();
-        
+
         if( pprog)
             delete pprog;
-        
+
     }
 }
 
@@ -8005,22 +8008,22 @@ TTYWindow::TTYWindow()
 TTYWindow::TTYWindow(wxWindow *parent, int n_lines)
 {
     wxDialog::Create( parent, -1, _T("Title"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER );
-    
+
     wxBoxSizer* bSizerOuterContainer = new wxBoxSizer( wxVERTICAL );
     SetSizer( bSizerOuterContainer );
-    
+
     m_pScroll = new TTYScroll(this, n_lines);
     m_pScroll->Scroll(-1, 1000);        // start with full scroll down
-    
+
     bSizerOuterContainer->Add( m_pScroll, 1, wxEXPAND, 5 );
 
     wxBoxSizer* bSizerBottomContainer = new wxBoxSizer( wxHORIZONTAL );
     bSizerOuterContainer->Add( bSizerBottomContainer, 0, wxEXPAND, 5 );
-    
- 
+
+
     wxStaticBox *psb = new wxStaticBox( this,  wxID_ANY, _("Legend")) ;
     wxStaticBoxSizer* sbSizer1 = new wxStaticBoxSizer( psb , wxVERTICAL );
-    
+
     CreateLegendBitmap();
     wxBitmapButton *bb = new wxBitmapButton(this, wxID_ANY, m_bm_legend);
     sbSizer1->Add( bb, 1, wxALL|wxEXPAND, 5 );
@@ -8028,9 +8031,9 @@ TTYWindow::TTYWindow(wxWindow *parent, int n_lines)
 
     m_buttonPause = new wxButton( this, wxID_ANY, _("Pause"), wxDefaultPosition, wxDefaultSize, 0 );
     bSizerBottomContainer->Add( m_buttonPause, 0, wxALIGN_RIGHT | wxALL, 5 );
-    
+
     m_buttonPause->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( TTYWindow::OnPauseClick ), NULL, this );
-   
+
     bpause = false;
 }
 
@@ -8046,42 +8049,42 @@ void TTYWindow::CreateLegendBitmap()
     wxMemoryDC dc;
     dc.SelectObject( m_bm_legend );
     if( m_bm_legend.IsOk()) {
-        
+
         dc.SetBackground( wxBrush(GetGlobalColor(_T("DILG1"))) );
         dc.Clear();
-        
+
         wxFont f(8, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL);
         dc.SetFont(f);
-        
+
         int yp = 25;
         int y = 5;
-        
+
         wxBrush b1(wxColour( _T("DARK GREEN")) );
         dc.SetBrush(b1);
         dc.DrawRectangle( 5, y, 20, 20 );
         dc.SetTextForeground( wxColour(_T("DARK GREEN")) );
         dc.DrawText(  _("Message accepted"), 30, y );
-        
+
         y += yp;
         wxBrush b2(wxColour( _T("#a0832a")) );
         dc.SetBrush(b2);
         dc.DrawRectangle( 5, y, 20, 20 );
         dc.SetTextForeground( wxColour(_T("#a0832a")) );
         dc.DrawText(  _("Message filtered and dropped"), 30, y );
-        
+
         y += yp;
         wxBrush b3(wxColour( _T("BLUE")) );
         dc.SetBrush(b3);
         dc.DrawRectangle( 5, y, 20, 20 );
         dc.SetTextForeground( wxColour(_T("BLUE")) );
         dc.DrawText(  _("Output Message"), 30, y );
-        
-        
-        
+
+
+
     }
-        
+
     dc.SelectObject( wxNullBitmap );
-        
+
 }
 
 
@@ -8092,13 +8095,13 @@ void TTYWindow::OnPauseClick( wxCommandEvent& event )
     if(!bpause) {
         bpause = true;
         m_pScroll->Pause( true );
-        
+
         m_buttonPause->SetLabel( _("Resume") );
     }
     else {
         bpause = false;
         m_pScroll->Pause( false );
-        
+
         m_buttonPause->SetLabel( _("Pause") );
     }
 }
@@ -8136,7 +8139,7 @@ void TTYScroll::Add( wxString &line )
         if( m_plineArray->GetCount() > m_nLines - 1 ) {                       // shuffle the arraystring
             wxArrayString *p_newArray = new wxArrayString;
 
-            for( unsigned int i = 1; i < m_plineArray->GetCount(); i++ ) 
+            for( unsigned int i = 1; i < m_plineArray->GetCount(); i++ )
                 p_newArray->Add( m_plineArray->Item( i ) );
 
             delete m_plineArray;
@@ -8177,12 +8180,12 @@ void TTYScroll::OnDraw( wxDC& dc )
                 dc.SetTextForeground( wxColour(_T("BLUE")) );
                 lss = ls.Mid(6);
         }
-        
+
         else if(ls.Mid(0, 5) == _T("<RED>") ){
             dc.SetTextForeground( wxColour(_T("RED")) );
             lss = ls.Mid(5);
         }
-        
+
         dc.DrawText( lss, 0, y );
        y += m_hLine;
     }
@@ -8229,13 +8232,13 @@ static int OCPNSoundCallback( const void *inputBuffer, void *outputBuffer,
         *out = data[sindex];
         out++;
         sindex++;
-        
+
         if( sindex >= smax_samples ) {
             bdone = true;
             break;
         }
     }
-    
+
     if(bdone)
         return paComplete;
     else
@@ -8257,19 +8260,19 @@ OCPN_Sound::OCPN_Sound()
         }
         portaudio_initialized = true;
     }
-        
+
     m_osdata = NULL;
     m_OK = false;
     m_stream = NULL;
-    
+
 }
- 
+
 OCPN_Sound::~OCPN_Sound()
 {
     if( m_stream ) {
         Pa_CloseStream( m_stream );
     }
-    
+
     FreeMem();
 }
 
@@ -8281,19 +8284,19 @@ bool OCPN_Sound::IsOk() const
 bool OCPN_Sound::Create(const wxString& fileName, bool isResource)
 {
     m_OK = false;
-    
+
     FreeMem();
-    
+
     wxFile fileWave;
     if (!fileWave.Open(fileName, wxFile::read))
     {
         return false;
     }
-    
+
     wxFileOffset lenOrig = fileWave.Length();
     if ( lenOrig == wxInvalidOffset )
         return false;
-    
+
     size_t len = wx_truncate_cast(size_t, lenOrig);
     wxUint8 *data = new wxUint8[len];
     if ( fileWave.Read(data, len) != lenOrig )
@@ -8302,7 +8305,7 @@ bool OCPN_Sound::Create(const wxString& fileName, bool isResource)
         wxLogError(_("Couldn't load sound data from '%s'."), fileName.c_str());
         return false;
     }
-    
+
     if (!LoadWAV(data, len, true))
     {
         delete [] data;
@@ -8310,19 +8313,19 @@ bool OCPN_Sound::Create(const wxString& fileName, bool isResource)
                    fileName.c_str());
         return false;
     }
-    
+
     sdata = m_osdata->m_data;           //The raw sound data
     sindex = 0;
     smax_samples = m_osdata->m_samples;
- 
+
     PaError err;
     m_stream = NULL;
-    
+
     /* Open an audio I/O stream. */
     err = Pa_OpenDefaultStream( &m_stream,
                                 0, /* no input channels */
-                                m_osdata->m_channels, 
-                                paInt16, 
+                                m_osdata->m_channels,
+                                paInt16,
                                 m_osdata->m_samplingRate,
                                 256, /* frames per buffer, i.e. the number
                                 of sample frames that PortAudio will
@@ -8337,12 +8340,12 @@ bool OCPN_Sound::Create(const wxString& fileName, bool isResource)
     if( err != paNoError )
         printf( "PortAudio Create() error: %s\n", Pa_GetErrorText( err ) );
 
-    err = Pa_SetStreamFinishedCallback( m_stream, OCPNSoundFinishedCallback ); 
+    err = Pa_SetStreamFinishedCallback( m_stream, OCPNSoundFinishedCallback );
     if( err != paNoError )
         printf( "PortAudio SetStreamFinishedCallback() error: %s\n", Pa_GetErrorText( err ) );
-    
+
     m_OK = true;
-    
+
     return true;
 }
 
@@ -8350,13 +8353,13 @@ bool OCPN_Sound::Play(unsigned flags) const
 {
     if(m_stream) {
         Pa_StopStream( m_stream );
-    
+
         if( !splaying ) {
             sdata = m_osdata->m_data;           //The raw sound data
             sindex = 0;
             smax_samples = m_osdata->m_samples;
             stream = m_stream;
-    
+
             PaError err = Pa_StartStream( stream );
             if( err != paNoError ) {
                 printf( "PortAudio Play() error: %s\n", Pa_GetErrorText( err ) );
@@ -8366,7 +8369,7 @@ bool OCPN_Sound::Play(unsigned flags) const
                 splaying = true;
                 return true;
             }
-        
+
         }
         else
             return false;
@@ -8383,7 +8386,7 @@ void OCPN_Sound::Stop()
 {
     Pa_StopStream( m_stream );
     splaying = false;
-    
+
 }
 
 typedef struct
@@ -8425,7 +8428,7 @@ bool OCPN_Sound::LoadWAV(const wxUint8 *data, size_t length, bool copyData)
     // so check that we have at least as much
     if ( length < 44 )
         return false;
-    
+
     WAVEFORMAT waveformat;
     memcpy(&waveformat, &data[FMT_INDEX + 4], sizeof(WAVEFORMAT));
     waveformat.uiSize = wxUINT32_SWAP_ON_BE(waveformat.uiSize);
@@ -8435,15 +8438,15 @@ bool OCPN_Sound::LoadWAV(const wxUint8 *data, size_t length, bool copyData)
     waveformat.ulAvgBytesPerSec = wxUINT32_SWAP_ON_BE(waveformat.ulAvgBytesPerSec);
     waveformat.uiBlockAlign = wxUINT16_SWAP_ON_BE(waveformat.uiBlockAlign);
     waveformat.uiBitsPerSample = wxUINT16_SWAP_ON_BE(waveformat.uiBitsPerSample);
-    
+
     // get the sound data size
     wxUint32 ul;
     memcpy(&ul, &data[FMT_INDEX + waveformat.uiSize + 12], 4);
     ul = wxUINT32_SWAP_ON_BE(ul);
-    
+
     if ( length < ul + FMT_INDEX + waveformat.uiSize + 16 )
         return false;
-    
+
     if (memcmp(data, "RIFF", 4) != 0)
         return false;
     if (memcmp(&data[WAVE_INDEX], "WAVE", 4) != 0)
@@ -8452,14 +8455,14 @@ bool OCPN_Sound::LoadWAV(const wxUint8 *data, size_t length, bool copyData)
         return false;
     if (memcmp(&data[FMT_INDEX + waveformat.uiSize + 8], "data", 4) != 0)
         return false;
-    
+
     if (waveformat.uiFormatTag != WAVE_FORMAT_PCM)
         return false;
-    
+
     if (waveformat.ulSamplesPerSec !=
         waveformat.ulAvgBytesPerSec / waveformat.uiBlockAlign)
         return false;
-    
+
     m_osdata = new OCPNSoundData;
     m_osdata->m_dataWithHeader = NULL;
     m_osdata->m_channels = waveformat.uiChannels;
@@ -8467,7 +8470,7 @@ bool OCPN_Sound::LoadWAV(const wxUint8 *data, size_t length, bool copyData)
     m_osdata->m_bitsPerSample = waveformat.uiBitsPerSample;
     m_osdata->m_samples = ul / (m_osdata->m_channels * m_osdata->m_bitsPerSample / 8);
     m_osdata->m_dataBytes = ul;
-    
+
     if (copyData)
     {
         m_osdata->m_dataWithHeader = new wxUint8[length];
@@ -8475,10 +8478,10 @@ bool OCPN_Sound::LoadWAV(const wxUint8 *data, size_t length, bool copyData)
     }
     else
         m_osdata->m_dataWithHeader = (wxUint8*)data;
-    
+
     m_osdata->m_data =
     (&m_osdata->m_dataWithHeader[FMT_INDEX + waveformat.uiSize + 8]);
-    
+
     return true;
 }
 
@@ -8488,7 +8491,7 @@ void OCPN_Sound::FreeMem(void)
         if( m_osdata->m_dataWithHeader )
             delete [] m_osdata->m_dataWithHeader;
         delete m_osdata;
-        
+
         m_osdata = NULL;
     }
 }
@@ -8520,11 +8523,11 @@ bool OCPN_Sound::Play(unsigned flags) const
 
 bool OCPN_Sound::IsPlaying() const
 {
-#ifndef __WXMSW__    
+#ifndef __WXMSW__
     return wxSound::IsPlaying();
 #else
     return false;
-#endif    
+#endif
 }
 
 void OCPN_Sound::Stop()
