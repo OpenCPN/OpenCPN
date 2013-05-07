@@ -496,9 +496,10 @@ public:
     
     wxString          m_MarkName;
     wxString          m_MarkDescription;
+    wxDateTime        m_CreateTime;
     
     wxString          m_IconName;
-    
+
     Plugin_HyperlinkList *m_HyperlinkList;
     
 };
