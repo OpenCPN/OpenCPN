@@ -3399,6 +3399,8 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     m_pAuiManager = auimgr;
     m_pdecoder = pdecoder;
 
+    SetMinSize( wxSize(400,240));
+
     g_p_sort_decoder = pdecoder;
     m_pMMSI_array = new ArrayOfMMSI( ArrayItemCompareMMSI );
 
