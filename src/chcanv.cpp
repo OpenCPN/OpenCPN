@@ -246,6 +246,7 @@ extern wxAuiManager      *g_pauimgr;
 
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
+extern bool             g_bdisable_opengl;
 
 extern bool             g_bFullScreenQuilt;
 extern wxProgressDialog *s_ProgDialog;
@@ -1659,7 +1660,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                     if( chart_fractional_area < .20 ) {
                         b_add = false;
                     }
-                    
+
                     //  Allow S57 charts that are near normal zoom, no matter what their fractional area coverage
                     if( zoom_factor > 0.5)
                         b_add = true;
@@ -1790,7 +1791,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
     double saved_vp_rotation = vp_local.rotation;                      // save a copy
     vp_local.SetRotationAngle( 0. );
-    
+
     bool bfull = vp_in.b_FullScreenQuilt;
     BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
 
@@ -2164,7 +2165,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    Mark the quilt to indicate need for background clear if the region is not fully covered
     m_bneed_clear = !unrendered_region.IsEmpty();
     m_back_region = unrendered_region;
-    
+
     //    Finally, iterate thru the quilt and preload all of the required charts.
     //    For dynamic S57 SENC creation, this is where SENC creation happens first.....
     bool b_stop_ap = false;
@@ -2183,7 +2184,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
         cc1->StopAutoPan();
         cc1->StartAutoPan();
     }
-    
+
     //    Build and maintain the array of indexes in this quilt
 
     m_last_index_array = m_index_array;       //save the last one for delta checks
@@ -3233,18 +3234,20 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     undo = new Undo;
 
     VPoint.Invalidate();
-    
+
     m_bpan_enable = true;
-    
-    m_glcc = new glChartCanvas(this);
 
-#if wxCHECK_VERSION(2, 9, 0)
-    m_pGLcontext = new wxGLContext(m_glcc);
-    m_glcc->SetContext(m_pGLcontext);
-#else
-    m_pGLcontext = m_glcc->GetContext();
-#endif
+    if ( !g_bdisable_opengl )
+    {
+        m_glcc = new glChartCanvas(this);
 
+    #if wxCHECK_VERSION(2, 9, 0)
+        m_pGLcontext = new wxGLContext(m_glcc);
+        m_glcc->SetContext(m_pGLcontext);
+    #else
+        m_pGLcontext = m_glcc->GetContext();
+    #endif
+    }
 
     singleClickEventIsValid = false;
 
@@ -3643,7 +3646,8 @@ ChartCanvas::~ChartCanvas()
     delete m_pos_image_user_grey_dusk;
     delete m_pos_image_user_grey_night;
     delete undo;
-    delete m_glcc;
+    if( !g_bdisable_opengl )
+        delete m_glcc;
 }
 
 int ChartCanvas::GetCanvasChartNativeScale()
@@ -3826,7 +3830,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
     m_panx = 0;
     m_pany = 0;
-    
+
     m_modkeys = event.GetModifiers();
 
     if( event.GetKeyCode() == WXK_CONTROL ) m_bmouse_key_mod = true;
@@ -4034,7 +4038,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             parent_frame->ToggleChartOutlines();
             break;
 
-#if 0            
+#if 0
         case 'R':
             parent_frame->ToggleRocks();
             break;
@@ -4192,9 +4196,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     if( !pPanKeyTimer->IsRunning() && ( m_panx || m_pany ) && m_bpan_enable )
         pPanKeyTimer->Start( 1, wxTIMER_ONE_SHOT );
 
-#ifndef __WXMAC__    
+#ifndef __WXMAC__
     event.Skip();
-#endif    
+#endif
 }
 
 void ChartCanvas::OnKeyUp( wxKeyEvent &event )
@@ -4240,7 +4244,7 @@ void ChartCanvas::Do_Pankeys( wxTimerEvent& event )
 {
     if( !m_bpan_enable)
         return;
-    
+
     if( !( m_panx || m_pany ) )
         return;
 
@@ -4372,7 +4376,7 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                         s.Append( _("Route: ") );
                     else
                         s.Append( _("Layer Route: ") );
-                    
+
                     if( pr->m_RouteNameString.IsEmpty() ) s.Append( _("(unnamed)") );
                     else
                         s.Append( pr->m_RouteNameString );
@@ -5275,7 +5279,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
         double dist = sqrt(
                           pow( (double) ( lHeadPoint.x - lPredPoint.x ), 2 )
                           + pow( (double) ( lHeadPoint.y - lPredPoint.y ), 2 ) );
-        if( dist > ndelta_pix && !wxIsNaN(gSog) ) 
+        if( dist > ndelta_pix && !wxIsNaN(gSog) )
             b_render_hdt = true;
     }
 
@@ -6211,7 +6215,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
             //  Calculate the point of CPA for ownship
             double ocpa_lat, ocpa_lon;
-            
+
             //  Detect and handle the case where ownship COG is undefined....
             if( wxIsNaN(gCog) || wxIsNaN( gSog ) ) {
                 ocpa_lat = gLat;
@@ -6220,7 +6224,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             else {
                 ll_gc_ll( gLat, gLon, gCog, gSog * td->TCPA / 60., &ocpa_lat, &ocpa_lon );
             }
-            
+
             wxPoint oCPAPoint;
 
             GetCanvasPointPix( ocpa_lat, ocpa_lon, &oCPAPoint );
@@ -6738,7 +6742,7 @@ void ChartCanvas::AlertDraw( ocpnDC& dc )
     } else
         AnchorAlertOn2 = false;
 
-    
+
     if( play_sound ) {
         if( !g_anchorwatch_sound.IsOk() ) g_anchorwatch_sound.Create( g_sAIS_Alert_Sound_File );
 
@@ -7915,7 +7919,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             pFindRP = pSelect->FindSelection( slat, slon, SELTYPE_ROUTEPOINT );
             pFindRouteSeg = pSelect->FindSelection( slat, slon, SELTYPE_ROUTESEGMENT );
             pFindTrackSeg = pSelect->FindSelection( slat, slon, SELTYPE_TRACKSEGMENT );
-            
+
             if( m_bShowCurrent ) pFindCurrent = pSelectTC->FindSelection( slat, slon,
                                                     SELTYPE_CURRENTPOINT );
 
@@ -7967,7 +7971,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         }
                         if( !brp_viz )                          // is not visible as part of route
                             brp_viz = prp->IsVisible();         //  so treat as isolated point
-                        
+
                     } else
                         brp_viz = prp->IsVisible();               // isolated point
 
@@ -8299,7 +8303,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 }
             }
         }
-    }  
+    }
     if( !VPoint.b_quilt ) {
         if( parent_frame->GetnChartStack() > 1 ) {
             contextMenu->Append( ID_DEF_MENU_MAX_DETAIL, _( "Max Detail Here" ) );
@@ -8437,9 +8441,9 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     if( seltype & SELTYPE_ROUTESEGMENT ) {
         bool blay = false;
-        if( m_pSelectedRoute && m_pSelectedRoute->m_bIsInLayer ) 
+        if( m_pSelectedRoute && m_pSelectedRoute->m_bIsInLayer )
             blay = true;
-        
+
         if( blay ){
             delete menuRoute;
             menuRoute = new wxMenu( _("Layer Route") );
@@ -8485,7 +8489,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 item.Append(_T(" )") );
             }
             menuRoute->Append( ID_RT_MENU_SENDTOGPS, item );
-            
+
         }
         //      Set this menu as the "focused context menu"
         menuFocus = menuRoute;
@@ -8493,9 +8497,9 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     if( seltype & SELTYPE_TRACKSEGMENT ) {
         bool blay = false;
-        if( m_pSelectedTrack && m_pSelectedTrack->m_bIsInLayer ) 
+        if( m_pSelectedTrack && m_pSelectedTrack->m_bIsInLayer )
             blay = true;
-        
+
         if( blay ) {
             delete menuTrack;
             menuTrack = new wxMenu( _("Layer Track") );
@@ -8506,28 +8510,28 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             menuTrack->Append( ID_TK_MENU_COPY, _( "Copy As KML" ) );
             menuTrack->Append( ID_TK_MENU_DELETE, _( "Delete..." ) );
         }
-        
+
         //      Set this menu as the "focused context menu"
         menuFocus = menuTrack;
     }
 
     if( seltype & SELTYPE_ROUTEPOINT ) {
         bool blay = false;
-        if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer ) 
+        if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer )
             blay = true;
-        
+
         if( blay ){
             delete menuWaypoint;
             menuWaypoint = new wxMenu( _("Layer Routepoint") );
             menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
-            
-            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) 
+
+            if( m_pSelectedRoute && m_pSelectedRoute->IsActive() )
                 menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
         }
         else {
             menuWaypoint->Append( ID_WP_MENU_PROPERTIES, _( "Properties..." ) );
             if( m_pSelectedRoute && m_pSelectedRoute->IsActive() ) {
-                if(m_pSelectedRoute->m_pRouteActivePoint != m_pFoundRoutePoint ) 
+                if(m_pSelectedRoute->m_pRouteActivePoint != m_pFoundRoutePoint )
                     menuWaypoint->Append( ID_RT_MENU_ACTPOINT, _( "Activate" ) );
             }
 
@@ -8562,9 +8566,9 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     if( seltype & SELTYPE_MARKPOINT ) {
         bool blay = false;
-        if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer ) 
+        if( m_pFoundRoutePoint && m_pFoundRoutePoint->m_bIsInLayer )
             blay = true;
-        
+
         if( blay ){
             delete menuWaypoint;
             menuWaypoint = new wxMenu( _("Layer Waypoint") );
@@ -8590,7 +8594,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 item.Append(_T(" )") );
             }
             menuWaypoint->Append( ID_WPT_MENU_SENDTOGPS, item );
-            
+
 
             if( ( m_pFoundRoutePoint == pAnchorWatchPoint1 ) || ( m_pFoundRoutePoint == pAnchorWatchPoint2 ) )
                 menuWaypoint->Append( ID_WP_MENU_CLEAR_ANCHORWATCH, _( "Clear Anchor Watch" ) );
@@ -8706,7 +8710,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
             }
         }
     }
-    
+
 
     if( Chs57 || !area_notices.empty() ) {
         // Go get the array of all objects at the cursor lat/lon
@@ -8758,7 +8762,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
             objText << CHs57_Overlay->CreateObjDescriptions( overlay_rule_list );
             objText << _T("<hr noshade>");
         }
-        
+
         for( std::vector< Ais8_001_22* >::iterator an = area_notices.begin(); an != area_notices.end(); ++an ) {
             objText << _T( "<b>AIS Area Notice:</b> " );
             objText << ais8_001_22_notice_names[( *an )->notice_type];
@@ -9501,7 +9505,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
              else {
                  SendToGpsDlg dlg;
                  dlg.SetWaypoint( m_pFoundRoutePoint );
-                 
+
                  dlg.Create( NULL, -1, _( "Send To GPS..." ), _T("") );
                  dlg.ShowModal();
              }
@@ -9515,14 +9519,14 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             else {
                 SendToGpsDlg dlg;
                 dlg.SetRoute( m_pSelectedRoute );
-                
+
                 dlg.Create( NULL, -1, _( "Send To GPS..." ), _T("") );
                 dlg.ShowModal();
             }
-                
+
         }
         break;
-        
+
     case ID_PASTE_WAYPOINT:
         pupHandler_PasteWaypoint();
         break;
@@ -10093,7 +10097,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             s0.Append( _("Route: ") );
         else
             s0.Append( _("Layer Route: ") );
-        
+
         s0 += FormatDistanceAdaptive( route->m_route_length + dist );
         RenderExtraRouteLegInfo( dc, r_rband, s0 );
     }
@@ -10114,7 +10118,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     wxPaintDC dc( this );
 
-    m_glcc->Show( g_bopengl );
+    if( !g_bdisable_opengl )
+        m_glcc->Show( g_bopengl );
 
     if( g_bopengl ) {
         if( !s_in_update ) {          // no recursion allowed, seen on lo-spec Mac
@@ -15133,7 +15138,7 @@ void RolloverWin::SetBitmap( int rollover )
 
 
     if(m_plabelFont && m_plabelFont->IsOk()) {
-        
+
     //    Draw the text
         mdc.SetFont( *m_plabelFont );
 
@@ -15181,7 +15186,7 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
         break;
 
     }
-    
+
     int font_size = wxMax(8, dFont->GetPointSize());
     m_plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
                          dFont->GetStyle(), dFont->GetWeight(), false, dFont->GetFaceName() );
@@ -15199,7 +15204,7 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
         w = 10;
         h = 10;
     }
-    
+
     m_size.x = w + 8;
     m_size.y = h + 8;
 
@@ -16006,9 +16011,9 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
         ctrl->SetBackgroundColour( back_color );
     else
         ctrl->SetBackgroundColour( wxColour( 0xff, 0xff, 0xff ));
-#endif    
 #endif
-        
+#endif
+
     wxWindowList kids = ctrl->GetChildren();
     for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
         wxWindowListNode *node = kids.Item( i );

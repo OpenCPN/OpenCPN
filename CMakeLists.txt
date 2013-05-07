@@ -1010,7 +1010,7 @@ IF(WIN32 AND NOT UNIX)
 
   SET(CPACK_NSIS_INSTALLED_ICON_NAME "opencpn.exe")
   SET(CPACK_NSIS_PACKAGE_NAME_LC "opencpn")
-
+ 
 #  These lines set the name of the Windows Start Menu shortcut and the icon that goes with it
   SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME} ${PACKAGE_VERSION}")
   SET(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/src/bitmaps\\\\opencpn.ico")
