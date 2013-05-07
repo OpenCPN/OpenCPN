@@ -952,7 +952,11 @@ void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
        *dist = g_geod_S / 1852.0;
 }
 
-
+void PositionBearingDistanceMercator(double lat, double lon, double brg, double dist,
+                                     double *dlat, double *dlon)
+{
+    ll_gc_ll(lat, lon, brg, dist, dlat, dlon);
+}
 
 /* --------------------------------------------------------------------------------- */
 /*
@@ -960,7 +964,6 @@ void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
 // calculates the distance along a geodesic curve, using elliptic earth model.
 */
 /* --------------------------------------------------------------------------------- */
-
 
 double DistGreatCircle(double slat, double slon, double dlat, double dlon)
 {

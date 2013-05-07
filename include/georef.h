@@ -120,6 +120,9 @@ extern "C" void ll_gc_ll(double lat, double lon, double crs, double dist, double
 extern "C" void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
                                 double *bearing, double *dist);
 
+
+extern "C" void PositionBearingDistanceMercator(double lat, double lon, double brg, double dist,
+                                                double *dlat, double *dlon);
 extern "C" double DistGreatCircle(double slat, double slon, double dlat, double dlon);
 
 extern "C" int GetDatumIndex(const char *str);

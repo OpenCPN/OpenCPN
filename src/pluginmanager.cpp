@@ -1682,6 +1682,12 @@ bool GetActiveRoutepointGPX( char *buffer, unsigned int buffer_length )
         return false;
 }
 
+void PositionBearingDistanceMercator_Plugin(double lat, double lon,
+                                            double brg, double dist,
+                                            double *dlat, double *dlon)
+{
+    PositionBearingDistanceMercator(lat, lon, brg, dist, dlat, dlon);
+}
 
 void DistanceBearingMercator_Plugin(double lat0, double lon0, double lat1, double lon1, double *brg, double *dist)
 {
