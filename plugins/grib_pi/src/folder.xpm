@@ -365,7 +365,7 @@ static const char *request[] = {
 "bb##m.gh```k``hfcmmbbb",
 "bbbbbbb#bma###bbbbbbbb"
 };
-static char *play[] = {
+static const char *play[] = {
 /* width height num_colors chars_per_pixel */
 "    22    22       16            1",
 /* colors */
@@ -409,7 +409,7 @@ static char *play[] = {
 "jjmifff.llblld.ffiimjj",
 "jjjeeeeeeemmmeeeeeejjj"
 };
-static char *stop[] = {
+static const char *stop[] = {
 /* width height num_colors chars_per_pixel */
 "    22    22       16            1",
 /* colors */

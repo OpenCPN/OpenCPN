@@ -421,7 +421,7 @@ GribPreferencesDialogBase::GribPreferencesDialogBase( wxWindow* parent, wxWindow
 	fgSizer6 = new wxFlexGridSizer( 0, 1, 0, 0 );
 	fgSizer6->SetFlexibleDirection( wxBOTH );
 	fgSizer6->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
+
 	m_cbUseHiDef = new wxCheckBox( this, wxID_ANY, _("Use High Definition Graphics"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer6->Add( m_cbUseHiDef, 0, wxALL, 5 );
 	
@@ -433,14 +433,15 @@ GribPreferencesDialogBase::GribPreferencesDialogBase( wxWindow* parent, wxWindow
 	
 	m_cbCopyMissingWaveRecord = new wxCheckBox( this, wxID_ANY, _("Copy Missing Wave Records"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer6->Add( m_cbCopyMissingWaveRecord, 0, wxALL, 5 );
-	
-	m_rbLocalTime = new wxRadioButton( this, wxID_ANY, _("Local Time"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer6->Add( m_rbLocalTime, 0, wxALL, 5 );
-	
-	m_rbUTC = new wxRadioButton( this, wxID_ANY, _("UTC"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer6->Add( m_rbUTC, 0, wxALL, 5 );
-	
-	
+
+    const wxString options[] = { _("Load the More Recent File in Directory"), _("Load the Last Open File") };
+    m_rbStartOptions = new wxRadioBox( this, wxID_ANY, _("Load File Options"), wxDefaultPosition, wxDefaultSize, 2, options, 2, wxRA_SPECIFY_ROWS );
+    fgSizer6->Add( m_rbStartOptions, 0, wxALL|wxEXPAND, 5 );
+
+    const wxString format[] = { _("Local Time"), _("UTC") };
+    m_rbTimeFormat = new wxRadioBox( this, wxID_ANY, _("Time Options"), wxDefaultPosition, wxDefaultSize, 2, format, 2, wxRA_SPECIFY_ROWS );
+    fgSizer6->Add( m_rbTimeFormat, 0, wxALL|wxEXPAND, 5 );
+
 	fgSizer8->Add( fgSizer6, 1, wxEXPAND, 5 );
 	
 	m_sdbSizer2 = new wxStdDialogButtonSizer();

@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Chart Database Object
@@ -20,10 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
- */
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 
 // For compilers that support precompilation, includes "wx.h".
@@ -131,7 +129,8 @@ void ChartStack::AddChart( int db_add )
         nEntry = j;
         SetDBIndex(j-1, db_index);
     }
-             //    Remove exact duplicates, i.e. charts that have exactly the same file name and mod time
+             //    Remove exact duplicates, i.e. charts that have exactly the same file name and 
+            //     nearly the same mod time.
             //    These charts can be in the database due to having the exact same chart in different directories,
             //    as may be desired for some grouping schemes
             //    Note that if the target name is actually a directory, then windows fails to produce a valid
@@ -148,7 +147,7 @@ void ChartStack::AddChart( int db_add )
                         {
                             ChartTableEntry *pn = ChartData->GetpChartTableEntry(GetDBIndex(jd));
                             if( pm->GetFileTime() && pn->GetFileTime()) {
-                                if(pm->GetFileTime() == pn->GetFileTime()) {      // simple test
+                                if( abs(pm->GetFileTime() - pn->GetFileTime()) < 60 ) {           // simple test
                                     if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
                                         SetDBIndex(jd, -1);           // mark to remove
                                 }
@@ -248,10 +247,10 @@ ChartDB::~ChartDB()
       delete pChartCache;
 }
 
-bool ChartDB::LoadBinary(wxString *filename, ArrayOfCDI& dir_array_check)
+bool ChartDB::LoadBinary(const wxString & filename, ArrayOfCDI& dir_array_check)
 {
       m_dir_array = dir_array_check;
-      return ChartDatabase::Read(*filename);
+      return ChartDatabase::Read(filename);
 
       // Check chartDirs against dir_array_check
 }
@@ -471,7 +470,7 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
       cstk->nEntry = j;
 
 
-//    Remove exact duplicates, i.e. charts that have exactly the same file name and mod time
+//    Remove exact duplicates, i.e. charts that have exactly the same file name and nearly the same mod time
 //    These charts can be in the database due to having the exact same chart in different directories,
 //    as may be desired for some grouping schemes
 //    Note that if the target name is actually a directory, then windows fails to produce a valid
@@ -488,10 +487,10 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
                         {
                               ChartTableEntry *pn = GetpChartTableEntry(cstk->GetDBIndex(jd));
                               if( pm->GetFileTime() && pn->GetFileTime()) {
-                                if(pm->GetFileTime() == pn->GetFileTime()) {      // simple test
-                                    if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
-                                          cstk->SetDBIndex(jd, -1);           // mark to remove
-                                }
+                                    if( abs(pm->GetFileTime() - pn->GetFileTime()) < 60 ) {           // simple test
+                                        if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
+                                           cstk->SetDBIndex(jd, -1);           // mark to remove
+                                    }
                               }
                         }
                   }

@@ -1,11 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  PlugIn Object Definition/API
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -20,10 +20,9 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
- ***************************************************************************
- *
- */
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
+
 #ifndef _PLUGIN_H_
 #define _PLUGIN_H_
 
@@ -464,6 +463,78 @@ class DECL_EXP opencpn_plugin_19 : public opencpn_plugin_18
             virtual void OnSetupOptions(void);
 };
 
+//------------------------------------------------------------------
+//      Route and Waypoint PlugIn support
+//
+//------------------------------------------------------------------
+
+class Plugin_Hyperlink 
+{
+public:
+    wxString DescrText;
+    wxString Link;
+    wxString Type;
+};
+
+WX_DECLARE_LIST(Plugin_Hyperlink, Plugin_HyperlinkList);
+
+
+
+class PlugIn_Waypoint
+{
+public:
+    PlugIn_Waypoint();
+    PlugIn_Waypoint(double lat, double lon,
+                    const wxString& icon_ident, const wxString& wp_name,
+                    const wxString& GUID = _T("") );
+    ~PlugIn_Waypoint();
+    
+    double             m_lat;
+    double             m_lon;
+    
+    wxString          m_GUID;
+    
+    wxString          m_MarkName;
+    wxString          m_MarkDescription;
+    
+    wxString          m_IconName;
+    
+    Plugin_HyperlinkList *m_HyperlinkList;
+    
+};
+
+WX_DECLARE_LIST(PlugIn_Waypoint, Plugin_WaypointList);
+
+class PlugIn_Route
+{
+public:
+    PlugIn_Route(void);
+    ~PlugIn_Route(void);
+    
+    wxString    m_NameString;
+    wxString    m_StartString;
+    wxString    m_EndString;
+    wxString    m_GUID;
+    
+    Plugin_WaypointList     *pWaypointList;
+};
+
+class PlugIn_Track
+{
+public:
+    PlugIn_Track(void);
+    ~PlugIn_Track(void);
+    
+    wxString    m_NameString;
+    wxString    m_StartString;
+    wxString    m_EndString;
+    wxString    m_GUID;
+    
+    Plugin_WaypointList     *pWaypointList;
+};
+
+
+
 //----------------------------------------------------------------------------------------------------------
 //    The PlugIn CallBack API Definition
 //
@@ -537,15 +608,10 @@ extern "C" DECL_EXP void toSM_ECC_Plugin(double lat, double lon, double lat0, do
 extern "C" DECL_EXP void fromSM_ECC_Plugin(double x, double y, double lat0, double lon0, double *lat, double *lon);
 
 extern "C" DECL_EXP bool DecodeSingleVDOMessage( const wxString& str, PlugIn_Position_Fix_Ex *pos, wxString *acc );
+extern "C" DECL_EXP int GetChartbarHeight( void );
+extern "C" DECL_EXP bool GetActiveRoutepointGPX( char *buffer, unsigned int buffer_length );
 
-/* API 1.10  adds some common functions to avoid unnecessary code duplication */
-/* Study the original OpenCPN source for functional definitions  */
-extern "C" DECL_EXP double toUsrDistance_Plugin( double nm_distance, int unit = -1 );
-extern "C" DECL_EXP double fromUsrDistance_Plugin( double usr_distance, int unit = -1 );
-extern "C" DECL_EXP double toUsrSpeed_Plugin( double kts_speed, int unit = -1 );
-extern "C" DECL_EXP double fromUsrSpeed_Plugin( double usr_speed, int unit = -1 );
-extern DECL_EXP wxString getUsrDistanceUnit_Plugin( int unit = -1 );
-extern DECL_EXP wxString getUsrSpeedUnit_Plugin( int unit = -1 );
+
 
 /* API 1.9 */
 typedef enum OptionsParentPI
@@ -560,8 +626,37 @@ typedef enum OptionsParentPI
 extern DECL_EXP wxScrolledWindow *AddOptionsPage( OptionsParentPI parent, wxString title );
 extern DECL_EXP bool DeleteOptionsPage( wxScrolledWindow* page );
 
-extern "C" DECL_EXP int GetChartbarHeight( void );
-extern "C" DECL_EXP bool GetActiveRoutepointGPX( char *buffer, unsigned int buffer_length );
+
+/* API 1.10  */
+
+/* API 1.10  adds some common functions to avoid unnecessary code duplication */
+/* Study the original OpenCPN source for functional definitions  */
+extern "C" DECL_EXP double toUsrDistance_Plugin( double nm_distance, int unit = -1 );
+extern "C" DECL_EXP double fromUsrDistance_Plugin( double usr_distance, int unit = -1 );
+extern "C" DECL_EXP double toUsrSpeed_Plugin( double kts_speed, int unit = -1 );
+extern "C" DECL_EXP double fromUsrSpeed_Plugin( double usr_speed, int unit = -1 );
+extern DECL_EXP wxString getUsrDistanceUnit_Plugin( int unit = -1 );
+extern DECL_EXP wxString getUsrSpeedUnit_Plugin( int unit = -1 );
+extern DECL_EXP wxString GetNewGUID();
+
+
+
+// API 1.10 Route and Waypoint Support
+extern DECL_EXP wxBitmap *FindSystemWaypointIcon( wxString& icon_name );
+extern DECL_EXP bool AddCustomWaypointIcon( wxBitmap *pimage, wxString key, wxString description );
+
+extern DECL_EXP bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent = true);
+extern DECL_EXP bool DeleteSingleWaypoint( wxString &GUID );
+extern DECL_EXP bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint );
+
+extern DECL_EXP bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent = true );
+extern DECL_EXP bool DeletePlugInRoute( wxString& GUID );
+extern DECL_EXP bool UpdatePlugInRoute ( PlugIn_Route *proute );
+
+extern DECL_EXP bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent = true );
+extern DECL_EXP bool DeletePlugInTrack( wxString& GUID );
+extern DECL_EXP bool UpdatePlugInTrack ( PlugIn_Track *ptrack );
+
 
 #endif            // _PLUGIN_H_
 

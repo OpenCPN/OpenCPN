@@ -159,7 +159,7 @@ GribTimelineRecordSet::~GribTimelineRecordSet()
     ClearCachedData();
 }
 
-void GRIBUIDialog::OpenFile()
+void GRIBUIDialog::OpenFile(bool newestFile)
 {
     m_bpPlay->SetBitmap(*m_bPlay);
     m_bpPlay->SetToolTip(_("Play"));
@@ -170,6 +170,11 @@ void GRIBUIDialog::OpenFile()
        but for some reason it crbashes windows */
 //    delete m_bGRIBActiveFile;
     m_pTimelineSet = NULL;
+
+    //get more recent file in default directory if necessary
+    wxFileName f( m_file_name );
+    if( newestFile || f.GetFullName().IsEmpty() ) m_file_name = GetNewestFileInDirectory();
+
     m_bGRIBActiveFile = new GRIBFile( m_file_name,
                                       pPlugIn->GetCopyFirstCumRec(),
                                       pPlugIn->GetCopyMissWaveRec() );    
@@ -197,12 +202,39 @@ void GRIBUIDialog::OpenFile()
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Error:  No valid data in this file!") );
             } else
                 PopulateComboDataList( 0 );
-        } else 
-            pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
-
+        } else {
+            if( fn.IsDir() ) {
+                pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning:  Empty directory!") );
+                SetLabel( fn.GetFullPath() );
+            }
+            else
+                pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
+	}
         SetFactoryOptions();
         DisplayDataGRS();
         PopulateTrackingControls();
+    }
+}
+
+wxString GRIBUIDialog::GetNewestFileInDirectory()
+{
+    if( !wxDir::Exists( m_grib_dir ) ) {
+         wxStandardPaths path;
+         m_grib_dir = path.GetDocumentsDir();
+    }
+    //    Get an array of GRIB file names in the target directory, not descending into subdirs
+    wxArrayString file_array;
+    int m_n_files = 0;
+    m_n_files = wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grb" ), wxDIR_FILES );
+    m_n_files += wxDir::GetAllFiles( m_grib_dir, &file_array, _T ( "*.grb.bz2" ),
+        wxDIR_FILES );
+    if( m_n_files ) {
+        file_array.Sort( CompareFileStringTime );              //sort the files by File Modification Date  
+
+        return file_array[0];                                  //return the first file (the more recent one)
+    } else {
+        wxFileName d(m_grib_dir);
+        return wxString( m_grib_dir.Append(d.GetPathSeparator()) );                                      //this directory is empty
     }
 }
 
@@ -843,7 +875,10 @@ void GRIBUIDialog::OnCBAny( wxCommandEvent& event )
 
 void GRIBUIDialog::OnOpenFile( wxCommandEvent& event )
 {
-    //    m_pGribForecastTimer.Stop();
+    if( !wxDir::Exists( m_grib_dir ) ) {
+         wxStandardPaths path;
+         m_grib_dir = path.GetDocumentsDir();
+    }
        
     wxFileDialog *dialog = new wxFileDialog(this, _("Select a GRIB file"), m_grib_dir, 
         _T(""), wxT ( "Grib files (*.grb;*.grb.bz2|*.grb;*.grb.bz2"), wxFD_OPEN, wxDefaultPosition,

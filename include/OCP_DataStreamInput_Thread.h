@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __OCP_DATASTREAMINPUT_THREAD_H__
 #define __OCP_DATASTREAMINPUT_THREAD_H__
@@ -63,13 +62,13 @@ public:
 
     ~OCP_DataStreamInput_Thread(void);
     void *Entry();
-    bool SetOutMsg(wxString msg);
+    bool SetOutMsg(const wxString & msg);
     void OnExit(void);
 
 private:
     void ThreadMessage(const wxString &msg);
     void Parse_And_Send_Posn(const char *s);
-    int OpenComPortPhysical(wxString &com_name, int baud_rate);
+    int OpenComPortPhysical(const wxString &com_name, int baud_rate);
     int CloseComPortPhysical(int fd);
     int WriteComPortPhysical(int port_descriptor, const wxString& string);
     int WriteComPortPhysical(int port_descriptor, char *msg);

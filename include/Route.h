@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __ROUTE_H__
 #define __ROUTE_H__
@@ -69,8 +68,8 @@ public:
       wxString GetNewMarkSequenced(void);
       void AssembleRoute();
       bool IsEqualTo(Route *ptargetroute);
-      void CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix);
-      void CloneTrack(Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix);
+      void CloneRoute(Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix);
+      void CloneTrack(Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix);
       void CloneAddedTrackPoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void CloneAddedRoutePoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void ClearHighlights(void);
@@ -85,7 +84,7 @@ public:
       bool IsSelected() { return m_bRtIsSelected; }
       bool IsTrack(){ return m_bIsTrack; }
 
-      bool SendToGPS(wxString& com_name, bool bsend_waypoints, wxGauge *pProgress);
+      bool SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress);
 
       double GetRouteArrivalRadius(void){ return m_ArrivalRadius;}
       void SetRouteArrivalRadius(double radius){m_ArrivalRadius = radius;}
@@ -118,6 +117,7 @@ public:
       wxBoundingBox     RBBox;
       wxRect      active_pt_rect;
       wxString    m_Colour;
+      bool        m_btemp;
 
 private:
       bool        CalculateCrossesIDL();

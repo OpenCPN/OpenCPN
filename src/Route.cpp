@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "wx/wxprec.h"
 
@@ -66,7 +65,8 @@ Route::Route( void )
     pRoutePointList = new RoutePointList;
     m_pLastAddedPoint = NULL;
     m_GUID = pWayPointMan->CreateGUID( NULL );
-
+    m_btemp = false;
+    
     m_ArrivalRadius = .05;        // default, Miles
 
     RBBox.Reset();
@@ -93,7 +93,7 @@ Route::~Route( void )
 
 // The following is used only for route splitting, assumes just created, empty route
 //
-void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix )
+void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix)
 {
     m_bIsTrack = psourceroute->m_bIsTrack;
 
@@ -119,7 +119,7 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, w
 
 }
 
-void Route::CloneTrack( Route *psourceroute, int start_nPoint, int end_nPoint, wxString suffix )
+void Route::CloneTrack( Route *psourceroute, int start_nPoint, int end_nPoint, const wxString & suffix)
 {
     if( psourceroute->m_bIsInLayer ) return;
 
@@ -970,7 +970,7 @@ void Route::RenameRoutePoints( void )
     }
 }
 
-bool Route::SendToGPS( wxString& com_name, bool bsend_waypoints, wxGauge *pProgress )
+bool Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress )
 {
     bool result = false;
 

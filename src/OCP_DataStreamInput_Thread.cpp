@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "OCP_DataStreamInput_Thread.h"
 #include "OCPN_DataStreamEvent.h"
@@ -464,23 +463,33 @@ void *OCP_DataStreamInput_Thread::Entry()
                 else {                          // timed out
                     n_timeout++;;
                     if( n_timeout > max_timeout ) {
-
-                        bool b_close = true;
-
-                        //  If the port is input only, double check the timeout
-                        //  We do this since some virtual serial port emulators
-                        //  do not seem to honor SetCommTimeouts() function
-                        if( m_io_select == DS_TYPE_INPUT ) {
-                            wxDateTime then = wxDateTime::Now();
-                            int tt = then.GetTicks();
-                            if( (tt - t) <  (max_timeout * loop_timeout)/1000 ) {
-                                b_close = false;
-                                n_timeout = 0;
-                                b_sleep = true;
-                            }
+                        
+                        //  If nothing has been input from the port for a long time (10 sec), it may be broken.
+                        //  So we probably want to reset the port.
+                        
+                        //  There are 2 cases to consider on timing
+                        //  1.  Read-only port
+                        //      COMMTIMEOUT(loop_timeout) is 2 seconds, max_timeout=5
+                        //   2.  Read/Write port
+                        //      COMMTIMEOUT(loop_timeout) is 2 msec, max_timeout=5000
+                        
+                        //  Some virtual port emulators (XPort, especially) do not honor COMMTIMEOUTS
+                        //  So, we must check the real time (in seconds) of the inactivity time.
+                        //  If it is much shorter than 10 secs, assume that COMMTIMEOUTS are not working
+                        //  In this case, abort the port reset, reset the counters,
+                        //  and signal a need for a Sleep() between read commands to avoid CPU saturation.
+                        
+                        bool b_need_reset = true;
+                        
+                        wxDateTime then = wxDateTime::Now();
+                        int dt = then.GetTicks() - t;
+                        if( (dt) <  ((max_timeout * loop_timeout)/1000)/2 ) {
+                            b_need_reset = false;
+                            n_timeout = 0;
+                            b_sleep = true;
                         }
-
-                        if( b_close ) {
+                        
+                        if( b_need_reset ) {
                             b_inner = false;
                             CloseComPortPhysical(m_gps_fd);
                             m_gps_fd = NULL;
@@ -633,7 +642,7 @@ void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
         gFrame->AddPendingEvent(event);
 }
 
-bool OCP_DataStreamInput_Thread::SetOutMsg(wxString msg)
+bool OCP_DataStreamInput_Thread::SetOutMsg(const wxString & msg)
 {
     //  Assume that the caller already owns the mutex
 
@@ -669,7 +678,7 @@ bool OCP_DataStreamInput_Thread::SetOutMsg(wxString msg)
 
 #ifdef __POSIX__
 
-int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud_rate)
+int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, int baud_rate)
 {
 
     // Declare the termios data structures
@@ -809,7 +818,7 @@ bool OCP_DataStreamInput_Thread::CheckComPortPhysical(int port_descriptor)
 #endif            // __POSIX__
 
 #ifdef __WXMSW__
-int OCP_DataStreamInput_Thread::OpenComPortPhysical(wxString &com_name, int baud_rate)
+int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, int baud_rate)
 {
 
 //    Set up the serial port

@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __TCDATAFACTORY_H__
 #define __TCDATAFACTORY_H__
@@ -60,7 +59,7 @@ public:
     TCDataFactory();
     virtual ~TCDataFactory();
 
-    virtual TC_Error_Code LoadData(wxString &data_file_path) = 0;
+    virtual TC_Error_Code LoadData(const wxString &data_file_path) = 0;
 
     virtual int GetMaxIndex(void) = 0;
     virtual IDX_entry *GetIndexEntry(int n_index) = 0;

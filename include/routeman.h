@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Route Manager
@@ -20,11 +20,8 @@
  *   You should have received a copy of the GNU General Public License     *
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.          *
- ***************************************************************************
- *
- */
-
+ *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
+ **************************************************************************/
 
 #ifndef __ROUTEMAN_H__
 #define __ROUTEMAN_H__
@@ -78,6 +75,7 @@ public:
 
       bool IsRouteValid(Route *pRoute);
 
+      Route *FindRouteByGUID(wxString &guid);
       Route *FindRouteContainingWaypoint(RoutePoint *pWP);
       wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
       bool DoesRouteContainSharedPoints( Route *pRoute );
@@ -165,16 +163,16 @@ public:
       int GetNumIcons(void){ return m_pIconArray->Count(); }
       wxString CreateGUID(RoutePoint *pRP);
       RoutePoint *GetNearbyWaypoint(double lat, double lon, double radius_meters);
-      RoutePoint *GetOtherNearbyWaypoint(double lat, double lon, double radius_meters, wxString &guid);
+      RoutePoint *GetOtherNearbyWaypoint(double lat, double lon, double radius_meters, const wxString &guid);
       void SetColorScheme(ColorScheme cs);
       bool SharedWptsExist();
       void DeleteAllWaypoints(bool b_delete_used);
-      RoutePoint *FindRoutePointByGUID(wxString &guid);
+      RoutePoint *FindRoutePointByGUID(const wxString &guid);
       void DestroyWaypoint(RoutePoint *pRp);
       void ClearRoutePointFonts(void);
       void ProcessIcons( ocpnStyle::Style* style );
 
-      bool DoesIconExist(const wxString icon_key);
+      bool DoesIconExist(const wxString & icon_key) const;
       wxBitmap *GetIconBitmap(int index);
       wxString *GetIconDescription(int index);
       wxString *GetIconKey(int index);
@@ -183,9 +181,8 @@ public:
 
       RoutePointList    *m_pWayPointList;
 
+      void ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description);
 private:
-      void ProcessIcon(wxBitmap pimage, wxString key, wxString description);
-
       wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 
       wxImageList       *pmarkicon_image_list;        // Current wxImageList, updated on colorscheme change

@@ -21,7 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************/
+ **************************************************************************/
 
 #include "wx/wx.h"
 
@@ -71,7 +71,7 @@ void Multiplexer::ClearStreams()
     m_pdatastreams->Clear();
 }
 
-DataStream *Multiplexer::FindStream( wxString port )
+DataStream *Multiplexer::FindStream(const wxString & port)
 {
     for (size_t i = 0; i < m_pdatastreams->Count(); i++)
     {
@@ -94,7 +94,7 @@ void Multiplexer::StopAndRemoveStream( DataStream *stream )
     }
 }
 
-void Multiplexer::LogOutputMessageColor( wxString &msg, wxString stream_name, wxString color )
+void Multiplexer::LogOutputMessageColor(const wxString &msg, const wxString & stream_name, const wxString & color)
 {
     if (NMEALogWindow::Get().Active()) {
         wxDateTime now = wxDateTime::Now();
@@ -112,7 +112,7 @@ void Multiplexer::LogOutputMessageColor( wxString &msg, wxString stream_name, wx
 
 
 
-void Multiplexer::LogOutputMessage( wxString &msg, wxString stream_name, bool b_filter )
+void Multiplexer::LogOutputMessage(const wxString &msg, wxString stream_name, bool b_filter)
 {
     if(b_filter)
         LogOutputMessageColor( msg, stream_name, _T("<AMBER>") );
@@ -120,7 +120,7 @@ void Multiplexer::LogOutputMessage( wxString &msg, wxString stream_name, bool b_
         LogOutputMessageColor( msg, stream_name, _T("<BLUE>") );
 }
 
-void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_filter )
+void Multiplexer::LogInputMessage(const wxString &msg, const wxString & stream_name, bool b_filter)
 {
     if (NMEALogWindow::Get().Active()) {
         wxDateTime now = wxDateTime::Now();
@@ -139,7 +139,7 @@ void Multiplexer::LogInputMessage( wxString &msg, wxString stream_name, bool b_f
 }
 
 
-void Multiplexer::SendNMEAMessage( wxString &msg )
+void Multiplexer::SendNMEAMessage(const wxString &msg)
 {
     //Send to all the outputs
     for (size_t i = 0; i < m_pdatastreams->Count(); i++)
@@ -187,7 +187,7 @@ void Multiplexer::OnEvtStream(OCPN_DataStreamEvent& event)
     wxString port(_T("Virtual:"));
     if( stream )
         port = wxString(stream->GetPort());
-    
+
     if( !message.IsEmpty() )
     {
         //Send to core consumers
@@ -287,7 +287,7 @@ bool Multiplexer::CreateAndRestoreSavedStreamProperties()
 }
 
 
-bool Multiplexer::SendRouteToGPS(Route *pr, wxString &com_name, bool bsend_waypoints, wxGauge *pProgress)
+bool Multiplexer::SendRouteToGPS(Route *pr, const wxString &com_name, bool bsend_waypoints, wxGauge *pProgress)
 {
     bool ret_bool = false;
     DataStream *old_stream = FindStream( com_name );
@@ -800,7 +800,7 @@ ret_point_1:
 }
 
 
-bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, wxString &com_name, wxGauge *pProgress)
+bool Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wxGauge *pProgress)
 {
     bool ret_bool = false;
     DataStream *old_stream = FindStream( com_name );

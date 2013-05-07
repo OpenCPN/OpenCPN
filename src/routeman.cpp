@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Route Manager
@@ -21,9 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
+ **************************************************************************/
 
 #include "wx/wxprec.h"
 
@@ -947,6 +945,22 @@ wxString Routeman::GetRouteReverseMessage( void )
             _("Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?") );
 }
 
+Route *Routeman::FindRouteByGUID(wxString &guid)
+{
+    Route *pRoute = NULL;
+    wxRouteListNode *node1 = pRouteList->GetFirst();
+    while( node1 ) {
+        pRoute = node1->GetData();
+        
+        if( pRoute->m_GUID == guid )
+            break;
+        node1 = node1->GetNext();
+    }
+ 
+    return pRoute;
+}
+
+
 //--------------------------------------------------------------------------------
 //      WayPointman   Implementation
 //--------------------------------------------------------------------------------
@@ -1082,7 +1096,7 @@ void WayPointman::ProcessIcons( ocpnStyle::Style* style )
     ProcessIcon( style->GetIcon( _T("activepoint") ), _T("activepoint"), _T("Active WP") );
 }
 
-void WayPointman::ProcessIcon( wxBitmap pimage, wxString key, wxString description )
+void WayPointman::ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description)
 {
     MarkIcon *pmi;
 
@@ -1243,7 +1257,7 @@ void WayPointman::SetColorScheme( ColorScheme cs )
     }
 }
 
-bool WayPointman::DoesIconExist( const wxString icon_key )
+bool WayPointman::DoesIconExist(const wxString & icon_key) const
 {
     MarkIcon *pmi;
     unsigned int i;
@@ -1358,7 +1372,7 @@ wxString WayPointman::CreateGUID( RoutePoint *pRP )
     return GpxDocument::GetUUID();
 }
 
-RoutePoint *WayPointman::FindRoutePointByGUID( wxString &guid )
+RoutePoint *WayPointman::FindRoutePointByGUID(const wxString &guid)
 {
     wxRoutePointListNode *prpnode = pWayPointMan->m_pWayPointList->GetFirst();
     while( prpnode ) {
@@ -1393,7 +1407,7 @@ RoutePoint *WayPointman::GetNearbyWaypoint( double lat, double lon, double radiu
 }
 
 RoutePoint *WayPointman::GetOtherNearbyWaypoint( double lat, double lon, double radius_meters,
-        wxString &guid )
+        const wxString &guid )
 {
     //    Iterate on the RoutePoint list, checking distance
 

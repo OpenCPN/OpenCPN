@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "wx/wxprec.h"
 
@@ -75,6 +74,7 @@ RoutePoint::RoutePoint()
     m_NameLocationOffsetX = -10;
     m_NameLocationOffsetY = 8;
     m_pMarkFont = NULL;
+    m_btemp = false;
 
     m_prop_string_format = _T ( "A" );
 
@@ -120,8 +120,9 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_NameLocationOffsetY = orig->m_NameLocationOffsetY;
     m_pMarkFont = orig->m_pMarkFont;
     m_prop_string_format = orig->m_prop_string_format;
-	m_MarkDescription = orig->m_MarkDescription;
-
+    m_MarkDescription = orig->m_MarkDescription;
+    m_btemp = orig->m_btemp;
+        
     m_HyperlinkList = new HyperlinkList;
     m_IconName = orig->m_IconName;
     ReLoadIcon();
@@ -166,7 +167,8 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_NameLocationOffsetX = -10;
     m_NameLocationOffsetY = 8;
     m_pMarkFont = NULL;
-
+    m_btemp = false;
+    
     m_prop_string_format = _T ( "A" );           // Set the current Property String format indicator
 
     m_HyperlinkList = new HyperlinkList;
@@ -204,7 +206,7 @@ RoutePoint::~RoutePoint( void )
     }
 }
 
-void RoutePoint::SetName( wxString name )
+void RoutePoint::SetName(const wxString & name)
 {
     m_MarkName = name;
     CalculateNameExtents();
@@ -400,7 +402,7 @@ bool RoutePoint::IsSame( RoutePoint *pOtherRP )
     return IsSame;
 }
 
-bool RoutePoint::SendToGPS( wxString& com_name, wxGauge *pProgress )
+bool RoutePoint::SendToGPS(const wxString & com_name, wxGauge *pProgress)
 {
     bool result = false;
     if( g_pMUX ) result = g_pMUX->SendWaypointToGPS( this, com_name, pProgress );

@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  ChartBase Definition
@@ -21,9 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
+ **************************************************************************/
 
 #ifndef _CHARTBASE_H_
 #define _CHARTBASE_H_
@@ -304,7 +302,7 @@ class ChartPlugInWrapper : public ChartBase
 {
       public:
             ChartPlugInWrapper();
-            ChartPlugInWrapper(wxString &chart_class);
+            ChartPlugInWrapper(const wxString &chart_class);
             virtual ~ChartPlugInWrapper();
 
             virtual wxString GetFileSearchMask(void);

@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  Chart Canvas
@@ -21,9 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
+ **************************************************************************/
 
 #ifndef __CHCANV_H__
 #define __CHCANV_H__
@@ -152,7 +150,8 @@ public:
       void CancelMouseRoute();
 
       void Do_Pankeys(wxTimerEvent& event);
-
+      void EnableAutoPan( bool b_enable );
+      
       bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust = true);
       bool SetVPScale(double sc);
       bool SetViewPoint ( double lat, double lon);
@@ -396,7 +395,7 @@ private:
       void JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius);
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
-      void ShowRoutePropertiesDialog( wxString title, Route* selected );
+      void ShowRoutePropertiesDialog(wxString title, Route* selected);
 
       //    Data
       int         m_canvas_width, m_canvas_height;
@@ -537,6 +536,7 @@ private:
       double      m_zoom_target_factor;
       double      m_zoom_current_factor;
 
+      bool        m_benable_autopan;
 
 DECLARE_EVENT_TABLE()
 };

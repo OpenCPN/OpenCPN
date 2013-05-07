@@ -1,11 +1,11 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  * Purpose:  wifi Client Data Object
  * Author:   David Register
  *
  ***************************************************************************
- *   Copyright (C) 2010 by David S. Register   *
+ *   Copyright (C) 2010 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -21,10 +21,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- *
- */
-
+ **************************************************************************/
 
 #ifndef __WIFICLIENT_H__
 #define __WIFICLIENT_H__
@@ -92,7 +89,7 @@ class WIFIWindow: public wxWindow
         WIFIWindow(wxFrame *frame, const wxString& WiFiServerName);
         ~WIFIWindow();
 
-        void GetSource(wxString& source);
+        void GetSource(wxString & source);
 
       //    Stop/Start the Socket Client
       //    Used to prevent async interrupts at critical times
@@ -170,7 +167,7 @@ class WIFIDNSTestThread: public wxThread
 {
     public:
 
-        WIFIDNSTestThread(wxString &name_or_ip);
+        WIFIDNSTestThread(const wxString &name_or_ip);
         ~WIFIDNSTestThread();
         void *Entry();
 

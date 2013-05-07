@@ -909,7 +909,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                     }
                     
                     //  Allow S57 charts that are near normal zoom, no matter what their fractional area coverage
-                    if( zoom_factor > 0.5)
+                    if( zoom_factor > 0.1)
                         b_add = true;
                 }
 
@@ -929,7 +929,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
                     if( !b_exists ) {
                         //      Check to be sure that this chart has not already been added
-                        //    i.e. charts that have exactly the same file name and mod time
+                        //    i.e. charts that have exactly the same file name and nearly the same mod time
                         //    These charts can be in the database due to having the exact same chart in different directories,
                         //    as may be desired for some grouping schemes
                         bool b_noadd = false;
@@ -938,7 +938,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                             if( m_extended_stack_array.Item( id ) != -1 ) {
                                 ChartTableEntry *pm = ChartData->GetpChartTableEntry( m_extended_stack_array.Item( id ) );
                                 if( pm->GetFileTime() && pn->GetFileTime()) {
-                                    if( pm->GetFileTime() == pn->GetFileTime() ) {           // simple test
+                                    if( abs(pm->GetFileTime() - pn->GetFileTime()) < 60 ) {           // simple test
                                         if( pn->GetpFileName()->IsSameAs( *( pm->GetpFileName() ) ) )
                                             b_noadd = true;
                                     }
@@ -1413,17 +1413,24 @@ bool Quilt::Compose( const ViewPort &vp_in )
     m_bneed_clear = !unrendered_region.IsEmpty();
     m_back_region = unrendered_region;
 
-    cc1->StopAutoPan();
-    
     //    Finally, iterate thru the quilt and preload all of the required charts.
     //    For dynamic S57 SENC creation, this is where SENC creation happens first.....
+    bool b_stop_ap = false;
     for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
         QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
-        if( ( pqc->b_include ) && ( !pqc->b_eclipsed ) ) ChartData->OpenChartFromDB( pqc->dbIndex,
-                    FULL_INIT );
+        if( ( pqc->b_include ) && ( !pqc->b_eclipsed ) )
+            if( !ChartData->IsChartInCache( pqc->dbIndex ) ) {
+                cc1->EnableAutoPan(false);
+                b_stop_ap = true;
+            }
+            ChartData->OpenChartFromDB( pqc->dbIndex, FULL_INIT );
+        }
+        
+    if(b_stop_ap) {
+        cc1->EnableAutoPan(false);
+        cc1->EnableAutoPan(true);
     }
-    cc1->StopAutoPan();
-    
+        
     //    Build and maintain the array of indexes in this quilt
 
     m_last_index_array = m_index_array;       //save the last one for delta checks

@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __ROUTEPOINT_H__
 #define __ROUTEPOINT_H__
@@ -63,7 +62,7 @@ public:
       wxString GetName(void){ return m_MarkName; }
       wxString GetDescription(void) { return m_MarkDescription; }
 
-      void SetName(wxString name);
+      void SetName(const wxString & name);
       void CalculateNameExtents(void);
 
       void SetCourse( double course) { m_routeprop_course = course; };
@@ -72,7 +71,7 @@ public:
       double GetDistance() { return m_routeprop_distance; };
 
 
-      bool SendToGPS ( wxString& com_name, wxGauge *pProgress );
+      bool SendToGPS(const wxString& com_name, wxGauge *pProgress);
 
 
       double             m_lat;
@@ -124,6 +123,7 @@ public:
       double            m_routeprop_distance;       // distance from this waypoint to the next waypoint if in a route.
 
       HyperlinkList     *m_HyperlinkList;
+      bool              m_btemp;
 
 private:
       wxString          m_MarkName;

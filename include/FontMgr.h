@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  *
  * Project:  OpenCPN
  *
@@ -19,8 +19,7 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #ifndef __FONTMGR_H__
 #define __FONTMGR_H__
@@ -49,7 +48,7 @@ public:
       static wxString GetFontConfigKey( const wxString &description );
 
       void LoadFontNative(wxString *pConfigString, wxString *pNativeDesc);
-      bool SetFont(wxString &TextElement, wxFont *pFont, wxColour color);
+      bool SetFont(const wxString &TextElement, wxFont *pFont, wxColour color);
 
 private:
       wxString GetSimpleNativeFont(int size);
