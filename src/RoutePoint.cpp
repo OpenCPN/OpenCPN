@@ -74,6 +74,7 @@ RoutePoint::RoutePoint()
     m_NameLocationOffsetX = -10;
     m_NameLocationOffsetY = 8;
     m_pMarkFont = NULL;
+    m_btemp = false;
 
     m_prop_string_format = _T ( "A" );
 
@@ -119,8 +120,9 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_NameLocationOffsetY = orig->m_NameLocationOffsetY;
     m_pMarkFont = orig->m_pMarkFont;
     m_prop_string_format = orig->m_prop_string_format;
-	m_MarkDescription = orig->m_MarkDescription;
-
+    m_MarkDescription = orig->m_MarkDescription;
+    m_btemp = orig->m_btemp;
+        
     m_HyperlinkList = new HyperlinkList;
     m_IconName = orig->m_IconName;
     ReLoadIcon();
@@ -165,7 +167,8 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_NameLocationOffsetX = -10;
     m_NameLocationOffsetY = 8;
     m_pMarkFont = NULL;
-
+    m_btemp = false;
+    
     m_prop_string_format = _T ( "A" );           // Set the current Property String format indicator
 
     m_HyperlinkList = new HyperlinkList;

@@ -117,6 +117,7 @@ public:
       wxBoundingBox     RBBox;
       wxRect      active_pt_rect;
       wxString    m_Colour;
+      bool        m_btemp;
 
 private:
       bool        CalculateCrossesIDL();

@@ -75,6 +75,7 @@ public:
 
       bool IsRouteValid(Route *pRoute);
 
+      Route *FindRouteByGUID(wxString &guid);
       Route *FindRouteContainingWaypoint(RoutePoint *pWP);
       wxArrayPtrVoid *GetRouteArrayContaining(RoutePoint *pWP);
       bool DoesRouteContainSharedPoints( Route *pRoute );
@@ -180,9 +181,8 @@ public:
 
       RoutePointList    *m_pWayPointList;
 
-private:
       void ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description);
-
+private:
       wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 
       wxImageList       *pmarkicon_image_list;        // Current wxImageList, updated on colorscheme change

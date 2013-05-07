@@ -945,6 +945,22 @@ wxString Routeman::GetRouteReverseMessage( void )
             _("Waypoints can be renamed to reflect the new order, the names will be '001', '002' etc.\n\nDo you want to rename the waypoints?") );
 }
 
+Route *Routeman::FindRouteByGUID(wxString &guid)
+{
+    Route *pRoute = NULL;
+    wxRouteListNode *node1 = pRouteList->GetFirst();
+    while( node1 ) {
+        pRoute = node1->GetData();
+        
+        if( pRoute->m_GUID == guid )
+            break;
+        node1 = node1->GetNext();
+    }
+ 
+    return pRoute;
+}
+
+
 //--------------------------------------------------------------------------------
 //      WayPointman   Implementation
 //--------------------------------------------------------------------------------

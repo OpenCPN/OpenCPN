@@ -123,6 +123,7 @@ public:
       double            m_routeprop_distance;       // distance from this waypoint to the next waypoint if in a route.
 
       HyperlinkList     *m_HyperlinkList;
+      bool              m_btemp;
 
 private:
       wxString          m_MarkName;

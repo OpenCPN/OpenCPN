@@ -65,7 +65,8 @@ Route::Route( void )
     pRoutePointList = new RoutePointList;
     m_pLastAddedPoint = NULL;
     m_GUID = pWayPointMan->CreateGUID( NULL );
-
+    m_btemp = false;
+    
     m_ArrivalRadius = .05;        // default, Miles
 
     RBBox.Reset();

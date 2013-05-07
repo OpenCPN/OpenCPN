@@ -59,7 +59,7 @@ bool NavObjectCollection::CreateNavObjGPXPoints( void )
     while( node ) {
         pr = node->GetData();
 
-        if( ( pr->m_bIsolatedMark ) && !( pr->m_bIsInLayer ) )      //( !WptIsInRouteList ( pr ) )
+        if( ( pr->m_bIsolatedMark ) && !( pr->m_bIsInLayer ) && !(pr->m_btemp) )
                 {
             m_pXMLrootnode->AddWaypoint( CreateGPXWpt( pr, GPX_WPT_WAYPOINT ) );
         }
@@ -76,10 +76,8 @@ bool NavObjectCollection::CreateNavObjGPXRoutes( void )
     while( node1 ) {
         Route *pRoute = node1->GetData();
 
-        if( !pRoute->m_bIsTrack && !( pRoute->m_bIsInLayer ) )                         // Not tracks
-                {
+        if( !pRoute->m_bIsTrack && !( pRoute->m_bIsInLayer ) && (!pRoute->m_btemp) )
             m_pXMLrootnode->AddRoute( CreateGPXRte( pRoute ) );
-        }
         node1 = node1->GetNext();
     }
 
@@ -95,11 +93,8 @@ bool NavObjectCollection::CreateNavObjGPXTracks( void )
         RoutePointList *pRoutePointList = pRoute->pRoutePointList;             //->GetCount(); do if
 
         if( pRoutePointList->GetCount() ) {
-            if( pRoute->m_bIsTrack && !( pRoute->m_bIsInLayer ) )                     // Tracks only
-                    {
-                //Redundant - RoutePointList *pRoutePointList = pRoute->pRoutePointList;
+            if( pRoute->m_bIsTrack && !( pRoute->m_bIsInLayer ) && (!pRoute->m_btemp) ) 
                 m_pXMLrootnode->AddTrack( CreateGPXTrk( pRoute ) );
-            }
         }
         node1 = node1->GetNext();
     }
