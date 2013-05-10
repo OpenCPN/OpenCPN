@@ -639,6 +639,9 @@ extern "C" DECL_EXP double fromUsrSpeed_Plugin( double usr_speed, int unit = -1 
 extern DECL_EXP wxString getUsrDistanceUnit_Plugin( int unit = -1 );
 extern DECL_EXP wxString getUsrSpeedUnit_Plugin( int unit = -1 );
 extern DECL_EXP wxString GetNewGUID();
+extern "C" DECL_EXP bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2);
+extern "C" DECL_EXP void ll_gc_ll_PlugIn(double lat, double lon, double brg, double dist, double *dlat, double *dlon);
+
 
 
 

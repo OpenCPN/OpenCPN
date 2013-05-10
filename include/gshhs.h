@@ -395,6 +395,6 @@ private:
     wxColor water;
 };
 
-bool DECL_EXP gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2);
+bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2);
 
 #endif

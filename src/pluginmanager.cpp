@@ -1711,6 +1711,12 @@ double DistGreatCircle_Plugin(double slat, double slon, double dlat, double dlon
     return DistGreatCircle(slat, slon, dlat, dlon);
 }
 
+void ll_gc_ll_PlugIn(double lat, double lon, double brg, double dist, double *dlat, double *dlon)
+{
+    ll_gc_ll(lat, lon, brg, dist, dlat, dlon);
+}
+    
+
 void toTM_Plugin(float lat, float lon, float lat0, float lon0, double *x, double *y)
 {
     toTM(lat, lon, lat0, lon0, x, y);
@@ -1770,6 +1776,12 @@ wxString getUsrSpeedUnit_Plugin( int unit )
 {
     return getUsrSpeedUnit( unit );
 }
+
+bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2)
+{
+    return gshhsCrossesLand(lat1, lon1, lat2, lon2);
+}
+    
 
 // API 1.10 Route and Waypoint Support
 //wxBitmap *FindSystemWaypointIcon( wxString& icon_name );
