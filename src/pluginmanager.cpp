@@ -1783,6 +1783,19 @@ bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2
 }
     
 
+void PlugInPlaySound( wxString &sound_file )
+{
+    OCPN_Sound sound;
+    sound.Create( sound_file );
+        
+#ifndef __WXMSW__
+    if(sound.IsOk() && !sound.IsPlaying())
+        sound.Play();
+#else
+    if( sound.IsOk() ) sound.Play();
+#endif
+}
+    
 // API 1.10 Route and Waypoint Support
 //wxBitmap *FindSystemWaypointIcon( wxString& icon_name );
 
