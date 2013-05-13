@@ -1694,6 +1694,12 @@ bool GetActiveRoutepointGPX( char *buffer, unsigned int buffer_length )
         return false;
 }
 
+void PositionBearingDistanceMercator_Plugin(double lat, double lon,
+                                            double brg, double dist,
+                                            double *dlat, double *dlon)
+{
+    PositionBearingDistanceMercator(lat, lon, brg, dist, dlat, dlon);
+}
 
 void DistanceBearingMercator_Plugin(double lat0, double lon0, double lat1, double lon1, double *brg, double *dist)
 {
@@ -1778,6 +1784,8 @@ PlugIn_Waypoint::PlugIn_Waypoint(double lat, double lon,
                 const wxString& icon_ident, const wxString& wp_name,
                 const wxString& GUID )
 {
+    wxDateTime now = wxDateTime::Now();
+    m_CreateTime = now.ToUTC();
     m_HyperlinkList = NULL;
 
     m_lat = lat;
@@ -2006,6 +2014,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
         
         pWP->m_MarkDescription = pwp->m_MarkDescription;
         pWP->m_bShowName = false;
+        pWP->m_CreateTime = pwp->m_CreateTime;
         
         route->AddPoint( pWP );
         
@@ -2031,6 +2040,9 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
 
     if(b_permanent)
         pConfig->AddNewRoute( route );
+
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        pRouteManagerDialog->UpdateRouteListCtrl();
     
     return true;
 }
@@ -2089,6 +2101,7 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
         
         pWP->m_MarkDescription = pwp->m_MarkDescription;
         pWP->m_bShowName = false;
+        pWP->m_CreateTime = pwp->m_CreateTime;
         
         track->AddPoint( pWP );
         
@@ -2113,6 +2126,9 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
     
     if(b_permanent)
         pConfig->AddNewRoute( track );
+
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        pRouteManagerDialog->UpdateTrkListCtrl();
     
     return true;
 }
@@ -2129,6 +2145,10 @@ bool DeletePluginTrack( wxString& GUID )
         g_pRouteMan->DeleteTrack( (Track *)pRoute );
         b_found = true;
     }
+
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        pRouteManagerDialog->UpdateRouteListCtrl();
+    
     return b_found;
  }
 
