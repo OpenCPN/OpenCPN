@@ -1711,12 +1711,6 @@ double DistGreatCircle_Plugin(double slat, double slon, double dlat, double dlon
     return DistGreatCircle(slat, slon, dlat, dlon);
 }
 
-void ll_gc_ll_PlugIn(double lat, double lon, double brg, double dist, double *dlat, double *dlon)
-{
-    ll_gc_ll(lat, lon, brg, dist, dlat, dlon);
-}
-    
-
 void toTM_Plugin(float lat, float lon, float lat0, float lon0, double *x, double *y)
 {
     toTM(lat, lon, lat0, lon0, x, y);
