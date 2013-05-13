@@ -19,11 +19,11 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "OCPNListCtrl.h"
 #include "AIS_Target_Data.h"
+#include "navutil.h"
 
 extern wxString g_AisTargetList_column_spec;
 extern bool bGPSValid;

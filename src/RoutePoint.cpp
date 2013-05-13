@@ -32,6 +32,7 @@
 #include "multiplexer.h"
 #include "navutil.h"
 #include "FontMgr.h"
+#include "OCPNMessageBox.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;

@@ -47,8 +47,11 @@
 #include "chcanv.h"
 #include "tcmgr.h"		// pjotrc 2011.03.02
 #include "PositionParser.h"
+#include "OCPNMessageBox.h"
 
-extern double             gLat, gLon, gSog, gCog;
+extern double             gLat;
+extern double             gLon;
+extern double             gSog;
 extern double             g_PlanSpeed;
 extern wxDateTime         g_StartTime;
 extern int                g_StartTimeTZ;
@@ -65,12 +68,6 @@ extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
 
 extern MyFrame            *gFrame;
-
-// Global print data, to remember settings during the session
-extern wxPrintData               *g_printData;
-
-// Global page setup data
-extern wxPageSetupData*          g_pageSetupData;
 
 // Global print route selection dialog
 extern RoutePrintSelection * pRoutePrintSelection;

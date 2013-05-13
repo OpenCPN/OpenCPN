@@ -19,12 +19,13 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include <wx/textctrl.h>
 #include <wx/sizer.h>
 #include <wx/tokenzr.h>
+#include <wx/spinctrl.h>
+#include <wx/aui/aui.h>
 
 #include "AISTargetListDialog.h"
 #include "ais.h"
@@ -32,6 +33,7 @@
 #include "AIS_Target_Data.h"
 #include "OCPNListCtrl.h"
 #include "styles.h"
+#include "navutil.h"
 
 static AIS_Decoder *s_p_sort_decoder;
 

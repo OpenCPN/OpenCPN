@@ -453,11 +453,6 @@ public:
 };
 
 
-extern int OCPNMessageBox(wxWindow *parent,
-                          const wxString& message,
-                          const wxString& caption = _T("Message"),
-                          int style = wxOK, int x = -1, int y = -1);
-
 #if 0
 class OCPNMessageDialog
 {

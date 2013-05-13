@@ -43,6 +43,7 @@
 #include "chartbase.h"
 #include "Layer.h"
 #include "SendToGpsDlg.h"
+#include "OCPNMessageBox.h"
 
 #define DIALOG_MARGIN 3
 

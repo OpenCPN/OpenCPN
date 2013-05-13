@@ -71,6 +71,7 @@
 #include "Layer.h"
 #include "NavObjectCollection.h"
 #include "NMEALogWindow.h"
+#include "OCPNMessageBox.h"
 
 #ifdef USE_S57
 #include "s52plib.h"
@@ -108,7 +109,6 @@ extern wxString         g_csv_locn;
 extern wxString         g_SENCPrefix;
 extern wxString         g_UserPresLibData;
 
-extern AIS_Decoder      *g_pAIS;
 extern wxString         g_SData_Locn;
 extern wxString         *pInit_Chart_Dir;
 extern WayPointman      *pWayPointMan;
@@ -5407,6 +5407,29 @@ bool LogMessageOnce(const wxString &msg)
 /**************************************************************************/
 /*          Some assorted utilities                                       */
 /**************************************************************************/
+
+wxString FormatDistanceAdaptive( double distance )
+{
+    wxString result;
+    if( distance < 0.1 ) {
+        result << wxString::Format(_T("%3.0f "), distance*1852.0 ) << _T("m");
+        return result;
+    }
+    if( distance < 5.0 ) {
+        result << wxString::Format(_T("%1.2f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
+        return result;
+    }
+    if( distance < 100.0 ) {
+        result << wxString::Format(_T("%2.1f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
+        return result;
+    }
+    if( distance < 1000.0 ) {
+        result << wxString::Format(_T("%3.0f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
+        return result;
+    }
+    result << wxString::Format(_T("%4.0f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
+    return result;
+}
 
 /**************************************************************************/
 /*          Converts the distance to the units selected by user           */

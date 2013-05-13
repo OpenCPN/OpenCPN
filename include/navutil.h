@@ -68,6 +68,7 @@ enum
     SPEED_MS
 };
 
+extern wxString FormatDistanceAdaptive( double distance );
 extern bool LogMessageOnce(const wxString &msg);
 extern double toUsrDistance( double nm_distance, int unit = -1 );
 extern double fromUsrDistance( double usr_distance, int unit = -1 );

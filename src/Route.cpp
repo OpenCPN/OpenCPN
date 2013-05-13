@@ -31,6 +31,7 @@
 #include "navutil.h"
 #include "multiplexer.h"
 #include "Select.h"
+#include "OCPNMessageBox.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;

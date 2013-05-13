@@ -74,6 +74,8 @@
 #include "AIS_Target_Data.h"
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
+#include "AISTargetListDialog.h"
+#include "OCPNMessageBox.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -104,9 +106,6 @@ extern sigjmp_buf           env;                    // the context saved by sigs
 
 #include <vector>
 
-//    Profiling support
-//#include "/usr/include/valgrind/callgrind.h"
-
 // ----------------------------------------------------------------------------
 // Useful Prototypes
 // ----------------------------------------------------------------------------
@@ -114,15 +113,16 @@ extern bool G_FloatPtInPolygon ( MyFlPoint *rgpts, int wnumpts, float x, float y
 extern void catch_signals(int signo);
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
-extern ChartBase        *Current_Vector_Ch;
 extern ChartBase        *Current_Ch;
 extern double           g_ChartNotRenderScaleFactor;
-extern double           gLat, gLon, gCog, gSog, gHdt;
-extern double           vLat, vLon;
+extern double           gLat;
+extern double           gLon;
+extern double           gCog;
+extern double           gSog;
+extern double           gHdt;
+extern double           vLat;
+extern double           vLon;
 extern ChartDB          *ChartData;
-extern bool             bDBUpdateInProgress;
-extern ColorScheme      global_color_scheme;
-extern bool             g_bHDTValid;
 extern int              g_nbrightness;
 
 extern ConsoleCanvas    *console;
@@ -141,9 +141,6 @@ extern RouteProp        *pRoutePropDialog;
 extern MarkInfoImpl     *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
-
-extern IDX_entry        *gpIDX;
-extern int               gpIDXn;
 
 extern RoutePoint       *pAnchorWatchPoint1;
 extern RoutePoint       *pAnchorWatchPoint2;
@@ -179,20 +176,8 @@ extern StatWin          *stats;
 
 //    AIS Global configuration
 extern bool             g_bShowAIS;
-extern bool             g_bCPAMax;
-extern double           g_CPAMax_NM;
-extern bool             g_bCPAWarn;
-extern double           g_CPAWarn_NM;
-extern bool             g_bTCPA_Max;
-extern double           g_TCPA_Max;
-extern bool             g_bMarkLost;
-extern double           g_MarkLost_Mins;
-extern bool             g_bRemoveLost;
-extern double           g_RemoveLost_Mins;
 extern bool             g_bShowCOG;
 extern double           g_ShowCOG_Mins;
-extern bool             g_bShowTracks;
-extern double           g_ShowTracks_Mins;
 extern bool             g_bShowMoored;
 extern double           g_ShowMoored_Kts;
 extern bool             g_bAISShowTracks;
@@ -209,19 +194,18 @@ extern bool             g_bEnableZoomToCursor;
 
 extern AISTargetAlertDialog    *g_pais_alert_dialog_active;
 extern AISTargetQueryDialog    *g_pais_query_dialog_active;
-extern int              g_ais_query_dialog_x, g_ais_query_dialog_y;
+extern int              g_ais_query_dialog_x;
+extern int              g_ais_query_dialog_y;
 
-extern int              g_S57_dialog_sx, g_S57_dialog_sy;
+extern int              g_S57_dialog_sx;
+extern int              g_S57_dialog_sy;
 
 extern CM93DSlide       *pCM93DetailSlider;
-extern bool             g_bShowCM93DetailSlider;
-extern int              g_cm93detail_dialog_x, g_cm93detail_dialog_y;
-extern int              g_cm93_zoom_factor;
+extern int              g_cm93detail_dialog_x;
+extern int              g_cm93detail_dialog_y;
 
 extern bool             g_b_overzoom_x;                      // Allow high overzoom
 extern bool             g_bDisplayGrid;
-
-extern bool             g_bUseGreenShip;
 
 extern ChartCanvas      *cc1;
 
@@ -233,19 +217,11 @@ extern double           g_n_gps_antenna_offset_y;
 extern double           g_n_gps_antenna_offset_x;
 extern int              g_n_ownship_min_mm;
 
-extern wxPlatformInfo   *g_pPlatform;
-
-extern bool             g_bUseRaster;
-extern bool             g_bUseVector;
-extern bool             g_bUseCM93;
-
 extern bool             g_bCourseUp;
-extern double           g_COGAvg;               // only needed for debug....
 
 extern int              g_click_stop;
 extern double           g_ownship_predictor_minutes;
 
-extern ArrayOfInts      g_quilt_noshow_index_array;
 extern ChartStack       *pCurrentStack;
 extern bool              g_bquiting;
 extern AISTargetListDialog *g_pAISTargetList;
@@ -263,12 +239,6 @@ extern wxProgressDialog *s_ProgDialog;
 
 extern bool             g_bsmoothpanzoom;
 
-extern int              g_GPU_MemSize;
-extern bool             g_b_useStencil;
-
-bool                    g_bDebugOGL;
-
-extern int              g_memCacheLimit;
 extern bool             g_b_assume_azerty;
 
 extern int              g_GroupIndex;
@@ -279,7 +249,6 @@ extern int              g_current_arrow_scale;
 
 extern S57QueryDialog   *g_pObjectQueryDialog;
 extern ocpnStyle::StyleManager* g_StyleManager;
-extern Multiplexer      *g_pMUX;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 
 extern OCPN_Sound        g_anchorwatch_sound;
@@ -1469,7 +1438,7 @@ void ChartCanvas::SetQuiltMode( bool b_quilt )
     VPoint.b_FullScreenQuilt = g_bFullScreenQuilt;
 }
 
-bool ChartCanvas::GetQuiltMode( void )
+bool ChartCanvas::GetQuiltMode( void ) const
 {
     return VPoint.b_quilt;
 }
@@ -1673,7 +1642,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     case WXK_F12: {
         if( m_modkeys == wxMOD_ALT )
             m_nMeasureState = *(int *)(0);          // generate a fault for testing
-            
+
         parent_frame->ToggleChartOutlines();
         break;
     }
@@ -6542,7 +6511,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         for( std::vector< Ais8_001_22* >::iterator an = area_notices.begin(); an != area_notices.end(); ++an ) {
             objText << _T( "<b>AIS Area Notice:</b> " );
-            objText << ais8_001_22_notice_names[( *an )->notice_type];
+            objText << ais_get_ais8_001_22_notice_names(( *an )->notice_type);
             for( std::vector< Ais8_001_22_SubArea >::iterator sa = ( *an )->sub_areas.begin(); sa != ( *an )->sub_areas.end(); ++sa )
                 if( !sa->text.empty() )
                     objText << sa->text;
@@ -7746,28 +7715,6 @@ bool ChartCanvas::PurgeGLCanvasChartCache( ChartBase *pc )
 {
     if( g_bopengl && m_glcc ) m_glcc->PurgeChartTextures( pc );
     return true;
-}
-
-wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
-    wxString result;
-    if( distance < 0.1 ) {
-        result << wxString::Format(_T("%3.0f "), distance*1852.0 ) << _T("m");
-        return result;
-    }
-    if( distance < 5.0 ) {
-        result << wxString::Format(_T("%1.2f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-        return result;
-    }
-    if( distance < 100.0 ) {
-        result << wxString::Format(_T("%2.1f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-        return result;
-    }
-    if( distance < 1000.0 ) {
-        result << wxString::Format(_T("%3.0f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-        return result;
-    }
-    result << wxString::Format(_T("%4.0f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-    return result;
 }
 
 void RenderExtraRouteLegInfo( ocpnDC &dc, wxPoint ref_point, wxString s )

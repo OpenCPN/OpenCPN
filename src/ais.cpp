@@ -21,87 +21,10 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
- ***************************************************************************
- */
+ **************************************************************************/
 
 #include "wx/wx.h"
-#include "wx/tokenzr.h"
-#include "wx/datetime.h"
-#include "wx/sound.h"
-#include <wx/wfstream.h>
-#include <wx/imaglist.h>
-
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
-
-#include "dychart.h"
-#include "FontMgr.h"
 #include "ais.h"
-#include "chart1.h"
-#include "navutil.h"        // for Select
-#include "georef.h"
-#include "pluginmanager.h"  // for PlugInManager
-#include "styles.h"
-#include "datastream.h"
-#include "Select.h"
-
-extern  int             s_dns_test_flag;
-extern  Select          *pSelectAIS;
-extern  double          gLat, gLon, gSog, gCog;
-extern FontMgr          *pFontMgr;
-extern ChartCanvas      *cc1;
-extern MyFrame          *gFrame;
-extern MyConfig         *pConfig;
-extern bool             g_bopengl;
-
-//    AIS Global configuration
-extern bool             g_bCPAMax;
-extern double           g_CPAMax_NM;
-extern bool             g_bCPAWarn;
-extern double           g_CPAWarn_NM;
-extern bool             g_bTCPA_Max;
-extern double           g_TCPA_Max;
-extern bool             g_bMarkLost;
-extern double           g_MarkLost_Mins;
-extern bool             g_bRemoveLost;
-extern double           g_RemoveLost_Mins;
-extern bool             g_bAISShowTracks;
-extern double           g_AISShowTracks_Mins;
-extern bool             g_bShowMoored;
-extern double           g_ShowMoored_Kts;
-extern bool             g_bShowAllCPA;
-
-extern bool             g_bGPSAISMux;
-extern ColorScheme      global_color_scheme;
-
-extern bool             g_bAIS_CPA_Alert;
-extern bool             g_bAIS_CPA_Alert_Audio;
-extern bool             g_bAIS_CPA_Alert_Suppress_Moored;
-
-extern int              g_ais_alert_dialog_x, g_ais_alert_dialog_y;
-extern int              g_ais_alert_dialog_sx, g_ais_alert_dialog_sy;
-extern wxString         g_sAIS_Alert_Sound_File;
-
-extern AISTargetListDialog    *g_pAISTargetList;
-extern int              g_AisTargetList_range;
-extern wxString         g_AisTargetList_perspective;
-extern int              g_AisTargetList_sortColumn;
-extern bool             g_bAisTargetList_sortReverse;
-extern wxString         g_AisTargetList_column_spec;
-extern int              g_AisTargetList_count;
-
-extern bool             g_bAISRolloverShowClass;
-extern bool             g_bAISRolloverShowCOG;
-extern bool             g_bAISRolloverShowCPA;
-
-extern bool             g_bAIS_ACK_Timeout;
-extern double           g_AckTimeout_Mins;
-
-extern bool             bGPSValid;
-
-extern PlugInManager    *g_pi_manager;
-extern ocpnStyle::StyleManager* g_StyleManager;
 
 #if !defined(NAN)
 static const long long lNaN = 0xfff8000000000000;
@@ -111,9 +34,13 @@ static const long long lNaN = 0xfff8000000000000;
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(AISTargetTrackList);
 
-wxString ais_get_status(int index)
+// IMO Circ. 289 Area Notices, based on libais
+const size_t AIS8_001_22_NUM_NAMES=128;
+const size_t AIS8_001_22_SUBAREA_SIZE=87;
+
+const wxString & ais_get_status(int index)
 {
-	static const wxString ais_status[] = {
+    static const wxString ais_status[] = {
       _("Underway"),
       _("At Anchor"),
       _("Not Under Command"),
@@ -136,14 +63,14 @@ wxString ais_get_status(int index)
       _("Real"),
       _("Real (On Position)"),
       _("Real(Off Position)")
-	};
+    };
 
-	return ais_status[index];
+    return ais_status[index];
 }
 
-wxString ais_get_type(int index)
+const wxString & ais_get_type(int index)
 {
-	static const wxString ais_type[] = {
+    static const wxString ais_type[] = {
       _("Vessel Fishing"),             //30        0
       _("Vessel Towing"),              //31        1
       _("Vessel Towing, Long"),        //32        2
@@ -200,14 +127,14 @@ wxString ais_get_type(int index)
       _("GpsGate Buddy"),              //xx           52
       _("Position Report"),            //xx        53
       _("Distress")                    //xx        54
-	};
+    };
 
-	return ais_type[index];
+    return ais_type[index];
 }
 
-wxString ais_get_short_type(int index)
+const wxString & ais_get_short_type(int index)
 {
-	static const wxString short_ais_type[] = {
+    static const wxString short_ais_type[] = {
       _("F/V"),                  //30        0
       _("Tow"),                  //31        1
       _("Long Tow"),             //32        2
@@ -264,12 +191,14 @@ wxString ais_get_short_type(int index)
     _("Buddy"),                //xx        52
     _("DSC"),                  //xx        53
     _("Distress")              //xx        54
-	};
+    };
 
-	return short_ais_type[index];
+    return short_ais_type[index];
 }
 
-wxString ais8_001_22_notice_names[] = { // 128] = {
+const wxString & ais_get_ais8_001_22_notice_names(int notice_type)
+{
+    static const wxString ais8_001_22_notice_names[] = { // 128] = {
     _("Caution Area: Marine mammals habitat (implies whales NOT observed)"), // 0 - WARNING: extra text by Kurt
     _("Caution Area: Marine mammals in area - reduce speed"), // 1
     _("Caution Area: Marine mammals in area - stay clear"), // 2
@@ -398,7 +327,10 @@ wxString ais8_001_22_notice_names[] = { // 128] = {
     _("Other - Define in associated text field"), // 125
     _("Cancellation - cancel area as identified by Message Linkage ID"), // 126
     _("Undefined (default)") //, // 127
-};
+    };
+
+    return ais8_001_22_notice_names[notice_type];
+}
 
 wxString trimAISField( char *data )
 {

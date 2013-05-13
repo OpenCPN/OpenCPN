@@ -47,6 +47,7 @@
 #include "navutil.h"                            // for LogMessageOnce
 #include "ocpn_pixel.h"
 #include "ocpndc.h"
+#include "OCPNMessageBox.h"
 
 #include "cpl_csv.h"
 #include "setjmp.h"
