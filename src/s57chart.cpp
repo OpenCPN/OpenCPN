@@ -694,6 +694,9 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
                         }
                     }
+                    else {                      // not "POLYTESSGEO"
+                        pfpx->Ungetch(buf, strlen(buf) );
+                    }
 
                     break;
                 }
@@ -4208,6 +4211,14 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
                 }
 
+                //      Ensure that Area objects actually describe a valid object
+                if( GEO_AREA == obj->Primitive_type ) {
+                    if( !obj->BBObj.GetValid() ) {
+                        delete obj;
+                        continue;
+                    }
+                }
+                    
 //      This is where Simplified or Paper-Type point features are selected
                 switch( obj->Primitive_type ){
                     case GEO_POINT:
