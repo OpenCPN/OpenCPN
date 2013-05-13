@@ -67,6 +67,7 @@ extern WayPointman     *pWayPointMan;
 extern Select          *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern RouteList       *pRouteList;
+extern PlugInManager   *g_pi_manager;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
@@ -1779,15 +1780,15 @@ bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2
 
 void PlugInPlaySound( wxString &sound_file )
 {
-    OCPN_Sound sound;
-    sound.Create( sound_file );
+    if(g_pi_manager) {
+        g_pi_manager->m_plugin_sound.Stop();
+        g_pi_manager->m_plugin_sound.UnLoad();
+    
+        g_pi_manager->m_plugin_sound.Create( sound_file );
         
-#ifndef __WXMSW__
-    if(sound.IsOk() && !sound.IsPlaying())
-        sound.Play();
-#else
-    if( sound.IsOk() ) sound.Play();
-#endif
+        if( g_pi_manager->m_plugin_sound.IsOk() )
+            g_pi_manager->m_plugin_sound.Play();
+    }
 }
     
 // API 1.10 Route and Waypoint Support

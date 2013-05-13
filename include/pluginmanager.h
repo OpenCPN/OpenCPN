@@ -36,6 +36,7 @@
 #include "chart1.h"                 // for MyFrame
 #include "chcanv.h"                 // for ViewPort
 #include "datastream.h"             // for GenericPosDat
+#include "OCPN_Sound.h"
 
 //For widgets...
 #include "wx/hyperlink.h"
@@ -248,7 +249,8 @@ public:
       MyFrame *GetParentFrame(){ return pParent; }
 
       void DimeWindow(wxWindow *win);
-
+      OCPN_Sound        m_plugin_sound;
+      
 private:
       bool DeactivatePlugIn(PlugInContainer *pic);
       wxBitmap *BuildDimmedToolBitmap(wxBitmap *pbmp_normal, unsigned char dim_ratio);
@@ -269,7 +271,6 @@ private:
       int               m_plugin_menu_item_id_next;
       wxBitmap          m_cached_overlay_bm;
 
- //     opencpn_plugin    *m_plugin_base;
 
 
 };
