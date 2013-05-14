@@ -1784,7 +1784,7 @@ void PlugInPlaySound( wxString &sound_file )
         
 #ifndef __WXMSW__
     if(sound.IsOk() && !sound.IsPlaying())
-        sound.Play(wxSOUND_SYNC);
+        sound.Play();
 #else
     if( sound.IsOk() ) sound.Play();
 #endif
