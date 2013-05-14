@@ -468,7 +468,7 @@ class DECL_EXP opencpn_plugin_19 : public opencpn_plugin_18
 //
 //------------------------------------------------------------------
 
-class Plugin_Hyperlink 
+class DECL_EXP Plugin_Hyperlink 
 {
 public:
     wxString DescrText;
@@ -480,7 +480,7 @@ WX_DECLARE_LIST(Plugin_Hyperlink, Plugin_HyperlinkList);
 
 
 
-class PlugIn_Waypoint
+class DECL_EXP PlugIn_Waypoint
 {
 public:
     PlugIn_Waypoint();
@@ -506,7 +506,7 @@ public:
 
 WX_DECLARE_LIST(PlugIn_Waypoint, Plugin_WaypointList);
 
-class PlugIn_Route
+class DECL_EXP PlugIn_Route
 {
 public:
     PlugIn_Route(void);
@@ -520,7 +520,7 @@ public:
     Plugin_WaypointList     *pWaypointList;
 };
 
-class PlugIn_Track
+class DECL_EXP PlugIn_Track
 {
 public:
     PlugIn_Track(void);
