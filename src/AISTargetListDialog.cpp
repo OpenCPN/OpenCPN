@@ -32,6 +32,8 @@
 #include "AIS_Target_Data.h"
 #include "OCPNListCtrl.h"
 #include "styles.h"
+#include "Select.h"
+#include "routemanagerdialog.h"
 
 static AIS_Decoder *s_p_sort_decoder;
 
@@ -46,6 +48,9 @@ extern MyConfig *pConfig;
 extern AISTargetListDialog *g_pAISTargetList;
 extern MyFrame *gFrame;
 extern ChartCanvas *cc1;
+extern wxString g_default_wp_icon;
+extern Select *pSelect;
+extern RouteManagerDialog *pRouteManagerDialog;
 
 IMPLEMENT_CLASS ( AISTargetListDialog, wxPanel )
 
@@ -264,7 +269,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     m_pdecoder = pdecoder;
 
     SetMinSize( wxSize(400,240));
-    
+
     s_p_sort_decoder = pdecoder;
     m_pMMSI_array = new ArrayOfMMSI( ArrayItemCompareMMSI );
 
@@ -412,6 +417,12 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     m_pButtonJumpTo->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( AISTargetListDialog::OnTargetScrollTo ), NULL, this );
     boxSizer02->Add( m_pButtonJumpTo, 0, wxALL, 0 );
+
+    m_pButtonCreateWpt = new wxButton( this, wxID_ANY, _("Create WPT"), wxDefaultPosition,
+            wxDefaultSize, wxBU_AUTODRAW );
+    m_pButtonCreateWpt->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+            wxCommandEventHandler( AISTargetListDialog::OnTargetCreateWpt ), NULL, this );
+    boxSizer02->Add( m_pButtonCreateWpt, 0, wxALL, 0 );
     boxSizer02->AddSpacer( 10 );
 
     m_pStaticTextRange = new wxStaticText( this, wxID_ANY, _("Limit range: NM"), wxDefaultPosition,
@@ -615,6 +626,31 @@ void AISTargetListDialog::OnTargetScrollTo( wxCommandEvent& event )
             m_pMMSI_array->Item( selItemID ) );
 
     if( pAISTarget ) gFrame->JumpToPosition( pAISTarget->Lat, pAISTarget->Lon, cc1->GetVPScale() );
+}
+
+void AISTargetListDialog::OnTargetCreateWpt( wxCommandEvent& event )
+{
+    long selItemID = -1;
+    selItemID = m_pListCtrlAISTargets->GetNextItem( selItemID, wxLIST_NEXT_ALL,
+            wxLIST_STATE_SELECTED );
+    if( selItemID == -1 ) return;
+
+    AIS_Target_Data *pAISTarget = NULL;
+    if( m_pdecoder ) pAISTarget = m_pdecoder->Get_Target_Data_From_MMSI(
+            m_pMMSI_array->Item( selItemID ) );
+
+    if( pAISTarget ) {
+        RoutePoint *pWP = new RoutePoint( pAISTarget->Lat, pAISTarget->Lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+        pWP->m_bIsolatedMark = true;                      // This is an isolated mark
+        pSelect->AddSelectableRoutePoint( pAISTarget->Lat, pAISTarget->Lon, pWP );
+        pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
+
+        if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+            pRouteManagerDialog->UpdateWptListCtrl();
+        cc1->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+        cc1->undo->AfterUndoableAction( NULL );
+        Refresh( false );
+    }
 }
 
 void AISTargetListDialog::OnLimitRange( wxCommandEvent& event )

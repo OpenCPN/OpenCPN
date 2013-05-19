@@ -71,12 +71,14 @@ class AISTargetListDialog: public wxPanel
             void OnTargetQuery( wxCommandEvent& event );
             void OnTargetListColumnClicked( wxListEvent &event );
             void OnTargetScrollTo( wxCommandEvent& event );
+            void OnTargetCreateWpt( wxCommandEvent& event );
             void OnLimitRange( wxCommandEvent& event );
 
             wxWindow          *m_pparent;
             wxAuiManager      *m_pAuiManager;
             wxButton          *m_pButtonInfo;
             wxButton          *m_pButtonJumpTo;
+            wxButton          *m_pButtonCreateWpt;
             wxStaticText      *m_pStaticTextRange;
             wxSpinCtrl        *m_pSpinCtrlRange;
             wxStaticText      *m_pStaticTextCount;

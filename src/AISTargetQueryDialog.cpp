@@ -33,17 +33,27 @@
 #include "FontMgr.h"
 #include "AIS_Target_Data.h"
 #include "AIS_Decoder.h"
+#include "Select.h"
+#include "routemanagerdialog.h"
 
 extern AISTargetQueryDialog *g_pais_query_dialog_active;
 extern int g_ais_query_dialog_x;
 extern int g_ais_query_dialog_y;
 extern ColorScheme global_color_scheme;
 extern AIS_Decoder *g_pAIS;
+extern wxString g_default_wp_icon;
+extern Select *pSelect;
+extern MyConfig *pConfig;
+extern RouteManagerDialog *pRouteManagerDialog;
+extern ChartCanvas *cc1;
 
 #define xID_OK 10009
+#define xID_WPT_CREATE 10010
 IMPLEMENT_CLASS ( AISTargetQueryDialog, wxDialog )
 // AISTargetQueryDialog event table definition
-BEGIN_EVENT_TABLE ( AISTargetQueryDialog, wxDialog ) EVT_BUTTON( xID_OK, AISTargetQueryDialog::OnIdOKClick )
+BEGIN_EVENT_TABLE ( AISTargetQueryDialog, wxDialog )
+    EVT_BUTTON( xID_OK, AISTargetQueryDialog::OnIdOKClick )
+    EVT_BUTTON( xID_WPT_CREATE, AISTargetQueryDialog::OnIdWptCreateClick )
     EVT_CLOSE(AISTargetQueryDialog::OnClose)
     EVT_MOVE( AISTargetQueryDialog::OnMove )
 END_EVENT_TABLE()
@@ -83,6 +93,25 @@ void AISTargetQueryDialog::OnClose( wxCloseEvent& event )
 void AISTargetQueryDialog::OnIdOKClick( wxCommandEvent& event )
 {
     Close();
+}
+
+void AISTargetQueryDialog::OnIdWptCreateClick( wxCommandEvent& event )
+{
+    if( m_MMSI != 0 ) { //  Faulty MMSI could be reported as 0
+        AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
+        if( td ) {
+            RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+            pWP->m_bIsolatedMark = true;                      // This is an isolated mark
+            pSelect->AddSelectableRoutePoint( td->Lat, td->Lon, pWP );
+            pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
+
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateWptListCtrl();
+            cc1->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+            cc1->undo->AfterUndoableAction( NULL );
+            Refresh( false );
+        }
+    }
 }
 
 bool AISTargetQueryDialog::Create( wxWindow* parent, wxWindowID id, const wxString& caption,
@@ -142,6 +171,8 @@ void AISTargetQueryDialog::CreateControls()
     topSizer->Add( m_pQueryTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 5 );
 
     wxSizer* ok = CreateButtonSizer( wxOK );
+    wxButton* createWptBtn = new wxButton( this, xID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );
+    ok->Add( createWptBtn, 0, wxALL|wxEXPAND, 5 );
     topSizer->Add( ok, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
 }
 

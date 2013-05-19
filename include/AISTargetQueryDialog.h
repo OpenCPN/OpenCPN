@@ -60,6 +60,7 @@ public:
 
       void OnClose(wxCloseEvent& event);
       void OnIdOKClick( wxCommandEvent& event );
+      void OnIdWptCreateClick( wxCommandEvent& event );
       void OnMove( wxMoveEvent& event );
 
       void CreateControls();
