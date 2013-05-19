@@ -74,6 +74,7 @@
 #include "AIS_Target_Data.h"
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
+#include "compasswin.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -175,6 +176,7 @@ extern AIS_Decoder      *g_pAIS;
 
 extern MyFrame          *gFrame;
 extern StatWin          *stats;
+extern ocpnFloatingCompassWindow *g_FloatingCompassDialog;
 
 //    AIS Global configuration
 extern bool             g_bShowAIS;
@@ -1933,6 +1935,18 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             }
             SetScreenBrightness( g_nbrightness );
 
+            break;
+
+        case 9:                      // Ctrl I
+            if( g_FloatingCompassDialog ) {
+                if( g_FloatingCompassDialog->IsShown() ) {
+                    g_FloatingCompassDialog->Hide();
+                    gFrame->Raise();
+                } else {
+                    g_FloatingCompassDialog->Show();
+                }
+                Refresh();
+            }
             break;
 
         default:
