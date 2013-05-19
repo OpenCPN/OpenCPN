@@ -256,6 +256,7 @@ extern wxAuiManager      *g_pauimgr;
 
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
+extern bool             g_bdisable_opengl;
 
 extern bool             g_bFullScreenQuilt;
 extern wxProgressDialog *s_ProgDialog;
@@ -971,20 +972,22 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bzooming_out = false;;
 
     EnableAutoPan(true);
-    
+
     undo = new Undo;
 
     VPoint.Invalidate();
 
-    m_glcc = new glChartCanvas(this);
+    if ( !g_bdisable_opengl )
+    {
+        m_glcc = new glChartCanvas(this);
 
-#if wxCHECK_VERSION(2, 9, 0)
-    m_pGLcontext = new wxGLContext(m_glcc);
-    m_glcc->SetContext(m_pGLcontext);
-#else
-    m_pGLcontext = m_glcc->GetContext();
-#endif
-
+    #if wxCHECK_VERSION(2, 9, 0)
+        m_pGLcontext = new wxGLContext(m_glcc);
+        m_glcc->SetContext(m_pGLcontext);
+    #else
+        m_pGLcontext = m_glcc->GetContext();
+    #endif
+    }
 
     singleClickEventIsValid = false;
 
@@ -1383,7 +1386,8 @@ ChartCanvas::~ChartCanvas()
     delete m_pos_image_user_grey_dusk;
     delete m_pos_image_user_grey_night;
     delete undo;
-    delete m_glcc;
+    if( !g_bdisable_opengl )
+        delete m_glcc;
 }
 
 int ChartCanvas::GetCanvasChartNativeScale()
@@ -1672,7 +1676,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     case WXK_F12: {
         if( m_modkeys == wxMOD_ALT )
             m_nMeasureState = *(int *)(0);          // generate a fault for testing
-            
+
         parent_frame->ToggleChartOutlines();
         break;
     }
@@ -1977,7 +1981,7 @@ void ChartCanvas::Do_Pankeys( wxTimerEvent& event )
 
     if( !m_benable_autopan )
         return;
-    
+
     const int slowpan = 2, maxpan = 100;
     int repeat = 100;
 
@@ -4822,8 +4826,8 @@ void ChartCanvas::EnableAutoPan(bool b_enable )
         m_pany = 0;
         m_panspeed = 0;
     }
-}  
-    
+}
+
 bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging )
 {
     bool bft = false;
@@ -7895,7 +7899,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     wxPaintDC dc( this );
 
-    m_glcc->Show( g_bopengl );
+    if( !g_bdisable_opengl )
+        m_glcc->Show( g_bopengl );
 
     if( g_bopengl ) {
         if( !s_in_update ) {          // no recursion allowed, seen on lo-spec Mac

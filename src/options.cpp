@@ -174,6 +174,7 @@ extern s52plib          *ps52plib;
 
 extern wxString         g_locale;
 extern bool             g_bportable;
+extern bool             g_bdisable_opengl;
 extern wxString         *pHome_Locn;
 
 extern ChartGroupArray  *g_pGroupArray;
@@ -1367,6 +1368,7 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     //  OpenGL Render checkbox
     pOpenGL = new wxCheckBox( itemPanelUI, ID_OPENGLBOX, _("Use Accelerated Graphics (OpenGL)") );
     itemStaticBoxSizerCDO->Add( pOpenGL, 1, wxALL, border_size );
+    pOpenGL->Enable(!g_bdisable_opengl);
 
     //  Smooth Pan/Zoom checkbox
     pSmoothPanZoom = new wxCheckBox( itemPanelUI, ID_SMOOTHPANZOOMBOX,

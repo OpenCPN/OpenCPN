@@ -124,6 +124,7 @@ extern bool             g_bShowDepthUnits;
 extern bool             g_bAutoAnchorMark;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
+extern bool             g_bdisable_opengl;
 extern bool             g_bsmoothpanzoom;
 
 extern bool             g_bShowOutlines;
@@ -1102,10 +1103,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "LookAheadMode" ), &g_bLookAhead, 0 );
     Read( _T ( "SkewToNorthUp" ), &g_bskew_comp, 0 );
     Read( _T ( "OpenGL" ), &g_bopengl, 0 );
-
-//#ifdef __WXMAC__
-//      g_bopengl = 0;
-//#endif
+    if ( g_bdisable_opengl )
+        g_bopengl = false;
 
     Read( _T ( "ActiveChartGroup" ), &g_GroupIndex, 0 );
 

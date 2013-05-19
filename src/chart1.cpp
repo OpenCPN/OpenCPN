@@ -421,6 +421,8 @@ bool                      g_bQuiltStart;
 
 bool                      g_bportable;
 
+bool                      g_bdisable_opengl;
+
 ChartGroupArray           *g_pGroupArray;
 int                       g_GroupIndex;
 
@@ -754,12 +756,15 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddSwitch( _T("unit_test_1") );
 
     parser.AddSwitch( _T("p") );
+
+    parser.AddSwitch( _T("no_opengl") );
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
 {
     g_unit_test_1 = parser.Found( _T("unit_test_1") );
     g_bportable = parser.Found( _T("p") );
+    g_bdisable_opengl = parser.Found( _T("no_opengl") );
 
     return true;
 }
@@ -2073,12 +2078,16 @@ if( 0 == g_memCacheLimit )
     //  We need a deferred resize to get glDrawPixels() to work right.
     //  So we set a trigger to generate a resize after 5 seconds....
     //  See the "UniChrome" hack elsewhere
-    glChartCanvas *pgl = (glChartCanvas *) cc1->GetglCanvas();
-    if( pgl && ( pgl->GetRendererString().Find( _T("UniChrome") ) != wxNOT_FOUND ) ) {
-        gFrame->m_defer_size = gFrame->GetSize();
-        gFrame->SetSize( gFrame->m_defer_size.x - 10, gFrame->m_defer_size.y );
-        g_pauimgr->Update();
-        gFrame->m_bdefer_resize = true;
+    if ( !g_bdisable_opengl )
+    {
+        glChartCanvas *pgl = (glChartCanvas *) cc1->GetglCanvas();
+        if( pgl && ( pgl->GetRendererString().Find( _T("UniChrome") ) != wxNOT_FOUND ) )
+        {
+            gFrame->m_defer_size = gFrame->GetSize();
+            gFrame->SetSize( gFrame->m_defer_size.x - 10, gFrame->m_defer_size.y );
+            g_pauimgr->Update();
+            gFrame->m_bdefer_resize = true;
+        }
     }
     return TRUE;
 }
