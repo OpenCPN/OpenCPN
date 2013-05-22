@@ -73,7 +73,6 @@ extern bool             g_bskew_comp;
 extern bool             g_bopengl;
 extern bool             g_bsmoothpanzoom;
 
-extern FontMgr          *pFontMgr;
 extern wxString         *pInit_Chart_Dir;
 extern wxArrayOfConnPrm *g_pConnectionParams;
 extern Multiplexer      *g_pMUX;
@@ -1601,12 +1600,12 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 
     m_itemFontElementListBox = new wxChoice( itemPanelFont, ID_CHOICE_FONTELEMENT );
 
-    int nFonts = pFontMgr->GetNumFonts();
+    int nFonts = FontMgr::Get().GetNumFonts();
     for( int it = 0; it < nFonts; it++ ) {
-        wxString *t = pFontMgr->GetDialogString( it );
+        const wxString  & t = FontMgr::Get().GetDialogString( it );
 
-        if( pFontMgr->GetConfigString( it )->StartsWith( g_locale ) ) {
-            m_itemFontElementListBox->Append( *t );
+        if( FontMgr::Get().GetConfigString(it).StartsWith( g_locale ) ) {
+            m_itemFontElementListBox->Append(t);
         }
     }
 
@@ -2855,8 +2854,8 @@ void options::OnChooseFont( wxCommandEvent& event )
     wxFont *psfont;
     wxFontData font_data;
 
-    wxFont *pif = pFontMgr->GetFont( sel_text_element );
-    wxColour init_color = pFontMgr->GetFontColor( sel_text_element );
+    wxFont *pif = FontMgr::Get().GetFont( sel_text_element );
+    wxColour init_color = FontMgr::Get().GetFontColor( sel_text_element );
 
     wxFontData init_font_data;
     if( pif ) init_font_data.SetInitialFont( *pif );
@@ -2873,7 +2872,7 @@ void options::OnChooseFont( wxCommandEvent& event )
         wxFont font = font_data.GetChosenFont();
         psfont = new wxFont( font );
         wxColor color = font_data.GetColour();
-        pFontMgr->SetFont( sel_text_element, psfont, color );
+        FontMgr::Get().SetFont( sel_text_element, psfont, color );
 
         pParent->UpdateAllFonts();
     }

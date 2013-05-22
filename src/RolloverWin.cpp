@@ -35,8 +35,6 @@
 #include "navutil.h"
 #include "FontMgr.h"
 
-extern FontMgr* pFontMgr;
-
 BEGIN_EVENT_TABLE(RolloverWin, wxWindow) EVT_PAINT(RolloverWin::OnPaint)
     EVT_TIMER(ROLLOVER_TIMER, RolloverWin::OnTimer)
     EVT_MOUSE_EVENTS ( RolloverWin::OnMouseEvent )
@@ -95,17 +93,17 @@ void RolloverWin::SetBitmap( int rollover )
     switch( rollover ) {
         case AIS_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-            mdc.SetTextForeground( pFontMgr->GetFontColor( _T("AISRollover") ) );
+            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _T("AISRollover") ) );
             break;
 
         case TC_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 255 );
-            mdc.SetTextForeground( pFontMgr->GetFontColor( _T("TideCurrentGraphRollover") ) );
+            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _T("TideCurrentGraphRollover") ) );
             break;
         default:
         case LEG_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-            mdc.SetTextForeground( pFontMgr->GetFontColor( _T("RouteLegInfoRollover") ) );
+            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _T("RouteLegInfoRollover") ) );
             break;
     }
 
@@ -146,16 +144,16 @@ void RolloverWin::SetBestPosition( int x, int y, int off_x, int off_y, int rollo
     switch( rollover ) {
 
     case AIS_ROLLOVER:
-        dFont = pFontMgr->GetFont( _("AISRollover"), 12 );
+        dFont = FontMgr::Get().GetFont( _("AISRollover"), 12 );
         break;
 
     case TC_ROLLOVER:
-        dFont = pFontMgr->GetFont( _("TideCurrentGraphRollover"), 12 );
+        dFont = FontMgr::Get().GetFont( _("TideCurrentGraphRollover"), 12 );
         break;
 
     default:
     case LEG_ROLLOVER:
-        dFont = pFontMgr->GetFont( _("RouteLegInfoRollover"), 12 );
+        dFont = FontMgr::Get().GetFont( _("RouteLegInfoRollover"), 12 );
         break;
 
     }
