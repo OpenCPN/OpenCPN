@@ -51,7 +51,6 @@
 #include "routemanagerdialog.h"
 
 extern MyConfig        *pConfig;
-extern FontMgr         *pFontMgr;
 extern wxString        g_SData_Locn;
 extern AIS_Decoder     *g_pAIS;
 extern wxAuiManager    *g_pauimgr;
@@ -1448,10 +1447,7 @@ bool GetGlobalColor(wxString colorName, wxColour *pcolour)
 
 wxFont *OCPNGetFont(wxString TextElement, int default_size)
 {
-    if(pFontMgr)
-        return pFontMgr->GetFont(TextElement, default_size);
-    else
-        return NULL;
+    return FontMgr::Get().GetFont(TextElement, default_size);
 }
 
 wxString *GetpSharedDataLocation(void)

@@ -31,31 +31,42 @@
 
 #include "FontDesc.h"
 
+/**
+ * Manages the font list.
+ *
+ * Singleton.
+ */
 class FontMgr
 {
-public:
-      FontMgr();
-      ~FontMgr();
+    public:
+        static FontMgr & Get();
+    
+        wxFont *GetFont(const wxString &TextElement, int default_size = 0);
+        wxColour GetFontColor( const wxString &TextElement ) const;
+    
+        int GetNumFonts(void) const;
+        const wxString & GetConfigString(int i) const;
+        const wxString & GetDialogString(int i) const;
+        const wxString & GetNativeDesc(int i) const;
+        wxString GetFullConfigDesc( int i ) const;
+        static wxString GetFontConfigKey( const wxString &description );
+    
+        void LoadFontNative(wxString *pConfigString, wxString *pNativeDesc);
+        bool SetFont(const wxString &TextElement, wxFont *pFont, wxColour color);
+    
+    private: // private for singleton
+        FontMgr();
+        ~FontMgr();
+        FontMgr(const FontMgr &) {}
+        FontMgr & operator=(const FontMgr &) { return *this; }
 
-      wxFont *GetFont(const wxString &TextElement, int default_size = 0);
-      wxColour GetFontColor( const wxString &TextElement );
-
-      int GetNumFonts(void);
-      wxString *GetConfigString(int i);
-      wxString *GetDialogString(int i);
-      wxString *GetNativeDesc(int i);
-      wxString GetFullConfigDesc ( int i );
-      static wxString GetFontConfigKey( const wxString &description );
-
-      void LoadFontNative(wxString *pConfigString, wxString *pNativeDesc);
-      bool SetFont(const wxString &TextElement, wxFont *pFont, wxColour color);
-
-private:
-      wxString GetSimpleNativeFont(int size);
-
-      FontList          *m_fontlist;
-      wxFont            *pDefFont;
-
+    private:
+        wxString GetSimpleNativeFont(int size);
+    
+        static FontMgr * instance;
+    
+        FontList *m_fontlist;
+        wxFont   *pDefFont;
 };
 
 #endif
