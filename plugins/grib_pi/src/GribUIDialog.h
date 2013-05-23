@@ -87,11 +87,11 @@ public:
     void SelectGribRecordSet( GribRecordSet *pGribRecordSet );
     void SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet);
     void SetCursorLatLon( double lat, double lon );
-    void SetFactoryOptions();
+    void SetFactoryOptions( bool set_val = false );
 
     wxDateTime TimelineTime();
     wxDateTime MinTime();
-    wxDateTime MaxTime();
+    //wxDateTime MaxTime();
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
     void TimelineChanged(bool sync=false);
     void CreateActiveFileFromName( wxString filename );

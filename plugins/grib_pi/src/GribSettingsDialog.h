@@ -92,6 +92,7 @@ private:
     void PopulateUnits(int settings);
     void OnDataTypeChoice( wxCommandEvent& event );
     void OnApply( wxCommandEvent& event );
+    void OnIntepolateChange( wxCommandEvent& event );
 
     GRIBUIDialog &m_parent;
 

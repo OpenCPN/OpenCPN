@@ -261,39 +261,41 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	wxStaticBoxSizer* sbSizer4;
 	sbSizer4 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("playback") ), wxVERTICAL );
 	
-	wxGridSizer* gSizer2;
-	gSizer2 = new wxGridSizer( 0, 2, 0, 0 );
-	
-	m_cInterpolate = new wxCheckBox( this, wxID_ANY, _("Interpolate between gribs"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cInterpolate->SetValue(true); 
-	gSizer2->Add( m_cInterpolate, 0, 0, 5 );
-	
+	wxGridSizer* fgSizer41;
+	fgSizer41 = new wxFlexGridSizer( 0, 3, 0, 0 );
+		
 	m_cLoopMode = new wxCheckBox( this, wxID_ANY, _("Loop Mode"), wxDefaultPosition, wxDefaultSize, 0 );
-	gSizer2->Add( m_cLoopMode, 0, 0, 5 );
+	fgSizer41->Add( m_cLoopMode, 0, wxALL, 5 );
+
+    m_staticText4 = new wxStaticText( this, wxID_ANY, _("Updates per Second"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText4->Wrap( -1 );
+	fgSizer41->Add( m_staticText4, 0, wxALL, 5 );
+
+    m_sUpdatesPerSecond = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 60, 4 );
+	fgSizer41->Add( m_sUpdatesPerSecond, 0, wxALL, 5 );
+
+    m_cInterpolate = new wxCheckBox( this, wxID_ANY, _("Interpolate between gribs"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cInterpolate->SetValue(true); 
+	fgSizer41->Add( m_cInterpolate, 0, wxALL, 5 );
 	
 	m_staticText5 = new wxStaticText( this, wxID_ANY, _("Slices per Update"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText5->Wrap( -1 );
-	gSizer2->Add( m_staticText5, 0, 0, 5 );
+	fgSizer41->Add( m_staticText5, 0, wxALL, 5 );
 	
 	m_sSlicesPerUpdate = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100, 2 );
-	gSizer2->Add( m_sSlicesPerUpdate, 0, wxALL, 5 );
+	fgSizer41->Add( m_sSlicesPerUpdate, 0, wxALL, 5 );
+
+    fgSizer41->Add( 0, 0, wxTOP, 5 );
 	
-	m_staticText9 = new wxStaticText( this, wxID_ANY, _("Updates per Second"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText9 = new wxStaticText( this, wxID_ANY, _("Slices per hour"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText9->Wrap( -1 );
-	gSizer2->Add( m_staticText9, 0, wxALL, 5 );
-	
-	m_sUpdatesPerSecond = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 60, 4 );
-	gSizer2->Add( m_sUpdatesPerSecond, 0, wxALL, 5 );
-	
-	m_staticText4 = new wxStaticText( this, wxID_ANY, _("Slices per hour"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText4->Wrap( -1 );
-	gSizer2->Add( m_staticText4, 0, wxALL, 5 );
+	fgSizer41->Add( m_staticText9, 0, wxALL, 5 );
 	
 	m_sHourDivider = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 20, 2 );
-	gSizer2->Add( m_sHourDivider, 0, wxALL, 5 );
+	fgSizer41->Add( m_sHourDivider, 0, wxALL, 5 );
 	
 	
-	sbSizer4->Add( gSizer2, 1, 0, 5 );
+	sbSizer4->Add( fgSizer41, 1, 0, 5 );
 	
 	
 	fgSizer4->Add( sbSizer4, 1, 0, 5 );
@@ -396,6 +398,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	this->Centre( wxBOTH );
 	
 	// Connect Events
+    m_cInterpolate->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnIntepolateChange ), NULL, this );
 	m_cDataType->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnDataTypeChoice ), NULL, this );
 	m_sdbSizer1Apply->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnApply ), NULL, this );
 }
@@ -403,6 +406,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 GribSettingsDialogBase::~GribSettingsDialogBase()
 {
 	// Disconnect Events
+    m_cInterpolate->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnIntepolateChange ), NULL, this );
 	m_cDataType->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribSettingsDialogBase::OnDataTypeChoice ), NULL, this );
 	m_sdbSizer1Apply->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribSettingsDialogBase::OnApply ), NULL, this );
 	
