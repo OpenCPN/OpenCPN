@@ -66,7 +66,6 @@ public:
       Routeman(MyApp *parent);
       ~Routeman();
 
-      void AssembleAllRoutes(void);
       void DeleteRoute(Route *pRoute);
       void DeleteAllRoutes(void);
       void DeleteAllTracks(void);

@@ -49,6 +49,7 @@
 #include "OCPN_DataStreamEvent.h"
 #include "georef.h"
 #include "routemanagerdialog.h"
+#include "NavObjectCollection.h"
 
 extern MyConfig        *pConfig;
 extern wxString        g_SData_Locn;
@@ -1656,18 +1657,14 @@ int GetChartbarHeight( void )
 bool GetRoutepointGPX( RoutePoint *pRoutePoint, char *buffer, unsigned int buffer_length)
 {
     bool ret = false;
-    GpxDocument *gpx = new GpxDocument();
-    GpxRootElement *gpxroot = (GpxRootElement *) gpx->RootElement();
-    gpxroot->AddWaypoint( ::CreateGPXWpt( pRoutePoint, GPX_WPT_WAYPOINT ) );
-
+    
+    NavObjectCollection1 *pgpx = new NavObjectCollection1;
+    pgpx->AddGPXWaypoint( pRoutePoint);
     wxString gpxfilename = wxFileName::CreateTempFileName(wxT("gpx"));
-    gpx->SaveFile( gpxfilename );
-
-    gpx->Clear();
-    delete gpx;
-
+    pgpx->SaveFile(gpxfilename);
+    delete pgpx;
+    
     wxFFile gpxfile( gpxfilename );
-
     wxString s;
     if( gpxfile.ReadAll( &s ) ) {
         if(s.Length() < buffer_length) {
@@ -1678,7 +1675,6 @@ bool GetRoutepointGPX( RoutePoint *pRoutePoint, char *buffer, unsigned int buffe
 
     gpxfile.Close();
     ::wxRemoveFile(gpxfilename);
-
 
     return ret;
 }
@@ -1895,7 +1891,7 @@ bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent)
                 Hyperlink* h = new Hyperlink();
                 h->DescrText = link->DescrText;
                 h->Link = link->Link;
-                h->Type = link->Type;
+                h->LType = link->Type;
             
                 pWP->m_HyperlinkList->Append( h );
             
@@ -1967,7 +1963,7 @@ bool UpdateSingleWaypoint( PlugIn_Waypoint *pwaypoint )
                     Hyperlink* h = new Hyperlink();
                     h->DescrText = link->DescrText;
                     h->Link = link->Link;
-                    h->Type = link->Type;
+                    h->LType = link->Type;
                     
                     prp->m_HyperlinkList->Append( h );
                     
@@ -2019,7 +2015,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
                     Hyperlink* h = new Hyperlink();
                     h->DescrText = link->DescrText;
                     h->Link = link->Link;
-                    h->Type = link->Type;
+                    h->LType = link->Type;
                     
                     pWP->m_HyperlinkList->Append( h );
                     
@@ -2030,7 +2026,7 @@ bool AddPlugInRoute( PlugIn_Route *proute, bool b_permanent )
         
         pWP->m_MarkDescription = pwp->m_MarkDescription;
         pWP->m_bShowName = false;
-        pWP->m_CreateTime = pwp->m_CreateTime;
+        pWP->SetCreateTime(pwp->m_CreateTime);
         
         route->AddPoint( pWP );
         
@@ -2117,7 +2113,7 @@ bool AddPlugInTrack( PlugIn_Track *ptrack, bool b_permanent )
         
         pWP->m_MarkDescription = pwp->m_MarkDescription;
         pWP->m_bShowName = false;
-        pWP->m_CreateTime = pwp->m_CreateTime;
+        pWP->SetCreateTime( pwp->m_CreateTime );
         
         track->AddPoint( pWP );
         

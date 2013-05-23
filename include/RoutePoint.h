@@ -44,9 +44,9 @@ public:
       void Draw(ocpnDC& dc, wxPoint *rpn = NULL);
       void ReLoadIcon(void);
 
-      wxString CreatePropString(void);
-      void SetPropFromString(const wxString &prop_string);
-
+      wxDateTime GetCreateTime(void);
+      void SetCreateTime( wxDateTime dt );
+      
       void SetPosition(double lat, double lon);
       double GetLatitude()  { return m_lat; };
       double GetLongitude() { return m_lon; };
@@ -96,11 +96,9 @@ public:
       bool              m_bIsVisible;           // true if should be drawn, false if invisible
       bool              m_bIsListed;
       bool              m_bIsActive;
-      int               m_ConfigWPNum;
       wxString          m_MarkDescription;
       wxString          m_GUID;
       wxString          m_IconName;
-      wxString          m_prop_string_format;         // Alpha character, like "A", giving version of property string
 
       wxFont            *m_pMarkFont;
       wxColour          m_FontColor;
@@ -114,7 +112,7 @@ public:
       wxRect            CurrentRect_in_DC;
       int               m_NameLocationOffsetX;
       int               m_NameLocationOffsetY;
-      wxDateTime        m_CreateTime;
+      wxString          m_timestring;
       int               m_GPXTrkSegNo;
       bool              m_bIsInLayer;
       int               m_LayerID;
@@ -127,6 +125,8 @@ public:
 
 private:
       wxString          m_MarkName;
+      wxDateTime        m_CreateTimeX;
+      
 };
 
 WX_DECLARE_LIST(RoutePoint, RoutePointList);// establish class as list member

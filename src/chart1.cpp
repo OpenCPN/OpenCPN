@@ -2015,10 +2015,11 @@ if( 0 == g_memCacheLimit )
 //        gFrame->MemFootTimer.Start(1000, wxTIMER_CONTINUOUS);
 
     // Import Layer-wise any .gpx files from /Layers directory
-    wxString layerdir = g_PrivateDataDir;  //g_SData_Locn;
-    wxChar sep = wxFileName::GetPathSeparator();
-    if( layerdir.Last() != sep ) layerdir.Append( sep );
+    wxString layerdir = g_PrivateDataDir; 
+    appendOSDirSlash( &layerdir );
     layerdir.Append( _T("layers") );
+
+#if 0    
     wxArrayString file_array;
     g_LayerIdx = 0;
 
@@ -2043,6 +2044,15 @@ if( 0 == g_memCacheLimit )
                 cont = dir.GetNext( &filename );
             }
         }
+    }
+#endif
+
+    if( wxDir::Exists( layerdir ) ) {
+        wxString laymsg;
+        laymsg.Printf( wxT("Getting .gpx layer files from: %s"), layerdir.c_str() );
+        wxLogMessage( laymsg );
+        
+        pConfig->LoadLayers(layerdir);
     }
 
     cc1->ReloadVP();                  // once more, and good to go
@@ -3017,7 +3027,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     pConfig->UpdateSettings();
     pConfig->UpdateNavObj();
 
-    pConfig->m_pNavObjectChangesSet->Clear();
+//    pConfig->m_pNavObjectChangesSet->Clear();
     delete pConfig->m_pNavObjectChangesSet;
 
     //Remove any leftover Routes and Waypoints from config file as they were saved to navobj before

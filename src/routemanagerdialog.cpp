@@ -1357,7 +1357,7 @@ static int CompareTracks( const Track** track1, const Track** track2 )
 {
     RoutePoint* start1 = ( *track1 )->pRoutePointList->GetFirst()->GetData();
     RoutePoint* start2 = ( *track2 )->pRoutePointList->GetFirst()->GetData();
-    if( start1->m_CreateTime > start2->m_CreateTime ) return 1;
+    if( start1->GetCreateTime() > start2->GetCreateTime() ) return 1;
     return -1; // Two tracks starting at the same time is not possible.
 }
 
@@ -1473,7 +1473,7 @@ void RouteManagerDialog::OnTrkMenuSelected( wxCommandEvent &event )
                     newPoint->m_bIsVisible = true;
                     newPoint->m_GPXTrkSegNo = 1;
 
-                    newPoint->m_CreateTime = rPoint->m_CreateTime;
+                    newPoint->SetCreateTime(rPoint->GetCreateTime());
 
                     targetTrack->AddPoint( newPoint );
 
@@ -1552,8 +1552,8 @@ void RouteManagerDialog::UpdateTrkListCtrl()
         wxString name = trk->m_RouteNameString;
         if( name.IsEmpty() ) {
             RoutePoint *rp = trk->GetPoint( 1 );
-            if( rp && rp->m_CreateTime.IsValid() ) name = rp->m_CreateTime.FormatISODate() + _T(" ")
-                    + rp->m_CreateTime.FormatISOTime();   //name = rp->m_CreateTime.Format();
+            if( rp && rp->GetCreateTime().IsValid() ) name = rp->GetCreateTime().FormatISODate() + _T(" ")
+                    + rp->GetCreateTime().FormatISOTime();   //name = rp->m_CreateTime.Format();
             else
                 name = _("(Unnamed Track)");
         }
@@ -2280,7 +2280,7 @@ void RouteManagerDialog::OnLayNewClick( wxCommandEvent &event )
 {
     bool show_flag = g_bShowLayers;
     g_bShowLayers = true;
-    pConfig->ImportGPX( this, true, _T(""), false );
+    pConfig->UI_ImportGPX( this, true, _T("") );
     g_bShowLayers = show_flag;
 
     UpdateRouteListCtrl();
@@ -2596,7 +2596,7 @@ void RouteManagerDialog::OnImportClick( wxCommandEvent &event )
     // Import routes
     // FIXME there is no way to instruct this function about what to import.
     // Suggest to add that!
-    pConfig->ImportGPX( this );
+    pConfig->UI_ImportGPX( this );
 
     UpdateRouteListCtrl();
     UpdateTrkListCtrl();

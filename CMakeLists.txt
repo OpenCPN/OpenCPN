@@ -506,6 +506,7 @@ SET(SRCS
 		src/ConnectionParams.cpp
 		src/OCP_DataStreamInput_Thread.cpp
         src/multiplexer.cpp
+                src/pugixml.cpp
     )
 
 IF(wx_Version MATCHES "2.9")

@@ -72,12 +72,9 @@ Route::Route( void )
     RBBox.Reset();
     m_bcrosses_idl = false;
 
-    m_bIsInLayer = g_bIsNewLayer;
-    if( m_bIsInLayer ) {
-        m_LayerID = g_LayerIdx;
-        m_bListed = false;
-    } else
-        m_LayerID = 0;
+    m_LayerID = 0;
+    m_bIsInLayer = false;
+
     m_Colour = wxEmptyString;
 
     m_lastMousePointIndex = 0;
@@ -165,7 +162,6 @@ void Route::CloneTrack( Route *psourceroute, int start_nPoint, int end_nPoint, c
 void Route::CloneAddedRoutePoint( RoutePoint *ptargetpoint, RoutePoint *psourcepoint )
 {
     ptargetpoint->m_MarkDescription = psourcepoint->m_MarkDescription;
-    ptargetpoint->m_prop_string_format = psourcepoint->m_prop_string_format;
     ptargetpoint->m_bKeepXRoute = psourcepoint->m_bKeepXRoute;
     ptargetpoint->m_bIsVisible = psourcepoint->m_bIsVisible;
     ptargetpoint->m_bPtIsSelected = false;
@@ -176,7 +172,7 @@ void Route::CloneAddedRoutePoint( RoutePoint *ptargetpoint, RoutePoint *psourcep
     ptargetpoint->CurrentRect_in_DC = psourcepoint->CurrentRect_in_DC;
     ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetX;
     ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetY;
-    ptargetpoint->m_CreateTime = psourcepoint->m_CreateTime;
+    ptargetpoint->SetCreateTime(psourcepoint->GetCreateTime());
     ptargetpoint->m_HyperlinkList = new HyperlinkList;
 
     if( !psourcepoint->m_HyperlinkList->IsEmpty() ) {
@@ -191,7 +187,6 @@ void Route::CloneAddedTrackPoint( RoutePoint *ptargetpoint, RoutePoint *psourcep
     ptargetpoint->m_bIsInRoute = false;
     ptargetpoint->m_bIsInTrack = true;
     ptargetpoint->m_MarkDescription = psourcepoint->m_MarkDescription;
-    ptargetpoint->m_prop_string_format = psourcepoint->m_prop_string_format;
     ptargetpoint->m_bKeepXRoute = psourcepoint->m_bKeepXRoute;
     ptargetpoint->m_bIsVisible = psourcepoint->m_bIsVisible;
     ptargetpoint->m_bPtIsSelected = false;
@@ -202,7 +197,7 @@ void Route::CloneAddedTrackPoint( RoutePoint *ptargetpoint, RoutePoint *psourcep
     ptargetpoint->CurrentRect_in_DC = psourcepoint->CurrentRect_in_DC;
     ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetX;
     ptargetpoint->m_NameLocationOffsetX = psourcepoint->m_NameLocationOffsetY;
-    ptargetpoint->m_CreateTime = psourcepoint->m_CreateTime;
+    ptargetpoint->SetCreateTime(psourcepoint->GetCreateTime());
     ptargetpoint->m_HyperlinkList = new HyperlinkList;
     // Hyperlinks not implemented currently in GPX for trackpoints
     //if (!psourcepoint->m_HyperlinkList->IsEmpty()) {

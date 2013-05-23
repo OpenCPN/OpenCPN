@@ -60,22 +60,18 @@ RoutePoint::RoutePoint()
     m_bBlink = false;
     m_bIsInRoute = false;
     m_bIsInTrack = false;
-    wxDateTime now = wxDateTime::Now();
-    m_CreateTime = now.ToUTC();
+    m_CreateTimeX = wxDateTime::Now();
     m_GPXTrkSegNo = 1;
     m_bIsolatedMark = false;
     m_bShowName = true;
     m_bKeepXRoute = false;
     m_bIsVisible = true;
     m_bIsListed = true;
-    m_ConfigWPNum = -1;
     CurrentRect_in_DC = wxRect( 0, 0, 0, 0 );
     m_NameLocationOffsetX = -10;
     m_NameLocationOffsetY = 8;
     m_pMarkFont = NULL;
     m_btemp = false;
-
-    m_prop_string_format = _T ( "A" );
 
     m_HyperlinkList = new HyperlinkList;
 
@@ -106,19 +102,17 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_bBlink = orig->m_bBlink;
     m_bIsInRoute = orig->m_bIsInRoute;
     m_bIsInTrack = orig->m_bIsInTrack;
-    m_CreateTime = orig->m_CreateTime;
+    m_CreateTimeX = orig->m_CreateTimeX;
     m_GPXTrkSegNo = orig->m_GPXTrkSegNo;
     m_bIsolatedMark = orig->m_bIsolatedMark;
     m_bShowName = orig->m_bShowName;
     m_bKeepXRoute = orig->m_bKeepXRoute;
     m_bIsVisible = orig->m_bIsVisible;
     m_bIsListed = orig->m_bIsListed;
-    m_ConfigWPNum = orig->m_ConfigWPNum;
     CurrentRect_in_DC = orig->CurrentRect_in_DC;
     m_NameLocationOffsetX = orig->m_NameLocationOffsetX;
     m_NameLocationOffsetY = orig->m_NameLocationOffsetY;
     m_pMarkFont = orig->m_pMarkFont;
-    m_prop_string_format = orig->m_prop_string_format;
     m_MarkDescription = orig->m_MarkDescription;
     m_btemp = orig->m_btemp;
         
@@ -153,26 +147,23 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_bBlink = false;
     m_bIsInRoute = false;
     m_bIsInTrack = false;
-    wxDateTime now = wxDateTime::Now();
-    m_CreateTime = now.ToUTC();
+    m_CreateTimeX = wxDateTime::Now();
     m_GPXTrkSegNo = 1;
     m_bIsolatedMark = false;
     m_bShowName = true;
     m_bKeepXRoute = false;
     m_bIsVisible = true;
     m_bIsListed = true;
-    m_ConfigWPNum = -1;
     CurrentRect_in_DC = wxRect( 0, 0, 0, 0 );
     m_NameLocationOffsetX = -10;
     m_NameLocationOffsetY = 8;
     m_pMarkFont = NULL;
     m_btemp = false;
     
-    m_prop_string_format = _T ( "A" );           // Set the current Property String format indicator
-
     m_HyperlinkList = new HyperlinkList;
 
-    if( !pGUID.IsEmpty() ) m_GUID = pGUID;
+    if( !pGUID.IsEmpty() )
+        m_GUID = pGUID;
     else
         m_GUID = pWayPointMan->CreateGUID( this );
 
@@ -205,6 +196,21 @@ RoutePoint::~RoutePoint( void )
     }
 }
 
+wxDateTime RoutePoint::GetCreateTime()
+{
+    if(!m_CreateTimeX.IsValid()) {
+        if(m_timestring.Len())
+            ParseGPXDateTime( m_CreateTimeX, m_timestring );
+    }
+    return m_CreateTimeX;
+}
+
+void RoutePoint::SetCreateTime( wxDateTime dt )
+{
+    m_CreateTimeX = dt;
+}
+
+        
 void RoutePoint::SetName(const wxString & name)
 {
     m_MarkName = name;
@@ -220,53 +226,6 @@ void RoutePoint::CalculateNameExtents( void )
         m_NameExtents = dc.GetTextExtent( m_MarkName );
     } else
         m_NameExtents = wxSize( 0, 0 );
-
-}
-
-wxString RoutePoint::CreatePropString( void )
-{
-    wxString ret;
-    ret.Printf( _T ( ",%d,%d,%d,%d" ), m_bDynamicName, m_bShowName, m_bKeepXRoute, m_bIsVisible );
-    ret.Prepend( m_prop_string_format );
-    return ret;
-}
-
-void RoutePoint::SetPropFromString( const wxString &prop_string )
-{
-    long tmp_prop;
-    wxString str_fmt;
-
-    if( !prop_string.IsEmpty() ) {
-        wxStringTokenizer tkp( prop_string, _T ( "," ) );
-
-        //  Look at the first character
-        wxString c1 = prop_string.Mid( 0, 1 );
-        if( c1.ToLong( &tmp_prop ) ) str_fmt = _T ( "A" ); // Assume format version is 'A' if first char is numeric
-        else
-            str_fmt = tkp.GetNextToken();
-
-        if( str_fmt == _T ( "A" ) ) {
-
-            wxString token = tkp.GetNextToken();
-            token.ToLong( &tmp_prop );
-            m_bDynamicName = !( tmp_prop == 0 );
-
-            token = tkp.GetNextToken();
-            token.ToLong( &tmp_prop );
-            m_bShowName = !( tmp_prop == 0 );
-
-            token = tkp.GetNextToken();
-            token.ToLong( &tmp_prop );
-            m_bKeepXRoute = !( tmp_prop == 0 );
-
-            token = tkp.GetNextToken();               // format A might or might not have 4 fields
-            if( token.Len() ) {
-                token.ToLong( &tmp_prop );
-                m_bIsVisible = !( tmp_prop == 0 );
-            } else
-                m_bIsVisible = true;
-        }
-    }
 
 }
 

@@ -432,7 +432,7 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
 
         case 6:
             {
-                wxDateTime timestamp = g_this_point->m_CreateTime;
+                wxDateTime timestamp = g_this_point->GetCreateTime();
                 if( timestamp.IsValid() )
                     ret = ts2s( timestamp, m_tz_selection, m_LMT_Offset, TIMESTAMP_FORMAT );
                 else
@@ -441,12 +441,12 @@ wxString OCPNTrackListCtrl::OnGetItemText( long item, long column ) const
             break;
 
         case 7:
-            if( ( item > 0 ) && g_this_point->m_CreateTime.IsValid()
-                    && g_prev_point->m_CreateTime.IsValid() )
+            if( ( item > 0 ) && g_this_point->GetCreateTime().IsValid()
+                    && g_prev_point->GetCreateTime().IsValid() )
             {
                 double speed = 0.;
                 double seconds =
-                        g_this_point->m_CreateTime.Subtract( g_prev_point->m_CreateTime ).GetSeconds().ToDouble();
+                        g_this_point->GetCreateTime().Subtract( g_prev_point->GetCreateTime() ).GetSeconds().ToDouble();
 
                 if( seconds > 0. )
                     speed = gt_leg_dist / seconds * 3600;
@@ -642,7 +642,7 @@ void RouteProp::OnRoutepropExtendClick( wxCommandEvent& event )
 
         if( IsThisTrackExtendable() ) {
             int begin = 1;
-            if( pLastPoint->m_CreateTime == m_pExtendPoint->m_CreateTime ) begin = 2;
+            if( pLastPoint->GetCreateTime() == m_pExtendPoint->GetCreateTime() ) begin = 2;
             pSelect->DeleteAllSelectableTrackSegments( m_pExtendRoute );
             m_pExtendRoute->CloneTrack( m_pRoute, begin, m_pRoute->GetnPoints(), _("_plus") );
             pSelect->AddAllSelectableTrackSegments( m_pExtendRoute );
@@ -787,16 +787,16 @@ bool RouteProp::IsThisTrackExtendable()
     if( m_pRoute == g_pActiveTrack || m_pRoute->m_bIsInLayer ) return false;
 
     RoutePoint *pLastPoint = m_pRoute->GetPoint( 1 );
-    if( !pLastPoint->m_CreateTime.IsValid() ) return false;
+    if( !pLastPoint->GetCreateTime().IsValid() ) return false;
 
     wxRouteListNode *route_node = pRouteList->GetFirst();
     while( route_node ) {
         Route *proute = route_node->GetData();
         if( proute->m_bIsTrack && proute->IsVisible() && ( proute->m_GUID != m_pRoute->m_GUID ) ) {
             RoutePoint *track_node = proute->GetLastPoint();
-            if( track_node->m_CreateTime.IsValid() ) {
-                if( track_node->m_CreateTime <= pLastPoint->m_CreateTime ) if( !m_pExtendPoint
-                        || track_node->m_CreateTime > m_pExtendPoint->m_CreateTime ) {
+            if( track_node->GetCreateTime().IsValid() ) {
+                if( track_node->GetCreateTime() <= pLastPoint->GetCreateTime() )
+                    if( !m_pExtendPoint || track_node->GetCreateTime() > m_pExtendPoint->GetCreateTime() ) {
                     m_pExtendPoint = track_node;
                     m_pExtendRoute = proute;
                 }
@@ -1350,9 +1350,9 @@ bool RouteProp::UpdateProperties()
         RoutePoint *first_point = m_pRoute->GetPoint( 1 );
         double total_seconds = 0.;
 
-        if( last_point->m_CreateTime.IsValid() && first_point->m_CreateTime.IsValid() ) {
+        if( last_point->GetCreateTime().IsValid() && first_point->GetCreateTime().IsValid() ) {
             total_seconds =
-                    last_point->m_CreateTime.Subtract( first_point->m_CreateTime ).GetSeconds().ToDouble();
+                    last_point->GetCreateTime().Subtract( first_point->GetCreateTime() ).GetSeconds().ToDouble();
             if( total_seconds != 0. ) {
                 m_avgspeed = m_pRoute->m_route_length / total_seconds * 3600;
             } else {
@@ -2509,7 +2509,7 @@ void MarkInfoImpl::SetRoutePoint( RoutePoint *pRP )
                 Hyperlink* h = new Hyperlink();
                 h->DescrText = link->DescrText;
                 h->Link = link->Link;
-                h->Type = link->Type;
+                h->LType = link->LType;
 
                 m_pMyLinkList->Append( h );
 
@@ -2628,7 +2628,7 @@ void MarkInfoImpl::OnAddLink( wxCommandEvent& event )
         Hyperlink* h = new Hyperlink();
         h->DescrText = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
         h->Link = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
-        h->Type = wxEmptyString;
+        h->LType = wxEmptyString;
         m_pRoutePoint->m_HyperlinkList->Append( h );
     }
 
@@ -2758,7 +2758,7 @@ void MarkInfoImpl::OnMarkInfoCancelClick( wxCommandEvent& event )
                 Hyperlink* h = new Hyperlink();
                 h->DescrText = link->DescrText;
                 h->Link = link->Link;
-                h->Type = link->Type;
+                h->LType = link->LType;
 
                 m_pRoutePoint->m_HyperlinkList->Append( h );
 

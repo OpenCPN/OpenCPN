@@ -25,25 +25,91 @@
 #ifndef __NAVOBJECTCOLLECTION_H__
 #define __NAVOBJECTCOLLECTION_H__
 
-#include "gpxdocument.h"
+#include "pugixml.hpp"
+#include "Route.h"
+#include "RoutePoint.h"
 
-class TiXmlNode;
+class Track;
 
-class NavObjectCollection : public GpxDocument
+//      Bitfield definition controlling the GPX nodes output for point objects
+#define         OUT_TYPE        1 << 1          //  Output point type
+#define         OUT_TIME        1 << 2          //  Output time as ISO string
+#define         OUT_NAME        1 << 3          //  Output point name if defined
+#define         OUT_NAME_FORCE  1 << 4          //  Output point name, even if empty
+#define         OUT_DESC        1 << 5          //  Output description if defined
+#define         OUT_DESC_FORCE  1 << 6          //  Output description, even if empty
+#define         OUT_SYM_FORCE   1 << 7          //  Output symbol name, using "empty" if undefined
+#define         OUT_GUID        1 << 8          //  Output GUID if defined
+#define         OUT_VIZ         1 << 9          //  Output point viz, if non-zero(true)
+#define         OUT_VIZ_NAME    1 << 10         //  Output point name viz, if non-zero(true)
+#define         OUT_SHARED      1 << 11         //  Output point shared state, if non-zero(true)
+#define         OUT_AUTO_NAME   1 << 12         //  Output point auto_name state, if non-zero(true)
+#define         OUT_HYPERLINKS  1 << 13         //  Output point Hyperlinks, if present
+#define         OUT_ACTION_ADD  1 << 14         //  opencpn:action node support
+#define         OUT_ACTION_DEL  1 << 15
+#define         OUT_ACTION_UPD  1 << 16
+
+#define  OPT_TRACKPT    OUT_TIME
+#define  OPT_WPT        (OUT_TYPE) +\
+                        (OUT_TIME) +\
+                        (OUT_NAME) +\
+                        (OUT_DESC) +\
+                        (OUT_SYM_FORCE) +\
+                        (OUT_GUID) +\
+                        (OUT_VIZ) +\
+                        (OUT_VIZ_NAME) +\
+                        (OUT_SHARED) +\
+                        (OUT_AUTO_NAME) +\
+                        (OUT_HYPERLINKS)
+#define OPT_ROUTEPT     OPT_WPT                        
+
+//      Bitfield definitions controlling the GPX nodes output for Route.Track objects
+#define         RT_OUT_ACTION_ADD         1 << 1          //  opencpn:action node support
+#define         RT_OUT_ACTION_DEL         1 << 2
+#define         RT_OUT_ACTION_UPD         1 << 3
+
+
+class NavObjectCollection1 : public pugi::xml_document
 {
-      public:
-            NavObjectCollection();
-            ~NavObjectCollection();
+public:
+    NavObjectCollection1();
+    ~NavObjectCollection1();
+    
+    bool CreateNavObjGPXPoints(void);
+    bool CreateNavObjGPXRoutes(void);
+    bool CreateNavObjGPXTracks(void);
+ 
+    bool AddGPXRoutesList( RouteList *pRoutes );
+    bool AddGPXPointsList( RoutePointList *pRoutePoints );
+    bool AddGPXRoute(Route *pRoute);
+    bool AddGPXTrack(Track *pTrk);
+    bool AddGPXWaypoint(RoutePoint *pWP );
+    
+    bool CreateAllGPXObjects();
+    bool LoadAllGPXObjects(void);
+    int LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz);
+    
+    bool SaveFile( const wxString filename );
 
-            bool CreateNavObjGPXPoints(void);
-            bool CreateNavObjGPXRoutes(void);
-            bool CreateNavObjGPXTracks(void);
-
-            bool LoadAllGPXObjects(void);
-
-      private:
-            GpxRootElement   *m_pXMLrootnode;
-            TiXmlNode   *m_proot_next;
+    void SetRootGPXNode(void);
+    
+    pugi::xml_node      m_gpx_root;
 };
+
+
+class NavObjectChanges : public NavObjectCollection1
+{
+public:
+    NavObjectChanges();
+    ~NavObjectChanges();
+    
+    bool AddRoute( Route *pr, const char *action );           // support "changes" file set
+    bool AddTrack( Track *pr, const char *action );
+    bool AddWP( RoutePoint *pr, const char *action );
+    
+    bool ApplyChanges(void);
+    
+};
+
 
 #endif

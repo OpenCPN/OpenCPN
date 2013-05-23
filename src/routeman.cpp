@@ -804,26 +804,6 @@ void Routeman::DeleteAllTracks( void )
 
 }
 
-void Routeman::AssembleAllRoutes( void )
-{
-    //    Iterate on the RouteList
-    wxRouteListNode *node = pRouteList->GetFirst();
-    while( node ) {
-        Route *proute = node->GetData();
-
-        proute->AssembleRoute();
-        if( proute->GetnPoints() ) {
-            pSelect->AddAllSelectableRouteSegments( proute );
-        } else                                // this route has no points
-        {
-            pConfig->DeleteConfigRoute( proute );
-            DeleteRoute( proute );
-        }
-
-        node = node->GetNext();                   // Route
-    }
-}
-
 void Routeman::DeleteTrack( Route *pRoute )
 {
     if( pRoute ) {

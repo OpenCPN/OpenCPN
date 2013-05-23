@@ -6813,7 +6813,7 @@ void pupHandler_PasteTrack() {
         newPoint->m_GPXTrkSegNo = 1;
 
         wxDateTime now = wxDateTime::Now();
-        newPoint->m_CreateTime = curPoint->m_CreateTime;
+        newPoint->SetCreateTime(curPoint->GetCreateTime());
 
         newTrack->AddPoint( newPoint );
 

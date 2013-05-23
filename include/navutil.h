@@ -45,7 +45,7 @@
 #include "s52s57.h"
 #include "chcanv.h"
 #include "tinyxml.h"
-#include "gpxdocument.h"
+//#include "gpxdocument.h"
 #include "chartdbs.h"
 #include "RoutePoint.h"
 #include "vector2D.h"
@@ -86,6 +86,8 @@ class Route;
 class NavObjectCollection;
 class wxProgressDialog;
 class ocpnDC;
+class NavObjectCollection1;
+class NavObjectChanges;
 
 //----------------------------------------------------------------------------
 //    Track
@@ -152,13 +154,13 @@ DECLARE_EVENT_TABLE()
 //    Static XML Helpers
 //----------------------------------------------------------------------------
 
-RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name, bool b_fullviz = false );
-Route *LoadGPXRoute (GpxRteElement *rtenode, int routenum, bool b_fullviz = false );
-Route *LoadGPXTrack (GpxTrkElement *trknode, bool b_fullviz = false );
-void GPXLoadTrack ( GpxTrkElement *trknode, bool b_fullviz = false  );
-void GPXLoadRoute ( GpxRteElement *rtenode, int routenum, bool b_fullviz = false );
-void InsertRoute(Route *pTentRoute, int routenum);
-void UpdateRoute(Route *pTentRoute);
+//RoutePoint *LoadGPXWaypoint (GpxWptElement *wptnode, wxString def_symbol_name, bool b_fullviz = false );
+//Route *LoadGPXRoute (GpxRteElement *rtenode, int routenum, bool b_fullviz = false );
+//Route *LoadGPXTrack (GpxTrkElement *trknode, bool b_fullviz = false );
+//void GPXLoadTrack ( GpxTrkElement *trknode, bool b_fullviz = false  );
+//void GPXLoadRoute ( GpxRteElement *rtenode, int routenum, bool b_fullviz = false );
+//void InsertRoute(Route *pTentRoute, int routenum);
+//void UpdateRoute(Route *pTentRoute);
 
 GpxWptElement *CreateGPXWpt ( RoutePoint *pr, char * waypoint_type, bool b_props_explicit = false, bool b_props_minimal = false );
 GpxRteElement *CreateGPXRte ( Route *pRoute );
@@ -169,6 +171,7 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon);
 RoutePoint *WaypointExists( const wxString& guid);
 Route *RouteExists( const wxString& guid);
 Route *RouteExists( Route * pTentRoute );
+const wxChar *ParseGPXDateTime( wxDateTime &dt, const wxChar *datetime );
 
 //----------------------------------------------------------------------------
 //    Config
@@ -200,28 +203,27 @@ public:
       virtual void UpdateNavObj();
       virtual void StoreNavObjChanges();
 
+      bool LoadLayers(wxString &path);
+      
       void ExportGPX(wxWindow* parent, bool bviz_only = false, bool blayer = false);
-      void ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true);
+      void UI_ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true);
 
       bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes);
       bool ExportGPXWaypoints(wxWindow* parent, RoutePointList *pRoutePoints);
 
       void CreateRotatingNavObjBackup();
 
-      int m_NextRouteNum;
-      int m_NextWPNum;
-
       double st_lat, st_lon, st_view_scale;            // startup values
       bool  st_bFollow;
 
-      wxString    m_gpx_path;
+      wxString                m_gpx_path;
 
       wxString                m_sNavObjSetFile;
       wxString                m_sNavObjSetChangesFile;
 
-      NavObjectCollection     *m_pNavObjectInputSet;
-      NavObjectCollection     *m_pNavObjectChangesSet;
-
+      NavObjectChanges        *m_pNavObjectChangesSet;
+      NavObjectCollection1    *m_pNavObjectInputSet;
+      
 //    These members are set/reset in Options dialog
       bool  m_bShowDebugWindows;
 
