@@ -207,6 +207,12 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
     m_sSlicesPerUpdate->SetValue(m_Settings.m_SlicesPerUpdate);
     m_sUpdatesPerSecond->SetValue(m_Settings.m_UpdatesPerSecond);
     m_sHourDivider->SetValue(m_Settings.m_HourDivider);
+    if(!m_cInterpolate->IsChecked() ) {              //hide no suiting parameters
+        m_staticText5->Hide();
+        m_sSlicesPerUpdate->Hide();
+        m_staticText9->Hide();
+        m_sHourDivider->Hide();
+    }
 
     for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++)
         m_cDataType->Append(tname_from_index[i]);
@@ -219,7 +225,15 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
 /* set settings to the dialog controls */
 void GribSettingsDialog::WriteSettings()
 {
-    m_Settings.m_bInterpolate = m_cInterpolate->GetValue();
+    if(m_Settings.m_bInterpolate != m_cInterpolate->GetValue()) {
+        m_Settings.m_bInterpolate = m_cInterpolate->GetValue();
+        if(m_cInterpolate->IsChecked()) {
+            wxMessageDialog mes(this, _("This file contains data for particular times and you have chosen to display data for different times.\nPlease consider that these values will be interpolated."),
+                _("Warning!"), wxOK);
+            mes.ShowModal();
+        }
+    }
+
     m_Settings.m_bLoopMode = m_cLoopMode->GetValue();
     m_Settings.m_SlicesPerUpdate = m_sSlicesPerUpdate->GetValue();
     m_Settings.m_UpdatesPerSecond = m_sUpdatesPerSecond->GetValue();
@@ -279,5 +293,23 @@ void GribSettingsDialog::OnDataTypeChoice( wxCommandEvent& event )
 void GribSettingsDialog::OnApply( wxCommandEvent& event )
 {
     WriteSettings();
-    m_parent.SetFactoryOptions();
+    m_parent.SetFactoryOptions(true);
+    m_parent.TimelineChanged();
+}
+
+void GribSettingsDialog::OnIntepolateChange( wxCommandEvent& event )
+{
+    if( m_cInterpolate->IsChecked() ) {
+        m_staticText5->Show();
+        m_sSlicesPerUpdate->Show();
+        m_staticText9->Show();
+        m_sHourDivider->Show();
+    } else {                                        //hide no suiting parameters 
+        m_staticText5->Hide();
+        m_sSlicesPerUpdate->Hide();
+        m_staticText9->Hide();
+        m_sHourDivider->Hide();
+    }
+    this->Fit();
+    this->Refresh();
 }
