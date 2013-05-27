@@ -44,6 +44,7 @@ struct GribOverlaySettings
     double CalibrationFactor(int settings);
     double CalibrateValue(int settings, double input)
         { return (input+CalibrationOffset(settings))*CalibrationFactor(settings); }
+    wxString GetUnitSymbol(int settings);
     double GetMin(int settings);
     double GetMax(int settings);
     // settings options
