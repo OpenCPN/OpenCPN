@@ -312,7 +312,7 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     DimeWindow( this );
 
     m_pTimelineSet = NULL;
-    PopulateTrackingControls();
+    m_fgTrackingControls->Clear();
 
     Fit();
     SetMinSize( GetBestSize() );
@@ -403,8 +403,7 @@ void GRIBUIDialog::PopulateTrackingControls( void )
     }
 
     m_fgTrackingControls->Clear();
-    int cols = (GetSize().x / 180) * 3;
-    m_fgTrackingControls->SetCols(cols);
+    m_fgTrackingControls->SetCols(9);
 
     GribRecord **RecordArray;
     if( m_pTimelineSet )
@@ -471,12 +470,12 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             vy = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vy);
             
             double vkn = sqrt( vx * vx + vy * vy );
-            m_tcWindSpeed->SetValue( wxString::Format( _T("%2d"), (int) vkn ));
+            m_tcWindSpeed->SetValue( wxString::Format( _T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , (int) vkn ) );
             
             double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
             if( ang > 360. ) ang -= 360.;
             if( ang < 0. ) ang += 360.;
-            m_tcWindDirection->SetValue( wxString::Format( _T("%03d"), (int) ( ang ) ));
+            m_tcWindDirection->SetValue( wxString::Format( _T("%03d\u00B0"), (int) ( ang ) ));
         } else {
             m_tcWindSpeed->SetValue( _("N/A") );
             m_tcWindDirection->SetValue(  _("N/A") );
@@ -495,12 +494,12 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             vy = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vy);
             
             double vkn = sqrt( vx * vx + vy * vy );
-            m_tcWindScatSpeed->SetValue( wxString::Format( _T("%2d"), (int) vkn ) );
+            m_tcWindScatSpeed->SetValue( wxString::Format( _T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND), (int) vkn ) );
             
             double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
             if( ang > 360. ) ang -= 360.;
             if( ang < 0. ) ang += 360.;
-            m_tcWindScatDirection->SetValue( wxString::Format( _T("%03d"), (int) ( ang ) ) );
+            m_tcWindScatDirection->SetValue( wxString::Format( _T("%03d\u00B0"), (int) ( ang ) ) );
         } else {
             m_tcWindScatSpeed->SetValue( _("N/A") );
             m_tcWindScatDirection->SetValue( _("N/A") );
@@ -514,7 +513,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         
         if( vkn != GRIB_NOTDEF ) {
             vkn = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND_GUST, vkn);
-            m_tcWindGust->SetValue( wxString::Format(_T("%2d"), (int) ( vkn )) );
+            m_tcWindGust->SetValue( wxString::Format(_T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND_GUST), (int) ( vkn )) );
         } else
             m_tcWindGust->SetValue( _("N/A") );
     }
@@ -526,7 +525,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         
         if( press != GRIB_NOTDEF ) {
             press = m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRESSURE, press);
-            m_tcPressure->SetValue( wxString::Format(_T("%2d"), (int) ( press )) );
+            m_tcPressure->SetValue( wxString::Format(_T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE), (int) ( press )) );
         } else
             m_tcPressure->SetValue( _("N/A") );
     }
@@ -538,7 +537,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         
         if( height != GRIB_NOTDEF ) {
             height = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WAVE, height);
-            m_tcWaveHeight->SetValue( wxString::Format( _T("%4.1f"), height ));
+            m_tcWaveHeight->SetValue( wxString::Format( _T("%4.1f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WAVE), height ));
         } else
             m_tcWaveHeight->SetValue( _("N/A") );
     }
@@ -548,7 +547,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         double direction = RecordArray[Idx_WVDIR]->
             getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
         if( direction != GRIB_NOTDEF )
-            m_tcWaveDirection->SetValue( wxString::Format( _T("%03d"), (int)direction ));
+            m_tcWaveDirection->SetValue( wxString::Format( _T("%03d\u00B0"), (int)direction ));
         else
             m_tcWaveDirection->SetValue( _("N/A") );
     }
@@ -566,12 +565,12 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             vy = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vy);
             
             double vkn = sqrt( vx * vx + vy * vy );
-            m_tcCurrentVelocity->SetValue( wxString::Format( _T("%5.2f"), vkn ) );
+            m_tcCurrentVelocity->SetValue( wxString::Format( _T("%4.1f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );
             
             double ang = 90. + ( atan2( -vy, vx ) * 180. / PI );
             if( ang > 360. ) ang -= 360.;
             if( ang < 0. ) ang += 360.;
-            m_tcCurrentDirection->SetValue( wxString::Format( _T("%03d"), (int) ( ang ) ) );            
+            m_tcCurrentDirection->SetValue( wxString::Format( _T("%03d\u00B0"), (int) ( ang ) ) );            
         } else {
             m_tcCurrentVelocity->SetValue( _("N/A") );
             m_tcCurrentDirection->SetValue( _("N/A") );
@@ -585,7 +584,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         
         if( precip != GRIB_NOTDEF ) {
             precip = m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRECIPITATION, precip);
-            m_tcPrecipitation->SetValue( wxString::Format( _T("%6.2f"), precip ) );
+            m_tcPrecipitation->SetValue( wxString::Format( _T("%6.2f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRECIPITATION), precip ) );
         } else
             m_tcPrecipitation->SetValue( _("N/A") );
     }
@@ -597,7 +596,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         
         if( cloud != GRIB_NOTDEF ) {
             cloud = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CLOUD, cloud);
-            m_tcCloud->SetValue( wxString::Format( _T("%6.2f"), cloud ) );
+            wxString val( wxString::Format( _T("%5.1f "), cloud ) );
+            m_tcCloud->SetValue( val + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CLOUD) );
         } else
             m_tcCloud->SetValue( _("N/A") );
     }
@@ -609,7 +609,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         
         if( temp != GRIB_NOTDEF ) {
             temp = m_OverlaySettings.CalibrateValue(GribOverlaySettings::AIR_TEMPERATURE, temp);
-            m_tcAirTemperature->SetValue( wxString::Format( _T("%6.2f"), temp ) );
+            m_tcAirTemperature->SetValue( wxString::Format( _T("%5.1f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::AIR_TEMPERATURE), temp ) );
         } else
             m_tcAirTemperature->SetValue( _("N/A") );
     }
@@ -621,7 +621,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         
         if( temp != GRIB_NOTDEF ) {
             temp = m_OverlaySettings.CalibrateValue(GribOverlaySettings::SEA_TEMPERATURE, temp);
-            m_tcSeaTemperature->SetValue( wxString::Format( _T("%6.2f"), temp ) );
+            m_tcSeaTemperature->SetValue( wxString::Format( _T("%5.1f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::SEA_TEMPERATURE), temp ) );
         } else
             m_tcSeaTemperature->SetValue( _("N/A") );
     }
@@ -650,8 +650,6 @@ void GRIBUIDialog::OnSize( wxSizeEvent& event )
     wxSize p = event.GetSize();
     pPlugIn->SetGribDialogSizeX( p.x );
     pPlugIn->SetGribDialogSizeY( p.y );
-
-    PopulateTrackingControls();
 
     event.Skip();
 }
