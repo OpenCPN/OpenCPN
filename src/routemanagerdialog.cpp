@@ -2497,6 +2497,8 @@ void RouteManagerDialog::OnLayToggleListingClick( wxCommandEvent &event )
 
 void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
 {
+    ::wxBeginBusyCursor();
+    
     // Process Tracks and Routes in this layer
     wxRouteListNode *node1 = pRouteList->GetFirst();
     while( node1 ) {
@@ -2513,11 +2515,14 @@ void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
     }
 
     // Process waypoints in this layer
+    //  n.b.  If the waypoint belongs to a track, and is not shared, then do not list it.
+    //  This is a performance optimization, allowing large track support.
+    
     wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
 
     while( node ) {
         RoutePoint *rp = node->GetData();
-        if( rp && ( rp->m_LayerID == layer->m_LayerID ) ) {
+        if( rp && !rp->m_bIsInTrack && rp->m_bIsolatedMark && ( rp->m_LayerID == layer->m_LayerID ) ) {
             rp->SetListed( layer->IsVisibleOnListing() );
         }
 
@@ -2529,6 +2534,8 @@ void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
     UpdateWptListCtrl();
     UpdateLayListCtrl();
 
+    ::wxEndBusyCursor();
+    
     cc1->Refresh();
 }
 
