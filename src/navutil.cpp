@@ -665,34 +665,20 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
         RoutePoint *prp = node->GetData();
         unsigned short int ToSegNo = prp->m_GPXTrkSegNo;
 
-/*
-        if( m_bRunning || prp->m_IconName.StartsWith( _T("xmred") ) ) {         // pjotrc 2010.02.26
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ) ) );
-            wxPen dPen( GetGlobalColor( _T ( "URED" ) ), g_track_line_width );
-            dc.SetPen( dPen );
-        } else
-            if( prp->m_IconName.StartsWith( _T("xmblue") ) ) {                  // pjotrc 2010.02.26
-                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "BLUE3" ) ) ) );
-                wxPen dPen( GetGlobalColor( _T ( "BLUE3" ) ), g_track_line_width );
-                dc.SetPen( dPen );
-            } else
-                if( prp->m_IconName.StartsWith( _T("xmgreen") ) ) {             // pjotrc 2010.02.26
-                    dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UGREN" ) ) ) );
-                    wxPen dPen( GetGlobalColor( _T ( "UGREN" ) ), g_track_line_width );
-                    dc.SetPen( dPen );
-                } else {                                                      // pjotrc 2010.03.02
-                    dc.SetBrush( wxBrush( GetGlobalColor( _T ( "CHMGD" ) ) ) );
-                    wxPen dPen( GetGlobalColor( _T ( "CHMGD" ) ), g_track_line_width );
-                    dc.SetPen( dPen );
-                }
-*/
+        wxPoint r;
+        cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r );
 
-        prp->Draw( dc, &rptn );
+        //  We do inline decomposition of the line segments, in a simple minded way
+        //  If the line segment length is less than approximately 2 pixels, then simply don't render it,
+        //  but continue on to the next point.
+        if((abs(r.x - rpt.x) > 1) || (abs(r.y- rpt.y) > 1) ){
+            prp->Draw( dc, &rptn );
 
-        if( ToSegNo == FromSegNo )
-            RenderSegment( dc, rpt.x, rpt.y, rptn.x, rptn.y, VP, false, (int) radius ); // no arrows, with hilite
+            if( ToSegNo == FromSegNo )
+                RenderSegment( dc, rpt.x, rpt.y, rptn.x, rptn.y, VP, false, (int) radius ); // no arrows, with hilite
 
-        rpt = rptn;
+            rpt = rptn;
+        }
 
         node = node->GetNext();
         FromSegNo = ToSegNo;
