@@ -1757,9 +1757,17 @@ int MyConfig::LoadMyConfig( int iteration )
             //Let's reconstruct the unsaved changes
             NavObjectChanges *pNavObjectChangesSet = new NavObjectChanges();
             pNavObjectChangesSet->load_file( m_sNavObjSetChangesFile.fn_str() );
+            
+            //  Remove the file before applying the changes,
+            //  just in case the changes file itself causes a fault.
+            //  If it does fault, at least the next restart will proceed without fault.
+            ::wxRemoveFile( m_sNavObjSetChangesFile );
+            
+            wxLogMessage( _T("Applying NavObjChanges") );
             pNavObjectChangesSet->ApplyChanges();
-            UpdateNavObj(); //We save the data before we throw away the change log
             delete pNavObjectChangesSet;
+            
+            UpdateNavObj(); 
         }
     }
 
@@ -2488,8 +2496,6 @@ void MyConfig::UpdateNavObj( void )
     
     delete pNavObjectSet;
 
-    
-    ::wxRemoveFile( m_sNavObjSetChangesFile );
     delete m_pNavObjectChangesSet;
     m_pNavObjectChangesSet = new NavObjectChanges();
     
