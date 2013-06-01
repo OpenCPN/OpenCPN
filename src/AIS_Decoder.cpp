@@ -511,13 +511,15 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         arpa_brgunit = tkz.GetNextToken(); //4) Bearing Units
         if ( arpa_brgunit == _T("R") )
         {
-            if ( arpa_ref_hdg != NAN )
+            if ( wxIsNaN(arpa_ref_hdg) )
             {
-                if ( gHdt != NAN )
+                if ( !wxIsNaN(gHdt) )
                     arpa_brg += gHdt;
                 else
                     arpa_brg += gCog;
             }
+            else
+                arpa_brg += arpa_ref_hdg;
             if ( arpa_brg >= 360. )
                 arpa_brg -= 360.;
         }
@@ -528,13 +530,15 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         arpa_cogunit = tkz.GetNextToken(); //7) Course Units
         if ( arpa_cogunit == _T("R") )
         {
-            if ( arpa_ref_hdg != NAN )
+            if ( wxIsNaN(arpa_ref_hdg) )
             {
-                if ( gHdt != NAN )
+                if ( !wxIsNaN(gHdt) )
                     arpa_cog += gHdt;
                 else
                     arpa_cog += gCog;
             }
+            else
+                arpa_cog += arpa_ref_hdg;
             if ( arpa_cog >= 360. )
                 arpa_cog -= 360.;
         }
