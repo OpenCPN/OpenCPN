@@ -256,7 +256,9 @@ void grib_pi::OnToolbarToolCallback(int id)
     if(!m_pGribDialog)
     {
         m_pGribDialog = new GRIBUIDialog(m_parent_window, this);
-        m_pGribDialog->Move(wxPoint(m_grib_dialog_x, m_grib_dialog_y));
+        wxPoint p = wxPoint(m_grib_dialog_x, m_grib_dialog_y);
+        m_pGribDialog->Move(0,0);        // workaround for gtk autocentre dialog behavior
+        m_pGribDialog->Move(p);
 
         // Create the drawing factory
         m_pGRIBOverlayFactory = new GRIBOverlayFactory( *m_pGribDialog );
@@ -319,11 +321,11 @@ void grib_pi::OnToolbarToolCallback(int id)
       // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
       // to actual status to ensure correct status upon toolbar rebuild
       SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
-
+/*
       wxPoint p = m_pGribDialog->GetPosition();
       m_pGribDialog->Move(0,0);        // workaround for gtk autocentre dialog behavior
       m_pGribDialog->Move(p);
-
+*/
       RequestRefresh(m_parent_window); // refresh mainn window
 }
 

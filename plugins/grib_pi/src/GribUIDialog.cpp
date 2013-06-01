@@ -305,6 +305,8 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     m_bpSettings->SetBitmap(wxBitmap( setting ));
     m_bpRequest->SetBitmap(wxBitmap( request ));
 
+    //connect events have not been done in dialog base
+    this->Connect( wxEVT_MOVE, wxMoveEventHandler( GRIBUIDialog::OnMove ) );
     m_tPlayStop.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBUIDialog::OnPlayStopTimer ), NULL, this);
 
     m_OverlaySettings.Read();
