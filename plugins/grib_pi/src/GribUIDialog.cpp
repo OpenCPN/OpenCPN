@@ -674,8 +674,10 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
         toSAILDOC( 2, 1, lonmax ) );
 
     GribRequestSetting *req_Dialog = new GribRequestSetting( this, pPlugIn->GetRequestConfig(), zone, pPlugIn->GetMailAdresse() );
-    
-    if( req_Dialog->ShowModal() == wxID_SAVE ) {
+    req_Dialog->m_rButtonYes->SetLabel(_("Send"));
+    req_Dialog->m_rButtonApply->SetLabel(_("Save"));
+
+    if( req_Dialog->ShowModal() == wxID_APPLY ) {
         req_Dialog->m_RequestConfigBase.SetChar( 2, (char) ( req_Dialog->m_pModel->GetCurrentSelection() + '0' ) );
         if( req_Dialog->m_pModel->GetCurrentSelection() == 0 ) {
             req_Dialog->m_RequestConfigBase.SetChar( 3, (char) ( req_Dialog->m_pResolution->GetCurrentSelection() + '0' ) );
@@ -1247,7 +1249,7 @@ void GribRequestSetting::OnModelChange(wxCommandEvent &event)
 
     //permit to send a new message
     m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));
-    m_bSend->Show();
+    m_rButtonYes->Show();
 
     m_MailImage->SetLabel( WriteMail() );
     Fit();
@@ -1257,7 +1259,7 @@ void GribRequestSetting::OnAnyChange(wxCommandEvent &event)
 {
     //permit to send a new message
     m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));
-    m_bSend->Show();
+    m_rButtonYes->Show();
 
     m_MailImage->SetLabel( WriteMail() );
     Fit();
@@ -1328,6 +1330,6 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
         m_MailImage->SetLabel(
             _("Request can't be sent. Please verify your eMail systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."));
     }
-    m_bSend->Hide();
+    m_rButtonYes->Hide();
     Fit();
 }
