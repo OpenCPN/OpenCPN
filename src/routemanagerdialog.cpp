@@ -998,6 +998,10 @@ void RouteManagerDialog::OnRteDeleteClick( wxCommandEvent &event )
 {
     RouteList list;
 
+    int answer = OCPNMessageBox( this, _("Are you sure you want to delete the selected object(s)"), wxString( _("OpenCPN Alert") ), wxYES_NO );
+    if ( answer != wxID_YES )
+        return;
+
     bool busy = false;
     if( m_pRouteListCtrl->GetSelectedItemCount() ) {
         ::wxBeginBusyCursor();
@@ -1678,6 +1682,10 @@ void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
 {
     RouteList list;
 
+    int answer = OCPNMessageBox( this, _("Are you sure you want to delete the selected object(s)"), wxString( _("OpenCPN Alert") ), wxYES_NO );
+    if ( answer != wxID_YES )
+        return;
+
     bool busy = false;
     if( m_pTrkListCtrl->GetSelectedItemCount() ) {
         ::wxBeginBusyCursor();
@@ -2038,6 +2046,10 @@ void RouteManagerDialog::OnWptZoomtoClick( wxCommandEvent &event )
 void RouteManagerDialog::OnWptDeleteClick( wxCommandEvent &event )
 {
     RoutePointList list;
+
+    int answer = OCPNMessageBox( this, _("Are you sure you want to delete the selected object(s)"), wxString( _("OpenCPN Alert") ), wxYES_NO );
+    if ( answer != wxID_YES )
+        return;
 
     bool busy = false;
     if( m_pWptListCtrl->GetSelectedItemCount() ) {
