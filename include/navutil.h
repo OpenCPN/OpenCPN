@@ -204,12 +204,12 @@ public:
       virtual void StoreNavObjChanges();
 
       bool LoadLayers(wxString &path);
-      
+
       void ExportGPX(wxWindow* parent, bool bviz_only = false, bool blayer = false);
       void UI_ImportGPX(wxWindow* parent, bool islayer = false, wxString dirpath = _T(""), bool isdirectory = true);
 
-      bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes);
-      bool ExportGPXWaypoints(wxWindow* parent, RoutePointList *pRoutePoints);
+      bool ExportGPXRoutes(wxWindow* parent, RouteList *pRoutes, const wxString suggestedName = _T("routes"));
+      bool ExportGPXWaypoints(wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName = _T("waypoints"));
 
       void CreateRotatingNavObjBackup();
 
@@ -223,7 +223,7 @@ public:
 
       NavObjectChanges        *m_pNavObjectChangesSet;
       NavObjectCollection1    *m_pNavObjectInputSet;
-      
+
 //    These members are set/reset in Options dialog
       bool  m_bShowDebugWindows;
 

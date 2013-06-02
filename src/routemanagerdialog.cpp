@@ -1163,6 +1163,8 @@ void RouteManagerDialog::OnRteExportClick( wxCommandEvent &event )
 {
     RouteList list;
 
+    wxString suggested_name = _T("routes");
+
     long item = -1;
     for ( ;; )
     {
@@ -1172,11 +1174,14 @@ void RouteManagerDialog::OnRteExportClick( wxCommandEvent &event )
 
         Route *proute_to_export = pRouteList->Item( m_pRouteListCtrl->GetItemData( item ) )->GetData();
 
-        if( proute_to_export )
+        if( proute_to_export ) {
             list.Append( proute_to_export );
+            if( proute_to_export->m_RouteNameString != wxEmptyString )
+                suggested_name = proute_to_export->m_RouteNameString;
+        }
     }
 
-    pConfig->ExportGPXRoutes( this, &list );
+    pConfig->ExportGPXRoutes( this, &list, suggested_name );
 }
 
 void RouteManagerDialog::OnRteActivateClick( wxCommandEvent &event )
@@ -1715,6 +1720,7 @@ void RouteManagerDialog::OnTrkDeleteClick( wxCommandEvent &event )
 void RouteManagerDialog::OnTrkExportClick( wxCommandEvent &event )
 {
     RouteList list;
+    wxString suggested_name = _T("tracks");
 
     long item = -1;
     for ( ;; )
@@ -1725,11 +1731,14 @@ void RouteManagerDialog::OnTrkExportClick( wxCommandEvent &event )
 
         Route *proute_to_export = pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
 
-        if( proute_to_export )
+        if( proute_to_export ) {
             list.Append( proute_to_export );
+            if( proute_to_export->m_RouteNameString != wxEmptyString )
+                suggested_name = proute_to_export->m_RouteNameString;
+        }
     }
 
-    pConfig->ExportGPXRoutes( this, &list );
+    pConfig->ExportGPXRoutes( this, &list, suggested_name );
 }
 
 void RouteManagerDialog::OnTrkRouteFromTrackClick( wxCommandEvent &event )
@@ -2134,6 +2143,8 @@ void RouteManagerDialog::OnWptExportClick( wxCommandEvent &event )
 {
     RoutePointList list;
 
+    wxString suggested_name = _T("waypoints");
+
     long item = -1;
     for ( ;; )
     {
@@ -2143,11 +2154,14 @@ void RouteManagerDialog::OnWptExportClick( wxCommandEvent &event )
 
         RoutePoint *wp = (RoutePoint *) m_pWptListCtrl->GetItemData( item );
 
-        if( wp && !wp->m_bIsInLayer)
+        if( wp && !wp->m_bIsInLayer) {
             list.Append( wp );
+            if( wp->GetName() != wxEmptyString )
+                suggested_name = wp->GetName();
+        }
     }
 
-    pConfig->ExportGPXWaypoints( this, &list );
+    pConfig->ExportGPXWaypoints( this, &list, suggested_name );
 }
 
 void RouteManagerDialog::OnWptSendToGPSClick( wxCommandEvent &event )
@@ -2498,7 +2512,7 @@ void RouteManagerDialog::OnLayToggleListingClick( wxCommandEvent &event )
 void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
 {
     ::wxBeginBusyCursor();
-    
+
     // Process Tracks and Routes in this layer
     wxRouteListNode *node1 = pRouteList->GetFirst();
     while( node1 ) {
@@ -2517,7 +2531,7 @@ void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
     // Process waypoints in this layer
     //  n.b.  If the waypoint belongs to a track, and is not shared, then do not list it.
     //  This is a performance optimization, allowing large track support.
-    
+
     wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
 
     while( node ) {
@@ -2535,7 +2549,7 @@ void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
     UpdateLayListCtrl();
 
     ::wxEndBusyCursor();
-    
+
     cc1->Refresh();
 }
 

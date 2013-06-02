@@ -1730,7 +1730,7 @@ int MyConfig::LoadMyConfig( int iteration )
     //  Routes
     if( 0 == iteration )
         pRouteList = new RouteList;
-        
+
     //    Groups
     if( 0 == iteration )
         LoadConfigGroups( g_pGroupArray );
@@ -1742,32 +1742,32 @@ int MyConfig::LoadMyConfig( int iteration )
 
         if( NULL == m_pNavObjectInputSet )
             m_pNavObjectInputSet = new NavObjectCollection1();
-        
+
         if( ::wxFileExists( m_sNavObjSetFile ) ) {
             if( m_pNavObjectInputSet->load_file( m_sNavObjSetFile.fn_str() ) )
                 m_pNavObjectInputSet->LoadAllGPXObjects();
         }
-        
+
         delete m_pNavObjectInputSet;
-        
-        
+
+
         if( ::wxFileExists( m_sNavObjSetChangesFile ) ) {
             //We crashed last time :(
             //That's why this file still exists...
             //Let's reconstruct the unsaved changes
             NavObjectChanges *pNavObjectChangesSet = new NavObjectChanges();
             pNavObjectChangesSet->load_file( m_sNavObjSetChangesFile.fn_str() );
-            
+
             //  Remove the file before applying the changes,
             //  just in case the changes file itself causes a fault.
             //  If it does fault, at least the next restart will proceed without fault.
             ::wxRemoveFile( m_sNavObjSetChangesFile );
-            
+
             wxLogMessage( _T("Applying NavObjChanges") );
             pNavObjectChangesSet->ApplyChanges();
             delete pNavObjectChangesSet;
-            
-            UpdateNavObj(); 
+
+            UpdateNavObj();
         }
     }
 
@@ -1846,50 +1846,50 @@ bool MyConfig::LoadLayers(wxString &path)
                 file_array.Add( filename); // single-gpx-file layer
             else
                 wxDir::GetAllFiles( filename, &file_array, wxT("*.gpx") );      // layers subdirectory set
-         
+
             if( file_array.GetCount() ){
                 l = new Layer();
                 l->m_LayerID = ++g_LayerIdx;
                 l->m_LayerFileName = file_array[0];
                 if( file_array.GetCount() <= 1 )
                     wxFileName::SplitPath( file_array[0], NULL, NULL, &( l->m_LayerName ), NULL, NULL );
-                else 
+                else
                     wxFileName::SplitPath( filename, NULL, NULL, &( l->m_LayerName ), NULL, NULL );
-                
+
                 bool bLayerViz = g_bShowLayers;
-                
+
                 if( g_VisibleLayers.Contains( l->m_LayerName ) )
                     bLayerViz = true;
                 if( g_InvisibleLayers.Contains( l->m_LayerName ) )
                     bLayerViz = false;
-    
+
                 l->m_bIsVisibleOnChart = bLayerViz;
-            
+
                 wxString laymsg;
                 laymsg.Printf( wxT("New layer %d: %s"), l->m_LayerID, l->m_LayerName.c_str() );
                 wxLogMessage( laymsg );
-            
+
                 pLayerList->Insert( l );
-            
+
                 //  Load the entire file array as a single layer
-                
+
                 for( unsigned int i = 0; i < file_array.GetCount(); i++ ) {
                     wxString file_path = file_array[i];
-                    
+
                     if( ::wxFileExists( file_path ) ) {
                         NavObjectCollection1 *pSet = new NavObjectCollection1;
                         pSet->load_file(file_path.fn_str());
                         l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, bLayerViz);
-                        
+
                         delete pSet;
                     }
                 }
             }
-            
+
             cont = dir.GetNext( &filename );
         }
     }
-    
+
     return true;
 }
 
@@ -1961,7 +1961,7 @@ bool MyConfig::AddNewRoute( Route *pr, int crm )
         m_pNavObjectChangesSet->AddRoute( pr, "add" );
         StoreNavObjChanges();
     }
-    
+
     return true;
 }
 
@@ -1971,11 +1971,11 @@ bool MyConfig::UpdateRoute( Route *pr )
 
 
     if( !m_bIsImporting ) {
-        if( pr->m_bIsTrack ) 
+        if( pr->m_bIsTrack )
             m_pNavObjectChangesSet->AddTrack( (Track *)pr, "update" );
         else
             m_pNavObjectChangesSet->AddRoute( pr, "update" );
-        
+
         StoreNavObjChanges();
     }
 
@@ -1988,7 +1988,7 @@ bool MyConfig::DeleteConfigRoute( Route *pr )
         return true;
 
     if( !m_bIsImporting ) {
-        if( !pr->m_bIsTrack ) 
+        if( !pr->m_bIsTrack )
             m_pNavObjectChangesSet->AddRoute( (Track *)pr, "delete" );
         else
             m_pNavObjectChangesSet->AddTrack( (Track *)pr, "delete" );
@@ -2490,15 +2490,15 @@ void MyConfig::UpdateNavObj( void )
 
 //   Create the NavObjectCollection, and save to specified file
     NavObjectCollection1 *pNavObjectSet = new NavObjectCollection1();
-    
+
     pNavObjectSet->CreateAllGPXObjects();
     pNavObjectSet->SaveFile( m_sNavObjSetFile );
-    
+
     delete pNavObjectSet;
 
     delete m_pNavObjectChangesSet;
     m_pNavObjectChangesSet = new NavObjectChanges();
-    
+
 }
 
 void MyConfig::StoreNavObjChanges( void )
@@ -2506,9 +2506,9 @@ void MyConfig::StoreNavObjChanges( void )
     m_pNavObjectChangesSet->SaveFile( m_sNavObjSetChangesFile );
 }
 
-bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes )
+bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
 {
-    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, _T("routes"),
+    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, suggestedName,
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
     int response = saveDialog.ShowModal();
@@ -2536,9 +2536,9 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes )
         return false;
 }
 
-bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints )
+bool MyConfig::ExportGPXWaypoints( wxWindow* parent, RoutePointList *pRoutePoints, const wxString suggestedName )
 {
-    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, wxT ( "" ),
+    wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, suggestedName,
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
     int response = saveDialog.ShowModal();
@@ -2587,9 +2587,9 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         }
 
         ::wxBeginBusyCursor();
-        
+
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
-        
+
         wxProgressDialog *pprog = NULL;
         int count = pWayPointMan->m_pWayPointList->GetCount();
         if( count > 200) {
@@ -2706,7 +2706,7 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
                 else
                     wxFileName::SplitPath( dirpath, NULL, NULL, &( l->m_LayerName ), NULL, NULL );
             }
-            
+
             bool bLayerViz = g_bShowLayers;
             if( g_VisibleLayers.Contains( l->m_LayerName ) )
                 bLayerViz = true;
@@ -2725,16 +2725,16 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
             wxString path = file_array[i];
 
             if( ::wxFileExists( path ) ) {
-                
+
                 NavObjectCollection1 *pSet = new NavObjectCollection1;
                 pSet->load_file(path.fn_str());
-                
+
                 if(islayer){
                     l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, l->m_bIsVisibleOnChart);
                 }
                 else
                     pSet->LoadAllGPXObjects();
-                
+
                 delete pSet;
             }
         }
