@@ -1841,6 +1841,18 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
         }
 
+        case 14:             // Ctrl N - Activate next waypoint in a route
+        {
+            if( Route * r = g_pRouteMan->GetpActiveRoute() ) {
+                int indexActive = r->GetIndexOf( r->m_pRouteActivePoint );
+                if( ( indexActive + 1 ) <= r->GetnPoints() ) {
+                    g_pRouteMan->ActivateNextPoint( r, true );
+                    Refresh( false );
+                }
+            }
+            break;
+        }
+
         case 32:             // Space                      //    Drop Marker at boat's position;
         {
             RoutePoint *pWP = new RoutePoint( gLat, gLon, g_default_wp_icon, wxEmptyString,
