@@ -2021,11 +2021,11 @@ if( 0 == g_memCacheLimit )
 //        gFrame->MemFootTimer.Start(1000, wxTIMER_CONTINUOUS);
 
     // Import Layer-wise any .gpx files from /Layers directory
-    wxString layerdir = g_PrivateDataDir; 
+    wxString layerdir = g_PrivateDataDir;
     appendOSDirSlash( &layerdir );
     layerdir.Append( _T("layers") );
 
-#if 0    
+#if 0
     wxArrayString file_array;
     g_LayerIdx = 0;
 
@@ -2057,7 +2057,7 @@ if( 0 == g_memCacheLimit )
         wxString laymsg;
         laymsg.Printf( wxT("Getting .gpx layer files from: %s"), layerdir.c_str() );
         wxLogMessage( laymsg );
-        
+
         pConfig->LoadLayers(layerdir);
     }
 

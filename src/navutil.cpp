@@ -293,6 +293,8 @@ extern int              g_lastClientRectw;
 extern int              g_lastClientRecth;
 
 extern bool             g_bHighliteTracks;
+extern int              g_cog_predictor_width;
+extern int              g_ais_cog_predictor_width;
 
 extern int              g_route_line_width;
 extern int              g_track_line_width;
@@ -1148,6 +1150,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "SpeedFormat" ), &g_iSpeedFormat, 0 ); //0 = "kts"), 1 = "mph", 2 = "km/h", 3 = "m/s"
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
+    Read( _T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width, 3 );
     Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType, 0 );
     Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0 );
     Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0 );
@@ -1254,6 +1257,7 @@ int MyConfig::LoadMyConfig( int iteration )
     g_Show_Target_Name_Scale = Read( _T ( "ShowAISTargetNameScale" ), 250000L );
     g_Show_Target_Name_Scale = wxMax( 5000, g_Show_Target_Name_Scale );
     Read( _T ( "bWplIsAprsPositionReport" ), &g_bWplIsAprsPosition, 1 );
+    Read( _T ( "AISCOGPredictorWidth" ), &g_ais_cog_predictor_width, 3 );
 
     Read( _T ( "bAISAlertAudio" ), &g_bAIS_CPA_Alert_Audio );
     Read( _T ( "AISAlertAudioFile" ), &g_sAIS_Alert_Sound_File );
@@ -2212,6 +2216,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
 
     Write( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
+    Write( _T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width );
     Write( _T ( "OwnShipIconType" ), g_OwnShipIconType );
     Write( _T ( "OwnShipLength" ), g_n_ownship_length_meters );
     Write( _T ( "OwnShipWidth" ), g_n_ownship_beam_meters );
@@ -2353,6 +2358,7 @@ void MyConfig::UpdateSettings()
     Write( _T ( "bShowAISName" ), g_bShowAISName );
     Write( _T ( "ShowAISTargetNameScale" ), g_Show_Target_Name_Scale );
     Write( _T ( "bWplIsAprsPositionReport" ), g_bWplIsAprsPosition );
+    Write( _T ( "AISCOGPredictorWidth" ), g_ais_cog_predictor_width );
 
     Write( _T ( "AlertDialogSizeX" ), g_ais_alert_dialog_sx );
     Write( _T ( "AlertDialogSizeY" ), g_ais_alert_dialog_sy );

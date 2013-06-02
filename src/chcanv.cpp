@@ -298,6 +298,9 @@ int gamma_state;
 bool g_brightness_init;
 int   last_brightness;
 
+int                      g_cog_predictor_width;
+int                      g_ais_cog_predictor_width;
+
 // "Curtain" mode parameters
 wxDialog                *g_pcurtain;
 
@@ -3288,22 +3291,23 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
         //            if( wxIsNaN(gCog) )
         //                pred_colour = GetGlobalColor( _T ( "GREY1" ) );
 
-                wxPen ppPen2( pred_colour, 3, wxUSER_DASH );
+                wxPen ppPen2( pred_colour, g_cog_predictor_width, wxUSER_DASH );
                 ppPen2.SetDashes( 2, dash_long );
                 dc.SetPen( ppPen2 );
                 dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
                                 lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
 
                 wxDash dash_long3[2];
-                dash_long3[0] = 3 * dash_long[0];
-                dash_long3[1] = 3 * dash_long[1];
+                dash_long3[0] = g_cog_predictor_width * dash_long[0];
+                dash_long3[1] = g_cog_predictor_width * dash_long[1];
 
-                wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxUSER_DASH );
-                ppPen3.SetDashes( 2, dash_long3 );
-                dc.SetPen( ppPen3 );
-                dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
-
+                if( g_cog_predictor_width > 1 ) {
+                    wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxUSER_DASH );
+                    ppPen3.SetDashes( 2, dash_long3 );
+                    dc.SetPen( ppPen3 );
+                    dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                                    lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+                }
                 wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxSOLID );
                 dc.SetPen( ppPen1 );
                 dc.SetBrush( wxBrush( pred_colour ) ); //*wxWHITE_BRUSH);
@@ -4084,15 +4088,17 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                                  GetVP().pix_width, 0, GetVP().pix_height );
 
                 if( ( res != Invisible ) && ( td->b_active ) ) {
-                    //    Draw a 3 pixel wide line
-                    wxPen wide_pen( target_brush.GetColour(), 3 );
+                    //    Draw a wider coloured line
+                    wxPen wide_pen( target_brush.GetColour(), g_ais_cog_predictor_width );
                     dc.SetPen( wide_pen );
                     dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
 
-                    //    Draw a 1 pixel wide black line
-                    wxPen narrow_pen( GetGlobalColor( _T ( "UBLCK" ) ), 1 );
-                    dc.SetPen( narrow_pen );
-                    dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
+                    if( g_ais_cog_predictor_width > 1 ) {
+                        //    Draw a 1 pixel wide black line
+                        wxPen narrow_pen( GetGlobalColor( _T ( "UBLCK" ) ), 1 );
+                        dc.SetPen( narrow_pen );
+                        dc.StrokeLine( pixx, pixy, pixx1, pixy1 );
+                    }
 
                     dc.SetBrush( target_brush );
                     dc.StrokeCircle( PredPoint.x, PredPoint.y, 5 );
