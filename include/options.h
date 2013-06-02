@@ -70,6 +70,7 @@ enum {
     ID_BUTTONADD,
     ID_BUTTONDELETE,
     ID_BUTTONFONTCHOOSE,
+    ID_BUTTONFONTCOLOR,
     ID_BUTTONGROUP,
     ID_BUTTONREBUILD,
     ID_BUTTONTCDATA,
@@ -237,6 +238,9 @@ public:
     void OnXidOkClick( wxCommandEvent& event );
     void OnCancelClick( wxCommandEvent& event );
     void OnChooseFont( wxCommandEvent& event );
+#ifdef __WXGTK__
+    void OnChooseFontColor( wxCommandEvent& event );
+#endif
     void OnDisplayCategoryRadioButton( wxCommandEvent& event );
     void OnButtonClearClick( wxCommandEvent& event );
     void OnButtonSelectClick( wxCommandEvent& event );
