@@ -45,6 +45,9 @@
 #define PI        3.1415926535897931160E0      /* pi */
 #endif
 
+const wxString resolution0[] = { _("0.5 Deg"), _("1.0 Deg"), _("1.5 Deg"), _("2.0 Deg") };
+const wxString resolution1[] = { _("0.2 Deg"), _("0.6 Deg"), _("1.2 Deg"), _("2.0 Deg") };
+
 class GRIBFile;
 class GRIBRecord;
 class GribRecordTree;
@@ -142,6 +145,7 @@ private:
 
     wxString         m_file_name;   /* selected file */
     wxString         m_grib_dir;
+    wxBitmap         *m_bPlay;
 };
 
 //----------------------------------------------------------------------------------------------------------
@@ -191,6 +195,9 @@ public:
       {m_RequestConfigBase = config; m_RequestZoneBase = zone; m_MailAdressBase = adress; InitRequestConfig();}
 
       ~GribRequestSetting() {}
+      wxString m_RequestConfigBase;
+      wxString m_MailAdressBase;
+      wxString m_RequestZoneBase;
       
 private:
       void InitRequestConfig();
@@ -200,8 +207,9 @@ private:
       void OnModelChange(wxCommandEvent &event);
       void OnAnyChange( wxCommandEvent& event );
       void OnSendMaiL( wxCommandEvent& event );
-};
+      void OnSaveMail( wxCommandEvent& event ) { this->EndModal(wxID_APPLY); }
 
+};
 
 #endif
 
