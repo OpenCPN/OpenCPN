@@ -206,6 +206,7 @@ public:
       wxFontPickerCtrl             *m_pFontPickerSmall;
       wxSpinCtrl                   *m_pSpinSpeedMax;
       wxChoice                     *m_pChoiceSpeedUnit;
+      wxChoice                     *m_pChoiceDistanceUnit;
       wxChoice                     *m_pChoiceWindSpeedUnit;
 
 private:

@@ -110,6 +110,7 @@
 #include "vwr.hpp"
 #include "vwt.hpp"
 #include "zda.hpp"
+#include "vlw.hpp"
 /*
 #include "ROT.hpp"
 #include "RPM.hpp"
@@ -226,8 +227,9 @@ class NMEA0183
       VDR Vdr;
 */
       VHW Vhw;
+	  VLW Vlw;
 /*
-      VLW Vlw;
+      
       VPW Vpw;
 */
       VTG Vtg;

@@ -1,6 +1,6 @@
 ##---------------------------------------------------------------------------
 ## Author:      Dave Register
-##***************************************************************************
+## ***************************************************************************
 ## *   Copyright (C) 2010 by David S. Register                               *
 ## *   This program is free software; you can redistribute it and/or modify  *
 ## *   it under the terms of the GNU General Public License as published by  *
@@ -15,7 +15,7 @@
 ## *   You should have received a copy of the GNU General Public License     *
 ## *   along with this program; if not, write to the                         *
 ## *   Free Software Foundation, Inc.,                                       *
-## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.             *
+## *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
 ## ***************************************************************************
 
 
@@ -23,9 +23,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 # This should be 2.8.0 to have FindGTK2 module
 IF (COMMAND cmake_policy)
-  CMAKE_POLICY(SET CMP0003 OLD)
-  CMAKE_POLICY(SET CMP0005 OLD)
-  CMAKE_POLICY(SET CMP0011 OLD)
+    CMAKE_POLICY(SET CMP0003 OLD)
+    CMAKE_POLICY(SET CMP0005 OLD)
+    CMAKE_POLICY(SET CMP0011 OLD)
 ENDIF (COMMAND cmake_policy)
 
 PROJECT(dashboard_pi)
@@ -44,13 +44,13 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32)
- ADD_DEFINITIONS( "-Wall -O3 -fexceptions -fvisibility=hidden" )
+    ADD_DEFINITIONS( "-Wall -O3 -fexceptions -fvisibility=hidden" )
 
- IF(NOT APPLE)
-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
- ELSE(NOT APPLE)
-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
- ENDIF(NOT APPLE)
+    IF(NOT APPLE)
+        SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
+    ELSE(NOT APPLE)
+        SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
+    ENDIF(NOT APPLE)
 
 ENDIF(NOT WIN32)
 
@@ -78,117 +78,117 @@ FIND_PACKAGE(Gettext REQUIRED)
 
 
 SET(SRC_DASHBOARD
-            src/dashboard_pi.h
- 		src/dashboard_pi.cpp
- 		src/instrument.cpp
- 		src/instrument.h
- 		src/compass.cpp
- 		src/compass.h
- 		src/dial.cpp
- 		src/dial.h
-            src/gps.cpp
-            src/gps.h
-            src/rudder_angle.cpp
-            src/rudder_angle.h
- 		src/speedometer.cpp
- 		src/speedometer.h
- 		src/wind.cpp
- 		src/wind.h
-            src/depth.cpp
-            src/depth.h
-	    src/clock.cpp
-            src/clock.h
-            src/icons.cpp
-            src/icons.h
-		src/wind_history.cpp
-		src/wind_history.h
-
- 	)
+    src/dashboard_pi.h
+    src/dashboard_pi.cpp
+    src/instrument.cpp
+    src/instrument.h
+    src/compass.cpp
+    src/compass.h
+    src/dial.cpp
+    src/dial.h
+    src/gps.cpp
+    src/gps.h
+    src/rudder_angle.cpp
+    src/rudder_angle.h
+    src/speedometer.cpp
+    src/speedometer.h
+    src/wind.cpp
+    src/wind.h
+    src/depth.cpp
+    src/depth.h
+    src/clock.cpp
+    src/clock.h
+    src/icons.cpp
+    src/icons.h
+    src/wind_history.cpp
+    src/wind_history.h
+)
 
 SET(SRC_NMEA0183
-		src/nmea0183/LatLong.hpp
-		src/nmea0183/latlong.cpp
-		src/nmea0183/long.cpp
-		src/nmea0183/nmea0183.cpp
-		src/nmea0183/nmea0183.hpp
-		src/nmea0183/Response.hpp
-		src/nmea0183/response.cpp
-		src/nmea0183/RMB.hpp
-		src/nmea0183/rmb.cpp
-		src/nmea0183/Sentence.hpp
-		src/nmea0183/sentence.cpp
-		src/nmea0183/talkerid.cpp
-		src/nmea0183/RMC.HPP
-		src/nmea0183/rmc.cpp
-		src/nmea0183/hexvalue.cpp
-		src/nmea0183/lat.cpp
-		src/nmea0183/expid.cpp
-		src/nmea0183/wpl.hpp
-		src/nmea0183/wpl.cpp
-		src/nmea0183/rte.hpp
-		src/nmea0183/rte.cpp
-		src/nmea0183/hdt.hpp
-		src/nmea0183/hdt.cpp
-		src/nmea0183/hdg.hpp
-		src/nmea0183/hdg.cpp
-		src/nmea0183/hdm.hpp
-		src/nmea0183/hdm.cpp
-		src/nmea0183/gll.hpp
-		src/nmea0183/gll.cpp
-		src/nmea0183/vtg.hpp
-		src/nmea0183/vtg.cpp
-		src/nmea0183/gga.hpp
-		src/nmea0183/gga.cpp
-		src/nmea0183/gsv.hpp
-		src/nmea0183/gsv.cpp
-            src/nmea0183/dbt.cpp
-            src/nmea0183/dbt.hpp
-            src/nmea0183/dpt.cpp
-            src/nmea0183/dpt.hpp
-            src/nmea0183/mtw.cpp
-            src/nmea0183/mtw.hpp
-            src/nmea0183/mwv.cpp
-            src/nmea0183/mwv.hpp
-            src/nmea0183/vhw.hpp
-            src/nmea0183/vhw.cpp
-            src/nmea0183/vwr.cpp
-            src/nmea0183/vwr.hpp
-            src/nmea0183/zda.cpp
-            src/nmea0183/zda.hpp
-		src/nmea0183/rsa.hpp
-		src/nmea0183/rsa.cpp
-		src/nmea0183/SatInfo.h
-            src/nmea0183/mwd.cpp
-            src/nmea0183/mwd.hpp
-            src/nmea0183/vwt.cpp
-            src/nmea0183/vwt.hpp
-            src/nmea0183/mta.cpp
-            src/nmea0183/mta.hpp
-
-	)
+    src/nmea0183/LatLong.hpp
+    src/nmea0183/latlong.cpp
+    src/nmea0183/long.cpp
+    src/nmea0183/nmea0183.cpp
+    src/nmea0183/nmea0183.hpp
+    src/nmea0183/Response.hpp
+    src/nmea0183/response.cpp
+    src/nmea0183/RMB.hpp
+    src/nmea0183/rmb.cpp
+    src/nmea0183/Sentence.hpp
+    src/nmea0183/sentence.cpp
+    src/nmea0183/talkerid.cpp
+    src/nmea0183/RMC.HPP
+    src/nmea0183/rmc.cpp
+    src/nmea0183/hexvalue.cpp
+    src/nmea0183/lat.cpp
+    src/nmea0183/expid.cpp
+    src/nmea0183/wpl.hpp
+    src/nmea0183/wpl.cpp
+    src/nmea0183/rte.hpp
+    src/nmea0183/rte.cpp
+    src/nmea0183/hdt.hpp
+    src/nmea0183/hdt.cpp
+    src/nmea0183/hdg.hpp
+    src/nmea0183/hdg.cpp
+    src/nmea0183/hdm.hpp
+    src/nmea0183/hdm.cpp
+    src/nmea0183/gll.hpp
+    src/nmea0183/gll.cpp
+    src/nmea0183/vtg.hpp
+    src/nmea0183/vtg.cpp
+    src/nmea0183/gga.hpp
+    src/nmea0183/gga.cpp
+    src/nmea0183/gsv.hpp
+    src/nmea0183/gsv.cpp
+    src/nmea0183/dbt.cpp
+    src/nmea0183/dbt.hpp
+    src/nmea0183/dpt.cpp
+    src/nmea0183/dpt.hpp
+    src/nmea0183/mtw.cpp
+    src/nmea0183/mtw.hpp
+    src/nmea0183/mwv.cpp
+    src/nmea0183/mwv.hpp
+    src/nmea0183/vhw.hpp
+    src/nmea0183/vhw.cpp
+    src/nmea0183/vwr.cpp
+    src/nmea0183/vwr.hpp
+    src/nmea0183/zda.cpp
+    src/nmea0183/zda.hpp
+    src/nmea0183/rsa.hpp
+    src/nmea0183/rsa.cpp
+    src/nmea0183/SatInfo.h
+    src/nmea0183/mwd.cpp
+    src/nmea0183/mwd.hpp
+    src/nmea0183/vwt.cpp
+    src/nmea0183/vwt.hpp
+    src/nmea0183/mta.cpp
+    src/nmea0183/mta.hpp
+    src/nmea0183/vlw.cpp
+    src/nmea0183/vlw.hpp
+)
 INCLUDE_DIRECTORIES(src/nmea0183)
 
 ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_DASHBOARD} ${SRC_NMEA0183} )
 
 IF(WIN32)
-  SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")
-  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OPENCPN_IMPORT_LIB} )
-  ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
+    SET(OPENCPN_IMPORT_LIB "../../${CMAKE_CFG_INTDIR}/${PARENT}")
+    TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${OPENCPN_IMPORT_LIB} )
+    ADD_DEPENDENCIES(${PACKAGE_NAME} ${PARENT})
 ENDIF(WIN32)
 
 TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} ${wxWidgets_LIBRARIES} )
 
 
 IF(APPLE)
-      INSTALL(TARGETS ${PACKAGE_NAME} BUNDLE LIBRARY DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/PlugIns)
+    INSTALL(TARGETS ${PACKAGE_NAME} BUNDLE LIBRARY DESTINATION ${CMAKE_BINARY_DIR}/OpenCPN.app/Contents/PlugIns)
 ENDIF(APPLE)
 
 IF(UNIX AND NOT APPLE)
-INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION ${PREFIX_PLUGINS})
+    INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME LIBRARY DESTINATION ${PREFIX_PLUGINS})
 ENDIF(UNIX AND NOT APPLE)
 
 IF(WIN32)
-INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
+    INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
 ENDIF(WIN32)
 
 INCLUDE("../PluginLocalization.cmake")

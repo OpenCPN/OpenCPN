@@ -112,9 +112,10 @@ NMEA0183::NMEA0183()
    response_table.Append( (RESPONSE *) &Vbw );
 */
    response_table.Append( (RESPONSE *) &Vhw );
-/*
-   response_table.Append( (RESPONSE *) &Vdr );
    response_table.Append( (RESPONSE *) &Vlw );
+   /*
+   response_table.Append( (RESPONSE *) &Vdr );
+
    response_table.Append( (RESPONSE *) &Vpw );
 */
    response_table.Append( (RESPONSE *) &Vtg );

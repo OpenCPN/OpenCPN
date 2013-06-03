@@ -1,4 +1,4 @@
-/******************************************************************************
+/***************************************************************************
  * $Id: instrument.h, v1.0 2010/08/30 SethDart Exp $
  *
  * Project:  OpenCPN
@@ -81,7 +81,9 @@ enum
     OCPN_DBP_STC_MON = 1 << 22,
     OCPN_DBP_STC_ATMP = 1 << 23, //AirTemp
     OCPN_DBP_STC_TWD = 1 << 24,
-    OCPN_DBP_STC_TWS2 = 1 << 25
+    OCPN_DBP_STC_TWS2 = 1 << 25,
+    OCPN_DBP_STC_VLW1 = 1 << 26, // Trip Log
+    OCPN_DBP_STC_VLW2 = 1 << 27  // Sum Log
 };
 
 class DashboardInstrument : public wxControl
