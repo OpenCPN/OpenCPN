@@ -248,6 +248,7 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                     wxString tpChildName = wxString::FromUTF8( tpchild.name() );
                     if( tpChildName == _T("trkpt") ) {
                         pWp = ::GPXLoadWaypoint1(tpchild, _T("empty"), _T("noGUID"), false, b_layer, b_layerviz, layer_id);
+                        pWp->m_bIsolatedMark = false;
                         pTentTrack->AddPoint( pWp, false, true );          // defer BBox calculation
                         pWp->m_bIsInRoute = false;                      // Hack
                         pWp->m_bIsInTrack = true;
