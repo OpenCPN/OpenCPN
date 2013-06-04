@@ -156,6 +156,7 @@ void DataStream::Open(void)
 
                 if(hSerialComm == INVALID_HANDLE_VALUE) {
                     m_last_error = DS_ERROR_PORTNOTFOUND;
+                    wxLogMessage( _T("   Error, comm port open failure, INVALID_HANDLE_VALUE, Datastream skipped.") );
                     return;
                 }
                 else
