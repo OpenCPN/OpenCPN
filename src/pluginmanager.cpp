@@ -281,6 +281,27 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
         return false;
 }
 
+bool PlugInManager::CallLateInit(void)
+{
+    bool bret = true;
+
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    {
+        PlugInContainer *pic = plugin_array.Item(i);
+
+        if(pic->m_cap_flag & WANTS_LATE_INIT)
+        {
+            wxString msg(_T("PlugInManager: Calling LateInit PlugIn: "));
+            msg += pic->m_plugin_file;
+            wxLogMessage(msg);
+
+            pic->m_pplugin->LateInit();
+        }
+    }
+
+    return bret;
+}
+
 bool PlugInManager::UpdatePlugIns()
 {
     bool bret = false;
@@ -2302,6 +2323,9 @@ void opencpn_plugin::SetColorScheme(PI_ColorScheme cs)
 {}
 
 void opencpn_plugin::UpdateAuiStatus(void)
+{}
+
+void opencpn_plugin::LateInit(void)
 {}
 
 

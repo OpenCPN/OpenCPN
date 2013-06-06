@@ -2090,6 +2090,9 @@ if( 0 == g_memCacheLimit )
             gFrame->m_bdefer_resize = true;
         }
     }
+
+    g_pi_manager->CallLateInit();
+
     return TRUE;
 }
 

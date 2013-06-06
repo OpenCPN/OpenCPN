@@ -242,6 +242,7 @@ public:
       void SendResizeEventToAllPlugIns(int x, int y);
       void SetColorSchemeForAllPlugIns(ColorScheme cs);
       void NotifyAuiPlugIns(void);
+      bool CallLateInit(void);
 
       wxArrayString GetPlugInChartClassNameArray(void);
 
