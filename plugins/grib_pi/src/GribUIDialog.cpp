@@ -60,6 +60,9 @@ int round (double x) {
 
 WX_DEFINE_OBJARRAY( ArrayOfGribRecordSets );
 
+enum { SAILDOCS,ZYGRIB };
+enum { GFS,COAMPS,RTOFS };
+
 //    Sort compare function for File Modification Time
 static int CompareFileStringTime( const wxString& first, const wxString& second )
 {
@@ -84,39 +87,20 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
     }
 }
 
-wxString toSAILDOC ( int NEflag, int MMflag, double a )
+wxString toMailFormat ( int NEflag, int a )
 {
-    //saildoc needs value in degré (without decimal) so translate doube value in integer and if necessary tacking one degré more 
-    //to be sure all the screen is covered
-    short neg = 0;
-    if ( a < 0.0 ) {
-        a = -a;
-        neg = 1;
-    }
     char c;
     switch(NEflag) {
-        case 1: {
-            if ( !neg ) {
-                if( MMflag == 1 ) a += 1.;
-                c = 'N';
-            } else {
-                if( MMflag == 2 ) a += 1.;
-                c = 'S';                               
-            }
+        case 1:
+            c = 'N';
+            if ( a < 0.0 ) c = 'S';                             
             break;
-        }
-        case 2: {
-            if ( !neg ) {
-                if( MMflag == 1 ) a += 1.; 
-                c = 'E';
-            } else {
-                if( MMflag == 2 ) a += 1.;
-                c = 'W';                                  
-            }
-        }
+        case 2:
+            c = 'E';
+            if ( a < 0.0 ) c = 'W';                                  
     }
     wxString s;
-    s.Printf ( _T ( "%01d%c" ), (int) a, c );
+    s.Printf ( _T ( "%01d%c" ), abs(a), c );
     return s;
 }
 
@@ -669,36 +653,53 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
             if( lonmin < -180. ) lonmin += 360.;
             if( lonmin > 180. ) lonmin -= 360.;
     }
-    wxString zone( 
-        toSAILDOC( 1, 1, m_vp->lat_max ) + wxT(",") +
-        toSAILDOC( 1, 2, m_vp->lat_min ) + wxT(",") +
-        toSAILDOC( 2, 2, lonmin ) + wxT(",") +
-        toSAILDOC( 2, 1, lonmax ) );
+     int latmaxi =  (int) ceil(m_vp->lat_max);
+     int latmini =  (int) floor(m_vp->lat_min);
+     int lonmini =  (int) floor(lonmin);
+     int lonmaxi =  (int) ceil(lonmax);
 
-    GribRequestSetting *req_Dialog = new GribRequestSetting( this, pPlugIn->GetRequestConfig(), zone, pPlugIn->GetMailAdresse() );
+    GribRequestSetting *req_Dialog = new GribRequestSetting( this, pPlugIn->GetRequestConfig(), latmaxi, latmini, lonmini, lonmaxi,
+        pPlugIn->GetMailAddresses(), pPlugIn->GetZyGribLogin(), pPlugIn->GetZyGribCode() );
     req_Dialog->m_rButtonYes->SetLabel(_("Send"));
     req_Dialog->m_rButtonApply->SetLabel(_("Save"));
+    req_Dialog->m_tResUnit->SetLabel(wxString::Format( _T("\u00B0")));
 
     if( req_Dialog->ShowModal() == wxID_APPLY ) {
-        req_Dialog->m_RequestConfigBase.SetChar( 2, (char) ( req_Dialog->m_pModel->GetCurrentSelection() + '0' ) );
-        if( req_Dialog->m_pModel->GetCurrentSelection() == 0 ) {
-            req_Dialog->m_RequestConfigBase.SetChar( 3, (char) ( req_Dialog->m_pResolution->GetCurrentSelection() + '0' ) );
-            req_Dialog->m_pWaves->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 8, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 8, '.' );
-            req_Dialog->m_pRainfall->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 9, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 9, '.' );
-            req_Dialog->m_pCloudCover->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 10, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 10, '.' );
-            req_Dialog->m_pAirTemp->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 11, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 11, '.' );
-            req_Dialog->m_pSeaTemp->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 12, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 12, '.' );
-            req_Dialog->m_pCurrent->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 13, 'X' ) : req_Dialog->m_RequestConfigBase.SetChar( 13, '.' );
-        } else if( req_Dialog->m_pModel->GetCurrentSelection() == 1 ) 
-            req_Dialog->m_RequestConfigBase.SetChar( 3, (char) ( req_Dialog->m_pResolution->GetCurrentSelection() + '0' ) );
-
-        req_Dialog->m_RequestConfigBase.SetChar( 6, 'X' );              //must be always selected
+        //save all enabled parameters
+        req_Dialog->m_RequestConfigBase.SetChar( 0, (char) ( req_Dialog->m_pMailTo->GetCurrentSelection() + '0' ) );
+        if(req_Dialog->m_pMailTo->GetCurrentSelection() == SAILDOCS)
+            req_Dialog->m_RequestConfigBase.SetChar( 1, (char) ( req_Dialog->m_pModel->GetCurrentSelection() + '0' ) );
+        if(req_Dialog->m_pModel->GetCurrentSelection() != RTOFS)
+            req_Dialog->m_RequestConfigBase.SetChar( 2, (char) ( req_Dialog->m_pResolution->GetCurrentSelection() + '0' ) );
+        req_Dialog->m_RequestConfigBase.SetChar( 3, (char) ( req_Dialog->m_pInterval->GetCurrentSelection() + '0' ) );
+        req_Dialog->m_RequestConfigBase.SetChar( 4, (char) ( req_Dialog->m_pTimeRange->GetCurrentSelection() + '0' ) );
+        if(req_Dialog->m_pMailTo->GetCurrentSelection() == ZYGRIB && req_Dialog->m_pWModel->IsShown())
+            req_Dialog->m_RequestConfigBase.SetChar( 5, (char) ( req_Dialog->m_pWModel->GetCurrentSelection() + '0' ) );
+        req_Dialog->m_RequestConfigBase.SetChar( 6, 'X' );              //must be always selected as a default
         req_Dialog->m_RequestConfigBase.SetChar( 7, 'X' );
+        if(req_Dialog->m_pModel->GetCurrentSelection() != COAMPS) {
+            req_Dialog->m_pWaves->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 8, 'X' ) 
+                : req_Dialog->m_RequestConfigBase.SetChar( 8, '.' );
+            req_Dialog->m_pRainfall->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 9, 'X' ) 
+                : req_Dialog->m_RequestConfigBase.SetChar( 9, '.' );
+            req_Dialog->m_pCloudCover->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 10, 'X' ) 
+                : req_Dialog->m_RequestConfigBase.SetChar( 10, '.' );
+            req_Dialog->m_pAirTemp->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 11, 'X' ) 
+                : req_Dialog->m_RequestConfigBase.SetChar( 11, '.' );
+            req_Dialog->m_pSeaTemp->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 12, 'X' ) 
+                : req_Dialog->m_RequestConfigBase.SetChar( 12, '.' );
+        }
+        if(req_Dialog->m_pModel->GetCurrentSelection() != ZYGRIB && req_Dialog->m_pModel->GetCurrentSelection() != COAMPS)
+            req_Dialog->m_pCurrent->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 13, 'X' ) 
+                : req_Dialog->m_RequestConfigBase.SetChar( 13, '.' );
+        if(req_Dialog->m_pMailTo->GetCurrentSelection() == ZYGRIB)
+            req_Dialog->m_pWindGust->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 14, 'X' ) 
+                : req_Dialog->m_RequestConfigBase.SetChar( 14, '.' );
 
-        req_Dialog->m_RequestConfigBase.SetChar( 4, (char) ( req_Dialog->m_pInterval->GetCurrentSelection() + '0' ) );
-        req_Dialog->m_RequestConfigBase.SetChar( 5, (char) ( req_Dialog->m_pTimeRange->GetCurrentSelection() + '0' ) );
+        pPlugIn->SetZyGribLogin(req_Dialog->m_pLogin->GetValue());
+        pPlugIn->SetZyGribCode(req_Dialog->m_pCode->GetValue());
 
-        pPlugIn->SetRequestConfig( req_Dialog->m_RequestConfigBase );
+        pPlugIn->SetRequestConfig(req_Dialog->m_RequestConfigBase);
     }
 
     req_Dialog->Destroy();
@@ -1151,185 +1152,328 @@ GRIBFile::~GRIBFile()
     delete m_pGribReader;
 }
 
+//----------------------------------------------------------------------------------------------------------
+//          GRIB Request Implementation
+//----------------------------------------------------------------------------------------------------------
 void GribRequestSetting::InitRequestConfig()
 {
     long i,j;
-    ( (wxString) m_RequestConfigBase.GetChar(2) ).ToLong( &i );
-    ( (wxString) m_RequestConfigBase.GetChar(3) ).ToLong( &j );
+    ( (wxString) m_RequestConfigBase.GetChar(0) ).ToLong( &i );             //MailTo
+    m_pMailTo->SetSelection(i);
+    ( (wxString) m_RequestConfigBase.GetChar(1) ).ToLong( &i );             //Model
+    ( (wxString) m_RequestConfigBase.GetChar(2) ).ToLong( &j );             //Resolution
 
     ApplyRequestConfig( i, j );
    
-    ( (wxString) m_RequestConfigBase.GetChar(4) ).ToLong( &j );
+    ( (wxString) m_RequestConfigBase.GetChar(3) ).ToLong( &j );             //interval
     m_pInterval->SetSelection( j );
 
-    ( (wxString) m_RequestConfigBase.GetChar(5) ).ToLong( &j );
+    ( (wxString) m_RequestConfigBase.GetChar(4) ).ToLong( &j );             //Time Range
     m_pTimeRange->SetSelection( j );
 
-    m_pWind->Enable( false );
+    ( (wxString) m_RequestConfigBase.GetChar(5) ).ToLong( &j );             //Waves model
+    m_pWModel->SetSelection( j );
+
+    m_pWind->Enable( false );                                               //always selected if available
     m_pPress->Enable( false );
 
-    m_MailImage->SetLabel( WriteMail() );
-    Fit();
+    if(EstimateFileSize()) {
+        m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));               //permit to send a message
+        m_rButtonYes->Show();
+        m_MailImage->SetValue( WriteMail() );
+    } else { 
+        m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
+        m_rButtonYes->Hide();
+        m_MailImage->SetValue(
+            _("The file size limit is overcome!\nYou can zoom in to decrease the area or change parameters")); 
+    }
+
+    this->Fit();
+    this->Refresh();
 
 }
 
 void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
 {
-    long j;
-    m_pModel->SetSelection( sel1 );
-    switch( sel1 ) {
-    case 0:
-        for( int i = 0; i<4; i++ ){
-            m_pResolution->SetString(i,resolution0[i]);
-        }
-        ( (wxString) m_RequestConfigBase.GetChar(3) ).ToLong( &j );
-        m_pResolution->SetSelection( j );
-        m_pResolution->Enable( true );
+    //some useful  strings
+    const wxString res[][3] = { _("0.5"), _("1"), _("2"),
+        _("0.2"), _("0.8"), _("1.6") };
 
-        m_pWind->SetValue( true );
-        m_pPress->SetValue( true );
+    bool IsZYGRIB = false, IsGFS = false, IsRTOFS = false;
 
-        m_pWaves->SetValue( m_RequestConfigBase.GetChar(8) == 'X' );
-        m_pWaves->Enable( true );
-        m_pRainfall->SetValue( m_RequestConfigBase.GetChar(9) == 'X' );
-        m_pRainfall->Enable( true );
-        m_pCloudCover->SetValue( m_RequestConfigBase.GetChar(10) == 'X' );
-        m_pCloudCover->Enable( true );
-        m_pAirTemp->SetValue( m_RequestConfigBase.GetChar(11) == 'X' );
-        m_pAirTemp->Enable( true );
-        m_pSeaTemp->SetValue( m_RequestConfigBase.GetChar(12) == 'X' );
-        m_pSeaTemp->Enable( true );
-        break;
-    case 1:
-        for( int i = 0; i<4; i++ ){
-            m_pResolution->SetString(i,resolution1[i]);
-        }
-        
-        m_pResolution->SetSelection( sel2 );
-        m_pResolution->Enable( true );
-        m_pWind->SetValue( true );                          //default parameters wind and pression
-        m_pPress->SetValue( true );
-        m_pSeaTemp->Enable(false);                       
-        break;
-    case 2 :
-        for( int i = 0; i<4; i++ ){
-            m_pResolution->SetString(i, resolution0[i]);
-        }
-       
-        m_pResolution->SetSelection( 0 );                   //default resolution ("05,05")
-        m_pResolution->Enable( false );
-        m_pWind->SetValue( false );
-        m_pPress->SetValue( false );
-        m_pSeaTemp->SetValue( true );                       //default parameters current and sea temperature
-        m_pCurrent->SetValue( true );
-        m_pCurrent->Enable( false );
-        break;
-    }
+    //Model is always GFS if Zygrib
+    if( m_pMailTo->GetCurrentSelection() == ZYGRIB ) { sel1 = GFS; IsZYGRIB = true; } 
     
-    if( sel1 != 0 ) {
-        m_pWaves->SetValue( false );
-        m_pWaves->Enable( false );
-        m_pRainfall->SetValue( false );
-        m_pRainfall->Enable( false );
-        m_pCloudCover->SetValue( false );
-        m_pCloudCover->Enable( false );
-        m_pAirTemp->SetValue( false );
-        m_pAirTemp->Enable( false );
-        m_pSeaTemp->Enable( false );
-    }
+    if( sel1 == GFS ) IsGFS = true;
 
-    if( sel1 != 2 ) {
-        m_pCurrent->SetValue( false );
-        m_pCurrent->Enable( false );
-    }
+    //Resolution is always 0.5 if RTOFS
+    if( sel1 == RTOFS) { sel2 = 0; IsRTOFS = true; }
 
+    m_pModel->SetSelection( sel1 );
+   
+    //populate resolution choice                               
+    int m = (sel1 == 2) ? 0 : sel1;
+    for( int i = 0; i<3; i++ ) {
+        m_pResolution->SetString(i,res[m][i]);
+    }
+     m_pResolution->SetSelection(sel2);
+    //apply time & resolution limits 
+    if(!IsGFS) m_pInterval->SetSelection( wxMax(1, m_pInterval->GetCurrentSelection()));               //mini 6 hours for COAMPS & RTOFS
+    if( sel1 == COAMPS) m_pTimeRange->SetSelection( wxMin(1, m_pTimeRange->GetCurrentSelection()));    //maxi 3 jours for this model
+    if(IsRTOFS) m_pTimeRange->SetSelection( wxMin(4, m_pTimeRange->GetCurrentSelection()));            // maxi 6 jours for this model
+    
+    m_pResolution->Enable( !IsRTOFS );
+    m_pModel->Enable(!IsZYGRIB);
+    m_pWind->SetValue( !IsRTOFS );
+    m_pPress->SetValue( !IsRTOFS );
+    m_pWaves->SetValue( m_RequestConfigBase.GetChar(8) == 'X' && IsGFS );
+    m_pWaves->Enable( IsGFS );
+    m_pRainfall->SetValue( m_RequestConfigBase.GetChar(9) == 'X' && IsGFS );
+    m_pRainfall->Enable( IsGFS );
+    m_pCloudCover->SetValue( m_RequestConfigBase.GetChar(10) == 'X' && IsGFS );
+    m_pCloudCover->Enable( IsGFS );
+    m_pAirTemp->SetValue( m_RequestConfigBase.GetChar(11) == 'X' && IsGFS );
+    m_pAirTemp->Enable( IsGFS );
+    m_pSeaTemp->SetValue( (m_RequestConfigBase.GetChar(12) == 'X' && (!IsZYGRIB && IsGFS)) || IsRTOFS );
+    m_pSeaTemp->Enable( !IsZYGRIB && IsGFS );
+    m_pWindGust->SetValue( m_RequestConfigBase.GetChar(14) == 'X' && IsZYGRIB);
+    m_pWindGust->Enable( IsZYGRIB );
+    m_pCurrent->SetValue( IsRTOFS );
+    m_pCurrent->Enable( false );
+
+    //show parameters only if necessary
+    m_tLogin->Show(IsZYGRIB);
+    m_pLogin->Show(IsZYGRIB);
+    m_tCode->Show(IsZYGRIB);
+    m_pCode->Show(IsZYGRIB);
+    m_tWModel->Show(IsZYGRIB && m_pWaves->IsChecked());
+    m_pWModel->Show(IsZYGRIB && m_pWaves->IsChecked());
 }
 
-void GribRequestSetting::OnModelChange(wxCommandEvent &event)
+void GribRequestSetting::OnTopChange(wxCommandEvent &event)
 {
-    ApplyRequestConfig( m_pModel->GetCurrentSelection(), m_pResolution->GetCurrentSelection() );
+   ApplyRequestConfig( m_pModel->GetCurrentSelection(), m_pResolution->GetCurrentSelection() );
 
-    //permit to send a new message
-    m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));
-    m_rButtonYes->Show();
+    if(EstimateFileSize()) {
+        m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));                   //permit to send a (new) message
+        m_rButtonYes->Show();
+        m_MailImage->SetValue( WriteMail() );
+    } else { 
+        m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
+        m_rButtonYes->Hide();
+        m_MailImage->SetValue(
+            _("The file size limit is overcome!\nYou can zoom in to decrease the area or change parameters")); 
+    }
 
-    m_MailImage->SetLabel( WriteMail() );
-    Fit();
+    this->Fit();
+    this->Refresh();
 }
 
 void GribRequestSetting::OnAnyChange(wxCommandEvent &event)
 {
-    //permit to send a new message
-    m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));
-    m_rButtonYes->Show();
+    m_tWModel->Show(m_pMailTo->GetCurrentSelection() == ZYGRIB && m_pWaves->IsChecked());
+    m_pWModel->Show(m_pMailTo->GetCurrentSelection() == ZYGRIB && m_pWaves->IsChecked());
 
-    m_MailImage->SetLabel( WriteMail() );
-    Fit();
+    //apply time & resolution limits 
+    if(m_pModel->GetCurrentSelection() != GFS) m_pInterval->SetSelection(
+        wxMax(1, m_pInterval->GetCurrentSelection()));  //mini 6 hours for COAMPS & RTOFS
+    if( m_pModel->GetCurrentSelection() == COAMPS) m_pTimeRange->SetSelection(
+        wxMin(1, m_pTimeRange->GetCurrentSelection()));   //maxi 3 jours for this model
+    if(m_pModel->GetCurrentSelection() == RTOFS) m_pTimeRange->SetSelection(
+        wxMin(4, m_pTimeRange->GetCurrentSelection()));     // maxi 6 jours for this model
+
+   
+    if(EstimateFileSize()) {
+        m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));                   //permit to send a (new) message
+        m_rButtonYes->Show();
+        m_MailImage->SetValue( WriteMail() );
+    } else { 
+        m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
+        m_rButtonYes->Hide();
+        m_MailImage->SetValue(
+            _("The file size limit is overcome!\nYou can zoom in to decrease the area or change parameters")); 
+    }
+
+    this->Fit();
+    this->Refresh();
 }
 
 wxString GribRequestSetting::WriteMail()
 {
     //some useful strings
-    const wxString s[] = { wxT("GFS"), wxT("COAMPS"), wxT("RTOFS"),wxT("|"), wxT("|=\n"), wxT(":") };
-    const wxString r[][4] = { wxT("0.5,0.5"), wxT("1.0,1.0"), wxT("1.5,1.5"), wxT("2.0,2.0"),
-        wxT("0.2,0.2"), wxT("0.6,0.6"), wxT("1.2,1.2"), wxT("2.0,2.0") };
-    const wxString i[] = { wxT("0,3,6"), wxT("0,6,12"), wxT("0,12,24") };
-    const wxString p[] = { wxT("..96"), wxT("..144"), wxT("..192") };
+    const wxString s[] = { _T(","), _T(" ") };        //separators
+    const wxString p[][6] = { _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("WAVES"), _T("SEATMP"), _T(""), //parameters
+        _T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), _T(""), _T("GUST") };
 
-    wxString r_action = wxT("send"),r_parameters;
-
-    int model = m_pModel->GetCurrentSelection();
-    switch( m_pModel->GetCurrentSelection() ) {               
-    case 0:                     //GFS
-        r_parameters = wxT("WIND,PRESS");                  // the default minimum request parameters
-        if( m_pWaves->GetValue() )
-            r_parameters.Append( wxT(",WAVES") );
-        if( m_pRainfall->GetValue() )
-            r_parameters.Append( wxT(",APCP") );
-        if( m_pCloudCover->GetValue() )
-            r_parameters.Append( wxT(",TCDC") );
-        if( m_pAirTemp->GetValue() )
-            r_parameters.Append( wxT(",AIRTMP") );
-        if( m_pSeaTemp->GetValue() )
-            r_parameters.Append( wxT(",SEATMP") );
+    wxString r_topmess,r_parameters,r_zone;
+    //write the top part of the mail
+    switch( m_pMailTo->GetCurrentSelection() ) {
+    case SAILDOCS:                                                                         //Saildocs
+        r_zone = toMailFormat(1, m_LatmaxBase) + _T(",") + toMailFormat(1, m_LatminBase) + _T(",")
+            + toMailFormat(2, m_LonminBase) + _T(",") + toMailFormat(2, m_LonmaxBase);
+        r_topmess = wxT("send ");
+        r_topmess.Append(m_pModel->GetStringSelection() + _T(":"));
+        r_topmess.Append( r_zone  + _T("|"));
+        double v;
+        m_pResolution->GetStringSelection().ToDouble(&v);
+        r_topmess.Append(wxString::Format(_T("%1.1f,%1.1f"), v, v) + _T("|"));
+        m_pInterval->GetStringSelection().ToDouble(&v);
+        r_topmess.Append(wxString::Format(_T("0,%d,%d"), (int) v, (int) v*2));
+        m_pTimeRange->GetStringSelection().ToDouble(&v);
+        r_topmess.Append(wxString::Format(_T("..%d"), (int) v*24) + _T("|=\n"));
         break;
-    case 1:                    //COAMPS
+    case ZYGRIB:                                                                         //Zygrib
+        r_zone = toMailFormat(1, m_LatminBase) + toMailFormat(2, m_LonminBase) + _T(" ")
+            + toMailFormat(1, m_LatmaxBase) + toMailFormat(2, m_LonmaxBase);
+        r_topmess = wxT("login : ");
+        r_topmess.Append(m_pLogin->GetValue() + _T("\n"));
+        r_topmess.Append(wxT("code :"));
+        r_topmess.Append(m_pCode->GetValue() + _T("\n"));
+        r_topmess.Append(wxT("area : "));
+        r_topmess.append(r_zone + _T("\n"));
+        r_topmess.Append(wxT("resol : "));
+        r_topmess.append(m_pResolution->GetStringSelection() + _T("\n"));
+        r_topmess.Append(wxT("days : "));
+        r_topmess.append(m_pTimeRange->GetStringSelection() + _T("\n"));
+        r_topmess.Append(wxT("hours : "));
+        r_topmess.append(m_pInterval->GetStringSelection() + _T("\n"));
+        if(m_pWaves->IsChecked()) {
+            r_topmess.Append(wxT("waves : "));
+            r_topmess.append(m_pWModel->GetStringSelection() + _T("\n"));
+        }
+        r_topmess.Append(wxT("meteo : "));
+        r_topmess.append(m_pModel->GetStringSelection() + _T("\n"));
+        break;
+    }
+    //write the parameters part of the mail
+    switch( m_pModel->GetCurrentSelection() ) {               
+    case GFS:                                                                           //GFS
+        r_parameters = wxT("WIND") + s[m_pMailTo->GetCurrentSelection()] + wxT("PRESS");    // the default minimum request parameters
+        if( m_pRainfall->GetValue() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][0] );
+        if( m_pCloudCover->GetValue() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][1] );
+        if( m_pAirTemp->GetValue() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][2] );
+        if( m_pWaves->GetValue() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][3] );
+        if( m_pSeaTemp->GetValue() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][4] );
+        if( m_pWindGust->GetValue() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][5] );
+        break;
+    case COAMPS:                                                                           //COAMPS
         r_parameters = wxT("WIND,PRMSL");                                 //the default parameters for this model
         break;
-    case 2:                    //RTOFS
-        model = 0;                                                        // same resolution range as GFS
+    case RTOFS:                                                                           //RTOFS                                                        
         r_parameters = wxT("CUR,WTMP");                                   //the default parameters for this model
+        break;
     }
-    return wxString( 
-    wxT("send ") 
-    + s[m_pModel->GetCurrentSelection()] 
-    + s[5] + m_RequestZoneBase + s[3] 
-    + r[model][m_pResolution->GetCurrentSelection()] + s[3] 
-    + i[m_pInterval->GetCurrentSelection()] 
-    + p[m_pTimeRange->GetCurrentSelection()] 
-    + s[4] + r_parameters
-    );
+    return wxString( r_topmess + r_parameters );
+}
+
+bool GribRequestSetting::EstimateFileSize()
+{
+    //define size limits
+    int limit;
+    if(m_pMailTo->GetCurrentSelection() == ZYGRIB )                      
+        limit = 2;
+    else                                                                 //No size limit for SaiDocs
+        limit = 0;
+
+    //too small zone ? ( mini 2 * resolutions )
+    double reso,time,inter;
+    m_pResolution->GetStringSelection().ToDouble(&reso);
+    m_pTimeRange->GetStringSelection().ToDouble(&time);
+    m_pInterval->GetStringSelection().ToDouble(&inter);
+    if (m_LonmaxBase-m_LonminBase < 2*reso) {
+        m_LonminBase -= reso;
+        m_LonmaxBase += reso;
+    }
+    if (m_LatmaxBase-m_LatminBase < 2*reso) {
+        m_LatmaxBase += reso;
+        m_LatminBase -= reso;
+    }
+    int npts = (int) (  ceil(((double)(m_LatmaxBase-m_LatminBase)/reso))
+                       * ceil(((double)(m_LonmaxBase-m_LonminBase)/reso)) );
+
+    if(m_pModel->GetCurrentSelection() == COAMPS )                                           //limited area for COAMPS
+        npts = wxMin(npts, (int) (  ceil(40.0/reso) * ceil(40.0/reso) ) );
+
+    // Nombre de GribRecords
+    int nbrec = (int) (time*24/inter)+1;
+    int nbPress = (m_pPress->IsChecked()) ?  nbrec   : 0;
+    int nbWind  = (m_pWind->IsChecked()) ?  2*nbrec : 0;
+    int nbRain  = (m_pRainfall->IsChecked()) ?  nbrec-1 : 0;
+    int nbCloud = (m_pCloudCover->IsChecked()) ?  nbrec-1 : 0;
+    int nbTemp  = (m_pAirTemp->IsChecked())    ?  nbrec   : 0;
+    int nbSTemp  = (m_pSeaTemp->IsChecked())    ?  nbrec   : 0;
+    int nbGUSTsfc  = (m_pWindGust->IsChecked()) ?  nbrec : 0;
+    int nbCurrent  = (m_pCurrent->IsChecked()) ?  nbrec : 0;
+
+    int head = 84;
+    double estime = 0.0;
+    int nbits;
+
+    nbits = 13;
+    estime += nbWind*(head+(nbits*npts)/8+2 );
+    estime += nbCurrent*(head+(nbits*npts)/8+2 );
+
+    nbits = 11;
+    estime += nbTemp*(head+(nbits*npts)/8+2 );
+    estime += nbSTemp*(head+(nbits*npts)/8+2 );
+
+    nbits = 4;
+    estime += nbRain*(head+(nbits*npts)/8+2 );
+
+    nbits = 15;
+    estime += nbPress*(head+(nbits*npts)/8+2 );
+
+    nbits = 4;
+    estime += nbCloud*(head+(nbits*npts)/8+2 );
+
+    nbits = 7;
+    estime += nbGUSTsfc*(head+(nbits*npts)/8+2 );
+
+	int nbwave = 0;
+	if (m_pWaves->IsChecked()) nbwave++;
+	if (m_pWModel->IsShown()) nbwave ++;
+	nbits = 6;
+	estime += nbrec*nbwave*(head+(nbits*npts)/8+2 );
+
+	estime /= (1024*1024);
+
+    m_tFileSize->SetLabel(wxString::Format(_T("%1.2f Mo"), estime));
+
+    if(limit) {
+        m_tLimit->SetLabel(_("( Max ") + wxString::Format(_T("%d"), limit) + _(" Mo )"));
+        if(estime > limit) return false;
+    } else
+        m_tLimit->SetLabel(_T(""));
+
+    return true;
 }
 
 void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
 {
     wxMailMessage *message = new wxMailMessage( 
-    wxT("Grib-Request"),
-    m_MailAdressBase,               //to ( saildoc request adresse )
-    WriteMail()                     //message
-    );
+    wxT("gribauto"),                                                                            //requested subject
+    (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailAddressBase.BeforeFirst(_T(';'))     //to request address
+        : m_MailAddressBase.AfterFirst(_T(';')),                                         
+    WriteMail()                                                                                 //message image
+    ); 
     wxEmail mail ;
     m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
     if(mail.Send( *message ) ) {
 #ifdef __WXMSW__
-        m_MailImage->SetLabel(
+        m_MailImage->SetValue(
             _("Your request is ready. An eMail is prepared in your eMail environment. \nYou have just to click 'send' to send it...\nSave or Cancel to finish...or new parameters for a new eMail ...") );
 #else
-        m_MailImage->SetLabel(
+        m_MailImage->SetValue(
             _("Your request was sent \n(if your system has an MTA configured and is able to send eMail).\nSave or Cancel to finish...or new parameters for a new eMail ..."));
 #endif
     } else {
-        m_MailImage->SetLabel(
+        m_MailImage->SetValue(
             _("Request can't be sent. Please verify your eMail systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."));
     }
     m_rButtonYes->Hide();

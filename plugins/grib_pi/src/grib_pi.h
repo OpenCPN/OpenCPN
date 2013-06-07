@@ -95,13 +95,16 @@ public:
       void OnGribDialogClose();
 
       void SetRequestConfig ( wxString conf ){ m_RequestConfig = conf; }
+      void SetZyGribLogin ( wxString log ){ m_ZyGribLogin = log; }
+      void SetZyGribCode ( wxString cod ){ m_ZyGribCode = cod; }
       wxString GetRequestConfig(){ return m_RequestConfig; }
-      wxString GetMailAdresse(){ return m_bMailAdresse; }
+      wxString GetMailAddresses(){ return m_bMailAddresses; }
+      wxString GetZyGribLogin() { return m_ZyGribLogin; }
+      wxString GetZyGribCode() { return m_ZyGribCode; }
 
       int  GetTimeZone() { return m_bTimeZone; }
       bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
       bool GetCopyMissWaveRec() { return  m_bCopyMissWaveRec; }
-      wxString GetSaildocAdresse() { return m_bMailAdresse; }
 
       GRIBOverlayFactory *GetGRIBOverlayFactory(){ return m_pGRIBOverlayFactory; }
 
@@ -135,7 +138,9 @@ private:
       bool             m_bCopyMissWaveRec;
       int              m_bLoadLastOpenFile;
       wxString         m_RequestConfig;
-      wxString         m_bMailAdresse;
+      wxString         m_bMailAddresses;
+      wxString         m_ZyGribLogin;
+      wxString         m_ZyGribCode;
       
       bool             m_bGRIBShowIcon;
 

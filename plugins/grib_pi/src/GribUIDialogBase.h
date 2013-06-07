@@ -182,35 +182,46 @@ class GribRequestSettingBase : public wxDialog
 	private:
 	
 	protected:
-		wxChoice* m_pMailTo;
-		wxStaticText* m_MailImage;
+		wxStaticText* m_tLogin;
+		wxStaticText* m_tCode;
+		wxStaticText* m_staticText21;
+		wxStaticText* m_tWModel;
+		wxTextCtrl* m_MailImage;
+		wxStaticText* m_tFileSize;
+		wxStaticText* m_tLimit;
 		
 		// Virtual event handlers, overide them in your derived class
-		virtual void OnModelChange( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTopChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAnyChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSaveMail( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSendMaiL( wxCommandEvent& event ) { event.Skip(); }
 		
 	
 	public:
+		wxChoice* m_pMailTo;
 		wxChoice* m_pModel;
+		wxTextCtrl* m_pLogin;
+		wxTextCtrl* m_pCode;
 		wxChoice* m_pResolution;
+		wxStaticText* m_tResUnit;
 		wxChoice* m_pInterval;
 		wxChoice* m_pTimeRange;
 		wxCheckBox* m_pWind;
 		wxCheckBox* m_pPress;
-		wxCheckBox* m_pWaves;
+		wxCheckBox* m_pWindGust;
 		wxCheckBox* m_pRainfall;
 		wxCheckBox* m_pCloudCover;
 		wxCheckBox* m_pAirTemp;
 		wxCheckBox* m_pSeaTemp;
 		wxCheckBox* m_pCurrent;
+		wxCheckBox* m_pWaves;
+		wxChoice* m_pWModel;
 		wxStdDialogButtonSizer* m_rButton;
 		wxButton* m_rButtonYes;
 		wxButton* m_rButtonApply;
 		wxButton* m_rButtonCancel;
 		
-		GribRequestSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("GRIB Mail Request Setting ,Writing & Sending"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxDEFAULT_DIALOG_STYLE ); 
+		GribRequestSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Write and send GRIB request setting"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~GribRequestSettingBase();
 	
 };
