@@ -2073,6 +2073,7 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
             case ID_DBP_I_VLW2: // Sum Log
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_VLW2, _T("%2.1f") );
+                break;
 
             case ID_DBP_I_TWA: //true wind angle
                 instrument = new DashboardInstrument_Single( this, wxID_ANY,
