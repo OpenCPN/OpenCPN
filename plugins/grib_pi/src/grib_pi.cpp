@@ -206,7 +206,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_rbTimeFormat->SetSelection( m_bTimeZone );
     Pref->m_rbStartOptions->SetSelection( m_bLoadLastOpenFile );
 
-    // TODO: update m_bMailAdresse
+    // TODO: update m_bMailAddresses
 
      if( Pref->ShowModal() == wxID_OK ) {
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
@@ -435,13 +435,15 @@ bool grib_pi::LoadConfig(void)
     pConf->Read ( _T( "GRIBTimeZone" ), &m_bTimeZone, 1 );
     pConf->Read ( _T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1 );
     pConf->Read ( _T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1 );
-    pConf->Read ( _T( "MailRequestConfig" ), &m_RequestConfig, _T( "000220XX......" ) );
-    pConf->Read ( _T( "MailRequestAdesse" ), &m_bMailAdresse, _T("query@saildocs.com") );
+    pConf->Read ( _T( "MailRequestConfig" ), &m_RequestConfig, _T( "000220XX......." ) );
+    pConf->Read ( _T( "MailRequestAddresses" ), &m_bMailAddresses, _T("query@saildocs.com;gribauto@zygrib.org") );
+    pConf->Read ( _T( "ZyGribLogin" ), &m_ZyGribLogin, _T("") );
+    pConf->Read ( _T( "ZyGribCode" ), &m_ZyGribCode, _T("") );
 
 
     //if GriDataConfig has been corrupted , take the standard one to fix a crash
-    if( m_RequestConfig.Len() != wxString (_T( "000220XX......" ) ).Len() )
-        m_RequestConfig = _T( "000220XX......" );
+    if( m_RequestConfig.Len() != wxString (_T( "000220XX......." ) ).Len() )
+        m_RequestConfig = _T( "000220XX......." );
 
     m_grib_dialog_sx = pConf->Read ( _T ( "GRIBDialogSizeX" ), 300L );
     m_grib_dialog_sy = pConf->Read ( _T ( "GRIBDialogSizeY" ), 540L );
@@ -468,7 +470,9 @@ bool grib_pi::SaveConfig(void)
     pConf->Write ( _T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec );
     pConf->Write ( _T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec );
     pConf->Write ( _T ( "MailRequestConfig" ), m_RequestConfig );
-    pConf->Write ( _T( "MailRequestAdesse" ), m_bMailAdresse );
+    pConf->Write ( _T( "MailRequestAddresses" ), m_bMailAddresses );
+    pConf->Write ( _T( "ZyGribLogin" ), m_ZyGribLogin );
+    pConf->Write ( _T( "ZyGribCode" ), m_ZyGribCode );
 
 
     pConf->Write ( _T ( "GRIBDialogSizeX" ),  m_grib_dialog_sx );
