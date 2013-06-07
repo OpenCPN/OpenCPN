@@ -518,11 +518,15 @@ void AnnunText::OnPaint( wxPaintEvent& event )
 
     if( m_plabelFont ) {
         mdc.SetFont( *m_plabelFont );
+        if ( m_pbackBrush->GetColour() != FontMgr::Get().GetFontColor( _("Console Legend") ) )
+            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _("Console Legend") ) );
         mdc.DrawText( m_label, 5, 2 );
     }
 
     if( m_pvalueFont ) {
         mdc.SetFont( *m_pvalueFont );
+        if ( m_pbackBrush->GetColour() != FontMgr::Get().GetFontColor( _("Console Value") ) )
+            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _("Console Value") ) );
 
         int w, h;
         mdc.GetTextExtent( m_value, &w, &h );

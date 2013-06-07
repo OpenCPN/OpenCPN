@@ -115,7 +115,7 @@ RoutePoint::RoutePoint( RoutePoint* orig )
     m_pMarkFont = orig->m_pMarkFont;
     m_MarkDescription = orig->m_MarkDescription;
     m_btemp = orig->m_btemp;
-        
+
     m_HyperlinkList = new HyperlinkList;
     m_IconName = orig->m_IconName;
     ReLoadIcon();
@@ -159,7 +159,7 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_NameLocationOffsetY = 8;
     m_pMarkFont = NULL;
     m_btemp = false;
-    
+
     m_HyperlinkList = new HyperlinkList;
 
     if( !pGUID.IsEmpty() )
@@ -210,7 +210,7 @@ void RoutePoint::SetCreateTime( wxDateTime dt )
     m_CreateTimeX = dt;
 }
 
-        
+
 void RoutePoint::SetName(const wxString & name)
 {
     m_MarkName = name;
@@ -272,7 +272,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
     if( m_bShowName ) {
         if( 0 == m_pMarkFont ) {
             m_pMarkFont = FontMgr::Get().GetFont( _( "Marks" ) );
-            m_FontColor = FontMgr::Get().GetFontColor( _("Marks") );
+            m_FontColor = FontMgr::Get().GetFontColor( _( "Marks" ) );
             CalculateNameExtents();
         }
 

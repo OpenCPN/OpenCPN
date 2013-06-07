@@ -93,17 +93,17 @@ void RolloverWin::SetBitmap( int rollover )
     switch( rollover ) {
         case AIS_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _T("AISRollover") ) );
+            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _("AISRollover") ) );
             break;
 
         case TC_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 0.0, GetGlobalColor( _T ( "YELO1" ) ), 255 );
-            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _T("TideCurrentGraphRollover") ) );
+            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _("TideCurrentGraphRollover") ) );
             break;
         default:
         case LEG_ROLLOVER:
             AlphaBlending( dc, 0, 0, m_size.x, m_size.y, 6.0, GetGlobalColor( _T ( "YELO1" ) ), 172 );
-            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _T("RouteLegInfoRollover") ) );
+            mdc.SetTextForeground( FontMgr::Get().GetFontColor( _("RouteLegInfoRollover") ) );
             break;
     }
 

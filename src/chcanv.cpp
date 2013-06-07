@@ -4336,7 +4336,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
                 if ( tgt_name != wxEmptyString ) {
                     dc.SetFont( *FontMgr::Get().GetFont( _( "AIS Target Name" ), 12 ) );
-                    dc.SetTextForeground( FontMgr::Get().GetFontColor( _T( "AIS Target Name" ) ) );
+                    dc.SetTextForeground( FontMgr::Get().GetFontColor( _( "AIS Target Name" ) ) );
 
                     int w, h;
                     dc.GetTextExtent( tgt_name, &w, &h );
@@ -6588,9 +6588,10 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         }
 
         wxColor bg = g_pObjectQueryDialog->GetBackgroundColour();
+        wxColor fg = FontMgr::Get().GetFontColor( _("ObjectQuery") );
 
-        objText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font face="), bg.Red(), bg.Blue(),
-                        bg.Green() );
+        objText.Printf( _T("<html><body bgcolor=#%02x%02x%02x><font color=#%02x%02x%02x face="), bg.Red(), bg.Blue(),
+                        bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
         objText += _T("\"");
         objText += face;
         objText += _T("\">");
@@ -9286,7 +9287,7 @@ void ChartCanvas::DrawAllTidesInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuildSel
     wxBrush *brc_2 = wxTheBrushList->FindOrCreateBrush( GetGlobalColor( _T ( "YELO1" ) ), wxSOLID );
 
     wxFont *dFont = FontMgr::Get().GetFont( _("ExtendedTideIcon"), 12 );
-    dc.SetTextForeground( FontMgr::Get().GetFontColor( _T("ExtendedTideIcon") ) );
+    dc.SetTextForeground( FontMgr::Get().GetFontColor( _("ExtendedTideIcon") ) );
     int font_size = wxMax(8, dFont->GetPointSize());
     wxFont *plabelFont = wxTheFontList->FindOrCreateFont( font_size, dFont->GetFamily(),
                          dFont->GetStyle(), dFont->GetWeight() );

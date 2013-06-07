@@ -678,7 +678,7 @@ ToolTipWin::~ToolTipWin()
 void ToolTipWin::SetColorScheme( ColorScheme cs )
 {
     m_back_color = GetGlobalColor( _T ( "UIBCK" ) );
-    m_text_color = GetGlobalColor( _T ( "UITX1" ) );
+    m_text_color = FontMgr::Get().GetFontColor( _("ToolTips") );
 }
 
 void ToolTipWin::SetBitmap()
@@ -777,7 +777,7 @@ public:
     {
         return toolname;
     }
-    
+
     void SetIconName(wxString name)
     {
         iconName = name;
@@ -786,7 +786,7 @@ public:
     {
         return iconName;
     }
-    
+
     wxCoord m_x;
     wxCoord m_y;
     wxCoord m_width;
@@ -1235,7 +1235,7 @@ void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
                         m_last_ro_tool->m_y - 30;
 
                 m_pToolTipWin->Move(0,0);       // workaround for gtk autocentre dialog behavior
-                
+
                 m_pToolTipWin->SetPosition( ClientToScreen( pos_in_toolbar ) );
                 m_pToolTipWin->SetBitmap();
                 m_pToolTipWin->Show();
@@ -1441,9 +1441,9 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
             if( tool->IsEnabled() ) {
                 if( tool->IsToggled() )
                     bmp = m_style->GetToolIcon( tool->GetToolname(), TOOLICON_TOGGLED, tool->rollover );
-                else 
+                else
                     bmp = m_style->GetToolIcon( tool->GetIconName(), TOOLICON_NORMAL, tool->rollover );
-                
+
                 tool->SetNormalBitmap( bmp );
                 tool->bitmapOK = true;
             } else {

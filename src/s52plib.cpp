@@ -240,18 +240,18 @@ LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
 
             wxString LATTC = LUPCandidate->ATTCArray->Item( iLUPAtt );
             wxString LATTValue( LATTC.Mid( 6 ) );
-            
+
             //  Verify that attribute names and values will convert with UTF8
             char *slatv = NULL;
             wxCharBuffer vbuffer=LATTValue.ToUTF8();
             if(vbuffer.data())
                 slatv = vbuffer.data();
-            
+
             char *slatc = NULL;
             wxCharBuffer buffer=LATTC.ToUTF8();
             if(buffer.data())
                 slatc = buffer.data();
- 
+
             if( slatv && slatc ){
                 while( *currATT != '\0' ) {
                     if( 0 == strncmp( slatc, currATT, 6 ) ) {
@@ -418,7 +418,7 @@ Rules *s52plib::StringToRules( const wxString& str_in )
     wxCharBuffer buffer=str_in.ToUTF8();
     if(!buffer.data())
         return NULL;
-        
+
     size_t len = strlen( buffer.data() );
     char *str0 = (char *) calloc( len + 1, 1 );
     strncpy( str0, buffer.data(), len );
@@ -1087,7 +1087,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
     int len = 0;
     char *ret_ptr = str;
     char *tmp = buf;
-    
+
     if(!buf)
         return NULL;
 
@@ -1111,7 +1111,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
             ++len;
         }
         *tmp = '\0';
-        
+
         ret_ptr++; // skip ',' or ')'
     }
     if( len < 6 )
@@ -1127,7 +1127,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
     wxCharBuffer buffer=value.ToUTF8();
     if(!buffer.data())
         return ret_ptr;
-        
+
     if( value.IsEmpty() ) {
         if( defval )
             _getParamVal( rzRules, buf + 7, buf, bsz - 7 ); // default value --recursion
@@ -1181,7 +1181,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 
             value = result;
         }
-        
+
         wxCharBuffer buffer=value.ToUTF8();
         if(buffer.data()){
             unsigned int len = wxMin(strlen(buffer.data()), bsz-1);
@@ -1507,7 +1507,9 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
              pdc->DrawText( ptext->frmtd, xp + 1, yp );
              pdc->DrawText( ptext->frmtd, xp - 1, yp );
              */
-            wxColour wcolor( ptext->pcol->R, ptext->pcol->G, ptext->pcol->B );
+             wxColour wcolor = FontMgr::Get().GetFontColor(_("ChartTexts"));
+            if( wcolor == *wxBLACK )
+                wcolor = wxColour( ptext->pcol->R, ptext->pcol->G, ptext->pcol->B );
             pdc->SetTextForeground( wcolor );
 
             pdc->DrawText( ptext->frmtd, xp, yp );
@@ -3455,7 +3457,7 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
     if( !ObjectRenderCheckPos( rzRules, vp ) ) return 0;
 
     if( !ObjectRenderCheckCat( rzRules, vp ) ) {
-#if 0        
+#if 0
         //  This is an "out-of-spec" optimization
         //    Conditional symbology for rocks and wrecks is expensive
         //    because we have to find the DEPARE or DRGARE that it is in,
@@ -3463,7 +3465,7 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
         //    and then potentially move the hazard to DISPLAYBASE category.
         //
         //    Lets only consider and allow this case for large scale chart views....
-        
+
         if( ( !strncmp( rzRules->LUP->OBCL, "UWTROC", 6 ) )
                 || ( !strncmp( rzRules->LUP->OBCL, "WRECKS", 6 ) ) ) {
             if( vp->chart_scale > 20000. ) return 0;
@@ -5380,14 +5382,14 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
     while( rules != NULL ) {
         switch( rules->ruleType ){
             case RUL_ARE_CO:
-                if( rzRules->obj->bCS_Added  && !ObjectRenderCheckCat( rzRules, vp ) ) 
-                    break; 
+                if( rzRules->obj->bCS_Added  && !ObjectRenderCheckCat( rzRules, vp ) )
+                    break;
                 RenderToGLAC( rzRules, rules, vp );
                 break; // AC
-                
+
             case RUL_ARE_PA:
-                if( rzRules->obj->bCS_Added  && !ObjectRenderCheckCat( rzRules, vp ) ) 
-                        break; 
+                if( rzRules->obj->bCS_Added  && !ObjectRenderCheckCat( rzRules, vp ) )
+                        break;
                 RenderToGLAP( rzRules, rules, vp );
                 break; // AP
 
@@ -5895,7 +5897,7 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
 
     //      Do Object Type Filtering
     DisCat obj_cat = rzRules->obj->m_DisplayCat;
-    
+
     if( m_nDisplayCategory == MARINERS_STANDARD ) {
         if( -1 == rzRules->obj->iOBJL ) UpdateOBJLArray( rzRules->obj );
 
