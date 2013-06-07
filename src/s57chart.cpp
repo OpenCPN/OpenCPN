@@ -4821,23 +4821,40 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
         if( pFeature->IsFieldSet( iField ) ) {
             if( ( iField == 1 ) || ( iField > 7 ) ) {
                 OGRFieldDefn *poFDefn = pFeature->GetDefnRef()->GetFieldDefn( iField );
-
                 const char *pType = OGRFieldDefn::GetFieldTypeName( poFDefn->GetType() );
+                const char *pAttrName = poFDefn->GetNameRef();
+                const char *pAttrVal = pFeature->GetFieldAsString( iField );
+ 
+                snprintf( line, MAX_HDR_LINE - 2, "  %s (%c) = ", pAttrName, *pType);
+                wxString AttrStringPrefix = wxString( line, wxConvUTF8 );
+                
+                wxString wxAttrValue;
+                
+                if( (0 == strncmp("NOBJNM",pAttrName, 6) ) ||
+                    (0 == strncmp("NINFOR",pAttrName, 6) ) ||
+                    (0 == strncmp("NTXTDS",pAttrName, 6) ) )
+                {
+                    if( poReader->GetNall() == 2) {     // ENC is using UCS-2 / UTF-16 encoding
+                        wxMBConvUTF16 conv;
+                        wxString att_conv(pAttrVal, conv);
+                        wxAttrValue = att_conv;
+                    }
+                }
+                
+                if( wxAttrValue.IsEmpty()) {
+    // Attempt different conversions to accomodate different language encodings in
+    // the original ENC files.
 
-                snprintf( line, MAX_HDR_LINE - 2, "  %s (%c) = %s", poFDefn->GetNameRef(), *pType,
-                        pFeature->GetFieldAsString( iField ) );
+                    wxAttrValue = wxString( pAttrVal, wxConvUTF8 );
 
-				// Attempt different conversions to accomodate different language encodings in
-				// theoriginal files.
+                    if( wxAttrValue.Length() < strlen(pAttrVal) )
+                        wxAttrValue = wxString( pAttrVal, wxConvISO8859_1 );
 
-				wxString wxAttrValue( line, wxConvUTF8 );
-
-				if( wxAttrValue.Length() < strlen(line) )
-					wxAttrValue = wxString( line, wxConvISO8859_1 );
-
-				if( wxAttrValue.Length() < strlen(line) )
-					wxLogError( _T("Warning: CreateSENCRecord(): Failed to convert string value to wxString.") );
-
+                    if( wxAttrValue.Length() < strlen(pAttrVal) )
+                        wxLogError( _T("Warning: CreateSENCRecord(): Failed to convert string value to wxString.") );
+                }
+               
+                sheader += AttrStringPrefix;
                 sheader += wxAttrValue;
                 sheader += '\n';
             }
