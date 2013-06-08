@@ -79,6 +79,7 @@ class       wxAuiManager;
 #define     WANTS_PLUGIN_MESSAGING                    0x00004000
 #define     WANTS_OPENGL_OVERLAY_CALLBACK             0x00008000
 #define     WANTS_DYNAMIC_OPENGL_OVERLAY_CALLBACK     0x00010000
+#define     WANTS_LATE_INIT                           0x40000000
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -408,6 +409,7 @@ public:
 
       virtual wxArrayString GetDynamicChartClassNameArray(void);
 
+      virtual void LateInit(void); // If WANTS_LATE_INIT is returned by Init()
  };
 
 
