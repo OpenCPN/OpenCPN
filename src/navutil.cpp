@@ -2506,6 +2506,7 @@ void MyConfig::UpdateNavObj( void )
 
     delete pNavObjectSet;
 
+    wxRemoveFile( m_sNavObjSetChangesFile );
     delete m_pNavObjectChangesSet;
     m_pNavObjectChangesSet = new NavObjectChanges();
 
