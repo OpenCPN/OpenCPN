@@ -730,11 +730,13 @@ void InsertRouteA( Route *pTentRoute )
                     while( node ) {
                         RoutePoint *prp = node->GetData();
                         
-                        if( ip )
+                        if( ip ) {
                             pSelect->AddSelectableRouteSegment( prev_rlat, prev_rlon, prp->m_lat,
                                                                 prp->m_lon, prev_pConfPoint, prp, pTentRoute );
+                            pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
+                        }
                             
-                            prev_rlat = prp->m_lat;
+                        prev_rlat = prp->m_lat;
                         prev_rlon = prp->m_lon;
                         prev_pConfPoint = prp;
                         
