@@ -2140,7 +2140,7 @@ void RouteManagerDialog::OnWptGoToClick( wxCommandEvent &event )
     rteName.Append( name );
     temp_route->m_RouteNameString = rteName;
     temp_route->m_RouteStartString = _("Here");
-    ;
+    
     temp_route->m_RouteEndString = name;
     temp_route->m_bDeleteOnArrival = true;
 

@@ -364,10 +364,14 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
 
             if( ChildName == _T ( "rtept" ) ) {
                     pWp = ::GPXLoadWaypoint1(  tschild, _T("square"), _T(""), b_fullviz, b_layer, b_layerviz, layer_id);
+                    RoutePoint *erp = ::WaypointExists( pWp->m_GUID );
+                    if( erp != NULL )
+                        pWp = erp;
                     pTentRoute->AddPoint( pWp, false, true );          // defer BBox calculation
                     pWp->m_bIsInRoute = true;                      // Hack
                     pWp->m_bIsInTrack = false;
-                    pWayPointMan->m_pWayPointList->Append( pWp );
+                    if( erp == NULL )
+                        pWayPointMan->m_pWayPointList->Append( pWp );
             }
             else
             if( ChildName == _T ( "name" ) ) {
@@ -730,12 +734,10 @@ void InsertRouteA( Route *pTentRoute )
                     while( node ) {
                         RoutePoint *prp = node->GetData();
                         
-                        if( ip ) {
+                        if( ip )
                             pSelect->AddSelectableRouteSegment( prev_rlat, prev_rlon, prp->m_lat,
                                                                 prp->m_lon, prev_pConfPoint, prp, pTentRoute );
-                            pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
-                        }
-                            
+                        pSelect->AddSelectableRoutePoint(prp->m_lat, prp->m_lon, prp);
                         prev_rlat = prp->m_lat;
                         prev_rlon = prp->m_lon;
                         prev_pConfPoint = prp;
