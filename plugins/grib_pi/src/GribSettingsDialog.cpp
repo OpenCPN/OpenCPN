@@ -71,7 +71,7 @@ void GribOverlaySettings::Read()
         wxString Name=name_from_index[i];
 
         int units;
-        pConf->Read ( Name + _T ( "Units" ), &units);
+        pConf->Read ( Name + _T ( "Units" ), &units,0);
         Settings[i].m_Units = (SettingsType)units;
 
         pConf->Read ( Name + _T ( "BarbedArrows" ), &Settings[i].m_bBarbedArrows, i==WIND);

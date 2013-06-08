@@ -331,17 +331,15 @@ void grib_pi::OnToolbarToolCallback(int id)
 
 void grib_pi::OnGribDialogClose()
 {
-    SetToolbarItemState( m_leftclick_tool_id, false );
+    m_bShowGrib = false;
+    SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
 
-    if(m_pGribDialog)
-        m_pGribDialog->Hide();
+    m_pGribDialog->Hide();
 
     SaveConfig();
-//      m_pGribDialog->SetGribRecordSet( NULL );          //clear the screen
+     
+    RequestRefresh(m_parent_window); // refresh mainn window
 
-      m_bShowGrib = false;
-
-      SaveConfig();
 }
 
 bool grib_pi::RenderOverlay(wxDC &dc, PlugIn_ViewPort *vp)
