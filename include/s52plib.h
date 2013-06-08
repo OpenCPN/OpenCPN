@@ -237,6 +237,9 @@ public:
 	void SetTextOverlapAvoid( bool f ) {
 		m_bDeClutterText = f;
 	}
+	void SetShowNationalText( bool f ) {
+		m_bShowNationalTexts = f;
+	}
 	void SetShowAtonText( bool f ) {
 		m_bShowAtonText = f;
 	}
@@ -266,6 +269,7 @@ public:
     bool m_bExtendLightSectors;
 	bool m_bShowS57ImportantTextOnly;
 	bool m_bDeClutterText;
+	bool m_bShowNationalTexts;
 
 	int m_VersionMajor;
 	int m_VersionMinor;

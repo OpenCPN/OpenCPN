@@ -130,6 +130,7 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     //        Set up some default flags
     m_bDeClutterText = false;
     m_bShowAtonText = true;
+    m_bShowNationalTexts = false;
 
     HPGL = new RenderFromHPGL( this );
 
@@ -1230,17 +1231,35 @@ S52_TextC *S52_PL_parseTX( ObjRazRules *rzRules, Rules *rules, char *cmd )
     S52_TextC *text = NULL;
     char *str = NULL;
     char val[MAXL] = { '\0' }; // value of arg
+    char strnobjnm[7] = { "NOBJNM" };
+    char valn[MAXL] = { '\0' }; // value of arg
 
     str = (char*) rules->INSTstr;
 
+    if( ps52plib->m_bShowNationalTexts && NULL != strstr( str, "OBJNAM" ) ) // in case user wants the national text shown and the rule contains OBJNAM, try to get the value
+    {
+        _getParamVal( rzRules, strnobjnm, valn, MAXL );
+        if( !strcmp( strnobjnm, valn ) )
+            valn[0] = '\0'; //NOBJNM is not defined
+        else
+            valn[MAXL - 1] = '\0'; // make sure the string terminates
+    }
+
     str = _getParamVal( rzRules, str, val, MAXL ); // get ATTRIB list
+
     if( NULL == str ) return 0; // abort this command word if mandatory param absent
 
     val[MAXL - 1] = '\0'; // make sure the string terminates
 
     text = new S52_TextC;
     str = _parseTEXT( rzRules, text, str );
-    if( NULL != text ) text->frmtd = wxString( val, wxConvUTF8 );
+    if( NULL != text )
+    {
+        if ( valn[0] != '\0' )
+            text->frmtd = wxString( valn, wxConvUTF8 );
+        else
+            text->frmtd = wxString( val, wxConvUTF8 );
+    }
 
     return text;
 }

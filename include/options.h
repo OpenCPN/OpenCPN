@@ -148,6 +148,7 @@ enum {
     ID_VECTORCHECKBOX1,
     ID_ZTCCHECKBOX,
     ID_DELETECHECKBOX,
+    ID_NATIONALTEXTCHECKBOX,
     xID_OK
 };
 
@@ -391,6 +392,7 @@ public:
     wxCheckBox              *pCheck_LDISTEXT;
     wxCheckBox              *pCheck_XLSECTTEXT;
     wxCheckBox              *pCheck_DECLTEXT;
+    wxCheckBox              *pCheck_NATIONALTEXT;
     wxTextCtrl              *m_ShallowCtl;
     wxTextCtrl              *m_SafetyCtl;
     wxTextCtrl              *m_DeepCtl;

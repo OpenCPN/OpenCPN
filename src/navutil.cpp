@@ -1338,6 +1338,9 @@ int MyConfig::LoadMyConfig( int iteration )
         Read( _T ( "bDeClutterText" ), &read_int, 0 );
         ps52plib->m_bDeClutterText = !( read_int == 0 );
 
+        Read( _T ( "bShowNationalText" ), &read_int, 0 );
+        ps52plib->m_bShowNationalTexts = !( read_int == 0 );
+
         if( Read( _T ( "S52_MAR_SAFETY_CONTOUR" ), &dval, 5.0 ) ) {
             S52_setMarinerParam( S52_MAR_SAFETY_CONTOUR, dval );
             S52_setMarinerParam( S52_MAR_SAFETY_DEPTH, dval ); // Set safety_contour and safety_depth the same
@@ -2398,6 +2401,7 @@ void MyConfig::UpdateSettings()
         Write( _T ( "bShowLightDescription" ), ps52plib->m_bShowLdisText );
         Write( _T ( "bExtendLightSectors" ), ps52plib->m_bExtendLightSectors );
         Write( _T ( "bDeClutterText" ), ps52plib->m_bDeClutterText );
+        Write( _T ( "bShowNationalText" ), ps52plib->m_bShowNationalTexts );
 
         Write( _T ( "S52_MAR_SAFETY_CONTOUR" ), S52_getMarinerParam( S52_MAR_SAFETY_CONTOUR ) );
         Write( _T ( "S52_MAR_SHALLOW_CONTOUR" ), S52_getMarinerParam( S52_MAR_SHALLOW_CONTOUR ) );

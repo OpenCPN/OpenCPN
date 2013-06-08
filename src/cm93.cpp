@@ -4139,7 +4139,7 @@ void cm93chart::ProcessMCOVRObjects ( int cell_index, char subcell )
                                                 tmp_transform_x = *pf;
                                           else if ( sattr.IsSameAs ( _T ( "_wgsoy" ) ) )
                                                 tmp_transform_y = *pf;
-#endif                                          
+#endif
                                     }
 
 
@@ -5721,9 +5721,9 @@ void cm93compchart::UpdateRenderRegions ( const ViewPort& VPoint )
       ViewPort vp_positive = VPoint;
 
       SetVPPositive ( &vp_positive );
-      
+
       SetVPParms ( VPoint );
-      
+
       if ( m_pcm93chart_current )
       {
             m_pcm93chart_current->SetVPParms ( vp_positive );
@@ -5895,13 +5895,13 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
 
                                           for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++ ,  p++)
                                           {
-                                              
+
                                               pwp[ip] = vp_positive.GetPixFromLL( p->y, p->x );
 
                                               //    Outlines stored in MCDs are not adjusted for offsets
                                               pwp[ip].x -= mcd->user_xoff * vp.view_scale_ppm;
                                               pwp[ip].y -= mcd->user_yoff * vp.view_scale_ppm;
-                                              
+
                                           }
 
                                           //    Scrub the points
@@ -6116,13 +6116,13 @@ InitReturn cm93compchart::CreateHeaderData()
 
       //        Read the root directory, getting subdirectories to build a small scale coverage region
       wxRect extent_rect;
- 
+
       wxDir dirt(m_prefixComposite);
       wxString candidate;
       wxRegEx test(_T("[0-9]+"));
-      
+
       bool b_cont = dirt.GetFirst(&candidate);
-      
+
       while(b_cont) {
           if(test.Matches(candidate)&& (candidate.Len() == 8)) {
               wxString dir = m_prefixComposite;
@@ -6134,7 +6134,7 @@ InitReturn cm93compchart::CreateHeaderData()
                   if( num_name.ToLong( &number ) ) {
                       int ilat = number / 10000;
                       int ilon = number % 10000;
-                      
+
                       int lat_base = ( ilat - 270 ) / 3.;
                       int lon_base = ilon / 3.;
                       extent_rect.Union(wxRect(lon_base, lat_base, 20, 20));

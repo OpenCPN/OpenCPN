@@ -1119,6 +1119,10 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     pCheck_DECLTEXT->SetValue( FALSE );
     catSizer->Add( pCheck_DECLTEXT, 1, wxALL | wxEXPAND, group_item_spacing );
 
+    pCheck_NATIONALTEXT = new wxCheckBox( ps57Ctl, ID_NATIONALTEXTCHECKBOX, _("National text on chart") );
+    pCheck_NATIONALTEXT->SetValue( FALSE );
+    catSizer->Add( pCheck_NATIONALTEXT, 1, wxALL | wxEXPAND, group_item_spacing );
+
     wxBoxSizer* styleSizer = new wxBoxSizer( wxVERTICAL );
     vectorPanel->Add( styleSizer, 1, wxALL | wxEXPAND, 0 );
 
@@ -2110,6 +2114,7 @@ void options::SetInitialSettings()
         pCheck_LDISTEXT->SetValue( ps52plib->m_bShowLdisText );
         pCheck_XLSECTTEXT->SetValue( ps52plib->m_bExtendLightSectors );
         pCheck_DECLTEXT->SetValue( ps52plib->m_bDeClutterText );
+        pCheck_NATIONALTEXT->SetValue( ps52plib->m_bShowNationalTexts );
 
         // Chart Display Style
         if( ps52plib->m_nSymbolStyle == PAPER_CHART ) pPointStyle->SetSelection( 0 );
@@ -2689,6 +2694,7 @@ void options::OnApplyClick( wxCommandEvent& event )
         ps52plib->m_bShowLdisText = pCheck_LDISTEXT->GetValue();
         ps52plib->m_bExtendLightSectors = pCheck_XLSECTTEXT->GetValue();
         ps52plib->m_bDeClutterText = pCheck_DECLTEXT->GetValue();
+        ps52plib->m_bShowNationalTexts = pCheck_NATIONALTEXT->GetValue();
 
         if( 0 == pPointStyle->GetSelection() ) ps52plib->m_nSymbolStyle = PAPER_CHART;
         else
