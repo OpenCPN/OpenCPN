@@ -179,7 +179,7 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
     pWP = new RoutePoint( rlat, rlon, SymString, NameString, GuidString, false ); // do not add to global WP list yet...
     pWP->m_MarkDescription = DescString;
-    pWP->m_bIsolatedMark = true;      // This is an isolated mark
+    pWP->m_bIsolatedMark = bshared;      // This is an isolated mark
     
 
     if( b_propvizname )
@@ -1034,7 +1034,7 @@ bool NavObjectCollection1::LoadAllGPXObjects()
             }
             else
                 if( !strcmp(object.name(), "rte") ) {
-                    Route *pRoute = GPXLoadRoute1( object, true, false, false, 0 );
+                    Route *pRoute = GPXLoadRoute1( object, false, false, false, 0 );
                     InsertRouteA( pRoute );
                 }
                 
