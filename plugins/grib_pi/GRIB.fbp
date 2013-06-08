@@ -43,7 +43,7 @@
             <property name="name">GRIBUIDialogBase</property>
             <property name="pos"></property>
             <property name="size">-1,-1</property>
-            <property name="style">wxCAPTION|wxDIALOG_NO_PARENT|wxRESIZE_BORDER|wxSYSTEM_MENU</property>
+            <property name="style">wxCAPTION|wxCLOSE_BOX|wxDIALOG_NO_PARENT|wxRESIZE_BORDER|wxSYSTEM_MENU</property>
             <property name="subclass"></property>
             <property name="title">GRIB Display Control</property>
             <property name="tooltip"></property>
