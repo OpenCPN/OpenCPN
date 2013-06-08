@@ -72,7 +72,7 @@ S57Reader::S57Reader( const char * pszFilename )
     bMissingWarningIssued = FALSE;
     bAttrWarningIssued = FALSE;
     
-    Nall==0;
+    Nall = 0;
 
 }
 
