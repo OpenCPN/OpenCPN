@@ -32,6 +32,12 @@
 
 #define STYLE_UNDEFINED -1
 
+#define ROUTE_DEFAULT_SPEED 5.0
+#define RTE_TIME_DISP_UTC _T("UTC")
+#define RTE_TIME_DISP_PC _T("PC")
+#define RTE_TIME_DISP_LOCAL _T("LOCAL")
+#define RTE_UNDEF_DEPARTURE wxInvalidDateTime
+
 class ocpnDC;
 
 class Route : public wxObject
@@ -100,6 +106,7 @@ public:
       wxString    m_RouteNameString;
       wxString    m_RouteStartString;
       wxString    m_RouteEndString;
+      wxString    m_RouteDescription;
       bool        m_bIsTrack;             //TODO should use class type instead
       RoutePoint  *m_pLastAddedPoint;
       bool        m_bDeleteOnArrival;
@@ -110,6 +117,10 @@ public:
       int         m_style;
       int         m_lastMousePointIndex;
       bool        m_NextLegGreatCircle;
+      double      m_PlannedSpeed;
+      wxDateTime  m_PlannedDeparture;
+      wxString    m_TimeDisplayFormat;
+      HyperlinkList     *m_HyperlinkList;
 
       wxArrayString      RoutePointGUIDList;
       RoutePointList     *pRoutePointList;

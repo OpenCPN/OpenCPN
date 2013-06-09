@@ -43,6 +43,7 @@
 #include "chartbase.h"
 #include "Layer.h"
 #include "SendToGpsDlg.h"
+#include "TrackPropDlg.h"
 
 #define DIALOG_MARGIN 3
 
@@ -119,6 +120,7 @@ extern RouteList *pRouteList;
 extern LayerList *pLayerList;
 extern wxString GetLayerName(int id);
 extern RouteProp *pRoutePropDialog;
+extern TrackPropDlg *pTrackPropDialog;
 extern Routeman  *g_pRouteMan;
 extern MyConfig  *pConfig;
 extern ChartCanvas *cc1;
@@ -1081,25 +1083,23 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
 
     if( !route ) return;
 
-    if( NULL == pRoutePropDialog )          // There is one global instance of the RouteProp Dialog
-        pRoutePropDialog = new RouteProp( GetParent() );
+    if( !route->m_bIsTrack ) { //TODO: It's a route, we still need the new implementation here
+        if( NULL == pRoutePropDialog )          // There is one global instance of the RouteProp Dialog
+            pRoutePropDialog = new RouteProp( GetParent() );
 
-    pRoutePropDialog->SetRouteAndUpdate( route );
-    pRoutePropDialog->UpdateProperties();
-    if( !route->m_bIsInLayer )
-        pRoutePropDialog->SetDialogTitle( _("Route Properties") );
-    else {
-        wxString caption( _T("Route Properties, Layer: ") );
-        caption.Append( GetLayerName( route->m_LayerID ) );
-        pRoutePropDialog->SetDialogTitle( caption );
+        pRoutePropDialog->SetRouteAndUpdate( route );
+        pRoutePropDialog->UpdateProperties();
+        if( !route->m_bIsInLayer )
+            pRoutePropDialog->SetDialogTitle( _("Route Properties") );
+        else {
+            wxString caption( _T("Route Properties, Layer: ") );
+            caption.Append( GetLayerName( route->m_LayerID ) );
+            pRoutePropDialog->SetDialogTitle( caption );
+        }
+
+        if( !pRoutePropDialog->IsShown() )
+            pRoutePropDialog->Show();
     }
-
-    if( !pRoutePropDialog->IsShown() )
-        pRoutePropDialog->Show();
-    
-    // route might have changed
-//    UpdateRouteListCtrl();
-
     m_bNeedConfigFlush = true;
 }
 
@@ -1662,20 +1662,12 @@ void RouteManagerDialog::OnTrkPropertiesClick( wxCommandEvent &event )
 
     if( !route ) return;
 
-    if( NULL == pRoutePropDialog )          // There is one global instance of the RouteProp Dialog
-    pRoutePropDialog = new RouteProp( GetParent() );
+    if( NULL == pTrackPropDialog )          // There is one global instance of the RouteProp Dialog
+        pTrackPropDialog = new TrackPropDlg( GetParent() );
+    pTrackPropDialog->SetTrackAndUpdate( route );
 
-    pRoutePropDialog->SetRouteAndUpdate( route );
-    pRoutePropDialog->UpdateProperties();
-    if( !route->m_bIsInLayer ) pRoutePropDialog->SetDialogTitle( _("Track Properties") );
-    else {
-        wxString caption( _T("Track Properties, Layer: ") );
-        caption.Append( GetLayerName( route->m_LayerID ) );
-        pRoutePropDialog->SetDialogTitle( caption );
-    }
-
-    if( !pRoutePropDialog->IsShown() ) pRoutePropDialog->ShowModal();
-    // track might have changed
+    if( !pTrackPropDialog->IsShown() )
+        pTrackPropDialog->Show();
     UpdateTrkListCtrl();
 
     m_bNeedConfigFlush = true;
@@ -1752,14 +1744,8 @@ void RouteManagerDialog::OnTrkExportClick( wxCommandEvent &event )
     pConfig->ExportGPXRoutes( this, &list, suggested_name );
 }
 
-void RouteManagerDialog::OnTrkRouteFromTrackClick( wxCommandEvent &event )
+void RouteManagerDialog::TrackToRoute( Track *track )
 {
-    long item = -1;
-    item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
-    if( item == -1 ) return;
-
-    Track *track = (Track *) pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
-
     if( !track ) return;
     if( track->m_bIsInLayer ) return;
 
@@ -1779,9 +1765,20 @@ void RouteManagerDialog::OnTrkRouteFromTrackClick( wxCommandEvent &event )
 
     cc1->Refresh();
 
-    UpdateRouteListCtrl();
-
     ::wxEndBusyCursor();
+}
+
+void RouteManagerDialog::OnTrkRouteFromTrackClick( wxCommandEvent &event )
+{
+    long item = -1;
+    item = m_pTrkListCtrl->GetNextItem( item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
+    if( item == -1 ) return;
+
+    Track *track = (Track *) pRouteList->Item( m_pTrkListCtrl->GetItemData( item ) )->GetData();
+    
+    TrackToRoute( track );
+    
+    UpdateRouteListCtrl();
 }
 
 void RouteManagerDialog::OnTrkDeleteAllClick( wxCommandEvent &event )

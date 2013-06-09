@@ -99,6 +99,7 @@
 #include "AISTargetAlertDialog.h"
 #include "AIS_Decoder.h"
 #include "OCP_DataStreamInput_Thread.h"
+#include "TrackPropDlg.h"
 
 #include "cutil.h"
 #include "routemanagerdialog.h"
@@ -187,6 +188,7 @@ Routeman                  *g_pRouteMan;
 WayPointman               *pWayPointMan;
 MarkInfoImpl              *pMarkPropDialog;
 RouteProp                 *pRoutePropDialog;
+TrackPropDlg              *pTrackPropDialog;
 MarkInfoImpl              *pMarkInfoDialog;
 RouteManagerDialog        *pRouteManagerDialog;
 GoToPositionDialog        *pGoToPositionDialog;

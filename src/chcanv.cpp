@@ -54,6 +54,7 @@
 #include "chart1.h"
 #include "cutil.h"
 #include "routeprop.h"
+#include "TrackPropDlg.h"
 #include "tcmgr.h"
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
@@ -140,6 +141,7 @@ extern Select           *pSelectAIS;
 extern WayPointman      *pWayPointMan;
 extern MarkInfoImpl     *pMarkPropDialog;
 extern RouteProp        *pRoutePropDialog;
+extern TrackPropDlg     *pTrackPropDialog;
 extern MarkInfoImpl     *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
@@ -5127,7 +5129,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         if( cursorItem ) {
             Route *pr = (Route *) cursorItem->m_pData3;
             if( pr->IsVisible() ) {
-                ShowRoutePropertiesDialog( _("Track Properties"), pr );
+                ShowTrackPropertiesDialog( pr );
                 return;
             }
         }
@@ -5699,9 +5701,12 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     if( m_pEditRouteArray ) {
                         for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                             Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                            if( pRoutePropDialog->m_pRoute == pr ) {
+                            if( !pr->IsTrack() && pRoutePropDialog->m_pRoute == pr ) {
                                 pRoutePropDialog->SetRouteAndUpdate( pr );
                                 pRoutePropDialog->UpdateProperties();
+                            } else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
+                                pTrackPropDialog->SetTrackAndUpdate( pr );
+                                pTrackPropDialog->UpdateProperties();
                             }
                         }
                     }
@@ -6749,6 +6754,19 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
     Refresh( false );
 }
 
+void ChartCanvas::ShowTrackPropertiesDialog( Route* selected )
+{
+    if( NULL == pTrackPropDialog )  // There is one global instance of the RouteProp Dialog
+        pTrackPropDialog = new TrackPropDlg( this );
+
+    pTrackPropDialog->SetTrackAndUpdate( selected );
+    pTrackPropDialog->UpdateProperties();
+
+    pTrackPropDialog->Show();
+
+    Refresh( false );
+}
+
 void pupHandler_PasteWaypoint() {
     Kml* kml = new Kml();
     ::wxBeginBusyCursor();
@@ -7489,7 +7507,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     }
 
     case ID_TK_MENU_PROPERTIES: {
-        ShowRoutePropertiesDialog( _("Track Properties"), m_pSelectedTrack );
+        ShowTrackPropertiesDialog( m_pSelectedTrack );
         break;
     }
 

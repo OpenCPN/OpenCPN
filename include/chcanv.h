@@ -396,6 +396,7 @@ private:
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
       void ShowRoutePropertiesDialog(wxString title, Route* selected);
+      void ShowTrackPropertiesDialog( Route* selected );
 
       void ShowBrightnessLevelTimedPopup( int brightness, int min, int max );
       

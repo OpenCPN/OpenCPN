@@ -107,68 +107,68 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
         
         else              // Read hyperlink
         if( !strcmp( pcn, "link") ) {
-                              wxString HrefString;
-                              wxString HrefTextString;
-                              wxString HrefTypeString;
-                              if( linklist == NULL ) linklist = new HyperlinkList;
-                             HrefString = wxString::FromUTF8( child.first_attribute().value() );
-                             
-                             for( pugi::xml_node child1 = child.first_child(); child1; child1 = child1.next_sibling() ) {
-                                 wxString LinkString = wxString::FromUTF8( child1.name() );
-                             
-                                if( LinkString == _T ( "text" ) )
-                                    HrefTextString = wxString::FromUTF8( child1.first_child().value() );
-                                if( LinkString == _T ( "type" ) ) 
-                                    HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
-                             }
-                          
-                            Hyperlink *link = new Hyperlink;
-                            link->Link = HrefString;
-                            link->DescrText = HrefTextString;
-                            link->LType = HrefTypeString;
-                            linklist->Append( link );
-                          }
-    
+            wxString HrefString;
+            wxString HrefTextString;
+            wxString HrefTypeString;
+            if( linklist == NULL )
+                linklist = new HyperlinkList;
+            HrefString = wxString::FromUTF8( child.first_attribute().value() );
+
+            for( pugi::xml_node child1 = child.first_child(); child1; child1 = child1.next_sibling() ) {
+                wxString LinkString = wxString::FromUTF8( child1.name() );
+
+                if( LinkString == _T ( "text" ) )
+                    HrefTextString = wxString::FromUTF8( child1.first_child().value() );
+                if( LinkString == _T ( "type" ) ) 
+                    HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
+            }
+          
+            Hyperlink *link = new Hyperlink;
+            link->Link = HrefString;
+            link->DescrText = HrefTextString;
+            link->LType = HrefTypeString;
+            linklist->Append( link );
+        }
+
     //    OpenCPN Extensions....
-         else
-         if( !strcmp( pcn, "extensions") ) {
-                                for( pugi::xml_node ext_child = child.first_child(); ext_child; ext_child = ext_child.next_sibling() ) {
-                                    wxString ext_name = wxString::FromUTF8( ext_child.name() );
-                                      if( ext_name == _T ( "opencpn:guid" ) ) {
-                                          GuidString = wxString::FromUTF8( ext_child.first_child().value() );
-                                      }
-                                      else
-                                        if( ext_name == _T ( "opencpn:viz" ) ) {
-                                            b_propviz = true;
-                                            wxString s = wxString::FromUTF8( ext_child.first_child().value() );
-                                            long v = 0;
-                                            if( s.ToLong( &v ) )
-                                                bviz = ( v != 0 );
-                                        }
-                                        else
-                                            if( ext_name == _T ( "opencpn:viz_name" ) ) {
-                                                b_propvizname = true;
-                                                wxString s = wxString::FromUTF8( ext_child.first_child().value() );
-                                                long v = 0;
-                                                if( s.ToLong( &v ) )
-                                                    bviz_name = ( v != 0 );
-                                            }
-                                            else
-                                              if( ext_name == _T ( "opencpn:auto_name" ) ) {
-                                                wxString s = wxString::FromUTF8( ext_child.first_child().value() );
-                                                long v = 0;
-                                                if( s.ToLong( &v ) )
-                                                    bauto_name = ( v != 0 );
-                                              }
-                                              else
-                                                if( ext_name  == _T ( "opencpn:shared" ) ) {
-                                                    wxString s = wxString::FromUTF8( ext_child.first_child().value() );
-                                                    long v = 0;
-                                                    if( s.ToLong( &v ) )
-                                                        bshared = ( v != 0 );
-                                              }
-                
-                                }// for 
+        else
+        if( !strcmp( pcn, "extensions") ) {
+            for( pugi::xml_node ext_child = child.first_child(); ext_child; ext_child = ext_child.next_sibling() ) {
+                wxString ext_name = wxString::FromUTF8( ext_child.name() );
+                if( ext_name == _T ( "opencpn:guid" ) ) {
+                  GuidString = wxString::FromUTF8( ext_child.first_child().value() );
+                }
+                else
+                if( ext_name == _T ( "opencpn:viz" ) ) {
+                    b_propviz = true;
+                    wxString s = wxString::FromUTF8( ext_child.first_child().value() );
+                    long v = 0;
+                    if( s.ToLong( &v ) )
+                        bviz = ( v != 0 );
+                }
+                else
+                if( ext_name == _T ( "opencpn:viz_name" ) ) {
+                    b_propvizname = true;
+                    wxString s = wxString::FromUTF8( ext_child.first_child().value() );
+                    long v = 0;
+                    if( s.ToLong( &v ) )
+                        bviz_name = ( v != 0 );
+                }
+                else
+                if( ext_name == _T ( "opencpn:auto_name" ) ) {
+                    wxString s = wxString::FromUTF8( ext_child.first_child().value() );
+                    long v = 0;
+                    if( s.ToLong( &v ) )
+                        bauto_name = ( v != 0 );
+                }
+                else
+                if( ext_name  == _T ( "opencpn:shared" ) ) {
+                    wxString s = wxString::FromUTF8( ext_child.first_child().value() );
+                    long v = 0;
+                    if( s.ToLong( &v ) )
+                        bshared = ( v != 0 );
+                }
+            }// for 
         } //extensions
     }   // for
 
@@ -228,10 +228,12 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                       int layer_id )
 {
     wxString RouteName;
+    wxString DescString;
     unsigned short int GPXSeg;            
     bool b_propviz = false;
     bool b_viz = true;
     Track *pTentTrack = NULL;
+    HyperlinkList *linklist = NULL;
     
     wxString Name = wxString::FromUTF8( trk_node.name() );
     if( Name == _T ( "trk" ) ) {
@@ -260,10 +262,11 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                 }
             }
             else
-                if( ChildName == _T ( "name" ) ) {
-                     RouteName = wxString::FromUTF8( tschild.first_child().value() );
-                }
-            
+            if( ChildName == _T ( "name" ) )
+                RouteName = wxString::FromUTF8( tschild.first_child().value() );
+            else
+            if( ChildName == _T ( "desc" ) )
+                DescString = wxString::FromUTF8( tschild.first_child().value() );
             else
             if( ChildName.EndsWith( _T ( "TrackExtension" ) ) ) //Parse GPXX color
             {
@@ -274,6 +277,31 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                 }
             }
             
+            else
+            
+            if( ChildName == _T ( "link") ) {
+                wxString HrefString;
+                wxString HrefTextString;
+                wxString HrefTypeString;
+                if( linklist == NULL )
+                    linklist = new HyperlinkList;
+                HrefString = wxString::FromUTF8( tschild.first_attribute().value() );
+
+                for( pugi::xml_node child1 = tschild.first_child(); child1; child1 = child1.next_sibling() ) {
+                    wxString LinkString = wxString::FromUTF8( child1.name() );
+
+                    if( LinkString == _T ( "text" ) )
+                        HrefTextString = wxString::FromUTF8( child1.first_child().value() );
+                    if( LinkString == _T ( "type" ) ) 
+                        HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
+                }
+              
+                Hyperlink *link = new Hyperlink;
+                link->Link = HrefString;
+                link->DescrText = HrefTextString;
+                link->LType = HrefTypeString;
+                linklist->Append( link );
+            }
             
             else
             if( ChildName == _T ( "extensions" ) ) {
@@ -324,6 +352,7 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
         }
         
         pTentTrack->m_RouteNameString = RouteName;
+        pTentTrack->m_RouteDescription = DescString;
 
         if( b_propviz )
                 pTentTrack->SetVisible( b_viz );
@@ -341,6 +370,11 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                 
                 
     }
+    
+    if( linklist ) {
+        delete pTentTrack->m_HyperlinkList;                    // created in RoutePoint ctor
+        pTentTrack->m_HyperlinkList = linklist;
+    }
     return pTentTrack;
 }
 
@@ -351,9 +385,11 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
                       int layer_id )
 {
     wxString RouteName;
+    wxString DescString;
     bool b_propviz = false;
     bool b_viz = true;
     Route *pTentRoute = NULL;
+    HyperlinkList *linklist = NULL;
     
     wxString Name = wxString::FromUTF8( wpt_node.name() );
     if( Name == _T ( "rte" ) ) {
@@ -377,7 +413,11 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
             }
             else
             if( ChildName == _T ( "name" ) ) {
-                    RouteName = wxString::FromUTF8( tschild.first_child().value() );
+                RouteName = wxString::FromUTF8( tschild.first_child().value() );
+            }
+            else
+            if( ChildName == _T ( "desc" ) ) {
+                DescString = wxString::FromUTF8( tschild.first_child().value() );
             }
                 
             else
@@ -391,51 +431,89 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
             }
             
             else
-            if( ChildName == _T ( "extensions" ) ) {
-                        TiXmlNode *ext_child;
-                        for( pugi::xml_node ext_child = tschild.first_child(); ext_child; ext_child = ext_child.next_sibling() ) {
-                            wxString ext_name = wxString::FromUTF8( ext_child.name() );
- 
-                            if( ext_name == _T ( "opencpn:start" ) ) {
-                                pTentRoute->m_RouteStartString = wxString::FromUTF8(ext_child.first_child().value());
-                            }
-                            else
-                            if( ext_name == _T ( "opencpn:end" ) ) {
-                                pTentRoute->m_RouteEndString = wxString::FromUTF8(ext_child.first_child().value());
-                            }
-                                
-                            else
-                            if( ext_name == _T ( "opencpn:viz" ) ) {
-                                        wxString viz = wxString::FromUTF8(ext_child.first_child().value());
-                                        b_propviz = true;
-                                        b_viz = ( viz == _T("1") );
-                            }
-                            
-                            else
-                            if( ext_name == _T ( "opencpn:style" ) ) {
-                                for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
-                                {
-                                    if( !strcmp( attr.name(), "style" ) )
-                                        pTentRoute->m_style = attr.as_int();
-                                    else
-                                    if( !strcmp( attr.name(), "width" ) )
-                                        pTentRoute->m_width = attr.as_int();
-                                }
-                             }
-                             
-                             else
-                             if( ext_name == _T ( "opencpn:guid" ) ) {
-                                //if ( !g_bIsNewLayer ) ) 
-                                pTentRoute->m_GUID =  wxString::FromUTF8(ext_child.first_child().value());
-                             }
+            if( ChildName == _T ( "link") ) {
+                wxString HrefString;
+                wxString HrefTextString;
+                wxString HrefTypeString;
+                if( linklist == NULL )
+                    linklist = new HyperlinkList;
+                HrefString = wxString::FromUTF8( tschild.first_attribute().value() );
+
+                for( pugi::xml_node child1 = tschild.first_child(); child1; child1 = child1.next_sibling() ) {
+                    wxString LinkString = wxString::FromUTF8( child1.name() );
+
+                    if( LinkString == _T ( "text" ) )
+                        HrefTextString = wxString::FromUTF8( child1.first_child().value() );
+                    if( LinkString == _T ( "type" ) ) 
+                        HrefTypeString = wxString::FromUTF8( child1.first_child().value() );
+                }
+              
+                Hyperlink *link = new Hyperlink;
+                link->Link = HrefString;
+                link->DescrText = HrefTextString;
+                link->LType = HrefTypeString;
+                linklist->Append( link );
+            }
             
-                               
-                        } //extensions
-                        }
+            else
+            if( ChildName == _T ( "extensions" ) ) {
+                TiXmlNode *ext_child;
+                for( pugi::xml_node ext_child = tschild.first_child(); ext_child; ext_child = ext_child.next_sibling() ) {
+                    wxString ext_name = wxString::FromUTF8( ext_child.name() );
+
+                    if( ext_name == _T ( "opencpn:start" ) ) {
+                        pTentRoute->m_RouteStartString = wxString::FromUTF8(ext_child.first_child().value());
+                    }
+                    else
+                    if( ext_name == _T ( "opencpn:end" ) ) {
+                        pTentRoute->m_RouteEndString = wxString::FromUTF8(ext_child.first_child().value());
+                    }
+                        
+                    else
+                    if( ext_name == _T ( "opencpn:viz" ) ) {
+                                wxString viz = wxString::FromUTF8(ext_child.first_child().value());
+                                b_propviz = true;
+                                b_viz = ( viz == _T("1") );
                     }
                     
-        pTentRoute->m_RouteNameString = RouteName;
+                    else
+                    if( ext_name == _T ( "opencpn:style" ) ) {
+                        for (pugi::xml_attribute attr = ext_child.first_attribute(); attr; attr = attr.next_attribute())
+                        {
+                            if( !strcmp( attr.name(), "style" ) )
+                                pTentRoute->m_style = attr.as_int();
+                            else
+                            if( !strcmp( attr.name(), "width" ) )
+                                pTentRoute->m_width = attr.as_int();
+                        }
+                     }
+                     
+                     else
+                     if( ext_name == _T ( "opencpn:guid" ) ) {
+                        //if ( !g_bIsNewLayer ) ) 
+                        pTentRoute->m_GUID =  wxString::FromUTF8(ext_child.first_child().value());
+                     }
+                     
+                     else
+                     if( ext_name == _T ( "opencpn:planned_speed" ) ) {
+                        pTentRoute->m_PlannedSpeed = atof( ext_child.first_child().value() );
+                     }
+                     
+                     else
+                     if( ext_name == _T ( "opencpn:planned_departure" ) ) {
+                        ParseGPXDateTime( pTentRoute->m_PlannedDeparture, wxString::FromUTF8(ext_child.first_child().value()) );
+                     }
+                     
+                     else
+                     if( ext_name == _T ( "opencpn:time_display" ) ) {
+                        pTentRoute->m_TimeDisplayFormat, wxString::FromUTF8(ext_child.first_child().value());
+                     }
+                } //extensions
+            }
+        }
                     
+        pTentRoute->m_RouteNameString = RouteName;
+        pTentRoute->m_RouteDescription = DescString;
 
         if( b_propviz )
                   pTentRoute->SetVisible( b_viz );
@@ -452,7 +530,10 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
         }            
  
     }
-
+    if( linklist ) {
+        delete pTentRoute->m_HyperlinkList;                    // created in RoutePoint ctor
+        pTentRoute->m_HyperlinkList = linklist;
+    }
     return pTentRoute;
 }
 
@@ -583,6 +664,39 @@ bool GPXCreateTrk( pugi::xml_node node, Route *pRoute )
         }
     }
     
+    if( pRoute->m_RouteDescription.Len() ) {
+        wxCharBuffer buffer=pRoute->m_RouteDescription.ToUTF8();
+        if(buffer.data()) {
+            child = node.append_child("desc");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
+    }
+    
+    // Hyperlinks
+    HyperlinkList *linklist = pRoute->m_HyperlinkList;
+    if( linklist && linklist->GetCount() ) {
+        wxHyperlinkListNode *linknode = linklist->GetFirst();
+        while( linknode ) {
+            Hyperlink *link = linknode->GetData();
+        
+            pugi::xml_node child_link = node.append_child("link");
+            child_link.append_attribute("href") = link->Link.mb_str();
+        
+            wxCharBuffer buffer=link->DescrText.ToUTF8();
+            if(buffer.data()) {
+                child = child_link.append_child("text");
+                child.append_child(pugi::node_pcdata).set_value(buffer.data());
+            }
+        
+            if( link->LType.Len() ) {
+                child = child_link.append_child("type");
+                child.append_child(pugi::node_pcdata).set_value(link->LType.mb_str());
+            }
+        
+            linknode = linknode->GetNext();
+        }
+    }
+    
     pugi::xml_node child_ext = node.append_child("extensions");
     
     child = child_ext.append_child("opencpn:guid");
@@ -664,6 +778,39 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
         }
     }
     
+    if( pRoute->m_RouteDescription.Len() ) {
+        wxCharBuffer buffer=pRoute->m_RouteDescription.ToUTF8();
+        if(buffer.data()) {
+            child = node.append_child("desc");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
+    }
+    
+    // Hyperlinks
+    HyperlinkList *linklist = pRoute->m_HyperlinkList;
+    if( linklist && linklist->GetCount() ) {
+        wxHyperlinkListNode *linknode = linklist->GetFirst();
+        while( linknode ) {
+            Hyperlink *link = linknode->GetData();
+        
+            pugi::xml_node child_link = node.append_child("link");
+            child_link.append_attribute("href") = link->Link.mb_str();
+        
+            wxCharBuffer buffer=link->DescrText.ToUTF8();
+            if(buffer.data()) {
+                child = child_link.append_child("text");
+                child.append_child(pugi::node_pcdata).set_value(buffer.data());
+            }
+        
+            if( link->LType.Len() ) {
+                child = child_link.append_child("type");
+                child.append_child(pugi::node_pcdata).set_value(link->LType.mb_str());
+            }
+        
+            linknode = linknode->GetNext();
+        }
+    }
+    
     pugi::xml_node child_ext = node.append_child("extensions");
     
     child = child_ext.append_child("opencpn:guid");
@@ -688,6 +835,24 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
         }
     }
     
+    if( pRoute->m_PlannedSpeed != ROUTE_DEFAULT_SPEED ) {
+        child = child_ext.append_child("opencpn:planned_speed");
+        wxString s;
+        s.Printf(_T("%.2f"), pRoute->m_PlannedSpeed);
+        child.append_child(pugi::node_pcdata).set_value(s.mb_str());
+    }
+    
+    if( pRoute->m_PlannedDeparture != RTE_UNDEF_DEPARTURE ) {
+        child = child_ext.append_child("opencpn:planned_departure");
+        wxString t = pRoute->m_PlannedDeparture.FormatISODate().Append(_T("T")).Append(pRoute->m_PlannedDeparture.FormatISOTime()).Append(_T("Z"));
+        child.append_child(pugi::node_pcdata).set_value(t.mb_str());
+    }
+
+    if( pRoute->m_TimeDisplayFormat != RTE_TIME_DISP_UTC ) {
+        child = child_ext.append_child("opencpn:time_display");
+        child.append_child(pugi::node_pcdata).set_value(pRoute->m_TimeDisplayFormat.mb_str());
+    }                        
+    
     if( pRoute->m_width != STYLE_UNDEFINED || pRoute->m_style != STYLE_UNDEFINED ) {
         child = child_ext.append_child("opencpn:style");
         
@@ -697,14 +862,12 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
             child.append_attribute("style") = pRoute->m_style;
     }
     
-    
     if( pRoute->m_Colour != wxEmptyString ) {
         pugi::xml_node gpxx_ext = node.append_child("gpxx:RouteExtension");
         child = gpxx_ext.append_child("gpxx:DisplayColor");
         child.append_child(pugi::node_pcdata).set_value(pRoute->m_Colour.mb_str());
     }
-    
-    
+                                 
     RoutePointList *pRoutePointList = pRoute->pRoutePointList;
     wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
     RoutePoint *prp;
