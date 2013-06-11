@@ -563,8 +563,6 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	int m_pResolutionNChoices = sizeof( m_pResolutionChoices ) / sizeof( wxString );
 	m_pResolution = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pResolutionNChoices, m_pResolutionChoices, 0 );
 	m_pResolution->SetSelection( 0 );
-	m_pResolution->SetMinSize( wxSize( 40,-1 ) );
-	
 	fgSizer13->Add( m_pResolution, 0, wxALL, 1 );
 	
 	m_tResUnit = new wxStaticText( this, wxID_ANY, _("Deg"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -580,9 +578,6 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	int m_pIntervalNChoices = sizeof( m_pIntervalChoices ) / sizeof( wxString );
 	m_pInterval = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pIntervalNChoices, m_pIntervalChoices, 0 );
 	m_pInterval->SetSelection( 0 );
-	m_pInterval->SetMinSize( wxSize( 40,-1 ) );
-	m_pInterval->SetMaxSize( wxSize( 10,-1 ) );
-	
 	fgSizer13->Add( m_pInterval, 0, wxALL, 1 );
 	
 	wxStaticText* m_staticText20;
@@ -599,8 +594,6 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	int m_pTimeRangeNChoices = sizeof( m_pTimeRangeChoices ) / sizeof( wxString );
 	m_pTimeRange = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pTimeRangeNChoices, m_pTimeRangeChoices, 0 );
 	m_pTimeRange->SetSelection( 0 );
-	m_pTimeRange->SetMinSize( wxSize( 40,-1 ) );
-	
 	fgSizer13->Add( m_pTimeRange, 0, wxALL, 1 );
 	
 	m_staticText21 = new wxStaticText( this, wxID_ANY, _("Days"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -676,7 +669,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer11->SetFlexibleDirection( wxBOTH );
 	fgSizer11->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	m_MailImage = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_NO_VSCROLL|wxTE_READONLY );
+	m_MailImage = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
 	fgSizer11->Add( m_MailImage, 0, wxALL|wxEXPAND, 5 );
 	
 	
