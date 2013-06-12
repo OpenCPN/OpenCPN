@@ -49,7 +49,7 @@
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           9
+#define API_VERSION_MINOR           10
 
 //    Fwd Definitions
 class       wxFileConfig;
@@ -79,7 +79,7 @@ class       wxAuiManager;
 #define     WANTS_PLUGIN_MESSAGING                    0x00004000
 #define     WANTS_OPENGL_OVERLAY_CALLBACK             0x00008000
 #define     WANTS_DYNAMIC_OPENGL_OVERLAY_CALLBACK     0x00010000
-#define     WANTS_LATE_INIT                           0x40000000
+#define     WANTS_LATE_INIT                           0x00020000
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -408,8 +408,6 @@ public:
       virtual void UpdateAuiStatus(void);
 
       virtual wxArrayString GetDynamicChartClassNameArray(void);
-
-      virtual void LateInit(void); // If WANTS_LATE_INIT is returned by Init()
  };
 
 
@@ -463,6 +461,15 @@ class DECL_EXP opencpn_plugin_19 : public opencpn_plugin_18
             virtual ~opencpn_plugin_19();
 
             virtual void OnSetupOptions(void);
+};
+
+class DECL_EXP opencpn_plugin_110 : public opencpn_plugin_19
+{
+    public:
+            opencpn_plugin_110(void *pmgr);
+            virtual ~opencpn_plugin_110();
+    
+            virtual void LateInit(void); // If WANTS_LATE_INIT is returned by Init()
 };
 
 //------------------------------------------------------------------
