@@ -269,22 +269,18 @@ int wxCALLBACK SortWaypointsOnName(long item1, long item2, long list)
 {
     wxListCtrl *lc = (wxListCtrl*)list;
 
-    wxListItem it1, it2;
-    it1.SetId(lc->FindItem(-1, item1));
-    it1.SetColumn(1);
-    it1.SetMask(it1.GetMask() | wxLIST_MASK_TEXT);
+    RoutePoint *pRP1 = (RoutePoint *)item1;
+    RoutePoint *pRP2 = (RoutePoint *)item2;
 
-    it2.SetId(lc->FindItem(-1, item2));
-    it2.SetColumn(1);
-    it2.SetMask(it2.GetMask() | wxLIST_MASK_TEXT);
-
-    lc->GetItem(it1);
-    lc->GetItem(it2);
-
-    if(sort_wp_name_dir & 1)
-    return it2.GetText().CmpNoCase(it1.GetText());
+    if(pRP1 && pRP2) {
+        if(sort_wp_name_dir & 1)
+            return pRP2->GetName().CmpNoCase(pRP1->GetName());
+        else
+            return pRP1->GetName().CmpNoCase(pRP2->GetName());
+    }
     else
-    return it1.GetText().CmpNoCase(it2.GetText());
+        return 0;
+    
 }
 
 // sort callback. Sort by wpt distance.
@@ -1240,7 +1236,9 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
 
         int wpts_set_viz = wxID_YES;
         bool togglesharedwpts = true;
-        if( g_pRouteMan->DoesRouteContainSharedPoints(route) && route->IsVisible() ) {
+        bool has_shared_wpts = g_pRouteMan->DoesRouteContainSharedPoints(route);
+        
+        if( has_shared_wpts && route->IsVisible() ) {
             wpts_set_viz = OCPNMessageBox(  this, _("Do you also want to make the shared waypoints being part of this route invisible?"), _("Question"), wxYES_NO );
             togglesharedwpts = (wpts_set_viz == wxID_YES);
         }
@@ -1252,7 +1250,9 @@ void RouteManagerDialog::OnRteToggleVisibility( wxMouseEvent &event )
         pConfig->UpdateRoute( route );
         cc1->Refresh();
 
-        UpdateWptListCtrl();
+        //   We need to update the waypoint list control only if the visibility of shared waypoints might have changed.
+        if( has_shared_wpts )
+            UpdateWptListCtrlViz();
 
         ::wxEndBusyCursor();
 
@@ -1881,6 +1881,24 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     UpdateWptButtons();
 }
 
+void RouteManagerDialog::UpdateWptListCtrlViz( )
+{
+    long item = -1;
+    for ( ;; )
+    {
+        item = m_pWptListCtrl->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_DONTCARE);
+        if ( item == -1 )
+            break;
+        
+        RoutePoint *pRP = (RoutePoint *)m_pWptListCtrl->GetItemData(item);
+        int image = pRP->IsVisible() ? pWayPointMan->GetIconIndex( pRP->m_pbmIcon )
+        : pWayPointMan->GetXIconIndex( pRP->m_pbmIcon ) ;
+                        
+        m_pWptListCtrl->SetItemImage(item, image);
+    }
+}
+
+
 void RouteManagerDialog::OnWptDefaultAction( wxListEvent &event )
 {
     wxCommandEvent evt;
@@ -1981,12 +1999,13 @@ void RouteManagerDialog::OnWptNewClick( wxCommandEvent &event )
     cc1->Refresh( false );      // Needed for MSW, why not GTK??
 
     if( NULL == pMarkPropDialog )          // There is one global instance of the MarkProp Dialog
-    pMarkPropDialog = new MarkInfoImpl( GetParent() );
+        pMarkPropDialog = new MarkInfoImpl( GetParent() );
 
     pMarkPropDialog->SetRoutePoint( pWP );
     pMarkPropDialog->UpdateProperties();
 
-    if( !pMarkPropDialog->IsShown() ) pMarkPropDialog->ShowModal();
+    if( !pMarkPropDialog->IsShown() )
+        pMarkPropDialog->ShowModal();
 
     // waypoint might have changed
     UpdateWptListCtrl();
