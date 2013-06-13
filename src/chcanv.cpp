@@ -4012,9 +4012,9 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             GetCanvasPointPix( ocpa_lat, ocpa_lon, &oCPAPoint );
             GetCanvasPointPix( tcpa_lat, tcpa_lon, &tCPAPoint );
 
-            //        Save a copy of these
-            wxPoint oCPAPoint_sav = oCPAPoint;
-            wxPoint tCPAPoint_sav = tCPAPoint;
+            //        Save a copy of these unclipped points
+            wxPoint oCPAPoint_unclipped = oCPAPoint;
+            wxPoint tCPAPoint_unclipped = tCPAPoint;
 
             //  Draw a line from target CPA point to ownship CPA point
             ClipResult ores = cohen_sutherland_line_clip_i( &tCPAPoint.x, &tCPAPoint.y,
@@ -4036,14 +4036,18 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLK" ) ) ) );
 
                 //  Using the true ends, not the clipped ends
-                dc.StrokeCircle( tCPAPoint_sav.x, tCPAPoint_sav.y, 5 );
-                dc.StrokeCircle( oCPAPoint_sav.x, oCPAPoint_sav.y, 5 );
+                dc.StrokeCircle( tCPAPoint_unclipped.x, tCPAPoint_unclipped.y, 5 );
+                dc.StrokeCircle( oCPAPoint_unclipped.x, oCPAPoint_unclipped.y, 5 );
             }
 
             // Draw the intercept line from ownship
             wxPoint oShipPoint;
             GetCanvasPointPix ( gLat, gLon, &oShipPoint );
-            ClipResult ownres = cohen_sutherland_line_clip_i ( &oShipPoint.x, &oShipPoint.y, &oCPAPoint.x, &oCPAPoint.y, 0, GetVP().pix_width, 0, GetVP().pix_height );
+            oCPAPoint = oCPAPoint_unclipped;    // recover the unclipped point
+            
+            ClipResult ownres = cohen_sutherland_line_clip_i ( &oShipPoint.x, &oShipPoint.y,
+                                                               &oCPAPoint.x, &oCPAPoint.y,
+                                                               0, GetVP().pix_width, 0, GetVP().pix_height );
 
             if ( ownres != Invisible ) {
                 wxPen ppPen2 ( GetGlobalColor ( _T ( "URED" )), 2, wxUSER_DASH );
