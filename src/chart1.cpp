@@ -1642,7 +1642,7 @@ if( 0 == g_memCacheLimit )
 
 
     g_StartTime = wxInvalidDateTime;
-    g_StartTimeTZ = 1;				// start with local times
+    g_StartTimeTZ = 1;                // start with local times
     gpIDX = NULL;
     gpIDXn = 0;
 
@@ -3651,6 +3651,11 @@ void MyFrame::ActivateMOB( void )
 
         if( g_pRouteMan->GetpActiveRoute() ) g_pRouteMan->DeactivateRoute();
         g_pRouteMan->ActivateRoute( temp_route, pWP_MOB );
+
+        wxJSONValue v;
+        v[_T("GUID")] = temp_route->m_GUID;
+        wxString msg_id( _T("OCPN_MAN_OVERBOARD") );
+        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
     }
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
@@ -3678,33 +3683,63 @@ void MyFrame::TrackOn( void )
     pRouteList->Append( g_pActiveTrack );
     g_pActiveTrack->Start();
 
-    if( g_toolbar ) g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
+    if( g_toolbar )
+        g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
 
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+    {
+        pRouteManagerDialog->UpdateTrkListCtrl();
+        pRouteManagerDialog->UpdateRouteListCtrl();
+    }
+
+    wxJSONValue v;
+    wxDateTime now;
+    now = now.Now().ToUTC();
+    wxString name = g_pActiveTrack->m_RouteNameString;
+    if(name.IsEmpty())
+    {
+        RoutePoint *rp = g_pActiveTrack->GetPoint( 1 );
+        if( rp && rp->GetCreateTime().IsValid() )
+            name = rp->GetCreateTime().FormatISODate() + _T(" ") + rp->GetCreateTime().FormatISOTime();   
+        else
+            name = _("(Unnamed Track)");
+    }
+    v[_T("Name")] = name;
+    v[_T("GUID")] = g_pActiveTrack->m_GUID;
+    wxString msg_id( _T("OCPN_TRK_ACTIVATED") );
+    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
 }
 
 void MyFrame::TrackOff( bool do_add_point )
 {
-    if( g_pActiveTrack ) {
+    if( g_pActiveTrack )
+    {
+        wxJSONValue v;
+        wxString msg_id( _T("OCPN_TRK_DEACTIVATED") );
+        v[_T("GUID")] = g_pActiveTrack->m_GUID;
+        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+
         g_pActiveTrack->Stop( do_add_point );
 
-        if( g_pActiveTrack->GetnPoints() < 2 ) g_pRouteMan->DeleteRoute( g_pActiveTrack );
+        if( g_pActiveTrack->GetnPoints() < 2 )
+            g_pRouteMan->DeleteRoute( g_pActiveTrack );
         else
-            if( g_bTrackDaily ) {
-                if( g_pActiveTrack->DoExtendDaily() ) g_pRouteMan->DeleteRoute( g_pActiveTrack );
-            }
-
+            if( g_bTrackDaily && g_pActiveTrack->DoExtendDaily() )
+                g_pRouteMan->DeleteRoute( g_pActiveTrack );
     }
 
     g_pActiveTrack = NULL;
 
     g_bTrackActive = false;
 
-    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+    {
         pRouteManagerDialog->UpdateTrkListCtrl();
         pRouteManagerDialog->UpdateRouteListCtrl();
     }
 
-    if( g_toolbar ) g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
+    if( g_toolbar )
+        g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
 }
 
 void MyFrame::TrackMidnightRestart( void )
@@ -6460,8 +6495,10 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
 
     //  We can possibly use the estimated magnetic variation if WMM_pi is present and active
     //  and we have no other source of Variation
-    if(!g_bVAR_Rx) {
-        if(message_ID == _T("WMM_VARIATION_BOAT")) {
+    if(!g_bVAR_Rx) 
+    {
+        if(message_ID == _T("WMM_VARIATION_BOAT"))
+        {
 
         // construct the JSON root object
             wxJSONValue  root;
@@ -6482,6 +6519,192 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
             decl.ToDouble(&decl_val);
 
             gVar = decl_val;
+        }
+    }
+
+    if(message_ID == _T("OCPN_TRACK_REQUEST"))
+    {
+        wxJSONValue  root;
+        wxJSONReader reader;
+        wxString trk_id = wxEmptyString;
+
+        int numErrors = reader.Parse( message_JSONText, &root );
+        if ( numErrors > 0 )
+            return;
+
+        if(root.HasMember(_T("Track_ID")))
+            trk_id = root[_T("Track_ID")].AsString();
+
+        for(RouteList::iterator it = pRouteList->begin(); it != pRouteList->end(); it++)
+        {
+            wxString name = wxEmptyString;
+            if((*it)->IsTrack() && (*it)->m_GUID == trk_id)
+            {
+                name = (*it)->m_RouteNameString;
+                if(name.IsEmpty())
+                {
+                    RoutePoint *rp = (*it)->GetPoint( 1 );
+                    if( rp && rp->GetCreateTime().IsValid() )
+                        name = rp->GetCreateTime().FormatISODate() + _T(" ") + rp->GetCreateTime().FormatISOTime();   
+                    else
+                        name = _("(Unnamed Track)");
+                }
+
+/*                Tracks can be huge e.g merged tracks. On Compüters with small memory this can produce a crash by insufficient memory !!
+
+                wxJSONValue v; unsigned long i = 0;
+                for(RoutePointList::iterator itp = (*it)->pRoutePointList->begin(); itp != (*it)->pRoutePointList->end(); itp++)
+                {
+                    v[i][0] = (*itp)->m_lat;
+                    v[i][1] = (*itp)->m_lon;
+                    i++;                    
+                }
+                    wxString msg_id( _T("OCPN_TRACKPOINTS_COORDS") );
+                    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+            }
+*/
+/*                To avoid memory problems send a single trackpoint. It's up to the plugin to collect the data. */
+                int i = 1;     wxJSONValue v;
+                for(RoutePointList::iterator itp = (*it)->pRoutePointList->begin(); itp != (*it)->pRoutePointList->end(); itp++)
+                {
+                    v[_T("lat")] = (*itp)->m_lat;
+                    v[_T("lon")] = (*itp)->m_lon;
+                    v[_T("TotalNodes")] = (*it)->pRoutePointList->GetCount();
+                    v[_T("NodeNr")] = i;
+                    v[_T("error")] = false;
+                    i++;
+                    wxString msg_id( _T("OCPN_TRACKPOINTS_COORDS") );
+                    g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+                }
+            }
+            else
+            {
+                wxJSONValue v;
+                v[_T("error")] = true;
+
+                wxString msg_id( _T("OCPN_TRACKPOINTS_COORDS") );
+                g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+            }
+        }
+    }
+    else if(message_ID == _T("OCPN_ROUTE_REQUEST"))
+    {
+        wxJSONValue  root;
+        wxJSONReader reader;
+        wxString route_id = wxEmptyString;
+
+        int numErrors = reader.Parse( message_JSONText, &root );
+        if ( numErrors > 0 )  {
+            return;
+        }
+
+        if(root.HasMember(_T("Route_ID")))
+            route_id = root[_T("Route_ID")].AsString();
+
+        for(RouteList::iterator it = pRouteList->begin(); it != pRouteList->end(); it++)
+        {
+            wxString name = wxEmptyString;
+            wxJSONValue v;
+
+            if(!(*it)->IsTrack() && (*it)->m_GUID == route_id)
+            {
+                name = (*it)->m_RouteNameString;
+                if(name.IsEmpty())
+                    name = _("(Unnamed Route)");
+
+                v[_T("Name")] = name;
+
+                wxJSONValue v; int i = 0;
+                for(RoutePointList::iterator itp = (*it)->pRoutePointList->begin(); itp != (*it)->pRoutePointList->end(); itp++)
+                {
+                    v[i][_T("error")] = false;
+                    v[i][_T("lat")] = (*itp)->m_lat;
+                    v[i][_T("lon")] = (*itp)->m_lon;
+                    v[i][_T("WPName")] = (*itp)->GetName();
+                    v[i][_T("WPDescription")] = (*itp)->GetDescription();
+                    wxHyperlinkListNode *node = (*itp)->m_HyperlinkList->GetFirst();
+                    if(node)
+                    {
+                        int n = 1;
+                        while(node)
+                        {
+                            Hyperlink *httpLink = node->GetData();
+                            v[i][_T("WPLink")+wxString::Format(_T("%d"),n)] = httpLink->Link;
+                            v[i][_T("WPLinkDesciption")+wxString::Format(_T("%d"),n++)] = httpLink->DescrText;
+                            node = node->GetNext();
+                        }
+                    }
+                    i++;                    
+                }
+                wxString msg_id( _T("OCPN_ROUTE_RESPONSE") );
+                g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+            }
+            else
+            {
+                wxJSONValue v;
+                v[0][_T("error")] = true;
+
+                wxString msg_id( _T("OCPN_ROUTE_RESPONSE") );
+                g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+            }
+        }
+    }
+    else if(message_ID == _T("OCPN_ROUTELIST_REQUEST"))
+    {
+        wxJSONValue  root;
+        wxJSONReader reader;
+        bool mode = true, error = false;
+
+        int numErrors = reader.Parse( message_JSONText, &root );
+        if ( numErrors > 0 )
+            return;
+
+        if(root.HasMember(_T("mode")))
+        {
+            wxString str = root[_T("mode")].AsString();
+            if( str == _T("Track")) mode = false;
+
+            wxJSONValue v; int i = 1;
+            for(RouteList::iterator it = pRouteList->begin(); it != pRouteList->end(); it++)
+            {
+                if((*it)->IsTrack())
+                    if(mode == true) continue;
+                if(!(*it)->IsTrack())
+                    if(mode == false) continue;
+                v[0][_T("isTrack")] = !mode;
+                
+                wxString name = (*it)->m_RouteNameString;
+                if(name.IsEmpty() && !mode)
+                {
+                    RoutePoint *rp = (*it)->GetPoint( 1 );
+                    if( rp && rp->GetCreateTime().IsValid() ) name = rp->GetCreateTime().FormatISODate() + _T(" ")
+                        + rp->GetCreateTime().FormatISOTime();
+                    else
+                        name = _("(Unnamed Track)");
+                }
+                else if(name.IsEmpty() && mode)
+                    name = _("(Unnamed Route)");
+                    
+
+                v[i][_T("error")] = false;
+                v[i][_T("name")] = name;
+                v[i][_T("GUID")] = (*it)->m_GUID;
+                bool l = (*it)->IsTrack();
+                if(g_pActiveTrack == (*it) && !mode)
+                    v[i][_T("active")] = true;
+                else
+                    v[i][_T("active")] = (*it)->IsActive();
+                i++;
+            }
+            wxString msg_id( _T("OCPN_ROUTELIST_RESPONSE") );
+            g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
+        }
+        else
+        {
+            wxJSONValue v;
+            v[0][_T("error")] = true;
+            wxString msg_id( _T("OCPN_ROUTELIST_RESPONSE") );
+            g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
         }
     }
 }
@@ -6521,7 +6744,8 @@ bool MyFrame::EvalPriority(const wxString & message, DataStream *pDS )
 
     //  If the message has been seen before, and the priority is greater than or equal to current priority,
     //  then simply update the record
-    if( stream_priority >= pcontainer->current_priority ) {
+    if( stream_priority >= pcontainer->current_priority )
+    {
         pcontainer->receipt_time = wxDateTime::Now();
         pcontainer-> current_priority = stream_priority;
         pcontainer->stream_name = stream_name;
@@ -6533,8 +6757,10 @@ bool MyFrame::EvalPriority(const wxString & message, DataStream *pDS )
     //  then if the time since the last recorded message is greater than GPS_TIMEOUT_SECONDS
     //  then update the record with the new priority and stream.
     //  Otherwise, ignore the message as too low a priority
-    else {
-        if( (wxDateTime::Now().GetTicks() - pcontainer->receipt_time.GetTicks()) > GPS_TIMEOUT_SECONDS ) {
+    else
+    {
+        if( (wxDateTime::Now().GetTicks() - pcontainer->receipt_time.GetTicks()) > GPS_TIMEOUT_SECONDS )
+        {
             pcontainer->receipt_time = wxDateTime::Now();
             pcontainer-> current_priority = stream_priority;
             pcontainer->stream_name = stream_name;
@@ -6548,14 +6774,16 @@ bool MyFrame::EvalPriority(const wxString & message, DataStream *pDS )
     wxString new_port = pcontainer->stream_name;
 
     //  If the data source or priority has changed for this message type, emit a log entry
-    if (pcontainer->current_priority != old_priority || new_port != old_port ) {
+    if (pcontainer->current_priority != old_priority || new_port != old_port )
+    {
          wxString logmsg = wxString::Format(_T("Changing NMEA Datasource for %s to %s (Priority: %i)"),
                                             msg_type.c_str(),
                                             new_port.c_str(),
                                             pcontainer->current_priority);
          wxLogMessage(logmsg );
 
-         if (NMEALogWindow::Get().Active()) {
+         if (NMEALogWindow::Get().Active())
+         {
              wxDateTime now = wxDateTime::Now();
              wxString ss = now.FormatISOTime();
              ss.Append( _T(" ") );
@@ -6578,7 +6806,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
     wxString str_buf = wxString(event.GetNMEAString().c_str(), wxConvUTF8);
 
-    if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
+    if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
+    {
         g_total_NMEAerror_messages++;
         wxString msg( _T("MEH.NMEA Sentence received...") );
         msg.Append( str_buf );
@@ -6589,9 +6818,12 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     if( (str_buf[0] != '$')  &&  (str_buf[0] != '!') )
         return;
 
-    if( event.GetStream() ) {
-        if(!event.GetStream()->ChecksumOK(str_buf) ){
-            if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
+    if( event.GetStream() )
+    {
+        if(!event.GetStream()->ChecksumOK(str_buf) )
+        {
+            if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
+            {
                 g_total_NMEAerror_messages++;
                 wxString msg( _T(">>>>>>NMEA Sentence Checksum Bad...") );
                 msg.Append( str_buf );
@@ -6604,11 +6836,16 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
     bool b_accept = EvalPriority( str_buf, event.GetStream() );
     if( b_accept ) {
         m_NMEA0183 << str_buf;
-        if( m_NMEA0183.PreParse() ) {
-            if( m_NMEA0183.LastSentenceIDReceived == _T("RMC") ) {
-                if( m_NMEA0183.Parse() ) {
-                    if( m_NMEA0183.Rmc.IsDataValid == NTrue ) {
-                        if( !wxIsNaN(m_NMEA0183.Rmc.Position.Latitude.Latitude) ) {
+        if( m_NMEA0183.PreParse() )
+        {
+            if( m_NMEA0183.LastSentenceIDReceived == _T("RMC") )
+            {
+                if( m_NMEA0183.Parse() )
+                {
+                    if( m_NMEA0183.Rmc.IsDataValid == NTrue )
+                    {
+                        if( !wxIsNaN(m_NMEA0183.Rmc.Position.Latitude.Latitude) )
+                        {
                             double llt = m_NMEA0183.Rmc.Position.Latitude.Latitude;
                             int lat_deg_int = (int) ( llt / 100 );
                             double lat_deg = lat_deg_int;
@@ -6619,13 +6856,15 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                         else
                             ll_valid = false;
 
-                        if( !wxIsNaN(m_NMEA0183.Rmc.Position.Longitude.Longitude) ) {
+                        if( !wxIsNaN(m_NMEA0183.Rmc.Position.Longitude.Longitude) )
+                        {
                             double lln = m_NMEA0183.Rmc.Position.Longitude.Longitude;
                             int lon_deg_int = (int) ( lln / 100 );
                             double lon_deg = lon_deg_int;
                             double lon_min = lln - ( lon_deg * 100 );
                             gLon = lon_deg + ( lon_min / 60. );
-                            if( m_NMEA0183.Rmc.Position.Longitude.Easting == West ) gLon = -gLon;
+                            if( m_NMEA0183.Rmc.Position.Longitude.Easting == West )
+                                gLon = -gLon;
                         }
                         else
                             ll_valid = false;
@@ -6633,60 +6872,67 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                         gSog = m_NMEA0183.Rmc.SpeedOverGroundKnots;
                         gCog = m_NMEA0183.Rmc.TrackMadeGoodDegreesTrue;
 
-                        if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) ) {
-                            if( m_NMEA0183.Rmc.MagneticVariationDirection == East ) gVar =
-                                    m_NMEA0183.Rmc.MagneticVariation;
+                        if( !wxIsNaN(m_NMEA0183.Rmc.MagneticVariation) )
+                        {
+                            if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
+                                gVar = m_NMEA0183.Rmc.MagneticVariation;
                             else
-                                if( m_NMEA0183.Rmc.MagneticVariationDirection == West ) gVar =
-                                        -m_NMEA0183.Rmc.MagneticVariation;
+                                if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
+                                    gVar = -m_NMEA0183.Rmc.MagneticVariation;
 
                             g_bVAR_Rx = true;
                             gVAR_Watchdog = gps_watchdog_timeout_ticks;
-
                         }
 
                         sfixtime = m_NMEA0183.Rmc.UTCTime;
 
-                        if(ll_valid ) {
+                        if(ll_valid )
+                        {
                             gGPS_Watchdog = gps_watchdog_timeout_ticks;
                             wxDateTime now = wxDateTime::Now();
                             m_fixtime = now.GetTicks();
                         }
                         pos_valid = ll_valid;
                     }
-                } else
-                    if( g_nNMEADebug ) {
+                }
+                else
+                    if( g_nNMEADebug )
+                    {
                         wxString msg( _T("   ") );
                         msg.Append( m_NMEA0183.ErrorMessage );
                         msg.Append( _T(" : ") );
                         msg.Append( str_buf );
                         wxLogMessage( msg );
                     }
-
             }
 
             else
-                if( m_NMEA0183.LastSentenceIDReceived == _T("HDT") ) {
-                    if( m_NMEA0183.Parse() ) {
+                if( m_NMEA0183.LastSentenceIDReceived == _T("HDT") )
+                {
+                    if( m_NMEA0183.Parse() )
+                    {
                         gHdt = m_NMEA0183.Hdt.DegreesTrue;
-                        if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) ) {
+                        if( !wxIsNaN(m_NMEA0183.Hdt.DegreesTrue) )
+                        {
                             g_bHDT_Rx = true;
                             gHDT_Watchdog = gps_watchdog_timeout_ticks;
                         }
-                    } else
-                        if( g_nNMEADebug ) {
+                    }
+                    else
+                        if( g_nNMEADebug )
+                        {
                             wxString msg( _T("   ") );
                             msg.Append( m_NMEA0183.ErrorMessage );
                             msg.Append( _T(" : ") );
                             msg.Append( str_buf );
                             wxLogMessage( msg );
                         }
-
                 }
-
                 else
-                    if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") ) {
-                        if( m_NMEA0183.Parse() ) {
+                    if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") )
+                    {
+                        if( m_NMEA0183.Parse() )
+                        {
                             gHdm = m_NMEA0183.Hdg.MagneticSensorHeadingDegrees;
                             if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
                                 gHDx_Watchdog = gps_watchdog_timeout_ticks;
@@ -6696,14 +6942,16 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                             else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
                                 gVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
 
-                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) ) {
-                                    g_bVAR_Rx = true;
-                                    gVAR_Watchdog = gps_watchdog_timeout_ticks;
+                            if( !wxIsNaN(m_NMEA0183.Hdg.MagneticVariationDegrees) )
+                            {
+                                g_bVAR_Rx = true;
+                                gVAR_Watchdog = gps_watchdog_timeout_ticks;
                             }
 
 
                         } else
-                            if( g_nNMEADebug ) {
+                            if( g_nNMEADebug )
+                            {
                                 wxString msg( _T("   ") );
                                 msg.Append( m_NMEA0183.ErrorMessage );
                                 msg.Append( _T(" : ") );
@@ -6712,35 +6960,38 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                             }
 
                     }
-
                     else
-                        if( m_NMEA0183.LastSentenceIDReceived == _T("HDM") ) {
-                            if( m_NMEA0183.Parse() ) {
+                        if( m_NMEA0183.LastSentenceIDReceived == _T("HDM") )
+                        {
+                            if( m_NMEA0183.Parse() )
+                            {
                                 gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
-                                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) ) {
+                                if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
                                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
-                                }
-                            } else
-                                if( g_nNMEADebug ) {
+                            } 
+                            else
+                                if( g_nNMEADebug )
+                                {
                                     wxString msg( _T("   ") );
                                     msg.Append( m_NMEA0183.ErrorMessage );
                                     msg.Append( _T(" : ") );
                                     msg.Append( str_buf );
                                     wxLogMessage( msg );
                                 }
-
                         }
-
                         else
-                            if( m_NMEA0183.LastSentenceIDReceived == _T("VTG") ) {
-                                if( m_NMEA0183.Parse() ) {
+                            if( m_NMEA0183.LastSentenceIDReceived == _T("VTG") )
+                            {
+                                if( m_NMEA0183.Parse() )
+                                {
                                     gSog = m_NMEA0183.Vtg.SpeedKnots;
                                     gCog = m_NMEA0183.Vtg.TrackDegreesTrue;
                                     if( !wxIsNaN(m_NMEA0183.Vtg.SpeedKnots) && !wxIsNaN(m_NMEA0183.Vtg.TrackDegreesTrue) )
                                         gGPS_Watchdog = gps_watchdog_timeout_ticks;
-
-                                } else
-                                    if( g_nNMEADebug ) {
+                                }
+                                else
+                                    if( g_nNMEADebug )
+                                    {
                                         wxString msg( _T("   ") );
                                         msg.Append( m_NMEA0183.ErrorMessage );
                                         msg.Append( _T(" : ") );
@@ -6748,16 +6999,18 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                         wxLogMessage( msg );
                                     }
                             }
-
                             else
-                                if( m_NMEA0183.LastSentenceIDReceived == _T("GSV") ) {
-                                    if( m_NMEA0183.Parse() ) {
+                                if( m_NMEA0183.LastSentenceIDReceived == _T("GSV") )
+                                {
+                                    if( m_NMEA0183.Parse() )
+                                    {
                                         g_SatsInView = m_NMEA0183.Gsv.SatsInView;
                                         gSAT_Watchdog = sat_watchdog_timeout_ticks;
                                         g_bSatValid = true;
-
-                                    } else
-                                        if( g_nNMEADebug ) {
+                                    }
+                                    else
+                                        if( g_nNMEADebug )
+                                        {
                                             wxString msg( _T("   ") );
                                             msg.Append( m_NMEA0183.ErrorMessage );
                                             msg.Append( _T(" : ") );
@@ -6765,14 +7018,16 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                             wxLogMessage( msg );
                                         }
                                 }
-
                                 else
-                                    if( g_bUseGLL && m_NMEA0183.LastSentenceIDReceived == _T("GLL") ) {
-                                        if( m_NMEA0183.Parse() ) {
-                                            if( m_NMEA0183.Gll.IsDataValid == NTrue ) {
-                                                if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) ) {
-                                                    double llt =
-                                                            m_NMEA0183.Gll.Position.Latitude.Latitude;
+                                    if( g_bUseGLL && m_NMEA0183.LastSentenceIDReceived == _T("GLL") )
+                                    {
+                                        if( m_NMEA0183.Parse() )
+                                        {
+                                            if( m_NMEA0183.Gll.IsDataValid == NTrue )
+                                            {
+                                                if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) )
+                                                {
+                                                    double llt = m_NMEA0183.Gll.Position.Latitude.Latitude;
                                                     int lat_deg_int = (int) ( llt / 100 );
                                                     double lat_deg = lat_deg_int;
                                                     double lat_min = llt - ( lat_deg * 100 );
@@ -6783,22 +7038,23 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                 else
                                                     ll_valid = false;
 
-                                                if( !wxIsNaN(m_NMEA0183.Gll.Position.Longitude.Longitude) ) {
-                                                    double lln =
-                                                            m_NMEA0183.Gll.Position.Longitude.Longitude;
+                                                if( !wxIsNaN(m_NMEA0183.Gll.Position.Longitude.Longitude) )
+                                                {
+                                                    double lln = m_NMEA0183.Gll.Position.Longitude.Longitude;
                                                     int lon_deg_int = (int) ( lln / 100 );
                                                     double lon_deg = lon_deg_int;
                                                     double lon_min = lln - ( lon_deg * 100 );
                                                     gLon = lon_deg + ( lon_min / 60. );
-                                                    if( m_NMEA0183.Gll.Position.Longitude.Easting
-                                                            == West ) gLon = -gLon;
+                                                    if( m_NMEA0183.Gll.Position.Longitude.Easting == West )
+                                                        gLon = -gLon;
                                                 }
                                                 else
                                                     ll_valid = false;
 
                                                 sfixtime = m_NMEA0183.Gll.UTCTime;
 
-                                                if(ll_valid) {
+                                                if(ll_valid)
+                                                {
                                                     gGPS_Watchdog = gps_watchdog_timeout_ticks;
                                                     wxDateTime now = wxDateTime::Now();
                                                     m_fixtime = now.GetTicks();
@@ -6806,7 +7062,8 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                 pos_valid = ll_valid;
                                             }
                                         } else
-                                            if( g_nNMEADebug ) {
+                                            if( g_nNMEADebug )
+                                            {
                                                 wxString msg( _T("   ") );
                                                 msg.Append( m_NMEA0183.ErrorMessage );
                                                 msg.Append( _T(" : ") );
@@ -6814,27 +7071,29 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                                 wxLogMessage( msg );
                                             }
                                     }
-
                                     else
-                                        if( m_NMEA0183.LastSentenceIDReceived == _T("GGA") ) {
-                                            if( m_NMEA0183.Parse() ) {
-                                                if( m_NMEA0183.Gga.GPSQuality > 0 ) {
-                                                    if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) ) {
-                                                        double llt =
-                                                                m_NMEA0183.Gga.Position.Latitude.Latitude;
+                                        if( m_NMEA0183.LastSentenceIDReceived == _T("GGA") )
+                                        {
+                                            if( m_NMEA0183.Parse() )
+                                            {
+                                                if( m_NMEA0183.Gga.GPSQuality > 0 )
+                                                {
+                                                    if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) )
+                                                    {
+                                                        double llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
                                                         int lat_deg_int = (int) ( llt / 100 );
                                                         double lat_deg = lat_deg_int;
                                                         double lat_min = llt - ( lat_deg * 100 );
                                                         gLat = lat_deg + ( lat_min / 60. );
-                                                        if( m_NMEA0183.Gga.Position.Latitude.Northing
-                                                                == South ) gLat = -gLat;
+                                                        if( m_NMEA0183.Gga.Position.Latitude.Northing == South )
+                                                            gLat = -gLat;
                                                     }
                                                     else
                                                         ll_valid = false;
 
-                                                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Longitude.Longitude) ) {
-                                                        double lln =
-                                                                m_NMEA0183.Gga.Position.Longitude.Longitude;
+                                                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Longitude.Longitude) )
+                                                    {
+                                                        double lln = m_NMEA0183.Gga.Position.Longitude.Longitude;
                                                         int lon_deg_int = (int) ( lln / 100 );
                                                         double lon_deg = lon_deg_int;
                                                         double lon_min = lln - ( lon_deg * 100 );
@@ -6847,21 +7106,22 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
                                                     sfixtime = m_NMEA0183.Gga.UTCTime;
 
-                                                    if(ll_valid) {
+                                                    if(ll_valid)
+                                                    {
                                                         gGPS_Watchdog = gps_watchdog_timeout_ticks;
                                                         wxDateTime now = wxDateTime::Now();
                                                         m_fixtime = now.GetTicks();
                                                     }
                                                     pos_valid = ll_valid;
 
-                                                    g_SatsInView =
-                                                            m_NMEA0183.Gga.NumberOfSatellitesInUse;
+                                                    g_SatsInView = m_NMEA0183.Gga.NumberOfSatellitesInUse;
                                                     gSAT_Watchdog = sat_watchdog_timeout_ticks;
                                                     g_bSatValid = true;
 
                                                 }
                                             } else
-                                                if( g_nNMEADebug ) {
+                                                if( g_nNMEADebug )
+                                                {
                                                     wxString msg( _T("   ") );
                                                     msg.Append( m_NMEA0183.ErrorMessage );
                                                     msg.Append( _T(" : ") );
@@ -6871,13 +7131,15 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                         }
         }
         //      Process ownship (AIVDO) messages from any source
-        else if(str_buf.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) ) {
+        else if(str_buf.Mid( 1, 5 ).IsSameAs( _T("AIVDO") ) )
+        {
             GenericPosDatEx gpd;
             AIS_Error nerr = AIS_GENERIC_ERROR;
             if(g_pAIS)
                 nerr = g_pAIS->DecodeSingleVDO(str_buf, &gpd, &m_VDO_accumulator);
 
-            if(nerr == AIS_NoError){
+            if(nerr == AIS_NoError)
+            {
                 if( !wxIsNaN(gpd.kLat) )
                     gLat = gpd.kLat;
                 if( !wxIsNaN(gpd.kLon) )
@@ -6887,22 +7149,25 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 gSog = gpd.kSog;
 
                 gHdt = gpd.kHdt;
-                if( !wxIsNaN(gpd.kHdt) ) {
+                if( !wxIsNaN(gpd.kHdt) )
+                {
                     g_bHDT_Rx = true;
                     gHDT_Watchdog = gps_watchdog_timeout_ticks;
                 }
 
-                if( !wxIsNaN(gpd.kLat) && !wxIsNaN(gpd.kLon) ) {
+                if( !wxIsNaN(gpd.kLat) && !wxIsNaN(gpd.kLon) )
+                {
                     gGPS_Watchdog = gps_watchdog_timeout_ticks;
                     wxDateTime now = wxDateTime::Now();
                     m_fixtime = now.GetTicks();
 
                     pos_valid = true;
                 }
-
             }
-            else {
-                if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
+            else 
+            {
+                if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
+                {
                     g_total_NMEAerror_messages++;
                     wxString msg( _T("   Invalid AIVDO Sentence...") );
                     msg.Append( str_buf );
@@ -6910,10 +7175,11 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                 }
             }
         }
-
-        else {
+        else
+        {
             bis_recognized_sentence = false;
-            if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) ) {
+            if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
+            {
                 g_total_NMEAerror_messages++;
                 wxString msg( _T("   Unrecognized NMEA Sentence...") );
                 msg.Append( str_buf );
@@ -7360,7 +7626,7 @@ void MyPrintout::DrawPageOne( wxDC *dc )
 
 //---------------------------------------------------------------------------------------
 //
-//		GPS Positioning Device Detection
+//        GPS Positioning Device Detection
 //
 //---------------------------------------------------------------------------------------
 

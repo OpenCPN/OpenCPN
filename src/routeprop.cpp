@@ -45,8 +45,9 @@
 #include "routemanagerdialog.h"
 #include "routeprintout.h"
 #include "chcanv.h"
-#include "tcmgr.h"		// pjotrc 2011.03.02
+#include "tcmgr.h"        // pjotrc 2011.03.02
 #include "PositionParser.h"
+#include "pluginmanager.h"
 
 extern double             gLat, gLon, gSog, gCog;
 extern double             g_PlanSpeed;
@@ -63,6 +64,7 @@ extern Routeman           *g_pRouteMan;
 extern RouteManagerDialog *pRouteManagerDialog;
 extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
+extern PlugInManager      *g_pi_manager;
 
 extern MyFrame            *gFrame;
 
@@ -79,18 +81,18 @@ extern RoutePrintSelection * pRoutePrintSelection;
 * Helper stuff for calculating Route Plans
 */
 
-#define	pi	    (4.*atan(1.0))
-#define	tpi	    (2.*pi)
-#define	twopi	(2.*pi)
-#define	degs	(180./pi)
-#define	rads	(pi/180.)
+#define    pi        (4.*atan(1.0))
+#define    tpi        (2.*pi)
+#define    twopi    (2.*pi)
+#define    degs    (180./pi)
+#define    rads    (pi/180.)
 
-#define	MOTWILIGHT	1	// in some languages there may be a distinction between morning/evening
-#define	SUNRISE	    2
-#define	DAY		    3
-#define	SUNSET	    4
-#define	EVTWILIGHT	5
-#define	NIGHT		6
+#define    MOTWILIGHT    1    // in some languages there may be a distinction between morning/evening
+#define    SUNRISE        2
+#define    DAY            3
+#define    SUNSET        4
+#define    EVTWILIGHT    5
+#define    NIGHT        6
 
 char daylight_status[][20] = {
     "   ( - )",
@@ -111,10 +113,10 @@ Bit      Meaning
 3       rising transition
 */
 
-#define	LW	1
-#define	HW	2
-#define	FALLING	4
-#define	RISING	8
+#define    LW    1
+#define    HW    2
+#define    FALLING    4
+#define    RISING    8
 
 char tide_status[][8] = {
     " LW ",
@@ -192,7 +194,7 @@ double getDaylightEvent( double glat, double glong, int riset, double altitude, 
         utnew = FNrange( utold - ( GHA + g + riset * correction ) );
         utold = tmp;
     }
-    return ( utnew * degs / 15. );	// returns decimal hours UTC
+    return ( utnew * degs / 15. );    // returns decimal hours UTC
 }
 
 static double getLMT( double ut, double lon )
@@ -261,12 +263,12 @@ int getDaylightStatus( double lat, double lon, wxDateTime utcDateTime )
     }
 }
 
-#define UTCINPUT    0
-#define	LTINPUT     1	// i.e. this PC local time
-#define	LMTINPUT    2	// i.e. the remote location LMT time
-#define INPUT_FORMAT      1
-#define DISPLAY_FORMAT    2
-#define     TIMESTAMP_FORMAT  3
+#define    UTCINPUT         0
+#define    LTINPUT          1    // i.e. this PC local time
+#define    LMTINPUT         2    // i.e. the remote location LMT time
+#define    INPUT_FORMAT     1
+#define    DISPLAY_FORMAT   2
+#define    TIMESTAMP_FORMAT 3
 
 wxString ts2s(wxDateTime ts, int tz_selection, long LMT_offset, int format)
 {
@@ -820,7 +822,7 @@ RouteProp::~RouteProp()
     delete m_RouteDestCtl;
 
     delete m_StartTimeCtl;
-    //	delete pDispTz;
+    //    delete pDispTz;
 
     delete m_wpList;
 
@@ -1504,7 +1506,7 @@ bool RouteProp::UpdateProperties()
 
             //  Mark Name
             if( arrival ) m_wpList->SetItem( item_line_index, 1, prp->GetName() );
-	    // Store Dewcription
+        // Store Dewcription
             if( arrival ) m_wpList->SetItem( item_line_index, 9, prp->GetDescription() );
 
             //  Distance
@@ -1537,42 +1539,42 @@ bool RouteProp::UpdateProperties()
 
             DistanceBearingMercator( prp->m_lat, prp->m_lon, slat, slon, &brg, &leg_dist );
 
-	    // calculation of course at current WayPoint.
-	    double course=10, tmp_leg_dist=23;
-	    wxRoutePointListNode *next_node = node->GetNext();
-	    RoutePoint * _next_prp = (next_node)? next_node->GetData(): NULL;
-	    if (_next_prp )
-	    {
-		DistanceBearingMercator( _next_prp->m_lat, _next_prp->m_lon, prp->m_lat, prp->m_lon, &course, &tmp_leg_dist );
-	    }else
-	    {
-	      course = 0.0;
-	      tmp_leg_dist = 0.0;
-	    }
+        // calculation of course at current WayPoint.
+        double course=10, tmp_leg_dist=23;
+        wxRoutePointListNode *next_node = node->GetNext();
+        RoutePoint * _next_prp = (next_node)? next_node->GetData(): NULL;
+        if (_next_prp )
+        {
+        DistanceBearingMercator( _next_prp->m_lat, _next_prp->m_lon, prp->m_lat, prp->m_lon, &course, &tmp_leg_dist );
+        }else
+        {
+          course = 0.0;
+          tmp_leg_dist = 0.0;
+        }
 
-	    prp->SetCourse(course); // save the course to the next waypoint for printing.
-	    // end of calculation
+        prp->SetCourse(course); // save the course to the next waypoint for printing.
+        // end of calculation
 
 
             t.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( leg_dist ) );
             if( arrival ) m_wpList->SetItem( item_line_index, 2, t );
             if( !enroute ) m_wpList->SetItem( item_line_index, 2, nullify );
-	    prp->SetDistance(leg_dist); // save the course to the next waypoint for printing.
+        prp->SetDistance(leg_dist); // save the course to the next waypoint for printing.
 
             //  Bearing
             t.Printf( _T("%03.0f Deg. T"), brg );
             if( arrival ) m_wpList->SetItem( item_line_index, 3, t );
             if( !enroute ) m_wpList->SetItem( item_line_index, 3, nullify );
 
-	    // Course (bearing of next )
-	    if (_next_prp)
-	    {
-		t.Printf( _T("%03.0f Deg. T"), course );
-		if( arrival ) m_wpList->SetItem( item_line_index, 10, t );
-	    }else
-	    {
-	      m_wpList->SetItem( item_line_index, 10, nullify );
-	    }
+        // Course (bearing of next )
+        if (_next_prp)
+        {
+        t.Printf( _T("%03.0f Deg. T"), course );
+        if( arrival ) m_wpList->SetItem( item_line_index, 10, t );
+        }else
+        {
+          m_wpList->SetItem( item_line_index, 10, nullify );
+        }
 
             //  Lat/Lon
             wxString tlat = toSDMM( 1, prp->m_lat, prp->m_bIsInTrack );  // low precision for routes
@@ -1762,7 +1764,7 @@ bool RouteProp::SaveChanges( void )
 
     //  Save the current planning speed
     g_PlanSpeed = m_planspeed;
-    g_StartTime = m_starttime;	// both always UTC
+    g_StartTime = m_starttime;    // both always UTC
     g_StartTimeTZ = pDispTz->GetSelection();
     m_StartTimeCtl->Clear();
 
@@ -1779,6 +1781,15 @@ bool RouteProp::SaveChanges( void )
 
         pConfig->UpdateRoute( m_pRoute );
         pConfig->UpdateSettings();
+    }
+
+    if( m_pRoute->IsActive() || ((Track*) m_pRoute)->IsRunning() )
+    {
+        wxJSONValue v;
+        v[_T("Name")] =  m_pRoute->m_RouteNameString;
+        v[_T("GUID")] =  m_pRoute->m_GUID;
+        wxString msg_id( _T("OCPN_TRK_ACTIVATED") );
+        g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
     }
 
     return true;
@@ -1818,7 +1829,7 @@ void RouteProp::OnStartTimeCtlUpdated( wxCommandEvent& event )
     } else {
         m_pEnroutePoint = NULL;
         m_bStartNow = false;
-        if( !d.ParseDateTime( stime ) )		// only specific times accepted
+        if( !d.ParseDateTime( stime ) )        // only specific times accepted
         d = wxInvalidDateTime;
 
         m_starttime = d;
