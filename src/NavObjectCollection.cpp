@@ -1017,7 +1017,7 @@ bool NavObjectCollection1::LoadAllGPXObjects()
     for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
     {
         if( !strcmp(object.name(), "wpt") ) {
-            RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), true, false, false, 0 );
+            RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), false, false, false, 0 );
             pWp->m_bIsolatedMark = true;      // This is an isolated mark
             
             if(pWp) {
@@ -1160,7 +1160,7 @@ bool NavObjectChanges::ApplyChanges(void)
     for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
     {
         if( !strcmp(object.name(), "wpt") ) {
-            RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), true, false, false, 0 );
+            RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), false, false, false, 0 );
             
             if(pWp && pWayPointMan) {
                 pWp->m_bIsolatedMark = true;
