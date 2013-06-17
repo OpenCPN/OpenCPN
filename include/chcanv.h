@@ -397,6 +397,8 @@ private:
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
       void ShowRoutePropertiesDialog(wxString title, Route* selected);
 
+      void ShowBrightnessLevelTimedPopup( int brightness, int min, int max );
+      
       //    Data
       int         m_canvas_width, m_canvas_height;
 
@@ -476,7 +478,9 @@ private:
 
       RolloverWin *m_pRolloverWin;
       RolloverWin *m_pAISRolloverWin;
-
+      
+      TimedPopupWin *m_pBrightPopup;
+      
       wxImage     m_os_image_red_day;
       wxImage     m_os_image_red_dusk;
       wxImage     m_os_image_red_night;

@@ -35,5 +35,6 @@
 #define ZOOM_TIMER        8
 #define PANKEY_TIMER      9
 #define DBLCLICK_TIMER   10
+#define POPUP_TIMER      11
 
 #endif

@@ -592,9 +592,6 @@ long                      g_toolbar_orient;
 
 MyDialogPtrArray          g_MacShowDialogArray;
 
-OCPNBitmapDialog          *g_pbrightness_indicator_dialog;
-int                       g_brightness_timeout;
-
 //                        OpenGL Globals
 int                       g_GPU_MemSize;
 bool                      g_b_useStencil;
@@ -3317,54 +3314,6 @@ void MyFrame::SetGroupIndex( int index )
     }
 }
 
-void MyFrame::ShowBrightnessLevelTimedDialog( int brightness, int min, int max )
-{
-    wxFont *pfont = wxTheFontList->FindOrCreateFont( 40, wxDEFAULT, wxNORMAL, wxBOLD );
-
-    if( !g_pbrightness_indicator_dialog ) {
-        //    Calculate size
-        int x, y;
-        GetTextExtent( _T("MAX"), &x, &y, NULL, NULL, pfont );
-
-        g_pbrightness_indicator_dialog = new OCPNBitmapDialog( this, wxPoint( 200, 200 ),
-                wxSize( x + 2, y + 2 ) );
-    }
-
-    int bmpsx = g_pbrightness_indicator_dialog->GetSize().x;
-    int bmpsy = g_pbrightness_indicator_dialog->GetSize().y;
-
-    wxBitmap bmp( bmpsx, bmpsx );
-    wxMemoryDC mdc( bmp );
-
-    mdc.SetTextForeground( GetGlobalColor( _T("GREEN4") ) );
-    mdc.SetBackground( wxBrush( GetGlobalColor( _T("UINFD") ) ) );
-    mdc.SetPen( wxPen( wxColour( 0, 0, 0 ) ) );
-    mdc.SetBrush( wxBrush( GetGlobalColor( _T("UINFD") ) ) );
-    mdc.Clear();
-
-    mdc.DrawRectangle( 0, 0, bmpsx, bmpsy );
-
-    mdc.SetFont( *pfont );
-    wxString val;
-
-    if( brightness == max ) val = _T("MAX");
-    else
-        if( brightness == min ) val = _T("MIN");
-        else
-            val.Printf( _T("%3d"), brightness );
-
-    mdc.DrawText( val, 0, 0 );
-
-    mdc.SelectObject( wxNullBitmap );
-
-    g_pbrightness_indicator_dialog->SetBitmap( bmp );
-    g_pbrightness_indicator_dialog->Show();
-    g_pbrightness_indicator_dialog->Refresh();
-
-    g_brightness_timeout = 3;           // seconds
-
-}
-
 void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 {
     if( s_ProgDialog ) return;
@@ -4794,16 +4743,6 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     if( bDBUpdateInProgress ) return;
 
     FrameTimer1.Stop();
-
-//    Manage the brightness dialog timeout
-    if( g_brightness_timeout > 0 ) {
-        g_brightness_timeout--;
-
-        if( g_brightness_timeout == 0 ) {
-            g_pbrightness_indicator_dialog->Destroy();
-            g_pbrightness_indicator_dialog = NULL;
-        }
-    }
 
 //  Update and check watchdog timer for GPS data source
     gGPS_Watchdog--;
@@ -8567,43 +8506,64 @@ double AnchorDistFix( double const d, double const AnchorPointMinDist,
             else
                 return d;
 }
-//  Generic on-screen bitmap dialog
-BEGIN_EVENT_TABLE(OCPNBitmapDialog, wxDialog) EVT_PAINT(OCPNBitmapDialog::OnPaint)
+
+//      Auto timed popup Window implementation
+
+BEGIN_EVENT_TABLE(TimedPopupWin, wxWindow) EVT_PAINT(TimedPopupWin::OnPaint)
+EVT_TIMER(POPUP_TIMER, TimedPopupWin::OnTimer)
+
 END_EVENT_TABLE()
 
-OCPNBitmapDialog::OCPNBitmapDialog( wxWindow *frame, wxPoint position, wxSize size )
+// Define a constructor
+TimedPopupWin::TimedPopupWin( wxWindow *parent, int timeout ) :
+wxWindow( parent, wxID_ANY, wxPoint( 0, 0 ), wxSize( 1, 1 ), wxNO_BORDER )
 {
-    long wstyle = wxSIMPLE_BORDER;
-    wxDialog::Create( frame, wxID_ANY, _T(""), position, size, wstyle );
-
+    m_pbm = NULL;
+    
+    m_timer_timeout.SetOwner( this, POPUP_TIMER );
+    m_timeout_sec = timeout;
+    isActive = false;
     Hide();
 }
 
-OCPNBitmapDialog::~OCPNBitmapDialog()
+TimedPopupWin::~TimedPopupWin()
 {
+    delete m_pbm;
+}
+void TimedPopupWin::OnTimer( wxTimerEvent& event )
+{
+    if( IsShown() )
+        Hide();
 }
 
-void OCPNBitmapDialog::SetBitmap( wxBitmap bitmap )
+
+void TimedPopupWin::SetBitmap( wxBitmap &bmp )
 {
-    m_bitmap = bitmap;
+    delete m_pbm;
+    m_pbm = new wxBitmap( bmp );
+    
+    // Retrigger the auto timeout
+    if( m_timeout_sec > 0 )
+        m_timer_timeout.Start( m_timeout_sec * 1000, wxTIMER_ONE_SHOT );
 }
 
-void OCPNBitmapDialog::OnPaint( wxPaintEvent& event )
+void TimedPopupWin::OnPaint( wxPaintEvent& event )
 {
-
+    int width, height;
+    GetClientSize( &width, &height );
     wxPaintDC dc( this );
+    
+    wxMemoryDC mdc;
+    mdc.SelectObject( *m_pbm );
+    dc.Blit( 0, 0, width, height, &mdc, 0, 0 );
 
-    if( m_bitmap.IsOk() ) dc.DrawBitmap( m_bitmap, 0, 0 );
 }
-
 
 
 //      Console supporting printf functionality for Windows GUI app
 
-// maximum mumber of lines the output console should have
-
 #ifdef __WXMSW__
-static const WORD MAX_CONSOLE_LINES = 500;
+static const WORD MAX_CONSOLE_LINES = 500;  // maximum mumber of lines the output console should have
 
 //#ifdef _DEBUG
 

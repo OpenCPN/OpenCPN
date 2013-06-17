@@ -293,7 +293,6 @@ class MyFrame: public wxFrame
     void SetupQuiltMode(void);
 
     void ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge = true);
-    void ShowBrightnessLevelTimedDialog(int brightness, int min, int max);
 
     bool CheckGroup(int igroup);
 
@@ -458,35 +457,34 @@ extern int OCPNMessageBox(wxWindow *parent,
                           const wxString& caption = _T("Message"),
                           int style = wxOK, int x = -1, int y = -1);
 
-#if 0
-class OCPNMessageDialog
-{
-      public:
-            OCPNMessageDialog(wxWindow* parent, const wxString& message, const wxString& caption = _T("Message box"), long style = wxOK | wxCANCEL, const wxPoint& pos = wxDefaultPosition);
-
-            ~OCPNMessageDialog();
-
-            int ShowModal();
-      private:
-            wxMessageDialog *m_pdialog;
-};
-#endif
-
 
 //----------------------------------------------------------------------------
-// Generic Bitmap Dialog
+// Generic Auto Timed Window
+// Belongs to the creator, not deleted automatically on applicaiton close
 //----------------------------------------------------------------------------
-class OCPNBitmapDialog: public wxDialog
-{
-      public:
-            OCPNBitmapDialog(wxWindow *frame, wxPoint position, wxSize size);
-            ~OCPNBitmapDialog();
-            void  SetBitmap(wxBitmap bitmap);
-            void OnPaint(wxPaintEvent& event);
-      private:
-            wxBitmap    m_bitmap;
 
-            DECLARE_EVENT_TABLE()
+class TimedPopupWin: public wxWindow
+{
+public:
+    TimedPopupWin( wxWindow *parent, int timeout = -1 );
+    ~TimedPopupWin();
+    
+    void OnPaint( wxPaintEvent& event );
+    
+    void SetBitmap( wxBitmap &bmp );
+    wxBitmap* GetBitmap() { return m_pbm; }
+    void OnTimer( wxTimerEvent& event );
+    bool IsActive() { return isActive; }
+    void IsActive( bool state ) { isActive = state; }
+    
+private:
+    wxBitmap *m_pbm;
+    wxTimer m_timer_timeout;
+    int m_timeout_sec;
+    bool isActive;
+    
+    DECLARE_EVENT_TABLE()
 };
+
 
 #endif
