@@ -6604,7 +6604,7 @@ void OpenCPN_OGRErrorHandler( CPLErr eErrClass, int nError, const char * pszErro
     else
         sprintf( buf, "   ERROR %d: %s\n", nError, pszErrorMsg );
 
-    if( g_bGDAL_Debug ) {
+    if( g_bGDAL_Debug  || ( CE_Debug != eErrClass) ) {          // log every warning or error
         wxString msg( buf, wxConvUTF8 );
         wxLogMessage( msg );
     }

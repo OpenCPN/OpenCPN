@@ -1542,6 +1542,18 @@ void S57Reader::AssembleLineGeometry( DDFRecord * poFRecord,
         int nVC_RCID1 = 0;
         int nVC_RCIDStart, nVC_RCIDEnd;
 
+        if( poField == NULL )
+        {
+            CPLError( CE_Warning, CPLE_AppDefined,
+                      "Couldn't find field VRPT in spatial record %d.\n"
+                      "Feature OBJL=%s, RCID=%d may have corrupt or"
+                      "missing geometry.",
+                      nRCID,
+                      poFeature->GetDefnRef()->GetName(),
+                      poFRecord->GetIntSubfield( "FRID", 0, "RCID", 0 ) );
+            continue;
+        }
+        
         if(poField->GetRepeatCount() > 1)
         {
               nVC_RCID0 = ParseName( poField, 0 );
