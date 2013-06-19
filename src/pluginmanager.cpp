@@ -2538,6 +2538,16 @@ PluginListPanel::~PluginListPanel()
 {
 }
 
+void PluginListPanel::UpdateSelections()
+{
+    for(unsigned int i=0 ; i < m_PluginItems.GetCount() ; i++) {
+        PluginPanel *pPluginPanel = m_PluginItems.Item(i);
+        if( pPluginPanel ){
+            pPluginPanel->SetSelected( pPluginPanel->GetSelected() );
+        }
+    }
+}
+    
 void PluginListPanel::SelectPlugin( PluginPanel *pi )
 {
     if (m_PluginSelected == pi)

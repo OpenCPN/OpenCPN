@@ -1857,6 +1857,9 @@ void options::CreateControls()
     pSettingsCB1 = pDebugShowStat;
 
     SetColorScheme( (ColorScheme) 0 );
+    
+    //  Update the PlugIn page to reflect the state of individual selections
+    m_pPlugInCtrl->UpdateSelections();
 
     if( height < 768 ) {
         SetSizeHints( width-200, height-200, -1, -1 );
