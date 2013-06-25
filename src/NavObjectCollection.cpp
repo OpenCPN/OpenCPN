@@ -482,13 +482,19 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
     }
         
     if ( (!pr->GetName().IsEmpty() && (flags & OUT_NAME)) || (flags & OUT_NAME_FORCE) ) {
-        child = node.append_child("name");
-        child.append_child(pugi::node_pcdata).set_value(pr->GetName().mb_str());
+        wxCharBuffer buffer=pr->GetName().ToUTF8();
+        if(buffer.data()) {
+            child = node.append_child("name");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
     }       
 
     if ( (!pr->GetDescription().IsEmpty() && (flags & OUT_DESC)) || (flags & OUT_DESC_FORCE) ) {
-        child = node.append_child("desc");
-        child.append_child(pugi::node_pcdata).set_value(pr->GetDescription().mb_str());
+        wxCharBuffer buffer=pr->GetDescription().ToUTF8();
+        if(buffer.data()) {
+            child = node.append_child("desc");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
     }       
     
     if (flags & OUT_SYM_FORCE) {
@@ -542,8 +548,11 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
                 pugi::xml_node child_link = node.append_child("link");
                 child_link.append_attribute("href") = link->Link.mb_str();
             
-                child = child_link.append_child("text");
-                child.append_child(pugi::node_pcdata).set_value(link->DescrText.mb_str());
+                wxCharBuffer buffer=link->DescrText.ToUTF8();
+                if(buffer.data()) {
+                    child = child_link.append_child("text");
+                    child.append_child(pugi::node_pcdata).set_value(buffer.data());
+                }
             
                 if( link->LType.Len() ) {
                     child = child_link.append_child("type");
@@ -565,8 +574,11 @@ bool GPXCreateTrk( pugi::xml_node node, Route *pRoute )
     pugi::xml_node child;
 
     if( pRoute->m_RouteNameString.Len() ) {
-        child = node.append_child("name");
-        child.append_child(pugi::node_pcdata).set_value(pRoute->m_RouteNameString.mb_str());
+        wxCharBuffer buffer=pRoute->m_RouteNameString.ToUTF8();
+        if(buffer.data()) {
+            child = node.append_child("name");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
     }
     
     pugi::xml_node child_ext = node.append_child("extensions");
@@ -578,13 +590,19 @@ bool GPXCreateTrk( pugi::xml_node node, Route *pRoute )
     child.append_child(pugi::node_pcdata).set_value(pRoute->IsVisible() == true ? "1" : "0");
 
     if( pRoute->m_RouteStartString.Len() ) {
-        child = child_ext.append_child("opencpn:start");
-        child.append_child(pugi::node_pcdata).set_value(pRoute->m_RouteStartString.mb_str());
+        wxCharBuffer buffer=pRoute->m_RouteStartString.ToUTF8();
+        if(buffer.data()) {
+            child = child_ext.append_child("opencpn:start");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
     }
     
     if( pRoute->m_RouteEndString.Len() ) {
-        child = child_ext.append_child("opencpn:end");
-        child.append_child(pugi::node_pcdata).set_value(pRoute->m_RouteEndString.mb_str());
+        wxCharBuffer buffer=pRoute->m_RouteEndString.ToUTF8();
+        if(buffer.data()) {
+            child = child_ext.append_child("opencpn:end");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
     }
     
     if( pRoute->m_width != STYLE_UNDEFINED || pRoute->m_style != STYLE_UNDEFINED ) {
@@ -637,8 +655,11 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
     pugi::xml_node child;
     
     if( pRoute->m_RouteNameString.Len() ) {
-        child = node.append_child("name");
-        child.append_child(pugi::node_pcdata).set_value(pRoute->m_RouteNameString.mb_str());
+        wxCharBuffer buffer=pRoute->m_RouteNameString.ToUTF8();
+        if(buffer.data()) {
+            child = node.append_child("name");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
     }
     
     pugi::xml_node child_ext = node.append_child("extensions");
@@ -650,13 +671,19 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
     child.append_child(pugi::node_pcdata).set_value(pRoute->IsVisible() == true ? "1" : "0");
     
     if( pRoute->m_RouteStartString.Len() ) {
-        child = child_ext.append_child("opencpn:start");
-        child.append_child(pugi::node_pcdata).set_value(pRoute->m_RouteStartString.mb_str());
+        wxCharBuffer buffer=pRoute->m_RouteStartString.ToUTF8();
+        if(buffer.data()) {
+            child = child_ext.append_child("opencpn:start");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
     }
     
     if( pRoute->m_RouteEndString.Len() ) {
-        child = child_ext.append_child("opencpn:end");
-        child.append_child(pugi::node_pcdata).set_value(pRoute->m_RouteEndString.mb_str());
+        wxCharBuffer buffer=pRoute->m_RouteEndString.ToUTF8();
+        if(buffer.data()) {
+            child = child_ext.append_child("opencpn:end");
+            child.append_child(pugi::node_pcdata).set_value(buffer.data());
+        }
     }
     
     if( pRoute->m_width != STYLE_UNDEFINED || pRoute->m_style != STYLE_UNDEFINED ) {
