@@ -8656,12 +8656,13 @@ void ChartCanvas::EmbossCanvas( ocpnDC &dc, emboss_data *pemboss, int x, int y )
         snip_dc.SelectObject( snip_bmp );
 
         snip_dc.Blit( 0, 0, pemboss->width, pemboss->height, pmdc, x, y );
-
+        snip_dc.SelectObject( wxNullBitmap );
+        
         wxImage snip_img = snip_bmp.ConvertToImage();
 
         //  Apply Emboss map to the snip image
         unsigned char* pdata = snip_img.GetData();
-        {
+        if( pdata ) {
             for( int y = 0; y < pemboss->height; y++ ) {
                 int map_index = ( y * pemboss->width );
                 for( int x = 0; x < pemboss->width; x++ ) {
@@ -8695,7 +8696,6 @@ void ChartCanvas::EmbossCanvas( ocpnDC &dc, emboss_data *pemboss, int x, int y )
         pmdc->Blit( x, y, pemboss->width, pemboss->height, &result_dc, 0, 0 );
 
         result_dc.SelectObject( wxNullBitmap );
-        snip_dc.SelectObject( wxNullBitmap );
     }
 #ifndef __WXMSW__
     else if(0/*b_useTexRect*/)
