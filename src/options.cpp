@@ -3149,8 +3149,9 @@ void options::OnButtonTestSound( wxCommandEvent& event )
     AIS_Sound.Create( g_sAIS_Alert_Sound_File );
 
     if( AIS_Sound.IsOk() ) {
+        
+#ifndef __WXMSW__
         AIS_Sound.Play();
-
         int t = 0;
         while( AIS_Sound.IsPlaying() && (t < 10) ) {
             wxSleep(1);
@@ -3158,6 +3159,10 @@ void options::OnButtonTestSound( wxCommandEvent& event )
         }
         if( AIS_Sound.IsPlaying() )
             AIS_Sound.Stop();
+ 
+#else
+        AIS_Sound.Play(wxSOUND_SYNC);
+#endif
     }
 
 }
