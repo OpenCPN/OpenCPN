@@ -2508,7 +2508,6 @@
 			<disp-prio>Area 2</disp-prio>
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Plain</table-name>
-			<attrib-code index="0">CATVEG13</attrib-code>
 			<instruction>AP(VEGATN03);LS(DASH,1,LANDF)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32030</comment>
@@ -5840,7 +5839,6 @@
 			<disp-prio>Area 2</disp-prio>
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Symbolized</table-name>
-			<attrib-code index="0">CATVEG13</attrib-code>
 			<instruction>AP(VEGATN03);LS(DASH,1,LANDF)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32030</comment>
@@ -31968,7 +31966,7 @@
 			<filltype>L</filltype>
 			<spacing>C</spacing>
 			<description>area of depth less than the safety contour</description>
-			<bitmap width="9" height="9">
+			<bitmap width="32" height="32">
 				<distance min="0" max="0" />
 				<pivot x="5" y="5" />
 				<origin x="0" y="0" />

@@ -2254,15 +2254,31 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     char *str = (char*) rules->INSTstr;
     c = getColor( str + 7 ); // Colour
     w = atoi( str + 5 ); // Width
+    wxPen *pdotpen = NULL;
 
     if( m_pdc ) //DC mode
     {
         wxColour color( c->R, c->G, c->B );
-        int style = wxSOLID; // Style default
-        if( !strncmp( str, "DASH", 4 ) ) style = wxSHORT_DASH;
 
-        wxPen *pthispen = wxThePenList->FindOrCreatePen( color, w, style );
-        m_pdc->SetPen( *pthispen );
+        if( !strncmp( str, "DOTT", 4 ) ) {
+            wxDash dash1[2];
+            dash1[0] = 1;
+            dash1[1] = 2; 
+            
+            pdotpen = new wxPen(*wxBLACK_PEN);
+            pdotpen->SetStyle(wxUSER_DASH);
+            pdotpen->SetDashes( 2, dash1 );
+            pdotpen->SetWidth( w );
+            pdotpen->SetColour( color );
+            m_pdc->SetPen( *pdotpen );
+        }        
+        else {
+            int style = wxSOLID; // Style default
+            if( !strncmp( str, "DASH", 4 ) )
+                style = wxSHORT_DASH;
+            wxPen *pthispen = wxThePenList->FindOrCreatePen( color, w, style );
+            m_pdc->SetPen( *pthispen );
+        }
     } else // OpenGL mode
     {
         glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_ENABLE_BIT ); //Save state
@@ -2286,7 +2302,11 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glLineStipple( 1, 0x3F3F );
             glEnable( GL_LINE_STIPPLE );
         }
-
+        else if( !strncmp( str, "DOTT", 4 ) ) {
+            glLineStipple( 1, 0x3333 );
+            glEnable( GL_LINE_STIPPLE );
+        }
+        
     }
 
     //    Get a true pixel clipping/bounding box from the vp
@@ -2567,6 +2587,11 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     if( !m_pdc ) glPopAttrib();
 
+    if(pdotpen) {
+        pdotpen->SetDashes( 1, NULL );
+        delete pdotpen;
+    }
+    
     return 1;
 }
 

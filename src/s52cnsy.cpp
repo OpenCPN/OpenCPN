@@ -1718,47 +1718,49 @@ static void *OBSTRN04 (void *param)
       {
              if (GEO_LINE == obj->Primitive_type)
              {
-                         goto end;
-                         /*
-            // Continuation B
-                  GString *quaposstr = S57_getAttVal(geo, "QUAPOS");
-                  int      quapos    = 0;
+                 // Continuation B
+                 
+                 quapnt01str = CSQUAPNT01(obj);
+                 
+                 if( quapnt01str->Len() > 1 ) {
+                     long quapos;
+                     quapnt01str->ToLong(&quapos);
+                     if ( 2 <= quapos && quapos < 10){
+                         if (udwhaz03str->Len())
+                             obstrn04str.Append(_T(";LC(LOWACC41)"));
+                         else
+                             obstrn04str.Append(_T(";LC(LOWACC31)"));
+                     }
+                     goto end;
+                 }
+                 
+                 if ( udwhaz03str->Len() )
+                 {
+                     obstrn04str.Append( _T("LS(DOTT,2,CHBLK)") );
+                     goto end;
+                 }
 
-                  if (NULL != quaposstr) {
-                        quapos = atoi(quaposstr->str);
-                        if ( 2 <= quapos && quapos < 10){
-                              if (NULL != udwhaz03str)
-                                    g_string_append(obstrn04str, ";LC(LOWACC41)");
-                              else
-                                    g_string_append(obstrn04str, ";LC(LOWACC31)");
-                        }
-                  }
+                 if (UNKNOWN != valsou){
+                     if (valsou <= 20.0)
+                         obstrn04str.Append( _T(";LS(DOTT,2,CHBLK)") );
+                     else
+                         obstrn04str.Append( _T(";LS(DASH,2,CHBLK)") );
+                 }
+                 else
+                     obstrn04str.Append( _T(";LS(DOTT,2,CHBLK)") );
 
-                  if (NULL != udwhaz03str)
-                        g_string_append(obstrn04str, ";LS(DOTT,2,CHBLK)");
-
-                  if (UNKNOWN != valsou)
+                 
+                 if (udwhaz03str->Len()){
+                        //  Show the isolated danger symbol at the midpoint of the line
+                    }
+                 else {
+                    if (UNKNOWN != valsou)
                         if (valsou <= 20.0)
-                              g_string_append(obstrn04str, ";LS(DOTT,2,CHBLK)");
-                  else
-                        g_string_append(obstrn04str, ";LS(DASH,2,CHBLK)");
-                  else
-                        g_string_append(obstrn04str, ";LS(DOTT,2,CHBLK)");
-
-
-                  if (NULL != udwhaz03str)
-                        g_string_append(obstrn04str, udwhaz03str->str);
-                  else {
-                        if (UNKNOWN != valsou)
-                              if (valsou <= 20.0)
-                                    g_string_append(obstrn04str, sndfrm02str->str);
-                  }
-
-                  return obstrn04str;
-                         */
+                            obstrn04str.Append(*sndfrm02str);
+                 }
                }
 
-            else
+            else                // Area feature
             {
                   quapnt01str = CSQUAPNT01(obj);
 
