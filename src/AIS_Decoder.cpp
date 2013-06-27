@@ -1775,8 +1775,11 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
 void AIS_Decoder::OnTimerAISAudio( wxTimerEvent& event )
 {
     if( g_bAIS_CPA_Alert_Audio && m_bAIS_Audio_Alert_On ) {
-        m_AIS_Sound.Create( g_sAIS_Alert_Sound_File );
-        if( m_AIS_Sound.IsOk() ) m_AIS_Sound.Play();
+        if(!m_AIS_Sound.IsOk() )
+             m_AIS_Sound.Create( g_sAIS_Alert_Sound_File );
+             
+        if( m_AIS_Sound.IsOk() && !m_AIS_Sound.IsPlaying())
+            m_AIS_Sound.Play();
     }
     m_AIS_Audio_Alert_Timer.Start( TIMER_AIS_AUDIO_MSEC, wxTIMER_CONTINUOUS );
 }
@@ -1949,7 +1952,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
     }
 
     //    At this point, the audio flag is set
-
+    m_bAIS_Audio_Alert_On = true;
     //    Honor the global flag
     if( !g_bAIS_CPA_Alert_Audio ) m_bAIS_Audio_Alert_On = false;
 
@@ -1958,8 +1961,11 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
             m_AIS_Audio_Alert_Timer.SetOwner( this, TIMER_AISAUDIO );
             m_AIS_Audio_Alert_Timer.Start( TIMER_AIS_AUDIO_MSEC );
 
-            m_AIS_Sound.Create( g_sAIS_Alert_Sound_File );
-            if( m_AIS_Sound.IsOk() ) m_AIS_Sound.Play();
+            if( !m_AIS_Sound.IsOk() )
+                m_AIS_Sound.Create( g_sAIS_Alert_Sound_File );
+            
+            if( m_AIS_Sound.IsOk() && !m_AIS_Sound.IsPlaying())
+                m_AIS_Sound.Play();
         }
     } else
         m_AIS_Audio_Alert_Timer.Stop();
