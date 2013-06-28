@@ -663,6 +663,8 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
     req_Dialog->m_rButtonYes->SetLabel(_("Send"));
     req_Dialog->m_rButtonApply->SetLabel(_("Save"));
     req_Dialog->m_tResUnit->SetLabel(wxString::Format( _T("\u00B0")));
+    req_Dialog->m_pLogin->SetToolTip(_("Login you use to connect to Zygrib's forum"));
+    req_Dialog->m_pCode->SetToolTip(_("Get your Code in Zygrib's forum ( This is not your password! )"));
 
     if( req_Dialog->ShowModal() == wxID_APPLY ) {
         //save all enabled parameters
@@ -1177,17 +1179,11 @@ void GribRequestSetting::InitRequestConfig()
     m_pWind->Enable( false );                                               //always selected if available
     m_pPress->Enable( false );
 
-    if(EstimateFileSize()) {
-        m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));               //permit to send a message
-        m_rButtonYes->Show();
-        m_MailImage->SetValue( WriteMail() );
-    } else { 
-        m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
-        m_rButtonYes->Hide();
-        m_MailImage->SetValue(
-            _("The file size limit is overcome!\nYou can zoom in to decrease the area or change parameters")); 
-    }
+    m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));               //permit to send a (new) message
+    m_rButtonYes->Show();
 
+    m_MailImage->SetValue( WriteMail() );
+  
     this->Fit();
     this->Refresh();
 
@@ -1252,18 +1248,13 @@ void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
 
 void GribRequestSetting::OnTopChange(wxCommandEvent &event)
 {
-   ApplyRequestConfig( m_pModel->GetCurrentSelection(), m_pResolution->GetCurrentSelection() );
 
-    if(EstimateFileSize()) {
-        m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));                   //permit to send a (new) message
-        m_rButtonYes->Show();
-        m_MailImage->SetValue( WriteMail() );
-    } else { 
-        m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
-        m_rButtonYes->Hide();
-        m_MailImage->SetValue(
-            _("The file size limit is overcome!\nYou can zoom in to decrease the area or change parameters")); 
-    }
+    ApplyRequestConfig( m_pModel->GetCurrentSelection(), m_pResolution->GetCurrentSelection() );
+
+    m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));                   //permit to send a (new) message
+    m_rButtonYes->Show();
+
+    m_MailImage->SetValue( WriteMail() );
 
     this->Fit();
     this->Refresh();
@@ -1278,21 +1269,14 @@ void GribRequestSetting::OnAnyChange(wxCommandEvent &event)
     if(m_pModel->GetCurrentSelection() != GFS) m_pInterval->SetSelection(
         wxMax(1, m_pInterval->GetCurrentSelection()));  //mini 6 hours for COAMPS & RTOFS
     if( m_pModel->GetCurrentSelection() == COAMPS) m_pTimeRange->SetSelection(
-        wxMin(1, m_pTimeRange->GetCurrentSelection()));   //maxi 3 jours for this model
+        wxMin(1, m_pTimeRange->GetCurrentSelection()));   //maxi 3 days for this model
     if(m_pModel->GetCurrentSelection() == RTOFS) m_pTimeRange->SetSelection(
-        wxMin(4, m_pTimeRange->GetCurrentSelection()));     // maxi 6 jours for this model
+        wxMin(4, m_pTimeRange->GetCurrentSelection()));     // maxi 6 days for this model
 
-   
-    if(EstimateFileSize()) {
-        m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));                   //permit to send a (new) message
-        m_rButtonYes->Show();
-        m_MailImage->SetValue( WriteMail() );
-    } else { 
-        m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
-        m_rButtonYes->Hide();
-        m_MailImage->SetValue(
-            _("The file size limit is overcome!\nYou can zoom in to decrease the area or change parameters")); 
-    }
+    m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));                   //permit to send a (new) message
+    m_rButtonYes->Show();
+
+    m_MailImage->SetValue( WriteMail() );
 
     this->Fit();
     this->Refresh();
@@ -1300,6 +1284,7 @@ void GribRequestSetting::OnAnyChange(wxCommandEvent &event)
 
 wxString GribRequestSetting::WriteMail()
 {
+    m_MailError_Nb = 0;
     //some useful strings
     const wxString s[] = { _T(","), _T(" ") };        //separators
     const wxString p[][6] = { _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("WAVES"), _T("SEATMP"), _T(""), //parameters
@@ -1343,6 +1328,7 @@ wxString GribRequestSetting::WriteMail()
         }
         r_topmess.Append(wxT("meteo : "));
         r_topmess.append(m_pModel->GetStringSelection() + _T("\n"));
+        if ( m_pLogin->GetValue().IsEmpty() || m_pCode->GetValue().IsEmpty() ) m_MailError_Nb =1;
         break;
     }
     //write the parameters part of the mail
@@ -1369,6 +1355,7 @@ wxString GribRequestSetting::WriteMail()
         r_parameters = wxT("CUR,WTMP");                                   //the default parameters for this model
         break;
     }
+    if( !EstimateFileSize() ) m_MailError_Nb += 2;
     return wxString( r_topmess + r_parameters );
 }
 
@@ -1456,6 +1443,21 @@ bool GribRequestSetting::EstimateFileSize()
 
 void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
 {
+    const wxString error[] = { _T("\n\n"), _("Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and read instructions..."),
+        _("The file size limit is overcome!\nYou can zoom in and/or change parameters...") };
+
+    if( m_MailError_Nb ) {
+        m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
+        if( m_MailError_Nb == 3 ) 
+            m_MailImage->SetValue( error[1] + error[0] + error[2] );
+        else
+            m_MailImage->SetValue( error[m_MailError_Nb] );
+        m_rButtonYes->Hide();
+        this->Fit();
+        this->Refresh();
+        return;
+    }
+
     wxMailMessage *message = new wxMailMessage( 
     wxT("gribauto"),                                                                            //requested subject
     (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailAddressBase.BeforeFirst(_T(';'))     //to request address
@@ -1467,15 +1469,16 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
     if(mail.Send( *message ) ) {
 #ifdef __WXMSW__
         m_MailImage->SetValue(
-            _("Your request is ready. An eMail is prepared in your eMail environment. \nYou have just to click 'send' to send it...\nSave or Cancel to finish...or new parameters for a new eMail ...") );
+            _("Your request is ready. An email is prepared in your email environment. \nYou have just to click 'send' to send it...\nSave or Cancel to finish...or new parameters for a new email ...") );
 #else
         m_MailImage->SetValue(
-            _("Your request was sent \n(if your system has an MTA configured and is able to send eMail).\nSave or Cancel to finish...or new parameters for a new eMail ..."));
+            _("Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or new parameters for a new email ..."));
 #endif
     } else {
         m_MailImage->SetValue(
-            _("Request can't be sent. Please verify your eMail systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."));
+            _("Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."));
     }
     m_rButtonYes->Hide();
-    Fit();
+    this->Fit();
+    this->Refresh();
 }
