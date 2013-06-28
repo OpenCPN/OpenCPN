@@ -215,6 +215,8 @@ private:
       void OnSendMaiL( wxCommandEvent& event );
       void OnSaveMail( wxCommandEvent& event ) { this->EndModal(wxID_APPLY); }
 
+      int  m_MailError_Nb;
+
 };
 
 #endif
