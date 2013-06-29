@@ -639,7 +639,7 @@ void OCP_DataStreamInput_Thread::ThreadMessage(const wxString &msg)
     event.SetEventObject( (wxObject *)this );
     event.SetString(msg);
     if( gFrame )
-        gFrame->AddPendingEvent(event);
+        gFrame->GetEventHandler()->AddPendingEvent(event);
 }
 
 bool OCP_DataStreamInput_Thread::SetOutMsg(const wxString & msg)
