@@ -2806,6 +2806,17 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
 {
     wxPoint r;
 
+    //  We calculate the winding direction of the poly
+    //  in order to know which side to draw symbol on
+    double dfSum = 0.0;
+    
+    for( int iseg = 0; iseg < npt - 1; iseg++ ) {
+        dfSum += ptp[iseg].x * ptp[iseg+1].y - ptp[iseg].y * ptp[iseg+1].x;
+    }
+    dfSum += ptp[npt-1].x * ptp[0].y - ptp[npt-1].y * ptp[0].x;
+    
+    bool cw = dfSum < 0.;
+    
     //    Get a true pixel clipping/bounding box from the vp
     wxPoint pbb = vp->GetPixFromLL( vp->clat, vp->clon );
     int xmin_ = pbb.x - vp->rv_rect.width / 2;
@@ -2819,41 +2830,57 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
         wxPen *pthispen = wxThePenList->FindOrCreatePen( color, width, wxSOLID );
         m_pdc->SetPen( *pthispen );
 
-        for( int iseg = 0; iseg < npt - 1; iseg++ ) {
+        int start_seg = 0;
+        int end_seg = npt - 1;
+        int inc = 1;
+        
+        if( cw ){
+            start_seg = npt - 1;
+            end_seg = 0;
+            inc = -1;
+        }
+        
+        float dx, dy, seg_len, theta, cth, sth, tdeg;
+        
+        bool done = false;
+        int iseg = start_seg;
+        while( !done ){
+            
             // Do not bother with segments that are invisible
 
             x0 = ptp[iseg].x;
             y0 = ptp[iseg].y;
-            x1 = ptp[iseg + 1].x;
-            y1 = ptp[iseg + 1].y;
+            x1 = ptp[iseg + inc].x;
+            y1 = ptp[iseg + inc].y;
 
             ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_, ymin_,
                     ymax_ );
 
-            if( res == Invisible ) continue;
+            if( res == Invisible )
+                goto next_seg_dc;
 
-            float dx = ptp[iseg + 1].x - ptp[iseg].x;
-            float dy = ptp[iseg + 1].y - ptp[iseg].y;
-            float seg_len = sqrt( dx * dx + dy * dy );
-            float theta = atan2( dy, dx );
-            float cth = cos( theta );
-            float sth = sin( theta );
-            float tdeg = theta * 180. / PI;
-
+            dx = ptp[iseg + inc].x - ptp[iseg].x;
+            dy = ptp[iseg + inc].y - ptp[iseg].y;
+            seg_len = sqrt( dx * dx + dy * dy );
+            theta = atan2( dy, dx );
+            cth = cos( theta );
+            sth = sin( theta );
+            tdeg = theta * 180. / PI;
+            
             if( seg_len >= 1.0 ) {
                 if( seg_len <= sym_len * sym_factor ) {
+                    int xst1 = ptp[iseg].x;
+                    int yst1 = ptp[iseg].y;
+                    float xst2, yst2;
                     if( seg_len >= sym_len ) {
-                        int xst1 = ptp[iseg].x;
-                        float xst2 = xst1 + ( sym_len * cth );
-
-                        int yst1 = ptp[iseg].y;
-                        float yst2 = yst1 + ( sym_len * sth );
-
-                        pdc->DrawLine( xst1, yst1, (wxCoord) floor( xst2 ),
-                                (wxCoord) floor( yst2 ) );
+                        xst2 = xst1 + ( sym_len * cth );
+                        yst2 = yst1 + ( sym_len * sth );
                     } else {
-                        pdc->DrawLines( 2, &ptp[iseg] );
+                        xst2 = ptp[iseg + inc].x;
+                        yst2 = ptp[iseg + inc].y;
                     }
+                    
+                    pdc->DrawLine( xst1, yst1, (wxCoord) floor( xst2 ), (wxCoord) floor( yst2 ) );
                 }
 
                 else {
@@ -2870,17 +2897,22 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
                                 draw_rule->pos.line.pivot_y.LIRW );
 
                         HPGL->SetTargetDC( pdc );
-                        HPGL->Render( str, col, r, pivot, (double) tdeg );
+                        HPGL->Render( str, col, r, pivot, tdeg );
 
                         xs += sym_len * cth * sym_factor;
                         ys += sym_len * sth * sym_factor;
                         s += sym_len * sym_factor;
                     }
 
-                    pdc->DrawLine( (int) xs, (int) ys, ptp[iseg + 1].x, ptp[iseg + 1].y );
+                    pdc->DrawLine( (int) xs, (int) ys, ptp[iseg + inc].x, ptp[iseg + inc].y );
                 }
             }
-        } // for
+next_seg_dc:            
+            iseg += inc;
+            if(iseg == end_seg)
+                done = true;
+            
+        } // while
     } // if pdc
     else // opengl
     {
@@ -2888,26 +2920,41 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
         glColor4ub( color.Red(), color.Green(), color.Blue(), color.Alpha() );
         glLineWidth( wxMax(g_GLMinLineWidth, (float)width * 0.7) );
 
-        for( int iseg = 0; iseg < npt - 1; iseg++ ) {
-            // Do not bother with segments that are invisible
+        int start_seg = 0;
+        int end_seg = npt - 1;
+        int inc = 1;
+        
+        if( cw ){
+            start_seg = npt - 1;
+            end_seg = 0;
+            inc = -1;
+        }
+        
+        float dx, dy, seg_len, theta, cth, sth, tdeg;
+        
+        bool done = false;
+        int iseg = start_seg;
+        while( !done ){
+           // Do not bother with segments that are invisible
 
             x0 = ptp[iseg].x;
             y0 = ptp[iseg].y;
-            x1 = ptp[iseg + 1].x;
-            y1 = ptp[iseg + 1].y;
+            x1 = ptp[iseg + inc].x;
+            y1 = ptp[iseg + inc].y;
 
             ClipResult res = cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, xmin_, xmax_, ymin_,
                     ymax_ );
 
-            if( res == Invisible ) continue;
+            if( res == Invisible )
+                goto next_seg;
 
-            float dx = ptp[iseg + 1].x - ptp[iseg].x;
-            float dy = ptp[iseg + 1].y - ptp[iseg].y;
-            float seg_len = sqrt( dx * dx + dy * dy );
-            float theta = atan2( dy, dx );
-            float cth = cos( theta );
-            float sth = sin( theta );
-            float tdeg = theta * 180. / PI;
+            dx = ptp[iseg + inc].x - ptp[iseg].x;
+            dy = ptp[iseg + inc].y - ptp[iseg].y;
+            seg_len = sqrt( dx * dx + dy * dy );
+            theta = atan2( dy, dx );
+            cth = cos( theta );
+            sth = sin( theta );
+            tdeg = theta * 180. / PI;
 
             if( seg_len >= 1.0 ) {
                 if( seg_len <= sym_len * sym_factor ) {
@@ -2918,8 +2965,8 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
                         xst2 = xst1 + ( sym_len * cth );
                         yst2 = yst1 + ( sym_len * sth );
                     } else {
-                        xst2 = ptp[iseg + 1].x;
-                        yst2 = ptp[iseg + 1].y;
+                        xst2 = ptp[iseg + inc].x;
+                        yst2 = ptp[iseg + inc].y;
                     }
 
                     glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT ); //Save state
@@ -2976,13 +3023,17 @@ void s52plib::draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp, 
                     {
                         glBegin( GL_LINES );
                         glVertex2i( xs, ys );
-                        glVertex2i( ptp[iseg + 1].x, ptp[iseg + 1].y );
+                        glVertex2i( ptp[iseg + inc].x, ptp[iseg + inc].y );
                         glEnd();
                     }
                     glPopAttrib();
                 }
             }
-        } // for
+next_seg:            
+            iseg += inc;
+            if(iseg == end_seg)
+                done = true;
+        } // while
 
     } //opengl
 }
