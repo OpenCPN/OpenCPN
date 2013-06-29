@@ -3337,33 +3337,15 @@ ListOfS57Obj *s57chart::GetAssociatedObjects( S57Obj *obj )
 
     switch( obj->Primitive_type ){
         case GEO_POINT:
+            //  n.b.  This logic not perfectly right for LINE and AREA features
+            //  It uses the object reference point for testing, instead of the decomposed
+            //  line or boundary geometry.  Thus, it may fail on some intersecting relationships.
+            //  Judged acceptable, in favor of performance implications.
+            //  DSR
+        case GEO_LINE:
+        case GEO_AREA:
             ObjRazRules *top;
             disPrioIdx = 1;         // PRIO_GROUP1:S57 group 1 filled areas
-
-            /*
-             for(j=0 ; j<LUPNAME_NUM ; j++)
-             {
-             top = razRules[disPrioIdx][j];
-             while ( top != NULL)
-             {
-             //                              if(!strncmp(top->obj->FeatureName, "DEPARE", 6) || !strncmp(top->obj->FeatureName, "DRGARE", 6))
-             if(top->obj->bIsAssociable)
-             {
-             if(top->obj->BBObj.PointInBox( lon, lat, 0.0))
-             {
-             if(IsPointInObjArea(lat, lon, 0.0, top->obj))
-             {
-             pobj_list->Append(top->obj);
-             break;
-             }
-             }
-             }
-
-             ObjRazRules *nxx  = top->next;
-             top = nxx;
-             }
-             }
-             */
 
             gotit = false;
             top = razRules[disPrioIdx][3];     // PLAIN_BOUNDARIES
@@ -3399,12 +3381,6 @@ ListOfS57Obj *s57chart::GetAssociatedObjects( S57Obj *obj )
                 }
             }
 
-            break;
-
-        case GEO_LINE:
-            break;
-
-        case GEO_AREA:
             break;
 
         default:
