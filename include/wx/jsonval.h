@@ -11,9 +11,9 @@
 #if !defined( _WX_JSONVAL_H )
 #define _WX_JSONVAL_H
 
-#ifdef __GNUG__
-    #pragma interface "jsonval.h"
-#endif
+//#ifdef __GNUG__
+//    #pragma interface "jsonval.h"
+//#endif
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"

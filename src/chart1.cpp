@@ -3148,10 +3148,10 @@ void MyFrame::ProcessCanvasResize( void )
 
 void MyFrame::OnSize( wxSizeEvent& event )
 {
-    DoSetSize();
+    ODoSetSize();
 }
 
-void MyFrame::DoSetSize( void )
+void MyFrame::ODoSetSize( void )
 {
     int x, y;
     GetClientSize( &x, &y );

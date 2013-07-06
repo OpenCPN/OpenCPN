@@ -95,7 +95,6 @@ src/mygdal/cpl_minixml.cpp
 src/chart1.cpp
 src/s52utils.cpp
 src/s52plib.cpp
-src/cutil.c
 src/statwin.cpp
 src/chartdb.cpp
 src/mygeom.cpp
@@ -163,7 +162,6 @@ src/about.cpp
 src/s57chart.cpp
 src/thumbwin.cpp
 src/tri.c
-src/georef.c
 src/s52cnsy.cpp
 src/routeman.cpp
 src/pluginmanager.cpp
