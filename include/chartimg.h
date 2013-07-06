@@ -33,6 +33,7 @@
 
 #include "chartbase.h"
 #include "georef.h"                 // for GeoRef type
+#include "OCPNRegion.h"
 
 typedef enum ScaleTypeEnum
 {
@@ -151,15 +152,15 @@ class  ChartBaseBSB     :public ChartBase
       virtual int latlong_to_pix_vp(double lat, double lon, int &pixx, int &pixy, ViewPort& vp);
       virtual int vp_pix_to_latlong(ViewPort& vp, int pixx, int pixy, double *lat, double *lon);
 
-      bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
+      bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                        const wxRegion &Region);
+                                        const OCPNRegion &Region);
 
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
       virtual double GetNearestPreferredScalePPM(double target_scale_ppm);
 
-      void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion  *pValidRegion);
+      void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion  *pValidRegion);
 
       virtual bool GetChartExtent(Extent *pext);
 
@@ -208,7 +209,7 @@ protected:
       virtual int BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int xl, int sub_samp);
 
 
-      bool GetViewUsingCache( wxRect& source, wxRect& dest, const wxRegion& Region, ScaleTypeEnum scale_type );
+      bool GetViewUsingCache( wxRect& source, wxRect& dest, const OCPNRegion& Region, ScaleTypeEnum scale_type );
       bool GetView( wxRect& source, wxRect& dest, ScaleTypeEnum scale_type );
 
 
@@ -312,7 +313,7 @@ protected:
 
       bool      m_bIDLcross;
 
-      wxRegion  m_last_region;
+      OCPNRegion  m_last_region;
 
       int       m_b_cdebug;
 

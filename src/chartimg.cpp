@@ -256,7 +256,7 @@ bool ChartDummy::GetChartExtent(Extent *pext)
     return true;
 }
 
-bool ChartDummy::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+bool ChartDummy::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region)
 {
       return true;
 }
@@ -264,7 +264,7 @@ bool ChartDummy::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VP
 
 
 
-bool ChartDummy::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
+bool ChartDummy::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region)
 {
       return RenderViewOnDC(dc, VPoint);
 }
@@ -304,7 +304,7 @@ bool ChartDummy::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
 }
 
 
-void ChartDummy::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
+void ChartDummy::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion)
 {
       pValidRegion->Clear();
       pValidRegion->Union(0, 0, 1, 1);
@@ -3069,7 +3069,7 @@ bool ChartBaseBSB::IsRenderCacheable( wxRect& source, wxRect& dest )
 }
 
 
-void ChartBaseBSB::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
+void ChartBaseBSB::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion)
 {
       SetVPRasterParms(VPoint);
 
@@ -3102,7 +3102,7 @@ void ChartBaseBSB::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValid
 }
 
 
-bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const wxRegion& Region, ScaleTypeEnum scale_type )
+bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const OCPNRegion& Region, ScaleTypeEnum scale_type )
 {
       wxRect s1;
       ScaleTypeEnum scale_type_corrected;
@@ -3341,7 +3341,7 @@ bool ChartBaseBSB::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 {
       SetVPRasterParms(VPoint);
 
-      wxRegion rgn(0,0,VPoint.pix_width, VPoint.pix_height);
+      OCPNRegion rgn(0,0,VPoint.pix_width, VPoint.pix_height);
 
       bool bsame_region = (rgn == m_last_region);          // only want to do this once
 
@@ -3357,13 +3357,13 @@ bool ChartBaseBSB::RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint)
 
 
 
-bool ChartBaseBSB::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+bool ChartBaseBSB::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region)
 {
       return true;
 }
 
 
-bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region)
+bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region)
 {
       SetVPRasterParms(VPoint);
 
@@ -3374,12 +3374,12 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
       {
             printf("%d RenderRegion  ScaleType:  %d   factor:  %g\n", s_dc++, RENDER_HIDEF, factor );
             printf("Rect list:\n");
-            wxRegionIterator upd ( Region ); // get the requested rect list
-            while ( upd )
+            OCPNRegionIterator upd ( Region ); // get the requested rect list
+            while ( upd.HaveRects() )
             {
                   wxRect rect = upd.GetRect();
                   printf("   %d %d %d %d\n", rect.x, rect.y, rect.width, rect.height);
-                  upd ++ ;
+                  upd.NextRect() ;
             }
       }
 
@@ -3440,11 +3440,11 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
      //     Get the region rectangle count
 
      int n_rect =0;
-     wxRegionIterator upd ( Region ); // get the requested rect list
-     while ( upd )
+     OCPNRegionIterator upd ( Region ); // get the requested rect list
+     while ( upd.HaveRects() )
      {
            n_rect++;
-           upd ++ ;
+           upd.NextRect();
      }
 
      if((!IsRenderCacheable( Rsrc, dest ) && ( n_rect > 4 ) && (n_rect < 20)) || ( factor < 1))
@@ -3456,14 +3456,14 @@ bool ChartBaseBSB::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, 
 //           PixelCache *pPixCacheTemp = new PixelCache(dest.width, dest.height, BPP);
 
       //    Decompose the region into rectangles, and fetch them into the target dc
-           wxRegionIterator upd ( Region ); // get the requested rect list
+           OCPNRegionIterator upd ( Region ); // get the requested rect list
            int ir = 0;
-           while ( upd )
+           while ( upd.HaveRects() )
            {
                  wxRect rect = upd.GetRect();
                  GetAndScaleData(pPixCache->GetpData(), Rsrc, Rsrc.width, rect, dest.width, factor, ren_type);
                  ir++;
-                 upd ++ ;
+                 upd.NextRect();;
            }
 
 //           delete pPixCache;                           // new cache is OK

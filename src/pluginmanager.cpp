@@ -3003,19 +3003,21 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor, int can
         return 2.0e7;
 }
 
-bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region)
+bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region)
 {
     return true;
 }
 
 
 bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-        const wxRegion &Region)
+        const OCPNRegion &Region)
 {
     if(m_ppicb)
     {
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
-        dc.SelectObject(m_ppicb->RenderRegionView( pivp, Region));
+        OCPNRegion rg = Region;
+        wxRegion r = rg.ConvertTowxRegion();
+        dc.SelectObject(m_ppicb->RenderRegionView( pivp, r));
         return true;
     }
     else
@@ -3034,7 +3036,7 @@ bool ChartPlugInWrapper::AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed)
         return false;
 }
 
-void ChartPlugInWrapper::GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion)
+void ChartPlugInWrapper::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion)
 {
     if(m_ppicb)
     {

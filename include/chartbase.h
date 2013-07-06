@@ -169,14 +169,14 @@ public:
 
       virtual bool IsReadyToRender(){ return bReadyToRender;}
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                        const wxRegion &Region) = 0;
+                                        const OCPNRegion &Region) = 0;
 
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                        const wxRegion &Region) = 0;
+                                        const OCPNRegion &Region) = 0;
 
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed) = 0;
 
-      virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion) = 0;
+      virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion) = 0;
 
       virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate = true ) = 0;
 
@@ -271,14 +271,14 @@ public:
       virtual bool GetChartExtent(Extent *pext);
 
       virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                        const wxRegion &Region);
+                                        const OCPNRegion &Region);
 
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                        const wxRegion &Region);
+                                        const OCPNRegion &Region);
 
       virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
 
-      virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
+      virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
 
       virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
@@ -320,14 +320,14 @@ class ChartPlugInWrapper : public ChartBase
             virtual bool GetChartExtent(Extent *pext);
 
             virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint,
-                                              const wxRegion &Region);
+                                              const OCPNRegion &Region);
 
             virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                              const wxRegion &Region);
+                                              const OCPNRegion &Region);
 
             virtual bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
 
-            virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
+            virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
 
             virtual void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 

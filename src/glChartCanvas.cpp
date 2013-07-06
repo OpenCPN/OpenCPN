@@ -687,7 +687,7 @@ void glChartCanvas::GrowData( int size )
     }
 }
 
-void glChartCanvas::SetClipRegion( ViewPort &vp, wxRegion &region, bool b_clear )
+void glChartCanvas::SetClipRegion( ViewPort &vp, OCPNRegion &region, bool b_clear )
 {
     if( g_b_useStencil ) {
         glPushMatrix();
@@ -729,8 +729,8 @@ void glChartCanvas::SetClipRegion( ViewPort &vp, wxRegion &region, bool b_clear 
         glStencilOp( GL_KEEP, GL_KEEP, GL_REPLACE );
 
         //    Decompose the region into rectangles, and draw as quads
-        wxRegionIterator clipit( region );
-        while( clipit ) {
+        OCPNRegionIterator clipit( region );
+        while( clipit.HaveRects() ) {
             wxRect rect = clipit.GetRect();
 
             if(vp.b_quilt)
@@ -746,7 +746,7 @@ void glChartCanvas::SetClipRegion( ViewPort &vp, wxRegion &region, bool b_clear 
             glVertex2f( rect.x, rect.y + rect.height );
             glEnd();
 
-            clipit++;
+            clipit.NextRect();
         }
 
         //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
@@ -795,8 +795,8 @@ void glChartCanvas::SetClipRegion( ViewPort &vp, wxRegion &region, bool b_clear 
 
         //    Decompose the region into rectangles, and draw as quads
         //    With z = 1
-        wxRegionIterator clipit( region );
-        while( clipit ) {
+        OCPNRegionIterator clipit( region );
+        while( clipit.HaveRects() ) {
             wxRect rect = clipit.GetRect();
 
             if(vp.b_quilt)
@@ -820,7 +820,7 @@ void glChartCanvas::SetClipRegion( ViewPort &vp, wxRegion &region, bool b_clear 
             glVertex3f( rect.x, rect.y + rect.height, 0.5 );
             glEnd();
 
-            clipit++;
+            clipit.NextRect();
         }
 
         glDepthFunc( GL_GREATER );                          // Set the test value
@@ -832,7 +832,7 @@ void glChartCanvas::SetClipRegion( ViewPort &vp, wxRegion &region, bool b_clear 
     }
 }
 
-void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, wxRegion &region )
+void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, OCPNRegion &region )
 {
     if( !chart ) return;
 
@@ -1187,15 +1187,15 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, w
 
 }
 
-void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_clear )
+void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, OCPNRegion Region, bool b_clear )
 {
     m_gl_rendered_region.Clear();
 
     if( cc1->m_pQuilt->GetnCharts() && !cc1->m_pQuilt->IsBusy() ) {
         //  Walk the region list to determine whether we need a clear before starting
         if( b_clear ) {
-            wxRegion clear_test_region = Region;
-
+            OCPNRegion clear_test_region = Region;
+            
             ChartBase *cchart = cc1->m_pQuilt->GetFirstChart();
             while( cchart ) {
                 if( ! cc1->IsChartLargeEnoughToRender( cchart, vp ) ) {
@@ -1205,7 +1205,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
 
                 QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
                 if( pqp->b_Valid ) {
-                    wxRegion get_region = pqp->ActiveRegion;
+                    OCPNRegion get_region = pqp->ActiveRegion;
 
                     if( !get_region.IsEmpty() )
                         clear_test_region.Subtract( get_region );
@@ -1229,7 +1229,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
 
             QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
             if( pqp->b_Valid ) {
-                wxRegion get_region = pqp->ActiveRegion;
+                OCPNRegion get_region = pqp->ActiveRegion;
                 get_region.Intersect( Region );
 
                 bool b_rendered = false;
@@ -1253,7 +1253,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
 
                         if( !b_rendered ) {
                             if( chart->GetChartFamily() == CHART_FAMILY_VECTOR ) {
-                                wxRegion rr = get_region;
+                                OCPNRegion rr = get_region;
                                 rr.Offset( vp.rv_rect.x, vp.rv_rect.y );
                                 b_rendered = chart->RenderRegionViewOnGL( *m_pcontext, cc1->VPoint, rr );
                             }
@@ -1275,7 +1275,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
             while( pch ) {
                 QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
                 if( pqp->b_Valid ) {
-                    wxRegion get_region = pqp->ActiveRegion;
+                    OCPNRegion get_region = pqp->ActiveRegion;
 
                     get_region.Intersect( Region );
                     if( !get_region.IsEmpty() ) {
@@ -1298,7 +1298,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
         }
 
         // Hilite rollover patch
-        wxRegion hiregion = cc1->m_pQuilt->GetHiliteRegion( vp );
+        OCPNRegion hiregion = cc1->m_pQuilt->GetHiliteRegion( vp );
 
         if( !hiregion.IsEmpty() ) {
             glPushAttrib( GL_COLOR_BUFFER_BIT );
@@ -1323,8 +1323,8 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
 
             glColor4f( (float) .8, (float) .4, (float) .4, (float) hitrans );
 
-            wxRegionIterator upd ( hiregion );
-            while ( upd )
+            OCPNRegionIterator upd ( hiregion );
+            while ( upd.HaveRects() )
             {
                 wxRect rect = upd.GetRect();
 
@@ -1335,7 +1335,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
                 glVertex2i( rect.x, rect.y + rect.height );
                 glEnd();
 
-                upd ++ ;
+                upd.NextRect();
             }
 
             glDisable( GL_BLEND );
@@ -1349,7 +1349,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, wxRegion Region, bool b_cle
     }
 }
 
-void glChartCanvas::ComputeRenderQuiltViewGLRegion( ViewPort &vp, wxRegion Region )
+void glChartCanvas::ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Region )
 {
     m_gl_rendered_region.Clear();
 
@@ -1364,7 +1364,7 @@ void glChartCanvas::ComputeRenderQuiltViewGLRegion( ViewPort &vp, wxRegion Regio
 
                 QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
                 if( pqp->b_Valid ) {
-                    wxRegion get_region = pqp->ActiveRegion;
+                    OCPNRegion get_region = pqp->ActiveRegion;
                     get_region.Intersect( Region );
 
                     //  Todo  If chart is cm93, and it happens not to render, then calculation will be wrong
@@ -1408,7 +1408,7 @@ void glChartCanvas::render()
         b_newview = false;
     }
 
-    wxRegion chart_get_region( 0, 0, cc1->VPoint.rv_rect.width, cc1->VPoint.rv_rect.height );
+    OCPNRegion chart_get_region( 0, 0, cc1->VPoint.rv_rect.width, cc1->VPoint.rv_rect.height );
 
     ocpnDC gldc( *this );
 
@@ -1595,7 +1595,7 @@ void glChartCanvas::render()
                             }
 
                             //calculate the new regions to render
-                            wxRegion update_region;
+                            OCPNRegion update_region;
                             if( dy ) {
                                 if( dy > 0 ) update_region.Union(
                                         wxRect( 0, VPoint.pix_height - dy, VPoint.pix_width, dy ) );
@@ -1733,7 +1733,7 @@ void glChartCanvas::render()
         if( !b_rendered ) {
             if( !dynamic_cast<ChartDummy*>( Current_Ch ) ) {
                 glClear( GL_COLOR_BUFFER_BIT );
-                wxRegion full_region( cc1->VPoint.rv_rect );
+                OCPNRegion full_region( cc1->VPoint.rv_rect );
                 Current_Ch->RenderRegionViewOnGL( *m_pcontext, cc1->VPoint, full_region );
             }
         }
@@ -1741,7 +1741,7 @@ void glChartCanvas::render()
 
 //    Render the WorldChart
 
-    wxRegion chartValidRegion;
+    OCPNRegion chartValidRegion;
 
     if(!VPoint.b_quilt)
         Current_Ch->GetValidCanvasRegion ( svp, &chartValidRegion );
@@ -1750,7 +1750,7 @@ void glChartCanvas::render()
 
     // Make a region covering the current chart on the canvas
         // growing the box to account for rotation
-    wxRegion backgroundRegion( VPoint.rv_rect.x, VPoint.rv_rect.y, VPoint.rv_rect.width,
+    OCPNRegion backgroundRegion( VPoint.rv_rect.x, VPoint.rv_rect.y, VPoint.rv_rect.width,
                                    VPoint.rv_rect.height );
 
 
@@ -1833,7 +1833,7 @@ void glChartCanvas::render()
 
 #if 0
     //  Debug
-    wxRegionIterator upd ( ru );
+    OCPNRegionIterator upd ( ru );
     while ( upd )
     {
         wxRect rect = upd.GetRect();
