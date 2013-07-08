@@ -377,7 +377,7 @@ public:
     OCPNRegion( size_t n, const wxPoint *points, int fillStyle = wxODDEVEN_RULE );
     
     virtual ~OCPNRegion(){}
-    void InitRect(wxCoord x, wxCoord y, wxCoord w, wxCoord h);
+//    void InitRect(wxCoord x, wxCoord y, wxCoord w, wxCoord h);
     
     wxRegion &ConvertTowxRegion();
     
@@ -385,7 +385,7 @@ public:
 #ifdef USE_NEW_REGION    
 
     // common part of ctors for a rectangle region
-    void OInitRect(wxCoord x, wxCoord y, wxCoord w, wxCoord h);
+    void InitRect(wxCoord x, wxCoord y, wxCoord w, wxCoord h);
  
      // operators
     // ---------

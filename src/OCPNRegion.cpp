@@ -120,7 +120,6 @@ public:
 #define M_REGIONDATA_OF(rgn) ((OCPNRegionRefData *)(rgn.m_refData))
 
 IMPLEMENT_DYNAMIC_CLASS(OCPNRegion, wxGDIObject)
-//IMPLEMENT_DYNAMIC_CLASS(OCPNRegionIterator,wxObject)
 
 // ----------------------------------------------------------------------------
 // OCPNRegion construction
@@ -129,59 +128,36 @@ IMPLEMENT_DYNAMIC_CLASS(OCPNRegion, wxGDIObject)
 #define M_REGIONDATA ((OCPNRegionRefData *)m_refData)
 
 #ifndef USE_NEW_REGION
-OCPNRegion::OCPNRegion( wxCoord x, wxCoord y, wxCoord w, wxCoord h )
+
+OCPNRegion::OCPNRegion( wxCoord x, wxCoord y, wxCoord w, wxCoord h ) : wxRegion(x,y,w,h)
+
 {
-    wxRegion *t = new wxRegion(x, y, w, h);
-    *this = *(OCPNRegion *)t;
-    t->UnRef();
 }
 
-OCPNRegion::OCPNRegion( const wxPoint& topLeft, const wxPoint& bottomRight )
+OCPNRegion::OCPNRegion( const wxPoint& topLeft, const wxPoint& bottomRight ) : wxRegion(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y) 
 {
-    wxRegion *t = new wxRegion(topLeft.x, topLeft.y,
-                               bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
-    *this = *(OCPNRegion *)t;
-    t->UnRef();
 }
 
-OCPNRegion::OCPNRegion( const wxRect& rect )
+OCPNRegion::OCPNRegion( const wxRect& rect ) : wxRegion(rect.x, rect.y, rect.width, rect.height)
 {
-    wxRegion *t = new wxRegion(rect.x, rect.y, rect.width, rect.height);
-    *this = *(OCPNRegion *)t;
-    t->UnRef();
 }
 
-
-OCPNRegion::OCPNRegion( size_t n, const wxPoint *points, int fillStyle )
-{
 #ifdef __WXOSX__
-    wxRegion *t = new wxRegion(n, points, (wxPolygonFillMode)fillStyle);
-#else
-    wxRegion *t = new wxRegion(n, points, fillStyle);
-#endif    
-    *this = *(OCPNRegion *)t;
-    t->UnRef();
+OCPNRegion::OCPNRegion( size_t n, const wxPoint *points, int fillStyle ) : wxRegion(n, points, (wxPolygonFillMode)fillStyle)
+{
 }
 
-void OCPNRegion::InitRect(wxCoord x, wxCoord y, wxCoord w, wxCoord h)
+#else
+OCPNRegion::OCPNRegion( size_t n, const wxPoint *points, int fillStyle ) : wxRegion(n, points, fillStyle)
 {
-    GdkRectangle rect;
-    rect.x = x;
-    rect.y = y;
-    rect.width = w;
-    rect.height = h;
-    
-    m_refData = new OCPNRegionRefData();
-    
-    M_REGIONDATA->m_region = gdk_region_rectangle( &rect );
 }
+#endif
+
 
 wxRegion &OCPNRegion::ConvertTowxRegion()
 {
     return *(wxRegion *)this;
 }
-
-
 
 
 #endif    
@@ -220,7 +196,7 @@ void OCPNRegion::InitRect(wxCoord x, wxCoord y, wxCoord w, wxCoord h)
 OCPNRegion::OCPNRegion( GdkRegion *region )
 {
     m_refData = new OCPNRegionRefData();
-///    M_REGIONDATA->m_region = gdk_region_copy( region );
+    M_REGIONDATA->m_region = gdk_region_copy( region );
 }
 
 OCPNRegion::OCPNRegion( size_t n, const wxPoint *points, int fillStyle )
