@@ -5435,7 +5435,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                         << _("Would you like include the Great Circle routing points for this leg?");
 
+#ifndef __WXOSX__
                     int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+#else
+                    int answer = wxID_NO;
+#endif                    
 
                     if( answer == wxID_YES ) {
                         RoutePoint* gcPoint;
