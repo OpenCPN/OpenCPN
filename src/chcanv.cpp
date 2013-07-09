@@ -1957,10 +1957,10 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             if( g_FloatingCompassDialog ) {
                 if( g_FloatingCompassDialog->IsShown() ) {
                     g_FloatingCompassDialog->Hide();
-                    gFrame->Raise();
                 } else {
                     g_FloatingCompassDialog->Show();
                 }
+                gFrame->Raise();
                 Refresh();
             }
             break;
