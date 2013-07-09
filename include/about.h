@@ -88,6 +88,7 @@ class about: public wxDialog
     wxTextCtrl *pAboutTextCtl;
     wxTextCtrl *pAuthorTextCtl;
     wxTextCtrl *pLicenseTextCtl;
+    wxNotebook *pNotebook;
 
 };
 
