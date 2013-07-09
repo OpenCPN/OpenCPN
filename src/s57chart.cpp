@@ -6823,7 +6823,8 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                     }
                     if( curr_att0 ) {
                         char *curr_att = curr_att0;
-
+                        bool bviz = true;
+                        
                         attrCounter = 0;
                         int noAttr = 0;
                         bool inDepthRange = false;
@@ -6846,6 +6847,10 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
 
                             int yOpacity = (float)opacity*1.3; // Matched perception with red/green
 
+                            if( curAttrName == _T("LITVIS") ){
+                                if(value.StartsWith(_T("obsc")) )
+                                    bviz = false;
+                            }
                             if( curAttrName == _T("SECTR1") ) value.ToDouble( &sectr1 );
                             if( curAttrName == _T("SECTR2") ) value.ToDouble( &sectr2 );
                             if( curAttrName == _T("VALNMR") ) value.ToDouble( &valnmr );
@@ -6884,6 +6889,9 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                                     sectorlegs[i].sector1 == sector.sector1 &&
                                     sectorlegs[i].sector2 == sector.sector2 ) newsector = false;
                             }
+                            if(!bviz)
+                                newsector = false;
+                            
                             if( newsector ) {
                                 sectorlegs.push_back( sector );
                                 newSectorsNeedDrawing = true;
