@@ -27,6 +27,7 @@
 
 #include <wx/glcanvas.h>
 #include "ocpn_types.h"
+#include "OCPNRegion.h"
 
 class glTextureDescriptor;          // Defined/implemented in chcanv.cpp
 
@@ -54,16 +55,16 @@ public:
       wxString GetRendererString(){ return m_renderer; }
 
       void Invalidate() { m_gl_cache_vp.Invalidate(); }
-      void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, wxRegion &region);
+      void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, OCPNRegion &region);
       bool PurgeChartTextures(ChartBase *pc);
       void ClearAllRasterTextures(void);
       void DrawGLOverLayObjects(void);
 
 protected:
-      void RenderQuiltViewGL(ViewPort &vp, wxRegion Region, bool b_clear = true);
+      void RenderQuiltViewGL(ViewPort &vp, OCPNRegion Region, bool b_clear = true);
       void BuildFBO(void);
-      void SetClipRegion(ViewPort &vp, wxRegion &region, bool b_clear);
-      void ComputeRenderQuiltViewGLRegion( ViewPort &vp, wxRegion Region );
+      void SetClipRegion(ViewPort &vp, OCPNRegion &region, bool b_clear);
+      void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Region );
 
       wxGLContext       *m_pcontext;
 
@@ -107,7 +108,7 @@ protected:
       GLuint       m_blit_tex;
       int          m_cache_tex_x;
       int          m_cache_tex_y;
-      wxRegion     m_gl_rendered_region;
+      OCPNRegion     m_gl_rendered_region;
 
 DECLARE_EVENT_TABLE()
 };

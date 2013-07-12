@@ -54,7 +54,7 @@ class M_COVR_Desc
       bool     WriteWKB(void *p);
       int      ReadWKB(wxFFileInputStream &ifs);
       void     Update(M_COVR_Desc *pmcd);
-      wxRegion GetRegion(const ViewPort &vp, wxPoint *pwp);
+      OCPNRegion GetRegion(const ViewPort &vp, wxPoint *pwp);
 
 
       int         m_cell_index;
@@ -338,7 +338,7 @@ class cm93chart : public s57chart
 
             wxPoint *GetDrawBuffer(int nSize);
 
-            wxRegion          m_render_region;
+            OCPNRegion          m_render_region;
 
       private:
             InitReturn CreateHeaderDataFromCM93Cell(void);
@@ -418,7 +418,7 @@ class cm93compchart : public s57chart
             wxString GetPubDate();
 
             void SetVPParms(const ViewPort &vpt);
-            void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
+            void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
 
 
             ThumbData *GetThumbData(int tnx, int tny, float lat, float lon);
@@ -426,10 +426,10 @@ class cm93compchart : public s57chart
 
             bool AdjustVP(ViewPort &vp_last, ViewPort &vp_proposed);
 
-            bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
+            bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 
             virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint,
-                                              const wxRegion &Region);
+                                              const OCPNRegion &Region);
             void SetColorScheme(ColorScheme cs, bool bApplyImmediate);
 
             bool RenderNextSmallerCellOutlines( ocpnDC &dc, ViewPort& vp);
@@ -462,7 +462,7 @@ class cm93compchart : public s57chart
             void InvalidateCache();
       private:
             void UpdateRenderRegions ( const ViewPort& VPoint );
-            wxRegion GetValidScreenCanvasRegion(const ViewPort& VPoint, const wxRegion &ScreenRegion);
+            OCPNRegion GetValidScreenCanvasRegion(const ViewPort& VPoint, const OCPNRegion &ScreenRegion);
             bool RenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint);
 
             InitReturn CreateHeaderData();
@@ -470,9 +470,9 @@ class cm93compchart : public s57chart
             void FillScaleArray(double lat, double lon);
             int PrepareChartScale(const ViewPort &vpt, int cmscale);
             int GetCMScaleFromVP(const ViewPort &vpt);
-            bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
+            bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 
-            bool DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region );
+            bool DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region );
 
 
             //    Data members

@@ -324,7 +324,7 @@ class MyFrame: public wxFrame
     wxSize              m_defer_size;
 
   private:
-    void DoSetSize(void);
+    void ODoSetSize(void);
     void DoCOGSet(void);
 
         //      Toolbar support

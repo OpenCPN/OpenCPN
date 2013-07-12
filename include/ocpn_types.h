@@ -34,6 +34,8 @@
 #define __OCPNTYPES_H__
 
 #include "bbox.h"
+//#include "OCPNRegion.h"
+class OCPNRegion;
 
 //    ChartType constants
 typedef enum ChartTypeEnum
@@ -81,7 +83,7 @@ class ViewPort
             void GetLLFromPix(const wxPoint &p, double *lat, double *lon);
             wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
 
-            wxRegion GetVPRegionIntersect( const wxRegion &Region, size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
+            OCPNRegion GetVPRegionIntersect( const OCPNRegion &Region, size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
 
             void SetBoxes(void);
 

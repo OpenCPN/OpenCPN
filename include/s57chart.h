@@ -126,12 +126,12 @@ public:
 
       void SetNativeScale(int s){m_Chart_Scale = s;}
 
-      virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
-      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region);
-      virtual bool RenderOverlayRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region);
-      virtual bool RenderOverlayRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region);
+      virtual bool RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
+      virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region);
+      virtual bool RenderOverlayRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
+      virtual bool RenderOverlayRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region);
 
-      virtual void GetValidCanvasRegion(const ViewPort& VPoint, wxRegion *pValidRegion);
+      virtual void GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion);
 
       virtual void GetPointPix(ObjRazRules *rzRules, float rlat, float rlon, wxPoint *r);
       virtual void GetPointPix(ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints);
@@ -200,7 +200,7 @@ public:
 
       //    Last ViewPort succesfully rendered, stored as an aid to calculating pixel cache address offsets and regions
       ViewPort    m_last_vp;
-      wxRegion    m_last_Region;
+      OCPNRegion    m_last_Region;
 
       virtual bool IsCacheValid(){ return (pDIB != NULL); }
       virtual void InvalidateCache();
@@ -219,13 +219,13 @@ private:
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);
       bool DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect);
 
-      bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const wxRegion &Region, bool b_overlay);
-      bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region, bool b_overlay);
+      bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region, bool b_overlay);
+      bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region, bool b_overlay);
 
       int DCRenderRect(wxMemoryDC& dcinput, const ViewPort& vp, wxRect *rect);
       bool DCRenderLPB(wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rect);
 
-      void SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRegion &Region, bool b_render_nodta = true);
+      void SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region, bool b_render_nodta = true);
       void SetClipRegionGL(const wxGLContext &glc, const ViewPort& VPoint, const wxRect &Rect, bool b_render_nodta = true);
 
       InitReturn PostInit( ChartInitFlag flags, ColorScheme cs );

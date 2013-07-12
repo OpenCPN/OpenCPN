@@ -75,6 +75,7 @@
 #include "AISTargetAlertDialog.h"
 #include "SendToGpsDlg.h"
 #include "compasswin.h"
+#include "OCPNRegion.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -579,10 +580,10 @@ void ViewPort::GetLLFromPix( const wxPoint &p, double *lat, double *lon )
     *lon = slon;
 }
 
-wxRegion ViewPort::GetVPRegionIntersect( const wxRegion &Region, size_t n, float *llpoints,
+OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, float *llpoints,
         int chart_native_scale, wxPoint *ppoints )
 {
-    //  Calculate the intersection between a given wxRegion (Region) and a polygon specified by lat/lon points.
+    //  Calculate the intersection between a given OCPNRegion (Region) and a polygon specified by lat/lon points.
 
     //    If the viewpoint is highly overzoomed wrt to chart native scale, the polygon region may be huge.
     //    This can be very expensive, and lead to crashes on some platforms (gtk in particular)
@@ -626,7 +627,7 @@ wxRegion ViewPort::GetVPRegionIntersect( const wxRegion &Region, size_t n, float
 
                 if( _OUT == trans_box.Intersect( (wxBoundingBox&) vp_positive.vpBBox ) ) {
                     if( _OUT == trans_box.Intersect( (wxBoundingBox&) vpBBox ) ) {
-                        return wxRegion();
+                        return OCPNRegion();
                     }
                 }
             }
@@ -667,7 +668,7 @@ wxRegion ViewPort::GetVPRegionIntersect( const wxRegion &Region, size_t n, float
         wxPoint p1 = GetPixFromLL( cb_maxlat, cb_minlon );  // upper left
         wxPoint p2 = GetPixFromLL( cb_minlat, cb_maxlon );   // lower right
 
-        wxRegion r( p1, p2 );
+        OCPNRegion r( p1, p2 );
         r.Intersect( Region );
         return r;
     }
@@ -713,7 +714,8 @@ wxRegion ViewPort::GetVPRegionIntersect( const wxRegion &Region, size_t n, float
 
     else
     {
-        wxRegion r = wxRegion(n, pp);
+        
+        OCPNRegion r = OCPNRegion(n, pp);
         if(NULL == ppoints)
             delete[] pp;
 
@@ -723,7 +725,7 @@ wxRegion ViewPort::GetVPRegionIntersect( const wxRegion &Region, size_t n, float
     }
 
 #else
-    wxRegion r = wxRegion( n, pp );
+    OCPNRegion r = OCPNRegion( n, pp );
 
     if( NULL == ppoints ) delete[] pp;
 
@@ -5433,7 +5435,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
                         << _("Would you like include the Great Circle routing points for this leg?");
 
+#ifndef __WXOSX__
                     int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+#else
+                    int answer = wxID_NO;
+#endif                    
 
                     if( answer == wxID_YES ) {
                         RoutePoint* gcPoint;
@@ -8082,7 +8088,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 //        printf("Onpaint pix %d %d\n", VPoint.pix_width, VPoint.pix_height);
 //        printf("OnPaint rv_rect %d %d\n", VPoint.rv_rect.width, VPoint.rv_rect.height);
 
-    wxRegion chart_get_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
+    OCPNRegion chart_get_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
 
     //  If we are going to use the cached rotated image, there is no need to fetch any chart data
     //  and this will do it...
@@ -8149,7 +8155,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                                 }
                             }
 
-                            wxRegion update_region;
+                            OCPNRegion update_region;
                             if( dy ) {
                                 if( dy > 0 ) update_region.Union(
                                         wxRect( 0, VPoint.pix_height - dy, VPoint.pix_width, dy ) );
@@ -8208,7 +8214,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         else            // quilted, course-up
         {
             temp_dc.SelectObject( m_working_bm );
-            wxRegion chart_get_all_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
+            OCPNRegion chart_get_all_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
             m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_all_region );
         }
     }
@@ -8228,7 +8234,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
 //    Arrange to render the World Chart vector data behind the rendered current chart
 //    so that uncovered canvas areas show at least the world chart.
-    wxRegion chartValidRegion;
+    OCPNRegion chartValidRegion;
     if( !VPoint.b_quilt )
         Current_Ch->GetValidCanvasRegion( svp, &chartValidRegion ); // Make a region covering the current chart on the canvas
     else
@@ -8237,7 +8243,11 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     //    Copy current chart region
     wxRegion backgroundRegion( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
 
-    if( chartValidRegion.IsOk() ) backgroundRegion.Subtract( chartValidRegion );
+    wxRegion clip_region;
+    if( chartValidRegion.IsOk() ){
+        clip_region = chartValidRegion.ConvertTowxRegion();
+        backgroundRegion.Subtract( clip_region );
+    }
 
     //    Associate with temp_dc
     temp_dc.DestroyClippingRegion();
@@ -8377,7 +8387,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             wxMemoryDC ssdc_r;
             ssdc_r.SelectObject ( *pss_overlay_bmp );
 
-            wxRegionIterator upd_final ( rgn_blit );
+            OCPNRegionIterator upd_final ( rgn_blit );
             while ( upd_final )
             {
                 wxRect rect = upd_final.GetRect();
@@ -8426,7 +8436,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     //  Test code to validate the dc drawing rectangle....
     /*
-     wxRegionIterator upd_ru ( ru ); // get the update rect list
+     OCPNRegionIterator upd_ru ( ru ); // get the update rect list
      while ( upd_ru )
      {
      wxRect rect = upd_ru.GetRect();
