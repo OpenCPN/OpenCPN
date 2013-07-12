@@ -114,7 +114,7 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
                              HrefString = wxString::FromUTF8( child.first_attribute().value() );
                              
                              for( pugi::xml_node child1 = child.first_child(); child1; child1 = child1.next_sibling() ) {
-                                 wxString LinkString = wxString::FromUTF8( child1.value() );
+                                 wxString LinkString = wxString::FromUTF8( child1.name() );
                              
                                 if( LinkString == _T ( "text" ) )
                                     HrefTextString = wxString::FromUTF8( child1.first_child().value() );
