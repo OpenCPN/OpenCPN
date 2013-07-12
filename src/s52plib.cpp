@@ -599,18 +599,19 @@ int s52plib::_LUP2rules( LUPrec *LUP, S57Obj *pObj )
 int CompareLUPObjects( LUPrec *item1, LUPrec *item2 )
 {
     // sort the items by their name...
-#if wxCHECK_VERSION(2, 9, 0)
-    int ir = wxStricmp ( item1->OBCL, item2->OBCL );
-#else
     int ir = strcmp( item1->OBCL, item2->OBCL );
-#endif
-    if( ir != 0 ) return ir;
+
+    if( ir != 0 )
+        return ir;
     int c1 = 0;
     int c2 = 0;
-    if( item1->ATTCArray ) c1 = item1->ATTCArray->Count();
-    if( item2->ATTCArray ) c2 = item2->ATTCArray->Count();
+    if( item1->ATTCArray )
+        c1 = item1->ATTCArray->Count();
+    if( item2->ATTCArray )
+        c2 = item2->ATTCArray->Count();
 
-    if( c1 != c2 ) return c2 - c1;
+    if( c1 != c2 )
+        return c2 - c1;
     return item1->nSequence - item2->nSequence;
 }
 
