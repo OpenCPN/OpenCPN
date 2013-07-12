@@ -1905,10 +1905,18 @@ void RouteProp::OnRoutepropOkClick( wxCommandEvent& event )
     m_pEnroutePoint = NULL;
     m_bStartNow = false;
 
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+        if( !m_pRoute->m_bIsTrack )
+            pRouteManagerDialog->UpdateRouteListCtrl();
+        else
+            pRouteManagerDialog->UpdateTrkListCtrl();
+    }
+    
     Hide();
     cc1->Refresh( false );
 
     event.Skip();
+    
 }
 
 void RouteProp::OnEvtColDragEnd( wxListEvent& event )
@@ -2747,6 +2755,10 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
         delete m_pMyLinkList;
         m_pMyLinkList = NULL;
     }
+    
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+        pRouteManagerDialog->UpdateWptListCtrl();
+    
     event.Skip();
 }
 

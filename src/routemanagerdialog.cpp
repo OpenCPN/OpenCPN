@@ -1082,20 +1082,23 @@ void RouteManagerDialog::OnRtePropertiesClick( wxCommandEvent &event )
     if( !route ) return;
 
     if( NULL == pRoutePropDialog )          // There is one global instance of the RouteProp Dialog
-    pRoutePropDialog = new RouteProp( GetParent() );
+        pRoutePropDialog = new RouteProp( GetParent() );
 
     pRoutePropDialog->SetRouteAndUpdate( route );
     pRoutePropDialog->UpdateProperties();
-    if( !route->m_bIsInLayer ) pRoutePropDialog->SetDialogTitle( _("Route Properties") );
+    if( !route->m_bIsInLayer )
+        pRoutePropDialog->SetDialogTitle( _("Route Properties") );
     else {
         wxString caption( _T("Route Properties, Layer: ") );
         caption.Append( GetLayerName( route->m_LayerID ) );
         pRoutePropDialog->SetDialogTitle( caption );
     }
 
-    if( !pRoutePropDialog->IsShown() ) pRoutePropDialog->ShowModal();
+    if( !pRoutePropDialog->IsShown() )
+        pRoutePropDialog->Show();
+    
     // route might have changed
-    UpdateRouteListCtrl();
+//    UpdateRouteListCtrl();
 
     m_bNeedConfigFlush = true;
 }
@@ -2030,7 +2033,8 @@ void RouteManagerDialog::OnWptPropertiesClick( wxCommandEvent &event )
 void RouteManagerDialog::WptShowPropertiesDialog( RoutePoint* wp, wxWindow* parent )
 {
     // There is one global instance of the MarkProp Dialog
-    if( NULL == pMarkPropDialog ) pMarkPropDialog = new MarkInfoImpl( parent );
+    if( NULL == pMarkPropDialog )
+        pMarkPropDialog = new MarkInfoImpl( parent );
 
     pMarkPropDialog->SetRoutePoint( wp );
     pMarkPropDialog->UpdateProperties();
@@ -2041,7 +2045,8 @@ void RouteManagerDialog::WptShowPropertiesDialog( RoutePoint* wp, wxWindow* pare
     } else
         pMarkPropDialog->SetDialogTitle( _("Waypoint Properties") );
 
-    if( !pMarkPropDialog->IsShown() ) pMarkPropDialog->ShowModal();
+    if( !pMarkPropDialog->IsShown() )
+        pMarkPropDialog->Show();
 
 }
 
