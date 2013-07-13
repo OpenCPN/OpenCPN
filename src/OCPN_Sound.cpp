@@ -275,21 +275,33 @@ bool OCPN_Sound::LoadWAV(const wxUint8 *data, size_t length, bool copyData)
     waveformat.uiBlockAlign = wxUINT16_SWAP_ON_BE(waveformat.uiBlockAlign);
     waveformat.uiBitsPerSample = wxUINT16_SWAP_ON_BE(waveformat.uiBitsPerSample);
     
-    // get the sound data size
-    wxUint32 ul;
-    memcpy(&ul, &data[FMT_INDEX + waveformat.uiSize + 12], 4);
-    ul = wxUINT32_SWAP_ON_BE(ul);
     
-    if ( length < ul + FMT_INDEX + waveformat.uiSize + 16 )
-        return false;
-    
+    //  Sanity checks
     if (memcmp(data, "RIFF", 4) != 0)
         return false;
     if (memcmp(&data[WAVE_INDEX], "WAVE", 4) != 0)
         return false;
     if (memcmp(&data[FMT_INDEX], "fmt ", 4) != 0)
         return false;
-    if (memcmp(&data[FMT_INDEX + waveformat.uiSize + 8], "data", 4) != 0)
+ 
+    // get the sound data size
+        wxUint32 ul = 0;
+    //  Get the "data" chunk length
+    if (memcmp(&data[FMT_INDEX + waveformat.uiSize + 8], "data", 4) == 0) {
+        memcpy(&ul, &data[FMT_INDEX + waveformat.uiSize + 12], 4);
+        ul = wxUINT32_SWAP_ON_BE(ul);
+    }
+    
+    //  There may be a "fact" chunk in the header, which will displace the first "data" chunk
+    //  If so, find the "data" chunk 12 bytes further along
+    else if (memcmp(&data[FMT_INDEX + waveformat.uiSize + 8], "fact", 4) == 0) {
+        if (memcmp(&data[FMT_INDEX + waveformat.uiSize + 8 + 12], "data", 4) == 0) {
+            memcpy(&ul, &data[FMT_INDEX + waveformat.uiSize + 12 + 12], 4);
+            ul = wxUINT32_SWAP_ON_BE(ul);
+        }
+    }
+    
+    if ( length < ul + FMT_INDEX + waveformat.uiSize + 16 )
         return false;
     
     if (waveformat.uiFormatTag != WAVE_FORMAT_PCM)
