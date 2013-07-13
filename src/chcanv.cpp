@@ -4448,8 +4448,6 @@ void ChartCanvas::JaggyCircle( ocpnDC &dc, wxPen pen, int x, int y, int radius )
 
     wxDateTime now = wxDateTime::Now();
 
-//      srand( now.GetTicks());
-    srand( 1 );
     dc.SetPen( pen );
 
     int x0, y0, x1, y1;

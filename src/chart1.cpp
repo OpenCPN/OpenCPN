@@ -920,6 +920,12 @@ bool MyApp::OnInit()
 #endif
 #endif
 
+    //  Seed the random number generator
+    wxDateTime x = wxDateTime::UNow();
+    long seed = x.GetMillisecond();
+    seed *= x.GetTicks();
+    srand(seed);
+
     g_pPlatform = new wxPlatformInfo;
 
     //    On MSW, force the entire process to run on one CPU core only
