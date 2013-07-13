@@ -434,6 +434,7 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
             //              Develop Geometry
 
+            
             switch( prim ){
                 case 1: {
                     if( !bMulti ) {
@@ -4807,7 +4808,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 wxString wxAttrValue;
                 
                 if( (0 == strncmp("NOBJNM",pAttrName, 6) ) ||
-                    (0 == strncmp("NINFOR",pAttrName, 6) ) ||
+                    (0 == strncmp("NINFOM",pAttrName, 6) ) ||
                     (0 == strncmp("NTXTDS",pAttrName, 6) ) )
                 {
                     if( poReader->GetNall() == 2) {     // ENC is using UCS-2 / UTF-16 encoding
@@ -4858,7 +4859,8 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
         sheader += wxString( line, wxConvUTF8 );
     }
     fprintf( fpOut, "HDRLEN=%lu\n", (unsigned long) sheader.Len() );
-    fwrite( sheader.mb_str( wxConvUTF8 ), 1, sheader.Len(), fpOut );
+    wxCharBuffer buffer=sheader.ToUTF8();
+    fwrite( buffer.data(), 1, strlen(buffer), fpOut );
 
     if( ( pGeo != NULL ) /*&& (mode == 1)*/) {
         int wkb_len = pGeo->WkbSize();
