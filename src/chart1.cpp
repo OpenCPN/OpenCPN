@@ -660,7 +660,7 @@ DEFINE_EVENT_TYPE(EVT_THREADMSG)
 //              Local constants
 //------------------------------------------------------------------------------
 enum {
-    ID_PIANO_DISABLE_QUILT_CHART = 50000, ID_PIANO_ENABLE_QUILT_CHART
+    ID_PIANO_DISABLE_QUILT_CHART = 32000, ID_PIANO_ENABLE_QUILT_CHART
 };
 
 //------------------------------------------------------------------------------
