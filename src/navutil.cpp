@@ -1768,7 +1768,8 @@ int MyConfig::LoadMyConfig( int iteration )
             //  Remove the file before applying the changes,
             //  just in case the changes file itself causes a fault.
             //  If it does fault, at least the next restart will proceed without fault.
-            ::wxRemoveFile( m_sNavObjSetChangesFile );
+            if( ::wxFileExists( m_sNavObjSetChangesFile ) )
+                ::wxRemoveFile( m_sNavObjSetChangesFile );
 
             wxLogMessage( _T("Applying NavObjChanges") );
             pNavObjectChangesSet->ApplyChanges();
