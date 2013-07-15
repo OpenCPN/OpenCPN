@@ -174,8 +174,10 @@ RoutePoint * GPXLoadWaypoint1( pugi::xml_node &wpt_node,
 
     // Create waypoint
 
-    if( b_layer )
-        GuidString = _T("LayGUID");
+    if( b_layer ) {
+        if( GuidString.IsEmpty() )
+            GuidString = _T("LayGUID");
+    }
 
     pWP = new RoutePoint( rlat, rlon, SymString, NameString, GuidString, false ); // do not add to global WP list yet...
     pWP->m_MarkDescription = DescString;
