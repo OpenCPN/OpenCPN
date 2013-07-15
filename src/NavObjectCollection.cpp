@@ -263,7 +263,7 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
                 }
             
             else
-            if( ChildName.EndsWith( _T ( "RouteExtension" ) ) ) //Parse GPXX color
+            if( ChildName.EndsWith( _T ( "TrackExtension" ) ) ) //Parse GPXX color
             {
                 for( pugi::xml_node gpxx_child = tschild.first_child(); gpxx_child; gpxx_child = gpxx_child.next_sibling() ) {
                     wxString gpxx_name = wxString::FromUTF8( gpxx_child.name() );
