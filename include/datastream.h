@@ -204,7 +204,8 @@ private:
 
     void OnSocketEvent(wxSocketEvent& event);
     void OnTimerSocket(wxTimerEvent& event);
-
+    void OnSocketReadWatchdogTimer(wxTimerEvent& event);
+    
     wxMutex             m_output_mutex;
     bool                m_bok;
     wxEvtHandler        *m_consumer;
@@ -248,7 +249,8 @@ private:
     bool                m_brx_connect_event;
     wxTimer             m_socket_timer;
     int                 m_txenter;
-
+    wxTimer             m_socketread_watchdog_timer;
+    int                 m_dog_value;
 
 DECLARE_EVENT_TABLE()
 };
