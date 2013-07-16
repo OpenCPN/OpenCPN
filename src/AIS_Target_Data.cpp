@@ -185,6 +185,12 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         MMSIstr = wxString::Format( _T("%09d"), abs( MMSI ) );
     }
     ClassStr = wxGetTranslation( Get_class_string( false ) );
+    
+    if( Class == AIS_ATON ) {
+        wxString cls(_T("AtoN: ") );
+        cls += Get_vessel_type_string(false);
+        ClassStr = wxGetTranslation( cls );
+    }
 
     if( IMOstr.Length() )
         html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
@@ -479,7 +485,14 @@ wxString AIS_Target_Data::GetRolloverString( void )
     if( g_bAISRolloverShowClass || ( Class == AIS_SART ) ) {
         if( result.Len() ) result.Append( _T("\n") );
         result.Append( _T("[") );
-        result.Append( wxGetTranslation( Get_class_string( false ) ) );
+        if( Class == AIS_ATON ) {
+            result.Append( wxGetTranslation( Get_class_string( true ) ) );
+            result.Append(_T(": "));
+            result.Append( wxGetTranslation( Get_vessel_type_string( false ) ) );
+        }
+        else
+            result.Append( wxGetTranslation( Get_class_string( false ) ) );
+        
         result.Append( _T("] ") );
         if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
             if( Class == AIS_SART ) {
