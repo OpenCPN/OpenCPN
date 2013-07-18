@@ -561,7 +561,7 @@ bool TrackPropDlg::UpdateProperties()
 
         m_sdbBtmBtnsSizerExtend->Enable( IsThisTrackExtendable() );
         //m_sdbBtmBtnsSizerSplit->Enable( false );
-        SetTitle( _("Track Properties, Layer: %d") );
+        SetTitle( _("Track Properties") );
     }
 
     ::wxEndBusyCursor();
@@ -1065,6 +1065,7 @@ OCPNTrackListCtrl::OCPNTrackListCtrl( wxWindow* parent, wxWindowID id, const wxP
         wxListCtrl( parent, id, pos, size, style )
 {
     m_parent = parent;
+    g_prev_item = -1;
 }
 
 OCPNTrackListCtrl::~OCPNTrackListCtrl()
