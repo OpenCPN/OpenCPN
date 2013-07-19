@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-02 14:06-0500\n"
+"POT-Creation-Date: 2013-07-19 12:07-0400\n"
 "PO-Revision-Date: 2012-11-29 18:35-0300\n"
 "Last-Translator: \n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -154,22 +154,11 @@ msgid " (Ctrl-Space)"
 msgstr "(Ctrl-Mellanslag)"
 #
 #
-msgid " (Last Known)"
-msgstr "(Senaste kända)"
-#
-#
 msgid " - "
 msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Flyttbar version (-p) körs från"
-#
-msgid " </b>in<b> "
-msgstr " </b>om<b> "
-#
-#
-msgid " COG Unavailable"
-msgstr "COG ej tillgänglig"
 #
 #
 msgid " ChartFile:  "
@@ -243,10 +232,6 @@ msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "\"Fartygsnamn\" MMSI (Anropssignal)"
 #
 #
-msgid "&Acknowledge"
-msgstr "&Bekräfta"
-#
-#
 msgid "&Activate"
 msgstr "&Aktivera"
 #
@@ -272,16 +257,9 @@ msgid "&Delete All"
 msgstr "Ra&dera alla"
 #
 #
-msgid "&Export Route..."
+#, fuzzy
+msgid "&Export selected..."
 msgstr "Exportera rutt..."
-#
-#
-msgid "&Export Track..."
-msgstr "Exportera spår..."
-#
-#
-msgid "&Export Wpt..."
-msgstr "E&xportera waypoint..."
 #
 #
 msgid "&Font family:"
@@ -290,10 +268,6 @@ msgstr "Teckensnitt:"
 #
 msgid "&Go To"
 msgstr "Gå till"
-#
-#
-msgid "&Jump To"
-msgstr "Gå till "
 #
 #
 msgid "&Merge Selected Tracks"
@@ -330,10 +304,6 @@ msgstr "&Reversera rutt"
 #
 msgid "&Send to GPS"
 msgstr "Skicka till GPS"
-#
-#
-msgid "&Silence Alert"
-msgstr "&Tysta Larm"
 #
 #
 msgid "&Start Track"
@@ -377,21 +347,6 @@ msgstr ""
 #
 msgid "(unnamed)"
 msgstr "(namnlös)"
-#
-msgid ", Out: None"
-msgstr ", Ut: Ingen"
-#
-#
-msgid "-"
-msgstr "-"
-#
-#
-msgid "--"
-msgstr "--"
-#
-#
-msgid "---"
-msgstr "---"
 #
 #
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
@@ -531,20 +486,17 @@ msgid "?"
 msgstr "?"
 #
 #
-msgid "A"
-msgstr "A"
-#
-#
 msgid "AIS"
 msgstr "AIS"
 #
 #
-msgid "AIS Alert"
-msgstr "AIS-alarm"
-#
-#
 msgid "AIS Target List..."
 msgstr "AIS lista..."
+#
+#
+#, fuzzy
+msgid "AIS Target Name"
+msgstr "Visa AIS info "
 #
 #
 msgid "AIS Target Query"
@@ -554,21 +506,19 @@ msgstr "Visa AIS info "
 msgid "AIS Targets"
 msgstr "AIS-fartyg"
 #
-#
-msgid "AIS target list"
-msgstr "AIS lista"
-#
-#
-msgid "AISRollover"
-msgstr "AIS \"Rulla över\""
+msgid "APRS"
+msgstr ""
 #
 #
-msgid "AISTargetAlert"
-msgstr "AIS varning"
+#, fuzzy
+msgid "APRS Position Report"
+msgstr "DSC Positionsrapport           "
 #
+msgid "ARPA"
+msgstr ""
 #
-msgid "AISTargetQuery"
-msgstr "AIS-fartygsegenskaper"
+msgid "ARPA radar target"
+msgstr ""
 #
 #
 msgid "About"
@@ -577,9 +527,6 @@ msgstr "Om"
 #
 msgid "About OpenCPN"
 msgstr "Om OpenCPN"
-#
-msgid "Accept"
-msgstr ""
 #
 msgid "Accept Sentences"
 msgstr "Ta emot kommandon"
@@ -594,10 +541,6 @@ msgstr "Aktivera"
 #
 msgid "Activate Next Waypoint"
 msgstr "Aktivera nästa waypoint"
-#
-#
-msgid "Active"
-msgstr "Aktiv"
 #
 #
 msgid "Active Datasets"
@@ -630,10 +573,6 @@ msgstr "Address"
 #
 msgid "Aground"
 msgstr "Står på grund"
-#
-#
-msgid "Aid to Navigation"
-msgstr "Navigationshjälp"
 #
 #
 msgid "All Active Charts"
@@ -711,6 +650,11 @@ msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "Vill du radera <ALLA> waypoints?"
 #
 #
+#, fuzzy
+msgid "Are you sure you want to delete the selected object(s)"
+msgstr "Säker på att du vill radera rutten?"
+#
+#
 msgid "Are you sure you want to delete this route?"
 msgstr "Säker på att du vill radera rutten?"
 #
@@ -747,24 +691,13 @@ msgid "Automatic Daily Tracks"
 msgstr "Automatisk dagligt spår"
 #
 #
-msgid "Avg. speed (Kts)"
+#, fuzzy
+msgid "Avg. speed"
 msgstr "Medelhastighet (Knop)"
-#
-#
-msgid "B"
-msgstr "B"
-#
-#
-msgid "Barge, tanker, chemical"
-msgstr "Pråm, tanker, kemikalier"
 #
 #
 msgid "Base"
 msgstr "Enkel"
-#
-#
-msgid "Base Station"
-msgstr "Basstation"
 #
 #
 msgid "Basic"
@@ -818,20 +751,8 @@ msgstr "Blå"
 msgid "Boundaries"
 msgstr "Gränser"
 #
-#
-msgid "Brg"
-msgstr "Brg"
-#
 msgid "Buddy"
 msgstr "Kompis"
-#
-#
-msgid "Bulk carrier maritime"
-msgstr "Bulktransportfartyg"
-#
-#
-msgid "Bunkership"
-msgstr "Bunkerfartyg"
 #
 msgid "Buoy/Light Labels"
 msgstr "Namn på bojar och fyrar"
@@ -853,10 +774,6 @@ msgid "COG Predictor Length (min)"
 msgstr "Kurspilens längd i tid (min)"
 #
 #
-msgid "CPA"
-msgstr "CPA"
-#
-#
 msgid "CPA Calculation"
 msgstr "CPA-beräkning"
 #
@@ -867,10 +784,6 @@ msgstr "CPA/TCPA"
 #
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA-larm"
-#
-#
-msgid "Call"
-msgstr "Anrop"
 #
 #
 msgid "Cancel"
@@ -1005,9 +918,6 @@ msgstr "Cell"
 msgid "Cell Scale"
 msgstr "Cell-skala"
 #
-msgid "Center View"
-msgstr "Visa centrerad"
-#
 msgid "Center View..."
 msgstr "Centrera på..."
 #
@@ -1091,23 +1001,16 @@ msgid "Charts"
 msgstr "Sjökort"
 #
 #
+#, fuzzy
+msgid "Choose Font Color..."
+msgstr "Välj Teckensnitt..."
+#
+#
 msgid "Choose Font..."
 msgstr "Välj Teckensnitt..."
 #
 msgid "Choose Format for Copy"
 msgstr "Välj vilket format du vill kopiera i"
-#
-#
-msgid "Choose a file"
-msgstr "Välj en fil"
-#
-#
-msgid "Class"
-msgstr "Klass"
-#
-#
-msgid "Clear"
-msgstr "Ej satt"
 #
 #
 msgid "Clear All"
@@ -1131,10 +1034,6 @@ msgstr "Klicka för att bekräfta valet av teckensnitt."
 #
 msgid "Close"
 msgstr "Avsluta"
-#
-#
-msgid "CoG"
-msgstr "CoG"
 #
 #
 msgid "Color:"
@@ -1166,10 +1065,6 @@ msgstr "Värden i Aktiv rutt-fönstret"
 msgid "Constrained by draught"
 msgstr "Hämmad av sitt djupgående"
 #
-#
-msgid "Container vessel"
-msgstr "Containerfartyg"
-#
 msgid "Control checksum"
 msgstr "Använd kontrollsumma"
 #
@@ -1189,10 +1084,6 @@ msgstr "&Kopiera som text"
 #, fuzzy
 msgid "Copy as KML..."
 msgstr "Kopiera..."
-#
-#, c-format
-msgid "Couldn't load sound data from '%s'."
-msgstr ""
 #
 #
 msgid "Course"
@@ -1219,14 +1110,6 @@ msgid "Create Waypoint"
 msgstr "Skapa waypoint"
 #
 #
-msgid "Cruise ship"
-msgstr "Kryssningsfartyg"
-#
-#
-msgid "Current"
-msgstr "Strömmar"
-#
-#
 msgid "Cyan"
 msgstr "Cyan"
 #
@@ -1237,10 +1120,6 @@ msgstr "D/V"
 #
 msgid "DSC"
 msgstr "DSC"
-#
-#
-msgid "DSC Position Report"
-msgstr "DSC Positionsrapport           "
 #
 #
 msgid "Dark Blue"
@@ -1273,10 +1152,6 @@ msgstr "Mörkgul"
 #
 msgid "Data Connections"
 msgstr "Anslutningar"
-#
-#
-msgid "Data Source :"
-msgstr "NMEA datakälla:"
 #
 #
 #, fuzzy
@@ -1443,9 +1318,10 @@ msgstr ""
 msgid "Distress Area: Vessel under assault"
 msgstr ""
 #
+#, fuzzy
 msgid ""
-"Do you also want to toggle the visibility of shared waypoints being part of "
-"this route?"
+"Do you also want to make the shared waypoints being part of this route "
+"invisible?"
 msgstr ""
 "Vill du ändra synlighet för de waypoints som den här rutten delar med andra "
 "också?"
@@ -1463,11 +1339,6 @@ msgstr "Streck-prickad"
 #
 msgid "Dredge"
 msgstr "Muddring"
-#
-#
-#, fuzzy
-msgid "Drop"
-msgstr "Placera waypoint"
 #
 #
 msgid "Drop MOB Marker"
@@ -1566,14 +1437,6 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr ""
 #
-#
-msgid "Error on Route Upload.  Please check logfiles..."
-msgstr "Fel vid uppladdning av rutt. Kontrollera loggfiler..."
-#
-#
-msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr "Fel vid uppladdning av waypoint.  Kontrollera loggfilen..."
-#
 msgid "Error!"
 msgstr "Fel!"
 #
@@ -1618,20 +1481,12 @@ msgid "Failed to initialize the user interface. "
 msgstr "Det saknas information för att bygga upp användargränssnittet."
 #
 #
-msgid "Fast ship"
-msgstr "Snabbgående fartyg"
-#
-#
 msgid "Fathoms"
 msgstr "Famnar"
 #
 #
 msgid "Feet"
 msgstr "Fot"
-#
-#
-msgid "Ferry"
-msgstr "Färja"
 #
 #
 msgid "Filter NMEA Course and Speed data"
@@ -1644,10 +1499,6 @@ msgstr "Filterperiod (sek)"
 #
 msgid "Filters"
 msgstr "Filter"
-#
-#
-msgid "Fishing boat"
-msgstr "Fiskebåt"
 #
 #
 msgid "Fix.Struct."
@@ -1671,14 +1522,6 @@ msgid "Format uploads for Furuno GP3X"
 msgstr "Formatera för överföring till Furuno GP3X"
 #
 #
-msgid "Freightbarge"
-msgstr "Fraktpråm"
-#
-#
-msgid "Freightbarge with containers"
-msgstr "Fraktpråm med containers"
-#
-#
 msgid "Full Route"
 msgstr "Hela rutten"
 #
@@ -1688,14 +1531,8 @@ msgstr "GPS avstånd från för (m)"
 msgid "GPS Offset from Midship (m)"
 msgstr "GPS avstånd från midskepps (m)"
 #
-msgid "GPS/Plotter Port"
-msgstr ""
-#
 msgid "GPSD"
 msgstr "GPSD"
-#
-msgid "GPSGate Buddy"
-msgstr "GPSGate Buddy"
 #
 #
 msgid "GPX"
@@ -1705,20 +1542,12 @@ msgid "GUID"
 msgstr "GUID"
 #
 #
-msgid "Gas tanker"
-msgstr "Gastanker"
-#
-#
 msgid "General"
 msgstr "Allmänna inställningar"
 #
 #
 msgid "General Options"
 msgstr "Allmänna inställningar"
-#
-#
-msgid "General cargo Vessel maritime"
-msgstr "Maritimt lastfartyg"
 #
 #
 msgid "Go to "
@@ -1737,13 +1566,6 @@ msgstr "Bunten \""
 #
 msgid "HSC"
 msgstr "HSC"
-#
-#
-msgid "HW"
-msgstr "HW"
-#
-msgid "Heading"
-msgstr "Kurs"
 #
 #
 msgid "Help"
@@ -1790,16 +1612,8 @@ msgid "Highlight Tracks"
 msgstr "Visa spår"
 #
 #
-msgid "Hydrofoil"
-msgstr "Bärplansbåt"
-#
-#
 msgid "I&mport GPX..."
 msgstr "&Importera GPX..."
-#
-#
-msgid "IMO"
-msgstr "IMO"
 #
 #
 msgid "Icon"
@@ -1823,14 +1637,6 @@ msgstr "Importera GPX-fil"
 msgid "Important Text Only"
 msgstr "Enbart viktiga texter"
 #
-#
-#, fuzzy
-msgid "In"
-msgstr "Symbol"
-#
-msgid "In: None"
-msgstr "In: Ingen"
-#
 msgid "Information: Icebreaker waiting area"
 msgstr ""
 #
@@ -1845,10 +1651,6 @@ msgstr ""
 #
 msgid "Information: Position of icebreakers"
 msgstr ""
-#
-#
-msgid "Inland Blue Flag"
-msgstr "Blå flagg"
 #
 msgid "Input filtering"
 msgstr "Filtrera indata"
@@ -1888,8 +1690,8 @@ msgstr "Utökad KML med extra waypoint-data (för QtVlm)"
 msgid "Kilometers"
 msgstr "Kilometer"
 #
-msgid "Kts"
-msgstr "knop"
+msgid "Knots"
+msgstr ""
 #
 #
 msgid "LE/V"
@@ -1898,10 +1700,6 @@ msgstr "LE/V"
 #
 msgid "LMT @ Location"
 msgstr "LMT @ Plats"
-#
-#
-msgid "LW"
-msgstr "LW"
 #
 #
 msgid "Language"
@@ -1962,9 +1760,6 @@ msgstr "Främre ledfyr"
 msgid "Leading Light Rear"
 msgstr "Bakre ledfyr"
 #
-msgid "Left"
-msgstr "Vänster"
-#
 #
 msgid "Leg"
 msgstr "Ben"
@@ -1972,10 +1767,6 @@ msgstr "Ben"
 #
 msgid "Leg: from "
 msgstr "Ben: från "
-#
-#
-msgid "Legend"
-msgstr "Rubriker i Aktiv rutt-fönstret"
 #
 #
 msgid "Length"
@@ -2009,25 +1800,6 @@ msgid "Light w/Sectors"
 msgstr "Ljussignal med sektorer"
 #
 #
-msgid "Limit range: NM"
-msgstr "Begränsad räckvidd: NM"
-#
-#
-msgid "Link"
-msgstr "Länk"
-#
-#
-msgid "Link Properties"
-msgstr "Länk-egenskaper"
-#
-#
-msgid "Link description"
-msgstr "Beskrivning"
-#
-msgid "Link not complete, can't be saved."
-msgstr "Länken är inte fullständig och kan inte sparas."
-#
-#
 msgid "Links"
 msgstr "Länkar"
 #
@@ -2036,10 +1808,6 @@ msgstr "Länkar öppnas för redigering."
 #
 msgid "Links are opened in the default browser."
 msgstr "Länkar öppnas i datorns webbläsare."
-#
-#
-msgid "Liquified gas tanker"
-msgstr "Tankfartyg, flytande gas"
 #
 #
 msgid "List contents"
@@ -2052,9 +1820,6 @@ msgstr "Inlästa sjökortsmappar"
 #
 msgid "Local @ PC"
 msgstr "Lokal @ PC"
-#
-msgid "Local file..."
-msgstr "Lokal fil..."
 #
 #
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
@@ -2108,10 +1873,6 @@ msgid "MAN OVERBOARD"
 msgstr "Man över bord"
 #
 #
-msgid "MMSI"
-msgstr "MMSI"
-#
-#
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
 #
@@ -2130,10 +1891,6 @@ msgstr "Marinstandard"
 #
 msgid "Mark targets as lost after (min)"
 msgstr "Markera AIS-fartyg som borttappade efter (min)"
-#
-#
-msgid "Marks"
-msgstr "Waypoints"
 #
 #
 msgid "Max Detail Here"
@@ -2170,12 +1927,6 @@ msgstr "Slå samman waypoints?"
 msgid "Merge waypoints?"
 msgstr "Slå samman waypoints?"
 #
-msgid "Message accepted"
-msgstr "Kommandot accepterat"
-#
-msgid "Message filtered and dropped"
-msgstr "Kommandot bortfiltrerat"
-#
 #
 msgid "Meters"
 msgstr "Meter"
@@ -2199,56 +1950,15 @@ msgid "Moored"
 msgstr "Förtöjd"
 #
 #
-msgid "Motor freighter"
-msgstr "Motordrivet fraktfartyg"
-#
-#
-msgid "Motor freighter pushing at least one tank-ship"
-msgstr "Motordrivet fraktfartyg påskjutande minst en tanker"
-#
-#
-msgid "Motor freighter pushing one or more freighters"
-msgstr "Motordrivet fraktfartyg påskjutande en eller fler fraktfartyg"
-#
-#
-msgid "Motor freighter with one or more ships alongside"
-msgstr "Motordrivet fraktfartyg med ett eller flera fartyg vid sidan"
-#
-#
-msgid "Motor freighter with tanker"
-msgstr "Motordrivet fraktfartyg med tanker"
-#
-#
-msgid "Motor freighter, tug"
-msgstr "Motordrivet fraktfartyg, bogserbåt"
-#
-#
-msgid "Motor tanker"
-msgstr "Motordriven tanker"
-#
-#
-msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
-msgstr "Motordriven tanker, torrlast som om vätska (t.ex. cement)"
-#
-#
-msgid "Motor tanker, liquid cargo, type C"
-msgstr "Motordriven tanker, flytande last, typ C"
-#
-#
-msgid "Motor tanker, liquid cargo, type N"
-msgstr "Motordriven tanker, flytande last, typ N"
-#
-#
-msgid "Motor tanker, tug"
-msgstr "Motordriven tanker, bogserbåt"
-#
-#
 msgid "Move Boat Here"
 msgstr "Flytta båten hit"
 #
 #
 msgid "Move Waypoint"
 msgstr "Flytta waypoint"
+#
+msgid "Mph"
+msgstr ""
 #
 msgid "NMEA"
 msgstr "NMEA"
@@ -2259,9 +1969,6 @@ msgstr "NMEA 0183"
 msgid "NMEA 2000"
 msgstr "NMEA 2000"
 #
-msgid "NMEA Debug Window"
-msgstr "NMEA Datafönster"
-#
 msgid "NMi"
 msgstr "NM"
 #
@@ -2269,23 +1976,23 @@ msgstr "NM"
 msgid "Name"
 msgstr "Namn"
 #
+msgid "National text on chart"
+msgstr ""
+#
 #
 msgid "Nautical Miles"
 msgstr "Sjömil"
 #
 #
-msgid "Nav Status"
-msgstr "Nav status"
+#, fuzzy
+msgid "Nautical miles"
+msgstr "Sjömil"
 #
 msgid "Navigate To Here"
 msgstr "Starta navigering hit"
 #
 msgid "Navigate To This"
 msgstr "Navigera till denna"
-#
-#
-msgid "Net"
-msgstr "Nätverk"
 #
 msgid "Network"
 msgstr "Nätverk"
@@ -2298,15 +2005,8 @@ msgid "New Group..."
 msgstr "Ny bunt..."
 #
 #
-msgid "Next"
-msgstr "Nästa"
-#
-#
 msgid "Next tide event"
 msgstr "Nästa tidvatten"
-#
-msgid "No"
-msgstr "Nej"
 #
 #
 msgid "No CPA Calculation if target range is greater than (NMi)"
@@ -2358,20 +2058,15 @@ msgid "Object Query..."
 msgstr "Detaljinformation..."
 #
 #
-msgid "Object, not otherwise specified"
-msgstr "Objekt, ej specificerad ytterligare"
-#
-#
-msgid "Object, towed, not otherwise specified"
-msgstr "Objekt under bogsering, ej specificerad ytterligare"
-#
-#
 msgid "ObjectQuery"
 msgstr "Detaljinformation"
 #
 #
 msgid "Ok"
 msgstr "Ok"
+#
+msgid "Old log will be moved to opencpn.log.log"
+msgstr ""
 #
 #
 msgid "OpenCPN Alert"
@@ -2460,15 +2155,7 @@ msgstr "Annan"
 msgid "Other - Define in associated text field"
 msgstr ""
 #
-#, fuzzy
-msgid "Out"
-msgstr "Utdata"
-#
 msgid "Output"
-msgstr "Utdata"
-#
-#
-msgid "Output Message"
 msgstr "Utdata"
 #
 msgid "Output filtering"
@@ -2514,14 +2201,6 @@ msgid "Passenger Ship"
 msgstr "Passagerarfartyg"
 #
 #
-msgid "Passenger ship without accomodation"
-msgstr "Passagerarfartyg utan logi"
-#
-#
-msgid "Passenger ship, ferry, cruise ship, red cross ship"
-msgstr "Passagerarfartyg, färja, kryssningsfartyg, Röda korset-fartyg"
-#
-#
 msgid "Paste Route"
 msgstr "Klistra in rutt"
 #
@@ -2532,9 +2211,6 @@ msgstr "Klistra in spår"
 #
 msgid "Paste Waypoint"
 msgstr "Klistra in waypoint"
-#
-msgid "Pause"
-msgstr "Pause"
 #
 #
 msgid "Pilot Vessel"
@@ -2549,8 +2225,9 @@ msgid "Plan Speed"
 msgstr "Aktuell fart"
 #
 #
-msgid "Plan speed (Kts)"
-msgstr "Aktuell fart (Knop)"
+#, fuzzy
+msgid "Plan speed"
+msgstr "Aktuell fart"
 #
 #
 msgid "Play Ships Bells"
@@ -2569,10 +2246,6 @@ msgstr ""
 #
 msgid "Pleasure craft"
 msgstr "Fritidsfartyg"
-#
-#
-msgid "Pleasure craft, longer than 20 metres"
-msgstr "Fritidsfartyg, längd över 20 meter"
 #
 #
 msgid "Plugins"
@@ -2631,16 +2304,8 @@ msgid "Preferred Channel Starboard Hand"
 msgstr "Rekommenderad kanal styrbords hand"
 #
 #
-msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr "Ställ in GPS för uppladdning av Rutt/Waypoint och klicka Skicka..."
-#
-#
 msgid "Preserve Scale when Switching Charts"
 msgstr "Behåll skala vid växling till nytt sjökort"
-#
-#
-msgid "Prev"
-msgstr "Föregående"
 #
 #
 msgid "Preview:"
@@ -2663,19 +2328,12 @@ msgstr "Dela rutt"
 msgid "Priority"
 msgstr "Prioritet"
 #
-msgid "Problem discovered"
-msgstr "Ett problem upptäcktes"
-#
 msgid "Proceed to this location - await instructions"
 msgstr ""
 #
 #
 msgid "Processing Waypoints..."
 msgstr "Bearbetar waypoints..."
-#
-#
-msgid "Progress..."
-msgstr "Skickar data..."
 #
 #
 msgid "Properties"
@@ -2689,94 +2347,12 @@ msgid "Protocol"
 msgstr "Protokoll"
 #
 #
-msgid "Pushboat, single"
-msgstr "Påskjutande bogserbåt, ensam"
-#
-#
-msgid "Pushtow, eight barges at least one tanker or gas barge"
-msgstr "Påskjutande bogserbåt, åtta lastpråmar varav minst en tanker-/gaspråm"
-#
-#
-msgid "Pushtow, eight cargo barges"
-msgstr "Påskjutande bogserbåt, åtta lastpråmar"
-#
-#
-msgid "Pushtow, five barges at least one tanker or gas barge"
-msgstr "Påskjutande bogserbåt, fem lastpråmar varav minst en tanker-/gaspråm"
-#
-#
-msgid "Pushtow, five cargo barges"
-msgstr "Påskjutande bogserbåt, fem lastpråmar"
-#
-#
-msgid "Pushtow, four barges at least one tanker or gas barge"
-msgstr "Påskjutande bogserbåt, fyra lastpråmar varav minst en tanker-/gaspråm"
-#
-#
-msgid "Pushtow, four cargo barges"
-msgstr "Påskjutande bogserbåt, fyra lastpråmar"
-#
-#
-msgid "Pushtow, nine or more barges"
-msgstr "Påskjutande bogserbåt, nio eller fler lastpråmar"
-#
-#
-msgid "Pushtow, nine or more barges at least one tanker or gas barge"
-msgstr ""
-"Påskjutande bogserbåt, nio eller fler lastpråmar varav minst en tanker-/"
-"gaspråm"
-#
-#
-msgid "Pushtow, one cargo barge"
-msgstr "Påskjutande bogserbåt, en lastpråm"
-#
-#
-msgid "Pushtow, one tank/gas barge"
-msgstr "Påskjutande bogserbåt, en tanker-/gaspråm"
-#
-#
-msgid "Pushtow, seven barges at least one tanker or gas barge"
-msgstr "Påskjutande bogserbåt, sju lastpråmar varav minst en tanker-/gaspråm"
-#
-#
-msgid "Pushtow, seven cargo barges"
-msgstr "Påskjutande bogserbåt, sju lastpråmar"
-#
-#
-msgid "Pushtow, six barges at least one tanker or gas barge"
-msgstr "Påskjutande bogserbåt, sex lastpråmar varav minst en tanker-/gaspråm"
-#
-#
-msgid "Pushtow, six cargo barges"
-msgstr "Påskjutande bogserbåt, sex lastpråmar"
-#
-#
-msgid "Pushtow, three barges at least one tanker or gas barge"
-msgstr "Påskjutande bogserbåt, tre lastpråmar varav minst en tanker-/gaspråm"
-#
-#
-msgid "Pushtow, three cargo barges"
-msgstr "Påskjutande bogserbåt, tre lastpråmar"
-#
-#
-msgid "Pushtow, two barges at least one tanker or gas barge"
-msgstr "Påskjutande bogserbåt, två lastpråmar varav minst en tanker-/gaspråm"
-#
-#
-msgid "Pushtow, two cargo barges"
-msgstr "Påskjutande bogserbåt, två lastpråmar"
-#
-#
 msgid "Question"
 msgstr "Fråga"
 #
 #
 msgid "RACON"
 msgstr "Radarfyr"
-#
-#
-msgid "Range"
-msgstr "Avstånd"
 #
 #
 msgid "Real"
@@ -2806,10 +2382,6 @@ msgstr ""
 msgid "Red"
 msgstr "Röd"
 #
-#
-msgid "Red cross ship"
-msgstr "Röda korset-fartyg"
-#
 msgid "Redo"
 msgstr "Gör om"
 #
@@ -2830,13 +2402,6 @@ msgstr "Ref pkt"
 #
 msgid "Reference Point"
 msgstr "Referenspunkt"
-#
-#
-msgid "Reference Station :"
-msgstr "Referensstation:"
-#
-msgid "Reject"
-msgstr ""
 #
 #
 msgid "Remaining time : "
@@ -2865,12 +2430,6 @@ msgstr "Tag bort borttappade fartyg efter (min)"
 #
 msgid "Rename Waypoints?"
 msgstr "Ändra namn på waypoints?"
-#
-msgid "Report Age"
-msgstr "Uppdaterad sedan"
-#
-msgid "Report as of"
-msgstr "Rapporterades"
 #
 msgid "Report from ship: Icing info"
 msgstr ""
@@ -2920,9 +2479,6 @@ msgstr ""
 msgid "Restricted Manoeuvrability"
 msgstr "Nedsatt manöverförmåga"
 #
-msgid "Resume"
-msgstr "Återuppta"
-#
 #
 msgid "Retrieving initial Chart Directory set from Windows Registry"
 msgstr "Hämtar inställning för sjökortsmappar från Windows Registry"
@@ -2935,16 +2491,12 @@ msgstr "Hämtar språkinställning från Windows Registry"
 msgid "Reverse..."
 msgstr "Reversera rutt..."
 #
-#
-msgid "Right"
-msgstr "Höger"
+msgid "Rogue or suspicious vessel"
+msgstr ""
 #
 #
 msgid "Rollover"
 msgstr "\"Rulla över\""
-#
-msgid "Rouge or suspicious vessel"
-msgstr ""
 #
 #
 msgid "Route"
@@ -2966,10 +2518,6 @@ msgstr "Ruttegenskaper"
 #
 msgid "Route Properties"
 msgstr "Ruttegenskaper"
-#
-#
-msgid "Route Uploaded successfully."
-msgstr "Rutt uppladdad ok."
 #
 #
 msgid "Route from Track"
@@ -3005,19 +2553,12 @@ msgid "SAR/V"
 msgstr "SAR/V"
 #
 #
-msgid "SART"
-msgstr "SART"
-#
-#
 msgid "SOG COG"
 msgstr "SOG COG"
 #
 #
 msgid "Safe Water"
 msgstr "Säkert vatten"
-#
-msgid "Safety Broadcast Message"
-msgstr "Allmänt säkerhetsmeddelande   "
 #
 #
 msgid "Safety Depth"
@@ -3096,14 +2637,6 @@ msgstr ""
 "efter datareducering"
 #
 #
-msgid "Send"
-msgstr "Skicka"
-#
-#
-msgid "Send Route To GPS"
-msgstr "Skicka rutt till GPS"
-#
-#
 msgid "Send To GPS..."
 msgstr "Skicka till GPS"
 #
@@ -3118,13 +2651,6 @@ msgstr "Kommandofilter"
 #
 msgid "Serial"
 msgstr "Seriell"
-#
-#
-msgid "Service vessel, police patrol, port service"
-msgstr "Servicefartyg, polis, hamntjänst"
-#
-msgid "Set"
-msgstr "Satt"
 #
 #
 msgid "Set Anchor Watch"
@@ -3262,8 +2788,16 @@ msgid "Show course from each Waypoint to the next one. "
 msgstr ""
 #
 #
+#, fuzzy
+msgid "Show distance as"
+msgstr "Visa Lat/Long som"
+#
+#
 msgid "Show name"
 msgstr "Visa namn"
+#
+msgid "Show names with AIS targets at scale greater than 1:"
+msgstr ""
 #
 #
 msgid "Show on chart"
@@ -3272,6 +2806,11 @@ msgstr "Visa på sjökort"
 #
 msgid "Show radar rings"
 msgstr "Visa radarringar"
+#
+#
+#, fuzzy
+msgid "Show speed as"
+msgstr "Visa tidvatten"
 #
 #
 msgid "Show target COG predictor arrow, length (min)"
@@ -3294,16 +2833,8 @@ msgid "Smooth Panning / Zooming"
 msgstr "Steglös skalning och förflyttning"
 #
 #
-msgid "SoG"
-msgstr "SoG"
-#
-#
 msgid "Solid"
 msgstr "Fylld"
-#
-#, c-format
-msgid "Sound file '%s' is in unsupported format."
-msgstr ""
 #
 #
 msgid "Spare"
@@ -3349,6 +2880,9 @@ msgstr "Start"
 msgid "StatusBar"
 msgstr "Statusrad"
 #
+msgid "Statute miles"
+msgstr ""
+#
 #
 msgid "Stbd"
 msgstr "Stbd"
@@ -3379,36 +2913,8 @@ msgid "TCP"
 msgstr "TCP"
 #
 #
-msgid "TCPA"
-msgstr "TCPA"
-#
-#
-msgid "Tankbarge"
-msgstr "Tankpråm"
-#
-#
-msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
-msgstr "Tankpråm, torrlast som om vätska (t.ex. cement)"
-#
-#
-msgid "Tankbarge, gas"
-msgstr "Tankpråm, gas"
-#
-#
-msgid "Tankbarge, liquid cargo, type C"
-msgstr "Tankpråm, flytande last, typ C"
-#
-#
-msgid "Tankbarge, liquid cargo, type N"
-msgstr "Tankpråm, flytande last, typ N"
-#
-#
 msgid "Tanker"
 msgstr "Tanker"
-#
-#
-msgid "Target Count"
-msgstr "Antal fartyg"
 #
 #
 msgid "Target List..."
@@ -3417,10 +2923,6 @@ msgstr "AIS lista..."
 #
 msgid "Target Query..."
 msgstr "Detaljinformation..."
-#
-#
-msgid "Target info"
-msgstr "Fartygsinfo"
 #
 #
 msgid "Temporary GOTO Route"
@@ -3441,10 +2943,6 @@ msgstr "Servicefartyg"
 #
 msgid "Test Alert Sound"
 msgstr "Testa ljud"
-#
-#
-msgid "Testing"
-msgstr "Testar"
 #
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
@@ -3551,14 +3049,6 @@ msgid "This waypoint is part of a layer and can't be edited"
 msgstr "Den här "
 #
 #
-msgid "Tide"
-msgstr "Tidvatten"
-#
-#
-msgid "TideCurrentGraphRollover"
-msgstr "Tidvatten/Strömdiagram \"Rulla över\""
-#
-#
 msgid "Tides && Currents"
 msgstr "Tidvatten && strömmar "
 #
@@ -3571,10 +3061,6 @@ msgid "Times shown as"
 msgstr "Tid visas som"
 #
 #
-msgid "Timestamp"
-msgstr "Tidmarkering"
-#
-#
 msgid "To"
 msgstr "Till"
 #
@@ -3583,16 +3069,8 @@ msgid "To Waypoint"
 msgstr "Till waypoint"
 #
 #
-msgid "Today"
-msgstr "Idag"
-#
-#
 msgid "Toggle Tracking"
 msgstr "Visa båtens spår"
-#
-#
-msgid "Tomorrow"
-msgstr "Imorgon"
 #
 #
 msgid "ToolTips"
@@ -3622,10 +3100,6 @@ msgid "Track Name"
 msgstr "Spårets namn"
 #
 #
-msgid "Track Properties"
-msgstr "Spåregenskaper"
-#
-#
 msgid "Tracking Precision"
 msgstr "Precision för nya spår"
 #
@@ -3643,40 +3117,12 @@ msgstr "Skicka kommandon"
 msgid "Transverse Mercator"
 msgstr "Transverse Mercator"
 #
+msgid "Treat WPL sentences as APRS position reports"
+msgstr ""
+#
 #
 msgid "Tug"
 msgstr "Bogserbåt"
-#
-#
-msgid "Tug freighter, coupled"
-msgstr "Bogser-/fraktfartyg, kopplade"
-#
-#
-msgid "Tug, assisting a vessel or linked combination"
-msgstr "Bogserbåt, bistående ett fartyg eller sammanlänkade"
-#
-#
-msgid "Tug, freighter"
-msgstr "Bogserbåt, fraktfartyg"
-#
-#
-msgid "Tug, freighter/tanker, coupled"
-msgstr "Bogserbåt/fraktfartyg/tanker, kopplade"
-#
-#
-msgid "Tug, one or more tows"
-msgstr "Bogserbåt, ett eller flera släp"
-#
-#
-msgid "Tug, single"
-msgstr "Bogserbåt, ensam"
-#
-#
-msgid "Tug, tanker"
-msgstr "Bogserbåt, tanker"
-#
-msgid "Turn Rate"
-msgstr "Kursändring"
 #
 #
 msgid "Type"
@@ -3684,9 +3130,6 @@ msgstr "Typ"
 #
 msgid "UDP"
 msgstr "UDP"
-#
-msgid "URL"
-msgstr "URL"
 #
 #
 msgid "UTC"
@@ -3711,14 +3154,6 @@ msgstr "Under gång"
 #
 msgid "Undo"
 msgstr "Ångra"
-#
-#
-msgid "Unit carrier maritime"
-msgstr "Maritimt transportfartyg"
-#
-#
-msgid "Unk"
-msgstr "Okänd"
 #
 #
 msgid "Unknown"
@@ -3807,18 +3242,6 @@ msgid "Vessel requesting non-distress assistance"
 msgstr ""
 #
 #
-msgid "Vessel, type unknown"
-msgstr "Fartyg, okänd typ"
-#
-#
-msgid ""
-"Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
-"dredge"
-msgstr ""
-"Fartyg, arbete-/underhållsfarkost, flytande kran, kabelfartyg, bojfartyg, "
-"mudderfartyg"
-#
-#
 msgid "Virtual"
 msgstr "Virtuell"
 #
@@ -3863,10 +3286,6 @@ msgstr "Egenskaper för &waypoint..."
 #, fuzzy
 msgid "Waypoint Properties, Layer: "
 msgstr "Waypointegenskaper, lager: "
-#
-#
-msgid "Waypoint(s) Uploaded successfully."
-msgstr "Waypoint(s) uppladdning ok."
 #
 #
 msgid "Waypoints"
@@ -3928,9 +3347,6 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Gul"
 #
-msgid "Yes"
-msgstr "Ja"
-#
 msgid "Yes, hide it."
 msgstr "Ja, dölj den."
 #
@@ -3975,12 +3391,28 @@ msgstr "_B"
 msgid "_plus"
 msgstr "_plus"
 #
+msgid "km"
+msgstr ""
 #
-msgid "in"
-msgstr "om"
+msgid "km/h"
+msgstr ""
 #
-msgid "min"
+#, fuzzy
+msgid "kts"
+msgstr "knop"
+#
+msgid "m"
+msgstr ""
+#
+msgid "m/s"
+msgstr ""
+#
+#, fuzzy
+msgid "mi"
 msgstr "min"
+#
+msgid "mph"
+msgstr ""
 #
 #
 msgid "wgsox"
@@ -3992,6 +3424,105 @@ msgstr "wgsoy"
 #
 msgid "wxFB Website"
 msgstr "Webbsida för wxFB"
+#
+#
+#
+#~ msgid " (Last Known)"
+#~ msgstr "(Senaste kända)"
+#
+#
+#~ msgid " </b>in<b> "
+#~ msgstr " </b>om<b> "
+#
+#
+#
+#~ msgid " COG Unavailable"
+#~ msgstr "COG ej tillgänglig"
+#
+#
+#
+#~ msgid "&Acknowledge"
+#~ msgstr "&Bekräfta"
+#
+#
+#
+#~ msgid "&Export Track..."
+#~ msgstr "Exportera spår..."
+#
+#
+#
+#~ msgid "&Export Wpt..."
+#~ msgstr "E&xportera waypoint..."
+#
+#
+#
+#~ msgid "&Jump To"
+#~ msgstr "Gå till "
+#
+#
+#
+#~ msgid "&Silence Alert"
+#~ msgstr "&Tysta Larm"
+#
+#
+#~ msgid ", Out: None"
+#~ msgstr ", Ut: Ingen"
+#
+#
+#
+#~ msgid "-"
+#~ msgstr "-"
+#
+#
+#
+#~ msgid "--"
+#~ msgstr "--"
+#
+#
+#
+#~ msgid "---"
+#~ msgstr "---"
+#
+#
+#
+#~ msgid "A"
+#~ msgstr "A"
+#
+#
+#
+#~ msgid "AIS Alert"
+#~ msgstr "AIS-alarm"
+#
+#
+#
+#~ msgid "AIS target list"
+#~ msgstr "AIS lista"
+#
+#
+#
+#~ msgid "AISRollover"
+#~ msgstr "AIS \"Rulla över\""
+#
+#
+#
+#~ msgid "AISTargetAlert"
+#~ msgstr "AIS varning"
+#
+#
+#
+#~ msgid "AISTargetQuery"
+#~ msgstr "AIS-fartygsegenskaper"
+#
+#
+#
+#~ msgid "Active"
+#~ msgstr "Aktiv"
+#
+#
+#
+#~ msgid "Aid to Navigation"
+#~ msgstr "Navigationshjälp"
+#
 #
 #
 #
@@ -4009,6 +3540,76 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#~ msgid "B"
+#~ msgstr "B"
+#
+#
+#
+#~ msgid "Barge, tanker, chemical"
+#~ msgstr "Pråm, tanker, kemikalier"
+#
+#
+#
+#~ msgid "Base Station"
+#~ msgstr "Basstation"
+#
+#
+#
+#~ msgid "Brg"
+#~ msgstr "Brg"
+#
+#
+#
+#~ msgid "Bulk carrier maritime"
+#~ msgstr "Bulktransportfartyg"
+#
+#
+#
+#~ msgid "Bunkership"
+#~ msgstr "Bunkerfartyg"
+#
+#
+#
+#~ msgid "CPA"
+#~ msgstr "CPA"
+#
+#
+#
+#~ msgid "Call"
+#~ msgstr "Anrop"
+#
+#
+#~ msgid "Center View"
+#~ msgstr "Visa centrerad"
+#
+#
+#
+#~ msgid "Choose a file"
+#~ msgstr "Välj en fil"
+#
+#
+#
+#~ msgid "Class"
+#~ msgstr "Klass"
+#
+#
+#
+#~ msgid "Clear"
+#~ msgstr "Ej satt"
+#
+#
+#
+#~ msgid "CoG"
+#~ msgstr "CoG"
+#
+#
+#
+#~ msgid "Container vessel"
+#~ msgstr "Containerfartyg"
+#
+#
+#
+#
 #
 #
 #
@@ -4022,10 +3623,116 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#~ msgid "Cruise ship"
+#~ msgstr "Kryssningsfartyg"
+#
+#
+#
+#~ msgid "Current"
+#~ msgstr "Strömmar"
+#
+#
+#
+#~ msgid "Data Source :"
+#~ msgstr "NMEA datakälla:"
+#
+#
+#
+#, fuzzy
+#~ msgid "Drop"
+#~ msgstr "Placera waypoint"
+#
+#
+#
+#
 #
 #
 #~ msgid "E&xport All..."
 #~ msgstr "E&xportera alla..."
+#
+#
+#
+#~ msgid "Error on Route Upload.  Please check logfiles..."
+#~ msgstr "Fel vid uppladdning av rutt. Kontrollera loggfiler..."
+#
+#
+#
+#~ msgid "Error on Waypoint Upload.  Please check logfiles..."
+#~ msgstr "Fel vid uppladdning av waypoint.  Kontrollera loggfilen..."
+#
+#
+#
+#~ msgid "Fast ship"
+#~ msgstr "Snabbgående fartyg"
+#
+#
+#
+#~ msgid "Ferry"
+#~ msgstr "Färja"
+#
+#
+#
+#~ msgid "Fishing boat"
+#~ msgstr "Fiskebåt"
+#
+#
+#
+#~ msgid "Freightbarge"
+#~ msgstr "Fraktpråm"
+#
+#
+#
+#~ msgid "Freightbarge with containers"
+#~ msgstr "Fraktpråm med containers"
+#
+#
+#~ msgid "GPSGate Buddy"
+#~ msgstr "GPSGate Buddy"
+#
+#
+#
+#~ msgid "Gas tanker"
+#~ msgstr "Gastanker"
+#
+#
+#
+#~ msgid "General cargo Vessel maritime"
+#~ msgstr "Maritimt lastfartyg"
+#
+#
+#
+#~ msgid "HW"
+#~ msgstr "HW"
+#
+#
+#~ msgid "Heading"
+#~ msgstr "Kurs"
+#
+#
+#
+#~ msgid "Hydrofoil"
+#~ msgstr "Bärplansbåt"
+#
+#
+#
+#~ msgid "IMO"
+#~ msgstr "IMO"
+#
+#
+#
+#, fuzzy
+#~ msgid "In"
+#~ msgstr "Symbol"
+#
+#
+#~ msgid "In: None"
+#~ msgstr "In: Ingen"
+#
+#
+#
+#~ msgid "Inland Blue Flag"
+#~ msgstr "Blå flagg"
+#
 #
 #
 #
@@ -4043,10 +3750,332 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#~ msgid "LW"
+#~ msgstr "LW"
+#
+#
+#~ msgid "Left"
+#~ msgstr "Vänster"
+#
+#
+#
+#~ msgid "Legend"
+#~ msgstr "Rubriker i Aktiv rutt-fönstret"
+#
+#
+#
+#~ msgid "Limit range: NM"
+#~ msgstr "Begränsad räckvidd: NM"
+#
+#
+#
+#~ msgid "Link"
+#~ msgstr "Länk"
+#
+#
+#
+#~ msgid "Link Properties"
+#~ msgstr "Länk-egenskaper"
+#
+#
+#
+#~ msgid "Link description"
+#~ msgstr "Beskrivning"
+#
+#
+#~ msgid "Link not complete, can't be saved."
+#~ msgstr "Länken är inte fullständig och kan inte sparas."
+#
+#
+#
+#~ msgid "Liquified gas tanker"
+#~ msgstr "Tankfartyg, flytande gas"
+#
+#
+#~ msgid "Local file..."
+#~ msgstr "Lokal fil..."
+#
+#
+#
+#~ msgid "MMSI"
+#~ msgstr "MMSI"
+#
+#
+#
+#
 #
 #
 #~ msgid "Mark Properties"
 #~ msgstr "Waypointegenskaper"
+#
+#
+#
+#~ msgid "Marks"
+#~ msgstr "Waypoints"
+#
+#
+#~ msgid "Message accepted"
+#~ msgstr "Kommandot accepterat"
+#
+#
+#~ msgid "Message filtered and dropped"
+#~ msgstr "Kommandot bortfiltrerat"
+#
+#
+#
+#~ msgid "Motor freighter"
+#~ msgstr "Motordrivet fraktfartyg"
+#
+#
+#
+#~ msgid "Motor freighter pushing at least one tank-ship"
+#~ msgstr "Motordrivet fraktfartyg påskjutande minst en tanker"
+#
+#
+#
+#~ msgid "Motor freighter pushing one or more freighters"
+#~ msgstr "Motordrivet fraktfartyg påskjutande en eller fler fraktfartyg"
+#
+#
+#
+#~ msgid "Motor freighter with one or more ships alongside"
+#~ msgstr "Motordrivet fraktfartyg med ett eller flera fartyg vid sidan"
+#
+#
+#
+#~ msgid "Motor freighter with tanker"
+#~ msgstr "Motordrivet fraktfartyg med tanker"
+#
+#
+#
+#~ msgid "Motor freighter, tug"
+#~ msgstr "Motordrivet fraktfartyg, bogserbåt"
+#
+#
+#
+#~ msgid "Motor tanker"
+#~ msgstr "Motordriven tanker"
+#
+#
+#
+#~ msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
+#~ msgstr "Motordriven tanker, torrlast som om vätska (t.ex. cement)"
+#
+#
+#
+#~ msgid "Motor tanker, liquid cargo, type C"
+#~ msgstr "Motordriven tanker, flytande last, typ C"
+#
+#
+#
+#~ msgid "Motor tanker, liquid cargo, type N"
+#~ msgstr "Motordriven tanker, flytande last, typ N"
+#
+#
+#
+#~ msgid "Motor tanker, tug"
+#~ msgstr "Motordriven tanker, bogserbåt"
+#
+#
+#~ msgid "NMEA Debug Window"
+#~ msgstr "NMEA Datafönster"
+#
+#
+#
+#~ msgid "Nav Status"
+#~ msgstr "Nav status"
+#
+#
+#
+#~ msgid "Net"
+#~ msgstr "Nätverk"
+#
+#
+#
+#~ msgid "Next"
+#~ msgstr "Nästa"
+#
+#
+#~ msgid "No"
+#~ msgstr "Nej"
+#
+#
+#
+#~ msgid "Object, not otherwise specified"
+#~ msgstr "Objekt, ej specificerad ytterligare"
+#
+#
+#
+#~ msgid "Object, towed, not otherwise specified"
+#~ msgstr "Objekt under bogsering, ej specificerad ytterligare"
+#
+#
+#, fuzzy
+#~ msgid "Out"
+#~ msgstr "Utdata"
+#
+#
+#
+#~ msgid "Output Message"
+#~ msgstr "Utdata"
+#
+#
+#
+#~ msgid "Passenger ship without accomodation"
+#~ msgstr "Passagerarfartyg utan logi"
+#
+#
+#
+#~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
+#~ msgstr "Passagerarfartyg, färja, kryssningsfartyg, Röda korset-fartyg"
+#
+#
+#~ msgid "Pause"
+#~ msgstr "Pause"
+#
+#
+#
+#~ msgid "Plan speed (Kts)"
+#~ msgstr "Aktuell fart (Knop)"
+#
+#
+#
+#~ msgid "Pleasure craft, longer than 20 metres"
+#~ msgstr "Fritidsfartyg, längd över 20 meter"
+#
+#
+#
+#~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
+#~ msgstr "Ställ in GPS för uppladdning av Rutt/Waypoint och klicka Skicka..."
+#
+#
+#
+#~ msgid "Prev"
+#~ msgstr "Föregående"
+#
+#
+#~ msgid "Problem discovered"
+#~ msgstr "Ett problem upptäcktes"
+#
+#
+#
+#~ msgid "Progress..."
+#~ msgstr "Skickar data..."
+#
+#
+#
+#~ msgid "Pushboat, single"
+#~ msgstr "Påskjutande bogserbåt, ensam"
+#
+#
+#
+#~ msgid "Pushtow, eight barges at least one tanker or gas barge"
+#~ msgstr ""
+#~ "Påskjutande bogserbåt, åtta lastpråmar varav minst en tanker-/gaspråm"
+#
+#
+#
+#~ msgid "Pushtow, eight cargo barges"
+#~ msgstr "Påskjutande bogserbåt, åtta lastpråmar"
+#
+#
+#
+#~ msgid "Pushtow, five barges at least one tanker or gas barge"
+#~ msgstr "Påskjutande bogserbåt, fem lastpråmar varav minst en tanker-/gaspråm"
+#
+#
+#
+#~ msgid "Pushtow, five cargo barges"
+#~ msgstr "Påskjutande bogserbåt, fem lastpråmar"
+#
+#
+#
+#~ msgid "Pushtow, four barges at least one tanker or gas barge"
+#~ msgstr ""
+#~ "Påskjutande bogserbåt, fyra lastpråmar varav minst en tanker-/gaspråm"
+#
+#
+#
+#~ msgid "Pushtow, four cargo barges"
+#~ msgstr "Påskjutande bogserbåt, fyra lastpråmar"
+#
+#
+#
+#~ msgid "Pushtow, nine or more barges"
+#~ msgstr "Påskjutande bogserbåt, nio eller fler lastpråmar"
+#
+#
+#
+#~ msgid "Pushtow, nine or more barges at least one tanker or gas barge"
+#~ msgstr ""
+#~ "Påskjutande bogserbåt, nio eller fler lastpråmar varav minst en tanker-/"
+#~ "gaspråm"
+#
+#
+#
+#~ msgid "Pushtow, one cargo barge"
+#~ msgstr "Påskjutande bogserbåt, en lastpråm"
+#
+#
+#
+#~ msgid "Pushtow, one tank/gas barge"
+#~ msgstr "Påskjutande bogserbåt, en tanker-/gaspråm"
+#
+#
+#
+#~ msgid "Pushtow, seven barges at least one tanker or gas barge"
+#~ msgstr "Påskjutande bogserbåt, sju lastpråmar varav minst en tanker-/gaspråm"
+#
+#
+#
+#~ msgid "Pushtow, seven cargo barges"
+#~ msgstr "Påskjutande bogserbåt, sju lastpråmar"
+#
+#
+#
+#~ msgid "Pushtow, six barges at least one tanker or gas barge"
+#~ msgstr "Påskjutande bogserbåt, sex lastpråmar varav minst en tanker-/gaspråm"
+#
+#
+#
+#~ msgid "Pushtow, six cargo barges"
+#~ msgstr "Påskjutande bogserbåt, sex lastpråmar"
+#
+#
+#
+#~ msgid "Pushtow, three barges at least one tanker or gas barge"
+#~ msgstr "Påskjutande bogserbåt, tre lastpråmar varav minst en tanker-/gaspråm"
+#
+#
+#
+#~ msgid "Pushtow, three cargo barges"
+#~ msgstr "Påskjutande bogserbåt, tre lastpråmar"
+#
+#
+#
+#~ msgid "Pushtow, two barges at least one tanker or gas barge"
+#~ msgstr "Påskjutande bogserbåt, två lastpråmar varav minst en tanker-/gaspråm"
+#
+#
+#
+#~ msgid "Pushtow, two cargo barges"
+#~ msgstr "Påskjutande bogserbåt, två lastpråmar"
+#
+#
+#
+#~ msgid "Range"
+#~ msgstr "Avstånd"
+#
+#
+#
+#~ msgid "Red cross ship"
+#~ msgstr "Röda korset-fartyg"
+#
+#
+#
+#~ msgid "Reference Station :"
+#~ msgstr "Referensstation:"
+#
 #
 #
 #
@@ -4058,12 +4087,187 @@ msgstr "Webbsida för wxFB"
 #~ msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
 #
 #
+#~ msgid "Report Age"
+#~ msgstr "Uppdaterad sedan"
+#
+#
+#~ msgid "Report as of"
+#~ msgstr "Rapporterades"
+#
+#
+#~ msgid "Resume"
+#~ msgstr "Återuppta"
+#
+#
+#
+#~ msgid "Right"
+#~ msgstr "Höger"
+#
+#
+#
+#~ msgid "Route Uploaded successfully."
+#~ msgstr "Rutt uppladdad ok."
+#
+#
+#
+#~ msgid "SART"
+#~ msgstr "SART"
+#
+#
+#~ msgid "Safety Broadcast Message"
+#~ msgstr "Allmänt säkerhetsmeddelande   "
+#
+#
+#
+#~ msgid "Send"
+#~ msgstr "Skicka"
+#
+#
+#
+#~ msgid "Send Route To GPS"
+#~ msgstr "Skicka rutt till GPS"
+#
+#
+#
 #
 #
 #
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "Skicka till GPS"
+#
+#
+#
+#~ msgid "Service vessel, police patrol, port service"
+#~ msgstr "Servicefartyg, polis, hamntjänst"
+#
+#
+#~ msgid "Set"
+#~ msgstr "Satt"
+#
+#
+#
+#~ msgid "SoG"
+#~ msgstr "SoG"
+#
+#
+#
+#~ msgid "TCPA"
+#~ msgstr "TCPA"
+#
+#
+#
+#~ msgid "Tankbarge"
+#~ msgstr "Tankpråm"
+#
+#
+#
+#~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
+#~ msgstr "Tankpråm, torrlast som om vätska (t.ex. cement)"
+#
+#
+#
+#~ msgid "Tankbarge, gas"
+#~ msgstr "Tankpråm, gas"
+#
+#
+#
+#~ msgid "Tankbarge, liquid cargo, type C"
+#~ msgstr "Tankpråm, flytande last, typ C"
+#
+#
+#
+#~ msgid "Tankbarge, liquid cargo, type N"
+#~ msgstr "Tankpråm, flytande last, typ N"
+#
+#
+#
+#~ msgid "Target Count"
+#~ msgstr "Antal fartyg"
+#
+#
+#
+#~ msgid "Target info"
+#~ msgstr "Fartygsinfo"
+#
+#
+#
+#~ msgid "Testing"
+#~ msgstr "Testar"
+#
+#
+#
+#~ msgid "Tide"
+#~ msgstr "Tidvatten"
+#
+#
+#
+#~ msgid "TideCurrentGraphRollover"
+#~ msgstr "Tidvatten/Strömdiagram \"Rulla över\""
+#
+#
+#
+#~ msgid "Timestamp"
+#~ msgstr "Tidmarkering"
+#
+#
+#
+#~ msgid "Today"
+#~ msgstr "Idag"
+#
+#
+#
+#~ msgid "Tomorrow"
+#~ msgstr "Imorgon"
+#
+#
+#
+#~ msgid "Track Properties"
+#~ msgstr "Spåregenskaper"
+#
+#
+#
+#~ msgid "Tug freighter, coupled"
+#~ msgstr "Bogser-/fraktfartyg, kopplade"
+#
+#
+#
+#~ msgid "Tug, assisting a vessel or linked combination"
+#~ msgstr "Bogserbåt, bistående ett fartyg eller sammanlänkade"
+#
+#
+#
+#~ msgid "Tug, freighter"
+#~ msgstr "Bogserbåt, fraktfartyg"
+#
+#
+#
+#~ msgid "Tug, freighter/tanker, coupled"
+#~ msgstr "Bogserbåt/fraktfartyg/tanker, kopplade"
+#
+#
+#
+#~ msgid "Tug, one or more tows"
+#~ msgstr "Bogserbåt, ett eller flera släp"
+#
+#
+#
+#~ msgid "Tug, single"
+#~ msgstr "Bogserbåt, ensam"
+#
+#
+#
+#~ msgid "Tug, tanker"
+#~ msgstr "Bogserbåt, tanker"
+#
+#
+#~ msgid "Turn Rate"
+#~ msgstr "Kursändring"
+#
+#
+#~ msgid "URL"
+#~ msgstr "URL"
+#
 #
 #
 #
@@ -4075,3 +4279,41 @@ msgstr "Webbsida för wxFB"
 #
 #~ msgid "Unavailable"
 #~ msgstr "Ej tillgänglig"
+#
+#
+#
+#~ msgid "Unit carrier maritime"
+#~ msgstr "Maritimt transportfartyg"
+#
+#
+#
+#~ msgid "Unk"
+#~ msgstr "Okänd"
+#
+#
+#
+#~ msgid "Vessel, type unknown"
+#~ msgstr "Fartyg, okänd typ"
+#
+#
+#
+#~ msgid ""
+#~ "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
+#~ "dredge"
+#~ msgstr ""
+#~ "Fartyg, arbete-/underhållsfarkost, flytande kran, kabelfartyg, bojfartyg, "
+#~ "mudderfartyg"
+#
+#
+#
+#~ msgid "Waypoint(s) Uploaded successfully."
+#~ msgstr "Waypoint(s) uppladdning ok."
+#
+#
+#~ msgid "Yes"
+#~ msgstr "Ja"
+#
+#
+#
+#~ msgid "in"
+#~ msgstr "om"

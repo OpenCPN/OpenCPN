@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-02 14:06-0500\n"
+"POT-Creation-Date: 2013-07-19 12:07-0400\n"
 "PO-Revision-Date: 2010-12-09 22:35+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaiet@netti.fi>\n"
@@ -141,9 +141,6 @@ msgstr " %H tuntia  %M minuuttia"
 msgid " (Ctrl-Space)"
 msgstr ""
 #
-msgid " (Last Known)"
-msgstr ""
-#
 # 
 # 
 msgid " - "
@@ -151,15 +148,6 @@ msgstr " -"
 #
 msgid " -- [Portable(-p) executing from "
 msgstr ""
-#
-msgid " </b>in<b> "
-msgstr ""
-#
-# 
-# 
-#, fuzzy
-msgid " COG Unavailable"
-msgstr "Ei karttaa saatavilla"
 #
 # 
 # 
@@ -245,11 +233,6 @@ msgstr ""
 #
 # 
 # 
-msgid "&Acknowledge"
-msgstr "&Kuittaus"
-#
-# 
-# 
 msgid "&Activate"
 msgstr "&Aktivoi"
 #
@@ -281,20 +264,8 @@ msgstr "&Poista"
 # 
 # 
 #, fuzzy
-msgid "&Export Route..."
+msgid "&Export selected..."
 msgstr "Vie reitti..."
-#
-# 
-# 
-#, fuzzy
-msgid "&Export Track..."
-msgstr "Vie jälki..."
-#
-# 
-# 
-#, fuzzy
-msgid "&Export Wpt..."
-msgstr "&Vie..."
 #
 # 
 # 
@@ -306,9 +277,6 @@ msgstr "&Kirjasinperhe:"
 #, fuzzy
 msgid "&Go To"
 msgstr "Mene tänne"
-#
-msgid "&Jump To"
-msgstr ""
 #
 # 
 # 
@@ -358,11 +326,6 @@ msgstr "&Käännä"
 #, fuzzy
 msgid "&Send to GPS"
 msgstr "Lähetä GPS:lle..."
-#
-# 
-# 
-msgid "&Silence Alert"
-msgstr "&Sammuta hälytys"
 #
 # 
 # 
@@ -421,26 +384,6 @@ msgstr ""
 #, fuzzy
 msgid "(unnamed)"
 msgstr "(Nimeämätön reitti)"
-#
-msgid ", Out: None"
-msgstr ""
-#
-# 
-# 
-msgid "-"
-msgstr "-"
-#
-# 
-# 
-#, fuzzy
-msgid "--"
-msgstr "-"
-#
-# 
-# 
-#, fuzzy
-msgid "---"
-msgstr "-"
 #
 # 
 # 
@@ -588,24 +531,20 @@ msgstr ""
 #
 # 
 # 
-msgid "A"
-msgstr "A"
-#
-# 
-# 
 msgid "AIS"
 msgstr "AIS"
-#
-# 
-# 
-msgid "AIS Alert"
-msgstr "AIS hälytysluettelo"
 #
 # 
 # 
 #, fuzzy
 msgid "AIS Target List..."
 msgstr "AIS maaliluettelo"
+#
+# 
+# 
+#, fuzzy
+msgid "AIS Target Name"
+msgstr "AIS maalin kysely"
 #
 # 
 # 
@@ -618,27 +557,20 @@ msgstr "AIS maalin kysely"
 msgid "AIS Targets"
 msgstr "Näytä AIS maalit"
 #
-# 
-# 
-msgid "AIS target list"
-msgstr "AIS maaliluettelo"
+msgid "APRS"
+msgstr ""
 #
 # 
 # 
 #, fuzzy
-msgid "AISRollover"
-msgstr "AIS hälytysluettelo"
+msgid "APRS Position Report"
+msgstr "Viime raporttiaika:"
 #
-# 
-# 
-#, fuzzy
-msgid "AISTargetAlert"
-msgstr "AIS-maalikysely?"
+msgid "ARPA"
+msgstr ""
 #
-# 
-# 
-msgid "AISTargetQuery"
-msgstr "AIS-maalikysely?"
+msgid "ARPA radar target"
+msgstr ""
 #
 # 
 # 
@@ -649,9 +581,6 @@ msgstr "Ohjelmatietoja"
 # 
 msgid "About OpenCPN"
 msgstr "Tietoja OpenCPN:stä"
-#
-msgid "Accept"
-msgstr ""
 #
 msgid "Accept Sentences"
 msgstr ""
@@ -669,12 +598,6 @@ msgstr "Aktivoi"
 #, fuzzy
 msgid "Activate Next Waypoint"
 msgstr "Aktivoi reitin seuraava piste"
-#
-# 
-# 
-#, fuzzy
-msgid "Active"
-msgstr "Aktivoi"
 #
 # 
 # 
@@ -756,14 +679,6 @@ msgstr ""
 # 
 # 
 #, fuzzy
-msgid "Aid to Navigation"
-msgstr ""
-"Aid to Navigation\n"
-"\n"
-#
-# 
-# 
-#, fuzzy
 msgid "All Active Charts"
 msgstr "Aktiiviset karttahakemistot"
 #
@@ -840,6 +755,12 @@ msgstr "Haluatko varmasti poistaa KAIKKI kiintopisteet?"
 # 
 # 
 #, fuzzy
+msgid "Are you sure you want to delete the selected object(s)"
+msgstr "Haluatko varmasti poistaa KAIKKI jäljet?"
+#
+# 
+# 
+#, fuzzy
 msgid "Are you sure you want to delete this route?"
 msgstr "Haluatko varmasti poistaa KAIKKI jäljet?"
 #
@@ -886,31 +807,13 @@ msgstr "Automaattiseuranta"
 msgid "Automatic Daily Tracks"
 msgstr ""
 #
-# 
-# 
-msgid "Avg. speed (Kts)"
-msgstr ""
-#
-# 
-# 
-msgid "B"
-msgstr "B"
-#
-# 
-# 
-msgid "Barge, tanker, chemical"
+msgid "Avg. speed"
 msgstr ""
 #
 # 
 # 
 msgid "Base"
 msgstr "Perus"
-#
-# 
-# 
-#, fuzzy
-msgid "Base Station"
-msgstr "Päämäärä"
 #
 # 
 # 
@@ -977,22 +880,7 @@ msgstr ""
 msgid "Boundaries"
 msgstr "Rajat"
 #
-# 
-# 
-msgid "Brg"
-msgstr "Suuntima"
-#
 msgid "Buddy"
-msgstr ""
-#
-# 
-# 
-msgid "Bulk carrier maritime"
-msgstr ""
-#
-# 
-# 
-msgid "Bunkership"
 msgstr ""
 #
 msgid "Buoy/Light Labels"
@@ -1020,11 +908,6 @@ msgstr "Oman aluksen keulaviivan pituus (minuuteissa):"
 #
 # 
 # 
-msgid "CPA"
-msgstr ""
-#
-# 
-# 
 msgid "CPA Calculation"
 msgstr "CPA-laskenta"
 #
@@ -1038,11 +921,6 @@ msgstr "CPA/TCPA-hälytykset"
 # 
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA-hälytykset"
-#
-# 
-# 
-msgid "Call"
-msgstr "Kutsu"
 #
 # 
 # 
@@ -1194,9 +1072,6 @@ msgstr "Kutsu"
 msgid "Cell Scale"
 msgstr ""
 #
-msgid "Center View"
-msgstr ""
-#
 msgid "Center View..."
 msgstr ""
 #
@@ -1295,25 +1170,17 @@ msgstr "Kartat"
 #
 # 
 # 
+#, fuzzy
+msgid "Choose Font Color..."
+msgstr "Valitse kirjasin..."
+#
+# 
+# 
 msgid "Choose Font..."
 msgstr "Valitse kirjasin..."
 #
 msgid "Choose Format for Copy"
 msgstr ""
-#
-msgid "Choose a file"
-msgstr ""
-#
-# 
-# 
-msgid "Class"
-msgstr "Luokka"
-#
-# 
-# 
-#, fuzzy
-msgid "Clear"
-msgstr "Poista kaikki"
 #
 # 
 # 
@@ -1342,11 +1209,6 @@ msgstr "Hyväksy kirjasinvalinta."
 # 
 msgid "Close"
 msgstr "Sulje"
-#
-# 
-# 
-msgid "CoG"
-msgstr "COG"
 #
 # 
 # 
@@ -1386,11 +1248,6 @@ msgstr ""
 msgid "Constrained by draught"
 msgstr ""
 #
-# 
-# 
-msgid "Container vessel"
-msgstr ""
-#
 msgid "Control checksum"
 msgstr ""
 #
@@ -1407,10 +1264,6 @@ msgid "Copy as KML"
 msgstr ""
 #
 msgid "Copy as KML..."
-msgstr ""
-#
-#, c-format
-msgid "Couldn't load sound data from '%s'."
 msgstr ""
 #
 # 
@@ -1446,16 +1299,6 @@ msgstr "Poista kiintopiste"
 #
 # 
 # 
-msgid "Cruise ship"
-msgstr ""
-#
-# 
-# 
-msgid "Current"
-msgstr "Virta"
-#
-# 
-# 
 #, fuzzy
 msgid "Cyan"
 msgstr "Peruuta"
@@ -1467,12 +1310,6 @@ msgstr ""
 #
 msgid "DSC"
 msgstr ""
-#
-# 
-# 
-#, fuzzy
-msgid "DSC Position Report"
-msgstr "Viime raporttiaika:"
 #
 # 
 msgid "Dark Blue"
@@ -1507,12 +1344,6 @@ msgstr ""
 #, fuzzy
 msgid "Data Connections"
 msgstr "Kirjasinasetukset"
-#
-# 
-# 
-#, fuzzy
-msgid "Data Source :"
-msgstr "NMEA lähde"
 #
 #
 # 
@@ -1722,8 +1553,8 @@ msgid "Distress Area: Vessel under assault"
 msgstr ""
 #
 msgid ""
-"Do you also want to toggle the visibility of shared waypoints being part of "
-"this route?"
+"Do you also want to make the shared waypoints being part of this route "
+"invisible?"
 msgstr ""
 #
 # 
@@ -1741,12 +1572,6 @@ msgstr ""
 # 
 msgid "Dredge"
 msgstr ""
-#
-# 
-# 
-#, fuzzy
-msgid "Drop"
-msgstr "Aseta merkintä tähän"
 #
 # 
 # 
@@ -1854,16 +1679,6 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr ""
 #
-# 
-# 
-msgid "Error on Route Upload.  Please check logfiles..."
-msgstr ""
-#
-# 
-# 
-msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr ""
-#
 msgid "Error!"
 msgstr ""
 #
@@ -1919,11 +1734,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Fast ship"
-msgstr ""
-#
-# 
-# 
 msgid "Fathoms"
 msgstr "Sylit"
 #
@@ -1931,11 +1741,6 @@ msgstr "Sylit"
 # 
 msgid "Feet"
 msgstr "Jalat"
-#
-# 
-# 
-msgid "Ferry"
-msgstr ""
 #
 # 
 # 
@@ -1950,11 +1755,6 @@ msgstr ""
 #, fuzzy
 msgid "Filters"
 msgstr "&kilometriä"
-#
-# 
-# 
-msgid "Fishing boat"
-msgstr ""
 #
 # 
 # 
@@ -1982,16 +1782,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Freightbarge"
-msgstr ""
-#
-# 
-# 
-msgid "Freightbarge with containers"
-msgstr ""
-#
-# 
-# 
 #, fuzzy
 msgid "Full Route"
 msgstr "Poista reitti"
@@ -2002,16 +1792,7 @@ msgstr ""
 msgid "GPS Offset from Midship (m)"
 msgstr ""
 #
-#
-# 
-# 
-msgid "GPS/Plotter Port"
-msgstr "GPS/Plotter portti"
-#
 msgid "GPSD"
-msgstr ""
-#
-msgid "GPSGate Buddy"
 msgstr ""
 #
 # 
@@ -2045,12 +1826,6 @@ msgstr "GPX"
 msgid "GUID"
 msgstr ""
 #
-# 
-# 
-#, fuzzy
-msgid "Gas tanker"
-msgstr "Rasteri"
-#
 #
 # 
 # 
@@ -2063,11 +1838,6 @@ msgstr "AIS yleiset"
 #, fuzzy
 msgid "General Options"
 msgstr "Käyttöliittymäasetukset"
-#
-# 
-# 
-msgid "General cargo Vessel maritime"
-msgstr ""
 #
 # 
 # 
@@ -2088,14 +1858,6 @@ msgstr ""
 # 
 # 
 msgid "HSC"
-msgstr ""
-#
-# 
-# 
-msgid "HW"
-msgstr ""
-#
-msgid "Heading"
 msgstr ""
 #
 # 
@@ -2155,17 +1917,9 @@ msgstr "Näytä maalijälki"
 #
 # 
 # 
-msgid "Hydrofoil"
-msgstr ""
-#
-# 
-# 
 #, fuzzy
 msgid "I&mport GPX..."
 msgstr "&Tuo..."
-#
-msgid "IMO"
-msgstr ""
 #
 # 
 # 
@@ -2192,15 +1946,6 @@ msgstr "Tuo GPX-tiedosto"
 msgid "Important Text Only"
 msgstr "Näytä vain tärkeät tekstit"
 #
-# 
-# 
-#, fuzzy
-msgid "In"
-msgstr "Ikoni"
-#
-msgid "In: None"
-msgstr ""
-#
 msgid "Information: Icebreaker waiting area"
 msgstr ""
 #
@@ -2214,9 +1959,6 @@ msgid "Information: Places of refuge"
 msgstr ""
 #
 msgid "Information: Position of icebreakers"
-msgstr ""
-#
-msgid "Inland Blue Flag"
 msgstr ""
 #
 msgid "Input filtering"
@@ -2263,7 +2005,7 @@ msgstr ""
 msgid "Kilometers"
 msgstr "&kilometriä"
 #
-msgid "Kts"
+msgid "Knots"
 msgstr ""
 #
 # 
@@ -2274,11 +2016,6 @@ msgstr ""
 # 
 # 
 msgid "LMT @ Location"
-msgstr ""
-#
-# 
-# 
-msgid "LW"
 msgstr ""
 #
 # 
@@ -2354,9 +2091,6 @@ msgstr ""
 msgid "Leading Light Rear"
 msgstr ""
 #
-msgid "Left"
-msgstr ""
-#
 # 
 # 
 msgid "Leg"
@@ -2367,9 +2101,6 @@ msgstr "Reittiväli"
 #, fuzzy
 msgid "Leg: from "
 msgstr "Reittiväli:"
-#
-msgid "Legend"
-msgstr ""
 #
 # 
 # 
@@ -2415,32 +2146,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Limit range: NM"
-msgstr ""
-#
-# 
-# 
-#, fuzzy
-msgid "Link"
-msgstr "Linkit"
-#
-# 
-# 
-#, fuzzy
-msgid "Link Properties"
-msgstr "Merkitse ominaisuudet"
-#
-# 
-# 
-#, fuzzy
-msgid "Link description"
-msgstr "Kuvaus"
-#
-msgid "Link not complete, can't be saved."
-msgstr ""
-#
-# 
-# 
 msgid "Links"
 msgstr "Linkit"
 #
@@ -2448,11 +2153,6 @@ msgid "Links are opened for editing."
 msgstr ""
 #
 msgid "Links are opened in the default browser."
-msgstr ""
-#
-# 
-# 
-msgid "Liquified gas tanker"
 msgstr ""
 #
 # 
@@ -2470,9 +2170,6 @@ msgstr "Paperikartta"
 # 
 # 
 msgid "Local @ PC"
-msgstr ""
-#
-msgid "Local file..."
 msgstr ""
 #
 # 
@@ -2542,11 +2239,6 @@ msgstr "MIES YLI LAIDAN (MOB)"
 #
 # 
 # 
-msgid "MMSI"
-msgstr "MMSI"
-#
-# 
-# 
 msgid "M_COVR ID"
 msgstr ""
 #
@@ -2570,12 +2262,6 @@ msgstr "Mariner's Standard (vakio)"
 #, fuzzy
 msgid "Mark targets as lost after (min)"
 msgstr "Merkitse maali kadotetuksi (minuutin) jälkeen:"
-#
-# 
-# 
-#, fuzzy
-msgid "Marks"
-msgstr "Uusi merkintä"
 #
 # 
 # 
@@ -2623,12 +2309,6 @@ msgstr "Uudelleennimeä kiintopisteet?"
 msgid "Merge waypoints?"
 msgstr "Uudelleennimeä kiintopisteet?"
 #
-msgid "Message accepted"
-msgstr ""
-#
-msgid "Message filtered and dropped"
-msgstr ""
-#
 # 
 # 
 msgid "Meters"
@@ -2657,61 +2337,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Motor freighter"
-msgstr ""
-#
-# 
-# 
-msgid "Motor freighter pushing at least one tank-ship"
-msgstr ""
-#
-# 
-# 
-msgid "Motor freighter pushing one or more freighters"
-msgstr ""
-#
-# 
-# 
-msgid "Motor freighter with one or more ships alongside"
-msgstr ""
-#
-# 
-# 
-msgid "Motor freighter with tanker"
-msgstr ""
-#
-# 
-# 
-msgid "Motor freighter, tug"
-msgstr ""
-#
-# 
-# 
-msgid "Motor tanker"
-msgstr ""
-#
-# 
-# 
-msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
-msgstr ""
-#
-# 
-# 
-msgid "Motor tanker, liquid cargo, type C"
-msgstr ""
-#
-# 
-# 
-msgid "Motor tanker, liquid cargo, type N"
-msgstr ""
-#
-# 
-# 
-msgid "Motor tanker, tug"
-msgstr ""
-#
-# 
-# 
 #, fuzzy
 msgid "Move Boat Here"
 msgstr "Siirrä alus tähän"
@@ -2722,6 +2347,9 @@ msgstr "Siirrä alus tähän"
 msgid "Move Waypoint"
 msgstr "Kiintopisteelle"
 #
+msgid "Mph"
+msgstr ""
+#
 msgid "NMEA"
 msgstr ""
 #
@@ -2729,9 +2357,6 @@ msgid "NMEA 0183"
 msgstr ""
 #
 msgid "NMEA 2000"
-msgstr ""
-#
-msgid "NMEA Debug Window"
 msgstr ""
 #
 msgid "NMi"
@@ -2742,6 +2367,9 @@ msgstr ""
 msgid "Name"
 msgstr "Nimi"
 #
+msgid "National text on chart"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -2750,8 +2378,9 @@ msgstr "&meripeninkulmaa"
 #
 # 
 # 
-msgid "Nav Status"
-msgstr "Status"
+#, fuzzy
+msgid "Nautical miles"
+msgstr "&meripeninkulmaa"
 #
 # 
 # 
@@ -2761,12 +2390,6 @@ msgstr "Navigointitiedot"
 #
 msgid "Navigate To This"
 msgstr ""
-#
-# 
-# 
-#, fuzzy
-msgid "Net"
-msgstr "Seuraava"
 #
 msgid "Network"
 msgstr ""
@@ -2782,15 +2405,7 @@ msgstr ""
 #
 # 
 # 
-msgid "Next"
-msgstr "Seuraava"
-#
-# 
-# 
 msgid "Next tide event"
-msgstr ""
-#
-msgid "No"
 msgstr ""
 #
 # 
@@ -2857,16 +2472,6 @@ msgstr "Kohdekysely"
 #
 # 
 # 
-msgid "Object, not otherwise specified"
-msgstr ""
-#
-# 
-# 
-msgid "Object, towed, not otherwise specified"
-msgstr ""
-#
-# 
-# 
 #, fuzzy
 msgid "ObjectQuery"
 msgstr "Kohdekysely"
@@ -2875,6 +2480,9 @@ msgstr "Kohdekysely"
 # 
 msgid "Ok"
 msgstr "Ok"
+#
+msgid "Old log will be moved to opencpn.log.log"
+msgstr ""
 #
 # 
 # 
@@ -2996,17 +2604,8 @@ msgstr "Muu"
 msgid "Other - Define in associated text field"
 msgstr ""
 #
-msgid "Out"
-msgstr ""
-#
 msgid "Output"
 msgstr ""
-#
-# 
-# 
-#, fuzzy
-msgid "Output Message"
-msgstr "OpenCPN viesti"
 #
 msgid "Output filtering"
 msgstr ""
@@ -3063,16 +2662,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Passenger ship without accomodation"
-msgstr ""
-#
-# 
-# 
-msgid "Passenger ship, ferry, cruise ship, red cross ship"
-msgstr ""
-#
-# 
-# 
 #, fuzzy
 msgid "Paste Route"
 msgstr "Luo reitti"
@@ -3088,9 +2677,6 @@ msgstr "Vie jälki..."
 #, fuzzy
 msgid "Paste Waypoint"
 msgstr "Aktivoi kiintopiste"
-#
-msgid "Pause"
-msgstr ""
 #
 # 
 # 
@@ -3110,7 +2696,7 @@ msgstr "Suunniteltu nopeus"
 # 
 # 
 #, fuzzy
-msgid "Plan speed (Kts)"
+msgid "Plan speed"
 msgstr "Suunniteltu nopeus"
 #
 # 
@@ -3135,11 +2721,6 @@ msgstr "Uudelleenkäynnistä OpenCPN kielen vaihtamiseksi "
 #, fuzzy
 msgid "Pleasure craft"
 msgstr "Mittaus pois"
-#
-# 
-# 
-msgid "Pleasure craft, longer than 20 metres"
-msgstr ""
 #
 msgid "Plugins"
 msgstr ""
@@ -3213,19 +2794,9 @@ msgstr ""
 #
 # 
 # 
-msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr "Aseta GPS vastaanottamaan reitti/kiintopiste-tietoja ja paina lähetä..."
-#
-# 
-# 
 #, fuzzy
 msgid "Preserve Scale when Switching Charts"
 msgstr "Säilytä mittakaava kartan vaihdossa"
-#
-# 
-# 
-msgid "Prev"
-msgstr "Edellinen"
 #
 # 
 # 
@@ -3252,9 +2823,6 @@ msgstr "Poista reitti"
 msgid "Priority"
 msgstr ""
 #
-msgid "Problem discovered"
-msgstr ""
-#
 msgid "Proceed to this location - await instructions"
 msgstr ""
 #
@@ -3263,11 +2831,6 @@ msgstr ""
 #, fuzzy
 msgid "Processing Waypoints..."
 msgstr "Poista kaikki kiintopisteet"
-#
-# 
-# 
-msgid "Progress..."
-msgstr "Edistyminen..."
 #
 # 
 # 
@@ -3285,100 +2848,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Pushboat, single"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, eight barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, eight cargo barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, five barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, five cargo barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, four barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, four cargo barges"
-msgstr ""
-#
-# 
-msgid "Pushtow, nine or more barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, nine or more barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, one cargo barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, one tank/gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, seven barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, seven cargo barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, six barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, six cargo barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, three barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, three cargo barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, two barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, two cargo barges"
-msgstr ""
-#
-# 
-# 
 #, fuzzy
 msgid "Question"
 msgstr "Asetukset"
@@ -3387,11 +2856,6 @@ msgstr "Asetukset"
 # 
 msgid "RACON"
 msgstr ""
-#
-# 
-# 
-msgid "Range"
-msgstr "Etäisyys"
 #
 # 
 # 
@@ -3426,11 +2890,6 @@ msgstr "OpenCPN päivittää karttatietokantaa config-tiedoston mukaan..."
 msgid "Red"
 msgstr ""
 #
-# 
-# 
-msgid "Red cross ship"
-msgstr ""
-#
 msgid "Redo"
 msgstr ""
 #
@@ -3453,15 +2912,6 @@ msgstr ""
 #, fuzzy
 msgid "Reference Point"
 msgstr "Vertailuasema:"
-#
-# 
-# 
-#, fuzzy
-msgid "Reference Station :"
-msgstr "Vertailuasema:"
-#
-msgid "Reject"
-msgstr ""
 #
 # 
 # 
@@ -3502,12 +2952,6 @@ msgstr "Poista kadotetut maalit (minuutin) jälkeen:"
 # 
 msgid "Rename Waypoints?"
 msgstr "Uudelleennimeä kiintopisteet?"
-#
-msgid "Report Age"
-msgstr ""
-#
-msgid "Report as of"
-msgstr ""
 #
 msgid "Report from ship: Icing info"
 msgstr ""
@@ -3560,9 +3004,6 @@ msgstr ""
 msgid "Restricted Manoeuvrability"
 msgstr ""
 #
-msgid "Resume"
-msgstr ""
-#
 # 
 # 
 msgid "Retrieving initial Chart Directory set from Windows Registry"
@@ -3579,18 +3020,12 @@ msgstr ""
 msgid "Reverse..."
 msgstr "&Käännä"
 #
-# 
-# 
-#, fuzzy
-msgid "Right"
-msgstr "&Paksuus:"
+msgid "Rogue or suspicious vessel"
+msgstr ""
 #
 # 
 # 
 msgid "Rollover"
-msgstr ""
-#
-msgid "Rouge or suspicious vessel"
 msgstr ""
 #
 # 
@@ -3618,11 +3053,6 @@ msgstr "Reitin ominaisuudet"
 # 
 msgid "Route Properties"
 msgstr "Reitin ominaisuudet"
-#
-# 
-# 
-msgid "Route Uploaded successfully."
-msgstr ""
 #
 # 
 # 
@@ -3665,9 +3095,6 @@ msgstr ""
 msgid "SAR/V"
 msgstr ""
 #
-msgid "SART"
-msgstr ""
-#
 # 
 # 
 msgid "SOG COG"
@@ -3676,9 +3103,6 @@ msgstr ""
 # 
 # 
 msgid "Safe Water"
-msgstr ""
-#
-msgid "Safety Broadcast Message"
 msgstr ""
 #
 # 
@@ -3768,16 +3192,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Send"
-msgstr "Lähetä"
-#
-# 
-# 
-msgid "Send Route To GPS"
-msgstr "Lähetä reitti GPSään"
-#
-# 
-# 
 msgid "Send To GPS..."
 msgstr "Lähetä GPS:lle..."
 #
@@ -3794,14 +3208,6 @@ msgid "Sentence Filter"
 msgstr "&Sammuta hälytys"
 #
 msgid "Serial"
-msgstr ""
-#
-# 
-# 
-msgid "Service vessel, police patrol, port service"
-msgstr ""
-#
-msgid "Set"
 msgstr ""
 #
 # 
@@ -3976,11 +3382,44 @@ msgstr ""
 msgid "Show course from each Waypoint to the next one. "
 msgstr ""
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+#, fuzzy
+msgid "Show distance as"
+msgstr "Kokonaismatka"
+#
 # 
 # 
 #, fuzzy
 msgid "Show name"
 msgstr "Näytä nimi"
+#
+msgid "Show names with AIS targets at scale greater than 1:"
+msgstr ""
 #
 # 
 # 
@@ -3992,6 +3431,12 @@ msgstr "Näytä AIS maalit"
 # 
 msgid "Show radar rings"
 msgstr "Näytä tutkarenkaat"
+#
+# 
+# 
+#, fuzzy
+msgid "Show speed as"
+msgstr "Näytä vuorovedet"
 #
 # 
 # 
@@ -4020,18 +3465,9 @@ msgstr ""
 #
 # 
 # 
-msgid "SoG"
-msgstr "SOG"
-#
-# 
-# 
 #, fuzzy
 msgid "Solid"
 msgstr "Symboolinen"
-#
-#, c-format
-msgid "Sound file '%s' is in unsupported format."
-msgstr ""
 #
 # 
 # 
@@ -4095,6 +3531,9 @@ msgstr "Aloita"
 msgid "StatusBar"
 msgstr "Näytä tilapalkki"
 #
+msgid "Statute miles"
+msgstr ""
+#
 # 
 # 
 msgid "Stbd"
@@ -4135,42 +3574,7 @@ msgstr "CPA/TCPA-hälytykset"
 #
 # 
 # 
-#, fuzzy
-msgid "TCPA"
-msgstr "CPA/TCPA-hälytykset"
-#
-# 
-# 
-msgid "Tankbarge"
-msgstr ""
-#
-# 
-# 
-msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
-msgstr ""
-#
-# 
-# 
-msgid "Tankbarge, gas"
-msgstr ""
-#
-# 
-# 
-msgid "Tankbarge, liquid cargo, type C"
-msgstr ""
-#
-# 
-# 
-msgid "Tankbarge, liquid cargo, type N"
-msgstr ""
-#
-# 
-# 
 msgid "Tanker"
-msgstr ""
-#
-# 
-msgid "Target Count"
 msgstr ""
 #
 # 
@@ -4184,11 +3588,6 @@ msgstr "AIS maaliluettelo"
 #, fuzzy
 msgid "Target Query..."
 msgstr "AIS maalin kysely"
-#
-# 
-# 
-msgid "Target info"
-msgstr ""
 #
 # 
 # 
@@ -4217,12 +3616,6 @@ msgstr "Lähetä"
 # 
 msgid "Test Alert Sound"
 msgstr "Testaa hälytysääntä"
-#
-# 
-# 
-#, fuzzy
-msgid "Testing"
-msgstr "Asetukset"
 #
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
@@ -4326,16 +3719,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Tide"
-msgstr "Vuorovesi"
-#
-# 
-# 
-msgid "TideCurrentGraphRollover"
-msgstr ""
-#
-# 
-# 
 #, fuzzy
 msgid "Tides && Currents"
 msgstr "Näytä virrat"
@@ -4352,12 +3735,6 @@ msgstr ""
 #
 # 
 # 
-#, fuzzy
-msgid "Timestamp"
-msgstr "ETE/Aikaleima"
-#
-# 
-# 
 msgid "To"
 msgstr "mihin"
 #
@@ -4368,18 +3745,8 @@ msgstr "Kiintopisteelle"
 #
 # 
 # 
-msgid "Today"
-msgstr "Tänään"
-#
-# 
-# 
 msgid "Toggle Tracking"
 msgstr "Kytke jälki"
-#
-# 
-# 
-msgid "Tomorrow"
-msgstr "Huomenna"
 #
 # 
 # 
@@ -4420,11 +3787,6 @@ msgstr "Merkitse nimi"
 #
 # 
 # 
-msgid "Track Properties"
-msgstr "Jäljen asetukset"
-#
-# 
-# 
 #, fuzzy
 msgid "Tracking Precision"
 msgstr "Jäljen asetukset"
@@ -4445,47 +3807,12 @@ msgstr ""
 msgid "Transverse Mercator"
 msgstr "Transverse Mercator"
 #
+msgid "Treat WPL sentences as APRS position reports"
+msgstr ""
+#
 # 
 # 
 msgid "Tug"
-msgstr ""
-#
-# 
-# 
-msgid "Tug freighter, coupled"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, assisting a vessel or linked combination"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, freighter"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, freighter/tanker, coupled"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, one or more tows"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, single"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, tanker"
-msgstr ""
-#
-msgid "Turn Rate"
 msgstr ""
 #
 # 
@@ -4494,9 +3821,6 @@ msgid "Type"
 msgstr "Tyyppi"
 #
 msgid "UDP"
-msgstr ""
-#
-msgid "URL"
 msgstr ""
 #
 # 
@@ -4528,16 +3852,6 @@ msgstr ""
 #
 msgid "Undo"
 msgstr ""
-#
-# 
-# 
-msgid "Unit carrier maritime"
-msgstr ""
-#
-# 
-# 
-msgid "Unk"
-msgstr "Unk"
 #
 # 
 # 
@@ -4638,18 +3952,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Vessel, type unknown"
-msgstr ""
-#
-# 
-# 
-msgid ""
-"Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
-"dredge"
-msgstr ""
-#
-# 
-# 
 msgid "Virtual"
 msgstr ""
 #
@@ -4706,11 +4008,6 @@ msgstr "&Ominaisuudet"
 #, fuzzy
 msgid "Waypoint Properties, Layer: "
 msgstr "Merkitse ominaisuudet"
-#
-# 
-# 
-msgid "Waypoint(s) Uploaded successfully."
-msgstr ""
 #
 # 
 # 
@@ -4783,9 +4080,6 @@ msgstr ""
 msgid "Yellow"
 msgstr "Kutsu"
 #
-msgid "Yes"
-msgstr ""
-#
 msgid "Yes, hide it."
 msgstr ""
 #
@@ -4838,13 +4132,25 @@ msgstr "B"
 msgid "_plus"
 msgstr ""
 #
-# 
-# 
-#, fuzzy
-msgid "in"
-msgstr "Linkit"
+msgid "km"
+msgstr ""
 #
-msgid "min"
+msgid "km/h"
+msgstr ""
+#
+msgid "kts"
+msgstr ""
+#
+msgid "m"
+msgstr ""
+#
+msgid "m/s"
+msgstr ""
+#
+msgid "mi"
+msgstr ""
+#
+msgid "mph"
 msgstr ""
 #
 # 
@@ -4859,6 +4165,7 @@ msgstr ""
 #
 msgid "wxFB Website"
 msgstr ""
+#
 #
 #
 #
@@ -4893,6 +4200,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "      COG arrow predictor length (Minutes):"
@@ -4912,10 +4220,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "  Kiinteän maalin max nopeus (solmua):"
+#
 #
 #
 #
@@ -4963,10 +4273,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Karttaprojektio on TUNTEMATON, oletus Mercator:"
+#
 #
 #
 #
@@ -4999,10 +4311,25 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "  Could not open serial port '"
 #~ msgstr "  Ssarjaporttia ei pysty avaamaan'"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid " COG Unavailable"
+#~ msgstr "Ei karttaa saatavilla"
+#
+#
+# 
+# 
+#~ msgid "&Acknowledge"
+#~ msgstr "&Kuittaus"
+#
 #
 #
 #
@@ -5092,6 +4419,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5119,6 +4447,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Poista kaikki reitit"
+#
 #
 #
 #
@@ -5179,6 +4508,27 @@ msgstr ""
 #~ msgstr "&Poista kaikki jäljet"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "&Export Track..."
+#~ msgstr "Vie jälki..."
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "&Export Wpt..."
+#~ msgstr "&Vie..."
+#
+#
+# 
+# 
+#~ msgid "&Silence Alert"
+#~ msgstr "&Sammuta hälytys"
+#
+#
+#
 #
 #
 #
@@ -5213,6 +4563,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -5221,6 +4572,7 @@ msgstr ""
 #~ msgstr ""
 #~ "'\n"
 #~ "Ehdotus: Yritä sulkea muut sovellukset."
+#
 #
 #
 #
@@ -5281,6 +4633,27 @@ msgstr ""
 #~ msgstr "(Aktiivoitu reitti)"
 #
 #
+# 
+# 
+#~ msgid "-"
+#~ msgstr "-"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "--"
+#~ msgstr "-"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "---"
+#~ msgstr "-"
+#
+#
+#
 #
 #
 #
@@ -5316,6 +4689,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5324,6 +4698,19 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #~ msgstr "Nopeus:            Tuntematon\n"
+#
+#
+# 
+# 
+#~ msgid "A"
+#~ msgstr "A"
+#
+#
+# 
+# 
+#~ msgid "AIS Alert"
+#~ msgstr "AIS hälytysluettelo"
+#
 #
 #
 #
@@ -5360,6 +4747,33 @@ msgstr ""
 #~ msgstr "AIS hälytysluettelo"
 #
 #
+# 
+# 
+#~ msgid "AIS target list"
+#~ msgstr "AIS maaliluettelo"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "AISRollover"
+#~ msgstr "AIS hälytysluettelo"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "AISTargetAlert"
+#~ msgstr "AIS-maalikysely?"
+#
+#
+# 
+# 
+#~ msgid "AISTargetQuery"
+#~ msgstr "AIS-maalikysely?"
+#
+#
+#
 #
 #
 #
@@ -5388,6 +4802,14 @@ msgstr ""
 #~ msgstr "Aktivoi reitti"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "Active"
+#~ msgstr "Aktivoi"
+#
+#
+#
 #
 #
 #
@@ -5405,6 +4827,7 @@ msgstr ""
 # 
 #~ msgid "Add Selection"
 #~ msgstr "Valitse mukaan"
+#
 #
 #
 #
@@ -5454,10 +4877,21 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Lisätieto"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Aid to Navigation"
+#~ msgstr ""
+#~ "Aid to Navigation\n"
+#~ "\n"
+#
 #
 #
 #
@@ -5491,6 +4925,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Autopilot Output Port"
@@ -5510,10 +4945,25 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Available Chart Directories"
 #~ msgstr "Käytettävät karttahakemistot"
+#
+#
+# 
+# 
+#~ msgid "B"
+#~ msgstr "B"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Base Station"
+#~ msgstr "Päämäärä"
+#
 #
 #
 #
@@ -5551,11 +5001,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr "Nopeus:            Tuntematon\n"
+#
+#
+# 
+# 
+#~ msgid "Brg"
+#~ msgstr "Suuntima"
+#
 #
 #
 #
@@ -5575,6 +5033,7 @@ msgstr ""
 # 
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -5609,10 +5068,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 zoom-detaljit"
+#
 #
 #
 #
@@ -5649,10 +5110,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f NM\n"
+#
+#
+# 
+# 
+#~ msgid "Call"
+#~ msgstr "Kutsu"
+#
 #
 #
 #
@@ -5679,6 +5148,7 @@ msgstr ""
 #~ "Onko gpsd käynnissä?\n"
 #~ "\n"
 #~ "gpsd isäntä on: "
+#
 #
 #
 #
@@ -5753,11 +5223,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "CallSign:             "
 #~ msgstr "Sijainti:"
+#
 #
 #
 #
@@ -5807,10 +5279,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart Display Filters"
 #~ msgstr "Karttanäyttösuodin"
+#
 #
 #
 #
@@ -5830,6 +5304,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Sijainti"
+#
 #
 #
 #
@@ -5887,6 +5362,13 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Viallinen karttatiedosto... käyttö estetty \n"
+#
+#
+# 
+# 
+#~ msgid "Class"
+#~ msgstr "Luokka"
+#
 #
 #
 #
@@ -5965,11 +5447,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Class:                "
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -6063,6 +5547,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6096,6 +5581,20 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "Clear"
+#~ msgstr "Poista kaikki"
+#
+#
+# 
+# 
+#~ msgid "CoG"
+#~ msgstr "COG"
+#
+#
+#
 #
 #
 #
@@ -6112,6 +5611,7 @@ msgstr ""
 # 
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "TCP/IP-hostia ei löydy '"
+#
 #
 #
 #
@@ -6149,6 +5649,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6170,11 +5671,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Course:                 Unavailable\n"
 #~ msgstr "Nopeus:            Tuntematon\n"
+#
+#
+# 
+# 
+#~ msgid "Current"
+#~ msgstr "Virta"
+#
 #
 #
 #
@@ -6248,10 +5757,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Cursor: "
 #~ msgstr "Osoitin:"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Data Source :"
+#~ msgstr "NMEA lähde"
+#
 #
 #
 #
@@ -6307,11 +5825,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Kirjasinväri."
+#
 #
 #
 #
@@ -6356,10 +5876,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Poista merkintä"
+#
 #
 #
 #
@@ -6394,6 +5916,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Selection"
@@ -6413,10 +5936,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Track"
 #~ msgstr "Poista jälki"
+#
 #
 #
 #
@@ -6452,10 +5977,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Destination:          "
 #~ msgstr "Päämäärä:"
+#
 #
 #
 #
@@ -6475,6 +6002,14 @@ msgstr ""
 #, fuzzy
 #~ msgid "Display Style"
 #~ msgstr "Karttanäyttötyyli"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Drop"
+#~ msgstr "Aseta merkintä tähän"
+#
 #
 #
 #
@@ -6499,10 +6034,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ENC/Vector"
 #~ msgstr "ENC/Vektori"
+#
 #
 #
 #
@@ -6540,10 +6077,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ETA:                  "
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -6633,6 +6172,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6642,6 +6182,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Aikaleima"
+#
 #
 #
 #
@@ -6676,10 +6217,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Etc."
 #~ msgstr "jne."
+#
 #
 #
 #
@@ -6764,6 +6307,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6780,6 +6324,7 @@ msgstr ""
 #~ "libgps:ää ei pysty avaamaan.\n"
 #~ "\n"
 #~ "gpsd-isäntä on: "
+#
 #
 #
 #
@@ -6842,11 +6387,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "From Ownship: %03d Deg   "
 #~ msgstr "Omasta aluksesta: %03d ast  %6.2f mpk"
+#
 #
 #
 #
@@ -6869,6 +6416,14 @@ msgstr ""
 #
 #
 #
+# 
+# 
+#~ msgid "GPS/Plotter Port"
+#~ msgstr "GPS/Plotter portti"
+#
+#
+#
+#
 #
 #
 #
@@ -6884,6 +6439,7 @@ msgstr ""
 # 
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD Data Server"
+#
 #
 #
 #
@@ -6973,6 +6529,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7000,6 +6557,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB data"
+#
 #
 #
 #
@@ -7089,6 +6647,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7118,6 +6677,14 @@ msgstr ""
 #~ msgstr "GRIB-tiedostojen hakemisto"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "Gas tanker"
+#~ msgstr "Rasteri"
+#
+#
+#
 #
 #
 #
@@ -7135,6 +6702,7 @@ msgstr ""
 # 
 #~ msgid "Go To Here"
 #~ msgstr "Mene tänne"
+#
 #
 #
 #
@@ -7180,11 +6748,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Suuntima:              %5.0f Deg.\n"
+#
 #
 #
 #
@@ -7237,6 +6807,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7256,6 +6827,14 @@ msgstr ""
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Tuo GPX-tiedosto"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "In"
+#~ msgstr "Ikoni"
+#
 #
 #
 #
@@ -7304,10 +6883,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Kielet/kirjasimet"
+#
 #
 #
 #
@@ -7344,10 +6925,33 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Leg/Route"
 #~ msgstr "Reittiosuus/reitti"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Link"
+#~ msgstr "Linkit"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Link Properties"
+#~ msgstr "Merkitse ominaisuudet"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Link description"
+#~ msgstr "Kuvaus"
+#
 #
 #
 #
@@ -7367,6 +6971,13 @@ msgstr ""
 # 
 #~ msgid "META Objects"
 #~ msgstr "META Objects"
+#
+#
+# 
+# 
+#~ msgid "MMSI"
+#~ msgstr "MMSI"
+#
 #
 #
 #
@@ -7403,6 +7014,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -7489,10 +7101,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Merkitse ikoni"
+#
 #
 #
 #
@@ -7532,10 +7146,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Properties"
 #~ msgstr "Merkitse ominaisuudet"
+#
 #
 #
 #
@@ -7565,6 +7181,14 @@ msgstr ""
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Merkkaa /WP ominaisuudet"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Marks"
+#~ msgstr "Uusi merkintä"
+#
 #
 #
 #
@@ -7608,6 +7232,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Metres"
@@ -7626,10 +7251,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA lähde"
+#
 #
 #
 #
@@ -7665,11 +7292,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Name:  "
 #~ msgstr "Nimi:"
+#
+#
+# 
+# 
+#~ msgid "Nav Status"
+#~ msgstr "Status"
+#
 #
 #
 #
@@ -7690,6 +7325,14 @@ msgstr ""
 # 
 #~ msgid "Navigational Status:  "
 #~ msgstr "Status: "
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Net"
+#~ msgstr "Seuraava"
+#
 #
 #
 #
@@ -7730,6 +7373,13 @@ msgstr ""
 #~ msgstr "Uusi merkintä"
 #
 #
+# 
+# 
+#~ msgid "Next"
+#~ msgstr "Seuraava"
+#
+#
+#
 #
 #
 #
@@ -7747,6 +7397,14 @@ msgstr ""
 #, fuzzy
 #~ msgid "Number of Radar Rings"
 #~ msgstr "Tutkarenkaiden määrä"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Output Message"
+#~ msgstr "OpenCPN viesti"
+#
 #
 #
 #
@@ -7780,6 +7438,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -7799,11 +7458,20 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Jälkipisteiden aikaväli (sekuntia):"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Plan speed (Kts)"
+#~ msgstr "Suunniteltu nopeus"
+#
 #
 #
 #
@@ -7893,6 +7561,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7920,6 +7589,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
+#
 #
 #
 #
@@ -8009,6 +7679,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8052,6 +7723,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -8059,6 +7731,7 @@ msgstr ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Raportin ikä:               %3d Sec.\n"
+#
 #
 #
 #
@@ -8127,6 +7800,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -8138,6 +7812,14 @@ msgstr ""
 #~ msgstr ""
 #~ "libgps API Version mismatch.\n"
 #~ "Opencpn found version %d.%d, but requires at least version 3.1"
+#
+#
+# 
+# 
+#~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
+#~ msgstr ""
+#~ "Aseta GPS vastaanottamaan reitti/kiintopiste-tietoja ja paina lähetä..."
+#
 #
 #
 #
@@ -8198,6 +7880,13 @@ msgstr ""
 #~ msgstr "Ilmanpaine, mbar"
 #
 #
+# 
+# 
+#~ msgid "Prev"
+#~ msgstr "Edellinen"
+#
+#
+#
 #
 #
 #
@@ -8229,6 +7918,13 @@ msgstr ""
 #~ msgstr "Tulostus"
 #
 #
+# 
+# 
+#~ msgid "Progress..."
+#~ msgstr "Edistyminen..."
+#
+#
+#
 #
 #
 #
@@ -8245,6 +7941,13 @@ msgstr ""
 # 
 #~ msgid "Radar rings"
 #~ msgstr "Tutkarenkaat"
+#
+#
+# 
+# 
+#~ msgid "Range"
+#~ msgstr "Etäisyys"
+#
 #
 #
 #
@@ -8282,6 +7985,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Range:                %5.1f NM\n"
@@ -8301,10 +8005,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Raster"
 #~ msgstr "Rasteri"
+#
 #
 #
 #
@@ -8342,11 +8048,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Raportin ikä:               %3d Sec.\n"
+#
 #
 #
 #
@@ -8384,6 +8092,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -8405,11 +8114,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 #~ msgstr "Raportin ikä:               %3d Sec.\n"
+#
 #
 #
 #
@@ -8467,6 +8178,14 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+# 
+#, fuzzy
+#~ msgid "Reference Station :"
+#~ msgstr "Vertailuasema:"
+#
+#
+#
 #
 #
 #
@@ -8484,6 +8203,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Poista tämä kartta tilkkutäkistä."
+#
 #
 #
 #
@@ -8526,40 +8246,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Käännä reitti"
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 # 
 # 
 #, fuzzy
-#~ msgid "Route Distance: "
-#~ msgstr "Kokonaismatka"
+#~ msgid "Right"
+#~ msgstr "&Paksuus:"
+#
 #
 #
 #
@@ -8633,6 +8332,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -8653,11 +8353,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Reitti"
+#
 #
 #
 #
@@ -8731,10 +8433,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "Valitse tilkkutäkin karttatyypit"
+#
 #
 #
 #
@@ -8793,6 +8497,19 @@ msgstr ""
 # 
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Valtse GRIB-hakemisto"
+#
+#
+# 
+# 
+#~ msgid "Send"
+#~ msgstr "Lähetä"
+#
+#
+# 
+# 
+#~ msgid "Send Route To GPS"
+#~ msgstr "Lähetä reitti GPSään"
+#
 #
 #
 #
@@ -8855,11 +8572,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "Lähetä GPS:lle..."
+#
 #
 #
 #
@@ -8904,10 +8623,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Settings"
 #~ msgstr "Asetukset"
+#
 #
 #
 #
@@ -8978,10 +8699,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show ATON labels"
 #~ msgstr "Näytä ATON-leimat"
+#
 #
 #
 #
@@ -9071,6 +8794,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9098,6 +8822,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Näytä GRIB-ruutu"
+#
 #
 #
 #
@@ -9183,6 +8908,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Printing Icon"
@@ -9214,10 +8940,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Näytä jälki-ikoni"
+#
 #
 #
 #
@@ -9292,6 +9020,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -9301,6 +9030,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -9367,6 +9097,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -9376,6 +9107,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -9417,6 +9149,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -9426,6 +9159,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -9467,6 +9201,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -9492,6 +9227,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -9501,6 +9237,13 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
+#
+# 
+# 
+#~ msgid "SoG"
+#~ msgstr "SOG"
+#
 #
 #
 #
@@ -9538,6 +9281,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Speed:                %5.2f Kts.\n"
@@ -9557,10 +9301,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi Data Server"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "TCPA"
+#~ msgstr "CPA/TCPA-hälytykset"
+#
 #
 #
 #
@@ -9597,10 +9350,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Testing"
+#~ msgstr "Asetukset"
+#
 #
 #
 #
@@ -9622,6 +9384,13 @@ msgstr ""
 #~ msgstr "Tekstielementit"
 #
 #
+# 
+# 
+#~ msgid "Tide"
+#~ msgstr "Vuorovesi"
+#
+#
+#
 #
 #
 #
@@ -9640,6 +9409,20 @@ msgstr ""
 #, fuzzy
 #~ msgid "Tide & Current Dataset Selection"
 #~ msgstr "Näytä virrat"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "Timestamp"
+#~ msgstr "ETE/Aikaleima"
+#
+#
+# 
+# 
+#~ msgid "Today"
+#~ msgstr "Tänään"
+#
 #
 #
 #
@@ -9721,6 +9504,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9742,6 +9526,13 @@ msgstr ""
 #~ msgstr "Reitin nimi"
 #
 #
+# 
+# 
+#~ msgid "Tomorrow"
+#~ msgstr "Huomenna"
+#
+#
+#
 #
 #
 #
@@ -9759,6 +9550,13 @@ msgstr ""
 # 
 #~ msgid "ToolBox"
 #~ msgstr "Työkalut"
+#
+#
+# 
+# 
+#~ msgid "Track Properties"
+#~ msgstr "Jäljen asetukset"
+#
 #
 #
 #
@@ -9794,10 +9592,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Mittakaava: %8.0f       "
+#
 #
 #
 #
@@ -9835,11 +9635,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "UN Ship Type:         "
 #~ msgstr "Alustyyppi:"
+#
 #
 #
 #
@@ -9878,6 +9680,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -9886,6 +9689,7 @@ msgstr ""
 #~ "libgps:ää ei pysty avaamaan.\n"
 #~ "\n"
 #~ "gpsd-isäntä on: "
+#
 #
 #
 #
@@ -9913,10 +9717,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Units"
 #~ msgstr "Yksiköt"
+#
+#
+# 
+# 
+#~ msgid "Unk"
+#~ msgstr "Unk"
+#
 #
 #
 #
@@ -9990,10 +9802,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Use SCAMIN"
 #~ msgstr "Käytä SCAMIN-asetusta"
+#
 #
 #
 #
@@ -10067,10 +9881,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Waypoint Locking"
 #~ msgstr "Kiintopisteiden lukitus"
+#
 #
 #
 #
@@ -10105,10 +9921,19 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "cm93 Detail"
 #~ msgstr "CM93 detaljit"
+#
+#
+# 
+# 
+#, fuzzy
+#~ msgid "in"
+#~ msgstr "Linkit"
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-02 14:06-0500\n"
+"POT-Creation-Date: 2013-07-19 12:07-0400\n"
 "PO-Revision-Date: 2010-03-31 01:12+0300\n"
 "Last-Translator: \n"
 "Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
@@ -183,9 +183,6 @@ msgstr " %H Ч  %M М"
 msgid " (Ctrl-Space)"
 msgstr ""
 #
-msgid " (Last Known)"
-msgstr ""
-#
 # 
 # 
 # 
@@ -196,18 +193,6 @@ msgstr ""
 #
 msgid " -- [Portable(-p) executing from "
 msgstr ""
-#
-msgid " </b>in<b> "
-msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid " COG Unavailable"
-msgstr "Карты недоступны"
 #
 # 
 # 
@@ -337,14 +322,6 @@ msgstr ""
 # 
 # 
 # 
-msgid "&Acknowledge"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
 #, fuzzy
 msgid "&Activate"
 msgstr "Активировать маршрут"
@@ -390,25 +367,7 @@ msgstr "Удалить маркер"
 # 
 # 
 #, fuzzy
-msgid "&Export Route..."
-msgstr "Экспорт...."
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "&Export Track..."
-msgstr "Экспорт...."
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "&Export Wpt..."
+msgid "&Export selected..."
 msgstr "Экспорт...."
 #
 # 
@@ -427,15 +386,6 @@ msgstr "Семейство &шрифтов:"
 #, fuzzy
 msgid "&Go To"
 msgstr "Установить судно здесь"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "&Jump To"
-msgstr "Положение"
 #
 # 
 # 
@@ -513,15 +463,6 @@ msgstr "Обратный маршрут"
 #, fuzzy
 msgid "&Send to GPS"
 msgstr "Отправить в устройство GPS"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "&Silence Alert"
-msgstr "Выберите звук предупреждения"
 #
 # 
 # 
@@ -612,24 +553,6 @@ msgstr ""
 #, fuzzy
 msgid "(unnamed)"
 msgstr "Конец маршрута"
-#
-msgid ", Out: None"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-msgid "-"
-msgstr ""
-#
-# 
-# 
-msgid "--"
-msgstr ""
-#
-msgid "---"
-msgstr ""
 #
 # 
 # 
@@ -793,13 +716,6 @@ msgstr ""
 # 
 # 
 # 
-msgid "A"
-msgstr ""
-#
-# 
-# 
-# 
-# 
 # 
 msgid "AIS"
 msgstr "АИС"
@@ -809,8 +725,9 @@ msgstr "АИС"
 # 
 # 
 # 
-msgid "AIS Alert"
-msgstr "Предупреждение АИС"
+#, fuzzy
+msgid "AIS Target List..."
+msgstr "Запрос целей АИС"
 #
 # 
 # 
@@ -818,7 +735,7 @@ msgstr "Предупреждение АИС"
 # 
 # 
 #, fuzzy
-msgid "AIS Target List..."
+msgid "AIS Target Name"
 msgstr "Запрос целей АИС"
 #
 # 
@@ -838,14 +755,8 @@ msgstr "Запрос целей АИС"
 msgid "AIS Targets"
 msgstr "Отображать треки целей"
 #
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "AIS target list"
-msgstr "Запрос целей АИС"
+msgid "APRS"
+msgstr ""
 #
 # 
 # 
@@ -853,24 +764,13 @@ msgstr "Запрос целей АИС"
 # 
 # 
 #, fuzzy
-msgid "AISRollover"
-msgstr "Предупреждение АИС"
+msgid "APRS Position Report"
+msgstr "Время последнего сообщения:       "
 #
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "AISTargetAlert"
-msgstr "Запрос целей АИС"
+msgid "ARPA"
+msgstr ""
 #
-# 
-# 
-# 
-# 
-# 
-msgid "AISTargetQuery"
+msgid "ARPA radar target"
 msgstr ""
 #
 # 
@@ -888,9 +788,6 @@ msgstr "О программе"
 # 
 msgid "About OpenCPN"
 msgstr "О программе OpenCPN"
-#
-msgid "Accept"
-msgstr ""
 #
 msgid "Accept Sentences"
 msgstr ""
@@ -915,15 +812,6 @@ msgstr "Активировать маршрут"
 #, fuzzy
 msgid "Activate Next Waypoint"
 msgstr "Активировать следующую точку маршрута"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Active"
-msgstr "Активировать маршрут"
 #
 # 
 # 
@@ -1013,15 +901,6 @@ msgstr ""
 # 
 msgid "Aground"
 msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Aid to Navigation"
-msgstr "Навишационные данные"
 #
 # 
 # 
@@ -1127,6 +1006,15 @@ msgstr "Вы точно хотите удалить ВСЕ путевые точ
 # 
 # 
 #, fuzzy
+msgid "Are you sure you want to delete the selected object(s)"
+msgstr "Вы точно хотите удалить ВСЕ маршруты?"
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "Are you sure you want to delete this route?"
 msgstr "Вы точно хотите удалить ВСЕ маршруты?"
 #
@@ -1217,21 +1105,7 @@ msgstr "Автоматическое ведение"
 msgid "Automatic Daily Tracks"
 msgstr "Автоматические якорные метки"
 #
-# 
-# 
-msgid "Avg. speed (Kts)"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-msgid "B"
-msgstr ""
-#
-# 
-# 
-msgid "Barge, tanker, chemical"
+msgid "Avg. speed"
 msgstr ""
 #
 # 
@@ -1241,15 +1115,6 @@ msgstr ""
 # 
 msgid "Base"
 msgstr "Базовые"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Base Station"
-msgstr "Пункт назначения"
 #
 # 
 # 
@@ -1322,26 +1187,7 @@ msgstr ""
 msgid "Boundaries"
 msgstr "Границы"
 #
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Brg"
-msgstr "Направление"
-#
 msgid "Buddy"
-msgstr ""
-#
-# 
-# 
-msgid "Bulk carrier maritime"
-msgstr ""
-#
-# 
-# 
-msgid "Bunkership"
 msgstr ""
 #
 msgid "Buoy/Light Labels"
@@ -1380,13 +1226,6 @@ msgstr "      Время предсказания движения целей (�
 # 
 # 
 # 
-msgid "CPA"
-msgstr ""
-#
-# 
-# 
-# 
-# 
 # 
 msgid "CPA Calculation"
 msgstr "Вычисление CPA"
@@ -1407,15 +1246,6 @@ msgstr "Предупреждения CPA/TCPA"
 # 
 msgid "CPA/TCPA Alerts"
 msgstr "Предупреждения CPA/TCPA"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Call"
-msgstr "Очистить всё"
 #
 # 
 # 
@@ -1573,9 +1403,6 @@ msgstr "Очистить всё"
 msgid "Cell Scale"
 msgstr ""
 #
-msgid "Center View"
-msgstr ""
-#
 msgid "Center View..."
 msgstr ""
 #
@@ -1707,32 +1534,20 @@ msgstr "Карты"
 # 
 # 
 # 
+#, fuzzy
+msgid "Choose Font Color..."
+msgstr "Шрифт..."
+#
+# 
+# 
+# 
+# 
+# 
 msgid "Choose Font..."
 msgstr "Шрифт..."
 #
 msgid "Choose Format for Copy"
 msgstr ""
-#
-msgid "Choose a file"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Class"
-msgstr "Закрыть"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Clear"
-msgstr "Очистить всё"
 #
 # 
 # 
@@ -1776,13 +1591,6 @@ msgstr "Зафиксировать изменение шрифта."
 # 
 msgid "Close"
 msgstr "Закрыть"
-#
-# 
-# 
-# 
-# 
-msgid "CoG"
-msgstr ""
 #
 # 
 # 
@@ -1835,11 +1643,6 @@ msgstr ""
 msgid "Constrained by draught"
 msgstr ""
 #
-# 
-# 
-msgid "Container vessel"
-msgstr ""
-#
 msgid "Control checksum"
 msgstr ""
 #
@@ -1856,10 +1659,6 @@ msgid "Copy as KML"
 msgstr ""
 #
 msgid "Copy as KML..."
-msgstr ""
-#
-#, c-format
-msgid "Couldn't load sound data from '%s'."
 msgstr ""
 #
 # 
@@ -1910,19 +1709,6 @@ msgstr "Удалить путевую точку"
 #
 # 
 # 
-msgid "Cruise ship"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-msgid "Current"
-msgstr "Течение"
-#
-# 
-# 
 # 
 # 
 # 
@@ -1937,15 +1723,6 @@ msgstr ""
 #
 msgid "DSC"
 msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "DSC Position Report"
-msgstr "Время последнего сообщения:       "
 #
 # 
 msgid "Dark Blue"
@@ -1983,15 +1760,6 @@ msgstr ""
 #, fuzzy
 msgid "Data Connections"
 msgstr "Настройки шрифта"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Data Source :"
-msgstr "Источник данных NMEA Data"
 #
 #
 # 
@@ -2279,8 +2047,8 @@ msgid "Distress Area: Vessel under assault"
 msgstr ""
 #
 msgid ""
-"Do you also want to toggle the visibility of shared waypoints being part of "
-"this route?"
+"Do you also want to make the shared waypoints being part of this route "
+"invisible?"
 msgstr ""
 #
 # 
@@ -2298,15 +2066,6 @@ msgstr ""
 # 
 msgid "Dredge"
 msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Drop"
-msgstr "Установить маркер"
 #
 # 
 # 
@@ -2508,20 +2267,6 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr ""
 #
-# 
-# 
-# 
-# 
-msgid "Error on Route Upload.  Please check logfiles..."
-msgstr ""
-#
-# 
-# 
-# 
-# 
-msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr ""
-#
 msgid "Error!"
 msgstr ""
 #
@@ -2592,11 +2337,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Fast ship"
-msgstr ""
-#
-# 
-# 
 # 
 # 
 # 
@@ -2610,11 +2350,6 @@ msgstr "Сажени"
 # 
 msgid "Feet"
 msgstr "Футы"
-#
-# 
-# 
-msgid "Ferry"
-msgstr ""
 #
 # 
 # 
@@ -2632,11 +2367,6 @@ msgstr ""
 #, fuzzy
 msgid "Filters"
 msgstr "&Километры"
-#
-# 
-# 
-msgid "Fishing boat"
-msgstr ""
 #
 # 
 # 
@@ -2667,16 +2397,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Freightbarge"
-msgstr ""
-#
-# 
-# 
-msgid "Freightbarge with containers"
-msgstr ""
-#
-# 
-# 
 # 
 # 
 # 
@@ -2690,19 +2410,7 @@ msgstr ""
 msgid "GPS Offset from Midship (m)"
 msgstr ""
 #
-#
-# 
-# 
-# 
-# 
-# 
-msgid "GPS/Plotter Port"
-msgstr "Порт GPS/Плоттера"
-#
 msgid "GPSD"
-msgstr ""
-#
-msgid "GPSGate Buddy"
 msgstr ""
 #
 # 
@@ -2747,15 +2455,6 @@ msgstr "GPX"
 msgid "GUID"
 msgstr ""
 #
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Gas tanker"
-msgstr "Базовые"
-#
 #
 # 
 # 
@@ -2774,11 +2473,6 @@ msgstr "Основные настройки АИС"
 #, fuzzy
 msgid "General Options"
 msgstr "Настройки интерфейса пользователя"
-#
-# 
-# 
-msgid "General cargo Vessel maritime"
-msgstr ""
 #
 # 
 # 
@@ -2802,14 +2496,6 @@ msgstr ""
 # 
 # 
 msgid "HSC"
-msgstr ""
-#
-# 
-# 
-msgid "HW"
-msgstr ""
-#
-msgid "Heading"
 msgstr ""
 #
 # 
@@ -2888,20 +2574,12 @@ msgstr "Отображать треки целей"
 #
 # 
 # 
-msgid "Hydrofoil"
-msgstr ""
-#
-# 
-# 
 # 
 # 
 # 
 #, fuzzy
 msgid "I&mport GPX..."
 msgstr "Экспорт...."
-#
-msgid "IMO"
-msgstr ""
 #
 # 
 # 
@@ -2937,18 +2615,6 @@ msgstr "Загрузить файл GPX"
 msgid "Important Text Only"
 msgstr "Показывать только важные сообщения"
 #
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "In"
-msgstr "Иконка"
-#
-msgid "In: None"
-msgstr ""
-#
 msgid "Information: Icebreaker waiting area"
 msgstr ""
 #
@@ -2962,9 +2628,6 @@ msgid "Information: Places of refuge"
 msgstr ""
 #
 msgid "Information: Position of icebreakers"
-msgstr ""
-#
-msgid "Inland Blue Flag"
 msgstr ""
 #
 msgid "Input filtering"
@@ -3016,7 +2679,7 @@ msgstr ""
 msgid "Kilometers"
 msgstr "&Километры"
 #
-msgid "Kts"
+msgid "Knots"
 msgstr ""
 #
 # 
@@ -3027,11 +2690,6 @@ msgstr ""
 # 
 # 
 msgid "LMT @ Location"
-msgstr ""
-#
-# 
-# 
-msgid "LW"
 msgstr ""
 #
 # 
@@ -3128,9 +2786,6 @@ msgstr ""
 msgid "Leading Light Rear"
 msgstr ""
 #
-msgid "Left"
-msgstr ""
-#
 # 
 # 
 # 
@@ -3147,9 +2802,6 @@ msgstr "Участок"
 #, fuzzy
 msgid "Leg: from "
 msgstr "Участок"
-#
-msgid "Legend"
-msgstr ""
 #
 # 
 # 
@@ -3210,41 +2862,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Limit range: NM"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Link"
-msgstr "Ссылки"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Link Properties"
-msgstr "Параметры маркера/точки"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Link description"
-msgstr "Описание"
-#
-msgid "Link not complete, can't be saved."
-msgstr ""
-#
-# 
-# 
 # 
 # 
 # 
@@ -3255,11 +2872,6 @@ msgid "Links are opened for editing."
 msgstr ""
 #
 msgid "Links are opened in the default browser."
-msgstr ""
-#
-# 
-# 
-msgid "Liquified gas tanker"
 msgstr ""
 #
 # 
@@ -3283,9 +2895,6 @@ msgstr "Бумажная карта"
 # 
 # 
 msgid "Local @ PC"
-msgstr ""
-#
-msgid "Local file..."
 msgstr ""
 #
 # 
@@ -3366,13 +2975,6 @@ msgstr "ЧЕЛОВЕК ЗА БОРТОМ"
 #
 # 
 # 
-# 
-# 
-msgid "MMSI"
-msgstr ""
-#
-# 
-# 
 msgid "M_COVR ID"
 msgstr ""
 #
@@ -3405,15 +3007,6 @@ msgstr "Морской стандарт"
 #, fuzzy
 msgid "Mark targets as lost after (min)"
 msgstr "Пометить цель как потеряную через (мин.):"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Marks"
-msgstr "Новый маркер"
 #
 # 
 # 
@@ -3479,12 +3072,6 @@ msgstr "Путевые точки"
 msgid "Merge waypoints?"
 msgstr "Путевые точки"
 #
-msgid "Message accepted"
-msgstr ""
-#
-msgid "Message filtered and dropped"
-msgstr ""
-#
 # 
 # 
 # 
@@ -3517,61 +3104,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Motor freighter"
-msgstr ""
-#
-# 
-# 
-msgid "Motor freighter pushing at least one tank-ship"
-msgstr ""
-#
-# 
-# 
-msgid "Motor freighter pushing one or more freighters"
-msgstr ""
-#
-# 
-# 
-msgid "Motor freighter with one or more ships alongside"
-msgstr ""
-#
-# 
-# 
-msgid "Motor freighter with tanker"
-msgstr ""
-#
-# 
-# 
-msgid "Motor freighter, tug"
-msgstr ""
-#
-# 
-# 
-msgid "Motor tanker"
-msgstr ""
-#
-# 
-# 
-msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
-msgstr ""
-#
-# 
-# 
-msgid "Motor tanker, liquid cargo, type C"
-msgstr ""
-#
-# 
-# 
-msgid "Motor tanker, liquid cargo, type N"
-msgstr ""
-#
-# 
-# 
-msgid "Motor tanker, tug"
-msgstr ""
-#
-# 
-# 
 # 
 # 
 # 
@@ -3588,6 +3120,9 @@ msgstr "Установить судно здесь"
 msgid "Move Waypoint"
 msgstr "Путевая точка"
 #
+msgid "Mph"
+msgstr ""
+#
 msgid "NMEA"
 msgstr ""
 #
@@ -3595,9 +3130,6 @@ msgid "NMEA 0183"
 msgstr ""
 #
 msgid "NMEA 2000"
-msgstr ""
-#
-msgid "NMEA Debug Window"
 msgstr ""
 #
 msgid "NMi"
@@ -3610,6 +3142,9 @@ msgstr ""
 # 
 msgid "Name"
 msgstr "Название"
+#
+msgid "National text on chart"
+msgstr ""
 #
 # 
 # 
@@ -3626,8 +3161,8 @@ msgstr "&Морские мили"
 # 
 # 
 #, fuzzy
-msgid "Nav Status"
-msgstr "Навигационный статус:  "
+msgid "Nautical miles"
+msgstr "&Морские мили"
 #
 # 
 # 
@@ -3640,15 +3175,6 @@ msgstr "Навишационные данные"
 #
 msgid "Navigate To This"
 msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Net"
-msgstr "След."
 #
 msgid "Network"
 msgstr ""
@@ -3667,18 +3193,7 @@ msgstr ""
 #
 # 
 # 
-# 
-# 
-# 
-msgid "Next"
-msgstr "След."
-#
-# 
-# 
 msgid "Next tide event"
-msgstr ""
-#
-msgid "No"
 msgstr ""
 #
 # 
@@ -3766,16 +3281,6 @@ msgstr "Запрос объектов"
 #
 # 
 # 
-msgid "Object, not otherwise specified"
-msgstr ""
-#
-# 
-# 
-msgid "Object, towed, not otherwise specified"
-msgstr ""
-#
-# 
-# 
 # 
 # 
 # 
@@ -3790,6 +3295,9 @@ msgstr "Запрос объектов"
 # 
 msgid "Ok"
 msgstr "Да"
+#
+msgid "Old log will be moved to opencpn.log.log"
+msgstr ""
 #
 # 
 # 
@@ -3966,20 +3474,8 @@ msgstr "Прочие"
 msgid "Other - Define in associated text field"
 msgstr ""
 #
-msgid "Out"
-msgstr ""
-#
 msgid "Output"
 msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Output Message"
-msgstr "Сообщение OpenCPN"
 #
 msgid "Output filtering"
 msgstr ""
@@ -4051,16 +3547,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Passenger ship without accomodation"
-msgstr ""
-#
-# 
-# 
-msgid "Passenger ship, ferry, cruise ship, red cross ship"
-msgstr ""
-#
-# 
-# 
 # 
 # 
 # 
@@ -4085,9 +3571,6 @@ msgstr "Экспорт...."
 #, fuzzy
 msgid "Paste Waypoint"
 msgstr "Активировать путевую точку"
-#
-msgid "Pause"
-msgstr ""
 #
 # 
 # 
@@ -4116,7 +3599,7 @@ msgstr "Скорость"
 # 
 # 
 #, fuzzy
-msgid "Plan speed (Kts)"
+msgid "Plan speed"
 msgstr "Скорость"
 #
 msgid "Play Ships Bells"
@@ -4147,11 +3630,6 @@ msgstr "Для активации нового языка необходимо �
 #, fuzzy
 msgid "Pleasure craft"
 msgstr "Измерения отключены"
-#
-# 
-# 
-msgid "Pleasure craft, longer than 20 metres"
-msgstr ""
 #
 msgid "Plugins"
 msgstr ""
@@ -4242,26 +3720,9 @@ msgstr ""
 # 
 # 
 # 
-msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-msgstr ""
-"Подготовьте GPS для загрузки маршрута/путевых точек и нажмите Отправить..."
-#
-# 
-# 
-# 
-# 
-# 
 #, fuzzy
 msgid "Preserve Scale when Switching Charts"
 msgstr "Сохранять масштаб при переключении карт"
-#
-# 
-# 
-# 
-# 
-# 
-msgid "Prev"
-msgstr "Пред."
 #
 # 
 # 
@@ -4300,9 +3761,6 @@ msgstr "Удалить маршрут"
 msgid "Priority"
 msgstr ""
 #
-msgid "Problem discovered"
-msgstr ""
-#
 msgid "Proceed to this location - await instructions"
 msgstr ""
 #
@@ -4319,14 +3777,6 @@ msgstr ""
 #, fuzzy
 msgid "Processing Waypoints..."
 msgstr "Удалить все путевые точки"
-#
-# 
-# 
-# 
-# 
-# 
-msgid "Progress..."
-msgstr "Выполнено..."
 #
 # 
 # 
@@ -4350,100 +3800,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Pushboat, single"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, eight barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, eight cargo barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, five barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, five cargo barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, four barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, four cargo barges"
-msgstr ""
-#
-# 
-msgid "Pushtow, nine or more barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, nine or more barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, one cargo barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, one tank/gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, seven barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, seven cargo barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, six barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, six cargo barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, three barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, three cargo barges"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, two barges at least one tanker or gas barge"
-msgstr ""
-#
-# 
-# 
-msgid "Pushtow, two cargo barges"
-msgstr ""
-#
-# 
-# 
 # 
 # 
 # 
@@ -4455,15 +3811,6 @@ msgstr "Установки"
 # 
 msgid "RACON"
 msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Range"
-msgstr "Язык"
 #
 # 
 # 
@@ -4508,11 +3855,6 @@ msgstr ""
 msgid "Red"
 msgstr ""
 #
-# 
-# 
-msgid "Red cross ship"
-msgstr ""
-#
 msgid "Redo"
 msgstr ""
 #
@@ -4538,18 +3880,6 @@ msgstr ""
 #, fuzzy
 msgid "Reference Point"
 msgstr "Опорная станция:"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Reference Station :"
-msgstr "Опорная станция:"
-#
-msgid "Reject"
-msgstr ""
 #
 # 
 # 
@@ -4610,12 +3940,6 @@ msgstr "Убрать потеряные цели через (мин.):"
 msgid "Rename Waypoints?"
 msgstr "Путевые точки"
 #
-msgid "Report Age"
-msgstr ""
-#
-msgid "Report as of"
-msgstr ""
-#
 msgid "Report from ship: Icing info"
 msgstr ""
 #
@@ -4667,9 +3991,6 @@ msgstr ""
 msgid "Restricted Manoeuvrability"
 msgstr ""
 #
-msgid "Resume"
-msgstr ""
-#
 # 
 # 
 # 
@@ -4693,23 +4014,14 @@ msgstr ""
 msgid "Reverse..."
 msgstr "Обратный маршрут"
 #
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Right"
-msgstr "&Толщина:"
+msgid "Rogue or suspicious vessel"
+msgstr ""
 #
 # 
 # 
 # 
 # 
 msgid "Rollover"
-msgstr ""
-#
-msgid "Rouge or suspicious vessel"
 msgstr ""
 #
 # 
@@ -4753,13 +4065,6 @@ msgstr "Параметры маршрута"
 # 
 msgid "Route Properties"
 msgstr "Параметры маршрута"
-#
-# 
-# 
-# 
-# 
-msgid "Route Uploaded successfully."
-msgstr ""
 #
 # 
 # 
@@ -4810,9 +4115,6 @@ msgstr ""
 msgid "SAR/V"
 msgstr ""
 #
-msgid "SART"
-msgstr ""
-#
 # 
 # 
 # 
@@ -4823,9 +4125,6 @@ msgstr ""
 # 
 # 
 msgid "Safe Water"
-msgstr ""
-#
-msgid "Safety Broadcast Message"
 msgstr ""
 #
 # 
@@ -4946,23 +4245,6 @@ msgstr ""
 # 
 # 
 # 
-msgid "Send"
-msgstr "Отправить"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Send Route To GPS"
-msgstr "Отправить в устройство GPS"
-#
-# 
-# 
-# 
-# 
-# 
 msgid "Send To GPS..."
 msgstr "Отправить в устройство GPS"
 #
@@ -4985,14 +4267,6 @@ msgid "Sentence Filter"
 msgstr "Выберите звук предупреждения"
 #
 msgid "Serial"
-msgstr ""
-#
-# 
-# 
-msgid "Service vessel, police patrol, port service"
-msgstr ""
-#
-msgid "Set"
 msgstr ""
 #
 # 
@@ -5249,6 +4523,39 @@ msgstr ""
 msgid "Show course from each Waypoint to the next one. "
 msgstr ""
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Show distance as"
+msgstr "Общая дистанция"
+#
 # 
 # 
 # 
@@ -5257,6 +4564,9 @@ msgstr ""
 #, fuzzy
 msgid "Show name"
 msgstr "Отображать название"
+#
+msgid "Show names with AIS targets at scale greater than 1:"
+msgstr ""
 #
 # 
 # 
@@ -5274,6 +4584,15 @@ msgstr "Отображать треки целей"
 # 
 msgid "Show radar rings"
 msgstr "Отобразить кольца радара"
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Show speed as"
+msgstr "Показать приливы"
 #
 # 
 # 
@@ -5316,21 +4635,10 @@ msgstr ""
 # 
 # 
 # 
-msgid "SoG"
-msgstr ""
-#
-# 
-# 
-# 
-# 
 # 
 #, fuzzy
 msgid "Solid"
 msgstr "Символьные"
-#
-#, c-format
-msgid "Sound file '%s' is in unsupported format."
-msgstr ""
 #
 # 
 # 
@@ -5421,6 +4729,9 @@ msgstr "Начало"
 msgid "StatusBar"
 msgstr "Показать строку состояния"
 #
+msgid "Statute miles"
+msgstr ""
+#
 # 
 # 
 msgid "Stbd"
@@ -5470,45 +4781,7 @@ msgstr "Предупреждения CPA/TCPA"
 #
 # 
 # 
-# 
-# 
-# 
-#, fuzzy
-msgid "TCPA"
-msgstr "Предупреждения CPA/TCPA"
-#
-# 
-# 
-msgid "Tankbarge"
-msgstr ""
-#
-# 
-# 
-msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
-msgstr ""
-#
-# 
-# 
-msgid "Tankbarge, gas"
-msgstr ""
-#
-# 
-# 
-msgid "Tankbarge, liquid cargo, type C"
-msgstr ""
-#
-# 
-# 
-msgid "Tankbarge, liquid cargo, type N"
-msgstr ""
-#
-# 
-# 
 msgid "Tanker"
-msgstr ""
-#
-# 
-msgid "Target Count"
 msgstr ""
 #
 # 
@@ -5528,11 +4801,6 @@ msgstr "Запрос целей АИС"
 #, fuzzy
 msgid "Target Query..."
 msgstr "Запрос целей АИС"
-#
-# 
-# 
-msgid "Target info"
-msgstr ""
 #
 # 
 # 
@@ -5571,15 +4839,6 @@ msgstr "Отправить"
 # 
 msgid "Test Alert Sound"
 msgstr "Тестирование звука предупреждений"
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Testing"
-msgstr "Установки"
 #
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
@@ -5712,19 +4971,6 @@ msgstr ""
 # 
 # 
 # 
-msgid "Tide"
-msgstr "Прилив"
-#
-# 
-# 
-msgid "TideCurrentGraphRollover"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
 #, fuzzy
 msgid "Tides && Currents"
 msgstr "Показать течения"
@@ -5740,10 +4986,6 @@ msgstr "Время на маршруте"
 # 
 # 
 msgid "Times shown as"
-msgstr ""
-#
-# 
-msgid "Timestamp"
 msgstr ""
 #
 # 
@@ -5767,24 +5009,8 @@ msgstr "Путевая точка"
 # 
 # 
 # 
-msgid "Today"
-msgstr "Сегодня"
-#
-# 
-# 
-# 
-# 
-# 
 msgid "Toggle Tracking"
 msgstr "Включить слежение"
-#
-# 
-# 
-# 
-# 
-# 
-msgid "Tomorrow"
-msgstr "Завтра"
 #
 # 
 # 
@@ -5841,14 +5067,6 @@ msgstr "Название маркера"
 # 
 # 
 # 
-msgid "Track Properties"
-msgstr "Параметры слежения"
-#
-# 
-# 
-# 
-# 
-# 
 #, fuzzy
 msgid "Tracking Precision"
 msgstr "Параметры слежения"
@@ -5875,47 +5093,12 @@ msgstr ""
 msgid "Transverse Mercator"
 msgstr ""
 #
+msgid "Treat WPL sentences as APRS position reports"
+msgstr ""
+#
 # 
 # 
 msgid "Tug"
-msgstr ""
-#
-# 
-# 
-msgid "Tug freighter, coupled"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, assisting a vessel or linked combination"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, freighter"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, freighter/tanker, coupled"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, one or more tows"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, single"
-msgstr ""
-#
-# 
-# 
-msgid "Tug, tanker"
-msgstr ""
-#
-msgid "Turn Rate"
 msgstr ""
 #
 # 
@@ -5926,9 +5109,6 @@ msgid "Type"
 msgstr ""
 #
 msgid "UDP"
-msgstr ""
-#
-msgid "URL"
 msgstr ""
 #
 # 
@@ -5968,18 +5148,6 @@ msgid "Underway"
 msgstr ""
 #
 msgid "Undo"
-msgstr ""
-#
-# 
-# 
-msgid "Unit carrier maritime"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-msgid "Unk"
 msgstr ""
 #
 # 
@@ -6099,18 +5267,6 @@ msgstr ""
 #
 # 
 # 
-msgid "Vessel, type unknown"
-msgstr ""
-#
-# 
-# 
-msgid ""
-"Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
-"dredge"
-msgstr ""
-#
-# 
-# 
 msgid "Virtual"
 msgstr ""
 #
@@ -6188,13 +5344,6 @@ msgstr "Свойства"
 #, fuzzy
 msgid "Waypoint Properties, Layer: "
 msgstr "Параметры маркера/точки"
-#
-# 
-# 
-# 
-# 
-msgid "Waypoint(s) Uploaded successfully."
-msgstr ""
 #
 # 
 # 
@@ -6284,9 +5433,6 @@ msgstr ""
 msgid "Yellow"
 msgstr "Очистить всё"
 #
-msgid "Yes"
-msgstr ""
-#
 msgid "Yes, hide it."
 msgstr ""
 #
@@ -6348,16 +5494,25 @@ msgstr ""
 msgid "_plus"
 msgstr ""
 #
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "in"
-msgstr "Ссылки"
+msgid "km"
+msgstr ""
 #
-msgid "min"
+msgid "km/h"
+msgstr ""
+#
+msgid "kts"
+msgstr ""
+#
+msgid "m"
+msgstr ""
+#
+msgid "m/s"
+msgstr ""
+#
+msgid "mi"
+msgstr ""
+#
+msgid "mph"
 msgstr ""
 #
 # 
@@ -6372,6 +5527,7 @@ msgstr ""
 #
 msgid "wxFB Website"
 msgstr ""
+#
 #
 #
 #
@@ -6409,6 +5565,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6416,6 +5573,7 @@ msgstr ""
 # 
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Максимальная скорость заякоренной цели (узл.):"
+#
 #
 #
 #
@@ -6452,6 +5610,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6473,6 +5632,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6480,6 +5640,17 @@ msgstr ""
 # 
 #~ msgid "  Could not open serial port '"
 #~ msgstr "  Не удаётся открыть последовательный порт '"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid " COG Unavailable"
+#~ msgstr "Карты недоступны"
+#
 #
 #
 #
@@ -6545,6 +5716,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Закрыть"
+#
 #
 #
 #
@@ -6646,6 +5818,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6687,6 +5860,47 @@ msgstr ""
 #~ msgstr "Удалить все маршруты"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "&Export Track..."
+#~ msgstr "Экспорт...."
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "&Export Wpt..."
+#~ msgstr "Экспорт...."
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "&Jump To"
+#~ msgstr "Положение"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "&Silence Alert"
+#~ msgstr "Выберите звук предупреждения"
+#
+#
+#
 #
 #
 #
@@ -6724,6 +5938,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6735,6 +5950,7 @@ msgstr ""
 #~ msgstr ""
 #~ "'\n"
 #~ "Подсказка: Попробуйте закрыть другие приложения."
+#
 #
 #
 #
@@ -6821,6 +6037,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6829,6 +6046,7 @@ msgstr ""
 #, fuzzy
 #~ msgid ":               "
 #~ msgstr "Ожидаемое время прибытия:                  "
+#
 #
 #
 #
@@ -6856,6 +6074,16 @@ msgstr ""
 #~ "\n"
 #~ "\n"
 #~ msgstr "Тип судна:  "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "AIS Alert"
+#~ msgstr "Предупреждение АИС"
+#
 #
 #
 #
@@ -6895,6 +6123,37 @@ msgstr ""
 #~ msgstr "Предупреждение АИС"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "AIS target list"
+#~ msgstr "Запрос целей АИС"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "AISRollover"
+#~ msgstr "Предупреждение АИС"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "AISTargetAlert"
+#~ msgstr "Запрос целей АИС"
+#
+#
+#
 #
 #
 #
@@ -6924,6 +6183,17 @@ msgstr ""
 # 
 #~ msgid "Activate Route"
 #~ msgstr "Активировать маршрут"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Active"
+#~ msgstr "Активировать маршрут"
+#
 #
 #
 #
@@ -6977,6 +6247,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6984,6 +6255,17 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Дополнительная информация"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Aid to Navigation"
+#~ msgstr "Навишационные данные"
+#
 #
 #
 #
@@ -7020,6 +6302,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7042,6 +6325,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7049,6 +6333,17 @@ msgstr ""
 # 
 #~ msgid "Available Chart Directories"
 #~ msgstr "Доступные каталоги с картами"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Base Station"
+#~ msgstr "Пункт назначения"
+#
 #
 #
 #
@@ -7089,6 +6384,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7097,6 +6393,17 @@ msgstr ""
 #, fuzzy
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr "Тип судна:  "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Brg"
+#~ msgstr "Направление"
+#
 #
 #
 #
@@ -7134,6 +6441,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7141,6 +6449,17 @@ msgstr ""
 # 
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "Увеличение деталей CM93"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Call"
+#~ msgstr "Очистить всё"
+#
 #
 #
 #
@@ -7223,6 +6542,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7231,6 +6551,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "CallSign:             "
 #~ msgstr "Координаты:              "
+#
 #
 #
 #
@@ -7283,6 +6604,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7290,6 +6612,7 @@ msgstr ""
 # 
 #~ msgid "Chart Display Filters"
 #~ msgstr "Фильтр отображения карт"
+#
 #
 #
 #
@@ -7312,6 +6635,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Положение"
+#
 #
 #
 #
@@ -7372,6 +6696,17 @@ msgstr ""
 # 
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Файл карты повреждён... данная карта не будет доступна \n"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Class"
+#~ msgstr "Закрыть"
+#
 #
 #
 #
@@ -7457,6 +6792,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7465,6 +6801,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Class:                "
 #~ msgstr "Ожидаемое время прибытия:                  "
+#
 #
 #
 #
@@ -7540,6 +6877,17 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Clear"
+#~ msgstr "Очистить всё"
+#
+#
+#
 #
 #
 #
@@ -7559,6 +6907,7 @@ msgstr ""
 # 
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "Не удаётся определить хост TCP/IP '"
+#
 #
 #
 #
@@ -7599,6 +6948,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7607,6 +6957,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "Курс:               %5.0f Град.\n"
+#
 #
 #
 #
@@ -7633,6 +6984,16 @@ msgstr ""
 #~ msgstr "Тип судна:  "
 #
 #
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Current"
+#~ msgstr "Течение"
+#
+#
+#
 #
 #
 #
@@ -7653,6 +7014,17 @@ msgstr ""
 # 
 #~ msgid "Cursor: "
 #~ msgstr "Курсор: "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Data Source :"
+#~ msgstr "Источник данных NMEA Data"
+#
 #
 #
 #
@@ -7711,6 +7083,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7734,6 +7107,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7742,6 +7116,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Deg"
 #~ msgstr "Участок"
+#
 #
 #
 #
@@ -7843,6 +7218,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7850,6 +7226,7 @@ msgstr ""
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Удалить маркер"
+#
 #
 #
 #
@@ -7887,6 +7264,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7909,6 +7287,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7916,6 +7295,7 @@ msgstr ""
 # 
 #~ msgid "Delete Track"
 #~ msgstr "Удалить трек"
+#
 #
 #
 #
@@ -7954,6 +7334,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7961,6 +7342,7 @@ msgstr ""
 # 
 #~ msgid "Destination:          "
 #~ msgstr "Точка назначения:  "
+#
 #
 #
 #
@@ -7985,6 +7367,17 @@ msgstr ""
 #~ msgstr "Стиль отображения карт"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Drop"
+#~ msgstr "Установить маркер"
+#
+#
+#
 #
 #
 # 
@@ -7995,6 +7388,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "E&xport All..."
 #~ msgstr "Экспорт...."
+#
 #
 #
 #
@@ -8041,6 +7435,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8048,6 +7443,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  "
 #~ msgstr "Ожидаемое время прибытия:                  "
+#
 #
 #
 #
@@ -8129,6 +7525,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8151,6 +7548,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8158,6 +7556,7 @@ msgstr ""
 # 
 #~ msgid "Etc."
 #~ msgstr "Дополнения"
+#
 #
 #
 #
@@ -8214,6 +7613,7 @@ msgstr ""
 # 
 #~ msgid "Exit OpenCPN"
 #~ msgstr "Выйти"
+#
 #
 #
 #
@@ -8306,6 +7706,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8314,6 +7715,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "From Ownship: %03d Deg   "
 #~ msgstr "От исх. поз.: %03d Град.  %6.2f Мор. миль"
+#
 #
 #
 #
@@ -8339,6 +7741,17 @@ msgstr ""
 #
 #
 #
+# 
+# 
+# 
+# 
+# 
+#~ msgid "GPS/Plotter Port"
+#~ msgstr "Порт GPS/Плоттера"
+#
+#
+#
+#
 #
 #
 #
@@ -8357,6 +7770,7 @@ msgstr ""
 # 
 #~ msgid "GPSD Data Server"
 #~ msgstr "Сервер GPSD"
+#
 #
 #
 #
@@ -8419,6 +7833,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -8514,6 +7929,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8547,6 +7963,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Настройки отображения информации GRIB"
+#
 #
 #
 #
@@ -8613,6 +8030,17 @@ msgstr ""
 #~ msgstr "Каталог файлов GRIB"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Gas tanker"
+#~ msgstr "Базовые"
+#
+#
+#
 #
 #
 #
@@ -8634,6 +8062,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Go To Here"
 #~ msgstr "Установить судно здесь"
+#
 #
 #
 #
@@ -8682,6 +8111,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8706,6 +8136,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8714,6 +8145,17 @@ msgstr ""
 #, fuzzy
 #~ msgid "IMO:                 %8d\n"
 #~ msgstr "Ожидаемое время прибытия:                  "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "In"
+#~ msgstr "Иконка"
+#
 #
 #
 #
@@ -8752,6 +8194,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8760,6 +8203,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Jump To Position"
 #~ msgstr "Положение"
+#
 #
 #
 #
@@ -8811,6 +8255,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8818,6 +8263,7 @@ msgstr ""
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Языки/шрифты"
+#
 #
 #
 #
@@ -8857,6 +8303,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8864,6 +8311,37 @@ msgstr ""
 # 
 #~ msgid "Leg/Route"
 #~ msgstr "Уч/Маршрут"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Link"
+#~ msgstr "Ссылки"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Link Properties"
+#~ msgstr "Параметры маркера/точки"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Link description"
+#~ msgstr "Описание"
+#
 #
 #
 #
@@ -8917,6 +8395,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8925,6 +8404,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "Ожидаемое время прибытия:                  "
+#
 #
 #
 #
@@ -9014,6 +8494,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9021,6 +8502,7 @@ msgstr ""
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Иконка маркера"
+#
 #
 #
 #
@@ -9063,6 +8545,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9095,6 +8578,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9103,6 +8587,17 @@ msgstr ""
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Параметры маркера/точки"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Marks"
+#~ msgstr "Новый маркер"
+#
 #
 #
 #
@@ -9149,6 +8644,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9170,6 +8666,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9177,6 +8674,7 @@ msgstr ""
 # 
 #~ msgid "NMEA Data Source"
 #~ msgstr "Источник данных NMEA Data"
+#
 #
 #
 #
@@ -9215,6 +8713,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9223,6 +8722,17 @@ msgstr ""
 #, fuzzy
 #~ msgid "Name:  "
 #~ msgstr "Название корабля:  "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Nav Status"
+#~ msgstr "Навигационный статус:  "
+#
 #
 #
 #
@@ -9246,6 +8756,17 @@ msgstr ""
 # 
 #~ msgid "Navigational Status:  "
 #~ msgstr "Навигационный статус:  "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Net"
+#~ msgstr "След."
+#
 #
 #
 #
@@ -9289,6 +8810,16 @@ msgstr ""
 #~ msgstr "Новый маркер"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Next"
+#~ msgstr "След."
+#
+#
+#
 #
 #
 #
@@ -9309,6 +8840,17 @@ msgstr ""
 #, fuzzy
 #~ msgid "Number of Radar Rings"
 #~ msgstr "Количество отображаемых колец радара"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Output Message"
+#~ msgstr "Сообщение OpenCPN"
+#
 #
 #
 #
@@ -9345,6 +8887,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9367,6 +8910,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9375,6 +8919,17 @@ msgstr ""
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Размещать точки трека с интервалом (сек.):"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Plan speed (Kts)"
+#~ msgstr "Скорость"
+#
 #
 #
 #
@@ -9470,6 +9025,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9503,6 +9059,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 #
@@ -9599,6 +9156,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9633,6 +9191,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
+#
 #
 #
 #
@@ -9690,6 +9249,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9702,6 +9262,17 @@ msgstr ""
 #, fuzzy
 #~ msgid "Position:               "
 #~ msgstr "Координаты:              "
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
+#~ msgstr ""
+#~ "Подготовьте GPS для загрузки маршрута/путевых точек и нажмите Отправить..."
+#
 #
 #
 #
@@ -9768,6 +9339,16 @@ msgstr ""
 #~ msgstr "Давление, мБар"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Prev"
+#~ msgstr "Пред."
+#
+#
+#
 #
 #
 #
@@ -9802,6 +9383,16 @@ msgstr ""
 #~ msgstr "Печать"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Progress..."
+#~ msgstr "Выполнено..."
+#
+#
+#
 #
 #
 #
@@ -9821,6 +9412,17 @@ msgstr ""
 # 
 #~ msgid "Radar rings"
 #~ msgstr "Кольца радара"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Range"
+#~ msgstr "Язык"
+#
 #
 #
 #
@@ -9861,6 +9463,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9868,6 +9471,7 @@ msgstr ""
 # 
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Расстояние:                %5.1f мор. миль\n"
+#
 #
 #
 #
@@ -9891,6 +9495,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Raster"
 #~ msgstr "Базовые"
+#
 #
 #
 #
@@ -9931,6 +9536,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9939,6 +9545,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Давность сообщения:               %3d сек.\n"
+#
 #
 #
 #
@@ -9979,6 +9586,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10003,6 +9611,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10011,6 +9620,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 #~ msgstr "Давность сообщения:               %3d сек.\n"
+#
 #
 #
 #
@@ -10071,6 +9681,17 @@ msgstr ""
 #~ "\n"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Reference Station :"
+#~ msgstr "Опорная станция:"
+#
+#
+#
 #
 #
 #
@@ -10091,6 +9712,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Удалить точку из маршрута"
+#
 #
 #
 #
@@ -10137,6 +9759,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10146,37 +9769,15 @@ msgstr ""
 #~ msgstr "Обратный маршрут"
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 # 
 # 
 # 
 # 
 # 
 #, fuzzy
-#~ msgid "Route Distance: "
-#~ msgstr "Общая дистанция"
+#~ msgid "Right"
+#~ msgstr "&Толщина:"
+#
 #
 #
 #
@@ -10215,6 +9816,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10223,6 +9825,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Маршрут"
+#
 #
 #
 #
@@ -10288,6 +9891,26 @@ msgstr ""
 #, fuzzy
 #~ msgid "Select GRIB Directory"
 #~ msgstr "Каталог файлов GRIB"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Send"
+#~ msgstr "Отправить"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Send Route To GPS"
+#~ msgstr "Отправить в устройство GPS"
+#
 #
 #
 #
@@ -10362,6 +9985,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10385,6 +10009,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10392,6 +10017,7 @@ msgstr ""
 # 
 #~ msgid "Settings"
 #~ msgstr "Установки"
+#
 #
 #
 #
@@ -10465,6 +10091,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10472,6 +10099,7 @@ msgstr ""
 # 
 #~ msgid "Show ATON labels"
 #~ msgstr "Показать метки ATON"
+#
 #
 #
 #
@@ -10572,6 +10200,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10610,6 +10239,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Показать диалог GRIB"
+#
 #
 #
 #
@@ -10699,6 +10329,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10733,6 +10364,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10740,6 +10372,7 @@ msgstr ""
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Показать иконку треков"
+#
 #
 #
 #
@@ -10820,6 +10453,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10830,6 +10464,7 @@ msgstr ""
 #~ "Size:                 %dm x %dm\n"
 #~ "\n"
 #~ msgstr "Ожидаемое время прибытия:                  "
+#
 #
 #
 #
@@ -10897,6 +10532,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10907,6 +10543,7 @@ msgstr ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr "Расстояние:                %5.1f мор. миль\n"
+#
 #
 #
 #
@@ -10949,6 +10586,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10959,6 +10597,7 @@ msgstr ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr "Расстояние:                %5.1f мор. миль\n"
+#
 #
 #
 #
@@ -11001,6 +10640,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11011,6 +10651,7 @@ msgstr ""
 #~ "Size:               %5.1fm x %4.1fm x ---m\n"
 #~ "\n"
 #~ msgstr "Скорость:                %5.2f узл.\n"
+#
 #
 #
 #
@@ -11051,6 +10692,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11058,6 +10700,7 @@ msgstr ""
 # 
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "Скорость:                %5.2f узл.\n"
+#
 #
 #
 #
@@ -11082,6 +10725,27 @@ msgstr ""
 #~ msgstr "Сервер данных TCP/IP WiFi"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "TCPA"
+#~ msgstr "Предупреждения CPA/TCPA"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Testing"
+#~ msgstr "Установки"
+#
+#
+#
 #
 #
 #
@@ -11102,6 +10766,16 @@ msgstr ""
 # 
 #~ msgid "Text Element"
 #~ msgstr "Текстовый элемент"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Tide"
+#~ msgstr "Прилив"
+#
 #
 #
 #
@@ -11125,6 +10799,16 @@ msgstr ""
 #, fuzzy
 #~ msgid "Tide & Current Dataset Selection"
 #~ msgstr "Показать течения"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Today"
+#~ msgstr "Сегодня"
+#
 #
 #
 #
@@ -11209,6 +10893,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11233,6 +10918,16 @@ msgstr ""
 #~ msgstr "Маршрут"
 #
 #
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Tomorrow"
+#~ msgstr "Завтра"
+#
+#
+#
 #
 #
 #
@@ -11253,6 +10948,16 @@ msgstr ""
 # 
 #~ msgid "ToolBox"
 #~ msgstr "Настройки"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#~ msgid "Track Properties"
+#~ msgstr "Параметры слежения"
+#
 #
 #
 #
@@ -11291,6 +10996,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11299,6 +11005,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Масштаб: %8.0f  Увеличение: %4.0fx"
+#
 #
 #
 #
@@ -11339,6 +11046,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11347,6 +11055,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "UN Ship Type:         "
 #~ msgstr "Тип судна:  "
+#
 #
 #
 #
@@ -11377,6 +11086,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11384,6 +11094,7 @@ msgstr ""
 # 
 #~ msgid "Units"
 #~ msgstr "Единицы"
+#
 #
 #
 #
@@ -11461,6 +11172,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11468,6 +11180,7 @@ msgstr ""
 # 
 #~ msgid "Use SCAMIN"
 #~ msgstr "Использовать  SCAMIN"
+#
 #
 #
 #
@@ -11547,6 +11260,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11569,6 +11283,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11576,6 +11291,7 @@ msgstr ""
 # 
 #~ msgid "WiFi Options"
 #~ msgstr "Параметры WiFi"
+#
 #
 #
 #
@@ -11655,6 +11371,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11662,3 +11379,13 @@ msgstr ""
 # 
 #~ msgid "cm93 Detail"
 #~ msgstr "Детали CM93"
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "in"
+#~ msgstr "Ссылки"
