@@ -180,10 +180,16 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
-IF(NOT WIN32)
+IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
-ENDIF(NOT WIN32)
+ENDIF(NOT WIN32 AND NOT APPLE)
+
+IF( APPLE )
+  ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -Wno-overloaded-virtual" )
+  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations" )
+ENDIF(APPLE)
 
 #Enable CrashReporting for Windows
 IF(WIN32)
@@ -775,11 +781,11 @@ IF(APPLE)
   SET(CMAKE_C_FLAGS_RELEASE "-O3 -arch ${ARCH}")
   SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH}")
 
-  SET(CMAKE_CXX_FLAGS "-O2 -arch ${ARCH} -Wno-deprecated -Wno-deprecated-declarations")
-  SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -arch ${ARCH} -Wno-deprecated -Wno-deprecated-declarations")
-  SET(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -arch ${ARCH} -Wno-deprecated -Wno-deprecated-declarations")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -arch ${ARCH} -Wno-deprecated -Wno-deprecated-declarations")
-  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH} -Wno-deprecated -Wno-deprecated-declarations")
+  SET(CMAKE_CXX_FLAGS "-O2 -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_DEBUG "-g -O0 -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_MINSIZEREL "-O2 -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -arch ${ARCH}")
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -O3 -arch ${ARCH}")
 
   SET(CMAKE_EXE_LINKER_FLAGS "-O2 -arch ${ARCH}")
   SET(CMAKE_SHARED_LINKER_FLAGS "-O2 -arch ${ARCH}")

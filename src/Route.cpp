@@ -152,11 +152,11 @@ void Route::CloneTrack( Route *psourceroute, int start_nPoint, int end_nPoint, c
 
         int segment_shift = psourcepoint->m_GPXTrkSegNo;
 
-        if( ( start_nPoint == 2 ) /*&& (psourcepoint->m_GPXTrkSegNo == startTrkSegNo)*/)
-			segment_shift = psourcepoint->m_GPXTrkSegNo - 1; // continue first segment if tracks share the first point
+        if(  start_nPoint == 2 ) 
+            segment_shift = psourcepoint->m_GPXTrkSegNo - 1; // continue first segment if tracks share the first point
 
         if( b_splitting )
-			m_pLastAddedPoint->m_GPXTrkSegNo = ( psourcepoint->m_GPXTrkSegNo - startTrkSegNo ) + 1;
+            m_pLastAddedPoint->m_GPXTrkSegNo = ( psourcepoint->m_GPXTrkSegNo - startTrkSegNo ) + 1;
         else
             m_pLastAddedPoint->m_GPXTrkSegNo = startTrkSegNo + segment_shift;
     }

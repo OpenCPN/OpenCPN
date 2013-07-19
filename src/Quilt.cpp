@@ -682,28 +682,23 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
                     }
                 }
 
-                if( target_stack_index >= 0 ) {
-                    new_db_index = m_extended_stack_array.Item( target_stack_index );
+                new_db_index = m_extended_stack_array.Item( target_stack_index );
 
-                    //  The target chart min/max scales must comply with propsed chart scale on-screen
-                    ChartBase *pcandidate = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
-                    double test_max_ref_scale = 1e8;
-                    double test_min_ref_scale = 0;
-                    if(pcandidate) {
-                        test_max_ref_scale = 1.01 * pcandidate->GetNormalScaleMax( m_canvas_scale_factor, cc1->GetCanvasWidth() );
-                        test_min_ref_scale = 0.99 * pcandidate->GetNormalScaleMin( m_canvas_scale_factor, false );
-                    }
+                //  The target chart min/max scales must comply with propsed chart scale on-screen
+                ChartBase *pcandidate = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
+                double test_max_ref_scale = 1e8;
+                double test_min_ref_scale = 0;
+                if(pcandidate) {
+                    test_max_ref_scale = 1.01 * pcandidate->GetNormalScaleMax( m_canvas_scale_factor, cc1->GetCanvasWidth() );
+                    test_min_ref_scale = 0.99 * pcandidate->GetNormalScaleMin( m_canvas_scale_factor, false );
+                }
 
-                    if( ( current_family == ChartData->GetDBChartFamily( new_db_index ) )
+                if( ( current_family == ChartData->GetDBChartFamily( new_db_index ) )
                             && IsChartQuiltableRef( new_db_index )
                             && (proposed_scale_onscreen >= test_min_ref_scale)
                             && (proposed_scale_onscreen <= test_max_ref_scale) )
 
                             SetReferenceChart( new_db_index );
-                } else {
-                    int new_ref_dbIndex = GetNewRefChart();
-                    SetReferenceChart( new_ref_dbIndex );
-                }
             }
         }
     }

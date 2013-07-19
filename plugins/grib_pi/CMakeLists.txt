@@ -42,16 +42,16 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #ADD_DEFINITIONS( "-Wall -ansi -pedantic -Wno-variadic-macros" )
 #TODO: Should we use  -fno-stack-protector
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
-IF(NOT WIN32)
- ADD_DEFINITIONS( "-Wall -O0 -fexceptions -fvisibility=hidden" )
+IF(NOT WIN32 AND NOT APPLE)
+    ADD_DEFINITIONS( "-Wall -O0 -fexceptions -fvisibility=hidden" )
+    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
+ENDIF(NOT WIN32 AND NOT APPLE)
 
- IF(NOT APPLE)
-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,-Bsymbolic")
- ELSE(NOT APPLE)
-  SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
- ENDIF(NOT APPLE)
-
-ENDIF(NOT WIN32)
+IF( APPLE )
+   ADD_DEFINITIONS( "-O0 -fexceptions -fvisibility=hidden" )
+   ADD_DEFINITIONS("-Wno-unused -Wno-overloaded-virtual")
+   SET(CMAKE_SHARED_LINKER_FLAGS "-Wl -undefined dynamic_lookup")
+ENDIF( APPLE )
 
 # Add some definitions to satisfy MS
 IF(WIN32)
@@ -69,7 +69,7 @@ ENDIF(NOT DEFINED wxWidgets_USE_FILE)
 
 FIND_PACKAGE(Gettext REQUIRED)
 
-# For convenience we define the sources as a variable. You can add 
+# For convenience we define the sources as a variable. You can add
 # header files and cpp/c files and CMake will sort them out
 
 
@@ -84,14 +84,14 @@ SET(SRC_GRIB
             src/GribUIDialog.h
             src/GribSettingsDialog.cpp
             src/GribSettingsDialog.h
-            src/icons.h 
+            src/icons.h
             src/msg.h
             src/email.h
             src/email.cpp
             src/icons.cpp
-            src/GribReader.cpp 
-            src/GribRecord.cpp  
-            src/zuFile.cpp 
+            src/GribReader.cpp
+            src/GribRecord.cpp
+            src/zuFile.cpp
             src/IsoLine.cpp
 
             ../../src/wxJSON/jsonval.cpp
@@ -106,12 +106,12 @@ ADD_LIBRARY(${PACKAGE_NAME} SHARED ${SRC_GRIB})
 
 IF(NOT UNIX)
     SET(SRC_BZIP
-            src/bzip2/bzlib.c 
-            src/bzip2/blocksort.c 
-            src/bzip2/compress.c 
-            src/bzip2/crctable.c 
-            src/bzip2/decompress.c 
-            src/bzip2/huffman.c 
+            src/bzip2/bzlib.c
+            src/bzip2/blocksort.c
+            src/bzip2/compress.c
+            src/bzip2/crctable.c
+            src/bzip2/decompress.c
+            src/bzip2/huffman.c
             src/bzip2/randtable.c
     )
     ADD_LIBRARY(LIB_BZIP ${SRC_BZIP})
@@ -156,6 +156,6 @@ ENDIF(UNIX AND NOT APPLE)
 IF(WIN32)
 INSTALL(TARGETS ${PACKAGE_NAME} RUNTIME DESTINATION "plugins")
 ENDIF(WIN32)
- 	  	 
+
 INCLUDE("../PluginLocalization.cmake")
 PLUGIN_LOCALIZATION()
