@@ -217,7 +217,8 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
 
          if( m_bTimeZone != Pref->m_rbTimeFormat->GetSelection() ) {
              m_bTimeZone = Pref->m_rbTimeFormat->GetSelection();
-             m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
+             if( m_pGRIBOverlayFactory )
+                m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
              updatelevel = 2;
          }
 
@@ -232,10 +233,10 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
          if(m_pGribDialog ) {
              switch( updatelevel ) {
              case 0:
-                 break;                                          
+                 break;
              case 3:
                  //rebuild current activefile with new parameters and rebuil data list with current index
-                 m_pGribDialog->CreateActiveFileFromName( m_pGribDialog->m_bGRIBActiveFile->GetFileName() );  
+                 m_pGribDialog->CreateActiveFileFromName( m_pGribDialog->m_bGRIBActiveFile->GetFileName() );
                  m_pGribDialog->PopulateComboDataList( 0/*m_pGribDialog->GetActiveForecastIndex()*/ );
                  m_pGribDialog->DisplayDataGRS();
                  break;
@@ -314,8 +315,8 @@ void grib_pi::OnToolbarToolCallback(int id)
       //    Toggle dialog?
       if(m_bShowGrib) {
           m_pGribDialog->Show();
-          m_pGribDialog->DisplayDataGRS();   
-      } else 
+          m_pGribDialog->DisplayDataGRS();
+      } else
           m_pGribDialog->Hide();
 
       // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
@@ -337,7 +338,7 @@ void grib_pi::OnGribDialogClose()
     m_pGribDialog->Hide();
 
     SaveConfig();
-     
+
     RequestRefresh(m_parent_window); // refresh mainn window
 
 }
@@ -374,7 +375,7 @@ void grib_pi::SetCursorLatLon(double lat, double lon)
 
 void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
 {
-    if(message_id == _T("GRIB_VERSION_REQUEST")) 
+    if(message_id == _T("GRIB_VERSION_REQUEST"))
     {
         wxJSONValue v;
         v[_T("GribVersionMinor")] = GetAPIVersionMinor();
@@ -477,7 +478,7 @@ bool grib_pi::SaveConfig(void)
     pConf->Write ( _T ( "GRIBDialogSizeY" ),  m_grib_dialog_sy );
     pConf->Write ( _T ( "GRIBDialogPosX" ),   m_grib_dialog_x );
     pConf->Write ( _T ( "GRIBDialogPosY" ),   m_grib_dialog_y );
-    
+
     return true;
 }
 
@@ -498,7 +499,7 @@ void grib_pi::SendTimelineMessage(wxDateTime time)
     v[_T("Hour")] = time.GetHour();
     v[_T("Minute")] = time.GetMinute();
     v[_T("Second")] = time.GetSecond();
-    
+
     wxJSONWriter w;
     wxString out;
     w.Write(v, out);
