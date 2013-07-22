@@ -4858,8 +4858,8 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
         sprintf( line, "  %s %g %g\n", pGeo->getGeometryName(), ref_lat, ref_lon );
         sheader += wxString( line, wxConvUTF8 );
     }
-    fprintf( fpOut, "HDRLEN=%lu\n", (unsigned long) sheader.Len() );
     wxCharBuffer buffer=sheader.ToUTF8();
+    fprintf( fpOut, "HDRLEN=%lu\n", (unsigned long) strlen(buffer) );
     fwrite( buffer.data(), 1, strlen(buffer), fpOut );
 
     if( ( pGeo != NULL ) /*&& (mode == 1)*/) {
