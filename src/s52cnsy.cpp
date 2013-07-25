@@ -2100,6 +2100,13 @@ static void *SLCONS03(void *param)
                 cmdw ="SY(LOWACC01)";
         }
     } else {
+        
+        // This instruction not found in PLIB 3.4, but seems to appear in later PLIB implementations
+        // by commercial ECDIS providers, so.....
+        if (GEO_AREA == obj->Primitive_type) {
+            slcons03 = _T("AP(CROSSX01);");
+        }
+            
         // GEO_LINE and GEO_AREA are the same
         if (bquapos) {
             if (2 <= quapos && quapos < 10)
@@ -2113,7 +2120,7 @@ static void *SLCONS03(void *param)
                 ival = 0;
                 bvalstr  = GetIntAttr(obj, "CATSLC", ival);
 
-                if (bvalstr && ( 6  == ival || 15 == ival || 16 == ival ))
+                if (bvalstr && ( 4 == ival || 6  == ival || 8  == ival || 15 == ival || 16 == ival ))
                     cmdw = "LS(SOLD,4,CSTLN)";
                 else {
                     bvalstr = GetIntAttr(obj, "WATLEV", ival);
