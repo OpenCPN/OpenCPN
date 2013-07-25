@@ -2508,7 +2508,7 @@
 			<disp-prio>Area 2</disp-prio>
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Plain</table-name>
-			<instruction>AP(VEGATN03);LS(DASH,1,LANDF)</instruction>
+			<instruction>AP(CROSSX02);LS(DASH,1,LANDF)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32030</comment>
 		</lookup>
@@ -5839,7 +5839,7 @@
 			<disp-prio>Area 2</disp-prio>
 			<radar-prio>Supressed</radar-prio>
 			<table-name>Symbolized</table-name>
-			<instruction>AP(VEGATN03);LS(DASH,1,LANDF)</instruction>
+			<instruction>AP(CROSSX02);LS(DASH,1,LANDF)</instruction>
 			<display-cat>Other</display-cat>
 			<comment>32030</comment>
 		</lookup>
@@ -31989,7 +31989,22 @@
                         </bitmap>
                         <color-ref>ACHBRN</color-ref>
                 </pattern>
-	</patterns>
+
+                <pattern RCID="4">
+                        <name>CROSSX02</name>
+                        <definition>R</definition>
+                        <filltype>L</filltype>
+                        <spacing>C</spacing>
+                        <description>General small dot pattern</description>
+                        <bitmap width="16" height="16">
+                                <distance min="0" max="0" />
+                                <pivot x="8" y="8" />
+                                <origin x="0" y="0" />
+                                <graphics-location x="430" y="1040" />
+                        </bitmap>
+                        <color-ref>ACHBRN</color-ref>
+                </pattern>
+        </patterns>
 
 	<symbols>
 
