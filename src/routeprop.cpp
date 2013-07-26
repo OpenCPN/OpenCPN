@@ -942,7 +942,7 @@ void RouteProp::SetRouteAndUpdate( Route *pR )
     } else {
         g_StartTime = wxInvalidDateTime;
         g_StartTimeTZ = 1;
-        if( pR->m_PlannedDeparture != RTE_UNDEF_DEPARTURE )
+        if( pR->m_PlannedDeparture.IsValid() )
             m_starttime = pR->m_PlannedDeparture;
         else
             m_starttime = g_StartTime;

@@ -842,7 +842,7 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
         child.append_child(pugi::node_pcdata).set_value(s.mb_str());
     }
     
-    if( pRoute->m_PlannedDeparture != RTE_UNDEF_DEPARTURE ) {
+    if( pRoute->m_PlannedDeparture.IsValid() ) {
         child = child_ext.append_child("opencpn:planned_departure");
         wxString t = pRoute->m_PlannedDeparture.FormatISODate().Append(_T("T")).Append(pRoute->m_PlannedDeparture.FormatISOTime()).Append(_T("Z"));
         child.append_child(pugi::node_pcdata).set_value(t.mb_str());
