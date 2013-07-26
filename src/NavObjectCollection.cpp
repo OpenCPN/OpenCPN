@@ -549,11 +549,6 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
     s.Printf(_T("%.9f"), pr->m_lon);
     node.append_attribute("lon") = s.mb_str();
  
-    if(flags & OUT_TYPE) {
-        child = node.append_child("type");
-        child.append_child(pugi::node_pcdata).set_value("WPT");
-    }
-        
     if(flags & OUT_TIME) {
             child = node.append_child("time");
             if( pr->m_timestring.Len() )
@@ -579,6 +574,33 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
             child.append_child(pugi::node_pcdata).set_value(buffer.data());
         }
     }       
+
+    // Hyperlinks
+    if(flags & OUT_HYPERLINKS ){
+        HyperlinkList *linklist = pr->m_HyperlinkList;
+        if( linklist && linklist->GetCount() ) {
+            wxHyperlinkListNode *linknode = linklist->GetFirst();
+            while( linknode ) {
+                Hyperlink *link = linknode->GetData();
+                
+                pugi::xml_node child_link = node.append_child("link");
+                child_link.append_attribute("href") = link->Link.mb_str();
+                
+                wxCharBuffer buffer=link->DescrText.ToUTF8();
+                if(buffer.data()) {
+                    child = child_link.append_child("text");
+                    child.append_child(pugi::node_pcdata).set_value(buffer.data());
+                }
+                
+                if( link->LType.Len() ) {
+                    child = child_link.append_child("type");
+                    child.append_child(pugi::node_pcdata).set_value(link->LType.mb_str());
+                }
+                
+                linknode = linknode->GetNext();
+            }
+        }
+    }
     
     if (flags & OUT_SYM_FORCE) {
         child = node.append_child("sym");
@@ -589,7 +611,12 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
             child.append_child("empty");
         }
     }       
- 
+    
+    if(flags & OUT_TYPE) {
+        child = node.append_child("type");
+        child.append_child(pugi::node_pcdata).set_value("WPT");
+    }
+    
     if( (flags & OUT_GUID) || (flags & OUT_VIZ) || (flags & OUT_VIZ_NAME) || (flags & OUT_SHARED)
             || (flags & OUT_AUTO_NAME) ) {
         
@@ -620,34 +647,6 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
          }
     }
     
-    // Hyperlinks
-    if(flags & OUT_HYPERLINKS ){
-        HyperlinkList *linklist = pr->m_HyperlinkList;
-        if( linklist && linklist->GetCount() ) {
-            wxHyperlinkListNode *linknode = linklist->GetFirst();
-            while( linknode ) {
-                Hyperlink *link = linknode->GetData();
-            
-                pugi::xml_node child_link = node.append_child("link");
-                child_link.append_attribute("href") = link->Link.mb_str();
-            
-                wxCharBuffer buffer=link->DescrText.ToUTF8();
-                if(buffer.data()) {
-                    child = child_link.append_child("text");
-                    child.append_child(pugi::node_pcdata).set_value(buffer.data());
-                }
-            
-                if( link->LType.Len() ) {
-                    child = child_link.append_child("type");
-                    child.append_child(pugi::node_pcdata).set_value(link->LType.mb_str());
-                }
-            
-                linknode = linknode->GetNext();
-            }
-        }
-    }
-            
-             
     return true;
 }
 
@@ -1191,7 +1190,7 @@ void NavObjectCollection1::SetRootGPXNode(void)
         m_gpx_root.append_attribute( "xmlns" ) = "http://www.topografix.com/GPX/1/1";
         m_gpx_root.append_attribute( "xmlns:gpxx" ) =  "http://www.garmin.com/xmlschemas/GpxExtensions/v3";
         m_gpx_root.append_attribute( "xsi:schemaLocation" ) = "http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd";
-        
+        m_gpx_root.append_attribute( "xmlns:opencpn" ) = "http://www.opencpn.org";
     }
 }
         
