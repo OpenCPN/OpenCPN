@@ -2342,6 +2342,10 @@ void ChartCanvas::GetCanvasPointPix( double rlat, double rlon, wxPoint *r )
 //                        bInside = true;
 //                        if ( bInside )
         if( Cur_BSB_Ch ) {
+            //    This is a Raster chart....
+            //    If the VP is changing, the raster chart parameters may not yet be setup
+            //    So do that before accessing the chart's embedded georeferencing
+            Cur_BSB_Ch->SetVPRasterParms( GetVP() );
             int rpixxd, rpixyd;
             if( 0 == Cur_BSB_Ch->latlong_to_pix_vp( rlat, rlon, rpixxd, rpixyd, GetVP() ) ) {
                 r->x = rpixxd;
