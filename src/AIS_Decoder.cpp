@@ -1918,13 +1918,24 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
             bool b_jumpto = palarm_target->Class == AIS_SART;
 
-            AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
-            pAISAlertDialog->Create( palarm_target->MMSI, m_parent_frame, this, b_jumpto, -1,
+//      See FS# 968/998
+//      If alert occurs while OCPN is iconized to taskbar, then clicking the taskbar icon
+//      only brings up the Alert dialog, and not the entire application.
+//      This is an OS specific behavior, not seen on linux or Mac.
+//      This patch will allow the audio alert to occur, and the visual alert will pop up soon
+//      after the user selects the OCPN icon from the taskbar. (on the next timer tick, probably)
+#ifdef __WXMSW__            
+            if( !gFrame->IsIconized() )
+#endif                
+            {
+                AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
+                pAISAlertDialog->Create( palarm_target->MMSI, m_parent_frame, this, b_jumpto, -1,
                     _("AIS Alert"), wxPoint( g_ais_alert_dialog_x, g_ais_alert_dialog_y ),
                     wxSize( g_ais_alert_dialog_sx, g_ais_alert_dialog_sy ) );
 
-            g_pais_alert_dialog_active = pAISAlertDialog;
-            pAISAlertDialog->Show();                     // Show modeless, so it stays on the screen
+                g_pais_alert_dialog_active = pAISAlertDialog;
+                pAISAlertDialog->Show();                     // Show modeless, so it stays on the screen
+            }
 
             //    Audio alert if requested
             m_bAIS_Audio_Alert_On = true;             // always on when alert is first shown
