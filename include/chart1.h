@@ -66,6 +66,7 @@ class ChartCanvas;
 class ocpnFloatingToolbarDialog;
 class OCPN_MsgEvent;
 class options;
+class Track;
 
 //----------------------------------------------------------------------------
 //   constants
@@ -252,7 +253,7 @@ class MyFrame: public wxFrame
     bool ToggleLights( bool doToggle = true, bool temporary = false );
     void ToggleAnchor(void);
     void TrackOn(void);
-    void TrackOff(bool do_add_point = false);
+    Track *TrackOff(bool do_add_point = false);
     void TrackMidnightRestart(void);
     void ToggleColorScheme();
     int GetnChartStack(void);

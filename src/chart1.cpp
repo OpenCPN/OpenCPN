@@ -3667,8 +3667,10 @@ void MyFrame::TrackOn( void )
     g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
 }
 
-void MyFrame::TrackOff( bool do_add_point )
+Track *MyFrame::TrackOff( bool do_add_point )
 {
+    Track *return_val = g_pActiveTrack;
+    
     if( g_pActiveTrack )
     {
         wxJSONValue v;
@@ -3678,11 +3680,19 @@ void MyFrame::TrackOff( bool do_add_point )
 
         g_pActiveTrack->Stop( do_add_point );
 
-        if( g_pActiveTrack->GetnPoints() < 2 )
+        if( g_pActiveTrack->GetnPoints() < 2 ) {
             g_pRouteMan->DeleteRoute( g_pActiveTrack );
-        else
-            if( g_bTrackDaily && g_pActiveTrack->DoExtendDaily() )
-                g_pRouteMan->DeleteRoute( g_pActiveTrack );
+            return_val = NULL;
+        }
+        else {
+            if( g_bTrackDaily ) {
+                Track *pExtendTrack = g_pActiveTrack->DoExtendDaily();
+                if(pExtendTrack) {
+                    g_pRouteMan->DeleteRoute( g_pActiveTrack );
+                    return_val = pExtendTrack;
+                }
+            }
+        }
     }
 
     g_pActiveTrack = NULL;
@@ -3697,17 +3707,26 @@ void MyFrame::TrackOff( bool do_add_point )
 
     if( g_toolbar )
         g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
+    
+    return return_val;
 }
 
 void MyFrame::TrackMidnightRestart( void )
 {
-    if( !g_pActiveTrack ) return;
+    if( !g_pActiveTrack )
+        return;
 
-    Track *pPreviousTrack = g_pActiveTrack;
-    TrackOff( true );
+    Track *pPreviousTrack = TrackOff( true );
     TrackOn();
-    g_pActiveTrack->FixMidnight( pPreviousTrack );
-
+    
+    //  Set the restarted track's current state such that the current track point's attributes match the
+    //  attributes of the last point of the track that was just stopped at midnight.
+    
+    if( pPreviousTrack ) {
+        RoutePoint *pMidnightPoint = pPreviousTrack->GetLastPoint();
+        g_pActiveTrack->AdjustCurrentTrackPoint(pMidnightPoint);
+    }
+    
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
         pRouteManagerDialog->UpdateTrkListCtrl();
         pRouteManagerDialog->UpdateRouteListCtrl();
@@ -4860,6 +4879,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     int hour = lognow.GetHour();
     lognow.MakeGMT();
     int minute = lognow.GetMinute();
+    int second = lognow.GetSecond();
+    
     wxTimeSpan logspan = lognow.Subtract( g_loglast_time );
     if( ( logspan.IsLongerThan( wxTimeSpan( 0, 30, 0, 0 ) ) ) || ( minute == 0 )
             || ( minute == 30 ) ) {
@@ -4897,7 +4918,8 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             wxLogMessage( navmsg );
             g_loglast_time = lognow;
 
-            if( hour == 0 && minute == 0 && g_bTrackDaily ) TrackMidnightRestart();
+            if( hour == 0 && minute == 0 && g_bTrackDaily )
+                TrackMidnightRestart();
 
             int bells = ( hour % 4 ) * 2;     // 2 bells each hour
             if( minute != 0 ) bells++;       // + 1 bell on 30 minutes

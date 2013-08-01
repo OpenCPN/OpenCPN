@@ -102,8 +102,7 @@ class Track : public wxEvtHandler, public Route
 
             void Start(void);
             void Stop(bool do_add_point = false);
-            void FixMidnight(Track *pPreviousTrack);
-            bool DoExtendDaily(void);
+            Track *DoExtendDaily(void);
             bool IsRunning(){ return m_bRunning; }
             void Draw(ocpnDC& dc, ViewPort &VP);
 
@@ -115,6 +114,8 @@ class Track : public wxEvtHandler, public Route
             double GetXTE(RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to);
             double GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon, double toLat, double toLon  );
 
+            void AdjustCurrentTrackPoint( RoutePoint *prototype );
+            
       private:
             void OnTimerTrack(wxTimerEvent& event);
             void AddPointNow(bool do_add_point = false);

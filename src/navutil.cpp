@@ -401,7 +401,7 @@ void Track::Stop( bool do_add_point )
     m_track_run = 0;
 }
 
-bool Track::DoExtendDaily()
+Track *Track::DoExtendDaily()
 {
     Route *pExtendRoute = NULL;
     RoutePoint *pExtendPoint = NULL;
@@ -414,10 +414,11 @@ bool Track::DoExtendDaily()
 
         if( !proute->m_bIsInLayer && proute->m_bIsTrack && proute->m_GUID != this->m_GUID ) {
             RoutePoint *track_node = proute->GetLastPoint();
-            if( track_node->GetCreateTime() <= pLastPoint->GetCreateTime() ) if( !pExtendPoint
-                    || track_node->GetCreateTime() > pExtendPoint->GetCreateTime() ) {
-                pExtendPoint = track_node;
-                pExtendRoute = proute;
+            if( track_node->GetCreateTime() <= pLastPoint->GetCreateTime() ) {
+                if( !pExtendPoint  || track_node->GetCreateTime() > pExtendPoint->GetCreateTime() ) {
+                    pExtendPoint = track_node;
+                    pExtendRoute = proute;
+                }
             }
         }
         route_node = route_node->GetNext();                         // next route
@@ -437,19 +438,20 @@ bool Track::DoExtendDaily()
         pSelect->AddAllSelectableTrackSegments( pExtendRoute );
         pSelect->DeleteAllSelectableTrackSegments( this );
         this->ClearHighlights();
-        return true;
+        return (Track *)pExtendRoute;
     } else {
-        if( this->m_RouteNameString.IsNull() ) this->m_RouteNameString =
-                wxDateTime::Today().FormatISODate();
-        return false;
+        if( this->m_RouteNameString.IsNull() )
+            this->m_RouteNameString = wxDateTime::Today().FormatISODate();
+        return NULL;
     }
 }
 
-void Track::FixMidnight( Track *pPreviousTrack )
+void Track::AdjustCurrentTrackPoint( RoutePoint *prototype )
 {
-    RoutePoint *pMidnightPoint = pPreviousTrack->GetLastPoint();
-    CloneAddedTrackPoint( m_lastStoredTP, pMidnightPoint );
-    m_prev_time = pMidnightPoint->GetCreateTime().FromUTC();
+    if(prototype) {
+        CloneAddedTrackPoint( m_lastStoredTP, prototype );
+        m_prev_time = prototype->GetCreateTime().FromUTC();
+    }
 }
 
 void Track::OnTimerTrack( wxTimerEvent& event )
