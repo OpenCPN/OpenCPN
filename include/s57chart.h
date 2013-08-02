@@ -214,6 +214,9 @@ public:
       char GetUsageChar(void){ return m_usage_char; }
       static bool IsCellOverlayType(char *pFullPath);
 
+      bool        m_b2pointLUPS;
+      bool        m_b2lineLUPS;
+      
 private:
 
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);

@@ -2370,18 +2370,35 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell )
 
 
 //      This is where Simplified or Paper-Type point features are selected
+//      In the case where the chart needs alternate LUPS loaded, do so.
+//      This case is triggered when the UpdateLUP() method has been called on a partially loaded chart.
+
                         switch ( obj->Primitive_type )
                         {
                               case GEO_POINT:
                               case GEO_META:
                               case GEO_PRIM:
-
-                                    if ( PAPER_CHART == ps52plib->m_nSymbolStyle )
-                                          LUP_Name = PAPER_CHART;
-                                    else
-                                          LUP_Name = SIMPLIFIED;
-
-                                    break;
+                                  if ( PAPER_CHART == ps52plib->m_nSymbolStyle )
+                                      LUP_Name = PAPER_CHART;
+                                  else
+                                      LUP_Name = SIMPLIFIED;
+                                 
+                                  if(m_b2pointLUPS)
+                                  {
+                                      LUPname  LUPO_Name;
+                                      if ( PAPER_CHART == ps52plib->m_nSymbolStyle )
+                                          LUPO_Name = SIMPLIFIED;
+                                      else
+                                          LUPO_Name = PAPER_CHART;
+                                      
+                                      //  Load the alternate LUP
+                                      LUPrec *LUPO = ps52plib->S52_LUPLookup ( LUPO_Name, obj->FeatureName, obj );
+                                      if( LUPO ) {
+                                          ps52plib->_LUP2rules ( LUPO, obj );
+                                          _insertRules ( obj,LUPO, this );
+                                      }
+                                  }
+                                  break;
 
                               case GEO_LINE:
                                     LUP_Name = LINES;
@@ -2393,6 +2410,21 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell )
                                     else
                                           LUP_Name = SYMBOLIZED_BOUNDARIES;
 
+                                    if(m_b2lineLUPS)
+                                    {
+                                        LUPname  LUPO_Name;
+                                        if ( PLAIN_BOUNDARIES == ps52plib->m_nBoundaryStyle )
+                                            LUPO_Name = SYMBOLIZED_BOUNDARIES;
+                                        else
+                                            LUPO_Name = PLAIN_BOUNDARIES;
+                                        
+                                        //  Load the alternate LUP
+                                        LUPrec *LUPO = ps52plib->S52_LUPLookup ( LUPO_Name, obj->FeatureName, obj );
+                                        if( LUPO ) {
+                                            ps52plib->_LUP2rules ( LUPO, obj );
+                                            _insertRules ( obj,LUPO, this );
+                                        }
+                                    }
                                     break;
                         }
 
@@ -2406,7 +2438,8 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell )
                                     msg.Prepend ( _T ( "   CM93 could not find LUP for " ) );
                                     LogMessageOnce ( msg );
                               }
-                              delete obj;
+                              if(0 == obj->nRef)
+                                  delete obj;
                         }
                         else
                         {

@@ -1038,6 +1038,10 @@ s57chart::s57chart()
 
     ref_lat = 0.0;
     ref_lon = 0.0;
+    
+    m_b2pointLUPS = false;
+    m_b2lineLUPS = false;
+    
 }
 
 s57chart::~s57chart()
@@ -1199,7 +1203,8 @@ void s57chart::FreeObjectsAndRules()
             top = razRules[i][j];
             while( top != NULL ) {
                 top->obj->nRef--;
-                if( 0 == top->obj->nRef ) delete top->obj;
+                if( 0 == top->obj->nRef )
+                    delete top->obj;
 
                 if( top->child ) {
                     ObjRazRules *ctop = top->child;
@@ -1530,7 +1535,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     if( Region != m_last_Region ) force_new_view = true;
 
     ps52plib->PrepareForRender();
-
+    
     if( m_plib_state_hash != ps52plib->GetStateHash() ) {
         m_bLinePrioritySet = false;                     // need to reset line priorities
         UpdateLUPs( this );                               // and update the LUPs
@@ -4666,10 +4671,10 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
     ObjRazRules *top;
     ObjRazRules *nxx;
     LUPrec *LUP;
-
     for( int i = 0; i < PRIO_NUM; ++i ) {
         //  SIMPLIFIED is set, PAPER_CHART is bare
         if( ( razRules[i][0] ) && ( NULL == razRules[i][1] ) ) {
+            m_b2pointLUPS = true;
             top = razRules[i][0];
 
             while( top != NULL ) {
@@ -4691,6 +4696,7 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
 
         //  PAPER_CHART is set, SIMPLIFIED is bare
         if( ( razRules[i][1] ) && ( NULL == razRules[i][0] ) ) {
+            m_b2pointLUPS = true;
             top = razRules[i][1];
 
             while( top != NULL ) {
@@ -4710,6 +4716,7 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
 
         //  PLAIN_BOUNDARIES is set, SYMBOLIZED_BOUNDARIES is bare
         if( ( razRules[i][3] ) && ( NULL == razRules[i][4] ) ) {
+            m_b2lineLUPS = true;
             top = razRules[i][3];
 
             while( top != NULL ) {
@@ -4728,6 +4735,7 @@ void s57chart::UpdateLUPs( s57chart *pOwner )
 
         //  SYMBOLIZED_BOUNDARIES is set, PLAIN_BOUNDARIES is bare
         if( ( razRules[i][4] ) && ( NULL == razRules[i][3] ) ) {
+            m_b2lineLUPS = true;
             top = razRules[i][4];
 
             while( top != NULL ) {
