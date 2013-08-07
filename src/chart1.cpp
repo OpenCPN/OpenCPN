@@ -869,9 +869,10 @@ bool MyApp::OnInit()
 
     // URL for sending error reports over HTTP.
     info.pszEmailTo = _T("opencpn@bigdumboat.com");
-    //    info.pszUrl = _T("http://myapp.com/tools/crashrpt.php");
-    info.uPriorities[CR_HTTP] = CR_NEGATIVE_PRIORITY; //3;  // First try send report over HTTP
-    info.uPriorities[CR_SMTP] = 3;  // Second try send report over SMTP
+    info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
+    info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
+    info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP
+    info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
     info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
 
     // Install all available exception handlers.
@@ -3657,7 +3658,7 @@ void MyFrame::TrackOn( void )
     {
         RoutePoint *rp = g_pActiveTrack->GetPoint( 1 );
         if( rp && rp->GetCreateTime().IsValid() )
-            name = rp->GetCreateTime().FormatISODate() + _T(" ") + rp->GetCreateTime().FormatISOTime();   
+            name = rp->GetCreateTime().FormatISODate() + _T(" ") + rp->GetCreateTime().FormatISOTime();
         else
             name = _("(Unnamed Track)");
     }
@@ -3670,7 +3671,7 @@ void MyFrame::TrackOn( void )
 Track *MyFrame::TrackOff( bool do_add_point )
 {
     Track *return_val = g_pActiveTrack;
-    
+
     if( g_pActiveTrack )
     {
         wxJSONValue v;
@@ -3707,7 +3708,7 @@ Track *MyFrame::TrackOff( bool do_add_point )
 
     if( g_toolbar )
         g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
-    
+
     return return_val;
 }
 
@@ -3718,15 +3719,15 @@ void MyFrame::TrackMidnightRestart( void )
 
     Track *pPreviousTrack = TrackOff( true );
     TrackOn();
-    
+
     //  Set the restarted track's current state such that the current track point's attributes match the
     //  attributes of the last point of the track that was just stopped at midnight.
-    
+
     if( pPreviousTrack ) {
         RoutePoint *pMidnightPoint = pPreviousTrack->GetLastPoint();
         g_pActiveTrack->AdjustCurrentTrackPoint(pMidnightPoint);
     }
-    
+
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
         pRouteManagerDialog->UpdateTrkListCtrl();
         pRouteManagerDialog->UpdateRouteListCtrl();
@@ -4880,7 +4881,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     lognow.MakeGMT();
     int minute = lognow.GetMinute();
     int second = lognow.GetSecond();
-    
+
     wxTimeSpan logspan = lognow.Subtract( g_loglast_time );
     if( ( logspan.IsLongerThan( wxTimeSpan( 0, 30, 0, 0 ) ) ) || ( minute == 0 )
             || ( minute == 30 ) ) {
@@ -6464,7 +6465,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
 
     //  We can possibly use the estimated magnetic variation if WMM_pi is present and active
     //  and we have no other source of Variation
-    if(!g_bVAR_Rx) 
+    if(!g_bVAR_Rx)
     {
         if(message_ID == _T("WMM_VARIATION_BOAT"))
         {
@@ -6514,7 +6515,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
                 {
                     RoutePoint *rp = (*it)->GetPoint( 1 );
                     if( rp && rp->GetCreateTime().IsValid() )
-                        name = rp->GetCreateTime().FormatISODate() + _T(" ") + rp->GetCreateTime().FormatISOTime();   
+                        name = rp->GetCreateTime().FormatISODate() + _T(" ") + rp->GetCreateTime().FormatISOTime();
                     else
                         name = _("(Unnamed Track)");
                 }
@@ -6526,7 +6527,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
                 {
                     v[i][0] = (*itp)->m_lat;
                     v[i][1] = (*itp)->m_lon;
-                    i++;                    
+                    i++;
                 }
                     wxString msg_id( _T("OCPN_TRACKPOINTS_COORDS") );
                     g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
@@ -6603,7 +6604,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
                             node = node->GetNext();
                         }
                     }
-                    i++;                    
+                    i++;
                 }
                 wxString msg_id( _T("OCPN_ROUTE_RESPONSE") );
                 g_pi_manager->SendJSONMessageToAllPlugins( msg_id, v );
@@ -6641,7 +6642,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
                 if(!(*it)->IsTrack())
                     if(mode == false) continue;
                 v[0][_T("isTrack")] = !mode;
-                
+
                 wxString name = (*it)->m_RouteNameString;
                 if(name.IsEmpty() && !mode)
                 {
@@ -6653,7 +6654,7 @@ void MyFrame::OnEvtPlugInMessage( OCPN_MsgEvent & event )
                 }
                 else if(name.IsEmpty() && mode)
                     name = _("(Unnamed Route)");
-                    
+
 
                 v[i][_T("error")] = false;
                 v[i][_T("name")] = name;
@@ -6937,7 +6938,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                 gHdm = m_NMEA0183.Hdm.DegreesMagnetic;
                                 if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
                                     gHDx_Watchdog = gps_watchdog_timeout_ticks;
-                            } 
+                            }
                             else
                                 if( g_nNMEADebug )
                                 {
@@ -7133,7 +7134,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                     pos_valid = true;
                 }
             }
-            else 
+            else
             {
                 if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
                 {
@@ -8549,7 +8550,7 @@ TimedPopupWin::TimedPopupWin( wxWindow *parent, int timeout ) :
 wxWindow( parent, wxID_ANY, wxPoint( 0, 0 ), wxSize( 1, 1 ), wxNO_BORDER )
 {
     m_pbm = NULL;
-    
+
     m_timer_timeout.SetOwner( this, POPUP_TIMER );
     m_timeout_sec = timeout;
     isActive = false;
@@ -8571,7 +8572,7 @@ void TimedPopupWin::SetBitmap( wxBitmap &bmp )
 {
     delete m_pbm;
     m_pbm = new wxBitmap( bmp );
-    
+
     // Retrigger the auto timeout
     if( m_timeout_sec > 0 )
         m_timer_timeout.Start( m_timeout_sec * 1000, wxTIMER_ONE_SHOT );
@@ -8582,7 +8583,7 @@ void TimedPopupWin::OnPaint( wxPaintEvent& event )
     int width, height;
     GetClientSize( &width, &height );
     wxPaintDC dc( this );
-    
+
     wxMemoryDC mdc;
     mdc.SelectObject( *m_pbm );
     dc.Blit( 0, 0, width, height, &mdc, 0, 0 );
