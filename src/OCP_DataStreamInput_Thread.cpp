@@ -693,18 +693,25 @@ int OCP_DataStreamInput_Thread::OpenComPortPhysical(const wxString &com_name, in
     speed_t baud_parm;
     switch(baud_rate)
     {
-        case 4800:
-              baud_parm = B4800;
-              break;
-        case 9600:
-              baud_parm = B9600;
-              break;
-        case 38400:
-              baud_parm = B38400;
-              break;
-        default:
-              baud_parm = B4800;
-              break;
+        case     50: baud_parm =     B50; break;
+        case     75: baud_parm =     B75; break;
+        case    110: baud_parm =    B110; break;
+        case    134: baud_parm =    B134; break;
+        case    150: baud_parm =    B150; break;
+        case    200: baud_parm =    B200; break;
+        case    300: baud_parm =    B300; break;
+        case    600: baud_parm =    B600; break;
+        case   1200: baud_parm =   B1200; break;
+        case   1800: baud_parm =   B1800; break;
+        case   2400: baud_parm =   B2400; break;
+        case   4800: baud_parm =   B4800; break;
+        case   9600: baud_parm =   B9600; break;
+        case  19200: baud_parm =  B19200; break;
+        case  38400: baud_parm =  B38400; break;
+        case  57600: baud_parm =  B57600; break;
+        case 115200: baud_parm = B115200; break;
+        
+        default: baud_parm = B4800; break;
     }
 
     if (isatty(com_fd) != 0)
