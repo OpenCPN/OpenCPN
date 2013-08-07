@@ -880,7 +880,8 @@ void Route::Reverse( bool bRenamePoints )
     pRoutePointList->DeleteContents( false );
     pRoutePointList->Clear();
     m_nPoints = 0;
-
+    m_route_length = 0.0;
+    
     AssembleRoute();                          // Rebuild the route points from the GUID list
 
     if( bRenamePoints ) RenameRoutePoints();
