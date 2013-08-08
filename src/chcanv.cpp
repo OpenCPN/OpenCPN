@@ -843,7 +843,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_TIMER ( PAN_TIMER, ChartCanvas::PanTimerEvent )
     EVT_TIMER ( CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent )
     EVT_TIMER ( ROT_TIMER, ChartCanvas::RotateTimerEvent )
-    EVT_TIMER ( RTELEGPU_TIMER, ChartCanvas::OnRouteLegPopupTimerEvent )
+    EVT_TIMER ( ROPOPUP_TIMER, ChartCanvas::OnRolloverPopupTimerEvent )
     EVT_KEY_DOWN(ChartCanvas::OnKeyDown )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
     EVT_TIMER ( PANKEY_TIMER, ChartCanvas::Do_Pankeys )
@@ -946,7 +946,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_bChartDragging = false;
     m_bMeasure_Active = false;
     m_pMeasureRoute = NULL;
-    m_pRolloverWin = NULL;
+    m_pRouteRolloverWin = NULL;
     m_pAISRolloverWin = NULL;
 
     m_pCIWin = NULL;
@@ -1153,9 +1153,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_MouseWheelTimer.SetOwner( this );
 
-    m_RouteLegPopupTimer.SetOwner( this, RTELEGPU_TIMER );
+    m_RolloverPopupTimer.SetOwner( this, ROPOPUP_TIMER );
 
-    m_routeleg_popup_timer_msec = 20;
+    m_rollover_popup_timer_msec = 20;
 
     m_b_rot_hidef = true;
 
@@ -1365,7 +1365,7 @@ ChartCanvas::~ChartCanvas()
     delete pPanKeyTimer;
     delete m_DoubleClickTimer;
 
-    delete m_pRolloverWin;
+    delete m_pRouteRolloverWin;
     delete m_pAISRolloverWin;
     delete m_pBrightPopup;
 
@@ -2155,9 +2155,55 @@ void ChartCanvas::RotateTimerEvent( wxTimerEvent& event )
     ReloadVP();
 }
 
-void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
+void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 {
-    // Route info rollover
+    bool b_need_refresh = false;
+    
+    //  Handle the AIS Rollover Window first
+    bool showAISRollover = false;
+    if( g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS ) {
+        SelectItem *pFind = pSelectAIS->FindSelection( m_cursor_lat, m_cursor_lon,
+                                                       SELTYPE_AISTARGET );
+        if( pFind ) {
+            int FoundAIS_MMSI = (long) pFind->m_pData1; // cast to long avoids problems with 64bit compilers
+            AIS_Target_Data *ptarget = g_pAIS->Get_Target_Data_From_MMSI( FoundAIS_MMSI );
+            
+            if( ptarget ) {
+                showAISRollover = true;
+                
+                if( NULL == m_pAISRolloverWin ) {
+                    m_pAISRolloverWin = new RolloverWin( this, 10 );
+                    m_pAISRolloverWin->IsActive( false );
+                    b_need_refresh = true;
+                }
+                
+                if( !m_pAISRolloverWin->IsActive() ) {
+                    
+                    wxString s = ptarget->GetRolloverString();
+                    m_pAISRolloverWin->SetString( s );
+                    
+                    wxSize win_size = GetSize();
+                    if( console->IsShown() ) win_size.x -= console->GetSize().x;
+                    m_pAISRolloverWin->SetBestPosition( mouse_x, mouse_y, 16, 16, AIS_ROLLOVER, win_size );
+                    
+                    m_pAISRolloverWin->SetBitmap( AIS_ROLLOVER );
+                    m_pAISRolloverWin->IsActive( true );
+                    b_need_refresh = true;
+                }
+            }
+        }
+        else {
+            showAISRollover = false;
+        }
+    }
+
+    //  Maybe turn the rollover off
+    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() && !showAISRollover ) {
+        m_pAISRolloverWin->IsActive( false );
+        b_need_refresh = true;
+    }
+    
+    // Now the Route info rollover
     // Show the route segment info
     bool showRollover = false;
 
@@ -2176,12 +2222,12 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                 m_pRolloverRouteSeg = pFindSel;
                 showRollover = true;
 
-                if( NULL == m_pRolloverWin ) {
-                    m_pRolloverWin = new RolloverWin( this );
-                    m_pRolloverWin->IsActive( false );
+                if( NULL == m_pRouteRolloverWin ) {
+                    m_pRouteRolloverWin = new RolloverWin( this );
+                    m_pRouteRolloverWin->IsActive( false );
                 }
 
-                if( !m_pRolloverWin->IsActive() ) {
+                if( !m_pRouteRolloverWin->IsActive() ) {
                     wxString s;
                     RoutePoint *segShow_point_a = (RoutePoint *) m_pRolloverRouteSeg->m_pData1;
                     RoutePoint *segShow_point_b = (RoutePoint *) m_pRolloverRouteSeg->m_pData2;
@@ -2223,15 +2269,15 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
                         s << _T(" (+") << FormatDistanceAdaptive( dist_to_endleg ) << _T(")");
                     }
 
-                    m_pRolloverWin->SetString( s );
+                    m_pRouteRolloverWin->SetString( s );
 
                     wxSize win_size = GetSize();
                     if( console->IsShown() ) win_size.x -= console->GetSize().x;
-                    m_pRolloverWin->SetBestPosition( mouse_x, mouse_y, 16, 16, LEG_ROLLOVER,
+                    m_pRouteRolloverWin->SetBestPosition( mouse_x, mouse_y, 16, 16, LEG_ROLLOVER,
                                                      win_size );
-                    m_pRolloverWin->SetBitmap( LEG_ROLLOVER );
-                    m_pRolloverWin->IsActive( true );
-                    Refresh();
+                    m_pRouteRolloverWin->SetBitmap( LEG_ROLLOVER );
+                    m_pRouteRolloverWin->IsActive( true );
+                    b_need_refresh = true;
                     showRollover = true;
                     break;
                 }
@@ -2247,21 +2293,26 @@ void ChartCanvas::OnRouteLegPopupTimerEvent( wxTimerEvent& event )
     }
 
     //    If currently creating a route, do not show this rollover window
-    if( parent_frame->nRoute_State ) showRollover = false;
+    if( parent_frame->nRoute_State )
+        showRollover = false;
 
     //    Similar for AIS target rollover window
-    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() ) showRollover = false;
+    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() )
+        showRollover = false;
 
-    if( m_pRolloverWin && m_pRolloverWin->IsActive() && !showRollover ) {
-        m_pRolloverWin->IsActive( false );
+    if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() && !showRollover ) {
+        m_pRouteRolloverWin->IsActive( false );
         m_pRolloverRouteSeg = NULL;
-        m_pRolloverWin->Destroy();
-        m_pRolloverWin = NULL;
-        Refresh();
-    } else if( m_pRolloverWin && showRollover ) {
-        m_pRolloverWin->IsActive( true );
-        Refresh();
+        m_pRouteRolloverWin->Destroy();
+        m_pRouteRolloverWin = NULL;
+        b_need_refresh = true;
+    } else if( m_pRouteRolloverWin && showRollover ) {
+        m_pRouteRolloverWin->IsActive( true );
+        b_need_refresh = true;
     }
+    
+    if( b_need_refresh )
+        Refresh();
 }
 
 void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
@@ -5192,10 +5243,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     mouse_leftisdown = event.LeftIsDown();
 
 //      Retrigger the route leg popup timer
-    if( m_pRolloverWin && m_pRolloverWin->IsActive() ) m_RouteLegPopupTimer.Start( 10,
+    if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() ) m_RolloverPopupTimer.Start( 10,
                 wxTIMER_ONE_SHOT );               // faster response while the rollover is turned on
     else
-        m_RouteLegPopupTimer.Start( m_routeleg_popup_timer_msec, wxTIMER_ONE_SHOT );
+        m_RolloverPopupTimer.Start( m_rollover_popup_timer_msec, wxTIMER_ONE_SHOT );
 
 //  Retrigger the cursor tracking timer
     pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
@@ -5304,46 +5355,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
         CheckEdgePan( x, y, event.Dragging() );
         Refresh( false );
-    }
-
-    bool showRollover = false;
-//    AIS Target Rollover
-    if( g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS ) {
-        SelectItem *pFind = pSelectAIS->FindSelection( m_cursor_lat, m_cursor_lon,
-                            SELTYPE_AISTARGET );
-        if( pFind ) {
-            int FoundAIS_MMSI = (long) pFind->m_pData1; // cast to long avoids problems with 64bit compilers
-            AIS_Target_Data *ptarget = g_pAIS->Get_Target_Data_From_MMSI( FoundAIS_MMSI );
-
-            if( ptarget ) {
-                showRollover = true;
-
-                if( NULL == m_pAISRolloverWin ) {
-                    m_pAISRolloverWin = new RolloverWin( this, 10 );
-                    m_pAISRolloverWin->IsActive( false );
-                    Refresh();
-                }
-
-                if( !m_pAISRolloverWin->IsActive() ) {
-
-                    wxString s = ptarget->GetRolloverString();
-                    m_pAISRolloverWin->SetString( s );
-
-                    wxSize win_size = GetSize();
-                    if( console->IsShown() ) win_size.x -= console->GetSize().x;
-                    m_pAISRolloverWin->SetBestPosition( x, y, 16, 16, AIS_ROLLOVER, win_size );
-
-                    m_pAISRolloverWin->SetBitmap( AIS_ROLLOVER );
-                    m_pAISRolloverWin->IsActive( true );
-                    Refresh();
-                }
-            }
-        }
-    }
-
-    if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() && !showRollover ) {
-        m_pAISRolloverWin->IsActive( false );
-        Refresh();
     }
 
 //          Mouse Clicks
@@ -8637,6 +8648,15 @@ bool ChartCanvas::SetCursor( const wxCursor &c )
 
 void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
 {
+    //  Keep the mouse position members up to date
+    GetCanvasPixPoint( mouse_x, mouse_y, m_cursor_lat, m_cursor_lon );
+    
+    //      Retrigger the route leg popup timer
+    //      This handles the case when the chart is moving in auto-follow mode, but no user mouse input is made.
+    //      The timer handler may Hide() the popup if the chart moved enough
+    if( (m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) || (m_pAISRolloverWin && m_pAISRolloverWin->IsActive()) )
+        m_RolloverPopupTimer.Start( 10, wxTIMER_ONE_SHOT ); 
+         
 
     if( g_bopengl ) {
 
@@ -8909,10 +8929,10 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     s57_DrawExtendedLightSectors( dc, VPoint, extendedSectorLegs );
 #endif
 
-    if( m_pRolloverWin && m_pRolloverWin->IsActive() ) {
-        dc.DrawBitmap( *(m_pRolloverWin->GetBitmap()),
-                m_pRolloverWin->GetPosition().x,
-                m_pRolloverWin->GetPosition().y, false );
+    if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() ) {
+        dc.DrawBitmap( *(m_pRouteRolloverWin->GetBitmap()),
+                       m_pRouteRolloverWin->GetPosition().x,
+                       m_pRouteRolloverWin->GetPosition().y, false );
     }
     if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() ) {
         dc.DrawBitmap( *(m_pAISRolloverWin->GetBitmap()),

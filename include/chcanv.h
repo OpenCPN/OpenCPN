@@ -337,7 +337,7 @@ private:
       void MouseEvent(wxMouseEvent& event);
       void ShipDraw(ocpnDC& dc);
       void DrawArrow(ocpnDC& dc, int x, int y, double rot_angle, double scale);
-      void OnRouteLegPopupTimerEvent ( wxTimerEvent& event );
+      void OnRolloverPopupTimerEvent ( wxTimerEvent& event );
       void FindRoutePointsAtCursor( float selectRadius, bool setBeingEdited );
 
       void RotateTimerEvent(wxTimerEvent& event);
@@ -428,13 +428,13 @@ private:
       wxTimer     *m_DoubleClickTimer;
 
       wxTimer     m_MouseWheelTimer;
-      wxTimer     m_RouteLegPopupTimer;
+      wxTimer     m_RolloverPopupTimer;
 
       int         m_mouse_wheel_oneshot;
       int         m_last_wheel_dir;
 
       int         m_curtrack_timer_msec;
-      int         m_routeleg_popup_timer_msec;
+      int         m_rollover_popup_timer_msec;
 
       GSHHSChart  *pWorldBackgroundChart;
 
@@ -477,7 +477,7 @@ private:
       wxBitmap    m_bmCurrentDusk;
       wxBitmap    m_bmCurrentNight;
 
-      RolloverWin *m_pRolloverWin;
+      RolloverWin *m_pRouteRolloverWin;
       RolloverWin *m_pAISRolloverWin;
       
       TimedPopupWin *m_pBrightPopup;
