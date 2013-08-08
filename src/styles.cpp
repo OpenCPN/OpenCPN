@@ -241,7 +241,18 @@ wxBitmap Style::GetToolIcon(const wxString & toolname, int iconType, bool rollov
                 tool->rolloverLoaded = true;
                 return tool->rollover;
             } else {
-                tool->icon = SetBitmapBrightness( bm );
+                if( toolname == _T("mob_btn") ) {
+                    double dimLevel = 1.0;
+                    if(colorscheme ==  GLOBAL_COLOR_SCHEME_DUSK)
+                        dimLevel = 0.5;
+                    else if(colorscheme ==  GLOBAL_COLOR_SCHEME_NIGHT)
+                        dimLevel = 0.5;
+                    tool->icon = SetBitmapBrightnessAbs( bm, dimLevel );
+                }
+                else {
+                    tool->icon = SetBitmapBrightness( bm );
+                }
+                
                 tool->iconLoaded = true;
                 return tool->icon;
             }
@@ -349,7 +360,12 @@ wxBitmap Style::SetBitmapBrightness( wxBitmap& bitmap )
             return bitmap;
         }
     }
+    
+    return SetBitmapBrightnessAbs(bitmap, dimLevel);
+}
 
+wxBitmap Style::SetBitmapBrightnessAbs( wxBitmap& bitmap, double level )
+{
     wxImage image = bitmap.ConvertToImage();
 
     int gimg_width = image.GetWidth();
@@ -361,7 +377,7 @@ wxBitmap Style::SetBitmapBrightness( wxBitmap& bitmap )
                 wxImage::RGBValue rgb( image.GetRed( ix, iy ), image.GetGreen( ix, iy ),
                         image.GetBlue( ix, iy ) );
                 wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
-                hsv.value = hsv.value * dimLevel;
+                hsv.value = hsv.value * level;
                 wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
                 image.SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
             }

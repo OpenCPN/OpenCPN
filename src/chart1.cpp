@@ -2706,12 +2706,6 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
             tipString, wxITEM_NORMAL );
 
     CheckAndAddPlugInTool( tb );
-    tipString = wxString( _("Drop MOB Marker") ) << _(" (Ctrl-Space)");
-    if( _toolbarConfigMenuUtil( ID_MOB, tipString ) )
-        tb->AddTool( ID_MOB, _T("mob_btn"),
-            style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
-
-    CheckAndAddPlugInTool( tb );
     tipString = _("About OpenCPN");
     if( _toolbarConfigMenuUtil( ID_HELP, tipString ) )
         tb->AddTool( ID_HELP, _T("help"),
@@ -2720,6 +2714,13 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     //      Add any PlugIn toolbar tools that request default positioning
     AddDefaultPositionPlugInTools( tb );
 
+    //  And finally add the MOB tool
+    tipString = wxString( _("Drop MOB Marker") ) << _(" (Ctrl-Space)");
+    if( _toolbarConfigMenuUtil( ID_MOB, tipString ) )
+        tb->AddTool( ID_MOB, _T("mob_btn"),
+                     style->GetToolIcon( _T("mob_btn"), TOOLICON_NORMAL ), tipString, wxITEM_NORMAL );
+                     
+                     
 // Realize() the toolbar
     g_FloatingToolbarDialog->Realize();
 

@@ -136,7 +136,8 @@ public:
       void DrawToolbarLineEnd( wxBitmap& bmp );
 
       wxBitmap SetBitmapBrightness( wxBitmap& bitmap );
-
+      wxBitmap SetBitmapBrightnessAbs( wxBitmap& bitmap, double level );
+      
       void SetOrientation( long orient );
       int GetOrientation();
       void SetColorScheme( ColorScheme cs );
