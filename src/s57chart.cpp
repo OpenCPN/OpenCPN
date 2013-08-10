@@ -6732,7 +6732,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             narc++;
             step = ( angle2 - angle1 ) / (double)narc;
 
-            if( angle2 - angle1 < 15 && sectorlegs[i].fillSector ) {
+            if( angle2 - angle1 < 5 && sectorlegs[i].fillSector ) {
                 wxPoint yellowCone[3];
                 yellowCone[0] = lightPos;
                 yellowCone[1] = end1;
@@ -6897,7 +6897,13 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                             for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
                                 if( sectorlegs[i].pos == sector.pos &&
                                     sectorlegs[i].sector1 == sector.sector1 &&
-                                    sectorlegs[i].sector2 == sector.sector2 ) newsector = false;
+                                    sectorlegs[i].sector2 == sector.sector2 ) {
+                                        newsector = false;
+                                        //  In the case of duplicate sectors, choose the instance with largest range.
+                                        //  This applies to the case where day and night VALNMR are different, and so
+                                        //  makes the vector result independent of the order of day/night light features.
+                                        sectorlegs[i].range = wxMax(sectorlegs[i].range, sector.range);
+                                }
                             }
                             if(!bviz)
                                 newsector = false;
