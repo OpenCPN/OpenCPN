@@ -417,7 +417,7 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
 {
     long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
 #ifdef __WXOSX__
-//    style |= wxSTAY_ON_TOP;
+    style |= wxSTAY_ON_TOP;
 #endif
 
     wxDialog::Create( parent, -1, wxString( _("Route Manager") ), wxDefaultPosition, wxDefaultSize,
@@ -1817,6 +1817,9 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
         if( item != -1 ) selected_id = m_pWptListCtrl->GetItemData( item );
     }
 
+    //  Freshen the image list
+    m_pWptListCtrl->SetImageList( pWayPointMan->Getpmarkicon_image_list(), wxIMAGE_LIST_SMALL );
+    
     m_pWptListCtrl->DeleteAllItems();
 
     wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
