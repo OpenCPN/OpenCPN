@@ -69,7 +69,12 @@ void CM93DSlide::Init( void )
 bool CM93DSlide::Create( wxWindow *parent, wxWindowID id, int value, int minValue, int maxValue,
                          const wxPoint& pos, const wxSize& size, long style, const wxString& title )
 {
-    if( !wxDialog::Create( parent, id, title, pos, size, wxDEFAULT_DIALOG_STYLE ) ) return false;
+    long wstyle = wxDEFAULT_DIALOG_STYLE;
+#ifdef __WXOSX__
+    wstyle |= wxSTAY_ON_TOP;
+#endif
+    
+    if( !wxDialog::Create( parent, id, title, pos, size, wstyle ) ) return false;
 
     m_pparent = parent;
 
