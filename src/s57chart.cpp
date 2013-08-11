@@ -6732,7 +6732,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             narc++;
             step = ( angle2 - angle1 ) / (double)narc;
 
-            if( sectorlegs[i].isleading /*angle2 - angle1 < 5 && sectorlegs[i].fillSector*/ ) {
+            if( sectorlegs[i].isleading && (angle2 - angle1 < 15) /* && sectorlegs[i].fillSector*/ ) {
                 wxPoint yellowCone[3];
                 yellowCone[0] = lightPos;
                 yellowCone[1] = end1;
@@ -6888,6 +6888,10 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                         free(curr_att0);
 
                         if( ( sectr1 >= 0 ) && ( sectr2 >= 0 ) ) {
+                            if( sectr1 > sectr2 ) {             // normalize
+                                sectr2 += 360.0;
+                            }
+                            
                             sector.pos.m_x = light->m_lon;
                             sector.pos.m_y = light->m_lat;
 
@@ -6927,13 +6931,13 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     }
     
     //  Work with the sector legs vector to identify  and mark "Leading Lights"
-    
+    int ns = sectorlegs.size();
     if( sectorlegs.size() > 0 ) {
         for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
             if( fabs( sectorlegs[i].sector1 - sectorlegs[i].sector2 ) < 0.5 )
                 continue;
             
-            if((fabs(sectorlegs[i].sector1 - sectorlegs[i].sector2) < 15)  && sectorlegs[i].iswhite ) {
+            if(((sectorlegs[i].sector2 - sectorlegs[i].sector1) < 15)  && sectorlegs[i].iswhite ) {
                 //      Check to see if this sector has a visible range greater than any other white light
                 
                 if( sectorlegs.size() > 1 ) {
@@ -6942,7 +6946,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                         if(i == j)
                             continue;
                         if((sectorlegs[j].iswhite) && (sectorlegs[i].range <= sectorlegs[j].range) ){
-                            if(fabs(sectorlegs[j].sector1 - sectorlegs[j].sector2) >= 15){  // test sector should not be a leading light
+                            if((sectorlegs[j].sector2 - sectorlegs[j].sector1) >= 15){  // test sector should not be a leading light
                                 bleading = false;    // cannot be a sector, since its range is <= another white light
                                 break;
                             }
