@@ -6732,7 +6732,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             narc++;
             step = ( angle2 - angle1 ) / (double)narc;
 
-            if( angle2 - angle1 < 5 && sectorlegs[i].fillSector ) {
+            if( sectorlegs[i].isleading /*angle2 - angle1 < 5 && sectorlegs[i].fillSector*/ ) {
                 wxPoint yellowCone[3];
                 yellowCone[0] = lightPos;
                 yellowCone[1] = end1;
@@ -6867,13 +6867,16 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                             if( curAttrName == _T("COLOUR") ) {
                                 sector.fillSector = true;
                                 color = wxColor( 255, 255, 0, yOpacity );
+                                sector.iswhite = true;
                                 if( value == _T("red(3)") ) {
                                     color = wxColor( 255, 0, 0, opacity );
                                     sector.fillSector = false;
+                                    sector.iswhite = false;
                                 }
                                 if( value == _T("green(4)") ) {
                                     color = wxColor( 0, 255, 0, opacity );
                                     sector.fillSector = false;
+                                    sector.iswhite = false;
                                 }
                             }
                             if( curAttrName == _T("EXCLIT") ) {
@@ -6892,6 +6895,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                             sector.sector1 = sectr1;
                             sector.sector2 = sectr2;
                             sector.color = color;
+                            sector.isleading = false;           // tentative judgment, check below
 
                             bool newsector = true;
                             for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
@@ -6921,5 +6925,42 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
         rule_list->Clear();
         delete rule_list;
     }
+    
+    //  Work with the sector legs vector to identify  and mark "Leading Lights"
+    
+    if( sectorlegs.size() > 0 ) {
+        for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
+            if( fabs( sectorlegs[i].sector1 - sectorlegs[i].sector2 ) < 0.5 )
+                continue;
+            
+            if((fabs(sectorlegs[i].sector1 - sectorlegs[i].sector2) < 15)  && sectorlegs[i].iswhite ) {
+                //      Check to see if this sector has a visible range greater than any other white light
+                
+                if( sectorlegs.size() > 1 ) {
+                    bool bleading = true;
+                    for( unsigned int j=0; j<sectorlegs.size(); j++ ) {
+                        if(i == j)
+                            continue;
+                        if((sectorlegs[j].iswhite) && (sectorlegs[i].range <= sectorlegs[j].range) ){
+                            if(fabs(sectorlegs[j].sector1 - sectorlegs[j].sector2) >= 15){  // test sector should not be a leading light
+                                bleading = false;    // cannot be a sector, since its range is <= another white light
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if(bleading)
+                        sectorlegs[i].isleading = true;
+                }
+            }
+            else
+                sectorlegs[i].isleading = false;
+                
+        }
+    }
+    
+            
+    
+    
     return newSectorsNeedDrawing;
 }
