@@ -238,7 +238,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     }
 
     wxString AISTypeStr, UNTypeStr, sizeString;
-    if( ( Class != AIS_BASE ) && ( Class != AIS_SART ) ) {
+    if( ( Class != AIS_BASE ) && ( Class != AIS_SART ) && ( Class != AIS_DSC ) ) {
 
         //      Ship type
         AISTypeStr = wxGetTranslation( Get_vessel_type_string() );
@@ -312,7 +312,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         html << rowEnd << _T("<tr><td colspan=2>") << _T("<b>") << sizeString << rowEnd;
     }
 
-    else if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
+    else if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) && ( Class != AIS_DSC ) ) {
         html << _T("<tr><td colspan=2>") << _T("<b>") << AISTypeStr;
         if( navStatStr.Length() )
             html << _T(", ") << navStatStr;
@@ -411,7 +411,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         brgStr = _("---");
 
     wxString turnRateHdr; // Blank if ATON or BASE
-    if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) {
+    if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) && ( Class != AIS_DSC ) ) {
         html << vertSpacer << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
             << rowStart <<_("Speed") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
             << _("Course") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
@@ -655,7 +655,10 @@ wxString AIS_Target_Data::Get_class_string( bool b_short )
         case AIS_GPSG_BUDDY:
             return b_short ? _("Buddy") : _("GPSGate Buddy");
         case AIS_DSC:
-            return b_short ? _("DSC") : _("DSC Position Report");
+            if( ShipType == 12 )
+                return b_short ? _("DSC") : _("DSC Distress");
+            else
+                return b_short ? _("DSC") : _("DSC Position Report");
         case AIS_SART:
             return b_short ? _("SART") : _("SART");
         case AIS_ARPA:

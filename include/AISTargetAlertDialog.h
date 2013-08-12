@@ -30,7 +30,32 @@
 class AIS_Decoder;
 class wxHtmlWindow;
 
-class AISTargetAlertDialog: public wxDialog
+class OCPN_AlertDialog: public wxDialog
+{
+    DECLARE_CLASS( OCPN_AlertDialog )
+    DECLARE_EVENT_TABLE()
+public:
+    
+    OCPN_AlertDialog( );
+    
+    virtual ~OCPN_AlertDialog( );
+    virtual void Init();
+    
+    virtual bool Create( wxWindow *parent,
+                 wxWindowID id = wxID_ANY,
+                 const wxString& caption = _("OpenCPN Alert"),
+                 const wxPoint& pos = wxDefaultPosition,
+                 const wxSize& size = wxDefaultSize,
+                 long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+
+                 
+private:
+    wxWindow          *m_pparent;
+    
+};
+
+
+class AISTargetAlertDialog: public OCPN_AlertDialog
 {
       DECLARE_CLASS( AISTargetAlertDialog )
                   DECLARE_EVENT_TABLE()
@@ -38,26 +63,21 @@ class AISTargetAlertDialog: public wxDialog
 
            AISTargetAlertDialog( );
 
-            ~AISTargetAlertDialog( );
-            void Init();
-
-            bool Create( int target_mmsi,
-                         wxWindow *parent,
-                         AIS_Decoder *pdecoder,
-                         bool b_jumpto,
-                         wxWindowID id = wxID_ANY,
-                         const wxString& caption = _("AIS Alert"),
-                         const wxPoint& pos = wxDefaultPosition,
-                         const wxSize& size = wxDefaultSize,
-                         long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
-
-           void CreateControls();
+           ~AISTargetAlertDialog( );
+           bool Create( int target_mmsi, wxWindow *parent, AIS_Decoder *pdecoder,bool b_jumpto,
+                                wxWindowID id = wxID_ANY,
+                                const wxString& caption = _("OpenCPN AIS Alert"),
+                                const wxPoint& pos = wxDefaultPosition,
+                                const wxSize& size = wxDefaultSize,
+                                long style = wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU );
+           void Init();
 
            int Get_Dialog_MMSI(void){ return m_target_mmsi; }
            void UpdateText();
 
       private:
-            bool GetAlertText(void);
+          void CreateControls();
+          bool GetAlertText(void);
             void OnClose(wxCloseEvent& event);
             void OnIdAckClick( wxCommandEvent& event );
             void OnMove( wxMoveEvent& event );
@@ -69,11 +89,11 @@ class AISTargetAlertDialog: public wxDialog
             wxHtmlWindow      *m_pAlertTextCtl;
             int               m_target_mmsi;
             AIS_Decoder       *m_pdecoder;
-            wxWindow          *m_pparent;
             wxFont            *m_pFont;
             wxString          m_alert_text;
             bool              m_bjumpto;
 
 };
+
 
 #endif
