@@ -6732,7 +6732,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             narc++;
             step = ( angle2 - angle1 ) / (double)narc;
 
-            if( sectorlegs[i].isleading && (angle2 - angle1 < 15) /* && sectorlegs[i].fillSector*/ ) {
+            if( sectorlegs[i].isleading/* && (angle2 - angle1 < 15) */ ) {
                 wxPoint yellowCone[3];
                 yellowCone[0] = lightPos;
                 yellowCone[1] = end1;
@@ -6798,6 +6798,8 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     ChartBase *targetchart = cc1->GetChartAtCursor();
     s57chart *chart = dynamic_cast<s57chart*>( targetchart );
 
+    bool bhas_red_green = false;
+    
     if( chart ) {
         sectorlegs.clear();
 
@@ -6865,18 +6867,17 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                             if( curAttrName == _T("SECTR2") ) value.ToDouble( &sectr2 );
                             if( curAttrName == _T("VALNMR") ) value.ToDouble( &valnmr );
                             if( curAttrName == _T("COLOUR") ) {
-                                sector.fillSector = true;
                                 color = wxColor( 255, 255, 0, yOpacity );
                                 sector.iswhite = true;
                                 if( value == _T("red(3)") ) {
                                     color = wxColor( 255, 0, 0, opacity );
-                                    sector.fillSector = false;
                                     sector.iswhite = false;
+                                    bhas_red_green = true;
                                 }
                                 if( value == _T("green(4)") ) {
                                     color = wxColor( 0, 255, 0, opacity );
-                                    sector.fillSector = false;
                                     sector.iswhite = false;
+                                    bhas_red_green = true;
                                 }
                             }
                             if( curAttrName == _T("EXCLIT") ) {
@@ -6929,7 +6930,8 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
         rule_list->Clear();
         delete rule_list;
     }
-    
+
+#if 0    
     //  Work with the sector legs vector to identify  and mark "Leading Lights"
     int ns = sectorlegs.size();
     if( sectorlegs.size() > 0 ) {
@@ -6962,9 +6964,16 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                 
         }
     }
-    
+#endif    
+
+//  Work with the sector legs vector to identify  and mark "Leading Lights"
+    for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
+ 
+        if(((sectorlegs[i].sector2 - sectorlegs[i].sector1) < 15)  && sectorlegs[i].iswhite && bhas_red_green) {
+            sectorlegs[i].isleading = true;
+        }
+    }
             
-    
     
     return newSectorsNeedDrawing;
 }
