@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1328\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-19 12:07-0400\n"
+"POT-Creation-Date: 2013-08-13 12:43-0400\n"
 "PO-Revision-Date: 2013-02-06 18:14+0200\n"
 "Last-Translator: Αλέξανδρος Δ. Γκότσης <sailingteam@users.isc.tuc.gr>\n"
 "Language-Team: TUC sailingteam <sailingteam@isc.tuc.gr>\n"
@@ -505,6 +505,9 @@ msgstr "Διεύθυνση"
 #
 msgid "Aground"
 msgstr "Προσαραγμένο"
+#
+msgid "All"
+msgstr ""
 #
 msgid "All Active Charts"
 msgstr "Όλοι οι ενεργοί χάρτες"
@@ -1801,9 +1804,6 @@ msgstr "Πληροφορίες OpenCPN"
 msgid "Options"
 msgstr "Επιλογές"
 #
-msgid "Other"
-msgstr "Άλλη"
-#
 msgid "Other - Define in associated text field"
 msgstr "Άλλο: ορίζεται στο σχετικό πεδίο κειμένου"
 #
@@ -2823,468 +2823,626 @@ msgstr ""
 msgid "wxFB Website"
 msgstr "Ιστοσελίδα wxFB"
 #
+#
 #~ msgid " (Last Known)"
 #~ msgstr " (τελευταία γνωστή)"
+#
 #
 #~ msgid " </b>in<b> "
 #~ msgstr " </b>σε<b> "
 #
+#
 #~ msgid " COG Unavailable"
 #~ msgstr " πορεία CoG μη διαθέσιμη"
+#
 #
 #~ msgid "&Acknowledge"
 #~ msgstr "&Αναγνώριση"
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "Ε&ξαγωγή ίχνους..."
+#
 #
 #~ msgid "&Export Wpt..."
 #~ msgstr "Ε&ξαγωγή σημείου..."
 #
+#
 #~ msgid "&Jump To"
 #~ msgstr "&Πήγαινε σε"
+#
 #
 #~ msgid "&Silence Alert"
 #~ msgstr "&Σίγαση  συναγερμού"
 #
+#
 #~ msgid ", Out: None"
 #~ msgstr ", Out: κανένα"
+#
 #
 #~ msgid "--"
 #~ msgstr "--"
 #
+#
 #~ msgid "---"
 #~ msgstr "---"
+#
 #
 #~ msgid "AIS Alert"
 #~ msgstr "Συναγερμός AIS"
 #
+#
 #~ msgid "AIS target list"
 #~ msgstr "Κατάλογος στόχων AIS"
+#
 #
 #~ msgid "AISTargetAlert"
 #~ msgstr "AISΣυναγρμΣτόχου"
 #
+#
 #~ msgid "AISTargetQuery"
 #~ msgstr "AIS.Πληρ.Στόχου"
+#
 #
 #~ msgid "Accept"
 #~ msgstr "Αποδοχή "
 #
+#
 #~ msgid "Active"
 #~ msgstr "Ενεργό"
+#
 #
 #~ msgid "Aid to Navigation"
 #~ msgstr "Βοήθημα ναυσιπλοΐας"
 #
+#
 #~ msgid "Barge, tanker, chemical"
 #~ msgstr "Φορτηγίδα, τάνκερ, με χημικά"
+#
 #
 #~ msgid "Base Station"
 #~ msgstr "Σταθμος βάσης"
 #
+#
 #~ msgid "Brg"
 #~ msgstr "Κατευθ. Πυξ."
+#
 #
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "Ποντοπόρο, ξηρού φορτίου"
 #
+#
 #~ msgid "Bunkership"
 #~ msgstr "Τροφοδοτικό καυσίμων"
+#
 #
 #~ msgid "Call"
 #~ msgstr "ΔΔΣ"
 #
+#
 #~ msgid "Center View"
 #~ msgstr "Κεντράρισμα"
+#
 #
 #~ msgid "Choose a file"
 #~ msgstr "Διαλέξτε αρχείο"
 #
+#
 #~ msgid "Class"
 #~ msgstr "Τύπος"
+#
 #
 #~ msgid "Clear"
 #~ msgstr "Καθάρισε"
 #
+#
 #~ msgid "Container vessel"
 #~ msgstr "Πλοίο κοντέηνερ"
+#
 #
 #~ msgid "Couldn't load sound data from '%s'."
 #~ msgstr "Δεν μπορώ να φορτώσω δεδομένα ήχου από '%s'."
 #
+#
 #~ msgid "Cruise ship"
 #~ msgstr "Κρουαζιερόπλοιο"
+#
 #
 #~ msgid "Current"
 #~ msgstr "Ρεύμα"
 #
+#
 #~ msgid "Data Source :"
 #~ msgstr "Πηγή δεδομένων: "
+#
 #
 #~ msgid "Drop"
 #~ msgstr "Απόρριψη "
 #
+#
 #~ msgid "Error on Route Upload.  Please check logfiles..."
 #~ msgstr "Σφάλμα στη φόρτωση της διαδρομής. Δες τα log αρχεία..."
+#
 #
 #~ msgid "Error on Waypoint Upload.  Please check logfiles..."
 #~ msgstr "Σφάλμα στη φόρτωση των σημείων. Δες τα log αρχεία..."
 #
+#
 #~ msgid "Fast ship"
 #~ msgstr "Ταχύπλοο"
+#
 #
 #~ msgid "Ferry"
 #~ msgstr "Φέριμποτ"
 #
+#
 #~ msgid "Fishing boat"
 #~ msgstr "Αλιευτικό"
+#
 #
 #~ msgid "Freightbarge"
 #~ msgstr "Φορτηγίδα"
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "Φορτηγίδα με κοντέινερ"
+#
 #
 #~ msgid "GPS/Plotter Port"
 #~ msgstr "Θύρα GPS/καταγραφέα"
 #
+#
 #~ msgid "Gas tanker"
 #~ msgstr "Τάνκερ αερίου"
+#
 #
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "Γενικό φορτηγό πλοίο, ποντοπόρο"
 #
+#
 #~ msgid "HW"
 #~ msgstr "Πλυμ."
+#
 #
 #~ msgid "Heading"
 #~ msgstr "Κατεύθυνση"
 #
+#
 #~ msgid "Hydrofoil"
 #~ msgstr "Υδροπτέρυγα"
+#
 #
 #~ msgid "In: None"
 #~ msgstr "In: κανένα"
 #
+#
 #~ msgid "Inland Blue Flag"
 #~ msgstr "Μπλε σημαία"
+#
 #
 #~ msgid "LW"
 #~ msgstr "Άμπωτις"
 #
+#
 #~ msgid "Left"
 #~ msgstr "Αριστερά"
+#
 #
 #~ msgid "Legend"
 #~ msgstr "Υπόμνημα"
 #
+#
 #~ msgid "Limit range: NM"
 #~ msgstr "Όριο απόστασης: ν.μ."
+#
 #
 #~ msgid "Link"
 #~ msgstr "Σύνδεσμος"
 #
+#
 #~ msgid "Link Properties"
 #~ msgstr "Ιδιότητες συνδέσμου"
+#
 #
 #~ msgid "Link description"
 #~ msgstr "Περιγραφή συνδέσμου"
 #
+#
 #~ msgid "Link not complete, can't be saved."
 #~ msgstr "Ο σύνδεσμος δεν είναι πλήρης και δεν μπορεί να αποθηκευθεί"
+#
 #
 #~ msgid "Liquified gas tanker"
 #~ msgstr "Τάνκερ με υγροπ. αέριο"
 #
+#
 #~ msgid "Local file..."
 #~ msgstr "Τοπικό αρχείο..."
+#
 #
 #~ msgid "Marks"
 #~ msgstr "Σημάδια"
 #
+#
 #~ msgid "Message accepted"
 #~ msgstr "Δεκτό μήνυμα"
+#
 #
 #~ msgid "Message filtered and dropped"
 #~ msgstr "Το μήνυμα απερρίφθη"
 #
+#
 #~ msgid "Motor freighter"
 #~ msgstr "Φορτηγό"
+#
 #
 #~ msgid "Motor freighter pushing at least one tank-ship"
 #~ msgstr "Φορτηγό που σπρώχνει τουλάχιστον ένα δεξαμενόπολοιο"
 #
+#
 #~ msgid "Motor freighter pushing one or more freighters"
 #~ msgstr "Φορτηγό που σπρώχνει ένα ή περισσότερα φορτηγά"
+#
 #
 #~ msgid "Motor freighter with one or more ships alongside"
 #~ msgstr "Φορτηγό με ένα ή περισσότερα πλοία δεμένα δίπλα του"
 #
+#
 #~ msgid "Motor freighter with tanker"
 #~ msgstr "Φορτηγό με δεξαμενόπλοιο"
+#
 #
 #~ msgid "Motor freighter, tug"
 #~ msgstr "Φορτηγό, ρυμουλκό"
 #
+#
 #~ msgid "Motor tanker"
 #~ msgstr "Δεξαμενόπλοιο"
+#
 #
 #~ msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Δεξαμενόπλοιο, ξηρό φορτίο κόνεως (π.χ. τσιμέντο)"
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type C"
 #~ msgstr "Δεξαμενόπλοιο, υγρό φορτίο, τύπου C"
+#
 #
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "Δεξαμενόπλοιο, υγρό φορτίο, τύπου Ν"
 #
+#
 #~ msgid "Motor tanker, tug"
 #~ msgstr "Δεξαμενόπλοιο, ρυμουλκό"
+#
 #
 #~ msgid "NMEA Debug Window"
 #~ msgstr "NMEA Debug παράθυρο"
 #
+#
 #~ msgid "Nav Status"
 #~ msgstr "Κατάστ."
+#
 #
 #~ msgid "Net"
 #~ msgstr "Δίκτυο"
 #
+#
 #~ msgid "Next"
 #~ msgstr "Επόμενο"
+#
 #
 #~ msgid "No"
 #~ msgstr "Όχι"
 #
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "Αντικείμενο, μη προσδιορισμένο"
+#
 #
 #~ msgid "Object, towed, not otherwise specified"
 #~ msgstr "Ρυμουλκούμενο, μη περαιτέρω προσδιορισμένο"
 #
+#
+#~ msgid "Other"
+#~ msgstr "Άλλη"
+#
+#
 #~ msgid "Output Message"
 #~ msgstr "Εξερχόμενο μήνυμα"
+#
 #
 #~ msgid "Passenger ship without accomodation"
 #~ msgstr "Επιβατηγό χωρίς καμπίνες"
 #
+#
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "Επιβατηγό, φέριμποτ, κρουαζιερόπλοιο, πλοίο ερ. σταυρού"
+#
 #
 #~ msgid "Pause"
 #~ msgstr "Παύση"
 #
+#
 #~ msgid "Plan speed (Kts)"
 #~ msgstr "Σχεδ. ταχύτητα (κόμβοι)"
+#
 #
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "Σκάφος αναψυχής, πάνω από 20 m"
 #
+#
 #~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 #~ msgstr "Ετοίμασε το GPS για τη φόρτωση και πάτησε «Στείλε»..."
+#
 #
 #~ msgid "Prev"
 #~ msgstr "Προηγ."
 #
+#
 #~ msgid "Problem discovered"
 #~ msgstr "Το πρόβλημα βρέθηκε"
+#
 #
 #~ msgid "Progress..."
 #~ msgstr "Πρόοδος..."
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "Ρυμουλκό ώθησης (μονό)"
+#
 #
 #~ msgid "Pushtow, eight barges at least one tanker or gas barge"
 #~ msgstr "Ρυμουλκό ώθησης, 8 φορτηγίδες, τουλάχιστον μία δεξαμενοφορτηγίδα"
 #
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "Ρυμουλκό ώθησης, 8 φορτηγίδες"
+#
 #
 #~ msgid "Pushtow, five barges at least one tanker or gas barge"
 #~ msgstr "Ρυμουλκό ώθησης, 5 φορτηγίδες, τουλάχιστον μία δεξαμενοφορτηγίδα"
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "Ρυμουλκό ώθησης, 5 φορτηγίδες"
+#
 #
 #~ msgid "Pushtow, four barges at least one tanker or gas barge"
 #~ msgstr "Ρυμουλκό ώθησης, 4 φορτηγίδες, τουλάχιστον μία δεξαμενοφορτηγίδα"
 #
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "Ρυμουλκό ώθησης, 4 φορτηγίδες"
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "Ρυμουλκό ώθησης, 9 ή περισσότερες φορτηγίδες"
+#
 #
 #~ msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 #~ msgstr ""
 #~ "Ρυμουλκό ώθησης, 9 ή περισσότερες φορτηγίδες, τουλάχιστον μία "
 #~ "δεξαμενοφορτηγίδα"
 #
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "Ρυμουλκό ώθησης, μία φορτηγίδα"
+#
 #
 #~ msgid "Pushtow, one tank/gas barge"
 #~ msgstr "Ρυμουλκό ώθησης, μία δεξαμενοφορτηγίδα"
 #
+#
 #~ msgid "Pushtow, seven barges at least one tanker or gas barge"
 #~ msgstr "Ρυμουλκό ώθησης, 7 φορτηγίδες, τουλάχιστον μία δεξαμενοφορτηγίδα"
+#
 #
 #~ msgid "Pushtow, seven cargo barges"
 #~ msgstr "Ρυμουλκό ώθησης, 7 φορτηγίδες"
 #
+#
 #~ msgid "Pushtow, six barges at least one tanker or gas barge"
 #~ msgstr "Ρυμουλκό ώθησης, 6 φορτηγίδες, τουλάχιστον μία δεξαμενοφορτηγίδα"
+#
 #
 #~ msgid "Pushtow, six cargo barges"
 #~ msgstr "Ρυμουλκό ώθησης, 6 φορτηγίδες"
 #
+#
 #~ msgid "Pushtow, three barges at least one tanker or gas barge"
 #~ msgstr "Ρυμουλκό ώθησης, 3 φορτηγίδες, τουλάχιστον μία δεξαμενοφορτηγίδα"
+#
 #
 #~ msgid "Pushtow, three cargo barges"
 #~ msgstr "Ρυμουλκό ώθησης, 3 φορτηγίδες"
 #
+#
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr "Ρυμουλκό ώθησης, 2 φορτηγίδες, τουλάχιστον μία δεξαμενοφορτηγίδα"
+#
 #
 #~ msgid "Pushtow, two cargo barges"
 #~ msgstr "Ρυμουλκό ώθησης, δύο φορτηγίδες"
 #
+#
 #~ msgid "Range"
 #~ msgstr "Απόσταση"
+#
 #
 #~ msgid "Red cross ship"
 #~ msgstr "Πλοίο Ερυθρού Σταυρού"
 #
+#
 #~ msgid "Reference Station :"
 #~ msgstr "Σταθμός αναφοράς: "
+#
 #
 #~ msgid "Reject"
 #~ msgstr "Απόρριψη "
 #
+#
 #~ msgid "Report Age"
 #~ msgstr "Παλαιότητα αναφοράς"
+#
 #
 #~ msgid "Report as of"
 #~ msgstr "Αναφορά από την"
 #
+#
 #~ msgid "Resume"
 #~ msgstr "Συνέχισε"
+#
 #
 #~ msgid "Right"
 #~ msgstr "Δεξιά"
 #
+#
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "Η διαδρομή φορτώθηκε επιτυχώς"
+#
 #
 #~ msgid "SART"
 #~ msgstr "SART (πομπός διάσωσης)"
 #
+#
 #~ msgid "Safety Broadcast Message"
 #~ msgstr "Μήνυμα ασφαλείας ασυρμάτου"
+#
 #
 #~ msgid "Send"
 #~ msgstr "Στείλε"
 #
+#
 #~ msgid "Send Route To GPS"
 #~ msgstr "Αποστολή διαδρομής στο  GPS"
+#
 #
 #~ msgid "Service vessel, police patrol, port service"
 #~ msgstr "Υπηρεσιακό, λιμενικό, σκάφος μαρίνας"
 #
+#
 #~ msgid "Set"
 #~ msgstr "Θέσε"
+#
 #
 #~ msgid "Sound file '%s' is in unsupported format."
 #~ msgstr "Το αρχείο ήχου '%s' είναι σε μη αναγνωρίσιμο format."
 #
+#
 #~ msgid "Tankbarge"
 #~ msgstr "Δεξαμενογορτηγίδα"
+#
 #
 #~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Δεξαμενοφορτηγίδα ξηρού φορτίου κόνεως"
 #
+#
 #~ msgid "Tankbarge, gas"
 #~ msgstr "Δεξαμενοφορτηγίδα με αέριο"
+#
 #
 #~ msgid "Tankbarge, liquid cargo, type C"
 #~ msgstr "Δεξαμενοφορτηγίδα, υγρό φορτίο, τύπου C"
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type N"
 #~ msgstr "Δεξαμενοφορτηγίδα, υγρό φορτίο, τύπου Ν"
+#
 #
 #~ msgid "Target Count"
 #~ msgstr "Αριθμός στόχων"
 #
+#
 #~ msgid "Target info"
 #~ msgstr "Πληροφορίες στόχου"
+#
 #
 #~ msgid "Testing"
 #~ msgstr "Τεστ"
 #
+#
 #~ msgid "Tide"
 #~ msgstr "Παλίρροια"
+#
 #
 #~ msgid "TideCurrentGraphRollover"
 #~ msgstr "ΔιάγραμμαΠαλίρροιαςRollover"
 #
+#
 #~ msgid "Timestamp"
 #~ msgstr "Χρονική στιγμή"
+#
 #
 #~ msgid "Today"
 #~ msgstr "Σήμερα"
 #
+#
 #~ msgid "Tomorrow"
 #~ msgstr "Αύριο"
+#
 #
 #~ msgid "Track Properties"
 #~ msgstr "Ιδιότητες ίχνους πορείας"
 #
+#
 #~ msgid "Tug freighter, coupled"
 #~ msgstr "Ρυμουλκό, φορτηγό, συνδεδεμένα"
+#
 #
 #~ msgid "Tug, assisting a vessel or linked combination"
 #~ msgstr "Ρυμουλκό που βοηθά πλοίο ή ομάδα φορτηγίδων"
 #
+#
 #~ msgid "Tug, freighter"
 #~ msgstr "Ρυμουλκό, φορτηγό"
+#
 #
 #~ msgid "Tug, freighter/tanker, coupled"
 #~ msgstr "Ρυμουλκό, φορτηγό/τάνκερ, συνδεδεμένα"
 #
+#
 #~ msgid "Tug, one or more tows"
 #~ msgstr "Ρυμουλκό, μία ή περισσότερες ρυμούλκες"
+#
 #
 #~ msgid "Tug, single"
 #~ msgstr "Ρυμουλκό, μονό"
 #
+#
 #~ msgid "Tug, tanker"
 #~ msgstr "Ρυμουλκό, δεξαμενόπλοιο"
+#
 #
 #~ msgid "Turn Rate"
 #~ msgstr "Ρυθμός περιστροφής"
 #
+#
 #~ msgid "Unit carrier maritime"
 #~ msgstr "Ποντοπόρο φορτηγό"
+#
 #
 #~ msgid "Unk"
 #~ msgstr "Αγν."
 #
+#
 #~ msgid "Vessel, type unknown"
 #~ msgstr "Σκάφος αγνώστου τύπου"
+#
 #
 #~ msgid ""
 #~ "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
 #~ "dredge"
 #~ msgstr "Σκάφος επισκευών, πλωτός γερανός, καλωδιοθέτης, σημαδούρα, βυθοκόρος"
 #
+#
 #~ msgid "Waypoint(s) Uploaded successfully."
 #~ msgstr "Τα σημεία φορτώθηκαν επιτυχώς"
 #
+#
 #~ msgid "Yes"
 #~ msgstr "Ναι"
+#
 #
 #~ msgid "in"
 #~ msgstr "σε"

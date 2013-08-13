@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-19 12:07-0400\n"
+"POT-Creation-Date: 2013-08-13 12:43-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom  avec collaboration active de Sailor54 et AISEAG "
 "<contact@gilletarom.fr>\n"
@@ -512,6 +512,9 @@ msgstr "Adresse IP"
 # AIS
 msgid "Aground"
 msgstr "Echoué"
+#
+msgid "All"
+msgstr ""
 #
 msgid "All Active Charts"
 msgstr "Toutes les cartes"
@@ -1872,9 +1875,6 @@ msgstr "Informations OpenCPN "
 msgid "Options"
 msgstr "Options (Boite à outils) :"
 #
-msgid "Other"
-msgstr "Plus encore"
-#
 msgid "Other - Define in associated text field"
 msgstr "Autre - à définir dans le texte associé"
 #
@@ -2963,529 +2963,701 @@ msgstr "WGS Y"
 msgid "wxFB Website"
 msgstr "Site web wxFB"
 #
+#
 #~ msgid " (Last Known)"
 #~ msgstr "(Dernier connu)"
+#
 #
 #~ msgid " </b>in<b> "
 #~ msgstr " </b>en<b> "
 #
+#
 #~ msgid " COG Unavailable"
 #~ msgstr " COG  Indisponible"
+#
 #
 #~ msgid "&Acknowledge"
 #~ msgstr "Acquitter"
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "Exporter ...."
+#
 #
 #~ msgid "&Export Wpt..."
 #~ msgstr "Exporter ..."
 #
+#
 #~ msgid "&Jump To"
 #~ msgstr "Aller à"
+#
 #
 #~ msgid "&Silence Alert"
 #~ msgstr "Alarme sonore : &Stopper"
 #
+#
 #~ msgid ", Out: None"
 #~ msgstr ", Sortie : Aucun filtrage"
+#
 #
 #~ msgid "-"
 #~ msgstr "-"
 #
+#
 #~ msgid "--"
 #~ msgstr "--"
+#
 #
 #~ msgid "---"
 #~ msgstr "---"
 #
+#
 #~ msgid "A"
 #~ msgstr "A"
 #
+#
 #~ msgid "AIS Alert"
 #~ msgstr "Alarme AIS"
+#
 #
 # Menu contextuel : AIS
 #~ msgid "AIS target list"
 #~ msgstr "Liste des cibles"
 #
+#
 # Toolbox/Langue
 #~ msgid "AISRollover"
 #~ msgstr "Rollover : Cible AIS."
 #
+#
 #~ msgid "AISTargetAlert"
 #~ msgstr "Fenêtre d'alarme AIS"
+#
 #
 # Menu contextuel : AIS
 #~ msgid "AISTargetQuery"
 #~ msgstr "Informations sur la cible"
 #
+#
 # Ok
 #~ msgid "Accept"
 #~ msgstr "Accepter"
 #
+#
 #~ msgid "Active"
 #~ msgstr "Active"
+#
 #
 #~ msgid "Aid to Navigation"
 #~ msgstr "Aide à la navigation"
 #
+#
 #~ msgid "B"
 #~ msgstr "B"
+#
 #
 #~ msgid "Barge, tanker, chemical"
 #~ msgstr "Chaland, citerne, chimiquier"
 #
+#
 #~ msgid "Base Station"
 #~ msgstr "Station  fixe"
+#
 #
 #~ msgid "Brg"
 #~ msgstr "Relèvement"
 #
+#
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "Vraquier maritime"
+#
 #
 #~ msgid "Bunkership"
 #~ msgstr "Bateau ravitailleur"
 #
+#
 #~ msgid "CPA"
 #~ msgstr "CPA"
+#
 #
 #~ msgid "Call"
 #~ msgstr "Indicatif"
 #
+#
 #~ msgid "Center View"
 #~ msgstr "Centrer la vue"
+#
 #
 #~ msgid "Choose a file"
 #~ msgstr "Choisir un fichier"
 #
+#
 #~ msgid "Class"
 #~ msgstr "Classe"
+#
 #
 #~ msgid "Clear"
 #~ msgstr "Effacer"
 #
+#
 #~ msgid "CoG"
 #~ msgstr "COG"
+#
 #
 #~ msgid "Container vessel"
 #~ msgstr "Porte-conteneurs"
 #
+#
 #~ msgid "Couldn't load sound data from '%s'."
 #~ msgstr "Impossible de charger les données de son depuis '%s'"
+#
 #
 #~ msgid "Cruise ship"
 #~ msgstr "Navire de croisière"
 #
+#
 #~ msgid "Current"
 #~ msgstr "Afficher les courants"
+#
 #
 #~ msgid "Data Source :"
 #~ msgstr "Source de données NMEA : "
 #
+#
 # Ok
 #~ msgid "Drop"
 #~ msgstr "Ne pas envoyer"
+#
 #
 #~ msgid "Error on Route Upload.  Please check logfiles..."
 #~ msgstr ""
 #~ "Route : Erreur durant le chargement. Plus de détailsà ce sujet dans  le "
 #~ "fichier opencpn.log ..."
 #
+#
 #~ msgid "Error on Waypoint Upload.  Please check logfiles..."
 #~ msgstr ""
 #~ "Waypoint : Erreur durant le chargement. Plus de détails à ce sujet dans le "
 #~ "fichier opencpn.log ..."
 #
+#
 #~ msgid "Fast ship"
 #~ msgstr "Navire à Grande Vitesse (NGV)"
+#
 #
 #~ msgid "Ferry"
 #~ msgstr "Ferry"
 #
+#
 #~ msgid "Fishing boat"
 #~ msgstr "Bateau de pêche"
+#
 #
 #~ msgid "Freightbarge"
 #~ msgstr "Chaland de transport de fret"
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "Chaland porte-containeurs"
+#
 #
 #~ msgid "GPS/Plotter Port"
 #~ msgstr "Port du GPS/traceur"
 #
+#
 #~ msgid "GPSGate Buddy"
 #~ msgstr "GPSGate Buddy"
+#
 #
 #~ msgid "Gas tanker"
 #~ msgstr "Navire gazier"
 #
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "Cargo maritime, marchandises diverses"
+#
 #
 #~ msgid "HW"
 #~ msgstr "PM"
 #
+#
 #~ msgid "Heading"
 #~ msgstr "Relevé"
+#
 #
 #~ msgid "Hydrofoil"
 #~ msgstr "Hydroglisseur"
 #
+#
 #~ msgid "IMO"
 #~ msgstr "IMO"
+#
 #
 #~ msgid "In"
 #~ msgstr "Entrée "
 #
+#
 #~ msgid "In: None"
 #~ msgstr "Entrée : Aucun filtrage"
+#
 #
 #~ msgid "Inland Blue Flag"
 #~ msgstr "Pavillon bleu, eaux int. "
 #
+#
 #~ msgid "LW"
 #~ msgstr "BM"
+#
 #
 #~ msgid "Left"
 #~ msgstr "Gauche"
 #
+#
 #~ msgid "Legend"
 #~ msgstr "Légende de la console"
+#
 #
 #~ msgid "Limit range: NM"
 #~ msgstr "Distance limite : NM"
 #
+#
 #~ msgid "Link"
 #~ msgstr "Lien"
+#
 #
 # Menu contextuel : Waypoint/marque
 #~ msgid "Link Properties"
 #~ msgstr "Propriétés du lien"
 #
+#
 #~ msgid "Link description"
 #~ msgstr "Description du lien"
+#
 #
 #~ msgid "Link not complete, can't be saved."
 #~ msgstr "Lien incomplet qui ne peut être sauvegardé"
 #
+#
 #~ msgid "Liquified gas tanker"
 #~ msgstr "Navire-citerne pour gaz liquéfié"
+#
 #
 #~ msgid "Local file..."
 #~ msgstr "Fichier local ..."
 #
+#
 #~ msgid "MMSI"
 #~ msgstr "MMSI"
+#
 #
 #~ msgid "Marks"
 #~ msgstr "Marques"
 #
+#
 #~ msgid "Message accepted"
 #~ msgstr "Message accepté"
+#
 #
 #~ msgid "Message filtered and dropped"
 #~ msgstr "Message filtré et exclu"
 #
+#
 #~ msgid "Motor freighter"
 #~ msgstr "Péniche automotrice"
+#
 #
 #~ msgid "Motor freighter pushing at least one tank-ship"
 #~ msgstr "Péniche automotrice poussant au moins un bateau-citerne"
 #
+#
 #~ msgid "Motor freighter pushing one or more freighters"
 #~ msgstr "Péniche automotrice poussant un ou plusieurs chalands"
+#
 #
 #~ msgid "Motor freighter with one or more ships alongside"
 #~ msgstr "Péniche automotrice avec un ou plusieurs navires à couple"
 #
+#
 #~ msgid "Motor freighter with tanker"
 #~ msgstr "Péniche automotrice avec bateau-citerne"
+#
 #
 #~ msgid "Motor freighter, tug"
 #~ msgstr "Péniche automotrice, remorqueur"
 #
+#
 #~ msgid "Motor tanker"
 #~ msgstr "Péniche-citerne automotrice"
+#
 #
 #~ msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 #~ msgstr ""
 #~ "Péniche-citerne automotrice, cargaison sèche traitée comme liquide (ex. "
 #~ "ciment)"
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type C"
 #~ msgstr "Péniche-citerne automotrice, vrac liquide, de type C"
+#
 #
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "Péniche-citerne automotrice, vrac liquide, de type N"
 #
+#
 #~ msgid "Motor tanker, tug"
 #~ msgstr "Péniche-citerne automoteur, remorqueur"
+#
 #
 #~ msgid "NMEA Debug Window"
 #~ msgstr "Fenêtre de débugage NMEA"
 #
+#
 #~ msgid "Nav Status"
 #~ msgstr "Statut de nav."
+#
 #
 #~ msgid "Net"
 #~ msgstr "Réseau"
 #
+#
 #~ msgid "Next"
 #~ msgstr "Suiv."
+#
 #
 #~ msgid "No"
 #~ msgstr "Aucun"
 #
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "Objet, non autrement défini"
+#
 #
 #~ msgid "Object, towed, not otherwise specified"
 #~ msgstr "Objet, remorqué, non autrement défini"
 #
+#
+#~ msgid "Other"
+#~ msgstr "Plus encore"
+#
+#
 #~ msgid "Out"
 #~ msgstr "  Sortie "
+#
 #
 #~ msgid "Output Message"
 #~ msgstr "Message envoyé"
 #
+#
 #~ msgid "Passenger ship without accomodation"
 #~ msgstr "Bateau d'excursions journalières"
+#
 #
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "Bateau de passagers, ferry, bateau de croisière, bateau-hôpital"
 #
+#
 #~ msgid "Pause"
 #~ msgstr "Pause"
+#
 #
 #~ msgid "Plan speed (Kts)"
 #~ msgstr "Vitesse prévue (Noeuds)"
 #
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "Bateau de plaisance, longueur > à 20 mètres"
+#
 #
 #~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 #~ msgstr ""
 #~ "Configurer le GPS pour recevoir des routes/waypoint puis cliquer sur "
 #~ "\"Envoyer\" ..."
 #
+#
 #~ msgid "Prev"
 #~ msgstr "Préc."
+#
 #
 #~ msgid "Problem discovered"
 #~ msgstr "Problème découvert"
 #
+#
 #~ msgid "Progress..."
 #~ msgstr "Chargement..."
+#
 #
 #~ msgid "Pushboat, single"
 #~ msgstr "Bateau pousseur, seul"
 #
+#
 #~ msgid "Pushtow, eight barges at least one tanker or gas barge"
 #~ msgstr "Pousseur, huit chalands dont au moins une citerne ou un gazier"
+#
 #
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "Pousseur, huit chalands de marchandises diverses"
 #
+#
 #~ msgid "Pushtow, five barges at least one tanker or gas barge"
 #~ msgstr "Pousseur, cinq chalands dont au moins une citerne ou un gazier"
+#
 #
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "Pousseur, cinq chalands de marchandises diverses"
 #
+#
 #~ msgid "Pushtow, four barges at least one tanker or gas barge"
 #~ msgstr "Pousseur, quatre chalands dont au moins une citerne ou un gazier"
+#
 #
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "Pousseur, quatre chalands de marchandises diverses"
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "Pousseur, neuf chalands de marchandises diverses ou plus"
+#
 #
 #~ msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 #~ msgstr ""
 #~ "Pousseur, neuf chalands ou plus dont au moins une citerne ou un gazier"
 #
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "Pousseur, un chaland de marchandises diverses"
+#
 #
 #~ msgid "Pushtow, one tank/gas barge"
 #~ msgstr "Pousseur, un  chaland citerne ou gazier"
 #
+#
 #~ msgid "Pushtow, seven barges at least one tanker or gas barge"
 #~ msgstr "Pousseur, sept chalands dont au moins une citerne ou un gazier"
+#
 #
 #~ msgid "Pushtow, seven cargo barges"
 #~ msgstr "Pousseur, sept chalands de marchandises diverses"
 #
+#
 #~ msgid "Pushtow, six barges at least one tanker or gas barge"
 #~ msgstr "Pousseur, six chalands dont au moins une citerne ou un gazier"
+#
 #
 #~ msgid "Pushtow, six cargo barges"
 #~ msgstr "Pousseur, six chalands de marchandises diversess"
 #
+#
 #~ msgid "Pushtow, three barges at least one tanker or gas barge"
 #~ msgstr "Pousseur, trois chalands dont au moins une citerne ou un gazier"
+#
 #
 #~ msgid "Pushtow, three cargo barges"
 #~ msgstr "Pousseur, trois chalands de marchandises diverses"
 #
+#
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr "Pousseur, deux chalands dont au moins une citerne ou un gazier"
+#
 #
 #~ msgid "Pushtow, two cargo barges"
 #~ msgstr "Pousseur, deux chalands de marchandises diverses"
 #
+#
 #~ msgid "Range"
 #~ msgstr "Distance"
+#
 #
 #~ msgid "Red cross ship"
 #~ msgstr "Bateau-hôpital"
 #
+#
 #~ msgid "Reference Station :"
 #~ msgstr "Port de référence :"
+#
 #
 # Ok
 #~ msgid "Reject"
 #~ msgstr "Rejeter"
 #
+#
 #~ msgid "Report Age"
 #~ msgstr "Age du rapport"
+#
 #
 #~ msgid "Report as of"
 #~ msgstr "Rapport daté du"
 #
+#
 #~ msgid "Resume"
 #~ msgstr "Reprendre"
+#
 #
 #~ msgid "Right"
 #~ msgstr "Droit"
 #
+#
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "Route : Chargement réussi"
 #
+#
 #~ msgid "SART"
 #~ msgstr "SART"
+#
 #
 # Ok
 #~ msgid "Safety Broadcast Message"
 #~ msgstr "Message de sécurité  "
 #
+#
 # Ok
 #~ msgid "Send"
 #~ msgstr "Envoyer"
 #
+#
 #~ msgid "Send Route To GPS"
 #~ msgstr "Route : Envoyer au GPS"
+#
 #
 #~ msgid "Service vessel, police patrol, port service"
 #~ msgstr "Bateau de service, police fluviale, service du port"
 #
+#
 #~ msgid "Set"
 #~ msgstr "Activer"
+#
 #
 #~ msgid "SoG"
 #~ msgstr "SOG"
 #
+#
 #~ msgid "Sound file '%s' is in unsupported format."
 #~ msgstr "Le format du fichier de son '%s' n'est pas supporté"
+#
 #
 #~ msgid "TCPA"
 #~ msgstr "TCPA"
 #
+#
 #~ msgid "Tankbarge"
 #~ msgstr "Chaland-citerne"
+#
 #
 #~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Chaland-citerne, cargaison sèche traitée comme liquide (ex. ciment)"
 #
+#
 #~ msgid "Tankbarge, gas"
 #~ msgstr "Chaland gazier"
+#
 #
 #~ msgid "Tankbarge, liquid cargo, type C"
 #~ msgstr "Chaland-citerne, vrac liquide, de type C"
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type N"
 #~ msgstr "Chaland-citerne, vrac liquide, de type N"
+#
 #
 #~ msgid "Target Count"
 #~ msgstr "Nombre de cible(s)"
 #
+#
 #~ msgid "Target info"
 #~ msgstr "Infos sur la cible"
+#
 #
 #~ msgid "Testing"
 #~ msgstr "Test en cours"
 #
+#
 #~ msgid "Tide"
 #~ msgstr "Marée"
+#
 #
 # Toolbox/Langue
 #~ msgid "TideCurrentGraphRollover"
 #~ msgstr "Info affichées par survol pour marées et courants"
 #
+#
 #~ msgid "Timestamp"
 #~ msgstr "ETE/Horodatage"
+#
 #
 #~ msgid "Today"
 #~ msgstr "Aujourd'hui"
 #
+#
 #~ msgid "Tomorrow"
 #~ msgstr "Demain"
+#
 #
 # Menu contextuel : Trace
 #~ msgid "Track Properties"
 #~ msgstr "Trace : Propriétés ...."
 #
+#
 #~ msgid "Tug freighter, coupled"
 #~ msgstr "Remorqueur, péniche a couple"
+#
 #
 #~ msgid "Tug, assisting a vessel or linked combination"
 #~ msgstr "Remorqueur assistant un navire ou en tandem"
 #
+#
 #~ msgid "Tug, freighter"
 #~ msgstr "Péniche remorqueur"
+#
 #
 #~ msgid "Tug, freighter/tanker, coupled"
 #~ msgstr "Remorqueur, bateau-citerne à couple"
 #
+#
 #~ msgid "Tug, one or more tows"
 #~ msgstr "Remorqueur, un ou plusieurs remorqués"
+#
 #
 #~ msgid "Tug, single"
 #~ msgstr "Remorqueur, seul"
 #
+#
 #~ msgid "Tug, tanker"
 #~ msgstr "Bateau-citerne remorqueur"
+#
 #
 #~ msgid "Turn Rate"
 #~ msgstr "Vitesse de rotation"
 #
+#
 #~ msgid "URL"
 #~ msgstr "URL"
+#
 #
 #~ msgid "Unit carrier maritime"
 #~ msgstr "Porte containers de haute mer"
 #
+#
 #~ msgid "Unk"
 #~ msgstr "Inc."
+#
 #
 # Ok
 #~ msgid "Vessel, type unknown"
 #~ msgstr "Navire, type inconnu"
+#
 #
 #~ msgid ""
 #~ "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
 #~ "dredge"
 #~ msgstr "Navire, bateau-atelier, derrick flottant, cablier, baliseur, drague"
 #
+#
 #~ msgid "Waypoint(s) Uploaded successfully."
 #~ msgstr "Waypoint : Chargement réussi"
 #
+#
 #~ msgid "Yes"
 #~ msgstr "Oui"
+#
 #
 #~ msgid "in"
 #~ msgstr "dans"
