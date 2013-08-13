@@ -6799,7 +6799,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     s57chart *chart = dynamic_cast<s57chart*>( targetchart );
 
     bool bhas_red_green = false;
-    
+    bool bleading_attribute = false;
     if( chart ) {
         sectorlegs.clear();
 
@@ -6824,7 +6824,6 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                 wxPoint2DDouble objPos( light->m_lat, light->m_lon );
                 if( lightPosD.m_x == 0 && lightPosD.m_y == 0.0 )
                     lightPosD = objPos;
-                
                 if( lightPosD == objPos ) {
                     char *curr_att0 = NULL;
                     wxCharBuffer buffer=light->attList->ToUTF8();
@@ -6883,6 +6882,12 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                             if( curAttrName == _T("EXCLIT") ) {
                                 if( value.Find( _T("(3)") ) ) valnmr = 1.0;  // Fog lights.
                             }
+                            if( curAttrName == _T("CATLIT") ){
+                                if( value.Upper().StartsWith( _T("DIRECT")) ||
+                                    value.Upper().StartsWith(_T("LEAD")) )
+                                    bleading_attribute = true;
+                            }
+                                
                             attrCounter++;
                         }
 
@@ -6969,8 +6974,11 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
 //  Work with the sector legs vector to identify  and mark "Leading Lights"
     for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
  
-        if(((sectorlegs[i].sector2 - sectorlegs[i].sector1) < 15)  && sectorlegs[i].iswhite && bhas_red_green) {
-            sectorlegs[i].isleading = true;
+        if(((sectorlegs[i].sector2 - sectorlegs[i].sector1) < 15) || bleading_attribute ) {
+            if( sectorlegs[i].iswhite && bhas_red_green )
+                sectorlegs[i].isleading = true;
+            if( bleading_attribute )
+                sectorlegs[i].isleading = true;
         }
     }
             
