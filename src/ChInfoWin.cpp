@@ -82,8 +82,12 @@ void ChInfoWin::FitToChars( int char_width, int char_height )
 {
     wxSize size;
 
+    int adjust = 1;
+#ifdef __WXOSX__
+    adjust = 2;
+#endif
     size.x = GetCharWidth() * char_width;
-    size.y = GetCharHeight() * ( char_height + 1 );
+    size.y = GetCharHeight() * ( char_height + adjust );
     SetWinSize( size );
 }
 

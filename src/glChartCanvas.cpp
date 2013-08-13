@@ -35,6 +35,8 @@
 #include "chartbase.h"
 #include "chartimg.h"
 #include "s57chart.h"
+#include "ChInfoWin.h"
+#include "thumbwin.h"
 
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
@@ -55,6 +57,7 @@ extern bool g_bCourseUp;
 extern ChartBase *Current_Ch;
 extern ColorScheme global_color_scheme;
 extern bool g_bquiting;
+extern ThumbWin         *pthumbwin;
 
 extern PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffersEXT;
 extern PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffersEXT;
@@ -1809,6 +1812,42 @@ void glChartCanvas::render()
 
     if( cc1->m_bShowCurrent ) cc1->DrawAllCurrentsInBBox( gldc, cc1->GetVP().GetBBox(), true,
                 true );
+    
+ 
+    //  On some platforms, the opengl context window is always on top of any standard DC windows,
+    //  so we need to draw the Chart Info Window and the Thumbnail as overlayed bmps.
+
+#ifdef __WXOSX__    
+    if(cc1->m_pCIWin && cc1->m_pCIWin->IsShown()) {
+        wxClientDC infodc(cc1->m_pCIWin);
+        int x, y, width, height;
+        cc1->m_pCIWin->GetClientSize( &width, &height );
+        cc1->m_pCIWin->GetPosition( &x, &y );
+        wxBitmap bmp(width, height, -1);
+        wxMemoryDC dc(bmp);
+        if(bmp.IsOk()){
+            dc.Blit( 0, 0, width, height, &infodc, 0, 0 );
+            dc.SelectObject(wxNullBitmap);
+            
+            gldc.DrawBitmap( bmp, x, y, false);
+        }
+    }
+
+    if( pthumbwin && pthumbwin->IsShown()) {
+        wxClientDC thumbdc(pthumbwin);
+        int thumbx, thumby, thumbsx, thumbsy;
+        pthumbwin->GetPosition( &thumbx, &thumby );
+        pthumbwin->GetSize( &thumbsx, &thumbsy );
+        wxBitmap thumbbmp(thumbsx, thumbsy, -1);
+        wxMemoryDC dc(thumbbmp);
+        if(thumbbmp.IsOk()){
+            dc.Blit( 0, 0, thumbsx, thumbsy, &thumbdc, 0, 0 );
+            dc.SelectObject(wxNullBitmap);
+            
+            gldc.DrawBitmap( thumbbmp, thumbx, thumby, false);
+        }
+    }
+#endif
 
     //quiting?
     if( g_bquiting ) {
