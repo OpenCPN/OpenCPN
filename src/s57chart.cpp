@@ -6800,6 +6800,13 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
 
     bool bhas_red_green = false;
     bool bleading_attribute = false;
+    
+    int opacity = 100;
+    if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ) opacity = 50;
+    if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
+    
+    int yOpacity = (float)opacity*1.3; // Matched perception of white/yellow with red/green
+    
     if( chart ) {
         sectorlegs.clear();
 
@@ -6852,11 +6859,6 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                             if( *curr_att == '\037' ) curr_att++;
 
                             wxString value = chart->GetObjectAttributeValueAsString( light, attrCounter, curAttrName );
-                            int opacity = 100;
-                            if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK ) opacity = 50;
-                            if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
-
-                            int yOpacity = (float)opacity*1.3; // Matched perception with red/green
 
                             if( curAttrName == _T("LITVIS") ){
                                 if(value.StartsWith(_T("obsc")) )
@@ -6866,8 +6868,6 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                             if( curAttrName == _T("SECTR2") ) value.ToDouble( &sectr2 );
                             if( curAttrName == _T("VALNMR") ) value.ToDouble( &valnmr );
                             if( curAttrName == _T("COLOUR") ) {
-                                color = wxColor( 255, 255, 0, yOpacity );
-                                sector.iswhite = true;
                                 if( value == _T("red(3)") ) {
                                     color = wxColor( 255, 0, 0, opacity );
                                     sector.iswhite = false;
@@ -6904,6 +6904,11 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                             sector.range = (valnmr > 0.0) ? valnmr : 2.5; // Short default range.
                             sector.sector1 = sectr1;
                             sector.sector2 = sectr2;
+                            
+                            if(!color.IsOk()){
+                                color = wxColor( 255, 255, 0, yOpacity );
+                                sector.iswhite = true;
+                            }
                             sector.color = color;
                             sector.isleading = false;           // tentative judgment, check below
 
