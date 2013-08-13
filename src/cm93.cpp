@@ -2099,6 +2099,7 @@ bool cm93chart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 
 void cm93chart::SetVPParms ( const ViewPort &vpt )
 {
+    bool busy_cursor = false;
       //    Save a copy for later reference
 
       m_vp_current = vpt;
@@ -2149,6 +2150,10 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             //    The cell is not in place, so go load it
             if ( !bcell_is_in )
             {
+                if( !busy_cursor) { 
+                    ::wxBeginBusyCursor();
+                    busy_cursor = true;
+                }
                   int cell_index = vpcells.Item ( i );
 
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
@@ -2185,6 +2190,8 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                   }
             }
       }
+      if( busy_cursor) 
+          ::wxEndBusyCursor();
 }
 
 
@@ -5175,8 +5182,8 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 //      CALLGRIND_START_INSTRUMENTATION
 
       if ( m_last_scale_for_busy != VPoint.view_scale_ppm ) {
-        ::wxBeginBusyCursor();
-        m_b_busy_shown = true;
+ //       ::wxBeginBusyCursor();
+ //       m_b_busy_shown = true;
         m_last_scale_for_busy = VPoint.view_scale_ppm;
       }
 
@@ -5414,8 +5421,8 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
       if ( m_b_busy_shown )
       {
-                  ::wxEndBusyCursor();
-                  m_b_busy_shown = false;
+//                  ::wxEndBusyCursor();
+//                  m_b_busy_shown = false;
       }
 
       return render_return;
@@ -5451,8 +5458,8 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 //      CALLGRIND_START_INSTRUMENTATION
       if ( m_last_scale_for_busy != VPoint.view_scale_ppm )
       {
-            ::wxBeginBusyCursor();
-            m_b_busy_shown = true;
+//            ::wxBeginBusyCursor();
+//            m_b_busy_shown = true;
             m_last_scale_for_busy = VPoint.view_scale_ppm;
       }
 
@@ -5739,8 +5746,8 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 
       if ( m_b_busy_shown )
       {
-            ::wxEndBusyCursor();
-            m_b_busy_shown = false;
+//            ::wxEndBusyCursor();
+//            m_b_busy_shown = false;
       }
 
       return render_return;
@@ -6102,8 +6109,8 @@ bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 
       if ( m_last_scale_for_busy != vp_proposed.view_scale_ppm )
       {
-            ::wxBeginBusyCursor();
-            m_b_busy_shown = true;
+//            ::wxBeginBusyCursor();
+//            m_b_busy_shown = true;
       }
 
       int cmscale = GetCMScaleFromVP ( vp_proposed );                   // This is the scale that should be used, based on the vp
@@ -6112,8 +6119,8 @@ bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 
       if ( m_b_busy_shown )
       {
-            ::wxEndBusyCursor();
-            m_b_busy_shown = false;
+ //           ::wxEndBusyCursor();
+ //           m_b_busy_shown = false;
       }
 
       if ( g_bDebugCM93 )
