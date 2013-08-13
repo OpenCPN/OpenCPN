@@ -1081,7 +1081,7 @@ void options::CreatePanel_VectorCharts( size_t parent, int border_size, int grou
     wxBoxSizer* catSizer = new wxBoxSizer( wxVERTICAL );
     vectorPanel->Add( catSizer, 1, wxALL | wxEXPAND, group_item_spacing );
 
-    wxString pDispCatStrings[] = { _("Base"), _("Standard"), _("Other"), _("Mariners Standard") };
+    wxString pDispCatStrings[] = { _("Base"), _("Standard"), _("All"), _("Mariners Standard") };
     pDispCat = new wxRadioBox( ps57Ctl, ID_RADARDISTUNIT, _("Display Category"), wxDefaultPosition,
             wxDefaultSize, 4, pDispCatStrings, 1, wxRA_SPECIFY_COLS );
     catSizer->Add( pDispCat, 0, wxALL | wxEXPAND, 2 );
