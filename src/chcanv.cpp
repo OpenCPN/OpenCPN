@@ -5320,12 +5320,16 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             double factor = m_bmouse_key_mod ? 1.1 : 2.0;
 
             if( g_bEnableZoomToCursor ) {
+                //  Capture current cursor position, as the zooms below may change it.
+                double zlat = m_cursor_lat;
+                double zlon = m_cursor_lon;
+                
                 bool b_zoom_moved = false;
                 if( wheel_dir > 0 ) b_zoom_moved = ZoomCanvasIn( factor );
                 else if( wheel_dir < 0 ) b_zoom_moved = ZoomCanvasOut( factor );
 
                 wxPoint r;
-                GetCanvasPointPix( m_cursor_lat, m_cursor_lon, &r );
+                GetCanvasPointPix( zlat, zlon, &r );
                 PanCanvas( r.x - x, r.y - y );
                 ClearbFollow();      // update the follow flag
             } else {
