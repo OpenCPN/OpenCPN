@@ -6763,19 +6763,25 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
 
             bool haveAngle1 = false;
             bool haveAngle2 = false;
+            int sec1 = (int)sectorlegs[i].sector1;
+            int sec2 = (int)sectorlegs[i].sector2;
+            if(sec1 > 360) sec1 -= 360;
+            if(sec2 > 360) sec2 -= 360;
+            
             for( unsigned int j=0; j<sectorangles.size(); j++ ) {
-                if( sectorangles[j] == (int)sectorlegs[i].sector1 ) haveAngle1 = true;
-                if( sectorangles[j] == (int)sectorlegs[i].sector2 ) haveAngle2 = true;
+                
+                if( sectorangles[j] == sec1 ) haveAngle1 = true;
+                if( sectorangles[j] == sec2 ) haveAngle2 = true;
             }
 
             if( ! haveAngle1 ) {
                 dc.StrokeLine( lightPos, end1 );
-                sectorangles.push_back( (int) sectorlegs[i].sector1 );
+                sectorangles.push_back( sec1 );
             }
 
             if( ! haveAngle2 ) {
                 dc.StrokeLine( lightPos, end2 );
-                sectorangles.push_back( (int) sectorlegs[i].sector2 );
+                sectorangles.push_back( sec2 );
             }
         }
     }
@@ -6839,6 +6845,7 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                         curr_att0 = (char *) calloc( len + 1, 1 );
                         strncpy( curr_att0, buffer.data(), len );
                     }
+                    
                     if( curr_att0 ) {
                         char *curr_att = curr_att0;
                         bool bviz = true;
@@ -6848,6 +6855,8 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                         bool inDepthRange = false;
                         s57Sector_t sector;
 
+                        bleading_attribute = false;
+                        
                         while( *curr_att ) {
                             curAttrName.Clear();
                             noAttr++;
@@ -6912,6 +6921,9 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                             sector.color = color;
                             sector.isleading = false;           // tentative judgment, check below
 
+                            if( bleading_attribute )
+                                sector.isleading = true;
+                            
                             bool newsector = true;
                             for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
                                 if( sectorlegs[i].pos == sector.pos &&
@@ -6977,12 +6989,11 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
 #endif    
 
 //  Work with the sector legs vector to identify  and mark "Leading Lights"
+//  Sectors with CATLIT "Leading" or "Directional" attribute set have already been marked
     for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
  
-        if(((sectorlegs[i].sector2 - sectorlegs[i].sector1) < 15) || bleading_attribute ) {
+        if(((sectorlegs[i].sector2 - sectorlegs[i].sector1) < 15) ) {
             if( sectorlegs[i].iswhite && bhas_red_green )
-                sectorlegs[i].isleading = true;
-            if( bleading_attribute )
                 sectorlegs[i].isleading = true;
         }
     }
