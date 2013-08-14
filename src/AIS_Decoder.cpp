@@ -1614,7 +1614,7 @@ void AIS_Decoder::UpdateAllAlarms( void )
                     this_alarm = AIS_ALARM_SET;
             
             if( g_bCPAWarn && td->b_active && td->b_positionOnceValid &&
-                ( td->Class != AIS_SART ) && ( td->Class != AIS_SART ) ) {
+                ( td->Class != AIS_SART ) && ( td->Class != AIS_DSC ) ) {
                 //      Skip anchored/moored(interpreted as low speed) targets if requested
                 if( ( !g_bShowMoored ) && ( td->SOG <= g_ShowMoored_Kts ) ) {       // dsr
                     td->n_alarm_state = AIS_NO_ALARM;
