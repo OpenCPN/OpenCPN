@@ -23,6 +23,8 @@
  */
 
 #include "wx/wxprec.h"
+#include <wx/tokenzr.h>
+
 #include "GL/gl.h"
 
 #include "glChartCanvas.h"
@@ -1819,14 +1821,31 @@ void glChartCanvas::render()
 
 #ifdef __WXOSX__    
     if(cc1->m_pCIWin && cc1->m_pCIWin->IsShown()) {
-        wxClientDC infodc(cc1->m_pCIWin);
         int x, y, width, height;
         cc1->m_pCIWin->GetClientSize( &width, &height );
         cc1->m_pCIWin->GetPosition( &x, &y );
         wxBitmap bmp(width, height, -1);
         wxMemoryDC dc(bmp);
         if(bmp.IsOk()){
-            dc.Blit( 0, 0, width, height, &infodc, 0, 0 );
+            dc.SetBackground( wxBrush(GetGlobalColor( _T ( "UIBCK" ) ) ));
+            dc.Clear();
+ 
+            dc.SetTextBackground( GetGlobalColor( _T ( "UIBCK" ) ) );
+            dc.SetTextForeground( GetGlobalColor( _T ( "UITX1" ) ) );
+            
+            int yt = 0;
+            int xt = 0;
+            wxString s = cc1->m_pCIWin->GetString();
+            int h = cc1->m_pCIWin->GetCharHeight();
+            
+            wxStringTokenizer tkz( s, _T("\n") );
+            wxString token;
+            
+            while(tkz.HasMoreTokens()) {
+                token = tkz.GetNextToken();
+                dc.DrawText(token, xt, yt);
+                yt += h;
+            }
             dc.SelectObject(wxNullBitmap);
             
             gldc.DrawBitmap( bmp, x, y, false);
@@ -1834,19 +1853,12 @@ void glChartCanvas::render()
     }
 
     if( pthumbwin && pthumbwin->IsShown()) {
-        wxClientDC thumbdc(pthumbwin);
-        int thumbx, thumby, thumbsx, thumbsy;
+        int thumbx, thumby;
         pthumbwin->GetPosition( &thumbx, &thumby );
-        pthumbwin->GetSize( &thumbsx, &thumbsy );
-        wxBitmap thumbbmp(thumbsx, thumbsy, -1);
-        wxMemoryDC dc(thumbbmp);
-        if(thumbbmp.IsOk()){
-            dc.Blit( 0, 0, thumbsx, thumbsy, &thumbdc, 0, 0 );
-            dc.SelectObject(wxNullBitmap);
-            
-            gldc.DrawBitmap( thumbbmp, thumbx, thumby, false);
-        }
+        if( pthumbwin->GetBitmap().IsOk())
+            gldc.DrawBitmap( pthumbwin->GetBitmap(), thumbx, thumby, false);
     }
+    
 #endif
 
     //quiting?

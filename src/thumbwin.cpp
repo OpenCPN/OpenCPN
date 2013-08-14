@@ -111,3 +111,16 @@ void ThumbWin::OnPaint( wxPaintEvent& event )
         }
     }
 }
+
+const wxBitmap &ThumbWin::GetBitmap(void)
+{
+    if( pThumbChart ) {
+        if( pThumbChart->GetThumbData() ) {
+            if( pThumbChart->GetThumbData()->pDIBThumb )
+                m_bitmap =  *( pThumbChart->GetThumbData()->pDIBThumb );
+        }
+    }
+    
+    return m_bitmap;
+}
+     

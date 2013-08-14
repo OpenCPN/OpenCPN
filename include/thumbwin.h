@@ -64,9 +64,10 @@ public:
 
       void Resize(void);
       void SetMaxSize(wxSize const &max_size);
+      const wxBitmap &GetBitmap(void);
 
 
-      wxBitmap     *pThumbShowing;
+      wxBitmap     m_bitmap;
       ChartBase    *pThumbChart;
 
 private:

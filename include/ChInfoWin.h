@@ -33,10 +33,9 @@ public:
     ChInfoWin( wxWindow *parent );
     ~ChInfoWin();
 
-    void SetString(const wxString &s)
-    {
-        m_string = s;
-    }
+    void SetString(const wxString &s){ m_string = s; }
+    const wxString& GetString(void) { return m_string; }
+    
     void SetPosition( wxPoint pt )
     {
         m_position = pt;
@@ -54,12 +53,13 @@ public:
     void OnPaint( wxPaintEvent& event );
     void OnEraseBackground( wxEraseEvent& event );
 
+    wxStaticText *m_pInfoTextCtl;
+    
 private:
 
     wxString m_string;
     wxSize m_size;
     wxPoint m_position;
-    wxStaticText *m_pInfoTextCtl;
 
     DECLARE_EVENT_TABLE()
 };
