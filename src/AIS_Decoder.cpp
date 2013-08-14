@@ -1604,18 +1604,25 @@ void AIS_Decoder::UpdateAllAlarms( void )
             }
 
             ais_alarm_type this_alarm = AIS_NO_ALARM;
-            if( g_bCPAWarn && td->b_active && td->b_positionOnceValid ) {
+
+            //  SART targets always alert
+            if( td->Class == AIS_SART )
+                this_alarm = AIS_ALARM_SET;
+            
+            //  DSC Distress targets always alert
+            if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )
+                    this_alarm = AIS_ALARM_SET;
+            
+            if( g_bCPAWarn && td->b_active && td->b_positionOnceValid &&
+                ( td->Class != AIS_SART ) && ( td->Class != AIS_SART ) ) {
                 //      Skip anchored/moored(interpreted as low speed) targets if requested
-                if( ( !g_bShowMoored ) && ( td->SOG <= g_ShowMoored_Kts ) )        // dsr
-                        {
+                if( ( !g_bShowMoored ) && ( td->SOG <= g_ShowMoored_Kts ) ) {       // dsr
                     td->n_alarm_state = AIS_NO_ALARM;
                     continue;
                 }
 
                 //    No Alert on moored(interpreted as low speed) targets if so requested
-                if( g_bAIS_CPA_Alert_Suppress_Moored && ( td->SOG <= g_ShowMoored_Kts ) )     // dsr
-                        {
-
+                if( g_bAIS_CPA_Alert_Suppress_Moored && ( td->SOG <= g_ShowMoored_Kts ) ) {    // dsr
                     td->n_alarm_state = AIS_NO_ALARM;
                     continue;
                 }
@@ -1636,13 +1643,6 @@ void AIS_Decoder::UpdateAllAlarms( void )
                 }
             }
 
-            //  SART targets always alert
-            if( td->Class == AIS_SART )
-                this_alarm = AIS_ALARM_SET;
-
-            //  DSC Distress targets always alert
-            if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )
-                this_alarm = AIS_ALARM_SET;
             
             //    Maintain the timer for in_ack flag
             //  SART and DSC targets always maintain ack timeout

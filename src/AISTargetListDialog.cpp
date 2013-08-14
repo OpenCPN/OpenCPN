@@ -71,8 +71,19 @@ static int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarge
     AIS_Target_Data *t1 = pAISTarget1;
     AIS_Target_Data *t2 = pAISTarget2;
 
-    if( t1->Class == AIS_SART ) return -1;
-    if( t2->Class == AIS_SART ) return 1;
+    if( t1->Class == AIS_SART ) {
+        if( t2->Class == AIS_DSC )
+            return 0;
+        else
+            return -1;
+    }
+    
+    if( t2->Class == AIS_SART ) {
+        if( t1->Class == AIS_DSC )
+            return 0;
+        else
+            return 1;
+    }
 
     switch( g_AisTargetList_sortColumn ){
         case tlNAME:
