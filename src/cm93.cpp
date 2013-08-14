@@ -88,6 +88,8 @@ WX_DEFINE_OBJARRAY ( Array_Of_M_COVR_Desc_Ptr );
 WX_DEFINE_LIST ( List_Of_M_COVR_Desc );
 
 
+bool s_b_busy_shown;
+
 void appendOSDirSep ( wxString* pString )
 {
       wxChar sep = wxFileName::GetPathSeparator();
@@ -2099,7 +2101,6 @@ bool cm93chart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
 
 void cm93chart::SetVPParms ( const ViewPort &vpt )
 {
-    bool busy_cursor = false;
       //    Save a copy for later reference
 
       m_vp_current = vpt;
@@ -2150,10 +2151,6 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
             //    The cell is not in place, so go load it
             if ( !bcell_is_in )
             {
-                if( !busy_cursor) { 
-                    ::wxBeginBusyCursor();
-                    busy_cursor = true;
-                }
                   int cell_index = vpcells.Item ( i );
 
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
@@ -2190,8 +2187,10 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                   }
             }
       }
-      if( busy_cursor) 
+      if( s_b_busy_shown){
           ::wxEndBusyCursor();
+          s_b_busy_shown = false;
+      }
 }
 
 
@@ -4416,6 +4415,11 @@ int cm93chart::loadsubcell ( int cellindex, wxChar sub_char )
 
       //    File is known to exist
 
+      if(!s_b_busy_shown) {
+          ::wxBeginBusyCursor();
+          s_b_busy_shown = true;
+      }
+      
       wxString msg ( _T ( "Loading CM93 cell " ) );
       msg += file;
       wxLogMessage ( msg );
@@ -4617,8 +4621,6 @@ cm93compchart::cm93compchart()
 
       SetSpecialOutlineCellIndex ( 0, 0, 0 );
       m_pOffsetDialog = NULL;
-
-      m_last_scale_for_busy = 0;
 
       m_pcm93mgr = new cm93manager();
 
@@ -5181,12 +5183,6 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
 
 //      CALLGRIND_START_INSTRUMENTATION
 
-      if ( m_last_scale_for_busy != VPoint.view_scale_ppm ) {
- //       ::wxBeginBusyCursor();
- //       m_b_busy_shown = true;
-        m_last_scale_for_busy = VPoint.view_scale_ppm;
-      }
-
       if ( g_bDebugCM93 ) {
             printf ( "\nOn DoRenderRegionViewOnGL Ref scale is %d, %c %g\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ), VPoint.view_scale_ppm );
             OCPNRegionIterator upd ( Region );
@@ -5419,12 +5415,6 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
             }
       }
 
-      if ( m_b_busy_shown )
-      {
-//                  ::wxEndBusyCursor();
-//                  m_b_busy_shown = false;
-      }
-
       return render_return;
 }
 
@@ -5456,13 +5446,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 //      g_bDebugCM93 = true;
 
 //      CALLGRIND_START_INSTRUMENTATION
-      if ( m_last_scale_for_busy != VPoint.view_scale_ppm )
-      {
-//            ::wxBeginBusyCursor();
-//            m_b_busy_shown = true;
-            m_last_scale_for_busy = VPoint.view_scale_ppm;
-      }
-
       if ( g_bDebugCM93 )
       {
             printf ( "\nOn DoRenderRegionViewOnDC Ref scale is %d, %c\n", m_cmscale, ( char ) ( 'A' + m_cmscale -1 ) );
@@ -5742,12 +5725,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 
                   }
             }
-      }
-
-      if ( m_b_busy_shown )
-      {
-//            ::wxEndBusyCursor();
-//            m_b_busy_shown = false;
       }
 
       return render_return;
@@ -6107,21 +6084,10 @@ bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
       //    If it does not, the partial render will not quilt correctly with the previous data
       //    Detect this case, and indicate that the entire screen must be rendered.
 
-      if ( m_last_scale_for_busy != vp_proposed.view_scale_ppm )
-      {
-//            ::wxBeginBusyCursor();
-//            m_b_busy_shown = true;
-      }
 
       int cmscale = GetCMScaleFromVP ( vp_proposed );                   // This is the scale that should be used, based on the vp
 
       int cmscale_actual = PrepareChartScale ( vp_proposed, cmscale );  // this is the scale that will be used, based on cell coverage
-
-      if ( m_b_busy_shown )
-      {
- //           ::wxEndBusyCursor();
- //           m_b_busy_shown = false;
-      }
 
       if ( g_bDebugCM93 )
             printf ( "  In AdjustVP,  adjustment subchart scale is %c\n", ( char ) ( 'A' + cmscale_actual -1 ) );

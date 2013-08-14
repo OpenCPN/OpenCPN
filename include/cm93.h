@@ -499,8 +499,6 @@ class cm93compchart : public s57chart
             ViewPort          m_vpt;
 
             CM93OffsetDialog  *m_pOffsetDialog;
-            double            m_last_scale_for_busy;
-            bool              m_b_busy_shown;
 
 };
 
