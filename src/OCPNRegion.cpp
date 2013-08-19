@@ -826,7 +826,7 @@ bool OCPNRegionIterator::HaveRects() const
 
 void OCPNRegionIterator::NextRect()
 {
-    (*m_ri)++;
+    ++(*m_ri);
 }
 
 
