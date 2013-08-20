@@ -358,7 +358,7 @@ private:
 			render_canvas_parms *pPatt_spec );
 
 	LUPrec *FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
-			wxArrayOfS57attVal *objAttVal, bool bStrict );
+			wxArrayOfS57attVal *objAttVal, int n_objattr, bool bStrict );
 	Rules *StringToRules( const wxString& str_in );
 	void GetAndAddCSRules( ObjRazRules *rzRules, Rules *rules );
 

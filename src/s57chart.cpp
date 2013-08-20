@@ -126,8 +126,9 @@ static bool s_ProgressCallBack( void )
 
 S57Obj::S57Obj()
 {
-    attList = NULL;
+    att_array = NULL;
     attVal = NULL;
+    n_attr = 0;
 
     pPolyTessGeo = NULL;
     pPolyTrapGeo = NULL;
@@ -175,7 +176,7 @@ S57Obj::~S57Obj()
             }
             delete attVal;
         }
-        if( attList ) delete attList;
+        free( att_array );
 
         if( pPolyTessGeo ) delete pPolyTessGeo;
 
@@ -197,8 +198,10 @@ S57Obj::~S57Obj()
 
 S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dummy2 )
 {
-    attList = NULL;
+    att_array = NULL;
     attVal = NULL;
+    n_attr = 0;
+    
     pPolyTessGeo = NULL;
     pPolyTrapGeo = NULL;
     bCS_Added = 0;
@@ -246,7 +249,6 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     {
 
         if( !strncmp( buf, "OGRF", 4 ) ) {
-            attList = new wxString();
             attVal = new wxArrayOfS57attVal();
 
             FEIndex = atoi( buf + 19 );
@@ -422,9 +424,12 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                     }
 
                     if( strlen( szAtt ) ) {
-                        attList->Append( wxString( szAtt, wxConvUTF8 ) );
-                        attList->Append( '\037' );
-
+                        wxASSERT( strlen(szAtt) == 6);
+                        att_array = (char *)realloc(att_array, 6*(n_attr + 1));
+                        
+                        strncpy(att_array + (6 * sizeof(char) * n_attr), szAtt, 6);
+                        n_attr++;
+                        
                         attVal->Add( pattValTmp );
                     } else
                         delete pattValTmp;
@@ -865,66 +870,56 @@ int S57Obj::my_bufgetl( char *ib_read, char *ib_end, char *buf, int buf_len_max 
     return nLineLen;
 }
 
+int S57Obj::GetAttributeIndex( const char *AttrSeek ) {
+    char *patl = att_array;
+    
+    for(int i=0 ; i < n_attr ; i++) {
+        if(!strncmp(patl, AttrSeek, 6)){
+            return i;
+            break;
+        }
+        
+        patl += 6;
+    }
+    
+    return -1;
+}
+    
+    
 wxString S57Obj::GetAttrValueAsString( char *AttrName )
 {
     wxString str;
-    char *tattList = NULL;
     
-    wxCharBuffer buffer=attList->ToUTF8();
-    if(buffer.data()) {
-        size_t len = strlen( buffer.data() );
-        tattList = (char *) calloc( len + 1, 1 );
-        strncpy( tattList, buffer.data(), len );
-    }
-    else
-        return str;
-
-    char *patl = tattList;
-    char *patr;
-    int idx = 0;
-    while( *patl ) {
-        patr = patl;
-        while( *patr != '\037' )
-            patr++;
-
-        if( !strncmp( patl, AttrName, 6 ) ) break;
-
-        patl = patr + 1;
-        idx++;
-    }
-
-    if( !*patl ) {
-        free( tattList );
-        return str;
-    }
+    int idx = GetAttributeIndex(AttrName);
+    
+    if(idx >= 0) {
 
 //      using idx to get the attribute value
 
-    S57attVal *v = attVal->Item( idx );
+        S57attVal *v = attVal->Item( idx );
 
-    switch( v->valType ){
-        case OGR_STR: {
-            char *val = (char *) ( v->value );
-            str.Append( wxString( val, wxConvUTF8 ) );
-            break;
-        }
-        case OGR_REAL: {
-            double dval = *(double*) ( v->value );
-            str.Printf( _T("%g"), dval );
-            break;
-        }
-        case OGR_INT: {
-            int ival = *( (int *) v->value );
-            str.Printf( _T("%d"), ival );
-            break;
-        }
-        default: {
-            str.Printf( _T("Unknown attribute type") );
-            break;
+        switch( v->valType ){
+            case OGR_STR: {
+                char *val = (char *) ( v->value );
+                str.Append( wxString( val, wxConvUTF8 ) );
+                break;
+            }
+            case OGR_REAL: {
+                double dval = *(double*) ( v->value );
+                str.Printf( _T("%g"), dval );
+                break;
+            }
+            case OGR_INT: {
+                int ival = *( (int *) v->value );
+                str.Printf( _T("%d"), ival );
+                break;
+            }
+            default: {
+                str.Printf( _T("Unknown attribute type") );
+                break;
+            }
         }
     }
-
-    free( tattList );
     return str;
 }
 
@@ -6243,16 +6238,8 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         }
 
         //    Get the Attributes and values, making sure they can be converted from UTF8
-        char *curr_att0 = NULL;
-        wxCharBuffer buffer = current->obj->attList->ToUTF8();
-        if(buffer.data()) {
-            size_t len = strlen( buffer.data() );
-            curr_att0 = (char *) calloc( len + 1, 1 );
-            strncpy( curr_att0, buffer.data(), len );
-        }
-        
-        if(curr_att0) {
-            char *curr_att = curr_att0;
+        if(current->obj->att_array) {
+            char *curr_att = current->obj->att_array;
 
             attrCounter = 0;
 
@@ -6262,17 +6249,11 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
 
             bool inDepthRange = false;
 
-            while( *curr_att ) {
+            while( attrCounter < current->obj->n_attr ) {
                 //    Attribute name
-                curAttrName.Clear();
+                curAttrName = wxString(curr_att, wxConvUTF8, 6);
                 noAttr++;
-                while( ( *curr_att ) && ( *curr_att != '\037' ) ) {
-                    char t = *curr_att++;
-                    curAttrName.Append( t );
-                }
-
-                if( *curr_att == '\037' ) curr_att++;
-
+                
                 // Sort out how some kinds of attibutes are displayed to get a more readable look.
                 // DEPARE gets just its range. Lights are grouped.
 
@@ -6317,8 +6298,9 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 }
 
                 attrCounter++;
+                curr_att += 6;
 
-            }             //while *curr_att
+            }             //while attrCounter < current->obj->n_attr
 
             if( !isLight ) {
                 attribStr << _T("</table>\n");
@@ -6336,7 +6318,6 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 ret_val << objText;
             }
 
-            free( curr_att0 );
         }
     } // Object for loop
 
@@ -6838,16 +6819,9 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                 if( lightPosD.m_x == 0 && lightPosD.m_y == 0.0 )
                     lightPosD = objPos;
                 if( lightPosD == objPos ) {
-                    char *curr_att0 = NULL;
-                    wxCharBuffer buffer=light->attList->ToUTF8();
-                    if(buffer.data()) {
-                        size_t len = strlen(buffer.data());
-                        curr_att0 = (char *) calloc( len + 1, 1 );
-                        strncpy( curr_att0, buffer.data(), len );
-                    }
                     
-                    if( curr_att0 ) {
-                        char *curr_att = curr_att0;
+                    if( light->att_array ) {
+                        char *curr_att = light->att_array;
                         bool bviz = true;
                         
                         attrCounter = 0;
@@ -6857,15 +6831,9 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
 
                         bleading_attribute = false;
                         
-                        while( *curr_att ) {
-                            curAttrName.Clear();
+                        while( attrCounter < light->n_attr ) {
+                            curAttrName = wxString(curr_att, wxConvUTF8, 6 );
                             noAttr++;
-                            while( ( *curr_att ) && ( *curr_att != '\037' ) ) {
-                                char t = *curr_att++;
-                                curAttrName.Append( t );
-                            }
-
-                            if( *curr_att == '\037' ) curr_att++;
 
                             wxString value = chart->GetObjectAttributeValueAsString( light, attrCounter, curAttrName );
 
@@ -6898,9 +6866,8 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
                             }
                                 
                             attrCounter++;
+                            curr_att += 6;
                         }
-
-                        free(curr_att0);
 
                         if( ( sectr1 >= 0 ) && ( sectr2 >= 0 ) ) {
                             if( sectr1 > sectr2 ) {             // normalize

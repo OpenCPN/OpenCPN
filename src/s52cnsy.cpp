@@ -150,43 +150,60 @@ static void *DATCVR01(void *param)
 
 }
 
+
+bool GetIntAttr(S57Obj *obj, const char *AttrName, int &val)
+{
+    int idx = obj->GetAttributeIndex(AttrName);
+    
+    if(idx >= 0) {
+        //      using idx to get the attribute value
+         S57attVal *v = obj->attVal->Item(idx);
+        val = *(int*)(v->value);
+        
+        return true;
+    }
+    else
+        return false;
+        
+}
+#if 0
 bool GetIntAttr(S57Obj *obj, const char *AttrName, int &val)
 {
     char *attList = (char *)calloc(obj->attList->Len()+1, 1);
     strncpy(attList, obj->attList->mb_str(), obj->attList->Len());
-
-        char *patl = attList;
-        char *patr;
-        int idx = 0;
-        while(*patl)
+    
+    char *patl = attList;
+    char *patr;
+    int idx = 0;
+    while(*patl)
+    {
+        patr = patl;
+        while(*patr != '\037')
+            patr++;
+        
+        if(!strncmp(patl, AttrName, 6))
+            break;
+        
+        patl = patr + 1;
+        idx++;
+    }
+    
+    if(!*patl)                                     // Requested Attribute not found
         {
-                patr = patl;
-                while(*patr != '\037')
-                        patr++;
-
-                if(!strncmp(patl, AttrName, 6))
-                        break;
-
-                patl = patr + 1;
-                idx++;
+            free(attList);
+            return false;                            // so don't return a value
         }
-
-        if(!*patl)                                     // Requested Attribute not found
-        {
-              free(attList);
-              return false;                            // so don't return a value
-        }
-
-//      using idx to get the attribute value
+        
+        //      using idx to get the attribute value
         wxArrayOfS57attVal      *pattrVal = obj->attVal;
-
-        S57attVal *v = pattrVal->Item(idx);
-        val = *(int*)(v->value);
-
-        free(attList);
-        return true;
+    
+    S57attVal *v = pattrVal->Item(idx);
+    val = *(int*)(v->value);
+    
+    free(attList);
+    return true;
 }
-
+#endif
 /*
 bool GetFloatAttr(S57Obj *obj, char *AttrName, float &val)
 {
@@ -227,124 +244,53 @@ bool GetFloatAttr(S57Obj *obj, char *AttrName, float &val)
 */
 bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val)
 {
-    char *attList = (char *)calloc(obj->attList->Len()+1, 1);
-    strncpy(attList, obj->attList->mb_str(), obj->attList->Len());
-
-    char *patl = attList;
-    char *patr;
-    int idx = 0;
-    while(*patl)
-    {
-        patr = patl;
-        while(*patr != '\037')
-            patr++;
-
-        if(!strncmp(patl, AttrName, 6))
-            break;
-
-        patl = patr + 1;
-        idx++;
-    }
-
-    if(!*patl)                                        // Requested Attribute not found
-    {
-        free(attList);
-        return false;
-    }
-
+    int idx = obj->GetAttributeIndex(AttrName);
+    
+    if(idx >= 0) {
 //      using idx to get the attribute value
-    wxArrayOfS57attVal      *pattrVal = obj->attVal;
 
-    S57attVal *v = pattrVal->Item(idx);
-    val = *(double*)(v->value);
+        S57attVal *v = obj->attVal->Item(idx);
+        val = *(double*)(v->value);
 
-    free(attList);
-    return true;
+        return true;
+    }
+    else
+        return false;
 }
 
 
 bool GetStringAttr(S57Obj *obj, const char *AttrName, char *pval, int nc)
 {
-    *pval = 0;
-    char *attList = (char *)calloc(obj->attList->Len()+1, 1);
-    strncpy(attList, obj->attList->mb_str(), obj->attList->Len());
-//        char *attList = (char *)(obj->attList->);        //attList is wxString
-
-        char *patl = attList;
-        char *patr;
-        int idx = 0;
-        while(*patl)
-        {
-                patr = patl;
-                while(*patr != '\037')
-                        patr++;
-
-                if(!strncmp(patl, AttrName, 6))
-                        break;
-
-                patl = patr + 1;
-                idx++;
-        }
-
-        if(!*patl)
-        {
-              free(attList);
-              return false;
-        }
-
-//      using idx to get the attribute value
-        wxArrayOfS57attVal      *pattrVal = obj->attVal;
-
-        S57attVal *v = pattrVal->Item(idx);
+    int idx = obj->GetAttributeIndex(AttrName);
+    
+    if(idx >= 0) {
+        //      using idx to get the attribute value
+        S57attVal *v = obj->attVal->Item(idx);
 
         char *val = (char *)(v->value);
 
         strncpy(pval, val, nc);
 
-        free(attList);
         return true;
+    }
+    else
+        return false;
 }
 
 wxString *GetStringAttrWXS(S57Obj *obj, const char *AttrName)
 {
-
-    char *attList = (char *)calloc(obj->attList->Len()+1, 1);
-    strncpy(attList, obj->attList->mb_str(), obj->attList->Len());
-//        char *attList = (char *)(obj->attList->);        //attList is wxString
-
-        char *patl = attList;
-        char *patr;
-        int idx = 0;
-        while(*patl)
-        {
-                patr = patl;
-                while(*patr != '\037')
-                        patr++;
-
-                if(!strncmp(patl, AttrName, 6))
-                        break;
-
-                patl = patr + 1;
-                idx++;
-        }
-
-        if(!*patl)
-        {
-              free(attList);
-              return NULL;
-        }
-
-//      using idx to get the attribute value
-        wxArrayOfS57attVal      *pattrVal = obj->attVal;
-
-        S57attVal *v = pattrVal->Item(idx);
-
+    int idx = obj->GetAttributeIndex(AttrName);
+    
+    if(idx >= 0) {
+        //      using idx to get the attribute value
+        S57attVal *v = obj->attVal->Item(idx);
+        
         char *val = (char *)(v->value);
-
-        wxString *ret = new wxString(val,  wxConvUTF8);
-
-        free(attList);
-        return ret;
+        
+        return new wxString(val,  wxConvUTF8);
+    }
+    else
+        return NULL;
 }
 
 static int      _parseList(const char *str_in, char *buf, int buf_size)
@@ -956,9 +902,9 @@ static void *DEPCNT02 (void *param)
                   if (safe) {
                       wxString safeCntr = _T("LS(DASH,2,DEPSC)");
                       S57Obj tempObj;
-                      tempObj.attList = new wxString();
                       LUPrec* safelup = ps52plib->S52_LUPLookup( PLAIN_BOUNDARIES, "SAFECD", &tempObj, false );
-                      if( safelup ) safeCntr = *safelup->INST;
+                      if( safelup )
+                          safeCntr = *safelup->INST;
                       rule_str = _T(";") + safeCntr;
                   }
                   else
@@ -968,9 +914,9 @@ static void *DEPCNT02 (void *param)
             if (safe) {
                 wxString safeCntr = _T("LS(SOLD,2,DEPSC)");
                 S57Obj tempObj;
-                tempObj.attList = new wxString();
                 LUPrec* safelup = ps52plib->S52_LUPLookup( PLAIN_BOUNDARIES, "SAFECN", &tempObj, false );
-                if( safelup ) safeCntr = *safelup->INST;
+                if( safelup )
+                    safeCntr = *safelup->INST;
                 rule_str = _T(";") + safeCntr;
             }
             else
