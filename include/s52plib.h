@@ -134,49 +134,68 @@ extern void txfRenderFancyString( TexFont * txf, char *string, int len );
 
 class RenderFromHPGL;
 
+
+//-----------------------------------------------------------------------------
+//      LUP Array container, and friends
+//-----------------------------------------------------------------------------
+typedef struct _LUPHashIndex {
+    int n_start;
+    int count;
+} LUPHashIndex;
+
+WX_DECLARE_STRING_HASH_MAP( LUPHashIndex*, LUPArrayIndexHash );
+
+class LUPArrayContainer {
+public:
+    LUPArrayContainer();
+    ~LUPArrayContainer();
+    
+    wxArrayOfLUPrec     *GetLUPArray(void){ return LUPArray; }
+    LUPHashIndex        *GetArrayIndexHelper( const char *objectName );
+    
+private:
+    wxArrayOfLUPrec             *LUPArray;          // Sorted Array
+    LUPArrayIndexHash           IndexHash;
+};
+
+    
 //-----------------------------------------------------------------------------
 //    s52plib definition
 //-----------------------------------------------------------------------------
 
 class s52plib {
 public:
-      s52plib( const wxString& PLib, bool b_forceLegacy = false );
-	~s52plib();
+     s52plib( const wxString& PLib, bool b_forceLegacy = false );
+    ~s52plib();
 
-	void SetPPMM( float ppmm ) {
-		canvas_pix_per_mm = ppmm;
-	}
-	float GetPPMM() {
-		return canvas_pix_per_mm;
-	}
-	LUPrec *S52_LUPLookup( LUPname LUP_name, const char * objectName,
-			S57Obj *pObj, bool bStrict = 0 );
-	int _LUP2rules( LUPrec *LUP, S57Obj *pObj );
-	S52color* getColor( const char *colorName );
-	wxColour getwxColour( const wxString &colorName );
+    void SetPPMM( float ppmm ) { canvas_pix_per_mm = ppmm; 	}
+    float GetPPMM() { return canvas_pix_per_mm; }
 
-	void UpdateMarinerParams( void );
-	void ClearCNSYLUPArray( void );
+    LUPrec *S52_LUPLookup( LUPname LUP_name, const char * objectName,
+        S57Obj *pObj, bool bStrict = 0 );
+    int _LUP2rules( LUPrec *LUP, S57Obj *pObj );
+    S52color* getColor( const char *colorName );
+    wxColour getwxColour( const wxString &colorName );
 
-	void GenerateStateHash();
-	long GetStateHash() {
-		return m_state_hash;
-	}
+    void UpdateMarinerParams( void );
+    void ClearCNSYLUPArray( void );
 
-	void SetPLIBColorScheme( wxString scheme );
-	wxString GetPLIBColorScheme( void ) {
-		return m_ColorScheme;
-	}
+    void GenerateStateHash();
+    long GetStateHash() { return m_state_hash;  }
 
-      void SetGLRendererString(const wxString &renderer);
+    void SetPLIBColorScheme( wxString scheme );
+    wxString GetPLIBColorScheme( void ) { return m_ColorScheme; }
 
-	bool ObjectRenderCheck( ObjRazRules *rzRules, ViewPort *vp );
-	bool ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp );
-	bool ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp );
-	bool ObjectRenderCheckCS( ObjRazRules *rzRules, ViewPort *vp );
+    void SetGLRendererString(const wxString &renderer);
 
-	void DestroyLUP( LUPrec *pLUP );
+    bool ObjectRenderCheck( ObjRazRules *rzRules, ViewPort *vp );
+    bool ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp );
+    bool ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp );
+    bool ObjectRenderCheckCS( ObjRazRules *rzRules, ViewPort *vp );
 
+    static void DestroyLUP( LUPrec *pLUP );
+    static void ClearRulesCache( Rule *pR );
+    
 //    Temporarily save/restore the current colortable index
 //    Useful for Thumbnail rendering
 	void SaveColorScheme( void ) {
@@ -203,54 +222,27 @@ public:
 			ViewPort *vp, wxRect &render_rect );
 
 	// Accessors
-      bool GetShowSoundings() {
-            return m_bShowSoundg;
-      }
-      void SetShowSoundings( bool f ) {
-            m_bShowSoundg = f;
-            GenerateStateHash();
-      }
+    bool GetShowSoundings() { return m_bShowSoundg; }
+    void SetShowSoundings( bool f ) { m_bShowSoundg = f; GenerateStateHash(); }
 
-	bool GetShowS57Text() {
-		return m_bShowS57Text;
-	}
-	void SetShowS57Text( bool f ) {
-		m_bShowS57Text = f;
-            GenerateStateHash();
-      }
+    bool GetShowS57Text() { return m_bShowS57Text;  }
+    void SetShowS57Text( bool f ) { m_bShowS57Text = f;  GenerateStateHash(); }
 
-	bool GetShowS57ImportantTextOnly() {
-		return m_bShowS57ImportantTextOnly;
-	}
-	void SetShowS57ImportantTextOnly( bool f ) {
-		m_bShowS57ImportantTextOnly = f;
-            GenerateStateHash();
-	}
+    bool GetShowS57ImportantTextOnly() { return m_bShowS57ImportantTextOnly; }
+    void SetShowS57ImportantTextOnly( bool f ) { m_bShowS57ImportantTextOnly = f; GenerateStateHash(); }
 
-	int GetMajorVersion( void ) {
-		return m_VersionMajor;
-	}
-	int GetMinorVersion( void ) {
-		return m_VersionMinor;
-	}
+    int GetMajorVersion( void ) { return m_VersionMajor; }
+    int GetMinorVersion( void ) { return m_VersionMinor; }
 
-	void SetTextOverlapAvoid( bool f ) {
-		m_bDeClutterText = f;
-	}
-	void SetShowNationalText( bool f ) {
-		m_bShowNationalTexts = f;
-	}
-	void SetShowAtonText( bool f ) {
-		m_bShowAtonText = f;
-	}
-    void SetShowLdisText( bool f ) {
-        m_bShowLdisText = f;
-    }
-    void SetExtendLightSectors( bool f ) {
-        m_bExtendLightSectors = f;
-    }
+    void SetTextOverlapAvoid( bool f ) { m_bDeClutterText = f; }
+    void SetShowNationalText( bool f ) { m_bShowNationalTexts = f; }
+    void SetShowAtonText( bool f ) { m_bShowAtonText = f; }
+    void SetShowLdisText( bool f ) { m_bShowLdisText = f; }
+    void SetExtendLightSectors( bool f ) { m_bExtendLightSectors = f; }
 
-	wxArrayOfLUPrec* SelectLUPARRAY( LUPname TNAM );
+    wxArrayOfLUPrec* SelectLUPARRAY( LUPname TNAM );
+    LUPArrayContainer *SelectLUPArrayContainer( LUPname TNAM );
+        
 	void DestroyPatternRuleNode( Rule *pR );
 	void DestroyRuleNode( Rule *pR );
 
@@ -284,14 +276,17 @@ public:
 	RuleHash *_cond_sym; // conditional symbolisation rules
 	RuleHash *_symb_symR; // symbol symbolisation rules, Raster
 
-	//    Sorted Arrays of LUPrecs
-	wxArrayOfLUPrec *lineLUPArray; // lines
-	wxArrayOfLUPrec *areaPlaineLUPArray; // areas: PLAIN_BOUNDARIES
-	wxArrayOfLUPrec *areaSymbolLUPArray; // areas: SYMBOLIZED_BOUNDARIE
-	wxArrayOfLUPrec *pointSimplLUPArray; // points: SIMPLIFIED
-	wxArrayOfLUPrec *pointPaperLUPArray; // points: PAPER_CHART
-	wxArrayOfLUPrec *condSymbolLUPArray; // Dynamic Conditional Symbology
+    
+    
+    LUPArrayContainer   *line_LAC;
+    LUPArrayContainer   *areaPlain_LAC;
+    LUPArrayContainer   *areaSymbol_LAC;
+    LUPArrayContainer   *pointSimple_LAC;
+    LUPArrayContainer   *pointPaper_LAC;
+    
+    wxArrayOfLUPrec *condSymbolLUPArray; // Dynamic Conditional Symbology
 
+	
     wxArrayPtrVoid *pOBJLArray; // Used for Display Filtering
     std::vector<wxString> OBJLDescriptions;
 
@@ -357,16 +352,20 @@ private:
 			S52color *c, render_canvas_parms *pb_spec,
 			render_canvas_parms *pPatt_spec );
 
-	LUPrec *FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
+	LUPrec *FindBestLUP2( wxArrayPtrVoid *nameMatch, char *objAtt,
 			wxArrayOfS57attVal *objAttVal, int n_objattr, bool bStrict );
-	Rules *StringToRules( const wxString& str_in );
+
+        LUPrec *FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex, unsigned int count,
+                              S57Obj *pObj, bool bStrict );
+        
+        
+        Rules *StringToRules( const wxString& str_in );
 	void GetAndAddCSRules( ObjRazRules *rzRules, Rules *rules );
 
 	void DestroyPattRules( RuleHash *rh );
 
 	void DestroyRules( RuleHash *rh );
 
-	void ClearRulesCache( Rule *pR );
 
 	void DestroyLUPArray( wxArrayOfLUPrec *pLUPArray );
 

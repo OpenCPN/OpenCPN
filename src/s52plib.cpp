@@ -66,9 +66,134 @@ extern double g_GLMinLineWidth;
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr( S57Obj *obj, const char *AttrName, double &val );
 
-//    Implement the Bounding Box list
+//    Implement all lists
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST( ObjList );
+
+//-----------------------------------------------------------------------------
+//      Comparison Function for LUPArray sorting
+//      Note Global Scope
+//-----------------------------------------------------------------------------
+#ifndef _COMPARE_LUP_DEFN_
+#define _COMPARE_LUP_DEFN_
+
+int CompareLUPObjects( LUPrec *item1, LUPrec *item2 )
+{
+    // sort the items by their name...
+    int ir = strcmp( item1->OBCL, item2->OBCL );
+    
+    if( ir != 0 )
+        return ir;
+    int c1 = 0;
+    int c2 = 0;
+    if( item1->ATTCArray )
+        c1 = item1->ATTCArray->Count();
+    if( item2->ATTCArray )
+        c2 = item2->ATTCArray->Count();
+    
+    if( c1 != c2 )
+        return c2 - c1;
+    return item1->nSequence - item2->nSequence;
+}
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//-----------------------------------------------------------------------------
+//      LUPArrayContainer implementation
+//-----------------------------------------------------------------------------
+LUPArrayContainer::LUPArrayContainer()
+{
+    //   Build the initially empty sorted arrays of LUP Records, per LUP type.
+    //   Sorted on object name, e.g. ACHARE.  Why sorted?  Helps in the S52_LUPLookup method....
+    LUPArray = new wxArrayOfLUPrec( CompareLUPObjects );
+}
+
+LUPArrayContainer::~LUPArrayContainer()
+{
+    if( LUPArray ) {
+        for( unsigned int il = 0; il < LUPArray->GetCount(); il++ )
+            s52plib::DestroyLUP( LUPArray->Item( il ) );
+        
+        LUPArray->Clear();
+        delete LUPArray;
+    }
+    
+    LUPArrayIndexHash::iterator it;
+    for( it = IndexHash.begin(); it != IndexHash.end(); ++it ){
+        free( it->second );
+    }
+}
+
+LUPHashIndex *LUPArrayContainer::GetArrayIndexHelper( const char *objectName )
+{
+    // Look for the key
+    wxString key(objectName, wxConvUTF8);
+    LUPArrayIndexHash::iterator it = IndexHash.find( key );
+    
+    if( it == IndexHash.end() ){             
+        //      Key not found, needs to be added
+        LUPHashIndex *pindex = (LUPHashIndex *)malloc(sizeof(LUPHashIndex));
+        pindex->n_start = -1;
+        pindex->count = 0;
+        IndexHash[key] = pindex;
+        
+        //      Find the first matching entry in the LUP Array
+        int index = 0;
+        int index_max = LUPArray->GetCount();
+        int first_match = 0;
+        int ocnt = 0;
+        LUPrec *LUPCandidate;
+        
+        //        This technique of extracting proper LUPs depends on the fact that
+        //        the LUPs have been sorted in their array, by OBCL.
+        //        Thus, all the LUPS with the same OBCL will be grouped together
+        
+        while( !first_match && ( index < index_max ) ) {
+            LUPCandidate = LUPArray->Item( index );
+            if( !strcmp( objectName, LUPCandidate->OBCL ) ) {
+                pindex->n_start = index;
+                first_match = 1;
+                ocnt++;
+                index++;
+                break;
+            }
+            index++;
+        }
+        
+        while( first_match && ( index < index_max ) ) {
+            LUPCandidate = LUPArray->Item( index );
+            if( !strcmp( objectName, LUPCandidate->OBCL ) ) {
+                ocnt++;
+            } else {
+                break;
+            }
+            
+            index++;
+        }
+        
+        pindex->count = ocnt;
+        
+        return pindex;
+    }
+    else
+        return it->second;              // return a pointer to the found record
+        
+    
+}
+
 
 //-----------------------------------------------------------------------------
 //      s52plib implementation
@@ -79,11 +204,6 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
 
     pOBJLArray = new wxArrayPtrVoid;
 
-    lineLUPArray = NULL; // lines
-    areaPlaineLUPArray = NULL; // areas: PLAIN_BOUNDARIES
-    areaSymbolLUPArray = NULL; // areas: SYMBOLIZED_BOUNDARIE
-    pointSimplLUPArray = NULL; // points: SIMPLIFIED
-    pointPaperLUPArray = NULL; // points: PAPER_CHART
     condSymbolLUPArray = NULL; // Dynamic Conditional Symbology
 
     _symb_sym = NULL;
@@ -139,8 +259,15 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
 
 s52plib::~s52plib()
 {
-    if( m_bOK ) S52_flush_Plib();
+    delete areaPlain_LAC;
+    delete line_LAC ;
+    delete areaSymbol_LAC;
+    delete pointSimple_LAC;
+    delete pointPaper_LAC;
+    
+    S52_flush_Plib();
 
+   
 //      Free the OBJL Array Elements
     for( unsigned int iPtr = 0; iPtr < pOBJLArray->GetCount(); iPtr++ )
         free( pOBJLArray->Item( iPtr ) );
@@ -155,6 +282,54 @@ s52plib::~s52plib()
 
     delete HPGL;
 }
+
+//      Various static helper methods
+
+void s52plib::DestroyLUP( LUPrec *pLUP )
+{
+    Rules *top = pLUP->ruleList;
+    
+    while( top != NULL ) {
+        Rules *Rtmp = top->next;
+        
+        if( top->INST0 ) free( top->INST0 ); // free the Instruction string head
+
+        if( top->b_private_razRule ) // need to free razRule?
+        {
+            Rule *pR = top->razRule;
+            if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
+            
+            free( pR->vector.LVCT );
+            
+            if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
+            
+            free( pR->colRef.SCRF );
+            
+            s52plib::ClearRulesCache( pR );
+            
+            free( pR );
+        }
+        
+        free( top );
+        top = Rtmp;
+    }
+    
+    delete pLUP->ATTCArray;
+    delete pLUP->INST;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void s52plib::SetGLRendererString(const wxString &renderer)
 {
@@ -194,24 +369,240 @@ wxArrayOfLUPrec* s52plib::SelectLUPARRAY( LUPname TNAM )
 {
     switch( TNAM ){
         case SIMPLIFIED:
-            return pointSimplLUPArray;
+            return pointSimple_LAC->GetLUPArray();
         case PAPER_CHART:
-            return pointPaperLUPArray;
+            return pointPaper_LAC->GetLUPArray();
         case LINES:
-            return lineLUPArray;
+            return line_LAC->GetLUPArray();
         case PLAIN_BOUNDARIES:
-            return areaPlaineLUPArray;
+            return areaPlain_LAC->GetLUPArray();
         case SYMBOLIZED_BOUNDARIES:
-            return areaSymbolLUPArray;
+            return areaSymbol_LAC->GetLUPArray();
         default:
             return NULL;
     }
 }
 
+LUPArrayContainer *s52plib::SelectLUPArrayContainer( LUPname TNAM )
+{
+    switch( TNAM ){
+        case SIMPLIFIED:
+            return pointSimple_LAC;
+        case PAPER_CHART:
+            return pointPaper_LAC;
+        case LINES:
+            return line_LAC;
+        case PLAIN_BOUNDARIES:
+            return areaPlain_LAC;
+        case SYMBOLIZED_BOUNDARIES:
+            return areaSymbol_LAC;
+        default:
+            return NULL;
+    }
+}
+
+
 extern Cond condTable[];
 
+LUPrec *s52plib::FindBestLUP( wxArrayOfLUPrec *LUPArray, unsigned int startIndex, unsigned int count, S57Obj *pObj, bool bStrict )
+{
+    //  Check the parameters
+    if( 0 == count )
+        return NULL;
+    if( startIndex >= LUPArray->GetCount() )
+        return NULL;
+    
+    LUPrec *LUP = NULL;
+    int nATTMatch = 0;
+    int countATT = 0;
+    bool bmatch_found = false;
+    
+    // setup default to the first LUP
+    LUP = LUPArray->Item( startIndex );
+    
+    for( unsigned int i = 0; i < count; ++i ) {
+        LUPrec *LUPCandidate = NULL;
+        countATT = 0;
+        char *currATT = pObj->att_array;
+        int attIdx = 0;
+        
+        LUPCandidate = LUPArray->Item( startIndex + i );
+        
+        if( !LUPCandidate->ATTCArray ) continue;        // this LUP has no attributes
+        
+        if( pObj->att_array == NULL ) return LUP;       // object has no attributes, so att match
+
+        for( unsigned int iLUPAtt = 0; iLUPAtt < LUPCandidate->ATTCArray->GetCount(); iLUPAtt++ ) {
+            
+            wxString LATTC = LUPCandidate->ATTCArray->Item( iLUPAtt );
+            wxString LATTValue( LATTC.Mid( 6 ) );
+            
+            //  Verify that attribute names and values in the LUP will convert with UTF8
+            char *slatv = NULL;
+            wxCharBuffer vbuffer=LATTValue.ToUTF8();
+            if(vbuffer.data())
+                slatv = vbuffer.data();
+            
+            char *slatc = NULL;
+            wxCharBuffer buffer=LATTC.ToUTF8();
+            if(buffer.data())
+                slatc = buffer.data();
+            
+            if( slatv && slatc ){
+                while( attIdx < pObj->n_attr ) {
+                    if( 0 == strncmp( slatc, currATT, 6 ) ) {
+                        //OK we have an attribute match
+                        //checking attribute value
+                        S57attVal *v;
+                        
+                        bool attValMatch = false;
+                        
+                        // special case (i)
+                        if( LATTC.Mid( 6, 1 ) == ' ' ) // use any value
+                        attValMatch = true;
+                        
+                        // special case (ii)
+                        //TODO  Find an ENC with "UNKNOWN" DRVAL1 or DRVAL2 and debug this code
+                        /*
+                         *                        if ( !strncmp ( LUPCandidate->OBCL, "DEPARE", 6 ) )
+                         *                        {
+                         *                        if ( LATTC[6] == '?' )  // match if value is unknown
+                         *                        attValMatch = TRUE;
+                         }
+                         */
+                        v = ( pObj->attVal->Item( attIdx ) );
+                        
+                        switch( v->valType ){
+                            case OGR_INT: // S57 attribute type 'E' enumerated, 'I' integer
+                            {
+                                int a;
+                                char ss[41];
+                                strncpy( ss, slatv, 39 );
+                                ss[40] = '\0';
+                                sscanf( ss, "%d", &a );
+                                if( a == *(int*) ( v->value ) )
+                                    attValMatch = true;
+                                break;
+                            }
+                            
+                            case OGR_INT_LST: // S57 attribute type 'L' list: comma separated integer
+                            {
+                                int a;
+                                char ss[41];
+                                strncpy( ss, slatv, 39 );
+                                ss[40] = '\0';
+                                char *s = &ss[0];
+                                
+                                int *b = (int*) v->value;
+                                sscanf( s, "%d", &a );
+                                
+                                while( *s != '\0' ) {
+                                    if( a == *b ) {
+                                        sscanf( ++s, "%d", &a );
+                                        b++;
+                                        attValMatch = true;
+                                        
+                                    } else
+                                        attValMatch = false;
+                                }
+                                break;
+                            }
+                            case OGR_REAL: // S57 attribute type'F' float
+                            {
+                                float a;
+                                if( LATTC.Mid( 6, 1 ) != '?' ) {
+                                    if( LATTValue.Len() ) {
+                                        char ss[40];
+                                        strncpy( ss, slatv, 39 );
+                                        sscanf( ss, "%f", &a );
+                                        if( a == *(float*) ( v->value ) ) attValMatch = true;
+                                    }
+                                }
+                                break;
+                            }
+                            
+                            case OGR_STR: // S57 attribute type'A' code string, 'S' free text
+                            {
+                                
+                                //    Strings must be exact match
+                                //    n.b. OGR_STR is used for S-57 attribute type 'L', comma-separated list
+                                
+                                wxString cs( (char *) v->value, wxConvUTF8 ); // Attribute from object
+                                if( LATTValue.Len() == cs.Len() ) if( LATTValue == cs ) attValMatch =
+                                    true;
+                                break;
+                            }
+                            
+                            default:
+                                break;
+                        } //switch
+                        
+                        // value match
+                        if( attValMatch ) {
+                            ++countATT;
+                        }
+                        
+                        goto next_LUP_Attr;
+                    } // if attribute match
+                    
+                    //  Advance to the next S57obj attribute
+                    currATT += 6;
+                    ++attIdx;
+                    
+                } //while
+            } //if
+            
+            next_LUP_Attr:
+            
+            currATT = pObj->att_array; // restart the object attribute list
+            attIdx = 0;
+        } // for iLUPAtt
+        
+        //      Create a "match score", defined as fraction of candidate LUP attributes
+        //      actually matched by feature.
+        //      Used later for resolving "ties"
+        
+        int nattr_matching_on_candidate = countATT;
+        int nattrs_on_candidate = LUPCandidate->ATTCArray->GetCount();
+        double candidate_score = ( 1. * nattr_matching_on_candidate )
+        / ( 1. * nattrs_on_candidate );
+        
+        //       According to S52 specs, match must be perfect,
+        //         and the first 100% match is selected
+        if( candidate_score == 1.0 ) {
+            LUP = LUPCandidate;
+            bmatch_found = true;
+            break; // selects the first 100% match
+        }
+        
+    } //for loop
+    
+    //  In strict mode, we require at least one attribute to match exactly
+    
+    if( bStrict ) {
+        if( nATTMatch == 0 ) // nothing matched
+        LUP = NULL;
+    } else {
+        //      If no match found, return the first LUP in the list which has no attributes
+        if( !bmatch_found ) {
+            for( unsigned int j = 0; j < count; ++j ) {
+                LUPrec *LUPtmp = NULL;
+                
+                LUPtmp = LUPArray->Item( startIndex + j );
+                if( LUPtmp->ATTCArray == NULL ) {
+                    return LUPtmp;
+                }
+            }
+        }
+    }
+    
+    return LUP;
+}
+
+
+
 // get LUP with "best" Object attribute match
-LUPrec *s52plib::FindBestLUP( wxArrayPtrVoid *nameMatch, char *objAtt,
+LUPrec *s52plib::FindBestLUP2( wxArrayPtrVoid *nameMatch, char *objAtt,
         wxArrayOfS57attVal *objAttVal, int n_objattr, bool bStrict )
 {
     LUPrec *LUP = NULL;
@@ -587,33 +978,6 @@ int s52plib::_LUP2rules( LUPrec *LUP, S57Obj *pObj )
         return 0;
 }
 
-//-----------------------------------------------------------------------------
-//      Comparison Function for LUPArray sorting
-//      Note Global Scope
-//-----------------------------------------------------------------------------
-#ifndef _COMPARE_LUP_DEFN_
-#define _COMPARE_LUP_DEFN_
-
-int CompareLUPObjects( LUPrec *item1, LUPrec *item2 )
-{
-    // sort the items by their name...
-    int ir = strcmp( item1->OBCL, item2->OBCL );
-
-    if( ir != 0 )
-        return ir;
-    int c1 = 0;
-    int c2 = 0;
-    if( item1->ATTCArray )
-        c1 = item1->ATTCArray->Count();
-    if( item2->ATTCArray )
-        c2 = item2->ATTCArray->Count();
-
-    if( c1 != c2 )
-        return c2 - c1;
-    return item1->nSequence - item2->nSequence;
-}
-
-#endif
 
 int s52plib::S52_load_Plib( const wxString& PLib, bool b_forceLegacy )
 {
@@ -626,13 +990,12 @@ int s52plib::S52_load_Plib( const wxString& PLib, bool b_forceLegacy )
     _symb_sym = new RuleHash; // symbol
     _cond_sym = new RuleHash; // conditional
 
-    //   Build the initially empty sorted arrays of LUP Records, per LUP type.
-    //   Sorted on object name, e.g. ACHARE.  Why sorted?  Helps in the S52_LUPLookup method....
-    pointSimplLUPArray = new wxArrayOfLUPrec( CompareLUPObjects ); // point simplified
-    pointPaperLUPArray = new wxArrayOfLUPrec( CompareLUPObjects ); // point traditional(paper)
-    lineLUPArray = new wxArrayOfLUPrec( CompareLUPObjects ); // lines;
-    areaPlaineLUPArray = new wxArrayOfLUPrec( CompareLUPObjects ); // area plain boundary
-    areaSymbolLUPArray = new wxArrayOfLUPrec( CompareLUPObjects ); // area symbolized boundary
+    line_LAC = new LUPArrayContainer;
+    areaPlain_LAC= new LUPArrayContainer;
+    areaSymbol_LAC= new LUPArrayContainer;
+    pointSimple_LAC= new LUPArrayContainer;
+    pointPaper_LAC= new LUPArrayContainer;
+    
     condSymbolLUPArray = new wxArrayOfLUPrec( CompareLUPObjects ); // dynamic Cond Sym LUPs
 
     m_unused_color.R = 255;
@@ -868,38 +1231,6 @@ void s52plib::DestroyPattRules( RuleHash *rh )
     delete rh;
 }
 
-void s52plib::DestroyLUP( LUPrec *pLUP )
-{
-    Rules *top = pLUP->ruleList;
-
-    while( top != NULL ) {
-        Rules *Rtmp = top->next;
-
-        if( top->INST0 ) free( top->INST0 ); // free the Instruction string head
-
-        if( top->b_private_razRule ) // need to free razRule?
-        {
-            Rule *pR = top->razRule;
-            if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
-
-            free( pR->vector.LVCT );
-
-            if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
-
-            free( pR->colRef.SCRF );
-
-            ClearRulesCache( pR );
-
-            free( pR );
-        }
-
-        free( top );
-        top = Rtmp;
-    }
-
-    delete pLUP->ATTCArray;
-    delete pLUP->INST;
-}
 
 void s52plib::DestroyLUPArray( wxArrayOfLUPrec *pLUPArray )
 {
@@ -925,6 +1256,8 @@ void s52plib::ClearCNSYLUPArray( void )
 
 bool s52plib::S52_flush_Plib()
 {
+    if(!m_bOK)
+        return false;
 
     //    OpenGL Hashmaps
     CARC_Hash::iterator ita;
@@ -934,12 +1267,6 @@ bool s52plib::S52_flush_Plib()
     }
     m_CARC_hashmap.clear();
 
-    // destroy look-up tables
-    DestroyLUPArray( lineLUPArray );
-    DestroyLUPArray( pointSimplLUPArray );
-    DestroyLUPArray( pointPaperLUPArray );
-    DestroyLUPArray( areaPlaineLUPArray );
-    DestroyLUPArray( areaSymbolLUPArray );
     DestroyLUPArray( condSymbolLUPArray );
 
 //      Destroy Rules
@@ -964,62 +1291,22 @@ bool s52plib::S52_flush_Plib()
     return TRUE;
 }
 
-LUPrec *s52plib::S52_LUPLookup( LUPname LUP_Name, const char * objectName, S57Obj *pObj,
-        bool bStrict )
-
+LUPrec *s52plib::S52_LUPLookup( LUPname LUP_Name, const char * objectName, S57Obj *pObj, bool bStrict )
 {
     LUPrec *LUP = NULL;
     LUPrec *LUPCandidate;
 
-    wxArrayOfLUPrec *la = SelectLUPARRAY( LUP_Name );
-
-    if( NULL == la ) // S52PLIB probably did not load
-    return NULL;
-
-    wxArrayPtrVoid *nameMatch = new wxArrayPtrVoid;
-
-    int ocnt = 0;
-
-    int first_match = 0;
-    int index = 0;
-    int index_max = la->GetCount();
-
-    //        This technique of extracting proper LUPs depends on the fact that
-    //        the LUPs have been sorted in their array, by OBCL.
-    //        Thus, all the LUPS with the same OBCL will be grouped together
-
-    while( !first_match && ( index < index_max ) ) {
-        LUPCandidate = la->Item( index );
-        if( !strcmp( objectName, LUPCandidate->OBCL ) ) {
-            first_match = 1;
-            ocnt++;
-            nameMatch->Add( LUPCandidate );
-            index++;
-            break;
-        }
-        index++;
-    }
-
-    while( first_match && ( index < index_max ) ) {
-        LUPCandidate = la->Item( index );
-        if( !strcmp( objectName, LUPCandidate->OBCL ) ) {
-            ocnt++;
-            nameMatch->Add( LUPCandidate );
-        } else {
-            break;
-        }
-
-        index++;
-    }
-
-    if( ocnt )
-        LUP = FindBestLUP( nameMatch, pObj->att_array, pObj->attVal, pObj->n_attr, bStrict );
-
-    nameMatch->Clear();
-    delete nameMatch;
-
+    LUPArrayContainer *plac = SelectLUPArrayContainer( LUP_Name );
+    
+    LUPHashIndex *hip = plac->GetArrayIndexHelper( objectName );
+    int nLUPs = hip->count;
+    int nStartIndex = hip->n_start;
+    
+    LUP = FindBestLUP( plac->GetLUPArray(), nStartIndex, nLUPs, pObj, bStrict );
+    
     return LUP;
 }
+
 
 void s52plib::SetPLIBColorScheme( wxString scheme )
 {
