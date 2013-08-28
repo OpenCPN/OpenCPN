@@ -227,6 +227,8 @@ bool Routeman::ActivateRoute( Route *pRouteToActivate, RoutePoint *pStartPoint )
     ActivateRoutePoint( pRouteToActivate, pActivePoint );
 
     m_bArrival = false;
+    m_arrival_min = 1e6;
+    m_arrival_test = 0;
 
     pRouteToActivate->m_bRtIsActive = true;
 
@@ -293,6 +295,9 @@ bool Routeman::ActivateRoutePoint( Route *pA, RoutePoint *pRP_target )
     g_blink_rect = pRP_target->CurrentRect_in_DC;               // set up global blinker
 
     m_bArrival = false;
+    m_arrival_min = 1e6;
+    m_arrival_test = 0;
+    
 
     //    Update the RouteProperties Dialog, if currently shown
     if( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) ) {
@@ -336,6 +341,8 @@ bool Routeman::ActivateNextPoint( Route *pr, bool skipped )
         g_blink_rect = pActivePoint->CurrentRect_in_DC;               // set up global blinker
 
         m_bArrival = false;
+        m_arrival_min = 1e6;
+        m_arrival_test = 0;
 
         //    Update the RouteProperties Dialog, if currently shown
         if( ( NULL != pRoutePropDialog ) && ( pRoutePropDialog->IsShown() ) ) {
@@ -443,27 +450,32 @@ bool Routeman::UpdateProgress()
             UpdateAutopilot();
 
             bDidArrival = true;
-
-            if( !ActivateNextPoint( pActiveRoute, false ) )            // at the end?
-                    {
-                Route *pthis_route = pActiveRoute;
-                DeactivateRoute( true );                  // this is an arrival
-                if( pthis_route->m_bDeleteOnArrival ) {
-                    pConfig->DeleteConfigRoute( pthis_route );
-                    DeleteRoute( pthis_route );
-                    if( pRoutePropDialog ) {
-                        pRoutePropDialog->SetRouteAndUpdate( NULL );
-                        pRoutePropDialog->UpdateProperties();
-                    }
-                    if( pRouteManagerDialog ) pRouteManagerDialog->UpdateRouteListCtrl();
-
-                }
-            }
+            DoAdvance();
 
         }
-
+        else {
+        //      Test to see if we are moving away from the arrival point, and
+        //      have been mving away for 2 seconds.  
+        //      If so, we should declare "Arrival"
+            if( (CurrentRangeToActiveNormalCrossing - m_arrival_min) >  pActiveRoute->GetRouteArrivalRadius() ){
+                if(++m_arrival_test > 2) {
+                    m_bArrival = true;
+                    UpdateAutopilot();
+                    
+                    bDidArrival = true;
+                    DoAdvance();
+                }
+            }
+            else
+                m_arrival_test = 0;
+                
+        }
+        
+        if( !bDidArrival )                                        
+            m_arrival_min = wxMin( m_arrival_min, CurrentRangeToActiveNormalCrossing );
+        
         if( !bDidArrival )                                        // Only once on arrival
-        UpdateAutopilot();
+            UpdateAutopilot();
 
         bret_val = true;                                        // a route is active
     }
@@ -472,6 +484,30 @@ bool Routeman::UpdateProgress()
 
     return bret_val;
 }
+
+void Routeman::DoAdvance(void)
+{
+    if( !ActivateNextPoint( pActiveRoute, false ) )            // at the end?
+    {
+        Route *pthis_route = pActiveRoute;
+        DeactivateRoute( true );                  // this is an arrival
+        
+        if( pthis_route->m_bDeleteOnArrival ) {
+            pConfig->DeleteConfigRoute( pthis_route );
+            DeleteRoute( pthis_route );
+            if( pRoutePropDialog ) {
+                pRoutePropDialog->SetRouteAndUpdate( NULL );
+                pRoutePropDialog->UpdateProperties();
+            }
+        }
+
+        if( pRouteManagerDialog )
+            pRouteManagerDialog->UpdateRouteListCtrl();
+                            
+    }
+}
+                    
+    
 
 bool Routeman::DeactivateRoute( bool b_arrival )
 {
