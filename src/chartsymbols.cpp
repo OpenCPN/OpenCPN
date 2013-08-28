@@ -231,9 +231,11 @@ void ChartSymbols::ProcessLookups( TiXmlElement* lookupNodes )
                 goto nextNode;
             }
             if( nodeType == _T("attrib-code") ) {
-                if( !lookup.attributeCodeArray ) lookup.attributeCodeArray = new wxArrayString();
+                if( !lookup.attributeCodeArray )
+                    lookup.attributeCodeArray = new wxArrayString();
                 wxString value = wxString( subNode->GetText(), wxConvUTF8 );
-                if( value == _T("ORIENT") ) value << _T(" ");
+                if( value.length() == 6 )
+                    value << _T(" ");
                 lookup.attributeCodeArray->Add( value );
                 goto nextNode;
             }
