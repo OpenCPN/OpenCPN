@@ -1094,10 +1094,10 @@ bool Quilt::Compose( const ViewPort &vp_in )
             vp_region.Subtract( chart_region );          // adding this chart
         }
     }
-
+    
     //    Now the rest of the candidates
-    //    We always walk the entire list for s57 quilts, to pick up eclipsed overlays
-    if( !vp_region.IsEmpty() || ( CHART_TYPE_S57 == m_reference_type ) ) {
+    bool b_has_overlays = false;
+    if( !vp_region.IsEmpty() ) {
         for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
             QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
 
@@ -1105,7 +1105,17 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
             const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
 
-
+            //  Skip overlays on this pass, so that they do not subtract from quilt and thus displace 
+            //  a geographical cell with the same extents.
+            //  Overlays will be picked up in the next pass, if any are found
+            if(  CHART_TYPE_S57 == m_reference_type ) {
+                if(s57chart::IsCellOverlayType(cte.GetpFullPath() )){
+                    b_has_overlays = true;
+                    continue;
+                }
+            }
+            
+            
             if( cte.GetScale() >= m_reference_scale ) {
                 //  If this chart appears in the no-show array, then simply include it, but
                 //  don't subtract its region when determining the smaller scale charts to include.....
@@ -1140,15 +1150,59 @@ bool Quilt::Compose( const ViewPort &vp_in )
                 pqc->b_include = false;                       // skip this chart, scale is too large
             }
 
-            /// Don't break early if the quilt is S57 ENC
-            /// This will allow the overlay cells found in Euro(Austrian) IENC to be included
-            if( CHART_TYPE_S57 != m_reference_type ) {
-                if( vp_region.IsEmpty() )                   // normal stop condition, quilt is full
-                    break;
-            }
+            if( vp_region.IsEmpty() )                   // normal stop condition, quilt is full
+                break;
         }
     }
 
+    
+    //  For S57 quilts, walk the list again to identify overlay cells found previously,
+    //  and make sure they are always included and not eclipsed
+    if( b_has_overlays && (CHART_TYPE_S57 == m_reference_type) ) {
+        for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
+            QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
+            
+            if( pqc->dbIndex == m_refchart_dbIndex ) continue;               // already did this one
+
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
+            
+            if( cte.GetScale() >= m_reference_scale ) {
+                bool b_in_noshow = false;
+                for( unsigned int ins = 0; ins < g_quilt_noshow_index_array.GetCount(); ins++ ) {
+                    if( g_quilt_noshow_index_array.Item( ins ) == pqc->dbIndex ) // chart is in the noshow list
+                    {
+                        b_in_noshow = true;
+                        break;
+                    }
+                }
+                
+                if( !b_in_noshow ) {
+                    //    Check intersection
+                    OCPNRegion vpu_region( vp_local.rv_rect );
+                    
+                    OCPNRegion chart_region = pqc->quilt_region;
+                    if( !chart_region.Empty() )
+                        vpu_region.Intersect( chart_region );
+                    
+                    if( vpu_region.IsEmpty() )
+                        pqc->b_include = false; // skip this chart, no true overlap
+                    else {
+                        if( ChartData->IsChartInCache( pqc->dbIndex ) ){
+                            ChartBase *pc = ChartData->OpenChartFromDB( pqc->dbIndex, FULL_INIT );
+                            s57chart *ps57 = dynamic_cast<s57chart *>( pc );
+                            bool b_overlay = ( ps57->GetUsageChar() == 'L' || ps57->GetUsageChar() == 'A' );
+                            if( b_overlay )
+                                pqc->b_include = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+  
+    
+    
     //    Walk the candidate list again, marking "eclipsed" charts
     //    which at this point are the ones with b_include == false .AND. whose scale is strictly smaller than the ref scale
     //    Also, maintain the member list of same
