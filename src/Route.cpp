@@ -40,6 +40,7 @@ extern int g_route_line_width;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern Multiplexer *g_pMUX;
+extern double           g_n_arrival_circle_radius;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST ( RouteList );
@@ -67,7 +68,7 @@ Route::Route( void )
     m_GUID = pWayPointMan->CreateGUID( NULL );
     m_btemp = false;
     
-    m_ArrivalRadius = .05;        // default, Miles
+    m_ArrivalRadius = g_n_arrival_circle_radius;        // Nautical Miles
 
     RBBox.Reset();
     m_bcrosses_idl = false;

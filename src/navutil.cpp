@@ -232,6 +232,7 @@ extern double           g_n_ownship_beam_meters;
 extern double           g_n_gps_antenna_offset_y;
 extern double           g_n_gps_antenna_offset_x;
 extern int              g_n_ownship_min_mm;
+extern double           g_n_arrival_circle_radius;
 
 extern bool             g_bPreserveScaleOnX;
 
@@ -1161,6 +1162,13 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "OwnShipMinSize" ), &g_n_ownship_min_mm, 1 );
     g_n_ownship_min_mm = wxMax(g_n_ownship_min_mm, 1);
 
+    g_n_arrival_circle_radius = .050;           // default
+    wxString racr;
+    Read( _T ( "RouteArrivalCircleRadius" ), &racr );
+    if(racr.Len())
+        racr.ToDouble( &g_n_arrival_circle_radius);
+    g_n_arrival_circle_radius = wxMax(g_n_arrival_circle_radius, .001);
+    
     Read( _T ( "FullScreenQuilt" ), &g_bFullScreenQuilt, 1 );
 
     Read( _T ( "StartWithTrackActive" ), &g_bTrackCarryOver, 0 );
@@ -2230,6 +2238,11 @@ void MyConfig::UpdateSettings()
     Write( _T ( "OwnShipGPSOffsetY" ), g_n_gps_antenna_offset_y );
     Write( _T ( "OwnShipMinSize" ), g_n_ownship_min_mm );
 
+    wxString racr;
+ //   racr.Printf( _T ( "%g" ), g_n_arrival_circle_radius );
+ //   Write( _T ( "RouteArrivalCircleRadius" ), racr );
+    Write( _T ( "RouteArrivalCircleRadius" ), wxString::Format( _T("%.2f"), g_n_arrival_circle_radius ));
+    
     Write( _T ( "ChartQuilting" ), g_bQuiltEnable );
     Write( _T ( "FullScreenQuilt" ), g_bFullScreenQuilt );
 

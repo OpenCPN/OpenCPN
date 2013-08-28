@@ -133,6 +133,7 @@ extern double           g_n_ownship_beam_meters;
 extern double           g_n_gps_antenna_offset_y;
 extern double           g_n_gps_antenna_offset_x;
 extern int              g_n_ownship_min_mm;
+extern double           g_n_arrival_circle_radius;
 
 extern bool             g_bEnableZoomToCursor;
 extern bool             g_bTrackDaily;
@@ -992,6 +993,21 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     pTrackPrecision = new wxChoice( itemPanelShip, wxID_ANY, wxDefaultPosition, m_pShipIconType->GetSize(), 3, trackAlt );
     pTrackGrid->Add( pTrackPrecision, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
+    //  Routes
+    wxStaticBox* routeText = new wxStaticBox( itemPanelShip, wxID_ANY, _("Routes") );
+    wxStaticBoxSizer* routeSizer = new wxStaticBoxSizer( routeText, wxVERTICAL );
+    ownShip->Add( routeSizer, 0, wxGROW | wxALL, border_size );
+    
+    wxFlexGridSizer *pRouteGrid = new wxFlexGridSizer( 1, 2, group_item_spacing, group_item_spacing );
+    pRouteGrid->AddGrowableCol( 1 );
+    routeSizer->Add( pRouteGrid, 0, wxALL | wxEXPAND, border_size );
+
+    wxStaticText* raText = new wxStaticText( itemPanelShip, wxID_STATIC, _("Waypoint Arrival Circle Radius (NMi)") );
+    pRouteGrid->Add( raText, 1, wxEXPAND | wxALL, group_item_spacing );
+
+    m_pText_ACRadius = new wxTextCtrl( itemPanelShip, -1 );
+    pRouteGrid->Add( m_pText_ACRadius, 0, wxALL | wxALIGN_RIGHT, group_item_spacing );
+    
     DimeControl( itemPanelShip );
 }
 
@@ -1952,7 +1968,8 @@ void options::SetInitialSettings()
     m_pOSGPSOffsetX->SetValue( wxString::Format( _T("%.1f"), g_n_gps_antenna_offset_x ) );
     m_pOSGPSOffsetY->SetValue( wxString::Format( _T("%.1f"), g_n_gps_antenna_offset_y ) );
     m_pOSMinSize->SetValue( wxString::Format( _T("%d"), g_n_ownship_min_mm ) );
-
+    m_pText_ACRadius->SetValue( wxString::Format( _T("%.2f"), g_n_arrival_circle_radius ) );
+    
     wxString buf;
     if( g_iNavAidRadarRingsNumberVisible > 10 ) g_iNavAidRadarRingsNumberVisible = 10;
     pNavAidRadarRingsNumberVisible->SetSelection( g_iNavAidRadarRingsNumberVisible );
@@ -2431,6 +2448,8 @@ void options::OnApplyClick( wxCommandEvent& event )
     }
     g_OwnShipIconType = m_pShipIconType->GetSelection();
 
+    m_pText_ACRadius->GetValue().ToDouble( &g_n_arrival_circle_radius );
+    
     //    Handle Chart Tab
     wxString dirname;
 

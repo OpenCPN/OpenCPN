@@ -539,6 +539,8 @@ double                    g_n_gps_antenna_offset_y;
 double                    g_n_gps_antenna_offset_x;
 int                       g_n_ownship_min_mm;
 
+double                    g_n_arrival_circle_radius;
+
 int                       g_nautosave_interval_seconds;
 
 bool                      g_bPreserveScaleOnX;
