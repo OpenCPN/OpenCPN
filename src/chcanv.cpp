@@ -8959,7 +8959,8 @@ void ChartCanvas::EmbossDepthScale( ocpnDC &dc )
         else if( s.StartsWith( _T("METERS") ) ) depth_unit_type = DEPTH_UNIT_METERS;
         else if( s.StartsWith( _T("METRES") ) ) depth_unit_type = DEPTH_UNIT_METERS;
         else if( s.StartsWith( _T("METRIC") ) ) depth_unit_type = DEPTH_UNIT_METERS;
-
+        else if( s.StartsWith( _T("METER") ) ) depth_unit_type = DEPTH_UNIT_METERS;
+        
     } else {
         if( Current_Ch ) {
             depth_unit_type = Current_Ch->GetDepthUnitType();
