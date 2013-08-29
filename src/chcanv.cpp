@@ -2587,7 +2587,8 @@ bool ChartCanvas::DoZoomCanvasIn( double factor )
         int new_db_index = m_pQuilt->AdjustRefOnZoomIn( proposed_scale_onscreen );
         if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
 
-        pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
+        if(pCurrentStack)
+            pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
     }
 
     if( pc ) {
@@ -2634,26 +2635,30 @@ bool ChartCanvas::DoZoomCanvasOut( double zoom_factor )
         double new_scale_ppm = target_scale_ppm;
         proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
 
+        if( ChartData && pc ) {
         //      If Current_Ch is not on the screen, unbound the zoomout
-        LLBBox viewbox = VPoint.GetBBox();
-        wxBoundingBox chart_box;
-        int current_index = ChartData->FinddbIndex( pc->GetFullPath() );
-        ChartData->GetDBBoundingBox( current_index, &chart_box );
-        if( ( viewbox.Intersect( chart_box ) == _OUT ) ) {
-            proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+            LLBBox viewbox = VPoint.GetBBox();
+            wxBoundingBox chart_box;
+            int current_index = ChartData->FinddbIndex( pc->GetFullPath() );
+            ChartData->GetDBBoundingBox( current_index, &chart_box );
+            if( ( viewbox.Intersect( chart_box ) == _OUT ) ) {
+                proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
                                             GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
-        }
-        else {
-        //  Clamp the minimum scale zoom-out to the value specified by the chart
-            double max_allowed_scale = 4.0 * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
-            proposed_scale_onscreen = wxMin( proposed_scale_onscreen, max_allowed_scale );
+            }
+            else {
+            //  Clamp the minimum scale zoom-out to the value specified by the chart
+                double max_allowed_scale = 4.0 * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
+                proposed_scale_onscreen = wxMin( proposed_scale_onscreen, max_allowed_scale );
+            }
         }
 
      } else {
         int new_db_index = m_pQuilt->AdjustRefOnZoomOut( proposed_scale_onscreen );
         if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
 
-        pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
+        if(pCurrentStack)
+            pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
+            
         b_smallest = m_pQuilt->IsChartSmallestScale( new_db_index );
 
         double target_scale_ppm = GetVPScale() / zoom_factor;

@@ -707,8 +707,10 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
 
 bool Quilt::IsChartSmallestScale( int dbIndex )
 {
+    if(!ChartData)
+        return false;
+    
     // find the smallest scale chart of the specified type on the extended stack array
-
     int specified_type = ChartData->GetDBChartType( dbIndex );
     int target_dbindex = -1;
 
