@@ -485,6 +485,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path)
 
             int t1 = ptiderec->max_time_add;
             double t1a = (double)(t1 / 100) + ((double)(t1 % 100))/60.;
+            t1a *= 60;                  // Minutes
             pIDX->IDX_ht_time_off = t1a;
             pIDX->IDX_ht_mpy = ptiderec->max_level_multiply;
             if(0. == pIDX->IDX_ht_mpy) pIDX->IDX_ht_mpy = 1.0;
@@ -493,6 +494,7 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path)
 
             t1 = ptiderec->min_time_add;
             t1a = (double)(t1 / 100) + ((double)(t1 % 100))/60.;
+            t1a *= 60;                  // Minutes
             pIDX->IDX_lt_time_off = t1a;
             pIDX->IDX_lt_mpy = ptiderec->min_level_multiply;
             if(0. == pIDX->IDX_lt_mpy) pIDX->IDX_lt_mpy = 1.0;
