@@ -5581,9 +5581,15 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( m_pEditRouteArray ) {
                     for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                         Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                        wxRect route_rect;
-                        pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
-                        pre_rect.Union( route_rect );
+                        //      Need to validate route pointer
+                        //      Route may be gone due to drgging close to ownship with
+                        //      "Delete On Arrival" state set, as in the case of
+                        //      navigating to an isolated waypoint on a temporary route
+                        if( g_pRouteMan->IsRouteValid(pr) ) {
+                            wxRect route_rect;
+                            pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                            pre_rect.Union( route_rect );
+                        }
                     }
                 }
 
@@ -5612,9 +5618,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( m_pEditRouteArray ) {
                     for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                         Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                        wxRect route_rect;
-                        pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
-                        post_rect.Union( route_rect );
+                        if( g_pRouteMan->IsRouteValid(pr) ) {
+                            wxRect route_rect;
+                            pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                            post_rect.Union( route_rect );
+                        }
                     }
                 }
 
@@ -5712,11 +5720,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 if( m_pEditRouteArray ) {
                     for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                         Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                        pr->CalculateBBox();
-                        pr->UpdateSegmentDistances();
-                        pr->m_bIsBeingEdited = false;
+                        if( g_pRouteMan->IsRouteValid(pr) ) {
+                            pr->CalculateBBox();
+                            pr->UpdateSegmentDistances();
+                            pr->m_bIsBeingEdited = false;
 
-                        pConfig->UpdateRoute( pr );
+                            pConfig->UpdateRoute( pr );
+                        }
                     }
                 }
 
@@ -5725,12 +5735,14 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     if( m_pEditRouteArray ) {
                         for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                             Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                            if( !pr->IsTrack() && pRoutePropDialog->m_pRoute == pr ) {
-                                pRoutePropDialog->SetRouteAndUpdate( pr );
-                                pRoutePropDialog->UpdateProperties();
-                            } else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
-                                pTrackPropDialog->SetTrackAndUpdate( pr );
-                                pTrackPropDialog->UpdateProperties();
+                            if( g_pRouteMan->IsRouteValid(pr) ) {
+                                if( !pr->IsTrack() && pRoutePropDialog->m_pRoute == pr ) {
+                                    pRoutePropDialog->SetRouteAndUpdate( pr );
+                                    pRoutePropDialog->UpdateProperties();
+                                } else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
+                                    pTrackPropDialog->SetTrackAndUpdate( pr );
+                                    pTrackPropDialog->UpdateProperties();
+                                }
                             }
                         }
                     }
