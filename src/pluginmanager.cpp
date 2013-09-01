@@ -1107,7 +1107,10 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bm
         ocpnStyle::Style*style = g_StyleManager->GetCurrentStyle();
         pttc->bitmap_day = new wxBitmap( style->GetIcon( _T("default_pi") ));
     } else {
-        pttc->bitmap_day = new wxBitmap(*bitmap);
+        //  Force a non-reference copy of the bitmap from the PlugIn
+        wxRect rb(0, 0, bitmap->GetWidth(), bitmap->GetHeight());
+        pttc->bitmap_day = new wxBitmap(rb.width, rb.height, -1);
+        *pttc->bitmap_day = bitmap->GetSubBitmap( rb );
     }
 
     pttc->bitmap_dusk = BuildDimmedToolBitmap(pttc->bitmap_day, 128);
@@ -1202,7 +1205,10 @@ void PlugInManager::SetToolbarItemBitmaps(int item, wxBitmap *bitmap, wxBitmap *
                     ocpnStyle::Style*style = g_StyleManager->GetCurrentStyle();
                     pttc->bitmap_day = new wxBitmap( style->GetIcon( _T("default_pi") ));
                 } else {
-                    pttc->bitmap_day = new wxBitmap(*bitmap);
+                    //  Force a non-reference copy of the bitmap from the PlugIn
+                    wxRect rb(0, 0, bitmap->GetWidth(), bitmap->GetHeight());
+                    pttc->bitmap_day = new wxBitmap(rb.width, rb.height, -1);
+                    *pttc->bitmap_day = bitmap->GetSubBitmap( rb );
                 }
 
                 pttc->bitmap_dusk = BuildDimmedToolBitmap(bitmap, 128);
