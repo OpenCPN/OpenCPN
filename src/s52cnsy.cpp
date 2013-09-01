@@ -1133,15 +1133,17 @@ static void *LIGHTS05 (void *param)
     GetDoubleAttr(obj, "VALNMR", valnmr);
 
 
-    char catlitstr[20];
+    char catlitstr[20] = {'\0'};
     GetStringAttr(obj, "CATLIT", catlitstr, 19);
 
-    char litvisstr[20];
+    char litvisstr[20] = {'\0'};;
     GetStringAttr(obj, "LITVIS", litvisstr, 19);
 
 
     char     catlit[LISTSIZE]  = {'\0'};
     char     litvis[LISTSIZE]  = {'\0'};
+    char     col_str[20] = {'\0'};
+    
     bool     flare_at_45       = false;
     double   sectr1            = UNKNOWN_DOUBLE;
     double   sectr2            = UNKNOWN_DOUBLE;
@@ -1180,7 +1182,6 @@ static void *LIGHTS05 (void *param)
 
     // Continuation A
 
-    char col_str[20];
     GetStringAttr(obj, "COLOUR", col_str, 19);
 
     if (strlen(col_str))
@@ -2713,7 +2714,7 @@ static void *TOPMAR01 (void *param)
 // searches for platforms by looking for other objects that are located at the
 // same position.. Based on the finding whether the platform is rigid or
 // floating, the respective upright or sloping symbol is selected and presented
-// at the objects location. Buoy symbols and topmark symbols have been
+// at the objects location. Buoyf symbols and topmark symbols have been
 // carefully designed to fit to each other when combined at the same position.
 // The result is a composed symbol that looks like the traditional symbols the
 // mariner is used to.
@@ -3276,7 +3277,7 @@ static wxString _LITDSN01(S57Obj *obj)
 
 
      // SIGGRP, (c)(c) ...
-      char grp_str[20] = {'\0'};;
+      char grp_str[20] = {'\0'};
       GetStringAttr(obj, "SIGGRP", grp_str, 19);
       if(strlen(grp_str))
       {
@@ -3318,7 +3319,7 @@ static wxString _LITDSN01(S57Obj *obj)
       }
 
       // COLOUR,
-      char col_str[20];
+      char col_str[20] = {'\0'};
 
       // Don't show for sectored lights since we are only showing one of the sectors.
       double sectrTest;
