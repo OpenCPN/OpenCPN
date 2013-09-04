@@ -84,7 +84,8 @@ class ViewPort
             wxPoint2DDouble GetDoublePixFromLL(double lat, double lon);
 
             OCPNRegion GetVPRegionIntersect( const OCPNRegion &Region, size_t n, float *llpoints, int chart_native_scale, wxPoint *ppoints = NULL );
-
+            wxRect GetVPRectIntersect( size_t n, float *llpoints );
+            
             void SetBoxes(void);
 
 //  Accessors

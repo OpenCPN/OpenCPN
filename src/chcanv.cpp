@@ -737,6 +737,32 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
 #endif
 }
 
+wxRect ViewPort::GetVPRectIntersect( size_t n, float *llpoints )
+{
+    //  Calculate the intersection between the currect VP screen 
+    //  and the bounding box of a polygon specified by lat/lon points.
+    
+    float *pfp = llpoints;
+
+    wxBoundingBox point_box;
+    for( unsigned int ip = 0; ip < n; ip++ ) {
+        point_box.Expand(pfp[1], pfp[0]);
+        pfp += 2;
+    }
+
+    wxPoint pul = GetPixFromLL( point_box.GetMaxY(), point_box.GetMinX() );
+    wxPoint plr = GetPixFromLL( point_box.GetMinY(), point_box.GetMaxX() );
+    
+    OCPNRegion r( pul, plr );
+    OCPNRegion rs(rv_rect);
+    
+    r.Intersect(rs);
+    
+    return r.GetBox();
+    
+ 
+}
+
 void ViewPort::SetBoxes( void )
 {
 
