@@ -291,7 +291,8 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
         if( ConfigurePen() ) {
 
             glDisable( GL_MULTISAMPLE );
-
+            glDisable( GL_LINE_STIPPLE );
+            
             bool b_draw_thick = false;
 
             float pen_width = wxMax(g_GLMinLineWidth, m_pen.GetWidth());
@@ -391,6 +392,7 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 
         bool b_draw_thick = false;
 
+        glDisable( GL_LINE_STIPPLE );
         SetGLStipple();
 
         //      Enable anti-aliased lines, at best quality

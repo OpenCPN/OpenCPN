@@ -2363,13 +2363,14 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
     } else // OpenGL mode
     {
-        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_ENABLE_BIT ); //Save state
+        //glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_ENABLE_BIT ); //Save state
 
         glColor3ub( c->R, c->G, c->B );
 
         glDisable( GL_LINE_SMOOTH );
         glDisable( GL_BLEND );
 
+        
         //    Set drawing width
         if( w > 1 ) {
             GLint parms[2];
@@ -2388,6 +2389,9 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glLineStipple( 1, 0x3333 );
             glEnable( GL_LINE_STIPPLE );
         }
+        else
+            glDisable( GL_LINE_STIPPLE );
+        
         
     }
 
@@ -2667,7 +2671,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     free( ptp );
                 }
 
-    if( !m_pdc ) glPopAttrib();
+//    if( !m_pdc ) glPopAttrib();
 
     if(pdotpen) {
         pdotpen->SetDashes( 1, NULL );
