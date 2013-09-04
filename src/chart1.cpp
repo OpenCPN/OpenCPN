@@ -593,6 +593,7 @@ ocpnFloatingCompassWindow *g_FloatingCompassDialog;
 int                       g_toolbar_x;
 int                       g_toolbar_y;
 long                      g_toolbar_orient;
+wxRect                    g_last_tb_rect;
 
 MyDialogPtrArray          g_MacShowDialogArray;
 
@@ -5226,28 +5227,40 @@ void RenderShadowText( wxDC *pdc, wxFont *pFont, wxString& str, int x, int y )
 
 }
 
+
 void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
 {
     if( !g_FloatingCompassDialog ) return;
 
-    //    Look for overlap
+    //    Look for change in overlap or positions
     bool b_update = false;
-    if( g_FloatingCompassDialog && g_FloatingToolbarDialog ) {
-        int x_offset = g_FloatingCompassDialog->GetXOffset();
-        int y_offset = g_FloatingCompassDialog->GetYOffset();
-        int cc1_edge_comp = 2;
-
-        // check to see if it would overlap if it was in its home position (upper right)
+    wxRect tentative_rect;
+    wxPoint tentative_pt_in_screen;
+    int x_offset;
+    int y_offset;
+    int size_x, size_y;
+    int cc1_edge_comp = 2;
+    
+    if( g_FloatingToolbarDialog ) {
+        x_offset = g_FloatingCompassDialog->GetXOffset();
+        y_offset = g_FloatingCompassDialog->GetYOffset();
+        g_FloatingCompassDialog->GetSize(&size_x, &size_y);
         wxSize parent_size = g_FloatingCompassDialog->GetParent()->GetSize();
-        wxPoint tentative_pt_in_screen = g_FloatingCompassDialog->GetParent()->ClientToScreen(
-                wxPoint(
-                        parent_size.x - g_FloatingCompassDialog->GetSize().x
-                        - x_offset - cc1_edge_comp, y_offset ) );
-        wxRect tentative_rect( tentative_pt_in_screen.x, tentative_pt_in_screen.y,
-                g_FloatingCompassDialog->GetSize().x, g_FloatingCompassDialog->GetSize().y );
+        
+        // check to see if it would overlap if it was in its home position (upper right)
+         tentative_pt_in_screen = g_FloatingCompassDialog->GetParent()->ClientToScreen(
+                wxPoint( parent_size.x - size_x - x_offset - cc1_edge_comp, y_offset ) );
+        
+        tentative_rect = wxRect( tentative_pt_in_screen.x, tentative_pt_in_screen.y, size_x, size_y );
 
+    }
+
+    //  If the toolbar location has changed, or the proposed compassDialog location has changed
+    if( (g_FloatingToolbarDialog->GetScreenRect() != g_last_tb_rect) ||
+        (tentative_rect != g_FloatingCompassDialog->GetScreenRect()) ) {
+    
         wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
-
+    
         //    if they would not intersect, go ahead and move it to the upper right
         //      Else it has to be on lower right
         if( !tb_rect.Intersects( tentative_rect ) ) {
@@ -5255,13 +5268,15 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
         }
         else {
             wxPoint posn_in_canvas =
-                wxPoint(
-                    cc1->GetSize().x - g_FloatingCompassDialog->GetSize().x - x_offset - cc1_edge_comp,
-                    cc1->GetSize().y - ( g_FloatingCompassDialog->GetSize().y + y_offset + cc1_edge_comp ) );
+                wxPoint( cc1->GetSize().x - size_x - x_offset - cc1_edge_comp,
+                    cc1->GetSize().y - ( size_y + y_offset + cc1_edge_comp ) );
             g_FloatingCompassDialog->Move( cc1->ClientToScreen( posn_in_canvas ) );
         }
 
         b_update = true;
+        
+        g_last_tb_rect = tb_rect;
+        
     }
 
     if( g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
