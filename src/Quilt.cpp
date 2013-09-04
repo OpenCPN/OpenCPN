@@ -1316,6 +1316,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
             if( pqc->dbIndex == m_refchart_dbIndex )
                 continue;               // already did this one
 
+             const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
+            
             //  Skip overlays on this pass, so that they do not subtract from quilt and thus displace 
             //  a geographical cell with the same extents.
             //  Overlays will be picked up in the next pass, if any are found
@@ -1325,8 +1327,6 @@ bool Quilt::Compose( const ViewPort &vp_in )
                     continue;
                 }
             }
-            
-            const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqc->dbIndex );
             
             if( cte.GetScale() >= m_reference_scale ) {
                 //  If this chart appears in the no-show array, then simply include it, but
