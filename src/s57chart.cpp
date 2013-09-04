@@ -1279,17 +1279,15 @@ double s57chart::GetNormalScaleMax( double canvas_scale_factor, int canvas_width
 
 void s57chart::GetPointPix( ObjRazRules *rzRules, float north, float east, wxPoint *r )
 {
-    r->x = (int) round(((east - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
-    r->y = (int) round(m_pixy_vp_center - ((north - m_northing_vp_center) * m_view_scale_ppm));
+    r->x = roundint(((east - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
+    r->y = roundint(m_pixy_vp_center - ((north - m_northing_vp_center) * m_view_scale_ppm));
 }
 
 void s57chart::GetPointPix( ObjRazRules *rzRules, wxPoint2DDouble *en, wxPoint *r, int nPoints )
 {
     for( int i = 0; i < nPoints; i++ ) {
-        r[i].x =
-                (int) round(((en[i].m_x - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
-        r[i].y =
-                (int) round(m_pixy_vp_center - ((en[i].m_y - m_northing_vp_center) * m_view_scale_ppm));
+        r[i].x =  roundint(((en[i].m_x - m_easting_vp_center) * m_view_scale_ppm) + m_pixx_vp_center);
+        r[i].y =  roundint(m_pixy_vp_center - ((en[i].m_y - m_northing_vp_center) * m_view_scale_ppm));
     }
 }
 

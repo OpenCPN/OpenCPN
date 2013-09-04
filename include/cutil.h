@@ -63,7 +63,14 @@ typedef struct {
 #endif
 #endif
 
-
+inline int roundint (double x)
+{
+    int tmp = static_cast<int> (x);
+    tmp += (x-tmp>=.5) - (x-tmp<=-.5);
+    return tmp;
+}
+     
+     
 
 //-------------------------------------------------------------------------------------------------------
 //  Cohen & Sutherland Line clipping algorithms
