@@ -670,7 +670,7 @@ void TrackPropDlg::OnTrackPropCopyTxtClick( wxCommandEvent& event )
             << _("Destination") << tab << m_pRoute->m_RouteEndString << eol
             << _("Total Distance") << tab << m_tTotDistance->GetValue() << eol
             << _("Speed") << tab << m_tAvgSpeed->GetValue() << eol
-            << _("Departure Time (m/d/y h:m)") << tab << m_pRoute->GetPoint(0)->GetCreateTime().Format() << eol
+            << _("Departure Time (m/d/y h:m)") << tab << m_pRoute->GetPoint(1)->GetCreateTime().Format() << eol
             << _("Time Enroute") << tab << m_tTimeEnroute->GetValue() << eol << eol;
 
     int noCols;
