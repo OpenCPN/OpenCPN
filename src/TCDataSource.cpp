@@ -53,9 +53,10 @@ TC_Error_Code TCDataSource::LoadData(const wxString &data_file_path)
 
     wxFileName fname(data_file_path);
 
-    if(!fname.FileExists()) return TC_FILE_NOT_FOUND;
+    if(!fname.FileExists())
+        return TC_FILE_NOT_FOUND;
 
-    if(fname.GetExt() == _T("IDX")) {
+    if( fname.GetExt() == _T("IDX") || fname.GetExt() == _T("idx")) {
         TCDS_Ascii_Harmonic *pdata = new TCDS_Ascii_Harmonic;
         m_pfactory = dynamic_cast<TCDataFactory*>(pdata);
         pTCDS_Ascii_Harmonic = pdata;
@@ -66,17 +67,22 @@ TC_Error_Code TCDataSource::LoadData(const wxString &data_file_path)
         pTCDS_Binary_Harmonic = pdata;
     }
 
-    TC_Error_Code err_code = m_pfactory->LoadData(data_file_path);
+    TC_Error_Code err_code;
+    if(m_pfactory) {
+        err_code = m_pfactory->LoadData(data_file_path);
 
     //  Mark the index entries individually with owner
-    unsigned int max_index = GetMaxIndex();
-    for(unsigned int i=0 ; i < max_index ; i++) {
-        IDX_entry *pIDX = GetIndexEntry( i );
-        if(pIDX){
-            pIDX->pDataSource = this;
-            strncpy(pIDX->source_ident, m_data_source_path.mb_str(), MAXNAMELEN );
+        unsigned int max_index = GetMaxIndex();
+        for(unsigned int i=0 ; i < max_index ; i++) {
+            IDX_entry *pIDX = GetIndexEntry( i );
+            if(pIDX){
+                pIDX->pDataSource = this;
+                strncpy(pIDX->source_ident, m_data_source_path.mb_str(), MAXNAMELEN );
+            }
         }
     }
+    else
+        err_code = TC_FILE_NOT_FOUND;
 
     return err_code;
 }
