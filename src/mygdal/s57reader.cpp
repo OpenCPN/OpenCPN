@@ -894,7 +894,7 @@ void S57Reader::ApplyObjectClassAttributes( DDFRecord * poRecord,
                 }
  
                 if( nLength ) {
-                    char *aa = (char *)calloc(nLength, 1);
+                    char *aa = (char *)calloc(nLength + 2, 1);
                     memcpy(aa, pszValue, nLength);
                     
                     int index = poFeature->GetFieldIndex(pszAcronym);
