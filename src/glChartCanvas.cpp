@@ -363,6 +363,7 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
                     1 ), m_data( NULL ), m_datasize( 0 ), m_bsetup( false )
 {
     m_ntex = 0;
+    m_b_paint_enable = true;
 }
 
 glChartCanvas::~glChartCanvas()
@@ -626,6 +627,10 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 //          g_bDebugOGL = true;
     }
 
+    //  Paint updates may have been externally disabled (temporarily, to avoid Yield() recursion performance loss)
+    if(!m_b_paint_enable)
+        return;
+        
     //      Recursion test, sometimes seen on GTK systems when wxBusyCursor is activated
     if( s_in_glpaint ) return;
     s_in_glpaint++;

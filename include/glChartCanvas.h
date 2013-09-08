@@ -53,6 +53,8 @@ public:
       void MouseEvent(wxMouseEvent& event);
 
       wxString GetRendererString(){ return m_renderer; }
+      void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
+      
 
       void Invalidate() { m_gl_cache_vp.Invalidate(); }
       void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, OCPNRegion &region);
@@ -96,6 +98,7 @@ protected:
       int  m_tex_max_res;
       int  m_tex_max_res_initial;
       bool m_b_mem_crunch;
+      bool m_b_paint_enable;
 
       //    For FBO(s)
       bool         m_b_useFBO;

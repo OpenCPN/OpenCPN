@@ -966,7 +966,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     warp_flag = false;
     m_bzooming = false;
     m_bmouse_key_mod = false;
-
+    m_b_paint_enable = true;
+    
     pss_overlay_bmp = NULL;
     pss_overlay_mask = NULL;
     m_bChartDragging = false;
@@ -1491,6 +1492,13 @@ int ChartCanvas::FindClosestCanvasChartdbIndex( int scale )
     }
 
     return new_dbIndex;
+}
+
+void ChartCanvas::EnablePaint(bool b_enable)
+{ 
+    m_b_paint_enable = b_enable;
+    if(m_glcc)
+        m_glcc->EnablePaint(b_enable);
 }
 
 bool ChartCanvas::IsQuiltDelta()
@@ -8093,6 +8101,9 @@ int s_in_update;
 void ChartCanvas::OnPaint( wxPaintEvent& event )
 {
 //      CALLGRIND_START_INSTRUMENTATION
+    //  Paint updates may have been externally disabled (temporarily, to avoid Yield() recursion performance loss)
+    if(!m_b_paint_enable)
+        return;
 
     wxPaintDC dc( this );
 
