@@ -224,11 +224,11 @@ public:
 
       NavObjectChanges        *m_pNavObjectChangesSet;
       NavObjectCollection1    *m_pNavObjectInputSet;
-
+      bool                    m_bSkipChangeSetUpdate;
+      
 //    These members are set/reset in Options dialog
       bool  m_bShowDebugWindows;
 
-      bool  m_bIsImporting;
 
 
 };

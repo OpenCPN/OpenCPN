@@ -799,11 +799,11 @@ void Routeman::DeleteAllRoutes( void )
         }
 
         if( !proute->m_bIsTrack ) {
-            pConfig->m_bIsImporting = true;
+            pConfig->m_bSkipChangeSetUpdate = true;
             pConfig->DeleteConfigRoute( proute );
             DeleteRoute( proute );
             node = pRouteList->GetFirst();                   // Route
-            pConfig->m_bIsImporting = false;
+            pConfig->m_bSkipChangeSetUpdate = false;
         } else
             node = node->GetNext();
     }
@@ -827,11 +827,11 @@ void Routeman::DeleteAllTracks( void )
         }
 
         if( proute->m_bIsTrack ) {
-            pConfig->m_bIsImporting = true;
+            pConfig->m_bSkipChangeSetUpdate = true;
             pConfig->DeleteConfigRoute( proute );
             DeleteTrack( proute );
             node = pRouteList->GetFirst();                   // Route
-            pConfig->m_bIsImporting = false;
+            pConfig->m_bSkipChangeSetUpdate = false;
         } else
             node = node->GetNext();
     }
@@ -882,10 +882,10 @@ void Routeman::DeleteTrack( Route *pRoute )
             if( pcontainer_route == NULL ) {
                 prp->m_bIsInRoute = false;          // Take this point out of this (and only) route
                 if( !prp->m_bKeepXRoute ) {
-                    pConfig->m_bIsImporting = true;
+                    pConfig->m_bSkipChangeSetUpdate = true;
                     pConfig->DeleteWayPoint( prp );
                     pSelect->DeleteSelectablePoint( prp, SELTYPE_ROUTEPOINT );
-                    pConfig->m_bIsImporting = false;
+                    pConfig->m_bSkipChangeSetUpdate = false;
 
                     pRoute->pRoutePointList->DeleteNode( pnode );
                     /*
@@ -1490,7 +1490,7 @@ void WayPointman::DeleteAllWaypoints( bool b_delete_used )
 
 }
 
-void WayPointman::DestroyWaypoint( RoutePoint *pRp )
+void WayPointman::DestroyWaypoint( RoutePoint *pRp, bool b_update_changeset )
 {
     if( pRp ) {
         // Get a list of all routes containing this point
@@ -1512,10 +1512,10 @@ void WayPointman::DestroyWaypoint( RoutePoint *pRp )
             for( unsigned int ir = 0; ir < proute_array->GetCount(); ir++ ) {
                 Route *pr = (Route *) proute_array->Item( ir );
                 if( pr->GetnPoints() < 2 ) {
-                    pConfig->m_bIsImporting = true;
+                    pConfig->m_bSkipChangeSetUpdate = true;
                     pConfig->DeleteConfigRoute( pr );
                     g_pRouteMan->DeleteRoute( pr );
-                    pConfig->m_bIsImporting = false;
+                    pConfig->m_bSkipChangeSetUpdate = false;
                 }
             }
 
@@ -1523,7 +1523,13 @@ void WayPointman::DestroyWaypoint( RoutePoint *pRp )
         }
 
         // Now it is safe to delete the point
+        if( ! b_update_changeset )
+            pConfig->m_bSkipChangeSetUpdate = true;             // turn OFF change-set updating if requested
+        
         pConfig->DeleteWayPoint( pRp );
+        
+        pConfig->m_bSkipChangeSetUpdate = false;
+        
         pSelect->DeleteSelectablePoint( pRp, SELTYPE_ROUTEPOINT );
 
         //TODO  FIXME

@@ -989,7 +989,7 @@ MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
     m_pNavObjectInputSet = NULL;
     m_pNavObjectChangesSet = new NavObjectChanges();
 
-    m_bIsImporting = false;
+    m_bSkipChangeSetUpdate = false;
 
     g_pConnectionParams = new wxArrayOfConnPrm();
 }
@@ -1975,7 +1975,7 @@ bool MyConfig::AddNewRoute( Route *pr, int crm )
         return true;
 
 
-    if( !m_bIsImporting ) {
+    if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddRoute( pr, "add" );
         StoreNavObjChanges();
     }
@@ -1988,7 +1988,7 @@ bool MyConfig::UpdateRoute( Route *pr )
     if( pr->m_bIsInLayer ) return true;
 
 
-    if( !m_bIsImporting ) {
+    if( !m_bSkipChangeSetUpdate ) {
         if( pr->m_bIsTrack )
             m_pNavObjectChangesSet->AddTrack( (Track *)pr, "update" );
         else
@@ -2005,7 +2005,7 @@ bool MyConfig::DeleteConfigRoute( Route *pr )
     if( pr->m_bIsInLayer )
         return true;
 
-    if( !m_bIsImporting ) {
+    if( !m_bSkipChangeSetUpdate ) {
         if( !pr->m_bIsTrack )
             m_pNavObjectChangesSet->AddRoute( (Track *)pr, "delete" );
         else
@@ -2021,7 +2021,7 @@ bool MyConfig::AddNewWayPoint( RoutePoint *pWP, int crm )
     if( pWP->m_bIsInLayer )
         return true;
 
-    if( !m_bIsImporting ) {
+    if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddWP( pWP, "add" );
         StoreNavObjChanges();
     }
@@ -2034,7 +2034,7 @@ bool MyConfig::UpdateWayPoint( RoutePoint *pWP )
     if( pWP->m_bIsInLayer )
         return true;
 
-    if( !m_bIsImporting ) {
+    if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddWP( pWP, "update" );
         StoreNavObjChanges();
     }
@@ -2047,7 +2047,7 @@ bool MyConfig::DeleteWayPoint( RoutePoint *pWP )
     if( pWP->m_bIsInLayer )
         return true;
 
-    if( !m_bIsImporting ) {
+    if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddWP( pWP, "delete" );
         StoreNavObjChanges();
     }

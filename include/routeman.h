@@ -173,7 +173,7 @@ public:
       bool SharedWptsExist();
       void DeleteAllWaypoints(bool b_delete_used);
       RoutePoint *FindRoutePointByGUID(const wxString &guid);
-      void DestroyWaypoint(RoutePoint *pRp);
+      void DestroyWaypoint(RoutePoint *pRp, bool b_update_changeset = true);
       void ClearRoutePointFonts(void);
       void ProcessIcons( ocpnStyle::Style* style );
 
