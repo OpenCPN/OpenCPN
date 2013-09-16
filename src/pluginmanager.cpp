@@ -23,6 +23,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#include <typeinfo>
 #include <wx/wx.h>
 #include <wx/dir.h>
 #include <wx/filename.h>
@@ -500,6 +501,25 @@ bool PlugInManager::CheckPluginCompatibility(wxString plugin_file)
     return b_compat;
 }
 
+bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
+{
+    int len = sizeof(PluginBlacklist) / sizeof(BlackListedPlugin);
+    int major = plugin->GetPlugInVersionMajor();
+    int minor = plugin->GetPlugInVersionMinor();
+    wxString name = wxString::FromAscii(typeid(*plugin).name());
+    for (int i = 0; i < len; i++) {
+        if( ( PluginBlacklist[i].all_lower && name.EndsWith(PluginBlacklist[i].name) && PluginBlacklist[i].version_major >= major && PluginBlacklist[i].version_minor >= minor ) ||
+            ( !PluginBlacklist[i].all_lower && name.EndsWith(PluginBlacklist[i].name) && PluginBlacklist[i].version_major == major && PluginBlacklist[i].version_minor == minor ) )
+        {
+            if ( PluginBlacklist[i].hard )
+                wxMessageBox(wxString::Format(_("Plugin %s (%s), version %i.%i was detected. This version is known to be unstable and will not be loaded, please go to the opencpn.org plugin downloads page and get the latest stable version of this plugin available."), PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(), major, minor), _("Broken plugin detected..."));
+            else
+                wxMessageBox(wxString::Format(_("Plugin %s (%s), version %i.%i was detected. This version is known to be unstable, please go to the opencpn.org plugin downloads page and get the latest stable version of this plugin available."), PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(), major, minor), _("Broken plugin detected..."));
+            return PluginBlacklist[i].hard;
+        }
+    }
+    return false;
+}
 
 PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 {
@@ -567,6 +587,11 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
     int ver = (api_major * 100) + api_minor;
     pic->m_api_version = ver;
 
+    if ( CheckBlacklistedPlugin(plug_in) ) {
+        delete plugin;
+        delete pic;
+        return NULL;
+    }
 
     switch(ver)
     {
