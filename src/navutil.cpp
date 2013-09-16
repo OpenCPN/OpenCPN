@@ -96,6 +96,8 @@ extern double           kLat, kLon;
 extern double           initial_scale_ppm;
 extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
+extern bool             g_bShowMag;
+extern double           g_UserVar;
 
 extern wxToolBarBase    *toolBar;
 
@@ -1075,6 +1077,13 @@ int MyConfig::LoadMyConfig( int iteration )
     g_COGFilterSec = wxMax(g_COGFilterSec, 1);
     g_SOGFilterSec = g_COGFilterSec;
 
+    Read( _T ( "ShowMag" ), &g_bShowMag, 0 );
+    g_UserVar = 0.0;
+    wxString umv;
+    Read( _T ( "UserMagVariation" ), &umv );
+    if(umv.Len())
+        umv.ToDouble( &g_UserVar );
+    
     Read( _T ( "ScreenBrightness" ), &g_nbrightness, 100 );
 
     Read( _T ( "MemFootprintMgrTimeSec" ), &g_MemFootSec, 60 );
@@ -2211,6 +2220,9 @@ void MyConfig::UpdateSettings()
     Write( _T ( "FilterNMEA_Avg" ), g_bfilter_cogsog );
     Write( _T ( "FilterNMEA_Sec" ), g_COGFilterSec );
 
+    Write( _T ( "ShowMag" ), g_bShowMag );
+    Write( _T ( "UserMagVariation" ), wxString::Format( _T("%.2f"), g_UserVar ) );
+ 
     Write( _T ( "CM93DetailFactor" ), g_cm93_zoom_factor );
     Write( _T ( "CM93DetailZoomPosX" ), g_cm93detail_dialog_x );
     Write( _T ( "CM93DetailZoomPosY" ), g_cm93detail_dialog_y );

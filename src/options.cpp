@@ -75,6 +75,9 @@ extern bool             g_bShowDepthUnits;
 extern bool             g_bskew_comp;
 extern bool             g_bopengl;
 extern bool             g_bsmoothpanzoom;
+extern bool             g_bShowMag;
+extern double           g_UserVar;
+
 
 extern wxString         *pInit_Chart_Dir;
 extern wxArrayOfConnPrm *g_pConnectionParams;
@@ -1428,6 +1431,25 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     pSkewComp = new wxCheckBox( itemPanelUI, ID_SKEWCOMPBOX,
             _("Show Skewed Raster Charts as North-Up") );
     itemStaticBoxSizerCDO->Add( pSkewComp, 1, wxALL, border_size );
+    
+    //  "Mag Heading" checkbox
+    pCBMagShow = new wxCheckBox( itemPanelUI, ID_MAGSHOWCHECKBOX, _("Show Magnetic bearings and headings") );
+    itemStaticBoxSizerCDO->Add( pCBMagShow, 0, wxALL, border_size );
+    
+    //  Mag Heading user variation
+    wxFlexGridSizer *pUserVarGrid = new wxFlexGridSizer( 2 );
+    pUserVarGrid->AddGrowableCol( 1 );
+    itemStaticBoxSizerCDO->Add( pUserVarGrid, 0, wxALL | wxEXPAND, border_size );
+    
+    wxStaticText* itemStaticTextUserVar = new wxStaticText( itemPanelUI, wxID_STATIC,
+                                                                    _("Assumed Magnetic Variation, deg.") );
+    pUserVarGrid->Add( itemStaticTextUserVar, 0, wxADJUST_MINSIZE,
+                           border_size );
+    
+    pMagVar = new wxTextCtrl( itemPanelUI, ID_TEXTCTRL, _T(""), wxDefaultPosition,
+                                       wxDefaultSize );
+    pUserVarGrid->Add( pMagVar, 0, wxALIGN_RIGHT | wxALL, border_size );
+    
 }
 
 void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_spacing, wxSize small_button_size )
@@ -1949,6 +1971,11 @@ void options::SetInitialSettings()
         pSmoothPanZoom->Disable();
     }
 
+    pCBMagShow->SetValue( g_bShowMag );
+    
+    s.Printf( _T("%4.1f"), g_UserVar );
+    pMagVar->SetValue(s);
+    
     pSDisplayGrid->SetValue( g_bDisplayGrid );
 
     pCBCourseUp->SetValue( g_bCourseUp );
@@ -2530,6 +2557,9 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bCourseUp = pCBCourseUp->GetValue();
     g_bLookAhead = pCBLookAhead->GetValue();
 
+    g_bShowMag = pCBMagShow->GetValue();
+    pMagVar->GetValue().ToDouble( &g_UserVar );
+    
     m_pText_OSCOG_Predictor->GetValue().ToDouble( &g_ownship_predictor_minutes );
 
     g_iNavAidRadarRingsNumberVisible = pNavAidRadarRingsNumberVisible->GetSelection();

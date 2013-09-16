@@ -597,6 +597,10 @@ wxRect                    g_last_tb_rect;
 
 MyDialogPtrArray          g_MacShowDialogArray;
 
+bool                      g_bShowMag;
+double                    g_UserVar;
+
+
 //                        OpenGL Globals
 int                       g_GPU_MemSize;
 bool                      g_b_useStencil;
@@ -4969,7 +4973,10 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         double brg, dist;
         DistanceBearingMercator( cursor_lat, cursor_lon, gLat, gLon, &brg, &dist );
         wxString s;
-        s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int) brg );
+        if( g_bShowMag )
+            s.Printf( wxString("%03d°(M)  ", wxConvUTF8 ), (int)GetTrueOrMag( brg ) );
+        else
+            s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int)GetTrueOrMag( brg ) );
         s << cc1->FormatDistanceAdaptive( dist );
         if( GetStatusBar() ) SetStatusText( s, STAT_FIELD_CURSOR_BRGRNG );
     }
@@ -5086,6 +5093,18 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             m_bdefer_resize = false;
         }
     }
+}
+
+double MyFrame::GetTrueOrMag(double a)
+{
+    if( g_bShowMag ){
+        if(!wxIsNaN(gVar))
+            return ((a + gVar) >= 0.) ? (a + gVar) : (a + gVar + 360.);
+        else
+            return ((a + g_UserVar) >= 0.) ? (a + g_UserVar) : (a + g_UserVar + 360.);
+    }
+    else
+        return a;
 }
 
 void MyFrame::TouchAISActive( void )
@@ -7240,9 +7259,14 @@ void MyFrame::PostProcessNNEA( bool pos_valid, const wxString &sfixtime )
             sogcog.Printf( _T("SOG %2.2f ") + getUsrSpeedUnit() + _T("  "), toUsrSpeed( gSog ) );
 
         wxString cogs;
-        if( wxIsNaN(gCog) ) cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
-        else
-            cogs.Printf( wxString("COG %2.0f°", wxConvUTF8 ), gCog );
+        if( wxIsNaN(gCog) )
+            cogs.Printf( wxString( "COG ---\u00B0", wxConvUTF8 ) );
+        else {
+            if( g_bShowMag )
+                cogs << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( gCog ) );
+            else
+                cogs << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( gCog ) );
+        }
 
         sogcog.Append( cogs );
         SetStatusText( sogcog, STAT_FIELD_SOGCOG );

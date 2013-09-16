@@ -65,6 +65,7 @@ extern RouteManagerDialog *pRouteManagerDialog;
 extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
 extern PlugInManager      *g_pi_manager;
+extern bool                g_bShowMag;
 
 extern MyFrame            *gFrame;
 
@@ -804,14 +805,22 @@ void RouteProp::CreateControls()
     m_wpList->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, 45 );
     m_wpList->InsertColumn( 1, _("To Waypoint"), wxLIST_FORMAT_LEFT, 120 );
     m_wpList->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, 70 );
-    m_wpList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, 70 );
+    
+    if(g_bShowMag)
+        m_wpList->InsertColumn( 3, _("Bearing (M)"), wxLIST_FORMAT_LEFT, 80 );
+    else
+        m_wpList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, 80 );
+    
     m_wpList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, 85 );
     m_wpList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, 90 );
     m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, 135 );
     m_wpList->InsertColumn( 7, _("Speed"), wxLIST_FORMAT_CENTER, 72 );
     m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, 90 );
     m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, 90 );   // additional columt with WP description
-    m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, 70 );       // additional columt with WP new course. Is it same like "bearing" of the next WP.
+    if(g_bShowMag)
+        m_wpList->InsertColumn( 10, _("Course (M)"), wxLIST_FORMAT_LEFT, 80 );       // additional columt with WP new course. Is it same like "bearing" of the next WP.
+    else
+        m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, 80 );   // additional columt with WP new course. Is it same like "bearing" of the next WP.
     m_wpList->Hide();
 
     Connect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK,
@@ -1280,25 +1289,35 @@ bool RouteProp::UpdateProperties()
         // end of calculation
 
 
-            t.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( leg_dist ) );
-            if( arrival ) m_wpList->SetItem( item_line_index, 2, t );
-            if( !enroute ) m_wpList->SetItem( item_line_index, 2, nullify );
+        t.Printf( _T("%6.2f ") + getUsrDistanceUnit(), toUsrDistance( leg_dist ) );
+        if( arrival )
+            m_wpList->SetItem( item_line_index, 2, t );
+        if( !enroute )
+            m_wpList->SetItem( item_line_index, 2, nullify );
         prp->SetDistance(leg_dist); // save the course to the next waypoint for printing.
 
             //  Bearing
-            t.Printf( _T("%03.0f Deg. T"), brg );
-            if( arrival ) m_wpList->SetItem( item_line_index, 3, t );
-            if( !enroute ) m_wpList->SetItem( item_line_index, 3, nullify );
+        if( g_bShowMag )
+            t.Printf( _T("%03.0f Deg. M"), gFrame->GetTrueOrMag( brg ) );
+        else
+            t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( brg ) );
+        
+        if( arrival )
+            m_wpList->SetItem( item_line_index, 3, t );
+        if( !enroute )
+            m_wpList->SetItem( item_line_index, 3, nullify );
 
         // Course (bearing of next )
-        if (_next_prp)
-        {
-        t.Printf( _T("%03.0f Deg. T"), course );
-        if( arrival ) m_wpList->SetItem( item_line_index, 10, t );
-        }else
-        {
-          m_wpList->SetItem( item_line_index, 10, nullify );
+        if (_next_prp){
+            if( g_bShowMag )
+                t.Printf( _T("%03.0f Deg. M"), gFrame->GetTrueOrMag( course ) );
+            else
+                t.Printf( _T("%03.0f Deg. T"), gFrame->GetTrueOrMag( course ) );
+            if( arrival )
+                m_wpList->SetItem( item_line_index, 10, t );
         }
+        else
+            m_wpList->SetItem( item_line_index, 10, nullify );
 
             //  Lat/Lon
             wxString tlat = toSDMM( 1, prp->m_lat, prp->m_bIsInTrack );  // low precision for routes

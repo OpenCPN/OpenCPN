@@ -53,6 +53,7 @@ extern MyFrame          *gFrame;
 extern bool             g_bShowActiveRouteHighway;
 extern double           gCog;
 extern double           gSog;
+extern bool             g_bShowMag;
 
 extern ocpnStyle::StyleManager* g_StyleManager;
 
@@ -268,9 +269,16 @@ void ConsoleCanvas::UpdateRouteData()
 
 //    Brg
             float dcog = g_pRouteMan->GetCurrentBrgToActivePoint();
-            if( dcog >= 359.5 ) dcog = 0;
-            str_buf.Printf( _T("%6.0f"), dcog );
-            pBRG->SetAValue( str_buf );
+            if( dcog >= 359.5 )
+                dcog = 0;
+            
+            wxString cogstr;
+            if( g_bShowMag )
+                cogstr << wxString::Format( wxString("%6.0f(M)", wxConvUTF8 ), gFrame->GetTrueOrMag( dcog ) );
+            else
+                cogstr << wxString::Format( wxString("%6.0f", wxConvUTF8 ), gFrame->GetTrueOrMag( dcog ) );
+            
+            pBRG->SetAValue( cogstr );
 
 //    XTE
             str_buf.Printf( _T("%6.2f"), g_pRouteMan->GetCurrentXTEToActivePoint() );

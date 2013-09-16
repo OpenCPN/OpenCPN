@@ -296,6 +296,8 @@ class MyFrame: public wxFrame
     void ChartsRefresh(int dbi_hint, ViewPort &vp, bool b_purge = true);
 
     bool CheckGroup(int igroup);
+    double GetTrueOrMag(double a);
+    
 
     void TouchAISActive(void);
     void UpdateAISTool(void);

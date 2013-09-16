@@ -29,6 +29,9 @@ extern ChartCanvas *cc1;
 extern bool g_bAISRolloverShowClass;
 extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
+extern bool g_bShowMag;
+extern MyFrame *gFrame;
+
 
 //    Define and declare a hasmap for ERI Ship type strings, keyed by their UN Codes.
 WX_DECLARE_HASH_MAP(int, wxString, wxIntegerHash, wxIntegerEqual, ERIShipTypeHash);
@@ -369,9 +372,16 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
         if( Class == AIS_CLASS_A || Class == AIS_CLASS_B || Class == AIS_ARPA || Class == AIS_APRS ) {
             int crs = wxRound( COG );
-            if( crs < 360 ) courseStr = wxString::Format( _T("%03d&deg;"), crs );
-            else if( COG == 360.0 ) courseStr = _T("---");
-            else if( crs == 360 ) courseStr = _T("0&deg;");
+            if( crs < 360 ) {
+                if( g_bShowMag )
+                    courseStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+                else
+                    courseStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+            }   
+            else if( COG == 360.0 )
+                courseStr = _T("---");
+            else if( crs == 360 )
+                courseStr = _T("0&deg;");
 
             if( SOG <= 102.2 )
                 sogStr = wxString::Format( _T("%5.2f ") + getUsrSpeedUnit(), toUsrSpeed( SOG ) );
@@ -404,9 +414,14 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         rngStr = _("---");
 
     int brg = (int) wxRound( Brg );
-    if( Brg > 359.5 ) brg = 0;
-    if( b_positionOnceValid && bGPSValid && ( Brg >= 0. ) && ( Range_NM > 0. ) && ( fabs( Lat ) < 85. ) )
-        brgStr = wxString::Format( _T("%03d&deg;"), brg );
+    if( Brg > 359.5 )
+        brg = 0;
+    if( b_positionOnceValid && bGPSValid && ( Brg >= 0. ) && ( Range_NM > 0. ) && ( fabs( Lat ) < 85. ) ){
+        if( g_bShowMag )
+            brgStr << wxString::Format( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( Brg ) );
+        else
+            brgStr << wxString::Format( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( Brg ) );
+    }   
     else
         brgStr = _("---");
 
@@ -544,10 +559,17 @@ wxString AIS_Target_Data::GetRolloverString( void )
 
         int crs = wxRound( COG );
         if( b_positionOnceValid ) {
-            if( crs < 360 ) result
-                    << wxString::Format( wxString( " COG %03d°", wxConvUTF8 ), crs );
-            else if( COG == 360.0 ) result << _(" COG Unavailable");
-            else if( crs == 360 ) result << wxString( " COG 000°", wxConvUTF8 );
+            if( crs < 360 ) {
+                if( g_bShowMag )
+                    result << wxString::Format( wxString("COG %03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+                else
+                    result << wxString::Format( wxString("COG %03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( crs ) );
+            }
+                
+            else if( COG == 360.0 )
+                result << _(" COG Unavailable");
+            else if( crs == 360 )
+                result << wxString( " COG 000°", wxConvUTF8 );
         } else
             result << _(" COG Unavailable");
     }
