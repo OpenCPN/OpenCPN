@@ -134,6 +134,7 @@ AIS_Target_Data::AIS_Target_Data()
     blue_paddle = 0;
     bCPA_Valid = false;
     ROTIND = 0;
+    b_show_track = true;
 }
 
 AIS_Target_Data::~AIS_Target_Data()
@@ -698,3 +699,7 @@ void AIS_Target_Data::Toggle_AIS_CPA(void)
     b_show_AIS_CPA = !b_show_AIS_CPA ? true : false;
 }
 
+void AIS_Target_Data::ToggleShowTrack(void)
+{
+    b_show_track = !b_show_track ? true : false;
+}
