@@ -156,6 +156,7 @@ wxString                  glog_file;
 wxString                  gConfig_File;
 
 int                       g_unit_test_1;
+bool                      g_start_fullscreen;
 
 MyFrame                   *gFrame;
 
@@ -761,10 +762,9 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
 {
     //    Add some OpenCPN specific command line options
     parser.AddSwitch( _T("unit_test_1") );
-
     parser.AddSwitch( _T("p") );
-
     parser.AddSwitch( _T("no_opengl") );
+    parser.AddSwitch( _T("fullscreen") );
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
@@ -772,6 +772,7 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
     g_unit_test_1 = parser.Found( _T("unit_test_1") );
     g_bportable = parser.Found( _T("p") );
     g_bdisable_opengl = parser.Found( _T("no_opengl") );
+    g_start_fullscreen = parser.Found( _T("fullscreen") );
 
     return true;
 }
@@ -1742,7 +1743,7 @@ if( 0 == g_memCacheLimit )
 
     cc1 = new ChartCanvas( gFrame );                         // the chart display canvas
     gFrame->SetCanvasWindow( cc1 );
-
+    
     cc1->SetQuiltMode( g_bQuiltEnable );                     // set initial quilt mode
     cc1->m_bFollow = pConfig->st_bFollow;               // set initial state
     cc1->SetViewPoint( vLat, vLon, initial_scale_ppm, 0., 0. );
@@ -1756,6 +1757,9 @@ if( 0 == g_memCacheLimit )
     pthumbwin = new ThumbWin( cc1 );
 
     gFrame->ApplyGlobalSettings( 1, false );               // done once on init with resize
+    
+    if ( g_start_fullscreen )
+        gFrame->ToggleFullScreen();
 
     g_toolbar_x = wxMax(g_toolbar_x, 0);
     g_toolbar_y = wxMax(g_toolbar_y, 0);
