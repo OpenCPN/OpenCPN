@@ -1407,6 +1407,22 @@ bool MyApp::OnInit()
 
     g_config_version_string = vs;
 
+    //  Validate OpenGL functionality, if selected
+#ifdef __WXMSW__
+    if( /*g_bopengl &&*/ !g_bdisable_opengl ) {
+        wxFileName fn(std_path.GetExecutablePath());
+        bool b_test_result = TestGLCanvas(fn.GetPathWithSep() );
+        
+        if( !b_test_result )
+            wxLogMessage( _T("OpenGL disabled due to test app failure.") );
+        
+        g_bdisable_opengl = !b_test_result;
+    }
+#endif
+    
+    
+    
+    
  #ifdef USE_S57
 
 //      Set up a useable CPL library error handler for S57 stuff
@@ -2345,6 +2361,9 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
             dstr->SetOutputFilter(cp->OutputSentenceList);
             dstr->SetOutputFilterType(cp->OutputSentenceListType);
             dstr->SetChecksumCheck(cp->ChecksumCheck);
+            
+            cp->b_IsSetup = true;
+            
             g_pMUX->AddStream(dstr);
         }
     }
@@ -8695,6 +8714,35 @@ void RedirectIOToConsole()
 
 //#endif
 #endif
+
+
+#ifdef __WXMSW__
+bool TestGLCanvas(wxString &prog_dir)
+{
+    wxString test_app = prog_dir;
+    test_app += _T("cube.exe");
+    
+    if(::wxFileExists(test_app)){
+        long proc_return = ::wxExecute(test_app, wxEXEC_SYNC);
+        printf("OpenGL Test Process returned %0X\n", proc_return);
+        if(proc_return == 0)
+            printf("GLCanvas OK\n");
+        else
+            printf("GLCanvas failed to start, disabling OpenGL.\n");
+        
+        return (proc_return == 0);
+    }
+    else
+        return true;
+    
+    
+}
+#endif
+
+
+
+    
+
 
 #if 0
 /*************************************************************************
