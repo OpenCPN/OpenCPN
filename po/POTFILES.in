@@ -171,4 +171,4 @@ src/styles.cpp
 src/kml.cpp
 src/undo.cpp
 src/routeprintout.cpp
-
+src/TrackPropDlg.cpp

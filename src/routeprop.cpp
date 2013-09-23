@@ -95,16 +95,6 @@ extern RoutePrintSelection * pRoutePrintSelection;
 #define    EVTWILIGHT    5
 #define    NIGHT        6
 
-char daylight_status[][20] = {
-    "   ( - )",
-    "   (Twilight)",
-    "   (Sunrise)",
-    "   (Daytime)",
-    "   (Sunset)",
-    "   (Twilight)",
-    "   (Nighttime)"
-};
-
 /* Next high tide, low tide, transition of the mark level, or some
 combination.
 Bit      Meaning
@@ -133,6 +123,31 @@ char tide_status[][8] = {
 // adapted by author's permission from QBASIC source as published at
 //     http://www.stargazing.net/kepler
 
+wxString GetDaylightString(int index)
+{
+    switch (index)
+    {
+        case 0:
+            return      _T(" - ");
+        case 1:
+            return      _("MoTwilight");
+        case 2:
+            return      _("Sunrise");
+        case 3:
+            return      _("Daytime");
+        case 4:
+            return      _("Sunset");
+        case 5:
+            return      _("EvTwilight");
+        case 6:
+            return      _("Nighttime");
+            
+        default:
+            return      _T("");
+    }
+}
+
+            
 static double sign( double x )
 {
     if( x < 0. ) return -1.;
@@ -1350,8 +1365,10 @@ bool RouteProp::UpdateProperties()
                     wxString s = ts2s( act_starttime, tz_selection, (int) LMT_Offset,
                             DISPLAY_FORMAT );
                     time_form.Append( s );
-                    time_form.Append( wxString::From8BitData( &daylight_status[ds][0] ) );
-
+                    time_form.Append( _T("   (") );
+                    time_form.Append( GetDaylightString(ds) );
+                    time_form.Append( _T(")") );
+                    
                     if( ptcmgr ) {
                         int jx = 0;
                         if( prp->GetName().Find( _T("@~~") ) != wxNOT_FOUND ) {
@@ -1388,7 +1405,10 @@ bool RouteProp::UpdateProperties()
 
                         int ds = getDaylightStatus( prp->m_lat, prp->m_lon, ueta );
                         time_form = ts2s( ueta, tz_selection, LMT_Offset, DISPLAY_FORMAT );
-                        time_form.Append( wxString::From8BitData( &daylight_status[ds][0] ) );
+                        time_form.Append( _T("   (") );
+                        time_form.Append( GetDaylightString(ds) );
+                        time_form.Append( _T(")") );
+                        
 
                         if( ptcmgr ) {
                             int jx = 0;
