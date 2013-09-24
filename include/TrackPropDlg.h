@@ -162,7 +162,9 @@ class TrackPropDlg : public wxDialog
         void OnEditLinkToggle( wxCommandEvent& event );
 
 	public:
-		TrackPropDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track Properties"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 680,440 ), long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER|wxSTAY_ON_TOP ); 
+	TrackPropDlg( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Track Properties"),
+                              const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( 680,440 ),
+                              long style = wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxMINIMIZE_BOX|wxRESIZE_BORDER ); 
 		~TrackPropDlg();
 
 		void m_hyperlink1OnContextMenu( wxMouseEvent &event )

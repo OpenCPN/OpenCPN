@@ -73,6 +73,12 @@ wxString timestamp2s(wxDateTime ts, int tz_selection, long LMT_offset, int forma
 
 TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
 {
+    long wstyle = style;
+#ifdef __WXOSX__
+    wstyle |= wxSTAY_ON_TOP;
+#endif
+
+    SetWindowStyleFlag( wstyle ); 
 	this->SetSizeHints( wxSize( 670,440 ), wxDefaultSize );
 	
 	wxBoxSizer* bSizerMain;
