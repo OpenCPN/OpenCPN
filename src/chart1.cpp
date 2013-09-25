@@ -5329,7 +5329,10 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
 
 int MyFrame::GetnChartStack( void )
 {
-    return pCurrentStack->nEntry;
+    if(pCurrentStack)
+        return pCurrentStack->nEntry;
+    else
+        return 0;
 }
 
 //    Application memory footprint management
@@ -5546,6 +5549,9 @@ void MyFrame::SelectQuiltRefdbChart( int db_index )
 void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type,
         ChartFamilyEnum New_Family )
 {
+    if( !pCurrentStack ) 
+        return;
+    
     if( index < pCurrentStack->nEntry ) {
 //      Open the new chart
         ChartBase *pTentative_Chart;
@@ -5596,6 +5602,9 @@ void MyFrame::SelectChartFromStack( int index, bool bDir, ChartTypeEnum New_Type
 
 void MyFrame::SelectdbChart( int dbindex )
 {
+    if( !pCurrentStack ) 
+        return;
+    
     if( dbindex >= 0 ) {
 //      Open the new chart
         ChartBase *pTentative_Chart;
@@ -6217,6 +6226,9 @@ static int menu_selected_index;
 
 void MyFrame::PianoPopupMenu( int x, int y, int selected_index, int selected_dbIndex )
 {
+    if( !pCurrentStack ) 
+        return;
+    
     //    No context menu if quilting is disabled
     if( !cc1->GetQuiltMode() ) return;
 
@@ -6279,6 +6291,9 @@ void MyFrame::OnPianoMenuEnableChart( wxCommandEvent& event )
 
 void MyFrame::OnPianoMenuDisableChart( wxCommandEvent& event )
 {
+    if( !pCurrentStack ) 
+        return;
+    
     RemoveChartFromQuilt( menu_selected_dbIndex );
 
 //      It could happen that the chart being disabled is the reference chart....
