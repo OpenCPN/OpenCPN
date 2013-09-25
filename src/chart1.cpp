@@ -6183,9 +6183,11 @@ bool MyFrame::DoChartUpdate( void )
     if( bNewPiano ) UpdateControlBar();
 
     //  Update the ownship position on thumbnail chart, if shown
-    if( pthumbwin->IsShown() ) {
-        if( pthumbwin->pThumbChart ) if( pthumbwin->pThumbChart->UpdateThumbData( gLat, gLon ) ) pthumbwin->Refresh(
-                TRUE );
+    if( pthumbwin && pthumbwin->IsShown() ) {
+        if( pthumbwin->pThumbChart ){
+            if( pthumbwin->pThumbChart->UpdateThumbData( gLat, gLon ) )
+                pthumbwin->Refresh( TRUE );
+        }
     }
 
     bFirstAuto = false;                           // Auto open on program start
