@@ -1019,6 +1019,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     if ( !g_bdisable_opengl )
     {
+        wxLogMessage( _T("Creating glChartCanvas") );
         m_glcc = new glChartCanvas(this);
 
     #if wxCHECK_VERSION(2, 9, 0)
