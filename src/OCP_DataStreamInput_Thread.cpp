@@ -302,7 +302,10 @@ void *OCP_DataStreamInput_Thread::Entry()
 {
     wxString msg;
 
-
+    wxSleep(1);         //  allow Bluetooth SPP connections to re-cycle after the parent's test for existence.
+                        //  In the MS Bluetooth stack, there is apparently a minimum time required
+                        //  between CloseHandle() and CreateFile() on the same port.
+                        // FS#1008
 
     bool not_done;
     HANDLE hSerialComm = (HANDLE)(-1);

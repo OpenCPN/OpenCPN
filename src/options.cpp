@@ -2423,7 +2423,7 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
         pConnectionParams->OutputSentenceListType = WHITELIST;
     else
         pConnectionParams->OutputSentenceListType = BLACKLIST;
-    pConnectionParams->Port = m_comboPort->GetValue();
+    pConnectionParams->Port = m_comboPort->GetValue().BeforeFirst(' ');
     pConnectionParams->Protocol = PROTO_NMEA0183;
 
     pConnectionParams->bEnabled = m_connection_enabled;

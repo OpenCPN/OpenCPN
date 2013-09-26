@@ -8106,11 +8106,11 @@ wxArrayString *EnumerateSerialPorts( void )
                     if( GetLastError() == 122)  //ERROR_INSUFFICIENT_BUFFER, OK in this case
                         bOk = true;
                 }
-#if 0
+//#if 0
                 //      We could get friendly name and/or description here
+                TCHAR fname[256] = {0};
+                TCHAR desc[256] ={0};
                 if (bOk) {
-                    TCHAR fname[256];
-                    TCHAR desc[256];
                     BOOL bSuccess = SetupDiGetDeviceRegistryProperty(
                         hDevInfo, &devdata, SPDRP_FRIENDLYNAME, NULL,
                         (PBYTE)fname, sizeof(fname), NULL);
@@ -8119,7 +8119,7 @@ wxArrayString *EnumerateSerialPorts( void )
                         hDevInfo, &devdata, SPDRP_DEVICEDESC, NULL,
                         (PBYTE)desc, sizeof(desc), NULL);
                 }
-#endif
+//#endif
                 //  Get the "COMn string from the registry key
                 if(bOk) {
                     bool bFoundCom = false;
@@ -8142,17 +8142,20 @@ wxArrayString *EnumerateSerialPorts( void )
 
                     if( bFoundCom ) {
                         wxString port( dname, wxConvUTF8 );
-                        bool b_dupl = false;
 
-                        //      Add it to the return set if it has not already been found
+                        //      If the port has already been found, remove the prior entry
+                        //      in favor of this entry, which will have descriptive information appended
                         for( unsigned int n=0 ; n < preturn->GetCount() ; n++ ) {
                             if((preturn->Item(n)).IsSameAs(port)){
-                                b_dupl = true;
+                                preturn->RemoveAt( n );
                                 break;
                             }
                         }
-                        if(!b_dupl)
-                            preturn->Add( port );
+                        wxString desc_name( desc, wxConvUTF8 );         // append "description"
+                        port += _T(" ");
+                        port += desc_name;
+                            
+                        preturn->Add( port );
                     }
                 }
             }
