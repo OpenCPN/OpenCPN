@@ -367,7 +367,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_staticText7->Wrap( -1 );
 	gSizer3->Add( m_staticText7, 0, wxALL, 5 );
 	
-	wxString m_cOverlayColorsChoices[] = { _("Current"), _("Generic"), _("Quickscat"), _("SeaTemp"), _("Rain"), _("Cloud") };
+	wxString m_cOverlayColorsChoices[] = { _("Generic"), _("Quickscat"), _("AirTemp"), _("SeaTemp"), _("Rain"), _("Cloud"), _("Current") };
 	int m_cOverlayColorsNChoices = sizeof( m_cOverlayColorsChoices ) / sizeof( wxString );
 	m_cOverlayColors = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cOverlayColorsNChoices, m_cOverlayColorsChoices, 0 );
 	m_cOverlayColors->SetSelection( 0 );
