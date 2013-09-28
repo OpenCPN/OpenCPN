@@ -27,7 +27,7 @@
 
 #include "grib_pi.h"
 
-static const wxString units0_names[] = {_("Knots"), _("M/S"), _("MPH"), _("KPH"), wxEmptyString};
+static const wxString units0_names[] = {_("Knots"), _("m/s"), _("mph"), _("km/h"), wxEmptyString};
 static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), wxEmptyString};
 static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};
 static const wxString units3_names[] = {_("Celcius"), _("Fahrenheit"), wxEmptyString};
@@ -144,8 +144,8 @@ double GribOverlaySettings::CalibrationFactor(int settings)
     case 0: switch(Settings[settings].m_Units) {
         case KNOTS:  return 3.6 / 1.852;
         case M_S:    return 1;
-        case MPH:    return 3.6 / 1.852 * 1.15;
-        case KPH:    return 3.6 / 1.852 * 1.85;
+        case MPH:    return 3.6 / 1.60934;
+        case KPH:    return 3.6;
         } break;
     case 1: switch(Settings[settings].m_Units) {
         case MILLIBARS: return 1 / 100.;
@@ -176,7 +176,7 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings)
             case KNOTS:  return _T("kt");
             case M_S:    return _T("m/s");
             case MPH:    return _T("mph");
-            case KPH:    return _T("kmh");
+            case KPH:    return _T("km/h");
         } break;
         case 1: switch(Settings[settings].m_Units) {
             case MILLIBARS: return _T("hPa");
@@ -206,7 +206,7 @@ double GribOverlaySettings::GetMin(int settings)
     double min = 0;
     switch(settings) {
     case PRESSURE:        min = 84000;   break; /* 100's of millibars */
-    case AIR_TEMPERATURE: min = 273.15-100; break; /* kelvin */
+    case AIR_TEMPERATURE: min = 273.15-50; break; /* kelvin */
     case SEA_TEMPERATURE: min = 273.15-10;  break; /* kelvin */
     }
     return CalibrateValue(settings, min);
@@ -223,7 +223,7 @@ double GribOverlaySettings::GetMax(int settings)
     case CURRENT:         max = 20;      break; /* m/s */
     case PRECIPITATION:   max = 80;      break; /* mm */
     case CLOUD:           max = 100;     break; /* percent */
-    case AIR_TEMPERATURE: max = 273.15+100;  break; /* kelvin */
+    case AIR_TEMPERATURE: max = 273.15+50;  break; /* kelvin */
     case SEA_TEMPERATURE: max = 273.15+50;  break; /* kelvin */
     }
     return CalibrateValue(settings, max);

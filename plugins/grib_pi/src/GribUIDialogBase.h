@@ -61,9 +61,6 @@ class GRIBUIDialogBase : public wxDialog
 		wxFlexGridSizer* m_fgTrackingControls;
 		wxTextCtrl* m_tcWindSpeed;
 		wxTextCtrl* m_tcWindDirection;
-		wxCheckBox* m_cbWindScat;
-		wxTextCtrl* m_tcWindScatSpeed;
-		wxTextCtrl* m_tcWindScatDirection;
 		wxTextCtrl* m_tcWaveHeight;
 		wxTextCtrl* m_tcWaveDirection;
 		wxTextCtrl* m_tcCurrentVelocity;

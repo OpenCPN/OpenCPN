@@ -379,21 +379,16 @@ ColorMap GenericMap[] =
  {24, _T("#0000d0")}, {27, _T("#0400e0")}, {30, _T("#0800e0")}, {36, _T("#a000e0")},
  {42, _T("#c004c0")}, {48, _T("#c008a0")}, {56, _T("#c0a008")}};
 
-ColorMap QuickscatMap[] =
-{{0, _T("#000000")},  {5, _T("#000000")},  {10, _T("#00b2d9")}, {15, _T("#00d4d4")},
- {20, _T("#00d900")}, {25, _T("#d9d900")}, {30, _T("#d95700")}, {35, _T("#ae0000")},
- {40, _T("#870000")}, {45, _T("#414100")}};
-
 //    HTML colors taken from zygrib representation
 ColorMap AirTempMap[] =
-{{-90, _T("#283282")}, {-50, _T("#273c8c")}, {-45, _T("#264696")}, {-40, _T("#2350a0")},
- {-36, _T("#1f5aaa")}, {-32, _T("#1a64b4")}, {-28, _T("#136ec8")}, {-24, _T("#0c78e1")},
- {-21, _T("#0382e6")}, {-18, _T("#0091e6")}, {-15, _T("#009ee1")}, {-12, _T("#00a6dc")},
- {-9 , _T("#00b2d7")}, {-6 , _T("#00bed2")}, {-3 , _T("#28c8c8")}, {0  , _T("#78d2aa")},
- { 3 , _T("#8cdc78")}, { 6 , _T("#a0eb5f")}, { 9 , _T("#c8f550")}, {12 , _T("#f3fb02")},
- {15 , _T("#ffed00")}, {18 , _T("#ffdd00")}, { 21, _T("#ffc900")}, {24 , _T("#ffab00")},
- {28 , _T("#ff8100")}, {32 , _T("#f1780c")}, { 36, _T("#e26a23")}, {40 , _T("#d5453c")},
- {45 , _T("#b53c59")}};
+{{0, _T("#283282")}, {5, _T("#273c8c")}, {10, _T("#264696")}, {14, _T("#2350a0")},
+ {18, _T("#1f5aaa")}, {22, _T("#1a64b4")}, {26, _T("#136ec8")}, {29, _T("#0c78e1")},
+ {32, _T("#0382e6")}, {35, _T("#0091e6")}, {38, _T("#009ee1")}, {41 , _T("#00a6dc")}, 
+ {44 , _T("#00b2d7")}, {47 , _T("#00bed2")}, {50  , _T("#28c8c8")}, { 53 , _T("#78d2aa")}, 
+ { 56 , _T("#8cdc78")}, { 59 , _T("#a0eb5f")}, {62 , _T("#c8f550")}, {65 , _T("#f3fb02")}, 
+ {68 , _T("#ffed00")}, { 71, _T("#ffdd00")}, {74 , _T("#ffc900")}, {78 , _T("#ffab00")}, 
+ {82 , _T("#ff8100")}, { 86, _T("#f1780c")}, {90 , _T("#e26a23")}, {95 , _T("#d5453c")},
+ {100 , _T("#b53c59")}};
 
 ColorMap SeaTempMap[] =
 {{0, _T("#0000d9")},  {1, _T("#002ad9")},  {2, _T("#006ed9")},  {3, _T("#00b2d9")},
@@ -415,11 +410,11 @@ ColorMap CloudMap[] =
  {30, _T("#c8c8b4")}, {40, _T("#aaaa8c")}, {50, _T("#969678")}, {60, _T("#787864")},
  {70, _T("#646450")}, {80, _T("#5a5a46")}, {90, _T("#505036")}};
 
-ColorMap *ColorMaps[] = {CurrentMap, GenericMap, QuickscatMap, SeaTempMap, PrecipitationMap, CloudMap};
+ColorMap *ColorMaps[] = {CurrentMap, GenericMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
 
 enum {
-    CURRENT_GRAPHIC_INDEX, GENERIC_GRAPHIC_INDEX, QUICKSCAT_GRAPHIC_INDEX,
-    SEATEMP_GRAPHIC_INDEX, PRECIPITATION_GRAPHIC_INDEX, CLOUD_GRAPHIC_INDEX
+    GENERIC_GRAPHIC_INDEX, AIRTEMP__GRAPHIC_INDEX, SEATEMP_GRAPHIC_INDEX, 
+    PRECIPITATION_GRAPHIC_INDEX, CLOUD_GRAPHIC_INDEX, CURRENT_GRAPHIC_INDEX
 };
 
 wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
@@ -443,14 +438,14 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
         map = GenericMap;
         maplen = (sizeof GenericMap) / (sizeof *GenericMap);
         break;
-    case QUICKSCAT_GRAPHIC_INDEX:
-        map = QuickscatMap;
-        maplen = (sizeof QuickscatMap) / (sizeof *QuickscatMap);
+    case AIRTEMP__GRAPHIC_INDEX: 
+        map = AirTempMap;
+        maplen = (sizeof AirTempMap) / (sizeof *AirTempMap);
         break;
     case SEATEMP_GRAPHIC_INDEX: 
         map = SeaTempMap;
         maplen = (sizeof SeaTempMap) / (sizeof *SeaTempMap);
-        break;
+    break;
     case PRECIPITATION_GRAPHIC_INDEX:
         map = PrecipitationMap;
         maplen = (sizeof PrecipitationMap) / (sizeof *PrecipitationMap);
