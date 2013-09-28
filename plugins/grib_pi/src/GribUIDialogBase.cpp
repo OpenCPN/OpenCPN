@@ -87,15 +87,6 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_tcWindDirection->SetMaxLength( 3 ); 
 	m_fgTrackingControls->Add( m_tcWindDirection, 0, wxALL, 1 );
 	
-	m_cbWindScat = new wxCheckBox( this, wxID_ANY, _("Wind Scat"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_fgTrackingControls->Add( m_cbWindScat, 0, wxALL, 5 );
-	
-	m_tcWindScatSpeed = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	m_fgTrackingControls->Add( m_tcWindScatSpeed, 0, wxALL, 1 );
-	
-	m_tcWindScatDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), 0 );
-	m_fgTrackingControls->Add( m_tcWindScatDirection, 0, wxALL, 1 );
-	
 	m_cbWave = new wxCheckBox( this, ID_CB_SIG_WAVE_HEIGHT, _("Wave"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbWave, 0, wxALL, 5 );
 	
@@ -205,7 +196,6 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_bpSettings->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnSettings ), NULL, this );
 	m_bpRequest->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnRequest ), NULL, this );
 	m_cbWind->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
-	m_cbWindScat->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
 	m_cbWave->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
 	m_cbCurrent->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
 	m_cbWindGust->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
@@ -239,7 +229,6 @@ GRIBUIDialogBase::~GRIBUIDialogBase()
 	m_bpSettings->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnSettings ), NULL, this );
 	m_bpRequest->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnRequest ), NULL, this );
 	m_cbWind->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
-	m_cbWindScat->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
 	m_cbWave->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
 	m_cbCurrent->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
 	m_cbWindGust->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnCBAny ), NULL, this );
@@ -367,7 +356,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_staticText7->Wrap( -1 );
 	gSizer3->Add( m_staticText7, 0, wxALL, 5 );
 	
-	wxString m_cOverlayColorsChoices[] = { _("Current"), _("Generic"), _("Quickscat"), _("SeaTemp"), _("Rain"), _("Cloud") };
+	wxString m_cOverlayColorsChoices[] = { _("Generic"), _("AirTemp"), _("SeaTemp"), _("Rain"), _("Cloud"), _("Current") };
 	int m_cOverlayColorsNChoices = sizeof( m_cOverlayColorsChoices ) / sizeof( wxString );
 	m_cOverlayColors = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cOverlayColorsNChoices, m_cOverlayColorsChoices, 0 );
 	m_cOverlayColors->SetSelection( 0 );
