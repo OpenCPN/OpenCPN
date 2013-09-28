@@ -240,6 +240,8 @@ public:
     void OnXidOkClick( wxCommandEvent& event );
     void OnCancelClick( wxCommandEvent& event );
     void OnChooseFont( wxCommandEvent& event );
+    void OnCPAWarnClick( wxCommandEvent& event );
+    
 #ifdef __WXGTK__
     void OnChooseFontColor( wxCommandEvent& event );
 #endif
