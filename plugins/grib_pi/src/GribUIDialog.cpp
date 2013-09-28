@@ -398,8 +398,6 @@ void GRIBUIDialog::PopulateTrackingControls( void )
 
     AddTrackingControl(m_cbWind, m_tcWindSpeed, m_tcWindDirection,
                        m_pTimelineSet && RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY]);
-    AddTrackingControl(m_cbWindScat, m_tcWindScatSpeed, m_tcWindScatDirection,
-                       m_pTimelineSet && RecordArray[Idx_WINDSCAT_VX] && RecordArray[Idx_WINDSCAT_VY]);
     AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet && RecordArray[Idx_WIND_GUST]);
     AddTrackingControl(m_cbPressure, m_tcPressure, 0, m_pTimelineSet && RecordArray[Idx_PRESSURE]);
 
@@ -466,30 +464,6 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         } else {
             m_tcWindSpeed->SetValue( _("N/A") );
             m_tcWindDirection->SetValue(  _("N/A") );
-        }
-    }
-
-    //    Update the QuickScat (aka Wind) control
-    if( RecordArray[Idx_WINDSCAT_VX] && RecordArray[Idx_WINDSCAT_VY] ) {
-        double vx = RecordArray[Idx_WINDSCAT_VX]->
-            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-        double vy = RecordArray[Idx_WINDSCAT_VY]->
-            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-
-        if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-            vx = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vx);
-            vy = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vy);
-
-            double vkn = sqrt( vx * vx + vy * vy );
-            m_tcWindScatSpeed->SetValue( wxString::Format( _T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND), (int) vkn ) );
-
-            double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
-            if( ang > 360. ) ang -= 360.;
-            if( ang < 0. ) ang += 360.;
-            m_tcWindScatDirection->SetValue( wxString::Format( _T("%03d\u00B0"), (int) ( ang ) ) );
-        } else {
-            m_tcWindScatSpeed->SetValue( _("N/A") );
-            m_tcWindScatDirection->SetValue( _("N/A") );
         }
     }
 
@@ -1131,8 +1105,6 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                     case GRB_PRESSURE: idx = Idx_PRESSURE;   break;
                     case GRB_HTSGW:    idx = Idx_HTSIGW;  break;
                     case GRB_WVDIR:    idx = Idx_WVDIR;   break;
-                    case GRB_USCT:     idx = Idx_WINDSCAT_VX; break;
-                    case GRB_VSCT:     idx = Idx_WINDSCAT_VY; break;
                     case GRB_UOGRD:    idx = Idx_SEACURRENT_VX; break;
                     case GRB_VOGRD:    idx = Idx_SEACURRENT_VY; break;
                     case GRB_PRECIP_TOT: idx = Idx_PRECIP_TOT; break;
