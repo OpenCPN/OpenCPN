@@ -1300,10 +1300,48 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
             }
         }
     }
-
+ 
+ 
+    // Yellow
+    m_os_image_yellow_day = m_os_image_red_day.Copy();
+    
+    gimg_width = m_os_image_yellow_day.GetWidth();
+    gimg_height = m_os_image_yellow_day.GetHeight();
+    
+    m_os_image_yellow_dusk = m_os_image_red_day.Copy();
+    m_os_image_yellow_night = m_os_image_red_day.Copy();
+    
+    for( int iy = 0; iy < gimg_height; iy++ ) {
+        for( int ix = 0; ix < gimg_width; ix++ ) {
+            if( !m_os_image_yellow_day.IsTransparent( ix, iy ) ) {
+                wxImage::RGBValue rgb( m_os_image_yellow_day.GetRed( ix, iy ),
+                                       m_os_image_yellow_day.GetGreen( ix, iy ),
+                                       m_os_image_yellow_day.GetBlue( ix, iy ) );
+                wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
+                hsv.hue += 60./360.;             //shift to yellow        
+                wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
+                m_os_image_yellow_day.SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
+                
+                hsv = wxImage::RGBtoHSV( rgb );
+                hsv.value = hsv.value * factor_dusk;
+                hsv.hue += 60./360.;             // shift to yellow
+                nrgb = wxImage::HSVtoRGB( hsv );
+                m_os_image_yellow_dusk.SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
+                
+                hsv = wxImage::RGBtoHSV( rgb );
+                hsv.hue += 60./360.;             //shift to yellow
+                hsv.value = hsv.value * factor_night;
+                nrgb = wxImage::HSVtoRGB( hsv );
+                m_os_image_yellow_night.SetRGB( ix, iy, nrgb.red, nrgb.green, nrgb.blue );
+            }
+        }
+    }
+    
+    
     //  Set initial pointers to ownship images
     m_pos_image_red = &m_os_image_red_day;
-
+    m_pos_image_yellow = &m_os_image_yellow_day;
+    
     //  Look for user defined ownship image
     //  This may be found in the shared data location along with other user defined icons.
     //  and will be called "ownship.xpm" or "ownship.png"
@@ -2079,24 +2117,28 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     case GLOBAL_COLOR_SCHEME_DAY:
         m_pos_image_red = &m_os_image_red_day;
         m_pos_image_grey = &m_os_image_grey_day;
+        m_pos_image_yellow = &m_os_image_yellow_day;
         m_pos_image_user = m_pos_image_user_day;
         m_pos_image_user_grey = m_pos_image_user_grey_day;
         break;
     case GLOBAL_COLOR_SCHEME_DUSK:
         m_pos_image_red = &m_os_image_red_dusk;
         m_pos_image_grey = &m_os_image_grey_dusk;
+        m_pos_image_yellow = &m_os_image_yellow_dusk;
         m_pos_image_user = m_pos_image_user_dusk;
         m_pos_image_user_grey = m_pos_image_user_grey_dusk;
         break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
         m_pos_image_red = &m_os_image_red_night;
         m_pos_image_grey = &m_os_image_grey_night;
+        m_pos_image_yellow = &m_os_image_yellow_night;
         m_pos_image_user = m_pos_image_user_night;
         m_pos_image_user_grey = m_pos_image_user_grey_night;
         break;
     default:
         m_pos_image_red = &m_os_image_red_day;
         m_pos_image_grey = &m_os_image_grey_day;
+        m_pos_image_yellow = &m_os_image_yellow_day;
         m_pos_image_user = m_pos_image_user_day;
         m_pos_image_user_grey = m_pos_image_user_grey_day;
         break;
@@ -3233,9 +3275,11 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
         //     It changes color based on GPS and Chart accuracy/availability
         wxColour ship_color( GetGlobalColor( _T ( "URED" ) ) );         // default is OK
 
-        if( SHIP_NORMAL != m_ownship_state ) ship_color = GetGlobalColor( _T ( "GREY1" ) );
+        if( SHIP_NORMAL != m_ownship_state )
+            ship_color = GetGlobalColor( _T ( "GREY1" ) );
 
-        if( SHIP_LOWACCURACY == m_ownship_state ) ship_color = GetGlobalColor( _T ( "YELO1" ) );
+        if( SHIP_LOWACCURACY == m_ownship_state )
+            ship_color = GetGlobalColor( _T ( "YELO1" ) );
 
         if( GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
         {
@@ -3257,8 +3301,13 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
             wxImage pos_image;
             pos_image = m_pos_image_red->Copy();
-            if( SHIP_NORMAL != m_ownship_state ) pos_image = m_pos_image_grey->Copy();
+            
+            if( SHIP_LOWACCURACY == m_ownship_state )
+                pos_image = m_pos_image_yellow->Copy();
+            else if( SHIP_NORMAL != m_ownship_state )
+                pos_image = m_pos_image_grey->Copy();
 
+            
             //      Substitute user ownship image if found
             if( m_pos_image_user ) {
                 pos_image = m_pos_image_user->Copy();

@@ -489,10 +489,14 @@ private:
       wxImage     m_os_image_grey_day;
       wxImage     m_os_image_grey_dusk;
       wxImage     m_os_image_grey_night;
-
+      wxImage     m_os_image_yellow_day;
+      wxImage     m_os_image_yellow_dusk;
+      wxImage     m_os_image_yellow_night;
+      
       wxImage     *m_pos_image_red;
       wxImage     *m_pos_image_grey;
-
+      wxImage     *m_pos_image_yellow;
+      
       wxImage     *m_pos_image_user;
       wxImage     *m_pos_image_user_grey;
 
