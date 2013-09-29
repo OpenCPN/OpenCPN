@@ -75,18 +75,18 @@ void GribOverlaySettings::Read()
         Settings[i].m_Units = (SettingsType)units;
 
         pConf->Read ( Name + _T ( "BarbedArrows" ), &Settings[i].m_bBarbedArrows, i==WIND);
-        int defrange[SETTINGS_COUNT] = {100, 100, 100, 10, 10, 1, 10, 1, 1};
+        int defrange[SETTINGS_COUNT] = {100, 100, 0, 0, 0, 0, 0, 0, 0};
         pConf->Read ( Name + _T ( "BarbedRange" ), &Settings[i].m_iBarbedRange, defrange[i]);
 
         pConf->Read ( Name + _T ( "IsoBars" ), &Settings[i].m_bIsoBars, i==PRESSURE);
-        double defspacing[SETTINGS_COUNT] = {10, 10, 10, 1, 2, .1, 10, 1, 1};
+        double defspacing[SETTINGS_COUNT] = {0, 0, 4, 0, 0, 0, 0, 2, 2};
         pConf->Read ( Name + _T ( "IsoBarSpacing" ), &Settings[i].m_iIsoBarSpacing, defspacing[i]);
 
         pConf->Read ( Name + _T ( "DirectionArrows" ), &Settings[i].m_bDirectionArrows, i==CURRENT);
         pConf->Read ( Name + _T ( "DirectionArrowSize" ), &Settings[i].m_iDirectionArrowSize, 10);
 
         pConf->Read ( Name + _T ( "OverlayMap" ), &Settings[i].m_bOverlayMap, i!=WIND && i!=PRESSURE);
-        int defcolor[SETTINGS_COUNT] = {1, 1, 1, 1, 0, 4, 5, 3, 3};
+        int defcolor[SETTINGS_COUNT] = {1, 1, 0, 0, 6, 4, 5, 2, 3};
         pConf->Read ( Name + _T ( "OverlayMapColors" ), &Settings[i].m_iOverlayMapColors, defcolor[i]);
 
         pConf->Read ( Name + _T ( "Numbers" ), &Settings[i].m_bNumbers, 0);
@@ -216,8 +216,8 @@ double GribOverlaySettings::GetMax(int settings)
 {
     double max = 0;
     switch(settings) {
-    case WIND:            max = 200;     break; /* m/s */
-    case WIND_GUST:       max = 200;     break; /* m/s */
+    case WIND:            max = 40;     break; /* m/s */
+    case WIND_GUST:       max = 40;     break; /* m/s */
     case PRESSURE:        max = 112000;  break; /* 100s of millibars */
     case WAVE:            max = 12;      break; /* meters */
     case CURRENT:         max = 20;      break; /* m/s */
@@ -295,6 +295,7 @@ void GribSettingsDialog::SetDataTypeSettings(int settings)
 void GribSettingsDialog::ReadDataTypeSettings(int settings)
 {
     GribOverlaySettings::OverlayDataSettings &odc = m_Settings.Settings[settings];
+
     m_cDataUnits->SetSelection(odc.m_Units);
     m_cbBarbedArrows->SetValue(odc.m_bBarbedArrows);
     m_sBarbedRange->SetValue(odc.m_iBarbedRange);
@@ -306,6 +307,75 @@ void GribSettingsDialog::ReadDataTypeSettings(int settings)
     m_cOverlayColors->SetSelection(odc.m_iOverlayMapColors);
     m_cbNumbers->SetValue(odc.m_bNumbers);
     m_sNumbersSpacing->SetValue(odc.m_iNumbersSpacing);
+    ShowFittingSettings(settings);
+}
+
+void GribSettingsDialog::ShowFittingSettings( int settings )
+{
+    //Hide all Parameters
+    m_cbBarbedArrows->Show(false);
+    m_tBarbedRange->Show(false);
+    m_sBarbedRange->Show(false);
+    m_cbIsoBars->Show(false);
+    m_tIsoBarSpacing->Show(false);
+    m_sIsoBarSpacing->Show(false);
+    m_cbDirectionArrows->Show(false);
+    m_tDirectionArrowSize->Show(false);
+    m_sDirectionArrowSize->Show(false);
+    m_cbOverlayMap->Show(false);
+    m_tOverlayColors->Show(false);
+    m_cOverlayColors->Show(false);
+    //Show only fitting parameters
+    switch(settings){
+    case 0:
+        ShowSettings( 1 );
+        ShowSettings( 4 );
+        break;
+    case 2:
+        ShowSettings( 2 );
+        m_cbIsoBars->SetLabel(_("Iso Bars"));
+        break;
+    case 3:
+    case 4:
+        ShowSettings( 3 );
+        ShowSettings( 4 );
+        break;
+    case 1:
+    case 5:
+    case 6:
+        ShowSettings( 4 );
+        break;
+    case 7:
+    case 8:
+        ShowSettings( 2 );
+        m_cbIsoBars->SetLabel(_("Iso Temperatures"));
+        ShowSettings( 4 );
+    }
+}
+
+void GribSettingsDialog::ShowSettings( int params )
+{
+    switch(params){
+    case 1:
+        m_cbBarbedArrows->Show();
+        m_tBarbedRange->Show();
+        m_sBarbedRange->Show();
+        break;
+    case 2:
+        m_cbIsoBars->Show();
+        m_tIsoBarSpacing->Show();
+        m_sIsoBarSpacing->Show();
+        break;
+    case 3:
+        m_cbDirectionArrows->Show();
+        m_tDirectionArrowSize->Show();
+        m_sDirectionArrowSize->Show();
+        break;
+    case 4:
+        m_cbOverlayMap->Show();
+        m_tOverlayColors->Show();
+        m_cOverlayColors->Show();
+    }
 }
 
 void GribSettingsDialog::PopulateUnits(int settings)
@@ -321,6 +391,8 @@ void GribSettingsDialog::OnDataTypeChoice( wxCommandEvent& event )
     m_lastdatatype = m_cDataType->GetSelection();
     PopulateUnits(m_lastdatatype);
     ReadDataTypeSettings(m_lastdatatype);
+    this->Fit();
+    this->Refresh();
 }
 
 void GribSettingsDialog::OnApply( wxCommandEvent& event )

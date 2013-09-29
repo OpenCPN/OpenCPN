@@ -119,12 +119,16 @@ class GribSettingsDialogBase : public wxDialog
 		wxChoice* m_cDataType;
 		wxChoice* m_cDataUnits;
 		wxCheckBox* m_cbBarbedArrows;
+		wxStaticText* m_tBarbedRange;
 		wxSpinCtrl* m_sBarbedRange;
 		wxCheckBox* m_cbIsoBars;
+		wxStaticText* m_tIsoBarSpacing;
 		wxSpinCtrl* m_sIsoBarSpacing;
 		wxCheckBox* m_cbDirectionArrows;
+		wxStaticText* m_tDirectionArrowSize;
 		wxSpinCtrl* m_sDirectionArrowSize;
 		wxCheckBox* m_cbOverlayMap;
+		wxStaticText* m_tOverlayColors;
 		wxChoice* m_cOverlayColors;
 		wxCheckBox* m_cbNumbers;
 		wxSpinCtrl* m_sNumbersSpacing;

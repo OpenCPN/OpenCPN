@@ -91,6 +91,8 @@ private:
     void SetDataTypeSettings(int settings);
     void ReadDataTypeSettings(int settings);
     void PopulateUnits(int settings);
+    void ShowFittingSettings (int settings);
+    void ShowSettings( int params );
     void OnDataTypeChoice( wxCommandEvent& event );
     void OnApply( wxCommandEvent& event );
     void OnIntepolateChange( wxCommandEvent& event );

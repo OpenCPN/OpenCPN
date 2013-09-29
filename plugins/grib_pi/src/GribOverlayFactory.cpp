@@ -379,6 +379,14 @@ ColorMap GenericMap[] =
  {24, _T("#0000d0")}, {27, _T("#0400e0")}, {30, _T("#0800e0")}, {36, _T("#a000e0")},
  {42, _T("#c004c0")}, {48, _T("#c008a0")}, {56, _T("#c0a008")}};
 
+//    HTML colors taken from zygrib representation 
+ColorMap WindMap[] =
+{{0, _T("#288CFF")},{3, _T("#00AFFF")},{6, _T("#00DCE1")},{9, _T("#00F7B0")},{12, _T("#00EA9C")},
+{15, _T("#82F059")},{18, _T("#F0F503")},{21, _T("#FFED00")},{24, _T("#FFDB00")},{27, _T("#FFC700")},
+{30, _T("#FFB400")},{33, _T("#FF9800")},{36, _T("#FF7E00")},{39, _T("#F77800")},{42, _T("#EC7814")},
+{45, _T("#E4711E")},{48, _T("#E06128")},{51, _T("#DC5132")},{54, _T("#D5453C")},{57, _T("#CD3A46")},
+{60, _T("#BE2C50")},{63, _T("#B41A5A")},{66, _T("#AA1464")},{70, _T("#962878")},{75, _T("#8C328C")}};
+
 //    HTML colors taken from zygrib representation
 ColorMap AirTempMap[] =
 {{0, _T("#283282")}, {5, _T("#273c8c")}, {10, _T("#264696")}, {14, _T("#2350a0")},
@@ -410,10 +418,10 @@ ColorMap CloudMap[] =
  {30, _T("#c8c8b4")}, {40, _T("#aaaa8c")}, {50, _T("#969678")}, {60, _T("#787864")},
  {70, _T("#646450")}, {80, _T("#5a5a46")}, {90, _T("#505036")}};
 
-ColorMap *ColorMaps[] = {CurrentMap, GenericMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
+ColorMap *ColorMaps[] = {CurrentMap, GenericMap, WindMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
 
 enum {
-    GENERIC_GRAPHIC_INDEX, AIRTEMP__GRAPHIC_INDEX, SEATEMP_GRAPHIC_INDEX, 
+    GENERIC_GRAPHIC_INDEX, WIND_GRAPHIC_INDEX, AIRTEMP__GRAPHIC_INDEX, SEATEMP_GRAPHIC_INDEX, 
     PRECIPITATION_GRAPHIC_INDEX, CLOUD_GRAPHIC_INDEX, CURRENT_GRAPHIC_INDEX
 };
 
@@ -437,6 +445,10 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
     case GENERIC_GRAPHIC_INDEX:
         map = GenericMap;
         maplen = (sizeof GenericMap) / (sizeof *GenericMap);
+        break;
+    case WIND_GRAPHIC_INDEX:
+        map = WindMap;
+        maplen = (sizeof WindMap) / (sizeof *WindMap);
         break;
     case AIRTEMP__GRAPHIC_INDEX: 
         map = AirTempMap;
