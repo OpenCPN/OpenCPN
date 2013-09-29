@@ -8797,8 +8797,10 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
     //      Retrigger the route leg popup timer
     //      This handles the case when the chart is moving in auto-follow mode, but no user mouse input is made.
     //      The timer handler may Hide() the popup if the chart moved enough
+    //      n.b.  We use slightly longer oneshot value to allow this method's Refresh() to complete before 
+    //      ptentially getting another Refresh() in the popup timer handler.
     if( (m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) || (m_pAISRolloverWin && m_pAISRolloverWin->IsActive()) )
-        m_RolloverPopupTimer.Start( 10, wxTIMER_ONE_SHOT ); 
+        m_RolloverPopupTimer.Start( 500, wxTIMER_ONE_SHOT ); 
          
 
     if( g_bopengl ) {
