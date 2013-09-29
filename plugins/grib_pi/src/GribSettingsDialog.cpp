@@ -115,7 +115,7 @@ void GribOverlaySettings::Write()
         pConf->Write ( Name + _T ( "Units" ), (int)Settings[i].m_Units);
         pConf->Write ( Name + _T ( "BarbedArrows" ), Settings[i].m_bBarbedArrows);
         pConf->Write ( Name + _T ( "BarbedRange" ), Settings[i].m_iBarbedRange);
-        pConf->Write ( Name + _T ( "IsoBars" ), Settings[i].m_bIsoBars);
+        pConf->Write ( Name + _T ( "Display Isobars" ), Settings[i].m_bIsoBars);
         pConf->Write ( Name + _T ( "IsoBarSpacing" ), Settings[i].m_iIsoBarSpacing);
         pConf->Write ( Name + _T ( "DirectionArrows" ), Settings[i].m_bDirectionArrows);
         pConf->Write ( Name + _T ( "DirectionArrowSize" ), Settings[i].m_iDirectionArrowSize);
@@ -333,7 +333,7 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
         break;
     case 2:
         ShowSettings( 2 );
-        m_cbIsoBars->SetLabel(_("Iso Bars"));
+        m_cbIsoBars->SetLabel(_("Display Isobars"));
         break;
     case 3:
     case 4:
@@ -348,7 +348,7 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     case 7:
     case 8:
         ShowSettings( 2 );
-        m_cbIsoBars->SetLabel(_("Iso Temperatures"));
+        m_cbIsoBars->SetLabel(_("Display Iso Temp. Lines"));
         ShowSettings( 4 );
     }
 }
