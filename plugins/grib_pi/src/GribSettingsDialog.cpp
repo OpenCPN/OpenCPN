@@ -325,6 +325,7 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     m_cbOverlayMap->Show(false);
     m_tOverlayColors->Show(false);
     m_cOverlayColors->Show(false);
+    this->Fit();
     //Show only fitting parameters
     switch(settings){
     case 0:
