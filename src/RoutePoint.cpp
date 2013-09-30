@@ -72,7 +72,9 @@ RoutePoint::RoutePoint()
     m_NameLocationOffsetY = 8;
     m_pMarkFont = NULL;
     m_btemp = false;
-
+    m_SelectNode = NULL;
+    m_ManagerNode = NULL;
+    
     m_HyperlinkList = new HyperlinkList;
 
     m_GUID = pWayPointMan->CreateGUID( this );
@@ -122,6 +124,10 @@ RoutePoint::RoutePoint( RoutePoint* orig )
 
     m_bIsInLayer = orig->m_bIsInLayer;
     m_GUID = pWayPointMan->CreateGUID( this );
+    
+    m_SelectNode = NULL;
+    m_ManagerNode = NULL;
+    
 }
 
 RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, const wxString& name,
@@ -160,6 +166,9 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
     m_pMarkFont = NULL;
     m_btemp = false;
 
+    m_SelectNode = NULL;
+    m_ManagerNode = NULL;
+    
     m_HyperlinkList = new HyperlinkList;
 
     if( !pGUID.IsEmpty() )
@@ -175,7 +184,8 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
 
     //  Possibly add the waypoint to the global list maintained by the waypoint manager
 
-    if( bAddToList && NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->Append( this );
+    if( bAddToList && NULL != pWayPointMan )
+        pWayPointMan->AddRoutePoint( this );
 
     m_bIsInLayer = g_bIsNewLayer;
     if( m_bIsInLayer ) {
@@ -188,7 +198,8 @@ RoutePoint::RoutePoint( double lat, double lon, const wxString& icon_ident, cons
 RoutePoint::~RoutePoint( void )
 {
 //  Remove this point from the global waypoint list
-    if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->DeleteObject( this );
+    if( NULL != pWayPointMan )
+        pWayPointMan->RemoveRoutePoint( this );
 
     if( m_HyperlinkList ) {
         m_HyperlinkList->DeleteContents( true );

@@ -2630,7 +2630,7 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
 
         wxProgressDialog *pprog = NULL;
-        int count = pWayPointMan->m_pWayPointList->GetCount();
+        int count = pWayPointMan->GetWaypointList()->GetCount();
         if( count > 200) {
             pprog = new wxProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL,
                                           wxPD_APP_MODAL | wxPD_SMOOTH |
@@ -2642,7 +2642,7 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         //WPTs
         int ic = 0;
 
-        wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+        wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
         RoutePoint *pr;
         while( node ) {
             if(pprog) {
@@ -2789,7 +2789,7 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon )
 {
     RoutePoint *pret = NULL;
 //    if( g_bIsNewLayer ) return NULL;
-    wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
     bool Exists = false;
     while( node ) {
         RoutePoint *pr = node->GetData();
@@ -2811,7 +2811,7 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon )
 
 RoutePoint *WaypointExists( const wxString& guid )
 {
-    wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
     while( node ) {
         RoutePoint *pr = node->GetData();
 

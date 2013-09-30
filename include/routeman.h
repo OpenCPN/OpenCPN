@@ -184,10 +184,13 @@ public:
 
       wxImageList *Getpmarkicon_image_list(void);
 
-      RoutePointList    *m_pWayPointList;
+      bool AddRoutePoint(RoutePoint *prp);
+      bool RemoveRoutePoint(RoutePoint *prp);
+      RoutePointList *GetWaypointList(void) { return m_pWayPointList; }
 
       void ProcessIcon(wxBitmap pimage, const wxString & key, const wxString & description);
 private:
+      RoutePointList    *m_pWayPointList;
       wxBitmap *CreateDimBitmap(wxBitmap *pBitmap, double factor);
 
       wxImageList       *pmarkicon_image_list;        // Current wxImageList, updated on colorscheme change

@@ -126,7 +126,7 @@ void doUndoDeleteWaypoint( UndoAction* action )
     RoutePoint* point = (RoutePoint*) action->before[0];
     pSelect->AddSelectableRoutePoint( point->m_lat, point->m_lon, point );
     pConfig->AddNewWayPoint( point, -1 );
-    if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->Append( point );
+    if( NULL != pWayPointMan ) pWayPointMan->AddRoutePoint( point );
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
 }
 
@@ -135,7 +135,7 @@ void doRedoDeleteWaypoint( UndoAction* action )
     RoutePoint* point = (RoutePoint*) action->before[0];
     pConfig->DeleteWayPoint( point );
     pSelect->DeleteSelectablePoint( point, SELTYPE_ROUTEPOINT );
-    if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->DeleteObject( point );
+    if( NULL != pWayPointMan ) pWayPointMan->RemoveRoutePoint( point );
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
 }
 
@@ -153,7 +153,7 @@ void doUndoAppendWaypoint( UndoAction* action )
     if( action->beforeType[0] == Undo_IsOrphanded ) {
         pConfig->DeleteWayPoint( point );
         pSelect->DeleteSelectablePoint( point, SELTYPE_ROUTEPOINT );
-        if( NULL != pWayPointMan ) pWayPointMan->m_pWayPointList->DeleteObject( point );
+        if( NULL != pWayPointMan ) pWayPointMan->RemoveRoutePoint( point );
     }
 
     if( noRouteLeftToRedo ) {

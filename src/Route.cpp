@@ -939,7 +939,7 @@ void Route::AssembleRoute( void )
         wxString GUID = RoutePointGUIDList[ip];
 
         //    And on the RoutePoints themselves
-        wxRoutePointListNode *prpnode = pWayPointMan->m_pWayPointList->GetFirst();
+        wxRoutePointListNode *prpnode = pWayPointMan->GetWaypointList()->GetFirst();
         while( prpnode ) {
             RoutePoint *prp = prpnode->GetData();
 
