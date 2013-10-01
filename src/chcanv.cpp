@@ -4547,8 +4547,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
             if( true_scale_display < g_Show_Target_Name_Scale ) { // from which scale to display name
 
-                wxString tgt_name =wxString::FromUTF8( td->ShipName );
-                tgt_name = tgt_name.substr( 0, tgt_name.find( _T ( "@" ), 0 ) );
+                wxString tgt_name = td->GetFullName();
                 tgt_name = tgt_name.substr( 0, tgt_name.find( _T ( "Unknown" ), 0) );
 
                 if ( tgt_name != wxEmptyString ) {
