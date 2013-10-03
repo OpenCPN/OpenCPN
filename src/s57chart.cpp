@@ -5079,8 +5079,16 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 psd = (double *) ps;
                 pdf = (float *) pd;
 
+#ifdef ARMHF
+                double lata, lona;
+                memcpy(&lona, psd, sizeof(double));
+                memcpy(&lata, &psd[1], sizeof(double));
+                lon = lona;
+                lat = lata;
+#else                
                 lon = *psd++;                                      // fetch the point
                 lat = *psd;
+#endif                
 
 
                 //  Calculate SM from chart common reference point
