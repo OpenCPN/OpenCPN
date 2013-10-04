@@ -31,6 +31,7 @@
 #include <wx/stattext.h>
 #include <wx/spinctrl.h>
 #include <wx/choice.h>
+#include <wx/statline.h>
 #include <wx/radiobox.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -132,6 +133,11 @@ class GribSettingsDialogBase : public wxDialog
 		wxChoice* m_cOverlayColors;
 		wxCheckBox* m_cbNumbers;
 		wxSpinCtrl* m_sNumbersSpacing;
+		wxStaticLine* m_staticline1;
+		wxStaticLine* m_staticline2;
+		wxStaticLine* m_staticline3;
+		wxStaticText* m_staticText24;
+		wxSlider* m_sTransparency;
 		wxStdDialogButtonSizer* m_sButton;
 		wxButton* m_sButtonOK;
 		wxButton* m_sButtonApply;
@@ -140,6 +146,7 @@ class GribSettingsDialogBase : public wxDialog
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnIntepolateChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnDataTypeChoice( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTransparencyChange( wxScrollEvent& event ) { event.Skip(); }
 		virtual void OnApply( wxCommandEvent& event ) { event.Skip(); }
 		
 	

@@ -264,7 +264,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
                 r = c.Red();
                 g = c.Green();
                 b = c.Blue();
-                a = 220;
+                a = m_Settings.m_iOverlayTransparency;
             } else {
                 r = 255;
                 g = 255;
@@ -347,7 +347,7 @@ wxImage GRIBOverlayFactory::CreateGribImage( int settings, GribRecord *pGR,
                 for( int xp = 0; xp < grib_pixel_size; xp++ )
                     for( int yp = 0; yp < grib_pixel_size; yp++ ) {
                         gr_image.SetRGB( ipix + xp, jpix + yp, r, g, b );
-                        gr_image.SetAlpha( ipix + xp, jpix + yp, 220 );
+                        gr_image.SetAlpha( ipix + xp, jpix + yp, m_Settings.m_iOverlayTransparency);
                     }
             } else {
                 for( int xp = 0; xp < grib_pixel_size; xp++ )

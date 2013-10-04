@@ -66,6 +66,7 @@ void GribOverlaySettings::Read()
     pConf->Read ( _T ( "SlicesPerUpdate" ), &m_SlicesPerUpdate, 2);
     pConf->Read ( _T ( "UpdatesPerSecond" ), &m_UpdatesPerSecond, 2);
     pConf->Read ( _T ( "HourDivider" ), &m_HourDivider, 2);
+    pConf->Read ( _T ( "OverlayTransparency" ), &m_iOverlayTransparency, 220);
 
     for(int i=0; i<SETTINGS_COUNT; i++) {
         wxString Name=name_from_index[i];
@@ -108,6 +109,7 @@ void GribOverlaySettings::Write()
     pConf->Write ( _T ( "SlicesPerUpdate" ), m_SlicesPerUpdate);
     pConf->Write ( _T ( "UpdatesPerSecond" ), m_UpdatesPerSecond);
     pConf->Write ( _T ( "HourDivider" ), m_HourDivider);
+    pConf->Write ( _T ( "OverlayTransparency" ), m_iOverlayTransparency);
 
     for(int i=0; i<SETTINGS_COUNT; i++) {
         wxString Name=name_from_index[i];
@@ -239,6 +241,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
     m_sSlicesPerUpdate->SetValue(m_Settings.m_SlicesPerUpdate);
     m_sUpdatesPerSecond->SetValue(m_Settings.m_UpdatesPerSecond);
     m_sHourDivider->SetValue(m_Settings.m_HourDivider);
+    m_sTransparency->SetValue(m_Settings.m_iOverlayTransparency);
     if(!m_cInterpolate->IsChecked() ) {              //hide no suiting parameters
         m_tSlicesPerUpdate->Hide();
         m_sSlicesPerUpdate->Hide();
@@ -290,6 +293,7 @@ void GribSettingsDialog::SetDataTypeSettings(int settings)
     odc.m_iOverlayMapColors = m_cOverlayColors->GetSelection();
     odc.m_bNumbers = m_cbNumbers->GetValue();
     odc.m_iNumbersSpacing = m_sNumbersSpacing->GetValue();
+
 }
 
 void GribSettingsDialog::ReadDataTypeSettings(int settings)
@@ -307,6 +311,7 @@ void GribSettingsDialog::ReadDataTypeSettings(int settings)
     m_cOverlayColors->SetSelection(odc.m_iOverlayMapColors);
     m_cbNumbers->SetValue(odc.m_bNumbers);
     m_sNumbersSpacing->SetValue(odc.m_iNumbersSpacing);
+
     ShowFittingSettings(settings);
 }
 
@@ -394,6 +399,13 @@ void GribSettingsDialog::OnDataTypeChoice( wxCommandEvent& event )
     ReadDataTypeSettings(m_lastdatatype);
     this->Fit();
     this->Refresh();
+}
+
+void GribSettingsDialog::OnTransparencyChange( wxScrollEvent& event  )
+{
+    m_extSettings = m_Settings;
+    m_Settings.m_iOverlayTransparency = m_sTransparency->GetValue();
+    m_parent.TimelineChanged();
 }
 
 void GribSettingsDialog::OnApply( wxCommandEvent& event )
