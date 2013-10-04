@@ -415,7 +415,7 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
             tp->p_bbox = new wxBoundingBox;
             double *pbb = (double *)m_buf_ptr;
             
-#ifdef armhf
+#ifdef ARMHF
             double abox[4];
             memcpy(&abox[0], pbb, 4 * sizeof(double));
             double minx = abox[0];
