@@ -994,6 +994,16 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             if( bnewtarget ) {
                 delete pTargetData;                           // this target is not going to be used
                 m_n_targets--;
+            } else {
+                //  If this is not an ownship message, update the AIS Target in the Selectable list
+                //  even if the message type was not recognized
+                if( !pTargetData->b_OwnShip ) {
+                    if( pTargetData->b_positionOnceValid ) {
+                        SelectItem *pSel = pSelectAIS->AddSelectablePoint( pTargetData->Lat,
+                                              pTargetData->Lon, (void *) mmsi_long, SELTYPE_AISTARGET );
+                        pSel->SetUserData( mmsi );
+                    }
+                }
             }
         }
 
