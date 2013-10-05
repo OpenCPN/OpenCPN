@@ -250,6 +250,7 @@ extern bool             g_bUseCM93;
 extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
 extern int              g_COGAvgSec;
+extern bool             g_bMagneticAPB;
 
 extern int              g_MemFootSec;
 extern int              g_MemFootMB;
@@ -1083,6 +1084,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UserMagVariation" ), &umv );
     if(umv.Len())
         umv.ToDouble( &g_UserVar );
+
+    Read( _T ( "UseMagAPB" ), &g_bMagneticAPB, 0 );
     
     Read( _T ( "ScreenBrightness" ), &g_nbrightness, 100 );
 
@@ -2240,7 +2243,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "CourseUpMode" ), g_bCourseUp );
     Write( _T ( "LookAheadMode" ), g_bLookAhead );
     Write( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
-
+    Write( _T ( "ShowMag" ), g_bMagneticAPB );
+    
     Write( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
     Write( _T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width );
     Write( _T ( "OwnShipIconType" ), g_OwnShipIconType );
