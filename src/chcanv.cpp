@@ -1903,16 +1903,11 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             }
             break;
 
-        case 13:             // Ctrl M // Drop Marker at cursor // Enter // Drop Marker at boat;
+        case 13:             // Ctrl M // Drop Marker at cursor 
         {
             double lat, lon;
-            if( m_modkeys == wxMOD_CONTROL ) {
-                lat = m_cursor_lat;
-                lon = m_cursor_lon;
-            } else {
-                lat = gLat;
-                lon = gLon;
-            }
+            lat = m_cursor_lat;
+            lon = m_cursor_lon;
             RoutePoint *pWP = new RoutePoint( lat, lon, g_default_wp_icon, wxEmptyString,
                                               GPX_EMPTY_STRING );
             pWP->m_bIsolatedMark = true;                      // This is an isolated mark
@@ -1938,7 +1933,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             break;
         }
 
-        case 32:             // Space                      //    Drop Marker at boat's position;
+        case 15:             // Ctrl O - Drop Marker at boat's position
         {
             RoutePoint *pWP = new RoutePoint( gLat, gLon, g_default_wp_icon, wxEmptyString,
                                               GPX_EMPTY_STRING );
