@@ -238,11 +238,11 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     wxPoint pmax;
     GetCanvasPixLL( vp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
 
-    int width = abs( pmax.x - pmin.x )/grib_pixel_size;
-    int height = abs( pmax.y - pmin.y )/grib_pixel_size;
+    int width = abs( pmax.x - pmin.x );// /grib_pixel_size;
+    int height = abs( pmax.y - pmin.y );// /grib_pixel_size;
 
-    //    Dont try to create enormous GRIB textures
-    if( ( width > 512 ) || ( height > 512 ))
+    //    Dont try to create enormous GRIB textures ( no more than the screen size )
+    if( width > m_ParentSize.GetWidth() || height > m_ParentSize.GetHeight() )
         return false;
 
     unsigned char *data = new unsigned char[width*height*4];
@@ -319,8 +319,8 @@ wxImage GRIBOverlayFactory::CreateGribImage( int settings, GribRecord *pGR,
     int width = abs( pmax.x - pmin.x );
     int height = abs( pmax.y - pmin.y );
 
-    //    Dont try to create enormous GRIB bitmaps
-    if( width > 1024 || height > 1024 )
+    //    Dont try to create enormous GRIB bitmaps ( no more than the screen size )
+    if( width > m_ParentSize.GetWidth() || height > m_ParentSize.GetHeight() )
         return wxNullImage;
 
     //    This could take a while....
@@ -499,7 +499,10 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
         return m_labelCache[value];
 
     wxString labels;
-    labels.Printf(_T("%d"), (int)(value+0.5));
+    if( value < 10 )
+        labels.Printf(_T("%0.1f"), value);
+    else
+        labels.Printf(_T("%d"), (int)(value+0.5));
 
     wxColour text_color;
     GetGlobalColor( _T ( "DILG3" ), &text_color );

@@ -208,8 +208,8 @@ double GribOverlaySettings::GetMin(int settings)
     double min = 0;
     switch(settings) {
     case PRESSURE:        min = 84000;   break; /* 100's of millibars */
-    case AIR_TEMPERATURE: min = 273.15-50; break; /* kelvin */
-    case SEA_TEMPERATURE: min = 273.15-10;  break; /* kelvin */
+    case AIR_TEMPERATURE: min = 273.15-40; break; /* kelvin */
+    case SEA_TEMPERATURE: min = 273.15-40;  break; /* kelvin */
     }
     return CalibrateValue(settings, min);
 }
@@ -221,8 +221,8 @@ double GribOverlaySettings::GetMax(int settings)
     case WIND:            max = 40;     break; /* m/s */
     case WIND_GUST:       max = 40;     break; /* m/s */
     case PRESSURE:        max = 112000;  break; /* 100s of millibars */
-    case WAVE:            max = 12;      break; /* meters */
-    case CURRENT:         max = 20;      break; /* m/s */
+    case WAVE:            max = 30;      break; /* meters */
+    case CURRENT:         max = 12;      break; /* m/s */
     case PRECIPITATION:   max = 80;      break; /* mm */
     case CLOUD:           max = 100;     break; /* percent */
     case AIR_TEMPERATURE: max = 273.15+50;  break; /* kelvin */
