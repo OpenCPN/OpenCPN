@@ -875,12 +875,15 @@ bool MyApp::OnInit()
 
     wxString version_crash = str_version_major + _T(".") + str_version_minor + _T(".") + str_version_patch;
     info.pszAppVersion = version_crash.c_str();
+    
+    info.uMiniDumpType = MiniDumpWithDataSegs;  // Include the data sections from all loaded modules.
+                                                // This results in the inclusion of global variables
 
     // URL for sending error reports over HTTP.
     info.pszEmailTo = _T("opencpn@bigdumboat.com");
     info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
     info.pszUrl = _T("http://bigdumboat.com/crashrpt/ocpn_crashrpt.php");
-    info.uPriorities[CR_HTTP] = 3;  // First try send report over HTTP
+    info.uPriorities[CR_HTTP] = 1;  // First try send report over HTTP
     info.uPriorities[CR_SMTP] = CR_NEGATIVE_PRIORITY;  // Second try send report over SMTP
     info.uPriorities[CR_SMAPI] = CR_NEGATIVE_PRIORITY; //1; // Third try send report over Simple MAPI
 
