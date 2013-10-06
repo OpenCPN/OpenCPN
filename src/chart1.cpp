@@ -8748,7 +8748,7 @@ void RedirectIOToConsole()
 bool TestGLCanvas(wxString &prog_dir)
 {
     wxString test_app = prog_dir;
-    test_app += _T("cube.exe");
+    test_app += _T("ocpn_gltest1.exe");
     
     if(::wxFileExists(test_app)){
         long proc_return = ::wxExecute(test_app, wxEXEC_SYNC);
