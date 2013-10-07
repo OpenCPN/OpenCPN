@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-13 12:43-0400\n"
+"POT-Creation-Date: 2013-10-06 23:19-0400\n"
 "PO-Revision-Date: 2011-01-09 19:39+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -301,6 +301,12 @@ msgstr ""
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "      \"Aluse nimi\" MMSI (Kutsung)"
 #
+msgid "%D Days, %H:%M"
+msgstr ""
+#
+msgid "%H:%M"
+msgstr ""
+#
 # 
 # 
 # 
@@ -500,6 +506,15 @@ msgstr ""
 #, fuzzy
 msgid "(unnamed)"
 msgstr "(Nimetu teekond)"
+#
+#
+#
+# 
+# 
+# 
+# 
+msgid "--"
+msgstr "--"
 #
 # 
 # 
@@ -782,6 +797,9 @@ msgstr ""
 msgid "Address"
 msgstr ""
 #
+msgid "Advanced"
+msgstr ""
+#
 # 
 # 
 msgid "Aground"
@@ -917,6 +935,9 @@ msgstr "Oled kindel, et tahad kustutada <KÕIK> vahepunktid?"
 msgid "Assumed 1 Mile Point"
 msgstr "Vale 1 Miili Punkt"
 #
+msgid "Assumed Magnetic Variation, deg."
+msgstr ""
+#
 # 
 # 
 # 
@@ -1023,6 +1044,14 @@ msgid "Bearing"
 msgstr "Kurss"
 #
 # 
+# 
+# 
+# 
+#, fuzzy
+msgid "Bearing (M)"
+msgstr "Kurss"
+#
+# 
 msgid "Black"
 msgstr ""
 #
@@ -1036,6 +1065,9 @@ msgstr ""
 # 
 msgid "Boundaries"
 msgstr "Piirid"
+#
+msgid "Broken plugin detected..."
+msgstr ""
 #
 msgid "Buddy"
 msgstr ""
@@ -1424,6 +1456,14 @@ msgstr "Sulge"
 # 
 # 
 #, fuzzy
+msgid "Color"
+msgstr "V&ärv:"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "Color:"
 msgstr "V&ärv:"
 #
@@ -1491,6 +1531,14 @@ msgstr ""
 # 
 #, fuzzy
 msgid "Course"
+msgstr "Kurss ülesse töörežiim"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Course (M)"
 msgstr "Kurss ülesse töörežiim"
 #
 # 
@@ -1586,6 +1634,9 @@ msgstr "Kirjatüübi seaded"
 #, fuzzy
 msgid "DataPort"
 msgstr "AIS-i andemte port"
+#
+msgid "Daytime"
+msgstr ""
 #
 # 
 # 
@@ -1758,6 +1809,14 @@ msgstr "Näita kategooriaid"
 #, fuzzy
 msgid "Display Options"
 msgstr "Kaardi vaate seaded"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Display parameters"
+msgstr "Näita kategooriaid"
 #
 # 
 # 
@@ -1991,6 +2050,19 @@ msgstr ""
 msgid "Estimated time : "
 msgstr ""
 #
+msgid "EvTwilight"
+msgstr ""
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Export"
+msgstr "&Ekspordi Teepunkt..."
+#
 # 
 # 
 # 
@@ -2005,6 +2077,14 @@ msgstr "&Ekspordi Kõik..."
 # 
 msgid "Export GPX file"
 msgstr "Ekspordi GPX fail"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Extend"
+msgstr "Lõpeta teekond"
 #
 # 
 # 
@@ -2105,6 +2185,9 @@ msgstr "Sunni täielikuks andmebaaside uuenduseks"
 msgid "Format uploads for Furuno GP3X"
 msgstr ""
 #
+msgid "From"
+msgstr ""
+#
 # 
 # 
 # 
@@ -2200,6 +2283,14 @@ msgstr "Näita AIS-i sihtmärke"
 # 
 #, fuzzy
 msgid "Hide Target CPA"
+msgstr "AIS-i sihtmärgi päring"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Hide Target Track"
 msgstr "AIS-i sihtmärgi päring"
 #
 msgid "Hide This Chart"
@@ -2732,6 +2823,9 @@ msgstr ""
 msgid "Miscellaneous Options"
 msgstr ""
 #
+msgid "MoTwilight"
+msgstr ""
+#
 # 
 # 
 msgid "Moored"
@@ -2822,6 +2916,9 @@ msgstr ""
 # 
 # 
 msgid "Next tide event"
+msgstr ""
+#
+msgid "Nighttime"
 msgstr ""
 #
 # 
@@ -3193,7 +3290,8 @@ msgstr "Mängi laevakellasid"
 # 
 # 
 # 
-msgid "Play Sound on CPA/TCPA Alerts"
+#, fuzzy
+msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "Mängi heli CPA/TCPA Alarmile"
 #
 # 
@@ -3211,6 +3309,20 @@ msgstr "Palun taaskäivita OpenCPN, et aktiveeruks keelefail"
 #, fuzzy
 msgid "Pleasure craft"
 msgstr "Mõõtmine välja"
+#
+#, c-format
+msgid ""
+"Plugin %s (%s), version %i.%i was detected. This version is known to be "
+"unstable and will not be loaded, please go to the opencpn.org plugin "
+"downloads page and get the latest stable version of this plugin available."
+msgstr ""
+#
+#, c-format
+msgid ""
+"Plugin %s (%s), version %i.%i was detected. This version is known to be "
+"unstable, please go to the opencpn.org plugin downloads page and get the "
+"latest stable version of this plugin available."
+msgstr ""
 #
 # 
 # 
@@ -3311,6 +3423,42 @@ msgstr "Säilita skaala kui vahetab kaarte"
 # 
 msgid "Preview:"
 msgstr "Eelvaade:"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Print"
+msgstr "Prindin"
 #
 # 
 # 
@@ -3413,6 +3561,14 @@ msgstr "Asukoht"
 # 
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "OpenCPN vajab uuendusi kaartide andmebaasi failidest...."
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Recorded points"
+msgstr "Muudan Teepunkti nime?"
 #
 # 
 msgid "Red"
@@ -3937,6 +4093,9 @@ msgstr ""
 msgid "Show Lat/Long as"
 msgstr "Näita AIS-i sihtmärke"
 #
+msgid "Show Magnetic bearings and headings"
+msgstr ""
+#
 # 
 # 
 # 
@@ -3966,6 +4125,14 @@ msgstr "Näita staatuse riba"
 # 
 #, fuzzy
 msgid "Show Target CPA"
+msgstr "Näita AIS-i sihtmärke"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Show Target Track"
 msgstr "Näita AIS-i sihtmärke"
 #
 # 
@@ -4180,6 +4347,14 @@ msgstr "Kiirus (sõlmed)"
 # 
 # 
 #, fuzzy
+msgid "Split"
+msgstr "Kustuta teekond"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "Split Route"
 msgstr "Kustuta teekond"
 #
@@ -4210,6 +4385,9 @@ msgstr ""
 msgid "Start"
 msgstr "Start"
 #
+msgid "Statistics"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4236,8 +4414,22 @@ msgstr ""
 # 
 # 
 #, fuzzy
+msgid "Style"
+msgstr "&Stiil:"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "Style:"
 msgstr "&Stiil:"
+#
+msgid "Sunrise"
+msgstr ""
+#
+msgid "Sunset"
+msgstr ""
 #
 # 
 # 
@@ -4252,14 +4444,6 @@ msgstr "Keela alarm sildutud/ankrus objektidele"
 # 
 msgid "Symbolized"
 msgstr "Sümboliseeritud"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "T"
-msgstr "Sinna"
 #
 # 
 # 
@@ -4462,8 +4646,26 @@ msgstr "Teekonna aeg"
 #
 # 
 # 
+# 
+# 
+#, fuzzy
+msgid "Time enroute"
+msgstr "Teekonna aeg"
+#
+# 
+# 
 msgid "Times shown as"
 msgstr ""
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Timestamp"
+msgstr "ETE/Timestamp"
 #
 # 
 # 
@@ -4478,6 +4680,14 @@ msgstr "Sinna"
 # 
 msgid "To Waypoint"
 msgstr "Teepunkti"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "To route"
+msgstr "Teekonna aeg"
 #
 # 
 # 
@@ -4516,6 +4726,14 @@ msgstr "Pikkus"
 # 
 # 
 #, fuzzy
+msgid "Total distance"
+msgstr "Kogu vahemaa"
+#
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "Tow"
 msgstr "Sinna"
 #
@@ -4533,6 +4751,23 @@ msgstr "Jäljed"
 # 
 msgid "Track Name"
 msgstr "Jälje nimi"
+#
+#
+#
+# 
+# 
+# 
+# 
+msgid "Track Properties"
+msgstr "Jälje omadused"
+#
+# 
+# 
+# 
+# 
+#, fuzzy, c-format
+msgid "Track Properties, Layer: %d"
+msgstr "Koha omadused"
 #
 # 
 # 
@@ -4662,6 +4897,9 @@ msgstr "Kasuta Garmini GRMN (host) modes, et laadida teepunktid ja teekonnad."
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Kasuta Garmini GRMN (host) modes, et laadida teepunktid ja teekonnad."
 #
+msgid "Use magnetic bearings in output sentence ECAPB"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4778,6 +5016,9 @@ msgstr "Hoiata kui TCPA on lähemal (Minutit):"
 msgid "Waypoint"
 msgstr "Teepunktid"
 #
+msgid "Waypoint Arrival Circle Radius (NMi)"
+msgstr ""
+#
 # 
 # 
 # 
@@ -4846,6 +5087,9 @@ msgstr "Kui font on allajoonitud"
 #
 # 
 msgid "White"
+msgstr ""
+#
+msgid "Width"
 msgstr ""
 #
 msgid "Width Over All (m)"
@@ -4979,6 +5223,14 @@ msgstr ""
 #
 # 
 # 
+# 
+# 
+#, fuzzy
+msgid "track"
+msgstr "Jäljed"
+#
+# 
+# 
 msgid "wgsox"
 msgstr ""
 #
@@ -5006,12 +5258,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "\n"
 #~ msgstr "\n"
+#
 #
 #
 #
@@ -5078,6 +5332,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5101,12 +5356,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Max. seisva objekti kiirus (sõlmed):"
+#
 #
 #
 #
@@ -5160,12 +5417,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "Kaardi projektsioon on tundmatu, jultunud Mercator:"
+#
 #
 #
 #
@@ -5243,6 +5502,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5254,6 +5514,7 @@ msgstr ""
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Ei suuda laadidal create_pi: "
+#
 #
 #
 #
@@ -5314,12 +5575,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr "Ei avanud AIS-i seeria porti"
+#
 #
 #
 #
@@ -5345,6 +5608,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5352,6 +5616,7 @@ msgstr ""
 #, fuzzy
 #~ msgid " COG Unavailable"
 #~ msgstr "Kaart pole saadaval"
+#
 #
 #
 #
@@ -5364,6 +5629,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5371,14 +5637,6 @@ msgstr ""
 #~ msgid "&Export Track..."
 #~ msgstr "&Ekspordi jälg..."
 #
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "&Export Wpt..."
-#~ msgstr "&Ekspordi Teepunkt..."
 #
 #
 #
@@ -5392,12 +5650,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "&Silence Alert"
 #~ msgstr "&Vaikne alarm"
+#
 #
 #
 #
@@ -5440,6 +5700,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5453,6 +5714,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5460,14 +5722,6 @@ msgstr ""
 #~ msgid "-"
 #~ msgstr "-"
 #
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "--"
-#~ msgstr "--"
 #
 #
 #
@@ -5478,6 +5732,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "---"
 #~ msgstr "--"
+#
 #
 #
 #
@@ -5521,6 +5776,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5534,6 +5790,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5543,12 +5800,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "AIS Alert"
 #~ msgstr "AIS-i alarm"
+#
 #
 #
 #
@@ -5590,12 +5849,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "AIS target list"
 #~ msgstr "AIS-i objektide nimekiri"
+#
 #
 #
 #
@@ -5608,6 +5869,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5617,12 +5879,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "AISTargetQuery"
 #~ msgstr "AIS objekti päring"
+#
 #
 #
 #
@@ -5670,12 +5934,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Activate Route"
 #~ msgstr "Aktiveeri teekond"
+#
 #
 #
 #
@@ -5703,12 +5969,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Add Selection"
 #~ msgstr "Lisa asukoht"
+#
 #
 #
 #
@@ -5764,12 +6032,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Additional information"
 #~ msgstr "Lisa informatsioon"
+#
 #
 #
 #
@@ -5796,12 +6066,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "All files (*.*)|*.*"
 #~ msgstr "Kõik failid (*.*)|*.*"
+#
 #
 #
 #
@@ -5865,12 +6137,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Autopilot Output Port"
 #~ msgstr "Autopiloodi väljuv port"
+#
 #
 #
 #
@@ -5897,6 +6171,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5906,12 +6181,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Base Station"
 #~ msgstr "Tugijaam"
+#
 #
 #
 #
@@ -5974,12 +6251,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Kurss:                %03d Deg.\n"
+#
 #
 #
 #
@@ -6007,6 +6286,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6030,12 +6310,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -6076,10 +6358,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 nihe näitamisel"
+#
 #
 #
 #
@@ -6171,6 +6455,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6196,6 +6481,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 nihe sees"
+#
 #
 #
 #
@@ -6287,6 +6573,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6329,10 +6616,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CM93 Offsets"
 #~ msgstr "CM93 nihked"
+#
 #
 #
 #
@@ -6408,6 +6697,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6417,12 +6707,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "CPA"
 #~ msgstr "CPA"
+#
 #
 #
 #
@@ -6465,6 +6757,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6474,12 +6767,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Call"
 #~ msgstr "Kutsung"
+#
 #
 #
 #
@@ -6528,12 +6823,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "CallSign:             "
 #~ msgstr "Kutsung:"
+#
 #
 #
 #
@@ -6625,6 +6922,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6682,12 +6980,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Chart"
 #~ msgstr "Kaart"
+#
 #
 #
 #
@@ -6727,6 +7027,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6734,6 +7035,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Asukoht"
+#
 #
 #
 #
@@ -6797,6 +7099,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6804,6 +7107,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Choose a file"
 #~ msgstr "Konsooli väärtus"
+#
 #
 #
 #
@@ -6831,12 +7135,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Class:                "
 #~ msgstr "Klass:                  "
+#
 #
 #
 #
@@ -6850,12 +7156,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "CoG"
 #~ msgstr "CoG"
+#
 #
 #
 #
@@ -6896,12 +7204,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Course:                 %03d Deg.\n"
 #~ msgstr "Kurss:             %03d Deg.\n"
+#
 #
 #
 #
@@ -6945,12 +7255,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Course:                 Unavailable\n"
 #~ msgstr "Kurss:            Kättesaamatu\n"
+#
 #
 #
 #
@@ -6977,12 +7289,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Cursor: "
 #~ msgstr "Kursor: "
+#
 #
 #
 #
@@ -6993,6 +7307,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Data Source :"
 #~ msgstr "NMEA andemete allikas"
+#
 #
 #
 #
@@ -7054,6 +7369,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7061,6 +7377,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Teksti värv"
+#
 #
 #
 #
@@ -7111,12 +7428,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Kustuta punkt"
+#
 #
 #
 #
@@ -7157,6 +7476,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7180,12 +7500,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Delete Track"
 #~ msgstr "Kustuta jälg"
+#
 #
 #
 #
@@ -7227,12 +7549,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Destination:          "
 #~ msgstr "Sihtkoht:"
+#
 #
 #
 #
@@ -7259,6 +7583,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7266,6 +7591,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Drop"
 #~ msgstr "Pane punkt siia"
+#
 #
 #
 #
@@ -7295,12 +7621,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "ENC/Vector"
 #~ msgstr "ENC/Vektor"
+#
 #
 #
 #
@@ -7343,12 +7671,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "ETA:                  "
 #~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -7410,10 +7740,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Enable Manual CM93 Offsets"
 #~ msgstr "Aktiveeri manuaalne CM93 nihe"
+#
 #
 #
 #
@@ -7440,12 +7772,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Error on Route Upload.  Please check logfiles..."
 #~ msgstr "Viga teekonna laadimisel. Palun vaata logifaili..."
+#
 #
 #
 #
@@ -7472,12 +7806,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Etc."
 #~ msgstr "Mitmesugust"
+#
 #
 #
 #
@@ -7568,6 +7904,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7582,6 +7919,7 @@ msgstr ""
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Ei suuda laadida libgps.so"
+#
 #
 #
 #
@@ -7646,6 +7984,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7653,6 +7992,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "From Ownship: %03d Deg   "
 #~ msgstr "Asukohast: %03d kraadi  %6.2f miili"
+#
 #
 #
 #
@@ -7680,6 +8020,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7702,12 +8043,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD andmete server"
+#
 #
 #
 #
@@ -7735,12 +8078,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Go To Here"
 #~ msgstr "Mine siia"
+#
 #
 #
 #
@@ -7791,6 +8136,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7798,6 +8144,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Kurss:                %03d Deg.\n"
+#
 #
 #
 #
@@ -7856,6 +8203,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7880,6 +8228,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7890,6 +8239,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7897,6 +8247,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Inland Blue Flag"
 #~ msgstr "Sisemaa Sinilipp        Sea\n"
+#
 #
 #
 #
@@ -7938,12 +8289,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Jump To"
 #~ msgstr "Hüppa siia"
+#
 #
 #
 #
@@ -7993,10 +8346,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Jump To Position..."
 #~ msgstr "Hüppa positsioonile"
+#
 #
 #
 #
@@ -8051,12 +8406,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Keeled/Fondid"
+#
 #
 #
 #
@@ -8099,12 +8456,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Leg/Route"
 #~ msgstr "Lõik/Teekond"
+#
 #
 #
 #
@@ -8118,10 +8477,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Limit range: NM"
 #~ msgstr "Piir ulatus: miili"
+#
 #
 #
 #
@@ -8135,6 +8496,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8142,6 +8504,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Link Properties"
 #~ msgstr "Koha omadused"
+#
 #
 #
 #
@@ -8169,12 +8532,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "META Objects"
 #~ msgstr "META objektid"
+#
 #
 #
 #
@@ -8217,6 +8582,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8224,6 +8590,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -8316,12 +8683,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Punkti Ikoon"
+#
 #
 #
 #
@@ -8367,12 +8736,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Mark Properties"
 #~ msgstr "Koha omadused"
+#
 #
 #
 #
@@ -8409,12 +8780,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Marks"
 #~ msgstr "Märgid"
+#
 #
 #
 #
@@ -8464,6 +8837,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8486,12 +8860,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA andemete allikas"
+#
 #
 #
 #
@@ -8533,6 +8909,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8540,6 +8917,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Name:  "
 #~ msgstr "Nimi:"
+#
 #
 #
 #
@@ -8567,12 +8945,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Navigational Status:  "
 #~ msgstr "Navigeerimis staatus:"
+#
 #
 #
 #
@@ -8583,6 +8963,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Net"
 #~ msgstr "Järgmine"
+#
 #
 #
 #
@@ -8628,12 +9009,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Next"
 #~ msgstr "Järgmine"
+#
 #
 #
 #
@@ -8690,6 +9073,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8701,6 +9085,7 @@ msgstr ""
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN Lisade baasi klass"
+#
 #
 #
 #
@@ -8782,6 +9167,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8803,12 +9189,14 @@ msgstr ""
 #~ msgstr "OpenCPN S57 SENC fail laadimine"
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Other"
 #~ msgstr "Muu"
+#
 #
 #
 #
@@ -8819,6 +9207,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Output Message"
 #~ msgstr "OpenCPN sõnum"
+#
 #
 #
 #
@@ -8858,6 +9247,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8865,6 +9255,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Place Trackpoints at distance interval (NMi)"
 #~ msgstr "Pane jäljepunkt vahemaaga (miilid)"
+#
 #
 #
 #
@@ -8891,12 +9282,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Plan speed (Kts)"
 #~ msgstr "Plaanitud kiirus (sõlmed)"
+#
 #
 #
 #
@@ -8940,6 +9333,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Lisade haldur otsib lisasid asukohast"
+#
 #
 #
 #
@@ -9017,6 +9411,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9028,6 +9423,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Lisade haldur: Seadistan lisa:"
+#
 #
 #
 #
@@ -9105,6 +9501,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9116,6 +9513,7 @@ msgstr ""
 # 
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Lisade haldur: eemaldan lisa:"
+#
 #
 #
 #
@@ -9178,6 +9576,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9187,6 +9586,7 @@ msgstr ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Raporti vanus:          %3d Sec.\n"
+#
 #
 #
 #
@@ -9260,6 +9660,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9278,12 +9679,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 #~ msgstr "Valmista GPS teekonnaks/Kohapunkt laetakse ja vajuta Saada..."
+#
 #
 #
 #
@@ -9294,40 +9697,6 @@ msgstr ""
 #~ msgid "Prev"
 #~ msgstr "Eelmine"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Printing"
-#~ msgstr "Prindin"
 #
 #
 #
@@ -9353,6 +9722,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9362,12 +9732,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Range"
 #~ msgstr "Kaugus"
+#
 #
 #
 #
@@ -9410,6 +9782,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9433,12 +9806,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Raster"
 #~ msgstr "Raster"
+#
 #
 #
 #
@@ -9481,12 +9856,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Pöördekiirus:               %3d Deg./Min. Paremale\n"
+#
 #
 #
 #
@@ -9530,6 +9907,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9555,6 +9933,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9562,6 +9941,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 #~ msgstr "Pöördekiirus:               %3d Deg./Min. Paremale\n"
+#
 #
 #
 #
@@ -9623,6 +10003,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9646,6 +10027,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9653,6 +10035,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Eemalda see kaart kihtidest"
+#
 #
 #
 #
@@ -9701,12 +10084,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Vastupidine teekond"
+#
 #
 #
 #
@@ -9734,6 +10119,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9744,12 +10130,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "Teekond laetud edukalt"
+#
 #
 #
 #
@@ -9791,6 +10179,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9800,12 +10189,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Send"
 #~ msgstr "Saada"
+#
 #
 #
 #
@@ -9821,6 +10212,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9828,6 +10220,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "&Saada GPS-i..."
+#
 #
 #
 #
@@ -9878,12 +10271,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Settings"
 #~ msgstr "Seaded"
+#
 #
 #
 #
@@ -9960,12 +10355,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Show ATON labels"
 #~ msgstr "Näita ATON silte"
+#
 #
 #
 #
@@ -10030,12 +10427,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Näita jälje ikooni"
+#
 #
 #
 #
@@ -10065,6 +10464,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Suurus:            %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -10137,6 +10537,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10147,6 +10548,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Suurus:           %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -10193,6 +10595,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10203,6 +10606,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Suurus:            ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -10249,6 +10653,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10259,6 +10664,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Suurus:            %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -10290,12 +10696,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "SoG"
 #~ msgstr "SoG"
+#
 #
 #
 #
@@ -10338,12 +10746,23 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "Kiirus:                %5.2f sõlme\n"
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "T"
+#~ msgstr "Sinna"
+#
 #
 #
 #
@@ -10370,6 +10789,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10377,6 +10797,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "TCPA"
 #~ msgstr "CPA TCPA"
+#
 #
 #
 #
@@ -10419,12 +10840,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -10436,10 +10859,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Target info"
 #~ msgstr "Sihtkoha info"
+#
 #
 #
 #
@@ -10467,6 +10892,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10476,12 +10902,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Tide"
 #~ msgstr "Tõus"
+#
 #
 #
 #
@@ -10509,15 +10937,6 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Timestamp"
-#~ msgstr "ETE/Timestamp"
-#
-#
 #
 # 
 # 
@@ -10525,6 +10944,7 @@ msgstr ""
 # 
 #~ msgid "Today"
 #~ msgstr "Täna"
+#
 #
 #
 #
@@ -10612,6 +11032,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10633,6 +11054,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Teekonna nimi"
+#
 #
 #
 #
@@ -10659,6 +11081,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10666,14 +11089,6 @@ msgstr ""
 #~ msgid "ToolBox"
 #~ msgstr "Seaded"
 #
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Track Properties"
-#~ msgstr "Jälje omadused"
 #
 #
 #
@@ -10715,12 +11130,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Mõõtkava: %8.0f             "
+#
 #
 #
 #
@@ -10764,6 +11181,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10771,6 +11189,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "UN Ship Type:         "
 #~ msgstr "Aluse tüüp:"
+#
 #
 #
 #
@@ -10815,6 +11234,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10822,6 +11242,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Unable to load libgps"
 #~ msgstr "Ei suuda laadida libgps.so "
+#
 #
 #
 #
@@ -10855,6 +11276,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10864,12 +11286,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Unk"
 #~ msgstr "Unk"
+#
 #
 #
 #
@@ -10910,6 +11334,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10919,12 +11344,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Waypoint(s) Uploaded successfully."
 #~ msgstr "Punkt(id) laetud"
+#
 #
 #
 #
@@ -10965,11 +11392,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 #~ msgstr "X nihe (positiivselt liigutab kaardi itta) (miili/cos/(lat)) :"
+#
 #
 #
 #
@@ -11009,12 +11438,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "cm93 Detail"
 #~ msgstr "cm93 detailid"
+#
 #
 #
 #
@@ -11025,6 +11456,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "in"
 #~ msgstr "Lingid"
+#
 #
 #
 #
