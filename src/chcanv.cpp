@@ -7615,7 +7615,11 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
                 pRoutePropDialog->UpdateProperties();
             }
 
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
+                pRouteManagerDialog->UpdateWptListCtrl();
+                pRouteManagerDialog->UpdateRouteListCtrl();
+            }
+                
         }
 
         break;
