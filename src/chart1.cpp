@@ -163,6 +163,7 @@ MyFrame                   *gFrame;
 ChartCanvas               *cc1;
 ConsoleCanvas             *console;
 StatWin                   *stats;
+wxWindowList              AppActivateList;
 
 MyConfig                  *pConfig;
 
@@ -442,6 +443,8 @@ wxString                  g_TCData_Dir;
 struct sigaction          sa_all;
 struct sigaction          sa_all_old;
 #endif
+
+bool                      g_boptionsactive;
 
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
@@ -800,6 +803,29 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
                 g_FloatingToolbarDialog->Submerge();
         }
 
+
+        AppActivateList.Clear();
+        if(cc1){
+            for ( wxWindowList::iterator it = cc1->GetChildren().begin(); it != cc1->GetChildren().end(); ++it ) {
+                if( (*it)->IsShown() ) {
+                    (*it)->Hide();
+                    AppActivateList.Append(*it);
+                }
+            }
+        }
+            
+        if(gFrame){
+            for ( wxWindowList::iterator it = gFrame->GetChildren().begin(); it != gFrame->GetChildren().end(); ++it ) {
+                if( (*it)->IsShown() ) {
+                    if( !(*it)->IsKindOf( CLASSINFO(ChartCanvas) ) ) {
+                        (*it)->Hide();
+                        AppActivateList.Append(*it);
+                    }
+                }
+            }
+        }
+            
+#if 0            
         if(console && console->IsShown()) {
             console->Hide();
         }
@@ -811,7 +837,7 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
         if(stats && stats->IsShown()) {
             stats->Hide();
         }
-
+#endif
     }
     else
     {
@@ -821,6 +847,19 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
                                                 // reportedly not required for wx 2.9
         gFrame->SurfaceToolbar();
 
+        wxWindow *pOptions = NULL;
+        
+        wxWindowListNode *node = AppActivateList.GetFirst();
+        while (node) {
+            wxWindow *win = node->GetData();
+            win->Show();
+            if( win->IsKindOf( CLASSINFO(options) ) )
+                pOptions = win;
+                
+            node = node->GetNext();
+        }
+        
+#if 0        
         if(g_FloatingCompassDialog){
             g_FloatingCompassDialog->Hide();
             g_FloatingCompassDialog->Show();
@@ -837,8 +876,11 @@ void MyApp::OnActivateApp( wxActivateEvent& event )
                 console->Show();
             }
         }
-
-        gFrame->Raise();
+#endif
+        if( pOptions )
+            pOptions->Raise();
+        else
+            gFrame->Raise();
 
     }
 #endif
@@ -2462,6 +2504,15 @@ void MyFrame::OnActivate( wxActivateEvent& event )
     {
         SurfaceToolbar();
 
+        wxWindowListNode *node = AppActivateList.GetFirst();
+        while (node) {
+            wxWindow *win = node->GetData();
+            win->Show();
+           
+            node = node->GetNext();
+        }
+        
+#if 0
         if(g_FloatingCompassDialog)
             g_FloatingCompassDialog->Show();
 
@@ -2472,7 +2523,7 @@ void MyFrame::OnActivate( wxActivateEvent& event )
             if( g_pRouteMan->IsAnyRouteActive() )
                 console->Show();
         }
-
+#endif
         gFrame->Raise();
 
     }
@@ -3524,7 +3575,7 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
 
         case ID_ROUTEMANAGER: {
             if( NULL == pRouteManagerDialog )         // There is one global instance of the Dialog
-            pRouteManagerDialog = new RouteManagerDialog( this );
+            pRouteManagerDialog = new RouteManagerDialog( cc1 );
 
             pRouteManagerDialog->UpdateRouteListCtrl();
             pRouteManagerDialog->UpdateTrkListCtrl();
@@ -4035,6 +4086,8 @@ int MyFrame::DoOptionsDialog()
     static wxPoint lastWindowPos( 0,0 );
     static wxSize lastWindowSize( 0,0 );
 
+    g_boptionsactive = true;
+    
     ::wxBeginBusyCursor();
     options optionsDlg( this, -1, _("Options") );
     ::wxEndBusyCursor();
@@ -4119,6 +4172,9 @@ int MyFrame::DoOptionsDialog()
 #endif
 
     Refresh( false );
+    
+    g_boptionsactive = false;
+    
     return ret_val;
 }
 
@@ -4781,6 +4837,27 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
             g_FloatingToolbarDialog->Submerge();
         }
 
+        AppActivateList.Clear();
+        if(cc1){
+            for ( wxWindowList::iterator it = cc1->GetChildren().begin(); it != cc1->GetChildren().end(); ++it ) {
+                if( (*it)->IsShown() ) {
+                    (*it)->Hide();
+                    AppActivateList.Append(*it);
+                }
+            }
+        }
+        
+        if(gFrame){
+            for ( wxWindowList::iterator it = gFrame->GetChildren().begin(); it != gFrame->GetChildren().end(); ++it ) {
+                if( (*it)->IsShown() ) {
+                    if( !(*it)->IsKindOf( CLASSINFO(ChartCanvas) ) ) {
+                        (*it)->Hide();
+                        AppActivateList.Append(*it);
+                    }
+                }
+            }
+        }
+#if 0        
         if(console && console->IsShown()) {
             console->Hide();
         }
@@ -4792,6 +4869,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         if(stats && stats->IsShown()) {
             stats->Hide();
         }
+#endif        
     }
 #endif
 
