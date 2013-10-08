@@ -174,6 +174,7 @@ extern bool             g_bGarminHostUpload;
 
 extern wxLocale         *plocale_def_lang;
 extern OCPN_Sound        g_anchorwatch_sound;
+extern bool             g_bMagneticAPB;
 
 
 #ifdef USE_S57
@@ -521,17 +522,22 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     bSizer161->Add( bSizer171, 1, wxEXPAND, 5 );
 
+    int cb_space = 2;
     m_cbNMEADebug = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Show NMEA Debug Window"), wxDefaultPosition, wxDefaultSize, 0 );
-    bSizer161->Add( m_cbNMEADebug, 0, wxALL, 3 );
+    bSizer161->Add( m_cbNMEADebug, 0, wxALL, cb_space );
 
     m_cbFurunoGP3X = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Format uploads for Furuno GP3X"), wxDefaultPosition, wxDefaultSize, 0 );
     m_cbFurunoGP3X->SetValue(g_GPS_Ident == _T("FurunoGP3X"));
-    bSizer161->Add( m_cbFurunoGP3X, 0, wxALL, 3 );
+    bSizer161->Add( m_cbFurunoGP3X, 0, wxALL, cb_space );
 
     m_cbGarminUploadHost = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use Garmin GRMN (Host) mode for uploads"), wxDefaultPosition, wxDefaultSize, 0 );
     m_cbGarminUploadHost->SetValue(g_bGarminHostUpload);
-    bSizer161->Add( m_cbGarminUploadHost, 0, wxALL, 3 );
+    bSizer161->Add( m_cbGarminUploadHost, 0, wxALL, cb_space );
 
+    m_cbAPBMagnetic = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Use magnetic bearings in output sentence ECAPB"), wxDefaultPosition, wxDefaultSize, 0 );
+    m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
+    bSizer161->Add( m_cbAPBMagnetic, 0, wxALL, cb_space );
+    
     bSizer151->Add( bSizer161, 1, wxEXPAND, 5 );
     sbSizerGeneral->Add( bSizer151, 1, wxEXPAND, 5 );
     bSizerOuterContainer->Add( sbSizerGeneral, 0, wxALL|wxEXPAND, 5 );
@@ -784,7 +790,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbNMEADebug->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnShowGpsWindowCheckboxClick ), NULL, this );
     m_cbFilterSogCog->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_tFilterSec->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
-
+    m_cbAPBMagnetic->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_lcSources->Connect( wxEVT_LEFT_DOWN, wxMouseEventHandler(options::OnConnectionToggleEnable), NULL, this );
 
     wxListItem col0;
@@ -1605,7 +1611,7 @@ void options::CreatePanel_AIS( size_t parent, int border_size, int group_item_sp
     pAlertGrid->Add( m_SelSound, 0, wxALL | wxALIGN_RIGHT, group_item_spacing );
 
     m_pCheck_AlertAudio = new wxCheckBox( panelAIS, ID_AISALERTAUDIO,
-            _("Play Sound on CPA/TCPA Alerts") );
+                _("Play Sound on CPA/TCPA Alerts and DSC/SART emergencies.") );
     pAlertGrid->Add( m_pCheck_AlertAudio, 0, wxALL, group_item_spacing );
 
     wxButton *m_pPlay_Sound = new wxButton( panelAIS, ID_AISALERTTESTSOUND,
@@ -1975,6 +1981,7 @@ void options::SetInitialSettings()
         pSmoothPanZoom->Disable();
     }
 
+    m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
     pCBMagShow->SetValue( g_bShowMag );
     
     s.Printf( _T("%4.1f"), g_UserVar );
@@ -2581,6 +2588,8 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     g_bShowMag = pCBMagShow->GetValue();
     pMagVar->GetValue().ToDouble( &g_UserVar );
+    
+    g_bMagneticAPB = m_cbAPBMagnetic->GetValue();
     
     m_pText_OSCOG_Predictor->GetValue().ToDouble( &g_ownship_predictor_minutes );
 

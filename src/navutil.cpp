@@ -250,6 +250,7 @@ extern bool             g_bUseCM93;
 extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
 extern int              g_COGAvgSec;
+extern bool             g_bMagneticAPB;
 
 extern int              g_MemFootSec;
 extern int              g_MemFootMB;
@@ -1083,6 +1084,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "UserMagVariation" ), &umv );
     if(umv.Len())
         umv.ToDouble( &g_UserVar );
+
+    Read( _T ( "UseMagAPB" ), &g_bMagneticAPB, 0 );
     
     Read( _T ( "ScreenBrightness" ), &g_nbrightness, 100 );
 
@@ -2240,7 +2243,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "CourseUpMode" ), g_bCourseUp );
     Write( _T ( "LookAheadMode" ), g_bLookAhead );
     Write( _T ( "COGUPAvgSeconds" ), g_COGAvgSec );
-
+    Write( _T ( "ShowMag" ), g_bMagneticAPB );
+    
     Write( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
     Write( _T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width );
     Write( _T ( "OwnShipIconType" ), g_OwnShipIconType );
@@ -2630,7 +2634,7 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         NavObjectCollection1 *pgpx = new NavObjectCollection1;
 
         wxProgressDialog *pprog = NULL;
-        int count = pWayPointMan->m_pWayPointList->GetCount();
+        int count = pWayPointMan->GetWaypointList()->GetCount();
         if( count > 200) {
             pprog = new wxProgressDialog( _("Export GPX file"), _T("0/0"), count, NULL,
                                           wxPD_APP_MODAL | wxPD_SMOOTH |
@@ -2642,7 +2646,7 @@ void MyConfig::ExportGPX( wxWindow* parent, bool bviz_only, bool blayer )
         //WPTs
         int ic = 0;
 
-        wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+        wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
         RoutePoint *pr;
         while( node ) {
             if(pprog) {
@@ -2789,7 +2793,7 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon )
 {
     RoutePoint *pret = NULL;
 //    if( g_bIsNewLayer ) return NULL;
-    wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
     bool Exists = false;
     while( node ) {
         RoutePoint *pr = node->GetData();
@@ -2811,7 +2815,7 @@ RoutePoint *WaypointExists( const wxString& name, double lat, double lon )
 
 RoutePoint *WaypointExists( const wxString& guid )
 {
-    wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
     while( node ) {
         RoutePoint *pr = node->GetData();
 

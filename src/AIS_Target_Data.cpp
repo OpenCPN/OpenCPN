@@ -142,6 +142,26 @@ AIS_Target_Data::~AIS_Target_Data()
       delete m_ptrack;
 }
 
+wxString AIS_Target_Data::GetFullName( void )
+{
+    wxString retName;
+    if( b_nameValid ) {
+        wxString shipName = trimAISField( ShipName );
+        if( shipName == _T("Unknown") )
+            retName = wxGetTranslation( shipName );
+        else
+            retName = shipName;
+
+        if( strlen( ShipNameExtension ) ) {
+            wxString shipNameExt = trimAISField( ShipNameExtension );
+            retName += shipNameExt;
+        }
+    }
+    
+    return retName;
+}
+    
+    
 wxString AIS_Target_Data::BuildQueryResult( void )
 {
     wxString html;
@@ -162,13 +182,16 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     html << tableStart << _T("<tr><td nowrap colspan=2>");
     if( ( Class != AIS_BASE ) && ( Class != AIS_SART ) ) {
         if( b_nameValid ) {
-            wxString shipName = trimAISField( ShipName );
-            wxString intlName;
-            if( shipName == _T("Unknown") ) intlName = wxGetTranslation( shipName );
-            else
-                intlName = shipName;
-            html << _T("<font size=+2><i><b>") << intlName ;
-            if( strlen( ShipNameExtension ) ) html << wxString( ShipNameExtension, wxConvUTF8 );
+//            wxString shipName = trimAISField( ShipName );
+//            wxString intlName;
+//            if( shipName == _T("Unknown") ) intlName = wxGetTranslation( shipName );
+//            else
+//                intlName = shipName;
+            html << _T("<font size=+2><i><b>") << GetFullName() ;
+//            if( strlen( ShipNameExtension ) ) {
+//                wxString shipNameExt = trimAISField( ShipNameExtension );
+//                html << shipNameExt;
+//            }
             html << _T("</b></i></font>&nbsp;&nbsp;<b>");
         }
     }
@@ -476,6 +499,9 @@ wxString AIS_Target_Data::GetRolloverString( void )
     wxString t;
     if( b_nameValid ) {
         result.Append( _T("\"") );
+        
+        result.Append( GetFullName() );
+/*
         wxString uret = trimAISField( ShipName );
         wxString ret;
         if( uret == _T("Unknown") ) ret = wxGetTranslation( uret );
@@ -483,9 +509,11 @@ wxString AIS_Target_Data::GetRolloverString( void )
             ret = uret;
 
         result.Append( ret );
-        if( strlen( ShipNameExtension ) ) result.Append(
-                wxString( ShipNameExtension, wxConvUTF8 ) );
-
+        if( strlen( ShipNameExtension ) ){
+            wxString shipNameExt = trimAISField( ShipNameExtension );
+            result.Append( shipNameExt );
+        }
+*/        
         result.Append( _T("\" ") );
     }
     if( Class != AIS_GPSG_BUDDY ) {

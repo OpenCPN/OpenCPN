@@ -62,7 +62,6 @@ extern ConsoleCanvas    *console;
 extern RouteList        *pRouteList;
 extern Select           *pSelect;
 extern MyConfig         *pConfig;
-extern WayPointman      *pWayPointMan;
 extern Routeman         *g_pRouteMan;
 
 extern wxRect           g_blink_rect;
@@ -71,6 +70,8 @@ extern wxString         g_PrivateDataDir;
 
 extern double           gLat, gLon, gSog, gCog;
 extern double           gVar;
+
+extern bool             g_bMagneticAPB;
 
 extern RoutePoint       *pAnchorWatchPoint1;
 extern RoutePoint       *pAnchorWatchPoint2;
@@ -658,6 +659,8 @@ bool Routeman::UpdateAutopilot()
  
             //  We never pass the perpendicular, since we declare arrival before reaching this point
             m_NMEA0183.Apb.IsPerpendicular = NFalse;
+
+            m_NMEA0183.Apb.To = pActivePoint->GetName().Truncate( 6 );
             
             double brg1, dist1;
             DistanceBearingMercator( pActivePoint->m_lat, pActivePoint->m_lon,
@@ -665,18 +668,31 @@ bool Routeman::UpdateAutopilot()
                                      &brg1,
                                      &dist1 );
             
-            m_NMEA0183.Apb.BearingOriginToDestination = brg1;
-            m_NMEA0183.Apb.BearingOriginToDestinationUnits = _("T");
+            if( g_bMagneticAPB && !wxIsNaN(gVar) ) {
+                
+                double brg1m = ((brg1 + gVar) >= 0.) ? (brg1 + gVar) : (brg1 + gVar + 360.);
+                double bapm = ((CurrentBrgToActivePoint + gVar) >= 0.) ? (CurrentBrgToActivePoint + gVar) : (CurrentBrgToActivePoint + gVar + 360.);
+                
+                m_NMEA0183.Apb.BearingOriginToDestination = brg1m;
+                m_NMEA0183.Apb.BearingOriginToDestinationUnits = _T("M");
+                
+                m_NMEA0183.Apb.BearingPresentPositionToDestination = bapm;
+                m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _T("M");
+                
+                m_NMEA0183.Apb.HeadingToSteer = bapm;
+                m_NMEA0183.Apb.HeadingToSteerUnits = _T("M");
+            }
+            else {
+                m_NMEA0183.Apb.BearingOriginToDestination = brg1;
+                m_NMEA0183.Apb.BearingOriginToDestinationUnits = _T("T");
 
-            m_NMEA0183.Apb.To = pActivePoint->GetName().Truncate( 6 );
+                m_NMEA0183.Apb.BearingPresentPositionToDestination = CurrentBrgToActivePoint;
+                m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _T("T");
             
-            m_NMEA0183.Apb.BearingPresentPositionToDestination = CurrentBrgToActivePoint;
-            m_NMEA0183.Apb.BearingPresentPositionToDestinationUnits = _("T");
-            
-            m_NMEA0183.Apb.To = pActivePoint->GetName().Truncate( 6 );
 
-            m_NMEA0183.Apb.HeadingToSteer = CurrentBrgToActivePoint;
-            m_NMEA0183.Apb.HeadingToSteerUnits = _("T");
+                m_NMEA0183.Apb.HeadingToSteer = CurrentBrgToActivePoint;
+                m_NMEA0183.Apb.HeadingToSteerUnits = _T("T");
+            }
             
             m_NMEA0183.Apb.Write( snt );
             g_pMUX->SendNMEAMessage( snt.Sentence );
@@ -1064,6 +1080,36 @@ WayPointman::~WayPointman()
     delete pmarkicon_image_list;
 }
 
+bool WayPointman::AddRoutePoint(RoutePoint *prp)
+{
+    if(!prp)
+        return false;
+    
+    wxRoutePointListNode *prpnode = m_pWayPointList->Append(prp);
+    prp->SetManagerListNode( prpnode );
+    
+    return true;
+}
+
+bool WayPointman::RemoveRoutePoint(RoutePoint *prp)
+{
+    if(!prp)
+        return false;
+    
+    wxRoutePointListNode *prpnode = (wxRoutePointListNode *)prp->GetManagerListNode();
+    
+    if(prpnode) 
+        delete prpnode;
+    else
+        m_pWayPointList->DeleteObject(prp);
+    
+    prp->SetManagerListNode( NULL );
+    
+    return true;
+}
+
+
+
 void WayPointman::ProcessIcons( ocpnStyle::Style* style )
 {
     ProcessIcon( style->GetIcon( _T("empty") ), _T("empty"), _T("Empty") );
@@ -1390,7 +1436,7 @@ wxString WayPointman::CreateGUID( RoutePoint *pRP )
 
 RoutePoint *WayPointman::FindRoutePointByGUID(const wxString &guid)
 {
-    wxRoutePointListNode *prpnode = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *prpnode = m_pWayPointList->GetFirst();
     while( prpnode ) {
         RoutePoint *prp = prpnode->GetData();
 
@@ -1525,25 +1571,16 @@ void WayPointman::DestroyWaypoint( RoutePoint *pRp, bool b_update_changeset )
         // Now it is safe to delete the point
         if( ! b_update_changeset )
             pConfig->m_bSkipChangeSetUpdate = true;             // turn OFF change-set updating if requested
-        
         pConfig->DeleteWayPoint( pRp );
-        
         pConfig->m_bSkipChangeSetUpdate = false;
         
-        pSelect->DeleteSelectablePoint( pRp, SELTYPE_ROUTEPOINT );
-
-        //TODO  FIXME
-        // Some memory corruption occurs if the wp is deleted here.
-        // To continue running OK, it is sufficient to simply remove the wp from the global list
-        // This will leak, although called infrequently....
-        //  12/15/10...Seems to occur only on MOB delete....
-
-        if( NULL != pWayPointMan )
-            pWayPointMan->m_pWayPointList->DeleteObject( pRp );
+        pSelect->DeleteSelectableRoutePoint( pRp );
 
         //    The RoutePoint might be currently in use as an anchor watch point
         if( pRp == pAnchorWatchPoint1 ) pAnchorWatchPoint1 = NULL;
         if( pRp == pAnchorWatchPoint2 ) pAnchorWatchPoint2 = NULL;
+
+        RemoveRoutePoint( pRp);
 
     }
 }

@@ -1822,7 +1822,7 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
     
     m_pWptListCtrl->DeleteAllItems();
 
-    wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
 
     int index = 0;
     while( node ) {
@@ -2391,7 +2391,7 @@ void RouteManagerDialog::OnLayDeleteClick( wxCommandEvent &event )
     //}
 
     // Process waypoints in this layer
-    wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
     wxRoutePointListNode *node3;
 
     while( node ) {
@@ -2459,7 +2459,7 @@ void RouteManagerDialog::ToggleLayerContentsOnChart( Layer *layer )
     }
 
     // Process waypoints in this layer
-    wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
 
     while( node ) {
         RoutePoint *rp = node->GetData();
@@ -2513,7 +2513,7 @@ void RouteManagerDialog::ToggleLayerContentsNames( Layer *layer )
     }
 
     // Process waypoints in this layer
-    wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
 
     while( node ) {
         RoutePoint *rp = node->GetData();
@@ -2568,7 +2568,7 @@ void RouteManagerDialog::ToggleLayerContentsOnListing( Layer *layer )
     //  n.b.  If the waypoint belongs to a track, and is not shared, then do not list it.
     //  This is a performance optimization, allowing large track support.
 
-    wxRoutePointListNode *node = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
 
     while( node ) {
         RoutePoint *rp = node->GetData();

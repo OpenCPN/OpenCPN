@@ -1927,7 +1927,7 @@ bool AddSingleWaypoint( PlugIn_Waypoint *pwaypoint, bool b_permanent)
     //  GUID
     //  Make sure that this GUID is indeed unique in the Routepoint list
     bool b_unique = true;
-    wxRoutePointListNode *prpnode = pWayPointMan->m_pWayPointList->GetFirst();
+    wxRoutePointListNode *prpnode = pWayPointMan->GetWaypointList()->GetFirst();
     while( prpnode ) {
         RoutePoint *prp = prpnode->GetData();
 

@@ -414,10 +414,21 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
             //  Read the triangle primitive bounding box as lat/lon
             tp->p_bbox = new wxBoundingBox;
             double *pbb = (double *)m_buf_ptr;
+            
+#ifdef ARMHF
+            double abox[4];
+            memcpy(&abox[0], pbb, 4 * sizeof(double));
+            double minx = abox[0];
+            double maxx = abox[1];
+            double miny = abox[2];
+            double maxy = abox[3];
+#else            
             double minx = *pbb++;
             double maxx = *pbb++;
             double miny = *pbb++;
-            double maxy = *pbb++;
+            double maxy = *pbb;
+#endif
+            
             tp->p_bbox->SetMin(minx, miny);
             tp->p_bbox->SetMax(maxx, maxy);
 

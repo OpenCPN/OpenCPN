@@ -150,6 +150,7 @@ enum {
     ID_DELETECHECKBOX,
     ID_NATIONALTEXTCHECKBOX,
     ID_MAGSHOWCHECKBOX,
+    ID_MAGAPBCHECKBOX,
     xID_OK
 };
 
@@ -353,6 +354,7 @@ public:
     wxButton* m_sdbSizerDlgButtonsCancel;
     wxStaticBoxSizer* sbSizerInFilter;
     wxStaticBoxSizer* sbSizerOutFilter;
+    wxCheckBox *m_cbAPBMagnetic;
 
     SentenceListDlg* m_stcdialog_in;
     SentenceListDlg* m_stcdialog_out;

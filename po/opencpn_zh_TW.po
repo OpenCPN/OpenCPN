@@ -2,51 +2,60 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 2.4.720\n"
+"Project-Id-Version: OpenCPN 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-13 12:43-0400\n"
-"PO-Revision-Date: 2011-07-21 11:02+0800\n"
+"POT-Creation-Date: 2013-10-06 23:19-0400\n"
+"PO-Revision-Date: 2013-09-25 15:27+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
-"Language: \n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Bookmarks: -1,-1,-1,214,-1,-1,-1,-1,-1,-1\n"
-"X-Poedit-Language: Chinese\n"
-"X-Poedit-Country: TAIWAN\n"
-"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.5.7\n"
 #
 msgid ""
 "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr ""
+"\n"
+" - GPS 天線距離船頭位置設定值不可大於船身長度"
 #
 msgid ""
 "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr ""
+"\n"
+" - GPS 天線橫向位置設定值不可大於船身寬度"
 #
 msgid ""
 "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr ""
+"\n"
+" - 船舶圖示大小必須介於 1 到 100 mm 之間"
 #
 msgid ""
 "\n"
 " - your ship's beam must be > 0"
 msgstr ""
+"\n"
+" - 船寬必須 > 0"
 #
 msgid ""
 "\n"
 " - your ship's length must be > 0"
 msgstr ""
+"\n"
+" - 船長必須 > 0"
 #
-# 
-# 
+#
+#
 msgid ""
 "\n"
 "OpenCPN is distributed in the hope that it will be useful,\n"
@@ -74,154 +83,153 @@ msgstr ""
 "請按下\"OK\"表示同意繼續,  按下\"Cancel\"離開.\n"
 #
 msgid "    Incompatible PlugIn detected:"
-msgstr ""
+msgstr "    偵測到不相容的插件:"
 #
-# 
-# 
+#
+#
 msgid "   Chart File RLL data corrupt on chart "
 msgstr "   圖檔 RLL 資料毀損 "
 #
-# 
-# 
+#
+#
 msgid "   Chart File contains less than 3 PLY points: "
 msgstr "   海圖檔資料少於 3 PLY 點: "
 #
-# 
-# 
+#
+#
 msgid "   Chart File corrupt in PostInit() on chart "
 msgstr "   圖檔無法呼叫 PostInit() "
 #
-# 
-# 
-msgid "   Chart file has no BSB header, cannot Init."
-msgstr "   圖檔無BSB標頭, 無法起始."
 #
-# 
-# 
+#
+msgid "   Chart file has no BSB header, cannot Init."
+msgstr "   圖檔無 BSB 標頭, 無法起始."
+#
+#
+#
 #, c-format
 msgid "   Could not read first %d bytes of header for chart file: "
 msgstr "   無法讀取海圖標頭檔前 %d 位元組: "
 #
-# 
-# 
+#
+#
 msgid "   Error creating Line Index for chart "
 msgstr "   建立海圖索引失敗 "
 #
 msgid ""
 "   External application \"xcalib\" not found. Screen brightness not changed."
-msgstr ""
+msgstr "   找不到外部應用程式 \"xcalib\" . 螢幕亮度並未改變."
 #
-# 
-# 
+#
+#
 msgid "   Line Index corrupt, recreating Index for chart "
 msgstr "   線性索引檔毀損, 重新建立海圖索引 "
 #
-# 
-# 
+#
+#
 msgid "   Result: OK, Internal georef solution used."
 msgstr "   結果: OK, 使用內部參考座標."
 #
-# 
-# 
+#
+#
 msgid "   Trying again with internally calculated georef solution "
 msgstr "   嘗試使用內部參考座標計算 "
 #
-# 
-# 
+#
+#
 msgid ""
 "   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
 "chart "
 msgstr ""
 "   VP 使用內部參考座標最後檢查: Georeference Chart_Error_Factor on chart "
 #
-# 
-# 
+#
+#
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
 msgstr "   VP 最後檢查: Georeference Chart_Error_Factor on chart "
 #
-# 
-# 
+#
+#
 msgid " %D Days  %H Hours  %M Minutes"
 msgstr " %D 天  %H 小時  %M 分鐘"
 #
-# 
-# 
+#
+#
 msgid " %H Hours  %M Minutes"
 msgstr " %H 小時  %M 分鐘"
 #
 msgid " (Ctrl-Space)"
-msgstr ""
+msgstr " (Ctrl-Space)"
 #
-# 
-# 
+#
+#
 msgid " - "
 msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
-msgstr ""
+msgstr " -- [Portable(-p) executing from "
 #
-# 
-# 
+#
+#
 msgid " ChartFile:  "
 msgstr " 海圖檔:  "
 #
-# 
-# 
+#
+#
 msgid " Datum:  "
 msgstr " 座標系統:"
 #
-# 
-# 
+#
+#
 msgid " Depth Units:  "
 msgstr " 水深單位:　"
 #
-# 
-# 
+#
+#
 msgid " ID:  "
 msgstr " ID:  "
 #
-# 
-# 
+#
+#
 msgid " Name:  "
 msgstr " 名稱:  "
 #
-# 
-# 
+#
+#
 msgid " Projection:  "
 msgstr " 投影方式: "
 #
-# 
-# 
+#
+#
 #, c-format
 msgid " Scale:  1:%d"
 msgstr " 比例尺:  1:%d"
 #
-# 
-# 
-#, fuzzy
-msgid " Ship "
-msgstr " 船名:"
 #
-# 
-# 
+#
+msgid " Ship "
+msgstr " 船名"
+#
+#
+#
 msgid " Soundings:  "
 msgstr " 水深:  "
 #
-# 
-# 
+#
+#
 msgid " Source Edition:  "
 msgstr " 來源版本: "
 #
-# 
-# 
+#
+#
 msgid " Updated:  "
 msgstr " 更新: "
 #
 msgid " for details."
-msgstr ""
+msgstr " for details."
 #
-# 
-# 
+#
+#
 #, c-format
 msgid " is %5g"
 msgstr " is %5g"
@@ -230,440 +238,438 @@ msgid ""
 " shorter than rhumbline.\n"
 "\n"
 msgstr ""
+" 較恆向線(rhumbline)為短.\n"
+"\n"
 #
-# 
-# 
+#
+#
 msgid " to "
 msgstr " 到 "
 #
 msgid "\" is empty, switching to \"All Active Charts\" group."
-msgstr ""
+msgstr "\" 是空的, 切換到 \"All Active Charts\" 群組."
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "\"Ship Name\" MMSI (Call Sign)"
-msgstr "      \"船名\" MMSI (呼號)"
+msgstr "\"船名\" MMSI (Call Sign)"
 #
-# 
-# 
+msgid "%D Days, %H:%M"
+msgstr "%D Days, %H:%M"
+#
+msgid "%H:%M"
+msgstr "%H:%M"
+#
+#
+#
 msgid "&Activate"
 msgstr "啟用(&A)"
 #
-# 
-# 
+#
+#
 msgid "&Cancel"
 msgstr "取消(&C)"
 #
 msgid "&Center View"
-msgstr ""
+msgstr "移至經緯度(&C)"
 #
 msgid "&Copy all as text"
-msgstr ""
+msgstr "&複製全部為文字"
 #
 msgid "&Copy as text"
-msgstr ""
+msgstr "複製成文字(&C)"
 #
-# 
-# 
+#
+#
 msgid "&Delete"
 msgstr "刪除(&D)"
 #
-# 
-# 
+#
+#
 msgid "&Delete All"
 msgstr "刪除全部(&D)"
 #
-# 
-# 
-#, fuzzy
-msgid "&Export selected..."
-msgstr "匯出航路(&E)..."
 #
-# 
-# 
+#
+msgid "&Export selected..."
+msgstr "匯出已選(&E)..."
+#
+#
+#
 msgid "&Font family:"
 msgstr "字型(&F):"
 #
-# 
-# 
+#
+#
 msgid "&Go To"
 msgstr "前往(&G)"
 #
-# 
-# 
-#, fuzzy
-msgid "&Merge Selected Tracks"
-msgstr "刪除航跡"
 #
-# 
-# 
+#
+msgid "&Merge Selected Tracks"
+msgstr "合併所選航跡(&M)"
+#
+#
+#
 msgid "&New"
 msgstr "新增(&N)"
 #
-# 
-# 
+#
+#
 msgid "&OK"
 msgstr "確定(&O)"
 #
-# 
-# 
+#
+#
 msgid "&Point size:"
 msgstr "點數大小(&P):"
 #
-# 
-# 
+#
+#
 msgid "&Properties"
 msgstr "屬性(&P)"
 #
-# 
-# 
+#
+#
 msgid "&Properties..."
 msgstr "屬性(&P)..."
 #
-# 
-# 
-#, fuzzy
-msgid "&Remove Selected"
-msgstr "刪除航跡"
 #
-# 
-# 
+#
+msgid "&Remove Selected"
+msgstr "&刪除已選"
+#
+#
+#
 msgid "&Reverse"
 msgstr "反向(&R)"
 #
-# 
-# 
+#
+#
 msgid "&Send to GPS"
 msgstr "傳送至GPS(&S)"
 #
-# 
-# 
+#
+#
 msgid "&Start Track"
 msgstr "開始軌跡(&S)"
 #
-# 
-# 
+#
+#
 msgid "&Style:"
 msgstr "樣式(&S):"
 #
-# 
-# 
+#
+#
 msgid "&Underline"
 msgstr "底線(&U)"
 #
-# 
-# 
-#, fuzzy
-msgid "&Waypoint Properties..."
-msgstr "屬性(&P)..."
 #
-# 
-# 
+#
+msgid "&Waypoint Properties..."
+msgstr "&轉向點屬性..."
+#
+#
+#
 msgid "&Weight:"
 msgstr "寬度(&W):"
 #
-# 
-# 
-msgid "(Unnamed Layer)"
-msgstr "(未命名航路)"
 #
-# 
-# 
+#
+msgid "(Unnamed Layer)"
+msgstr "(未命名圖層)"
+#
+#
+#
 msgid "(Unnamed Route)"
 msgstr "(未命名航路)"
 #
-# 
-# 
+#
+#
 msgid "(Unnamed Track)"
 msgstr "(未命名航跡)"
 #
-# 
-# 
+#
+#
 msgid "(Unnamed Waypoint)"
 msgstr "(未命名轉向點)"
 #
 msgid "(reserved for future use)"
-msgstr ""
+msgstr "(保留供未來使用)"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "(unnamed)"
-msgstr "(未命名航路)"
+msgstr "(未命名)"
 #
-# 
-# 
+#
+#
+msgid "--"
+msgstr "--"
+#
+#
+#
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
 msgstr "---<<< 警告:  海圖參考座標正確性不佳. >>>---"
 #
-# 
-# 
+#
+#
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
 msgstr "---<<< 警告:  海圖參考座標正確性可能不佳. >>>---"
 #
 msgid "..."
-msgstr ""
+msgstr "..."
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "...and TCPA is less than (min)"
-msgstr "  ..且TCPA 小於多少(分鐘):"
+msgstr "...且TCPA 小於多少(分鐘)"
 #
 msgid "0"
-msgstr ""
+msgstr "0"
 #
 msgid "1"
-msgstr ""
+msgstr "1"
 #
 msgid "1 pixel"
-msgstr ""
+msgstr "1 像素"
 #
-# 
-# 
+#
+#
 msgid "1.0 NM along COG"
 msgstr "1.0 NM along COG"
 #
 msgid "10 pixels"
-msgstr ""
+msgstr "10 像素"
 #
 msgid "115200"
-msgstr ""
+msgstr "115200"
 #
 msgid "1200"
-msgstr ""
+msgstr "1200"
 #
 msgid "150"
-msgstr ""
+msgstr "150"
 #
 msgid "19200"
-msgstr ""
+msgstr "19200"
 #
 msgid "2"
-msgstr ""
+msgstr "2"
 #
-# 
-# 
+#
+#
 msgid "2 Color"
 msgstr "2 色"
 #
 msgid "2 pixels"
-msgstr ""
+msgstr "2 像素"
 #
 msgid "230400"
-msgstr ""
+msgstr "230400"
 #
 msgid "2400"
-msgstr ""
+msgstr "2400"
 #
 msgid "3"
-msgstr ""
+msgstr "3"
 #
 msgid "3 pixels"
-msgstr ""
+msgstr "3 像素"
 #
 msgid "300"
-msgstr ""
+msgstr "300"
 #
 msgid "38400"
-msgstr ""
+msgstr "38400"
 #
 msgid "4"
-msgstr ""
+msgstr "4"
 #
-# 
-# 
+#
+#
 msgid "4 Color"
 msgstr "4 色"
 #
 msgid "4 pixels"
-msgstr ""
+msgstr "4 像素"
 #
 msgid "460800"
-msgstr ""
+msgstr "460800"
 #
 msgid "4800"
-msgstr ""
+msgstr "4800"
 #
 msgid "5"
-msgstr ""
+msgstr "5"
 #
 msgid "5 pixels"
-msgstr ""
+msgstr "5 像素"
 #
 msgid "57600"
-msgstr ""
+msgstr "57600"
 #
 msgid "6"
-msgstr ""
+msgstr "6"
 #
 msgid "6 pixels"
-msgstr ""
+msgstr "6 像素"
 #
 msgid "600"
-msgstr ""
+msgstr "600"
 #
 msgid "7"
-msgstr ""
+msgstr "7"
 #
 msgid "7 pixels"
-msgstr ""
+msgstr "7 像素"
 #
 msgid "8"
-msgstr ""
+msgstr "8"
 #
 msgid "8 pixels"
-msgstr ""
+msgstr "8 像素"
 #
 msgid "9"
-msgstr ""
+msgstr "9"
 #
 msgid "9 pixels"
-msgstr ""
+msgstr "9 像素"
 #
 msgid "921600"
-msgstr ""
+msgstr "921600"
 #
 msgid "9600"
-msgstr ""
+msgstr "9600"
 #
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
-msgstr ""
+msgstr "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 #
-# 
-# 
+#
+#
 msgid "?"
 msgstr "?"
 #
-# 
-# 
+#
+#
 msgid "AIS"
 msgstr "AIS"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "AIS Target List..."
-msgstr "AIS 目標列表"
+msgstr "AIS 目標列表..."
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "AIS Target Name"
-msgstr "AIS 目標查詢"
+msgstr "AIS 目標名稱"
 #
-# 
-# 
+#
+#
 msgid "AIS Target Query"
 msgstr "AIS 目標查詢"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "AIS Targets"
-msgstr "顯示 AIS 目標"
+msgstr "AIS 目標"
 #
 msgid "APRS"
-msgstr ""
+msgstr "APRS"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "APRS Position Report"
-msgstr "最近位置發報時間:  "
+msgstr "APRS 位置報告"
 #
 msgid "ARPA"
-msgstr ""
+msgstr "ARPA"
 #
 msgid "ARPA radar target"
-msgstr ""
+msgstr "ARPA 雷達目標"
 #
-# 
-# 
+#
+#
 msgid "About"
 msgstr "關於"
 #
-# 
-# 
+#
+#
 msgid "About OpenCPN"
 msgstr "關於 OpenCPN "
 #
 msgid "Accept Sentences"
-msgstr ""
+msgstr "接受字串"
 #
 msgid "Accept only sentences"
-msgstr ""
+msgstr "接受下列字串"
 #
-# 
-# 
+#
+#
 msgid "Activate"
 msgstr "啟用"
 #
-# 
-# 
-#, fuzzy
-msgid "Activate Next Waypoint"
-msgstr "航路下一點啟動導航"
 #
-# 
-# 
-#, fuzzy
+#
+msgid "Activate Next Waypoint"
+msgstr "啓動下一轉向點"
+#
+#
+#
 msgid "Active Datasets"
-msgstr "使用中的海圖目錄"
+msgstr "使用中的資料集"
 #
 msgid "Add"
-msgstr ""
+msgstr "加入"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Add Connection"
-msgstr "字型選項"
+msgstr "加入連接"
 #
 msgid "Add Dataset..."
-msgstr ""
+msgstr "新增資料集…"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Add Directory..."
-msgstr "OpenCPN 目錄掃描...."
+msgstr "加入目錄..."
 #
 msgid "Add a directory containing chart files"
-msgstr ""
+msgstr "新增包含海圖檔案的目錄"
 #
 msgid "Add new"
-msgstr ""
+msgstr "新增"
 #
 msgid "Address"
-msgstr ""
+msgstr "位址"
 #
-# 
-# 
+msgid "Advanced"
+msgstr "進階"
+#
+#
+#
 msgid "Aground"
 msgstr "擱淺"
 #
 msgid "All"
-msgstr ""
+msgstr "全部"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "All Active Charts"
-msgstr "使用中的海圖目錄"
+msgstr "所有使用中的海圖"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "All Available Charts"
-msgstr "使用中的海圖目錄"
+msgstr "所有可用的海圖"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "All Charts"
-msgstr "海圖"
+msgstr "所有海圖"
 #
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -672,2659 +678,2659 @@ msgid ""
 "out all the sentences with certain TALKER prefix (like GP, AI etc.). The "
 "filter accepts just these three formats."
 msgstr ""
+"NMEA字串通常由3個字元來區分種類（例如RMC, GGA等等），前方可能再加上兩個前置字"
+"元來表示發送來源，使得NMEA字串開頭看起來像這樣GPGGA或AITXT 。你可能利用特定的"
+"發送源前置字元（例如GP, AI等等）過濾所有字串。"
 #
 msgid "Anchorage Area: Anchorage closed"
-msgstr ""
+msgstr "錨區: 錨區關閉"
 #
 msgid "Anchorage Area: Anchorage open"
-msgstr ""
+msgstr "錨區: 開放錨泊"
 #
 msgid "Anchorage Area: Anchoring prohibited"
-msgstr ""
+msgstr "錨區: 禁止下錨"
 #
 msgid "Anchorage Area: Deep draft anchorage"
-msgstr ""
+msgstr "錨區: 深水下錨"
 #
 msgid "Anchorage Area: Shallow draft anchorage"
-msgstr ""
+msgstr "錨區: 淺水下錨"
 #
 msgid "Anchorage Area: Vessel transfer operations"
-msgstr ""
+msgstr "錨區: 船舶移動操作"
 #
 msgid "Anchorage created "
-msgstr ""
+msgstr "Anchorage created "
 #
 msgid "Answering 'No' will create a new waypoint at the same location."
-msgstr ""
+msgstr "回答 'No' 將會在相同位置處建立一個新的轉向點."
 #
 msgid "Answering 'No' will create all new waypoints for this route."
-msgstr ""
+msgstr "回答 'No' 將會為此航路建立全新的轉向點."
 #
-# 
-# 
+#
+#
 msgid "Append Waypoint"
 msgstr "附加轉向點"
 #
 msgid "Apply"
-msgstr ""
+msgstr "套用"
 #
-# 
-# 
+#
+#
 msgid "Are you sure you want to delete <ALL> routes?"
 msgstr "確定刪除<所有>航路?"
 #
-# 
-# 
+#
+#
 msgid "Are you sure you want to delete <ALL> tracks?"
 msgstr "確定要刪除<所有>航跡?"
 #
-# 
-# 
+#
+#
 msgid "Are you sure you want to delete <ALL> waypoints?"
 msgstr "確定刪除<所有>轉向點?"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Are you sure you want to delete the selected object(s)"
-msgstr "確定要刪除這條航跡?"
+msgstr "確定要刪除所選物件"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Are you sure you want to delete this route?"
-msgstr "確定要刪除這條航跡?"
+msgstr "確定要刪除這條航路?"
 #
-# 
-# 
+#
+#
 msgid "Are you sure you want to delete this track?"
 msgstr "確定要刪除這條航跡?"
 #
-# 
-# 
-#, fuzzy
-msgid "Are you sure you want to remove this waypoint?"
-msgstr "確定刪除<所有>轉向點?"
 #
-# 
-# 
+#
+msgid "Are you sure you want to remove this waypoint?"
+msgstr "確定刪除這個轉向點?"
+#
+#
+#
 msgid "Assumed 1 Mile Point"
 msgstr "1 海浬假設點"
 #
-# 
-# 
-msgid "At Anchor"
-msgstr "設定流錨警報"
+msgid "Assumed Magnetic Variation, deg."
+msgstr "假設磁差, 度."
 #
-# 
-# 
+#
+#
+msgid "At Anchor"
+msgstr "錨泊中"
+#
+#
+#
 msgid "AtoN"
 msgstr "AtoN"
 #
-# 
-# 
+#
+#
 msgid "Authors"
 msgstr "作者"
 #
-# 
-# 
+#
+#
 msgid "Auto Follow"
 msgstr "自動定位"
 #
-# 
-# 
+#
+#
 msgid "Automatic Daily Tracks"
 msgstr "每日自動追跡"
 #
-# 
-# 
-#, fuzzy
-msgid "Avg. speed"
-msgstr "平均速度 (Kts)"
 #
-# 
-# 
+#
+msgid "Avg. speed"
+msgstr "平均速度"
+#
+#
+#
 msgid "Base"
 msgstr "基本"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Basic"
 msgstr "基本"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Baudrate"
-msgstr "NMEA 傳輸速率"
+msgstr "傳輸速率"
 #
-# 
-# 
+#
+#
 msgid "Beacon, Isolated Danger"
-msgstr "立標, 危險水域"
+msgstr "信號標, 孤立危險物"
 #
-# 
-# 
+#
+#
 msgid "Beacon, Port Hand"
-msgstr "立標, 左舷側"
+msgstr "信號標, 左舷側"
 #
-# 
-# 
+#
+#
 msgid "Beacon, Preferred Channel Port Hand"
-msgstr "立標, 主要航道左舷側"
+msgstr "信號標, 主要航道左舷側"
 #
-# 
-# 
+#
+#
 msgid "Beacon, Preferred Channel Starboard Hand"
-msgstr "立標, 主要航道右舷側"
+msgstr "信號標, 主要航道右舷側"
 #
-# 
-# 
+#
+#
 msgid "Beacon, Safe Water"
-msgstr "立標, 安全水域"
+msgstr "信號標, 安全水域"
 #
-# 
-# 
+#
+#
 msgid "Beacon, Special Mark"
-msgstr "立標, 特別標誌"
+msgstr "信號標, 特別標誌"
 #
-# 
-# 
+#
+#
 msgid "Beacon, Starboard Hand"
-msgstr "立標, 右舷側"
+msgstr "信號標, 右舷側"
 #
-# 
-# 
+#
+#
 msgid "Bearing"
 msgstr "方位"
 #
-# 
+#
+#
+msgid "Bearing (M)"
+msgstr "方位 (M)"
+#
+#
 msgid "Black"
 msgstr "黑"
 #
-# 
+#
 msgid "Blue"
 msgstr "藍"
 #
-# 
-# 
+#
+#
 msgid "Boundaries"
 msgstr "邊界"
 #
+msgid "Broken plugin detected..."
+msgstr "偵測到錯誤的插件..."
+#
 msgid "Buddy"
-msgstr ""
+msgstr "Buddy"
 #
 msgid "Buoy/Light Labels"
-msgstr ""
+msgstr "浮標/燈光 標註"
 #
-# 
-# 
+#
+#
 msgid "C&olour:"
 msgstr "色彩(&o):"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "CM93 Detail Level"
-msgstr "在此處顯示最大詳細度"
+msgstr "CM93 詳細度"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "CM93 Offset Dialog..."
-msgstr "CM93 Offset 顯示"
+msgstr "CM93 Offset 對話框..."
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "COG Predictor Length (min)"
-msgstr "本船 COG 向量預測長度(分鐘):"
+msgstr "COG 向量線長度(分鐘)"
 #
-# 
-# 
+#
+#
 msgid "CPA Calculation"
 msgstr "CPA 計算"
 #
-# 
-# 
+#
+#
 msgid "CPA TCPA"
 msgstr "CPA TCPA"
 #
-# 
-# 
+#
+#
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA 警示"
 #
-# 
-# 
+#
+#
 msgid "Cancel"
 msgstr "取消"
 #
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
-msgstr ""
+msgstr "刪除 - 刪除定義於訊息連結ID區域"
 #
-# 
-# 
+#
+#
 msgid "Card. E"
 msgstr "Card. E"
 #
-# 
-# 
+#
+#
 msgid "Card. N"
 msgstr "Card. N"
 #
-# 
-# 
+#
+#
 msgid "Card. S"
 msgstr "Card. S"
 #
-# 
-# 
+#
+#
 msgid "Card. W"
 msgstr "Card. W"
 #
-# 
-# 
+#
+#
 msgid "Cardinal E Beacon"
 msgstr "東方位導航立標"
 #
-# 
-# 
+#
+#
 msgid "Cardinal Mark E"
 msgstr "東方位導航標"
 #
-# 
-# 
+#
+#
 msgid "Cardinal Mark N"
 msgstr "北方位導航標"
 #
-# 
-# 
+#
+#
 msgid "Cardinal Mark S"
 msgstr "南方位導航標"
 #
-# 
-# 
+#
+#
 msgid "Cardinal Mark W"
 msgstr "西方位導航標"
 #
-# 
-# 
+#
+#
 msgid "Cardinal N Beacon"
 msgstr "北方位導航立標"
 #
-# 
-# 
+#
+#
 msgid "Cardinal S Beacon"
 msgstr "南方位導航立標"
 #
-# 
-# 
+#
+#
 msgid "Cardinal W Beacon"
 msgstr "西方位導航立標"
 #
-# 
-# 
+#
+#
 msgid "Cargo Ship"
 msgstr "貨船"
 #
 msgid "Caution Area: Cluster of fishing vessels"
-msgstr ""
+msgstr "警戒區域: 漁船群集"
 #
 msgid "Caution Area: Derelicts (drifting objects)"
-msgstr ""
+msgstr "警戒區域: 漂流物"
 #
 msgid "Caution Area: Divers down"
-msgstr ""
+msgstr "警戒區域: 潛水夫作業中"
 #
 msgid "Caution Area: Dredge operations"
-msgstr ""
+msgstr "警戒區域: 濬挖作業"
 #
 msgid "Caution Area: Fairway closed"
-msgstr ""
+msgstr "警戒區域: 航道封閉"
 #
 msgid "Caution Area: Fishery - nets in water"
-msgstr ""
+msgstr "警戒區域: 漁網設置"
 #
 msgid "Caution Area: Harbour closed"
-msgstr ""
+msgstr "警戒區域: 港口封閉"
 #
 msgid "Caution Area: Marine event"
-msgstr ""
+msgstr "警戒區域: 海事事故"
 #
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
-msgstr ""
+msgstr "警戒區域: 海洋哺乳動物棲息地"
 #
 msgid "Caution Area: Marine mammals in area - reduce speed"
-msgstr ""
+msgstr "警戒區域: 海洋哺乳動物活動區-減速慢行"
 #
 msgid "Caution Area: Marine mammals in area - report sightings"
-msgstr ""
+msgstr "警戒區域: 海洋哺乳動物活動區-發現通報"
 #
 msgid "Caution Area: Marine mammals in area - stay clear"
-msgstr ""
+msgstr "警戒區域: 海洋哺乳動物活動區-保持遠離"
 #
 msgid "Caution Area: Protected habitat - no fishing or anchoring"
-msgstr ""
+msgstr "警戒區域: 保護棲息地 - 禁止捕魚與錨泊"
 #
 msgid "Caution Area: Protected habitat - reduce speed"
-msgstr ""
+msgstr "警戒區域: 保護棲息地 - 減速慢行"
 #
 msgid "Caution Area: Protected habitat - stay clear"
-msgstr ""
+msgstr "警戒區域: 保護棲息地 - 保持遠離"
 #
 msgid "Caution Area: Risk (define in Associated text field)"
-msgstr ""
+msgstr "警戒區域: 風險(定義於說明中)"
 #
 msgid "Caution Area: Seaplane operations"
-msgstr ""
+msgstr "警戒區域: 水上飛機作業"
 #
 msgid "Caution Area: Survey operations"
-msgstr ""
+msgstr "警戒區域: 檢驗作業"
 #
 msgid "Caution Area: Swim area"
-msgstr ""
+msgstr "警戒區域: 游泳區域"
 #
 msgid "Caution Area: Traffic congestion"
-msgstr ""
+msgstr "警戒區域: 交通擁塞"
 #
 msgid "Caution Area: Underwater operation"
-msgstr ""
+msgstr "警戒區域: 水下作業"
 #
 msgid "Caution Area: Underwater vehicle operation"
-msgstr ""
+msgstr "警戒區域: 水下艦艇作業"
 #
-# 
-# 
+#
+#
 msgid "Cell"
 msgstr "Cell"
 #
-# 
-# 
+#
+#
 msgid "Cell Scale"
 msgstr "Cell Scale"
 #
 msgid "Center View..."
-msgstr ""
+msgstr "移至經緯度…"
 #
-# 
-# 
+#
+#
 msgid "Change Color Scheme"
 msgstr "更換色彩樣式"
 #
-# 
-# 
+#
+#
 msgid "Chart Depth Units"
 msgstr "海圖水深單位"
 #
-# 
-# 
+#
+#
 msgid "Chart Display Options"
 msgstr "海圖顯示選項"
 #
 msgid "Chart Feature: Bridge closed"
-msgstr ""
+msgstr "海圖特徵: 橋樑關閉"
 #
 msgid "Chart Feature: Bridge fully open"
-msgstr ""
+msgstr "海圖特徵: 橋樑全開"
 #
 msgid "Chart Feature: Bridge partially open"
-msgstr ""
+msgstr "海圖特徵: 橋樑半開"
 #
 msgid "Chart Feature: Channel obstruction"
-msgstr ""
+msgstr "海圖特徵: 航道阻礙"
 #
 msgid "Chart Feature: Reduced vertical clearance"
-msgstr ""
+msgstr "海圖特徵: 垂直方向空間縮減"
 #
 msgid "Chart Feature: Semi-submerged object"
-msgstr ""
+msgstr "海圖特徵: 半沈沒物體"
 #
 msgid "Chart Feature: Shoal area"
-msgstr ""
+msgstr "海圖特徵: 淺灘區域"
 #
 msgid "Chart Feature: Shoal area due east"
-msgstr ""
+msgstr "海圖特徵: 東方淺灘"
 #
 msgid "Chart Feature: Shoal area due north"
-msgstr ""
+msgstr "海圖特徵: 北方淺灘"
 #
 msgid "Chart Feature: Shoal area due south"
-msgstr ""
+msgstr "海圖特徵: 南方淺灘"
 #
 msgid "Chart Feature: Shoal area due west"
-msgstr ""
+msgstr "海圖特徵: 西方淺灘"
 #
 msgid "Chart Feature: Submerged object"
-msgstr ""
+msgstr "海圖特徵: 沈沒物體"
 #
 msgid "Chart Feature: Sunken vessel"
-msgstr ""
+msgstr "海圖特徵: 沈船"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Chart Groups"
-msgstr "海圖"
+msgstr "海圖群組"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Chart Information Objects"
-msgstr "標記資訊"
+msgstr "海圖資訊物件"
 #
-# 
-# 
+#
+#
 msgid "Chart Print"
 msgstr "海圖列印"
 #
-# 
-# 
-#, fuzzy
-msgid "Chart Up Mode"
-msgstr "設定北方朝上模式"
 #
-# 
-# 
+#
+msgid "Chart Up Mode"
+msgstr "海圖朝上模式"
+#
+#
+#
 msgid "Chart1::Event...TCMgr Not Available"
 msgstr "Chart1::Event...TCMgr 無法獲得"
 #
-# 
-# 
-#, fuzzy
-msgid "ChartTexts"
-msgstr "海圖"
 #
-# 
-# 
+#
+msgid "ChartTexts"
+msgstr "海圖文字"
+#
+#
+#
 msgid "Charts"
 msgstr "海圖"
 #
-# 
-# 
-#, fuzzy
-msgid "Choose Font Color..."
-msgstr "選擇字型"
 #
-# 
-# 
+#
+msgid "Choose Font Color..."
+msgstr "選擇字型顏色…"
+#
+#
+#
 msgid "Choose Font..."
 msgstr "選擇字型"
 #
 msgid "Choose Format for Copy"
-msgstr ""
+msgstr "選擇複製格式"
 #
-# 
-# 
+#
+#
 msgid "Clear All"
 msgstr "清除全部"
 #
-# 
-# 
+#
+#
 msgid "Clear Anchor Watch"
 msgstr "清除流錨警報"
 #
 msgid "Clearance granted - proceed to berth"
-msgstr ""
+msgstr "淨空許可 - 進行泊靠"
 #
-# 
-# 
+#
+#
 msgid "Click to cancel the font selection."
 msgstr "按一下取消所選字型"
 #
-# 
-# 
+#
+#
 msgid "Click to confirm the font selection."
 msgstr "按一下確認所選字型"
 #
-# 
-# 
+#
+#
 msgid "Close"
 msgstr "關閉"
 #
-# 
-# 
+#
+#
+msgid "Color"
+msgstr "顏色"
+#
+#
+#
 msgid "Color:"
 msgstr "顏色:"
 #
-# 
-# 
+#
+#
 msgid "Colors"
 msgstr "色彩"
 #
 msgid "Combo!"
-msgstr ""
+msgstr "Combo!"
 #
 msgid "Confirm deletion of tracks and routes"
-msgstr ""
+msgstr "重複確認刪除航跡與航路"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Connections"
-msgstr "字型選項"
+msgstr "連接"
 #
-# 
-# 
+#
+#
 msgid "Console Legend"
 msgstr "Console 圖例"
 #
-# 
-# 
+#
+#
 msgid "Console Value"
 msgstr "Console 數值"
 #
-# 
-# 
+#
+#
 msgid "Constrained by draught"
 msgstr "吃水受限"
 #
 msgid "Control checksum"
-msgstr ""
+msgstr "Control checksum"
 #
 msgid "Copy As KML"
-msgstr ""
+msgstr "複製為 KML"
 #
 msgid "Copy Log File to Clipboard"
-msgstr ""
+msgstr "複製記錄檔到剪貼簿"
 #
 msgid "Copy Settings File to Clipboard"
-msgstr ""
+msgstr "複製設定檔到剪貼簿"
 #
 msgid "Copy as KML"
-msgstr ""
+msgstr "複製為 KML"
 #
 msgid "Copy as KML..."
-msgstr ""
+msgstr "複製為 KML..."
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Course"
-msgstr "航向朝上模式"
+msgstr "航向"
 #
-# 
-# 
+#
+#
+msgid "Course (M)"
+msgstr "航向 (M)"
+#
+#
+#
 msgid "Course UP Mode"
 msgstr "航向朝上模式"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Course Up Mode"
 msgstr "航向朝上模式"
 #
-# 
-#, fuzzy
+#
 msgid "Course-Up Mode Display Update Period (sec)"
 msgstr "航向朝上顯示模式更新週期 (秒)"
 #
-# 
-# 
+#
+#
 msgid "Create Route"
 msgstr "建立航路"
 #
-# 
-# 
-#, fuzzy
-msgid "Create Waypoint"
-msgstr "刪除轉向點"
 #
-# 
-# 
+#
+msgid "Create Waypoint"
+msgstr "建立航路點"
+#
+#
+#
 msgid "Cyan"
 msgstr "青"
 #
-# 
-# 
+#
+#
 msgid "D/V"
 msgstr "水下作業船"
 #
-# 
-# 
-#, fuzzy
-msgid "DSC"
-msgstr "高速船"
 #
-# 
+#
+msgid "DSC"
+msgstr "DSC"
+#
+#
 msgid "Dark Blue"
 msgstr "暗藍"
 #
-# 
+#
 msgid "Dark Cyan"
 msgstr "暗青"
 #
-# 
+#
 msgid "Dark Gray"
 msgstr "暗灰"
 #
-# 
+#
 msgid "Dark Green"
 msgstr "暗綠"
 #
-# 
-msgid "Dark Magenta"
-msgstr "紫紅"
 #
-# 
+msgid "Dark Magenta"
+msgstr "暗洋紅"
+#
+#
 msgid "Dark Red"
 msgstr "暗紅"
 #
-# 
+#
 msgid "Dark Yellow"
 msgstr "暗黃"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Data Connections"
-msgstr "字型選項"
+msgstr "資料連接"
 #
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "DataPort"
-msgstr "AIS 連接埠"
+msgstr "資料連接埠"
 #
-# 
-# 
-#, fuzzy
+msgid "Daytime"
+msgstr "白天"
+#
+#
+#
 msgid "De-Cluttered Text"
-msgstr "De-Clutter 字型 (測試中)"
+msgstr "精簡文字"
 #
-# 
-# 
+#
+#
 msgid "Deactivate"
 msgstr "取消作用"
 #
-# 
-#, fuzzy
+#
 msgid "Decimal Degrees"
 msgstr "十進位度"
 #
-# 
-# 
+#
+#
 msgid "Deep Depth"
-msgstr "最大水深"
+msgstr "深水區水深"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Default"
-msgstr "預設顏色"
+msgstr "預設"
 #
-# 
-# 
+#
+#
 msgid "Default color"
 msgstr "預設顏色"
 #
-# 
-#, fuzzy
+#
 msgid "Degrees, Decimal Minutes"
 msgstr "度, 十進位分"
 #
-# 
+#
 msgid "Degrees, Minutes, Seconds"
 msgstr "度, 分, 秒"
 #
-# 
-# 
-#, fuzzy
-msgid "Delete"
-msgstr "刪除(&D)"
 #
-# 
-# 
+#
+msgid "Delete"
+msgstr "刪除"
+#
+#
+#
 msgid "Delete All"
 msgstr "刪除全部"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Delete Group"
-msgstr "刪除航路"
+msgstr "刪除群組"
 #
-# 
-# 
+#
+#
 msgid "Delete Waypoint"
-msgstr "刪除轉向點"
+msgstr "刪除航路點"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Delete..."
-msgstr "刪除(&D)"
+msgstr "刪除..."
 #
-# 
-# 
+#
+#
 msgid "Depart From"
 msgstr "出發點"
 #
-# 
-# 
-msgid "Departure Time (m/d/y h:m)"
-msgstr "離開時間 (m/d/y h:m)"
 #
-# 
-# 
+#
+msgid "Departure Time (m/d/y h:m)"
+msgstr "出發時間 (m/d/y h:m)"
+#
+#
+#
 msgid "Depth Settings(m)"
 msgstr "深度設定(公尺)"
 #
-# 
-# 
-#, fuzzy
-msgid "Depth Soundings"
-msgstr "顯示水深"
 #
-# 
-# 
+#
+msgid "Depth Soundings"
+msgstr "水深"
+#
+#
+#
 msgid "Description"
 msgstr "說明"
 #
-# 
-# 
+#
+#
 msgid "Destination"
 msgstr "目的地"
 #
-# 
-# 
-#, fuzzy
-msgid "Directories"
-msgstr "使用中的海圖目錄"
 #
-# 
-# 
+#
+msgid "Directories"
+msgstr "目錄"
+#
+#
+#
 msgid "Disable"
 msgstr "取消"
 #
-# 
-# 
+#
+#
 msgid "Disable Full Screen Quilting"
 msgstr "取消全螢幕接圖功能"
 #
-# 
-# 
+#
+#
 msgid "Display"
 msgstr "顯示"
 #
-# 
-# 
+#
+#
 msgid "Display Category"
 msgstr "顯示分類"
 #
-# 
-# 
-#, fuzzy
-msgid "Display Options"
-msgstr "海圖顯示選項"
 #
-# 
-# 
+#
+msgid "Display Options"
+msgstr "顯示選項"
+#
+#
+#
+msgid "Display parameters"
+msgstr "顯示參數"
+#
+#
+#
 msgid "Distance"
 msgstr "距離"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Distance Between Rings"
 msgstr "圈距"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Distance Unit"
-msgstr "距離"
+msgstr "距離單位"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Distance from Ownship"
-msgstr "距離"
+msgstr "與本船距離"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Distress"
-msgstr "距離"
+msgstr "事故"
 #
 msgid "Distress Area: Person overboard"
-msgstr ""
+msgstr "事故區域: 人員落水"
 #
 msgid "Distress Area: Pollution response area"
-msgstr ""
+msgstr "事故區域: 污染處理區域"
 #
 msgid "Distress Area: SAR area"
-msgstr ""
+msgstr "事故區域: 搜救區域"
 #
 msgid "Distress Area: Vessel abandoning ship"
-msgstr ""
+msgstr "事故區域: 棄船"
 #
 msgid "Distress Area: Vessel collision"
-msgstr ""
+msgstr "事故區域: 船舶碰撞"
 #
 msgid "Distress Area: Vessel disabled and adrift"
-msgstr ""
+msgstr "事故區域: 船舶漂流"
 #
 msgid "Distress Area: Vessel fire/explosion"
-msgstr ""
+msgstr "事故區域: 船舶火災/爆炸"
 #
 msgid "Distress Area: Vessel flooding"
-msgstr ""
+msgstr "事故區域: 船舶進水"
 #
 msgid "Distress Area: Vessel grounding"
-msgstr ""
+msgstr "事故區域: 船舶擱淺"
 #
 msgid "Distress Area: Vessel listing/capsizing"
-msgstr ""
+msgstr "事故區域: 船舶傾斜/翻覆"
 #
 msgid "Distress Area: Vessel requests medical assistance"
-msgstr ""
+msgstr "事故區域: 船舶請求醫療協助"
 #
 msgid "Distress Area: Vessel sinking"
-msgstr ""
+msgstr "事故區域: 船舶沈沒"
 #
 msgid "Distress Area: Vessel under assault"
-msgstr ""
+msgstr "事故區域: 船舶遭受攻擊"
 #
 msgid ""
 "Do you also want to make the shared waypoints being part of this route "
 "invisible?"
-msgstr ""
+msgstr "也要令航路中的共用航點成為不可見?"
 #
-# 
-# 
+#
+#
 msgid "Done."
 msgstr "完成."
 #
 msgid "Dot"
-msgstr ""
+msgstr "點"
 #
 msgid "Dot dash"
-msgstr ""
+msgstr "點折線"
 #
-# 
-# 
+#
+#
 msgid "Dredge"
 msgstr "濬挖船"
 #
-# 
-# 
+#
+#
 msgid "Drop MOB Marker"
 msgstr "標定人員落水標記"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Drop Mark"
-msgstr "在此放置標記"
+msgstr "放置標記"
 #
 msgid "Drop Sentences"
-msgstr ""
+msgstr "丟棄字串"
 #
 msgid "Drop sentences"
-msgstr ""
+msgstr "丟棄下列字串"
 #
-# 
-# 
+#
+#
 msgid "ETA"
 msgstr "ETA"
 #
-# 
-# 
+#
+#
 msgid "ETA          "
 msgstr "ETA          "
 #
-# 
+#
 msgid "ETE"
 msgstr "ETE"
 #
-# 
-#, fuzzy
+#
 msgid "ETE/ETD"
-msgstr "ETE"
+msgstr "ETE/ETD"
 #
 msgid "Edit"
-msgstr ""
+msgstr "編輯"
 #
-# 
-# 
+#
+#
 msgid "Elapsed time : "
 msgstr "經過時間 : "
 #
 msgid "Elements to print..."
-msgstr ""
+msgstr "列印項目…"
 #
-# 
-# 
+#
+#
 msgid "Enable"
 msgstr "啟動"
 #
-# 
-# 
+#
+#
 msgid "Enable Chart Quilting"
 msgstr "啟用自動接圖功能"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "啟動目標警告認知計時 (分鐘)"
 #
-# 
-#, fuzzy
+#
 msgid "Enable Transparent Toolbar"
 msgstr "啟用透明工具列"
 #
-# 
-# 
+#
+#
 msgid "End Route"
 msgstr "結束航路"
 #
-# 
-# 
+#
+#
 msgid "Engaged in Fishing"
-msgstr "從事捕漁"
+msgstr "捕撈中"
 #
 msgid "Enter Group Name"
-msgstr ""
+msgstr "輸入群組名稱"
 #
 msgid "Enter the NMEA sentence"
-msgstr ""
+msgstr "輸入NMEA字串"
 #
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
-msgstr ""
+msgstr "輸入NMEA字串(2, 3 或 5 個字元)"
 #
 msgid "Environmental Caution Area: Hazardous sea ice"
-msgstr ""
+msgstr "環境警戒區域: 危險海冰"
 #
 msgid "Environmental Caution Area: Heavy icing"
-msgstr ""
+msgstr "環境警戒區域: 厚冰"
 #
 msgid "Environmental Caution Area: High waves"
-msgstr ""
+msgstr "環境警戒區域: 大浪"
 #
 msgid "Environmental Caution Area: High wind"
-msgstr ""
+msgstr "環境警戒區域: 強風"
 #
 msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
-msgstr ""
+msgstr "環境警戒區域: 能見度受限(霧, 雨, 其他)"
 #
 msgid "Environmental Caution Area: Storm front (line squall)"
-msgstr ""
+msgstr "環境警戒區域: 暴風雨鋒面"
 #
 msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
-msgstr ""
+msgstr "環境警戒區域: 暴風雨警告"
 #
 msgid "Environmental Caution Area: Strong currents"
-msgstr ""
+msgstr "環境警戒區域: 強勁海流"
 #
 msgid "Error!"
-msgstr ""
+msgstr "錯誤!"
 #
-# 
-# 
+#
+#
 msgid "Estimated time : "
 msgstr "估計時間 : "
 #
-# 
-# 
-#, fuzzy
-msgid "Export All Visible..."
-msgstr "匯出全部(&x)..."
+msgid "EvTwilight"
+msgstr "暮光"
 #
-# 
-# 
+#
+#
+msgid "Export"
+msgstr "匯出"
+#
+#
+#
+msgid "Export All Visible..."
+msgstr "匯出所有可見的…"
+#
+#
+#
 msgid "Export GPX file"
 msgstr "匯出 GPX 檔案"
 #
-# 
-# 
+#
+#
+msgid "Extend"
+msgstr "延伸"
+#
+#
+#
 msgid "Extend Route"
 msgstr "延伸航路"
 #
-# 
-# 
+#
+#
 msgid "Extend Track"
 msgstr "延伸航跡"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Extended"
-msgstr "延伸航路"
+msgstr "延伸"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Extended Light Sectors"
-msgstr "扇形燈"
+msgstr "延伸燈號扇型範圍"
 #
-# 
-# 
+#
+#
 msgid "ExtendedTideIcon"
-msgstr "擴大潮汐圖示"
+msgstr "延伸潮汐圖示"
 #
-# 
-# 
+#
+#
 msgid "F/V"
 msgstr "漁船"
 #
 msgid "Failed to initialize the user interface. "
-msgstr ""
+msgstr "使用者介面啓用失敗"
 #
-# 
-# 
+#
+#
 msgid "Fathoms"
 msgstr "噚"
 #
-# 
-# 
+#
+#
 msgid "Feet"
 msgstr "英呎"
 #
-# 
-# 
+#
+#
 msgid "Filter NMEA Course and Speed data"
 msgstr "篩選 NMEA 航向與速度資料"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Filter period (sec)"
 msgstr "篩選週期 (秒)"
 #
-# 
-# 
-#, fuzzy
-msgid "Filters"
-msgstr "公里(&K)"
 #
-# 
-# 
+#
+msgid "Filters"
+msgstr "篩選"
+#
+#
+#
 msgid "Fix.Struct."
 msgstr "固定結構體"
 #
-# 
-# 
+#
+#
 msgid "Fixed Structure"
 msgstr "固定結構體"
 #
 msgid "Fonts"
-msgstr ""
+msgstr "字型"
 #
 msgid "For this leg the Great Circle route is "
-msgstr ""
+msgstr "此航程中大圈航路"
 #
-# 
-# 
+#
+#
 msgid "Force Full Database Rebuild"
 msgstr "強制重建索引資料庫"
 #
 msgid "Format uploads for Furuno GP3X"
-msgstr ""
+msgstr "上傳 Furuno GP3X 格式"
 #
-# 
-# 
-#, fuzzy
+msgid "From"
+msgstr "從"
+#
+#
+#
 msgid "Full Route"
-msgstr "分離航路"
+msgstr "整條航路"
 #
 msgid "GPS Offset from Bow (m)"
-msgstr ""
+msgstr "GPS 天線距船艏位置(m)"
 #
 msgid "GPS Offset from Midship (m)"
-msgstr ""
+msgstr "GPS 天線距船舯位置(m) "
 #
 msgid "GPSD"
-msgstr ""
+msgstr "GPSD"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "GPX"
-msgstr "GPS"
+msgstr "GPX"
 #
 msgid "GUID"
-msgstr ""
+msgstr "GUID"
 #
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "General"
-msgstr "AIS 一般項目"
+msgstr "一般"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "General Options"
-msgstr "圖形介面選項"
+msgstr "一般選項"
 #
-# 
-# 
+#
+#
 msgid "Go to "
 msgstr "前往"
 #
 msgid "GpsGate Buddy"
-msgstr ""
+msgstr "GpsGate Buddy"
 #
-# 
+#
 msgid "Green"
 msgstr "綠"
 #
 msgid "Group \""
-msgstr ""
+msgstr "Group \""
 #
-# 
-# 
+#
+#
 msgid "HSC"
 msgstr "高速船"
 #
-# 
-# 
+#
+#
 msgid "Help"
 msgstr "求助"
 #
-# 
-# 
+#
+#
 msgid "Here"
 msgstr "這裡"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Hide AIS Targets"
-msgstr "顯示 AIS 目標"
+msgstr "隱藏 AIS 目標"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Hide Target CPA"
-msgstr "AIS 目標查詢"
+msgstr "隱藏目標CPA"
 #
-# 
-# 
-#, fuzzy
+#
+#
+msgid "Hide Target Track"
+msgstr "隱藏目標軌跡"
+#
+#
+#
 msgid "Hide This Chart"
-msgstr "從海圖中隱藏"
+msgstr "隱藏此海圖"
 #
-# 
-# 
+#
+#
 msgid "Hide WPT names"
 msgstr "隱藏轉向點名稱"
 #
-# 
-# 
-#, fuzzy
-msgid "Hide anchored/moored targets, speed max (kn)"
-msgstr "錨泊/繫泊目標判定準則"
 #
-# 
-# 
+#
+msgid "Hide anchored/moored targets, speed max (kn)"
+msgstr "隱藏 錨泊/繫泊目標, 速度上限(kn)"
+#
+#
+#
 msgid "Hide from chart"
 msgstr "從海圖中隱藏"
 #
 msgid "High"
-msgstr ""
+msgstr "高"
 #
-# 
-# 
+#
+#
 msgid "High Speed Craft"
 msgstr "高速船"
 #
-# 
-# 
-#, fuzzy
-msgid "Highlight Tracks"
-msgstr "分離航跡"
 #
-# 
-# 
+#
+msgid "Highlight Tracks"
+msgstr "航跡強調顯示"
+#
+#
+#
 msgid "I&mport GPX..."
 msgstr "匯入(&m)..."
 #
-# 
-# 
+#
+#
 msgid "Icon"
 msgstr "圖示"
 #
 msgid "If checked, only the sentences with a valid checksum are passed through"
-msgstr ""
+msgstr "如果選取, 只有檢驗碼正確的字串才會通過"
 #
 msgid "Ignore Sentences"
-msgstr ""
+msgstr "忽略字串"
 #
 msgid "Ignore sentences"
-msgstr ""
+msgstr "忽略下列字串"
 #
-# 
-# 
+#
+#
 msgid "Import GPX file"
 msgstr "匯入 GPX 檔案"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Important Text Only"
-msgstr "僅顯示匯入文字"
+msgstr "僅顯示重要文字"
 #
 msgid "Information: Icebreaker waiting area"
-msgstr ""
+msgstr "資訊: 破冰等候區域"
 #
 msgid "Information: Location of response units"
-msgstr ""
+msgstr "資訊: 回應單元位置"
 #
 msgid "Information: Pilot boarding position"
-msgstr ""
+msgstr "資訊: 引水人登輪位置"
 #
 msgid "Information: Places of refuge"
-msgstr ""
+msgstr "資訊: 避難位置"
 #
 msgid "Information: Position of icebreakers"
-msgstr ""
+msgstr "資訊: 破冰位置"
 #
 msgid "Input filtering"
-msgstr ""
+msgstr "輸入篩選"
 #
-# 
-# 
+#
+#
 msgid "Insert Waypoint"
 msgstr "插入轉向點"
 #
 msgid ""
 "Instruction: Await instructions prior to proceeding beyond this point/juncture"
-msgstr ""
+msgstr "指示: 在此處等候進一步指示"
 #
 msgid "Instruction: Contact Port Administration at this point/juncture"
-msgstr ""
+msgstr "指示: 在此處聯絡港口管理處"
 #
 msgid "Instruction: Contact VTS at this point/juncture"
-msgstr ""
+msgstr "指示: 在此處聯絡VTS"
 #
 msgid "Instruction: Do not proceed beyond this point/juncture"
-msgstr ""
+msgstr "指示: 在此處後勿繼續前進"
 #
-# 
-# 
+#
+#
 msgid "Isol. Dngr"
 msgstr "Isol. Dngr"
 #
-# 
-# 
+#
+#
 msgid "Isolated Danger"
-msgstr "航路管理"
+msgstr "孤立危險物"
 #
 msgid "KML Standard (Google Earth and others)"
-msgstr ""
+msgstr "KML 標準(Google Earth 與其他)"
 #
 msgid "KML with extended waypoint data (QtVlm)"
-msgstr ""
+msgstr "KML 具延伸轉向點資料(QtVlm)"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Kilometers"
-msgstr "公里(&K)"
+msgstr "公里"
 #
 msgid "Knots"
-msgstr ""
+msgstr "Knots"
 #
-# 
-# 
+#
+#
 msgid "LE/V"
-msgstr "執法船"
+msgstr "警務船"
 #
-# 
-# 
+#
+#
 msgid "LMT @ Location"
 msgstr "LMT @ Location"
 #
-# 
-# 
+#
+#
 msgid "Language"
 msgstr "語系"
 #
-# 
-# 
+#
+#
 msgid "Latitude"
 msgstr "緯度"
 #
-# 
-# 
+#
+#
 msgid "Law Enforcement Vessel"
-msgstr "執法船舶"
+msgstr "警務船舶"
 #
-# 
-# 
+#
+#
 msgid "Layer Name"
-msgstr "標記名稱"
+msgstr "圖層名稱"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Layer Route"
-msgstr "建立航路"
+msgstr "圖層航路"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Layer Route: "
-msgstr "建立航路"
+msgstr "圖層航路:"
 #
 msgid "Layer Routepoint"
-msgstr ""
+msgstr "圖層航路點"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Layer Track"
-msgstr "匯出航跡(&E)..."
+msgstr "圖層軌跡"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Layer Waypoint"
-msgstr "啟用轉向點"
+msgstr "圖層轉向點"
 #
-# 
-# 
+#
+#
 msgid "Layers"
 msgstr "圖層"
 #
-# 
-# 
+#
+#
 msgid "Ldg Lt Front"
 msgstr "Ldg Lt Front"
 #
-# 
-# 
+#
+#
 msgid "Ldg Lt Rear"
 msgstr "Ldg Lt Rear"
 #
-# 
-# 
+#
+#
 msgid "Leading Light Front"
 msgstr "前引導燈"
 #
-# 
-# 
+#
+#
 msgid "Leading Light Rear"
 msgstr "後引導燈"
 #
-# 
-# 
+#
+#
 msgid "Leg"
 msgstr "航段"
 #
-# 
-# 
+#
+#
 msgid "Leg: from "
 msgstr "航段: 從"
 #
-# 
-# 
+#
+#
 msgid "Length"
 msgstr "長度"
 #
 msgid "Length Over All (m)"
-msgstr ""
+msgstr "總長LOA(m)"
 #
-# 
-# 
+#
+#
 msgid "License"
 msgstr "版權"
 #
-# 
-# 
+#
+#
 msgid "Light"
-msgstr "寬度(&W):"
+msgstr "燈光"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Light Descriptions"
-msgstr "顯示燈號說明"
+msgstr "燈號說明"
 #
-# 
-# 
+#
+#
 msgid "Light Gray"
 msgstr "亮灰"
 #
-# 
-# 
+#
+#
 msgid "Light Vessel/Rig"
 msgstr "燈船/台"
 #
-# 
-# 
+#
+#
 msgid "Light w/Sectors"
 msgstr "扇形燈"
 #
-# 
-# 
+#
+#
 msgid "Links"
 msgstr "連結"
 #
 msgid "Links are opened for editing."
-msgstr ""
+msgstr "連結開啓供編輯"
 #
 msgid "Links are opened in the default browser."
-msgstr ""
+msgstr "連結已在預設瀏覽器中開啓"
 #
-# 
-# 
+#
+#
 msgid "List contents"
 msgstr "內容列表"
 #
-# 
-# 
-#, fuzzy
-msgid "Loaded Charts"
-msgstr "紙海圖"
 #
-# 
-# 
+#
+msgid "Loaded Charts"
+msgstr "已載入海圖"
+#
+#
+#
 msgid "Local @ PC"
 msgstr "Local @ PC"
 #
-# 
-# 
-#, fuzzy
-msgid "Lock Waypoints (Unless waypoint property dialog visible)"
-msgstr "鎖定所有轉向點, 除非轉向點屬性對話框出現"
 #
-# 
-# 
+#
+msgid "Lock Waypoints (Unless waypoint property dialog visible)"
+msgstr "鎖定航路點 (除非航路點屬性對話框可見)"
+#
+#
+#
 msgid "Long Tow"
 msgstr "長距離拖曳"
 #
 msgid "Long dash"
-msgstr ""
+msgstr "長折線"
 #
-# 
-# 
+#
+#
 msgid "Longitude"
 msgstr "經度"
 #
-# 
-# 
-msgid "Look Ahead Mode"
-msgstr "前方預置模式"
 #
-# 
-# 
+#
+msgid "Look Ahead Mode"
+msgstr "預視前方模式"
+#
+#
+#
 msgid "Lost Targets"
 msgstr "目標遺失"
 #
-# 
-# 
-#, fuzzy
-msgid "Low"
-msgstr "拖曳"
 #
-# 
-# 
+#
+msgid "Low"
+msgstr "低"
+#
+#
+#
 msgid "Lt"
 msgstr "Lt"
 #
-# 
-# 
+#
+#
 msgid "Lt sect."
 msgstr "Lt sect."
 #
-# 
-# 
+#
+#
 msgid "LtV/Rig"
 msgstr "LtV/Rig"
 #
-# 
-# 
+#
+#
 msgid "M/T"
 msgstr "M/T"
 #
-# 
-# 
+#
+#
 msgid "M/V"
 msgstr "M/V"
 #
-# 
-# 
+#
+#
 msgid "MAN OVERBOARD"
 msgstr "人員落水"
 #
-# 
-# 
+#
+#
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
 #
-# 
+#
 msgid "Magenta"
 msgstr "洋紅"
 #
-# 
-# 
+#
+#
 msgid "Mariner's Standard"
 msgstr "航海用"
 #
-# 
-# 
+#
+#
 msgid "Mariners Standard"
 msgstr "航海用"
 #
-# 
-# 
-#, fuzzy
-msgid "Mark targets as lost after (min)"
-msgstr "信號消失多久後標記為目標遺失(分鐘):"
 #
-# 
-# 
+#
+msgid "Mark targets as lost after (min)"
+msgstr "信號消失多久後標記為目標遺失(分鐘)"
+#
+#
+#
 msgid "Max Detail Here"
 msgstr "在此處顯示最大詳細度"
 #
-# 
-# 
-#, fuzzy
-msgid "Measure"
-msgstr "結束測量"
 #
-# 
-# 
+#
+msgid "Measure"
+msgstr "測量"
+#
+#
+#
 msgid "Measure Off"
 msgstr "結束測量"
 #
-# 
-# 
+#
+#
 msgid "Med/V"
 msgstr "醫療交通船"
 #
-# 
-# 
+#
+#
 msgid "Medical Transport"
 msgstr "醫療交通船"
 #
 msgid "Medium"
-msgstr ""
+msgstr "中"
 #
-# 
-# 
+#
+#
 msgid "Mercator"
 msgstr "麥卡托"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Merge waypoint?"
-msgstr "重新命名轉向點?"
+msgstr "合併轉向點?"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Merge waypoints?"
-msgstr "重新命名轉向點?"
+msgstr "合併轉向點?"
 #
-# 
-# 
+#
+#
 msgid "Meters"
 msgstr "公尺"
 #
-# 
-# 
+#
+#
 msgid "Mil/V"
 msgstr "軍艦"
 #
-# 
-# 
+#
+#
 msgid "Military Vessel"
 msgstr "軍艦"
 #
 msgid "Minimum Screen Size (mm)"
-msgstr ""
+msgstr "最小螢幕顯示大小(mm)"
 #
 msgid "Miscellaneous Options"
-msgstr ""
+msgstr "雜項選項"
 #
-# 
-# 
+msgid "MoTwilight"
+msgstr "曙光"
+#
+#
+#
 msgid "Moored"
 msgstr "繫泊中"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Move Boat Here"
 msgstr "移動船舶至此處"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Move Waypoint"
-msgstr "前往轉向點"
+msgstr "移動航路點"
 #
 msgid "Mph"
-msgstr ""
+msgstr "Mph"
 #
 msgid "NMEA"
-msgstr ""
+msgstr "NMEA"
 #
 msgid "NMEA 0183"
-msgstr ""
+msgstr "NMEA 0183"
 #
 msgid "NMEA 2000"
-msgstr ""
+msgstr "NMEA 2000"
 #
 msgid "NMi"
-msgstr ""
+msgstr "NMi"
 #
-# 
-# 
+#
+#
 msgid "Name"
 msgstr "名稱"
 #
 msgid "National text on chart"
-msgstr ""
+msgstr "當地文字"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Nautical Miles"
-msgstr "海浬(&N)"
+msgstr "海浬"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Nautical miles"
-msgstr "海浬(&N)"
+msgstr "海浬"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Navigate To Here"
-msgstr "導航資料"
+msgstr "導航至此處"
 #
 msgid "Navigate To This"
-msgstr ""
+msgstr "導航至此處"
 #
 msgid "Network"
-msgstr ""
+msgstr "網路通訊"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "New Chart Group"
-msgstr "海圖"
+msgstr "新海圖群組"
 #
 msgid "New Group..."
-msgstr ""
+msgstr "新群組..."
 #
-# 
-# 
+#
+#
 msgid "Next tide event"
 msgstr "下一個潮汐事件"
 #
-# 
-# 
-#, fuzzy
+msgid "Nighttime"
+msgstr "夜晚"
+#
+#
+#
 msgid "No CPA Calculation if target range is greater than (NMi)"
 msgstr "如果目標距離大於多少海浬時不予計算 CPA"
 #
-# 
-# 
+#
+#
 msgid "No Chart Available"
 msgstr "無此區域海圖"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid ""
 "No Charts Installed.\n"
 "Please select chart folders in Options > Charts."
 msgstr ""
-"           沒有安裝圖資.\n"
-"請至 工具箱->海圖 選取適當的海圖目錄."
+"沒有安裝圖資.\n"
+"請至 選項 -> 海圖 選取圖資目錄."
 #
 msgid "No, I don't want to hide it."
-msgstr ""
+msgstr "不, 我不要隱藏它."
 #
 msgid "No, and permanently remove the option to hide it."
-msgstr ""
+msgstr "不, 永久移除隱藏選項."
 #
-# 
-# 
+#
+#
 msgid "No. of items"
 msgstr "項目編號"
 #
 msgid "None"
-msgstr ""
+msgstr "無"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "North Up Mode"
-msgstr "設定北方朝上模式"
+msgstr "北方朝上模式"
 #
-# 
-# 
+#
+#
 msgid "Not Under Command"
 msgstr "無法控制"
 #
-# 
-# 
+#
+#
 msgid "OK"
 msgstr "OK"
 #
-# 
-# 
+#
+#
 msgid "Object Query"
 msgstr "物件查詢"
 #
-# 
-# 
-#, fuzzy
-msgid "Object Query..."
-msgstr "物件查詢"
 #
-# 
-# 
-#, fuzzy
+#
+msgid "Object Query..."
+msgstr "物件查詢..."
+#
+#
+#
 msgid "ObjectQuery"
 msgstr "物件查詢"
 #
-# 
-# 
+#
+#
 msgid "Ok"
 msgstr "Ok"
 #
 msgid "Old log will be moved to opencpn.log.log"
-msgstr ""
+msgstr "舊的記錄檔會移至opencpn.log.log"
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Alert"
 msgstr "OpenCPN 警示"
 #
-# 
-# 
+#
+#
 msgid "OpenCPN CM93 Cell Offset Adjustments"
 msgstr "OpenCPN CM93 Cell Offset 調整"
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Chart Add...."
 msgstr "OpenCPN 海圖新增...."
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Chart Scan...."
 msgstr "OpenCPN 海圖掃描...."
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Chart Update"
 msgstr "OpenCPN 海圖更新"
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Converting Track to Route...."
 msgstr "OpenCPN 轉換軌跡成航路...."
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Directory Scan...."
 msgstr "OpenCPN 目錄掃描...."
 #
-# 
-# 
-#, fuzzy
-msgid "OpenCPN Group Notice"
-msgstr "OpenCPN 航路建立"
 #
-# 
-# 
+#
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN 群組通知"
+#
+#
+#
 msgid "OpenCPN Info"
 msgstr "OpenCPN 資訊"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "OpenCPN Remove Waypoint"
-msgstr "OpenCPN 航路建立"
+msgstr "OpenCPN 移除轉向點"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "OpenCPN Route"
-msgstr "OpenCPN 航路建立"
+msgstr "OpenCPN 航路"
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Route Create"
 msgstr "OpenCPN 航路建立"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "OpenCPN Route Delete"
-msgstr "OpenCPN 航路建立"
+msgstr "OpenCPN 航路刪除"
 #
-# 
-# 
+#
+#
 msgid "OpenCPN S57 SENC File Create..."
-msgstr "OpenCPN S57 SENC檔案建立..."
+msgstr "OpenCPN S57 SENC檔案建立…"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "OpenCPN Track"
-msgstr "OpenCPN 航跡刪除"
+msgstr "OpenCPN 航跡"
 #
-# 
-# 
+#
+#
 msgid "OpenCPN Track Delete"
 msgstr "OpenCPN 航跡刪除"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "OpenCPN Waypoint"
-msgstr "OpenCPN 航路建立"
+msgstr "OpenCPN 轉向點"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "OpenCPN cannot start. "
-msgstr "OpenCPN 海圖更新"
+msgstr "OpenCPN 無法啟動."
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "OpenCPN info"
 msgstr "OpenCPN 資訊"
 #
-# 
-# 
+#
+#
 msgid "Options"
 msgstr "選項"
 #
 msgid "Other - Define in associated text field"
-msgstr ""
+msgstr "其他 - 定義於相關說明文字"
 #
 msgid "Output"
-msgstr ""
+msgstr "輸出"
 #
 msgid "Output filtering"
-msgstr ""
+msgstr "輸出篩選"
 #
 msgid "Output on this port ( as Autopilot or NMEA Repeater)"
-msgstr ""
+msgstr "輸出至此連接埠(連接 Autopilot 或作為 NMEA 轉送器)"
 #
-# 
-# 
+#
+#
 msgid "OverZoom"
-msgstr "超出縮放範圍"
+msgstr "過度縮放"
 #
-# 
-# 
+#
+#
 msgid "Overwrite existing file?"
 msgstr "覆寫現有檔案?"
 #
-# 
-# 
-#, fuzzy
-msgid "Own Ship"
-msgstr " 船名:"
 #
-# 
-# 
+#
+msgid "Own Ship"
+msgstr " 本船"
+#
+#
+#
 msgid "P/V"
 msgstr "領港船"
 #
-# 
-# 
+#
+#
 msgid "PC/V"
 msgstr "污染控制船"
 #
-# 
-# 
+#
+#
 msgid "Paper Chart"
 msgstr "紙海圖"
 #
-# 
-# 
-#, fuzzy
-msgid "Parameters"
-msgstr "公尺"
 #
-# 
-# 
+#
+msgid "Parameters"
+msgstr "參數"
+#
+#
+#
 msgid "Pass/V"
 msgstr "客船"
 #
-# 
-# 
+#
+#
 msgid "Passenger Ship"
 msgstr "客船"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Paste Route"
-msgstr "建立航路"
+msgstr "貼上航路"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Paste Track"
-msgstr "匯出航跡(&E)..."
+msgstr "貼上航跡"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Paste Waypoint"
-msgstr "啟用轉向點"
+msgstr "貼上轉向點"
 #
-# 
-# 
+#
+#
 msgid "Pilot Vessel"
 msgstr "領港船"
 #
-# 
-# 
+#
+#
 msgid "Plain"
 msgstr "平面"
 #
-# 
-# 
+#
+#
 msgid "Plan Speed"
 msgstr "計畫航速"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Plan speed"
-msgstr "計畫航速"
+msgstr "計畫速度"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Play Ships Bells"
-msgstr "播放船鐘"
+msgstr "播放船鐘聲效"
 #
-# 
-# 
-msgid "Play Sound on CPA/TCPA Alerts"
+#
+#
+#, fuzzy
+msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "CPA/TCPA 警報時發出音效"
 #
-# 
-# 
-#, fuzzy
-msgid "Please restart OpenCPN to activate language or style changes."
-msgstr "請重新啟動 OpenCPN 來顯示新設定的語系"
 #
-# 
-# 
+#
+msgid "Please restart OpenCPN to activate language or style changes."
+msgstr "請重新啟動 OpenCPN 來顯示新設定的語系與樣式."
+#
+#
+#
 msgid "Pleasure craft"
 msgstr "遊艇"
 #
-# 
-# 
-#, fuzzy
+#, c-format
+msgid ""
+"Plugin %s (%s), version %i.%i was detected. This version is known to be "
+"unstable and will not be loaded, please go to the opencpn.org plugin "
+"downloads page and get the latest stable version of this plugin available."
+msgstr ""
+"偵測到 %s (%s)插件, 版本 %i.%i . 此版本已知不相容將不進行載入, 請至 opencpn."
+"org 查詢是否有最新相容版本."
+#
+#, c-format
+msgid ""
+"Plugin %s (%s), version %i.%i was detected. This version is known to be "
+"unstable, please go to the opencpn.org plugin downloads page and get the "
+"latest stable version of this plugin available."
+msgstr ""
+"偵測到插件 %s (%s), 版本 %i.%i . 此版本尚不穩定, 請至 opencpn.org 查詢是否已有"
+"最新版本."
+#
+#
+#
 msgid "Plugins"
 msgstr "插件"
 #
-# 
-# 
+#
+#
 msgid "Points"
 msgstr "點"
 #
-# 
-# 
+#
+#
 msgid "Pollution Control Vessel"
 msgstr "污染控制船"
 #
-# 
-# 
+#
+#
 msgid "Polyconic"
 msgstr "多圓錐投影"
 #
-# 
-# 
+#
+#
 msgid "Port"
 msgstr "左舷"
 #
-# 
-# 
+#
+#
 msgid "Port Hand"
 msgstr "左舷側"
 #
-# 
-# 
+#
+#
 msgid "Port Hand Mark"
 msgstr "左舷側航標"
 #
-# 
-# 
-msgid "Port Tender"
-msgstr "Port Tender"
 #
-# 
-# 
+#
+msgid "Port Tender"
+msgstr "港勤工作船"
+#
+#
+#
 msgid "Position"
 msgstr "位置"
 #
-# 
-# 
-#, fuzzy
-msgid "Position Report"
-msgstr "最近位置發報時間:  "
 #
-# 
-# 
+#
+msgid "Position Report"
+msgstr "位置報告  "
+#
+#
+#
 msgid "Pref. Chnl"
 msgstr "偏好航道"
 #
-# 
-# 
+#
+#
 msgid "Preferences"
 msgstr "偏好設定"
 #
-# 
-# 
+#
+#
 msgid "Preferred Channel Port Hand"
 msgstr "主要航道左舷側"
 #
-# 
-# 
+#
+#
 msgid "Preferred Channel Starboard Hand"
 msgstr "主要航道右舷側"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Preserve Scale when Switching Charts"
 msgstr "切換海圖時保留原比例尺"
 #
-# 
-# 
+#
+#
 msgid "Preview:"
 msgstr "預覽:"
 #
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+msgid "Print"
+msgstr "列印"
+#
+#
+#
 msgid "Print Chart"
 msgstr "列印海圖"
 #
-# 
-# 
-#, fuzzy
-msgid "Print Route"
-msgstr "分離航路"
 #
-# 
-# 
-#, fuzzy
+#
+msgid "Print Route"
+msgstr "列印航路"
+#
+#
+#
 msgid "Print Route Selection"
-msgstr "分離航路"
+msgstr "列印航路選擇"
 #
 msgid "Priority"
-msgstr ""
+msgstr "優先權"
 #
 msgid "Proceed to this location - await instructions"
-msgstr ""
+msgstr "前往此處 - 等候指示"
 #
-# 
-# 
+#
+#
 msgid "Processing Waypoints..."
 msgstr "處理轉向點..."
 #
-# 
-# 
+#
+#
 msgid "Properties"
 msgstr "屬性"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Properties..."
-msgstr "屬性(&P)..."
+msgstr "屬性..."
 #
 msgid "Protocol"
-msgstr ""
+msgstr "協定"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Question"
-msgstr "設定"
+msgstr "問題"
 #
-# 
-# 
+#
+#
 msgid "RACON"
 msgstr "雷達反射信號標"
 #
-# 
-# 
+#
+#
 msgid "Real"
 msgstr "Real"
 #
-# 
-# 
+#
+#
 msgid "Real (On Position)"
 msgstr "Real (On Position)"
 #
 msgid "Real Scale Bitmap"
-msgstr ""
+msgstr "實際比例點陣圖"
 #
 msgid "Real Scale Vector"
-msgstr ""
+msgstr "實際比例向量圖"
 #
-# 
-# 
+#
+#
 msgid "Real(Off Position)"
 msgstr "Real(Off Position)"
 #
-# 
-# 
+#
+#
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "依據組態檔設定來更新海圖索引資料...."
 #
-# 
+#
+#
+msgid "Recorded points"
+msgstr "已記錄航點"
+#
+#
 msgid "Red"
 msgstr "紅"
 #
 msgid "Redo"
-msgstr ""
+msgstr "重做"
 #
 msgid "Reduce Data Precision"
-msgstr ""
+msgstr "降低資料精確度"
 #
 msgid "Reduce Data..."
-msgstr ""
+msgstr "減少資料..."
 #
 msgid "Reduced Detail at Small Scale"
-msgstr ""
+msgstr "在小比例尺減少細節"
 #
-# 
-# 
+#
+#
 msgid "Ref. Pt"
 msgstr "參考點"
 #
-# 
-# 
+#
+#
 msgid "Reference Point"
 msgstr "參考點:"
 #
-# 
-# 
+#
+#
 msgid "Remaining time : "
 msgstr "剩餘時間 : "
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Remove Chart"
-msgstr "使用中的海圖目錄"
+msgstr "移除海圖"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Remove Connection"
-msgstr "字型選項"
+msgstr "移除連接"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Remove Selected"
-msgstr "刪除航跡"
+msgstr "移除選取"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Remove from Route"
-msgstr "從航路中移除轉向點"
+msgstr "從航路中移除"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Remove lost targets after (min)"
-msgstr "多久後移除遺失目標 (分鐘:):"
+msgstr "多久後移除遺失目標 (分鐘)"
 #
-# 
-# 
+#
+#
 msgid "Rename Waypoints?"
 msgstr "重新命名轉向點?"
 #
 msgid "Report from ship: Icing info"
-msgstr ""
+msgstr "船舶通報訊息: 流冰資訊"
 #
 msgid ""
 "Report from ship: Miscellaneous information - define in Associated text field"
-msgstr ""
+msgstr "船舶通報訊息: 其他資訊 - 定義於相關文字欄位"
 #
-# 
-# 
+#
+#
 msgid "Reserved 11"
 msgstr "Reserved 11"
 #
-# 
-# 
+#
+#
 msgid "Reserved 12"
 msgstr "Reserved 12"
 #
-# 
-# 
+#
+#
 msgid "Reserved 13"
 msgstr "Reserved 13"
 #
-# 
-# 
+#
+#
 msgid "Reserved 14"
 msgstr "Reserved 14"
 #
 msgid "Restricted Area: Active military OPAREA"
-msgstr ""
+msgstr "限制區域: 軍事活動區"
 #
 msgid "Restricted Area: Drifting Mines"
-msgstr ""
+msgstr "限制區域: 水雷"
 #
 msgid "Restricted Area: Entry approval required prior to transit"
-msgstr ""
+msgstr "限制區域: 需要進入許可"
 #
 msgid "Restricted Area: Entry prohibited"
-msgstr ""
+msgstr "限制區域: 禁止進入"
 #
 msgid "Restricted Area: Firing - danger area."
-msgstr ""
+msgstr "限制區域: 射擊區域"
 #
 msgid "Restricted Area: Fishing prohibited"
-msgstr ""
+msgstr "限制區域: 禁止捕撈"
 #
 msgid "Restricted Area: No anchoring."
-msgstr ""
+msgstr "限制區域: 禁止下錨"
 #
-# 
-# 
+#
+#
 msgid "Restricted Manoeuvrability"
 msgstr "操縱性受限制"
 #
-# 
-# 
+#
+#
 msgid "Retrieving initial Chart Directory set from Windows Registry"
-msgstr "從Windows Registry取得啟始海圖目錄"
+msgstr "從Windows Registry 取得啟始海圖目錄"
 #
-# 
-# 
+#
+#
 msgid "Retrieving initial language selection from Windows Registry"
-msgstr "從Windows Registry取得啟始語言"
+msgstr "從Windows Registry 取得啟始語言"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Reverse..."
-msgstr "反向(&R)"
+msgstr "反向..."
 #
 msgid "Rogue or suspicious vessel"
-msgstr ""
+msgstr "惡意或可疑船舶"
 #
-# 
-# 
+#
+#
 msgid "Rollover"
-msgstr "Rollover"
+msgstr "滑鼠移至物件上方時顯示"
 #
-# 
-# 
+#
+#
 msgid "Route"
 msgstr "航路"
 #
-# 
-# 
+#
+#
 msgid "Route Manager"
 msgstr "航路管理"
 #
-# 
-# 
+#
+#
 msgid "Route Name"
 msgstr "航路名稱"
 #
-# 
-# 
-#, fuzzy
-msgid "Route Print"
-msgstr "航路屬性"
 #
-# 
-# 
+#
+msgid "Route Print"
+msgstr "航路列印"
+#
+#
+#
 msgid "Route Properties"
 msgstr "航路屬性"
 #
-# 
-# 
-msgid "Route from Track"
-msgstr "從航跡設定航路"
 #
-# 
-# 
-#, fuzzy
+#
+msgid "Route from Track"
+msgstr "從軌跡設定航路"
+#
+#
+#
 msgid "Route: "
-msgstr "航路"
+msgstr "航路:"
 #
 msgid "Route: Alternative route"
-msgstr ""
+msgstr "航路: 替代航路"
 #
 msgid "Route: Recommended route"
-msgstr ""
+msgstr "航路: 建議航路"
 #
 msgid "Route: Recommended route through ice"
-msgstr ""
+msgstr "航路: 建議冰層航路"
 #
-# 
-# 
+#
+#
 msgid "RouteLegInfoRollover"
-msgstr "航程資訊Rollover"
+msgstr "航程資訊浮動顯示"
 #
-# 
-# 
+#
+#
 msgid "Routes"
 msgstr "航路 "
 #
-# 
-# 
+#
+#
 msgid "S/V"
 msgstr "帆船"
 #
-# 
-# 
+#
+#
 msgid "SAR/V"
 msgstr "搜救船"
 #
-# 
-# 
+#
+#
 msgid "SOG COG"
 msgstr "SOG COG"
 #
-# 
-# 
+#
+#
 msgid "Safe Water"
 msgstr "安全水域"
 #
-# 
-# 
+#
+#
 msgid "Safety Depth"
 msgstr "安全水深"
 #
-# 
-# 
+#
+#
 msgid "Sailing Vessel"
 msgstr "帆船"
 #
-# 
-# 
-#, fuzzy, c-format
+#
+#
+#, c-format
 msgid "Scale %4.0f"
-msgstr "放大比例尺"
+msgstr "Scale %4.0f"
 #
-# 
-# 
-#, fuzzy, c-format
+#
+#
+#, c-format
 msgid "Scale %4.0f (%1.1fx)"
-msgstr "真實比例: %8.0f  放大 %4.1fx"
+msgstr "Scale %4.0f (%1.1fx)"
 #
-# 
-# 
-#, fuzzy, c-format
+#
+#
+#, c-format
 msgid "Scale %4.0f (%1.2fx)"
-msgstr "真實比例: %8.0f  放大 %4.2fx"
+msgstr "Scale %4.0f (%1.2fx)"
 #
-# 
-# 
+#
+#
 msgid "Scale In"
 msgstr "放大比例尺"
 #
-# 
-# 
+#
+#
 msgid "Scale Out"
 msgstr "縮小比例尺"
 #
-# 
-msgid "Scan Charts and Update Database"
-msgstr ""
 #
-# 
-# 
+msgid "Scan Charts and Update Database"
+msgstr "掃瞄海圖與更新資料庫"
+#
+#
+#
 msgid "Search and Rescue Vessel"
 msgstr "搜救船"
 #
 msgid "Seatalk"
-msgstr ""
+msgstr "Seatalk"
 #
 msgid "Security Alert - Level 1"
-msgstr ""
+msgstr "保全警報 - Level 1"
 #
 msgid "Security Alert - Level 2"
-msgstr ""
+msgstr "保全警報 - Level 2"
 #
 msgid "Security Alert - Level 3"
-msgstr ""
+msgstr "保全警報 - Level 3"
 #
 msgid "See the log file at "
-msgstr ""
+msgstr "See the log file at "
 #
-# 
-# 
+#
+#
 msgid "Select Alert Sound"
 msgstr "選擇警報聲效"
 #
-# 
-# 
+#
+#
 msgid "Select All"
 msgstr "選擇全部"
 #
-# 
-# 
+#
+#
 msgid "Select Sound File"
 msgstr "選擇音效檔"
 #
 msgid "Select Tide/Current Data"
-msgstr ""
+msgstr "選擇 潮汐/洋流 資料"
 #
 msgid ""
 "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
 msgstr ""
+"選擇最大容許錯誤(公尺)\n"
+"在資料減少後:"
 #
-# 
-# 
+#
+#
 msgid "Send To GPS..."
 msgstr "傳送至GPS.."
 #
-# 
-# 
-#, fuzzy
-msgid "Send to GPS"
-msgstr "傳送至GPS(&S)"
 #
-# 
-# 
-#, fuzzy
+#
+msgid "Send to GPS"
+msgstr "傳送至GPS"
+#
+#
+#
 msgid "Sentence Filter"
-msgstr "警報靜音(&S)"
+msgstr "字串篩選"
 #
 msgid "Serial"
-msgstr ""
+msgstr "序列傳輸"
 #
-# 
-# 
+#
+#
 msgid "Set Anchor Watch"
 msgstr "設定流錨警報"
 #
-# 
-# 
-msgid "Shallow Depth"
-msgstr "最小水深"
 #
-# 
-# 
+#
+msgid "Shallow Depth"
+msgstr "淺水區水深"
+#
+#
+#
 msgid "Shift to Larger Scale Chart"
 msgstr "顯示大比例尺海圖"
 #
-# 
-# 
+#
+#
 msgid "Shift to Smaller Scale Chart"
 msgstr "顯示小比例尺海圖"
 #
 msgid "Ship Icon Type"
-msgstr ""
+msgstr "船舶圖示種類"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Ships"
-msgstr " 船名:"
+msgstr " 船名"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Short dash"
-msgstr "顯示潮汐"
+msgstr "短折線"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show"
-msgstr "顯示網格"
+msgstr "顯示"
 #
-# 
-# 
+#
+#
 msgid "Show AIS Targets"
 msgstr "顯示 AIS 目標"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show AIS targets real size"
-msgstr "顯示 AIS 目標"
+msgstr "顯示 AIS 目標實際大小"
 #
-# 
-# 
+#
+#
 msgid "Show CPA/TCPA Alert Dialog"
-msgstr "顯示 CPA/TCPA 警報對話框"
+msgstr "顯示 CPA/TCPA 警報視窗"
 #
-# 
-# 
+#
+#
 msgid "Show Chart Outlines"
 msgstr "顯示海圖範圍圖框"
 #
-# 
-# 
-msgid "Show Current Information"
-msgstr "顯示洋流資訊"
 #
-# 
-# 
+#
+msgid "Show Current Information"
+msgstr "顯示海流資訊"
+#
+#
+#
 msgid "Show Currents"
 msgstr "顯示海流"
 #
-# 
-# 
+#
+#
 msgid "Show Depth Units"
 msgstr "顯示水深單位"
 #
 msgid "Show Distance from each Waypoint to the next one."
-msgstr ""
+msgstr "顯示從每一轉向點到下一點的距離"
 #
-# 
-# 
+#
+#
 msgid "Show ENC Text"
 msgstr "顯示 ENC 文字"
 #
-# 
-# 
+#
+#
 msgid "Show Grid"
 msgstr "顯示網格"
 #
 msgid "Show Highway"
-msgstr ""
+msgstr "Show Highway"
 #
-# 
-# 
+#
+#
 msgid "Show Lat/Long as"
-msgstr "經/緯度 顯示方式"
+msgstr "經/緯度 顯示單位"
 #
-# 
-# 
-#, fuzzy
+msgid "Show Magnetic bearings and headings"
+msgstr "顯示磁羅經方位"
+#
+#
+#
 msgid "Show NMEA Debug Window"
-msgstr "顯示 GPS/NMEA 資料流視窗"
+msgstr "顯示 NMEA 除錯視窗"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show Skewed Raster Charts as North-Up"
-msgstr "允許在航向朝上模式中顯示旋轉的點陣圖"
+msgstr "允許在北方朝上模式中顯示旋轉的光柵掃瞄式海圖"
 #
-# 
-# 
+#
+#
 msgid "Show Status Bar"
 msgstr "顯示狀態列"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show Target CPA"
-msgstr "顯示 AIS 目標"
+msgstr "顯示目標CPA"
 #
-# 
-# 
-#, fuzzy
+#
+#
+msgid "Show Target Track"
+msgstr "顯示目標軌跡"
+#
+#
+#
 msgid "Show This Chart"
-msgstr "顯示在海圖上"
+msgstr "顯示此海圖"
 #
-# 
-# 
+#
+#
 msgid "Show Tide Information"
 msgstr "顯示潮汐資訊"
 #
-# 
-# 
+#
+#
 msgid "Show Tides"
 msgstr "顯示潮汐"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show Toolbar in Fullscreen Mode"
 msgstr "在全螢幕模式中顯示工具列"
 #
-# 
-# 
+#
+#
 msgid "Show WPT names"
 msgstr "顯示轉向點名稱"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show Waypoint description."
-msgstr "說明"
+msgstr "顯示轉向點說明"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show Waypoint name."
-msgstr "轉向點名稱"
+msgstr "顯示轉向點名稱."
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show Waypoint position."
-msgstr "標記資訊"
+msgstr "顯示轉向點位置"
 #
 msgid "Show area notices (from AIS binary messages)"
-msgstr ""
+msgstr "顯示區域通知 (來自 AIS binary 資料)"
 #
 msgid "Show course from each Waypoint to the next one. "
-msgstr ""
+msgstr "顯示每一轉向點到下一點的航向"
 #
 #
 #
@@ -3350,205 +3356,206 @@ msgstr ""
 #
 #
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show distance as"
-msgstr "總距離"
+msgstr "距離顯示單位"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show name"
 msgstr "顯示名稱"
 #
 msgid "Show names with AIS targets at scale greater than 1:"
-msgstr ""
+msgstr "顯示 AIS 目標名稱當比例尺大於1:"
 #
-# 
-# 
+#
+#
 msgid "Show on chart"
 msgstr "顯示在海圖上"
 #
-# 
-# 
+#
+#
 msgid "Show radar rings"
 msgstr "顯示雷達距離圈"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show speed as"
-msgstr "顯示潮汐"
+msgstr "速度顯示單位"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show target COG predictor arrow, length (min)"
-msgstr "顯示COG向量箭頭"
+msgstr "顯示目標COG向量, 長度(分鐘)"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Show target tracks, length (min)"
-msgstr "顯示目標軌跡"
+msgstr "顯示目標軌跡, 長度(分鐘)"
 #
-# 
-# 
+#
+#
 msgid "Shows the font preview."
 msgstr "顯示字型預覽"
 #
-# 
-# 
+#
+#
 msgid "Simplified"
 msgstr "簡化"
 #
 msgid "Smooth Panning / Zooming"
-msgstr ""
+msgstr "平滑 移動 / 縮放"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Solid"
-msgstr "符號化"
+msgstr "實線"
 #
-# 
-# 
+#
+#
 msgid "Spare"
 msgstr "備用"
 #
-# 
-# 
+#
+#
 msgid "Special"
 msgstr "特別"
 #
-# 
-# 
+#
+#
 msgid "Special Mark"
 msgstr "特別標記"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Speed"
-msgstr "計畫航速"
+msgstr "船速"
 #
-# 
-# 
+#
+#
 msgid "Speed (Kts)"
-msgstr "速度, 節"
+msgstr "速度 (節)"
 #
-# 
-# 
+#
+#
+msgid "Split"
+msgstr "分離"
+#
+#
+#
 msgid "Split Route"
 msgstr "分離航路"
 #
-# 
-# 
+#
+#
 msgid "Split Track"
 msgstr "分離航跡"
 #
-# 
-# 
+#
+#
 msgid "Standard"
 msgstr "標準"
 #
-# 
-# 
+#
+#
 msgid "Starboard Hand Mark"
 msgstr "右舷側航標"
 #
-# 
-# 
+#
+#
 msgid "Start"
 msgstr "開始"
 #
-# 
-# 
-#, fuzzy
+msgid "Statistics"
+msgstr "統計"
+#
+#
+#
 msgid "StatusBar"
-msgstr "顯示狀態列"
+msgstr "狀態列"
 #
 msgid "Statute miles"
-msgstr ""
+msgstr "Statute miles"
 #
-# 
-# 
+#
+#
 msgid "Stbd"
 msgstr "右舷"
 #
-# 
-# 
+#
+#
 msgid "Stbd Hand"
 msgstr "右舷側"
 #
-# 
-# 
-#, fuzzy
-msgid "Style:"
-msgstr "樣式(&S):"
 #
-# 
-# 
+#
+msgid "Style"
+msgstr "樣式"
+#
+#
+#
+msgid "Style:"
+msgstr "樣式:"
+#
+msgid "Sunrise"
+msgstr "日出"
+#
+msgid "Sunset"
+msgstr "日落"
+#
+#
+#
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "不顯示錨泊/繫泊中之目標"
 #
-# 
-# 
+#
+#
 msgid "Symbolized"
 msgstr "符號化"
 #
-# 
-# 
-#, fuzzy
-msgid "T"
-msgstr "到"
 #
-# 
-# 
-#, fuzzy
+#
 msgid "TCP"
-msgstr "CPA TCPA"
+msgstr "TCP"
 #
-# 
-# 
+#
+#
 msgid "Tanker"
 msgstr "油輪"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Target List..."
-msgstr "AIS 目標列表"
+msgstr "目標列表..."
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Target Query..."
-msgstr "AIS 目標查詢"
+msgstr "目標查詢..."
 #
-# 
-# 
+#
+#
 msgid "Temporary GOTO Route"
 msgstr "臨時航路"
 #
-# 
-# 
+#
+#
 msgid "Temporary MOB Route"
 msgstr "暫時 MOB 路徑"
 #
-# 
-# 
+#
+#
 msgid "Temporary layer"
 msgstr "暫時圖層"
 #
-# 
-# 
-msgid "Tender"
-msgstr "潮汐"
 #
-# 
-# 
+#
+msgid "Tender"
+msgstr "工作船"
+#
+#
+#
 msgid "Test Alert Sound"
 msgstr "測試警報聲效"
 #
@@ -3556,64 +3563,67 @@ msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
+"人員落水按鍵為重要安全功能.\n"
+"確定要隱藏它?"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "The Open Source Chart Plotter/Navigator"
-msgstr ""
-"\n"
-"         OpenCPN...一個精巧的開放原始碼海圖標繪/導航軟體"
+msgstr "開放原始碼海圖標繪/導航軟體"
 #
 #, c-format
 msgid ""
 "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr ""
+"航跡使用的資料量\n"
+"減少至 %d%%."
 #
 msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
+"目前執行航跡尚未合併.\n"
+"您可在完成後合併."
 #
-# 
-# 
+#
+#
 msgid "The font colour."
 msgstr "字型色彩"
 #
-# 
-# 
-msgid "The font family."
-msgstr "字型"
 #
-# 
-# 
+#
+msgid "The font family."
+msgstr "字型系"
+#
+#
+#
 msgid "The font point size."
 msgstr "字型點數大小"
 #
-# 
-# 
+#
+#
 msgid "The font style."
 msgstr "字型樣式"
 #
-# 
-# 
+#
+#
 msgid "The font weight."
 msgstr "字體寬度"
 #
 msgid "The necessary configuration files were not found. "
-msgstr ""
+msgstr "找不到所需的組態檔."
 #
 msgid "The settings for own ship real size are not correct:"
-msgstr ""
+msgstr "本船設定的實際大小不正確:"
 #
 msgid ""
 "The waypoint you want to delete is used in a route, do you really want to "
 "delete it?"
-msgstr ""
+msgstr "您要刪除的轉向點正使用中, 確定要刪除?"
 #
-# 
-# 
+#
+#
 msgid "There"
 msgstr "那裡"
 #
@@ -3622,21 +3632,26 @@ msgid ""
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
 msgstr ""
+"在要貼上的位置已有現存的轉向點, 您要合併嗎？\n"
+"\n"
 #
 msgid ""
 "There are some waypoints used in routes or anchor alarms. Do you want to "
 "delete them as well? This will change the routes and disable the anchor "
 "alarms. Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
+"有一些轉向點已用於航路或錨泊警報. 你要刪除它嗎？這將會改變航路並取消錨泊警報."
 #
 msgid ""
 "There is an existing waypoint at the same location as the one you are "
 "pasting. Would you like to merge the pasted data with it?\n"
 "\n"
 msgstr ""
+"在即將貼上的位置上已有一個現存的航路點. 要合併貼上的資料嗎? \n"
+"\n"
 #
-# 
-# 
+#
+#
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
@@ -3644,314 +3659,338 @@ msgstr ""
 "列印發生錯誤.\n"
 "印表機是否連接妥當?"
 #
-# 
-# 
+#
+#
 msgid "This Leg"
 msgstr "本區段"
 #
 msgid "This waypoint is part of a layer and can't be edited"
-msgstr ""
+msgstr "此轉向點為圖層的一部份且無法編輯"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Tides && Currents"
-msgstr "顯示海流"
+msgstr "潮汐與海流"
 #
-# 
-# 
+#
+#
 msgid "Time Enroute"
 msgstr "航程所需時間"
 #
-# 
-# 
+#
+#
+msgid "Time enroute"
+msgstr "航程所需時間"
+#
+#
+#
 msgid "Times shown as"
 msgstr "時間顯示成"
 #
-# 
-# 
+#
+#
+msgid "Timestamp"
+msgstr "時間戳記"
+#
+#
+#
 msgid "To"
 msgstr "到"
 #
-# 
-# 
+#
+#
 msgid "To Waypoint"
 msgstr "前往轉向點"
 #
-# 
-# 
+#
+#
+msgid "To route"
+msgstr "到 航路"
+#
+#
+#
 msgid "Toggle Tracking"
 msgstr "切換航跡顯示"
 #
-# 
-# 
+#
+#
 msgid "ToolTips"
 msgstr "工具提示"
 #
 msgid "Toolbar and Window Style"
-msgstr ""
+msgstr "工具列與視窗樣式"
 #
-# 
-# 
+#
+#
 msgid "Total Distance"
 msgstr "總距離"
 #
-# 
-# 
-#, fuzzy
-msgid "Total Length: "
-msgstr "長度"
 #
-# 
-# 
+#
+msgid "Total Length: "
+msgstr "總長度:"
+#
+#
+#
+msgid "Total distance"
+msgstr "總距離"
+#
+#
+#
 msgid "Tow"
 msgstr "拖曳"
 #
-# 
-# 
-#, fuzzy
-msgid "Track"
-msgstr "航跡"
 #
-# 
-# 
+#
+msgid "Track"
+msgstr "Track"
+#
+#
+#
 msgid "Track Name"
 msgstr "航跡名稱"
 #
-# 
-# 
-#, fuzzy
-msgid "Tracking Precision"
+#
+#
+msgid "Track Properties"
 msgstr "航跡屬性"
 #
-# 
-# 
+#
+#
+#, c-format
+msgid "Track Properties, Layer: %d"
+msgstr "航跡屬性, 圖層: %d"
+#
+#
+#
+msgid "Tracking Precision"
+msgstr "追跡精確度"
+#
+#
+#
 msgid "Tracks"
 msgstr "航跡"
 #
 msgid "Transmit Sentences"
-msgstr ""
+msgstr "發送字串"
 #
 msgid "Transmit sentences"
-msgstr ""
+msgstr "發送下列字串"
 #
-# 
-# 
+#
+#
 msgid "Transverse Mercator"
 msgstr "橫向麥卡托"
 #
 msgid "Treat WPL sentences as APRS position reports"
-msgstr ""
+msgstr "將 WPL 字串視為 APRS 位置報告"
 #
-# 
-# 
+#
+#
 msgid "Tug"
 msgstr "拖船"
 #
-# 
-# 
+#
+#
 msgid "Type"
 msgstr "型式"
 #
 msgid "UDP"
-msgstr ""
+msgstr "UDP"
 #
-# 
-# 
+#
+#
 msgid "UTC"
 msgstr "UTC"
 #
-# 
-# 
+#
+#
 msgid "Undefined"
-msgstr "底線(&U)"
+msgstr "未定義"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Undefined (default)"
-msgstr "底線(&U)"
+msgstr "未定義(預設)"
 #
-# 
-# 
+#
+#
 msgid "Under way sailing"
 msgstr "航行中"
 #
-# 
-# 
+#
+#
 msgid "Underway"
 msgstr "航行中"
 #
 msgid "Undo"
-msgstr ""
+msgstr "復原"
 #
-# 
-# 
+#
+#
 msgid "Unknown"
 msgstr "未知"
 #
-# 
-# 
-msgid "Unlist contents"
-msgstr "Unlist contents"
 #
-# 
-# 
+#
+msgid "Unlist contents"
+msgstr "未列表內容"
+#
+#
+#
 msgid "Unspecified"
 msgstr "未指定"
 #
-# 
-# 
+#
+#
 msgid "Update Control"
 msgstr "更新控制"
 #
 msgid "Use Accelerated Graphics (OpenGL)"
+msgstr "使用圖形顯示加速功能(OpenGL)"
+#
+#
+#
+msgid "Use Garmin (GRMN) mode for input"
+msgstr "使用 Garmin (GRMN)模式輸入"
+#
+#
+#
+msgid "Use Garmin GRMN (Host) mode for uploads"
+msgstr "使用 Garmin GRMN (Host) 模式上傳"
+#
+msgid "Use magnetic bearings in output sentence ECAPB"
 msgstr ""
 #
-# 
-# 
-#, fuzzy
-msgid "Use Garmin (GRMN) mode for input"
-msgstr "使用 Garmin GRMN/GRMN (Host) 模式上傳轉向點與航路."
 #
-# 
-# 
-#, fuzzy
-msgid "Use Garmin GRMN (Host) mode for uploads"
-msgstr "使用 Garmin GRMN/GRMN (Host) 模式上傳轉向點與航路."
 #
-# 
-# 
 msgid "Use nearby waypoint?"
 msgstr "使用最近的轉向點?"
 #
 msgid "User Interface"
-msgstr ""
+msgstr "使用者介面"
 #
-# 
-# 
+#
+#
 msgid "User X Offset"
-msgstr "更新 CM93 Offset"
+msgstr "User X Offset"
 #
-# 
-# 
+#
+#
 msgid "User X Offset (Metres)"
 msgstr "User X Offset (Metres)"
 #
-# 
-# 
-msgid "User Y Offset"
-msgstr "更新 CM93 Offset"
 #
-# 
-# 
+#
+msgid "User Y Offset"
+msgstr "User Y Offset"
+#
+#
+#
 msgid "User Y Offset (Metres)"
 msgstr "User Y Offset (Metres)"
 #
-# 
-# 
-#, fuzzy
-msgid "VTS active target"
-msgstr "使用中的海圖目錄"
 #
-# 
-# 
+#
+msgid "VTS active target"
+msgstr "VTS 作用中目標"
+#
+#
+#
 msgid "Vector Charts"
 msgstr "向量圖"
 #
-# 
-# 
+#
+#
 msgid "Vessel Diving"
 msgstr "潛水作業中"
 #
-# 
-# 
+#
+#
 msgid "Vessel Dredging"
 msgstr "浚挖作業中"
 #
-# 
-# 
+#
+#
 msgid "Vessel Fishing"
 msgstr "船舶捕漁中"
 #
-# 
-# 
+#
+#
 msgid "Vessel Towing"
 msgstr "船舶拖曳中"
 #
-# 
-# 
+#
+#
 msgid "Vessel Towing, Long"
 msgstr "船舶長距拖曳中"
 #
 msgid "Vessel requesting non-distress assistance"
-msgstr ""
+msgstr "船舶請求非船難協助"
 #
-# 
-# 
+#
+#
 msgid "Virtual"
 msgstr "Virtual"
 #
-# 
-# 
+#
+#
 msgid "Virtual (Off Position)"
 msgstr "Virtual (Off Position)"
 #
-# 
-# 
+#
+#
 msgid "Virtual (On Position)"
 msgstr "Virtual (On Position)"
 #
 msgid "Visible buttons"
-msgstr ""
+msgstr "可見按鈕"
 #
-# 
-# 
+#
+#
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV檔 (*.wav)|*.wav|所有檔案 (*.*)|*.*"
 #
-# 
-# 
-#, fuzzy
-msgid "Warn if CPA less than (NMi)"
-msgstr "當 CPA 小於多少(海浬)時發出警告:"
 #
-# 
-# 
-#, fuzzy
+#
+msgid "Warn if CPA less than (NMi)"
+msgstr "當 CPA 小於多少時發出警告(海浬)"
+#
+#
+#
 msgid "Waypoint"
 msgstr "轉向點"
 #
-# 
-# 
-#, fuzzy
-msgid "Waypoint Information"
-msgstr "標記資訊"
+msgid "Waypoint Arrival Circle Radius (NMi)"
+msgstr "航路點到達圈半徑(海浬)"
 #
-# 
-# 
+#
+#
+msgid "Waypoint Information"
+msgstr "轉向點資訊"
+#
+#
+#
 msgid "Waypoint Name"
 msgstr "轉向點名稱"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Waypoint Properties"
-msgstr "屬性(&P)..."
+msgstr "轉向點屬性"
 #
-# 
-# 
-#, fuzzy
+#
+#
 msgid "Waypoint Properties, Layer: "
-msgstr "標記屬性"
+msgstr "轉向點屬性, 圖層:"
 #
-# 
-# 
+#
+#
 msgid "Waypoints"
 msgstr "轉向點"
 #
-# 
-# 
+#
+#
 msgid ""
 "Waypoints can be renamed to reflect the new order, the names will be '001', "
 "'002' etc.\n"
@@ -3962,140 +4001,149 @@ msgstr ""
 "\n"
 "是否重新命名轉向點?"
 #
-# 
-# 
+#
+#
 msgid "Welcome to OpenCPN"
 msgstr "歡迎使用 OpenCPN"
 #
-# 
-# 
+#
+#
 msgid "Whether the font is underlined."
 msgstr "字型是否加底線"
 #
-# 
+#
 msgid "White"
 msgstr "白"
 #
+msgid "Width"
+msgstr "寬度"
+#
 msgid "Width Over All (m)"
-msgstr ""
+msgstr "全寬(m)"
 #
 msgid "Width:"
-msgstr ""
+msgstr "寬度:"
 #
-# 
-# 
+#
+#
 msgid "Wing In Ground Effect"
 msgstr "翼地效應"
 #
 msgid "Would you like include the Great Circle routing points for this leg?"
-msgstr ""
+msgstr "想要在此航段中包含大圈航路?"
 #
 msgid "Wrong length of the NMEA filter value"
-msgstr ""
+msgstr "錯誤的 NMEA 篩選值長度"
 #
-# 
-# 
+#
+#
 msgid "XTE         L"
 msgstr "XTE         L"
 #
-# 
-# 
+#
+#
 msgid "XTE         R"
 msgstr "XTE         R"
 #
-# 
-# 
+#
+#
 msgid "Yat"
 msgstr "遊艇"
 #
-# 
-# 
+#
+#
 msgid "Yellow"
 msgstr "黃"
 #
 msgid "Yes, hide it."
-msgstr ""
+msgstr "是, 隱藏它."
 #
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make it inaccessible."
 msgstr ""
+"無法從工具列中隱藏最後的工具\n"
+"將會無法存取."
 #
 msgid "You must enter the address..."
-msgstr ""
+msgstr "必須輸入位址..."
 #
 msgid "You must select or enter the port..."
-msgstr ""
+msgstr "必須選取或輸入埠號…"
 #
-# 
-# 
+#
+#
 msgid "Zoom In"
 msgstr "放大"
 #
-# 
-# 
+#
+#
 msgid "Zoom Out"
 msgstr "縮小"
 #
-# 
-# 
-#, fuzzy
-msgid "Zoom to Cursor"
-msgstr "放大(&Z)"
 #
-# 
-# 
+#
+msgid "Zoom to Cursor"
+msgstr "縮放時以游標位置為中心"
+#
+#
+#
 msgid "[Class] Type (Status)"
 msgstr "[船級] 形式 (狀態)"
 #
-# 
-# 
+#
+#
 msgid "_A"
-msgstr "A"
+msgstr "_A"
 #
-# 
-# 
+#
+#
 msgid "_B"
-msgstr "B"
+msgstr "_B"
 #
-# 
-# 
+#
+#
 msgid "_plus"
 msgstr "_plus"
 #
 msgid "km"
-msgstr ""
+msgstr "km"
 #
 msgid "km/h"
-msgstr ""
+msgstr "km/h"
 #
 msgid "kts"
-msgstr ""
+msgstr "kts"
 #
 msgid "m"
-msgstr ""
+msgstr "m"
 #
 msgid "m/s"
-msgstr ""
+msgstr "m/s"
 #
 msgid "mi"
-msgstr ""
+msgstr "mi"
 #
 msgid "mph"
-msgstr ""
+msgstr "mph"
 #
-# 
-# 
+#
+#
+msgid "track"
+msgstr "track"
+#
+#
+#
 msgid "wgsox"
 msgstr "wgsox"
 #
-# 
-# 
+#
+#
 msgid "wgsoy"
 msgstr "wgsoy"
 #
 msgid "wxFB Website"
-msgstr ""
+msgstr "wxFB 網站"
 #
 #
 #
@@ -4113,8 +4161,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "\n"
 #~ msgstr "\n"
 #
@@ -4150,12 +4197,11 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -4181,8 +4227,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "   COG 箭頭長度"
 #
@@ -4202,8 +4247,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "   目標最大移動速度(節)"
 #
@@ -4223,8 +4267,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "      Target track length (Minutes):"
 #~ msgstr "   目標航跡紀錄長度"
 #
@@ -4257,8 +4300,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
 #
@@ -4294,13 +4336,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load library: "
 #~ msgstr "   插件管理員: 無法載入程式庫: "
 #
@@ -4336,13 +4377,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol create_pi: "
 #
@@ -4378,13 +4418,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol destroy_pi: "
 #
@@ -4403,8 +4442,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr "  無法開啟 AIS 連接埠 '"
 #
@@ -4423,18 +4461,23 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "  Could not open serial port '"
 #~ msgstr "  無法開啟序列通訊埠 '"
 #
 #
+#~ msgid " (Last Known)"
+#~ msgstr " (Last Known)"
 #
-# 
-# 
-#, fuzzy
+#
+#~ msgid " </b>in<b> "
+#~ msgstr " </b>in<b> "
+#
+#
+#
+#
 #~ msgid " COG Unavailable"
-#~ msgstr " COG: 無法取得"
+#~ msgstr " COG 無法取得"
 #
 #
 #
@@ -4452,7 +4495,6 @@ msgstr ""
 #
 #
 #
-# 
 #~ msgid " COG: %03d Deg."
 #~ msgstr " COG: %03d 度."
 #
@@ -4472,14 +4514,12 @@ msgstr ""
 #
 #
 #
-# 
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG: 000 度."
 #
 #
 #
-# 
-# 
+#
 #~ msgid "&Acknowledge"
 #~ msgstr "警報確認(&A)"
 #
@@ -4515,23 +4555,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "&Close"
 #~ msgstr "關閉(&C)"
 #
@@ -4567,23 +4606,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
 #
@@ -4619,52 +4657,40 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "刪除所有航跡(&D)..."
 #
 #
 #
-# 
-# 
+#
 #~ msgid "&Export Track..."
 #~ msgstr "匯出航跡(&E)..."
 #
 #
 #
-# 
-# 
-#~ msgid "&Export Wpt..."
-#~ msgstr "匯出轉向點(&E)..."
 #
-#
-#
-# 
-# 
-#, fuzzy
 #~ msgid "&Jump To"
-#~ msgstr "跳至"
+#~ msgstr "&跳至"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "&Silence Alert"
 #~ msgstr "警報靜音(&S)"
 #
@@ -4700,22 +4726,21 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "&Toggle Chart"
 #~ msgstr "(&T)切換海圖顯示"
 #
@@ -4734,8 +4759,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "'\n"
 #~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
@@ -4758,8 +4782,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "'\n"
 #~ "Suggestion: Try closing other applications."
@@ -4799,47 +4822,40 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(使用中航跡)"
 #
 #
+#~ msgid ", Out: None"
+#~ msgstr ", Out: None"
 #
-# 
-# 
+#
+#
+#
 #~ msgid "-"
 #~ msgstr "-"
 #
 #
 #
-# 
-# 
-#~ msgid "--"
-#~ msgstr "--"
 #
-#
-#
-# 
-# 
-#, fuzzy
 #~ msgid "---"
-#~ msgstr "--"
+#~ msgstr "---"
 #
 #
 #
@@ -4858,8 +4874,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid ":               "
 #~ msgstr "船級:                  "
@@ -4881,8 +4896,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid ""
 #~ ":               Unavailable\n"
@@ -4892,15 +4906,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "A"
 #~ msgstr "A"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "AIS Alert"
 #~ msgstr "AIS 警告"
 #
@@ -4934,41 +4946,38 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "AIS 警告"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "AIS target list"
 #~ msgstr "AIS 目標列表"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "AISRollover"
 #~ msgstr "AISRollover"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "AISTargetAlert"
 #~ msgstr "AIS 目標警告"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "AISTargetQuery"
 #~ msgstr "AIS 目標查詢"
 #
 #
+#~ msgid "Accept"
+#~ msgstr "接受"
 #
 #
 #
@@ -4984,8 +4993,9 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Activate CM93 Offset"
 #~ msgstr "啟用 CM93 Offset "
 #
@@ -5014,15 +5024,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Activate Route"
 #~ msgstr "啟動導航"
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Active"
 #~ msgstr "啟用"
@@ -5043,8 +5051,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Add Selection"
 #~ msgstr "增加選擇項目"
 #
@@ -5063,8 +5070,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "加入本圖為接圖一部份"
 #
@@ -5100,15 +5106,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Aid to Navigation"
 #~ msgstr "導航協助"
 #
@@ -5128,8 +5132,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "All files (*.*)|*.*"
 #~ msgstr "所有檔案 (*.*)|*.*"
 #
@@ -5165,16 +5168,15 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "嘗試載入 libgps.so"
 #
@@ -5193,8 +5195,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Autopilot Output Port"
 #~ msgstr "自動航行裝置輸出連接埠"
 #
@@ -5214,29 +5215,25 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "擁有的海圖目錄"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "B"
 #~ msgstr "B"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Barge, tanker, chemical"
 #~ msgstr "駁船, 油船, 化學品"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Base Station"
 #~ msgstr "Base Station"
 #
@@ -5272,13 +5269,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "BaseClassCommonName"
 #~ msgstr "BaseClassCommonName"
 #
@@ -5299,8 +5295,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "方位:                %03d Deg.\n"
 #
@@ -5321,29 +5316,25 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr "方位:                無法取得\n"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Brg"
 #~ msgstr "船艏向"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "海洋散貨船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Bunkership"
 #~ msgstr "加油船"
 #
@@ -5363,8 +5354,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "CM93"
 #~ msgstr "CM93"
 #
@@ -5383,8 +5373,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "CM93 Detail Slider..."
 #~ msgstr "啟用 CM93 詳細度控制滑桿"
@@ -5405,8 +5394,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 Offset 顯示"
 #
@@ -5442,23 +5430,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "CM93 Offset Off"
 #~ msgstr "CM93 Offset Off"
 #
@@ -5494,23 +5481,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
 #
@@ -5546,23 +5532,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "CM93 Offset Tool Off"
 #~ msgstr "CM93 Offset Tool Off"
 #
@@ -5598,23 +5583,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
 #
@@ -5634,8 +5618,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "CM93 Offsets"
 #~ msgstr "CM93 Offsets"
 #
@@ -5671,23 +5654,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offsets On"
 #
@@ -5707,15 +5689,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 縮放詳細度"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "CPA"
 #~ msgstr "CPA"
 #
@@ -5736,8 +5716,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "CPA:       \n"
 #~ msgstr "CPA:       \n"
 #
@@ -5758,15 +5737,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f NM\n"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Call"
 #~ msgstr "呼號"
 #
@@ -5785,8 +5762,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Call to gps_open failed.\n"
 #~ "Is gpsd running?\n"
@@ -5830,23 +5806,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
 #
@@ -5867,8 +5842,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "CallSign:             "
 #~ msgstr "呼號:              "
 #
@@ -5904,23 +5878,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Cell X Offset"
 #~ msgstr "設定 CM93 Offset"
@@ -5957,28 +5930,29 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "設定 CM93 Offset"
 #
 #
+#~ msgid "Center View"
+#~ msgstr "Center View"
 #
 #
 #
@@ -6009,8 +5983,9 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Chart"
 #~ msgstr "海圖"
 #
@@ -6030,8 +6005,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "海圖顯示項目過濾條件"
 #
@@ -6050,24 +6024,20 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "位置"
 #
 #
 #
-# 
-# 
-#, fuzzy
+#
 #~ msgid "Choose a file"
-#~ msgstr "Console 數值"
+#~ msgstr "選擇一個檔案"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Class"
 #~ msgstr "船級"
 #
@@ -6088,30 +6058,25 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Class:                "
 #~ msgstr "船級:                  "
 #
 #
 #
-# 
-# 
-#, fuzzy
+#
 #~ msgid "Clear"
-#~ msgstr "清除全部"
+#~ msgstr "清除"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "CoG"
 #~ msgstr "CoG"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Container vessel"
 #~ msgstr "貨櫃船"
 #
@@ -6130,12 +6095,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "無法解析 TCP/IP 主機 '"
 #
 #
+#~ msgid "Couldn't load sound data from '%s'."
+#~ msgstr "無法從 '%s' 載入聲音檔."
 #
 #
 #
@@ -6152,8 +6118,9 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Course:                 %03d Deg.\n"
 #~ msgstr "航向:                 %03d 度.\n"
 #
@@ -6174,8 +6141,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "航向:                 000 度.\n"
 #
@@ -6196,22 +6162,19 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Course:                 Unavailable\n"
 #~ msgstr "航向:                 無法取得\n"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Cruise ship"
 #~ msgstr "遊輪"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Current"
 #~ msgstr "海流"
 #
@@ -6231,18 +6194,15 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Cursor: "
 #~ msgstr "游標: "
 #
 #
 #
-# 
-# 
-#, fuzzy
+#
 #~ msgid "Data Source :"
-#~ msgstr "NMEA 資料來源"
+#~ msgstr "資料來源 :"
 #
 #
 #
@@ -6269,8 +6229,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Deactivate Route"
 #~ msgstr "取消導航"
 #
@@ -6302,8 +6261,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "預設顏色"
@@ -6324,8 +6282,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Deg"
 #~ msgstr "濬挖船"
@@ -6355,8 +6312,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Delete Mark"
 #~ msgstr "刪除標記"
 #
@@ -6376,8 +6332,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Delete Route"
 #~ msgstr "刪除航路"
 #
@@ -6397,8 +6352,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Delete Selection"
 #~ msgstr "刪除選擇項目"
 #
@@ -6418,8 +6372,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Delete Track"
 #~ msgstr "刪除航跡"
 #
@@ -6439,8 +6392,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Depth Settings"
 #~ msgstr "深度設定"
 #
@@ -6461,8 +6413,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Destination:          "
 #~ msgstr "目的地:          "
 #
@@ -6481,16 +6432,14 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Display Style"
 #~ msgstr "海圖顯示方式"
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Drop"
 #~ msgstr "在此放置標記"
@@ -6500,8 +6449,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "E&xport All..."
 #~ msgstr "匯出全部(&x)..."
 #
@@ -6521,8 +6469,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "ENC/Vector"
 #~ msgstr "ENC/向量圖"
 #
@@ -6543,8 +6490,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "ETA:"
 #~ msgstr "ETA:"
 #
@@ -6565,8 +6511,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "ETA:                  "
 #~ msgstr "ETA:                  "
 #
@@ -6602,13 +6547,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/時間戳記"
 #
@@ -6628,8 +6572,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Enable Manual CM93 Offsets"
 #~ msgstr "手動 CM93 Offsets"
 #
@@ -6649,22 +6592,19 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "啟用滑鼠滾輪放大縮小游標所在位置功能"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Error on Route Upload.  Please check logfiles..."
 #~ msgstr "航路上傳錯誤.  請檢查 logfiles..."
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Error on Waypoint Upload.  Please check logfiles..."
 #~ msgstr "轉向點上傳錯誤.  請檢查 logfiles..."
 #
@@ -6684,43 +6624,37 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Etc."
 #~ msgstr "其他"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Fast ship"
 #~ msgstr "快速船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Ferry"
 #~ msgstr "渡輪"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Fishing boat"
 #~ msgstr "漁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Freightbarge"
 #~ msgstr "貨運駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "載有貨櫃之貨運駁船"
 #
@@ -6740,8 +6674,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "From Ownship: %03d Deg   "
 #~ msgstr "距離本船: %03d 度  %6.2f 海浬"
@@ -6762,16 +6695,14 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
 #
 #
 #
 #
-# 
-# 
+#
 #~ msgid "GPS/Plotter Port"
 #~ msgstr "GPS/繪圖機 連接埠"
 #
@@ -6790,22 +6721,23 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD 伺服器"
 #
 #
+#~ msgid "GPSGate Buddy"
+#~ msgstr "GPSGate Buddy"
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Gas tanker"
 #~ msgstr "氣體儲運船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "一般海洋貨物船"
 #
@@ -6825,8 +6757,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Go To Here"
 #~ msgstr "前往這裡"
 #
@@ -6855,19 +6786,19 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "前往標記/轉向點"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "HW"
 #~ msgstr "HW"
 #
 #
+#~ msgid "Heading"
+#~ msgstr "Heading"
 #
 #
 #
@@ -6884,21 +6815,20 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "方位:                %03d 度.\n"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Hydrofoil"
 #~ msgstr "水翼船"
 #
 #
 #
-# 
 #, fuzzy
 #~ msgid "IMO"
 #~ msgstr "IMO:\n"
@@ -6920,23 +6850,24 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "IMO:                 %8d\n"
 #~ msgstr "IMO:                 %8d\n"
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "In"
 #~ msgstr "圖示"
 #
 #
+#~ msgid "In: None"
+#~ msgstr "In: None"
 #
-# 
-# 
+#
+#
+#
 #, fuzzy
 #~ msgid "Inland Blue Flag"
 #~ msgstr "內陸藍旗        設定\n"
@@ -6958,8 +6889,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Inland Blue Flag        Clear\n"
 #~ msgstr "內陸藍旗        清除\n"
 #
@@ -6979,8 +6909,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Jump To"
 #~ msgstr "跳至"
 #
@@ -7000,8 +6929,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Jump To Position"
 #~ msgstr "變更位置"
 #
@@ -7030,8 +6958,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "跳至位置..."
 #
@@ -7051,16 +6978,14 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Jump To..."
 #~ msgstr "跳至"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "LW"
 #~ msgstr "LW"
 #
@@ -7093,8 +7018,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Language/Fonts"
 #~ msgstr "語系/字型"
 #
@@ -7115,12 +7039,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "最近位置發報時間:  "
 #
 #
+#~ msgid "Left"
+#~ msgstr "Left"
 #
 #
 #
@@ -7136,58 +7061,59 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Leg/Route"
 #~ msgstr "航程區段/航路"
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Legend"
 #~ msgstr "Console 圖例"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Limit range: NM"
 #~ msgstr "限制範圍: 海浬"
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Link"
 #~ msgstr "連結"
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Link Properties"
 #~ msgstr "標記屬性"
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Link description"
 #~ msgstr "說明"
 #
 #
+#~ msgid "Link not complete, can't be saved."
+#~ msgstr "連結未完成, 無法儲存"
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Liquified gas tanker"
 #~ msgstr "液態瓦斯船"
 #
 #
+#~ msgid "Local file..."
+#~ msgstr "本機檔案..."
 #
 #
 #
@@ -7203,15 +7129,15 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "META Objects"
 #~ msgstr "中繼物件"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "MMSI"
 #~ msgstr "MMSI"
 #
@@ -7247,8 +7173,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "MMSI:                 %09d\n"
 #
@@ -7284,8 +7209,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Mark Icon"
 #~ msgstr "標記圖示"
 #
@@ -7321,8 +7245,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Mark Name"
 #~ msgstr "標記名稱"
 #
@@ -7331,8 +7254,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Mark Properties"
 #~ msgstr "標記屬性"
 #
@@ -7361,16 +7283,14 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "標記/轉向點屬性"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Marks"
 #~ msgstr "標記"
 #
@@ -7399,12 +7319,17 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Measure....."
 #~ msgstr "測量....."
 #
 #
+#~ msgid "Message accepted"
+#~ msgstr "訊息已接收"
+#
+#
+#~ msgid "Message filtered and dropped"
+#~ msgstr "訊息已過濾並丟棄"
 #
 #
 #
@@ -7420,85 +7345,75 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Metres"
 #~ msgstr "公尺"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor freighter"
 #~ msgstr "動力貨船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor freighter pushing at least one tank-ship"
 #~ msgstr "動力貨船頂推最少一艘液貨儲槽船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor freighter pushing one or more freighters"
 #~ msgstr "動力貨船頂推一或多艘貨船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor freighter with one or more ships alongside"
 #~ msgstr "動力貨船一或多艘並排"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor freighter with tanker"
 #~ msgstr "具液態儲槽之動力貨船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor freighter, tug"
 #~ msgstr "動力貨船, 拖船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor tanker"
 #~ msgstr "動力液貨船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "動力液貨船, 視同液體的乾貨(例如:水泥)"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor tanker, liquid cargo, type C"
 #~ msgstr "動力液貨船, 液態貨物, 型式 C"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "動力液貨船, 液態貨物, 型式 N"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Motor tanker, tug"
 #~ msgstr "動力液貨船, 拖船"
 #
@@ -7517,12 +7432,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA 資料來源"
 #
 #
+#~ msgid "NMEA Debug Window"
+#~ msgstr "NMEA 除錯視窗"
 #
 #
 #
@@ -7538,8 +7454,9 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "NMEA Options"
 #~ msgstr "NMEA 選項"
 #
@@ -7560,15 +7477,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Name:  "
 #~ msgstr "名稱:  "
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Nav Status"
 #~ msgstr "航行狀態"
 #
@@ -7589,15 +7504,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "導航狀態:  "
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Net"
 #~ msgstr "下一個"
@@ -7634,22 +7547,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
 #~ msgid "New Mark"
 #~ msgstr "新標記"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Next"
 #~ msgstr "下一個"
 #
 #
+#~ msgid "No"
+#~ msgstr "No"
 #
 #
 #
@@ -7664,23 +7577,22 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #, fuzzy
 #~ msgid "Number of Radar Rings"
 #~ msgstr "雷達距離圈數量"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "物件, 未定義"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Object, towed, not otherwise specified"
 #~ msgstr "物件, 拖曳, 未定義"
 #
@@ -7716,13 +7628,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "OpenCPN 插件基礎Class"
 #
@@ -7758,13 +7669,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid ""
 #~ "OpenCPN PlugIn Base Class\n"
 #~ "PlugInManager created this base class"
@@ -7773,15 +7683,18 @@ msgstr ""
 #~ "插件管理員建立基礎class"
 #
 #
-# 
-# 
+#
+#
 #~ msgid "Other"
 #~ msgstr "其他"
 #
 #
+#~ msgid "Out"
+#~ msgstr "Out"
 #
-# 
-# 
+#
+#
+#
 #, fuzzy
 #~ msgid "Output Message"
 #~ msgstr "OpenCPN 訊息"
@@ -7801,27 +7714,26 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "本船顯示選項"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Passenger ship without accomodation"
 #~ msgstr "無住艙區載客船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "客船, 渡輪, 遊輪, 紅十字船(醫療服務船)"
 #
 #
+#~ msgid "Pause"
+#~ msgstr "暫停"
 #
 #
 #
@@ -7836,8 +7748,9 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at distance interval (NMi)"
 #~ msgstr "以距離間距(海浬)標記航跡"
@@ -7857,23 +7770,20 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "以時間間隔(秒)標記航跡"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Plan speed (Kts)"
 #~ msgstr "計畫航速 (Kts)"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "遊艇, 長度超過20公尺"
 #
@@ -7909,13 +7819,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "插件管理員搜尋插件 "
 #
@@ -7951,13 +7860,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "插件管理員: 停止插件: "
 #
@@ -7993,13 +7901,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "插件管理員: 起始插件: "
 #
@@ -8035,13 +7942,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "插件管理員: 載入插件: "
 #
@@ -8077,13 +7983,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "插件管理員: 卸載插件: "
 #
@@ -8119,13 +8024,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "插件管理員: 卸載插件 with invalid API version %d.%d: "
 #
@@ -8146,8 +8050,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
@@ -8187,12 +8090,11 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
 #~ msgid "Position:               "
 #~ msgstr "位置:               "
 #
@@ -8225,8 +8127,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Possible libgps API version mismatch.\n"
 #~ "libgps did not reasonably respond to version request\n"
@@ -8240,188 +8141,137 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 #~ msgstr "準備好GPS, 按下傳送鍵上傳航路/轉向點..."
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Prev"
 #~ msgstr "前一個"
 #
 #
+#~ msgid "Problem discovered"
+#~ msgstr "發現問題"
 #
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-#~ msgid "Printing"
-#~ msgstr "列印"
-#
-#
-#
-# 
-# 
 #~ msgid "Progress..."
 #~ msgstr "進行中..."
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "推式駁船, 單一艘"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, eight barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 八艘駁船其中至少一艘為液態貨或氣體駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "頂推船, 八艘貨物駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, five barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 五艘駁船其中至少一艘為液態貨或氣體駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "頂推船, 五艘貨物駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, four barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 四艘駁船其中至少一艘為液態貨或氣體駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "頂推船, 四艘貨物駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "頂推船, 九艘以上駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 九艘駁船其中至少一艘為液態貨或氣體駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "頂推船, 單一艘貨運駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, one tank/gas barge"
 #~ msgstr "頂推船, 一艘 tank/gas 駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, seven barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 七艘駁船其中至少一艘為液態貨或氣體駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, seven cargo barges"
 #~ msgstr "頂推船, 七艘貨物駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, six barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 六艘駁船其中至少一艘為液態貨或氣體駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, six cargo barges"
 #~ msgstr "頂推船, 六艘貨物駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, three barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 三艘駁船其中至少一艘為液態貨或氣體駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, three cargo barges"
 #~ msgstr "頂推船, 三艘貨物駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 兩艘駁船其中至少一艘為液態貨或氣體駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Pushtow, two cargo barges"
 #~ msgstr "頂推船, 兩艘貨物駁船"
 #
@@ -8440,15 +8290,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Radar rings"
 #~ msgstr "雷達距離圈"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Range"
 #~ msgstr "範圍"
 #
@@ -8469,8 +8317,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Range:                  Unavailable\n"
 #~ msgstr "範圍:                  無法取得\n"
 #
@@ -8491,8 +8338,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "範圍:                %5.1f NM\n"
 #
@@ -8512,8 +8358,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Raster"
 #~ msgstr "影像掃描式海圖"
 #
@@ -8534,8 +8379,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
 #~ msgstr "迴轉率            %3d Deg./Min. 向左\n"
 #
@@ -8556,8 +8400,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "迴轉率            %3d Deg./Min. 向右\n"
 #
@@ -8578,8 +8421,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Rate Of Turn            0\n"
 #~ msgstr "迴轉率            %3d Deg./Min.\n"
 #
@@ -8600,8 +8442,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "迴轉率            %3d Deg./Min. 向左\n"
 #
@@ -8622,26 +8463,25 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 #~ msgstr "迴轉率            %3d Deg./Min. 向右\n"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Red cross ship"
 #~ msgstr "紅十字船(醫療服務船)"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Reference Station :"
 #~ msgstr "參考點:"
 #
 #
+#~ msgid "Reject"
+#~ msgstr "Reject"
 #
 #
 #
@@ -8656,8 +8496,9 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "從接圖中移除本圖"
@@ -8677,12 +8518,21 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "從接圖中移除本圖"
 #
 #
+#~ msgid "Report Age"
+#~ msgstr "Report Age"
+#
+#
+#~ msgid "Report as of"
+#~ msgstr "Report as of"
+#
+#
+#~ msgid "Resume"
+#~ msgstr "恢復"
 #
 #
 #
@@ -8707,18 +8557,17 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Reverse Route"
 #~ msgstr "反向航路"
 #
 #
 #
-# 
-# 
-#, fuzzy
+#
 #~ msgid "Right"
-#~ msgstr "寬度(&W):"
+#~ msgstr "寬度"
 #
 #
 #
@@ -8736,16 +8585,14 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Route Properties..."
 #~ msgstr "航路屬性"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "航路上傳成功."
 #
@@ -8765,19 +8612,20 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "從航跡設定航路"
 #
 #
 #
-# 
-# 
-#, fuzzy
+#
 #~ msgid "SART"
-#~ msgstr "搜救船"
+#~ msgstr "雷達詢答機"
+#
+#
+#~ msgid "Safety Broadcast Message"
+#~ msgstr "安全廣播訊息"
 #
 #
 #
@@ -8795,22 +8643,19 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "選擇自動接圖使用之海圖格式"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Send"
 #~ msgstr "傳送"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Send Route To GPS"
 #~ msgstr "傳送航路至GPS"
 #
@@ -8819,20 +8664,20 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "傳送至GPS(&S)"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Service vessel, police patrol, port service"
 #~ msgstr "服務船舶, 水警巡邏, 港勤服務"
 #
 #
+#~ msgid "Set"
+#~ msgstr "Set"
 #
 #
 #
@@ -8857,8 +8702,9 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "設定航向朝上模式"
 #
@@ -8878,8 +8724,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Settings"
 #~ msgstr "設定"
 #
@@ -8899,8 +8744,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "顯示 ATON 標籤"
 #
@@ -8932,8 +8776,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Show Printing Icon"
 #~ msgstr "顯示列印圖示"
 #
@@ -8965,8 +8808,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Show Track icon"
 #~ msgstr "顯示航跡圖示"
 #
@@ -8986,7 +8828,6 @@ msgstr ""
 #
 #
 #
-# 
 #~ msgid "Show layers initially"
 #~ msgstr "啟始時顯示圖層"
 #
@@ -9007,8 +8848,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm\n"
 #~ "\n"
@@ -9033,8 +8873,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
@@ -9059,8 +8898,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x ---m\n"
 #~ "\n"
@@ -9085,8 +8923,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
@@ -9111,8 +8948,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x ---m\n"
 #~ "\n"
@@ -9137,8 +8973,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
@@ -9163,8 +8998,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x ---m\n"
 #~ "\n"
@@ -9174,12 +9008,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "SoG"
 #~ msgstr "SoG"
 #
 #
+#~ msgid "Sound file '%s' is in unsupported format."
+#~ msgstr "音效檔案 '%s' 為不支援的格式"
 #
 #
 #
@@ -9196,8 +9031,9 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
 #~ msgid "Speed:                  Unavailable\n"
 #~ msgstr "速度:                  無法取得\n"
 #
@@ -9218,14 +9054,15 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "速度:                %5.2f 節.\n"
 #
 #
 #
 #
+#~ msgid "T"
+#~ msgstr "T"
 #
 #
 #
@@ -9239,18 +9076,19 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
+#
+#
+#
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi 資料伺服器"
 #
 #
 #
-# 
-# 
-#, fuzzy
+#
 #~ msgid "TCPA"
-#~ msgstr "CPA TCPA"
+#~ msgstr "TCPA"
 #
 #
 #
@@ -9269,8 +9107,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "TCPA:  \n"
 #~ msgstr "TCPA:  \n"
 #
@@ -9291,67 +9128,57 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tankbarge"
 #~ msgstr "液態儲槽駁船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "儲槽駁船, 視同液體的乾貨(例如:水泥)"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tankbarge, gas"
 #~ msgstr "儲槽駁船, 氣體"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tankbarge, liquid cargo, type C"
 #~ msgstr "液態貨駁船, 液態貨物, 型式 C"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tankbarge, liquid cargo, type N"
 #~ msgstr "液態儲槽駁船, 液態貨物, 型式 N"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Target Count"
 #~ msgstr "目標計數"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Target info"
 #~ msgstr "目標資訊"
 #
 #
 #
-# 
-# 
-#, fuzzy
+#
 #~ msgid "Testing"
-#~ msgstr "設定"
+#~ msgstr "測試"
 #
 #
 #
@@ -9369,15 +9196,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Text Element"
 #~ msgstr "文字項目"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tide"
 #~ msgstr "潮汐"
 #
@@ -9397,8 +9222,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Tide & Current Dataset Selection"
 #~ msgstr "顯示海流"
@@ -9419,37 +9243,26 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "潮流圖表Rollover"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "TideCurrentGraphRollover"
 #~ msgstr "潮流圖表Rollover"
 #
 #
 #
-# 
-# 
-#~ msgid "Timestamp"
-#~ msgstr "時間戳記"
 #
-#
-#
-# 
-# 
 #~ msgid "Today"
 #~ msgstr "今天"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tomorrow"
 #~ msgstr "明天"
 #
@@ -9469,17 +9282,12 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "ToolBox"
 #~ msgstr "工具箱"
 #
 #
 #
-# 
-# 
-#~ msgid "Track Properties"
-#~ msgstr "航跡屬性"
 #
 #
 #
@@ -9495,10 +9303,6 @@ msgstr ""
 #
 #
 #
-#
-#
-# 
-# 
 #, fuzzy
 #~ msgid "Track Properties..."
 #~ msgstr "航跡屬性"
@@ -9519,57 +9323,49 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "真實比例: %8.0f             "
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tug freighter, coupled"
 #~ msgstr "貨運拖船, 成對"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tug, assisting a vessel or linked combination"
 #~ msgstr "拖船, 協助他船或與他船連結"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tug, freighter"
 #~ msgstr "貨運拖船"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tug, freighter/tanker, coupled"
 #~ msgstr "貨運/液態貨運拖船, 成對"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tug, one or more tows"
 #~ msgstr "拖船, 拖曳一或多艘"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tug, single"
 #~ msgstr "拖船, 單一艘"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Tug, tanker"
 #~ msgstr "拖船, 油輪"
 #
@@ -9590,8 +9386,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Type:                 "
 #~ msgstr "ETA:                  "
 #
@@ -9612,8 +9407,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "UN Ship Type:         "
 #~ msgstr "UN Ship Type:         "
 #
@@ -9632,8 +9426,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Unable to initialize libgps.\n"
 #~ "\n"
@@ -9658,8 +9451,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Unable to load libgps"
 #~ msgstr "無法載入 libgps"
 #
@@ -9672,16 +9464,14 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid "Unavailable"
 #~ msgstr " COG: 無法取得"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Unit carrier maritime"
 #~ msgstr "Unit carrier maritime"
 #
@@ -9700,15 +9490,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Units"
 #~ msgstr "單位"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Unk"
 #~ msgstr "Unk"
 #
@@ -9728,22 +9516,19 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Use SCAMIN"
 #~ msgstr "使用 SCAMIN"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Vessel, type unknown"
 #~ msgstr "船舶, 型式未知"
 #
 #
 #
-# 
-# 
+#
 #~ msgid ""
 #~ "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
 #~ "dredge"
@@ -9765,15 +9550,13 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Waypoint Locking"
 #~ msgstr "轉向點鎖定"
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Waypoint(s) Uploaded successfully."
 #~ msgstr "轉向點上傳成功."
 #
@@ -9793,8 +9576,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "WiFi Options"
 #~ msgstr "WiFi 選項"
 #
@@ -9814,8 +9596,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 #~ msgstr "X Offset (向東為正值) (NMi Projected) :"
 #
@@ -9835,8 +9616,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
 #~ msgstr "Y Offset (向北為正值) (NMi Projected) :"
 #
@@ -9856,18 +9636,15 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #~ msgid "cm93 Detail"
 #~ msgstr "cm93 詳細度"
 #
 #
 #
-# 
-# 
-#, fuzzy
+#
 #~ msgid "in"
-#~ msgstr "連結"
+#~ msgstr "in"
 #
 #
 #
@@ -9898,8 +9675,7 @@ msgstr ""
 #
 #
 #
-# 
-# 
+#
 #, fuzzy
 #~ msgid ""
 #~ "libgps API version mismatch.\n"

@@ -62,6 +62,12 @@ public:
       wxString GetName(void){ return m_MarkName; }
       wxString GetDescription(void) { return m_MarkDescription; }
 
+      void *GetSelectNode(void) { return m_SelectNode; }
+      void SetSelectNode(void* node) { m_SelectNode = node; }
+
+      void *GetManagerListNode(void) { return m_ManagerNode; }
+      void SetManagerListNode(void* node) { m_ManagerNode = node; }
+      
       void SetName(const wxString & name);
       void CalculateNameExtents(void);
 
@@ -126,6 +132,9 @@ public:
 private:
       wxString          m_MarkName;
       wxDateTime        m_CreateTimeX;
+      
+      void              *m_SelectNode;
+      void              *m_ManagerNode;
       
 };
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.1.1405 release candidate\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-13 12:43-0400\n"
+"POT-Creation-Date: 2013-10-06 23:19-0400\n"
 "PO-Revision-Date: 2013-02-08 13:57+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
@@ -319,6 +319,12 @@ msgstr "\" is leeg, gebruik de \"All Active Charts\" groep."
 msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "    \"Scheepsnaam\" MMSI (roepnaam)"
 #
+msgid "%D Days, %H:%M"
+msgstr ""
+#
+msgid "%H:%M"
+msgstr ""
+#
 #
 #
 #
@@ -513,6 +519,15 @@ msgstr "(reserved for future use)"
 #
 msgid "(unnamed)"
 msgstr "(onbenoemd)"
+#
+#
+#
+#
+#
+#
+#
+msgid "--"
+msgstr "--"
 #
 #
 #
@@ -806,6 +821,9 @@ msgstr "Nieuw toevoegen"
 msgid "Address"
 msgstr "Adres"
 #
+msgid "Advanced"
+msgstr ""
+#
 #
 #
 msgid "Aground"
@@ -950,6 +968,9 @@ msgstr "Weet u zeker dat u dit markeringspunt wilt verwijderen?"
 msgid "Assumed 1 Mile Point"
 msgstr "Verondersteld 1 NM punt"
 #
+msgid "Assumed Magnetic Variation, deg."
+msgstr ""
+#
 #
 #
 #
@@ -1054,6 +1075,14 @@ msgstr "Koers"
 #
 #
 #
+#
+#
+#, fuzzy
+msgid "Bearing (M)"
+msgstr "Koers"
+#
+#
+#
 msgid "Black"
 msgstr "zwart"
 #
@@ -1068,6 +1097,9 @@ msgstr "blauw"
 #
 msgid "Boundaries"
 msgstr "Grenzen"
+#
+msgid "Broken plugin detected..."
+msgstr ""
 #
 #
 msgid "Buddy"
@@ -1447,6 +1479,14 @@ msgstr "Sluiten"
 #
 #
 #
+#, fuzzy
+msgid "Color"
+msgstr "Kleur: "
+#
+#
+#
+#
+#
 msgid "Color:"
 msgstr "Kleur: "
 #
@@ -1513,6 +1553,14 @@ msgstr "Kopiëren als KML ..."
 #
 #
 msgid "Course"
+msgstr "Koers"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Course (M)"
 msgstr "Koers"
 #
 #
@@ -1614,6 +1662,9 @@ msgstr "Gegevensverbindingen"
 #
 msgid "DataPort"
 msgstr "Datapoort:"
+#
+msgid "Daytime"
+msgstr ""
 #
 #
 #
@@ -1781,6 +1832,14 @@ msgstr "Weergavecategorie"
 #
 msgid "Display Options"
 msgstr "Weergaveopties Eigen Vaartuig"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Display parameters"
+msgstr "Weergavecategorie"
 #
 #
 #
@@ -2018,6 +2077,19 @@ msgstr "Fout!"
 msgid "Estimated time : "
 msgstr "Geschatte tijd:"
 #
+msgid "EvTwilight"
+msgstr ""
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Export"
+msgstr "&Exporteer markeringspunt ..."
+#
 #
 #
 #
@@ -2031,6 +2103,14 @@ msgstr "Exporteer wat zichtbaar is ..."
 #
 msgid "Export GPX file"
 msgstr "Exporteer GPX-bestand"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Extend"
+msgstr "Uitgebreid"
 #
 #
 #
@@ -2128,6 +2208,9 @@ msgstr "Forceer volledige herbouw van database"
 msgid "Format uploads for Furuno GP3X"
 msgstr "Format voor Furuno GP3X uploads"
 #
+msgid "From"
+msgstr ""
+#
 #
 #
 #
@@ -2221,6 +2304,14 @@ msgstr "Verberg AIS objecten"
 #
 #
 msgid "Hide Target CPA"
+msgstr "Verberg CPA van AIS object"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Hide Target Track"
 msgstr "Verberg CPA van AIS object"
 #
 #
@@ -2741,6 +2832,9 @@ msgstr "Minimum schermafmeting (mm)"
 msgid "Miscellaneous Options"
 msgstr "Overige Opties"
 #
+msgid "MoTwilight"
+msgstr ""
+#
 #
 #
 msgid "Moored"
@@ -2839,6 +2933,9 @@ msgstr "Nieuwe groep ..."
 #
 msgid "Next tide event"
 msgstr "Volgend HW/LW"
+#
+msgid "Nighttime"
+msgstr ""
 #
 #
 #
@@ -3187,7 +3284,8 @@ msgstr "Glazen slaan"
 #
 #
 #
-msgid "Play Sound on CPA/TCPA Alerts"
+#, fuzzy
+msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
 msgstr "CPA/TCPA waarschuwing"
 #
 #
@@ -3203,6 +3301,20 @@ msgstr "Start OpenCPN opnieuw om de nieuwe taalkeuze te activeren."
 #
 msgid "Pleasure craft"
 msgstr "pleziervaartuig"
+#
+#, c-format
+msgid ""
+"Plugin %s (%s), version %i.%i was detected. This version is known to be "
+"unstable and will not be loaded, please go to the opencpn.org plugin "
+"downloads page and get the latest stable version of this plugin available."
+msgstr ""
+#
+#, c-format
+msgid ""
+"Plugin %s (%s), version %i.%i was detected. This version is known to be "
+"unstable, please go to the opencpn.org plugin downloads page and get the "
+"latest stable version of this plugin available."
+msgstr ""
 #
 #
 #
@@ -3304,6 +3416,34 @@ msgstr "Voorbeeld: "
 #
 #
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Print"
+msgstr "Weergaveoptie Afdrukken"
+#
+#
+#
+#
+#
 msgid "Print Chart"
 msgstr "Afdrukken kaart"
 #
@@ -3396,6 +3536,14 @@ msgstr "werkelijk (niet op positie)"
 #
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Vernieuw de kaartendatabase vanuit configuratiebestand ..."
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Recorded points"
+msgstr "Routepunten samenvoegen?"
 #
 #
 #
@@ -3908,6 +4056,9 @@ msgstr "Toon 'Snelweg'"
 msgid "Show Lat/Long as"
 msgstr "    Toon positie in:"
 #
+msgid "Show Magnetic bearings and headings"
+msgstr ""
+#
 #
 #
 #
@@ -3934,6 +4085,14 @@ msgstr "Toon statusbalk"
 #
 #
 msgid "Show Target CPA"
+msgstr "Toon CPA van AIS object"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Show Target Track"
 msgstr "Toon CPA van AIS object"
 #
 #
@@ -4131,6 +4290,14 @@ msgstr "Vaart"
 #
 #
 #
+#, fuzzy
+msgid "Split"
+msgstr "Route splitsen"
+#
+#
+#
+#
+#
 msgid "Split Route"
 msgstr "Route splitsen"
 #
@@ -4160,6 +4327,9 @@ msgstr "'stuurboordszijde' markering"
 msgid "Start"
 msgstr "Start"
 #
+msgid "Statistics"
+msgstr ""
+#
 #
 #
 #
@@ -4184,8 +4354,22 @@ msgstr "'stuurboordszijde'"
 #
 #
 #
+#, fuzzy
+msgid "Style"
+msgstr "Stijl:"
+#
+#
+#
+#
+#
 msgid "Style:"
 msgstr "Stijl:"
+#
+msgid "Sunrise"
+msgstr ""
+#
+msgid "Sunset"
+msgstr ""
 #
 #
 #
@@ -4200,13 +4384,6 @@ msgstr "Onderdruk waarschuwingen voor geankerde en gemeerde objecten"
 #
 msgid "Symbolized"
 msgstr "gesymboliseerd"
-#
-#
-#
-#
-#
-msgid "T"
-msgstr "Naar"
 #
 #
 #
@@ -4421,8 +4598,25 @@ msgstr "Vaartijd"
 #
 #
 #
+#
+#
+#, fuzzy
+msgid "Time enroute"
+msgstr "Vaartijd"
+#
+#
+#
 msgid "Times shown as"
 msgstr "Tijden in "
+#
+#
+#
+#
+#
+#
+#
+msgid "Timestamp"
+msgstr "Tijdstip"
 #
 #
 #
@@ -4437,6 +4631,14 @@ msgstr "Naar"
 #
 msgid "To Waypoint"
 msgstr "Naar punt"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "To route"
+msgstr "Vaartijd"
 #
 #
 #
@@ -4473,6 +4675,14 @@ msgstr "Totale lengte:"
 #
 #
 #
+#, fuzzy
+msgid "Total distance"
+msgstr "Totale verheid (NM)"
+#
+#
+#
+#
+#
 msgid "Tow"
 msgstr "sleep"
 #
@@ -4489,6 +4699,23 @@ msgstr "Track"
 #
 msgid "Track Name"
 msgstr "Track-naam"
+#
+#
+#
+#
+#
+#
+#
+msgid "Track Properties"
+msgstr "Track-eigenschappen"
+#
+#
+#
+#
+#
+#, fuzzy, c-format
+msgid "Track Properties, Layer: %d"
+msgstr "Markeringspunt-eigenschappen, laag:"
 #
 #
 #
@@ -4612,6 +4839,9 @@ msgstr "Gebruik Garmin (GRMN) modus voor invoer"
 msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Gebruik Garmin GRMN (Host) modus voor uploads"
 #
+msgid "Use magnetic bearings in output sentence ECAPB"
+msgstr ""
+#
 #
 #
 #
@@ -4723,6 +4953,9 @@ msgstr "Waarschuw als kortste naderingsafstand minder is dan (zeemijl): "
 msgid "Waypoint"
 msgstr "Markeringspunt"
 #
+msgid "Waypoint Arrival Circle Radius (NMi)"
+msgstr ""
+#
 #
 #
 #
@@ -4791,6 +5024,11 @@ msgstr "Als het lettertype onderstreept is."
 #
 msgid "White"
 msgstr "wit"
+#
+#
+#, fuzzy
+msgid "Width"
+msgstr "Breedte:"
 #
 msgid "Width Over All (m)"
 msgstr "Breedte over alles (m)"
@@ -4924,6 +5162,14 @@ msgstr ""
 #
 #
 #
+#
+#
+#, fuzzy
+msgid "track"
+msgstr "Track"
+#
+#
+#
 msgid "wgsox"
 msgstr "WGS X offset"
 #
@@ -4935,6 +5181,7 @@ msgstr "WGS Y offset"
 #
 msgid "wxFB Website"
 msgstr "wxFB website"
+#
 #
 #
 #
@@ -4983,6 +5230,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -4991,6 +5239,7 @@ msgstr "wxFB website"
 #~ "\n"
 #~ "\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5023,6 +5272,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "     Vectorlengte (in tijdminuten): "
 #
@@ -5039,8 +5289,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "     Max. vaart geankerde objecten (knopen): "
+#
 #
 #
 #
@@ -5082,8 +5334,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr " Onbekende kaartprojectie (aanname is Mercator): "
+#
 #
 #
 #
@@ -5152,8 +5406,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Kan symbool create_pi niet laden: "
+#
 #
 #
 #
@@ -5202,8 +5458,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr " Kan de AIS poort niet openen"
+#
 #
 #
 #
@@ -5224,8 +5482,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid " (Last Known)"
 #~ msgstr " (Laatst bekende)"
+#
 #
 #
 #
@@ -5238,8 +5498,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid " COG Unavailable"
 #~ msgstr "COG niet beschikbaar"
+#
 #
 #
 #
@@ -5266,8 +5528,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr "COG: 000°"
+#
 #
 #
 #
@@ -5284,6 +5548,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "&Exporteer track ..."
 #
@@ -5293,17 +5558,10 @@ msgstr "wxFB website"
 #
 #
 #
-#~ msgid "&Export Wpt..."
-#~ msgstr "&Exporteer markeringspunt ..."
-#
-#
-#
-#
-#
-#
 #
 #~ msgid "&Jump To"
 #~ msgstr "&Spring naar"
+#
 #
 #
 #
@@ -5326,12 +5584,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
 #~ msgstr ""
 #~ "'\n"
 #~ "Suggestie: probeer 'xxx.xxx.xxx.xxx' notatie."
+#
 #
 #
 #
@@ -5372,8 +5632,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
 #
 #
 #
@@ -5386,17 +5648,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "-"
 #~ msgstr "-"
 #
-#
-#
-#
-#
-#
-#
-#~ msgid "--"
-#~ msgstr "--"
 #
 #
 #
@@ -5421,8 +5676,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ":               "
 #~ msgstr ":       "
+#
 #
 #
 #
@@ -5456,8 +5713,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "<--Remove"
 #~ msgstr "<--Verwijder"
+#
 #
 #
 #
@@ -5474,8 +5733,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "AIS Alert"
 #~ msgstr "AIS waarschuwing"
+#
 #
 #
 #
@@ -5512,8 +5773,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "AIS target list"
 #~ msgstr "AIS objectenlijst"
+#
 #
 #
 #
@@ -5530,8 +5793,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "AISTargetAlert"
 #~ msgstr "AIS objectwaarschuwing"
+#
 #
 #
 #
@@ -5544,8 +5809,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Accept"
 #~ msgstr "Accepteren"
+#
 #
 #
 #
@@ -5583,6 +5850,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "Activeer route"
 #
@@ -5592,8 +5860,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Active"
 #~ msgstr "Actief "
+#
 #
 #
 #
@@ -5623,6 +5893,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Add Selection"
 #~ msgstr "Voeg selectie toe"
 #
@@ -5638,8 +5909,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Voeg deze kaart toe aan samenvoeging."
+#
 #
 #
 #
@@ -5680,6 +5953,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Aanvullende informatie"
 #
@@ -5689,8 +5963,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Aid to Navigation"
 #~ msgstr "Navigatiehulpmiddel"
+#
 #
 #
 #
@@ -5720,8 +5996,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Autopilot Output Port"
 #~ msgstr "Poort voor autopilot"
+#
 #
 #
 #
@@ -5745,8 +6023,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "B"
 #~ msgstr "B"
+#
 #
 #
 #
@@ -5761,8 +6041,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Base Station"
 #~ msgstr "Walstation"
+#
 #
 #
 #
@@ -5813,8 +6095,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Peiling:                  %03d°\n"
+#
 #
 #
 #
@@ -5839,8 +6123,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Brg"
 #~ msgstr "Peiling"
+#
 #
 #
 #
@@ -5853,8 +6139,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Bunkership"
 #~ msgstr "bunkerschip"
+#
 #
 #
 #
@@ -5884,6 +6172,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "CM93 Detail Slider..."
 #~ msgstr "Activeer CM93 detail-schuifbalk"
@@ -5899,8 +6188,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 Offsets Weergave"
+#
 #
 #
 #
@@ -5929,6 +6220,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 zoomdetail"
 #
@@ -5938,8 +6230,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CPA"
 #~ msgstr "CPA"
+#
 #
 #
 #
@@ -5972,6 +6266,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f NM\n"
 #
@@ -5981,8 +6276,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Call"
 #~ msgstr "C/S"
+#
 #
 #
 #
@@ -6021,8 +6318,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "Roepnaam:         "
+#
 #
 #
 #
@@ -6032,8 +6331,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Center View"
 #~ msgstr "Centreer beeld op positie"
+#
 #
 #
 #
@@ -6077,6 +6378,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "Filters Kaartweergave"
 #
@@ -6089,8 +6391,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Chart Groups..."
 #~ msgstr "Kaartgroepen ..."
+#
 #
 #
 #
@@ -6116,6 +6420,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Positie"
@@ -6126,8 +6431,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Choose a file"
 #~ msgstr "Kies een bestand"
+#
 #
 #
 #
@@ -6152,8 +6459,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Class:                "
 #~ msgstr "Klasse:       "
+#
 #
 #
 #
@@ -6170,6 +6479,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "CoG"
 #~ msgstr "COG"
 #
@@ -6177,8 +6487,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Container vessel"
 #~ msgstr "containerschip"
+#
 #
 #
 #
@@ -6200,13 +6512,16 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "Kan TCP/IP host niet vinden"
 #
 #
 #
+#
 #~ msgid "Couldn't load sound data from '%s'."
 #~ msgstr "Kan dieptegegevens niet laden van '%s'"
+#
 #
 #
 #
@@ -6239,8 +6554,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "Koers:               000°\n"
+#
 #
 #
 #
@@ -6263,8 +6580,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Cruise ship"
 #~ msgstr "cruise schip"
+#
 #
 #
 #
@@ -6288,6 +6607,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "POS cursor: "
 #
@@ -6297,8 +6617,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Data Source :"
 #~ msgstr "Databron:"
+#
 #
 #
 #
@@ -6349,6 +6671,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Default dataset"
 #~ msgstr "standaard gegevens "
 #
@@ -6363,8 +6686,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Deg"
 #~ msgstr "°"
+#
 #
 #
 #
@@ -6404,8 +6729,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Delete Route"
 #~ msgstr "Route verwijderen"
+#
 #
 #
 #
@@ -6436,8 +6763,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Delete Track"
 #~ msgstr "Track verwijderen"
+#
 #
 #
 #
@@ -6469,8 +6798,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Bestemming:          "
+#
 #
 #
 #
@@ -6494,6 +6825,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Drop"
 #~ msgstr "Plaats markeringspunt hier"
 #
@@ -6503,8 +6835,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "E&xporteer alles ..."
+#
 #
 #
 #
@@ -6536,8 +6870,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "ETA:"
 #~ msgstr "ETA:"
+#
 #
 #
 #
@@ -6588,8 +6924,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Vaartijd/Tijdstip"
+#
 #
 #
 #
@@ -6618,6 +6956,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "Activeer Zoom-met-Muiswiel-naar-Cursorpositie"
 #
@@ -6627,8 +6966,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Error on Route Upload.  Please check logfiles..."
 #~ msgstr "Fout bij laden van route. Raadpleeg logbestanden ..."
+#
 #
 #
 #
@@ -6652,8 +6993,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Overig"
+#
 #
 #
 #
@@ -6666,8 +7009,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Ferry"
 #~ msgstr "veerboot"
+#
 #
 #
 #
@@ -6680,6 +7025,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Freightbarge"
 #~ msgstr "vrachtduwbak (VDB)"
 #
@@ -6687,8 +7033,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "vrachtduwbak met containers"
+#
 #
 #
 #
@@ -6720,8 +7068,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
 #
 #
 #
@@ -6745,14 +7095,17 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD dataserver"
 #
 #
 #
 #
+#
 #~ msgid "GPSGate Buddy"
 #~ msgstr "GPSGate Buddy"
+#
 #
 #
 #
@@ -6767,8 +7120,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "vrachtschip (zee) "
+#
 #
 #
 #
@@ -6808,6 +7163,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Ga naar markeringspunt/routepunt"
 #
@@ -6820,8 +7176,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Groups"
 #~ msgstr "Groepen"
+#
 #
 #
 #
@@ -6851,13 +7209,16 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Harmonic dataset to use:"
 #~ msgstr "Te gebruiken harmonische gegevens:"
 #
 #
 #
+#
 #~ msgid "Heading"
 #~ msgstr "Koers"
+#
 #
 #
 #
@@ -6880,6 +7241,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Hydrofoil"
 #~ msgstr "draagvleugelboot"
 #
@@ -6887,8 +7249,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "IMO"
 #~ msgstr "IMO"
+#
 #
 #
 #
@@ -6913,8 +7277,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "In"
 #~ msgstr "In"
+#
 #
 #
 #
@@ -6927,8 +7293,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Inland Blue Flag"
 #~ msgstr "Blauwe Bord binnenwateren"
+#
 #
 #
 #
@@ -6960,8 +7328,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Spring naar"
+#
 #
 #
 #
@@ -6999,8 +7369,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Spring naar positie ..."
+#
 #
 #
 #
@@ -7025,6 +7397,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Precies"
 #
@@ -7032,8 +7405,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "LW"
 #~ msgstr "LW"
+#
 #
 #
 #
@@ -7076,13 +7451,16 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Laatste rapportagetijdstip: "
 #
 #
 #
+#
 #~ msgid "Left"
 #~ msgstr "Links"
+#
 #
 #
 #
@@ -7106,6 +7484,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Legend"
 #~ msgstr "Console legenda"
 #
@@ -7113,8 +7492,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Limit range: NM"
 #~ msgstr "Beperk afstand: NM"
+#
 #
 #
 #
@@ -7131,8 +7512,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Link Properties"
 #~ msgstr "Link-eigenschappen"
+#
 #
 #
 #
@@ -7146,8 +7529,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Link not complete, can't be saved."
 #~ msgstr "Link niet compleet, opslaan is niet mogelijk."
+#
 #
 #
 #
@@ -7159,8 +7544,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Local file..."
 #~ msgstr "Lokaal bestand ..."
+#
 #
 #
 #
@@ -7184,8 +7571,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "MMSI"
 #~ msgstr "MMSI"
+#
 #
 #
 #
@@ -7244,8 +7633,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "Markeringspunt-icoon"
+#
 #
 #
 #
@@ -7283,8 +7674,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Mark Properties"
 #~ msgstr "Markeringspunt-eigenschappen"
+#
 #
 #
 #
@@ -7317,8 +7710,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Marks"
 #~ msgstr "Markeringspunten"
+#
 #
 #
 #
@@ -7347,13 +7742,16 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Message accepted"
 #~ msgstr "Bericht geaccepteerd"
 #
 #
 #
+#
 #~ msgid "Message filtered and dropped"
 #~ msgstr "Bericht gefilterd en afgewezen"
+#
 #
 #
 #
@@ -7375,8 +7773,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Motor freighter"
 #~ msgstr "motorvrachtschip"
+#
 #
 #
 #
@@ -7389,8 +7789,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Motor freighter pushing one or more freighters"
 #~ msgstr "lang samenstel, MVS"
+#
 #
 #
 #
@@ -7403,8 +7805,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Motor freighter with tanker"
 #~ msgstr "breed samenstel, min. 1 MTS"
+#
 #
 #
 #
@@ -7417,8 +7821,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Motor tanker"
 #~ msgstr "motortankschip"
+#
 #
 #
 #
@@ -7431,6 +7837,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type C"
 #~ msgstr "motortankschip, vloeibare lading, type C"
 #
@@ -7438,8 +7845,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "motortankschip, vloeibare lading, type N"
+#
 #
 #
 #
@@ -7460,13 +7869,16 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA databron"
 #
 #
 #
+#
 #~ msgid "NMEA Debug Window"
 #~ msgstr "NMEA Debug Window"
+#
 #
 #
 #
@@ -7498,8 +7910,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Name:  "
 #~ msgstr " Naam: "
+#
 #
 #
 #
@@ -7524,8 +7938,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "Navigatiestatus: "
+#
 #
 #
 #
@@ -7566,8 +7982,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "New Mark"
 #~ msgstr "markering, nieuw gevaar"
+#
 #
 #
 #
@@ -7580,8 +7998,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "No"
 #~ msgstr "Nee"
+#
 #
 #
 #
@@ -7603,6 +8023,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "object, niet nader gespecificeerd"
 #
@@ -7610,8 +8031,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Object, towed, not otherwise specified"
 #~ msgstr "gesleept object"
+#
 #
 #
 #
@@ -7680,6 +8103,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "OpenCPN PlugIn Base Class\n"
 #~ "PlugInManager created this base class"
@@ -7692,13 +8116,16 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Other"
 #~ msgstr "andere"
 #
 #
 #
+#
 #~ msgid "Out"
 #~ msgstr "Uit"
+#
 #
 #
 #
@@ -7721,9 +8148,11 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "Weergaveoptie Eigen Vaartuig"
+#
 #
 #
 #
@@ -7736,13 +8165,16 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "passagierschip binnenvaart"
 #
 #
 #
+#
 #~ msgid "Pause"
 #~ msgstr "Pauzeer"
+#
 #
 #
 #
@@ -7772,6 +8204,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Plaats trackpunten met tijdinterval van (seconden):"
@@ -7782,8 +8215,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Plan speed (Kts)"
 #~ msgstr "Verwachte vaart (knopen)"
+#
 #
 #
 #
@@ -7823,8 +8258,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "PlugInManager zoekt naar PlugIns op lokatie"
+#
 #
 #
 #
@@ -7893,8 +8330,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "PlugInManager: Initialiseert PlugIn: "
+#
 #
 #
 #
@@ -7963,8 +8402,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "PlugInManager: Verwijdert PlugIn: "
+#
 #
 #
 #
@@ -8015,12 +8456,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Ouderdom rapportage:           %3d sec\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8080,6 +8523,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Possible libgps API version mismatch.\n"
 #~ "libgps did not reasonably respond to version request\n"
@@ -8090,6 +8534,7 @@ msgstr "wxFB website"
 #~ "libgps reageerde niet op versie verzoek.\n"
 #~ "\n"
 #~ "Wilt u deze versie van Libgps toch gebruiken?"
+#
 #
 #
 #
@@ -8108,6 +8553,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Prev"
 #~ msgstr "<<"
 #
@@ -8115,34 +8561,9 @@ msgstr "wxFB website"
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Printing"
-#~ msgstr "Weergaveoptie Afdrukken"
-#
-#
-#
-#
 #~ msgid "Problem discovered"
 #~ msgstr "Probleem ontdekt"
+#
 #
 #
 #
@@ -8157,8 +8578,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "duwboot losvarend"
+#
 #
 #
 #
@@ -8171,8 +8594,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "duwboot met 8 vrachtduwbakken"
+#
 #
 #
 #
@@ -8185,8 +8610,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "duwboot met 5 vrachtduwbakken"
+#
 #
 #
 #
@@ -8199,8 +8626,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "duwboot met 4 vrachtduwbakken"
+#
 #
 #
 #
@@ -8213,8 +8642,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 #~ msgstr "duwboot 9+ DB - min. 1 (G) TDB"
+#
 #
 #
 #
@@ -8227,8 +8658,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Pushtow, one tank/gas barge"
 #~ msgstr "duwboot 1 (G) TDB"
+#
 #
 #
 #
@@ -8241,8 +8674,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Pushtow, seven cargo barges"
 #~ msgstr "duwboot met 7 vrachtduwbakken"
+#
 #
 #
 #
@@ -8255,8 +8690,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Pushtow, six cargo barges"
 #~ msgstr "duwboot met 6 vrachtduwbakken"
+#
 #
 #
 #
@@ -8269,8 +8706,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Pushtow, three cargo barges"
 #~ msgstr "duwboot met 3 vrachtduwbakken"
+#
 #
 #
 #
@@ -8283,8 +8722,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Pushtow, two cargo barges"
 #~ msgstr "duwboot met 2 vrachtduwbakken"
+#
 #
 #
 #
@@ -8307,8 +8748,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Range"
 #~ msgstr "Afstand"
+#
 #
 #
 #
@@ -8341,6 +8784,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Afstand:                %5.1f NM\n"
 #
@@ -8357,8 +8801,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Raster"
+#
 #
 #
 #
@@ -8391,8 +8837,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Draaisnelheid:             %3d°/min. SB\n"
+#
 #
 #
 #
@@ -8425,8 +8873,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Draaisnelheid:             > 5°/30 sec. BB\n"
+#
 #
 #
 #
@@ -8449,8 +8899,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Red cross ship"
 #~ msgstr "rode kruis schip"
+#
 #
 #
 #
@@ -8463,8 +8915,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Reject"
 #~ msgstr "Verwerp"
+#
 #
 #
 #
@@ -8494,8 +8948,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Verwijder deze kaart uit samenvoeging."
+#
 #
 #
 #
@@ -8505,8 +8961,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Report Age"
 #~ msgstr "Rapportage-leeftijd"
+#
 #
 #
 #
@@ -8516,8 +8974,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Resume"
 #~ msgstr "Vervolgen"
+#
 #
 #
 #
@@ -8550,8 +9010,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Right"
 #~ msgstr "Rechts"
+#
 #
 #
 #
@@ -8575,8 +9037,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "Route goed geladen."
+#
 #
 #
 #
@@ -8599,14 +9063,17 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "SART"
 #~ msgstr "SART"
 #
 #
 #
 #
+#
 #~ msgid "Safety Broadcast Message"
 #~ msgstr "Veiligheidsbericht:  "
+#
 #
 #
 #
@@ -8630,8 +9097,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Send"
 #~ msgstr "Zend"
+#
 #
 #
 #
@@ -8648,8 +9117,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Send to GPS ( "
 #~ msgstr "Zend naar GPS ("
+#
 #
 #
 #
@@ -8660,8 +9131,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Set"
 #~ msgstr "Instellen"
+#
 #
 #
 #
@@ -8701,6 +9174,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Settings"
 #~ msgstr "Schermweergave"
 #
@@ -8717,8 +9191,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "Toon labels bij navigatiesymbolen"
+#
 #
 #
 #
@@ -8771,6 +9247,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Toon track-icoon"
 #
@@ -8785,8 +9262,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "Toon kaartlagen initieel"
+#
 #
 #
 #
@@ -8823,12 +9302,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Grootte:                %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8865,12 +9346,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Grootte:                ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8907,12 +9390,14 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Grootte:                %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8941,13 +9426,16 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "SoG"
 #~ msgstr "SOG"
 #
 #
 #
+#
 #~ msgid "Sound file '%s' is in unsupported format."
 #~ msgstr "Format van dieptebestand '%s' wordt niet ondersteund"
+#
 #
 #
 #
@@ -8980,8 +9468,18 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "Vaart:                %5.2f knopen\n"
+#
+#
+#
+#
+#
+#
+#~ msgid "T"
+#~ msgstr "Naar"
+#
 #
 #
 #
@@ -9005,8 +9503,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "TCPA"
 #~ msgstr "TCPA"
+#
 #
 #
 #
@@ -9039,8 +9539,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d uur:min\n"
+#
 #
 #
 #
@@ -9053,8 +9555,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "tankduwbak (TDB), droge lading"
+#
 #
 #
 #
@@ -9067,8 +9571,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type C"
 #~ msgstr "tankduwbak (TDB), vloeibare lading, type C"
+#
 #
 #
 #
@@ -9081,6 +9587,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Target Count"
 #~ msgstr "Objectaantal"
 #
@@ -9088,8 +9595,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Target info"
 #~ msgstr "Objectinformatie"
+#
 #
 #
 #
@@ -9113,6 +9622,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Text Element"
 #~ msgstr "Tekstelement"
 #
@@ -9122,8 +9632,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Tide"
 #~ msgstr "Getijhoogte"
+#
 #
 #
 #
@@ -9153,9 +9665,11 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "Info getijgrafiek bij aanwijzen"
+#
 #
 #
 #
@@ -9170,17 +9684,10 @@ msgstr "wxFB website"
 #
 #
 #
-#~ msgid "Timestamp"
-#~ msgstr "Tijdstip"
-#
-#
-#
-#
-#
-#
 #
 #~ msgid "Today"
 #~ msgstr "Vandaag"
+#
 #
 #
 #
@@ -9204,17 +9711,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "ToolBox"
 #~ msgstr "Toolbox voor instellingen"
 #
-#
-#
-#
-#
-#
-#
-#~ msgid "Track Properties"
-#~ msgstr "Track-eigenschappen"
 #
 #
 #
@@ -9245,8 +9745,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Schaal 1 : %8.0f         "
+#
 #
 #
 #
@@ -9259,8 +9761,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Tug, assisting a vessel or linked combination"
 #~ msgstr "sleepboot assisterend"
+#
 #
 #
 #
@@ -9273,8 +9777,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Tug, freighter/tanker, coupled"
 #~ msgstr "gekoppelde sleep-sch. min. 1 SL-TS"
+#
 #
 #
 #
@@ -9287,8 +9793,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Tug, single"
 #~ msgstr "sleepboot, losvarend"
+#
 #
 #
 #
@@ -9299,8 +9807,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Turn Rate"
 #~ msgstr "Draaisnelheid"
+#
 #
 #
 #
@@ -9333,14 +9843,17 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "UN Ship Type:         "
 #~ msgstr "VN scheepstype: "
 #
 #
 #
 #
+#
 #~ msgid "URL"
 #~ msgstr "URL"
+#
 #
 #
 #
@@ -9375,8 +9888,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Unable to load libgps"
 #~ msgstr "Kan libgps niet laden."
+#
 #
 #
 #
@@ -9391,8 +9906,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Unit carrier maritime"
 #~ msgstr "containerschip (zee)"
+#
 #
 #
 #
@@ -9415,8 +9932,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Unk"
 #~ msgstr "Onbekend"
+#
 #
 #
 #
@@ -9445,6 +9964,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Use SCAMIN"
 #~ msgstr "Gebruik SCAMIN"
 #
@@ -9452,8 +9972,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Vessel, type unknown"
 #~ msgstr "vaartuig, type onbekend"
+#
 #
 #
 #
@@ -9477,6 +9999,7 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Waypoint Locking"
 #~ msgstr "Route- en Markeringspunten Vastzetten"
 #
@@ -9486,8 +10009,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Waypoint(s) Uploaded successfully."
 #~ msgstr "Markeringspunt(en) goed geladen."
+#
 #
 #
 #
@@ -9516,8 +10041,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 #~ msgstr "     X offset (in NM; positief verplaatst kaart naar oosten):"
+#
 #
 #
 #
@@ -9535,8 +10062,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "Yes"
 #~ msgstr "Ja"
+#
 #
 #
 #
@@ -9560,8 +10089,10 @@ msgstr "wxFB website"
 #
 #
 #
+#
 #~ msgid "in"
 #~ msgstr "in"
+#
 #
 #
 #

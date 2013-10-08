@@ -994,6 +994,16 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             if( bnewtarget ) {
                 delete pTargetData;                           // this target is not going to be used
                 m_n_targets--;
+            } else {
+                //  If this is not an ownship message, update the AIS Target in the Selectable list
+                //  even if the message type was not recognized
+                if( !pTargetData->b_OwnShip ) {
+                    if( pTargetData->b_positionOnceValid ) {
+                        SelectItem *pSel = pSelectAIS->AddSelectablePoint( pTargetData->Lat,
+                                              pTargetData->Lon, (void *) mmsi_long, SELTYPE_AISTARGET );
+                        pSel->SetUserData( mmsi );
+                    }
+                }
             }
         }
 
@@ -1953,9 +1963,15 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 //      This is an OS specific behavior, not seen on linux or Mac.
 //      This patch will allow the audio alert to occur, and the visual alert will pop up soon
 //      after the user selects the OCPN icon from the taskbar. (on the next timer tick, probably)
-#ifdef __WXMSW__            
+            
+//#ifdef __WXMSW__            
+         if( gFrame->IsIconized() || !gFrame->IsActive() )
+                gFrame->RequestUserAttention();
+//#endif
+            
+//#ifdef __WXMSW__            
             if( !gFrame->IsIconized() )
-#endif                
+//#endif                
             {
                 AISTargetAlertDialog *pAISAlertDialog = new AISTargetAlertDialog();
                 pAISAlertDialog->Create( palarm_target->MMSI, m_parent_frame, this, b_jumpto, -1,
