@@ -47,6 +47,8 @@ static const wxString tname_from_index[] = {_("Wind"), _("Wind Gust"),  _("Press
 
 static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 0, 4, 5, 3, 3};
 
+enum SettingsDisplay {B_ARROWS, ISO_LINES, D_ARROWS, OVERLAY};
+
 wxString GribOverlaySettings::NameFromIndex(int index)
 {
     return tname_from_index[index];
@@ -333,51 +335,51 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     this->Fit();
     //Show only fitting parameters
     switch(settings){
-    case 0:
-        ShowSettings( 1 );
-        ShowSettings( 4 );
+    case m_Settings.WIND:
+        ShowSettings( B_ARROWS );
+        ShowSettings( OVERLAY );
         break;
-    case 2:
-        ShowSettings( 2 );
+    case m_Settings.PRESSURE:
+        ShowSettings( ISO_LINES );
         m_cbIsoBars->SetLabel(_("Display Isobars"));
         break;
-    case 3:
-    case 4:
-        ShowSettings( 3 );
-        ShowSettings( 4 );
+    case m_Settings.WAVE:
+    case m_Settings.CURRENT:
+        ShowSettings( D_ARROWS );
+        ShowSettings( OVERLAY );
         break;
-    case 1:
-    case 5:
-    case 6:
-        ShowSettings( 4 );
+    case m_Settings.WIND_GUST:
+    case m_Settings.PRECIPITATION:
+    case m_Settings.CLOUD:
+        ShowSettings( OVERLAY );
         break;
-    case 7:
-    case 8:
-        ShowSettings( 2 );
+    case m_Settings.AIR_TEMPERATURE:
+    case m_Settings.SEA_TEMPERATURE:
+        ShowSettings( ISO_LINES );
         m_cbIsoBars->SetLabel(_("Display Iso Temp. Lines"));
-        ShowSettings( 4 );
+        ShowSettings( OVERLAY );
     }
 }
 
 void GribSettingsDialog::ShowSettings( int params )
 {
     switch(params){
-    case 1:
+    case B_ARROWS:
         m_cbBarbedArrows->Show();
         m_tBarbedRange->Show();
         m_sBarbedRange->Show();
         break;
-    case 2:
+    case ISO_LINES:
         m_cbIsoBars->Show();
         m_tIsoBarSpacing->Show();
         m_sIsoBarSpacing->Show();
         break;
-    case 3:
+    case D_ARROWS:
         m_cbDirectionArrows->Show();
         m_tDirectionArrowSize->Show();
         m_sDirectionArrowSize->Show();
         break;
-    case 4:
+    case OVERLAY:
         m_cbOverlayMap->Show();
         m_tOverlayColors->Show();
         m_cOverlayColors->Show();
