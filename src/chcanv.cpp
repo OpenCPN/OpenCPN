@@ -1029,6 +1029,9 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pGLcontext = m_glcc->GetContext();
     #endif
     }
+    else
+        m_glcc = NULL;
+    
 
     singleClickEventIsValid = false;
 
