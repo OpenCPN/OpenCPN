@@ -7459,15 +7459,16 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
             pConfig->DeleteConfigRoute( m_pSelectedRoute );
             g_pRouteMan->DeleteRoute( m_pSelectedRoute );
+            if( pRoutePropDialog && ( pRoutePropDialog->IsShown()) && (m_pSelectedRoute == pRoutePropDialog->GetRoute()) ) {
+                pRoutePropDialog->Hide();
+            }
+
             m_pSelectedRoute = NULL;
             m_pFoundRoutePoint = NULL;
             m_pFoundRoutePointSecond = NULL;
-            if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
-                pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
-                pRoutePropDialog->UpdateProperties();
-            }
-
-            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateRouteListCtrl();
+            
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateRouteListCtrl();
 
             if( pMarkPropDialog && pMarkPropDialog->IsShown() ) {
                 pMarkPropDialog->ValidateMark();
@@ -7677,15 +7678,15 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             pConfig->DeleteConfigRoute( m_pSelectedTrack );
 
             g_pRouteMan->DeleteTrack( m_pSelectedTrack );
+
+            if( pTrackPropDialog && ( pTrackPropDialog->IsShown()) && (m_pSelectedTrack == pTrackPropDialog->GetTrack()) ) {
+                pRoutePropDialog->Hide();
+            }
+
             m_pSelectedTrack = NULL;
             m_pFoundRoutePoint = NULL;
             m_pFoundRoutePointSecond = NULL;
-
-            if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
-                pRoutePropDialog->SetRouteAndUpdate( m_pSelectedTrack );
-                pRoutePropDialog->UpdateProperties();
-            }
-
+            
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
                 pRouteManagerDialog->UpdateTrkListCtrl();
                 pRouteManagerDialog->UpdateRouteListCtrl();
