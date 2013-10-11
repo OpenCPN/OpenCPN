@@ -899,7 +899,8 @@ void RouteManagerDialog::UpdateRouteListCtrl()
         m_pRouteListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
     }
 
-    if( m_lastRteItem >= 0 ) m_pRouteListCtrl->EnsureVisible( m_lastRteItem );
+    if( (m_lastRteItem >= 0) && (m_pRouteListCtrl->GetItemCount()) )
+        m_pRouteListCtrl->EnsureVisible( m_lastRteItem );
     UpdateRteButtons();
 }
 
@@ -1586,7 +1587,8 @@ void RouteManagerDialog::UpdateTrkListCtrl()
         m_pTrkListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
     }
 
-    if( m_lastTrkItem >= 0 ) m_pTrkListCtrl->EnsureVisible( m_lastTrkItem );
+    if( (m_lastTrkItem >= 0 ) && (m_pTrkListCtrl->GetItemCount()) )
+        m_pTrkListCtrl->EnsureVisible( m_lastTrkItem );
     UpdateTrkButtons();
 }
 
@@ -1880,7 +1882,8 @@ void RouteManagerDialog::UpdateWptListCtrl( RoutePoint *rp_select, bool b_retain
         m_pWptListCtrl->SetItemState( item, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED );
     }
 
-    if( m_lastWptItem >= 0 ) m_pWptListCtrl->EnsureVisible( m_lastWptItem );
+    if( (m_lastWptItem >= 0) && (m_pWptListCtrl->GetItemCount()) )
+        m_pWptListCtrl->EnsureVisible( m_lastWptItem );
     UpdateWptButtons();
 }
 
