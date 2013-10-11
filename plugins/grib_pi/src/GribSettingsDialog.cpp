@@ -335,26 +335,26 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     this->Fit();
     //Show only fitting parameters
     switch(settings){
-    case m_Settings.WIND:
+    case 0:
         ShowSettings( B_ARROWS );
         ShowSettings( OVERLAY );
         break;
-    case m_Settings.PRESSURE:
+    case 2:
         ShowSettings( ISO_LINES );
         m_cbIsoBars->SetLabel(_("Display Isobars"));
         break;
-    case m_Settings.WAVE:
-    case m_Settings.CURRENT:
+    case 3:
+    case 4:
         ShowSettings( D_ARROWS );
         ShowSettings( OVERLAY );
         break;
-    case m_Settings.WIND_GUST:
-    case m_Settings.PRECIPITATION:
-    case m_Settings.CLOUD:
+    case 1:
+    case 5:
+    case 6:
         ShowSettings( OVERLAY );
         break;
-    case m_Settings.AIR_TEMPERATURE:
-    case m_Settings.SEA_TEMPERATURE:
+    case 7:
+    case 8:
         ShowSettings( ISO_LINES );
         m_cbIsoBars->SetLabel(_("Display Iso Temp. Lines"));
         ShowSettings( OVERLAY );

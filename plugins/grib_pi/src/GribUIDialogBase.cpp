@@ -80,33 +80,27 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls->Add( m_cbWind, 0, wxALL, 5 );
 	
 	m_tcWindSpeed = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_tcWindSpeed->SetMaxLength( 3 ); 
 	m_fgTrackingControls->Add( m_tcWindSpeed, 0, wxALL, 1 );
 	
 	m_tcWindDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_tcWindDirection->SetMaxLength( 3 ); 
 	m_fgTrackingControls->Add( m_tcWindDirection, 0, wxALL, 1 );
 	
 	m_cbWave = new wxCheckBox( this, ID_CB_SIG_WAVE_HEIGHT, _("Wave"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbWave, 0, wxALL, 5 );
 	
 	m_tcWaveHeight = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_tcWaveHeight->SetMaxLength( 5 ); 
 	m_fgTrackingControls->Add( m_tcWaveHeight, 0, wxALL, 1 );
 	
 	m_tcWaveDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_tcWaveDirection->SetMaxLength( 3 ); 
 	m_fgTrackingControls->Add( m_tcWaveDirection, 0, wxALL, 1 );
 	
 	m_cbCurrent = new wxCheckBox( this, ID_CB_CURRENT_VELOCITY, _("Current"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbCurrent, 0, wxALL, 5 );
 	
 	m_tcCurrentVelocity = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_tcCurrentVelocity->SetMaxLength( 5 ); 
 	m_fgTrackingControls->Add( m_tcCurrentVelocity, 0, wxALL, 1 );
 	
 	m_tcCurrentDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_tcCurrentDirection->SetMaxLength( 5 ); 
 	m_fgTrackingControls->Add( m_tcCurrentDirection, 0, wxALL, 1 );
 	
 	m_cbWindGust = new wxCheckBox( this, wxID_ANY, _("Wind Gust"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -122,7 +116,6 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls->Add( m_cbPressure, 0, wxALL, 5 );
 	
 	m_tcPressure = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_tcPressure->SetMaxLength( 5 ); 
 	m_fgTrackingControls->Add( m_tcPressure, 0, wxALL, 1 );
 	
 	
@@ -159,7 +152,6 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls->Add( m_cbSeaTemperature, 0, wxALL, 5 );
 	
 	m_tcSeaTemperature = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
-	m_tcSeaTemperature->SetMaxLength( 5 ); 
 	m_fgTrackingControls->Add( m_tcSeaTemperature, 0, wxALL, 1 );
 	
 	
@@ -386,7 +378,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_staticText24->Wrap( -1 );
 	fgSizer15->Add( m_staticText24, 0, wxALL, 5 );
 	
-	m_sTransparency = new wxSlider( this, wxID_ANY, 50, 70, 255, wxDefaultPosition, wxDefaultSize, wxSL_HORIZONTAL );
+	m_sTransparency = new wxSlider( this, wxID_ANY, 50, 70, 255, wxDefaultPosition, wxSize( 100,-1 ), wxSL_HORIZONTAL );
 	fgSizer15->Add( m_sTransparency, 0, wxALL, 5 );
 	
 	
@@ -693,6 +685,8 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer11->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	m_MailImage = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
+	m_MailImage->SetMinSize( wxSize( -1,80 ) );
+	
 	fgSizer11->Add( m_MailImage, 0, wxALL|wxEXPAND, 5 );
 	
 	
