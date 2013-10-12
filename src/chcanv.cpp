@@ -7680,7 +7680,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             g_pRouteMan->DeleteTrack( m_pSelectedTrack );
 
             if( pTrackPropDialog && ( pTrackPropDialog->IsShown()) && (m_pSelectedTrack == pTrackPropDialog->GetTrack()) ) {
-                pRoutePropDialog->Hide();
+                pTrackPropDialog->Hide();
             }
 
             m_pSelectedTrack = NULL;
