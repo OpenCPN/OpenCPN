@@ -512,9 +512,11 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
             ( !PluginBlacklist[i].all_lower && name.EndsWith(PluginBlacklist[i].name) && PluginBlacklist[i].version_major == major && PluginBlacklist[i].version_minor == minor ) )
         {
             if ( PluginBlacklist[i].hard )
-                wxMessageBox(wxString::Format(_("Plugin %s (%s), version %i.%i was detected. This version is known to be unstable and will not be loaded, please go to the opencpn.org plugin downloads page and get the latest stable version of this plugin available."), PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(), major, minor), _("Broken plugin detected..."));
+                wxMessageBox(wxString::Format(_("PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable and will not be loaded.\n Please update this PlugIn at the opencpn.org website."),
+                                              PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(), major, minor), _("Blacklisted plugin detected..."));
             else
-                wxMessageBox(wxString::Format(_("Plugin %s (%s), version %i.%i was detected. This version is known to be unstable, please go to the opencpn.org plugin downloads page and get the latest stable version of this plugin available."), PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(), major, minor), _("Broken plugin detected..."));
+                wxMessageBox(wxString::Format(_("PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable.\n Please update this PlugIn at the opencpn.org website."),
+                                              PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(), major, minor), _("Blacklisted plugin detected..."));
             return PluginBlacklist[i].hard;
         }
     }

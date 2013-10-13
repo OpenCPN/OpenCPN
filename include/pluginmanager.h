@@ -74,7 +74,10 @@ typedef struct {
     bool all_lower;     // if true, blacklist also all the lower versions of the plugin
 } BlackListedPlugin;
 
-const BlackListedPlugin PluginBlacklist[] = { { _T("aisradar_pi"), 0, 95, false, true } };
+const BlackListedPlugin PluginBlacklist[] = {
+    { _T("aisradar_pi"), 0, 95, false, true },
+    { _T("radar_pi"), 0, 95, false, true },             // GCC alias for aisradar_pi
+};
 
 //----------------------------------------------------------------------------
 // PlugIn Messaging scheme Event
