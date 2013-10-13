@@ -5203,10 +5203,18 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 double MyFrame::GetTrueOrMag(double a)
 {
     if( g_bShowMag ){
-        if(!wxIsNaN(gVar))
-            return ((a + gVar) >= 0.) ? (a + gVar) : (a + gVar + 360.);
-        else
-            return ((a + g_UserVar) >= 0.) ? (a + g_UserVar) : (a + g_UserVar + 360.);
+        if(!wxIsNaN(gVar)){
+            if((a + gVar) >360.)
+                return (a + gVar - 360.);
+            else
+                return ((a + gVar) >= 0.) ? (a + gVar) : (a + gVar + 360.);
+        }
+        else{
+            if((a + g_UserVar) >360.)
+                return (a + g_UserVar - 360.);
+            else                
+                return ((a + g_UserVar) >= 0.) ? (a + g_UserVar) : (a + g_UserVar + 360.);
+        }
     }
     else
         return a;
