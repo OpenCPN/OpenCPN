@@ -1820,9 +1820,6 @@ if( 0 == g_memCacheLimit )
 
     gFrame->ApplyGlobalSettings( 1, false );               // done once on init with resize
     
-    if ( g_start_fullscreen )
-        gFrame->ToggleFullScreen();
-
     g_toolbar_x = wxMax(g_toolbar_x, 0);
     g_toolbar_y = wxMax(g_toolbar_y, 0);
 
@@ -1903,9 +1900,6 @@ if( 0 == g_memCacheLimit )
 
     //   Notify all the AUI PlugIns so that they may syncronize with the Perspective
     g_pi_manager->NotifyAuiPlugIns();
-
-    //   Initialize and Save the existing Screen Brightness
-//       InitScreenBrightness();
 
     bool b_SetInitialPoint = false;
 
@@ -2171,7 +2165,10 @@ if( 0 == g_memCacheLimit )
     }
 
     g_pi_manager->CallLateInit();
-
+    
+    if ( g_start_fullscreen )
+        gFrame->ToggleFullScreen();
+    
     return TRUE;
 }
 
