@@ -7615,8 +7615,13 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             if( !g_pRouteMan->IsRouteValid( m_pSelectedRoute ) ) m_pSelectedRoute = NULL;
 
             if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
-                pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
-                pRoutePropDialog->UpdateProperties();
+                if( m_pSelectedRoute ) { 
+                    pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
+                    pRoutePropDialog->UpdateProperties();
+                }
+                else
+                    pRoutePropDialog->Hide();
+                    
             }
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) {
