@@ -2112,7 +2112,9 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
 
         m_textLatitude->SetValue( ::toSDMM( 1, m_pRoutePoint->m_lat ) );
         m_textLongitude->SetValue( ::toSDMM( 2, m_pRoutePoint->m_lon ) );
-
+        m_lat_save = m_pRoutePoint->m_lat;
+        m_lon_save = m_pRoutePoint->m_lon;
+        
         if( positionOnly ) return true;
 
         //Layer or not?
