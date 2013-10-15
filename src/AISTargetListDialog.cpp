@@ -470,10 +470,9 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 
     if( m_pAuiManager ) {
         wxAuiPaneInfo pane =
-                wxAuiPaneInfo().Name( _T("AISTargetList") ).Caption( _("AIS target list") ).CaptionVisible(
-                        true ).DestroyOnClose( true ).Float().FloatingPosition( 50, 200 ).TopDockable(
-                        false ).BottomDockable( true ).LeftDockable( false ).RightDockable( false ).Show(
-                        true );
+                wxAuiPaneInfo().Name( _T("AISTargetList") ).CaptionVisible( true ).
+                        DestroyOnClose( true ).Float().FloatingPosition( 50, 200 ).TopDockable( false ).
+                        BottomDockable( true ).LeftDockable( false ).RightDockable( false ).Show( true );
         m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
 
         bool b_reset_pos = false;
@@ -518,6 +517,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             pConfig->UpdateSettings();
         }
 
+        pane.Caption( wxGetTranslation( _("AIS target list") ) );
         m_pAuiManager->AddPane( this, pane );
         m_pAuiManager->Update();
 
