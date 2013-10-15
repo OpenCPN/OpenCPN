@@ -238,11 +238,11 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     wxPoint pmax;
     GetCanvasPixLL( vp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
 
-    int width = abs( pmax.x - pmin.x )/grib_pixel_size;
-    int height = abs( pmax.y - pmin.y )/grib_pixel_size;
+    int width = abs( pmax.x - pmin.x );// /grib_pixel_size;
+    int height = abs( pmax.y - pmin.y );// /grib_pixel_size;
 
-    //    Dont try to create enormous GRIB textures
-    if( ( width > 512 ) || ( height > 512 ))
+    //    Dont try to create enormous GRIB textures ( no more than the screen size )
+    if( width > m_ParentSize.GetWidth() || height > m_ParentSize.GetHeight() )
         return false;
 
     unsigned char *data = new unsigned char[width*height*4];
@@ -264,7 +264,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
                 r = c.Red();
                 g = c.Green();
                 b = c.Blue();
-                a = 220;
+                a = m_Settings.m_iOverlayTransparency;
             } else {
                 r = 255;
                 g = 255;
@@ -319,8 +319,8 @@ wxImage GRIBOverlayFactory::CreateGribImage( int settings, GribRecord *pGR,
     int width = abs( pmax.x - pmin.x );
     int height = abs( pmax.y - pmin.y );
 
-    //    Dont try to create enormous GRIB bitmaps
-    if( width > 1024 || height > 1024 )
+    //    Dont try to create enormous GRIB bitmaps ( no more than the screen size )
+    if( width > m_ParentSize.GetWidth() || height > m_ParentSize.GetHeight() )
         return wxNullImage;
 
     //    This could take a while....
@@ -347,7 +347,7 @@ wxImage GRIBOverlayFactory::CreateGribImage( int settings, GribRecord *pGR,
                 for( int xp = 0; xp < grib_pixel_size; xp++ )
                     for( int yp = 0; yp < grib_pixel_size; yp++ ) {
                         gr_image.SetRGB( ipix + xp, jpix + yp, r, g, b );
-                        gr_image.SetAlpha( ipix + xp, jpix + yp, 220 );
+                        gr_image.SetAlpha( ipix + xp, jpix + yp, m_Settings.m_iOverlayTransparency);
                     }
             } else {
                 for( int xp = 0; xp < grib_pixel_size; xp++ )
@@ -378,6 +378,14 @@ ColorMap GenericMap[] =
  {12, _T("#d90060")}, {15, _T("#ae0080")}, {18, _T("#8300a0")}, {21, _T("#5700c0")},
  {24, _T("#0000d0")}, {27, _T("#0400e0")}, {30, _T("#0800e0")}, {36, _T("#a000e0")},
  {42, _T("#c004c0")}, {48, _T("#c008a0")}, {56, _T("#c0a008")}};
+
+//    HTML colors taken from zygrib representation 
+ColorMap WindMap[] =
+{{0, _T("#288CFF")},{3, _T("#00AFFF")},{6, _T("#00DCE1")},{9, _T("#00F7B0")},{12, _T("#00EA9C")},
+{15, _T("#82F059")},{18, _T("#F0F503")},{21, _T("#FFED00")},{24, _T("#FFDB00")},{27, _T("#FFC700")},
+{30, _T("#FFB400")},{33, _T("#FF9800")},{36, _T("#FF7E00")},{39, _T("#F77800")},{42, _T("#EC7814")},
+{45, _T("#E4711E")},{48, _T("#E06128")},{51, _T("#DC5132")},{54, _T("#D5453C")},{57, _T("#CD3A46")},
+{60, _T("#BE2C50")},{63, _T("#B41A5A")},{66, _T("#AA1464")},{70, _T("#962878")},{75, _T("#8C328C")}};
 
 //    HTML colors taken from zygrib representation
 ColorMap AirTempMap[] =
@@ -410,10 +418,10 @@ ColorMap CloudMap[] =
  {30, _T("#c8c8b4")}, {40, _T("#aaaa8c")}, {50, _T("#969678")}, {60, _T("#787864")},
  {70, _T("#646450")}, {80, _T("#5a5a46")}, {90, _T("#505036")}};
 
-ColorMap *ColorMaps[] = {CurrentMap, GenericMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
+ColorMap *ColorMaps[] = {CurrentMap, GenericMap, WindMap, AirTempMap, SeaTempMap, PrecipitationMap, CloudMap};
 
 enum {
-    GENERIC_GRAPHIC_INDEX, AIRTEMP__GRAPHIC_INDEX, SEATEMP_GRAPHIC_INDEX, 
+    GENERIC_GRAPHIC_INDEX, WIND_GRAPHIC_INDEX, AIRTEMP__GRAPHIC_INDEX, SEATEMP_GRAPHIC_INDEX, 
     PRECIPITATION_GRAPHIC_INDEX, CLOUD_GRAPHIC_INDEX, CURRENT_GRAPHIC_INDEX
 };
 
@@ -437,6 +445,10 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
     case GENERIC_GRAPHIC_INDEX:
         map = GenericMap;
         maplen = (sizeof GenericMap) / (sizeof *GenericMap);
+        break;
+    case WIND_GRAPHIC_INDEX:
+        map = WindMap;
+        maplen = (sizeof WindMap) / (sizeof *WindMap);
         break;
     case AIRTEMP__GRAPHIC_INDEX: 
         map = AirTempMap;
@@ -487,7 +499,10 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
         return m_labelCache[value];
 
     wxString labels;
-    labels.Printf(_T("%d"), (int)(value+0.5));
+    if( value < 10 )
+        labels.Printf(_T("%0.1f"), value);
+    else
+        labels.Printf(_T("%d"), (int)(value+0.5));
 
     wxColour text_color;
     GetGlobalColor( _T ( "DILG3" ), &text_color );

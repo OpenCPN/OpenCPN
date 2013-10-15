@@ -53,6 +53,7 @@ struct GribOverlaySettings
     int m_SlicesPerUpdate;
     int m_UpdatesPerSecond;
     int m_HourDivider;
+    int m_iOverlayTransparency;
 
     enum SettingsType {WIND, WIND_GUST, PRESSURE, WAVE, CURRENT, PRECIPITATION, CLOUD, 
                        AIR_TEMPERATURE, SEA_TEMPERATURE, SETTINGS_COUNT};
@@ -91,7 +92,10 @@ private:
     void SetDataTypeSettings(int settings);
     void ReadDataTypeSettings(int settings);
     void PopulateUnits(int settings);
+    void ShowFittingSettings (int settings);
+    void ShowSettings( int params );
     void OnDataTypeChoice( wxCommandEvent& event );
+    void OnTransparencyChange( wxScrollEvent& event  );
     void OnApply( wxCommandEvent& event );
     void OnIntepolateChange( wxCommandEvent& event );
 

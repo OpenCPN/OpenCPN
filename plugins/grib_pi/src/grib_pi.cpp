@@ -264,6 +264,7 @@ void grib_pi::OnToolbarToolCallback(int id)
         // Create the drawing factory
         m_pGRIBOverlayFactory = new GRIBOverlayFactory( *m_pGribDialog );
         m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
+        m_pGRIBOverlayFactory->SetParentSize( m_display_width, m_display_height);
         m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
         m_pGribDialog->TimelineChanged();
 

@@ -176,7 +176,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_sTimeline->SetValue(0);
 
     wxFileName fn( m_file_name );
-    SetLabel( fn.GetFullName() );
+    this->SetTitle( fn.GetFullName() );
 
     if( m_bGRIBActiveFile ) {
         if( m_bGRIBActiveFile->IsOK() ) {
@@ -189,7 +189,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
         } else {
             if( fn.IsDir() ) {
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning:  Empty directory!") );
-                SetLabel( fn.GetFullPath() );
+                this->SetTitle( fn.GetFullPath() );
             }
             else
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
