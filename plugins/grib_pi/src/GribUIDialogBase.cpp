@@ -520,10 +520,38 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer17->SetFlexibleDirection( wxBOTH );
 	fgSizer17->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
+	wxFlexGridSizer* fgSizer16;
+	fgSizer16 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer16->AddGrowableCol( 1 );
+	fgSizer16->SetFlexibleDirection( wxBOTH );
+	fgSizer16->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	
+	m_staticText25 = new wxStaticText( this, wxID_ANY, _("Sender eMail Address"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText25->Wrap( -1 );
+	fgSizer16->Add( m_staticText25, 0, wxALL, 5 );
+	
+	m_pSenderAddress = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer16->Add( m_pSenderAddress, 0, wxALL|wxEXPAND, 5 );
+	
+	
+	fgSizer17->Add( fgSizer16, 1, wxEXPAND, 5 );
+	
 	wxFlexGridSizer* fgSizer9;
 	fgSizer9 = new wxFlexGridSizer( 0, 4, 0, 0 );
 	fgSizer9->SetFlexibleDirection( wxBOTH );
 	fgSizer9->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	
+	m_staticline4 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	fgSizer9->Add( m_staticline4, 0, wxEXPAND | wxALL, 5 );
+	
+	m_staticline5 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	fgSizer9->Add( m_staticline5, 0, wxEXPAND | wxALL, 5 );
+	
+	m_staticline6 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	fgSizer9->Add( m_staticline6, 0, wxEXPAND | wxALL, 5 );
+	
+	m_staticline7 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	fgSizer9->Add( m_staticline7, 0, wxEXPAND | wxALL, 5 );
 	
 	wxStaticText* m_staticText15;
 	m_staticText15 = new wxStaticText( this, wxID_ANY, _("Mail To "), wxDefaultPosition, wxDefaultSize, 0 );
@@ -547,14 +575,14 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_pModel->SetSelection( 0 );
 	fgSizer9->Add( m_pModel, 0, wxALL, 5 );
 	
-	m_tLogin = new wxStaticText( this, wxID_ANY, _("Your ZyGrib Login"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_tLogin = new wxStaticText( this, wxID_ANY, _("zyGrib Login"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tLogin->Wrap( -1 );
 	fgSizer9->Add( m_tLogin, 0, wxALL, 5 );
 	
 	m_pLogin = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer9->Add( m_pLogin, 0, wxALL, 5 );
 	
-	m_tCode = new wxStaticText( this, wxID_ANY, _("Your ZyGrib Code"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_tCode = new wxStaticText( this, wxID_ANY, _("zyGrib Code"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tCode->Wrap( -1 );
 	fgSizer9->Add( m_tCode, 0, wxALL, 5 );
 	

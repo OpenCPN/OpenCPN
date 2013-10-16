@@ -190,6 +190,11 @@ class GribRequestSettingBase : public wxDialog
 	private:
 	
 	protected:
+		wxStaticText* m_staticText25;
+		wxStaticLine* m_staticline4;
+		wxStaticLine* m_staticline5;
+		wxStaticLine* m_staticline6;
+		wxStaticLine* m_staticline7;
 		wxStaticText* m_tLogin;
 		wxStaticText* m_tCode;
 		wxStaticText* m_staticText21;
@@ -206,6 +211,7 @@ class GribRequestSettingBase : public wxDialog
 		
 	
 	public:
+		wxTextCtrl* m_pSenderAddress;
 		wxChoice* m_pMailTo;
 		wxChoice* m_pModel;
 		wxTextCtrl* m_pLogin;

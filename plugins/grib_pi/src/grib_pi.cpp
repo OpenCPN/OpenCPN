@@ -206,7 +206,7 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_rbTimeFormat->SetSelection( m_bTimeZone );
     Pref->m_rbStartOptions->SetSelection( m_bLoadLastOpenFile );
 
-    // TODO: update m_bMailAddresses
+    // TODO: update m_bMailToAddresses
 
      if( Pref->ShowModal() == wxID_OK ) {
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
@@ -436,7 +436,8 @@ bool grib_pi::LoadConfig(void)
     pConf->Read ( _T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1 );
     pConf->Read ( _T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1 );
     pConf->Read ( _T( "MailRequestConfig" ), &m_RequestConfig, _T( "000220XX......." ) );
-    pConf->Read ( _T( "MailRequestAddresses" ), &m_bMailAddresses, _T("query@saildocs.com;gribauto@zygrib.org") );
+    pConf->Read ( _T( "MailSenderAddress" ), &m_bMailFromAddress, _T("") );
+    pConf->Read ( _T( "MailRequestAddresses" ), &m_bMailToAddresses, _T("query@saildocs.com;gribauto@zygrib.org") );
     pConf->Read ( _T( "ZyGribLogin" ), &m_ZyGribLogin, _T("") );
     pConf->Read ( _T( "ZyGribCode" ), &m_ZyGribCode, _T("") );
 
@@ -470,7 +471,8 @@ bool grib_pi::SaveConfig(void)
     pConf->Write ( _T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec );
     pConf->Write ( _T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec );
     pConf->Write ( _T ( "MailRequestConfig" ), m_RequestConfig );
-    pConf->Write ( _T( "MailRequestAddresses" ), m_bMailAddresses );
+    pConf->Write ( _T( "MailSenderAddress" ), m_bMailFromAddress );
+    pConf->Write ( _T( "MailRequestAddresses" ), m_bMailToAddresses );
     pConf->Write ( _T( "ZyGribLogin" ), m_ZyGribLogin );
     pConf->Write ( _T( "ZyGribCode" ), m_ZyGribCode );
 

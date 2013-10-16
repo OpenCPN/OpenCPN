@@ -634,10 +634,11 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
      int lonmaxi =  (int) ceil(lonmax);
 
     GribRequestSetting *req_Dialog = new GribRequestSetting( this, pPlugIn->GetRequestConfig(), latmaxi, latmini, lonmini, lonmaxi,
-        pPlugIn->GetMailAddresses(), pPlugIn->GetZyGribLogin(), pPlugIn->GetZyGribCode() );
+        pPlugIn->GetMailFromAddress(), pPlugIn->GetMailToAddresses(), pPlugIn->GetZyGribLogin(), pPlugIn->GetZyGribCode() );
     req_Dialog->m_rButtonYes->SetLabel(_("Send"));
     req_Dialog->m_rButtonApply->SetLabel(_("Save"));
     req_Dialog->m_tResUnit->SetLabel(wxString::Format( _T("\u00B0")));
+    req_Dialog->m_pSenderAddress->SetToolTip(_("Address used to send request eMail. (Mandatory for LINUX)"));
     req_Dialog->m_pLogin->SetToolTip(_("Login you use to connect to Zygrib's forum"));
     req_Dialog->m_pCode->SetToolTip(_("Get your Code in Zygrib's forum ( This is not your password! )"));
 
@@ -673,6 +674,7 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
             req_Dialog->m_pWindGust->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 14, 'X' )
                 : req_Dialog->m_RequestConfigBase.SetChar( 14, '.' );
 
+        pPlugIn->SetMailFromAddress(req_Dialog->m_pSenderAddress->GetValue());
         pPlugIn->SetZyGribLogin(req_Dialog->m_pLogin->GetValue());
         pPlugIn->SetZyGribCode(req_Dialog->m_pCode->GetValue());
 
@@ -1433,9 +1435,10 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
 
     wxMailMessage *message = new wxMailMessage(
     wxT("gribauto"),                                                                            //requested subject
-    (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailAddressBase.BeforeFirst(_T(';'))     //to request address
-        : m_MailAddressBase.AfterFirst(_T(';')),
-    WriteMail()                                                                                 //message image
+    (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailToAddresses.BeforeFirst(_T(';'))     //to request address
+        : m_MailToAddresses.AfterFirst(_T(';')),
+    WriteMail(),                                                                                 //message image
+    m_pSenderAddress->GetValue()
     );
     wxEmail mail ;
     m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
