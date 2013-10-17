@@ -6,105 +6,133 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 3.3.420\n"
+"Project-Id-Version: grib_pi 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-24 14:34+1200\n"
+"POT-Creation-Date: 2013-10-16 22:12-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/GribUIDialog.cpp:434 src/GribUIDialog.cpp:435 src/GribUIDialog.cpp:458
-#: src/GribUIDialog.cpp:459 src/GribUIDialog.cpp:472 src/GribUIDialog.cpp:484
-#: src/GribUIDialog.cpp:496 src/GribUIDialog.cpp:506 src/GribUIDialog.cpp:529
-#: src/GribUIDialog.cpp:530 src/GribUIDialog.cpp:543 src/GribUIDialog.cpp:555
-#: src/GribUIDialog.cpp:567 src/GribUIDialog.cpp:579
-msgid "N/A"
-msgstr ""
-
-#: src/GribUIDialog.cpp:693
-msgid "eMail To"
-msgstr ""
-
-#: src/GribUIDialog.cpp:696
-msgid "Action"
-msgstr ""
-
-#: src/GribUIDialog.cpp:697 src/GribUIDialogBase.cpp:492
-msgid "Send"
-msgstr ""
-
-#: src/GribUIDialog.cpp:699 src/GribUIDialogBase.cpp:484
-msgid "Model"
-msgstr ""
-
-#: src/GribUIDialog.cpp:702
-msgid "Zone"
-msgstr ""
-
-#: src/GribUIDialog.cpp:705
-msgid "Resolution"
-msgstr ""
-
-#: src/GribUIDialog.cpp:706
-msgid " Deg"
-msgstr ""
-
-#: src/GribUIDialog.cpp:708
-msgid "Interval"
-msgstr ""
-
-#: src/GribUIDialog.cpp:712
-msgid "Period"
-msgstr ""
-
-#: src/GribUIDialog.cpp:716
-msgid "Days"
-msgstr ""
-
-#: src/GribUIDialog.cpp:718
-msgid "Parameters"
-msgstr ""
-
-#: src/GribUIDialog.cpp:737
-msgid ""
-"Your request is ready. An eMail is prepared in your eMail environment.\n"
-"You have just to click 'send' to send it.\n"
-"OK to continue ..."
-msgstr ""
-
-#: src/GribUIDialog.cpp:739
-msgid ""
-"Your request was sent (if your system has an MTA configured and is able to "
-"send mail).\n"
-"OK to continue ..."
-msgstr ""
-
-#: src/GribUIDialog.cpp:741
-msgid "eMail"
-msgstr ""
-
-#: src/GribUIDialog.cpp:767
-msgid "Stop"
-msgstr ""
-
-#: src/GribUIDialog.cpp:770 src/GribUIDialog.cpp:783
-#: src/GribUIDialogBase.cpp:69
+#: src/GribUIDialog.cpp:149 src/GribUIDialog.cpp:708 src/GribUIDialog.cpp:722
+#: src/GribUIDialogBase.cpp:47
 msgid "Play"
 msgstr ""
 
-#: src/GribUIDialog.cpp:927
+#: src/GribUIDialog.cpp:186
+msgid "Error:  No valid data in this file!"
+msgstr ""
+
+#: src/GribUIDialog.cpp:191
+msgid "Warning:  Empty directory!"
+msgstr ""
+
+#: src/GribUIDialog.cpp:465 src/GribUIDialog.cpp:466 src/GribUIDialog.cpp:479
+#: src/GribUIDialog.cpp:491 src/GribUIDialog.cpp:503 src/GribUIDialog.cpp:513
+#: src/GribUIDialog.cpp:536 src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:550
+#: src/GribUIDialog.cpp:563 src/GribUIDialog.cpp:575 src/GribUIDialog.cpp:587
+msgid "N/A"
+msgstr ""
+
+#: src/GribUIDialog.cpp:638
+msgid "Send"
+msgstr ""
+
+#: src/GribUIDialog.cpp:639
+msgid "Save"
+msgstr ""
+
+#: src/GribUIDialog.cpp:641
+msgid "Login you use to connect to Zygrib's forum"
+msgstr ""
+
+#: src/GribUIDialog.cpp:642
+msgid "Get your Code in Zygrib's forum ( This is not your password! )"
+msgstr ""
+
+#: src/GribUIDialog.cpp:704
+msgid "Stop"
+msgstr ""
+
+#: src/GribUIDialog.cpp:878
 msgid "Select a GRIB file"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1052
+#: src/GribUIDialog.cpp:1045
 msgid "Error:  File does not exist!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1065
+#: src/GribUIDialog.cpp:1058
 msgid "Error:  Can't read this File!"
+msgstr ""
+
+#: src/GribUIDialog.cpp:1168 src/GribUIDialogBase.cpp:577
+msgid "0.5"
+msgstr ""
+
+#: src/GribUIDialog.cpp:1168 src/GribUIDialogBase.cpp:577
+msgid "1"
+msgstr ""
+
+#: src/GribUIDialog.cpp:1168 src/GribUIDialogBase.cpp:577
+#: src/GribUIDialogBase.cpp:608
+msgid "2"
+msgstr ""
+
+#: src/GribUIDialog.cpp:1169
+msgid "0.2"
+msgstr ""
+
+#: src/GribUIDialog.cpp:1169
+msgid "0.8"
+msgstr ""
+
+#: src/GribUIDialog.cpp:1169
+msgid "1.6"
+msgstr ""
+
+#: src/GribUIDialog.cpp:1409
+msgid "( Max "
+msgstr ""
+
+#: src/GribUIDialog.cpp:1409
+msgid " Mo )"
+msgstr ""
+
+#: src/GribUIDialog.cpp:1419
+msgid ""
+"Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and read instructions..."
+msgstr ""
+
+#: src/GribUIDialog.cpp:1420
+msgid ""
+"The file size limit is overcome!\n"
+"You can zoom in and/or change parameters..."
+msgstr ""
+
+#: src/GribUIDialog.cpp:1445
+msgid ""
+"Your request is ready. An email is prepared in your email environment. \n"
+"You have just to click 'send' to send it...\n"
+"Save or Cancel to finish...or new parameters for a new email ..."
+msgstr ""
+
+#: src/GribUIDialog.cpp:1448
+msgid ""
+"Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or new parameters for a new email ..."
+msgstr ""
+
+#: src/GribUIDialog.cpp:1452
+msgid ""
+"Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
 msgstr ""
 
 #: src/GribSettingsDialog.cpp:30
@@ -112,15 +140,15 @@ msgid "Knots"
 msgstr ""
 
 #: src/GribSettingsDialog.cpp:30
-msgid "M/S"
+msgid "m/s"
 msgstr ""
 
 #: src/GribSettingsDialog.cpp:30
-msgid "MPH"
+msgid "mph"
 msgstr ""
 
 #: src/GribSettingsDialog.cpp:30
-msgid "KPH"
+msgid "km/h"
 msgstr ""
 
 #: src/GribSettingsDialog.cpp:31
@@ -159,30 +187,51 @@ msgstr ""
 msgid "Percentage"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:43 src/GribUIDialogBase.cpp:85
-#: src/GribOverlayFactory.cpp:675
+#: src/GribSettingsDialog.cpp:39 src/GribSettingsDialog.cpp:43
+#: src/GribUIDialogBase.cpp:79 src/GribUIDialogBase.cpp:351
+#: src/GribUIDialogBase.cpp:635 src/GribOverlayFactory.cpp:685
 msgid "Wind"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:43 src/GribUIDialogBase.cpp:127
-msgid "Wind Gust"
+#: src/GribSettingsDialog.cpp:39
+msgid "WindGust"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:43 src/GribUIDialogBase.cpp:136
+#: src/GribSettingsDialog.cpp:39 src/GribSettingsDialog.cpp:43
+#: src/GribUIDialogBase.cpp:115 src/GribUIDialogBase.cpp:638
 msgid "Pressure"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:44 src/GribUIDialogBase.cpp:105
+#: src/GribSettingsDialog.cpp:40 src/GribSettingsDialog.cpp:44
+#: src/GribUIDialogBase.cpp:88
 msgid "Wave"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:44 src/GribUIDialogBase.cpp:116
-#: src/GribUIDialogBase.cpp:366
+#: src/GribSettingsDialog.cpp:40 src/GribSettingsDialog.cpp:44
+#: src/GribUIDialogBase.cpp:97 src/GribUIDialogBase.cpp:351
 msgid "Current"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:146
+#: src/GribSettingsDialog.cpp:41 src/GribSettingsDialog.cpp:45
+#: src/GribUIDialogBase.cpp:124
 msgid "Precipitation"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:41
+msgid "CloudCover"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:42
+msgid "AirTemperature"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:42
+msgid "SeaTemperature"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:43 src/GribUIDialogBase.cpp:106
+#: src/GribUIDialogBase.cpp:641
+msgid "Wind Gust"
 msgstr ""
 
 #: src/GribSettingsDialog.cpp:45
@@ -197,6 +246,25 @@ msgstr ""
 msgid "Sea Temperature"
 msgstr ""
 
+#: src/GribSettingsDialog.cpp:269
+msgid ""
+"This file contains data for particular times and you have chosen to display "
+"data for different times.\n"
+"Please consider that these values will be interpolated."
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:270
+msgid "Warning!"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:344
+msgid "Display Isobars"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:359
+msgid "Display Iso Temp. Lines"
+msgstr ""
+
 #: src/GribUIDialogBase.cpp:29
 msgid "Previous"
 msgstr ""
@@ -209,203 +277,351 @@ msgstr ""
 msgid "Now"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:47
+#: src/GribUIDialogBase.cpp:55
 msgid "Open File"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:52
+#: src/GribUIDialogBase.cpp:60
 msgid "Settings"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:57
+#: src/GribUIDialogBase.cpp:65
 msgid "Request"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:79
+#: src/GribUIDialogBase.cpp:73
 msgid "GRIB Data at Cursor"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:96
-msgid "Wind Scat"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:155 src/GribUIDialogBase.cpp:366
+#: src/GribUIDialogBase.cpp:133 src/GribUIDialogBase.cpp:351
 msgid "Cloud"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:164
+#: src/GribUIDialogBase.cpp:142
 msgid "Air Temp"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:173
+#: src/GribUIDialogBase.cpp:151
 msgid "Sea Temp"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:270
+#: src/GribUIDialogBase.cpp:245
 msgid "playback"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:275
-msgid "Interpolate between gribs"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:279
+#: src/GribUIDialogBase.cpp:252
 msgid "Loop Mode"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:282
-msgid "Slices per Update"
-msgstr ""
-
-#: src/GribUIDialogBase.cpp:289
+#: src/GribUIDialogBase.cpp:256
 msgid "Updates per Second"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:296
+#: src/GribUIDialogBase.cpp:263
+msgid "Interpolate between gribs"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:266
+msgid "Slices per Update"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:276
 msgid "Slices per hour"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:310
+#: src/GribUIDialogBase.cpp:290
 msgid "Display"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:320
+#: src/GribUIDialogBase.cpp:303
 msgid "Units"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:329
+#: src/GribUIDialogBase.cpp:314
 msgid "Barbed Arrows"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:332
+#: src/GribUIDialogBase.cpp:317
 msgid "Range"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:339
+#: src/GribUIDialogBase.cpp:324
 msgid "Iso Bars"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:342 src/GribUIDialogBase.cpp:375
+#: src/GribUIDialogBase.cpp:327 src/GribUIDialogBase.cpp:361
 msgid "Spacing"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:349
+#: src/GribUIDialogBase.cpp:334
 msgid "Direction Arrows"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:352
+#: src/GribUIDialogBase.cpp:337
 msgid "Size"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:359
+#: src/GribUIDialogBase.cpp:344
 msgid "OverlayMap"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:362
+#: src/GribUIDialogBase.cpp:347
 msgid "Colors"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:366
+#: src/GribUIDialogBase.cpp:351
 msgid "Generic"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:366
-msgid "Quickscat"
+#: src/GribUIDialogBase.cpp:351
+msgid "AirTemp"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:366
+#: src/GribUIDialogBase.cpp:351
 msgid "SeaTemp"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:366
+#: src/GribUIDialogBase.cpp:351
 msgid "Rain"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:372
+#: src/GribUIDialogBase.cpp:357
 msgid "Numbers"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:433
+#: src/GribUIDialogBase.cpp:377
+msgid "Overlay Transparency"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:455
 msgid "Use High Definition Graphics"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:436
+#: src/GribUIDialogBase.cpp:458
 msgid "Use Gradual Colors"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:439
+#: src/GribUIDialogBase.cpp:461
 msgid "Copy First Cumulative Missing Record"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:442
+#: src/GribUIDialogBase.cpp:464
 msgid "Copy Missing Wave Records"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:445
+#: src/GribUIDialogBase.cpp:467
+msgid "Load the More Recent File in Directory"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:467
+msgid "Load the Last Open File"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:469
+msgid "Load File Options"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:473
 msgid "Local Time"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:448
+#: src/GribUIDialogBase.cpp:473
 msgid "UTC"
 msgstr ""
 
-#: src/GribUIDialogBase.cpp:488
-msgid "MyLabel"
+#: src/GribUIDialogBase.cpp:475
+msgid "Time Options"
 msgstr ""
 
-#: src/smapi.cpp:120
-msgid "Mapi is not installed or invalid on this computer"
+#: src/GribUIDialogBase.cpp:516
+msgid "Profile"
 msgstr ""
 
-#: src/smapi.cpp:120
-msgid "Error"
+#: src/GribUIDialogBase.cpp:529
+msgid "Mail To "
 msgstr ""
 
-#: src/smapi.cpp:206
-msgid "OpenCpn failed to logon! Please verify your eMail environment"
+#: src/GribUIDialogBase.cpp:533
+msgid "Saildocs"
 msgstr ""
 
-#: src/smapi.cpp:207 src/smapi.cpp:469
-msgid "eMail error"
+#: src/GribUIDialogBase.cpp:533
+msgid "ZyGrib"
 msgstr ""
 
-#: src/smapi.cpp:469
-msgid "Failed to send mail message"
+#: src/GribUIDialogBase.cpp:540
+msgid "Forecast Model "
 msgstr ""
 
-#: src/GribUIDialogBase.h:108
+#: src/GribUIDialogBase.cpp:544
+msgid "GFS"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:544
+msgid "COAMPS"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:544
+msgid "RTOFS"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:550
+msgid "Your ZyGrib Login"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:557
+msgid "Your ZyGrib Code"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:573
+msgid "Resolution"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:583
+msgid "Deg"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:588
+msgid "Interval"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:592 src/GribUIDialogBase.cpp:608
+msgid "3"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:592 src/GribUIDialogBase.cpp:608
+msgid "6"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:592
+msgid "12"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:592
+msgid "24"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:599
+msgid "Hours"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:604
+msgid "Time Range"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:608
+msgid "4"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:608
+msgid "5"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:608
+msgid "7"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:608
+msgid "8"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:614
+msgid "Days"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:628
+msgid "Data available in the selected forecast model"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:644
+msgid "Rainfall"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:647
+msgid "Clouds Cover"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:650
+msgid "Air Temperature(2m)"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:653
+msgid "Sea Temperature(surf.)"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:656
+msgid "Current(Surf.)"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:659
+msgid "Waves"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:662
+msgid "WavesModel"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:666
+msgid "WW3-GLOBAL"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:666
+msgid "WW3-MEDIT"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:679
+msgid "Mail"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:704
+msgid "Estimated File Size"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:708
+msgid "size"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:712
+msgid " (Max size )"
+msgstr ""
+
+#: src/smapi.cpp:119
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr ""
+
+#: src/GribUIDialogBase.h:103
 msgid "GRIB Display Control"
 msgstr ""
 
-#: src/GribUIDialogBase.h:159
+#: src/GribUIDialogBase.h:158
 msgid "Grib Settings"
 msgstr ""
 
-#: src/GribUIDialogBase.h:184
+#: src/GribUIDialogBase.h:180
 msgid "Grib Preferences"
 msgstr ""
 
-#: src/GribUIDialogBase.h:209
-msgid "Request Pofile"
+#: src/GribUIDialogBase.h:232
+msgid "Write and send GRIB request setting"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:675
+#: src/GribOverlayFactory.cpp:685
 msgid "Building Isobar map"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:830 src/GribOverlayFactory.cpp:849
+#: src/GribOverlayFactory.cpp:840 src/GribOverlayFactory.cpp:859
 msgid "Please Zoom or Scale Out to view suppressed "
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:831 src/GribOverlayFactory.cpp:850
+#: src/GribOverlayFactory.cpp:841 src/GribOverlayFactory.cpp:860
 msgid " data"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:977
+#: src/GribOverlayFactory.cpp:987
 msgid " (Dup)"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:979
+#: src/GribOverlayFactory.cpp:989
 msgid "Ref : "
 msgstr ""
 
