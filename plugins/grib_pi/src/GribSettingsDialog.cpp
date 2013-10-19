@@ -51,7 +51,7 @@ enum SettingsDisplay {B_ARROWS, ISO_LINES, D_ARROWS, OVERLAY};
 
 wxString GribOverlaySettings::NameFromIndex(int index)
 {
-    return tname_from_index[index];
+    return wxGetTranslation(tname_from_index[index]);
 }
 
 void GribOverlaySettings::Read()
@@ -138,7 +138,7 @@ double GribOverlaySettings::CalibrationOffset(int settings)
         case FAHRENHEIT: return -273.15 + 32*5/9.0;
         } break;
     }
-        
+
     return 0;
 }
 
@@ -169,7 +169,7 @@ double GribOverlaySettings::CalibrationFactor(int settings)
         } break;
     case 5: return 1;
     }
-        
+
     return 1;
 }
 
@@ -252,7 +252,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
     }
 
     for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++)
-        m_cDataType->Append(tname_from_index[i]);
+        m_cDataType->Append( wxGetTranslation(tname_from_index[i]) );
 
     m_cDataType->SetSelection(m_lastdatatype);
     PopulateUnits(m_lastdatatype);
@@ -424,7 +424,7 @@ void GribSettingsDialog::OnIntepolateChange( wxCommandEvent& event )
         m_sSlicesPerUpdate->Show();
         m_tHourDivider->Show();
         m_sHourDivider->Show();
-    } else {                                        //hide no suiting parameters 
+    } else {                                        //hide no suiting parameters
         m_tSlicesPerUpdate->Hide();
         m_sSlicesPerUpdate->Hide();
         m_tHourDivider->Hide();
