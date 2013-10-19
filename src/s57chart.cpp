@@ -3887,8 +3887,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     Title.append( SENCfile.GetFullPath() );
 
     s_ProgDialog = new wxProgressDialog( Title, Message, m_nGeoRecords, NULL,
-            wxPD_AUTO_HIDE | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME
-                    | wxPD_SMOOTH | wxSTAY_ON_TOP );
+                                         wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
 
     //      Analyze Updates
     //      The OGR library will apply updates automatically, if enabled.
@@ -3936,7 +3935,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     //      Open the OGRS57DataSource
     //      This will ingest the .000 file from the working dir, and apply updates
 
-    int open_return = poS57DS->Open( m_tmpup_array->Item( 0 ).mb_str(), TRUE, &s_ProgressCallBack ); ///172
+    int open_return = poS57DS->Open( m_tmpup_array->Item( 0 ).mb_str(), TRUE, NULL/*&s_ProgressCallBack*/ ); ///172
     if( open_return == BAD_UPDATE )         ///172
     bbad_update = true;
 

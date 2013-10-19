@@ -2010,11 +2010,7 @@ void RouteManagerDialog::OnWptNewClick( wxCommandEvent &event )
     pMarkPropDialog->SetRoutePoint( pWP );
     pMarkPropDialog->UpdateProperties();
 
-    if( !pMarkPropDialog->IsShown() )
-        pMarkPropDialog->ShowModal();
-
-    // waypoint might have changed
-    UpdateWptListCtrl();
+    WptShowPropertiesDialog( pWP, GetParent() );
 }
 
 void RouteManagerDialog::OnWptPropertiesClick( wxCommandEvent &event )
