@@ -30,19 +30,19 @@
 static const wxString units0_names[] = {_("Knots"), _("m/s"), _("mph"), _("km/h"), wxEmptyString};
 static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), wxEmptyString};
 static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};
-static const wxString units3_names[] = {_("Celcius"), _("Fahrenheit"), wxEmptyString};
+static const wxString units3_names[] = {_("Celsius"), _("Fahrenheit"), wxEmptyString};
 static const wxString units4_names[] = {_("Millimeters"), _("Inches"), wxEmptyString};
 static const wxString units5_names[] = {_("Percentage"), wxEmptyString};
 static const wxString *unit_names[] = {units0_names, units1_names, units2_names,
                                        units3_names, units4_names, units5_names};
 
-static const wxString name_from_index[] = {_("Wind"), _("WindGust"), _("Pressure"),
-                                           _("Wave"), _("Current"),
-                                           _("Precipitation"), _("CloudCover"),
-                                           _("AirTemperature"), _("SeaTemperature")};
+static const wxString name_from_index[] = {_T("Wind"), _T("WindGust"), _T("Pressure"),
+                                           _T("Waves"), _T("Current"),
+                                           _T("Rainfall"), _T("CloudCover"),
+                                           _T("AirTemperature"), _T("SeaTemperature")};
 static const wxString tname_from_index[] = {_("Wind"), _("Wind Gust"),  _("Pressure"),
-                                            _("Wave"), _("Current"),
-                                            _("Precipitation"), _("Cloud Cover"),
+                                            _("Waves"), _("Current"),
+                                            _("Rainfall"), _("Cloud Cover"),
                                             _("Air Temperature"), _("Sea Temperature")};
 
 static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 0, 4, 5, 3, 3};
@@ -177,7 +177,7 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings)
 {
     switch(unittype[settings]) {
         case 0: switch(Settings[settings].m_Units) {
-            case KNOTS:  return _T("kt");
+            case KNOTS:  return _T("kts");
             case M_S:    return _T("m/s");
             case MPH:    return _T("mph");
             case KPH:    return _T("km/h");
@@ -390,7 +390,7 @@ void GribSettingsDialog::PopulateUnits(int settings)
 {
     m_cDataUnits->Clear();
     for(int i=0; !unit_names[unittype[m_lastdatatype]][i].empty(); i++)
-        m_cDataUnits->Append(unit_names[unittype[m_lastdatatype]][i]);
+        m_cDataUnits->Append( wxGetTranslation((unit_names[unittype[m_lastdatatype]][i])));
 }
 
 void GribSettingsDialog::OnDataTypeChoice( wxCommandEvent& event )

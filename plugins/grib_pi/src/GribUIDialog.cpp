@@ -688,6 +688,7 @@ void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 {
     GribOverlaySettings initSettings = m_OverlaySettings;
     GribSettingsDialog *dialog = new GribSettingsDialog( *this, m_OverlaySettings,  m_lastdatatype);
+    dialog->m_sButtonApply->SetLabel(_("Apply"));
     if(dialog->ShowModal() == wxID_OK)
     {
         dialog->WriteSettings();
@@ -1167,8 +1168,8 @@ void GribRequestSetting::InitRequestConfig()
 void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
 {
     //some useful  strings
-    const wxString res[][3] = { {_("0.5"), _("1"), _("2")},
-        {_("0.2"), _("0.8"), _("1.6")} };
+    const wxString res[][3] = { {_T("0.5"), _T("1"), _T("2")},
+        {_T("0.2"), _T("0.8"), _T("1.6")} };
 
     bool IsZYGRIB = false, IsGFS = false, IsRTOFS = false;
 

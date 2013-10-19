@@ -85,7 +85,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_tcWindDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcWindDirection, 0, wxALL, 1 );
 	
-	m_cbWave = new wxCheckBox( this, ID_CB_SIG_WAVE_HEIGHT, _("Wave"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cbWave = new wxCheckBox( this, ID_CB_SIG_WAVE_HEIGHT, _("Waves"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbWave, 0, wxALL, 5 );
 	
 	m_tcWaveHeight = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 60,-1 ), wxTE_READONLY );
