@@ -194,9 +194,12 @@ public:
           int lonmax, wxString fromadd, wxString toadd, wxString login, wxString code)
           : GribRequestSettingBase(parent)
       {m_RequestConfigBase = config; m_LatmaxBase = latmax;  m_LatminBase = latmin;  m_LonminBase = lonmin;  m_LonmaxBase = lonmax; 
-          m_pSenderAddress->ChangeValue(fromadd); m_MailToAddresses = toadd; m_pLogin->ChangeValue(login); m_pCode->ChangeValue(code); InitRequestConfig();}
+          m_pSenderAddress->ChangeValue(fromadd); m_MailToAddresses = toadd; m_pLogin->ChangeValue(login); m_pCode->ChangeValue(code);}
 
       ~GribRequestSetting() {}
+
+      void InitRequestConfig();
+
       wxString m_RequestConfigBase;
       wxString m_MailToAddresses;
       wxString m_MailFromAddress;
@@ -204,9 +207,8 @@ public:
       int m_LatminBase;
       int m_LonminBase;
       int m_LonmaxBase;
-      
+    
 private:
-      void InitRequestConfig();
       void ApplyRequestConfig( int sel1, int sel2 );
       wxString WriteMail();
       bool EstimateFileSize();

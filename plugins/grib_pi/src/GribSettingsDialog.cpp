@@ -43,7 +43,7 @@ static const wxString name_from_index[] = {_T("Wind"), _T("WindGust"), _T("Press
 static const wxString tname_from_index[] = {_("Wind"), _("Wind Gust"),  _("Pressure"),
                                             _("Waves"), _("Current"),
                                             _("Rainfall"), _("Cloud Cover"),
-                                            _("Air Temperature"), _("Sea Temperature")};
+                                            _("Air Temperature(2m)"), _("Sea Temperature(surf.)")};
 
 static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 0, 4, 5, 3, 3};
 
@@ -266,7 +266,7 @@ void GribSettingsDialog::WriteSettings()
     if(m_Settings.m_bInterpolate != m_cInterpolate->GetValue()) {
         m_Settings.m_bInterpolate = m_cInterpolate->GetValue();
         if(m_cInterpolate->IsChecked()) {
-            wxMessageDialog mes(this, _("This file contains data for particular times and you have chosen to display data for different times.\nPlease consider that these values will be interpolated."),
+            wxMessageDialog mes(this, _("This file contains data for particular time intervals but you have chosen to display different intervals.\nPlease consider that the values will be interpolated."),
                 _("Warning!"), wxOK);
             mes.ShowModal();
         }
