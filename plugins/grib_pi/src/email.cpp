@@ -95,7 +95,7 @@ wxEmail::Send(wxMailMessage& message,
         wxFileOutputStream stream(filename);
         if (stream.Ok())
         {
-            stream.Write(msg, msg.Length());
+            stream.Write(msg.ToUTF8(), msg.Length());
         }
         else
         {

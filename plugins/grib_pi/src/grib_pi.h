@@ -95,10 +95,12 @@ public:
       void OnGribDialogClose();
 
       void SetRequestConfig ( wxString conf ){ m_RequestConfig = conf; }
+      void SetMailFromAddress ( wxString add ){ m_bMailFromAddress = add; }
       void SetZyGribLogin ( wxString log ){ m_ZyGribLogin = log; }
       void SetZyGribCode ( wxString cod ){ m_ZyGribCode = cod; }
       wxString GetRequestConfig(){ return m_RequestConfig; }
-      wxString GetMailAddresses(){ return m_bMailAddresses; }
+      wxString GetMailToAddresses(){ return m_bMailToAddresses; }
+      wxString GetMailFromAddress(){ return m_bMailFromAddress; }
       wxString GetZyGribLogin() { return m_ZyGribLogin; }
       wxString GetZyGribCode() { return m_ZyGribCode; }
 
@@ -138,7 +140,8 @@ private:
       bool             m_bCopyMissWaveRec;
       int              m_bLoadLastOpenFile;
       wxString         m_RequestConfig;
-      wxString         m_bMailAddresses;
+      wxString         m_bMailToAddresses;
+      wxString         m_bMailFromAddress;
       wxString         m_ZyGribLogin;
       wxString         m_ZyGribCode;
       

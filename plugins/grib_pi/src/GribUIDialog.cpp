@@ -634,13 +634,30 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
      int lonmaxi =  (int) ceil(lonmax);
 
     GribRequestSetting *req_Dialog = new GribRequestSetting( this, pPlugIn->GetRequestConfig(), latmaxi, latmini, lonmini, lonmaxi,
-        pPlugIn->GetMailAddresses(), pPlugIn->GetZyGribLogin(), pPlugIn->GetZyGribCode() );
+        pPlugIn->GetMailFromAddress(), pPlugIn->GetMailToAddresses(), pPlugIn->GetZyGribLogin(), pPlugIn->GetZyGribCode() );
+    wxString s1[] = {_T("GFS"),_T("COMPS"),_T("RTOFS")};
+    for( int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
+        req_Dialog->m_pModel->Append( s1[i] );
+    wxString s2[] = {_T("Saildocs"),_T("zyGrib")};
+    for( int i= 0;  i<(sizeof(s2) / sizeof(wxString));i++)
+        req_Dialog->m_pMailTo->Append( s2[i] );
+    for( double i=0.5; i<3; i*=2)
+        req_Dialog->m_pResolution->Append( wxString::Format(_T("%0.1f"), i));
+    for( int i=3; i<25; i*=2)
+        req_Dialog->m_pInterval->Append( wxString::Format(_T("%d"), i));
+    for( int i=2; i<9; i++)
+        req_Dialog->m_pTimeRange->Append( wxString::Format(_T("%d"), i));
+    wxString s3[] = {_T("WW3-GLOBAL"),_T("WW3-MEDIT")};
+    for( int i= 0;  i<(sizeof(s3) / sizeof(wxString));i++)
+        req_Dialog->m_pWModel->Append( s3[i] );
     req_Dialog->m_rButtonYes->SetLabel(_("Send"));
     req_Dialog->m_rButtonApply->SetLabel(_("Save"));
     req_Dialog->m_tResUnit->SetLabel(wxString::Format( _T("\u00B0")));
-    req_Dialog->m_pLogin->SetToolTip(_("Login you use to connect to Zygrib's forum"));
-    req_Dialog->m_pCode->SetToolTip(_("Get your Code in Zygrib's forum ( This is not your password! )"));
-
+    req_Dialog->m_pSenderAddress->SetToolTip(_("Address used to send request eMail. (Mandatory for LINUX)"));
+    req_Dialog->m_pLogin->SetToolTip(_("This is your zyGrib's forum access Login"));
+    req_Dialog->m_pCode->SetToolTip(_("Get this Code in zyGrib's forum ( This is not your password! )"));
+    req_Dialog->InitRequestConfig();
+    req_Dialog->Fit();
     if( req_Dialog->ShowModal() == wxID_APPLY ) {
         //save all enabled parameters
         req_Dialog->m_RequestConfigBase.SetChar( 0, (char) ( req_Dialog->m_pMailTo->GetCurrentSelection() + '0' ) );
@@ -673,6 +690,7 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
             req_Dialog->m_pWindGust->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 14, 'X' )
                 : req_Dialog->m_RequestConfigBase.SetChar( 14, '.' );
 
+        pPlugIn->SetMailFromAddress(req_Dialog->m_pSenderAddress->GetValue());
         pPlugIn->SetZyGribLogin(req_Dialog->m_pLogin->GetValue());
         pPlugIn->SetZyGribCode(req_Dialog->m_pCode->GetValue());
 
@@ -686,6 +704,7 @@ void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 {
     GribOverlaySettings initSettings = m_OverlaySettings;
     GribSettingsDialog *dialog = new GribSettingsDialog( *this, m_OverlaySettings,  m_lastdatatype);
+    dialog->m_sButtonApply->SetLabel(_("Apply"));
     if(dialog->ShowModal() == wxID_OK)
     {
         dialog->WriteSettings();
@@ -1165,8 +1184,8 @@ void GribRequestSetting::InitRequestConfig()
 void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
 {
     //some useful  strings
-    const wxString res[][3] = { {_("0.5"), _("1"), _("2")},
-        {_("0.2"), _("0.8"), _("1.6")} };
+    const wxString res[][3] = { {_T("0.5"), _T("1"), _T("2")},
+        {_T("0.2"), _T("0.8"), _T("1.6")} };
 
     bool IsZYGRIB = false, IsGFS = false, IsRTOFS = false;
 
@@ -1416,7 +1435,7 @@ bool GribRequestSetting::EstimateFileSize()
 
 void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
 {
-    const wxString error[] = { _T("\n\n"), _("Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and read instructions..."),
+    const wxString error[] = { _T("\n\n"), _("Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."),
         _("The file size limit is overcome!\nYou can zoom in and/or change parameters...") };
 
     if( m_MailError_Nb ) {
@@ -1433,16 +1452,17 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
 
     wxMailMessage *message = new wxMailMessage(
     wxT("gribauto"),                                                                            //requested subject
-    (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailAddressBase.BeforeFirst(_T(';'))     //to request address
-        : m_MailAddressBase.AfterFirst(_T(';')),
-    WriteMail()                                                                                 //message image
+    (m_pMailTo->GetCurrentSelection() == SAILDOCS) ? m_MailToAddresses.BeforeFirst(_T(';'))     //to request address
+        : m_MailToAddresses.AfterFirst(_T(';')),
+    WriteMail(),                                                                                 //message image
+    m_pSenderAddress->GetValue()
     );
     wxEmail mail ;
     m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
     if(mail.Send( *message ) ) {
 #ifdef __WXMSW__
         m_MailImage->SetValue(
-            _("Your request is ready. An email is prepared in your email environment. \nYou have just to click 'send' to send it...\nSave or Cancel to finish...or new parameters for a new email ...") );
+            _("Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or new parameters for a new email ...") );
 #else
         m_MailImage->SetValue(
             _("Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or new parameters for a new email ..."));

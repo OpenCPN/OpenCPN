@@ -138,10 +138,6 @@ class GribSettingsDialogBase : public wxDialog
 		wxStaticLine* m_staticline3;
 		wxStaticText* m_staticText24;
 		wxSlider* m_sTransparency;
-		wxStdDialogButtonSizer* m_sButton;
-		wxButton* m_sButtonOK;
-		wxButton* m_sButtonApply;
-		wxButton* m_sButtonCancel;
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnIntepolateChange( wxCommandEvent& event ) { event.Skip(); }
@@ -154,6 +150,10 @@ class GribSettingsDialogBase : public wxDialog
 		wxCheckBox* m_cLoopMode;
 		wxCheckBox* m_cInterpolate;
 		wxSpinCtrl* m_sHourDivider;
+		wxStdDialogButtonSizer* m_sButton;
+		wxButton* m_sButtonOK;
+		wxButton* m_sButtonApply;
+		wxButton* m_sButtonCancel;
 		
 		GribSettingsDialogBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Grib Settings"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~GribSettingsDialogBase();
@@ -190,6 +190,11 @@ class GribRequestSettingBase : public wxDialog
 	private:
 	
 	protected:
+		wxStaticText* m_staticText25;
+		wxStaticLine* m_staticline4;
+		wxStaticLine* m_staticline5;
+		wxStaticLine* m_staticline6;
+		wxStaticLine* m_staticline7;
 		wxStaticText* m_tLogin;
 		wxStaticText* m_tCode;
 		wxStaticText* m_staticText21;
@@ -206,6 +211,7 @@ class GribRequestSettingBase : public wxDialog
 		
 	
 	public:
+		wxTextCtrl* m_pSenderAddress;
 		wxChoice* m_pMailTo;
 		wxChoice* m_pModel;
 		wxTextCtrl* m_pLogin;
@@ -229,7 +235,7 @@ class GribRequestSettingBase : public wxDialog
 		wxButton* m_rButtonApply;
 		wxButton* m_rButtonCancel;
 		
-		GribRequestSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Write and send GRIB request setting"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		GribRequestSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Write and send eMail request"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~GribRequestSettingBase();
 	
 };
