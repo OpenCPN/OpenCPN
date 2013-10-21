@@ -4176,6 +4176,7 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         dc.CalcBoundingBox( x, y );
         dc.CalcBoundingBox( x + size_x, y + size_y );
     } else {
+#ifdef ocpnUSE_GL
         /* opengl version */
         glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
@@ -4190,6 +4191,7 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         glEnd();
 
         glDisable( GL_BLEND );
+#endif        
     }
 }
 

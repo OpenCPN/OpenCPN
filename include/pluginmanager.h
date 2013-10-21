@@ -30,7 +30,10 @@
 #include <wx/wx.h>
 #include <wx/dynarray.h>
 #include <wx/dynlib.h>
+
+#ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
+#endif
 
 #include "ocpn_plugin.h"
 #include "chart1.h"                 // for MyFrame

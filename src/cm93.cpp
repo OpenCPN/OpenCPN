@@ -3678,7 +3678,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
 
                   if(1)
                   {
-                  //    This will be a deferred tesselation.....
+                //    This will be a deferred tesselation.....
 
                         // Set up the conversion factors for use in the tesselator
                         xgeom->x_rate   = m_CIB.transform_x_rate;

@@ -1017,6 +1017,10 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     VPoint.Invalidate();
 
+    m_glcc = NULL;
+    m_pGLcontext = NULL;
+
+#ifdef ocpnUSE_GL    
     if ( !g_bdisable_opengl )
     {
         wxLogMessage( _T("Creating glChartCanvas") );
@@ -1029,9 +1033,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         m_pGLcontext = m_glcc->GetContext();
     #endif
     }
-    else
-        m_glcc = NULL;
-    
+#endif
 
     singleClickEventIsValid = false;
 
@@ -1470,8 +1472,11 @@ ChartCanvas::~ChartCanvas()
     delete m_pos_image_user_grey_dusk;
     delete m_pos_image_user_grey_night;
     delete undo;
+#ifdef ocpnUSE_GL
     if( !g_bdisable_opengl )
         delete m_glcc;
+#endif
+        
 }
 
 int ChartCanvas::GetCanvasChartNativeScale()
@@ -1543,8 +1548,10 @@ int ChartCanvas::FindClosestCanvasChartdbIndex( int scale )
 void ChartCanvas::EnablePaint(bool b_enable)
 { 
     m_b_paint_enable = b_enable;
+#ifdef ocpnUSE_GL
     if(m_glcc)
         m_glcc->EnablePaint(b_enable);
+#endif    
 }
 
 bool ChartCanvas::IsQuiltDelta()
@@ -2145,8 +2152,10 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     CreateDepthUnitEmbossMaps( cs );
     CreateOZEmbossMapData( cs );
 
-    if( g_bopengl && m_glcc ) m_glcc->ClearAllRasterTextures();
-
+#ifdef ocpnUSE_GL
+    if( g_bopengl && m_glcc )
+        m_glcc->ClearAllRasterTextures();
+#endif
     SetbTCUpdate( true );                        // force re-render of tide/current locators
 
     ReloadVP();
@@ -2840,11 +2849,15 @@ void ChartCanvas::ReloadVP( bool b_adjust )
 
 void ChartCanvas::LoadVP( ViewPort &vp, bool b_adjust )
 {
+#ifdef ocpnUSE_GL
     if( g_bopengl ) {
         m_glcc->Invalidate();
         if( m_glcc->GetSize().x != VPoint.pix_width || m_glcc->GetSize().y != VPoint.pix_height ) m_glcc->SetSize(
                 VPoint.pix_width, VPoint.pix_height );
-    } else {
+    }
+    else
+#endif        
+    {
         m_cache_vp.Invalidate();
         m_bm_cache_vp.Invalidate();
     }
@@ -2917,7 +2930,10 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     if( last_vp.view_scale_ppm != scale_ppm ) {
         m_cache_vp.Invalidate();
 
-        if( g_bopengl ) m_glcc->Invalidate();
+#ifdef ocpnUSE_GL        
+        if( g_bopengl )
+            m_glcc->Invalidate();
+#endif        
     }
 
     //  A preliminary value, may be tweaked below
@@ -3058,8 +3074,10 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
                 if(m_pQuilt->GetXStackHash() != hash1) {
                     m_bm_cache_vp.Invalidate();
+#ifdef ocpnUSE_GL                    
                     if(g_bopengl)
                         m_glcc->Invalidate();
+#endif                    
                 }
 
                 ChartData->UnLockCache();
@@ -5019,9 +5037,11 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     //  Rescale again, to capture all the changes for new canvas size
     SetVPScale( GetVPScale() );
 
+#ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc ) {
         m_glcc->OnSize( event );
     }
+#endif    
     //  Invalidate the whole window
     ReloadVP();
 }
@@ -8040,7 +8060,10 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 
 bool ChartCanvas::PurgeGLCanvasChartCache( ChartBase *pc )
 {
-    if( g_bopengl && m_glcc ) m_glcc->PurgeChartTextures( pc );
+#ifdef ocpnUSE_GL
+    if( g_bopengl && m_glcc )
+        m_glcc->PurgeChartTextures( pc );
+#endif    
     return true;
 }
 
@@ -8199,6 +8222,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     wxPaintDC dc( this );
 
+#ifdef ocpnUSE_GL    
     if( !g_bdisable_opengl )
         m_glcc->Show( g_bopengl );
 
@@ -8211,6 +8235,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
         return;
     }
+#endif
 
     if( ( GetVP().pix_width == 0 ) || ( GetVP().pix_height == 0 ) ) return;
 
@@ -8791,8 +8816,11 @@ int ChartCanvas::GetNextContextMenuId()
 
 bool ChartCanvas::SetCursor( const wxCursor &c )
 {
-    if( g_bopengl ) return m_glcc->SetCursor( c );
+#ifdef ocpnUSE_GL
+    if( g_bopengl )
+        return m_glcc->SetCursor( c );
     else
+#endif        
         return wxWindow::SetCursor( c );
 }
 
@@ -8809,7 +8837,7 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
     if( (m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()) || (m_pAISRolloverWin && m_pAISRolloverWin->IsActive()) )
         m_RolloverPopupTimer.Start( 500, wxTIMER_ONE_SHOT ); 
          
-
+#ifdef ocpnUSE_GL
     if( g_bopengl ) {
 
         m_glcc->Refresh( eraseBackground, NULL ); // We always are going to render the entire screen anyway, so make
@@ -8831,6 +8859,7 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
         }
 
     } else
+#endif        
         wxWindow::Refresh( eraseBackground, rect );
 
 }
@@ -8838,8 +8867,9 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
 void ChartCanvas::Update()
 {
     if( g_bopengl ) {
+#ifdef ocpnUSE_GL        
         m_glcc->Update();
-//          m_glcc->render(); /* for some reason repaint not triggered */
+#endif
     } else
         wxWindow::Update();
 }
@@ -8899,6 +8929,9 @@ void ChartCanvas::EmbossCanvas( ocpnDC &dc, emboss_data *pemboss, int x, int y )
 
         result_dc.SelectObject( wxNullBitmap );
     }
+
+#ifdef ocpnUSE_GL
+    
 #ifndef __WXMSW__
     else if(0/*b_useTexRect*/)
     {
@@ -9010,6 +9043,7 @@ void ChartCanvas::EmbossCanvas( ocpnDC &dc, emboss_data *pemboss, int x, int y )
         glDisable( GL_BLEND );
         glDisable( GL_TEXTURE_2D );
     }
+#endif    
 }
 
 void ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )

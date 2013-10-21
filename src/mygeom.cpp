@@ -42,6 +42,8 @@
 
 #include "triangulate.h"
 
+#ifdef ocpnUSE_GL
+
 #ifdef USE_GLU_TESS
 #ifdef __WXOSX__
 #include "GL/gl.h"
@@ -49,6 +51,8 @@
 #else
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
+
 #endif
 
 #ifdef __WXMSW__
@@ -150,7 +154,6 @@ TriPrim               *s_pTPG_Last;
 static GLUtesselator  *GLUtessobj;
 static double         s_ref_lat;
 static double         s_ref_lon;
-static bool           s_bSENC_SM;
 
 static bool           s_bmerc_transform;
 static double         s_transform_x_rate;
@@ -162,6 +165,7 @@ wxArrayPtrVoid        *s_pCombineVertexArray;
 static const double   CM93_semimajor_axis_meters = 6378388.0;            // CM93 semimajor axis
 
 #endif
+static bool           s_bSENC_SM;
 
 static int            tess_orient;
 static wxMemoryOutputStream *ostream1;
@@ -294,15 +298,19 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
     m_ref_lat = ref_lat;
     m_ref_lon = ref_lon;
 
-    if(bUseInternalTess)
+    if(bUseInternalTess){
+        printf("internal tess\n");
         ErrorCode = PolyTessGeoTri(poly, bSENC_SM, ref_lat, ref_lon);
-    else
+    }
+    else {
 #ifdef USE_GLU_TESS
-        ErrorCode = PolyTessGeoGL(poly, bSENC_SM, ref_lat, ref_lon);
+printf("USE_GLU_TESS tess\n");
+ErrorCode = PolyTessGeoGL(poly, bSENC_SM, ref_lat, ref_lon);
 #else
-        ErrorCode = PolyTessGeoTri(poly, bSENC_SM, ref_lat, ref_lon);
+printf("PolyTessGeoTri tess\n");
+ErrorCode = PolyTessGeoTri(poly, bSENC_SM, ref_lat, ref_lon);
 #endif
-
+    }
 }
 
 
@@ -1121,6 +1129,15 @@ PolyTessGeo::~PolyTessGeo()
 
 }
 
+int PolyTessGeo::BuildDeferredTess(void)
+{
+#ifdef USE_GLU_TESS
+    return BuildTessGL();
+#else
+    return 0;
+#endif
+}
+
 
 
 #ifdef USE_GLU_TESS
@@ -1146,6 +1163,8 @@ void __CALL_CONVENTION combineCallback(GLdouble coords[3],
 //      Using OpenGL/GLU tesselator
 int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon)
 {
+#ifdef ocpnUSE_GL
+    
     int iir, ip;
     int *cntr;
     GLdouble *geoPt;
@@ -1538,12 +1557,15 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
 
     m_bOK = true;
 
+#endif          //    #ifdef ocpnUSE_GL
+    
     return 0;
 }
 
-
 int PolyTessGeo::BuildTessGL(void)
 {
+#ifdef ocpnUSE_GL
+    
       int iir, ip;
       int *cntr;
       GLdouble *geoPt;
@@ -1918,6 +1940,8 @@ int PolyTessGeo::BuildTessGL(void)
 
       m_bOK = true;
 
+#endif          //#ifdef ocpnUSE_GL
+      
       return 0;
 }
 

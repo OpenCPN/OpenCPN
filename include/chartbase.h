@@ -31,12 +31,15 @@
 #include "bbox.h"
 #include "ocpn_types.h"
 
+#ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
+#endif
 
 //----------------------------------------------------------------------------
 //  Forward Declarations
 //----------------------------------------------------------------------------
 class ViewPort;
+class wxGLContext;
 
 //----------------------------------------------------------------------------
 // Constants. etc

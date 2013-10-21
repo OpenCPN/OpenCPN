@@ -37,7 +37,12 @@ WX_DEFINE_ARRAY_PTR(S57attVal *, wxArrayOfS57attVal);
 WX_DEFINE_ARRAY( S57attVal *, wxArrayOfS57attVal );
 #endif
 
+class wxGLContext;
+#ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
+#endif
+
+
 #include <wx/dcgraph.h>         // supplemental, for Mac
 
 //    wxWindows Hash Map Declarations
@@ -55,6 +60,7 @@ WX_DECLARE_STRING_HASH_MAP( int, CARC_Hash );
 class ViewPort;
 class PixelCache;
 
+#ifdef ocpnUSE_GL
 /* Copyright (c) Mark J. Kilgard, 1997. */
 
 /* This program is freely distributable without licensing fees  and is
@@ -129,6 +135,11 @@ extern void txfRenderString( TexFont * txf, char *string, int len );
 extern void txfRenderFancyString( TexFont * txf, char *string, int len );
 
 #endif /* __TEXFONT_H__ */
+
+#else
+typedef struct {} TexFont;
+
+#endif
 
 class RenderFromHPGL;
 
@@ -210,12 +221,6 @@ public:
     int RenderObjectToDC( wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp );
     int RenderAreaToDC( wxDC *pdc, ObjRazRules *rzRules, ViewPort *vp, render_canvas_parms *pb_spec );
 
-    //    For OpenGL
-    int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
-        ViewPort *vp, wxRect &render_rect );
-    int RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
-        ViewPort *vp, wxRect &render_rect );
-
     // Accessors
     bool GetShowSoundings() { return m_bShowSoundg; }
     void SetShowSoundings( bool f ) { m_bShowSoundg = f; GenerateStateHash(); }
@@ -241,6 +246,14 @@ public:
     void DestroyPatternRuleNode( Rule *pR );
     void DestroyRuleNode( Rule *pR );
 
+//#ifdef ocpnUSE_GL
+    //    For OpenGL
+    int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
+                          ViewPort *vp, wxRect &render_rect );
+    int RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
+                        ViewPort *vp, wxRect &render_rect );
+//#endif
+    
     //Todo accessors
     DisCat m_nDisplayCategory;
     LUPname m_nSymbolStyle;
@@ -366,7 +379,10 @@ private:
     bool useLegacyRaster;
 
     wxDC *m_pdc; // The current DC
+    
+//#ifdef ocpnUSE_GL
     wxGLContext *m_glcc;
+//#endif
 
     int *ledge;
     int *redge;
@@ -385,12 +401,13 @@ private:
     wxRect m_render_rect;
 
     bool m_txf_ready;
-    TexFont *m_txf;
     int m_txf_avg_char_width;
     int m_txf_avg_char_height;
     CARC_Hash m_CARC_hashmap;
     RenderFromHPGL* HPGL;
 
+    TexFont *m_txf;
+    
 };
 
 

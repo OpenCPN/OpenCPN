@@ -51,6 +51,7 @@
 #include "georef.h"
 #include "routemanagerdialog.h"
 #include "NavObjectCollection.h"
+#include "OCPNRegion.h"
 
 extern MyConfig        *pConfig;
 extern wxString        g_SData_Locn;

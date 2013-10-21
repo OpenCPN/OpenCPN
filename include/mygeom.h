@@ -181,7 +181,7 @@ class PolyTessGeo
 
         bool IsOk(){ return m_bOK;}
 
-        int BuildTessGL(void);
+        int BuildDeferredTess(void);
 
         int Write_PolyTriGroup( FILE *ofs);
         int Write_PolyTriGroup( wxOutputStream &ostream);
@@ -196,6 +196,7 @@ class PolyTessGeo
 
 
     private:
+        int BuildTessGL(void);
         int PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
         int PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon);
         int my_bufgets( char *buf, int buf_len_max );

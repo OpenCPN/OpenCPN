@@ -130,7 +130,7 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
 SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 
-FIND_PACKAGE(OpenGL REQUIRED)
+FIND_PACKAGE(OpenGL)
 IF(OPENGL_GLU_FOUND)
 
     SET(wxWidgets_USE_LIBS ${wxWidgets_USE_LIBS} gl )
@@ -139,6 +139,8 @@ IF(OPENGL_GLU_FOUND)
     MESSAGE (STATUS "Found OpenGL..." )
     MESSAGE (STATUS "    Lib: " ${OPENGL_LIBRARIES})
     MESSAGE (STATUS "    Include: " ${OPENGL_INCLUDE_DIR})
+    ADD_DEFINITIONS(-DocpnUSE_GL)
+    ADD_DEFINITIONS(-DUSE_GLU_TESS)
 
 ELSE(OPENGL_GLU_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
@@ -201,7 +203,6 @@ IF(WIN32)
 ENDIF(WIN32)
 
 # Add some definitions to satisfy MS
-ADD_DEFINITIONS(-DUSE_GLU_TESS)
 IF(WIN32)
     ADD_DEFINITIONS(-D__MSVC__)
     ADD_DEFINITIONS(-D_CRT_NONSTDC_NO_DEPRECATE -D_CRT_SECURE_NO_DEPRECATE)
@@ -362,9 +363,7 @@ SET(HDRS
 		include/MarkIcon.h
 		include/SendToGpsDlg.h
 		include/TCWin.h
-		include/glTextureDescriptor.h
 		include/tide_time.h
-		include/glChartCanvas.h
 		include/ChInfoWin.h
 		include/ocpCursor.h
 		include/Quilt.h
@@ -449,8 +448,6 @@ SET(SRCS
 		src/GoToPositionDialog.cpp
 		src/CM93DSlide.cpp
 		src/RolloverWin.cpp
-		src/glChartCanvas.cpp
-		src/glTextureDescriptor.cpp
 		src/ChInfoWin.cpp
 		src/AISTargetQueryDialog.cpp
 		src/AIS_Bitstring.cpp
@@ -536,6 +533,16 @@ SET(SRC_TINYXML
             src/tinyxmlparser.cpp
             include/tinyxml.h
       )
+
+IF(OPENGL_GLU_FOUND)
+  SET(HDRS ${HDRS} include/glChartCanvas.h
+                   include/glTextureDescriptor.h
+        )
+  SET(SRCS ${SRCS} src/glChartCanvas.cpp
+                   src/glTextureDescriptor.cpp
+        )
+ENDIF(OPENGL_GLU_FOUND)
+
 
 IF(TINYXML_FOUND)
     message (STATUS "Building with tinyxml includes")
@@ -1251,7 +1258,9 @@ IF(WIN32 AND NOT UNIX)
  configure_file("${CMAKE_SOURCE_DIR}/buildwin/NSIS_Unicode/Language files/Langstrings_TURKISH.nsh.in" "${CMAKE_SOURCE_DIR}//buildwin/NSIS_Unicode/Include/Langstrings_TURKISH.nsh" @ONLY)
 ENDIF(WIN32 AND NOT UNIX)
 
-configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h) #Gunther
+IF(NOT SKIP_VERSION_CONFIG)
+   configure_file(version.h.in ${CMAKE_SOURCE_DIR}/include/version.h)
+ENDIF(NOT SKIP_VERSION_CONFIG)
 
 # this dummy target is necessary to make sure the ADDITIONAL_MAKE_CLEAN_FILES directive is executed.
 # apparently, the base CMakeLists.txt file must have "some" target to activate all the clean steps.
