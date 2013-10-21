@@ -645,7 +645,7 @@ static int lang_list[] = {
             wxLANGUAGE_ARABIC_SUDAN,
             wxLANGUAGE_ARABIC_SYRIA,
             wxLANGUAGE_ARABIC_TUNISIA,
-            wxLANGUAGE_ARABIC_UAE,
+//            wxLANGUAGE_ARABIC_UAE,
             wxLANGUAGE_ARABIC_YEMEN,
             wxLANGUAGE_ARMENIAN,
             wxLANGUAGE_ASSAMESE,
