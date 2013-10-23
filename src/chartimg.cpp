@@ -727,6 +727,8 @@ found_uclc_file:
       if(!SetMinMax())
             return INIT_FAIL_REMOVE;          // have to bail here
 
+      AnalyzeSkew();
+      
       if(init_flags == HEADER_ONLY)
             return INIT_OK;
 
@@ -1362,6 +1364,8 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       if(!SetMinMax())
             return INIT_FAIL_REMOVE;          // have to bail here
 
+      AnalyzeSkew();
+      
       if(init_flags == HEADER_ONLY)
             return INIT_OK;
 
@@ -4339,6 +4343,110 @@ PaletteDir ChartBaseBSB::GetPaletteDir(void)
              return PaletteRev;
  }
 
+bool ChartBaseBSB::AnalyzeSkew(void)
+{
+    double lonmin = 1000;
+    double lonmax = -1000;
+    double latmin = 90.;
+    double latmax = -90.;
+    
+    int plonmin = 100000;
+    int plonmax = 0;
+    int platmin = 100000;
+    int platmax = 0;
+    int nlonmin, nlonmax, nlatmax, nlatmin;
+    nlonmin =0; nlonmax=0; nlatmax=0; nlatmin=0;
+    
+    if(0 == nRefpoint)                  // bad chart georef...
+            return (1);
+    
+    for(int n=0 ; n<nRefpoint ; n++)
+    {
+        //    Longitude
+        if(pRefTable[n].lonr > lonmax)
+        {
+            lonmax = pRefTable[n].lonr;
+            plonmax = (int)pRefTable[n].xr;
+            nlonmax = n;
+        }
+        if(pRefTable[n].lonr < lonmin)
+        {
+            lonmin = pRefTable[n].lonr;
+            plonmin = (int)pRefTable[n].xr;
+            nlonmin = n;
+        }
+        
+        //    Latitude
+        if(pRefTable[n].latr < latmin)
+        {
+            latmin = pRefTable[n].latr;
+            platmin = (int)pRefTable[n].yr;
+            nlatmin = n;
+        }
+        if(pRefTable[n].latr > latmax)
+        {
+            latmax = pRefTable[n].latr;
+            platmax = (int)pRefTable[n].yr;
+            nlatmax = n;
+        }
+    }
+
+    //  Find the two REF points that are farthest apart
+    double dist_max = 0.;
+    int imax = 0;
+    int jmax = 0;
+    
+    for(int i=0 ; i<nRefpoint ; i++)
+    {
+        for(int j=i+1 ; j < nRefpoint ; j++)
+        {
+            double dx = pRefTable[i].xr - pRefTable[j].xr;
+            double dy = pRefTable[i].yr - pRefTable[j].yr;
+            double dist = (dx * dx) + (dy * dy);
+            if(dist > dist_max)
+            {
+                dist_max = dist;
+                imax = i;
+                jmax = j;
+            }
+        }
+    }
+    
+    if(m_projection == PROJECTION_MERCATOR)
+    {
+        double easting0, easting1, northing0, northing1;
+        //  Get the Merc projection of the two REF points
+        toSM_ECC(pRefTable[imax].latr, pRefTable[imax].lonr, m_proj_lat, m_proj_lon, &easting0, &northing0);
+        toSM_ECC(pRefTable[jmax].latr, pRefTable[jmax].lonr, m_proj_lat, m_proj_lon, &easting1, &northing1);
+     
+        double skew_proj = atan2( (easting1-easting0), (northing1 - northing0) ) * 180./PI;
+        double skew_points = atan2( (pRefTable[jmax].yr - pRefTable[imax].yr), (pRefTable[jmax].xr - pRefTable[imax].xr) ) * 180./PI; 
+        
+        double apparent_skew =  skew_points - skew_proj + 90.;
+        if(apparent_skew < 0.)
+            apparent_skew += 360;
+        if(apparent_skew > 360.)
+            apparent_skew -= 360;
+        
+        
+        if(fabs( apparent_skew - m_Chart_Skew ) > 2) {           // measured skew is more than 2 degrees 
+           m_Chart_Skew = apparent_skew;                         // different from stated skew
+           
+           wxString msg = _T("   Warning: Skew override on chart ");
+           msg.Append(m_FullPath);
+           wxString msg1;
+           msg1.Printf(_T(" is %5g degrees"), apparent_skew);
+           msg.Append(msg1);
+           
+           wxLogMessage(msg);
+           
+           return false;
+           
+        }
+    }    
+    
+    return true;
+}
 
 
 int   ChartBaseBSB::AnalyzeRefpoints(void)
@@ -4689,8 +4797,31 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
        else
              m_ppm_avg = 1.0;                      // absolute fallback to prevent div-0 errors
 
-
-
+#if 0
+       // Alternate Skew verification
+       ViewPort vps;
+       vps.clat = pRefTable[0].latr;
+       vps.clon = pRefTable[0].lonr;
+       vps.view_scale_ppm = m_ppm_avg;
+       vps.skew = 0.;
+       vps.pix_width = 1000;
+       vps.pix_height = 1000;
+       
+       int x1, y1, x2, y2;
+       latlong_to_pix_vp(latmin, (lonmax + lonmin)/2., x1, y1, vps);
+       latlong_to_pix_vp(latmax, (lonmax + lonmin)/2., x2, y2, vps);
+      
+       double apparent_skew = (atan2( (y2-y1), (x2-x1) ) * 180./PI) + 90.;
+       if(apparent_skew < 0.)
+           apparent_skew += 360;
+       if(apparent_skew > 360.)
+           apparent_skew -= 360;
+       
+       if(fabs( apparent_skew - m_Chart_Skew ) > 2) {           // measured skew is more than 2 degress different
+           m_Chart_Skew = apparent_skew;
+       }
+#endif       
+       
         // Do a last little test using a synthetic ViewPort of nominal size.....
         ViewPort vp;
         vp.clat = pRefTable[0].latr;

@@ -216,6 +216,8 @@ protected:
       virtual int BSBScanScanline(wxInputStream *pinStream);
       virtual int ReadBSBHdrLine( wxFileInputStream*, char *, int );
       virtual int AnalyzeRefpoints(void);
+      virtual bool AnalyzeSkew(void);
+      
       virtual bool SetMinMax(void);
 
       InitReturn PreInit( const wxString& name, ChartInitFlag init_flags, ColorScheme cs );
