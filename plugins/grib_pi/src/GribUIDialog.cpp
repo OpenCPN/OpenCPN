@@ -176,7 +176,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_sTimeline->SetValue(0);
 
     wxFileName fn( m_file_name );
-    this->SetTitle( fn.GetFullName() );
+    wxString title( fn.GetFullName() );
 
     if( m_bGRIBActiveFile ) {
         if( m_bGRIBActiveFile->IsOK() ) {
@@ -184,8 +184,10 @@ void GRIBUIDialog::OpenFile(bool newestFile)
             if( rsa->GetCount() == 0 ) {
                 m_bGRIBActiveFile = NULL;
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Error:  No valid data in this file!") );
-            } else
+            } else {
                 PopulateComboDataList( 0 );
+                title.append( _T("(") + TToString( m_bGRIBActiveFile->GetRefDateTime(), pPlugIn->GetTimeZone()) + _T(")"));
+            }
         } else {
             if( fn.IsDir() ) {
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning:  Empty directory!") );
@@ -194,6 +196,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
             else
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
 	}
+        this->SetTitle(title);
         SetFactoryOptions();
         DisplayDataGRS();
         PopulateTrackingControls();
@@ -391,6 +394,7 @@ void GRIBUIDialog::PopulateTrackingControls( void )
 
     m_fgTrackingControls->Clear();
     m_fgTrackingControls->SetCols(9);
+    this->Fit();
 
     GribRecord **RecordArray;
     if( m_pTimelineSet )
@@ -1139,6 +1143,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
             }
         }
     }
+    m_pRefDateTime = pRec->getRecordRefDate();
 }
 
 GRIBFile::~GRIBFile()

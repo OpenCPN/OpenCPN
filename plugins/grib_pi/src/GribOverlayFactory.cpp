@@ -83,7 +83,7 @@ static wxString MToString( int DataCenterModel )
     default : return  _T("OTHER_DATA_CENTER");
     }
 }
-
+#if 0
 static wxString TToString( const wxDateTime date_time, const int time_zone )
 {  
     wxDateTime t( date_time );
@@ -95,7 +95,7 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
         default: return t.Format( _T(" %a %d-%b-%Y %H:%M  "), wxDateTime::UTC ) + _T("UTC");
     }
 }
-
+#endif
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Factory Implementation
 //----------------------------------------------------------------------------------------------------------
@@ -192,6 +192,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
         DrawMessageWindow( ( m_Message ), vp->pix_width, vp->pix_height, m_dFont_war );
         return false;
     }
+    m_Message_Hiden.Empty();
 
     //    If the scale has changed, clear out the cached bitmaps
     if( vp->view_scale_ppm != m_last_vp_scale )
@@ -225,7 +226,8 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
             RenderGribNumbers( i, pGR, vp );
         }
     }
-
+    if( !m_Message_Hiden.IsEmpty() )
+        DrawMessageWindow( m_Message_Hiden , vp->pix_width, vp->pix_height, m_dFont_map );
     return true;
 }
 
@@ -837,9 +839,10 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                 DrawGLTexture( pGO->m_iTexture, pGO->m_width, pGO->m_height,
                                porg.x, porg.y, grib_pixel_size );
             else
-                DrawMessageWindow( _("Please Zoom or Scale Out to view invisible overlay: ")
-                                   + GribOverlaySettings::NameFromIndex(settings),
-                                   vp->pix_width, vp->pix_height, m_dFont_map );
+                m_Message_Hiden.IsEmpty()?
+                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays: "))
+                    .Append(GribOverlaySettings::NameFromIndex(settings))
+                    : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
         }
         else        //DC mode
         {
@@ -856,9 +859,10 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
             if( pGO->m_pDCBitmap )
                 m_pdc->DrawBitmap( *( pGO->m_pDCBitmap ), porg.x, porg.y, true );
             else
-                DrawMessageWindow( _("Please Zoom or Scale Out to view invisible overlay: ")
-                                   + GribOverlaySettings::NameFromIndex(settings),
-                                   vp->pix_width, vp->pix_height, m_dFont_map );
+                m_Message_Hiden.IsEmpty()?
+                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays: "))
+                    .Append(GribOverlaySettings::NameFromIndex(settings))
+                    : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
         }
     }
 
@@ -979,7 +983,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 
     delete pGRM;
 }
-
+#if 0
 wxString GRIBOverlayFactory::GetRefString( GribRecord *rec, int map )
 {
     wxString string = GribOverlaySettings::NameFromIndex(map);
@@ -992,7 +996,7 @@ wxString GRIBOverlayFactory::GetRefString( GribRecord *rec, int map )
     
     return string;
 }
-
+#endif
 void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont)
 {
     if(msg.empty())

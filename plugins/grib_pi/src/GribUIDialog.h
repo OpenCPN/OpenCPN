@@ -170,6 +170,10 @@ public:
     {
         return &m_GribRecordSetArray;
     }
+    time_t GetRefDateTime( void )
+    {
+        return m_pRefDateTime;
+    }
 
 private:
 
@@ -177,6 +181,7 @@ private:
     wxString m_last_message;
     wxString m_FileName;
     GribReader *m_pGribReader;
+    time_t m_pRefDateTime;
 
     //    An array of GribRecordSets found in this GRIB file
     ArrayOfGribRecordSets m_GribRecordSetArray;
