@@ -2264,7 +2264,22 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
                     m_pAISRolloverWin->IsActive( false );
                     b_need_refresh = true;
                 }
+
+                //      Sometimes the mouse moves fast enough to get over a new AIS target before
+                //      the one-shot has fired to remove the old target.
+                //      Result:  wrong target data is shown.
+                //      Detect this case,close the existing rollover ASAP, and restart the timer.
+                if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() &&
+                    m_AISRollover_MMSI && (m_AISRollover_MMSI != FoundAIS_MMSI) ){
+                    m_RolloverPopupTimer.Start( 50, wxTIMER_ONE_SHOT );
+                    m_pAISRolloverWin->IsActive( false );
+                    m_AISRollover_MMSI = 0;
+                    Refresh();
+                    return;
+                }
                 
+                m_AISRollover_MMSI = FoundAIS_MMSI;
+                   
                 if( !m_pAISRolloverWin->IsActive() ) {
                     
                     wxString s = ptarget->GetRolloverString();
@@ -2281,6 +2296,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
             }
         }
         else {
+            m_AISRollover_MMSI = 0;
             showAISRollover = false;
         }
     }
@@ -2288,6 +2304,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
     //  Maybe turn the rollover off
     if( m_pAISRolloverWin && m_pAISRolloverWin->IsActive() && !showAISRollover ) {
         m_pAISRolloverWin->IsActive( false );
+        m_AISRollover_MMSI = 0;
         b_need_refresh = true;
     }
     
