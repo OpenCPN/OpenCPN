@@ -460,12 +460,12 @@ public:
 extern int OCPNMessageBox(wxWindow *parent,
                           const wxString& message,
                           const wxString& caption = _T("Message"),
-                          int style = wxOK, int x = -1, int y = -1);
+                          int style = wxOK,  int timout_sec = -1, int x = -1, int y = -1);
 
 
 //----------------------------------------------------------------------------
 // Generic Auto Timed Window
-// Belongs to the creator, not deleted automatically on applicaiton close
+// Belongs to the creator, not deleted automatically on application close
 //----------------------------------------------------------------------------
 
 class TimedPopupWin: public wxWindow
