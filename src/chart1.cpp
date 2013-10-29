@@ -1153,7 +1153,7 @@ bool MyApp::OnInit()
     //  Constrain the size of the log file
     wxString large_log_message;
     if( ::wxFileExists( glog_file ) ) {
-        if( wxFileName::GetSize( glog_file ) > 1 /*1000000*/ ) {
+        if( wxFileName::GetSize( glog_file ) > 1000000 ) {
             wxString oldlog = glog_file;                      // pjotrc 2010.02.09
             oldlog.Append( _T(".log") );
             //  Defer the showing of this messagebox until the system locale is established.
