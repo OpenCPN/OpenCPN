@@ -2231,7 +2231,7 @@ void ChartCanvas::ShowBrightnessLevelTimedPopup( int brightness, int min, int ma
     
     m_pBrightPopup->SetBitmap( bmp );
     m_pBrightPopup->Show();
- //   m_pBrightPopup->Refresh();
+    m_pBrightPopup->Refresh();
     
     
 }
