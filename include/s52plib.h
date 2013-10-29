@@ -30,13 +30,6 @@
 
 #include "s52s57.h"                 //types
 
-//    Dynamic arrays of pointers need explicit macros in wx261
-#ifdef __WX261
-WX_DEFINE_ARRAY_PTR(S57attVal *, wxArrayOfS57attVal);
-#else
-WX_DEFINE_ARRAY( S57attVal *, wxArrayOfS57attVal );
-#endif
-
 class wxGLContext;
 #ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>

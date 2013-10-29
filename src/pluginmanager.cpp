@@ -512,12 +512,18 @@ bool PlugInManager::CheckBlacklistedPlugin(opencpn_plugin* plugin)
         if( ( PluginBlacklist[i].all_lower && name.EndsWith(PluginBlacklist[i].name) && PluginBlacklist[i].version_major >= major && PluginBlacklist[i].version_minor >= minor ) ||
             ( !PluginBlacklist[i].all_lower && name.EndsWith(PluginBlacklist[i].name) && PluginBlacklist[i].version_major == major && PluginBlacklist[i].version_minor == minor ) )
         {
-            if ( PluginBlacklist[i].hard )
-                wxMessageBox(wxString::Format(_("PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable and will not be loaded.\n Please update this PlugIn at the opencpn.org website."),
-                                              PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(), major, minor), _("Blacklisted plugin detected..."));
-            else
-                wxMessageBox(wxString::Format(_("PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable.\n Please update this PlugIn at the opencpn.org website."),
-                                              PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(), major, minor), _("Blacklisted plugin detected..."));
+            wxString msg;
+            if ( PluginBlacklist[i].hard ){
+                msg = wxString::Format(_("PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable and will not be loaded.\n Please update this PlugIn at the opencpn.org website."),
+                                              PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(), major, minor), _("Blacklisted plugin detected...");
+            }
+            else{
+                msg = wxString::Format(_("PlugIn %s (%s), version %i.%i was detected.\n This version is known to be unstable.\n Please update this PlugIn at the opencpn.org website."),
+                                              PluginBlacklist[i].name.c_str(), plugin->GetCommonName().c_str(), major, minor), _("Blacklisted plugin detected...");
+            }
+            
+            OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );  // 5 second timeout
+            
             return PluginBlacklist[i].hard;
         }
     }

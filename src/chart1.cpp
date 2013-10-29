@@ -1454,7 +1454,7 @@ bool MyApp::OnInit()
 
     //  Show deferred log restart message, if it exists.
     if( !large_log_message.IsEmpty() )
-        OCPNMessageBox ( NULL, large_log_message, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK );
+        OCPNMessageBox ( NULL, large_log_message, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 5 );
     
     //  Validate OpenGL functionality, if selected
 #ifdef ocpnUSE_GL
@@ -8670,8 +8670,188 @@ void SetSystemColors( ColorScheme cs )
 #endif
 }
 
+class  OCPNMessageDialog: public wxDialog
+{
+    
+public:
+    OCPNMessageDialog(wxWindow *parent, const wxString& message,
+                           const wxString& caption = wxMessageBoxCaptionStr,
+                           long style = wxOK|wxCENTRE, const wxPoint& pos = wxDefaultPosition);
+    
+    void OnYes(wxCommandEvent& event);
+    void OnNo(wxCommandEvent& event);
+    void OnCancel(wxCommandEvent& event);
+    
+private:
+    int m_style;
+    DECLARE_EVENT_TABLE()
+};
+
+BEGIN_EVENT_TABLE(OCPNMessageDialog, wxDialog)
+EVT_BUTTON(wxID_YES, OCPNMessageDialog::OnYes)
+EVT_BUTTON(wxID_NO, OCPNMessageDialog::OnNo)
+EVT_BUTTON(wxID_CANCEL, OCPNMessageDialog::OnCancel)
+END_EVENT_TABLE()
+
+
+OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
+                                                const wxString& message,
+                                                const wxString& caption,
+                                                long style,
+                                                const wxPoint& pos)
+: wxDialog( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
+{
+    m_style = style;
+    
+    wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
+    
+    wxBoxSizer *icon_text = new wxBoxSizer( wxHORIZONTAL );
+    
+    #if wxUSE_STATBMP
+    // 1) icon
+    if (style & wxICON_MASK)
+    {
+        wxBitmap bitmap;
+        switch ( style & wxICON_MASK )
+        {
+            default:
+                wxFAIL_MSG(_T("incorrect log style"));
+                // fall through
+                
+            case wxICON_ERROR:
+                bitmap = wxArtProvider::GetIcon(wxART_ERROR, wxART_MESSAGE_BOX);
+                break;
+                
+            case wxICON_INFORMATION:
+                bitmap = wxArtProvider::GetIcon(wxART_INFORMATION, wxART_MESSAGE_BOX);
+                break;
+                
+            case wxICON_WARNING:
+                bitmap = wxArtProvider::GetIcon(wxART_WARNING, wxART_MESSAGE_BOX);
+                break;
+                
+            case wxICON_QUESTION:
+                bitmap = wxArtProvider::GetIcon(wxART_QUESTION, wxART_MESSAGE_BOX);
+                break;
+        }
+        wxStaticBitmap *icon = new wxStaticBitmap(this, wxID_ANY, bitmap);
+        icon_text->Add( icon, 0, wxCENTER );
+    }
+    #endif // wxUSE_STATBMP
+    
+    #if wxUSE_STATTEXT
+    // 2) text
+    icon_text->Add( CreateTextSizer( message ), 0, wxALIGN_CENTER | wxLEFT, 10 );
+    
+    topsizer->Add( icon_text, 1, wxCENTER | wxLEFT|wxRIGHT|wxTOP, 10 );
+    #endif // wxUSE_STATTEXT
+    
+    // 3) buttons
+    int center_flag = wxEXPAND;
+    if (style & wxYES_NO)
+        center_flag = wxALIGN_CENTRE;
+    wxSizer *sizerBtn = CreateSeparatedButtonSizer(style & ButtonSizerFlags);
+    if ( sizerBtn )
+        topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10 );
+    
+    SetAutoLayout( true );
+    SetSizer( topsizer );
+    
+    topsizer->SetSizeHints( this );
+    topsizer->Fit( this );
+    wxSize size( GetSize() );
+    if (size.x < size.y*3/2)
+    {
+        size.x = size.y*3/2;
+        SetSize( size );
+    }
+    
+    Centre( wxBOTH | wxCENTER_FRAME);
+}
+
+void OCPNMessageDialog::OnYes(wxCommandEvent& WXUNUSED(event))
+{
+    EndModal( wxID_YES );
+}
+
+void OCPNMessageDialog::OnNo(wxCommandEvent& WXUNUSED(event))
+{
+    EndModal( wxID_NO );
+}
+
+void OCPNMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
+{
+    // Allow cancellation via ESC/Close button except if
+    // only YES and NO are specified.
+    if ( (m_style & wxYES_NO) != wxYES_NO || (m_style & wxCANCEL) )
+    {
+        EndModal( wxID_CANCEL );
+    }
+}
+
+
+
+
+
+class TimedMessageBox:wxEvtHandler
+{
+public:
+    TimedMessageBox(wxWindow* parent, const wxString& message,
+                    const wxString& caption = _T("Message box"), long style = wxOK | wxCANCEL,
+                    int timeout_sec = -1, const wxPoint& pos = wxDefaultPosition );
+    ~TimedMessageBox();
+    int GetRetVal(void){ return ret_val; }
+    void OnTimer(wxTimerEvent &evt);
+    
+    wxTimer     m_timer;
+    OCPNMessageDialog *dlg;
+    int         ret_val;
+
+    DECLARE_EVENT_TABLE()
+};
+
+BEGIN_EVENT_TABLE(TimedMessageBox, wxEvtHandler)
+EVT_TIMER(-1, TimedMessageBox::OnTimer)
+END_EVENT_TABLE()
+
+TimedMessageBox::TimedMessageBox(wxWindow* parent, const wxString& message,
+                                 const wxString& caption, long style, int timeout_sec, const wxPoint& pos )
+{
+    ret_val = 0;
+    m_timer.SetOwner( this, -1 );
+    
+    if(timeout_sec > 0)
+        m_timer.Start( timeout_sec * 1000, wxTIMER_ONE_SHOT );
+                              
+    dlg = new OCPNMessageDialog( parent, message, caption, style, pos );
+    int ret = dlg->ShowModal();
+    
+    int yyp = 5;
+    
+    delete dlg;
+    dlg = NULL;
+    
+    ret_val = ret;
+}
+
+
+TimedMessageBox::~TimedMessageBox()
+{
+}
+
+void TimedMessageBox::OnTimer(wxTimerEvent &evt)
+{
+    if( dlg )
+        dlg->EndModal( wxID_CANCEL );
+}
+
+
+    
+
+
+
 int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& caption, int style,
-        int x, int y )
+                    int timeout_sec, int x, int y  )
 {
 
 #ifdef __WXOSX__
@@ -8684,8 +8864,14 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
     if( stats )
         stats->Hide();
 #endif
-    wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
-    int ret = dlg.ShowModal();
+
+      int ret =  wxID_OK;  
+        
+      TimedMessageBox tbox(parent, message, caption, style, timeout_sec, wxPoint( x, y )  );
+      ret = tbox.GetRetVal() ;
+      
+//    wxMessageDialog dlg( parent, message, caption, style | wxSTAY_ON_TOP, wxPoint( x, y ) );
+//    int ret = dlg.ShowModal();
 
 #ifdef __WXOSX__
     if(gFrame)

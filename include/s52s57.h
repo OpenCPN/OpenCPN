@@ -262,6 +262,8 @@ typedef struct _S57attVal {
     OGRatt_t valType;
 } S57attVal;
 
+WX_DEFINE_ARRAY( S57attVal *, wxArrayOfS57attVal );
+
 typedef struct _OBJLElement {
     char OBJLName[6];
     int nViz;
