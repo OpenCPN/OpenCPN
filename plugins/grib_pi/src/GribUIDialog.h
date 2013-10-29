@@ -79,25 +79,16 @@ public:
     ~GRIBUIDialog();
 
     void OpenFile( bool newestFile = false );
-    wxString GetNewestFileInDirectory();
-
-    void SetFilename( wxString file_name ) { m_file_name = file_name; }
-    void SelectTreeControlGRS( GRIBFile *pgribfile );
-    void PopulateTreeControlGRS( GRIBFile *pgribfile, int file_index );
-    void SelectGribRecordSet( GribRecordSet *pGribRecordSet );
-    void SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet);
+    
     void SetCursorLatLon( double lat, double lon );
     void SetFactoryOptions( bool set_val = false );
 
     wxDateTime TimelineTime();
-    wxDateTime MinTime();
-    //wxDateTime MaxTime();
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
-    void TimelineChanged(bool sync=false);
+    void TimelineChanged();
     void CreateActiveFileFromName( wxString filename );
-    void PopulateComboDataList( int index );
+    void PopulateComboDataList();
     void ComputeBestForecastForNow();
-    void DisplayDataGRS();
     void SetViewPort( PlugIn_ViewPort *vp ) { m_vp = new PlugIn_ViewPort(*vp); }
 
     GribOverlaySettings m_OverlaySettings;
@@ -105,6 +96,7 @@ public:
     wxTimer m_tPlayStop;
 
     GRIBFile        *m_bGRIBActiveFile;
+    bool             m_InterpolateMode;
 
 private:
     void OnClose( wxCloseEvent& event );
@@ -119,7 +111,7 @@ private:
     void UpdateTrackingControls( void );
 
     void OnPrev( wxCommandEvent& event );
-    void OnRecordForecast( wxCommandEvent& event ) { DisplayDataGRS(); }
+    void OnRecordForecast( wxCommandEvent& event ) { m_InterpolateMode = false; TimelineChanged(); }
     void OnNext( wxCommandEvent& event );
     void OnNow( wxCommandEvent& event ) { ComputeBestForecastForNow(); }
     void OnOpenFile( wxCommandEvent& event );
@@ -127,6 +119,11 @@ private:
 
     void OnTimeline( wxScrollEvent& event );
     void OnCBAny( wxCommandEvent& event );
+
+    wxDateTime MinTime();
+    wxString GetNewestFileInDirectory();
+    void SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet);
+    int GetTimePosition(wxDateTime time);
 
     //    Data
     wxWindow *pParent;

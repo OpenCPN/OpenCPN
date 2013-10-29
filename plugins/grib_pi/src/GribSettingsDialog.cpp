@@ -407,7 +407,7 @@ void GribSettingsDialog::OnTransparencyChange( wxScrollEvent& event  )
 {
     m_extSettings = m_Settings;
     m_Settings.m_iOverlayTransparency = m_sTransparency->GetValue();
-    m_parent.TimelineChanged();
+    m_parent.SetFactoryOptions();
 }
 
 void GribSettingsDialog::OnApply( wxCommandEvent& event )

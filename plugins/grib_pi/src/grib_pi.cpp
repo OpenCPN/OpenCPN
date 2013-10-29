@@ -206,8 +206,6 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_rbTimeFormat->SetSelection( m_bTimeZone );
     Pref->m_rbStartOptions->SetSelection( m_bLoadLastOpenFile );
 
-    // TODO: update m_bMailToAddresses
-
      if( Pref->ShowModal() == wxID_OK ) {
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
@@ -237,13 +235,13 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
              case 3:
                  //rebuild current activefile with new parameters and rebuil data list with current index
                  m_pGribDialog->CreateActiveFileFromName( m_pGribDialog->m_bGRIBActiveFile->GetFileName() );
-                 m_pGribDialog->PopulateComboDataList( 0/*m_pGribDialog->GetActiveForecastIndex()*/ );
-                 m_pGribDialog->DisplayDataGRS();
+                 m_pGribDialog->PopulateComboDataList();
+                 m_pGribDialog->TimelineChanged();
                  break;
              case 2 :
                  //only rebuild  data list with current index and new timezone
-                 m_pGribDialog->PopulateComboDataList( 0/*m_pGribDialog->GetActiveForecastIndex()*/ );
-                 m_pGribDialog->DisplayDataGRS();
+                 m_pGribDialog->PopulateComboDataList();
+                 m_pGribDialog->TimelineChanged();
                  break;
              }
          }
@@ -266,7 +264,6 @@ void grib_pi::OnToolbarToolCallback(int id)
         m_pGRIBOverlayFactory->SetTimeZone( m_bTimeZone );
         m_pGRIBOverlayFactory->SetParentSize( m_display_width, m_display_height);
         m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
-        m_pGribDialog->TimelineChanged();
 
         m_pGribDialog->OpenFile( m_bLoadLastOpenFile == 0 );
     }
@@ -316,7 +313,6 @@ void grib_pi::OnToolbarToolCallback(int id)
       //    Toggle dialog?
       if(m_bShowGrib) {
           m_pGribDialog->Show();
-          m_pGribDialog->DisplayDataGRS();
       } else
           m_pGribDialog->Hide();
 

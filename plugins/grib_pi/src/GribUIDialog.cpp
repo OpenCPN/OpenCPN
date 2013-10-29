@@ -185,20 +185,19 @@ void GRIBUIDialog::OpenFile(bool newestFile)
                 m_bGRIBActiveFile = NULL;
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Error:  No valid data in this file!") );
             } else {
-                PopulateComboDataList( 0 );
+                PopulateComboDataList();
                 title.append( _T("(") + TToString( m_bGRIBActiveFile->GetRefDateTime(), pPlugIn->GetTimeZone()) + _T(")"));
             }
         } else {
             if( fn.IsDir() ) {
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning:  Empty directory!") );
-                this->SetTitle( fn.GetFullPath() );
             }
             else
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
-	}
+        }
         this->SetTitle(title);
         SetFactoryOptions();
-        DisplayDataGRS();
+        TimelineChanged();
         PopulateTrackingControls();
     }
 }
@@ -248,6 +247,7 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
 
     m_bGRIBActiveFile = NULL;
     m_pTimelineSet = NULL;
+    m_InterpolateMode = false;
 
     wxFileConfig *pConf = GetOCPNConfigObject();
 
@@ -722,7 +722,7 @@ void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 
 void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
 {
-   if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
+    if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
         m_bpPlay->SetBitmap(wxBitmap( stop ));
         m_bpPlay->SetToolTip( _("Stop") );
         m_tPlayStop.Start( 1000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
@@ -747,45 +747,41 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
         }
     } else {
         m_sTimeline->SetValue(m_sTimeline->GetValue() + 1);
+        m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
+        if(!m_InterpolateMode) m_cRecordForecast->SetSelection( m_sTimeline->GetValue() );
         TimelineChanged();
     }
 }
 
-#if 0
-void GRIBUIDialog::OnFileDirChange( wxFileDirPickerEvent &event )
+void GRIBUIDialog::TimelineChanged()
 {
-    m_pRecordTree->DeleteAllItems();
-    delete m_pRecordTree->m_file_id_array;
-
-    m_RecordTree_root_id = m_pRecordTree->AddRoot( _T ( "GRIBs" ) );
-    PopulateTreeControl();
-    m_pRecordTree->Expand( m_RecordTree_root_id );
-
-    pPlugIn->GetGRIBOverlayFactory()->Reset();
-
-    Refresh();
-
-    m_grib_dir = event.GetPath();
-}
-#endif
-
-void GRIBUIDialog::TimelineChanged(bool sync)
-{
-    if(!m_bGRIBActiveFile)
+    if( !m_bGRIBActiveFile || (m_bGRIBActiveFile && !m_bGRIBActiveFile->IsOK()) ) {
+        pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
         return;
+    }
 
     wxDateTime time = TimelineTime();
     SetGribTimelineRecordSet(GetTimeLineRecordSet(time));
 
-    /* get closest index to update combo box */
-    unsigned int i;
-    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    if( !m_InterpolateMode ){
+        double sel = (m_cRecordForecast->GetCurrentSelection());
 
-    if(rsa->GetCount() < 2) { /* this case should be handled below instead,
-                                 but apparently the logic is wrong and sometimes crashes */
-        m_cRecordForecast->SetSelection(0);
-        return;
-    }
+    /* get closest value to update timeline */
+        m_sTimeline->SetValue((int)
+            m_OverlaySettings.m_bInterpolate ? sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
+            );
+    } else
+        m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
+
+    pPlugIn->SendTimelineMessage(time);
+    RequestRefresh( pParent );
+}
+
+int GRIBUIDialog::GetTimePosition(wxDateTime time)
+{
+    /* get closest index to update combo box */
+    size_t i;
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
 
     wxDateTime itime, ip1time;
     for(i=0; i<rsa->GetCount()-1; i++) {
@@ -794,35 +790,19 @@ void GRIBUIDialog::TimelineChanged(bool sync)
         if(ip1time >= time)
             break;
     }
-
-    if(time - itime < ip1time - time)
-        m_cRecordForecast->SetSelection(i);
-    else
-        m_cRecordForecast->SetSelection(i+1);
-
-    if(sync)
-        return;
-
-//    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
-        m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
-//    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
-
-    pPlugIn->SendTimelineMessage(time);
-    RequestRefresh( pParent );
+    return (time - itime < ip1time - time) ? i : i+1;
 }
 
 wxDateTime GRIBUIDialog::TimelineTime()
 {
-    int tl = (m_TimeLineHours == 0) ? 0 : m_sTimeline->GetValue();
-    if(m_OverlaySettings.m_bInterpolate) {
-        //compute timeline with the true step = slices per update*divider
-        int hours = tl*m_OverlaySettings.m_SlicesPerUpdate/m_OverlaySettings.m_HourDivider;
-        int minutes = ((tl*m_OverlaySettings.m_SlicesPerUpdate)%m_OverlaySettings.m_HourDivider)*(60*m_OverlaySettings.m_SlicesPerUpdate/m_OverlaySettings.m_HourDivider);
-        return MinTime() + wxTimeSpan(hours, minutes);
+    if(m_InterpolateMode) {
+        int tl = (m_TimeLineHours == 0) ? 0 : m_sTimeline->GetValue();
+        int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
+        return MinTime() + wxTimeSpan( tl * stepmin / 60, (tl * stepmin) % 60 );
     } else {
-        //compute timeline from the record selected
         ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-        return rsa->Item(tl).m_Reference_Time;
+        int index = m_cRecordForecast->GetCurrentSelection() < 1 ? 0 :m_cRecordForecast->GetCurrentSelection();
+        return rsa->Item(index).m_Reference_Time;
     }
 }
 
@@ -835,13 +815,6 @@ wxDateTime GRIBUIDialog::MinTime()
     }
     return wxDateTime(0.0);
 }
-
-#if 0
-wxDateTime GRIBUIDialog::MaxTime()
-{
-    return MinTime() + wxTimeSpan(m_sTimeline->GetMax()/m_OverlaySettings.m_HourDivider);
-}
-#endif
 
 GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
 {
@@ -859,6 +832,8 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
     if(i == 0)
         im1 = 0;
 
+    if(!m_InterpolateMode) im1 = i;
+
     wxDateTime mintime = MinTime();
     double minute2 = (curtime - mintime).GetMinutes();
     curtime = rsa->Item(im1).m_Reference_Time;
@@ -874,15 +849,14 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
     else
         interp_const = (nminute-minute1) / (minute2-minute1);
 
-    if(!m_OverlaySettings.m_bInterpolate)
-        interp_const = round(interp_const);
-
     GribRecordSet &GRS1 = rsa->Item(im1), &GRS2 = rsa->Item(i);
     return new GribTimelineRecordSet(GRS1, GRS2, interp_const);
 }
 
 void GRIBUIDialog::OnTimeline( wxScrollEvent& event )
 {
+    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
+    if(!m_InterpolateMode) m_cRecordForecast->SetSelection(m_sTimeline->GetValue());
     TimelineChanged();
 }
 
@@ -918,9 +892,13 @@ void GRIBUIDialog::CreateActiveFileFromName( wxString filename )
     }
 }
 
-void GRIBUIDialog::PopulateComboDataList( int index )
+void GRIBUIDialog::PopulateComboDataList()
 {
-    m_cRecordForecast->Clear();
+    int index = 0;
+    if( !m_cRecordForecast->IsEmpty() ){
+        index = m_cRecordForecast->GetCurrentSelection();
+        m_cRecordForecast->Clear();
+    }
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
     for( size_t i = 0; i < rsa->GetCount(); i++ ) {
@@ -933,27 +911,26 @@ void GRIBUIDialog::PopulateComboDataList( int index )
 
 void GRIBUIDialog::OnPrev( wxCommandEvent& event )
 {
-    if(m_cRecordForecast->GetCurrentSelection() == -1) /* set to interpolated entry */
-        TimelineChanged(true);
+    if(m_InterpolateMode) m_cRecordForecast->SetSelection(GetTimePosition(TimelineTime()));  /* set to interpolated entry */
 
-//    m_pGribForecastTimer.Stop();
-    int selection = m_cRecordForecast->GetCurrentSelection() - 1;
-    if(selection < 0)
-        selection = 0;
-    m_cRecordForecast->SetSelection( selection );
-    DisplayDataGRS( );
+    m_InterpolateMode = false;
+
+    m_cRecordForecast->SetSelection( m_cRecordForecast->GetCurrentSelection() < 1 ? 0: m_cRecordForecast->GetCurrentSelection() - 1 );
+
+    TimelineChanged();
 }
 
 void GRIBUIDialog::OnNext( wxCommandEvent& event )
 {
-    if(m_cRecordForecast->GetCurrentSelection() == -1) /* set to interpolated entry */
-        TimelineChanged(true);
+    if(m_InterpolateMode) m_cRecordForecast->SetSelection(GetTimePosition(TimelineTime()));  /* set to interpolated entry */
+
+    m_InterpolateMode = false;
 
     if( m_cRecordForecast->GetCurrentSelection() == (int)m_cRecordForecast->GetCount() - 1 ) return; //end of list
 
-//    m_pGribForecastTimer.Stop();
     m_cRecordForecast->SetSelection( m_cRecordForecast->GetCurrentSelection() + 1 );
-    DisplayDataGRS( );
+
+    TimelineChanged();
 }
 
 void GRIBUIDialog::ComputeBestForecastForNow()
@@ -962,60 +939,25 @@ void GRIBUIDialog::ComputeBestForecastForNow()
     wxDateTime now = wxDateTime::Now().ToUTC(wxDateTime::Now().IsDST()==0);
     if(now.IsDST()) now.Add(wxTimeSpan( 1,0,0,0));          //bug in wxWidgets ?
 
-    if( m_OverlaySettings.m_bInterpolate ) {
+    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
+    if( m_InterpolateMode ) {
         wxTimeSpan span = now - MinTime();
-        int stepmin = 60*m_OverlaySettings.m_SlicesPerUpdate/m_OverlaySettings.m_HourDivider;
-        if((span.GetMinutes()%stepmin) > (stepmin/2))
-            m_sTimeline->SetValue((span.GetMinutes()+stepmin)/stepmin);
-        else
-            m_sTimeline->SetValue(span.GetMinutes()/stepmin);
+        int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
+        m_sTimeline->SetValue(span.GetMinutes()%stepmin < stepmin/2 ? span.GetMinutes()/stepmin : (span.GetMinutes()/stepmin) + 1);
     }
     else {
         ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-        size_t i;
-        for( i=0; i<rsa->GetCount()-1; i++ ) {
+        for( size_t i=0; i<rsa->GetCount()-1; i++ ) {
             wxDateTime ti2( rsa->Item(i+1).m_Reference_Time );
             if(ti2 >= now) {
                 wxDateTime ti1( rsa->Item(i).m_Reference_Time );
-                if( (now-ti1) > (ti2-now) ) i++;
+                m_cRecordForecast->SetSelection(now-ti1 < ti2-now ? i : i+1);
                 break;
             }
         }
-        m_sTimeline->SetValue(i);
     }
     TimelineChanged();
-}
 
-void GRIBUIDialog::DisplayDataGRS()
-{
-    if( m_bGRIBActiveFile &&  m_bGRIBActiveFile->IsOK() ) {
-        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-        int selection = m_cRecordForecast->GetCurrentSelection();
-        if(selection >=0) {
-            GribRecordSet *record = &rsa->Item( selection );
-            if(m_OverlaySettings.m_bInterpolate)
-                SelectGribRecordSet( record );
-            else {
-                m_sTimeline->SetValue(selection);
-                TimelineChanged();
-            }
-        }
-    } else
-        SelectGribRecordSet( NULL );
-}
-
-void GRIBUIDialog::SelectGribRecordSet( GribRecordSet *pGribRecordSet )
-{
-    if(!pGribRecordSet) {
-        pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
-        return;
-    }
-
-    wxDateTime mintime = MinTime(), curtime = pGribRecordSet->m_Reference_Time;
-    double hour = (curtime - mintime).GetMinutes()/60.0;
-
-    m_sTimeline->SetValue(hour/m_OverlaySettings.m_SlicesPerUpdate*m_OverlaySettings.m_HourDivider);
-    TimelineChanged();
 }
 
 void GRIBUIDialog::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)
@@ -1031,21 +973,22 @@ void GRIBUIDialog::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)
 
 void GRIBUIDialog::SetFactoryOptions( bool set_val )
 {
-    int max = m_sTimeline->GetMax(), val = m_sTimeline->GetValue();             //memorize the old range and value
+    int max = wxMax(m_sTimeline->GetMax(), 1), val = m_sTimeline->GetValue();             //memorize the old range and value
 
-    if(m_OverlaySettings.m_bInterpolate)
-        m_sTimeline->SetMax(m_TimeLineHours/m_OverlaySettings.m_SlicesPerUpdate*m_OverlaySettings.m_HourDivider);
+    if(m_OverlaySettings.m_bInterpolate){
+        int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
+        m_sTimeline->SetMax(m_TimeLineHours * 60 / stepmin );
+    }
     else {
-        if(m_bGRIBActiveFile) {
+        if(m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK()) {
             ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
             m_sTimeline->SetMax(rsa->GetCount()-1);
         }
     }
 
     //try to retrieve a coherent timeline value with the new timeline range if it has changed
-    if( set_val && m_sTimeline->GetMax() != 0 )
-        m_sTimeline->SetValue( m_sTimeline->GetMax() * val / max );
-
+        if( set_val && m_sTimeline->GetMax() != 0 )
+            m_sTimeline->SetValue( m_sTimeline->GetMax() * val / max );
 
     if(m_pTimelineSet)
         m_pTimelineSet->ClearCachedData();
@@ -1104,7 +1047,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
     //    Convert from zyGrib organization by data type/level to our organization by time.
 
     GribRecord *pRec;
-
+    bool isOK(false);
     //    Get the map of GribRecord vectors
     std::map<std::string, std::vector<GribRecord *>*> *p_map = m_pGribReader->getGribMap();
 
@@ -1114,7 +1057,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
         std::vector<GribRecord *> *ls = ( *it ).second;
         for( zuint i = 0; i < ls->size(); i++ ) {
             pRec = ls->at( i );
-
+            isOK = true;
             time_t thistime = pRec->getRecordCurrentDate();
 
             //   Search the GribRecordSet array for a GribRecordSet with matching time
@@ -1143,7 +1086,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
             }
         }
     }
-    m_pRefDateTime = pRec->getRecordRefDate();
+    if(isOK) m_pRefDateTime = pRec->getRecordRefDate();     //to ovaid crash with ceratain bad files
 }
 
 GRIBFile::~GRIBFile()
