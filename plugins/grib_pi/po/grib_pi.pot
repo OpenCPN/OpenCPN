@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-20 11:03+0200\n"
+"POT-Creation-Date: 2013-10-29 09:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/GribUIDialog.cpp:149 src/GribUIDialog.cpp:727 src/GribUIDialog.cpp:741
+#: src/GribUIDialog.cpp:149 src/GribUIDialog.cpp:731 src/GribUIDialog.cpp:745
 #: src/GribUIDialogBase.cpp:47
 msgid "Play"
 msgstr ""
@@ -25,92 +25,93 @@ msgstr ""
 msgid "Error:  No valid data in this file!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:191
+#: src/GribUIDialog.cpp:193
 msgid "Warning:  Empty directory!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:465 src/GribUIDialog.cpp:466 src/GribUIDialog.cpp:479
-#: src/GribUIDialog.cpp:491 src/GribUIDialog.cpp:503 src/GribUIDialog.cpp:513
-#: src/GribUIDialog.cpp:536 src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:550
-#: src/GribUIDialog.cpp:563 src/GribUIDialog.cpp:575 src/GribUIDialog.cpp:587
+#: src/GribUIDialog.cpp:469 src/GribUIDialog.cpp:470 src/GribUIDialog.cpp:483
+#: src/GribUIDialog.cpp:495 src/GribUIDialog.cpp:507 src/GribUIDialog.cpp:517
+#: src/GribUIDialog.cpp:540 src/GribUIDialog.cpp:541 src/GribUIDialog.cpp:554
+#: src/GribUIDialog.cpp:567 src/GribUIDialog.cpp:579 src/GribUIDialog.cpp:591
 msgid "N/A"
 msgstr ""
 
-#: src/GribUIDialog.cpp:653
+#: src/GribUIDialog.cpp:657
 msgid "Send"
 msgstr ""
 
-#: src/GribUIDialog.cpp:654
+#: src/GribUIDialog.cpp:658
 msgid "Save"
 msgstr ""
 
-#: src/GribUIDialog.cpp:656
+#: src/GribUIDialog.cpp:660
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr ""
 
-#: src/GribUIDialog.cpp:657
+#: src/GribUIDialog.cpp:661
 msgid "This is your zyGrib's forum access Login"
 msgstr ""
 
-#: src/GribUIDialog.cpp:658
+#: src/GribUIDialog.cpp:662
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
 
-#: src/GribUIDialog.cpp:707
+#: src/GribUIDialog.cpp:711 src/GribUIDialogBase.cpp:393
+#: src/GribUIDialogBase.cpp:744
 msgid "Apply"
 msgstr ""
 
-#: src/GribUIDialog.cpp:723
+#: src/GribUIDialog.cpp:727
 msgid "Stop"
 msgstr ""
 
-#: src/GribUIDialog.cpp:897
+#: src/GribUIDialog.cpp:875
 msgid "Select a GRIB file"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1064
+#: src/GribUIDialog.cpp:1011
 msgid "Error:  File does not exist!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1077
+#: src/GribUIDialog.cpp:1024
 msgid "Error:  Can't read this File!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1428
+#: src/GribUIDialog.cpp:1376
 msgid "( Max "
 msgstr ""
 
-#: src/GribUIDialog.cpp:1428
+#: src/GribUIDialog.cpp:1376
 msgid " Mo )"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1438
+#: src/GribUIDialog.cpp:1386
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr ""
 
-#: src/GribUIDialog.cpp:1439
+#: src/GribUIDialog.cpp:1387
 msgid ""
 "The file size limit is overcome!\n"
 "You can zoom in and/or change parameters..."
 msgstr ""
 
-#: src/GribUIDialog.cpp:1465
+#: src/GribUIDialog.cpp:1413
 msgid ""
 "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or new parameters for a new email ..."
 msgstr ""
 
-#: src/GribUIDialog.cpp:1468
+#: src/GribUIDialog.cpp:1416
 msgid ""
 "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or new parameters for a new email ..."
 msgstr ""
 
-#: src/GribUIDialog.cpp:1472
+#: src/GribUIDialog.cpp:1420
 msgid ""
 "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
@@ -171,7 +172,7 @@ msgstr ""
 
 #: src/GribSettingsDialog.cpp:43 src/GribUIDialogBase.cpp:79
 #: src/GribUIDialogBase.cpp:351 src/GribUIDialogBase.cpp:658
-#: src/GribOverlayFactory.cpp:685
+#: src/GribOverlayFactory.cpp:687
 msgid "Wind"
 msgstr ""
 
@@ -472,19 +473,19 @@ msgstr ""
 msgid "Write and send eMail request"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:685
+#: src/GribOverlayFactory.cpp:687
 msgid "Building Isobar map"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:840 src/GribOverlayFactory.cpp:859
-msgid "Please Zoom or Scale Out to view invisible overlay: "
+#: src/GribOverlayFactory.cpp:843 src/GribOverlayFactory.cpp:863
+msgid "Please Zoom or Scale Out to view invisible overlays: "
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:987
+#: src/GribOverlayFactory.cpp:991
 msgid " (Dup)"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:989
+#: src/GribOverlayFactory.cpp:993
 msgid "Ref : "
 msgstr ""
 
