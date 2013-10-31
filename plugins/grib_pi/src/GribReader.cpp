@@ -231,23 +231,17 @@ void GribReader::readAllGribRecords()
                         else if( rec->getDataType() == GRB_WVDIR )               // Wind Wave Direction
                               storeRecordInMap(rec);
 
-                        else if( rec->getDataType() == GRB_USCT )                // Scatterometer U Wind Estimate
-                              storeRecordInMap(rec);
-
-                        else if( rec->getDataType() == GRB_VSCT )                // Scatterometer V Wind Estimate
-                              storeRecordInMap(rec);
-
                         else if( rec->getDataType() == GRB_CRAIN )               // Catagorical Rain  1/0
                               storeRecordInMap(rec);
-
-                        //else if ((rec->getDataType()==GRB_TEMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0))
-                             // storeRecordInMap(rec);                              // gfs SEATMP
 
                         else if ((rec->getDataType()==GRB_WTMP) && (rec->getLevelType()==LV_GND_SURF) && (rec->getLevelValue()==0))
                               storeRecordInMap(rec);                             // rtofs Water Temp + translated gfs Water Temp  
 
                         else if( (rec->getDataType()==GRB_UOGRD || rec->getDataType()==GRB_VOGRD))          // rtofs model sea current current
                               storeRecordInMap(rec);
+
+                        else if(rec->getDataType() == GRB_CAPE && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) //Potential energy
+                            storeRecordInMap(rec);
 
                         else
                         {

@@ -273,6 +273,8 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
         m_cbAirTemperature->SetValue(value);
         pConf->Read( _T ( "SeaTemperaturePlot" ), &value, false );
         m_cbSeaTemperature->SetValue(value);
+        pConf->Read( _T ( "CAPEPlot" ), &value, false );
+        m_cbCAPE->SetValue(value);
 
         pConf->Read ( _T ( "lastdatatype" ), &m_lastdatatype, 0);
 
@@ -324,6 +326,7 @@ GRIBUIDialog::~GRIBUIDialog()
         pConf->Write( _T ( "CloudPlot" ), m_cbCloud->GetValue());
         pConf->Write( _T ( "AirTemperaturePlot" ), m_cbAirTemperature->GetValue());
         pConf->Write( _T ( "SeaTemperaturePlot" ), m_cbSeaTemperature->GetValue());
+        pConf->Write( _T ( "CAPEPlot" ), m_cbCAPE->GetValue());
         pConf->Write( _T ( "lastdatatype" ), m_lastdatatype);
 
         pConf->Write ( _T ( "Filename" ), m_file_name );
@@ -430,6 +433,8 @@ void GRIBUIDialog::PopulateTrackingControls( void )
                        m_pTimelineSet && RecordArray[Idx_AIR_TEMP_2M]);
     AddTrackingControl(m_cbSeaTemperature, m_tcSeaTemperature, 0,
                        m_pTimelineSet && RecordArray[Idx_SEA_TEMP]);
+    AddTrackingControl(m_cbCAPE, m_tcCAPE, 0,
+                       m_pTimelineSet && RecordArray[Idx_CAPE]);
 
     Fit();
     Refresh();
@@ -439,13 +444,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
 {
     if( !m_pTimelineSet )
         return;
-#if(0)
-    wxDateTime t = m_pTimelineSet->m_Reference_Time;
-    t.MakeFromTimezone( wxDateTime::UTC );
-    if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
-    m_cRecordForecast->SetLabel(t.Format(_T("%Y-%m-%d %H:%M:%S "), wxDateTime::Local) + _T("Local - ") +
-                                t.Format(_T("%H:%M:%S "), wxDateTime::UTC) + _T("GMT"));
-#endif
+
     GribRecord **RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
     //    Update the wind control
     if( RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY] ) {
@@ -591,6 +590,18 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             m_tcSeaTemperature->SetValue( _("N/A") );
     }
 
+    //    Update the Convective Available Potential Energy (CAPE)
+    if( RecordArray[Idx_CAPE] ) {
+        double cape = RecordArray[Idx_CAPE]->
+            getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
+
+        if( cape != GRIB_NOTDEF ) {
+            cape = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CAPE, cape);
+            m_tcCAPE->SetValue( wxString::Format( _T("%5.0f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CAPE), cape ) );
+        } else
+            m_tcCAPE->SetValue( _("N/A") );
+    }
+
     Fit();
 }
 
@@ -639,7 +650,7 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
 
     GribRequestSetting *req_Dialog = new GribRequestSetting( this, pPlugIn->GetRequestConfig(), latmaxi, latmini, lonmini, lonmaxi,
         pPlugIn->GetMailFromAddress(), pPlugIn->GetMailToAddresses(), pPlugIn->GetZyGribLogin(), pPlugIn->GetZyGribCode() );
-    wxString s1[] = {_T("GFS"),_T("COMPS"),_T("RTOFS")};
+    wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS")};
     for( int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
         req_Dialog->m_pModel->Append( s1[i] );
     wxString s2[] = {_T("Saildocs"),_T("zyGrib")};
@@ -686,6 +697,8 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
                 : req_Dialog->m_RequestConfigBase.SetChar( 11, '.' );
             req_Dialog->m_pSeaTemp->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 12, 'X' )
                 : req_Dialog->m_RequestConfigBase.SetChar( 12, '.' );
+            req_Dialog->m_pCAPE->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 15, 'X' )
+                : req_Dialog->m_RequestConfigBase.SetChar( 15, '.' );
         }
         if(req_Dialog->m_pModel->GetCurrentSelection() != ZYGRIB && req_Dialog->m_pModel->GetCurrentSelection() != COAMPS)
             req_Dialog->m_pCurrent->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 13, 'X' )
@@ -1077,6 +1090,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                     case GRB_CLOUD_TOT:  idx = Idx_CLOUD_TOT; break;
                     case GRB_TEMP:     idx = Idx_AIR_TEMP_2M; break;
                     case GRB_WTMP:     idx = Idx_SEA_TEMP; break;
+                    case GRB_CAPE:      idx = Idx_CAPE;break;
                     }
 
                     if(idx != -1)
@@ -1174,6 +1188,8 @@ void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
     m_pSeaTemp->Enable( !IsZYGRIB && IsGFS );
     m_pWindGust->SetValue( m_RequestConfigBase.GetChar(14) == 'X' && IsZYGRIB);
     m_pWindGust->Enable( IsZYGRIB );
+    m_pCAPE->SetValue( m_RequestConfigBase.GetChar(15) == 'X' && IsGFS );
+    m_pCAPE->Enable( IsGFS );
     m_pCurrent->SetValue( IsRTOFS );
     m_pCurrent->Enable( false );
 
@@ -1227,8 +1243,8 @@ wxString GribRequestSetting::WriteMail()
     m_MailError_Nb = 0;
     //some useful strings
     const wxString s[] = { _T(","), _T(" ") };        //separators
-    const wxString p[][6] = {{ _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("WAVES"), _T("SEATMP"), _T("")}, //parameters
-        {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), _T(""), _T("GUST")} };
+    const wxString p[][7] = {{ _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("WAVES"), _T("SEATMP"), wxEmptyString, _T("CAPE")}, //parameters
+        {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), wxEmptyString, _T("GUST"), _T("CAPE")} };
 
     wxString r_topmess,r_parameters,r_zone;
     //write the top part of the mail
@@ -1287,6 +1303,8 @@ wxString GribRequestSetting::WriteMail()
             r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][4] );
         if( m_pWindGust->GetValue() )
             r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][5] );
+        if( m_pCAPE->GetValue() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][6] );
         break;
     case COAMPS:                                                                           //COAMPS
         r_parameters = wxT("WIND,PRMSL");                                 //the default parameters for this model
@@ -1337,6 +1355,7 @@ bool GribRequestSetting::EstimateFileSize()
     int nbSTemp  = (m_pSeaTemp->IsChecked())    ?  nbrec   : 0;
     int nbGUSTsfc  = (m_pWindGust->IsChecked()) ?  nbrec : 0;
     int nbCurrent  = (m_pCurrent->IsChecked()) ?  nbrec : 0;
+    int nbCape  = (m_pCAPE->IsChecked()) ?  nbrec : 0;
 
     int head = 84;
     double estime = 0.0;
@@ -1361,6 +1380,9 @@ bool GribRequestSetting::EstimateFileSize()
 
     nbits = 7;
     estime += nbGUSTsfc*(head+(nbits*npts)/8+2 );
+
+    nbits = 5;
+    estime += nbCape*(head+(nbits*npts)/8+2 );
 
 	int nbwave = 0;
 	if (m_pWaves->IsChecked()) nbwave++;

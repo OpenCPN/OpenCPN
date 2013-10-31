@@ -56,13 +56,14 @@ struct GribOverlaySettings
     int m_iOverlayTransparency;
 
     enum SettingsType {WIND, WIND_GUST, PRESSURE, WAVE, CURRENT, PRECIPITATION, CLOUD, 
-                       AIR_TEMPERATURE, SEA_TEMPERATURE, SETTINGS_COUNT};
+                       AIR_TEMPERATURE, SEA_TEMPERATURE, CAPE, SETTINGS_COUNT};
     enum Units0 {KNOTS, M_S, MPH, KPH};
     enum Units1 {MILLIBARS, MMHG};
     enum Units2 {METERS, FEET};
     enum Units3 {CELCIUS, FAHRENHEIT};
     enum Units4 {MILLIMETERS, INCHES};
     enum Units5 {PERCENTAGE};
+    enum Units6 {JPKG};
 
     struct OverlayDataSettings {
         int m_Units;

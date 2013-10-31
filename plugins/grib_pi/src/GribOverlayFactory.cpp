@@ -183,6 +183,8 @@ void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar)
         idx = Idx_AIR_TEMP_2M; break;
     case GribOverlaySettings::SEA_TEMPERATURE:
         idx = Idx_SEA_TEMP; break;
+    case GribOverlaySettings::CAPE:
+        idx = Idx_CAPE; break;
     }
 }
 
@@ -214,7 +216,8 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
            (i == GribOverlaySettings::PRECIPITATION   && !m_dlg.m_cbPrecipitation->GetValue()) ||
            (i == GribOverlaySettings::CLOUD           && !m_dlg.m_cbCloud->GetValue()) ||
            (i == GribOverlaySettings::AIR_TEMPERATURE && !m_dlg.m_cbAirTemperature->GetValue()) ||
-           (i == GribOverlaySettings::SEA_TEMPERATURE && !m_dlg.m_cbSeaTemperature->GetValue()))
+           (i == GribOverlaySettings::SEA_TEMPERATURE && !m_dlg.m_cbSeaTemperature->GetValue()) ||
+           (i == GribOverlaySettings::CAPE            && !m_dlg.m_cbCAPE->GetValue()))
             continue;
 
         if(overlay) /* render overlays first */
@@ -516,7 +519,7 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
 
     wxMemoryDC mdc(wxNullBitmap);
 
-    wxFont mfont( 12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+    wxFont mfont( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
     mdc.SetFont( mfont );
 
     int w, h;
@@ -983,20 +986,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 
     delete pGRM;
 }
-#if 0
-wxString GRIBOverlayFactory::GetRefString( GribRecord *rec, int map )
-{
-    wxString string = GribOverlaySettings::NameFromIndex(map);
-    if( rec->isDuplicated() )
-        string.Append(_(" (Dup)") );
-    string.Append( _T(" ") );
-    string.Append( _("Ref : ") );
-    string.Append( MToString( rec->getDataCenterModel() ) );
-    string.Append( TToString( rec->getRecordRefDate(), m_TimeZone ) );
-    
-    return string;
-}
-#endif
+
 void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont *mfont)
 {
     if(msg.empty())
