@@ -630,9 +630,9 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
             child.append_child(pugi::node_pcdata).set_value(pr->m_GUID.mb_str());
         }
          
-         if((flags & OUT_VIZ) && pr->m_bIsVisible) {
+         if((flags & OUT_VIZ) && !pr->m_bIsVisible) {
              child = child_ext.append_child("opencpn:viz");
-             child.append_child(pugi::node_pcdata).set_value("1");
+             child.append_child(pugi::node_pcdata).set_value("0");
          }
             
          if((flags & OUT_VIZ_NAME) && pr->m_bShowName) {
