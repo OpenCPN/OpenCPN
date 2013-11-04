@@ -186,7 +186,7 @@ void AISTargetQueryDialog::UpdateText()
     wxColor bg = GetBackgroundColour();
     m_pQueryTextCtl->SetBackgroundColour( bg );
 
-    if( m_MMSI != 0 ) { //  Faulty MMSI could be reported as 0
+//    if( m_MMSI == 0 ) { //  Faulty MMSI could be reported as 0
         AIS_Target_Data *td = g_pAIS->Get_Target_Data_From_MMSI( m_MMSI );
         if( td ) {
             wxFont *dFont = FontMgr::Get().GetFont( _("AISTargetQuery"), 12 );
@@ -222,7 +222,7 @@ void AISTargetQueryDialog::UpdateText()
             sz -= wxSize( 200, 200 );
             m_pQueryTextCtl->SetMinSize( sz );
         }
-    }
+  //  }
 }
 
 void AISTargetQueryDialog::OnMove( wxMoveEvent& event )
