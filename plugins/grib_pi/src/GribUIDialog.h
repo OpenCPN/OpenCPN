@@ -172,6 +172,9 @@ public:
         return m_pRefDateTime;
     }
 
+    WX_DEFINE_ARRAY_INT(int, GribIdxArray);
+    GribIdxArray m_GribIdxArray;
+
 private:
 
     bool m_bOK;

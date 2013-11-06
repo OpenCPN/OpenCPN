@@ -152,7 +152,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_cRecordForecast->Clear();
     /* this should be un-commented to avoid a memory leak,
        but for some reason it crbashes windows */
-//    delete m_bGRIBActiveFile;
+    delete m_bGRIBActiveFile;
     m_pTimelineSet = NULL;
 
     //get more recent file in default directory if necessary
@@ -399,42 +399,42 @@ void GRIBUIDialog::PopulateTrackingControls( void )
     m_fgTrackingControls->SetCols(9);
     this->Fit();
 
-    GribRecord **RecordArray;
-    if( m_pTimelineSet )
-        RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
-
     AddTrackingControl(m_cbWind, m_tcWindSpeed, m_tcWindDirection,
-                       m_pTimelineSet && RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY]);
-    AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet && RecordArray[Idx_WIND_GUST]);
-    AddTrackingControl(m_cbPressure, m_tcPressure, 0, m_pTimelineSet && RecordArray[Idx_PRESSURE]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND 
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND);
+    AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet 
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND);
+    AddTrackingControl(m_cbPressure, m_tcPressure, 0, m_pTimelineSet 
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND);
 
     /* tracking for wave is funky */
-    if(m_pTimelineSet && RecordArray[Idx_HTSIGW]) {
-        if(RecordArray[Idx_WVDIR])
+    if(m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) != wxNOT_FOUND) {
+        if(m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND)
             AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, true);
         else {
             AddTrackingControl(m_cbWave, m_tcWaveHeight, 0, true);
             m_tcWaveDirection->Hide();
         }
     } else
-        if(m_pTimelineSet && RecordArray[Idx_WVDIR]) {
+        if(m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND) {
             AddTrackingControl(m_cbWave, 0, m_tcWaveDirection, true);
             m_tcWaveHeight->Hide();
         } else
             AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, false);
 
     AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection,
-                       m_pTimelineSet && RecordArray[Idx_SEACURRENT_VX] && RecordArray[Idx_SEACURRENT_VY]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND 
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VY) != wxNOT_FOUND);
     AddTrackingControl(m_cbPrecipitation, m_tcPrecipitation, 0,
-                       m_pTimelineSet && RecordArray[Idx_PRECIP_TOT]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND);
     AddTrackingControl(m_cbCloud, m_tcCloud, 0,
-                       m_pTimelineSet && RecordArray[Idx_CLOUD_TOT]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND);
     AddTrackingControl(m_cbAirTemperature, m_tcAirTemperature, 0,
-                       m_pTimelineSet && RecordArray[Idx_AIR_TEMP_2M]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP_2M) != wxNOT_FOUND);
     AddTrackingControl(m_cbSeaTemperature, m_tcSeaTemperature, 0,
-                       m_pTimelineSet && RecordArray[Idx_SEA_TEMP]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND);
     AddTrackingControl(m_cbCAPE, m_tcCAPE, 0,
-                       m_pTimelineSet && RecordArray[Idx_CAPE]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND);
 
     Fit();
     Refresh();
@@ -1093,8 +1093,10 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                     case GRB_CAPE:      idx = Idx_CAPE;break;
                     }
 
-                    if(idx != -1)
+                    if(idx != -1) {
                         m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]= pRec;
+                        if(m_GribIdxArray.Index(idx) == wxNOT_FOUND ) m_GribIdxArray.Add(idx, 1);
+                    }
                     break;
                 }
             }
