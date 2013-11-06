@@ -210,6 +210,8 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
          m_bLoadLastOpenFile= Pref->m_rbStartOptions->GetSelection();
+          if( m_pGRIBOverlayFactory )
+              m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
 
          int updatelevel = 0;
 
