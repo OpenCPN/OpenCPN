@@ -1895,7 +1895,7 @@ void options::CreateControls()
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
             wxDefaultSize, g_pi_manager->GetPlugInArray() );
-    m_pPlugInCtrl->SetScrollRate( 5, 5 );
+    m_pPlugInCtrl->SetScrollRate( 15, 15 );
 
     itemBoxSizerPanelPlugins->Add( m_pPlugInCtrl, 1, wxEXPAND|wxALL, border_size );
 
