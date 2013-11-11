@@ -4801,7 +4801,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
     wxString sheader;
 
     fprintf( fpOut, "OGRFeature(%s):%ld\n", pFeature->GetDefnRef()->GetName(), pFeature->GetFID() );
-
+    
 //      In the interests of output file size, DO NOT report fields that are not set.
     for( int iField = 0; iField < pFeature->GetFieldCount(); iField++ ) {
         if( pFeature->IsFieldSet( iField ) ) {
@@ -4826,6 +4826,11 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                             wxString att_conv(pAttrVal, conv);
                             wxAttrValue = att_conv;
                         }
+                        else if( poReader->GetNall() == 1) {     // ENC is using Lex level 1 (ISO 8859_1) encoding
+                            wxCSConv conv(_T("iso8859-1") );
+                            wxString att_conv(pAttrVal, conv);
+                            wxAttrValue = att_conv;
+                        }
                     }
                     
                     if( wxAttrValue.IsEmpty()) {
@@ -4835,9 +4840,16 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                         wxAttrValue = wxString( pAttrVal, wxConvUTF8 );
 
                         if( 0 ==wxAttrValue.Length() ) {
-                            wxMBConvUTF16 conv;
-                            wxString att_conv(pAttrVal, conv);
-                            wxAttrValue = att_conv;
+                            if( poReader->GetNall() == 2) {     // ENC is using UCS-2 / UTF-16 encoding
+                                wxMBConvUTF16 conv;
+                                wxString att_conv(pAttrVal, conv);
+                                wxAttrValue = att_conv;
+                            }
+                            else if( poReader->GetNall() == 1) {     // ENC is using Lex level 1 (ISO 8859_1) encoding
+                                wxCSConv conv(_T("iso8859-1") );
+                                wxString att_conv(pAttrVal, conv);
+                                wxAttrValue = att_conv;
+                            }
                             
                             if( 0 ==wxAttrValue.Length() ) {
                                 wxLogError( _T("Warning: CreateSENCRecord(): Failed to convert string value to wxString.") );
