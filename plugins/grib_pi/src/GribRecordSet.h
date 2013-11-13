@@ -34,7 +34,7 @@ enum { Idx_WIND_VX, Idx_WIND_VY, Idx_WIND_GUST, Idx_PRESSURE, Idx_HTSIGW, Idx_WV
        Idx_SEACURRENT_VX, Idx_SEACURRENT_VY,
        Idx_PRECIP_TOT, Idx_CLOUD_TOT,
        Idx_AIR_TEMP_2M, Idx_SEA_TEMP,
-       Idx_COUNT };
+       Idx_CAPE, Idx_COUNT };
 
 class GribRecordSet {
 public:

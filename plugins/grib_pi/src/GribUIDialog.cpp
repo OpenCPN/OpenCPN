@@ -152,7 +152,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_cRecordForecast->Clear();
     /* this should be un-commented to avoid a memory leak,
        but for some reason it crbashes windows */
-//    delete m_bGRIBActiveFile;
+    delete m_bGRIBActiveFile;
     m_pTimelineSet = NULL;
 
     //get more recent file in default directory if necessary
@@ -176,7 +176,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_sTimeline->SetValue(0);
 
     wxFileName fn( m_file_name );
-    this->SetTitle( fn.GetFullName() );
+    wxString title( fn.GetFullName() );
 
     if( m_bGRIBActiveFile ) {
         if( m_bGRIBActiveFile->IsOK() ) {
@@ -184,18 +184,20 @@ void GRIBUIDialog::OpenFile(bool newestFile)
             if( rsa->GetCount() == 0 ) {
                 m_bGRIBActiveFile = NULL;
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Error:  No valid data in this file!") );
-            } else
-                PopulateComboDataList( 0 );
+            } else {
+                PopulateComboDataList();
+                title.append( _T("(") + TToString( m_bGRIBActiveFile->GetRefDateTime(), pPlugIn->GetTimeZone()) + _T(")"));
+            }
         } else {
             if( fn.IsDir() ) {
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning:  Empty directory!") );
-                this->SetTitle( fn.GetFullPath() );
             }
             else
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
-	}
+        }
+        this->SetTitle(title);
         SetFactoryOptions();
-        DisplayDataGRS();
+        TimelineChanged();
         PopulateTrackingControls();
     }
 }
@@ -245,6 +247,7 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
 
     m_bGRIBActiveFile = NULL;
     m_pTimelineSet = NULL;
+    m_InterpolateMode = false;
 
     wxFileConfig *pConf = GetOCPNConfigObject();
 
@@ -270,6 +273,8 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
         m_cbAirTemperature->SetValue(value);
         pConf->Read( _T ( "SeaTemperaturePlot" ), &value, false );
         m_cbSeaTemperature->SetValue(value);
+        pConf->Read( _T ( "CAPEPlot" ), &value, false );
+        m_cbCAPE->SetValue(value);
 
         pConf->Read ( _T ( "lastdatatype" ), &m_lastdatatype, 0);
 
@@ -321,6 +326,7 @@ GRIBUIDialog::~GRIBUIDialog()
         pConf->Write( _T ( "CloudPlot" ), m_cbCloud->GetValue());
         pConf->Write( _T ( "AirTemperaturePlot" ), m_cbAirTemperature->GetValue());
         pConf->Write( _T ( "SeaTemperaturePlot" ), m_cbSeaTemperature->GetValue());
+        pConf->Write( _T ( "CAPEPlot" ), m_cbCAPE->GetValue());
         pConf->Write( _T ( "lastdatatype" ), m_lastdatatype);
 
         pConf->Write ( _T ( "Filename" ), m_file_name );
@@ -391,41 +397,44 @@ void GRIBUIDialog::PopulateTrackingControls( void )
 
     m_fgTrackingControls->Clear();
     m_fgTrackingControls->SetCols(9);
-
-    GribRecord **RecordArray;
-    if( m_pTimelineSet )
-        RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
+    this->Fit();
 
     AddTrackingControl(m_cbWind, m_tcWindSpeed, m_tcWindDirection,
-                       m_pTimelineSet && RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY]);
-    AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet && RecordArray[Idx_WIND_GUST]);
-    AddTrackingControl(m_cbPressure, m_tcPressure, 0, m_pTimelineSet && RecordArray[Idx_PRESSURE]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND 
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND);
+    AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet 
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND);
+    AddTrackingControl(m_cbPressure, m_tcPressure, 0, m_pTimelineSet 
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND);
 
     /* tracking for wave is funky */
-    if(m_pTimelineSet && RecordArray[Idx_HTSIGW]) {
-        if(RecordArray[Idx_WVDIR])
+    if(m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HTSIGW) != wxNOT_FOUND) {
+        if(m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND)
             AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, true);
         else {
             AddTrackingControl(m_cbWave, m_tcWaveHeight, 0, true);
             m_tcWaveDirection->Hide();
         }
     } else
-        if(m_pTimelineSet && RecordArray[Idx_WVDIR]) {
+        if(m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVDIR) != wxNOT_FOUND) {
             AddTrackingControl(m_cbWave, 0, m_tcWaveDirection, true);
             m_tcWaveHeight->Hide();
         } else
             AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, false);
 
     AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection,
-                       m_pTimelineSet && RecordArray[Idx_SEACURRENT_VX] && RecordArray[Idx_SEACURRENT_VY]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND 
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VY) != wxNOT_FOUND);
     AddTrackingControl(m_cbPrecipitation, m_tcPrecipitation, 0,
-                       m_pTimelineSet && RecordArray[Idx_PRECIP_TOT]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND);
     AddTrackingControl(m_cbCloud, m_tcCloud, 0,
-                       m_pTimelineSet && RecordArray[Idx_CLOUD_TOT]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND);
     AddTrackingControl(m_cbAirTemperature, m_tcAirTemperature, 0,
-                       m_pTimelineSet && RecordArray[Idx_AIR_TEMP_2M]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP_2M) != wxNOT_FOUND);
     AddTrackingControl(m_cbSeaTemperature, m_tcSeaTemperature, 0,
-                       m_pTimelineSet && RecordArray[Idx_SEA_TEMP]);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND);
+    AddTrackingControl(m_cbCAPE, m_tcCAPE, 0,
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND);
 
     Fit();
     Refresh();
@@ -435,13 +444,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
 {
     if( !m_pTimelineSet )
         return;
-#if(0)
-    wxDateTime t = m_pTimelineSet->m_Reference_Time;
-    t.MakeFromTimezone( wxDateTime::UTC );
-    if( t.IsDST() ) t.Subtract( wxTimeSpan( 1, 0, 0, 0 ) );
-    m_cRecordForecast->SetLabel(t.Format(_T("%Y-%m-%d %H:%M:%S "), wxDateTime::Local) + _T("Local - ") +
-                                t.Format(_T("%H:%M:%S "), wxDateTime::UTC) + _T("GMT"));
-#endif
+
     GribRecord **RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
     //    Update the wind control
     if( RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY] ) {
@@ -587,6 +590,18 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             m_tcSeaTemperature->SetValue( _("N/A") );
     }
 
+    //    Update the Convective Available Potential Energy (CAPE)
+    if( RecordArray[Idx_CAPE] ) {
+        double cape = RecordArray[Idx_CAPE]->
+            getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
+
+        if( cape != GRIB_NOTDEF ) {
+            cape = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CAPE, cape);
+            m_tcCAPE->SetValue( wxString::Format( _T("%5.0f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CAPE), cape ) );
+        } else
+            m_tcCAPE->SetValue( _("N/A") );
+    }
+
     Fit();
 }
 
@@ -635,7 +650,7 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
 
     GribRequestSetting *req_Dialog = new GribRequestSetting( this, pPlugIn->GetRequestConfig(), latmaxi, latmini, lonmini, lonmaxi,
         pPlugIn->GetMailFromAddress(), pPlugIn->GetMailToAddresses(), pPlugIn->GetZyGribLogin(), pPlugIn->GetZyGribCode() );
-    wxString s1[] = {_T("GFS"),_T("COMPS"),_T("RTOFS")};
+    wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS")};
     for( int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
         req_Dialog->m_pModel->Append( s1[i] );
     wxString s2[] = {_T("Saildocs"),_T("zyGrib")};
@@ -682,6 +697,8 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
                 : req_Dialog->m_RequestConfigBase.SetChar( 11, '.' );
             req_Dialog->m_pSeaTemp->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 12, 'X' )
                 : req_Dialog->m_RequestConfigBase.SetChar( 12, '.' );
+            req_Dialog->m_pCAPE->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 15, 'X' )
+                : req_Dialog->m_RequestConfigBase.SetChar( 15, '.' );
         }
         if(req_Dialog->m_pModel->GetCurrentSelection() != ZYGRIB && req_Dialog->m_pModel->GetCurrentSelection() != COAMPS)
             req_Dialog->m_pCurrent->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 13, 'X' )
@@ -718,7 +735,7 @@ void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 
 void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
 {
-   if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
+    if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
         m_bpPlay->SetBitmap(wxBitmap( stop ));
         m_bpPlay->SetToolTip( _("Stop") );
         m_tPlayStop.Start( 1000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
@@ -743,45 +760,41 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
         }
     } else {
         m_sTimeline->SetValue(m_sTimeline->GetValue() + 1);
+        m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
+        if(!m_InterpolateMode) m_cRecordForecast->SetSelection( m_sTimeline->GetValue() );
         TimelineChanged();
     }
 }
 
-#if 0
-void GRIBUIDialog::OnFileDirChange( wxFileDirPickerEvent &event )
+void GRIBUIDialog::TimelineChanged()
 {
-    m_pRecordTree->DeleteAllItems();
-    delete m_pRecordTree->m_file_id_array;
-
-    m_RecordTree_root_id = m_pRecordTree->AddRoot( _T ( "GRIBs" ) );
-    PopulateTreeControl();
-    m_pRecordTree->Expand( m_RecordTree_root_id );
-
-    pPlugIn->GetGRIBOverlayFactory()->Reset();
-
-    Refresh();
-
-    m_grib_dir = event.GetPath();
-}
-#endif
-
-void GRIBUIDialog::TimelineChanged(bool sync)
-{
-    if(!m_bGRIBActiveFile)
+    if( !m_bGRIBActiveFile || (m_bGRIBActiveFile && !m_bGRIBActiveFile->IsOK()) ) {
+        pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
         return;
+    }
 
     wxDateTime time = TimelineTime();
     SetGribTimelineRecordSet(GetTimeLineRecordSet(time));
 
-    /* get closest index to update combo box */
-    unsigned int i;
-    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    if( !m_InterpolateMode ){
+        double sel = (m_cRecordForecast->GetCurrentSelection());
 
-    if(rsa->GetCount() < 2) { /* this case should be handled below instead,
-                                 but apparently the logic is wrong and sometimes crashes */
-        m_cRecordForecast->SetSelection(0);
-        return;
-    }
+    /* get closest value to update timeline */
+        m_sTimeline->SetValue((int)
+            m_OverlaySettings.m_bInterpolate ? sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
+            );
+    } else
+        m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
+
+    pPlugIn->SendTimelineMessage(time);
+    RequestRefresh( pParent );
+}
+
+int GRIBUIDialog::GetTimePosition(wxDateTime time)
+{
+    /* get closest index to update combo box */
+    size_t i;
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
 
     wxDateTime itime, ip1time;
     for(i=0; i<rsa->GetCount()-1; i++) {
@@ -790,35 +803,19 @@ void GRIBUIDialog::TimelineChanged(bool sync)
         if(ip1time >= time)
             break;
     }
-
-    if(time - itime < ip1time - time)
-        m_cRecordForecast->SetSelection(i);
-    else
-        m_cRecordForecast->SetSelection(i+1);
-
-    if(sync)
-        return;
-
-//    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
-        m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
-//    m_cRecordForecast->ToggleWindowStyle(wxCB_READONLY);
-
-    pPlugIn->SendTimelineMessage(time);
-    RequestRefresh( pParent );
+    return (time - itime < ip1time - time) ? i : i+1;
 }
 
 wxDateTime GRIBUIDialog::TimelineTime()
 {
-    int tl = (m_TimeLineHours == 0) ? 0 : m_sTimeline->GetValue();
-    if(m_OverlaySettings.m_bInterpolate) {
-        //compute timeline with the true step = slices per update*divider
-        int hours = tl*m_OverlaySettings.m_SlicesPerUpdate/m_OverlaySettings.m_HourDivider;
-        int minutes = ((tl*m_OverlaySettings.m_SlicesPerUpdate)%m_OverlaySettings.m_HourDivider)*(60*m_OverlaySettings.m_SlicesPerUpdate/m_OverlaySettings.m_HourDivider);
-        return MinTime() + wxTimeSpan(hours, minutes);
+    if(m_InterpolateMode) {
+        int tl = (m_TimeLineHours == 0) ? 0 : m_sTimeline->GetValue();
+        int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
+        return MinTime() + wxTimeSpan( tl * stepmin / 60, (tl * stepmin) % 60 );
     } else {
-        //compute timeline from the record selected
         ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-        return rsa->Item(tl).m_Reference_Time;
+        int index = m_cRecordForecast->GetCurrentSelection() < 1 ? 0 :m_cRecordForecast->GetCurrentSelection();
+        return rsa->Item(index).m_Reference_Time;
     }
 }
 
@@ -831,13 +828,6 @@ wxDateTime GRIBUIDialog::MinTime()
     }
     return wxDateTime(0.0);
 }
-
-#if 0
-wxDateTime GRIBUIDialog::MaxTime()
-{
-    return MinTime() + wxTimeSpan(m_sTimeline->GetMax()/m_OverlaySettings.m_HourDivider);
-}
-#endif
 
 GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
 {
@@ -855,6 +845,8 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
     if(i == 0)
         im1 = 0;
 
+    if(!m_InterpolateMode) im1 = i;
+
     wxDateTime mintime = MinTime();
     double minute2 = (curtime - mintime).GetMinutes();
     curtime = rsa->Item(im1).m_Reference_Time;
@@ -870,15 +862,14 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
     else
         interp_const = (nminute-minute1) / (minute2-minute1);
 
-    if(!m_OverlaySettings.m_bInterpolate)
-        interp_const = round(interp_const);
-
     GribRecordSet &GRS1 = rsa->Item(im1), &GRS2 = rsa->Item(i);
     return new GribTimelineRecordSet(GRS1, GRS2, interp_const);
 }
 
 void GRIBUIDialog::OnTimeline( wxScrollEvent& event )
 {
+    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
+    if(!m_InterpolateMode) m_cRecordForecast->SetSelection(m_sTimeline->GetValue());
     TimelineChanged();
 }
 
@@ -914,9 +905,13 @@ void GRIBUIDialog::CreateActiveFileFromName( wxString filename )
     }
 }
 
-void GRIBUIDialog::PopulateComboDataList( int index )
+void GRIBUIDialog::PopulateComboDataList()
 {
-    m_cRecordForecast->Clear();
+    int index = 0;
+    if( !m_cRecordForecast->IsEmpty() ){
+        index = m_cRecordForecast->GetCurrentSelection();
+        m_cRecordForecast->Clear();
+    }
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
     for( size_t i = 0; i < rsa->GetCount(); i++ ) {
@@ -929,27 +924,26 @@ void GRIBUIDialog::PopulateComboDataList( int index )
 
 void GRIBUIDialog::OnPrev( wxCommandEvent& event )
 {
-    if(m_cRecordForecast->GetCurrentSelection() == -1) /* set to interpolated entry */
-        TimelineChanged(true);
+    if(m_InterpolateMode) m_cRecordForecast->SetSelection(GetTimePosition(TimelineTime()));  /* set to interpolated entry */
 
-//    m_pGribForecastTimer.Stop();
-    int selection = m_cRecordForecast->GetCurrentSelection() - 1;
-    if(selection < 0)
-        selection = 0;
-    m_cRecordForecast->SetSelection( selection );
-    DisplayDataGRS( );
+    m_InterpolateMode = false;
+
+    m_cRecordForecast->SetSelection( m_cRecordForecast->GetCurrentSelection() < 1 ? 0: m_cRecordForecast->GetCurrentSelection() - 1 );
+
+    TimelineChanged();
 }
 
 void GRIBUIDialog::OnNext( wxCommandEvent& event )
 {
-    if(m_cRecordForecast->GetCurrentSelection() == -1) /* set to interpolated entry */
-        TimelineChanged(true);
+    if(m_InterpolateMode) m_cRecordForecast->SetSelection(GetTimePosition(TimelineTime()));  /* set to interpolated entry */
+
+    m_InterpolateMode = false;
 
     if( m_cRecordForecast->GetCurrentSelection() == (int)m_cRecordForecast->GetCount() - 1 ) return; //end of list
 
-//    m_pGribForecastTimer.Stop();
     m_cRecordForecast->SetSelection( m_cRecordForecast->GetCurrentSelection() + 1 );
-    DisplayDataGRS( );
+
+    TimelineChanged();
 }
 
 void GRIBUIDialog::ComputeBestForecastForNow()
@@ -958,60 +952,25 @@ void GRIBUIDialog::ComputeBestForecastForNow()
     wxDateTime now = wxDateTime::Now().ToUTC(wxDateTime::Now().IsDST()==0);
     if(now.IsDST()) now.Add(wxTimeSpan( 1,0,0,0));          //bug in wxWidgets ?
 
-    if( m_OverlaySettings.m_bInterpolate ) {
+    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
+    if( m_InterpolateMode ) {
         wxTimeSpan span = now - MinTime();
-        int stepmin = 60*m_OverlaySettings.m_SlicesPerUpdate/m_OverlaySettings.m_HourDivider;
-        if((span.GetMinutes()%stepmin) > (stepmin/2))
-            m_sTimeline->SetValue((span.GetMinutes()+stepmin)/stepmin);
-        else
-            m_sTimeline->SetValue(span.GetMinutes()/stepmin);
+        int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
+        m_sTimeline->SetValue(span.GetMinutes()%stepmin < stepmin/2 ? span.GetMinutes()/stepmin : (span.GetMinutes()/stepmin) + 1);
     }
     else {
         ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-        size_t i;
-        for( i=0; i<rsa->GetCount()-1; i++ ) {
+        for( size_t i=0; i<rsa->GetCount()-1; i++ ) {
             wxDateTime ti2( rsa->Item(i+1).m_Reference_Time );
             if(ti2 >= now) {
                 wxDateTime ti1( rsa->Item(i).m_Reference_Time );
-                if( (now-ti1) > (ti2-now) ) i++;
+                m_cRecordForecast->SetSelection(now-ti1 < ti2-now ? i : i+1);
                 break;
             }
         }
-        m_sTimeline->SetValue(i);
     }
     TimelineChanged();
-}
 
-void GRIBUIDialog::DisplayDataGRS()
-{
-    if( m_bGRIBActiveFile &&  m_bGRIBActiveFile->IsOK() ) {
-        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-        int selection = m_cRecordForecast->GetCurrentSelection();
-        if(selection >=0) {
-            GribRecordSet *record = &rsa->Item( selection );
-            if(m_OverlaySettings.m_bInterpolate)
-                SelectGribRecordSet( record );
-            else {
-                m_sTimeline->SetValue(selection);
-                TimelineChanged();
-            }
-        }
-    } else
-        SelectGribRecordSet( NULL );
-}
-
-void GRIBUIDialog::SelectGribRecordSet( GribRecordSet *pGribRecordSet )
-{
-    if(!pGribRecordSet) {
-        pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
-        return;
-    }
-
-    wxDateTime mintime = MinTime(), curtime = pGribRecordSet->m_Reference_Time;
-    double hour = (curtime - mintime).GetMinutes()/60.0;
-
-    m_sTimeline->SetValue(hour/m_OverlaySettings.m_SlicesPerUpdate*m_OverlaySettings.m_HourDivider);
-    TimelineChanged();
 }
 
 void GRIBUIDialog::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)
@@ -1027,21 +986,22 @@ void GRIBUIDialog::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)
 
 void GRIBUIDialog::SetFactoryOptions( bool set_val )
 {
-    int max = m_sTimeline->GetMax(), val = m_sTimeline->GetValue();             //memorize the old range and value
+    int max = wxMax(m_sTimeline->GetMax(), 1), val = m_sTimeline->GetValue();             //memorize the old range and value
 
-    if(m_OverlaySettings.m_bInterpolate)
-        m_sTimeline->SetMax(m_TimeLineHours/m_OverlaySettings.m_SlicesPerUpdate*m_OverlaySettings.m_HourDivider);
+    if(m_OverlaySettings.m_bInterpolate){
+        int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
+        m_sTimeline->SetMax(m_TimeLineHours * 60 / stepmin );
+    }
     else {
-        if(m_bGRIBActiveFile) {
+        if(m_bGRIBActiveFile && m_bGRIBActiveFile->IsOK()) {
             ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
             m_sTimeline->SetMax(rsa->GetCount()-1);
         }
     }
 
     //try to retrieve a coherent timeline value with the new timeline range if it has changed
-    if( set_val && m_sTimeline->GetMax() != 0 )
-        m_sTimeline->SetValue( m_sTimeline->GetMax() * val / max );
-
+        if( set_val && m_sTimeline->GetMax() != 0 )
+            m_sTimeline->SetValue( m_sTimeline->GetMax() * val / max );
 
     if(m_pTimelineSet)
         m_pTimelineSet->ClearCachedData();
@@ -1100,7 +1060,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
     //    Convert from zyGrib organization by data type/level to our organization by time.
 
     GribRecord *pRec;
-
+    bool isOK(false);
     //    Get the map of GribRecord vectors
     std::map<std::string, std::vector<GribRecord *>*> *p_map = m_pGribReader->getGribMap();
 
@@ -1110,7 +1070,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
         std::vector<GribRecord *> *ls = ( *it ).second;
         for( zuint i = 0; i < ls->size(); i++ ) {
             pRec = ls->at( i );
-
+            isOK = true;
             time_t thistime = pRec->getRecordCurrentDate();
 
             //   Search the GribRecordSet array for a GribRecordSet with matching time
@@ -1130,15 +1090,19 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                     case GRB_CLOUD_TOT:  idx = Idx_CLOUD_TOT; break;
                     case GRB_TEMP:     idx = Idx_AIR_TEMP_2M; break;
                     case GRB_WTMP:     idx = Idx_SEA_TEMP; break;
+                    case GRB_CAPE:      idx = Idx_CAPE;break;
                     }
 
-                    if(idx != -1)
+                    if(idx != -1) {
                         m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]= pRec;
+                        if(m_GribIdxArray.Index(idx) == wxNOT_FOUND ) m_GribIdxArray.Add(idx, 1);
+                    }
                     break;
                 }
             }
         }
     }
+    if(isOK) m_pRefDateTime = pRec->getRecordRefDate();     //to ovaid crash with ceratain bad files
 }
 
 GRIBFile::~GRIBFile()
@@ -1226,6 +1190,8 @@ void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
     m_pSeaTemp->Enable( !IsZYGRIB && IsGFS );
     m_pWindGust->SetValue( m_RequestConfigBase.GetChar(14) == 'X' && IsZYGRIB);
     m_pWindGust->Enable( IsZYGRIB );
+    m_pCAPE->SetValue( m_RequestConfigBase.GetChar(15) == 'X' && IsGFS );
+    m_pCAPE->Enable( IsGFS );
     m_pCurrent->SetValue( IsRTOFS );
     m_pCurrent->Enable( false );
 
@@ -1279,8 +1245,8 @@ wxString GribRequestSetting::WriteMail()
     m_MailError_Nb = 0;
     //some useful strings
     const wxString s[] = { _T(","), _T(" ") };        //separators
-    const wxString p[][6] = {{ _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("WAVES"), _T("SEATMP"), _T("")}, //parameters
-        {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), _T(""), _T("GUST")} };
+    const wxString p[][7] = {{ _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("WAVES"), _T("SEATMP"), wxEmptyString, _T("CAPE")}, //parameters
+        {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), wxEmptyString, _T("GUST"), _T("CAPE")} };
 
     wxString r_topmess,r_parameters,r_zone;
     //write the top part of the mail
@@ -1339,6 +1305,8 @@ wxString GribRequestSetting::WriteMail()
             r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][4] );
         if( m_pWindGust->GetValue() )
             r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][5] );
+        if( m_pCAPE->GetValue() )
+            r_parameters.Append( s[m_pMailTo->GetCurrentSelection()] + p[m_pMailTo->GetCurrentSelection()][6] );
         break;
     case COAMPS:                                                                           //COAMPS
         r_parameters = wxT("WIND,PRMSL");                                 //the default parameters for this model
@@ -1389,6 +1357,7 @@ bool GribRequestSetting::EstimateFileSize()
     int nbSTemp  = (m_pSeaTemp->IsChecked())    ?  nbrec   : 0;
     int nbGUSTsfc  = (m_pWindGust->IsChecked()) ?  nbrec : 0;
     int nbCurrent  = (m_pCurrent->IsChecked()) ?  nbrec : 0;
+    int nbCape  = (m_pCAPE->IsChecked()) ?  nbrec : 0;
 
     int head = 84;
     double estime = 0.0;
@@ -1413,6 +1382,9 @@ bool GribRequestSetting::EstimateFileSize()
 
     nbits = 7;
     estime += nbGUSTsfc*(head+(nbits*npts)/8+2 );
+
+    nbits = 5;
+    estime += nbCape*(head+(nbits*npts)/8+2 );
 
 	int nbwave = 0;
 	if (m_pWaves->IsChecked()) nbwave++;

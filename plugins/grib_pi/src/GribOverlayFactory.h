@@ -132,6 +132,7 @@ private:
     GribOverlay *m_pOverlay[GribOverlaySettings::SETTINGS_COUNT];
 
     wxString m_Message;
+    wxString m_Message_Hiden;
     int  m_TimeZone;
     wxSize  m_ParentSize;
 

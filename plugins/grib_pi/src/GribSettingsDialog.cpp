@@ -33,19 +33,20 @@ static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};
 static const wxString units3_names[] = {_("Celsius"), _("Fahrenheit"), wxEmptyString};
 static const wxString units4_names[] = {_("Millimeters"), _("Inches"), wxEmptyString};
 static const wxString units5_names[] = {_("Percentage"), wxEmptyString};
+static const wxString units6_names[] = {_("j/kg"), wxEmptyString};
 static const wxString *unit_names[] = {units0_names, units1_names, units2_names,
-                                       units3_names, units4_names, units5_names};
+                                       units3_names, units4_names, units5_names, units6_names};
 
 static const wxString name_from_index[] = {_T("Wind"), _T("WindGust"), _T("Pressure"),
                                            _T("Waves"), _T("Current"),
                                            _T("Rainfall"), _T("CloudCover"),
-                                           _T("AirTemperature"), _T("SeaTemperature")};
+                                           _T("AirTemperature"), _T("SeaTemperature"), _T("CAPE")};
 static const wxString tname_from_index[] = {_("Wind"), _("Wind Gust"),  _("Pressure"),
                                             _("Waves"), _("Current"),
                                             _("Rainfall"), _("Cloud Cover"),
-                                            _("Air Temperature(2m)"), _("Sea Temperature(surf.)")};
+                                            _("Air Temperature(2m)"), _("Sea Temperature(surf.)"), _("CAPE")};
 
-static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 0, 4, 5, 3, 3};
+static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 0, 4, 5, 3, 3, 6};
 
 enum SettingsDisplay {B_ARROWS, ISO_LINES, D_ARROWS, OVERLAY};
 
@@ -78,18 +79,18 @@ void GribOverlaySettings::Read()
         Settings[i].m_Units = (SettingsType)units;
 
         pConf->Read ( Name + _T ( "BarbedArrows" ), &Settings[i].m_bBarbedArrows, i==WIND);
-        int defrange[SETTINGS_COUNT] = {100, 100, 0, 0, 0, 0, 0, 0, 0};
+        int defrange[SETTINGS_COUNT] = {100, 100, 0, 0, 0, 0, 0, 0, 0, 0};
         pConf->Read ( Name + _T ( "BarbedRange" ), &Settings[i].m_iBarbedRange, defrange[i]);
 
         pConf->Read ( Name + _T ( "IsoBars" ), &Settings[i].m_bIsoBars, i==PRESSURE);
-        double defspacing[SETTINGS_COUNT] = {0, 0, 4, 0, 0, 0, 0, 2, 2};
+        double defspacing[SETTINGS_COUNT] = {4, 0, 4, 0, 0, 0, 0, 2, 2, 100};
         pConf->Read ( Name + _T ( "IsoBarSpacing" ), &Settings[i].m_iIsoBarSpacing, defspacing[i]);
 
         pConf->Read ( Name + _T ( "DirectionArrows" ), &Settings[i].m_bDirectionArrows, i==CURRENT);
         pConf->Read ( Name + _T ( "DirectionArrowSize" ), &Settings[i].m_iDirectionArrowSize, 10);
 
         pConf->Read ( Name + _T ( "OverlayMap" ), &Settings[i].m_bOverlayMap, i!=WIND && i!=PRESSURE);
-        int defcolor[SETTINGS_COUNT] = {1, 1, 0, 0, 6, 4, 5, 2, 3};
+        int defcolor[SETTINGS_COUNT] = {1, 1, 0, 0, 6, 4, 5, 2, 3, 0};
         pConf->Read ( Name + _T ( "OverlayMapColors" ), &Settings[i].m_iOverlayMapColors, defcolor[i]);
 
         pConf->Read ( Name + _T ( "Numbers" ), &Settings[i].m_bNumbers, 0);
@@ -167,7 +168,8 @@ double GribOverlaySettings::CalibrationFactor(int settings)
         case MILLIMETERS: return 1;
         case INCHES:      return 25.4;
         } break;
-    case 5: return 1;
+    case 5:
+    case 6: return 1;
     }
 
     return 1;
@@ -201,6 +203,9 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings)
         case 5: switch(Settings[settings].m_Units) {
             case PERCENTAGE:  return _T("%");
         } break;
+        case 6: switch(Settings[settings].m_Units) {
+            case JPKG:  return _T("j/kg");
+        } break;
     }
     return _T("");
 }
@@ -229,6 +234,7 @@ double GribOverlaySettings::GetMax(int settings)
     case CLOUD:           max = 100;     break; /* percent */
     case AIR_TEMPERATURE: max = 273.15+50;  break; /* kelvin */
     case SEA_TEMPERATURE: max = 273.15+50;  break; /* kelvin */
+    case CAPE:            max = 4000;    break; /* j/kg */
     }
     return CalibrateValue(settings, max);
 }
@@ -336,7 +342,14 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     //Show only fitting parameters
     switch(settings){
     case 0:
+        ShowSettings( ISO_LINES );
+        m_cbIsoBars->SetLabel(_("Display Isotachs"));
         ShowSettings( B_ARROWS );
+        ShowSettings( OVERLAY );
+        break;
+    case 1:
+        ShowSettings( ISO_LINES );
+        m_cbIsoBars->SetLabel(_("Display Isotachs"));
         ShowSettings( OVERLAY );
         break;
     case 2:
@@ -348,7 +361,6 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
         ShowSettings( D_ARROWS );
         ShowSettings( OVERLAY );
         break;
-    case 1:
     case 5:
     case 6:
         ShowSettings( OVERLAY );
@@ -356,8 +368,14 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     case 7:
     case 8:
         ShowSettings( ISO_LINES );
-        m_cbIsoBars->SetLabel(_("Display Iso Temp. Lines"));
+        m_cbIsoBars->SetLabel(_("Display Isotherms"));
         ShowSettings( OVERLAY );
+        break;
+    case 9:
+        ShowSettings( ISO_LINES );
+        m_cbIsoBars->SetLabel(_("Display Iso CAPE"));
+        ShowSettings( OVERLAY );
+
     }
 }
 
@@ -407,7 +425,7 @@ void GribSettingsDialog::OnTransparencyChange( wxScrollEvent& event  )
 {
     m_extSettings = m_Settings;
     m_Settings.m_iOverlayTransparency = m_sTransparency->GetValue();
-    m_parent.TimelineChanged();
+    m_parent.SetFactoryOptions();
 }
 
 void GribSettingsDialog::OnApply( wxCommandEvent& event )
