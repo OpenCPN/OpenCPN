@@ -8232,13 +8232,16 @@ int spaint;
 int s_in_update;
 void ChartCanvas::OnPaint( wxPaintEvent& event )
 {
-//      CALLGRIND_START_INSTRUMENTATION
-    //  Paint updates may have been externally disabled (temporarily, to avoid Yield() recursion performance loss)
-    if(!m_b_paint_enable)
-        return;
-
     wxPaintDC dc( this );
 
+    //  Paint updates may have been externally disabled (temporarily, to avoid Yield() recursion performance loss)
+    //  It is important that the wxPaintDC is built, even if we elect to not process this paint message.
+    //  Otherwise, the paint message may not be removed from the message queue, esp on Windows. (FS#1213)
+    //  This would lead to a deadlock condition in ::wxYield()
+    
+    if(!m_b_paint_enable)
+        return;
+    
 #ifdef ocpnUSE_GL    
     if( !g_bdisable_opengl )
         m_glcc->Show( g_bopengl );
