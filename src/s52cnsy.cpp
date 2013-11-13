@@ -1468,7 +1468,7 @@ static void *OBSTRN04a(void *param)
 }
 */
 
-wxString *SNDFRM02(S57Obj *obj, double depth_value);
+wxString SNDFRM02(S57Obj *obj, double depth_value);
 
 static void *OBSTRN04 (void *param)
 // Remarks: Obstructions or isolated underwater dangers of depths less than the safety
@@ -1496,7 +1496,7 @@ static void *OBSTRN04 (void *param)
       double   depth_value = UNKNOWN;
       double   least_depth = UNKNOWN;
 
-      wxString *sndfrm02str = NULL;
+      wxString sndfrm02str;
       wxString *quapnt01str = NULL;
 
       GetDoubleAttr(obj, "VALSOU", valsou);
@@ -1654,7 +1654,7 @@ static void *OBSTRN04 (void *param)
              }
 
              if (sounding)
-                  obstrn04str.Append(*sndfrm02str);
+                  obstrn04str.Append(sndfrm02str);
 
              obstrn04str.Append(*quapnt01str);
 
@@ -1703,7 +1703,7 @@ static void *OBSTRN04 (void *param)
                  else {
                     if (UNKNOWN != valsou)
                         if (valsou <= 20.0)
-                            obstrn04str.Append(*sndfrm02str);
+                            obstrn04str.Append(sndfrm02str);
                  }
                }
 
@@ -1731,7 +1731,7 @@ static void *OBSTRN04 (void *param)
                         else
                               obstrn04str.Append(_T(";LS(DASH,2,CHBLK)"));
 
-                        obstrn04str.Append(*sndfrm02str);
+                        obstrn04str.Append(sndfrm02str);
 
                   } else {
                         int watlev = -9;
@@ -1826,7 +1826,6 @@ end:
     strcpy(r, obstrn04str.mb_str());
 
     delete udwhaz03str;
-    delete sndfrm02str;
     delete quapnt01str;
 
     return r;
@@ -2442,7 +2441,7 @@ static void *SNDFRM02(void *param)
 }
 */
 
-wxString *SNDFRM02(S57Obj *obj, double depth_value);
+wxString SNDFRM02(S57Obj *obj, double depth_value);
 
 static void *SOUNDG02(void *param)
 // Remarks: In S-57 soundings are elements of sounding arrays rather than individual
@@ -2469,18 +2468,17 @@ static void *SOUNDG03(void *param)
     ObjRazRules *rzRules = (ObjRazRules *)param;
     S57Obj *obj = rzRules->obj;
 
-    wxString *s = SNDFRM02(obj, obj->z);
+    wxString s = SNDFRM02(obj, obj->z);
 
-    char *r = (char *)malloc(s->Len() + 1);
-    strcpy(r, s->mb_str());
+    char *r = (char *)malloc(s.Len() + 1);
+    strcpy(r, s.mb_str());
 
-    delete s;
     return r;
 }
 
 
 
-wxString *SNDFRM02(S57Obj *obj, double depth_value_in)
+wxString SNDFRM02(S57Obj *obj, double depth_value_in)
 // Remarks: Soundings differ from plain text because they have to be readable under all
 // circumstances and their digits are placed according to special rules. This
 // conditional symbology procedure accesses a set of carefully designed
@@ -2578,26 +2576,46 @@ wxString *SNDFRM02(S57Obj *obj, double depth_value_in)
 
     // Continuation A
     if (depth_value < 10.0) {
-        // can be above water (negative)
-        int fraction = (int)ABS((depth_value - leading_digit)*10);
+        
+        //      If showing as "feet", round off to one digit only
+        if( (ps52plib->m_nDepthUnitDisplay == 0) && (depth_value > 0) ){
+            double r1 = depth_value ;
+            depth_value = wxRound( r1 ) ;
+            leading_digit = (int) depth_value;
+        }
+        
+        if (depth_value < 10.0) {
+            // can be above water (negative)
+            int fraction = (int)ABS((depth_value - leading_digit)*10);
 
 
-        sprintf(temp_str, ";SY(%s1%1i)", symbol_prefix_a, (int)ABS(leading_digit));
-        sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s5%1i)", symbol_prefix_a, fraction);
-        if(fraction > 0)
+            sprintf(temp_str, ";SY(%s1%1i)", symbol_prefix_a, (int)ABS(leading_digit));
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+            if(fraction > 0) {
+                sprintf(temp_str, ";SY(%s5%1i)", symbol_prefix_a, fraction);
+                sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+            }
 
         // above sea level (negative)
-        if (depth_value < 0.0)
-        {
-            sprintf(temp_str, ";SY(%sA1)", symbol_prefix_a);
-            sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+            if (depth_value < 0.0)
+            {
+                sprintf(temp_str, ";SY(%sA1)", symbol_prefix_a);
+                sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+            }
+            goto return_point;
         }
-        goto return_point;
     }
 
     if (depth_value < 31.0) {
+        
+        //      If showing as "feet", round off to two digits only
+        if( (ps52plib->m_nDepthUnitDisplay == 0) && (depth_value > 0) ){
+            double r1 = depth_value ;
+            depth_value = wxRound( r1 ) ;
+            leading_digit = (int) depth_value;
+        }
+            
+            
         double fraction = depth_value - floor(leading_digit);
 
         if (fraction != 0.0) {
@@ -2612,9 +2630,10 @@ wxString *SNDFRM02(S57Obj *obj, double depth_value_in)
             int secnd_digit = (int)(floor(leading_digit - (first_digit * 10)));
             sprintf(temp_str, ";SY(%s1%1i)", symbol_prefix_a, secnd_digit/*(int)leading_digit*/);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-            sprintf(temp_str, ";SY(%s5%1i)", symbol_prefix_a, (int)fraction);
-            if((int)fraction > 0)
+            if((int)fraction > 0) {
+                sprintf(temp_str, ";SY(%s5%1i)", symbol_prefix_a, (int)fraction);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
+            }
 
             goto return_point;
         }
@@ -2695,16 +2714,11 @@ wxString *SNDFRM02(S57Obj *obj, double depth_value_in)
 return_point:
         sndfrm02.Append('\037');
 
-        wxString *r = new wxString(sndfrm02);
-
-/*        char *r = (char *)malloc(sndfrm02.Len() + 1);
-        strcpy(r, sndfrm02.mb_str());
-*/
         delete tecsoustr;
         delete quasoustr;
         delete statusstr;
 
-        return r;
+        return sndfrm02;
 }
 
 
@@ -2894,7 +2908,7 @@ static void *WRECKS02 (void *param)
 // called by this symbology procedure.
 {
     wxString wrecks02str;
-    wxString *sndfrm02str = NULL;
+    wxString sndfrm02str;
     wxString *udwhaz03str = NULL;
     wxString *quapnt01str = NULL;
     double   least_depth = UNKNOWN;
@@ -3032,8 +3046,7 @@ static void *WRECKS02 (void *param)
 				if ( 7 == quasou ) //Fixes FS 165
 					wrecks02str.Append(_T(";SY(WRECKS07)"));
 
-                if (NULL != sndfrm02str)                          // always show valsou depth
-                        wrecks02str.Append(*sndfrm02str);
+                wrecks02str.Append(sndfrm02str);       // always show valsou depth
 ///////////////////////////////////////////
 
                 wrecks02str.Append(*udwhaz03str);
@@ -3117,7 +3130,7 @@ static void *WRECKS02 (void *param)
             if (valsou <= 20) {
                     wrecks02str.Append(*udwhaz03str);
                     wrecks02str.Append(*quapnt01str);
-                    wrecks02str.Append(*sndfrm02str);
+                    wrecks02str.Append(sndfrm02str);
 
             } else {
                 // NOTE: ??? same as above ???
@@ -3151,7 +3164,6 @@ static void *WRECKS02 (void *param)
     char *r = (char *)malloc(wrecks02str.Len() + 1);
     strcpy(r, wrecks02str.mb_str());
 
-    delete sndfrm02str;
     delete udwhaz03str;
     delete quapnt01str;
 
