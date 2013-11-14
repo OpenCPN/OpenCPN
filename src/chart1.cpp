@@ -49,11 +49,7 @@
 #include <wx/dialog.h>
 #include <wx/progdlg.h>
 
-#if wxCHECK_VERSION(2, 9, 0)
 #include <wx/dialog.h>
-#else
-//  #include "scrollingdialog.h"
-#endif
 
 #include "dychart.h"
 
@@ -8747,10 +8743,11 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
     #endif // wxUSE_STATTEXT
     
     // 3) buttons
+    int AllButtonSizerFlags = wxOK|wxCANCEL|wxYES|wxNO|wxHELP|wxNO_DEFAULT;
     int center_flag = wxEXPAND;
     if (style & wxYES_NO)
         center_flag = wxALIGN_CENTRE;
-    wxSizer *sizerBtn = CreateSeparatedButtonSizer(style & ButtonSizerFlags);
+    wxSizer *sizerBtn = CreateSeparatedButtonSizer(style & AllButtonSizerFlags);
     if ( sizerBtn )
         topsizer->Add(sizerBtn, 0, center_flag | wxALL, 10 );
     
