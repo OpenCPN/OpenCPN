@@ -400,11 +400,11 @@ void GRIBUIDialog::PopulateTrackingControls( void )
     this->Fit();
 
     AddTrackingControl(m_cbWind, m_tcWindSpeed, m_tcWindDirection,
-        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND 
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND
         && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND);
-    AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet 
+    AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet
         && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND);
-    AddTrackingControl(m_cbPressure, m_tcPressure, 0, m_pTimelineSet 
+    AddTrackingControl(m_cbPressure, m_tcPressure, 0, m_pTimelineSet
         && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRESSURE) != wxNOT_FOUND);
 
     /* tracking for wave is funky */
@@ -423,7 +423,7 @@ void GRIBUIDialog::PopulateTrackingControls( void )
             AddTrackingControl(m_cbWave, m_tcWaveHeight, m_tcWaveDirection, false);
 
     AddTrackingControl(m_cbCurrent, m_tcCurrentVelocity, m_tcCurrentDirection,
-        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND 
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VX) != wxNOT_FOUND
         && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEACURRENT_VY) != wxNOT_FOUND);
     AddTrackingControl(m_cbPrecipitation, m_tcPrecipitation, 0,
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_PRECIP_TOT) != wxNOT_FOUND);
@@ -651,10 +651,10 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
     GribRequestSetting *req_Dialog = new GribRequestSetting( this, pPlugIn->GetRequestConfig(), latmaxi, latmini, lonmini, lonmaxi,
         pPlugIn->GetMailFromAddress(), pPlugIn->GetMailToAddresses(), pPlugIn->GetZyGribLogin(), pPlugIn->GetZyGribCode() );
     wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS")};
-    for( int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
+    for( unsigned int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
         req_Dialog->m_pModel->Append( s1[i] );
     wxString s2[] = {_T("Saildocs"),_T("zyGrib")};
-    for( int i= 0;  i<(sizeof(s2) / sizeof(wxString));i++)
+    for( unsigned int i= 0;  i<(sizeof(s2) / sizeof(wxString));i++)
         req_Dialog->m_pMailTo->Append( s2[i] );
     for( double i=0.5; i<3; i*=2)
         req_Dialog->m_pResolution->Append( wxString::Format(_T("%0.1f"), i));
@@ -663,7 +663,7 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
     for( int i=2; i<9; i++)
         req_Dialog->m_pTimeRange->Append( wxString::Format(_T("%d"), i));
     wxString s3[] = {_T("WW3-GLOBAL"),_T("WW3-MEDIT")};
-    for( int i= 0;  i<(sizeof(s3) / sizeof(wxString));i++)
+    for( unsigned int i= 0;  i<(sizeof(s3) / sizeof(wxString));i++)
         req_Dialog->m_pWModel->Append( s3[i] );
     req_Dialog->m_rButtonYes->SetLabel(_("Send"));
     req_Dialog->m_rButtonApply->SetLabel(_("Save"));
@@ -908,7 +908,11 @@ void GRIBUIDialog::CreateActiveFileFromName( wxString filename )
 void GRIBUIDialog::PopulateComboDataList()
 {
     int index = 0;
+#if wxCHECK_VERSION(3,0,0)
+    if (!m_cRecordForecast->IsListEmpty() ){
+#else
     if( !m_cRecordForecast->IsEmpty() ){
+#endif
         index = m_cRecordForecast->GetCurrentSelection();
         m_cRecordForecast->Clear();
     }
