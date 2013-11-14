@@ -908,7 +908,7 @@ void GRIBUIDialog::CreateActiveFileFromName( wxString filename )
 void GRIBUIDialog::PopulateComboDataList()
 {
     int index = 0;
-#if wxCHECK_VERSION(3,0,0)
+#if wxCHECK_VERSION(2,9,0)
     if (!m_cRecordForecast->IsListEmpty() ){
 #else
     if( !m_cRecordForecast->IsEmpty() ){
