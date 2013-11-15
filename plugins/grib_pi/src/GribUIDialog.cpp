@@ -1152,8 +1152,11 @@ void GribRequestSetting::InitRequestConfig()
 void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
 {
     //some useful  strings
-    const wxString res[][3] = { {_T("0.5"), _T("1"), _T("2")},
-        {_T("0.2"), _T("0.8"), _T("1.6")} };
+    const wxString res[][3] = { 
+        {_T("0.5"), _T("1.0"), _T("2.0")},
+        {_T("0.2"), _T("0.8"), _T("1.6")},
+        {_T("0.05"), _T("0.25"), _T("1.0")} 
+    };
 
     bool IsZYGRIB = false, IsGFS = false, IsRTOFS = false;
 
@@ -1162,15 +1165,11 @@ void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
 
     if( sel1 == GFS ) IsGFS = true;
 
-    //Resolution is always 0.5 if RTOFS
-    if( sel1 == RTOFS) { sel2 = 0; IsRTOFS = true; }
-
     m_pModel->SetSelection( sel1 );
 
     //populate resolution choice
-    int m = (sel1 == 2) ? 0 : sel1;
     for( int i = 0; i<3; i++ ) {
-        m_pResolution->SetString(i,res[m][i]);
+        m_pResolution->SetString(i,res[sel1][i]);
     }
      m_pResolution->SetSelection(sel2);
     //apply time & resolution limits
@@ -1261,9 +1260,9 @@ wxString GribRequestSetting::WriteMail()
         r_topmess = wxT("send ");
         r_topmess.Append(m_pModel->GetStringSelection() + _T(":"));
         r_topmess.Append( r_zone  + _T("|"));
+        r_topmess.Append(m_pResolution->GetStringSelection()).Append(_T(","))
+            .Append(m_pResolution->GetStringSelection()).Append(_T("|"));
         double v;
-        m_pResolution->GetStringSelection().ToDouble(&v);
-        r_topmess.Append(wxString::Format(_T("%1.1f,%1.1f"), v, v) + _T("|"));
         m_pInterval->GetStringSelection().ToDouble(&v);
         r_topmess.Append(wxString::Format(_T("0,%d,%d"), (int) v, (int) v*2));
         m_pTimeRange->GetStringSelection().ToDouble(&v);
