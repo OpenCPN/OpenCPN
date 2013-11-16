@@ -1006,7 +1006,10 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pos_image_user_grey_day   = NULL;
     m_pos_image_user_grey_dusk  = NULL;
     m_pos_image_user_grey_night = NULL;
-
+    m_pos_image_user_yellow_day = NULL;
+    m_pos_image_user_yellow_dusk = NULL;
+    m_pos_image_user_yellow_night = NULL;
+    
     m_zoom_timer.SetOwner(this, ZOOM_TIMER);
     m_bzooming_in = false;;
     m_bzooming_out = false;;
@@ -1414,6 +1417,41 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
             }
         }
 
+        //  Make a yellow image for rendering under low accuracy chart conditions
+        m_pos_image_user_yellow_day = new wxImage;
+        m_pos_image_user_yellow_dusk = new wxImage;
+        m_pos_image_user_yellow_night = new wxImage;
+        
+        *m_pos_image_user_yellow_day = m_pos_image_user_grey_day->Copy();
+        *m_pos_image_user_yellow_dusk = m_pos_image_user_grey_day->Copy();
+        *m_pos_image_user_yellow_night = m_pos_image_user_grey_day->Copy();
+        
+        for( int iy = 0; iy < gimg_height; iy++ ) {
+            for( int ix = 0; ix < gimg_width; ix++ ) {
+                if( !m_pos_image_user_grey_day->IsTransparent( ix, iy ) ) {
+                    wxImage::RGBValue rgb( m_pos_image_user_grey_day->GetRed( ix, iy ),
+                                           m_pos_image_user_grey_day->GetGreen( ix, iy ),
+                                           m_pos_image_user_grey_day->GetBlue( ix, iy ) );
+
+                    //  Simply remove all "blue" from the greyscaled image...
+                    //  so, what is not black becomes yellow.
+                    wxImage::HSVValue hsv = wxImage::RGBtoHSV( rgb );
+                    wxImage::RGBValue nrgb = wxImage::HSVtoRGB( hsv );
+                    m_pos_image_user_yellow_day->SetRGB( ix, iy, nrgb.red, nrgb.green, 0 );
+                    
+                    hsv = wxImage::RGBtoHSV( rgb );
+                    hsv.value = hsv.value * factor_dusk;
+                    nrgb = wxImage::HSVtoRGB( hsv );
+                    m_pos_image_user_yellow_dusk->SetRGB( ix, iy, nrgb.red, nrgb.green, 0 );
+                    
+                    hsv = wxImage::RGBtoHSV( rgb );
+                    hsv.value = hsv.value * factor_night;
+                    nrgb = wxImage::HSVtoRGB( hsv );
+                    m_pos_image_user_yellow_night->SetRGB( ix, iy, nrgb.red, nrgb.green, 0 );
+                }
+            }
+        }
+        
     }
 
     m_pBrightPopup = NULL;
@@ -1471,6 +1509,10 @@ ChartCanvas::~ChartCanvas()
     delete m_pos_image_user_grey_day;
     delete m_pos_image_user_grey_dusk;
     delete m_pos_image_user_grey_night;
+    delete m_pos_image_user_yellow_day;
+    delete m_pos_image_user_yellow_dusk;
+    delete m_pos_image_user_yellow_night;
+    
     delete undo;
 #ifdef ocpnUSE_GL
     if( !g_bdisable_opengl )
@@ -2125,6 +2167,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
         m_pos_image_yellow = &m_os_image_yellow_day;
         m_pos_image_user = m_pos_image_user_day;
         m_pos_image_user_grey = m_pos_image_user_grey_day;
+        m_pos_image_user_yellow = m_pos_image_user_yellow_day;
         break;
     case GLOBAL_COLOR_SCHEME_DUSK:
         m_pos_image_red = &m_os_image_red_dusk;
@@ -2132,6 +2175,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
         m_pos_image_yellow = &m_os_image_yellow_dusk;
         m_pos_image_user = m_pos_image_user_dusk;
         m_pos_image_user_grey = m_pos_image_user_grey_dusk;
+        m_pos_image_user_yellow = m_pos_image_user_yellow_dusk;
         break;
     case GLOBAL_COLOR_SCHEME_NIGHT:
         m_pos_image_red = &m_os_image_red_night;
@@ -2139,6 +2183,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
         m_pos_image_yellow = &m_os_image_yellow_night;
         m_pos_image_user = m_pos_image_user_night;
         m_pos_image_user_grey = m_pos_image_user_grey_night;
+        m_pos_image_user_yellow = m_pos_image_user_yellow_night;
         break;
     default:
         m_pos_image_red = &m_os_image_red_day;
@@ -2146,6 +2191,7 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
         m_pos_image_yellow = &m_os_image_yellow_day;
         m_pos_image_user = m_pos_image_user_day;
         m_pos_image_user_grey = m_pos_image_user_grey_day;
+        m_pos_image_user_yellow = m_pos_image_user_yellow_day;
         break;
     }
 
@@ -3344,7 +3390,11 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
             //      Substitute user ownship image if found
             if( m_pos_image_user ) {
                 pos_image = m_pos_image_user->Copy();
-                if( SHIP_NORMAL != m_ownship_state ) pos_image = m_pos_image_user_grey->Copy();
+                
+                if( SHIP_LOWACCURACY == m_ownship_state ) 
+                    pos_image = m_pos_image_user_yellow->Copy();
+                else if( SHIP_NORMAL != m_ownship_state )
+                    pos_image = m_pos_image_user_grey->Copy();
             }
 
             if( g_n_ownship_beam_meters > 0.0 && g_n_ownship_length_meters > 0.0 && g_OwnShipIconType > 0 ) // use large ship
