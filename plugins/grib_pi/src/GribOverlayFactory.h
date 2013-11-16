@@ -117,7 +117,7 @@ private:
     void drawTriangle( wxPen pen, bool south, double si, double co, int di, int dj, int b );
 
     wxColour GetGraphicColor(int config, double val);
-    wxImage &getLabel(double value);
+    wxImage &getLabel(double value, int settings);
 
     void DrawGLTexture( GLuint texture, int width, int height, int xd, int yd, int grib_pixel_size );
     void DrawGLRGBA( unsigned char *pRGBA, int RGBA_width, int RGBA_height, int xd, int yd );

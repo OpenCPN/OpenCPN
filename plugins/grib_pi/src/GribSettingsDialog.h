@@ -58,7 +58,7 @@ struct GribOverlaySettings
     enum SettingsType {WIND, WIND_GUST, PRESSURE, WAVE, CURRENT, PRECIPITATION, CLOUD, 
                        AIR_TEMPERATURE, SEA_TEMPERATURE, CAPE, SETTINGS_COUNT};
     enum Units0 {KNOTS, M_S, MPH, KPH};
-    enum Units1 {MILLIBARS, MMHG};
+    enum Units1 {MILLIBARS, MMHG, INHG};
     enum Units2 {METERS, FEET};
     enum Units3 {CELCIUS, FAHRENHEIT};
     enum Units4 {MILLIMETERS, INCHES};
