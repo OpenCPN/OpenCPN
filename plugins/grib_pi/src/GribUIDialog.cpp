@@ -683,27 +683,28 @@ void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
         m_bpPlay->SetBitmap(*m_bPlay );
         m_bpPlay->SetToolTip( _("Play") );
     }
+    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
 }
 
 void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
 {
-    if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) )
+    if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
         m_tPlayStop.Stop();
-    else if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) {
-        if(m_OverlaySettings.m_bLoopMode) {
+        return;
+    }
+    if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) {
+        if(m_OverlaySettings.m_bLoopMode)
             m_sTimeline->SetValue(0);
-            TimelineChanged();
-        } else {
+        else {
             m_bpPlay->SetBitmap(*m_bPlay );
             m_bpPlay->SetToolTip( _("Play") );
             m_tPlayStop.Stop();
         }
-    } else {
+    } else
         m_sTimeline->SetValue(m_sTimeline->GetValue() + 1);
-        m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
-        if(!m_InterpolateMode) m_cRecordForecast->SetSelection( m_sTimeline->GetValue() );
-        TimelineChanged();
-    }
+     
+    if(!m_InterpolateMode) m_cRecordForecast->SetSelection( m_sTimeline->GetValue() );
+    TimelineChanged();
 }
 
 void GRIBUIDialog::TimelineChanged()
