@@ -475,13 +475,13 @@ GribPreferencesDialogBase::GribPreferencesDialogBase( wxWindow* parent, wxWindow
 	m_cbCopyMissingWaveRecord = new wxCheckBox( this, wxID_ANY, _("Copy Missing Wave Records"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer6->Add( m_cbCopyMissingWaveRecord, 0, wxALL, 5 );
 	
-	wxString m_rbLoadOptionsChoices[] = { _("Load the More Recent File in Directory"), _("Load the Last Open File") };
+	wxString m_rbLoadOptionsChoices[] = { _("Load the More Recent File in Directory"), _("Load the Last Opened File") };
 	int m_rbLoadOptionsNChoices = sizeof( m_rbLoadOptionsChoices ) / sizeof( wxString );
 	m_rbLoadOptions = new wxRadioBox( this, wxID_ANY, _("Load File Options"), wxDefaultPosition, wxDefaultSize, m_rbLoadOptionsNChoices, m_rbLoadOptionsChoices, 1, wxRA_SPECIFY_COLS );
 	m_rbLoadOptions->SetSelection( 0 );
 	fgSizer6->Add( m_rbLoadOptions, 0, wxALL|wxEXPAND, 5 );
 	
-	wxString m_rbStartOptionsChoices[] = { _("Start at the first forecast in File"), _("Start at the nearest forecast to current time"), _("Authorize Interpolation to start at current time") };
+	wxString m_rbStartOptionsChoices[] = { _("Start at the first forecast in GRIB file"), _("Start at the nearest forecast to current time"), _("Authorize Interpolation to start at current time") };
 	int m_rbStartOptionsNChoices = sizeof( m_rbStartOptionsChoices ) / sizeof( wxString );
 	m_rbStartOptions = new wxRadioBox( this, wxID_ANY, _("Start Options"), wxDefaultPosition, wxDefaultSize, m_rbStartOptionsNChoices, m_rbStartOptionsChoices, 1, wxRA_SPECIFY_COLS );
 	m_rbStartOptions->SetSelection( 0 );

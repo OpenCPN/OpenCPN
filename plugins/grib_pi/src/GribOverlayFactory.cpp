@@ -842,8 +842,8 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                                porg.x, porg.y, grib_pixel_size );
             else
                 m_Message_Hiden.IsEmpty()?
-                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays: "))
-                    .Append(GribOverlaySettings::NameFromIndex(settings))
+                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays:"))
+                    .Append(_T(" ")).Append(GribOverlaySettings::NameFromIndex(settings))
                     : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
         }
         else        //DC mode
@@ -862,8 +862,8 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                 m_pdc->DrawBitmap( *( pGO->m_pDCBitmap ), porg.x, porg.y, true );
             else
                 m_Message_Hiden.IsEmpty()?
-                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays: "))
-                    .Append(GribOverlaySettings::NameFromIndex(settings))
+                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays:"))
+                    .Append(_T(" ")).Append(GribOverlaySettings::NameFromIndex(settings))
                     : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
         }
     }
