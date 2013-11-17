@@ -154,6 +154,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
        but for some reason it crbashes windows */
     delete m_bGRIBActiveFile;
     m_pTimelineSet = NULL;
+    m_InterpolateMode = false;
 
     //get more recent file in default directory if necessary
     wxFileName f( m_file_name );
@@ -197,7 +198,10 @@ void GRIBUIDialog::OpenFile(bool newestFile)
         }
         this->SetTitle(title);
         SetFactoryOptions();
-        TimelineChanged();
+        if( pPlugIn->GetStartOptions() )
+            ComputeBestForecastForNow();
+        else
+            TimelineChanged();
         PopulateTrackingControls();
     }
 }
@@ -248,7 +252,6 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     pReq_Dialog = NULL;
     m_bGRIBActiveFile = NULL;
     m_pTimelineSet = NULL;
-    m_InterpolateMode = false;
 
     wxFileConfig *pConf = GetOCPNConfigObject();
 
@@ -719,11 +722,10 @@ void GRIBUIDialog::TimelineChanged()
     SetGribTimelineRecordSet(GetTimeLineRecordSet(time));
 
     if( !m_InterpolateMode ){
-        double sel = (m_cRecordForecast->GetCurrentSelection());
-
     /* get closest value to update timeline */
-        m_sTimeline->SetValue((int)
-            m_OverlaySettings.m_bInterpolate ? sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
+        double sel = (m_cRecordForecast->GetCurrentSelection());
+        m_sTimeline->SetValue(
+            (int) m_OverlaySettings.m_bInterpolate ? sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
             );
     } else
         m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
@@ -894,28 +896,49 @@ void GRIBUIDialog::OnNext( wxCommandEvent& event )
 
 void GRIBUIDialog::ComputeBestForecastForNow()
 {
+    if( !m_bGRIBActiveFile || (m_bGRIBActiveFile && !m_bGRIBActiveFile->IsOK()) ) {
+        pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
+        return;
+    }
+
     //wxDateTime::Now() is in local time and must be transslated to UTC to be compared to grib times
     wxDateTime now = wxDateTime::Now().ToUTC(wxDateTime::Now().IsDST()==0);
     if(now.IsDST()) now.Add(wxTimeSpan( 1,0,0,0));          //bug in wxWidgets ?
 
-    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
-    if( m_InterpolateMode ) {
-        wxTimeSpan span = now - MinTime();
-        int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
-        m_sTimeline->SetValue(span.GetMinutes()%stepmin < stepmin/2 ? span.GetMinutes()/stepmin : (span.GetMinutes()/stepmin) + 1);
-    }
-    else {
-        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-        for( size_t i=0; i<rsa->GetCount()-1; i++ ) {
-            wxDateTime ti2( rsa->Item(i+1).m_Reference_Time );
-            if(ti2 >= now) {
-                wxDateTime ti1( rsa->Item(i).m_Reference_Time );
-                m_cRecordForecast->SetSelection(now-ti1 < ti2-now ? i : i+1);
-                break;
-            }
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+  
+    //verifie if we are outside of the file time range
+    now = (now > rsa->Item(rsa->GetCount()-1).m_Reference_Time) ? rsa->Item(rsa->GetCount()-1).m_Reference_Time :
+        (now < rsa->Item(0).m_Reference_Time) ? rsa->Item(0).m_Reference_Time : now;
+
+    //find the combobox nearest forecast
+    for( size_t i=0; i<rsa->GetCount()-1; i++ ) {
+        wxDateTime ti2( rsa->Item(i+1).m_Reference_Time );
+        if(ti2 >= now) {
+            wxDateTime ti1( rsa->Item(i).m_Reference_Time );
+            m_cRecordForecast->SetSelection(now-ti1 < ti2-now ? i : i+1);
+            break;
         }
     }
-    TimelineChanged();
+
+    if( pPlugIn->GetStartOptions() < 2 ) {         //no interpolation : take the nearest forecast
+        m_InterpolateMode = false;
+        TimelineChanged();                        
+
+    } else {                                       //interpolation 
+        //find the nearest timeline position
+        if( m_OverlaySettings.m_bInterpolate ) {                                
+            double sel = (m_cRecordForecast->GetCurrentSelection());
+            m_sTimeline->SetValue(
+                (int) m_OverlaySettings.m_bInterpolate ? sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
+            );
+        } else
+            m_sTimeline->SetValue(m_cRecordForecast->GetCurrentSelection());    
+
+        m_InterpolateMode = true;                                               //take current time & interpolate forecast
+        SetGribTimelineRecordSet(GetTimeLineRecordSet(now));                    
+        m_cRecordForecast->SetValue( TToString( now, pPlugIn->GetTimeZone() ) );
+    }
 
 }
 

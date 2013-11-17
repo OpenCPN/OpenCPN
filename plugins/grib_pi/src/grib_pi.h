@@ -95,6 +95,7 @@ public:
       void OnGribDialogClose();
 
       int  GetTimeZone() { return m_bTimeZone; }
+      int  GetStartOptions() { return m_bStartOptions; }
       bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
       bool GetCopyMissWaveRec() { return  m_bCopyMissWaveRec; }
 
@@ -129,6 +130,7 @@ private:
       bool             m_bCopyFirstCumRec;
       bool             m_bCopyMissWaveRec;
       int              m_bLoadLastOpenFile;
+      int              m_bStartOptions;
       wxString         m_RequestConfig;
       wxString         m_bMailToAddresses;
       wxString         m_bMailFromAddress;
@@ -152,6 +154,8 @@ public:
     GribPreferencesDialog( wxWindow *pparent)
     : GribPreferencesDialogBase(pparent) {}
     ~GribPreferencesDialog() {}
-};
 
+private:
+    void OnStartOptionChange(wxCommandEvent& event);
+};
 #endif
