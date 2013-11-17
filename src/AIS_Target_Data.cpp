@@ -339,7 +339,12 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         html << rowEnd << _T("<tr><td colspan=2>") << _T("<b>") << sizeString << rowEnd;
     }
 
-    else if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) && ( Class != AIS_DSC ) ) {
+    else if( Class == AIS_ATON )  {
+        html << _T("<tr><td colspan=2>") << _T("<b>") << navStatStr;
+        html << rowEnd << _T("<tr><td colspan=2>") << _T("<b>") << sizeString << rowEnd;
+    }
+    
+    else if( ( Class != AIS_BASE ) && ( Class != AIS_DSC ) ) {
         html << _T("<tr><td colspan=2>") << _T("<b>") << AISTypeStr;
         if( navStatStr.Length() )
             html << _T(", ") << navStatStr;
