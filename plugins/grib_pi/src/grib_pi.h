@@ -94,17 +94,8 @@ public:
 
       void OnGribDialogClose();
 
-      void SetRequestConfig ( wxString conf ){ m_RequestConfig = conf; }
-      void SetMailFromAddress ( wxString add ){ m_bMailFromAddress = add; }
-      void SetZyGribLogin ( wxString log ){ m_ZyGribLogin = log; }
-      void SetZyGribCode ( wxString cod ){ m_ZyGribCode = cod; }
-      wxString GetRequestConfig(){ return m_RequestConfig; }
-      wxString GetMailToAddresses(){ return m_bMailToAddresses; }
-      wxString GetMailFromAddress(){ return m_bMailFromAddress; }
-      wxString GetZyGribLogin() { return m_ZyGribLogin; }
-      wxString GetZyGribCode() { return m_ZyGribCode; }
-
       int  GetTimeZone() { return m_bTimeZone; }
+      int  GetStartOptions() { return m_bStartOptions; }
       bool GetCopyFirstCumRec() { return  m_bCopyFirstCumRec; }
       bool GetCopyMissWaveRec() { return  m_bCopyMissWaveRec; }
 
@@ -139,6 +130,7 @@ private:
       bool             m_bCopyFirstCumRec;
       bool             m_bCopyMissWaveRec;
       int              m_bLoadLastOpenFile;
+      int              m_bStartOptions;
       wxString         m_RequestConfig;
       wxString         m_bMailToAddresses;
       wxString         m_bMailFromAddress;
@@ -162,6 +154,8 @@ public:
     GribPreferencesDialog( wxWindow *pparent)
     : GribPreferencesDialogBase(pparent) {}
     ~GribPreferencesDialog() {}
-};
 
+private:
+    void OnStartOptionChange(wxCommandEvent& event);
+};
 #endif

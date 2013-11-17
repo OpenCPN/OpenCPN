@@ -154,6 +154,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
        but for some reason it crbashes windows */
     delete m_bGRIBActiveFile;
     m_pTimelineSet = NULL;
+    m_InterpolateMode = false;
 
     //get more recent file in default directory if necessary
     wxFileName f( m_file_name );
@@ -197,7 +198,10 @@ void GRIBUIDialog::OpenFile(bool newestFile)
         }
         this->SetTitle(title);
         SetFactoryOptions();
-        TimelineChanged();
+        if( pPlugIn->GetStartOptions() )
+            ComputeBestForecastForNow();
+        else
+            TimelineChanged();
         PopulateTrackingControls();
     }
 }
@@ -245,9 +249,9 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     pParent = parent;
     pPlugIn = ppi;
 
+    pReq_Dialog = NULL;
     m_bGRIBActiveFile = NULL;
     m_pTimelineSet = NULL;
-    m_InterpolateMode = false;
 
     wxFileConfig *pConf = GetOCPNConfigObject();
 
@@ -344,6 +348,16 @@ void GRIBUIDialog::SetCursorLatLon( double lat, double lon )
     m_cursor_lat = lat;
 
     UpdateTrackingControls();
+}
+
+void GRIBUIDialog::SetViewPort( PlugIn_ViewPort *vp )
+{
+    if(m_vp == vp)  return;
+
+    m_vp = new PlugIn_ViewPort(*vp);
+
+    if(pReq_Dialog)
+        if(pReq_Dialog->IsShown()) pReq_Dialog->OnVpChange(vp);
 }
 
 void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show )
@@ -489,7 +503,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
 
         if( press != GRIB_NOTDEF ) {
             press = m_OverlaySettings.CalibrateValue(GribOverlaySettings::PRESSURE, press);
-            m_tcPressure->SetValue( wxString::Format(_T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE), (int) ( press )) );
+            int p = (m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units == 2) ? 2 : 0;  // if PRESSURE & inHG = two decimals
+            m_tcPressure->SetValue( wxString::Format(_T("%2.*f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE), p, ( press )) );
         } else
             m_tcPressure->SetValue( _("N/A") );
     }
@@ -630,91 +645,20 @@ void GRIBUIDialog::OnSize( wxSizeEvent& event )
     event.Skip();
 }
 
-
 void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
 {
-    double lonmax=m_vp->lon_max;
-    double lonmin=m_vp->lon_min;
-    if( ( fabs( m_vp->lat_max ) < 90. ) && ( fabs( lonmax ) < 360. ) ) {
-           if( lonmax < -180. ) lonmax += 360.;
-           if( lonmax > 180. ) lonmax -= 360.;
-    }
-    if( ( fabs( m_vp->lat_min ) < 90. ) && ( fabs( lonmin ) < 360. ) ) {
-            if( lonmin < -180. ) lonmin += 360.;
-            if( lonmin > 180. ) lonmin -= 360.;
-    }
-     int latmaxi =  (int) ceil(m_vp->lat_max);
-     int latmini =  (int) floor(m_vp->lat_min);
-     int lonmini =  (int) floor(lonmin);
-     int lonmaxi =  (int) ceil(lonmax);
-
-    GribRequestSetting *req_Dialog = new GribRequestSetting( this, pPlugIn->GetRequestConfig(), latmaxi, latmini, lonmini, lonmaxi,
-        pPlugIn->GetMailFromAddress(), pPlugIn->GetMailToAddresses(), pPlugIn->GetZyGribLogin(), pPlugIn->GetZyGribCode() );
-    wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS")};
-    for( unsigned int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
-        req_Dialog->m_pModel->Append( s1[i] );
-    wxString s2[] = {_T("Saildocs"),_T("zyGrib")};
-    for( unsigned int i= 0;  i<(sizeof(s2) / sizeof(wxString));i++)
-        req_Dialog->m_pMailTo->Append( s2[i] );
-    for( double i=0.5; i<3; i*=2)
-        req_Dialog->m_pResolution->Append( wxString::Format(_T("%0.1f"), i));
-    for( int i=3; i<25; i*=2)
-        req_Dialog->m_pInterval->Append( wxString::Format(_T("%d"), i));
-    for( int i=2; i<9; i++)
-        req_Dialog->m_pTimeRange->Append( wxString::Format(_T("%d"), i));
-    wxString s3[] = {_T("WW3-GLOBAL"),_T("WW3-MEDIT")};
-    for( unsigned int i= 0;  i<(sizeof(s3) / sizeof(wxString));i++)
-        req_Dialog->m_pWModel->Append( s3[i] );
-    req_Dialog->m_rButtonYes->SetLabel(_("Send"));
-    req_Dialog->m_rButtonApply->SetLabel(_("Save"));
-    req_Dialog->m_tResUnit->SetLabel(wxString::Format( _T("\u00B0")));
-    req_Dialog->m_pSenderAddress->SetToolTip(_("Address used to send request eMail. (Mandatory for LINUX)"));
-    req_Dialog->m_pLogin->SetToolTip(_("This is your zyGrib's forum access Login"));
-    req_Dialog->m_pCode->SetToolTip(_("Get this Code in zyGrib's forum ( This is not your password! )"));
-    req_Dialog->InitRequestConfig();
-    req_Dialog->Fit();
-    if( req_Dialog->ShowModal() == wxID_APPLY ) {
-        //save all enabled parameters
-        req_Dialog->m_RequestConfigBase.SetChar( 0, (char) ( req_Dialog->m_pMailTo->GetCurrentSelection() + '0' ) );
-        if(req_Dialog->m_pMailTo->GetCurrentSelection() == SAILDOCS)
-            req_Dialog->m_RequestConfigBase.SetChar( 1, (char) ( req_Dialog->m_pModel->GetCurrentSelection() + '0' ) );
-        if(req_Dialog->m_pModel->GetCurrentSelection() != RTOFS)
-            req_Dialog->m_RequestConfigBase.SetChar( 2, (char) ( req_Dialog->m_pResolution->GetCurrentSelection() + '0' ) );
-        req_Dialog->m_RequestConfigBase.SetChar( 3, (char) ( req_Dialog->m_pInterval->GetCurrentSelection() + '0' ) );
-        req_Dialog->m_RequestConfigBase.SetChar( 4, (char) ( req_Dialog->m_pTimeRange->GetCurrentSelection() + '0' ) );
-        if(req_Dialog->m_pMailTo->GetCurrentSelection() == ZYGRIB && req_Dialog->m_pWModel->IsShown())
-            req_Dialog->m_RequestConfigBase.SetChar( 5, (char) ( req_Dialog->m_pWModel->GetCurrentSelection() + '0' ) );
-        req_Dialog->m_RequestConfigBase.SetChar( 6, 'X' );              //must be always selected as a default
-        req_Dialog->m_RequestConfigBase.SetChar( 7, 'X' );
-        if(req_Dialog->m_pModel->GetCurrentSelection() != COAMPS) {
-            req_Dialog->m_pWaves->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 8, 'X' )
-                : req_Dialog->m_RequestConfigBase.SetChar( 8, '.' );
-            req_Dialog->m_pRainfall->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 9, 'X' )
-                : req_Dialog->m_RequestConfigBase.SetChar( 9, '.' );
-            req_Dialog->m_pCloudCover->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 10, 'X' )
-                : req_Dialog->m_RequestConfigBase.SetChar( 10, '.' );
-            req_Dialog->m_pAirTemp->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 11, 'X' )
-                : req_Dialog->m_RequestConfigBase.SetChar( 11, '.' );
-            req_Dialog->m_pSeaTemp->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 12, 'X' )
-                : req_Dialog->m_RequestConfigBase.SetChar( 12, '.' );
-            req_Dialog->m_pCAPE->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 15, 'X' )
-                : req_Dialog->m_RequestConfigBase.SetChar( 15, '.' );
-        }
-        if(req_Dialog->m_pModel->GetCurrentSelection() != ZYGRIB && req_Dialog->m_pModel->GetCurrentSelection() != COAMPS)
-            req_Dialog->m_pCurrent->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 13, 'X' )
-                : req_Dialog->m_RequestConfigBase.SetChar( 13, '.' );
-        if(req_Dialog->m_pMailTo->GetCurrentSelection() == ZYGRIB)
-            req_Dialog->m_pWindGust->IsChecked() ? req_Dialog->m_RequestConfigBase.SetChar( 14, 'X' )
-                : req_Dialog->m_RequestConfigBase.SetChar( 14, '.' );
-
-        pPlugIn->SetMailFromAddress(req_Dialog->m_pSenderAddress->GetValue());
-        pPlugIn->SetZyGribLogin(req_Dialog->m_pLogin->GetValue());
-        pPlugIn->SetZyGribCode(req_Dialog->m_pCode->GetValue());
-
-        pPlugIn->SetRequestConfig(req_Dialog->m_RequestConfigBase);
+    if(pReq_Dialog){                                                 //there is one instance of the dialog
+        if(pReq_Dialog->IsShown()) return;                           //already visible
     }
 
-    req_Dialog->Destroy();
+    delete pReq_Dialog;                                              //delete to be re-created
+    
+    pReq_Dialog = new GribRequestSetting( this );
+
+    pReq_Dialog->SetVpSize(m_vp);
+    pReq_Dialog->InitRequestConfig();
+    pReq_Dialog->Fit();
+    pReq_Dialog->Show();
 }
 
 void GRIBUIDialog::OnSettings( wxCommandEvent& event )
@@ -743,27 +687,28 @@ void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
         m_bpPlay->SetBitmap(*m_bPlay );
         m_bpPlay->SetToolTip( _("Play") );
     }
+    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
 }
 
 void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
 {
-    if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) )
+    if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
         m_tPlayStop.Stop();
-    else if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) {
-        if(m_OverlaySettings.m_bLoopMode) {
+        return;
+    }
+    if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) {
+        if(m_OverlaySettings.m_bLoopMode)
             m_sTimeline->SetValue(0);
-            TimelineChanged();
-        } else {
+        else {
             m_bpPlay->SetBitmap(*m_bPlay );
             m_bpPlay->SetToolTip( _("Play") );
             m_tPlayStop.Stop();
         }
-    } else {
+    } else
         m_sTimeline->SetValue(m_sTimeline->GetValue() + 1);
-        m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
-        if(!m_InterpolateMode) m_cRecordForecast->SetSelection( m_sTimeline->GetValue() );
-        TimelineChanged();
-    }
+     
+    if(!m_InterpolateMode) m_cRecordForecast->SetSelection( m_sTimeline->GetValue() );
+    TimelineChanged();
 }
 
 void GRIBUIDialog::TimelineChanged()
@@ -777,11 +722,10 @@ void GRIBUIDialog::TimelineChanged()
     SetGribTimelineRecordSet(GetTimeLineRecordSet(time));
 
     if( !m_InterpolateMode ){
-        double sel = (m_cRecordForecast->GetCurrentSelection());
-
     /* get closest value to update timeline */
-        m_sTimeline->SetValue((int)
-            m_OverlaySettings.m_bInterpolate ? sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
+        double sel = (m_cRecordForecast->GetCurrentSelection());
+        m_sTimeline->SetValue(
+            (int) m_OverlaySettings.m_bInterpolate ? sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
             );
     } else
         m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
@@ -952,28 +896,49 @@ void GRIBUIDialog::OnNext( wxCommandEvent& event )
 
 void GRIBUIDialog::ComputeBestForecastForNow()
 {
+    if( !m_bGRIBActiveFile || (m_bGRIBActiveFile && !m_bGRIBActiveFile->IsOK()) ) {
+        pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
+        return;
+    }
+
     //wxDateTime::Now() is in local time and must be transslated to UTC to be compared to grib times
     wxDateTime now = wxDateTime::Now().ToUTC(wxDateTime::Now().IsDST()==0);
     if(now.IsDST()) now.Add(wxTimeSpan( 1,0,0,0));          //bug in wxWidgets ?
 
-    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
-    if( m_InterpolateMode ) {
-        wxTimeSpan span = now - MinTime();
-        int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
-        m_sTimeline->SetValue(span.GetMinutes()%stepmin < stepmin/2 ? span.GetMinutes()/stepmin : (span.GetMinutes()/stepmin) + 1);
-    }
-    else {
-        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-        for( size_t i=0; i<rsa->GetCount()-1; i++ ) {
-            wxDateTime ti2( rsa->Item(i+1).m_Reference_Time );
-            if(ti2 >= now) {
-                wxDateTime ti1( rsa->Item(i).m_Reference_Time );
-                m_cRecordForecast->SetSelection(now-ti1 < ti2-now ? i : i+1);
-                break;
-            }
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+  
+    //verifie if we are outside of the file time range
+    now = (now > rsa->Item(rsa->GetCount()-1).m_Reference_Time) ? rsa->Item(rsa->GetCount()-1).m_Reference_Time :
+        (now < rsa->Item(0).m_Reference_Time) ? rsa->Item(0).m_Reference_Time : now;
+
+    //find the combobox nearest forecast
+    for( size_t i=0; i<rsa->GetCount()-1; i++ ) {
+        wxDateTime ti2( rsa->Item(i+1).m_Reference_Time );
+        if(ti2 >= now) {
+            wxDateTime ti1( rsa->Item(i).m_Reference_Time );
+            m_cRecordForecast->SetSelection(now-ti1 < ti2-now ? i : i+1);
+            break;
         }
     }
-    TimelineChanged();
+
+    if( pPlugIn->GetStartOptions() < 2 ) {         //no interpolation : take the nearest forecast
+        m_InterpolateMode = false;
+        TimelineChanged();                        
+
+    } else {                                       //interpolation 
+        //find the nearest timeline position
+        if( m_OverlaySettings.m_bInterpolate ) {                                
+            double sel = (m_cRecordForecast->GetCurrentSelection());
+            m_sTimeline->SetValue(
+                (int) m_OverlaySettings.m_bInterpolate ? sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
+            );
+        } else
+            m_sTimeline->SetValue(m_cRecordForecast->GetCurrentSelection());    
+
+        m_InterpolateMode = true;                                               //take current time & interpolate forecast
+        SetGribTimelineRecordSet(GetTimeLineRecordSet(now));                    
+        m_cRecordForecast->SetValue( TToString( now, pPlugIn->GetTimeZone() ) );
+    }
 
 }
 
@@ -1119,6 +1084,47 @@ GRIBFile::~GRIBFile()
 //----------------------------------------------------------------------------------------------------------
 void GribRequestSetting::InitRequestConfig()
 {
+    wxFileConfig *pConf = GetOCPNConfigObject();
+
+    if(pConf) {
+        pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
+    wxString sender,login, code;
+    pConf->Read ( _T( "MailRequestConfig" ), &m_RequestConfigBase, _T( "000220XX........" ) );
+    pConf->Read ( _T( "MailSenderAddress" ), &sender, _T("") );
+    m_pSenderAddress->ChangeValue( sender );
+    pConf->Read ( _T( "MailRequestAddresses" ), &m_MailToAddresses, _T("query@saildocs.com;gribauto@zygrib.org") );
+    pConf->Read ( _T( "ZyGribLogin" ), &login, _T("") );
+    m_pLogin->ChangeValue( login );
+    pConf->Read ( _T( "ZyGribCode" ), &code, _T("") );
+    m_pCode->ChangeValue( code );
+
+    //if GriDataConfig has been corrupted , take the standard one to fix a crash
+    if( m_RequestConfigBase.Len() != wxString (_T( "000220XX........" ) ).Len() )
+        m_RequestConfigBase = _T( "000220XX........" );
+    }
+
+    wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS")};
+    for( int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
+        m_pModel->Append( s1[i] );
+    wxString s2[] = {_T("Saildocs"),_T("zyGrib")};
+    for( int i= 0;  i<(sizeof(s2) / sizeof(wxString));i++)
+        m_pMailTo->Append( s2[i] );
+    for( double i=0.5; i<3; i*=2)
+        m_pResolution->Append( wxString::Format(_T("%0.1f"), i));
+    for( int i=3; i<25; i*=2)
+        m_pInterval->Append( wxString::Format(_T("%d"), i));
+    for( int i=2; i<9; i++)
+        m_pTimeRange->Append( wxString::Format(_T("%d"), i));
+    wxString s3[] = {_T("WW3-GLOBAL"),_T("WW3-MEDIT")};
+    for( int i= 0;  i<(sizeof(s3) / sizeof(wxString));i++)
+        m_pWModel->Append( s3[i] );
+    m_rButtonYes->SetLabel(_("Send"));
+    m_rButtonApply->SetLabel(_("Save"));
+    m_tResUnit->SetLabel(wxString::Format( _T("\u00B0")));
+    m_pSenderAddress->SetToolTip(_("Address used to send request eMail. (Mandatory for LINUX)"));
+    m_pLogin->SetToolTip(_("This is your zyGrib's forum access Login"));
+    m_pCode->SetToolTip(_("Get this Code in zyGrib's forum ( This is not your password! )"));
+
     long i,j;
     ( (wxString) m_RequestConfigBase.GetChar(0) ).ToLong( &i );             //MailTo
     m_pMailTo->SetSelection(i);
@@ -1139,21 +1145,45 @@ void GribRequestSetting::InitRequestConfig()
     m_pWind->Enable( false );                                               //always selected if available
     m_pPress->Enable( false );
 
-    m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));               //permit to send a (new) message
-    m_rButtonYes->Show();
-
+    m_AllowSend = true;
     m_MailImage->SetValue( WriteMail() );
+}
 
-    this->Fit();
-    this->Refresh();
+void GribRequestSetting::SetVpSize(PlugIn_ViewPort *vp)
+{
+    double lonmax=vp->lon_max;
+    double lonmin=vp->lon_min;
+    if( ( fabs( vp->lat_max ) < 90. ) && ( fabs( lonmax ) < 360. ) ) {
+        if( lonmax < -180. ) lonmax += 360.;
+        if( lonmax > 180. ) lonmax -= 360.;
+    }
+    if( ( fabs( vp->lat_min ) < 90. ) && ( fabs( lonmin ) < 360. ) ) {
+        if( lonmin < -180. ) lonmin += 360.;
+        if( lonmin > 180. ) lonmin -= 360.;
+    }
 
+    m_LatmaxBase = (int) ceil(vp->lat_max);
+    m_LatminBase = (int) floor(vp->lat_min);
+    m_LonminBase = (int) floor(lonmin);
+    m_LonmaxBase = (int) ceil(lonmax);
+}
+
+void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp)
+{
+    if(!m_AllowSend) return;
+
+    SetVpSize(vp);
+    m_MailImage->SetValue( WriteMail() );
 }
 
 void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
 {
     //some useful  strings
-    const wxString res[][3] = { {_T("0.5"), _T("1"), _T("2")},
-        {_T("0.2"), _T("0.8"), _T("1.6")} };
+    const wxString res[][3] = { 
+        {_T("0.5"), _T("1.0"), _T("2.0")},
+        {_T("0.2"), _T("0.8"), _T("1.6")},
+        {_T("0.05"), _T("0.25"), _T("1.0")} 
+    };
 
     bool IsZYGRIB = false, IsGFS = false, IsRTOFS = false;
 
@@ -1162,15 +1192,11 @@ void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
 
     if( sel1 == GFS ) IsGFS = true;
 
-    //Resolution is always 0.5 if RTOFS
-    if( sel1 == RTOFS) { sel2 = 0; IsRTOFS = true; }
-
     m_pModel->SetSelection( sel1 );
 
     //populate resolution choice
-    int m = (sel1 == 2) ? 0 : sel1;
     for( int i = 0; i<3; i++ ) {
-        m_pResolution->SetString(i,res[m][i]);
+        m_pResolution->SetString(i,res[sel1][i]);
     }
      m_pResolution->SetSelection(sel2);
     //apply time & resolution limits
@@ -1213,10 +1239,7 @@ void GribRequestSetting::OnTopChange(wxCommandEvent &event)
 
     ApplyRequestConfig( m_pModel->GetCurrentSelection(), m_pResolution->GetCurrentSelection() );
 
-    m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));                   //permit to send a (new) message
-    m_rButtonYes->Show();
-
-    m_MailImage->SetValue( WriteMail() );
+    if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
     this->Fit();
     this->Refresh();
@@ -1235,13 +1258,57 @@ void GribRequestSetting::OnAnyChange(wxCommandEvent &event)
     if(m_pModel->GetCurrentSelection() == RTOFS) m_pTimeRange->SetSelection(
         wxMin(4, m_pTimeRange->GetCurrentSelection()));     // maxi 6 days for this model
 
-    m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));                   //permit to send a (new) message
-    m_rButtonYes->Show();
-
-    m_MailImage->SetValue( WriteMail() );
+    if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
     this->Fit();
     this->Refresh();
+}
+
+void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
+{
+    m_RequestConfigBase.SetChar( 0, (char) ( m_pMailTo->GetCurrentSelection() + '0' ) );
+    if(m_pMailTo->GetCurrentSelection() == SAILDOCS)
+        m_RequestConfigBase.SetChar( 1, (char) ( m_pModel->GetCurrentSelection() + '0' ) );
+    if(m_pModel->GetCurrentSelection() != RTOFS)
+        m_RequestConfigBase.SetChar( 2, (char) ( m_pResolution->GetCurrentSelection() + '0' ) );
+    m_RequestConfigBase.SetChar( 3, (char) ( m_pInterval->GetCurrentSelection() + '0' ) );
+    m_RequestConfigBase.SetChar( 4, (char) ( m_pTimeRange->GetCurrentSelection() + '0' ) );
+    if(m_pMailTo->GetCurrentSelection() == ZYGRIB && m_pWModel->IsShown())
+        m_RequestConfigBase.SetChar( 5, (char) ( m_pWModel->GetCurrentSelection() + '0' ) );
+    m_RequestConfigBase.SetChar( 6, 'X' );              //must be always selected as a default
+    m_RequestConfigBase.SetChar( 7, 'X' );
+    if(m_pModel->GetCurrentSelection() != COAMPS) {
+        m_pWaves->IsChecked() ? m_RequestConfigBase.SetChar( 8, 'X' )
+            : m_RequestConfigBase.SetChar( 8, '.' );
+        m_pRainfall->IsChecked() ? m_RequestConfigBase.SetChar( 9, 'X' )
+            : m_RequestConfigBase.SetChar( 9, '.' );
+        m_pCloudCover->IsChecked() ? m_RequestConfigBase.SetChar( 10, 'X' )
+            : m_RequestConfigBase.SetChar( 10, '.' );
+        m_pAirTemp->IsChecked() ? m_RequestConfigBase.SetChar( 11, 'X' )
+            : m_RequestConfigBase.SetChar( 11, '.' );
+        m_pSeaTemp->IsChecked() ? m_RequestConfigBase.SetChar( 12, 'X' )
+            : m_RequestConfigBase.SetChar( 12, '.' );
+        m_pCAPE->IsChecked() ? m_RequestConfigBase.SetChar( 15, 'X' )
+            : m_RequestConfigBase.SetChar( 15, '.' );
+    }
+    if(m_pModel->GetCurrentSelection() != ZYGRIB && m_pModel->GetCurrentSelection() != COAMPS)
+        m_pCurrent->IsChecked() ? m_RequestConfigBase.SetChar( 13, 'X' )
+            : m_RequestConfigBase.SetChar( 13, '.' );
+    if(m_pMailTo->GetCurrentSelection() == ZYGRIB)
+        m_pWindGust->IsChecked() ? m_RequestConfigBase.SetChar( 14, 'X' )
+            : m_RequestConfigBase.SetChar( 14, '.' );
+
+    wxFileConfig *pConf = GetOCPNConfigObject();
+    if(pConf) {
+        pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
+
+        pConf->Write ( _T ( "MailRequestConfig" ), m_RequestConfigBase );
+        pConf->Write ( _T( "MailSenderAddress" ), m_pSenderAddress->GetValue() );
+        pConf->Write ( _T( "MailRequestAddresses" ), m_MailToAddresses );
+        pConf->Write ( _T( "ZyGribLogin" ), m_pLogin->GetValue() );
+        pConf->Write ( _T( "ZyGribCode" ), m_pCode->GetValue() );
+    }
+        this->Hide();
 }
 
 wxString GribRequestSetting::WriteMail()
@@ -1261,9 +1328,9 @@ wxString GribRequestSetting::WriteMail()
         r_topmess = wxT("send ");
         r_topmess.Append(m_pModel->GetStringSelection() + _T(":"));
         r_topmess.Append( r_zone  + _T("|"));
+        r_topmess.Append(m_pResolution->GetStringSelection()).Append(_T(","))
+            .Append(m_pResolution->GetStringSelection()).Append(_T("|"));
         double v;
-        m_pResolution->GetStringSelection().ToDouble(&v);
-        r_topmess.Append(wxString::Format(_T("%1.1f,%1.1f"), v, v) + _T("|"));
         m_pInterval->GetStringSelection().ToDouble(&v);
         r_topmess.Append(wxString::Format(_T("0,%d,%d"), (int) v, (int) v*2));
         m_pTimeRange->GetStringSelection().ToDouble(&v);
@@ -1411,16 +1478,34 @@ bool GribRequestSetting::EstimateFileSize()
 
 void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
 {
+    if(!m_AllowSend) {
+        m_rButtonCancel->Show();
+        m_rButtonApply->Show();
+        m_rButtonYes->SetLabel(_("Send"));
+
+        m_MailImage->SetForegroundColour(wxColor( 0, 0, 0 ));                   //permit to send a (new) message
+        m_AllowSend = true;
+
+        m_MailImage->SetValue( WriteMail() );
+
+        return;
+    }
+
     const wxString error[] = { _T("\n\n"), _("Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."),
         _("The file size limit is overcome!\nYou can zoom in and/or change parameters...") };
 
+    m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
+    m_AllowSend = false;
+
     if( m_MailError_Nb ) {
-        m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
+       // m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
         if( m_MailError_Nb == 3 )
             m_MailImage->SetValue( error[1] + error[0] + error[2] );
         else
             m_MailImage->SetValue( error[m_MailError_Nb] );
-        m_rButtonYes->Hide();
+        m_rButtonCancel->Hide();
+        m_rButtonApply->Hide();
+        m_rButtonYes->SetLabel(_("Continue..."));
         this->Fit();
         this->Refresh();
         return;
@@ -1434,20 +1519,20 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
     m_pSenderAddress->GetValue()
     );
     wxEmail mail ;
-    m_MailImage->SetForegroundColour(wxColor( 255, 0, 0 ));
     if(mail.Send( *message ) ) {
 #ifdef __WXMSW__
         m_MailImage->SetValue(
-            _("Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or new parameters for a new email ...") );
+            _("Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue...") );
 #else
         m_MailImage->SetValue(
-            _("Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or new parameters for a new email ..."));
+            _("Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue...") );
 #endif
     } else {
         m_MailImage->SetValue(
             _("Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."));
+        m_rButtonYes->Hide();
     }
-    m_rButtonYes->Hide();
+    m_rButtonYes->SetLabel(_("Continue..."));
     this->Fit();
     this->Refresh();
 }

@@ -204,16 +204,22 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
     Pref->m_cbCopyFirstCumulativeRecord->SetValue(m_bCopyFirstCumRec);
     Pref->m_cbCopyMissingWaveRecord->SetValue(m_bCopyMissWaveRec);
     Pref->m_rbTimeFormat->SetSelection( m_bTimeZone );
-    Pref->m_rbStartOptions->SetSelection( m_bLoadLastOpenFile );
+    Pref->m_rbLoadOptions->SetSelection( m_bLoadLastOpenFile );
+    Pref->m_rbStartOptions->SetSelection( m_bStartOptions );
 
      if( Pref->ShowModal() == wxID_OK ) {
          m_bGRIBUseHiDef= Pref->m_cbUseHiDef->GetValue();
          m_bGRIBUseGradualColors= Pref->m_cbUseGradualColors->GetValue();
-         m_bLoadLastOpenFile= Pref->m_rbStartOptions->GetSelection();
+         m_bLoadLastOpenFile= Pref->m_rbLoadOptions->GetSelection();
           if( m_pGRIBOverlayFactory )
               m_pGRIBOverlayFactory->SetSettings( m_bGRIBUseHiDef, m_bGRIBUseGradualColors );
 
          int updatelevel = 0;
+
+         if( m_bStartOptions != Pref->m_rbStartOptions->GetSelection() ) {
+             m_bStartOptions = Pref->m_rbStartOptions->GetSelection();
+             updatelevel = 1;
+         }
 
          if( m_bTimeZone != Pref->m_rbTimeFormat->GetSelection() ) {
              m_bTimeZone = Pref->m_rbTimeFormat->GetSelection();
@@ -244,6 +250,10 @@ void grib_pi::ShowPreferencesDialog( wxWindow* parent )
                  //only rebuild  data list with current index and new timezone
                  m_pGribDialog->PopulateComboDataList();
                  m_pGribDialog->TimelineChanged();
+                 break;
+             case 1:
+                 //only re-compute the best forecast
+                 m_pGribDialog->ComputeBestForecastForNow();
                  break;
              }
          }
@@ -315,8 +325,10 @@ void grib_pi::OnToolbarToolCallback(int id)
       //    Toggle dialog?
       if(m_bShowGrib) {
           m_pGribDialog->Show();
-      } else
+      } else {
           m_pGribDialog->Hide();
+          if(m_pGribDialog->pReq_Dialog) m_pGribDialog->pReq_Dialog->Hide();
+          }
 
       // Toggle is handled by the toolbar but we must keep plugin manager b_toggle updated
       // to actual status to ensure correct status upon toolbar rebuild
@@ -335,6 +347,7 @@ void grib_pi::OnGribDialogClose()
     SetToolbarItemState( m_leftclick_tool_id, m_bShowGrib );
 
     m_pGribDialog->Hide();
+    if(m_pGribDialog->pReq_Dialog) m_pGribDialog->pReq_Dialog->Hide();
 
     SaveConfig();
 
@@ -426,6 +439,7 @@ bool grib_pi::LoadConfig(void)
 
     pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
     pConf->Read ( _T( "LoadLastOpenFile" ), &m_bLoadLastOpenFile, 0 );
+    pConf->Read ( _T("OpenFileOption" ), &m_bStartOptions, 1 );
     pConf->Read ( _T( "GRIBUseHiDef" ),  &m_bGRIBUseHiDef, 0 );
     pConf->Read ( _T( "GRIBUseGradualColors" ),     &m_bGRIBUseGradualColors, 0 );
 
@@ -433,16 +447,6 @@ bool grib_pi::LoadConfig(void)
     pConf->Read ( _T( "GRIBTimeZone" ), &m_bTimeZone, 1 );
     pConf->Read ( _T( "CopyFirstCumulativeRecord" ), &m_bCopyFirstCumRec, 1 );
     pConf->Read ( _T( "CopyMissingWaveRecord" ), &m_bCopyMissWaveRec, 1 );
-    pConf->Read ( _T( "MailRequestConfig" ), &m_RequestConfig, _T( "000220XX........" ) );
-    pConf->Read ( _T( "MailSenderAddress" ), &m_bMailFromAddress, _T("") );
-    pConf->Read ( _T( "MailRequestAddresses" ), &m_bMailToAddresses, _T("query@saildocs.com;gribauto@zygrib.org") );
-    pConf->Read ( _T( "ZyGribLogin" ), &m_ZyGribLogin, _T("") );
-    pConf->Read ( _T( "ZyGribCode" ), &m_ZyGribCode, _T("") );
-
-
-    //if GriDataConfig has been corrupted , take the standard one to fix a crash
-    if( m_RequestConfig.Len() != wxString (_T( "000220XX........" ) ).Len() )
-        m_RequestConfig = _T( "000220XX........" );
 
     m_grib_dialog_sx = pConf->Read ( _T ( "GRIBDialogSizeX" ), 300L );
     m_grib_dialog_sy = pConf->Read ( _T ( "GRIBDialogSizeY" ), 540L );
@@ -462,18 +466,13 @@ bool grib_pi::SaveConfig(void)
     pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
 
     pConf->Write ( _T ( "LoadLastOpenFile" ), m_bLoadLastOpenFile );
+    pConf->Write ( _T ( "OpenFileOption" ), m_bStartOptions );
     pConf->Write ( _T ( "ShowGRIBIcon" ), m_bGRIBShowIcon );
     pConf->Write ( _T ( "GRIBUseHiDef" ), m_bGRIBUseHiDef );
     pConf->Write ( _T ( "GRIBUseGradualColors" ),    m_bGRIBUseGradualColors );
     pConf->Write ( _T ( "GRIBTimeZone" ), m_bTimeZone );
     pConf->Write ( _T ( "CopyFirstCumulativeRecord" ), m_bCopyFirstCumRec );
     pConf->Write ( _T ( "CopyMissingWaveRecord" ), m_bCopyMissWaveRec );
-    pConf->Write ( _T ( "MailRequestConfig" ), m_RequestConfig );
-    pConf->Write ( _T( "MailSenderAddress" ), m_bMailFromAddress );
-    pConf->Write ( _T( "MailRequestAddresses" ), m_bMailToAddresses );
-    pConf->Write ( _T( "ZyGribLogin" ), m_ZyGribLogin );
-    pConf->Write ( _T( "ZyGribCode" ), m_ZyGribCode );
-
 
     pConf->Write ( _T ( "GRIBDialogSizeX" ),  m_grib_dialog_sx );
     pConf->Write ( _T ( "GRIBDialogSizeY" ),  m_grib_dialog_sy );
@@ -505,4 +504,16 @@ void grib_pi::SendTimelineMessage(wxDateTime time)
     wxString out;
     w.Write(v, out);
     SendPluginMessage(wxString(_T("GRIB_TIMELINE")), out);
+}
+
+//----------------------------------------------------------------------------------------------------------
+//          Prefrence dialog Implementation
+//----------------------------------------------------------------------------------------------------------
+void GribPreferencesDialog::OnStartOptionChange( wxCommandEvent& event )
+{
+    if(m_rbStartOptions->GetSelection() == 2) {
+        wxMessageDialog mes(this, _("You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"),
+                _("Warning!"), wxOK);
+            mes.ShowModal();
+        }
 }

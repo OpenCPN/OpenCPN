@@ -496,7 +496,7 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
 }
 
 /* return cached wxImage for a given number, or create it if not in the cache */
-wxImage &GRIBOverlayFactory::getLabel(double value)
+wxImage &GRIBOverlayFactory::getLabel(double value, int settings)
 {
     std::map <double, wxImage >::iterator it;
     it = m_labelCache.find(value);
@@ -504,10 +504,8 @@ wxImage &GRIBOverlayFactory::getLabel(double value)
         return m_labelCache[value];
 
     wxString labels;
-    if( value < 10 )
-        labels.Printf(_T("%0.1f"), value);
-    else
-        labels.Printf(_T("%d"), (int)(value+0.5));
+    int p =  settings == 2 && m_Settings.Settings[2].m_Units == 2 ? 2 : value < 10 ? 1 : 0;//two decimals for pressure & inHG, one for small values
+    labels.Printf( _T("%.*f"), p, value );
 
     wxColour text_color;
     GetGlobalColor( _T ( "DILG3" ), &text_color );
@@ -680,7 +678,8 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
         double max = m_Settings.GetMax(settings);
 
         /* convert min and max to units being used */
-        for( double press = min; press <= max; press += m_Settings.Settings[settings].m_iIsoBarSpacing) {
+        double factor = ( settings == 2 && m_Settings.Settings[2].m_Units == 2 ) ? 0.03 : 1.;//divide spacing by 1/3 for PRESURRE & inHG
+        for( double press = min; press <= max; press += (m_Settings.Settings[settings].m_iIsoBarSpacing * factor) ) {
             if(progressdialog)
                 progressdialog->Update(press-min);
             else {
@@ -712,7 +711,7 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
         int first = 0;
 
         piso->drawIsoLineLabels( this, m_pdc, vp, density,
-                                 first, getLabel(piso->getValue()) );
+                                 first, getLabel(piso->getValue(), settings) );
     }
 
     delete pGRM;
@@ -843,8 +842,8 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                                porg.x, porg.y, grib_pixel_size );
             else
                 m_Message_Hiden.IsEmpty()?
-                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays: "))
-                    .Append(GribOverlaySettings::NameFromIndex(settings))
+                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays:"))
+                    .Append(_T(" ")).Append(GribOverlaySettings::NameFromIndex(settings))
                     : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
         }
         else        //DC mode
@@ -863,8 +862,8 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                 m_pdc->DrawBitmap( *( pGO->m_pDCBitmap ), porg.x, porg.y, true );
             else
                 m_Message_Hiden.IsEmpty()?
-                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays: "))
-                    .Append(GribOverlaySettings::NameFromIndex(settings))
+                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays:"))
+                    .Append(_T(" ")).Append(GribOverlaySettings::NameFromIndex(settings))
                     : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
         }
     }
@@ -930,7 +929,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 
                         if( mag != GRIB_NOTDEF ) {
                             double value = m_Settings.CalibrateValue(settings, mag);
-                            wxImage &label = getLabel(value);
+                            wxImage &label = getLabel(value, settings);
                             if( m_pdc ) {
                                 m_pdc->DrawBitmap(label, p.x, p.y, true);
                             } else {

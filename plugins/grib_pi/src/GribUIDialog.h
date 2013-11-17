@@ -50,6 +50,7 @@ class GRIBRecord;
 class GribRecordTree;
 class GRIBOverlayFactory;
 class GribRecordSet;
+class GribRequestSetting;
 
 class wxFileConfig;
 class grib_pi;
@@ -89,12 +90,13 @@ public:
     void CreateActiveFileFromName( wxString filename );
     void PopulateComboDataList();
     void ComputeBestForecastForNow();
-    void SetViewPort( PlugIn_ViewPort *vp ) { m_vp = new PlugIn_ViewPort(*vp); }
+    void SetViewPort( PlugIn_ViewPort *vp );
 
     GribOverlaySettings m_OverlaySettings;
 
     wxTimer m_tPlayStop;
 
+    GribRequestSetting  *pReq_Dialog;
     GRIBFile        *m_bGRIBActiveFile;
     bool             m_InterpolateMode;
 
@@ -195,19 +197,17 @@ private:
 class GribRequestSetting : public GribRequestSettingBase
 {
 public:
-      GribRequestSetting( wxWindow *parent, wxString config, int latmax, int latmin, int lonmin,
-          int lonmax, wxString fromadd, wxString toadd, wxString login, wxString code)
-          : GribRequestSettingBase(parent)
-      {m_RequestConfigBase = config; m_LatmaxBase = latmax;  m_LatminBase = latmin;  m_LonminBase = lonmin;  m_LonmaxBase = lonmax; 
-          m_pSenderAddress->ChangeValue(fromadd); m_MailToAddresses = toadd; m_pLogin->ChangeValue(login); m_pCode->ChangeValue(code);}
+      GribRequestSetting( wxWindow *parent )
+          : GribRequestSettingBase(parent) {};
 
       ~GribRequestSetting() {}
 
       void InitRequestConfig();
+      void SetVpSize(PlugIn_ViewPort *vp);
+      void OnVpChange(PlugIn_ViewPort *vp);
 
       wxString m_RequestConfigBase;
       wxString m_MailToAddresses;
-      wxString m_MailFromAddress;
       int m_LatmaxBase;
       int m_LatminBase;
       int m_LonminBase;
@@ -221,10 +221,10 @@ private:
       void OnTopChange(wxCommandEvent &event);
       void OnAnyChange( wxCommandEvent& event );
       void OnSendMaiL( wxCommandEvent& event );
-      void OnSaveMail( wxCommandEvent& event ) { this->EndModal(wxID_APPLY); }
+      void OnSaveMail( wxCommandEvent& event );
 
       int  m_MailError_Nb;
-
+      bool m_AllowSend;
 };
 
 #endif

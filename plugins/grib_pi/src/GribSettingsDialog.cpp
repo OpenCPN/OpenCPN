@@ -28,7 +28,7 @@
 #include "grib_pi.h"
 
 static const wxString units0_names[] = {_("Knots"), _("m/s"), _("mph"), _("km/h"), wxEmptyString};
-static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), wxEmptyString};
+static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), _("inHG"), wxEmptyString};
 static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};
 static const wxString units3_names[] = {_("Celsius"), _("Fahrenheit"), wxEmptyString};
 static const wxString units4_names[] = {_("Millimeters"), _("Inches"), wxEmptyString};
@@ -154,7 +154,8 @@ double GribOverlaySettings::CalibrationFactor(int settings)
         } break;
     case 1: switch(Settings[settings].m_Units) {
         case MILLIBARS: return 1 / 100.;
-        case MMHG: return 1 / (100. * 1.33);
+        case MMHG: return 1 / (100. * 1.333);
+        case INHG: return 1 / (100. * 33.864);
         } break;
     case 2: switch(Settings[settings].m_Units) {
         case METERS: return 1;
@@ -187,6 +188,7 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings)
         case 1: switch(Settings[settings].m_Units) {
             case MILLIBARS: return _T("hPa");
             case MMHG: return _T("mmHg");
+            case INHG: return _T("inHg");
         } break;
         case 2: switch(Settings[settings].m_Units) {
             case METERS: return _T("m");

@@ -170,12 +170,17 @@ class GribPreferencesDialogBase : public wxDialog
 	private:
 	
 	protected:
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnStartOptionChange( wxCommandEvent& event ) { event.Skip(); }
+		
 	
 	public:
 		wxCheckBox* m_cbUseHiDef;
 		wxCheckBox* m_cbUseGradualColors;
 		wxCheckBox* m_cbCopyFirstCumulativeRecord;
 		wxCheckBox* m_cbCopyMissingWaveRecord;
+		wxRadioBox* m_rbLoadOptions;
 		wxRadioBox* m_rbStartOptions;
 		wxRadioBox* m_rbTimeFormat;
 		
