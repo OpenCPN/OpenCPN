@@ -1,363 +1,283 @@
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# FIRST AUTHOR &lt;EMAIL@ADDRESS&gt;, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: dashboard_pi 2.4.708 beta for 2.5\n"
+"Project-Id-Version: dashboard_pi 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-14 17:36+0100\n"
-"PO-Revision-Date: 2012-11-17 11:54+0100\n"
+"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"PO-Revision-Date: 2013-10-24 17:15+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
-"Language-Team:  <rider2@kpnmail.nl>\n"
+"Language-Team: &lt;rider2@kpnmail.nl&gt;\n"
+"Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
-"X-Poedit-Language: Dutch\n"
-"X-Poedit-Country: NETHERLANDS\n"
-"X-Poedit-SourceCharset: utf-8\n"
-
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.5.4\n"
 #
-#: src/clock.cpp:126
-#: src/dial.cpp:420
-#: src/gps.cpp:124
-#: src/wind.cpp:64
-msgid "N"
-msgstr "N"
-
+msgid " mag"
+msgstr "magn"
 #
-#: src/dashboard_pi.cpp:83
-msgid "Position"
-msgstr "Positie"
-
+msgid " true"
+msgstr "waar"
 #
-#: src/dashboard_pi.cpp:85
-msgid "SOG"
-msgstr "SOG"
-
+msgid "Add"
+msgstr "Toevoegen"
 #
-#: src/dashboard_pi.cpp:87
-msgid "Speedometer"
-msgstr "Log"
-
+msgid "Add instrument"
+msgstr "Voeg instrument toe"
 #
-#: src/dashboard_pi.cpp:89
-msgid "COG"
-msgstr "COG"
-
-#
-#: src/dashboard_pi.cpp:91
-msgid "GPS Compass"
-msgstr "Kompasroos GPS vaarrichting"
-
-#
-#: src/dashboard_pi.cpp:93
-msgid "Compass"
-msgstr "Kompas"
-
-#
-#: src/dashboard_pi.cpp:95
-msgid "COG+HDG Compass"
-msgstr "Kompasroos COG+Koers"
-
-#
-#: src/dashboard_pi.cpp:97
-msgid "STW"
-msgstr "Vaart door water"
-
-#: src/dashboard_pi.cpp:99
-msgid "True HDG"
-msgstr "Ware koers"
-
-#
-#: src/dashboard_pi.cpp:101
-msgid "Mag HDG"
-msgstr "Magn koers"
-
-#
-#: src/dashboard_pi.cpp:104
-msgid "App. Wind Angle & Speed"
-msgstr "Schijnbare windhoek & -snelheid"
-
-#
-#: src/dashboard_pi.cpp:106
-#: src/dashboard_pi.cpp:108
-msgid "App. Wind Speed"
-msgstr "Schijnbare windsnelheid"
-
-#
-#: src/dashboard_pi.cpp:110
-msgid "True Wind Angle & Speed"
-msgstr "Ware windhoek & -snelheid"
-
-#
-#: src/dashboard_pi.cpp:112
-#: src/dashboard_pi.cpp:114
-msgid "Depth"
-msgstr "Diepte"
-
-#: src/dashboard_pi.cpp:116
-msgid "Water Temp."
-msgstr "Watertemperatuur"
-
-#: src/dashboard_pi.cpp:118
 msgid "Air Temp."
 msgstr "Luchttemperatuur"
-
 #
-#: src/dashboard_pi.cpp:120
 msgid "App. Wind Angle"
 msgstr "Schijnbare windhoek"
-
 #
-#: src/dashboard_pi.cpp:122
-msgid "True Wind Angle"
-msgstr "Ware windhoek"
-
-#: src/dashboard_pi.cpp:124
-msgid "True Wind Direction"
-msgstr "Ware windrichting"
-
+msgid "App. Wind Angle & Speed"
+msgstr "Schijnbare windhoek &amp; -snelheid"
 #
-#: src/dashboard_pi.cpp:126
-msgid "True Wind Speed"
-msgstr "Ware windsnelheid"
-
+msgid "App. Wind Speed"
+msgstr "Schijnbare windsnelheid"
 #
-#: src/dashboard_pi.cpp:128
-msgid "True Wind Dir. & Speed"
-msgstr "Ware windrichting en -snelheid"
-
+msgid "Appearance"
+msgstr "Lettertypes"
 #
-#: src/dashboard_pi.cpp:130
-#: src/dashboard_pi.cpp:132
-msgid "VMG"
-msgstr "Behouden vaart"
-
+msgid "Boat speed units:"
+msgstr "Eenheid voor vaart:"
 #
-#: src/dashboard_pi.cpp:134
-#: src/dashboard_pi.cpp:136
-msgid "Rudder Angle"
-msgstr "Roerstand"
-
+msgid "COG"
+msgstr "COG"
 #
-#: src/dashboard_pi.cpp:138
-msgid "GPS in View"
-msgstr "Aantal satellieten in zicht"
-
+msgid "Caption:"
+msgstr "Naam:"
 #
-#: src/dashboard_pi.cpp:140
-msgid "GPS Status"
-msgstr "GPS status"
-
-#
-#: src/dashboard_pi.cpp:142
-msgid "Cursor"
-msgstr "Cursor"
-
-#
-#: src/dashboard_pi.cpp:144
 msgid "Clock"
 msgstr "Klok"
-
 #
-#: src/dashboard_pi.cpp:146
-msgid "Sunrise/Sunset"
-msgstr "Zon op / Zon onder"
-
+msgid "Compass"
+msgstr "Kompas"
 #
-#: src/dashboard_pi.cpp:148
-msgid "Moon phase"
-msgstr "Maanfase"
-
+msgid "Cursor"
+msgstr "Cursor"
 #
-#: src/dashboard_pi.cpp:303
-#: src/dashboard_pi.cpp:377
-#: src/dashboard_pi.cpp:1056
-#: src/dashboard_pi.cpp:1064
-#: src/dashboard_pi.cpp:1209
-#: src/dashboard_pi.cpp:1248
-#: src/dashboard_pi.cpp:1446
 msgid "Dashboard"
 msgstr "Instrumentenpaneel"
-
 #
-#: src/dashboard_pi.cpp:382
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Dashboard PlugIn voor OpenCPN"
-
 #
-#: src/dashboard_pi.cpp:387
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 "Dashboard PlugIn voor OpenCPN\n"
 "Geeft navigatie-instrumenten weer op basis van NMEA gegevens."
-
-#: src/dashboard_pi.cpp:608
-msgid "Kts"
-msgstr "Knp"
-
 #
-#: src/dashboard_pi.cpp:1185
 msgid "Dashboard preferences"
 msgstr "Dashboard voorkeuren"
-
 #
-#: src/dashboard_pi.cpp:1255
-msgid "show this dashboard"
-msgstr "Toon dit paneel"
-
-#
-#: src/dashboard_pi.cpp:1261
-msgid "Caption:"
-msgstr "Naam:"
-
-#
-#: src/dashboard_pi.cpp:1269
-msgid "Orientation:"
-msgstr "Oriëntatie:"
-
-#
-#: src/dashboard_pi.cpp:1273
-#: src/dashboard_pi.cpp:1637
-msgid "Vertical"
-msgstr "verticaal"
-
-#
-#: src/dashboard_pi.cpp:1274
-#: src/dashboard_pi.cpp:1639
-msgid "Horizontal"
-msgstr "horizontaal"
-
-#
-#: src/dashboard_pi.cpp:1281
-#: src/dashboard_pi.cpp:1289
-#: src/dashboard_pi.cpp:1563
-msgid "Instruments"
-msgstr "Instrumenten"
-
-#
-#: src/dashboard_pi.cpp:1297
-msgid "Add"
-msgstr "Toevoegen"
-
-#
-#: src/dashboard_pi.cpp:1302
-msgid "Edit"
-msgstr "Wijzigen"
-
-#
-#: src/dashboard_pi.cpp:1307
-msgid "Delete"
-msgstr "Wissen"
-
-#
-#: src/dashboard_pi.cpp:1313
-msgid "Up"
-msgstr "Omhoog"
-
-#
-#: src/dashboard_pi.cpp:1318
-msgid "Down"
-msgstr "Omlaag"
-
-#
-#: src/dashboard_pi.cpp:1328
-msgid "Appearance"
-msgstr "Lettertypes"
-
-#
-#: src/dashboard_pi.cpp:1330
-msgid "Fonts"
-msgstr "Lettertypes"
-
-#
-#: src/dashboard_pi.cpp:1336
-msgid "Title:"
-msgstr "Naam:"
-
-#
-#: src/dashboard_pi.cpp:1342
 msgid "Data:"
 msgstr "Data:"
-
 #
-#: src/dashboard_pi.cpp:1348
-msgid "Label:"
-msgstr "Label:"
-
+msgid "Delete"
+msgstr "Wissen"
 #
-#: src/dashboard_pi.cpp:1354
-msgid "Small:"
-msgstr "Klein:"
-
+msgid "Depth"
+msgstr "Diepte"
 #
-#: src/dashboard_pi.cpp:1546
-msgid "Add instrument"
-msgstr "Voeg instrument toe"
-
+msgid "Distance units:"
+msgstr "Eenheid voor afstand:"
 #
-#: src/dashboard_pi.cpp:1552
-msgid "Select instrument to add:"
-msgstr "Kies toe te voegen instrument:"
-
-#: src/dashboard_pi.cpp:1646
-msgid "Preferences..."
-msgstr "Voorkeuren ..."
-
+msgid "Down"
+msgstr "Omlaag"
 #
-#: src/dial.cpp:420
-#: src/wind.cpp:64
-msgid "NE"
-msgstr "NO"
-
-#
-#: src/dial.cpp:420
-#: src/gps.cpp:125
-#: src/wind.cpp:64
 msgid "E"
 msgstr "O"
-
 #
-#: src/dial.cpp:420
-#: src/wind.cpp:64
-msgid "SE"
-msgstr "ZO"
-
+msgid "ENE"
+msgstr "ONO"
 #
-#: src/dial.cpp:420
-#: src/gps.cpp:126
-#: src/wind.cpp:64
-msgid "S"
-msgstr "Z"
-
+msgid "ESE"
+msgstr "OZO"
 #
-#: src/dial.cpp:420
-#: src/wind.cpp:64
-msgid "SW"
-msgstr "ZW"
-
+msgid "Fonts"
+msgstr "Lettertypes"
 #
-#: src/dial.cpp:420
-#: src/gps.cpp:127
-#: src/wind.cpp:64
-msgid "W"
-msgstr "W"
-
+msgid "GPS Compass"
+msgstr "Kompasroos GPS vaarrichting"
 #
-#: src/dial.cpp:420
-#: src/wind.cpp:64
+msgid "GPS Status"
+msgstr "GPS status"
+#
+msgid "GPS in View"
+msgstr "Aantal satellieten in zicht"
+#
+msgid "Honor OpenCPN settings"
+msgstr "Volg OpenCPN-instellingen"
+#
+msgid "Horizontal"
+msgstr "horizontaal"
+#
+msgid "Instruments"
+msgstr "Instrumenten"
+#
+msgid "Kilometers"
+msgstr "kIlometer"
+#
+msgid "Kts"
+msgstr "knopen"
+#
+msgid "Label:"
+msgstr "Label:"
+#
+msgid "Mag HDG"
+msgstr "Magn koers"
+#
+#, c-format
+msgid "Max %.1f since %02d:%02d  Overall %.1f"
+msgstr "Max %.1f sinds %02d:%02d  Totaal %.1f"
+#
+msgid "Meters"
+msgstr "meter"
+#
+msgid "Moon phase"
+msgstr "Maanfase"
+#
+msgid "N"
+msgstr "N"
+#
+msgid "NE"
+msgstr "NO"
+#
+msgid "NNE"
+msgstr "NNO"
+#
+msgid "NNW"
+msgstr "NNW"
+#
 msgid "NW"
 msgstr "NW"
-
-#: src/instrument.cpp:158
-msgid " true"
-msgstr "waar"
-
-#: src/instrument.cpp:160
-msgid " mag"
-msgstr "magn"
-
+#
+msgid "Nautical miles"
+msgstr "zeemijl"
+#
+msgid "Orientation:"
+msgstr "Oriëntatie:"
+#
+msgid "Position"
+msgstr "Positie"
+#
+msgid "Preferences..."
+msgstr "Voorkeuren ..."
+#
+msgid "Rudder Angle"
+msgstr "Roerstand"
+#
+msgid "S"
+msgstr "Z"
+#
+msgid "SE"
+msgstr "ZO"
+#
+msgid "SOG"
+msgstr "SOG"
+#
+msgid "SSE"
+msgstr "ZZO"
+#
+msgid "SSW"
+msgstr "ZZW"
+#
+msgid "STW"
+msgstr "Vaart door water"
+#
+msgid "SW"
+msgstr "ZW"
+#
+msgid "Select instrument to add:"
+msgstr "Kies toe te voegen instrument:"
+#
+msgid "Small:"
+msgstr "Klein:"
+#
+msgid "Speedometer"
+msgstr "Log"
+#
+msgid "Speedometer max value:"
+msgstr "Maximum waarde log:"
+#
+msgid "Statute miles"
+msgstr "landmijl"
+#
+msgid "Sum Log"
+msgstr "Samenvatting"
+#
+msgid "Sunrise/Sunset"
+msgstr "Zon op / Zon onder"
+#
+msgid "Title:"
+msgstr "Naam:"
+#
+msgid "Trip Log"
+msgstr "Reislog"
+#
+msgid "True HDG"
+msgstr "Ware koers"
+#
+msgid "True Wind Angle"
+msgstr "Ware windhoek"
+#
+msgid "True Wind Angle & Speed"
+msgstr "Ware windhoek &amp; -snelheid"
+#
+msgid "True Wind Dir. & Speed"
+msgstr "Ware windrichting en -snelheid"
+#
+msgid "True Wind Direction"
+msgstr "Ware windrichting"
+#
+msgid "True Wind Speed"
+msgstr "Ware windsnelheid"
+#
+msgid "Units, Ranges, Formats"
+msgstr "Eenheden"
+#
+msgid "Up"
+msgstr "Omhoog"
+#
+msgid "VMG"
+msgstr "Behouden vaart"
+#
+msgid "Vertical"
+msgstr "verticaal"
+#
+msgid "W"
+msgstr "W"
+#
+msgid "WNW"
+msgstr "WNW"
+#
+msgid "WSW"
+msgstr "WZW"
+#
+msgid "Water Temp."
+msgstr "Watertemperatuur"
+#
+msgid "Wind history"
+msgstr "Windhistorie"
+#
+msgid "Wind speed units:"
+msgstr "Eenheid voor windsnelheid:"
+#
+msgid "km/h"
+msgstr "km/u"
+#
+msgid "m/s"
+msgstr "m/s"
+#
+msgid "mph"
+msgstr "mph"
+#
+msgid "show this dashboard"
+msgstr "Toon dit paneel"

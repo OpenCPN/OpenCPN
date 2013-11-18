@@ -7,13 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1124\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"POT-Creation-Date: 2013-11-17 19:30-0500\n"
 "PO-Revision-Date: 2010-11-28 18:28+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+#
+msgid " mag"
+msgstr ""
+#
+msgid " true"
+msgstr ""
 #
 msgid "Add"
 msgstr "Dodaj"
@@ -21,10 +28,25 @@ msgstr "Dodaj"
 msgid "Add instrument"
 msgstr "Dodaj instrument"
 #
-msgid "Apparent wind"
-msgstr "Wiatr pozorny"
+#, fuzzy
+msgid "Air Temp."
+msgstr "Temperatura"
+#
+#, fuzzy
+msgid "App. Wind Angle"
+msgstr "Kąt do wiatru"
+#
+msgid "App. Wind Angle & Speed"
+msgstr ""
+#
+#, fuzzy
+msgid "App. Wind Speed"
+msgstr "Prędkość wiatru"
 #
 msgid "Appearance"
+msgstr ""
+#
+msgid "Boat speed units:"
 msgstr ""
 #
 msgid "COG"
@@ -67,38 +89,65 @@ msgstr "Usuń"
 msgid "Depth"
 msgstr "Głębokość"
 #
+msgid "Distance units:"
+msgstr ""
+#
 msgid "Down"
 msgstr "Na dół"
 #
 msgid "E"
 msgstr "E"
 #
-msgid "Edit"
-msgstr "Zmień"
+#, fuzzy
+msgid "ENE"
+msgstr "NE"
+#
+#, fuzzy
+msgid "ESE"
+msgstr "SE"
 #
 msgid "Fonts"
 msgstr "Czcionki"
 #
-msgid "GPS in view"
-msgstr "Odbiór GPS"
+#, fuzzy
+msgid "GPS Compass"
+msgstr "Kompas"
 #
-msgid "GPS status"
+#, fuzzy
+msgid "GPS Status"
 msgstr "Status GPS"
 #
-msgid "HDG"
-msgstr "HDG"
+#, fuzzy
+msgid "GPS in View"
+msgstr "Odbiór GPS"
+#
+msgid "Honor OpenCPN settings"
+msgstr ""
 #
 msgid "Horizontal"
 msgstr ""
 #
-msgid "Instrument width:"
-msgstr "Szerokość instrumentu"
-#
 msgid "Instruments"
 msgstr "Instrumenty"
 #
+msgid "Kilometers"
+msgstr ""
+#
+msgid "Kts"
+msgstr ""
+#
 msgid "Label:"
 msgstr "Etykieta:"
+#
+msgid "Mag HDG"
+msgstr ""
+#
+#, c-format
+msgid "Max %.1f since %02d:%02d  Overall %.1f"
+msgstr ""
+#
+msgid "Meters"
+msgstr ""
 #
 msgid "Moon phase"
 msgstr ""
@@ -109,8 +158,19 @@ msgstr "N"
 msgid "NE"
 msgstr "NE"
 #
+#, fuzzy
+msgid "NNE"
+msgstr "NE"
+#
+#, fuzzy
+msgid "NNW"
+msgstr "NW"
+#
 msgid "NW"
 msgstr "NW"
+#
+msgid "Nautical miles"
+msgstr ""
 #
 msgid "Orientation:"
 msgstr ""
@@ -118,7 +178,11 @@ msgstr ""
 msgid "Position"
 msgstr "Pozycja"
 #
-msgid "Rudder angle"
+msgid "Preferences..."
+msgstr ""
+#
+#, fuzzy
+msgid "Rudder Angle"
 msgstr "Kąt wychylenia steru"
 #
 msgid "S"
@@ -129,6 +193,14 @@ msgstr "SE"
 #
 msgid "SOG"
 msgstr "SOG"
+#
+#, fuzzy
+msgid "SSE"
+msgstr "SE"
+#
+#, fuzzy
+msgid "SSW"
+msgstr "SW"
 #
 msgid "STW"
 msgstr "STW"
@@ -145,17 +217,47 @@ msgstr "Zmniejsz:"
 msgid "Speedometer"
 msgstr "Spidometr"
 #
-msgid "Sunrise/Sunset"
+#, fuzzy
+msgid "Speedometer max value:"
+msgstr "Spidometr"
+#
+msgid "Statute miles"
 msgstr ""
 #
-msgid "Temp"
-msgstr "Temperatura"
+msgid "Sum Log"
+msgstr ""
+#
+msgid "Sunrise/Sunset"
+msgstr ""
 #
 msgid "Title:"
 msgstr "Nazwa:"
 #
-msgid "True wind"
-msgstr "Wiatr rzeczywisty"
+msgid "Trip Log"
+msgstr ""
+#
+msgid "True HDG"
+msgstr ""
+#
+#, fuzzy
+msgid "True Wind Angle"
+msgstr "Kąt do wiatru"
+#
+msgid "True Wind Angle & Speed"
+msgstr ""
+#
+msgid "True Wind Dir. & Speed"
+msgstr ""
+#
+msgid "True Wind Direction"
+msgstr ""
+#
+#, fuzzy
+msgid "True Wind Speed"
+msgstr "Prędkość wiatru"
+#
+msgid "Units, Ranges, Formats"
+msgstr ""
 #
 msgid "Up"
 msgstr "Do góry"
@@ -169,11 +271,52 @@ msgstr ""
 msgid "W"
 msgstr "W"
 #
-msgid "Wind angle"
-msgstr "Kąt do wiatru"
+#, fuzzy
+msgid "WNW"
+msgstr "NW"
 #
-msgid "Wind speed"
+#, fuzzy
+msgid "WSW"
+msgstr "SW"
+#
+msgid "Water Temp."
+msgstr ""
+#
+msgid "Wind history"
+msgstr ""
+#
+#, fuzzy
+msgid "Wind speed units:"
 msgstr "Prędkość wiatru"
+#
+msgid "km/h"
+msgstr ""
+#
+msgid "m/s"
+msgstr ""
+#
+msgid "mph"
+msgstr ""
 #
 msgid "show this dashboard"
 msgstr ""
+#
+#
+#~ msgid "Apparent wind"
+#~ msgstr "Wiatr pozorny"
+#
+#
+#~ msgid "Edit"
+#~ msgstr "Zmień"
+#
+#
+#~ msgid "HDG"
+#~ msgstr "HDG"
+#
+#
+#~ msgid "Instrument width:"
+#~ msgstr "Szerokość instrumentu"
+#
+#
+#~ msgid "True wind"
+#~ msgstr "Wiatr rzeczywisty"

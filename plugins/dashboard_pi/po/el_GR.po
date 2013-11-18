@@ -7,15 +7,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1207\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"POT-Creation-Date: 2013-11-17 19:30-0500\n"
 "PO-Revision-Date: 2010-12-20 18:31+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team:  <ogog1@otenet.gr>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Greek\n"
 "X-Poedit-Country: GREECE\n"
+#
+msgid " mag"
+msgstr ""
+#
+msgid " true"
+msgstr ""
 #
 msgid "Add"
 msgstr "Προσθήκη"
@@ -23,10 +30,25 @@ msgstr "Προσθήκη"
 msgid "Add instrument"
 msgstr "Πρόσθεσε Όργανο"
 #
-msgid "Apparent wind"
-msgstr "Φαινομενικός Άνεμος"
+#, fuzzy
+msgid "Air Temp."
+msgstr "Θερμοκρασία"
+#
+#, fuzzy
+msgid "App. Wind Angle"
+msgstr "Γωνία Ανέμου"
+#
+msgid "App. Wind Angle & Speed"
+msgstr ""
+#
+#, fuzzy
+msgid "App. Wind Speed"
+msgstr "Ταχύτητα Ανέμου"
 #
 msgid "Appearance"
+msgstr ""
+#
+msgid "Boat speed units:"
 msgstr ""
 #
 msgid "COG"
@@ -69,38 +91,65 @@ msgstr "Διαγραφή"
 msgid "Depth"
 msgstr "Βάθος"
 #
+msgid "Distance units:"
+msgstr ""
+#
 msgid "Down"
 msgstr "Κάτω"
 #
 msgid "E"
 msgstr "Α (E)"
 #
-msgid "Edit"
-msgstr "Επεξεργασία"
+#, fuzzy
+msgid "ENE"
+msgstr "ΒΑ (NE)"
+#
+#, fuzzy
+msgid "ESE"
+msgstr "ΝΑ (SE)"
 #
 msgid "Fonts"
 msgstr "Γραμματοσειρές"
 #
-msgid "GPS in view"
-msgstr "Ορατό GPS"
+#, fuzzy
+msgid "GPS Compass"
+msgstr "Πυξίδα"
 #
-msgid "GPS status"
+#, fuzzy
+msgid "GPS Status"
 msgstr "Κατάσταση GPS"
 #
-msgid "HDG"
-msgstr "HDG(heading:κατεύθυνση)"
+#, fuzzy
+msgid "GPS in View"
+msgstr "Ορατό GPS"
+#
+msgid "Honor OpenCPN settings"
+msgstr ""
 #
 msgid "Horizontal"
 msgstr ""
 #
-msgid "Instrument width:"
-msgstr "Πλάτος Οργάνων:"
-#
 msgid "Instruments"
 msgstr "Όργανα"
 #
+msgid "Kilometers"
+msgstr ""
+#
+msgid "Kts"
+msgstr ""
+#
 msgid "Label:"
 msgstr "Ετικέτα:"
+#
+msgid "Mag HDG"
+msgstr ""
+#
+#, c-format
+msgid "Max %.1f since %02d:%02d  Overall %.1f"
+msgstr ""
+#
+msgid "Meters"
+msgstr ""
 #
 msgid "Moon phase"
 msgstr ""
@@ -111,8 +160,19 @@ msgstr "Β (N)"
 msgid "NE"
 msgstr "ΒΑ (NE)"
 #
+#, fuzzy
+msgid "NNE"
+msgstr "ΒΑ (NE)"
+#
+#, fuzzy
+msgid "NNW"
+msgstr "ΒΔ (NW)"
+#
 msgid "NW"
 msgstr "ΒΔ (NW)"
+#
+msgid "Nautical miles"
+msgstr ""
 #
 msgid "Orientation:"
 msgstr ""
@@ -120,7 +180,11 @@ msgstr ""
 msgid "Position"
 msgstr "Θέση (Συντεταγμένες)"
 #
-msgid "Rudder angle"
+msgid "Preferences..."
+msgstr ""
+#
+#, fuzzy
+msgid "Rudder Angle"
 msgstr "Γωνία Πηδαλίου"
 #
 msgid "S"
@@ -131,6 +195,14 @@ msgstr "ΝΑ (SE)"
 #
 msgid "SOG"
 msgstr "SOG(Ταχύτητα επί Εδάφους)"
+#
+#, fuzzy
+msgid "SSE"
+msgstr "ΝΑ (SE)"
+#
+#, fuzzy
+msgid "SSW"
+msgstr "ΝΔ (SW)"
 #
 msgid "STW"
 msgstr "STW(Ταχύτητα επί Ύδατος)"
@@ -147,17 +219,47 @@ msgstr "Στενό:"
 msgid "Speedometer"
 msgstr "Ταχύμετρο"
 #
-msgid "Sunrise/Sunset"
+#, fuzzy
+msgid "Speedometer max value:"
+msgstr "Ταχύμετρο"
+#
+msgid "Statute miles"
 msgstr ""
 #
-msgid "Temp"
-msgstr "Θερμοκρασία"
+msgid "Sum Log"
+msgstr ""
+#
+msgid "Sunrise/Sunset"
+msgstr ""
 #
 msgid "Title:"
 msgstr "Τίτλος:"
 #
-msgid "True wind"
-msgstr "Αληθής Άνεμος"
+msgid "Trip Log"
+msgstr ""
+#
+msgid "True HDG"
+msgstr ""
+#
+#, fuzzy
+msgid "True Wind Angle"
+msgstr "Γωνία Ανέμου"
+#
+msgid "True Wind Angle & Speed"
+msgstr ""
+#
+msgid "True Wind Dir. & Speed"
+msgstr ""
+#
+msgid "True Wind Direction"
+msgstr ""
+#
+#, fuzzy
+msgid "True Wind Speed"
+msgstr "Ταχύτητα Ανέμου"
+#
+msgid "Units, Ranges, Formats"
+msgstr ""
 #
 msgid "Up"
 msgstr "Επάνω"
@@ -171,11 +273,52 @@ msgstr ""
 msgid "W"
 msgstr "Δ (W)"
 #
-msgid "Wind angle"
-msgstr "Γωνία Ανέμου"
+#, fuzzy
+msgid "WNW"
+msgstr "ΒΔ (NW)"
 #
-msgid "Wind speed"
+#, fuzzy
+msgid "WSW"
+msgstr "ΝΔ (SW)"
+#
+msgid "Water Temp."
+msgstr ""
+#
+msgid "Wind history"
+msgstr ""
+#
+#, fuzzy
+msgid "Wind speed units:"
 msgstr "Ταχύτητα Ανέμου"
+#
+msgid "km/h"
+msgstr ""
+#
+msgid "m/s"
+msgstr ""
+#
+msgid "mph"
+msgstr ""
 #
 msgid "show this dashboard"
 msgstr ""
+#
+#
+#~ msgid "Apparent wind"
+#~ msgstr "Φαινομενικός Άνεμος"
+#
+#
+#~ msgid "Edit"
+#~ msgstr "Επεξεργασία"
+#
+#
+#~ msgid "HDG"
+#~ msgstr "HDG(heading:κατεύθυνση)"
+#
+#
+#~ msgid "Instrument width:"
+#~ msgstr "Πλάτος Οργάνων:"
+#
+#
+#~ msgid "True wind"
+#~ msgstr "Αληθής Άνεμος"

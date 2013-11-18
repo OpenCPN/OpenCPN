@@ -7,128 +7,132 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-24 14:34+1200\n"
-"PO-Revision-Date: 2012-12-25 11:00+0100\n"
+"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"PO-Revision-Date: 2013-10-19 19:29+0100\n"
 "Last-Translator: CarCode <carcode@me.com>\n"
 "Language-Team: Gerhard Mueller <carcode@me.com>\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
-"X-Poedit-Language: German\n"
-"X-Poedit-Country: GERMANY\n"
 "X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 1.5.7\n"
 #
-msgid " (Dup)"
-msgstr ""
+msgid " (Max size )"
+msgstr " (Max.Größe)"
 #
-msgid " Deg"
-msgstr ""
+msgid " Mo )"
+msgstr " MB )"
 #
+msgid "( Max "
+msgstr "( Max "
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid " data"
-msgstr "GRIB-Daten"
-#
-msgid "Action"
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr ""
 #
 msgid "Air Temp"
+msgstr "Luft-Temp."
+#
+msgid "Air Temperature(2m)"
+msgstr "Luft-Temperatur (2m)"
+#
+msgid "Apply"
 msgstr ""
 #
-msgid "Air Temperature"
+msgid "Authorize Interpolation to start at current time"
 msgstr ""
 #
 msgid "Barbed Arrows"
+msgstr "Pfeil-Federn"
+#
+#, fuzzy
+msgid ""
+"Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
 msgstr ""
+"Vor eMail-Senden an zyGrib muß Login und Code eingeben werden.\n"
+"Besuchen Sie bitte www.zygrib.org/ und lesen Sie die Anweisungen..."
 #
 msgid "Building Isobar map"
+msgstr "Erzeuge Isobar-Karte"
+#
+msgid "CAPE"
 msgstr ""
 #
-msgid "Celcius"
-msgstr ""
-#
-msgid "Cloud"
+msgid "Celsius"
 msgstr ""
 #
 msgid "Cloud Cover"
-msgstr ""
+msgstr "Bewölkung"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
 msgid "Colors"
-msgstr "Schließen"
+msgstr "Farben"
+#
+msgid "Continue..."
+msgstr ""
 #
 msgid "Copy First Cumulative Missing Record"
-msgstr ""
+msgstr "Kopiere ersten fehlenden kumulativen Datensatz"
 #
 msgid "Copy Missing Wave Records"
-msgstr ""
+msgstr "Kopiere fehlende Wellen-Daten"
 #
-#, fuzzy
 msgid "Current"
-msgstr "Geschw. Gezeitenstrom, kn"
+msgstr "Strömung"
+#
+msgid "Data available"
+msgstr ""
 #
 msgid "Days"
-msgstr ""
+msgstr "Tage"
+#
+msgid "Deg"
+msgstr "Grad"
 #
 msgid "Direction Arrows"
-msgstr ""
+msgstr "Richtungs-Pfeile"
 #
 msgid "Display"
-msgstr ""
+msgstr "Anzeige"
 #
-msgid "Error"
-msgstr ""
+#, fuzzy
+msgid "Display Iso CAPE"
+msgstr "Zeige Isobare"
+#
+msgid "Display Isobars"
+msgstr "Zeige Isobare"
+#
+#, fuzzy
+msgid "Display Isotachs"
+msgstr "Zeige Isobare"
+#
+#, fuzzy
+msgid "Display Isotherms"
+msgstr "Zeige Isobare"
 #
 msgid "Error:  Can't read this File!"
-msgstr ""
+msgstr "Fehler: Kann Datei nicht lesen!"
 #
 msgid "Error:  File does not exist!"
-msgstr ""
+msgstr "Fehler: Datei gibt es nicht!"
+#
+msgid "Error:  No valid data in this file!"
+msgstr "Fehler: Keine gültigen Daten in Datei!"
+#
+msgid "Estimated File Size"
+msgstr "Voraussichtl. Dateigröße"
 #
 msgid "Fahrenheit"
-msgstr ""
-#
-msgid "Failed to send mail message"
-msgstr ""
+msgstr "Fahrenheit"
 #
 msgid "Feet"
-msgstr ""
+msgstr "Fuß"
+#
+msgid "Forecast Model "
+msgstr "Vorhersage-Modell"
 #
 msgid "GRIB Data at Cursor"
-msgstr ""
+msgstr "Grib Daten am Cursor"
 #
 msgid "GRIB Display Control"
 msgstr "GRIB-Anzeige Einstellungen"
@@ -157,235 +161,377 @@ msgstr ""
 "- Strömungsrichtung/ -geschwindigkeit."
 #
 msgid "Generic"
-msgstr ""
+msgstr "Allgemein"
+#
+#, fuzzy
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr "Holen Sie Ihren Code vom zyGrib-Forum ( Das ist nicht Ihr Paßwort! )"
 #
 msgid "Grib"
 msgstr "GRIB"
 #
-#, fuzzy
 msgid "Grib Preferences"
-msgstr "GRIB Einstellungen"
+msgstr "Grib Einstellungen"
 #
 msgid "Grib Settings"
-msgstr ""
+msgstr "Grib Einstellungen"
+#
+msgid "Hours"
+msgstr "Stunden"
 #
 msgid "Inches"
-msgstr ""
+msgstr "Zoll"
 #
 msgid "Interpolate between gribs"
-msgstr ""
+msgstr "Interpoliere zwischen Gribs"
 #
 msgid "Interval"
-msgstr ""
+msgstr "Intervall"
 #
-msgid "Iso Bars"
-msgstr ""
-#
-msgid "KPH"
-msgstr ""
+#, fuzzy
+msgid "IsoBars"
+msgstr "Isobare"
 #
 msgid "Knots"
-msgstr ""
+msgstr "Knoten"
+#
+msgid "Load File Options"
+msgstr "Lade Datei-Optionen"
+#
+#, fuzzy
+msgid "Load the Last Opened File"
+msgstr "Lade zuletzt offene Datei"
+#
+msgid "Load the More Recent File in Directory"
+msgstr "Lade neueste Datei im Verzeichnis"
 #
 msgid "Local Time"
-msgstr ""
+msgstr "Lokale Zeit"
 #
 msgid "Loop Mode"
-msgstr ""
+msgstr "Loop Modus"
 #
-msgid "M/S"
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr ""
+"Mail Fehler: MAPI32.DLL ist nicht installiert oder ungültig auf diesem "
+"Computer!"
 #
-msgid "MPH"
-msgstr ""
+msgid "Mail"
+msgstr "Mail"
 #
-msgid "Mapi is not installed or invalid on this computer"
-msgstr ""
+msgid "Mail To "
+msgstr "Mail an "
 #
 msgid "Meters"
-msgstr ""
+msgstr "Meter"
 #
 msgid "MilliBars"
-msgstr ""
+msgstr "Millibar"
 #
 msgid "Millimeters"
-msgstr ""
-#
-msgid "Model"
-msgstr ""
-#
-msgid "MyLabel"
-msgstr ""
+msgstr "Millimeter"
 #
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 #
 msgid "Next"
-msgstr ""
+msgstr "nächstes"
 #
 msgid "Now"
-msgstr ""
+msgstr "Jetzt"
 #
 msgid "Numbers"
-msgstr ""
+msgstr "Nummern"
 #
 msgid "Open File"
-msgstr ""
+msgstr "Datei öffnen"
 #
-msgid "OpenCpn failed to logon! Please verify your eMail environment"
-msgstr ""
+msgid "Overlay Transparency"
+msgstr "Überlagerte Tranparenz"
 #
 msgid "OverlayMap"
-msgstr ""
-#
-msgid "Parameters"
-msgstr ""
+msgstr "Überlagerte Karte"
 #
 msgid "Percentage"
-msgstr ""
-#
-msgid "Period"
-msgstr ""
+msgstr "Prozent"
 #
 msgid "Play"
-msgstr ""
+msgstr "Abspielen"
 #
 #, fuzzy
-msgid "Please Zoom or Scale Out to view suppressed "
-msgstr ""
-"Zur Anzeige der ausgeblendeten HTSGW GRIB-Daten bitte herauszoom oder Maßstab "
-"verkleinern."
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "Bitte auszoomen oder Maßstab verkleinern zur Anzeige ausgeblendeter "
 #
-msgid "Precipitation"
-msgstr ""
-#
-#, fuzzy
 msgid "Pressure"
-msgstr "Luftdruck, mBar"
+msgstr "Luftdruck"
 #
 msgid "Previous"
-msgstr ""
+msgstr "vorher"
 #
-msgid "Quickscat"
-msgstr ""
+msgid "Profile"
+msgstr "Profil"
 #
-msgid "Rain"
-msgstr ""
+msgid "Rainfall"
+msgstr "Regen"
 #
 msgid "Range"
-msgstr ""
-#
-msgid "Ref : "
-msgstr ""
+msgstr "Bereich"
 #
 msgid "Request"
-msgstr ""
+msgstr "Anfrage"
 #
-msgid "Request Pofile"
+msgid ""
+"Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
 msgstr ""
+"Anfrage nicht gesendet. Bitte prüfen Sie Ihr eMail-System Parameter.\n"
+"Sie sollten auch in Ihre Logdatei sehen.\n"
+"Beenden mit Speichern oder Abbr. ..."
 #
 msgid "Resolution"
-msgstr ""
+msgstr "Auflösung"
 #
+msgid "Save"
+msgstr "Speichern"
 #
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
 msgid "Sea Temp"
-msgstr "Wassertemp. (Oberfl.), °C"
+msgstr "Wassertemp."
 #
-msgid "Sea Temperature"
-msgstr ""
+msgid "Sea Temperature(surf.)"
+msgstr "See-Temperatur(Oberfl.)"
 #
-msgid "SeaTemp"
-msgstr ""
-#
-#, fuzzy
 msgid "Select a GRIB file"
-msgstr "GRIB-Verzeichnis auswählen"
+msgstr "Wähle Grib Datei"
 #
 msgid "Send"
+msgstr "Senden"
+#
+msgid "Sender eMail Address"
 msgstr ""
 #
 msgid "Settings"
-msgstr ""
+msgstr "Einstellungen"
 #
 msgid "Size"
-msgstr ""
+msgstr "Größe"
 #
 msgid "Slices per Update"
-msgstr ""
+msgstr "Scheiben je Update"
 #
 msgid "Slices per hour"
-msgstr ""
+msgstr "Scheiben pro Stunde"
 #
 msgid "Spacing"
+msgstr "Abstand"
+#
+#, fuzzy
+msgid "Start Options"
+msgstr "Zeit-Optionen"
+#
+msgid "Start at the first forecast in GRIB file"
+msgstr ""
+#
+msgid "Start at the nearest forecast to current time"
 msgstr ""
 #
 msgid "Stop"
+msgstr "Stop"
+#
+msgid ""
+"The file size limit is overcome!\n"
+"You can zoom in and/or change parameters..."
 msgstr ""
+"Dateigrößen-Grenze erreicht!\n"
+"Sie können einzoomen und/oder Parameter ändern..."
+#
+#, fuzzy
+msgid ""
+"This file contains data for particular time intervals but you have chosen to "
+"display different intervals.\n"
+"Please consider that the values will be interpolated."
+msgstr ""
+"Diese Datei enthält Daten für eine bestimmte Zeit und Sie wollen Daten für "
+"eine andere Zeit anzeigen.\n"
+"Bitte beachten Sie, daß diese Werte interpoliert werden."
+#
+msgid "This is your zyGrib's forum access Login"
+msgstr ""
+#
+msgid "Time Options"
+msgstr "Zeit-Optionen"
+#
+msgid "Time Range"
+msgstr "Zeit-Bereich"
 #
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 #
 msgid "Units"
-msgstr ""
+msgstr "Einheiten"
 #
 msgid "Updates per Second"
-msgstr ""
+msgstr "Updates pro Sekunde"
 #
 msgid "Use Gradual Colors"
-msgstr ""
+msgstr "Verwende abgestufte Farben"
 #
 msgid "Use High Definition Graphics"
 msgstr "Hochauflösende Grafik verwenden"
 #
-msgid "Wave"
-msgstr ""
+msgid "Warning!"
+msgstr "Warnung!"
+#
+msgid "Warning:  Empty directory!"
+msgstr "Warnung: Leeres Verzeichnis!"
+#
+msgid "Waves"
+msgstr "Wellen"
+#
+msgid "WavesModel"
+msgstr "Wellen-Modell"
 #
 msgid "Wind"
-msgstr ""
+msgstr "Wind"
 #
 msgid "Wind Gust"
-msgstr ""
+msgstr "Wind-Boe"
 #
-msgid "Wind Scat"
-msgstr ""
-#
-msgid ""
-"Your request is ready. An eMail is prepared in your eMail environment.\n"
-"You have just to click 'send' to send it.\n"
-"OK to continue ..."
-msgstr ""
+#, fuzzy
+msgid "Write and send eMail request"
+msgstr "Schreibe und Sende Grib Abfrage-Einstellung"
 #
 msgid ""
-"Your request was sent (if your system has an MTA configured and is able to "
-"send mail).\n"
-"OK to continue ..."
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but "
+"interpolated!"
 msgstr ""
 #
-msgid "Zone"
+#, fuzzy
+msgid ""
+"Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr ""
+"Ihre Anfrage ist fertig. Eine eMail befindet sich in Ihrer eMail-Umgebung.\n"
+"Zum Senden klicke 'Senden'.\n"
+"Weiter mit Speichern oder Abbr. ... oder neue Parameter für neue eMail..."
+#
+#, fuzzy
+msgid ""
+"Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
+msgstr ""
+"Ihre Anfrage wurde gesendet \n"
+"(wenn Ihr System einen MTA konfiguriert hat und Mail senden kann).\n"
+"Weiter mit Speichern oder Abbr. ... oder neue Parameter für neue eMail..."
+#
+msgid "inHG"
 msgstr ""
 #
-msgid "eMail"
+msgid "j/kg"
 msgstr ""
 #
-msgid "eMail To"
-msgstr ""
+msgid "km/h"
+msgstr "km/h"
 #
-msgid "eMail error"
-msgstr ""
+msgid "m/s"
+msgstr "m/s"
 #
 msgid "mmHG"
-msgstr ""
+msgstr "Torr"
+#
+msgid "mph"
+msgstr "mph"
 #
 msgid "playback"
-msgstr ""
+msgstr "Abspielen"
+#
+#, fuzzy
+msgid "zyGrib Code"
+msgstr "Ihr zyGrib Code"
+#
+#, fuzzy
+msgid "zyGrib Login"
+msgstr "Ihr zyGrib Login"
+#
+#~ msgid " (Dup)"
+#~ msgstr " (Doppl)"
+#
+#~ msgid " data"
+#~ msgstr "Daten"
+#
+#~ msgid "0.2"
+#~ msgstr "0.2"
+#
+#~ msgid "0.5"
+#~ msgstr "0.5"
+#
+#~ msgid "0.8"
+#~ msgstr "0.8"
+#
+#~ msgid "1"
+#~ msgstr "1"
+#
+#~ msgid "1.6"
+#~ msgstr "1.6"
+#
+#~ msgid "12"
+#~ msgstr "12"
+#
+#~ msgid "2"
+#~ msgstr "2"
+#
+#~ msgid "24"
+#~ msgstr "24"
+#
+#~ msgid "3"
+#~ msgstr "3"
+#
+#~ msgid "4"
+#~ msgstr "4"
+#
+#~ msgid "5"
+#~ msgstr "5"
+#
+#~ msgid "6"
+#~ msgstr "6"
+#
+#~ msgid "7"
+#~ msgstr "7"
+#
+#~ msgid "8"
+#~ msgstr "8"
+#
+#~ msgid "Air Temperature"
+#~ msgstr "Luft-Temperatur"
+#
+#~ msgid "AirTemp"
+#~ msgstr "Luft-Temp."
+#
+#~ msgid "AirTemperature"
+#~ msgstr "Luft-Temperatur"
+#
+#~ msgid "COAMPS"
+#~ msgstr "COAMPS"
+#
+#~ msgid "Celcius"
+#~ msgstr "Celsius"
+#
+#~ msgid "Cloud"
+#~ msgstr "Wolken"
+#
+#~ msgid "CloudCover"
+#~ msgstr "Bewölkung"
+#
+#~ msgid "Clouds Cover"
+#~ msgstr "Bewölkung"
+#
+#~ msgid "Current(Surf.)"
+#~ msgstr "Strömung(Oberfl.)"
+#
+#
 #
 #
 #
@@ -393,6 +539,17 @@ msgstr ""
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB Einstellungen"
+#
+#~ msgid "Data available in the selected forecast model"
+#~ msgstr "Daten verfügbar im gewählten Vorhersage-Modell"
+#
+#~ msgid "Display Iso Temp. Lines"
+#~ msgstr "Zeige Iso Temp. Linien"
+#
+#~ msgid "GFS"
+#~ msgstr "GFS"
+#
+#
 #
 #
 #~ msgid "GRIB"
@@ -423,8 +580,15 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Verzeichnis GRIB-Dateien"
+#
+#~ msgid "Login you use to connect to Zygrib's forum"
+#~ msgstr "Ihr Login für das zyGrib-Forum"
+#
+#
 #
 #
 #
@@ -438,11 +602,15 @@ msgstr ""
 #
 #
 #
+#
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Ozean-Strömung bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
+#
 #
 #
 #
@@ -456,11 +624,15 @@ msgstr ""
 #
 #
 #
+#
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
+#
 #
 #
 #
@@ -471,12 +643,28 @@ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten CRAIN GRIB-Daten bitte herauszoom oder "
 #~ "Maßstab verkleinern."
 #
+#~ msgid "Precipitation"
+#~ msgstr "Niederschlag"
+#
+#
+#
 #
 #
 #
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Luftdruck, mBar"
+#
+#~ msgid "RTOFS"
+#~ msgstr "RTOFS"
+#
+#~ msgid "Rain"
+#~ msgstr "Regen"
+#
+#~ msgid "Ref : "
+#~ msgstr "Ref : "
+#
+#
 #
 #
 #
@@ -495,6 +683,20 @@ msgstr ""
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB Einstellungen"
+#
+#~ msgid "Saildocs"
+#~ msgstr "Saildocs"
+#
+#~ msgid "Sea Temperature"
+#~ msgstr "See-Temperatur"
+#
+#~ msgid "SeaTemp"
+#~ msgstr "See-Temp."
+#
+#~ msgid "SeaTemperature"
+#~ msgstr "Wassertemperatur"
+#
+#
 #
 #
 #
@@ -523,6 +725,8 @@ msgstr ""
 #
 #~ msgid "Show GRIB icon"
 #~ msgstr "GRIB-Symbol anzeigen"
+#
+#
 #
 #
 #
@@ -556,8 +760,21 @@ msgstr ""
 #
 #
 #
+#
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "WARNUNG:  Die QuickScat GRIB-Daten sind %d Stunden alt."
+#
+#~ msgid "WW3-GLOBAL"
+#~ msgstr "WW3-GLOBAL"
+#
+#~ msgid "WW3-MEDIT"
+#~ msgstr "WW3-MEDIT"
+#
+#~ msgid "Wave"
+#~ msgstr "Wellen"
+#
+#
 #
 #
 #
@@ -569,9 +786,13 @@ msgstr ""
 #
 #
 #
+#
+#
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Windrichtung"
+#
+#
 #
 #
 #
@@ -580,30 +801,11 @@ msgstr ""
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Windgeschwindigkeit, kn"
 #
+#~ msgid "WindGust"
+#~ msgstr "Wind-Boe"
 #
+#~ msgid "ZyGrib"
+#~ msgstr "zyGrib"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Wind Speed, Kts."
-#~ msgstr "Windgeschwindigkeit, kn"
+#~ msgid "size"
+#~ msgstr "Größe"

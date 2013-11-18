@@ -7,14 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"POT-Creation-Date: 2013-11-17 19:30-0500\n"
 "PO-Revision-Date: 2010-11-24 22:54-0500\n"
-"Language-Team: \n"
 "Last-Translator: \n"
+"Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
+#
+msgid " mag"
+msgstr ""
+#
+msgid " true"
+msgstr ""
 #
 #
 msgid "Add"
@@ -24,11 +30,22 @@ msgstr ""
 msgid "Add instrument"
 msgstr ""
 #
+msgid "Air Temp."
+msgstr ""
 #
-msgid "Apparent wind"
+msgid "App. Wind Angle"
+msgstr ""
+#
+msgid "App. Wind Angle & Speed"
+msgstr ""
+#
+msgid "App. Wind Speed"
 msgstr ""
 #
 msgid "Appearance"
+msgstr ""
+#
+msgid "Boat speed units:"
 msgstr ""
 #
 #
@@ -77,6 +94,9 @@ msgstr ""
 msgid "Depth"
 msgstr ""
 #
+msgid "Distance units:"
+msgstr ""
+#
 #
 msgid "Down"
 msgstr ""
@@ -85,37 +105,51 @@ msgstr ""
 msgid "E"
 msgstr ""
 #
+msgid "ENE"
+msgstr ""
 #
-msgid "Edit"
+msgid "ESE"
 msgstr ""
 #
 msgid "Fonts"
 msgstr ""
 #
-#
-msgid "GPS in view"
+msgid "GPS Compass"
 msgstr ""
 #
-#
-msgid "GPS status"
+msgid "GPS Status"
 msgstr ""
 #
+msgid "GPS in View"
+msgstr ""
 #
-msgid "HDG"
+msgid "Honor OpenCPN settings"
 msgstr ""
 #
 msgid "Horizontal"
 msgstr ""
 #
 #
-msgid "Instrument width:"
-msgstr ""
-#
-#
 msgid "Instruments"
 msgstr ""
 #
+msgid "Kilometers"
+msgstr ""
+#
+msgid "Kts"
+msgstr ""
+#
 msgid "Label:"
+msgstr ""
+#
+msgid "Mag HDG"
+msgstr ""
+#
+#, c-format
+msgid "Max %.1f since %02d:%02d  Overall %.1f"
+msgstr ""
+#
+msgid "Meters"
 msgstr ""
 #
 msgid "Moon phase"
@@ -129,8 +163,17 @@ msgstr ""
 msgid "NE"
 msgstr ""
 #
+msgid "NNE"
+msgstr ""
+#
+msgid "NNW"
+msgstr ""
+#
 #
 msgid "NW"
+msgstr ""
+#
+msgid "Nautical miles"
 msgstr ""
 #
 msgid "Orientation:"
@@ -140,8 +183,10 @@ msgstr ""
 msgid "Position"
 msgstr ""
 #
+msgid "Preferences..."
+msgstr ""
 #
-msgid "Rudder angle"
+msgid "Rudder Angle"
 msgstr ""
 #
 #
@@ -154,6 +199,12 @@ msgstr ""
 #
 #
 msgid "SOG"
+msgstr ""
+#
+msgid "SSE"
+msgstr ""
+#
+msgid "SSW"
 msgstr ""
 #
 #
@@ -175,18 +226,43 @@ msgstr ""
 msgid "Speedometer"
 msgstr ""
 #
-msgid "Sunrise/Sunset"
+msgid "Speedometer max value:"
 msgstr ""
 #
+msgid "Statute miles"
+msgstr ""
 #
-msgid "Temp"
+msgid "Sum Log"
+msgstr ""
+#
+msgid "Sunrise/Sunset"
 msgstr ""
 #
 msgid "Title:"
 msgstr ""
 #
+msgid "Trip Log"
+msgstr ""
 #
-msgid "True wind"
+msgid "True HDG"
+msgstr ""
+#
+msgid "True Wind Angle"
+msgstr ""
+#
+msgid "True Wind Angle & Speed"
+msgstr ""
+#
+msgid "True Wind Dir. & Speed"
+msgstr ""
+#
+msgid "True Wind Direction"
+msgstr ""
+#
+msgid "True Wind Speed"
+msgstr ""
+#
+msgid "Units, Ranges, Formats"
 msgstr ""
 #
 #
@@ -204,12 +280,28 @@ msgstr ""
 msgid "W"
 msgstr ""
 #
-#
-msgid "Wind angle"
+msgid "WNW"
 msgstr ""
 #
+msgid "WSW"
+msgstr ""
 #
-msgid "Wind speed"
+msgid "Water Temp."
+msgstr ""
+#
+msgid "Wind history"
+msgstr ""
+#
+msgid "Wind speed units:"
+msgstr ""
+#
+msgid "km/h"
+msgstr ""
+#
+msgid "m/s"
+msgstr ""
+#
+msgid "mph"
 msgstr ""
 #
 msgid "show this dashboard"

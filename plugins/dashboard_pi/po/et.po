@@ -7,14 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-11 10:27-0400\n"
+"POT-Creation-Date: 2013-11-17 19:30-0500\n"
 "PO-Revision-Date: 2011-01-09 18:59+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: \n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: \n"
+#
+msgid " mag"
+msgstr ""
+#
+msgid " true"
+msgstr ""
 #
 #
 msgid "Add"
@@ -25,10 +31,27 @@ msgid "Add instrument"
 msgstr "Lisa paneel"
 #
 #
-msgid "Apparent wind"
+#, fuzzy
+msgid "Air Temp."
+msgstr "Temp."
+#
+#
+#, fuzzy
+msgid "App. Wind Angle"
+msgstr "Tuule nurk"
+#
+msgid "App. Wind Angle & Speed"
 msgstr ""
 #
+#
+#, fuzzy
+msgid "App. Wind Speed"
+msgstr "Tuule kiirus"
+#
 msgid "Appearance"
+msgstr ""
+#
+msgid "Boat speed units:"
 msgstr ""
 #
 #
@@ -77,6 +100,9 @@ msgstr "Kustuta"
 msgid "Depth"
 msgstr "Sügavus"
 #
+msgid "Distance units:"
+msgstr ""
+#
 #
 msgid "Down"
 msgstr "Alla"
@@ -86,37 +112,61 @@ msgid "E"
 msgstr "E"
 #
 #
-msgid "Edit"
-msgstr "Muuda"
+#, fuzzy
+msgid "ENE"
+msgstr "NE"
+#
+#
+#, fuzzy
+msgid "ESE"
+msgstr "SE"
 #
 msgid "Fonts"
 msgstr "Fondid"
 #
 #
-msgid "GPS in view"
-msgstr "GPS vaade"
+#, fuzzy
+msgid "GPS Compass"
+msgstr "Kompass"
 #
 #
-msgid "GPS status"
+#, fuzzy
+msgid "GPS Status"
 msgstr "GPS staatus"
 #
 #
-msgid "HDG"
-msgstr "HDG"
+#, fuzzy
+msgid "GPS in View"
+msgstr "GPS vaade"
+#
+msgid "Honor OpenCPN settings"
+msgstr ""
 #
 msgid "Horizontal"
 msgstr ""
 #
 #
-msgid "Instrument width:"
-msgstr "Sildi laius:"
-#
-#
 msgid "Instruments"
 msgstr "Paneelid"
 #
+msgid "Kilometers"
+msgstr ""
+#
+msgid "Kts"
+msgstr ""
+#
 msgid "Label:"
 msgstr "Silt:"
+#
+msgid "Mag HDG"
+msgstr ""
+#
+#, c-format
+msgid "Max %.1f since %02d:%02d  Overall %.1f"
+msgstr ""
+#
+msgid "Meters"
+msgstr ""
 #
 msgid "Moon phase"
 msgstr ""
@@ -130,8 +180,21 @@ msgid "NE"
 msgstr "NE"
 #
 #
+#, fuzzy
+msgid "NNE"
+msgstr "NE"
+#
+#
+#, fuzzy
+msgid "NNW"
+msgstr "NW"
+#
+#
 msgid "NW"
 msgstr "NW"
+#
+msgid "Nautical miles"
+msgstr ""
 #
 msgid "Orientation:"
 msgstr ""
@@ -140,8 +203,12 @@ msgstr ""
 msgid "Position"
 msgstr "Positsioon"
 #
+msgid "Preferences..."
+msgstr ""
 #
-msgid "Rudder angle"
+#
+#, fuzzy
+msgid "Rudder Angle"
 msgstr "Rooli nurk"
 #
 #
@@ -155,6 +222,16 @@ msgstr "SE"
 #
 msgid "SOG"
 msgstr "SOG"
+#
+#
+#, fuzzy
+msgid "SSE"
+msgstr "SE"
+#
+#
+#, fuzzy
+msgid "SSW"
+msgstr "SW"
 #
 #
 msgid "STW"
@@ -175,19 +252,50 @@ msgstr "Väike:"
 msgid "Speedometer"
 msgstr "Spidomeeter"
 #
-msgid "Sunrise/Sunset"
+#
+#, fuzzy
+msgid "Speedometer max value:"
+msgstr "Spidomeeter"
+#
+msgid "Statute miles"
 msgstr ""
 #
+msgid "Sum Log"
+msgstr ""
 #
-msgid "Temp"
-msgstr "Temp."
+msgid "Sunrise/Sunset"
+msgstr ""
 #
 msgid "Title:"
 msgstr "Tiitel:"
 #
+msgid "Trip Log"
+msgstr ""
 #
-msgid "True wind"
-msgstr "Tõeline tuul"
+msgid "True HDG"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "True Wind Angle"
+msgstr "Tuule nurk"
+#
+msgid "True Wind Angle & Speed"
+msgstr ""
+#
+msgid "True Wind Dir. & Speed"
+msgstr ""
+#
+msgid "True Wind Direction"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "True Wind Speed"
+msgstr "Tuule kiirus"
+#
+msgid "Units, Ranges, Formats"
+msgstr ""
 #
 #
 msgid "Up"
@@ -205,12 +313,54 @@ msgid "W"
 msgstr "W"
 #
 #
-msgid "Wind angle"
-msgstr "Tuule nurk"
+#, fuzzy
+msgid "WNW"
+msgstr "NW"
 #
 #
-msgid "Wind speed"
+#, fuzzy
+msgid "WSW"
+msgstr "SW"
+#
+msgid "Water Temp."
+msgstr ""
+#
+msgid "Wind history"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Wind speed units:"
 msgstr "Tuule kiirus"
+#
+msgid "km/h"
+msgstr ""
+#
+msgid "m/s"
+msgstr ""
+#
+msgid "mph"
+msgstr ""
 #
 msgid "show this dashboard"
 msgstr ""
+#
+#
+#
+#~ msgid "Edit"
+#~ msgstr "Muuda"
+#
+#
+#
+#~ msgid "HDG"
+#~ msgstr "HDG"
+#
+#
+#
+#~ msgid "Instrument width:"
+#~ msgstr "Sildi laius:"
+#
+#
+#
+#~ msgid "True wind"
+#~ msgstr "Tõeline tuul"

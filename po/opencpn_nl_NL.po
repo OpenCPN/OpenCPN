@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN 3.1.1405 release candidate\n"
+"Project-Id-Version: opencpn 3.3.1006\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-06 23:19-0400\n"
-"PO-Revision-Date: 2013-02-08 13:57+0100\n"
+"POT-Creation-Date: 2013-11-17 19:25-0500\n"
+"PO-Revision-Date: 2013-10-24 16:49+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
 "Language: nl_NL\n"
@@ -320,10 +320,10 @@ msgid "\"Ship Name\" MMSI (Call Sign)"
 msgstr "    \"Scheepsnaam\" MMSI (roepnaam)"
 #
 msgid "%D Days, %H:%M"
-msgstr ""
+msgstr "%D dagen, %H:%M"
 #
 msgid "%H:%M"
-msgstr ""
+msgstr "%H:%M"
 #
 #
 #
@@ -366,9 +366,8 @@ msgstr "&Verwijder alles"
 #
 #
 #
-#, fuzzy
 msgid "&Export selected..."
-msgstr "&Exporteer route ..."
+msgstr "&Exporteer selectie ..."
 #
 #
 #
@@ -716,9 +715,8 @@ msgstr "AIS objectenlijst ..."
 #
 #
 #
-#, fuzzy
 msgid "AIS Target Name"
-msgstr "AIS objectgegevens"
+msgstr "AIS objectnaam"
 #
 #
 #
@@ -735,21 +733,20 @@ msgid "AIS Targets"
 msgstr "AIS Objecten"
 #
 msgid "APRS"
-msgstr ""
+msgstr "APRS"
 #
 #
 #
 #
 #
-#, fuzzy
 msgid "APRS Position Report"
-msgstr "DSC positierapport"
+msgstr "APRS positierapport"
 #
 msgid "ARPA"
-msgstr ""
+msgstr "ARPA"
 #
 msgid "ARPA radar target"
-msgstr ""
+msgstr "ARPA radar object"
 #
 #
 #
@@ -822,7 +819,7 @@ msgid "Address"
 msgstr "Adres"
 #
 msgid "Advanced"
-msgstr ""
+msgstr "Uitgebreid"
 #
 #
 #
@@ -834,9 +831,8 @@ msgstr "aan de grond"
 #
 #
 #
-#, fuzzy
 msgid "All"
-msgstr "Alles behalve"
+msgstr "alles"
 #
 #
 #
@@ -938,9 +934,8 @@ msgstr "Weet u zeker dat u <ALLE> markeringspunten wilt verwijderen?"
 #
 #
 #
-#, fuzzy
 msgid "Are you sure you want to delete the selected object(s)"
-msgstr "Weet u zeker dat u deze route wilt verwijderen?"
+msgstr "Weet u zeker dat u de geselecteerde objecten wilt verwijderen?"
 #
 #
 #
@@ -969,7 +964,7 @@ msgid "Assumed 1 Mile Point"
 msgstr "Verondersteld 1 NM punt"
 #
 msgid "Assumed Magnetic Variation, deg."
-msgstr ""
+msgstr "     Magnetische variatie in ° (geschat)"
 #
 #
 #
@@ -1006,7 +1001,6 @@ msgstr "Automatische dagelijkse tracks"
 #
 #
 #
-#, fuzzy
 msgid "Avg. speed"
 msgstr "Gemiddelde vaart (knopen)"
 #
@@ -1077,14 +1071,16 @@ msgstr "Koers"
 #
 #
 #
-#, fuzzy
 msgid "Bearing (M)"
-msgstr "Koers"
+msgstr "Peiling (M)"
 #
 #
 #
 msgid "Black"
 msgstr "zwart"
+#
+msgid "Blacklisted plugin detected..."
+msgstr "Foute plugin gedetecteerd ..."
 #
 #
 #
@@ -1097,9 +1093,6 @@ msgstr "blauw"
 #
 msgid "Boundaries"
 msgstr "Grenzen"
-#
-msgid "Broken plugin detected..."
-msgstr ""
 #
 #
 msgid "Buddy"
@@ -1309,6 +1302,11 @@ msgstr "Cel"
 msgid "Cell Scale"
 msgstr "Celschaal"
 #
+#
+#
+msgid "Center View"
+msgstr "Centreer beeld op positie"
+#
 msgid "Center View..."
 msgstr "Centreer beeld ..."
 #
@@ -1423,9 +1421,8 @@ msgstr "Kaarten"
 #
 #
 #
-#, fuzzy
 msgid "Choose Font Color..."
-msgstr "Kies lettertype ..."
+msgstr "Kies letterkleur ..."
 #
 #
 #
@@ -1436,6 +1433,15 @@ msgstr "Kies lettertype ..."
 #
 msgid "Choose Format for Copy"
 msgstr "Kies format voor het kopiëren"
+#
+#
+#
+#
+#
+#
+#
+msgid "Choose a file"
+msgstr "Kies een bestand"
 #
 #
 #
@@ -1479,9 +1485,8 @@ msgstr "Sluiten"
 #
 #
 #
-#, fuzzy
 msgid "Color"
-msgstr "Kleur: "
+msgstr "Kleur"
 #
 #
 #
@@ -1559,9 +1564,8 @@ msgstr "Koers"
 #
 #
 #
-#, fuzzy
 msgid "Course (M)"
-msgstr "Koers"
+msgstr "Koers (M)"
 #
 #
 #
@@ -1664,7 +1668,7 @@ msgid "DataPort"
 msgstr "Datapoort:"
 #
 msgid "Daytime"
-msgstr ""
+msgstr "Overdag"
 #
 #
 #
@@ -1837,9 +1841,8 @@ msgstr "Weergaveopties Eigen Vaartuig"
 #
 #
 #
-#, fuzzy
 msgid "Display parameters"
-msgstr "Weergavecategorie"
+msgstr "Weergaveparameters"
 #
 #
 #
@@ -1915,13 +1918,12 @@ msgstr "Noodgebied: vaartuig zinkend"
 msgid "Distress Area: Vessel under assault"
 msgstr "Noodgebied: vaartuig onder aanval"
 #
-#, fuzzy
 msgid ""
 "Do you also want to make the shared waypoints being part of this route "
 "invisible?"
 msgstr ""
-"Wilt u ook de zichtbaarheid omschakelen van de gedeelde markeringspunten die "
-"deel uitmaken van deze route?"
+"Wilt u ook de gedeelde markeringspunten die deel uitmaken van deze route "
+"onzichtbaat maken?"
 #
 #
 #
@@ -2078,7 +2080,7 @@ msgid "Estimated time : "
 msgstr "Geschatte tijd:"
 #
 msgid "EvTwilight"
-msgstr ""
+msgstr "Avondschemering"
 #
 #
 #
@@ -2086,9 +2088,8 @@ msgstr ""
 #
 #
 #
-#, fuzzy
 msgid "Export"
-msgstr "&Exporteer markeringspunt ..."
+msgstr "Exporteren"
 #
 #
 #
@@ -2108,9 +2109,8 @@ msgstr "Exporteer GPX-bestand"
 #
 #
 #
-#, fuzzy
 msgid "Extend"
-msgstr "Uitgebreid"
+msgstr "Uitbreiden"
 #
 #
 #
@@ -2209,7 +2209,7 @@ msgid "Format uploads for Furuno GP3X"
 msgstr "Format voor Furuno GP3X uploads"
 #
 msgid "From"
-msgstr ""
+msgstr "Van"
 #
 #
 #
@@ -2310,9 +2310,8 @@ msgstr "Verberg CPA van AIS object"
 #
 #
 #
-#, fuzzy
 msgid "Hide Target Track"
-msgstr "Verberg CPA van AIS object"
+msgstr "Verberg track AIS object"
 #
 #
 #
@@ -2455,7 +2454,7 @@ msgid "Kilometers"
 msgstr "kilometer"
 #
 msgid "Knots"
-msgstr ""
+msgstr "knopen"
 #
 #
 #
@@ -2615,6 +2614,39 @@ msgstr "sectorlicht"
 #
 #
 #
+#
+#
+msgid "Link"
+msgstr "Link"
+#
+#
+#
+#
+#
+#
+#
+msgid "Link Properties"
+msgstr "Link-eigenschappen"
+#
+#
+#
+#
+#
+#
+#
+msgid "Link description"
+msgstr "Link-omschrijving"
+#
+#
+#
+#
+msgid "Link not complete, can't be saved."
+msgstr "Link niet compleet, opslaan is niet mogelijk."
+#
+#
+#
+#
+#
 msgid "Links"
 msgstr "Links"
 #
@@ -2644,6 +2676,12 @@ msgstr "Geladen Kaarten"
 #
 msgid "Local @ PC"
 msgstr "Computertijd"
+#
+#
+#
+#
+msgid "Local file..."
+msgstr "Lokaal bestand ..."
 #
 #
 #
@@ -2833,7 +2871,7 @@ msgid "Miscellaneous Options"
 msgstr "Overige Opties"
 #
 msgid "MoTwilight"
-msgstr ""
+msgstr "Ochtendschemering"
 #
 #
 #
@@ -2855,7 +2893,7 @@ msgid "Move Waypoint"
 msgstr "Verplaats routepunt "
 #
 msgid "Mph"
-msgstr ""
+msgstr "mph"
 #
 msgid "NMEA"
 msgstr "NMEA"
@@ -2888,7 +2926,7 @@ msgid "Name"
 msgstr "Naam"
 #
 msgid "National text on chart"
-msgstr ""
+msgstr "Nationale tekst op kaart"
 #
 #
 #
@@ -2901,7 +2939,6 @@ msgstr "zeemijl (NM of NMi)"
 #
 #
 #
-#, fuzzy
 msgid "Nautical miles"
 msgstr "zeemijl (NM of NMi)"
 #
@@ -2935,7 +2972,7 @@ msgid "Next tide event"
 msgstr "Volgend HW/LW"
 #
 msgid "Nighttime"
-msgstr ""
+msgstr "'s-Nachts"
 #
 #
 #
@@ -3022,7 +3059,7 @@ msgid "Ok"
 msgstr "OK"
 #
 msgid "Old log will be moved to opencpn.log.log"
-msgstr ""
+msgstr "Het oude logbestand wordt verplaatst naar opencpn.log.log"
 #
 #
 #
@@ -3269,7 +3306,6 @@ msgstr "Verwachte vaart"
 #
 #
 #
-#, fuzzy
 msgid "Plan speed"
 msgstr "Verwachte vaart"
 #
@@ -3284,9 +3320,8 @@ msgstr "Glazen slaan"
 #
 #
 #
-#, fuzzy
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
-msgstr "CPA/TCPA waarschuwing"
+msgstr "Geluidsmelding bij CPA/TCPA waarschuwingen en DSC/SART noodberichten"
 #
 #
 #
@@ -3304,17 +3339,23 @@ msgstr "pleziervaartuig"
 #
 #, c-format
 msgid ""
-"Plugin %s (%s), version %i.%i was detected. This version is known to be "
-"unstable and will not be loaded, please go to the opencpn.org plugin "
-"downloads page and get the latest stable version of this plugin available."
+"PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable and will not be loaded.\n"
+" Please update this PlugIn at the opencpn.org website."
 msgstr ""
+"Plugin %s (%s), versie %i.%i is gedetecteerd. Deze versie is onstabiel\n"
+"en zal niet worden geladen. Ga naar de plugin downloadpagina van\n"
+"opencpn.org en download de laatste stabiele versie van deze plugin."
 #
 #, c-format
 msgid ""
-"Plugin %s (%s), version %i.%i was detected. This version is known to be "
-"unstable, please go to the opencpn.org plugin downloads page and get the "
-"latest stable version of this plugin available."
+"PlugIn %s (%s), version %i.%i was detected.\n"
+" This version is known to be unstable.\n"
+" Please update this PlugIn at the opencpn.org website."
 msgstr ""
+"Plugin %s (%s), versie %i.%i is gedetecteerd. Deze versie is\n"
+" onstabiel. Ga naar de plugin downloadpagina van opencpn.org\n"
+"en download de laatste stabiele versie van deze plugin."
 #
 #
 #
@@ -3436,9 +3477,8 @@ msgstr "Voorbeeld: "
 #
 #
 #
-#, fuzzy
 msgid "Print"
-msgstr "Weergaveoptie Afdrukken"
+msgstr "Afdrukken"
 #
 #
 #
@@ -3463,6 +3503,12 @@ msgstr "Routeselectie afdrukken"
 #
 msgid "Priority"
 msgstr "Prioriteit:"
+#
+#
+#
+#
+msgid "Problem discovered"
+msgstr "Probleem ontdekt"
 #
 msgid "Proceed to this location - await instructions"
 msgstr "Vaar naar deze positie - wacht op instructies"
@@ -3541,9 +3587,8 @@ msgstr "Vernieuw de kaartendatabase vanuit configuratiebestand ..."
 #
 #
 #
-#, fuzzy
 msgid "Recorded points"
-msgstr "Routepunten samenvoegen?"
+msgstr "Opgeslagen routepunten"
 #
 #
 #
@@ -3693,7 +3738,6 @@ msgstr "Haal de initiele taalselectie op uit het Windows register"
 msgid "Reverse..."
 msgstr "Omdraaien ..."
 #
-#, fuzzy
 msgid "Rogue or suspicious vessel"
 msgstr "Verdacht vaartuig"
 #
@@ -3992,7 +4036,7 @@ msgstr "Toon AIS objecten"
 #
 #
 msgid "Show AIS targets real size"
-msgstr "Toon AIS objecten in werkelijke grootte"
+msgstr "Toon AIS-objecten in werkelijke grootte"
 #
 #
 #
@@ -4057,7 +4101,7 @@ msgid "Show Lat/Long as"
 msgstr "    Toon positie in:"
 #
 msgid "Show Magnetic bearings and headings"
-msgstr ""
+msgstr "Toon peilingen en koersen t.o.v. magnetische noorden"
 #
 #
 #
@@ -4091,9 +4135,8 @@ msgstr "Toon CPA van AIS object"
 #
 #
 #
-#, fuzzy
 msgid "Show Target Track"
-msgstr "Toon CPA van AIS object"
+msgstr "Toon track van AIS object"
 #
 #
 #
@@ -4177,9 +4220,8 @@ msgstr "Toon koers van elk routepunt naar het volgende."
 #
 #
 #
-#, fuzzy
 msgid "Show distance as"
-msgstr "Totale verheid (NM):"
+msgstr "    Toon afstand in:"
 #
 #
 #
@@ -4189,7 +4231,7 @@ msgid "Show name"
 msgstr "Toon naam"
 #
 msgid "Show names with AIS targets at scale greater than 1:"
-msgstr ""
+msgstr "Toon namen bij AIS-objecten met een schaal > 1:"
 #
 #
 #
@@ -4209,9 +4251,8 @@ msgstr "Aantal te tonen afstandscirkels:"
 #
 #
 #
-#, fuzzy
 msgid "Show speed as"
-msgstr "Toon getijhoogte-iconen"
+msgstr "    Toon vaart in:"
 #
 #
 #
@@ -4290,9 +4331,8 @@ msgstr "Vaart"
 #
 #
 #
-#, fuzzy
 msgid "Split"
-msgstr "Route splitsen"
+msgstr "Splitsen"
 #
 #
 #
@@ -4328,7 +4368,7 @@ msgid "Start"
 msgstr "Start"
 #
 msgid "Statistics"
-msgstr ""
+msgstr "Statistiek"
 #
 #
 #
@@ -4338,7 +4378,7 @@ msgid "StatusBar"
 msgstr "Statusbalk"
 #
 msgid "Statute miles"
-msgstr ""
+msgstr "statute mile"
 #
 #
 #
@@ -4354,9 +4394,8 @@ msgstr "'stuurboordszijde'"
 #
 #
 #
-#, fuzzy
 msgid "Style"
-msgstr "Stijl:"
+msgstr "Stijl"
 #
 #
 #
@@ -4366,10 +4405,10 @@ msgid "Style:"
 msgstr "Stijl:"
 #
 msgid "Sunrise"
-msgstr ""
+msgstr "Zonsopkomst"
 #
 msgid "Sunset"
-msgstr ""
+msgstr "Zonsondergang"
 #
 #
 #
@@ -4600,7 +4639,6 @@ msgstr "Vaartijd"
 #
 #
 #
-#, fuzzy
 msgid "Time enroute"
 msgstr "Vaartijd"
 #
@@ -4636,9 +4674,8 @@ msgstr "Naar punt"
 #
 #
 #
-#, fuzzy
 msgid "To route"
-msgstr "Vaartijd"
+msgstr "Naar route"
 #
 #
 #
@@ -4675,7 +4712,6 @@ msgstr "Totale lengte:"
 #
 #
 #
-#, fuzzy
 msgid "Total distance"
 msgstr "Totale verheid (NM)"
 #
@@ -4713,9 +4749,9 @@ msgstr "Track-eigenschappen"
 #
 #
 #
-#, fuzzy, c-format
+#, c-format
 msgid "Track Properties, Layer: %d"
-msgstr "Markeringspunt-eigenschappen, laag:"
+msgstr "Track-eigenschappen, laag: %d"
 #
 #
 #
@@ -4745,7 +4781,7 @@ msgid "Transverse Mercator"
 msgstr "Transversale Mercator"
 #
 msgid "Treat WPL sentences as APRS position reports"
-msgstr ""
+msgstr "Verwerk WPL-strings als APRS-positierapporten"
 #
 #
 #
@@ -4761,6 +4797,12 @@ msgstr "Type"
 #
 msgid "UDP"
 msgstr "UDP"
+#
+#
+#
+#
+msgid "URL"
+msgstr "URL"
 #
 #
 #
@@ -4840,7 +4882,7 @@ msgid "Use Garmin GRMN (Host) mode for uploads"
 msgstr "Gebruik Garmin GRMN (Host) modus voor uploads"
 #
 msgid "Use magnetic bearings in output sentence ECAPB"
-msgstr ""
+msgstr "Gebruik peilingen t.o.v. magnetische noorden in outputbericht ECAPB"
 #
 #
 #
@@ -4954,7 +4996,7 @@ msgid "Waypoint"
 msgstr "Markeringspunt"
 #
 msgid "Waypoint Arrival Circle Radius (NMi)"
-msgstr ""
+msgstr "Straal van routepuntaankomstcirkel (zeemijl)"
 #
 #
 #
@@ -5026,9 +5068,8 @@ msgid "White"
 msgstr "wit"
 #
 #
-#, fuzzy
 msgid "Width"
-msgstr "Breedte:"
+msgstr "Breedte"
 #
 msgid "Width Over All (m)"
 msgstr "Breedte over alles (m)"
@@ -5138,35 +5179,32 @@ msgid "_plus"
 msgstr "_plus"
 #
 msgid "km"
-msgstr ""
+msgstr "km"
 #
 msgid "km/h"
-msgstr ""
+msgstr "km/u"
 #
-#, fuzzy
 msgid "kts"
 msgstr "Knopen"
 #
 msgid "m"
-msgstr ""
+msgstr "m"
 #
 msgid "m/s"
-msgstr ""
+msgstr "m/s"
 #
-#, fuzzy
 msgid "mi"
-msgstr "min"
+msgstr "mi"
 #
 msgid "mph"
-msgstr ""
+msgstr "mph"
 #
 #
 #
 #
 #
-#, fuzzy
 msgid "track"
-msgstr "Track"
+msgstr "track"
 #
 #
 #
@@ -6332,12 +6370,6 @@ msgstr "wxFB website"
 #
 #
 #
-#~ msgid "Center View"
-#~ msgstr "Centreer beeld op positie"
-#
-#
-#
-#
 #
 #
 #
@@ -6424,16 +6456,6 @@ msgstr "wxFB website"
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Positie"
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Choose a file"
-#~ msgstr "Kies een bestand"
 #
 #
 #
@@ -7501,52 +7523,8 @@ msgstr "wxFB website"
 #
 #
 #
-#
-#
-#~ msgid "Link"
-#~ msgstr "Link"
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Link Properties"
-#~ msgstr "Link-eigenschappen"
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Link description"
-#~ msgstr "Link-omschrijving"
-#
-#
-#
-#
-#
-#~ msgid "Link not complete, can't be saved."
-#~ msgstr "Link niet compleet, opslaan is niet mogelijk."
-#
-#
-#
-#
-#
-#
 #~ msgid "Liquified gas tanker"
 #~ msgstr "gastanker (zee)"
-#
-#
-#
-#
-#
-#~ msgid "Local file..."
-#~ msgstr "Lokaal bestand ..."
 #
 #
 #
@@ -8556,13 +8534,6 @@ msgstr "wxFB website"
 #
 #~ msgid "Prev"
 #~ msgstr "<<"
-#
-#
-#
-#
-#
-#~ msgid "Problem discovered"
-#~ msgstr "Probleem ontdekt"
 #
 #
 #
@@ -9846,13 +9817,6 @@ msgstr "wxFB website"
 #
 #~ msgid "UN Ship Type:         "
 #~ msgstr "VN scheepstype: "
-#
-#
-#
-#
-#
-#~ msgid "URL"
-#~ msgstr "URL"
 #
 #
 #

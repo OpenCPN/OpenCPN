@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-24 14:34+1200\n"
+"POT-Creation-Date: 2013-11-17 19:30-0500\n"
 "PO-Revision-Date: 2013-09-25 15:53+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -17,548 +17,51 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Generator: Poedit 1.5.7\n"
-
 #
-#: src/GribUIDialog.cpp:434 src/GribUIDialog.cpp:435 src/GribUIDialog.cpp:458
-#: src/GribUIDialog.cpp:459 src/GribUIDialog.cpp:472 src/GribUIDialog.cpp:484
-#: src/GribUIDialog.cpp:496 src/GribUIDialog.cpp:506 src/GribUIDialog.cpp:529
-#: src/GribUIDialog.cpp:530 src/GribUIDialog.cpp:543 src/GribUIDialog.cpp:555
-#: src/GribUIDialog.cpp:567 src/GribUIDialog.cpp:579
-msgid "N/A"
-msgstr "N/A"
-
-#
-#
-#: src/GribUIDialog.cpp:693
-msgid "eMail To"
-msgstr "送郵件給"
-
-#
-#
-#: src/GribUIDialog.cpp:696
-msgid "Action"
-msgstr "動作"
-
-#
-#
-#: src/GribUIDialog.cpp:697 src/GribUIDialogBase.cpp:492
-msgid "Send"
-msgstr "發送"
-
-#
-#
-#: src/GribUIDialog.cpp:699 src/GribUIDialogBase.cpp:484
-msgid "Model"
-msgstr "模型"
-
-#
-#
-#: src/GribUIDialog.cpp:702
-msgid "Zone"
-msgstr "區域"
-
-#
-#
-#: src/GribUIDialog.cpp:705
-msgid "Resolution"
-msgstr "解析"
-
-#
-#
-#: src/GribUIDialog.cpp:706
-msgid " Deg"
-msgstr "度"
-
-#
-#
-#: src/GribUIDialog.cpp:708
-msgid "Interval"
-msgstr "間隔"
-
-#
-#
-#: src/GribUIDialog.cpp:712
-msgid "Period"
-msgstr "週期"
-
-#
-#
-#: src/GribUIDialog.cpp:716
-msgid "Days"
-msgstr "天"
-
-#
-#
-#: src/GribUIDialog.cpp:718
-msgid "Parameters"
-msgstr "參數"
-
-#
-#
-#: src/GribUIDialog.cpp:737
-msgid ""
-"Your request is ready. An eMail is prepared in your eMail environment.\n"
-"You have just to click 'send' to send it.\n"
-"OK to continue ..."
+msgid " (Max size )"
 msgstr ""
-"您的請求電子郵件已準備完成. 按下'發送'鍵來傳送.\n"
-"按OK繼續 ..."
-
 #
-#
-#: src/GribUIDialog.cpp:739
-msgid ""
-"Your request was sent (if your system has an MTA configured and is able to "
-"send mail).\n"
-"OK to continue ..."
+msgid " Mo )"
 msgstr ""
-"您的請求已送出(如果您的電腦具備發送電郵能力).\n"
-"按OK繼續 ..."
-
 #
+msgid "( Max "
+msgstr ""
 #
-#: src/GribUIDialog.cpp:741
-msgid "eMail"
-msgstr "eMail"
-
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr ""
 #
-#: src/GribUIDialog.cpp:767
-msgid "Stop"
-msgstr "停止"
-
-#
-#: src/GribUIDialog.cpp:770 src/GribUIDialog.cpp:783
-#: src/GribUIDialogBase.cpp:69
-msgid "Play"
-msgstr "播放"
-
-#
-#
-#: src/GribUIDialog.cpp:927
-msgid "Select a GRIB file"
-msgstr "選擇 GRIB 檔案"
-
-#
-#: src/GribUIDialog.cpp:1052
-msgid "Error:  File does not exist!"
-msgstr "錯誤: 檔案不存在!"
-
-#
-#
-#: src/GribUIDialog.cpp:1065
-msgid "Error:  Can't read this File!"
-msgstr "錯誤: 無法讀取檔案!"
-
-#
-#: src/GribSettingsDialog.cpp:30
-msgid "Knots"
-msgstr "節"
-
-#
-#: src/GribSettingsDialog.cpp:30
-msgid "M/S"
-msgstr "公尺/秒"
-
-#
-#: src/GribSettingsDialog.cpp:30
-msgid "MPH"
-msgstr "每小時英哩"
-
-#
-#: src/GribSettingsDialog.cpp:30
-msgid "KPH"
-msgstr "每小時公里"
-
-#
-#: src/GribSettingsDialog.cpp:31
-msgid "MilliBars"
-msgstr "毫巴"
-
-#
-#: src/GribSettingsDialog.cpp:31
-msgid "mmHG"
-msgstr "毫米水銀柱"
-
-#
-#: src/GribSettingsDialog.cpp:32
-msgid "Meters"
-msgstr "公尺"
-
-#
-#: src/GribSettingsDialog.cpp:32
-msgid "Feet"
-msgstr "英呎"
-
-#
-#: src/GribSettingsDialog.cpp:33
-msgid "Celcius"
-msgstr "攝氏"
-
-#
-#: src/GribSettingsDialog.cpp:33
-msgid "Fahrenheit"
-msgstr "華氏"
-
-#
-#: src/GribSettingsDialog.cpp:34
-msgid "Millimeters"
-msgstr "毫米"
-
-#
-#: src/GribSettingsDialog.cpp:34
-msgid "Inches"
-msgstr "英吋"
-
-#
-#: src/GribSettingsDialog.cpp:35
-msgid "Percentage"
-msgstr "百分比"
-
-#
-#
-#: src/GribSettingsDialog.cpp:43 src/GribUIDialogBase.cpp:85
-#: src/GribOverlayFactory.cpp:675
-msgid "Wind"
-msgstr "風"
-
-#
-#: src/GribSettingsDialog.cpp:43 src/GribUIDialogBase.cpp:127
-msgid "Wind Gust"
-msgstr "陣風"
-
-#
-#
-#: src/GribSettingsDialog.cpp:43 src/GribUIDialogBase.cpp:136
-msgid "Pressure"
-msgstr "氣壓"
-
-#
-#: src/GribSettingsDialog.cpp:44 src/GribUIDialogBase.cpp:105
-msgid "Wave"
-msgstr "波"
-
-#
-#
-#: src/GribSettingsDialog.cpp:44 src/GribUIDialogBase.cpp:116
-#: src/GribUIDialogBase.cpp:366
-msgid "Current"
-msgstr "海流"
-
-#
-#: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:146
-msgid "Precipitation"
-msgstr "凝結"
-
-#
-#: src/GribSettingsDialog.cpp:45
-msgid "Cloud Cover"
-msgstr "雲層"
-
-#
-#: src/GribSettingsDialog.cpp:46
-msgid "Air Temperature"
-msgstr "大氣溫度"
-
-#
-#: src/GribSettingsDialog.cpp:46
-msgid "Sea Temperature"
-msgstr "海水溫度"
-
-#
-#: src/GribUIDialogBase.cpp:29
-msgid "Previous"
-msgstr "前一個"
-
-#
-#: src/GribUIDialogBase.cpp:37
-msgid "Next"
-msgstr "下一個"
-
-#
-#: src/GribUIDialogBase.cpp:42
-msgid "Now"
-msgstr "現在"
-
-#
-#: src/GribUIDialogBase.cpp:47
-msgid "Open File"
-msgstr "開啟檔案"
-
-#
-#: src/GribUIDialogBase.cpp:52
-msgid "Settings"
-msgstr "設定"
-
-#
-#: src/GribUIDialogBase.cpp:57
-msgid "Request"
-msgstr "請求"
-
-#
-#: src/GribUIDialogBase.cpp:79
-msgid "GRIB Data at Cursor"
-msgstr "游標位置的 GRIB 資料"
-
-#
-#: src/GribUIDialogBase.cpp:96
-msgid "Wind Scat"
-msgstr "Wind Scat"
-
-#
-#: src/GribUIDialogBase.cpp:155 src/GribUIDialogBase.cpp:366
-msgid "Cloud"
-msgstr "雲"
-
-#
-#: src/GribUIDialogBase.cpp:164
 msgid "Air Temp"
 msgstr "大氣溫度"
-
 #
+#, fuzzy
+msgid "Air Temperature(2m)"
+msgstr "大氣溫度"
 #
+msgid "Apply"
+msgstr ""
 #
+msgid "Authorize Interpolation to start at current time"
+msgstr ""
 #
-#
-#
-#
-#
-#
-#
-#: src/GribUIDialogBase.cpp:173
-msgid "Sea Temp"
-msgstr "海水溫度"
-
-#
-#: src/GribUIDialogBase.cpp:270
-msgid "playback"
-msgstr "播放"
-
-#
-#: src/GribUIDialogBase.cpp:275
-msgid "Interpolate between gribs"
-msgstr "Interpolate between gribs"
-
-#
-#: src/GribUIDialogBase.cpp:279
-msgid "Loop Mode"
-msgstr "循環模式"
-
-#
-#: src/GribUIDialogBase.cpp:282
-msgid "Slices per Update"
-msgstr "分隔每個更新"
-
-#
-#: src/GribUIDialogBase.cpp:289
-msgid "Updates per Second"
-msgstr "每秒更新"
-
-#
-#: src/GribUIDialogBase.cpp:296
-msgid "Slices per hour"
-msgstr "分隔每小時"
-
-#
-#: src/GribUIDialogBase.cpp:310
-msgid "Display"
-msgstr "顯示"
-
-#
-#
-#: src/GribUIDialogBase.cpp:320
-msgid "Units"
-msgstr "單位"
-
-#
-#: src/GribUIDialogBase.cpp:329
 msgid "Barbed Arrows"
 msgstr "箭頭"
-
 #
-#: src/GribUIDialogBase.cpp:332
-msgid "Range"
-msgstr "範圍"
-
+msgid ""
+"Before sending an email to Zygrib you have to enter your Login and Code.\n"
+"Please visit www.zygrib.org/ and follow instructions..."
+msgstr ""
 #
-#: src/GribUIDialogBase.cpp:339
-msgid "Iso Bars"
-msgstr "等壓線"
-
-#
-#: src/GribUIDialogBase.cpp:342 src/GribUIDialogBase.cpp:375
-msgid "Spacing"
-msgstr "間距"
-
-#
-#: src/GribUIDialogBase.cpp:349
-msgid "Direction Arrows"
-msgstr "方向箭頭"
-
-#
-#: src/GribUIDialogBase.cpp:352
-msgid "Size"
-msgstr "大小"
-
-#
-#: src/GribUIDialogBase.cpp:359
-msgid "OverlayMap"
-msgstr "疊圖"
-
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#: src/GribUIDialogBase.cpp:362
-msgid "Colors"
-msgstr "顏色"
-
-#
-#: src/GribUIDialogBase.cpp:366
-msgid "Generic"
-msgstr "一般"
-
-#
-#: src/GribUIDialogBase.cpp:366
-msgid "Quickscat"
-msgstr "Quickscat"
-
-#
-#: src/GribUIDialogBase.cpp:366
-msgid "SeaTemp"
-msgstr "海水溫度"
-
-#
-#: src/GribUIDialogBase.cpp:366
-msgid "Rain"
-msgstr "雨"
-
-#
-#: src/GribUIDialogBase.cpp:372
-msgid "Numbers"
-msgstr "Numbers"
-
-#
-#
-#: src/GribUIDialogBase.cpp:433
-msgid "Use High Definition Graphics"
-msgstr "使用高畫質圖形"
-
-#
-#: src/GribUIDialogBase.cpp:436
-msgid "Use Gradual Colors"
-msgstr "使用漸層顏色"
-
-#
-#: src/GribUIDialogBase.cpp:439
-msgid "Copy First Cumulative Missing Record"
-msgstr "複製首先累積遺失的記錄"
-
-#
-#: src/GribUIDialogBase.cpp:442
-msgid "Copy Missing Wave Records"
-msgstr "複製遺失波浪記錄"
-
-#
-#
-#: src/GribUIDialogBase.cpp:445
-msgid "Local Time"
-msgstr "本地時間"
-
-#
-#
-#: src/GribUIDialogBase.cpp:448
-msgid "UTC"
-msgstr "UTC"
-
-#
-#: src/GribUIDialogBase.cpp:488
-msgid "MyLabel"
-msgstr "我的標籤"
-
-#
-#: src/smapi.cpp:120
-msgid "Mapi is not installed or invalid on this computer"
-msgstr "Mapi 未安裝在此電腦上"
-
-#
-#: src/smapi.cpp:120
-msgid "Error"
-msgstr "錯誤"
-
-#
-#: src/smapi.cpp:206
-msgid "OpenCpn failed to logon! Please verify your eMail environment"
-msgstr "OpenCPN 登入失敗! 請檢查您的電子郵件設定"
-
-#
-#: src/smapi.cpp:207 src/smapi.cpp:469
-msgid "eMail error"
-msgstr "eMail 錯誤"
-
-#
-#: src/smapi.cpp:469
-msgid "Failed to send mail message"
-msgstr "傳送郵件失敗"
-
-#
-#
-#: src/GribUIDialogBase.h:108
-msgid "GRIB Display Control"
-msgstr "GRIB 顯示控制"
-
-#
-#: src/GribUIDialogBase.h:159
-msgid "Grib Settings"
-msgstr "Grib 設定"
-
-#
-#
-#: src/GribUIDialogBase.h:184
-msgid "Grib Preferences"
-msgstr "GRIB 偏好設定"
-
-#
-#
-#: src/GribUIDialogBase.h:209
-msgid "Request Pofile"
-msgstr "請求設定檔"
-
-#
-#: src/GribOverlayFactory.cpp:675
 msgid "Building Isobar map"
 msgstr "建立等壓線圖"
-
 #
+msgid "CAPE"
+msgstr ""
 #
-#: src/GribOverlayFactory.cpp:830 src/GribOverlayFactory.cpp:849
-msgid "Please Zoom or Scale Out to view suppressed "
-msgstr "請放大畫面以顯示 suppressed"
-
+msgid "Celsius"
+msgstr ""
 #
-#
-#
-#
-#
+msgid "Cloud Cover"
+msgstr "雲層"
 #
 #
 #
@@ -567,37 +70,107 @@ msgstr "請放大畫面以顯示 suppressed"
 #
 #
 #
-#: src/GribOverlayFactory.cpp:831 src/GribOverlayFactory.cpp:850
-msgid " data"
-msgstr "資料"
-
 #
 #
-#: src/GribOverlayFactory.cpp:977
-msgid " (Dup)"
-msgstr " (Dup)"
-
 #
 #
-#: src/GribOverlayFactory.cpp:979
-msgid "Ref : "
-msgstr "參考:"
-
 #
 #
-#: src/grib_pi.cpp:110
-msgid "Grib"
-msgstr "Grib"
-
 #
 #
-#: src/grib_pi.cpp:171
+#
+#
+#
+#
+#
+#
+#
+#
+msgid "Colors"
+msgstr "顏色"
+#
+msgid "Continue..."
+msgstr ""
+#
+msgid "Copy First Cumulative Missing Record"
+msgstr "複製首先累積遺失的記錄"
+#
+msgid "Copy Missing Wave Records"
+msgstr "複製遺失波浪記錄"
+#
+#
+msgid "Current"
+msgstr "海流"
+#
+msgid "Data available"
+msgstr ""
+#
+#
+msgid "Days"
+msgstr "天"
+#
+#
+#, fuzzy
+msgid "Deg"
+msgstr "度"
+#
+msgid "Direction Arrows"
+msgstr "方向箭頭"
+#
+msgid "Display"
+msgstr "顯示"
+#
+#, fuzzy
+msgid "Display Iso CAPE"
+msgstr "顯示"
+#
+#, fuzzy
+msgid "Display Isobars"
+msgstr "顯示"
+#
+#, fuzzy
+msgid "Display Isotachs"
+msgstr "顯示"
+#
+msgid "Display Isotherms"
+msgstr ""
+#
+#
+msgid "Error:  Can't read this File!"
+msgstr "錯誤: 無法讀取檔案!"
+#
+msgid "Error:  File does not exist!"
+msgstr "錯誤: 檔案不存在!"
+#
+#
+#, fuzzy
+msgid "Error:  No valid data in this file!"
+msgstr "錯誤: 無法讀取檔案!"
+#
+msgid "Estimated File Size"
+msgstr ""
+#
+msgid "Fahrenheit"
+msgstr "華氏"
+#
+msgid "Feet"
+msgstr "英呎"
+#
+msgid "Forecast Model "
+msgstr ""
+#
+msgid "GRIB Data at Cursor"
+msgstr "游標位置的 GRIB 資料"
+#
+#
+msgid "GRIB Display Control"
+msgstr "GRIB 顯示控制"
+#
+#
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "OpenCPN GRIB 插件"
-
 #
 #
-#: src/grib_pi.cpp:177
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
@@ -616,7 +189,354 @@ msgstr ""
 "- significant波高\n"
 "- 海平面溫度\n"
 "- 海面流向與流速."
-
+#
+msgid "Generic"
+msgstr "一般"
+#
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr ""
+#
+#
+msgid "Grib"
+msgstr "Grib"
+#
+#
+msgid "Grib Preferences"
+msgstr "GRIB 偏好設定"
+#
+msgid "Grib Settings"
+msgstr "Grib 設定"
+#
+msgid "Hours"
+msgstr ""
+#
+msgid "Inches"
+msgstr "英吋"
+#
+msgid "Interpolate between gribs"
+msgstr "Interpolate between gribs"
+#
+#
+msgid "Interval"
+msgstr "間隔"
+#
+#, fuzzy
+msgid "IsoBars"
+msgstr "等壓線"
+#
+msgid "Knots"
+msgstr "節"
+#
+msgid "Load File Options"
+msgstr ""
+#
+msgid "Load the Last Opened File"
+msgstr ""
+#
+msgid "Load the More Recent File in Directory"
+msgstr ""
+#
+#
+msgid "Local Time"
+msgstr "本地時間"
+#
+msgid "Loop Mode"
+msgstr "循環模式"
+#
+#, fuzzy
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr "Mapi 未安裝在此電腦上"
+#
+#
+#, fuzzy
+msgid "Mail"
+msgstr "eMail"
+#
+#
+#, fuzzy
+msgid "Mail To "
+msgstr "送郵件給"
+#
+msgid "Meters"
+msgstr "公尺"
+#
+msgid "MilliBars"
+msgstr "毫巴"
+#
+msgid "Millimeters"
+msgstr "毫米"
+#
+msgid "N/A"
+msgstr "N/A"
+#
+msgid "Next"
+msgstr "下一個"
+#
+msgid "Now"
+msgstr "現在"
+#
+msgid "Numbers"
+msgstr "Numbers"
+#
+msgid "Open File"
+msgstr "開啟檔案"
+#
+#, fuzzy
+msgid "Overlay Transparency"
+msgstr "疊圖"
+#
+msgid "OverlayMap"
+msgstr "疊圖"
+#
+msgid "Percentage"
+msgstr "百分比"
+#
+msgid "Play"
+msgstr "播放"
+#
+#
+#, fuzzy
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "請放大畫面以顯示 suppressed"
+#
+#
+msgid "Pressure"
+msgstr "氣壓"
+#
+msgid "Previous"
+msgstr "前一個"
+#
+msgid "Profile"
+msgstr ""
+#
+#, fuzzy
+msgid "Rainfall"
+msgstr "雨"
+#
+msgid "Range"
+msgstr "範圍"
+#
+msgid "Request"
+msgstr "請求"
+#
+msgid ""
+"Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr ""
+#
+#
+msgid "Resolution"
+msgstr "解析"
+#
+msgid "Save"
+msgstr ""
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+msgid "Sea Temp"
+msgstr "海水溫度"
+#
+#, fuzzy
+msgid "Sea Temperature(surf.)"
+msgstr "海水溫度"
+#
+#
+msgid "Select a GRIB file"
+msgstr "選擇 GRIB 檔案"
+#
+#
+msgid "Send"
+msgstr "發送"
+#
+msgid "Sender eMail Address"
+msgstr ""
+#
+msgid "Settings"
+msgstr "設定"
+#
+msgid "Size"
+msgstr "大小"
+#
+msgid "Slices per Update"
+msgstr "分隔每個更新"
+#
+msgid "Slices per hour"
+msgstr "分隔每小時"
+#
+msgid "Spacing"
+msgstr "間距"
+#
+msgid "Start Options"
+msgstr ""
+#
+msgid "Start at the first forecast in GRIB file"
+msgstr ""
+#
+msgid "Start at the nearest forecast to current time"
+msgstr ""
+#
+msgid "Stop"
+msgstr "停止"
+#
+msgid ""
+"The file size limit is overcome!\n"
+"You can zoom in and/or change parameters..."
+msgstr ""
+#
+msgid ""
+"This file contains data for particular time intervals but you have chosen to "
+"display different intervals.\n"
+"Please consider that the values will be interpolated."
+msgstr ""
+#
+msgid "This is your zyGrib's forum access Login"
+msgstr ""
+#
+msgid "Time Options"
+msgstr ""
+#
+#, fuzzy
+msgid "Time Range"
+msgstr "範圍"
+#
+#
+msgid "UTC"
+msgstr "UTC"
+#
+#
+msgid "Units"
+msgstr "單位"
+#
+msgid "Updates per Second"
+msgstr "每秒更新"
+#
+msgid "Use Gradual Colors"
+msgstr "使用漸層顏色"
+#
+#
+msgid "Use High Definition Graphics"
+msgstr "使用高畫質圖形"
+#
+msgid "Warning!"
+msgstr ""
+#
+msgid "Warning:  Empty directory!"
+msgstr ""
+#
+#, fuzzy
+msgid "Waves"
+msgstr "波"
+#
+#
+#, fuzzy
+msgid "WavesModel"
+msgstr "模型"
+#
+#
+msgid "Wind"
+msgstr "風"
+#
+msgid "Wind Gust"
+msgstr "陣風"
+#
+msgid "Write and send eMail request"
+msgstr ""
+#
+msgid ""
+"You have chosen to authorize interpolation.\n"
+"Don't forget that data displayed at current time will not be real but "
+"interpolated!"
+msgstr ""
+#
+#
+#, fuzzy
+msgid ""
+"Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
+msgstr ""
+"您的請求電子郵件已準備完成. 按下'發送'鍵來傳送.\n"
+"按OK繼續 ..."
+#
+#
+#, fuzzy
+msgid ""
+"Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
+msgstr ""
+"您的請求已送出(如果您的電腦具備發送電郵能力).\n"
+"按OK繼續 ..."
+#
+msgid "inHG"
+msgstr ""
+#
+msgid "j/kg"
+msgstr ""
+#
+msgid "km/h"
+msgstr ""
+#
+msgid "m/s"
+msgstr ""
+#
+msgid "mmHG"
+msgstr "毫米水銀柱"
+#
+msgid "mph"
+msgstr ""
+#
+msgid "playback"
+msgstr "播放"
+#
+msgid "zyGrib Code"
+msgstr ""
+#
+msgid "zyGrib Login"
+msgstr ""
+#
+#
+#
+#~ msgid " (Dup)"
+#~ msgstr " (Dup)"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#~ msgid " data"
+#~ msgstr "資料"
+#
+#
+#
+#~ msgid "Action"
+#~ msgstr "動作"
+#
+#
+#~ msgid "Celcius"
+#~ msgstr "攝氏"
+#
+#
+#~ msgid "Cloud"
+#~ msgstr "雲"
+#
 #
 #
 #
@@ -624,13 +544,21 @@ msgstr ""
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB 偏好設定"
-
+#
+#
+#~ msgid "Error"
+#~ msgstr "錯誤"
+#
+#
+#~ msgid "Failed to send mail message"
+#~ msgstr "傳送郵件失敗"
+#
 #
 #
 #
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
-
+#
 #
 #
 #
@@ -659,7 +587,37 @@ msgstr ""
 #
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB 檔案目錄"
-
+#
+#
+#~ msgid "KPH"
+#~ msgstr "每小時公里"
+#
+#
+#~ msgid "M/S"
+#~ msgstr "公尺/秒"
+#
+#
+#~ msgid "MPH"
+#~ msgstr "每小時英哩"
+#
+#
+#~ msgid "MyLabel"
+#~ msgstr "我的標籤"
+#
+#
+#~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
+#~ msgstr "OpenCPN 登入失敗! 請檢查您的電子郵件設定"
+#
+#
+#
+#~ msgid "Parameters"
+#~ msgstr "參數"
+#
+#
+#
+#~ msgid "Period"
+#~ msgstr "週期"
+#
 #
 #
 #
@@ -667,7 +625,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
-
+#
 #
 #
 #
@@ -676,7 +634,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
-
+#
 #
 #
 #
@@ -685,7 +643,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
-
+#
 #
 #
 #
@@ -693,7 +651,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
-
+#
 #
 #
 #
@@ -701,7 +659,11 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed CRAIN GRIB"
-
+#
+#
+#~ msgid "Precipitation"
+#~ msgstr "凝結"
+#
 #
 #
 #
@@ -709,7 +671,21 @@ msgstr ""
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "氣壓, mBar"
-
+#
+#
+#~ msgid "Quickscat"
+#~ msgstr "Quickscat"
+#
+#
+#
+#~ msgid "Ref : "
+#~ msgstr "參考:"
+#
+#
+#
+#~ msgid "Request Pofile"
+#~ msgstr "請求設定檔"
+#
 #
 #
 #
@@ -728,7 +704,11 @@ msgstr ""
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB 偏好設定"
-
+#
+#
+#~ msgid "SeaTemp"
+#~ msgstr "海水溫度"
+#
 #
 #
 #
@@ -757,7 +737,7 @@ msgstr ""
 #
 #~ msgid "Show GRIB icon"
 #~ msgstr "顯示 GRIB 圖示"
-
+#
 #
 #
 #
@@ -765,7 +745,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Significant波高, m"
-
+#
 #
 #
 #
@@ -795,7 +775,7 @@ msgstr ""
 #
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "警告:  QuickScat GRIB 資料為 %d 小時前資料."
-
+#
 #
 #
 #
@@ -803,7 +783,11 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "風向"
-
+#
+#
+#~ msgid "Wind Scat"
+#~ msgstr "Wind Scat"
+#
 #
 #
 #
@@ -811,7 +795,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "風向"
-
+#
 #
 #
 #
@@ -819,3 +803,12 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "風速,  Kts."
+#
+#
+#
+#~ msgid "Zone"
+#~ msgstr "區域"
+#
+#
+#~ msgid "eMail error"
+#~ msgstr "eMail 錯誤"
