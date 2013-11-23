@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1117\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-22 20:37-0500\n"
+"POT-Creation-Date: 2013-11-23 18:19-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,7 +84,8 @@ msgstr ""
 msgid " Projection:  "
 msgstr ""
 
-#: src/chartdbs.cpp:1012 src/ais.cpp:164
+#: src/chartdbs.cpp:1012 src/ais.cpp:164 src/AIS_Target_Data.cpp:262
+#: src/AIS_Target_Data.cpp:559 src/AIS_Target_Data.cpp:726
 msgid "Unknown"
 msgstr ""
 
@@ -1095,6 +1096,7 @@ msgid "Depart From"
 msgstr ""
 
 #: src/routeprop.cpp:489 src/routeprop.cpp:662 src/TrackPropDlg.cpp:676
+#: src/AIS_Target_Data.cpp:380
 msgid "Destination"
 msgstr ""
 
@@ -1321,7 +1323,7 @@ msgstr ""
 msgid "Bearing (M)"
 msgstr ""
 
-#: src/routeprop.cpp:827 src/TrackPropDlg.cpp:208
+#: src/routeprop.cpp:827 src/TrackPropDlg.cpp:208 src/AIS_Target_Data.cpp:471
 msgid "Bearing"
 msgstr ""
 
@@ -1340,6 +1342,7 @@ msgid "ETE/ETD"
 msgstr ""
 
 #: src/routeprop.cpp:832 src/TrackPropDlg.cpp:212 src/TrackPropDlg.cpp:678
+#: src/AIS_Target_Data.cpp:460
 msgid "Speed"
 msgstr ""
 
@@ -1357,6 +1360,7 @@ msgid "Course (M)"
 msgstr ""
 
 #: src/routeprop.cpp:838 src/routeprintout.cpp:109 src/routeprintout.cpp:376
+#: src/AIS_Target_Data.cpp:461
 msgid "Course"
 msgstr ""
 
@@ -1392,7 +1396,7 @@ msgstr ""
 msgid " %H Hours  %M Minutes"
 msgstr ""
 
-#: src/routeprop.cpp:1158
+#: src/routeprop.cpp:1158 src/AIS_Target_Data.cpp:382
 msgid "ETA"
 msgstr ""
 
@@ -1783,7 +1787,7 @@ msgstr ""
 msgid "Reserved 14"
 msgstr ""
 
-#: src/ais.cpp:130
+#: src/ais.cpp:130 src/AIS_Target_Data.cpp:276
 msgid "Undefined"
 msgstr ""
 
@@ -2027,7 +2031,7 @@ msgstr ""
 msgid "ARPA radar target"
 msgstr ""
 
-#: src/ais.cpp:201
+#: src/ais.cpp:201 src/AIS_Target_Data.cpp:723
 msgid "APRS Position Report"
 msgstr ""
 
@@ -2107,7 +2111,7 @@ msgstr ""
 msgid "?"
 msgstr ""
 
-#: src/ais.cpp:231
+#: src/ais.cpp:231 src/AIS_Target_Data.cpp:708
 msgid "AtoN"
 msgstr ""
 
@@ -2183,19 +2187,19 @@ msgstr ""
 msgid "LtV/Rig"
 msgstr ""
 
-#: src/ais.cpp:263
+#: src/ais.cpp:263 src/AIS_Target_Data.cpp:712
 msgid "Buddy"
 msgstr ""
 
-#: src/ais.cpp:264
+#: src/ais.cpp:264 src/AIS_Target_Data.cpp:715 src/AIS_Target_Data.cpp:717
 msgid "DSC"
 msgstr ""
 
-#: src/ais.cpp:266
+#: src/ais.cpp:266 src/AIS_Target_Data.cpp:721
 msgid "ARPA"
 msgstr ""
 
-#: src/ais.cpp:267
+#: src/ais.cpp:267 src/AIS_Target_Data.cpp:723
 msgid "APRS"
 msgstr ""
 
@@ -2981,7 +2985,7 @@ msgstr ""
 msgid "Clear All"
 msgstr ""
 
-#: src/options.cpp:1109
+#: src/options.cpp:1109 src/AIS_Target_Data.cpp:710
 msgid "Base"
 msgstr ""
 
@@ -3677,7 +3681,7 @@ msgid "Move Waypoint"
 msgstr ""
 
 #: src/routeprintout.cpp:106 src/routeprintout.cpp:369
-#: src/GoToPositionDialog.cpp:116
+#: src/GoToPositionDialog.cpp:116 src/AIS_Target_Data.cpp:364
 msgid "Position"
 msgstr ""
 
@@ -3831,10 +3835,12 @@ msgid "Problem discovered"
 msgstr ""
 
 #: src/AISTargetListDialog.cpp:124 src/AISTargetListDialog.cpp:136
+#: src/AIS_Target_Data.cpp:244 src/AIS_Target_Data.cpp:575
 msgid "Active"
 msgstr ""
 
 #: src/AISTargetListDialog.cpp:125 src/AISTargetListDialog.cpp:137
+#: src/AIS_Target_Data.cpp:245 src/AIS_Target_Data.cpp:576
 msgid "Testing"
 msgstr ""
 
@@ -3846,11 +3852,13 @@ msgstr ""
 msgid "Call"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:337
+#: src/AISTargetListDialog.cpp:337 src/AIS_Target_Data.cpp:224
+#: src/AIS_Target_Data.cpp:233
 msgid "MMSI"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:345
+#: src/AISTargetListDialog.cpp:345 src/AIS_Target_Data.cpp:225
+#: src/AIS_Target_Data.cpp:234
 msgid "Class"
 msgstr ""
 
@@ -3862,7 +3870,7 @@ msgstr ""
 msgid "Brg"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:377
+#: src/AISTargetListDialog.cpp:377 src/AIS_Target_Data.cpp:470
 msgid "Range"
 msgstr ""
 
@@ -3874,7 +3882,8 @@ msgstr ""
 msgid "SoG"
 msgstr ""
 
-#: src/AISTargetListDialog.cpp:400
+#: src/AISTargetListDialog.cpp:400 src/AIS_Target_Data.cpp:482
+#: src/AIS_Target_Data.cpp:613
 msgid "CPA"
 msgstr ""
 
@@ -3900,4 +3909,106 @@ msgstr ""
 
 #: src/AISTargetListDialog.cpp:520
 msgid "AIS target list"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:226
+msgid "IMO"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:285
+msgid "Safety Broadcast Message"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:358
+msgid " (Last Known)"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:365
+msgid "Report Age"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:375
+msgid "Report as of"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:388 src/AIS_Target_Data.cpp:398
+#: src/AIS_Target_Data.cpp:418 src/AIS_Target_Data.cpp:436
+#: src/AIS_Target_Data.cpp:443 src/AIS_Target_Data.cpp:455
+msgid "---"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:427 src/AIS_Target_Data.cpp:430
+msgid "Right"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:428 src/AIS_Target_Data.cpp:431
+msgid "Left"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:462
+msgid "Heading"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:467
+msgid "Turn Rate"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:479 src/AIS_Target_Data.cpp:614
+msgid "in"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:489 src/AIS_Target_Data.cpp:492
+msgid "Inland Blue Flag"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:490
+msgid "Clear"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:493
+msgid "Set"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:604 src/AIS_Target_Data.cpp:608
+msgid " COG Unavailable"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:615
+msgid "min"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:704
+msgid "A"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:706
+msgid "B"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:708
+msgid "Aid to Navigation"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:710
+msgid "Base Station"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:712
+msgid "GPSGate Buddy"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:715
+msgid "DSC Distress"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:717
+msgid "DSC Position Report"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:719
+msgid "SART"
+msgstr ""
+
+#: src/AIS_Target_Data.cpp:726
+msgid "Unk"
 msgstr ""

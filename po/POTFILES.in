@@ -37,6 +37,7 @@ include/multiplexer.h
 include/LinkPropDlg.h
 include/GoToPositionDialog.h
 include/AISTargetListDialog.h
+include/AIS_Target_Data.h
 src/chartdbs.cpp
 src/mygdal/ogrmultipolygon.cpp
 src/mygdal/cpl_csv.cpp
@@ -178,3 +179,4 @@ src/TrackPropDlg.cpp
 src/LinkPropDlg.cpp
 src/GoToPositionDialog.cpp
 src/AISTargetListDialog.cpp
+src/AIS_Target_Data.cpp
