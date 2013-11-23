@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:25-0500\n"
+"POT-Creation-Date: 2013-11-22 20:37-0500\n"
 "PO-Revision-Date: 2013-10-18 13:15+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC Sailing Team <sailingteam@isc.tuc.gr>\n"
@@ -303,6 +303,10 @@ msgstr "(κρατημένο για μελλοντική χρήση)"
 msgid "(unnamed)"
 msgstr "(ανώνυμο)"
 #
+#, fuzzy
+msgid "-"
+msgstr "--"
+#
 msgid "--"
 msgstr "--"
 #
@@ -455,6 +459,10 @@ msgstr "Πληροφορίες για στόχο AIS"
 msgid "AIS Targets"
 msgstr "Στόχοι AIS"
 #
+#, fuzzy
+msgid "AIS target list"
+msgstr "Κατάλογος στόχων AIS..."
+#
 msgid "APRS"
 msgstr ""
 #
@@ -484,6 +492,10 @@ msgstr "Ενεργοποίηση"
 #
 msgid "Activate Next Waypoint"
 msgstr "Ενεργοποίηση επόμενου σημείου πορείας"
+#
+#, fuzzy
+msgid "Active"
+msgstr "Ενεργοποίηση"
 #
 msgid "Active Datasets"
 msgstr "Ενεργές βάσεις δεδομένων"
@@ -667,6 +679,10 @@ msgstr "Μπλε"
 msgid "Boundaries"
 msgstr "Όρια"
 #
+#, fuzzy
+msgid "Brg"
+msgstr "Κατεύθυνση πυξίδας"
+#
 msgid "Buddy"
 msgstr "Φίλος"
 #
@@ -685,6 +701,9 @@ msgstr "Διάλογος αντιστάθμισης χάρτη CM93..."
 msgid "COG Predictor Length (min)"
 msgstr "Μήκος πρόγνωσης πραγμ. πορείας (min)"
 #
+msgid "CPA"
+msgstr ""
+#
 msgid "CPA Calculation"
 msgstr "Υπολογισμός σημείου πλησιέστερης προσέγγισης (CPA)"
 #
@@ -693,6 +712,9 @@ msgstr "Πλησ. σημείο προσέγγισης και χρόνος (CPA T
 #
 msgid "CPA/TCPA Alerts"
 msgstr "Συναγερμοί CPA/TCPA"
+#
+msgid "Call"
+msgstr ""
 #
 msgid "Cancel"
 msgstr "Ακύρωση"
@@ -901,6 +923,9 @@ msgstr "Επίλεξε φορμά για την αντιγραφή"
 msgid "Choose a file"
 msgstr "Διαλέξτε αρχείο"
 #
+msgid "Class"
+msgstr ""
+#
 msgid "Clear All"
 msgstr "Εκκαθάριση όλων"
 #
@@ -918,6 +943,9 @@ msgstr "Για να επικυρωθεί η επιλογή γραμματοσε�
 #
 msgid "Close"
 msgstr "Κλείσιμο"
+#
+msgid "CoG"
+msgstr ""
 #
 msgid "Color"
 msgstr "Χρώμα: "
@@ -981,6 +1009,10 @@ msgstr "Περίοδος ανανέωσης οθόνης για λειτουργ
 #
 msgid "Create Route"
 msgstr "Δημιουργία διαδρομής"
+#
+#, fuzzy
+msgid "Create WPT"
+msgstr "Δημιουργία σημείου πορείας"
 #
 msgid "Create Waypoint"
 msgstr "Δημιουργία σημείου πορείας"
@@ -1571,6 +1603,9 @@ msgstr "Φαρό-πλοιο/κατασκ."
 msgid "Light w/Sectors"
 msgstr "Φάρος με τομείς"
 #
+msgid "Limit range: NM"
+msgstr ""
+#
 msgid "Link"
 msgstr "Σύνδεσμος"
 #
@@ -1643,6 +1678,9 @@ msgstr "Ο/Γ"
 #
 msgid "MAN OVERBOARD"
 msgstr "ΑΝΘΡΩΠΟΣ ΣΤΗ ΘΑΛΑΣΣΑ"
+#
+msgid "MMSI"
+msgstr ""
 #
 msgid "M_COVR ID"
 msgstr ""
@@ -1739,6 +1777,10 @@ msgstr "&Ναυτικά μίλια"
 #
 msgid "Nautical miles"
 msgstr "&Ναυτικά μίλια"
+#
+#, fuzzy
+msgid "Nav Status"
+msgstr "Μπάρα κατάστασης"
 #
 msgid "Navigate To Here"
 msgstr "Διαδρομή μέχρι εδώ"
@@ -2051,6 +2093,9 @@ msgstr "Ερώτηση"
 #
 msgid "RACON"
 msgstr "Ραδιοφάρος"
+#
+msgid "Range"
+msgstr ""
 #
 msgid "Real"
 msgstr "Πραγματικό"
@@ -2440,6 +2485,9 @@ msgstr "Απλοποιημένοι"
 msgid "Smooth Panning / Zooming"
 msgstr "Ομαλό Panning/Zooming"
 #
+msgid "SoG"
+msgstr ""
+#
 msgid "Solid"
 msgstr "Συμπαγής"
 #
@@ -2512,14 +2560,26 @@ msgstr "Με σύμβολα"
 msgid "TCP"
 msgstr ""
 #
+#, fuzzy
+msgid "TCPA"
+msgstr "Πλησ. σημείο προσέγγισης και χρόνος (CPA TCPA)"
+#
 msgid "Tanker"
 msgstr "Δεξαμενόπλοιο"
+#
+#, fuzzy
+msgid "Target Count"
+msgstr "Κατάλογος στόχων..."
 #
 msgid "Target List..."
 msgstr "Κατάλογος στόχων..."
 #
 msgid "Target Query..."
 msgstr "Πληροφορίες στόχου..."
+#
+#, fuzzy
+msgid "Target info"
+msgstr "Κατάλογος στόχων..."
 #
 msgid "Temporary GOTO Route"
 msgstr "Προσωρινή GOTO διαδρομή"
@@ -2535,6 +2595,10 @@ msgstr "Βοηθ. βάρκα"
 #
 msgid "Test Alert Sound"
 msgstr "Δοκιμή ήχου συναγερμού"
+#
+#, fuzzy
+msgid "Testing"
+msgstr "Ερώτηση"
 #
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"

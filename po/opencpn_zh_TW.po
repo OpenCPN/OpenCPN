@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:25-0500\n"
+"POT-Creation-Date: 2013-11-22 20:37-0500\n"
 "PO-Revision-Date: 2013-09-25 15:27+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -404,6 +404,13 @@ msgstr "(未命名)"
 #
 #
 #
+#
+#
+msgid "-"
+msgstr "-"
+#
+#
+#
 msgid "--"
 msgstr "--"
 #
@@ -575,6 +582,13 @@ msgstr "AIS 目標查詢"
 msgid "AIS Targets"
 msgstr "AIS 目標"
 #
+#
+#
+#
+#
+msgid "AIS target list"
+msgstr "AIS 目標列表"
+#
 msgid "APRS"
 msgstr "APRS"
 #
@@ -614,6 +628,14 @@ msgstr "啟用"
 #
 msgid "Activate Next Waypoint"
 msgstr "啓動下一轉向點"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Active"
+msgstr "啟用"
 #
 #
 #
@@ -867,6 +889,13 @@ msgstr "藍"
 msgid "Boundaries"
 msgstr "邊界"
 #
+#
+#
+#
+#
+msgid "Brg"
+msgstr "船艏向"
+#
 msgid "Buddy"
 msgstr "Buddy"
 #
@@ -895,6 +924,13 @@ msgstr "COG 向量線長度(分鐘)"
 #
 #
 #
+#
+#
+msgid "CPA"
+msgstr "CPA"
+#
+#
+#
 msgid "CPA Calculation"
 msgstr "CPA 計算"
 #
@@ -907,6 +943,13 @@ msgstr "CPA TCPA"
 #
 msgid "CPA/TCPA Alerts"
 msgstr "CPA/TCPA 警示"
+#
+#
+#
+#
+#
+msgid "Call"
+msgstr "呼號"
 #
 #
 #
@@ -1174,6 +1217,13 @@ msgstr "選擇一個檔案"
 #
 #
 #
+#
+#
+msgid "Class"
+msgstr "船級"
+#
+#
+#
 msgid "Clear All"
 msgstr "清除全部"
 #
@@ -1199,6 +1249,13 @@ msgstr "按一下確認所選字型"
 #
 msgid "Close"
 msgstr "關閉"
+#
+#
+#
+#
+#
+msgid "CoG"
+msgstr "CoG"
 #
 #
 #
@@ -1287,6 +1344,12 @@ msgstr "航向朝上顯示模式更新週期 (秒)"
 #
 msgid "Create Route"
 msgstr "建立航路"
+#
+#
+#
+#, fuzzy
+msgid "Create WPT"
+msgstr "建立航路點"
 #
 #
 #
@@ -2114,6 +2177,13 @@ msgstr "扇形燈"
 #
 #
 #
+#
+msgid "Limit range: NM"
+msgstr "限制範圍: 海浬"
+#
+#
+#
+#
 #, fuzzy
 msgid "Link"
 msgstr "連結"
@@ -2228,6 +2298,13 @@ msgstr "M/V"
 #
 msgid "MAN OVERBOARD"
 msgstr "人員落水"
+#
+#
+#
+#
+#
+msgid "MMSI"
+msgstr "MMSI"
 #
 #
 #
@@ -2367,6 +2444,13 @@ msgstr "海浬"
 #
 msgid "Nautical miles"
 msgstr "海浬"
+#
+#
+#
+#
+#
+msgid "Nav Status"
+msgstr "航行狀態"
 #
 #
 #
@@ -2860,6 +2944,13 @@ msgstr "問題"
 #
 msgid "RACON"
 msgstr "雷達反射信號標"
+#
+#
+#
+#
+#
+msgid "Range"
+msgstr "範圍"
 #
 #
 #
@@ -3453,6 +3544,13 @@ msgstr "平滑 移動 / 縮放"
 #
 #
 #
+#
+#
+msgid "SoG"
+msgstr "SoG"
+#
+#
+#
 msgid "Solid"
 msgstr "實線"
 #
@@ -3565,8 +3663,22 @@ msgstr "TCP"
 #
 #
 #
+#
+#
+msgid "TCPA"
+msgstr "TCPA"
+#
+#
+#
 msgid "Tanker"
 msgstr "油輪"
+#
+#
+#
+#
+#
+msgid "Target Count"
+msgstr "目標計數"
 #
 #
 #
@@ -3577,6 +3689,13 @@ msgstr "目標列表..."
 #
 msgid "Target Query..."
 msgstr "目標查詢..."
+#
+#
+#
+#
+#
+msgid "Target info"
+msgstr "目標資訊"
 #
 #
 #
@@ -3602,6 +3721,13 @@ msgstr "工作船"
 #
 msgid "Test Alert Sound"
 msgstr "測試警報聲效"
+#
+#
+#
+#
+#
+msgid "Testing"
+msgstr "測試"
 #
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
@@ -4210,8 +4336,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
+#
 #
 #
 #
@@ -4278,6 +4406,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "   COG 箭頭長度"
 #
@@ -4299,8 +4428,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "   目標最大移動速度(節)"
+#
 #
 #
 #
@@ -4354,8 +4485,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
+#
 #
 #
 #
@@ -4438,8 +4571,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol create_pi: "
+#
 #
 #
 #
@@ -4500,8 +4635,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr "  無法開啟 AIS 連接埠 '"
+#
 #
 #
 #
@@ -4525,8 +4662,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid " (Last Known)"
 #~ msgstr " (Last Known)"
+#
 #
 #
 #
@@ -4537,8 +4676,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid " COG Unavailable"
 #~ msgstr " COG 無法取得"
+#
 #
 #
 #
@@ -4577,6 +4718,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG: 000 度."
 #
@@ -4584,8 +4726,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "&Acknowledge"
 #~ msgstr "警報確認(&A)"
+#
 #
 #
 #
@@ -4688,8 +4832,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 #
@@ -4747,8 +4893,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "匯出航跡(&E)..."
+#
 #
 #
 #
@@ -4761,8 +4909,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "&Silence Alert"
 #~ msgstr "警報靜音(&S)"
+#
 #
 #
 #
@@ -4832,12 +4982,14 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
 #~ msgstr ""
 #~ "'\n"
 #~ " 建議: 試著用 'xxx.xxx.xxx.xxx' 標示法"
+#
 #
 #
 #
@@ -4912,8 +5064,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(使用中航跡)"
+#
 #
 #
 #
@@ -4924,15 +5078,10 @@ msgstr "wxFB 網站"
 #
 #
 #
-#~ msgid "-"
-#~ msgstr "-"
-#
-#
-#
-#
 #
 #~ msgid "---"
 #~ msgstr "---"
+#
 #
 #
 #
@@ -4976,12 +5125,14 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid ""
 #~ ":               Unavailable\n"
 #~ "\n"
 #~ "\n"
 #~ msgstr "方位:                無法取得\n"
+#
 #
 #
 #
@@ -4994,8 +5145,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "AIS Alert"
 #~ msgstr "AIS 警告"
+#
 #
 #
 #
@@ -5037,15 +5190,10 @@ msgstr "wxFB 網站"
 #
 #
 #
-#~ msgid "AIS target list"
-#~ msgstr "AIS 目標列表"
-#
-#
-#
-#
 #
 #~ msgid "AISRollover"
 #~ msgstr "AISRollover"
+#
 #
 #
 #
@@ -5058,13 +5206,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "AISTargetQuery"
 #~ msgstr "AIS 目標查詢"
 #
 #
 #
+#
 #~ msgid "Accept"
 #~ msgstr "接受"
+#
 #
 #
 #
@@ -5114,16 +5265,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "啟動導航"
 #
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Active"
-#~ msgstr "啟用"
 #
 #
 #
@@ -5145,6 +5290,7 @@ msgstr "wxFB 網站"
 #
 #~ msgid "Add Selection"
 #~ msgstr "增加選擇項目"
+#
 #
 #
 #
@@ -5200,6 +5346,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
 #
@@ -5207,8 +5354,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Aid to Navigation"
 #~ msgstr "導航協助"
+#
 #
 #
 #
@@ -5273,8 +5422,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "嘗試載入 libgps.so"
+#
 #
 #
 #
@@ -5314,8 +5465,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "擁有的海圖目錄"
+#
 #
 #
 #
@@ -5328,6 +5481,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Barge, tanker, chemical"
 #~ msgstr "駁船, 油船, 化學品"
 #
@@ -5335,8 +5489,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Base Station"
 #~ msgstr "Base Station"
+#
 #
 #
 #
@@ -5399,8 +5555,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "方位:                %03d Deg.\n"
+#
 #
 #
 #
@@ -5428,15 +5586,10 @@ msgstr "wxFB 網站"
 #
 #
 #
-#~ msgid "Brg"
-#~ msgstr "船艏向"
-#
-#
-#
-#
 #
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "海洋散貨船"
+#
 #
 #
 #
@@ -5463,8 +5616,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -5505,8 +5660,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 Offset 顯示"
+#
 #
 #
 #
@@ -5609,8 +5766,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -5713,8 +5872,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -5786,8 +5947,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offsets On"
+#
 #
 #
 #
@@ -5810,12 +5973,6 @@ msgstr "wxFB 網站"
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 縮放詳細度"
 #
-#
-#
-#
-#
-#~ msgid "CPA"
-#~ msgstr "CPA"
 #
 #
 #
@@ -5858,15 +6015,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f NM\n"
 #
-#
-#
-#
-#
-#~ msgid "Call"
-#~ msgstr "呼號"
 #
 #
 #
@@ -5945,6 +6097,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
 #
@@ -5967,8 +6120,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "呼號:              "
+#
 #
 #
 #
@@ -6072,9 +6227,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "設定 CM93 Offset"
+#
 #
 #
 #
@@ -6130,8 +6287,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "海圖顯示項目過濾條件"
+#
 #
 #
 #
@@ -6154,12 +6313,6 @@ msgstr "wxFB 網站"
 #~ msgid "Chart Position"
 #~ msgstr "位置"
 #
-#
-#
-#
-#
-#~ msgid "Class"
-#~ msgstr "船級"
 #
 #
 #
@@ -6187,15 +6340,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Clear"
 #~ msgstr "清除"
 #
-#
-#
-#
-#
-#~ msgid "CoG"
-#~ msgstr "CoG"
 #
 #
 #
@@ -6221,13 +6369,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "無法解析 TCP/IP 主機 '"
 #
 #
 #
+#
 #~ msgid "Couldn't load sound data from '%s'."
 #~ msgstr "無法從 '%s' 載入聲音檔."
+#
 #
 #
 #
@@ -6270,8 +6421,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "航向:                 000 度.\n"
+#
 #
 #
 #
@@ -6299,8 +6452,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Cruise ship"
 #~ msgstr "遊輪"
+#
 #
 #
 #
@@ -6327,6 +6482,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "游標: "
 #
@@ -6334,8 +6490,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Data Source :"
 #~ msgstr "資料來源 :"
+#
 #
 #
 #
@@ -6397,9 +6555,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "預設顏色"
+#
 #
 #
 #
@@ -6450,8 +6610,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "刪除標記"
+#
 #
 #
 #
@@ -6492,6 +6654,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "刪除選擇項目"
 #
@@ -6513,8 +6676,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Delete Track"
 #~ msgstr "刪除航跡"
+#
 #
 #
 #
@@ -6556,8 +6721,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "目的地:          "
+#
 #
 #
 #
@@ -6584,6 +6751,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Drop"
 #~ msgstr "在此放置標記"
@@ -6595,8 +6763,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "匯出全部(&x)..."
+#
 #
 #
 #
@@ -6638,8 +6808,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "ETA:"
 #~ msgstr "ETA:"
+#
 #
 #
 #
@@ -6702,8 +6874,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/時間戳記"
+#
 #
 #
 #
@@ -6744,6 +6918,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "啟用滑鼠滾輪放大縮小游標所在位置功能"
 #
@@ -6751,8 +6926,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Error on Route Upload.  Please check logfiles..."
 #~ msgstr "航路上傳錯誤.  請檢查 logfiles..."
+#
 #
 #
 #
@@ -6779,8 +6956,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "其他"
+#
 #
 #
 #
@@ -6793,8 +6972,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Ferry"
 #~ msgstr "渡輪"
+#
 #
 #
 #
@@ -6807,6 +6988,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Freightbarge"
 #~ msgstr "貨運駁船"
 #
@@ -6814,8 +6996,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "載有貨櫃之貨運駁船"
+#
 #
 #
 #
@@ -6857,8 +7041,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
 #
 #
 #
@@ -6885,13 +7071,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD 伺服器"
 #
 #
 #
+#
 #~ msgid "GPSGate Buddy"
 #~ msgstr "GPSGate Buddy"
+#
 #
 #
 #
@@ -6904,8 +7093,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "一般海洋貨物船"
+#
 #
 #
 #
@@ -6955,8 +7146,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "前往標記/轉向點"
+#
 #
 #
 #
@@ -6967,8 +7160,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Heading"
 #~ msgstr "Heading"
+#
 #
 #
 #
@@ -6996,8 +7191,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Hydrofoil"
 #~ msgstr "水翼船"
+#
 #
 #
 #
@@ -7025,8 +7222,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "IMO:                 %8d\n"
 #~ msgstr "IMO:                 %8d\n"
+#
 #
 #
 #
@@ -7038,8 +7237,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "In: None"
 #~ msgstr "In: None"
+#
 #
 #
 #
@@ -7048,6 +7249,7 @@ msgstr "wxFB 網站"
 #, fuzzy
 #~ msgid "Inland Blue Flag"
 #~ msgstr "內陸藍旗        設定\n"
+#
 #
 #
 #
@@ -7089,8 +7291,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "跳至"
+#
 #
 #
 #
@@ -7140,8 +7344,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "跳至位置..."
+#
 #
 #
 #
@@ -7169,8 +7375,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "LW"
 #~ msgstr "LW"
+#
 #
 #
 #
@@ -7225,13 +7433,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "最近位置發報時間:  "
 #
 #
 #
+#
 #~ msgid "Left"
 #~ msgstr "Left"
+#
 #
 #
 #
@@ -7258,16 +7469,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Legend"
 #~ msgstr "Console 圖例"
 #
-#
-#
-#
-#
-#~ msgid "Limit range: NM"
-#~ msgstr "限制範圍: 海浬"
 #
 #
 #
@@ -7294,15 +7500,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "中繼物件"
 #
-#
-#
-#
-#
-#~ msgid "MMSI"
-#~ msgstr "MMSI"
 #
 #
 #
@@ -7375,8 +7576,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "標記圖示"
+#
 #
 #
 #
@@ -7422,8 +7625,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Mark Properties"
 #~ msgstr "標記屬性"
+#
 #
 #
 #
@@ -7460,8 +7665,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Marks"
 #~ msgstr "標記"
+#
 #
 #
 #
@@ -7495,13 +7702,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Message accepted"
 #~ msgstr "訊息已接收"
 #
 #
 #
+#
 #~ msgid "Message filtered and dropped"
 #~ msgstr "訊息已過濾並丟棄"
+#
 #
 #
 #
@@ -7528,8 +7738,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor freighter"
 #~ msgstr "動力貨船"
+#
 #
 #
 #
@@ -7542,8 +7754,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor freighter pushing one or more freighters"
 #~ msgstr "動力貨船頂推一或多艘貨船"
+#
 #
 #
 #
@@ -7556,8 +7770,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor freighter with tanker"
 #~ msgstr "具液態儲槽之動力貨船"
+#
 #
 #
 #
@@ -7570,8 +7786,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor tanker"
 #~ msgstr "動力液貨船"
+#
 #
 #
 #
@@ -7584,6 +7802,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type C"
 #~ msgstr "動力液貨船, 液態貨物, 型式 C"
 #
@@ -7591,8 +7810,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "動力液貨船, 液態貨物, 型式 N"
+#
 #
 #
 #
@@ -7618,13 +7839,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA 資料來源"
 #
 #
 #
+#
 #~ msgid "NMEA Debug Window"
 #~ msgstr "NMEA 除錯視窗"
+#
 #
 #
 #
@@ -7666,15 +7890,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Name:  "
 #~ msgstr "名稱:  "
 #
-#
-#
-#
-#
-#~ msgid "Nav Status"
-#~ msgstr "航行狀態"
 #
 #
 #
@@ -7697,6 +7916,7 @@ msgstr "wxFB 網站"
 #
 #~ msgid "Navigational Status:  "
 #~ msgstr "導航狀態:  "
+#
 #
 #
 #
@@ -7743,8 +7963,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "New Mark"
 #~ msgstr "新標記"
+#
 #
 #
 #
@@ -7755,8 +7977,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "No"
 #~ msgstr "No"
+#
 #
 #
 #
@@ -7783,6 +8007,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "物件, 未定義"
 #
@@ -7790,8 +8015,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Object, towed, not otherwise specified"
 #~ msgstr "物件, 拖曳, 未定義"
+#
 #
 #
 #
@@ -7874,6 +8101,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "OpenCPN PlugIn Base Class\n"
 #~ "PlugInManager created this base class"
@@ -7885,13 +8113,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Other"
 #~ msgstr "其他"
 #
 #
 #
+#
 #~ msgid "Out"
 #~ msgstr "Out"
+#
 #
 #
 #
@@ -7918,9 +8149,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "本船顯示選項"
+#
 #
 #
 #
@@ -7933,13 +8166,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "客船, 渡輪, 遊輪, 紅十字船(醫療服務船)"
 #
 #
 #
+#
 #~ msgid "Pause"
 #~ msgstr "暫停"
+#
 #
 #
 #
@@ -7979,9 +8215,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "以時間間隔(秒)標記航跡"
+#
 #
 #
 #
@@ -7994,8 +8232,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "遊艇, 長度超過20公尺"
+#
 #
 #
 #
@@ -8078,8 +8318,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "插件管理員: 停止插件: "
+#
 #
 #
 #
@@ -8162,8 +8404,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "插件管理員: 載入插件: "
+#
 #
 #
 #
@@ -8246,8 +8490,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "插件管理員: 卸載插件 with invalid API version %d.%d: "
+#
 #
 #
 #
@@ -8274,6 +8520,7 @@ msgstr "wxFB 網站"
 #~ msgstr ""
 #~ "位置發報經過時間:       %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8347,6 +8594,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Possible libgps API version mismatch.\n"
 #~ "libgps did not reasonably respond to version request\n"
@@ -8362,8 +8610,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 #~ msgstr "準備好GPS, 按下傳送鍵上傳航路/轉向點..."
+#
 #
 #
 #
@@ -8376,8 +8626,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Progress..."
 #~ msgstr "進行中..."
+#
 #
 #
 #
@@ -8390,8 +8642,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, eight barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 八艘駁船其中至少一艘為液態貨或氣體駁船"
+#
 #
 #
 #
@@ -8404,8 +8658,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, five barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 五艘駁船其中至少一艘為液態貨或氣體駁船"
+#
 #
 #
 #
@@ -8418,8 +8674,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, four barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 四艘駁船其中至少一艘為液態貨或氣體駁船"
+#
 #
 #
 #
@@ -8432,8 +8690,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "頂推船, 九艘以上駁船"
+#
 #
 #
 #
@@ -8446,8 +8706,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "頂推船, 單一艘貨運駁船"
+#
 #
 #
 #
@@ -8460,8 +8722,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, seven barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 七艘駁船其中至少一艘為液態貨或氣體駁船"
+#
 #
 #
 #
@@ -8474,8 +8738,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, six barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 六艘駁船其中至少一艘為液態貨或氣體駁船"
+#
 #
 #
 #
@@ -8488,8 +8754,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, three barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 三艘駁船其中至少一艘為液態貨或氣體駁船"
+#
 #
 #
 #
@@ -8502,8 +8770,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 兩艘駁船其中至少一艘為液態貨或氣體駁船"
+#
 #
 #
 #
@@ -8529,15 +8799,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Radar rings"
 #~ msgstr "雷達距離圈"
 #
-#
-#
-#
-#
-#~ msgid "Range"
-#~ msgstr "範圍"
 #
 #
 #
@@ -8580,6 +8845,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "範圍:                %5.1f NM\n"
 #
@@ -8601,8 +8867,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "影像掃描式海圖"
+#
 #
 #
 #
@@ -8645,8 +8913,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "迴轉率            %3d Deg./Min. 向右\n"
+#
 #
 #
 #
@@ -8689,8 +8959,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "迴轉率            %3d Deg./Min. 向左\n"
+#
 #
 #
 #
@@ -8718,8 +8990,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Red cross ship"
 #~ msgstr "紅十字船(醫療服務船)"
+#
 #
 #
 #
@@ -8730,8 +9004,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Reject"
 #~ msgstr "Reject"
+#
 #
 #
 #
@@ -8771,8 +9047,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "從接圖中移除本圖"
+#
 #
 #
 #
@@ -8781,13 +9059,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Report as of"
 #~ msgstr "Report as of"
 #
 #
 #
+#
 #~ msgid "Resume"
 #~ msgstr "恢復"
+#
 #
 #
 #
@@ -8823,8 +9104,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Right"
 #~ msgstr "寬度"
+#
 #
 #
 #
@@ -8852,8 +9135,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "航路上傳成功."
+#
 #
 #
 #
@@ -8881,13 +9166,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "SART"
 #~ msgstr "雷達詢答機"
 #
 #
 #
+#
 #~ msgid "Safety Broadcast Message"
 #~ msgstr "安全廣播訊息"
+#
 #
 #
 #
@@ -8914,6 +9202,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Send"
 #~ msgstr "傳送"
 #
@@ -8921,8 +9210,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Send Route To GPS"
 #~ msgstr "傳送航路至GPS"
+#
 #
 #
 #
@@ -8939,13 +9230,16 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Service vessel, police patrol, port service"
 #~ msgstr "服務船舶, 水警巡邏, 港勤服務"
 #
 #
 #
+#
 #~ msgid "Set"
 #~ msgstr "Set"
+#
 #
 #
 #
@@ -8995,6 +9289,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Settings"
 #~ msgstr "設定"
 #
@@ -9016,8 +9311,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "顯示 ATON 標籤"
+#
 #
 #
 #
@@ -9082,6 +9379,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "顯示航跡圖示"
 #
@@ -9102,8 +9400,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "啟始時顯示圖層"
+#
 #
 #
 #
@@ -9150,12 +9450,14 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -9202,12 +9504,14 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -9254,12 +9558,14 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -9287,17 +9593,12 @@ msgstr "wxFB 網站"
 #~ "Size:               %5.1fm x %4.1fm x ---m\n"
 #~ "\n"
 #
-#
-#
-#
-#
-#~ msgid "SoG"
-#~ msgstr "SoG"
 #
 #
 #
 #~ msgid "Sound file '%s' is in unsupported format."
 #~ msgstr "音效檔案 '%s' 為不支援的格式"
+#
 #
 #
 #
@@ -9340,8 +9641,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "速度:                %5.2f 節.\n"
+#
 #
 #
 #
@@ -9368,15 +9671,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi 資料伺服器"
 #
-#
-#
-#
-#
-#~ msgid "TCPA"
-#~ msgstr "TCPA"
 #
 #
 #
@@ -9419,8 +9717,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -9433,8 +9733,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "儲槽駁船, 視同液體的乾貨(例如:水泥)"
+#
 #
 #
 #
@@ -9447,8 +9749,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type C"
 #~ msgstr "液態貨駁船, 液態貨物, 型式 C"
+#
 #
 #
 #
@@ -9457,26 +9761,6 @@ msgstr "wxFB 網站"
 #~ msgid "Tankbarge, liquid cargo, type N"
 #~ msgstr "液態儲槽駁船, 液態貨物, 型式 N"
 #
-#
-#
-#
-#
-#~ msgid "Target Count"
-#~ msgstr "目標計數"
-#
-#
-#
-#
-#
-#~ msgid "Target info"
-#~ msgstr "目標資訊"
-#
-#
-#
-#
-#
-#~ msgid "Testing"
-#~ msgstr "測試"
 #
 #
 #
@@ -9503,8 +9787,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tide"
 #~ msgstr "潮汐"
+#
 #
 #
 #
@@ -9546,9 +9832,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "潮流圖表Rollover"
+#
 #
 #
 #
@@ -9561,8 +9849,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Today"
 #~ msgstr "今天"
+#
 #
 #
 #
@@ -9589,8 +9879,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "ToolBox"
 #~ msgstr "工具箱"
+#
 #
 #
 #
@@ -9632,8 +9924,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "真實比例: %8.0f             "
+#
 #
 #
 #
@@ -9646,8 +9940,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tug, assisting a vessel or linked combination"
 #~ msgstr "拖船, 協助他船或與他船連結"
+#
 #
 #
 #
@@ -9660,8 +9956,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tug, freighter/tanker, coupled"
 #~ msgstr "貨運/液態貨運拖船, 成對"
+#
 #
 #
 #
@@ -9674,6 +9972,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tug, single"
 #~ msgstr "拖船, 單一艘"
 #
@@ -9681,8 +9980,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tug, tanker"
 #~ msgstr "拖船, 油輪"
+#
 #
 #
 #
@@ -9725,8 +10026,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "UN Ship Type:         "
 #~ msgstr "UN Ship Type:         "
+#
 #
 #
 #
@@ -9771,8 +10074,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Unable to load libgps"
 #~ msgstr "無法載入 libgps"
+#
 #
 #
 #
@@ -9788,6 +10093,7 @@ msgstr "wxFB 網站"
 #, fuzzy
 #~ msgid "Unavailable"
 #~ msgstr " COG: 無法取得"
+#
 #
 #
 #
@@ -9813,8 +10119,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Units"
 #~ msgstr "單位"
+#
 #
 #
 #
@@ -9841,6 +10149,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Use SCAMIN"
 #~ msgstr "使用 SCAMIN"
 #
@@ -9848,8 +10157,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Vessel, type unknown"
 #~ msgstr "船舶, 型式未知"
+#
 #
 #
 #
@@ -9878,6 +10189,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Waypoint Locking"
 #~ msgstr "轉向點鎖定"
 #
@@ -9885,8 +10197,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Waypoint(s) Uploaded successfully."
 #~ msgstr "轉向點上傳成功."
+#
 #
 #
 #
@@ -9927,8 +10241,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
 #~ msgstr "X Offset (向東為正值) (NMi Projected) :"
+#
 #
 #
 #
@@ -9969,6 +10285,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "cm93 Detail"
 #~ msgstr "cm93 詳細度"
 #
@@ -9976,8 +10293,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "in"
 #~ msgstr "in"
+#
 #
 #
 #

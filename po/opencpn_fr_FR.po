@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:25-0500\n"
+"POT-Creation-Date: 2013-11-22 20:37-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
@@ -304,6 +304,10 @@ msgstr "(Réservé pour un usage futur)"
 msgid "(unnamed)"
 msgstr "(Sans nom)"
 #
+#, fuzzy
+msgid "-"
+msgstr "--"
+#
 msgid "--"
 msgstr "--"
 #
@@ -458,6 +462,11 @@ msgstr "Informations émises par cette cible"
 msgid "AIS Targets"
 msgstr "Cibles AIS"
 #
+# Menu contextuel : AIS
+#, fuzzy
+msgid "AIS target list"
+msgstr "AIS : Liste des cibles ..."
+#
 msgid "APRS"
 msgstr "APRS"
 #
@@ -489,6 +498,10 @@ msgstr "Activer"
 # Menu contextuel : Waypoint
 msgid "Activate Next Waypoint"
 msgstr "Activer le waypoint suivant."
+#
+#, fuzzy
+msgid "Active"
+msgstr "Activer"
 #
 msgid "Active Datasets"
 msgstr "Données actives"
@@ -679,6 +692,10 @@ msgstr "Bleu"
 msgid "Boundaries"
 msgstr "Limites de zones de cartes"
 #
+#, fuzzy
+msgid "Brg"
+msgstr "Relèvement"
+#
 msgid "Buddy"
 msgstr "Buddy"
 #
@@ -697,6 +714,10 @@ msgstr "CM93 : Dialogue de compensation ..."
 msgid "COG Predictor Length (min)"
 msgstr "COG : Taille des flèches de prédiction de la route en minutes "
 #
+#, fuzzy
+msgid "CPA"
+msgstr "TCP"
+#
 msgid "CPA Calculation"
 msgstr "CPA : Calcul du point d'abordage le plus proche"
 #
@@ -705,6 +726,9 @@ msgstr "CPA / TCPA"
 #
 msgid "CPA/TCPA Alerts"
 msgstr "Alarmes CPA/TCPA ( TCPA = Temps pour le CPA)."
+#
+msgid "Call"
+msgstr ""
 #
 msgid "Cancel"
 msgstr "Annuler"
@@ -919,6 +943,9 @@ msgstr "Choisissez le format de copie"
 msgid "Choose a file"
 msgstr "Sélectionnez un fichier"
 #
+msgid "Class"
+msgstr ""
+#
 msgid "Clear All"
 msgstr "Ne rien sélectionner"
 #
@@ -936,6 +963,9 @@ msgstr "Cliquer pour confirmer la sélection de police."
 #
 msgid "Close"
 msgstr "Fermer"
+#
+msgid "CoG"
+msgstr ""
 #
 msgid "Color"
 msgstr "Couleur"
@@ -1000,6 +1030,10 @@ msgstr "Période de rafraichissement (Sec.)"
 #
 msgid "Create Route"
 msgstr "Route : Créer"
+#
+#, fuzzy
+msgid "Create WPT"
+msgstr "Waypoint : Créer"
 #
 msgid "Create Waypoint"
 msgstr "Waypoint : Créer"
@@ -1626,6 +1660,9 @@ msgstr "Bateau feu/Plate-forme"
 msgid "Light w/Sectors"
 msgstr "Feu à secteurs"
 #
+msgid "Limit range: NM"
+msgstr ""
+#
 msgid "Link"
 msgstr "Lien"
 #
@@ -1701,6 +1738,9 @@ msgstr "Cargo"
 #
 msgid "MAN OVERBOARD"
 msgstr "Homme à la mer (MOB)"
+#
+msgid "MMSI"
+msgstr ""
 #
 msgid "M_COVR ID"
 msgstr "M_COVRD ID"
@@ -1800,6 +1840,10 @@ msgstr "Milles marins"
 #
 msgid "Nautical miles"
 msgstr "Milles marins"
+#
+#, fuzzy
+msgid "Nav Status"
+msgstr "Barre d'état"
 #
 msgid "Navigate To Here"
 msgstr "Aller jusqu'ici"
@@ -2134,6 +2178,9 @@ msgstr "Question"
 #
 msgid "RACON"
 msgstr "RACON"
+#
+msgid "Range"
+msgstr ""
 #
 # AIS
 msgid "Real"
@@ -2551,6 +2598,9 @@ msgstr "Simplifiés"
 msgid "Smooth Panning / Zooming"
 msgstr "Zoom : Activer le lissage Panoramique"
 #
+msgid "SoG"
+msgstr ""
+#
 msgid "Solid"
 msgstr "Trait plein"
 #
@@ -2623,9 +2673,18 @@ msgstr "Limites : Crénelées"
 msgid "TCP"
 msgstr "TCP"
 #
+#, fuzzy
+msgid "TCPA"
+msgstr "CPA / TCPA"
+#
 # AIS
 msgid "Tanker"
 msgstr "Pétrolier"
+#
+# Menu contextuel : AIS
+#, fuzzy
+msgid "Target Count"
+msgstr "Liste des cibles ..."
 #
 # Menu contextuel : AIS
 msgid "Target List..."
@@ -2633,6 +2692,11 @@ msgstr "Liste des cibles ..."
 #
 msgid "Target Query..."
 msgstr "Informations émises par cette cible ..."
+#
+# Menu contextuel : AIS
+#, fuzzy
+msgid "Target info"
+msgstr "Liste des cibles ..."
 #
 msgid "Temporary GOTO Route"
 msgstr "Route temporaire"
@@ -2648,6 +2712,10 @@ msgstr "Annexe"
 #
 msgid "Test Alert Sound"
 msgstr "Tester l'alarme"
+#
+#, fuzzy
+msgid "Testing"
+msgstr "Question"
 #
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
