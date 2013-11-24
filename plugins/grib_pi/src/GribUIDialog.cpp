@@ -652,7 +652,7 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
     }
 
     delete pReq_Dialog;                                              //delete to be re-created
-    
+
     pReq_Dialog = new GribRequestSetting( this );
 
     pReq_Dialog->SetVpSize(m_vp);
@@ -706,7 +706,7 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
         }
     } else
         m_sTimeline->SetValue(m_sTimeline->GetValue() + 1);
-     
+
     if(!m_InterpolateMode) m_cRecordForecast->SetSelection( m_sTimeline->GetValue() );
     TimelineChanged();
 }
@@ -906,7 +906,7 @@ void GRIBUIDialog::ComputeBestForecastForNow()
     if(now.IsDST()) now.Add(wxTimeSpan( 1,0,0,0));          //bug in wxWidgets ?
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-  
+
     //verifie if we are outside of the file time range
     now = (now > rsa->Item(rsa->GetCount()-1).m_Reference_Time) ? rsa->Item(rsa->GetCount()-1).m_Reference_Time :
         (now < rsa->Item(0).m_Reference_Time) ? rsa->Item(0).m_Reference_Time : now;
@@ -923,20 +923,20 @@ void GRIBUIDialog::ComputeBestForecastForNow()
 
     if( pPlugIn->GetStartOptions() < 2 ) {         //no interpolation : take the nearest forecast
         m_InterpolateMode = false;
-        TimelineChanged();                        
+        TimelineChanged();
 
-    } else {                                       //interpolation 
+    } else {                                       //interpolation
         //find the nearest timeline position
-        if( m_OverlaySettings.m_bInterpolate ) {                                
+        if( m_OverlaySettings.m_bInterpolate ) {
             double sel = (m_cRecordForecast->GetCurrentSelection());
             m_sTimeline->SetValue(
                 (int) m_OverlaySettings.m_bInterpolate ? sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
             );
         } else
-            m_sTimeline->SetValue(m_cRecordForecast->GetCurrentSelection());    
+            m_sTimeline->SetValue(m_cRecordForecast->GetCurrentSelection());
 
         m_InterpolateMode = true;                                               //take current time & interpolate forecast
-        SetGribTimelineRecordSet(GetTimeLineRecordSet(now));                    
+        SetGribTimelineRecordSet(GetTimeLineRecordSet(now));
         m_cRecordForecast->SetValue( TToString( now, pPlugIn->GetTimeZone() ) );
     }
 
@@ -988,6 +988,7 @@ void GRIBUIDialog::SetFactoryOptions( bool set_val )
 GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
 {
     m_bOK = true;           // Assume ok until proven otherwise
+    m_pGribReader = NULL;
 
     if( !::wxFileExists( file_name ) ) {
         m_last_message = _( "Error:  File does not exist!" );
@@ -1179,10 +1180,10 @@ void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp)
 void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
 {
     //some useful  strings
-    const wxString res[][3] = { 
+    const wxString res[][3] = {
         {_T("0.5"), _T("1.0"), _T("2.0")},
         {_T("0.2"), _T("0.8"), _T("1.6")},
-        {_T("0.05"), _T("0.25"), _T("1.0")} 
+        {_T("0.05"), _T("0.25"), _T("1.0")}
     };
 
     bool IsZYGRIB = false, IsGFS = false, IsRTOFS = false;
