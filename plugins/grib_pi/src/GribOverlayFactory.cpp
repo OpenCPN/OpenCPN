@@ -692,7 +692,7 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
             }
 
             piso = new IsoLine( press,
-                                m_Settings.CalibrationFactor(settings),
+                                m_Settings.CalibrationFactor(settings, press, true),
                                 m_Settings.CalibrationOffset(settings), pGRA );
 
             pIsobarArray[idx]->Add( piso );

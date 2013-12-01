@@ -468,11 +468,10 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
 
         if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-            vx = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vx);
-            vy = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vy);
-
+            /*in case of beaufort scale unit, it's better to calculate vkn before calibrate value to maintain precision*/
             double vkn = sqrt( vx * vx + vy * vy );
-            m_tcWindSpeed->SetValue( wxString::Format( _T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , (int) vkn ) );
+            vkn = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vkn);
+            m_tcWindSpeed->SetValue( wxString::Format( _T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , round( vkn )) );
 
             double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
             if( ang > 360. ) ang -= 360.;
@@ -491,7 +490,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
 
         if( vkn != GRIB_NOTDEF ) {
             vkn = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND_GUST, vkn);
-            m_tcWindGust->SetValue( wxString::Format(_T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND_GUST), (int) ( vkn )) );
+            m_tcWindGust->SetValue( wxString::Format(_T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND_GUST), round( vkn )) );
         } else
             m_tcWindGust->SetValue( _("N/A") );
     }
