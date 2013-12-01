@@ -468,11 +468,10 @@ void GRIBUIDialog::UpdateTrackingControls( void )
             getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
 
         if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-            vx = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vx);
-            vy = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vy);
-
+            /*in case of beaufort scale unit, it's better to calculate vkn before calibrate value to maintain precision*/
             double vkn = sqrt( vx * vx + vy * vy );
-            m_tcWindSpeed->SetValue( wxString::Format( _T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , (int) vkn ) );
+            vkn = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vkn);
+            m_tcWindSpeed->SetValue( wxString::Format( _T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , (int)round( vkn )) );
 
             double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
             if( ang > 360. ) ang -= 360.;
@@ -491,7 +490,7 @@ void GRIBUIDialog::UpdateTrackingControls( void )
 
         if( vkn != GRIB_NOTDEF ) {
             vkn = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND_GUST, vkn);
-            m_tcWindGust->SetValue( wxString::Format(_T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND_GUST), (int) ( vkn )) );
+            m_tcWindGust->SetValue( wxString::Format(_T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND_GUST), (int)round( vkn )) );
         } else
             m_tcWindGust->SetValue( _("N/A") );
     }
@@ -1103,21 +1102,15 @@ void GribRequestSetting::InitRequestConfig()
     if( m_RequestConfigBase.Len() != wxString (_T( "000220XX........" ) ).Len() )
         m_RequestConfigBase = _T( "000220XX........" );
     }
-
+    //populate model, mail to, waves model choices
     wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS")};
-    for( int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
+    for( unsigned i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
         m_pModel->Append( s1[i] );
     wxString s2[] = {_T("Saildocs"),_T("zyGrib")};
-    for( int i= 0;  i<(sizeof(s2) / sizeof(wxString));i++)
+    for( unsigned i= 0;  i<(sizeof(s2) / sizeof(wxString));i++)
         m_pMailTo->Append( s2[i] );
-    for( double i=0.5; i<3; i*=2)
-        m_pResolution->Append( wxString::Format(_T("%0.1f"), i));
-    for( int i=3; i<25; i*=2)
-        m_pInterval->Append( wxString::Format(_T("%d"), i));
-    for( int i=2; i<9; i++)
-        m_pTimeRange->Append( wxString::Format(_T("%d"), i));
     wxString s3[] = {_T("WW3-GLOBAL"),_T("WW3-MEDIT")};
-    for( int i= 0;  i<(sizeof(s3) / sizeof(wxString));i++)
+    for( unsigned i= 0;  i<(sizeof(s3) / sizeof(wxString));i++)
         m_pWModel->Append( s3[i] );
     m_rButtonYes->SetLabel(_("Send"));
     m_rButtonApply->SetLabel(_("Save"));
@@ -1126,19 +1119,17 @@ void GribRequestSetting::InitRequestConfig()
     m_pLogin->SetToolTip(_("This is your zyGrib's forum access Login"));
     m_pCode->SetToolTip(_("Get this Code in zyGrib's forum ( This is not your password! )"));
 
-    long i,j;
+    long i,j,k;
     ( (wxString) m_RequestConfigBase.GetChar(0) ).ToLong( &i );             //MailTo
     m_pMailTo->SetSelection(i);
     ( (wxString) m_RequestConfigBase.GetChar(1) ).ToLong( &i );             //Model
-    ( (wxString) m_RequestConfigBase.GetChar(2) ).ToLong( &j );             //Resolution
-
-    ApplyRequestConfig( i, j );
-
+    m_pModel->SetSelection(i);
+    ( (wxString) m_RequestConfigBase.GetChar(2) ).ToLong( &i );             //Resolution
     ( (wxString) m_RequestConfigBase.GetChar(3) ).ToLong( &j );             //interval
-    m_pInterval->SetSelection( j );
+    ( (wxString) m_RequestConfigBase.GetChar(4) ).ToLong( &k, 16 );         //Time Range
+    k--;                                         // range max = 2 to 16 stored in hexa from 1 to f
 
-    ( (wxString) m_RequestConfigBase.GetChar(4) ).ToLong( &j );             //Time Range
-    m_pTimeRange->SetSelection( j );
+    ApplyRequestConfig( i, j ,k);
 
     ( (wxString) m_RequestConfigBase.GetChar(5) ).ToLong( &j );             //Waves model
     m_pWModel->SetSelection( j );
@@ -1177,7 +1168,7 @@ void GribRequestSetting::OnVpChange(PlugIn_ViewPort *vp)
     m_MailImage->SetValue( WriteMail() );
 }
 
-void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
+void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned tr )
 {
     //some useful  strings
     const wxString res[][3] = {
@@ -1186,31 +1177,38 @@ void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
         {_T("0.05"), _T("0.25"), _T("1.0")}
     };
 
-    bool IsZYGRIB = false, IsGFS = false, IsRTOFS = false;
-
-    //Model is always GFS if Zygrib
-    if( m_pMailTo->GetCurrentSelection() == ZYGRIB ) { sel1 = GFS; IsZYGRIB = true; }
-
-    if( sel1 == GFS ) IsGFS = true;
-
-    m_pModel->SetSelection( sel1 );
+    bool IsZYGRIB = m_pMailTo->GetCurrentSelection() == ZYGRIB; 
+    if(IsZYGRIB) m_pModel->SetSelection(GFS);                       //Model is always GFS when Zygrib selected
+    bool IsGFS = m_pModel->GetCurrentSelection() == GFS;
+    bool IsRTOFS = m_pModel->GetCurrentSelection() == RTOFS;
 
     //populate resolution choice
+    m_pResolution->Clear();
     for( int i = 0; i<3; i++ ) {
-        m_pResolution->SetString(i,res[sel1][i]);
+        m_pResolution->Append(res[m_pModel->GetCurrentSelection()][i]);
     }
-     m_pResolution->SetSelection(sel2);
-    //apply time & resolution limits
-    if(!IsGFS) m_pInterval->SetSelection( wxMax(1, m_pInterval->GetCurrentSelection()));               //mini 6 hours for COAMPS & RTOFS
-    if( sel1 == COAMPS) m_pTimeRange->SetSelection( wxMin(1, m_pTimeRange->GetCurrentSelection()));    //maxi 3 jours for this model
-    if(IsRTOFS) m_pTimeRange->SetSelection( wxMin(4, m_pTimeRange->GetCurrentSelection()));            // maxi 6 jours for this model
+     m_pResolution->SetSelection(rs);
 
-    m_pResolution->Enable( !IsRTOFS );
+    unsigned l;
+     //populate time interval choice
+    l = IsGFS ? 3 : IsRTOFS ? 12 : 6;
+    m_pInterval->Clear();
+    for( unsigned i=l; i<25; i*=2)
+        m_pInterval->Append( wxString::Format(_T("%d"), i));
+    m_pInterval->SetSelection(wxMin(it,m_pInterval->GetCount()-1));
+
+    //populate time range choice
+    l = IsZYGRIB ? 8 : IsGFS ? 16 : IsRTOFS ? 6 : 3;
+    m_pTimeRange->Clear();
+    for( unsigned i=2; i<l+1; i++)
+        m_pTimeRange->Append( wxString::Format(_T("%d"), i));
+    m_pTimeRange->SetSelection( wxMin(l-2, tr));
+
     m_pModel->Enable(!IsZYGRIB);
     m_pWind->SetValue( !IsRTOFS );
     m_pPress->SetValue( !IsRTOFS );
     m_pWaves->SetValue( m_RequestConfigBase.GetChar(8) == 'X' && IsGFS );
-    m_pWaves->Enable( IsGFS );
+    m_pWaves->Enable( IsGFS && m_pTimeRange->GetCurrentSelection() < 7 );      //gfs & time range less than 8 days
     m_pRainfall->SetValue( m_RequestConfigBase.GetChar(9) == 'X' && IsGFS );
     m_pRainfall->Enable( IsGFS );
     m_pCloudCover->SetValue( m_RequestConfigBase.GetChar(10) == 'X' && IsGFS );
@@ -1238,7 +1236,7 @@ void GribRequestSetting::ApplyRequestConfig( int sel1, int sel2 )
 void GribRequestSetting::OnTopChange(wxCommandEvent &event)
 {
 
-    ApplyRequestConfig( m_pModel->GetCurrentSelection(), m_pResolution->GetCurrentSelection() );
+    ApplyRequestConfig( m_pResolution->GetCurrentSelection(), m_pInterval->GetCurrentSelection(), m_pTimeRange->GetCurrentSelection() );
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
@@ -1251,13 +1249,27 @@ void GribRequestSetting::OnAnyChange(wxCommandEvent &event)
     m_tWModel->Show(m_pMailTo->GetCurrentSelection() == ZYGRIB && m_pWaves->IsChecked());
     m_pWModel->Show(m_pMailTo->GetCurrentSelection() == ZYGRIB && m_pWaves->IsChecked());
 
-    //apply time & resolution limits
-    if(m_pModel->GetCurrentSelection() != GFS) m_pInterval->SetSelection(
-        wxMax(1, m_pInterval->GetCurrentSelection()));  //mini 6 hours for COAMPS & RTOFS
-    if( m_pModel->GetCurrentSelection() == COAMPS) m_pTimeRange->SetSelection(
-        wxMin(1, m_pTimeRange->GetCurrentSelection()));   //maxi 3 days for this model
-    if(m_pModel->GetCurrentSelection() == RTOFS) m_pTimeRange->SetSelection(
-        wxMin(4, m_pTimeRange->GetCurrentSelection()));     // maxi 6 days for this model
+    if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
+
+    this->Fit();
+    this->Refresh();
+}
+
+void GribRequestSetting::OnTimeRangeChange(wxCommandEvent &event)
+{
+    m_tWModel->Show(m_pMailTo->GetCurrentSelection() == ZYGRIB && m_pWaves->IsChecked());
+    m_pWModel->Show(m_pMailTo->GetCurrentSelection() == ZYGRIB && m_pWaves->IsChecked());
+
+    if( m_pModel->GetCurrentSelection() == 0 ) {               //gfs
+        if( m_pTimeRange->GetCurrentSelection() > 6 ) {         //time range more than 8 days
+            m_pWaves->SetValue(0);
+            m_pWaves->Enable(false);
+            wxMessageDialog mes(this, _("You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5\u00B0x2.5\u00B0 and the time intervall 12 hours."),
+                _("Warning!"), wxOK);
+            mes.ShowModal();
+        } else
+            m_pWaves->Enable(true);
+    }
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
@@ -1273,7 +1285,9 @@ void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
     if(m_pModel->GetCurrentSelection() != RTOFS)
         m_RequestConfigBase.SetChar( 2, (char) ( m_pResolution->GetCurrentSelection() + '0' ) );
     m_RequestConfigBase.SetChar( 3, (char) ( m_pInterval->GetCurrentSelection() + '0' ) );
-    m_RequestConfigBase.SetChar( 4, (char) ( m_pTimeRange->GetCurrentSelection() + '0' ) );
+    wxString range;
+    range.Printf(_T("%x"), m_pTimeRange->GetCurrentSelection() + 1 );       //range max = 2 to 16 stored in hexa 1 to f
+    m_RequestConfigBase.SetChar( 4, range.GetChar( 0 ) );
     if(m_pMailTo->GetCurrentSelection() == ZYGRIB && m_pWModel->IsShown())
         m_RequestConfigBase.SetChar( 5, (char) ( m_pWModel->GetCurrentSelection() + '0' ) );
     m_RequestConfigBase.SetChar( 6, 'X' );              //must be always selected as a default
@@ -1317,7 +1331,7 @@ wxString GribRequestSetting::WriteMail()
     m_MailError_Nb = 0;
     //some useful strings
     const wxString s[] = { _T(","), _T(" ") };        //separators
-    const wxString p[][7] = {{ _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("WAVES"), _T("SEATMP"), wxEmptyString, _T("CAPE")}, //parameters
+    const wxString p[][7] = {{ _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("HTSGW,WVDIR"), _T("SEATMP"), wxEmptyString, _T("CAPE")}, //parameters
         {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), wxEmptyString, _T("GUST"), _T("CAPE")} };
 
     wxString r_topmess,r_parameters,r_zone;

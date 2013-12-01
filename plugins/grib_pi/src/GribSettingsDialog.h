@@ -41,9 +41,11 @@ struct GribOverlaySettings
     void Write();
 
     double CalibrationOffset(int settings);
-    double CalibrationFactor(int settings);
+    double CalibrationFactor(int settings, double input, bool reverse = false);
     double CalibrateValue(int settings, double input)
-        { return (input+CalibrationOffset(settings))*CalibrationFactor(settings); }
+        { return (input+CalibrationOffset(settings))*CalibrationFactor(settings, input); }
+    double GetmstobfFactor(double input);
+    double GetbftomsFactor(double input);
     wxString GetUnitSymbol(int settings);
     double GetMin(int settings);
     double GetMax(int settings);
@@ -57,7 +59,7 @@ struct GribOverlaySettings
 
     enum SettingsType {WIND, WIND_GUST, PRESSURE, WAVE, CURRENT, PRECIPITATION, CLOUD, 
                        AIR_TEMPERATURE, SEA_TEMPERATURE, CAPE, SETTINGS_COUNT};
-    enum Units0 {KNOTS, M_S, MPH, KPH};
+    enum Units0 {KNOTS, M_S, MPH, KPH, BFS};
     enum Units1 {MILLIBARS, MMHG, INHG};
     enum Units2 {METERS, FEET};
     enum Units3 {CELCIUS, FAHRENHEIT};

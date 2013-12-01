@@ -630,8 +630,8 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
                         double vy =  pGRY->getValue( i, j );
 
                         if( vx != GRIB_NOTDEF && vy != GRIB_NOTDEF ) {
-                            vx = m_Settings.CalibrateValue(settings, vx);
-                            vy = m_Settings.CalibrateValue(settings, vy);
+                            vx *= 3.6/1.852;            //always in knots to respect the standard
+                            vy *= 3.6/1.852;
 
                             drawWindArrowWithBarbs( settings, p.x, p.y, vx, vy, polar, ( lat < 0. ), colour );
                         }
@@ -692,7 +692,7 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
             }
 
             piso = new IsoLine( press,
-                                m_Settings.CalibrationFactor(settings),
+                                m_Settings.CalibrationFactor(settings, press, true),
                                 m_Settings.CalibrationOffset(settings), pGRA );
 
             pIsobarArray[idx]->Add( piso );

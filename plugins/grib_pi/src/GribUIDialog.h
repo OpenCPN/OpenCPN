@@ -214,12 +214,13 @@ public:
       int m_LonmaxBase;
     
 private:
-      void ApplyRequestConfig( int sel1, int sel2 );
+      void ApplyRequestConfig( unsigned rs, unsigned it, unsigned tr );
       wxString WriteMail();
       bool EstimateFileSize();
 
       void OnTopChange(wxCommandEvent &event);
       void OnAnyChange( wxCommandEvent& event );
+      void OnTimeRangeChange( wxCommandEvent& event );
       void OnSendMaiL( wxCommandEvent& event );
       void OnSaveMail( wxCommandEvent& event );
 
