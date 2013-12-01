@@ -82,11 +82,11 @@ void GribOverlaySettings::Read()
         int defrange[SETTINGS_COUNT] = {100, 100, 0, 0, 0, 0, 0, 0, 0, 0};
         pConf->Read ( Name + _T ( "BarbedRange" ), &Settings[i].m_iBarbedRange, defrange[i]);
 
-        pConf->Read ( Name + _T ( "IsoBars" ), &Settings[i].m_bIsoBars, i==PRESSURE);
+        pConf->Read ( Name + _T ( "Display Isobars" ), &Settings[i].m_bIsoBars, i==PRESSURE);
         double defspacing[SETTINGS_COUNT] = {4, 0, 4, 0, 0, 0, 0, 2, 2, 100};
         pConf->Read ( Name + _T ( "IsoBarSpacing" ), &Settings[i].m_iIsoBarSpacing, defspacing[i]);
 
-        pConf->Read ( Name + _T ( "DirectionArrows" ), &Settings[i].m_bDirectionArrows, i==CURRENT);
+        pConf->Read ( Name + _T ( "DirectionArrows" ), &Settings[i].m_bDirectionArrows, i==CURRENT || i==WAVE);
         pConf->Read ( Name + _T ( "DirectionArrowSize" ), &Settings[i].m_iDirectionArrowSize, 10);
 
         pConf->Read ( Name + _T ( "OverlayMap" ), &Settings[i].m_bOverlayMap, i!=WIND && i!=PRESSURE);
