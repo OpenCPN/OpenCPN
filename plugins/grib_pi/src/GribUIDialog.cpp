@@ -1105,10 +1105,10 @@ void GribRequestSetting::InitRequestConfig()
     }
 
     wxString s1[] = {_T("GFS"),_T("COAMPS"),_T("RTOFS")};
-    for( int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
+    for( unsigned int i= 0;  i<(sizeof(s1) / sizeof(wxString));i++)
         m_pModel->Append( s1[i] );
     wxString s2[] = {_T("Saildocs"),_T("zyGrib")};
-    for( int i= 0;  i<(sizeof(s2) / sizeof(wxString));i++)
+    for( unsigned int i= 0;  i<(sizeof(s2) / sizeof(wxString));i++)
         m_pMailTo->Append( s2[i] );
     for( double i=0.5; i<3; i*=2)
         m_pResolution->Append( wxString::Format(_T("%0.1f"), i));
@@ -1117,7 +1117,7 @@ void GribRequestSetting::InitRequestConfig()
     for( int i=2; i<9; i++)
         m_pTimeRange->Append( wxString::Format(_T("%d"), i));
     wxString s3[] = {_T("WW3-GLOBAL"),_T("WW3-MEDIT")};
-    for( int i= 0;  i<(sizeof(s3) / sizeof(wxString));i++)
+    for( unsigned int i= 0;  i<(sizeof(s3) / sizeof(wxString));i++)
         m_pWModel->Append( s3[i] );
     m_rButtonYes->SetLabel(_("Send"));
     m_rButtonApply->SetLabel(_("Save"));
