@@ -4391,6 +4391,58 @@ bool ChartBaseBSB::AnalyzeSkew(void)
         }
     }
 
+    //    Special case for charts which cross the IDL
+    if((lonmin * lonmax) < 0)
+    {
+        if(pRefTable[nlonmin].xr > pRefTable[nlonmax].xr)
+        {
+            //    walk the reference table and add 360 to any longitude which is < 0
+            for(int n=0 ; n<nRefpoint ; n++)
+            {
+                if(pRefTable[n].lonr < 0.0)
+                    pRefTable[n].lonr += 360.;
+            }
+            
+            //    And recalculate the  min/max
+            lonmin = 1000;
+            lonmax = -1000;
+            
+            for(int n=0 ; n<nRefpoint ; n++)
+            {
+                //    Longitude
+                if(pRefTable[n].lonr > lonmax)
+                {
+                    lonmax = pRefTable[n].lonr;
+                    plonmax = (int)pRefTable[n].xr;
+                    nlonmax = n;
+                }
+                if(pRefTable[n].lonr < lonmin)
+                {
+                    lonmin = pRefTable[n].lonr;
+                    plonmin = (int)pRefTable[n].xr;
+                    nlonmin = n;
+                }
+                
+                //    Latitude
+                if(pRefTable[n].latr < latmin)
+                {
+                    latmin = pRefTable[n].latr;
+                    platmin = (int)pRefTable[n].yr;
+                    nlatmin = n;
+                }
+                if(pRefTable[n].latr > latmax)
+                {
+                    latmax = pRefTable[n].latr;
+                    platmax = (int)pRefTable[n].yr;
+                    nlatmax = n;
+                }
+            }
+            m_bIDLcross = true;
+        }
+    }
+    
+    
+    
     //  Find the two REF points that are farthest apart
     double dist_max = 0.;
     int imax = 0;
