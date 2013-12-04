@@ -27,7 +27,7 @@
 
 #include "grib_pi.h"
 
-static const wxString units0_names[] = {_("Knots"), _("m/s"), _("mph"), _("km/h"), wxEmptyString};
+static const wxString units0_names[] = {_("Knots"), _("m/s"), _("mph"), _("km/h"), _("Beaufort"), wxEmptyString};
 static const wxString units1_names[] = {_("MilliBars"), _("mmHG"), _("inHG"), wxEmptyString};
 static const wxString units2_names[] = {_("Meters"), _("Feet"), wxEmptyString};
 static const wxString units3_names[] = {_("Celsius"), _("Fahrenheit"), wxEmptyString};
@@ -82,11 +82,11 @@ void GribOverlaySettings::Read()
         int defrange[SETTINGS_COUNT] = {100, 100, 0, 0, 0, 0, 0, 0, 0, 0};
         pConf->Read ( Name + _T ( "BarbedRange" ), &Settings[i].m_iBarbedRange, defrange[i]);
 
-        pConf->Read ( Name + _T ( "IsoBars" ), &Settings[i].m_bIsoBars, i==PRESSURE);
+        pConf->Read ( Name + _T ( "Display Isobars" ), &Settings[i].m_bIsoBars, i==PRESSURE);
         double defspacing[SETTINGS_COUNT] = {4, 0, 4, 0, 0, 0, 0, 2, 2, 100};
         pConf->Read ( Name + _T ( "IsoBarSpacing" ), &Settings[i].m_iIsoBarSpacing, defspacing[i]);
 
-        pConf->Read ( Name + _T ( "DirectionArrows" ), &Settings[i].m_bDirectionArrows, i==CURRENT);
+        pConf->Read ( Name + _T ( "DirectionArrows" ), &Settings[i].m_bDirectionArrows, i==CURRENT || i==WAVE);
         pConf->Read ( Name + _T ( "DirectionArrowSize" ), &Settings[i].m_iDirectionArrowSize, 10);
 
         pConf->Read ( Name + _T ( "OverlayMap" ), &Settings[i].m_bOverlayMap, i!=WIND && i!=PRESSURE);
@@ -143,7 +143,7 @@ double GribOverlaySettings::CalibrationOffset(int settings)
     return 0;
 }
 
-double GribOverlaySettings::CalibrationFactor(int settings)
+double GribOverlaySettings::CalibrationFactor(int settings, double input, bool reverse)
 {
     switch(unittype[settings]) {
     case 0: switch(Settings[settings].m_Units) {
@@ -151,6 +151,7 @@ double GribOverlaySettings::CalibrationFactor(int settings)
         case M_S:    return 1;
         case MPH:    return 3.6 / 1.60934;
         case KPH:    return 3.6;
+        case BFS:    return (reverse) ? GetbftomsFactor(input) : GetmstobfFactor(input);
         } break;
     case 1: switch(Settings[settings].m_Units) {
         case MILLIBARS: return 1 / 100.;
@@ -176,6 +177,63 @@ double GribOverlaySettings::CalibrationFactor(int settings)
     return 1;
 }
 
+/*
+Beaufort scale
+    force             in knots   in m/s         in knots
+    0                   < 1        <0.5             < 1
+    1         from      1         0.5       to      3
+    2                   4         2.1               6
+    3                   7         3.6               10
+    4                   11        5.7               16
+    5                   17        8.7               21
+    6                   22        11.3              27
+    7                   28        14.4              33
+    8                   34        17.5              40
+    9                   41        21.1              47
+    10                  48        24.7              55
+    11                  56        28.8              63
+    12                   >= 64     >= 32.9           >= 64
+*/
+
+double GribOverlaySettings::GetmstobfFactor(double input)
+{
+    double val = fabs(input);
+    //find bf value ( m/s ) and return the corresponding factor
+    if(val < 0.5 ) return 0;
+    if(val < 2.1 ) return 1/input;
+    if(val < 3.6 ) return 2/input;
+    if(val < 5.7 ) return 3/input;
+    if(val < 8.7 ) return 4/input;
+    if(val < 11.3 ) return 5/input;
+    if(val < 14.4 ) return 6/input;
+    if(val < 17.5 ) return 7/input;
+    if(val < 21.1 ) return 8/input;
+    if(val < 24.7 ) return 9/input;
+    if(val < 28.8 ) return 10/input;
+    if(val < 32.9 ) return 11/input;
+    return 12/input;
+}
+
+double GribOverlaySettings::GetbftomsFactor(double input)
+{
+    //find the limit value in m/s in Beaufort scale and return the corresponding factor
+    switch((int) input) {
+    case 1:  return input/0.5;
+    case 2:  return input/2.1;
+    case 3:  return input/3.6;
+    case 4:  return input/5.7;
+    case 5:  return input/8.7;
+    case 6:  return input/11.3;
+    case 7:  return input/14.4;
+    case 8:  return input/17.5;
+    case 9:  return input/21.1;
+    case 10: return input/24.7;
+    case 11: return input/28.7;
+    case 12: return input/32.9;
+    }
+    return 1;
+}
+
 wxString GribOverlaySettings::GetUnitSymbol(int settings)
 {
     switch(unittype[settings]) {
@@ -184,6 +242,7 @@ wxString GribOverlaySettings::GetUnitSymbol(int settings)
             case M_S:    return _T("m/s");
             case MPH:    return _T("mph");
             case KPH:    return _T("km/h");
+            case BFS:    return _T("bf");
         } break;
         case 1: switch(Settings[settings].m_Units) {
             case MILLIBARS: return _T("hPa");
