@@ -1853,7 +1853,7 @@ if( 0 == g_memCacheLimit )
 
 //      Load and initialize any PlugIns
     g_pi_manager = new PlugInManager( gFrame );
-    g_pi_manager->LoadAllPlugIns( _T("/home/dsr")/*g_Plugin_Dir*/ );
+    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir );
 
 // Show the frame
 
