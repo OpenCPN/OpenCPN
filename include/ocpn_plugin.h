@@ -757,16 +757,6 @@ public:
       //  Public Methods
       PI_S57Obj();
       ~PI_S57Obj();
-//      PI_S57Obj(char *first_line, wxInputStream *fpx, double ref_lat, double ref_lon);
-
-//      wxString GetAttrValueAsString ( char *attr );
-//      int GetAttributeIndex( const char *AttrSeek );
-
-      // Private Methods
-private:
-//      bool IsUsefulAttribute(char *buf);
-//      int my_fgets( char *buf, int buf_len_max, wxInputStream& ifs );
-//      int my_bufgetl( char *ib_read, char *ib_end, char *buf, int buf_len_max );
 
 public:
       // Instance Data
@@ -833,45 +823,12 @@ public:
 };
 
 
-#if 0
-class PI_LUPrec{
-public:
-//   int            RCID;             // record identifier
-//   char           OBCL[7];          // Name (6 char) '\0' terminated
-//   Object_t       FTYP;             // 'A' Area, 'L' Line, 'P' Point
-    PI_DisPrio        DPRI;             // Display Priority
-//   RadPrio        RPRI;             // 'O' or 'S', Radar Priority
-    PI_LUPname        TNAM;             // FTYP:  areas, points, lines
-//   wxArrayString *ATTCArray;        // ArrayString of LUP Attributes
-//   wxString       *INST;            // Instruction Field (rules)
-    PI_DisCat         DISC;             // Display Categorie: D/S/O, DisplayBase, Standard, Other
-//   int            LUCM;             // Look-Up Comment (PLib3.x put 'groupes' here,
-                                    // hence 'int', but its a string in the specs)
-//   int            nSequence;        // A sequence number, indicating order of encounter in
-                                    //  the PLIB file
-//   Rules          *ruleList;        // rasterization rule list
-};
-
-#endif
-
-
-#if 0
-// S57 object interface container
-typedef struct _PI_ObjContainer{
-   PI_S57Obj          *obj;
-   PI_LUPrec          *LUP;
-//   s57chart        *chart;                // chart object owning this rule set
-   struct _PI_ObjContainer *child;          // child list, used only for MultiPoint Soundings
-   struct _PI_ObjContainer *next;
-}PI_ObjContainer;
-#endif
 
 wxString PI_GetPLIBColorScheme();            //ps52plib->GetPLIBColorScheme()
 int PI_GetPLIBDepthUnitInt();           //ps52plib->m_nDepthUnitDisplay
 int PI_GetPLIBSymbolStyle();            //ps52plib->m_nSymbolStyle
 int PI_GetPLIBBoundaryStyle();          //ps52plib->m_nBoundaryStyle
 bool PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp ); //ps52plib->ObjectRenderCheck
-//PI_LUPrec *PI_S52Lookup( PI_LUPname LUP_name, PI_S57Obj *pObj, bool bStrict = 0 ); //ps52plib->S52_LUPLookup
 
 int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp );  //ps52plib->RenderObjectToDC
 
