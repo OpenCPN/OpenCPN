@@ -553,6 +553,8 @@ private:
     void SetDSFormRWStates();
     void FillSourceList();
     ConnectionParams *CreateConnectionParamsFromSelectedItem();
+    
+    wxNotebookPage*             m_groupsPage;
 };
 
 class ChartGroupsUI: public wxScrolledWindow {

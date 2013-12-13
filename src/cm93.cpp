@@ -1920,6 +1920,10 @@ cm93chart::cm93chart()
       m_nDrawBufferSize = 1;
 
 
+      //  Set up the chart context
+      m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
+      m_this_chart_context->chart = this;
+      
 }
 
 cm93chart::~cm93chart()
@@ -2466,6 +2470,10 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell )
 
 //              Establish Object's Display Category
                               obj->m_DisplayCat = LUP->DISC;
+                              
+ //              Populate the chart context
+                               obj->m_chart_context = m_this_chart_context;
+                                          
                         }
                   }
 

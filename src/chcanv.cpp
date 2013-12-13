@@ -860,6 +860,13 @@ void ViewPort::SetBoxes( void )
     // Restore the rotation angle
     SetRotationAngle( rotation_save );
 }
+
+void ViewPort::SetBBoxDirect( double latmin, double lonmin, double latmax, double lonmax)
+{
+    vpBBox.SetMin( lonmin, latmin );
+    vpBBox.SetMax( lonmax, latmax );
+}
+
 //------------------------------------------------------------------------------
 //    ChartCanvas Implementation
 //------------------------------------------------------------------------------

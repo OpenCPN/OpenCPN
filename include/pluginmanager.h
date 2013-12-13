@@ -40,6 +40,7 @@
 #include "chcanv.h"                 // for ViewPort
 #include "datastream.h"             // for GenericPosDat
 #include "OCPN_Sound.h"
+#include "s52s57.h"
 
 //For widgets...
 #include "wx/hyperlink.h"
@@ -338,7 +339,39 @@ private:
 };
 
 
+//  API 1.11 adds access to S52 Presentation library
+//  These are some wrapper conversion utilities
 
+class S52PLIB_Context
+{
+public:
+    S52PLIB_Context(){
+        bBBObj_valid = false;
+        bCS_Added = false;
+        bFText_Added = false;
+        CSrules = NULL;
+        FText = NULL;
+        };
+        
+    ~S52PLIB_Context(){};
+    
+    wxBoundingBox           BBObj;                  // lat/lon BBox of the rendered object
+    bool                    bBBObj_valid;           // set after the BBObj has been calculated once.
+    
+    Rules                   *CSrules;               // per object conditional symbology
+    int                     bCS_Added;
+    
+    S52_TextC                *FText;
+    int                     bFText_Added;
+    wxRect                  rText;
+    
+    LUPrec                  *LUP;
+};
+
+
+
+void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj );
+void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj );
 
 #endif            // _PLUGINMGR_H_
 
