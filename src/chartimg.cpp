@@ -1318,6 +1318,12 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
       else if(m_projection == PROJECTION_POLYCONIC)
             m_proj_lon = m_proj_parameter;
 
+      //    We have seen improperly coded charts, with non-sense value of PP parameter
+      //    FS#1251      
+      //    Check and override if necessary      
+      if(m_proj_lat >82.0 || m_proj_lat < -82.0)
+        m_proj_lat = 0.0;
+            
 
 //    Validate some of the header data
       if((Size_X == 0) || (Size_Y == 0))
