@@ -56,6 +56,26 @@ wxString *CSQUALIN01(S57Obj *obj);
 
 
 
+wxArrayPtrVoid *GetChartFloatingATONArray( ObjRazRules *rzRules )
+{
+    S57Obj *obj = rzRules->obj;
+    if( obj->m_chart_context->chart )
+        return obj->m_chart_context->pFloatingATONArray;
+    else
+        return NULL;
+    
+}
+
+wxArrayPtrVoid *GetChartRigidATONArray( ObjRazRules *rzRules )
+{
+    S57Obj *obj = rzRules->obj;
+    if( obj->m_chart_context->chart )
+        return obj->m_chart_context->pRigidATONArray;
+    else
+        return NULL;
+    
+}
+
 static void *CLRLIN01(void *param)
 {
         ObjRazRules *rzRules = (ObjRazRules *)param;
@@ -541,7 +561,16 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
 
         // get area DEPARE & DRGARE that intersect this point/line/area
 
-        ListOfS57Obj *pobj_list = rzRules->chart->GetAssociatedObjects(obj);
+        ListOfS57Obj *pobj_list;
+
+        
+        if( obj->m_chart_context->chart )
+            pobj_list = obj->m_chart_context->chart->GetAssociatedObjects(obj);
+        else{
+            wxString *ret_str = new wxString(udwhaz03str);
+            return ret_str;
+        }
+            
 
         wxListOfS57ObjNode *node = pobj_list->GetFirst();
         while(node)
@@ -799,11 +828,16 @@ static void *DEPCNT02 (void *param)
             else
             {
                   double next_safe_contour;
-                  if(rzRules->chart->GetNearestSafeContour(safety_contour, next_safe_contour))
-                  {
+                  if( obj->m_chart_context->chart ){
+                      if(obj->m_chart_context->chart->GetNearestSafeContour(safety_contour, next_safe_contour))
+                      {
                         if (drval1 == next_safe_contour)
                               safe = TRUE;
+                      }
                   }
+                  else
+                      safe = true;              //TODO fix for PlugIn chart
+                  
 //                  safe = FALSE;            //for debug
                               /*
                   if (1 == S52_state)
@@ -851,11 +885,14 @@ static void *DEPCNT02 (void *param)
             else
             {
                   double next_safe_contour;
-                  if(rzRules->chart->GetNearestSafeContour(safety_contour, next_safe_contour))
-                  {
+                  if( obj->m_chart_context->chart ){
+                      if(obj->m_chart_context->chart->GetNearestSafeContour(safety_contour, next_safe_contour)) {
                         if (valdco == next_safe_contour)
                               safe = TRUE;
+                      }
                   }
+                  else
+                      safe = TRUE;              // TODO fix for PlugIn
 
 
 /*
@@ -1207,7 +1244,7 @@ static void *LIGHTS05 (void *param)
 
         wxString ssym;
 
-        if(_atPtPos(obj, rzRules->chart->pFloatingATONArray, false))          // Is this LIGHTS feature colocated with ...ANY... floating aid?
+        if(_atPtPos(obj, GetChartFloatingATONArray( rzRules ), false))          // Is this LIGHTS feature colocated with ...ANY... floating aid?
         {
             flare_at_45 = false;
 
@@ -2748,11 +2785,11 @@ static void *TOPMAR01 (void *param)
         int topshp      = (!battr) ? 0 : top_int;
 
 
-        if (TRUE == _atPtPos(obj, rzRules->chart->pFloatingATONArray, false))
+        if (TRUE == _atPtPos(obj, GetChartFloatingATONArray( rzRules ), false))
             floating = TRUE;
         else
             // FIXME: this test is wierd since it doesn't affect 'floating'
-            if (TRUE == _atPtPos(obj, rzRules->chart->pRigidATONArray, false))
+            if (TRUE == _atPtPos(obj, GetChartRigidATONArray( rzRules ), false))
                 floating = FALSE;
 
 

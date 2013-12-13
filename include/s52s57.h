@@ -292,6 +292,16 @@ class OGRFeature;
 class PolyTessGeo;
 class PolyTessGeoTrap;
 
+typedef struct _chart_context{
+    void                    *m_pvc_hash;
+    void                    *m_pve_hash;
+    double                  ref_lat;
+    double                  ref_lon;
+    wxArrayPtrVoid          *pFloatingATONArray;
+    wxArrayPtrVoid          *pRigidATONArray;
+    s57chart                *chart;
+}chart_context;
+
 
 class S57Obj
 {
@@ -365,10 +375,16 @@ public:
       double                  y_rate;                 // to be used in GetPointPix() and friends
       double                  x_origin;               // on a per-object basis if necessary
       double                  y_origin;
+      
+      chart_context           *m_chart_context;       // per-chart constants, carried in each object for convenience
 
 };
 
 
+typedef struct _sm_parms{
+    double easting_vp_center;
+    double northing_vp_center;
+}sm_parms;
 
 
 
@@ -376,7 +392,10 @@ public:
 typedef struct _ObjRazRules{
    LUPrec          *LUP;
    S57Obj          *obj;
-   s57chart        *chart;                //dsr ... chart object owning this rule set
+//   void         (*GetPointPixel)(void *, float, float, wxPoint *);
+   
+//   s57chart        *chart;                //dsr ... chart object owning this rule set
+   sm_parms        *sm_transform_parms;
    struct _ObjRazRules *child;            // child list, used only for MultiPoint Soundings
    struct _ObjRazRules *next;
 }ObjRazRules;

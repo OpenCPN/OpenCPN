@@ -4493,6 +4493,24 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
             }
         }
     }
+    
+    //  Set up the chart context
+    m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
+    m_this_chart_context->chart = this;
+    
+    //  Loop and populate all the objects
+    for( int i = 0; i < PRIO_NUM; ++i ) {
+        for( int j = 0; j < LUPNAME_NUM; j++ ) {
+            top = razRules[i][j];
+            while( top != NULL ) {
+                S57Obj *obj = top->obj;
+                obj->m_chart_context = m_this_chart_context;
+                top = top->next;
+            }
+        }
+    }
+    
+    
 
     return ret_val;
 }
@@ -4604,7 +4622,7 @@ int s57chart::_insertRules( S57Obj *obj, LUPrec *LUP, s57chart *pOwner )
     rzRules->obj = obj;
     obj->nRef++;                         // Increment reference counter for delete check;
     rzRules->LUP = LUP;
-    rzRules->chart = pOwner;
+//    rzRules->chart = pOwner;
     rzRules->next = razRules[disPrioIdx][LUPtypeIdx];
     rzRules->child = NULL;
     razRules[disPrioIdx][LUPtypeIdx] = rzRules;

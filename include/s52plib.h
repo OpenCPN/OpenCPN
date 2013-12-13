@@ -323,7 +323,7 @@ private:
 
     void RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj,
         S52color *c, wxBoundingBox &BBView, render_canvas_parms *pb_spec,
-        render_canvas_parms *patt_spec );
+        render_canvas_parms *patt_spec, ViewPort *vp );
 
     void draw_lc_poly( wxDC *pdc, wxColor &color, int width, wxPoint *ptp,
         int npt, float sym_len, float sym_factor, Rule *draw_rule,
@@ -361,6 +361,10 @@ private:
     bool TextRenderCheck( ObjRazRules *rzRules );
     bool inter_tri_rect( wxPoint *ptp, render_canvas_parms *pb_spec );
 
+    bool GetPointPixArray( ObjRazRules *rzRules, wxPoint2DDouble* pd, wxPoint *pp, int nv, ViewPort *vp );
+    bool GetPointPixSingle( ObjRazRules *rzRules, float north, float east, wxPoint *r, ViewPort *vp );
+    void GetPixPointSingle( int pixx, int pixy, double *plat, double *plon, ViewPort *vp );
+    
     wxString m_plib_file;
 
     float canvas_pix_per_mm; // Set by parent, used to scale symbols/lines/patterns

@@ -221,6 +221,8 @@ public:
       bool        m_b2pointLUPS;
       bool        m_b2lineLUPS;
       
+      struct _chart_context     *m_this_chart_context;
+      
 private:
 
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);

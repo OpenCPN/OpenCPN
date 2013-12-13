@@ -150,6 +150,7 @@ wxLog                     *Oldlogger;
 bool                      g_bFirstRun;
 wxString                  glog_file;
 wxString                  gConfig_File;
+wxString                  gExe_path;
 
 int                       g_unit_test_1;
 bool                      g_start_fullscreen;
@@ -1095,6 +1096,8 @@ bool MyApp::OnInit()
 //      Establish a "home" location
     wxStandardPathsBase& std_path = wxApp::GetTraits()->GetStandardPaths();
     std_path.Get();
+    
+    gExe_path = std_path.GetExecutablePath();
 
     pHome_Locn = new wxString;
 #ifdef __WXMSW__
@@ -1850,7 +1853,7 @@ if( 0 == g_memCacheLimit )
 
 //      Load and initialize any PlugIns
     g_pi_manager = new PlugInManager( gFrame );
-    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir );
+    g_pi_manager->LoadAllPlugIns( _T("/home/dsr")/*g_Plugin_Dir*/ );
 
 // Show the frame
 
@@ -2082,6 +2085,8 @@ if( 0 == g_memCacheLimit )
 
     stats->Show( true );
 
+    Yield();
+    
     gFrame->DoChartUpdate();
 
     g_FloatingToolbarDialog->LockPosition(false);
@@ -3161,7 +3166,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         g_pAISTargetList->Destroy();
     }
 
-    g_FloatingCompassDialog->Destroy();
+    if( g_FloatingCompassDialog ) g_FloatingCompassDialog->Destroy();
     g_FloatingCompassDialog = NULL;
 
     //      Delete all open charts in the cache
@@ -5638,6 +5643,9 @@ void MyFrame::SelectQuiltRefdbChart( int db_index )
         double best_scale = GetBestVPScale( pc );
         cc1->SetVPScale( best_scale );
     }
+    else
+        cc1->SetQuiltRefChart( -1 );
+    
 
 }
 
