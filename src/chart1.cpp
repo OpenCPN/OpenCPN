@@ -703,6 +703,11 @@ catch_signals(int signo)
         case SIGSEGV:
         siglongjmp(env, 1);// jump back to the setjmp() point
         break;
+        
+        case SIGTERM:
+        gFrame->Close();
+        abort();
+        break;
 
         default:
         break;
@@ -1059,6 +1064,9 @@ bool MyApp::OnInit()
     sigaction(SIGUSR1, &sa_all, NULL);
 
     sigaction(SIGUSR1, NULL, &sa_all_old);// inspect existing action for this signal
+    
+    sigaction(SIGTERM, &sa_all, NULL);
+    sigaction(SIGTERM, NULL, &sa_all_old);
 #endif
 
 //      Initialize memory tracer
