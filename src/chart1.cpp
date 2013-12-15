@@ -705,8 +705,8 @@ catch_signals(int signo)
         break;
         
         case SIGTERM:
+        LogMessageOnce(_T("Sigterm received"));
         gFrame->Close();
-        abort();
         break;
 
         default:
