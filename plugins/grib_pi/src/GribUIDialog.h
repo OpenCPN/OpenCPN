@@ -83,6 +83,7 @@ public:
     
     void SetCursorLatLon( double lat, double lon );
     void SetFactoryOptions( bool set_val = false );
+    void PopulateTrackingControls( void );
 
     wxDateTime TimelineTime();
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
@@ -109,7 +110,6 @@ private:
     void OnPlayStopTimer( wxTimerEvent & );
 
     void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show );
-    void PopulateTrackingControls( void );
     void UpdateTrackingControls( void );
 
     void OnPrev( wxCommandEvent& event );

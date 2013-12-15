@@ -469,9 +469,19 @@ void GRIBUIDialog::UpdateTrackingControls( void )
 
         if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
             /*in case of beaufort scale unit, it's better to calculate vkn before calibrate value to maintain precision*/
-            double vkn = sqrt( vx * vx + vy * vy );
-            vkn = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vkn);
-            m_tcWindSpeed->SetValue( wxString::Format( _T("%2d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , (int)round( vkn )) );
+            double vkn = sqrt( vx * vx + vy * vy ),vk;
+            vk = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vkn);
+            m_tcWindSpeed->SetValue( wxString::Format( _T("%3d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , (int)round( vk )) );
+
+            //wind is a special case: if current unit is not bf ==> double speed display (current unit + bf)
+            if(m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units != GribOverlaySettings::BFS) {
+                m_tcWindSpeed->SetSizeHints(80,-1);
+                vk = m_OverlaySettings.GetmstobfFactor(vkn)* vkn;
+                wxString s( wxString::Format( _T("%2d bf"), (int)round( vk )) );
+                m_tcWindSpeed->SetValue(m_tcWindSpeed->GetValue().Append(_T(" - ")).Append(s));
+            } else
+                m_tcWindSpeed->SetSizeHints(60,-1);
+            //
 
             double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
             if( ang > 360. ) ang -= 360.;
@@ -674,6 +684,7 @@ void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 
     SetFactoryOptions(true);
     TimelineChanged();
+    PopulateTrackingControls();
 }
 
 void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
