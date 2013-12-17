@@ -35,7 +35,7 @@
             <property name="event_handler">impl_virtual</property>
             <property name="extra_style"></property>
             <property name="fg"></property>
-            <property name="font"></property>
+            <property name="font">,90,90,9,70,0</property>
             <property name="hidden">0</property>
             <property name="id">wxID_ANY</property>
             <property name="maximum_size"></property>
@@ -1120,7 +1120,7 @@
                                         <property name="maxlength"></property>
                                         <property name="min_size"></property>
                                         <property name="minimize_button">0</property>
-                                        <property name="minimum_size"></property>
+                                        <property name="minimum_size">-1,-1</property>
                                         <property name="moveable">1</property>
                                         <property name="name">m_tcWindSpeed</property>
                                         <property name="pane_border">1</property>
@@ -1131,7 +1131,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">70,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -1222,7 +1222,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">45,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -1401,7 +1401,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">70,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -1492,7 +1492,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">45,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -1671,7 +1671,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">70,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -1762,7 +1762,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">45,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -1941,7 +1941,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">70,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -2130,7 +2130,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">70,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -2319,7 +2319,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">70,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -2508,7 +2508,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">70,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -2697,7 +2697,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">70,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -2886,7 +2886,7 @@
                                         <property name="pos"></property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">70,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -3075,7 +3075,7 @@
                                         <property name="pos">-1,-1</property>
                                         <property name="resize">Resizable</property>
                                         <property name="show">1</property>
-                                        <property name="size">60,-1</property>
+                                        <property name="size">70,-1</property>
                                         <property name="style">wxTE_READONLY</property>
                                         <property name="subclass"></property>
                                         <property name="toolbar_pane">0</property>
@@ -5969,7 +5969,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="1">
+        <object class="Dialog" expanded="0">
             <property name="aui_managed">0</property>
             <property name="aui_manager_style">wxAUI_MGR_DEFAULT</property>
             <property name="bg"></property>
@@ -6031,7 +6031,7 @@
             <event name="OnSetFocus"></event>
             <event name="OnSize"></event>
             <event name="OnUpdateUI"></event>
-            <object class="wxFlexGridSizer" expanded="1">
+            <object class="wxFlexGridSizer" expanded="0">
                 <property name="cols">1</property>
                 <property name="flexible_direction">wxBOTH</property>
                 <property name="growablecols"></property>
@@ -6043,11 +6043,11 @@
                 <property name="permission">none</property>
                 <property name="rows">0</property>
                 <property name="vgap">0</property>
-                <object class="sizeritem" expanded="1">
+                <object class="sizeritem" expanded="0">
                     <property name="border">5</property>
                     <property name="flag">wxEXPAND</property>
                     <property name="proportion">1</property>
-                    <object class="wxFlexGridSizer" expanded="1">
+                    <object class="wxFlexGridSizer" expanded="0">
                         <property name="cols">1</property>
                         <property name="flexible_direction">wxBOTH</property>
                         <property name="growablecols"></property>
@@ -6501,11 +6501,11 @@
                                 <event name="OnUpdateUI"></event>
                             </object>
                         </object>
-                        <object class="sizeritem" expanded="1">
+                        <object class="sizeritem" expanded="0">
                             <property name="border">5</property>
                             <property name="flag">wxALL|wxEXPAND</property>
                             <property name="proportion">0</property>
-                            <object class="wxRadioBox" expanded="1">
+                            <object class="wxRadioBox" expanded="0">
                                 <property name="BottomDockable">1</property>
                                 <property name="LeftDockable">1</property>
                                 <property name="RightDockable">1</property>

@@ -450,6 +450,12 @@ void GRIBUIDialog::PopulateTrackingControls( void )
     AddTrackingControl(m_cbCAPE, m_tcCAPE, 0,
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND);
 
+    //Risize speed ctrl for single or double unit display
+    if(m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units == GribOverlaySettings::BFS)
+        m_tcWindSpeed->SetMinSize(wxSize(70, -1));
+    else
+        m_tcWindSpeed->SetMinSize(wxSize(110, -1) );
+
     Fit();
     Refresh();
 }
@@ -475,12 +481,10 @@ void GRIBUIDialog::UpdateTrackingControls( void )
 
             //wind is a special case: if current unit is not bf ==> double speed display (current unit + bf)
             if(m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units != GribOverlaySettings::BFS) {
-                m_tcWindSpeed->SetSizeHints(80,-1);
                 vk = m_OverlaySettings.GetmstobfFactor(vkn)* vkn;
-                wxString s( wxString::Format( _T("%2d bf"), (int)round( vk )) );
-                m_tcWindSpeed->SetValue(m_tcWindSpeed->GetValue().Append(_T(" - ")).Append(s));
-            } else
-                m_tcWindSpeed->SetSizeHints(60,-1);
+                m_tcWindSpeed->SetValue(m_tcWindSpeed->GetValue().Append(_T(" - ")).
+                    Append(wxString::Format( _T("%2d bf"), (int)round( vk ))));
+            }
             //
 
             double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
