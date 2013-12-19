@@ -420,26 +420,22 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
             m_buf_ptr += byte_size;
 
             //  Read the triangle primitive bounding box as lat/lon
-            tp->p_bbox = new wxBoundingBox;
             double *pbb = (double *)m_buf_ptr;
             
 #ifdef ARMHF
             double abox[4];
             memcpy(&abox[0], pbb, 4 * sizeof(double));
-            double minx = abox[0];
-            double maxx = abox[1];
-            double miny = abox[2];
-            double maxy = abox[3];
+            tp->minx = abox[0];
+            tp->maxx = abox[1];
+            tp->miny = abox[2];
+            tp->maxy = abox[3];
 #else            
-            double minx = *pbb++;
-            double maxx = *pbb++;
-            double miny = *pbb++;
-            double maxy = *pbb;
+            tp->minx = *pbb++;
+            tp->maxx = *pbb++;
+            tp->miny = *pbb++;
+            tp->maxy = *pbb;
 #endif
             
-            tp->p_bbox->SetMin(minx, miny);
-            tp->p_bbox->SetMax(maxx, maxy);
-
             m_buf_ptr += 4 * sizeof(double);
 
         }
@@ -828,8 +824,6 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
             }
             //  Calculate bounding box as lat/lon
 
-            pTP->p_bbox = new wxBoundingBox;
-
             float sxmax = -179;                   // this poly BBox
             float sxmin = 170;
             float symax = -90;
@@ -848,8 +842,10 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
                 symin = fmin(yd, symin);
             }
 
-            pTP->p_bbox->SetMin(sxmin, symin);
-            pTP->p_bbox->SetMax(sxmax, symax);
+            pTP->minx = sxmin;
+            pTP->miny = symin;
+            pTP->maxx = sxmax;
+            pTP->maxy = symax;
 
         }
         pr = (polyout *)pr->poly_next;
@@ -937,14 +933,10 @@ int PolyTessGeo::Write_PolyTriGroup( FILE *ofs)
         ostream2->Write( pTP->p_vertex, pTP->nVert * 2 * sizeof(double));
 
         //  Write out the object bounding box as lat/lon
-        double minx = pTP->p_bbox->GetMinX();
-        double maxx = pTP->p_bbox->GetMaxX();
-        double miny = pTP->p_bbox->GetMinY();
-        double maxy = pTP->p_bbox->GetMaxY();
-        ostream2->Write(&minx, sizeof(double));
-        ostream2->Write(&maxx, sizeof(double));
-        ostream2->Write(&miny, sizeof(double));
-        ostream2->Write(&maxy, sizeof(double));
+        ostream2->Write(&pTP->minx, sizeof(double));
+        ostream2->Write(&pTP->maxx, sizeof(double));
+        ostream2->Write(&pTP->miny, sizeof(double));
+        ostream2->Write(&pTP->maxy, sizeof(double));
 
 
         pTP = pTP->p_next;
@@ -1036,14 +1028,10 @@ int PolyTessGeo::Write_PolyTriGroup( wxOutputStream &out_stream)
             ostream2->Write( pTP->p_vertex, pTP->nVert * 2 * sizeof(double));
 
         //  Write out the object bounding box as lat/lon
-            double minx = pTP->p_bbox->GetMinX();
-            double maxx = pTP->p_bbox->GetMaxX();
-            double miny = pTP->p_bbox->GetMinY();
-            double maxy = pTP->p_bbox->GetMaxY();
-            ostream2->Write(&minx, sizeof(double));
-            ostream2->Write(&maxx, sizeof(double));
-            ostream2->Write(&miny, sizeof(double));
-            ostream2->Write(&maxy, sizeof(double));
+            ostream2->Write(&pTP->minx, sizeof(double));
+            ostream2->Write(&pTP->maxx, sizeof(double));
+            ostream2->Write(&pTP->miny, sizeof(double));
+            ostream2->Write(&pTP->maxy, sizeof(double));
 
 
             pTP = pTP->p_next;
@@ -2000,8 +1988,6 @@ void __CALL_CONVENTION endCallback(void)
             pTPG->nVert = s_nvcall;
 
         //  Calculate bounding box
-            pTPG->p_bbox = new wxBoundingBox;
-
             float sxmax = -1000;                   // this poly BBox
             float sxmin = 1000;
             float symax = -90;
@@ -2037,9 +2023,11 @@ void __CALL_CONVENTION endCallback(void)
                 }
             }
 
-            pTPG->p_bbox->SetMin(sxmin, symin);
-            pTPG->p_bbox->SetMax(sxmax, symax);
-
+            pTPG->minx = sxmin;
+            pTPG->miny = symin;
+            pTPG->maxx = sxmax;
+            pTPG->maxy = symax;
+            
 
             //  Transcribe this geometry to TriPrim, converting to SM if called for
 
@@ -2325,7 +2313,6 @@ TriPrim::~TriPrim()
 {
 
     free(p_vertex);
-    delete p_bbox;
 }
 
 

@@ -5057,16 +5057,24 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
 
         PolyTriGroup *ppg = obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
+        wxBoundingBox tp_box;
         TriPrim *p_tp = ppg->tri_prim_head;
         while( p_tp ) {
+ 
+            tp_box.SetMin(p_tp->minx, p_tp->miny);
+            tp_box.SetMax(p_tp->maxx, p_tp->maxy);
+            
             bool b_greenwich = false;
             if( BBView.GetMaxX() > 360. ) {
                 wxBoundingBox bbRight( 0., BBView.GetMinY(), BBView.GetMaxX() - 360.,
                         BBView.GetMaxY() );
-                if( bbRight.Intersect( *( p_tp->p_bbox ), margin ) != _OUT ) b_greenwich = true;
+                
+                
+                if( bbRight.Intersect( tp_box, margin ) != _OUT )
+                    b_greenwich = true;
             }
 
-            if( b_greenwich || ( BBView.Intersect( *( p_tp->p_bbox ), margin ) != _OUT ) ) {
+            if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
                 //      Get and convert the points
                 wxPoint *pr = ptp;
 
@@ -5233,16 +5241,24 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
+        wxBoundingBox tp_box;
         TriPrim *p_tp = ppg->tri_prim_head;
         while( p_tp ) {
+            
+            tp_box.SetMin(p_tp->minx, p_tp->miny);
+            tp_box.SetMax(p_tp->maxx, p_tp->maxy);
+            
             bool b_greenwich = false;
             if( BBView.GetMaxX() > 360. ) {
                 wxBoundingBox bbRight( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
                         vp->GetBBox().GetMaxY() );
-                if( bbRight.Intersect( *( p_tp->p_bbox ), margin ) != _OUT ) b_greenwich = true;
+                
+                
+                if( bbRight.Intersect( tp_box, margin ) != _OUT )
+                    b_greenwich = true;
             }
 
-            if( b_greenwich || ( BBView.Intersect( *( p_tp->p_bbox ), margin ) != _OUT ) ) {
+            if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
                 //      Get and convert the points
                 /*
                  wxPoint *pr = ptp;
@@ -5407,16 +5423,23 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         PolyTriGroup *ppg = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
 
+        wxBoundingBox tp_box;
         TriPrim *p_tp = ppg->tri_prim_head;
         while( p_tp ) {
+            
+            tp_box.SetMin(p_tp->minx, p_tp->miny);
+            tp_box.SetMax(p_tp->maxx, p_tp->maxy);
+            
             bool b_greenwich = false;
             if( BBView.GetMaxX() > 360. ) {
                 wxBoundingBox bbRight( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
                         vp->GetBBox().GetMaxY() );
-                if( bbRight.Intersect( *( p_tp->p_bbox ), margin ) != _OUT ) b_greenwich = true;
+                
+                if( bbRight.Intersect( tp_box, margin ) != _OUT )
+                    b_greenwich = true;
             }
 
-            if( b_greenwich || ( BBView.Intersect( *( p_tp->p_bbox ), margin ) != _OUT ) ) {
+            if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
 
                 //      Get and convert the points
 

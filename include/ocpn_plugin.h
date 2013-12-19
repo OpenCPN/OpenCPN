@@ -685,8 +685,8 @@ extern DECL_EXP bool UpdatePlugInTrack ( PlugIn_Track *ptrack );
 /* API 1.11  */
 
 /* API 1.11  adds some more common functions to avoid unnecessary code duplication */
-wxColour GetBaseGlobalColor(wxString colorName);
-int OCPNMessageBox_PlugIn(wxWindow *parent,
+wxColour DECL_EXP GetBaseGlobalColor(wxString colorName);
+int DECL_EXP OCPNMessageBox_PlugIn(wxWindow *parent,
                           const wxString& message,
                           const wxString& caption = _T("Message"),
                           int style = wxOK, int x = -1, int y = -1);
@@ -750,7 +750,7 @@ typedef enum PI_InitReturn
 }_PI_InitReturn;
 
 
-class PI_S57Obj
+class DECL_EXP PI_S57Obj
 {
 public:
 
@@ -824,21 +824,21 @@ public:
 
 
 
-wxString PI_GetPLIBColorScheme();            //ps52plib->GetPLIBColorScheme()
-int PI_GetPLIBDepthUnitInt();           //ps52plib->m_nDepthUnitDisplay
-int PI_GetPLIBSymbolStyle();            //ps52plib->m_nSymbolStyle
-int PI_GetPLIBBoundaryStyle();          //ps52plib->m_nBoundaryStyle
-bool PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp ); //ps52plib->ObjectRenderCheck
+wxString DECL_EXP PI_GetPLIBColorScheme();            //ps52plib->GetPLIBColorScheme()
+int DECL_EXP PI_GetPLIBDepthUnitInt();           //ps52plib->m_nDepthUnitDisplay
+int DECL_EXP PI_GetPLIBSymbolStyle();            //ps52plib->m_nSymbolStyle
+int DECL_EXP PI_GetPLIBBoundaryStyle();          //ps52plib->m_nBoundaryStyle
+bool DECL_EXP PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp ); //ps52plib->ObjectRenderCheck
 
-int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp );  //ps52plib->RenderObjectToDC
+int DECL_EXP PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp );  //ps52plib->RenderObjectToDC
 
-int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRect rect, unsigned char *pixbuf );
+int DECL_EXP PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRect rect, unsigned char *pixbuf );
 
-bool PI_PLIBSetContext( PI_S57Obj *pObj ); 
+bool DECL_EXP PI_PLIBSetContext( PI_S57Obj *pObj ); 
 
-PI_LUPname PI_GetObjectLUPName( PI_S57Obj *pObj );
-PI_DisPrio PI_GetObjectDisplayPriority( PI_S57Obj *pObj );
-PI_DisCat PI_GetObjectDisplayCategory( PI_S57Obj *pObj );
+PI_LUPname DECL_EXP PI_GetObjectLUPName( PI_S57Obj *pObj );
+PI_DisPrio DECL_EXP PI_GetObjectDisplayPriority( PI_S57Obj *pObj );
+PI_DisCat DECL_EXP PI_GetObjectDisplayCategory( PI_S57Obj *pObj );
 
 
 
