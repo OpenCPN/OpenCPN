@@ -93,6 +93,7 @@ public:
     void DrawGLImage( wxImage *pimage, wxCoord x, wxCoord y, bool usemask );
     void DrawMessageZoomOut( PlugIn_ViewPort *vp );
 
+    wxSize  m_ParentSize;
 private:
 
     bool DoRenderGribOverlay( PlugIn_ViewPort *vp );
@@ -134,7 +135,6 @@ private:
     wxString m_Message;
     wxString m_Message_Hiden;
     int  m_TimeZone;
-    wxSize  m_ParentSize;
 
     wxDC *m_pdc;
     wxGraphicsContext *m_gdc;

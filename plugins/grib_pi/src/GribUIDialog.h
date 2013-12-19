@@ -112,6 +112,7 @@ private:
     void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show );
     void UpdateTrackingControls( void );
 
+    void OnZoomToCenterClick( wxCommandEvent& event );
     void OnPrev( wxCommandEvent& event );
     void OnRecordForecast( wxCommandEvent& event ) { m_InterpolateMode = false; TimelineChanged(); }
     void OnNext( wxCommandEvent& event );

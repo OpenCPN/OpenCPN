@@ -293,6 +293,7 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     m_bpPrev->SetBitmap(wxBitmap( prev ));
     m_bpNext->SetBitmap(wxBitmap( next ));
     m_bpNow->SetBitmap(wxBitmap( now ));
+    m_bpZoomToCenter->SetBitmap(wxBitmap( zoomto ));
     m_bPlay = new wxBitmap( play );
     m_bpPlay->SetBitmap(*m_bPlay );
     m_bpOpenFile->SetBitmap(wxBitmap( openfile ));
@@ -388,10 +389,13 @@ void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxC
 void GRIBUIDialog::PopulateTrackingControls( void )
 {
     //fix crash with curious files with no record
-    if(m_pTimelineSet)
+    if(m_pTimelineSet) {
         m_bpSettings->Enable();
-    else
+        m_bpZoomToCenter->Enable();
+    } else {
         m_bpSettings->Disable();
+        m_bpZoomToCenter->Disable();
+    }
 
     if(m_pTimelineSet && m_TimeLineHours) {
         m_sTimeline->Show();
@@ -882,6 +886,64 @@ void GRIBUIDialog::PopulateComboDataList()
         m_cRecordForecast->Append( TToString( t, pPlugIn->GetTimeZone() ) );
     }
     m_cRecordForecast->SetSelection( index );
+}
+
+void GRIBUIDialog::OnZoomToCenterClick( wxCommandEvent& event )
+{
+    if(!m_pTimelineSet) return;
+
+    //calculate the largest overlay size
+    GribRecord **pGR = m_pTimelineSet->m_GribRecordPtrArray;
+    double latmin = -GRIB_NOTDEF, latmax = GRIB_NOTDEF, lonmin = -GRIB_NOTDEF, lonmax = GRIB_NOTDEF;
+    for( int i = 0; i<13; i++){
+        GribRecord *pGRA = pGR[i];
+        if(!pGRA) continue;
+        if(pGRA->getLatMin() < latmin) latmin = pGRA->getLatMin();
+        if(pGRA->getLatMax() > latmax) latmax = pGRA->getLatMax();
+        if(pGRA->getLonMin() < lonmin) lonmin = pGRA->getLonMin();
+        if(pGRA->getLonMax() > lonmax) lonmax = pGRA->getLonMax();
+    }
+    if( latmin == -GRIB_NOTDEF || lonmin == -GRIB_NOTDEF ||
+        latmax ==  GRIB_NOTDEF || lonmax ==  GRIB_NOTDEF)return;
+
+    //calculate overlay size
+    double width = lonmax - lonmin;
+    double height = latmax - latmin;
+
+    // Calculate overlay center
+    double clat = latmin + height / 2;
+    double clon = lonmin + width / 2;
+
+    //try to limit the ppm at a reasonable value
+    if(width  > 120.){
+        lonmin = clon - 60.;
+        lonmax = clon + 60.;
+    }
+    if(height > 120.){
+        latmin = clat - 60.;
+        latmax = clat + 60.;
+    }
+
+
+    //Calculate overlay width & height in nm (around the center)
+    double ow, oh;
+    DistanceBearingMercator_Plugin(clat, lonmin, clat, lonmax, NULL, &ow );
+    DistanceBearingMercator_Plugin( latmin, clon, latmax, clon, NULL, &oh );
+
+    //calculate screen size
+    int w = pPlugIn->GetGRIBOverlayFactory()->m_ParentSize.GetWidth();
+    int h = pPlugIn->GetGRIBOverlayFactory()->m_ParentSize.GetHeight();
+
+    //calculate final ppm scale to use
+    double ppm;
+    ppm = wxMin(w/(ow*1852), h/(oh*1852)) * ( 100 - fabs( clat ) ) / 90;
+
+    ppm = wxMin(ppm, 1.0);
+
+    JumpToPosition(clat, clon, ppm);
+
+    RequestRefresh( pParent );
+
 }
 
 void GRIBUIDialog::OnPrev( wxCommandEvent& event )

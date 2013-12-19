@@ -55,6 +55,7 @@ class GRIBUIDialogBase : public wxDialog
 		wxComboBox* m_cRecordForecast;
 		wxBitmapButton* m_bpNext;
 		wxBitmapButton* m_bpNow;
+		wxBitmapButton* m_bpZoomToCenter;
 		wxBitmapButton* m_bpPlay;
 		wxBitmapButton* m_bpOpenFile;
 		wxBitmapButton* m_bpSettings;
@@ -81,6 +82,7 @@ class GRIBUIDialogBase : public wxDialog
 		virtual void OnRecordForecast( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnNext( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnNow( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnZoomToCenterClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnPlayStop( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTimeline( wxScrollEvent& event ) { event.Skip(); }
 		virtual void OnOpenFile( wxCommandEvent& event ) { event.Skip(); }
