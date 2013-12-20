@@ -351,7 +351,7 @@ static const char *stop[] = {
 "hhhfemgcdhhhhkcgmejhhh",
 "hhhh#####hhhhh####hhhh"
 };
-static char *zoomto[] = {
+static const char *zoomto[] = {
 /* width height num_colors chars_per_pixel */
 "    22    22       16            1",
 /* colors */
