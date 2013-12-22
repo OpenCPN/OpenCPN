@@ -4201,15 +4201,16 @@ int s52plib::dda_tri( wxPoint *ptp, S52color *c, render_canvas_parms *pb_spec,
     if( !inter_tri_rect( ptp, pb_spec ) ) return 0;
 
     if( NULL != c ) {
-#ifdef ocpnUSE_ocpnBitmap
-        r = c->R;
-        g = c->G;
-        b = c->B;
-#else
-        b = c->R;
-        g = c->G;
-        r = c->B;
-#endif
+        if(pb_spec->b_revrgb) {
+            r = c->R;
+            g = c->G;
+            b = c->B;
+        }
+        else {
+            b = c->R;
+            g = c->G;
+            r = c->B;
+        }
     }
 
     //      Color Debug
@@ -4631,15 +4632,16 @@ inline int s52plib::dda_trap( wxPoint *segs, int lseg, int rseg, int ytop, int y
     unsigned char r = 0, g = 0, b = 0;
 
     if( NULL != c ) {
-#ifdef ocpnUSE_ocpnBitmap
-        r = c->R;
-        g = c->G;
-        b = c->B;
-#else
-        b = c->R;
-        g = c->G;
-        r = c->B;
-#endif
+        if(pb_spec->b_revrgb) {
+            r = c->R;
+            g = c->G;
+            b = c->B;
+        }
+        else {
+            b = c->R;
+            g = c->G;
+            r = c->B;
+        }
     }
 
     //      Color Debug

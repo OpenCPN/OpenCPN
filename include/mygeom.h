@@ -36,7 +36,7 @@
 
 
 #include <ogr_geometry.h>
-#include "s52s57.h"
+//#include "s52s57.h"
 
 #define TESS_VERT   0                           // constants describing preferred tess orientation
 #define TESS_HORZ   1

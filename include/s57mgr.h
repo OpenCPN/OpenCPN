@@ -31,7 +31,7 @@
 #define __S57MGR_H__
 
 
-#include "s52s57.h"                 //types
+//#include "s52s57.h"                 //types
 
 #include <ogrsf_frmts.h>
 //----------------------------------------------------------------------------

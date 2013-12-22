@@ -84,6 +84,9 @@ class S57ObjectDesc;
 class S57Reader;
 class OGRS57DataSource;
 class S57ClassRegistrar;
+class S57Obj;
+class VE_Element;
+class VC_Element;
 
 #include <wx/dynarray.h>
 

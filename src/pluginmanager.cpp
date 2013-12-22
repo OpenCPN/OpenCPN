@@ -237,15 +237,13 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
 
 
 
-    wxDir pi_dir(m_plugin_location);
-
-    if(pi_dir.IsOpened())
-    {
+        wxArrayString file_list;
         wxString plugin_file;
-        bool b_more =pi_dir.GetFirst(&plugin_file, pispec);
-        while(b_more)
-        {
-            wxString file_name = m_plugin_location + _T("/") + plugin_file;
+        
+        wxDir::GetAllFiles( m_plugin_location, &file_list, pispec );
+        
+        for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
+            wxString file_name = file_list[i];
 
             bool b_compat = CheckPluginCompatibility(file_name);
 
@@ -300,16 +298,11 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
                 }
             }
 
-
-            b_more =pi_dir.GetNext(&plugin_file);
         }
 
         UpDateChartDataTypes();
 
         return true;
-    }
-    else
-        return false;
 }
 
 bool PlugInManager::CallLateInit(void)
@@ -3550,6 +3543,12 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
     pb_spec.height = rect.height;
     pb_spec.x = rect.x;
     pb_spec.y = rect.y;
+#ifdef ocpnUSE_ocpnBitmap
+    pb_spec.b_revrgb = true;
+#else
+    pb_spec.b_revrgb = false;
+#endif
+    
  
     //  Create and populate a compatible s57 Object
     S57Obj cobj;

@@ -42,10 +42,8 @@
 #endif
 
 #include "bbox.h"
-#include "s52s57.h"
 #include "chcanv.h"
 #include "tinyxml.h"
-//#include "gpxdocument.h"
 #include "chartdbs.h"
 #include "RoutePoint.h"
 #include "vector2D.h"

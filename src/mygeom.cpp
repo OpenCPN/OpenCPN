@@ -37,6 +37,8 @@
 
 #include "dychart.h"
 
+#include "s52s57.h"
+
 #include "mygeom.h"
 #include "georef.h"
 

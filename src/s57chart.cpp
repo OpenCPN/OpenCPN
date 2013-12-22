@@ -932,48 +932,6 @@ render_canvas_parms::render_canvas_parms()
     pix_buff = NULL;
 }
 
-render_canvas_parms::render_canvas_parms( int xr, int yr, int widthr, int heightr, wxColour color )
-{
-    depth = BPP;
-    pb_pitch = ( widthr * depth / 8 );
-    lclip = x;
-    rclip = x + widthr - 1;
-    pix_buff = (unsigned char *) malloc( heightr * pb_pitch );
-    width = widthr;
-    height = heightr;
-    x = xr;
-    y = yr;
-
-    unsigned char r, g, b;
-    if( color.IsOk() ) {
-        r = color.Red();
-        g = color.Green();
-        b = color.Blue();
-    } else
-        r = g = b = 0;
-
-    if( depth == 24 ) {
-        for( int i = 0; i < height; i++ ) {
-            unsigned char *p = pix_buff + ( i * pb_pitch );
-            for( int j = 0; j < width; j++ ) {
-                *p++ = r;
-                *p++ = g;
-                *p++ = b;
-            }
-        }
-    } else {
-        for( int i = 0; i < height; i++ ) {
-            unsigned char *p = pix_buff + ( i * pb_pitch );
-            for( int j = 0; j < width; j++ ) {
-                *p++ = r;
-                *p++ = g;
-                *p++ = b;
-                *p++ = 0;
-            }
-        }
-    }
-
-}
 
 render_canvas_parms::~render_canvas_parms( void )
 {
@@ -2283,6 +2241,12 @@ int s57chart::DCRenderRect( wxMemoryDC& dcinput, const ViewPort& vp, wxRect* rec
     pb_spec.x = rect->x;
     pb_spec.y = rect->y;
 
+#ifdef ocpnUSE_ocpnBitmap
+    pb_spec.b_revrgb = true;
+#else
+    pb_spec.b_revrgb = false;
+#endif
+    
     // Preset background
     wxColour color = GetGlobalColor( _T ( "NODTA" ) );
     unsigned char r, g, b;
