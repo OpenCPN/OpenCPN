@@ -42,6 +42,7 @@
 #include <time.h>
 
 #include "grib_pi.h"
+#include "GribTable.h"
 #include "email.h"
 #include "folder.xpm"
 
@@ -148,6 +149,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_bpPlay->SetBitmap(*m_bPlay);
     m_bpPlay->SetToolTip(_("Play"));
     m_tPlayStop.Stop();
+    SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, false);
 
     m_cRecordForecast->Clear();
     /* this should be un-commented to avoid a memory leak,
@@ -185,10 +187,13 @@ void GRIBUIDialog::OpenFile(bool newestFile)
             if( rsa->GetCount() == 0 ) {
                 m_bGRIBActiveFile = NULL;
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Error:  No valid data in this file!") );
+
             } else {
                 PopulateComboDataList();
                 title.append( _T("(") + TToString( m_bGRIBActiveFile->GetRefDateTime(), pPlugIn->GetTimeZone()) + _T(")"));
             }
+            if( rsa->GetCount() > 1 )
+                SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, true);
         } else {
             if( fn.IsDir() ) {
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning:  Empty directory!") );
@@ -313,6 +318,7 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
 
     Fit();
     SetMinSize( GetBestSize() );
+
 }
 
 GRIBUIDialog::~GRIBUIDialog()
@@ -349,6 +355,35 @@ void GRIBUIDialog::SetCursorLatLon( double lat, double lon )
     m_cursor_lat = lat;
 
     UpdateTrackingControls();
+}
+
+void GRIBUIDialog::ContextMenuItemCallback(int id)
+{
+     wxFileConfig *pConf = GetOCPNConfigObject();
+
+     int x,y,w,h;
+
+     if(pConf) {
+        pConf->SetPath ( _T ( "/Settings/GRIB" ) );
+
+        pConf->Read( _T ( "GribDataTablePosition_x" ), &x, -1 );
+        pConf->Read( _T ( "GribDataTablePosition_y" ), &y, -1 );
+        pConf->Read( _T ( "GribDataTableWidth" ), &w, 900 );
+        pConf->Read( _T ( "GribDataTableHeight" ), &h, 350 );
+     }
+     //init centered position and default size if not set yet
+     if(x==-1 && y == -1) { x = (m_vp->pix_width - w) / 2; y = (m_vp->pix_height - h) /2; }
+
+     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+     GRIBTable *table = new GRIBTable(*this);
+
+     table->InitGribTable( pPlugIn->GetTimeZone(), rsa );
+     table->m_pButtonTableOK->SetLabel(_("Close"));
+
+     //set dialog size and position
+     table->SetSize(w, h);
+     table->SetPosition(wxPoint(x, y));
+     table->ShowModal();
 }
 
 void GRIBUIDialog::SetViewPort( PlugIn_ViewPort *vp )

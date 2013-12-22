@@ -33,6 +33,7 @@
 #include <wx/choice.h>
 #include <wx/statline.h>
 #include <wx/radiobox.h>
+#include <wx/grid.h>
 
 ///////////////////////////////////////////////////////////////////////////
 
@@ -248,6 +249,34 @@ class GribRequestSettingBase : public wxDialog
 		
 		GribRequestSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Write and send eMail request"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~GribRequestSettingBase();
+	
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class GRIBTableBase
+///////////////////////////////////////////////////////////////////////////////
+class GRIBTableBase : public wxDialog 
+{
+	private:
+	
+	protected:
+		wxStaticText* m_pPositionText;
+		wxStaticText* m_pCursorPosition;
+		
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
+		virtual void OnClick( wxGridEvent& event ) { event.Skip(); }
+		virtual void OnRangeClick( wxGridRangeSelectEvent& event ) { event.Skip(); }
+		virtual void OnOKButton( wxCommandEvent& event ) { event.Skip(); }
+		
+	
+	public:
+		wxGrid* m_pGribTable;
+		wxStdDialogButtonSizer* m_pButtonTable;
+		wxButton* m_pButtonTableOK;
+		
+		GRIBTableBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Grib Data Table"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE|wxMAXIMIZE_BOX|wxRESIZE_BORDER ); 
+		~GRIBTableBase();
 	
 };
 

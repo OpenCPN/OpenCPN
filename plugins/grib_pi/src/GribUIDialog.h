@@ -81,6 +81,7 @@ public:
 
     void OpenFile( bool newestFile = false );
     
+    void ContextMenuItemCallback(int id);
     void SetCursorLatLon( double lat, double lon );
     void SetFactoryOptions( bool set_val = false );
     void PopulateTrackingControls( void );
@@ -97,9 +98,11 @@ public:
 
     wxTimer m_tPlayStop;
 
+    grib_pi             *pPlugIn;
     GribRequestSetting  *pReq_Dialog;
     GRIBFile        *m_bGRIBActiveFile;
     bool             m_InterpolateMode;
+    double m_cursor_lat, m_cursor_lon;
 
 private:
     void OnClose( wxCloseEvent& event );
@@ -130,12 +133,9 @@ private:
 
     //    Data
     wxWindow *pParent;
-    grib_pi *pPlugIn;
 
     PlugIn_ViewPort  *m_vp;
     int m_lastdatatype;
-
-    double m_cursor_lat, m_cursor_lon;
 
     GribTimelineRecordSet *m_pTimelineSet;
     int m_TimeLineHours;
