@@ -1604,8 +1604,8 @@ void AIS_Decoder::UpdateAllAlarms( void )
                 if( ( g_bTCPA_Max ) && ( td->TCPA > g_TCPA_Max ) )
                     m_bGeneralAlert = false;
 
-                //  SART targets always alert
-                if( td->Class == AIS_SART )
+                //  SART targets always alert if "Active"
+                if( td->Class == AIS_SART && td->NavStatus == 14)
                     m_bGeneralAlert = true;
 
                 //  DSC Distress targets always alert
@@ -1615,8 +1615,8 @@ void AIS_Decoder::UpdateAllAlarms( void )
 
             ais_alarm_type this_alarm = AIS_NO_ALARM;
 
-            //  SART targets always alert
-            if( td->Class == AIS_SART )
+            //  SART targets always alert if "Active"
+            if( td->Class == AIS_SART && td->NavStatus == 14)
                 this_alarm = AIS_ALARM_SET;
             
             //  DSC Distress targets always alert
