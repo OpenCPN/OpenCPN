@@ -232,7 +232,7 @@ private:
     bool m_bquilt_has_overlays;
     unsigned long m_xa_hash;
     int m_zout_dbindex;
-
+    int m_lost_refchart_dbIndex;
 };
 
 #endif

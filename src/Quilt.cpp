@@ -182,6 +182,8 @@ Quilt::Quilt()
     m_reference_type = CHART_TYPE_UNKNOWN;
     m_reference_family = CHART_FAMILY_UNKNOWN;
 
+    m_lost_refchart_dbIndex = -1;
+    
     cnode = NULL;
 
     m_pBM = NULL;
@@ -775,6 +777,9 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
         SetReferenceChart( new_ref_dbIndex );
     }
 
+    //  Reset "lost" chart logic
+    m_lost_refchart_dbIndex = -1;
+    
     int new_db_index = m_refchart_dbIndex;
 
     unsigned int extended_array_count = m_extended_stack_array.GetCount();
@@ -849,6 +854,9 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
         SetReferenceChart( new_ref_dbIndex );
     }
 
+    //  Reset "lost" chart logic
+    m_lost_refchart_dbIndex = -1;
+    
     int new_db_index = m_refchart_dbIndex;
     int current_db_index = m_refchart_dbIndex;
     int current_family = m_reference_family;
@@ -1253,6 +1261,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //    If this situation occurs, we need to immediately select a new reference chart
     //    And rebuild the Candidate Array
     //
+    //    We also save the dbIndex of the "lost" chart, and try to recover it
+    //    on subsequent quilts, typically as the user pans the "lost" chart back on-screen.
+    //    The "lost" chart logic is reset on any zoom operations.
+    //    See FS#1221
+    //
     //    A special case occurs with cm93 composite chart set as the reference chart:
     //    It is not at this point a candidate, so won't be found by the search
     //    This case is indicated if the candidate count is zero.
@@ -1267,10 +1280,25 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
 
     if( !bf && m_pcandidate_array->GetCount() ) {
+        m_lost_refchart_dbIndex = m_refchart_dbIndex;    // save for later
         m_refchart_dbIndex = GetNewRefChart();
         BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
     }
 
+    if((-1 != m_lost_refchart_dbIndex) && ( m_lost_refchart_dbIndex != m_refchart_dbIndex )) {
+        
+        //      Is the lost chart in the extended stack ?
+        //      If so, build a new Cnadidate array based upon the lost chart
+        for( unsigned int ir = 0; ir < m_extended_stack_array.GetCount(); ir++ ) {
+            if( m_lost_refchart_dbIndex == m_extended_stack_array.Item( ir ) ) {
+                m_refchart_dbIndex = m_lost_refchart_dbIndex;
+                BuildExtendedChartStackAndCandidateArray(bfull, m_refchart_dbIndex, vp_local);
+                m_lost_refchart_dbIndex = -1;
+                break;
+            }
+        }
+    }
+    
 
     //    Using Region logic, and starting from the largest scale chart
     //    figuratively "draw" charts until the ViewPort window is completely quilted over
