@@ -92,7 +92,9 @@ public:
     void DrawOLBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask );
     void DrawGLImage( wxImage *pimage, wxCoord x, wxCoord y, bool usemask );
     void DrawMessageZoomOut( PlugIn_ViewPort *vp );
+    wxColour GetGraphicColor(int config, double val);
 
+    wxSize  m_ParentSize;
 private:
 
     bool DoRenderGribOverlay( PlugIn_ViewPort *vp );
@@ -116,7 +118,6 @@ private:
     void drawGrandeBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
     void drawTriangle( wxPen pen, bool south, double si, double co, int di, int dj, int b );
 
-    wxColour GetGraphicColor(int config, double val);
     wxImage &getLabel(double value, int settings);
 
     void DrawGLTexture( GLuint texture, int width, int height, int xd, int yd, int grib_pixel_size );
@@ -134,7 +135,6 @@ private:
     wxString m_Message;
     wxString m_Message_Hiden;
     int  m_TimeZone;
-    wxSize  m_ParentSize;
 
     wxDC *m_pdc;
     wxGraphicsContext *m_gdc;

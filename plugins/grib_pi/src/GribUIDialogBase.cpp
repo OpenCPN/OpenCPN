@@ -21,7 +21,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	fgSizer1->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
 	
 	wxFlexGridSizer* fgSizer51;
-	fgSizer51 = new wxFlexGridSizer( 1, 9, 0, 0 );
+	fgSizer51 = new wxFlexGridSizer( 1, 10, 0, 0 );
 	fgSizer51->AddGrowableCol( 1 );
 	fgSizer51->SetFlexibleDirection( wxHORIZONTAL );
 	fgSizer51->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_NONE );
@@ -44,12 +44,17 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	
 	fgSizer51->Add( m_bpNow, 0, wxALL, 1 );
 	
+	m_bpZoomToCenter = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
+	m_bpZoomToCenter->SetToolTip( _("Zoom To Center") );
+	
+	fgSizer51->Add( m_bpZoomToCenter, 0, wxALL, 1 );
+	
 	m_bpPlay = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpPlay->SetToolTip( _("Play") );
 	
 	fgSizer51->Add( m_bpPlay, 0, wxALL, 1 );
 	
-	m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( 80,-1 ), wxSL_HORIZONTAL );
+	m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( 90,-1 ), wxSL_HORIZONTAL );
 	fgSizer51->Add( m_sTimeline, 0, wxEXPAND, 1 );
 	
 	m_bpOpenFile = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
@@ -184,6 +189,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_cRecordForecast->Connect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( GRIBUIDialogBase::OnRecordForecast ), NULL, this );
 	m_bpNext->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnNext ), NULL, this );
 	m_bpNow->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnNow ), NULL, this );
+	m_bpZoomToCenter->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnZoomToCenterClick ), NULL, this );
 	m_bpPlay->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnPlayStop ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_TOP, wxScrollEventHandler( GRIBUIDialogBase::OnTimeline ), NULL, this );
 	m_sTimeline->Connect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( GRIBUIDialogBase::OnTimeline ), NULL, this );
@@ -218,6 +224,7 @@ GRIBUIDialogBase::~GRIBUIDialogBase()
 	m_cRecordForecast->Disconnect( wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( GRIBUIDialogBase::OnRecordForecast ), NULL, this );
 	m_bpNext->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnNext ), NULL, this );
 	m_bpNow->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnNow ), NULL, this );
+	m_bpZoomToCenter->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnZoomToCenterClick ), NULL, this );
 	m_bpPlay->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBUIDialogBase::OnPlayStop ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_TOP, wxScrollEventHandler( GRIBUIDialogBase::OnTimeline ), NULL, this );
 	m_sTimeline->Disconnect( wxEVT_SCROLL_BOTTOM, wxScrollEventHandler( GRIBUIDialogBase::OnTimeline ), NULL, this );
@@ -830,5 +837,106 @@ GribRequestSettingBase::~GribRequestSettingBase()
 	m_pWModel->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_rButtonApply->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSaveMail ), NULL, this );
 	m_rButtonYes->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSendMaiL ), NULL, this );
+	
+}
+
+GRIBTableBase::GRIBTableBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxSize( -1,-1 ), wxSize( -1,-1 ) );
+	
+	wxBoxSizer* bSizer1;
+	bSizer1 = new wxBoxSizer( wxVERTICAL );
+	
+	wxFlexGridSizer* fgSizer18;
+	fgSizer18 = new wxFlexGridSizer( 0, 1, 0, 0 );
+	fgSizer18->AddGrowableRow( 1 );
+	fgSizer18->SetFlexibleDirection( wxBOTH );
+	fgSizer18->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_NONE );
+	
+	wxFlexGridSizer* fgSizer19;
+	fgSizer19 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer19->SetFlexibleDirection( wxBOTH );
+	fgSizer19->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_NONE );
+	
+	m_pPositionText = new wxStaticText( this, wxID_ANY, _("Data at Cursor Position:"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_pPositionText->Wrap( -1 );
+	fgSizer19->Add( m_pPositionText, 0, wxALL|wxEXPAND, 5 );
+	
+	m_pCursorPosition = new wxStaticText( this, wxID_ANY, _("00N  00W"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_pCursorPosition->Wrap( -1 );
+	fgSizer19->Add( m_pCursorPosition, 0, wxALL|wxEXPAND, 5 );
+	
+	
+	fgSizer18->Add( fgSizer19, 1, wxEXPAND, 10 );
+	
+	wxFlexGridSizer* fgSizer20;
+	fgSizer20 = new wxFlexGridSizer( 0, 1, 0, 0 );
+	fgSizer20->AddGrowableRow( 0 );
+	fgSizer20->SetFlexibleDirection( wxBOTH );
+	fgSizer20->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
+	
+	m_pGribTable = new wxGrid( this, wxID_ANY, wxDefaultPosition, wxSize( -1,50 ), 0 );
+	
+	// Grid
+	m_pGribTable->CreateGrid( 2, 0 );
+	m_pGribTable->EnableEditing( false );
+	m_pGribTable->EnableGridLines( true );
+	m_pGribTable->EnableDragGridSize( false );
+	m_pGribTable->SetMargins( 0, 0 );
+	
+	// Columns
+	m_pGribTable->EnableDragColMove( false );
+	m_pGribTable->EnableDragColSize( false );
+	m_pGribTable->SetColLabelSize( 0 );
+	m_pGribTable->SetColLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
+	
+	// Rows
+	m_pGribTable->EnableDragRowSize( false );
+	m_pGribTable->SetRowLabelSize( 120 );
+	m_pGribTable->SetRowLabelAlignment( wxALIGN_CENTRE, wxALIGN_CENTRE );
+	
+	// Label Appearance
+	
+	// Cell Defaults
+	m_pGribTable->SetDefaultCellFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 90, false, wxEmptyString ) );
+	m_pGribTable->SetDefaultCellAlignment( wxALIGN_CENTRE, wxALIGN_TOP );
+	fgSizer20->Add( m_pGribTable, 0, wxALL|wxEXPAND, 5 );
+	
+	
+	fgSizer18->Add( fgSizer20, 1, wxEXPAND, 5 );
+	
+	m_pButtonTable = new wxStdDialogButtonSizer();
+	m_pButtonTableOK = new wxButton( this, wxID_OK );
+	m_pButtonTable->AddButton( m_pButtonTableOK );
+	m_pButtonTable->Realize();
+	
+	fgSizer18->Add( m_pButtonTable, 1, wxEXPAND, 5 );
+	
+	
+	bSizer1->Add( fgSizer18, 1, wxEXPAND, 5 );
+	
+	
+	this->SetSizer( bSizer1 );
+	this->Layout();
+	bSizer1->Fit( this );
+	
+	this->Centre( wxBOTH );
+	
+	// Connect Events
+	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GRIBTableBase::OnClose ) );
+	m_pGribTable->Connect( wxEVT_GRID_CELL_LEFT_CLICK, wxGridEventHandler( GRIBTableBase::OnClick ), NULL, this );
+	m_pGribTable->Connect( wxEVT_GRID_LABEL_LEFT_CLICK, wxGridEventHandler( GRIBTableBase::OnClick ), NULL, this );
+	m_pGribTable->Connect( wxEVT_GRID_RANGE_SELECT, wxGridRangeSelectEventHandler( GRIBTableBase::OnRangeClick ), NULL, this );
+	m_pButtonTableOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBTableBase::OnOKButton ), NULL, this );
+}
+
+GRIBTableBase::~GRIBTableBase()
+{
+	// Disconnect Events
+	this->Disconnect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GRIBTableBase::OnClose ) );
+	m_pGribTable->Disconnect( wxEVT_GRID_CELL_LEFT_CLICK, wxGridEventHandler( GRIBTableBase::OnClick ), NULL, this );
+	m_pGribTable->Disconnect( wxEVT_GRID_LABEL_LEFT_CLICK, wxGridEventHandler( GRIBTableBase::OnClick ), NULL, this );
+	m_pGribTable->Disconnect( wxEVT_GRID_RANGE_SELECT, wxGridRangeSelectEventHandler( GRIBTableBase::OnRangeClick ), NULL, this );
+	m_pButtonTableOK->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GRIBTableBase::OnOKButton ), NULL, this );
 	
 }

@@ -42,6 +42,7 @@
 #include <time.h>
 
 #include "grib_pi.h"
+#include "GribTable.h"
 #include "email.h"
 #include "folder.xpm"
 
@@ -148,6 +149,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_bpPlay->SetBitmap(*m_bPlay);
     m_bpPlay->SetToolTip(_("Play"));
     m_tPlayStop.Stop();
+    SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, false);
 
     m_cRecordForecast->Clear();
     /* this should be un-commented to avoid a memory leak,
@@ -185,10 +187,13 @@ void GRIBUIDialog::OpenFile(bool newestFile)
             if( rsa->GetCount() == 0 ) {
                 m_bGRIBActiveFile = NULL;
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Error:  No valid data in this file!") );
+
             } else {
                 PopulateComboDataList();
                 title.append( _T("(") + TToString( m_bGRIBActiveFile->GetRefDateTime(), pPlugIn->GetTimeZone()) + _T(")"));
             }
+            if( rsa->GetCount() > 1 )
+                SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, true);
         } else {
             if( fn.IsDir() ) {
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning:  Empty directory!") );
@@ -293,6 +298,7 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     m_bpPrev->SetBitmap(wxBitmap( prev ));
     m_bpNext->SetBitmap(wxBitmap( next ));
     m_bpNow->SetBitmap(wxBitmap( now ));
+    m_bpZoomToCenter->SetBitmap(wxBitmap( zoomto ));
     m_bPlay = new wxBitmap( play );
     m_bpPlay->SetBitmap(*m_bPlay );
     m_bpOpenFile->SetBitmap(wxBitmap( openfile ));
@@ -312,6 +318,7 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
 
     Fit();
     SetMinSize( GetBestSize() );
+
 }
 
 GRIBUIDialog::~GRIBUIDialog()
@@ -348,6 +355,35 @@ void GRIBUIDialog::SetCursorLatLon( double lat, double lon )
     m_cursor_lat = lat;
 
     UpdateTrackingControls();
+}
+
+void GRIBUIDialog::ContextMenuItemCallback(int id)
+{
+     wxFileConfig *pConf = GetOCPNConfigObject();
+
+     int x,y,w,h;
+
+     if(pConf) {
+        pConf->SetPath ( _T ( "/Settings/GRIB" ) );
+
+        pConf->Read( _T ( "GribDataTablePosition_x" ), &x, -1 );
+        pConf->Read( _T ( "GribDataTablePosition_y" ), &y, -1 );
+        pConf->Read( _T ( "GribDataTableWidth" ), &w, 900 );
+        pConf->Read( _T ( "GribDataTableHeight" ), &h, 350 );
+     }
+     //init centered position and default size if not set yet
+     if(x==-1 && y == -1) { x = (m_vp->pix_width - w) / 2; y = (m_vp->pix_height - h) /2; }
+
+     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+     GRIBTable *table = new GRIBTable(*this);
+
+     table->InitGribTable( pPlugIn->GetTimeZone(), rsa );
+     table->m_pButtonTableOK->SetLabel(_("Close"));
+
+     //set dialog size and position
+     table->SetSize(w, h);
+     table->SetPosition(wxPoint(x, y));
+     table->ShowModal();
 }
 
 void GRIBUIDialog::SetViewPort( PlugIn_ViewPort *vp )
@@ -388,10 +424,13 @@ void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxC
 void GRIBUIDialog::PopulateTrackingControls( void )
 {
     //fix crash with curious files with no record
-    if(m_pTimelineSet)
+    if(m_pTimelineSet) {
         m_bpSettings->Enable();
-    else
+        m_bpZoomToCenter->Enable();
+    } else {
         m_bpSettings->Disable();
+        m_bpZoomToCenter->Disable();
+    }
 
     if(m_pTimelineSet && m_TimeLineHours) {
         m_sTimeline->Show();
@@ -882,6 +921,64 @@ void GRIBUIDialog::PopulateComboDataList()
         m_cRecordForecast->Append( TToString( t, pPlugIn->GetTimeZone() ) );
     }
     m_cRecordForecast->SetSelection( index );
+}
+
+void GRIBUIDialog::OnZoomToCenterClick( wxCommandEvent& event )
+{
+    if(!m_pTimelineSet) return;
+
+    //calculate the largest overlay size
+    GribRecord **pGR = m_pTimelineSet->m_GribRecordPtrArray;
+    double latmin = -GRIB_NOTDEF, latmax = GRIB_NOTDEF, lonmin = -GRIB_NOTDEF, lonmax = GRIB_NOTDEF;
+    for( int i = 0; i<13; i++){
+        GribRecord *pGRA = pGR[i];
+        if(!pGRA) continue;
+        if(pGRA->getLatMin() < latmin) latmin = pGRA->getLatMin();
+        if(pGRA->getLatMax() > latmax) latmax = pGRA->getLatMax();
+        if(pGRA->getLonMin() < lonmin) lonmin = pGRA->getLonMin();
+        if(pGRA->getLonMax() > lonmax) lonmax = pGRA->getLonMax();
+    }
+    if( latmin == -GRIB_NOTDEF || lonmin == -GRIB_NOTDEF ||
+        latmax ==  GRIB_NOTDEF || lonmax ==  GRIB_NOTDEF)return;
+
+    //calculate overlay size
+    double width = lonmax - lonmin;
+    double height = latmax - latmin;
+
+    // Calculate overlay center
+    double clat = latmin + height / 2;
+    double clon = lonmin + width / 2;
+
+    //try to limit the ppm at a reasonable value
+    if(width  > 120.){
+        lonmin = clon - 60.;
+        lonmax = clon + 60.;
+    }
+    if(height > 120.){
+        latmin = clat - 60.;
+        latmax = clat + 60.;
+    }
+
+
+    //Calculate overlay width & height in nm (around the center)
+    double ow, oh;
+    DistanceBearingMercator_Plugin(clat, lonmin, clat, lonmax, NULL, &ow );
+    DistanceBearingMercator_Plugin( latmin, clon, latmax, clon, NULL, &oh );
+
+    //calculate screen size
+    int w = pPlugIn->GetGRIBOverlayFactory()->m_ParentSize.GetWidth();
+    int h = pPlugIn->GetGRIBOverlayFactory()->m_ParentSize.GetHeight();
+
+    //calculate final ppm scale to use
+    double ppm;
+    ppm = wxMin(w/(ow*1852), h/(oh*1852)) * ( 100 - fabs( clat ) ) / 90;
+
+    ppm = wxMin(ppm, 1.0);
+
+    JumpToPosition(clat, clon, ppm);
+
+    RequestRefresh( pParent );
+
 }
 
 void GRIBUIDialog::OnPrev( wxCommandEvent& event )

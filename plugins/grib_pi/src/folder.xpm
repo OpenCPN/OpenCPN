@@ -351,3 +351,47 @@ static const char *stop[] = {
 "hhhfemgcdhhhhkcgmejhhh",
 "hhhh#####hhhhh####hhhh"
 };
+static const char *zoomto[] = {
+/* width height num_colors chars_per_pixel */
+"    22    22       16            1",
+/* colors */
+"` c #4c4664",
+". c #dcf2fc",
+"# c #1476d4",
+"a c #0c8ee4",
+"b c #1482dc",
+"c c #04a2f4",
+"d c #1c6ed4",
+"e c #147edc",
+"f c #0c96ec",
+"g c #fcfefc",
+"h c #0c8ae4",
+"i c #0c9ef4",
+"j c #147adc",
+"k c #0c92ec",
+"l c #1486e4",
+"m c #1c72d4",
+/* pixels */
+"cifkahgggggggggglkkfcc",
+"fffahgggggggggggglkkff",
+"ffahlgggggggggggghhakf",
+"fahlbeggggggggggeelhaf",
+"ahlbjjmggggggggmjebhla",
+"h.ee##mdggggggdm##jb.h",
+"gggj#ddggggggggdd##ggg",
+"ggggddg````````gddgggg",
+"ggggggg````````ggggggg",
+"ggggggg``gggg``ggggggg",
+"ggggggg``gggg``ggggggg",
+"ggggggg``gggg``ggggggg",
+"ggggggg``gggg``ggggggg",
+"ggggggg````````ggggggg",
+"ggggmdg````````gddgggg",
+"gggjmmdggggggggdd#mggg",
+"l.be##ddggggggddd#eb.l",
+"khlbe##ggggggggd#ebhha",
+"kahheeggggggggggebhlak",
+"fkalhggggggggggggbhakf",
+"cfkahgggggggggggghakii",
+"cfffalgggggggggglkkfic"
+};

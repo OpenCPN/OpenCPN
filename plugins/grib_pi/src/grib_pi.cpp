@@ -270,6 +270,10 @@ void grib_pi::OnToolbarToolCallback(int id)
         wxPoint p = wxPoint(m_grib_dialog_x, m_grib_dialog_y);
         m_pGribDialog->Move(0,0);        // workaround for gtk autocentre dialog behavior
         m_pGribDialog->Move(p);
+        wxMenu* dummy = new wxMenu(_T("Plugin"));
+        wxMenuItem* table = new wxMenuItem( dummy, wxID_ANY, wxString( _("Weather table") ), wxEmptyString, wxITEM_NORMAL );
+        m_MenuItem = AddCanvasContextMenuItem(table, this);
+        SetCanvasContextMenuItemViz(m_MenuItem, false);
 
         // Create the drawing factory
         m_pGRIBOverlayFactory = new GRIBOverlayFactory( *m_pGribDialog );
@@ -325,7 +329,14 @@ void grib_pi::OnToolbarToolCallback(int id)
       //    Toggle dialog?
       if(m_bShowGrib) {
           m_pGribDialog->Show();
+          if( m_pGribDialog->m_bGRIBActiveFile ) {
+              if( m_pGribDialog->m_bGRIBActiveFile->IsOK() ) {
+                  ArrayOfGribRecordSets *rsa = m_pGribDialog->m_bGRIBActiveFile->GetRecordSetArrayPtr();
+                  if(rsa->GetCount() > 1) SetCanvasContextMenuItemViz( m_MenuItem, true);
+              }
+          }
       } else {
+          SetCanvasContextMenuItemViz( m_MenuItem, false);
           m_pGribDialog->Hide();
           if(m_pGribDialog->pReq_Dialog) m_pGribDialog->pReq_Dialog->Hide();
           }
@@ -383,6 +394,12 @@ void grib_pi::SetCursorLatLon(double lat, double lon)
 {
     if(m_pGribDialog)
         m_pGribDialog->SetCursorLatLon(lat, lon);
+}
+
+void grib_pi::OnContextMenuItemCallback(int id)
+{
+    if(!m_pGribDialog->m_bGRIBActiveFile) return;
+    m_pGribDialog->ContextMenuItemCallback(id);
 }
 
 void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
