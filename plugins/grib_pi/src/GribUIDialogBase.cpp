@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Oct  8 2012)
+// C++ code generated with wxFormBuilder (version Nov  6 2013)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -551,38 +551,34 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer17->SetFlexibleDirection( wxBOTH );
 	fgSizer17->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
-	wxFlexGridSizer* fgSizer16;
-	fgSizer16 = new wxFlexGridSizer( 0, 2, 0, 0 );
-	fgSizer16->AddGrowableCol( 1 );
-	fgSizer16->SetFlexibleDirection( wxBOTH );
-	fgSizer16->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	m_pSenderSizer = new wxFlexGridSizer( 0, 2, 0, 0 );
+	m_pSenderSizer->AddGrowableCol( 1 );
+	m_pSenderSizer->SetFlexibleDirection( wxBOTH );
+	m_pSenderSizer->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
+	wxStaticText* m_staticText25;
 	m_staticText25 = new wxStaticText( this, wxID_ANY, _("Sender eMail Address"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText25->Wrap( -1 );
-	fgSizer16->Add( m_staticText25, 0, wxALL, 5 );
+	m_pSenderSizer->Add( m_staticText25, 0, wxALL, 5 );
 	
 	m_pSenderAddress = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer16->Add( m_pSenderAddress, 0, wxALL|wxEXPAND, 5 );
+	m_pSenderSizer->Add( m_pSenderAddress, 0, wxALL|wxEXPAND, 5 );
+	
+	wxStaticLine* m_staticline4;
+	m_staticline4 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	m_pSenderSizer->Add( m_staticline4, 0, wxEXPAND | wxALL, 5 );
+	
+	wxStaticLine* m_staticline5;
+	m_staticline5 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
+	m_pSenderSizer->Add( m_staticline5, 0, wxEXPAND | wxALL, 5 );
 	
 	
-	fgSizer17->Add( fgSizer16, 1, wxEXPAND, 5 );
+	fgSizer17->Add( m_pSenderSizer, 1, wxEXPAND, 5 );
 	
 	wxFlexGridSizer* fgSizer9;
 	fgSizer9 = new wxFlexGridSizer( 0, 4, 0, 0 );
 	fgSizer9->SetFlexibleDirection( wxBOTH );
 	fgSizer9->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	m_staticline4 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizer9->Add( m_staticline4, 0, wxEXPAND | wxALL, 5 );
-	
-	m_staticline5 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizer9->Add( m_staticline5, 0, wxEXPAND | wxALL, 5 );
-	
-	m_staticline6 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizer9->Add( m_staticline6, 0, wxEXPAND | wxALL, 5 );
-	
-	m_staticline7 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizer9->Add( m_staticline7, 0, wxEXPAND | wxALL, 5 );
 	
 	wxStaticText* m_staticText15;
 	m_staticText15 = new wxStaticText( this, wxID_ANY, _("Mail To "), wxDefaultPosition, wxDefaultSize, 0 );
@@ -711,7 +707,6 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer10->Add( m_pCurrent, 0, wxALL, 5 );
 	
 	m_pCAPE = new wxCheckBox( this, wxID_ANY, _("CAPE"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_pCAPE->SetValue(true); 
 	fgSizer10->Add( m_pCAPE, 0, wxALL, 5 );
 	
 	m_pWaves = new wxCheckBox( this, wxID_ANY, _("Waves"), wxDefaultPosition, wxDefaultSize, 0 );

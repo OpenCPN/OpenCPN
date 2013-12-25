@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////
-// C++ code generated with wxFormBuilder (version Oct  8 2012)
+// C++ code generated with wxFormBuilder (version Nov  6 2013)
 // http://www.wxformbuilder.org/
 //
 // PLEASE DO "NOT" EDIT THIS FILE!
@@ -200,11 +200,7 @@ class GribRequestSettingBase : public wxDialog
 	private:
 	
 	protected:
-		wxStaticText* m_staticText25;
-		wxStaticLine* m_staticline4;
-		wxStaticLine* m_staticline5;
-		wxStaticLine* m_staticline6;
-		wxStaticLine* m_staticline7;
+		wxFlexGridSizer* m_pSenderSizer;
 		wxStaticText* m_tLogin;
 		wxStaticText* m_tCode;
 		wxStaticText* m_staticText21;

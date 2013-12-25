@@ -29,9 +29,12 @@ public:
 
     // Send a message.
     // Specify profile, or leave it to wxWidgets to find the current user name
-    static bool Send(wxMailMessage& message, const wxString& profileName = wxEmptyString,
-        const wxString& sendMail = wxT("/usr/sbin/sendmail -t"));
-    
+    //two sending methods for Unix plateforms : sendmail or xdg-email shell script
+    static bool Send(wxMailMessage& message, int sendMethod, const wxString& profileName = wxEmptyString,
+        const wxString& sendMail2 = wxT("/usr/sbin/sendmail -t"),           //sendmail
+        const wxString& sendMail1 = wxT("/usr/bin/xdg-email"),              //xdg in bin folder
+        const wxString& sendMail0 = wxT("/usr/sbin/xdg-email"));            //xdg in sbin folder
+
 protected:
 };
 
