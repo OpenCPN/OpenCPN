@@ -3280,12 +3280,12 @@ void ChartPlugInWrapper::latlong_to_chartpix(double lat, double lon, double &pix
 
 wxString toSDMM_PlugIn(int NEflag, double a, bool hi_precision)
 {
-    return _T("");
+    return toSDMM(NEflag, a, hi_precision);
 }
 
 wxColour GetBaseGlobalColor(wxString colorName)
 {
-    return wxColour(255, 0, 0);
+    return GetGlobalColor( colorName );
 }
 
 

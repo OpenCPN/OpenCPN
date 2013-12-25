@@ -691,7 +691,7 @@ int DECL_EXP OCPNMessageBox_PlugIn(wxWindow *parent,
                           const wxString& caption = _T("Message"),
                           int style = wxOK, int x = -1, int y = -1);
 
-wxString toSDMM_PlugIn(int NEflag, double a, bool hi_precision = true);
+extern DECL_EXP wxString toSDMM_PlugIn(int NEflag, double a, bool hi_precision = true);
 
 extern "C"  DECL_EXP wxString *GetpPrivateApplicationDataLocation();
 extern  DECL_EXP wxString GetOCPN_ExePath( void );
