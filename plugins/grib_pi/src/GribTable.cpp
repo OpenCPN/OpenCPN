@@ -36,61 +36,6 @@
 #include <wx/progdlg.h>
 #include "GribTable.h"
 
-
-/*****************************************************************************************************
-// to do : replace this function by API function when it'll work
-******************************************************************************************************/
-wxString toSDMM ( int NEflag, double a )
-{
-      short neg = 0;
-      int d;
-      long m;
-
-      if ( a < 0.0 )
-      {
-            a = -a;
-            neg = 1;
-      }
-      d = ( int ) a;
-      m = ( long ) ( ( a - ( double ) d ) * 60000.0 );
-
-      if ( neg )
-            d = -d;
-
-      wxString s;
-
-      if ( !NEflag )
-            s.Printf ( _T ( "%d %02ld.%03ld'" ), d, m / 1000, m % 1000 );
-      else
-      {
-            if ( NEflag == 1 )
-            {
-                  char c = 'N';
-
-                  if ( neg )
-                  {
-                        d = -d;
-                        c = 'S';
-                  }
-
-                  s.Printf ( _T ( "%03d %02ld.%03ld %c" ), d, m / 1000, ( m % 1000 ), c );
-            }
-            else if ( NEflag == 2 )
-            {
-                  char c = 'E';
-
-                  if ( neg )
-                  {
-                        d = -d;
-                        c = 'W';
-                  }
-                  s.Printf ( _T ( "%03d %02ld.%03ld %c" ), d, m / 1000, ( m % 1000 ), c );
-            }
-      }
-      return s;
-}
-//---------------------------------------------------------------------------------------------------------
-
 //----------------------------------------------------------------------------------------------------------
 //          GRIB Table Implementation
 //----------------------------------------------------------------------------------------------------------
@@ -111,8 +56,8 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
    
     //populate "cursor position" display 
     wxString l;
-    l.Append(toSDMM(1, m_pGDialog->m_cursor_lat)).Append(_T("  "))
-        .Append(toSDMM(2, m_pGDialog->m_cursor_lon));
+    l.Append(toSDMM_PlugIn(1, m_pGDialog->m_cursor_lat)).Append(_T("   "))
+        .Append(toSDMM_PlugIn(2, m_pGDialog->m_cursor_lon));
     m_pCursorPosition->SetLabel(l);
     m_pCursorPosition->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
     m_pPositionText->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
