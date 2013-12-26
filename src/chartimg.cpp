@@ -4481,11 +4481,14 @@ bool ChartBaseBSB::AnalyzeSkew(void)
         double skew_points = atan2( (pRefTable[jmax].yr - pRefTable[imax].yr), (pRefTable[jmax].xr - pRefTable[imax].xr) ) * 180./PI; 
         
         double apparent_skew =  skew_points - skew_proj + 90.;
-        if(apparent_skew < 0.)
-            apparent_skew += 360;
-        if(apparent_skew > 360.)
-            apparent_skew -= 360;
         
+        // normalize to +/- 180.
+        if(fabs(apparent_skew) > 180.){
+            if(apparent_skew < 0.)
+                apparent_skew += 360.;
+            else
+                apparent_skew -= 360.;
+        }
         
         if(fabs( apparent_skew - m_Chart_Skew ) > 2) {           // measured skew is more than 2 degrees 
            m_Chart_Skew = apparent_skew;                         // different from stated skew
@@ -4934,14 +4937,20 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
         }
 
         Chart_Error_Factor = fmax(fabs(xpl_err_max/(lonmax - lonmin)), fabs(ypl_err_max/(latmax - latmin)));
-
+        double chart_error_meters = fmax(fabs(xpl_err_max * 60. * 1852.),
+                                         fabs(ypl_err_max * 60. * 1852.));
+        //      calculate a nominal pixel error
+        //      Assume a modern display has about 4000 pixels/meter.
+        //      Assume the chart is to be displayed at nominal printed scale
+        double chart_error_pixels = chart_error_meters * 4000. / m_Chart_Scale;
+        
         //        Good enough for navigation?
-        if(Chart_Error_Factor > .02)
+        if(chart_error_pixels > 10)
         {
                     wxString msg = _("   VP Final Check: Georeference Chart_Error_Factor on chart ");
                     msg.Append(m_FullPath);
                     wxString msg1;
-                    msg1.Printf(_T(" is %5g"), Chart_Error_Factor);
+                    msg1.Printf(_T(" is %5g \n     nominal pixel error is: %5g"), Chart_Error_Factor, chart_error_pixels);
                     msg.Append(msg1);
 
                     wxLogMessage(msg);
@@ -4951,7 +4960,7 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
 
         //  Try again with my calculated georef
         //  This problem was found on NOAA 514_1.KAP.  The embedded coefficients are just wrong....
-        if((Chart_Error_Factor > .02) && bHaveEmbeddedGeoref)
+        if((chart_error_pixels > 10) && bHaveEmbeddedGeoref)
         {
               wxString msg = _("   Trying again with internally calculated georef solution ");
               wxLogMessage(msg);
@@ -4999,13 +5008,17 @@ int   ChartBaseBSB::AnalyzeRefpoints(void)
 
               Chart_Error_Factor = fmax(fabs(xpl_err_max/(lonmax - lonmin)), fabs(ypl_err_max/(latmax - latmin)));
 
+              chart_error_meters = fmax(fabs(xpl_err_max * 60. * 1852.),
+                                               fabs(ypl_err_max * 60. * 1852.));
+              chart_error_pixels = chart_error_meters * 4000. / m_Chart_Scale;
+              
         //        Good enough for navigation?
-              if(Chart_Error_Factor > .02)
+              if(chart_error_pixels > 10)
               {
                     wxString msg = _("   VP Final Check with internal georef: Georeference Chart_Error_Factor on chart ");
                     msg.Append(m_FullPath);
                     wxString msg1;
-                    msg1.Printf(_(" is %5g"), Chart_Error_Factor);
+                    msg1.Printf(_T(" is %5g\n     nominal pixel error is: %5g"), Chart_Error_Factor, chart_error_pixels);
                     msg.Append(msg1);
 
                     wxLogMessage(msg);
