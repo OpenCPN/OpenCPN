@@ -135,6 +135,8 @@ AIS_Target_Data::AIS_Target_Data()
     bCPA_Valid = false;
     ROTIND = 0;
     b_show_track = true;
+    b_specialPosnReport = false;
+    altitude = 0;
 }
 
 AIS_Target_Data::~AIS_Target_Data()
@@ -280,6 +282,13 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             UNTypeStr = wxGetTranslation( type );
         }
 
+        if( b_specialPosnReport ){
+            AISTypeStr = wxGetTranslation( _("Special Position Report") );
+            UNTypeStr.Clear();
+            navStatStr.Clear();
+        }
+            
+            
         if( Class == AIS_SART ) {
             if( MSG_14_text.Len() ) {
                 html << rowStart << _("Safety Broadcast Message") << rowEnd
@@ -292,7 +301,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         if( NavStatus != ATON_VIRTUAL && Class != AIS_ARPA && Class != AIS_APRS ) {
             if( ( Class == AIS_CLASS_B ) || ( Class == AIS_ATON ) ) {
                 sizeString = wxString::Format( _T("%dm x %dm"), ( DimA + DimB ), ( DimC + DimD ) );
-            } else {
+            } else if(!b_specialPosnReport) {
                 if( ( DimA + DimB + DimC + DimD ) == 0 ) {
                     if( b_isEuroInland ) {
                         if( Euro_Length == 0.0 ) {
@@ -376,7 +385,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
              << rowStartH << wxString::Format( _T("<b>%d:%d UTC "), m_utc_hour, m_utc_min )
              << rowEnd;
     } else {
-        if( Class == AIS_CLASS_A ) {
+        if( Class == AIS_CLASS_A && !b_specialPosnReport ) {
             html << vertSpacer << rowStart << _("Destination")
                  << _T("</font></td><td align=right><font size=-2>")
                  << _("ETA") << _T("</font></td></tr>\n")
@@ -412,8 +421,17 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             else if( crs == 360 )
                 courseStr = _T("0&deg;");
 
-            if( SOG <= 102.2 )
-                sogStr = wxString::Format( _T("%5.2f ") + getUsrSpeedUnit(), toUsrSpeed( SOG ) );
+            double speed_show = toUsrSpeed( SOG );
+            
+            if( ( SOG <= 102.2 ) || b_specialPosnReport ){
+                if( speed_show < 10.0 )
+                    sogStr = wxString::Format( _T("%.2f "), speed_show ) + getUsrSpeedUnit();
+                else if( speed_show < 100.0 )
+                    sogStr = wxString::Format( _T("%.1f "), speed_show ) + getUsrSpeedUnit();
+                else
+                    sogStr = wxString::Format( _T("%.0f "), speed_show ) + getUsrSpeedUnit();
+            }
+//                sogStr = wxString::Format( _T("%5.2f ") + getUsrSpeedUnit(), toUsrSpeed( SOG ) );
             else
                 sogStr = _("---");
 
@@ -432,7 +450,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                     else rotStr = _T("0");
                 }
             }
-            else
+            else if( !b_specialPosnReport )
                 rotStr = _("---");
         }
     }
@@ -454,25 +472,34 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     else
         brgStr = _("---");
 
-    wxString turnRateHdr; // Blank if ATON or BASE
+    wxString turnRateHdr; // Blank if ATON or BASE or Special Position Report (9)
     if( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) && ( Class != AIS_DSC ) ) {
         html << vertSpacer << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
             << rowStart <<_("Speed") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
-            << _("Course") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
-            << _("Heading") << _T("</font></td></tr>")
+            << _("Course") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>");
+            if( !b_specialPosnReport )
+                html << _("Heading") ;
+            
+            html << _T("</font></td></tr>")
             << rowStartH << _T("<b>") << sogStr << _T("</b></td><td>&nbsp;</td><td><b>")
-            << courseStr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
-            << hdgStr << rowEnd << _T("</table></td></tr>")
+            << courseStr << _T("</b></td><td>&nbsp;</td><td align=right><b>");
+            if(!b_specialPosnReport)
+                html << hdgStr;
+            html  << rowEnd << _T("</table></td></tr>")
             << vertSpacer;
-        turnRateHdr = _("Turn Rate");
+            
+        if( !b_specialPosnReport )
+            turnRateHdr = _("Turn Rate");
     }
     html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
         << rowStart <<_("Range") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
         << _("Bearing") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>")
         << turnRateHdr << _T("</font></td></tr>")
         << rowStartH << _T("<b>") << rngStr << _T("</b></td><td>&nbsp;</td><td><b>")
-        << brgStr << _T("</b></td><td>&nbsp;</td><td align=right><b>")
-        << rotStr << rowEnd << _T("</table></td></tr>")
+        << brgStr << _T("</b></td><td>&nbsp;</td><td align=right><b>");
+        if(!b_specialPosnReport)
+            html << rotStr;
+        html << rowEnd << _T("</table></td></tr>")
         << vertSpacer;
 
     wxString tcpaStr;
@@ -494,6 +521,18 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         }
     }
 
+    if(b_specialPosnReport) {
+        if(altitude != 4095) {
+            wxString altStr;
+            altStr.Printf(_T("%4d M"), altitude );
+            html /*<< _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")*/
+            << rowStart <<_("Altitude") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
+            << rowStartH << _T("<b>") << altStr << _T("</b></td><td>&nbsp;</td><td><b>")
+            << rowEnd << _T("</table></td></tr>")
+            << vertSpacer;
+        }
+    }
+    
     html << _T("</table>");
     return html;
 }
@@ -504,21 +543,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
     wxString t;
     if( b_nameValid ) {
         result.Append( _T("\"") );
-        
         result.Append( GetFullName() );
-/*
-        wxString uret = trimAISField( ShipName );
-        wxString ret;
-        if( uret == _T("Unknown") ) ret = wxGetTranslation( uret );
-        else
-            ret = uret;
-
-        result.Append( ret );
-        if( strlen( ShipNameExtension ) ){
-            wxString shipNameExt = trimAISField( ShipNameExtension );
-            result.Append( shipNameExt );
-        }
-*/        
         result.Append( _T("\" ") );
     }
     if( Class != AIS_GPSG_BUDDY ) {
@@ -561,10 +586,14 @@ wxString AIS_Target_Data::GetRolloverString( void )
                 }
             }
 
-            if( Class != AIS_SART ) result.Append(
-                    wxGetTranslation( Get_vessel_type_string( false ) ) );
+            if( Class != AIS_SART ) {
+                if( !b_specialPosnReport )
+                    result.Append( wxGetTranslation( Get_vessel_type_string( false ) ) );
+                else
+                    result.Append( _("Special Position Report") );
+            }
 
-            if( ( Class != AIS_CLASS_B ) && ( Class != AIS_SART ) ) {
+            if( ( Class != AIS_CLASS_B ) && ( Class != AIS_SART ) && !b_specialPosnReport) {
                 if( ( NavStatus <= 15 ) && ( NavStatus >= 0 ) ) {
                     result.Append( _T(" (") );
                     result.Append(wxGetTranslation(ais_get_status(NavStatus)));
@@ -581,16 +610,18 @@ wxString AIS_Target_Data::GetRolloverString( void )
         }
     }
 
-    if( g_bAISRolloverShowCOG && ( SOG <= 102.2 )
+    if( g_bAISRolloverShowCOG && (( SOG <= 102.2 ) || b_specialPosnReport) 
             && ( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) ) {
         if( result.Len() ) result << _T("\n");
         
         double speed_show = toUsrSpeed( SOG );
         if( speed_show < 10.0 )
             result << wxString::Format( _T("SOG %.2f "), speed_show ) << getUsrSpeedUnit() << _T(" ");
-        else
+        else if( speed_show < 100.0 )
             result << wxString::Format( _T("SOG %.1f "), speed_show ) << getUsrSpeedUnit() << _T(" ");
-
+        else
+            result << wxString::Format( _T("SOG %.0f "), speed_show ) << getUsrSpeedUnit() << _T(" ");
+        
         int crs = wxRound( COG );
         if( b_positionOnceValid ) {
             if( crs < 360 ) {

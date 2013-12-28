@@ -4270,7 +4270,9 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
         if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )					// distress
             target_brush = wxBrush( GetGlobalColor( _T ( "URED" ) ) );
-
+        if( td->b_specialPosnReport )
+            target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
+        
         if( ( td->n_alarm_state == AIS_ALARM_SET ) && ( td->bCPA_Valid ) ) target_brush = wxBrush(
                         GetGlobalColor( _T ( "URED" ) ) );
 

@@ -1264,6 +1264,40 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
         }
         case 9:                   // Special Position Report (Standard SAR Aircraft Position Report)
         {
+            ptd->SOG =  bstr->GetInt( 51, 10 ) ;
+            
+            int lon = bstr->GetInt( 62, 28 );
+            if( lon & 0x08000000 )                    // negative?
+            lon |= 0xf0000000;
+            double lon_tentative = lon / 600000.;
+            
+            int lat = bstr->GetInt( 90, 27 );
+            if( lat & 0x04000000 )                    // negative?
+            lat |= 0xf8000000;
+            double lat_tentative = lat / 600000.;
+            
+            if( ( lon_tentative <= 180. ) && ( lat_tentative <= 90. ) ) // Ship does not report Lat or Lon "unavailable"
+                    {
+                        ptd->Lon = lon_tentative;
+                        ptd->Lat = lat_tentative;
+                        ptd->b_positionDoubtful = false;
+                        ptd->b_positionOnceValid = true;          // Got the position at least once
+                        ptd->PositionReportTicks = now.GetTicks();
+                    } else
+                        ptd->b_positionDoubtful = true;
+                    
+            //    decode balance of message....
+            ptd->COG = 0.1 * ( bstr->GetInt( 117, 12 ) );
+
+            int alt_tent = bstr->GetInt( 39, 12 );
+            if( alt_tent != 4095)
+                ptd->altitude = alt_tent;
+            
+            ptd->b_specialPosnReport = true;
+            
+            parse_result = true;
+            b_posn_report = true;
+            
             break;
         }
         case 21:                                    // Test Message (Aid to Navigation)
