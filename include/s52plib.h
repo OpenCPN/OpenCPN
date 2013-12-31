@@ -46,7 +46,7 @@ WX_DECLARE_HASH_MAP( wxString, Rule*, wxStringHash, wxStringEqual, RuleHash );
 
 WX_DEFINE_SORTED_ARRAY( LUPrec *, wxArrayOfLUPrec );
 
-WX_DECLARE_LIST( S57Obj, ObjList );
+WX_DECLARE_LIST( S52_TextC, TextObjList );
 
 WX_DECLARE_STRING_HASH_MAP( int, CARC_Hash );
 
@@ -338,7 +338,7 @@ private:
     bool RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y,
         wxRect *pRectDrawn, S57Obj *pobj, bool bCheckOverlap, ViewPort *vp );
 
-    bool CheckTextRectList( const wxRect &test_rect, S57Obj *pobj );
+    bool CheckTextRectList( const wxRect &test_rect, S52_TextC *ptext );
     int RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp,	bool bTX );
 
     int PrioritizeLineFeature( ObjRazRules *rzRules, int npriority );
@@ -387,7 +387,7 @@ private:
     int m_colortable_index;
     int m_colortable_index_save;
 
-    ObjList m_textObjList;
+    TextObjList m_textObjList;
 
     double m_display_pix_per_mm;
 

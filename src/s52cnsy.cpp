@@ -60,9 +60,9 @@ wxArrayPtrVoid *GetChartFloatingATONArray( ObjRazRules *rzRules )
 {
     S57Obj *obj = rzRules->obj;
     if( obj->m_chart_context->chart )
-        return obj->m_chart_context->pFloatingATONArray;
+        return obj->m_chart_context->chart->pFloatingATONArray;
     else
-        return NULL;
+        return obj->m_chart_context->pFloatingATONArray;
     
 }
 
@@ -70,10 +70,9 @@ wxArrayPtrVoid *GetChartRigidATONArray( ObjRazRules *rzRules )
 {
     S57Obj *obj = rzRules->obj;
     if( obj->m_chart_context->chart )
-        return obj->m_chart_context->pRigidATONArray;
+        return obj->m_chart_context->chart->pRigidATONArray;
     else
-        return NULL;
-    
+        return obj->m_chart_context->pRigidATONArray;
 }
 
 static void *CLRLIN01(void *param)

@@ -41,6 +41,7 @@
 #include "datastream.h"             // for GenericPosDat
 #include "OCPN_Sound.h"
 #include "s52s57.h"
+#include "s57chart.h"               // for Object list
 
 //For widgets...
 #include "wx/hyperlink.h"
@@ -263,6 +264,10 @@ public:
 
       wxArrayString GetPlugInChartClassNameArray(void);
 
+      ListOfPI_S57Obj *GetPlugInObjRuleListAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
+                                                       float SelectRadius, const ViewPort& vp );
+      wxString CreateObjDescriptions( ChartPlugInWrapper *target, ListOfPI_S57Obj *rule_list );
+      
       wxString GetLastError();
       MyFrame *GetParentFrame(){ return pParent; }
 

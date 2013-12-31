@@ -84,6 +84,7 @@ class       wxAuiManager;
 #define     WANTS_OPENGL_OVERLAY_CALLBACK             0x00008000
 #define     WANTS_DYNAMIC_OPENGL_OVERLAY_CALLBACK     0x00010000
 #define     WANTS_LATE_INIT                           0x00020000
+#define     INSTALLS_PLUGIN_CHART_GL                  0x00040000
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -703,6 +704,35 @@ extern "C"  DECL_EXP int RemoveChartFromDBInPlace( wxString &full_path );
 //  API 1.11 adds access to S52 Presentation library
 //Types
 
+class PI_S57Obj;
+
+WX_DECLARE_LIST(PI_S57Obj, ListOfPI_S57Obj);
+
+// ----------------------------------------------------------------------------
+// PlugInChartBaseGL
+//  Derived from PlugInChartBase, add OpenGL Vector chart support
+// ----------------------------------------------------------------------------
+
+class DECL_EXP PlugInChartBaseGL : public PlugInChartBase
+{
+public:
+    PlugInChartBaseGL();
+    virtual ~PlugInChartBaseGL();
+    
+    virtual int RenderRegionViewOnGL( const wxGLContext &glc, const PlugIn_ViewPort& VPoint,
+                                      const wxRegion &Region, bool b_use_stencil );
+    
+    virtual ListOfPI_S57Obj *GetObjRuleListAtLatLon(float lat, float lon, float select_radius, PlugIn_ViewPort *VPoint);
+    virtual wxString CreateObjDescriptions( ListOfPI_S57Obj* obj_list );
+    
+};
+
+
+
+
+
+
+
 class wxArrayOfS57attVal;
 
 // name of the addressed look up table set (fifth letter)
@@ -774,7 +804,7 @@ public:
       double                  y;
       double                  z;
       int                     npt;                    // number of points as needed by arrays
-      void /*pt*/                      *geoPt;                 // for LINE & AREA not described by PolyTessGeo
+      void                    *geoPt;                 // for LINE & AREA not described by PolyTessGeo
       double                  *geoPtz;                // an array[3] for MultiPoint, SM with Z, i.e. depth
       double                  *geoPtMulti;            // an array[2] for MultiPoint, lat/lon to make bbox
                                                       // of decomposed points
@@ -824,29 +854,29 @@ public:
 
 
 
-wxString DECL_EXP PI_GetPLIBColorScheme();            //ps52plib->GetPLIBColorScheme()
-int DECL_EXP PI_GetPLIBDepthUnitInt();           //ps52plib->m_nDepthUnitDisplay
-int DECL_EXP PI_GetPLIBSymbolStyle();            //ps52plib->m_nSymbolStyle
-int DECL_EXP PI_GetPLIBBoundaryStyle();          //ps52plib->m_nBoundaryStyle
-bool DECL_EXP PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp ); //ps52plib->ObjectRenderCheck
+wxString DECL_EXP PI_GetPLIBColorScheme();        
+int DECL_EXP PI_GetPLIBDepthUnitInt();          
+int DECL_EXP PI_GetPLIBSymbolStyle();           
+int DECL_EXP PI_GetPLIBBoundaryStyle();         
+int DECL_EXP PI_GetPLIBStateHash();
 
-int DECL_EXP PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp );  //ps52plib->RenderObjectToDC
-
-int DECL_EXP PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRect rect, unsigned char *pixbuf );
-
-bool DECL_EXP PI_PLIBSetContext( PI_S57Obj *pObj ); 
-
+bool DECL_EXP PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp ); 
 PI_LUPname DECL_EXP PI_GetObjectLUPName( PI_S57Obj *pObj );
 PI_DisPrio DECL_EXP PI_GetObjectDisplayPriority( PI_S57Obj *pObj );
 PI_DisCat DECL_EXP PI_GetObjectDisplayCategory( PI_S57Obj *pObj );
+void DECL_EXP PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio );
+void DECL_EXP PI_PLIBPrepareForNewRender(void);
 
 
+bool DECL_EXP PI_PLIBSetContext( PI_S57Obj *pObj ); 
+
+int DECL_EXP PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp );  
+int DECL_EXP PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRect rect, unsigned char *pixbuf );
 
 
+int DECL_EXP PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
+                                    PlugIn_ViewPort *vp, wxRect &render_rect );
 
-
-
-
-
-#endif            // _PLUGIN_H_
+int DECL_EXP PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
+                                    PlugIn_ViewPort *vp, wxRect &render_rect );
 

@@ -230,6 +230,7 @@ public:
     int           RGBA_width;
     int           RGBA_height;
     int           rendered_char_height;
+    wxRect      rText;          // rectangle of the text as currently rendered, used for declutter
 };
 
 
