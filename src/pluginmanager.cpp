@@ -241,7 +241,14 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
         wxArrayString file_list;
         wxString plugin_file;
         
-        wxDir::GetAllFiles( m_plugin_location, &file_list, pispec );
+        int get_flags =  wxDIR_FILES | wxDIR_DIRS;
+#ifdef __WXMSW__
+#ifdef _DEBUG
+        get_flags =  wxDIR_FILES;
+#endif        
+#endif        
+        
+        wxDir::GetAllFiles( m_plugin_location, &file_list, pispec, get_flags );
         
         for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
             wxString file_name = file_list[i];
@@ -3712,6 +3719,7 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
     pb_spec.b_revrgb = false;
 #endif
     
+    pb_spec.b_revrgb = false;
  
     //  Create and populate a compatible s57 Object
     S57Obj cobj;
