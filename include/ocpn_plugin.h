@@ -482,7 +482,7 @@ class DECL_EXP opencpn_plugin_111 : public opencpn_plugin_110
 public:
     opencpn_plugin_111(void *pmgr);
     virtual ~opencpn_plugin_111();
-    
+
 };
 
 //------------------------------------------------------------------
@@ -718,13 +718,13 @@ class DECL_EXP PlugInChartBaseGL : public PlugInChartBase
 public:
     PlugInChartBaseGL();
     virtual ~PlugInChartBaseGL();
-    
+
     virtual int RenderRegionViewOnGL( const wxGLContext &glc, const PlugIn_ViewPort& VPoint,
                                       const wxRegion &Region, bool b_use_stencil );
-    
+
     virtual ListOfPI_S57Obj *GetObjRuleListAtLatLon(float lat, float lon, float select_radius, PlugIn_ViewPort *VPoint);
     virtual wxString CreateObjDescriptions( ListOfPI_S57Obj* obj_list );
-    
+
 };
 
 
@@ -768,7 +768,7 @@ typedef enum _PI_DisPrio{
     PI_PRIO_HAZARDS         = '8',                  // hazards
     PI_PRIO_MARINERS        = '9',                  // VRM, EBL, own ship
     PI_PRIO_NUM             = 10                    // number of priority levels
-    
+
 }PI_DisPrio;
 
 typedef enum PI_InitReturn
@@ -810,19 +810,19 @@ public:
                                                       // of decomposed points
 
       void                    *pPolyTessGeo;
-                                                      
+
       double                  m_lat;                  // The lat/lon of the object's "reference" point
       double                  m_lon;
 
       double                  chart_ref_lat;
       double                  chart_ref_lon;
-      
+
       double                  lat_min;
       double                  lat_max;
       double                  lon_min;
       double                  lon_max;
       bool                    bBBObj_valid;
-      
+
       int                     Scamin;                 // SCAMIN attribute decoded during load
 
       bool                    bIsClone;
@@ -840,9 +840,9 @@ public:
 
       void *                  S52_Context;
       PI_S57Obj               *child;           // child list, used only for MultiPoint Soundings
-                    
+
       PI_S57Obj               *next;            //  List linkage
-      
+
 
                                                       // This transform converts from object geometry
                                                       // to SM coordinates.
@@ -854,13 +854,13 @@ public:
 
 
 
-wxString DECL_EXP PI_GetPLIBColorScheme();        
-int DECL_EXP PI_GetPLIBDepthUnitInt();          
-int DECL_EXP PI_GetPLIBSymbolStyle();           
-int DECL_EXP PI_GetPLIBBoundaryStyle();         
+wxString DECL_EXP PI_GetPLIBColorScheme();
+int DECL_EXP PI_GetPLIBDepthUnitInt();
+int DECL_EXP PI_GetPLIBSymbolStyle();
+int DECL_EXP PI_GetPLIBBoundaryStyle();
 int DECL_EXP PI_GetPLIBStateHash();
 
-bool DECL_EXP PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp ); 
+bool DECL_EXP PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp );
 PI_LUPname DECL_EXP PI_GetObjectLUPName( PI_S57Obj *pObj );
 PI_DisPrio DECL_EXP PI_GetObjectDisplayPriority( PI_S57Obj *pObj );
 PI_DisCat DECL_EXP PI_GetObjectDisplayCategory( PI_S57Obj *pObj );
@@ -868,9 +868,9 @@ void DECL_EXP PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio );
 void DECL_EXP PI_PLIBPrepareForNewRender(void);
 
 
-bool DECL_EXP PI_PLIBSetContext( PI_S57Obj *pObj ); 
+bool DECL_EXP PI_PLIBSetContext( PI_S57Obj *pObj );
 
-int DECL_EXP PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp );  
+int DECL_EXP PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp );
 int DECL_EXP PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRect rect, unsigned char *pixbuf );
 
 
@@ -879,5 +879,6 @@ int DECL_EXP PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
 
 int DECL_EXP PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
                                     PlugIn_ViewPort *vp, wxRect &render_rect );
+
 
 #endif //_PLUGIN_H_
