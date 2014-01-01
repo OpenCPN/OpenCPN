@@ -595,7 +595,7 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
                 }
                 
                 buffer=link->LType.ToUTF8();
-                if(buffer.data()) {
+                if(buffer.data() && strlen(buffer.data()) > 0) {
                     child = child_link.append_child("type");
                     child.append_child(pugi::node_pcdata).set_value(buffer.data());
                 }
@@ -693,7 +693,7 @@ bool GPXCreateTrk( pugi::xml_node node, Route *pRoute )
             }
         
             buffer=link->LType.ToUTF8();
-            if(buffer.data()) {
+            if(buffer.data()  && strlen(buffer.data()) > 0) {
                 child = child_link.append_child("type");
                 child.append_child(pugi::node_pcdata).set_value(buffer.data());
             }
@@ -811,7 +811,7 @@ bool GPXCreateRoute( pugi::xml_node node, Route *pRoute )
             }
 
             buffer=link->LType.ToUTF8();
-            if(buffer.data()) {
+            if(buffer.data() && strlen(buffer.data()) > 0) {
                 child = child_link.append_child("type");
                 child.append_child(pugi::node_pcdata).set_value(buffer.data());
             }
