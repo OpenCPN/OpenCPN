@@ -725,6 +725,11 @@ public:
     virtual ListOfPI_S57Obj *GetObjRuleListAtLatLon(float lat, float lon, float select_radius, PlugIn_ViewPort *VPoint);
     virtual wxString CreateObjDescriptions( ListOfPI_S57Obj* obj_list );
 
+    virtual int GetNoCOVREntries();
+    virtual int GetNoCOVRTablePoints(int iTable);
+    virtual int  GetNoCOVRTablenPoints(int iTable);
+    virtual float *GetNoCOVRTableHead(int iTable);
+    
 };
 
 
