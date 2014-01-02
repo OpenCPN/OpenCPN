@@ -42,6 +42,10 @@
 #include <math.h>
 #include <time.h>
 
+#ifndef __MSW__
+#include <arpa/inet.h>
+#endif
+
 #include "dychart.h"
 
 #include "datastream.h"
@@ -109,6 +113,7 @@ void DataStream::Init(void)
     m_Thread_run_flag = -1;
     m_sock = 0;
     m_tsock = 0;
+    m_is_multicast = false;
     m_socket_server_active = 0;
     m_socket_server = 0;
     m_txenter = 0;
@@ -258,6 +263,17 @@ void DataStream::Open(void)
                     conn_addr.Service(m_net_port);
                     conn_addr.AnyAddress();    
                     m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
+                    in_addr_t addr = ((struct sockaddr_in *) m_addr.GetAddress()->m_addr)->sin_addr.s_addr;
+
+                    // Test if address is IPv4 multicast
+                    if ((ntohl(addr) & 0xf0000000)  == 0xe0000000) {
+                        m_is_multicast=true;
+                        m_mrq.imr_multiaddr.s_addr = addr;
+                        m_mrq.imr_interface.s_addr = INADDR_ANY;
+
+                        m_sock->SetOption(IPPROTO_IP,IP_ADD_MEMBERSHIP,&m_mrq, sizeof(m_mrq));
+                    }
+                    
                     
                     // Set up another socket for transmit
                     if((m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT)) {
@@ -265,8 +281,11 @@ void DataStream::Open(void)
                         tconn_addr.Service(0);          // use ephemeral out port
                         tconn_addr.AnyAddress();    
                         m_tsock = new wxDatagramSocket(tconn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
-                        wxString addr = m_addr.IPAddress();
-                        if( addr.EndsWith(_T("255")) ) {
+                        // Here would be the place to disable multicast loopback
+                        // but for consistency with broadcast behaviour, we will
+                        // instead rely on setting priority levels to ignore
+                        // sentences read back that have just been transmitted
+                        if ((!m_is_multicast) && ( m_addr.IPAddress().EndsWith(_T("255")))) {
                             int broadcastEnable=1;
                             bool bam = m_tsock->SetOption(SOL_SOCKET, SO_BROADCAST, &broadcastEnable, sizeof(broadcastEnable));
                         }
@@ -327,6 +346,9 @@ void DataStream::Close()
     //    Kill off the TCP Socket if alive
     if(m_sock)
     {
+        if (m_is_multicast)
+            m_sock->SetOption(IPPROTO_IP,IP_DROP_MEMBERSHIP,&m_mrq, 
+                sizeof(m_mrq));
         m_sock->Notify(FALSE);
         m_sock->Destroy();
     }
