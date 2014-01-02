@@ -65,9 +65,13 @@ typedef struct {
 
 inline int roundint (double x)
 {
+#ifdef __WXOSX__
+    return (int)wxRound(x);     //FS#1278
+#else
     int tmp = static_cast<int> (x);
     tmp += (x-tmp>=.5) - (x-tmp<=-.5);
     return tmp;
+#endif    
 }
      
      
