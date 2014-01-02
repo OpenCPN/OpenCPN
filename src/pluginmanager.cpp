@@ -77,6 +77,7 @@ extern s52plib         *ps52plib;
 extern wxString        *pChartListFileName;
 extern wxString         gExe_path;
 extern bool             g_b_useStencil;
+extern wxString         g_Plugin_Dir;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
@@ -3394,6 +3395,11 @@ int OCPNMessageBox_PlugIn(wxWindow *parent,
 wxString GetOCPN_ExePath( void )
 {
     return gExe_path;
+}
+
+wxString *GetpPlugInLocation()
+{
+    return &g_Plugin_Dir;
 }
 
 //      API 1.11 Access to Vector PlugIn charts
