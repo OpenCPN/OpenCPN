@@ -1771,6 +1771,9 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
 
                 // Now factor in the users selected font size.
                 fontSize += templateFont->GetPointSize() - 12;
+                
+                // In no case should font size be less than 10, since it becomes unreadable
+                fontSize = wxMax(10, fontSize);
 
                 text->pFont = wxTheFontList->FindOrCreateFont( fontSize, wxFONTFAMILY_SWISS,
                         templateFont->GetStyle(), fontweight, false, templateFont->GetFaceName() );
