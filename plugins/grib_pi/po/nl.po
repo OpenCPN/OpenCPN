@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-01 19:14-0500\n"
 "PO-Revision-Date: 2013-10-24 17:24+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: rider2@kpnmail.nl\n"
@@ -26,6 +26,9 @@ msgstr " Mo )"
 msgid "( Max "
 msgstr "( Max "
 #
+msgid "00N  00W"
+msgstr ""
+#
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr "Adres voor verzenden e-mailverzoek (verplicht voor LINUX)"
 #
@@ -44,6 +47,9 @@ msgstr ""
 msgid "Barbed Arrows"
 msgstr "Windpijlen"
 #
+msgid "Beaufort"
+msgstr ""
+#
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
@@ -59,6 +65,9 @@ msgstr ""
 #
 msgid "Celsius"
 msgstr "Celsius"
+#
+msgid "Close"
+msgstr ""
 #
 msgid "Cloud Cover"
 msgstr "Bewolking"
@@ -101,6 +110,10 @@ msgstr "Kopieer ontbrekende golfgegevens"
 #
 msgid "Current"
 msgstr "Stroomsnelheid"
+#
+#, fuzzy
+msgid "Data at Cursor Position:"
+msgstr "GRIB-gegevens bij cursor"
 #
 msgid "Data available"
 msgstr "Gegevens beschikbaar"
@@ -190,6 +203,10 @@ msgstr "Zet deze code in het zyGrib-forum (dit is niet uw wachtwoord!)"
 #
 msgid "Grib"
 msgstr "Grib"
+#
+#, fuzzy
+msgid "Grib Data Table"
+msgstr "Gegevens beschikbaar"
 #
 msgid "Grib Preferences"
 msgstr "Gribvoorkeuren"
@@ -313,6 +330,9 @@ msgstr ""
 msgid "Resolution"
 msgstr "Resolutie"
 #
+msgid "Rotated overlays suppressed in DC mode"
+msgstr ""
+#
 msgid "Save"
 msgstr "Opslaan"
 #
@@ -423,6 +443,9 @@ msgstr "Golfhoogte"
 msgid "WavesModel"
 msgstr "Golfmodel"
 #
+msgid "Weather table"
+msgstr ""
+#
 msgid "Wind"
 msgstr "Wind"
 #
@@ -436,6 +459,13 @@ msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
 "interpolated!"
+msgstr ""
+#
+msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
 msgstr ""
 #
 #, fuzzy
@@ -457,6 +487,9 @@ msgstr ""
 "Uw verzoek is verzonden (mits uw systeem hiervoor\n"
 "geconfigureerd is en mail kan verzenden).\n"
 "Opslaan of Afbreken om te beeindigen of nieuwe parameters in te voeren ..."
+#
+msgid "Zoom To Center"
+msgstr ""
 #
 msgid "inHG"
 msgstr ""
@@ -486,8 +519,10 @@ msgid "zyGrib Login"
 msgstr "zyGrib login"
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (dup)"
+#
 #
 #
 #
@@ -506,12 +541,15 @@ msgstr "zyGrib login"
 #~ msgstr "gegevens"
 #
 #
+#
 #~ msgid "Action"
 #~ msgstr "Actie"
 #
 #
+#
 #~ msgid "Celcius"
 #~ msgstr "Celsius"
+#
 #
 #
 #~ msgid "Cloud"
@@ -521,20 +559,25 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB voorkeuren"
 #
+#
 #~ msgid "Display Iso Temp. Lines"
 #~ msgstr "Toon isothermen"
+#
 #
 #
 #~ msgid "Error"
 #~ msgstr "Fout"
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Kon mailbericht niet versturen"
+#
 #
 #
 #
@@ -569,36 +612,45 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Map voor GRIB bestand"
+#
 #
 #
 #~ msgid "KPH"
 #~ msgstr "km/u"
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "m/sec"
+#
 #
 #
 #~ msgid "MPH"
 #~ msgstr "mijl/u"
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "MijnLabel"
+#
 #
 #
 #~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
 #~ msgstr "OpenCPN logon mislukt! Controleer uw e-mail instellingen."
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "Parameters"
 #
 #
+#
 #~ msgid "Period"
 #~ msgstr "Periode"
+#
 #
 #
 #
@@ -614,9 +666,11 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+#
 #
 #
 #
@@ -632,9 +686,11 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
+#
 #
 #
 #
@@ -646,8 +702,10 @@ msgstr "zyGrib login"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Neerslag"
+#
 #
 #
 #
@@ -659,16 +717,20 @@ msgstr "zyGrib login"
 #~ msgstr "luchtdruk (hPa)"
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
+#
 #
 #
 #~ msgid "Ref : "
 #~ msgstr "Ref:"
 #
 #
+#
 #~ msgid "Request Pofile"
 #~ msgstr "Verzoekprofiel"
+#
 #
 #
 #
@@ -690,8 +752,10 @@ msgstr "zyGrib login"
 #~ msgstr "GRIB voorkeuren"
 #
 #
+#
 #~ msgid "SeaTemp"
 #~ msgstr "ZeeTemp"
+#
 #
 #
 #
@@ -749,8 +813,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Toon windsnelheid in m/sec"
+#
 #
 #
 #
@@ -766,13 +832,16 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "windrichting"
 #
 #
+#
 #~ msgid "Wind Scat"
 #~ msgstr "Windscat"
+#
 #
 #
 #
@@ -788,13 +857,16 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "windsnelheid (m/sec)"
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Zone"
+#
 #
 #
 #~ msgid "eMail error"

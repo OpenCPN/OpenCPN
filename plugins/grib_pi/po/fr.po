@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-01 19:14-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
@@ -10,7 +10,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.6.3\n"
 #
 msgid " (Max size )"
 msgstr "(Taille maximale)"
@@ -20,6 +20,9 @@ msgstr " Mo )"
 #
 msgid "( Max "
 msgstr "( Max "
+#
+msgid "00N  00W"
+msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr ""
@@ -35,10 +38,13 @@ msgid "Apply"
 msgstr "Appliquer"
 #
 msgid "Authorize Interpolation to start at current time"
-msgstr ""
+msgstr "Permettre l'interpolation pour démarrer à l'heure actuelle"
 #
 msgid "Barbed Arrows"
 msgstr "Flèches à barbules"
+#
+msgid "Beaufort"
+msgstr ""
 #
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
@@ -52,10 +58,13 @@ msgid "Building Isobar map"
 msgstr "Construire la carte des isobarres"
 #
 msgid "CAPE"
-msgstr ""
+msgstr "CAPE"
 #
 msgid "Celsius"
 msgstr "Celsius"
+#
+msgid "Close"
+msgstr ""
 #
 msgid "Cloud Cover"
 msgstr "Couverture nuageuse"
@@ -64,7 +73,7 @@ msgid "Colors"
 msgstr "Couleurs"
 #
 msgid "Continue..."
-msgstr ""
+msgstr "Continuer ...."
 #
 msgid "Copy First Cumulative Missing Record"
 msgstr "Copier le premier enregistrement cumulatif manquant"
@@ -74,6 +83,10 @@ msgstr "Copier les enregistrements de vagues  manquants"
 #
 msgid "Current"
 msgstr "Courant"
+#
+#, fuzzy
+msgid "Data at Cursor Position:"
+msgstr "Valeurs des données sous la souris"
 #
 msgid "Data available"
 msgstr "Donnée valide"
@@ -90,20 +103,17 @@ msgstr "Direction des flèches"
 msgid "Display"
 msgstr "Afficher"
 #
-#, fuzzy
 msgid "Display Iso CAPE"
-msgstr "Afficher les isobarres"
+msgstr "Afficher les iso Cape"
 #
 msgid "Display Isobars"
 msgstr "Afficher les isobarres"
 #
-#, fuzzy
 msgid "Display Isotachs"
-msgstr "Afficher les isobarres"
+msgstr "Afficher les isotaches"
 #
-#, fuzzy
 msgid "Display Isotherms"
-msgstr "Afficher les isobarres"
+msgstr "Afficher les isothermes"
 #
 msgid "Error:  Can't read this File!"
 msgstr "Erreur : Impossible de lire ce fichier !"
@@ -160,16 +170,20 @@ msgstr "Générique"
 #
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
-"Obtenir ce code dans le forum de Zygrib ( Ce n'est pas votre mot de passe )"
+"Obtenir ce code dans le site web de Zygrib ( Ce n'est pas votre mot de passe )"
 #
 msgid "Grib"
 msgstr "Grib"
+#
+#, fuzzy
+msgid "Grib Data Table"
+msgstr "Donnée valide"
 #
 msgid "Grib Preferences"
 msgstr "Préférences"
 #
 msgid "Grib Settings"
-msgstr "Préférences GRIB"
+msgstr "Préférences d'affichage des prévisions"
 #
 msgid "Hours"
 msgstr "heures"
@@ -178,7 +192,7 @@ msgid "Inches"
 msgstr "Pouces"
 #
 msgid "Interpolate between gribs"
-msgstr "Interpoler entre GRIB"
+msgstr "Interpoler entre tranches horaires"
 #
 msgid "Interval"
 msgstr "Intervalle"
@@ -190,14 +204,13 @@ msgid "Knots"
 msgstr "Noeuds"
 #
 msgid "Load File Options"
-msgstr "Option de fichier"
+msgstr "Options de chargement de fichier"
 #
-#, fuzzy
 msgid "Load the Last Opened File"
-msgstr "Chargez le dernier fichier ouvert"
+msgstr "Charger le dernier fichier utilisé"
 #
 msgid "Load the More Recent File in Directory"
-msgstr "Chargez le plus récent fichier du dossier"
+msgstr "Charger le plus récent fichier du dossier"
 #
 msgid "Local Time"
 msgstr "Heure Locale"
@@ -251,7 +264,6 @@ msgstr "Pourcentage"
 msgid "Play"
 msgstr "Jouer"
 #
-#, fuzzy
 msgid "Please Zoom or Scale Out to view invisible overlays:"
 msgstr ""
 "Veuillez diminuer le zoom ou l'échelle pour afficher les données non visibles"
@@ -286,7 +298,10 @@ msgstr ""
 "Sauvegardez ou annulez pour finir. ..."
 #
 msgid "Resolution"
-msgstr "Resolution"
+msgstr "Résolution"
+#
+msgid "Rotated overlays suppressed in DC mode"
+msgstr ""
 #
 msgid "Save"
 msgstr "Sauvegarder"
@@ -321,15 +336,16 @@ msgstr "Tranches par heure"
 msgid "Spacing"
 msgstr "Espacement"
 #
-#, fuzzy
 msgid "Start Options"
-msgstr "Zone horaire"
+msgstr "Options de démarrage"
 #
 msgid "Start at the first forecast in GRIB file"
-msgstr ""
+msgstr "Ouvrir la première tranche de prévisions météo"
 #
 msgid "Start at the nearest forecast to current time"
 msgstr ""
+"Ouvrir la tranche horaire de prévisions météo la plus proche de l'heure "
+"actuelle"
 #
 msgid "Stop"
 msgstr "Stop"
@@ -354,7 +370,7 @@ msgid "This is your zyGrib's forum access Login"
 msgstr "Ceci est votre login d'accès au forum de Zygrib"
 #
 msgid "Time Options"
-msgstr "Zone horaire"
+msgstr "Options de date"
 #
 msgid "Time Range"
 msgstr "Zone horaire"
@@ -369,7 +385,7 @@ msgid "Updates per Second"
 msgstr "Mises à jour par seconde"
 #
 msgid "Use Gradual Colors"
-msgstr "Utilisez le dégradé de couleur"
+msgstr "Utiliser le dégradé de couleur"
 #
 #
 msgid "Use High Definition Graphics"
@@ -387,6 +403,9 @@ msgstr "Vagues"
 msgid "WavesModel"
 msgstr "Modèle des vagues"
 #
+msgid "Weather table"
+msgstr ""
+#
 msgid "Wind"
 msgstr "Vent"
 #
@@ -394,26 +413,34 @@ msgid "Wind Gust"
 msgstr "Rafale de vent"
 #
 msgid "Write and send eMail request"
-msgstr "Préparation et envoi des caractéristiques de la requête GRIB"
+msgstr "Préparation et envoi de l'email pour la requête GRIB"
 #
 msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
 "interpolated!"
 msgstr ""
+"Vous avez choisi d'autoriser l'interpolation.\n"
+"N'oubliez pas que les données affichées pour l'heure actuelle ne "
+"correspondent pas à la réalité mais sont interpolées."
 #
-#, fuzzy
+msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+msgstr ""
+#
 msgid ""
 "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
 msgstr ""
 "Votre demande est prête. Un Mail est preparé dans votre logiciel mail.\n"
-"Il vous reste à cliquer sur  'Envoyer' .\n"
-"Sauvegardez ou Annulez pour continuer ... ou entrer de nouveaux paramètres "
+"Il vous reste à vérifier son contenu et à cliquer sur  'Envoyer' .\n"
+"Sauvegardez ou Annulez pour terminer ... ou entrer de nouveaux paramètres "
 "pour un nouvel email ...."
 #
-#, fuzzy
 msgid ""
 "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
@@ -421,14 +448,17 @@ msgid ""
 msgstr ""
 "Votre demande a été envoyée\n"
 "(si votre systeme a un MTA configuré et est capable d'envoyer des mails).\n"
-"Sauvegardez ou annulez pour continuer ... ou entrez de nouveaux paramètres "
+"Sauvegardez ou annulez pour terminer ... ou entrez de nouveaux paramètres "
 "pour un nouvel email ..."
 #
-msgid "inHG"
+msgid "Zoom To Center"
 msgstr ""
 #
+msgid "inHG"
+msgstr "inHG"
+#
 msgid "j/kg"
-msgstr ""
+msgstr "j/kg"
 #
 msgid "km/h"
 msgstr "km/h"
@@ -450,115 +480,3 @@ msgstr "Votre code Zygrib"
 #
 msgid "zyGrib Login"
 msgstr "Votre login Zygrib"
-#
-#~ msgid " (Dup)"
-#~ msgstr " (Dup)"
-#
-#~ msgid "0.2"
-#~ msgstr "0.2"
-#
-#~ msgid "0.5"
-#~ msgstr "0.5"
-#
-#~ msgid "0.8"
-#~ msgstr "0.8"
-#
-#~ msgid "1"
-#~ msgstr "1"
-#
-#~ msgid "1.6"
-#~ msgstr "1.6"
-#
-#~ msgid "12"
-#~ msgstr "12"
-#
-#~ msgid "2"
-#~ msgstr "2"
-#
-#~ msgid "24"
-#~ msgstr "24"
-#
-#~ msgid "3"
-#~ msgstr "3"
-#
-#~ msgid "4"
-#~ msgstr "4"
-#
-#~ msgid "5"
-#~ msgstr "5"
-#
-#~ msgid "6"
-#~ msgstr "6"
-#
-#~ msgid "7"
-#~ msgstr "7"
-#
-#~ msgid "8"
-#~ msgstr "8"
-#
-#~ msgid "Air Temperature"
-#~ msgstr "Température de l'air"
-#
-#~ msgid "AirTemp"
-#~ msgstr "Temp. Air"
-#
-#~ msgid "AirTemperature"
-#~ msgstr "Température de l'air"
-#
-#~ msgid "COAMPS"
-#~ msgstr "COAMPS"
-#
-#~ msgid "Celcius"
-#~ msgstr "Celsius"
-#
-#~ msgid "Cloud"
-#~ msgstr "Nuage"
-#
-#~ msgid "CloudCover"
-#~ msgstr "Couverture nuageuse"
-#
-#~ msgid "Data available in the selected forecast model"
-#~ msgstr "Données demandées dans le modèle de prévision choisi"
-#
-#~ msgid "Display Iso Temp. Lines"
-#~ msgstr "Afficher les isothermes"
-#
-#~ msgid "GFS"
-#~ msgstr "GFS"
-#
-#~ msgid "Login you use to connect to Zygrib's forum"
-#~ msgstr "Login que vous utilisez pour vous connecter au forum de Zygrib."
-#
-#~ msgid "Precipitation"
-#~ msgstr "Précipitation"
-#
-#~ msgid "RTOFS"
-#~ msgstr "RTOFS"
-#
-#~ msgid "Rain"
-#~ msgstr "Pluie"
-#
-#
-#~ msgid "Ref : "
-#~ msgstr "Ref : "
-#
-#~ msgid "Saildocs"
-#~ msgstr "Saildocs"
-#
-#~ msgid "Sea Temperature"
-#~ msgstr "Température de l'eau"
-#
-#~ msgid "SeaTemp"
-#~ msgstr "Temp. eau"
-#
-#~ msgid "SeaTemperature"
-#~ msgstr "Température de l'eau"
-#
-#~ msgid "Wave"
-#~ msgstr "Vague"
-#
-#~ msgid "WindGust"
-#~ msgstr "Rafale de vent"
-#
-#~ msgid "ZyGrib"
-#~ msgstr "ZyGrib"

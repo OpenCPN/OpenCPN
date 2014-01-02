@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-01 19:14-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -20,6 +20,9 @@ msgid " Mo )"
 msgstr ""
 #
 msgid "( Max "
+msgstr ""
+#
+msgid "00N  00W"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
@@ -40,6 +43,9 @@ msgstr ""
 msgid "Barbed Arrows"
 msgstr ""
 #
+msgid "Beaufort"
+msgstr ""
+#
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
@@ -52,6 +58,9 @@ msgid "CAPE"
 msgstr ""
 #
 msgid "Celsius"
+msgstr ""
+#
+msgid "Close"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -99,6 +108,9 @@ msgstr ""
 #, fuzzy
 msgid "Current"
 msgstr "Velocità Corrente (nodi)"
+#
+msgid "Data at Cursor Position:"
+msgstr ""
 #
 msgid "Data available"
 msgstr ""
@@ -187,6 +199,9 @@ msgstr ""
 #
 msgid "Grib"
 msgstr "Mostra Pannello GRIB"
+#
+msgid "Grib Data Table"
+msgstr ""
 #
 #, fuzzy
 msgid "Grib Preferences"
@@ -309,6 +324,9 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
+msgid "Rotated overlays suppressed in DC mode"
+msgstr ""
+#
 msgid "Save"
 msgstr ""
 #
@@ -417,6 +435,9 @@ msgstr ""
 msgid "WavesModel"
 msgstr ""
 #
+msgid "Weather table"
+msgstr ""
+#
 msgid "Wind"
 msgstr ""
 #
@@ -433,6 +454,13 @@ msgid ""
 msgstr ""
 #
 msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+msgstr ""
+#
+msgid ""
 "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
@@ -442,6 +470,9 @@ msgid ""
 "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
+msgstr ""
+#
+msgid "Zoom To Center"
 msgstr ""
 #
 msgid "inHG"
@@ -485,9 +516,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "Dati GRIB"
+#
 #
 #
 #
@@ -501,8 +534,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -541,9 +576,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Zoom out o riduci scala per vedere SEATEMP soppressi"
+#
 #
 #
 #
@@ -563,9 +600,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Zoom out o riduci scala per vedere OCEAN CURRENT soppressi"
+#
 #
 #
 #
@@ -583,6 +622,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Zoom out o riduci scala per vedere CRAIN GRIB soppressi"
@@ -593,9 +633,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Pressione (hPa)"
+#
 #
 #
 #
@@ -644,8 +686,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "Mostra l'icona GRIB"
+#
 #
 #
 #
@@ -686,8 +730,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "Attenzione:  Dati QuickScat GRIB sono vecchi di %d ore."
+#
 #
 #
 #
@@ -705,6 +751,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Direzione Vento (gradi)"
@@ -715,9 +762,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Velocità Vento (nodi)"
+#
 #
 #
 #

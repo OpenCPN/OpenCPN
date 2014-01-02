@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-17 19:30-0500\n"
-"PO-Revision-Date: 2013-01-05 09:50+0200\n"
+"PO-Revision-Date: 2013-12-02 17:22+0200\n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -16,57 +16,75 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Basepath: C:\\GIT\\opencpn2\\opencpn\\plugins\\dashboard_pi\n"
+
 #
 msgid " mag"
 msgstr "Manyetik"
+
 #
 msgid " true"
 msgstr "Gerçek"
+
 #
 msgid "Add"
 msgstr "Ekle"
+
 #
 msgid "Add instrument"
 msgstr "Araç Ekle"
+
 #
 msgid "Air Temp."
 msgstr "Hava Sıcaklığı"
+
 #
 msgid "App. Wind Angle"
 msgstr "Görünen Rüzgar Açısı"
+
 #
 msgid "App. Wind Angle & Speed"
 msgstr "Görünen Rüzgar Açısı ve Hızı"
+
 #
 msgid "App. Wind Speed"
 msgstr "Görünen Rüzgar Hızı"
+
 #
 msgid "Appearance"
 msgstr "Görünüm"
+
 #
 msgid "Boat speed units:"
-msgstr ""
+msgstr "Tekne hız birimleri:"
+
 #
 msgid "COG"
 msgstr "COG"
+
 #
 msgid "Caption:"
 msgstr "Başlık:"
+
 #
 msgid "Clock"
 msgstr "Saat"
+
 #
 msgid "Compass"
 msgstr "Pusula"
+
 #
 msgid "Cursor"
 msgstr "Fare"
+
 #
 msgid "Dashboard"
 msgstr "Gösterge Paneli"
+
 #
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "OpenCPN Gösterge Paneli Eklentisi"
+
 #
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
@@ -74,221 +92,281 @@ msgid ""
 msgstr ""
 "OpenCPN Göstege Paneli Eklentisi\n"
 " NMEA kaynaklı seyir araçlarını gösterir."
+
 #
 msgid "Dashboard preferences"
 msgstr "Gösterge Paneli Ayarları"
+
 #
 msgid "Data:"
 msgstr "Veri:"
+
 #
 msgid "Delete"
 msgstr "Sil"
+
 #
 msgid "Depth"
 msgstr "Derinlik"
+
 #
 msgid "Distance units:"
-msgstr ""
+msgstr "Uzaklık birimleri:"
+
 #
 msgid "Down"
 msgstr "Aşağı"
+
 #
 msgid "E"
 msgstr "D"
+
 #
 msgid "ENE"
 msgstr "DKD"
+
 #
 msgid "ESE"
 msgstr "DGD"
+
 #
 msgid "Fonts"
-msgstr "Harf"
+msgstr "Yazım şekli"
+
 #
 msgid "GPS Compass"
 msgstr "GPS Pusula"
+
 #
 msgid "GPS Status"
 msgstr "GPS Durumu"
+
 #
 msgid "GPS in View"
 msgstr "GPS Görünümü"
+
 #
 msgid "Honor OpenCPN settings"
-msgstr ""
+msgstr "OpenCPN'de belirlenen ayarlar"
+
 #
 msgid "Horizontal"
 msgstr "Yatay"
+
 #
 msgid "Instruments"
 msgstr "Araçlar"
+
 #
 msgid "Kilometers"
-msgstr ""
+msgstr "Kilometre"
+
 #
 msgid "Kts"
-msgstr "Knt"
+msgstr "Knot"
+
 #
 msgid "Label:"
 msgstr "Etiket:"
+
 #
 msgid "Mag HDG"
 msgstr "Manyetik Pruva"
+
 #
 #, c-format
 msgid "Max %.1f since %02d:%02d  Overall %.1f"
-msgstr ""
+msgstr "Ençok %.1f %02d:%02d den beri Toplam %.1f"
+
 #
 msgid "Meters"
-msgstr ""
+msgstr "Metre"
+
 #
 msgid "Moon phase"
 msgstr "Ay Dönemi"
+
 #
 msgid "N"
 msgstr "K"
+
 #
 msgid "NE"
 msgstr "KD"
+
 #
 msgid "NNE"
 msgstr "KKD"
+
 #
 msgid "NNW"
 msgstr "KKB"
+
 #
 msgid "NW"
 msgstr "KB"
+
 #
 msgid "Nautical miles"
-msgstr ""
+msgstr "Deniz mili"
+
 #
 msgid "Orientation:"
 msgstr "Görünüş:"
+
 #
 msgid "Position"
 msgstr "Mevki"
+
 #
 msgid "Preferences..."
-msgstr "Ayarlar..."
+msgstr "Ayarlar"
+
 #
 msgid "Rudder Angle"
 msgstr "Dümen Açısı"
+
 #
 msgid "S"
 msgstr "G"
+
 #
 msgid "SE"
 msgstr "GD"
+
 #
 msgid "SOG"
 msgstr "SOG"
+
 #
 msgid "SSE"
 msgstr "GGD"
+
 #
 msgid "SSW"
 msgstr "GGB"
+
 #
 msgid "STW"
 msgstr "STW"
+
 #
 msgid "SW"
 msgstr "GB"
+
 #
 msgid "Select instrument to add:"
 msgstr "Eklemek İçin Araç Seç:"
+
 #
 msgid "Small:"
 msgstr "Küçük:"
+
 #
 msgid "Speedometer"
 msgstr "Hızölçer"
+
 #
-#, fuzzy
 msgid "Speedometer max value:"
-msgstr "Hızölçer"
+msgstr "Hızölçerin en yüksek değeri:"
+
 #
 msgid "Statute miles"
-msgstr ""
+msgstr "Kara mili"
+
 #
 msgid "Sum Log"
-msgstr ""
+msgstr "Toplam kütük"
+
 #
 msgid "Sunrise/Sunset"
 msgstr "Gündoğumu/Günbatımı"
+
 #
 msgid "Title:"
 msgstr "Adı:"
+
 #
 msgid "Trip Log"
-msgstr ""
+msgstr "Yol kütüğü"
+
 #
 msgid "True HDG"
 msgstr "Gerçek Pruva"
+
 #
 msgid "True Wind Angle"
 msgstr "Gerçek Rüzgar Açısı"
+
 #
 msgid "True Wind Angle & Speed"
 msgstr "Gerçek Rüzgar Açısı ve Yönü"
+
 #
 msgid "True Wind Dir. & Speed"
 msgstr "Gerçek Rüzgar Yönü ve Hızı"
+
 #
 msgid "True Wind Direction"
 msgstr "Gerçek Rüzgar Yönü"
+
 #
 msgid "True Wind Speed"
 msgstr "Gerçek Rüzgar Hızı"
+
 #
 msgid "Units, Ranges, Formats"
-msgstr ""
+msgstr "Birimler, aralıklar, yazım şekilleri"
+
 #
 msgid "Up"
 msgstr "Yukarı"
+
 #
 msgid "VMG"
 msgstr "VMG"
+
 #
 msgid "Vertical"
 msgstr "Dikey"
+
 #
 msgid "W"
 msgstr "B"
+
 #
 msgid "WNW"
 msgstr "BKB"
+
 #
 msgid "WSW"
 msgstr "BGB"
+
 #
 msgid "Water Temp."
 msgstr "Su Sıcaklığı"
+
 #
 msgid "Wind history"
 msgstr "Rüzgar Gemişi"
+
 #
 msgid "Wind speed units:"
-msgstr ""
+msgstr "Rüzgar hız birimleri:"
+
 #
 msgid "km/h"
-msgstr ""
+msgstr "km/saat"
+
 #
 msgid "m/s"
-msgstr ""
+msgstr "metre/saniye"
+
 #
 msgid "mph"
-msgstr ""
+msgstr "mil/saat"
+
 #
 msgid "show this dashboard"
 msgstr "Bu Paneli Göster"
-#
-#~ msgid "Apparent wind"
-#~ msgstr "scheinbarer Wind"
-#
-#~ msgid "Edit"
-#~ msgstr "Bearbeiten"
-#
-#~ msgid "Instrument width:"
-#~ msgstr "Instrumenten Breite:"
+

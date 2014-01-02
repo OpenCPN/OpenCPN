@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-01 19:14-0500\n"
 "PO-Revision-Date: 2010-11-28 17:53+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: \n"
@@ -23,6 +23,9 @@ msgid " Mo )"
 msgstr ""
 #
 msgid "( Max "
+msgstr ""
+#
+msgid "00N  00W"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
@@ -43,6 +46,9 @@ msgstr ""
 msgid "Barbed Arrows"
 msgstr ""
 #
+msgid "Beaufort"
+msgstr ""
+#
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
@@ -55,6 +61,9 @@ msgid "CAPE"
 msgstr ""
 #
 msgid "Celsius"
+msgstr ""
+#
+msgid "Close"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -100,6 +109,9 @@ msgstr ""
 #, fuzzy
 msgid "Current"
 msgstr "Prędkość prądu, w."
+#
+msgid "Data at Cursor Position:"
+msgstr ""
 #
 msgid "Data available"
 msgstr ""
@@ -191,6 +203,9 @@ msgstr ""
 # 
 msgid "Grib"
 msgstr "Grib"
+#
+msgid "Grib Data Table"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -315,6 +330,9 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
+msgid "Rotated overlays suppressed in DC mode"
+msgstr ""
+#
 msgid "Save"
 msgstr ""
 #
@@ -423,6 +441,9 @@ msgstr ""
 msgid "WavesModel"
 msgstr ""
 #
+msgid "Weather table"
+msgstr ""
+#
 # 
 msgid "Wind"
 msgstr ""
@@ -440,6 +461,13 @@ msgid ""
 msgstr ""
 #
 msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+msgstr ""
+#
+msgid ""
 "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
@@ -449,6 +477,9 @@ msgid ""
 "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
+msgstr ""
+#
+msgid "Zoom To Center"
 msgstr ""
 #
 msgid "inHG"
@@ -479,6 +510,7 @@ msgid "zyGrib Login"
 msgstr ""
 #
 #
+#
 # 
 # 
 # 
@@ -498,6 +530,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Data Display Preferences"
@@ -505,9 +538,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -541,10 +576,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Zmniejsz skalę lub powiększenie by zobaczyć SEATEMP"
+#
 #
 #
 #
@@ -558,11 +595,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Zmniejsz skalę lub powiększenie by zobaczyć OCEAN CURRENT"
+#
 #
 #
 #
@@ -575,6 +614,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
@@ -583,10 +623,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Ciśnienie, mbar"
+#
 #
 #
 #
@@ -606,6 +648,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Preferencje GRIB"
+#
 #
 #
 #
@@ -639,10 +682,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Wysokość fali znacznej, m"
+#
 #
 #
 #
@@ -677,10 +722,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "Kierunek wiatru"
+#
 #
 #
 #
@@ -693,10 +740,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Prędkość wiatru, w."
+#
 #
 #
 #

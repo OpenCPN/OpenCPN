@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
-"PO-Revision-Date: 2012-06-03 20:54+0200\n"
+"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"PO-Revision-Date: 2013-12-10 18:46+0200\n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
 "Language: \n"
@@ -20,48 +20,59 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 #
 msgid " (Max size )"
-msgstr ""
+msgstr "(En büyük ölçek)"
 #
 msgid " Mo )"
-msgstr ""
+msgstr " En küçük )"
 #
 msgid "( Max "
+msgstr "(En büyük"
+#
+msgid "00N  00W"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr ""
+msgstr "eMail istemek için adres gönderildi. (LINUX için zorunlu)"
 #
 msgid "Air Temp"
-msgstr ""
+msgstr "Hava Sıcaklığı"
 #
 msgid "Air Temperature(2m)"
-msgstr ""
+msgstr "Hava Sıcaklığı (2m)"
 #
 msgid "Apply"
-msgstr ""
+msgstr "Uygula"
 #
 msgid "Authorize Interpolation to start at current time"
-msgstr ""
+msgstr "Zaman ayarını şimdi başlat."
 #
 msgid "Barbed Arrows"
+msgstr "Sakallı Oklar"
+#
+msgid "Beaufort"
 msgstr ""
 #
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr ""
+"ZyGrib'e email göndermeden önce ve kullanıcı adı ve şifrenizi girin.\n"
+"Lütfen  www.zygrib.org/ sayfasına bağlanıp gösterilen yolu izleyin..."
 #
 msgid "Building Isobar map"
-msgstr ""
+msgstr "Eşbasınç haritası oluşturuluyor."
 #
 msgid "CAPE"
-msgstr ""
+msgstr "CAPE"
 #
 msgid "Celsius"
+msgstr "Santigrad"
+#
+msgid "Close"
 msgstr ""
 #
 msgid "Cloud Cover"
-msgstr ""
+msgstr "Bulut Durumu"
 #
 #
 #
@@ -85,75 +96,77 @@ msgstr ""
 #
 #
 #
-#, fuzzy
 msgid "Colors"
-msgstr "&Kapat"
+msgstr "Renkler"
 #
 msgid "Continue..."
-msgstr ""
+msgstr "Devam"
 #
 msgid "Copy First Cumulative Missing Record"
-msgstr ""
+msgstr "İlk Kayıp Birikimli Kaydı Kopyala"
 #
 msgid "Copy Missing Wave Records"
-msgstr ""
+msgstr "Kayıp Dalga Raporunu Kopyala"
 #
 #
+#
+msgid "Current"
+msgstr "Akıntı"
 #
 #, fuzzy
-msgid "Current"
-msgstr "Akıntı hızı, Kts"
+msgid "Data at Cursor Position:"
+msgstr "GRIB Verisini Farede Göster"
 #
 msgid "Data available"
-msgstr ""
+msgstr "Veri alınabilir"
 #
 msgid "Days"
-msgstr ""
+msgstr "Gün"
 #
 msgid "Deg"
-msgstr ""
+msgstr "Derece"
 #
 msgid "Direction Arrows"
-msgstr ""
+msgstr "Yön Okları"
 #
 msgid "Display"
-msgstr ""
+msgstr "Gösterilen Veriler"
 #
 msgid "Display Iso CAPE"
-msgstr ""
+msgstr "Eş CAP çizgilerini göster"
 #
 msgid "Display Isobars"
-msgstr ""
+msgstr "Eşbasınç Çizgilerini Göster"
 #
 msgid "Display Isotachs"
-msgstr ""
+msgstr "Isotachs çizgilerini göster"
 #
 msgid "Display Isotherms"
-msgstr ""
+msgstr "Eşsıcaklık çizgilerini göster"
 #
 msgid "Error:  Can't read this File!"
-msgstr ""
+msgstr "Hata: Dosya okunamıyor"
 #
 msgid "Error:  File does not exist!"
-msgstr ""
+msgstr "Hata: Dosya yok!"
 #
 msgid "Error:  No valid data in this file!"
-msgstr ""
+msgstr "Hata: Bu dosyada geçerli veri yok"
 #
 msgid "Estimated File Size"
-msgstr ""
+msgstr "Hesaplanan Dosya Boyutu"
 #
 msgid "Fahrenheit"
-msgstr ""
+msgstr "Fahrenayt"
 #
 msgid "Feet"
-msgstr ""
+msgstr "Ayak"
 #
 msgid "Forecast Model "
-msgstr ""
+msgstr "Tahmin Modeli"
 #
 msgid "GRIB Data at Cursor"
-msgstr ""
+msgstr "GRIB Verisini Farede Göster"
 #
 msgid "GRIB Display Control"
 msgstr "GRIB Görüntü Denetim Panosu"
@@ -181,139 +194,146 @@ msgstr ""
 "- Yüzey akıntılarının yönü ve hızı."
 #
 msgid "Generic"
-msgstr ""
+msgstr "Üretilmiş"
 #
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
-msgstr ""
+msgstr "Bu kodu zyGrib formundan al. (Bu sisin şifreniz değil!)"
 #
 msgid "Grib"
 msgstr "GRIB"
 #
 #, fuzzy
+msgid "Grib Data Table"
+msgstr "Veri alınabilir"
+#
 msgid "Grib Preferences"
-msgstr "GRIB Seçenekleri"
+msgstr "GRIB Ayarları"
 #
 msgid "Grib Settings"
-msgstr ""
+msgstr "GRIB Ayarları"
 #
 msgid "Hours"
-msgstr ""
+msgstr "Saat"
 #
 msgid "Inches"
-msgstr ""
+msgstr "İnç"
 #
 msgid "Interpolate between gribs"
-msgstr ""
+msgstr "Gribler arası dönem"
 #
 msgid "Interval"
-msgstr ""
+msgstr "Aralık"
 #
 msgid "IsoBars"
-msgstr ""
+msgstr "Eşbasınç"
 #
 msgid "Knots"
-msgstr ""
+msgstr "Knot"
 #
 msgid "Load File Options"
-msgstr ""
+msgstr "Dosya Seçeneklerini yükle"
 #
 msgid "Load the Last Opened File"
-msgstr ""
+msgstr "Son açılan dosyayı yükle"
 #
 msgid "Load the More Recent File in Directory"
-msgstr ""
+msgstr "Klasördeki Son Tarihli Dosyayı Aç"
 #
 msgid "Local Time"
-msgstr ""
+msgstr "Yerel Zaaman"
 #
 msgid "Loop Mode"
-msgstr ""
+msgstr "Yakınlaştırma Durumu"
 #
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr ""
+"eMail hatası: MAPI32.DLL dosyası yüklenmemiş ya da bu bilgisayar için geçerli "
+"değil."
 #
 msgid "Mail"
-msgstr ""
+msgstr "eMail"
 #
 msgid "Mail To "
-msgstr ""
+msgstr "Adresine email gönder"
 #
 msgid "Meters"
-msgstr ""
+msgstr "Metre"
 #
 msgid "MilliBars"
-msgstr ""
+msgstr "MiliBar"
 #
 msgid "Millimeters"
-msgstr ""
+msgstr "Milimetre"
 #
 msgid "N/A"
-msgstr ""
+msgstr "Veri Yok"
 #
 msgid "Next"
-msgstr ""
+msgstr "Sonraki"
 #
 msgid "Now"
-msgstr ""
+msgstr "Şimdi"
 #
 msgid "Numbers"
-msgstr ""
+msgstr "Sayılar"
 #
 msgid "Open File"
-msgstr ""
+msgstr "Dosya aç"
 #
 msgid "Overlay Transparency"
-msgstr ""
+msgstr "Bindirimin Geçirgenlik Derecesi"
 #
 msgid "OverlayMap"
-msgstr ""
+msgstr "Haritaya bindir"
 #
 msgid "Percentage"
-msgstr ""
+msgstr "Yüzde"
 #
 msgid "Play"
-msgstr ""
+msgstr "Oynat"
 #
 #
 #
-#, fuzzy
 msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr ""
-"Zur Anzeige der ausgeblendeten HTSGW GRIB-Daten bitte herauszoom oder Maßstab "
-"verkleinern."
+msgstr "Bindirimi görebilmek için haritayı yakınlaştırın yada uzaklaştırın."
 #
 #
 #
-#, fuzzy
 msgid "Pressure"
-msgstr "Basınç, mBar"
+msgstr "Basınç "
 #
 msgid "Previous"
-msgstr ""
+msgstr "Önceki"
 #
 msgid "Profile"
-msgstr ""
+msgstr "Veriler"
 #
 msgid "Rainfall"
-msgstr ""
+msgstr "Yağış"
 #
 msgid "Range"
-msgstr ""
+msgstr "Aralık"
 #
 msgid "Request"
-msgstr ""
+msgstr "İstem"
 #
 msgid ""
 "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
 "Save or Cancel to finish..."
 msgstr ""
+"İstek gönderilemedi. Lütfen email değişkenlerinizin doğruluğundan emin olun.\n"
+"Aynı zamanda kütük dosyanıza bakın.\n"
+"Bitirmek için saklayın ya da iptal edin..."
 #
 msgid "Resolution"
+msgstr "Çözünürlük"
+#
+msgid "Rotated overlays suppressed in DC mode"
 msgstr ""
 #
 msgid "Save"
-msgstr ""
+msgstr "Sakla"
 #
 #
 #
@@ -325,114 +345,130 @@ msgstr ""
 #
 #
 #
-#, fuzzy
 msgid "Sea Temp"
-msgstr "Deniz yüzey sıcaklığı, °C"
+msgstr "Deniz sıcaklığı"
 #
 msgid "Sea Temperature(surf.)"
-msgstr ""
+msgstr "Deniz Yüzeyi Sıcaklığı"
 #
 #
 #
-#, fuzzy
 msgid "Select a GRIB file"
-msgstr "GRIB dosyasını seçin"
+msgstr "Bir GRIB dosyası seçin "
 #
 msgid "Send"
-msgstr ""
+msgstr "Gönder"
 #
 msgid "Sender eMail Address"
-msgstr ""
+msgstr "Göndericinin eMail Adresi"
 #
 msgid "Settings"
-msgstr ""
+msgstr "Ayarlar"
 #
 msgid "Size"
-msgstr ""
+msgstr "Büyüklük"
 #
 msgid "Slices per Update"
-msgstr ""
+msgstr "Güncelleme Aralığı"
 #
 msgid "Slices per hour"
-msgstr ""
+msgstr "Saatlik Aralıklar"
 #
 msgid "Spacing"
-msgstr ""
+msgstr "Aralama"
 #
 msgid "Start Options"
-msgstr ""
+msgstr "Seçenekleri Başlat"
 #
 msgid "Start at the first forecast in GRIB file"
-msgstr ""
+msgstr "İlk GRIB dosyasıyla başla"
 #
 msgid "Start at the nearest forecast to current time"
-msgstr ""
+msgstr "En güncel GRIB dosyasıyla başla"
 #
 msgid "Stop"
-msgstr ""
+msgstr "Dur"
 #
 msgid ""
 "The file size limit is overcome!\n"
 "You can zoom in and/or change parameters..."
 msgstr ""
+"Dosya büyüklük sınırı aşıldı. \n"
+"Daha da yakınlaşabilir ya da değişkenleri değiştirebilirsiniz..."
 #
 msgid ""
 "This file contains data for particular time intervals but you have chosen to "
 "display different intervals.\n"
 "Please consider that the values will be interpolated."
 msgstr ""
+"Bu dosya özel zaman dilimi verileri içeriyor. Siz farkıl zaman dilimi "
+"kullanılmasını seçtiniz.\n"
+"Lütfen değerlerin aralıklandırılacağını (interpolate) dikkate alın."
 #
 msgid "This is your zyGrib's forum access Login"
-msgstr ""
+msgstr "Bu sizin zyGrib's forumuna giriş parolanızdır."
 #
 msgid "Time Options"
-msgstr ""
+msgstr "Zaman Seçenekleri"
 #
 msgid "Time Range"
-msgstr ""
+msgstr "Zaman Aralığı"
 #
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 #
 msgid "Units"
-msgstr ""
+msgstr "Birimler"
 #
 msgid "Updates per Second"
-msgstr ""
+msgstr "Dakikada bir Güncelle"
 #
 msgid "Use Gradual Colors"
-msgstr ""
+msgstr "Geçici Renkleri Kullan"
 #
 #
 #
 msgid "Use High Definition Graphics"
-msgstr "Yüksek çözünürlükte grafik kullan."
+msgstr "Yüksek Çözünürlükte Grafik Kullan."
 #
 msgid "Warning!"
-msgstr ""
+msgstr "Uyarı!"
 #
 msgid "Warning:  Empty directory!"
-msgstr ""
+msgstr "Uyarı: Boş klasör!"
 #
 msgid "Waves"
-msgstr ""
+msgstr "Dalga"
 #
 msgid "WavesModel"
+msgstr "Dalga Modeli"
+#
+msgid "Weather table"
 msgstr ""
 #
 msgid "Wind"
-msgstr ""
+msgstr "Rüzgar"
 #
 msgid "Wind Gust"
-msgstr ""
+msgstr "Rüzgar Kaçağı"
 #
 msgid "Write and send eMail request"
-msgstr ""
+msgstr "eMail oluşturup gönderin"
 #
 msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
 "interpolated!"
+msgstr ""
+"Aralık değeri kullanılmasını (interpolation) onayladınız. \n"
+"Gösterilen değerin şimdiki gerçek değer yerine aralık değeri olduğunu "
+"unutmayın."
+#
+msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
 msgstr ""
 #
 msgid ""
@@ -440,39 +476,49 @@ msgid ""
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
 msgstr ""
+"İsteğiniz hazır. Sizin ortamınızda bir email hazırlandı. \n"
+"Sadece onaylayın ve gönderin...  \n"
+"Sonlandırmak için Sakla ya da İptal tuşuna basın ya da Devam edin..."
 #
 msgid ""
 "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
 msgstr ""
+"İsteğiniz gönderildi.  \n"
+"(Eğer sisteminizde bir MTA yapılandırılmış ve bir email gönderilelevekse).  \n"
+"Bitirmek için Sakla ya da İptal tuşuna basın... Ya da Devam edin..."
+#
+msgid "Zoom To Center"
+msgstr ""
 #
 msgid "inHG"
-msgstr ""
+msgstr "CivaBasıncında"
 #
 msgid "j/kg"
-msgstr ""
+msgstr "j/kg"
 #
 msgid "km/h"
-msgstr ""
+msgstr "km/saat"
 #
 msgid "m/s"
-msgstr ""
+msgstr "metre/saniye"
 #
 msgid "mmHG"
-msgstr ""
+msgstr "mmCivaBasıncı"
 #
 msgid "mph"
-msgstr ""
+msgstr "mil/saat"
 #
 msgid "playback"
-msgstr ""
+msgstr "Görünüm"
 #
 msgid "zyGrib Code"
-msgstr ""
+msgstr "zyGrib Kodu"
 #
 msgid "zyGrib Login"
-msgstr ""
+msgstr "zyGrib Bağlan"
+#
 #
 #
 #
@@ -494,6 +540,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB Seçenekleri"
@@ -502,8 +549,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -542,11 +591,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -568,11 +619,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Ozean-Strömung bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -592,6 +645,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr ""
@@ -604,9 +658,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Basınç, mBar"
+#
 #
 #
 #
@@ -655,8 +711,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "GRIB simgesini göster"
+#
 #
 #
 #
@@ -697,8 +755,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "DİKKAT: Acele GRIB verileri %d saat eskidir."
+#
 #
 #
 #
@@ -716,6 +776,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Rüzgar yönü"
@@ -726,37 +787,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
-#~ msgstr "Rüzgar hızı, Kts."
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Wind Speed, Kts."
 #~ msgstr "Rüzgar hızı, Kts."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-01 19:14-0500\n"
 "PO-Revision-Date: 2012-12-29 13:16+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: \n"
@@ -24,6 +24,9 @@ msgid " Mo )"
 msgstr ""
 #
 msgid "( Max "
+msgstr ""
+#
+msgid "00N  00W"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
@@ -44,6 +47,9 @@ msgstr ""
 msgid "Barbed Arrows"
 msgstr ""
 #
+msgid "Beaufort"
+msgstr ""
+#
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
@@ -56,6 +62,9 @@ msgid "CAPE"
 msgstr ""
 #
 msgid "Celsius"
+msgstr ""
+#
+msgid "Close"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -99,6 +108,9 @@ msgstr ""
 #, fuzzy
 msgid "Current"
 msgstr "Áramlat sebessége, csomó."
+#
+msgid "Data at Cursor Position:"
+msgstr ""
 #
 msgid "Data available"
 msgstr ""
@@ -184,6 +196,9 @@ msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
 #
 msgid "Grib"
+msgstr ""
+#
+msgid "Grib Data Table"
 msgstr ""
 #
 #, fuzzy
@@ -305,6 +320,9 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
+msgid "Rotated overlays suppressed in DC mode"
+msgstr ""
+#
 msgid "Save"
 msgstr ""
 #
@@ -407,6 +425,9 @@ msgstr ""
 msgid "WavesModel"
 msgstr ""
 #
+msgid "Weather table"
+msgstr ""
+#
 msgid "Wind"
 msgstr ""
 #
@@ -423,6 +444,13 @@ msgid ""
 msgstr ""
 #
 msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+msgstr ""
+#
+msgid ""
 "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
@@ -432,6 +460,9 @@ msgid ""
 "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
+msgstr ""
+#
+msgid "Zoom To Center"
 msgstr ""
 #
 msgid "inHG"
@@ -473,9 +504,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "GRIB adat"
+#
 #
 #
 #
@@ -511,8 +544,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB fájl könyvtár"
+#
 #
 #
 #
@@ -528,11 +563,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr ""
 #~ "Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
 #~ "megjelenítéséhez"
+#
 #
 #
 #
@@ -548,6 +585,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr ""
@@ -558,11 +596,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr ""
 #~ "Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
 #~ "megjelenítéséhez"
+#
 #
 #
 #
@@ -587,9 +627,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "BRIB beállítások"
+#
 #
 #
 #
@@ -646,8 +688,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Szélsebesség méter/sec-ben mutatása"
+#
 #
 #
 #
@@ -661,9 +705,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "Szél irány"
+#
 #
 #
 #
@@ -677,9 +723,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Szél sebesség, m/s."
+#
 #
 #
 #

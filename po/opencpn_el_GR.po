@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-22 20:37-0500\n"
+"POT-Creation-Date: 2014-01-01 19:13-0500\n"
 "PO-Revision-Date: 2013-10-18 13:15+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC Sailing Team <sailingteam@isc.tuc.gr>\n"
@@ -144,11 +144,18 @@ msgstr "%H ώρες  %M λεπτά"
 msgid " (Ctrl-Space)"
 msgstr " (Ctrl-Space)"
 #
+msgid " (Last Known)"
+msgstr ""
+#
 msgid " - "
 msgstr ""
 #
 msgid " -- [Portable(-p) executing from "
 msgstr " -- [Φορητό(-p) εκτελείται από "
+#
+#, fuzzy
+msgid " COG Unavailable"
+msgstr "Δεν υπάρχει χάρτης"
 #
 msgid " ChartFile:  "
 msgstr " ΑρχείοΧάρτη:"
@@ -186,10 +193,6 @@ msgstr " Ανανέωση: "
 #
 msgid " for details."
 msgstr " για λεπτομέρειες."
-#
-#, c-format
-msgid " is %5g"
-msgstr "είναι %5g"
 #
 msgid ""
 " shorter than rhumbline.\n"
@@ -308,6 +311,10 @@ msgid "-"
 msgstr "--"
 #
 msgid "--"
+msgstr "--"
+#
+#, fuzzy
+msgid "---"
 msgstr "--"
 #
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
@@ -444,6 +451,9 @@ msgstr ""
 msgid "?"
 msgstr ";"
 #
+msgid "A"
+msgstr ""
+#
 msgid "AIS"
 msgstr ""
 #
@@ -527,6 +537,9 @@ msgstr "Για προχωρημένους"
 msgid "Aground"
 msgstr "Προσαραγμένο"
 #
+msgid "Aid to Navigation"
+msgstr ""
+#
 msgid "All"
 msgstr "Όλα"
 #
@@ -538,6 +551,10 @@ msgstr "Όλοι οι διαθέσιμοι χάρτες"
 #
 msgid "All Charts"
 msgstr "Όλοι οι χάρτες"
+#
+#, fuzzy
+msgid "Altitude"
+msgstr "Γεωγρ. πλάτος"
 #
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -631,8 +648,15 @@ msgstr "Αυτόματα ημερήσια ίχνη πορείας"
 msgid "Avg. speed"
 msgstr "Μ. ταχύτητα"
 #
+msgid "B"
+msgstr ""
+#
 msgid "Base"
 msgstr "Βάση"
+#
+#, fuzzy
+msgid "Base Station"
+msgstr "Προορισμός"
 #
 msgid "Basic"
 msgstr "Βασικά"
@@ -926,6 +950,10 @@ msgstr "Διαλέξτε αρχείο"
 msgid "Class"
 msgstr ""
 #
+#, fuzzy
+msgid "Clear"
+msgstr "Εκκαθάριση όλων"
+#
 msgid "Clear All"
 msgstr "Εκκαθάριση όλων"
 #
@@ -1025,6 +1053,14 @@ msgstr "Β/Κ"
 #
 msgid "DSC"
 msgstr ""
+#
+#, fuzzy
+msgid "DSC Distress"
+msgstr "Κατάσταση κινδύνου"
+#
+#, fuzzy
+msgid "DSC Position Report"
+msgstr "Αναφορά θέσης"
 #
 msgid "Dark Blue"
 msgstr "Σκούρο μπλε"
@@ -1385,6 +1421,9 @@ msgstr "Αντιστάθμιση κεραίας GPS από το μέσον το�
 msgid "GPSD"
 msgstr ""
 #
+msgid "GPSGate Buddy"
+msgstr ""
+#
 msgid "GPX"
 msgstr ""
 #
@@ -1411,6 +1450,9 @@ msgstr "Η ομάδα \""
 #
 msgid "HSC"
 msgstr "Ταχύπλοο"
+#
+msgid "Heading"
+msgstr ""
 #
 msgid "Help"
 msgstr "Βοήθεια"
@@ -1451,6 +1493,9 @@ msgstr "Φωτισμένα ίχνη πορείας"
 msgid "I&mport GPX..."
 msgstr "Ε&ισαγωγή από GPX..."
 #
+msgid "IMO"
+msgstr ""
+#
 msgid "Icon"
 msgstr "Εικονίδιο"
 #
@@ -1485,6 +1530,9 @@ msgstr "Πληροφορίες: καταφύγια"
 #
 msgid "Information: Position of icebreakers"
 msgstr "Πληροφορίες: Τοποθεσία παγοθραυστικών"
+#
+msgid "Inland Blue Flag"
+msgstr ""
 #
 msgid "Input filtering"
 msgstr "Φίλτρο εισόδου"
@@ -1572,6 +1620,9 @@ msgstr "Οδηγός φάρος, μπρος"
 #
 msgid "Leading Light Rear"
 msgstr "Οδηγός φάρος, πίσω"
+#
+msgid "Left"
+msgstr ""
 #
 msgid "Leg"
 msgstr "Σκέλος"
@@ -2160,6 +2211,12 @@ msgstr "Αφαίρεσε τους χαμένους στόχους μετά απ�
 msgid "Rename Waypoints?"
 msgstr "Αλλαγή ονόματος σημείων πορείας;"
 #
+msgid "Report Age"
+msgstr ""
+#
+msgid "Report as of"
+msgstr ""
+#
 msgid "Report from ship: Icing info"
 msgstr "Αναφορά από πλοίο: πληροφορίες πάγου"
 #
@@ -2214,6 +2271,10 @@ msgstr "Εξάγει την αρχική επιλογή γλώσσας από τ
 msgid "Reverse..."
 msgstr "Αντιστροφή..."
 #
+#, fuzzy
+msgid "Right"
+msgstr "Φάρος"
+#
 msgid "Rogue or suspicious vessel"
 msgstr "Ύποπτο σκάφος"
 #
@@ -2262,11 +2323,17 @@ msgstr "Ι/Φ"
 msgid "SAR/V"
 msgstr "Σωστικό Σκ."
 #
+msgid "SART"
+msgstr ""
+#
 msgid "SOG COG"
 msgstr "Ταχύτητα, πορεία (SOG COG)"
 #
 msgid "Safe Water"
 msgstr "Ασφαλή νερά"
+#
+msgid "Safety Broadcast Message"
+msgstr ""
 #
 msgid "Safety Depth"
 msgstr "Ασφαλές βάθος"
@@ -2343,6 +2410,10 @@ msgstr "Φίλτρο δεδομένων"
 #
 msgid "Serial"
 msgstr "Σειριακή"
+#
+#, fuzzy
+msgid "Set"
+msgstr "Δύση ηλίου"
 #
 msgid "Set Anchor Watch"
 msgstr "Καθόρισε επιτήρηση αγκυροβολίας"
@@ -2499,6 +2570,10 @@ msgstr "Ειδικό"
 #
 msgid "Special Mark"
 msgstr "Ειδικό σημάδι"
+#
+#, fuzzy
+msgid "Special Position Report"
+msgstr "Αναφορά θέσης APRS"
 #
 msgid "Speed"
 msgstr "Ταχύτητα"
@@ -2774,6 +2849,9 @@ msgstr "Θεώρησε τις προτάσεις WPL ως αναφορές θέ�
 msgid "Tug"
 msgstr "Ρυμουλκό"
 #
+msgid "Turn Rate"
+msgstr ""
+#
 msgid "Type"
 msgstr "Τύπος"
 #
@@ -2800,6 +2878,10 @@ msgstr "Εν πλω"
 #
 msgid "Undo"
 msgstr "Επαναφορά"
+#
+#, fuzzy
+msgid "Unk"
+msgstr "Άγνωστο"
 #
 msgid "Unknown"
 msgstr "Άγνωστο"
@@ -2995,6 +3077,10 @@ msgstr ""
 msgid "_plus"
 msgstr "_συν"
 #
+#, fuzzy
+msgid "in"
+msgstr "Σύνδεσμος"
+#
 msgid "km"
 msgstr ""
 #
@@ -3013,6 +3099,10 @@ msgstr ""
 msgid "mi"
 msgstr "μ."
 #
+#, fuzzy
+msgid "min"
+msgstr "μ."
+#
 msgid "mph"
 msgstr "μ.α.ώ."
 #
@@ -3027,3 +3117,7 @@ msgstr ""
 #
 msgid "wxFB Website"
 msgstr "Ιστοσελίδα wxFB"
+#
+#
+#~ msgid " is %5g"
+#~ msgstr "είναι %5g"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.3.1006\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-01 19:14-0500\n"
 "PO-Revision-Date: 2013-10-14 23:57+0100\n"
 "Last-Translator: Frode Lynum <post@opencpn.kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -24,6 +24,9 @@ msgid " Mo )"
 msgstr ""
 #
 msgid "( Max "
+msgstr ""
+#
+msgid "00N  00W"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
@@ -45,6 +48,9 @@ msgstr ""
 msgid "Barbed Arrows"
 msgstr "Spisse piler"
 #
+msgid "Beaufort"
+msgstr ""
+#
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
@@ -57,6 +63,9 @@ msgid "CAPE"
 msgstr ""
 #
 msgid "Celsius"
+msgstr ""
+#
+msgid "Close"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -98,6 +107,10 @@ msgstr "Kopier manglende bølgeregistrering"
 #
 msgid "Current"
 msgstr "Strøm"
+#
+#, fuzzy
+msgid "Data at Cursor Position:"
+msgstr "GRIB data ved kursor"
 #
 msgid "Data available"
 msgstr ""
@@ -188,6 +201,9 @@ msgstr ""
 #
 msgid "Grib"
 msgstr "GRIB"
+#
+msgid "Grib Data Table"
+msgstr ""
 #
 msgid "Grib Preferences"
 msgstr "GRIB alternativer"
@@ -310,6 +326,9 @@ msgstr ""
 msgid "Resolution"
 msgstr "Oppløsning"
 #
+msgid "Rotated overlays suppressed in DC mode"
+msgstr ""
+#
 msgid "Save"
 msgstr ""
 #
@@ -414,6 +433,9 @@ msgstr "Bølge"
 msgid "WavesModel"
 msgstr "Modell"
 #
+msgid "Weather table"
+msgstr ""
+#
 msgid "Wind"
 msgstr "Vind"
 #
@@ -427,6 +449,13 @@ msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
 "interpolated!"
+msgstr ""
+#
+msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
 msgstr ""
 #
 #, fuzzy
@@ -448,6 +477,9 @@ msgstr ""
 "Din forespørsel ble sendt (hvis ditt system har en MTA konfigurert og kan "
 "sende epost).\n"
 "OK for å gå videre..."
+#
+msgid "Zoom To Center"
+msgstr ""
 #
 msgid "inHG"
 msgstr ""
@@ -477,8 +509,10 @@ msgid "zyGrib Login"
 msgstr ""
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (Dup)"
+#
 #
 #
 #
@@ -496,16 +530,20 @@ msgstr ""
 #~ msgstr " data"
 #
 #
+#
 #~ msgid "Action"
 #~ msgstr "Utfør"
+#
 #
 #
 #~ msgid "Celcius"
 #~ msgstr "Celcius"
 #
 #
+#
 #~ msgid "Cloud"
 #~ msgstr "Sky"
+#
 #
 #
 #
@@ -516,12 +554,15 @@ msgstr ""
 #~ msgstr "GRIB innstillinger"
 #
 #
+#
 #~ msgid "Error"
 #~ msgstr "Feil"
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Kunne ikke sende epost melding"
+#
 #
 #
 #
@@ -554,32 +595,40 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB fil katalog"
+#
 #
 #
 #~ msgid "KPH"
 #~ msgstr "KMT"
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "M/S"
+#
 #
 #
 #~ msgid "MPH"
 #~ msgstr "MPT"
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "MittMerke"
+#
 #
 #
 #~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
 #~ msgstr "OpenCPN klarte ikke å logge inn! Vennligst sjekk ditt epost system"
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "Parametre"
+#
 #
 #
 #~ msgid "Period"
@@ -589,9 +638,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØTEMP GRIB"
+#
 #
 #
 #
@@ -607,9 +658,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØSTRØM GRIB"
+#
 #
 #
 #
@@ -623,13 +676,16 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte CRAIN GRIB"
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Nedbør"
+#
 #
 #
 #
@@ -640,12 +696,15 @@ msgstr ""
 #~ msgstr "Lufttrykk, mb"
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
 #
 #
+#
 #~ msgid "Ref : "
 #~ msgstr "Ref : "
+#
 #
 #
 #~ msgid "Request Pofile"
@@ -666,9 +725,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB innstillinger"
+#
 #
 #
 #~ msgid "SeaTemp"
@@ -700,8 +761,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "Vis GRIB ikon"
+#
 #
 #
 #
@@ -738,8 +801,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ADVARSEL:  QuickSCAT GRIB data er %d timer gammel."
+#
 #
 #
 #
@@ -750,8 +815,10 @@ msgstr ""
 #~ msgstr "Vindretning"
 #
 #
+#
 #~ msgid "Wind Scat"
 #~ msgstr "Vindscat"
+#
 #
 #
 #
@@ -765,13 +832,16 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Vindhastighet, Knop"
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Sone"
+#
 #
 #
 #~ msgid "eMail error"
