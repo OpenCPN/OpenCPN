@@ -42,7 +42,7 @@
 #include <math.h>
 #include <time.h>
 
-#ifndef __MSW__
+#ifndef __WXMSW__
 #include <arpa/inet.h>
 #endif
 
@@ -263,7 +263,11 @@ void DataStream::Open(void)
                     conn_addr.Service(m_net_port);
                     conn_addr.AnyAddress();    
                     m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
+#ifdef __WXGTK__
                     in_addr_t addr = ((struct sockaddr_in *) m_addr.GetAddress()->m_addr)->sin_addr.s_addr;
+#else
+                    unsigned int addr = inet_addr(m_addr.IPAddress().mb_str());
+#endif
 
                     // Test if address is IPv4 multicast
                     if ((ntohl(addr) & 0xf0000000)  == 0xe0000000) {
