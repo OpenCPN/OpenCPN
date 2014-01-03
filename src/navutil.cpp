@@ -39,7 +39,7 @@
 #include "dychart.h"
 
 #include <stdlib.h>
-#include <math.h>
+//#include <math.h>
 #include <time.h>
 #include <locale>
 #include <deque>

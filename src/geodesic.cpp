@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include "geodesic.h"
 
 /* These methods implemented using the Vincenty method.

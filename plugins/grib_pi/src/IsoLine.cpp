@@ -32,8 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "GribSettingsDialog.h"
 #include "GribOverlayFactory.h"
 
-static void GenerateSpline(int n, wxPoint points[]);
-static void ClearSplineList();
+//static void GenerateSpline(int n, wxPoint points[]);
+//static void ClearSplineList();
 wxList ocpn_wx_spline_point_list;
 
 #include <wx/listimpl.cpp>
@@ -580,21 +580,21 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
         if (nb % density == 0)
         {
             Segment *seg = *it;
-            
+
 //            if(vp->vpBBox.PointInBox((seg->px1 + seg->px2)/2., (seg->py1 + seg->py2)/2., 0.))
             {
                 wxPoint ab;
                 GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
                 wxPoint cd;
                 GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
-                
+
                 int w = imageLabel.GetWidth();
                 int h = imageLabel.GetHeight();
 
                 int label_offset = 6;
                 int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
                 int yd = (ab.y + cd.y - h)/2;
-                
+
                 if(dc) {
                     /* don't use alpha for isobars, for some reason draw bitmap ignores
                        the 4th argument (true or false has same result) */
@@ -901,7 +901,7 @@ void GenSpline( wxList *points )
 
 }
 
-
+#if 0
 static void GenerateSpline(int n, wxPoint points[])
 {
       wxList list;
@@ -924,4 +924,4 @@ static void ClearSplineList()
             node = ocpn_wx_spline_point_list.GetFirst();
       }
 }
-
+#endif

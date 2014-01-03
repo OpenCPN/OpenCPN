@@ -36,6 +36,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <math.h>
 
 #include "georef.h"
 #include "cutil.h"
@@ -855,8 +856,8 @@ void ll_gc_ll(double lat, double lon, double brg, double dist, double *dlat, dou
 void ll_gc_ll_reverse(double lat1, double lon1, double lat2, double lon2,
                       double *bearing, double *dist)
 {
-    double th1,costh1,sinth1,sina12,cosa12,M,N,c1,c2,D,P,s1;
-    int merid, signS;
+//    double th1,costh1,sinth1,sina12,cosa12,M,N,c1,c2,D,P,s1;
+//    int merid, signS;
     
     /*   Input/Output from geodesic functions   */
     double al12;           /* Forward azimuth */
@@ -974,8 +975,8 @@ void PositionBearingDistanceMercator(double lat, double lon, double brg, double 
 
 double DistGreatCircle(double slat, double slon, double dlat, double dlon)
 {
-    double th1,costh1,sinth1,sina12,cosa12,M,N,c1,c2,D,P,s1;
-    int merid, signS;
+//    double th1,costh1,sinth1,sina12,cosa12,M,N,c1,c2,D,P,s1;
+//    int merid, signS;
     
     /*   Input/Output from geodesic functions   */
     double al12;           /* Forward azimuth */

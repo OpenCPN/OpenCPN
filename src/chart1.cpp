@@ -8869,8 +8869,9 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
                     int timeout_sec, int x, int y  )
 {
 
-    long parent_style;
 #ifdef __WXOSX__
+    long parent_style;
+    
     if(g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->Hide();
 

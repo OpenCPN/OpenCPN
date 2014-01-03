@@ -70,6 +70,7 @@ bool PointInLLBox( PlugIn_ViewPort *vp, double x, double y )
     return FALSE;
 }
 
+#if 0
 static wxString MToString( int DataCenterModel )
 {
     switch( DataCenterModel ) {
@@ -83,6 +84,8 @@ static wxString MToString( int DataCenterModel )
     default : return  _T("OTHER_DATA_CENTER");
     }
 }
+#endif
+
 #if 0
 static wxString TToString( const wxDateTime date_time, const int time_zone )
 {

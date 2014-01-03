@@ -305,7 +305,6 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
             
             else
             if( ChildName == _T ( "extensions" ) ) {
-                        TiXmlNode *ext_child;
                         for( pugi::xml_node ext_child = tschild.first_child(); ext_child; ext_child = ext_child.next_sibling() ) {
                             wxString ext_name = wxString::FromUTF8( ext_child.name() );
                             if( ext_name == _T ( "opencpn:start" ) ) {
@@ -457,7 +456,6 @@ Route *GPXLoadRoute1( pugi::xml_node &wpt_node, bool b_fullviz,
             
             else
             if( ChildName == _T ( "extensions" ) ) {
-                TiXmlNode *ext_child;
                 for( pugi::xml_node ext_child = tschild.first_child(); ext_child; ext_child = ext_child.next_sibling() ) {
                     wxString ext_name = wxString::FromUTF8( ext_child.name() );
 

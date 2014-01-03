@@ -1101,7 +1101,6 @@ bool s52plib::S52_flush_Plib()
 LUPrec *s52plib::S52_LUPLookup( LUPname LUP_Name, const char * objectName, S57Obj *pObj, bool bStrict )
 {
     LUPrec *LUP = NULL;
-    LUPrec *LUPCandidate;
 
     LUPArrayContainer *plac = SelectLUPArrayContainer( LUP_Name );
     
@@ -1278,7 +1277,7 @@ char *_getParamVal( ObjRazRules *rzRules, char *str, char *buf, int bsz )
 
         wxCharBuffer buffer=value.ToUTF8();
         if(buffer.data()){
-            unsigned int len = wxMin(strlen(buffer.data()), bsz-1);
+            unsigned int len = wxMin(strlen(buffer.data()), (unsigned int)bsz-1);
             strncpy( buf, buffer.data(), len );
             buf[len] = 0;
         }

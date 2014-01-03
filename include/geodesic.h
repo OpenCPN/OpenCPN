@@ -3,7 +3,11 @@
 
 #define _USE_MATH_DEFINES
 //#include <cmath>
-#include <math.h>
+//#include <math.h>
+
+#ifndef M_PI
+#define M_PI        3.1415926535897931160E0      /* pi */
+#endif
 
 #define GEODESIC_WGS84_SEMI_MAJORAXIS 6378137.0
 #define GEODESIC_WGS84_SEMI_MINORAXIS 6356752.3142

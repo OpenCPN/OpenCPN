@@ -53,7 +53,7 @@ void  GribRecord::translateDataType()
 				multiplyAllData( 3600.0 );
         }
         if (dataType == GRB_TEMP                        //gfs Water surface Temperature
-            && levelType == LV_GND_SURF 
+            && levelType == LV_GND_SURF
             && levelValue == 0) dataType = GRB_WTMP;
 
 	}
@@ -284,7 +284,7 @@ GribRecord::GribRecord(const GribRecord &rec1, const GribRecord &rec2, double d)
         } else
             ok = false;
     }
-    
+
     /* should maybe update strCurDate ? */
 }
 
@@ -311,7 +311,7 @@ GribRecord *GribRecord::MagnitudeRecord(const GribRecord &rec1, const GribRecord
         } else
             rec->ok = false;
     }
-    
+
     return rec;
 }
 
@@ -931,7 +931,7 @@ double GribRecord::getInterpolatedValue(double px, double py, bool numericalInte
     int i0 = (int) pi;  // point 00
     int j0 = (int) pj;
 
-    int i1 = pi+1, j1 = pj+1;
+    unsigned int i1 = pi+1, j1 = pj+1;
     if(i1 >= Ni)
         i1 -= Ni;
 
