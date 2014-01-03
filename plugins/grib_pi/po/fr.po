@@ -404,7 +404,7 @@ msgid "WavesModel"
 msgstr "Modèle des vagues"
 #
 msgid "Weather table"
-msgstr "Table de météorologiques"
+msgstr "Météotable"
 #
 msgid "Wind"
 msgstr "Vent"
