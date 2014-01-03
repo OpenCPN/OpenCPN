@@ -697,6 +697,7 @@ extern DECL_EXP wxString toSDMM_PlugIn(int NEflag, double a, bool hi_precision =
 extern "C"  DECL_EXP wxString *GetpPrivateApplicationDataLocation();
 extern  DECL_EXP wxString GetOCPN_ExePath( void );
 extern "C"  DECL_EXP wxString *GetpPlugInLocation();
+extern  DECL_EXP wxString GetPlugInPath(opencpn_plugin *pplugin);
 
 extern "C"  DECL_EXP int AddChartToDBInPlace( wxString &full_path, bool b_ProgressDialog );
 extern "C"  DECL_EXP int RemoveChartFromDBInPlace( wxString &full_path );

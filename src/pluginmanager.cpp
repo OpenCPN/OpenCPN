@@ -3402,6 +3402,23 @@ wxString *GetpPlugInLocation()
     return &g_Plugin_Dir;
 }
 
+wxString GetPlugInPath(opencpn_plugin *pplugin)
+{
+    wxString ret_val;
+    ArrayOfPlugIns *pi_array = g_pi_manager->GetPlugInArray();
+    for(unsigned int i = 0 ; i < pi_array->GetCount() ; i++)
+    {
+        PlugInContainer *pic = pi_array->Item(i);
+        if(pic->m_pplugin == pplugin )
+        {
+            ret_val =pic->m_plugin_file;
+            break;
+        }
+    }
+    
+    return ret_val;
+}
+
 //      API 1.11 Access to Vector PlugIn charts
 
 ListOfPI_S57Obj *PlugInManager::GetPlugInObjRuleListAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
