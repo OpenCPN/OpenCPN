@@ -1209,6 +1209,7 @@ void GribRequestSetting::InitRequestConfig()
     m_pLogin->ChangeValue( login );
     pConf->Read ( _T( "ZyGribCode" ), &code, _T("") );
     m_pCode->ChangeValue( code );
+    pConf->Read ( _T( "SendMailMethod" ), &m_SendMethod, 0 );
 
     //if GriDataConfig has been corrupted , take the standard one to fix a crash
     if( m_RequestConfigBase.Len() != wxString (_T( "000220XX........" ) ).Len() )
@@ -1240,6 +1241,16 @@ void GribRequestSetting::InitRequestConfig()
     ( (wxString) m_RequestConfigBase.GetChar(3) ).ToLong( &j );             //interval
     ( (wxString) m_RequestConfigBase.GetChar(4) ).ToLong( &k, 16 );         //Time Range
     k--;                                         // range max = 2 to 16 stored in hexa from 1 to f
+
+#ifdef __WXMSW__                                 //show / hide sender elemants as necessary
+    m_pSenderSizer->ShowItems(false);
+    m_MailImage->SetMinSize(wxSize(-1, -1));
+#else
+    if(m_SendMethod == 0 )
+        m_pSenderSizer->ShowItems(false);
+    else
+        m_pSenderSizer->ShowItems(true);
+#endif
 
     ApplyRequestConfig( i, j ,k);
 
@@ -1434,6 +1445,7 @@ void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
         pConf->Write ( _T( "MailRequestAddresses" ), m_MailToAddresses );
         pConf->Write ( _T( "ZyGribLogin" ), m_pLogin->GetValue() );
         pConf->Write ( _T( "ZyGribCode" ), m_pCode->GetValue() );
+        pConf->Write ( _T( "SendMailMethod" ), m_SendMethod );
     }
         this->Hide();
 }
@@ -1646,13 +1658,18 @@ void GribRequestSetting::OnSendMaiL( wxCommandEvent& event  )
     m_pSenderAddress->GetValue()
     );
     wxEmail mail ;
-    if(mail.Send( *message ) ) {
+    if(mail.Send( *message, m_SendMethod)) {
 #ifdef __WXMSW__
         m_MailImage->SetValue(
             _("Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue...") );
 #else
+        if(m_SendMethod == 0 ) {
+            m_MailImage->SetValue(
+            _("Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue...") );
+        } else {
         m_MailImage->SetValue(
             _("Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue...") );
+        }
 #endif
     } else {
         m_MailImage->SetValue(
