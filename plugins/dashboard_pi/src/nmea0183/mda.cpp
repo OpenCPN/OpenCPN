@@ -39,6 +39,7 @@
 */
 
 //IMPLEMENT_DYNAMIC( MDA, RESPONSE )
+// TODO: Read rest of MDA sentece. 
 
 MDA::MDA()
 {
@@ -79,7 +80,7 @@ bool MDA::Parse( const SENTENCE& sentence )
 **    |   |  |  |          Air temperature, degrees C
 **    |   |  |----Barometric pressure, bars
 **    |----- Barometric pressure, inches of mercur
-
+*/
 
 
    /*
