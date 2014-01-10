@@ -39,7 +39,7 @@
 */
 
 //IMPLEMENT_DYNAMIC( MDA, RESPONSE )
-// TODO: Read rest of MDA sentece. 
+// TODO: Read rest of MDA sentece.
 
 MDA::MDA()
 {
@@ -98,7 +98,7 @@ UnitOfMeasurement = sentence.Field( 4 );
 
 if(UnitOfMeasurement==wxT("B"))
 {
-   Pressure       = sentence.Double( 3 )*1000; //from bar to Hecto pascal
+   Pressure       = sentence.Double( 3 ); //from bar to Hecto pascal
 
 }
 

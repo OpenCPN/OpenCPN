@@ -234,10 +234,6 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("<");
                 else if (unit == _T("N")) //Knots
                   m_data = wxString::Format(m_format, data)+_T(" Kts");
-                else if (unit == _T("B")) //bar converted to hecto pascal in mda.cpp
-                  m_data = wxString::Format(m_format, data)+_T(" hpa");
-                else if (unit == _T("I")) //incHG converted to hecto pascal in mda.cpp
-                  m_data = wxString::Format(m_format, data)+_T(" hpa");
 /* maybe in the future ...
                 else if (unit == _T("M")) // m/s
                   m_data = wxString::Format(m_format, data)+_T(" m/s");

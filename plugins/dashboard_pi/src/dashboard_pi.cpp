@@ -652,7 +652,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
             }
         } else if( m_NMEA0183.LastSentenceIDReceived == _T("MDA") ) {  //Barometric pressure
             if( m_NMEA0183.Parse() ) {
-
+                // TODO make posibilyti to select between Bar or InchHg
                 /*
 
                  double   m_NMEA0183.Mda.Pressure;
@@ -661,9 +661,10 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 
                  */
 
-                SendSentenceToAllInstruments( OCPN_DBP_STC_MDA, m_NMEA0183.Mda.Pressure,
+                SendSentenceToAllInstruments( OCPN_DBP_STC_MDA, m_NMEA0183.Mda.Pressure *1000,
 
-                        m_NMEA0183.Mda.UnitOfMeasurement );
+                       _T("hpa") ); //Convert to hpa befor sending to instruments.
+
 
             }
 

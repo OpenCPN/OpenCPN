@@ -354,10 +354,6 @@ void DashboardInstrument_Dial::DrawData(wxGCDC* dc, double value,
                text = wxString::Format(format, value)+DEGREE_SIGN+_T("M");
           else if (unit == _T("N")) // Knots
                text = wxString::Format(format, value)+_T(" Kts");
-	  else if (unit == _T("B")) // bar
-               text = wxString::Format(format, value)+_T(" hpa");
-          else if (unit == _T("I")) // inchHG
-               text = wxString::Format(format, value)+_T(" hpa");
           else
                text = wxString::Format(format, value)+_T(" ")+unit;
       }
