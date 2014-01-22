@@ -1335,9 +1335,18 @@ void RouteManagerDialog::OnRteSendToGPSClick( wxCommandEvent &event )
 
     wxString source;
     pdlg->Create( NULL, -1, _( "Send To GPS..." ), source );
-    pdlg->ShowModal();
-
-    delete pdlg;
+    
+#ifdef __WXOSX__
+    HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
+        pdlg->ShowModal();
+        
+#ifdef __WXOSX__
+    ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+        
+    pdlg->Destroy();
 }
 
 void RouteManagerDialog::OnRteDefaultAction( wxListEvent &event )

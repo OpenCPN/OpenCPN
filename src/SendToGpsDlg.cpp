@@ -150,14 +150,16 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
     if( m_pRoute ) m_pRoute->SendToGPS( src, true, m_pgauge );
     if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( src, m_pgauge );
 
-    Show( false );
-    event.Skip();
+//    Show( false );
+//    event.Skip();
+    Close();
 }
 
 void SendToGpsDlg::OnCancelClick( wxCommandEvent& event )
 {
-    Show( false );
-    event.Skip();
+//    Show( false );
+//    event.Skip();
+    Close();
 }
 
 

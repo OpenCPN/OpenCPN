@@ -2554,8 +2554,18 @@ bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxSt
     wxFileDialog saveDialog( parent, _( "Export GPX file" ), m_gpx_path, suggestedName,
             wxT ( "GPX files (*.gpx)|*.gpx" ), wxFD_SAVE );
 
-    int response = saveDialog.ShowModal();
+#ifdef __WXOSX__
+    if(parent)
+        parent->HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
 
+     int response = saveDialog.ShowModal();
+
+#ifdef __WXOSX__
+    if(parent)
+        parent->ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+            
     wxString path = saveDialog.GetPath();
     wxFileName fn( path );
     m_gpx_path = fn.GetPath();
