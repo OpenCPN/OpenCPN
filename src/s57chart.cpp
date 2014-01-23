@@ -6120,7 +6120,9 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
             else if( curAttrName == _T("ORIENT") ) val_suffix = _T("&deg;");
             else if( curAttrName == _T("VALNMR") ) val_suffix = _T(" Nm");
             else if( curAttrName == _T("SIGPER") ) val_suffix = _T("s");
-
+            else if( curAttrName == _T("VALACM") ) val_suffix = _T(" Minutes/year");
+            else if( curAttrName == _T("VALMAG") ) val_suffix = _T("&deg;");
+            
             if( dval - floor( dval ) < 0.01 ) value.Printf( _T("%2.0f"), dval );
             else
                 value.Printf( _T("%4.1f"), dval );
