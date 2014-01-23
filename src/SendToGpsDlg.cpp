@@ -147,8 +147,8 @@ void SendToGpsDlg::OnSendClick( wxCommandEvent& event )
     g_uploadConnection = src;                   // save for persistence
 
     //    And send it out
-    if( m_pRoute ) m_pRoute->SendToGPS( src, true, m_pgauge );
-    if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( src, m_pgauge );
+    if( m_pRoute ) m_pRoute->SendToGPS( src.BeforeFirst(' '), true, m_pgauge );
+    if( m_pRoutePoint ) m_pRoutePoint->SendToGPS( src.BeforeFirst(' '), m_pgauge );
 
 //    Show( false );
 //    event.Skip();
