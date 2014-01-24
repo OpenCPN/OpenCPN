@@ -866,6 +866,7 @@ int DECL_EXP PI_GetPLIBDepthUnitInt();
 int DECL_EXP PI_GetPLIBSymbolStyle();
 int DECL_EXP PI_GetPLIBBoundaryStyle();
 int DECL_EXP PI_GetPLIBStateHash();
+double DECL_EXP PI_GetPLIBMarinerSafetyContour();
 
 bool DECL_EXP PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp );
 PI_LUPname DECL_EXP PI_GetObjectLUPName( PI_S57Obj *pObj );

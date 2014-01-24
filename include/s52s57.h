@@ -301,6 +301,8 @@ typedef struct _chart_context{
     wxArrayPtrVoid          *pFloatingATONArray;
     wxArrayPtrVoid          *pRigidATONArray;
     s57chart                *chart;
+    double                  safety_contour;                  
+    
 }chart_context;
 
 

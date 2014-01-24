@@ -337,4 +337,9 @@ extern "C" pVector2D vSubtractVectors(pVector2D v0, pVector2D v1, pVector2D v);
 extern "C" double vVectorMagnitude(pVector2D v0);
 extern "C" double vVectorSquared(pVector2D v0);
 
+//      Simple and fast CRC32 calculator
+
+extern "C" unsigned int crc32buf(unsigned char *buf, size_t len);
+
+
 #endif

@@ -183,6 +183,8 @@ public:
       virtual void ForceEdgePriorityEvaluate(void);
 
       void ClearRenderedTextCache();
+      
+      double GetCalculatedSafetyContour(void){ return m_next_safe_cnt; }
 
 //#ifdef ocpnUSE_GL
       virtual bool RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region);
@@ -228,6 +230,8 @@ public:
       
 private:
 
+      void SetSafetyContour(void);
+    
       bool DoRenderViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, RenderTypeEnum option, bool force_new_view);
 
       bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region, bool b_overlay);
@@ -324,6 +328,8 @@ private:
       long        m_plib_state_hash;
       bool        m_btex_mem;
       char        m_usage_char;
+      
+      double      m_next_safe_cnt;
 };
 
 #endif
