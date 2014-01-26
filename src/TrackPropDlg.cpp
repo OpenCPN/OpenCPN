@@ -57,14 +57,18 @@ wxString timestamp2s(wxDateTime ts, int tz_selection, long LMT_offset, int forma
     else if (format == TIMESTAMP_FORMAT) f = _T("%m/%d/%Y %H:%M:%S");
     else f = _T(" %m/%d %H:%M");
     switch (tz_selection) {
-    case 0: s.Append(ts.Format(f));
-        if (format != INPUT_FORMAT) s.Append(_T(" UT"));
-        break;
-    case 1: s.Append(ts.FromUTC().Format(f)); break;
-    case 2:
-        wxTimeSpan lmt(0,0,(int)LMT_offset,0);
-        s.Append(ts.Add(lmt).Format(f));
-        if (format != INPUT_FORMAT) s.Append(_T(" LMT"));
+        case UTCINPUT: 
+            s.Append(ts.Format(f));
+            if (format != INPUT_FORMAT)
+                s.Append(_T(" UT"));
+            break;
+        case LTINPUT:
+            s.Append(ts.FromUTC().Format(f));
+            break;
+        case LMTINPUT:
+            wxTimeSpan lmt(0,0,(int)LMT_offset,0);
+            s.Append(ts.Add(lmt).Format(f));
+            if (format != INPUT_FORMAT) s.Append(_T(" LMT"));
     }
     return(s);
 }
@@ -200,6 +204,24 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
 	
 	wxStaticBoxSizer* sbSizerPoints;
 	sbSizerPoints = new wxStaticBoxSizer( new wxStaticBox( m_panelBasic, wxID_ANY, _("Recorded points") ), wxVERTICAL );
+	
+	wxBoxSizer* bSizerShowTime;
+	bSizerShowTime = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_stShowTime = new wxStaticText( m_panelBasic, wxID_ANY, _("Time shown as"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_stShowTime->Wrap( -1 );
+	bSizerShowTime->Add( m_stShowTime, 0, wxALL, 5 );
+	
+	m_rbShowTimeUTC = new wxRadioButton( m_panelBasic, wxID_ANY, _("UTC"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizerShowTime->Add( m_rbShowTimeUTC, 0, 0, 5 );
+	
+	m_rbShowTimePC = new wxRadioButton( m_panelBasic, wxID_ANY, _("Local @ PC"), wxDefaultPosition, wxDefaultSize, 0 );
+    bSizerShowTime->Add( m_rbShowTimePC, 0, 0, 5 );
+
+    m_rbShowTimeLocal = new wxRadioButton( m_panelBasic, wxID_ANY, _("LMT @ Track Start"), wxDefaultPosition, wxDefaultSize, 0 );
+	bSizerShowTime->Add( m_rbShowTimeLocal, 0, 0, 5 );
+	
+	sbSizerPoints->Add( bSizerShowTime, 0, wxEXPAND, 5 );
 	
 	m_lcPoints = new OCPNTrackListCtrl( m_panelBasic, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_EDIT_LABELS | wxLC_VIRTUAL );
 
@@ -344,6 +366,10 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
             wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
     m_toggleBtnEdit->Connect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
             wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
+    
+    m_rbShowTimeUTC->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
+    m_rbShowTimePC->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
+    m_rbShowTimeLocal->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
         
     m_pLinkProp = new LinkPropImpl( this );
     m_pMyLinkList = NULL;
@@ -373,6 +399,10 @@ TrackPropDlg::~TrackPropDlg()
             wxCommandEventHandler( TrackPropDlg::OnAddLink ), NULL, this );
     m_toggleBtnEdit->Disconnect( wxEVT_COMMAND_TOGGLEBUTTON_CLICKED,
             wxCommandEventHandler( TrackPropDlg::OnEditLinkToggle ), NULL, this );
+            
+    m_rbShowTimeUTC->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
+    m_rbShowTimePC->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
+    m_rbShowTimeLocal->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( TrackPropDlg::OnShowTimeTZ), NULL, this );
 
 	delete m_menuLink; 
 }
@@ -413,6 +443,7 @@ void TrackPropDlg::InitializeList()
         return;
 
     m_lcPoints->m_pRoute = m_pRoute;
+    m_lcPoints->m_LMT_Offset = long( ( m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon ) * 3600. / 15. );
     
     m_lcPoints->SetItemCount( m_pRoute->GetnPoints() );
 }
@@ -964,6 +995,18 @@ void TrackPropDlg::OnHyperLinkClick( wxHyperlinkEvent &event )
 #endif
 }
 
+void TrackPropDlg::OnShowTimeTZ ( wxCommandEvent &event )
+{
+    if (m_rbShowTimeUTC->GetValue())
+        m_lcPoints->m_tz_selection = UTCINPUT;
+    else if (m_rbShowTimePC->GetValue())
+        m_lcPoints->m_tz_selection = LTINPUT;
+    else
+        m_lcPoints->m_tz_selection = LMTINPUT;
+    m_lcPoints->DeleteAllItems();
+    InitializeList();
+}
+
 bool TrackPropDlg::SaveChanges( void )
 {
     if( m_pRoute && !m_pRoute->m_bIsInLayer ) {
@@ -1072,6 +1115,8 @@ OCPNTrackListCtrl::OCPNTrackListCtrl( wxWindow* parent, wxWindowID id, const wxP
 {
     m_parent = parent;
     g_prev_item = -1;
+    m_tz_selection = 0;
+    m_LMT_Offset = 0;
 }
 
 OCPNTrackListCtrl::~OCPNTrackListCtrl()
