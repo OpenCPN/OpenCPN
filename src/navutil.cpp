@@ -3812,6 +3812,18 @@ double toUsrDistance( double nm_distance, int unit  )
         case DISTANCE_M:
             ret = nm_distance * 1852;
             break;
+        case DISTANCE_FT:
+            ret = nm_distance * 6076.12;
+            break;
+        case DISTANCE_FA:
+            ret = nm_distance * 1012.68591;
+            break;
+        case DISTANCE_IN:
+            ret = nm_distance * 72913.4;
+            break;
+        case DISTANCE_CM:
+            ret = nm_distance * 185200;
+            break;
     }
     return ret;
 }
@@ -3861,6 +3873,18 @@ wxString getUsrDistanceUnit( int unit )
             break;
         case DISTANCE_M:
             ret = _("m");
+            break;
+        case DISTANCE_FT:
+            ret = _("ft");
+            break;
+        case DISTANCE_FA:
+            ret = _("fa");
+            break;
+        case DISTANCE_IN:
+            ret = _("in");
+            break;
+        case DISTANCE_CM:
+            ret = _("cm");
             break;
     }
     return ret;

@@ -212,7 +212,7 @@ PlugInManager::~PlugInManager()
 
 bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
 {
-    m_plugin_location = plugin_dir;
+    m_plugin_location = _T("/home/nohal/source/opencpn/build/plugins/dashboard_pi/");//plugin_dir;
 
     wxString msg(_T("PlugInManager searching for PlugIns in location "));
     msg += m_plugin_location;

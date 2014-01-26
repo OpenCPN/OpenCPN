@@ -55,7 +55,11 @@ enum
     DISTANCE_NMI = 0,
     DISTANCE_MI,
     DISTANCE_KM,
-    DISTANCE_M
+    DISTANCE_M,
+    DISTANCE_FT,
+    DISTANCE_FA,
+    DISTANCE_IN,
+    DISTANCE_CM
 };
 
 enum

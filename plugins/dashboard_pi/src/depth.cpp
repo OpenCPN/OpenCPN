@@ -26,6 +26,8 @@
  */
 
 #include "depth.h"
+extern int g_iDashDepthUnit;
+
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include <wx/wxprec.h>
@@ -45,7 +47,7 @@ DashboardInstrument_Depth::DashboardInstrument_Depth( wxWindow *parent, wxWindow
 {
       m_MaxDepth = 0;
       m_Depth = 0;
-      m_DepthUnit = _T("m");
+      m_DepthUnit = getUsrDistanceUnit_Plugin( g_iDashDepthUnit );
       m_Temp = _T("--");
       for (int idx = 0; idx < DEPTH_RECORD_COUNT; idx++)
       {
