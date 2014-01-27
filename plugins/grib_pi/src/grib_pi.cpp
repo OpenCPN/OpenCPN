@@ -362,6 +362,8 @@ void grib_pi::OnGribDialogClose()
 
     SaveConfig();
 
+    SetCanvasContextMenuItemViz(m_MenuItem, false);
+
     RequestRefresh(m_parent_window); // refresh mainn window
 
 }
