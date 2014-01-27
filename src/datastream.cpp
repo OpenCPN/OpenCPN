@@ -246,7 +246,8 @@ void DataStream::Open(void)
                         // supported platforms fall into that category.
 
                         int nagleDisable=1;
-                        m_socket_server->SetOption(IPPROTO_TCP,TCP_NODELAY,&nagleDisable, sizeof(nagleDisable));
+                        if(m_socket_server->IsOk())
+                            m_socket_server->SetOption(IPPROTO_TCP,TCP_NODELAY,&nagleDisable, sizeof(nagleDisable));
                         m_socket_server->SetEventHandler(*this, DS_SERVERSOCKET_ID);
                         m_socket_server->SetNotify( wxSOCKET_CONNECTION_FLAG );
                         m_socket_server->Notify(TRUE);
