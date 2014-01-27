@@ -70,7 +70,9 @@ public:
     NetworkProtocol NetProtocol;
     wxString        NetworkAddress;
     int             NetworkPort;
-
+    wxString        LastNetworkAddress;
+    int             LastNetworkPort;
+    
     DataProtocol    Protocol;
     wxString        Port;
     int             Baudrate;
@@ -95,7 +97,8 @@ public:
     wxString GetOutputValueStr();
     wxString GetFiltersStr();
     wxString GetDSPort();
-
+    wxString GetLastDSPort();
+    
     bool            Valid;
     bool            b_IsSetup;
 private:

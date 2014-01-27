@@ -229,3 +229,19 @@ wxString ConnectionParams::GetDSPort()
     }
 }
 
+wxString ConnectionParams::GetLastDSPort()
+{
+    if ( Type == SERIAL )
+        return wxString::Format( _T("Serial:%s"), Port.c_str() );
+    else
+    {
+        wxString proto;
+        if ( NetProtocol == TCP )
+            proto = _T("TCP");
+        else if (NetProtocol == UDP)
+            proto = _T("UDP");
+        else
+            proto = _T("GPSD");
+        return wxString::Format( _T("%s:%s:%d"), proto.c_str(), LastNetworkAddress.c_str(), LastNetworkPort );
+    }
+}
