@@ -70,6 +70,13 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
 
     if( pAISTarget ) {
         switch( column ){
+            case tlTRK:
+                if( pAISTarget->b_show_track )
+                    ret = _("Yes");
+                else
+                    ret = _("No");
+                break;
+                
             case tlNAME:
                 if( ( pAISTarget->Class == AIS_BASE ) || ( pAISTarget->Class == AIS_SART ) ) ret =
                         _("-");
