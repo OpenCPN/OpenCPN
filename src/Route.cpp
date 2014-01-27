@@ -83,7 +83,7 @@ Route::Route( void )
     
     m_PlannedSpeed = ROUTE_DEFAULT_SPEED;
     m_PlannedDeparture = RTE_UNDEF_DEPARTURE;
-    m_TimeDisplayFormat = RTE_TIME_DISP_UTC;
+    m_TimeDisplayFormat = RTE_TIME_DISP_PC;
     
     m_HyperlinkList = new HyperlinkList;
 }

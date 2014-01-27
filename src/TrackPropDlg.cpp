@@ -221,6 +221,8 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     m_rbShowTimeLocal = new wxRadioButton( m_panelBasic, wxID_ANY, _("LMT @ Track Start"), wxDefaultPosition, wxDefaultSize, 0 );
     bSizerShowTime->Add( m_rbShowTimeLocal, 0, 0, 5 );
     
+    m_rbShowTimePC->SetValue(true);
+    
     sbSizerPoints->Add( bSizerShowTime, 0, wxEXPAND, 5 );
     
     m_lcPoints = new OCPNTrackListCtrl( m_panelBasic, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_EDIT_LABELS | wxLC_VIRTUAL );
@@ -1115,7 +1117,7 @@ OCPNTrackListCtrl::OCPNTrackListCtrl( wxWindow* parent, wxWindowID id, const wxP
 {
     m_parent = parent;
     g_prev_item = -1;
-    m_tz_selection = 0;
+    m_tz_selection = LTINPUT;
     m_LMT_Offset = 0;
 }
 
