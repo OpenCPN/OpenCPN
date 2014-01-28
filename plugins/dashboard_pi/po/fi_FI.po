@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1124\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:37-0500\n"
+"POT-Creation-Date: 2014-01-28 10:21-0500\n"
 "PO-Revision-Date: 2010-12-09 22:33+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaite@netti.fi>\n"
@@ -46,6 +46,9 @@ msgid "App. Wind Speed"
 msgstr "Tuulennopeus"
 #
 msgid "Appearance"
+msgstr ""
+#
+msgid "Barometric pressure"
 msgstr ""
 #
 msgid "Boat speed units:"
@@ -320,8 +323,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Apparent wind"
 #~ msgstr "Suhteellinen tuuli"
+#
 #
 #
 #
@@ -330,13 +335,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "HDG"
 #~ msgstr "HDG"
 #
 #
 #
+#
 #~ msgid "Instrument width:"
 #~ msgstr "Mittarileveys:"
+#
 #
 #
 #

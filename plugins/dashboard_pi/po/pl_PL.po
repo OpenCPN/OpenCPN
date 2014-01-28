@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1124\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:37-0500\n"
+"POT-Creation-Date: 2014-01-28 10:21-0500\n"
 "PO-Revision-Date: 2010-11-28 18:28+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: \n"
@@ -44,6 +44,9 @@ msgid "App. Wind Speed"
 msgstr "Prędkość wiatru"
 #
 msgid "Appearance"
+msgstr ""
+#
+msgid "Barometric pressure"
 msgstr ""
 #
 msgid "Boat speed units:"
@@ -318,8 +321,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Apparent wind"
 #~ msgstr "Wiatr pozorny"
+#
 #
 #
 #
@@ -328,13 +333,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "HDG"
 #~ msgstr "HDG"
 #
 #
 #
+#
 #~ msgid "Instrument width:"
 #~ msgstr "Szerokość instrumentu"
+#
 #
 #
 #

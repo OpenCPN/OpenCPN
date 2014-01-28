@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:37-0500\n"
+"POT-Creation-Date: 2014-01-28 10:21-0500\n"
 "PO-Revision-Date: 2013-10-18 21:08+0100\n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
@@ -43,6 +43,9 @@ msgstr "V. app. : Vitesse"
 #
 msgid "Appearance"
 msgstr "Apparence"
+#
+msgid "Barometric pressure"
+msgstr ""
 #
 msgid "Boat speed units:"
 msgstr "Unité de vitesse du bateau :"
@@ -301,28 +304,35 @@ msgid "show this dashboard"
 msgstr "Montrer ce tableau de bord"
 #
 #
+#
 #~ msgid "Airtemp"
 #~ msgstr "Temp. de l'air"
+#
 #
 #
 #~ msgid "Apparent wind"
 #~ msgstr "Vent apparent"
 #
 #
+#
 #~ msgid "COG+HDG Compass"
 #~ msgstr "Compas COG & HDG"
+#
 #
 #
 #~ msgid "Edit"
 #~ msgstr "Editer"
 #
 #
+#
 #~ msgid "True wind"
 #~ msgstr "Vent vrai"
 #
 #
+#
 #~ msgid "Wind angle"
 #~ msgstr "Angle de vent"
+#
 #
 #
 #~ msgid "mag"

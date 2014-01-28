@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1207\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:37-0500\n"
+"POT-Creation-Date: 2014-01-28 10:21-0500\n"
 "PO-Revision-Date: 2010-12-20 18:31+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team:  <ogog1@otenet.gr>\n"
@@ -46,6 +46,9 @@ msgid "App. Wind Speed"
 msgstr "Ταχύτητα Ανέμου"
 #
 msgid "Appearance"
+msgstr ""
+#
+msgid "Barometric pressure"
 msgstr ""
 #
 msgid "Boat speed units:"
@@ -320,8 +323,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Apparent wind"
 #~ msgstr "Φαινομενικός Άνεμος"
+#
 #
 #
 #
@@ -330,13 +335,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "HDG"
 #~ msgstr "HDG(heading:κατεύθυνση)"
 #
 #
 #
+#
 #~ msgid "Instrument width:"
 #~ msgstr "Πλάτος Οργάνων:"
+#
 #
 #
 #

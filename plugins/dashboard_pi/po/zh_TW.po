@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:37-0500\n"
+"POT-Creation-Date: 2014-01-28 10:21-0500\n"
 "PO-Revision-Date: 2013-09-25 15:52+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -44,6 +44,9 @@ msgstr "相對風速"
 #
 msgid "Appearance"
 msgstr "外觀"
+#
+msgid "Barometric pressure"
+msgstr ""
 #
 msgid "Boat speed units:"
 msgstr ""

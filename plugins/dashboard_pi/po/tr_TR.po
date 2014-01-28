@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:37-0500\n"
+"POT-Creation-Date: 2014-01-28 10:21-0500\n"
 "PO-Revision-Date: 2013-12-02 17:22+0200\n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -43,6 +43,9 @@ msgstr "Görünen Rüzgar Hızı"
 #
 msgid "Appearance"
 msgstr "Görünüm"
+#
+msgid "Barometric pressure"
+msgstr ""
 #
 msgid "Boat speed units:"
 msgstr "Tekne hız birimleri:"

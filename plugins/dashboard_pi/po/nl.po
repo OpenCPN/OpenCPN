@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:37-0500\n"
+"POT-Creation-Date: 2014-01-28 10:21-0500\n"
 "PO-Revision-Date: 2013-10-24 17:15+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: &lt;rider2@kpnmail.nl&gt;\n"
@@ -42,6 +42,9 @@ msgstr "Schijnbare windsnelheid"
 #
 msgid "Appearance"
 msgstr "Lettertypes"
+#
+msgid "Barometric pressure"
+msgstr ""
 #
 msgid "Boat speed units:"
 msgstr "Eenheid voor vaart:"
