@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2010-03-29 20:29+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -29,6 +29,11 @@ msgid "00N  00W"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr ""
+#
+msgid ""
+"Air\n"
+"Temperature"
 msgstr ""
 #
 msgid "Air Temp"
@@ -64,6 +69,9 @@ msgid "Celsius"
 msgstr ""
 #
 msgid "Close"
+msgstr ""
+#
+msgid "Cloud"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -338,6 +346,11 @@ msgstr ""
 msgid "Save"
 msgstr ""
 #
+msgid ""
+"Sea\n"
+"Temperature"
+msgstr ""
+#
 msgid "Sea Temp"
 msgstr ""
 #
@@ -509,6 +522,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -531,12 +545,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -575,6 +591,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -584,6 +601,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot."
 #~ "wysokości fali znacznej"
+#
 #
 #
 #
@@ -604,6 +622,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -614,6 +633,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot. "
 #~ "opadów deszczu"
+#
 #
 #
 #
@@ -633,6 +653,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -647,6 +668,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -654,6 +676,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Ciśnienie, mBar"
+#
 #
 #
 #
@@ -692,6 +715,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -699,6 +723,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Wysokość fali znacznej, m"
+#
 #
 #
 #
@@ -738,6 +763,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -745,6 +771,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "Kierunek wiatru"
+#
 #
 #
 #
@@ -762,6 +789,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -769,6 +797,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Prędkość wiatru, w."
+#
 #
 #
 #

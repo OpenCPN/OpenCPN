@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2010-12-09 22:34+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaite@netti.fi>\n"
@@ -31,6 +31,11 @@ msgid "00N  00W"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr ""
+#
+msgid ""
+"Air\n"
+"Temperature"
 msgstr ""
 #
 msgid "Air Temp"
@@ -66,6 +71,9 @@ msgid "Celsius"
 msgstr ""
 #
 msgid "Close"
+msgstr ""
+#
+msgid "Cloud"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -333,6 +341,20 @@ msgstr ""
 #
 #
 #, fuzzy
+msgid ""
+"Sea\n"
+"Temperature"
+msgstr "Meriveden pintalämpötila, C"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
 msgid "Sea Temp"
 msgstr "Meriveden pintalämpötila, C"
 #
@@ -503,9 +525,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "GRIB Data"
+#
 #
 #
 #
@@ -519,8 +543,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -557,9 +583,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB pintalämpötilan"
+#
 #
 #
 #
@@ -577,9 +605,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB virtatiedot"
+#
 #
 #
 #
@@ -595,6 +625,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB sadetiedon"
@@ -604,9 +635,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Ilampaine, mbar"
+#
 #
 #
 #
@@ -655,8 +688,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "Näytä GRIB-ikoni"
+#
 #
 #
 #
@@ -695,8 +730,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROITUS:  QuickScat GRIB data on %d tuntia vanhaa."
+#
 #
 #
 #
@@ -712,6 +749,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Tuulen suunta"
@@ -721,9 +759,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Tuulen nopeus, solmua"
+#
 #
 #
 #

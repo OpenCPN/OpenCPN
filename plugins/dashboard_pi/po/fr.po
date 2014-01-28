@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-28 00:37-0500\n"
 "PO-Revision-Date: 2013-10-18 21:08+0100\n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
@@ -53,6 +53,10 @@ msgstr "COG"
 msgid "Caption:"
 msgstr "Titre :"
 #
+#, fuzzy
+msgid "Centimeters"
+msgstr "Kilomètres"
+#
 msgid "Clock"
 msgstr "Horloge"
 #
@@ -87,6 +91,10 @@ msgstr "Supprimer"
 msgid "Depth"
 msgstr "Profondeur"
 #
+#, fuzzy
+msgid "Depth units:"
+msgstr "Unités de distance"
+#
 msgid "Distance units:"
 msgstr "Unités de distance"
 #
@@ -101,6 +109,12 @@ msgstr "ENE"
 #
 msgid "ESE"
 msgstr "ESE"
+#
+msgid "Fathoms"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Polices"
@@ -119,6 +133,9 @@ msgstr "Honor OpenCPN settings"
 #
 msgid "Horizontal"
 msgstr "Horizontal"
+#
+msgid "Inches"
+msgstr ""
 #
 msgid "Instruments"
 msgstr "Instruments"
@@ -283,23 +300,30 @@ msgstr "mph"
 msgid "show this dashboard"
 msgstr "Montrer ce tableau de bord"
 #
+#
 #~ msgid "Airtemp"
 #~ msgstr "Temp. de l'air"
+#
 #
 #~ msgid "Apparent wind"
 #~ msgstr "Vent apparent"
 #
+#
 #~ msgid "COG+HDG Compass"
 #~ msgstr "Compas COG & HDG"
+#
 #
 #~ msgid "Edit"
 #~ msgstr "Editer"
 #
+#
 #~ msgid "True wind"
 #~ msgstr "Vent vrai"
 #
+#
 #~ msgid "Wind angle"
 #~ msgstr "Angle de vent"
+#
 #
 #~ msgid "mag"
 #~ msgstr "Magnétique"

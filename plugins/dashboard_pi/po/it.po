@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-28 00:37-0500\n"
 "PO-Revision-Date: 2012-09-01 11:11+0100\n"
 "Last-Translator: tr\n"
 "Language-Team: \n"
@@ -61,6 +61,9 @@ msgstr ""
 msgid "Caption:"
 msgstr ""
 #
+msgid "Centimeters"
+msgstr ""
+#
 msgid "Clock"
 msgstr ""
 #
@@ -102,6 +105,9 @@ msgstr "Cancella"
 msgid "Depth"
 msgstr "Profondità"
 #
+msgid "Depth units:"
+msgstr ""
+#
 msgid "Distance units:"
 msgstr ""
 #
@@ -122,6 +128,12 @@ msgstr "NE"
 #, fuzzy
 msgid "ESE"
 msgstr "SE"
+#
+msgid "Fathoms"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Caratteri"
@@ -146,6 +158,9 @@ msgstr ""
 #
 msgid "Horizontal"
 msgstr "horizontale"
+#
+msgid "Inches"
+msgstr ""
 #
 #
 msgid "Instruments"
@@ -354,8 +369,10 @@ msgid "show this dashboard"
 msgstr ""
 #
 #
+#
 #~ msgid "Airtemp"
 #~ msgstr "Temp. Aria"
+#
 #
 #
 #
@@ -364,8 +381,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Edit"
 #~ msgstr "Modifica"
+#
 #
 #
 #
@@ -374,8 +393,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "True wind"
 #~ msgstr "Vento Reale"
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:13-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2013-10-18 13:15+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC Sailing Team <sailingteam@isc.tuc.gr>\n"
@@ -1463,6 +1463,10 @@ msgstr "Εδώ"
 msgid "Hide AIS Targets"
 msgstr "Κρύψε τους στόχους AIS "
 #
+#, fuzzy
+msgid "Hide All Tracks"
+msgstr "Κρύψε το ίχνος πορείας του στόχου"
+#
 msgid "Hide Target CPA"
 msgstr "Κρύψε το CPA του στόχου"
 #
@@ -1578,6 +1582,9 @@ msgstr "Α/Ω"
 #
 msgid "LMT @ Location"
 msgstr "Ωρα στην τοποθεσία"
+#
+msgid "LMT @ Track Start"
+msgstr ""
 #
 msgid "Language"
 msgstr "Γλώσσα"
@@ -2445,6 +2452,10 @@ msgstr "Εμφάνιση στόχων AIS"
 msgid "Show AIS targets real size"
 msgstr "Δείχνε τους στόχους AIS σε πραγματικό μέγεθος"
 #
+#, fuzzy
+msgid "Show All Tracks"
+msgstr "Δείξε το ίχνος πορείας του στόχου"
+#
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Διάλογος για συναγερμούς  CPA/TCPA"
 #
@@ -2779,6 +2790,10 @@ msgstr "Χρόνος εν πλω"
 msgid "Time enroute"
 msgstr "Χρόνος εν πλω"
 #
+#, fuzzy
+msgid "Time shown as"
+msgstr "Η ώρα έχει τη μορφή"
+#
 msgid "Times shown as"
 msgstr "Η ώρα έχει τη μορφή"
 #
@@ -2795,6 +2810,10 @@ msgid "To route"
 msgstr "Στη διαδρομή"
 #
 msgid "Toggle Tracking"
+msgstr "Αρχή/παύση παρακολούθησης"
+#
+#, fuzzy
+msgid "Toggle track"
 msgstr "Αρχή/παύση παρακολούθησης"
 #
 msgid "ToolTips"
@@ -2845,6 +2864,10 @@ msgstr "Αντίστροφη Μερκατορική"
 #
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "Θεώρησε τις προτάσεις WPL ως αναφορές θέσης APRS"
+#
+#, fuzzy
+msgid "Trk"
+msgstr "Ίχνος πορείας"
 #
 msgid "Tug"
 msgstr "Ρυμουλκό"
@@ -3077,6 +3100,15 @@ msgstr ""
 msgid "_plus"
 msgstr "_συν"
 #
+msgid "cm"
+msgstr ""
+#
+msgid "fa"
+msgstr ""
+#
+msgid "ft"
+msgstr ""
+#
 #, fuzzy
 msgid "in"
 msgstr "Σύνδεσμος"
@@ -3117,6 +3149,7 @@ msgstr ""
 #
 msgid "wxFB Website"
 msgstr "Ιστοσελίδα wxFB"
+#
 #
 #
 #~ msgid " is %5g"

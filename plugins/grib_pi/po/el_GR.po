@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1207\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2010-12-20 18:23+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -29,6 +29,11 @@ msgid "00N  00W"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr ""
+#
+msgid ""
+"Air\n"
+"Temperature"
 msgstr ""
 #
 msgid "Air Temp"
@@ -64,6 +69,9 @@ msgid "Celsius"
 msgstr ""
 #
 msgid "Close"
+msgstr ""
+#
+msgid "Cloud"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -346,6 +354,21 @@ msgstr ""
 # 
 # 
 #, fuzzy
+msgid ""
+"Sea\n"
+"Temperature"
+msgstr "Θερμοκρασία Επιφανείας, C "
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "Sea Temp"
 msgstr "Θερμοκρασία Επιφανείας, C "
 #
@@ -511,6 +534,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -531,6 +555,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Data Display Preferences"
@@ -539,9 +564,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -577,10 +604,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα SEATEMP GRIB"
+#
 #
 #
 #
@@ -597,12 +626,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr ""
 #~ "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα OCEAN CURRENT GRIB"
+#
 #
 #
 #
@@ -617,6 +648,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
@@ -626,10 +658,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Ατμ. Πίεση, mBar"
+#
 #
 #
 #
@@ -650,6 +684,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Ιδιότητες GRIB"
+#
 #
 #
 #
@@ -685,10 +720,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Διακριτό ύψος Κύματος, m(μέτρα) "
+#
 #
 #
 #
@@ -727,10 +764,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "Διεύθυνση Ανέμου"
+#
 #
 #
 #
@@ -745,10 +784,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Ταχύτητα Ανέμου, Kts"
+#
 #
 #
 #

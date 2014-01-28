@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2010-11-28 17:53+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: \n"
@@ -29,6 +29,11 @@ msgid "00N  00W"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr ""
+#
+msgid ""
+"Air\n"
+"Temperature"
 msgstr ""
 #
 msgid "Air Temp"
@@ -64,6 +69,9 @@ msgid "Celsius"
 msgstr ""
 #
 msgid "Close"
+msgstr ""
+#
+msgid "Cloud"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -346,6 +354,21 @@ msgstr ""
 # 
 # 
 #, fuzzy
+msgid ""
+"Sea\n"
+"Temperature"
+msgstr "Temp. powierzchni morza, C"
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "Sea Temp"
 msgstr "Temp. powierzchni morza, C"
 #
@@ -511,6 +534,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -531,6 +555,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Data Display Preferences"
@@ -539,9 +564,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -577,10 +604,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Zmniejsz skalę lub powiększenie by zobaczyć SEATEMP"
+#
 #
 #
 #
@@ -596,11 +625,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Zmniejsz skalę lub powiększenie by zobaczyć OCEAN CURRENT"
+#
 #
 #
 #
@@ -615,6 +646,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
@@ -624,10 +656,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Ciśnienie, mbar"
+#
 #
 #
 #
@@ -648,6 +682,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Preferencje GRIB"
+#
 #
 #
 #
@@ -683,10 +718,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Wysokość fali znacznej, m"
+#
 #
 #
 #
@@ -723,10 +760,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "Kierunek wiatru"
+#
 #
 #
 #
@@ -741,10 +780,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Prędkość wiatru, w."
+#
 #
 #
 #

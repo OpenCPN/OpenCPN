@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2013-10-20 22:24+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
@@ -31,6 +31,14 @@ msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr ""
+#
+#
+#
+#, fuzzy
+msgid ""
+"Air\n"
+"Temperature"
+msgstr "Lufttemperatur"
 #
 msgid "Air Temp"
 msgstr "Lufttemp"
@@ -69,6 +77,11 @@ msgstr ""
 #
 msgid "Close"
 msgstr ""
+#
+#
+#
+msgid "Cloud"
+msgstr "Moln"
 #
 msgid "Cloud Cover"
 msgstr "Molntäcke"
@@ -334,6 +347,14 @@ msgstr "Spara"
 #
 #
 #
+#, fuzzy
+msgid ""
+"Sea\n"
+"Temperature"
+msgstr "Vattentemperatur"
+#
+#
+#
 #
 #
 #
@@ -518,8 +539,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (Dup)"
+#
 #
 #
 #
@@ -538,60 +561,75 @@ msgstr "Ditt ZyGrib användarnamn"
 #~ msgstr "data"
 #
 #
+#
 #~ msgid "0.2"
 #~ msgstr "0.2"
+#
 #
 #
 #~ msgid "0.5"
 #~ msgstr "0.5"
 #
 #
+#
 #~ msgid "0.8"
 #~ msgstr "0.8"
+#
 #
 #
 #~ msgid "1"
 #~ msgstr "1"
 #
 #
+#
 #~ msgid "1.6"
 #~ msgstr "1.6"
+#
 #
 #
 #~ msgid "12"
 #~ msgstr "12"
 #
 #
+#
 #~ msgid "2"
 #~ msgstr "2"
+#
 #
 #
 #~ msgid "24"
 #~ msgstr "24"
 #
 #
+#
 #~ msgid "3"
 #~ msgstr "3"
+#
 #
 #
 #~ msgid "4"
 #~ msgstr "4"
 #
 #
+#
 #~ msgid "5"
 #~ msgstr "5"
+#
 #
 #
 #~ msgid "6"
 #~ msgstr "6"
 #
 #
+#
 #~ msgid "7"
 #~ msgstr "7"
 #
 #
+#
 #~ msgid "8"
 #~ msgstr "8"
+#
 #
 #
 #
@@ -600,8 +638,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Air Temperature"
 #~ msgstr "Lufttemperatur"
+#
 #
 #
 #
@@ -610,12 +650,9 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
-#~ msgid "AirTemperature"
-#~ msgstr "Lufttemperatur"
-#
-#
 #~ msgid "COAMPS"
 #~ msgstr "COAMPS"
+#
 #
 #
 #
@@ -624,18 +661,16 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
-#~ msgid "Cloud"
-#~ msgstr "Moln"
-#
-#
 #
 #~ msgid "CloudCover"
 #~ msgstr "Molntäcke"
 #
 #
 #
+#
 #~ msgid "Clouds Cover"
 #~ msgstr "Molntäcke"
+#
 #
 #
 #
@@ -647,17 +682,21 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB Inställningar"
+#
 #
 #
 #~ msgid "Data available in the selected forecast model"
 #~ msgstr "Tillgängliga data i den valda prognosmodellen"
 #
 #
+#
 #~ msgid "Display Iso Temp. Lines"
 #~ msgstr "Visa Iso templinjer"
+#
 #
 #
 #
@@ -666,12 +705,15 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Mislyckades att skicka epost"
 #
 #
+#
 #~ msgid "GFS"
 #~ msgstr "GFS"
+#
 #
 #
 #
@@ -706,8 +748,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB Filkatalog"
+#
 #
 #
 #
@@ -715,8 +759,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #~ msgstr "km/t"
 #
 #
+#
 #~ msgid "Login you use to connect to Zygrib's forum"
 #~ msgstr "Inloggning som du använder för att ansluta till Zygrib's forum"
+#
 #
 #
 #
@@ -725,8 +771,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "MPH"
 #~ msgstr "mph"
+#
 #
 #
 #
@@ -735,8 +783,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
 #~ msgstr "OpenCpn kunde inte logga in! Kontrollera din epostinställning"
+#
 #
 #
 #
@@ -745,8 +795,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Period"
 #~ msgstr "Period"
+#
 #
 #
 #
@@ -762,9 +814,11 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB regninformation"
+#
 #
 #
 #
@@ -780,9 +834,11 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB yttemperatur"
+#
 #
 #
 #
@@ -795,8 +851,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Nederbörd"
+#
 #
 #
 #
@@ -809,12 +867,15 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
 #
 #
+#
 #~ msgid "RTOFS"
 #~ msgstr "RTOFS"
+#
 #
 #
 #
@@ -823,8 +884,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Ref : "
 #~ msgstr "Ref : "
+#
 #
 #
 #
@@ -847,13 +910,16 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB Inställningar"
 #
 #
+#
 #~ msgid "Saildocs"
 #~ msgstr "Saildocs"
+#
 #
 #
 #
@@ -862,13 +928,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "SeaTemp"
 #~ msgstr "Vattentemp"
 #
-#
-#
-#~ msgid "SeaTemperature"
-#~ msgstr "Vattentemperatur"
 #
 #
 #
@@ -927,8 +990,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Visa m/s för vindstyrka"
+#
 #
 #
 #
@@ -940,8 +1005,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #~ msgstr "Signifikant våghöjd, m"
 #
 #
+#
 #~ msgid "WW3-GLOBAL"
 #~ msgstr "WW3-GLOBAL"
+#
 #
 #
 #~ msgid "WW3-MEDIT"
@@ -949,8 +1016,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Wave"
 #~ msgstr "Våghöjd"
+#
 #
 #
 #
@@ -963,8 +1032,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Wind Scat"
 #~ msgstr "Vind Scat"
+#
 #
 #
 #
@@ -980,9 +1051,11 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Vindstyrka, m/s."
+#
 #
 #
 #
@@ -991,8 +1064,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Zone"
+#
 #
 #
 #
@@ -1001,8 +1076,10 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "eMail error"
 #~ msgstr "epostfel"
+#
 #
 #
 #~ msgid "size"

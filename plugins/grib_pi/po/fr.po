@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
@@ -27,6 +27,12 @@ msgstr ""
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr ""
 "Adresse mail utilisée pour envoyer une requête. (Obligatoire pour Linux)"
+#
+#, fuzzy
+msgid ""
+"Air\n"
+"Temperature"
+msgstr "Température de l'air(2m)"
 #
 msgid "Air Temp"
 msgstr "Temp. Air"
@@ -65,6 +71,10 @@ msgstr "Celsius"
 #
 msgid "Close"
 msgstr ""
+#
+#, fuzzy
+msgid "Cloud"
+msgstr "Couverture nuageuse"
 #
 msgid "Cloud Cover"
 msgstr "Couverture nuageuse"
@@ -305,6 +315,12 @@ msgstr ""
 #
 msgid "Save"
 msgstr "Sauvegarder"
+#
+#, fuzzy
+msgid ""
+"Sea\n"
+"Temperature"
+msgstr "Température de l'eau(Surf.)"
 #
 msgid "Sea Temp"
 msgstr "Temp. eau"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2013-09-25 15:53+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -32,6 +32,12 @@ msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr ""
+#
+#, fuzzy
+msgid ""
+"Air\n"
+"Temperature"
+msgstr "大氣溫度"
 #
 msgid "Air Temp"
 msgstr "大氣溫度"
@@ -68,6 +74,11 @@ msgstr ""
 #
 msgid "Close"
 msgstr ""
+#
+#
+#
+msgid "Cloud"
+msgstr "雲"
 #
 msgid "Cloud Cover"
 msgstr "雲層"
@@ -351,6 +362,12 @@ msgstr ""
 msgid "Save"
 msgstr ""
 #
+#, fuzzy
+msgid ""
+"Sea\n"
+"Temperature"
+msgstr "海水溫度"
+#
 #
 #
 #
@@ -538,8 +555,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (Dup)"
+#
 #
 #
 #
@@ -561,18 +580,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Action"
 #~ msgstr "動作"
+#
 #
 #
 #
 #~ msgid "Celcius"
 #~ msgstr "攝氏"
 #
-#
-#
-#~ msgid "Cloud"
-#~ msgstr "雲"
 #
 #
 #
@@ -585,13 +602,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Error"
 #~ msgstr "錯誤"
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "傳送郵件失敗"
+#
 #
 #
 #
@@ -627,8 +647,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB 檔案目錄"
+#
 #
 #
 #
@@ -637,8 +659,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "公尺/秒"
+#
 #
 #
 #
@@ -647,8 +671,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "我的標籤"
+#
 #
 #
 #
@@ -658,8 +684,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "參數"
+#
 #
 #
 #
@@ -672,9 +700,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
+#
 #
 #
 #
@@ -692,9 +722,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
+#
 #
 #
 #
@@ -710,14 +742,17 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed CRAIN GRIB"
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "凝結"
+#
 #
 #
 #
@@ -730,14 +765,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
 #
 #
 #
 #
+#
 #~ msgid "Ref : "
 #~ msgstr "參考:"
+#
 #
 #
 #
@@ -761,9 +799,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB 偏好設定"
+#
 #
 #
 #
@@ -797,8 +837,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "顯示 GRIB 圖示"
+#
 #
 #
 #
@@ -837,8 +879,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "警告:  QuickScat GRIB 資料為 %d 小時前資料."
+#
 #
 #
 #
@@ -851,8 +895,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Wind Scat"
 #~ msgstr "Wind Scat"
+#
 #
 #
 #
@@ -868,6 +914,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "風速,  Kts."
@@ -875,8 +922,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "區域"
+#
 #
 #
 #

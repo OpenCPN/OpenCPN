@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.3.1006\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-28 00:37-0500\n"
 "PO-Revision-Date: 2013-10-15 00:32+0100\n"
 "Last-Translator: Frode Lynum <post@opencpn.kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -53,6 +53,9 @@ msgstr "COG"
 msgid "Caption:"
 msgstr "Overskrift:"
 #
+msgid "Centimeters"
+msgstr ""
+#
 msgid "Clock"
 msgstr "Klokke"
 #
@@ -87,6 +90,9 @@ msgstr "Slett"
 msgid "Depth"
 msgstr "Dybde"
 #
+msgid "Depth units:"
+msgstr ""
+#
 msgid "Distance units:"
 msgstr ""
 #
@@ -101,6 +107,12 @@ msgstr "ØNØ"
 #
 msgid "ESE"
 msgstr "ØSØ"
+#
+msgid "Fathoms"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Skrift"
@@ -119,6 +131,9 @@ msgstr ""
 #
 msgid "Horizontal"
 msgstr "Horisontal"
+#
+msgid "Inches"
+msgstr ""
 #
 msgid "Instruments"
 msgstr "Instrumenter"

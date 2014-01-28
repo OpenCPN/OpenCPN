@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1124\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-28 00:37-0500\n"
 "PO-Revision-Date: 2010-11-28 18:28+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: \n"
@@ -55,6 +55,9 @@ msgstr "COG"
 msgid "Caption:"
 msgstr ""
 #
+msgid "Centimeters"
+msgstr ""
+#
 msgid "Clock"
 msgstr ""
 #
@@ -89,6 +92,9 @@ msgstr "Usuń"
 msgid "Depth"
 msgstr "Głębokość"
 #
+msgid "Depth units:"
+msgstr ""
+#
 msgid "Distance units:"
 msgstr ""
 #
@@ -105,6 +111,12 @@ msgstr "NE"
 #, fuzzy
 msgid "ESE"
 msgstr "SE"
+#
+msgid "Fathoms"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Czcionki"
@@ -125,6 +137,9 @@ msgid "Honor OpenCPN settings"
 msgstr ""
 #
 msgid "Horizontal"
+msgstr ""
+#
+msgid "Inches"
 msgstr ""
 #
 msgid "Instruments"
@@ -302,20 +317,25 @@ msgid "show this dashboard"
 msgstr ""
 #
 #
+#
 #~ msgid "Apparent wind"
 #~ msgstr "Wiatr pozorny"
+#
 #
 #
 #~ msgid "Edit"
 #~ msgstr "Zmień"
 #
 #
+#
 #~ msgid "HDG"
 #~ msgstr "HDG"
 #
 #
+#
 #~ msgid "Instrument width:"
 #~ msgstr "Szerokość instrumentu"
+#
 #
 #
 #~ msgid "True wind"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1207\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-28 00:37-0500\n"
 "PO-Revision-Date: 2010-12-20 18:31+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team:  <ogog1@otenet.gr>\n"
@@ -57,6 +57,9 @@ msgstr "COG(Πορεία επί Εδάφους)"
 msgid "Caption:"
 msgstr ""
 #
+msgid "Centimeters"
+msgstr ""
+#
 msgid "Clock"
 msgstr ""
 #
@@ -91,6 +94,9 @@ msgstr "Διαγραφή"
 msgid "Depth"
 msgstr "Βάθος"
 #
+msgid "Depth units:"
+msgstr ""
+#
 msgid "Distance units:"
 msgstr ""
 #
@@ -107,6 +113,12 @@ msgstr "ΒΑ (NE)"
 #, fuzzy
 msgid "ESE"
 msgstr "ΝΑ (SE)"
+#
+msgid "Fathoms"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Γραμματοσειρές"
@@ -127,6 +139,9 @@ msgid "Honor OpenCPN settings"
 msgstr ""
 #
 msgid "Horizontal"
+msgstr ""
+#
+msgid "Inches"
 msgstr ""
 #
 msgid "Instruments"
@@ -304,20 +319,25 @@ msgid "show this dashboard"
 msgstr ""
 #
 #
+#
 #~ msgid "Apparent wind"
 #~ msgstr "Φαινομενικός Άνεμος"
+#
 #
 #
 #~ msgid "Edit"
 #~ msgstr "Επεξεργασία"
 #
 #
+#
 #~ msgid "HDG"
 #~ msgstr "HDG(heading:κατεύθυνση)"
 #
 #
+#
 #~ msgid "Instrument width:"
 #~ msgstr "Πλάτος Οργάνων:"
+#
 #
 #
 #~ msgid "True wind"

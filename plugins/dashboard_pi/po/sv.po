@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-28 00:37-0500\n"
 "PO-Revision-Date: 2013-10-20 22:17+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -59,6 +59,10 @@ msgstr "COG"
 msgid "Caption:"
 msgstr "Titel:"
 #
+#, fuzzy
+msgid "Centimeters"
+msgstr "Kilometer"
+#
 msgid "Clock"
 msgstr "Klocka"
 #
@@ -100,6 +104,10 @@ msgstr "Ta bort"
 msgid "Depth"
 msgstr "Djup"
 #
+#, fuzzy
+msgid "Depth units:"
+msgstr "Enhet för avstånd:"
+#
 msgid "Distance units:"
 msgstr "Enhet för avstånd:"
 #
@@ -118,6 +126,12 @@ msgstr "ONO"
 #
 msgid "ESE"
 msgstr "OSO"
+#
+msgid "Fathoms"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Typsnitt"
@@ -139,6 +153,9 @@ msgstr "Föredra OpenCPN inställningar"
 #
 msgid "Horizontal"
 msgstr "Horisontell"
+#
+msgid "Inches"
+msgstr ""
 #
 #
 msgid "Instruments"

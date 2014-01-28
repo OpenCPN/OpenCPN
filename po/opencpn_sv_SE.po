@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:13-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2013-11-19 22:18+0100\n"
 "Last-Translator: hakan <momo@stupan.se>\n"
 "Language-Team: AB Torsk & Bäver <N/A>\n"
@@ -1798,6 +1798,11 @@ msgid "Hide AIS Targets"
 msgstr "Dölj AIS-mål"
 #
 #
+#, fuzzy
+msgid "Hide All Tracks"
+msgstr "Dölj målspår"
+#
+#
 msgid "Hide Target CPA"
 msgstr "Visa inte CPA för AIS-fartyg"
 #
@@ -1938,6 +1943,9 @@ msgstr "LE/V"
 #
 msgid "LMT @ Location"
 msgstr "LMT @ Plats"
+#
+msgid "LMT @ Track Start"
+msgstr ""
 #
 #
 msgid "Language"
@@ -3065,6 +3073,11 @@ msgid "Show AIS targets real size"
 msgstr "Visa AIS-fartyg med verklig storlek"
 #
 #
+#, fuzzy
+msgid "Show All Tracks"
+msgstr "Visa målspår"
+#
+#
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Visa larmmeddelande för CPA/TCPA"
 #
@@ -3480,6 +3493,11 @@ msgid "Time enroute"
 msgstr "Återstående tid till destination"
 #
 #
+#, fuzzy
+msgid "Time shown as"
+msgstr "Tid visas som"
+#
+#
 msgid "Times shown as"
 msgstr "Tid visas som"
 #
@@ -3500,6 +3518,11 @@ msgstr "Till rutt"
 #
 #
 msgid "Toggle Tracking"
+msgstr "Visa båtens spår"
+#
+#
+#, fuzzy
+msgid "Toggle track"
 msgstr "Visa båtens spår"
 #
 #
@@ -3567,6 +3590,11 @@ msgstr "Transverse Mercator"
 #
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "Behandla WPL-meningar som APRS positionsrapporter"
+#
+#
+#, fuzzy
+msgid "Trk"
+msgstr "Spår"
 #
 #
 msgid "Tug"
@@ -3847,6 +3875,21 @@ msgstr "_B"
 msgid "_plus"
 msgstr "_plus"
 #
+#, fuzzy
+msgid "cm"
+msgstr "m"
+#
+msgid "fa"
+msgstr ""
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "ft"
+msgstr "Vänster"
+#
 #
 #
 #
@@ -3899,13 +3942,16 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid " </b>in<b> "
 #~ msgstr " </b>om<b> "
 #
 #
 #
+#
 #~ msgid " is %5g"
 #~ msgstr "är %5g"
+#
 #
 #
 #
@@ -3922,8 +3968,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "Exportera spår..."
+#
 #
 #
 #
@@ -3940,6 +3988,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "&Silence Alert"
 #~ msgstr "&Tysta Larm"
 #
@@ -3948,8 +3997,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid ", Out: None"
 #~ msgstr ", Ut: Ingen"
+#
 #
 #
 #
@@ -3966,8 +4017,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "AISRollover"
 #~ msgstr "AIS \"Rulla över\""
+#
 #
 #
 #
@@ -3984,8 +4037,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "AISTargetQuery"
 #~ msgstr "AIS-fartygsegenskaper"
+#
 #
 #
 #
@@ -4002,6 +4057,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "Bulktransportfartyg"
 #
@@ -4011,8 +4067,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Bunkership"
 #~ msgstr "Bunkerfartyg"
+#
 #
 #
 #
@@ -4038,8 +4096,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Kopiera"
+#
 #
 #
 #
@@ -4056,6 +4116,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Current"
 #~ msgstr "Strömmar"
 #
@@ -4065,8 +4126,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Data Source :"
 #~ msgstr "NMEA datakälla:"
+#
 #
 #
 #
@@ -4087,8 +4150,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "E&xportera alla..."
+#
 #
 #
 #
@@ -4105,8 +4170,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Error on Waypoint Upload.  Please check logfiles..."
 #~ msgstr "Fel vid uppladdning av waypoint.  Kontrollera loggfilen..."
+#
 #
 #
 #
@@ -4123,8 +4190,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Ferry"
 #~ msgstr "Färja"
+#
 #
 #
 #
@@ -4141,8 +4210,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Freightbarge"
 #~ msgstr "Fraktpråm"
+#
 #
 #
 #
@@ -4159,8 +4230,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Gas tanker"
 #~ msgstr "Gastanker"
+#
 #
 #
 #
@@ -4177,8 +4250,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "HW"
 #~ msgstr "HW"
+#
 #
 #
 #
@@ -4195,6 +4270,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "In"
 #~ msgstr "Symbol"
@@ -4204,8 +4280,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "In: None"
 #~ msgstr "In: Ingen"
+#
 #
 #
 #
@@ -4232,8 +4310,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "LW"
 #~ msgstr "LW"
+#
 #
 #
 #
@@ -4250,8 +4330,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Liquified gas tanker"
 #~ msgstr "Tankfartyg, flytande gas"
+#
 #
 #
 #
@@ -4267,6 +4349,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Message accepted"
 #~ msgstr "Kommandot accepterat"
 #
@@ -4275,8 +4358,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Message filtered and dropped"
 #~ msgstr "Kommandot bortfiltrerat"
+#
 #
 #
 #
@@ -4293,8 +4378,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor freighter pushing at least one tank-ship"
 #~ msgstr "Motordrivet fraktfartyg påskjutande minst en tanker"
+#
 #
 #
 #
@@ -4311,8 +4398,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor freighter with one or more ships alongside"
 #~ msgstr "Motordrivet fraktfartyg med ett eller flera fartyg vid sidan"
+#
 #
 #
 #
@@ -4329,8 +4418,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor freighter, tug"
 #~ msgstr "Motordrivet fraktfartyg, bogserbåt"
+#
 #
 #
 #
@@ -4347,8 +4438,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Motordriven tanker, torrlast som om vätska (t.ex. cement)"
+#
 #
 #
 #
@@ -4365,8 +4458,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "Motordriven tanker, flytande last, typ N"
+#
 #
 #
 #
@@ -4382,8 +4477,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "NMEA Debug Window"
 #~ msgstr "NMEA Datafönster"
+#
 #
 #
 #
@@ -4399,8 +4496,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "No"
 #~ msgstr "Nej"
+#
 #
 #
 #
@@ -4417,6 +4516,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Object, towed, not otherwise specified"
 #~ msgstr "Objekt under bogsering, ej specificerad ytterligare"
 #
@@ -4425,8 +4525,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Other"
 #~ msgstr "Annan"
+#
 #
 #
 #
@@ -4443,8 +4545,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Output Message"
 #~ msgstr "Utdata"
+#
 #
 #
 #
@@ -4461,6 +4565,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "Passagerarfartyg, färja, kryssningsfartyg, Röda korset-fartyg"
 #
@@ -4469,8 +4574,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pause"
 #~ msgstr "Pause"
+#
 #
 #
 #
@@ -4487,8 +4594,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "Fritidsfartyg, längd över 20 meter"
+#
 #
 #
 #
@@ -4505,8 +4614,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Prev"
 #~ msgstr "Föregående"
+#
 #
 #
 #
@@ -4523,8 +4634,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "Påskjutande bogserbåt, ensam"
+#
 #
 #
 #
@@ -4542,8 +4655,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "Påskjutande bogserbåt, åtta lastpråmar"
+#
 #
 #
 #
@@ -4560,8 +4675,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "Påskjutande bogserbåt, fem lastpråmar"
+#
 #
 #
 #
@@ -4579,6 +4696,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "Påskjutande bogserbåt, fyra lastpråmar"
 #
@@ -4588,8 +4706,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "Påskjutande bogserbåt, nio eller fler lastpråmar"
+#
 #
 #
 #
@@ -4608,8 +4728,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "Påskjutande bogserbåt, en lastpråm"
+#
 #
 #
 #
@@ -4626,8 +4748,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, seven barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, sju lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -4644,8 +4768,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, six barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, sex lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -4662,8 +4788,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, three barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, tre lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -4680,8 +4808,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, två lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -4698,8 +4828,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Red cross ship"
 #~ msgstr "Röda korset-fartyg"
+#
 #
 #
 #
@@ -4721,6 +4853,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
 #
@@ -4729,8 +4862,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Resume"
 #~ msgstr "Återuppta"
+#
 #
 #
 #
@@ -4747,6 +4882,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Send"
 #~ msgstr "Skicka"
 #
@@ -4756,8 +4892,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Send Route To GPS"
 #~ msgstr "Skicka rutt till GPS"
+#
 #
 #
 #

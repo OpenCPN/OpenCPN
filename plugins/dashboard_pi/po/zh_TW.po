@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-28 00:37-0500\n"
 "PO-Revision-Date: 2013-09-25 15:52+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -54,6 +54,9 @@ msgstr "COG"
 msgid "Caption:"
 msgstr "標題:"
 #
+msgid "Centimeters"
+msgstr ""
+#
 msgid "Clock"
 msgstr "時鐘"
 #
@@ -88,6 +91,9 @@ msgstr "刪除"
 msgid "Depth"
 msgstr "水深"
 #
+msgid "Depth units:"
+msgstr ""
+#
 msgid "Distance units:"
 msgstr ""
 #
@@ -102,6 +108,12 @@ msgstr "ENE"
 #
 msgid "ESE"
 msgstr "ESE"
+#
+msgid "Fathoms"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "字型"
@@ -120,6 +132,9 @@ msgstr ""
 #
 msgid "Horizontal"
 msgstr "水平"
+#
+msgid "Inches"
+msgstr ""
 #
 msgid "Instruments"
 msgstr "航儀"

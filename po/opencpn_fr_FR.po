@@ -19,7 +19,6 @@ msgstr ""
 "\n"
 " - La position du GPS par rapport à la proue doit être <=l à la longueur."
 
-#
 msgid ""
 "\n"
 " - your GPS offset from midship must be within your ship's beam"
@@ -421,7 +420,7 @@ msgid "1 pixel"
 msgstr "1 pixel"
 
 msgid "1.0 NM along COG"
-msgstr "1 NM sur le cap du COG"
+msgstr "1.0 NM sur le cap du COG"
 
 #
 msgid "10 pixels"

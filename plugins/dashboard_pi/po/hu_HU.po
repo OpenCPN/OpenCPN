@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1207\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-28 00:37-0500\n"
 "PO-Revision-Date: 2012-12-29 13:06+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: SZIGETI Szabolcs <szigi@ik.bme.hu>\n"
@@ -53,6 +53,9 @@ msgstr "COG"
 msgid "Caption:"
 msgstr "Felirat:"
 #
+msgid "Centimeters"
+msgstr ""
+#
 msgid "Clock"
 msgstr "Óra"
 #
@@ -87,6 +90,9 @@ msgstr "Töröl"
 msgid "Depth"
 msgstr "Mélység"
 #
+msgid "Depth units:"
+msgstr ""
+#
 msgid "Distance units:"
 msgstr ""
 #
@@ -103,6 +109,12 @@ msgstr "ÉK"
 #, fuzzy
 msgid "ESE"
 msgstr "DK"
+#
+msgid "Fathoms"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Betűtípusok"
@@ -121,6 +133,9 @@ msgstr ""
 #
 msgid "Horizontal"
 msgstr "Vízszintes"
+#
+msgid "Inches"
+msgstr ""
 #
 msgid "Instruments"
 msgstr "Műszerek"
@@ -293,8 +308,10 @@ msgid "show this dashboard"
 msgstr "mutassa ezt a műszerfalat"
 #
 #
+#
 #~ msgid "COG+HDG Compass"
 #~ msgstr "COG + HDG Kompassz"
+#
 #
 #
 #~ msgid "Edit"

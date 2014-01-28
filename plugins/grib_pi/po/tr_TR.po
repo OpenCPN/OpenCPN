@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2013-12-10 18:46+0200\n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -33,6 +33,12 @@ msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr "eMail istemek için adres gönderildi. (LINUX için zorunlu)"
+#
+#, fuzzy
+msgid ""
+"Air\n"
+"Temperature"
+msgstr "Hava Sıcaklığı (2m)"
 #
 msgid "Air Temp"
 msgstr "Hava Sıcaklığı"
@@ -70,6 +76,10 @@ msgstr "Santigrad"
 #
 msgid "Close"
 msgstr ""
+#
+#, fuzzy
+msgid "Cloud"
+msgstr "Bulut Durumu"
 #
 msgid "Cloud Cover"
 msgstr "Bulut Durumu"
@@ -335,6 +345,12 @@ msgstr ""
 msgid "Save"
 msgstr "Sakla"
 #
+#, fuzzy
+msgid ""
+"Sea\n"
+"Temperature"
+msgstr "Deniz Yüzeyi Sıcaklığı"
+#
 #
 #
 #
@@ -532,9 +548,11 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "GRIB Verileri"
+#
 #
 #
 #
@@ -550,8 +568,10 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -592,11 +612,13 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -620,11 +642,13 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Ozean-Strömung bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -646,6 +670,7 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr ""
@@ -659,9 +684,11 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Basınç, mBar"
+#
 #
 #
 #
@@ -712,8 +739,10 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "GRIB simgesini göster"
+#
 #
 #
 #
@@ -756,8 +785,10 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "DİKKAT: Acele GRIB verileri %d saat eskidir."
+#
 #
 #
 #
@@ -777,9 +808,11 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Rüzgar yönü"
+#
 #
 #
 #

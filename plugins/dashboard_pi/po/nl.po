@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-17 19:30-0500\n"
+"POT-Creation-Date: 2014-01-28 00:37-0500\n"
 "PO-Revision-Date: 2013-10-24 17:15+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: &lt;rider2@kpnmail.nl&gt;\n"
@@ -52,6 +52,10 @@ msgstr "COG"
 msgid "Caption:"
 msgstr "Naam:"
 #
+#, fuzzy
+msgid "Centimeters"
+msgstr "kIlometer"
+#
 msgid "Clock"
 msgstr "Klok"
 #
@@ -86,6 +90,10 @@ msgstr "Wissen"
 msgid "Depth"
 msgstr "Diepte"
 #
+#, fuzzy
+msgid "Depth units:"
+msgstr "Eenheid voor afstand:"
+#
 msgid "Distance units:"
 msgstr "Eenheid voor afstand:"
 #
@@ -100,6 +108,12 @@ msgstr "ONO"
 #
 msgid "ESE"
 msgstr "OZO"
+#
+msgid "Fathoms"
+msgstr ""
+#
+msgid "Feet"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Lettertypes"
@@ -118,6 +132,9 @@ msgstr "Volg OpenCPN-instellingen"
 #
 msgid "Horizontal"
 msgstr "horizontaal"
+#
+msgid "Inches"
+msgstr ""
 #
 msgid "Instruments"
 msgstr "Instrumenten"

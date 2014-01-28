@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.3.1006\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2013-10-14 23:57+0100\n"
 "Last-Translator: Frode Lynum <post@opencpn.kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -31,6 +31,12 @@ msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr ""
+#
+#, fuzzy
+msgid ""
+"Air\n"
+"Temperature"
+msgstr "Luft temperatur"
 #
 msgid "Air Temp"
 msgstr "Luft temp"
@@ -67,6 +73,11 @@ msgstr ""
 #
 msgid "Close"
 msgstr ""
+#
+#
+#
+msgid "Cloud"
+msgstr "Sky"
 #
 msgid "Cloud Cover"
 msgstr "Skydekke"
@@ -332,6 +343,12 @@ msgstr ""
 msgid "Save"
 msgstr ""
 #
+#, fuzzy
+msgid ""
+"Sea\n"
+"Temperature"
+msgstr "Havtemperatur"
+#
 #
 #
 #
@@ -510,8 +527,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (Dup)"
+#
 #
 #
 #
@@ -531,18 +550,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Action"
 #~ msgstr "Utfør"
+#
 #
 #
 #
 #~ msgid "Celcius"
 #~ msgstr "Celcius"
 #
-#
-#
-#~ msgid "Cloud"
-#~ msgstr "Sky"
 #
 #
 #
@@ -555,13 +572,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Error"
 #~ msgstr "Feil"
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Kunne ikke sende epost melding"
+#
 #
 #
 #
@@ -596,8 +616,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB fil katalog"
+#
 #
 #
 #
@@ -606,8 +628,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "M/S"
+#
 #
 #
 #
@@ -616,8 +640,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "MittMerke"
+#
 #
 #
 #
@@ -626,8 +652,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "Parametre"
+#
 #
 #
 #
@@ -639,9 +667,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØTEMP GRIB"
+#
 #
 #
 #
@@ -659,9 +689,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØSTRØM GRIB"
+#
 #
 #
 #
@@ -677,14 +709,17 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte CRAIN GRIB"
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Nedbør"
+#
 #
 #
 #
@@ -697,13 +732,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
 #
 #
 #
+#
 #~ msgid "Ref : "
 #~ msgstr "Ref : "
+#
 #
 #
 #
@@ -726,9 +764,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB innstillinger"
+#
 #
 #
 #
@@ -762,8 +802,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "Vis GRIB ikon"
+#
 #
 #
 #
@@ -802,8 +844,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ADVARSEL:  QuickSCAT GRIB data er %d timer gammel."
+#
 #
 #
 #
@@ -816,8 +860,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Wind Scat"
 #~ msgstr "Vindscat"
+#
 #
 #
 #
@@ -833,14 +879,17 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Vindhastighet, Knop"
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Sone"
+#
 #
 #
 #

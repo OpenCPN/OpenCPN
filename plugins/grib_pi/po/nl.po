@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-01 19:14-0500\n"
+"POT-Creation-Date: 2014-01-28 00:36-0500\n"
 "PO-Revision-Date: 2013-10-24 17:24+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: rider2@kpnmail.nl\n"
@@ -31,6 +31,12 @@ msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr "Adres voor verzenden e-mailverzoek (verplicht voor LINUX)"
+#
+#, fuzzy
+msgid ""
+"Air\n"
+"Temperature"
+msgstr "Luchttemp. (2 m)"
 #
 msgid "Air Temp"
 msgstr "Luchttemp."
@@ -68,6 +74,11 @@ msgstr "Celsius"
 #
 msgid "Close"
 msgstr ""
+#
+#
+#
+msgid "Cloud"
+msgstr "Bewolking"
 #
 msgid "Cloud Cover"
 msgstr "Bewolking"
@@ -336,6 +347,12 @@ msgstr ""
 msgid "Save"
 msgstr "Opslaan"
 #
+#, fuzzy
+msgid ""
+"Sea\n"
+"Temperature"
+msgstr "Zeewateroppervl.temp."
+#
 #
 #
 #
@@ -520,8 +537,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (dup)"
+#
 #
 #
 #
@@ -542,18 +561,16 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Action"
 #~ msgstr "Actie"
+#
 #
 #
 #
 #~ msgid "Celcius"
 #~ msgstr "Celsius"
 #
-#
-#
-#~ msgid "Cloud"
-#~ msgstr "Bewolking"
 #
 #
 #
@@ -565,8 +582,10 @@ msgstr "zyGrib login"
 #~ msgstr "GRIB voorkeuren"
 #
 #
+#
 #~ msgid "Display Iso Temp. Lines"
 #~ msgstr "Toon isothermen"
+#
 #
 #
 #
@@ -575,8 +594,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Kon mailbericht niet versturen"
+#
 #
 #
 #
@@ -613,8 +634,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Map voor GRIB bestand"
+#
 #
 #
 #
@@ -623,8 +646,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "m/sec"
+#
 #
 #
 #
@@ -633,8 +658,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "MijnLabel"
+#
 #
 #
 #
@@ -643,13 +670,16 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "Parameters"
 #
 #
 #
+#
 #~ msgid "Period"
 #~ msgstr "Periode"
+#
 #
 #
 #
@@ -667,9 +697,11 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+#
 #
 #
 #
@@ -687,9 +719,11 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
+#
 #
 #
 #
@@ -703,8 +737,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Neerslag"
+#
 #
 #
 #
@@ -718,8 +754,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
+#
 #
 #
 #
@@ -728,8 +766,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Request Pofile"
 #~ msgstr "Verzoekprofiel"
+#
 #
 #
 #
@@ -753,8 +793,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "SeaTemp"
 #~ msgstr "ZeeTemp"
+#
 #
 #
 #
@@ -814,8 +856,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Toon windsnelheid in m/sec"
+#
 #
 #
 #
@@ -833,14 +877,17 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "windrichting"
 #
 #
 #
+#
 #~ msgid "Wind Scat"
 #~ msgstr "Windscat"
+#
 #
 #
 #
@@ -858,14 +905,17 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "windsnelheid (m/sec)"
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Zone"
+#
 #
 #
 #
