@@ -3560,13 +3560,11 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj )
     cobj->pPolyTessGeo = ( PolyTessGeo* )pObj->pPolyTessGeo;
     cobj->m_chart_context = (chart_context *)pObj->m_chart_context;
 
-    cobj->bBBObj_valid = pObj->bBBObj_valid;
-    if(pObj->bBBObj_valid){
-        cobj->BBObj.SetMin( pObj->lon_min, pObj->lat_min );
-        cobj->BBObj.SetMax( pObj->lon_max, pObj->lat_max );
-    }        
-    
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
+    
+    cobj->bBBObj_valid = pContext->bBBObj_valid;
+    if( pContext->bBBObj_valid )
+        cobj->BBObj = pContext->BBObj;
     
     cobj->CSrules = pContext->CSrules;
     cobj->bCS_Added = pContext->bCS_Added;
@@ -3605,7 +3603,12 @@ bool PI_PLIBSetContext( PI_S57Obj *pObj )
         delete ctx->FText;
         ctx->FText = NULL;
     }
-        
+    
+    //  Reset object selection box
+    ctx->bBBObj_valid = true;
+    ctx->BBObj.SetMin( pObj->lon_min, pObj->lat_min );
+    ctx->BBObj.SetMax( pObj->lon_max, pObj->lat_max );
+    
     
     if(pObj->child){
         wxASSERT(0);
@@ -3645,7 +3648,17 @@ bool PI_PLIBSetContext( PI_S57Obj *pObj )
     return true;
 }
     
+void PI_UpdateContext(PI_S57Obj *pObj)
+{
+    S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
+    if(pContext){
+        pContext->bBBObj_valid = true;
+        pContext->BBObj.SetMin( pObj->lon_min, pObj->lat_min );
+        pContext->BBObj.SetMax( pObj->lon_max, pObj->lat_max );
+    }
+}
 
+    
 void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj )
 {
     //  Update the PLIB context after the render operation
@@ -3664,6 +3677,20 @@ void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj )
     
 }
 
+bool PI_GetObjectRenderBox( PI_S57Obj *pObj, double *lat_min, double *lat_max, double *lon_min, double *lon_max)
+{
+    S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
+    if(pContext){
+        if(lat_min) *lat_min = pContext->BBObj.GetMinY();
+        if(lat_max) *lat_max = pContext->BBObj.GetMaxY();
+        if(lon_min) *lon_min = pContext->BBObj.GetMinX();
+        if(lon_max) *lon_max = pContext->BBObj.GetMaxX();
+        return pContext->bBBObj_valid;
+    }
+    else
+        return false;
+}
+    
 PI_LUPname PI_GetObjectLUPName( PI_S57Obj *pObj )
 {
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;

@@ -828,7 +828,6 @@ public:
       double                  lat_max;
       double                  lon_min;
       double                  lon_max;
-      bool                    bBBObj_valid;
 
       int                     Scamin;                 // SCAMIN attribute decoded during load
 
@@ -867,6 +866,8 @@ int DECL_EXP PI_GetPLIBSymbolStyle();
 int DECL_EXP PI_GetPLIBBoundaryStyle();
 int DECL_EXP PI_GetPLIBStateHash();
 double DECL_EXP PI_GetPLIBMarinerSafetyContour();
+bool DECL_EXP PI_GetObjectRenderBox( PI_S57Obj *pObj, double *lat_min, double *lat_max, double *lon_min, double *lon_max);
+void DECL_EXP PI_UpdateContext(PI_S57Obj *pObj);
 
 bool DECL_EXP PI_PLIBObjectRenderCheck( PI_S57Obj *pObj, PlugIn_ViewPort *vp );
 PI_LUPname DECL_EXP PI_GetObjectLUPName( PI_S57Obj *pObj );
