@@ -987,7 +987,8 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 UpdateOneCPA( pTargetData );
 
                 //    Update this target's track
-                if( g_bAISShowTracks ) UpdateOneTrack( pTargetData );
+                if( pTargetData->b_show_track )
+                    UpdateOneTrack( pTargetData );
             }
         } else {
 //             printf("Unrecognised AIS message ID: %d\n", pTargetData->MID);

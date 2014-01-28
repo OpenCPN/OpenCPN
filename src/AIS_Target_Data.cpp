@@ -31,6 +31,7 @@ extern bool g_bAISRolloverShowCOG;
 extern bool g_bAISRolloverShowCPA;
 extern bool g_bShowMag;
 extern MyFrame *gFrame;
+extern bool g_bAISShowTracks;
 
 
 //    Define and declare a hasmap for ERI Ship type strings, keyed by their UN Codes.
@@ -134,7 +135,7 @@ AIS_Target_Data::AIS_Target_Data()
     blue_paddle = 0;
     bCPA_Valid = false;
     ROTIND = 0;
-    b_show_track = true;
+    b_show_track = g_bAISShowTracks;
     b_specialPosnReport = false;
     altitude = 0;
 }

@@ -4098,7 +4098,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     if( td->n_alarm_state == AIS_ALARM_SET ) drawit++;
 
     //  If AIS tracks are shown, is the first point of the track on-screen?
-    if( g_bAISShowTracks && td->b_show_track ) {
+    if( 1/*g_bAISShowTracks*/ && td->b_show_track ) {
         wxAISTargetTrackListNode *node = td->m_ptrack->GetFirst();
         if( node ) {
             AISTargetTrackPoint *ptrack_point = node->GetData();
@@ -4659,7 +4659,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         }
 
         //  Draw tracks if enabled
-        if( g_bAISShowTracks && td->b_show_track ) {
+        if( 1/*g_bAISShowTracks*/ && td->b_show_track ) {
             wxPoint TrackPointA;
             wxPoint TrackPointB;
 
@@ -6567,7 +6567,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                     menuAIS->Append( ID_DEF_MENU_AIS_CPA, _( "Show Target CPA" ) );
             }
             menuAIS->Append( ID_DEF_MENU_AISTARGETLIST, _("Target List...") );
-            if ( g_bAISShowTracks ) {
+            if ( 1 /*g_bAISShowTracks*/ ) {
                 if( myptarget && myptarget->b_show_track )
                     menuAIS->Append( ID_DEF_MENU_AISSHOWTRACK, _("Hide Target Track") );
                 else

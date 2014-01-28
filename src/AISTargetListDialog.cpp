@@ -51,6 +51,7 @@ extern ChartCanvas *cc1;
 extern wxString g_default_wp_icon;
 extern Select *pSelect;
 extern RouteManagerDialog *pRouteManagerDialog;
+extern bool g_bAISShowTracks;
 
 IMPLEMENT_CLASS ( AISTargetListDialog, wxPanel )
 
@@ -454,7 +455,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     m_pButtonHideAllTracks->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( AISTargetListDialog::OnHideAllTracks ), NULL, this );
     boxSizer02->Add( m_pButtonHideAllTracks, 0, wxEXPAND | wxALL, 0 );
-    
+
     m_pButtonShowAllTracks = new wxButton( this, wxID_ANY, _("Show All Tracks"), wxDefaultPosition,
             wxDefaultSize, wxBU_AUTODRAW );
     m_pButtonShowAllTracks->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
@@ -466,7 +467,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     m_pButtonToggleTrack->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( AISTargetListDialog::OnToggleTrack ), NULL, this );
     boxSizer02->Add( m_pButtonToggleTrack, 0, wxEXPAND | wxALL, 0 );
-
+    
     boxSizer02->AddSpacer( 10 );
 
     m_pStaticTextRange = new wxStaticText( this, wxID_ANY, _("Limit range: NM"), wxDefaultPosition,
