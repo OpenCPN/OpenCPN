@@ -1181,7 +1181,7 @@ bool dashboard_pi::LoadConfig( void )
         pConf->Read( _T("SpeedUnit"), &g_iDashSpeedUnit, 0 );
         
         pConf->Read( _T("DepthUnit"), &g_iDashDepthUnit, 3 );
-        g_iDashDepthUnit = wxMin(g_iDashDepthUnit, 3);
+        g_iDashDepthUnit = wxMax(g_iDashDepthUnit, 3);
 
         pConf->Read( _T("DistanceUnit"), &g_iDashDistanceUnit, 0 );
         pConf->Read( _T("WindSpeedUnit"), &g_iDashWindSpeedUnit, 0 );
