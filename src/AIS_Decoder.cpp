@@ -1291,10 +1291,9 @@ bool AIS_Decoder::Parse_VDXBitstring( AIS_Bitstring *bstr, AIS_Target_Data *ptd 
             ptd->COG = 0.1 * ( bstr->GetInt( 117, 12 ) );
 
             int alt_tent = bstr->GetInt( 39, 12 );
-            if( alt_tent != 4095)
-                ptd->altitude = alt_tent;
+            ptd->altitude = alt_tent;
             
-            ptd->b_specialPosnReport = true;
+            ptd->b_SarAircraftPosnReport = true;
             
             parse_result = true;
             b_posn_report = true;

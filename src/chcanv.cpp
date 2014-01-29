@@ -4086,7 +4086,8 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
     //    If target's speed is unavailable, use zero for further calculations
     double target_sog = td->SOG;
-    if( td->SOG > 102.2 ) target_sog = 0.;
+    if( (td->SOG > 102.2) && !td->b_SarAircraftPosnReport )
+        target_sog = 0.;
 
     int drawit = 0;
     wxPoint TargetPoint, PredPoint;
@@ -4270,7 +4271,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             target_brush = wxBrush( GetGlobalColor( _T ( "CHYLW" ) ) );
         if( ( td->Class == AIS_DSC ) && ( td->ShipType == 12 ) )					// distress
             target_brush = wxBrush( GetGlobalColor( _T ( "URED" ) ) );
-        if( td->b_specialPosnReport )
+        if( td->b_SarAircraftPosnReport )
             target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
         
         if( ( td->n_alarm_state == AIS_ALARM_SET ) && ( td->bCPA_Valid ) ) target_brush = wxBrush(
@@ -4469,6 +4470,95 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             else
                 SART_Render( dc, wxPen( GetGlobalColor( _T ( "UGREN" ) ), 2 ),
                              TargetPoint.x, TargetPoint.y, 8 );
+                
+        } else if(td->b_SarAircraftPosnReport) {
+            wxPoint SarIcon[10];
+            wxPoint SarRot[10];
+            
+            SarIcon[0] = wxPoint(0, 12);
+            SarIcon[1] = wxPoint(4, 2);
+            SarIcon[2] = wxPoint(16, -2);
+            SarIcon[3] = wxPoint(16, -8);
+            SarIcon[4] = wxPoint(4, -8);
+            SarIcon[5] = wxPoint(3, -16);
+            SarIcon[6] = wxPoint(10, -18);
+            SarIcon[7] = wxPoint(10, -22);
+            SarIcon[8] = wxPoint(0, -22);
+
+
+            // Draw icon as two halves
+            
+            //  First half
+             
+            for( int i = 0; i < 9; i++ )
+            {
+                double px = ( (double) SarIcon[i].x ) * sin( theta )
+                + ( (double) SarIcon[i].y ) * cos( theta );
+                double py = ( (double) SarIcon[i].y ) * sin( theta )
+                - ( (double) SarIcon[i].x ) * cos( theta );
+                SarRot[i].x = (int) round( px );
+                SarRot[i].y = (int) round( py );
+            }
+            wxPoint ais_tri_icon[3];
+            
+            wxPen tri_pen( target_brush.GetColour(), 1 );
+            dc.SetPen( tri_pen );
+            dc.SetBrush( target_brush );
+            
+            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[1]; ais_tri_icon[2] = SarRot[4];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[1]; ais_tri_icon[1] = SarRot[2]; ais_tri_icon[2] = SarRot[3];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[1]; ais_tri_icon[1] = SarRot[3]; ais_tri_icon[2] = SarRot[4];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[4]; ais_tri_icon[2] = SarRot[5];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[5]; ais_tri_icon[2] = SarRot[8];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[5]; ais_tri_icon[1] = SarRot[6]; ais_tri_icon[2] = SarRot[7];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[5]; ais_tri_icon[1] = SarRot[7]; ais_tri_icon[2] = SarRot[8];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+
+            wxPen target_outline_pen( GetGlobalColor( _T ( "UBLCK" ) ), 2 );
+            dc.SetPen( target_outline_pen );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
+            dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
+            
+            // second half
+            
+            for( int i = 0; i < 9; i++ )                // mirror the icon (x -> -x)
+            {
+                double px = (-(double) SarIcon[i].x ) * sin( theta )
+                + ( (double) SarIcon[i].y ) * cos( theta );
+                double py = ( (double) SarIcon[i].y ) * sin( theta )
+                - (-(double) SarIcon[i].x ) * cos( theta );
+                SarRot[i].x = (int) round( px );
+                SarRot[i].y = (int) round( py );
+            }
+
+            dc.SetPen( tri_pen );
+            dc.SetBrush( target_brush );
+            
+            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[1]; ais_tri_icon[2] = SarRot[4];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[1]; ais_tri_icon[1] = SarRot[2]; ais_tri_icon[2] = SarRot[3];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[1]; ais_tri_icon[1] = SarRot[3]; ais_tri_icon[2] = SarRot[4];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[4]; ais_tri_icon[2] = SarRot[5];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[5]; ais_tri_icon[2] = SarRot[8];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[5]; ais_tri_icon[1] = SarRot[6]; ais_tri_icon[2] = SarRot[7];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            ais_tri_icon[0] = SarRot[5]; ais_tri_icon[1] = SarRot[7]; ais_tri_icon[2] = SarRot[8];
+            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            
+            dc.SetPen( target_outline_pen );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
+            dc.StrokePolygon( 9, SarRot, TargetPoint.x, TargetPoint.y );
+            
         } else {         // ship class A or B or a Buddy or DSC
             wxPen target_pen( GetGlobalColor( _T ( "UBLCK" ) ), 1 );
 

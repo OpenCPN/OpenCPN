@@ -136,7 +136,7 @@ AIS_Target_Data::AIS_Target_Data()
     bCPA_Valid = false;
     ROTIND = 0;
     b_show_track = g_bAISShowTracks;
-    b_specialPosnReport = false;
+    b_SarAircraftPosnReport = false;
     altitude = 0;
 }
 
@@ -221,6 +221,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         cls += Get_vessel_type_string(false);
         ClassStr = wxGetTranslation( cls );
     }
+    
+    if(b_SarAircraftPosnReport)
+        ClassStr = _("SAR Aircraft");
 
     if( IMOstr.Length() )
         html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
@@ -283,8 +286,8 @@ wxString AIS_Target_Data::BuildQueryResult( void )
             UNTypeStr = wxGetTranslation( type );
         }
 
-        if( b_specialPosnReport ){
-            AISTypeStr = wxGetTranslation( _("Special Position Report") );
+        if( b_SarAircraftPosnReport ){
+            AISTypeStr.Clear();
             UNTypeStr.Clear();
             navStatStr.Clear();
         }
@@ -302,7 +305,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         if( NavStatus != ATON_VIRTUAL && Class != AIS_ARPA && Class != AIS_APRS ) {
             if( ( Class == AIS_CLASS_B ) || ( Class == AIS_ATON ) ) {
                 sizeString = wxString::Format( _T("%dm x %dm"), ( DimA + DimB ), ( DimC + DimD ) );
-            } else if(!b_specialPosnReport) {
+            } else if(!b_SarAircraftPosnReport) {
                 if( ( DimA + DimB + DimC + DimD ) == 0 ) {
                     if( b_isEuroInland ) {
                         if( Euro_Length == 0.0 ) {
@@ -386,7 +389,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
              << rowStartH << wxString::Format( _T("<b>%d:%d UTC "), m_utc_hour, m_utc_min )
              << rowEnd;
     } else {
-        if( Class == AIS_CLASS_A && !b_specialPosnReport ) {
+        if( Class == AIS_CLASS_A && !b_SarAircraftPosnReport ) {
             html << vertSpacer << rowStart << _("Destination")
                  << _T("</font></td><td align=right><font size=-2>")
                  << _("ETA") << _T("</font></td></tr>\n")
@@ -424,7 +427,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
 
             double speed_show = toUsrSpeed( SOG );
             
-            if( ( SOG <= 102.2 ) || b_specialPosnReport ){
+            if( ( SOG <= 102.2 ) || b_SarAircraftPosnReport ){
                 if( speed_show < 10.0 )
                     sogStr = wxString::Format( _T("%.2f "), speed_show ) + getUsrSpeedUnit();
                 else if( speed_show < 100.0 )
@@ -451,7 +454,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
                     else rotStr = _T("0");
                 }
             }
-            else if( !b_specialPosnReport )
+            else if( !b_SarAircraftPosnReport )
                 rotStr = _("---");
         }
     }
@@ -478,18 +481,18 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         html << vertSpacer << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
             << rowStart <<_("Speed") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
             << _("Course") << _T("</font></td><td>&nbsp;</td><td align=right><font size=-2>");
-            if( !b_specialPosnReport )
+            if( !b_SarAircraftPosnReport )
                 html << _("Heading") ;
             
             html << _T("</font></td></tr>")
             << rowStartH << _T("<b>") << sogStr << _T("</b></td><td>&nbsp;</td><td><b>")
             << courseStr << _T("</b></td><td>&nbsp;</td><td align=right><b>");
-            if(!b_specialPosnReport)
+            if(!b_SarAircraftPosnReport)
                 html << hdgStr;
             html  << rowEnd << _T("</table></td></tr>")
             << vertSpacer;
             
-        if( !b_specialPosnReport )
+            if( !b_SarAircraftPosnReport )
             turnRateHdr = _("Turn Rate");
     }
     html << _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")
@@ -498,16 +501,16 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         << turnRateHdr << _T("</font></td></tr>")
         << rowStartH << _T("<b>") << rngStr << _T("</b></td><td>&nbsp;</td><td><b>")
         << brgStr << _T("</b></td><td>&nbsp;</td><td align=right><b>");
-        if(!b_specialPosnReport)
+        if(!b_SarAircraftPosnReport)
             html << rotStr;
         html << rowEnd << _T("</table></td></tr>")
         << vertSpacer;
 
     wxString tcpaStr;
-    if( bCPA_Valid ) tcpaStr << _T("/<b> ") << _("in") << _T("<b>") << FormatTimeAdaptive( (int)(TCPA*60.) );
+    if( bCPA_Valid ) tcpaStr << _T("</b> ") << _("in") << _T("<b>") << FormatTimeAdaptive( (int)(TCPA*60.) );
 
     if( bCPA_Valid ) {
-        html<< vertSpacer << rowStart << _("CPA") << rowEnd
+        html<< vertSpacer << rowStart << _T("<font size=-2>") <<_("CPA") << _T("</font>") << rowEnd
             << rowStartH << _T("<b>") << cc1->FormatDistanceAdaptive( CPA )
             << tcpaStr << rowEnd;
     }
@@ -522,16 +525,17 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         }
     }
 
-    if(b_specialPosnReport) {
-        if(altitude != 4095) {
-            wxString altStr;
+    if(b_SarAircraftPosnReport) {
+        wxString altStr;
+        if(altitude != 4095) 
             altStr.Printf(_T("%4d M"), altitude );
-            html /*<< _T("<tr><td colspan=2><table width=100% border=0 cellpadding=0 cellspacing=0>")*/
-            << rowStart <<_("Altitude") << _T("</font></td><td>&nbsp;</td><td><font size=-2>")
-            << rowStartH << _T("<b>") << altStr << _T("</b></td><td>&nbsp;</td><td><b>")
-            << rowEnd << _T("</table></td></tr>")
-            << vertSpacer;
-        }
+        else
+            altStr = _("Unknown");
+            
+        html    << rowStart <<_("Altitude") << _T("</font></td><td>&nbsp;</td><td><font size=-0>")
+        << rowStartH << _T("<b>") << altStr << _T("</b></td><td>&nbsp;</td><td><b>")
+        << rowEnd << _T("</table></td></tr>")
+        << vertSpacer;
     }
     
     html << _T("</table>");
@@ -565,6 +569,8 @@ wxString AIS_Target_Data::GetRolloverString( void )
             result.Append(_T(": "));
             result.Append( wxGetTranslation( Get_vessel_type_string( false ) ) );
         }
+        else if(b_SarAircraftPosnReport)
+            result.Append(_("SAR Aircraft"));
         else
             result.Append( wxGetTranslation( Get_class_string( false ) ) );
         
@@ -588,13 +594,11 @@ wxString AIS_Target_Data::GetRolloverString( void )
             }
 
             if( Class != AIS_SART ) {
-                if( !b_specialPosnReport )
+                if( !b_SarAircraftPosnReport )
                     result.Append( wxGetTranslation( Get_vessel_type_string( false ) ) );
-                else
-                    result.Append( _("Special Position Report") );
             }
 
-            if( ( Class != AIS_CLASS_B ) && ( Class != AIS_SART ) && !b_specialPosnReport) {
+            if( ( Class != AIS_CLASS_B ) && ( Class != AIS_SART ) && !b_SarAircraftPosnReport) {
                 if( ( NavStatus <= 15 ) && ( NavStatus >= 0 ) ) {
                     result.Append( _T(" (") );
                     result.Append(wxGetTranslation(ais_get_status(NavStatus)));
@@ -611,7 +615,7 @@ wxString AIS_Target_Data::GetRolloverString( void )
         }
     }
 
-    if( g_bAISRolloverShowCOG && (( SOG <= 102.2 ) || b_specialPosnReport) 
+    if( g_bAISRolloverShowCOG && (( SOG <= 102.2 ) || b_SarAircraftPosnReport) 
             && ( ( Class != AIS_ATON ) && ( Class != AIS_BASE ) ) ) {
         if( result.Len() ) result << _T("\n");
         
