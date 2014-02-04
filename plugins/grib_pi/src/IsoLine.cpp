@@ -399,8 +399,10 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
           dc->SetPen(ppISO);
       } else { /* opengl */
 
+#ifdef ocpnUSE_GL          
           glColor4ub(isoLineColor.Red(), isoLineColor.Green(), isoLineColor.Blue(),
                      255/*isoLineColor.Alpha()*/);
+#endif          
       }
 
       std::list<Segment *>::iterator it;
@@ -436,7 +438,9 @@ void IsoLine::drawIsoLine(GRIBOverlayFactory *pof, wxDC *dc, PlugIn_ViewPort *vp
 #endif
                       dc->DrawLine(ab.x, ab.y, cd.x, cd.y);
             } else { /* opengl */
+#ifdef ocpnUSE_GL                
                 pof->DrawGLLine(ab.x, ab.y, cd.x, cd.y, 2);
+#endif                
             }
         }
     }
@@ -601,10 +605,12 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
                     wxImage img(w, h, imageLabel.GetData(), true);
                     dc->DrawBitmap(img, xd, yd, false);
                 } else { /* opengl */
+#ifdef ocpnUSE_GL                    
                     glRasterPos2i(xd, yd);
                     glPixelZoom(1, -1); /* draw data from top to bottom */
                     glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, imageLabel.GetData());
                     glPixelZoom(1, 1);
+#endif                    
                 }
             }
         }
