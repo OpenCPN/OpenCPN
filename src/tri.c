@@ -542,7 +542,7 @@ polyout  *triangulate_polygon(int ncontours, int cntr[], double (*vertices)[2])
   //    is some over-writing of input data somewhere.
   //    Check for these conditions peephole-wise, and ignore
   //    any triangualtion results if found.   Sigh....
-  //    Todo:  Look at this some more
+  //    TODO:  Look at this some more
 
   for (i = 0; i < nmonpoly; i++)
   {
@@ -565,8 +565,8 @@ polyout  *triangulate_polygon(int ncontours, int cntr[], double (*vertices)[2])
               q = mchain[q].next;
           }
 
-          if(vert[vt0].pt.y < 5.0)
-              return NULL;
+//          if(vert[vt0].pt.y < 5.0)
+//              return NULL;
 
           p = mchain[p].next;
       }
