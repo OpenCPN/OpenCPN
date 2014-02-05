@@ -3123,7 +3123,7 @@ TAuA:Aus:: 139.6333 -17.1167 10:0 Sweers Island, Australia
 TNAA:Can:NovS: -65.6333 43.4333 -4:0 Swim Point, Nova Scotia
 TAsi:Jpn:: 146.817 43.8667 9:0 Syakotan, Hokkaido, Japan
 TAsi:Jpn:: 148.017 45.3333 9:0 Syamanbe, Hokkaido, Japan
-TAuA:Aus:: 151.2333 -33.85 0:0 Sydney, Australia
+TAuA:Aus:: 151.2333 -33.85 10:0 Sydney, Australia
 TAuA:Aus:: 151.2333 -33.85 10:0 Sydney, Australia (2)
 TNAA:Can:NovS: -60.2 46.15 -4:0 Sydney, Nova Scotia
 TAsi:Jpn:: 143.283 42.0167 9:0 Syoya, Hokkaido, Japan
@@ -7417,22 +7417,22 @@ tNAP:US:CA: -124.1833 41.75 -8:0 Crescent City
 
 
 
-cNAA:XX:XX: -73.1112  41.0795 -5:0 Stratford Point, 4.3 miles south of, depth 15 feet 
+cNAA:XX:XX: -73.1112  41.0795 -5:0 Stratford Point, 4.3 miles south of, depth 15 feet
 ^33   0.40 0 14   0.30 0   3096 254 75 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.1122  41.0795 -5:0 Stratford Point, 4.3 miles south of, depth 60 feet 
+#cNAA:XX:XX: -73.1122  41.0795 -5:0 Stratford Point, 4.3 miles south of, depth 60 feet
 #^-15   0.20 0 -14   0.30 0   3096 291 78 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.0967  41.0495 -5:0 Stratford Point, 6.1 miles south of, depth 15 feet 
+cNAA:XX:XX: -73.0967  41.0495 -5:0 Stratford Point, 6.1 miles south of, depth 15 feet
 ^3   0.30 0 25   0.30 0   3101 267 80 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.0977  41.0495 -5:0 Stratford Point, 6.1 miles south of, depth 51 feet 
+#cNAA:XX:XX: -73.0977  41.0495 -5:0 Stratford Point, 6.1 miles south of, depth 51 feet
 #^-22   0.30 0 -25   0.20 0   3101 279 87 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.4055  41.0328 -5:0 Sheffield I. Tower, 1.1 miles SE of, depth 15 feet 
+cNAA:XX:XX: -73.4055  41.0328 -5:0 Sheffield I. Tower, 1.1 miles SE of, depth 15 feet
 ^54   0.30 0 68   0.30 0   3151 283 81 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.4065  41.0328 -5:0 Sheffield I. Tower, 1.1 miles SE of, depth 60 feet 
+#cNAA:XX:XX: -73.4065  41.0328 -5:0 Sheffield I. Tower, 1.1 miles SE of, depth 60 feet
 #^-6   0.20 0 69   0.20 0   3151 269 76 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.4208  41.0553 -5:0 Sheffield I. Hbr., 0.5 mile southeast of
@@ -10580,7 +10580,7 @@ cNAA:XX:XX: -96.3233  28.4217 -6:0 Matagorda Channel ,(entrance jetty)
 ^-56   1.20 0 -18   0.80 0   8766 317 142 1 Galveston Bay Entrance, Texas Current
 
 cNAA:XX:XX: -97.045  27.8333 -6:0 Aransas Pass
-^0   0.00 0 0   0.00 0   8771 300 118 1 Aransas Pass, Texas Current 
+^0   0.00 0 0   0.00 0   8771 300 118 1 Aransas Pass, Texas Current
 
 cNAA:XX:XX: -97.2300  27.8150 -6:0 Port Ingleside
 ^24   0.70 0 131   0.50 0   8776 286 102 1 Aransas Pass, Texas Curren
@@ -11223,7 +11223,7 @@ cNAA:XX:XX: -135.6500  57.3833 -9:0 Suloia Point
 
 cNAA:XX:XX: -135.6267  57.4067 -9:0 SERGIUS NARROWS
 ^0   0.00 0 0   0.00 0   3205 62 240 1 Sergius Narrows, Peril Strait, Alaska
- 
+
 cNAA:XX:XX: -135.5833  57.4167 -9:0 Point Siroi
 ^23   0.30 0 22   0.40 0   3209 59 283 1 Sergius Narrows, Peril Strait, Alaska
 
@@ -11743,7 +11743,7 @@ cNAA:XX:XX: -166.0500  61.5000 -9:0 Hooper Bay entrance
 cNAA:XX:XX: -172.7167  60.3500 -9:0 St. Mathew I., southwest coast
 ^144   0.50 0 209   0.40 0   4121 292 119 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
-cNAA:XX:XX: -168.9333  63.1167 -9:0 St. Lawrence Island, Apavawook Cape, 1 mile south 
+cNAA:XX:XX: -168.9333  63.1167 -9:0 St. Lawrence Island, Apavawook Cape, 1 mile south
 ^-238   0.20 0 -219   0.40 0   4129 75 272 1 Kvichak Bay (off Naknek River Entrance), Alaska
 
 cNAA:XX:XX: -168.8333  63.3333 -9:0 St. Lawrence Island, Off Northeast Cape
@@ -13215,7 +13215,7 @@ cNAA:XX:XX: -126.8167  50.6000 -8:0 WEYNTON PASSAGE
 
 cNAA:XX:XX: -123.5367  48.3067 -8:0 RACE PASSAGE, Race Rocks
 ^0   0.00 0 0   0.00 0   12010 90 270 1 Race Passage, British Columbia Current
- 
+
 cNAA:XX:XX: -127.5584  50.5522 -8:0 QUATSINO NARROWS
 ^0   0.00 0 0   0.00 0   12011 10 190 1 Quatsino Narrows, British Columbia Current
 
@@ -13327,7 +13327,7 @@ cNAA:XX:XX: -68.5833  44.0833 -5:0 Isle au Haut, 0.8 mile E of Rich's Pt
 cNAA:XX:XX: -68.7028  44.1367 -5:0 East Penobscot Bay, Mark Island, north of
 ^-18   0.10 0 -147   0.20 0   0156 13 164 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
-cNAA:XX:XX: -68.8250  44.1325 -5:0 East Penobscot Bay, Widow Island-Stimpson Island, 
+cNAA:XX:XX: -68.8250  44.1325 -5:0 East Penobscot Bay, Widow Island-Stimpson Island,
 ^-43   0.30 0 4   0.20 0   0161 302 118 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -68.7822  44.1938 -5:0 East Penobscot Bay, Eagle Island, 0.4 nautical mil
@@ -13507,10 +13507,10 @@ cNAA:XX:XX: -68.9133  44.0920 -5:0 West Penobscot Bay, Dogfish Island, NNE of
 cNAA:XX:XX: -69.0778  44.1022 -5:0 West Penobscot Bay, Rockland Harbor Breakwater
 ^-78   0.10 0 -64   0.20 0   0431 315 97 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
-cNAA:XX:XX: -68.9122  44.1130 -5:0 West Penobscot Bay, Browshead, Vinalhaven Island, 
+cNAA:XX:XX: -68.9122  44.1130 -5:0 West Penobscot Bay, Browshead, Vinalhaven Island,
 ^-108   0.10 0 -55   0.10 0   0436 16 221 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
-cNAA:XX:XX: -68.9237  44.1150 -5:0 West Penobscot Bay, Crabtree Pt., North Haven I., 
+cNAA:XX:XX: -68.9237  44.1150 -5:0 West Penobscot Bay, Crabtree Pt., North Haven I.,
 ^-43   0.10 0 -55   0.10 0   0441 3 228 1 Grand Manan Channel (Bay of Fundy Entrance), New Brunswick Current
 
 cNAA:XX:XX: -68.8930  44.1270 -5:0 West Penobscot Ba SEYMOUR NARROWSy, Fox Island Thorofare
@@ -14959,7 +14959,7 @@ cNAA:XX:XX: -72.3478  41.2837 -5:0 Connecticut River, Saybrook Point, 0.2 mile n
 cNAA:XX:XX: -72.3462  41.3167 -5:0 Connecticut River, Railroad drawbridge
 ^48   0.40 0 63   0.30 0   2856 360 198 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -72.4038  41.3883 -5:0 Connecticut River, Eustasia Island, 0.6 mile ESE 
+cNAA:XX:XX: -72.4038  41.3883 -5:0 Connecticut River, Eustasia Island, 0.6 mile ESE
 ^134   0.40 0 92   0.50 0   2861 290 70 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -72.4630  41.4428 -5:0 Connecticut River, Eddy Rock Shoal, west of
@@ -15085,19 +15085,19 @@ cNAA:XX:XX: -73.0867  41.2778 -5:0 Housatonic River, Wooster Island, 0.1 mile so
 cNAA:XX:XX: -73.1188  41.1125 -5:0 Point No Point, 2.1 miles south of
 ^-9   0.50 0 1   0.40 0   3076 251 74 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.0967  40.9745 -5:0 Old Field Point, 1 mile east of, depth 15 feet 
+cNAA:XX:XX: -73.0967  40.9745 -5:0 Old Field Point, 1 mile east of, depth 15 feet
 ^227   0.10 0 154   0.20 0   3081 105 308 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.0977  40.9745 -5:0 Old Field Point, 1 mile east of, depth 40 feet 
+#cNAA:XX:XX: -73.0977  40.9745 -5:0 Old Field Point, 1 mile east of, depth 40 feet
 #^171   0.10 0 146   0.20 0   3081 110 297 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.1395  41.0220 -5:0 Old Field Point, 2.9 n.mi. NNW of
 ^40   0.20 0 -36   0.20 0   3086 254 76 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.0950  41.0038 -5:0 Old Field Point, 2 miles northeast of, depth 15 feet 
+cNAA:XX:XX: -73.0950  41.0038 -5:0 Old Field Point, 2 miles northeast of, depth 15 feet
 ^54   0.40 0 -2   0.40 0   3091 266 92 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.0960  41.0038 -5:0 Old Field Point, 2 miles northeast of, depth 22 feet 
+#cNAA:XX:XX: -73.0960  41.0038 -5:0 Old Field Point, 2 miles northeast of, depth 22 feet
 #^43   0.20 0 -3   0.20 0   3091 236 81 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.1000  40.9667 -5:0 Port Jefferson Harbor entrance
@@ -15124,19 +15124,19 @@ cNAA:XX:XX: -73.2400  41.0842 -5:0 Pine Creek Point, 2.3 miles SSE of
 cNAA:XX:XX: -73.3653  41.1045 -5:0 Saugatuck River, 0.3 mi. NW of Bluff Pt
 ^9   0.20 0 29   0.10 0   3141 265 80 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.3967  41.0063 -5:0 Eatons Neck Pt., 3 miles north of, depth 15 feet 
+cNAA:XX:XX: -73.3967  41.0063 -5:0 Eatons Neck Pt., 3 miles north of, depth 15 feet
 ^61   0.30 0 45   0.30 0   3181 253 46 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.3977  41.0063 -5:0 Eatons Neck Pt., 3 miles north of, depth 40 feet 
+#cNAA:XX:XX: -73.3977  41.0063 -5:0 Eatons Neck Pt., 3 miles north of, depth 40 feet
 #^38   0.20 0 35   0.20 0   3181 264 78 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.3987  41.0063 -5:0 Eatons Neck Pt., 3 miles north of, depth 170 feet 
+#cNAA:XX:XX: -73.3987  41.0063 -5:0 Eatons Neck Pt., 3 miles north of, depth 170 feet
 #^-17   0.20 0 95   0.20 0   3181 188 54 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.4175  40.9267 -5:0 Huntington Bay, off East Fort Point, depth 15 feet 
+cNAA:XX:XX: -73.4175  40.9267 -5:0 Huntington Bay, off East Fort Point, depth 15 feet
 ^15   0.20 0 23   0.20 0   3186 190 14 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.4185  40.9267 -5:0 Huntington Bay, off East Fort Point, depth 30 feet 
+#cNAA:XX:XX: -73.4185  40.9267 -5:0 Huntington Bay, off East Fort Point, depth 30 feet
 #^-33   0.10 0 14   0.10 0   3186 179 7 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.4075  40.9088 -5:0 Northport Bay entrance (in channel)
@@ -15145,22 +15145,22 @@ cNAA:XX:XX: -73.4075  40.9088 -5:0 Northport Bay entrance (in channel)
 cNAA:XX:XX: -73.3833  40.9167 -5:0 Northport Bay, south of Duck I. Bluff
 ^42   0.20 0 7   0.10 0   3196 7 286 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.4780  41.0263 -5:0 Long Neck Point, 0.6 mile south of, depth 15 feet 
+cNAA:XX:XX: -73.4780  41.0263 -5:0 Long Neck Point, 0.6 mile south of, depth 15 feet
 ^-59   0.30 0 83   0.20 0   3201 252 73 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.4790  41.0263 -5:0 Long Neck Point, 0.6 mile south of, depth 27 feet 
+#cNAA:XX:XX: -73.4790  41.0263 -5:0 Long Neck Point, 0.6 mile south of, depth 27 feet
 #^-44   0.30 0 81   0.20 0   3201 257 80 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.4950  40.9658 -5:0 Lloyd Point, 1.3 miles NNW of, depth 15 feet 
+cNAA:XX:XX: -73.4950  40.9658 -5:0 Lloyd Point, 1.3 miles NNW of, depth 15 feet
 ^97   0.40 0 89   0.30 0   3206 255 55 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.4960  40.9658 -5:0 Lloyd Point, 1.3 miles NNW of, depth 40 feet 
+#cNAA:XX:XX: -73.4960  40.9658 -5:0 Lloyd Point, 1.3 miles NNW of, depth 40 feet
 #^13   0.40 0 76   0.20 0   3206 269 53 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.5167  40.9983 -5:0 Shippan Point, 1.3 miles SSE of, depth 15 feet 
+cNAA:XX:XX: -73.5167  40.9983 -5:0 Shippan Point, 1.3 miles SSE of, depth 15 feet
 ^49   0.30 0 22   0.30 0   3211 239 55 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.5172  40.9997 -5:0 Shippan Point, 1.3 miles SSE of, depth 40 feet 
+#cNAA:XX:XX: -73.5172  40.9997 -5:0 Shippan Point, 1.3 miles SSE of, depth 40 feet
 #^31   0.30 0 55   0.30 0   3211 247 71 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.5005  40.9192 -5:0 Oyster Bay, Rocky Point, 1 mile east of
@@ -15175,28 +15175,28 @@ cNAA:XX:XX: -73.5333  40.8833 -5:0 Oyster Bay, Harbor, west of Soper Point
 cNAA:XX:XX: -73.5367  41.0147 -5:0 Stamford Harbor entrance
 ^-69   0.10 0 -118   0.30 0   3236 329 134 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.5670  40.9837 -5:0 Greenwich Point, 1.1 miles south of, depth 15 feet 
+cNAA:XX:XX: -73.5670  40.9837 -5:0 Greenwich Point, 1.1 miles south of, depth 15 feet
 ^94   0.30 0 108   0.30 0   3241 258 73 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.5680  40.9837 -5:0 Greenwich Point, 1.1 miles south of, depth 55 feet 
+#cNAA:XX:XX: -73.5680  40.9837 -5:0 Greenwich Point, 1.1 miles south of, depth 55 feet
 #^97   0.20 0 50   0.20 0   3241 265 69 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.5613  40.9600 -5:0 Greenwich Point, 2.5 miles south of, depth 15 feet 
+cNAA:XX:XX: -73.5613  40.9600 -5:0 Greenwich Point, 2.5 miles south of, depth 15 feet
 ^60   0.30 0 56   0.20 0   3246 242 52 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.5623  40.9600 -5:0 Greenwich Point, 2.5 miles south of, depth 55 feet 
+#cNAA:XX:XX: -73.5623  40.9600 -5:0 Greenwich Point, 2.5 miles south of, depth 55 feet
 #^-54   0.20 0 -28   0.10 0   3246 256 79 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.5670  40.9250 -5:0 Oak Neck Point, 0.6 mile north of, depth 15 feet 
+cNAA:XX:XX: -73.5670  40.9250 -5:0 Oak Neck Point, 0.6 mile north of, depth 15 feet
 ^184   0.20 0 144   0.20 0   3251 260 72 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.5680  40.9250 -5:0 Oak Neck Point, 0.6 mile north of, depth 30 feet 
+#cNAA:XX:XX: -73.5680  40.9250 -5:0 Oak Neck Point, 0.6 mile north of, depth 30 feet
 #^67   0.20 0 100   0.20 0   3251 300 90 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.5945  40.9942 -5:0 Captain Hbr. Ent., 0.6 mile southwest of, depth 15 feet 
+cNAA:XX:XX: -73.5945  40.9942 -5:0 Captain Hbr. Ent., 0.6 mile southwest of, depth 15 feet
 ^105   0.20 0 108   0.20 0   3256 312 118 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.5955  40.9942 -5:0 Captain Hbr. Ent., 0.6 mile southwest of, depth 30 feet 
+#cNAA:XX:XX: -73.5955  40.9942 -5:0 Captain Hbr. Ent., 0.6 mile southwest of, depth 30 feet
 #^95   0.20 0 57   0.20 0   3256 319 142 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.6000  41.0167 -5:0 Cos Cob Harbor, off Goose Island
@@ -15208,10 +15208,10 @@ cNAA:XX:XX: -73.6582  40.9375 -5:0 Parsonage Point, 1.3 n.mi. ESE of
 cNAA:XX:XX: -73.6750  40.9387 -5:0 Peningo Neck, 0.6 mi. off Parsonage Pt
 ^82   0.30 0 75   0.20 0   3271 226 35 1 The Race, Long Island Sound, New York Current
 
-cNAA:XX:XX: -73.6400  40.9133 -5:0 Matinecock Point, 0.7 mile NNW of, depth 15 feet 
+cNAA:XX:XX: -73.6400  40.9133 -5:0 Matinecock Point, 0.7 mile NNW of, depth 15 feet
 ^87   0.20 0 93   0.20 0   3276 233 46 1 The Race, Long Island Sound, New York Current
 
-#cNAA:XX:XX: -73.6400  40.9133 -5:0 Matinecock Point, 0.7 mile NNW of, depth 40 feet 
+#cNAA:XX:XX: -73.6400  40.9133 -5:0 Matinecock Point, 0.7 mile NNW of, depth 40 feet
 #^48   0.30 0 92   0.20 0   3276 262 53 1 The Race, Long Island Sound, New York Current
 
 cNAA:XX:XX: -73.6562  40.9247 -5:0 Matinecock Point, 1.7 miles northwest of
