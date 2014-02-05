@@ -89,7 +89,7 @@ static int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarge
     switch( g_AisTargetList_sortColumn ){
         case tlTRK:
             n1 = t1->b_show_track;
-            n2 = t1->b_show_track;
+            n2 = t2->b_show_track;
             b_cmptype_num = true;
             break;
         
