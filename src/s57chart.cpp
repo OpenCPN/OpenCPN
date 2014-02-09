@@ -6742,7 +6742,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             narc++;
             step = ( angle2 - angle1 ) / (double)narc;
 
-            if( sectorlegs[i].isleading && (angle2 - angle1 < 15)  ) {
+            if( sectorlegs[i].isleading && (angle2 - angle1 < 60)  ) {
                 wxPoint yellowCone[3];
                 yellowCone[0] = lightPos;
                 yellowCone[1] = end1;
