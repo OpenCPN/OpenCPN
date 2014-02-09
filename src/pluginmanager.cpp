@@ -79,6 +79,8 @@ extern wxString        *pChartListFileName;
 extern wxString         gExe_path;
 extern bool             g_b_useStencil;
 extern wxString         g_Plugin_Dir;
+extern bool             g_boptionsactive;
+extern options         *g_options;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
@@ -1701,10 +1703,8 @@ int AddChartToDBInPlace( wxString &full_path, bool b_ProgressDialog )
             ChartData = new ChartDB( gFrame );
             ChartData->LoadBinary(*pChartListFileName, XnewChartDirArray);
 
-            ChartTableEntry *pcte;
-            for(int i=0 ; i<ChartData->GetChartTableEntries() ; i++){
-                pcte = ChartData->GetpChartTableEntry(i);
-                int yyp = 5;
+            if(g_boptionsactive){
+                g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
             }
             
             ViewPort vp;
@@ -1733,6 +1733,10 @@ int RemoveChartFromDBInPlace( wxString &full_path )
         ChartData = new ChartDB( gFrame );
         ChartData->LoadBinary(*pChartListFileName, XnewChartDirArray);
     
+        if(g_boptionsactive){
+            g_options->UpdateDisplayedChartDirList(ChartData->GetChartDirArray());
+        }
+        
         ViewPort vp;
         gFrame->ChartsRefresh(-1, vp);
     }

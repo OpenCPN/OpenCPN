@@ -2359,6 +2359,20 @@ void options::OnButtonaddClick( wxCommandEvent& event )
     event.Skip();
 }
 
+void options::UpdateDisplayedChartDirList(ArrayOfCDI p)
+{
+    wxString dirname;
+    if( pActiveChartsList ) {
+        pActiveChartsList->Clear();
+        int nDir = p.GetCount();
+        for( int i = 0; i < nDir; i++ ) {
+            dirname = p.Item( i ).fullpath;
+            if( !dirname.IsEmpty() )
+                pActiveChartsList->Append( dirname );
+        }
+    }
+}
+
 void options::UpdateWorkArrayFromTextCtl()
 {
     wxString dirname;

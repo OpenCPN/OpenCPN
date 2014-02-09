@@ -347,7 +347,7 @@ class MyFrame: public wxFrame
     void ApplyGlobalColorSchemetoStatusBar(void);
     void PostProcessNNEA(bool pos_valid, const wxString &sfixtime);
 
-    void ScrubGroupArray();
+    bool ScrubGroupArray();
     wxString GetGroupName(int igroup);
     void LoadHarmonics();
 

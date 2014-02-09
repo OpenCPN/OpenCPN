@@ -228,6 +228,9 @@ public:
         return m_pWorkDirList;
     }
 
+    void UpdateDisplayedChartDirList(ArrayOfCDI p);
+    
+    
     void SetConfigPtr( MyConfig *p )
     {
         m_pConfig = p;
