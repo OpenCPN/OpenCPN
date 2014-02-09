@@ -785,6 +785,8 @@ void GRIBUIDialog::TimelineChanged()
     } else
         m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
 
+    UpdateTrackingControls();
+    
     pPlugIn->SendTimelineMessage(time);
     RequestRefresh( pParent );
 }
