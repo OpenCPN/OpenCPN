@@ -2338,7 +2338,18 @@ void RouteManagerDialog::OnLayNewClick( wxCommandEvent &event )
 {
     bool show_flag = g_bShowLayers;
     g_bShowLayers = true;
+    
+#ifdef __WXOSX__
+    HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
     pConfig->UI_ImportGPX( this, true, _T("") );
+    
+#ifdef __WXOSX__
+    ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
+    
     g_bShowLayers = show_flag;
 
     UpdateRouteListCtrl();
@@ -2661,8 +2672,17 @@ void RouteManagerDialog::OnImportClick( wxCommandEvent &event )
     // Import routes
     // FIXME there is no way to instruct this function about what to import.
     // Suggest to add that!
+    
+#ifdef __WXOSX__
+    HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
     pConfig->UI_ImportGPX( this );
 
+#ifdef __WXOSX__
+    ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
     UpdateRouteListCtrl();
     UpdateTrkListCtrl();
     UpdateWptListCtrl();

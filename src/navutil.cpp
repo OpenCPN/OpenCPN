@@ -2724,6 +2724,7 @@ void MyConfig::UI_ImportGPX( wxWindow* parent, bool islayer, wxString dirpath, b
         wxFileDialog openDialog( parent, _( "Import GPX file" ), m_gpx_path, wxT ( "" ),
                 wxT ( "GPX files (*.gpx)|*.gpx|All files (*.*)|*.*" ),
                 wxFD_OPEN | wxFD_MULTIPLE );
+        openDialog.Centre();
         response = openDialog.ShowModal();
         if( response == wxID_OK ) {
             openDialog.GetPaths( file_array );
