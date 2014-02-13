@@ -8,10 +8,6 @@
 // Licence:     wxWidgets licence
 /////////////////////////////////////////////////////////////////////////////
 
-#ifdef __GNUG__
-    #pragma implementation "jsonreader.cpp"
-#endif
-
 #include <wx/jsonreader.h>
 
 #include <wx/mstream.h>
