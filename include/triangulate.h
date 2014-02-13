@@ -92,6 +92,7 @@ typedef struct {
       int nvert;
       int *vertex_index_list;
       void *poly_next;
+      int index_hash;
 } polyout;
 
 
@@ -151,6 +152,7 @@ extern int int_trapezate_polygon(int, int[], double (*)[2], itrap_t **, isegment
 extern int is_point_inside_polygon(double *);
 //extern polyout *trapezate_polygon(int, int *, double (*)[2]);
 
+polyout  *do_triangulate_polygon(int ncontours, int cntr[], double (*vertices)[2]);
 
 
 

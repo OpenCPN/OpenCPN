@@ -231,6 +231,9 @@ bool ispolysame(polyout *p1, polyout *p2)
 {
     int i2;
 
+    if(p1->index_hash != p2->index_hash)
+        return false;
+    
     if(p1->nvert != p2->nvert)
         return false;
 
@@ -1092,7 +1095,7 @@ int PolyTessGeo::BuildTessTri(void)
     }
     
     //  Check the list for duplicates
-    
+
     pr = polys;
     for(int idt = 0 ; idt<npoly0-1 ; idt++)
     {
@@ -1111,7 +1114,7 @@ int PolyTessGeo::BuildTessTri(void)
         
         pr = (polyout *)pr->poly_next;
     }
-    
+
     //  Walk the list again to get unique poly count
     pr = polys;
     int npoly = 0;
@@ -1577,7 +1580,7 @@ PolyTessGeo::~PolyTessGeo()
 
 int PolyTessGeo::BuildDeferredTess(void)
 {
-#ifdef USE_GLU_TESS
+#ifdef xUSE_GLU_TESS
     return BuildTessGL();
 #else
     return BuildTessTri();
