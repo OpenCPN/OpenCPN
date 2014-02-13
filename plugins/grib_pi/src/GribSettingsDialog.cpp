@@ -168,7 +168,7 @@ double GribOverlaySettings::CalibrationFactor(int settings, double input, bool r
         } break;
     case 4: switch(Settings[settings].m_Units) {
         case MILLIMETERS: return 1;
-        case INCHES:      return 25.4;
+        case INCHES:      return 1./25.4;
         } break;
     case 5:
     case 6: return 1;
