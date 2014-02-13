@@ -73,6 +73,7 @@ extern wxString         g_PrivateDataDir;
 extern double           g_CM93Maps_Offset_x;
 extern double           g_CM93Maps_Offset_y;
 extern bool             g_CM93Maps_Offset_on;
+extern bool             g_bopengl;
 
 
 
@@ -3695,7 +3696,21 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                         xgeom->y_offset = m_CIB.transform_y_origin - trans_WGS84_offset_y;
 
                         //    Set up a deferred tesselation
-                        pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
+                        //      If OpnGL is not available, use the trapezoid tesselator 
+                        //        instead of the triangle tesselator
+                        
+                        //      Two reasons for this:
+                        //      a.  Tri tesselator is buggy, some tris not rendered correctly
+                        //      b.  Tri tesselator is slower than trapezoids for direct rendering
+#ifdef ocpnUSE_GL
+                        if(g_bopengl)
+                            pobj->pPolyTessGeo = new PolyTessGeo ( xgeom );
+                        else
+                            pobj->pPolyTrapGeo = new PolyTessGeoTrap ( xgeom );
+                        
+#else                        
+                            pobj->pPolyTrapGeo = new PolyTessGeoTrap ( xgeom );
+#endif                        
                   }
 
                   break;
