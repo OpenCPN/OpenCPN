@@ -532,7 +532,25 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings)
         return m_labelCache[value];
 
     wxString labels;
-    int p =  settings == 2 && m_Settings.Settings[2].m_Units == 2 ? 2 : value < 10 ? 1 : 0;//two decimals for pressure & inHG, one for small values
+    int p;
+    switch(settings) {
+        case 2: 
+            p = m_Settings.Settings[2].m_Units == 2 ? 2 : 0;
+            break;
+        case 3:
+        case 4:
+        case 7:
+        case 8:
+            p = 1;
+            break;
+        case 5: 
+            p = value < 100. ? 2 : value < 10. ? 1 : 0;
+            p += m_Settings.Settings[5].m_Units == 1 ? 1 : 0;
+            break;
+
+        default : 
+            p = 0;
+    }
     labels.Printf( _T("%.*f"), p, value );
 
     wxColour text_color;
