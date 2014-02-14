@@ -134,6 +134,16 @@ static int nrecurse;
 # define inline static inline
 #endif
 
+#ifdef __MSVC__
+DWORD filter(EXCEPTION_POINTERS * eps)
+{
+    if (eps->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION)
+        return EXCEPTION_EXECUTE_HANDLER;
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+
+EXCEPTION_POINTERS * eps = 0;
+#endif
 
 #ifdef STANDALONE
 
@@ -1708,7 +1718,6 @@ static int triangulate_single_polygon(int nvert, int vcount, int posmax, int sid
   register int v;
   int ri = 0;      /* reflex chain */
   int endv, tmp, vpos;
-  int yyp;
 
   if (side == TRI_RHS)          /* RHS segment is a single segment */
     {
@@ -4373,16 +4382,6 @@ bail_point:
 }
 
 
-#ifdef __MSVC__
-      DWORD filter(EXCEPTION_POINTERS * eps)
-{
-      if (eps->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION)
-            return EXCEPTION_EXECUTE_HANDLER;
-      return EXCEPTION_CONTINUE_SEARCH;
-}
-
-      EXCEPTION_POINTERS * eps = 0;
-#endif
 
 
 
