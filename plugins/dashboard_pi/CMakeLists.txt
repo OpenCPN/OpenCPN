@@ -101,7 +101,8 @@ SET(SRC_DASHBOARD
     src/icons.h
     src/wind_history.cpp
     src/wind_history.h
-
+    src/baro_history.cpp
+    src/baro_history.h
     src/wxJSON/jsonval.cpp
     src/wxJSON/jsonreader.cpp
 
