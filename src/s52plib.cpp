@@ -1935,6 +1935,13 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
 # endif
 #endif
         wxMemoryDC mdc( *pbm );
+        if(!mdc.IsOk()){
+            wxString msg;
+            msg.Printf(_T("RenderHPGL: width %d  height %d"), width, height);
+            wxLogMessage(msg);
+            return false;
+        }
+        
         wxGCDC gdc( mdc );
 
         HPGL->SetTargetGCDC( &gdc );
@@ -1960,6 +1967,8 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
 
         wxBitmap targetBm( bm_width, bm_height, 24 );
         wxMemoryDC targetDc( targetBm );
+        if(!targetDc.IsOk())
+            return false;
         wxGCDC targetGcdc( targetDc );
 
         targetDc.Blit( 0, 0, bm_width, bm_height, m_pdc, screenOriginX, screenOriginY );
