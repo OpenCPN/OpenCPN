@@ -620,7 +620,16 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 }
                 if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
                        mHDx_Watchdog = gps_watchdog_timeout_ticks;
-
+                
+                //      If Variation is available, no higher priority HDT is available,
+                //      then calculate and propagate calculated HDT
+                if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
+                    if( !wxIsNaN( mVar )  && (mPriHeadingT > 3) ){
+                        mPriHeadingT = 4;
+                        SendSentenceToAllInstruments(OCPN_DBP_STC_HDT, mHdm + mVar, _T("\u00B0"));
+                        mHDT_Watchdog = gps_watchdog_timeout_ticks;
+                    }
+                }
             }
         }
 
@@ -634,7 +643,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) )
                     mHDx_Watchdog = gps_watchdog_timeout_ticks;
 
-                //      If Variation is available, no higher priority HDT is availabe,
+                //      If Variation is available, no higher priority HDT is available,
                 //      then calculate and propagate calculated HDT
                 if( !wxIsNaN(m_NMEA0183.Hdm.DegreesMagnetic) ) {
                     if( !wxIsNaN( mVar )  && (mPriHeadingT > 2) ){
