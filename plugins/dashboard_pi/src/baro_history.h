@@ -43,7 +43,7 @@
 
 // Warn: div by 0 if count == 1
 #define BARO_RECORD_COUNT 3000
-min
+
 #include "instrument.h"
 #include "dial.h"
 

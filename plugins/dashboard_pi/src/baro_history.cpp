@@ -44,7 +44,7 @@
 //************************************************************************************************************************
 // History of barometic pressure
 //************************************************************************************************************************
-min
+
 DashboardInstrument_BaroHistory::DashboardInstrument_BaroHistory( wxWindow *parent, wxWindowID id, wxString title) :
       DashboardInstrument(parent, id, title, OCPN_DBP_STC_MDA)
 {     SetDrawSoloInPane(true);
