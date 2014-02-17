@@ -606,12 +606,15 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         else if( m_NMEA0183.LastSentenceIDReceived == _T("HDG") ) {
             if( m_NMEA0183.Parse() ) {
                 if( mPriVar >= 2 ) {
-                    mPriVar = 2;
-                    if( m_NMEA0183.Hdg.MagneticVariationDirection == East ) mVar =
-                            m_NMEA0183.Hdg.MagneticVariationDegrees;
-                    else if( m_NMEA0183.Hdg.MagneticVariationDirection == West ) mVar =
-                            -m_NMEA0183.Hdg.MagneticVariationDegrees;
-                    SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, mVar, _T("\u00B0") );
+                    if( !wxIsNaN( m_NMEA0183.Hdg.MagneticVariationDegrees ) ){
+                        mPriVar = 2;
+                        if( m_NMEA0183.Hdg.MagneticVariationDirection == East )
+                            mVar =  m_NMEA0183.Hdg.MagneticVariationDegrees;
+                        else if( m_NMEA0183.Hdg.MagneticVariationDirection == West )
+                            mVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
+                        SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, mVar, _T("\u00B0") );
+                    }
+                    
                 }
                 if( mPriHeadingM >= 1 ) {
                     mPriHeadingM = 1;
@@ -810,14 +813,16 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                     }
 
                     if( mPriVar >= 3 ) {
-                        mPriVar = 3;
-                        if( m_NMEA0183.Rmc.MagneticVariationDirection == East ) mVar =
-                                m_NMEA0183.Rmc.MagneticVariation;
-                        else if( m_NMEA0183.Rmc.MagneticVariationDirection == West ) mVar =
-                                -m_NMEA0183.Rmc.MagneticVariation;
-                        mVar_Watchdog = gps_watchdog_timeout_ticks;
+                        if( !wxIsNaN( m_NMEA0183.Rmc.MagneticVariation ) ){
+                            mPriVar = 3;
+                            if( m_NMEA0183.Rmc.MagneticVariationDirection == East )
+                                mVar = m_NMEA0183.Rmc.MagneticVariation;
+                            else if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
+                                mVar = -m_NMEA0183.Rmc.MagneticVariation;
+                            mVar_Watchdog = gps_watchdog_timeout_ticks;
                         
-                        SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, mVar, _T("\u00B0") );
+                            SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, mVar, _T("\u00B0") );
+                        }
                     }
 
                     if( mPriDateTime >= 3 ) {
@@ -844,8 +849,8 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
         else if( m_NMEA0183.LastSentenceIDReceived == _T("VHW") ) {
             if( m_NMEA0183.Parse() ) {
                 if( mPriHeadingT >= 2 ) {
-                    mPriHeadingT = 2;
                     if( m_NMEA0183.Vhw.DegreesTrue < 999. ) {
+                        mPriHeadingT = 2;
                         SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, m_NMEA0183.Vhw.DegreesTrue,
                                 _T("\u00B0T") );
                     }
@@ -971,10 +976,10 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
 
             SendSentenceToAllInstruments( OCPN_DBP_STC_SOG, toUsrSpeed_Plugin( gpd.Sog, g_iDashSpeedUnit ), getUsrSpeedUnit_Plugin( g_iDashSpeedUnit ) );
             SendSentenceToAllInstruments( OCPN_DBP_STC_COG, gpd.Cog, _T("\u00B0") );
-            SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("\u00B0T") );
-            if( !wxIsNaN(gpd.Hdt) )
+            if( !wxIsNaN(gpd.Hdt) ) {
+                SendSentenceToAllInstruments( OCPN_DBP_STC_HDT, gpd.Hdt, _T("\u00B0T") );
                 mHDT_Watchdog = gps_watchdog_timeout_ticks;
-
+            }
         }
     }
 }
@@ -992,11 +997,13 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
         SendSentenceToAllInstruments( OCPN_DBP_STC_COG, pfix.Cog, _T("\u00B0") );
     }
     if( mPriVar >= 1 ) {
-        mPriVar = 1;
-        mVar = pfix.Var;
-        mVar_Watchdog = gps_watchdog_timeout_ticks;
+        if( !wxIsNaN( pfix.Var ) ){
+            mPriVar = 1;
+            mVar = pfix.Var;
+            mVar_Watchdog = gps_watchdog_timeout_ticks;
         
-        SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, pfix.Var, _T("\u00B0") );
+            SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, pfix.Var, _T("\u00B0") );
+        }
     }
     if( mPriDateTime >= 6 ) { //We prefer the GPS datetime
         mPriDateTime = 6;
