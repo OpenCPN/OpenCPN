@@ -1049,6 +1049,7 @@ void PlugInManager::SendMessageToAllPlugins(const wxString &message_id, const wx
                 case 108:
                 case 109:
                 case 110:
+                case 111:
                 {
                     opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                     if(ppi)
@@ -3678,7 +3679,9 @@ void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj )
     if(cobj->bBBObj_valid)
         pContext->BBObj = cobj->BBObj;
     pContext->bBBObj_valid = cobj->bBBObj_valid;
-    
+
+    //  Render operation may have promoted the object's display category (e.g.WRECKS)
+    pObj->m_DisplayCat = (PI_DisCat)cobj->m_DisplayCat;
 }
 
 bool PI_GetObjectRenderBox( PI_S57Obj *pObj, double *lat_min, double *lat_max, double *lon_min, double *lon_max)

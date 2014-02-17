@@ -562,23 +562,25 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
 
         // get area DEPARE & DRGARE that intersect this point/line/area
 
-        ListOfS57Obj *pobj_list;
+        ListOfS57Obj *pobj_list = NULL;
 
         
         if( obj->m_chart_context->chart )
             pobj_list = obj->m_chart_context->chart->GetAssociatedObjects(obj);
         else{
-            wxString *ret_str = new wxString(udwhaz03str);
-            return ret_str;
+            danger = false;
+//            wxString *ret_str = new wxString(udwhaz03str);
+//            return ret_str;
         }
             
 
-        wxListOfS57ObjNode *node = pobj_list->GetFirst();
-        while(node)
-        {
-              S57Obj *ptest_obj = node->GetData();
-              if(GEO_LINE == ptest_obj->Primitive_type)
-              {
+        if( pobj_list ){    
+            wxListOfS57ObjNode *node = pobj_list->GetFirst();
+            while(node)
+            {
+                S57Obj *ptest_obj = node->GetData();
+                if(GEO_LINE == ptest_obj->Primitive_type)
+                {
                     double drval2 = 0.0;
                     GetDoubleAttr(ptest_obj, "DRVAL2", drval2);
 
@@ -587,9 +589,9 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
                           danger = TRUE;
                           break;
                     }
-              }
-              else
-              {
+                }
+                else
+                {
                     double drval1 = 0.0;
                     GetDoubleAttr(ptest_obj, "DRVAL1", drval1);
 
@@ -598,11 +600,12 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
                           danger = TRUE;
                           break;
                     }
-              }
-              node = node->GetNext();
-        }
+                }
+                node = node->GetNext();
+            }
 
-        delete pobj_list;
+            delete pobj_list;
+        }
     }
 
     if (TRUE == danger)
