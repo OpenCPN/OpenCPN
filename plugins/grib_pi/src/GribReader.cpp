@@ -228,6 +228,9 @@ void GribReader::readAllGribRecords()
                         else if( rec->getDataType() == GRB_HTSGW )               // Significant Wave Height
                               storeRecordInMap(rec);
 
+                        else if( rec->getDataType() == GRB_WVPER )               // Waves period
+                              storeRecordInMap(rec);
+
                         else if( rec->getDataType() == GRB_WVDIR )               // Wind Wave Direction
                               storeRecordInMap(rec);
 
@@ -354,6 +357,7 @@ void  GribReader::copyMissingWaveRecords ()
 {
 	copyMissingWaveRecords (GRB_HTSGW, LV_GND_SURF, 0);
 	copyMissingWaveRecords (GRB_WVDIR, LV_GND_SURF,0);
+    copyMissingWaveRecords (GRB_WVPER, LV_GND_SURF,0);
 }
 
 //---------------------------------------------------------------------------------

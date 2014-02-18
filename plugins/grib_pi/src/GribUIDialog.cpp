@@ -494,6 +494,11 @@ void GRIBUIDialog::PopulateTrackingControls( void )
         m_tcWindSpeed->SetMinSize(wxSize(70, -1));
     else
         m_tcWindSpeed->SetMinSize(wxSize(110, -1) );
+    //Risize wave height ctrl for single or double display
+    if(m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVPER) == wxNOT_FOUND)
+        m_tcWaveHeight->SetMinSize(wxSize(70, -1));
+    else
+        m_tcWaveHeight->SetMinSize(wxSize(90, -1) );
 
     Fit();
     Refresh();
@@ -568,7 +573,13 @@ void GRIBUIDialog::UpdateTrackingControls( void )
 
         if( height != GRIB_NOTDEF ) {
             height = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WAVE, height);
-            m_tcWaveHeight->SetValue( wxString::Format( _T("%4.1f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WAVE), height ));
+            wxString w( wxString::Format( _T("%4.1f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WAVE), height ));
+            if( RecordArray[Idx_WVPER] ) {
+                double period = RecordArray[Idx_WVPER]->
+                    getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+                if( period != GRIB_NOTDEF ) w.Append( wxString::Format( _T(" - %01ds") , (int) round(period) ));
+            }
+            m_tcWaveHeight->SetValue(w);
         } else
             m_tcWaveHeight->SetValue( _("N/A") );
     }
@@ -1180,6 +1191,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                     case GRB_WIND_GUST: idx = Idx_WIND_GUST; break;
                     case GRB_PRESSURE: idx = Idx_PRESSURE;   break;
                     case GRB_HTSGW:    idx = Idx_HTSIGW;  break;
+                    case GRB_WVPER:    idx = Idx_WVPER;  break;
                     case GRB_WVDIR:    idx = Idx_WVDIR;   break;
                     case GRB_UOGRD:    idx = Idx_SEACURRENT_VX; break;
                     case GRB_VOGRD:    idx = Idx_SEACURRENT_VY; break;
@@ -1471,7 +1483,7 @@ wxString GribRequestSetting::WriteMail()
     m_MailError_Nb = 0;
     //some useful strings
     const wxString s[] = { _T(","), _T(" ") };        //separators
-    const wxString p[][7] = {{ _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("HTSGW,WVDIR"), _T("SEATMP"), wxEmptyString, _T("CAPE")}, //parameters
+    const wxString p[][7] = {{ _T("APCP"), _T("TCDC"), _T("AIRTMP"), _T("HTSGW,WVPER,WVDIR"), _T("SEATMP"), wxEmptyString, _T("CAPE")}, //parameters
         {_T("PRECIP"), _T("CLOUD"), _T("TEMP"), _T("WVSIG WVWIND"), wxEmptyString, _T("GUST"), _T("CAPE")} };
 
     wxString r_topmess,r_parameters,r_zone;
@@ -1577,6 +1589,7 @@ bool GribRequestSetting::EstimateFileSize()
     int nbrec = (int) (time*24/inter)+1;
     int nbPress = (m_pPress->IsChecked()) ?  nbrec   : 0;
     int nbWind  = (m_pWind->IsChecked()) ?  2*nbrec : 0;
+    int nbwave  = (m_pWaves->IsChecked()) ?  2*nbrec : 0;
     int nbRain  = (m_pRainfall->IsChecked()) ?  nbrec-1 : 0;
     int nbCloud = (m_pCloudCover->IsChecked()) ?  nbrec-1 : 0;
     int nbTemp  = (m_pAirTemp->IsChecked())    ?  nbrec   : 0;
@@ -1584,7 +1597,6 @@ bool GribRequestSetting::EstimateFileSize()
     int nbGUSTsfc  = (m_pWindGust->IsChecked()) ?  nbrec : 0;
     int nbCurrent  = (m_pCurrent->IsChecked()) ?  nbrec : 0;
     int nbCape  = (m_pCAPE->IsChecked()) ?  nbrec : 0;
-
     int head = 84;
     double estime = 0.0;
     int nbits;
@@ -1612,9 +1624,6 @@ bool GribRequestSetting::EstimateFileSize()
     nbits = 5;
     estime += nbCape*(head+(nbits*npts)/8+2 );
 
-	int nbwave = 0;
-	if (m_pWaves->IsChecked()) nbwave++;
-	if (m_pWModel->IsShown()) nbwave ++;
 	nbits = 6;
 	estime += nbrec*nbwave*(head+(nbits*npts)/8+2 );
 
