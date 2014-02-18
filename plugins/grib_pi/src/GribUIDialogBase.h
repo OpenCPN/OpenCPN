@@ -38,11 +38,16 @@
 ///////////////////////////////////////////////////////////////////////////
 
 #define ID_TIMELINE 1000
-#define ID_CB_WIND_SPEED 1001
-#define ID_CB_SIG_WAVE_HEIGHT 1002
-#define ID_CB_CURRENT_VELOCITY 1003
-#define ID_CB_PRESSURE 1004
-#define ID_CB_SEA_TEMPERATURE 1005
+#define ID_CB_WIND 1001
+#define ID_CB_WAVES 1002
+#define ID_CB_CURRENT 1003
+#define ID_CB_WIND_GUSTS 1004
+#define ID_CB_PRESSURE 1005
+#define ID_CB_RAINFALL 1006
+#define ID_CB_CLOUD_COVER 1007
+#define ID_CB_AIR_TEMP 1008
+#define ID_CB_SEA_TEMP 1009
+#define ID_CB_CAPE 1010
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Class GRIBUIDialogBase
@@ -125,14 +130,16 @@ class GribSettingsDialogBase : public wxDialog
 		wxChoice* m_cDataType;
 		wxChoice* m_cDataUnits;
 		wxCheckBox* m_cbBarbedArrows;
-		wxStaticText* m_tBarbedRange;
-		wxSpinCtrl* m_sBarbedRange;
+		wxChoice* m_cBarbedColours;
+		wxCheckBox* m_cBarbedVisibility;
 		wxCheckBox* m_cbIsoBars;
-		wxStaticText* m_tIsoBarSpacing;
+		wxFlexGridSizer* m_fIsoBarSpacing;
 		wxSpinCtrl* m_sIsoBarSpacing;
+		wxFlexGridSizer* m_fIsoBarVisibility;
+		wxCheckBox* m_sIsoBarVisibility;
 		wxCheckBox* m_cbDirectionArrows;
-		wxStaticText* m_tDirectionArrowSize;
-		wxSpinCtrl* m_sDirectionArrowSize;
+		wxChoice* m_cDirectionArrowForm;
+		wxChoice* m_cDirectionArrowSize;
 		wxCheckBox* m_cbOverlayMap;
 		wxStaticText* m_tOverlayColors;
 		wxChoice* m_cOverlayColors;

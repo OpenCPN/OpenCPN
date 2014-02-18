@@ -266,9 +266,9 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
         bool value;
         pConf->Read( _T ( "WindPlot" ), &value, true );
         m_cbWind->SetValue(value);
-        pConf->Read( _T ( "WindGustPlot" ), &value, true );
+        pConf->Read( _T ( "WindGustPlot" ), &value, false );
         m_cbWindGust->SetValue(value);
-        pConf->Read( _T ( "PressurePlot" ), &value, true );
+        pConf->Read( _T ( "PressurePlot" ), &value, false );
         m_cbPressure->SetValue(value);
         pConf->Read( _T ( "WavePlot" ), &value, false );
         m_cbWave->SetValue(value);
@@ -876,6 +876,18 @@ void GRIBUIDialog::OnTimeline( wxScrollEvent& event )
 
 void GRIBUIDialog::OnCBAny( wxCommandEvent& event )
 {
+    //Ovoid to have more than one overlay at a time
+    if(m_cbWind->IsShown() && event.GetId() != m_cbWind->GetId()) m_cbWind->SetValue(false);
+    if(m_cbPressure->IsShown() && event.GetId() != m_cbPressure->GetId()) m_cbPressure->SetValue(false);
+    if(m_cbWindGust->IsShown() && event.GetId() != m_cbWindGust->GetId()) m_cbWindGust->SetValue(false);
+    if(m_cbWave->IsShown() && event.GetId() != m_cbWave->GetId()) m_cbWave->SetValue(false);
+    if(m_cbPrecipitation->IsShown() && event.GetId() != m_cbPrecipitation->GetId()) m_cbPrecipitation->SetValue(false);
+    if(m_cbCloud->IsShown() && event.GetId() != m_cbCloud->GetId()) m_cbCloud->SetValue(false);
+    if(m_cbAirTemperature->IsShown() && event.GetId() != m_cbAirTemperature->GetId()) m_cbAirTemperature->SetValue(false);
+    if(m_cbSeaTemperature->IsShown() && event.GetId() != m_cbSeaTemperature->GetId()) m_cbSeaTemperature->SetValue(false);
+    if(m_cbCAPE->IsShown() && event.GetId() != m_cbCAPE->GetId()) m_cbCAPE->SetValue(false);
+    if(m_cbCurrent->IsShown() && event.GetId() != m_cbCurrent->GetId()) m_cbCurrent->SetValue(false);
+
     SetFactoryOptions();                     // Reload the visibility options
 }
 
