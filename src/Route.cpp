@@ -283,7 +283,8 @@ RoutePoint *Route::GetPoint( const wxString &guid )
 
 void Route::DrawPointWhich( ocpnDC& dc, int iPoint, wxPoint *rpn )
 {
-    GetPoint( iPoint )->Draw( dc, rpn );
+    if( iPoint <= GetnPoints() )
+        GetPoint( iPoint )->Draw( dc, rpn );
 }
 
 void Route::DrawSegment( ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow )
