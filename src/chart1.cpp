@@ -8714,6 +8714,7 @@ public:
     void OnYes(wxCommandEvent& event);
     void OnNo(wxCommandEvent& event);
     void OnCancel(wxCommandEvent& event);
+    void OnClose( wxCloseEvent& event );
     
 private:
     int m_style;
@@ -8724,6 +8725,7 @@ BEGIN_EVENT_TABLE(OCPNMessageDialog, wxDialog)
 EVT_BUTTON(wxID_YES, OCPNMessageDialog::OnYes)
 EVT_BUTTON(wxID_NO, OCPNMessageDialog::OnNo)
 EVT_BUTTON(wxID_CANCEL, OCPNMessageDialog::OnCancel)
+EVT_CLOSE(OCPNMessageDialog::OnClose)
 END_EVENT_TABLE()
 
 
@@ -8823,6 +8825,10 @@ void OCPNMessageDialog::OnCancel(wxCommandEvent& WXUNUSED(event))
     }
 }
 
+void OCPNMessageDialog::OnClose( wxCloseEvent& event )
+{
+    EndModal( wxID_CANCEL );
+}
 
 
 
