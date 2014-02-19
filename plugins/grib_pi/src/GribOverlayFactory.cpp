@@ -210,10 +210,31 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     wxArrayPtrVoid **pIA = m_pGribTimelineRecordSet->m_IsobarArray;
 
     for(int overlay = 1; overlay >= 0; overlay--)
-    for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++) {
-        if((i == GribOverlaySettings::WIND            && !m_dlg.m_cbWind->GetValue()) ||
-           (i == GribOverlaySettings::WIND_GUST       && !m_dlg.m_cbWindGust->GetValue()) ||
-           (i == GribOverlaySettings::PRESSURE        && !m_dlg.m_cbPressure->GetValue()) ||
+        for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++) {
+            if(i == GribOverlaySettings::WIND ) {
+                if(m_dlg.m_cbWind->GetValue()) {
+                    if(overlay) /* render overlays first */
+                        RenderGribOverlayMap( i, pGR, vp );
+                    else {
+                        RenderGribBarbedArrows( i, pGR, vp );
+                        RenderGribIsobar( i, pGR, pIA, vp );
+                        RenderGribNumbers( i, pGR, vp );
+                    }
+                }else
+                    if(m_Settings.Settings[i].m_iBarbedVisibility) RenderGribBarbedArrows( i, pGR, vp );
+
+                continue;
+            }
+            if(i == GribOverlaySettings::PRESSURE ) {
+                if(m_dlg.m_cbPressure->GetValue()) {
+                        RenderGribIsobar( i, pGR, pIA, vp );
+                        RenderGribNumbers( i, pGR, vp );
+                }else
+                    if(m_Settings.Settings[i].m_iIsoBarVisibility) RenderGribIsobar( i, pGR, pIA, vp );
+
+                continue;
+            }
+        if((i == GribOverlaySettings::WIND_GUST       && !m_dlg.m_cbWindGust->GetValue()) ||
            (i == GribOverlaySettings::WAVE            && !m_dlg.m_cbWave->GetValue()) ||
            (i == GribOverlaySettings::CURRENT         && !m_dlg.m_cbCurrent->GetValue()) ||
            (i == GribOverlaySettings::PRECIPITATION   && !m_dlg.m_cbPrecipitation->GetValue()) ||
@@ -795,9 +816,17 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
     int imax = pGRX->getNi();                  // Longitude
     int jmax = pGRX->getNj();                  // Latitude
 
+    // Set Size
+    int arrowWidth = 2;
+    int arrowSize;
+    if(m_Settings.Settings[settings].m_iDirectionArrowSize == 0)
+        arrowSize = 26;
+    else
+        arrowSize = 16;
+
     //    Set minimum spacing between arrows
     double space;
-    space = fabs(60 * cos(vp->rotation));
+    space = fabs((arrowSize * 2) * cos(vp->rotation));
 
     int oldx = -1000;
     int oldy = -1000;
@@ -825,14 +854,20 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
                     if( PointInLLBox( vp, lon, lat ) || PointInLLBox( vp, lon - 360., lat ) ) {
                         if(polar) {
                             double dir = pGRX->getValue( i, j );
-                            if( dir != GRIB_NOTDEF )
-                                drawWaveArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour );
+                            if( dir != GRIB_NOTDEF ){
+                                if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
+                                    drawSingleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour, arrowWidth, arrowSize );
+                                else
+                                    drawDoubleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour, arrowWidth, arrowSize );
+                            }
                         } else {
                             double vx = pGRX->getValue( i,j ), vy = pGRY->getValue( i,j );
                             if( vx != GRIB_NOTDEF || vy != GRIB_NOTDEF ) {
                                 double dir = atan2(vy, -vx);
-                                dir += vp->rotation;
-                                drawWaveArrow( p.x, p.y, dir, colour );
+                                if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
+                                    drawSingleArrow( p.x, p.y, dir + vp->rotation, colour, arrowWidth, arrowSize );
+                                else
+                                    drawDoubleArrow( p.x, p.y, dir + vp->rotation, colour, arrowWidth, arrowSize );
                             }
                         }
                     }
@@ -1077,7 +1112,7 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
     DrawOLBitmap( sbm, 0, y - ( GetChartbarHeight() + h ), false );
 }
 
-void GRIBOverlayFactory::drawWaveArrow( int i, int j, double ang, wxColour arrowColor )
+void GRIBOverlayFactory::drawDoubleArrow( int i, int j, double ang, wxColour arrowColor, int arrowWidth, int arrowSize )
 {
     double si = sin( ang ), co = cos( ang );
 
@@ -1088,7 +1123,6 @@ void GRIBOverlayFactory::drawWaveArrow( int i, int j, double ang, wxColour arrow
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
     }
 
-    int arrowSize = 26;
     int dec = -arrowSize / 2;
 
     drawTransformedLine( pen, si, co, i, j, dec, -2, dec + arrowSize, -2 );
@@ -1099,18 +1133,17 @@ void GRIBOverlayFactory::drawWaveArrow( int i, int j, double ang, wxColour arrow
 
 }
 
-void GRIBOverlayFactory::drawSingleArrow( int i, int j, double ang, wxColour arrowColor, int width )
+void GRIBOverlayFactory::drawSingleArrow( int i, int j, double ang, wxColour arrowColor, int arrowWidth, int arrowSize )
 {
-    double si = sin( ang * PI / 180. ), co = cos( ang * PI / 180. );
+    double si = sin( ang ), co = cos( ang );
 
-    wxPen pen( arrowColor, width );
+    wxPen pen( arrowColor, 2 );
 
     if( m_pdc ) {
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
     }
 
-    int arrowSize = 26;
     int dec = -arrowSize / 2;
 
     drawTransformedLine( pen, si, co, i, j, dec, 0, dec + arrowSize, 0 );
@@ -1134,6 +1167,9 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int i, int j, dou
         ang = atan2( vy, -vx );
     }
 
+    if(m_Settings.Settings[settings].m_iBarbedColour == 1)
+        arrowColor = GetGraphicColor(settings, vkn);
+
     ang += rotate_angle;
     double si = sin( ang ), co = cos( ang );
 
@@ -1143,9 +1179,6 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int i, int j, dou
         m_pdc->SetPen( pen );
         m_pdc->SetBrush( *wxTRANSPARENT_BRUSH);
     }
-
-    /* normalize vkn to be from 0-100 instead of 0-m_Settings.Settings[settings].m_bBarbedRange */
-    vkn *= 100.0/m_Settings.Settings[settings].m_iBarbedRange;
 
     if( vkn < 1 ) {
         int r = 5;     // wind is very light, draw a circle

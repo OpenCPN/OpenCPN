@@ -111,8 +111,8 @@ private:
 
     void drawWindArrowWithBarbs( int config, int x, int y, double vx, double vy,
                                  bool polar, bool south, wxColour arrowColor, double rotate_angle );
-    void drawWaveArrow( int i, int j, double dir, wxColour arrowColor );
-    void drawSingleArrow( int i, int j, double dir, wxColour arrowColor, int width = 1 );
+    void drawDoubleArrow( int i, int j, double dir, wxColour arrowColor, int arrowWidth, int arrowSize );
+    void drawSingleArrow( int i, int j, double dir, wxColour arrowColor, int arrowWidth, int arrowSize );
 
     void drawTransformedLine( wxPen pen, double si, double co, int di, int dj,
                               int i, int j, int k, int l );

@@ -48,7 +48,7 @@ static const wxString tname_from_index[] = {_("Wind"), _("Wind Gust"),  _("Press
 
 static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 0, 4, 5, 3, 3, 6};
 
-enum SettingsDisplay {B_ARROWS, ISO_LINES, D_ARROWS, OVERLAY};
+enum SettingsDisplay {B_ARROWS, ISO_LINE_VISI, ISO_LINE_SHORT, D_ARROWS, OVERLAY, NUMBERS};
 
 wxString GribOverlaySettings::NameFromIndex(int index)
 {
@@ -64,8 +64,8 @@ void GribOverlaySettings::Read()
         return;
 
     pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
-    pConf->Read ( _T ( "Interpolate" ), &m_bInterpolate, 1 );
-    pConf->Read ( _T ( "LoopMode" ), &m_bLoopMode, 0 );
+    pConf->Read ( _T ( "Interpolate" ), &m_bInterpolate, false );
+    pConf->Read ( _T ( "LoopMode" ), &m_bLoopMode, false );
     pConf->Read ( _T ( "SlicesPerUpdate" ), &m_SlicesPerUpdate, 2);
     pConf->Read ( _T ( "UpdatesPerSecond" ), &m_UpdatesPerSecond, 2);
     pConf->Read ( _T ( "HourDivider" ), &m_HourDivider, 2);
@@ -79,21 +79,24 @@ void GribOverlaySettings::Read()
         Settings[i].m_Units = (SettingsType)units;
 
         pConf->Read ( Name + _T ( "BarbedArrows" ), &Settings[i].m_bBarbedArrows, i==WIND);
-        int defrange[SETTINGS_COUNT] = {100, 100, 0, 0, 0, 0, 0, 0, 0, 0};
-        pConf->Read ( Name + _T ( "BarbedRange" ), &Settings[i].m_iBarbedRange, defrange[i]);
+        pConf->Read ( Name + _T ( "BarbedVisibility" ), &Settings[i].m_iBarbedVisibility, i==WIND);
+        pConf->Read ( Name + _T ( "BarbedColors" ), &Settings[i].m_iBarbedColour, 0);
 
         pConf->Read ( Name + _T ( "Display Isobars" ), &Settings[i].m_bIsoBars, i==PRESSURE);
-        double defspacing[SETTINGS_COUNT] = {4, 0, 4, 0, 0, 0, 0, 2, 2, 100};
+        double defspacing[SETTINGS_COUNT] = {4, 4, 4, 0, 0, 0, 0, 2, 2, 100};
         pConf->Read ( Name + _T ( "IsoBarSpacing" ), &Settings[i].m_iIsoBarSpacing, defspacing[i]);
+        pConf->Read ( Name + _T ( "IsoBarVisibility" ), &Settings[i].m_iIsoBarVisibility, i==PRESSURE);
 
         pConf->Read ( Name + _T ( "DirectionArrows" ), &Settings[i].m_bDirectionArrows, i==CURRENT || i==WAVE);
-        pConf->Read ( Name + _T ( "DirectionArrowSize" ), &Settings[i].m_iDirectionArrowSize, 10);
+        double defform[SETTINGS_COUNT] = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0};
+        pConf->Read ( Name + _T ( "DirectionArrowForm" ), &Settings[i].m_iDirectionArrowForm, defform[i]);
+        pConf->Read ( Name + _T ( "DirectionArrowSize" ), &Settings[i].m_iDirectionArrowSize, 0);
 
         pConf->Read ( Name + _T ( "OverlayMap" ), &Settings[i].m_bOverlayMap, i!=WIND && i!=PRESSURE);
         int defcolor[SETTINGS_COUNT] = {1, 1, 0, 0, 6, 4, 5, 2, 3, 0};
         pConf->Read ( Name + _T ( "OverlayMapColors" ), &Settings[i].m_iOverlayMapColors, defcolor[i]);
 
-        pConf->Read ( Name + _T ( "Numbers" ), &Settings[i].m_bNumbers, 0);
+        pConf->Read ( Name + _T ( "Numbers" ), &Settings[i].m_bNumbers, false);
         pConf->Read ( Name + _T ( "NumbersSpacing" ), &Settings[i].m_iNumbersSpacing, 50);
     }
 }
@@ -115,19 +118,68 @@ void GribOverlaySettings::Write()
     pConf->Write ( _T ( "OverlayTransparency" ), m_iOverlayTransparency);
 
     for(int i=0; i<SETTINGS_COUNT; i++) {
-        wxString Name=name_from_index[i];
 
-        pConf->Write ( Name + _T ( "Units" ), (int)Settings[i].m_Units);
-        pConf->Write ( Name + _T ( "BarbedArrows" ), Settings[i].m_bBarbedArrows);
-        pConf->Write ( Name + _T ( "BarbedRange" ), Settings[i].m_iBarbedRange);
-        pConf->Write ( Name + _T ( "Display Isobars" ), Settings[i].m_bIsoBars);
-        pConf->Write ( Name + _T ( "IsoBarSpacing" ), Settings[i].m_iIsoBarSpacing);
-        pConf->Write ( Name + _T ( "DirectionArrows" ), Settings[i].m_bDirectionArrows);
-        pConf->Write ( Name + _T ( "DirectionArrowSize" ), Settings[i].m_iDirectionArrowSize);
-        pConf->Write ( Name + _T ( "OverlayMap" ), Settings[i].m_bOverlayMap);
-        pConf->Write ( Name + _T ( "OverlayMapColors" ), Settings[i].m_iOverlayMapColors);
-        pConf->Write ( Name + _T ( "Numbers" ), Settings[i].m_bNumbers);
-        pConf->Write ( Name + _T ( "NumbersSpacing" ), Settings[i].m_iNumbersSpacing);
+        pConf->Write ( name_from_index[i] + _T ( "Units" ), (int)Settings[i].m_Units);
+    
+        if(i == WIND){
+            SaveSettingGroups(pConf, i, B_ARROWS);
+            SaveSettingGroups(pConf, i, ISO_LINE_SHORT);
+            SaveSettingGroups(pConf, i, OVERLAY);
+            SaveSettingGroups(pConf, i, NUMBERS);
+        }
+        else if(i == WIND_GUST || i == AIR_TEMPERATURE || i == SEA_TEMPERATURE || i == CAPE) {
+            SaveSettingGroups(pConf, i, ISO_LINE_SHORT);
+            SaveSettingGroups(pConf, i, OVERLAY);
+            SaveSettingGroups(pConf, i, NUMBERS);
+        }
+        else if(i == PRESSURE) {
+            SaveSettingGroups(pConf, i, ISO_LINE_SHORT);
+            SaveSettingGroups(pConf, i, ISO_LINE_VISI);
+            SaveSettingGroups(pConf, i, NUMBERS);
+        }
+        else if(i == WAVE || i == CURRENT) {
+            SaveSettingGroups(pConf, i, D_ARROWS);
+            SaveSettingGroups(pConf, i, OVERLAY);
+            SaveSettingGroups(pConf, i, NUMBERS);
+        }
+        else if( i == PRECIPITATION || i == CLOUD) {
+            SaveSettingGroups(pConf, i, OVERLAY);
+            SaveSettingGroups(pConf, i, NUMBERS);
+        }
+    }
+     
+}
+
+void GribOverlaySettings::SaveSettingGroups(wxFileConfig *pConf, int settings, int group)
+{
+    wxString Name=name_from_index[settings];
+
+    switch(group) {
+    case B_ARROWS:
+        pConf->Write ( Name + _T ( "BarbedArrows" ), Settings[settings].m_bBarbedArrows);
+        pConf->Write ( Name + _T ( "BarbedVisibility" ), Settings[settings].m_iBarbedVisibility);
+        pConf->Write ( Name + _T ( "BarbedColors" ), Settings[settings].m_iBarbedColour);
+        break;
+    case ISO_LINE_SHORT:
+        pConf->Write ( Name + _T ( "Display Isobars" ), Settings[settings].m_bIsoBars);
+        pConf->Write ( Name + _T ( "IsoBarSpacing" ), Settings[settings].m_iIsoBarSpacing);
+        break;
+    case ISO_LINE_VISI:
+        pConf->Write ( Name + _T ( "IsoBarVisibility" ), Settings[settings].m_iIsoBarVisibility);
+        break;
+    case D_ARROWS:
+        pConf->Write ( Name + _T ( "DirectionArrows" ), Settings[settings].m_bDirectionArrows);
+        pConf->Write ( Name + _T ( "DirectionArrowForm" ), Settings[settings].m_iDirectionArrowForm);
+        pConf->Write ( Name + _T ( "DirectionArrowSize" ), Settings[settings].m_iDirectionArrowSize);
+        break;
+    case OVERLAY:
+        pConf->Write ( Name + _T ( "OverlayMap" ), Settings[settings].m_bOverlayMap);
+        pConf->Write ( Name + _T ( "OverlayMapColors" ), Settings[settings].m_iOverlayMapColors);
+        break;
+    case NUMBERS:
+        pConf->Write ( Name + _T ( "Numbers" ), Settings[settings].m_bNumbers);
+        pConf->Write ( Name + _T ( "NumbersSpacing" ), Settings[settings].m_iNumbersSpacing);
+        break;
     }
 }
 
@@ -354,10 +406,14 @@ void GribSettingsDialog::SetDataTypeSettings(int settings)
     GribOverlaySettings::OverlayDataSettings &odc = m_Settings.Settings[settings];
     odc.m_Units = m_cDataUnits->GetSelection();
     odc.m_bBarbedArrows = m_cbBarbedArrows->GetValue();
+    odc.m_iBarbedVisibility = m_cBarbedVisibility->GetValue();
+    odc.m_iBarbedColour = m_cBarbedColours->GetSelection();
     odc.m_bIsoBars = m_cbIsoBars->GetValue();
+    odc.m_iIsoBarVisibility = m_sIsoBarVisibility->GetValue();
     odc.m_iIsoBarSpacing = m_sIsoBarSpacing->GetValue();
     odc.m_bDirectionArrows = m_cbDirectionArrows->GetValue();
-    odc.m_iDirectionArrowSize = m_sDirectionArrowSize->GetValue();
+    odc.m_iDirectionArrowForm = m_cDirectionArrowForm->GetSelection();
+    odc.m_iDirectionArrowSize = m_cDirectionArrowSize->GetSelection();
     odc.m_bOverlayMap = m_cbOverlayMap->GetValue();
     odc.m_iOverlayMapColors = m_cOverlayColors->GetSelection();
     odc.m_bNumbers = m_cbNumbers->GetValue();
@@ -371,11 +427,14 @@ void GribSettingsDialog::ReadDataTypeSettings(int settings)
 
     m_cDataUnits->SetSelection(odc.m_Units);
     m_cbBarbedArrows->SetValue(odc.m_bBarbedArrows);
-    m_sBarbedRange->SetValue(odc.m_iBarbedRange);
+    m_cBarbedVisibility->SetValue(odc.m_iBarbedVisibility);
+    m_cBarbedColours->SetSelection(odc.m_iBarbedColour);
     m_cbIsoBars->SetValue(odc.m_bIsoBars);
+    m_sIsoBarVisibility->SetValue(odc.m_iIsoBarVisibility);
     m_sIsoBarSpacing->SetValue(odc.m_iIsoBarSpacing);
     m_cbDirectionArrows->SetValue(odc.m_bDirectionArrows);
-    m_sDirectionArrowSize->SetValue(odc.m_iDirectionArrowSize);
+    m_cDirectionArrowForm->SetSelection(odc.m_iDirectionArrowForm);
+    m_cDirectionArrowSize->SetSelection(odc.m_iDirectionArrowSize);
     m_cbOverlayMap->SetValue(odc.m_bOverlayMap);
     m_cOverlayColors->SetSelection(odc.m_iOverlayMapColors);
     m_cbNumbers->SetValue(odc.m_bNumbers);
@@ -388,14 +447,16 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
 {
     //Hide all Parameters
     m_cbBarbedArrows->Show(false);
-    m_tBarbedRange->Show(false);
-    m_sBarbedRange->Show(false);
+    m_cBarbedVisibility->Show(false);
+    m_cBarbedColours->Show(false);
     m_cbIsoBars->Show(false);
-    m_tIsoBarSpacing->Show(false);
-    m_sIsoBarSpacing->Show(false);
+    m_fIsoBarSpacing->ShowItems(false);
+    m_fIsoBarSpacing->Detach(1);
+    m_fIsoBarVisibility->ShowItems(false);
+    m_fIsoBarVisibility->Detach(0);
     m_cbDirectionArrows->Show(false);
-    m_tDirectionArrowSize->Show(false);
-    m_sDirectionArrowSize->Show(false);
+    m_cDirectionArrowForm->Show(false);
+    m_cDirectionArrowSize->Show(false);
     m_cbOverlayMap->Show(false);
     m_tOverlayColors->Show(false);
     m_cOverlayColors->Show(false);
@@ -403,18 +464,18 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     //Show only fitting parameters
     switch(settings){
     case 0:
-        ShowSettings( ISO_LINES );
+        ShowSettings( ISO_LINE_SHORT );
         m_cbIsoBars->SetLabel(_("Display Isotachs"));
         ShowSettings( B_ARROWS );
         ShowSettings( OVERLAY );
         break;
     case 1:
-        ShowSettings( ISO_LINES );
+        ShowSettings( ISO_LINE_SHORT );
         m_cbIsoBars->SetLabel(_("Display Isotachs"));
         ShowSettings( OVERLAY );
         break;
     case 2:
-        ShowSettings( ISO_LINES );
+        ShowSettings( ISO_LINE_VISI );
         m_cbIsoBars->SetLabel(_("Display Isobars"));
         break;
     case 3:
@@ -428,12 +489,12 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
         break;
     case 7:
     case 8:
-        ShowSettings( ISO_LINES );
+        ShowSettings( ISO_LINE_SHORT );
         m_cbIsoBars->SetLabel(_("Display Isotherms"));
         ShowSettings( OVERLAY );
         break;
     case 9:
-        ShowSettings( ISO_LINES );
+        ShowSettings( ISO_LINE_SHORT );
         m_cbIsoBars->SetLabel(_("Display Iso CAPE"));
         ShowSettings( OVERLAY );
 
@@ -445,18 +506,26 @@ void GribSettingsDialog::ShowSettings( int params )
     switch(params){
     case B_ARROWS:
         m_cbBarbedArrows->Show();
-        m_tBarbedRange->Show();
-        m_sBarbedRange->Show();
+        m_cBarbedVisibility->Show();
+        m_cBarbedColours->Show();
         break;
-    case ISO_LINES:
+    case ISO_LINE_VISI:
         m_cbIsoBars->Show();
-        m_tIsoBarSpacing->Show();
-        m_sIsoBarSpacing->Show();
+        m_fIsoBarSpacing->Add(m_sIsoBarSpacing, 0, 5,wxALL|wxEXPAND);
+        m_fIsoBarSpacing->ShowItems(true);
+        m_fIsoBarVisibility->Add(m_sIsoBarVisibility, 0, 5,wxTOP|wxLEFT|wxEXPAND);
+        m_fIsoBarVisibility->ShowItems(true);
+        break;
+    case ISO_LINE_SHORT:
+        m_cbIsoBars->Show();
+        m_fIsoBarSpacing->ShowItems(true);
+        m_fIsoBarVisibility->Add(m_sIsoBarSpacing, 0, 5,wxTOP|wxLEFT|wxEXPAND);
+        m_fIsoBarVisibility->ShowItems(true);
         break;
     case D_ARROWS:
         m_cbDirectionArrows->Show();
-        m_tDirectionArrowSize->Show();
-        m_sDirectionArrowSize->Show();
+        m_cDirectionArrowForm->Show();
+        m_cDirectionArrowSize->Show();
         break;
     case OVERLAY:
         m_cbOverlayMap->Show();

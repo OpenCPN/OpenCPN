@@ -141,6 +141,7 @@ void  GribRecord::translateDataType()
         switch (getDataType()) {
             case GRB_HTSGW:
             case GRB_WVDIR:
+            case GRB_WVPER:
                 levelType  = LV_GND_SURF;
                 levelValue = 0;
                 break;
