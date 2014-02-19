@@ -60,7 +60,7 @@
 #include "depth.h"
 #include "clock.h"
 #include "wind_history.h"
-
+#include "baro_history.h"
 
 class DashboardWindow;
 class DashboardWindowContainer;
@@ -149,7 +149,7 @@ public:
       int GetToolbarItemId(){ return m_toolbar_item_id; }
       int GetDashboardWindowShownCount();
       void SetPluginMessage(wxString &message_id, wxString &message_body);
-      
+
 private:
       bool LoadConfig(void);
       void ApplyConfig(void);
@@ -178,7 +178,7 @@ private:
       int                  mHDT_Watchdog;
       int                  mGPS_Watchdog;
       int                  mVar_Watchdog;
-      
+
 //protected:
 //      DECLARE_EVENT_TABLE();
 };

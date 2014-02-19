@@ -78,7 +78,7 @@ enum {
     ID_DBP_I_DPT, ID_DBP_D_DPT, ID_DBP_I_TMP, ID_DBP_I_VMG, ID_DBP_D_VMG, ID_DBP_I_RSA,
     ID_DBP_D_RSA, ID_DBP_I_SAT, ID_DBP_D_GPS, ID_DBP_I_PTR, ID_DBP_I_CLK, ID_DBP_I_SUN,
     ID_DBP_D_MON, ID_DBP_I_ATMP, ID_DBP_I_AWA, ID_DBP_I_TWA, ID_DBP_I_TWD, ID_DBP_I_TWS,
-    ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_D_WDH, ID_DBP_I_VLW1, ID_DBP_I_VLW2, ID_DBP_D_MDA, ID_DBP_I_MDA,
+    ID_DBP_D_TWD, ID_DBP_I_HDM, ID_DBP_D_HDT, ID_DBP_D_WDH, ID_DBP_I_VLW1, ID_DBP_I_VLW2, ID_DBP_D_MDA, ID_DBP_I_MDA,ID_DBP_D_BPH,
     ID_DBP_LAST_ENTRY //this has a reference in one of the routines; defining a "LAST_ENTRY" and setting the reference to it, is one codeline less to change (and find) when adding new instruments :-)
 };
 
@@ -163,6 +163,8 @@ wxString getInstrumentCaption( unsigned int id )
             return _("Moon phase");
         case ID_DBP_D_WDH:
             return _("Wind history");
+        case ID_DBP_D_BPH:
+            return  _("Barometric history");
         case ID_DBP_I_VLW1:
             return _("Trip Log");
         case ID_DBP_I_VLW2:
@@ -184,7 +186,7 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_I_HDM:
         case ID_DBP_I_AWS:
         case ID_DBP_I_DPT:
-	case ID_DBP_I_MDA:
+    	case ID_DBP_I_MDA:
         case ID_DBP_I_TMP:
         case ID_DBP_I_ATMP:
         case ID_DBP_I_TWA:
@@ -209,13 +211,14 @@ void getListItemForInstrument( wxListItem &item, unsigned int id )
         case ID_DBP_D_TW:
         case ID_DBP_D_TWD:
         case ID_DBP_D_DPT:
-	case ID_DBP_D_MDA:
+    	case ID_DBP_D_MDA:
         case ID_DBP_D_VMG:
         case ID_DBP_D_RSA:
         case ID_DBP_D_GPS:
         case ID_DBP_D_HDT:
         case ID_DBP_D_MON:
         case ID_DBP_D_WDH:
+        case ID_DBP_D_BPH:
             item.SetImage( 1 );
             break;
     }
@@ -312,7 +315,7 @@ int dashboard_pi::Init( void )
     mHDT_Watchdog = 2;
     mGPS_Watchdog = 2;
     mVar_Watchdog = 2;
-    
+
     g_pFontTitle = new wxFont( 10, wxFONTFAMILY_SWISS, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
     g_pFontData = new wxFont( 14, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
     g_pFontLabel = new wxFont( 8, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
@@ -399,7 +402,7 @@ void dashboard_pi::Notify()
         mPriVar = 99;
         SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, NAN, _T("\u00B0T") );
     }
-    
+
     mGPS_Watchdog--;
     if( mGPS_Watchdog <= 0 ) {
         SAT_INFO sats[4];
@@ -614,7 +617,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             mVar = -m_NMEA0183.Hdg.MagneticVariationDegrees;
                         SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, mVar, _T("\u00B0") );
                     }
-                    
+
                 }
                 if( mPriHeadingM >= 1 ) {
                     mPriHeadingM = 1;
@@ -623,7 +626,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                 }
                 if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) )
                        mHDx_Watchdog = gps_watchdog_timeout_ticks;
-                
+
                 //      If Variation is available, no higher priority HDT is available,
                 //      then calculate and propagate calculated HDT
                 if( !wxIsNaN(m_NMEA0183.Hdg.MagneticSensorHeadingDegrees) ) {
@@ -655,7 +658,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                         mHDT_Watchdog = gps_watchdog_timeout_ticks;
                     }
                 }
-                
+
             }
         }
 
@@ -820,7 +823,7 @@ void dashboard_pi::SetNMEASentence( wxString &sentence )
                             else if( m_NMEA0183.Rmc.MagneticVariationDirection == West )
                                 mVar = -m_NMEA0183.Rmc.MagneticVariation;
                             mVar_Watchdog = gps_watchdog_timeout_ticks;
-                        
+
                             SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, mVar, _T("\u00B0") );
                         }
                     }
@@ -1001,7 +1004,7 @@ void dashboard_pi::SetPositionFix( PlugIn_Position_Fix &pfix )
             mPriVar = 1;
             mVar = pfix.Var;
             mVar_Watchdog = gps_watchdog_timeout_ticks;
-        
+
             SendSentenceToAllInstruments( OCPN_DBP_STC_HMV, pfix.Var, _T("\u00B0") );
         }
     }
@@ -1025,12 +1028,12 @@ void dashboard_pi::SetPluginMessage(wxString &message_id, wxString &message_body
 {
     if(message_id == _T("WMM_VARIATION_BOAT"))
     {
-        
+
         // construct the JSON root object
         wxJSONValue  root;
         // construct a JSON parser
         wxJSONReader reader;
-        
+
         // now read the JSON text and store it in the 'root' structure
         // check for errors before retreiving values...
         int numErrors = reader.Parse( message_body, &root );
@@ -1038,13 +1041,13 @@ void dashboard_pi::SetPluginMessage(wxString &message_id, wxString &message_body
             //              const wxArrayString& errors = reader.GetErrors();
             return;
         }
-        
+
         // get the DECL value from the JSON message
         wxString decl = root[_T("Decl")].AsString();
         double decl_val;
         decl.ToDouble(&decl_val);
-        
-        
+
+
         if( mPriVar >= 4 ) {
             mPriVar = 4;
             mVar = decl_val;
@@ -1250,7 +1253,7 @@ bool dashboard_pi::LoadConfig( void )
 
         pConf->Read( _T("SpeedometerMax"), &g_iDashSpeedMax, 12 );
         pConf->Read( _T("SpeedUnit"), &g_iDashSpeedUnit, 0 );
-        
+
         pConf->Read( _T("DepthUnit"), &g_iDashDepthUnit, 3 );
         g_iDashDepthUnit = wxMax(g_iDashDepthUnit, 3);
 
@@ -1624,7 +1627,7 @@ DashboardPreferencesDialog::DashboardPreferencesDialog( wxWindow *parent, wxWind
     m_pChoiceSpeedUnit = new wxChoice( itemPanelNotebook02, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_SpeedUnitNChoices, m_SpeedUnitChoices, 0 );
     m_pChoiceSpeedUnit->SetSelection( g_iDashSpeedUnit + 1 );
     itemFlexGridSizer04->Add( m_pChoiceSpeedUnit, 0, wxALIGN_RIGHT | wxALL, 0 );
-    
+
     wxStaticText* itemStaticTextDepthU = new wxStaticText( itemPanelNotebook02, wxID_ANY, _("Depth units:"),
             wxDefaultPosition, wxDefaultSize, 0 );
     itemFlexGridSizer04->Add( itemStaticTextDepthU, 0, wxEXPAND | wxALL, border_size );
@@ -2263,6 +2266,10 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
                 break;
             case ID_DBP_D_WDH:
                 instrument = new DashboardInstrument_WindDirHistory(this, wxID_ANY,
+                        getInstrumentCaption( id ) );
+                  break;
+            case ID_DBP_D_BPH:
+                instrument = new DashboardInstrument_BaroHistory(this, wxID_ANY,
                         getInstrumentCaption( id ) );
                   break;
         }
