@@ -39,6 +39,7 @@ struct GribOverlaySettings
 
     void Read();
     void Write();
+    void SaveSettingGroups(wxFileConfig *pConf, int settings, int group);
 
     double CalibrationOffset(int settings);
     double CalibrationFactor(int settings, double input, bool reverse = false);
@@ -70,10 +71,13 @@ struct GribOverlaySettings
     struct OverlayDataSettings {
         int m_Units;
         bool m_bBarbedArrows;
-        int m_iBarbedRange;
+        bool m_iBarbedVisibility;
+        int m_iBarbedColour;
         bool m_bIsoBars;
+        bool m_iIsoBarVisibility;
         double m_iIsoBarSpacing;
         bool m_bDirectionArrows;
+        int m_iDirectionArrowForm;
         int m_iDirectionArrowSize;
         bool m_bOverlayMap;
         int m_iOverlayMapColors;
