@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.3.1006\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2013-10-14 23:57+0100\n"
 "Last-Translator: Frode Lynum <post@opencpn.kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -44,6 +44,9 @@ msgstr "Luft temp"
 #, fuzzy
 msgid "Air Temperature(2m)"
 msgstr "Luft temperatur"
+#
+msgid "Always visible"
+msgstr ""
 #
 msgid "Apply"
 msgstr ""
@@ -110,6 +113,9 @@ msgstr "Farger"
 msgid "Continue..."
 msgstr ""
 #
+msgid "Controled Colours"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr "Kopier første manglende kumulative registrering"
 #
@@ -128,6 +134,13 @@ msgstr ""
 #
 msgid "Days"
 msgstr "Dager"
+#
+#, fuzzy
+msgid "Default Colour"
+msgstr "Bruk gradiente farger"
+#
+msgid "Default Size"
+msgstr ""
 #
 #, fuzzy
 msgid "Deg"
@@ -153,6 +166,10 @@ msgstr "Vis"
 #
 msgid "Display Isotherms"
 msgstr ""
+#
+#, fuzzy
+msgid "Double Arrow"
+msgstr "Spisse piler"
 #
 msgid "Error:  Can't read this File!"
 msgstr "Feil: Kan ikke lese filen!"
@@ -322,9 +339,6 @@ msgstr ""
 msgid "Rainfall"
 msgstr "Regn"
 #
-msgid "Range"
-msgstr "Rekkevidde"
-#
 msgid "Request"
 msgstr "Forespørsel"
 #
@@ -376,14 +390,17 @@ msgstr ""
 msgid "Settings"
 msgstr "Innstillinger"
 #
-msgid "Size"
-msgstr "Størrelse"
+msgid "Single Arrow"
+msgstr ""
 #
 msgid "Slices per Update"
 msgstr "Stykker per oppdatering"
 #
 msgid "Slices per hour"
 msgstr "Stykker per time"
+#
+msgid "Small Size"
+msgstr ""
 #
 msgid "Spacing"
 msgstr "Mellomrom"
@@ -528,8 +545,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (Dup)"
+#
 #
 #
 #
@@ -551,14 +570,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Action"
 #~ msgstr "Utfør"
 #
 #
 #
 #
+#
 #~ msgid "Celcius"
 #~ msgstr "Celcius"
+#
 #
 #
 #
@@ -573,14 +595,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Error"
 #~ msgstr "Feil"
 #
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Kunne ikke sende epost melding"
+#
 #
 #
 #
@@ -617,8 +642,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB fil katalog"
+#
 #
 #
 #
@@ -629,8 +656,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "M/S"
+#
 #
 #
 #
@@ -641,8 +670,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "MittMerke"
+#
 #
 #
 #
@@ -653,8 +684,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "Parametre"
+#
 #
 #
 #
@@ -668,9 +701,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØTEMP GRIB"
+#
 #
 #
 #
@@ -690,9 +725,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØSTRØM GRIB"
+#
 #
 #
 #
@@ -710,6 +747,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte CRAIN GRIB"
@@ -717,8 +755,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Nedbør"
+#
 #
 #
 #
@@ -733,8 +773,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
+#
+#
+#~ msgid "Range"
+#~ msgstr "Rekkevidde"
+#
 #
 #
 #
@@ -745,8 +791,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Request Pofile"
 #~ msgstr "Forespør profil"
+#
 #
 #
 #
@@ -772,8 +820,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "SeaTemp"
 #~ msgstr "Havtemp"
+#
 #
 #
 #
@@ -812,9 +862,15 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Signifikant bølgehøyde, m"
+#
+#
+#~ msgid "Size"
+#~ msgstr "Størrelse"
+#
 #
 #
 #
@@ -854,6 +910,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "Vindretning"
@@ -861,8 +918,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Wind Scat"
 #~ msgstr "Vindscat"
+#
 #
 #
 #
@@ -880,6 +939,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Vindhastighet, Knop"
@@ -887,8 +947,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Sone"
+#
 #
 #
 #

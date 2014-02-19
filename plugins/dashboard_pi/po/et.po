@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 10:21-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2011-01-09 18:59+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: \n"
@@ -51,6 +51,9 @@ msgstr "Tuule kiirus"
 msgid "Appearance"
 msgstr ""
 #
+msgid "Barometric history"
+msgstr ""
+#
 msgid "Barometric pressure"
 msgstr ""
 #
@@ -69,10 +72,6 @@ msgstr ""
 #
 msgid "Clock"
 msgstr ""
-#
-#
-msgid "Compass"
-msgstr "Kompass"
 #
 msgid "Cursor"
 msgstr ""
@@ -290,6 +289,11 @@ msgstr "Tiitel:"
 msgid "Trip Log"
 msgstr ""
 #
+#
+#, fuzzy
+msgid "True Compass"
+msgstr "Kompass"
+#
 msgid "True HDG"
 msgstr ""
 #
@@ -367,8 +371,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Edit"
 #~ msgstr "Muuda"
+#
 #
 #
 #
@@ -381,8 +387,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Instrument width:"
 #~ msgstr "Sildi laius:"
+#
 #
 #
 #

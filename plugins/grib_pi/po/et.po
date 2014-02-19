@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2011-01-09 19:25+0200\n"
 "Last-Translator: Peep Prants <peep@prants.ee>\n"
 "Language-Team: OpenCPN ET <LL@li.org>\n"
@@ -40,6 +40,9 @@ msgid "Air Temp"
 msgstr ""
 #
 msgid "Air Temperature(2m)"
+msgstr ""
+#
+msgid "Always visible"
 msgstr ""
 #
 msgid "Apply"
@@ -107,6 +110,9 @@ msgstr "&Sulge"
 msgid "Continue..."
 msgstr ""
 #
+msgid "Controled Colours"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr ""
 #
@@ -125,6 +131,12 @@ msgid "Data available"
 msgstr ""
 #
 msgid "Days"
+msgstr ""
+#
+msgid "Default Colour"
+msgstr ""
+#
+msgid "Default Size"
 msgstr ""
 #
 msgid "Deg"
@@ -146,6 +158,9 @@ msgid "Display Isotachs"
 msgstr ""
 #
 msgid "Display Isotherms"
+msgstr ""
+#
+msgid "Double Arrow"
 msgstr ""
 #
 msgid "Error:  Can't read this File!"
@@ -314,9 +329,6 @@ msgstr ""
 msgid "Rainfall"
 msgstr ""
 #
-msgid "Range"
-msgstr ""
-#
 msgid "Request"
 msgstr ""
 #
@@ -380,13 +392,16 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 #
-msgid "Size"
+msgid "Single Arrow"
 msgstr ""
 #
 msgid "Slices per Update"
 msgstr ""
 #
 msgid "Slices per hour"
+msgstr ""
+#
+msgid "Small Size"
 msgstr ""
 #
 msgid "Spacing"
@@ -534,9 +549,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "GRIB-i andmed"
+#
 #
 #
 #
@@ -553,8 +570,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -595,9 +614,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Palun vähenda mõõtkava nägemaks peidetud MERETEMPERATUURI"
+#
 #
 #
 #
@@ -619,9 +640,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Palun vähenda mõõtkava nägemaks peidetud OOKEANI MOMENDI ILMA"
+#
 #
 #
 #
@@ -641,6 +664,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Palun vähenda mõõtkava nägemaks peidetud CRAIN ILMA"
@@ -652,9 +676,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Õhurõhk, mBar"
+#
 #
 #
 #
@@ -706,8 +732,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "Näita GRIB-i ikooni"
+#
 #
 #
 #
@@ -750,8 +778,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "HOIATUS: GRIB-i andmed on %d tundi vanad."
+#
 #
 #
 #
@@ -771,6 +801,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Tuule suund"
@@ -782,9 +813,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Tuule kiirus, sõlmedes"
+#
 #
 #
 #

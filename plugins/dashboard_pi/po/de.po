@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1302\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 10:21-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2014-01-02 19:19+0100\n"
 "Last-Translator: CarCode <carcode@me.com>\n"
 "Language-Team: CarCode <carcode@me.com>\n"
@@ -45,6 +45,10 @@ msgstr "scheinb. Windgeschw."
 msgid "Appearance"
 msgstr "Erscheinungsbild"
 #
+#, fuzzy
+msgid "Barometric history"
+msgstr "Windhistorie"
+#
 msgid "Barometric pressure"
 msgstr ""
 #
@@ -63,9 +67,6 @@ msgstr "Kilometer"
 #
 msgid "Clock"
 msgstr "Uhr"
-#
-msgid "Compass"
-msgstr "Kompaß"
 #
 msgid "Cursor"
 msgstr "Cursor"
@@ -243,6 +244,10 @@ msgstr "Titel:"
 #
 msgid "Trip Log"
 msgstr "Trip Log"
+#
+#, fuzzy
+msgid "True Compass"
+msgstr "Kompaß"
 #
 msgid "True HDG"
 msgstr "rechtw. Kurs"

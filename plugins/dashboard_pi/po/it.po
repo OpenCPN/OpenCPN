@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 10:21-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2012-09-01 11:11+0100\n"
 "Last-Translator: tr\n"
 "Language-Team: \n"
@@ -51,6 +51,9 @@ msgstr "Angolo Vento apparente"
 msgid "Appearance"
 msgstr ""
 #
+msgid "Barometric history"
+msgstr ""
+#
 msgid "Barometric pressure"
 msgstr ""
 #
@@ -69,10 +72,6 @@ msgstr ""
 #
 msgid "Clock"
 msgstr ""
-#
-#
-msgid "Compass"
-msgstr "Bussola"
 #
 msgid "Cursor"
 msgstr ""
@@ -292,6 +291,11 @@ msgstr "Titolo:"
 msgid "Trip Log"
 msgstr ""
 #
+#
+#, fuzzy
+msgid "True Compass"
+msgstr "Bussola"
+#
 msgid "True HDG"
 msgstr ""
 #
@@ -374,8 +378,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Airtemp"
 #~ msgstr "Temp. Aria"
+#
 #
 #
 #
@@ -388,8 +394,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Edit"
 #~ msgstr "Modifica"
+#
 #
 #
 #
@@ -402,8 +410,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "True wind"
 #~ msgstr "Vento Reale"
+#
 #
 #
 #

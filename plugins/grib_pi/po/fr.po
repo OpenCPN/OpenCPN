@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
@@ -39,6 +39,9 @@ msgstr "Temp. Air"
 #
 msgid "Air Temperature(2m)"
 msgstr "Température de l'air(2m)"
+#
+msgid "Always visible"
+msgstr ""
 #
 msgid "Apply"
 msgstr "Appliquer"
@@ -85,6 +88,9 @@ msgstr "Couleurs"
 msgid "Continue..."
 msgstr "Continuer ...."
 #
+msgid "Controled Colours"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr "Copier le premier enregistrement cumulatif manquant"
 #
@@ -103,6 +109,13 @@ msgstr "Donnée valide"
 #
 msgid "Days"
 msgstr "Jours"
+#
+#, fuzzy
+msgid "Default Colour"
+msgstr "Utiliser le dégradé de couleur"
+#
+msgid "Default Size"
+msgstr ""
 #
 msgid "Deg"
 msgstr " Deg"
@@ -124,6 +137,10 @@ msgstr "Afficher les isotaches"
 #
 msgid "Display Isotherms"
 msgstr "Afficher les isothermes"
+#
+#, fuzzy
+msgid "Double Arrow"
+msgstr "Flèches à barbules"
 #
 msgid "Error:  Can't read this File!"
 msgstr "Erreur : Impossible de lire ce fichier !"
@@ -291,9 +308,6 @@ msgstr "Profil"
 msgid "Rainfall"
 msgstr "Précipitations"
 #
-msgid "Range"
-msgstr "Intervalle"
-#
 msgid "Request"
 msgstr "Requête"
 #
@@ -340,14 +354,17 @@ msgstr "Votre adresse de messagerie"
 msgid "Settings"
 msgstr "Préférences"
 #
-msgid "Size"
-msgstr "Taille"
+msgid "Single Arrow"
+msgstr ""
 #
 msgid "Slices per Update"
 msgstr "Tranches par jour"
 #
 msgid "Slices per hour"
 msgstr "Tranches par heure"
+#
+msgid "Small Size"
+msgstr ""
 #
 msgid "Spacing"
 msgstr "Espacement"
@@ -496,3 +513,11 @@ msgstr "Votre code Zygrib"
 #
 msgid "zyGrib Login"
 msgstr "Votre login Zygrib"
+#
+#
+#~ msgid "Range"
+#~ msgstr "Intervalle"
+#
+#
+#~ msgid "Size"
+#~ msgstr "Taille"

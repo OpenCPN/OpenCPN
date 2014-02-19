@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2010-03-29 20:29+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -40,6 +40,9 @@ msgid "Air Temp"
 msgstr ""
 #
 msgid "Air Temperature(2m)"
+msgstr ""
+#
+msgid "Always visible"
 msgstr ""
 #
 msgid "Apply"
@@ -110,6 +113,9 @@ msgstr "Zamknij"
 msgid "Continue..."
 msgstr ""
 #
+msgid "Controled Colours"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr ""
 #
@@ -127,6 +133,12 @@ msgstr ""
 #
 # 
 msgid "Days"
+msgstr ""
+#
+msgid "Default Colour"
+msgstr ""
+#
+msgid "Default Size"
 msgstr ""
 #
 msgid "Deg"
@@ -148,6 +160,9 @@ msgid "Display Isotachs"
 msgstr ""
 #
 msgid "Display Isotherms"
+msgstr ""
+#
+msgid "Double Arrow"
 msgstr ""
 #
 # 
@@ -324,9 +339,6 @@ msgstr ""
 msgid "Rainfall"
 msgstr ""
 #
-msgid "Range"
-msgstr ""
-#
 msgid "Request"
 msgstr ""
 #
@@ -375,13 +387,16 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 #
-msgid "Size"
+msgid "Single Arrow"
 msgstr ""
 #
 msgid "Slices per Update"
 msgstr ""
 #
 msgid "Slices per hour"
+msgstr ""
+#
+msgid "Small Size"
 msgstr ""
 #
 msgid "Spacing"
@@ -523,6 +538,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -546,12 +562,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -592,6 +610,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -601,6 +620,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot."
 #~ "wysokości fali znacznej"
+#
 #
 #
 #
@@ -623,6 +643,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -633,6 +654,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot. "
 #~ "opadów deszczu"
+#
 #
 #
 #
@@ -654,6 +676,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -669,6 +692,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -676,6 +700,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Ciśnienie, mBar"
+#
 #
 #
 #
@@ -716,6 +741,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -723,6 +749,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Wysokość fali znacznej, m"
+#
 #
 #
 #
@@ -764,6 +791,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -771,6 +799,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "Kierunek wiatru"
+#
 #
 #
 #
@@ -790,6 +819,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -797,6 +827,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Prędkość wiatru, w."
+#
 #
 #
 #

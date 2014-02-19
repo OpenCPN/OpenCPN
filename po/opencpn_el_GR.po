@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2013-10-18 13:15+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC Sailing Team <sailingteam@isc.tuc.gr>\n"
@@ -472,6 +472,14 @@ msgstr "Στόχοι AIS"
 #, fuzzy
 msgid "AIS target list"
 msgstr "Κατάλογος στόχων AIS..."
+#
+#, fuzzy
+msgid "AISRollover"
+msgstr "Το Rollover ποντικιού δείχνει:"
+#
+#, fuzzy
+msgid "AISTargetQuery"
+msgstr "Πληροφορίες για στόχο AIS"
 #
 msgid "APRS"
 msgstr ""
@@ -1331,6 +1339,9 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Περιοχή περιβαλλοντικού κινδύνου: Ισχυρά θαλάσσια ρεύματα"
 #
+msgid "Error on Waypoint Upload.  Please check logfiles..."
+msgstr ""
+#
 msgid "Error!"
 msgstr "Σφάλμα!"
 #
@@ -1754,6 +1765,9 @@ msgstr "Στάνταρ ναυτικών"
 #
 msgid "Mark targets as lost after (min)"
 msgstr "Θεώρησε τους στόχους ως χαμένους μετά από (min)"
+#
+msgid "Marks"
+msgstr ""
 #
 msgid "Max Detail Here"
 msgstr "Μέγιστη λεπτομέρεια εδώ"
@@ -2327,6 +2341,9 @@ msgstr "Διαδρομές"
 msgid "S/V"
 msgstr "Ι/Φ"
 #
+msgid "SAR Aircraft"
+msgstr ""
+#
 msgid "SAR/V"
 msgstr "Σωστικό Σκ."
 #
@@ -2582,10 +2599,6 @@ msgstr "Ειδικό"
 msgid "Special Mark"
 msgstr "Ειδικό σημάδι"
 #
-#, fuzzy
-msgid "Special Position Report"
-msgstr "Αναφορά θέσης APRS"
-#
 msgid "Speed"
 msgstr "Ταχύτητα"
 #
@@ -2780,6 +2793,9 @@ msgstr "Αυτό το σκέλος"
 #
 msgid "This waypoint is part of a layer and can't be edited"
 msgstr "Αυτό το σημείο είναι μέρος ενός ταξιδιού και δεν μπορεί να αλλάξει"
+#
+msgid "TideCurrentGraphRollover"
+msgstr ""
 #
 msgid "Tides && Currents"
 msgstr "Παλίρροια && ρεύματα"
@@ -3008,6 +3024,9 @@ msgstr "Ιδιότητες σημείου πορείας"
 msgid "Waypoint Properties, Layer: "
 msgstr "Ιδιότητες σημαδιού, ταξίδι: "
 #
+msgid "Waypoint(s) Uploaded successfully."
+msgstr ""
+#
 msgid "Waypoints"
 msgstr "Σημεία πορείας"
 #
@@ -3152,5 +3171,11 @@ msgstr "Ιστοσελίδα wxFB"
 #
 #
 #
+#
 #~ msgid " is %5g"
 #~ msgstr "είναι %5g"
+#
+#
+#, fuzzy
+#~ msgid "Special Position Report"
+#~ msgstr "Αναφορά θέσης APRS"

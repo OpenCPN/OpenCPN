@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2013-10-24 17:24+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: rider2@kpnmail.nl\n"
@@ -43,6 +43,9 @@ msgstr "Luchttemp."
 #
 msgid "Air Temperature(2m)"
 msgstr "Luchttemp. (2 m)"
+#
+msgid "Always visible"
+msgstr ""
 #
 msgid "Apply"
 msgstr "Toepassen"
@@ -112,6 +115,9 @@ msgstr "kleuren"
 msgid "Continue..."
 msgstr ""
 #
+msgid "Controled Colours"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr "Kopieer 'First Cumulative Missing Record' "
 #
@@ -131,6 +137,13 @@ msgstr "Gegevens beschikbaar"
 #
 msgid "Days"
 msgstr "dagen"
+#
+#, fuzzy
+msgid "Default Colour"
+msgstr "Gebruik graduele kleuren"
+#
+msgid "Default Size"
+msgstr ""
 #
 msgid "Deg"
 msgstr "°"
@@ -155,6 +168,10 @@ msgstr "Toon isobaren"
 #, fuzzy
 msgid "Display Isotherms"
 msgstr "Toon isobaren"
+#
+#, fuzzy
+msgid "Double Arrow"
+msgstr "Windpijlen"
 #
 msgid "Error:  Can't read this File!"
 msgstr "Fout: kan bestand niet lezen!"
@@ -323,9 +340,6 @@ msgstr "Profiel"
 msgid "Rainfall"
 msgstr "Neerslag"
 #
-msgid "Range"
-msgstr "bereik"
-#
 msgid "Request"
 msgstr "Verzoek"
 #
@@ -381,14 +395,17 @@ msgstr "E-mailadres verzender"
 msgid "Settings"
 msgstr "Instellingen"
 #
-msgid "Size"
-msgstr "grootte"
+msgid "Single Arrow"
+msgstr ""
 #
 msgid "Slices per Update"
 msgstr "delen per update"
 #
 msgid "Slices per hour"
 msgstr "delen per uur"
+#
+msgid "Small Size"
+msgstr ""
 #
 msgid "Spacing"
 msgstr "tussenafstand"
@@ -538,8 +555,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (dup)"
+#
 #
 #
 #
@@ -562,8 +581,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Action"
 #~ msgstr "Actie"
+#
 #
 #
 #
@@ -577,14 +598,17 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB voorkeuren"
 #
 #
 #
+#
 #~ msgid "Display Iso Temp. Lines"
 #~ msgstr "Toon isothermen"
+#
 #
 #
 #
@@ -595,8 +619,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Kon mailbericht niet versturen"
+#
 #
 #
 #
@@ -635,8 +661,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Map voor GRIB bestand"
+#
 #
 #
 #
@@ -647,8 +675,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "m/sec"
+#
 #
 #
 #
@@ -659,8 +689,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "MijnLabel"
+#
 #
 #
 #
@@ -671,14 +703,17 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "Parameters"
 #
 #
 #
 #
+#
 #~ msgid "Period"
 #~ msgstr "Periode"
+#
 #
 #
 #
@@ -698,9 +733,11 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+#
 #
 #
 #
@@ -720,9 +757,11 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
+#
 #
 #
 #
@@ -738,8 +777,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Neerslag"
+#
 #
 #
 #
@@ -755,8 +796,14 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
+#
+#
+#~ msgid "Range"
+#~ msgstr "bereik"
+#
 #
 #
 #
@@ -767,8 +814,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Request Pofile"
 #~ msgstr "Verzoekprofiel"
+#
 #
 #
 #
@@ -794,8 +843,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "SeaTemp"
 #~ msgstr "ZeeTemp"
+#
 #
 #
 #
@@ -857,8 +908,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Toon windsnelheid in m/sec"
+#
 #
 #
 #
@@ -870,6 +923,11 @@ msgstr "zyGrib login"
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "significante golfhoogte (m)"
+#
+#
+#~ msgid "Size"
+#~ msgstr "grootte"
+#
 #
 #
 #
@@ -885,8 +943,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Wind Scat"
 #~ msgstr "Windscat"
+#
 #
 #
 #
@@ -906,6 +966,7 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "windsnelheid (m/sec)"
@@ -913,8 +974,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Zone"
+#
 #
 #
 #

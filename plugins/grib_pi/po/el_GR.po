@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1207\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2010-12-20 18:23+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -40,6 +40,9 @@ msgid "Air Temp"
 msgstr ""
 #
 msgid "Air Temperature(2m)"
+msgstr ""
+#
+msgid "Always visible"
 msgstr ""
 #
 msgid "Apply"
@@ -107,6 +110,9 @@ msgstr "&Κλείσιμο"
 msgid "Continue..."
 msgstr ""
 #
+msgid "Controled Colours"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr ""
 #
@@ -128,6 +134,12 @@ msgstr ""
 msgid "Days"
 msgstr ""
 #
+msgid "Default Colour"
+msgstr ""
+#
+msgid "Default Size"
+msgstr ""
+#
 msgid "Deg"
 msgstr ""
 #
@@ -147,6 +159,9 @@ msgid "Display Isotachs"
 msgstr ""
 #
 msgid "Display Isotherms"
+msgstr ""
+#
+msgid "Double Arrow"
 msgstr ""
 #
 # 
@@ -322,9 +337,6 @@ msgstr ""
 msgid "Rainfall"
 msgstr ""
 #
-msgid "Range"
-msgstr ""
-#
 msgid "Request"
 msgstr ""
 #
@@ -390,13 +402,16 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 #
-msgid "Size"
+msgid "Single Arrow"
 msgstr ""
 #
 msgid "Slices per Update"
 msgstr ""
 #
 msgid "Slices per hour"
+msgstr ""
+#
+msgid "Small Size"
 msgstr ""
 #
 msgid "Spacing"
@@ -535,6 +550,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -556,6 +572,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Data Display Preferences"
@@ -565,9 +582,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -605,10 +624,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα SEATEMP GRIB"
+#
 #
 #
 #
@@ -627,12 +648,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr ""
 #~ "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα OCEAN CURRENT GRIB"
+#
 #
 #
 #
@@ -649,6 +672,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
@@ -659,10 +683,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Ατμ. Πίεση, mBar"
+#
 #
 #
 #
@@ -684,6 +710,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Ιδιότητες GRIB"
+#
 #
 #
 #
@@ -721,10 +748,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Διακριτό ύψος Κύματος, m(μέτρα) "
+#
 #
 #
 #
@@ -765,10 +794,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "Διεύθυνση Ανέμου"
+#
 #
 #
 #
@@ -785,10 +816,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Ταχύτητα Ανέμου, Kts"
+#
 #
 #
 #

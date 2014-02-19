@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1124\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 10:21-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2010-12-09 22:33+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaite@netti.fi>\n"
@@ -48,6 +48,9 @@ msgstr "Tuulennopeus"
 msgid "Appearance"
 msgstr ""
 #
+msgid "Barometric history"
+msgstr ""
+#
 msgid "Barometric pressure"
 msgstr ""
 #
@@ -65,9 +68,6 @@ msgstr ""
 #
 msgid "Clock"
 msgstr ""
-#
-msgid "Compass"
-msgstr "Kompassi"
 #
 msgid "Cursor"
 msgstr ""
@@ -256,6 +256,10 @@ msgstr "Otsikko:"
 msgid "Trip Log"
 msgstr ""
 #
+#, fuzzy
+msgid "True Compass"
+msgstr "Kompassi"
+#
 msgid "True HDG"
 msgstr ""
 #
@@ -324,8 +328,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Apparent wind"
 #~ msgstr "Suhteellinen tuuli"
+#
 #
 #
 #
@@ -336,14 +342,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "HDG"
 #~ msgstr "HDG"
 #
 #
 #
 #
+#
 #~ msgid "Instrument width:"
 #~ msgstr "Mittarileveys:"
+#
 #
 #
 #

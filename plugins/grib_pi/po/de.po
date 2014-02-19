@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1302\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2014-01-02 20:14+0100\n"
 "Last-Translator: CarCode <carcode@me.com>\n"
 "Language-Team: Gerhard Mueller <carcode@me.com>\n"
@@ -45,6 +45,9 @@ msgstr "Luft-Temp."
 #
 msgid "Air Temperature(2m)"
 msgstr "Luft-Temperatur (2m)"
+#
+msgid "Always visible"
+msgstr ""
 #
 msgid "Apply"
 msgstr "Anwenden"
@@ -90,6 +93,9 @@ msgstr "Farben"
 msgid "Continue..."
 msgstr "Weiter..."
 #
+msgid "Controled Colours"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr "Kopiere ersten fehlenden kumulativen Datensatz"
 #
@@ -107,6 +113,13 @@ msgstr "Daten verfügbar"
 #
 msgid "Days"
 msgstr "Tage"
+#
+#, fuzzy
+msgid "Default Colour"
+msgstr "Verwende abgestufte Farben"
+#
+msgid "Default Size"
+msgstr ""
 #
 msgid "Deg"
 msgstr "Grad"
@@ -128,6 +141,10 @@ msgstr "Zeige Isotache"
 #
 msgid "Display Isotherms"
 msgstr "Zeige Isotherme"
+#
+#, fuzzy
+msgid "Double Arrow"
+msgstr "Pfeil-Federn"
 #
 msgid "Error:  Can't read this File!"
 msgstr "Fehler: Kann Datei nicht lesen!"
@@ -294,9 +311,6 @@ msgstr "Profil"
 msgid "Rainfall"
 msgstr "Regen"
 #
-msgid "Range"
-msgstr "Bereich"
-#
 msgid "Request"
 msgstr "Anfrage"
 #
@@ -343,14 +357,17 @@ msgstr "Sender eMail Adresse"
 msgid "Settings"
 msgstr "Einstellungen"
 #
-msgid "Size"
-msgstr "Größe"
+msgid "Single Arrow"
+msgstr ""
 #
 msgid "Slices per Update"
 msgstr "Scheiben je Update"
 #
 msgid "Slices per hour"
 msgstr "Scheiben pro Stunde"
+#
+msgid "Small Size"
+msgstr ""
 #
 msgid "Spacing"
 msgstr "Abstand"
@@ -501,8 +518,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (Doppl)"
+#
 #
 #
 #
@@ -511,8 +530,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "0.2"
 #~ msgstr "0.2"
+#
 #
 #
 #
@@ -521,8 +542,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "0.8"
 #~ msgstr "0.8"
+#
 #
 #
 #
@@ -531,8 +554,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "1.6"
 #~ msgstr "1.6"
+#
 #
 #
 #
@@ -541,8 +566,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "2"
 #~ msgstr "2"
+#
 #
 #
 #
@@ -551,8 +578,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "3"
 #~ msgstr "3"
+#
 #
 #
 #
@@ -561,8 +590,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "5"
 #~ msgstr "5"
+#
 #
 #
 #
@@ -571,8 +602,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "7"
 #~ msgstr "7"
+#
 #
 #
 #
@@ -581,8 +614,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Air Temperature"
 #~ msgstr "Luft-Temperatur"
+#
 #
 #
 #
@@ -591,8 +626,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "COAMPS"
 #~ msgstr "COAMPS"
+#
 #
 #
 #
@@ -601,8 +638,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "CloudCover"
 #~ msgstr "Bewölkung"
+#
 #
 #
 #
@@ -611,8 +650,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Current(Surf.)"
 #~ msgstr "Strömung(Oberfl.)"
+#
 #
 #
 #
@@ -627,8 +668,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Data available in the selected forecast model"
 #~ msgstr "Daten verfügbar im gewählten Vorhersage-Modell"
+#
 #
 #
 #
@@ -637,8 +680,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "GFS"
 #~ msgstr "GFS"
+#
 #
 #
 #
@@ -677,13 +722,16 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Verzeichnis GRIB-Dateien"
 #
 #
 #
+#
 #~ msgid "Login you use to connect to Zygrib's forum"
 #~ msgstr "Ihr Login für das zyGrib-Forum"
+#
 #
 #
 #
@@ -705,11 +753,13 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Ozean-Strömung bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -731,11 +781,13 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -752,8 +804,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Niederschlag"
+#
 #
 #
 #
@@ -768,8 +822,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "RTOFS"
 #~ msgstr "RTOFS"
+#
 #
 #
 #
@@ -777,9 +833,15 @@ msgstr "zyGrib Login"
 #~ msgstr "Regen"
 #
 #
+#~ msgid "Range"
+#~ msgstr "Bereich"
+#
+#
+#
 #
 #~ msgid "Ref : "
 #~ msgstr "Ref : "
+#
 #
 #
 #
@@ -805,8 +867,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Saildocs"
 #~ msgstr "Saildocs"
+#
 #
 #
 #
@@ -815,8 +879,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "SeaTemp"
 #~ msgstr "See-Temp."
+#
 #
 #
 #
@@ -857,9 +923,15 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Signifik. Wellenhöhe, m"
+#
+#
+#~ msgid "Size"
+#~ msgstr "Größe"
+#
 #
 #
 #
@@ -895,8 +967,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "WW3-GLOBAL"
 #~ msgstr "WW3-GLOBAL"
+#
 #
 #
 #
@@ -905,8 +979,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Wave"
 #~ msgstr "Wellen"
+#
 #
 #
 #
@@ -926,9 +1002,11 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Windrichtung"
+#
 #
 #
 #

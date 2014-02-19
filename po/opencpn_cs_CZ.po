@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.606\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2013-02-07 12:54-0600\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <pavel@kalian.cz>\n"
@@ -762,6 +762,33 @@ msgstr "AIS cíle"
 #
 msgid "AIS target list"
 msgstr "Seznam cílů AIS"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+msgid "AISRollover"
+msgstr "AISRollover"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+msgid "AISTargetQuery"
+msgstr "AISTargetQuery"
 #
 msgid "APRS"
 msgstr ""
@@ -2215,6 +2242,19 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Oblast varování prostředí: Silný proud"
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+msgid "Error on Waypoint Upload.  Please check logfiles..."
+msgstr "Chyba při nahrávání trasových bodů. Prosím zkontroluj log..."
+#
 msgid "Error!"
 msgstr "Chyba!"
 #
@@ -3003,6 +3043,20 @@ msgstr "Mariners Standard"
 #
 msgid "Mark targets as lost after (min)"
 msgstr "Označit cíle za ztracené po (min)"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+msgid "Marks"
+msgstr "Značky"
 #
 #
 #
@@ -4039,6 +4093,9 @@ msgstr "Trasy"
 msgid "S/V"
 msgstr ""
 #
+msgid "SAR Aircraft"
+msgstr ""
+#
 #
 #
 msgid "SAR/V"
@@ -4554,14 +4611,6 @@ msgstr "Speciální značka"
 #
 #
 #
-#, fuzzy
-msgid "Special Position Report"
-msgstr "Report pozice DSC"
-#
-#
-#
-#
-#
 msgid "Speed"
 msgstr "Rychlost"
 #
@@ -4900,6 +4949,18 @@ msgstr "Tento úsek"
 #
 msgid "This waypoint is part of a layer and can't be edited"
 msgstr "Tento bod je součástí vrstvy a nemůže být upraven."
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+msgid "TideCurrentGraphRollover"
+msgstr "PrekryvnyGrafPrilivProudu"
 #
 #
 #
@@ -5351,6 +5412,19 @@ msgstr "Vlastnosti TB, Vrstva:"
 #
 #
 #
+#
+#
+#
+#
+#
+#
+msgid "Waypoint(s) Uploaded successfully."
+msgstr "Trasové body úspěšně nahrány."
+#
+#
+#
+#
+#
 msgid "Waypoints"
 msgstr "Trasové body"
 #
@@ -5594,8 +5668,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
+#
 #
 #
 #
@@ -5649,6 +5725,7 @@ msgstr "Stránky wxFB"
 #~ "\n"
 #~ "\n"
 #~ "\n"
+#
 #
 #
 #
@@ -5704,6 +5781,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "      Délka šipky předpovědi COG (minut):"
 #
@@ -5732,8 +5810,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Max rychlost vyvázaného cíle (uzle):"
+#
 #
 #
 #
@@ -5800,8 +5880,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Mapová projekce je NEZNÁMÁ, předpokládáme Mercator:"
+#
 #
 #
 #
@@ -5896,8 +5978,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   PlugInManager: Nemmohu načíst symbol create_pi: "
+#
 #
 #
 #
@@ -5971,8 +6055,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr "  Nemohu otevřít sériový port AIS '"
+#
 #
 #
 #
@@ -6008,8 +6094,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid " </b>in<b> "
 #~ msgstr " </b>za<b> "
+#
 #
 #
 #
@@ -6058,6 +6146,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG: 000 Stu."
 #
@@ -6067,8 +6156,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid " is %5g"
 #~ msgstr " je %5g"
+#
 #
 #
 #
@@ -6095,8 +6186,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "&Export stopy...."
+#
 #
 #
 #
@@ -6123,8 +6216,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "&Silence Alert"
 #~ msgstr "Potlačit vý&strahu"
+#
 #
 #
 #
@@ -6203,12 +6298,14 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
 #~ msgstr ""
 #~ "'\n"
 #~ " Doporučení: Zkus 'xxx.xxx.xxx.xxx' notaci"
+#
 #
 #
 #
@@ -6248,8 +6345,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid ", Out: None"
 #~ msgstr ", Ven: Nic"
+#
 #
 #
 #
@@ -6306,6 +6405,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid ""
 #~ ":               Unavailable\n"
 #~ "\n"
@@ -6332,8 +6432,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "<--Remove"
 #~ msgstr "<--Odstranit"
+#
 #
 #
 #
@@ -6388,22 +6490,11 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "AIS SART Alert"
 #~ msgstr "Výstraha AIS "
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "AISRollover"
-#~ msgstr "AISRollover"
 #
 #
 #
@@ -6419,19 +6510,6 @@ msgstr "Stránky wxFB"
 #~ msgid "AISTargetAlert"
 #~ msgstr "AISTargetAlert"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "AISTargetQuery"
-#~ msgstr "AISTargetQuery"
 #
 #
 #
@@ -6466,8 +6544,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Activate CM93 Offset"
 #~ msgstr "Aktivovat posuny CM93"
+#
 #
 #
 #
@@ -6530,6 +6610,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Active Charts"
 #~ msgstr "Aktivní mapy"
 #
@@ -6554,8 +6635,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Active Tide/Current Data"
 #~ msgstr "Aktivní data přílivu/proudu"
+#
 #
 #
 #
@@ -6609,8 +6692,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Přidat tuto mapu do sestavy."
+#
 #
 #
 #
@@ -6676,8 +6761,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Další informace"
+#
 #
 #
 #
@@ -6755,8 +6842,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Pokouším se nahrát libgps.so"
+#
 #
 #
 #
@@ -6810,6 +6899,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Dostupné složky map"
 #
@@ -6822,8 +6912,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Barge, tanker, chemical"
 #~ msgstr "Prám, tanker, chemický"
+#
 #
 #
 #
@@ -6899,8 +6991,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Kurs:              %03d St.\n"
+#
 #
 #
 #
@@ -6940,8 +7034,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "Loď na sypké hmoty"
+#
 #
 #
 #
@@ -6995,6 +7091,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "CM93 Detail Slider..."
 #~ msgstr "Povolit posuvník detailu CM93"
@@ -7022,8 +7119,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "Zobrazení posunu CM93"
+#
 #
 #
 #
@@ -7142,8 +7241,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Posun CM93 zap."
+#
 #
 #
 #
@@ -7262,6 +7363,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Nástroj Posun CM93...."
 #
@@ -7288,8 +7390,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "CM93 Offsets"
 #~ msgstr "Posuny  CM93"
+#
 #
 #
 #
@@ -7376,8 +7480,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "Detail přiblížení CM93"
+#
 #
 #
 #
@@ -7434,8 +7540,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f nm\n"
+#
 #
 #
 #
@@ -7497,8 +7605,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "Volací znak:              "
+#
 #
 #
 #
@@ -7614,9 +7724,11 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Nastav posun CM93"
+#
 #
 #
 #
@@ -7666,8 +7778,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Chart Groups..."
 #~ msgstr "Skupiny map..."
+#
 #
 #
 #
@@ -7716,6 +7830,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Pozice"
@@ -7729,8 +7844,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Container vessel"
 #~ msgstr "Kontejnerová loď"
+#
 #
 #
 #
@@ -7776,8 +7893,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "Nemohu rozpoznat TCP/IP hostitele '"
+#
 #
 #
 #
@@ -7798,8 +7917,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Cruise ship"
 #~ msgstr "Výletní loď"
+#
 #
 #
 #
@@ -7840,8 +7961,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "Kurzor:"
+#
 #
 #
 #
@@ -7880,8 +8003,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Deg"
 #~ msgstr "Stupně"
+#
 #
 #
 #
@@ -7936,8 +8061,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "Smazat výběr"
+#
 #
 #
 #
@@ -7992,8 +8119,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Depth Settings"
 #~ msgstr "Nastavení hloubky"
+#
 #
 #
 #
@@ -8034,6 +8163,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Drop"
 #~ msgstr "Zahodit"
 #
@@ -8051,8 +8181,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "E&xportovat vše...."
+#
 #
 #
 #
@@ -8105,8 +8237,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Enable Manual CM93 Offsets"
 #~ msgstr "Povolit manuální posuny  CM93"
+#
 #
 #
 #
@@ -8146,21 +8280,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Error on Route Upload.  Please check logfiles..."
 #~ msgstr "Chyba při nahrávání trasy. Prosím zkontroluj log..."
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Error on Waypoint Upload.  Please check logfiles..."
-#~ msgstr "Chyba při nahrávání trasových bodů. Prosím zkontroluj log..."
 #
 #
 #
@@ -8199,8 +8322,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Fast ship"
 #~ msgstr "Rychlý trajekt"
+#
 #
 #
 #
@@ -8223,8 +8348,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Fishing boat"
 #~ msgstr "Rybářská loď"
+#
 #
 #
 #
@@ -8247,8 +8374,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "Níkladní prám s kontejnery"
+#
 #
 #
 #
@@ -8303,8 +8432,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
 #
 #
 #
@@ -8345,8 +8476,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD Data Server"
+#
 #
 #
 #
@@ -8371,8 +8504,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "Obecné nákladní plavidlo"
+#
 #
 #
 #
@@ -8422,6 +8557,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Groups"
 #~ msgstr "Skupiny"
 #
@@ -8434,8 +8570,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "HW"
 #~ msgstr "HW"
+#
 #
 #
 #
@@ -8460,6 +8598,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "In"
 #~ msgstr "In"
 #
@@ -8470,8 +8609,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "In: None"
 #~ msgstr "Dovnitř: Nic"
+#
 #
 #
 #
@@ -8526,8 +8667,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Jump To Position"
 #~ msgstr "Skok na pozici"
+#
 #
 #
 #
@@ -8566,8 +8709,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "LW"
 #~ msgstr "LW"
+#
 #
 #
 #
@@ -8607,6 +8752,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Legend"
 #~ msgstr "Legenda"
 #
@@ -8619,8 +8765,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Liquified gas tanker"
 #~ msgstr "Tanker s kapalným plynem"
+#
 #
 #
 #
@@ -8664,22 +8812,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Mark Properties"
 #~ msgstr "Vlastnosti TB"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Marks"
-#~ msgstr "Značky"
 #
 #
 #
@@ -8698,8 +8834,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Message filtered and dropped"
 #~ msgstr "Zpráva odfiltrována a zahozena"
+#
 #
 #
 #
@@ -8738,8 +8876,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Motor tanker"
 #~ msgstr "Motorový tanker"
+#
 #
 #
 #
@@ -8762,8 +8902,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type C"
 #~ msgstr "Motorový tanker, tekutý náklad typu C"
+#
 #
 #
 #
@@ -8801,6 +8943,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "Datový zdroj NMEA"
 #
@@ -8811,8 +8954,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "NMEA Debug Window"
 #~ msgstr "Okno ladění NMEA"
+#
 #
 #
 #
@@ -8867,8 +9012,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Navigation Data"
 #~ msgstr "Navigační data"
+#
 #
 #
 #
@@ -8895,6 +9042,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Next"
 #~ msgstr "Další"
 #
@@ -8905,8 +9053,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "No"
 #~ msgstr "Ne"
+#
 #
 #
 #
@@ -8945,8 +9095,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "Objekt, jinak nespecifikován"
+#
 #
 #
 #
@@ -8970,6 +9122,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Other"
 #~ msgstr "Jiný"
 #
@@ -8980,8 +9133,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Out"
 #~ msgstr "Ven"
+#
 #
 #
 #
@@ -9021,9 +9176,11 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "Volby zobrazení vlastní lodi"
+#
 #
 #
 #
@@ -9046,6 +9203,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "Loď s pasažéry, trajekt, výletní loď, loď červeného kříže"
 #
@@ -9056,8 +9214,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Pause"
 #~ msgstr "Pozastavit"
+#
 #
 #
 #
@@ -9111,9 +9271,11 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Umístit stopové body v intervalu (sekund):"
+#
 #
 #
 #
@@ -9138,8 +9300,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "Rekreační plavidlo, delší než 20m"
+#
 #
 #
 #
@@ -9166,8 +9330,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Prev"
 #~ msgstr "Předchozí"
+#
 #
 #
 #
@@ -9192,8 +9358,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "Tlačný remorkér, samostatný"
+#
 #
 #
 #
@@ -9216,8 +9384,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "Tlačná souprava, pět nákladních van"
+#
 #
 #
 #
@@ -9239,8 +9409,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "Tlačná souprava, devět či více nákladních van"
+#
 #
 #
 #
@@ -9263,8 +9435,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, seven cargo barges"
 #~ msgstr "Tlačná souprava, sedm nákladních van"
+#
 #
 #
 #
@@ -9287,6 +9461,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, three cargo barges"
 #~ msgstr "Tlačná souprava, tři nákladní vany"
 #
@@ -9299,8 +9474,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, two cargo barges"
 #~ msgstr "Tlačná souprava, dvě nákladní vany"
+#
 #
 #
 #
@@ -9354,8 +9531,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Rastr"
+#
 #
 #
 #
@@ -9380,6 +9559,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Reference Station :"
 #~ msgstr "Referenční stanice:"
 #
@@ -9390,8 +9570,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Reject"
 #~ msgstr "Odmítnout"
+#
 #
 #
 #
@@ -9444,8 +9626,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Odstranit tuto mapu ze sestavy."
+#
 #
 #
 #
@@ -9470,8 +9654,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Resume"
 #~ msgstr "Obnovit"
+#
 #
 #
 #
@@ -9511,8 +9697,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "Trasa nahrána úspěšně."
+#
 #
 #
 #
@@ -9566,6 +9754,7 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "Vyber typy map pro skládání"
 #
@@ -9580,8 +9769,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Send"
 #~ msgstr "Poslat"
+#
 #
 #
 #
@@ -9611,9 +9802,11 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "Ode&slat do GPS"
+#
 #
 #
 #
@@ -9634,8 +9827,19 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Sound file '%s' is in unsupported format."
 #~ msgstr "Zvukový soubor '%s' je v nepodporovaném formátu."
+#
+#
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Special Position Report"
+#~ msgstr "Report pozice DSC"
+#
 #
 #
 #
@@ -9660,20 +9864,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Tide"
 #~ msgstr "Příliv"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "TideCurrentGraphRollover"
-#~ msgstr "PrekryvnyGrafPrilivProudu"
 #
 #
 #
@@ -9700,8 +9894,10 @@ msgstr "Stránky wxFB"
 #
 #
 #
+#
 #~ msgid "Tomorrow"
 #~ msgstr "Zítra"
+#
 #
 #
 #
@@ -9715,18 +9911,6 @@ msgstr "Stránky wxFB"
 #~ msgid "Vessel, type unknown"
 #~ msgstr "Plavidlo, neznámý typ"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Waypoint(s) Uploaded successfully."
-#~ msgstr "Trasové body úspěšně nahrány."
 #
 #
 #

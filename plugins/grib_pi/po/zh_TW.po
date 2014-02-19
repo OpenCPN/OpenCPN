@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2013-09-25 15:53+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -45,6 +45,9 @@ msgstr "大氣溫度"
 #, fuzzy
 msgid "Air Temperature(2m)"
 msgstr "大氣溫度"
+#
+msgid "Always visible"
+msgstr ""
 #
 msgid "Apply"
 msgstr ""
@@ -112,6 +115,9 @@ msgstr "顏色"
 msgid "Continue..."
 msgstr ""
 #
+msgid "Controled Colours"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr "複製首先累積遺失的記錄"
 #
@@ -132,6 +138,13 @@ msgstr ""
 #
 msgid "Days"
 msgstr "天"
+#
+#, fuzzy
+msgid "Default Colour"
+msgstr "使用漸層顏色"
+#
+msgid "Default Size"
+msgstr ""
 #
 #
 #, fuzzy
@@ -158,6 +171,10 @@ msgstr "顯示"
 #
 msgid "Display Isotherms"
 msgstr ""
+#
+#, fuzzy
+msgid "Double Arrow"
+msgstr "箭頭"
 #
 #
 msgid "Error:  Can't read this File!"
@@ -340,9 +357,6 @@ msgstr ""
 msgid "Rainfall"
 msgstr "雨"
 #
-msgid "Range"
-msgstr "範圍"
-#
 msgid "Request"
 msgstr "請求"
 #
@@ -398,14 +412,17 @@ msgstr ""
 msgid "Settings"
 msgstr "設定"
 #
-msgid "Size"
-msgstr "大小"
+msgid "Single Arrow"
+msgstr ""
 #
 msgid "Slices per Update"
 msgstr "分隔每個更新"
 #
 msgid "Slices per hour"
 msgstr "分隔每小時"
+#
+msgid "Small Size"
+msgstr ""
 #
 msgid "Spacing"
 msgstr "間距"
@@ -556,8 +573,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (Dup)"
+#
 #
 #
 #
@@ -581,14 +600,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Action"
 #~ msgstr "動作"
 #
 #
 #
 #
+#
 #~ msgid "Celcius"
 #~ msgstr "攝氏"
+#
 #
 #
 #
@@ -603,14 +625,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Error"
 #~ msgstr "錯誤"
 #
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "傳送郵件失敗"
+#
 #
 #
 #
@@ -648,8 +673,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB 檔案目錄"
+#
 #
 #
 #
@@ -660,8 +687,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "公尺/秒"
+#
 #
 #
 #
@@ -672,8 +701,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "我的標籤"
+#
 #
 #
 #
@@ -685,8 +716,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "參數"
+#
 #
 #
 #
@@ -701,9 +734,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed SEATEMP GRIB"
+#
 #
 #
 #
@@ -723,9 +758,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed OCEAN CURRENT GRIB"
+#
 #
 #
 #
@@ -743,6 +780,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "請放大畫面以顯示 suppressed CRAIN GRIB"
@@ -750,8 +788,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "凝結"
+#
 #
 #
 #
@@ -766,8 +806,14 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
+#
+#
+#~ msgid "Range"
+#~ msgstr "範圍"
+#
 #
 #
 #
@@ -775,6 +821,7 @@ msgstr ""
 #
 #~ msgid "Ref : "
 #~ msgstr "參考:"
+#
 #
 #
 #
@@ -800,6 +847,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB 偏好設定"
@@ -807,8 +855,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "SeaTemp"
 #~ msgstr "海水溫度"
+#
 #
 #
 #
@@ -847,9 +897,15 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Significant波高, m"
+#
+#
+#~ msgid "Size"
+#~ msgstr "大小"
+#
 #
 #
 #
@@ -889,6 +945,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "風向"
@@ -896,8 +953,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Wind Scat"
 #~ msgstr "Wind Scat"
+#
 #
 #
 #
@@ -915,6 +974,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "風速,  Kts."
@@ -923,8 +983,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "區域"
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.1.1224\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 10:21-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2013-12-02 17:22+0200\n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -44,6 +44,10 @@ msgstr "Görünen Rüzgar Hızı"
 msgid "Appearance"
 msgstr "Görünüm"
 #
+#, fuzzy
+msgid "Barometric history"
+msgstr "Rüzgar Gemişi"
+#
 msgid "Barometric pressure"
 msgstr ""
 #
@@ -62,9 +66,6 @@ msgstr "Kilometre"
 #
 msgid "Clock"
 msgstr "Saat"
-#
-msgid "Compass"
-msgstr "Pusula"
 #
 msgid "Cursor"
 msgstr "Fare"
@@ -242,6 +243,10 @@ msgstr "Adı:"
 #
 msgid "Trip Log"
 msgstr "Yol kütüğü"
+#
+#, fuzzy
+msgid "True Compass"
+msgstr "Pusula"
 #
 msgid "True HDG"
 msgstr "Gerçek Pruva"

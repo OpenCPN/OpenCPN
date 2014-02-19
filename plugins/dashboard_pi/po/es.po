@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Plugin Dashboard 1.2 Opencpn 3.3.1303\n"
+"Project-Id-Version: Plugin Dashboard 1.2 Opencpn 3.3.1328\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 10:21-0500\n"
-"PO-Revision-Date: 2014-01-20 21:18+0100\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
+"PO-Revision-Date: 2014-01-30 18:50+0100\n"
 "Last-Translator: Pepo II <Pepo_II@outlok.es>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
 "Language: es_ES\n"
@@ -49,8 +49,12 @@ msgstr "Vel. Viento Apar."
 msgid "Appearance"
 msgstr "Aspecto"
 #
+#, fuzzy
+msgid "Barometric history"
+msgstr "Presión barométrica"
+#
 msgid "Barometric pressure"
-msgstr ""
+msgstr "Presión barométrica"
 #
 msgid "Boat speed units:"
 msgstr "Unidades velocidad barco:"
@@ -62,16 +66,11 @@ msgstr "COG"
 msgid "Caption:"
 msgstr "Nombre:"
 #
-#, fuzzy
 msgid "Centimeters"
-msgstr "Kilómetros"
+msgstr "Centímetros"
 #
 msgid "Clock"
 msgstr "Reloj"
-#
-#
-msgid "Compass"
-msgstr "Compás"
 #
 msgid "Cursor"
 msgstr "Cursor"
@@ -107,9 +106,8 @@ msgstr "Borrar"
 msgid "Depth"
 msgstr "Profundidad"
 #
-#, fuzzy
 msgid "Depth units:"
-msgstr "Unidades distancia:"
+msgstr "Unidades profundidad:"
 #
 msgid "Distance units:"
 msgstr "Unidades distancia:"
@@ -131,10 +129,10 @@ msgid "ESE"
 msgstr "ESE"
 #
 msgid "Fathoms"
-msgstr ""
+msgstr "Brazas"
 #
 msgid "Feet"
-msgstr ""
+msgstr "Pie"
 #
 msgid "Fonts"
 msgstr "Fuentes"
@@ -159,7 +157,7 @@ msgid "Horizontal"
 msgstr "Horizontal"
 #
 msgid "Inches"
-msgstr ""
+msgstr "Pulgadas"
 #
 #
 msgid "Instruments"
@@ -282,6 +280,11 @@ msgstr "Título:"
 #
 msgid "Trip Log"
 msgstr "Dist. viaje"
+#
+#
+#, fuzzy
+msgid "True Compass"
+msgstr "Compás"
 #
 # Heading: Rumbo
 msgid "True HDG"

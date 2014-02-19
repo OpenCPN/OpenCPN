@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 10:21-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2013-09-25 15:52+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -45,6 +45,10 @@ msgstr "相對風速"
 msgid "Appearance"
 msgstr "外觀"
 #
+#, fuzzy
+msgid "Barometric history"
+msgstr "風向歷史記錄"
+#
 msgid "Barometric pressure"
 msgstr ""
 #
@@ -62,9 +66,6 @@ msgstr ""
 #
 msgid "Clock"
 msgstr "時鐘"
-#
-msgid "Compass"
-msgstr "羅盤"
 #
 msgid "Cursor"
 msgstr "游標"
@@ -242,6 +243,10 @@ msgstr "標題:"
 #
 msgid "Trip Log"
 msgstr ""
+#
+#, fuzzy
+msgid "True Compass"
+msgstr "羅盤"
 #
 msgid "True HDG"
 msgstr "True HDG"

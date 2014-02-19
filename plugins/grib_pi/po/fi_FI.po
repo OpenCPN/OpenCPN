@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2010-12-09 22:34+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaite@netti.fi>\n"
@@ -42,6 +42,9 @@ msgid "Air Temp"
 msgstr ""
 #
 msgid "Air Temperature(2m)"
+msgstr ""
+#
+msgid "Always visible"
 msgstr ""
 #
 msgid "Apply"
@@ -108,6 +111,9 @@ msgstr "&Sulje"
 msgid "Continue..."
 msgstr ""
 #
+msgid "Controled Colours"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr ""
 #
@@ -125,6 +131,12 @@ msgid "Data available"
 msgstr ""
 #
 msgid "Days"
+msgstr ""
+#
+msgid "Default Colour"
+msgstr ""
+#
+msgid "Default Size"
 msgstr ""
 #
 msgid "Deg"
@@ -146,6 +158,9 @@ msgid "Display Isotachs"
 msgstr ""
 #
 msgid "Display Isotherms"
+msgstr ""
+#
+msgid "Double Arrow"
 msgstr ""
 #
 msgid "Error:  Can't read this File!"
@@ -311,9 +326,6 @@ msgstr ""
 msgid "Rainfall"
 msgstr ""
 #
-msgid "Range"
-msgstr ""
-#
 msgid "Request"
 msgstr ""
 #
@@ -374,13 +386,16 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 #
-msgid "Size"
+msgid "Single Arrow"
 msgstr ""
 #
 msgid "Slices per Update"
 msgstr ""
 #
 msgid "Slices per hour"
+msgstr ""
+#
+msgid "Small Size"
 msgstr ""
 #
 msgid "Spacing"
@@ -526,9 +541,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "GRIB Data"
+#
 #
 #
 #
@@ -544,8 +561,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -584,9 +603,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB pintalämpötilan"
+#
 #
 #
 #
@@ -606,9 +627,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB virtatiedot"
+#
 #
 #
 #
@@ -626,6 +649,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB sadetiedon"
@@ -636,9 +660,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Ilampaine, mbar"
+#
 #
 #
 #
@@ -689,8 +715,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "Näytä GRIB-ikoni"
+#
 #
 #
 #
@@ -731,8 +759,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROITUS:  QuickScat GRIB data on %d tuntia vanhaa."
+#
 #
 #
 #
@@ -750,6 +780,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Tuulen suunta"
@@ -760,9 +791,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Tuulen nopeus, solmua"
+#
 #
 #
 #

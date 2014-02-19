@@ -5,17 +5,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN version 3.0\n"
+"Project-Id-Version: OpenCPN version 3.3.1328\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
-"PO-Revision-Date: 2013-10-20 22:24+0100\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
+"PO-Revision-Date: 2014-02-13 23:38+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
 "Language: sv_SE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.6.4\n"
 #
 msgid " (Max size )"
 msgstr " (Max storlek)"
@@ -27,18 +27,17 @@ msgid "( Max "
 msgstr "( Max "
 #
 msgid "00N  00W"
-msgstr ""
+msgstr "00N  00W"
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr ""
+msgstr "Adress för att skicka epostförfrågan. (obligatorisk för Linux)"
 #
-#
-#
-#, fuzzy
 msgid ""
 "Air\n"
 "Temperature"
-msgstr "Lufttemperatur"
+msgstr ""
+"Luft\n"
+"Temperatur"
 #
 msgid "Air Temp"
 msgstr "Lufttemp"
@@ -46,39 +45,39 @@ msgstr "Lufttemp"
 msgid "Air Temperature(2m)"
 msgstr "Lufttemperatur(2m)"
 #
-msgid "Apply"
+msgid "Always visible"
 msgstr ""
 #
+msgid "Apply"
+msgstr "Använd"
+#
 msgid "Authorize Interpolation to start at current time"
-msgstr ""
+msgstr "Tillåt interpolering för att starta vid aktuell tid"
 #
 msgid "Barbed Arrows"
 msgstr "Pilar med hakar"
 #
 msgid "Beaufort"
-msgstr ""
+msgstr "Beaufort"
 #
-#, fuzzy
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr ""
 "Innan du skickar epost till Zygrib måste du ange dina inloggningsuppgifter.\n"
-"Besök www.zygrib.org/ och läs instruktion..."
+"Besök www.zygrib.org/ och följ instruktionerna..."
 #
 msgid "Building Isobar map"
 msgstr "Skapar isobar-karta"
 #
 msgid "CAPE"
-msgstr ""
+msgstr "CAPE"
 #
 msgid "Celsius"
-msgstr ""
+msgstr "Celsius"
 #
 msgid "Close"
-msgstr ""
-#
-#
+msgstr "Avsluta"
 #
 msgid "Cloud"
 msgstr "Moln"
@@ -112,6 +111,9 @@ msgid "Colors"
 msgstr "Färger"
 #
 msgid "Continue..."
+msgstr "Fortsätt..."
+#
+msgid "Controled Colours"
 msgstr ""
 #
 msgid "Copy First Cumulative Missing Record"
@@ -123,15 +125,21 @@ msgstr "Kopiera saknad våginformation"
 msgid "Current"
 msgstr "Ström"
 #
-#, fuzzy
 msgid "Data at Cursor Position:"
 msgstr "GRIB-data vid markör"
 #
 msgid "Data available"
-msgstr ""
+msgstr "Data finns tillgängligt"
 #
 msgid "Days"
 msgstr "Dagar"
+#
+#, fuzzy
+msgid "Default Colour"
+msgstr "Använd gradvisa färger"
+#
+msgid "Default Size"
+msgstr ""
 #
 msgid "Deg"
 msgstr "Grader"
@@ -142,20 +150,21 @@ msgstr "Riktningspilar"
 msgid "Display"
 msgstr "Visa"
 #
-#, fuzzy
 msgid "Display Iso CAPE"
-msgstr "Visa Isobarer"
+msgstr "Visa Iso CAPE"
 #
 msgid "Display Isobars"
 msgstr "Visa Isobarer"
 #
-#, fuzzy
 msgid "Display Isotachs"
-msgstr "Visa Isobarer"
+msgstr "Visa Isotachs"
+#
+msgid "Display Isotherms"
+msgstr "Visa Isotherms"
 #
 #, fuzzy
-msgid "Display Isotherms"
-msgstr "Visa Isobarer"
+msgid "Double Arrow"
+msgstr "Pilar med hakar"
 #
 msgid "Error:  Can't read this File!"
 msgstr "Fel: Filen är inte läsbar!"
@@ -209,7 +218,6 @@ msgstr ""
 msgid "Generic"
 msgstr "Generell"
 #
-#, fuzzy
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr "Hämta din kod i Zygrib's forum (Detta är inte ditt lösenord!)"
 #
@@ -217,7 +225,7 @@ msgid "Grib"
 msgstr "Grib"
 #
 msgid "Grib Data Table"
-msgstr ""
+msgstr "GRIB datatabell"
 #
 msgid "Grib Preferences"
 msgstr "GRIB Inställningar"
@@ -237,7 +245,6 @@ msgstr "Interpolera mellan grib"
 msgid "Interval"
 msgstr "Intervall"
 #
-#, fuzzy
 msgid "IsoBars"
 msgstr "Isobar"
 #
@@ -247,7 +254,6 @@ msgstr "Knop"
 msgid "Load File Options"
 msgstr "Inställningar för laddning av fil"
 #
-#, fuzzy
 msgid "Load the Last Opened File"
 msgstr "Ladda den senast öppnade filen"
 #
@@ -305,9 +311,8 @@ msgstr "Procent"
 msgid "Play"
 msgstr "Spela upp"
 #
-#, fuzzy
 msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr "Zooma ut eller öka skalan för att visa GRIB "
+msgstr "Zooma ut eller öka skalan för att visa GRIB.information"
 #
 msgid "Pressure"
 msgstr "Lufttryck"
@@ -320,9 +325,6 @@ msgstr "Profil"
 #
 msgid "Rainfall"
 msgstr "Regn"
-#
-msgid "Range"
-msgstr "Avstånd"
 #
 msgid "Request"
 msgstr "Hämta"
@@ -340,18 +342,17 @@ msgid "Resolution"
 msgstr "Upplösning"
 #
 msgid "Rotated overlays suppressed in DC mode"
-msgstr ""
+msgstr "Överlagrad data som är roterad döljs i DC-läge"
 #
 msgid "Save"
 msgstr "Spara"
 #
-#
-#
-#, fuzzy
 msgid ""
 "Sea\n"
 "Temperature"
-msgstr "Vattentemperatur"
+msgstr ""
+"Sjö\n"
+"Temperatur"
 #
 #
 #
@@ -374,13 +375,13 @@ msgid "Send"
 msgstr "Skicka"
 #
 msgid "Sender eMail Address"
-msgstr ""
+msgstr "Avsändarens epostadress"
 #
 msgid "Settings"
 msgstr "Inställningar"
 #
-msgid "Size"
-msgstr "Storlek"
+msgid "Single Arrow"
+msgstr ""
 #
 msgid "Slices per Update"
 msgstr "Antal delar/uppdatering"
@@ -388,18 +389,20 @@ msgstr "Antal delar/uppdatering"
 msgid "Slices per hour"
 msgstr "Antal delar/timme"
 #
+msgid "Small Size"
+msgstr ""
+#
 msgid "Spacing"
 msgstr "Avstånd"
 #
-#, fuzzy
 msgid "Start Options"
-msgstr "Tidsinställningar"
+msgstr "Startinställningar"
 #
 msgid "Start at the first forecast in GRIB file"
-msgstr ""
+msgstr "Starta vid den första prognosen i GRIB-filen"
 #
 msgid "Start at the nearest forecast to current time"
-msgstr ""
+msgstr "Starta vid den prognos som är närmast aktuell tid"
 #
 msgid "Stop"
 msgstr "Stopp"
@@ -411,7 +414,6 @@ msgstr ""
 "Gränsen för filstorlek har överskridits!\n"
 "Du kan zooma in och/eller ändra parametrar..."
 #
-#, fuzzy
 msgid ""
 "This file contains data for particular time intervals but you have chosen to "
 "display different intervals.\n"
@@ -419,10 +421,10 @@ msgid ""
 msgstr ""
 "Den här filen innehåller data för vissa tider och du har valt att visa data "
 "för andra tider.\n"
-"Tänk på att dessa värden kommer att interpoleras."
+"Tänk på att visade värden kommer att interpoleras."
 #
 msgid "This is your zyGrib's forum access Login"
-msgstr ""
+msgstr "Detta är din inloggning för zyGrib's forum"
 #
 msgid "Time Options"
 msgstr "Tidsinställningar"
@@ -458,7 +460,7 @@ msgid "WavesModel"
 msgstr "Vågmodell"
 #
 msgid "Weather table"
-msgstr ""
+msgstr "Vädertabell"
 #
 msgid "Wind"
 msgstr "Vind"
@@ -466,15 +468,17 @@ msgstr "Vind"
 msgid "Wind Gust"
 msgstr "Vindby"
 #
-#, fuzzy
 msgid "Write and send eMail request"
-msgstr "Spara och skicka inställningar för GRIB-begäran"
+msgstr "Epostförfrågan om GRIB-data"
 #
 msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
 "interpolated!"
 msgstr ""
+"Du har valt att tillåta interpolering.\n"
+"Kom ihåg att data som visas för aktuell tid är beräknad och inte motsvarar "
+"data i GRIB-filen!"
 #
 msgid ""
 "You request a forecast for more than 8 days horizon.\n"
@@ -482,8 +486,11 @@ msgid ""
 "Don't forget that beyond the first 8 days, the resolution will be only "
 "2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
 msgstr ""
+"Du har begärt en prognos som sträcker sig längre än 8 dagar.\n"
+"Detta är ej möjligt för vågdata som kommer att tas bort från din förfrågan.\n"
+"Kom ihåg att efter de första 8 dagarna så är upplösningen enbart "
+"2.5\\u00B0x2.5\\u00B0 med tidsintervall på 12 timmar."
 #
-#, fuzzy
 msgid ""
 "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
@@ -491,28 +498,26 @@ msgid ""
 msgstr ""
 "Din förfrågan är klar. Ett epostmeddelande har skapats i din epostlåda.\n"
 "Klicka 'Sänd' för att skicka meddelandet.\n"
-"Spara eller Avbryt för att fortsätta... eller nya parametrar för ett nytt "
-"meddelande"
+"Spara eller Avbryt för att skicka... eller Fortsätt för ett nytt meddelande"
 #
-#, fuzzy
 msgid ""
 "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
 msgstr ""
 "Din förfrågan skickades\n"
-"(oditt system har en konfigurerad MTA och möjligheten att skicka epost).\n"
+"(om ditt system har en konfigurerad MTA och möjligheten att skicka epost).\n"
 "Spara eller Avbryt för att fortsätta... eller nya parametrar för ett nytt "
 "meddelande"
 #
 msgid "Zoom To Center"
-msgstr ""
+msgstr "Zooma till centrum"
 #
 msgid "inHG"
-msgstr ""
+msgstr "inHG"
 #
 msgid "j/kg"
-msgstr ""
+msgstr "j/kg"
 #
 msgid "km/h"
 msgstr "km/t"
@@ -529,15 +534,11 @@ msgstr "mph"
 msgid "playback"
 msgstr "Spela upp"
 #
-#, fuzzy
 msgid "zyGrib Code"
-msgstr "Ditt ZyGrib lösenord"
+msgstr "ZyGrib lösenord"
 #
-#, fuzzy
 msgid "zyGrib Login"
-msgstr "Ditt ZyGrib användarnamn"
-#
-#
+msgstr "ZyGrib användarnamn"
 #
 #
 #~ msgid " (Dup)"
@@ -555,123 +556,77 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
-#
-#
 #~ msgid " data"
 #~ msgstr "data"
-#
-#
 #
 #~ msgid "0.2"
 #~ msgstr "0.2"
 #
-#
-#
 #~ msgid "0.5"
 #~ msgstr "0.5"
-#
-#
 #
 #~ msgid "0.8"
 #~ msgstr "0.8"
 #
-#
-#
 #~ msgid "1"
 #~ msgstr "1"
-#
-#
 #
 #~ msgid "1.6"
 #~ msgstr "1.6"
 #
-#
-#
 #~ msgid "12"
 #~ msgstr "12"
-#
-#
 #
 #~ msgid "2"
 #~ msgstr "2"
 #
-#
-#
 #~ msgid "24"
 #~ msgstr "24"
-#
-#
 #
 #~ msgid "3"
 #~ msgstr "3"
 #
-#
-#
 #~ msgid "4"
 #~ msgstr "4"
-#
-#
 #
 #~ msgid "5"
 #~ msgstr "5"
 #
-#
-#
 #~ msgid "6"
 #~ msgstr "6"
-#
-#
 #
 #~ msgid "7"
 #~ msgstr "7"
 #
-#
-#
 #~ msgid "8"
 #~ msgstr "8"
-#
-#
 #
 #
 #~ msgid "Action"
 #~ msgstr "Åtgärd"
 #
 #
-#
-#
 #~ msgid "Air Temperature"
 #~ msgstr "Lufttemperatur"
-#
-#
 #
 #
 #~ msgid "AirTemp"
 #~ msgstr "Lufttemp"
 #
-#
-#
 #~ msgid "COAMPS"
 #~ msgstr "COAMPS"
-#
-#
 #
 #
 #~ msgid "Celcius"
 #~ msgstr "Celcius"
 #
 #
-#
-#
 #~ msgid "CloudCover"
 #~ msgstr "Molntäcke"
 #
 #
-#
-#
 #~ msgid "Clouds Cover"
 #~ msgstr "Molntäcke"
-#
-#
 #
 #
 #~ msgid "Current(Surf.)"
@@ -681,40 +636,26 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
-#
-#
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB Inställningar"
 #
-#
-#
 #~ msgid "Data available in the selected forecast model"
 #~ msgstr "Tillgängliga data i den valda prognosmodellen"
 #
-#
-#
 #~ msgid "Display Iso Temp. Lines"
 #~ msgstr "Visa Iso templinjer"
-#
-#
 #
 #
 #~ msgid "Error"
 #~ msgstr "Fel"
 #
 #
-#
-#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Mislyckades att skicka epost"
 #
-#
-#
 #~ msgid "GFS"
 #~ msgstr "GFS"
-#
-#
 #
 #
 #
@@ -747,59 +688,39 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
-#
-#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB Filkatalog"
-#
-#
 #
 #
 #~ msgid "KPH"
 #~ msgstr "km/t"
 #
-#
-#
 #~ msgid "Login you use to connect to Zygrib's forum"
 #~ msgstr "Inloggning som du använder för att ansluta till Zygrib's forum"
-#
-#
 #
 #
 #~ msgid "M/S"
 #~ msgstr "m/s"
 #
 #
-#
-#
 #~ msgid "MPH"
 #~ msgstr "mph"
-#
-#
 #
 #
 #~ msgid "MyLabel"
 #~ msgstr "Egen beteckning"
 #
 #
-#
-#
 #~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
 #~ msgstr "OpenCpn kunde inte logga in! Kontrollera din epostinställning"
-#
-#
 #
 #
 #~ msgid "Parameters"
 #~ msgstr "Parametrar"
 #
 #
-#
-#
 #~ msgid "Period"
 #~ msgstr "Period"
-#
-#
 #
 #
 #
@@ -813,13 +734,9 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
-#
-#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB regninformation"
-#
-#
 #
 #
 #
@@ -833,13 +750,9 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
-#
-#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB yttemperatur"
-#
-#
 #
 #
 #
@@ -850,12 +763,8 @@ msgstr "Ditt ZyGrib användarnamn"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB regninformation"
 #
 #
-#
-#
 #~ msgid "Precipitation"
 #~ msgstr "Nederbörd"
-#
-#
 #
 #
 #
@@ -866,29 +775,23 @@ msgstr "Ditt ZyGrib användarnamn"
 #~ msgstr "Lufttryck, mBar"
 #
 #
-#
-#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
 #
-#
-#
 #~ msgid "RTOFS"
 #~ msgstr "RTOFS"
-#
-#
 #
 #
 #~ msgid "Rain"
 #~ msgstr "Regn"
 #
 #
+#~ msgid "Range"
+#~ msgstr "Avstånd"
 #
 #
 #~ msgid "Ref : "
 #~ msgstr "Ref : "
-#
-#
 #
 #
 #~ msgid "Request Pofile"
@@ -909,30 +812,20 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
-#
-#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB Inställningar"
 #
-#
-#
 #~ msgid "Saildocs"
 #~ msgstr "Saildocs"
-#
-#
 #
 #
 #~ msgid "Sea Temperature"
 #~ msgstr "Vattentemperatur"
 #
 #
-#
-#
 #~ msgid "SeaTemp"
 #~ msgstr "Vattentemp"
-#
-#
 #
 #
 #
@@ -989,12 +882,8 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
-#
-#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Visa m/s för vindstyrka"
-#
-#
 #
 #
 #
@@ -1005,22 +894,18 @@ msgstr "Ditt ZyGrib användarnamn"
 #~ msgstr "Signifikant våghöjd, m"
 #
 #
+#~ msgid "Size"
+#~ msgstr "Storlek"
 #
 #~ msgid "WW3-GLOBAL"
 #~ msgstr "WW3-GLOBAL"
-#
-#
 #
 #~ msgid "WW3-MEDIT"
 #~ msgstr "WW3-MEDIT"
 #
 #
-#
-#
 #~ msgid "Wave"
 #~ msgstr "Våghöjd"
-#
-#
 #
 #
 #
@@ -1031,12 +916,8 @@ msgstr "Ditt ZyGrib användarnamn"
 #~ msgstr "Vindriktning"
 #
 #
-#
-#
 #~ msgid "Wind Scat"
 #~ msgstr "Vind Scat"
-#
-#
 #
 #
 #
@@ -1050,37 +931,25 @@ msgstr "Ditt ZyGrib användarnamn"
 #
 #
 #
-#
-#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Vindstyrka, m/s."
-#
-#
 #
 #
 #~ msgid "WindGust"
 #~ msgstr "Vindby"
 #
 #
-#
-#
 #~ msgid "Zone"
 #~ msgstr "Zone"
-#
-#
 #
 #
 #~ msgid "ZyGrib"
 #~ msgstr "ZyGrib"
 #
 #
-#
-#
 #~ msgid "eMail error"
 #~ msgstr "epostfel"
-#
-#
 #
 #~ msgid "size"
 #~ msgstr "storlek"

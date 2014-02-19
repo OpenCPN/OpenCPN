@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 2.2.1124\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 10:21-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2010-11-28 18:28+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: \n"
@@ -46,6 +46,9 @@ msgstr "Prędkość wiatru"
 msgid "Appearance"
 msgstr ""
 #
+msgid "Barometric history"
+msgstr ""
+#
 msgid "Barometric pressure"
 msgstr ""
 #
@@ -63,9 +66,6 @@ msgstr ""
 #
 msgid "Clock"
 msgstr ""
-#
-msgid "Compass"
-msgstr "Kompas"
 #
 msgid "Cursor"
 msgstr ""
@@ -254,6 +254,10 @@ msgstr "Nazwa:"
 msgid "Trip Log"
 msgstr ""
 #
+#, fuzzy
+msgid "True Compass"
+msgstr "Kompas"
+#
 msgid "True HDG"
 msgstr ""
 #
@@ -322,8 +326,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Apparent wind"
 #~ msgstr "Wiatr pozorny"
+#
 #
 #
 #
@@ -334,14 +340,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "HDG"
 #~ msgstr "HDG"
 #
 #
 #
 #
+#
 #~ msgid "Instrument width:"
 #~ msgstr "Szerokość instrumentu"
+#
 #
 #
 #

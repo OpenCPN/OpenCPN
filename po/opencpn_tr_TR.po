@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -538,6 +538,28 @@ msgstr "AIS Hedefleri"
 # Menu contextuel : AIS
 msgid "AIS target list"
 msgstr "AIS hedef listesi"
+#
+#
+#
+#
+#
+#
+#
+#
+# Toolbox/Langue
+msgid "AISRollover"
+msgstr "AISRollover"
+#
+#
+#
+#
+#
+#
+#
+#
+# Menu contextuel : AIS
+msgid "AISTargetQuery"
+msgstr "AISHedefAçıklaması"
 #
 msgid "APRS"
 msgstr "APRS"
@@ -1532,6 +1554,18 @@ msgstr "Çevresel Uyarı Bölgesi: Fırtına uyarısı (fırtına hattı ya da a
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Çevresel Uyarı Bölgesi: Güçlü akıntılar"
 #
+#
+#
+#
+#
+#
+#
+#
+msgid "Error on Waypoint Upload.  Please check logfiles..."
+msgstr ""
+"Seyirnoktalası yüklenirken hata oluştu. Lütfen kayıt dosyalarını kontrol "
+"edin..."
+#
 msgid "Error!"
 msgstr "Hata!"
 #
@@ -2056,6 +2090,17 @@ msgstr "Denizci Standardı"
 #
 msgid "Mark targets as lost after (min)"
 msgstr "Hedefleri Kayıp Olarak İşaretleme Süresi (dakika) :"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+msgid "Marks"
+msgstr "İşaretler"
 #
 #
 msgid "Max Detail Here"
@@ -2779,6 +2824,9 @@ msgstr "Rotalar"
 msgid "S/V"
 msgstr "S/V"
 #
+msgid "SAR Aircraft"
+msgstr ""
+#
 msgid "SAR/V"
 msgstr "SAR/V"
 #
@@ -3121,10 +3169,6 @@ msgstr "Özel"
 msgid "Special Mark"
 msgstr "Özel İşaret"
 #
-#, fuzzy
-msgid "Special Position Report"
-msgstr "DSC Mevki Raporu"
-#
 #
 msgid "Speed"
 msgstr "Hız"
@@ -3358,6 +3402,17 @@ msgstr "Bu Bacak"
 #
 msgid "This waypoint is part of a layer and can't be edited"
 msgstr "Bu seyirnoktası bir etiketin parçası olduğu için iptal edilemiyor"
+#
+#
+#
+#
+#
+#
+#
+#
+# Toolbox/Langue
+msgid "TideCurrentGraphRollover"
+msgstr "GelgitAkıntıÇizelgeUzantısı"
 #
 msgid "Tides && Currents"
 msgstr "Gelgitler && Akıntılar"
@@ -3633,6 +3688,17 @@ msgid "Waypoint Properties, Layer: "
 msgstr "Seyirnoktası Özellikler Etiketi:"
 #
 #
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Waypoint(s) Uploaded successfully."
+msgstr "Rota başarıyla yüklendi."
+#
+#
 msgid "Waypoints"
 msgstr "Seyirnoktaları"
 #
@@ -3815,8 +3881,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
+#
 #
 #
 #
@@ -3869,6 +3937,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "      COG oku gösterge uzunluğu (Dakika) :   "
 #
@@ -3894,8 +3963,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Tonozdaki hedefler için enyüksek hız (Kts) :"
+#
 #
 #
 #
@@ -3956,9 +4027,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "  Harita projeksionu bilinemediği için, merkator olarak kabul edildi."
+#
 #
 #
 #
@@ -4003,6 +4076,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "  Could not open serial port '"
 #~ msgstr "      Bağlantı noktası açılamadı "
 #
@@ -4013,8 +4087,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid " </b>in<b> "
 #~ msgstr " </b>içinde<b> "
+#
 #
 #
 #
@@ -4061,14 +4137,17 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG : 000 Deg."
 #
 #
 #
 #
+#
 #~ msgid " is %5g"
 #~ msgstr " %5g"
+#
 #
 #
 #
@@ -4089,6 +4168,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "&Seyirizini Kaydet"
 #
@@ -4099,8 +4179,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "&Jump To"
 #~ msgstr "&Oraya Sıçra"
+#
 #
 #
 #
@@ -4134,12 +4216,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
 #~ msgstr ""
 #~ "'\n"
 #~ "Önerilen : Şu notasyonu deneyin 'xxx.xxx.xxx.xxx'"
+#
 #
 #
 #
@@ -4199,8 +4283,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
 #
 #
 #
@@ -4234,8 +4320,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ":               "
 #~ msgstr ":               "
+#
 #
 #
 #
@@ -4288,8 +4376,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "<--Remove"
 #~ msgstr "<-- Kaldır"
+#
 #
 #
 #
@@ -4309,16 +4399,6 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
-# Toolbox/Langue
-#~ msgid "AISRollover"
-#~ msgstr "AISRollover"
-#
-#
-#
-#
-#
-#
-#
 #
 #
 #~ msgid "AISTargetAlert"
@@ -4331,19 +4411,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
-# Menu contextuel : AIS
-#~ msgid "AISTargetQuery"
-#~ msgstr "AISHedefAçıklaması"
-#
-#
-#
-#
-#
-#
-#
 #
 #~ msgid "Accept"
 #~ msgstr "Kabul"
+#
 #
 #
 #
@@ -4399,6 +4470,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Route
 #~ msgid "Activate Route"
 #~ msgstr "Rotayı etkinleştir"
@@ -4423,8 +4495,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Active Charts"
 #~ msgstr "Etkin harita"
+#
 #
 #
 #
@@ -4472,8 +4546,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Bu haritayı diğer haritalara ekle"
+#
 #
 #
 #
@@ -4520,8 +4596,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "All files (*.*)|*.*"
 #~ msgstr "Tüm dosyalar (*.*)|*.*"
+#
 #
 #
 #
@@ -4568,6 +4646,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Kullanılabilir Harita Dosyaları"
 #
@@ -4578,8 +4657,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Barge, tanker, chemical"
 #~ msgstr "Barj, tanker, kimyasal taşıyan gemi"
+#
 #
 #
 #
@@ -4628,8 +4709,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr "Kerteriz  : Indisponible\n"
+#
 #
 #
 #
@@ -4648,8 +4731,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Bunkership"
 #~ msgstr "Kuruyük gemisi"
+#
 #
 #
 #
@@ -4696,9 +4781,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "CM93 Detail Slider..."
 #~ msgstr "CM93 Ayrıntı Sürgüsünü etkinleştir"
+#
 #
 #
 #
@@ -4745,8 +4832,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CM93 Offsets"
 #~ msgstr "CM93 Dengeleri"
+#
 #
 #
 #
@@ -4796,6 +4885,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CPA:       \n"
 #~ msgstr "CPA  : \n"
 #
@@ -4821,8 +4911,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA  :               %6.1f NM\n"
+#
 #
 #
 #
@@ -4878,8 +4970,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "Çağrıİşareti: "
+#
 #
 #
 #
@@ -4899,6 +4993,7 @@ msgstr "wxFB veb sayfası"
 #~ msgstr ""
 #~ "Seyir noktası gönderilemiyor. Çıkışı tanımlanmış seri bağlantı noktası "
 #~ "bulunamıyor."
+#
 #
 #
 #
@@ -4944,6 +5039,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Chart Groups..."
 #~ msgstr "Harita grupları"
 #
@@ -4967,8 +5063,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Chart Groups...New Group"
 #~ msgstr "Hrita grupları... Yeni grup"
+#
 #
 #
 #
@@ -5017,6 +5115,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Class:                "
 #~ msgstr "Sınıfı: "
 #
@@ -5027,8 +5126,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Container vessel"
 #~ msgstr "Conteyner gemisi"
+#
 #
 #
 #
@@ -5071,6 +5172,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "TCP/IP servis sağlayıcısı bulunamadı"
 #
@@ -5081,8 +5183,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Couldn't load sound data from '%s'."
 #~ msgstr "'%s' dan ses verisi yüklenemedi."
+#
 #
 #
 #
@@ -5131,8 +5235,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "COG                 : 000   Deg.\n"
+#
 #
 #
 #
@@ -5166,8 +5272,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Cruise ship"
 #~ msgstr "Yolcu gemisi"
+#
 #
 #
 #
@@ -5202,6 +5310,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Cursor: "
 #~ msgstr "Fare işaret noktası: "
 #
@@ -5213,8 +5322,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Data Source :"
 #~ msgstr "Veri Kaynağı:"
+#
 #
 #
 #
@@ -5283,9 +5394,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Varsayılan veri bileşeni"
+#
 #
 #
 #
@@ -5341,8 +5454,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "İşareti sil"
+#
 #
 #
 #
@@ -5391,8 +5506,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "Seçimi sil"
+#
 #
 #
 #
@@ -5418,6 +5535,7 @@ msgstr "wxFB veb sayfası"
 # Menu contextuel : Trace
 #~ msgid "Delete Track"
 #~ msgstr "Seyirizini sil"
+#
 #
 #
 #
@@ -5467,8 +5585,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Varış :"
+#
 #
 #
 #
@@ -5502,6 +5622,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Drop"
 #~ msgstr "İşaret Bırak"
 #
@@ -5516,8 +5637,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "&Tümünü Kaydet"
+#
 #
 #
 #
@@ -5566,8 +5689,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "ETA:"
 #~ msgstr "Yaklaşık Varış Zamanı:"
+#
 #
 #
 #
@@ -5615,8 +5740,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Enable Manual CM93 Offsets"
 #~ msgstr "CM93 dengelemesini elle yapılandırmaya izin ver"
+#
 #
 #
 #
@@ -5650,21 +5777,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Error on Route Upload.  Please check logfiles..."
 #~ msgstr ""
 #~ "Rota yüklenirken hata oluştu. Lütfen kayıt dosyalarını kontrol edin ..."
 #
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Error on Waypoint Upload.  Please check logfiles..."
-#~ msgstr ""
-#~ "Seyirnoktalası yüklenirken hata oluştu. Lütfen kayıt dosyalarını kontrol "
-#~ "edin..."
 #
 #
 #
@@ -5698,8 +5815,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Fast ship"
 #~ msgstr "Sürat teknesi"
+#
 #
 #
 #
@@ -5718,8 +5837,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Fishing boat"
 #~ msgstr "Balıkçı teknesi"
+#
 #
 #
 #
@@ -5738,8 +5859,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "Konteynirli yük barjı"
+#
 #
 #
 #
@@ -5789,8 +5912,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
 #
 #
 #
@@ -5824,8 +5949,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPS Veri sağlayıcı"
+#
 #
 #
 #
@@ -5844,8 +5971,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "Açıkdeniz Yük Gemisi"
+#
 #
 #
 #
@@ -5902,8 +6031,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Seyirnoktasına/İşarete git"
+#
 #
 #
 #
@@ -5935,8 +6066,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "HW"
 #~ msgstr "HW"
+#
 #
 #
 #
@@ -5996,6 +6129,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Pruva   : %03d   Deg.\n"
 #
@@ -6006,8 +6140,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Hydrofoil"
 #~ msgstr "Hydrofoil"
+#
 #
 #
 #
@@ -6042,6 +6178,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "In"
 #~ msgstr "Giriş"
 #
@@ -6052,8 +6189,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "In: None"
 #~ msgstr "İçerde: Yok"
+#
 #
 #
 #
@@ -6101,8 +6240,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Oraya git"
+#
 #
 #
 #
@@ -6158,8 +6299,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Pozisyona git..."
+#
 #
 #
 #
@@ -6204,6 +6347,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Tam"
 #
@@ -6214,8 +6358,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "LW"
 #~ msgstr "LW"
+#
 #
 #
 #
@@ -6277,8 +6423,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Son mevki rapor zamanı   : "
+#
 #
 #
 #
@@ -6312,6 +6460,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Legend"
 #~ msgstr "Yazıt"
 #
@@ -6322,8 +6471,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Liquified gas tanker"
 #~ msgstr "Sıvılaştırılmış gaz tankeri"
+#
 #
 #
 #
@@ -6382,8 +6533,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "META nesneleri"
+#
 #
 #
 #
@@ -6429,20 +6582,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Waypoint
 #~ msgid "Mark/WP Properties..."
 #~ msgstr "Seyirnoktası/İşaret özellikleri"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Marks"
-#~ msgstr "İşaretler"
 #
 #
 #
@@ -6484,8 +6628,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Message accepted"
 #~ msgstr "Mesaj alındı"
+#
 #
 #
 #
@@ -6519,8 +6665,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Metres"
 #~ msgstr "Metre"
+#
 #
 #
 #
@@ -6539,8 +6687,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Motor freighter pushing at least one tank-ship"
 #~ msgstr "En az bir tanker çeken, motorla çalışan mavna"
+#
 #
 #
 #
@@ -6559,8 +6709,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Motor freighter with one or more ships alongside"
 #~ msgstr "Yanında bir ya da iki gemi olan, motorla çalışan mavna"
+#
 #
 #
 #
@@ -6579,8 +6731,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Motor freighter, tug"
 #~ msgstr "Motorla çalışan mavna, römorkör"
+#
 #
 #
 #
@@ -6599,8 +6753,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Tanker, sıvı görünümlü kuruyük (ör. çimento)"
+#
 #
 #
 #
@@ -6619,8 +6775,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "Tanker, sıvı yük, tip N"
+#
 #
 #
 #
@@ -6653,8 +6811,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr " NMEA Veri kaynağı"
+#
 #
 #
 #
@@ -6688,8 +6848,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "NMEA Options"
 #~ msgstr "NMEA Seçenekleri"
+#
 #
 #
 #
@@ -6740,8 +6902,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "Seyir durumu: "
+#
 #
 #
 #
@@ -6762,6 +6926,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Next"
 #~ msgstr "Sonraki"
 #
@@ -6772,8 +6937,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "No"
 #~ msgstr "Hayır"
+#
 #
 #
 #
@@ -6806,8 +6973,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "Nesne (başka türlü belirtilmedikçe)"
+#
 #
 #
 #
@@ -6826,6 +6995,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Other"
 #~ msgstr "Diğer"
 #
@@ -6836,8 +7006,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Out"
 #~ msgstr "Çıkış"
+#
 #
 #
 #
@@ -6871,9 +7043,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "KendiTeknenizin görünüm seçenekleri"
+#
 #
 #
 #
@@ -6892,6 +7066,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "Yolcu gemisi, arabalı vapur, gezinti gemisi, sağlık gemisi"
 #
@@ -6902,8 +7077,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pause"
 #~ msgstr "Ara"
+#
 #
 #
 #
@@ -6949,9 +7126,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Her ( ) dakikada bir seyirizinoktası koy:"
+#
 #
 #
 #
@@ -6971,8 +7150,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "Spor amaçlı tekne, 20 metreden uzun"
+#
 #
 #
 #
@@ -7035,6 +7216,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Possible libgps API version mismatch.\n"
 #~ "libgps did not reasonably respond to version request\n"
@@ -7045,6 +7227,7 @@ msgstr "wxFB veb sayfası"
 #~ "libGPS istenen sürüme neden yanıt vermediği anlaşılamadı\n"
 #~ "\n"
 #~ "Gene de libGPS'in bu sürümünü kullanmak ister misiniz ?"
+#
 #
 #
 #
@@ -7067,8 +7250,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Prev"
 #~ msgstr "Önceki"
+#
 #
 #
 #
@@ -7088,8 +7273,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "İten tekne, tek"
+#
 #
 #
 #
@@ -7110,8 +7297,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, sekiz kargo barjı"
+#
 #
 #
 #
@@ -7131,8 +7320,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, beş kargo barjı"
+#
 #
 #
 #
@@ -7152,6 +7343,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, dört kargo barjı"
 #
@@ -7162,8 +7354,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, dokuz yada daha fazla kargo barjı"
+#
 #
 #
 #
@@ -7184,6 +7378,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "İtilerek/çekilerek hareket eden, tek kargo barjı"
 #
@@ -7194,8 +7389,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, one tank/gas barge"
 #~ msgstr "İtilerek/çekilerek hareket eden, tank/gaz barjı"
+#
 #
 #
 #
@@ -7215,8 +7412,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, seven cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, yedi kargo barjı"
+#
 #
 #
 #
@@ -7236,8 +7435,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, six cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, altı kargo barjı"
+#
 #
 #
 #
@@ -7257,8 +7458,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, three cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, üç kargo barjı"
+#
 #
 #
 #
@@ -7270,6 +7473,7 @@ msgstr "wxFB veb sayfası"
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr ""
 #~ "İtilerek/çekilerek hareket eden, en az biri tanker ya da gaz olan iki barj"
+#
 #
 #
 #
@@ -7301,8 +7505,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Radar rings"
 #~ msgstr "Radar halkaları"
+#
 #
 #
 #
@@ -7353,6 +7559,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Menzil           :%5.1f  NM\n"
 #
@@ -7378,8 +7585,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Raster"
+#
 #
 #
 #
@@ -7430,8 +7639,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Dönüş hızı: %3d Deg./Min. Droite\n"
+#
 #
 #
 #
@@ -7482,8 +7693,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Dönüş hızı : >5d Deg./Min. Gauche\n"
+#
 #
 #
 #
@@ -7518,8 +7731,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Red cross ship"
 #~ msgstr "Hastane gemisi"
+#
 #
 #
 #
@@ -7539,8 +7754,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Reject"
 #~ msgstr "Red"
+#
 #
 #
 #
@@ -7588,8 +7805,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Bu haritaları ekli diğer haritalardan çıkar"
+#
 #
 #
 #
@@ -7614,8 +7833,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Resume"
 #~ msgstr "Devam"
+#
 #
 #
 #
@@ -7672,20 +7893,12 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Route
 #, fuzzy
 #~ msgid "Route Properties..."
 #~ msgstr "Rota Özellikleri"
 #
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Route Uploaded successfully."
-#~ msgstr "Rota başarıyla yüklendi."
 #
 #
 #
@@ -7734,6 +7947,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "Birbirine eklenecek harita tiplerini seç"
 #
@@ -7745,8 +7959,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Send"
 #~ msgstr "Gönder"
+#
 #
 #
 #
@@ -7770,6 +7986,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Send to GPS ( "
 #~ msgstr "GPS'e Gönder "
 #
@@ -7780,8 +7997,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Service vessel, police patrol, port service"
 #~ msgstr "Servis teknesi, polis devriyesi, liman servisi"
+#
 #
 #
 #
@@ -7838,6 +8057,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Settings"
 #~ msgstr "Yapılandırma"
 #
@@ -7863,8 +8083,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "ATON etiketlerini göster"
+#
 #
 #
 #
@@ -7936,8 +8158,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Seyirizi simgesini göster"
+#
 #
 #
 #
@@ -7985,12 +8209,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Büyüklük               : %dm x %dm \n"
 #~ "\n"
+#
 #
 #
 #
@@ -8045,12 +8271,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x ---m\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Büyüklük           : %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8105,12 +8333,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x ---m\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Büyüklük             : ---m x ---m x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8165,6 +8395,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x ---m\n"
 #~ "\n"
@@ -8179,8 +8410,15 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Sound file '%s' is in unsupported format."
 #~ msgstr "'%s' ses dosyası biçimi desteklenmiyor."
+#
+#
+#, fuzzy
+#~ msgid "Special Position Report"
+#~ msgstr "DSC Mevki Raporu"
+#
 #
 #
 #
@@ -8231,8 +8469,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "Hız            : %5.2f noeuds.\n"
+#
 #
 #
 #
@@ -8265,8 +8505,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP, Wifi Veri sağlayıcısı "
+#
 #
 #
 #
@@ -8317,8 +8559,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA :  %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -8337,8 +8581,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "TankerBarjı, sıvı görünümlü kuruyük (ör. çimento)"
+#
 #
 #
 #
@@ -8357,6 +8603,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type C"
 #~ msgstr "Tank barjı, sıvı yük, tip C"
 #
@@ -8367,8 +8614,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type N"
 #~ msgstr "Tank barjı, sıvı yük, tip N"
+#
 #
 #
 #
@@ -8403,8 +8652,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Tide"
 #~ msgstr "Gelgit"
+#
 #
 #
 #
@@ -8452,21 +8703,12 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Toolbox/Langue
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "GelgitAkıntıÇizelgeUzantısı"
 #
-#
-#
-#
-#
-#
-#
-#
-# Toolbox/Langue
-#~ msgid "TideCurrentGraphRollover"
-#~ msgstr "GelgitAkıntıÇizelgeUzantısı"
 #
 #
 #
@@ -8487,8 +8729,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Tomorrow"
 #~ msgstr "Yarın"
+#
 #
 #
 #
@@ -8536,10 +8780,12 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Trace
 #, fuzzy
 #~ msgid "Track Properties..."
 #~ msgstr "Seyirizi özellikleri"
+#
 #
 #
 #

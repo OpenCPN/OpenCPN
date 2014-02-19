@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-28 00:36-0500\n"
+"POT-Creation-Date: 2014-02-18 23:59-0500\n"
 "PO-Revision-Date: 2012-12-29 13:16+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: \n"
@@ -41,6 +41,9 @@ msgid "Air Temp"
 msgstr ""
 #
 msgid "Air Temperature(2m)"
+msgstr ""
+#
+msgid "Always visible"
 msgstr ""
 #
 msgid "Apply"
@@ -107,6 +110,9 @@ msgstr "Bezár"
 msgid "Continue..."
 msgstr ""
 #
+msgid "Controled Colours"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr ""
 #
@@ -124,6 +130,12 @@ msgid "Data available"
 msgstr ""
 #
 msgid "Days"
+msgstr ""
+#
+msgid "Default Colour"
+msgstr ""
+#
+msgid "Default Size"
 msgstr ""
 #
 msgid "Deg"
@@ -145,6 +157,9 @@ msgid "Display Isotachs"
 msgstr ""
 #
 msgid "Display Isotherms"
+msgstr ""
+#
+msgid "Double Arrow"
 msgstr ""
 #
 msgid "Error:  Can't read this File!"
@@ -313,9 +328,6 @@ msgstr ""
 msgid "Rainfall"
 msgstr ""
 #
-msgid "Range"
-msgstr ""
-#
 msgid "Request"
 msgstr ""
 #
@@ -376,13 +388,16 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 #
-msgid "Size"
+msgid "Single Arrow"
 msgstr ""
 #
 msgid "Slices per Update"
 msgstr ""
 #
 msgid "Slices per hour"
+msgstr ""
+#
+msgid "Small Size"
 msgstr ""
 #
 msgid "Spacing"
@@ -528,9 +543,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "GRIB adat"
+#
 #
 #
 #
@@ -570,8 +587,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB fájl könyvtár"
+#
 #
 #
 #
@@ -591,11 +610,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr ""
 #~ "Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
 #~ "megjelenítéséhez"
+#
 #
 #
 #
@@ -615,6 +636,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr ""
@@ -627,11 +649,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr ""
 #~ "Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
 #~ "megjelenítéséhez"
+#
 #
 #
 #
@@ -660,9 +684,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "BRIB beállítások"
+#
 #
 #
 #
@@ -723,8 +749,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Szélsebesség méter/sec-ben mutatása"
+#
 #
 #
 #
@@ -742,9 +770,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "Szél irány"
+#
 #
 #
 #
@@ -762,9 +792,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Szél sebesség, m/s."
+#
 #
 #
 #
