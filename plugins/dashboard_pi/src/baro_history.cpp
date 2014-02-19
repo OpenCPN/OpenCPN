@@ -122,7 +122,7 @@ void DashboardInstrument_BaroHistory::SetData(int st, double data, wxString unit
       m_MaxPress   = wxMax(m_Press,m_MaxPress);
 
       m_MinPress   = wxMin(m_MinPress,m_Press);
-      if (wxMin(m_Press,m_MinPress)=-1 ) {
+      if (wxMin(m_Press,m_MinPress) == -1 ) {
       m_MinPress   = wxMin(m_Press,1200); // to make a OK inital value
      }
       //get the overall max min pressure
