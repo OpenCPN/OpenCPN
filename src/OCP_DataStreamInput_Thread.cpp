@@ -175,9 +175,9 @@ void *OCP_DataStreamInput_Thread::Entry()
 //                                msg.Append(m_PortName);
 //                                ThreadMessage(msg);
                           } else {
-                                wxString msg(_T("NMEA input device open on hotplug OK: "));
-                                msg.Append(m_PortName);
-                                ThreadMessage(msg);
+//                                wxString msg(_T("NMEA input device open on hotplug OK: "));
+//                                msg.Append(m_PortName);
+//                                ThreadMessage(msg);
                           }
                     }
               }
