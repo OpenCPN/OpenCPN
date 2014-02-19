@@ -6078,8 +6078,13 @@ bool MyFrame::DoChartUpdate( void )
                     }
                 }
 
-                cc1->SetQuiltRefChart( initial_db_index );
-                pCurrentStack->SetCurrentEntryFromdbIndex( initial_db_index );
+                if( ChartData ) {
+                    ChartBase *pc = ChartData->OpenChartFromDB( initial_db_index, FULL_INIT );
+                    if( pc ) {
+                        cc1->SetQuiltRefChart( initial_db_index );
+                        pCurrentStack->SetCurrentEntryFromdbIndex( initial_db_index );
+                    }
+                }
 
                 // Try to bound the inital Viewport scale to something reasonable for the selected reference chart
                 if( ChartData ) {
