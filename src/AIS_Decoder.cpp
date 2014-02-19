@@ -1520,8 +1520,12 @@ bool AIS_Decoder::NMEACheckSumOK( const wxString& str_in )
     unsigned char checksum_value = 0;
     int sentence_hex_sum;
 
+    wxCharBuffer buf = str_in.ToUTF8();
+    if( !buf.data()) 
+        return false;                           // cannot decode string
+        
     char str_ascii[AIS_MAX_MESSAGE_LEN + 1];
-    strncpy( str_ascii, str_in.mb_str(), AIS_MAX_MESSAGE_LEN );
+    strncpy( str_ascii, buf.data(), AIS_MAX_MESSAGE_LEN );
     str_ascii[AIS_MAX_MESSAGE_LEN] = '\0';
 
     int string_length = strlen( str_ascii );
