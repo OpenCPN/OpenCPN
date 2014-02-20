@@ -645,7 +645,7 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
             }
 
     int style = wxSOLID;
-    int width = g_route_line_width;
+    int width = g_track_line_width;
     wxColour col;
     if( m_style != STYLE_UNDEFINED )
         style = m_style;
