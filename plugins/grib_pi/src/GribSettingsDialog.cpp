@@ -451,9 +451,11 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     m_cBarbedColours->Show(false);
     m_cbIsoBars->Show(false);
     m_fIsoBarSpacing->ShowItems(false);
-    m_fIsoBarSpacing->Detach(1);
+    if(m_fIsoBarSpacing->GetCols() == 2) m_fIsoBarSpacing->Detach(1);
+    m_fIsoBarSpacing->SetCols(1);
     m_fIsoBarVisibility->ShowItems(false);
-    m_fIsoBarVisibility->Detach(0);
+    if(m_fIsoBarVisibility->GetCols() == 1 ) m_fIsoBarVisibility->Detach(0);
+    m_fIsoBarVisibility->SetCols(0);
     m_cbDirectionArrows->Show(false);
     m_cDirectionArrowForm->Show(false);
     m_cDirectionArrowSize->Show(false);
@@ -511,14 +513,17 @@ void GribSettingsDialog::ShowSettings( int params )
         break;
     case ISO_LINE_VISI:
         m_cbIsoBars->Show();
+        m_fIsoBarSpacing->SetCols(2);
         m_fIsoBarSpacing->Add(m_sIsoBarSpacing, 0, 5,wxALL|wxEXPAND);
         m_fIsoBarSpacing->ShowItems(true);
+        m_fIsoBarVisibility->SetCols(1);
         m_fIsoBarVisibility->Add(m_sIsoBarVisibility, 0, 5,wxTOP|wxLEFT|wxEXPAND);
         m_fIsoBarVisibility->ShowItems(true);
         break;
     case ISO_LINE_SHORT:
         m_cbIsoBars->Show();
         m_fIsoBarSpacing->ShowItems(true);
+        m_fIsoBarVisibility->SetCols(1);
         m_fIsoBarVisibility->Add(m_sIsoBarSpacing, 0, 5,wxTOP|wxLEFT|wxEXPAND);
         m_fIsoBarVisibility->ShowItems(true);
         break;

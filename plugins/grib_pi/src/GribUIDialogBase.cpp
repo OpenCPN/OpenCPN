@@ -361,7 +361,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	
 	fgSizer15->Add( m_fIsoBarSpacing, 1, wxALL|wxEXPAND, 5 );
 	
-	m_fIsoBarVisibility = new wxFlexGridSizer( 0, 2, 0, 0 );
+	m_fIsoBarVisibility = new wxFlexGridSizer( 0, 1, 0, 0 );
 	m_fIsoBarVisibility->SetFlexibleDirection( wxBOTH );
 	m_fIsoBarVisibility->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
