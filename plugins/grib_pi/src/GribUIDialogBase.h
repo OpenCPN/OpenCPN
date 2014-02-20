@@ -29,8 +29,8 @@
 #include <wx/statbox.h>
 #include <wx/dialog.h>
 #include <wx/stattext.h>
-#include <wx/spinctrl.h>
 #include <wx/choice.h>
+#include <wx/spinctrl.h>
 #include <wx/statline.h>
 #include <wx/radiobox.h>
 #include <wx/grid.h>
@@ -123,6 +123,8 @@ class GribSettingsDialogBase : public wxDialog
 	private:
 	
 	protected:
+		wxStaticText* m_staticText26;
+		wxChoice* m_cLoopStartPoint;
 		wxSpinCtrl* m_sUpdatesPerSecond;
 		wxStaticText* m_tSlicesPerUpdate;
 		wxSpinCtrl* m_sSlicesPerUpdate;

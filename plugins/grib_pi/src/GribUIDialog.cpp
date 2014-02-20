@@ -205,8 +205,10 @@ void GRIBUIDialog::OpenFile(bool newestFile)
         SetFactoryOptions();
         if( pPlugIn->GetStartOptions() )
             ComputeBestForecastForNow();
-        else
+        else {
+            m_pNowMode = false;
             TimelineChanged();
+        }
         PopulateTrackingControls();
     }
 }
@@ -763,15 +765,25 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
         return;
     }
     if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) {
-        if(m_OverlaySettings.m_bLoopMode)
-            m_sTimeline->SetValue(0);
+        if(m_OverlaySettings.m_bLoopMode) {
+            if(m_OverlaySettings.m_LoopStartPoint) {
+            ComputeBestForecastForNow();
+            m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
+            return;
+            } else
+                m_sTimeline->SetValue(0);
+        }
         else {
             m_bpPlay->SetBitmap(*m_bPlay );
             m_bpPlay->SetToolTip( _("Play") );
             m_tPlayStop.Stop();
         }
-    } else
-        m_sTimeline->SetValue(m_sTimeline->GetValue() + 1);
+    } else {
+        int value = m_pNowMode ? m_OverlaySettings.m_bInterpolate ?
+            GetNearestValue(GetNow(), 1) : GetNearestIndex(GetNow(), 2) : m_sTimeline->GetValue();
+        m_sTimeline->SetValue(value + 1);
+        m_pNowMode = false;
+    }
 
     if(!m_InterpolateMode) m_cRecordForecast->SetSelection( m_sTimeline->GetValue() );
     TimelineChanged();
@@ -802,7 +814,7 @@ void GRIBUIDialog::TimelineChanged()
     RequestRefresh( pParent );
 }
 
-int GRIBUIDialog::GetTimePosition(wxDateTime time)
+int GRIBUIDialog::GetNearestIndex(wxDateTime time, int model)
 {
     /* get closest index to update combo box */
     size_t i;
@@ -815,7 +827,39 @@ int GRIBUIDialog::GetTimePosition(wxDateTime time)
         if(ip1time >= time)
             break;
     }
-    return (time - itime < ip1time - time) ? i : i+1;
+    if(!model) return (time - itime > (ip1time - time)*3) ? i+1 : i;
+
+    return model == 1 ? time == ip1time ? i : i+1 : time == ip1time ? i+1 : i;
+}
+
+int GRIBUIDialog::GetNearestValue(wxDateTime time, int model)
+{
+    /* get closest value to update Time line */
+    if(m_TimeLineHours == 0) return 0;
+    wxDateTime itime, ip1time;
+    int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
+    wxTimeSpan span = time - MinTime();
+    int t = span.GetMinutes()/stepmin;
+    itime = MinTime() + wxTimeSpan( t * stepmin / 60, (t * stepmin) % 60 );     //time at t
+    ip1time = itime + wxTimeSpan( stepmin / 60, stepmin % 60 );                 //time at t+1
+
+    if(model == 1) return time == ip1time ? t+1 : t;
+
+    return (time - itime > (ip1time - time)*3) ? t+1 : t;
+}
+
+wxDateTime GRIBUIDialog::GetNow()
+{
+    //wxDateTime::Now() is in local time and must be transslated to UTC to be compared to grib times
+    wxDateTime now = wxDateTime::Now().ToUTC(wxDateTime::Now().IsDST()==0).SetSecond(0);
+    if(now.IsDST()) now.Add(wxTimeSpan( 1,0,0,0));          //bug in wxWidgets ?
+
+    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+
+    //verifie if we are outside of the file time range
+    now = (now > rsa->Item(rsa->GetCount()-1).m_Reference_Time) ? rsa->Item(rsa->GetCount()-1).m_Reference_Time :
+        (now < rsa->Item(0).m_Reference_Time) ? rsa->Item(0).m_Reference_Time : now;
+    return now;
 }
 
 wxDateTime GRIBUIDialog::TimelineTime()
@@ -1010,24 +1054,39 @@ void GRIBUIDialog::OnZoomToCenterClick( wxCommandEvent& event )
 
 void GRIBUIDialog::OnPrev( wxCommandEvent& event )
 {
-    if(m_InterpolateMode) m_cRecordForecast->SetSelection(GetTimePosition(TimelineTime()));  /* set to interpolated entry */
+    int selection;
+    if(m_pNowMode)
+        selection = GetNearestIndex(GetNow(), 1);
+    else if(m_InterpolateMode)
+        selection = GetNearestIndex(TimelineTime(), 1);  /* set to interpolated entry */
+    else
+        selection = m_cRecordForecast->GetCurrentSelection();
 
+    m_pNowMode = false;
     m_InterpolateMode = false;
 
-    m_cRecordForecast->SetSelection( m_cRecordForecast->GetCurrentSelection() < 1 ? 0: m_cRecordForecast->GetCurrentSelection() - 1 );
+    m_cRecordForecast->SetSelection( selection < 1 ? 0: selection - 1 );
 
     TimelineChanged();
+
 }
 
 void GRIBUIDialog::OnNext( wxCommandEvent& event )
 {
-    if(m_InterpolateMode) m_cRecordForecast->SetSelection(GetTimePosition(TimelineTime()));  /* set to interpolated entry */
+    int selection;
+    if(m_pNowMode)
+        selection = GetNearestIndex(GetNow(), 2);
+    else if(m_InterpolateMode)
+        selection = GetNearestIndex(TimelineTime(), 2);  /* set to interpolated entry */
+    else
+        selection = m_cRecordForecast->GetCurrentSelection();
 
+    m_pNowMode = false;
     m_InterpolateMode = false;
 
-    if( m_cRecordForecast->GetCurrentSelection() == (int)m_cRecordForecast->GetCount() - 1 ) return; //end of list
+    if( selection == (int)m_cRecordForecast->GetCount() - 1 ) return; //end of list
 
-    m_cRecordForecast->SetSelection( m_cRecordForecast->GetCurrentSelection() + 1 );
+    m_cRecordForecast->SetSelection( selection  + 1 );
 
     TimelineChanged();
 }
@@ -1038,46 +1097,32 @@ void GRIBUIDialog::ComputeBestForecastForNow()
         pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
         return;
     }
+    wxDateTime now = GetNow();
 
-    //wxDateTime::Now() is in local time and must be transslated to UTC to be compared to grib times
-    wxDateTime now = wxDateTime::Now().ToUTC(wxDateTime::Now().IsDST()==0);
-    if(now.IsDST()) now.Add(wxTimeSpan( 1,0,0,0));          //bug in wxWidgets ?
+    if( m_OverlaySettings.m_bInterpolate )
+        m_sTimeline->SetValue(GetNearestValue(now, 0));
+    else
+        m_cRecordForecast->SetSelection(GetNearestIndex(now, 0));
 
-    ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+    //m_OverlaySettings.m_bInterpolate ? m_InterpolateMode = true : m_InterpolateMode = false;
 
-    //verifie if we are outside of the file time range
-    now = (now > rsa->Item(rsa->GetCount()-1).m_Reference_Time) ? rsa->Item(rsa->GetCount()-1).m_Reference_Time :
-        (now < rsa->Item(0).m_Reference_Time) ? rsa->Item(0).m_Reference_Time : now;
-
-    //find the combobox nearest forecast
-    for( size_t i=0; i<rsa->GetCount()-1; i++ ) {
-        wxDateTime ti2( rsa->Item(i+1).m_Reference_Time );
-        if(ti2 >= now) {
-            wxDateTime ti1( rsa->Item(i).m_Reference_Time );
-            m_cRecordForecast->SetSelection(now-ti1 < ti2-now ? i : i+1);
-            break;
-        }
-    }
-
-    if( pPlugIn->GetStartOptions() < 2 ) {         //no interpolation : take the nearest forecast
-        m_InterpolateMode = false;
+    if( pPlugIn->GetStartOptions() != 2 ) {         //no interpolation at start : take the nearest forecast
+        m_OverlaySettings.m_bInterpolate ? m_InterpolateMode = true : m_InterpolateMode = false;
         TimelineChanged();
-
-    } else {                                       //interpolation
-        //find the nearest timeline position
-        if( m_OverlaySettings.m_bInterpolate ) {
-            double sel = (m_cRecordForecast->GetCurrentSelection());
-            m_sTimeline->SetValue(
-                (int) m_OverlaySettings.m_bInterpolate ? sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
-            );
-        } else
+    } else {                                       //interpolation on 'now' at start
+        if( !m_OverlaySettings.m_bInterpolate )
             m_sTimeline->SetValue(m_cRecordForecast->GetCurrentSelection());
 
-        m_InterpolateMode = true;                                               //take current time & interpolate forecast
-        SetGribTimelineRecordSet(GetTimeLineRecordSet(now));
+        m_InterpolateMode = true;
+        m_pNowMode = true;
+        SetGribTimelineRecordSet(GetTimeLineRecordSet(now));    //take current time & interpolate forecast
         m_cRecordForecast->SetValue( TToString( now, pPlugIn->GetTimeZone() ) );
-    }
 
+        UpdateTrackingControls();
+
+        pPlugIn->SendTimelineMessage(now);
+        RequestRefresh( pParent );
+    }
 }
 
 void GRIBUIDialog::SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet)

@@ -101,7 +101,6 @@ public:
     grib_pi             *pPlugIn;
     GribRequestSetting  *pReq_Dialog;
     GRIBFile        *m_bGRIBActiveFile;
-    bool             m_InterpolateMode;
     double m_cursor_lat, m_cursor_lon;
 
 private:
@@ -129,7 +128,9 @@ private:
     wxDateTime MinTime();
     wxString GetNewestFileInDirectory();
     void SetGribTimelineRecordSet(GribTimelineRecordSet *pTimelineSet);
-    int GetTimePosition(wxDateTime time);
+    int GetNearestIndex(wxDateTime time, int model);
+    int GetNearestValue(wxDateTime time, int model);
+    wxDateTime GetNow();
 
     //    Data
     wxWindow *pParent;
@@ -139,6 +140,8 @@ private:
 
     GribTimelineRecordSet *m_pTimelineSet;
     int m_TimeLineHours;
+    bool m_InterpolateMode;
+    bool m_pNowMode;
 
     wxString         m_file_name;   /* selected file */
     wxString         m_grib_dir;

@@ -66,6 +66,7 @@ void GribOverlaySettings::Read()
     pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
     pConf->Read ( _T ( "Interpolate" ), &m_bInterpolate, false );
     pConf->Read ( _T ( "LoopMode" ), &m_bLoopMode, false );
+    pConf->Read ( _T ( "LoopStartPoint" ), &m_LoopStartPoint, 0 );
     pConf->Read ( _T ( "SlicesPerUpdate" ), &m_SlicesPerUpdate, 2);
     pConf->Read ( _T ( "UpdatesPerSecond" ), &m_UpdatesPerSecond, 2);
     pConf->Read ( _T ( "HourDivider" ), &m_HourDivider, 2);
@@ -112,6 +113,7 @@ void GribOverlaySettings::Write()
     pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
     pConf->Write ( _T ( "Interpolate" ), m_bInterpolate);
     pConf->Write ( _T ( "LoopMode" ), m_bLoopMode );
+    pConf->Write ( _T ( "LoopStartPoint" ), m_LoopStartPoint);
     pConf->Write ( _T ( "SlicesPerUpdate" ), m_SlicesPerUpdate);
     pConf->Write ( _T ( "UpdatesPerSecond" ), m_UpdatesPerSecond);
     pConf->Write ( _T ( "HourDivider" ), m_HourDivider);
@@ -359,6 +361,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
     m_Settings = m_extSettings;
     m_cInterpolate->SetValue(m_Settings.m_bInterpolate);
     m_cLoopMode->SetValue(m_Settings.m_bLoopMode);
+    m_cLoopStartPoint->SetSelection(m_Settings.m_LoopStartPoint);
     m_sSlicesPerUpdate->SetValue(m_Settings.m_SlicesPerUpdate);
     m_sUpdatesPerSecond->SetValue(m_Settings.m_UpdatesPerSecond);
     m_sHourDivider->SetValue(m_Settings.m_HourDivider);
@@ -392,6 +395,7 @@ void GribSettingsDialog::WriteSettings()
     }
 
     m_Settings.m_bLoopMode = m_cLoopMode->GetValue();
+    m_Settings.m_LoopStartPoint = m_cLoopStartPoint->GetSelection();
     m_Settings.m_SlicesPerUpdate = m_sSlicesPerUpdate->GetValue();
     m_Settings.m_UpdatesPerSecond = m_sUpdatesPerSecond->GetValue();
     m_Settings.m_HourDivider = m_sHourDivider->GetValue();
