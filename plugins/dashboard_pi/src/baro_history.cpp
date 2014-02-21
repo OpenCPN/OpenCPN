@@ -158,7 +158,15 @@ void  DashboardInstrument_BaroHistory::DrawWindSpeedScale(wxGCDC* dc)
   dc->SetTextForeground(cl);
   dc->SetFont(*g_pFontSmall);
   //round m_MaxPress up to the next hpa ...
+  if (m_MaxPress > 1100)
+  m_MaxPress=1100;
+
+  if (m_TotalMinPress < 930)
+  m_TotalMinPress=930;
+
+
   m_MaxPressScale= (int)((m_MaxPress+15)-(m_TotalMinPress-15));
+
   if(!m_IsRunning) {
     label1=_T("-- hPa");
     label2=_T("-- hPa");
@@ -171,22 +179,22 @@ void  DashboardInstrument_BaroHistory::DrawWindSpeedScale(wxGCDC* dc)
  The goal is to draw the legend with decimals only, if we really have them !
 */
     // top legend for max press
-    label1.Printf(_T("%.0f hPa"), m_MaxPressScale +(m_TotalMinPress-27)  );
+    label1.Printf(_T("%.0f hPa"), m_MaxPressScale +(m_TotalMinPress-18)  );
 
     // 3/4 legend
 
-      label2.Printf(_T("%.0f hPa"), m_MaxPressScale *3./4 + (m_TotalMinPress-27)  );
+      label2.Printf(_T("%.0f hPa"), m_MaxPressScale *3./4 + (m_TotalMinPress-18)  );
 
     // center legend
 
-      label3.Printf(_T("%.0f hPa"), m_MaxPressScale /2 +(m_TotalMinPress-27));
+      label3.Printf(_T("%.0f hPa"), m_MaxPressScale /2 +(m_TotalMinPress-18));
 
     // 1/4 legend
 
-      label4.Printf(_T("%.0f hPa"), m_MaxPressScale /4 +(m_TotalMinPress-27)  );
+      label4.Printf(_T("%.0f hPa"), m_MaxPressScale /4 +(m_TotalMinPress-18)  );
 
     //bottom legend for min wind
-    label5.Printf(_T("%.0f hPa"), (m_TotalMinPress-27));
+    label5.Printf(_T("%.0f hPa"), (m_TotalMinPress-18));
   }
   dc->GetTextExtent(label1, &m_LeftLegend, &height, 0, 0, g_pFontSmall);
   dc->DrawText(label1, 4, (int)(m_TopLineHeight-height/2));
@@ -258,7 +266,7 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   col=wxColour(61,61,204,255); //blue, opaque
   dc->SetFont(*g_pFontData);
   dc->SetTextForeground(col);
-  WindSpeed=wxString::Format(_T("hpa %3.1f  "), m_Press);
+  WindSpeed=wxString::Format(_T("hPa %3.1f  "), m_Press);
   dc->GetTextExtent(WindSpeed, &degw, &degh, 0, 0, g_pFontData);
   dc->DrawText(WindSpeed, m_LeftLegend+3, m_TopLineHeight-degh);
   dc->SetFont(*g_pFontLabel);
@@ -294,8 +302,8 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   for (int idx = 1; idx < BARO_RECORD_COUNT; idx++) {
    // pointsSpd[idx].x = idx  + 3 + m_LeftLegend;
     //pointsSpd[idx].y = m_TopLineHeight+m_DrawAreaRect.height - m_ArrayPressHistory[idx] * ratioH;
-     pointsSpd[idx].y = m_TopLineHeight+m_DrawAreaRect.height - ((m_ArrayPressHistory[idx]-(double)m_TotalMinPress+27) * ratioH);
-   pointsSpd[idx].x = idx * m_ratioW + 3 + m_LeftLegend;
+     pointsSpd[idx].y = m_TopLineHeight+m_DrawAreaRect.height - ((m_ArrayPressHistory[idx]-(double)m_TotalMinPress+18) * ratioH);
+   pointsSpd[idx].x = idx * m_ratioW -3 ;//- 30 + m_LeftLegend;
    // pointsSpd[idx].x = idx + m_DrawAreaRect.x;
    // pointsSpd[idx].y= m_ArrayPressHistory[idx] * ratioH;
     if(BARO_RECORD_COUNT-m_SampleCount <= idx && pointsSpd[idx].y > m_TopLineHeight && pointSpeed_old.y > m_TopLineHeight && pointsSpd[idx].y <=m_TopLineHeight+m_DrawAreaRect.height && pointSpeed_old.y<=m_TopLineHeight+m_DrawAreaRect.height)
