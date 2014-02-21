@@ -66,6 +66,7 @@ void GribOverlaySettings::Read()
     pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
     pConf->Read ( _T ( "Interpolate" ), &m_bInterpolate, false );
     pConf->Read ( _T ( "LoopMode" ), &m_bLoopMode, false );
+    pConf->Read ( _T ( "LoopStartPoint" ), &m_LoopStartPoint, 0 );
     pConf->Read ( _T ( "SlicesPerUpdate" ), &m_SlicesPerUpdate, 2);
     pConf->Read ( _T ( "UpdatesPerSecond" ), &m_UpdatesPerSecond, 2);
     pConf->Read ( _T ( "HourDivider" ), &m_HourDivider, 2);
@@ -112,6 +113,7 @@ void GribOverlaySettings::Write()
     pConf->SetPath ( _T( "/PlugIns/GRIB" ) );
     pConf->Write ( _T ( "Interpolate" ), m_bInterpolate);
     pConf->Write ( _T ( "LoopMode" ), m_bLoopMode );
+    pConf->Write ( _T ( "LoopStartPoint" ), m_LoopStartPoint);
     pConf->Write ( _T ( "SlicesPerUpdate" ), m_SlicesPerUpdate);
     pConf->Write ( _T ( "UpdatesPerSecond" ), m_UpdatesPerSecond);
     pConf->Write ( _T ( "HourDivider" ), m_HourDivider);
@@ -359,6 +361,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
     m_Settings = m_extSettings;
     m_cInterpolate->SetValue(m_Settings.m_bInterpolate);
     m_cLoopMode->SetValue(m_Settings.m_bLoopMode);
+    m_cLoopStartPoint->SetSelection(m_Settings.m_LoopStartPoint);
     m_sSlicesPerUpdate->SetValue(m_Settings.m_SlicesPerUpdate);
     m_sUpdatesPerSecond->SetValue(m_Settings.m_UpdatesPerSecond);
     m_sHourDivider->SetValue(m_Settings.m_HourDivider);
@@ -392,6 +395,7 @@ void GribSettingsDialog::WriteSettings()
     }
 
     m_Settings.m_bLoopMode = m_cLoopMode->GetValue();
+    m_Settings.m_LoopStartPoint = m_cLoopStartPoint->GetSelection();
     m_Settings.m_SlicesPerUpdate = m_sSlicesPerUpdate->GetValue();
     m_Settings.m_UpdatesPerSecond = m_sUpdatesPerSecond->GetValue();
     m_Settings.m_HourDivider = m_sHourDivider->GetValue();
@@ -451,9 +455,11 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     m_cBarbedColours->Show(false);
     m_cbIsoBars->Show(false);
     m_fIsoBarSpacing->ShowItems(false);
-    m_fIsoBarSpacing->Detach(1);
+    if(m_fIsoBarSpacing->GetCols() == 2) m_fIsoBarSpacing->Detach(1);
+    m_fIsoBarSpacing->SetCols(1);
     m_fIsoBarVisibility->ShowItems(false);
-    m_fIsoBarVisibility->Detach(0);
+    if(m_fIsoBarVisibility->GetCols() == 1 ) m_fIsoBarVisibility->Detach(0);
+    m_fIsoBarVisibility->SetCols(0);
     m_cbDirectionArrows->Show(false);
     m_cDirectionArrowForm->Show(false);
     m_cDirectionArrowSize->Show(false);
@@ -511,14 +517,17 @@ void GribSettingsDialog::ShowSettings( int params )
         break;
     case ISO_LINE_VISI:
         m_cbIsoBars->Show();
+        m_fIsoBarSpacing->SetCols(2);
         m_fIsoBarSpacing->Add(m_sIsoBarSpacing, 0, 5,wxALL|wxEXPAND);
         m_fIsoBarSpacing->ShowItems(true);
+        m_fIsoBarVisibility->SetCols(1);
         m_fIsoBarVisibility->Add(m_sIsoBarVisibility, 0, 5,wxTOP|wxLEFT|wxEXPAND);
         m_fIsoBarVisibility->ShowItems(true);
         break;
     case ISO_LINE_SHORT:
         m_cbIsoBars->Show();
         m_fIsoBarSpacing->ShowItems(true);
+        m_fIsoBarVisibility->SetCols(1);
         m_fIsoBarVisibility->Add(m_sIsoBarSpacing, 0, 5,wxTOP|wxLEFT|wxEXPAND);
         m_fIsoBarVisibility->ShowItems(true);
         break;
