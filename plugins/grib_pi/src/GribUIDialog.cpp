@@ -724,8 +724,9 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
 
     pReq_Dialog->SetVpSize(m_vp);
     pReq_Dialog->InitRequestConfig();
-    pReq_Dialog->Fit();
     pReq_Dialog->Show();
+    pReq_Dialog->Fit();
+    pReq_Dialog->Refresh();
 }
 
 void GRIBUIDialog::OnSettings( wxCommandEvent& event )
