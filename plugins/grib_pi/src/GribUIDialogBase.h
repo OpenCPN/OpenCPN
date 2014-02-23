@@ -210,6 +210,7 @@ class GribRequestSettingBase : public wxDialog
 	
 	protected:
 		wxFlexGridSizer* m_pSenderSizer;
+		wxButton* m_pMovingGribButton;
 		wxStaticText* m_tLogin;
 		wxStaticText* m_tCode;
 		wxStaticText* m_staticText21;
@@ -220,6 +221,7 @@ class GribRequestSettingBase : public wxDialog
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnTopChange( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMovingGribButtonClick( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnAnyChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnTimeRangeChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSaveMail( wxCommandEvent& event ) { event.Skip(); }
@@ -254,6 +256,29 @@ class GribRequestSettingBase : public wxDialog
 		
 		GribRequestSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Write and send eMail request"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
 		~GribRequestSettingBase();
+	
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class GribMovingSettingBase
+///////////////////////////////////////////////////////////////////////////////
+class GribMovingSettingBase : public wxDialog 
+{
+	private:
+	
+	protected:
+		wxStaticText* m_staticText30;
+		wxStdDialogButtonSizer* m_sdbSizer5;
+		wxButton* m_sdbSizer5OK;
+		wxButton* m_sdbSizer5Cancel;
+	
+	public:
+		wxCheckBox* m_cMovingGribEnabled;
+		wxSpinCtrl* m_sMovingSpeed;
+		wxSpinCtrl* m_sMovingCourse;
+		
+		GribMovingSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Set Moving Grib"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxCAPTION ); 
+		~GribMovingSettingBase();
 	
 };
 
