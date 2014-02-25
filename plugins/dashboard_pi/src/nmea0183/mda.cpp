@@ -87,7 +87,7 @@ bool MDA::Parse( const SENTENCE& sentence )
    ** First we check the checksum...
    */
 
-   if ( sentence.IsChecksumBad( sentence.GetNumberOfDataFields() ) == TRUE || FALSE ) //diferent vendors have different length of data message and not 24 field as in standard.
+   if ( sentence.IsChecksumBad( sentence.GetNumberOfDataFields() +1) == TRUE || FALSE ) //diferent vendors have different length of data message and not 24 field as in standard.
    {
       SetErrorMessage( _T("Invalid Checksum") );
       return( FALSE );
