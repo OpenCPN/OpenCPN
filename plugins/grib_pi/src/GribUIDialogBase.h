@@ -127,8 +127,6 @@ class GribSettingsDialogBase : public wxDialog
 		wxChoice* m_cLoopStartPoint;
 		wxSpinCtrl* m_sUpdatesPerSecond;
 		wxStaticText* m_tSlicesPerUpdate;
-		wxSpinCtrl* m_sSlicesPerUpdate;
-		wxStaticText* m_tHourDivider;
 		wxChoice* m_cDataType;
 		wxChoice* m_cDataUnits;
 		wxCheckBox* m_cbBarbedArrows;
@@ -163,7 +161,7 @@ class GribSettingsDialogBase : public wxDialog
 	public:
 		wxCheckBox* m_cLoopMode;
 		wxCheckBox* m_cInterpolate;
-		wxSpinCtrl* m_sHourDivider;
+		wxChoice* m_sSlicesPerUpdate;
 		wxStdDialogButtonSizer* m_sButton;
 		wxButton* m_sButtonOK;
 		wxButton* m_sButtonApply;

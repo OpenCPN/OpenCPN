@@ -141,6 +141,7 @@ private:
 
     GribTimelineRecordSet *m_pTimelineSet;
     int m_TimeLineHours;
+    int m_FileIntervalIndex;
     bool m_InterpolateMode;
     bool m_pNowMode;
     bool m_pMovingGrib;

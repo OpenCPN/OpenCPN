@@ -174,7 +174,17 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     if(rsa->GetCount() < 2)
         m_TimeLineHours = 0;
     else {
-        GribRecordSet &first=rsa->Item(0), &last = rsa->Item(rsa->GetCount()-1);
+        GribRecordSet &first=rsa->Item(0), &second = rsa->Item(1), &last = rsa->Item(rsa->GetCount()-1);
+
+        //get file interval index
+       // wxTimeSpan sp = wxDateTime(second.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
+        //int intermin = sp.GetMinutes();
+        int halphintermin(wxTimeSpan(wxDateTime(second.m_Reference_Time) - wxDateTime(first.m_Reference_Time)).GetMinutes() / 2);
+        for( m_FileIntervalIndex=0;;m_FileIntervalIndex++){
+            if(m_OverlaySettings.GetMinFromIndex(m_FileIntervalIndex) > halphintermin) break;
+        }
+        m_FileIntervalIndex--;
+        if(m_OverlaySettings.m_SlicesPerUpdate > m_FileIntervalIndex) m_OverlaySettings.m_SlicesPerUpdate = m_FileIntervalIndex;
 
         //search for a moving grib file
         double wmin1,wmax1,hmin1,hmax1,wmin2,wmax2,hmin2,hmax2;
@@ -772,8 +782,7 @@ void GRIBUIDialog::OnRequest(  wxCommandEvent& event )
 void GRIBUIDialog::OnSettings( wxCommandEvent& event )
 {
     GribOverlaySettings initSettings = m_OverlaySettings;
-    GribSettingsDialog *dialog = new GribSettingsDialog( *this, m_OverlaySettings,  m_lastdatatype);
-    dialog->m_sButtonApply->SetLabel(_("Apply"));
+    GribSettingsDialog *dialog = new GribSettingsDialog( *this, m_OverlaySettings,  m_lastdatatype, m_FileIntervalIndex);
     if(dialog->ShowModal() == wxID_OK)
     {
         dialog->WriteSettings();
@@ -877,7 +886,7 @@ int GRIBUIDialog::GetNearestValue(wxDateTime time, int model)
     /* get closest value to update Time line */
     if(m_TimeLineHours == 0) return 0;
     wxDateTime itime, ip1time;
-    int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
+    int stepmin = m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate);
     wxTimeSpan span = time - MinTime();
     int t = span.GetMinutes()/stepmin;
     itime = MinTime() + wxTimeSpan( t * stepmin / 60, (t * stepmin) % 60 );     //time at t
@@ -906,7 +915,7 @@ wxDateTime GRIBUIDialog::TimelineTime()
 {
     if(m_InterpolateMode) {
         int tl = (m_TimeLineHours == 0) ? 0 : m_sTimeline->GetValue();
-        int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
+        int stepmin = m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate);
         return MinTime() + wxTimeSpan( tl * stepmin / 60, (tl * stepmin) % 60 );
     } else {
         ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
@@ -1169,7 +1178,7 @@ void GRIBUIDialog::SetFactoryOptions( bool set_val )
     int max = wxMax(m_sTimeline->GetMax(), 1), val = m_sTimeline->GetValue();             //memorize the old range and value
 
     if(m_OverlaySettings.m_bInterpolate && !m_pMovingGrib){
-        int stepmin = round ( 60. * (double)m_OverlaySettings.m_SlicesPerUpdate/(double)m_OverlaySettings.m_HourDivider );
+        int stepmin = m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate);
         m_sTimeline->SetMax(m_TimeLineHours * 60 / stepmin );
     }
     else {
