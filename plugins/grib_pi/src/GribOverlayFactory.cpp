@@ -199,8 +199,8 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     }
     m_Message_Hiden.Empty();
 
-    //    If the scale has changed, clear out the cached bitmaps
-    if( vp->view_scale_ppm != m_last_vp_scale )
+    //    If the scale has changed, clear out the cached bitmaps in DC mode
+    if( m_pdc && vp->view_scale_ppm != m_last_vp_scale )
         ClearCachedData();
 
     m_last_vp_scale = vp->view_scale_ppm;
@@ -262,54 +262,26 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR,
                                               PlugIn_ViewPort *vp, int grib_pixel_size )
 {
-    //  We need a vp without rotation
-    PlugIn_ViewPort uvp;
-    uvp.clat =                   vp->clat;                   // center point
-    uvp.clon =                   vp->clon;
-    uvp.view_scale_ppm =         vp->view_scale_ppm;
-    uvp.skew =                   vp->skew;
-    uvp.rotation =               0;
-    uvp.chart_scale =            vp->chart_scale;
-    uvp.pix_width =              vp->pix_width;
-    uvp.pix_height =             vp->pix_height;
-    uvp.rv_rect =                vp->rv_rect;
-    uvp.b_quilt =                vp->b_quilt;
-    uvp.m_projection_type =      vp->m_projection_type;
+    int width = (pGR->getNi()-1)*grib_pixel_size, height = (pGR->getNj()-1)*grib_pixel_size;
 
-    uvp.lat_min =                vp->lat_min;
-    uvp.lat_max =                vp->lat_max;
-    uvp.lon_min =                vp->lon_min;
-    uvp.lon_max =                vp->lon_max;
-
-    uvp.bValid =                 vp->bValid;                 // This VP is valid
-
-    wxPoint porg;
-    GetCanvasPixLL( &uvp, &porg, pGR->getLatMax(), pGR->getLonMin() );
-
-    wxPoint pmin;
-    GetCanvasPixLL( &uvp, &pmin, pGR->getLatMin(), pGR->getLonMin() );
-    wxPoint pmax;
-    GetCanvasPixLL( &uvp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
-
-    int width = abs( pmax.x - pmin.x );// /grib_pixel_size;
-    int height = abs( pmax.y - pmin.y );// /grib_pixel_size;
-
-    //    Dont try to create enormous GRIB textures ( no more than the screen size )
-    if( width > m_ParentSize.GetWidth() || height > m_ParentSize.GetHeight() )
+    //    Dont try to create enormous GRIB textures
+    if( width > 1024 || height > 1024 )
         return false;
 
     unsigned char *data = new unsigned char[width*height*4];
 
     for( int ipix = 0; ipix < width; ipix++ ) {
         for( int jpix = 0; jpix < height; jpix++ ) {
-            wxPoint p;
-            p.x = grib_pixel_size*ipix + porg.x;
-            p.y = grib_pixel_size*jpix + porg.y;
+            double v00 = pGR->getValue(ipix/grib_pixel_size, jpix/grib_pixel_size);
+            double v01 = pGR->getValue(ipix/grib_pixel_size, jpix/grib_pixel_size+1);
+            double v10 = pGR->getValue(ipix/grib_pixel_size+1, jpix/grib_pixel_size);
+            double v11 = pGR->getValue(ipix/grib_pixel_size+1, jpix/grib_pixel_size+1);
 
-            double lat, lon;
-            GetCanvasLLPix( &uvp, p, &lat, &lon );
+            double d10 = (double)(ipix%grib_pixel_size) / grib_pixel_size, d00 = 1 - d10;
+            double d11 = (double)(jpix%grib_pixel_size) / grib_pixel_size, d01 = 1 - d11;
 
-            double v = pGR->getInterpolatedValue(lon, lat);
+            double v = d01*(d00*v00 + d10*v10) + d11*(d00*v01 + d10*v11);
+
             unsigned char r, g, b, a;
             if( v != GRIB_NOTDEF ) {
                 v = m_Settings.CalibrateValue(settings, v);
@@ -339,6 +311,11 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_RECTANGLE_ARB, texture);
 
+    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP );
+    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP );
+    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
     glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
 
     glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
@@ -356,6 +333,19 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     pGO->m_iTexture = texture;
     pGO->m_width = width;
     pGO->m_height = height;
+
+    const double scalef = 8;
+    PlugIn_ViewPort uvp = *vp;
+    uvp.rotation = uvp.skew = 0;
+    uvp.view_scale_ppm = scalef;
+
+    wxPoint pmin;
+    GetCanvasPixLL( &uvp, &pmin, pGR->getLatMin(), pGR->getLonMin() );
+    wxPoint pmax;
+    GetCanvasPixLL( &uvp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
+
+    pGO->m_dwidth = (pmax.x - pmin.x) / scalef;
+    pGO->m_dheight = (pmin.y - pmax.y) / scalef;
 
     return true;
 }
@@ -661,18 +651,10 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
     bool barbs = true;
 
     //    Set minimum spacing between wind arrows
-    double space;
+    double space = barbs ? 30 : 20;
 
-    if( barbs ) {
-        space = fabs(30 * cos(vp->rotation));
-    }
-
-    else {
-        space = fabs(20 * cos(vp->rotation));
-    }
-
-    int oldx = -1000;
-    int oldy = -1000;
+    wxPoint oldpx(-1000, -1000);
+    wxPoint oldpy(-1000, -1000);
 
     wxColour colour;
     GetGlobalColor( _T ( "YELO2" ), &colour );
@@ -684,16 +666,16 @@ void GRIBOverlayFactory::RenderGribBarbedArrows( int settings, GribRecord **pGR,
         wxPoint pl;
         GetCanvasPixLL( vp, &pl, latl, lonl );
 
-        if( abs( pl.x - oldx ) >= space ) {
-            oldx = pl.x;
+        if( hypot( pl.x - oldpx.x, pl.y - oldpx.y ) >= space ) {
+            oldpx = pl;
             for( int j = 0; j < jmax; j++ ) {
                 double lon = pGRX->getX( i );
                 double lat = pGRX->getY( j );
                 wxPoint p;
                 GetCanvasPixLL( vp, &p, lat, lon );
 
-                if( abs( p.y - oldy ) >= space ) {
-                    oldy = p.y;
+                if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
+                    oldpy = p;
 
                     if( PointInLLBox( vp, lon, lat ) || PointInLLBox( vp, lon - 360., lat ) ) {
                         double vx =  pGRX->getValue( i, j );
@@ -922,12 +904,11 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
         {
 #ifdef ocpnUSE_GL            
             if( !pGO->m_iTexture )
-                CreateGribGLTexture( pGO, settings, pGRA, vp,
-                                     grib_pixel_size);
+                CreateGribGLTexture( pGO, settings, pGRA, vp, 8 );
 
             if( pGO->m_iTexture )
                 DrawGLTexture( pGO->m_iTexture, pGO->m_width, pGO->m_height,
-                               porg.x, porg.y, grib_pixel_size, vp );
+                               porg.x, porg.y, pGO->m_dwidth, pGO->m_dheight, vp );
             else
                 m_Message_Hiden.IsEmpty()?
                     m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays:"))
@@ -1457,15 +1438,11 @@ void GRIBOverlayFactory::DrawGLImage( wxImage *pimage, wxCoord xd, wxCoord yd, b
 
 #ifdef ocpnUSE_GL
 void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
-                                        int xd, int yd, int grib_pixel_size, PlugIn_ViewPort *vp )
+                                        int xd, int yd, double dwidth, double dheight,
+                                        PlugIn_ViewPort *vp )
 {
     glEnable(GL_TEXTURE_RECTANGLE_ARB);
     glBindTexture(GL_TEXTURE_RECTANGLE_ARB, texture);
-
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP );
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP );
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
     glDisable( GL_MULTISAMPLE );
 
@@ -1484,21 +1461,22 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
         double angle = vp->rotation;
         angle -= vp->skew;
 
-        double ddx = -xd + ( xd * cos( -angle ) - yd * sin( -angle ) ) ;
-        double ddy = -yd + ( yd * cos( -angle ) + xd * sin( -angle ) ) ;
-
+        glTranslatef( xd, yd, 0 );
         glRotatef( angle * 180. / PI, 0, 0, 1 );
-
-        glTranslatef( ddx, ddy, 0 );                 // post rotate translation
+        glTranslatef( -xd, -yd, 0 );
     }
 
-    int x = xd, y = yd, w = width*grib_pixel_size, h = height*grib_pixel_size;
+
+    double x = xd, y = yd;
+
+    double w = dwidth * vp->view_scale_ppm;
+    double h = dheight * vp->view_scale_ppm;
 
     glBegin(GL_QUADS);
-    glTexCoord2i(0, 0),          glVertex2i(x, y);
-    glTexCoord2i(width, 0),      glVertex2i(x+w, y);
-    glTexCoord2i(width, height), glVertex2i(x+w, y+h);
-    glTexCoord2i(0, height),     glVertex2i(x, y+h);
+    glTexCoord2i(0, 0),          glVertex2d(x, y);
+    glTexCoord2i(width, 0),      glVertex2d(x+w, y);
+    glTexCoord2i(width, height), glVertex2d(x+w, y+h);
+    glTexCoord2i(0, height),     glVertex2d(x, y+h);
     glEnd();
 
     glDisable(GL_BLEND);
