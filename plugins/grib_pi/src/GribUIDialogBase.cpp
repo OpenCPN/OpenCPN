@@ -615,14 +615,14 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer17->Add( m_pSenderSizer, 1, wxEXPAND, 5 );
 	
 	wxFlexGridSizer* fgSizer9;
-	fgSizer9 = new wxFlexGridSizer( 0, 4, 0, 0 );
+	fgSizer9 = new wxFlexGridSizer( 0, 5, 0, 0 );
 	fgSizer9->SetFlexibleDirection( wxBOTH );
 	fgSizer9->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 	
 	wxStaticText* m_staticText15;
 	m_staticText15 = new wxStaticText( this, wxID_ANY, _("Mail To "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText15->Wrap( -1 );
-	fgSizer9->Add( m_staticText15, 0, wxALL, 5 );
+	fgSizer9->Add( m_staticText15, 0, wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
 	wxArrayString m_pMailToChoices;
 	m_pMailTo = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pMailToChoices, 0 );
@@ -632,12 +632,15 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	wxStaticText* m_staticText16;
 	m_staticText16 = new wxStaticText( this, wxID_ANY, _("Forecast Model "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText16->Wrap( -1 );
-	fgSizer9->Add( m_staticText16, 0, wxALL, 5 );
+	fgSizer9->Add( m_staticText16, 0, wxALL|wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
 	
 	wxArrayString m_pModelChoices;
 	m_pModel = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pModelChoices, 0 );
 	m_pModel->SetSelection( 0 );
 	fgSizer9->Add( m_pModel, 0, wxALL, 5 );
+	
+	m_pMovingGribButton = new wxButton( this, wxID_ANY, _("Moving Grib Enabled"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer9->Add( m_pMovingGribButton, 0, wxALL, 5 );
 	
 	m_tLogin = new wxStaticText( this, wxID_ANY, _("zyGrib Login"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tLogin->Wrap( -1 );
@@ -828,6 +831,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	// Connect Events
 	m_pMailTo->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_pModel->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
+	m_pMovingGribButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnMovingGribButtonClick ), NULL, this );
 	m_pLogin->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pCode->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pResolution->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
@@ -853,6 +857,7 @@ GribRequestSettingBase::~GribRequestSettingBase()
 	// Disconnect Events
 	m_pMailTo->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_pModel->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
+	m_pMovingGribButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnMovingGribButtonClick ), NULL, this );
 	m_pLogin->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pCode->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pResolution->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
@@ -872,6 +877,76 @@ GribRequestSettingBase::~GribRequestSettingBase()
 	m_rButtonApply->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSaveMail ), NULL, this );
 	m_rButtonYes->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSendMaiL ), NULL, this );
 	
+}
+
+GribMovingSettingBase::GribMovingSettingBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
+{
+	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+	
+	wxFlexGridSizer* fgSizer22;
+	fgSizer22 = new wxFlexGridSizer( 0, 1, 0, 0 );
+	fgSizer22->SetFlexibleDirection( wxBOTH );
+	fgSizer22->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	
+	m_cMovingGribEnabled = new wxCheckBox( this, wxID_ANY, _("Enable Moving Grib"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_cMovingGribEnabled->SetValue(true); 
+	fgSizer22->Add( m_cMovingGribEnabled, 0, wxALL, 5 );
+	
+	
+	fgSizer22->Add( 0, 10, 1, wxEXPAND, 5 );
+	
+	wxFlexGridSizer* fgSizer23;
+	fgSizer23 = new wxFlexGridSizer( 0, 3, 0, 0 );
+	fgSizer23->SetFlexibleDirection( wxBOTH );
+	fgSizer23->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	
+	wxStaticText* m_staticText27;
+	m_staticText27 = new wxStaticText( this, wxID_ANY, _("Expected Speed (in knots)"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText27->Wrap( -1 );
+	fgSizer23->Add( m_staticText27, 0, wxALL, 5 );
+	
+	m_sMovingSpeed = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxSP_ARROW_KEYS, 0, 30, 0 );
+	fgSizer23->Add( m_sMovingSpeed, 0, wxALL, 5 );
+	
+	wxStaticText* m_staticText28;
+	m_staticText28 = new wxStaticText( this, wxID_ANY, _("Kts"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText28->Wrap( -1 );
+	fgSizer23->Add( m_staticText28, 0, wxBOTTOM|wxEXPAND|wxRIGHT|wxTOP, 5 );
+	
+	wxStaticText* m_staticText29;
+	m_staticText29 = new wxStaticText( this, wxID_ANY, _("Expected Course"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText29->Wrap( -1 );
+	fgSizer23->Add( m_staticText29, 0, wxALL, 5 );
+	
+	m_sMovingCourse = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxSP_ARROW_KEYS, 1, 360, 0 );
+	fgSizer23->Add( m_sMovingCourse, 0, wxALL, 5 );
+	
+	m_staticText30 = new wxStaticText( this, wxID_ANY, _("Deg"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText30->Wrap( -1 );
+	fgSizer23->Add( m_staticText30, 0, wxBOTTOM|wxEXPAND|wxRIGHT|wxTOP, 5 );
+	
+	
+	fgSizer22->Add( fgSizer23, 1, wxEXPAND, 5 );
+	
+	m_sdbSizer5 = new wxStdDialogButtonSizer();
+	m_sdbSizer5OK = new wxButton( this, wxID_OK );
+	m_sdbSizer5->AddButton( m_sdbSizer5OK );
+	m_sdbSizer5Cancel = new wxButton( this, wxID_CANCEL );
+	m_sdbSizer5->AddButton( m_sdbSizer5Cancel );
+	m_sdbSizer5->Realize();
+	
+	fgSizer22->Add( m_sdbSizer5, 1, wxALIGN_RIGHT|wxEXPAND, 5 );
+	
+	
+	this->SetSizer( fgSizer22 );
+	this->Layout();
+	fgSizer22->Fit( this );
+	
+	this->Centre( wxBOTH );
+}
+
+GribMovingSettingBase::~GribMovingSettingBase()
+{
 }
 
 GRIBTableBase::GRIBTableBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
