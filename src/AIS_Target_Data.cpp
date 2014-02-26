@@ -528,7 +528,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     if(b_SarAircraftPosnReport) {
         wxString altStr;
         if(altitude != 4095) 
-            altStr.Printf(_T("%4d M"), altitude );
+            altStr.Printf(_T("%4d m"), altitude );
         else
             altStr = _("Unknown");
             
