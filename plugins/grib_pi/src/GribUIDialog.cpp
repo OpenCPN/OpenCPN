@@ -801,16 +801,16 @@ void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
         m_bpPlay->SetBitmap(wxBitmap( stop ));
         m_bpPlay->SetToolTip( _("Stop") );
         m_tPlayStop.Start( 1000/m_OverlaySettings.m_UpdatesPerSecond, wxTIMER_CONTINUOUS );
-    } else {
+    } else
         m_bpPlay->SetBitmap(*m_bPlay );
-        m_bpPlay->SetToolTip( _("Play") );
-    }
+
     m_InterpolateMode = m_OverlaySettings.m_bInterpolate && !m_pMovingGrib;
 }
 
 void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
 {
     if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
+        m_bpPlay->SetToolTip( _("Play") );
         m_tPlayStop.Stop();
         return;
     }
@@ -818,21 +818,19 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
         if(m_OverlaySettings.m_bLoopMode) {
             if(m_OverlaySettings.m_LoopStartPoint) {
                 ComputeBestForecastForNow();
+                if(m_sTimeline->GetValue() >= m_sTimeline->GetMax()) m_bpPlay->SetBitmap(*m_bPlay );;        //will stop playback
                 return;
             } else
                 m_sTimeline->SetValue(0);
-        } else {
-            m_bpPlay->SetBitmap(*m_bPlay );
-            m_bpPlay->SetToolTip( _("Play") );
-            m_tPlayStop.Stop();
-        }
+        } else
+            m_bpPlay->SetBitmap(*m_bPlay );                                             //will stop playback
     } else {
         int value = m_pNowMode ? m_OverlaySettings.m_bInterpolate && !m_pMovingGrib ?
             GetNearestValue(GetNow(), 1) : GetNearestIndex(GetNow(), 2) : m_sTimeline->GetValue();
         m_sTimeline->SetValue(value + 1);
-        m_pNowMode = false;
     }
 
+    m_pNowMode = false;
     if(!m_InterpolateMode) m_cRecordForecast->SetSelection( m_sTimeline->GetValue() );
     TimelineChanged();
 }
@@ -975,6 +973,7 @@ void GRIBUIDialog::OnTimeline( wxScrollEvent& event )
 {
     m_InterpolateMode = m_OverlaySettings.m_bInterpolate && !m_pMovingGrib;
     if(!m_InterpolateMode) m_cRecordForecast->SetSelection(m_sTimeline->GetValue());
+    m_pNowMode = false;
     TimelineChanged();
 }
 
@@ -1120,6 +1119,8 @@ void GRIBUIDialog::OnNext( wxCommandEvent& event )
     else
         selection = m_cRecordForecast->GetCurrentSelection();
 
+    m_cRecordForecast->SetSelection( selection );
+
     m_pNowMode = false;
     m_InterpolateMode = false;
 
@@ -1141,8 +1142,10 @@ void GRIBUIDialog::ComputeBestForecastForNow()
 
     if( m_OverlaySettings.m_bInterpolate && !m_pMovingGrib )
         m_sTimeline->SetValue(GetNearestValue(now, 0));
-    else
+    else{
         m_cRecordForecast->SetSelection(GetNearestIndex(now, 0));
+        m_sTimeline->SetValue(m_cRecordForecast->GetCurrentSelection());
+    }
 
     if( pPlugIn->GetStartOptions() != 2 || m_pMovingGrib ) {         //no interpolation at start : take the nearest forecast
         m_OverlaySettings.m_bInterpolate && !m_pMovingGrib? m_InterpolateMode = true : m_InterpolateMode = false;
