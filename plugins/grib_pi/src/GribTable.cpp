@@ -363,24 +363,29 @@ wxString GRIBTable::GetWindGust(GribRecord **recordarray)
 wxString GRIBTable::GetWaves(GribRecord **recordarray)
 {
     wxString skn(wxEmptyString);
-    if( recordarray[Idx_WVDIR] ) {
-        double direction = recordarray[Idx_WVDIR]->
-            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
-        if( direction != GRIB_NOTDEF ){
-            skn.Printf(wxString::Format( _T("%03d\u00B0"), (int)direction ));
-        }
-    }
     if( recordarray[Idx_HTSIGW] ) {
         double height = recordarray[Idx_HTSIGW]->
             getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
-
         if( height != GRIB_NOTDEF ) {
-
-            if(!skn.IsEmpty()) skn.Append(_T("\n\n"));
-
             height = m_pGDialog->m_OverlaySettings.CalibrateValue(GribOverlaySettings::WAVE, height);
-            skn.Append( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WAVE), height ));
+            skn.Printf( wxString::Format( _T("%4.1f ") + m_pGDialog->m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WAVE), height ));
             m_pDataCellsColour = m_pGDialog->pPlugIn->m_pGRIBOverlayFactory->GetGraphicColor(GribOverlaySettings::WAVE, height);
+
+            if( recordarray[Idx_WVDIR] ) {
+                double direction = recordarray[Idx_WVDIR]->
+                    getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+                if( direction != GRIB_NOTDEF ){
+                    skn.Prepend(wxString::Format( _T("%03d\u00B0\n\n"), (int)direction ));
+                   
+                    if( recordarray[Idx_WVPER] ) {
+                        double period = recordarray[Idx_WVPER]->
+                            getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
+                        if( period != GRIB_NOTDEF ) {
+                            skn.Append( wxString::Format( _T("\n%01ds") , (int) (period + 0.5)) );
+                        }
+                    }
+                }
+            }
         }
     }
     return skn;

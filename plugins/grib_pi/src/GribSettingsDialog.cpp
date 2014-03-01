@@ -50,6 +50,23 @@ static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 0,
 
 enum SettingsDisplay {B_ARROWS, ISO_LINE_VISI, ISO_LINE_SHORT, D_ARROWS, OVERLAY, NUMBERS};
 
+int GribOverlaySettings::GetMinFromIndex( int index )
+{
+    switch(index){
+    case 0: return 2;
+    case 1: return 5;
+    case 2: return 10;
+    case 3: return 20;
+    case 4: return 30;
+    case 5: return 60;
+    case 6: return 90;
+    case 7: return 180;
+    case 8: return 360;
+    case 9: return 720;
+    }
+    return 1440;
+}
+
 wxString GribOverlaySettings::NameFromIndex(int index)
 {
     return wxGetTranslation(tname_from_index[index]);
@@ -69,7 +86,6 @@ void GribOverlaySettings::Read()
     pConf->Read ( _T ( "LoopStartPoint" ), &m_LoopStartPoint, 0 );
     pConf->Read ( _T ( "SlicesPerUpdate" ), &m_SlicesPerUpdate, 2);
     pConf->Read ( _T ( "UpdatesPerSecond" ), &m_UpdatesPerSecond, 2);
-    pConf->Read ( _T ( "HourDivider" ), &m_HourDivider, 2);
     pConf->Read ( _T ( "OverlayTransparency" ), &m_iOverlayTransparency, 220);
 
     for(int i=0; i<SETTINGS_COUNT; i++) {
@@ -116,7 +132,6 @@ void GribOverlaySettings::Write()
     pConf->Write ( _T ( "LoopStartPoint" ), m_LoopStartPoint);
     pConf->Write ( _T ( "SlicesPerUpdate" ), m_SlicesPerUpdate);
     pConf->Write ( _T ( "UpdatesPerSecond" ), m_UpdatesPerSecond);
-    pConf->Write ( _T ( "HourDivider" ), m_HourDivider);
     pConf->Write ( _T ( "OverlayTransparency" ), m_iOverlayTransparency);
 
     for(int i=0; i<SETTINGS_COUNT; i++) {
@@ -354,23 +369,27 @@ double GribOverlaySettings::GetMax(int settings)
     return CalibrateValue(settings, max);
 }
 
-GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings &Settings, int &lastdatatype)
+GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings &Settings, int &lastdatatype, int fileIntervalIndex)
     : GribSettingsDialogBase(&parent),
       m_parent(parent), m_extSettings(Settings), m_lastdatatype(lastdatatype)
 {
     m_Settings = m_extSettings;
+    //populate interval choice
+    m_sSlicesPerUpdate->Clear();
+    for( int i=0; i < fileIntervalIndex + 1; i++){
+        int mn = m_Settings.GetMinFromIndex(i);
+        m_sSlicesPerUpdate->Append(wxString::Format(_T("%2d "), mn / 60) + _("h") + wxString::Format(_T(" %.2d "), mn % 60) + _("mn"));
+    }
+
     m_cInterpolate->SetValue(m_Settings.m_bInterpolate);
     m_cLoopMode->SetValue(m_Settings.m_bLoopMode);
     m_cLoopStartPoint->SetSelection(m_Settings.m_LoopStartPoint);
-    m_sSlicesPerUpdate->SetValue(m_Settings.m_SlicesPerUpdate);
+    m_sSlicesPerUpdate->SetSelection(m_Settings.m_SlicesPerUpdate);
     m_sUpdatesPerSecond->SetValue(m_Settings.m_UpdatesPerSecond);
-    m_sHourDivider->SetValue(m_Settings.m_HourDivider);
     m_sTransparency->SetValue(m_Settings.m_iOverlayTransparency);
     if(!m_cInterpolate->IsChecked() ) {              //hide no suiting parameters
         m_tSlicesPerUpdate->Hide();
         m_sSlicesPerUpdate->Hide();
-        m_tHourDivider->Hide();
-        m_sHourDivider->Hide();
     }
 
     for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++)
@@ -379,6 +398,7 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
     m_cDataType->SetSelection(m_lastdatatype);
     PopulateUnits(m_lastdatatype);
     ReadDataTypeSettings(m_lastdatatype);
+    m_sButtonApply->SetLabel(_("Apply"));
     Fit();
 }
 
@@ -396,9 +416,8 @@ void GribSettingsDialog::WriteSettings()
 
     m_Settings.m_bLoopMode = m_cLoopMode->GetValue();
     m_Settings.m_LoopStartPoint = m_cLoopStartPoint->GetSelection();
-    m_Settings.m_SlicesPerUpdate = m_sSlicesPerUpdate->GetValue();
+    m_Settings.m_SlicesPerUpdate = m_sSlicesPerUpdate->GetCurrentSelection();
     m_Settings.m_UpdatesPerSecond = m_sUpdatesPerSecond->GetValue();
-    m_Settings.m_HourDivider = m_sHourDivider->GetValue();
 
     SetDataTypeSettings(m_lastdatatype);
 
@@ -519,6 +538,7 @@ void GribSettingsDialog::ShowSettings( int params )
         m_cbIsoBars->Show();
         m_fIsoBarSpacing->SetCols(2);
         m_fIsoBarSpacing->Add(m_sIsoBarSpacing, 0, 5,wxALL|wxEXPAND);
+        m_sIsoBarSpacing->SetMinSize(wxSize(70, -1));
         m_fIsoBarSpacing->ShowItems(true);
         m_fIsoBarVisibility->SetCols(1);
         m_fIsoBarVisibility->Add(m_sIsoBarVisibility, 0, 5,wxTOP|wxLEFT|wxEXPAND);
@@ -529,6 +549,7 @@ void GribSettingsDialog::ShowSettings( int params )
         m_fIsoBarSpacing->ShowItems(true);
         m_fIsoBarVisibility->SetCols(1);
         m_fIsoBarVisibility->Add(m_sIsoBarSpacing, 0, 5,wxTOP|wxLEFT|wxEXPAND);
+        m_sIsoBarSpacing->SetMinSize(wxSize(-1, -1));
         m_fIsoBarVisibility->ShowItems(true);
         break;
     case D_ARROWS:
@@ -580,13 +601,9 @@ void GribSettingsDialog::OnIntepolateChange( wxCommandEvent& event )
     if( m_cInterpolate->IsChecked() ) {
         m_tSlicesPerUpdate->Show();
         m_sSlicesPerUpdate->Show();
-        m_tHourDivider->Show();
-        m_sHourDivider->Show();
     } else {                                        //hide no suiting parameters
         m_tSlicesPerUpdate->Hide();
         m_sSlicesPerUpdate->Hide();
-        m_tHourDivider->Hide();
-        m_sHourDivider->Hide();
     }
     this->Fit();
     this->Refresh();

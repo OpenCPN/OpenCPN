@@ -274,7 +274,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	
 	m_staticText26 = new wxStaticText( this, wxID_ANY, _("Loop Start"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText26->Wrap( -1 );
-	fgSizer13->Add( m_staticText26, 0, wxALL, 5 );
+	fgSizer13->Add( m_staticText26, 0, wxALL|wxEXPAND, 5 );
 	
 	wxString m_cLoopStartPointChoices[] = { _("Top of Grib File"), _("Current time forecast") };
 	int m_cLoopStartPointNChoices = sizeof( m_cLoopStartPointChoices ) / sizeof( wxString );
@@ -288,7 +288,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	wxStaticText* m_staticText4;
 	m_staticText4 = new wxStaticText( this, wxID_ANY, _("Updates per Second"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText4->Wrap( -1 );
-	fgSizer13->Add( m_staticText4, 0, wxALL, 5 );
+	fgSizer13->Add( m_staticText4, 0, wxALL|wxEXPAND, 5 );
 	
 	m_sUpdatesPerSecond = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 60, 4 );
 	fgSizer13->Add( m_sUpdatesPerSecond, 0, wxALL|wxEXPAND, 5 );
@@ -296,22 +296,14 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_cInterpolate = new wxCheckBox( this, wxID_ANY, _("Interpolate between gribs"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer13->Add( m_cInterpolate, 0, wxALL, 5 );
 	
-	m_tSlicesPerUpdate = new wxStaticText( this, wxID_ANY, _("Slices per Update"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_tSlicesPerUpdate = new wxStaticText( this, wxID_ANY, _("Time Interval"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tSlicesPerUpdate->Wrap( -1 );
-	fgSizer13->Add( m_tSlicesPerUpdate, 0, wxALL, 5 );
+	fgSizer13->Add( m_tSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
 	
-	m_sSlicesPerUpdate = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 100, 2 );
+	wxArrayString m_sSlicesPerUpdateChoices;
+	m_sSlicesPerUpdate = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_sSlicesPerUpdateChoices, 0 );
+	m_sSlicesPerUpdate->SetSelection( 0 );
 	fgSizer13->Add( m_sSlicesPerUpdate, 0, wxALL|wxEXPAND, 5 );
-	
-	
-	fgSizer13->Add( 0, 0, 1, wxEXPAND, 5 );
-	
-	m_tHourDivider = new wxStaticText( this, wxID_ANY, _("Slices per hour"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_tHourDivider->Wrap( -1 );
-	fgSizer13->Add( m_tHourDivider, 0, wxALL, 5 );
-	
-	m_sHourDivider = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 1, 20, 2 );
-	fgSizer13->Add( m_sHourDivider, 1, wxALL|wxEXPAND, 5 );
 	
 	
 	sbSizer4->Add( fgSizer13, 1, wxEXPAND, 5 );
@@ -420,8 +412,8 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_staticText8->Wrap( -1 );
 	fgSizer15->Add( m_staticText8, 0, wxALL|wxEXPAND, 5 );
 	
-	m_sNumbersSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxSP_ARROW_KEYS, 0, 100, 50 );
-	fgSizer15->Add( m_sNumbersSpacing, 0, wxALL, 5 );
+	m_sNumbersSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxSP_ARROW_KEYS, 0, 100, 50 );
+	fgSizer15->Add( m_sNumbersSpacing, 0, wxALL|wxEXPAND, 5 );
 	
 	m_staticline1 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
 	fgSizer15->Add( m_staticline1, 0, wxEXPAND | wxALL, 5 );
