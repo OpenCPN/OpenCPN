@@ -1851,9 +1851,11 @@ bool Quilt::Compose( const ViewPort &vp_in )
 
             if( pc->GetChartType() == CHART_TYPE_S57 ) {
                 s57chart *ps57 = dynamic_cast<s57chart *>( pc );
-                pqp->b_overlay = ( ps57->GetUsageChar() == 'L' || ps57->GetUsageChar() == 'A' );
-                if( pqp->b_overlay )
-                    m_bquilt_has_overlays = true;
+                if( ps57 ){
+                    pqp->b_overlay = ( ps57->GetUsageChar() == 'L' || ps57->GetUsageChar() == 'A' );
+                    if( pqp->b_overlay )
+                        m_bquilt_has_overlays = true;
+                }
             }
         }
     }
