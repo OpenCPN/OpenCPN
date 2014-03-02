@@ -30950,6 +30950,17 @@
 			<HPGL>SPA;SW2;PU2105,1470;PD2409,1470;SPA;SW2;PU2261,1470;PD2261,1620;</HPGL>
 			<color-ref>ACHGRD</color-ref>
 		</line-style>
+                <line-style RCID="3192">
+                        <name>ESSARE01</name>
+                        <vector width="304" height="150">
+                                <distance min="0" max="0" />
+                                <pivot x="1904" y="1468" />
+                                <origin x="2105" y="1470" />
+                        </vector>
+                        <description>ESSA or PSSA boundary</description>
+                        <HPGL>SPA;SW2;PU2105,1470;PD2409,1470;SPA;SW2;PU2261,1470;PD2261,1620;</HPGL>
+                        <color-ref>ACHMGD</color-ref>
+                </line-style>
 		<line-style RCID="3347">
 			<name>CBLARE51</name>
 			<vector width="2739" height="500">
