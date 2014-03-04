@@ -82,6 +82,7 @@ public:
     void SetMessage( wxString message ) { m_Message = message; }
     void SetTimeZone( int TimeZone ) { m_TimeZone = TimeZone; }
     void SetParentSize( int w, int h ) { m_ParentSize.SetWidth(w) ; m_ParentSize.SetHeight(h) ;}
+    void SetAltitude(int altitude) { m_Altitude = altitude; }
 
     void SetGribTimelineRecordSet( GribTimelineRecordSet *pGribTimelineRecordSet1 );
     bool RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp );
@@ -99,8 +100,10 @@ public:
     wxColour GetGraphicColor(int config, double val);
 
     wxSize  m_ParentSize;
+    int m_Altitude;
 private:
 
+    void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar);
     bool DoRenderGribOverlay( PlugIn_ViewPort *vp );
     void RenderGribBarbedArrows( int config, GribRecord **pGR, PlugIn_ViewPort *vp );
     void RenderGribIsobar( int config, GribRecord **pGR, wxArrayPtrVoid **pIsobarArray, PlugIn_ViewPort *vp );

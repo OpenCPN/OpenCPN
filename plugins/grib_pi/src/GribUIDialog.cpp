@@ -154,8 +154,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, false);
 
     m_cRecordForecast->Clear();
-    /* this should be un-commented to avoid a memory leak,
-       but for some reason it crbashes windows */
+    pPlugIn->GetGRIBOverlayFactory()->SetAltitude( 0 );
     delete m_bGRIBActiveFile;
     m_pTimelineSet = NULL;
     m_InterpolateMode = false;
@@ -177,8 +176,6 @@ void GRIBUIDialog::OpenFile(bool newestFile)
         GribRecordSet &first=rsa->Item(0), &second = rsa->Item(1), &last = rsa->Item(rsa->GetCount()-1);
 
         //get file interval index
-       // wxTimeSpan sp = wxDateTime(second.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
-        //int intermin = sp.GetMinutes();
         int halphintermin(wxTimeSpan(wxDateTime(second.m_Reference_Time) - wxDateTime(first.m_Reference_Time)).GetMinutes() / 2);
         for( m_FileIntervalIndex=0;;m_FileIntervalIndex++){
             if(m_OverlaySettings.GetMinFromIndex(m_FileIntervalIndex) > halphintermin) break;
@@ -222,7 +219,6 @@ void GRIBUIDialog::OpenFile(bool newestFile)
             else
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( m_bGRIBActiveFile->GetLastMessage() );
         }
-
         this->SetTitle(title);
         SetFactoryOptions();
         if( pPlugIn->GetStartOptions() )
@@ -244,7 +240,7 @@ bool GRIBUIDialog::GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double 
     //calculate the largest overlay size
     GribRecord **pGR = timelineSet->m_GribRecordPtrArray;
     double ltmi = -GRIB_NOTDEF, ltma = GRIB_NOTDEF, lnmi = -GRIB_NOTDEF, lnma = GRIB_NOTDEF;
-    for( int i = 0; i<13; i++){
+    for( int i = 0; i<36; i++){
         GribRecord *pGRA = pGR[i];
         if(!pGRA) continue;
         if(pGRA->getLatMin() < ltmi) ltmi = pGRA->getLatMin();
@@ -366,6 +362,9 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     DimeWindow( this );
 
     m_pTimelineSet = NULL;
+    m_fgTrackingDisplay->Show(2,false);         //Hide extra altitude data parameters
+    //is there a bug in wxWigget? m_fgTrackingControls->Clear() delete m_fcAltitude so it's necessary to detach it before
+    m_fgTrackingControls->Detach(m_fcAltitude);
     m_fgTrackingControls->Clear();
 
     Fit();
@@ -448,11 +447,18 @@ void GRIBUIDialog::SetViewPort( PlugIn_ViewPort *vp )
         if(pReq_Dialog->IsShown()) pReq_Dialog->OnVpChange(vp);
 }
 
-void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show )
+void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show, bool altitude )
 {
     if(show) {
+        if( altitude ){
+            m_fcAltitude->Add(ctrl1, 0, wxALL, 1);
+            ctrl1->Show();
+            m_cbAltitude->Show();
+            m_fgTrackingControls->Add( m_fcAltitude, 1, wxRIGHT|wxBOTTOM, 3 );
+        } else {
         m_fgTrackingControls->Add(ctrl1, 0, wxALL, 1);
         ctrl1->Show();
+        }
         if(ctrl2) {
             m_fgTrackingControls->Add(ctrl2, 0, wxALL, 1);
             ctrl2->Show();
@@ -475,6 +481,11 @@ void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxC
 
 void GRIBUIDialog::PopulateTrackingControls( void )
 {
+    wxColour bgd1,bgd2;
+    GetGlobalColor( _T("DILG0"),&bgd1);
+    GetGlobalColor( _T("YELO1"),&bgd2);
+    m_tcWindSpeed->SetBackgroundColour(bgd1);
+
     //fix crash with curious files with no record
     if(m_pTimelineSet) {
         m_bpSettings->Enable();
@@ -500,13 +511,25 @@ void GRIBUIDialog::PopulateTrackingControls( void )
         m_bpNow->Disable();
     }
 
+    //is there a bug in wxWigget? flexsizer->Clear() delete child if it's a flexsizer so it's necessary to detach it before
+    if(m_fgTrackingControls->GetItem(m_fcAltitude) != NULL) m_fgTrackingControls->Detach(m_fcAltitude);
     m_fgTrackingControls->Clear();
     m_fgTrackingControls->SetCols(9);
+    if(m_fcAltitude->GetItem(m_cbWind) != NULL) m_fcAltitude->Detach(m_cbWind);
+    m_cbAltitude->Hide();
     this->Fit();
+
+    //populate and set altitude choice
+    m_cbAltitude->Clear();
+    for( int i = 0; i<5; i++) {
+        if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
+            && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) || i == 0 )
+                m_cbAltitude->Append(m_OverlaySettings.GetAltitudeFromIndex( i , m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units));
+    }
 
     AddTrackingControl(m_cbWind, m_tcWindSpeed, m_tcWindDirection,
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX) != wxNOT_FOUND
-        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND);
+        && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY) != wxNOT_FOUND, m_cbAltitude->GetCount() > 1 );
     AddTrackingControl(m_cbWindGust, m_tcWindGust, 0, m_pTimelineSet
         && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_GUST) != wxNOT_FOUND);
     AddTrackingControl(m_cbPressure, m_tcPressure, 0, m_pTimelineSet
@@ -535,18 +558,44 @@ void GRIBUIDialog::PopulateTrackingControls( void )
     AddTrackingControl(m_cbCloud, m_tcCloud, 0,
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND);
     AddTrackingControl(m_cbAirTemperature, m_tcAirTemperature, 0,
-        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP_2M) != wxNOT_FOUND);
+        m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP) != wxNOT_FOUND);
     AddTrackingControl(m_cbSeaTemperature, m_tcSeaTemperature, 0,
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND);
     AddTrackingControl(m_cbCAPE, m_tcCAPE, 0,
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND);
 
-    //Risize speed ctrl for single or double unit display
+    m_cbAltitude->SetSelection( pPlugIn->GetGRIBOverlayFactory()->m_Altitude );
+    //
+    //init and show extra parameters for altitude tracking if necessary
+    if( pPlugIn->GetGRIBOverlayFactory()->m_Altitude ) {
+        if( (m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP
+                + pPlugIn->GetGRIBOverlayFactory()->m_Altitude) != wxNOT_FOUND)
+            || (m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_HUMID_RE
+                + pPlugIn->GetGRIBOverlayFactory()->m_Altitude) != wxNOT_FOUND)
+            || (m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_GEOP_HGT
+                + pPlugIn->GetGRIBOverlayFactory()->m_Altitude) != wxNOT_FOUND) ) {
+                    m_fgTrackingDisplay->Show(2, true);
+                    m_tcAltitude->SetValue( _("N/A") );
+                    m_tcTemp->SetValue( _("N/A") );
+                    m_tcRelHumid->SetValue( _("N/A") );
+                    m_tcWindSpeed->SetBackgroundColour(bgd2);
+                    m_tcAltitude->SetBackgroundColour(bgd2);
+                    m_tcTemp->SetBackgroundColour(bgd2);
+                    m_tcRelHumid->SetBackgroundColour(bgd2);
+        }
+
+        m_stAltitudeText->SetLabel((m_OverlaySettings.GetAltitudeFromIndex(
+            pPlugIn->GetGRIBOverlayFactory()->m_Altitude, m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units))
+            .append(_T(" ")).Append( m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE) ) );
+    } else
+        m_fgTrackingDisplay->Show(2,false);
+    //
+    //Resize speed ctrl for single or double unit display
     if(m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units == GribOverlaySettings::BFS)
         m_tcWindSpeed->SetMinSize(wxSize(70, -1));
     else
         m_tcWindSpeed->SetMinSize(wxSize(110, -1) );
-    //Risize wave height ctrl for single or double display
+    //Resize wave height ctrl for single or double display
     if(m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WVPER) == wxNOT_FOUND)
         m_tcWaveHeight->SetMinSize(wxSize(70, -1));
     else
@@ -563,10 +612,11 @@ void GRIBUIDialog::UpdateTrackingControls( void )
 
     GribRecord **RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
     //    Update the wind control
-    if( RecordArray[Idx_WIND_VX] && RecordArray[Idx_WIND_VY] ) {
-        double vx = RecordArray[Idx_WIND_VX]->
+    int altitude = pPlugIn->GetGRIBOverlayFactory()->m_Altitude;
+    if( RecordArray[Idx_WIND_VX + altitude] && RecordArray[Idx_WIND_VY + altitude] ) {
+        double vx = RecordArray[Idx_WIND_VX + altitude]->
             getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-        double vy = RecordArray[Idx_WIND_VY]->
+        double vy = RecordArray[Idx_WIND_VY + altitude]->
             getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
 
         if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
@@ -699,8 +749,8 @@ void GRIBUIDialog::UpdateTrackingControls( void )
     }
 
     //    Update the Air Temperature
-    if( RecordArray[Idx_AIR_TEMP_2M] ) {
-        double temp = RecordArray[Idx_AIR_TEMP_2M]->
+    if( RecordArray[Idx_AIR_TEMP] ) {
+        double temp = RecordArray[Idx_AIR_TEMP]->
             getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
 
         if( temp != GRIB_NOTDEF ) {
@@ -733,7 +783,41 @@ void GRIBUIDialog::UpdateTrackingControls( void )
         } else
             m_tcCAPE->SetValue( _("N/A") );
     }
+    // Update extra data for altitude
+    // geopotential altitude
+    if( RecordArray[Idx_GEOP_HGT + altitude] ) {
+        double geop = RecordArray[Idx_GEOP_HGT + altitude]->
+            getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
 
+        if( geop != GRIB_NOTDEF ) {
+            geop = m_OverlaySettings.CalibrateValue(GribOverlaySettings::GEO_ALTITUDE, geop);
+            m_tcAltitude->SetValue( wxString::Format( _T("%5.0f "), geop ) + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE) );
+        } else
+            m_tcAltitude->SetValue( _("N/A") );
+    }
+
+    // temperature
+    if( RecordArray[Idx_AIR_TEMP + altitude] ) {
+        double temp = RecordArray[Idx_AIR_TEMP + altitude]->
+            getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
+
+        if( temp != GRIB_NOTDEF ) {
+            temp = m_OverlaySettings.CalibrateValue(GribOverlaySettings::AIR_TEMPERATURE, temp);
+            m_tcTemp->SetValue( wxString::Format( _T("%5.1f "), temp ) + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::AIR_TEMPERATURE) );
+        } else
+            m_tcTemp->SetValue(  _("N/A") );
+    }
+    // relative humidity
+    if( RecordArray[Idx_HUMID_RE + altitude] ) {
+        double humi = RecordArray[Idx_HUMID_RE + altitude]->
+            getInterpolatedValue( m_cursor_lon, m_cursor_lat, true );
+
+        if( humi != GRIB_NOTDEF ) {
+            humi = m_OverlaySettings.CalibrateValue(GribOverlaySettings::REL_HUMIDITY, humi);
+            m_tcRelHumid->SetValue( wxString::Format( _T("%5.0f "), humi ) + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::REL_HUMIDITY) );
+        } else
+            m_tcRelHumid->SetValue(  _("N/A") );
+    }
     Fit();
 }
 
@@ -977,6 +1061,29 @@ void GRIBUIDialog::OnTimeline( wxScrollEvent& event )
     TimelineChanged();
 }
 
+void GRIBUIDialog::OnAltitudeChange( wxCommandEvent& event )
+{
+    double alt;
+    m_cbAltitude->GetLabel().ToDouble(&alt);
+    switch((int) alt) {
+    case 8:
+    case 225:
+    case 300: pPlugIn->GetGRIBOverlayFactory()->SetAltitude(4);break;
+    case 14:
+    case 375:
+    case 500: pPlugIn->GetGRIBOverlayFactory()->SetAltitude(3);break;
+    case 20:
+    case 525:
+    case 700: pPlugIn->GetGRIBOverlayFactory()->SetAltitude(2);break;
+    case 25:
+    case 637:
+    case 850: pPlugIn->GetGRIBOverlayFactory()->SetAltitude(1);break;
+    default:  pPlugIn->GetGRIBOverlayFactory()->SetAltitude(0);break;
+    }
+    PopulateTrackingControls();
+    SetFactoryOptions();                     // Reload the visibility options
+}
+
 void GRIBUIDialog::OnCBAny( wxCommandEvent& event )
 {
     //Ovoid to have more than one overlay at a time
@@ -1138,6 +1245,11 @@ void GRIBUIDialog::ComputeBestForecastForNow()
         return;
     }
 
+    if ( !m_TimeLineHours ){                //fix a crash for one date files
+        TimelineChanged();
+        return;
+    }
+
     wxDateTime now = GetNow();
 
     if( m_OverlaySettings.m_bInterpolate && !m_pMovingGrib )
@@ -1271,8 +1383,28 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                 if( m_GribRecordSetArray.Item( j ).m_Reference_Time == thistime ) {
                     int idx = -1;
                     switch(pRec->getDataType()) {
-                    case GRB_WIND_VX:  idx = Idx_WIND_VX; break;
-                    case GRB_WIND_VY:  idx = Idx_WIND_VY; break;
+                    case GRB_WIND_VX:
+                        if(pRec->getLevelType() == LV_ISOBARIC){
+                            switch(pRec->getLevelValue()){
+                            case 300: idx = Idx_WIND_VX300;break;
+                            case 500: idx = Idx_WIND_VX500;break;
+                            case 700: idx = Idx_WIND_VX700;break;
+                            case 850: idx = Idx_WIND_VX850;break;
+                            }
+                        } else
+                            idx = Idx_WIND_VX;
+                        break;
+                    case GRB_WIND_VY:
+                        if(pRec->getLevelType() == LV_ISOBARIC){
+                            switch(pRec->getLevelValue()){
+                            case 300: idx = Idx_WIND_VY300;break;
+                            case 500: idx = Idx_WIND_VY500;break;
+                            case 700: idx = Idx_WIND_VY700;break;
+                            case 850: idx = Idx_WIND_VY850;break;
+                            }
+                        } else
+                            idx = Idx_WIND_VY;
+                        break;
                     case GRB_WIND_GUST: idx = Idx_WIND_GUST; break;
                     case GRB_PRESSURE: idx = Idx_PRESSURE;   break;
                     case GRB_HTSGW:    idx = Idx_HTSIGW;  break;
@@ -1282,10 +1414,40 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                     case GRB_VOGRD:    idx = Idx_SEACURRENT_VY; break;
                     case GRB_PRECIP_TOT: idx = Idx_PRECIP_TOT; break;
                     case GRB_CLOUD_TOT:  idx = Idx_CLOUD_TOT; break;
-                    case GRB_TEMP:     idx = Idx_AIR_TEMP_2M; break;
+                    case GRB_TEMP:
+                        if(pRec->getLevelType() == LV_ISOBARIC){
+                            switch(pRec->getLevelValue()){
+                            case 300: idx = idx = Idx_AIR_TEMP300;break;
+                            case 500: idx = idx = Idx_AIR_TEMP500;break;
+                            case 700: idx = idx = Idx_AIR_TEMP700;break;
+                            case 850: idx = idx = Idx_AIR_TEMP850;break;
+                            }
+                        } else
+                            idx = Idx_AIR_TEMP;
+                        break;
                     case GRB_WTMP:     idx = Idx_SEA_TEMP; break;
                     case GRB_CAPE:      idx = Idx_CAPE;break;
-                    }
+                    case GRB_HUMID_REL:
+                        if(pRec->getLevelType() == LV_ISOBARIC){
+                            switch(pRec->getLevelValue()){
+                            case 300: idx = idx = Idx_HUMID_RE300;break;
+                            case 500: idx = idx = Idx_HUMID_RE500;break;
+                            case 700: idx = idx = Idx_HUMID_RE700;break;
+                            case 850: idx = idx = Idx_HUMID_RE850;break;
+                            }
+                        }
+                        break;
+                    case GRB_GEOPOT_HGT:
+                        if(pRec->getLevelType() == LV_ISOBARIC){
+                            switch(pRec->getLevelValue()){
+                            case 300: idx = idx = Idx_GEOP_HGT300;break;
+                            case 500: idx = idx = Idx_GEOP_HGT500;break;
+                            case 700: idx = idx = Idx_GEOP_HGT700;break;
+                            case 850: idx = idx = Idx_GEOP_HGT850;break;
+                            }
+                        }
+                        break;
+                     }
 
                     if(idx != -1) {
                         m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]= pRec;

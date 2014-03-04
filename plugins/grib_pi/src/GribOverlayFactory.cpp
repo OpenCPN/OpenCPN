@@ -163,13 +163,13 @@ bool GRIBOverlayFactory::RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp )
     return DoRenderGribOverlay( vp );
 }
 
-void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar)
+void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy, bool &polar)
 {
     idx = idy = -1;
     polar = false;
     switch(i) {
     case GribOverlaySettings::WIND:
-        idx = Idx_WIND_VX, idy = Idx_WIND_VY; break;
+        idx = Idx_WIND_VX + m_Altitude, idy = Idx_WIND_VY + m_Altitude; break;
     case GribOverlaySettings::WIND_GUST:
         idx = Idx_WIND_GUST; break;
     case GribOverlaySettings::PRESSURE:
@@ -183,7 +183,7 @@ void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar)
     case GribOverlaySettings::CLOUD:
         idx = Idx_CLOUD_TOT; break;
     case GribOverlaySettings::AIR_TEMPERATURE:
-        idx = Idx_AIR_TEMP_2M; break;
+        idx = Idx_AIR_TEMP; break;
     case GribOverlaySettings::SEA_TEMPERATURE:
         idx = Idx_SEA_TEMP; break;
     case GribOverlaySettings::CAPE:
@@ -197,6 +197,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
         DrawMessageWindow( ( m_Message ), vp->pix_width, vp->pix_height, m_dFont_war );
         return false;
     }
+
     m_Message_Hiden.Empty();
 
     //    If the scale has changed, clear out the cached bitmaps in DC mode
@@ -252,6 +253,13 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
             RenderGribDirectionArrows( i, pGR, vp );
             RenderGribNumbers( i, pGR, vp );
         }
+    }
+    if( m_Altitude ) {
+        if( !m_Message_Hiden.IsEmpty() ) m_Message_Hiden.Append(_T("   "));
+        m_Message_Hiden.Append(_("WIND data at")).Append(_T(" "))
+            .Append(m_Settings.GetAltitudeFromIndex(m_Altitude, m_Settings.Settings[GribOverlaySettings::PRESSURE].m_Units)).Append(_T(" "))
+            .Append(m_Settings.GetUnitSymbol(GribOverlaySettings::PRESSURE))
+            .Append(_T(" !"));
     }
     if( !m_Message_Hiden.IsEmpty() )
         DrawMessageWindow( m_Message_Hiden , vp->pix_width, vp->pix_height, m_dFont_map );
