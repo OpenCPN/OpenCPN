@@ -29,12 +29,15 @@
 WX_DECLARE_OBJARRAY( GribRecord *, ArrayOfGribRecordPtrs );
 
     // These are indexes into the array
-enum { Idx_WIND_VX, Idx_WIND_VY, Idx_WIND_GUST, Idx_PRESSURE, Idx_HTSIGW, Idx_WVDIR, Idx_WVPER,
-       Idx_WINDSCAT_VY, Idx_WINDSCAT_VX,
-       Idx_SEACURRENT_VX, Idx_SEACURRENT_VY,
-       Idx_PRECIP_TOT, Idx_CLOUD_TOT,
-       Idx_AIR_TEMP_2M, Idx_SEA_TEMP,
-       Idx_CAPE, Idx_COUNT };
+enum { Idx_WIND_VX, Idx_WIND_VX850, Idx_WIND_VX700, Idx_WIND_VX500, Idx_WIND_VX300,
+    Idx_WIND_VY, Idx_WIND_VY850, Idx_WIND_VY700, Idx_WIND_VY500, Idx_WIND_VY300,
+    Idx_WIND_GUST, Idx_PRESSURE, Idx_HTSIGW, Idx_WVDIR, Idx_WVPER,
+    Idx_SEACURRENT_VX, Idx_SEACURRENT_VY, Idx_PRECIP_TOT, Idx_CLOUD_TOT,
+    Idx_AIR_TEMP, Idx_AIR_TEMP850, Idx_AIR_TEMP700, Idx_AIR_TEMP500, Idx_AIR_TEMP300,
+    Idx_SEA_TEMP, Idx_CAPE,
+    Idx_HUMID_RE, Idx_HUMID_RE850, Idx_HUMID_RE700, Idx_HUMID_RE500, Idx_HUMID_RE300,
+    Idx_GEOP_HGT,Idx_GEOP_HGT850, Idx_GEOP_HGT700, Idx_GEOP_HGT500, Idx_GEOP_HGT300,
+    Idx_COUNT };
 
 class GribRecordSet {
 public:

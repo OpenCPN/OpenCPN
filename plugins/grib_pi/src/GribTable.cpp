@@ -163,7 +163,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
             nrows++;
         }
         //create and polulate the Air Temperature data row
-        if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP_2M) != wxNOT_FOUND) {
+        if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_AIR_TEMP) != wxNOT_FOUND) {
             AddDataRow( nrows, i, _("Air\nTemperature"), singledatarow );
             m_pGribTable->SetCellValue(nrows, i, GetAirTemp(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
@@ -427,8 +427,8 @@ wxString GRIBTable::GetCloudCover(GribRecord **recordarray)
 wxString GRIBTable::GetAirTemp(GribRecord **recordarray)
 {
     wxString skn(wxEmptyString);
-    if( recordarray[Idx_AIR_TEMP_2M] ) {
-        double temp = recordarray[Idx_AIR_TEMP_2M]->
+    if( recordarray[Idx_AIR_TEMP] ) {
+        double temp = recordarray[Idx_AIR_TEMP]->
             getInterpolatedValue(m_pGDialog->m_cursor_lon, m_pGDialog->m_cursor_lat, true );
 
         if( temp != GRIB_NOTDEF ) {
