@@ -151,12 +151,12 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_bpPlay->SetBitmap(*m_bPlay);
     m_bpPlay->SetToolTip(_("Play"));
     m_tPlayStop.Stop();
-    SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, false);
-
     m_cRecordForecast->Clear();
     pPlugIn->GetGRIBOverlayFactory()->SetAltitude( 0 );
     delete m_bGRIBActiveFile;
     m_pTimelineSet = NULL;
+    m_sTimeline->SetValue(0);
+    m_TimeLineHours = 0;
     m_InterpolateMode = false;
     m_pNowMode = false;
     m_pMovingGrib = false;
@@ -170,48 +170,43 @@ void GRIBUIDialog::OpenFile(bool newestFile)
                                       pPlugIn->GetCopyMissWaveRec() );
 
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
-    if(rsa->GetCount() < 2)
-        m_TimeLineHours = 0;
-    else {
-        GribRecordSet &first=rsa->Item(0), &second = rsa->Item(1), &last = rsa->Item(rsa->GetCount()-1);
-
-        //get file interval index
-        int halphintermin(wxTimeSpan(wxDateTime(second.m_Reference_Time) - wxDateTime(first.m_Reference_Time)).GetMinutes() / 2);
-        for( m_FileIntervalIndex=0;;m_FileIntervalIndex++){
-            if(m_OverlaySettings.GetMinFromIndex(m_FileIntervalIndex) > halphintermin) break;
-        }
-        m_FileIntervalIndex--;
-        if(m_OverlaySettings.m_SlicesPerUpdate > m_FileIntervalIndex) m_OverlaySettings.m_SlicesPerUpdate = m_FileIntervalIndex;
-
-        //search for a moving grib file
-        double wmin1,wmax1,hmin1,hmax1,wmin2,wmax2,hmin2,hmax2;
-        GetGribZoneLimits(GetTimeLineRecordSet(first.m_Reference_Time), &wmin1, &wmax1, &hmin1, &hmax1 );
-        GetGribZoneLimits(GetTimeLineRecordSet(last.m_Reference_Time), &wmin2, &wmax2, &hmin2, &hmax2 );
-        if( wmin1 != wmin2 || wmax1 != wmax2 || hmin1 != hmin2 || hmax1 != hmax2 )
-            m_pMovingGrib = true;
-        //
-        wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
-        m_TimeLineHours = span.GetHours();
-        m_sTimeline->Enable();
-    }
-    m_sTimeline->SetValue(0);
 
     wxFileName fn( m_file_name );
     wxString title( fn.GetFullName() );
 
     if( m_bGRIBActiveFile ) {
         if( m_bGRIBActiveFile->IsOK() ) {
-            //there could be valid but empty file
-            if( rsa->GetCount() == 0 ) {
+            if( rsa->GetCount() == 0 ) {                        //valid but empty file
                 m_bGRIBActiveFile = NULL;
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Error:  No valid data in this file!") );
 
             } else {
                 PopulateComboDataList();
                 title.append( _T("(") + TToString( m_bGRIBActiveFile->GetRefDateTime(), pPlugIn->GetTimeZone()) + _T(")"));
+
+                if( rsa->GetCount() > 1 ) {
+                    GribRecordSet &first=rsa->Item(0), &second = rsa->Item(1), &last = rsa->Item(rsa->GetCount()-1);
+
+                    //compute ntotal time span
+                    wxTimeSpan span = wxDateTime(last.m_Reference_Time) - wxDateTime(first.m_Reference_Time);
+                    m_TimeLineHours = span.GetHours();
+
+                    //get file interval index and update intervale choice if necessary
+                    int halfintermin(wxTimeSpan(wxDateTime(second.m_Reference_Time) - wxDateTime(first.m_Reference_Time)).GetMinutes() / 2);
+                    for( m_FileIntervalIndex = 0;; m_FileIntervalIndex++){
+                        if(m_OverlaySettings.GetMinFromIndex(m_FileIntervalIndex) > halfintermin) break;
+                    }
+                    m_FileIntervalIndex--;
+                    if(m_OverlaySettings.m_SlicesPerUpdate > m_FileIntervalIndex) m_OverlaySettings.m_SlicesPerUpdate = m_FileIntervalIndex;
+
+                    //search for a moving grib file
+                    double wmin1,wmax1,hmin1,hmax1,wmin2,wmax2,hmin2,hmax2;
+                    GetGribZoneLimits(new GribTimelineRecordSet(first, first, 0), &wmin1, &wmax1, &hmin1, &hmax1 );
+                    GetGribZoneLimits(new GribTimelineRecordSet(last, last, 0), &wmin2, &wmax2, &hmin2, &hmax2 );
+                    if( wmin1 != wmin2 || wmax1 != wmax2 || hmin1 != hmin2 || hmax1 != hmax2 ) m_pMovingGrib = true;
+                    //
+                }
             }
-            if( rsa->GetCount() > 1 )
-                SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, true);
         } else {
             if( fn.IsDir() ) {
                 pPlugIn->GetGRIBOverlayFactory()->SetMessage( _("Warning:  Empty directory!") );
@@ -221,13 +216,14 @@ void GRIBUIDialog::OpenFile(bool newestFile)
         }
         this->SetTitle(title);
         SetFactoryOptions();
-        if( pPlugIn->GetStartOptions() )
+        if( pPlugIn->GetStartOptions() && m_TimeLineHours != 0)                             //fix a crash for one date files
             ComputeBestForecastForNow();
         else
             TimelineChanged();
 
         PopulateTrackingControls();
     }
+    SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, m_TimeLineHours != 0);
     if(m_pMovingGrib) {
         wxMessageDialog mes(this, _("The Grib file you are opening contains a moving Grib Zone.\nInterpolation is not supported for this type of file"),
             _("Warning!"), wxOK);
@@ -352,6 +348,12 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     m_bpOpenFile->SetBitmap(wxBitmap( openfile ));
     m_bpSettings->SetBitmap(wxBitmap( setting ));
     m_bpRequest->SetBitmap(wxBitmap( request ));
+
+    wxColour c;
+    GetGlobalColor( _T("YELO1"),&c);
+    m_tcAltitude->SetBackgroundColour(c);
+    m_tcTemp->SetBackgroundColour(c);
+    m_tcRelHumid->SetBackgroundColour(c);
 
     //connect events have not been done in dialog base
     this->Connect( wxEVT_MOVE, wxMoveEventHandler( GRIBUIDialog::OnMove ) );
@@ -487,29 +489,15 @@ void GRIBUIDialog::PopulateTrackingControls( void )
     m_tcWindSpeed->SetBackgroundColour(bgd1);
 
     //fix crash with curious files with no record
-    if(m_pTimelineSet) {
-        m_bpSettings->Enable();
-        m_bpZoomToCenter->Enable();
-    } else {
-        m_bpSettings->Disable();
-        m_bpZoomToCenter->Disable();
-    }
+    m_bpSettings->Enable(m_pTimelineSet != NULL);
+    m_bpZoomToCenter->Enable(m_pTimelineSet != NULL);
 
-    if(m_pTimelineSet && m_TimeLineHours) {
-        m_sTimeline->Show();
-        m_bpPlay->Show();
+    m_sTimeline->Show(m_pTimelineSet != NULL && m_TimeLineHours);
+    m_bpPlay->Show(m_pTimelineSet != NULL && m_TimeLineHours);
 
-        m_bpPrev->Enable();
-        m_bpNext->Enable();
-        m_bpNow->Enable();
-    } else {
-        m_sTimeline->Hide();
-        m_bpPlay->Hide();
-
-        m_bpPrev->Disable();
-        m_bpNext->Disable();
-        m_bpNow->Disable();
-    }
+    m_bpPrev->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
+    m_bpNext->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
+    m_bpNow->Enable(m_pTimelineSet != NULL && m_TimeLineHours);
 
     //is there a bug in wxWigget? flexsizer->Clear() delete child if it's a flexsizer so it's necessary to detach it before
     if(m_fgTrackingControls->GetItem(m_fcAltitude) != NULL) m_fgTrackingControls->Detach(m_fcAltitude);
@@ -579,9 +567,6 @@ void GRIBUIDialog::PopulateTrackingControls( void )
                     m_tcTemp->SetValue( _("N/A") );
                     m_tcRelHumid->SetValue( _("N/A") );
                     m_tcWindSpeed->SetBackgroundColour(bgd2);
-                    m_tcAltitude->SetBackgroundColour(bgd2);
-                    m_tcTemp->SetBackgroundColour(bgd2);
-                    m_tcRelHumid->SetBackgroundColour(bgd2);
         }
 
         m_stAltitudeText->SetLabel((m_OverlaySettings.GetAltitudeFromIndex(
@@ -1242,11 +1227,6 @@ void GRIBUIDialog::ComputeBestForecastForNow()
 {
     if( !m_bGRIBActiveFile || (m_bGRIBActiveFile && !m_bGRIBActiveFile->IsOK()) ) {
         pPlugIn->GetGRIBOverlayFactory()->SetGribTimelineRecordSet(NULL);
-        return;
-    }
-
-    if ( !m_TimeLineHours ){                //fix a crash for one date files
-        TimelineChanged();
         return;
     }
 

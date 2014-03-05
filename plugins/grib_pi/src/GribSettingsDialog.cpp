@@ -50,7 +50,7 @@ static const wxString tname_from_index[] = {_("Wind"), _("Wind Gust"),  _("Press
 
 static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 0, 4, 5, 3, 3, 6, 2, 5};
 
-static const int minuttes_from_index [GribOverlaySettings::SETTINGS_COUNT] = {2, 5, 10, 20, 30, 60, 90, 180, 360, 720};
+static const int minuttes_from_index [] = { 2, 5, 10, 20, 30, 60, 90, 180, 360, 720, 1440 };
 
 static const wxString altitude_from_index[3][5] = { _T("10m"), _T("850"), _T("700"), _T("500"), _T("300"),
                                                  _T("10m"), _T("637"), _T("525"), _T("375"), _T("225"),
@@ -65,19 +65,7 @@ wxString GribOverlaySettings::GetAltitudeFromIndex( int settings, int index )
 
 int GribOverlaySettings::GetMinFromIndex( int index )
 {
-    switch(index){
-    case 0: return 2;
-    case 1: return 5;
-    case 2: return 10;
-    case 3: return 20;
-    case 4: return 30;
-    case 5: return 60;
-    case 6: return 90;
-    case 7: return 180;
-    case 8: return 360;
-    case 9: return 720;
-    }
-    return 1440;
+    return minuttes_from_index[index];
 }
 
 wxString GribOverlaySettings::NameFromIndex(int index)
@@ -97,7 +85,7 @@ void GribOverlaySettings::Read()
     pConf->Read ( _T ( "Interpolate" ), &m_bInterpolate, false );
     pConf->Read ( _T ( "LoopMode" ), &m_bLoopMode, false );
     pConf->Read ( _T ( "LoopStartPoint" ), &m_LoopStartPoint, 0 );
-    pConf->Read ( _T ( "SlicesPerUpdate" ), &m_SlicesPerUpdate, 2);
+    pConf->Read ( _T ( "SlicesPerUpdate" ), &m_SlicesPerUpdate, 5);
     pConf->Read ( _T ( "UpdatesPerSecond" ), &m_UpdatesPerSecond, 2);
     pConf->Read ( _T ( "OverlayTransparency" ), &m_iOverlayTransparency, 220);
 
