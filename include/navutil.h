@@ -43,6 +43,7 @@
 
 #include "bbox.h"
 #include "chcanv.h"
+#include "tinyxml.h"
 #include "chartdbs.h"
 #include "RoutePoint.h"
 #include "vector2D.h"

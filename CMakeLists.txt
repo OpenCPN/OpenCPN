@@ -31,15 +31,13 @@
 # set /MT for Release build, and /MTd for debug.
 
 # define minimum cmake version
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6.2)
 # This should be 2.8.0 to have FindGTK2 module
 IF (COMMAND cmake_policy)
   CMAKE_POLICY(SET CMP0003 OLD)
   CMAKE_POLICY(SET CMP0005 OLD)
   CMAKE_POLICY(SET CMP0011 OLD)
 ENDIF (COMMAND cmake_policy)
-
-INCLUDE(ExternalProject)
 
 PROJECT(OpenCPN)
 
@@ -529,6 +527,13 @@ ENDIF(wx_Version MATCHES "2.9")
 
 SET( PACKAGE_HEADERS "" )
 
+SET(SRC_TINYXML
+            src/tinyxml.cpp
+            src/tinyxmlerror.cpp
+            src/tinyxmlparser.cpp
+            include/tinyxml.h
+      )
+
 IF(OPENGL_GLU_FOUND)
   SET(HDRS ${HDRS} include/glChartCanvas.h
                    include/glTextureDescriptor.h
@@ -545,9 +550,8 @@ IF(TINYXML_FOUND)
     ADD_DEFINITIONS(-DTIXML_USE_STL)
 ELSE(TINYXML_FOUND)
     message (STATUS "tinyxml library not found")
-    INCLUDE(ExternTinyXML)
-    SET(EXTRA_LIBS ${EXTRA_LIBS} tinyxml)
-    INCLUDE_DIRECTORIES("${tinyxml_INCLUDE_DIR}/tinyxml")
+    SET(SRCS ${SRCS} ${SRC_TINYXML})
+    ADD_DEFINITIONS(-DTIXML_USE_STL)
 ENDIF(TINYXML_FOUND)
 
 
@@ -636,9 +640,6 @@ IF (USE_S57)
 		src/mygdal/gdal_misc.cpp
 	)
 	ADD_LIBRARY(S57ENC ${SRC_S57ENC})
-	IF(NOT TINYXML_FOUND)
-		ADD_DEPENDENCIES(S57ENC tinyxml)
-	ENDIF()
 	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/mygdal)
 	SET(EXTRA_LIBS ${EXTRA_LIBS} S57ENC)
 ELSE (USE_S57)
@@ -697,9 +698,6 @@ IF (USE_GARMINHOST)
         ENDIF(WIN32)
 
 	ADD_LIBRARY(GARMINHOST ${SRC_GARMINHOST})
-	IF(NOT TINYXML_FOUND)
-		ADD_DEPENDENCIES(GARMINHOST tinyxml)
-	ENDIF(NOT TINYXML_FOUND)
 	INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/garmin/jeeps)
 	SET(EXTRA_LIBS ${EXTRA_LIBS} GARMINHOST)
         IF(WIN32)

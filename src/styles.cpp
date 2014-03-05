@@ -32,7 +32,6 @@
 #include <wx/filename.h>
 #include <wx/dir.h>
 #include <stdlib.h>
-#include <tinyxml.h>
 
 #include "styles.h"
 #include "chart1.h"
