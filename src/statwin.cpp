@@ -301,7 +301,7 @@ void PianoWin::OnPaint( wxPaintEvent& event )
 
             if( -1 == key_db_index ) continue;
 
-            if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_S57 ) {
+            if( ChartData->GetDBChartFamily( m_key_array.Item( i ) ) == CHART_FAMILY_VECTOR ) {
                 dc.SetBrush( m_vBrush );
 
                 for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
@@ -321,8 +321,7 @@ void PianoWin::OnPaint( wxPaintEvent& event )
                 }
 
                 else
-                    if( ChartData->GetDBChartType( m_key_array.Item( i ) )
-                            == CHART_TYPE_CM93COMP ) {
+                    if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93COMP ) {
                         dc.SetBrush( m_cBrush );
 
                         for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {

@@ -40,11 +40,36 @@
 class wxProgressDialog;
 ///////////////////////////////////////////////////////////////////////
 
-static const int DB_VERSION_PREVIOUS = 16;
-static const int DB_VERSION_CURRENT = 17;
+static const int DB_VERSION_PREVIOUS = 17;
+static const int DB_VERSION_CURRENT = 18;
 
 class ChartDatabase;
 class ChartGroupArray;
+
+struct ChartTableEntry_onDisk_18
+{
+    int         EntryOffset;
+    int         ChartType;
+    int         ChartFamily;
+    float       LatMax;
+    float       LatMin;
+    float       LonMax;
+    float       LonMin;
+    
+    int         Scale;
+    int         edition_date;
+    int         file_date;
+    
+    int         nPlyEntries;
+    int         nAuxPlyEntries;
+    
+    float       skew;
+    int         ProjectionType;
+    bool        bValid;
+    
+    int         nNoCovrPlyEntries;
+};
+
 
 struct ChartTableEntry_onDisk_17
 {
@@ -198,6 +223,7 @@ struct ChartTableEntry
   private:
     int         EntryOffset;
     int         ChartType;
+    int         ChartFamily;
     float       LatMax;
     float       LatMin;
     float       LonMax;

@@ -110,9 +110,9 @@ bool ChartTableHeader::CheckValid()
           msg.Prepend(wxT("   Warning: found incorrect chart db version: "));
           wxLogMessage(msg);
 
-          return false;       // no match....
+//          return false;       // no match....
 
-/*
+
           // Try previous version....
           sprintf(vb, "V%03d", DB_VERSION_PREVIOUS);
           if (strncmp(vb, dbVersion, sizeof(dbVersion)))
@@ -122,7 +122,7 @@ bool ChartTableHeader::CheckValid()
                 wxLogMessage(_T("   Scheduling db upgrade to current db version on Options->Charts page visit..."));
                 return true;
           }
-*/
+
 
     }
     else
@@ -154,6 +154,7 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
 
 
     ChartType = theChart.GetChartType();
+    ChartFamily = theChart.GetChartFamily();
     Scale = theChart.GetNativeScale();
 
     Skew = theChart.GetChartSkew();
@@ -321,8 +322,10 @@ int ChartTableEntry::GetChartType() const
 
 int ChartTableEntry::GetChartFamily() const
 {
-      switch(ChartType)
-      {
+    if(s_dbVersion < 18)
+    {
+        switch(ChartType)
+        {
             case CHART_TYPE_KAP:
             case CHART_TYPE_GEO:
                   return CHART_FAMILY_RASTER;
@@ -335,6 +338,9 @@ int ChartTableEntry::GetChartFamily() const
             default:
                   return CHART_FAMILY_UNKNOWN;
       }
+    }
+    else
+        return ChartFamily;
 }
 
 
@@ -350,7 +356,81 @@ bool ChartTableEntry::Read(const ChartDatabase *pDb, wxInputStream &is)
     ChartDatabase *pD = (ChartDatabase *)pDb;
     int db_version = pD->GetVersion();
 
-    if(db_version == 17)
+    if(db_version == 18)
+    {
+        // Read the path first
+        for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
+        pFullPath = (char *)malloc(cp - path + 1);
+        strncpy(pFullPath, path, cp - path + 1);
+        wxLogVerbose(_T("  Chart %s"), pFullPath);
+        
+        //  Create and populate the helper members
+        m_pfilename = new wxString;
+        wxString fullfilename(pFullPath, wxConvUTF8);
+        wxFileName fn(fullfilename);
+        *m_pfilename = fn.GetFullName();
+        
+        // Read the table entry
+        ChartTableEntry_onDisk_18 cte;
+        is.Read(&cte, sizeof(ChartTableEntry_onDisk_18));
+        
+        //    Transcribe the elements....
+        EntryOffset = cte.EntryOffset;
+        ChartType = cte.ChartType;
+        ChartFamily = cte.ChartFamily;
+        LatMax = cte.LatMax;
+        LatMin = cte.LatMin;
+        LonMax = cte.LonMax;
+        LonMin = cte.LonMin;
+        
+        Skew = cte.skew;
+        ProjectionType = cte.ProjectionType;
+        
+        Scale = cte.Scale;
+        edition_date = cte.edition_date;
+        file_date = cte.file_date;
+        
+        nPlyEntries = cte.nPlyEntries;
+        nAuxPlyEntries = cte.nAuxPlyEntries;
+        
+        nNoCovrPlyEntries = cte.nNoCovrPlyEntries;
+        
+        bValid = cte.bValid;
+        
+        if (nPlyEntries) {
+            int npeSize = nPlyEntries * 2 * sizeof(float);
+            pPlyTable = (float *)malloc(npeSize);
+            is.Read(pPlyTable, npeSize);
+        }
+        
+        if (nAuxPlyEntries) {
+            int napeSize = nAuxPlyEntries * sizeof(int);
+            pAuxPlyTable = (float **)malloc(nAuxPlyEntries * sizeof(float *));
+            pAuxCntTable = (int *)malloc(napeSize);
+            is.Read(pAuxCntTable, napeSize);
+            
+            for (int nAuxPlyEntry = 0; nAuxPlyEntry < nAuxPlyEntries; nAuxPlyEntry++) {
+                int nfSize = pAuxCntTable[nAuxPlyEntry] * 2 * sizeof(float);
+                pAuxPlyTable[nAuxPlyEntry] = (float *)malloc(nfSize);
+                is.Read(pAuxPlyTable[nAuxPlyEntry], nfSize);
+            }
+        }
+        
+        if (nNoCovrPlyEntries) {
+            int napeSize = nNoCovrPlyEntries * sizeof(int);
+            pNoCovrCntTable = (int *)malloc(napeSize);
+            is.Read(pNoCovrCntTable, napeSize);
+            
+            pNoCovrPlyTable = (float **)malloc(nNoCovrPlyEntries * sizeof(float *));
+            for (int i = 0; i < nNoCovrPlyEntries; i++) {
+                int nfSize = pNoCovrCntTable[i] * 2 * sizeof(float);
+                pNoCovrPlyTable[i] = (float *)malloc(nfSize);
+                is.Read(pNoCovrPlyTable[i], nfSize);
+            }
+        }
+    }
+    
+    else if(db_version == 17)
     {
         // Read the path first
         for (cp = path; (*cp = (char)is.GetC()) != 0; cp++);
@@ -588,11 +668,12 @@ bool ChartTableEntry::Write(const ChartDatabase *pDb, wxOutputStream &os)
 
     //      Write the current version type only
     //      Create an on_disk table entry
-    ChartTableEntry_onDisk_17 cte;
+    ChartTableEntry_onDisk_18 cte;
 
       //    Transcribe the elements....
     cte.EntryOffset = EntryOffset;
     cte.ChartType = ChartType;
+    cte.ChartFamily = ChartFamily;
     cte.LatMax = LatMax;
     cte.LatMin = LatMin;
     cte.LonMax = LonMax;
@@ -612,7 +693,7 @@ bool ChartTableEntry::Write(const ChartDatabase *pDb, wxOutputStream &os)
 
     cte.nNoCovrPlyEntries = nNoCovrPlyEntries;
     
-    os.Write(&cte, sizeof(ChartTableEntry_onDisk_17));
+    os.Write(&cte, sizeof(ChartTableEntry_onDisk_18));
     wxLogVerbose(_T("  Wrote Chart %s"), pFullPath);
 
     //      Write out the tables
