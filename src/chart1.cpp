@@ -7278,7 +7278,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                             {
                                                 if( m_NMEA0183.Gga.GPSQuality > 0 )
                                                 {
-                                                    if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) )
+                                                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Latitude.Latitude) )
                                                     {
                                                         double llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
                                                         int lat_deg_int = (int) ( llt / 100 );
