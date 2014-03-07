@@ -56,7 +56,7 @@ static const wxString altitude_from_index[3][5] = { _T("10m"), _T("850"), _T("70
                                                  _T("10m"), _T("637"), _T("525"), _T("375"), _T("225"),
                                                  _T("10m"), _T("25.2"), _T("20.7"), _T("14.8"), _T("8.9") };
 
-enum SettingsDisplay {B_ARROWS, ISO_LINE_VISI, ISO_LINE_SHORT, D_ARROWS, OVERLAY, NUMBERS};
+enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_LINE_VISI, ISO_LINE_SHORT, D_ARROWS, OVERLAY, NUMBERS};
 
 wxString GribOverlaySettings::GetAltitudeFromIndex( int settings, int index )
 {
@@ -470,30 +470,20 @@ void GribSettingsDialog::ReadDataTypeSettings(int settings)
 void GribSettingsDialog::ShowFittingSettings( int settings )
 {
     //Hide all Parameters
-    m_cbBarbedArrows->Show(false);
-    m_cBarbedVisibility->Show(false);
-    m_cBarbedColours->Show(false);
-    m_cbIsoBars->Show(false);
-    m_fIsoBarSpacing->ShowItems(false);
-    if(m_fIsoBarSpacing->GetCols() == 2) m_fIsoBarSpacing->Detach(1);
-    m_fIsoBarSpacing->SetCols(1);
-    m_fIsoBarVisibility->ShowItems(false);
-    if(m_fIsoBarVisibility->GetCols() == 1 ) m_fIsoBarVisibility->Detach(0);
-    m_fIsoBarVisibility->SetCols(0);
-    m_cbDirectionArrows->Show(false);
-    m_cDirectionArrowForm->Show(false);
-    m_cDirectionArrowSize->Show(false);
-    m_cbOverlayMap->Show(false);
-    m_tOverlayColors->Show(false);
-    m_cOverlayColors->Show(false);
-    m_cbNumbers->Show(false);
-    m_ctNumbers->Show(false);
-    m_sNumbersSpacing->Show(false);
+    ShowSettings( B_ARROWS, false );
+    ShowSettings( ISO_LINE, false );
+    if(m_fIsoBarSpacing->GetItem(m_sIsoBarSpacing) != NULL)  m_fIsoBarSpacing->Detach(m_sIsoBarSpacing);
+    if(m_fIsoBarVisibility->GetItem(m_sIsoBarSpacing) != NULL)  m_fIsoBarVisibility->Detach(m_sIsoBarSpacing);
+    if(m_fIsoBarVisibility->GetItem(m_sIsoBarVisibility) != NULL)  m_fIsoBarVisibility->Detach(m_sIsoBarVisibility);
+    ShowSettings( D_ARROWS, false  );
+    ShowSettings( OVERLAY, false  );
+    ShowSettings( NUMBERS, false );
     this->Fit();
     //Show only fitting parameters
     switch(settings){
     case 0:
         ShowSettings( ISO_LINE_SHORT );
+        ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Isotachs"));
         ShowSettings( B_ARROWS );
         ShowSettings( OVERLAY );
@@ -501,12 +491,14 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
         break;
     case 1:
         ShowSettings( ISO_LINE_SHORT );
+        ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Isotachs"));
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
         break;
     case 2:
         ShowSettings( ISO_LINE_VISI );
+        ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Isobars"));
         ShowSettings( NUMBERS );
         break;
@@ -524,58 +516,56 @@ void GribSettingsDialog::ShowFittingSettings( int settings )
     case 7:
     case 8:
         ShowSettings( ISO_LINE_SHORT );
+        ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Isotherms"));
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
         break;
     case 9:
         ShowSettings( ISO_LINE_SHORT );
+        ShowSettings( ISO_LINE );
         m_cbIsoBars->SetLabel(_("Display Iso CAPE"));
         ShowSettings( OVERLAY );
         ShowSettings( NUMBERS );
     }
 }
 
-void GribSettingsDialog::ShowSettings( int params )
+void GribSettingsDialog::ShowSettings( int params, bool show)
 {
     switch(params){
     case B_ARROWS:
-        m_cbBarbedArrows->Show();
-        m_cBarbedVisibility->Show();
-        m_cBarbedColours->Show();
+        m_cbBarbedArrows->Show(show);
+        m_cBarbedVisibility->Show(show);
+        m_cBarbedColours->Show(show);
+        break;
+    case ISO_LINE:
+        m_cbIsoBars->Show(show);
+        m_fIsoBarSpacing->ShowItems(show);
+        m_fIsoBarVisibility->ShowItems(show);
         break;
     case ISO_LINE_VISI:
-        m_cbIsoBars->Show();
-        m_fIsoBarSpacing->SetCols(2);
         m_fIsoBarSpacing->Add(m_sIsoBarSpacing, 0, 5,wxALL|wxEXPAND);
-        m_sIsoBarSpacing->SetMinSize(wxSize(70, -1));
-        m_fIsoBarSpacing->ShowItems(true);
-        m_fIsoBarVisibility->SetCols(1);
         m_fIsoBarVisibility->Add(m_sIsoBarVisibility, 0, 5,wxTOP|wxLEFT|wxEXPAND);
-        m_fIsoBarVisibility->ShowItems(true);
+        m_sIsoBarSpacing->SetMinSize(wxSize(70, -1));
         break;
     case ISO_LINE_SHORT:
-        m_cbIsoBars->Show();
-        m_fIsoBarSpacing->ShowItems(true);
-        m_fIsoBarVisibility->SetCols(1);
         m_fIsoBarVisibility->Add(m_sIsoBarSpacing, 0, 5,wxTOP|wxLEFT|wxEXPAND);
         m_sIsoBarSpacing->SetMinSize(wxSize(-1, -1));
-        m_fIsoBarVisibility->ShowItems(true);
         break;
     case D_ARROWS:
-        m_cbDirectionArrows->Show();
-        m_cDirectionArrowForm->Show();
-        m_cDirectionArrowSize->Show();
+        m_cbDirectionArrows->Show(show);
+        m_cDirectionArrowForm->Show(show);
+        m_cDirectionArrowSize->Show(show);
         break;
     case OVERLAY:
-        m_cbOverlayMap->Show();
-        m_tOverlayColors->Show();
-        m_cOverlayColors->Show();
+        m_cbOverlayMap->Show(show);
+        m_tOverlayColors->Show(show);
+        m_cOverlayColors->Show(show);
         break;
     case NUMBERS:
-        m_cbNumbers->Show();
-        m_ctNumbers->Show();
-        m_sNumbersSpacing->Show();
+        m_cbNumbers->Show(show);
+        m_ctNumbers->Show(show);
+        m_sNumbersSpacing->Show(show);
     }
 }
 

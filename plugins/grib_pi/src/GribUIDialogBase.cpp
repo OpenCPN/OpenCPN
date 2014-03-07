@@ -13,7 +13,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 	this->SetFont( wxFont( 9, 70, 90, 90, false, wxEmptyString ) );
-	
+
 	m_fgTrackingDisplay = new wxFlexGridSizer( 0, 1, 0, 0 );
 	m_fgTrackingDisplay->AddGrowableRow( 1 );
 	m_fgTrackingDisplay->SetFlexibleDirection( wxVERTICAL );
@@ -80,7 +80,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls = new wxFlexGridSizer( 0, 6, 0, 0 );
 	m_fgTrackingControls->SetFlexibleDirection( wxBOTH );
 	m_fgTrackingControls->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
+
 	m_fcAltitude = new wxFlexGridSizer( 0, 2, 0, 0 );
 	m_fcAltitude->SetFlexibleDirection( wxBOTH );
 	m_fcAltitude->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
@@ -184,8 +184,8 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	
 	
 	sbSizer2->Add( m_fgTrackingControls, 1, wxEXPAND, 1 );
-	
-	
+
+
 	m_fgTrackingDisplay->Add( sbSizer2, 1, wxFIXED_MINSIZE, 1 );
 
 	wxFlexGridSizer* fgSizer30;
@@ -250,8 +250,8 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 
 
 	m_fgTrackingDisplay->Add( fgSizer30, 1, wxEXPAND, 5 );
-	
-	
+
+
 	this->SetSizer( m_fgTrackingDisplay );
 	this->Layout();
 	m_fgTrackingDisplay->Fit( this );
@@ -411,6 +411,8 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	wxArrayString m_cDataUnitsChoices;
 	m_cDataUnits = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataUnitsChoices, 0 );
 	m_cDataUnits->SetSelection( 0 );
+	m_cDataUnits->SetMinSize( wxSize( 100,-1 ) );
+
 	fgSizer15->Add( m_cDataUnits, 0, wxALL|wxEXPAND, 5 );
 	
 	m_cbBarbedArrows = new wxCheckBox( this, wxID_ANY, _("Barbed Arrows"), wxDefaultPosition, wxDefaultSize, 0 );

@@ -102,7 +102,7 @@ private:
     void ReadDataTypeSettings(int settings);
     void PopulateUnits(int settings);
     void ShowFittingSettings (int settings);
-    void ShowSettings( int params );
+    void ShowSettings( int params, bool show = true );
     void OnDataTypeChoice( wxCommandEvent& event );
     void OnTransparencyChange( wxScrollEvent& event  );
     void OnApply( wxCommandEvent& event );
