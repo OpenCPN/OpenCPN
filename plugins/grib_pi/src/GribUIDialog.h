@@ -85,7 +85,7 @@ public:
     void ContextMenuItemCallback(int id);
     void SetCursorLatLon( double lat, double lon );
     void SetFactoryOptions( bool set_val = false );
-    void PopulateTrackingControls( void );
+    void PopulateTrackingControls( bool Populate_Altitude = true );
 
     wxDateTime TimelineTime();
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);

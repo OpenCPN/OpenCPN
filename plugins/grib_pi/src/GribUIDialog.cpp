@@ -132,6 +132,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_bpPlay->SetToolTip(_("Play"));
     m_tPlayStop.Stop();
     m_cRecordForecast->Clear();
+    m_cbAltitude->Clear();
     pPlugIn->GetGRIBOverlayFactory()->SetAltitude( 0 );
     m_FileIntervalIndex = m_OverlaySettings.m_SlicesPerUpdate;
     delete m_bGRIBActiveFile;
@@ -330,12 +331,6 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     m_bpSettings->SetBitmap(wxBitmap( setting ));
     m_bpRequest->SetBitmap(wxBitmap( request ));
 
-    wxColour c;
-    GetGlobalColor( _T("YELO1"),&c);
-    m_tcAltitude->SetBackgroundColour(c);
-    m_tcTemp->SetBackgroundColour(c);
-    m_tcRelHumid->SetBackgroundColour(c);
-
     //connect events have not been done in dialog base
     this->Connect( wxEVT_MOVE, wxMoveEventHandler( GRIBUIDialog::OnMove ) );
     m_tPlayStop.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBUIDialog::OnPlayStopTimer ), NULL, this);
@@ -462,12 +457,13 @@ void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxC
     }
 }
 
-void GRIBUIDialog::PopulateTrackingControls( void )
+void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
 {
     wxColour bgd1,bgd2;
     GetGlobalColor( _T("DILG0"),&bgd1);
     GetGlobalColor( _T("YELO1"),&bgd2);
     m_tcWindSpeed->SetBackgroundColour(bgd1);
+    m_tcWindDirection->SetBackgroundColour(bgd1);
 
     //fix crash with curious files with no record
     m_bpSettings->Enable(m_pTimelineSet != NULL);
@@ -488,12 +484,16 @@ void GRIBUIDialog::PopulateTrackingControls( void )
     m_cbAltitude->Hide();
     this->Fit();
 
-    //populate and set altitude choice
-    m_cbAltitude->Clear();
-    for( int i = 0; i<5; i++) {
-        if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
-            && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) || i == 0 )
-                m_cbAltitude->Append(m_OverlaySettings.GetAltitudeFromIndex( i , m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units));
+    //populate and set altitude choice if necessary
+    if( Populate_Altitude ) {
+        int selection = m_cbAltitude->GetCurrentSelection() < 1 ? 0 : m_cbAltitude->GetCurrentSelection();
+        m_cbAltitude->Clear();
+        for( int i = 0; i<5; i++) {
+            if( (( m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VX + i) != wxNOT_FOUND
+                && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_WIND_VY + i) != wxNOT_FOUND )) || i == 0 )
+                    m_cbAltitude->Append(m_OverlaySettings.GetAltitudeFromIndex( i , m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units));
+        }
+        m_cbAltitude->SetSelection( selection );
     }
 
     AddTrackingControl(m_cbWind, m_tcWindSpeed, m_tcWindDirection,
@@ -532,8 +532,6 @@ void GRIBUIDialog::PopulateTrackingControls( void )
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_SEA_TEMP) != wxNOT_FOUND);
     AddTrackingControl(m_cbCAPE, m_tcCAPE, 0,
         m_pTimelineSet && m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CAPE) != wxNOT_FOUND);
-
-    m_cbAltitude->SetSelection( pPlugIn->GetGRIBOverlayFactory()->m_Altitude );
     //
     //init and show extra parameters for altitude tracking if necessary
     if( pPlugIn->GetGRIBOverlayFactory()->m_Altitude ) {
@@ -547,7 +545,11 @@ void GRIBUIDialog::PopulateTrackingControls( void )
                     m_tcAltitude->SetValue( _("N/A") );
                     m_tcTemp->SetValue( _("N/A") );
                     m_tcRelHumid->SetValue( _("N/A") );
+                    m_tcAltitude->SetBackgroundColour(bgd2);
+                    m_tcTemp->SetBackgroundColour(bgd2);
+                    m_tcRelHumid->SetBackgroundColour(bgd2);
                     m_tcWindSpeed->SetBackgroundColour(bgd2);
+                    m_tcWindDirection->SetBackgroundColour(bgd2);
         }
 
         m_stAltitudeText->SetLabel((m_OverlaySettings.GetAltitudeFromIndex(
@@ -1046,7 +1048,7 @@ void GRIBUIDialog::OnAltitudeChange( wxCommandEvent& event )
     case 850: pPlugIn->GetGRIBOverlayFactory()->SetAltitude(1);break;
     default:  pPlugIn->GetGRIBOverlayFactory()->SetAltitude(0);break;
     }
-    PopulateTrackingControls();
+    PopulateTrackingControls( false );
     SetFactoryOptions();                     // Reload the visibility options
 }
 
