@@ -30,8 +30,6 @@
 #ifndef  WX_PRECOMP
 #include "wx/wx.h"
 #endif //precompiled headers
-#include <wx/fileconf.h>
-#include <wx/glcanvas.h>
 
 #include "GribUIDialogBase.h"
 #include "GribUIDialog.h"
