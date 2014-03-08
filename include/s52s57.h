@@ -440,8 +440,8 @@ public:
 class VE_Element
 {
 public:
-      int         index;
-      int         nCount;
+      unsigned int index;
+      unsigned int nCount;
       double      *pPoints;
       int         max_priority;
 };
@@ -449,7 +449,7 @@ public:
 class VC_Element
 {
 public:
-      int         index;
+      unsigned int index;
       double      *pPoint;
 };
 

@@ -2728,9 +2728,9 @@ Extended_Geometry *cm93chart::BuildGeom ( Object *pobject, wxFileOutputStream *p
 
                         ip--;                                                 // skip the last point in each segment
 
-                        ret_ptr->pvector_index[iseg * 3 + 0] = -1;                 // first connected node
+                        ret_ptr->pvector_index[iseg * 3 + 0] = 0;//-1;                 // first connected node
                         ret_ptr->pvector_index[iseg * 3 + 1] = pgd->index + m_current_cell_vearray_offset;         // edge index
-                        ret_ptr->pvector_index[iseg * 3 + 2] = -2;                 // last connected node
+                        ret_ptr->pvector_index[iseg * 3 + 2] = 0;//-2;                 // last connected node
 
                         if ( ( cur_end_point.x == start_point.x ) && ( cur_end_point.y == start_point.y ) )
                         {
@@ -2869,9 +2869,9 @@ Extended_Geometry *cm93chart::BuildGeom ( Object *pobject, wxFileOutputStream *p
                               }
                         }
 
-                        ret_ptr->pvector_index[iseg * 3 + 0] = -1;                 // first connected node
+                        ret_ptr->pvector_index[iseg * 3 + 0] = 0;//-1;                 // first connected node
                         ret_ptr->pvector_index[iseg * 3 + 1] = pgd->index + m_current_cell_vearray_offset;         // edge index
-                        ret_ptr->pvector_index[iseg * 3 + 2] = -2;                 // last connected node
+                        ret_ptr->pvector_index[iseg * 3 + 2] = 0;//-2;                 // last connected node
 
                   }           //for
 

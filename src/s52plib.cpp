@@ -2465,19 +2465,22 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash; 
         }
 
-        int nls_max;
+        unsigned int nls_max;
         if( rzRules->obj->m_n_edge_max_points > 0 ) // size has been precalculated on SENC load
-        nls_max = rzRules->obj->m_n_edge_max_points;
+            nls_max = rzRules->obj->m_n_edge_max_points;
         else {
             //  Calculate max malloc size required
-            nls_max = -1;
+            nls_max = 0;
             int *index_run_x = rzRules->obj->m_lsindex_array;
             for( int imseg = 0; imseg < rzRules->obj->m_n_lsindex; imseg++ ) {
                 index_run_x++; //Skip cNode
                 //  Get the edge
-                int enode = *index_run_x;
-                VE_Element *pedge = (*ve_hash)[enode];
-                if( pedge->nCount > nls_max ) nls_max = pedge->nCount;
+                unsigned int enode = *index_run_x;
+                if(enode){
+                    VE_Element *pedge = (*ve_hash)[enode];
+                    if( pedge->nCount > nls_max )
+                        nls_max = pedge->nCount;
+                }
                 index_run_x += 2;
             }
             rzRules->obj->m_n_edge_max_points = nls_max; // Got it, cache for next time
@@ -2498,8 +2501,8 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             index_run = &rzRules->obj->m_lsindex_array[seg_index];
 
             //  Get first connected node
-            int inode = *index_run++;
-            if( ( inode >= 0 ) ) {
+            unsigned int inode = *index_run++;
+            if( ( inode ) ) {
                 pnode = (*vc_hash)[inode];
                 if( pnode ) {
                     ppt = pnode->pPoint;
@@ -2511,7 +2514,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
 
             //  Get the edge
-            int enode = *index_run++;
+            unsigned int enode = *index_run++;
             VE_Element *pedge;
             pedge = (*ve_hash)[enode];
 
@@ -2529,8 +2532,8 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
 
             //  Get last connected node
-            int jnode = *index_run++;
-            if( ( jnode >= 0 ) ) {
+            unsigned int jnode = *index_run++;
+            if( ( jnode ) ) {
                 pnode = (*vc_hash)[jnode];
                 if( pnode ) {
                     ppt = pnode->pPoint;
@@ -2543,7 +2546,7 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             int istart, ndraw;
 
-            if( ( inode >= 0 ) && ( jnode >= 0 ) ) {
+            if(  inode  &&  jnode )  {
                 istart = 0;
                 ndraw = nls + 1;
             } else {
@@ -2775,19 +2778,22 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
         
         
-        int nls_max;
+        unsigned int nls_max;
         if( rzRules->obj->m_n_edge_max_points > 0 ) // size has been precalculated on SENC load
-        nls_max = rzRules->obj->m_n_edge_max_points;
+            nls_max = rzRules->obj->m_n_edge_max_points;
         else {
             //  Calculate max malloc size required
-            nls_max = -1;
+            nls_max = 0;
             int *index_run_x = rzRules->obj->m_lsindex_array;
             for( int imseg = 0; imseg < rzRules->obj->m_n_lsindex; imseg++ ) {
                 index_run_x++; //Skip cNode
                 //  Get the edge
-                int enode = *index_run_x;
-                VE_Element *pedge = (*ve_hash)[enode];
-                if( pedge->nCount > nls_max ) nls_max = pedge->nCount;
+                unsigned int enode = *index_run_x;
+                if( enode ){
+                    VE_Element *pedge = (*ve_hash)[enode];
+                    if( pedge->nCount > nls_max )
+                        nls_max = pedge->nCount;
+                }
                 index_run_x += 2;
             }
             rzRules->obj->m_n_edge_max_points = nls_max; // Got it, cache for next time
@@ -2807,8 +2813,8 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             index_run = &rzRules->obj->m_lsindex_array[seg_index];
 
             //  Get first connected node
-            int inode = *index_run++;
-            if( inode >= 0 ) {
+            unsigned int inode = *index_run++;
+            if( inode ) {
                 pnode = (*vc_hash)[inode];
                 if( pnode ) {
                     ppt = pnode->pPoint;
@@ -2820,7 +2826,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
 
             //  Get the edge
-            int enode = *index_run++;
+            unsigned int enode = *index_run++;
             VE_Element *pedge;
             pedge = (*ve_hash)[enode];
 
@@ -2839,8 +2845,8 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
 
             //  Get last connected node
-            int jnode = *index_run++;
-            if( jnode >= 0 ) {
+            unsigned int jnode = *index_run++;
+            if( jnode ) {
                 pnode = (*vc_hash)[jnode];
                 if( pnode ) {
                     ppt = pnode->pPoint;
@@ -2851,11 +2857,10 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 ptp[nls + 1] = pra; // insert ending node
             }
 
-            if( ( inode >= 0 ) && ( jnode >= 0 ) ) draw_lc_poly( m_pdc, color, w, ptp, nls + 2,
-                    sym_len, sym_factor, rules->razRule, vp );
+            if( ( inode ) && ( jnode ) )
+                draw_lc_poly( m_pdc, color, w, ptp, nls + 2, sym_len, sym_factor, rules->razRule, vp );
             else
-                draw_lc_poly( m_pdc, color, w, &ptp[1], nls, sym_len, sym_factor, rules->razRule,
-                        vp );
+                draw_lc_poly( m_pdc, color, w, &ptp[1], nls, sym_len, sym_factor, rules->razRule, vp );
 
         }
         free( ptp );
@@ -3109,6 +3114,7 @@ next_seg_dc:
             dx = ptp[iseg + inc].x - ptp[iseg].x;
             dy = ptp[iseg + inc].y - ptp[iseg].y;
             seg_len = sqrt( dx * dx + dy * dy );
+            
             theta = atan2( dy, dx );
             cth = cos( theta );
             sth = sin( theta );

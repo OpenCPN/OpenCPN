@@ -104,8 +104,8 @@ WX_DECLARE_OBJARRAY(VC_Element, ArrayOfVC_Elements);
 WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, MyNatsurHash );
 WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash );
 
-WX_DECLARE_HASH_MAP( int, VE_Element *, wxIntegerHash, wxIntegerEqual, VE_Hash );
-WX_DECLARE_HASH_MAP( int, VC_Element *, wxIntegerHash, wxIntegerEqual, VC_Hash );
+WX_DECLARE_HASH_MAP( unsigned int, VE_Element *, wxIntegerHash, wxIntegerEqual, VE_Hash );
+WX_DECLARE_HASH_MAP( unsigned int, VC_Element *, wxIntegerHash, wxIntegerEqual, VC_Hash );
 
 //----------------------------------------------------------------------------
 // s57 Chart object class
