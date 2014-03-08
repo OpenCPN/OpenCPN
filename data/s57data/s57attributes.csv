@@ -22,15 +22,15 @@
 21,Category of distance mark,CATDIS,E,F
 22,Category of dock,CATDOC,E,F
 23,Category of dumping ground,CATDPG,L,F
-24,Category of  fence/wall,CATFNC,E,F
+24,Category of fence/wall,CATFNC,E,F
 25,Category of ferry,CATFRY,E,F
-26,Category of  fishing  facility,CATFIF,E,F
-27,Category of  fog signal,CATFOG,E,F
-28,Category of  fortified structure,CATFOR,E,F
+26,Category of fishing facility,CATFIF,E,F
+27,Category of fog signal,CATFOG,E,F
+28,Category of fortified structure,CATFOR,E,F
 29,Category of gate,CATGAT,E,F
 30,Category of harbour facility,CATHAF,L,F
 31,Category of hulk,CATHLK,L,F
-32,Category of  ice,CATICE,E,F
+32,Category of ice,CATICE,E,F
 33,Category of installation buoy,CATINB,E,F
 34,Category of land region,CATLND,L,F
 35,Category of landmark,CATLMK,L,F
@@ -59,8 +59,8 @@
 58,Category of runway,CATRUN,E,F
 59,Category of sea area,CATSEA,E,F
 60,Category of shoreline construction,CATSLC,E,F
-61,Category of signal station, traffic,CATSIT,L,F
-62,Category of signal station, warning,CATSIW,L,F
+61,Category of signal station - traffic,CATSIT,L,F
+62,Category of signal station - warning,CATSIW,L,F
 63,Category of silo/tank,CATSIL,E,F
 64,Category of slope,CATSLO,E,F
 65,Category of small craft facility,CATSCF,L,F
@@ -80,8 +80,8 @@
 79,Compilation date,CPDATE,A,F
 80,Compilation scale,CSCALE,I,F
 81,Condition,CONDTN,E,F
-82,Conspicuous, Radar,CONRAD,E,F
-83,Conspicuous, visual,CONVIS,E,F
+82,Conspicuous - Radar,CONRAD,E,F
+83,Conspicuous - Visual,CONVIS,E,F
 84,Current velocity,CURVEL,F,F
 85,Date end,DATEND,A,F
 86,Date start,DATSTA,A,F
@@ -158,12 +158,12 @@
 157,Text string,$TXSTR,S,$
 158,Textual description,TXTDSC,S,F
 159,Tidal stream - panel values,TS_TSP,A,F
-160,Tidal stream, current - time series values,TS_TSV,A,F
+160,Tidal stream current - time series values,TS_TSV,A,F
 161,Tide - accuracy of water level,T_ACWL,E,F
 162,Tide - high and low water values,T_HWLW,A,F
 163,Tide - method of tidal prediction,T_MTOD,E,F
 164,Tide - time and height differences,T_THDF,A,F
-165,Tide, current - time interval of values,T_TINT,I,F
+165,Tide current - time interval of values,T_TINT,I,F
 166,Tide - time series values,T_TSVL,A,F
 167,Tide - value of harmonic constituents,T_VAHC,A,F
 168,Time end,TIMEND,A,F
@@ -180,9 +180,9 @@
 179,Value of sounding,VALSOU,F,F
 180,Vertical accuracy,VERACC,F,F
 181,Vertical clearance,VERCLR,F,F
-182,Vertical clearance, closed,VERCCL,F,F
-183,Vertical clearance, open,VERCOP,F,F
-184,Vertical clearance, safe,VERCSA,F,F
+182,Vertical clearance - closed,VERCCL,F,F
+183,Vertical clearance - open,VERCOP,F,F
+184,Vertical clearance - safe,VERCSA,F,F
 185,Vertical datum,VERDAT,E,F
 186,Vertical length,VERLEN,F,F
 187,Water level effect,WATLEV,E,F
@@ -255,7 +255,7 @@
 17096,Current velocity at low water level,curvlw,F,F
 17097,Current velocity at mean water level,curvmw,F,F
 17098,Current velocity at other water level,curvow,F,F
-17099,Avarage Passing Time Reference,aptref,S,F
+17099,Average Passing Time Reference,aptref,S,F
 17100,Category of exceptional structure,catexs,E,F
 17101,Category of cable,catcbl,E,F
 17102,Category of hulk,cathlk,L,F
