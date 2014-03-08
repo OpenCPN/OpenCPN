@@ -309,35 +309,33 @@ void PianoWin::OnPaint( wxPaintEvent& event )
                     dc.SetBrush( m_svBrush );
                 }
             }
-
-            else
-                if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93 ) {
+            else {
+                dc.SetBrush( m_tBrush );
+                
+                for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
+                    if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
+                        dc.SetBrush( m_slBrush );
+                }
+            }
+            
+            if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93 ) {
                     dc.SetBrush( m_cBrush );
 
                     for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
                         if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
                         dc.SetBrush( m_scBrush );
                     }
-                }
+            }
 
-                else
-                    if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93COMP ) {
-                        dc.SetBrush( m_cBrush );
+            if( ChartData->GetDBChartType( m_key_array.Item( i ) ) == CHART_TYPE_CM93COMP ) {
+                    dc.SetBrush( m_cBrush );
 
-                        for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
-                            if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
-                            dc.SetBrush( m_scBrush );
-                        }
+                    for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
+                        if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
+                        dc.SetBrush( m_scBrush );
                     }
+            }
 
-                    else {
-                        dc.SetBrush( m_tBrush );
-
-                        for( unsigned int ino = 0; ino < m_active_index_array.GetCount(); ino++ ) {
-                            if( m_active_index_array.Item( ino ) == key_db_index ) // chart is in the active list
-                            dc.SetBrush( m_slBrush );
-                        }
-                    }
 
             // Check to see if this box appears in the sub_light array
             // If so, add a crosshatch pattern to the brush
