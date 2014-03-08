@@ -441,7 +441,6 @@ int DDFRecord::ReadHeader()
                 //      Probably this is a UTF-16 encoded string,
                 //      So we manually place the terminator in the buffer, and carry on
                 
-                int yyp = 5;
                 pachData[nDataSize-1] = DDF_FIELD_TERMINATOR;
 //                CPLError( CE_Failure, CPLE_FileIO,
 //                          "Data record is short on DDF file." );
