@@ -437,13 +437,19 @@ int DDFRecord::ReadHeader()
             if( VSIFRead( pachData + nDataSize - 1, 1, 1, poModule->GetFP() )
                 != 1 )
             {
-                CPLError( CE_Failure, CPLE_FileIO,
-                          "Data record is short on DDF file." );
+                //      File end, without finding a DDF_FIELD_TERMINATOR
+                //      Probably this is a UTF-16 encoded string,
+                //      So we manually place the terminator in the buffer, and carry on
+                
+                int yyp = 5;
+                pachData[nDataSize-1] = DDF_FIELD_TERMINATOR;
+//                CPLError( CE_Failure, CPLE_FileIO,
+//                          "Data record is short on DDF file." );
 
-                return FALSE;
+//                return FALSE;
             }
-            CPLDebug( "ISO8211",
-                      "Didn't find field terminator, read one more byte." );
+//            CPLDebug( "ISO8211",
+//                      "Didn't find field terminator, read one more byte." );
         }
 
 /* -------------------------------------------------------------------- */
