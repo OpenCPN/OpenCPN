@@ -274,7 +274,11 @@ void DataStream::Open(void)
                     conn_addr.AnyAddress();    
                     m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
 #ifdef __WXGTK__
+# if wxCHECK_VERSION(3,0,0)
+                    in_addr_t addr = ((struct sockaddr_in *) m_addr.GetAddressData())->sin_addr.s_addr;
+# else
                     in_addr_t addr = ((struct sockaddr_in *) m_addr.GetAddress()->m_addr)->sin_addr.s_addr;
+# endif
 #else
                     unsigned int addr = inet_addr(m_addr.IPAddress().mb_str());
 #endif
