@@ -86,9 +86,9 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fcAltitude->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	wxArrayString m_cbAltitudeChoices;
-	m_cbAltitude = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxSize( 45,-1 ), m_cbAltitudeChoices, 0 );
+	m_cbAltitude = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxSize( 60,-1 ), m_cbAltitudeChoices, 0 );
 	m_cbAltitude->SetSelection( 0 );
-	m_cbAltitude->SetFont( wxFont( 7, 70, 90, 90, false, wxEmptyString ) );
+	m_cbAltitude->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 90, false, wxEmptyString ) );
 
 	m_fcAltitude->Add( m_cbAltitude, 0, wxLEFT, 3 );
 
