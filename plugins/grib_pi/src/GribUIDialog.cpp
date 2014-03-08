@@ -1380,10 +1380,10 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                     case GRB_TEMP:
                         if(pRec->getLevelType() == LV_ISOBARIC){
                             switch(pRec->getLevelValue()){
-                            case 300: idx = idx = Idx_AIR_TEMP300;break;
-                            case 500: idx = idx = Idx_AIR_TEMP500;break;
-                            case 700: idx = idx = Idx_AIR_TEMP700;break;
-                            case 850: idx = idx = Idx_AIR_TEMP850;break;
+                            case 300: idx = Idx_AIR_TEMP300;break;
+                            case 500: idx = Idx_AIR_TEMP500;break;
+                            case 700: idx = Idx_AIR_TEMP700;break;
+                            case 850: idx = Idx_AIR_TEMP850;break;
                             }
                         } else
                             idx = Idx_AIR_TEMP;
@@ -1393,20 +1393,20 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                     case GRB_HUMID_REL:
                         if(pRec->getLevelType() == LV_ISOBARIC){
                             switch(pRec->getLevelValue()){
-                            case 300: idx = idx = Idx_HUMID_RE300;break;
-                            case 500: idx = idx = Idx_HUMID_RE500;break;
-                            case 700: idx = idx = Idx_HUMID_RE700;break;
-                            case 850: idx = idx = Idx_HUMID_RE850;break;
+                            case 300: idx = Idx_HUMID_RE300;break;
+                            case 500: idx = Idx_HUMID_RE500;break;
+                            case 700: idx = Idx_HUMID_RE700;break;
+                            case 850: idx = Idx_HUMID_RE850;break;
                             }
                         }
                         break;
                     case GRB_GEOPOT_HGT:
                         if(pRec->getLevelType() == LV_ISOBARIC){
                             switch(pRec->getLevelValue()){
-                            case 300: idx = idx = Idx_GEOP_HGT300;break;
-                            case 500: idx = idx = Idx_GEOP_HGT500;break;
-                            case 700: idx = idx = Idx_GEOP_HGT700;break;
-                            case 850: idx = idx = Idx_GEOP_HGT850;break;
+                            case 300: idx = Idx_GEOP_HGT300;break;
+                            case 500: idx = Idx_GEOP_HGT500;break;
+                            case 700: idx = Idx_GEOP_HGT700;break;
+                            case 850: idx = Idx_GEOP_HGT850;break;
                             }
                         }
                         break;
