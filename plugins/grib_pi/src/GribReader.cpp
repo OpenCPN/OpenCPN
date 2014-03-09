@@ -199,12 +199,16 @@ void GribReader::readAllGribRecords()
                             && rec->getLevelType()==LV_ABOV_GND
                             && rec->getLevelValue()==10)
 
-                           )
+                            || (( rec->getDataType()==GRB_WIND_VX || rec->getDataType()==GRB_WIND_VY)//wind at x hpa
+							&& rec->getLevelType()==LV_ISOBARIC
+                            && (   rec->getLevelValue()==850
+								|| rec->getLevelValue()==700
+								|| rec->getLevelValue()==500
+								|| rec->getLevelValue()==300 ) )
+                            )//----------------------------------------
 
-                        {
-                              storeRecordInMap(rec);
+                            storeRecordInMap(rec);
 
-                        }
                         else if( (rec->getDataType()==GRB_WIND_GUST
                             && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) )
                             storeRecordInMap(rec);
@@ -215,6 +219,14 @@ void GribReader::readAllGribRecords()
 
                         else if( rec->getDataType()==GRB_TEMP	                 //Air temperature at 2m
                             && rec->getLevelType()==LV_ABOV_GND && rec->getLevelValue()==2 )
+                            storeRecordInMap(rec);
+
+                        else if( rec->getDataType()==GRB_TEMP	                 //Air temperature at x hpa
+                            && rec->getLevelType()==LV_ISOBARIC
+                            && (   rec->getLevelValue()==850
+								|| rec->getLevelValue()==700
+								|| rec->getLevelValue()==500
+								|| rec->getLevelValue()==300 ) )
                             storeRecordInMap(rec);
 
                         else if(rec->getDataType()==GRB_PRECIP_TOT               //total rainfall
@@ -244,6 +256,22 @@ void GribReader::readAllGribRecords()
                               storeRecordInMap(rec);
 
                         else if(rec->getDataType() == GRB_CAPE && rec->getLevelType()==LV_GND_SURF && rec->getLevelValue()==0) //Potential energy
+                            storeRecordInMap(rec);
+
+                        else if( (rec->getDataType()==GRB_GEOPOT_HGT                                       //geopotentiel geight at x hpa
+							&& rec->getLevelType()==LV_ISOBARIC)
+                            && (rec->getLevelValue()==850
+								|| rec->getLevelValue()==700
+								|| rec->getLevelValue()==500
+								|| rec->getLevelValue()==300) )
+                            storeRecordInMap(rec);
+
+                        else if( (rec->getDataType()==GRB_HUMID_REL                          //relative humidity at x hpa
+                            && rec->getLevelType()==LV_ISOBARIC)
+                            && (rec->getLevelValue()==850
+								|| rec->getLevelValue()==700
+								|| rec->getLevelValue()==500
+								|| rec->getLevelValue()==300) )
                             storeRecordInMap(rec);
 
                         else

@@ -111,7 +111,7 @@ private:
     void OnPlayStop( wxCommandEvent& event );
     void OnPlayStopTimer( wxTimerEvent & );
 
-    void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show );
+    void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show, bool altitude = false );
     void UpdateTrackingControls( void );
 
     void OnZoomToCenterClick( wxCommandEvent& event );
@@ -124,6 +124,7 @@ private:
 
     void OnTimeline( wxScrollEvent& event );
     void OnCBAny( wxCommandEvent& event );
+    void OnAltitudeChange( wxCommandEvent& event );
 
     wxDateTime MinTime();
     wxString GetNewestFileInDirectory();
@@ -141,6 +142,7 @@ private:
 
     GribTimelineRecordSet *m_pTimelineSet;
     int m_TimeLineHours;
+    int m_FileIntervalIndex;
     bool m_InterpolateMode;
     bool m_pNowMode;
     bool m_pMovingGrib;

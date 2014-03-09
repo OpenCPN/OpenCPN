@@ -608,6 +608,9 @@ bool                      g_bMagneticAPB;
 int                       g_GPU_MemSize;
 bool                      g_b_useStencil;
 
+bool                      g_bserial_access_checked;
+
+
 char bells_sound_file_name[8][12] =    // pjotrc 2010.02.09
 
         { "1bells.wav", "2bells.wav", "3bells.wav", "4bells.wav", "5bells.wav", "6bells.wav",
@@ -657,6 +660,7 @@ void appendOSDirSlash( wxString* pString );
 void InitializeUserColors( void );
 void DeInitializeUserColors( void );
 void SetSystemColors( ColorScheme cs );
+extern "C" bool CheckSerialAccess( void );
 
 DEFINE_EVENT_TYPE(EVT_THREADMSG)
 
@@ -1357,6 +1361,12 @@ bool MyApp::OnInit()
         exit( EXIT_FAILURE );
     }
 
+#ifdef __WXGTK__    
+//    if( !CheckSerialAccess() ){
+//    }
+        
+#endif    
+    
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
     pWayPointMan->ProcessIcons( g_StyleManager->GetCurrentStyle() );
@@ -2410,6 +2420,17 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     {
         ConnectionParams *cp = g_pConnectionParams->Item(i);
         if( cp->bEnabled ) {
+            
+#ifdef __WXGTK__
+            if( cp->GetDSPort().Contains(_T("Serial"))) {
+                if( ! g_bserial_access_checked ){
+                    if( !CheckSerialAccess() ){
+                    }
+                    g_bserial_access_checked = true;
+                }
+            }
+#endif    
+                
             dsPortType port_type;
             if (cp->Output)
                 port_type = DS_TYPE_INPUT_OUTPUT;
@@ -7257,7 +7278,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
                                             {
                                                 if( m_NMEA0183.Gga.GPSQuality > 0 )
                                                 {
-                                                    if( !wxIsNaN(m_NMEA0183.Gll.Position.Latitude.Latitude) )
+                                                    if( !wxIsNaN(m_NMEA0183.Gga.Position.Latitude.Latitude) )
                                                     {
                                                         double llt = m_NMEA0183.Gga.Position.Latitude.Latitude;
                                                         int lat_deg_int = (int) ( llt / 100 );
@@ -8327,6 +8348,114 @@ wxArrayString *EnumerateSerialPorts( void )
 
 #endif      //__WXMSW__
     return preturn;
+}
+
+
+bool CheckSerialAccess( void )
+{
+    bool bret = true;
+#ifdef __WXGTK__
+ 
+#if 0    
+    termios ttyset_old;
+    termios ttyset;
+    termios ttyset_check;
+    
+    // Get a list of the ports
+    wxArrayString *ports = EnumerateSerialPorts();
+    if( ports->GetCount() == 0 )
+        bret = false;
+    
+    for(unsigned int i=0 ; i < ports->GetCount() ; i++){
+        wxCharBuffer buf = ports->Item(i).ToUTF8();
+        
+        //      For the first real port found, try to open it, write some config, and
+        //      be sure it reads back correctly.
+        if( isTTYreal( buf.data() ) ){
+            int fd = open(buf.data(), O_RDWR | O_NONBLOCK | O_NOCTTY);
+            
+            // device name is pointing to a real device
+            if(fd > 0) {
+                
+                if (isatty(fd) != 0)
+                {
+                    /* Save original terminal parameters */
+                    tcgetattr(fd,&ttyset_old);
+                    // Write some data
+                    memcpy(&ttyset, &ttyset_old, sizeof(termios));
+                    
+                    ttyset.c_cflag &=~ CSIZE;
+                    ttyset.c_cflag |= CSIZE & CS7;
+                    
+                    tcsetattr(fd, TCSANOW, &ttyset);
+                    
+                    // Read it back
+                    tcgetattr(fd, &ttyset_check);
+                    if(( ttyset_check.c_cflag & CSIZE) != CS7 ){
+                        bret = false;
+                    }
+                    else {
+                            // and again
+                        ttyset.c_cflag &=~ CSIZE;
+                        ttyset.c_cflag |= CSIZE & CS8;
+                            
+                        tcsetattr(fd, TCSANOW, &ttyset);
+                            
+                            // Read it back
+                        tcgetattr(fd, &ttyset_check);
+                        if(( ttyset_check.c_cflag & CSIZE) != CS8 ){
+                            bret = false;
+                        }
+                    }
+                    
+                    tcsetattr(fd, TCSANOW, &ttyset_old);
+                }                    
+                        
+                close (fd);
+            }   // if open
+        }
+    }
+            
+#endif
+
+    //  Who owns /dev/ttyS0?
+    
+    wxArrayString result1;
+    wxExecute(_T("stat -c %G /dev/ttyS0"), result1);
+    
+    wxString group = result1[0];
+    
+    //  Is the current user in this group?
+    wxString user = wxGetUserId();
+    wxArrayString result2;
+    wxExecute(_T("groups ") + user, result2);
+    
+    wxString user_groups = result2[0];
+
+    if(user_groups.Find(group) == wxNOT_FOUND)
+        bret = false;
+ 
+    if(!bret){
+        wxString msg = _("OpenCPN requires access to serial ports to use serial NMEA data.\n\
+You currently do not have permission to access the serial ports on this system.\n\n\
+It is suggested that you exit OpenCPN now,\n\
+and add yourself to the correct group to enable serial port access.\n\n\
+You may do so by executing the following command from the linux command line:\n\n\
+                sudo usermod -a -G ");
+        
+        msg += group;
+        msg += _T(" ");
+        msg += user;
+        msg += _T("\n");
+    
+        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
+    }
+    
+    
+
+#endif
+    
+    return bret;
 }
 
 void appendOSDirSlash( wxString* pString )

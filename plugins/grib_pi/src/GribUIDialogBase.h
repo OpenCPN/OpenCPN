@@ -24,12 +24,12 @@
 #include <wx/combobox.h>
 #include <wx/slider.h>
 #include <wx/sizer.h>
+#include <wx/choice.h>
 #include <wx/checkbox.h>
 #include <wx/textctrl.h>
 #include <wx/statbox.h>
-#include <wx/dialog.h>
 #include <wx/stattext.h>
-#include <wx/choice.h>
+#include <wx/dialog.h>
 #include <wx/spinctrl.h>
 #include <wx/statline.h>
 #include <wx/radiobox.h>
@@ -57,6 +57,7 @@ class GRIBUIDialogBase : public wxDialog
 	private:
 	
 	protected:
+		wxFlexGridSizer* m_fgTrackingDisplay;
 		wxBitmapButton* m_bpPrev;
 		wxComboBox* m_cRecordForecast;
 		wxBitmapButton* m_bpNext;
@@ -67,6 +68,8 @@ class GRIBUIDialogBase : public wxDialog
 		wxBitmapButton* m_bpSettings;
 		wxBitmapButton* m_bpRequest;
 		wxFlexGridSizer* m_fgTrackingControls;
+		wxFlexGridSizer* m_fcAltitude;
+		wxChoice* m_cbAltitude;
 		wxTextCtrl* m_tcWindSpeed;
 		wxTextCtrl* m_tcWindDirection;
 		wxTextCtrl* m_tcWaveHeight;
@@ -80,6 +83,10 @@ class GRIBUIDialogBase : public wxDialog
 		wxTextCtrl* m_tcAirTemperature;
 		wxTextCtrl* m_tcSeaTemperature;
 		wxTextCtrl* m_tcCAPE;
+		wxStaticText* m_stAltitudeText;
+		wxTextCtrl* m_tcAltitude;
+		wxTextCtrl* m_tcTemp;
+		wxTextCtrl* m_tcRelHumid;
 		
 		// Virtual event handlers, overide them in your derived class
 		virtual void OnClose( wxCloseEvent& event ) { event.Skip(); }
@@ -94,6 +101,7 @@ class GRIBUIDialogBase : public wxDialog
 		virtual void OnOpenFile( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnSettings( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnRequest( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAltitudeChange( wxCommandEvent& event ) { event.Skip(); }
 		virtual void OnCBAny( wxCommandEvent& event ) { event.Skip(); }
 		
 	
@@ -127,8 +135,6 @@ class GribSettingsDialogBase : public wxDialog
 		wxChoice* m_cLoopStartPoint;
 		wxSpinCtrl* m_sUpdatesPerSecond;
 		wxStaticText* m_tSlicesPerUpdate;
-		wxSpinCtrl* m_sSlicesPerUpdate;
-		wxStaticText* m_tHourDivider;
 		wxChoice* m_cDataType;
 		wxChoice* m_cDataUnits;
 		wxCheckBox* m_cbBarbedArrows;
@@ -146,6 +152,7 @@ class GribSettingsDialogBase : public wxDialog
 		wxStaticText* m_tOverlayColors;
 		wxChoice* m_cOverlayColors;
 		wxCheckBox* m_cbNumbers;
+		wxStaticText* m_ctNumbers;
 		wxSpinCtrl* m_sNumbersSpacing;
 		wxStaticLine* m_staticline1;
 		wxStaticLine* m_staticline2;
@@ -163,7 +170,7 @@ class GribSettingsDialogBase : public wxDialog
 	public:
 		wxCheckBox* m_cLoopMode;
 		wxCheckBox* m_cInterpolate;
-		wxSpinCtrl* m_sHourDivider;
+		wxChoice* m_sSlicesPerUpdate;
 		wxStdDialogButtonSizer* m_sButton;
 		wxButton* m_sButtonOK;
 		wxButton* m_sButtonApply;

@@ -163,13 +163,13 @@ bool GRIBOverlayFactory::RenderGribOverlay( wxDC &dc, PlugIn_ViewPort *vp )
     return DoRenderGribOverlay( vp );
 }
 
-void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar)
+void GRIBOverlayFactory::SettingsIdToGribId(int i, int &idx, int &idy, bool &polar)
 {
     idx = idy = -1;
     polar = false;
     switch(i) {
     case GribOverlaySettings::WIND:
-        idx = Idx_WIND_VX, idy = Idx_WIND_VY; break;
+        idx = Idx_WIND_VX + m_Altitude, idy = Idx_WIND_VY + m_Altitude; break;
     case GribOverlaySettings::WIND_GUST:
         idx = Idx_WIND_GUST; break;
     case GribOverlaySettings::PRESSURE:
@@ -183,7 +183,7 @@ void SettingsIdToGribId(int i, int &idx, int &idy, bool &polar)
     case GribOverlaySettings::CLOUD:
         idx = Idx_CLOUD_TOT; break;
     case GribOverlaySettings::AIR_TEMPERATURE:
-        idx = Idx_AIR_TEMP_2M; break;
+        idx = Idx_AIR_TEMP; break;
     case GribOverlaySettings::SEA_TEMPERATURE:
         idx = Idx_SEA_TEMP; break;
     case GribOverlaySettings::CAPE:
@@ -197,6 +197,7 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
         DrawMessageWindow( ( m_Message ), vp->pix_width, vp->pix_height, m_dFont_war );
         return false;
     }
+
     m_Message_Hiden.Empty();
 
     //    If the scale has changed, clear out the cached bitmaps in DC mode
@@ -252,6 +253,13 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
             RenderGribDirectionArrows( i, pGR, vp );
             RenderGribNumbers( i, pGR, vp );
         }
+    }
+    if( m_Altitude ) {
+        if( !m_Message_Hiden.IsEmpty() ) m_Message_Hiden.Append(_T("   "));
+        m_Message_Hiden.Append(_("WIND data at")).Append(_T(" "))
+            .Append(m_Settings.GetAltitudeFromIndex(m_Altitude, m_Settings.Settings[GribOverlaySettings::PRESSURE].m_Units)).Append(_T(" "))
+            .Append(m_Settings.GetUnitSymbol(GribOverlaySettings::PRESSURE))
+            .Append(_T(" !"));
     }
     if( !m_Message_Hiden.IsEmpty() )
         DrawMessageWindow( m_Message_Hiden , vp->pix_width, vp->pix_height, m_dFont_map );
@@ -545,7 +553,7 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings)
     wxString labels;
     int p;
     switch(settings) {
-        case 2: 
+        case 2:
             p = m_Settings.Settings[2].m_Units == 2 ? 2 : 0;
             break;
         case 3:
@@ -554,12 +562,12 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings)
         case 8:
             p = 1;
             break;
-        case 5: 
+        case 5:
             p = value < 100. ? 2 : value < 10. ? 1 : 0;
             p += m_Settings.Settings[5].m_Units == 1 ? 1 : 0;
             break;
 
-        default : 
+        default :
             p = 0;
     }
     labels.Printf( _T("%.*f"), p, value );
@@ -902,7 +910,7 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
 
         if( !m_pdc )       //OpenGL mode
         {
-#ifdef ocpnUSE_GL            
+#ifdef ocpnUSE_GL
             if( !pGO->m_iTexture )
                 CreateGribGLTexture( pGO, settings, pGRA, vp, 8 );
 
@@ -914,7 +922,7 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                     m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays:"))
                     .Append(_T(" ")).Append(GribOverlaySettings::NameFromIndex(settings))
                     : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
-#endif                    
+#endif
         }
         else        //DC mode
         {
@@ -1008,7 +1016,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
                             if( m_pdc ) {
                                 m_pdc->DrawBitmap(label, p.x, p.y, true);
                             } else {
-#ifdef ocpnUSE_GL                                
+#ifdef ocpnUSE_GL
                                 int w = label.GetWidth(), h = label.GetHeight();
 #if 0 /* this way is more work on our part.. try it for debugging purposes */
                                 unsigned char *d = label.GetData(), *a = label.GetAlpha();
@@ -1166,14 +1174,14 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int i, int j, dou
         if( m_pdc )
             m_pdc->DrawCircle( i, j, r );
         else {
-#ifdef ocpnUSE_GL            
+#ifdef ocpnUSE_GL
             double w = pen.GetWidth(), s = 2 * M_PI / 10;
             if( m_hiDefGraphics ) w *= 0.75;
             wxColour c = pen.GetColour();
             glColor4ub( c.Red(), c.Green(), c.Blue(), 255);
             for( double a = 0; a < 2 * M_PI; a += s )
                 DrawGLLine( i + r*sin(a), j + r*cos(a), i + r*sin(a+s), j + r*cos(a+s), w );
-#endif            
+#endif
         }
     } else {
         // Arrange for arrows to be centered on origin
@@ -1271,7 +1279,7 @@ void GRIBOverlayFactory::drawTransformedLine( wxPen pen, double si, double co, i
         double w = pen.GetWidth();
         if( m_hiDefGraphics ) w *= 0.75;
         DrawGLLine( fi, fj, fk, fl, w );
-#endif        
+#endif
     }
 }
 
@@ -1350,7 +1358,7 @@ void GRIBOverlayFactory::DrawOLBitmap( const wxBitmap &bitmap, wxCoord x, wxCoor
     if( m_pdc )
         m_pdc->DrawBitmap( bmp, x, y, usemask );
     else {
-#ifdef ocpnUSE_GL        
+#ifdef ocpnUSE_GL
         wxImage image = bmp.ConvertToImage();
         int w = image.GetWidth(), h = image.GetHeight();
 
@@ -1398,7 +1406,7 @@ void GRIBOverlayFactory::DrawOLBitmap( const wxBitmap &bitmap, wxCoord x, wxCoor
             glDrawPixels( w, h, GL_RGB, GL_UNSIGNED_BYTE, image.GetData() );
             glPixelZoom( 1, 1 );
         }
-#endif        
+#endif
     }
 }
 
@@ -1430,9 +1438,9 @@ void GRIBOverlayFactory::DrawGLImage( wxImage *pimage, wxCoord xd, wxCoord yd, b
             }
     }
 
-#ifdef ocpnUSE_GL    
+#ifdef ocpnUSE_GL
     DrawGLRGBA( e, w, h, xd, yd );
-#endif    
+#endif
     delete[] e;
 }
 
@@ -1473,10 +1481,10 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
     double h = dheight * vp->view_scale_ppm;
 
     glBegin(GL_QUADS);
-    glTexCoord2i(0, 0),          glVertex2d(x, y);
-    glTexCoord2i(width, 0),      glVertex2d(x+w, y);
-    glTexCoord2i(width, height), glVertex2d(x+w, y+h);
-    glTexCoord2i(0, height),     glVertex2d(x, y+h);
+    glTexCoord2i(0, 0),          glVertex2d(x, y+h);
+    glTexCoord2i(width, 0),      glVertex2d(x+w, y+h);
+    glTexCoord2i(width, height), glVertex2d(x+w, y);
+    glTexCoord2i(0, height),     glVertex2d(x, y);
     glEnd();
 
     glDisable(GL_BLEND);
