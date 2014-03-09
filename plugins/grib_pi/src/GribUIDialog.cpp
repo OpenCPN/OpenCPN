@@ -89,8 +89,6 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
 #define SetBitmap SetBitmapLabel
 #endif
 
-const wxString buttonText[] = {_("Moving Grib Disabled"), _("Moving Grib Enabled") };
-
 //---------------------------------------------------------------------------------------
 //          GRIB Selector/Control Dialog Implementation
 //---------------------------------------------------------------------------------------

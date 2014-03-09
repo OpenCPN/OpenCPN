@@ -203,7 +203,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_staticText38->Wrap( -1 );
 	fgSizer31->Add( m_staticText38, 0, wxLEFT|wxRIGHT, 5 );
 
-	m_stAltitudeText = new wxStaticText( this, wxID_ANY, _("0"), wxDefaultPosition, wxSize( -1,-1 ), 0 );
+	m_stAltitudeText = new wxStaticText( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), 0 );
 	m_stAltitudeText->Wrap( -1 );
 	fgSizer31->Add( m_stAltitudeText, 0, wxLEFT|wxRIGHT, 5 );
 
@@ -1068,7 +1068,7 @@ GRIBTableBase::GRIBTableBase( wxWindow* parent, wxWindowID id, const wxString& t
 	m_pPositionText->Wrap( -1 );
 	fgSizer19->Add( m_pPositionText, 0, wxALL|wxEXPAND, 5 );
 	
-	m_pCursorPosition = new wxStaticText( this, wxID_ANY, _("00N  00W"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_pCursorPosition = new wxStaticText( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	m_pCursorPosition->Wrap( -1 );
 	fgSizer19->Add( m_pCursorPosition, 0, wxALL|wxEXPAND, 5 );
 	
