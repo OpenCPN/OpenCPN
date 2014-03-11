@@ -13,82 +13,82 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 {
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 	this->SetFont( wxFont( 9, 70, 90, 90, false, wxEmptyString ) );
-	
+
 	m_fgTrackingDisplay = new wxFlexGridSizer( 0, 1, 0, 0 );
 	m_fgTrackingDisplay->AddGrowableRow( 1 );
 	m_fgTrackingDisplay->SetFlexibleDirection( wxVERTICAL );
 	m_fgTrackingDisplay->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_ALL );
-	
+
 	wxFlexGridSizer* fgSizer51;
 	fgSizer51 = new wxFlexGridSizer( 1, 10, 0, 0 );
 	fgSizer51->AddGrowableCol( 1 );
 	fgSizer51->SetFlexibleDirection( wxHORIZONTAL );
 	fgSizer51->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_NONE );
-	
+
 	m_bpPrev = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpPrev->SetToolTip( _("Previous") );
-	
+
 	fgSizer51->Add( m_bpPrev, 0, wxALL, 1 );
-	
+
 	m_cRecordForecast = new wxComboBox( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, NULL, 0 ); 
 	fgSizer51->Add( m_cRecordForecast, 0, wxEXPAND|wxALL, 1 );
-	
+
 	m_bpNext = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpNext->SetToolTip( _("Next") );
-	
+
 	fgSizer51->Add( m_bpNext, 0, wxALL, 1 );
-	
+
 	m_bpNow = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpNow->SetToolTip( _("Now") );
-	
+
 	fgSizer51->Add( m_bpNow, 0, wxALL, 1 );
-	
+
 	m_bpZoomToCenter = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpZoomToCenter->SetToolTip( _("Zoom To Center") );
-	
+
 	fgSizer51->Add( m_bpZoomToCenter, 0, wxALL, 1 );
-	
+
 	m_bpPlay = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpPlay->SetToolTip( _("Play") );
-	
+
 	fgSizer51->Add( m_bpPlay, 0, wxALL, 1 );
-	
+
 	m_sTimeline = new wxSlider( this, ID_TIMELINE, 1, 0, 10, wxDefaultPosition, wxSize( 90,-1 ), wxSL_HORIZONTAL );
 	fgSizer51->Add( m_sTimeline, 0, wxEXPAND, 1 );
-	
+
 	m_bpOpenFile = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpOpenFile->SetToolTip( _("Open File") );
-	
+
 	fgSizer51->Add( m_bpOpenFile, 0, wxALL, 1 );
-	
+
 	m_bpSettings = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpSettings->SetToolTip( _("Settings") );
-	
+
 	fgSizer51->Add( m_bpSettings, 0, wxALL, 1 );
-	
+
 	m_bpRequest = new wxBitmapButton( this, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxDefaultSize, wxBU_AUTODRAW );
 	m_bpRequest->SetToolTip( _("Request") );
-	
+
 	fgSizer51->Add( m_bpRequest, 0, wxALL, 1 );
-	
+
 	
 	m_fgTrackingDisplay->Add( fgSizer51, 1, wxEXPAND, 1 );
-	
+
 	wxStaticBoxSizer* sbSizer2;
 	sbSizer2 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("GRIB Data at Cursor") ), wxVERTICAL );
-	
+
 	m_fgTrackingControls = new wxFlexGridSizer( 0, 6, 0, 0 );
 	m_fgTrackingControls->SetFlexibleDirection( wxBOTH );
 	m_fgTrackingControls->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
+
 	m_fcAltitude = new wxFlexGridSizer( 0, 2, 0, 0 );
 	m_fcAltitude->SetFlexibleDirection( wxBOTH );
 	m_fcAltitude->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	wxArrayString m_cbAltitudeChoices;
-	m_cbAltitude = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxSize( 45,-1 ), m_cbAltitudeChoices, 0 );
+	m_cbAltitude = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxSize( 60,-1 ), m_cbAltitudeChoices, 0 );
 	m_cbAltitude->SetSelection( 0 );
-	m_cbAltitude->SetFont( wxFont( 7, 70, 90, 90, false, wxEmptyString ) );
+	m_cbAltitude->SetFont( wxFont( wxNORMAL_FONT->GetPointSize(), 70, 90, 90, false, wxEmptyString ) );
 
 	m_fcAltitude->Add( m_cbAltitude, 0, wxLEFT, 3 );
 
@@ -97,95 +97,95 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 
 
 	m_fgTrackingControls->Add( m_fcAltitude, 1, wxEXPAND, 5 );
-	
+
 	m_tcWindSpeed = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcWindSpeed, 0, wxALL, 1 );
-	
+
 	m_tcWindDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 45,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcWindDirection, 0, wxALL, 1 );
-	
+
 	m_cbWave = new wxCheckBox( this, ID_CB_WAVES, _("Waves"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbWave, 0, wxALL, 5 );
-	
+
 	m_tcWaveHeight = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcWaveHeight, 0, wxALL, 1 );
-	
+
 	m_tcWaveDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 45,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcWaveDirection, 0, wxALL, 1 );
-	
+
 	m_cbCurrent = new wxCheckBox( this, ID_CB_CURRENT, _("Current"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbCurrent, 0, wxALL, 5 );
-	
+
 	m_tcCurrentVelocity = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcCurrentVelocity, 0, wxALL, 1 );
-	
+
 	m_tcCurrentDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 45,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcCurrentDirection, 0, wxALL, 1 );
-	
+
 	m_cbWindGust = new wxCheckBox( this, ID_CB_WIND_GUSTS, _("Wind Gust"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbWindGust, 0, wxALL, 5 );
-	
+
 	m_tcWindGust = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcWindGust, 0, wxALL, 1 );
-	
-	
+
+
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 1 );
-	
+
 	m_cbPressure = new wxCheckBox( this, ID_CB_PRESSURE, _("Pressure"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbPressure, 0, wxALL, 5 );
-	
+
 	m_tcPressure = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcPressure, 0, wxALL, 1 );
-	
-	
+
+
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 1 );
-	
+
 	m_cbPrecipitation = new wxCheckBox( this, ID_CB_RAINFALL, _("Rainfall"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbPrecipitation, 0, wxALL, 5 );
-	
+
 	m_tcPrecipitation = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcPrecipitation, 0, wxALL, 1 );
-	
-	
+
+
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 1 );
-	
+
 	m_cbCloud = new wxCheckBox( this, ID_CB_CLOUD_COVER, _("Cloud Cover"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbCloud, 0, wxALL, 5 );
-	
+
 	m_tcCloud = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcCloud, 0, wxALL, 1 );
-	
-	
+
+
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 1 );
-	
+
 	m_cbAirTemperature = new wxCheckBox( this, ID_CB_AIR_TEMP, _("Air Temp"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbAirTemperature, 0, wxALL, 5 );
-	
+
 	m_tcAirTemperature = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcAirTemperature, 0, wxALL, 1 );
-	
-	
+
+
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 1 );
-	
+
 	m_cbSeaTemperature = new wxCheckBox( this, ID_CB_SEA_TEMP, _("Sea Temp"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbSeaTemperature, 0, wxALL, 5 );
-	
+
 	m_tcSeaTemperature = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcSeaTemperature, 0, wxALL, 1 );
-	
-	
+
+
 	m_fgTrackingControls->Add( 0, 0, 1, wxEXPAND, 5 );
-	
+
 	m_cbCAPE = new wxCheckBox( this, ID_CB_CAPE, _("CAPE"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbCAPE, 0, wxALL, 5 );
 	
 	m_tcCAPE = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxPoint( -1,-1 ), wxSize( 70,-1 ), wxTE_READONLY );
 	m_fgTrackingControls->Add( m_tcCAPE, 0, wxALL, 1 );
-	
-	
+
+
 	sbSizer2->Add( m_fgTrackingControls, 1, wxEXPAND, 1 );
-	
-	
+
+
 	m_fgTrackingDisplay->Add( sbSizer2, 1, wxFIXED_MINSIZE, 1 );
 
 	wxFlexGridSizer* fgSizer30;
@@ -203,7 +203,7 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_staticText38->Wrap( -1 );
 	fgSizer31->Add( m_staticText38, 0, wxLEFT|wxRIGHT, 5 );
 
-	m_stAltitudeText = new wxStaticText( this, wxID_ANY, _("0"), wxDefaultPosition, wxSize( -1,-1 ), 0 );
+	m_stAltitudeText = new wxStaticText( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), 0 );
 	m_stAltitudeText->Wrap( -1 );
 	fgSizer31->Add( m_stAltitudeText, 0, wxLEFT|wxRIGHT, 5 );
 
@@ -250,14 +250,14 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 
 
 	m_fgTrackingDisplay->Add( fgSizer30, 1, wxEXPAND, 5 );
-	
-	
+
+
 	this->SetSizer( m_fgTrackingDisplay );
 	this->Layout();
 	m_fgTrackingDisplay->Fit( this );
-	
+
 	this->Centre( wxBOTH );
-	
+
 	// Connect Events
 	this->Connect( wxEVT_CLOSE_WINDOW, wxCloseEventHandler( GRIBUIDialogBase::OnClose ) );
 	this->Connect( wxEVT_SIZE, wxSizeEventHandler( GRIBUIDialogBase::OnSize ) );
@@ -411,32 +411,34 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	wxArrayString m_cDataUnitsChoices;
 	m_cDataUnits = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDataUnitsChoices, 0 );
 	m_cDataUnits->SetSelection( 0 );
+	m_cDataUnits->SetMinSize( wxSize( 100,-1 ) );
+
 	fgSizer15->Add( m_cDataUnits, 0, wxALL|wxEXPAND, 5 );
-	
+
 	m_cbBarbedArrows = new wxCheckBox( this, wxID_ANY, _("Barbed Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbBarbedArrows, 0, wxALL, 5 );
-	
+
 	wxString m_cBarbedColoursChoices[] = { _("Default Colour"), _("Controled Colours") };
 	int m_cBarbedColoursNChoices = sizeof( m_cBarbedColoursChoices ) / sizeof( wxString );
 	m_cBarbedColours = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cBarbedColoursNChoices, m_cBarbedColoursChoices, 0 );
 	m_cBarbedColours->SetSelection( 0 );
 	fgSizer15->Add( m_cBarbedColours, 0, wxALL|wxEXPAND, 5 );
-	
+
 	m_cBarbedVisibility = new wxCheckBox( this, wxID_ANY, _("Always visible"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cBarbedVisibility, 0, wxALL|wxEXPAND, 5 );
-	
+
 	m_cbIsoBars = new wxCheckBox( this, wxID_ANY, _("IsoBars"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbIsoBars, 0, wxALL, 5 );
-	
+
 	m_fIsoBarSpacing = new wxFlexGridSizer( 0, 2, 0, 0 );
 	m_fIsoBarSpacing->SetFlexibleDirection( wxBOTH );
 	m_fIsoBarSpacing->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
+
 	wxStaticText* m_tIsoBarSpacing;
 	m_tIsoBarSpacing = new wxStaticText( this, wxID_ANY, _("Spacing"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tIsoBarSpacing->Wrap( -1 );
 	m_fIsoBarSpacing->Add( m_tIsoBarSpacing, 0, wxBOTTOM|wxEXPAND|wxRIGHT, 5 );
-	
+
 	m_sIsoBarSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxSP_ARROW_KEYS, 1, 1000, 1 );
 	m_fIsoBarSpacing->Add( m_sIsoBarSpacing, 0, wxALL|wxEXPAND, 5 );
 	
@@ -681,174 +683,257 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	
 	
 	fgSizer17->Add( m_pSenderSizer, 1, wxEXPAND, 5 );
-	
+
 	wxFlexGridSizer* fgSizer9;
-	fgSizer9 = new wxFlexGridSizer( 0, 5, 0, 0 );
+	fgSizer9 = new wxFlexGridSizer( 0, 3, 0, 0 );
 	fgSizer9->SetFlexibleDirection( wxBOTH );
 	fgSizer9->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
+
+	wxFlexGridSizer* fgSizer33;
+	fgSizer33 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer33->SetFlexibleDirection( wxBOTH );
+	fgSizer33->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
 	wxStaticText* m_staticText15;
 	m_staticText15 = new wxStaticText( this, wxID_ANY, _("Mail To "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText15->Wrap( -1 );
-	fgSizer9->Add( m_staticText15, 0, wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
+	fgSizer33->Add( m_staticText15, 0, wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
+
 	wxArrayString m_pMailToChoices;
 	m_pMailTo = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pMailToChoices, 0 );
 	m_pMailTo->SetSelection( 0 );
-	fgSizer9->Add( m_pMailTo, 0, wxALL, 5 );
-	
+	fgSizer33->Add( m_pMailTo, 0, wxALL, 5 );
+
 	wxStaticText* m_staticText16;
 	m_staticText16 = new wxStaticText( this, wxID_ANY, _("Forecast Model "), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText16->Wrap( -1 );
-	fgSizer9->Add( m_staticText16, 0, wxALL|wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
-	
+	fgSizer33->Add( m_staticText16, 0, wxALL|wxEXPAND|wxLEFT|wxRIGHT|wxTOP, 5 );
+
 	wxArrayString m_pModelChoices;
 	m_pModel = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pModelChoices, 0 );
 	m_pModel->SetSelection( 0 );
-	fgSizer9->Add( m_pModel, 0, wxALL, 5 );
+	fgSizer33->Add( m_pModel, 0, wxALL, 5 );
+
+
+	fgSizer9->Add( fgSizer33, 1, wxEXPAND, 5 );
+
+	wxFlexGridSizer* fgSizer32;
+	fgSizer32 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer32->SetFlexibleDirection( wxBOTH );
+	fgSizer32->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_cMovingGribEnabled = new wxCheckBox( this, wxID_ANY, _("Moving Grib"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer32->Add( m_cMovingGribEnabled, 0, wxALL, 5 );
+
+	m_fgMovingParams = new wxFlexGridSizer( 0, 3, 0, 0 );
+	m_fgMovingParams->SetFlexibleDirection( wxBOTH );
+	m_fgMovingParams->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	wxStaticText* m_staticText27;
+	m_staticText27 = new wxStaticText( this, wxID_ANY, _("Expected Speed"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText27->Wrap( -1 );
+	m_fgMovingParams->Add( m_staticText27, 0, wxALL, 5 );
+
+	m_sMovingSpeed = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxSP_ARROW_KEYS, 1, 30, 1 );
+	m_fgMovingParams->Add( m_sMovingSpeed, 0, wxALL, 5 );
+
+	wxStaticText* m_sSpeedUnit;
+	m_sSpeedUnit = new wxStaticText( this, wxID_ANY, _("Kts"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_sSpeedUnit->Wrap( -1 );
+	m_fgMovingParams->Add( m_sSpeedUnit, 0, wxBOTTOM|wxEXPAND|wxRIGHT|wxTOP, 5 );
+
+	wxStaticText* m_staticText29;
+	m_staticText29 = new wxStaticText( this, wxID_ANY, _("Expected Course"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText29->Wrap( -1 );
+	m_fgMovingParams->Add( m_staticText29, 0, wxALL, 5 );
+
+	m_sMovingCourse = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxSP_ARROW_KEYS, 1, 360, 1 );
+	m_fgMovingParams->Add( m_sMovingCourse, 0, wxALL, 5 );
 	
-	m_pMovingGribButton = new wxButton( this, wxID_ANY, _("Moving Grib Enabled"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer9->Add( m_pMovingGribButton, 0, wxALL, 5 );
-	
+	m_sCourseUnit = new wxStaticText( this, wxID_ANY, _("Deg"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_sCourseUnit->Wrap( -1 );
+	m_fgMovingParams->Add( m_sCourseUnit, 0, wxBOTTOM|wxEXPAND|wxRIGHT|wxTOP, 5 );
+
+
+	fgSizer32->Add( m_fgMovingParams, 1, wxEXPAND, 5 );
+
+
+	fgSizer9->Add( fgSizer32, 1, wxEXPAND, 5 );
+
+	m_fgLog = new wxFlexGridSizer( 0, 2, 0, 0 );
+	m_fgLog->SetFlexibleDirection( wxBOTH );
+	m_fgLog->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	wxStaticText* m_tLogin;
 	m_tLogin = new wxStaticText( this, wxID_ANY, _("zyGrib Login"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tLogin->Wrap( -1 );
-	fgSizer9->Add( m_tLogin, 0, wxALL, 5 );
-	
+	m_fgLog->Add( m_tLogin, 0, wxALL, 5 );
+
 	m_pLogin = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer9->Add( m_pLogin, 0, wxALL, 5 );
-	
+	m_fgLog->Add( m_pLogin, 0, wxALL, 5 );
+
+	wxStaticText* m_tCode;
 	m_tCode = new wxStaticText( this, wxID_ANY, _("zyGrib Code"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tCode->Wrap( -1 );
-	fgSizer9->Add( m_tCode, 0, wxALL, 5 );
-	
+	m_fgLog->Add( m_tCode, 0, wxALL, 5 );
+
 	m_pCode = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer9->Add( m_pCode, 0, wxLEFT, 5 );
-	
-	
+	m_fgLog->Add( m_pCode, 0, wxALL, 5 );
+
+
+	fgSizer9->Add( m_fgLog, 1, wxEXPAND, 5 );
+
+
 	fgSizer17->Add( fgSizer9, 1, wxEXPAND, 10 );
-	
+
 	wxFlexGridSizer* fgSizer13;
 	fgSizer13 = new wxFlexGridSizer( 0, 9, 0, 0 );
 	fgSizer13->SetFlexibleDirection( wxBOTH );
 	fgSizer13->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
+
 	wxStaticText* m_staticText17;
 	m_staticText17 = new wxStaticText( this, wxID_ANY, _("Resolution"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText17->Wrap( -1 );
 	fgSizer13->Add( m_staticText17, 0, wxALL, 5 );
-	
+
 	wxArrayString m_pResolutionChoices;
 	m_pResolution = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pResolutionChoices, 0 );
 	m_pResolution->SetSelection( 0 );
 	fgSizer13->Add( m_pResolution, 0, wxALL, 1 );
-	
+
 	m_tResUnit = new wxStaticText( this, wxID_ANY, _("Deg"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_tResUnit->Wrap( -1 );
 	fgSizer13->Add( m_tResUnit, 0, wxTOP|wxBOTTOM|wxRIGHT, 5 );
-	
+
 	wxStaticText* m_staticText18;
 	m_staticText18 = new wxStaticText( this, wxID_ANY, _("Interval"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText18->Wrap( -1 );
 	fgSizer13->Add( m_staticText18, 0, wxALL, 5 );
-	
+
 	wxArrayString m_pIntervalChoices;
 	m_pInterval = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pIntervalChoices, 0 );
 	m_pInterval->SetSelection( 0 );
 	fgSizer13->Add( m_pInterval, 0, wxALL, 1 );
-	
+
 	wxStaticText* m_staticText20;
 	m_staticText20 = new wxStaticText( this, wxID_ANY, _("Hours"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText20->Wrap( -1 );
 	fgSizer13->Add( m_staticText20, 0, wxTOP|wxBOTTOM|wxRIGHT, 5 );
-	
+
 	wxStaticText* m_staticText19;
 	m_staticText19 = new wxStaticText( this, wxID_ANY, _("Time Range"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText19->Wrap( -1 );
 	fgSizer13->Add( m_staticText19, 0, wxALL, 5 );
-	
+
 	wxArrayString m_pTimeRangeChoices;
 	m_pTimeRange = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pTimeRangeChoices, 0 );
 	m_pTimeRange->SetSelection( 0 );
 	fgSizer13->Add( m_pTimeRange, 0, wxALL, 1 );
-	
+
 	m_staticText21 = new wxStaticText( this, wxID_ANY, _("Days"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText21->Wrap( -1 );
 	fgSizer13->Add( m_staticText21, 0, wxTOP|wxBOTTOM|wxRIGHT, 5 );
-	
-	
+
+
 	fgSizer17->Add( fgSizer13, 1, wxEXPAND, 5 );
-	
-	
+
+
 	sbSizer7->Add( fgSizer17, 1, wxEXPAND, 5 );
-	
-	
+
+
 	fgSizer101->Add( sbSizer7, 1, wxEXPAND, 5 );
-	
+
 	wxStaticBoxSizer* sbSizer8;
 	sbSizer8 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Data available") ), wxVERTICAL );
-	
+
 	wxFlexGridSizer* fgSizer10;
 	fgSizer10 = new wxFlexGridSizer( 0, 3, 0, 0 );
 	fgSizer10->SetFlexibleDirection( wxBOTH );
 	fgSizer10->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
+
 	m_pWind = new wxCheckBox( this, wxID_ANY, _("Wind"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pWind, 0, wxALL, 5 );
-	
+	fgSizer10->Add( m_pWind, 0, wxALL|wxEXPAND, 5 );
+
 	m_pPress = new wxCheckBox( this, wxID_ANY, _("Pressure"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pPress, 0, wxALL, 5 );
-	
+	fgSizer10->Add( m_pPress, 0, wxALL|wxEXPAND, 5 );
+
 	m_pWindGust = new wxCheckBox( this, wxID_ANY, _("Wind Gust"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pWindGust, 0, wxALL, 5 );
-	
+	fgSizer10->Add( m_pWindGust, 0, wxALL|wxEXPAND, 5 );
+
 	m_pRainfall = new wxCheckBox( this, wxID_ANY, _("Rainfall"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pRainfall, 0, wxALL, 5 );
-	
+	fgSizer10->Add( m_pRainfall, 0, wxALL|wxEXPAND, 5 );
+
 	m_pCloudCover = new wxCheckBox( this, wxID_ANY, _("Cloud Cover"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pCloudCover, 0, wxALL, 5 );
-	
+	fgSizer10->Add( m_pCloudCover, 0, wxALL|wxEXPAND, 5 );
+
 	m_pAirTemp = new wxCheckBox( this, wxID_ANY, _("Air Temperature(2m)"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pAirTemp, 0, wxALL, 5 );
-	
+	fgSizer10->Add( m_pAirTemp, 0, wxALL|wxEXPAND, 5 );
+
 	m_pSeaTemp = new wxCheckBox( this, wxID_ANY, _("Sea Temperature(surf.)"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pSeaTemp, 0, wxALL, 5 );
-	
+	fgSizer10->Add( m_pSeaTemp, 0, wxALL|wxEXPAND, 5 );
+
 	m_pCurrent = new wxCheckBox( this, wxID_ANY, _("Current"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pCurrent, 0, wxALL, 5 );
-	
+	fgSizer10->Add( m_pCurrent, 0, wxALL|wxEXPAND, 5 );
+
 	m_pCAPE = new wxCheckBox( this, wxID_ANY, _("CAPE"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pCAPE, 0, wxALL, 5 );
-	
+	fgSizer10->Add( m_pCAPE, 0, wxALL|wxEXPAND, 5 );
+
+	wxFlexGridSizer* fgSizer28;
+	fgSizer28 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer28->SetFlexibleDirection( wxBOTH );
+	fgSizer28->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
 	m_pWaves = new wxCheckBox( this, wxID_ANY, _("Waves"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pWaves, 0, wxALL, 5 );
-	
-	m_tWModel = new wxStaticText( this, wxID_ANY, _("WavesModel"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_tWModel->Wrap( -1 );
-	fgSizer10->Add( m_tWModel, 0, wxALL, 5 );
-	
+	fgSizer28->Add( m_pWaves, 0, wxALL, 5 );
+
 	wxArrayString m_pWModelChoices;
 	m_pWModel = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_pWModelChoices, 0 );
 	m_pWModel->SetSelection( 0 );
-	fgSizer10->Add( m_pWModel, 0, wxALL, 1 );
-	
-	
+	fgSizer28->Add( m_pWModel, 0, wxALL, 1 );
+
+
+	fgSizer10->Add( fgSizer28, 1, wxEXPAND, 5 );
+
+	m_pAltitudeData = new wxCheckBox( this, wxID_ANY, _("Altitude Data"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer10->Add( m_pAltitudeData, 0, wxALL|wxEXPAND, 5 );
+
+	m_fgAltitudeData = new wxFlexGridSizer( 0, 2, 0, 0 );
+	m_fgAltitudeData->SetFlexibleDirection( wxBOTH );
+	m_fgAltitudeData->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_p850hpa = new wxCheckBox( this, wxID_ANY, _("850 hPA"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_fgAltitudeData->Add( m_p850hpa, 0, wxALL|wxEXPAND, 5 );
+
+	m_p700hpa = new wxCheckBox( this, wxID_ANY, _("700 hPa"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_fgAltitudeData->Add( m_p700hpa, 0, wxALL|wxEXPAND, 5 );
+
+	m_p500hpa = new wxCheckBox( this, wxID_ANY, _("500 hPa"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_fgAltitudeData->Add( m_p500hpa, 0, wxALL|wxEXPAND, 5 );
+
+	m_p300hpa = new wxCheckBox( this, wxID_ANY, _("300 hPa"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_fgAltitudeData->Add( m_p300hpa, 0, wxALL|wxEXPAND, 5 );
+
+
+	fgSizer10->Add( m_fgAltitudeData, 1, wxEXPAND, 5 );
+
+
 	sbSizer8->Add( fgSizer10, 1, wxEXPAND, 5 );
-	
-	
+
+
 	fgSizer101->Add( sbSizer8, 1, wxEXPAND|wxTOP, 5 );
-	
+
 	wxStaticBoxSizer* sbSizer6;
 	sbSizer6 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Mail") ), wxVERTICAL );
-	
+
 	wxFlexGridSizer* fgSizer11;
 	fgSizer11 = new wxFlexGridSizer( 0, 1, 0, 0 );
 	fgSizer11->AddGrowableCol( 0 );
 	fgSizer11->SetFlexibleDirection( wxBOTH );
 	fgSizer11->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
+
 	m_MailImage = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY );
 	m_MailImage->SetMinSize( wxSize( -1,80 ) );
-	
+
 	fgSizer11->Add( m_MailImage, 0, wxALL|wxEXPAND, 5 );
 	
 	
@@ -899,7 +984,9 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	// Connect Events
 	m_pMailTo->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_pModel->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
-	m_pMovingGribButton->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnMovingGribButtonClick ), NULL, this );
+	m_cMovingGribEnabled->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnMovingClick ), NULL, this );
+	m_sMovingSpeed->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_sMovingCourse->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pLogin->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pCode->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pResolution->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
@@ -916,6 +1003,11 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_pCAPE->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pWaves->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pWModel->Connect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_pAltitudeData->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_p850hpa->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_p700hpa->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_p500hpa->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_p300hpa->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_rButtonApply->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSaveMail ), NULL, this );
 	m_rButtonYes->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSendMaiL ), NULL, this );
 }
@@ -925,7 +1017,9 @@ GribRequestSettingBase::~GribRequestSettingBase()
 	// Disconnect Events
 	m_pMailTo->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
 	m_pModel->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnTopChange ), NULL, this );
-	m_pMovingGribButton->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnMovingGribButtonClick ), NULL, this );
+	m_cMovingGribEnabled->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnMovingClick ), NULL, this );
+	m_sMovingSpeed->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_sMovingCourse->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pLogin->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pCode->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pResolution->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
@@ -942,79 +1036,14 @@ GribRequestSettingBase::~GribRequestSettingBase()
 	m_pCAPE->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pWaves->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_pWModel->Disconnect( wxEVT_COMMAND_CHOICE_SELECTED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_pAltitudeData->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_p850hpa->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_p700hpa->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_p500hpa->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
+	m_p300hpa->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnAnyChange ), NULL, this );
 	m_rButtonApply->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSaveMail ), NULL, this );
 	m_rButtonYes->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( GribRequestSettingBase::OnSendMaiL ), NULL, this );
 	
-}
-
-GribMovingSettingBase::GribMovingSettingBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
-{
-	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	
-	wxFlexGridSizer* fgSizer22;
-	fgSizer22 = new wxFlexGridSizer( 0, 1, 0, 0 );
-	fgSizer22->SetFlexibleDirection( wxBOTH );
-	fgSizer22->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	m_cMovingGribEnabled = new wxCheckBox( this, wxID_ANY, _("Enable Moving Grib"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_cMovingGribEnabled->SetValue(true); 
-	fgSizer22->Add( m_cMovingGribEnabled, 0, wxALL, 5 );
-	
-	
-	fgSizer22->Add( 0, 10, 1, wxEXPAND, 5 );
-	
-	wxFlexGridSizer* fgSizer23;
-	fgSizer23 = new wxFlexGridSizer( 0, 3, 0, 0 );
-	fgSizer23->SetFlexibleDirection( wxBOTH );
-	fgSizer23->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
-	
-	wxStaticText* m_staticText27;
-	m_staticText27 = new wxStaticText( this, wxID_ANY, _("Expected Speed (in knots)"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText27->Wrap( -1 );
-	fgSizer23->Add( m_staticText27, 0, wxALL, 5 );
-	
-	m_sMovingSpeed = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxSP_ARROW_KEYS, 0, 30, 0 );
-	fgSizer23->Add( m_sMovingSpeed, 0, wxALL, 5 );
-	
-	wxStaticText* m_staticText28;
-	m_staticText28 = new wxStaticText( this, wxID_ANY, _("Kts"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText28->Wrap( -1 );
-	fgSizer23->Add( m_staticText28, 0, wxBOTTOM|wxEXPAND|wxRIGHT|wxTOP, 5 );
-	
-	wxStaticText* m_staticText29;
-	m_staticText29 = new wxStaticText( this, wxID_ANY, _("Expected Course"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText29->Wrap( -1 );
-	fgSizer23->Add( m_staticText29, 0, wxALL, 5 );
-	
-	m_sMovingCourse = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxSP_ARROW_KEYS, 1, 360, 0 );
-	fgSizer23->Add( m_sMovingCourse, 0, wxALL, 5 );
-	
-	m_staticText30 = new wxStaticText( this, wxID_ANY, _("Deg"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText30->Wrap( -1 );
-	fgSizer23->Add( m_staticText30, 0, wxBOTTOM|wxEXPAND|wxRIGHT|wxTOP, 5 );
-	
-	
-	fgSizer22->Add( fgSizer23, 1, wxEXPAND, 5 );
-	
-	m_sdbSizer5 = new wxStdDialogButtonSizer();
-	m_sdbSizer5OK = new wxButton( this, wxID_OK );
-	m_sdbSizer5->AddButton( m_sdbSizer5OK );
-	m_sdbSizer5Cancel = new wxButton( this, wxID_CANCEL );
-	m_sdbSizer5->AddButton( m_sdbSizer5Cancel );
-	m_sdbSizer5->Realize();
-	
-	fgSizer22->Add( m_sdbSizer5, 1, wxALIGN_RIGHT|wxEXPAND, 5 );
-	
-	
-	this->SetSizer( fgSizer22 );
-	this->Layout();
-	fgSizer22->Fit( this );
-	
-	this->Centre( wxBOTH );
-}
-
-GribMovingSettingBase::~GribMovingSettingBase()
-{
 }
 
 GRIBTableBase::GRIBTableBase( wxWindow* parent, wxWindowID id, const wxString& title, const wxPoint& pos, const wxSize& size, long style ) : wxDialog( parent, id, title, pos, size, style )
@@ -1039,7 +1068,7 @@ GRIBTableBase::GRIBTableBase( wxWindow* parent, wxWindowID id, const wxString& t
 	m_pPositionText->Wrap( -1 );
 	fgSizer19->Add( m_pPositionText, 0, wxALL|wxEXPAND, 5 );
 	
-	m_pCursorPosition = new wxStaticText( this, wxID_ANY, _("00N  00W"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_pCursorPosition = new wxStaticText( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
 	m_pCursorPosition->Wrap( -1 );
 	fgSizer19->Add( m_pCursorPosition, 0, wxALL|wxEXPAND, 5 );
 	

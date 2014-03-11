@@ -25,4 +25,4 @@ src/grib_pi.cpp
 src/GribRecord.h
 src/icons.cpp
 src/GribTable.cpp
-
+src/GribRequestDialog.cpp

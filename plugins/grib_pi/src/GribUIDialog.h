@@ -37,6 +37,7 @@
 
 #include "GribUIDialogBase.h"
 #include "GribSettingsDialog.h"
+#include "GribRequestDialog.h"
 #include "GribReader.h"
 #include "GribRecordSet.h"
 #include "IsoLine.h"
@@ -84,7 +85,7 @@ public:
     void ContextMenuItemCallback(int id);
     void SetCursorLatLon( double lat, double lon );
     void SetFactoryOptions( bool set_val = false );
-    void PopulateTrackingControls( void );
+    void PopulateTrackingControls( bool Populate_Altitude = true );
 
     wxDateTime TimelineTime();
     GribTimelineRecordSet* GetTimeLineRecordSet(wxDateTime time);
@@ -197,64 +198,6 @@ private:
     ArrayOfGribRecordSets m_GribRecordSetArray;
 
     int m_nGribRecords;
-};
-
-//----------------------------------------------------------------------------------------------------------
-//    Request setting Specification
-//----------------------------------------------------------------------------------------------------------
-class GribRequestSetting : public GribRequestSettingBase
-{
-public:
-      GribRequestSetting( wxWindow *parent )
-          : GribRequestSettingBase(parent) {};
-
-      ~GribRequestSetting() {}
-
-      void InitRequestConfig();
-      void SetVpSize(PlugIn_ViewPort *vp);
-      void OnVpChange(PlugIn_ViewPort *vp);
-
-      wxString m_RequestConfigBase;
-      wxString m_MailToAddresses;
-      int m_LatmaxBase;
-      int m_LatminBase;
-      int m_LonminBase;
-      int m_LonmaxBase;
-    
-private:
-      void ApplyRequestConfig( unsigned rs, unsigned it, unsigned tr );
-      wxString WriteMail();
-      bool EstimateFileSize();
-
-      void OnTopChange(wxCommandEvent &event);
-      void OnMovingGribButtonClick( wxCommandEvent& event );
-      void OnAnyChange( wxCommandEvent& event );
-      void OnTimeRangeChange( wxCommandEvent& event );
-      void OnSendMaiL( wxCommandEvent& event );
-      void OnSaveMail( wxCommandEvent& event );
-
-      int  m_MailError_Nb;
-      int  m_SendMethod;
-      bool m_AllowSend;
-      bool m_MovingGribEnabled;
-      int m_MovingSpeed;
-      int m_MovingCourse;
-};
-
-//----------------------------------------------------------------------------------------------------------
-//    Moving Grib setting Specification
-//----------------------------------------------------------------------------------------------------------
-class GribMovingSetting : public GribMovingSettingBase
-{
-public:
-    GribMovingSetting( wxWindow *parent, int movingenabled, int movingspeed, int movingcourse )
-          : GribMovingSettingBase(parent) {};
-
-      ~GribMovingSetting() {}
-
-      bool GetMovingGribEnabled() { return m_cMovingGribEnabled->GetValue(); }
-      int GetMovingSpeed() { return m_sMovingSpeed->GetValue(); }
-      int GetMovingCourse() { return m_sMovingCourse->GetValue(); }
 };
 
 #endif

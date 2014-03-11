@@ -84,6 +84,8 @@ SET(SRC_GRIB
             src/GribUIDialog.h
             src/GribSettingsDialog.cpp
             src/GribSettingsDialog.h
+            src/GribRequestDialog.cpp
+            src/GribRequestDialog.h
             src/icons.h
             src/msg.h
             src/email.h

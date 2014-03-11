@@ -217,34 +217,22 @@ class GribRequestSettingBase : public wxDialog
 	
 	protected:
 		wxFlexGridSizer* m_pSenderSizer;
-		wxButton* m_pMovingGribButton;
-		wxStaticText* m_tLogin;
-		wxStaticText* m_tCode;
-		wxStaticText* m_staticText21;
-		wxStaticText* m_tWModel;
-		wxTextCtrl* m_MailImage;
-		wxStaticText* m_tFileSize;
-		wxStaticText* m_tLimit;
-		
-		// Virtual event handlers, overide them in your derived class
-		virtual void OnTopChange( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnMovingGribButtonClick( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnAnyChange( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnTimeRangeChange( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnSaveMail( wxCommandEvent& event ) { event.Skip(); }
-		virtual void OnSendMaiL( wxCommandEvent& event ) { event.Skip(); }
-		
-	
-	public:
 		wxTextCtrl* m_pSenderAddress;
 		wxChoice* m_pMailTo;
 		wxChoice* m_pModel;
+		wxCheckBox* m_cMovingGribEnabled;
+		wxFlexGridSizer* m_fgMovingParams;
+		wxSpinCtrl* m_sMovingSpeed;
+		wxSpinCtrl* m_sMovingCourse;
+		wxStaticText* m_sCourseUnit;
+		wxFlexGridSizer* m_fgLog;
 		wxTextCtrl* m_pLogin;
 		wxTextCtrl* m_pCode;
 		wxChoice* m_pResolution;
 		wxStaticText* m_tResUnit;
 		wxChoice* m_pInterval;
 		wxChoice* m_pTimeRange;
+		wxStaticText* m_staticText21;
 		wxCheckBox* m_pWind;
 		wxCheckBox* m_pPress;
 		wxCheckBox* m_pWindGust;
@@ -256,36 +244,33 @@ class GribRequestSettingBase : public wxDialog
 		wxCheckBox* m_pCAPE;
 		wxCheckBox* m_pWaves;
 		wxChoice* m_pWModel;
+		wxCheckBox* m_pAltitudeData;
+		wxFlexGridSizer* m_fgAltitudeData;
+		wxCheckBox* m_p850hpa;
+		wxCheckBox* m_p700hpa;
+		wxCheckBox* m_p500hpa;
+		wxCheckBox* m_p300hpa;
+		wxTextCtrl* m_MailImage;
+		wxStaticText* m_tFileSize;
+		wxStaticText* m_tLimit;
 		wxStdDialogButtonSizer* m_rButton;
 		wxButton* m_rButtonYes;
 		wxButton* m_rButtonApply;
 		wxButton* m_rButtonCancel;
 		
-		GribRequestSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Write and send eMail request"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
-		~GribRequestSettingBase();
-	
-};
+		// Virtual event handlers, overide them in your derived class
+		virtual void OnTopChange( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnMovingClick( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnAnyChange( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnTimeRangeChange( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSaveMail( wxCommandEvent& event ) { event.Skip(); }
+		virtual void OnSendMaiL( wxCommandEvent& event ) { event.Skip(); }
 
-///////////////////////////////////////////////////////////////////////////////
-/// Class GribMovingSettingBase
-///////////////////////////////////////////////////////////////////////////////
-class GribMovingSettingBase : public wxDialog 
-{
-	private:
-	
-	protected:
-		wxStaticText* m_staticText30;
-		wxStdDialogButtonSizer* m_sdbSizer5;
-		wxButton* m_sdbSizer5OK;
-		wxButton* m_sdbSizer5Cancel;
 	
 	public:
-		wxCheckBox* m_cMovingGribEnabled;
-		wxSpinCtrl* m_sMovingSpeed;
-		wxSpinCtrl* m_sMovingCourse;
 		
-		GribMovingSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Set Moving Grib"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = wxCAPTION ); 
-		~GribMovingSettingBase();
+		GribRequestSettingBase( wxWindow* parent, wxWindowID id = wxID_ANY, const wxString& title = _("Write and send eMail request"), const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxSize( -1,-1 ), long style = wxDEFAULT_DIALOG_STYLE ); 
+		~GribRequestSettingBase();
 	
 };
 
@@ -305,7 +290,7 @@ class GRIBTableBase : public wxDialog
 		virtual void OnClick( wxGridEvent& event ) { event.Skip(); }
 		virtual void OnRangeClick( wxGridRangeSelectEvent& event ) { event.Skip(); }
 		virtual void OnOKButton( wxCommandEvent& event ) { event.Skip(); }
-		
+
 	
 	public:
 		wxGrid* m_pGribTable;
