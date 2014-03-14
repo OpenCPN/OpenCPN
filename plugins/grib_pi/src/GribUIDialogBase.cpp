@@ -486,11 +486,11 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_cbNumbers = new wxCheckBox( this, wxID_ANY, _("Numbers"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbNumbers, 0, wxALL, 5 );
 	
-	m_ctNumbers = new wxStaticText( this, wxID_ANY, _("Spacing"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ctNumbers = new wxStaticText( this, wxID_ANY, _("Minimum Spacing"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ctNumbers->Wrap( -1 );
 	fgSizer15->Add( m_ctNumbers, 0, wxALL|wxEXPAND, 5 );
 	
-	m_sNumbersSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxSP_ARROW_KEYS, 0, 100, 50 );
+	m_sNumbersSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxSP_ARROW_KEYS, 30, 100, 50 );
 	fgSizer15->Add( m_sNumbersSpacing, 0, wxALL|wxEXPAND, 5 );
 	
 	m_staticline1 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );

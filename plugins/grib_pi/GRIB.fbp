@@ -4066,7 +4066,7 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog" expanded="0">
+        <object class="Dialog" expanded="1">
             <property name="aui_managed">0</property>
             <property name="aui_manager_style">wxAUI_MGR_DEFAULT</property>
             <property name="bg"></property>
@@ -4128,7 +4128,7 @@
             <event name="OnSetFocus"></event>
             <event name="OnSize"></event>
             <event name="OnUpdateUI"></event>
-            <object class="wxFlexGridSizer" expanded="0">
+            <object class="wxFlexGridSizer" expanded="1">
                 <property name="cols">1</property>
                 <property name="flexible_direction">wxBOTH</property>
                 <property name="growablecols"></property>
@@ -4870,11 +4870,11 @@
                         </object>
                     </object>
                 </object>
-                <object class="sizeritem" expanded="0">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag">wxEXPAND</property>
                     <property name="proportion">1</property>
-                    <object class="wxStaticBoxSizer" expanded="0">
+                    <object class="wxStaticBoxSizer" expanded="1">
                         <property name="id">wxID_ANY</property>
                         <property name="label">Display</property>
                         <property name="minimum_size"></property>
@@ -4882,11 +4882,11 @@
                         <property name="orient">wxVERTICAL</property>
                         <property name="permission">none</property>
                         <event name="OnUpdateUI"></event>
-                        <object class="sizeritem" expanded="0">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxALL|wxEXPAND</property>
                             <property name="proportion">1</property>
-                            <object class="wxFlexGridSizer" expanded="0">
+                            <object class="wxFlexGridSizer" expanded="1">
                                 <property name="cols">3</property>
                                 <property name="flexible_direction">wxBOTH</property>
                                 <property name="growablecols"></property>
@@ -6446,7 +6446,7 @@
                                         <property name="gripper">0</property>
                                         <property name="hidden">0</property>
                                         <property name="id">wxID_ANY</property>
-                                        <property name="label">Spacing</property>
+                                        <property name="label">Minimum Spacing</property>
                                         <property name="max_size"></property>
                                         <property name="maximize_button">0</property>
                                         <property name="maximum_size"></property>
@@ -6534,7 +6534,7 @@
                                         <property name="max_size"></property>
                                         <property name="maximize_button">0</property>
                                         <property name="maximum_size"></property>
-                                        <property name="min">0</property>
+                                        <property name="min">30</property>
                                         <property name="min_size"></property>
                                         <property name="minimize_button">0</property>
                                         <property name="minimum_size"></property>
