@@ -1030,7 +1030,7 @@ void GRIBUIDialog::OnTimeline( wxScrollEvent& event )
 void GRIBUIDialog::OnAltitudeChange( wxCommandEvent& event )
 {
     double alt;
-    m_cbAltitude->GetLabel().ToDouble(&alt);
+    m_cbAltitude->GetString( m_cbAltitude->GetCurrentSelection() ).ToDouble(&alt);
     switch((int) alt) {
     case 8:
     case 225:
