@@ -9,12 +9,15 @@ opencpn (2.5.0+dfsg-1) unstable; urgency=low
   * Suggests xtide and zygrib
   * Add DEP-5 comments to copyright file explaining embedded copies
   * Policy bumped to 3.9.3, without changes.
+  * Compile main program with hardening flags and -fPIC.
+  * Patch adding support for libgps20, backported from upstream 3.0.0 release.
+  * Patch allowing hardening CFLAGS to make it through to plugin builds.
   * Closing ITP. (Closes: #538067)
 
   [ Anton Martchukov ]
   * Additional copyright file auditing
 
- -- M. Hamish Bowman <hamish_b@yahoo.com>  Thu, 01 Mar 2012 12:53:43 +1300
+ -- M. Hamish Bowman <hamish_b@yahoo.com>  Sun, 16 Mar 2014 13:51:34 +1300
 
 opencpn (2.4.708-0) unstable; urgency=low
 
