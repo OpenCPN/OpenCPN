@@ -180,7 +180,7 @@ and a request function to get GRIB files by eMail.\n\n\
 Supported GRIB data include:\n\
 - wind direction and speed (at 10 m)\n\
 - wind gust\n\
-- surface presure\n\
+- surface pressure\n\
 - rainfall\n\
 - cloud cover\n\
 - significant wave height and direction\n\

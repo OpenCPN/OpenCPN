@@ -31,8 +31,8 @@
 #include <wx/stattext.h>
 #include <wx/dialog.h>
 #include <wx/spinctrl.h>
-#include <wx/statline.h>
 #include <wx/radiobox.h>
+#include <wx/statline.h>
 #include <wx/grid.h>
 
 ///////////////////////////////////////////////////////////////////////////
@@ -154,9 +154,6 @@ class GribSettingsDialogBase : public wxDialog
 		wxCheckBox* m_cbNumbers;
 		wxStaticText* m_ctNumbers;
 		wxSpinCtrl* m_sNumbersSpacing;
-		wxStaticLine* m_staticline1;
-		wxStaticLine* m_staticline2;
-		wxStaticLine* m_staticline3;
 		wxStaticText* m_staticText24;
 		wxSlider* m_sTransparency;
 		
