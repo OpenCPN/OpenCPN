@@ -13,7 +13,7 @@ Vcs-Browser: http://svn.debian.org/viewsvn/pkg-grass/packages/opencpn/trunk/debi
 
 Package: opencpn
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libgps19
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgps20
 Recommends: gpsd, opencpn-data, opencpn-doc, xtide-coastline
 Suggests: opencpn-plugins, gpsd-clients, xcalib, xtide, zygrib
 Description: GPS ChartPlotter/Navigator
