@@ -589,7 +589,7 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
     m_tcAirTemperature->SetToolTip( _("Air Temperature at") + t );
 
     m_cbAltitude->SetToolTip( wxString::Format( _("Pressure Altitude (in %s) or Standard Height Selection."),
-        m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE) ) );
+        m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE).c_str() ) );
 
     Fit();
     Refresh();
