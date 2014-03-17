@@ -2078,7 +2078,7 @@ void DashboardWindow::SetInstrumentList( wxArrayInt list )
             case ID_DBP_D_SOG:
                 instrument = new DashboardInstrument_Speedometer( this, wxID_ANY,
                         getInstrumentCaption( id ), OCPN_DBP_STC_SOG, 0, g_iDashSpeedMax );
-                ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( 1,
+                ( (DashboardInstrument_Dial *) instrument )->SetOptionLabel( g_iDashSpeedMax / 20 + 1,
                         DIAL_LABEL_HORIZONTAL );
                 //(DashboardInstrument_Dial *)instrument->SetOptionMarker(0.1, DIAL_MARKER_SIMPLE, 5);
                 ( (DashboardInstrument_Dial *) instrument )->SetOptionMarker( 0.5,
