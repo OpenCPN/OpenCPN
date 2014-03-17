@@ -396,9 +396,12 @@ int DDFSubfieldDefn::GetDataLength( const char * pachSourceData,
                     // Suck up the field terminator if one follows
                     // or else it will be interpreted as a new subfield.
                     // This is a pretty ugly counter-intuitive hack!
-                    if (nLength+1 < nMaxBytes &&
-                        pachSourceData[nLength+1] == DDF_FIELD_TERMINATOR)
+                    if (nLength+1 < nMaxBytes &&  pachSourceData[nLength+1] == DDF_FIELD_TERMINATOR)
                         extraConsumedBytes++;
+                    if (nLength+2 < nMaxBytes &&  pachSourceData[nLength+2] == 0)
+                        extraConsumedBytes++;
+                    
+                    
                     break;
                 } 
             }
@@ -816,13 +819,15 @@ void DDFSubfieldDefn::DumpData( const char * pachData, int nMaxBytes,
  */
 
 int DDFSubfieldDefn::GetDefaultValue( char *pachData, int nBytesAvailable,
-                                      int *pnBytesUsed )
+                                      int *pnBytesUsed, bool b_isUTF16 )
 
 {
     int nDefaultSize;
 
     if( !bIsVariable )
         nDefaultSize = nFormatWidth;
+    else if(b_isUTF16 )
+        nDefaultSize = 2;
     else
         nDefaultSize = 1;
 
@@ -838,6 +843,8 @@ int DDFSubfieldDefn::GetDefaultValue( char *pachData, int nBytesAvailable,
     if( bIsVariable )
     {
         pachData[0] = DDF_UNIT_TERMINATOR;
+        if(b_isUTF16)
+            pachData[1] = 0;
     }
     else
     {

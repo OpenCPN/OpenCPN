@@ -130,16 +130,24 @@ void DDFField::Dump( FILE * fp )
     fprintf( fp, "      Tag = `%s'\n", poDefn->GetName() );
     fprintf( fp, "      DataSize = %d\n", nDataSize );
 
-    fprintf( fp, "      Data = `" );
-    for( int i = 0; i < MIN(nDataSize,40); i++ )
+    fprintf( fp, "      Data = \n" );
+    
+    int il = 0;
+    for( int i = 0; i < MIN(nDataSize,1000); i++ )
     {
-        if( pachData[i] < 32 || pachData[i] > 126 )
+        //if( pachData[i] < 32 || pachData[i] > 126 )
             fprintf( fp, "\\%02X", ((unsigned char *) pachData)[i] );
-        else
-            fprintf( fp, "%c", pachData[i] );
+        //else
+            //fprintf( fp, "%c", pachData[i] );
+            il ++;
+            if( il == 16){
+                fprintf( fp, "\n" );
+                il = 0;
+            }
+            
     }
 
-    if( nDataSize > 40 )
+    if( nDataSize > 1000 )
         fprintf( fp, "..." );
     fprintf( fp, "'\n" );
 
@@ -377,6 +385,9 @@ const char *DDFField::GetInstanceData( int nInstance,
                                         nInstance );
         poLastSubfield->GetDataLength( pachLastData, nBytesRemaining2,
                                        &nLastSubfieldWidth );
+        
+        if((pachLastData[nLastSubfieldWidth-1] == 0) && (pachLastData[nLastSubfieldWidth - 2] == DDF_FIELD_TERMINATOR))
+            nLastSubfieldWidth -= 2;
 
         *pnInstanceSize =
             nBytesRemaining1 - (nBytesRemaining2 - nLastSubfieldWidth);

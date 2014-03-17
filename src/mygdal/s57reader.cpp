@@ -848,6 +848,8 @@ void S57Reader::ApplyObjectClassAttributes( DDFRecord * poRecord,
         if( nAttrId < 1 || nAttrId >= poRegistrar->GetMaxAttrIndex()
             || (pszAcronym = poRegistrar->GetAttrAcronym(nAttrId)) == NULL )
         {
+//            poRecord->Dump(stdout);
+//            int     xnAttrId = poRecord->GetIntSubfield("NATF",0,"ATTL",iAttr);
             static int bAttrWarningIssued = FALSE;
 
             if( !bAttrWarningIssued )
@@ -2357,16 +2359,30 @@ int S57Reader::ApplyRecordUpdate( DDFRecord *poTarget, DDFRecord *poUpdate )
 
     if( poUpdate->FindField( "NATF" ) != NULL )
     {
+        bool b_newField = false;
         DDFSubfieldDefn *poSrcATVLDefn;
         DDFField *poSrcATTF = poUpdate->FindField( "NATF" );
         DDFField *poDstATTF = poTarget->FindField( "NATF" );
+ 
+//        int up_FIDN = poUpdate->GetIntSubfield( "FOID", 0, "FIDN", 0 );
+//        if(up_FIDN == 1103712044 /*1225530334*/){
+//            poTarget->Dump(stdout);
+//        }
         
         if(NULL == poDstATTF)
         {
             //  This probably means that the update applies to an attribute that doesn't (yet) exist
             //  To fix, we need to add an attribute, then update it.
-            CPLDebug( "S57","Could not find target ATTF field for attribute update");
-            return FALSE;
+            
+            DDFFieldDefn *poNATF = poTarget->GetModule()->FindFieldDefn( "NATF" );
+            poTarget->AddField(poNATF);
+            poDstATTF = poTarget->FindField( "NATF" );
+            b_newField = true;
+            
+//            poTarget->Dump(stdout);
+            
+//            CPLDebug( "S57","Could not find target ATTF field for attribute update");
+//           return FALSE;
         }
         
         int     nRepeatCount = poSrcATTF->GetRepeatCount();
@@ -2386,9 +2402,23 @@ int S57Reader::ApplyRecordUpdate( DDFRecord *poTarget, DDFRecord *poUpdate )
             }
             if( iTAtt == -1 )
                 iTAtt = poDstATTF->GetRepeatCount();
+
+            //  If we just added a new field above, then the first attribute will be 0.
+            //   We should replace this one    
+            if(b_newField){
+                if( poTarget->GetIntSubfield( "NATF", 0, "ATTL", 0 ) == 0){
+                    iTAtt = 0;
+                    b_newField = false;
+                }
+            }
             
+                
             pszRawData = poSrcATTF->GetInstanceData( iAtt, &nDataBytes );
-            poTarget->SetFieldRaw( poDstATTF, iTAtt, pszRawData, nDataBytes );
+            
+//            poTarget->Dump(stdout);
+            poTarget->SetFieldRaw( poDstATTF, iTAtt, pszRawData, nDataBytes ); ///dsr
+//            poTarget->Dump(stdout);
+            
         }
     }
     

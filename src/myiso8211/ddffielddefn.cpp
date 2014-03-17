@@ -870,6 +870,10 @@ DDFSubfieldDefn *DDFFieldDefn::GetSubfield( int i )
 char *DDFFieldDefn::GetDefaultValue( int *pnSize )
 
 {
+    bool maybe_UTF16 = false;
+    bool b_isUTF16 = false;
+    if(!strncmp(pszTag, "NATF", 4))
+        maybe_UTF16 = true;
 /* -------------------------------------------------------------------- */
 /*      Loop once collecting the sum of the subfield lengths.           */
 /* -------------------------------------------------------------------- */
@@ -880,8 +884,14 @@ char *DDFFieldDefn::GetDefaultValue( int *pnSize )
     {
         int nSubfieldSize;
 
-        if( !papoSubfields[iSubfield]->GetDefaultValue( NULL, 0,
-                                                        &nSubfieldSize ) )
+        DDFSubfieldDefn *posf = papoSubfields[iSubfield];
+        if( maybe_UTF16 ){
+            if(!strncmp(posf->GetName(), "ATVL", 4))
+                b_isUTF16 = true;
+        }
+        
+        
+        if( !posf->GetDefaultValue( NULL, 0, &nSubfieldSize, b_isUTF16 ) )
             return NULL;
         nTotalSize += nSubfieldSize;
     }
@@ -903,7 +913,7 @@ char *DDFFieldDefn::GetDefaultValue( int *pnSize )
         int nSubfieldSize;
 
         if( !papoSubfields[iSubfield]->GetDefaultValue(
-                pachData + nOffset, nTotalSize - nOffset, &nSubfieldSize ) )
+                pachData + nOffset, nTotalSize - nOffset, &nSubfieldSize, b_isUTF16 ) )
         {
             CPLAssert( FALSE );
             return NULL;

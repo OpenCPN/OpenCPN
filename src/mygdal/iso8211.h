@@ -318,7 +318,7 @@ public:
     int         GetWidth() { return nFormatWidth; } // zero for variable.
 
     int         GetDefaultValue( char *pachData, int nBytesAvailable,
-                                 int *pnBytesUsed );
+                                 int *pnBytesUsed, bool b_UTF16 );
 
     void        Dump( FILE * fp );
 
