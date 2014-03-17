@@ -816,7 +816,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
     //    Set minimum spacing between arrows
     double space;
-    space = fabs((arrowSize * 2) * cos(vp->rotation));
+    space = fabs((arrowSize * 1.1) * cos(vp->rotation));
 
     int oldx = -1000;
     int oldy = -1000;

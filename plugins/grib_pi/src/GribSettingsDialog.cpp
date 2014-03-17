@@ -41,26 +41,26 @@ static const wxString name_from_index[] = {_T("Wind"), _T("WindGust"), _T("Press
                                            _T("Waves"), _T("Current"),
                                            _T("Rainfall"), _T("CloudCover"),
                                            _T("AirTemperature"), _T("SeaTemperature"), _T("CAPE"),
-                                           _("Altitude"), _("RelativeHumidity") };
+                                           _T("Altitude"), _T("RelativeHumidity") };
 static const wxString tname_from_index[] = {_("Wind"), _("Wind Gust"),  _("Pressure"),
                                             _("Waves"), _("Current"),
                                             _("Rainfall"), _("Cloud Cover"),
-                                            _("Air Temperature(2m)"), _("Sea Temperature(surf.)"), _("CAPE"),
-                                            _("Altitude"), _("Relative Humidity") };
+                                            _("Air Temperature"), _("Sea Temperature"), _("CAPE"),
+                                            _("Altitude(Pressure Altitude)"), _("Relative Humidity") };
 
 static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 0, 4, 5, 3, 3, 6, 2, 5};
 
 static const int minuttes_from_index [] = { 2, 5, 10, 20, 30, 60, 90, 180, 360, 720, 1440 };
 
-static const wxString altitude_from_index[3][5] = { _T("10m"), _T("850"), _T("700"), _T("500"), _T("300"),
-                                                 _T("10m"), _T("637"), _T("525"), _T("375"), _T("225"),
-                                                 _T("10m"), _T("25.2"), _T("20.7"), _T("14.8"), _T("8.9") };
+static const wxString altitude_from_index[3][5] = { _T("Std"), _T("850"), _T("700"), _T("500"), _T("300"),
+                                                 _T("Std"), _T("637"), _T("525"), _T("375"), _T("225"),
+                                                 _T("Std"), _T("25.2"), _T("20.7"), _T("14.8"), _T("8.9") };
 
 enum SettingsDisplay {B_ARROWS, ISO_LINE, ISO_LINE_VISI, ISO_LINE_SHORT, D_ARROWS, OVERLAY, NUMBERS};
 
-wxString GribOverlaySettings::GetAltitudeFromIndex( int settings, int index )
+wxString GribOverlaySettings::GetAltitudeFromIndex( int index, int unit )
 {
-    return wxGetTranslation(altitude_from_index[index][settings]);
+    return wxGetTranslation(altitude_from_index[unit][index]);
 }
 
 int GribOverlaySettings::GetMinFromIndex( int index )

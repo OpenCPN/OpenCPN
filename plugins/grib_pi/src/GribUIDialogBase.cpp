@@ -108,18 +108,26 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls->Add( m_cbWave, 0, wxALL, 5 );
 
 	m_tcWaveHeight = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
+	m_tcWaveHeight->SetToolTip( _("Significant Wave Height") );
+
 	m_fgTrackingControls->Add( m_tcWaveHeight, 0, wxALL, 1 );
 
 	m_tcWaveDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 45,-1 ), wxTE_READONLY );
+	m_tcWaveDirection->SetToolTip( _("Waves Direction") );
+
 	m_fgTrackingControls->Add( m_tcWaveDirection, 0, wxALL, 1 );
 
 	m_cbCurrent = new wxCheckBox( this, ID_CB_CURRENT, _("Current"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_fgTrackingControls->Add( m_cbCurrent, 0, wxALL, 5 );
 
 	m_tcCurrentVelocity = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
+	m_tcCurrentVelocity->SetToolTip( _("Surface Current Speed") );
+
 	m_fgTrackingControls->Add( m_tcCurrentVelocity, 0, wxALL, 1 );
 
 	m_tcCurrentDirection = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 45,-1 ), wxTE_READONLY );
+	m_tcCurrentDirection->SetToolTip( _("Surface Current Direction") );
+
 	m_fgTrackingControls->Add( m_tcCurrentDirection, 0, wxALL, 1 );
 
 	m_cbWindGust = new wxCheckBox( this, ID_CB_WIND_GUSTS, _("Wind Gust"), wxDefaultPosition, wxDefaultSize, 0 );
@@ -135,6 +143,8 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls->Add( m_cbPressure, 0, wxALL, 5 );
 
 	m_tcPressure = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
+	m_tcPressure->SetToolTip( _("Mean Sea Level Pressure (MSLP)") );
+
 	m_fgTrackingControls->Add( m_tcPressure, 0, wxALL, 1 );
 
 
@@ -144,6 +154,8 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls->Add( m_cbPrecipitation, 0, wxALL, 5 );
 
 	m_tcPrecipitation = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
+	m_tcPrecipitation->SetToolTip( _("Cumulative Rainfall per Hour") );
+
 	m_fgTrackingControls->Add( m_tcPrecipitation, 0, wxALL, 1 );
 
 
@@ -153,6 +165,8 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls->Add( m_cbCloud, 0, wxALL, 5 );
 
 	m_tcCloud = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
+	m_tcCloud->SetToolTip( _("Cloud Cover") );
+
 	m_fgTrackingControls->Add( m_tcCloud, 0, wxALL, 1 );
 
 
@@ -171,6 +185,8 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls->Add( m_cbSeaTemperature, 0, wxALL, 5 );
 
 	m_tcSeaTemperature = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
+	m_tcSeaTemperature->SetToolTip( _("Sea or Air Temperature at Surface Level") );
+
 	m_fgTrackingControls->Add( m_tcSeaTemperature, 0, wxALL, 1 );
 
 
@@ -180,6 +196,8 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls->Add( m_cbCAPE, 0, wxALL, 5 );
 	
 	m_tcCAPE = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxPoint( -1,-1 ), wxSize( 70,-1 ), wxTE_READONLY );
+	m_tcCAPE->SetToolTip( _("Convective Available Potential Energy") );
+
 	m_fgTrackingControls->Add( m_tcCAPE, 0, wxALL, 1 );
 
 
@@ -389,7 +407,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	fgSizer4->Add( sbSizer4, 1, wxEXPAND, 5 );
 	
 	wxStaticBoxSizer* sbSizer5;
-	sbSizer5 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Display") ), wxVERTICAL );
+	sbSizer5 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Data") ), wxVERTICAL );
 	
 	wxFlexGridSizer* fgSizer15;
 	fgSizer15 = new wxFlexGridSizer( 0, 3, 0, 0 );
@@ -486,34 +504,39 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_cbNumbers = new wxCheckBox( this, wxID_ANY, _("Numbers"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbNumbers, 0, wxALL, 5 );
 	
-	m_ctNumbers = new wxStaticText( this, wxID_ANY, _("Spacing"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_ctNumbers = new wxStaticText( this, wxID_ANY, _("Minimum Spacing"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_ctNumbers->Wrap( -1 );
 	fgSizer15->Add( m_ctNumbers, 0, wxALL|wxEXPAND, 5 );
 	
-	m_sNumbersSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxSP_ARROW_KEYS, 0, 100, 50 );
+	m_sNumbersSpacing = new wxSpinCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( -1,-1 ), wxSP_ARROW_KEYS, 30, 100, 50 );
 	fgSizer15->Add( m_sNumbersSpacing, 0, wxALL|wxEXPAND, 5 );
-	
-	m_staticline1 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizer15->Add( m_staticline1, 0, wxEXPAND | wxALL, 5 );
-	
-	m_staticline2 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizer15->Add( m_staticline2, 0, wxEXPAND | wxALL, 5 );
-	
-	m_staticline3 = new wxStaticLine( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLI_HORIZONTAL );
-	fgSizer15->Add( m_staticline3, 0, wxEXPAND | wxALL, 5 );
-	
-	m_staticText24 = new wxStaticText( this, wxID_ANY, _("Overlay Transparency"), wxDefaultPosition, wxDefaultSize, 0 );
-	m_staticText24->Wrap( -1 );
-	fgSizer15->Add( m_staticText24, 0, wxALL, 5 );
-	
-	m_sTransparency = new wxSlider( this, wxID_ANY, 50, 70, 255, wxDefaultPosition, wxSize( 100,-1 ), wxSL_HORIZONTAL );
-	fgSizer15->Add( m_sTransparency, 0, wxALL|wxEXPAND, 5 );
 	
 	
 	sbSizer5->Add( fgSizer15, 1, wxALL|wxEXPAND, 5 );
-	
+
 	
 	fgSizer4->Add( sbSizer5, 1, wxEXPAND, 5 );
+
+	wxStaticBoxSizer* sbSizer7;
+	sbSizer7 = new wxStaticBoxSizer( new wxStaticBox( this, wxID_ANY, _("Display") ), wxVERTICAL );
+
+	wxFlexGridSizer* fgSizer34;
+	fgSizer34 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer34->SetFlexibleDirection( wxBOTH );
+	fgSizer34->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+	
+	m_staticText24 = new wxStaticText( this, wxID_ANY, _("Overlay Transparency"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText24->Wrap( -1 );
+	fgSizer34->Add( m_staticText24, 0, wxALL, 5 );
+	
+	m_sTransparency = new wxSlider( this, wxID_ANY, 50, 70, 255, wxDefaultPosition, wxSize( 200,-1 ), wxSL_HORIZONTAL );
+	fgSizer34->Add( m_sTransparency, 0, wxALL|wxEXPAND, 5 );
+	
+	
+	sbSizer7->Add( fgSizer34, 1, wxEXPAND, 5 );
+	
+	
+	fgSizer4->Add( sbSizer7, 1, wxEXPAND, 5 );
 	
 	m_sButton = new wxStdDialogButtonSizer();
 	m_sButtonOK = new wxButton( this, wxID_OK );
@@ -730,7 +753,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_fgMovingParams->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
 	wxStaticText* m_staticText27;
-	m_staticText27 = new wxStaticText( this, wxID_ANY, _("Expected Speed"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText27 = new wxStaticText( this, wxID_ANY, _("Speed"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText27->Wrap( -1 );
 	m_fgMovingParams->Add( m_staticText27, 0, wxALL, 5 );
 
@@ -743,7 +766,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	m_fgMovingParams->Add( m_sSpeedUnit, 0, wxBOTTOM|wxEXPAND|wxRIGHT|wxTOP, 5 );
 
 	wxStaticText* m_staticText29;
-	m_staticText29 = new wxStaticText( this, wxID_ANY, _("Expected Course"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText29 = new wxStaticText( this, wxID_ANY, _("Course"), wxDefaultPosition, wxDefaultSize, 0 );
 	m_staticText29->Wrap( -1 );
 	m_fgMovingParams->Add( m_staticText29, 0, wxALL, 5 );
 
@@ -894,8 +917,16 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 
 	fgSizer10->Add( fgSizer28, 1, wxEXPAND, 5 );
 
-	m_pAltitudeData = new wxCheckBox( this, wxID_ANY, _("Altitude Data"), wxDefaultPosition, wxDefaultSize, 0 );
-	fgSizer10->Add( m_pAltitudeData, 0, wxALL|wxEXPAND, 5 );
+	wxFlexGridSizer* fgSizer331;
+	fgSizer331 = new wxFlexGridSizer( 0, 2, 0, 0 );
+	fgSizer331->SetFlexibleDirection( wxBOTH );
+	fgSizer331->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
+
+	m_pAltitudeData = new wxCheckBox( this, wxID_ANY, _("Pressure Altitude"), wxDefaultPosition, wxDefaultSize, 0 );
+	fgSizer331->Add( m_pAltitudeData, 0, wxALL|wxEXPAND, 5 );
+
+
+	fgSizer10->Add( fgSizer331, 1, wxEXPAND, 5 );
 
 	m_fgAltitudeData = new wxFlexGridSizer( 0, 2, 0, 0 );
 	m_fgAltitudeData->SetFlexibleDirection( wxBOTH );

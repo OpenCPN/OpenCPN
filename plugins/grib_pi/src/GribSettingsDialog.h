@@ -46,7 +46,7 @@ struct GribOverlaySettings
     double CalibrateValue(int settings, double input)
         { return (input+CalibrationOffset(settings))*CalibrationFactor(settings, input); }
     int GetMinFromIndex( int index );
-    wxString GetAltitudeFromIndex( int settings, int index );
+    wxString GetAltitudeFromIndex( int index, int unit );
     double GetmstobfFactor(double input);
     double GetbftomsFactor(double input);
     wxString GetUnitSymbol(int settings);

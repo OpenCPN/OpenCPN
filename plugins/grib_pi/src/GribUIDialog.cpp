@@ -552,7 +552,7 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
 
         m_stAltitudeText->SetLabel((m_OverlaySettings.GetAltitudeFromIndex(
             pPlugIn->GetGRIBOverlayFactory()->m_Altitude, m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units))
-            .append(_T(" ")).Append( m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE) ) );
+            .Append( _T(" ") ).Append( m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE) ) );
     } else
         m_fgTrackingDisplay->Show(2,false);
     //
@@ -566,6 +566,30 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
         m_tcWaveHeight->SetMinSize(wxSize(70, -1));
     else
         m_tcWaveHeight->SetMinSize(wxSize(90, -1) );
+
+    //add tooltips
+    wxString t; double lev;
+
+    lev = m_OverlaySettings.CalibrateValue(GribOverlaySettings::GEO_ALTITUDE, 10 );     //convert 10m in current altitude unit
+    t.Printf(
+        pPlugIn->GetGRIBOverlayFactory()->m_Altitude ? m_OverlaySettings.GetAltitudeFromIndex(
+        pPlugIn->GetGRIBOverlayFactory()->m_Altitude, m_OverlaySettings.Settings[GribOverlaySettings::PRESSURE].m_Units)
+        .Append( _T(" ") ).Append( m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE) )
+        : wxString::Format( _T("%1.*f "), lev == (int) lev ? 0 : 1, lev ).Append( m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE) )
+        );
+    m_tcWindSpeed->SetToolTip( _("Wind Speed at") + t.Prepend( _T(" ") ) );
+    m_tcWindDirection->SetToolTip( _("Wind Direction at") + t );
+
+    t.Printf( _T(" %1.*f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE), lev == (int) lev ? 0 : 1, lev );
+    m_tcWindGust->SetToolTip( _("Wind Gust at") + t );
+
+    lev = m_OverlaySettings.CalibrateValue(GribOverlaySettings::GEO_ALTITUDE, 2 );      //convert 2m in current altitude unit
+
+    t.Printf( _T(" %1.*f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE), lev == (int) lev ? 0 : 1, lev );
+    m_tcAirTemperature->SetToolTip( _("Air Temperature at") + t );
+
+    m_cbAltitude->SetToolTip( wxString::Format( _("Pressure Altitude (in %s) or Standard Height Selection."),
+        m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE).c_str() ) );
 
     Fit();
     Refresh();
@@ -1030,7 +1054,7 @@ void GRIBUIDialog::OnTimeline( wxScrollEvent& event )
 void GRIBUIDialog::OnAltitudeChange( wxCommandEvent& event )
 {
     double alt;
-    m_cbAltitude->GetLabel().ToDouble(&alt);
+    m_cbAltitude->GetString( m_cbAltitude->GetCurrentSelection() ).ToDouble(&alt);
     switch((int) alt) {
     case 8:
     case 225:
