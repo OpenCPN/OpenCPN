@@ -94,6 +94,7 @@ public:
     void PopulateComboDataList();
     void ComputeBestForecastForNow();
     void SetViewPort( PlugIn_ViewPort *vp );
+    void SetDataBackGroundColor();
 
     GribOverlaySettings m_OverlaySettings;
 

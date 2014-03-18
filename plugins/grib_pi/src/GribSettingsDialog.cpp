@@ -400,6 +400,9 @@ GribSettingsDialog::GribSettingsDialog(GRIBUIDialog &parent, GribOverlaySettings
     PopulateUnits(m_lastdatatype);
     ReadDataTypeSettings(m_lastdatatype);
     m_sButtonApply->SetLabel(_("Apply"));
+
+    DimeWindow( this );                             //aplly global colours scheme
+
     Fit();
 }
 

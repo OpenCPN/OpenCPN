@@ -573,11 +573,11 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings)
     labels.Printf( _T("%.*f"), p, value );
 
     wxColour text_color;
-    GetGlobalColor( _T ( "DILG3" ), &text_color );
+    GetGlobalColor( _T ( "UBLCK" ), &text_color );
     wxColour back_color;
     wxPen penText(text_color);
 
-    GetGlobalColor( _T ( "DILG0" ), &back_color );
+    GetGlobalColor( _T ( "DILG1" ), &back_color );
     wxBrush backBrush(back_color);
 
     wxMemoryDC mdc(wxNullBitmap);
@@ -822,7 +822,7 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
     int oldy = -1000;
 
     wxColour colour;
-    GetGlobalColor( _T ( "UBLCK" ), &colour );
+    GetGlobalColor( _T ( "DILG3" ), &colour );
 
     for( int i = 0; i < imax; i++ ) {
         double lonl = pGRX->getX( i );

@@ -47,6 +47,8 @@ wxString toMailFormat ( int NEflag, int a )                 //convert position t
 //----------------------------------------------------------------------------------------------------------
 void GribRequestSetting::InitRequestConfig()
 {
+    DimeWindow( this );                             //aplly global colours scheme
+
     wxFileConfig *pConf = GetOCPNConfigObject();
 
     if(pConf) {

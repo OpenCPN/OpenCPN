@@ -90,6 +90,7 @@ public:
 
     void Reset();
     void ClearCachedData( void );
+    void ClearCachedLabel( void ) { m_labelCache.clear(); }
 
     GribTimelineRecordSet *m_pGribTimelineRecordSet;
 
