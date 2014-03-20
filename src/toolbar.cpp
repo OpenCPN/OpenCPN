@@ -250,7 +250,11 @@ void ocpnFloatingToolbarDialog::SetGeometry()
 {
 
     if( m_ptoolbar ) {
-        m_ptoolbar->SetToolBitmapSize( m_style->GetToolSize() );
+        wxSize style_tool_size = m_style->GetToolSize();
+        style_tool_size.x *= 2;
+        style_tool_size.y *= 2;
+        
+        m_ptoolbar->SetToolBitmapSize( style_tool_size );
 
         wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
 
@@ -1066,7 +1070,7 @@ bool ocpnToolBarSimple::Realize()
     else
         m_style->SetOrientation( wxTB_HORIZONTAL );
 
-    wxSize toolSize = m_style->GetToolSize();
+    wxSize toolSize = wxSize(-1, -1);
     int separatorSize = m_style->GetToolSeparation();
 
     ocpnToolBarTool *lastTool = NULL;
@@ -1075,6 +1079,15 @@ bool ocpnToolBarSimple::Realize()
 
     while( node ) {
         ocpnToolBarTool *tool = (ocpnToolBarTool *) node->GetData();
+        
+        // Set the tool size to be the size of the first non-separator tool, usually the first one
+        if(toolSize.x == -1){
+            if( !tool->IsSeparator() ){
+                toolSize.x = tool->m_width;
+                toolSize.y = tool->m_height;
+            }
+        }
+        
         tool->firstInLine = firstNode;
         tool->lastInLine = false;
         firstNode = false;
@@ -1467,7 +1480,14 @@ void ocpnToolBarSimple::DrawTool( wxDC& dc, wxToolBarToolBase *toolBase )
         drawAt.y -= ( bmp.GetHeight() - m_style->GetToolSize().y ) / 2;
     }
 
-    dc.DrawBitmap( bmp, drawAt );
+    //  could cache this in the tool...
+    if( bmp.GetWidth() != tool->m_width || bmp.GetHeight() != tool->m_height) {
+        wxImage scaled_image = bmp.ConvertToImage();
+        wxBitmap sbmp = wxBitmap(scaled_image.Scale(tool->m_width, tool->m_height, wxIMAGE_QUALITY_NORMAL));
+        dc.DrawBitmap( sbmp, drawAt );
+    }
+    else
+        dc.DrawBitmap( bmp, drawAt );
 }
 
 // ----------------------------------------------------------------------------
