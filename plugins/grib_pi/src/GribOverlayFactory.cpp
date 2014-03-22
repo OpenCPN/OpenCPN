@@ -613,6 +613,8 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings)
 
     wxImage &image = m_labelCache[value];
 
+#ifdef ocpnUSE_GL
+
     unsigned char *d = image.GetData();
     unsigned char *a = image.GetAlpha();
 
@@ -627,6 +629,8 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings)
 
             a[ioff] = 255-(r+g+b)/3;
         }
+
+#endif
 
     return m_labelCache[value];
 }
@@ -1038,18 +1042,25 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 
                                 delete [] e;
 #else /* this way use opengl textures.. should be best */
+                                unsigned char *d = label.GetData(), *a = label.GetAlpha();
+                                unsigned char *e = new unsigned char[4*w*h];
+                                for( int y = 0; y < h; y++ ) {
+                                    for( int x = 0; x < w; x++ ) {
+                                        int ioff = (y * w + x),rgb = 0;
+                                        rgb += e[ioff* 4 + 0] = d[ioff* 3 + 0];
+                                        rgb += e[ioff* 4 + 1] = d[ioff* 3 + 1];
+                                        rgb += e[ioff* 4 + 2] = d[ioff* 3 + 2];
+                                        e[ioff* 4 + 3] = 255 - rgb/3;
+                                    }
+                                }
                                 glEnable( GL_BLEND );
                                 glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-                                glColor4f(0, 0, 0, 1);
-                                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+                                glColor4f(0, 0, 0, 0);
+                                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
                                 glBindTexture(GL_TEXTURE_RECTANGLE_ARB, 0);
                                 glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA,
                                              w, h, 0,
-                                             GL_RGB, GL_UNSIGNED_BYTE, label.GetData());
-                                glTexSubImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, 0, 0,
-                                                w, h,
-                                                GL_ALPHA, GL_UNSIGNED_BYTE, label.GetAlpha());
-
+                                             GL_RGBA, GL_UNSIGNED_BYTE, e);
                                 glEnable(GL_TEXTURE_RECTANGLE_ARB);
                                 glBegin(GL_QUADS);
                                 glTexCoord2i(0, 0), glVertex2i(p.x,   p.y);
@@ -1058,6 +1069,7 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
                                 glTexCoord2i(0, h), glVertex2i(p.x,   p.y+h);
                                 glEnd();
                                 glDisable(GL_TEXTURE_RECTANGLE_ARB);
+                                delete [] e;
 #endif
 #endif
                             }
