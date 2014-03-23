@@ -695,6 +695,8 @@ void IsoLine::extractIsoLine(const GribRecord *rec)
             c = rec->getValue( i-1, j   );
             d = rec->getValue( i,   j   );
 
+            if( a == GRIB_NOTDEF || b == GRIB_NOTDEF || c == GRIB_NOTDEF || d == GRIB_NOTDEF ) continue;
+
             // Détermine si 1 ou 2 segments traversent la case ab-cd
             // a  b
             // c  d
