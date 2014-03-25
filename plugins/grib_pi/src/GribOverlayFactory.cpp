@@ -920,7 +920,7 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
 
             if( pGO->m_iTexture )
                 DrawGLTexture( pGO->m_iTexture, pGO->m_width, pGO->m_height,
-                               porg.x, porg.y, pGO->m_dwidth, pGO->m_dheight, vp );
+                               porg.x, porg.y, (pGRA->getDj() < 0), pGO->m_dwidth, pGO->m_dheight, vp );
             else
                 m_Message_Hiden.IsEmpty()?
                     m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays:"))
@@ -1458,7 +1458,7 @@ void GRIBOverlayFactory::DrawGLImage( wxImage *pimage, wxCoord xd, wxCoord yd, b
 
 #ifdef ocpnUSE_GL
 void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
-                                        int xd, int yd, double dwidth, double dheight,
+                                        int xd, int yd, bool Djneg, double dwidth, double dheight,
                                         PlugIn_ViewPort *vp )
 {
     glEnable(GL_TEXTURE_RECTANGLE_ARB);
@@ -1493,10 +1493,10 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
     double h = dheight * vp->view_scale_ppm;
 
     glBegin(GL_QUADS);
-    glTexCoord2i(0, 0),          glVertex2d(x, y+h);
-    glTexCoord2i(width, 0),      glVertex2d(x+w, y+h);
-    glTexCoord2i(width, height), glVertex2d(x+w, y);
-    glTexCoord2i(0, height),     glVertex2d(x, y);
+    glTexCoord2i(0, 0),          glVertex2d(x, Djneg ? y : y+h );
+    glTexCoord2i(width, 0),      glVertex2d(x+w, Djneg ? y : y+h);
+    glTexCoord2i(width, height), glVertex2d(x+w, Djneg ? y+h : y);
+    glTexCoord2i(0, height),     glVertex2d(x, Djneg ? y+h : y);
     glEnd();
 
     glDisable(GL_BLEND);
