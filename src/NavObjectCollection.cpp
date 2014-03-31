@@ -910,9 +910,10 @@ void InsertRouteA( Route *pTentRoute )
                                //Now also change guids for the routepoints
                                wxRoutePointListNode *pthisnode = ( pTentRoute->pRoutePointList )->GetFirst();
                                while( pthisnode ) {
-                                   pthisnode->GetData()->m_GUID = pWayPointMan->CreateGUID( NULL );
+                                   RoutePoint *pR =  pthisnode->GetData();
+                                   if( pR && pR->m_bIsolatedMark )
+                                        pR->m_GUID = pWayPointMan->CreateGUID( NULL );
                                    pthisnode = pthisnode->GetNext();
-                                   //FIXME: !!!!!! the shared waypoint gets part of both the routes -> not  goood at all
                                }
             }
             
