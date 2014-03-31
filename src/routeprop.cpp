@@ -1652,7 +1652,9 @@ void RouteProp::OnRoutepropCancelClick( wxCommandEvent& event )
     }
 
     if( b_found_route ) m_pRoute->ClearHighlights();
-
+    
+    m_bStartNow = false;
+    
     Hide();
     cc1->Refresh( false );
 
