@@ -5784,7 +5784,8 @@ void MyFrame::SelectdbChart( int dbindex )
 
         double best_scale = GetBestVPScale( Current_Ch );
 
-        cc1->SetViewPoint( zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
+        if( Current_Ch )
+            cc1->SetViewPoint( zLat, zLon, best_scale, Current_Ch->GetChartSkew() * PI / 180.,
                 cc1->GetVPRotation() );
 
         SetChartUpdatePeriod( cc1->GetVP() );
