@@ -158,10 +158,6 @@ INCLUDE(${wxWidgets_USE_FILE})
     MESSAGE (STATUS "Found wxWidgets..." )
     MESSAGE (STATUS "${wxWidgets_LIBRARIES}")
 
-#  Search for wxWidgets 2.9
-STRING(REGEX MATCHALL "2.9" wx_Version "${wxWidgets_INCLUDE_DIRS}")
-
-
 MESSAGE (STATUS "")
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 
@@ -519,11 +515,13 @@ SET(SRCS
                 src/LinkPropDlg.cpp
     )
 
-IF(wx_Version MATCHES "2.9")
-ELSE(wx_Version MATCHES "2.9")
+#  Search for wxWidgets 2.9 or newer
+STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
+IF(wx_Version_2.9+)
+ELSE(wx_Version_2.9+)
   SET(HDRS ${HDRS} include/scrollingdialog.h )
   SET(SRCS ${SRCS} src/scrollingdialog.cpp)
-ENDIF(wx_Version MATCHES "2.9")
+ENDIF(wx_Version_2.9+)
 
 SET( PACKAGE_HEADERS "" )
 
