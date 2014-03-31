@@ -47,6 +47,8 @@ wxString toMailFormat ( int NEflag, int a )                 //convert position t
 //----------------------------------------------------------------------------------------------------------
 void GribRequestSetting::InitRequestConfig()
 {
+    DimeWindow( this );                             //aplly global colours scheme
+
     wxFileConfig *pConf = GetOCPNConfigObject();
 
     if(pConf) {
@@ -164,7 +166,7 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
 
     IsZYGRIB = m_pMailTo->GetCurrentSelection() == ZYGRIB;
     if(IsZYGRIB) m_pModel->SetSelection(GFS);                       //Model is always GFS when Zygrib selected
-    bool IsGFS = m_pModel->GetCurrentSelection() == GFS;
+    IsGFS = m_pModel->GetCurrentSelection() == GFS;
     bool IsRTOFS = m_pModel->GetCurrentSelection() == RTOFS;
 
     //populate resolution choice
@@ -207,12 +209,13 @@ void GribRequestSetting::ApplyRequestConfig( unsigned rs, unsigned it, unsigned 
     m_pCAPE->SetValue( m_RequestConfigBase.GetChar(15) == 'X' && IsGFS );
     m_pCAPE->Enable( IsGFS );
 
-    m_pAltitudeData->SetValue( m_RequestConfigBase.GetChar(17) == 'X' );                        //altitude data
+    m_pAltitudeData->SetValue( IsGFS ? m_RequestConfigBase.GetChar(17) == 'X' : false );        //altitude data zigrib + saildocs only GFS
+    m_pAltitudeData->Enable( IsGFS );
     m_p850hpa->SetValue( IsZYGRIB ? m_RequestConfigBase.GetChar(18) == 'X' : false );           //only zygrib
     m_p850hpa->Enable( IsZYGRIB );
     m_p700hpa->SetValue(  IsZYGRIB ? m_RequestConfigBase.GetChar(19) == 'X' : false );          //only zigrib
     m_p700hpa->Enable( IsZYGRIB );
-    m_p500hpa->SetValue(  m_RequestConfigBase.GetChar(20) == 'X' );                             //zigrib + saildocs
+    m_p500hpa->SetValue(  IsGFS ? m_RequestConfigBase.GetChar(20) == 'X' : false );             //zigrib + saildocs only GFS
     m_p300hpa->SetValue(  IsZYGRIB ? m_RequestConfigBase.GetChar(21) == 'X' : false  );         //only zigrib
     m_p300hpa->Enable( IsZYGRIB );
 
@@ -249,6 +252,7 @@ void GribRequestSetting::OnMovingClick( wxCommandEvent& event )
 
     if(m_AllowSend) m_MailImage->SetValue( WriteMail() );
 
+    this->Layout();
     this->Fit();
     this->Refresh();
 }
@@ -331,8 +335,12 @@ void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
         m_pWindGust->IsChecked() ? m_RequestConfigBase.SetChar( 14, 'X' )
             : m_RequestConfigBase.SetChar( 14, '.' );
 
-    m_pAltitudeData->IsChecked() ?  m_RequestConfigBase.SetChar( 17, 'X' )                          //altitude data
+    if( IsGFS ) {
+        m_pAltitudeData->IsChecked() ?  m_RequestConfigBase.SetChar( 17, 'X' )                      //altitude data
         : m_RequestConfigBase.SetChar( 17, '.' );
+        m_p500hpa->IsChecked() ?  m_RequestConfigBase.SetChar( 20, 'X' )
+        : m_RequestConfigBase.SetChar( 20, '.' );
+    }
     if( IsZYGRIB ) {
         m_p850hpa->IsChecked() ?  m_RequestConfigBase.SetChar( 18, 'X' )                                
             : m_RequestConfigBase.SetChar( 18, '.' );
@@ -341,8 +349,7 @@ void GribRequestSetting::OnSaveMail( wxCommandEvent& event )
         m_p300hpa->IsChecked() ?  m_RequestConfigBase.SetChar( 21, 'X' )
             : m_RequestConfigBase.SetChar( 21, '.' );
     }
-    m_p500hpa->IsChecked() ?  m_RequestConfigBase.SetChar( 20, 'X' )
-        : m_RequestConfigBase.SetChar( 20, '.' );
+
     wxFileConfig *pConf = GetOCPNConfigObject();
     if(pConf) {
         pConf->SetPath ( _T( "/PlugIns/GRIB" ) );

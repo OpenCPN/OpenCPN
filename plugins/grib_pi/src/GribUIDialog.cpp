@@ -457,12 +457,6 @@ void GRIBUIDialog::AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxC
 
 void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
 {
-    wxColour bgd1,bgd2;
-    GetGlobalColor( _T("DILG0"),&bgd1);
-    GetGlobalColor( _T("YELO1"),&bgd2);
-    m_tcWindSpeed->SetBackgroundColour(bgd1);
-    m_tcWindDirection->SetBackgroundColour(bgd1);
-
     //fix crash with curious files with no record
     m_bpSettings->Enable(m_pTimelineSet != NULL);
     m_bpZoomToCenter->Enable(m_pTimelineSet != NULL);
@@ -543,11 +537,6 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
                     m_tcAltitude->SetValue( _("N/A") );
                     m_tcTemp->SetValue( _("N/A") );
                     m_tcRelHumid->SetValue( _("N/A") );
-                    m_tcAltitude->SetBackgroundColour(bgd2);
-                    m_tcTemp->SetBackgroundColour(bgd2);
-                    m_tcRelHumid->SetBackgroundColour(bgd2);
-                    m_tcWindSpeed->SetBackgroundColour(bgd2);
-                    m_tcWindDirection->SetBackgroundColour(bgd2);
         }
 
         m_stAltitudeText->SetLabel((m_OverlaySettings.GetAltitudeFromIndex(
@@ -591,8 +580,21 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
     m_cbAltitude->SetToolTip( wxString::Format( _("Pressure Altitude (in %s) or Standard Height Selection."),
         m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE).c_str() ) );
 
+    SetDataBackGroundColor();
+
     Fit();
     Refresh();
+}
+
+void GRIBUIDialog::SetDataBackGroundColor()
+{
+    wxColour bgc;
+    GetGlobalColor( pPlugIn->GetGRIBOverlayFactory()->m_Altitude ? _T("YELO1") : _T("DILG0"), &bgc );
+    m_tcWindSpeed->SetBackgroundColour(bgc);
+    m_tcWindDirection->SetBackgroundColour(bgc);
+    m_tcAltitude->SetBackgroundColour(bgc);
+    m_tcTemp->SetBackgroundColour(bgc);
+    m_tcRelHumid->SetBackgroundColour(bgc);
 }
 
 void GRIBUIDialog::UpdateTrackingControls( void )

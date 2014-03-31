@@ -90,6 +90,7 @@ public:
 
     void Reset();
     void ClearCachedData( void );
+    void ClearCachedLabel( void ) { m_labelCache.clear(); }
 
     GribTimelineRecordSet *m_pGribTimelineRecordSet;
 
@@ -130,7 +131,7 @@ private:
 
 #ifdef ocpnUSE_GL
     void DrawGLTexture( GLuint texture, int width, int height,
-                        int xd, int yd, double dwidth, double dheight,
+                        int xd, int yd, bool Djneg, double dwidth, double dheight,
                         PlugIn_ViewPort *vp );
     void DrawGLRGBA( unsigned char *pRGBA, int RGBA_width, int RGBA_height, int xd, int yd );
     bool CreateGribGLTexture( GribOverlay *pGO, int config, GribRecord *pGR,
