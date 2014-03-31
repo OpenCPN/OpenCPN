@@ -302,6 +302,10 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
 {
     if( m_nPoints == 0 ) return;
 
+    int hilite = 0;
+    if(m_bIsBeingEdited)
+        hilite = 50;
+    
     if( m_bVisible && m_bRtIsSelected ) {
         dc.SetPen( *g_pRouteMan->GetSelectedRoutePen() );
         dc.SetBrush( *g_pRouteMan->GetSelectedRouteBrush() );
@@ -360,7 +364,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
 
             //TODO This logic could be simpliifed
             //Simple case
-            if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, VP, true ); // with arrows
+            if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, VP, true, hilite ); // with arrows
 
             //    In the cases where one point is on, and one off
             //    we must decide which way to go in longitude

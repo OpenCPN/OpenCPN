@@ -443,6 +443,11 @@ struct sigaction          sa_all_old;
 
 bool                      g_boptionsactive;
 options                   *g_options;
+int                       options_lastPage = -1;
+wxPoint                   options_lastWindowPos( 0,0 );
+wxSize                    options_lastWindowSize( 0,0 );
+
+double                    g_pix_per_mm;
 
 bool GetMemoryStatus(int *mem_total, int *mem_used);
 
@@ -631,6 +636,8 @@ double g_GLMinLineWidth;
 
 int n_NavMessageShown;
 wxString g_config_version_string;
+
+bool             g_bmobile;
 
 #ifndef __WXMSW__
 sigjmp_buf env;                    // the context saved by sigsetjmp();
@@ -903,6 +910,7 @@ bool MyApp::OnInit()
 {
     if( !wxApp::OnInit() ) return false;
 
+    
     //  On Windows
     //  We allow only one instance unless the portable option is used
 #ifdef __WXMSW__
@@ -1031,6 +1039,17 @@ bool MyApp::OnInit()
 
 //      CALLGRIND_STOP_INSTRUMENTATION
 
+    
+    //    Set up some drawing factors
+    int mmx, mmy;
+    wxDisplaySizeMM( &mmx, &mmy );
+    
+    int sx, sy;
+    wxDisplaySize( &sx, &sy );
+    
+    g_pix_per_mm = ( (double) sx ) / ( (double) mmx );
+    
+    
     g_start_time = wxDateTime::Now();
 
     g_loglast_time = g_start_time;   // pjotrc 2010.02.09
@@ -1881,6 +1900,9 @@ if( 0 == g_memCacheLimit )
 
     if( g_bframemax ) gFrame->Maximize( true );
 
+    if( g_bmobile  && ( g_pix_per_mm > 4.0))
+        gFrame->Maximize( true );
+        
     stats = new StatWin( cc1 );
     stats->SetColorScheme( global_color_scheme );
 
@@ -3370,7 +3392,13 @@ void MyFrame::ODoSetSize( void )
             DoChartUpdate();
     }
 
-    if( pthumbwin ) pthumbwin->SetMaxSize( cc1->GetParent()->GetSize() );
+    if( pthumbwin )
+        pthumbwin->SetMaxSize( cc1->GetParent()->GetSize() );
+    
+    //  Reset the options dialog size logic
+    options_lastWindowSize = wxSize(0,0);
+    options_lastWindowPos = wxPoint(0,0);    
+        
 }
 
 void MyFrame::PositionConsole( void )
@@ -3474,8 +3502,16 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_ROUTE: {
-            nRoute_State = 1;
-            cc1->SetCursor( *cc1->pCursorPencil );
+            if( 0 == nRoute_State ){
+                nRoute_State = 1;
+                cc1->SetCursor( *cc1->pCursorPencil );
+                g_toolbar->ToggleTool( ID_ROUTE, true );
+            }
+            else {
+                cc1->FinishRoute();
+                g_toolbar->ToggleTool( ID_ROUTE, false );
+            }
+            
             break;
         }
 
@@ -4124,10 +4160,6 @@ void MyFrame::JumpToPosition( double lat, double lon, double scale )
 
 int MyFrame::DoOptionsDialog()
 {
-    static int lastPage = -1;
-    static wxPoint lastWindowPos( 0,0 );
-    static wxSize lastWindowSize( 0,0 );
-
     g_boptionsactive = true;
     
     ::wxBeginBusyCursor();
@@ -4168,16 +4200,36 @@ int MyFrame::DoOptionsDialog()
     if(stats) stats->Hide();
 #endif
 
-    if( lastPage >= 0 )
-        g_options->m_pListbook->SetSelection( lastPage );
-    g_options->lastWindowPos = lastWindowPos;
-    if( lastWindowPos != wxPoint(0,0) ) {
-        g_options->Move( lastWindowPos );
-        g_options->SetSize( lastWindowSize );
-    } else {
-        g_options->Center();
-    }
+    if( options_lastPage >= 0 )
+        g_options->m_pListbook->SetSelection( options_lastPage );
 
+    if(!g_bmobile){
+        g_options->lastWindowPos = options_lastWindowPos;
+        if( options_lastWindowPos != wxPoint(0,0) ) {
+            g_options->Move( options_lastWindowPos );
+            g_options->SetSize( options_lastWindowSize );
+        } else {
+            g_options->Center();
+        }
+    }
+    else {
+        
+        wxSize canvas_size = cc1->GetSize();
+        wxPoint canvas_pos = cc1->GetPosition();
+        wxSize fitted_size = g_options->GetSize();;
+ 
+        fitted_size.x = wxMin(fitted_size.x, canvas_size.x);
+        fitted_size.y = wxMin(fitted_size.y, canvas_size.y);
+        
+        g_options->SetSize( fitted_size );
+        int xp = (canvas_size.x - fitted_size.x)/2;
+        int yp = (canvas_size.y - fitted_size.y)/2;
+        
+        wxPoint xxp = ClientToScreen(canvas_pos);
+        g_options->Move(xxp.x + xp, xxp.y + yp);
+        
+    }
+    
     if( g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->DisableTooltips();
 
@@ -4186,9 +4238,9 @@ int MyFrame::DoOptionsDialog()
     if( g_FloatingToolbarDialog)
         g_FloatingToolbarDialog->EnableTooltips();
 
-    lastPage = g_options->lastPage;
-    lastWindowPos = g_options->lastWindowPos;
-    lastWindowSize = g_options->lastWindowSize;
+    options_lastPage = g_options->lastPage;
+    options_lastWindowPos = g_options->lastWindowPos;
+    options_lastWindowSize = g_options->lastWindowSize;
 
     if( b_sub ) {
         SurfaceToolbar();
@@ -8871,6 +8923,8 @@ OCPNMessageDialog::OCPNMessageDialog( wxWindow *parent,
 : wxDialog( parent, wxID_ANY, caption, pos, wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxSTAY_ON_TOP )
 {
     m_style = style;
+    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
+    SetFont( *qFont );
     
     wxBoxSizer *topsizer = new wxBoxSizer( wxVERTICAL );
     
@@ -9236,6 +9290,23 @@ bool TestGLCanvas(wxString &prog_dir)
 
 
 
+wxFont *GetOCPNScaledFont( wxString item, int default_size )
+{
+    wxFont *dFont = FontMgr::Get().GetFont( item, default_size );
+    
+    if( g_bmobile ){
+        if(dFont->GetPointSize() < 20) {
+            wxFont *qFont = wxTheFontList->FindOrCreateFont( 20,
+                                                             dFont->GetFamily(),
+                                                             dFont->GetStyle(),
+                                                             dFont->GetWeight());
+            return qFont;
+        }
+    }
+    return dFont;
+}
+    
+    
     
 
 

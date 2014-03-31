@@ -319,6 +319,8 @@ extern wxString         g_TCData_Dir;
 extern Multiplexer      *g_pMUX;
 extern bool             portaudio_initialized;
 
+extern bool             g_bmobile;
+
 //---------------------------------------------------------------------------------
 //    Track Implementation
 //---------------------------------------------------------------------------------
@@ -1128,6 +1130,9 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "InitialdBIndex" ), &g_restore_dbindex, -1 );
 
     Read( _T ( "ChartNotRenderScaleFactor" ), &g_ChartNotRenderScaleFactor, 1.5 );
+    
+    Read( _T ( "MobileTouch" ), &g_bmobile, 0 );
+    
 
 #ifdef USE_S57
     Read( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor, 0 );
@@ -2290,6 +2295,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPSIdent" ), g_GPS_Ident );
     Write( _T ( "UseGarminHostUpload" ), g_bGarminHostUpload );
 
+    Write( _T ( "MobileTouch" ), g_bmobile );
+    
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );
