@@ -267,6 +267,8 @@ public:
 
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 
+      void        FinishRoute(void);
+      
 #ifdef ocpnUSE_GL
       glChartCanvas *GetglCanvas(){ return m_glcc; }
 #endif      
@@ -274,7 +276,6 @@ public:
 private:
       ViewPort    VPoint;
       void        PositionConsole(void);
-      void        FinishRoute(void);
       wxString    FindValidUploadPort();
       
 

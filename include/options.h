@@ -151,6 +151,7 @@ enum {
     ID_NATIONALTEXTCHECKBOX,
     ID_MAGSHOWCHECKBOX,
     ID_MAGAPBCHECKBOX,
+    ID_MOBILEBOX,
     xID_OK
 };
 
@@ -305,6 +306,7 @@ public:
     wxChoice                *m_pcTCDatasets;
     wxCheckBox              *pCBMagShow;
     wxTextCtrl              *pMagVar;
+    wxCheckBox              *pMobile;
     
     int                      k_tides;
 
