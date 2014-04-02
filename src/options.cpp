@@ -1451,7 +1451,7 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     
     //  Mobile/Tochscreen checkbox
     pMobile = new wxCheckBox( itemPanelUI, ID_MOBILEBOX,
-                                _("Enable Mobile/Touchscreen Interface") );
+                                _("Enable Touchscreen/Tablet Interface") );
     itemStaticBoxSizerCDO->Add( pMobile, 1, wxALL, border_size );
                                 
     //  "Mag Heading" checkbox
