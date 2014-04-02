@@ -126,7 +126,7 @@ private:
     void drawGrandeBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
     void drawTriangle( wxPen pen, bool south, double si, double co, int di, int dj, int b );
 
-    wxImage &getLabel(double value, int settings);
+    wxImage &getLabel(double value, int settings, wxColour back_colour);
 
 
 #ifdef ocpnUSE_GL
