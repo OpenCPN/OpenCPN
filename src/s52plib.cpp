@@ -2478,8 +2478,10 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 unsigned int enode = *index_run_x;
                 if(enode){
                     VE_Element *pedge = (*ve_hash)[enode];
-                    if( pedge->nCount > nls_max )
-                        nls_max = pedge->nCount;
+                    if(pedge){
+                        if( pedge->nCount > nls_max )
+                            nls_max = pedge->nCount;
+                    }
                 }
                 index_run_x += 2;
             }
@@ -2518,17 +2520,22 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             VE_Element *pedge;
             pedge = (*ve_hash)[enode];
 
+            int nls = 0;
+            
+            if(pedge){
+
             //  Here we decide to draw or not based on the highest priority seen for this segment
             //  That is, if this segment is going to be drawn at a higher priority later, then "continue", and don't draw it here.
-            if( pedge->max_priority != priority_current ) continue;
+                if( pedge->max_priority != priority_current ) continue;
 
-            int nls = pedge->nCount;
+                nls = pedge->nCount;
 
-            ppt = pedge->pPoints;
-            for( int ip = 0; ip < nls; ip++ ) {
-                easting = *ppt++;
-                northing = *ppt++;
-                GetPointPixSingle( rzRules, (float) northing, (float) easting, &ptp[ip + 1], vp );
+                ppt = pedge->pPoints;
+                for( int ip = 0; ip < nls; ip++ ) {
+                    easting = *ppt++;
+                    northing = *ppt++;
+                    GetPointPixSingle( rzRules, (float) northing, (float) easting, &ptp[ip + 1], vp );
+                }
             }
 
             //  Get last connected node
@@ -2791,8 +2798,10 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 unsigned int enode = *index_run_x;
                 if( enode ){
                     VE_Element *pedge = (*ve_hash)[enode];
-                    if( pedge->nCount > nls_max )
-                        nls_max = pedge->nCount;
+                    if(pedge){
+                        if( pedge->nCount > nls_max )
+                            nls_max = pedge->nCount;
+                    }
                 }
                 index_run_x += 2;
             }
@@ -2830,18 +2839,20 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             VE_Element *pedge;
             pedge = (*ve_hash)[enode];
 
+            int nls = 0;
+            if(pedge){
             //  Here we decide to draw or not based on the highest priority seen for this segment
             //  That is, if this segment is going to be drawn at a higher priority later, then don't draw it here.
-            if( pedge->max_priority != priority_current ) continue;
+                if( pedge->max_priority != priority_current ) continue;
 
-            int nls = pedge->nCount;
+                nls = pedge->nCount;
 
-            ppt = pedge->pPoints;
-            for( int ip = 0; ip < nls; ip++ ) {
-                easting = *ppt++;
-                northing = *ppt++;
-                GetPointPixSingle( rzRules, (float) northing, (float) easting,
-                        &ptp[ip + 1], vp );
+                ppt = pedge->pPoints;
+                for( int ip = 0; ip < nls; ip++ ) {
+                    easting = *ppt++;
+                    northing = *ppt++;
+                    GetPointPixSingle( rzRules, (float) northing, (float) easting, &ptp[ip + 1], vp );
+                }
             }
 
             //  Get last connected node
@@ -4050,7 +4061,8 @@ int s52plib::PrioritizeLineFeature( ObjRazRules *rzRules, int npriority )
             VE_Element *pedge = (*edge_hash)[enode];
 
             //    Set priority
-            pedge->max_priority = npriority;
+            if(pedge)
+                pedge->max_priority = npriority;
 
             //  Get last connected node
             inode = *index_run++;

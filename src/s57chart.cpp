@@ -4432,32 +4432,42 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                     int *index_run = &obj->m_lsindex_array[seg_index];
 
                     //  Get first connected node
-                    int inode = *index_run++;
+                    int inode = *index_run;
                     if( ( inode ) ) {
                         if( m_vc_hash.find( inode ) == m_vc_hash.end() ) {
                             //    Must be a bad index in the SENC file
                             //    Stuff a recognizable flag to indicate invalidity
-                            index_run--;
                             *index_run = 0;
-                            index_run++;
+                            m_vc_hash[0] = 0;
+                        }
+                    }
+                    index_run++;
+                    
+                    //  Get the edge
+                    int enode = *index_run;
+                    if( ( enode ) ) {
+                        if( m_ve_hash.find( enode ) == m_ve_hash.end() ) {
+                    //    Must be a bad index in the SENC file
+                    //    Stuff a recognizable flag to indicate invalidity
+                            *index_run = 0;
+                            m_ve_hash[0] = 0;
                         }
                     }
 
-                    //  Get the edge
-//                              int enode = *index_run++;
                     index_run++;
 
                     //  Get last connected node
-                    int jnode = *index_run++;
+                    int jnode = *index_run;
                     if( ( jnode ) ) {
                         if( m_vc_hash.find( jnode ) == m_vc_hash.end() ) {
                             //    Must be a bad index in the SENC file
                             //    Stuff a recognizable flag to indicate invalidity
-                            index_run--;
                             *index_run = 0;
-                            index_run++;
+                            m_vc_hash[0] = 0;
                         }
                     }
+                    index_run++;
+                    
                 }
 ///
                 nxx = top->next;
