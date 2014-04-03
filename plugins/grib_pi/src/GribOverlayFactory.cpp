@@ -775,16 +775,10 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
     if(idx < 0 || idy < 0)
         return;
 
-    if(polar) {
-        pGRX = pGR[idy];
-        if(!pGRX)
-            return;
-    } else {
-        pGRX = pGR[idx];
-        pGRY = pGR[idy];
-        if(!pGRX || !pGRY)
-            return;
-    }
+    pGRX = pGR[idx];
+    pGRY = pGR[idy];
+    if(!pGRX || !pGRY)
+        return;
 
     //    Get the the grid
     int imax = pGRX->getNi();                  // Longitude
@@ -827,21 +821,29 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
                     if( PointInLLBox( vp, lon, lat ) || PointInLLBox( vp, lon - 360., lat ) ) {
                         if(polar) {
-                            double dir = pGRX->getValue( i, j );
-                            if( dir != GRIB_NOTDEF ){
+                            double dir = pGRY->getValue( i, j );
+                            double sh = pGRX->getValue( i, j );
+                            if( dir != GRIB_NOTDEF && sh != GRIB_NOTDEF ){
                                 if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
                                     drawSingleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour, arrowWidth, arrowSize );
-                                else
+                                else if( m_Settings.Settings[settings].m_iDirectionArrowForm == 1 )
                                     drawDoubleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour, arrowWidth, arrowSize );
+                                else
+                                    drawSingleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour,
+                                        wxMax( 1, wxMin( 8, (int)(sh+0.5)) ), arrowSize );
                             }
                         } else {
                             double vx = pGRX->getValue( i,j ), vy = pGRY->getValue( i,j );
-                            if( vx != GRIB_NOTDEF || vy != GRIB_NOTDEF ) {
+                            if( vx != GRIB_NOTDEF && vy != GRIB_NOTDEF ) {
                                 double dir = atan2(vy, -vx);
+                                double sh = sqrt( vx * vx + vy * vy );
                                 if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
                                     drawSingleArrow( p.x, p.y, dir + vp->rotation, colour, arrowWidth, arrowSize );
-                                else
+                                else if( m_Settings.Settings[settings].m_iDirectionArrowForm == 1 )
                                     drawDoubleArrow( p.x, p.y, dir + vp->rotation, colour, arrowWidth, arrowSize );
+                                else
+                                    drawSingleArrow( p.x, p.y, dir + vp->rotation, colour,
+                                        wxMax( 1, wxMin( 8, (int)((8/2.5*sh)+0.5)) ), arrowSize );
                             }
                         }
                     }
@@ -1103,7 +1105,7 @@ void GRIBOverlayFactory::drawSingleArrow( int i, int j, double ang, wxColour arr
 {
     double si = sin( ang ), co = cos( ang );
 
-    wxPen pen( arrowColor, 2 );
+    wxPen pen( arrowColor, arrowWidth );
 
     if( m_pdc ) {
         m_pdc->SetPen( pen );
@@ -1113,6 +1115,8 @@ void GRIBOverlayFactory::drawSingleArrow( int i, int j, double ang, wxColour arr
     int dec = -arrowSize / 2;
 
     drawTransformedLine( pen, si, co, i, j, dec, 0, dec + arrowSize, 0 );
+
+    pen.SetWidth( arrowWidth < 2 ? 1 : 2 );
 
     drawTransformedLine( pen, si, co, i, j, dec - 2, 0, dec + 5, 6 );    // flèche
     drawTransformedLine( pen, si, co, i, j, dec - 2, 0, dec + 5, -6 );   // flèche
