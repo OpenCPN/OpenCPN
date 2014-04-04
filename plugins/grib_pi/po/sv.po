@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN version 3.3.1328\n"
+"Project-Id-Version: OpenCPN version 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2014-02-13 23:38+0100\n"
+"PO-Revision-Date: 2014-02-22 22:32+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
 "Language: sv_SE\n"
@@ -16,186 +16,716 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.6.4\n"
+
 #
-msgid " (Max size )"
-msgstr " (Max storlek)"
+#: src/GribUIDialog.cpp:150 src/GribUIDialog.cpp:754 src/GribUIDialog.cpp:770
+#: src/GribUIDialogBase.cpp:53
+msgid "Play"
+msgstr "Spela upp"
+
 #
-msgid " Mo )"
-msgstr " MB)"
+#: src/GribUIDialog.cpp:189
+msgid "Error:  No valid data in this file!"
+msgstr "Fel: Filen är inte läsbar!"
+
+#: src/GribUIDialog.cpp:199
+msgid "Warning:  Empty directory!"
+msgstr "Varning: Katalogen är tom!"
+
+#: src/GribUIDialog.cpp:381
+msgid "Close"
+msgstr "Avsluta"
+
 #
-msgid "( Max "
-msgstr "( Max "
-#
-msgid "00N  00W"
-msgstr "00N  00W"
-#
-msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr "Adress för att skicka epostförfrågan. (obligatorisk för Linux)"
-#
-msgid ""
-"Air\n"
-"Temperature"
-msgstr ""
-"Luft\n"
-"Temperatur"
-#
-msgid "Air Temp"
-msgstr "Lufttemp"
-#
-msgid "Air Temperature(2m)"
-msgstr "Lufttemperatur(2m)"
-#
-msgid "Always visible"
-msgstr ""
-#
+#: src/GribUIDialog.cpp:539 src/GribUIDialog.cpp:540 src/GribUIDialog.cpp:553
+#: src/GribUIDialog.cpp:566 src/GribUIDialog.cpp:584 src/GribUIDialog.cpp:594
+#: src/GribUIDialog.cpp:617 src/GribUIDialog.cpp:618 src/GribUIDialog.cpp:633
+#: src/GribUIDialog.cpp:646 src/GribUIDialog.cpp:658 src/GribUIDialog.cpp:670
+#: src/GribUIDialog.cpp:682
+msgid "N/A"
+msgstr "Saknas"
+
+#: src/GribUIDialog.cpp:733
 msgid "Apply"
 msgstr "Använd"
+
 #
-msgid "Authorize Interpolation to start at current time"
-msgstr "Tillåt interpolering för att starta vid aktuell tid"
+#: src/GribUIDialog.cpp:750
+msgid "Stop"
+msgstr "Stopp"
+
 #
-msgid "Barbed Arrows"
-msgstr "Pilar med hakar"
+#: src/GribUIDialog.cpp:912
+msgid "Select a GRIB file"
+msgstr "Välj en GRIB-fil"
+
 #
-msgid "Beaufort"
-msgstr "Beaufort"
+#: src/GribUIDialog.cpp:1132
+msgid "Error:  File does not exist!"
+msgstr "Fel: Filen finns inte!"
+
 #
+#: src/GribUIDialog.cpp:1145
+msgid "Error:  Can't read this File!"
+msgstr "Fel: Filen är inte läsbar!"
+
+#
+#: src/GribUIDialog.cpp:1256 src/GribUIDialog.cpp:1648
+msgid "Send"
+msgstr "Skicka"
+
+#: src/GribUIDialog.cpp:1257
+msgid "Save"
+msgstr "Spara"
+
+#: src/GribUIDialog.cpp:1259
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr "Adress för att skicka epostförfrågan. (obligatorisk för Linux)"
+
+#: src/GribUIDialog.cpp:1260
+msgid "This is your zyGrib's forum access Login"
+msgstr "Detta är din inloggning för zyGrib's forum"
+
+#: src/GribUIDialog.cpp:1261
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr "Hämta din kod i Zygrib's forum (Detta är inte ditt lösenord!)"
+
+#: src/GribUIDialog.cpp:1418
+msgid ""
+"You request a forecast for more than 8 days horizon.\n"
+"This is conflicting with Wave data which will be removed from your request.\n"
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+msgstr ""
+"Du har begärt en prognos som sträcker sig längre än 8 dagar.\n"
+"Detta är ej möjligt för vågdata som kommer att tas bort från din förfrågan.\n"
+"Kom ihåg att efter de första 8 dagarna så är upplösningen enbart "
+"2.5\\u00B0x2.5\\u00B0 med tidsintervall på 12 timmar."
+
+#: src/GribUIDialog.cpp:1419 src/GribSettingsDialog.cpp:389
+#: src/grib_pi.cpp:535
+msgid "Warning!"
+msgstr "Varning"
+
+#: src/GribUIDialog.cpp:1635
+msgid "( Max "
+msgstr "( Max "
+
+#: src/GribUIDialog.cpp:1635
+msgid " Mo )"
+msgstr " MB)"
+
+#: src/GribUIDialog.cpp:1658
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr ""
 "Innan du skickar epost till Zygrib måste du ange dina inloggningsuppgifter.\n"
 "Besök www.zygrib.org/ och följ instruktionerna..."
-#
-msgid "Building Isobar map"
-msgstr "Skapar isobar-karta"
-#
-msgid "CAPE"
-msgstr "CAPE"
-#
-msgid "Celsius"
-msgstr "Celsius"
-#
-msgid "Close"
-msgstr "Avsluta"
-#
-msgid "Cloud"
-msgstr "Moln"
-#
-msgid "Cloud Cover"
-msgstr "Molntäcke"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-msgid "Colors"
-msgstr "Färger"
-#
+
+#: src/GribUIDialog.cpp:1659
+msgid ""
+"The file size limit is overcome!\n"
+"You can zoom in and/or change parameters..."
+msgstr ""
+"Gränsen för filstorlek har överskridits!\n"
+"Du kan zooma in och/eller ändra parametrar..."
+
+#: src/GribUIDialog.cpp:1672 src/GribUIDialog.cpp:1704
 msgid "Continue..."
 msgstr "Fortsätt..."
+
 #
-msgid "Controled Colours"
+#: src/GribUIDialog.cpp:1689 src/GribUIDialog.cpp:1693
+msgid ""
+"Your request is ready. An email is prepared in your email environment. \n"
+"You have just to verify and send it...\n"
+"Save or Cancel to finish...or Continue..."
 msgstr ""
+"Din förfrågan är klar. Ett epostmeddelande har skapats i din epostlåda.\n"
+"Klicka 'Sänd' för att skicka meddelandet.\n"
+"Spara eller Avbryt för att skicka... eller Fortsätt för ett nytt meddelande"
+
 #
-msgid "Copy First Cumulative Missing Record"
-msgstr "Kopiera första ökande information som saknas"
-#
-msgid "Copy Missing Wave Records"
-msgstr "Kopiera saknad våginformation"
-#
-msgid "Current"
-msgstr "Ström"
-#
-msgid "Data at Cursor Position:"
-msgstr "GRIB-data vid markör"
-#
-msgid "Data available"
-msgstr "Data finns tillgängligt"
-#
-msgid "Days"
-msgstr "Dagar"
-#
-#, fuzzy
-msgid "Default Colour"
-msgstr "Använd gradvisa färger"
-#
-msgid "Default Size"
+#: src/GribUIDialog.cpp:1696
+msgid ""
+"Your request was sent \n"
+"(if your system has an MTA configured and is able to send email).\n"
+"Save or Cancel to finish...or Continue..."
 msgstr ""
+"Din förfrågan skickades\n"
+"(om ditt system har en konfigurerad MTA och möjligheten att skicka epost).\n"
+"Spara eller Avbryt för att fortsätta... eller nya parametrar för ett nytt "
+"meddelande"
+
+#: src/GribUIDialog.cpp:1701
+msgid ""
+"Request can't be sent. Please verify your email systeme parameters.\n"
+"You should also have a look at your log file.\n"
+"Save or Cancel to finish..."
+msgstr ""
+"Din begäran kan inte skickas. Kontrollera dina epostinställningar.\n"
+"Kontrollera också din loggfil.\n"
+"Spara eller Avbryt för att avsluta..."
+
 #
-msgid "Deg"
-msgstr "Grader"
+#: src/GribSettingsDialog.cpp:30
+msgid "Knots"
+msgstr "Knop"
+
+#: src/GribSettingsDialog.cpp:30
+msgid "m/s"
+msgstr "m/s"
+
+#: src/GribSettingsDialog.cpp:30
+msgid "mph"
+msgstr "mph"
+
+#: src/GribSettingsDialog.cpp:30
+msgid "km/h"
+msgstr "km/t"
+
+#: src/GribSettingsDialog.cpp:30
+msgid "Beaufort"
+msgstr "Beaufort"
+
 #
-msgid "Direction Arrows"
-msgstr "Riktningspilar"
+#: src/GribSettingsDialog.cpp:31
+msgid "MilliBars"
+msgstr "MilliBar"
+
 #
-msgid "Display"
-msgstr "Visa"
+#: src/GribSettingsDialog.cpp:31
+msgid "mmHG"
+msgstr "mmHG"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "inHG"
+msgstr "inHG"
+
 #
-msgid "Display Iso CAPE"
-msgstr "Visa Iso CAPE"
+#: src/GribSettingsDialog.cpp:32
+msgid "Meters"
+msgstr "Meter"
+
 #
-msgid "Display Isobars"
-msgstr "Visa Isobarer"
-#
-msgid "Display Isotachs"
-msgstr "Visa Isotachs"
-#
-msgid "Display Isotherms"
-msgstr "Visa Isotherms"
-#
-#, fuzzy
-msgid "Double Arrow"
-msgstr "Pilar med hakar"
-#
-msgid "Error:  Can't read this File!"
-msgstr "Fel: Filen är inte läsbar!"
-#
-msgid "Error:  File does not exist!"
-msgstr "Fel: Filen finns inte!"
-#
-msgid "Error:  No valid data in this file!"
-msgstr "Fel: Filen är inte läsbar!"
-#
-msgid "Estimated File Size"
-msgstr "Beräknad filstorlek"
-#
-msgid "Fahrenheit"
-msgstr "Fahrenheit"
-#
+#: src/GribSettingsDialog.cpp:32
 msgid "Feet"
 msgstr "Fot"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Celsius"
+msgstr "Celsius"
+
 #
-msgid "Forecast Model "
-msgstr "Prognosmodell"
+#: src/GribSettingsDialog.cpp:33
+msgid "Fahrenheit"
+msgstr "Fahrenheit"
+
 #
+#: src/GribSettingsDialog.cpp:34
+msgid "Millimeters"
+msgstr "Millimeter"
+
+#
+#: src/GribSettingsDialog.cpp:34
+msgid "Inches"
+msgstr "Tum"
+
+#
+#: src/GribSettingsDialog.cpp:35
+msgid "Percentage"
+msgstr "Procent"
+
+#: src/GribSettingsDialog.cpp:36
+msgid "j/kg"
+msgstr "j/kg"
+
+#
+#: src/GribSettingsDialog.cpp:44 src/GribUIDialogBase.cpp:85
+#: src/GribUIDialogBase.cpp:396 src/GribUIDialogBase.cpp:711
+#: src/GribOverlayFactory.cpp:759 src/GribTable.cpp:120
+msgid "Wind"
+msgstr "Vind"
+
+#
+#: src/GribSettingsDialog.cpp:44 src/GribUIDialogBase.cpp:113
+#: src/GribUIDialogBase.cpp:717 src/GribTable.cpp:138
+msgid "Wind Gust"
+msgstr "Vindby"
+
+#
+#: src/GribSettingsDialog.cpp:44 src/GribUIDialogBase.cpp:122
+#: src/GribUIDialogBase.cpp:714 src/GribTable.cpp:132
+msgid "Pressure"
+msgstr "Lufttryck"
+
+#
+#: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:95
+#: src/GribUIDialogBase.cpp:738 src/GribTable.cpp:146
+msgid "Waves"
+msgstr "Våghöjd"
+
+#
+#: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:104
+#: src/GribUIDialogBase.cpp:396 src/GribUIDialogBase.cpp:732
+#: src/GribTable.cpp:189
+msgid "Current"
+msgstr "Ström"
+
+#
+#: src/GribSettingsDialog.cpp:46 src/GribUIDialogBase.cpp:131
+#: src/GribUIDialogBase.cpp:396 src/GribUIDialogBase.cpp:720
+#: src/GribTable.cpp:153
+msgid "Rainfall"
+msgstr "Regn"
+
+#
+#: src/GribSettingsDialog.cpp:46 src/GribUIDialogBase.cpp:140
+#: src/GribUIDialogBase.cpp:396 src/GribUIDialogBase.cpp:723
+msgid "Cloud Cover"
+msgstr "Molntäcke"
+
+#
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:726
+msgid "Air Temperature(2m)"
+msgstr "Lufttemperatur(2m)"
+
+#
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:729
+msgid "Sea Temperature(surf.)"
+msgstr "Vattentemperatur(ytan)"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:167
+#: src/GribUIDialogBase.cpp:735 src/GribTable.cpp:181
+msgid "CAPE"
+msgstr "CAPE"
+
+#: src/GribSettingsDialog.cpp:388
+msgid ""
+"This file contains data for particular time intervals but you have chosen to "
+"display different intervals.\n"
+"Please consider that the values will be interpolated."
+msgstr ""
+"Den här filen innehåller data för vissa tider och du har valt att visa data "
+"för andra tider.\n"
+"Tänk på att visade värden kommer att interpoleras."
+
+#
+#: src/GribSettingsDialog.cpp:468 src/GribSettingsDialog.cpp:474
+msgid "Display Isotachs"
+msgstr "Visa Isotachs"
+
+#
+#: src/GribSettingsDialog.cpp:479
+msgid "Display Isobars"
+msgstr "Visa Isobarer"
+
+#
+#: src/GribSettingsDialog.cpp:493
+msgid "Display Isotherms"
+msgstr "Visa Isotherms"
+
+#
+#: src/GribSettingsDialog.cpp:498
+msgid "Display Iso CAPE"
+msgstr "Visa Iso CAPE"
+
+#
+#: src/GribUIDialogBase.cpp:30
+msgid "Previous"
+msgstr "Föregående"
+
+#
+#: src/GribUIDialogBase.cpp:38
+msgid "Next"
+msgstr "Nästa"
+
+#
+#: src/GribUIDialogBase.cpp:43
+msgid "Now"
+msgstr "Nu"
+
+#: src/GribUIDialogBase.cpp:48
+msgid "Zoom To Center"
+msgstr "Zooma till centrum"
+
+#
+#: src/GribUIDialogBase.cpp:61
+msgid "Open File"
+msgstr "Öppna fil"
+
+#
+#: src/GribUIDialogBase.cpp:66
+msgid "Settings"
+msgstr "Inställningar"
+
+#
+#: src/GribUIDialogBase.cpp:71
+msgid "Request"
+msgstr "Hämta"
+
+#
+#: src/GribUIDialogBase.cpp:79
 msgid "GRIB Data at Cursor"
 msgstr "GRIB-data vid markör"
+
 #
+#: src/GribUIDialogBase.cpp:149 src/GribUIDialogBase.cpp:396
+msgid "Air Temp"
+msgstr "Lufttemp"
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#: src/GribUIDialogBase.cpp:158 src/GribUIDialogBase.cpp:396
+msgid "Sea Temp"
+msgstr "Vattentemperatur"
+
+#
+#: src/GribUIDialogBase.cpp:265
+msgid "playback"
+msgstr "Spela upp"
+
+#
+#: src/GribUIDialogBase.cpp:272
+msgid "Loop Mode"
+msgstr "Återuppspelning"
+
+#
+#: src/GribUIDialogBase.cpp:276
+msgid "Updates per Second"
+msgstr "Uppdateringar/sekund"
+
+#
+#: src/GribUIDialogBase.cpp:283
+msgid "Interpolate between gribs"
+msgstr "Interpolera mellan grib"
+
+#
+#: src/GribUIDialogBase.cpp:286
+msgid "Slices per Update"
+msgstr "Antal delar/uppdatering"
+
+#
+#: src/GribUIDialogBase.cpp:296
+msgid "Slices per hour"
+msgstr "Antal delar/timme"
+
+#
+#: src/GribUIDialogBase.cpp:310
+msgid "Display"
+msgstr "Visa"
+
+#
+#: src/GribUIDialogBase.cpp:323
+msgid "Units"
+msgstr "Enhet"
+
+#
+#: src/GribUIDialogBase.cpp:334
+msgid "Barbed Arrows"
+msgstr "Pilar med hakar"
+
+#
+#: src/GribUIDialogBase.cpp:337
+msgid "Default Colour"
+msgstr "Standardfärg"
+
+#: src/GribUIDialogBase.cpp:337
+msgid "Controled Colours"
+msgstr "Kontrollerade färger"
+
+#: src/GribUIDialogBase.cpp:343 src/GribUIDialogBase.cpp:368
+msgid "Always visible"
+msgstr "Alltid synlig"
+
+#
+#: src/GribUIDialogBase.cpp:346
+msgid "IsoBars"
+msgstr "Isobar"
+
+#
+#: src/GribUIDialogBase.cpp:354 src/GribUIDialogBase.cpp:406
+msgid "Spacing"
+msgstr "Avstånd"
+
+#
+#: src/GribUIDialogBase.cpp:374
+msgid "Direction Arrows"
+msgstr "Riktningspilar"
+
+#: src/GribUIDialogBase.cpp:377
+msgid "Single Arrow"
+msgstr "Enkel pil"
+
+#
+#: src/GribUIDialogBase.cpp:377
+msgid "Double Arrow"
+msgstr "Dubbel pil"
+
+#: src/GribUIDialogBase.cpp:383
+msgid "Default Size"
+msgstr "Standardstorlek"
+
+#: src/GribUIDialogBase.cpp:383
+msgid "Small Size"
+msgstr "Liten storlek"
+
+#
+#: src/GribUIDialogBase.cpp:389
+msgid "OverlayMap"
+msgstr "Överlagrad karta"
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#: src/GribUIDialogBase.cpp:392
+msgid "Colors"
+msgstr "Färger"
+
+#
+#: src/GribUIDialogBase.cpp:396
+msgid "Generic"
+msgstr "Generell"
+
+#
+#: src/GribUIDialogBase.cpp:402
+msgid "Numbers"
+msgstr "Nummer"
+
+#
+#: src/GribUIDialogBase.cpp:422
+msgid "Overlay Transparency"
+msgstr "Transparent väderinformation"
+
+#
+#: src/GribUIDialogBase.cpp:500
+msgid "Use High Definition Graphics"
+msgstr "Använd högupplöst grafik"
+
+#
+#: src/GribUIDialogBase.cpp:503
+msgid "Use Gradual Colors"
+msgstr "Använd gradvisa färger"
+
+#
+#: src/GribUIDialogBase.cpp:506
+msgid "Copy First Cumulative Missing Record"
+msgstr "Kopiera första ökande information som saknas"
+
+#
+#: src/GribUIDialogBase.cpp:509
+msgid "Copy Missing Wave Records"
+msgstr "Kopiera saknad våginformation"
+
+#: src/GribUIDialogBase.cpp:512
+msgid "Load the More Recent File in Directory"
+msgstr "Välj nyaste fil i katalogen"
+
+#: src/GribUIDialogBase.cpp:512
+msgid "Load the Last Opened File"
+msgstr "Välj senast öppnad fil"
+
+#: src/GribUIDialogBase.cpp:514
+msgid "Load File Options"
+msgstr "Inställningar för inläsning av fil"
+
+#: src/GribUIDialogBase.cpp:518
+msgid "Start at the first forecast in GRIB file"
+msgstr "Starta vid den första prognosen i GRIB-filen"
+
+#: src/GribUIDialogBase.cpp:518
+msgid "Start at the nearest forecast to current time"
+msgstr "Starta vid den prognos som är närmast aktuell tid"
+
+#: src/GribUIDialogBase.cpp:518
+msgid "Authorize Interpolation to start at current time"
+msgstr "Tillåt interpolering för att starta vid aktuell tid"
+
+#: src/GribUIDialogBase.cpp:520
+msgid "Start Options"
+msgstr "Startinställningar"
+
+#
+#: src/GribUIDialogBase.cpp:524
+msgid "Local Time"
+msgstr "Lokal tid"
+
+#
+#: src/GribUIDialogBase.cpp:524
+msgid "UTC"
+msgstr "UTC"
+
+#: src/GribUIDialogBase.cpp:526
+msgid "Time Options"
+msgstr "Tidsinställningar"
+
+#: src/GribUIDialogBase.cpp:573
+msgid "Profile"
+msgstr "Profil"
+
+#: src/GribUIDialogBase.cpp:586
+msgid "Sender eMail Address"
+msgstr "Avsändarens epostadress"
+
+#
+#: src/GribUIDialogBase.cpp:610
+msgid "Mail To "
+msgstr "Epost Till"
+
+#: src/GribUIDialogBase.cpp:620
+msgid "Forecast Model "
+msgstr "Prognosmodell"
+
+#: src/GribUIDialogBase.cpp:629
+msgid "zyGrib Login"
+msgstr "ZyGrib användarnamn"
+
+#: src/GribUIDialogBase.cpp:636
+msgid "zyGrib Code"
+msgstr "ZyGrib lösenord"
+
+#
+#: src/GribUIDialogBase.cpp:652
+msgid "Resolution"
+msgstr "Upplösning"
+
+#
+#: src/GribUIDialogBase.cpp:661
+msgid "Deg"
+msgstr "Grader"
+
+#
+#: src/GribUIDialogBase.cpp:666
+msgid "Interval"
+msgstr "Intervall"
+
+#: src/GribUIDialogBase.cpp:676
+msgid "Hours"
+msgstr "Timmar"
+
+#
+#: src/GribUIDialogBase.cpp:681
+msgid "Time Range"
+msgstr "Avstånd"
+
+#
+#: src/GribUIDialogBase.cpp:690
+msgid "Days"
+msgstr "Dagar"
+
+#: src/GribUIDialogBase.cpp:704
+msgid "Data available"
+msgstr "Data finns tillgängligt"
+
+#
+#: src/GribUIDialogBase.cpp:741
+msgid "WavesModel"
+msgstr "Vågmodell"
+
+#
+#: src/GribUIDialogBase.cpp:757
+msgid "Mail"
+msgstr "Epost"
+
+#: src/GribUIDialogBase.cpp:782
+msgid "Estimated File Size"
+msgstr "Beräknad filstorlek"
+
+#: src/GribUIDialogBase.cpp:790
+msgid " (Max size )"
+msgstr " (Max storlek)"
+
+#
+#: src/GribUIDialogBase.cpp:882
+msgid "Data at Cursor Position:"
+msgstr "GRIB-data vid markör"
+
+#: src/GribUIDialogBase.cpp:886
+msgid "00N  00W"
+msgstr "00N  00W"
+
+#
+#: src/smapi.cpp:119
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr "Epostfel: Mapi är inte installerat eller saknas på datorn!"
+
+#
+#: src/GribUIDialogBase.h:113
 msgid "GRIB Display Control"
 msgstr "GRIB Visningskontroll"
+
 #
+#: src/GribUIDialogBase.h:170
+msgid "Grib Settings"
+msgstr "Grib-inställningar"
+
+#
+#: src/GribUIDialogBase.h:197
+msgid "Grib Preferences"
+msgstr "GRIB Inställningar"
+
+#: src/GribUIDialogBase.h:253
+msgid "Write and send eMail request"
+msgstr "Epostförfrågan om GRIB-data"
+
+#: src/GribUIDialogBase.h:281
+msgid "Grib Data Table"
+msgstr "GRIB datatabell"
+
+#
+#: src/GribOverlayFactory.cpp:759
+msgid "Building Isobar map"
+msgstr "Skapar isobar-karta"
+
+#
+#: src/GribOverlayFactory.cpp:933 src/GribOverlayFactory.cpp:958
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "Zooma ut eller öka skalan för att visa GRIB.information"
+
+#: src/GribOverlayFactory.cpp:941
+msgid "Rotated overlays suppressed in DC mode"
+msgstr "Överlagrad data som är roterad döljs i DC-läge"
+
+#
+#: src/grib_pi.cpp:110
+msgid "Grib"
+msgstr "Grib"
+
+#
+#: src/grib_pi.cpp:171
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "GRIB-modul för OpenCPN"
+
 #
+#: src/grib_pi.cpp:177
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
@@ -214,263 +744,12 @@ msgstr ""
 "- signifikant våghöjd\n"
 "- ytvattentemperatur\n"
 "-  strömhastighet och riktning"
-#
-msgid "Generic"
-msgstr "Generell"
-#
-msgid "Get this Code in zyGrib's forum ( This is not your password! )"
-msgstr "Hämta din kod i Zygrib's forum (Detta är inte ditt lösenord!)"
-#
-msgid "Grib"
-msgstr "Grib"
-#
-msgid "Grib Data Table"
-msgstr "GRIB datatabell"
-#
-msgid "Grib Preferences"
-msgstr "GRIB Inställningar"
-#
-msgid "Grib Settings"
-msgstr "Grib-inställningar"
-#
-msgid "Hours"
-msgstr "Timmar"
-#
-msgid "Inches"
-msgstr "Tum"
-#
-msgid "Interpolate between gribs"
-msgstr "Interpolera mellan grib"
-#
-msgid "Interval"
-msgstr "Intervall"
-#
-msgid "IsoBars"
-msgstr "Isobar"
-#
-msgid "Knots"
-msgstr "Knop"
-#
-msgid "Load File Options"
-msgstr "Inställningar för laddning av fil"
-#
-msgid "Load the Last Opened File"
-msgstr "Ladda den senast öppnade filen"
-#
-msgid "Load the More Recent File in Directory"
-msgstr "Ladda nyare fil i katalogen"
-#
-msgid "Local Time"
-msgstr "Lokal tid"
-#
-msgid "Loop Mode"
-msgstr "Återuppspelning"
-#
-msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
-msgstr "Epostfel: Mapi är inte installerat eller saknas på datorn!"
-#
-msgid "Mail"
-msgstr "Epost"
-#
-msgid "Mail To "
-msgstr "Epost Till"
-#
-msgid "Meters"
-msgstr "Meter"
-#
-msgid "MilliBars"
-msgstr "MilliBar"
-#
-msgid "Millimeters"
-msgstr "Millimeter"
-#
-msgid "N/A"
-msgstr "Saknas"
-#
-msgid "Next"
-msgstr "Nästa"
-#
-msgid "Now"
-msgstr "Nu"
-#
-msgid "Numbers"
-msgstr "Nummer"
-#
-msgid "Open File"
-msgstr "Öppna fil"
-#
-msgid "Overlay Transparency"
-msgstr "Transparent väderinformation"
-#
-msgid "OverlayMap"
-msgstr "överlagrad karta"
-#
-msgid "Percentage"
-msgstr "Procent"
-#
-msgid "Play"
-msgstr "Spela upp"
-#
-msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr "Zooma ut eller öka skalan för att visa GRIB.information"
-#
-msgid "Pressure"
-msgstr "Lufttryck"
-#
-msgid "Previous"
-msgstr "Föregående"
-#
-msgid "Profile"
-msgstr "Profil"
-#
-msgid "Rainfall"
-msgstr "Regn"
-#
-msgid "Request"
-msgstr "Hämta"
-#
-msgid ""
-"Request can't be sent. Please verify your email systeme parameters.\n"
-"You should also have a look at your log file.\n"
-"Save or Cancel to finish..."
-msgstr ""
-"Din begäran kan inte skickas. Kontrollera dina epostinställningar.\n"
-"Kontrollera också din loggfil.\n"
-"Spara eller Avbryt för att avsluta..."
-#
-msgid "Resolution"
-msgstr "Upplösning"
-#
-msgid "Rotated overlays suppressed in DC mode"
-msgstr "Överlagrad data som är roterad döljs i DC-läge"
-#
-msgid "Save"
-msgstr "Spara"
-#
-msgid ""
-"Sea\n"
-"Temperature"
-msgstr ""
-"Sjö\n"
-"Temperatur"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-msgid "Sea Temp"
-msgstr "Vattentemperatur"
-#
-msgid "Sea Temperature(surf.)"
-msgstr "Vattentemperatur(ytan)"
-#
-msgid "Select a GRIB file"
-msgstr "Välj en GRIB-fil"
-#
-msgid "Send"
-msgstr "Skicka"
-#
-msgid "Sender eMail Address"
-msgstr "Avsändarens epostadress"
-#
-msgid "Settings"
-msgstr "Inställningar"
-#
-msgid "Single Arrow"
-msgstr ""
-#
-msgid "Slices per Update"
-msgstr "Antal delar/uppdatering"
-#
-msgid "Slices per hour"
-msgstr "Antal delar/timme"
-#
-msgid "Small Size"
-msgstr ""
-#
-msgid "Spacing"
-msgstr "Avstånd"
-#
-msgid "Start Options"
-msgstr "Startinställningar"
-#
-msgid "Start at the first forecast in GRIB file"
-msgstr "Starta vid den första prognosen i GRIB-filen"
-#
-msgid "Start at the nearest forecast to current time"
-msgstr "Starta vid den prognos som är närmast aktuell tid"
-#
-msgid "Stop"
-msgstr "Stopp"
-#
-msgid ""
-"The file size limit is overcome!\n"
-"You can zoom in and/or change parameters..."
-msgstr ""
-"Gränsen för filstorlek har överskridits!\n"
-"Du kan zooma in och/eller ändra parametrar..."
-#
-msgid ""
-"This file contains data for particular time intervals but you have chosen to "
-"display different intervals.\n"
-"Please consider that the values will be interpolated."
-msgstr ""
-"Den här filen innehåller data för vissa tider och du har valt att visa data "
-"för andra tider.\n"
-"Tänk på att visade värden kommer att interpoleras."
-#
-msgid "This is your zyGrib's forum access Login"
-msgstr "Detta är din inloggning för zyGrib's forum"
-#
-msgid "Time Options"
-msgstr "Tidsinställningar"
-#
-msgid "Time Range"
-msgstr "Avstånd"
-#
-msgid "UTC"
-msgstr "UTC"
-#
-msgid "Units"
-msgstr "Enhet"
-#
-msgid "Updates per Second"
-msgstr "Uppdateringar/sekund"
-#
-msgid "Use Gradual Colors"
-msgstr "Använd gradvisa färger"
-#
-msgid "Use High Definition Graphics"
-msgstr "Använd högupplöst grafik"
-#
-msgid "Warning!"
-msgstr "Varning"
-#
-msgid "Warning:  Empty directory!"
-msgstr "Varning: Katalogen är tom!"
-#
-msgid "Waves"
-msgstr "Våghöjd"
-#
-msgid "WavesModel"
-msgstr "Vågmodell"
-#
+
+#: src/grib_pi.cpp:274
 msgid "Weather table"
 msgstr "Vädertabell"
-#
-msgid "Wind"
-msgstr "Vind"
-#
-msgid "Wind Gust"
-msgstr "Vindby"
-#
-msgid "Write and send eMail request"
-msgstr "Epostförfrågan om GRIB-data"
-#
+
+#: src/grib_pi.cpp:534
 msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
@@ -479,71 +758,162 @@ msgstr ""
 "Du har valt att tillåta interpolering.\n"
 "Kom ihåg att data som visas för aktuell tid är beräknad och inte motsvarar "
 "data i GRIB-filen!"
+
 #
+#: src/GribTable.cpp:160
+msgid "Cloud"
+msgstr "Moln"
+
+#
+#: src/GribTable.cpp:167
 msgid ""
-"You request a forecast for more than 8 days horizon.\n"
-"This is conflicting with Wave data which will be removed from your request.\n"
-"Don't forget that beyond the first 8 days, the resolution will be only "
-"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+"Air\n"
+"Temperature"
 msgstr ""
-"Du har begärt en prognos som sträcker sig längre än 8 dagar.\n"
-"Detta är ej möjligt för vågdata som kommer att tas bort från din förfrågan.\n"
-"Kom ihåg att efter de första 8 dagarna så är upplösningen enbart "
-"2.5\\u00B0x2.5\\u00B0 med tidsintervall på 12 timmar."
+"Luft\n"
+"Temperatur"
+
 #
+#: src/GribTable.cpp:174
 msgid ""
-"Your request is ready. An email is prepared in your email environment. \n"
-"You have just to verify and send it...\n"
-"Save or Cancel to finish...or Continue..."
+"Sea\n"
+"Temperature"
 msgstr ""
-"Din förfrågan är klar. Ett epostmeddelande har skapats i din epostlåda.\n"
-"Klicka 'Sänd' för att skicka meddelandet.\n"
-"Spara eller Avbryt för att skicka... eller Fortsätt för ett nytt meddelande"
+"Sjö\n"
+"Temperatur"
+
 #
-msgid ""
-"Your request was sent \n"
-"(if your system has an MTA configured and is able to send email).\n"
-"Save or Cancel to finish...or Continue..."
-msgstr ""
-"Din förfrågan skickades\n"
-"(om ditt system har en konfigurerad MTA och möjligheten att skicka epost).\n"
-"Spara eller Avbryt för att fortsätta... eller nya parametrar för ett nytt "
-"meddelande"
+#~ msgid "Range"
+#~ msgstr "Avstånd"
+
 #
-msgid "Zoom To Center"
-msgstr "Zooma till centrum"
+#~ msgid "Size"
+#~ msgstr "Storlek"
+
+#~ msgid "Login you use to connect to Zygrib's forum"
+#~ msgstr "Inloggning som du använder för att ansluta till Zygrib's forum"
+
+#~ msgid "0.5"
+#~ msgstr "0.5"
+
+#~ msgid "1"
+#~ msgstr "1"
+
+#~ msgid "2"
+#~ msgstr "2"
+
+#~ msgid "0.2"
+#~ msgstr "0.2"
+
+#~ msgid "0.8"
+#~ msgstr "0.8"
+
+#~ msgid "1.6"
+#~ msgstr "1.6"
+
 #
-msgid "inHG"
-msgstr "inHG"
+#~ msgid "Celcius"
+#~ msgstr "Celcius"
+
 #
-msgid "j/kg"
-msgstr "j/kg"
+#~ msgid "WindGust"
+#~ msgstr "Vindby"
+
 #
-msgid "km/h"
-msgstr "km/t"
+#~ msgid "Wave"
+#~ msgstr "Våghöjd"
+
 #
-msgid "m/s"
-msgstr "m/s"
+#~ msgid "Precipitation"
+#~ msgstr "Nederbörd"
+
 #
-msgid "mmHG"
-msgstr "mmHG"
+#~ msgid "CloudCover"
+#~ msgstr "Molntäcke"
+
 #
-msgid "mph"
-msgstr "mph"
+#~ msgid "Air Temperature"
+#~ msgstr "Lufttemperatur"
+
 #
-msgid "playback"
-msgstr "Spela upp"
+#~ msgid "Sea Temperature"
+#~ msgstr "Vattentemperatur"
+
+#~ msgid "Display Iso Temp. Lines"
+#~ msgstr "Visa Iso templinjer"
+
 #
-msgid "zyGrib Code"
-msgstr "ZyGrib lösenord"
+#~ msgid "AirTemp"
+#~ msgstr "Lufttemp"
+
 #
-msgid "zyGrib Login"
-msgstr "ZyGrib användarnamn"
+#~ msgid "SeaTemp"
+#~ msgstr "Vattentemp"
+
 #
+#~ msgid "Rain"
+#~ msgstr "Regn"
+
+#~ msgid "Saildocs"
+#~ msgstr "Saildocs"
+
 #
-#~ msgid " (Dup)"
-#~ msgstr " (Dup)"
+#~ msgid "ZyGrib"
+#~ msgstr "ZyGrib"
+
+#~ msgid "GFS"
+#~ msgstr "GFS"
+
+#~ msgid "COAMPS"
+#~ msgstr "COAMPS"
+
+#~ msgid "RTOFS"
+#~ msgstr "RTOFS"
+
+#~ msgid "3"
+#~ msgstr "3"
+
+#~ msgid "6"
+#~ msgstr "6"
+
+#~ msgid "12"
+#~ msgstr "12"
+
+#~ msgid "24"
+#~ msgstr "24"
+
+#~ msgid "4"
+#~ msgstr "4"
+
+#~ msgid "5"
+#~ msgstr "5"
+
+#~ msgid "7"
+#~ msgstr "7"
+
+#~ msgid "8"
+#~ msgstr "8"
+
+#~ msgid "Data available in the selected forecast model"
+#~ msgstr "Tillgängliga data i den valda prognosmodellen"
+
 #
+#~ msgid "Clouds Cover"
+#~ msgstr "Molntäcke"
+
+#
+#~ msgid "Current(Surf.)"
+#~ msgstr "Ström(ytan)"
+
+#~ msgid "WW3-GLOBAL"
+#~ msgstr "WW3-GLOBAL"
+
+#~ msgid "WW3-MEDIT"
+#~ msgstr "WW3-MEDIT"
+
+#~ msgid "size"
+#~ msgstr "storlek"
+
 #
 #
 #
@@ -558,80 +928,75 @@ msgstr "ZyGrib användarnamn"
 #
 #~ msgid " data"
 #~ msgstr "data"
+
 #
-#~ msgid "0.2"
-#~ msgstr "0.2"
+#~ msgid " (Dup)"
+#~ msgstr " (Dup)"
+
 #
-#~ msgid "0.5"
-#~ msgstr "0.5"
-#
-#~ msgid "0.8"
-#~ msgstr "0.8"
-#
-#~ msgid "1"
-#~ msgstr "1"
-#
-#~ msgid "1.6"
-#~ msgstr "1.6"
-#
-#~ msgid "12"
-#~ msgstr "12"
-#
-#~ msgid "2"
-#~ msgstr "2"
-#
-#~ msgid "24"
-#~ msgstr "24"
-#
-#~ msgid "3"
-#~ msgstr "3"
-#
-#~ msgid "4"
-#~ msgstr "4"
-#
-#~ msgid "5"
-#~ msgstr "5"
-#
-#~ msgid "6"
-#~ msgstr "6"
-#
-#~ msgid "7"
-#~ msgstr "7"
-#
-#~ msgid "8"
-#~ msgstr "8"
-#
+#~ msgid "Ref : "
+#~ msgstr "Ref : "
+
 #
 #~ msgid "Action"
 #~ msgstr "Åtgärd"
+
 #
+#~ msgid "Zone"
+#~ msgstr "Zone"
+
 #
-#~ msgid "Air Temperature"
-#~ msgstr "Lufttemperatur"
+#~ msgid "Period"
+#~ msgstr "Period"
+
 #
+#~ msgid "Parameters"
+#~ msgstr "Parametrar"
+
 #
-#~ msgid "AirTemp"
-#~ msgstr "Lufttemp"
+#~ msgid "M/S"
+#~ msgstr "m/s"
+
 #
-#~ msgid "COAMPS"
-#~ msgstr "COAMPS"
+#~ msgid "MPH"
+#~ msgstr "mph"
+
 #
+#~ msgid "KPH"
+#~ msgstr "km/t"
+
 #
-#~ msgid "Celcius"
-#~ msgstr "Celcius"
+#~ msgid "Wind Scat"
+#~ msgstr "Vind Scat"
+
 #
+#~ msgid "Quickscat"
+#~ msgstr "Quickscat"
+
 #
-#~ msgid "CloudCover"
-#~ msgstr "Molntäcke"
+#~ msgid "MyLabel"
+#~ msgstr "Egen beteckning"
+
 #
+#~ msgid "Error"
+#~ msgstr "Fel"
+
 #
-#~ msgid "Clouds Cover"
-#~ msgstr "Molntäcke"
+#~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
+#~ msgstr "OpenCpn kunde inte logga in! Kontrollera din epostinställning"
+
 #
+#~ msgid "eMail error"
+#~ msgstr "epostfel"
+
 #
-#~ msgid "Current(Surf.)"
-#~ msgstr "Ström(ytan)"
+#~ msgid "Failed to send mail message"
+#~ msgstr "Mislyckades att skicka epost"
+
 #
+#~ msgid "Request Pofile"
+#~ msgstr "Begär Pofil"
+
 #
 #
 #
@@ -639,29 +1004,12 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB Inställningar"
-#
-#~ msgid "Data available in the selected forecast model"
-#~ msgstr "Tillgängliga data i den valda prognosmodellen"
-#
-#~ msgid "Display Iso Temp. Lines"
-#~ msgstr "Visa Iso templinjer"
-#
-#
-#~ msgid "Error"
-#~ msgstr "Fel"
-#
-#
-#~ msgid "Failed to send mail message"
-#~ msgstr "Mislyckades att skicka epost"
-#
-#~ msgid "GFS"
-#~ msgstr "GFS"
-#
+
 #
 #
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
-#
+
 #
 #
 #
@@ -690,38 +1038,7 @@ msgstr "ZyGrib användarnamn"
 #
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB Filkatalog"
-#
-#
-#~ msgid "KPH"
-#~ msgstr "km/t"
-#
-#~ msgid "Login you use to connect to Zygrib's forum"
-#~ msgstr "Inloggning som du använder för att ansluta till Zygrib's forum"
-#
-#
-#~ msgid "M/S"
-#~ msgstr "m/s"
-#
-#
-#~ msgid "MPH"
-#~ msgstr "mph"
-#
-#
-#~ msgid "MyLabel"
-#~ msgstr "Egen beteckning"
-#
-#
-#~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
-#~ msgstr "OpenCpn kunde inte logga in! Kontrollera din epostinställning"
-#
-#
-#~ msgid "Parameters"
-#~ msgstr "Parametrar"
-#
-#
-#~ msgid "Period"
-#~ msgstr "Period"
-#
+
 #
 #
 #
@@ -729,7 +1046,7 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB yttemperatur"
-#
+
 #
 #
 #
@@ -737,7 +1054,7 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB regninformation"
-#
+
 #
 #
 #
@@ -745,7 +1062,7 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB regninformation"
-#
+
 #
 #
 #
@@ -753,7 +1070,7 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB yttemperatur"
-#
+
 #
 #
 #
@@ -761,11 +1078,7 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB regninformation"
-#
-#
-#~ msgid "Precipitation"
-#~ msgstr "Nederbörd"
-#
+
 #
 #
 #
@@ -773,30 +1086,7 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Pressure (MSL)"
 #~ msgstr "Lufttryck, mBar"
-#
-#
-#~ msgid "Quickscat"
-#~ msgstr "Quickscat"
-#
-#~ msgid "RTOFS"
-#~ msgstr "RTOFS"
-#
-#
-#~ msgid "Rain"
-#~ msgstr "Regn"
-#
-#
-#~ msgid "Range"
-#~ msgstr "Avstånd"
-#
-#
-#~ msgid "Ref : "
-#~ msgstr "Ref : "
-#
-#
-#~ msgid "Request Pofile"
-#~ msgstr "Begär Pofil"
-#
+
 #
 #
 #
@@ -815,18 +1105,7 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB Inställningar"
-#
-#~ msgid "Saildocs"
-#~ msgstr "Saildocs"
-#
-#
-#~ msgid "Sea Temperature"
-#~ msgstr "Vattentemperatur"
-#
-#
-#~ msgid "SeaTemp"
-#~ msgstr "Vattentemp"
-#
+
 #
 #
 #
@@ -855,7 +1134,7 @@ msgstr "ZyGrib användarnamn"
 #
 #~ msgid "Show GRIB icon"
 #~ msgstr "Aktivera GRIB-ikon"
-#
+
 #
 #
 #
@@ -884,7 +1163,7 @@ msgstr "ZyGrib användarnamn"
 #
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Visa m/s för vindstyrka"
-#
+
 #
 #
 #
@@ -892,21 +1171,7 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Sign.Wave Height"
 #~ msgstr "Signifikant våghöjd, m"
-#
-#
-#~ msgid "Size"
-#~ msgstr "Storlek"
-#
-#~ msgid "WW3-GLOBAL"
-#~ msgstr "WW3-GLOBAL"
-#
-#~ msgid "WW3-MEDIT"
-#~ msgstr "WW3-MEDIT"
-#
-#
-#~ msgid "Wave"
-#~ msgstr "Våghöjd"
-#
+
 #
 #
 #
@@ -914,11 +1179,7 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Wind Direction(10m)"
 #~ msgstr "Vindriktning"
-#
-#
-#~ msgid "Wind Scat"
-#~ msgstr "Vind Scat"
-#
+
 #
 #
 #
@@ -926,7 +1187,7 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Vindriktning"
-#
+
 #
 #
 #
@@ -934,22 +1195,3 @@ msgstr "ZyGrib användarnamn"
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Vindstyrka, m/s."
-#
-#
-#~ msgid "WindGust"
-#~ msgstr "Vindby"
-#
-#
-#~ msgid "Zone"
-#~ msgstr "Zone"
-#
-#
-#~ msgid "ZyGrib"
-#~ msgstr "ZyGrib"
-#
-#
-#~ msgid "eMail error"
-#~ msgstr "epostfel"
-#
-#~ msgid "size"
-#~ msgstr "storlek"
