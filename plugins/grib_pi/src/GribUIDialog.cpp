@@ -572,10 +572,16 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
     t.Printf( _T(" %1.*f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE), lev == (int) lev ? 0 : 1, lev );
     m_tcWindGust->SetToolTip( _("Wind Gust at") + t );
 
-    lev = m_OverlaySettings.CalibrateValue(GribOverlaySettings::GEO_ALTITUDE, 2 );      //convert 2m in current altitude unit
+    if( m_pTimelineSet ) {
+        wxString s[] = { _T(" "), _("Air Temperature at"), _("Surface level"), _("Sea Surface Temperature") };
 
-    t.Printf( _T(" %1.*f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE), lev == (int) lev ? 0 : 1, lev );
-    m_tcAirTemperature->SetToolTip( _("Air Temperature at") + t );
+        lev = m_OverlaySettings.CalibrateValue(GribOverlaySettings::GEO_ALTITUDE, 2 );      //convert 2m in current altitude unit
+        t.Printf( m_bGRIBActiveFile->m_GribIdxArray.Index(1000 + NORWAY_METNO) != wxNOT_FOUND ? s[0] + s[2]
+            : _T(" %1.*f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::GEO_ALTITUDE), lev == (int) lev ? 0 : 1, lev );
+        m_tcAirTemperature->SetToolTip(s[1] + t );
+
+        m_tcSeaTemperature->SetToolTip( m_bGRIBActiveFile->m_GribIdxArray.Index( 1000 + NOAA_GFS) != wxNOT_FOUND ? s[1] + s[0] + s[2] : s[3] );
+    }
 
     m_cbAltitude->SetToolTip( wxString::Format( _("Pressure Altitude (in %s) or Standard Height Selection."),
         m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE).c_str() ) );
@@ -1368,7 +1374,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
             //   Search the GribRecordSet array for a GribRecordSet with matching time
             for( unsigned int j = 0; j < m_GribRecordSetArray.GetCount(); j++ ) {
                 if( m_GribRecordSetArray.Item( j ).m_Reference_Time == thistime ) {
-                    int idx = -1;
+                    int idx = -1, mdx = -1;
                     switch(pRec->getDataType()) {
                     case GRB_WIND_VX:
                         if(pRec->getLevelType() == LV_ISOBARIC){
@@ -1411,8 +1417,12 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                             }
                         } else
                             idx = Idx_AIR_TEMP;
+                        if(pRec->getDataCenterModel() == NORWAY_METNO ) mdx = 1000 + NORWAY_METNO;
                         break;
-                    case GRB_WTMP:     idx = Idx_SEA_TEMP; break;
+                    case GRB_WTMP:
+                        idx = Idx_SEA_TEMP;
+                        if(pRec->getDataCenterModel() == NOAA_GFS ) mdx = 1000 + NOAA_GFS;
+                        break;
                     case GRB_CAPE:      idx = Idx_CAPE;break;
                     case GRB_HUMID_REL:
                         if(pRec->getLevelType() == LV_ISOBARIC){
@@ -1439,6 +1449,7 @@ GRIBFile::GRIBFile( const wxString file_name, bool CumRec, bool WaveRec )
                     if(idx != -1) {
                         m_GribRecordSetArray.Item( j ).m_GribRecordPtrArray[idx]= pRec;
                         if(m_GribIdxArray.Index(idx) == wxNOT_FOUND ) m_GribIdxArray.Add(idx, 1);
+                        if(mdx != -1 && m_GribIdxArray.Index(mdx) == wxNOT_FOUND ) m_GribIdxArray.Add(mdx, 1);
                     }
                     break;
                 }

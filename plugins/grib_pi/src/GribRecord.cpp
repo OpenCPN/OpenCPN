@@ -57,6 +57,19 @@ void  GribRecord::translateDataType()
             && levelValue == 0) dataType = GRB_WTMP;
 
 	}
+    //------------------------
+	//DNMI-NEurope.grb
+	//------------------------
+    else if ( (idCenter==88 && idModel==255 && idGrid==255)
+		|| (idCenter==88 && idModel==230 && idGrid==255)
+		|| (idCenter==88 && idModel==200 && idGrid==255)
+		|| (idCenter==88 && idModel==67 && idGrid==255) )
+    {
+        if( dataType==GRB_TEMP && levelType==LV_GND_SURF && levelValue==0 ) {       //air temperature at groud level
+            levelType = LV_ABOV_GND; levelValue = 2;
+        }
+		dataCenterModel = NORWAY_METNO;
+    }
 	//------------------------
 	// WRF NMM grib.meteorologic.net
 	//------------------------
@@ -131,6 +144,7 @@ void  GribRecord::translateDataType()
 	//------------------------
 	else
 	{
+        dataCenterModel = OTHER_DATA_CENTER;
 //		printf("Uncorrected GribRecord: ");
 //		this->print();
 //		this->knownData = false;
