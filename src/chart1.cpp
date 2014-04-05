@@ -4384,21 +4384,9 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     }
     m_COGFilterLast = stuffcog;
 
-    SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
+    if(cc1)
+        SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
-#if 0
-    bDBUpdateInProgress = false;
-
-    if( g_FloatingToolbarDialog ) {
-        if( IsFullScreen() && !g_bFullscreenToolbar ) g_FloatingToolbarDialog->Submerge();
-    }
-
-#ifdef __WXMAC__
-    if(stats) stats->Show();
-#endif
-
-    Refresh( false );
-#endif
     return 0;
 }
 
