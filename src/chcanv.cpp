@@ -10407,8 +10407,7 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuild
     double lat_last = 0.;
 
     double true_scale_display = floor( VPoint.chart_scale / 100. ) * 100.;
-    if( true_scale_display < g_Show_Target_Name_Scale )
-        bDrawCurrentValues = true;
+    bDrawCurrentValues =  true_scale_display < g_Show_Target_Name_Scale;
     
     wxPen *pblack_pen = wxThePenList->FindOrCreatePen( GetGlobalColor( _T ( "UINFD" ) ), 1,
                         wxSOLID );
