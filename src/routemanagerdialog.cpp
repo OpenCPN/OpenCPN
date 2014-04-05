@@ -770,6 +770,8 @@ void RouteManagerDialog::Create()
     Fit();
 
     SetMinSize( GetBestSize() );
+    
+    Centre();
 
     // create a image list for the list with just the eye icon
     wxImageList *imglist = new wxImageList( 20, 20, true, 1 );

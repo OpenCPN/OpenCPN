@@ -526,7 +526,7 @@ void ocpnFloatingToolbarDialog::Realize()
         m_topSizer->Add( m_pGrabberwin, 0, wxTOP, m_style->GetTopMargin() );
 
         m_topSizer->Layout();
-        m_topSizer->Fit( this );
+        Fit();
 
         //    Update "Dock" parameters
         if( m_position.x == 0 ) m_dock_x = -1;
@@ -540,6 +540,7 @@ void ocpnFloatingToolbarDialog::Realize()
         // Now create a bitmap mask forthe frame shape.
 
         if( m_marginsInvisible ) {
+            
             wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
             
             //  Determine whether the tool icons are meant (by style) to join without speces between
@@ -560,7 +561,30 @@ void ocpnFloatingToolbarDialog::Realize()
             
             
             
-            wxBitmap shape( GetSize().x, GetSize().y );
+
+            int toolCount = m_ptoolbar->GetVisibleToolCount();
+                
+            wxPoint upperLeft( m_style->GetLeftMargin(), m_style->GetTopMargin() );
+            wxSize visibleSize;
+            if( m_ptoolbar->IsVertical() ) {
+                int noTools = m_ptoolbar->GetMaxRows();
+                if( noTools > toolCount )
+                    noTools = toolCount;
+                visibleSize.x = m_ptoolbar->GetLineCount() * ( tool_size.x + m_style->GetTopMargin() );
+                visibleSize.y = noTools * ( tool_size.y + m_style->GetToolSeparation() );
+                visibleSize.x -= m_style->GetTopMargin();
+                visibleSize.y -= m_style->GetToolSeparation();
+            } else {
+                    int noTools = m_ptoolbar->GetMaxCols();
+                    if( noTools > toolCount )
+                        noTools = toolCount;
+                visibleSize.x = noTools * ( tool_size.x + m_style->GetToolSeparation() );
+                visibleSize.y = m_ptoolbar->GetLineCount() * ( tool_size.y + m_style->GetTopMargin() );
+                visibleSize.x -= m_style->GetToolSeparation();
+                visibleSize.y -= m_style->GetTopMargin();
+            }
+
+            wxBitmap shape( visibleSize.x + tool_size.x, visibleSize.y + tool_size.y);          // + fluff
             wxMemoryDC sdc( shape );
             sdc.SetBackground( *wxWHITE_BRUSH );
             sdc.SetBrush( *wxBLACK_BRUSH );
@@ -568,30 +592,6 @@ void ocpnFloatingToolbarDialog::Realize()
             sdc.Clear();
 
             if(b_overlap) {
-                int toolCount = m_ptoolbar->GetVisibleToolCount();
-                
-                wxPoint upperLeft( m_style->GetLeftMargin(), m_style->GetTopMargin() );
-                wxSize visibleSize;
-                if( m_ptoolbar->IsVertical() ) {
-                    int noTools = m_ptoolbar->GetMaxRows();
-                    if( noTools > toolCount )
-                        noTools = toolCount;
-                    visibleSize.x = m_ptoolbar->GetLineCount()
-                    * ( tool_size.x + m_style->GetTopMargin() );
-                    visibleSize.y = noTools
-                    * ( tool_size.y + m_style->GetToolSeparation() );
-                    visibleSize.x -= m_style->GetTopMargin();
-                    visibleSize.y -= m_style->GetToolSeparation();
-                } else {
-                    int noTools = m_ptoolbar->GetMaxCols();
-                    if( noTools > toolCount )
-                        noTools = toolCount;
-                    visibleSize.x = noTools * ( tool_size.x + m_style->GetToolSeparation() );
-                    visibleSize.y = m_ptoolbar->GetLineCount() * ( tool_size.y + m_style->GetTopMargin() );
-                    visibleSize.x -= m_style->GetToolSeparation();
-                    visibleSize.y -= m_style->GetTopMargin();
-                }
-
                 int lines = m_ptoolbar->GetLineCount();
                 for( int i = 1; i <= lines; i++ ) {
                     if( m_ptoolbar->IsVertical() ) {
