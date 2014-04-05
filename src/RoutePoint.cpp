@@ -373,16 +373,22 @@ bool RoutePoint::IsSame( RoutePoint *pOtherRP )
 
 bool RoutePoint::SendToGPS(const wxString & com_name, wxGauge *pProgress)
 {
-    bool result = false;
-    if( g_pMUX ) result = g_pMUX->SendWaypointToGPS( this, com_name, pProgress );
+    int result = 0;
+    if( g_pMUX )
+        result = g_pMUX->SendWaypointToGPS( this, com_name, pProgress );
 
     wxString msg;
-    if( result ) msg = _("Waypoint(s) Uploaded successfully.");
-    else
-        msg = _("Error on Waypoint Upload.  Please check logfiles...");
+    if( 0 == result )
+        msg = _("Waypoint(s) Uploaded successfully.");
+    else{
+        if( result == ERR_GARMIN_INITIALIZE )
+            msg = _("Error on Waypoint Upload.  Garmin GPS not connected");
+        else               
+            msg = _("Error on Waypoint Upload.  Please check logfiles...");
+    }
 
     OCPNMessageBox( NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
 
-    return result;
+    return (result == 0);
 }
 

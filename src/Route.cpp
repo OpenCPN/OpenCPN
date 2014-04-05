@@ -385,7 +385,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
 
                 if( dp < dtest ) adder = 0;
 
-                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, VP, true );
+                RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, VP, true, hilite );
             } else
                 if( !b_1_on && b_2_on ) {
                     if( rpt1.x < rpt2.x ) adder = (int) pix_full_circle;
@@ -397,7 +397,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
 
                     if( dp < dtest ) adder = 0;
 
-                    RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true );
+                    RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true, hilite );
                 }
 
                 //Both off, need to check shortest distance
@@ -412,7 +412,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
 
                         if( dp < dtest ) adder = 0;
 
-                        RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true );
+                        RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true, hilite );
                     }
         }
         rpt1 = rpt2;
@@ -978,9 +978,9 @@ void Route::RenameRoutePoints( void )
     }
 }
 
-bool Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress )
+int Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress )
 {
-    bool result = false;
+    int result = 0;
 
     if( g_pMUX ) {
         ::wxBeginBusyCursor();
@@ -989,13 +989,18 @@ bool Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *
     }
 
     wxString msg;
-    if( result ) msg = _("Route Uploaded successfully.");
-    else
-        msg = _("Error on Route Upload.  Please check logfiles...");
+    if( 0 == result )
+        msg = _("Route Uploaded successfully.");
+    else{
+        if( result == ERR_GARMIN_INITIALIZE )
+            msg = _("Error on Route Upload.  Garmin GPS not connected");
+        else
+            msg = _("Error on Route Upload.  Please check logfiles...");
 
-    OCPNMessageBox( NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
+        OCPNMessageBox( NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
+    }
 
-    return result;
+    return (result == 0);
 }
 
 //    Is this route equal to another, meaning,

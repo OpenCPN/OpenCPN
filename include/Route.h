@@ -90,7 +90,7 @@ public:
       bool IsSelected() { return m_bRtIsSelected; }
       bool IsTrack(){ return m_bIsTrack; }
 
-      bool SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress);
+      int SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *pProgress);
 
       double GetRouteArrivalRadius(void){ return m_ArrivalRadius;}
       void SetRouteArrivalRadius(double radius){m_ArrivalRadius = radius;}
