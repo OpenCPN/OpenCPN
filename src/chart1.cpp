@@ -1292,17 +1292,19 @@ bool MyApp::OnInit()
 //      Init the Route Manager
     g_pRouteMan = new Routeman( this );
 
-//      Init the Selectable Route Items List
+    //      Init the Selectable Route Items List
     pSelect = new Select();
-
-//      Init the Selectable Tide/Current Items List
+    pSelect->SetSelectPixelRadius( 12 );
+    
+    //      Init the Selectable Tide/Current Items List
     pSelectTC = new Select();
     //  Increase the select radius for tide/current stations
-    pSelectTC->SetSelectPixelRadius(25);
-
-//      Init the Selectable AIS Target List
+    pSelectTC->SetSelectPixelRadius( 25 );
+    
+    //      Init the Selectable AIS Target List
     pSelectAIS = new Select();
-
+    pSelectAIS->SetSelectPixelRadius( 12 );
+    
 //      Initially AIS display is always on
     g_bShowAIS = true;
     g_pais_query_dialog_active = NULL;
@@ -1395,6 +1397,16 @@ bool MyApp::OnInit()
     pConfig = (MyConfig *) pCF;
     pConfig->LoadMyConfig( 0 );
 
+    
+    if(g_bmobile){
+        int SelectPixelRadius = 50;
+    
+        pSelect->SetSelectPixelRadius(SelectPixelRadius);
+        pSelectTC->SetSelectPixelRadius( wxMax(25, SelectPixelRadius) );
+        pSelectAIS->SetSelectPixelRadius(SelectPixelRadius);
+    }
+        
+    
     //        Is this the first run after a clean install?
     if( !n_NavMessageShown ) g_bFirstRun = true;
 
@@ -3297,7 +3309,6 @@ void MyFrame::ProcessCanvasResize( void )
     UpdateGPSCompassStatusBox( true );
 
     if( console->IsShown() ) PositionConsole();
-
 }
 
 void MyFrame::OnSize( wxSizeEvent& event )
@@ -3354,6 +3365,7 @@ void MyFrame::ODoSetSize( void )
         }
     }
 
+    
     if( g_FloatingToolbarDialog ) {
         wxSize oldSize = g_FloatingToolbarDialog->GetSize();
         g_FloatingToolbarDialog->RePosition();
@@ -3366,7 +3378,8 @@ void MyFrame::ODoSetSize( void )
         g_FloatingToolbarDialog->RePosition();
 
     }
-
+ 
+   
     UpdateGPSCompassStatusBox( true );
 
     if( console ) PositionConsole();
@@ -3398,6 +3411,10 @@ void MyFrame::ODoSetSize( void )
     //  Reset the options dialog size logic
     options_lastWindowSize = wxSize(0,0);
     options_lastWindowPos = wxPoint(0,0);    
+    
+    if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ){
+        pRouteManagerDialog->Centre();
+    }
         
 }
 

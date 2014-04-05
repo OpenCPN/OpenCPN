@@ -29,7 +29,6 @@
 #include "chcanv.h"
 
 extern ChartCanvas *cc1;
-extern bool g_bmobile;
 
 Select::Select()
 {
@@ -40,8 +39,6 @@ Select::Select()
     if( h > 800 ) pixelRadius = 10;
     if( h > 1024 ) pixelRadius = 12;
     
-    if(g_bmobile)
-        pixelRadius = 50;
 }
 
 Select::~Select()
