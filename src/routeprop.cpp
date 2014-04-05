@@ -1163,6 +1163,10 @@ bool RouteProp::UpdateProperties()
 
     } else        // Route
     {
+        double brg, join_distance;
+        RoutePoint *first_point = m_pRoute->GetPoint( 1 );
+        DistanceBearingMercator( first_point->m_lat, first_point->m_lon, gLat, gLon, &brg, &join_distance );
+        
         //    Update the "tides event" column header
         wxListItem column_info;
         if( m_wpList->GetColumn( 8, column_info ) ) {
@@ -1206,6 +1210,12 @@ bool RouteProp::UpdateProperties()
             }
         }
 
+        if( m_bStartNow ) {
+            joining_time = wxTimeSpan::Seconds((long) wxRound( ( join_distance * 3600. ) / m_planspeed ) );
+            double join_seconds = joining_time.GetSeconds().ToDouble();
+            total_seconds += join_seconds;
+        }
+        
         if( m_starttime.IsValid() ) {
             wxString s;
             if( m_bStartNow ) {
@@ -1223,8 +1233,13 @@ bool RouteProp::UpdateProperties()
         if( IsThisRouteExtendable() ) m_ExtendButton->Enable( true );
 
         //  Total length
+        double total_length = m_pRoute->m_route_length;
+        if( m_bStartNow ) {
+            total_length += join_distance;
+        }
+            
         wxString slen;
-        slen.Printf( wxT("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( m_pRoute->m_route_length ) );
+        slen.Printf( wxT("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( total_length ) );
 
         if( !m_pEnroutePoint ) m_TotalDistCtl->SetValue( slen );
         else
