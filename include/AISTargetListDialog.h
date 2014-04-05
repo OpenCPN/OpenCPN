@@ -76,7 +76,8 @@ class AISTargetListDialog: public wxPanel
             void OnHideAllTracks( wxCommandEvent& event );
             void OnToggleTrack( wxCommandEvent& event );
             void OnLimitRange( wxCommandEvent& event );
-
+            void OnCloseButton( wxCommandEvent& event );
+            
             wxWindow          *m_pparent;
             wxAuiManager      *m_pAuiManager;
             wxButton          *m_pButtonInfo;
@@ -89,6 +90,8 @@ class AISTargetListDialog: public wxPanel
             wxSpinCtrl        *m_pSpinCtrlRange;
             wxStaticText      *m_pStaticTextCount;
             wxTextCtrl        *m_pTextTargetCount;
+            wxButton          *m_pButtonOK;
+            
 
             DECLARE_EVENT_TABLE()
 

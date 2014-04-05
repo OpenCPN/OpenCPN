@@ -507,6 +507,13 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
             wxTE_READONLY );
     boxSizer02->Add( m_pTextTargetCount, 0, wxALL, 0 );
 
+    boxSizer02->AddSpacer( 10 );
+    m_pButtonOK = new wxButton( this, wxID_ANY, _("Close"), wxDefaultPosition,
+                                    wxDefaultSize, wxBU_AUTODRAW );
+    m_pButtonOK->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+                              wxCommandEventHandler( AISTargetListDialog::OnCloseButton ), NULL, this );
+    boxSizer02->Add( m_pButtonOK, 0, wxEXPAND | wxALL, 0 );
+    
     topSizer->Layout();
 
     //    This is silly, but seems to be required for __WXMSW__ build
@@ -607,6 +614,17 @@ void AISTargetListDialog::OnPaneClose( wxAuiManagerEvent& event )
     event.Skip();
 }
 
+void AISTargetListDialog::OnCloseButton( wxCommandEvent& event )
+{
+    if(m_pAuiManager) {
+        wxAuiPaneInfo pane =m_pAuiManager->GetPane(_T("AISTargetList"));
+        g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( pane );
+        m_pAuiManager->DetachPane(this);
+        Destroy();
+    }
+}
+
+
 void AISTargetListDialog::UpdateButtons()
 {
     long item = -1;
@@ -634,6 +652,7 @@ void AISTargetListDialog::DoTargetQuery( int mmsi )
 {
     ShowAISTargetQueryDialog( m_pparent, mmsi );
 }
+
 
 /*
  ** When an item is activated in AIS TArget List then opens the AIS Target Query Dialog
