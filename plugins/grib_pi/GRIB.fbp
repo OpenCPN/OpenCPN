@@ -5909,7 +5909,7 @@
                                         <property name="caption"></property>
                                         <property name="caption_visible">1</property>
                                         <property name="center_pane">0</property>
-                                        <property name="choices">&quot;Single Arrow&quot; &quot;Double Arrow&quot;</property>
+                                        <property name="choices">&quot;Single Arrow&quot; &quot;Double Arrow&quot; &quot;Proportional Arrow&quot;</property>
                                         <property name="close_button">1</property>
                                         <property name="context_help"></property>
                                         <property name="context_menu">1</property>

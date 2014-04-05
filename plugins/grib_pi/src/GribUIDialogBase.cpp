@@ -476,7 +476,7 @@ GribSettingsDialogBase::GribSettingsDialogBase( wxWindow* parent, wxWindowID id,
 	m_cbDirectionArrows = new wxCheckBox( this, wxID_ANY, _("Direction Arrows"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer15->Add( m_cbDirectionArrows, 0, wxALL, 5 );
 	
-	wxString m_cDirectionArrowFormChoices[] = { _("Single Arrow"), _("Double Arrow") };
+	wxString m_cDirectionArrowFormChoices[] = { _("Single Arrow"), _("Double Arrow"), _("Proportional Arrow") };
 	int m_cDirectionArrowFormNChoices = sizeof( m_cDirectionArrowFormChoices ) / sizeof( wxString );
 	m_cDirectionArrowForm = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_cDirectionArrowFormNChoices, m_cDirectionArrowFormChoices, 0 );
 	m_cDirectionArrowForm->SetSelection( 1 );

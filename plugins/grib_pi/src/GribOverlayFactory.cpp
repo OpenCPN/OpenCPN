@@ -543,7 +543,7 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
 }
 
 /* return cached wxImage for a given number, or create it if not in the cache */
-wxImage &GRIBOverlayFactory::getLabel(double value, int settings)
+wxImage &GRIBOverlayFactory::getLabel(double value, int settings, wxColour back_color )
 {
     std::map <double, wxImage >::iterator it;
     it = m_labelCache.find(value);
@@ -574,10 +574,8 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings)
 
     wxColour text_color;
     GetGlobalColor( _T ( "UBLCK" ), &text_color );
-    wxColour back_color;
     wxPen penText(text_color);
 
-    GetGlobalColor( _T ( "DILG1" ), &back_color );
     wxBrush backBrush(back_color);
 
     wxMemoryDC mdc(wxNullBitmap);
@@ -610,27 +608,6 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings)
     m_labelCache[value] = bm.ConvertToImage();
 
     m_labelCache[value].InitAlpha();
-
-    wxImage &image = m_labelCache[value];
-
-#ifdef ocpnUSE_GL
-
-    unsigned char *d = image.GetData();
-    unsigned char *a = image.GetAlpha();
-
-    w = image.GetWidth(), h = image.GetHeight();
-    for( int y = 0; y < h; y++ )
-        for( int x = 0; x < w; x++ ) {
-            int r, g, b;
-            int ioff = (y * w + x);
-            r = d[ioff* 3 + 0];
-            g = d[ioff* 3 + 1];
-            b = d[ioff* 3 + 2];
-
-            a[ioff] = 255-(r+g+b)/3;
-        }
-
-#endif
 
     return m_labelCache[value];
 }
@@ -724,6 +701,9 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
     if(!pGRA)
         return;
 
+    wxColour back_color;
+    GetGlobalColor( _T ( "DILG1" ), &back_color );
+
     /* build magnitude from multiple record types like wind and current */
     if(idy >= 0 && !polar && pGR[idy]) {
         pGRM = GribRecord::MagnitudeRecord(*pGR[idx], *pGR[idy]);
@@ -775,7 +755,7 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
         int first = 0;
 
         piso->drawIsoLineLabels( this, m_pdc, vp, density,
-                                 first, getLabel(piso->getValue(), settings) );
+                                 first, getLabel(piso->getValue(), settings, back_color) );
     }
 
     delete pGRM;
@@ -795,16 +775,10 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
     if(idx < 0 || idy < 0)
         return;
 
-    if(polar) {
-        pGRX = pGR[idy];
-        if(!pGRX)
-            return;
-    } else {
-        pGRX = pGR[idx];
-        pGRY = pGR[idy];
-        if(!pGRX || !pGRY)
-            return;
-    }
+    pGRX = pGR[idx];
+    pGRY = pGR[idy];
+    if(!pGRX || !pGRY)
+        return;
 
     //    Get the the grid
     int imax = pGRX->getNi();                  // Longitude
@@ -847,21 +821,29 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
                     if( PointInLLBox( vp, lon, lat ) || PointInLLBox( vp, lon - 360., lat ) ) {
                         if(polar) {
-                            double dir = pGRX->getValue( i, j );
-                            if( dir != GRIB_NOTDEF ){
+                            double dir = pGRY->getValue( i, j );
+                            double sh = pGRX->getValue( i, j );
+                            if( dir != GRIB_NOTDEF && sh != GRIB_NOTDEF ){
                                 if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
                                     drawSingleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour, arrowWidth, arrowSize );
-                                else
+                                else if( m_Settings.Settings[settings].m_iDirectionArrowForm == 1 )
                                     drawDoubleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour, arrowWidth, arrowSize );
+                                else
+                                    drawSingleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour,
+                                        wxMax( 1, wxMin( 8, (int)(sh+0.5)) ), arrowSize );
                             }
                         } else {
                             double vx = pGRX->getValue( i,j ), vy = pGRY->getValue( i,j );
-                            if( vx != GRIB_NOTDEF || vy != GRIB_NOTDEF ) {
+                            if( vx != GRIB_NOTDEF && vy != GRIB_NOTDEF ) {
                                 double dir = atan2(vy, -vx);
+                                double sh = sqrt( vx * vx + vy * vy );
                                 if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
                                     drawSingleArrow( p.x, p.y, dir + vp->rotation, colour, arrowWidth, arrowSize );
-                                else
+                                else if( m_Settings.Settings[settings].m_iDirectionArrowForm == 1 )
                                     drawDoubleArrow( p.x, p.y, dir + vp->rotation, colour, arrowWidth, arrowSize );
+                                else
+                                    drawSingleArrow( p.x, p.y, dir + vp->rotation, colour,
+                                        wxMax( 1, wxMin( 8, (int)((8/2.5*sh)+0.5)) ), arrowSize );
                             }
                         }
                     }
@@ -991,9 +973,6 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
     int oldx = -1000;
     int oldy = -1000;
 
-    wxColour colour;
-    GetGlobalColor( _T ( "UBLCK" ), &colour );
-
     for( int i = 0; i < imax; i++ ) {
         double lonl = pGRA->getX( i );
         double latl = pGRA->getY( pGRA->getNj()/2 );
@@ -1016,41 +995,30 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 
                         if( mag != GRIB_NOTDEF ) {
                             double value = m_Settings.CalibrateValue(settings, mag);
-                            wxImage &label = getLabel(value, settings);
+                            wxImage &label = getLabel(value, settings, GetGraphicColor(settings, value));
+
+                            //set alpha chanel
+                            int w = label.GetWidth(), h = label.GetHeight();
+                            for( int y = 0; y < h; y++ ) {
+                                for( int x = 0; x < w; x++ ) {
+                                    label.SetAlpha( x, y, m_Settings.m_iOverlayTransparency );
+                                }
+                            }
+
                             if( m_pdc ) {
                                 m_pdc->DrawBitmap(label, p.x, p.y, true);
                             } else {
 #ifdef ocpnUSE_GL
                                 int w = label.GetWidth(), h = label.GetHeight();
-#if 0 /* this way is more work on our part.. try it for debugging purposes */
-                                unsigned char *d = label.GetData(), *a = label.GetAlpha();
-                                unsigned char *e = new unsigned char[4*w*h];
-                                for(int i=0; i<w*h; i++) {
-                                    for(int c=0; c<3; c++)
-                                        e[4*i+c] = d[3*i+c];
-                                    e[4*i+3] = a[3*i];
-                                }
-
-                                glRasterPos2i(p.x, p.y);
-                                glPixelZoom(1, -1); /* draw data from top to bottom */
-
-                                glEnable( GL_BLEND );
-                                glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-                                glDrawPixels(label.GetWidth(), label.GetHeight(),
-                                             GL_RGBA, GL_UNSIGNED_BYTE, e);
-                                glPixelZoom(1, 1);
-
-                                delete [] e;
-#else /* this way use opengl textures.. should be best */
                                 unsigned char *d = label.GetData(), *a = label.GetAlpha();
                                 unsigned char *e = new unsigned char[4*w*h];
                                 for( int y = 0; y < h; y++ ) {
                                     for( int x = 0; x < w; x++ ) {
-                                        int ioff = (y * w + x),rgb = 0;
-                                        rgb += e[ioff* 4 + 0] = d[ioff* 3 + 0];
-                                        rgb += e[ioff* 4 + 1] = d[ioff* 3 + 1];
-                                        rgb += e[ioff* 4 + 2] = d[ioff* 3 + 2];
-                                        e[ioff* 4 + 3] = 255 - rgb/3;
+                                        int ioff = (y * w + x);
+                                        e[ioff* 4 + 0] = d[ioff* 3 + 0];
+                                        e[ioff* 4 + 1] = d[ioff* 3 + 1];
+                                        e[ioff* 4 + 2] = d[ioff* 3 + 2];
+                                        e[ioff* 4 + 3] = m_Settings.m_iOverlayTransparency;
                                     }
                                 }
                                 glEnable( GL_BLEND );
@@ -1070,7 +1038,6 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
                                 glEnd();
                                 glDisable(GL_TEXTURE_RECTANGLE_ARB);
                                 delete [] e;
-#endif
 #endif
                             }
                         }
@@ -1138,7 +1105,7 @@ void GRIBOverlayFactory::drawSingleArrow( int i, int j, double ang, wxColour arr
 {
     double si = sin( ang ), co = cos( ang );
 
-    wxPen pen( arrowColor, 2 );
+    wxPen pen( arrowColor, arrowWidth );
 
     if( m_pdc ) {
         m_pdc->SetPen( pen );
@@ -1148,6 +1115,8 @@ void GRIBOverlayFactory::drawSingleArrow( int i, int j, double ang, wxColour arr
     int dec = -arrowSize / 2;
 
     drawTransformedLine( pen, si, co, i, j, dec, 0, dec + arrowSize, 0 );
+
+    pen.SetWidth( arrowWidth < 2 ? 1 : 2 );
 
     drawTransformedLine( pen, si, co, i, j, dec - 2, 0, dec + 5, 6 );    // flèche
     drawTransformedLine( pen, si, co, i, j, dec - 2, 0, dec + 5, -6 );   // flèche
