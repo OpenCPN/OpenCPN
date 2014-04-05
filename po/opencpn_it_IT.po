@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
+"POT-Creation-Date: 2014-04-05 11:43-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -958,6 +958,14 @@ msgstr "Elimino <TUTTI> i Punti/WP ?"
 #
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr "Elimino tutti gli oggetti selezionati?"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
+msgstr "Elimino <TUTTE> le Rotte?"
 #
 #
 #
@@ -2075,6 +2083,9 @@ msgstr "Abilita Mosaico Carte (taglio e sovrapposizione)"
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Abilita il Timeout per riconoscimento allarme (Minuti)"
 #
+msgid "Enable Touchscreen/Tablet Interface"
+msgstr ""
+#
 #
 msgid "Enable Transparent Toolbar"
 msgstr "Attiva Toolbar trasparente"
@@ -2122,6 +2133,9 @@ msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
 msgstr ""
 #
 msgid "Environmental Caution Area: Strong currents"
+msgstr ""
+#
+msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr ""
 #
 msgid "Error on Waypoint Upload.  Please check logfiles..."
@@ -3255,6 +3269,20 @@ msgstr "OpenCPN non può partire."
 #
 msgid "OpenCPN info"
 msgstr "OpenCPN Info"
+#
+msgid ""
+"OpenCPN requires access to serial ports to use serial NMEA data.\n"
+"You currently do not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
+msgstr ""
 #
 #
 #
@@ -4682,10 +4710,12 @@ msgstr ""
 "aggiungendo. Unisco i dati esistenti con quelli che stai aggiungendo?\n"
 "\n"
 #
+#, fuzzy
 msgid ""
-"There are some waypoints used in routes or anchor alarms. Do you want to "
-"delete them as well? This will change the routes and disable the anchor "
-"alarms. Answering No keeps the waypoints used in routes or alarms."
+"There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 "Ci sono alcuni Waypoints usati in Rotte o Allarmi Ancoraggio. Vuoi veramente "
 "canellarli? Questo cambierà le rotte e diabiliterà gli allarmi. Rispondendo "
@@ -5304,6 +5334,14 @@ msgstr "ft"
 #
 #
 msgid "in"
+msgstr "in "
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "in "
 msgstr "in "
 #
 msgid "km"

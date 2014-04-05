@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0b604\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
+"POT-Creation-Date: 2014-04-05 11:44-0400\n"
 "PO-Revision-Date: 2013-12-10 18:46+0200\n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: Gunther Pilz <service@opencpn.de>\n"
@@ -22,13 +22,16 @@ msgstr ""
 msgid " (Max size )"
 msgstr "(En büyük ölçek)"
 #
-msgid " Mo )"
-msgstr " En küçük )"
+msgid "300 hPa"
+msgstr ""
 #
-msgid "( Max "
-msgstr "(En büyük"
+msgid "500 hPa"
+msgstr ""
 #
-msgid "00N  00W"
+msgid "700 hPa"
+msgstr ""
+#
+msgid "850 hPA"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
@@ -43,8 +46,22 @@ msgstr "Hava Sıcaklığı (2m)"
 msgid "Air Temp"
 msgstr "Hava Sıcaklığı"
 #
+#, fuzzy
+msgid "Air Temperature"
+msgstr "Hava Sıcaklığı (2m)"
+#
+#, fuzzy
+msgid "Air Temperature at"
+msgstr "Hava Sıcaklığı (2m)"
+#
 msgid "Air Temperature(2m)"
 msgstr "Hava Sıcaklığı (2m)"
+#
+msgid "Altitude"
+msgstr ""
+#
+msgid "Altitude(Pressure Altitude)"
+msgstr ""
 #
 msgid "Always visible"
 msgstr ""
@@ -118,16 +135,32 @@ msgstr "Devam"
 msgid "Controled Colours"
 msgstr ""
 #
+msgid "Convective Available Potential Energy"
+msgstr ""
+#
 msgid "Copy First Cumulative Missing Record"
 msgstr "İlk Kayıp Birikimli Kaydı Kopyala"
 #
 msgid "Copy Missing Wave Records"
 msgstr "Kayıp Dalga Raporunu Kopyala"
 #
+#, fuzzy
+msgid "Course"
+msgstr "Saat"
+#
+msgid "Cumulative Rainfall per Hour"
+msgstr ""
+#
 #
 #
 msgid "Current"
 msgstr "Akıntı"
+#
+msgid "Current time forecast"
+msgstr ""
+#
+msgid "Data"
+msgstr ""
 #
 #, fuzzy
 msgid "Data at Cursor Position:"
@@ -171,6 +204,12 @@ msgstr "Eşsıcaklık çizgilerini göster"
 msgid "Double Arrow"
 msgstr "Sakallı Oklar"
 #
+msgid "Enter your forecasted Course"
+msgstr ""
+#
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr ""
+#
 msgid "Error:  Can't read this File!"
 msgstr "Hata: Dosya okunamıyor"
 #
@@ -201,15 +240,24 @@ msgstr "GRIB Görüntü Denetim Panosu"
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "OpenCPN GRIB Eklentisi"
 #
+#, fuzzy
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
-"Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n"
 "\n"
-"Supported GRIB file types include:\n"
-"- wind direction and speed\n"
-"- significant wave height\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
 "- sea surface temperature\n"
-"- surface current direction and speed."
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
 msgstr ""
 "OpenCPN GRIB Eklentisi\n"
 "Birçok GRIB dosya türünü haritada görüntüler.\n"
@@ -231,6 +279,10 @@ msgstr "GRIB"
 #
 #, fuzzy
 msgid "Grib Data Table"
+msgstr "Veri alınabilir"
+#
+#, fuzzy
+msgid "Grib Data at"
 msgstr "Veri alınabilir"
 #
 msgid "Grib Preferences"
@@ -257,6 +309,10 @@ msgstr "Eşbasınç"
 msgid "Knots"
 msgstr "Knot"
 #
+#, fuzzy
+msgid "Kts"
+msgstr "Knot"
+#
 msgid "Load File Options"
 msgstr "Dosya Seçeneklerini yükle"
 #
@@ -272,16 +328,39 @@ msgstr "Yerel Zaaman"
 msgid "Loop Mode"
 msgstr "Yakınlaştırma Durumu"
 #
+msgid "Loop Start"
+msgstr ""
+#
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr ""
 "eMail hatası: MAPI32.DLL dosyası yüklenmemiş ya da bu bilgisayar için geçerli "
 "değil."
+#
+msgid "MB"
+msgstr ""
 #
 msgid "Mail"
 msgstr "eMail"
 #
 msgid "Mail To "
 msgstr "Adresine email gönder"
+#
+#, fuzzy
+msgid "Max"
+msgstr "(En büyük"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Basınç, mBar"
 #
 msgid "Meters"
 msgstr "Metre"
@@ -291,6 +370,13 @@ msgstr "MiliBar"
 #
 msgid "Millimeters"
 msgstr "Milimetre"
+#
+#, fuzzy
+msgid "Minimum Spacing"
+msgstr "Aralama"
+#
+msgid "Moving Grib"
+msgstr ""
 #
 msgid "N/A"
 msgstr "Veri Yok"
@@ -329,14 +415,34 @@ msgstr "Bindirimi görebilmek için haritayı yakınlaştırın yada uzaklaştı
 msgid "Pressure"
 msgstr "Basınç "
 #
+#
+#
+#, fuzzy
+msgid "Pressure Altitude"
+msgstr "Basınç "
+#
+#, c-format
+msgid "Pressure Altitude (in %s) or Standard Height Selection."
+msgstr ""
+#
 msgid "Previous"
 msgstr "Önceki"
 #
 msgid "Profile"
 msgstr "Veriler"
 #
+#, fuzzy
+msgid "Proportional Arrow"
+msgstr "Yön Okları"
+#
 msgid "Rainfall"
 msgstr "Yağış"
+#
+msgid "Rel. Humid."
+msgstr ""
+#
+msgid "Relative Humidity"
+msgstr ""
 #
 msgid "Request"
 msgstr "İstem"
@@ -378,8 +484,15 @@ msgstr "Deniz Yüzeyi Sıcaklığı"
 msgid "Sea Temp"
 msgstr "Deniz sıcaklığı"
 #
+#, fuzzy
+msgid "Sea Temperature"
+msgstr "Deniz Yüzeyi Sıcaklığı"
+#
 msgid "Sea Temperature(surf.)"
 msgstr "Deniz Yüzeyi Sıcaklığı"
+#
+msgid "Sea or Air Temperature at Surface Level"
+msgstr ""
 #
 #
 #
@@ -395,20 +508,30 @@ msgstr "Göndericinin eMail Adresi"
 msgid "Settings"
 msgstr "Ayarlar"
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Significant Wave Height"
+msgstr "Belirgin dalga yüksekliği, m"
+#
 msgid "Single Arrow"
 msgstr ""
-#
-msgid "Slices per Update"
-msgstr "Güncelleme Aralığı"
-#
-msgid "Slices per hour"
-msgstr "Saatlik Aralıklar"
 #
 msgid "Small Size"
 msgstr ""
 #
 msgid "Spacing"
 msgstr "Aralama"
+#
+msgid "Speed"
+msgstr ""
 #
 msgid "Start Options"
 msgstr "Seçenekleri Başlat"
@@ -421,6 +544,21 @@ msgstr "En güncel GRIB dosyasıyla başla"
 #
 msgid "Stop"
 msgstr "Dur"
+#
+msgid "Surface Current Direction"
+msgstr ""
+#
+msgid "Surface Current Speed"
+msgstr ""
+#
+#, fuzzy
+msgid "Temperature"
+msgstr "Hava Sıcaklığı (2m)"
+#
+msgid ""
+"The Grib file you are opening contains a moving Grib Zone.\n"
+"Interpolation is not supported for this type of file"
+msgstr ""
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -441,11 +579,18 @@ msgstr ""
 msgid "This is your zyGrib's forum access Login"
 msgstr "Bu sizin zyGrib's forumuna giriş parolanızdır."
 #
+#, fuzzy
+msgid "Time Interval"
+msgstr "Aralık"
+#
 msgid "Time Options"
 msgstr "Zaman Seçenekleri"
 #
 msgid "Time Range"
 msgstr "Zaman Aralığı"
+#
+msgid "Top of Grib File"
+msgstr ""
 #
 msgid "UTC"
 msgstr "UTC"
@@ -464,6 +609,9 @@ msgstr "Geçici Renkleri Kullan"
 msgid "Use High Definition Graphics"
 msgstr "Yüksek Çözünürlükte Grafik Kullan."
 #
+msgid "WIND data at"
+msgstr ""
+#
 msgid "Warning!"
 msgstr "Uyarı!"
 #
@@ -473,8 +621,18 @@ msgstr "Uyarı: Boş klasör!"
 msgid "Waves"
 msgstr "Dalga"
 #
-msgid "WavesModel"
-msgstr "Dalga Modeli"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Waves Direction"
+msgstr "Rüzgar yönü"
 #
 msgid "Weather table"
 msgstr ""
@@ -482,8 +640,38 @@ msgstr ""
 msgid "Wind"
 msgstr "Rüzgar"
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Wind Direction at"
+msgstr "Rüzgar yönü"
+#
 msgid "Wind Gust"
 msgstr "Rüzgar Kaçağı"
+#
+#, fuzzy
+msgid "Wind Gust at"
+msgstr "Rüzgar Kaçağı"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Wind Speed at"
+msgstr "Rüzgar hızı, Kts."
 #
 msgid "Write and send eMail request"
 msgstr "eMail oluşturup gönderin"
@@ -525,6 +713,9 @@ msgstr ""
 msgid "Zoom To Center"
 msgstr ""
 #
+msgid "h"
+msgstr ""
+#
 msgid "inHG"
 msgstr "CivaBasıncında"
 #
@@ -540,6 +731,9 @@ msgstr "metre/saniye"
 msgid "mmHG"
 msgstr "mmCivaBasıncı"
 #
+msgid "mn"
+msgstr ""
+#
 msgid "mph"
 msgstr "mil/saat"
 #
@@ -551,6 +745,11 @@ msgstr "zyGrib Kodu"
 #
 msgid "zyGrib Login"
 msgstr "zyGrib Bağlan"
+#
+#
+#~ msgid " Mo )"
+#~ msgstr " En küçük )"
+#
 #
 #
 #
@@ -578,6 +777,7 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB Seçenekleri"
@@ -589,8 +789,10 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -635,11 +837,13 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -667,11 +871,13 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Ozean-Strömung bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -697,6 +903,7 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr ""
@@ -705,20 +912,9 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Pressure (MSL)"
-#~ msgstr "Basınç, mBar"
-#
-#
 #~ msgid "Range"
 #~ msgstr "Aralık"
+#
 #
 #
 #
@@ -773,25 +969,23 @@ msgstr "zyGrib Bağlan"
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "GRIB simgesini göster"
 #
 #
 #
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Sign.Wave Height"
-#~ msgstr "Belirgin dalga yüksekliği, m"
-#
-#
 #~ msgid "Size"
 #~ msgstr "Büyüklük"
+#
+#
+#~ msgid "Slices per Update"
+#~ msgstr "Güncelleme Aralığı"
+#
+#
+#~ msgid "Slices per hour"
+#~ msgstr "Saatlik Aralıklar"
+#
 #
 #
 #
@@ -829,17 +1023,9 @@ msgstr "zyGrib Bağlan"
 #~ msgstr "DİKKAT: Acele GRIB verileri %d saat eskidir."
 #
 #
+#~ msgid "WavesModel"
+#~ msgstr "Dalga Modeli"
 #
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Wind Direction(10m)"
-#~ msgstr "Rüzgar yönü"
 #
 #
 #
@@ -853,16 +1039,3 @@ msgstr "zyGrib Bağlan"
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Rüzgar yönü"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Wind Speed(10m)"
-#~ msgstr "Rüzgar hızı, Kts."
