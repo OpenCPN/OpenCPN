@@ -249,7 +249,6 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 {
     wxPoint r;
     wxRect hilitebox;
-    unsigned char transparency = 100;
 
     cc1->GetCanvasPointPix( m_lat, m_lon, &r );
 
@@ -299,10 +298,18 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
     hilitebox.y -= r.y;
     hilitebox.Inflate( 2 );
 
+    wxColour hi_colour = pen->GetColour();
+    unsigned char transparency = 100;
+    if( m_bIsBeingEdited ){
+        hi_colour = GetGlobalColor( _T ( "YELO1" ) );
+        transparency = 150;
+    }
+    
+        
     //  Highlite any selected point
-    if( m_bPtIsSelected ) {
+    if( m_bPtIsSelected || m_bIsBeingEdited) {
         AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, 0.0,
-                pen->GetColour(), transparency );
+                hi_colour, transparency );
     }
 
     bool bDrawHL = false;
