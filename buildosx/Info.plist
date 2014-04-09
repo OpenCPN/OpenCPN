@@ -11,21 +11,17 @@
 	<key>CFBundleIconFile</key>
 	<string>opencpn.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string></string>
+	<string>opencpn.org</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
-	<key>CFBundleLongVersionString</key>
-	<string></string>
 	<key>CFBundleName</key>
-	<string></string>
+	<string>OpenCPN</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string></string>
+	<string>3.3.1606</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string></string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>LSRequiresCarbon</key>
