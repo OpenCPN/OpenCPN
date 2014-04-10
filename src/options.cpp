@@ -2844,6 +2844,7 @@ void options::OnApplyClick( wxCommandEvent& event )
             ps52plib->GenerateStateHash();
 
             g_bopengl = temp_bopengl;
+            m_returnChanges |= GL_CHANGED;
         }
 
         enum _DisCat nset = OTHER;

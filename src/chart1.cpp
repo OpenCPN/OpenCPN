@@ -4299,19 +4299,21 @@ int MyFrame::DoOptionsDialog()
 
 int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
 {
+    //    Capture the name of the currently open chart
+    wxString chart_file_name;
+    if( cc1->GetQuiltMode() ) {
+        int dbi = cc1->GetQuiltRefChartdbIndex();
+        chart_file_name = ChartData->GetDBChartFileName( dbi );
+    } else
+        if( Current_Ch )
+            chart_file_name = Current_Ch->GetFullPath();
+        
     ArrayOfCDI *pWorkDirArray = dialog->GetWorkDirListPtr();
+
     if( ( rr & VISIT_CHARTS )
             && ( ( rr & CHANGE_CHARTS ) || ( rr & FORCE_UPDATE ) || ( rr & SCAN_UPDATE ) ) ) {
 
-        //    Capture the currently open chart
-        wxString chart_file_name;
-        if( cc1->GetQuiltMode() ) {
-            int dbi = cc1->GetQuiltRefChartdbIndex();
-            chart_file_name = ChartData->GetDBChartFileName( dbi );
-        } else
-            if( Current_Ch ) chart_file_name = Current_Ch->GetFullPath();
-
-        UpdateChartDatabaseInplace( *pWorkDirArray, ( ( rr & FORCE_UPDATE ) == FORCE_UPDATE ),
+       UpdateChartDatabaseInplace( *pWorkDirArray, ( ( rr & FORCE_UPDATE ) == FORCE_UPDATE ),
                 true, *pChartListFileName );
 
         //    Re-open the last open chart
@@ -4387,6 +4389,13 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
     if(cc1)
         SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
+     if(rr & GL_CHANGED){    
+        //    Refreseh the chart display, after flushing cache.
+        //      This will allow all charts to recognise new OpenGL configuration, if any
+        int dbii = ChartData->FinddbIndex( chart_file_name );
+        ChartsRefresh( dbii, cc1->GetVP(), true );
+    }
+    
     return 0;
 }
 
