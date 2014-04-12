@@ -8519,11 +8519,11 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 
     int nPly = ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
 
-    if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_S57 ) dc.SetPen(
-            wxPen( GetGlobalColor( _T ( "UINFG" ) ), 1, wxSOLID ) );
-
-    else if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_CM93 ) dc.SetPen(
-            wxPen( GetGlobalColor( _T ( "YELO1" ) ), 1, wxSOLID ) );
+    if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_CM93 )
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "YELO1" ) ), 1, wxSOLID ) );
+    
+    else if( ChartData->GetDBChartFamily( dbIndex ) == CHART_FAMILY_VECTOR )
+        dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFG" ) ), 1, wxSOLID ) );
 
     else
         dc.SetPen( wxPen( GetGlobalColor( _T ( "UINFR" ) ), 1, wxSOLID ) );
