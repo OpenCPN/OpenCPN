@@ -4,29 +4,32 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Plugin grib 2.2 OpenCPN 3.3.1328\n"
+"Project-Id-Version: Plugin grib 2.2 OpenCPN 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2014-01-30 18:54+0100\n"
+"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"PO-Revision-Date: 2014-02-23 10:15+0100\n"
 "Last-Translator: Pepo II <Pepo_II@outlok.es>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com &lt;opencpn.es@gmx.com&gt;\n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.3\n"
+"X-Generator: Poedit 1.6.4\n"
 #
 msgid " (Max size )"
 msgstr "(Max. tamaño)"
 #
-msgid " Mo )"
-msgstr " Mo )"
+msgid "300 hPa"
+msgstr ""
 #
-msgid "( Max "
-msgstr "( Max "
+msgid "500 hPa"
+msgstr ""
 #
-msgid "00N  00W"
-msgstr "00N  00W"
+msgid "700 hPa"
+msgstr ""
+#
+msgid "850 hPA"
+msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr ""
@@ -43,11 +46,29 @@ msgstr ""
 msgid "Air Temp"
 msgstr "Temp Aire"
 #
+#, fuzzy
+msgid "Air Temperature"
+msgstr ""
+"Temperatura\n"
+"Aire"
+#
+#, fuzzy
+msgid "Air Temperature at"
+msgstr ""
+"Temperatura\n"
+"Aire"
+#
 msgid "Air Temperature(2m)"
 msgstr "Temperatura Aire(2m)"
 #
-msgid "Always visible"
+msgid "Altitude"
 msgstr ""
+#
+msgid "Altitude(Pressure Altitude)"
+msgstr ""
+#
+msgid "Always visible"
+msgstr "Siempre visible"
 #
 msgid "Apply"
 msgstr "Aplicar"
@@ -65,7 +86,7 @@ msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr ""
-"Antes de enviar un email a ZyBrib debe entrar su Login y el Códifo.\n"
+"Antes de enviar un email a ZyBrib debe entrar su Login y el Código.\n"
 "Por favor visite www.zygrib.org/ y siga las instrucciones..."
 #
 msgid "Building Isobar map"
@@ -118,6 +139,9 @@ msgid "Continue..."
 msgstr "Continue..."
 #
 msgid "Controled Colours"
+msgstr "Colores controlados"
+#
+msgid "Convective Available Potential Energy"
 msgstr ""
 #
 msgid "Copy First Cumulative Missing Record"
@@ -126,10 +150,23 @@ msgstr "Copiar primero registros acumulados perdidos"
 msgid "Copy Missing Wave Records"
 msgstr "Copiar registros de onda perdidos"
 #
+#, fuzzy
+msgid "Course"
+msgstr "Horas"
+#
+msgid "Cumulative Rainfall per Hour"
+msgstr ""
+#
 #
 #
 msgid "Current"
 msgstr "Corrientes"
+#
+msgid "Current time forecast"
+msgstr ""
+#
+msgid "Data"
+msgstr ""
 #
 msgid "Data at Cursor Position:"
 msgstr "Datos en posición de cursor:"
@@ -140,12 +177,11 @@ msgstr "Datos disponibles"
 msgid "Days"
 msgstr "Días"
 #
-#, fuzzy
 msgid "Default Colour"
-msgstr "Usar Colores graduales"
+msgstr "Color por defecto"
 #
 msgid "Default Size"
-msgstr ""
+msgstr "Tamaño por defecto"
 #
 msgid "Deg"
 msgstr "Grados"
@@ -169,9 +205,14 @@ msgstr "Muestra Isotacas"
 msgid "Display Isotherms"
 msgstr "Muestra Isotermas"
 #
-#, fuzzy
 msgid "Double Arrow"
-msgstr "Flechas barradas"
+msgstr "Flecha doble"
+#
+msgid "Enter your forecasted Course"
+msgstr ""
+#
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr ""
 #
 msgid "Error:  Can't read this File!"
 msgstr "Error: ¡No puedo leer archivo!"
@@ -205,15 +246,24 @@ msgstr "Control Visualización GRIB"
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "PlugIn GRIB para OpenCPN"
 #
+#, fuzzy
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
-"Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n"
 "\n"
-"Supported GRIB file types include:\n"
-"- wind direction and speed\n"
-"- significant wave height\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
 "- sea surface temperature\n"
-"- surface current direction and speed."
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
 msgstr ""
 "PlugIn GRIB para OpenCPN\n"
 "Proporciona capacidades básicas para la superposición de archivos GRIB para "
@@ -235,6 +285,10 @@ msgid "Grib"
 msgstr "Grib"
 #
 msgid "Grib Data Table"
+msgstr "Tabla de Datos Grib"
+#
+#, fuzzy
+msgid "Grib Data at"
 msgstr "Tabla de Datos Grib"
 #
 msgid "Grib Preferences"
@@ -261,6 +315,10 @@ msgstr "Isobaras"
 msgid "Knots"
 msgstr "Nudos"
 #
+#, fuzzy
+msgid "Kts"
+msgstr "Nudos"
+#
 msgid "Load File Options"
 msgstr "Opciones carga de archivo"
 #
@@ -276,15 +334,37 @@ msgstr "Hora Local"
 msgid "Loop Mode"
 msgstr "Modo continuo"
 #
+msgid "Loop Start"
+msgstr ""
+#
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr ""
 "MAIL Error:¡ MAPI32.DLL no está instalada o no es válida en este ordenador!"
+#
+msgid "MB"
+msgstr ""
 #
 msgid "Mail"
 msgstr "Correo"
 #
 msgid "Mail To "
 msgstr "Enviar email a"
+#
+#, fuzzy
+msgid "Max"
+msgstr "( Max "
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Presión, mBar"
 #
 msgid "Meters"
 msgstr "Metros"
@@ -294,6 +374,13 @@ msgstr "Milibares"
 #
 msgid "Millimeters"
 msgstr "Milímetros"
+#
+#, fuzzy
+msgid "Minimum Spacing"
+msgstr "Espaciado"
+#
+msgid "Moving Grib"
+msgstr ""
 #
 msgid "N/A"
 msgstr "N/A"
@@ -332,14 +419,34 @@ msgstr "Por favor ajuste Zoom o Escala para ver capas invisibles:"
 msgid "Pressure"
 msgstr "Presión"
 #
+#
+#
+#, fuzzy
+msgid "Pressure Altitude"
+msgstr "Presión"
+#
+#, c-format
+msgid "Pressure Altitude (in %s) or Standard Height Selection."
+msgstr ""
+#
 msgid "Previous"
 msgstr "Previo"
 #
 msgid "Profile"
 msgstr "Perfil"
 #
+#, fuzzy
+msgid "Proportional Arrow"
+msgstr "Dirección flechas"
+#
 msgid "Rainfall"
 msgstr "Lluvia"
+#
+msgid "Rel. Humid."
+msgstr ""
+#
+msgid "Relative Humidity"
+msgstr ""
 #
 msgid "Request"
 msgstr "Petición"
@@ -383,8 +490,17 @@ msgstr ""
 msgid "Sea Temp"
 msgstr "Temp mar"
 #
+#, fuzzy
+msgid "Sea Temperature"
+msgstr ""
+"Temperatura\n"
+"mar"
+#
 msgid "Sea Temperature(surf.)"
 msgstr "Temperatura mar(sup.)"
+#
+msgid "Sea or Air Temperature at Surface Level"
+msgstr ""
 #
 #
 #
@@ -400,20 +516,29 @@ msgstr "Remitente del email "
 msgid "Settings"
 msgstr "Ajustes"
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Significant Wave Height"
+msgstr "Altura de Ola Significativa, m"
+#
 msgid "Single Arrow"
-msgstr ""
-#
-msgid "Slices per Update"
-msgstr "Trozos por actualización"
-#
-msgid "Slices per hour"
-msgstr "Trozos por hora"
+msgstr "Flecha sencilla"
 #
 msgid "Small Size"
-msgstr ""
+msgstr "Tamaño pequeño"
 #
 msgid "Spacing"
 msgstr "Espaciado"
+#
+msgid "Speed"
+msgstr ""
 #
 msgid "Start Options"
 msgstr "Opciones al Iniciar"
@@ -426,6 +551,23 @@ msgstr "Iniciar en la previsión más próxima a ahora"
 #
 msgid "Stop"
 msgstr "Parar"
+#
+msgid "Surface Current Direction"
+msgstr ""
+#
+msgid "Surface Current Speed"
+msgstr ""
+#
+#, fuzzy
+msgid "Temperature"
+msgstr ""
+"Temperatura\n"
+"Aire"
+#
+msgid ""
+"The Grib file you are opening contains a moving Grib Zone.\n"
+"Interpolation is not supported for this type of file"
+msgstr ""
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -446,11 +588,18 @@ msgstr ""
 msgid "This is your zyGrib's forum access Login"
 msgstr "Este es su Login de acceso al foro de ZyGrib"
 #
+#, fuzzy
+msgid "Time Interval"
+msgstr "Intervalo"
+#
 msgid "Time Options"
 msgstr "Opciones de hora"
 #
 msgid "Time Range"
 msgstr "Intervalo de tiempo"
+#
+msgid "Top of Grib File"
+msgstr ""
 #
 msgid "UTC"
 msgstr "UTC"
@@ -469,6 +618,9 @@ msgstr "Usar Colores graduales"
 msgid "Use High Definition Graphics"
 msgstr "Usar Gráficos Alta Definición"
 #
+msgid "WIND data at"
+msgstr ""
+#
 msgid "Warning!"
 msgstr "¡Atención!"
 #
@@ -478,8 +630,17 @@ msgstr "Atención: ¡directorio vacío!"
 msgid "Waves"
 msgstr "Olas"
 #
-msgid "WavesModel"
-msgstr "Modelo de olas"
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Waves Direction"
+msgstr "Dirección Viento"
 #
 msgid "Weather table"
 msgstr "Tabla del tiempo"
@@ -487,8 +648,36 @@ msgstr "Tabla del tiempo"
 msgid "Wind"
 msgstr "Viento"
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Wind Direction at"
+msgstr "Dirección Viento"
+#
 msgid "Wind Gust"
 msgstr "Rachas Viento"
+#
+#, fuzzy
+msgid "Wind Gust at"
+msgstr "Rachas Viento"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Wind Speed at"
+msgstr "Velocidad Viento, m/seg."
 #
 msgid "Write and send eMail request"
 msgstr "Escribir y enviar petición por email"
@@ -531,7 +720,10 @@ msgstr ""
 "Guardar o Cancelar para terminar... o Continuar..."
 #
 msgid "Zoom To Center"
-msgstr "Aumenta el Centro"
+msgstr "Centra imagen"
+#
+msgid "h"
+msgstr ""
 #
 msgid "inHG"
 msgstr "inHG"
@@ -548,6 +740,9 @@ msgstr "m/s"
 msgid "mmHG"
 msgstr "mmHG"
 #
+msgid "mn"
+msgstr ""
+#
 msgid "mph"
 msgstr "mph"
 #
@@ -559,6 +754,11 @@ msgstr "Código zyGrib"
 #
 msgid "zyGrib Login"
 msgstr "Login zyGrib"
+#
+#
+#~ msgid " Mo )"
+#~ msgstr " Mo )"
+#
 #
 #
 #
@@ -581,6 +781,11 @@ msgstr "Login zyGrib"
 #~ msgstr "Datos GRIB"
 #
 #
+#~ msgid "00N  00W"
+#~ msgstr "00N  00W"
+#
+#
+#
 #
 #
 #
@@ -596,8 +801,10 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -640,9 +847,11 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Ajuste Zoom o Escala para ver SEATEMP GRIB eliminado"
+#
 #
 #
 #
@@ -664,9 +873,11 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Ajuste Zoom o Escala para ver CRAIN GRIB eliminado"
+#
 #
 #
 #
@@ -688,21 +899,11 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Ajuste Zoom o Escala para ver CRAIN GRIB eliminado"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Pressure (MSL)"
-#~ msgstr "Presión, mBar"
 #
 #
 #~ msgid "Range"
@@ -725,9 +926,11 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Preferencias GRIB"
+#
 #
 #
 #
@@ -790,36 +993,27 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Mostrar metros/seg para Velocidad Viento"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Sign.Wave Height"
-#~ msgstr "Altura de Ola Significativa, m"
 #
 #
 #~ msgid "Size"
 #~ msgstr "Tamaño"
 #
 #
+#~ msgid "Slices per Update"
+#~ msgstr "Trozos por actualización"
 #
 #
+#~ msgid "Slices per hour"
+#~ msgstr "Trozos por hora"
 #
 #
+#~ msgid "WavesModel"
+#~ msgstr "Modelo de olas"
 #
-#
-#
-#, fuzzy
-#~ msgid "Wind Direction(10m)"
-#~ msgstr "Dirección Viento"
 #
 #
 #
@@ -832,15 +1026,3 @@ msgstr "Login zyGrib"
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Dirección Viento"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Wind Speed(10m)"
-#~ msgstr "Velocidad Viento, m/seg."

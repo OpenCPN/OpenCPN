@@ -5,17 +5,18 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.2.1110\n"
+"Project-Id-Version: OpenCPN, Dashboard.\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2013-10-18 21:08+0100\n"
+"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"PO-Revision-Date: 2014-02-20 01:45+0100\n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
-"Language-Team: \n"
-"Language: \n"
+"Language-Team: Gilletarom <contact@gilletarom.fr>\n"
+"Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.6.3\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 #
 msgid " mag"
 msgstr " magnét."
@@ -44,12 +45,11 @@ msgstr "V. app. : Vitesse"
 msgid "Appearance"
 msgstr "Apparence"
 #
-#, fuzzy
 msgid "Barometric history"
-msgstr "Historique du vent"
+msgstr "Historique de la pression"
 #
 msgid "Barometric pressure"
-msgstr ""
+msgstr "Pression"
 #
 msgid "Boat speed units:"
 msgstr "Unité de vitesse du bateau :"
@@ -60,9 +60,8 @@ msgstr "COG"
 msgid "Caption:"
 msgstr "Titre :"
 #
-#, fuzzy
 msgid "Centimeters"
-msgstr "Kilomètres"
+msgstr "Centimètres"
 #
 msgid "Clock"
 msgstr "Horloge"
@@ -81,7 +80,7 @@ msgid ""
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 "Complément \"Tableau de bord\" pour OpenCPN\n"
-"Fournit des instruments de navigation à partir de données NMEA."
+"Fournit des instruments de navigation qui exploitent les données NMEA."
 #
 msgid "Dashboard preferences"
 msgstr "Préférences du tableau de bord"
@@ -95,9 +94,8 @@ msgstr "Supprimer"
 msgid "Depth"
 msgstr "Profondeur"
 #
-#, fuzzy
 msgid "Depth units:"
-msgstr "Unités de distance"
+msgstr "Unités de profondeur  : "
 #
 msgid "Distance units:"
 msgstr "Unités de distance"
@@ -115,10 +113,10 @@ msgid "ESE"
 msgstr "ESE"
 #
 msgid "Fathoms"
-msgstr ""
+msgstr "Brasses"
 #
 msgid "Feet"
-msgstr ""
+msgstr "Pieds"
 #
 msgid "Fonts"
 msgstr "Polices"
@@ -133,13 +131,13 @@ msgid "GPS in View"
 msgstr "Satellites visibles"
 #
 msgid "Honor OpenCPN settings"
-msgstr "Honor OpenCPN settings"
+msgstr "Utiliser les choix faits dans OpenCPN"
 #
 msgid "Horizontal"
 msgstr "Horizontal"
 #
 msgid "Inches"
-msgstr ""
+msgstr "Pouces"
 #
 msgid "Instruments"
 msgstr "Instruments"
@@ -244,9 +242,8 @@ msgstr "Titre :"
 msgid "Trip Log"
 msgstr "Log du voyage"
 #
-#, fuzzy
 msgid "True Compass"
-msgstr "Compas"
+msgstr "Compas vrai"
 #
 msgid "True HDG"
 msgstr "Cap vrai"
@@ -267,7 +264,7 @@ msgid "True Wind Speed"
 msgstr "V. vrai : Vitesse"
 #
 msgid "Units, Ranges, Formats"
-msgstr "Unités, Ranges, Formats"
+msgstr "Unités, Formats"
 #
 msgid "Up"
 msgstr "Monter"
@@ -307,45 +304,3 @@ msgstr "mph"
 #
 msgid "show this dashboard"
 msgstr "Montrer ce tableau de bord"
-#
-#
-#
-#
-#~ msgid "Airtemp"
-#~ msgstr "Temp. de l'air"
-#
-#
-#
-#
-#~ msgid "Apparent wind"
-#~ msgstr "Vent apparent"
-#
-#
-#
-#
-#~ msgid "COG+HDG Compass"
-#~ msgstr "Compas COG & HDG"
-#
-#
-#
-#
-#~ msgid "Edit"
-#~ msgstr "Editer"
-#
-#
-#
-#
-#~ msgid "True wind"
-#~ msgstr "Vent vrai"
-#
-#
-#
-#
-#~ msgid "Wind angle"
-#~ msgstr "Angle de vent"
-#
-#
-#
-#
-#~ msgid "mag"
-#~ msgstr "Magnétique"

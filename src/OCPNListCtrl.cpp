@@ -78,7 +78,7 @@ wxString OCPNListCtrl::GetTargetColumnData( AIS_Target_Data *pAISTarget, long co
                 break;
                 
             case tlNAME:
-                if( ( pAISTarget->Class == AIS_BASE ) || ( pAISTarget->Class == AIS_SART ) || pAISTarget->b_SarAircraftPosnReport)
+                if( (!pAISTarget->b_nameValid && ( pAISTarget->Class == AIS_BASE )) || ( pAISTarget->Class == AIS_SART ) || pAISTarget->b_SarAircraftPosnReport)
                     ret = _("-");
                 else {
                     wxString uret = trimAISField( pAISTarget->ShipName );

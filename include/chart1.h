@@ -47,6 +47,9 @@ WX_DEFINE_ARRAY_INT(int, ArrayOfInts);
 //    Global Static error reporting function
 extern "C" void MyCPLErrorHandler( CPLErr eErrClass, int nError,
                              const char * pszErrorMsg );
+
+wxFont *GetOCPNScaledFont( wxString item, int default_size );
+
 #endif
 
 wxArrayString *EnumerateSerialPorts(void);

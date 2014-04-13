@@ -8,15 +8,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-16 13:35+0100\n"
+"POT-Creation-Date: 2014-04-05 11:44-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/GribUIDialog.cpp:130 src/GribUIDialog.cpp:887
+#: src/GribUIDialog.cpp:130 src/GribUIDialog.cpp:889
 #: src/GribUIDialogBase.cpp:52
 msgid "Play"
 msgstr ""
@@ -35,8 +36,8 @@ msgid ""
 "Interpolation is not supported for this type of file"
 msgstr ""
 
-#: src/GribUIDialog.cpp:209 src/GribSettingsDialog.cpp:413 src/grib_pi.cpp:542
-#: src/GribRequestDialog.cpp:277
+#: src/GribUIDialog.cpp:209 src/GribSettingsDialog.cpp:416 src/grib_pi.cpp:550
+#: src/GribRequestDialog.cpp:281
 msgid "Warning!"
 msgstr ""
 
@@ -44,50 +45,50 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: src/GribUIDialog.cpp:543 src/GribUIDialog.cpp:544 src/GribUIDialog.cpp:545
-#: src/GribUIDialog.cpp:631 src/GribUIDialog.cpp:632 src/GribUIDialog.cpp:645
-#: src/GribUIDialog.cpp:658 src/GribUIDialog.cpp:676 src/GribUIDialog.cpp:686
-#: src/GribUIDialog.cpp:709 src/GribUIDialog.cpp:710 src/GribUIDialog.cpp:725
-#: src/GribUIDialog.cpp:738 src/GribUIDialog.cpp:750 src/GribUIDialog.cpp:762
-#: src/GribUIDialog.cpp:774 src/GribUIDialog.cpp:786 src/GribUIDialog.cpp:798
-#: src/GribUIDialog.cpp:809
+#: src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:538 src/GribUIDialog.cpp:539
+#: src/GribUIDialog.cpp:633 src/GribUIDialog.cpp:634 src/GribUIDialog.cpp:647
+#: src/GribUIDialog.cpp:660 src/GribUIDialog.cpp:678 src/GribUIDialog.cpp:688
+#: src/GribUIDialog.cpp:711 src/GribUIDialog.cpp:712 src/GribUIDialog.cpp:727
+#: src/GribUIDialog.cpp:740 src/GribUIDialog.cpp:752 src/GribUIDialog.cpp:764
+#: src/GribUIDialog.cpp:776 src/GribUIDialog.cpp:788 src/GribUIDialog.cpp:800
+#: src/GribUIDialog.cpp:811
 msgid "N/A"
 msgstr ""
 
-#: src/GribUIDialog.cpp:580
+#: src/GribUIDialog.cpp:569
 msgid "Wind Speed at"
 msgstr ""
 
-#: src/GribUIDialog.cpp:581
+#: src/GribUIDialog.cpp:570
 msgid "Wind Direction at"
 msgstr ""
 
-#: src/GribUIDialog.cpp:584
+#: src/GribUIDialog.cpp:573
 msgid "Wind Gust at"
 msgstr ""
 
-#: src/GribUIDialog.cpp:589
+#: src/GribUIDialog.cpp:578
 msgid "Air Temperature at"
 msgstr ""
 
-#: src/GribUIDialog.cpp:591
+#: src/GribUIDialog.cpp:580
 #, c-format
 msgid "Pressure Altitude (in %s) or Standard Height Selection."
 msgstr ""
 
-#: src/GribUIDialog.cpp:876
+#: src/GribUIDialog.cpp:878
 msgid "Stop"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1101
+#: src/GribUIDialog.cpp:1103
 msgid "Select a GRIB file"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1314
+#: src/GribUIDialog.cpp:1316
 msgid "Error:  File does not exist!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1327
+#: src/GribUIDialog.cpp:1329
 msgid "Error:  Can't read this File!"
 msgstr ""
 
@@ -157,7 +158,7 @@ msgstr ""
 
 #: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:95
 #: src/GribUIDialogBase.cpp:498 src/GribUIDialogBase.cpp:877
-#: src/GribOverlayFactory.cpp:748 src/GribTable.cpp:120
+#: src/GribOverlayFactory.cpp:733 src/GribTable.cpp:120
 msgid "Wind"
 msgstr ""
 
@@ -227,26 +228,26 @@ msgstr ""
 msgid "Apply"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:412
+#: src/GribSettingsDialog.cpp:415
 msgid ""
 "This file contains data for particular time intervals but you have chosen to "
 "display different intervals.\n"
 "Please consider that the values will be interpolated."
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:487 src/GribSettingsDialog.cpp:495
+#: src/GribSettingsDialog.cpp:490 src/GribSettingsDialog.cpp:498
 msgid "Display Isotachs"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:502
+#: src/GribSettingsDialog.cpp:505
 msgid "Display Isobars"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:520
+#: src/GribSettingsDialog.cpp:523
 msgid "Display Isotherms"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:527
+#: src/GribSettingsDialog.cpp:530
 msgid "Display Iso CAPE"
 msgstr ""
 
@@ -412,6 +413,10 @@ msgstr ""
 
 #: src/GribUIDialogBase.cpp:479
 msgid "Double Arrow"
+msgstr ""
+
+#: src/GribUIDialogBase.cpp:479
+msgid "Proportional Arrow"
 msgstr ""
 
 #: src/GribUIDialogBase.cpp:485
@@ -646,15 +651,15 @@ msgstr ""
 msgid "WIND data at"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:748
+#: src/GribOverlayFactory.cpp:733
 msgid "Building Isobar map"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:921 src/GribOverlayFactory.cpp:946
+#: src/GribOverlayFactory.cpp:908 src/GribOverlayFactory.cpp:933
 msgid "Please Zoom or Scale Out to view invisible overlays:"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:929
+#: src/GribOverlayFactory.cpp:916
 msgid "Rotated overlays suppressed in DC mode"
 msgstr ""
 
@@ -686,11 +691,11 @@ msgid ""
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
 msgstr ""
 
-#: src/grib_pi.cpp:281
+#: src/grib_pi.cpp:283
 msgid "Weather table"
 msgstr ""
 
-#: src/grib_pi.cpp:541
+#: src/grib_pi.cpp:549
 msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
@@ -713,81 +718,81 @@ msgid ""
 "Temperature"
 msgstr ""
 
-#: src/GribRequestDialog.cpp:84 src/GribRequestDialog.cpp:556
+#: src/GribRequestDialog.cpp:86 src/GribRequestDialog.cpp:563
 msgid "Send"
 msgstr ""
 
-#: src/GribRequestDialog.cpp:85
+#: src/GribRequestDialog.cpp:87
 msgid "Save"
 msgstr ""
 
-#: src/GribRequestDialog.cpp:90
+#: src/GribRequestDialog.cpp:92
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr ""
 
-#: src/GribRequestDialog.cpp:91
+#: src/GribRequestDialog.cpp:93
 msgid "This is your zyGrib's forum access Login"
 msgstr ""
 
-#: src/GribRequestDialog.cpp:92
+#: src/GribRequestDialog.cpp:94
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
 
-#: src/GribRequestDialog.cpp:93
+#: src/GribRequestDialog.cpp:95
 msgid "Enter your forescasted Speed (in Knots)"
 msgstr ""
 
-#: src/GribRequestDialog.cpp:94
+#: src/GribRequestDialog.cpp:96
 msgid "Enter your forecasted Course"
 msgstr ""
 
-#: src/GribRequestDialog.cpp:276
+#: src/GribRequestDialog.cpp:280
 msgid ""
 "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
-"Don't forget that beyond the first 8 days, the resolution will be only 2.5"
-"\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
 msgstr ""
 
-#: src/GribRequestDialog.cpp:540 src/GribRequestDialog.cpp:543
+#: src/GribRequestDialog.cpp:547 src/GribRequestDialog.cpp:550
 msgid "MB"
 msgstr ""
 
-#: src/GribRequestDialog.cpp:543
+#: src/GribRequestDialog.cpp:550
 msgid "Max"
 msgstr ""
 
-#: src/GribRequestDialog.cpp:566
+#: src/GribRequestDialog.cpp:573
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr ""
 
-#: src/GribRequestDialog.cpp:567
+#: src/GribRequestDialog.cpp:574
 msgid ""
 "The file size limit is overcome!\n"
 "You can zoom in and/or change parameters..."
 msgstr ""
 
-#: src/GribRequestDialog.cpp:580 src/GribRequestDialog.cpp:612
+#: src/GribRequestDialog.cpp:587 src/GribRequestDialog.cpp:619
 msgid "Continue..."
 msgstr ""
 
-#: src/GribRequestDialog.cpp:597 src/GribRequestDialog.cpp:601
+#: src/GribRequestDialog.cpp:604 src/GribRequestDialog.cpp:608
 msgid ""
 "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
 msgstr ""
 
-#: src/GribRequestDialog.cpp:604
+#: src/GribRequestDialog.cpp:611
 msgid ""
 "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
 msgstr ""
 
-#: src/GribRequestDialog.cpp:609
+#: src/GribRequestDialog.cpp:616
 msgid ""
 "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"

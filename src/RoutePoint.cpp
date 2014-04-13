@@ -249,7 +249,6 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
 {
     wxPoint r;
     wxRect hilitebox;
-    unsigned char transparency = 100;
 
     cc1->GetCanvasPointPix( m_lat, m_lon, &r );
 
@@ -299,10 +298,18 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
     hilitebox.y -= r.y;
     hilitebox.Inflate( 2 );
 
+    wxColour hi_colour = pen->GetColour();
+    unsigned char transparency = 100;
+    if( m_bIsBeingEdited ){
+        hi_colour = GetGlobalColor( _T ( "YELO1" ) );
+        transparency = 150;
+    }
+    
+        
     //  Highlite any selected point
-    if( m_bPtIsSelected ) {
+    if( m_bPtIsSelected || m_bIsBeingEdited) {
         AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, 0.0,
-                pen->GetColour(), transparency );
+                hi_colour, transparency );
     }
 
     bool bDrawHL = false;
@@ -373,16 +380,22 @@ bool RoutePoint::IsSame( RoutePoint *pOtherRP )
 
 bool RoutePoint::SendToGPS(const wxString & com_name, wxGauge *pProgress)
 {
-    bool result = false;
-    if( g_pMUX ) result = g_pMUX->SendWaypointToGPS( this, com_name, pProgress );
+    int result = 0;
+    if( g_pMUX )
+        result = g_pMUX->SendWaypointToGPS( this, com_name, pProgress );
 
     wxString msg;
-    if( result ) msg = _("Waypoint(s) Uploaded successfully.");
-    else
-        msg = _("Error on Waypoint Upload.  Please check logfiles...");
+    if( 0 == result )
+        msg = _("Waypoint(s) Uploaded successfully.");
+    else{
+        if( result == ERR_GARMIN_INITIALIZE )
+            msg = _("Error on Waypoint Upload.  Garmin GPS not connected");
+        else               
+            msg = _("Error on Waypoint Upload.  Please check logfiles...");
+    }
 
     OCPNMessageBox( NULL, msg, _("OpenCPN Info"), wxOK | wxICON_INFORMATION );
 
-    return result;
+    return (result == 0);
 }
 

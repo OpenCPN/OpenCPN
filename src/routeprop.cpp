@@ -349,23 +349,21 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
 
     m_pEnroutePoint = NULL;
     m_bStartNow = false;
-
-    /*
-     wxScrollingDialog::Init();
-
-     SetLayoutAdaptation(true);
-     SetLayoutAdaptationLevel(2);
-
-     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER | wxVSCROLL;
-     wxScrollingDialog::Create( parent, id, caption, pos, size,wstyle );
-     */
     long wstyle = style;
 #ifdef __WXOSX__
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
+    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
+    SetFont( *qFont );
+    
     Create( parent, id, caption, pos, size, wstyle );
-    GetSizer()->SetSizeHints( this );
+
+    //  Make an estimate of the dialog size, without scrollbars showing
+    wxSize esize;
+    esize.x = GetCharWidth() * 110;
+    esize.y = GetCharHeight() * 40;
+    SetSize( esize );    
     Centre();
 }
 
@@ -628,13 +626,19 @@ bool RouteProp::Create( wxWindow* parent, wxWindowID id, const wxString& caption
 
 void RouteProp::CreateControls()
 {
-    ////@begin RouteProp content construction
 
-    RouteProp* itemDialog1 = this;
+    wxBoxSizer* itemBoxSizer1 = new wxBoxSizer( wxVERTICAL );
+    SetSizer( itemBoxSizer1 );
 
+    itemDialog1 = new wxScrolledWindow( this, wxID_ANY,
+                                      wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL);
+    itemDialog1->SetScrollRate(5, 5);
+    
+    itemBoxSizer1->Add( itemDialog1, 1, wxEXPAND | wxALL, 0 );
+    
     wxBoxSizer* itemBoxSizer2 = new wxBoxSizer( wxVERTICAL );
     itemDialog1->SetSizer( itemBoxSizer2 );
-
+    
     wxStaticBox* itemStaticBoxSizer3Static = new wxStaticBox( itemDialog1, wxID_ANY,
             _("Properties") );
     wxStaticBoxSizer* itemStaticBoxSizer3 = new wxStaticBoxSizer( itemStaticBoxSizer3Static,
@@ -729,7 +733,7 @@ void RouteProp::CreateControls()
     bSizer2->Add( pDispTz, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM,
             5 );
 
-    m_staticText1 = new wxStaticText( this, wxID_ANY, _("Color:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color:"), wxDefaultPosition, wxDefaultSize,
             0 );
     m_staticText1->Wrap( -1 );
     bSizer2->Add( m_staticText1, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -739,12 +743,12 @@ void RouteProp::CreateControls()
             _("Light Gray"), _("Dark Gray"), _("Red"), _("Green"), _("Yellow"), _("Blue"),
             _("Magenta"), _("Cyan"), _("White") };
     int m_chColorNChoices = sizeof( m_chColorChoices ) / sizeof(wxString);
-    m_chColor = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chColorNChoices,
+    m_chColor = new wxChoice( itemDialog1, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chColorNChoices,
             m_chColorChoices, 0 );
     m_chColor->SetSelection( 0 );
     bSizer2->Add( m_chColor, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
-    m_staticText2 = new wxStaticText( this, wxID_ANY, _("Style:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Style:"), wxDefaultPosition, wxDefaultSize,
             0 );
     m_staticText2->Wrap( -1 );
     bSizer2->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -752,12 +756,12 @@ void RouteProp::CreateControls()
     wxString m_chStyleChoices[] = { _("Default"), _("Solid"), _("Dot"), _("Long dash"),
             _("Short dash"), _("Dot dash") };
     int m_chStyleNChoices = sizeof( m_chStyleChoices ) / sizeof(wxString);
-    m_chStyle = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chStyleNChoices,
+    m_chStyle = new wxChoice( itemDialog1, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chStyleNChoices,
             m_chStyleChoices, 0 );
     m_chStyle->SetSelection( 0 );
     bSizer2->Add( m_chStyle, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
-    m_staticText2 = new wxStaticText( this, wxID_ANY, _("Width:"), wxDefaultPosition, wxDefaultSize,
+    m_staticText2 = new wxStaticText( itemDialog1, wxID_ANY, _("Width:"), wxDefaultPosition, wxDefaultSize,
             0 );
     m_staticText2->Wrap( -1 );
     bSizer2->Add( m_staticText2, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -766,7 +770,7 @@ void RouteProp::CreateControls()
             _("4 pixels"), _("5 pixels"), _("6 pixels"), _("7 pixels"), _("8 pixels"),
             _("9 pixels"), _("10 pixels") };
     int m_chWidthNChoices = sizeof( m_chWidthChoices ) / sizeof(wxString);
-    m_chWidth = new wxChoice( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chWidthNChoices,
+    m_chWidth = new wxChoice( itemDialog1, wxID_ANY, wxDefaultPosition, wxDefaultSize, m_chWidthNChoices,
             m_chWidthChoices, 0 );
     m_chWidth->SetSelection( 0 );
     bSizer2->Add( m_chWidth, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
@@ -778,30 +782,32 @@ void RouteProp::CreateControls()
     m_pListSizer = new wxStaticBoxSizer( itemStaticBoxSizer14Static, wxVERTICAL );
     itemBoxSizer2->Add( m_pListSizer, 1, wxEXPAND | wxALL, 5 );
 
-    wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
-    itemBoxSizer2->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
-
-     m_PrintButton = new wxButton( itemDialog1, ID_ROUTEPROP_PRINT, _("Print Route"),
+    wxBoxSizer* itemBoxSizerAux = new wxBoxSizer( wxHORIZONTAL );
+    itemBoxSizer2->Add( itemBoxSizerAux, 0, wxALIGN_LEFT | wxALL, 5 );
+    
+    m_PrintButton = new wxButton( itemDialog1, ID_ROUTEPROP_PRINT, _("Print Route"),
             wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_PrintButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+     itemBoxSizerAux->Add( m_PrintButton, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
     m_PrintButton->Enable( true );
-
 
     m_ExtendButton = new wxButton( itemDialog1, ID_ROUTEPROP_EXTEND, _("Extend Route"),
             wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_ExtendButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    itemBoxSizerAux->Add( m_ExtendButton, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
     m_ExtendButton->Enable( false );
 
     m_SplitButton = new wxButton( itemDialog1, ID_ROUTEPROP_SPLIT, _("Split Route"),
             wxDefaultPosition, wxDefaultSize, 0 );
-    itemBoxSizer16->Add( m_SplitButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    itemBoxSizerAux->Add( m_SplitButton, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
     m_SplitButton->Enable( false );
 
-    m_CancelButton = new wxButton( itemDialog1, ID_ROUTEPROP_CANCEL, _("Cancel"), wxDefaultPosition,
+    wxBoxSizer* itemBoxSizer16 = new wxBoxSizer( wxHORIZONTAL );
+    itemBoxSizer1->Add( itemBoxSizer16, 0, wxALIGN_RIGHT | wxALL, 5 );
+    
+    m_CancelButton = new wxButton( this, ID_ROUTEPROP_CANCEL, _("Cancel"), wxDefaultPosition,
             wxDefaultSize, 0 );
     itemBoxSizer16->Add( m_CancelButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
 
-    m_OKButton = new wxButton( itemDialog1, ID_ROUTEPROP_OK, _("OK"), wxDefaultPosition,
+    m_OKButton = new wxButton( this, ID_ROUTEPROP_OK, _("OK"), wxDefaultPosition,
             wxDefaultSize, 0 );
     itemBoxSizer16->Add( m_OKButton, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL | wxALL, 5 );
     m_OKButton->SetDefault();
@@ -813,31 +819,35 @@ void RouteProp::CreateControls()
             (wxObjectEventFunction) (wxEventFunction) &RouteProp::OnEvtColDragEnd );
 
 
-    //      Create the two list controls
+    //      Create the list control
     m_wpList = new wxListCtrl( itemDialog1, ID_LISTCTRL, wxDefaultPosition, wxSize( 800, 200 ),
             wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_EDIT_LABELS );
 
-    m_wpList->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, 45 );
-    m_wpList->InsertColumn( 1, _("To Waypoint"), wxLIST_FORMAT_LEFT, 120 );
-    m_wpList->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, 70 );
+    int char_size = GetCharWidth();
+    
+    m_wpList->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, char_size * 6 );
+    m_wpList->InsertColumn( 1, _("To Waypoint"), wxLIST_FORMAT_LEFT, char_size * 14 );
+    m_wpList->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, char_size * 9 );
     
     if(g_bShowMag)
-        m_wpList->InsertColumn( 3, _("Bearing (M)"), wxLIST_FORMAT_LEFT, 80 );
+        m_wpList->InsertColumn( 3, _("Bearing (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
     else
-        m_wpList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, 80 );
+        m_wpList->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, char_size * 10 );
     
-    m_wpList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, 85 );
-    m_wpList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, 90 );
-    m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, 135 );
-    m_wpList->InsertColumn( 7, _("Speed"), wxLIST_FORMAT_CENTER, 72 );
-    m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, 90 );
-    m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, 90 );   // additional columt with WP description
+    m_wpList->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( 6, _("ETE/ETD"), wxLIST_FORMAT_LEFT, char_size * 15 );
+    m_wpList->InsertColumn( 7, _("Speed"), wxLIST_FORMAT_CENTER, char_size * 9 );
+    m_wpList->InsertColumn( 8, _("Next tide event"), wxLIST_FORMAT_LEFT, char_size * 11 );
+    m_wpList->InsertColumn( 9, _("Description"), wxLIST_FORMAT_LEFT, char_size * 11 );   
     if(g_bShowMag)
-        m_wpList->InsertColumn( 10, _("Course (M)"), wxLIST_FORMAT_LEFT, 80 );       // additional columt with WP new course. Is it same like "bearing" of the next WP.
+        m_wpList->InsertColumn( 10, _("Course (M)"), wxLIST_FORMAT_LEFT, char_size * 10 );
     else
-        m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, 80 );   // additional columt with WP new course. Is it same like "bearing" of the next WP.
-    m_wpList->Hide();
+        m_wpList->InsertColumn( 10, _("Course"), wxLIST_FORMAT_LEFT, char_size * 10 );   
+    //    m_wpList->Hide();
 
+    m_pListSizer->Add( m_wpList, 2, wxEXPAND | wxALL, 5 );
+    
     Connect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK,
             wxListEventHandler(RouteProp::OnRoutePropRightClick), NULL, this );
     Connect( wxEVT_COMMAND_MENU_SELECTED,
@@ -1033,6 +1043,7 @@ void RouteProp::SetRouteAndUpdate( Route *pR )
 
     m_wpList->DeleteAllItems();
 
+#if 0    
     // Select the proper list control, and add it to List sizer
     m_pListSizer->Clear();
 
@@ -1040,12 +1051,23 @@ void RouteProp::SetRouteAndUpdate( Route *pR )
         m_wpList->Show();
         m_pListSizer->Add( m_wpList, 2, wxEXPAND | wxALL, 5 );
     }
-    GetSizer()->Fit( this );
+//    GetSizer()->Fit( this );
     GetSizer()->Layout();
+#endif
+    
 
     InitializeList();
 
     UpdateProperties();
+    
+    if( m_pRoute )
+        m_wpList->Show();
+
+//    GetSizer()->Fit( this );
+//    GetSizer()->Layout();
+        
+    Refresh( false );
+        
 }
 
 void RouteProp::InitializeList()
@@ -1141,6 +1163,10 @@ bool RouteProp::UpdateProperties()
 
     } else        // Route
     {
+        double brg, join_distance;
+        RoutePoint *first_point = m_pRoute->GetPoint( 1 );
+        DistanceBearingMercator( first_point->m_lat, first_point->m_lon, gLat, gLon, &brg, &join_distance );
+        
         //    Update the "tides event" column header
         wxListItem column_info;
         if( m_wpList->GetColumn( 8, column_info ) ) {
@@ -1184,6 +1210,12 @@ bool RouteProp::UpdateProperties()
             }
         }
 
+        if( m_bStartNow ) {
+            joining_time = wxTimeSpan::Seconds((long) wxRound( ( join_distance * 3600. ) / m_planspeed ) );
+            double join_seconds = joining_time.GetSeconds().ToDouble();
+            total_seconds += join_seconds;
+        }
+        
         if( m_starttime.IsValid() ) {
             wxString s;
             if( m_bStartNow ) {
@@ -1201,8 +1233,13 @@ bool RouteProp::UpdateProperties()
         if( IsThisRouteExtendable() ) m_ExtendButton->Enable( true );
 
         //  Total length
+        double total_length = m_pRoute->m_route_length;
+        if( m_bStartNow ) {
+            total_length += join_distance;
+        }
+            
         wxString slen;
-        slen.Printf( wxT("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( m_pRoute->m_route_length ) );
+        slen.Printf( wxT("%5.2f ") + getUsrDistanceUnit(), toUsrDistance( total_length ) );
 
         if( !m_pEnroutePoint ) m_TotalDistCtl->SetValue( slen );
         else
@@ -1652,7 +1689,9 @@ void RouteProp::OnRoutepropCancelClick( wxCommandEvent& event )
     }
 
     if( b_found_route ) m_pRoute->ClearHighlights();
-
+    
+    m_bStartNow = false;
+    
     Hide();
     cc1->Refresh( false );
 
@@ -1754,19 +1793,29 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
+    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
+    SetFont( *qFont );
+    
     Create( parent, id, title, pos, size, wstyle );
 
-    SetSizeHints( wxDefaultSize, wxDefaultSize );
 
     wxBoxSizer* bSizer1;
     bSizer1 = new wxBoxSizer( wxVERTICAL );
-
+    SetSizer( bSizer1 );
+    bSizer1->SetSizeHints( this );   // set size hints to honour minimum size
+    
     m_notebookProperties = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
-    m_panelBasicProperties = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition,
-            wxDefaultSize, wxTAB_TRAVERSAL );
+    
+    m_panelBasicProperties = new wxScrolledWindow( m_notebookProperties, wxID_ANY,
+                                                   wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL | wxTAB_TRAVERSAL);
+//    m_panelBasicProperties->SetScrollRate(5, 5);
+    
+    m_notebookProperties->AddPage( m_panelBasicProperties, _("Basic"), true );
+    
     wxBoxSizer* bSizerBasicProperties;
     bSizerBasicProperties = new wxBoxSizer( wxVERTICAL );
-
+    m_panelBasicProperties->SetSizer( bSizerBasicProperties );
+    
     wxStaticBoxSizer* sbSizerProperties;
     sbSizerProperties = new wxStaticBoxSizer(
             new wxStaticBox( m_panelBasicProperties, wxID_ANY, _("Properties") ), wxVERTICAL );
@@ -1886,6 +1935,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     m_hyperlink17 = new wxHyperlinkCtrl( m_scrolledWindowLinks, wxID_ANY, _("wxFB Website"),
             wxT("file:///C:\\ProgramData\\opencpn\\opencpn.log"), wxDefaultPosition,
             wxDefaultSize, wxHL_DEFAULT_STYLE );
+
     m_menuLink = new wxMenu();
     wxMenuItem* m_menuItemDelete;
     m_menuItemDelete = new wxMenuItem( m_menuLink, wxID_ANY, wxString( _("Delete") ), wxEmptyString,
@@ -1908,8 +1958,6 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizerLinks->Add( m_hyperlink17, 0, wxALL, 5 );
 
     m_scrolledWindowLinks->SetSizer( bSizerLinks );
-    m_scrolledWindowLinks->Layout();
-    bSizerLinks->Fit( m_scrolledWindowLinks );
     sbSizerLinks->Add( m_scrolledWindowLinks, 1, wxEXPAND | wxALL, 5 );
 
     wxBoxSizer* bSizer9;
@@ -1930,13 +1978,9 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizer9->Add( m_staticTextEditEnabled, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5 );
 
     sbSizerLinks->Add( bSizer9, 0, wxEXPAND, 5 );
-
     bSizerBasicProperties->Add( sbSizerLinks, 2, wxALL | wxEXPAND, 5 );
 
-    m_panelBasicProperties->SetSizer( bSizerBasicProperties );
-    m_panelBasicProperties->Layout();
-    bSizerBasicProperties->Fit( m_panelBasicProperties );
-    m_notebookProperties->AddPage( m_panelBasicProperties, _("Basic"), true );
+    
     m_panelDescription = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition,
             wxDefaultSize, wxTAB_TRAVERSAL );
     wxBoxSizer* bSizer15;
@@ -1947,8 +1991,6 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizer15->Add( m_textCtrlExtDescription, 1, wxALL | wxEXPAND, 5 );
 
     m_panelDescription->SetSizer( bSizer15 );
-    m_panelDescription->Layout();
-    bSizer15->Fit( m_panelDescription );
     m_notebookProperties->AddPage( m_panelDescription, _("Description"), false );
     m_panelExtendedProperties = new wxPanel( m_notebookProperties, wxID_ANY, wxDefaultPosition,
             wxDefaultSize, wxTAB_TRAVERSAL );
@@ -1987,8 +2029,6 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     bSizerExtendedProperties->Add( m_textCtrlGpx, 1, wxALL | wxEXPAND, 5 );
 
     m_panelExtendedProperties->SetSizer( bSizerExtendedProperties );
-    m_panelExtendedProperties->Layout();
-    bSizerExtendedProperties->Fit( m_panelExtendedProperties );
     m_notebookProperties->AddPage( m_panelExtendedProperties, _("Extended"), false );
 
     bSizer1->Add( m_notebookProperties, 1, wxEXPAND | wxALL, 5 );
@@ -2002,10 +2042,18 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     bSizer1->Add( m_sdbSizerButtons, 0, wxALL | wxEXPAND, 5 );
 
-    this->SetSizer( bSizer1 );
-    this->Layout();
 
-    this->Centre( wxBOTH );
+    //  This is a way of calculating the "best" size of a scrollable dialog
+    //  We calculate the minimum size of the controlling element ("Properties" page of the notebook) with scrollability disabled.
+    //  Then turn on scrolling by setting scrollrate afterwards.
+    Layout();
+    wxSize sz = bSizer1->CalcMin();
+    sz.IncBy( 20 );   // Account for some decorations?
+    SetClientSize(sz);
+    m_defaultClientSize = sz;
+    m_panelBasicProperties->SetScrollRate(5, 5);
+    
+    Centre( wxBOTH );
 
     // Connect Events
     m_textLatitude->Connect( wxEVT_COMMAND_TEXT_ENTER,
@@ -2101,6 +2149,8 @@ void MarkInfoImpl::InitialFocus( void )
 {
     m_textName->SetFocus();
     m_textName->SetInsertionPointEnd();
+    m_panelBasicProperties->Scroll(0, 0);
+    
 }
 
 void MarkInfoImpl::SetColorScheme( ColorScheme cs )
@@ -2193,7 +2243,6 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
                 linknode = linknode->GetNext();
             }
         }
-        bSizerLinks->Fit( m_scrolledWindowLinks );
 
         //      Iterate on the Icon Descriptions, filling in the control
         int iconToSelect = 0;
@@ -2207,8 +2256,6 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
             if( fillCombo && icons ) m_bcomboBoxIcon->Append( *ps, icons->GetBitmap( i ) );
         }
         m_bcomboBoxIcon->Select( iconToSelect );
-        this->Fit();
-        sbSizerLinks->Layout();
         icons = NULL;
     }
 
@@ -2468,6 +2515,7 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateWptListCtrl();
     
+    SetClientSize(m_defaultClientSize);
     event.Skip();
 }
 
@@ -2502,6 +2550,8 @@ void MarkInfoImpl::OnMarkInfoCancelClick( wxCommandEvent& event )
     Show( false );
     delete m_pMyLinkList;
     m_pMyLinkList = NULL;
+    SetClientSize(m_defaultClientSize);
+    
     event.Skip();
 }
 

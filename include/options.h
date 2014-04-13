@@ -151,6 +151,7 @@ enum {
     ID_NATIONALTEXTCHECKBOX,
     ID_MAGSHOWCHECKBOX,
     ID_MAGAPBCHECKBOX,
+    ID_MOBILEBOX,
     xID_OK
 };
 
@@ -168,6 +169,8 @@ enum {
 #define     GROUPS_CHANGED   512
 #define     STYLE_CHANGED   1024
 #define     TIDES_CHANGED   2048
+#define     GL_CHANGED      4096
+
 
 #ifndef wxCLOSE_BOX
 #define wxCLOSE_BOX 0x1000
@@ -305,6 +308,7 @@ public:
     wxChoice                *m_pcTCDatasets;
     wxCheckBox              *pCBMagShow;
     wxTextCtrl              *pMagVar;
+    wxCheckBox              *pMobile;
     
     int                      k_tides;
 

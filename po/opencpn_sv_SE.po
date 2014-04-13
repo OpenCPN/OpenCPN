@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN version 3.3.1328\n"
+"Project-Id-Version: OpenCPN version 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2014-02-13 22:34+0100\n"
+"POT-Creation-Date: 2014-04-05 11:43-0400\n"
+"PO-Revision-Date: 2014-02-22 22:43+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
 "Language: sv_SE\n"
@@ -759,6 +759,11 @@ msgid "Are you sure you want to delete the selected object(s)"
 msgstr "Är du säker på att du vill radera utvalda objekt?"
 #
 #
+#, fuzzy
+msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
+msgstr "Vill du radera <ALLA> rutter?"
+#
+#
 msgid "Are you sure you want to delete this route?"
 msgstr "Säker på att du vill radera rutten?"
 #
@@ -1364,7 +1369,7 @@ msgstr "Dagtid"
 #
 #
 msgid "De-Cluttered Text"
-msgstr "Rensa överlappande texter"
+msgstr "Rensa överlappande text"
 #
 #
 msgid "Deactivate"
@@ -1597,6 +1602,9 @@ msgstr "Aktivera sömlös visning"
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Aktivera max tid för kvittens av AIS-larm (min)"
 #
+msgid "Enable Touchscreen/Tablet Interface"
+msgstr ""
+#
 #
 msgid "Enable Transparent Toolbar"
 msgstr "Aktivera transparent verktygslist"
@@ -1641,6 +1649,17 @@ msgstr "Varningsområde: Stormvarning (Storm eller stormfronter)"
 #
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Varningsområde: Kraftig ström"
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Error on Waypoint Upload.  Garmin GPS not connected"
+msgstr "Fel vid uppladdning av waypoint.  Kontrollera loggfilen..."
 #
 #
 #
@@ -1894,7 +1913,7 @@ msgstr "Importera GPX-fil"
 #
 #
 msgid "Important Text Only"
-msgstr "Enbart viktiga texter"
+msgstr "Enbart viktiga text"
 #
 msgid "Information: Icebreaker waiting area"
 msgstr "Information: Isbrytare på redden"
@@ -2482,6 +2501,20 @@ msgstr "OpenCPN kan inte starta."
 msgid "OpenCPN info"
 msgstr "OpenCPN Information"
 #
+msgid ""
+"OpenCPN requires access to serial ports to use serial NMEA data.\n"
+"You currently do not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
+msgstr ""
+#
 #
 msgid "Options"
 msgstr "Användarinställningar"
@@ -2942,7 +2975,7 @@ msgid "S/V"
 msgstr "S/V"
 #
 msgid "SAR Aircraft"
-msgstr ""
+msgstr "SAR Flygplan"
 #
 #
 msgid "SAR/V"
@@ -3472,10 +3505,12 @@ msgstr ""
 "Vill du slå samman inklistrade punkter med dem?\n"
 "\n"
 #
+#, fuzzy
 msgid ""
-"There are some waypoints used in routes or anchor alarms. Do you want to "
-"delete them as well? This will change the routes and disable the anchor "
-"alarms. Answering No keeps the waypoints used in routes or alarms."
+"There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 "En eller flera waypoints används i andra rutter eller som ankarvakt. Vill du "
 "radera även dem? I så fall ändras rutterna och eventuella ankarvakter tas "
@@ -3507,7 +3542,7 @@ msgid "This waypoint is part of a layer and can't be edited"
 msgstr "Denna Waypoint tillhör ett lager och kan inte ändras"
 #
 msgid "TideCurrentGraphRollover"
-msgstr ""
+msgstr "Tidvatten/Ström \"Rulla över\""
 #
 #
 msgid "Tides && Currents"
@@ -3803,9 +3838,8 @@ msgstr "Waypointegenskaper, lager: "
 #
 #
 #
-#, fuzzy
 msgid "Waypoint(s) Uploaded successfully."
-msgstr "Rutt uppladdad ok."
+msgstr "Waypoint(s) uppladdade ok."
 #
 #
 msgid "Waypoints"
@@ -3928,6 +3962,13 @@ msgstr "ft"
 #
 #
 msgid "in"
+msgstr "in"
+#
+#
+#
+#
+#, fuzzy
+msgid "in "
 msgstr "in"
 #
 msgid "km"

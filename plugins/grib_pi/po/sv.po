@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: OpenCPN version 3.3.1328\n"
+"Project-Id-Version: OpenCPN version 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2014-02-13 23:38+0100\n"
+"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"PO-Revision-Date: 2014-02-22 22:32+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
 "Language: sv_SE\n"
@@ -20,14 +20,17 @@ msgstr ""
 msgid " (Max size )"
 msgstr " (Max storlek)"
 #
-msgid " Mo )"
-msgstr " MB)"
+msgid "300 hPa"
+msgstr ""
 #
-msgid "( Max "
-msgstr "( Max "
+msgid "500 hPa"
+msgstr ""
 #
-msgid "00N  00W"
-msgstr "00N  00W"
+msgid "700 hPa"
+msgstr ""
+#
+msgid "850 hPA"
+msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr "Adress för att skicka epostförfrågan. (obligatorisk för Linux)"
@@ -42,11 +45,24 @@ msgstr ""
 msgid "Air Temp"
 msgstr "Lufttemp"
 #
+msgid "Air Temperature"
+msgstr "Lufttemperatur"
+#
+#, fuzzy
+msgid "Air Temperature at"
+msgstr "Lufttemperatur"
+#
 msgid "Air Temperature(2m)"
 msgstr "Lufttemperatur(2m)"
 #
-msgid "Always visible"
+msgid "Altitude"
 msgstr ""
+#
+msgid "Altitude(Pressure Altitude)"
+msgstr ""
+#
+msgid "Always visible"
+msgstr "Alltid synlig"
 #
 msgid "Apply"
 msgstr "Använd"
@@ -114,6 +130,9 @@ msgid "Continue..."
 msgstr "Fortsätt..."
 #
 msgid "Controled Colours"
+msgstr "Kontrollerade färger"
+#
+msgid "Convective Available Potential Energy"
 msgstr ""
 #
 msgid "Copy First Cumulative Missing Record"
@@ -122,8 +141,21 @@ msgstr "Kopiera första ökande information som saknas"
 msgid "Copy Missing Wave Records"
 msgstr "Kopiera saknad våginformation"
 #
+#, fuzzy
+msgid "Course"
+msgstr "Timmar"
+#
+msgid "Cumulative Rainfall per Hour"
+msgstr ""
+#
 msgid "Current"
 msgstr "Ström"
+#
+msgid "Current time forecast"
+msgstr ""
+#
+msgid "Data"
+msgstr ""
 #
 msgid "Data at Cursor Position:"
 msgstr "GRIB-data vid markör"
@@ -134,12 +166,11 @@ msgstr "Data finns tillgängligt"
 msgid "Days"
 msgstr "Dagar"
 #
-#, fuzzy
 msgid "Default Colour"
-msgstr "Använd gradvisa färger"
+msgstr "Standardfärg"
 #
 msgid "Default Size"
-msgstr ""
+msgstr "Standardstorlek"
 #
 msgid "Deg"
 msgstr "Grader"
@@ -162,9 +193,14 @@ msgstr "Visa Isotachs"
 msgid "Display Isotherms"
 msgstr "Visa Isotherms"
 #
-#, fuzzy
 msgid "Double Arrow"
-msgstr "Pilar med hakar"
+msgstr "Dubbel pil"
+#
+msgid "Enter your forecasted Course"
+msgstr ""
+#
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr ""
 #
 msgid "Error:  Can't read this File!"
 msgstr "Fel: Filen är inte läsbar!"
@@ -196,15 +232,24 @@ msgstr "GRIB Visningskontroll"
 msgid "GRIB PlugIn for OpenCPN"
 msgstr "GRIB-modul för OpenCPN"
 #
+#, fuzzy
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
-"Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n"
 "\n"
-"Supported GRIB file types include:\n"
-"- wind direction and speed\n"
-"- significant wave height\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
 "- sea surface temperature\n"
-"- surface current direction and speed."
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
 msgstr ""
 "GRIB-modul för OpenCPN\n"
 "Visar överlagrad GRIB-information för ett flertal filtyper.\n"
@@ -225,6 +270,10 @@ msgid "Grib"
 msgstr "Grib"
 #
 msgid "Grib Data Table"
+msgstr "GRIB datatabell"
+#
+#, fuzzy
+msgid "Grib Data at"
 msgstr "GRIB datatabell"
 #
 msgid "Grib Preferences"
@@ -251,14 +300,18 @@ msgstr "Isobar"
 msgid "Knots"
 msgstr "Knop"
 #
+#, fuzzy
+msgid "Kts"
+msgstr "Knop"
+#
 msgid "Load File Options"
-msgstr "Inställningar för laddning av fil"
+msgstr "Inställningar för inläsning av fil"
 #
 msgid "Load the Last Opened File"
-msgstr "Ladda den senast öppnade filen"
+msgstr "Välj senast öppnad fil"
 #
 msgid "Load the More Recent File in Directory"
-msgstr "Ladda nyare fil i katalogen"
+msgstr "Välj nyaste fil i katalogen"
 #
 msgid "Local Time"
 msgstr "Lokal tid"
@@ -266,14 +319,31 @@ msgstr "Lokal tid"
 msgid "Loop Mode"
 msgstr "Återuppspelning"
 #
+msgid "Loop Start"
+msgstr ""
+#
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr "Epostfel: Mapi är inte installerat eller saknas på datorn!"
+#
+msgid "MB"
+msgstr ""
 #
 msgid "Mail"
 msgstr "Epost"
 #
 msgid "Mail To "
 msgstr "Epost Till"
+#
+#, fuzzy
+msgid "Max"
+msgstr "( Max "
+#
+#
+#
+#
+#, fuzzy
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Lufttryck, mBar"
 #
 msgid "Meters"
 msgstr "Meter"
@@ -283,6 +353,13 @@ msgstr "MilliBar"
 #
 msgid "Millimeters"
 msgstr "Millimeter"
+#
+#, fuzzy
+msgid "Minimum Spacing"
+msgstr "Avstånd"
+#
+msgid "Moving Grib"
+msgstr ""
 #
 msgid "N/A"
 msgstr "Saknas"
@@ -303,7 +380,7 @@ msgid "Overlay Transparency"
 msgstr "Transparent väderinformation"
 #
 msgid "OverlayMap"
-msgstr "överlagrad karta"
+msgstr "Överlagrad karta"
 #
 msgid "Percentage"
 msgstr "Procent"
@@ -317,14 +394,32 @@ msgstr "Zooma ut eller öka skalan för att visa GRIB.information"
 msgid "Pressure"
 msgstr "Lufttryck"
 #
+#, fuzzy
+msgid "Pressure Altitude"
+msgstr "Lufttryck"
+#
+#, c-format
+msgid "Pressure Altitude (in %s) or Standard Height Selection."
+msgstr ""
+#
 msgid "Previous"
 msgstr "Föregående"
 #
 msgid "Profile"
 msgstr "Profil"
 #
+#, fuzzy
+msgid "Proportional Arrow"
+msgstr "Riktningspilar"
+#
 msgid "Rainfall"
 msgstr "Regn"
+#
+msgid "Rel. Humid."
+msgstr ""
+#
+msgid "Relative Humidity"
+msgstr ""
 #
 msgid "Request"
 msgstr "Hämta"
@@ -365,8 +460,14 @@ msgstr ""
 msgid "Sea Temp"
 msgstr "Vattentemperatur"
 #
+msgid "Sea Temperature"
+msgstr "Vattentemperatur"
+#
 msgid "Sea Temperature(surf.)"
 msgstr "Vattentemperatur(ytan)"
+#
+msgid "Sea or Air Temperature at Surface Level"
+msgstr ""
 #
 msgid "Select a GRIB file"
 msgstr "Välj en GRIB-fil"
@@ -380,20 +481,24 @@ msgstr "Avsändarens epostadress"
 msgid "Settings"
 msgstr "Inställningar"
 #
+#
+#
+#
+#, fuzzy
+msgid "Significant Wave Height"
+msgstr "Signifikant våghöjd, m"
+#
 msgid "Single Arrow"
-msgstr ""
-#
-msgid "Slices per Update"
-msgstr "Antal delar/uppdatering"
-#
-msgid "Slices per hour"
-msgstr "Antal delar/timme"
+msgstr "Enkel pil"
 #
 msgid "Small Size"
-msgstr ""
+msgstr "Liten storlek"
 #
 msgid "Spacing"
 msgstr "Avstånd"
+#
+msgid "Speed"
+msgstr ""
 #
 msgid "Start Options"
 msgstr "Startinställningar"
@@ -406,6 +511,23 @@ msgstr "Starta vid den prognos som är närmast aktuell tid"
 #
 msgid "Stop"
 msgstr "Stopp"
+#
+msgid "Surface Current Direction"
+msgstr ""
+#
+msgid "Surface Current Speed"
+msgstr ""
+#
+#, fuzzy
+msgid "Temperature"
+msgstr ""
+"Luft\n"
+"Temperatur"
+#
+msgid ""
+"The Grib file you are opening contains a moving Grib Zone.\n"
+"Interpolation is not supported for this type of file"
+msgstr ""
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -426,11 +548,18 @@ msgstr ""
 msgid "This is your zyGrib's forum access Login"
 msgstr "Detta är din inloggning för zyGrib's forum"
 #
+#, fuzzy
+msgid "Time Interval"
+msgstr "Intervall"
+#
 msgid "Time Options"
 msgstr "Tidsinställningar"
 #
 msgid "Time Range"
 msgstr "Avstånd"
+#
+msgid "Top of Grib File"
+msgstr ""
 #
 msgid "UTC"
 msgstr "UTC"
@@ -447,6 +576,9 @@ msgstr "Använd gradvisa färger"
 msgid "Use High Definition Graphics"
 msgstr "Använd högupplöst grafik"
 #
+msgid "WIND data at"
+msgstr ""
+#
 msgid "Warning!"
 msgstr "Varning"
 #
@@ -456,8 +588,12 @@ msgstr "Varning: Katalogen är tom!"
 msgid "Waves"
 msgstr "Våghöjd"
 #
-msgid "WavesModel"
-msgstr "Vågmodell"
+#
+#
+#
+#, fuzzy
+msgid "Waves Direction"
+msgstr "Vindriktning"
 #
 msgid "Weather table"
 msgstr "Vädertabell"
@@ -465,8 +601,23 @@ msgstr "Vädertabell"
 msgid "Wind"
 msgstr "Vind"
 #
+#
+#
+#
+#, fuzzy
+msgid "Wind Direction at"
+msgstr "Vindriktning"
+#
 msgid "Wind Gust"
 msgstr "Vindby"
+#
+#, fuzzy
+msgid "Wind Gust at"
+msgstr "Vindby"
+#
+#, fuzzy
+msgid "Wind Speed at"
+msgstr "Vind Scat"
 #
 msgid "Write and send eMail request"
 msgstr "Epostförfrågan om GRIB-data"
@@ -513,6 +664,9 @@ msgstr ""
 msgid "Zoom To Center"
 msgstr "Zooma till centrum"
 #
+msgid "h"
+msgstr ""
+#
 msgid "inHG"
 msgstr "inHG"
 #
@@ -527,6 +681,9 @@ msgstr "m/s"
 #
 msgid "mmHG"
 msgstr "mmHG"
+#
+msgid "mn"
+msgstr ""
 #
 msgid "mph"
 msgstr "mph"
@@ -543,6 +700,9 @@ msgstr "ZyGrib användarnamn"
 #
 #~ msgid " (Dup)"
 #~ msgstr " (Dup)"
+#
+#~ msgid " Mo )"
+#~ msgstr " MB)"
 #
 #
 #
@@ -567,6 +727,9 @@ msgstr "ZyGrib användarnamn"
 #
 #~ msgid "0.8"
 #~ msgstr "0.8"
+#
+#~ msgid "00N  00W"
+#~ msgstr "00N  00W"
 #
 #~ msgid "1"
 #~ msgstr "1"
@@ -604,10 +767,6 @@ msgstr "ZyGrib användarnamn"
 #
 #~ msgid "Action"
 #~ msgstr "Åtgärd"
-#
-#
-#~ msgid "Air Temperature"
-#~ msgstr "Lufttemperatur"
 #
 #
 #~ msgid "AirTemp"
@@ -767,14 +926,6 @@ msgstr "ZyGrib användarnamn"
 #~ msgstr "Nederbörd"
 #
 #
-#
-#
-#
-#, fuzzy
-#~ msgid "Pressure (MSL)"
-#~ msgstr "Lufttryck, mBar"
-#
-#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
 #
@@ -818,10 +969,6 @@ msgstr "ZyGrib användarnamn"
 #
 #~ msgid "Saildocs"
 #~ msgstr "Saildocs"
-#
-#
-#~ msgid "Sea Temperature"
-#~ msgstr "Vattentemperatur"
 #
 #
 #~ msgid "SeaTemp"
@@ -886,16 +1033,16 @@ msgstr "ZyGrib användarnamn"
 #~ msgstr "Visa m/s för vindstyrka"
 #
 #
-#
-#
-#
-#, fuzzy
-#~ msgid "Sign.Wave Height"
-#~ msgstr "Signifikant våghöjd, m"
-#
-#
 #~ msgid "Size"
 #~ msgstr "Storlek"
+#
+#
+#~ msgid "Slices per Update"
+#~ msgstr "Antal delar/uppdatering"
+#
+#
+#~ msgid "Slices per hour"
+#~ msgstr "Antal delar/timme"
 #
 #~ msgid "WW3-GLOBAL"
 #~ msgstr "WW3-GLOBAL"
@@ -908,16 +1055,8 @@ msgstr "ZyGrib användarnamn"
 #~ msgstr "Våghöjd"
 #
 #
-#
-#
-#
-#, fuzzy
-#~ msgid "Wind Direction(10m)"
-#~ msgstr "Vindriktning"
-#
-#
-#~ msgid "Wind Scat"
-#~ msgstr "Vind Scat"
+#~ msgid "WavesModel"
+#~ msgstr "Vågmodell"
 #
 #
 #

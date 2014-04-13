@@ -357,6 +357,9 @@ private:
       int m_dock_y;
       ocpnStyle::Style* m_style;
       bool m_block;
+      
+      bool m_marginsInvisible;
+      
 };
 
 //---------------------------------------------------------------------------

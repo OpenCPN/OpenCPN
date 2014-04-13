@@ -319,6 +319,8 @@ extern wxString         g_TCData_Dir;
 extern Multiplexer      *g_pMUX;
 extern bool             portaudio_initialized;
 
+extern bool             g_bmobile;
+
 //---------------------------------------------------------------------------------
 //    Track Implementation
 //---------------------------------------------------------------------------------
@@ -1128,6 +1130,9 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "InitialdBIndex" ), &g_restore_dbindex, -1 );
 
     Read( _T ( "ChartNotRenderScaleFactor" ), &g_ChartNotRenderScaleFactor, 1.5 );
+    
+    Read( _T ( "MobileTouch" ), &g_bmobile, 0 );
+    
 
 #ifdef USE_S57
     Read( _T ( "CM93DetailFactor" ), &g_cm93_zoom_factor, 0 );
@@ -1872,11 +1877,16 @@ bool MyConfig::LoadLayers(wxString &path)
             filename.Prepend( wxFileName::GetPathSeparator() );
             filename.Prepend( path );
             wxFileName f( filename );
+            size_t nfiles = 0;
             if( f.GetExt().IsSameAs( wxT("gpx") ) )
                 file_array.Add( filename); // single-gpx-file layer
-            else
-                wxDir::GetAllFiles( filename, &file_array, wxT("*.gpx") );      // layers subdirectory set
-
+            else{
+                wxDir dir( filename );
+                if( dir.IsOpened() ){
+                    nfiles = dir.GetAllFiles( filename, &file_array, wxT("*.gpx") );      // layers subdirectory set
+                }
+            }
+            
             if( file_array.GetCount() ){
                 l = new Layer();
                 l->m_LayerID = ++g_LayerIdx;
@@ -1909,8 +1919,13 @@ bool MyConfig::LoadLayers(wxString &path)
                     if( ::wxFileExists( file_path ) ) {
                         NavObjectCollection1 *pSet = new NavObjectCollection1;
                         pSet->load_file(file_path.fn_str());
-                        l->m_NoOfItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, bLayerViz);
-
+                        long nItems = pSet->LoadAllGPXObjectsAsLayer(l->m_LayerID, bLayerViz);
+                        l->m_NoOfItems += nItems;
+                        
+                        wxString objmsg;
+                        objmsg.Printf( wxT("Loaded GPX file %s with %d items."), file_path.c_str(), nItems );
+                        wxLogMessage( objmsg );
+                        
                         delete pSet;
                     }
                 }
@@ -2290,6 +2305,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "GPSIdent" ), g_GPS_Ident );
     Write( _T ( "UseGarminHostUpload" ), g_bGarminHostUpload );
 
+    Write( _T ( "MobileTouch" ), g_bmobile );
+    
     wxString st0;
     st0.Printf( _T ( "%g" ), g_PlanSpeed );
     Write( _T ( "PlanSpeed" ), st0 );

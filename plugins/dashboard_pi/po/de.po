@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 3.3.1302\n"
+"Project-Id-Version: opencpn 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2014-01-02 19:19+0100\n"
+"PO-Revision-Date: 2014-02-21 19:01+0100\n"
 "Last-Translator: CarCode <carcode@me.com>\n"
 "Language-Team: CarCode <carcode@me.com>\n"
 "Language: de_DE\n"
@@ -16,295 +16,291 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Basepath: C:\\GIT\\opencpn2\\opencpn\\plugins\\dashboard_pi\n"
-"X-Generator: Poedit 1.6.3\n"
-#
+"X-Generator: Poedit 1.6.4\n"
+
 msgid " mag"
 msgstr "magn."
-#
+
 msgid " true"
 msgstr "rechtw."
-#
+
 msgid "Add"
 msgstr "Zufügen"
-#
+
 msgid "Add instrument"
 msgstr "Instrument hinzufügen"
-#
+
 msgid "Air Temp."
 msgstr "Lufttemp."
-#
+
 msgid "App. Wind Angle"
 msgstr "scheinb. Windwinkel"
-#
+
 msgid "App. Wind Angle & Speed"
 msgstr "scheinb. Windwinkel & -Geschw."
-#
+
 msgid "App. Wind Speed"
 msgstr "scheinb. Windgeschw."
-#
+
 msgid "Appearance"
 msgstr "Erscheinungsbild"
-#
-#, fuzzy
+
 msgid "Barometric history"
-msgstr "Windhistorie"
-#
+msgstr "Barometerhistorie"
+
 msgid "Barometric pressure"
-msgstr ""
-#
+msgstr "Barometr. Druck"
+
 msgid "Boat speed units:"
 msgstr "Bootgeschw. Einheiten:"
-#
+
 msgid "COG"
 msgstr "COG"
-#
+
 msgid "Caption:"
 msgstr "Fenstertitel:"
-#
-#, fuzzy
+
 msgid "Centimeters"
-msgstr "Kilometer"
-#
+msgstr "Zentimeter"
+
 msgid "Clock"
 msgstr "Uhr"
-#
+
 msgid "Cursor"
 msgstr "Cursor"
-#
+
 msgid "Dashboard"
 msgstr "Dashboard"
-#
+
 msgid "Dashboard PlugIn for OpenCPN"
 msgstr "Dashboard Plugin für OpenCPN"
-#
+
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
 "Dashboard Plugin für OpenCPN\n"
 "ermöglicht Instrumentenanzeigen aus NMEA Quellen."
-#
+
 msgid "Dashboard preferences"
 msgstr "Dashboard Einstellungen"
-#
+
 msgid "Data:"
 msgstr "Daten:"
-#
+
 msgid "Delete"
 msgstr "Löschen"
-#
+
 msgid "Depth"
 msgstr "Tiefe"
-#
-#, fuzzy
+
 msgid "Depth units:"
-msgstr "Entfernungs-Einheiten:"
-#
+msgstr "Tiefen-Einheiten:"
+
 msgid "Distance units:"
 msgstr "Entfernungs-Einheiten:"
-#
+
 msgid "Down"
 msgstr "runter"
-#
+
 msgid "E"
 msgstr "O"
-#
+
 msgid "ENE"
 msgstr "ONO"
-#
+
 msgid "ESE"
 msgstr "OSO"
-#
+
 msgid "Fathoms"
-msgstr ""
-#
+msgstr "Faden"
+
 msgid "Feet"
-msgstr ""
-#
+msgstr "Fuß"
+
 msgid "Fonts"
 msgstr "Schrift"
-#
+
 msgid "GPS Compass"
 msgstr "GPS Kompaß"
-#
+
 msgid "GPS Status"
 msgstr "GPS Status"
-#
+
 msgid "GPS in View"
 msgstr "GPS Sat. Anzahl"
-#
+
 msgid "Honor OpenCPN settings"
 msgstr "Berücksichtige OpenCPN Einstellungen"
-#
+
 msgid "Horizontal"
 msgstr "horizontal"
-#
+
 msgid "Inches"
-msgstr ""
-#
+msgstr "Zoll"
+
 msgid "Instruments"
 msgstr "Instrumente"
-#
+
 msgid "Kilometers"
 msgstr "Kilometer"
-#
+
 msgid "Kts"
 msgstr "kn"
-#
+
 msgid "Label:"
 msgstr "Label:"
-#
+
 msgid "Mag HDG"
 msgstr "magn. Kurs"
-#
+
 #, c-format
 msgid "Max %.1f since %02d:%02d  Overall %.1f"
 msgstr "Max %.1f seit %02d:%02d  Gesamt %.1f"
-#
+
 msgid "Meters"
 msgstr "Meter"
-#
+
 msgid "Moon phase"
 msgstr "Mondphase"
-#
+
 msgid "N"
 msgstr "N"
-#
+
 msgid "NE"
 msgstr "NO"
-#
+
 msgid "NNE"
 msgstr "NNO"
-#
+
 msgid "NNW"
 msgstr "NNW"
-#
+
 msgid "NW"
 msgstr "NW"
-#
+
 msgid "Nautical miles"
 msgstr "Naut. Meilen"
-#
+
 msgid "Orientation:"
 msgstr "Ausrichtung:"
-#
+
 msgid "Position"
 msgstr "Position"
-#
+
 msgid "Preferences..."
 msgstr "Einstellungen..."
-#
+
 msgid "Rudder Angle"
 msgstr "Ruderlage"
-#
+
 msgid "S"
 msgstr "S"
-#
+
 msgid "SE"
 msgstr "SO"
-#
+
 msgid "SOG"
 msgstr "SOG"
-#
+
 msgid "SSE"
 msgstr "SSO"
-#
+
 msgid "SSW"
 msgstr "SSW"
-#
+
 msgid "STW"
 msgstr "STW"
-#
+
 msgid "SW"
 msgstr "SW"
-#
+
 msgid "Select instrument to add:"
 msgstr "Instrument auswählen zum Hinzufügen:"
-#
+
 msgid "Small:"
 msgstr "Klein:"
-#
+
 msgid "Speedometer"
 msgstr "Log"
-#
+
 msgid "Speedometer max value:"
 msgstr "Log max. Wert:"
-#
+
 msgid "Statute miles"
 msgstr "Landmeilen"
-#
+
 msgid "Sum Log"
 msgstr "Sum Log"
-#
+
 msgid "Sunrise/Sunset"
 msgstr "Sonnenauf-/untergang"
-#
+
 msgid "Title:"
 msgstr "Titel:"
-#
+
 msgid "Trip Log"
 msgstr "Trip Log"
-#
-#, fuzzy
+
 msgid "True Compass"
-msgstr "Kompaß"
-#
+msgstr "Wahrer Kompaß"
+
 msgid "True HDG"
 msgstr "rechtw. Kurs"
-#
+
 msgid "True Wind Angle"
 msgstr "wahrer Windwinkel"
-#
+
 msgid "True Wind Angle & Speed"
 msgstr "wahrer Windwinkel & -Geschw."
-#
+
 msgid "True Wind Dir. & Speed"
 msgstr "wahrer Windwinkel & -Geschw."
-#
+
 msgid "True Wind Direction"
 msgstr "wahre Windrichtung "
-#
+
 msgid "True Wind Speed"
 msgstr "wahre Windgeschw."
-#
+
 msgid "Units, Ranges, Formats"
 msgstr "Einheiten, Bereiche, Formate"
-#
+
 msgid "Up"
 msgstr "hoch"
-#
+
 msgid "VMG"
 msgstr "VMG"
-#
+
 msgid "Vertical"
 msgstr "vertikal"
-#
+
 msgid "W"
 msgstr "W"
-#
+
 msgid "WNW"
 msgstr "WNW"
-#
+
 msgid "WSW"
 msgstr "WSW"
-#
+
 msgid "Water Temp."
 msgstr "Wassertemp."
-#
+
 msgid "Wind history"
 msgstr "Windhistorie"
-#
+
 msgid "Wind speed units:"
 msgstr "Windgeschw. Einheiten:"
-#
+
 msgid "km/h"
 msgstr "km/h"
-#
+
 msgid "m/s"
 msgstr "m/s"
-#
+
 msgid "mph"
 msgstr "mph"
-#
+
 msgid "show this dashboard"
 msgstr "zeige dies Dashboard"

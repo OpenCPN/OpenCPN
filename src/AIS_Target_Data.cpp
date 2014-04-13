@@ -183,18 +183,9 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     wxString IMOstr, MMSIstr, ClassStr;
 
     html << tableStart << _T("<tr><td nowrap colspan=2>");
-    if( ( Class != AIS_BASE ) && ( Class != AIS_SART ) ) {
+    if( /*( Class != AIS_BASE ) &&*/ ( Class != AIS_SART ) ) {
         if( b_nameValid ) {
-//            wxString shipName = trimAISField( ShipName );
-//            wxString intlName;
-//            if( shipName == _T("Unknown") ) intlName = wxGetTranslation( shipName );
-//            else
-//                intlName = shipName;
             html << _T("<font size=+2><i><b>") << GetFullName() ;
-//            if( strlen( ShipNameExtension ) ) {
-//                wxString shipNameExt = trimAISField( ShipNameExtension );
-//                html << shipNameExt;
-//            }
             html << _T("</b></i></font>&nbsp;&nbsp;<b>");
         }
     }

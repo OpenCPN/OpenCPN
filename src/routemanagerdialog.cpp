@@ -422,6 +422,9 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
 
     wxDialog::Create( parent, -1, wxString( _("Route Manager") ), wxDefaultPosition, wxDefaultSize,
             style );
+    
+    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
+    SetFont( *qFont );
 
     m_lastWptItem = -1;
     m_lastTrkItem = -1;
@@ -767,6 +770,8 @@ void RouteManagerDialog::Create()
     Fit();
 
     SetMinSize( GetBestSize() );
+    
+    Centre();
 
     // create a image list for the list with just the eye icon
     wxImageList *imglist = new wxImageList( 20, 20, true, 1 );
@@ -2240,7 +2245,7 @@ void RouteManagerDialog::OnWptDeleteAllClick( wxCommandEvent &event )
     }
     else
     {
-        prompt = _("There are some waypoints used in routes or anchor alarms. Do you want to delete them as well? This will change the routes and disable the anchor alarms. Answering No keeps the waypoints used in routes or alarms.");
+        prompt = _("There are some waypoints used in routes or anchor alarms.\n Do you want to delete them as well?\n This will change the routes and disable the anchor alarms.\n Answering No keeps the waypoints used in routes or alarms.");
         buttons = wxYES_NO | wxCANCEL;
         type = 2;
     }
@@ -2377,6 +2382,11 @@ void RouteManagerDialog::OnLayDeleteClick( wxCommandEvent &event )
 
     if( !layer ) return;
 
+    wxString prompt = _("Are you sure you want to delete this layer and <ALL> of its contents?");
+    int answer = OCPNMessageBox( this, prompt, wxString( _("OpenCPN Alert") ), wxYES_NO );
+    if ( answer == wxID_NO )
+        return;
+    
     // Process Tracks and Routes in this layer
     wxRouteListNode *node1 = pRouteList->GetFirst();
     wxRouteListNode *node2;

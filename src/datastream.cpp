@@ -248,6 +248,15 @@ void DataStream::Open(void)
                         int nagleDisable=1;
                         if(m_socket_server->IsOk())
                             m_socket_server->SetOption(IPPROTO_TCP,TCP_NODELAY,&nagleDisable, sizeof(nagleDisable));
+                        
+                        //      Drastically reduce the size of the socket output buffer
+                        //      so that when client goes away without properly closing, the stream will
+                        //      quickly fill the output buffer, and thus fail the write() call
+                        //      within a few seconds.    
+                        unsigned long outbuf_size = 512;
+                        if(m_socket_server->IsOk())
+                            m_socket_server->SetOption(SOL_SOCKET,SO_SNDBUF,&outbuf_size, sizeof(outbuf_size));
+                        
                         m_socket_server->SetEventHandler(*this, DS_SERVERSOCKET_ID);
                         m_socket_server->SetNotify( wxSOCKET_CONNECTION_FLAG );
                         m_socket_server->Notify(TRUE);
@@ -563,8 +572,10 @@ void DataStream::OnServerSocketEvent(wxSocketEvent& event)
             m_socket_server_active = m_socket_server->Accept(false);
  
             if( m_socket_server_active ) {
+                m_socket_server_active->SetTimeout(2);
+                m_socket_server_active->SetFlags( wxSOCKET_BLOCK );
                 m_socket_server_active->SetEventHandler(*this, DS_ACTIVESERVERSOCKET_ID);
-                m_socket_server_active->SetNotify( wxSOCKET_LOST_FLAG );
+                m_socket_server_active->SetNotify( wxSOCKET_LOST_FLAG | wxSOCKET_OUTPUT_FLAG);
                 m_socket_server_active->Notify(true);
             }
             
@@ -588,7 +599,6 @@ void DataStream::OnActiveServerEvent(wxSocketEvent& event)
             m_socket_server_active = 0;
             break;
         }
-        
         
         default :
             break;
@@ -709,6 +719,11 @@ bool DataStream::SendSentence( const wxString &sentence )
                     case TCP:
                         if( m_socket_server_active && m_socket_server_active->IsOk() ) {
                             m_socket_server_active->Write( payload.mb_str(), strlen( payload.mb_str() ) );
+                            if(m_socket_server_active->Error()){
+                                m_socket_server_active->Destroy();
+                                m_socket_server_active = 0;
+                                ret = false;
+                            }
                         }
                         else
                             ret = false;

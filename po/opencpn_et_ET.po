@@ -2,49 +2,57 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.1.622\n"
+"Project-Id-Version: opencpn 3.3.1328\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2011-01-09 19:39+0200\n"
-"Last-Translator: Peep Prants <peep@prants.ee>\n"
-"Language-Team: OpenCPN ET <LL@li.org>\n"
-"Language: et_ET\n"
+"POT-Creation-Date: 2014-04-05 11:43-0400\n"
+"PO-Revision-Date: 2014-03-22 21:12+0200\n"
+"Last-Translator: Highlander <highlander.et@gmail.com>\n"
+"Language-Team:  <open_en_et@googlegroups.com>\n"
+"Language: et_EE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 #
 msgid ""
 "\n"
 " - your GPS offset from bow must be within your ship's length"
 msgstr ""
+"\n"
+" - teie GPS-i nihe vöörist peab olema te laeva pikkuse piires"
 #
 msgid ""
 "\n"
 " - your GPS offset from midship must be within your ship's beam"
 msgstr ""
+"\n"
+" - teie GPS-i nihe keskosast peab olema te laeva laiuse piires"
 #
 msgid ""
 "\n"
 " - your minimum ship icon size must be between 1 and 100 mm"
 msgstr ""
+"\n"
+" - teie laeva vähim ikooni suurus peab olema 1 and 100 mm vahel"
 #
 msgid ""
 "\n"
 " - your ship's beam must be > 0"
 msgstr ""
+"\n"
+" - te laeva laius peab olema > 0"
 #
 msgid ""
 "\n"
 " - your ship's length must be > 0"
 msgstr ""
+"\n"
+" - te laeva pikkus peab olema > 0"
 #
-# 
-# 
-# 
-# 
 msgid ""
 "\n"
 "OpenCPN is distributed in the hope that it will be useful,\n"
@@ -61,891 +69,481 @@ msgid ""
 "Please click \"OK\" to agree and proceed, \"Cancel\" to quit.\n"
 msgstr ""
 "\n"
-"OpenCPN on loodu, lootuses, et see on sulle kasulikl,\n"
-"kuid ilma GARANTIITA; isegi mitte kaudselt\n"
-"garantiita TURUSTAMISEKS või SOOVIGA HARJUTADA\n"
-"ERI JUHTUMITEL.\n"
-"Vaata GNU General Public License et teada rohkem.\n"
+"OpenCPN jagatakse lootuses, et see on sulle kasulik,\n"
+"kuid ilma MINGI GARANTIITA; isegi mitte kaudse\n"
+"TURUSTAMISE või KONKREETSELE OTSTARBELE\n"
+"SOBIVUSE garantiita.\n"
+"Vaata GNU General Public License täpsustamiseks.\n"
 "\n"
-"OpenCPN-i võib kasutada koos kinnitatud\n"
-"paberkaartidega ja tava navigeerimis tavadega .\n"
+"OpenCPN-i peab kasutama ainult koos heakskiidetud\n"
+"paberkaartidega ja navigatsiooni traditsiooniliste meetoditega .\n"
 "\n"
-"ÄRA USALDA OpenCPN-ile täeilikult.\n"
+"ÄRA TOETU OpenCPN-ile elu või omandi ohutuse tagamiseks.\n"
 "\n"
 "Palun vajuta \"OK\" kui oled nõus, \"Katkestal\" väljumiseks.\n"
 #
 msgid "    Incompatible PlugIn detected:"
-msgstr ""
+msgstr "    Avastatud mitteühilduv plugin:"
 #
-# 
-# 
-# 
-# 
 msgid "   Chart File RLL data corrupt on chart "
-msgstr "Kaardi faili RLL andemd on vigastatud"
+msgstr "   Kaardifaili RLL-andmed on kaardil rikutud "
 #
-# 
-# 
-# 
-# 
 msgid "   Chart File contains less than 3 PLY points: "
-msgstr "Kaardi fail sisaldab vähem kui 3 PLY punkti:"
+msgstr "   Kaardifail sisaldab vähem kui 3 kalibreerimispunkti: "
 #
-# 
-# 
-# 
-# 
 msgid "   Chart File corrupt in PostInit() on chart "
-msgstr "Kaardi fail vigastatud PostInit() kohalt"
+msgstr "   Kaardifail on PostInit() kohas kaardil rikutud "
 #
-# 
-# 
-# 
-# 
 msgid "   Chart file has no BSB header, cannot Init."
-msgstr "Kaardi fail ei sisalda BSB päist, ei suuda installeerida"
+msgstr "   Kaardifailil pole BSB-päist, ei suuda käivitada."
 #
-# 
-# 
-# 
-# 
 #, c-format
 msgid "   Could not read first %d bytes of header for chart file: "
-msgstr "   Ei suutnud lugeda %d baite kaardi päisest: "
+msgstr "   Ei suutnud lugeda kaardifaili päise esimesi %d baite: "
 #
-# 
-# 
-# 
-# 
 msgid "   Error creating Line Index for chart "
-msgstr "Ei suuda kaardi indexit teha"
+msgstr "   Viga liinide indeksi loomisel kaardi jaoks"
 #
 msgid ""
 "   External application \"xcalib\" not found. Screen brightness not changed."
-msgstr ""
+msgstr "  Ei leitud välist programmi \"xcalib\". Ekraani heledust ei muudetud."
 #
-# 
-# 
-# 
-# 
 msgid "   Line Index corrupt, recreating Index for chart "
-msgstr "Joone indeks katki, regenereerin kaaardi indexi"
+msgstr "   Liinide indeks on rikutud, taastan indeksi kaardi jaoks "
 #
-# 
-# 
-# 
-# 
 msgid "   Result: OK, Internal georef solution used."
-msgstr "   Resulaat: OK, Sisemist georef vahendit kasutatakse."
+msgstr "   Tulemus: OK, kasutatakse seespidist georeferenss-lahendust."
 #
-# 
-# 
-# 
-# 
 msgid "   Trying again with internally calculated georef solution "
-msgstr "Proovin uuesti sisemise kalkuleerimis vahendiga"
+msgstr "   Proovin seespidiselt arvutatud georeferenss-lahendusega uuesti "
 #
-# 
-# 
-# 
-# 
 msgid ""
 "   VP Final Check with internal georef: Georeference Chart_Error_Factor on "
 "chart "
-msgstr "   VP lõplik sisemine kontroll: Georeference Chart_Error_Factor kaardil"
+msgstr ""
+"   VP lõplik kontroll seespidise georeferensiga: georeferensi "
+"Chart_Error_Factor viga kaardil "
 #
-# 
-# 
-# 
-# 
 msgid "   VP Final Check: Georeference Chart_Error_Factor on chart "
-msgstr "   VP VIIMANE KONTROLL: Georeference Chart_Error_Factor kaardil "
+msgstr "   VP lõplik kontroll: georeferensi Chart_Error_Factor viga kaardil "
 #
-# 
-# 
-# 
-# 
 msgid " %D Days  %H Hours  %M Minutes"
-msgstr " %D Päeva  %H Tundi  %M Minutit"
+msgstr " %D päeva  %H tundi  %M minutit"
 #
-# 
-# 
-# 
-# 
 msgid " %H Hours  %M Minutes"
-msgstr " %H Tundi  %M Minutit"
+msgstr " %H tundi  %M minutit"
 #
 msgid " (Ctrl-Space)"
-msgstr ""
+msgstr "(Ctrl-Space)"
 #
 msgid " (Last Known)"
-msgstr ""
+msgstr " (viimane teadaolev)"
 #
-# 
-# 
-# 
-# 
 msgid " - "
 msgstr " - "
 #
 msgid " -- [Portable(-p) executing from "
-msgstr ""
+msgstr " -- [Käivitan kaasaskantavat(-p) asukohas "
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid " COG Unavailable"
-msgstr "Kaart pole saadaval"
+msgstr " COG pole saadaval"
 #
-# 
-# 
-# 
-# 
 msgid " ChartFile:  "
-msgstr "Kaardi fail:"
+msgstr "Kaardifail: "
 #
-# 
-# 
-# 
-# 
 msgid " Datum:  "
-msgstr "Kuupäev:"
+msgstr "Koordinaatsüsteem: "
 #
-# 
-# 
-# 
-# 
 msgid " Depth Units:  "
-msgstr "Sügavuse ühik:  "
+msgstr "Sügavuse ühikud: "
 #
-# 
-# 
-# 
-# 
 msgid " ID:  "
-msgstr " ID:  "
+msgstr "ID: "
 #
-# 
-# 
-# 
-# 
 msgid " Name:  "
 msgstr "Nimi:"
 #
-# 
-# 
-# 
-# 
 msgid " Projection:  "
-msgstr "Prognoos:"
+msgstr "  projektsioon: "
 #
-# 
-# 
-# 
-# 
 #, c-format
 msgid " Scale:  1:%d"
-msgstr "Mõõtkava:  1:%d"
+msgstr "Mõõtkava: 1:%d"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid " Ship "
-msgstr "Alus:"
+msgstr "Laev"
 #
-# 
-# 
-# 
-# 
 msgid " Soundings:  "
-msgstr "Loodimine:"
+msgstr "  sügavused: "
 #
-# 
-# 
-# 
-# 
 msgid " Source Edition:  "
-msgstr "Allika muutmine:"
+msgstr "Väljaanne: "
 #
-# 
-# 
-# 
-# 
 msgid " Updated:  "
-msgstr "Uuendatud:"
+msgstr "  uuendatud: "
 #
 msgid " for details."
-msgstr ""
+msgstr " täpsustamiseks."
 #
 msgid ""
 " shorter than rhumbline.\n"
 "\n"
 msgstr ""
+" lühem kui rumbijoon.\n"
+"\n"
 #
-# 
-# 
-# 
-# 
 msgid " to "
-msgstr "--"
+msgstr " kuni "
 #
 msgid "\" is empty, switching to \"All Active Charts\" group."
-msgstr ""
+msgstr "\" on tühi, lülitun \"All Active Charts\" gruppile ümber."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "\"Ship Name\" MMSI (Call Sign)"
-msgstr "      \"Aluse nimi\" MMSI (Kutsung)"
+msgstr "\"Laev nimi\" MMSI (kutsung)"
 #
 msgid "%D Days, %H:%M"
-msgstr ""
+msgstr "%D päeva, %H:%M"
 #
 msgid "%H:%M"
-msgstr ""
+msgstr "%H:%M"
 #
-# 
-# 
-# 
-# 
 msgid "&Activate"
-msgstr "&Aktiveeri"
+msgstr "&Käivita"
 #
-# 
-# 
-# 
-# 
 msgid "&Cancel"
 msgstr "&Tühista"
 #
 msgid "&Center View"
-msgstr ""
+msgstr "Keskenda &vaade"
 #
 msgid "&Copy all as text"
-msgstr ""
+msgstr "K&opeeri kõik tekstina"
 #
 msgid "&Copy as text"
-msgstr ""
+msgstr "Ko&peeri tekstina"
 #
-# 
-# 
-# 
-# 
 msgid "&Delete"
-msgstr "&Kustuta"
+msgstr "K&ustuta"
 #
-# 
-# 
-# 
-# 
 msgid "&Delete All"
-msgstr "&Kustuta Kõik"
+msgstr "Kustut&a kõik"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "&Export selected..."
-msgstr "&Ekspordi teekond"
+msgstr "&Ekspordi valitud..."
 #
-# 
-# 
-# 
-# 
 msgid "&Font family:"
-msgstr "&Font family:"
+msgstr "&Kirjamärgi grupp:"
 #
-# 
-# 
-# 
-# 
 msgid "&Go To"
 msgstr "&Mine"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "&Merge Selected Tracks"
-msgstr "Kustuta jälg"
+msgstr "&Mesti valitud jäljed"
 #
-# 
-# 
-# 
-# 
 msgid "&New"
 msgstr "&Uus"
 #
-# 
-# 
-# 
-# 
 msgid "&OK"
 msgstr "&OK"
 #
-# 
-# 
-# 
-# 
 msgid "&Point size:"
 msgstr "&Punkti suurus:"
 #
-# 
-# 
-# 
-# 
 msgid "&Properties"
 msgstr "&Omadused"
 #
-# 
-# 
-# 
-# 
 msgid "&Properties..."
 msgstr "&Omadused..."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "&Remove Selected"
-msgstr "Kustuta jälg"
+msgstr "&Kõrvalda valitud"
 #
-# 
-# 
-# 
-# 
 msgid "&Reverse"
-msgstr "&Tagurpidi"
+msgstr "&Pööra ümber"
 #
-# 
-# 
-# 
-# 
 msgid "&Send to GPS"
-msgstr "&Saada GPS-i..."
+msgstr "&Saada GPS-i"
 #
-# 
-# 
-# 
-# 
 msgid "&Start Track"
-msgstr "&Alusta jälje näitamist"
+msgstr "&Käivita jälg"
 #
-# 
-# 
-# 
-# 
 msgid "&Style:"
-msgstr "&Stiil:"
+msgstr "&Stiil"
 #
-# 
-# 
-# 
-# 
 msgid "&Underline"
-msgstr "&Alajoon"
+msgstr "&Allajoonitud"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "&Waypoint Properties..."
-msgstr "&Omadused..."
+msgstr "&Teepunkti omadused..."
 #
-# 
-# 
-# 
-# 
 msgid "&Weight:"
-msgstr "&Paksus:"
+msgstr "&Paksus"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "(Unnamed Layer)"
-msgstr "(Nimetu teekond)"
+msgstr "(nimetu kiht)"
 #
-# 
-# 
-# 
-# 
 msgid "(Unnamed Route)"
-msgstr "(Nimetu teekond)"
+msgstr "(nimetu teekond)"
 #
-# 
-# 
-# 
-# 
 msgid "(Unnamed Track)"
-msgstr "(Nimetu jälg)"
+msgstr "(nimetu jälg)"
 #
-# 
-# 
-# 
-# 
 msgid "(Unnamed Waypoint)"
-msgstr "(Nimetu Teepunkt)"
+msgstr "(nimetu teepunkt)"
 #
 msgid "(reserved for future use)"
-msgstr ""
+msgstr "(reserveeritud tulevikuks)"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "(unnamed)"
-msgstr "(Nimetu teekond)"
+msgstr "(nimetu)"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "-"
 msgstr "-"
 #
-#
-#
-# 
-# 
-# 
-# 
 msgid "--"
 msgstr "--"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "---"
-msgstr "--"
+msgstr "---"
 #
-# 
-# 
-# 
-# 
 msgid "---<<< Warning:  Chart georef accuracy is poor. >>>---"
-msgstr "---<<< HOIATUS: Kaardil asukoht on vale. >>>---"
+msgstr "---<<< Hoiatus: kaardi georeferensi täpsus on madal. >>>---"
 #
-# 
-# 
-# 
-# 
 msgid "---<<< Warning:  Chart georef accuracy may be poor. >>>---"
-msgstr "---<<< HOIATUS: Kaardil asukoht võib olla vale. >>>---"
+msgstr "---<<< Hoiatus: kaardi georeferensi täpsus võib olla madal. >>>---"
 #
 msgid "..."
-msgstr ""
+msgstr "..."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "...and TCPA is less than (min)"
-msgstr "  ..Ja TCPA on vähem kui (Minutes):"
+msgstr "...ja TCPA on vähem kui (min)"
 #
 msgid "0"
-msgstr ""
+msgstr "0"
 #
 msgid "1"
-msgstr ""
+msgstr "1"
 #
 msgid "1 pixel"
-msgstr ""
+msgstr "1 piksel"
 #
-# 
-# 
 msgid "1.0 NM along COG"
-msgstr "1.0 NM edasi COG"
+msgstr "1.0 miil piki COG"
 #
 msgid "10 pixels"
-msgstr ""
+msgstr "10 pikslit"
 #
 msgid "115200"
-msgstr ""
+msgstr "115200"
 #
 msgid "1200"
-msgstr ""
+msgstr "1200"
 #
 msgid "150"
-msgstr ""
+msgstr "150"
 #
 msgid "19200"
-msgstr ""
+msgstr "19200"
 #
 msgid "2"
-msgstr ""
+msgstr "2"
 #
-# 
-# 
-# 
-# 
 msgid "2 Color"
 msgstr "2 värvi"
 #
 msgid "2 pixels"
-msgstr ""
+msgstr "2 pikslit"
 #
 msgid "230400"
-msgstr ""
+msgstr "230400"
 #
 msgid "2400"
-msgstr ""
+msgstr "2400"
 #
 msgid "3"
-msgstr ""
+msgstr "3"
 #
 msgid "3 pixels"
-msgstr ""
+msgstr "3 pikslit"
 #
 msgid "300"
-msgstr ""
+msgstr "300"
 #
 msgid "38400"
-msgstr ""
+msgstr "38400"
 #
 msgid "4"
-msgstr ""
+msgstr "4"
 #
-# 
-# 
-# 
-# 
 msgid "4 Color"
 msgstr "4 värvi"
 #
 msgid "4 pixels"
-msgstr ""
+msgstr "4 pikslit"
 #
 msgid "460800"
-msgstr ""
+msgstr "460800"
 #
 msgid "4800"
-msgstr ""
+msgstr "4800"
 #
 msgid "5"
-msgstr ""
+msgstr "5"
 #
 msgid "5 pixels"
-msgstr ""
+msgstr "5 pikslit"
 #
 msgid "57600"
-msgstr ""
+msgstr "57600"
 #
 msgid "6"
-msgstr ""
+msgstr "6"
 #
 msgid "6 pixels"
-msgstr ""
+msgstr "6 pikslit"
 #
 msgid "600"
-msgstr ""
+msgstr "600"
 #
 msgid "7"
-msgstr ""
+msgstr "7"
 #
 msgid "7 pixels"
-msgstr ""
+msgstr "7 pikslit"
 #
 msgid "8"
-msgstr ""
+msgstr "8"
 #
 msgid "8 pixels"
-msgstr ""
+msgstr "8 pikslit"
 #
 msgid "9"
-msgstr ""
+msgstr "9"
 #
 msgid "9 pixels"
-msgstr ""
+msgstr "9 pikslit"
 #
 msgid "921600"
-msgstr ""
+msgstr "921600"
 #
 msgid "9600"
-msgstr ""
+msgstr "9600"
 #
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
 msgstr ""
+"<font size=-2>(Sektori nurgad on tõelised peilingud mere poolt vaadates)</"
+"font><br>"
 #
-# 
-# 
 msgid "?"
-msgstr ""
+msgstr "?"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "A"
 msgstr "A"
 #
-# 
-# 
-# 
-# 
 msgid "AIS"
 msgstr "AIS"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "AIS Target List..."
-msgstr "AIS-i objektide nimekiri"
+msgstr "AIS märkide nimekiri..."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "AIS Target Name"
-msgstr "AIS-i sihtmärgi päring"
+msgstr "AIS-märgi nimi"
 #
-# 
-# 
-# 
-# 
 msgid "AIS Target Query"
-msgstr "AIS-i sihtmärgi päring"
+msgstr "AIS märgi päring"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "AIS Targets"
-msgstr "Näita AIS-i sihtmärke"
+msgstr "AIS märgid"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "AIS target list"
-msgstr "AIS-i objektide nimekiri"
+msgstr "AIS-märkide loend"
 #
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "AISRollover"
-msgstr "AIS-i Ülekeeramine"
+msgstr "AIS-üleliikumine"
 #
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "AISTargetQuery"
-msgstr "AIS objekti päring"
+msgstr "AIS-märgi päring"
 #
 msgid "APRS"
-msgstr ""
+msgstr "ARPS"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "APRS Position Report"
-msgstr "Viimane raport aeg:"
+msgstr "ARPS asukoha ettekanne"
 #
 msgid "ARPA"
-msgstr ""
+msgstr "ARPA"
 #
 msgid "ARPA radar target"
-msgstr ""
+msgstr "ARPA märk"
 #
-# 
-# 
-# 
-# 
 msgid "About"
 msgstr "Teave"
 #
-# 
-# 
-# 
-# 
 msgid "About OpenCPN"
-msgstr "Programmist OpenCPN"
+msgstr "OpenCPN teave"
 #
 msgid "Accept Sentences"
-msgstr ""
+msgstr "Võta vastu teated"
 #
 msgid "Accept only sentences"
-msgstr ""
+msgstr "vastu võtta ainult teated"
 #
-# 
-# 
-# 
-# 
 msgid "Activate"
-msgstr "Aktiveeri"
+msgstr "Käivita"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Activate Next Waypoint"
-msgstr "Aktiveeri järgmine teekonnas"
+msgstr "Käivita järgmine teepunkt"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Active"
 msgstr "Aktiveeri"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Active Datasets"
-msgstr "Aktiveeri kaardi kaustad"
+msgstr "Aktiivne andmestik"
 #
 msgid "Add"
-msgstr ""
+msgstr "Lisa"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Add Connection"
-msgstr "Kirjatüübi seaded"
+msgstr "Lisa ühendus"
 #
 msgid "Add Dataset..."
-msgstr ""
+msgstr "Lisa andmestik..."
 #
-# 
-# 
-#, fuzzy
 msgid "Add Directory..."
-msgstr "OpenCPN Kaustast otsimine..."
+msgstr "Lisa asukoht..."
 #
 msgid "Add a directory containing chart files"
-msgstr ""
+msgstr "Lisa kaarte sisaldav asukoht"
 #
 msgid "Add new"
-msgstr ""
+msgstr "Lisa uus"
 #
 msgid "Address"
-msgstr ""
+msgstr "aadress"
 #
 msgid "Advanced"
-msgstr ""
+msgstr "Edasijõudnud"
 #
-# 
-# 
 msgid "Aground"
-msgstr ""
+msgstr "Madalal"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Aid to Navigation"
-msgstr "Navigeerimis ABI"
+msgstr "Meresõidu abivahend"
 #
 msgid "All"
-msgstr ""
+msgstr "kõik"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "All Active Charts"
-msgstr "Aktiveeri kaardi kaustad"
+msgstr "Kõik aktiivsed kaardid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "All Available Charts"
-msgstr "Aktiveeri kaardi kaustad"
+msgstr "Kõik saadaval kaardid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "All Charts"
-msgstr "Kaardid"
+msgstr "Kõik kaardid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Altitude"
-msgstr "Laiuskraad"
+msgstr "Kõrgus"
 #
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -954,2740 +552,1496 @@ msgid ""
 "out all the sentences with certain TALKER prefix (like GP, AI etc.). The "
 "filter accepts just these three formats."
 msgstr ""
+"NMEA teade on harilikult 3 tähemärki pikk (nagu RMC, GGA jne). Sellel võib "
+"samuti olla 2-täheline eeslide allika ehk TALKER teate määratlemiseks. (Kogu "
+"teade näeks siis välja nagu GPGGA või AITXT). Võite välja filtreerida kindla "
+"TALKER-eesliitega (nagu GP, AI jne) teated. Filter tunnustab ainult neid "
+"kolme formaati."
 #
 msgid "Anchorage Area: Anchorage closed"
-msgstr ""
+msgstr "Ankruala: ankurdamine suletud"
 #
 msgid "Anchorage Area: Anchorage open"
-msgstr ""
+msgstr "Ankruala: ankurdamine avatud"
 #
 msgid "Anchorage Area: Anchoring prohibited"
-msgstr ""
+msgstr "Ankruala: ankurdamine keelatud"
 #
 msgid "Anchorage Area: Deep draft anchorage"
-msgstr ""
+msgstr "Ankruala: ankurdamine suure süvisega"
 #
 msgid "Anchorage Area: Shallow draft anchorage"
-msgstr ""
+msgstr "Ankruala: ankurdamine väikese süvisega"
 #
 msgid "Anchorage Area: Vessel transfer operations"
-msgstr ""
+msgstr "Ankruala: laevalt-laevale tööd"
 #
 msgid "Anchorage created "
-msgstr ""
+msgstr "Ankrukoht loodud"
 #
 msgid "Answering 'No' will create a new waypoint at the same location."
-msgstr ""
+msgstr "Vastates 'Ei' luuakse uus teepunkt samas kohas."
 #
 msgid "Answering 'No' will create all new waypoints for this route."
-msgstr ""
+msgstr "Vastates 'Ei' luuakse täiesti uued teepunktid selle teekonna jaoks."
 #
-# 
-# 
-# 
-# 
 msgid "Append Waypoint"
-msgstr "Ühenda Teepunkt"
+msgstr "Lisa teepunkt"
 #
 msgid "Apply"
-msgstr ""
+msgstr "Rakenda"
 #
-# 
-# 
-# 
-# 
 msgid "Are you sure you want to delete <ALL> routes?"
-msgstr "Oled kindel, et tahad kustutada <KÕIK> teekonnad?"
+msgstr "Kas olete kindel, et soovite kustutada <KÕIK> teekonnad?"
 #
-# 
-# 
-# 
-# 
 msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr "Kas oled kindel, et tahad kustutada <KÕIK> jäljed?"
+msgstr "Kas olete kindel, et soovite kustutada <KÕIK> jäljed?"
 #
-# 
-# 
-# 
-# 
 msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr "Oled kindel, et tahad kustutada <KÕIK> vahepunktid?"
+msgstr "Kas olete kindel, et soovite kustutada <KÕIK> teepunktid?"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Are you sure you want to delete the selected object(s)"
-msgstr "Kas oled kindel, et tahad kustutada <KÕIK> jäljed?"
+msgstr "Kas kindlalt soovite valitud objekt(id) kustutada?"
 #
-# 
-# 
-# 
-# 
 #, fuzzy
+msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
+msgstr "Kas olete kindel, et soovite kustutada <KÕIK> teekonnad?"
+#
 msgid "Are you sure you want to delete this route?"
-msgstr "Kas oled kindel, et tahad kustutada <KÕIK> jäljed?"
+msgstr "Kas olete kindel, et soovite selle teekonna kustutada?"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Are you sure you want to delete this track?"
-msgstr "Kas oled kindel, et tahad kustutada <KÕIK> jäljed?"
+msgstr "Kas olete kindel, et soovite seda jälge kustutada?"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Are you sure you want to remove this waypoint?"
-msgstr "Oled kindel, et tahad kustutada <KÕIK> vahepunktid?"
+msgstr "Olete kindel, et soovite selle teepunkti kõrvaldada?"
 #
-# 
-# 
 msgid "Assumed 1 Mile Point"
-msgstr "Vale 1 Miili Punkt"
+msgstr "1 miili oletatav punkt"
 #
 msgid "Assumed Magnetic Variation, deg."
-msgstr ""
+msgstr "oletatav magnetvariatsioon, °"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "At Anchor"
-msgstr "Sea ankruvalve"
+msgstr "Ankrul"
 #
-# 
-# 
-# 
-# 
 msgid "AtoN"
 msgstr "AtoN"
 #
-# 
-# 
-# 
-# 
 msgid "Authors"
 msgstr "Autorid"
 #
-# 
-# 
-# 
-# 
 msgid "Auto Follow"
-msgstr "Automaatne järgnemine"
+msgstr "Automaatne järgimine"
 #
-# 
-# 
 msgid "Automatic Daily Tracks"
-msgstr ""
+msgstr "automaatsed päevajäljed"
 #
-# 
-# 
-#, fuzzy
 msgid "Avg. speed"
-msgstr "Keskmine kiirus (sõlmed)"
+msgstr "Kesk. kiirus"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "B"
 msgstr "B"
 #
-# 
-# 
-# 
-# 
 msgid "Base"
-msgstr "Base"
+msgstr "baas"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Base Station"
-msgstr "Tugijaam"
+msgstr "Baasjaam"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Basic"
-msgstr "Base"
+msgstr "Elementaarne"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Baudrate"
-msgstr "NMEA Baud Rate"
+msgstr "Boodi"
 #
-# 
-# 
 msgid "Beacon, Isolated Danger"
-msgstr ""
+msgstr "Eraldiohu märk"
 #
-# 
-# 
 msgid "Beacon, Port Hand"
-msgstr ""
+msgstr "Vasaku külje paak/torn"
 #
-# 
-# 
 msgid "Beacon, Preferred Channel Port Hand"
-msgstr ""
+msgstr "Vasaku külje eelistatud kanali paak/torn"
 #
-# 
-# 
 msgid "Beacon, Preferred Channel Starboard Hand"
-msgstr ""
+msgstr "Parema külje eelistatud kanali paak/torn"
 #
-# 
-# 
 msgid "Beacon, Safe Water"
-msgstr ""
+msgstr "Farvaatri märk"
 #
-# 
-# 
 msgid "Beacon, Special Mark"
-msgstr ""
+msgstr "Eriotstarbe märk"
 #
-# 
-# 
 msgid "Beacon, Starboard Hand"
-msgstr ""
+msgstr "Parema külje paak/torn"
 #
-# 
-# 
-# 
-# 
 msgid "Bearing"
-msgstr "Kurss"
+msgstr "Suund"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Bearing (M)"
-msgstr "Kurss"
+msgstr "Peiling (M)"
 #
-# 
 msgid "Black"
-msgstr ""
+msgstr "must"
 #
 msgid "Blacklisted plugin detected..."
-msgstr ""
+msgstr "On avastatud keelatud plugin..."
 #
-# 
 msgid "Blue"
-msgstr ""
+msgstr "sinine"
 #
-# 
-# 
-# 
-# 
 msgid "Boundaries"
 msgstr "Piirid"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Brg"
-msgstr "Kurss"
+msgstr "Peiling"
 #
 msgid "Buddy"
-msgstr ""
+msgstr "Sõber"
 #
 msgid "Buoy/Light Labels"
-msgstr ""
+msgstr "Poi/tule silt"
 #
-# 
-# 
-# 
-# 
 msgid "C&olour:"
-msgstr "V&ärv:"
+msgstr "&Värv:"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "CM93 Detail Level"
-msgstr "Max. detailid siin"
+msgstr "CM93 detailide tase"
 #
-# 
-# 
-#, fuzzy
 msgid "CM93 Offset Dialog..."
-msgstr "CM93 nihe näitamisel"
+msgstr "CM93 nihke dialoog..."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "COG Predictor Length (min)"
-msgstr "Oma aluse COG-i noole ennustatav pikkus (minutites):"
+msgstr "COG eeldatav asukoht (min)"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "CPA"
 msgstr "CPA"
 #
-# 
-# 
-# 
-# 
 msgid "CPA Calculation"
-msgstr "CPA Kalkuleerimine"
+msgstr "CPA arvutamine"
 #
-# 
-# 
-# 
-# 
 msgid "CPA TCPA"
 msgstr "CPA TCPA"
 #
-# 
-# 
-# 
-# 
 msgid "CPA/TCPA Alerts"
-msgstr "CPA/TCPA Alarmid"
+msgstr "CPA/TCPA häired"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Call"
-msgstr "Kutsung"
+msgstr "Väljakutse"
 #
-# 
-# 
-# 
-# 
 msgid "Cancel"
 msgstr "Tühista"
 #
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
-msgstr ""
+msgstr "Tühistamine - tühistada ala, määratletud teatega seotud ID"
 #
-# 
-# 
 msgid "Card. E"
-msgstr ""
+msgstr "Kard. E"
 #
-# 
-# 
 msgid "Card. N"
-msgstr ""
+msgstr "Kard. N"
 #
-# 
-# 
 msgid "Card. S"
-msgstr ""
+msgstr "Kard. S"
 #
-# 
-# 
 msgid "Card. W"
-msgstr ""
+msgstr "Kard. W"
 #
-# 
-# 
 msgid "Cardinal E Beacon"
-msgstr ""
+msgstr "Kardinaalne E paak/torn"
 #
-# 
-# 
 msgid "Cardinal Mark E"
-msgstr ""
+msgstr "Kardinaalne E-märk"
 #
-# 
-# 
 msgid "Cardinal Mark N"
-msgstr ""
+msgstr "Kardinaalne N-märk"
 #
-# 
-# 
 msgid "Cardinal Mark S"
-msgstr ""
+msgstr "Kardinaalne S-märk"
 #
-# 
-# 
 msgid "Cardinal Mark W"
-msgstr ""
+msgstr "Kardinaalne W-märk"
 #
-# 
-# 
 msgid "Cardinal N Beacon"
-msgstr ""
+msgstr "Kardinaalne N paak/torn"
 #
-# 
-# 
 msgid "Cardinal S Beacon"
-msgstr ""
+msgstr "Kardinaalne S paak/torn"
 #
-# 
-# 
 msgid "Cardinal W Beacon"
-msgstr ""
+msgstr "Kardinaalne W paak/torn"
 #
-# 
-# 
 msgid "Cargo Ship"
-msgstr ""
+msgstr "Kaubalaev"
 #
 msgid "Caution Area: Cluster of fishing vessels"
-msgstr ""
+msgstr "Ettevaatusala: kalalaevade kogum"
 #
 msgid "Caution Area: Derelicts (drifting objects)"
-msgstr ""
+msgstr "Ettevaatusala: mahajäetud triivivad objektid"
 #
 msgid "Caution Area: Divers down"
-msgstr ""
+msgstr "Ettevaatusala: sukeldujad vees"
 #
 msgid "Caution Area: Dredge operations"
-msgstr ""
+msgstr "Ettevaatusala: süvendustööd"
 #
 msgid "Caution Area: Fairway closed"
-msgstr ""
+msgstr "Ettevaatusala: farvaater suletud"
 #
 msgid "Caution Area: Fishery - nets in water"
-msgstr ""
+msgstr "Ettevaatusala: kalandus - võrgud vees"
 #
 msgid "Caution Area: Harbour closed"
-msgstr ""
+msgstr "Ettevaatusala: sadam suletud"
 #
 msgid "Caution Area: Marine event"
-msgstr ""
+msgstr "Ettevaatusala: meresündmus"
 #
 msgid "Caution Area: Marine mammals habitat (implies whales NOT observed)"
-msgstr ""
+msgstr "Ettevaatusala: mereimetajate elukoht (ei eelda vaalade olemasolu)"
 #
 msgid "Caution Area: Marine mammals in area - reduce speed"
-msgstr ""
+msgstr "Ettevaatusala: mereimetajad alas - vähenda kiirust"
 #
 msgid "Caution Area: Marine mammals in area - report sightings"
-msgstr ""
+msgstr "Ettevaatusala: mereimetajad alas - teata märkamistest"
 #
 msgid "Caution Area: Marine mammals in area - stay clear"
-msgstr ""
+msgstr "Ettevaatusala: mereimetajad alas - hoia eemale"
 #
 msgid "Caution Area: Protected habitat - no fishing or anchoring"
-msgstr ""
+msgstr "Ettevaatusala: kaitstud elukoht - kalapüük ja ankurdamine keelatud"
 #
 msgid "Caution Area: Protected habitat - reduce speed"
-msgstr ""
+msgstr "Ettevaatusala: kaitstud elukoht - vähenda kiirust"
 #
 msgid "Caution Area: Protected habitat - stay clear"
-msgstr ""
+msgstr "Ettevaatusala: kaitstud elukoht - hoia eemale"
 #
 msgid "Caution Area: Risk (define in Associated text field)"
-msgstr ""
+msgstr "Ettevaatusala: risk (määratle seotud tekstiväljas)"
 #
 msgid "Caution Area: Seaplane operations"
-msgstr ""
+msgstr "Ettevaatusala: vesilennukite kasutamine"
 #
 msgid "Caution Area: Survey operations"
-msgstr ""
+msgstr "Ettevaatusala: mõõdistustööd"
 #
 msgid "Caution Area: Swim area"
-msgstr ""
+msgstr "Ettevaatusala: ujumisala"
 #
 msgid "Caution Area: Traffic congestion"
-msgstr ""
+msgstr "Ettevaatusala: liiklustakistus"
 #
 msgid "Caution Area: Underwater operation"
-msgstr ""
+msgstr "Ettevaatusala: veealused tööd"
 #
 msgid "Caution Area: Underwater vehicle operation"
-msgstr ""
+msgstr "Ettevaatusala: veealuse seadme kasutamine"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Cell"
-msgstr "Kutsung"
+msgstr "Element"
 #
-# 
-# 
 msgid "Cell Scale"
-msgstr ""
+msgstr "Elemendi mõõtkava"
 #
 msgid "Center View"
-msgstr ""
+msgstr "Vaade keskele"
 #
 msgid "Center View..."
-msgstr ""
+msgstr "Keskenda vaade..."
 #
-# 
-# 
-# 
-# 
 msgid "Change Color Scheme"
-msgstr "Muuda tausta heledust"
+msgstr "Vaheta värviskeemi"
 #
-# 
-# 
-# 
-# 
 msgid "Chart Depth Units"
-msgstr "Kaardi sügavuse ühikud"
+msgstr "Kaardi sügavusühikud"
 #
-# 
-# 
-# 
-# 
 msgid "Chart Display Options"
-msgstr "Kaardi vaate seaded"
+msgstr "Kaardi kuvamise valikud"
 #
 msgid "Chart Feature: Bridge closed"
-msgstr ""
+msgstr "Kanali objekt: sild suletud"
 #
 msgid "Chart Feature: Bridge fully open"
-msgstr ""
+msgstr "Kaardi objekt: sild täiesti avatud"
 #
 msgid "Chart Feature: Bridge partially open"
-msgstr ""
+msgstr "Kaardi objekt: sild osaliselt avatud"
 #
 msgid "Chart Feature: Channel obstruction"
-msgstr ""
+msgstr "Kaardi objekt: kanali takistus"
 #
 msgid "Chart Feature: Reduced vertical clearance"
-msgstr ""
+msgstr "Kaardi objekt: vähendatud vertikaalne liikumisruum"
 #
 msgid "Chart Feature: Semi-submerged object"
-msgstr ""
+msgstr "Kaardi objekt: osaliselt sukeldunud objekt"
 #
 msgid "Chart Feature: Shoal area"
-msgstr ""
+msgstr "Kaardi objekt: madal ala"
 #
 msgid "Chart Feature: Shoal area due east"
-msgstr ""
+msgstr "Kaardi objekt: madal ala otse E-s"
 #
 msgid "Chart Feature: Shoal area due north"
-msgstr ""
+msgstr "Kaardi objekt: madal ala otse N-s"
 #
 msgid "Chart Feature: Shoal area due south"
-msgstr ""
+msgstr "Kaardi objekt: madal ala otse S-s"
 #
 msgid "Chart Feature: Shoal area due west"
-msgstr ""
+msgstr "Kaardi objekt: madal ala otse W-s"
 #
 msgid "Chart Feature: Submerged object"
-msgstr ""
+msgstr "Kaardi objekt: sukeldunud objekt"
 #
 msgid "Chart Feature: Sunken vessel"
-msgstr ""
+msgstr "Kaardi objekt: uppunud laev"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Chart Groups"
-msgstr "Kaardid"
+msgstr "Kaartide grupid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Chart Information Objects"
-msgstr "Koha informatsioon"
+msgstr "Kaardi-info objektid"
 #
-# 
-# 
-# 
-# 
 msgid "Chart Print"
-msgstr "Kaardi print"
+msgstr "Kaardi printimine"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Chart Up Mode"
-msgstr "Kurss ülesse töörežiim"
+msgstr "Kaart-üleval tööreþiim"
 #
-# 
-# 
-# 
-# 
 msgid "Chart1::Event...TCMgr Not Available"
-msgstr "Kaart1::Sündmus...TCMgr Pole võimalik"
+msgstr "Chart1::Event...TCMgr pole saadaval"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "ChartTexts"
-msgstr "Kaardid"
+msgstr "Tekst kaardil"
 #
-# 
-# 
-# 
-# 
 msgid "Charts"
 msgstr "Kaardid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Choose Font Color..."
-msgstr "Vali Kirjatüüp..."
+msgstr "Vali tähe värv..."
 #
-# 
-# 
-# 
-# 
 msgid "Choose Font..."
-msgstr "Vali Kirjatüüp..."
+msgstr "Vali täht..."
 #
 msgid "Choose Format for Copy"
-msgstr ""
+msgstr "Vali kopeerimise formaat"
 #
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Choose a file"
-msgstr "Konsooli väärtus"
+msgstr "Vali fail"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Class"
-msgstr "Liik"
+msgstr "Klass"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Clear"
-msgstr "Puhasta kõik"
+msgstr "Puhasta"
 #
-# 
-# 
-# 
-# 
 msgid "Clear All"
 msgstr "Puhasta kõik"
 #
-# 
-# 
-# 
-# 
 msgid "Clear Anchor Watch"
-msgstr "Puhasta ankruvalve"
+msgstr "Lõpeta ankruvaht"
 #
 msgid "Clearance granted - proceed to berth"
-msgstr ""
+msgstr "Luba antud - minge kai äärde"
 #
-# 
-# 
-# 
-# 
 msgid "Click to cancel the font selection."
-msgstr "Vajuta Tühista fontide osas"
+msgstr "Vajuta kirjamärgi valiku tühistamiseks."
 #
-# 
-# 
-# 
-# 
 msgid "Click to confirm the font selection."
-msgstr "Vajuta kinnita fontide osas"
+msgstr "Vajuta kirjamärgi valiku kinnitamiseks."
 #
-# 
-# 
-# 
-# 
 msgid "Close"
 msgstr "Sulge"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "CoG"
 msgstr "CoG"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Color"
-msgstr "V&ärv:"
+msgstr "Värv"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Color:"
-msgstr "V&ärv:"
+msgstr "Värv:"
 #
-# 
-# 
-# 
-# 
 msgid "Colors"
 msgstr "Värvid"
 #
 msgid "Combo!"
-msgstr ""
+msgstr "Mõlemad!"
 #
 msgid "Confirm deletion of tracks and routes"
-msgstr ""
+msgstr "kinnita teekondade ja -punktide kustutamine"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Connections"
-msgstr "Kirjatüübi seaded"
+msgstr "Ühendused"
 #
-# 
-# 
-# 
-# 
 msgid "Console Legend"
 msgstr "Konsooli legend"
 #
-# 
-# 
-# 
-# 
 msgid "Console Value"
 msgstr "Konsooli väärtus"
 #
-# 
-# 
 msgid "Constrained by draught"
-msgstr ""
+msgstr "Süviselt piiratud laev"
 #
 msgid "Control checksum"
-msgstr ""
+msgstr "vaata kontrollsumma üle"
 #
 msgid "Copy As KML"
-msgstr ""
+msgstr "Kopeeri KML-na"
 #
 msgid "Copy Log File to Clipboard"
-msgstr ""
+msgstr "Kopeeri logifail lõikepuhvrisse"
 #
 msgid "Copy Settings File to Clipboard"
-msgstr ""
+msgstr "Kopeeri seadete fail lõikepuhvrisse"
 #
 msgid "Copy as KML"
-msgstr ""
+msgstr "Kopeeri KML-na"
 #
 msgid "Copy as KML..."
-msgstr ""
+msgstr "Kopeeri KML-na"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Course"
-msgstr "Kurss ülesse töörežiim"
+msgstr "Kurss"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Course (M)"
-msgstr "Kurss ülesse töörežiim"
+msgstr "Kurss (M)"
 #
-# 
-# 
-# 
-# 
 msgid "Course UP Mode"
-msgstr "Kurss ülesse töörežiim"
+msgstr "kurss-üleval moodus"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Course Up Mode"
-msgstr "Kurss ülesse töörežiim"
+msgstr "kurss-üleval tööreþiim"
 #
 msgid "Course-Up Mode Display Update Period (sec)"
-msgstr ""
+msgstr "kurss-üleval mooduse kuvamise uuendamise periood (sek)"
 #
-# 
-# 
-# 
-# 
 msgid "Create Route"
-msgstr "Moodusta teekond"
+msgstr "Loo teekond"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Create WPT"
-msgstr "Kustuta teepunkt"
+msgstr "Loo WPT"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Create Waypoint"
-msgstr "Kustuta teepunkt"
+msgstr "Loo teepunkt"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Cyan"
-msgstr "Tühista"
+msgstr "erksinine"
 #
-# 
-# 
 msgid "D/V"
-msgstr ""
+msgstr "Süv/l"
 #
 msgid "DSC"
-msgstr ""
+msgstr "DSC"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "DSC Distress"
-msgstr "Vahemaa"
+msgstr "DSC-häire"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "DSC Position Report"
-msgstr "Viimane raport aeg:"
+msgstr "DSC-asukoha ettekanne"
 #
-# 
 msgid "Dark Blue"
-msgstr ""
+msgstr "tumesinine"
 #
-# 
 msgid "Dark Cyan"
-msgstr ""
+msgstr "tume-erksinine"
 #
-# 
 msgid "Dark Gray"
-msgstr ""
+msgstr "tumehall"
 #
-# 
 msgid "Dark Green"
-msgstr ""
+msgstr "tumeroheline"
 #
-# 
 msgid "Dark Magenta"
-msgstr ""
+msgstr "tumepurpurviolett"
 #
-# 
 msgid "Dark Red"
-msgstr ""
+msgstr "tumepunane"
 #
-# 
 msgid "Dark Yellow"
-msgstr ""
+msgstr "tumekollane"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Data Connections"
-msgstr "Kirjatüübi seaded"
+msgstr "Andmeühendused"
 #
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "DataPort"
-msgstr "AIS-i andemte port"
+msgstr "andmepoord"
 #
 msgid "Daytime"
-msgstr ""
+msgstr "Päeva-aeg"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "De-Cluttered Text"
-msgstr "De-Clutter Tekst (exp.)"
+msgstr "Virvarrita tekst"
 #
-# 
-# 
-# 
-# 
 msgid "Deactivate"
-msgstr "Deaktiveeri"
+msgstr "Peata"
 #
 msgid "Decimal Degrees"
-msgstr ""
+msgstr "Kraadi kümnendikud"
 #
-# 
-# 
-# 
-# 
 msgid "Deep Depth"
-msgstr "Sügav sügavus"
+msgstr "suur sügavus"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Default"
-msgstr "Teksti värv"
+msgstr "vaikimisi"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Default color"
-msgstr "Teksti värv"
+msgstr "vaikimisi värv"
 #
 msgid "Degrees, Decimal Minutes"
-msgstr ""
+msgstr "kraadid, minutite kümnendikud"
 #
-# 
 msgid "Degrees, Minutes, Seconds"
-msgstr ""
+msgstr "kraadid, minutid, sekundid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Delete"
-msgstr "&Kustuta"
+msgstr "Kustuta"
 #
-# 
-# 
-# 
-# 
 msgid "Delete All"
 msgstr "Kustuta kõik"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Delete Group"
-msgstr "Kustuta teekond"
+msgstr "Kustuta grupp"
 #
-# 
-# 
-# 
-# 
 msgid "Delete Waypoint"
 msgstr "Kustuta teepunkt"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Delete..."
-msgstr "&Kustuta"
+msgstr "Kustuta..."
 #
-# 
-# 
-# 
-# 
 msgid "Depart From"
-msgstr "Lahkuma"
+msgstr "Alates"
 #
-# 
-# 
 msgid "Departure Time (m/d/y h:m)"
 msgstr ""
+"Lahkumise aeg\n"
+"(mm/dd/yyyy hh:mm)"
 #
-# 
-# 
-# 
-# 
 msgid "Depth Settings(m)"
-msgstr "Sügavus seaded(m)"
+msgstr "Sügavuse seaded (m)"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Depth Soundings"
-msgstr "Näita sügavust"
+msgstr "Sügavuse mõõdistused"
 #
-# 
-# 
-# 
-# 
 msgid "Description"
 msgstr "Kirjeldus"
 #
-# 
-# 
-# 
-# 
 msgid "Destination"
-msgstr "Sihtkoht"
+msgstr "Sihtpunkt"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Directories"
-msgstr "Aktiveeri kaardi kaustad"
+msgstr "Asukohad"
 #
-# 
-# 
-# 
-# 
 msgid "Disable"
-msgstr "Blokeeri"
+msgstr "Keela"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Disable Full Screen Quilting"
-msgstr "Luba kaartide kihistamine"
+msgstr "blokeeri täisekraan-kihistamine"
 #
-# 
-# 
-# 
-# 
 msgid "Display"
-msgstr "Ekraan"
+msgstr "Kuvamine"
 #
-# 
-# 
-# 
-# 
 msgid "Display Category"
-msgstr "Näita kategooriaid"
+msgstr "Kuva kategooria"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Display Options"
-msgstr "Kaardi vaate seaded"
+msgstr "Kuvamise valikud"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Display parameters"
-msgstr "Näita kategooriaid"
+msgstr "Näita omadused"
 #
-# 
-# 
-# 
-# 
 msgid "Distance"
 msgstr "Vahemaa"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Distance Between Rings"
-msgstr "Radari ringide vahemaa"
+msgstr "Vahemaa ringide vahel"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Distance Unit"
-msgstr "Vahemaa"
+msgstr "Vahemaa ühik"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Distance from Ownship"
-msgstr "Vahemaa"
+msgstr "Vahemaa oma laevast"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Distress"
-msgstr "Vahemaa"
+msgstr "Häda"
 #
 msgid "Distress Area: Person overboard"
-msgstr ""
+msgstr "Häire ala: inimene üle parda"
 #
 msgid "Distress Area: Pollution response area"
-msgstr ""
+msgstr "Häire ala: reostustõrje ala"
 #
 msgid "Distress Area: SAR area"
-msgstr ""
+msgstr "Häire ala: SAR ala"
 #
 msgid "Distress Area: Vessel abandoning ship"
-msgstr ""
+msgstr "Häire ala: mahajäetav laev"
 #
 msgid "Distress Area: Vessel collision"
-msgstr ""
+msgstr "Häire ala: laeva kokkupõrge"
 #
 msgid "Distress Area: Vessel disabled and adrift"
-msgstr ""
+msgstr "Häire ala: juhtimisvõimetu laev triivis"
 #
 msgid "Distress Area: Vessel fire/explosion"
-msgstr ""
+msgstr "Häire ala: tulekahju/plahvatus laeval"
 #
 msgid "Distress Area: Vessel flooding"
-msgstr ""
+msgstr "Häire ala: laev võtab vett sisse"
 #
 msgid "Distress Area: Vessel grounding"
-msgstr ""
+msgstr "Häie ala: laev madalal"
 #
 msgid "Distress Area: Vessel listing/capsizing"
-msgstr ""
+msgstr "Häire ala: laev kreenis/kaadumas"
 #
 msgid "Distress Area: Vessel requests medical assistance"
-msgstr ""
+msgstr "Häire ala: Laev palub meditsiinilist abi"
 #
 msgid "Distress Area: Vessel sinking"
-msgstr ""
+msgstr "Häire ala: uppuv laev"
 #
 msgid "Distress Area: Vessel under assault"
-msgstr ""
+msgstr "Häire ala: laeva rünnatakse"
 #
 msgid ""
 "Do you also want to make the shared waypoints being part of this route "
 "invisible?"
-msgstr ""
+msgstr "Kas ka soovite selle teekonna ühised teepunktid muuta nähtamatuteks?"
 #
-# 
-# 
 msgid "Done."
 msgstr "Tehtud."
 #
 msgid "Dot"
-msgstr ""
+msgstr "punktiirjoon"
 #
 msgid "Dot dash"
-msgstr ""
+msgstr "punkt-kriips-joon"
 #
-# 
-# 
 msgid "Dredge"
-msgstr ""
+msgstr "Süvendaja"
 #
-# 
-# 
-# 
-# 
 msgid "Drop MOB Marker"
-msgstr "Pane MOB punkt!"
+msgstr "Pane MOB tähis"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Drop Mark"
-msgstr "Pane punkt siia"
+msgstr "Pane märk"
 #
 msgid "Drop Sentences"
-msgstr ""
+msgstr "Jäta kõrvale teated"
 #
 msgid "Drop sentences"
-msgstr ""
+msgstr "hülga teated"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "ETA"
-msgstr "ETA:"
+msgstr "ETA"
 #
-# 
-# 
-# 
-# 
 msgid "ETA          "
 msgstr "ETA          "
 #
-# 
 msgid "ETE"
-msgstr ""
+msgstr "ETE"
 #
-# 
 msgid "ETE/ETD"
-msgstr ""
+msgstr "ETE/ETD"
 #
 msgid "Edit"
-msgstr ""
+msgstr "Muuda"
 #
-# 
-# 
 msgid "Elapsed time : "
-msgstr ""
+msgstr "Möödunud aeg:"
 #
 msgid "Elements to print..."
-msgstr ""
+msgstr "Elemendid printimiseks..."
 #
-# 
-# 
-# 
-# 
 msgid "Enable"
-msgstr "Aktiveeri"
+msgstr "Võimalda"
 #
-# 
-# 
-# 
-# 
 msgid "Enable Chart Quilting"
-msgstr "Luba kaartide kihistamine"
+msgstr "luba kaartide kihistamine"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Enable Target Alert Acknowledge timeout (min)"
-msgstr "Aktiveeri sihtkoha alarmi lõpp  (minutites)"
+msgstr "luba märgi häirele vastamise hilinemine (min)"
+#
+msgid "Enable Touchscreen/Tablet Interface"
+msgstr ""
 #
 msgid "Enable Transparent Toolbar"
-msgstr ""
+msgstr "luba läbipaistev tööriistariba"
 #
-# 
-# 
-# 
-# 
 msgid "End Route"
-msgstr "Lõpeta teekond"
+msgstr "Teekonna lõpp"
 #
-# 
-# 
 msgid "Engaged in Fishing"
-msgstr ""
+msgstr "Kalastamas"
 #
 msgid "Enter Group Name"
-msgstr ""
+msgstr "Sisesta grupi nimi"
 #
 msgid "Enter the NMEA sentence"
-msgstr ""
+msgstr "Sisesta NMEA teade"
 #
 msgid "Enter the NMEA sentence (2, 3 or 5 characters)"
-msgstr ""
+msgstr "Sisesta NMEA teade (2, 3 või 5 tähemärki)"
 #
 msgid "Environmental Caution Area: Hazardous sea ice"
-msgstr ""
+msgstr "Keskkonna ettevaatusala: ohtlik merejää"
 #
 msgid "Environmental Caution Area: Heavy icing"
-msgstr ""
+msgstr "Keskkonna ettevaatusala: kiire jäätumine"
 #
 msgid "Environmental Caution Area: High waves"
-msgstr ""
+msgstr "Keskkonna ettevaatusala: kõrged lained"
 #
 msgid "Environmental Caution Area: High wind"
-msgstr ""
+msgstr "Keskkonna ettevaatusala: tugev tuul"
 #
 msgid "Environmental Caution Area: Restricted visibility (fog, rain, etc.)"
-msgstr ""
+msgstr "Keskkonna ettevaatusala: piiratud nähtavus (udu, vihm jne)"
 #
 msgid "Environmental Caution Area: Storm front (line squall)"
-msgstr ""
+msgstr "Keskkonna ettevaatusala: tormi serv (pagi tee)"
 #
 msgid "Environmental Caution Area: Storm warning (storm cell or line of storms)"
-msgstr ""
+msgstr "Keskkonna ettevaatusala: tormihoiatus (tormi süda või tormide rivi)"
 #
 msgid "Environmental Caution Area: Strong currents"
-msgstr ""
+msgstr "Keskkonna ettevaatusala: tugevad hoovused"
 #
+#, fuzzy
+msgid "Error on Waypoint Upload.  Garmin GPS not connected"
+msgstr "Viga teepunktide üleslaadimisel. Vaadake logifaili..."
 #
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Error on Waypoint Upload.  Please check logfiles..."
-msgstr "Viga teepunkti laadimisel. Palun vaata logifaili..."
+msgstr "Viga teepunktide üleslaadimisel. Vaadake logifaili..."
 #
 msgid "Error!"
-msgstr ""
+msgstr "Viga!"
 #
-# 
-# 
 msgid "Estimated time : "
-msgstr ""
+msgstr "Eeldatav aeg:"
 #
 msgid "EvTwilight"
-msgstr ""
+msgstr "Hämarik"
 #
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Export"
-msgstr "&Ekspordi Teepunkt..."
+msgstr "Ekspordi"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Export All Visible..."
-msgstr "&Ekspordi Kõik..."
+msgstr "Ekspordi kõik nähtavad..."
 #
-# 
-# 
-# 
-# 
 msgid "Export GPX file"
-msgstr "Ekspordi GPX fail"
+msgstr "Ekspordi GPX-fail"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Extend"
-msgstr "Lõpeta teekond"
+msgstr "Pikenda"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Extend Route"
-msgstr "Lõpeta teekond"
+msgstr "Pikenda teekonda"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Extend Track"
-msgstr "Kustuta jälg"
+msgstr "Pikenda jälg"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Extended"
-msgstr "Lõpeta teekond"
+msgstr "Laiendatud"
 #
 msgid "Extended Light Sectors"
-msgstr ""
+msgstr "Pikendatud tulesektorid"
 #
-# 
-# 
 msgid "ExtendedTideIcon"
-msgstr ""
+msgstr "Üksikasjalik loodete ikoon"
 #
-# 
-# 
 msgid "F/V"
-msgstr ""
+msgstr "K/l"
 #
 msgid "Failed to initialize the user interface. "
-msgstr ""
+msgstr "Kasutajaliidest ei õnnestunud käivtada."
 #
-# 
-# 
-# 
-# 
 msgid "Fathoms"
-msgstr "Süld"
+msgstr "süllad"
 #
-# 
-# 
-# 
-# 
 msgid "Feet"
-msgstr "Jalg"
+msgstr "jalad"
 #
-# 
-# 
 msgid "Filter NMEA Course and Speed data"
-msgstr "Filtreeri NMEA kursi ja kiiruse andmed"
+msgstr "filtreeri NMEA kursi ja kiiruse andmed"
 #
-# 
-# 
-#, fuzzy
 msgid "Filter period (sec)"
-msgstr "Filtreeri periood (sekund)"
+msgstr "Filtri periood (s)"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Filters"
-msgstr "&Kilomeeetrid"
+msgstr "Filtrid"
 #
-# 
-# 
 msgid "Fix.Struct."
-msgstr ""
+msgstr "Fix.ehit"
 #
-# 
-# 
 msgid "Fixed Structure"
-msgstr ""
+msgstr "Kohtkindel ehitis"
 #
 msgid "Fonts"
-msgstr ""
+msgstr "Kirjamärgid"
 #
 msgid "For this leg the Great Circle route is "
-msgstr ""
+msgstr "Selle lõigu jaoks on suure ringi tee"
 #
-# 
-# 
-# 
-# 
 msgid "Force Full Database Rebuild"
-msgstr "Sunni täielikuks andmebaaside uuenduseks"
+msgstr "sunduslik kogu andmebaasi taasloomine"
 #
 msgid "Format uploads for Furuno GP3X"
-msgstr ""
+msgstr "vormista üleslaadimine Furuno GP3X jaoks"
 #
 msgid "From"
-msgstr ""
+msgstr "Alates"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Full Route"
-msgstr "Kustuta teekond"
+msgstr "Kogu teekond"
 #
 msgid "GPS Offset from Bow (m)"
-msgstr ""
+msgstr "GPS-i nihe vöörist (m)"
 #
 msgid "GPS Offset from Midship (m)"
-msgstr ""
+msgstr "GPS-i nihe laeva miidlis (m)"
 #
 msgid "GPSD"
-msgstr ""
+msgstr "GPSD"
 #
 msgid "GPSGate Buddy"
-msgstr ""
+msgstr "GPSGate sõber"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "GPX"
-msgstr "GPS"
+msgstr "GPX"
 #
 msgid "GUID"
-msgstr ""
+msgstr "GUID"
 #
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "General"
-msgstr "AIS üldine"
+msgstr "Üldine"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "General Options"
-msgstr "GUI seaded"
+msgstr "Üldised valikud"
 #
-# 
-# 
-# 
-# 
 msgid "Go to "
 msgstr "Mine"
 #
 msgid "GpsGate Buddy"
-msgstr ""
+msgstr "GPSGate sõber"
 #
-# 
 msgid "Green"
-msgstr ""
+msgstr "roheline"
 #
 msgid "Group \""
-msgstr ""
+msgstr "Grupp \""
 #
-# 
-# 
 msgid "HSC"
-msgstr ""
+msgstr "Kiire"
 #
 msgid "Heading"
-msgstr ""
+msgstr "Suund"
 #
-# 
-# 
-# 
-# 
 msgid "Help"
 msgstr "Abi"
 #
-# 
-# 
-# 
-# 
 msgid "Here"
-msgstr "Kohal"
+msgstr "Siin"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Hide AIS Targets"
-msgstr "Näita AIS-i sihtmärke"
+msgstr "Peida AIS märgid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Hide All Tracks"
-msgstr "AIS-i sihtmärgi päring"
+msgstr "Peida kõik jäljed"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Hide Target CPA"
-msgstr "AIS-i sihtmärgi päring"
+msgstr "Peida märgi CPA"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Hide Target Track"
-msgstr "AIS-i sihtmärgi päring"
+msgstr "Peida märgi jälg"
 #
 msgid "Hide This Chart"
-msgstr ""
+msgstr "Peida see kaart"
 #
-# 
-# 
 msgid "Hide WPT names"
-msgstr ""
+msgstr "Peida WPT nimed"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Hide anchored/moored targets, speed max (kn)"
-msgstr "Varja ankrus/sildutud objektid"
+msgstr "peida ankurdatud/sildunud märgid, suurim kiirus kuni (sõlme)"
 #
-# 
-# 
 msgid "Hide from chart"
-msgstr ""
+msgstr "Peida kaardilt"
 #
 msgid "High"
-msgstr ""
+msgstr "Kõrge"
 #
-# 
-# 
 msgid "High Speed Craft"
-msgstr ""
+msgstr "Kiirlaev"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Highlight Tracks"
-msgstr "&Alusta jälje näitamist"
+msgstr "erista jäljed"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "I&mport GPX..."
-msgstr "&Impordi..."
+msgstr "I&mpordi GPX..."
 #
 msgid "IMO"
-msgstr ""
+msgstr "IMO"
 #
-# 
-# 
-# 
-# 
 msgid "Icon"
 msgstr "Ikoon"
 #
 msgid "If checked, only the sentences with a valid checksum are passed through"
-msgstr ""
+msgstr "Kui valitud, ainult kehtiva kontrollsummaga teated saavad läbi"
 #
 msgid "Ignore Sentences"
-msgstr ""
+msgstr "Eira teated"
 #
 msgid "Ignore sentences"
-msgstr ""
+msgstr "eira teateid"
 #
-# 
-# 
-# 
-# 
 msgid "Import GPX file"
-msgstr "Impordi GPX fail"
+msgstr "Impordi GPX-faili"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Important Text Only"
-msgstr "Näita ainult olulist teksti"
+msgstr "Ainult oluline tekst"
 #
 msgid "Information: Icebreaker waiting area"
-msgstr ""
+msgstr "Info: jäämurdja ootamise ala"
 #
 msgid "Information: Location of response units"
-msgstr ""
+msgstr "Info: eriüksuste asukoht"
 #
 msgid "Information: Pilot boarding position"
-msgstr ""
+msgstr "Info: lootsi pealevõtu koht"
 #
 msgid "Information: Places of refuge"
-msgstr ""
+msgstr "Info: varjupaigad"
 #
 msgid "Information: Position of icebreakers"
-msgstr ""
+msgstr "Info: jäämurdjate asukohad"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Inland Blue Flag"
-msgstr "Sisemaa Sinilipp        Sea\n"
+msgstr "Sisemaa Sinine Lipp"
 #
 msgid "Input filtering"
-msgstr ""
+msgstr "Sisendi filtreerimine"
 #
-# 
-# 
-# 
-# 
 msgid "Insert Waypoint"
-msgstr "Sisesta vahepunkt"
+msgstr "Sisesta teepunkt"
 #
 msgid ""
 "Instruction: Await instructions prior to proceeding beyond this point/juncture"
 msgstr ""
+"Juhis: oodake juhiseid enne kui jätkate sellest punktist/piirist kaugemale "
+"edasi"
 #
 msgid "Instruction: Contact Port Administration at this point/juncture"
-msgstr ""
+msgstr "Juhis: Võtke siin punktis/piiril ühendust sadama administratsiooniga"
 #
 msgid "Instruction: Contact VTS at this point/juncture"
-msgstr ""
+msgstr "Juhis: võtke siin puntis/piiril ühendust VTS-ga "
 #
 msgid "Instruction: Do not proceed beyond this point/juncture"
-msgstr ""
+msgstr "Juhis: ärge ületage seda punkti/piiri"
 #
-# 
-# 
 msgid "Isol. Dngr"
-msgstr ""
+msgstr "Era.oht"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Isolated Danger"
-msgstr "Teekonna haldur"
+msgstr "Eraldiasuv oht"
 #
 msgid "KML Standard (Google Earth and others)"
-msgstr ""
+msgstr "Standartne KML (Google Earth ja teised)"
 #
 msgid "KML with extended waypoint data (QtVlm)"
-msgstr ""
+msgstr "KML koos laiendatud teepunkti andmetega (QtVlm)"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Kilometers"
-msgstr "&Kilomeeetrid"
+msgstr "kilomeetrid"
 #
 msgid "Knots"
-msgstr ""
+msgstr "sõlmed"
 #
-# 
-# 
 msgid "LE/V"
-msgstr ""
+msgstr "KoKa/l"
 #
-# 
-# 
 msgid "LMT @ Location"
-msgstr ""
+msgstr "LMT @ kohapeal"
 #
 msgid "LMT @ Track Start"
-msgstr ""
+msgstr "LMT @ jälje alustamine"
 #
-# 
-# 
-# 
-# 
 msgid "Language"
 msgstr "Keel"
 #
-# 
-# 
-# 
-# 
 msgid "Latitude"
-msgstr "Laiuskraad"
+msgstr "laius"
 #
-# 
-# 
 msgid "Law Enforcement Vessel"
-msgstr ""
+msgstr "Korrakaitse laev"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Layer Name"
-msgstr "Punkti nimi"
+msgstr "Kihi nimi"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Layer Route"
-msgstr "Moodusta teekond"
+msgstr "Kihi teekond"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Layer Route: "
-msgstr "Moodusta teekond"
+msgstr "Kiht Teekond:"
 #
 msgid "Layer Routepoint"
-msgstr ""
+msgstr "Kiht Teekonnapunkt"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Layer Track"
-msgstr "&Ekspordi jälg..."
+msgstr "Kiht Jälg"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Layer Waypoint"
-msgstr "Aktiveeri Teepunktid"
+msgstr "Kiht Teepunkt"
 #
-# 
-# 
 msgid "Layers"
-msgstr ""
+msgstr "Kihid"
 #
-# 
-# 
 msgid "Ldg Lt Front"
-msgstr ""
+msgstr "Alum. sihim."
 #
-# 
-# 
 msgid "Ldg Lt Rear"
-msgstr ""
+msgstr "Ülem. sihim."
 #
-# 
-# 
 msgid "Leading Light Front"
-msgstr ""
+msgstr "Alumine sihituli"
 #
-# 
-# 
 msgid "Leading Light Rear"
-msgstr ""
+msgstr "Ülemine sihituli"
 #
 msgid "Left"
-msgstr ""
+msgstr "vasak"
 #
-# 
-# 
-# 
-# 
 msgid "Leg"
-msgstr "Reis"
+msgstr "Lõik"
 #
-# 
-# 
-# 
-# 
 msgid "Leg: from "
-msgstr "Ring: siit"
+msgstr "Lõik:alates "
 #
-# 
-# 
-# 
-# 
 msgid "Length"
 msgstr "Pikkus"
 #
 msgid "Length Over All (m)"
-msgstr ""
+msgstr "Üldpikkus (LOA) (m)"
 #
-# 
-# 
-# 
-# 
 msgid "License"
 msgstr "Litsents"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Light"
-msgstr "&Paksus:"
+msgstr "Tuli"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Light Descriptions"
-msgstr "Näita tulede kirjeldust"
+msgstr "Tule kirjeldus"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Light Gray"
-msgstr "&Paksus:"
+msgstr "helehall"
 #
-# 
-# 
 msgid "Light Vessel/Rig"
-msgstr ""
+msgstr "Tulelaev/-seade"
 #
-# 
-# 
 msgid "Light w/Sectors"
-msgstr ""
+msgstr "Sektoritega tuli"
 #
-#
-#
-#
-#
-# 
-# 
 msgid "Limit range: NM"
-msgstr "Piir ulatus: miili"
+msgstr "piira ulatust: NM"
 #
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Link"
-msgstr "Lingid"
+msgstr "Link"
 #
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Link Properties"
-msgstr "Koha omadused"
+msgstr "Lingi omadused"
 #
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Link description"
-msgstr "Kirjeldus"
+msgstr "Lingi kirjeldus"
 #
 msgid "Link not complete, can't be saved."
-msgstr ""
+msgstr "Link pole lõpetatud, pole võimalik säilitada."
 #
-# 
-# 
-# 
-# 
 msgid "Links"
 msgstr "Lingid"
 #
 msgid "Links are opened for editing."
-msgstr ""
+msgstr "Lingid on avatud muutmiseks."
 #
 msgid "Links are opened in the default browser."
-msgstr ""
+msgstr "Lingid on avatud vaikimisi brauseris."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "List contents"
-msgstr "Litsents"
+msgstr "Loenda sisu"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Loaded Charts"
-msgstr "Paberkaart"
+msgstr "Laetud kaardid"
 #
-# 
-# 
 msgid "Local @ PC"
-msgstr ""
+msgstr "kohalik @ PC"
 #
 msgid "Local file..."
-msgstr ""
+msgstr "Kohalik fail..."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Lock Waypoints (Unless waypoint property dialog visible)"
-msgstr "Lukusta kõik vahepunktid niikaua kui vahepunktide aken on nähtav"
+msgstr "lukusta teepunktid (kui teepunkti omaduste dialoog pole just nähtav)"
 #
-# 
-# 
 msgid "Long Tow"
-msgstr ""
+msgstr "Pikk pukseerimine"
 #
 msgid "Long dash"
-msgstr ""
+msgstr "pikk joon"
 #
-# 
-# 
-# 
-# 
 msgid "Longitude"
-msgstr "Pikkuskraad"
+msgstr "pikkus"
 #
-# 
-# 
-# 
-# 
 msgid "Look Ahead Mode"
-msgstr "Vaade ette töörežiim"
+msgstr "ette-vaate moodus"
 #
-# 
-# 
-# 
-# 
 msgid "Lost Targets"
-msgstr "Kaotatud objekt"
+msgstr "Kaotatud märgid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Low"
-msgstr "Sinna"
+msgstr "madal"
 #
-# 
-# 
 msgid "Lt"
-msgstr ""
+msgstr "Tuli"
 #
-# 
-# 
 msgid "Lt sect."
-msgstr ""
+msgstr "Tule sekt."
 #
-# 
-# 
 msgid "LtV/Rig"
-msgstr ""
+msgstr "Tl/-s"
 #
-# 
-# 
 msgid "M/T"
-msgstr ""
+msgstr "M/t"
 #
-# 
-# 
 msgid "M/V"
-msgstr ""
+msgstr "M/l"
 #
-# 
-# 
-# 
-# 
 msgid "MAN OVERBOARD"
 msgstr "MEES ÜLE PARDA"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "MMSI"
 msgstr "MMSI"
 #
-# 
-# 
 msgid "M_COVR ID"
-msgstr ""
+msgstr "M_COVR ID"
 #
-# 
 msgid "Magenta"
-msgstr ""
+msgstr "purpurviolett"
 #
-# 
-# 
-# 
-# 
 msgid "Mariner's Standard"
-msgstr "Mere standard"
+msgstr "Laevniku valik"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Mariners Standard"
-msgstr "Mere standard"
+msgstr "laevniku valik"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Mark targets as lost after (min)"
-msgstr "Märgi objekt kaotatuks peale (Minutit):"
+msgstr "märgista märk kaotatuks peale (min)"
 #
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Marks"
 msgstr "Märgid"
 #
-# 
-# 
-# 
-# 
 msgid "Max Detail Here"
-msgstr "Max. detailid siin"
+msgstr "Maksimaalne detailsus siia"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Measure"
-msgstr "Mõõtmine välja"
+msgstr "Mõõtmine"
 #
-# 
-# 
-# 
-# 
 msgid "Measure Off"
 msgstr "Mõõtmine välja"
 #
-# 
-# 
 msgid "Med/V"
-msgstr ""
+msgstr "Med/l"
 #
-# 
-# 
 msgid "Medical Transport"
-msgstr ""
+msgstr "Meditsiiniline transportlaev"
 #
 msgid "Medium"
-msgstr ""
+msgstr "keskmine"
 #
-# 
-# 
-# 
-# 
 msgid "Mercator"
 msgstr "Mercator"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Merge waypoint?"
-msgstr "Muudan Teepunkti nime?"
+msgstr "Mestida teepunkt?"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Merge waypoints?"
-msgstr "Muudan Teepunkti nime?"
+msgstr "Mestida teepunktid?"
 #
-# 
-# 
-# 
-# 
 msgid "Meters"
-msgstr "Meetrid"
+msgstr "meetrid"
 #
-# 
-# 
 msgid "Mil/V"
-msgstr ""
+msgstr "S/l"
 #
-# 
-# 
 msgid "Military Vessel"
-msgstr ""
+msgstr "Sõjalaev"
 #
 msgid "Minimum Screen Size (mm)"
-msgstr ""
+msgstr "Vähim suurus ekraanil (mm)"
 #
 msgid "Miscellaneous Options"
-msgstr ""
+msgstr "Erinevad valikud"
 #
 msgid "MoTwilight"
-msgstr ""
+msgstr "Koit"
 #
-# 
-# 
 msgid "Moored"
-msgstr ""
+msgstr "Sildunud"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Move Boat Here"
-msgstr "Liiguta alus siia"
+msgstr "Pane laev siia"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Move Waypoint"
-msgstr "Teepunkti"
+msgstr "Teisalda teepunkt"
 #
 msgid "Mph"
-msgstr ""
+msgstr "mp/h"
 #
 msgid "NMEA"
-msgstr ""
+msgstr "NMEA"
 #
 msgid "NMEA 0183"
-msgstr ""
+msgstr "NMEA 0183"
 #
 msgid "NMEA 2000"
-msgstr ""
+msgstr "NMEA 2000"
 #
 msgid "NMi"
-msgstr ""
+msgstr "Mm"
 #
-# 
-# 
-# 
-# 
 msgid "Name"
 msgstr "Nimi"
 #
 msgid "National text on chart"
-msgstr ""
+msgstr "Rahvuslik tekst kaardil"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Nautical Miles"
-msgstr "&Meremiilid"
+msgstr "meremiilid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Nautical miles"
-msgstr "&Meremiilid"
+msgstr "meremiil"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Nav Status"
-msgstr "Nav. staatus"
+msgstr "Nav.staatus"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Navigate To Here"
-msgstr "Navigeerimise andmed"
+msgstr "Navigeeri siia"
 #
 msgid "Navigate To This"
-msgstr ""
+msgstr "Navigeeri selle juurde"
 #
 msgid "Network"
-msgstr ""
+msgstr "võrk"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "New Chart Group"
-msgstr "Kaardid"
+msgstr "Uus kaardigrupp"
 #
 msgid "New Group..."
-msgstr ""
+msgstr "Uus grupp..."
 #
-# 
-# 
 msgid "Next tide event"
-msgstr ""
+msgstr "Järgmised looded"
 #
 msgid "Nighttime"
-msgstr ""
+msgstr "Öö-aeg"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "No CPA Calculation if target range is greater than (NMi)"
-msgstr "Ei kalkuleeri CPA kui siht on kaugemal kui (miili):"
+msgstr "CPA ei arvutata kui märk on kaugemal kui (miili)"
 #
-# 
-# 
-# 
-# 
 msgid "No Chart Available"
-msgstr "Kaart pole saadaval"
+msgstr "Kaarte pole saadaval"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid ""
 "No Charts Installed.\n"
 "Please select chart folders in Options > Charts."
 msgstr ""
-"           Kaarte pole määratletud.\n"
-"Palun vali kaardid: Seaded->Kaardid."
+"Kaarte pole paigaldatud.\n"
+"Palun vali kaartide kaustad Valikud > Kaardid."
 #
 msgid "No, I don't want to hide it."
-msgstr ""
+msgstr "Ei, ma ei soovi teda peita."
 #
 msgid "No, and permanently remove the option to hide it."
-msgstr ""
+msgstr "Ei ning jäädavalt kõrvalda tema peitmise valikuvõimalus."
 #
-# 
-# 
 msgid "No. of items"
-msgstr ""
+msgstr "Osa N°"
 #
 msgid "None"
-msgstr ""
+msgstr "mitte ühtegi"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "North Up Mode"
-msgstr "Kurss ülesse töörežiim"
+msgstr "N-üleval tööreþiim"
 #
-# 
-# 
 msgid "Not Under Command"
-msgstr ""
+msgstr "Juhitavuse kaotanud"
 #
-# 
-# 
-# 
-# 
 msgid "OK"
 msgstr "OK"
 #
-# 
-# 
-# 
-# 
 msgid "Object Query"
 msgstr "Objekti päring"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Object Query..."
-msgstr "Objekti päring"
+msgstr "Objekti päring..."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "ObjectQuery"
-msgstr "Objekti päring"
+msgstr "Objektipäring"
 #
-# 
-# 
-# 
-# 
 msgid "Ok"
-msgstr "Ok"
+msgstr "OK"
 #
 msgid "Old log will be moved to opencpn.log.log"
-msgstr ""
+msgstr "Vana logi viiakse opencpn.log.log"
 #
-# 
-# 
-# 
-# 
 msgid "OpenCPN Alert"
-msgstr "OpenCPN alarm"
+msgstr "OpenCPN hoiatus"
 #
-# 
-# 
 msgid "OpenCPN CM93 Cell Offset Adjustments"
+msgstr "OpenCPN CM93 elemendi nihke täpsustused"
+#
+msgid "OpenCPN Chart Add...."
+msgstr "OpenCPN lisa kaart...."
+#
+msgid "OpenCPN Chart Scan...."
+msgstr "OpenCPN kaardi otsing...."
+#
+msgid "OpenCPN Chart Update"
+msgstr "OpenCPN kaardi uuendamine"
+#
+msgid "OpenCPN Converting Track to Route...."
+msgstr "OpenCPN muudab jälje teekonnaks..."
+#
+msgid "OpenCPN Directory Scan...."
+msgstr "OpenCPN asukoha otsing...."
+#
+msgid "OpenCPN Group Notice"
+msgstr "OpenCPN grupi märkus"
+#
+msgid "OpenCPN Info"
+msgstr "OpenCPN info"
+#
+msgid "OpenCPN Remove Waypoint"
+msgstr "OpenCPN teepunkti kõrvaldamine"
+#
+msgid "OpenCPN Route"
+msgstr "OpenCPN teekond"
+#
+msgid "OpenCPN Route Create"
+msgstr "Loo OpenCPN teekond"
+#
+msgid "OpenCPN Route Delete"
+msgstr "OpenCPN teekonna kustutamine"
+#
+msgid "OpenCPN S57 SENC File Create..."
+msgstr "OpenCPN S57 SENC faili loomine..."
+#
+msgid "OpenCPN Track"
+msgstr "OpenCPN jälg"
+#
+msgid "OpenCPN Track Delete"
+msgstr "OpenCPN jälje kustutamine"
+#
+msgid "OpenCPN Waypoint"
+msgstr "OpenCPN teepunkt"
+#
+msgid "OpenCPN cannot start. "
+msgstr "OpenCPN ei suuda käivituda."
+#
+msgid "OpenCPN info"
+msgstr "OpenPCN teave"
+#
+msgid ""
+"OpenCPN requires access to serial ports to use serial NMEA data.\n"
+"You currently do not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
 msgstr ""
 #
-# 
-# 
-# 
-# 
-msgid "OpenCPN Chart Add...."
-msgstr "OpenCPN kaartide lisamine..."
-#
-# 
-# 
-# 
-# 
-msgid "OpenCPN Chart Scan...."
-msgstr "OpenCPN kaartide otsing..."
-#
-# 
-# 
-# 
-# 
-msgid "OpenCPN Chart Update"
-msgstr "OpenCPN kaartide uuendus"
-#
-# 
-# 
-msgid "OpenCPN Converting Track to Route...."
-msgstr "OpenCPN konverteerib jälje teekonnaks"
-#
-# 
-# 
-msgid "OpenCPN Directory Scan...."
-msgstr "OpenCPN Kaustast otsimine..."
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "OpenCPN Group Notice"
-msgstr "OpenCPN teekonna looja"
-#
-# 
-# 
-# 
-# 
-msgid "OpenCPN Info"
-msgstr "OpenCPN Info"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "OpenCPN Remove Waypoint"
-msgstr "OpenCPN teekonna looja"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "OpenCPN Route"
-msgstr "OpenCPN teekonna looja"
-#
-# 
-# 
-# 
-# 
-msgid "OpenCPN Route Create"
-msgstr "OpenCPN teekonna looja"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "OpenCPN Route Delete"
-msgstr "OpenCPN teekonna looja"
-#
-# 
-# 
-# 
-# 
-msgid "OpenCPN S57 SENC File Create..."
-msgstr "OpenCPNS57 SENC fail loo..."
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "OpenCPN Track"
-msgstr "OpenCPN alarm"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "OpenCPN Track Delete"
-msgstr "OpenCPN alarm"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "OpenCPN Waypoint"
-msgstr "OpenCPN teekonna looja"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "OpenCPN cannot start. "
-msgstr "OpenCPN kaartide uuendus"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "OpenCPN info"
-msgstr "OpenCPN Info"
-#
-# 
-# 
-# 
-# 
 msgid "Options"
-msgstr "Seaded"
+msgstr "Valikud"
 #
 msgid "Other - Define in associated text field"
-msgstr ""
+msgstr "Muu - määratlege seotud tekstiväljas"
 #
 msgid "Output"
-msgstr ""
+msgstr "Väljund"
 #
 msgid "Output filtering"
-msgstr ""
+msgstr "Väljundi filtreerimine"
 #
 msgid "Output on this port ( as Autopilot or NMEA Repeater)"
-msgstr ""
+msgstr "väljasta selles pordis (nagu autoroolile või NMEA-kordajale)"
 #
-# 
-# 
-# 
-# 
 msgid "OverZoom"
-msgstr "Ülesuurendus"
+msgstr "Liigsuum"
 #
-# 
-# 
-# 
-# 
 msgid "Overwrite existing file?"
-msgstr "Kirjutan olemasoleva faili üle?"
+msgstr "Ks olemasolev fail üle kirjutada?"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Own Ship"
-msgstr "Alus:"
+msgstr "Oma laev"
 #
-# 
-# 
 msgid "P/V"
-msgstr ""
+msgstr "Lo/l"
 #
-# 
-# 
 msgid "PC/V"
-msgstr ""
+msgstr "ReoTõr/l"
 #
-# 
-# 
-# 
-# 
 msgid "Paper Chart"
-msgstr "Paberkaart"
+msgstr "paberkaart"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Parameters"
-msgstr "Meetrid"
+msgstr "Muutujad"
 #
-# 
-# 
 msgid "Pass/V"
-msgstr ""
+msgstr "R/l"
 #
-# 
-# 
 msgid "Passenger Ship"
-msgstr ""
+msgstr "Reisilaev"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Paste Route"
-msgstr "Moodusta teekond"
+msgstr "Kleebi teekond"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Paste Track"
-msgstr "&Ekspordi jälg..."
+msgstr "kleebi jälg"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Paste Waypoint"
-msgstr "Aktiveeri Teepunktid"
+msgstr "Kleebi teepunkt"
 #
-# 
-# 
 msgid "Pilot Vessel"
-msgstr ""
+msgstr "Lootsilaev"
 #
-# 
-# 
-# 
-# 
 msgid "Plain"
-msgstr "Tavaline"
+msgstr "lihtne"
 #
-# 
-# 
-# 
-# 
 msgid "Plan Speed"
-msgstr "Plaanitud kiirus"
+msgstr "Kavandatud kiirus"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Plan speed"
-msgstr "Plaanitud kiirus"
+msgstr "Kavandatav kiirus"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Play Ships Bells"
-msgstr "Mängi laevakellasid"
+msgstr "helista laevakella"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Play Sound on CPA/TCPA Alerts and DSC/SART emergencies."
-msgstr "Mängi heli CPA/TCPA Alarmile"
+msgstr "mängi heli CPA/TCPA häiretega ja DSC/SART hädaolukordades."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Please restart OpenCPN to activate language or style changes."
-msgstr "Palun taaskäivita OpenCPN, et aktiveeruks keelefail"
+msgstr "Palun taaskäivita OpenCPN keele- või stiilimuutuste aktiveerimiseks."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Pleasure craft"
-msgstr "Mõõtmine välja"
+msgstr "Väikelaev"
 #
 #, c-format
 msgid ""
@@ -3695,6 +2049,9 @@ msgid ""
 " This version is known to be unstable and will not be loaded.\n"
 " Please update this PlugIn at the opencpn.org website."
 msgstr ""
+"Plugin %s (%s), versioon %i.%i on avastatud.\n"
+" Teadaolevalt on see versioon ebastabiilne ja teda ei käivitata.\n"
+" Palun uuendage see plugin opencpn.org veebilehelt."
 #
 #, c-format
 msgid ""
@@ -3702,1387 +2059,674 @@ msgid ""
 " This version is known to be unstable.\n"
 " Please update this PlugIn at the opencpn.org website."
 msgstr ""
+"Plugin %s (%s), versioon %i.%i on avastatud.\n"
+" Teadaolevalt on see versioon ebastabiilne.\n"
+" Palun uuendage see plugin opencpn.org veebilehelt."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Plugins"
-msgstr "Lisad"
+msgstr "Pluginad"
 #
-# 
-# 
-# 
-# 
 msgid "Points"
 msgstr "Punktid"
 #
-# 
-# 
 msgid "Pollution Control Vessel"
-msgstr ""
+msgstr "Reostustõrjelaev"
 #
-# 
-# 
-# 
-# 
 msgid "Polyconic"
-msgstr "Polyconic"
+msgstr "polükooniline"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Port"
-msgstr "Punktid"
+msgstr "v/p"
 #
-# 
-# 
 msgid "Port Hand"
-msgstr ""
+msgstr "vasak külg"
 #
-# 
-# 
 msgid "Port Hand Mark"
-msgstr ""
+msgstr "vasaku külje märk"
 #
-# 
-# 
 msgid "Port Tender"
-msgstr ""
+msgstr "Sadamapuksiir"
 #
-# 
-# 
-# 
-# 
 msgid "Position"
 msgstr "Asukoht"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Position Report"
-msgstr "Viimane raport aeg:"
+msgstr "Asukoha ettekanne"
 #
-# 
-# 
 msgid "Pref. Chnl"
-msgstr ""
+msgstr "Eel.kanal"
 #
-# 
-# 
 msgid "Preferences"
-msgstr "Seaded"
+msgstr "Eelistused"
 #
-# 
-# 
 msgid "Preferred Channel Port Hand"
-msgstr ""
+msgstr "Vasaka külje eelistatud kanal"
 #
-# 
-# 
 msgid "Preferred Channel Starboard Hand"
-msgstr ""
+msgstr "Parema külje eelistatud kanal"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Preserve Scale when Switching Charts"
-msgstr "Säilita skaala kui vahetab kaarte"
+msgstr "säilita kaarte vahetades mõõtkava"
 #
-# 
-# 
-# 
-# 
 msgid "Preview:"
 msgstr "Eelvaade:"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Print"
-msgstr "Prindin"
+msgstr "Prindi"
 #
-# 
-# 
-# 
-# 
 msgid "Print Chart"
 msgstr "Prindi kaart"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Print Route"
-msgstr "Kustuta teekond"
+msgstr "Prindi teekond"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Print Route Selection"
-msgstr "Kustuta teekond"
+msgstr "Prindi teekonna valitud osa"
 #
 msgid "Priority"
-msgstr ""
+msgstr "Eesõigus"
 #
 msgid "Problem discovered"
-msgstr ""
+msgstr "Avastatud probleem"
 #
 msgid "Proceed to this location - await instructions"
-msgstr ""
+msgstr "Liikuge sinna asukohta - oodake juhiseid"
 #
-# 
-# 
-# 
-# 
-# 
 msgid "Processing Waypoints..."
-msgstr "Töötlen Teepunktid..."
+msgstr "Töötlemas teepunkte..."
 #
-# 
-# 
-# 
-# 
 msgid "Properties"
 msgstr "Omadused"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Properties..."
-msgstr "&Omadused..."
+msgstr "Omadused..."
 #
 msgid "Protocol"
-msgstr ""
+msgstr "protokoll"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Question"
-msgstr "Seaded"
+msgstr "Küsimus"
 #
-# 
-# 
 msgid "RACON"
-msgstr ""
+msgstr "Radarimajakas"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Range"
-msgstr "Kaugus"
+msgstr "vahemaa"
 #
-# 
-# 
 msgid "Real"
-msgstr ""
+msgstr "Tegelik"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Real (On Position)"
-msgstr "Asukoht"
+msgstr "Päris (asukohal)"
 #
 msgid "Real Scale Bitmap"
-msgstr ""
+msgstr "raster tegelikus mõõtkavas"
 #
 msgid "Real Scale Vector"
-msgstr ""
+msgstr "vektor tegelikus mõõtkavas"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Real(Off Position)"
-msgstr "Asukoht"
+msgstr "Päris (asukohalt väljas)"
 #
-# 
-# 
-# 
-# 
 msgid "Rebuilding chart database from configuration file entries..."
-msgstr "OpenCPN vajab uuendusi kaartide andmebaasi failidest...."
+msgstr "Taastan kaartide andmebaasi konfiguratsioonifaili kirjetest..."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Recorded points"
-msgstr "Muudan Teepunkti nime?"
+msgstr "Salvestatud punktid"
 #
-# 
 msgid "Red"
-msgstr ""
+msgstr "punane"
 #
 msgid "Redo"
-msgstr ""
+msgstr "Korda"
 #
 msgid "Reduce Data Precision"
-msgstr ""
+msgstr "Vähenda andmete täpsust"
 #
 msgid "Reduce Data..."
-msgstr ""
+msgstr "Vähenda andmeid..."
 #
 msgid "Reduced Detail at Small Scale"
-msgstr ""
+msgstr "Vähendatud detailid väiksel mõõtkaval"
 #
-# 
-# 
 msgid "Ref. Pt"
-msgstr ""
+msgstr "Läht/p"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Reference Point"
-msgstr "Järelvaate jaam:"
+msgstr "Lähtepunkt"
 #
-# 
-# 
 msgid "Remaining time : "
-msgstr ""
+msgstr "Järelejäänud aeg: "
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Remove Chart"
-msgstr "Aktiveeri kaardi kaustad"
+msgstr "Eemalda kaart"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Remove Connection"
-msgstr "Kirjatüübi seaded"
+msgstr "Kõrvalda ühendus"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Remove Selected"
-msgstr "Kustuta jälg"
+msgstr "Kõrvalda valitud"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Remove from Route"
-msgstr "Eemalda punkt teekonnast"
+msgstr "Kõrvalda teekonnast"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Remove lost targets after (min)"
-msgstr "Eemalda kaotatud objekt peale (Minutit):"
+msgstr "kõrvalda kaotatud märgid peale (min)"
 #
-# 
-# 
-# 
-# 
 msgid "Rename Waypoints?"
-msgstr "Muudan Teepunkti nime?"
+msgstr "Nimetada teepunkt ümber?"
 #
 msgid "Report Age"
-msgstr ""
+msgstr "Teate vanus"
 #
 msgid "Report as of"
-msgstr ""
+msgstr "Teatatud kui"
 #
 msgid "Report from ship: Icing info"
-msgstr ""
+msgstr "Ettekanne laevalt: jäätumise info"
 #
 msgid ""
 "Report from ship: Miscellaneous information - define in Associated text field"
-msgstr ""
+msgstr "Ettekanne laevalt: mitmesugune info - määratlege seotud tekstiväljas"
 #
-# 
-# 
 msgid "Reserved 11"
-msgstr ""
+msgstr "reserveeritud 11"
 #
-# 
-# 
 msgid "Reserved 12"
-msgstr ""
+msgstr "reserveeritud 12"
 #
-# 
-# 
 msgid "Reserved 13"
-msgstr ""
+msgstr "reserveeritud 13"
 #
 msgid "Reserved 14"
-msgstr ""
+msgstr "reserveeritud 14"
 #
 msgid "Restricted Area: Active military OPAREA"
-msgstr ""
+msgstr "Piiranguala: aktiivne sõjaoperatsioonide ala"
 #
 msgid "Restricted Area: Drifting Mines"
-msgstr ""
+msgstr "Piiranguala: triivivad miinid"
 #
 msgid "Restricted Area: Entry approval required prior to transit"
-msgstr ""
+msgstr "Piiranguala: sisenemisluba nõutud enne läbisõitu"
 #
 msgid "Restricted Area: Entry prohibited"
-msgstr ""
+msgstr "Piiranguala: sisenemine keelatud"
 #
 msgid "Restricted Area: Firing - danger area."
-msgstr ""
+msgstr "Piiranguala: tulistamine - ohtlik ala"
 #
 msgid "Restricted Area: Fishing prohibited"
-msgstr ""
+msgstr "Piiranguala: kalastamine keelatud"
 #
 msgid "Restricted Area: No anchoring."
-msgstr ""
+msgstr "Piiranguala: ankurdamine keelatud"
 #
-# 
-# 
 msgid "Restricted Manoeuvrability"
-msgstr ""
+msgstr "Piiratud manööverdusvõime"
 #
-# 
-# 
-# 
-# 
 msgid "Retrieving initial Chart Directory set from Windows Registry"
-msgstr "Saan kaadri asukoha info Windowsi registrist"
+msgstr "Otsin algse kaartide konplekti asukoha Windows-i registrist välja"
 #
-# 
-# 
-# 
-# 
 msgid "Retrieving initial language selection from Windows Registry"
-msgstr "Saan keeleinfo Windowsi registrist"
+msgstr "Otsin algse keelevaliku Windows-i registrist välja"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Reverse..."
-msgstr "&Tagurpidi"
+msgstr "Pööra ümber..."
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Right"
-msgstr "&Paksus:"
+msgstr "parem"
 #
 msgid "Rogue or suspicious vessel"
-msgstr ""
+msgstr "Suli või kahtlane laev"
 #
-# 
-# 
-# 
-# 
 msgid "Rollover"
-msgstr "Ülekeere"
+msgstr "Liigu üle"
 #
-# 
-# 
-# 
-# 
 msgid "Route"
 msgstr "Teekond"
 #
-# 
-# 
-# 
-# 
 msgid "Route Manager"
-msgstr "Teekonna haldur"
+msgstr "Teekondade haldur"
 #
-# 
-# 
-# 
-# 
 msgid "Route Name"
 msgstr "Teekonna nimi"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Route Print"
-msgstr "Teekonna omadused"
+msgstr "Teekonna printimine"
 #
-# 
-# 
-# 
-# 
 msgid "Route Properties"
 msgstr "Teekonna omadused"
 #
-# 
-# 
-# 
-# 
 msgid "Route from Track"
-msgstr "Teekond jäljest"
+msgstr "Loo jäljest teekond"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Route: "
-msgstr "Teekond"
+msgstr "Teekond:"
 #
 msgid "Route: Alternative route"
-msgstr ""
+msgstr "Teekond: alternatiivne teekond"
 #
 msgid "Route: Recommended route"
-msgstr ""
+msgstr "Teekond: soovitatav teekond"
 #
 msgid "Route: Recommended route through ice"
-msgstr ""
+msgstr "Teekond: soovitatav teekond läbi jää"
 #
-# 
-# 
 msgid "RouteLegInfoRollover"
-msgstr ""
+msgstr "Lõigu lühi-info üleliikudes"
 #
-# 
-# 
-# 
-# 
 msgid "Routes"
 msgstr "Teekonnad"
 #
-# 
-# 
 msgid "S/V"
-msgstr ""
+msgstr "Pu/l"
 #
 msgid "SAR Aircraft"
-msgstr ""
+msgstr "SAR-lennuk"
 #
-# 
-# 
 msgid "SAR/V"
-msgstr ""
+msgstr "SAR/l"
 #
 msgid "SART"
-msgstr ""
+msgstr "SART"
 #
-# 
-# 
-# 
-# 
 msgid "SOG COG"
 msgstr "SOG COG"
 #
-# 
-# 
 msgid "Safe Water"
-msgstr ""
+msgstr "Farvaater"
 #
 msgid "Safety Broadcast Message"
-msgstr ""
+msgstr "Ohutusteade"
 #
-# 
-# 
-# 
-# 
 msgid "Safety Depth"
-msgstr "Turvaline sügavus"
+msgstr "ohutu sügavus"
 #
-# 
-# 
 msgid "Sailing Vessel"
-msgstr ""
+msgstr "Purjelaev"
 #
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
+#, c-format
 msgid "Scale %4.0f"
-msgstr "Suurenda"
+msgstr "Mõõtkava %4.0f"
 #
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
+#, c-format
 msgid "Scale %4.0f (%1.1fx)"
-msgstr "Mõõtkava: %8.0f  Zoom %4.1fx"
+msgstr "Mõõtkava %4.0f (%1.1fx)-st"
 #
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
+#, c-format
 msgid "Scale %4.0f (%1.2fx)"
-msgstr "Õige mõõtkava: %8.0f  Zoom %4.2fx"
+msgstr "Mõõtkava %4.0f (%1.2fx)-st"
 #
-# 
-# 
-# 
-# 
 msgid "Scale In"
 msgstr "Suurenda"
 #
-# 
-# 
-# 
-# 
 msgid "Scale Out"
 msgstr "Vähenda"
 #
-# 
 msgid "Scan Charts and Update Database"
-msgstr ""
+msgstr "otsi kaarte ja uuenda andmebaas"
 #
-# 
-# 
 msgid "Search and Rescue Vessel"
-msgstr ""
+msgstr "Päästelaev"
 #
 msgid "Seatalk"
-msgstr ""
+msgstr "Seatalk"
 #
 msgid "Security Alert - Level 1"
-msgstr ""
+msgstr "Turvalisuse hoiatus - 1. tase"
 #
 msgid "Security Alert - Level 2"
-msgstr ""
+msgstr "Turvalisuse hoiatus - 2. tase"
 #
 msgid "Security Alert - Level 3"
-msgstr ""
+msgstr "Turvalisuse hoiatus - 3. tase"
 #
 msgid "See the log file at "
-msgstr ""
+msgstr "Vaata logifaili"
 #
-# 
-# 
-# 
-# 
 msgid "Select Alert Sound"
-msgstr "Vali alarmi heli"
+msgstr "Vali häire heli"
 #
-# 
-# 
-# 
-# 
 msgid "Select All"
 msgstr "Vali kõik"
 #
-# 
-# 
-# 
-# 
 msgid "Select Sound File"
-msgstr "Vali heli fail"
+msgstr "Vali helifail"
 #
 msgid "Select Tide/Current Data"
-msgstr ""
+msgstr "Vali loodete/hoovuse andmed"
 #
 msgid ""
 "Select the maximum error allowed (in meters)\n"
 "after data reduction:"
 msgstr ""
+"Vali suurim lubatud viga (meetrites)\n"
+"peale andmete vähendamist:"
 #
-# 
-# 
-# 
-# 
 msgid "Send To GPS..."
-msgstr "Saada GPS-i..."
+msgstr "Saada GPS-i"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Send to GPS"
-msgstr "&Saada GPS-i..."
+msgstr "Saada GPS-i"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Sentence Filter"
-msgstr "&Vaikne alarm"
+msgstr "Teate filter"
 #
 msgid "Serial"
-msgstr ""
+msgstr "jada"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Set"
-msgstr "Järgmine"
+msgstr "Määra"
 #
-# 
-# 
-# 
-# 
 msgid "Set Anchor Watch"
-msgstr "Sea ankruvalve"
+msgstr "Alusta ankruvahti"
 #
-# 
-# 
-# 
-# 
 msgid "Shallow Depth"
-msgstr "Madal sügavus"
+msgstr "madal vesi"
 #
-# 
-# 
-# 
-# 
 msgid "Shift to Larger Scale Chart"
-msgstr "Mine suuremale mõõtkavale"
+msgstr "Mine suurema mõõtkavaga kaardile"
 #
-# 
-# 
-# 
-# 
 msgid "Shift to Smaller Scale Chart"
-msgstr "Mine väiksemale mõõtkavale"
+msgstr "Mine väiksema mõõtkavaga kaardile"
 #
 msgid "Ship Icon Type"
-msgstr ""
+msgstr "laeva ikooni tüüp"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Ships"
-msgstr "Alus:"
+msgstr "Laevad"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Short dash"
-msgstr "Näita tõusu/mõõna jaamasid"
+msgstr "lühike joon"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show"
-msgstr "Näita tõusu/mõõna jaamasid"
+msgstr "Näita"
 #
-# 
-# 
-# 
-# 
 msgid "Show AIS Targets"
-msgstr "Näita AIS-i sihtmärke"
+msgstr "Näita AIS märke"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show AIS targets real size"
-msgstr "Näita AIS-i sihtmärke"
+msgstr "näita AIS märgi tegelikku suurust"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show All Tracks"
-msgstr "Näita AIS-i sihtmärke"
+msgstr "Näita kõik jäljed"
 #
-# 
-# 
-# 
-# 
 msgid "Show CPA/TCPA Alert Dialog"
-msgstr "Näita CPA/TCPA alarmi akent"
+msgstr "näita CPA/TCPA häire dialoogi"
 #
-# 
-# 
-# 
-# 
 msgid "Show Chart Outlines"
-msgstr "Näita kaardi piirjooni"
+msgstr "näita kaardi kontuure"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Current Information"
-msgstr "Koha informatsioon"
+msgstr "Näita hoovuse infot"
 #
-# 
-# 
-# 
-# 
 msgid "Show Currents"
-msgstr "Näita hoovuseid"
+msgstr "Näita hoovusi"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Depth Units"
-msgstr "Näita sügavusühikuid"
+msgstr "näita sügavusühikuid"
 #
 msgid "Show Distance from each Waypoint to the next one."
-msgstr ""
+msgstr "Näita vahemaad igast teepunktist järgmisse."
 #
-# 
-# 
-# 
-# 
 msgid "Show ENC Text"
 msgstr "Näita ENC teksti"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Grid"
-msgstr "Näita tõusu/mõõna jaamasid"
+msgstr "näita kaardivõrku"
 #
 msgid "Show Highway"
-msgstr ""
+msgstr "Näita magistraali"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Lat/Long as"
-msgstr "Näita AIS-i sihtmärke"
+msgstr "näita laiust/pikkust kui"
 #
 msgid "Show Magnetic bearings and headings"
-msgstr ""
+msgstr "Näita magnetsuundi ja -kursse"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show NMEA Debug Window"
-msgstr "Näita GPS/NMEA andmete saabumis akent"
+msgstr "näita NMEA silumise akent"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Skewed Raster Charts as North-Up"
-msgstr "Näita viltust raster kaarti Põhi üleval"
+msgstr "näita viltuseid rasterkaarte kui N-üleval"
 #
-# 
-# 
-# 
-# 
 msgid "Show Status Bar"
-msgstr "Näita staatuse riba"
+msgstr "näita olekuriba"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Target CPA"
-msgstr "Näita AIS-i sihtmärke"
+msgstr "Näita märgi CPA"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Target Track"
-msgstr "Näita AIS-i sihtmärke"
+msgstr "Näita märgi jälge"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show This Chart"
-msgstr "Näita AIS-i sihtmärke"
+msgstr "Näita seda kaarti"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Tide Information"
-msgstr "Koha informatsioon"
+msgstr "Näita loodete infot"
 #
-# 
-# 
-# 
-# 
 msgid "Show Tides"
-msgstr "Näita tõusu/mõõna jaamasid"
+msgstr "Näita loodeid"
 #
 msgid "Show Toolbar in Fullscreen Mode"
-msgstr ""
+msgstr "näita tööriistariba täisekraani-reþiimis"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show WPT names"
-msgstr "Näita nime"
+msgstr "Näita WPT nimesid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Waypoint description."
-msgstr "Kirjeldus"
+msgstr "Näita teepunkti kirjeldust."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Waypoint name."
-msgstr "Teepunktidi nimi"
+msgstr "Näita teepunkti nime."
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show Waypoint position."
-msgstr "Koha informatsioon"
+msgstr "Näita teepunkti asukohta."
 #
 msgid "Show area notices (from AIS binary messages)"
-msgstr ""
+msgstr "näita ala teateid (AIS binaarteadetest)"
 #
 msgid "Show course from each Waypoint to the next one. "
-msgstr ""
+msgstr "Näita kurssi igast teepunktist järgmisse."
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show distance as"
-msgstr "Kogu vahemaa"
+msgstr "näita vahemaad kui"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show name"
 msgstr "Näita nime"
 #
 msgid "Show names with AIS targets at scale greater than 1:"
-msgstr ""
+msgstr "näita nimesid koos AIS-märkidega suuremal mõõtkaval kui 1:"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show on chart"
-msgstr "Näita AIS-i sihtmärke"
+msgstr "Näita kaardil"
 #
-# 
-# 
-# 
-# 
 msgid "Show radar rings"
-msgstr "Näita radari ringe"
+msgstr "näita radariringe"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show speed as"
-msgstr "Näita tõusu/mõõna jaamasid"
+msgstr "näita kiirust kui"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show target COG predictor arrow, length (min)"
-msgstr "Näita objekti COG noolt"
+msgstr "näita märgi COG eeldatavat asukohta, (min) kaugusel"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Show target tracks, length (min)"
-msgstr "Näita sihtpunkti jälgi"
+msgstr "näita märgi jälge, pikkus (minutit)"
 #
-# 
-# 
-# 
-# 
 msgid "Shows the font preview."
-msgstr "Näita fondi eelvaadet."
+msgstr "Näitab kirjamärgi eelvaadet."
 #
-# 
-# 
-# 
-# 
 msgid "Simplified"
-msgstr "Lihtsustatud"
+msgstr "lihtsustatud"
 #
 msgid "Smooth Panning / Zooming"
-msgstr ""
+msgstr "sujuv panoraamimine / suumimine"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "SoG"
 msgstr "SoG"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Solid"
-msgstr "Sümboliseeritud"
+msgstr "jäme"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Spare"
-msgstr "Start"
+msgstr "Tagavara"
 #
-# 
-# 
 msgid "Special"
-msgstr ""
+msgstr "Eri"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Special Mark"
-msgstr "Kustuta punkt"
+msgstr "Eriotstarbeline märk"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Speed"
-msgstr "Plaanitud kiirus"
+msgstr "Kiirus"
 #
-# 
-# 
-# 
-# 
 msgid "Speed (Kts)"
-msgstr "Kiirus (sõlmed)"
+msgstr "Kiirus (sõlme)"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Split"
-msgstr "Kustuta teekond"
+msgstr "Jaga"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Split Route"
-msgstr "Kustuta teekond"
+msgstr "Poolita teekond"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Split Track"
-msgstr "&Alusta jälje näitamist"
+msgstr "Poolita jälg"
 #
-# 
-# 
-# 
-# 
 msgid "Standard"
-msgstr "Standard"
+msgstr "standartne"
 #
-# 
-# 
 msgid "Starboard Hand Mark"
-msgstr ""
+msgstr "Parema külje märk"
 #
-# 
-# 
-# 
-# 
 msgid "Start"
-msgstr "Start"
+msgstr "Käivita"
 #
 msgid "Statistics"
-msgstr ""
+msgstr "Statistika"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "StatusBar"
-msgstr "Näita staatuse riba"
+msgstr "Olekuriba"
 #
 msgid "Statute miles"
-msgstr ""
+msgstr "maamiil"
 #
-# 
-# 
 msgid "Stbd"
-msgstr ""
+msgstr "p/p"
 #
-# 
-# 
 msgid "Stbd Hand"
-msgstr ""
+msgstr "parem külg"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Style"
-msgstr "&Stiil:"
+msgstr "Stiil"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Style:"
-msgstr "&Stiil:"
+msgstr "Stiil:"
 #
 msgid "Sunrise"
-msgstr ""
+msgstr "Päikesetõus"
 #
 msgid "Sunset"
-msgstr ""
+msgstr "Päikseloojang"
 #
-# 
-# 
-# 
-# 
 msgid "Supress Alerts for anchored/moored targets"
-msgstr "Keela alarm sildutud/ankrus objektidele"
+msgstr "vaigista ankurdatud/sildunud märkide häired"
 #
-# 
-# 
-# 
-# 
 msgid "Symbolized"
-msgstr "Sümboliseeritud"
+msgstr "lisatud sümbolid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "TCP"
-msgstr "CPA TCPA"
+msgstr "TCP"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "TCPA"
-msgstr "CPA TCPA"
+msgstr "TCPA"
 #
-# 
-# 
 msgid "Tanker"
-msgstr ""
+msgstr "Tanker"
 #
-#
-#
-#
-#
-# 
-# 
-#, fuzzy
 msgid "Target Count"
-msgstr "Sihtkoha info"
+msgstr "Märke loendatud"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Target List..."
-msgstr "AIS-i objektide nimekiri"
+msgstr "Märkide nimekiri"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Target Query..."
-msgstr "AIS-i sihtmärgi päring"
+msgstr "Märkide päring..."
 #
-#
-#
-#
-#
-# 
-# 
 msgid "Target info"
-msgstr "Sihtkoha info"
+msgstr "Märgi info"
 #
-# 
-# 
-# 
-# 
 msgid "Temporary GOTO Route"
-msgstr "Ajutiselt MINE teekonnale"
+msgstr "Ajutine GOTO teekond"
 #
-# 
-# 
-# 
-# 
 msgid "Temporary MOB Route"
-msgstr "Ajutiselt MOB teekonnale"
+msgstr "Ajutine MOB teekond"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Temporary layer"
-msgstr "Ajutiselt MOB teekonnale"
+msgstr "Ajutine kiht"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Tender"
-msgstr "Saada"
+msgstr "Pukser"
 #
-# 
-# 
-# 
-# 
 msgid "Test Alert Sound"
-msgstr "Kontrolli alarmi helisid"
+msgstr "Testi häire heli"
 #
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Testing"
-msgstr "Seaded"
+msgstr "Testin"
 #
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
 msgstr ""
+"Mees üle parda nupp võiks olla oluline ohutusfuntsioon.\n"
+"Kas olete kindel, et soovite seda peita?"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "The Open Source Chart Plotter/Navigator"
-msgstr ""
-"\n"
-"         OpenCPN...on pisike ja armas vabavara navigeerimisvahend"
+msgstr "Vabavaraline kaardiplotter/navigaator"
 #
 #, c-format
 msgid ""
 "The amount of data used by the track\n"
 " was reduced by %d%%."
 msgstr ""
+"Teekonna poolt kasutatud andmete\n"
+"kogus on vähendatud %d%%."
 #
 msgid ""
 "The currently running Track was not merged.\n"
 "You can merge it later when it is completed."
 msgstr ""
+"Praegu jooksvat jälge ei mestitud.\n"
+"Võite mestida teda hiljem kui ta on lõpetanud."
 #
-# 
-# 
-# 
-# 
 msgid "The font colour."
-msgstr "Teksti värv"
+msgstr "Kirjamärgi värv."
 #
-# 
-# 
-# 
-# 
 msgid "The font family."
-msgstr "The font family."
+msgstr "Kirjamärgi grupp."
 #
-# 
-# 
-# 
-# 
 msgid "The font point size."
-msgstr "Fondi punkti suurus"
+msgstr "Kirjamärgi punkti suurus."
 #
-# 
-# 
-# 
-# 
 msgid "The font style."
-msgstr "Kirja stiil."
+msgstr "Kirjamärgi stiil."
 #
-# 
-# 
-# 
-# 
 msgid "The font weight."
-msgstr "Fondi paksus."
+msgstr "Kirjamärgi paksus."
 #
 msgid "The necessary configuration files were not found. "
-msgstr ""
+msgstr "Ei suudetud leida vajalikke konfiguratsioonifaile."
 #
 msgid "The settings for own ship real size are not correct:"
-msgstr ""
+msgstr "Oma laeva tegeliku suuruse seaded ei ole õiged:"
 #
 msgid ""
 "The waypoint you want to delete is used in a route, do you really want to "
 "delete it?"
 msgstr ""
+"Teepunkt, mida soovite kustutada, on teekonnas kasutusel, kas tõesti soovite "
+"teda kustutada?"
 #
-# 
-# 
-# 
-# 
 msgid "There"
 msgstr "Seal"
 #
@@ -5091,7659 +2735,410 @@ msgid ""
 "pasting. Would you like to just merge the pasted data into them?\n"
 "\n"
 msgstr ""
+"Seal on samas kohas, kuhu soovite mõned kleepida, olemas teepunktid,. Kas "
+"soovite kleebitavad andmed nendega mestida?\n"
+"\n"
 #
+#, fuzzy
 msgid ""
-"There are some waypoints used in routes or anchor alarms. Do you want to "
-"delete them as well? This will change the routes and disable the anchor "
-"alarms. Answering No keeps the waypoints used in routes or alarms."
+"There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
+"Mõned teepunktid on kasutusel teekondades või ankru häiretes. Kas soovite ka "
+"nemad kustutada? See muudab teekonnad ja blokeerib ankruhäired. Vastates Ei "
+"hoiatakse teekondade ja häirete punktid alles."
 #
 msgid ""
 "There is an existing waypoint at the same location as the one you are "
 "pasting. Would you like to merge the pasted data with it?\n"
 "\n"
 msgstr ""
+"Seal on samas kohas olemas teepunkt, kuhu soovite seda kleepida. Kas soovite "
+"kleebitavad andmed temaga mestida?\n"
+"\n"
 #
-# 
-# 
-# 
-# 
 msgid ""
 "There was a problem printing.\n"
 "Perhaps your current printer is not set correctly?"
 msgstr ""
-"Probleem printimisega.\n"
-"Tundub, et printer pole korralikult seadistatud?"
+"Oli probleem printimisega.\n"
+"Võib-olla pole printer korralikult seadistatud?"
 #
-# 
-# 
-# 
-# 
 msgid "This Leg"
 msgstr "See lõik"
 #
 msgid "This waypoint is part of a layer and can't be edited"
-msgstr ""
+msgstr "See teepunkt on osa kihist ning seda ei saa redigeerida"
 #
 msgid "TideCurrentGraphRollover"
-msgstr ""
+msgstr "Hoovuse-loodete graafiku üleliikumine"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Tides && Currents"
-msgstr "Näita hoovuseid"
+msgstr "Looded && hoovused"
 #
-# 
-# 
-# 
-# 
 msgid "Time Enroute"
-msgstr "Teekonna aeg"
+msgstr "Aeg teel"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Time enroute"
-msgstr "Teekonna aeg"
+msgstr "Aeg teel"
 #
 msgid "Time shown as"
-msgstr ""
+msgstr "Aeg on näidatud kui"
 #
-# 
-# 
 msgid "Times shown as"
-msgstr ""
+msgstr "Ajad näidatud kui"
 #
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Timestamp"
-msgstr "ETE/Timestamp"
+msgstr "Ajatempel"
 #
-# 
-# 
-# 
-# 
 msgid "To"
-msgstr "Sinna"
+msgstr "Kuhu"
 #
-# 
-# 
-# 
-# 
 msgid "To Waypoint"
 msgstr "Teepunkti"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "To route"
-msgstr "Teekonna aeg"
+msgstr "Teekonnale"
 #
-# 
-# 
-# 
-# 
 msgid "Toggle Tracking"
-msgstr "Lülita jälgimisele"
+msgstr "Lülita järgimist sisse-välja"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Toggle track"
-msgstr "Lülita jälgimisele"
+msgstr "Lülita jälg sisse-välja"
 #
-# 
-# 
-# 
-# 
 msgid "ToolTips"
-msgstr "Tööriista juhendid"
+msgstr "Nõuanded"
 #
 msgid "Toolbar and Window Style"
-msgstr ""
+msgstr "Tööriistariba ja akna stiil"
 #
-# 
-# 
-# 
-# 
 msgid "Total Distance"
 msgstr "Kogu vahemaa"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Total Length: "
-msgstr "Pikkus"
+msgstr "Kogupikkus: "
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Total distance"
-msgstr "Kogu vahemaa"
+msgstr "Üldine vahemaa"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Tow"
-msgstr "Sinna"
+msgstr "Pukseerimine"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Track"
-msgstr "Jäljed"
+msgstr "Jälg"
 #
-# 
-# 
-# 
-# 
 msgid "Track Name"
 msgstr "Jälje nimi"
 #
-#
-#
-# 
-# 
-# 
-# 
 msgid "Track Properties"
-msgstr "Jälje omadused"
+msgstr "Jalje omadused"
 #
-# 
-# 
-# 
-# 
-#, fuzzy, c-format
+#, c-format
 msgid "Track Properties, Layer: %d"
-msgstr "Koha omadused"
+msgstr "Jälje omadused, kiht: %d"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Tracking Precision"
-msgstr "Jälje omadused"
+msgstr "järgimise täpsus"
 #
-# 
-# 
-# 
-# 
 msgid "Tracks"
 msgstr "Jäljed"
 #
 msgid "Transmit Sentences"
-msgstr ""
+msgstr "Saada teated"
 #
 msgid "Transmit sentences"
-msgstr ""
+msgstr "saada teated"
 #
-# 
-# 
-# 
-# 
 msgid "Transverse Mercator"
-msgstr "Transverse Mercator"
+msgstr "Mercatori põik-"
 #
 msgid "Treat WPL sentences as APRS position reports"
-msgstr ""
+msgstr "käsitle WPL-teateid kui ARPS asukoha ettekandeid"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Trk"
-msgstr "Jäljed"
+msgstr "Jälg"
 #
-# 
-# 
 msgid "Tug"
-msgstr ""
+msgstr "Puksiir"
 #
 msgid "Turn Rate"
-msgstr ""
+msgstr "Pöördekiirus"
 #
-# 
-# 
-# 
-# 
 msgid "Type"
 msgstr "Tüüp"
 #
 msgid "UDP"
-msgstr ""
+msgstr "UDP"
 #
 msgid "URL"
-msgstr ""
+msgstr "URL"
 #
-# 
-# 
-# 
-# 
 msgid "UTC"
 msgstr "UTC"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Undefined"
-msgstr "&Alajoon"
+msgstr "Määratlemata"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Undefined (default)"
-msgstr "&Alajoon"
+msgstr "Määratlemata (vaikimisi)"
 #
-# 
-# 
 msgid "Under way sailing"
-msgstr ""
+msgstr "Teel purjede all"
 #
-# 
-# 
 msgid "Underway"
-msgstr ""
+msgstr "Teel"
 #
 msgid "Undo"
-msgstr ""
+msgstr "Võta tagasi"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Unk"
-msgstr "Unk"
+msgstr "Teadmata"
 #
-# 
-# 
-# 
-# 
 msgid "Unknown"
-msgstr "Tundmatu"
+msgstr "tundmatu"
 #
-# 
-# 
 msgid "Unlist contents"
-msgstr ""
+msgstr "Tühjenda nimekiri"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Unspecified"
-msgstr "&Alajoon"
+msgstr "Määratlemata"
 #
-# 
-# 
-# 
-# 
 msgid "Update Control"
-msgstr "Uuenda kontrolli"
+msgstr "Uuenduste kontroll"
 #
 msgid "Use Accelerated Graphics (OpenGL)"
-msgstr ""
+msgstr "kasuta graafikakiirendit (OpenGL)"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Use Garmin (GRMN) mode for input"
-msgstr "Kasuta Garmini GRMN (host) modes, et laadida teepunktid ja teekonnad."
+msgstr "kasuta Garmini (GRMN) moodust sisendiks"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Use Garmin GRMN (Host) mode for uploads"
-msgstr "Kasuta Garmini GRMN (host) modes, et laadida teepunktid ja teekonnad."
+msgstr "kasuta Garmini GRMN (host) moodust üleslaadimiseks"
 #
 msgid "Use magnetic bearings in output sentence ECAPB"
-msgstr ""
+msgstr "kasuta magnetpeilingut väljuvas ECAPB-teates"
 #
-# 
-# 
-# 
-# 
 msgid "Use nearby waypoint?"
-msgstr "Kasutan lähimat Teepunkti?"
+msgstr "Kasutada lähimat teepunkti?"
 #
 msgid "User Interface"
-msgstr ""
+msgstr "Kasutjajliides"
 #
-# 
-# 
-#, fuzzy
 msgid "User X Offset"
-msgstr "Uuenda CM93 nihe"
+msgstr "Kasutaja X-nihe"
 #
-# 
-# 
 msgid "User X Offset (Metres)"
-msgstr ""
+msgstr "Kasutaja X-nihe meetrites"
 #
-# 
-# 
-#, fuzzy
 msgid "User Y Offset"
-msgstr "Uuenda CM93 nihe"
+msgstr "Kasutaja Y-nihe"
 #
-# 
-# 
 msgid "User Y Offset (Metres)"
-msgstr ""
+msgstr "Kasutaja Y-nihe meetrites"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "VTS active target"
-msgstr "Aktiveeri kaardi kaustad"
+msgstr "VTS-i aktiivne märk"
 #
-# 
-# 
-# 
-# 
 msgid "Vector Charts"
-msgstr "Vektor kaardid"
+msgstr "Vektorkaardid"
 #
-# 
-# 
 msgid "Vessel Diving"
-msgstr ""
+msgstr "Sukeldumine laevalt"
 #
-# 
-# 
 msgid "Vessel Dredging"
-msgstr ""
+msgstr "Süvendav laev"
 #
-# 
-# 
 msgid "Vessel Fishing"
-msgstr ""
+msgstr "Kalastav laev"
 #
-# 
-# 
 msgid "Vessel Towing"
-msgstr ""
+msgstr "Pukseeriv laev"
 #
-# 
-# 
 msgid "Vessel Towing, Long"
-msgstr ""
+msgstr "Pukseeriv laev, pikk koosseis"
 #
 msgid "Vessel requesting non-distress assistance"
-msgstr ""
+msgstr "Merehädas mitteolev laev vajab abi"
 #
-# 
-# 
 msgid "Virtual"
-msgstr ""
+msgstr "Virtuaalne"
 #
-# 
-# 
 msgid "Virtual (Off Position)"
-msgstr ""
+msgstr "Virtuaalne (asukohalt väljas)"
 #
-# 
-# 
 msgid "Virtual (On Position)"
-msgstr ""
+msgstr "Virtuaalne (asukohal)"
 #
 msgid "Visible buttons"
-msgstr ""
+msgstr "Nähtavad nupud"
 #
-# 
-# 
-# 
-# 
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
-msgstr "WAV failid (*.wav)|*.wav|Kõik failid (*.*)|*.*"
+msgstr "WAV-failid (*.wav)|*.wav|Kõik failid (*.*)|*.*"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Warn if CPA less than (NMi)"
-msgstr "Hoiata kui TCPA on lähemal (Minutit):"
+msgstr "hoiata kui CPA on vähem kui (miili)"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Waypoint"
-msgstr "Teepunktid"
+msgstr "Teepunkt"
 #
 msgid "Waypoint Arrival Circle Radius (NMi)"
-msgstr ""
+msgstr "teepunkti saabumisringi raadius (miili)"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Waypoint Information"
-msgstr "Koha informatsioon"
+msgstr "Teepunkti info"
 #
-# 
-# 
-# 
-# 
 msgid "Waypoint Name"
-msgstr "Teepunktidi nimi"
+msgstr "Teepunkti nimi"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Waypoint Properties"
-msgstr "&Omadused..."
+msgstr "Teepunkti omadused"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Waypoint Properties, Layer: "
-msgstr "Koha omadused"
+msgstr "Kiht Teepunkti omadused:"
 #
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
 msgid "Waypoint(s) Uploaded successfully."
-msgstr "Punkt(id) laetud"
+msgstr "Teepunkt(id) on edukalt üleslaetud."
 #
-# 
-# 
-# 
-# 
 msgid "Waypoints"
 msgstr "Teepunktid"
 #
-# 
-# 
-# 
-# 
 msgid ""
 "Waypoints can be renamed to reflect the new order, the names will be '001', "
 "'002' etc.\n"
 "\n"
 "Do you want to rename the waypoints?"
 msgstr ""
-"Teepunktide nimed muudetakse, nimeks saavad '001', '002' jms.\n"
+"Teepunkte saab ümber nimetada uue järjekorra kasjatamiseks, nimed oleksid "
+"'001', 002' jne.\n"
 "\n"
-"Kas tahad teepunktide nimesid muuta?"
+"Kas soovite teepunktid ümber nimetadaa?"
 #
-# 
-# 
-# 
-# 
 msgid "Welcome to OpenCPN"
-msgstr "Tere tulemast OpenCPN-i"
+msgstr "Tere tulemast!"
 #
-# 
-# 
-# 
-# 
 msgid "Whether the font is underlined."
-msgstr "Kui font on allajoonitud"
+msgstr "Kas kirjamärk on allajoonitud."
 #
-# 
 msgid "White"
-msgstr ""
+msgstr "valge"
 #
 msgid "Width"
-msgstr ""
+msgstr "Laius"
 #
 msgid "Width Over All (m)"
-msgstr ""
+msgstr "Suurim laius (m)"
 #
 msgid "Width:"
-msgstr ""
+msgstr "Laius: "
 #
-# 
-# 
 msgid "Wing In Ground Effect"
-msgstr ""
+msgstr "Lendlaev"
 #
 msgid "Would you like include the Great Circle routing points for this leg?"
-msgstr ""
+msgstr "Kas sooviksite lisada selle lõigu jaoks suure ringi teekonna punktid?"
 #
 msgid "Wrong length of the NMEA filter value"
-msgstr ""
+msgstr "NMEA filtri väärtuse vale pikkus"
 #
-# 
-# 
-# 
-# 
 msgid "XTE         L"
 msgstr "XTE         L"
 #
-# 
-# 
-# 
-# 
 msgid "XTE         R"
 msgstr "XTE         R"
 #
-# 
-# 
 msgid "Yat"
-msgstr ""
+msgstr "Jaht"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Yellow"
-msgstr "Kutsung"
+msgstr "kollane"
 #
 msgid "Yes, hide it."
-msgstr ""
+msgstr "Jah, peida ta."
 #
 msgid ""
 "You can't hide the last tool from the toolbar\n"
 "as this would make it inaccessible."
 msgstr ""
+"Te ei saa peita viimast vahendit tööriistaribal,\n"
+"sest see muudaks ta kättesaamatuks."
 #
 msgid "You must enter the address..."
-msgstr ""
+msgstr "Te peate sisestama aadressi..."
 #
 msgid "You must select or enter the port..."
-msgstr ""
+msgstr "Peate valima või sisenema porti..."
 #
-# 
-# 
-# 
-# 
 msgid "Zoom In"
 msgstr "Suurenda"
 #
-# 
-# 
-# 
-# 
 msgid "Zoom Out"
 msgstr "Vähenda"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Zoom to Cursor"
-msgstr "Suurenda"
+msgstr "suumi hiire juurde"
 #
-# 
-# 
-# 
-# 
 msgid "[Class] Type (Status)"
-msgstr "[Class] Tüüp (Staatus)"
+msgstr "[Klass] tüüp (olek)"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "_A"
-msgstr "A"
+msgstr "_A"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "_B"
-msgstr "B"
+msgstr "_B"
 #
-# 
-# 
 msgid "_plus"
-msgstr ""
+msgstr "_pluss"
 #
 msgid "cm"
-msgstr ""
+msgstr "cm"
 #
 msgid "fa"
-msgstr ""
+msgstr "sülda"
 #
 msgid "ft"
-msgstr ""
+msgstr "jalga"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "in"
-msgstr "Lingid"
+msgstr "tolli"
+#
+#, fuzzy
+msgid "in "
+msgstr "tolli"
 #
 msgid "km"
-msgstr ""
+msgstr "km"
 #
 msgid "km/h"
-msgstr ""
+msgstr "km/h"
 #
 msgid "kts"
-msgstr ""
+msgstr "sõlme"
 #
 msgid "m"
-msgstr ""
+msgstr "m"
 #
 msgid "m/s"
-msgstr ""
+msgstr "m/s"
 #
 msgid "mi"
-msgstr ""
+msgstr "miili"
 #
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "min"
-msgstr "Lingid"
+msgstr "min"
 #
 msgid "mph"
-msgstr ""
+msgstr "mp/h"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "track"
-msgstr "Jäljed"
+msgstr "jälg"
 #
-# 
-# 
 msgid "wgsox"
-msgstr ""
+msgstr "wgsox"
 #
-# 
-# 
 msgid "wgsoy"
-msgstr ""
+msgstr "wgsoy"
 #
 msgid "wxFB Website"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "\n"
-#~ msgstr "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "\n"
-#~ "\n"
-#~ "\n"
-#~ msgstr ""
-#~ "\n"
-#~ "\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "      COG arrow predictor length (Minutes):"
-#~ msgstr "      COG noole ennustatav pikkus (Minutites):"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "      Max moored target speed (Kts.):"
-#~ msgstr "      Max. seisva objekti kiirus (sõlmed):"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "      Target track length (Minutes):"
-#~ msgstr "     Objekti jälje pikkus (Minutites):"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
-#~ msgstr "Kaardi projektsioon on tundmatu, jultunud Mercator:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "   PlugInManager: Cannot load library: "
-#~ msgstr "   PlugInManager: Ei suuda laadida library: "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "   PlugInManager: Cannot load symbol create_pi: "
-#~ msgstr "   PlugInManager: Ei suuda laadidal create_pi: "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "   PlugInManager: Cannot load symbol destroy_pi: "
-#~ msgstr "  Lisade haldur: Ei suuda laadida symbol destroy_pi:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "  Could not open AIS serial port '"
-#~ msgstr "Ei avanud AIS-i seeria porti"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "  Could not open serial port '"
-#~ msgstr "Ei suuda avada seeria porti"
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid " is %5g"
-#~ msgstr " on %5g"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "&Acknowledge"
-#~ msgstr "&Tunnustama"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "&Export Track..."
-#~ msgstr "&Ekspordi jälg..."
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "&Jump To"
-#~ msgstr "Hüppa siia"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "&Silence Alert"
-#~ msgstr "&Vaikne alarm"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "'\n"
-#~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
-#~ msgstr ""
-#~ "'\n"
-#~ "Soovitus: Proovi 'xxx.xxx.xxx.xxx' kirjaviisi"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "'\n"
-#~ "Suggestion: Try closing other applications."
-#~ msgstr ""
-#~ "'\n"
-#~ "SOOVITUS: Proovi sulgeda teised programmid."
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid ":               "
-#~ msgstr "Klass:                  "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid ""
-#~ ":               Unavailable\n"
-#~ "\n"
-#~ "\n"
-#~ msgstr "Kurss:            Kättesaamatu\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "AIS Alert"
-#~ msgstr "AIS-i alarm"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "AIS SART Alert"
-#~ msgstr "AIS-i alarm"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "AISTargetAlert"
-#~ msgstr "AIS sihi Alarm"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-#~ msgid "Activate CM93 Offset"
-#~ msgstr "Aktiveeri CM93 nihe"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Activate Route"
-#~ msgstr "Aktiveeri teekond"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Add Selection"
-#~ msgstr "Lisa asukoht"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Add this chart to quilt."
-#~ msgstr "Lisa see kaart kihtidesse"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Additional information"
-#~ msgstr "Lisa informatsioon"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "All files (*.*)|*.*"
-#~ msgstr "Kõik failid (*.*)|*.*"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "Attempting to load libgps.so"
-#~ msgstr "Ei suuda laadida libgps.so"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Autopilot Output Port"
-#~ msgstr "Autopiloodi väljuv port"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Available Chart Directories"
-#~ msgstr "Võimalikud kaardi kaustad"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "BaseClassCommonName"
-#~ msgstr "Baasi klassi põhiline nimi"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Bearing:                %03d Deg.\n"
-#~ msgstr "Kurss:                %03d Deg.\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Bearing:                Unavailable\n"
-#~ msgstr "Kurss:            Kättesaamatu\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "CM93"
-#~ msgstr "CM93"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "CM93 Detail Slider..."
-#~ msgstr "Luba CM93 kirjeldus aken"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-#~ msgid "CM93 Offset Display"
-#~ msgstr "CM93 nihe näitamisel"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "CM93 Offset Off"
-#~ msgstr "CM93 nihe väljas"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "CM93 Offset On"
-#~ msgstr "CM93 nihe sees"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "CM93 Offset Tool Off"
-#~ msgstr "CM93 nihke vahend väljas"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "CM93 Offset Tool....."
-#~ msgstr "CM93 nihke tööriist..."
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-#~ msgid "CM93 Offsets"
-#~ msgstr "CM93 nihked"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "CM93 Offsets On"
-#~ msgstr "CM93 nihked sees"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "CM93 Zoom Detail"
-#~ msgstr "CM93 suurendus"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "CPA:       \n"
-#~ msgstr "CPA:       \n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "CPA:                 %6.1f NM\n"
-#~ msgstr "CPA:                 %6.1f miili\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "Call to gps_open failed.\n"
-#~ "Is gpsd running?\n"
-#~ "\n"
-#~ "gpsd host is: "
-#~ msgstr ""
-#~ "Ühendus GPS-iga ei õnnestunud.\n"
-#~ "Kas GPS töötab?\n"
-#~ "\n"
-#~ "GPS-i host on: "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "CallSign:             "
-#~ msgstr "Kutsung:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Cell X Offset"
-#~ msgstr "Sea CM93 nihe"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Cell Y Offset"
-#~ msgstr "Sea CM93 nihe"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Chart"
-#~ msgstr "Kaart"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Chart Display Filters"
-#~ msgstr "Kaardi kuvamis filter"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Chart Position"
-#~ msgstr "Asukoht"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "Chart file corrupt.. disabling this chart \n"
-#~ msgstr "Kaardi fail katki.. keelan selle kaardi \n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Class:                "
-#~ msgstr "Klass:                  "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Could not resolve TCP/IP host '"
-#~ msgstr "Ei lahendanud TCP/IP hosti"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Course:                 %03d Deg.\n"
-#~ msgstr "Kurss:             %03d Deg.\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Course:                 000 Deg.\n"
-#~ msgstr "Kurss:             %03d Deg.\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Course:                 Unavailable\n"
-#~ msgstr "Kurss:            Kättesaamatu\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Current"
-#~ msgstr "Hoovus"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Cursor: "
-#~ msgstr "Kursor: "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Data Source :"
-#~ msgstr "NMEA andemete allikas"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Deactivate Route"
-#~ msgstr "Deaktiveeri teekond"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Default dataset"
-#~ msgstr "Teksti värv"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Deg"
-#~ msgstr "Reis"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Delete Mark"
-#~ msgstr "Kustuta punkt"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Delete Route"
-#~ msgstr "Kustuta teekond"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Delete Selection"
-#~ msgstr "Kustuta valik"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Delete Track"
-#~ msgstr "Kustuta jälg"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Depth Settings"
-#~ msgstr "Sügavus seaded"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Destination:          "
-#~ msgstr "Sihtkoht:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Display Style"
-#~ msgstr "Kaartide kuvamine"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Drop"
-#~ msgstr "Pane punkt siia"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "E&xport All..."
-#~ msgstr "&Ekspordi Kõik..."
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "ENC/Vector"
-#~ msgstr "ENC/Vektor"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "ETA:"
-#~ msgstr "ETA:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "ETA:                  "
-#~ msgstr "ETA:                  "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "ETE/Timestamp"
-#~ msgstr "ETE/Timestamp"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-#~ msgid "Enable Manual CM93 Offsets"
-#~ msgstr "Aktiveeri manuaalne CM93 nihe"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Enable Wheel-Zoom-to-Cursor"
-#~ msgstr "Luba rulli-suurendus kursorile"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Error on Route Upload.  Please check logfiles..."
-#~ msgstr "Viga teekonna laadimisel. Palun vaata logifaili..."
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Etc."
-#~ msgstr "Mitmesugust"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "Exit OpenCPN"
-#~ msgstr "Välju OpenCPN"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "Failed to load libgps.so"
-#~ msgstr "Ei suuda laadida libgps.so"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "Failed to load libgps.so.19"
-#~ msgstr "Ei suuda laadida libgps.so19"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "From Ownship: %03d Deg   "
-#~ msgstr "Asukohast: %03d kraadi  %6.2f miili"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "GPS"
-#~ msgstr "GPS"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "GPS/Plotter Port"
-#~ msgstr "GPS/Plotter Port"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "GPSD Data Server"
-#~ msgstr "GPSD andmete server"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Gas tanker"
-#~ msgstr "Raster"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Go To Here"
-#~ msgstr "Mine siia"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Go To Mark/WP"
-#~ msgstr "Mine Punkti/Teepunkti"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Heading:                %03d Deg.\n"
-#~ msgstr "Kurss:                %03d Deg.\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "IMO:                 %8d\n"
-#~ msgstr "ETA:                  "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Import new layer"
-#~ msgstr "Impordi GPX fail"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "In"
-#~ msgstr "Ikoon"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Inland Blue Flag        Clear\n"
-#~ msgstr "Sisemaa Sinilipp        Puhasta\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Jump To"
-#~ msgstr "Hüppa siia"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Jump To Position"
-#~ msgstr "Hüppa asukohta"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-#~ msgid "Jump To Position..."
-#~ msgstr "Hüppa positsioonile"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Jump To..."
-#~ msgstr "Hüppa siia"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Language/Fonts"
-#~ msgstr "Keeled/Fondid"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Last Position Report Time:  "
-#~ msgstr "Viimane raport aeg:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Leg/Route"
-#~ msgstr "Lõik/Teekond"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Legend"
-#~ msgstr "Konsooli legend"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "META Objects"
-#~ msgstr "META objektid"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "MMSI:                 %09d\n"
-#~ msgstr "ETA:                  "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "MarinersStandard"
-#~ msgstr "Mere standard"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Mark Icon"
-#~ msgstr "Punkti Ikoon"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Mark Name"
-#~ msgstr "Punkti nimi"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Mark Properties"
-#~ msgstr "Koha omadused"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Mark/WP Properties..."
-#~ msgstr "Punkti/Teepunkti omadused"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Measure....."
-#~ msgstr "Mõõda....."
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Metres"
-#~ msgstr "Meetrid"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "NMEA Data Source"
-#~ msgstr "NMEA andemete allikas"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "NMEA Options"
-#~ msgstr "NMEA seaded"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Name:  "
-#~ msgstr "Nimi:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Navigational Status:  "
-#~ msgstr "Navigeerimis staatus:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "New Mark"
-#~ msgstr "Uus punkt"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Next"
-#~ msgstr "Järgmine"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Number of Radar Rings"
-#~ msgstr "Mitu radari ringi näidatakse"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "OpenCPN PlugIn Base Class"
-#~ msgstr "OpenCPN Lisade baasi klass"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "OpenCPN PlugIn Base Class\n"
-#~ "PlugInManager created this base class"
-#~ msgstr ""
-#~ "OpenCPN lisade baasi klass\n"
-#~ "Lisade haldur lõi selle baas klassi"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "OpenCPN S57 SENC File Load"
-#~ msgstr "OpenCPN S57 SENC fail laadimine"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Other"
-#~ msgstr "Muu"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Output Message"
-#~ msgstr "OpenCPN sõnum"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Own Ship Display Options"
-#~ msgstr "Oma aluse kuvamis seaded"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Place Trackpoints at distance interval (NMi)"
-#~ msgstr "Pane jäljepunkt vahemaaga (miilid)"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Place Trackpoints at time interval (sec)"
-#~ msgstr "Pane jäljepunkt intervalliga (sekundid)"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Plan speed (Kts)"
-#~ msgstr "Plaanitud kiirus (sõlmed)"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "PlugInManager searching for PlugIns in location "
-#~ msgstr "Lisade haldur otsib lisasid asukohast"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "PlugInManager: Deactivating PlugIn: "
-#~ msgstr "Lisade haldur: deaktiveerin lisa:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "PlugInManager: Initializing PlugIn: "
-#~ msgstr "Lisade haldur: Seadistan lisa:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "PlugInManager: Loading PlugIn: "
-#~ msgstr "Lisade haldur: laen lisa:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "PlugInManager: UnLoading PlugIn: "
-#~ msgstr "Lisade haldur: eemaldan lisa:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
-#~ msgstr "Lisade haldur: eemaldan lisa millel on vale API versioon %d.%d: "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid ""
-#~ "Position Report Age:       %3d Sec.\n"
-#~ "\n"
-#~ msgstr "Raporti vanus:          %3d Sec.\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "Position:               "
-#~ msgstr "Koht:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid ""
-#~ "Possible libgps API version mismatch.\n"
-#~ "libgps did not reasonably respond to version request\n"
-#~ "\n"
-#~ "Would you like to use this version of libgps anyway?"
-#~ msgstr ""
-#~ "Võimalik libgps API versiooni erinevus.\n"
-#~ "libgps ei sobi selle versiooniga\n"
-#~ "\n"
-#~ "                              Kas soovid ikkagi kasutada seda libgps-i?"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
-#~ msgstr "Valmista GPS teekonnaks/Kohapunkt laetakse ja vajuta Saada..."
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Prev"
-#~ msgstr "Eelmine"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Progress..."
-#~ msgstr "Edenemine..."
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Radar rings"
-#~ msgstr "Radari ringid"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Range:                  Unavailable\n"
-#~ msgstr "Vahemik:            Kättesaamatu\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Range:                %5.1f NM\n"
-#~ msgstr "Vahemaa:                %5.1f NM\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Raster"
-#~ msgstr "Raster"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Rate Of Turn            %3d Deg./Min. Left\n"
-#~ msgstr "Pöördekiirus:               %3d Deg./Min. Vasakule\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
-#~ msgstr "Pöördekiirus:               %3d Deg./Min. Paremale\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Rate Of Turn            0\n"
-#~ msgstr "Pöördekiirus:               %3d Deg./Min.\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
-#~ msgstr "Pöördekiirus:               %3d Deg./Min. Vasakule\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
-#~ msgstr "Pöördekiirus:               %3d Deg./Min. Paremale\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "Recent Report Period:   %3d Sec.\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Viimane raporti periood:     %3d Sec.\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Reference Station :"
-#~ msgstr "Järelvaate jaam:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Remove this chart from quilt"
-#~ msgstr "Eemalda see kaart kihtidest"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Remove this chart from quilt."
-#~ msgstr "Eemalda see kaart kihtidest"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Reverse Route"
-#~ msgstr "Vastupidine teekond"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Route Properties..."
-#~ msgstr "Teekonna omadused"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Route Uploaded successfully."
-#~ msgstr "Teekond laetud edukalt"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Route/Track"
-#~ msgstr "Teekond jäljest"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Select Chart Types for Quilting"
-#~ msgstr "Märgi kaardi tübid kihistamiseks"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Send"
-#~ msgstr "Saada"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Send Route To GPS"
-#~ msgstr "Saada teekond GPS-i"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Send to GPS ( "
-#~ msgstr "&Saada GPS-i..."
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Set Course Up Mode"
-#~ msgstr "Kurss ülesse töörežiim"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Settings"
-#~ msgstr "Seaded"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "ShipName:  "
-#~ msgstr "Laeva nimi:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Show ATON labels"
-#~ msgstr "Näita ATON silte"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Show Printing Icon"
-#~ msgstr "Näita printimis ikooni"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Show Track icon"
-#~ msgstr "Näita jälje ikooni"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid ""
-#~ "Size:                 %dm x %dm\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Suurus:            %dm x %dm x ---m\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid ""
-#~ "Size:                 %dm x %dm \n"
-#~ "\n"
-#~ msgstr ""
-#~ "Suurus:            %dm x %dm x ---m\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "Size:                 %dm x %dm x %4.1fm\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Suurus:           %dm x %dm x %4.1fm\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "Size:                 %dm x %dm x ---m\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Suurus:            %dm x %dm x ---m\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "Size:                 ---m x ---m x %4.1fm\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Suurus:            ---m x ---m x %4.1fm\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "Size:                 ---m x ---m x ---m\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Suurus:            ---m x ---m x ---m\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Suurus:            %5.1fm x %4.1fm x %4.1fm\n"
-#~ "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "Size:               %5.1fm x %4.1fm x ---m\n"
-#~ "\n"
-#~ msgstr ""
-#~ "Suurus:           %5.1fm x %4.1fm x ---m\n"
-#~ "\n"
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Special Position Report"
-#~ msgstr "Viimane raport aeg:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Speed:                  Unavailable\n"
-#~ msgstr "Kiirus:                 Kättesaamatu\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Speed:                %5.2f Kts.\n"
-#~ msgstr "Kiirus:                %5.2f sõlme\n"
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "T"
-#~ msgstr "Sinna"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "TCP/IP WiFi Data Server"
-#~ msgstr "TCP/IP WiFi andemte server"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "TCPA:  \n"
-#~ msgstr "TCPA:  \n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
-#~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Text Element"
-#~ msgstr "Teksti element"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Tide"
-#~ msgstr "Tõus"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Tide & Current Dataset Selection"
-#~ msgstr "Näita hoovuseid"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Today"
-#~ msgstr "Täna"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Toggle Listing"
-#~ msgstr "Lülita jälgimisele"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Toggle Names"
-#~ msgstr "Teekonna nimi"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Tomorrow"
-#~ msgstr "Homme"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "ToolBox"
-#~ msgstr "Seaded"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Track Properties..."
-#~ msgstr "Jälje omadused"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "TrueScale: %8.0f             "
-#~ msgstr "Mõõtkava: %8.0f             "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Type:                 "
-#~ msgstr "ETA:                  "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "UN Ship Type:         "
-#~ msgstr "Aluse tüüp:"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "Unable to initialize libgps.\n"
-#~ "\n"
-#~ "gpsd host is: "
-#~ msgstr ""
-#~ "Ei suuda käivitada libgps.\n"
-#~ "\n"
-#~ "gpsd host on: "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Unable to load libgps"
-#~ msgstr "Ei suuda laadida libgps.so "
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Unavailable"
-#~ msgstr "Kaart pole saadaval"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Units"
-#~ msgstr "Ühikud"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Use SCAMIN"
-#~ msgstr "Kasuta SCAMIN"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "Waypoint Locking"
-#~ msgstr "Teepunkti lukustus"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "WiFi Options"
-#~ msgstr "WIFI seaded"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-#, fuzzy
-#~ msgid "X Offset (Positive moves map to East) (NMi Projected) :"
-#~ msgstr "X nihe (positiivselt liigutab kaardi itta) (miili/cos/(lat)) :"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-#, fuzzy
-#~ msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
-#~ msgstr "Y nihe (positiivselt liigutab kaardi põhja) (miili/cos/(lat)) :"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "cm93 Detail"
-#~ msgstr "cm93 detailid"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid ""
-#~ "libgps API version mismatch.\n"
-#~ "OpenCPN found version %d.%d, but requires at least version 3.0\n"
-#~ "\n"
-#~ "      Would you like to use this version of libgps anyway?"
-#~ msgstr ""
-#~ "libgps API Version sobimatu.\n"
-#~ "Opencpn leidis versiooni %d.%d, kuid nõutud vähemalt versioon 3.0\n"
-#~ "\n"
-#~ "Kas tahad seda versiooni ikka kasutada?"
+msgstr "wxFB veebileht"

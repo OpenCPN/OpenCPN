@@ -3,10 +3,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 3.3.1009\n"
+"Project-Id-Version: grib_pi 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2013-10-24 17:24+0100\n"
+"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"PO-Revision-Date: 2014-02-23 13:35+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: rider2@kpnmail.nl\n"
 "Language: nl_NL\n"
@@ -20,44 +20,66 @@ msgstr ""
 msgid " (Max size )"
 msgstr " (max. grootte)"
 #
-msgid " Mo )"
-msgstr " Mo )"
+msgid "300 hPa"
+msgstr ""
 #
-msgid "( Max "
-msgstr "( Max "
+msgid "500 hPa"
+msgstr ""
 #
-msgid "00N  00W"
+msgid "700 hPa"
+msgstr ""
+#
+msgid "850 hPA"
 msgstr ""
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr "Adres voor verzenden e-mailverzoek (verplicht voor LINUX)"
 #
-#, fuzzy
 msgid ""
 "Air\n"
 "Temperature"
-msgstr "Luchttemp. (2 m)"
+msgstr ""
+"Lucht-\n"
+"temperatuur"
 #
 msgid "Air Temp"
 msgstr "Luchttemp."
 #
+#, fuzzy
+msgid "Air Temperature"
+msgstr ""
+"Lucht-\n"
+"temperatuur"
+#
+#, fuzzy
+msgid "Air Temperature at"
+msgstr ""
+"Lucht-\n"
+"temperatuur"
+#
 msgid "Air Temperature(2m)"
 msgstr "Luchttemp. (2 m)"
 #
-msgid "Always visible"
+msgid "Altitude"
 msgstr ""
+#
+msgid "Altitude(Pressure Altitude)"
+msgstr ""
+#
+msgid "Always visible"
+msgstr "Altijd zichtbaar"
 #
 msgid "Apply"
 msgstr "Toepassen"
 #
 msgid "Authorize Interpolation to start at current time"
-msgstr ""
+msgstr "Laat interpolatie starten op huidige tijd"
 #
 msgid "Barbed Arrows"
 msgstr "Windpijlen"
 #
 msgid "Beaufort"
-msgstr ""
+msgstr "Beaufort"
 #
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
@@ -70,15 +92,13 @@ msgid "Building Isobar map"
 msgstr "Maken van  isobarenkaart ..."
 #
 msgid "CAPE"
-msgstr ""
+msgstr "CAPE"
 #
 msgid "Celsius"
 msgstr "Celsius"
 #
 msgid "Close"
-msgstr ""
-#
-#
+msgstr "Sluiten"
 #
 msgid "Cloud"
 msgstr "Bewolking"
@@ -113,9 +133,12 @@ msgid "Colors"
 msgstr "kleuren"
 #
 msgid "Continue..."
-msgstr ""
+msgstr "Doorgaan ..."
 #
 msgid "Controled Colours"
+msgstr "Kleuren"
+#
+msgid "Convective Available Potential Energy"
 msgstr ""
 #
 msgid "Copy First Cumulative Missing Record"
@@ -124,13 +147,25 @@ msgstr "Kopieer 'First Cumulative Missing Record' "
 msgid "Copy Missing Wave Records"
 msgstr "Kopieer ontbrekende golfgegevens"
 #
+#, fuzzy
+msgid "Course"
+msgstr "uren"
+#
+msgid "Cumulative Rainfall per Hour"
+msgstr ""
+#
 #
 msgid "Current"
 msgstr "Stroomsnelheid"
 #
-#, fuzzy
+msgid "Current time forecast"
+msgstr ""
+#
+msgid "Data"
+msgstr ""
+#
 msgid "Data at Cursor Position:"
-msgstr "GRIB-gegevens bij cursor"
+msgstr "GRIB-gegevens op cursorpositie:"
 #
 msgid "Data available"
 msgstr "Gegevens beschikbaar"
@@ -138,12 +173,11 @@ msgstr "Gegevens beschikbaar"
 msgid "Days"
 msgstr "dagen"
 #
-#, fuzzy
 msgid "Default Colour"
-msgstr "Gebruik graduele kleuren"
+msgstr "Standaard kleur"
 #
 msgid "Default Size"
-msgstr ""
+msgstr "Standaard grootte"
 #
 msgid "Deg"
 msgstr "°"
@@ -154,24 +188,26 @@ msgstr "Richtingpijlen"
 msgid "Display"
 msgstr "Toon op scherm"
 #
-#, fuzzy
 msgid "Display Iso CAPE"
-msgstr "Toon isobaren"
+msgstr "Toon iso CAPE"
 #
 msgid "Display Isobars"
 msgstr "Toon isobaren"
 #
-#, fuzzy
 msgid "Display Isotachs"
-msgstr "Toon isobaren"
+msgstr "Toon isotachen"
 #
-#, fuzzy
 msgid "Display Isotherms"
-msgstr "Toon isobaren"
+msgstr "Toon isothermen"
 #
-#, fuzzy
 msgid "Double Arrow"
-msgstr "Windpijlen"
+msgstr "Dubbele pijl"
+#
+msgid "Enter your forecasted Course"
+msgstr ""
+#
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr ""
 #
 msgid "Error:  Can't read this File!"
 msgstr "Fout: kan bestand niet lezen!"
@@ -199,25 +235,34 @@ msgstr "GRIB-gegevens bij cursor"
 #
 #
 msgid "GRIB Display Control"
-msgstr "GRIB Weergaveopties"
+msgstr "GRIB-weergaveopties"
 #
 msgid "GRIB PlugIn for OpenCPN"
-msgstr "GRIB PlugIn voor OpenCPN"
+msgstr "GRIB-plugIn voor OpenCPN"
 #
+#, fuzzy
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
-"Provides basic GRIB file overlay capabilities for several GRIB file types.\n"
+"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
+"and a request function to get GRIB files by eMail.\n"
 "\n"
-"Supported GRIB file types include:\n"
-"- wind direction and speed\n"
-"- significant wave height\n"
+"Supported GRIB data include:\n"
+"- wind direction and speed (at 10 m)\n"
+"- wind gust\n"
+"- surface pressure\n"
+"- rainfall\n"
+"- cloud cover\n"
+"- significant wave height and direction\n"
+"- air surface temperature (at 2 m)\n"
 "- sea surface temperature\n"
-"- surface current direction and speed."
+"- surface current direction and speed\n"
+"- Convective Available Potential Energy (CAPE)\n"
+"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
 msgstr ""
-"GRIB PlugIn voor OpenCPN\n"
-"Geeft kaartoverlay van GRIB gegevens voor verschillende bestandtypes.\n"
+"GRIB-plugIn voor OpenCPN\n"
+"Geeft kaartoverlay van GRIB-gegevens voor verschillende bestandtypes.\n"
 "\n"
-"Ondersteunde GRIB bestandtypes zijn:\n"
+"Ondersteunde GRIB-bestandtypes zijn:\n"
 "- windrichting en snelheid\n"
 "- significante golfhoogte\n"
 "- oppervlaktetemperatuur zeewater\n"
@@ -230,14 +275,17 @@ msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr "Zet deze code in het zyGrib-forum (dit is niet uw wachtwoord!)"
 #
 msgid "Grib"
-msgstr "Grib"
+msgstr "GRIB"
+#
+msgid "Grib Data Table"
+msgstr "GRIB-gegevenstabel"
 #
 #, fuzzy
-msgid "Grib Data Table"
-msgstr "Gegevens beschikbaar"
+msgid "Grib Data at"
+msgstr "GRIB-gegevenstabel"
 #
 msgid "Grib Preferences"
-msgstr "Gribvoorkeuren"
+msgstr "GRIB-voorkeuren"
 #
 msgid "Grib Settings"
 msgstr "GRIB-instellingen"
@@ -249,7 +297,7 @@ msgid "Inches"
 msgstr "inch"
 #
 msgid "Interpolate between gribs"
-msgstr "Interpoleer tussen gribs"
+msgstr "Interpoleer tussen GRIB-bestanden"
 #
 msgid "Interval"
 msgstr "Interval"
@@ -260,10 +308,13 @@ msgstr "Isobaren"
 msgid "Knots"
 msgstr "knopen"
 #
+#, fuzzy
+msgid "Kts"
+msgstr "knopen"
+#
 msgid "Load File Options"
 msgstr "Opties voor laden bestand"
 #
-#, fuzzy
 msgid "Load the Last Opened File"
 msgstr "Laad het laatst geopende bestand"
 #
@@ -276,15 +327,33 @@ msgstr "Lokale tijd"
 msgid "Loop Mode"
 msgstr "'Loop'-modus"
 #
+msgid "Loop Start"
+msgstr ""
+#
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
 msgstr ""
 "Mail-fout: MAPI32.DLL is niet geinstalleerd of ongeldig op deze computer!"
+#
+msgid "MB"
+msgstr ""
 #
 msgid "Mail"
 msgstr "E-mail"
 #
 msgid "Mail To "
 msgstr "E-mail aan"
+#
+#, fuzzy
+msgid "Max"
+msgstr "( Max "
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "luchtdruk (hPa)"
 #
 msgid "Meters"
 msgstr "meter"
@@ -294,6 +363,13 @@ msgstr "millibar"
 #
 msgid "Millimeters"
 msgstr "millimeter"
+#
+#, fuzzy
+msgid "Minimum Spacing"
+msgstr "tussenafstand"
+#
+msgid "Moving Grib"
+msgstr ""
 #
 msgid "N/A"
 msgstr "nvt"
@@ -323,7 +399,6 @@ msgid "Play"
 msgstr "Afspelen"
 #
 #
-#, fuzzy
 msgid "Please Zoom or Scale Out to view invisible overlays:"
 msgstr "Zoom uit of verklein schaal om niet-zichtbare overlay te zien:"
 #
@@ -331,14 +406,33 @@ msgstr "Zoom uit of verklein schaal om niet-zichtbare overlay te zien:"
 msgid "Pressure"
 msgstr "Luchtdruk"
 #
+#
+#, fuzzy
+msgid "Pressure Altitude"
+msgstr "Luchtdruk"
+#
+#, c-format
+msgid "Pressure Altitude (in %s) or Standard Height Selection."
+msgstr ""
+#
 msgid "Previous"
 msgstr "Vorige"
 #
 msgid "Profile"
 msgstr "Profiel"
 #
+#, fuzzy
+msgid "Proportional Arrow"
+msgstr "Richtingpijlen"
+#
 msgid "Rainfall"
 msgstr "Neerslag"
+#
+msgid "Rel. Humid."
+msgstr ""
+#
+msgid "Relative Humidity"
+msgstr ""
 #
 msgid "Request"
 msgstr "Verzoek"
@@ -357,15 +451,17 @@ msgstr "Resolutie"
 #
 msgid "Rotated overlays suppressed in DC mode"
 msgstr ""
+"Gedraaide overlays worden onderdrukt als u niet van OpenGL gebruik maakt"
 #
 msgid "Save"
 msgstr "Opslaan"
 #
-#, fuzzy
 msgid ""
 "Sea\n"
 "Temperature"
-msgstr "Zeewateroppervl.temp."
+msgstr ""
+"Zeewater-\n"
+"temperatuur"
 #
 #
 #
@@ -379,8 +475,17 @@ msgstr "Zeewateroppervl.temp."
 msgid "Sea Temp"
 msgstr "Zeetemp."
 #
+#, fuzzy
+msgid "Sea Temperature"
+msgstr ""
+"Zeewater-\n"
+"temperatuur"
+#
 msgid "Sea Temperature(surf.)"
 msgstr "Zeewateroppervl.temp."
+#
+msgid "Sea or Air Temperature at Surface Level"
+msgstr ""
 #
 #
 msgid "Select a GRIB file"
@@ -395,33 +500,54 @@ msgstr "E-mailadres verzender"
 msgid "Settings"
 msgstr "Instellingen"
 #
+#
+#
+#
+#
+#, fuzzy
+msgid "Significant Wave Height"
+msgstr "significante golfhoogte (m)"
+#
 msgid "Single Arrow"
-msgstr ""
-#
-msgid "Slices per Update"
-msgstr "delen per update"
-#
-msgid "Slices per hour"
-msgstr "delen per uur"
+msgstr "Enkele pijl"
 #
 msgid "Small Size"
-msgstr ""
+msgstr "Klein"
 #
 msgid "Spacing"
 msgstr "tussenafstand"
 #
-#, fuzzy
+msgid "Speed"
+msgstr ""
+#
 msgid "Start Options"
-msgstr "Tijdopties"
+msgstr "Startopties"
 #
 msgid "Start at the first forecast in GRIB file"
-msgstr ""
+msgstr "Start met de 1ste verwachting in het GRIB-bestand"
 #
 msgid "Start at the nearest forecast to current time"
-msgstr ""
+msgstr "Start met de verwachting die het dichtst bij de huidige tijd is"
 #
 msgid "Stop"
 msgstr "Stop"
+#
+msgid "Surface Current Direction"
+msgstr ""
+#
+msgid "Surface Current Speed"
+msgstr ""
+#
+#, fuzzy
+msgid "Temperature"
+msgstr ""
+"Lucht-\n"
+"temperatuur"
+#
+msgid ""
+"The Grib file you are opening contains a moving Grib Zone.\n"
+"Interpolation is not supported for this type of file"
+msgstr ""
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -443,11 +569,18 @@ msgstr ""
 msgid "This is your zyGrib's forum access Login"
 msgstr "Dit is uw login voor het zyGrib-forum"
 #
+#, fuzzy
+msgid "Time Interval"
+msgstr "Interval"
+#
 msgid "Time Options"
 msgstr "Tijdopties"
 #
 msgid "Time Range"
 msgstr "Periode"
+#
+msgid "Top of Grib File"
+msgstr ""
 #
 msgid "UTC"
 msgstr "UTC"
@@ -465,6 +598,9 @@ msgstr "Gebruik graduele kleuren"
 msgid "Use High Definition Graphics"
 msgstr "Gebruik hoge grafische resolutie"
 #
+msgid "WIND data at"
+msgstr ""
+#
 msgid "Warning!"
 msgstr "Waarschuwing!"
 #
@@ -474,17 +610,38 @@ msgstr "Waarschuwing: lege map!"
 msgid "Waves"
 msgstr "Golfhoogte"
 #
-msgid "WavesModel"
-msgstr "Golfmodel"
+#
+#
+#
+#
+#, fuzzy
+msgid "Waves Direction"
+msgstr "windrichting"
 #
 msgid "Weather table"
-msgstr ""
+msgstr "Weertabel"
 #
 msgid "Wind"
 msgstr "Wind"
 #
+#
+#
+#
+#
+#, fuzzy
+msgid "Wind Direction at"
+msgstr "windrichting"
+#
 msgid "Wind Gust"
 msgstr "Windvlagen"
+#
+#, fuzzy
+msgid "Wind Gust at"
+msgstr "Windvlagen"
+#
+#, fuzzy
+msgid "Wind Speed at"
+msgstr "Windscat"
 #
 msgid "Write and send eMail request"
 msgstr "Schrijf en verzend e-mail verzoek"
@@ -494,6 +651,9 @@ msgid ""
 "Don't forget that data displayed at current time will not be real but "
 "interpolated!"
 msgstr ""
+"U heeft gegevensinterpolatie toegestaan.\n"
+"Vergeet niet dat de voor de huidige tijd getoonde gegevens geïnterpoleerd "
+"zijn!"
 #
 msgid ""
 "You request a forecast for more than 8 days horizon.\n"
@@ -501,8 +661,12 @@ msgid ""
 "Don't forget that beyond the first 8 days, the resolution will be only "
 "2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
 msgstr ""
+"U vraagt om een verwachting langer dan 8 dagen vooruit.\n"
+"Dit conflicteert met de Golfgegevens, die daarom uit uw verzoek worden "
+"verwijderd.\n"
+"Vergeet niet dat na de eerste 8 dagen de resolutie slechts "
+"2.5\\u00B0x2.5\\u00B0 zal zijn met een interval van 12 uur."
 #
-#, fuzzy
 msgid ""
 "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
@@ -510,9 +674,8 @@ msgid ""
 msgstr ""
 "Uw aanvraag staat gereed. Een e-mail is voorbereid.\n"
 "Controleer en verzend deze ...\n"
-"Opslaan of Afbreken om te beeindigen of nieuwe parameters in te voeren ..."
+"Opslaan of Afbreken om te beeindigen ... of Doorgaan ..."
 #
-#, fuzzy
 msgid ""
 "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
@@ -520,16 +683,19 @@ msgid ""
 msgstr ""
 "Uw verzoek is verzonden (mits uw systeem hiervoor\n"
 "geconfigureerd is en mail kan verzenden).\n"
-"Opslaan of Afbreken om te beeindigen of nieuwe parameters in te voeren ..."
+"Opslaan of Afbreken om te beeindigen... of Doorgaan ..."
 #
 msgid "Zoom To Center"
+msgstr "Zoom op centrum"
+#
+msgid "h"
 msgstr ""
 #
 msgid "inHG"
-msgstr ""
+msgstr "inch kwik"
 #
 msgid "j/kg"
-msgstr ""
+msgstr "j/kg"
 #
 msgid "km/h"
 msgstr "km/u"
@@ -539,6 +705,9 @@ msgstr "m/s"
 #
 msgid "mmHG"
 msgstr "mm kwik"
+#
+msgid "mn"
+msgstr ""
 #
 msgid "mph"
 msgstr "mph"
@@ -553,14 +722,11 @@ msgid "zyGrib Login"
 msgstr "zyGrib login"
 #
 #
-#
-#
-#
 #~ msgid " (Dup)"
 #~ msgstr " (dup)"
 #
-#
-#
+#~ msgid " Mo )"
+#~ msgstr " Mo )"
 #
 #
 #
@@ -578,15 +744,12 @@ msgstr "zyGrib login"
 #~ msgid " data"
 #~ msgstr "gegevens"
 #
-#
-#
+#~ msgid "00N  00W"
+#~ msgstr "00N  00W"
 #
 #
 #~ msgid "Action"
 #~ msgstr "Actie"
-#
-#
-#
 #
 #
 #~ msgid "Celcius"
@@ -596,35 +759,20 @@ msgstr "zyGrib login"
 #
 #
 #
-#
-#
-#
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB voorkeuren"
 #
-#
-#
-#
 #~ msgid "Display Iso Temp. Lines"
 #~ msgstr "Toon isothermen"
-#
-#
-#
 #
 #
 #~ msgid "Error"
 #~ msgstr "Fout"
 #
 #
-#
-#
-#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Kon mailbericht niet versturen"
-#
-#
-#
 #
 #
 #
@@ -659,63 +807,36 @@ msgstr "zyGrib login"
 #
 #
 #
-#
-#
-#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Map voor GRIB bestand"
-#
-#
-#
 #
 #
 #~ msgid "KPH"
 #~ msgstr "km/u"
 #
 #
-#
-#
-#
 #~ msgid "M/S"
 #~ msgstr "m/sec"
-#
-#
-#
 #
 #
 #~ msgid "MPH"
 #~ msgstr "mijl/u"
 #
 #
-#
-#
-#
 #~ msgid "MyLabel"
 #~ msgstr "MijnLabel"
-#
-#
-#
 #
 #
 #~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
 #~ msgstr "OpenCPN logon mislukt! Controleer uw e-mail instellingen."
 #
 #
-#
-#
-#
 #~ msgid "Parameters"
 #~ msgstr "Parameters"
 #
 #
-#
-#
-#
 #~ msgid "Period"
 #~ msgstr "Periode"
-#
-#
-#
 #
 #
 #
@@ -731,15 +852,9 @@ msgstr "zyGrib login"
 #
 #
 #
-#
-#
-#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
-#
-#
-#
 #
 #
 #
@@ -755,15 +870,9 @@ msgstr "zyGrib login"
 #
 #
 #
-#
-#
-#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
-#
-#
-#
 #
 #
 #
@@ -775,26 +884,8 @@ msgstr "zyGrib login"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
 #
 #
-#
-#
-#
 #~ msgid "Precipitation"
 #~ msgstr "Neerslag"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Pressure (MSL)"
-#~ msgstr "luchtdruk (hPa)"
-#
-#
-#
 #
 #
 #~ msgid "Quickscat"
@@ -805,21 +896,12 @@ msgstr "zyGrib login"
 #~ msgstr "bereik"
 #
 #
-#
-#
-#
 #~ msgid "Ref : "
 #~ msgstr "Ref:"
 #
 #
-#
-#
-#
 #~ msgid "Request Pofile"
 #~ msgstr "Verzoekprofiel"
-#
-#
-#
 #
 #
 #
@@ -841,14 +923,8 @@ msgstr "zyGrib login"
 #~ msgstr "GRIB voorkeuren"
 #
 #
-#
-#
-#
 #~ msgid "SeaTemp"
 #~ msgstr "ZeeTemp"
-#
-#
-#
 #
 #
 #
@@ -906,49 +982,24 @@ msgstr "zyGrib login"
 #
 #
 #
-#
-#
-#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Toon windsnelheid in m/sec"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Sign.Wave Height"
-#~ msgstr "significante golfhoogte (m)"
 #
 #
 #~ msgid "Size"
 #~ msgstr "grootte"
 #
 #
+#~ msgid "Slices per Update"
+#~ msgstr "delen per update"
 #
 #
+#~ msgid "Slices per hour"
+#~ msgstr "delen per uur"
 #
 #
-#
-#
-#
-#, fuzzy
-#~ msgid "Wind Direction(10m)"
-#~ msgstr "windrichting"
-#
-#
-#
-#
-#
-#~ msgid "Wind Scat"
-#~ msgstr "Windscat"
-#
-#
-#
+#~ msgid "WavesModel"
+#~ msgstr "Golfmodel"
 #
 #
 #
@@ -964,22 +1015,13 @@ msgstr "zyGrib login"
 #
 #
 #
-#
-#
-#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "windsnelheid (m/sec)"
 #
 #
-#
-#
-#
 #~ msgid "Zone"
 #~ msgstr "Zone"
-#
-#
-#
 #
 #
 #~ msgid "eMail error"

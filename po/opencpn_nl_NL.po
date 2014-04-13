@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 3.3.1328\n"
+"Project-Id-Version: opencpn 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2014-01-29 19:11+0100\n"
+"POT-Creation-Date: 2014-04-05 11:43-0400\n"
+"PO-Revision-Date: 2014-02-23 13:26+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: NAV <rider2@kpnmail.nl>\n"
 "Language: nl_NL\n"
@@ -1023,6 +1023,14 @@ msgstr "Weet u zeker dat u <ALLE> markeringspunten wilt verwijderen?"
 #
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr "Weet u zeker dat u de geselecteerde objecten wilt verwijderen?"
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
+msgstr "Weet u zeker dat u <ALLE> routes wilt verwijderen?"
 #
 #
 #
@@ -2200,6 +2208,9 @@ msgstr "Activeer kaartsamenvoeging"
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Activeer time-out voor CPA/TCPA waarschuwing na bevestiging (minuten):"
 #
+msgid "Enable Touchscreen/Tablet Interface"
+msgstr ""
+#
 #
 #
 msgid "Enable Transparent Toolbar"
@@ -2250,6 +2261,16 @@ msgstr "Weerwaarschuwing: storm (cel of stormenlijn)"
 #
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Weerwaarschuwing: sterke stroom"
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Error on Waypoint Upload.  Garmin GPS not connected"
+msgstr "Fout bij laden van markeringspunten. Raadpleeg logbestanden ..."
 #
 #
 #
@@ -3453,6 +3474,20 @@ msgstr "OpenCPN kan niet starten."
 msgid "OpenCPN info"
 msgstr "OpenCPN info"
 #
+msgid ""
+"OpenCPN requires access to serial ports to use serial NMEA data.\n"
+"You currently do not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
+msgstr ""
+#
 #
 #
 #
@@ -4118,7 +4153,7 @@ msgid "S/V"
 msgstr "zei/s"
 #
 msgid "SAR Aircraft"
-msgstr ""
+msgstr "SAR vliegtuig"
 #
 #
 #
@@ -4943,10 +4978,12 @@ msgstr ""
 "samenvoegen?\n"
 "\n"
 #
+#, fuzzy
 msgid ""
-"There are some waypoints used in routes or anchor alarms. Do you want to "
-"delete them as well? This will change the routes and disable the anchor "
-"alarms. Answering No keeps the waypoints used in routes or alarms."
+"There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 "Enkele markeringspunten worden gebruikt in routes of voor ankeralarms. Wilt u "
 "deze ook verwijderen? Daardoor zullen de routes veranderen en de ankeralarms "
@@ -5608,6 +5645,16 @@ msgstr "Voet"
 #
 #
 msgid "in"
+msgstr "in"
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "in "
 msgstr "in"
 #
 msgid "km"

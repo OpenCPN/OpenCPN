@@ -5,396 +5,301 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.2.1110\n"
+"Project-Id-Version: dashboard_pi 3.3.1328\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2011-01-09 18:59+0200\n"
-"Last-Translator: Peep Prants <peep@prants.ee>\n"
-"Language-Team: \n"
-"Language: \n"
+"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"PO-Revision-Date: 2014-03-23 13:51+0200\n"
+"Last-Translator: Highlander <highlander.et@gmail.com>\n"
+"Language-Team:  <open_en_et@googlegroups.com>\n"
+"Language: pi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.4\n"
 #
 msgid " mag"
-msgstr ""
+msgstr "magn."
 #
 msgid " true"
-msgstr ""
-#
+msgstr "tõel."
 #
 msgid "Add"
 msgstr "Lisa"
 #
-#
 msgid "Add instrument"
-msgstr "Lisa paneel"
+msgstr "Lisa seade"
 #
-#
-#, fuzzy
 msgid "Air Temp."
-msgstr "Temp."
+msgstr "Õhu t°"
 #
-#
-#, fuzzy
 msgid "App. Wind Angle"
-msgstr "Tuule nurk"
+msgstr "Näiv tuule nurk"
 #
 msgid "App. Wind Angle & Speed"
-msgstr ""
+msgstr "Näiv tuule nurk ja kiirus"
 #
-#
-#, fuzzy
 msgid "App. Wind Speed"
-msgstr "Tuule kiirus"
+msgstr "Näiv tuule kiirus"
 #
 msgid "Appearance"
-msgstr ""
+msgstr "Välimus"
 #
 msgid "Barometric history"
-msgstr ""
+msgstr "Õhurõhu logi"
 #
 msgid "Barometric pressure"
-msgstr ""
+msgstr "Õhurõhk"
 #
 msgid "Boat speed units:"
-msgstr ""
-#
+msgstr "kaatri kiiruse ühikud:"
 #
 msgid "COG"
 msgstr "COG"
 #
 msgid "Caption:"
-msgstr ""
+msgstr "Pealdis:"
 #
 msgid "Centimeters"
-msgstr ""
+msgstr "sentimeetrid"
 #
 msgid "Clock"
-msgstr ""
+msgstr "Kell"
 #
 msgid "Cursor"
-msgstr ""
-#
+msgstr "Kursor"
 #
 msgid "Dashboard"
-msgstr "Infotahvel"
-#
+msgstr "Näidikupaneel"
 #
 msgid "Dashboard PlugIn for OpenCPN"
-msgstr "OpenCPN lisa Infopaneel"
-#
+msgstr "Näidikupaneeli plugin OpenCPN'le"
 #
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
-#
+"Näidikupaneeli plugin OpenCPN'le\n"
+"Võimaldab navigatsiooniseadme kuvamise NMEA-allikast"
 #
 msgid "Dashboard preferences"
-msgstr ""
+msgstr "Näidikupaneeli eelistused"
 #
 msgid "Data:"
-msgstr "Andmed:"
-#
+msgstr "andmed:"
 #
 msgid "Delete"
 msgstr "Kustuta"
-#
 #
 msgid "Depth"
 msgstr "Sügavus"
 #
 msgid "Depth units:"
-msgstr ""
+msgstr "sügavuse ühikud:"
 #
 msgid "Distance units:"
-msgstr ""
-#
+msgstr "vahemaa ühikud:"
 #
 msgid "Down"
 msgstr "Alla"
 #
-#
 msgid "E"
 msgstr "E"
 #
-#
-#, fuzzy
 msgid "ENE"
-msgstr "NE"
+msgstr "ENE"
 #
-#
-#, fuzzy
 msgid "ESE"
-msgstr "SE"
+msgstr "ESE"
 #
 msgid "Fathoms"
-msgstr ""
+msgstr "süllad"
 #
 msgid "Feet"
-msgstr ""
+msgstr "jalad"
 #
 msgid "Fonts"
-msgstr "Fondid"
+msgstr "Kirjamärgid"
 #
-#
-#, fuzzy
 msgid "GPS Compass"
-msgstr "Kompass"
+msgstr "GPS kompass"
 #
-#
-#, fuzzy
 msgid "GPS Status"
-msgstr "GPS staatus"
+msgstr "GPS olek"
 #
-#
-#, fuzzy
 msgid "GPS in View"
-msgstr "GPS vaade"
+msgstr "Nähtavad satelliidid"
 #
 msgid "Honor OpenCPN settings"
-msgstr ""
+msgstr "Austa OpenCPN väärtusi"
 #
 msgid "Horizontal"
-msgstr ""
+msgstr "rõhtne"
 #
 msgid "Inches"
-msgstr ""
-#
+msgstr "tollid"
 #
 msgid "Instruments"
-msgstr "Paneelid"
+msgstr "Seadmed"
 #
 msgid "Kilometers"
-msgstr ""
+msgstr "kilomeetrid"
 #
 msgid "Kts"
-msgstr ""
+msgstr "sõlmed"
 #
 msgid "Label:"
-msgstr "Silt:"
+msgstr "silt:"
 #
 msgid "Mag HDG"
-msgstr ""
+msgstr "Magn. HDG"
 #
 #, c-format
 msgid "Max %.1f since %02d:%02d  Overall %.1f"
-msgstr ""
+msgstr "Maks. %.1f alates %02d:%02d  Üldine %.1f"
 #
 msgid "Meters"
-msgstr ""
+msgstr "meetrid"
 #
 msgid "Moon phase"
-msgstr ""
-#
+msgstr "Kuufaas"
 #
 msgid "N"
 msgstr "N"
 #
-#
 msgid "NE"
 msgstr "NE"
 #
-#
-#, fuzzy
 msgid "NNE"
-msgstr "NE"
+msgstr "NNE"
 #
-#
-#, fuzzy
 msgid "NNW"
-msgstr "NW"
-#
+msgstr "NNW"
 #
 msgid "NW"
 msgstr "NW"
 #
 msgid "Nautical miles"
-msgstr ""
+msgstr "meremiilid"
 #
 msgid "Orientation:"
-msgstr ""
-#
+msgstr "Orientatsioon:"
 #
 msgid "Position"
-msgstr "Positsioon"
+msgstr "Asukoht"
 #
 msgid "Preferences..."
-msgstr ""
+msgstr "Eelistused..."
 #
-#
-#, fuzzy
 msgid "Rudder Angle"
-msgstr "Rooli nurk"
-#
+msgstr "Roolinurk"
 #
 msgid "S"
 msgstr "S"
 #
-#
 msgid "SE"
 msgstr "SE"
-#
 #
 msgid "SOG"
 msgstr "SOG"
 #
-#
-#, fuzzy
 msgid "SSE"
-msgstr "SE"
+msgstr "SSE"
 #
-#
-#, fuzzy
 msgid "SSW"
-msgstr "SW"
-#
+msgstr "SSW"
 #
 msgid "STW"
 msgstr "STW"
 #
-#
 msgid "SW"
 msgstr "SW"
 #
-#
 msgid "Select instrument to add:"
-msgstr "Vali paneel:"
+msgstr "Vali seade lisamiseks:"
 #
 msgid "Small:"
 msgstr "Väike:"
 #
-#
 msgid "Speedometer"
 msgstr "Spidomeeter"
 #
-#
-#, fuzzy
 msgid "Speedometer max value:"
-msgstr "Spidomeeter"
+msgstr "spidomeetri max väärtus:"
 #
 msgid "Statute miles"
-msgstr ""
+msgstr "maamiilid"
 #
 msgid "Sum Log"
-msgstr ""
+msgstr "Kogu logi"
 #
 msgid "Sunrise/Sunset"
-msgstr ""
+msgstr "Päikesetõus/-loojang"
 #
 msgid "Title:"
-msgstr "Tiitel:"
+msgstr "tiitel:"
 #
 msgid "Trip Log"
-msgstr ""
+msgstr "Reisi logi"
 #
-#
-#, fuzzy
 msgid "True Compass"
-msgstr "Kompass"
+msgstr "Tõeline kompass"
 #
 msgid "True HDG"
-msgstr ""
+msgstr "Tõeline HDG"
 #
-#
-#, fuzzy
 msgid "True Wind Angle"
-msgstr "Tuule nurk"
+msgstr "Tõeline tuule nurk"
 #
 msgid "True Wind Angle & Speed"
-msgstr ""
+msgstr "Tõeline tuule nurk ja kiirus"
 #
 msgid "True Wind Dir. & Speed"
-msgstr ""
+msgstr "Tõeline tuule suund ja kiirus"
 #
 msgid "True Wind Direction"
-msgstr ""
+msgstr "Tõeline tuule suund"
 #
-#
-#, fuzzy
 msgid "True Wind Speed"
-msgstr "Tuule kiirus"
+msgstr "Tõeline tuule kiirus"
 #
 msgid "Units, Ranges, Formats"
-msgstr ""
-#
+msgstr "Ühikud, ulatused, formaadid"
 #
 msgid "Up"
-msgstr "Ülesse"
-#
+msgstr "Üles"
 #
 msgid "VMG"
 msgstr "VMG"
 #
 msgid "Vertical"
-msgstr ""
-#
+msgstr "püstine"
 #
 msgid "W"
 msgstr "W"
 #
-#
-#, fuzzy
 msgid "WNW"
-msgstr "NW"
+msgstr "WNW"
 #
-#
-#, fuzzy
 msgid "WSW"
-msgstr "SW"
+msgstr "WSW"
 #
 msgid "Water Temp."
-msgstr ""
+msgstr "Vee t°"
 #
 msgid "Wind history"
-msgstr ""
+msgstr "Tuule logi"
 #
-#
-#, fuzzy
 msgid "Wind speed units:"
-msgstr "Tuule kiirus"
+msgstr "tuulekiiruse ühikud:"
 #
 msgid "km/h"
-msgstr ""
+msgstr "km/h"
 #
 msgid "m/s"
-msgstr ""
+msgstr "m/s"
 #
 msgid "mph"
-msgstr ""
+msgstr "mp/h"
 #
 msgid "show this dashboard"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#~ msgid "Edit"
-#~ msgstr "Muuda"
-#
-#
-#
-#
-#
-#
-#~ msgid "HDG"
-#~ msgstr "HDG"
-#
-#
-#
-#
-#
-#
-#~ msgid "Instrument width:"
-#~ msgstr "Sildi laius:"
-#
-#
-#
-#
-#
-#
-#~ msgid "True wind"
-#~ msgstr "Tõeline tuul"
+msgstr "kuva seda näidikupaneeli"

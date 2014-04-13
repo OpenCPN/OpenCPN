@@ -3,10 +3,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: dashboard_pi 3.3.1009\n"
+"Project-Id-Version: dashboard_pi 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2013-10-24 17:15+0100\n"
+"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"PO-Revision-Date: 2014-02-23 13:31+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: &lt;rider2@kpnmail.nl&gt;\n"
 "Language: nl_NL\n"
@@ -32,39 +32,37 @@ msgid "Air Temp."
 msgstr "Luchttemperatuur"
 #
 msgid "App. Wind Angle"
-msgstr "Schijnbare windhoek"
+msgstr "Schijnb. windhoek"
 #
 msgid "App. Wind Angle & Speed"
-msgstr "Schijnbare windhoek &amp; -snelheid"
+msgstr "Schijnbare wind"
 #
 msgid "App. Wind Speed"
-msgstr "Schijnbare windsnelheid"
+msgstr "Schijnb. windsnelheid"
 #
 msgid "Appearance"
 msgstr "Lettertypes"
 #
-#, fuzzy
 msgid "Barometric history"
-msgstr "Windhistorie"
+msgstr "Luchtdrukhistorie"
 #
 msgid "Barometric pressure"
-msgstr ""
+msgstr "Luchtdruk"
 #
 msgid "Boat speed units:"
 msgstr "Eenheid voor vaart:"
 #
 msgid "COG"
-msgstr "COG"
+msgstr "Koers over grond"
 #
 msgid "Caption:"
 msgstr "Naam:"
 #
-#, fuzzy
 msgid "Centimeters"
-msgstr "kIlometer"
+msgstr "cm"
 #
 msgid "Clock"
-msgstr "Klok"
+msgstr "Tijd"
 #
 msgid "Cursor"
 msgstr "Cursor"
@@ -94,9 +92,8 @@ msgstr "Wissen"
 msgid "Depth"
 msgstr "Diepte"
 #
-#, fuzzy
 msgid "Depth units:"
-msgstr "Eenheid voor afstand:"
+msgstr "Diepte-eenheid:"
 #
 msgid "Distance units:"
 msgstr "Eenheid voor afstand:"
@@ -114,31 +111,31 @@ msgid "ESE"
 msgstr "OZO"
 #
 msgid "Fathoms"
-msgstr ""
+msgstr "vadem"
 #
 msgid "Feet"
-msgstr ""
+msgstr "voet"
 #
 msgid "Fonts"
 msgstr "Lettertypes"
 #
 msgid "GPS Compass"
-msgstr "Kompasroos GPS vaarrichting"
+msgstr "Koers (GPS)"
 #
 msgid "GPS Status"
 msgstr "GPS status"
 #
 msgid "GPS in View"
-msgstr "Aantal satellieten in zicht"
+msgstr "Aantal satellieten"
 #
 msgid "Honor OpenCPN settings"
-msgstr "Volg OpenCPN-instellingen"
+msgstr "volg OpenCPN-instellingen"
 #
 msgid "Horizontal"
 msgstr "horizontaal"
 #
 msgid "Inches"
-msgstr ""
+msgstr "inch"
 #
 msgid "Instruments"
 msgstr "Instrumenten"
@@ -153,11 +150,11 @@ msgid "Label:"
 msgstr "Label:"
 #
 msgid "Mag HDG"
-msgstr "Magn koers"
+msgstr "Magnetische koers"
 #
 #, c-format
 msgid "Max %.1f since %02d:%02d  Overall %.1f"
-msgstr "Max %.1f sinds %02d:%02d  Totaal %.1f"
+msgstr "Max. %.1f sinds %02d:%02d  Max. %.1f"
 #
 msgid "Meters"
 msgstr "meter"
@@ -202,7 +199,7 @@ msgid "SE"
 msgstr "ZO"
 #
 msgid "SOG"
-msgstr "SOG"
+msgstr "Vaart over grond"
 #
 msgid "SSE"
 msgstr "ZZO"
@@ -223,29 +220,28 @@ msgid "Small:"
 msgstr "Klein:"
 #
 msgid "Speedometer"
-msgstr "Log"
+msgstr "Vaart en verheid"
 #
 msgid "Speedometer max value:"
-msgstr "Maximum waarde log:"
+msgstr "Max. vaartindicatie log:"
 #
 msgid "Statute miles"
 msgstr "landmijl"
 #
 msgid "Sum Log"
-msgstr "Samenvatting"
+msgstr "Verheid totaal"
 #
 msgid "Sunrise/Sunset"
-msgstr "Zon op / Zon onder"
+msgstr "Zon op/onder"
 #
 msgid "Title:"
 msgstr "Naam:"
 #
 msgid "Trip Log"
-msgstr "Reislog"
+msgstr "Verheid trip"
 #
-#, fuzzy
 msgid "True Compass"
-msgstr "Kompas"
+msgstr "Kompaskoers"
 #
 msgid "True HDG"
 msgstr "Ware koers"
@@ -254,10 +250,10 @@ msgid "True Wind Angle"
 msgstr "Ware windhoek"
 #
 msgid "True Wind Angle & Speed"
-msgstr "Ware windhoek &amp; -snelheid"
+msgstr "Ware wind"
 #
 msgid "True Wind Dir. & Speed"
-msgstr "Ware windrichting en -snelheid"
+msgstr "Ware wind"
 #
 msgid "True Wind Direction"
 msgstr "Ware windrichting"

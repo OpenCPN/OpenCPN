@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
+"POT-Creation-Date: 2014-04-05 11:43-0400\n"
 "PO-Revision-Date: 2013-10-18 13:15+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC Sailing Team <sailingteam@isc.tuc.gr>\n"
@@ -622,6 +622,10 @@ msgstr "Σίγουρα θέλετε να διαγράψετε <ΟΛΑ> τα ση
 #
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr "Σίγουρα θέλεις να διαγράψεις τα επιλεγμένα;"
+#
+#, fuzzy
+msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
+msgstr "Σίγουρα θέλετε να διαγράψετε όλες τις διαδρομές;"
 #
 msgid "Are you sure you want to delete this route?"
 msgstr "Σίγουρα θέλετε να διαγράψετε αυτή τη διαδρομή;"
@@ -1293,6 +1297,9 @@ msgstr "Επίτρεψε ψηφιδωτό χαρτών"
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Μέγιστος χρόνος για σίγαση του συναγερμού (min)"
 #
+msgid "Enable Touchscreen/Tablet Interface"
+msgstr ""
+#
 msgid "Enable Transparent Toolbar"
 msgstr "Διαφανής μπάρα εργαλείων"
 #
@@ -1338,6 +1345,9 @@ msgstr ""
 #
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Περιοχή περιβαλλοντικού κινδύνου: Ισχυρά θαλάσσια ρεύματα"
+#
+msgid "Error on Waypoint Upload.  Garmin GPS not connected"
+msgstr ""
 #
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr ""
@@ -1981,6 +1991,20 @@ msgstr "Το OpenCPN δεν μπορεί να ξεκινήσει. "
 #
 msgid "OpenCPN info"
 msgstr "Πληροφορίες OpenCPN"
+#
+msgid ""
+"OpenCPN requires access to serial ports to use serial NMEA data.\n"
+"You currently do not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
+msgstr ""
 #
 msgid "Options"
 msgstr "Επιλογές"
@@ -2763,10 +2787,12 @@ msgstr ""
 "Υπάρχουν σημεία πορείας στις ίδιες θέσεις με μερικά από αυτά που επικολλάτε. "
 "Θέλετε να συγχωνεύσετε τα δεδομένα με αυτά;\n"
 #
+#, fuzzy
 msgid ""
-"There are some waypoints used in routes or anchor alarms. Do you want to "
-"delete them as well? This will change the routes and disable the anchor "
-"alarms. Answering No keeps the waypoints used in routes or alarms."
+"There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 "Υπάρχουν σημεία που χρησιμοποιούνται σε διαδρομές ή επιτηρήσεις αγκυροβολίων. "
 "Θέλετε να διαγράψετε και αυτά; Αυτό θα αλλάξει τις διαδρομές και θα "
@@ -3132,6 +3158,10 @@ msgstr ""
 msgid "in"
 msgstr "Σύνδεσμος"
 #
+#, fuzzy
+msgid "in "
+msgstr "Σύνδεσμος"
+#
 msgid "km"
 msgstr ""
 #
@@ -3172,8 +3202,10 @@ msgstr "Ιστοσελίδα wxFB"
 #
 #
 #
+#
 #~ msgid " is %5g"
 #~ msgstr "είναι %5g"
+#
 #
 #
 #, fuzzy

@@ -58,6 +58,9 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     wxDialog::Create( parent, wxID_ANY, wxString( _T ( "test" ) ), wxPoint( x, y ),
                       wxSize( 550, 480 ), wstyle );
 
+    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
+    SetFont( *qFont );
+    
     pParent = parent;
 
     pIDX = (IDX_entry *) pvIDX;
@@ -133,11 +136,17 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
                              wxSize( ( sx * 32 / 100 ), ( sy * 20 / 100 ) ), 0, TClist,
                              wxLB_SINGLE | wxLB_NEEDED_SB );
 
-    OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( sx - 100, sy - 32 ),
+    //  Measure the size of a generic button, with label
+    wxButton *test_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( -1, -1), wxDefaultSize );
+    int tsx, tsy;
+    test_button->GetSize( &tsx, &tsy );
+    delete test_button;
+    
+    OK_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( sx - 100, sy - (tsy + 4) ),
                               wxDefaultSize );
 
-    PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 10, sy - 32 ),
-                              wxSize( 60, -1 ) );
+    PR_button = new wxButton( this, ID_TCWIN_PR, _( "Prev" ), wxPoint( 10, sy - (tsy + 4) ),
+                              wxSize( -1, -1 ) );
 
     m_ptextctrl = new wxTextCtrl( this, -1, _T(""), wxPoint( sx * 3 / 100, 6 ),
                                   wxSize( ( sx * 60 / 100 ), ( sy *29 / 100 ) ) ,
@@ -147,7 +156,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     PR_button->GetPosition( &bpx, &bpy );
 
     NX_button = new wxButton( this, ID_TCWIN_NX, _( "Next" ), wxPoint( bpx + bsx + 5, bpy ),
-                              wxSize( 60, -1 ) );
+                              wxSize( -1, -1 ) );
 
     m_TCWinPopupTimer.SetOwner( this, TCWININF_TIMER );
 

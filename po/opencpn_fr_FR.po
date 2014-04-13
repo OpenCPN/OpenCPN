@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
+"POT-Creation-Date: 2014-04-05 11:43-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
 "Language-Team: \n"
@@ -11,6 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.6.3\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 #
 msgid ""
 "\n"
@@ -473,11 +474,9 @@ msgstr "Cibles AIS"
 msgid "AIS target list"
 msgstr "AIS : Liste des cibles ..."
 #
-#, fuzzy
 msgid "AISRollover"
 msgstr "Info par survol d'une cible."
 #
-#, fuzzy
 msgid "AISTargetQuery"
 msgstr "Informations émises par cette cible"
 #
@@ -629,6 +628,10 @@ msgstr "Êtes vous certain de vouloir effacer <TOUTES> les marques ?"
 #
 msgid "Are you sure you want to delete the selected object(s)"
 msgstr "Êtes vous certain de vouloir effacer cet objet ?"
+#
+#, fuzzy
+msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
+msgstr "Êtes vous certain de vouloir effacer <TOUTES> les routes ?"
 #
 msgid "Are you sure you want to delete this route?"
 msgstr "Êtes vous certain de vouloir effacer cette route ?"
@@ -1311,6 +1314,9 @@ msgstr "Cartes : Activer l'affichage en mosaïque"
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Alerte sur cible : Activer le délai maximum d'acquitement (minutes)"
 #
+msgid "Enable Touchscreen/Tablet Interface"
+msgstr ""
+#
 msgid "Enable Transparent Toolbar"
 msgstr "Barre d'icônes : Permettre la transparence"
 #
@@ -1360,8 +1366,16 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Prudence, environnement hostile : Courants forts"
 #
+#, fuzzy
+msgid "Error on Waypoint Upload.  Garmin GPS not connected"
+msgstr ""
+"Erreur d'envoi du waypoint. S'il vous plait, regardez dans les fichiers "
+"log ...."
+#
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr ""
+"Erreur d'envoi du waypoint. S'il vous plait, regardez dans les fichiers "
+"log ...."
 #
 msgid "Error!"
 msgstr "Erreur !"
@@ -1503,9 +1517,8 @@ msgstr "Cacher les cibles AIS"
 # ---
 # Pytheas54: je préfère 'le' CPA
 # Gilletarom : Bonne idée.
-#, fuzzy
 msgid "Hide All Tracks"
-msgstr "Masquer la trace de la cible"
+msgstr "Cacher toutes les traces"
 #
 # Mm
 # ---
@@ -1639,7 +1652,7 @@ msgid "LMT @ Location"
 msgstr "Heure du lieu"
 #
 msgid "LMT @ Track Start"
-msgstr ""
+msgstr "LMT @ Track Start"
 #
 msgid "Language"
 msgstr "Langue"
@@ -1818,7 +1831,7 @@ msgid "Mark targets as lost after (min)"
 msgstr "Marquer les cibles comme perdues après ... minutes :"
 #
 msgid "Marks"
-msgstr ""
+msgstr "Marques"
 #
 msgid "Max Detail Here"
 msgstr "Détails maximum ici"
@@ -2048,8 +2061,22 @@ msgstr "OpenCPN ne peut pas démarrer"
 msgid "OpenCPN info"
 msgstr "Informations OpenCPN "
 #
+msgid ""
+"OpenCPN requires access to serial ports to use serial NMEA data.\n"
+"You currently do not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
+msgstr ""
+#
 msgid "Options"
-msgstr "Options (Boite à outils) :"
+msgstr "Options :"
 #
 msgid "Other - Define in associated text field"
 msgstr "Autre - à définir dans le texte associé"
@@ -2434,7 +2461,7 @@ msgid "S/V"
 msgstr "Voil."
 #
 msgid "SAR Aircraft"
-msgstr ""
+msgstr "Avion de recherche SAR"
 #
 msgid "SAR/V"
 msgstr "Nav. sauv."
@@ -2564,9 +2591,8 @@ msgstr "Afficher les cibles en taille réelle"
 #
 # Pytheas54: je préfère 'le' CPA
 # Gilletarom : Bonne idée
-#, fuzzy
 msgid "Show All Tracks"
-msgstr "Montrer la trace de la cible"
+msgstr "Montrer toutes les traces"
 #
 msgid "Show CPA/TCPA Alert Dialog"
 msgstr "Afficher la fenêtre de dialogue pour ces alarmes"
@@ -2873,10 +2899,12 @@ msgstr ""
 "Voulez vous seulement recopier leurs caractéristiques dans les nouveaux "
 "waypoint\n"
 #
+#, fuzzy
 msgid ""
-"There are some waypoints used in routes or anchor alarms. Do you want to "
-"delete them as well? This will change the routes and disable the anchor "
-"alarms. Answering No keeps the waypoints used in routes or alarms."
+"There are some waypoints used in routes or anchor alarms.\n"
+" Do you want to delete them as well?\n"
+" This will change the routes and disable the anchor alarms.\n"
+" Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
 "Il y a des waypoint utilisés dans des routes ou des alarmes de mouillage. "
 "Voulez-vous les supprimer aussi ? Cela va changer les routes ou désactiver "
@@ -2912,7 +2940,7 @@ msgstr ""
 "Cette marque ou ce waypoint appartient à une couche et ne peut être édité"
 #
 msgid "TideCurrentGraphRollover"
-msgstr ""
+msgstr "Info marées et courants par survol"
 #
 msgid "Tides && Currents"
 msgstr "Marées et courants"
@@ -2924,9 +2952,8 @@ msgid "Time enroute"
 msgstr "Durée de navigation"
 #
 # Ok
-#, fuzzy
 msgid "Time shown as"
-msgstr "Format de la date"
+msgstr "Format de l'heure"
 #
 # Ok
 msgid "Times shown as"
@@ -2947,9 +2974,8 @@ msgstr "Trace -> Route"
 msgid "Toggle Tracking"
 msgstr "Activer/désactiver le mode trace"
 #
-#, fuzzy
 msgid "Toggle track"
-msgstr "Activer/désactiver le mode trace"
+msgstr "Changer de trace"
 #
 msgid "ToolTips"
 msgstr "Outils de renseignement"
@@ -3004,9 +3030,8 @@ msgstr "Mercator transverse"
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "Traiter les phrases de type WPL comme des rapports de position APRS"
 #
-#, fuzzy
 msgid "Trk"
-msgstr "Trace :"
+msgstr "Tra"
 #
 # AIS
 msgid "Tug"
@@ -3167,7 +3192,7 @@ msgid "Waypoint Properties, Layer: "
 msgstr "Couche: Propriétés Waypoint/marque "
 #
 msgid "Waypoint(s) Uploaded successfully."
-msgstr ""
+msgstr "Waypoint envoyé(s) avec succès."
 #
 msgid "Waypoints"
 msgstr "Waypoint"
@@ -3262,18 +3287,20 @@ msgstr "_B"
 msgid "_plus"
 msgstr "_plus"
 #
-#, fuzzy
 msgid "cm"
-msgstr "m"
+msgstr "cm"
 #
 msgid "fa"
-msgstr ""
+msgstr "fa"
 #
-#, fuzzy
 msgid "ft"
-msgstr "Gauche"
+msgstr "ft"
 #
 msgid "in"
+msgstr "Dans"
+#
+#, fuzzy
+msgid "in "
 msgstr "Dans"
 #
 msgid "km"

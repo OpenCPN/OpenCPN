@@ -5,17 +5,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Plugin Dashboard 1.2 Opencpn 3.3.1328\n"
+"Project-Id-Version: Plugin Dashboard 1.2 Opencpn 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2014-01-30 18:50+0100\n"
+"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"PO-Revision-Date: 2014-02-23 10:16+0100\n"
 "Last-Translator: Pepo II <Pepo_II@outlok.es>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.3\n"
+"X-Generator: Poedit 1.6.4\n"
 #
 msgid " mag"
 msgstr "mag"
@@ -49,9 +49,8 @@ msgstr "Vel. Viento Apar."
 msgid "Appearance"
 msgstr "Aspecto"
 #
-#, fuzzy
 msgid "Barometric history"
-msgstr "Presión barométrica"
+msgstr "Historial de presión"
 #
 msgid "Barometric pressure"
 msgstr "Presión barométrica"
@@ -282,9 +281,8 @@ msgid "Trip Log"
 msgstr "Dist. viaje"
 #
 #
-#, fuzzy
 msgid "True Compass"
-msgstr "Compás"
+msgstr "Compás V"
 #
 # Heading: Rumbo
 msgid "True HDG"
