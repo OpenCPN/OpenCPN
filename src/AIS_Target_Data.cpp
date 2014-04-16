@@ -383,7 +383,7 @@ wxString AIS_Target_Data::BuildQueryResult( void )
         if( Class == AIS_CLASS_A && !b_SarAircraftPosnReport ) {
             html << vertSpacer << rowStart << _("Destination")
                  << _T("</font></td><td align=right><font size=-2>")
-                 << _("ETA") << _T("</font></td></tr>\n")
+                 << _("ETA (UTC)") << _T("</font></td></tr>\n")
                  << rowStartH << _T("<b>");
                  wxString dest =  trimAISField( Destination );
                  if(dest.Length() )
