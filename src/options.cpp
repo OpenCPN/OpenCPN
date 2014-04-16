@@ -4195,7 +4195,11 @@ void options::SetDefaultConnectionParams()
     m_rbTypeSerial->SetValue( bserial );
     m_rbTypeNet->SetValue( !bserial );
     
-    SetNMEAFormToSerial();
+    if(bserial)
+        SetNMEAFormToSerial();
+    else
+        SetNMEAFormToNet();
+    
     m_connection_enabled = true;
 }
 
