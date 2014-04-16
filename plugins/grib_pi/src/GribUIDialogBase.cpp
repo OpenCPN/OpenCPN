@@ -185,8 +185,6 @@ GRIBUIDialogBase::GRIBUIDialogBase( wxWindow* parent, wxWindowID id, const wxStr
 	m_fgTrackingControls->Add( m_cbSeaTemperature, 0, wxALL, 5 );
 
 	m_tcSeaTemperature = new wxTextCtrl( this, wxID_ANY, wxEmptyString, wxDefaultPosition, wxSize( 70,-1 ), wxTE_READONLY );
-	m_tcSeaTemperature->SetToolTip( _("Sea or Air Temperature at Surface Level") );
-
 	m_fgTrackingControls->Add( m_tcSeaTemperature, 0, wxALL, 1 );
 
 
