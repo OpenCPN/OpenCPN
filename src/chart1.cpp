@@ -5668,6 +5668,9 @@ void MyFrame::HandlePianoRollover( int selected_index, int selected_dbIndex )
     if( !cc1 ) return;
     if( !pCurrentStack ) return;
     if( s_ProgDialog ) return;
+    
+    if(ChartData && ChartData->IsBusy())
+        return;
 
     int sx, sy;
     stats->GetPosition( &sx, &sy );
@@ -6061,6 +6064,9 @@ bool MyFrame::DoChartUpdate( void )
     if( !cc1 ) return false;
     if( bDBUpdateInProgress ) return false;
     if( !ChartData ) return false;
+    
+    if(ChartData->IsBusy())
+        return false;
 
     int last_nEntry = -1;
     if( pCurrentStack ) last_nEntry = pCurrentStack->nEntry;
@@ -9099,15 +9105,24 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 
 #ifdef __WXOSX__
     long parent_style;
+    bool b_toolviz = false;
+    bool b_compassviz = false;
+    bool b_statsviz = false;
     
-    if(g_FloatingToolbarDialog)
+    if(g_FloatingToolbarDialog && g_FloatingToolbarDialog->IsShown()){
         g_FloatingToolbarDialog->Hide();
+        b_toolviz = true;
+    }
 
-    if( g_FloatingCompassDialog )
+    if( g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()){
         g_FloatingCompassDialog->Hide();
+        b_compassviz = true;
+    }
 
-    if( stats )
+    if( stats && stats->IsShown()) {
         stats->Hide();
+        b_statsviz = true;
+    }
     
     if(parent) {
         parent_style = parent->GetWindowStyle();
@@ -9125,13 +9140,13 @@ int OCPNMessageBox( wxWindow *parent, const wxString& message, const wxString& c
 //    ret = dlg.ShowModal();
 
 #ifdef __WXOSX__
-    if(gFrame)
+    if(gFrame && b_toolviz)
         gFrame->SurfaceToolbar();
 
-    if( g_FloatingCompassDialog )
+    if( g_FloatingCompassDialog && b_compassviz)
         g_FloatingCompassDialog->Show();
 
-    if( stats )
+    if( stats && b_statsviz)
         stats->Show();
 
     if(parent){

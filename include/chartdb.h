@@ -148,6 +148,7 @@ public:
       void ClearCacheInUseFlags(void);
       void PurgeCacheUnusedCharts(bool b_force = false);
 
+      bool IsBusy(){ return m_b_busy; }
 protected:
       virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
 
@@ -163,6 +164,7 @@ private:
 
       MyFrame           *pParent;
       bool              m_b_locked;
+      bool              m_b_busy;
 
 };
 
