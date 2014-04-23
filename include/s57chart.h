@@ -101,7 +101,6 @@ WX_DECLARE_LIST(ObjRazRules, ListOfObjRazRules);
 WX_DECLARE_OBJARRAY(VE_Element, ArrayOfVE_Elements);
 WX_DECLARE_OBJARRAY(VC_Element, ArrayOfVC_Elements);
 
-WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, MyNatsurHash );
 WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash );
 
 WX_DECLARE_HASH_MAP( unsigned int, VE_Element *, wxIntegerHash, wxIntegerEqual, VE_Hash );
@@ -158,9 +157,10 @@ public:
       bool DoesLatLonSelectObject(float lat, float lon, float select_radius, S57Obj *obj);
       bool IsPointInObjArea(float lat, float lon, float select_radius, S57Obj *obj);
       wxString GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxString curAttrName );
+      static wxString GetAttributeValueAsString( S57attVal *pAttrVal, wxString AttrName );
       static int CompareLights( const void** l1, const void** l2 );
       wxString CreateObjDescriptions( ListOfObjRazRules* rule);
-      wxString GetAttributeDecode(wxString& att, int ival);
+      static wxString GetAttributeDecode(wxString& att, int ival);
 
       wxFileName GetSENCFileName(){ return m_SENCFileName; }
       void SetSENCFileName(wxFileName fn){ m_SENCFileName = fn;}
@@ -277,9 +277,6 @@ private:
       
 
  // Private Data
-      wxString    *m_pcsv_locn;
-
-
       char        *hdr_buf;
       char        *mybuf_ptr;
       int         hdr_len;
@@ -319,8 +316,6 @@ private:
 
       VE_Hash     m_ve_hash;
       VC_Hash     m_vc_hash;
-
-      MyNatsurHash m_natsur_hash;               // hash table for cacheing NATSUR string values from int attributes
 
       bool        m_blastS57TextRender;
       wxString    m_lastColorScheme;

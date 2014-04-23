@@ -54,6 +54,8 @@
 
 #include "mygdal/ogr_s57.h"
 
+#include "pluginmanager.h"                      // for S57 lights overlay
+
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -88,6 +90,7 @@ extern bool              g_b_useStencil;
 extern ChartCanvas       *cc1;
 extern ChartBase         *Current_Ch;
 extern MyFrame*          gFrame;
+extern PlugInManager     *g_pi_manager;
 
 extern wxProgressDialog *s_ProgDialog;
 
@@ -963,7 +966,6 @@ s57chart::s57chart()
     pRigidATONArray = new wxArrayPtrVoid;
 
     m_tmpup_array = NULL;
-    m_pcsv_locn = new wxString( g_csv_locn );
 
     m_DepthUnits = _T("METERS");
     m_depth_unit_id = DEPTH_UNIT_METERS;
@@ -1009,8 +1011,6 @@ s57chart::~s57chart()
 
     delete pFloatingATONArray;
     delete pRigidATONArray;
-
-    delete m_pcsv_locn;
 
     delete m_pENCDS;
 
@@ -5642,20 +5642,10 @@ wxString s57chart::GetAttributeDecode( wxString& att, int ival )
 {
     wxString ret_val = _T("");
 
-    //    Special case for "NATSUR", cacheing the strings for faster chart rendering
-    if( att.IsSameAs( _T("NATSUR") ) ) {
-        if( !m_natsur_hash[ival].IsEmpty() )            // entry available?
-        {
-            return m_natsur_hash[ival];
-        }
-    }
-
-    if( NULL == m_pcsv_locn ) return ret_val;
-
     //  Get the attribute code from the acronym
     const char *att_code;
 
-    wxString file( *m_pcsv_locn );
+    wxString file( g_csv_locn );
     file.Append( _T("/s57attributes.csv") );
 
     if( !wxFileName::FileExists( file ) ) {
@@ -5674,7 +5664,7 @@ wxString s57chart::GetAttributeDecode( wxString& att, int ival )
     //  This will have to be a 2-d search, using ID field and Code field
 
     // Ingest, and get a pointer to the ingested table for "Expected Input" file
-    wxString ei_file( *m_pcsv_locn );
+    wxString ei_file( g_csv_locn );
     ei_file.Append( _T("/s57expectedinput.csv") );
 
     if( !wxFileName::FileExists( ei_file ) ) {
@@ -5708,8 +5698,6 @@ wxString s57chart::GetAttributeDecode( wxString& att, int ival )
 
         CSLDestroy( papszFields );
     }
-
-    if( att.IsSameAs( _T("NATSUR") ) ) m_natsur_hash[ival] = ret_val;            // cache the entry
 
     return ret_val;
 
@@ -6157,6 +6145,135 @@ wxString s57chart::GetObjectAttributeValueAsString( S57Obj *obj, int iatt, wxStr
     return value;
 }
 
+wxString s57chart::GetAttributeValueAsString( S57attVal *pAttrVal, wxString AttrName )
+{
+    wxString value;
+    switch( pAttrVal->valType ){
+        case OGR_STR: {
+            if( pAttrVal->value ) {
+                wxString val_str( (char *) ( pAttrVal->value ), wxConvUTF8 );
+                long ival;
+                if( val_str.ToLong( &ival ) ) {
+                    if( 0 == ival )
+                        value = _T("Unknown");
+                    else {
+                        wxString decode_val = GetAttributeDecode( AttrName, ival );
+                        if( !decode_val.IsEmpty() ) {
+                            value = decode_val;
+                            wxString iv;
+                            iv.Printf( _T("(%d)"), (int) ival );
+                            value.Append( iv );
+                        } else
+                            value.Printf( _T("%d"), (int) ival );
+                    }
+                }
+                
+                else if( val_str.IsEmpty() ) value = _T("Unknown");
+                
+                else {
+                    value.Clear();
+                    wxString value_increment;
+                    wxStringTokenizer tk( val_str, wxT(",") );
+                    int iv = 0;
+                    while( tk.HasMoreTokens() ) {
+                        wxString token = tk.GetNextToken();
+                        long ival;
+                        if( token.ToLong( &ival ) ) {
+                            wxString decode_val = GetAttributeDecode( AttrName, ival );
+                            if( !decode_val.IsEmpty() ) value_increment = decode_val;
+                            else
+                                value_increment.Printf( _T(" %d"), (int) ival );
+                            
+                            if( iv ) value_increment.Prepend( wxT(", ") );
+                        }
+                        value.Append( value_increment );
+                        
+                        iv++;
+                    }
+                    value.Append( val_str );
+                }
+            } else
+                value = _T("[NULL VALUE]");
+            
+            break;
+        }
+        
+        case OGR_INT: {
+            int ival = *( (int *) pAttrVal->value );
+            wxString decode_val = GetAttributeDecode( AttrName, ival );
+            
+            if( !decode_val.IsEmpty() ) {
+                value = decode_val;
+                wxString iv;
+                iv.Printf( _T("(%d)"), ival );
+                value.Append( iv );
+            } else
+                value.Printf( _T("(%d)"), ival );
+            
+            break;
+        }
+        case OGR_INT_LST:
+            break;
+            
+        case OGR_REAL: {
+            double dval = *( (double *) pAttrVal->value );
+            wxString val_suffix = _T(" m");
+            
+            //    As a special case, convert some attribute values to feet.....
+            if( ( AttrName == _T("VERCLR") ) || ( AttrName == _T("VERCLL") )
+                || ( AttrName == _T("HEIGHT") ) || ( AttrName == _T("HORCLR") ) ) {
+                    switch( ps52plib->m_nDepthUnitDisplay ){
+                        case 0:                       // feet
+                        case 2:                       // fathoms
+                        dval = dval * 3 * 39.37 / 36;              // feet
+                        val_suffix = _T(" ft");
+                        break;
+                        default:
+                            break;
+                    }
+                }
+                
+                else if( ( AttrName == _T("VALSOU") ) || ( AttrName == _T("DRVAL1") )
+                    || ( AttrName == _T("DRVAL2") ) ) {
+                    switch( ps52plib->m_nDepthUnitDisplay ){
+                        case 0:                       // feet
+                        dval = dval * 3 * 39.37 / 36;              // feet
+                        val_suffix = _T(" ft");
+                        break;
+                        case 2:                       // fathoms
+                        dval = dval * 3 * 39.37 / 36;              // fathoms
+                        dval /= 6.0;
+                        val_suffix = _T(" fathoms");
+                        break;
+                        default:
+                            break;
+                    }
+                }
+                
+                else if( AttrName == _T("SECTR1") ) val_suffix = _T("&deg;");
+                else if( AttrName == _T("SECTR2") ) val_suffix = _T("&deg;");
+                else if( AttrName == _T("ORIENT") ) val_suffix = _T("&deg;");
+                else if( AttrName == _T("VALNMR") ) val_suffix = _T(" Nm");
+                else if( AttrName == _T("SIGPER") ) val_suffix = _T("s");
+                else if( AttrName == _T("VALACM") ) val_suffix = _T(" Minutes/year");
+                else if( AttrName == _T("VALMAG") ) val_suffix = _T("&deg;");
+               
+               if( dval - floor( dval ) < 0.01 ) value.Printf( _T("%2.0f"), dval );
+               else
+                   value.Printf( _T("%4.1f"), dval );
+               
+               value << val_suffix;
+               
+               break;
+        }
+        
+                        case OGR_REAL_LST: {
+                            break;
+                        }
+    }
+    return value;
+}
+
 int s57chart::CompareLights( const void** l1ptr, const void** l2ptr )
 {
     S57Light l1 = *(S57Light*) *l1ptr;
@@ -6217,8 +6334,8 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
         //    using cpl_csv from the gdal library
 
         const char *name_desc;
-        if( NULL != m_pcsv_locn ) {
-            wxString oc_file( *m_pcsv_locn );
+        if( g_csv_locn.Len() ) {
+            wxString oc_file( g_csv_locn );
             oc_file.Append( _T("/s57objectclasses.csv") );
             name_desc = MyCSVGetField( oc_file.mb_str(), "Acronym",                  // match field
                     current->obj->FeatureName,            // match value
@@ -6813,8 +6930,21 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     double cursor_lat, cursor_lon;
     static double lastLat, lastLon;
 
-    if( !ps52plib || !ps52plib->m_bExtendLightSectors ) return false;
+    if( !ps52plib || !ps52plib->m_bExtendLightSectors ) 
+        return false;
 
+    ChartPlugInWrapper *target_plugin_chart = NULL;
+    s57chart *Chs57 = NULL;
+    
+    ChartBase *target_chart = cc1->GetChartAtCursor();
+    if( target_chart ){
+        if( (target_chart->GetChartType() == CHART_TYPE_PLUGIN) && (target_chart->GetChartFamily() == CHART_FAMILY_VECTOR) )
+            target_plugin_chart = dynamic_cast<ChartPlugInWrapper *>(target_chart);
+        else
+            Chs57 = dynamic_cast<s57chart*>( target_chart );
+    }
+    
+    
     cc1->GetCanvasPixPoint ( mx, my, cursor_lat, cursor_lon );
 
     if( lastLat == cursor_lat && lastLon == cursor_lon ) return false;
@@ -6822,9 +6952,6 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     lastLat = cursor_lat;
     lastLon = cursor_lon;
     bool newSectorsNeedDrawing = false;
-
-    ChartBase *targetchart = cc1->GetChartAtCursor();
-    s57chart *chart = dynamic_cast<s57chart*>( targetchart );
 
     bool bhas_red_green = false;
     bool bleading_attribute = false;
@@ -6834,131 +6961,204 @@ bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vec
     if( cc1->GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT) opacity = 20;
     
     int yOpacity = (float)opacity*1.3; // Matched perception of white/yellow with red/green
-    
-    if( chart ) {
+
+    if( target_plugin_chart || Chs57  ) {
+        // Go get the array of all objects at the cursor lat/lon
+        float selectRadius = 16 / ( viewport.view_scale_ppm * 1852 * 60 );
+        
+        ListOfObjRazRules* rule_list = NULL;
+        ListOfPI_S57Obj* pi_rule_list = NULL;
+        if( Chs57 )
+            rule_list = Chs57->GetObjRuleListAtLatLon( cursor_lat, cursor_lon, selectRadius, &viewport );
+        else if( target_plugin_chart )
+            pi_rule_list = g_pi_manager->GetPlugInObjRuleListAtLatLon( target_plugin_chart,
+                                                                       cursor_lat, cursor_lon, selectRadius, viewport );
+        
+        
         sectorlegs.clear();
 
-        float selectRadius = 16 / ( viewport.view_scale_ppm * 1852 * 60 );
-
-        ListOfObjRazRules* rule_list =
-                chart->GetObjRuleListAtLatLon( cursor_lat, cursor_lon, selectRadius, &viewport );
-
         wxPoint2DDouble lightPosD(0,0);
-
-        for( ListOfObjRazRules::Node *node = rule_list->GetLast(); node; node = node->GetPrevious() ) {
-            ObjRazRules *current = node->GetData();
-            S57Obj* light = current->obj;
+        wxPoint2DDouble objPos;
+        
+        char *curr_att;
+        int n_attr;
+        wxArrayOfS57attVal *attValArray;
+        
+        ListOfObjRazRules::Node *snode;
+        ListOfPI_S57Obj::Node *pnode;
+        
+        if(Chs57) 
+            snode = rule_list->GetLast();
+        else if( target_plugin_chart )
+            pnode = pi_rule_list->GetLast();
+        
+            
+        while(1) {
+            
+            bool is_light = false;
+            if(Chs57) {
+                if(!snode)
+                    break;
+                
+                ObjRazRules *current = snode->GetData();
+                S57Obj* light = current->obj;
+                if( !strcmp( light->FeatureName, "LIGHTS" ) ) {
+                    objPos = wxPoint2DDouble( light->m_lat, light->m_lon );
+                    curr_att = light->att_array;
+                    n_attr = light->n_attr;
+                    attValArray = light->attVal;
+                    is_light = true;
+                }
+            }
+            else if( target_plugin_chart ) {
+                if(!pnode)
+                    break;
+                PI_S57Obj* light = pnode->GetData();
+                if( !strcmp( light->FeatureName, "LIGHTS" ) ) {
+                    objPos = wxPoint2DDouble( light->m_lat, light->m_lon );
+                    curr_att = light->att_array;
+                    n_attr = light->n_attr;
+                    attValArray = light->attVal;
+                    is_light = true;
+                }
+            }
+            
+            
+            //  Ready to go
             int attrCounter;
             double sectr1 = -1;
             double sectr2 = -1;
             double valnmr = -1;
             wxString curAttrName;
             wxColor color;
-
-            if( !strcmp( light->FeatureName, "LIGHTS" ) ) {
-                wxPoint2DDouble objPos( light->m_lat, light->m_lon );
-                if( lightPosD.m_x == 0 && lightPosD.m_y == 0.0 )
-                    lightPosD = objPos;
-                if( lightPosD == objPos ) {
+            
+            if( lightPosD.m_x == 0 && lightPosD.m_y == 0.0 )
+                lightPosD = objPos;
+            
+            if( is_light && (lightPosD == objPos) ) {
+                
+                if( curr_att ) {
+                    bool bviz = true;
                     
-                    if( light->att_array ) {
-                        char *curr_att = light->att_array;
-                        bool bviz = true;
+                    attrCounter = 0;
+                    int noAttr = 0;
+                    bool inDepthRange = false;
+                    s57Sector_t sector;
+                    
+                    bleading_attribute = false;
+                    
+                    while( attrCounter < n_attr ) {
+                        curAttrName = wxString(curr_att, wxConvUTF8, 6 );
+                        noAttr++;
                         
-                        attrCounter = 0;
-                        int noAttr = 0;
-                        bool inDepthRange = false;
-                        s57Sector_t sector;
-
-                        bleading_attribute = false;
+                        S57attVal *pAttrVal = NULL;
+                        if(Chs57) 
+                            pAttrVal = attValArray->Item(attrCounter);
+                        else if( target_plugin_chart )
+                            pAttrVal = attValArray->Item(attrCounter);
                         
-                        while( attrCounter < light->n_attr ) {
-                            curAttrName = wxString(curr_att, wxConvUTF8, 6 );
-                            noAttr++;
-
-                            wxString value = chart->GetObjectAttributeValueAsString( light, attrCounter, curAttrName );
-
-                            if( curAttrName == _T("LITVIS") ){
-                                if(value.StartsWith(_T("obsc")) )
-                                    bviz = false;
-                            }
-                            if( curAttrName == _T("SECTR1") ) value.ToDouble( &sectr1 );
-                            if( curAttrName == _T("SECTR2") ) value.ToDouble( &sectr2 );
-                            if( curAttrName == _T("VALNMR") ) value.ToDouble( &valnmr );
-                            if( curAttrName == _T("COLOUR") ) {
-                                if( value == _T("red(3)") ) {
-                                    color = wxColor( 255, 0, 0, opacity );
-                                    sector.iswhite = false;
-                                    bhas_red_green = true;
-                                }
-                                if( value == _T("green(4)") ) {
-                                    color = wxColor( 0, 255, 0, opacity );
-                                    sector.iswhite = false;
-                                    bhas_red_green = true;
-                                }
-                            }
-                            if( curAttrName == _T("EXCLIT") ) {
-                                if( value.Find( _T("(3)") ) ) valnmr = 1.0;  // Fog lights.
-                            }
-                            if( curAttrName == _T("CATLIT") ){
-                                if( value.Upper().StartsWith( _T("DIRECT")) ||
-                                    value.Upper().StartsWith(_T("LEAD")) )
-                                    bleading_attribute = true;
-                            }
-                                
-                            attrCounter++;
-                            curr_att += 6;
+                        
+                        wxString value = s57chart::GetAttributeValueAsString( pAttrVal, curAttrName );
+                        
+                        if( curAttrName == _T("LITVIS") ){
+                            if(value.StartsWith(_T("obsc")) )
+                                bviz = false;
                         }
-
-                        if( ( sectr1 >= 0 ) && ( sectr2 >= 0 ) ) {
+                        if( curAttrName == _T("SECTR1") )value.ToDouble( &sectr1 );
+                        if( curAttrName == _T("SECTR2") ) value.ToDouble( &sectr2 );
+                        if( curAttrName == _T("VALNMR") ) value.ToDouble( &valnmr );
+                        if( curAttrName == _T("COLOUR") ) {
+                            if( value == _T("red(3)") ) {
+                                color = wxColor( 255, 0, 0, opacity );
+                                sector.iswhite = false;
+                                bhas_red_green = true;
+                            }
+                        
+                            if( value == _T("green(4)") ) {
+                                color = wxColor( 0, 255, 0, opacity );
+                                sector.iswhite = false;
+                                bhas_red_green = true;
+                            }
+                        }
+                    
+                        if( curAttrName == _T("EXCLIT") ) {
+                            if( value.Find( _T("(3)") ) ) valnmr = 1.0;  // Fog lights.
+                        }
+               
+                        if( curAttrName == _T("CATLIT") ){
+                            if( value.Upper().StartsWith( _T("DIRECT")) || value.Upper().StartsWith(_T("LEAD")) )
+                                bleading_attribute = true;
+                        }
+                                          
+                        attrCounter++;
+                        curr_att += 6;
+                    }
+                
+                    if( ( sectr1 >= 0 ) && ( sectr2 >= 0 ) ) {
                             if( sectr1 > sectr2 ) {             // normalize
-                                sectr2 += 360.0;
+                                    sectr2 += 360.0;
                             }
-                            
-                            sector.pos.m_x = light->m_lon;
-                            sector.pos.m_y = light->m_lat;
-
-                            sector.range = (valnmr > 0.0) ? valnmr : 2.5; // Short default range.
-                            sector.sector1 = sectr1;
-                            sector.sector2 = sectr2;
-                            
-                            if(!color.IsOk()){
-                                color = wxColor( 255, 255, 0, yOpacity );
-                                sector.iswhite = true;
-                            }
-                            sector.color = color;
-                            sector.isleading = false;           // tentative judgment, check below
-
-                            if( bleading_attribute )
-                                sector.isleading = true;
-                            
-                            bool newsector = true;
-                            for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
-                                if( sectorlegs[i].pos == sector.pos &&
-                                    sectorlegs[i].sector1 == sector.sector1 &&
-                                    sectorlegs[i].sector2 == sector.sector2 ) {
-                                        newsector = false;
-                                        //  In the case of duplicate sectors, choose the instance with largest range.
-                                        //  This applies to the case where day and night VALNMR are different, and so
-                                        //  makes the vector result independent of the order of day/night light features.
-                                        sectorlegs[i].range = wxMax(sectorlegs[i].range, sector.range);
-                                }
-                            }
-                            if(!bviz)
+                    
+                        sector.pos.m_x = objPos.m_y;              // lon
+                        sector.pos.m_y = objPos.m_x;
+                    
+                        sector.range = (valnmr > 0.0) ? valnmr : 2.5; // Short default range.
+                        sector.sector1 = sectr1;
+                        sector.sector2 = sectr2;
+                    
+                        if(!color.IsOk()){
+                            color = wxColor( 255, 255, 0, yOpacity );
+                            sector.iswhite = true;
+                        }
+                        sector.color = color;
+                        sector.isleading = false;           // tentative judgment, check below
+                    
+                        if( bleading_attribute )
+                            sector.isleading = true;
+                    
+                        bool newsector = true;
+                        for( unsigned int i=0; i<sectorlegs.size(); i++ ) {
+                            if( sectorlegs[i].pos == sector.pos &&
+                                sectorlegs[i].sector1 == sector.sector1 &&
+                                sectorlegs[i].sector2 == sector.sector2 ) {
                                 newsector = false;
-                            
-                            if( newsector ) {
-                                sectorlegs.push_back( sector );
-                                newSectorsNeedDrawing = true;
+                        //  In the case of duplicate sectors, choose the instance with largest range.
+                            //  This applies to the case where day and night VALNMR are different, and so
+                            //  makes the vector result independent of the order of day/night light features.
+                                sectorlegs[i].range = wxMax(sectorlegs[i].range, sector.range);
                             }
+                        }
+            
+                        if(!bviz)
+                            newsector = false;
+                    
+                        if( newsector ) {
+                            sectorlegs.push_back( sector );
+                            newSectorsNeedDrawing = true;
                         }
                     }
                 }
             }
-        }
+        
+            
+            
 
-        rule_list->Clear();
-        delete rule_list;
+            if(Chs57) 
+                snode = snode->GetPrevious();
+            else if( target_plugin_chart )
+                pnode = pnode->GetPrevious();
+            
+        }               // end of while
+
+        if(rule_list) {
+            rule_list->Clear();
+            delete rule_list;
+        }
+    
+        if(pi_rule_list) {
+            pi_rule_list->Clear();
+            delete pi_rule_list;
+        }
     }
 
 #if 0    
