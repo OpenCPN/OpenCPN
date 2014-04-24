@@ -901,7 +901,7 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
                                porg.x, porg.y, pGO->m_dwidth, pGO->m_dheight, vp );
             else
                 m_Message_Hiden.IsEmpty()?
-                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays:"))
+                    m_Message_Hiden.Append(_("Overlays too wide and can't be displayed:"))
                     .Append(_T(" ")).Append(GribOverlaySettings::NameFromIndex(settings))
                     : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
 #endif
