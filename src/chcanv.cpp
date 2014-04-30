@@ -290,7 +290,8 @@ extern wxArrayOfConnPrm *g_pConnectionParams;
 extern OCPN_Sound        g_anchorwatch_sound;
 
 extern bool              g_bShowMag;
-extern bool              g_bmobile;
+extern bool              g_btouch;
+extern bool              g_bresponsive;
 
 //  TODO why are these static?
 static int mouse_x;
@@ -5515,7 +5516,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
     if( s_ProgDialog ) return;
 
-    if(!g_bmobile){
+    if(!g_btouch){
         if( ( m_bMeasure_Active && ( m_nMeasureState >= 2 ) ) || ( parent_frame->nRoute_State > 1 )
             || ( parent_frame->nRoute_State ) > 1 ) {
             wxPoint p = ClientToScreen( wxPoint( x, y ) );
@@ -5534,7 +5535,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     mouse_leftisdown = event.LeftIsDown();
 
 //      Retrigger the route leg / AIS target popup timer
-    if( !g_bmobile )
+    if( !g_btouch )
     {
         if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive() )
             m_RolloverPopupTimer.Start( 10, wxTIMER_ONE_SHOT );               // faster response while the rollover is turned on
@@ -5552,7 +5553,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     //    Calculate meaningful SelectRadius
     float SelectRadius;
     int sel_rad_pix = 8;
-    if(g_bmobile)
+    if(g_btouch)
         sel_rad_pix = 50;
     
     SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
@@ -5642,7 +5643,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }
     }
 
-    if(!g_bmobile ){
+    if(!g_btouch ){
     //    Route Creation Rubber Banding
         if( parent_frame->nRoute_State >= 2 ) {
             r_rband.x = x;
@@ -5678,7 +5679,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         last_drag.y = my;
         leftIsDown = true;
 
-        if(!g_bmobile){
+        if(!g_btouch){
             if( parent_frame->nRoute_State )                  // creating route?
             {
                 double rlat, rlon;
@@ -5851,10 +5852,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             else {
                 FindRoutePointsAtCursor( SelectRadius, true );    // Not creating Route
             }
-        }  // !g_bmobile
+        }  // !g_btouch
         
        
-        if( g_bmobile ){
+       if( g_btouch ){
         //      Check to see if there is a route or AIS target under the cursor
         //      If so, start the rollover timer which creates the popup
             bool b_start_rollover = false;
@@ -5947,7 +5948,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     Refresh( false );
                 }
             }
-        }       // g_bmobile
+       }       // g_btouch
         
     }
 
@@ -6114,7 +6115,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         bool b_startedit_route = false;
         bool b_startedit_mark = false;
         
-        if(g_bmobile) {
+        if(g_btouch) {
             if( parent_frame->nRoute_State && !m_bChartDragging)                  // creating route?
             {
                 double rlat, rlon;
@@ -6318,7 +6319,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 }
                     
             }
-        }       // g_bmobile
+        }       // g_btouch
         
         
         if( m_bRouteEditing && !b_startedit_route) {
@@ -6383,7 +6384,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         else if( leftIsDown ) {  // left click for chart center
             leftIsDown = false;
 
-            if( !g_bmobile ){
+            if( !g_btouch ){
                 if( !m_bChartDragging && !m_bMeasure_Active ) {
                     switch( cursor_region ){
                         case MID_RIGHT: {
@@ -6745,7 +6746,7 @@ void MenuPrepend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
     wxFont *qFont = GetOCPNScaledFont(_T("Menu"), 12);
-    if(g_bmobile){
+    if(g_bresponsive){
 #ifdef __WXMSW__        
         item->SetFont(*qFont);
 #endif        
@@ -6757,7 +6758,7 @@ void MenuAppend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
     wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
-    if(g_bmobile){
+    if(g_bresponsive){
 #ifdef __WXMSW__        
         item->SetFont(*qFont);
 #endif        
@@ -7418,7 +7419,7 @@ void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
     if( NULL == pMarkPropDialog )    // There is one global instance of the MarkProp Dialog
         pMarkPropDialog = new MarkInfoImpl( this );
 
-    if( g_bmobile ) {
+    if( g_bresponsive ) {
         
         wxSize canvas_size = cc1->GetSize();
         wxPoint canvas_pos = cc1->GetPosition();
@@ -7465,7 +7466,7 @@ void ChartCanvas::ShowRoutePropertiesDialog(wxString title, Route* selected)
     if( NULL == pRoutePropDialog )  // There is one global instance of the RouteProp Dialog
         pRoutePropDialog = new RouteProp( this );
 
-    if( g_bmobile ) {
+    if( g_bresponsive ) {
         
         wxSize canvas_size = cc1->GetSize();
         wxPoint canvas_pos = cc1->GetPosition();
@@ -8744,7 +8745,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             route->m_NextLegGreatCircle = true;
         }
 
-        if( !g_bmobile) {
+        if( !g_bresponsive) {
             route->DrawPointWhich( dc, route->m_lastMousePointIndex, &lastPoint );
 
             if( route->m_NextLegGreatCircle ) {

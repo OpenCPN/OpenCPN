@@ -152,6 +152,7 @@ enum {
     ID_MAGSHOWCHECKBOX,
     ID_MAGAPBCHECKBOX,
     ID_MOBILEBOX,
+    ID_REPONSIVEBOX,
     xID_OK
 };
 
@@ -309,6 +310,7 @@ public:
     wxCheckBox              *pCBMagShow;
     wxTextCtrl              *pMagVar;
     wxCheckBox              *pMobile;
+    wxCheckBox              *pResponsive;
     
     int                      k_tides;
 

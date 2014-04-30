@@ -637,7 +637,8 @@ double g_GLMinLineWidth;
 int n_NavMessageShown;
 wxString g_config_version_string;
 
-bool             g_bmobile;
+bool             g_btouch;
+bool             g_bresponsive;
 
 #ifndef __WXMSW__
 sigjmp_buf env;                    // the context saved by sigsetjmp();
@@ -1398,7 +1399,7 @@ bool MyApp::OnInit()
     pConfig->LoadMyConfig( 0 );
 
     
-    if(g_bmobile){
+    if(g_btouch){
         int SelectPixelRadius = 50;
     
         pSelect->SetSelectPixelRadius(SelectPixelRadius);
@@ -1912,7 +1913,7 @@ if( 0 == g_memCacheLimit )
 
     if( g_bframemax ) gFrame->Maximize( true );
 
-    if( g_bmobile  && ( g_pix_per_mm > 4.0))
+    if( g_bresponsive  && ( g_pix_per_mm > 4.0))
         gFrame->Maximize( true );
         
     stats = new StatWin( cc1 );
@@ -4220,7 +4221,7 @@ int MyFrame::DoOptionsDialog()
     if( options_lastPage >= 0 )
         g_options->m_pListbook->SetSelection( options_lastPage );
 
-    if(!g_bmobile){
+    if(!g_bresponsive){
         g_options->lastWindowPos = options_lastWindowPos;
         if( options_lastWindowPos != wxPoint(0,0) ) {
             g_options->Move( options_lastWindowPos );
@@ -9324,7 +9325,7 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
 {
     wxFont *dFont = FontMgr::Get().GetFont( item, default_size );
     
-    if( g_bmobile ){
+    if( g_bresponsive ){
         if(dFont->GetPointSize() < 20) {
             wxFont *qFont = wxTheFontList->FindOrCreateFont( 20,
                                                              dFont->GetFamily(),
