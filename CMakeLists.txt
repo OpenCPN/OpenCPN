@@ -561,10 +561,12 @@ IF (USE_S57)
 	ADD_DEFINITIONS(-DUSE_S57)
 
 	SET(SRC_S57ENC
+                include/TexFont.h
 		include/s52plib.h
 		include/s52utils.h
 		include/s57chart.h
 		include/mygeom.h
+                src/TexFont.cpp
 		src/s52cnsy.cpp
 		src/s52plib.cpp
 		src/s52utils.cpp
