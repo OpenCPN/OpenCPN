@@ -2875,7 +2875,7 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             if( ( inode ) && ( jnode ) )
                 draw_lc_poly( m_pdc, color, w, ptp, nls + 2, sym_len, sym_factor, rules->razRule, vp );
-            else
+            else if(nls)
                 draw_lc_poly( m_pdc, color, w, &ptp[1], nls, sym_len, sym_factor, rules->razRule, vp );
 
         }
