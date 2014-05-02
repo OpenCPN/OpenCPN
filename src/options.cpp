@@ -1802,7 +1802,7 @@ void options::CreateControls()
     int check_spacing = 4;
     int group_item_spacing = 2;           // use for items within one group, with Add(...wxALL)
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 12);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
     SetFont( *qFont );
 
     int font_size_y, font_descent, font_lead;

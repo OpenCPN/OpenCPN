@@ -82,7 +82,7 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 12);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
     SetFont( *qFont );
     
     SetWindowStyleFlag( wstyle ); 

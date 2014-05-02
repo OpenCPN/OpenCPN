@@ -6745,7 +6745,7 @@ wxString _menuText( wxString name, wxString shortcut ) {
 void MenuPrepend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
-    wxFont *qFont = GetOCPNScaledFont(_T("Menu"), 12);
+    wxFont *qFont = GetOCPNScaledFont(_T("Menu"), 10);
     if(g_bresponsive){
 #ifdef __WXMSW__        
         item->SetFont(*qFont);
@@ -6757,7 +6757,7 @@ void MenuPrepend( wxMenu *menu, int id, wxString label)
 void MenuAppend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 12);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
     if(g_bresponsive){
 #ifdef __WXMSW__        
         item->SetFont(*qFont);
