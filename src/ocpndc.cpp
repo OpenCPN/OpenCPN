@@ -64,9 +64,7 @@ ocpnDC::ocpnDC( wxGLCanvas &canvas ) :
 {
 #ifdef ocpnUSE_GL
     
-    tex = 0;
     pgc = NULL;
-    glGenTextures( 1, &tex );
     m_textforegroundcolour = wxColour( 0, 0, 0 );
 #endif    
 }
@@ -74,7 +72,6 @@ ocpnDC::ocpnDC( wxGLCanvas &canvas ) :
 ocpnDC::ocpnDC( wxDC &pdc ) :
         glcanvas( NULL ), dc( &pdc ), m_pen( wxNullPen ), m_brush( wxNullBrush )
 {
-    tex = 0;
     pgc = NULL;
 #if wxUSE_GRAPHICS_CONTEXT
     wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
@@ -90,15 +87,11 @@ ocpnDC::ocpnDC( wxDC &pdc ) :
 ocpnDC::ocpnDC() :
         glcanvas( NULL ), dc( NULL ), m_pen( wxNullPen ), m_brush( wxNullBrush ), pgc( NULL )
 {
-    tex = 0;
 }
 
 ocpnDC::~ocpnDC()
 {
     if( pgc ) delete pgc;
-#ifdef ocpnUSE_GL
-    if( glcanvas ) glDeleteTextures( 1, &tex );
-#endif    
 }
 
 void ocpnDC::Clear()
