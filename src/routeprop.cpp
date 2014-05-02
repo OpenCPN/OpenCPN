@@ -354,7 +354,7 @@ RouteProp::RouteProp( wxWindow* parent, wxWindowID id, const wxString& caption, 
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
-    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 12);
     SetFont( *qFont );
     
     Create( parent, id, caption, pos, size, wstyle );
@@ -1793,7 +1793,7 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
-    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 12);
     SetFont( *qFont );
     
     Create( parent, id, title, pos, size, wstyle );
