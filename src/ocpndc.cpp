@@ -635,13 +635,13 @@ void ocpnDC::DrawRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h )
 }
 
 /* draw the arc along corners */
-static void drawrrhelper( wxCoord x, wxCoord y, wxCoord r, double st, double et )
+static void drawrrhelper( wxCoord x, wxCoord y, wxCoord r, float st, float et )
 {
 #ifdef ocpnUSE_GL
     const int slices = 10;
-    double dt = ( et - st ) / slices;
-    for( double t = st; t <= et; t += dt )
-        glVertex2i( x + r * cos( t ), y + r * sin( t ) );
+    float dt = ( et - st ) / slices;
+    for( float t = st; t <= et; t += dt )
+        glVertex2f( x + r * cos( t ), y + r * sin( t ) );
 #endif        
 }
 
@@ -734,8 +734,8 @@ void ocpnDC::DrawEllipse( wxCoord x, wxCoord y, wxCoord width, wxCoord height )
         dc->DrawEllipse( x, y, width, height );
 #ifdef ocpnUSE_GL
     else {
-        double r1 = width / 2, r2 = height / 2;
-        double cx = x + r1, cy = y + r2;
+        float r1 = width / 2, r2 = height / 2;
+        float cx = x + r1, cy = y + r2;
 
         glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT );      //Save state
 
@@ -745,18 +745,21 @@ void ocpnDC::DrawEllipse( wxCoord x, wxCoord y, wxCoord width, wxCoord height )
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
+        /* formula for variable step count to produce smooth ellipse */
+        float steps = floorf(wxMax(sqrtf(sqrtf((float)(width*width + height*height))), 1) * M_PI);
+
         if( ConfigureBrush() ) {
             glBegin( GL_TRIANGLE_FAN );
-            glVertex2d( cx, cy );
-            for( double a = 0; a <= 2 * M_PI; a += 2 * M_PI / 20 )
-                glVertex2d( cx + r1 * sin( a ), cy + r2 * cos( a ) );
+            glVertex2f( cx, cy );
+            for( float a = 0; a <= 2 * M_PI + M_PI/steps; a += 2 * M_PI / steps )
+                glVertex2f( cx + r1 * sinf( a ), cy + r2 * cosf( a ) );
             glEnd();
         }
 
         if( ConfigurePen() ) {
-            glBegin( GL_LINE_STRIP );
-            for( double a = 0; a <= 2 * M_PI; a += 2 * M_PI / 200 )
-                glVertex2d( cx + r1 * sin( a ), cy + r2 * cos( a ) );
+            glBegin( GL_LINE_LOOP );
+            for( float a = 0; a < 2 * M_PI - M_PI/steps; a += 2 * M_PI / steps )
+                glVertex2f( cx + r1 * sinf( a ), cy + r2 * cosf( a ) );
             glEnd();
         }
 
@@ -771,7 +774,7 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
         dc->DrawPolygon( n, points, xoffset, yoffset );
 #ifdef ocpnUSE_GL
     else {
-        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_POLYGON_BIT ); //Save state
+        glPushAttrib( GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_POLYGON_BIT ); //Save state
 
         SetGLAttrs( true );
 
@@ -857,12 +860,15 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
         dc->DrawPolygon( n, points, xoffset, yoffset );
 #ifdef ocpnUSE_GL
     else {
-        if( n < 5 ) {
+# ifndef ocpnUSE_GLES  // tessalator in glues is broken
+        if( n < 5 )
+# endif
+        {
             DrawPolygon( n, points, xoffset, yoffset );
             return;
         }
 
-        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_POLYGON_BIT ); //Save state
+        glPushAttrib( GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_POLYGON_BIT ); //Save state
         SetGLAttrs( false );
 
         static GLUtesselator *tobj = NULL;
@@ -928,6 +934,10 @@ void ocpnDC::StrokePolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yo
 
 void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask )
 {
+#ifdef ocpnUSE_GLES  // Do not attempt to do anything with glDrawPixels if using opengles
+        return;
+#endif
+
     wxBitmap bmp;
     if( x < 0 || y < 0 ) {
         int dx = ( x < 0 ? -x : 0 );
@@ -959,7 +969,6 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
                     "trying to use mask to draw a bitmap without alpha or mask\n" );
 
             unsigned char *e = new unsigned char[4 * w * h];
-//               int w = image.GetWidth(), h = image.GetHeight();
             {
                 for( int y = 0; y < h; y++ )
                     for( int x = 0; x < w; x++ ) {
@@ -997,6 +1006,9 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
         dc->DrawText( text, x, y );
 #ifdef ocpnUSE_GL
     else {
+# ifdef ocpnUSE_GLES
+        return;
+# endif
         wxCoord w = 0;
         wxCoord h = 0;
 #ifdef __WXMAC__
@@ -1026,6 +1038,18 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
             /* use the data in the bitmap for alpha channel,
              and set the color to text foreground */
             wxImage image = bmp.ConvertToImage();
+            if( x < 0 || y < 0 ) { // Allow Drawing text which is offset to start off screen
+                int dx = ( x < 0 ? -x : 0 );
+                int dy = ( y < 0 ? -y : 0 );
+                int w = bmp.GetWidth() - dx;
+                int h = bmp.GetHeight() - dy;
+                /* picture is out of viewport */
+                if( w <= 0 || h <= 0 ) return;
+                image = image.GetSubImage( wxRect( dx, dy, w, h ) );
+                x += dx;
+                y += dy;
+            }
+
             unsigned char *data = new unsigned char[image.GetWidth() * image.GetHeight()];
             unsigned char *im = image.GetData();
             for( int i = 0; i < w * h; i++ )
@@ -1093,9 +1117,6 @@ void ocpnDC::GLDrawBlendData( wxCoord x, wxCoord y, wxCoord w, wxCoord h, int fo
 {
 #ifdef ocpnUSE_GL
     
-    /*  Hmmmm.... I find that the texture version below does not work on my dodgy OpenChrome gl drivers
-     but the glDrawPixels works fine.*/
-
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glRasterPos2i( x, y );
@@ -1104,30 +1125,5 @@ void ocpnDC::GLDrawBlendData( wxCoord x, wxCoord y, wxCoord w, wxCoord h, int fo
     glPixelZoom( 1, 1 );
     glDisable( GL_BLEND );
 
-    return;
-
-    /* I would prefer to just use glDrawPixels than need a texture,
-     but sometimes it did not perform alpha blending correctly,
-     this way always works */
-
-#if 0
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, tex);
-    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, format, w, h, 0, format,
-            GL_UNSIGNED_BYTE, data);
-
-    glEnable(GL_TEXTURE_RECTANGLE_ARB);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0, 0); glVertex2f(x, y);
-    glTexCoord2f(w, 0); glVertex2f(x+w, y);
-    glTexCoord2f(w, h); glVertex2f(x+w, y+h);
-    glTexCoord2f(0, h); glVertex2f(x, y+h);
-    glEnd();
-    glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_RECTANGLE_ARB);
-
-#endif
 #endif
 }
