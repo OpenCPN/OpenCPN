@@ -974,8 +974,10 @@ void RouteProp::SetRouteAndUpdate( Route *pR )
 
     if( pR == m_pRoute ) {
         gStart_LMT_Offset = 0;
-        if( !pR->m_PlannedDeparture.IsValid() )
-            m_tz_selection = 0;
+        if( pR->m_PlannedDeparture.IsValid() )
+            m_starttime = pR->m_PlannedDeparture;
+        else
+            m_starttime = g_StartTime;
         
     } else {
         g_StartTime = wxInvalidDateTime;
