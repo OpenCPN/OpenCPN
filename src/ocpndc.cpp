@@ -237,7 +237,9 @@ void DrawEndCap(float x1, float y1, float t1, float angle)
     const int steps = 16;
     float xa, ya;
     bool first = true;
-    for(float a = angle + M_PI/2; a < angle + 3*M_PI/2; a +=  M_PI/steps) {
+    for(int i = 0; i <= steps; i++) {
+        float a = angle + M_PI/2 + M_PI/steps*i;
+
         float xb = x1 + t1 / 2 * cos( a );
         float yb = y1 + t1 / 2 * sin( a );
         if(first)
