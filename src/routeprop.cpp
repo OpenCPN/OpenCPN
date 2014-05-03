@@ -920,8 +920,6 @@ void RouteProp::OnRoutePropMenuSelected( wxCommandEvent& event )
                 wp = (RoutePoint *) m_wpList->GetItemData( item );
 
                 cc1->RemovePointFromRoute( wp, m_pRoute );
-
-                SetRouteAndUpdate( m_pRoute );
             }
             break;
         }
@@ -962,82 +960,83 @@ void RouteProp::SetDialogTitle(const wxString & title)
     SetTitle(title);
 }
 
-void RouteProp::SetRouteAndUpdate( Route *pR )
+void RouteProp::SetRouteAndUpdate( Route *pR, bool only_points )
 {
     if( NULL == pR )
         return;
 
     //  Fetch any config file values
+    if ( !only_points )
+    {
+        //      long LMT_Offset = 0;                    // offset in seconds from UTC for given location (-1 hr / 15 deg W)
+        m_tz_selection = 1;
 
-    //      long LMT_Offset = 0;                    // offset in seconds from UTC for given location (-1 hr / 15 deg W)
-    m_tz_selection = 1;
-
-    if( pR == m_pRoute ) {
-        gStart_LMT_Offset = 0;
-        if( !pR->m_PlannedDeparture.IsValid() )
-            m_tz_selection = 0;
-
-    } else {
-        g_StartTime = wxInvalidDateTime;
-        g_StartTimeTZ = 1;
-        if( pR->m_PlannedDeparture.IsValid() )
-            m_starttime = pR->m_PlannedDeparture;
-        else
-            m_starttime = g_StartTime;
-        if( pR->m_TimeDisplayFormat == RTE_TIME_DISP_UTC)
-            m_tz_selection = 0;
-        else if( pR->m_TimeDisplayFormat == RTE_TIME_DISP_LOCAL )
-            m_tz_selection = 2;
-        else
-            m_tz_selection = g_StartTimeTZ;
-        gStart_LMT_Offset = 0;
-        m_pEnroutePoint = NULL;
-        m_bStartNow = false;
-        m_planspeed = pR->m_PlannedSpeed;
-    }
-
-    m_pRoute = pR;
-
-    pDispTz->SetSelection( m_tz_selection );
-
-    if( m_pRoute ) {
-        //    Calculate  LMT offset from the first point in the route
-        if( m_pEnroutePoint && m_bStartNow ) gStart_LMT_Offset = long(
-                ( m_pEnroutePoint->m_lon ) * 3600. / 15. );
-        else
-            gStart_LMT_Offset = long(
-                    ( m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon ) * 3600. / 15. );
-    }
-
-    // Reorganize dialog for route or track display
-    if( m_pRoute ) {
-        if( m_pRoute->m_bIsTrack ) {
-            m_PlanSpeedLabel->SetLabel( _("Avg. speed") );
-            m_PlanSpeedCtl->SetEditable( false );
-            m_ExtendButton->SetLabel( _("Extend Track") );
-            m_SplitButton->SetLabel( _("Split Track") );
+        if( pR == m_pRoute ) {
+            gStart_LMT_Offset = 0;
+            if( !pR->m_PlannedDeparture.IsValid() )
+                m_tz_selection = 0;
 
         } else {
-            m_PlanSpeedLabel->SetLabel( _("Plan speed") );
-            m_PlanSpeedCtl->SetEditable( true );
-            m_ExtendButton->SetLabel( _("Extend Route") );
-            m_SplitButton->SetLabel( _("Split Route") );
+            g_StartTime = wxInvalidDateTime;
+            g_StartTimeTZ = 1;
+            if( pR->m_PlannedDeparture.IsValid() )
+                m_starttime = pR->m_PlannedDeparture;
+            else
+                m_starttime = g_StartTime;
+            if( pR->m_TimeDisplayFormat == RTE_TIME_DISP_UTC)
+                m_tz_selection = 0;
+            else if( pR->m_TimeDisplayFormat == RTE_TIME_DISP_LOCAL )
+                m_tz_selection = 2;
+            else
+                m_tz_selection = g_StartTimeTZ;
+            gStart_LMT_Offset = 0;
+            m_pEnroutePoint = NULL;
+            m_bStartNow = false;
+            m_planspeed = pR->m_PlannedSpeed;
         }
 
-        //    Fill in some top pane properties from the Route member elements
-        m_RouteNameCtl->SetValue( m_pRoute->m_RouteNameString );
-        m_RouteStartCtl->SetValue( m_pRoute->m_RouteStartString );
-        m_RouteDestCtl->SetValue( m_pRoute->m_RouteEndString );
+        m_pRoute = pR;
 
-        m_RouteNameCtl->SetFocus();
-    } else {
-        m_RouteNameCtl->Clear();
-        m_RouteStartCtl->Clear();
-        m_RouteDestCtl->Clear();
-        m_PlanSpeedCtl->Clear();
-        m_StartTimeCtl->Clear();
+        pDispTz->SetSelection( m_tz_selection );
+
+        if( m_pRoute ) {
+            //    Calculate  LMT offset from the first point in the route
+            if( m_pEnroutePoint && m_bStartNow ) gStart_LMT_Offset = long(
+                    ( m_pEnroutePoint->m_lon ) * 3600. / 15. );
+            else
+                gStart_LMT_Offset = long(
+                        ( m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon ) * 3600. / 15. );
+        }
+
+        // Reorganize dialog for route or track display
+        if( m_pRoute ) {
+            if( m_pRoute->m_bIsTrack ) {
+                m_PlanSpeedLabel->SetLabel( _("Avg. speed") );
+                m_PlanSpeedCtl->SetEditable( false );
+                m_ExtendButton->SetLabel( _("Extend Track") );
+                m_SplitButton->SetLabel( _("Split Track") );
+
+            } else {
+                m_PlanSpeedLabel->SetLabel( _("Plan speed") );
+                m_PlanSpeedCtl->SetEditable( true );
+                m_ExtendButton->SetLabel( _("Extend Route") );
+                m_SplitButton->SetLabel( _("Split Route") );
+            }
+
+            //    Fill in some top pane properties from the Route member elements
+            m_RouteNameCtl->SetValue( m_pRoute->m_RouteNameString );
+            m_RouteStartCtl->SetValue( m_pRoute->m_RouteStartString );
+            m_RouteDestCtl->SetValue( m_pRoute->m_RouteEndString );
+
+            m_RouteNameCtl->SetFocus();
+        } else {
+            m_RouteNameCtl->Clear();
+            m_RouteStartCtl->Clear();
+            m_RouteDestCtl->Clear();
+            m_PlanSpeedCtl->Clear();
+            m_StartTimeCtl->Clear();
+        }
     }
-
     //      if(m_pRoute)
     //            m_pRoute->UpdateSegmentDistances(m_planspeed);           // to interpret ETD properties
 

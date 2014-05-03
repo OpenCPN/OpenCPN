@@ -168,7 +168,7 @@ public:
     /// Should we show tooltips?
     static bool ShowToolTips();
 
-    void SetRouteAndUpdate(Route *pR);
+    void SetRouteAndUpdate(Route *pR, bool only_points = false);
     Route *GetRoute(void){return m_pRoute;}
 
     bool UpdateProperties(void);
@@ -220,7 +220,7 @@ public:
     wxChoice      *m_chWidth;
 
     wxStaticBoxSizer* m_pListSizer;
-    wxScrolledWindow *itemDialog1; 
+    wxScrolledWindow *itemDialog1;
 };
 
 //    LatLonTextCtrl Specification
@@ -294,7 +294,7 @@ class MarkInfoDef : public wxDialog
         wxToggleButton*         m_toggleBtnEdit;
         wxStaticBoxSizer*       sbSizerLinks;
         wxSize                  m_defaultClientSize;
-        
+
     // Virtual event handlers, overide them in your derived class
         virtual void OnPositionCtlUpdated( wxCommandEvent& event ) { event.Skip(); }
         virtual void OnDescChangedBasic( wxCommandEvent& event ) { event.Skip(); }
