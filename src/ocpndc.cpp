@@ -1041,8 +1041,8 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
             if( x < 0 || y < 0 ) { // Allow Drawing text which is offset to start off screen
                 int dx = ( x < 0 ? -x : 0 );
                 int dy = ( y < 0 ? -y : 0 );
-                int w = bmp.GetWidth() - dx;
-                int h = bmp.GetHeight() - dy;
+                w = bmp.GetWidth() - dx;
+                h = bmp.GetHeight() - dy;
                 /* picture is out of viewport */
                 if( w <= 0 || h <= 0 ) return;
                 image = image.GetSubImage( wxRect( dx, dy, w, h ) );
@@ -1050,7 +1050,7 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
                 y += dy;
             }
 
-            unsigned char *data = new unsigned char[image.GetWidth() * image.GetHeight()];
+            unsigned char *data = new unsigned char[w * h];
             unsigned char *im = image.GetData();
             for( int i = 0; i < w * h; i++ )
                 data[i] = im[3 * i];
