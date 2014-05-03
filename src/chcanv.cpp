@@ -6346,11 +6346,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                             if( g_pRouteMan->IsRouteValid(pr) ) {
                                 if( !pr->IsTrack() && pRoutePropDialog->m_pRoute == pr ) {
-                                    pRoutePropDialog->SetRouteAndUpdate( pr );
-                                    pRoutePropDialog->UpdateProperties();
+                                    pRoutePropDialog->SetRouteAndUpdate( pr, true );
                                 } else if ( ( NULL != pTrackPropDialog ) && ( pTrackPropDialog->IsShown() ) && pTrackPropDialog->m_pRoute == pr ) {
                                     pTrackPropDialog->SetTrackAndUpdate( pr );
-                                    pTrackPropDialog->UpdateProperties();
                                 }
                             }
                         }
@@ -8141,8 +8139,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         pConfig->UpdateRoute( m_pSelectedRoute );
 
         if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
-            pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
-            pRoutePropDialog->UpdateProperties();
+            pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute, true );
         }
 
         break;
@@ -8398,8 +8395,7 @@ void ChartCanvas::FinishRoute( void )
         if( m_pMouseRoute ) m_pMouseRoute->RebuildGUIDList(); // ensure the GUID list is intact and good
 
         if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
-            pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute );
-            pRoutePropDialog->UpdateProperties();
+            pRoutePropDialog->SetRouteAndUpdate( m_pMouseRoute, true );
         }
 
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateRouteListCtrl();
