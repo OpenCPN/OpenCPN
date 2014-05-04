@@ -266,6 +266,8 @@ public:
       void SetColorSchemeForAllPlugIns(ColorScheme cs);
       void NotifyAuiPlugIns(void);
       bool CallLateInit(void);
+      
+      void SendVectorChartObjectInfo(const wxString &chart, const wxString &feature, const wxString &objname, double &lat, double &lon, double &scale, int &nativescale);
 
       wxArrayString GetPlugInChartClassNameArray(void);
 

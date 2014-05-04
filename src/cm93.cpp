@@ -47,6 +47,7 @@
 #include "navutil.h"                            // for LogMessageOnce
 #include "ocpn_pixel.h"                         // for ocpnUSE_DIBSECTION
 #include "ocpndc.h"
+#include "pluginmanager.h"  // for PlugInManager
 
 #include <stdio.h>
 
@@ -78,7 +79,7 @@ extern double           g_CM93Maps_Offset_x;
 extern double           g_CM93Maps_Offset_y;
 extern bool             g_CM93Maps_Offset_on;
 extern bool             g_bopengl;
-
+extern PlugInManager    *g_pi_manager;
 
 
 // TODO  These should be gotten from the ctor
@@ -2338,6 +2339,9 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell, double view_scale_p
 
       int iObj = 0;
       S57Obj *obj;
+      
+      double scale = gFrame->GetBestVPScale(this);
+      int nativescale = GetNativeScale();
 
       while ( iObj < m_CIB.m_nfeature_records )
       {
@@ -2352,6 +2356,13 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell, double view_scale_p
 
                   if ( obj )
                   {
+                        wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
+                        wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
+                        wxString cellname = wxString::Format(_T("%i_%i"), cell_index, subcell);
+                        if ( fe_name == _T("_texto") )
+                            objnam  = obj->GetAttrValueAsString("_texta");
+                        if (objnam.Len() > 0)
+                            g_pi_manager->SendVectorChartObjectInfo( cellname, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
 
 //      Build/Maintain the ATON floating/rigid arrays
                         if ( GEO_POINT == obj->Primitive_type )

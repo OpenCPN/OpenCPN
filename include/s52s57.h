@@ -317,7 +317,7 @@ public:
       ~S57Obj();
       S57Obj(char *first_line, wxInputStream *fpx, double ref_lat, double ref_lon);
 
-      wxString GetAttrValueAsString ( char *attr );
+      wxString GetAttrValueAsString ( const char *attr );
       int GetAttributeIndex( const char *AttrSeek );
           
       // Private Methods
