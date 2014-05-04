@@ -62,6 +62,7 @@ extern ChartCanvas        *cc1;
 extern Select             *pSelect;
 extern Routeman           *g_pRouteMan;
 extern RouteManagerDialog *pRouteManagerDialog;
+extern RouteProp          *pRoutePropDialog;
 extern Track              *g_pActiveTrack;
 extern RouteList          *pRouteList;
 extern PlugInManager      *g_pi_manager;
@@ -934,8 +935,6 @@ void RouteProp::OnRoutePropMenuSelected( wxCommandEvent& event )
             if( !wp ) break;
 
             RouteManagerDialog::WptShowPropertiesDialog( wp, this );
-
-            UpdateProperties();
             break;
         }
     }
@@ -2516,6 +2515,9 @@ void MarkInfoImpl::OnMarkInfoOKClick( wxCommandEvent& event )
 
     if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
         pRouteManagerDialog->UpdateWptListCtrl();
+        
+    if( pRoutePropDialog && pRoutePropDialog->IsShown() )
+        pRoutePropDialog->UpdateProperties();
 
     SetClientSize(m_defaultClientSize);
     event.Skip();
