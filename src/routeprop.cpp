@@ -1876,6 +1876,8 @@ MarkInfoDef::MarkInfoDef( wxWindow* parent, wxWindowID id, const wxString& title
 
     bSizerTextProperties->Add( bSizer8, 0, wxEXPAND, 5 );
 
+    bSizerTextProperties->AddSpacer(15);
+    
     wxBoxSizer* bSizerLatLon;
     bSizerLatLon = new wxBoxSizer( wxHORIZONTAL );
 
