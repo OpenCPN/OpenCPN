@@ -491,21 +491,26 @@ void DrawGLThickLines( int n, wxPoint points[],wxCoord xoffset,
         }
 
         float aa = (a0 + a1) / 2;
-        float rad = t1 / 2 / cosf(a0 - a1);
+        float diff = fabsf(a0 - a1);
+        if(diff > M_PI)
+            diff -= 2*M_PI;
+        float rad = t1 / 2 / wxMax(cosf(diff / 2), .4);
 
-        if(fabsf(a0 - a1) > M_PI)
-           rad = -rad;
-                                 
         float t2sina1 = rad * sinf( aa );
         float t2cosa1 = rad * cosf( aa );
 
-        glVertex2f( x0 + t2sina0, y0 - t2cosa0 );
         glVertex2f( x1 + t2sina1, y1 - t2cosa1 );
         glVertex2f( x1 - t2sina1, y1 + t2cosa1 );
+        glVertex2f( x0 + t2sina0, y0 - t2cosa0 );
 
-        glVertex2f( x1 - t2sina1, y1 + t2cosa1 );
         glVertex2f( x0 - t2sina0, y0 + t2cosa0 );
         glVertex2f( x0 + t2sina0, y0 - t2cosa0 );
+
+        float dot = t2sina0 * t2sina1 + t2cosa0 * t2cosa1;
+        if(dot > 0)
+            glVertex2f( x1 - t2sina1, y1 + t2cosa1 );
+        else
+            glVertex2f( x1 + t2sina1, y1 - t2cosa1 );
 
         x0 = x1, x1 = x2;
         y0 = y1, y1 = y2;
