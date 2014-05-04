@@ -2111,7 +2111,7 @@ msgid ""
 "invisible?"
 msgstr ""
 "Wilt u ook de gedeelde markeringspunten die deel uitmaken van deze route "
-"onzichtbaat maken?"
+"onzichtbaar maken?"
 #
 #
 #
