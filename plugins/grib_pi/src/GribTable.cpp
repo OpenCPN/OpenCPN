@@ -157,7 +157,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         }
         //create and polulate total cloud control
         if(m_pGDialog->m_bGRIBActiveFile->m_GribIdxArray.Index(Idx_CLOUD_TOT) != wxNOT_FOUND) {
-            AddDataRow( nrows, i, _("Cloud"), singledatarow );
+            AddDataRow( nrows, i, _("Cloud Cover"), singledatarow );
             m_pGribTable->SetCellValue(nrows, i, GetCloudCover(RecordArray));
             m_pGribTable->SetCellBackgroundColour(nrows, i, m_pDataCellsColour);
             nrows++;
