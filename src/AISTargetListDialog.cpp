@@ -288,7 +288,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     m_pAuiManager = auimgr;
     m_pdecoder = pdecoder;
 
-    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
     SetFont( *qFont );
 
     //  Make an estimate of the default dialog size

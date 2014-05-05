@@ -3642,7 +3642,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   //    associate the vector(edge) index table
                   pobj->m_n_lsindex = xgeom->n_vector_indices;
                   pobj->m_lsindex_array = xgeom->pvector_index;         // object now owns the array
-                  pobj->m_n_edge_max_points = xgeom->n_max_edge_points;
+                  pobj->m_n_edge_max_points = 0; //xgeom->n_max_edge_points;
 
 
                   //    Find the proper WGS offset for this object
@@ -3869,7 +3869,7 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   //    associate the vector(edge) index table
                   pobj->m_n_lsindex = xgeom->n_vector_indices;
                   pobj->m_lsindex_array = xgeom->pvector_index;         // object now owns the array
-                  pobj->m_n_edge_max_points = xgeom->n_max_edge_points;
+                  pobj->m_n_edge_max_points = 0; //xgeom->n_max_edge_points;
 
 
                   //    Find the proper WGS offset for this object

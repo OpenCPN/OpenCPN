@@ -477,9 +477,13 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
             bool done = false;
 
             while(!done){
-                size_t nmea_end = m_sock_buffer.find('*'); // detect the potential end of a NMEA string by finding the checkum marker
-                if(nmea_end != wxString::npos && nmea_end < m_sock_buffer.size()-2){
-                    nmea_end += 3; // move to the char after the 2 checksum digits
+                int nmea_tail = 2;
+                size_t nmea_end = m_sock_buffer.find_first_of(_T("*\r\n")); // detect the potential end of a NMEA string by finding the checkum marker or EOL
+                if (nmea_end != wxString::npos && m_sock_buffer[nmea_end] != '*')
+                    nmea_tail = 0;
+
+                if(nmea_end != wxString::npos && nmea_end < m_sock_buffer.size() - nmea_tail){
+                    nmea_end += nmea_tail + 1; // move to the char after the 2 checksum digits, if present
                     wxString nmea_line = m_sock_buffer.substr(0,nmea_end);
                     m_sock_buffer = m_sock_buffer.substr(nmea_end);
 

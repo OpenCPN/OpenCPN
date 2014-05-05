@@ -29,7 +29,7 @@ LinkPropDlgDef::LinkPropDlgDef( wxWindow* parent, wxWindowID id, const wxString&
         const wxPoint& pos, const wxSize& size, long style ) :
         wxDialog( parent, id, title, pos, size, style )
 {
-    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
     SetFont( *qFont );
     
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );

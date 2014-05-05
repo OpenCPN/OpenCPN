@@ -423,7 +423,7 @@ RouteManagerDialog::RouteManagerDialog( wxWindow *parent )
     wxDialog::Create( parent, -1, wxString( _("Route Manager") ), wxDefaultPosition, wxDefaultSize,
             style );
     
-    wxFont *qFont = GetOCPNScaledFont(_T("Dialog"), 12);
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
     SetFont( *qFont );
 
     m_lastWptItem = -1;

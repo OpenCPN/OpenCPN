@@ -339,7 +339,8 @@ ChartBase *Quilt::GetFirstChart()
 
     if( !m_bcomposed ) return NULL;
 
-    if( m_bbusy ) return NULL;
+    if( m_bbusy )
+        return NULL;
 
     m_bbusy = true;
     ChartBase *pret = NULL;
@@ -359,7 +360,8 @@ ChartBase *Quilt::GetNextChart()
 
     if( !ChartData->IsValid() ) return NULL;
 
-    if( m_bbusy ) return NULL;
+    if( m_bbusy )
+        return NULL;
 
     m_bbusy = true;
     ChartBase *pret = NULL;
@@ -379,7 +381,8 @@ ChartBase *Quilt::GetLargestScaleChart()
 {
     if( !ChartData ) return NULL;
 
-    if( m_bbusy ) return NULL;
+    if( m_bbusy )
+        return NULL;
 
     m_bbusy = true;
     ChartBase *pret = NULL;
@@ -584,7 +587,8 @@ wxRect Quilt::GetChartQuiltBoundingRect( const ChartTableEntry &cte, ViewPort &v
 
 bool Quilt::IsQuiltVector( void )
 {
-    if( m_bbusy ) return false;
+    if( m_bbusy )
+        return false;
 
     m_bbusy = true;
 
@@ -614,7 +618,8 @@ bool Quilt::IsQuiltVector( void )
 
 int Quilt::GetChartdbIndexAtPix( wxPoint p )
 {
-    if( m_bbusy ) return -1;
+    if( m_bbusy )
+        return -1;
 
     m_bbusy = true;
 
@@ -635,7 +640,8 @@ int Quilt::GetChartdbIndexAtPix( wxPoint p )
 
 ChartBase *Quilt::GetChartAtPix( wxPoint p )
 {
-    if( m_bbusy ) return NULL;
+    if( m_bbusy )
+        return NULL;
 
     m_bbusy = true;
 
@@ -657,7 +663,8 @@ ChartBase *Quilt::GetChartAtPix( wxPoint p )
 
 ChartBase *Quilt::GetOverlayChartAtPix( wxPoint p )
 {
-    if( m_bbusy ) return NULL;
+    if( m_bbusy )
+        return NULL;
 
     m_bbusy = true;
 
@@ -680,7 +687,8 @@ ChartBase *Quilt::GetOverlayChartAtPix( wxPoint p )
 
 void Quilt::InvalidateAllQuiltPatchs( void )
 {
-    if( m_bbusy ) return;
+    if( m_bbusy )
+        return;
 
     m_bbusy = true;
     m_bbusy = false;
@@ -693,7 +701,8 @@ ArrayOfInts Quilt::GetQuiltIndexArray( void )
 
     ArrayOfInts ret;
 
-    if( m_bbusy ) return ret;
+    if( m_bbusy )
+        return ret;
 
     m_bbusy = true;
 
@@ -725,7 +734,8 @@ bool Quilt::IsQuiltDelta( ViewPort &vp )
 
 void Quilt::AdjustQuiltVP( ViewPort &vp_last, ViewPort &vp_proposed )
 {
-    if( m_bbusy ) return;
+    if( m_bbusy )
+        return;
 
 //      ChartBase *pRefChart = GetLargestScaleChart();
     ChartBase *pRefChart = ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
@@ -1229,9 +1239,17 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
 bool Quilt::Compose( const ViewPort &vp_in )
 {
-    if( !ChartData ) return false;
-    if( m_bbusy ) return false;
+    if( !ChartData )
+        return false;
 
+    if(ChartData->IsBusy())             // This prevent recursion on chart loads that Yeild()
+        return false;
+    
+    if( m_bbusy ) 
+        return false;
+
+    m_bbusy = true;
+    
     ChartData->UnLockCache();
 
     ViewPort vp_local = vp_in;                   // need a non-const copy
@@ -1874,6 +1892,9 @@ bool Quilt::Compose( const ViewPort &vp_in )
     }
 
     m_xa_hash = xa_hash;
+    
+    m_bbusy = false;
+    
     return true;
 }
 

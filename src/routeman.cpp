@@ -670,8 +670,8 @@ bool Routeman::UpdateAutopilot()
             
             if( g_bMagneticAPB && !wxIsNaN(gVar) ) {
                 
-                double brg1m = ((brg1 + gVar) >= 0.) ? (brg1 + gVar) : (brg1 + gVar + 360.);
-                double bapm = ((CurrentBrgToActivePoint + gVar) >= 0.) ? (CurrentBrgToActivePoint + gVar) : (CurrentBrgToActivePoint + gVar + 360.);
+                double brg1m = ((brg1 - gVar) >= 0.) ? (brg1 - gVar) : (brg1 - gVar + 360.);
+                double bapm = ((CurrentBrgToActivePoint - gVar) >= 0.) ? (CurrentBrgToActivePoint - gVar) : (CurrentBrgToActivePoint - gVar + 360.);
                 
                 m_NMEA0183.Apb.BearingOriginToDestination = brg1m;
                 m_NMEA0183.Apb.BearingOriginToDestinationUnits = _T("M");

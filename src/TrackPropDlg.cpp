@@ -82,16 +82,31 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     wstyle |= wxSTAY_ON_TOP;
 #endif
 
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    SetFont( *qFont );
+    
     SetWindowStyleFlag( wstyle ); 
-    this->SetSizeHints( wxSize( 670,440 ), wxDefaultSize );
+ //   this->SetSizeHints( wxSize( 670,440 ), wxDefaultSize );
     
     wxBoxSizer* bSizerMain;
     bSizerMain = new wxBoxSizer( wxVERTICAL );
+    SetSizer( bSizerMain );
+    bSizerMain->SetSizeHints( this );   // set size hints to honour minimum size
     
     m_notebook1 = new wxNotebook( this, wxID_ANY, wxDefaultPosition, wxDefaultSize, 0 );
-    m_panelBasic = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
-    wxBoxSizer* bSizerBasic;
-    bSizerBasic = new wxBoxSizer( wxVERTICAL );
+
+    bSizerMain->Add( m_notebook1, 1, wxEXPAND | wxALL, 5 );
+    
+    m_panelBasic = new wxScrolledWindow( m_notebook1, wxID_ANY,
+                                                   wxDefaultPosition, wxDefaultSize, wxHSCROLL | wxVSCROLL | wxTAB_TRAVERSAL);
+    
+    m_notebook1->AddPage( m_panelBasic, _("Basic"), true );
+    
+    wxBoxSizer* bSizerBasic = new wxBoxSizer( wxVERTICAL );
+    m_panelBasic->SetSizer( bSizerBasic );
+//    m_panelBasic->Layout();
+//    bSizerBasic->Fit( m_panelBasic );
+    
     
     wxBoxSizer* bSizerName;
     bSizerName = new wxBoxSizer( wxHORIZONTAL );
@@ -227,24 +242,24 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     
     m_lcPoints = new OCPNTrackListCtrl( m_panelBasic, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_HRULES | wxLC_VRULES | wxLC_EDIT_LABELS | wxLC_VIRTUAL );
 
-    m_lcPoints->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, 45 );
-    m_lcPoints->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_RIGHT, 70 );
-    m_lcPoints->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, 70 );
-    m_lcPoints->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, 85 );
-    m_lcPoints->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, 90 );
-    m_lcPoints->InsertColumn( 6, _("Timestamp"), wxLIST_FORMAT_LEFT, 135 );
-    m_lcPoints->InsertColumn( 7, _("Speed"), wxLIST_FORMAT_CENTER, 100 );
+    int dx = GetCharWidth();
+    
+    m_lcPoints->InsertColumn( 0, _("Leg"), wxLIST_FORMAT_LEFT, dx * 6/*45*/ );
+    m_lcPoints->InsertColumn( 2, _("Distance"), wxLIST_FORMAT_LEFT, dx * 10/*70*/ );
+    m_lcPoints->InsertColumn( 3, _("Bearing"), wxLIST_FORMAT_LEFT, dx * 8/*70*/ );
+    m_lcPoints->InsertColumn( 4, _("Latitude"), wxLIST_FORMAT_LEFT, dx * 11/*85*/ );
+    m_lcPoints->InsertColumn( 5, _("Longitude"), wxLIST_FORMAT_LEFT, dx * 11/*90*/ );
+    m_lcPoints->InsertColumn( 6, _("Timestamp"), wxLIST_FORMAT_LEFT, dx * 14/*135*/ );
+    m_lcPoints->InsertColumn( 7, _("Speed"), wxLIST_FORMAT_CENTER, dx * 8/*100*/ );
 
+    m_lcPoints->SetMinSize(wxSize(-1, 200) );
+    
     sbSizerPoints->Add( m_lcPoints, 1, wxALL|wxEXPAND, 5 );
     
     bSizerBasic->Add( sbSizerPoints, 1, wxALL|wxEXPAND, 5 );
     
-    m_panelBasic->SetSizer( bSizerBasic );
-    m_panelBasic->Layout();
-    bSizerBasic->Fit( m_panelBasic );
-    m_notebook1->AddPage( m_panelBasic, _("Basic"), true );
 
-    m_panelAdvanced = new wxPanel( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
+    m_panelAdvanced = new wxScrolledWindow( m_notebook1, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL );
     
     wxBoxSizer* bSizerAdvanced;
     bSizerAdvanced = new wxBoxSizer( wxVERTICAL );
@@ -307,11 +322,10 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     
     
     m_panelAdvanced->SetSizer( bSizerAdvanced );
-    m_panelAdvanced->Layout();
-    bSizerAdvanced->Fit( m_panelAdvanced );
+//    m_panelAdvanced->Layout();
+//    bSizerAdvanced->Fit( m_panelAdvanced );
     m_notebook1->AddPage( m_panelAdvanced, _("Advanced"), false );
     
-    bSizerMain->Add( m_notebook1, 1, wxEXPAND | wxALL, 5 );
     
     m_sdbBtmBtnsSizer = new wxStdDialogButtonSizer();
     m_sdbBtmBtnsSizerOK = new wxButton( this, wxID_OK );
@@ -341,8 +355,20 @@ TrackPropDlg::TrackPropDlg( wxWindow* parent, wxWindowID id, const wxString& tit
     ((wxWindowBase *)m_stName)->SetMinSize( wxSize(wxMax(w1, w2), h) );
     ((wxWindowBase *)m_stFrom)->SetMinSize( wxSize(wxMax(w1, w2), h) );
     
-    this->SetSizer( bSizerMain );
-    this->Layout();
+
+    //  This is a way of calculating the "best" size of a scrollable dialog
+    //  We calculate the minimum size of the controlling element ("Properties" page of the notebook) with scrollability disabled.
+    //  Then turn on scrolling by setting scrollrate afterwards.
+    Layout();
+    wxSize sz = bSizerMain->CalcMin();
+    sz.IncBy( 20 );   // Account for some decorations?
+    SetClientSize(sz);
+//    m_defaultClientSize = sz;
+    m_panelBasic->SetScrollRate(5, 5);
+    
+    
+    m_panelAdvanced->SetScrollRate(5, 5);
+    
     
     this->Centre( wxBOTH );
     

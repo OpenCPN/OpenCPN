@@ -50,7 +50,7 @@ extern PlugInManager*             g_pi_manager;
 extern wxMenu*                    g_FloatingToolbarConfigMenu;
 extern wxString                   g_toolbarConfig;
 extern bool                       g_bPermanentMOBIcon;
-extern bool                       g_bmobile;
+extern bool                       g_bresponsive;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
@@ -282,7 +282,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
 
     m_marginsInvisible = m_style->marginsInvisible;
 
-    if(g_bmobile )
+    if(g_bresponsive )
         m_marginsInvisible = true;
         
     Hide();
@@ -330,7 +330,7 @@ void ocpnFloatingToolbarDialog::SetGeometry()
 
     if( m_ptoolbar ) {
         wxSize style_tool_size = m_style->GetToolSize();
-        if(g_bmobile ){
+        if(g_bresponsive ){
             style_tool_size.x *= 2;
             style_tool_size.y *= 2;
         }
