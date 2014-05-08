@@ -876,6 +876,7 @@ PI_DisPrio DECL_EXP PI_GetObjectDisplayPriority( PI_S57Obj *pObj );
 PI_DisCat DECL_EXP PI_GetObjectDisplayCategory( PI_S57Obj *pObj );
 void DECL_EXP PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio );
 void DECL_EXP PI_PLIBPrepareForNewRender(void);
+void DECL_EXP PI_PLIBFreeContext( void *pContext );
 
 
 bool DECL_EXP PI_PLIBSetContext( PI_S57Obj *pObj );

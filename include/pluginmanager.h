@@ -356,6 +356,7 @@ public:
         bFText_Added = false;
         CSrules = NULL;
         FText = NULL;
+        ChildRazRules = NULL;
         };
         
     ~S52PLIB_Context(){};
@@ -371,6 +372,8 @@ public:
     wxRect                  rText;
     
     LUPrec                  *LUP;
+    ObjRazRules             *ChildRazRules;
+    
 };
 
 

@@ -3593,7 +3593,7 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj )
     cobj->bFText_Added = pContext->bFText_Added;
     cobj->rText = pContext->rText;
     
-    cobj->bIsClone = true;              // Protect cloned object pointers in S57Obj dtor 
+    cobj->bIsClone = true;              // Protect cloned object pointers in S57Obj dtor
     
 }
 
@@ -3679,7 +3679,7 @@ void PI_UpdateContext(PI_S57Obj *pObj)
 }
 
     
-void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj )
+void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj, ObjRazRules *rzRules )
 {
     //  Update the PLIB context after the render operation
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
@@ -3697,6 +3697,9 @@ void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj )
 
     //  Render operation may have promoted the object's display category (e.g.WRECKS)
     pObj->m_DisplayCat = (PI_DisCat)cobj->m_DisplayCat;
+    
+    pContext->ChildRazRules = rzRules->child;
+    
 }
 
 bool PI_GetObjectRenderBox( PI_S57Obj *pObj, double *lat_min, double *lat_max, double *lon_min, double *lon_max)
@@ -3775,7 +3778,7 @@ void PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio )
     ps52plib->SetLineFeaturePriority( &rzRules, prio );
 
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj );
+    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
     
 }
 
@@ -3787,6 +3790,30 @@ void PI_PLIBPrepareForNewRender( void )
     }
 }
 
+void PI_PLIBFreeContext( void *pContext )
+{
+
+    S52PLIB_Context *pctx = (S52PLIB_Context *)pContext;
+    
+    if( pctx->ChildRazRules ){
+        ObjRazRules *ctop = pctx->ChildRazRules;
+        while( ctop ) {
+            delete ctop->obj;
+            
+            if( ps52plib )
+                ps52plib->DestroyLUP( ctop->LUP );
+            delete ctop->LUP;
+            
+            ObjRazRules *cnxx = ctop->next;
+            delete ctop;
+            ctop = cnxx;
+        }
+    }
+
+    delete pctx->FText;
+    
+    delete pctx;
+}
 
 int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp )
 {
@@ -3806,7 +3833,7 @@ int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp )
     rzRules.obj = &cobj;
     rzRules.LUP = pContext->LUP;
     rzRules.sm_transform_parms = &transform;
-    rzRules.child = NULL;
+    rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
@@ -3815,8 +3842,8 @@ int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp )
     ps52plib->RenderObjectToDC( pdc, &rzRules, &cvp );
     
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj );
-    
+    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+
     return 1;
 }
 
@@ -3858,7 +3885,7 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
     rzRules.obj = &cobj;
     rzRules.LUP = pContext->LUP;
     rzRules.sm_transform_parms = &transform;
-    rzRules.child = NULL;
+    rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
 
     ViewPort cvp = CreateCompatibleViewport( *vp );
@@ -3867,7 +3894,7 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
     ps52plib->RenderAreaToDC( pdc, &rzRules, &cvp, &pb_spec );
 
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj );
+    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
     
     return 1;
 }
@@ -3891,7 +3918,7 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
     rzRules.obj = &cobj;
     rzRules.LUP = pContext->LUP;
     rzRules.sm_transform_parms = &transform;
-    rzRules.child = NULL;
+    rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
@@ -3901,8 +3928,8 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
     
     
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj );
-
+    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
+    
 #endif    
     return 1;
     
@@ -3927,7 +3954,7 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     rzRules.obj = &cobj;
     rzRules.LUP = pContext->LUP;
     rzRules.sm_transform_parms = &transform;
-    rzRules.child = NULL;
+    rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
@@ -3936,7 +3963,7 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     ps52plib->RenderObjectToGL( glcc, &rzRules, &cvp, render_rect );
     
     //  Update the PLIB context after the render operation
-    UpdatePIObjectPlibContext( pObj, &cobj );
+    UpdatePIObjectPlibContext( pObj, &cobj, &rzRules );
     
     return 1;
     
