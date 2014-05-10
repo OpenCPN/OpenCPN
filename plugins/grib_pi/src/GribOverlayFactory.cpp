@@ -270,26 +270,32 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR,
                                               PlugIn_ViewPort *vp, int grib_pixel_size )
 {
-    int width = (pGR->getNi()-1)*grib_pixel_size, height = (pGR->getNj()-1)*grib_pixel_size;
+    const double scalef = 0.00005;
+    PlugIn_ViewPort uvp = *vp;
+    uvp.rotation = uvp.skew = 0;
+    uvp.view_scale_ppm = scalef;
 
+    wxPoint porg;
+    GetCanvasPixLL( &uvp, &porg, pGR->getLatMax(), pGR->getLonMin() );
+    wxPoint pmin;
+    GetCanvasPixLL( &uvp, &pmin, pGR->getLatMin(), pGR->getLonMin() );
+    wxPoint pmax;
+    GetCanvasPixLL( &uvp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
+    int width = abs( pmax.x - pmin.x );
+    int height = abs( pmax.y - pmin.y );
     //    Dont try to create enormous GRIB textures
     if( width > 1024 || height > 1024 )
         return false;
 
     unsigned char *data = new unsigned char[width*height*4];
-
     for( int ipix = 0; ipix < width; ipix++ ) {
         for( int jpix = 0; jpix < height; jpix++ ) {
-            double v00 = pGR->getValue(ipix/grib_pixel_size, jpix/grib_pixel_size);
-            double v01 = pGR->getValue(ipix/grib_pixel_size, jpix/grib_pixel_size+1);
-            double v10 = pGR->getValue(ipix/grib_pixel_size+1, jpix/grib_pixel_size);
-            double v11 = pGR->getValue(ipix/grib_pixel_size+1, jpix/grib_pixel_size+1);
-
-            double d10 = (double)(ipix%grib_pixel_size) / grib_pixel_size, d00 = 1 - d10;
-            double d11 = (double)(jpix%grib_pixel_size) / grib_pixel_size, d01 = 1 - d11;
-
-            double v = d01*(d00*v00 + d10*v10) + d11*(d00*v01 + d10*v11);
-
+            wxPoint p;
+            p.x = grib_pixel_size*ipix + porg.x;
+            p.y = grib_pixel_size*jpix + porg.y;
+            double lat, lon;
+            GetCanvasLLPix( &uvp, p, &lat, &lon );
+            double v = pGR->getInterpolatedValue(lon, lat);
             unsigned char r, g, b, a;
             if( v != GRIB_NOTDEF ) {
                 v = m_Settings.CalibrateValue(settings, v);
@@ -342,18 +348,8 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     pGO->m_width = width;
     pGO->m_height = height;
 
-    const double scalef = 8;
-    PlugIn_ViewPort uvp = *vp;
-    uvp.rotation = uvp.skew = 0;
-    uvp.view_scale_ppm = scalef;
-
-    wxPoint pmin;
-    GetCanvasPixLL( &uvp, &pmin, pGR->getLatMin(), pGR->getLonMin() );
-    wxPoint pmax;
-    GetCanvasPixLL( &uvp, &pmax, pGR->getLatMax(), pGR->getLonMax() );
-
-    pGO->m_dwidth = (pmax.x - pmin.x) / scalef;
-    pGO->m_dheight = (pmin.y - pmax.y) / scalef;
+    pGO->m_dwidth = (pmax.x - pmin.x) / scalef * grib_pixel_size;
+    pGO->m_dheight = (pmin.y - pmax.y) / scalef * grib_pixel_size;
 
     return true;
 }
@@ -898,14 +894,14 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
         {
 #ifdef ocpnUSE_GL
             if( !pGO->m_iTexture )
-                CreateGribGLTexture( pGO, settings, pGRA, vp, 8 );
+                CreateGribGLTexture( pGO, settings, pGRA, vp, 1 );
 
             if( pGO->m_iTexture )
                 DrawGLTexture( pGO->m_iTexture, pGO->m_width, pGO->m_height,
-                               porg.x, porg.y, (pGRA->getDj() < 0), pGO->m_dwidth, pGO->m_dheight, vp );
+                               porg.x, porg.y, pGO->m_dwidth, pGO->m_dheight, vp );
             else
                 m_Message_Hiden.IsEmpty()?
-                    m_Message_Hiden.Append(_("Please Zoom or Scale Out to view invisible overlays:"))
+                    m_Message_Hiden.Append(_("Overlays too wide and can't be displayed:"))
                     .Append(_T(" ")).Append(GribOverlaySettings::NameFromIndex(settings))
                     : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
 #endif
@@ -1427,7 +1423,7 @@ void GRIBOverlayFactory::DrawGLImage( wxImage *pimage, wxCoord xd, wxCoord yd, b
 
 #ifdef ocpnUSE_GL
 void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
-                                        int xd, int yd, bool Djneg, double dwidth, double dheight,
+                                        int xd, int yd, double dwidth, double dheight,
                                         PlugIn_ViewPort *vp )
 {
     glEnable(GL_TEXTURE_RECTANGLE_ARB);
@@ -1462,10 +1458,10 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
     double h = dheight * vp->view_scale_ppm;
 
     glBegin(GL_QUADS);
-    glTexCoord2i(0, 0),          glVertex2d(x, Djneg ? y : y+h );
-    glTexCoord2i(width, 0),      glVertex2d(x+w, Djneg ? y : y+h);
-    glTexCoord2i(width, height), glVertex2d(x+w, Djneg ? y+h : y);
-    glTexCoord2i(0, height),     glVertex2d(x, Djneg ? y+h : y);
+    glTexCoord2i(0, 0),          glVertex2i(x, y);
+    glTexCoord2i(width, 0),      glVertex2i(x+w, y);
+    glTexCoord2i(width, height), glVertex2i(x+w, y+h);
+    glTexCoord2i(0, height),     glVertex2i(x, y+h);
     glEnd();
 
     glDisable(GL_BLEND);

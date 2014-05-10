@@ -46,7 +46,7 @@ static const wxString tname_from_index[] = {_("Wind"), _("Wind Gust"),  _("Press
                                             _("Waves"), _("Current"),
                                             _("Rainfall"), _("Cloud Cover"),
                                             _("Air Temperature"), _("Sea Temperature"), _("CAPE"),
-                                            _("Altitude(Pressure Altitude)"), _("Relative Humidity") };
+                                            _("Altitude(Geopotential)"), _("Relative Humidity") };
 
 static const int unittype[GribOverlaySettings::SETTINGS_COUNT] = {0, 0, 1, 2, 0, 4, 5, 3, 3, 6, 2, 5};
 

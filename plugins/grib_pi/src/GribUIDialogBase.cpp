@@ -920,7 +920,7 @@ GribRequestSettingBase::GribRequestSettingBase( wxWindow* parent, wxWindowID id,
 	fgSizer331->SetFlexibleDirection( wxBOTH );
 	fgSizer331->SetNonFlexibleGrowMode( wxFLEX_GROWMODE_SPECIFIED );
 
-	m_pAltitudeData = new wxCheckBox( this, wxID_ANY, _("Pressure Altitude"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_pAltitudeData = new wxCheckBox( this, wxID_ANY, _("Geopotential Height"), wxDefaultPosition, wxDefaultSize, 0 );
 	fgSizer331->Add( m_pAltitudeData, 0, wxALL|wxEXPAND, 5 );
 
 

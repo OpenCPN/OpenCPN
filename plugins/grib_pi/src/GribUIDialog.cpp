@@ -583,7 +583,7 @@ void GRIBUIDialog::PopulateTrackingControls( bool Populate_Altitude )
         m_tcSeaTemperature->SetToolTip( m_bGRIBActiveFile->m_GribIdxArray.Index( 1000 + NOAA_GFS) != wxNOT_FOUND ? s[1] + s[0] + s[2] : s[3] );
     }
 
-    m_cbAltitude->SetToolTip( wxString::Format( _("Pressure Altitude (in %s) or Standard Height Selection."),
+    m_cbAltitude->SetToolTip( wxString::Format( _("Select Geopotential Height (in %s) or Standard Altitude."),
         m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::PRESSURE).c_str() ) );
 
     SetDataBackGroundColor();
@@ -1029,8 +1029,6 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
     im1 = i-1;
     if(i == 0)
         im1 = 0;
-
-    if(!m_InterpolateMode) im1 = i;
 
     wxDateTime mintime = MinTime();
     double minute2 = (curtime - mintime).GetMinutes();
