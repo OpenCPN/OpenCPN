@@ -64,9 +64,7 @@ ocpnDC::ocpnDC( wxGLCanvas &canvas ) :
 {
 #ifdef ocpnUSE_GL
     
-    tex = 0;
     pgc = NULL;
-    glGenTextures( 1, &tex );
     m_textforegroundcolour = wxColour( 0, 0, 0 );
 #endif    
 }
@@ -74,7 +72,6 @@ ocpnDC::ocpnDC( wxGLCanvas &canvas ) :
 ocpnDC::ocpnDC( wxDC &pdc ) :
         glcanvas( NULL ), dc( &pdc ), m_pen( wxNullPen ), m_brush( wxNullBrush )
 {
-    tex = 0;
     pgc = NULL;
 #if wxUSE_GRAPHICS_CONTEXT
     wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
@@ -90,15 +87,11 @@ ocpnDC::ocpnDC( wxDC &pdc ) :
 ocpnDC::ocpnDC() :
         glcanvas( NULL ), dc( NULL ), m_pen( wxNullPen ), m_brush( wxNullBrush ), pgc( NULL )
 {
-    tex = 0;
 }
 
 ocpnDC::~ocpnDC()
 {
     if( pgc ) delete pgc;
-#ifdef ocpnUSE_GL
-    if( glcanvas ) glDeleteTextures( 1, &tex );
-#endif    
 }
 
 void ocpnDC::Clear()
@@ -237,43 +230,65 @@ void ocpnDC::SetGLStipple() const
 #endif    
 }
 
+#ifdef ocpnUSE_GL
+/* draw a half circle using triangles */
+void DrawEndCap(float x1, float y1, float t1, float angle)
+{
+    const int steps = 16;
+    float xa, ya;
+    bool first = true;
+    for(int i = 0; i <= steps; i++) {
+        float a = angle + M_PI/2 + M_PI/steps*i;
+
+        float xb = x1 + t1 / 2 * cos( a );
+        float yb = y1 + t1 / 2 * sin( a );
+        if(first)
+            first = false;
+        else {
+            glVertex2f( x1, y1 );
+            glVertex2f( xa, ya );
+            glVertex2f( xb, yb );
+        }
+        xa = xb, ya = yb;
+    }
+}
+#endif
+
 // Draws a line between (x1,y1) - (x2,y2) with a start thickness of t1
-void DrawGLThickLine( double x1, double y1, double x2, double y2, wxPen pen, bool b_hiqual )
+void DrawGLThickLine( float x1, float y1, float x2, float y2, wxPen pen, bool b_hiqual )
 {
 #ifdef ocpnUSE_GL
     
-    double angle = atan2( y2 - y1, x2 - x1 );
-    double t1 = pen.GetWidth();
-    double t2sina1 = t1 / 2 * sin( angle );
-    double t2cosa1 = t1 / 2 * cos( angle );
+    float angle = atan2f( y2 - y1, x2 - x1 );
+    float t1 = pen.GetWidth();
+    float t2sina1 = t1 / 2 * sinf( angle );
+    float t2cosa1 = t1 / 2 * cosf( angle );
 
-    glPushAttrib( GL_COLOR_BUFFER_BIT | GL_HINT_BIT | GL_POLYGON_BIT );      //Save state
-    ocpnDC::SetGLAttrs( b_hiqual );
+    glBegin( GL_TRIANGLES );
 
     //    n.b.  The dwxDash interpretation for GL only allows for 2 elements in the dash table.
     //    The first is assumed drawn, second is assumed space
     wxDash *dashes;
     int n_dashes = pen.GetDashes( &dashes );
     if( n_dashes ) {
-        double lpix = sqrt( ( x1 - x2 ) * ( x1 - x2 ) + ( y1 - y2 ) * ( y1 - y2 ) );
-        double lrun = 0.;
-        double xa = x1;
-        double ya = y1;
-        double ldraw = t1 * dashes[0];
-        double lspace = t1 * dashes[1];
+        float lpix = sqrtf( powf( (float) (x1 - x2), 2) + powf( (float) (y1 - y2), 2) );
+        float lrun = 0.;
+        float xa = x1;
+        float ya = y1;
+        float ldraw = t1 * dashes[0];
+        float lspace = t1 * dashes[1];
 
         while( lrun < lpix ) {
             //    Dash
-            double xb = xa + ldraw * cos( angle );
-            double yb = ya + ldraw * sin( angle );
+            float xb = xa + ldraw * cosf( angle );
+            float yb = ya + ldraw * sinf( angle );
 
             if( ( lrun + ldraw ) >= lpix )         // last segment is partial draw
-                    {
+            {
                 xb = x2;
                 yb = y2;
             }
 
-            glBegin( GL_TRIANGLES );
             glVertex2f( xa + t2sina1, ya - t2cosa1 );
             glVertex2f( xb + t2sina1, yb - t2cosa1 );
             glVertex2f( xb - t2sina1, yb + t2cosa1 );
@@ -281,7 +296,6 @@ void DrawGLThickLine( double x1, double y1, double x2, double y2, wxPen pen, boo
             glVertex2f( xb - t2sina1, yb + t2cosa1 );
             glVertex2f( xa - t2sina1, ya + t2cosa1 );
             glVertex2f( xa + t2sina1, ya - t2cosa1 );
-            glEnd();
 
             xa = xb;
             ya = yb;
@@ -296,16 +310,24 @@ void DrawGLThickLine( double x1, double y1, double x2, double y2, wxPen pen, boo
             lrun += lspace;
         }
     } else {
-        glBegin( GL_TRIANGLES );
         glVertex2f( x1 + t2sina1, y1 - t2cosa1 );
         glVertex2f( x2 + t2sina1, y2 - t2cosa1 );
         glVertex2f( x2 - t2sina1, y2 + t2cosa1 );
+
         glVertex2f( x2 - t2sina1, y2 + t2cosa1 );
         glVertex2f( x1 - t2sina1, y1 + t2cosa1 );
         glVertex2f( x1 + t2sina1, y1 - t2cosa1 );
-        glEnd();
+
+        /* wx draws a nice rounded end in dc mode, so replicate
+           this for opengl mode, should this be done for the dashed mode case? */
+        if(pen.GetCap() == wxCAP_ROUND) {
+            DrawEndCap( x1, y1, t1, angle);
+            DrawEndCap( x2, y2, t1, angle + M_PI);
+        }
+
     }
-    glPopAttrib();
+
+    glEnd();
 #endif    
 }
 
@@ -362,41 +384,39 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
                 wxDash *dashes;
                 int n_dashes = m_pen.GetDashes( &dashes );
                 if( n_dashes ) {
-                    double angle = atan2( (double) ( y2 - y1 ), (double) ( x2 - x1 ) );
-                    double cosa = cos( angle );
-                    double sina = sin( angle );
-                    double t1 = m_pen.GetWidth();
+                    float angle = atan2f( (float) ( y2 - y1 ), (float) ( x2 - x1 ) );
+                    float cosa = cosf( angle );
+                    float sina = sinf( angle );
+                    float t1 = m_pen.GetWidth();
 
-                    double lpix = sqrt(
-                            (double) ( x1 - x2 ) * ( x1 - x2 )
-                                    + (double) ( y1 - y2 ) * ( y1 - y2 ) );
-                    double lrun = 0.;
-                    double xa = x1;
-                    double ya = y1;
-                    double ldraw = t1 * dashes[0];
-                    double lspace = t1 * dashes[1];
+                    float lpix = sqrtf( powf(x1 - x2, 2) + powf(y1 - y2, 2) );
+                    float lrun = 0.;
+                    float xa = x1;
+                    float ya = y1;
+                    float ldraw = t1 * dashes[0];
+                    float lspace = t1 * dashes[1];
 
+                    glBegin( GL_LINES );
                     while( lrun < lpix ) {
                         //    Dash
-                        double xb = xa + ldraw * cosa;
-                        double yb = ya + ldraw * sina;
+                        float xb = xa + ldraw * cosa;
+                        float yb = ya + ldraw * sina;
 
                         if( ( lrun + ldraw ) >= lpix )         // last segment is partial draw
-                                {
+                        {
                             xb = x2;
                             yb = y2;
                         }
 
-                        glBegin( GL_LINES );
                         glVertex2f( xa, ya );
                         glVertex2f( xb, yb );
-                        glEnd();
 
                         xa = xa + ( lspace + ldraw ) * cosa;
                         ya = ya + ( lspace + ldraw ) * sina;
                         lrun += lspace + ldraw;
 
                     }
+                    glEnd();
                 } else                    // not dashed
                 {
                     glBegin( GL_LINES );
@@ -412,6 +432,106 @@ void ocpnDC::DrawLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2, bool b_hi
 #endif    
 }
 
+// Draws thick lines from triangles
+void DrawGLThickLines( int n, wxPoint points[],wxCoord xoffset,
+                       wxCoord yoffset, wxPen pen, bool b_hiqual )
+{
+#ifdef ocpnUSE_GL
+    if(n < 2)
+        return;
+
+    /* for dashed case, for now just draw thick lines */
+    wxDash *dashes;
+    if( pen.GetDashes( &dashes ) )
+    {
+        wxPoint p0 = points[0];
+        for( int i = 1; i < n; i++ ) {
+            DrawGLThickLine( p0.x + xoffset, p0.y + yoffset, points[i].x + xoffset,
+                             points[i].y + yoffset, pen, b_hiqual );
+            p0 = points[i];
+        }
+        return;
+    }
+
+    /* cull zero segments */
+    wxPoint *cpoints = new wxPoint[n];
+    cpoints[0] = points[0];
+    int c = 1;
+    for( int i = 1; i < n; i++ ) {
+        if(points[i].x != points[i-1].x || points[i].y != points[i-1].y)
+            cpoints[c++] = points[i];
+    }
+
+    /* nicer than than rendering each segment separately, this is because thick
+       line segments drawn as rectangles which have different angles have
+       rectangles which overlap and also leave a gap.
+       This code properly calculates vertexes for adjoining segments */
+    float t1 = pen.GetWidth();
+
+    float x0 = cpoints[0].x, y0 = cpoints[0].y, x1 = cpoints[1].x, y1 = cpoints[1].y;
+    float a0 = atan2f( y1 - y0, x1 - x0 );
+
+    // It is also possible to use triangle strip, (and triangle fan for endcap)
+    // to reduce vertex count.. is it worth it?
+    glBegin( GL_TRIANGLES );
+
+    float t2sina0 = t1 / 2 * sinf( a0 );
+    float t2cosa0 = t1 / 2 * cosf( a0 );
+
+    for( int i = 1; i < c; i++ ) {
+        float x2, y2;
+        float a1;
+
+        if(i < c - 1) {
+            x2 = cpoints[i + 1].x, y2 = cpoints[i + 1].y;
+            a1 = atan2f( y2 - y1, x2 - x1 );
+        } else {
+            x2 = x1, y2 = y1;
+            a1 = a0;
+        }
+
+        float aa = (a0 + a1) / 2;
+        float diff = fabsf(a0 - a1);
+        if(diff > M_PI)
+            diff -= 2*M_PI;
+        float rad = t1 / 2 / wxMax(cosf(diff / 2), .4);
+
+        float t2sina1 = rad * sinf( aa );
+        float t2cosa1 = rad * cosf( aa );
+
+        glVertex2f( x1 + t2sina1, y1 - t2cosa1 );
+        glVertex2f( x1 - t2sina1, y1 + t2cosa1 );
+        glVertex2f( x0 + t2sina0, y0 - t2cosa0 );
+
+        glVertex2f( x0 - t2sina0, y0 + t2cosa0 );
+        glVertex2f( x0 + t2sina0, y0 - t2cosa0 );
+
+        float dot = t2sina0 * t2sina1 + t2cosa0 * t2cosa1;
+        if(dot > 0)
+            glVertex2f( x1 - t2sina1, y1 + t2cosa1 );
+        else
+            glVertex2f( x1 + t2sina1, y1 - t2cosa1 );
+
+        x0 = x1, x1 = x2;
+        y0 = y1, y1 = y2;
+        a0 = a1;
+        t2sina0 = t2sina1, t2cosa0 = t2cosa1;
+    }
+ 
+    if(pen.GetCap() == wxCAP_ROUND) {
+        DrawEndCap( x0, y0, t1, a0);
+        DrawEndCap( x0, y0, t1, a0 + M_PI);
+     }
+
+    glEnd();
+
+    glPopAttrib();
+
+    delete [] cpoints;
+
+ #endif    
+ }
+
 void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffset, bool b_hiqual )
 {
     if( dc )
@@ -419,7 +539,7 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
 #ifdef ocpnUSE_GL
     else if( ConfigurePen() ) {
 
-        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT );      //Save state
+        glPushAttrib( GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT );      //Save state
         SetGLAttrs( b_hiqual );
 
         bool b_draw_thick = false;
@@ -448,13 +568,8 @@ void ocpnDC::DrawLines( int n, wxPoint points[], wxCoord xoffset, wxCoord yoffse
                 glLineWidth( wxMax(g_GLMinLineWidth, 1) );
         }
 
-        if( b_draw_thick/*m_pen.GetWidth() > 1*/) {
-            wxPoint p0 = points[0];
-            for( int i = 1; i < n; i++ ) {
-                DrawGLThickLine( p0.x + xoffset, p0.y + yoffset, points[i].x + xoffset,
-                        points[i].y + yoffset, m_pen, b_hiqual );
-                p0 = points[i];
-            }
+        if( b_draw_thick) {
+            DrawGLThickLines( n, points, xoffset, yoffset, m_pen, b_hiqual );
         } else {
             glBegin( GL_LINE_STRIP );
             for( int i = 0; i < n; i++ )
@@ -481,6 +596,9 @@ void ocpnDC::StrokeLine( wxCoord x1, wxCoord y1, wxCoord x2, wxCoord y2 )
 }
 
 void ocpnDC::StrokeLines( int n, wxPoint *points) {
+    if(n < 2) /* optimization and also to avoid assertion in pgc->StrokeLines */
+        return;
+
 #if wxUSE_GRAPHICS_CONTEXT
     if( pgc ) {
         wxPoint2DDouble* dPoints = (wxPoint2DDouble*) malloc( n * sizeof( wxPoint2DDouble ) );
@@ -524,13 +642,13 @@ void ocpnDC::DrawRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h )
 }
 
 /* draw the arc along corners */
-static void drawrrhelper( wxCoord x, wxCoord y, wxCoord r, double st, double et )
+static void drawrrhelper( wxCoord x, wxCoord y, wxCoord r, float st, float et )
 {
 #ifdef ocpnUSE_GL
     const int slices = 10;
-    double dt = ( et - st ) / slices;
-    for( double t = st; t <= et; t += dt )
-        glVertex2i( x + r * cos( t ), y + r * sin( t ) );
+    float dt = ( et - st ) / slices;
+    for( float t = st; t <= et; t += dt )
+        glVertex2f( x + r * cos( t ), y + r * sin( t ) );
 #endif        
 }
 
@@ -623,8 +741,8 @@ void ocpnDC::DrawEllipse( wxCoord x, wxCoord y, wxCoord width, wxCoord height )
         dc->DrawEllipse( x, y, width, height );
 #ifdef ocpnUSE_GL
     else {
-        double r1 = width / 2, r2 = height / 2;
-        double cx = x + r1, cy = y + r2;
+        float r1 = width / 2, r2 = height / 2;
+        float cx = x + r1, cy = y + r2;
 
         glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT );      //Save state
 
@@ -634,18 +752,21 @@ void ocpnDC::DrawEllipse( wxCoord x, wxCoord y, wxCoord width, wxCoord height )
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
         glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 
+        /* formula for variable step count to produce smooth ellipse */
+        float steps = floorf(wxMax(sqrtf(sqrtf((float)(width*width + height*height))), 1) * M_PI);
+
         if( ConfigureBrush() ) {
             glBegin( GL_TRIANGLE_FAN );
-            glVertex2d( cx, cy );
-            for( double a = 0; a <= 2 * M_PI; a += 2 * M_PI / 20 )
-                glVertex2d( cx + r1 * sin( a ), cy + r2 * cos( a ) );
+            glVertex2f( cx, cy );
+            for( float a = 0; a <= 2 * M_PI + M_PI/steps; a += 2 * M_PI / steps )
+                glVertex2f( cx + r1 * sinf( a ), cy + r2 * cosf( a ) );
             glEnd();
         }
 
         if( ConfigurePen() ) {
-            glBegin( GL_LINE_STRIP );
-            for( double a = 0; a <= 2 * M_PI; a += 2 * M_PI / 200 )
-                glVertex2d( cx + r1 * sin( a ), cy + r2 * cos( a ) );
+            glBegin( GL_LINE_LOOP );
+            for( float a = 0; a < 2 * M_PI - M_PI/steps; a += 2 * M_PI / steps )
+                glVertex2f( cx + r1 * sinf( a ), cy + r2 * cosf( a ) );
             glEnd();
         }
 
@@ -660,7 +781,7 @@ void ocpnDC::DrawPolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yoff
         dc->DrawPolygon( n, points, xoffset, yoffset );
 #ifdef ocpnUSE_GL
     else {
-        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_POLYGON_BIT ); //Save state
+        glPushAttrib( GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_POLYGON_BIT ); //Save state
 
         SetGLAttrs( true );
 
@@ -746,12 +867,15 @@ void ocpnDC::DrawPolygonTessellated( int n, wxPoint points[], wxCoord xoffset, w
         dc->DrawPolygon( n, points, xoffset, yoffset );
 #ifdef ocpnUSE_GL
     else {
-        if( n < 5 ) {
+# ifndef ocpnUSE_GLES  // tessalator in glues is broken
+        if( n < 5 )
+# endif
+        {
             DrawPolygon( n, points, xoffset, yoffset );
             return;
         }
 
-        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_POLYGON_BIT ); //Save state
+        glPushAttrib( GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT | GL_POLYGON_BIT ); //Save state
         SetGLAttrs( false );
 
         static GLUtesselator *tobj = NULL;
@@ -817,6 +941,10 @@ void ocpnDC::StrokePolygon( int n, wxPoint points[], wxCoord xoffset, wxCoord yo
 
 void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask )
 {
+#ifdef ocpnUSE_GLES  // Do not attempt to do anything with glDrawPixels if using opengles
+        return;
+#endif
+
     wxBitmap bmp;
     if( x < 0 || y < 0 ) {
         int dx = ( x < 0 ? -x : 0 );
@@ -848,7 +976,6 @@ void ocpnDC::DrawBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usem
                     "trying to use mask to draw a bitmap without alpha or mask\n" );
 
             unsigned char *e = new unsigned char[4 * w * h];
-//               int w = image.GetWidth(), h = image.GetHeight();
             {
                 for( int y = 0; y < h; y++ )
                     for( int x = 0; x < w; x++ ) {
@@ -886,6 +1013,9 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
         dc->DrawText( text, x, y );
 #ifdef ocpnUSE_GL
     else {
+# ifdef ocpnUSE_GLES
+        return;
+# endif
         wxCoord w = 0;
         wxCoord h = 0;
 #ifdef __WXMAC__
@@ -915,7 +1045,19 @@ void ocpnDC::DrawText( const wxString &text, wxCoord x, wxCoord y )
             /* use the data in the bitmap for alpha channel,
              and set the color to text foreground */
             wxImage image = bmp.ConvertToImage();
-            unsigned char *data = new unsigned char[image.GetWidth() * image.GetHeight()];
+            if( x < 0 || y < 0 ) { // Allow Drawing text which is offset to start off screen
+                int dx = ( x < 0 ? -x : 0 );
+                int dy = ( y < 0 ? -y : 0 );
+                w = bmp.GetWidth() - dx;
+                h = bmp.GetHeight() - dy;
+                /* picture is out of viewport */
+                if( w <= 0 || h <= 0 ) return;
+                image = image.GetSubImage( wxRect( dx, dy, w, h ) );
+                x += dx;
+                y += dy;
+            }
+
+            unsigned char *data = new unsigned char[w * h];
             unsigned char *im = image.GetData();
             for( int i = 0; i < w * h; i++ )
                 data[i] = im[3 * i];
@@ -982,9 +1124,6 @@ void ocpnDC::GLDrawBlendData( wxCoord x, wxCoord y, wxCoord w, wxCoord h, int fo
 {
 #ifdef ocpnUSE_GL
     
-    /*  Hmmmm.... I find that the texture version below does not work on my dodgy OpenChrome gl drivers
-     but the glDrawPixels works fine.*/
-
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glRasterPos2i( x, y );
@@ -993,30 +1132,5 @@ void ocpnDC::GLDrawBlendData( wxCoord x, wxCoord y, wxCoord w, wxCoord h, int fo
     glPixelZoom( 1, 1 );
     glDisable( GL_BLEND );
 
-    return;
-
-    /* I would prefer to just use glDrawPixels than need a texture,
-     but sometimes it did not perform alpha blending correctly,
-     this way always works */
-
-#if 0
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, tex);
-    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, format, w, h, 0, format,
-            GL_UNSIGNED_BYTE, data);
-
-    glEnable(GL_TEXTURE_RECTANGLE_ARB);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0, 0); glVertex2f(x, y);
-    glTexCoord2f(w, 0); glVertex2f(x+w, y);
-    glTexCoord2f(w, h); glVertex2f(x+w, y+h);
-    glTexCoord2f(0, h); glVertex2f(x, y+h);
-    glEnd();
-    glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_RECTANGLE_ARB);
-
-#endif
 #endif
 }
