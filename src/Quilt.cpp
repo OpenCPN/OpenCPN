@@ -890,26 +890,28 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
                 unsigned int target_stack_index = 0;
                 int target_stack_index_check = m_extended_stack_array.Index( current_db_index ); // Lookup
 
-                if( wxNOT_FOUND != target_stack_index_check ) target_stack_index =
-                        target_stack_index_check;
+                if( wxNOT_FOUND != target_stack_index_check )
+                    target_stack_index = target_stack_index_check;
 
-                while( ( proposed_scale_onscreen < min_ref_scale ) && ( target_stack_index > 0 ) ) {
-                    target_stack_index--;
-                    int test_db_index = m_extended_stack_array.Item( target_stack_index );
+                if(pCurrentStack) {
+                    while( ( proposed_scale_onscreen < min_ref_scale ) && ( target_stack_index > 0 ) ) {
+                        target_stack_index--;
+                        int test_db_index = m_extended_stack_array.Item( target_stack_index );
 
-                    if( pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
-                        if( ( current_family == ChartData->GetDBChartFamily( test_db_index ) )
-                                && IsChartQuiltableRef( test_db_index ) ) {
+                        if( pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
+                            if( ( current_family == ChartData->GetDBChartFamily( test_db_index ) )
+                                    && IsChartQuiltableRef( test_db_index ) ) {
 
-                            //    open the target, and check the min_scale
-                            ChartBase *ptest_chart = ChartData->OpenChartFromDB( test_db_index,
-                                                     FULL_INIT );
-                            if( ptest_chart ) min_ref_scale = ptest_chart->GetNormalScaleMin(
-                                                                      m_canvas_scale_factor, false );
+                                //    open the target, and check the min_scale
+                                ChartBase *ptest_chart = ChartData->OpenChartFromDB( test_db_index,
+                                                        FULL_INIT );
+                                if( ptest_chart ) min_ref_scale = ptest_chart->GetNormalScaleMin(
+                                                                        m_canvas_scale_factor, false );
+                            }
                         }
                     }
                 }
-
+                
                 new_db_index = m_extended_stack_array.Item( target_stack_index );
 
                 //  The target chart min/max scales must comply with propsed chart scale on-screen
