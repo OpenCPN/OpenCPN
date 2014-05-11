@@ -182,7 +182,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
                     //search for a moving grib file
                     double wmin1,wmax1,hmin1,hmax1,wmin2,wmax2,hmin2,hmax2;
                     GetGribZoneLimits(new GribTimelineRecordSet(first, first, 0), &wmin1, &wmax1, &hmin1, &hmax1 );
-                    GetGribZoneLimits(new GribTimelineRecordSet(last, last, 0), &wmin2, &wmax2, &hmin2, &hmax2 );
+                    GetGribZoneLimits(new GribTimelineRecordSet(second, second, 0), &wmin2, &wmax2, &hmin2, &hmax2 );
                     if( wmin1 != wmin2 || wmax1 != wmax2 || hmin1 != hmin2 || hmax1 != hmax2 ) m_pMovingGrib = true;
                     //
                 }
