@@ -93,7 +93,7 @@ extern MyConfig         *pConfig;
 extern ArrayOfCDI       g_ChartDirArray;
 extern double           vLat, vLon, gLat, gLon;
 extern double           kLat, kLon;
-extern double           initial_scale_ppm;
+extern double           initial_scale_ppm, initial_rotation;
 extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
 extern bool             g_bShowMag;
@@ -1614,6 +1614,7 @@ int MyConfig::LoadMyConfig( int iteration )
     gLon = START_LON;
 
     initial_scale_ppm = .0003;        // decent initial value
+    initial_rotation = 0;
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     wxString st;
@@ -1643,6 +1644,14 @@ int MyConfig::LoadMyConfig( int iteration )
         st_view_scale = fmax ( st_view_scale, .001/32 );
         st_view_scale = fmin ( st_view_scale, 4 );
         initial_scale_ppm = st_view_scale;
+    }
+
+    if( Read( wxString( _T ( "VPRotation" ) ), &st ) ) {
+        sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_rotation );
+//    Sanity check the rotation
+        st_rotation = fmin ( st_rotation, 360 );
+        st_rotation = fmax ( st_rotation, 0 );
+        initial_rotation = st_rotation * PI / 180;
     }
 
     wxString sll;
@@ -2381,6 +2390,8 @@ void MyConfig::UpdateSettings()
             Write( _T ( "VPLatLon" ), st1 );
             st1.Printf( _T ( "%g" ), vp.view_scale_ppm );
             Write( _T ( "VPScale" ), st1 );
+            st1.Printf( _T ( "%g" ), vp.rotation * 180 / PI );
+            Write( _T ( "VPRotation" ), st1 );
         }
     }
 

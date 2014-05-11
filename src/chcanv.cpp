@@ -880,14 +880,14 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MOUSE_EVENTS ( ChartCanvas::MouseEvent )
     EVT_TIMER ( DBLCLICK_TIMER, ChartCanvas::MouseTimedEvent )
     EVT_TIMER ( PAN_TIMER, ChartCanvas::PanTimerEvent )
+    EVT_TIMER ( MOVEMENT_TIMER, ChartCanvas::MovementTimerEvent )
+    EVT_TIMER ( MOVEMENT_STOP_TIMER, ChartCanvas::MovementStopTimerEvent )
     EVT_TIMER ( CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent )
     EVT_TIMER ( ROT_TIMER, ChartCanvas::RotateTimerEvent )
     EVT_TIMER ( ROPOPUP_TIMER, ChartCanvas::OnRolloverPopupTimerEvent )
     EVT_KEY_DOWN(ChartCanvas::OnKeyDown )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
-    EVT_TIMER ( PANKEY_TIMER, ChartCanvas::Do_Pankeys )
     EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
-    EVT_TIMER ( ZOOM_TIMER, ChartCanvas::OnZoomTimerEvent )
 
     EVT_MENU ( ID_DEF_MENU_MAX_DETAIL,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_DEF_MENU_SCALE_IN,           ChartCanvas::PopupMenuHandler )
@@ -1016,15 +1016,14 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pos_image_user_grey_day   = NULL;
     m_pos_image_user_grey_dusk  = NULL;
     m_pos_image_user_grey_night = NULL;
+
+    m_zoom_factor = 1;
+    m_rotation_speed = 0;
+    m_mustmove = 0;
+
     m_pos_image_user_yellow_day = NULL;
     m_pos_image_user_yellow_dusk = NULL;
     m_pos_image_user_yellow_night = NULL;
-
-    m_zoom_timer.SetOwner(this, ZOOM_TIMER);
-    m_bzooming_in = false;;
-    m_bzooming_out = false;;
-
-    EnableAutoPan(true);
 
     undo = new Undo;
 
@@ -1186,14 +1185,18 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     pPanTimer = new wxTimer( this, PAN_TIMER );
     pPanTimer->Stop();
 
+    pMovementTimer = new wxTimer( this, MOVEMENT_TIMER );
+    pMovementTimer->Stop();
+
+    pMovementStopTimer = new wxTimer( this, MOVEMENT_STOP_TIMER );
+    pMovementStopTimer->Stop();
+
     pRotDefTimer = new wxTimer( this, ROT_TIMER );
     pRotDefTimer->Stop();
 
     m_DoubleClickTimer = new wxTimer( this, DBLCLICK_TIMER );
     m_DoubleClickTimer->Stop();
 
-    pPanKeyTimer = new wxTimer( this, PANKEY_TIMER );
-    pPanKeyTimer->Stop();
     m_panx = m_pany = 0;
     m_panspeed = 0;
 
@@ -1483,9 +1486,10 @@ ChartCanvas::~ChartCanvas()
     delete pCursorCross;
 
     delete pPanTimer;
+    delete pMovementTimer;
+    delete pMovementStopTimer;
     delete pCurTrackTimer;
     delete pRotDefTimer;
-    delete pPanKeyTimer;
     delete m_DoubleClickTimer;
 
     delete m_pRouteRolloverWin;
@@ -1716,35 +1720,53 @@ ViewPort &ChartCanvas::GetVP()
     return VPoint;
 }
 
+void ChartCanvas::SetVP(ViewPort &vp)
+{
+    VPoint = vp;
+}
+
 void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
-    m_panx = 0;                         //  Stop any autopanning
-    m_pany = 0;
-
     m_modkeys = event.GetModifiers();
 
     if( event.GetKeyCode() == WXK_CONTROL ) m_bmouse_key_mod = true;
+
+    int panspeed = m_modkeys == wxMOD_ALT ? 2 : 100;
 
     // HOTKEYS
     switch( event.GetKeyCode() ) {
     case WXK_LEFT:
         if( m_modkeys == wxMOD_CONTROL ) parent_frame->DoStackDown();
-        else
+        else if(g_bsmoothpanzoom) {
+            StartTimedMovement();
             m_panx = -1;
+        } else
+            PanCanvas( -panspeed, 0 );
         break;
 
     case WXK_UP:
-        m_pany = -1;
+        if(g_bsmoothpanzoom) {
+            StartTimedMovement();
+            m_pany = -1;
+        } else
+            PanCanvas( 0, -panspeed );
         break;
 
     case WXK_RIGHT:
         if( m_modkeys == wxMOD_CONTROL ) parent_frame->DoStackUp();
-        else
+        else if(g_bsmoothpanzoom) {
+            StartTimedMovement();
             m_panx = 1;
+        } else
+            PanCanvas( panspeed, 0 );
         break;
 
     case WXK_DOWN:
-        m_pany = 1;
+        if(g_bsmoothpanzoom) {
+            StartTimedMovement();
+            m_pany = 1;
+        } else
+            PanCanvas( 0, panspeed );
         break;
 
     case WXK_F2:
@@ -1832,15 +1854,13 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     //NUMERIC PAD
     case WXK_NUMPAD_ADD:              // '+' on NUM PAD
-        if( m_modkeys == wxMOD_CONTROL ) ZoomCanvasIn( 1.1 );
-        else
-            ZoomCanvasIn( 2.0 );
+    case WXK_PAGEUP:
+        ZoomCanvas( 2.0 );
         break;
 
     case WXK_NUMPAD_SUBTRACT:   // '-' on NUM PAD
-        if( m_modkeys == wxMOD_CONTROL ) ZoomCanvasOut( 1.1 );
-        else
-            ZoomCanvasOut( 2.0 );
+    case WXK_PAGEDOWN:
+        ZoomCanvas( .5 );
         break;
 
     default:
@@ -1851,51 +1871,45 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
     if( event.GetKeyCode() < 128 )            //ascii
     {
         char key_char = (char) event.GetKeyCode();
-        if( m_modkeys == wxMOD_CONTROL ) key_char -= 64;
 
         //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
         if( !g_b_assume_azerty ) {
             switch( key_char ) {
-            case '+':
-            case '+' - 64:
-            case '=':
-            case '=' - 64:          // Ctrl =
-                if( m_modkeys == wxMOD_CONTROL )
-                    ZoomCanvasIn( 1.1 );
-                else
-                    ZoomCanvasIn( 2.0 );
+            case '+': case '=':
+                ZoomCanvas( 2.0 );
                 break;
 
-            case '-':
-            case '-' - 64:          // Ctrl -
-            case '_':
-                if( m_modkeys == wxMOD_CONTROL )
-                    ZoomCanvasOut( 1.1 );
-                else
-                    ZoomCanvasOut( 2.0 );
+            case '-': case '_':
+                ZoomCanvas( 0.5 );
+                break;
+
+            case ']':
+                RotateCanvas( 1 );
+                break;
+                
+            case '[':
+                RotateCanvas( -1 );
+                break;
+                
+            case '\\':
+                DoRotateCanvas(0);
                 break;
             }
         } else {
             switch( key_char ) {
             case 43:
-            case -21:
-                if( m_modkeys == wxMOD_CONTROL )
-                    ZoomCanvasIn( 1.1 );
-                else
-                    ZoomCanvasIn( 2.0 );
+                ZoomCanvas( 2.0 );
                 break;
 
             case 54:                     // '-'  alpha/num pad
             case 56:                     // '_'  alpha/num pad
-            case -10:                     // Ctrl '-'  alpha/num pad
-            case -8:                     // Ctrl '_' alpha/num pad
-                if( m_modkeys == wxMOD_CONTROL )
-                    ZoomCanvasOut( 1.1 );
-                else
-                    ZoomCanvasOut( 2.0 );
+                ZoomCanvas( 0.5 );
                 break;
             }
         }
+
+        if( m_modkeys == wxMOD_CONTROL )
+            key_char -= 64;
 
         switch( key_char ) {
         case 'A':
@@ -2109,9 +2123,6 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         }           // switch
     }
 
-    if( m_benable_autopan && !pPanKeyTimer->IsRunning() && ( m_panx || m_pany ) )
-        pPanKeyTimer->Start( 1, wxTIMER_ONE_SHOT );
-
 #ifndef __WXMAC__
     event.Skip();
 #endif
@@ -2123,13 +2134,25 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
     case WXK_LEFT:
     case WXK_RIGHT:
         m_panx = 0;
-        m_panspeed = 0;
+        if(!m_pany)
+            m_panspeed = 0;
         break;
 
     case WXK_UP:
     case WXK_DOWN:
         m_pany = 0;
-        m_panspeed = 0;
+        if(!m_panx)
+            m_panspeed = 0;
+        break;
+
+    case WXK_NUMPAD_ADD:              // '+' on NUM PAD
+    case WXK_NUMPAD_SUBTRACT:   // '-' on NUM PAD
+    case WXK_PAGEUP:
+    case WXK_PAGEDOWN:
+        if(m_mustmove)
+            DoMovement(m_mustmove);
+
+        m_zoom_factor = 1;
         break;
 
     case WXK_CONTROL:
@@ -2139,32 +2162,122 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
         break;
 
     }
+
+    if( event.GetKeyCode() < 128 )            //ascii
+    {
+        char key_char = (char) event.GetKeyCode();
+
+        //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
+        if( !g_b_assume_azerty ) {
+            switch( key_char ) {
+            case '+':     case '=':    
+            case '-':     case '_':
+              case 54:    case 56:    // '_'  alpha/num pad
+                DoMovement(m_mustmove);
+
+                m_zoom_factor = 1;
+                break;
+            case '[': case ']':
+                DoMovement(m_mustmove);
+                m_rotation_speed = 0;
+                break;
+            }
+        }
+    }
     event.Skip();
 }
 
-void ChartCanvas::Do_Pankeys( wxTimerEvent& event )
+void ChartCanvas::StopMovement( )
 {
-    if( !( m_panx || m_pany ) )
-        return;
+    m_panx = m_pany = 0;
+    m_panspeed = 0;
+    m_zoom_factor = 1;
+    m_rotation_speed = 0;
+    m_mustmove = 0;
+}
 
-    if( !m_benable_autopan )
-        return;
+/* instead of integrating in timer callbacks
+   (which do not always get called fast enough)
+   we can perform the integration of movement
+   at each render frame based on the time change */
+bool ChartCanvas::StartTimedMovement( )
+{
+    // Start/restart the stop movement timer
+    pMovementStopTimer->Start( 1000, wxTIMER_ONE_SHOT ); 
 
-    const int slowpan = 2, maxpan = 100;
-    int repeat = 100;
+    if(m_panx || m_pany || m_zoom_factor!=1 || m_rotation_speed) {
+        // already moving, gets called again because of key-repeat event
+        return false;
+    }
 
-    if( m_modkeys == wxMOD_ALT ) m_panspeed = slowpan;
-    else if( g_bsmoothpanzoom ) {
-        /* accelerate panning */
-        m_panspeed += 2;
-        if( m_panspeed > maxpan ) m_panspeed = maxpan;
+    m_last_movement_time = wxDateTime::UNow();
 
-        repeat = 5;
-    } else
-        m_panspeed = maxpan;
+    /* jumpstart because paint gets called right away, if we want first frame to move */
+//    m_last_movement_time -= wxTimeSpan::Milliseconds(100);
 
-    PanCanvas( m_panspeed * m_panx, m_panspeed * m_pany );
-    pPanKeyTimer->Start( repeat, wxTIMER_ONE_SHOT );
+    Refresh( false );
+
+    return true;
+}
+
+void ChartCanvas::DoTimedMovement()
+{
+    if(!m_panx && !m_pany && m_zoom_factor==1 && !m_rotation_speed)
+        return; /* not moving */
+
+    wxDateTime now = wxDateTime::UNow();
+    long dt = 0;
+    if(m_last_movement_time.IsValid())
+        dt = (now - m_last_movement_time).GetMilliseconds().ToLong();
+
+    m_last_movement_time = now;
+        
+    if(dt > 500) /* if we are running very slow, don't integrate too fast */
+        dt = 500;
+
+    DoMovement(dt);
+}
+
+void ChartCanvas::DoMovement( long dt )
+{
+    /* if we get here quickly assume 1ms so that some movement occurs */
+    if(dt == 0)
+        dt = 1;
+
+    m_mustmove -= dt;
+    if(m_mustmove < 0)
+        m_mustmove = 0;
+
+    if(m_panx || m_pany) {
+        const double slowpan = .1, maxpan = 2;
+        if( m_modkeys == wxMOD_ALT )
+            m_panspeed = slowpan;
+        else {
+            m_panspeed += (double)dt/500; /* apply acceleration */
+            m_panspeed = wxMin( maxpan, m_panspeed );
+        }
+        PanCanvas( m_panspeed * m_panx * dt, m_panspeed * m_pany * dt);
+    }
+
+    if(m_zoom_factor != 1) {
+        double alpha = 400, beta = 1.5;
+        double zoom_factor = (exp(dt / alpha) - 1) / beta + 1;
+
+        if( m_modkeys == wxMOD_ALT )
+            zoom_factor = pow(zoom_factor, .15);
+
+        if(m_zoom_factor < 1)
+            zoom_factor = 1/zoom_factor;
+            
+        DoZoomCanvas( zoom_factor );
+    }
+
+    if( m_rotation_speed ) { /* in degrees per second */
+        double speed = m_rotation_speed;
+        if( m_modkeys == wxMOD_ALT)
+            speed /= 10;
+        DoRotateCanvas( VPoint.rotation + speed * PI / 180 * dt / 1000.0);
+    }
 }
 
 void ChartCanvas::SetColorScheme( ColorScheme cs )
@@ -2637,222 +2750,164 @@ void ChartCanvas::GetCanvasPixPoint( int x, int y, double &lat, double &lon )
     }
 }
 
-bool ChartCanvas::ZoomCanvasIn( double factor )
+void ChartCanvas::ZoomCanvas( double factor )
 {
-    bool b_smooth = g_bsmoothpanzoom & g_bopengl & !g_bEnableZoomToCursor;
-
-    if( !VPoint.b_quilt ) {
-        ChartBase *pc = Current_Ch;
-        if( !pc ) return false;
-        if( pc->GetChartFamily() == CHART_FAMILY_VECTOR ) b_smooth = false;
-    } else
-        b_smooth = g_bsmoothpanzoom & !m_pQuilt->IsQuiltVector() & !g_bEnableZoomToCursor;
-
-    if( b_smooth ) {
-        if( m_bzooming_out )             // Interrupt?
-        {
-            m_zoom_timer.Stop();
-            m_bzooming_in = false;
-            m_bzooming_out = false;
+    if( g_bsmoothpanzoom ) {
+        if(StartTimedMovement()) {
+            m_mustmove += 150; /* for quick presses register as 200 ms duration */
+            m_zoom_factor = factor;
         }
-
-        if( !m_bzooming_in ) {
-            // Set up some parameters
-            m_zoomt = 5;
-            m_zoom_target_factor = factor;
-            m_zoom_current_factor = 1.0;
-            m_zoom_timer.Start( m_zoomt );             //, true);
-            m_bzooming_in = true;
-        } else        // Make sure timer is running, to recover from lost events
-        {
-            if( !m_zoom_timer.IsRunning() ) m_zoom_timer.Start( m_zoomt );
-        }
-    } else
-        DoZoomCanvasIn( factor );
-
-    extendedSectorLegs.clear();
-    return true;
-}
-
-bool ChartCanvas::ZoomCanvasOut( double factor )
-{
-    bool b_smooth = g_bsmoothpanzoom & g_bopengl & !g_bEnableZoomToCursor;
-
-    if( !VPoint.b_quilt ) {
-        ChartBase *pc = Current_Ch;
-        if( !pc ) return false;
-        if( pc->GetChartFamily() == CHART_FAMILY_VECTOR ) b_smooth = false;
-    } else
-        b_smooth = g_bsmoothpanzoom & !m_pQuilt->IsQuiltVector() & !g_bEnableZoomToCursor;
-
-    if( b_smooth ) {
-        if( m_bzooming_in )             // Interrupt?
-        {
-            m_zoom_timer.Stop();
-            m_bzooming_in = false;
-            m_bzooming_out = false;
-        }
-
-        if( !m_bzooming_out ) {
-            // Set up some parameters
-            m_zoomt = 5;
-            m_zoom_target_factor = factor;
-            m_zoom_current_factor = 1.0;
-            m_zoom_timer.Start( m_zoomt );             //, true);
-            m_bzooming_out = true;
-        } else        // Make sure timer is running, to recover from lost events
-        {
-            if( !m_zoom_timer.IsRunning() ) m_zoom_timer.Start( m_zoomt );
-        }
-
-    } else
-        DoZoomCanvasOut( factor );
-
-    extendedSectorLegs.clear();
-    return true;
-}
-
-void ChartCanvas::OnZoomTimerEvent( wxTimerEvent &event )
-{
-    if( m_bzooming_in && !m_bzooming_out ) {
-        if( m_zoom_current_factor < m_zoom_target_factor ) {
-            DoZoomCanvasIn( 1.05 );
-            m_zoom_current_factor *= 1.05;
-            m_zoom_timer.Start( m_zoomt );        //, true);
-        } else
-            m_bzooming_in = false;
-    } else if( m_bzooming_out && !m_bzooming_in ) {
-        if( m_zoom_current_factor < m_zoom_target_factor ) {
-            DoZoomCanvasOut( 1.05 );
-            m_zoom_current_factor *= 1.05;
-            m_zoom_timer.Start( m_zoomt );        //, true);
-        } else
-            m_bzooming_out = false;
-
-        if( m_zoom_current_factor >= m_zoom_target_factor ) m_bzooming_out = false;
-    } else if( m_bzooming_out && m_bzooming_in )      // incoherent, should never happen
-    {
-        m_zoom_timer.Stop();
-        m_bzooming_out = false;
-        m_bzooming_in = false;
-    }
-}
-
-bool ChartCanvas::DoZoomCanvasIn( double factor )
-{
-    //    Cannot allow Yield() re-entrancy here
-    if( m_bzooming ) return false;
-    m_bzooming = true;
-
-    bool b_do_zoom = true;
-
-    double zoom_factor = factor;
-
-    double min_allowed_scale = 50.0;                // meters per meter
-
-    double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() * zoom_factor );
-    ChartBase *pc = NULL;
-
-    if( !VPoint.b_quilt ) {
-        pc = Current_Ch;
     } else {
-        int new_db_index = m_pQuilt->AdjustRefOnZoomIn( proposed_scale_onscreen );
-        if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
-
-        if(pCurrentStack)
-            pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
+        if( m_modkeys == wxMOD_ALT )
+            factor = pow(factor, .15);
+        
+        DoZoomCanvas( factor );
     }
 
-    if( pc ) {
-        min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), g_b_overzoom_x );
-
-        double target_scale_ppm = GetVPScale() * zoom_factor;
-        double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
-
-        proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
-
-        //  Query the chart to determine the appropriate zoom range
-        if( proposed_scale_onscreen < min_allowed_scale ) {
-            if( min_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) ) b_do_zoom = false;
-            else
-                proposed_scale_onscreen = min_allowed_scale;
-        }
-    }
-
-    if( b_do_zoom ) {
-        SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
-        Refresh( false );
-    }
-
-    m_bzooming = false;
-
-    return true;
+    extendedSectorLegs.clear();
 }
 
-bool ChartCanvas::DoZoomCanvasOut( double zoom_factor )
+void ChartCanvas::DoZoomCanvas( double factor )
 {
-    if( m_bzooming ) return false;
+    /* TODO: queue the quilted loading code to a background thread
+       so yield is never called from here, and also rendering is not delayed */
+
+    //    Cannot allow Yield() re-entrancy here
+    if( m_bzooming ) return;
     m_bzooming = true;
 
-    bool b_do_zoom = true;
+    if(factor > 1)
+    {
+        bool b_do_zoom = true;
 
-    double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() / zoom_factor );
-    ChartBase *pc = NULL;
+        double zoom_factor = factor;
 
-    bool b_smallest = false;
+        double min_allowed_scale = 50.0;                // meters per meter
 
-    if( !VPoint.b_quilt ) {             // not quilted
-        pc = Current_Ch;
-        double target_scale_ppm = GetVPScale() / zoom_factor;
-        double new_scale_ppm = target_scale_ppm;
-        proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+        double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() * zoom_factor );
+        ChartBase *pc = NULL;
 
-        if( ChartData && pc ) {
-        //      If Current_Ch is not on the screen, unbound the zoomout
-            LLBBox viewbox = VPoint.GetBBox();
-            wxBoundingBox chart_box;
-            int current_index = ChartData->FinddbIndex( pc->GetFullPath() );
-            ChartData->GetDBBoundingBox( current_index, &chart_box );
-            if( ( viewbox.Intersect( chart_box ) == _OUT ) ) {
-                proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
-                                            GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
-            }
-            else {
-            //  Clamp the minimum scale zoom-out to the value specified by the chart
-                double max_allowed_scale = 4.0 * ( pc->GetNormalScaleMax( GetCanvasScaleFactor(), GetCanvasWidth() ) );
-                proposed_scale_onscreen = wxMin( proposed_scale_onscreen, max_allowed_scale );
+        if( !VPoint.b_quilt ) {
+            pc = Current_Ch;
+        } else {
+            int new_db_index = m_pQuilt->AdjustRefOnZoomIn( proposed_scale_onscreen );
+            if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
+
+            if(pCurrentStack)
+                pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
+        }
+
+        if( pc ) {
+            min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), g_b_overzoom_x );
+
+            double target_scale_ppm = GetVPScale() * zoom_factor;
+            double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
+
+            proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
+
+            //  Query the chart to determine the appropriate zoom range
+            if( proposed_scale_onscreen < min_allowed_scale ) {
+                if( min_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) ) {
+                    m_zoom_factor = 1; /* stop zooming */
+                    b_do_zoom = false;
+                } else
+                    proposed_scale_onscreen = min_allowed_scale;
             }
         }
 
-     } else {
-        int new_db_index = m_pQuilt->AdjustRefOnZoomOut( proposed_scale_onscreen );
-        if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
+        if( b_do_zoom ) {
+            SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
+            Refresh( false );
+        }
 
-        if(pCurrentStack)
-            pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
+    } else if(factor < 1) {
+        double zoom_factor = 1/factor;
 
-        b_smallest = m_pQuilt->IsChartSmallestScale( new_db_index );
+        bool b_do_zoom = true;
 
-        double target_scale_ppm = GetVPScale() / zoom_factor;
-        proposed_scale_onscreen = GetCanvasScaleFactor() / target_scale_ppm;
+        double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() / zoom_factor );
+        ChartBase *pc = NULL;
 
-        if( b_smallest || (0 == m_pQuilt->GetExtendedStackCount()))
-            proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
-                                            GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
-    }
+        bool b_smallest = false;
 
-    if( !pc ) {                         // no chart, so set a minimum scale
-        if( ( GetCanvasScaleFactor() / proposed_scale_onscreen ) < m_absolute_min_scale_ppm ) b_do_zoom = false;
-    }
+        if( !VPoint.b_quilt ) {             // not quilted
+            pc = Current_Ch;
 
-    if( b_do_zoom ) {
-        SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
-        Refresh( false );
+            if( ChartData && pc ) {
+                //      If Current_Ch is not on the screen, unbound the zoomout
+                LLBBox viewbox = VPoint.GetBBox();
+                wxBoundingBox chart_box;
+                int current_index = ChartData->FinddbIndex( pc->GetFullPath() );
+                double max_allowed_scale;
+
+                max_allowed_scale = GetCanvasScaleFactor() / m_absolute_min_scale_ppm;
+
+                if( ChartData->GetDBBoundingBox( current_index, &chart_box ) &&
+                    viewbox.Intersect( chart_box ) != _OUT )
+                    //  Clamp the minimum scale zoom-out to the value specified by the chart
+                    max_allowed_scale = wxMin(max_allowed_scale, 4.0 *
+                                              pc->GetNormalScaleMax( GetCanvasScaleFactor(),
+                                                                     GetCanvasWidth() ) );
+                if(proposed_scale_onscreen > max_allowed_scale) {
+                    m_zoom_factor = 1; /* stop zooming */
+                    proposed_scale_onscreen = max_allowed_scale;
+                }
+            }
+
+        } else {
+            int new_db_index = m_pQuilt->AdjustRefOnZoomOut( proposed_scale_onscreen );
+            if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
+
+            if(pCurrentStack)
+                pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
+            
+            b_smallest = m_pQuilt->IsChartSmallestScale( new_db_index );
+
+            if( b_smallest || (0 == m_pQuilt->GetExtendedStackCount()))
+                proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
+                                                GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
+        }
+
+        if( !pc ) {                         // no chart, so set a minimum scale
+            if( ( GetCanvasScaleFactor() / proposed_scale_onscreen ) < m_absolute_min_scale_ppm )
+                b_do_zoom = false;
+        }
+
+        if( b_do_zoom ) {
+            SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
+            Refresh( false );
+        }
     }
 
     m_bzooming = false;
+}
 
-    return true;
+void ChartCanvas::RotateCanvas( double dir )
+{
+    if(g_bCourseUp)
+        g_bCourseUp = false;
+
+    if(g_bsmoothpanzoom) {
+        if(StartTimedMovement()) {
+            m_mustmove += 150; /* for quick presses register as 200 ms duration */
+            m_rotation_speed = dir*60;
+        }
+    } else {
+        double speed = dir*10;
+        if( m_modkeys == wxMOD_ALT)
+            speed /= 20;
+        DoRotateCanvas(VPoint.rotation + PI/180 * speed);
+    }
+}
+
+void ChartCanvas::DoRotateCanvas( double rotation )
+{
+    while(rotation < 0) rotation += 2*PI;
+    while(rotation > 2*PI) rotation -= 2*PI;
+
+    SetVPRotation( rotation );
+    ReloadVP();
+    parent_frame->UpdateGPSCompassStatusBox( false );
 }
 
 void ChartCanvas::ClearbFollow( void )
@@ -2907,9 +2962,7 @@ bool ChartCanvas::PanCanvas( int dx, int dy )
 
     Refresh( false );
 
-    Update();               // Force an immediate screen update
-    // to be sure screen stays in sync with (fast) smooth panning
-    // on truly asynchronous opengl renderers.
+    pCurTrackTimer->Start( m_curtrack_timer_msec, wxTIMER_ONE_SHOT );
 
     return true;
 }
@@ -5273,18 +5326,14 @@ void ChartCanvas::PanTimerEvent( wxTimerEvent& event )
 
 }
 
-void ChartCanvas::EnableAutoPan(bool b_enable )
+void ChartCanvas::MovementTimerEvent( wxTimerEvent& )
 {
-    if(b_enable) {
-        m_benable_autopan = true;
-    }
-    else {
-        m_benable_autopan = false;
-        pPanKeyTimer->Stop();
-        m_panx = 0;
-        m_pany = 0;
-        m_panspeed = 0;
-    }
+    DoTimedMovement();
+}
+
+void ChartCanvas::MovementStopTimerEvent( wxTimerEvent& )
+{
+    StopMovement( );
 }
 
 bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging )
@@ -5528,7 +5577,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     if( g_bCourseUp ) {
         m_b_rot_hidef = false;
         pRotDefTimer->Start( 500, wxTIMER_ONE_SHOT );
-    }
+    } else
+        pRotDefTimer->Stop();
 
     mouse_x = x;
     mouse_y = y;
@@ -5619,26 +5669,22 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
     if( wheel_dir ) {
         if( !m_MouseWheelTimer.IsRunning() ) {
-            double factor = m_bmouse_key_mod ? 1.1 : 2.0;
+            double factor = m_bmouse_key_mod ? 1.05 : 1.3;
+            if(wheel_dir < 0)
+                factor = 1/factor;
+
+            ZoomCanvas( factor );
 
             if( g_bEnableZoomToCursor ) {
                 //  Capture current cursor position, as the zooms below may change it.
                 double zlat = m_cursor_lat;
                 double zlon = m_cursor_lon;
 
-                bool b_zoom_moved = false;
-                if( wheel_dir > 0 ) b_zoom_moved = ZoomCanvasIn( factor );
-                else if( wheel_dir < 0 ) b_zoom_moved = ZoomCanvasOut( factor );
-
                 wxPoint r;
                 GetCanvasPointPix( zlat, zlon, &r );
                 PanCanvas( r.x - x, r.y - y );
                 ClearbFollow();      // update the follow flag
-            } else {
-                if( wheel_dir > 0 ) ZoomCanvasIn( factor );
-                else if( wheel_dir < 0 ) ZoomCanvasOut( factor );
             }
-
             m_MouseWheelTimer.Start( m_mouse_wheel_oneshot, true );           // start timer
         }
     }
@@ -6105,8 +6151,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 last_drag.x = mx;
                 last_drag.y = my;
-
-                Refresh( false );
             }
         }
     }
@@ -9258,6 +9302,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     dc.DestroyClippingRegion();
 
     PaintCleanup();
+
+    pMovementTimer->Start( 1, wxTIMER_ONE_SHOT ); 
+
 //      CALLGRIND_STOP_INSTRUMENTATION
 
 }

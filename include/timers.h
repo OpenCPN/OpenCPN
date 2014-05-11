@@ -32,8 +32,8 @@
 #define ROPOPUP_TIMER     5
 #define TCWININF_TIMER    6
 #define ROLLOVER_TIMER    7
-#define ZOOM_TIMER        8
-#define PANKEY_TIMER      9
+#define MOVEMENT_TIMER    8
+#define MOVEMENT_STOP_TIMER      9
 #define DBLCLICK_TIMER   10
 #define POPUP_TIMER      11
 

@@ -216,7 +216,7 @@ public:
 
       void CreateRotatingNavObjBackup();
 
-      double st_lat, st_lon, st_view_scale;            // startup values
+      double st_lat, st_lon, st_view_scale, st_rotation;      // startup values
       bool  st_bFollow;
 
       wxString                m_gpx_path;
