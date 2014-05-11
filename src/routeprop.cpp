@@ -1163,9 +1163,11 @@ bool RouteProp::UpdateProperties()
 
     } else        // Route
     {
-        double brg, join_distance;
+        double brg;
+        double join_distance = 0.;
         RoutePoint *first_point = m_pRoute->GetPoint( 1 );
-        DistanceBearingMercator( first_point->m_lat, first_point->m_lon, gLat, gLon, &brg, &join_distance );
+        if( first_point )
+            DistanceBearingMercator( first_point->m_lat, first_point->m_lon, gLat, gLon, &brg, &join_distance );
 
         //    Update the "tides event" column header
         wxListItem column_info;
