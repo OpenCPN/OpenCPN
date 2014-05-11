@@ -934,9 +934,13 @@ bool MyApp::OnInit()
     wxString version_crash = str_version_major + _T(".") + str_version_minor + _T(".") + str_version_patch;
     info.pszAppVersion = version_crash.c_str();
     
-    info.uMiniDumpType = MiniDumpWithDataSegs;  // Include the data sections from all loaded modules.
+    int type = MiniDumpWithDataSegs;  // Include the data sections from all loaded modules.
                                                 // This results in the inclusion of global variables
 
+    type |=  MiniDumpNormal | MiniDumpWithPrivateReadWriteMemory | MiniDumpWithIndirectlyReferencedMemory;
+    info.uMiniDumpType = (MINIDUMP_TYPE)type;
+                                                
+                                                
     // URL for sending error reports over HTTP.
     info.pszEmailTo = _T("opencpn@bigdumboat.com");
     info.pszSmtpProxy = _T("mail.bigdumboat.com:587");
