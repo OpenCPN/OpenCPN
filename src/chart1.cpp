@@ -2609,7 +2609,7 @@ void MyFrame::OnActivate( wxActivateEvent& event )
 
 
 #endif
-    Raise();
+
     event.Skip();
 }
 
