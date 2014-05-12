@@ -155,14 +155,12 @@ public:
 
       void CancelMouseRoute();
 
-      void Do_Pankeys(wxTimerEvent& event);
-      void EnableAutoPan( bool b_enable );
-      
       bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust = true);
       bool SetVPScale(double sc);
       bool SetViewPoint ( double lat, double lon);
       void ReloadVP ( bool b_adjust = true );
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
+
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
       double GetVPRotation(void) { return GetVP().rotation; }
       double GetVPSkew(void) { return GetVP().skew; }
@@ -184,6 +182,11 @@ public:
 
       int GetNextContextMenuId();
 
+      bool StartTimedMovement( );
+      void DoTimedMovement( );
+      void DoMovement( long dt );
+      void StopMovement( );
+
       void SetColorScheme(ColorScheme cs);
       ColorScheme GetColorScheme(){ return m_cs;}
 
@@ -198,6 +201,7 @@ public:
       double GetCanvasTrueScale(){return m_true_scale_ppm;}
       double GetAbsoluteMinScalePpm(){ return m_absolute_min_scale_ppm; }
       ViewPort &GetVP();
+      void SetVP(ViewPort &);
       ChartBase* GetChartAtCursor();
       ChartBase* GetOverlayChartAtCursor();
 
@@ -214,14 +218,15 @@ public:
       void SetOwnShipState(ownship_state_t state){ m_ownship_state = state;}
       void GetCursorLatLon(double *lat, double *lon);
 
-      bool ZoomCanvasIn(double factor);
-      bool ZoomCanvasOut(double factor);
-      bool DoZoomCanvasIn(double factor);
-      bool DoZoomCanvasOut(double factor);
-
       bool PanCanvas(int dx, int dy);
       void StopAutoPan(void);
-      
+
+      void ZoomCanvas(double factor);
+      void DoZoomCanvas(double factor);
+
+      void RotateCanvas( double dir );
+      void DoRotateCanvas( double rotation );
+
       void ShowAISTargetList(void);
 
       void ShowGoToPosition(void);
@@ -331,9 +336,6 @@ private:
                                              // also may be considered as the "pixels-per-meter" of the canvas on-screen
       double      m_absolute_min_scale_ppm;
 
-      int m_panx, m_pany, m_panspeed, m_modkeys;
-      bool m_bmouse_key_mod;
-
       bool singleClickEventIsValid;
       wxMouseEvent singleClickEvent;
 
@@ -351,9 +353,10 @@ private:
 
       void RotateTimerEvent(wxTimerEvent& event);
       void PanTimerEvent(wxTimerEvent& event);
+      void MovementTimerEvent(wxTimerEvent& );
+      void MovementStopTimerEvent( wxTimerEvent& );
       bool CheckEdgePan(int x, int y, bool bdragging);
       void OnCursorTrackTimerEvent(wxTimerEvent& event);
-      void OnZoomTimerEvent(wxTimerEvent& event);
 
       void DrawAllRoutesInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);
       void DrawAllWaypointsInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly);
@@ -431,6 +434,8 @@ private:
 
 
       wxTimer     *pPanTimer;       // This timer used for auto panning on route creation and edit
+      wxTimer     *pMovementTimer;       // This timer used for smooth movement in non-opengl mode
+      wxTimer     *pMovementStopTimer; // This timer used to stop movement if a keyup event is lost
       wxTimer     *pCurTrackTimer;  // This timer used to update the status window on mouse idle
       wxTimer     *pRotDefTimer;    // This timer used to control rotaion rendering on mouse moves
       wxTimer     *pPanKeyTimer;    // This timer used to update pan key actions
@@ -552,15 +557,16 @@ private:
       wxGLContext   *m_pGLcontext;
 //#endif
 
-      //Smooth zoom member variables
-      wxTimer     m_zoom_timer;
-      bool        m_bzooming_in;
-      bool        m_bzooming_out;
-      int         m_zoomt;                // zoom timer constant, msec
-      double      m_zoom_target_factor;
-      double      m_zoom_current_factor;
+      //Smooth movement member variables
+      int         m_panx, m_pany, m_modkeys;
+      double      m_panspeed;
+      bool        m_bmouse_key_mod;
+      double      m_zoom_factor, m_rotation_speed;
+      int         m_mustmove;
 
-      bool        m_benable_autopan;
+
+      wxDateTime m_last_movement_time;
+
       bool        m_b_paint_enable;
       
       int         m_AISRollover_MMSI;
