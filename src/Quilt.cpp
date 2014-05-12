@@ -1727,21 +1727,16 @@ bool Quilt::Compose( const ViewPort &vp_in )
     //  We will (always??) get a refresh on the new Quilt anyway...
     cc1->EnablePaint(false);
     
-    bool b_stop_ap = false;
     for( ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
         QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
         if( ( pqc->b_include ) && ( !pqc->b_eclipsed ) )
-            if( !ChartData->IsChartInCache( pqc->dbIndex ) ) {
-                cc1->EnableAutoPan(false);
-                b_stop_ap = true;
-            }
+//         I am fairly certain this test can now be removed
+//            with improved smooth movement logic
+//            if( !ChartData->IsChartInCache( pqc->dbIndex ) )
+//                b_stop_movement = true;
+
             ChartData->OpenChartFromDB( pqc->dbIndex, FULL_INIT );
         }
-        
-    if(b_stop_ap) {
-        cc1->EnableAutoPan(false);
-        cc1->EnableAutoPan(true);
-    }
 
     cc1->EnablePaint(true);
     

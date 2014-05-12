@@ -50,7 +50,9 @@ extern PlugInManager*             g_pi_manager;
 extern wxMenu*                    g_FloatingToolbarConfigMenu;
 extern wxString                   g_toolbarConfig;
 extern bool                       g_bPermanentMOBIcon;
+extern bool                       g_btouch;
 extern bool                       g_bresponsive;
+extern bool                       g_bsmoothpanzoom;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
@@ -1412,6 +1414,17 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         if( event.RightDown() ) {
             OnRightClick( tool->GetId(), x, y );
         }
+
+    // allow smooth zooming while toolbutton is held down
+    if((tool->GetId() == ID_ZOOMIN || tool->GetId() == ID_ZOOMOUT)
+       && g_bsmoothpanzoom && !g_btouch) {
+        if(event.LeftDown())
+            cc1->ZoomCanvas( tool->GetId() == ID_ZOOMIN ? 2.0 : .5 );
+        else if(event.LeftUp())
+            cc1->StopMovement();
+
+        return; // do no more processing
+    }
 
     // Left Button Released.  Only this action confirms selection.
     // If the button is enabled and it is not a toggle tool and it is
