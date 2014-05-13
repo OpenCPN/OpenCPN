@@ -9654,12 +9654,12 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     }
 
     AISDrawAreaNotices( dc );
-
     DrawEmboss( dc, EmbossDepthScale( ) );
     DrawEmboss( dc, EmbossOverzoomIndicator( dc ) );
 
     DrawAllRoutesInBBox( dc, GetVP().GetBBox(), ru );
     DrawAllWaypointsInBBox( dc, GetVP().GetBBox(), ru, true ); // true draws only isolated marks
+    DrawAnchorWatchPoints( dc );
 
     AISDraw( dc );
     ShipDraw( dc );
@@ -10041,7 +10041,10 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxR
 
         node = node->GetNext();
     }
+}
 
+void ChartCanvas::DrawAnchorWatchPoints( ocpnDC& dc )
+{
     // draw anchor watch rings, if activated
 
     if( pAnchorWatchPoint1 || pAnchorWatchPoint2 ) {
@@ -10106,9 +10109,8 @@ double ChartCanvas::GetAnchorWatchRadiusPixels( RoutePoint *pAnchorWatchPoint )
         ll_gc_ll( pAnchorWatchPoint->m_lat, pAnchorWatchPoint->m_lon, 0, dabs, &tlat1, &tlon1 );
         GetCanvasPointPix( tlat1, tlon1, &r1 );
         GetCanvasPointPix( pAnchorWatchPoint->m_lat, pAnchorWatchPoint->m_lon, &lAnchorPoint );
-        lpp = sqrt(
-                  pow( (double) ( lAnchorPoint.x - r1.x ), 2 )
-                  + pow( (double) ( lAnchorPoint.y - r1.y ), 2 ) );
+        lpp = sqrt( pow( (double) (lAnchorPoint.x - r1.x), 2) +
+                    pow( (double) (lAnchorPoint.y - r1.y), 2) );
 
         //    This is an entry watch
         if( d1 < 0 ) lpp = -lpp;

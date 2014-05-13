@@ -375,6 +375,7 @@ private:
 
       void DrawAllRoutesInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);
       void DrawAllWaypointsInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly);
+      void DrawAnchorWatchPoints( ocpnDC& dc );
       double GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint);
 
       void DrawAllTidesInBBox(ocpnDC& dc, LLBBox& BBox, bool bRebuildSelList, bool bforce_redraw_tides,

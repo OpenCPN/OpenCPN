@@ -1266,6 +1266,7 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
     DrawEmboss(cc1->EmbossDepthScale() );
     DrawEmboss(cc1->EmbossOverzoomIndicator( dc ) );
 
+    cc1->DrawAnchorWatchPoints( dc );
     cc1->AISDraw( dc );
     ShipDraw( dc );
     cc1->AlertDraw( dc );
