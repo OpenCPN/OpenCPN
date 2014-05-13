@@ -269,7 +269,6 @@ extern wxProgressDialog *s_ProgDialog;
 extern bool             g_bsmoothpanzoom;
 
 extern int              g_GPU_MemSize;
-extern bool             g_b_useStencil;
 
 bool                    g_bDebugOGL;
 

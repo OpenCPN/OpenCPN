@@ -1533,25 +1533,19 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
      }
      */
 
+    wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+    float r, g, b;
+    if( color.IsOk() ) {
+        r = color.Red() / 255.;
+        g = color.Green() / 255.;
+        b = color.Blue() / 255.;
+    } else
+        r = g = b = 0;
+
     //    Adjust for rotation
     glPushMatrix();
 
-    if( fabs( VPoint.rotation ) > 0.01 ) {
-
-        double w = VPoint.pix_width;
-        double h = VPoint.pix_height;
-
-        //    Rotations occur around 0,0, so calculate a post-rotate translation factor
-        double angle = VPoint.rotation;
-        angle -= VPoint.skew;
-
-        double ddx = ( w * cos( -angle ) - h * sin( -angle ) - w ) / 2;
-        double ddy = ( h * cos( -angle ) + w * sin( -angle ) - h ) / 2;
-
-        glRotatef( angle * 180. / PI, 0, 0, 1 );
-
-        glTranslatef( ddx, ddy, 0 );                 // post rotate translation
-    }
+    glChartCanvas::RotateToViewPort(VPoint);
 
     //    Arbitrary optimization....
     //    It is cheaper to draw the entire screen if the rectangle count is large,
@@ -1586,8 +1580,10 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
             if( g_bDebugS57 ) printf( "   S57 Render Box:  %d %d %d %d\n", rect.x, rect.y,
                     rect.width, rect.height );
 
-            SetClipRegionGL( glc, temp_vp, rect, !b_overlay );
+            glColor3f( r, g, b ); /* nodta color */
+            glChartCanvas::SetClipRegion( temp_vp, OCPNRegion(rect), false, true); /* no rotation, clear */
             DoRenderRectOnGL( glc, temp_vp, rect );
+            glChartCanvas::DisableClipRegion();
 
             upd.NextRect();
         }
@@ -1617,7 +1613,8 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
         //            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
         //            temp_vp.GetBBox().EnLarge(margin);
 
-        SetClipRegionGL( glc, VPoint, Region, !b_overlay );
+        glColor3f( r, g, b ); /* nodta color */
+        glChartCanvas::SetClipRegion( temp_vp, Region, false, true ); /* no rotation */
         DoRenderRectOnGL( glc, temp_vp, rect );
 
     }
@@ -1630,179 +1627,6 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
 //      CALLGRIND_STOP_INSTRUMENTATION
 #endif
     return true;
-}
-
-void s57chart::SetClipRegionGL( const wxGLContext &glc, const ViewPort& VPoint,
-        const OCPNRegion &Region, bool b_render_nodta )
-{
-#ifdef ocpnUSE_GL
-    
-    if( g_b_useStencil ) {
-        //    Create a stencil buffer for clipping to the region
-        glEnable( GL_STENCIL_TEST );
-        glStencilMask( 0x1 );                 // write only into bit 0 of the stencil buffer
-        glClear( GL_STENCIL_BUFFER_BIT );
-
-        //    We are going to write "1" into the stencil buffer wherever the region is valid
-        glStencilFunc( GL_ALWAYS, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_REPLACE );
-    } else              //  Use depth buffer for clipping
-    {
-        glEnable( GL_DEPTH_TEST ); // to enable writing to the depth buffer
-        glDepthFunc( GL_ALWAYS );  // to ensure everything you draw passes
-        glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
-
-        glClear( GL_DEPTH_BUFFER_BIT ); // for a fresh start
-    }
-
-    //    As a convenience, while we are creating the stencil or depth mask,
-    //    also render the default "NODTA" background if selected
-    if( b_render_nodta ) {
-        wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-        float r, g, b;
-        if( color.IsOk() ) {
-            r = color.Red() / 255.;
-            g = color.Green() / 255.;
-            b = color.Blue() / 255.;
-        } else
-            r = g = b = 0;
-
-        glColor3f( r, g, b );
-        glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // enable color buffer
-
-    } else {
-        glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
-    }
-
-    OCPNRegionIterator upd( Region ); // get the Region rect list
-    while( upd.HaveRects() ) {
-        wxRect rect = upd.GetRect();
-
-        if( g_b_useStencil ) {
-            glBegin( GL_QUADS );
-
-            glVertex2f( rect.x, rect.y );
-            glVertex2f( rect.x + rect.width, rect.y );
-            glVertex2f( rect.x + rect.width, rect.y + rect.height );
-            glVertex2f( rect.x, rect.y + rect.height );
-            glEnd();
-
-        } else              //  Use depth buffer for clipping
-        {
-            if( g_bDebugS57 ) printf( "   Depth buffer Region rect:  %d %d %d %d\n", rect.x, rect.y,
-                    rect.width, rect.height );
-
-            glBegin( GL_QUADS );
-
-            //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
-            //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
-            //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
-            glVertex3f( rect.x, rect.y, 0.5 );
-            glVertex3f( rect.x + rect.width, rect.y, 0.5 );
-            glVertex3f( rect.x + rect.width, rect.y + rect.height, 0.5 );
-            glVertex3f( rect.x, rect.y + rect.height, 0.5 );
-            glEnd();
-
-        }
-
-        upd.NextRect();
-
-    }
-
-    if( g_b_useStencil ) {
-        //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
-        glStencilFunc( GL_EQUAL, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-
-    } else {
-        glDepthFunc( GL_GREATER );                          // Set the test value
-        glDepthMask( GL_FALSE );                            // disable depth buffer
-    }
-
-    glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
-#endif
-}
-
-void s57chart::SetClipRegionGL( const wxGLContext &glc, const ViewPort& VPoint, const wxRect &Rect,
-        bool b_render_nodta )
-{
-#ifdef ocpnUSE_GL
-    
-    if( g_b_useStencil ) {
-        //    Create a stencil buffer for clipping to the region
-        glEnable( GL_STENCIL_TEST );
-        glStencilMask( 0x1 );                 // write only into bit 0 of the stencil buffer
-        glClear( GL_STENCIL_BUFFER_BIT );
-
-        //    We are going to write "1" into the stencil buffer wherever the region is valid
-        glStencilFunc( GL_ALWAYS, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_REPLACE );
-
-    } else              //  Use depth buffer for clipping
-    {
-        glEnable( GL_DEPTH_TEST ); // to enable writing to the depth buffer
-        glDepthFunc( GL_ALWAYS );  // to ensure everything you draw passes
-        glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
-        glClear( GL_DEPTH_BUFFER_BIT ); // for a fresh start
-    }
-
-    //    As a convenience, while we are creating the stencil or depth mask,
-    //    also render the default "NODTA" background if selected
-    if( b_render_nodta ) {
-        wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-        float r, g, b;
-        if( color.IsOk() ) {
-            r = color.Red() / 255.;
-            g = color.Green() / 255.;
-            b = color.Blue() / 255.;
-        } else
-            r = g = b = 0;
-        glColor3f( r, g, b );
-        glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // enable color buffer
-
-    } else {
-        glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
-    }
-
-    if( g_b_useStencil ) {
-        glBegin( GL_QUADS );
-
-        glVertex2f( Rect.x, Rect.y );
-        glVertex2f( Rect.x + Rect.width, Rect.y );
-        glVertex2f( Rect.x + Rect.width, Rect.y + Rect.height );
-        glVertex2f( Rect.x, Rect.y + Rect.height );
-        glEnd();
-
-    } else              //  Use depth buffer for clipping
-    {
-        if( g_bDebugS57 ) printf( "   Depth buffer rect:  %d %d %d %d\n", Rect.x, Rect.y,
-                Rect.width, Rect.height );
-
-        glBegin( GL_QUADS );
-
-        //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
-        //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
-        //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
-        glVertex3f( Rect.x, Rect.y, 0.5 );
-        glVertex3f( Rect.x + Rect.width, Rect.y, 0.5 );
-        glVertex3f( Rect.x + Rect.width, Rect.y + Rect.height, 0.5 );
-        glVertex3f( Rect.x, Rect.y + Rect.height, 0.5 );
-        glEnd();
-
-    }
-
-    if( g_b_useStencil ) {
-        //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
-        glStencilFunc( GL_EQUAL, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-
-    } else {
-        glDepthFunc( GL_GREATER );                          // Set the test value
-        glDepthMask( GL_FALSE );                            // disable depth buffer
-    }
-
-    glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
-#endif
 }
 
 bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect )

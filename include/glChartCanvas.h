@@ -39,6 +39,13 @@ WX_DECLARE_HASH_MAP( void*, ChartTextureHashType*, wxPointerHash, wxPointerEqual
 class glChartCanvas : public wxGLCanvas
 {
 public:
+      static void RotateToViewPort(const ViewPort &vp);
+      static void SetClipRegion(const ViewPort &vp, const OCPNRegion &region,
+                                bool apply_rotation=true, bool b_clear=false);
+      static void DisableClipRegion();
+
+      static bool         s_b_useScissorTest;
+      static bool         s_b_useStencil;
 
       glChartCanvas(wxWindow *parent);
       ~glChartCanvas();
@@ -65,7 +72,6 @@ public:
 protected:
       void RenderQuiltViewGL(ViewPort &vp, OCPNRegion Region, bool b_clear = true);
       void BuildFBO(void);
-      void SetClipRegion(ViewPort &vp, OCPNRegion &region, bool b_clear);
       void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Region );
 
       wxGLContext       *m_pcontext;

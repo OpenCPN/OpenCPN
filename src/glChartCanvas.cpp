@@ -49,7 +49,6 @@ extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 extern ChartCanvas *cc1;
 extern s52plib *ps52plib;
 extern bool g_bopengl;
-extern bool g_b_useStencil;
 extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
 extern PlugInManager* g_pi_manager;
@@ -87,6 +86,8 @@ WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 #define FORMAT_BITS           GL_RGB
 #endif
 
+bool glChartCanvas::s_b_useScissorTest;
+bool glChartCanvas::s_b_useStencil;
 static int s_nquickbind;
 
 static bool UploadTexture( glTextureDescriptor *ptd, int n_basemult )
@@ -530,6 +531,11 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 
         if( ps52plib ) ps52plib->SetGLRendererString( m_renderer );
 
+        s_b_useScissorTest = true;
+        // the radeon x600 driver has buggy scissor test
+        if( GetRendererString().Find( _T("RADEON X600") ) != wxNOT_FOUND )
+            s_b_useScissorTest = false;
+
         //  This little hack fixes a problem seen with some Intel 945 graphics chips
         //  We need to not do anything that requires (some) complicated stencil operations.
 
@@ -552,8 +558,8 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
         //        printf("Stencil Buffer Available: %d\nStencil bits: %d\n", stencil, sb);
         glDisable( GL_STENCIL_TEST );
 
-        g_b_useStencil = false;
-        if( !bad_stencil_code && stencil && ( sb == 8 ) ) g_b_useStencil = true;
+        s_b_useStencil = false;
+        if( !bad_stencil_code && stencil && ( sb == 8 ) ) s_b_useStencil = true;
 
 //          GLenum err = glewInit();
 //           if (GLEW_OK != err)
@@ -595,7 +601,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
             }
         }
 
-        if( m_b_useFBO && !m_b_useFBOStencil ) g_b_useStencil = false;
+        if( m_b_useFBO && !m_b_useFBOStencil ) s_b_useStencil = false;
 
         if( m_b_useFBO ) {
             wxLogMessage( _T("OpenGL-> Using Framebuffer Objects") );
@@ -606,7 +612,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
         } else
             wxLogMessage( _T("OpenGL-> Framebuffer Objects unavailable") );
 
-        if( g_b_useStencil ) wxLogMessage( _T("OpenGL-> Using Stencil buffer clipping") );
+        if( s_b_useStencil ) wxLogMessage( _T("OpenGL-> Using Stencil buffer clipping") );
         else
             wxLogMessage( _T("OpenGL-> Using Depth buffer clipping") );
 
@@ -699,125 +705,94 @@ void glChartCanvas::GrowData( int size )
     }
 }
 
-void glChartCanvas::SetClipRegion( ViewPort &vp, OCPNRegion &region, bool b_clear )
+void glChartCanvas::RotateToViewPort(const ViewPort &vp)
 {
-    if( g_b_useStencil ) {
-        glPushMatrix();
+    float angle = vp.rotation;
+    if(g_bskew_comp)
+        angle -= vp.skew;
 
-        if( ( ( fabs( vp.rotation ) > 0.01 ) ) || ( g_bskew_comp && ( fabs( vp.skew ) > 0.01 ) ) ) {
+    if( fabs( angle ) > 0.0001 )
+    {
+        //    Rotations occur around 0,0, so translate to rotate around screen center
+        float xt = vp.pix_width / 2, yt = vp.pix_height / 2;
+        
+        glTranslatef( xt, yt, 0 );
+        glRotatef( angle * 180. / PI, 0, 0, 1 );
+        glTranslatef( -xt, -yt, 0 );
+    }
+}
 
-            //    Shift texture drawing positions to account for the larger chart rectangle
-            //    needed to cover the screen on rotated images
-            double w = vp.pix_width;
-            double h = vp.pix_height;
+/* set stencil buffer to clip in this region, and optionally clear using the current color */
+void glChartCanvas::SetClipRegion(const ViewPort &vp, const OCPNRegion &region,
+                                  bool apply_rotation, bool b_clear )
+{
+    bool rotation = fabs( vp.rotation ) > 0.0001 || ( g_bskew_comp && fabs( vp.skew ) > 0.0001);
 
-            double angle = vp.rotation;
-            angle -= vp.skew;
+#if 1 /* optimization: use scissor test or no test at all if one is not needed */
+    /* for some reason this causes an occasional bug in depth mode, I cannot
+       seem to solve it yet, so for now: */
+    if(!rotation && s_b_useStencil && s_b_useScissorTest) {
+        int n_rect = 0;
+        for(OCPNRegionIterator clipit( region ); clipit.HaveRects() && n_rect < 2; clipit.NextRect())
+            n_rect++;
 
-            //    Rotations occur around 0,0, so calculate a post-rotate translation factor
-            double ddx = ( w * cos( -angle ) - h * sin( -angle ) - w ) / 2;
-            double ddy = ( h * cos( -angle ) + w * sin( -angle ) - h ) / 2;
+        if(n_rect == 1) {
+            wxRect rect = OCPNRegionIterator( region ).GetRect();
+            if(rect ==  vp.rv_rect) {
+                /* no actual clipping need be done, common case */
+            } else {
+                glEnable(GL_SCISSOR_TEST);
+                glScissor(rect.x, vp.rv_rect.height-rect.height-rect.y, rect.width, rect.height);
+            }
 
-            glRotatef( angle * 180. / PI, 0, 0, 1 );
+            if(b_clear) { /* can glClear work in scissors instead? */
+                glBegin( GL_QUADS );
+                glVertex2i( rect.x, rect.y );
+                glVertex2i( rect.x + rect.width, rect.y );
+                glVertex2i( rect.x + rect.width, rect.y + rect.height );
+                glVertex2i( rect.x, rect.y + rect.height );
+                glEnd();
+            }
 
-            glTranslatef( ddx, ddy, 0 );                 // post rotate translation
+            /* the code in s52plib depends on the depth buffer being
+               initialized to this value, this code should go there instead and
+               only a flag set here. */
+            if(!s_b_useStencil) {
+                glClearDepth( 0.25 );
+                glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
+                glClear( GL_DEPTH_BUFFER_BIT );
+                glDepthMask( GL_FALSE );
+                glClearDepth( 1 ); // set back to default of 1
+                glDepthFunc( GL_GREATER );                          // Set the test value
+            }
+            return;
         }
+    }
+#endif
+    //    As a convenience, while we are creating the stencil or depth mask,
+    //    also clear the background if selected
+    if( !b_clear )
+        glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
 
+    if( s_b_useStencil ) {
         //    Create a stencil buffer for clipping to the region
         glEnable( GL_STENCIL_TEST );
         glStencilMask( 0x1 );                 // write only into bit 0 of the stencil buffer
         glClear( GL_STENCIL_BUFFER_BIT );
 
-        //    As a convenience, while we are creating the stencil or depth mask,
-        //    also clear the background if selected
-        if( b_clear ) {
-            glColor3f( 0, 255, 0 );
-            glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // enable color buffer
-        } else
-            glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
-
         //    We are going to write "1" into the stencil buffer wherever the region is valid
         glStencilFunc( GL_ALWAYS, 1, 1 );
         glStencilOp( GL_KEEP, GL_KEEP, GL_REPLACE );
-
-        //    Decompose the region into rectangles, and draw as quads
-        OCPNRegionIterator clipit( region );
-        while( clipit.HaveRects() ) {
-            wxRect rect = clipit.GetRect();
-
-            if(vp.b_quilt)
-                rect.Offset(vp.rv_rect.x, vp.rv_rect.y); // undo the adjustment made in quilt composition
-            else if(Current_Ch && Current_Ch->GetChartFamily() != CHART_FAMILY_VECTOR)
-                rect.Offset(vp.rv_rect.x, vp.rv_rect.y);
-
-            glBegin( GL_QUADS );
-
-            glVertex2f( rect.x, rect.y );
-            glVertex2f( rect.x + rect.width, rect.y );
-            glVertex2f( rect.x + rect.width, rect.y + rect.height );
-            glVertex2f( rect.x, rect.y + rect.height );
-            glEnd();
-
-            clipit.NextRect();
-        }
-
-        //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
-        glStencilFunc( GL_EQUAL, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-        glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
-
-        glPopMatrix();
-
     } else              //  Use depth buffer for clipping
     {
-        glPushMatrix();
-
-        if( ( ( fabs( vp.rotation ) > 0.01 ) ) || ( g_bskew_comp && ( fabs( vp.skew ) > 0.01 ) ) ) {
-
-            //    Shift texture drawing positions to account for the larger chart rectangle
-            //    needed to cover the screen on rotated images
-            double w = vp.pix_width;
-            double h = vp.pix_height;
-
-            double angle = vp.rotation;
-            angle -= vp.skew;
-
-            //    Rotations occur around 0,0, so calculate a post-rotate translation factor
-            double ddx = ( w * cos( -angle ) - h * sin( -angle ) - w ) / 2;
-            double ddy = ( h * cos( -angle ) + w * sin( -angle ) - h ) / 2;
-
-            glRotatef( angle * 180. / PI, 0, 0, 1 );
-
-            glTranslatef( ddx, ddy, 0 );                 // post rotate translation
-        }
-
         glEnable( GL_DEPTH_TEST ); // to enable writing to the depth buffer
         glDepthFunc( GL_ALWAYS );  // to ensure everything you draw passes
         glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
 
         glClear( GL_DEPTH_BUFFER_BIT ); // for a fresh start
 
-        //    As a convenience, while we are creating the stencil or depth mask,
-        //    also clear the background if selected
-        if( b_clear ) {
-            glColor3f( 255, 0, 0 );
-            glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // enable color buffer
-        } else
-            glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
-
         //    Decompose the region into rectangles, and draw as quads
         //    With z = 1
-        OCPNRegionIterator clipit( region );
-        while( clipit.HaveRects() ) {
-            wxRect rect = clipit.GetRect();
-
-            if(vp.b_quilt)
-                rect.Offset(vp.rv_rect.x, vp.rv_rect.y); // undo the adjustment made in quilt composition
-            else if(Current_Ch && Current_Ch->GetChartFamily() != CHART_FAMILY_VECTOR)
-                rect.Offset(vp.rv_rect.x, vp.rv_rect.y);
-
-            glBegin( GL_QUADS );
-
             // dep buffer clear = 1
             // 1 makes 0 in dep buffer, works
             // 0 make .5 in depth buffer
@@ -826,22 +801,51 @@ void glChartCanvas::SetClipRegion( ViewPort &vp, OCPNRegion &region, bool b_clea
             //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
             //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
             //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
-            glVertex3f( rect.x, rect.y, 0.5 );
-            glVertex3f( rect.x + rect.width, rect.y, 0.5 );
-            glVertex3f( rect.x + rect.width, rect.y + rect.height, 0.5 );
-            glVertex3f( rect.x, rect.y + rect.height, 0.5 );
-            glEnd();
-
-            clipit.NextRect();
-        }
-
-        glDepthFunc( GL_GREATER );                          // Set the test value
-        glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
-        glDepthMask( GL_FALSE );                            // disable depth buffer
-
-        glPopMatrix();
-
+        glTranslatef( 0, 0, .5 );
     }
+
+    if(rotation && apply_rotation) {
+        glPushMatrix();
+        glChartCanvas::RotateToViewPort( vp );
+    }
+
+    //    Decompose the region into rectangles, and draw as quads
+    OCPNRegionIterator clipit( region );
+    while( clipit.HaveRects() ) {
+        wxRect rect = clipit.GetRect();
+        
+        glBegin( GL_QUADS );
+        glVertex2i( rect.x, rect.y );
+        glVertex2i( rect.x + rect.width, rect.y );
+        glVertex2i( rect.x + rect.width, rect.y + rect.height );
+        glVertex2i( rect.x, rect.y + rect.height );
+        glEnd();
+        
+        clipit.NextRect();
+    }
+
+    if(rotation && apply_rotation)
+        glPopMatrix();
+    
+    if( s_b_useStencil ) {
+        //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
+        glStencilFunc( GL_EQUAL, 1, 1 );
+        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
+    } else {
+        glDepthFunc( GL_GREATER );                          // Set the test value
+        glDepthMask( GL_FALSE );                            // disable depth buffer
+        glTranslatef( 0, 0, -.5 ); // reset translation
+    }
+
+    if(!b_clear)
+        glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
+}
+
+void glChartCanvas::DisableClipRegion()
+{
+    glDisable( GL_SCISSOR_TEST );
+    glDisable( GL_STENCIL_TEST );
+    glDisable( GL_DEPTH_TEST );
 }
 
 void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, OCPNRegion &region )
@@ -887,7 +891,10 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     int tex_dim = 512;                  //max_texture_dimension;
     GrowData( 3 * tex_dim * tex_dim );
 
-    SetClipRegion( vp, region, false );         // no need to clear
+    /* clipping is relative to rv_rect */
+    OCPNRegion clipregion(region);
+    clipregion.Offset(vp.rv_rect.x, vp.rv_rect.y);
+    SetClipRegion( vp, clipregion );
 
     //    Look for the chart texture hashmap in the member chart hashmap
     ChartPointerHashType::iterator it = m_chart_hash.find( chart );
@@ -1431,7 +1438,7 @@ void glChartCanvas::render()
     glLoadIdentity();
     gluOrtho2D( 0, (GLint) w, (GLint) h, 0 );
 
-    if( g_b_useStencil ) {
+    if( s_b_useStencil ) {
         glEnable( GL_STENCIL_TEST );
         glStencilMask( 0xff );
         glClear( GL_STENCIL_BUFFER_BIT );
@@ -1780,7 +1787,7 @@ void glChartCanvas::render()
         nvp.rv_rect.x = 0;
         nvp.rv_rect.y = 0;
 
-        SetClipRegion( nvp, backgroundRegion, true );       // clear background
+        SetClipRegion( nvp, backgroundRegion, true, true );       // clear background
 
         glPushMatrix();
         if( fabs( cc1->GetVP().rotation ) > .01 ) {
