@@ -3978,46 +3978,40 @@ void ChartCanvas::ScaleBarDraw( ocpnDC& dc )
     int x_origin = g_bDisplayGrid ? 60 : 20;
     int y_origin = m_canvas_height - 50;
 
+    float dist;
+    int count;
+    wxPen pen1, pen2;
+
     if( GetVP().chart_scale > 80000 )        // Draw 10 mile scale as SCALEB11
     {
-        GetCanvasPixPoint( x_origin, y_origin, blat, blon );
-        ll_gc_ll( blat, blon, 0, 10.0, &tlat, &tlon );
-        GetCanvasPointPix( tlat, tlon, &r );
-
-        int l1 = ( y_origin - r.y ) / 5;
-
-        wxPen pen1( GetGlobalColor( _T ( "SNDG2" ) ), 3, wxSOLID );
-        wxPen pen2( GetGlobalColor( _T ( "SNDG1" ) ), 3, wxSOLID );
-
-        for( int i = 0; i < 5; i++ ) {
-            int y = l1 * i;
-            if( i & 1 ) dc.SetPen( pen1 );
-            else
-                dc.SetPen( pen2 );
-
-            dc.DrawLine( x_origin, y_origin - y, x_origin, y_origin - ( y + l1 ) );
-        }
+        dist = 10.0;
+        count = 5;
+        pen1 = wxPen( GetGlobalColor( _T ( "SNDG2" ) ), 3, wxSOLID );
+        pen2 = wxPen( GetGlobalColor( _T ( "SNDG1" ) ), 3, wxSOLID );
     } else                                // Draw 1 mile scale as SCALEB10
     {
-        GetCanvasPixPoint( x_origin, y_origin, blat, blon );
-        ll_gc_ll( blat, blon, 0, 1.0, &tlat, &tlon );
-        GetCanvasPointPix( tlat, tlon, &r );
-
-        int l1 = ( y_origin - r.y ) / 10;
-
-        wxPen pen1( GetGlobalColor( _T ( "SCLBR" ) ), 3, wxSOLID );
-        wxPen pen2( GetGlobalColor( _T ( "CHDRD" ) ), 3, wxSOLID );
-
-        for( int i = 0; i < 10; i++ ) {
-            int y = l1 * i;
-            if( i & 1 ) dc.SetPen( pen1 );
-            else
-                dc.SetPen( pen2 );
-
-            dc.DrawLine( x_origin, y_origin - y, x_origin, y_origin - ( y + l1 ) );
-        }
+        dist = 1.0;
+        count = 10;
+        pen1 = wxPen( GetGlobalColor( _T ( "SCLBR" ) ), 3, wxSOLID );
+        pen2 = wxPen( GetGlobalColor( _T ( "CHDRD" ) ), 3, wxSOLID );
     }
 
+    GetCanvasPixPoint( x_origin, y_origin, blat, blon );
+    double rotation = -VPoint.rotation;
+    if(!g_bskew_comp)
+        rotation -= VPoint.skew;
+    ll_gc_ll( blat, blon, rotation * 180 / PI, dist, &tlat, &tlon );
+    GetCanvasPointPix( tlat, tlon, &r );
+    int l1 = ( y_origin - r.y ) / count;
+
+    for( int i = 0; i < count; i++ ) {
+        int y = l1 * i;
+        if( i & 1 ) dc.SetPen( pen1 );
+        else
+            dc.SetPen( pen2 );
+        
+        dc.DrawLine( x_origin, y_origin - y, x_origin, y_origin - ( y + l1 ) );
+    }
 }
 
 void ChartCanvas::AISDrawAreaNotices( ocpnDC& dc )
