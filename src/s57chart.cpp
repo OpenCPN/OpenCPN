@@ -6605,7 +6605,7 @@ bool s57_GetChartExtent( const wxString& FullPath, Extent *pext )
 }
 
 void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs ) {
-    double rangeScale = 0.0;
+    float rangeScale = 0.0;
 
     if( sectorlegs.size() > 0 ) {
         std::vector<int> sectorangles;
@@ -6629,7 +6629,8 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             wxPoint lightPos = viewport.GetPixFromLL( sectorlegs[i].pos.m_y, sectorlegs[i].pos.m_x );
 
             // Make sure arcs are well inside viewport.
-            double rangePx = sqrt( pow(lightPos.x - end1.x, 2.0) + pow(lightPos.y - end1.y, 2.0) );
+            float rangePx = sqrtf( powf( (float) (lightPos.x - end1.x), 2) +
+                                   powf( (float) (lightPos.y - end1.y), 2) );
             rangePx /= 3.0;
             if( rangeScale == 0.0 ) {
                 rangeScale = 1.0;
@@ -6645,7 +6646,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             arcpen->SetCap( wxCAP_BUTT );
             dc.SetPen( *arcpen );
 
-            double angle1, angle2;
+            float angle1, angle2;
             angle1 = -(sectorlegs[i].sector2 + 90.0) - viewport.rotation * 180.0 / PI;
             angle2 = -(sectorlegs[i].sector1 + 90.0) - viewport.rotation * 180.0 / PI;
             if( angle1 > angle2 ) {
@@ -6653,18 +6654,16 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             }
             int lpx = lightPos.x;
             int lpy = lightPos.y;
-            int npoints = 1;
+            int npoints = 0;
             wxPoint arcpoints[150]; // Size relates to "step" below.
 
-            arcpoints[0].x = lpx + (int) ( rangePx * cos( angle1 * PI / 180. ) );
-            arcpoints[0].y = lpy - (int) ( rangePx * sin( angle1 * PI / 180. ) );
-            double step = 3.0;
+            float step = 3.0;
             while( (step < 15) && ((rangePx * sin(step * PI / 180.)) < 10) ) step += 2.0; // less points on small arcs
 
             // Make sure we start and stop exactly on the leg lines.
             int narc = ( angle2 - angle1 ) / step;
             narc++;
-            step = ( angle2 - angle1 ) / (double)narc;
+            step = ( angle2 - angle1 ) / (float)narc;
 
             if( sectorlegs[i].isleading && (angle2 - angle1 < 60)  ) {
                 wxPoint yellowCone[3];
@@ -6679,7 +6678,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
                 dc.StrokePolygon( 3, yellowCone, 0, 0 );
                 legOpacity = 50;
             } else {
-                for( double a = angle1; a <= angle2 + 0.1; a += step ) {
+                for( float a = angle1; a <= angle2 + 0.1; a += step ) {
                     int x = lpx + (int) ( rangePx * cos( a * PI / 180. ) );
                     int y = lpy - (int) ( rangePx * sin( a * PI / 180. ) );
                     arcpoints[npoints].x = x;
@@ -6723,7 +6722,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
 
 bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs ) {
     double cursor_lat, cursor_lon;
-    static double lastLat, lastLon;
+    static float lastLat, lastLon;
 
     if( !ps52plib || !ps52plib->m_bExtendLightSectors ) 
         return false;
