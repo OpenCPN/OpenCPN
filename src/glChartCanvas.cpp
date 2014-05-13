@@ -36,11 +36,13 @@
 #include "s52plib.h"
 #include "Quilt.h"
 #include "pluginmanager.h"
+#include "routeman.h"
 #include "chartbase.h"
 #include "chartimg.h"
 #include "s57chart.h"
 #include "ChInfoWin.h"
 #include "thumbwin.h"
+#include "cutil.h"
 
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
@@ -63,6 +65,13 @@ extern ChartBase *Current_Ch;
 extern ColorScheme global_color_scheme;
 extern bool g_bquiting;
 extern ThumbWin         *pthumbwin;
+
+extern double           gLat, gLon, gCog, gSog, gHdt;
+
+extern int              g_OwnShipIconType;
+extern double           g_ownship_predictor_minutes;
+extern double           g_n_ownship_length_meters;
+extern double           g_n_ownship_beam_meters;
 
 PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffers;
 PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffers;
@@ -401,6 +410,10 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
 
     m_b_BuiltFBO = false;
     m_b_DisableFBO = true; // disable until we merge the new fbo code
+
+    ownship_tex = 0;
+    ownship_large_scale_display_lists[0] = 0;
+    ownship_large_scale_display_lists[1] = 0;
 }
 
 glChartCanvas::~glChartCanvas()
@@ -737,9 +750,306 @@ bool glChartCanvas::PurgeChartTextures( ChartBase *pc )
         return false;
 }
 
-void glChartCanvas::DrawGLOverLayObjects( void )
+void glChartCanvas::ShipDraw(ocpnDC& dc)
 {
-    if( g_pi_manager ) g_pi_manager->RenderAllGLCanvasOverlayPlugIns( m_pcontext, cc1->GetVP() );
+    if( !cc1->GetVP().IsValid() ) return;
+    wxPoint lGPSPoint, lShipMidPoint, lPredPoint, lHeadPoint, GPSOffsetPixels(0,0);
+
+    double pred_lat, pred_lon;
+
+    //  COG/SOG may be undefined in NMEA data stream
+    float pCog = gCog;
+    if( wxIsNaN(pCog) )
+        pCog = 0.0;
+    float pSog = gSog;
+    if( wxIsNaN(pSog) )
+        pSog = 0.0;
+
+    ll_gc_ll( gLat, gLon, pCog, pSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
+
+    cc1->GetCanvasPointPix( gLat, gLon, &lGPSPoint );
+    lShipMidPoint = lGPSPoint;
+    cc1->GetCanvasPointPix( pred_lat, pred_lon, &lPredPoint );
+
+    float cog_rad = atan2f( (float) ( lPredPoint.y - lShipMidPoint.y ),
+                            (float) ( lPredPoint.x - lShipMidPoint.x ) );
+    cog_rad += PI;
+
+    float lpp = sqrtf( powf( (float) (lPredPoint.x - lShipMidPoint.x), 2) +
+                       powf( (float) (lPredPoint.y - lShipMidPoint.y), 2) );
+
+    //  Draw the icon rotated to the COG
+    //  or to the Hdt if available
+    float icon_hdt = pCog;
+    if( !wxIsNaN( gHdt ) ) icon_hdt = gHdt;
+
+    //  COG may be undefined in NMEA data stream
+    if( wxIsNaN(icon_hdt) ) icon_hdt = 0.0;
+
+//    Calculate the ownship drawing angle icon_rad using an assumed 10 minute predictor
+    double osd_head_lat, osd_head_lon;
+    wxPoint osd_head_point;
+
+    ll_gc_ll( gLat, gLon, icon_hdt, pSog * 10. / 60., &osd_head_lat, &osd_head_lon );
+
+    cc1->GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
+    cc1->GetCanvasPointPix( osd_head_lat, osd_head_lon, &osd_head_point );
+
+    float icon_rad = atan2( (float) ( osd_head_point.y - lShipMidPoint.y ),
+                            (float) ( osd_head_point.x - lShipMidPoint.x ) );
+    icon_rad += PI;
+
+    if( pSog < 0.2 ) icon_rad = ( ( icon_hdt + 90. ) * PI / 180. ) + cc1->GetVP().rotation;
+
+//    Calculate ownship Heading pointer as a predictor
+    double hdg_pred_lat, hdg_pred_lon;
+
+    ll_gc_ll( gLat, gLon, icon_hdt, pSog * g_ownship_predictor_minutes / 60., &hdg_pred_lat,
+              &hdg_pred_lon );
+
+    cc1->GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
+    cc1->GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
+
+//    Should we draw the Head vector?
+//    Compare the points lHeadPoint and lPredPoint
+//    If they differ by more than n pixels, and the head vector is valid, then render the head vector
+
+    float ndelta_pix = 10.;
+    bool b_render_hdt = false;
+    if( !wxIsNaN( gHdt ) ) {
+        float dist = sqrtf( powf( (float) (lHeadPoint.x - lPredPoint.x), 2) +
+                            powf( (float) (lHeadPoint.y - lPredPoint.y), 2) );
+        if( dist > ndelta_pix && !wxIsNaN(gSog) )
+            b_render_hdt = true;
+    }
+
+    int img_height;
+
+    if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
+    {
+        /* this test must match that in ShipDrawLargeScale */
+        int list = cc1->m_ownship_state == SHIP_NORMAL;
+
+        glPushMatrix();
+        glTranslatef(lShipMidPoint.x, lShipMidPoint.y, 0);
+            
+        if(ownship_large_scale_display_lists[list])
+            glCallList(ownship_large_scale_display_lists[list]);
+        else {
+            ownship_large_scale_display_lists[list] = glGenLists(1);
+            glNewList(ownship_large_scale_display_lists[list], GL_COMPILE_AND_EXECUTE);
+            lShipMidPoint.x = lShipMidPoint.y = 0;
+                
+            cc1->ShipDrawLargeScale(dc, lShipMidPoint);
+            glEndList();
+        }
+        glPopMatrix();
+        img_height = 20; /* is this needed? */
+    } else {
+        if(!ownship_tex) { /* initial run, create texture for ownship,
+                              also needed at colorscheme changes (not implemented) */
+            glGenTextures( 1, &ownship_tex );
+            glBindTexture(GL_TEXTURE_2D, ownship_tex);
+
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+
+            wxImage &image = cc1->m_pos_image_user ? *cc1->m_pos_image_user : *cc1->m_pos_image_grey;
+            
+            int w = image.GetWidth(), h = image.GetHeight();
+            int glw = NextPow2(w), glh = NextPow2(h);
+            ownship_size = wxSize(w, h);
+            ownship_tex_size = wxSize(glw, glh);
+            
+            unsigned char *d = image.GetData();
+            unsigned char *a = image.GetAlpha();
+            unsigned char *e = new unsigned char[4 * w * h];
+            for( int p = 0; p < w*h; p++ ) {
+                e[4*p+0] = d[3*p+0];
+                e[4*p+1] = d[3*p+1];
+                e[4*p+2] = d[3*p+2];
+                e[4*p+3] = a[p];
+            }
+            
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                         glw, glh, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
+                            w, h, GL_RGBA, GL_UNSIGNED_BYTE, e);
+            delete [] e;
+        }
+
+        /* establish ship color */
+        if( cc1->m_pos_image_user )
+            glColor4ub(255, 255, 255, 255);
+        else if( SHIP_NORMAL == cc1->m_ownship_state )
+            glColor4ub(255, 0, 0, 255);
+        else if( SHIP_LOWACCURACY == cc1->m_ownship_state )
+            glColor4ub(255, 255, 0, 255);
+        else
+            glColor4ub(128, 128, 128, 255);
+
+        /* scaled ship? */
+        float scale_factor_y = 1, scale_factor_x = 1;
+        int ownShipWidth = 22; // Default values from s_ownship_icon
+        int ownShipLength= 84;
+
+        if( g_n_ownship_beam_meters > 0.0 &&
+            g_n_ownship_length_meters > 0.0 &&
+            g_OwnShipIconType > 0 )
+        {            
+            if( g_OwnShipIconType == 1 ) {
+                ownShipWidth = ownship_size.x;
+                ownShipLength= ownship_size.y;
+            }
+
+            cc1->ComputeShipScaleFactor
+                (icon_hdt, ownShipWidth, ownShipLength, lShipMidPoint,
+                 GPSOffsetPixels, lGPSPoint, scale_factor_x, scale_factor_y);
+        }
+
+        glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_HINT_BIT);
+        glEnable( GL_LINE_SMOOTH );
+        glEnable( GL_POLYGON_SMOOTH );
+        glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+        glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
+
+        glEnable(GL_BLEND);
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+            
+        int x = lShipMidPoint.x, y = lShipMidPoint.y;
+        glPushMatrix();
+        glTranslatef(x, y, 0);
+
+        float deg = 180/PI * ( icon_rad - PI/2 );
+        glRotatef(deg, 0, 0, 1);
+
+        glScalef(scale_factor_x, scale_factor_y, 1);
+
+        if( g_OwnShipIconType < 2 ) { // Bitmap
+
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, ownship_tex);
+            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+                        
+            float glw = ownship_tex_size.x, glh = ownship_tex_size.y;
+            float u = ownship_size.x/glw, v = ownship_size.y/glh;
+            float w = ownship_size.x, h = ownship_size.y;
+            
+            glBegin(GL_QUADS);
+            glTexCoord2f(0, 0), glVertex2f(-w/2, -h/2);
+            glTexCoord2f(u, 0), glVertex2f(+w/2, -h/2);
+            glTexCoord2f(u, v), glVertex2f(+w/2, +h/2);
+            glTexCoord2f(0, v), glVertex2f(-w/2, +h/2);
+            glEnd();
+
+            glDisable(GL_TEXTURE_2D);
+        } else if( g_OwnShipIconType == 2 ) { // Scaled Vector
+
+            static const int s_ownship_icon[] = { 5, -42, 11, -28, 11, 42, -11, 42,
+                                                  -11, -28, -5, -42, -11, 0, 11, 0,
+                                                  0, 42, 0, -42       };
+            glBegin(GL_POLYGON);
+            for( int i = 0; i < 12; i+=2 )
+                glVertex2f(s_ownship_icon[i], s_ownship_icon[i + 1] );
+            glEnd();
+            
+            glColor3ub(0, 0, 0);
+            glLineWidth(1);
+
+            glBegin(GL_LINE_LOOP);
+            for(int i=0; i<12; i+=2)
+                glVertex2f( s_ownship_icon[i], s_ownship_icon[i+1] );
+            glEnd();
+
+            // draw reference point (midships) cross
+            glBegin(GL_LINES);
+            for(int i=12; i<20; i+=2)
+                glVertex2f( s_ownship_icon[i], s_ownship_icon[i+1] );
+            glEnd();
+        }
+        glPopMatrix();
+
+        img_height = ownShipLength * scale_factor_y;
+        
+        //      Reference point, where the GPS antenna is
+        int circle_rad = 3;
+        if( cc1->m_pos_image_user ) circle_rad = 1;
+               
+        float cx = lGPSPoint.x, cy = lGPSPoint.y;
+        float r = circle_rad+1;
+        glColor3ub(0, 0, 0);
+        glBegin(GL_POLYGON);
+        for( float a = 0; a <= 2 * PI; a += 2 * PI / 12 )
+            glVertex2f( cx + r * sinf( a ), cy + r * cosf( a ) );
+        glEnd();
+
+        r = circle_rad;
+        glColor3ub(255, 255, 255);
+        
+        glBegin(GL_POLYGON);
+        for( float a = 0; a <= 2 * M_PI; a += 2 * M_PI / 12 )
+            glVertex2f( cx + r * sinf( a ), cy + r * cosf( a ) );
+        glEnd();       
+        glPopAttrib();            // restore state
+    }
+
+    cc1->ShipIndicatorsDraw(dc, lpp,  GPSOffsetPixels,
+                            lGPSPoint,  lHeadPoint,
+                            img_height, cog_rad,
+                            lPredPoint,  b_render_hdt, lShipMidPoint);
+}
+
+void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
+{
+    ViewPort &vp = cc1->GetVP();
+
+    //  Draw any active or selected routes now
+    extern Routeman                  *g_pRouteMan;
+    extern Track                     *g_pActiveTrack;
+    Route *active_route = g_pRouteMan->GetpActiveRoute();
+
+//    if( active_route ) active_route->DrawGL( vp );
+//    if( g_pActiveTrack ) g_pActiveTrack->Draw( dc, vp );
+//    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp );
+
+    cc1->GridDraw( dc );
+
+    if( g_pi_manager ) {
+        g_pi_manager->SendViewPortToRequestingPlugIns( vp );
+        g_pi_manager->RenderAllGLCanvasOverlayPlugIns( GetContext(), vp );
+    }
+
+    // all functions called with cc1-> are still slow because they go through ocpndc
+    cc1->AISDrawAreaNotices( dc );
+    
+    cc1->EmbossDepthScale( dc );
+    cc1->EmbossOverzoomIndicator( dc );
+
+    cc1->AISDraw( dc );
+    ShipDraw( dc );
+    cc1->AlertDraw( dc );
+
+    cc1->RenderRouteLegs( dc );
+    cc1->ScaleBarDraw( dc );
+#ifdef USE_S57
+    s57_DrawExtendedLightSectors( dc, cc1->VPoint, cc1->extendedSectorLegs );
+#endif
+
+    /* This should be converted to opengl, it is currently caching screen
+       outside render, so the viewport can change without updating, (incorrect)
+       doing alpha blending in software with it and draw pixels (very slow) */
+    if( cc1->m_pRouteRolloverWin && cc1->m_pRouteRolloverWin->IsActive() ) {
+        dc.DrawBitmap( *(cc1->m_pRouteRolloverWin->GetBitmap()),
+                       cc1->m_pRouteRolloverWin->GetPosition().x,
+                       cc1->m_pRouteRolloverWin->GetPosition().y, false );
+    }
+
+    if( cc1->m_pAISRolloverWin && cc1->m_pAISRolloverWin->IsActive() ) {
+        dc.DrawBitmap( *(cc1->m_pAISRolloverWin->GetBitmap()),
+                       cc1->m_pAISRolloverWin->GetPosition().x,
+                       cc1->m_pAISRolloverWin->GetPosition().y, false );
+    }
 }
 
 void glChartCanvas::GrowData( int size )
@@ -1447,6 +1757,75 @@ void glChartCanvas::ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Reg
      }
 }
 
+ViewPort glChartCanvas::BuildClippedVP(ViewPort &VP, wxRect &rect)
+{
+    //  Build synthetic ViewPort on this rectangle so that
+    // it has a bounding box with lat and lon
+    //  Especially, we want the BBox to be accurate in order to
+    //  render only those objects actually visible in this region
+
+    ViewPort temp_vp = VP;
+
+    double lat1, lat2, lon2, lon1;
+
+    /* clipping rectangles are not rotated */
+    if(temp_vp.rotation)
+        cc1->SetVPRotation(0);
+
+    cc1->GetCanvasPixPoint( rect.x, rect.y + rect.height, lat1, lon1);
+    cc1->GetCanvasPixPoint( rect.x + rect.width, rect.y, lat2, lon2);
+    if( lon2 < lon1 )        // IDL fix
+        lon2 += 360.;
+
+    if(temp_vp.rotation)
+        cc1->SetVPRotation(temp_vp.rotation);
+
+    while( lon1 >= 180 ) {
+        lon1 -= 360;
+        lon2 -= 360;
+    }
+    
+    while( lon2 <= -180 ) {
+        lon1 += 360;
+            lon2 += 360;
+    }
+        
+    temp_vp.GetBBox().SetMin( lon1, lat1 );
+    temp_vp.GetBBox().SetMax( lon2, lat2 );
+
+    return temp_vp;
+}
+
+/* these are the overlay objects which move with the charts and
+   are not frequently updated (not ships etc..) 
+
+   many overlay objects are fixed to a geographical location or
+   grounded as opposed to the floating overlay objects. */
+void glChartCanvas::DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect)
+{
+    OCPNRegion region(rect);
+
+    /* only draw in this rectangle */
+    SetClipRegion( cc1->GetVP(), region);
+
+   /* to allow each overlay item to use it's hash table and only fetch in
+      these coordinates, construct a bounding box constrained to this rect */
+    ViewPort temp_vp = BuildClippedVP(cc1->GetVP(), rect);
+    cc1->RenderAllChartOutlines( dc, temp_vp );
+
+//    DrawAllRoutesAndWaypoints( temp_vp, region );
+    cc1->DrawAllRoutesInBBox( dc, temp_vp.GetBBox(), region );
+    cc1->DrawAllWaypointsInBBox( dc, temp_vp.GetBBox(), region, true ); // true draws only isolated marks
+
+    if( cc1->m_bShowTide )
+        cc1->DrawAllTidesInBBox( dc, temp_vp.GetBBox(), true, true );
+    
+    if( cc1->m_bShowCurrent )
+        cc1->DrawAllCurrentsInBBox( dc, temp_vp.GetBBox(), true, true );
+
+    DisableClipRegion();
+}
+
 void glChartCanvas::Render()
 {
     if( !m_bsetup ) return;
@@ -1871,98 +2250,9 @@ void glChartCanvas::Render()
 
 
 //    Now render overlay objects
-    DrawGLOverLayObjects();
-    cc1->DrawOverlayObjects( gldc, ru );
-
-    if( cc1->m_bShowTide ) cc1->DrawAllTidesInBBox( gldc, cc1->GetVP().GetBBox(), true, true );
-
-    if( cc1->m_bShowCurrent ) cc1->DrawAllCurrentsInBBox( gldc, cc1->GetVP().GetBBox(), true,
-                true );
-    
- 
-    //  On some platforms, the opengl context window is always on top of any standard DC windows,
-    //  so we need to draw the Chart Info Window and the Thumbnail as overlayed bmps.
-
-#ifdef __WXOSX__    
-    if(cc1->m_pCIWin && cc1->m_pCIWin->IsShown()) {
-        int x, y, width, height;
-        cc1->m_pCIWin->GetClientSize( &width, &height );
-        cc1->m_pCIWin->GetPosition( &x, &y );
-        wxBitmap bmp(width, height, -1);
-        wxMemoryDC dc(bmp);
-        if(bmp.IsOk()){
-            dc.SetBackground( wxBrush(GetGlobalColor( _T ( "UIBCK" ) ) ));
-            dc.Clear();
- 
-            dc.SetTextBackground( GetGlobalColor( _T ( "UIBCK" ) ) );
-            dc.SetTextForeground( GetGlobalColor( _T ( "UITX1" ) ) );
-            
-            int yt = 0;
-            int xt = 0;
-            wxString s = cc1->m_pCIWin->GetString();
-            int h = cc1->m_pCIWin->GetCharHeight();
-            
-            wxStringTokenizer tkz( s, _T("\n") );
-            wxString token;
-            
-            while(tkz.HasMoreTokens()) {
-                token = tkz.GetNextToken();
-                dc.DrawText(token, xt, yt);
-                yt += h;
-            }
-            dc.SelectObject(wxNullBitmap);
-            
-            gldc.DrawBitmap( bmp, x, y, false);
-        }
-    }
-
-    if( pthumbwin && pthumbwin->IsShown()) {
-        int thumbx, thumby;
-        pthumbwin->GetPosition( &thumbx, &thumby );
-        if( pthumbwin->GetBitmap().IsOk())
-            gldc.DrawBitmap( pthumbwin->GetBitmap(), thumbx, thumby, false);
-    }
-    
-#endif
-
-    //quiting?
-    if( g_bquiting ) {
-        GLubyte pattern[4 * 32];
-        for( int y = 0; y < 32; y++ ) {
-            GLubyte mask = 1 << y % 8;
-            for( int x = 0; x < 4; x++ )
-                pattern[y * 4 + x] = mask;
-        }
-
-        glEnable( GL_POLYGON_STIPPLE );
-        glPolygonStipple( pattern );
-        glBegin( GL_QUADS );
-        glColor3f( 0, 0, 0 );
-        glVertex2i( 0, 0 );
-        glVertex2i( 0, GetSize().y );
-        glVertex2i( GetSize().x, GetSize().y );
-        glVertex2i( GetSize().x, 0 );
-        glEnd();
-        glDisable( GL_POLYGON_STIPPLE );
-    }
-
-#if 0
-    //  Debug
-    OCPNRegionIterator upd ( ru );
-    while ( upd )
-    {
-        wxRect rect = upd.GetRect();
-        glBegin(GL_LINE_LOOP);
-        glColor3f(0, 0, 0);
-        glVertex2i(rect.x, rect.y);
-        glVertex2i(rect.x, rect.y + rect.height);
-        glVertex2i(rect.x + rect.width, rect.y + rect.height);
-        glVertex2i(rect.x + rect.width, rect.y);
-        glEnd();
-
-        upd ++;
-    }
-#endif
+    wxRect rect = ru.GetBox();
+    DrawGroundedOverlayObjectsRect( gldc, rect );
+    DrawFloatingOverlayObjects( gldc );
 
     SwapBuffers();
     glFinish();

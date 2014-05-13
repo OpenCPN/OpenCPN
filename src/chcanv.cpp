@@ -3299,13 +3299,221 @@ wxPoint transrot( wxPoint pt, double theta, wxPoint offset )
     return ret;
 }
 
+wxColour ChartCanvas::PredColor()
+{ 
+    if( SHIP_NORMAL == m_ownship_state )
+        return GetGlobalColor( _T ( "URED" ) );
+    return GetGlobalColor( _T ( "GREY1" ) );
+}
+
+wxColour ChartCanvas::ShipColor()
+{ 
+    //      Establish ship color
+    //     It changes color based on GPS and Chart accuracy/availability
+
+    if( SHIP_NORMAL != m_ownship_state )
+        return GetGlobalColor( _T ( "GREY1" ) );
+
+    if( SHIP_LOWACCURACY == m_ownship_state )
+        return GetGlobalColor( _T ( "YELO1" ) );
+
+    return GetGlobalColor( _T ( "URED" ) );         // default is OK
+}
+
+void ChartCanvas::ShipDrawLargeScale( ocpnDC& dc, wxPoint lShipMidPoint )
+{
+
+    dc.SetPen( wxPen( PredColor(), 2 ) );
+
+    if( SHIP_NORMAL == m_ownship_state )
+        dc.SetBrush( wxBrush( ShipColor(), wxTRANSPARENT ) );
+    else
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "YELO1" ) ) ) );
+ 
+    dc.DrawEllipse( lShipMidPoint.x - 10, lShipMidPoint.y - 10, 20, 20 );
+    dc.DrawEllipse( lShipMidPoint.x - 6, lShipMidPoint.y - 6, 12, 12 );
+
+    dc.DrawLine( lShipMidPoint.x - 12, lShipMidPoint.y, lShipMidPoint.x + 12, lShipMidPoint.y );
+    dc.DrawLine( lShipMidPoint.x, lShipMidPoint.y - 12, lShipMidPoint.x, lShipMidPoint.y + 12 );
+}
+
+void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
+                                      wxPoint GPSOffsetPixels,
+                                      wxPoint lGPSPoint, wxPoint lHeadPoint,
+                                      float img_height, float cog_rad,
+                                      wxPoint lPredPoint, bool b_render_hdt,
+                                      wxPoint lShipMidPoint)
+{
+    // draw course over ground if they are longer than the ship
+    if( !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
+        if( lpp >= img_height / 2 ) {
+            const double png_pred_icon_scale_factor = .4;
+            wxPoint icon[4];
+
+            for( int i = 0; i < 4; i++ ) {
+                int j = i * 2;
+                double pxa = (double) ( s_png_pred_icon[j] );
+                double pya = (double) ( s_png_pred_icon[j + 1] );
+
+                pya *= png_pred_icon_scale_factor;
+                pxa *= png_pred_icon_scale_factor;
+
+                double px = ( pxa * sin( cog_rad ) ) + ( pya * cos( cog_rad ) );
+                double py = ( pya * sin( cog_rad ) ) - ( pxa * cos( cog_rad ) );
+
+                icon[i].x = (int) wxRound( px ) + lPredPoint.x + GPSOffsetPixels.x;
+                icon[i].y = (int) wxRound( py ) + lPredPoint.y + GPSOffsetPixels.y;
+            }
+
+            //      COG Predictor
+            wxDash dash_long[2];
+            dash_long[0] = (int) ( 3.0 * m_pix_per_mm );  //8// Long dash  <---------+
+            dash_long[1] = (int) ( 1.5 * m_pix_per_mm );  //2// Short gap            |
+
+            wxPen ppPen2( PredColor(), g_cog_predictor_width, wxUSER_DASH );
+            ppPen2.SetDashes( 2, dash_long );
+            dc.SetPen( ppPen2 );
+            dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                           lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+
+            wxDash dash_long3[2];
+            dash_long3[0] = g_cog_predictor_width * dash_long[0];
+            dash_long3[1] = g_cog_predictor_width * dash_long[1];
+
+            if( g_cog_predictor_width > 1 ) {
+                wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxUSER_DASH );
+                ppPen3.SetDashes( 2, dash_long3 );
+                dc.SetPen( ppPen3 );
+                dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                               lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
+            }
+            wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxSOLID );
+            dc.SetPen( ppPen1 );
+            dc.SetBrush( wxBrush( PredColor() ) ); //*wxWHITE_BRUSH);
+
+            dc.StrokePolygon( 4, icon );
+        }
+    }
+
+    //      HDT Predictor
+    if( b_render_hdt ) {
+        wxDash dash_short[2];
+        dash_short[0] = (int) ( 1.5 * m_pix_per_mm );  // Short dash  <---------+
+        dash_short[1] = (int) ( 1.8 * m_pix_per_mm );  // Short gap            |
+
+        wxPen ppPen2( PredColor(), 1, wxUSER_DASH );
+        ppPen2.SetDashes( 2, dash_short );
+
+        dc.SetPen( ppPen2 );
+        dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
+                       lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y );
+
+        wxPen ppPen1( PredColor(), 2, wxSOLID );
+        dc.SetPen( ppPen1 );
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "GREY2" ) ) ) );
+
+        dc.StrokeCircle( lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y, 4 );
+    }
+
+    // Draw radar rings if activated
+    if( g_iNavAidRadarRingsNumberVisible ) {
+        double factor = 1.00;
+        if( g_pNavAidRadarRingsStepUnits == 1 )          // nautical miles
+            factor = 1 / 1.852;
+
+        factor *= g_fNavAidRadarRingsStep;
+
+        double tlat, tlon;
+        wxPoint r;
+        ll_gc_ll( gLat, gLon, 0, factor, &tlat, &tlon );
+        GetCanvasPointPix( tlat, tlon, &r );
+
+        double lpp = sqrt( pow( (double) (lShipMidPoint.x - r.x), 2) +
+                           pow( (double) (lShipMidPoint.y - r.y), 2 ) );
+        int pix_radius = (int) lpp;
+
+        wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
+        dc.SetPen( ppPen1 );
+        dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxTRANSPARENT ) );
+
+        for( int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++ )
+            dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, i * pix_radius );
+    }
+}
+
+void ChartCanvas::ComputeShipScaleFactor(float icon_hdt,
+                                         int ownShipWidth, int ownShipLength, 
+                                         wxPoint lShipMidPoint,
+                                         wxPoint GPSOffsetPixels, wxPoint lGPSPoint,
+                                         float &scale_factor_x, float &scale_factor_y)
+{
+    float screenResolution = (float) ::wxGetDisplaySize().y / ::wxGetDisplaySizeMM().y;
+
+    //  Calculate the true ship length in exact pixels
+    double ship_bow_lat, ship_bow_lon;
+    ll_gc_ll( gLat, gLon, icon_hdt, g_n_ownship_length_meters / 1852., &ship_bow_lat,
+              &ship_bow_lon );
+    wxPoint lShipBowPoint;
+    wxPoint2DDouble b_point = GetVP().GetDoublePixFromLL( ship_bow_lat, ship_bow_lon );
+    wxPoint2DDouble a_point = GetVP().GetDoublePixFromLL( gLat, gLon );
+    
+    float shipLength_px = sqrtf( powf( (float) (b_point.m_x - a_point.m_x), 2) +
+                                 powf( (float) (b_point.m_y - a_point.m_y), 2) );
+    
+    //  And in mm
+    float shipLength_mm = shipLength_px / screenResolution;
+    
+    //  Set minimum ownship drawing size
+    float ownship_min_mm = g_n_ownship_min_mm;
+    ownship_min_mm = wxMax(ownship_min_mm, 1.0);
+    
+    //  Calculate Nautical Miles distance from midships to gps antenna
+    float hdt_ant = icon_hdt + 180.;
+    float dy = ( g_n_ownship_length_meters / 2 - g_n_gps_antenna_offset_y ) / 1852.;
+    float dx = g_n_gps_antenna_offset_x / 1852.;
+    if( g_n_gps_antenna_offset_y > g_n_ownship_length_meters / 2 )      //reverse?
+    {
+        hdt_ant = icon_hdt;
+        dy = -dy;
+    }
+    
+    //  If the drawn ship size is going to be clamped, adjust the gps antenna offsets
+    if( shipLength_mm < ownship_min_mm ) {
+        dy /= shipLength_mm / ownship_min_mm;
+        dx /= shipLength_mm / ownship_min_mm;
+    }
+
+    double ship_mid_lat, ship_mid_lon, ship_mid_lat1, ship_mid_lon1;
+    
+    ll_gc_ll( gLat, gLon, hdt_ant, dy, &ship_mid_lat, &ship_mid_lon );
+    ll_gc_ll( ship_mid_lat, ship_mid_lon, icon_hdt - 90., dx, &ship_mid_lat1, &ship_mid_lon1 );
+
+    GetCanvasPointPix( ship_mid_lat1, ship_mid_lon1, &lShipMidPoint );
+    GPSOffsetPixels.x = lShipMidPoint.x - lGPSPoint.x;
+    GPSOffsetPixels.y = lShipMidPoint.y - lGPSPoint.y;
+    
+    float scale_factor = shipLength_px / ownShipLength;
+    
+    //  Calculate a scale factor that would produce a reasonably sized icon
+    float scale_factor_min = ownship_min_mm / ( ownShipLength / screenResolution );
+    
+    //  And choose the correct one
+    scale_factor = wxMax(scale_factor, scale_factor_min);
+    
+    scale_factor_y = scale_factor;
+    scale_factor_x = scale_factor_y * ( (float) ownShipLength / ownShipWidth )
+        / ( (float) g_n_ownship_length_meters / g_n_ownship_beam_meters );
+}
+
 void ChartCanvas::ShipDraw( ocpnDC& dc )
 {
     if( !GetVP().IsValid() ) return;
+
     int drawit = 0;
     wxPoint lGPSPoint, lShipMidPoint, lPredPoint, lHeadPoint, GPSOffsetPixels(0,0);
 
 //    Is ship in Vpoint?
+
     if( GetVP().GetBBox().PointInBox( gLon, gLat, 0 ) ) drawit++;                             // yep
 
 //    Calculate ownship Position Predictor
@@ -3313,10 +3521,10 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     double pred_lat, pred_lon;
 
     //  COG/SOG may be undefined in NMEA data stream
-    double pCog = gCog;
+    float pCog = gCog;
     if( wxIsNaN(pCog) )
         pCog = 0.0;
-    double pSog = gSog;
+    float pSog = gSog;
     if( wxIsNaN(pSog) )
         pSog = 0.0;
 
@@ -3326,20 +3534,19 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     lShipMidPoint = lGPSPoint;
     GetCanvasPointPix( pred_lat, pred_lon, &lPredPoint );
 
-    double cog_rad = atan2( (double) ( lPredPoint.y - lShipMidPoint.y ),
-                            (double) ( lPredPoint.x - lShipMidPoint.x ) );
+    float cog_rad = atan2f( (float) ( lPredPoint.y - lShipMidPoint.y ),
+                            (float) ( lPredPoint.x - lShipMidPoint.x ) );
     cog_rad += PI;
 
-    double lpp = sqrt(
-                     pow( (double) ( lPredPoint.x - lShipMidPoint.x ), 2 )
-                     + pow( (double) ( lPredPoint.y - lShipMidPoint.y ), 2 ) );
+    float lpp = sqrtf( powf( (float) (lPredPoint.x - lShipMidPoint.x), 2) +
+                       powf( (float) (lPredPoint.y - lShipMidPoint.y), 2) );
 
 //    Is predicted point in the VPoint?
     if( GetVP().GetBBox().PointInBox( pred_lon, pred_lat, 0 ) ) drawit++;                     // yep
 
     //  Draw the icon rotated to the COG
     //  or to the Hdt if available
-    double icon_hdt = pCog;
+    float icon_hdt = pCog;
     if( !wxIsNaN( gHdt ) ) icon_hdt = gHdt;
 
     //  COG may be undefined in NMEA data stream
@@ -3354,8 +3561,8 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
     GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
     GetCanvasPointPix( osd_head_lat, osd_head_lon, &osd_head_point );
 
-    double icon_rad = atan2( (double) ( osd_head_point.y - lShipMidPoint.y ),
-                             (double) ( osd_head_point.x - lShipMidPoint.x ) );
+    float icon_rad = atan2f( (float) ( osd_head_point.y - lShipMidPoint.y ),
+                             (float) ( osd_head_point.x - lShipMidPoint.x ) );
     icon_rad += PI;
 
     if( pSog < 0.2 ) icon_rad = ( ( icon_hdt + 90. ) * PI / 180. ) + GetVP().rotation;
@@ -3373,12 +3580,11 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 //    Compare the points lHeadPoint and lPredPoint
 //    If they differ by more than n pixels, and the head vector is valid, then render the head vector
 
-    double ndelta_pix = 10.;
+    float ndelta_pix = 10.;
     bool b_render_hdt = false;
     if( !wxIsNaN( gHdt ) ) {
-        double dist = sqrt(
-                          pow( (double) ( lHeadPoint.x - lPredPoint.x ), 2 )
-                          + pow( (double) ( lHeadPoint.y - lPredPoint.y ), 2 ) );
+        float dist = sqrtf( powf(  (float) (lHeadPoint.x - lPredPoint.x), 2) +
+                            powf(  (float) (lHeadPoint.y - lPredPoint.y), 2) );
         if( dist > ndelta_pix && !wxIsNaN(gSog) )
             b_render_hdt = true;
     }
@@ -3395,190 +3601,61 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
                                          wxPoint2DDouble( pred_lon, pred_lat ) ) ) drawit++;
 
 //    Do the draw if either the ship or prediction is within the current VPoint
-    if( drawit ) {
-        int img_height;
+    if( !drawit )
+        return;
 
-        wxColour pred_colour;
-        pred_colour = GetGlobalColor( _T ( "URED" ) );
-        if( SHIP_NORMAL != m_ownship_state ) pred_colour = GetGlobalColor( _T ( "GREY1" ) );
+    int img_height;
 
-        //      Establish ship color
-        //     It changes color based on GPS and Chart accuracy/availability
-        wxColour ship_color( GetGlobalColor( _T ( "URED" ) ) );         // default is OK
+    if( GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
+    {
+        ShipDrawLargeScale(dc, lShipMidPoint);
+        img_height = 20;
+    } else {
 
-        if( SHIP_NORMAL != m_ownship_state )
-            ship_color = GetGlobalColor( _T ( "GREY1" ) );
+        wxImage pos_image;
 
-        if( SHIP_LOWACCURACY == m_ownship_state )
-            ship_color = GetGlobalColor( _T ( "YELO1" ) );
-
-        if( GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
-        {
-            dc.SetPen( wxPen( pred_colour, 2 ) );
-
-            if( SHIP_NORMAL == m_ownship_state ) dc.SetBrush(
-                    wxBrush( ship_color, wxTRANSPARENT ) );
-            else
-                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "YELO1" ) ) ) );
-
-            dc.DrawEllipse( lShipMidPoint.x - 10, lShipMidPoint.y - 10, 20, 20 );
-            dc.DrawEllipse( lShipMidPoint.x - 6, lShipMidPoint.y - 6, 12, 12 );
-
-            dc.DrawLine( lShipMidPoint.x - 12, lShipMidPoint.y, lShipMidPoint.x + 12, lShipMidPoint.y );
-            dc.DrawLine( lShipMidPoint.x, lShipMidPoint.y - 12, lShipMidPoint.x, lShipMidPoint.y + 12 );
-            img_height = 20;
-        } else {
-            double screenResolution = (double) ::wxGetDisplaySize().y / ::wxGetDisplaySizeMM().y;
-
-            wxImage pos_image;
+        //      Substitute user ownship image if found
+        if( m_pos_image_user )
+            pos_image = m_pos_image_user->Copy();
+        else if( SHIP_NORMAL == m_ownship_state )
             pos_image = m_pos_image_red->Copy();
-
-            if( SHIP_LOWACCURACY == m_ownship_state )
-                pos_image = m_pos_image_yellow->Copy();
-            else if( SHIP_NORMAL != m_ownship_state )
-                pos_image = m_pos_image_grey->Copy();
+        if( SHIP_LOWACCURACY == m_ownship_state )
+            pos_image = m_pos_image_yellow->Copy();
+        else if( SHIP_NORMAL != m_ownship_state )
+            pos_image = m_pos_image_grey->Copy();
 
 
             //      Substitute user ownship image if found
-            if( m_pos_image_user ) {
-                pos_image = m_pos_image_user->Copy();
+        if( m_pos_image_user ) {
+            pos_image = m_pos_image_user->Copy();
+                
+            if( SHIP_LOWACCURACY == m_ownship_state ) 
+                pos_image = m_pos_image_user_yellow->Copy();
+            else if( SHIP_NORMAL != m_ownship_state )
+                pos_image = m_pos_image_user_grey->Copy();
+        }
 
-                if( SHIP_LOWACCURACY == m_ownship_state )
-                    pos_image = m_pos_image_user_yellow->Copy();
-                else if( SHIP_NORMAL != m_ownship_state )
-                    pos_image = m_pos_image_user_grey->Copy();
+        img_height = pos_image.GetHeight();
+
+        if( g_n_ownship_beam_meters > 0.0 &&
+            g_n_ownship_length_meters > 0.0 &&
+            g_OwnShipIconType > 0 ) // use large ship
+        {
+            int ownShipWidth = 22; // Default values from s_ownship_icon
+            int ownShipLength= 84;
+            if( g_OwnShipIconType == 1 ) {
+                ownShipWidth = pos_image.GetWidth();
+                ownShipLength= pos_image.GetHeight();
             }
 
-            if( g_n_ownship_beam_meters > 0.0 && g_n_ownship_length_meters > 0.0 && g_OwnShipIconType > 0 ) // use large ship
-            {
-                int ownShipWidth = 22; // Default values from s_ownship_icon
-                int ownShipLength= 84;
+            float scale_factor_x, scale_factor_y;
+            ComputeShipScaleFactor
+                (icon_hdt, ownShipWidth, ownShipLength, lShipMidPoint,
+                 GPSOffsetPixels, lGPSPoint, scale_factor_x, scale_factor_y);
 
-                if( g_OwnShipIconType == 1 ) {
-                    ownShipWidth = pos_image.GetWidth();
-                    ownShipLength= pos_image.GetHeight();
-                }
-
-                //  Calculate the true ship length in exact pixels
-                double ship_bow_lat, ship_bow_lon;
-                ll_gc_ll( gLat, gLon, icon_hdt, g_n_ownship_length_meters / 1852., &ship_bow_lat,
-                          &ship_bow_lon );
-                wxPoint lShipBowPoint;
-                wxPoint2DDouble b_point = GetVP().GetDoublePixFromLL( ship_bow_lat, ship_bow_lon );
-                wxPoint2DDouble a_point = GetVP().GetDoublePixFromLL( gLat, gLon );
-
-                double shipLength_px = sqrt( pow( (double) ( b_point.m_x - a_point.m_x ), 2 )
-                                           + pow( (double) ( b_point.m_y - a_point.m_y ), 2 ) );
-
-                //  And in mm
-                double shipLength_mm = shipLength_px / screenResolution;
-
-                //  Set minimum ownship drawing size
-                double ownship_min_mm = g_n_ownship_min_mm;
-                ownship_min_mm = wxMax(ownship_min_mm, 1.0);
-
-                //  Calculate Nautical Miles distance from midships to gps antenna
-                double hdt_ant = icon_hdt + 180.;
-                double dy = ( g_n_ownship_length_meters / 2 - g_n_gps_antenna_offset_y ) / 1852.;
-                double dx = g_n_gps_antenna_offset_x / 1852.;
-                if( g_n_gps_antenna_offset_y > g_n_ownship_length_meters / 2 )      //reverse?
-                {
-                    hdt_ant = icon_hdt;
-                    dy = -dy;
-                }
-
-                //  If the drawn ship size is going to be clamped, adjust the gps antenna offsets
-                if( shipLength_mm < ownship_min_mm ) {
-                    dy /= shipLength_mm / ownship_min_mm;
-                    dx /= shipLength_mm / ownship_min_mm;
-                }
-
-                double ship_mid_lat, ship_mid_lon, ship_mid_lat1, ship_mid_lon1;
-
-                ll_gc_ll( gLat, gLon, hdt_ant, dy, &ship_mid_lat, &ship_mid_lon );
-                ll_gc_ll( ship_mid_lat, ship_mid_lon, icon_hdt - 90., dx, &ship_mid_lat1, &ship_mid_lon1 );
-
-                GetCanvasPointPix( ship_mid_lat1, ship_mid_lon1, &lShipMidPoint );
-                GPSOffsetPixels.x = lShipMidPoint.x - lGPSPoint.x;
-                GPSOffsetPixels.y = lShipMidPoint.y - lGPSPoint.y;
-
-                double scale_factor = shipLength_px / ownShipLength;
-
-                //  Calculate a scale factor that would produce a reasonably sized icon
-                double scale_factor_min = ownship_min_mm / ( ownShipLength / screenResolution );
-
-                //  And choose the correct one
-                scale_factor = wxMax(scale_factor, scale_factor_min);
-
-                double scale_factor_y = scale_factor;
-                double scale_factor_x = scale_factor_y * ( (double) ownShipLength / ownShipWidth )
-                                        / ( (double) g_n_ownship_length_meters / g_n_ownship_beam_meters );
-
-                if( g_OwnShipIconType == 1 ) { // Scaled bitmap
-                    pos_image.Rescale( ownShipWidth * scale_factor_x, ownShipLength * scale_factor_y,
-                            wxIMAGE_QUALITY_HIGH );
-                    wxPoint rot_ctr( pos_image.GetWidth() / 2, pos_image.GetHeight() / 2 );
-                    wxImage rot_image = pos_image.Rotate( -( icon_rad - ( PI / 2. ) ), rot_ctr, true );
-
-                    // Simple sharpening algorithm.....
-                    for( int ip = 0; ip < rot_image.GetWidth(); ip++ )
-                        for( int jp = 0; jp < rot_image.GetHeight(); jp++ )
-                            if( rot_image.GetAlpha( ip, jp ) > 64 ) rot_image.SetAlpha( ip, jp, 255 );
-
-                    wxBitmap os_bm( rot_image );
-
-                    int w = os_bm.GetWidth();
-                    int h = os_bm.GetHeight();
-                    img_height = h;
-
-                    dc.DrawBitmap( os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2, true );
-
-                    // Maintain dirty box,, missing in __WXMSW__ library
-                    dc.CalcBoundingBox( lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2 );
-                    dc.CalcBoundingBox( lShipMidPoint.x - w / 2 + w, lShipMidPoint.y - h / 2 + h );
-                }
-
-                else if( g_OwnShipIconType == 2 ) { // Scaled Vector
-                    wxPoint ownship_icon[10];
-
-                    for( int i = 0; i < 10; i++ ) {
-                        int j = i * 2;
-                        double pxa = (double) ( s_ownship_icon[j] );
-                        double pya = (double) ( s_ownship_icon[j + 1] );
-                        pya *= scale_factor_y;
-                        pxa *= scale_factor_x;
-
-                        double px = ( pxa * sin( icon_rad ) ) + ( pya * cos( icon_rad ) );
-                        double py = ( pya * sin( icon_rad ) ) - ( pxa * cos( icon_rad ) );
-
-                        ownship_icon[i].x = (int) ( px ) + lShipMidPoint.x;
-                        ownship_icon[i].y = (int) ( py ) + lShipMidPoint.y;
-                    }
-
-                    wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxSOLID );
-                    dc.SetPen( ppPen1 );
-                    dc.SetBrush( wxBrush( ship_color ) );
-
-                    dc.StrokePolygon( 6, &ownship_icon[0], 0, 0 );
-
-                    //     draw reference point (midships) cross
-                    dc.StrokeLine( ownship_icon[6].x, ownship_icon[6].y, ownship_icon[7].x,
-                                 ownship_icon[7].y );
-                    dc.StrokeLine( ownship_icon[8].x, ownship_icon[8].y, ownship_icon[9].x,
-                                 ownship_icon[9].y );
-                }
-
-                img_height = ownShipLength * scale_factor_y;
-
-                //      Reference point, where the GPS antenna is
-                int circle_rad = 3;
-                if( m_pos_image_user ) circle_rad = 1;
-
-                dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
-                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
-                dc.StrokeCircle( lGPSPoint.x, lGPSPoint.y, circle_rad );
-            }
-            else { // Fixed bitmap icon.
+            if( g_OwnShipIconType == 1 ) { // Scaled bitmap
+                pos_image.Rescale( ownShipWidth * scale_factor_x, ownShipLength * scale_factor_y,
+                                   wxIMAGE_QUALITY_HIGH );
                 wxPoint rot_ctr( pos_image.GetWidth() / 2, pos_image.GetHeight() / 2 );
                 wxImage rot_image = pos_image.Rotate( -( icon_rad - ( PI / 2. ) ), rot_ctr, true );
 
@@ -3595,121 +3672,87 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
                 dc.DrawBitmap( os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2, true );
 
-                //      Reference point, where the GPS antenna is
-                int circle_rad = 3;
-                if( m_pos_image_user ) circle_rad = 1;
-
-                dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
-                dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
-                dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, circle_rad );
-
                 // Maintain dirty box,, missing in __WXMSW__ library
                 dc.CalcBoundingBox( lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2 );
                 dc.CalcBoundingBox( lShipMidPoint.x - w / 2 + w, lShipMidPoint.y - h / 2 + h );
             }
-        }         // ownship draw
 
-        // draw course over ground if they are longer than the ship
-        if( !wxIsNaN(gCog) && !wxIsNaN(gSog) ) {
-            if( lpp >= img_height / 2 ) {
-                const double png_pred_icon_scale_factor = .4;
-                wxPoint icon[4];
+            else if( g_OwnShipIconType == 2 ) { // Scaled Vector
+                wxPoint ownship_icon[10];
 
-                for( int i = 0; i < 4; i++ ) {
+                for( int i = 0; i < 10; i++ ) {
                     int j = i * 2;
-                    double pxa = (double) ( s_png_pred_icon[j] );
-                    double pya = (double) ( s_png_pred_icon[j + 1] );
+                    float pxa = (float) ( s_ownship_icon[j] );
+                    float pya = (float) ( s_ownship_icon[j + 1] );
+                    pya *= scale_factor_y;
+                    pxa *= scale_factor_x;
 
-                    pya *= png_pred_icon_scale_factor;
-                    pxa *= png_pred_icon_scale_factor;
+                    float px = ( pxa * sinf( icon_rad ) ) + ( pya * cosf( icon_rad ) );
+                    float py = ( pya * sinf( icon_rad ) ) - ( pxa * cosf( icon_rad ) );
 
-                    double px = ( pxa * sin( cog_rad ) ) + ( pya * cos( cog_rad ) );
-                    double py = ( pya * sin( cog_rad ) ) - ( pxa * cos( cog_rad ) );
-
-                    icon[i].x = (int) wxRound( px ) + lPredPoint.x + GPSOffsetPixels.x;
-                    icon[i].y = (int) wxRound( py ) + lPredPoint.y + GPSOffsetPixels.y;
+                    ownship_icon[i].x = (int) ( px ) + lShipMidPoint.x;
+                    ownship_icon[i].y = (int) ( py ) + lShipMidPoint.y;
                 }
 
-                //      COG Predictor
-                wxDash dash_long[2];
-                dash_long[0] = (int) ( 3.0 * m_pix_per_mm );  //8// Long dash  <---------+
-                dash_long[1] = (int) ( 1.5 * m_pix_per_mm );  //2// Short gap            |
-
-                //       If COG is unknown, render the predictor in grey
-        //            if( wxIsNaN(gCog) )
-        //                pred_colour = GetGlobalColor( _T ( "GREY1" ) );
-
-                wxPen ppPen2( pred_colour, g_cog_predictor_width, wxUSER_DASH );
-                ppPen2.SetDashes( 2, dash_long );
-                dc.SetPen( ppPen2 );
-                dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-                                lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
-
-                wxDash dash_long3[2];
-                dash_long3[0] = g_cog_predictor_width * dash_long[0];
-                dash_long3[1] = g_cog_predictor_width * dash_long[1];
-
-                if( g_cog_predictor_width > 1 ) {
-                    wxPen ppPen3( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxUSER_DASH );
-                    ppPen3.SetDashes( 2, dash_long3 );
-                    dc.SetPen( ppPen3 );
-                    dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-                                    lPredPoint.x + GPSOffsetPixels.x, lPredPoint.y + GPSOffsetPixels.y );
-                }
                 wxPen ppPen1( GetGlobalColor( _T ( "UBLCK" ) ), 1, wxSOLID );
                 dc.SetPen( ppPen1 );
-                dc.SetBrush( wxBrush( pred_colour ) ); //*wxWHITE_BRUSH);
+                dc.SetBrush( wxBrush( ShipColor() ) );
 
-                dc.StrokePolygon( 4, icon );
+                dc.StrokePolygon( 6, &ownship_icon[0], 0, 0 );
+
+                //     draw reference point (midships) cross
+                dc.StrokeLine( ownship_icon[6].x, ownship_icon[6].y, ownship_icon[7].x,
+                               ownship_icon[7].y );
+                dc.StrokeLine( ownship_icon[8].x, ownship_icon[8].y, ownship_icon[9].x,
+                               ownship_icon[9].y );
             }
+
+            img_height = ownShipLength * scale_factor_y;
+
+            //      Reference point, where the GPS antenna is
+            int circle_rad = 3;
+            if( m_pos_image_user ) circle_rad = 1;
+
+            dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
+            dc.StrokeCircle( lGPSPoint.x, lGPSPoint.y, circle_rad );
         }
+        else { // Fixed bitmap icon.
+            /* non opengl, or suboptimal opengl via ocpndc: */
+            wxPoint rot_ctr( pos_image.GetWidth() / 2, pos_image.GetHeight() / 2 );
+            wxImage rot_image = pos_image.Rotate( -( icon_rad - ( PI / 2. ) ), rot_ctr, true );
 
-        //      HDT Predictor
-        if( b_render_hdt ) {
-            wxDash dash_short[2];
-            dash_short[0] = (int) ( 1.5 * m_pix_per_mm );  // Short dash  <---------+
-            dash_short[1] = (int) ( 1.8 * m_pix_per_mm );  // Short gap            |
+            // Simple sharpening algorithm.....
+            for( int ip = 0; ip < rot_image.GetWidth(); ip++ )
+                for( int jp = 0; jp < rot_image.GetHeight(); jp++ )
+                    if( rot_image.GetAlpha( ip, jp ) > 64 ) rot_image.SetAlpha( ip, jp, 255 );
 
-            wxPen ppPen2( pred_colour, 1, wxUSER_DASH );
-            ppPen2.SetDashes( 2, dash_short );
+            wxBitmap os_bm( rot_image );
 
-            dc.SetPen( ppPen2 );
-            dc.StrokeLine( lGPSPoint.x + GPSOffsetPixels.x, lGPSPoint.y + GPSOffsetPixels.y,
-                           lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y );
+            int w = os_bm.GetWidth();
+            int h = os_bm.GetHeight();
+            img_height = h;
 
-            wxPen ppPen1( pred_colour, 2, wxSOLID );
-            dc.SetPen( ppPen1 );
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "GREY2" ) ) ) );
+            dc.DrawBitmap( os_bm, lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2, true );
 
-            dc.StrokeCircle( lHeadPoint.x + GPSOffsetPixels.x, lHeadPoint.y + GPSOffsetPixels.y, 4 );
+            //      Reference point, where the GPS antenna is
+            int circle_rad = 3;
+            if( m_pos_image_user ) circle_rad = 1;
+
+            dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
+            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UIBCK" ) ) ) );
+            dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, circle_rad );
+
+            // Maintain dirty box,, missing in __WXMSW__ library
+            dc.CalcBoundingBox( lShipMidPoint.x - w / 2, lShipMidPoint.y - h / 2 );
+            dc.CalcBoundingBox( lShipMidPoint.x - w / 2 + w, lShipMidPoint.y - h / 2 + h );
         }
+    }        // ownship draw
 
-        // Draw radar rings if activated
-        if( g_iNavAidRadarRingsNumberVisible ) {
-            double factor = 1.00;
-            if( g_pNavAidRadarRingsStepUnits == 1 )          // nautical miles
-                factor = 1 / 1.852;
-
-            factor *= g_fNavAidRadarRingsStep;
-
-            double tlat, tlon;
-            wxPoint r;
-            ll_gc_ll( gLat, gLon, 0, factor, &tlat, &tlon );
-            GetCanvasPointPix( tlat, tlon, &r );
-
-            double lpp = sqrt(
-                             pow( (double) ( lShipMidPoint.x - r.x ), 2 )
-                             + pow( (double) ( lShipMidPoint.y - r.y ), 2 ) );
-            int pix_radius = (int) lpp;
-
-            wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
-            dc.SetPen( ppPen1 );
-            dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxTRANSPARENT ) );
-
-            for( int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++ )
-                dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, i * pix_radius );
-        }
-    }         // if drawit
+    ShipIndicatorsDraw(dc, lpp,  GPSOffsetPixels,
+                        lGPSPoint,  lHeadPoint,
+                       img_height, cog_rad,
+                       lPredPoint,  b_render_hdt, lShipMidPoint);
 }
 
 /* @ChartCanvas::CalcGridSpacing

@@ -49,6 +49,7 @@ typedef struct {
       extern "C" int G_PtInPolygon(MyPoint *, int, float, float) ;
       extern "C" int G_PtInPolygon_FL(float_2Dpt *, int, float, float) ;
       extern "C" int mysnprintf( char *buffer, int count, const char *format, ... );
+      extern "C" int NextPow2(int size);
 #else /* __cplusplus */
       extern int G_PtInPolygon(MyPoint *, int, float, float) ;
       extern int mysnprintf( char *buffer, int count, const char *format, ... );

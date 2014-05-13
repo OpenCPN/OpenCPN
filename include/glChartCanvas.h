@@ -36,6 +36,11 @@ WX_DECLARE_OBJARRAY(glTextureDescriptor, ArrayOfTexDescriptors);
 WX_DECLARE_HASH_MAP( int, glTextureDescriptor*, wxIntegerHash, wxIntegerEqual, ChartTextureHashType );
 WX_DECLARE_HASH_MAP( void*, ChartTextureHashType*, wxPointerHash, wxPointerEqual, ChartPointerHashType );
 
+class ocpnDC;
+class emboss_data;
+class Route;
+class ChartBaseBSB;
+
 class glChartCanvas : public wxGLCanvas
 {
 public:
@@ -69,11 +74,20 @@ public:
     void ClearAllRasterTextures(void);
     void DrawGLOverLayObjects(void);
 
+    void ShipDraw(ocpnDC& dc);
+
 protected:
     void RenderQuiltViewGL(ViewPort &vp, OCPNRegion Region, bool b_clear = true);
     void BuildFBO();
     void SetupOpenGL();
     void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Region );
+
+    ViewPort BuildClippedVP(ViewPort &VP, wxRect &rect);
+
+    void DrawFloatingOverlayObjects( ocpnDC &dc );
+    void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
+
+    void DrawQuiting();
 
     wxGLContext       *m_pcontext;
 
@@ -120,6 +134,10 @@ protected:
     int          m_cache_tex_x;
     int          m_cache_tex_y;
     OCPNRegion     m_gl_rendered_region;
+
+    GLuint ownship_tex;
+    wxSize ownship_size, ownship_tex_size;
+    GLuint ownship_large_scale_display_lists[2];
 
     DECLARE_EVENT_TABLE()
 };

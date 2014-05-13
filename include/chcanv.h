@@ -283,7 +283,22 @@ private:
       void        PositionConsole(void);
       wxString    FindValidUploadPort();
       
+      wxColour PredColor();
+      wxColour ShipColor();
 
+      void ComputeShipScaleFactor(float icon_hdt,
+                                  int ownShipWidth, int ownShipLength, 
+                                  wxPoint lShipMidPoint,
+                                  wxPoint GpsOffsetPixels, wxPoint lGPSPoint,
+                                  float &scale_factor_x, float &scale_factor_y);
+
+      void ShipDrawLargeScale( ocpnDC& dc, wxPoint lShipMidPoint );
+      void ShipIndicatorsDraw( ocpnDC& dc, float lpp,
+                               wxPoint GPSOffsetPixels,
+                               wxPoint lGPSPoint, wxPoint lHeadPoint,
+                                      float img_height, float cog_rad,
+                               wxPoint lPredPoint, bool b_render_hdt,
+          wxPoint lShipMidPoint);
       ChInfoWin   *m_pCIWin;
 
       bool        m_bShowCurrent;
