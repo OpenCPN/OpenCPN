@@ -909,7 +909,7 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
         else        //DC mode
         {
             if(fabs(vp->rotation) > 0.1){
-                m_Message_Hiden.Append(_("Rotated overlays suppressed in DC mode"));
+                m_Message_Hiden.Append(_("overlays suppressed if not north-up in DC mode (enable OpenGL)"));
             }
             else {
                 if( !pGO->m_pDCBitmap ) {
