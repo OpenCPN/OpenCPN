@@ -189,6 +189,7 @@ extern wxString         g_locale;
 extern bool             g_bportable;
 extern bool             g_bdisable_opengl;
 extern wxString         *pHome_Locn;
+extern wxString         g_Plugin_Dir;
 
 extern ChartGroupArray  *g_pGroupArray;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -205,6 +206,7 @@ extern AIS_Decoder      *g_pAIS;
 extern bool             g_bserial_access_checked;
 
 options                *g_pOptions;
+bool                    g_bLoadedDisabledPlugins;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
@@ -1926,6 +1928,14 @@ void options::CreateControls()
 
     wxBoxSizer* itemBoxSizerPanelPlugins = new wxBoxSizer( wxVERTICAL );
     itemPanelPlugins->SetSizer( itemBoxSizerPanelPlugins );
+
+    // load the disabled plugins finally because the user might want to enable them
+    // I would prefer to change this so the plugins are only loaded if and when
+    // they select the plugin page
+    if(!g_bLoadedDisabledPlugins) {
+        g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, false );
+        g_bLoadedDisabledPlugins = true;
+    }
 
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
