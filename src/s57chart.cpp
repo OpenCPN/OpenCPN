@@ -86,7 +86,6 @@ extern wxString          g_SENCPrefix;
 extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
-extern bool              g_b_useStencil;
 extern ChartCanvas       *cc1;
 extern ChartBase         *Current_Ch;
 extern MyFrame*          gFrame;
@@ -1228,7 +1227,7 @@ double s57chart::GetNormalScaleMin( double canvas_scale_factor, bool b_allow_ove
 }
 double s57chart::GetNormalScaleMax( double canvas_scale_factor, int canvas_width )
 {
-    return 1.0e7;
+    return 1.0e7; /* TODO: fix this */
 }
 
 //-----------------------------------------------------------------------
@@ -1639,23 +1638,6 @@ bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint,
 
     ViewPort tvp = VPoint;                    // undo const  TODO fix this in PLIB
 
-    //    If the ViewPort is unrotated, we can use a simple (fast) scissor test instead
-    //    of a stencil or depth buffer clipping algorithm.....
-    /*
-     if(fabs(VPoint.rotation) < 0.01)
-     {
-
-     glScissor(rect.x, VPoint.pix_height-rect.height-rect.y, rect.width, rect.height);
-     glEnable(GL_SCISSOR_TEST);
-     glDisable (GL_STENCIL_TEST);
-     glDisable (GL_DEPTH_TEST);
-
-     }
-     */
-    if( g_b_useStencil ) glEnable( GL_STENCIL_TEST );
-    else
-        glEnable( GL_DEPTH_TEST );
-
     //      Render the areas quickly
     for( i = 0; i < PRIO_NUM; ++i ) {
         if( ps52plib->m_nBoundaryStyle == SYMBOLIZED_BOUNDARIES ) top = razRules[i][4]; // Area Symbolized Boundaries
@@ -1699,9 +1681,6 @@ bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint,
 
     }
 
-    glDisable( GL_STENCIL_TEST );
-    glDisable( GL_DEPTH_TEST );
-    glDisable( GL_SCISSOR_TEST );
 #endif          //#ifdef ocpnUSE_GL
     
     return true;
@@ -3689,6 +3668,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     wxString Title( _("OpenCPN S57 SENC File Create...") );
     Title.append( SENCfile.GetFullPath() );
 
+    cc1->StopMovement();
     s_ProgDialog = new wxProgressDialog( Title, Message, m_nGeoRecords, NULL,
                                          wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
 
@@ -4449,36 +4429,25 @@ void s57chart::ResetPointBBoxes( const ViewPort &vp_last, const ViewPort &vp_thi
     box_margin = ( 50. / vp_this.view_scale_ppm ) / ( 1852. * 60. );  //degrees
 
     for( int i = 0; i < PRIO_NUM; ++i ) {
-        top = razRules[i][0];
+        for( int j = 0; j < 2; ++j ) {
+            top = razRules[i][j];
 
-        while( top != NULL ) {
-            if( !top->obj->geoPtMulti )                      // do not reset multipoints
-            {
-                top->obj->bBBObj_valid = false;
-                top->obj->BBObj.SetMin( top->obj->m_lon - box_margin,
-                        top->obj->m_lat - box_margin );
-                top->obj->BBObj.SetMax( top->obj->m_lon + box_margin,
-                        top->obj->m_lat + box_margin );
+            while( top != NULL ) {
+                if( !top->obj->geoPtMulti )                      // do not reset multipoints
+                {
+                    /* this function does not calculate the box as it should, just
+                       invalidate it and it is updated after the first render */
+                    top->obj->bBBObj_valid = false;
+
+                    top->obj->BBObj.SetMin( top->obj->m_lon - box_margin,
+                                            top->obj->m_lat - box_margin );
+                    top->obj->BBObj.SetMax( top->obj->m_lon + box_margin,
+                                            top->obj->m_lat + box_margin );
+                }
+                
+                nxx = top->next;
+                top = nxx;
             }
-
-            nxx = top->next;
-            top = nxx;
-        }
-
-        top = razRules[i][1];
-
-        while( top != NULL ) {
-            if( !top->obj->geoPtMulti )                      // do not reset multipoints
-            {
-                top->obj->bBBObj_valid = false;
-                top->obj->BBObj.SetMin( top->obj->m_lon - box_margin,
-                        top->obj->m_lat - box_margin );
-                top->obj->BBObj.SetMax( top->obj->m_lon + box_margin,
-                        top->obj->m_lat + box_margin );
-            }
-
-            nxx = top->next;
-            top = nxx;
         }
     }
 }
