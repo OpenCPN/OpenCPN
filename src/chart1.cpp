@@ -2204,9 +2204,6 @@ if( 0 == g_memCacheLimit )
 
     cc1->ReloadVP();                  // once more, and good to go
 
-    g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-    if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
-
     g_FloatingToolbarDialog->Raise();
     g_FloatingToolbarDialog->Show();
 
@@ -4108,7 +4105,7 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
     UseNativeStatusBar( false );              // better for MSW, undocumented in frame.cpp
 #endif
 
-    if( pConfig->m_bShowDebugWindows ) {
+    if( pConfig->m_bShowStatusBar ) {
         if( !m_pStatusBar ) {
             m_pStatusBar = CreateStatusBar( m_StatusBarFieldCount, 0 );   // No wxST_SIZEGRIP needed
             ApplyGlobalColorSchemetoStatusBar();
@@ -4125,6 +4122,17 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
             Refresh( false );
         }
     }
+
+    if( pConfig->m_bShowCompassWin ) {
+        if(!g_FloatingCompassDialog) {
+            g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
+            if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
+        }
+    } else if(g_FloatingCompassDialog) {
+        g_FloatingCompassDialog->Destroy();
+        g_FloatingCompassDialog = NULL;
+    }
+
 
     if( bnewtoolbar ) UpdateToolbar( global_color_scheme );
 

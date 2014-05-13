@@ -1172,7 +1172,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod, 10 );
 
     Read( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
-    Read( _T ( "ShowDebugWindows" ), &m_bShowDebugWindows, 1 );
+    Read( _T ( "ShowStatusBar" ), &m_bShowStatusBar, 1 );
+    Read( _T ( "ShowCompassWindow" ), &m_bShowCompassWin, 1 );
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
@@ -2247,7 +2248,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
-    Write( _T ( "ShowDebugWindows" ), m_bShowDebugWindows );
+    Write( _T ( "ShowStatusBar" ), m_bShowStatusBar );
+    Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
     Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );

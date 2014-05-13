@@ -343,7 +343,8 @@ void options::Init()
 {
     m_pWorkDirList = NULL;
 
-    pDebugShowStat = NULL;
+    pShowStatusBar = NULL;
+    pShowCompassWin = NULL;
     pSelCtl = NULL;
     pActiveChartsList = NULL;
     ps57CtlListBox = NULL;
@@ -1727,9 +1728,13 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     wxStaticBoxSizer* miscOptions = new wxStaticBoxSizer( miscOptionsBox, wxVERTICAL );
     m_itemBoxSizerFontPanel->Add( miscOptions, 0, wxALL | wxEXPAND, border_size );
 
-    pDebugShowStat = new wxCheckBox( itemPanelFont, ID_DEBUGCHECKBOX1, _("Show Status Bar") );
-    pDebugShowStat->SetValue( FALSE );
-    miscOptions->Add( pDebugShowStat, 0, wxALL, border_size );
+    pShowStatusBar = new wxCheckBox( itemPanelFont, ID_DEBUGCHECKBOX1, _("Show Status Bar") );
+    pShowStatusBar->SetValue( FALSE );
+    miscOptions->Add( pShowStatusBar, 0, wxALL, border_size );
+
+    pShowCompassWin = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Compass/GPS Status Window") );
+    pShowCompassWin->SetValue( FALSE );
+    miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
 
     pFullScreenToolbar = new wxCheckBox( itemPanelFont, ID_FSTOOLBARCHECKBOX,
             _("Show Toolbar in Fullscreen Mode") );
@@ -1932,8 +1937,6 @@ void options::CreateControls()
     //      PlugIns can add panels, too
     if( g_pi_manager ) g_pi_manager->NotifySetupOptions();
 
-    pSettingsCB1 = pDebugShowStat;
-
     SetColorScheme( (ColorScheme) 0 );
     
     //  Update the PlugIn page to reflect the state of individual selections
@@ -1985,7 +1988,10 @@ void options::SetInitialSettings()
         groupsPanel->SetInitialSettings();
     }
 
-    if( m_pConfig ) pSettingsCB1->SetValue( m_pConfig->m_bShowDebugWindows );
+    if( m_pConfig ) {
+        pShowStatusBar->SetValue( m_pConfig->m_bShowStatusBar );
+        pShowCompassWin->SetValue( m_pConfig->m_bShowCompassWin );
+    }
 
     m_cbNMEADebug->SetValue(NMEALogWindow::Get().Active());
 /*TODO
@@ -2608,7 +2614,10 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     // Handle Settings Tab
 
-    if( m_pConfig ) m_pConfig->m_bShowDebugWindows = pSettingsCB1->GetValue();
+    if( m_pConfig ) {
+        m_pConfig->m_bShowStatusBar = pShowStatusBar->GetValue();
+        m_pConfig->m_bShowCompassWin = pShowCompassWin->GetValue();
+    }
 
 //TODO    g_bGarminHost = pGarminHost->GetValue();
 
