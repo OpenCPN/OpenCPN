@@ -9558,181 +9558,67 @@ void ChartCanvas::Update()
         wxWindow::Update();
 }
 
-void ChartCanvas::EmbossCanvas( ocpnDC &dc, emboss_data *pemboss, int x, int y )
+void ChartCanvas::DrawEmboss( ocpnDC &dc, emboss_data *pemboss)
 {
+    if( !pemboss ) return;
+    int x = pemboss->x, y = pemboss->y;
     const double factor = 200;
 
-    if( dc.GetDC() ) {
-        wxMemoryDC *pmdc = dynamic_cast<wxMemoryDC*>( dc.GetDC() );
-        wxASSERT_MSG ( pmdc, wxT ( "dc to EmbossCanvas not a memory dc" ) );
-
-        //Grab a snipped image out of the chart
-        wxMemoryDC snip_dc;
-        wxBitmap snip_bmp( pemboss->width, pemboss->height, -1 );
-        snip_dc.SelectObject( snip_bmp );
-
-        snip_dc.Blit( 0, 0, pemboss->width, pemboss->height, pmdc, x, y );
-        snip_dc.SelectObject( wxNullBitmap );
-
-        wxImage snip_img = snip_bmp.ConvertToImage();
-
-        //  Apply Emboss map to the snip image
-        unsigned char* pdata = snip_img.GetData();
-        if( pdata ) {
-            for( int y = 0; y < pemboss->height; y++ ) {
-                int map_index = ( y * pemboss->width );
-                for( int x = 0; x < pemboss->width; x++ ) {
-                    double val = ( pemboss->pmap[map_index] * factor ) / 256.;
-
-                    int nred = (int) ( ( *pdata ) + val );
-                    nred = nred > 255 ? 255 : ( nred < 0 ? 0 : nred );
-                    *pdata++ = (unsigned char) nred;
-
-                    int ngreen = (int) ( ( *pdata ) + val );
-                    ngreen = ngreen > 255 ? 255 : ( ngreen < 0 ? 0 : ngreen );
-                    *pdata++ = (unsigned char) ngreen;
-
-                    int nblue = (int) ( ( *pdata ) + val );
-                    nblue = nblue > 255 ? 255 : ( nblue < 0 ? 0 : nblue );
-                    *pdata++ = (unsigned char) nblue;
-
-                    map_index++;
-                }
+    wxASSERT_MSG( dc.GetDC(), wxT ( "DrawEmboss has no dc (opengl?)" ) );
+    wxMemoryDC *pmdc = dynamic_cast<wxMemoryDC*>( dc.GetDC() );
+    wxASSERT_MSG ( pmdc, wxT ( "dc to EmbossCanvas not a memory dc" ) );
+    
+    //Grab a snipped image out of the chart
+    wxMemoryDC snip_dc;
+    wxBitmap snip_bmp( pemboss->width, pemboss->height, -1 );
+    snip_dc.SelectObject( snip_bmp );
+    
+    snip_dc.Blit( 0, 0, pemboss->width, pemboss->height, pmdc, x, y );
+    snip_dc.SelectObject( wxNullBitmap );
+    
+    wxImage snip_img = snip_bmp.ConvertToImage();
+    
+    //  Apply Emboss map to the snip image
+    unsigned char* pdata = snip_img.GetData();
+    if( pdata ) {
+        for( int y = 0; y < pemboss->height; y++ ) {
+            int map_index = ( y * pemboss->width );
+            for( int x = 0; x < pemboss->width; x++ ) {
+                double val = ( pemboss->pmap[map_index] * factor ) / 256.;
+                
+                int nred = (int) ( ( *pdata ) + val );
+                nred = nred > 255 ? 255 : ( nred < 0 ? 0 : nred );
+                *pdata++ = (unsigned char) nred;
+                
+                int ngreen = (int) ( ( *pdata ) + val );
+                ngreen = ngreen > 255 ? 255 : ( ngreen < 0 ? 0 : ngreen );
+                *pdata++ = (unsigned char) ngreen;
+                
+                int nblue = (int) ( ( *pdata ) + val );
+                nblue = nblue > 255 ? 255 : ( nblue < 0 ? 0 : nblue );
+                *pdata++ = (unsigned char) nblue;
+                
+                map_index++;
             }
         }
-
-        //  Convert embossed snip to a bitmap
-        wxBitmap emb_bmp( snip_img );
-
-        //  Map to another memoryDC
-        wxMemoryDC result_dc;
-        result_dc.SelectObject( emb_bmp );
-
-        //  Blit to target
-        pmdc->Blit( x, y, pemboss->width, pemboss->height, &result_dc, 0, 0 );
-
-        result_dc.SelectObject( wxNullBitmap );
     }
+    
+    //  Convert embossed snip to a bitmap
+    wxBitmap emb_bmp( snip_img );
 
-#ifdef ocpnUSE_GL
-
-#ifndef __WXMSW__
-    else if(0/*b_useTexRect*/)
-    {
-        int w = pemboss->width, h = pemboss->height;
-        glEnable(GL_TEXTURE_RECTANGLE_ARB);
-
-        // render using opengl and alpha blending
-        if(!pemboss->gltexind) { /* upload to texture */
-            /* convert to luminance alpha map */
-            int size = pemboss->width*pemboss->height;
-            char *data = new char[2*size];
-            for(int i=0; i<size; i++) {
-                data[2*i] = pemboss->pmap[i] > 0 ? 0 : 255;
-                data[2*i+1] = abs(pemboss->pmap[i]);
-            }
-
-            glGenTextures(1, &pemboss->gltexind);
-            glBindTexture(GL_TEXTURE_RECTANGLE_ARB, pemboss->gltexind);
-            glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_LUMINANCE_ALPHA, w, h,
-                         0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data);
-
-            delete [] data;
-        }
-
-        glBindTexture(GL_TEXTURE_RECTANGLE_ARB, pemboss->gltexind);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-
-        glColor4f(1, 1, 1, factor / 256);
-
-        glBegin(GL_QUADS);
-        glTexCoord2i(0, 0), glVertex2i(x, y);
-        glTexCoord2i(w, 0), glVertex2i(x+w, y);
-        glTexCoord2i(w, h), glVertex2i(x+w, y+h);
-        glTexCoord2i(0, h), glVertex2i(x, y+h);
-        glEnd();
-
-        glDisable(GL_BLEND);
-        glDisable(GL_TEXTURE_RECTANGLE_ARB);
-    }
-#endif
-    else {
-        int a = pemboss->width;
-        int p = 0;
-        while( a ) {
-            a = a >> 1;
-            p++;
-        }
-        int width_p2 = 1 << p;
-
-        a = pemboss->height;
-        p = 0;
-        while( a ) {
-            a = a >> 1;
-            p++;
-        }
-        int height_p2 = 1 << p;
-
-        int w = pemboss->width, h = pemboss->height;
-
-        glEnable( GL_TEXTURE_2D );
-
-        // render using opengl and alpha blending
-        if( !pemboss->gltexind ) { /* upload to texture */
-            /* convert to luminance alpha map */
-            int size = width_p2 * height_p2;
-            char *data = new char[2 * size];
-            for( int i = 0; i < h; i++ ) {
-                for( int j = 0; j < width_p2; j++ ) {
-                    if( j < w ) {
-                        data[2 * ( ( i * width_p2 ) + j )] =
-                            pemboss->pmap[( i * w ) + j] > 0 ? 0 : 255;
-                        data[2 * ( ( i * width_p2 ) + j ) + 1] = abs(
-                                    pemboss->pmap[( i * w ) + j] );
-                    }
-                }
-            }
-
-            glGenTextures( 1, &pemboss->gltexind );
-            glBindTexture( GL_TEXTURE_2D, pemboss->gltexind );
-            glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, width_p2, height_p2, 0,
-                          GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-            delete[] data;
-        }
-
-        glBindTexture( GL_TEXTURE_2D, pemboss->gltexind );
-
-        glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND );
-
-        glColor4f( 1, 1, 1, factor / 256 );
-
-        double wp = (double) w / width_p2;
-        double hp = (double) h / height_p2;
-
-        glBegin( GL_QUADS );
-        glTexCoord2f( 0, 0 ), glVertex2i( x, y );
-        glTexCoord2f( wp, 0 ), glVertex2i( x + w, y );
-        glTexCoord2f( wp, hp ), glVertex2i( x + w, y + h );
-        glTexCoord2f( 0, hp ), glVertex2i( x, y + h );
-        glEnd();
-
-        glDisable( GL_BLEND );
-        glDisable( GL_TEXTURE_2D );
-    }
-#endif
+    //  Map to another memoryDC
+    wxMemoryDC result_dc;
+    result_dc.SelectObject( emb_bmp );
+    
+    //  Blit to target
+    pmdc->Blit( x, y, pemboss->width, pemboss->height, &result_dc, 0, 0 );
+    
+    result_dc.SelectObject( wxNullBitmap );
 }
 
-void ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
+emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 {
-    if( !g_bshow_overzoom_emboss ) return;
+    if( !g_bshow_overzoom_emboss ) return NULL;
 
     if( GetQuiltMode() ) {
         double chart_native_ppm;
@@ -9740,7 +9626,7 @@ void ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 
         double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
 
-        if( zoom_factor <= 4.0 ) return;
+        if( zoom_factor <= 4.0 ) return NULL;
     } else {
         double chart_native_ppm;
         if( Current_Ch ) chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
@@ -9749,26 +9635,13 @@ void ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
 
         double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
         if( Current_Ch ) {
-#ifdef USE_S57
-            //    Special case for cm93
-            if( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) {
-                if( zoom_factor > 8.0 ) {
-
-                    cm93compchart *pch = (cm93compchart *) Current_Ch;
-                    if( pch ) {
-                        wxPen mPen( GetGlobalColor( _T("UINFM") ), 2, wxSHORT_DASH );
-                        dc.SetPen( mPen );
-                        pch->RenderNextSmallerCellOutlines( dc, GetVP() );
-                    }
-                } else
-                    return;
-            } else
-#endif
-                if( zoom_factor <= 4.0 ) return;
+            if( zoom_factor <= 4.0 ) return NULL;
         }
     }
 
-    EmbossCanvas( dc, m_pEM_OverZoom, 0, 40 );
+    m_pEM_OverZoom->x = 0;
+    m_pEM_OverZoom->y = 40;
+    return m_pEM_OverZoom;
 }
 
 void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
@@ -9782,8 +9655,8 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
 
     AISDrawAreaNotices( dc );
 
-    EmbossDepthScale( dc );
-    EmbossOverzoomIndicator( dc );
+    DrawEmboss( dc, EmbossDepthScale( ) );
+    DrawEmboss( dc, EmbossOverzoomIndicator( dc ) );
 
     DrawAllRoutesInBBox( dc, GetVP().GetBBox(), ru );
     DrawAllWaypointsInBBox( dc, GetVP().GetBBox(), ru, true ); // true draws only isolated marks
@@ -9811,9 +9684,9 @@ void ChartCanvas::DrawOverlayObjects( ocpnDC &dc, const wxRegion& ru )
     }
 }
 
-void ChartCanvas::EmbossDepthScale( ocpnDC &dc )
+emboss_data *ChartCanvas::EmbossDepthScale()
 {
-    if( !g_bShowDepthUnits ) return;
+    if( !g_bShowDepthUnits ) return NULL;
 
     int depth_unit_type = DEPTH_UNIT_UNKNOWN;
 
@@ -9849,11 +9722,12 @@ void ChartCanvas::EmbossDepthScale( ocpnDC &dc )
         ped = m_pEM_Fathoms;
         break;
     default:
-        ped = NULL;
-        break;
+        return NULL;
     }
 
-    if( ped ) EmbossCanvas( dc, ped, ( GetVP().pix_width - ped->width ), 40 );
+    ped->x = ( GetVP().pix_width - ped->width );
+    ped->y = 40;
+    return ped;
 }
 
 void ChartCanvas::CreateDepthUnitEmbossMaps( ColorScheme cs )

@@ -76,6 +76,7 @@ public:
 
     void GridDraw( );
 
+    void DrawEmboss( emboss_data *emboss );
     void ShipDraw(ocpnDC& dc);
 
 protected:

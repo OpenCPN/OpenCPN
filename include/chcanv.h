@@ -406,18 +406,18 @@ private:
 
       void DrawOverlayObjects ( ocpnDC &dc, const wxRegion& ru );
 
-      void EmbossDepthScale(ocpnDC &dc );
+      emboss_data *EmbossDepthScale();
       emboss_data *CreateEmbossMapData(wxFont &font, int width, int height, const wxChar *str, ColorScheme cs);
       void CreateDepthUnitEmbossMaps(ColorScheme cs);
       wxBitmap CreateDimBitmap(wxBitmap &Bitmap, double factor);
 
       void CreateOZEmbossMapData(ColorScheme cs);
-      void EmbossOverzoomIndicator ( ocpnDC &dc);
+      emboss_data *EmbossOverzoomIndicator ( ocpnDC &dc);
 
 //      void CreateCM93OffsetEmbossMapData(ColorScheme cs);
 //      void EmbossCM93Offset ( wxMemoryDC *pdc);
 
-      void EmbossCanvas ( ocpnDC &dc, emboss_data *pemboss, int x, int y);
+      void DrawEmboss ( ocpnDC &dc, emboss_data *pemboss );
 
       void JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius);
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);

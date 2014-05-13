@@ -36,8 +36,10 @@ class emboss_data
             int         *pmap;
             int         width;
             int         height;
+            int         x, y;
 
             GLuint      gltexind;
+            int         glwidth, glheight; // next power of 2 larger than width/height
 };
 
 #endif

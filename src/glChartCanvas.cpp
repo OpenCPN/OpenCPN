@@ -928,6 +928,69 @@ void glChartCanvas::GridDraw( )
     }
 }
 
+void glChartCanvas::DrawEmboss( emboss_data *emboss  )
+{
+    if( !emboss ) return;
+    
+    int w = emboss->width, h = emboss->height;
+    
+    glEnable( GL_TEXTURE_2D );
+    
+    // render using opengl and alpha blending
+    if( !emboss->gltexind ) { /* upload to texture */
+
+        emboss->glwidth = NextPow2(emboss->width);
+        emboss->glheight = NextPow2(emboss->height);
+                
+        /* convert to luminance alpha map */
+        int size = emboss->glwidth * emboss->glheight;
+        char *data = new char[2 * size];
+        for( int i = 0; i < h; i++ ) {
+            for( int j = 0; j < emboss->glwidth; j++ ) {
+                if( j < w ) {
+                    data[2 * ( ( i * emboss->glwidth ) + j )] =
+                        emboss->pmap[( i * w ) + j] > 0 ? 0 : 255;
+                    data[2 * ( ( i * emboss->glwidth ) + j ) + 1] = abs(
+                        emboss->pmap[( i * w ) + j] );
+                }
+            }
+        }
+
+        glGenTextures( 1, &emboss->gltexind );
+        glBindTexture( GL_TEXTURE_2D, emboss->gltexind );
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, emboss->glwidth, emboss->glheight, 0,
+                      GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+        
+        delete[] data;
+    }
+    
+    glBindTexture( GL_TEXTURE_2D, emboss->gltexind );
+    
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND );
+    
+    const float factor = 200;
+    glColor4f( 1, 1, 1, factor / 256 );
+    
+    int x = emboss->x, y = emboss->y;
+
+    float wp = (float) w / emboss->glwidth;
+    float hp = (float) h / emboss->glheight;
+    
+    glBegin( GL_QUADS );
+    glTexCoord2f( 0, 0 ), glVertex2i( x, y );
+    glTexCoord2f( wp, 0 ), glVertex2i( x + w, y );
+    glTexCoord2f( wp, hp ), glVertex2i( x + w, y + h );
+    glTexCoord2f( 0, hp ), glVertex2i( x, y + h );
+    glEnd();
+    
+    glDisable( GL_BLEND );
+    glDisable( GL_TEXTURE_2D );
+}
+
 void glChartCanvas::ShipDraw(ocpnDC& dc)
 {
     if( !cc1->GetVP().IsValid() ) return;
@@ -1200,9 +1263,8 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
 
     // all functions called with cc1-> are still slow because they go through ocpndc
     cc1->AISDrawAreaNotices( dc );
-    
-    cc1->EmbossDepthScale( dc );
-    cc1->EmbossOverzoomIndicator( dc );
+    DrawEmboss(cc1->EmbossDepthScale() );
+    DrawEmboss(cc1->EmbossOverzoomIndicator( dc ) );
 
     cc1->AISDraw( dc );
     ShipDraw( dc );
