@@ -7137,7 +7137,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
     if( event.GetStream() )
     {
-        if(!event.GetStream()->ChecksumOK(str_buf) )
+        if(!event.GetStream()->ChecksumOK(event.GetNMEAString()) )
         {
             if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
             {
