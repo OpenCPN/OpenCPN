@@ -626,15 +626,15 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
 
         //    Case:  vpBBox is completely outside the chart box, or vice versa
         //    Return an empty region
-        if( _OUT == chart_box.Intersect( (wxBoundingBox&) vp_positive.vpBBox ) ) {
-            if( _OUT == chart_box.Intersect( (wxBoundingBox&) vpBBox ) ) {
+        if( chart_box.IntersectOut( (wxBoundingBox&) vp_positive.vpBBox ) ) {
+            if( chart_box.IntersectOut( (wxBoundingBox&) vpBBox ) ) {
                 // try again with the chart translated 360
                 wxPoint2DDouble rtw( 360., 0. );
                 wxBoundingBox trans_box = chart_box;
                 trans_box.Translate( rtw );
 
-                if( _OUT == trans_box.Intersect( (wxBoundingBox&) vp_positive.vpBBox ) ) {
-                    if( _OUT == trans_box.Intersect( (wxBoundingBox&) vpBBox ) ) {
+                if( trans_box.IntersectOut( (wxBoundingBox&) vp_positive.vpBBox ) ) {
+                    if( trans_box.IntersectOut( (wxBoundingBox&) vpBBox ) ) {
                         return OCPNRegion();
                     }
                 }
@@ -2843,7 +2843,7 @@ void ChartCanvas::DoZoomCanvas( double factor )
                 max_allowed_scale = GetCanvasScaleFactor() / m_absolute_min_scale_ppm;
 
                 if( ChartData->GetDBBoundingBox( current_index, &chart_box ) &&
-                    viewbox.Intersect( chart_box ) != _OUT )
+                    !viewbox.IntersectOut( chart_box ) )
                     //  Clamp the minimum scale zoom-out to the value specified by the chart
                     max_allowed_scale = wxMin(max_allowed_scale, 4.0 *
                                               pc->GetNormalScaleMax( GetCanvasScaleFactor(),
@@ -6374,7 +6374,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                         Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                         if( g_pRouteMan->IsRouteValid(pr) ) {
-                            pr->CalculateBBox();
+                            pr->FinalizeForRendering();
                             pr->UpdateSegmentDistances();
                             pr->m_bIsBeingEdited = false;
 
@@ -8518,7 +8518,7 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
     wxBoundingBox box;
     ChartData->GetDBBoundingBox( dbIndex, &box );
 
-    if( vp.GetBBox().Intersect( box, 0 ) != _OUT )              // chart is not outside of viewport
+    if( !vp.GetBBox().IntersectOut( box ) )              // chart is not outside of viewport
         b_draw = true;
 
     //  Does simple test fail, and current vp cross international dateline?
@@ -8527,7 +8527,7 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
         if( vp.GetBBox().GetMinX() < -180. ) {
             wxPoint2DDouble p( -360., 0 );
             box.Translate( p );
-            if( vp.GetBBox().Intersect( box, 0 ) != _OUT )       // chart is not outside of viewport
+            if( !vp.GetBBox().IntersectOut( box ) )       // chart is not outside of viewport
             {
                 b_draw = true;
                 lon_bias = -360.;
@@ -8535,7 +8535,7 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
         } else {
             wxPoint2DDouble p( 360., 0 );
             box.Translate( p );
-            if( vp.GetBBox().Intersect( box, 0 ) != _OUT )       // chart is not outside of viewport
+            if( !vp.GetBBox().IntersectOut( box ) )       // chart is not outside of viewport
             {
                 b_draw = true;
                 lon_bias = 360.;
@@ -8548,7 +8548,7 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
     if( !b_draw && ( box.GetMinX() < 180. ) && ( box.GetMaxX() > 180. ) ) {
         wxPoint2DDouble p( -360., 0 );
         box.Translate( p );
-        if( vp.GetBBox().Intersect( box, 0 ) != _OUT )           // chart is not outside of viewport
+        if( !vp.GetBBox().IntersectOut( box )  )           // chart is not outside of viewport
         {
             b_draw = true;
             lon_bias = -360.;
@@ -10044,23 +10044,23 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
 
             }
 
-            wxBoundingBox test_box = pRouteDraw->RBBox;
+            wxBoundingBox test_box = pRouteDraw->GetBBox();
 
             if( b_run ) test_box.Expand( gLon, gLat );
 
-            if( BltBBox.Intersect( test_box, 0 ) != _OUT ) // Route is not wholly outside window
+            if( !BltBBox.IntersectOut( test_box ) ) // Route is not wholly outside window
             {
                 b_drawn = true;
 
-                if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) ) pRouteDraw->Draw(
-                        dc, GetVP() );
+                if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) )
+                    pRouteDraw->Draw( dc, GetVP() );
             } else if( pRouteDraw->CrossesIDL() ) {
                 wxPoint2DDouble xlate( -360., 0. );
-                wxBoundingBox test_box1 = pRouteDraw->RBBox;
+                wxBoundingBox test_box1 = pRouteDraw->GetBBox();
                 test_box1.Translate( xlate );
                 if( b_run ) test_box1.Expand( gLon, gLat );
 
-                if( BltBBox.Intersect( test_box1, 0 ) != _OUT ) // Route is not wholly outside window
+                if( !BltBBox.IntersectOut( test_box1 ) ) // Route is not wholly outside window
                 {
                     b_drawn = true;
                     if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) ) pRouteDraw->Draw(
@@ -10072,9 +10072,9 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
             if( !b_drawn ) {
                 if( ( BltBBox.GetMinX() < -180. ) && ( BltBBox.GetMaxX() > -180. ) ) {
                     wxPoint2DDouble xlate( -360., 0. );
-                    wxBoundingBox test_box2 = pRouteDraw->RBBox;
+                    wxBoundingBox test_box2 = pRouteDraw->GetBBox();
                     test_box2.Translate( xlate );
-                    if( BltBBox.Intersect( test_box2, 0 ) != _OUT ) // Route is not wholly outside window
+                    if( !BltBBox.IntersectOut( test_box2 ) ) // Route is not wholly outside window
                     {
                         b_drawn = true;
                         if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) ) pRouteDraw->Draw(
@@ -10082,9 +10082,9 @@ void ChartCanvas::DrawAllRoutesInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxRegi
                     }
                 } else if( !b_drawn && ( BltBBox.GetMinX() < 180. ) && ( BltBBox.GetMaxX() > 180. ) ) {
                     wxPoint2DDouble xlate( 360., 0. );
-                    wxBoundingBox test_box3 = pRouteDraw->RBBox;
+                    wxBoundingBox test_box3 = pRouteDraw->GetBBox();
                     test_box3.Translate( xlate );
-                    if( BltBBox.Intersect( test_box3, 0 ) != _OUT ) // Route is not wholly outside window
+                    if( !BltBBox.IntersectOut( test_box3 ) ) // Route is not wholly outside window
                     {
                         b_drawn = true;
                         if( ( pRouteDraw != active_route ) && ( pRouteDraw != active_track ) ) pRouteDraw->Draw(

@@ -70,6 +70,7 @@ Route::Route( void )
     
     m_ArrivalRadius = g_n_arrival_circle_radius;        // Nautical Miles
 
+    m_bNeedsUpdateBBox = true;
     RBBox.Reset();
     m_bcrosses_idl = false;
 
@@ -119,7 +120,7 @@ void Route::CloneRoute( Route *psourceroute, int start_nPoint, int end_nPoint, c
         }
     }
 
-    CalculateBBox();
+    FinalizeForRendering();
 
 }
 
@@ -162,7 +163,7 @@ void Route::CloneTrack( Route *psourceroute, int start_nPoint, int end_nPoint, c
             m_pLastAddedPoint->m_GPXTrkSegNo = startTrkSegNo + segment_shift;
     }
 
-    CalculateBBox();
+    FinalizeForRendering();
 
 }
 
@@ -225,7 +226,7 @@ void Route::AddPoint( RoutePoint *pNewPoint, bool b_rename_in_sequence, bool b_d
 
     m_nPoints++;
 
-    if( !b_deferBoxCalc ) CalculateBBox();
+    if( !b_deferBoxCalc ) FinalizeForRendering();
 
     if( m_pLastAddedPoint ) pNewPoint->m_seg_len = DistGreatCircle( m_pLastAddedPoint->m_lat,
             m_pLastAddedPoint->m_lon, pNewPoint->m_lat, pNewPoint->m_lon );
@@ -539,7 +540,7 @@ RoutePoint *Route::InsertPointBefore( RoutePoint *pRP, double rlat, double rlon,
 
     if( bRenamePoints ) RenameRoutePoints();
 
-    CalculateBBox();
+    FinalizeForRendering();
     UpdateSegmentDistances();
 
     return ( newpoint );
@@ -602,7 +603,7 @@ void Route::DeletePoint( RoutePoint *rp, bool bRenamePoints )
         pConfig->UpdateRoute( this );
         RebuildGUIDList();                  // ensure the GUID list is intact and good
 
-        CalculateBBox();
+        FinalizeForRendering();
         UpdateSegmentDistances();
     }
 }
@@ -639,7 +640,7 @@ void Route::RemovePoint( RoutePoint *rp, bool bRenamePoints )
         pConfig->UpdateRoute( this );
         RebuildGUIDList();                  // ensure the GUID list is intact and good
 
-        CalculateBBox();
+        FinalizeForRendering();
         UpdateSegmentDistances();
     }
 
@@ -671,8 +672,15 @@ void Route::ReloadRoutePointIcons()
     }
 }
 
-void Route::CalculateBBox()
+void Route::FinalizeForRendering()
 {
+    m_bNeedsUpdateBBox = true;
+}
+
+wxBoundingBox Route::GetBBox( void )
+{
+    if(!m_bNeedsUpdateBBox)
+        return RBBox;
 
     double bbox_xmin = 180.;                        // set defaults
     double bbox_ymin = 90.;
@@ -716,6 +724,8 @@ void Route::CalculateBBox()
     RBBox.Expand( bbox_xmin, bbox_ymin );
     RBBox.Expand( bbox_xmax, bbox_ymax );
 
+    m_bNeedsUpdateBBox = false;
+    return RBBox;
 }
 
 bool Route::CalculateCrossesIDL( void )

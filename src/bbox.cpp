@@ -162,7 +162,7 @@ void wxBoundingBox::EnLarge(const double marge)
 // If they do not intersect, two scenario's are possible:
 // other is outside this -> return _OUT
 // other is inside this -> return _IN
-OVERLAP wxBoundingBox::Intersect(wxBoundingBox &other, double Marge)
+OVERLAP wxBoundingBox::Intersect(const wxBoundingBox &other, double Marge) const
 {
     assert (m_validbbox == TRUE);
 
@@ -188,7 +188,7 @@ OVERLAP wxBoundingBox::Intersect(wxBoundingBox &other, double Marge)
 
 
 // Checks if a line intersects the boundingbox
-bool wxBoundingBox::LineIntersect(const wxPoint2DDouble& begin, const wxPoint2DDouble& end )
+bool wxBoundingBox::LineIntersect(const wxPoint2DDouble& begin, const wxPoint2DDouble& end ) const
 {
     assert (m_validbbox == TRUE);
 
@@ -201,7 +201,7 @@ bool wxBoundingBox::LineIntersect(const wxPoint2DDouble& begin, const wxPoint2DD
 
 
 // Is the given point in the boundingbox ??
-bool wxBoundingBox::PointInBox(double x, double y, double Marge)
+bool wxBoundingBox::PointInBox(double x, double y, double Marge) const
 {
     assert (m_validbbox == TRUE);
 
@@ -215,7 +215,7 @@ bool wxBoundingBox::PointInBox(double x, double y, double Marge)
 //
 // Is the given point in the boundingbox ??
 //
-bool wxBoundingBox::PointInBox(const wxPoint2DDouble& a, double Marge)
+bool wxBoundingBox::PointInBox(const wxPoint2DDouble& a, double Marge) const
 {
     assert (m_validbbox == TRUE);
 
@@ -223,7 +223,7 @@ bool wxBoundingBox::PointInBox(const wxPoint2DDouble& a, double Marge)
 }
 
 
-wxPoint2DDouble wxBoundingBox::GetMin()
+wxPoint2DDouble wxBoundingBox::GetMin() const
 {
     assert (m_validbbox == TRUE);
 
@@ -231,7 +231,7 @@ wxPoint2DDouble wxBoundingBox::GetMin()
 }
 
 
-wxPoint2DDouble wxBoundingBox::GetMax()
+wxPoint2DDouble wxBoundingBox::GetMax() const
 {
     assert (m_validbbox == TRUE);
 

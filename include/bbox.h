@@ -34,18 +34,26 @@ public:
     void Expand(double x,double y);
     void Expand(const wxBoundingBox& bbox);
 
-    OVERLAP Intersect( wxBoundingBox &, double Marge = 0);
-    bool LineIntersect(const wxPoint2DDouble& begin, const wxPoint2DDouble& end );
-    bool PointInBox( const wxPoint2DDouble&, double Marge = 0);
-    virtual bool PointInBox( double, double, double Marge = 0);
+    OVERLAP Intersect( const wxBoundingBox &, double Marge = 0) const;
+
+    /* this routine is used very heavily, so this is a lightweight
+       version for when we only care if the other box is out */
+    inline bool IntersectOut( const wxBoundingBox &other ) const {
+        return (m_minx > other.m_maxx) || (m_maxx < other.m_minx) ||
+               (m_maxy < other.m_miny) || (m_miny > other.m_maxy);
+    }
+
+    bool LineIntersect(const wxPoint2DDouble& begin, const wxPoint2DDouble& end ) const;
+    bool PointInBox( const wxPoint2DDouble&, double Marge = 0) const;
+    virtual bool PointInBox( double, double, double Marge = 0) const;
 
     void Reset();
 
     void Translate( wxPoint2DDouble& );
     void MapBbox( const wxTransformMatrix& matrix);
 
-    double  GetWidth() {return m_maxx-m_minx;};
-    double  GetHeight(){return m_maxy-m_miny;};
+    double  GetWidth() const {return m_maxx-m_minx;};
+    double  GetHeight() const {return m_maxy-m_miny;};
     bool    GetValid()  const;
     void    SetValid(bool);
 
@@ -53,12 +61,12 @@ public:
 
     void    SetMin(double, double);
     void    SetMax(double, double);
-    inline  wxPoint2DDouble GetMin();
-    inline  wxPoint2DDouble GetMax();
-    inline  double GetMinX(){return m_minx;};
-    inline  double GetMinY(){return m_miny;};
-    inline  double GetMaxX(){return m_maxx;};
-    inline  double GetMaxY(){return m_maxy;};
+    inline  wxPoint2DDouble GetMin() const;
+    inline  wxPoint2DDouble GetMax() const;
+    inline  double GetMinX() const {return m_minx;};
+    inline  double GetMinY() const {return m_miny;};
+    inline  double GetMaxX() const {return m_maxx;};
+    inline  double GetMaxY() const {return m_maxy;};
 
     wxBoundingBox&  operator+( wxBoundingBox& );
     wxBoundingBox&  operator=(  const wxBoundingBox& );
