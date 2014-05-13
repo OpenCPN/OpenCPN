@@ -384,17 +384,6 @@ enum
     ID_DEF_MENU_LAST
 };
 
-PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffersEXT;
-PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffersEXT;
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    s_glFramebufferTexture2DEXT;
-PFNGLBINDFRAMEBUFFEREXTPROC         s_glBindFramebufferEXT;
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC s_glFramebufferRenderbufferEXT;
-PFNGLRENDERBUFFERSTORAGEEXTPROC     s_glRenderbufferStorageEXT;
-PFNGLBINDRENDERBUFFEREXTPROC        s_glBindRenderbufferEXT;
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  s_glCheckFramebufferStatusEXT;
-PFNGLDELETEFRAMEBUFFERSEXTPROC      s_glDeleteFramebuffersEXT;
-PFNGLDELETERENDERBUFFERSEXTPROC     s_glDeleteRenderbuffersEXT;
-
 //------------------------------------------------------------------------------
 //    ViewPort Implementation
 //------------------------------------------------------------------------------

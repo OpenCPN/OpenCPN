@@ -1,9 +1,11 @@
 /******************************************************************************
  *
  * Project:  OpenCPN
+ * Authors:  David Register
+ *           Sean D'Epagnier
  *
  ***************************************************************************
- *   Copyright (C) 2013 by David S. Register                               *
+ *   Copyright (C) 2014 by David S. Register                               *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,7 +24,7 @@
  ***************************************************************************
  */
 
-#include "wx/wxprec.h"
+#include <wx/wxprec.h>
 #include <wx/tokenzr.h>
 
 #include "GL/gl.h"
@@ -51,6 +53,8 @@ extern s52plib *ps52plib;
 extern bool g_bopengl;
 extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
+GLenum       g_texture_rectangle_format;
+
 extern PlugInManager* g_pi_manager;
 extern bool g_bskew_comp;
 extern int g_memCacheLimit;
@@ -60,16 +64,19 @@ extern ColorScheme global_color_scheme;
 extern bool g_bquiting;
 extern ThumbWin         *pthumbwin;
 
-extern PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffersEXT;
-extern PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffersEXT;
-extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    s_glFramebufferTexture2DEXT;
-extern PFNGLBINDFRAMEBUFFEREXTPROC         s_glBindFramebufferEXT;
-extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC s_glFramebufferRenderbufferEXT;
-extern PFNGLRENDERBUFFERSTORAGEEXTPROC     s_glRenderbufferStorageEXT;
-extern PFNGLBINDRENDERBUFFEREXTPROC        s_glBindRenderbufferEXT;
-extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  s_glCheckFramebufferStatusEXT;
-extern PFNGLDELETEFRAMEBUFFERSEXTPROC      s_glDeleteFramebuffersEXT;
-extern PFNGLDELETERENDERBUFFERSEXTPROC     s_glDeleteRenderbuffersEXT;
+PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffers;
+PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffers;
+PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    s_glFramebufferTexture2D;
+PFNGLBINDFRAMEBUFFEREXTPROC         s_glBindFramebuffer;
+PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC s_glFramebufferRenderbuffer;
+PFNGLRENDERBUFFERSTORAGEEXTPROC     s_glRenderbufferStorage;
+PFNGLBINDRENDERBUFFEREXTPROC        s_glBindRenderbuffer;
+PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC  s_glCheckFramebufferStatus;
+PFNGLDELETEFRAMEBUFFERSEXTPROC      s_glDeleteFramebuffers;
+PFNGLDELETERENDERBUFFERSEXTPROC     s_glDeleteRenderbuffers;
+PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
+PFNGLCOMPRESSEDTEXIMAGE2DPROC       s_glCompressedTexImage2D;
+PFNGLGETCOMPRESSEDTEXIMAGEPROC      s_glGetCompressedTexImage;
 
 #ifdef __WXMSW__
 HINSTANCE s_hGL_DLL;                   // Handle to DLL
@@ -291,62 +298,88 @@ static GLboolean QueryExtension( const char *extName )
     return GL_FALSE;
 }
 
-static bool GetglEntryPoints( void )
-{
+typedef void (*GenericFunction)(void);
+
 #if defined(__WXMSW__)
-    s_hGL_DLL = LoadLibrary( (LPCWSTR) "opengl32.dll" );
-    if( NULL == s_hGL_DLL ) return false;
+#define systemGetProcAddress(ADDR) wglGetProcAddress(ADDR)
+#elif defined(__WXOSX__)
 
-    s_glGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC) GetProcAddress( s_hGL_DLL,
-                             "glGenFramebuffersEXT" );
-    s_glGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC) GetProcAddress( s_hGL_DLL,
-                              "glGenRenderbuffersEXT" );
-    s_glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) GetProcAddress( s_hGL_DLL,
-                                  "glFramebufferTexture2DEXT" );
-    s_glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC) GetProcAddress( s_hGL_DLL,
-                             "glBindFramebufferEXT" );
-    s_glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) GetProcAddress(
-                                         s_hGL_DLL, "glFramebufferRenderbufferEXT" );
-    s_glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC) GetProcAddress( s_hGL_DLL,
-                                 "glRenderbufferStorageEXT" );
-    s_glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC) GetProcAddress( s_hGL_DLL,
-                              "glBindRenderbufferEXT" );
-    s_glCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) GetProcAddress( s_hGL_DLL,
-                                    "glCheckFramebufferStatusEXT" );
-    s_glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC) GetProcAddress( s_hGL_DLL,
-                                "glDeleteFramebuffersEXT" );
-    s_glDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC) GetProcAddress( s_hGL_DLL,
-                                 "glDeleteRenderbuffersEXT" );
+# if 0 /* someone please fix this for macosx, until then, no procs */
+#include <ApplicationServices/ApplicationServices.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <CoreFoundation/CFBundle.h>
 
-#elif defined(__WXMAC__)
-    return false;
+GenericFunction systemGetProcAddress(const char *procname)
+{
+    CFBundle opengl_framework = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
 
+    if(opengl_framework == NULL)
+        return (GenericFunction)NULL;
+    
+    CFStringRef symbolName = CFStringCreateWithCString(kCFAllocatorDefault, procname,
+                                                       kCFStringEncodingASCII);
+
+    GenericFunction symbol = CFBundleGetFunctionPointerForName(opengl_framework, symbolName);
+    CFRelease(symbolName);
+
+    return symbol;
+}
+# else
+#define systemGetProcAddress(ADDR) NULL /* fallback to failure for macosx */
+# endif
 #else
-
-    s_glGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC)glXGetProcAddress((const GLubyte *)"glGenFramebuffersEXT");
-    s_glGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC)glXGetProcAddress((const GLubyte *)"glGenRenderbuffersEXT");
-    s_glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)glXGetProcAddress((const GLubyte *)"glFramebufferTexture2DEXT");
-    s_glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)glXGetProcAddress((const GLubyte *)"glBindFramebufferEXT");
-    s_glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)glXGetProcAddress((const GLubyte *)"glFramebufferRenderbufferEXT");
-    s_glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)glXGetProcAddress((const GLubyte *)"glRenderbufferStorageEXT");
-    s_glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC)glXGetProcAddress((const GLubyte *)"glBindRenderbufferEXT");
-    s_glCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)glXGetProcAddress((const GLubyte *)"glCheckFramebufferStatusEXT");
-    s_glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)glXGetProcAddress((const GLubyte *)"glDeleteFramebuffersEXT");
-    s_glDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC)glXGetProcAddress((const GLubyte *)"glDeleteRenderbuffersEXT");
+#define systemGetProcAddress(ADDR) glXGetProcAddress((const GLubyte*)ADDR)
 #endif
 
-    if( NULL == s_glGenFramebuffersEXT ) return false;
-    if( NULL == s_glGenRenderbuffersEXT ) return false;
-    if( NULL == s_glFramebufferTexture2DEXT ) return false;
-    if( NULL == s_glBindFramebufferEXT ) return false;
-    if( NULL == s_glFramebufferRenderbufferEXT ) return false;
-    if( NULL == s_glRenderbufferStorageEXT ) return false;
-    if( NULL == s_glBindRenderbufferEXT ) return false;
-    if( NULL == s_glCheckFramebufferStatusEXT ) return false;
-    if( NULL == s_glDeleteFramebuffersEXT ) return false;
-    if( NULL == s_glDeleteRenderbuffersEXT ) return false;
+GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
+{
+    char addrbuf[256];
+    snprintf(addrbuf, sizeof addrbuf, "%s%s", addr, extension);
+    return (GenericFunction)systemGetProcAddress(addr);
+}
 
-    return true;
+static void GetglEntryPoints( void )
+{
+    // the following are all part of framebuffer object,
+    // according to opengl spec, we cannot mix EXT and ARB extensions
+    // (I don't know that it could ever happen, but if it did, bad things would happen)
+    const char *extensions[] = {"", "ARB", "EXT" };
+
+    unsigned int i;
+    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++)
+        if((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glGenFramebuffers", extensions[i])))
+            break;
+
+    s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)
+        ocpnGetProcAddress( "glGenRenderbuffers", extensions[i]);
+    s_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
+        ocpnGetProcAddress( "glFramebufferTexture2D", extensions[i]);
+    s_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)
+        ocpnGetProcAddress( "glBindFramebuffer", extensions[i]);
+    s_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)
+        ocpnGetProcAddress( "glFramebufferRenderbuffer", extensions[i]);
+    s_glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEEXTPROC)
+        ocpnGetProcAddress( "glRenderbufferStorage", extensions[i]);
+    s_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)
+        ocpnGetProcAddress( "glBindRenderbuffer", extensions[i]);
+    s_glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)
+        ocpnGetProcAddress( "glCheckFramebufferStatus", extensions[i]);
+    s_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)
+        ocpnGetProcAddress( "glDeleteFramebuffers", extensions[i]);
+    s_glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSEXTPROC)
+        ocpnGetProcAddress( "glDeleteRenderbuffers", extensions[i]);
+    s_glGenerateMipmap = (PFNGLGENERATEMIPMAPEXTPROC)
+        ocpnGetProcAddress( "glGenerateMipmap", extensions[i]);
+
+
+    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++)
+        if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
+            ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
+            break;
+
+    s_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)
+        ocpnGetProcAddress( "glGetCompressedTexImage", extensions[i]);
 }
 
 // This attribute set works OK with vesa software only OpenGL renderer
@@ -365,6 +398,9 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
 {
     m_ntex = 0;
     m_b_paint_enable = true;
+
+    m_b_BuiltFBO = false;
+    m_b_DisableFBO = true; // disable until we merge the new fbo code
 }
 
 glChartCanvas::~glChartCanvas()
@@ -424,9 +460,9 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     ViewPort &VP = cc1->GetVP();
     if( GetSize().x != VP.pix_width || GetSize().y != VP.pix_height ) {
         SetSize( VP.pix_width, VP.pix_height );
-        if( m_bsetup && m_b_useFBO ) {
+        if( m_bsetup && !m_b_BuiltFBO ) {
             BuildFBO();
-            ( *s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, 0 );
+            ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
         }
 
     }
@@ -438,66 +474,189 @@ void glChartCanvas::MouseEvent( wxMouseEvent& event )
     cc1->MouseEvent( event );
 }
 
-void glChartCanvas::BuildFBO( void )
+void glChartCanvas::BuildFBO( )
 {
-    if( m_bsetup && m_b_useFBO ) {
+    if( m_bsetup && m_b_BuiltFBO ) {
         glDeleteTextures( 1, &m_cache_tex );
-        ( *s_glDeleteFramebuffersEXT )( 1, &m_fb0 );
-        ( *s_glDeleteRenderbuffersEXT )( 1, &m_depth_rb );
+        ( s_glDeleteFramebuffers )( 1, &m_fb0 );
+        ( s_glDeleteRenderbuffers )( 1, &m_depth_rb );
     }
 
-    if( m_b_useFBO ) {
-        m_cache_tex_x = GetSize().x;
-        m_cache_tex_y = GetSize().y;
+    if( m_b_DisableFBO)
+        return;
 
-        ( *s_glGenFramebuffersEXT )( 1, &m_fb0 );
-        glGenTextures( 1, &m_cache_tex );
-        ( *s_glGenRenderbuffersEXT )( 1, &m_depth_rb );
+    m_cache_tex_x = GetSize().x;
+    m_cache_tex_y = GetSize().y;
 
-        ( *s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, m_fb0 );
+    ( s_glGenFramebuffers )( 1, &m_fb0 );
+    glGenTextures( 1, &m_cache_tex );
+    ( s_glGenRenderbuffers )( 1, &m_depth_rb );
 
-// initialize color texture
-
-        glBindTexture( m_TEX_TYPE, m_cache_tex );
-        glTexParameterf( m_TEX_TYPE, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-        glTexParameteri( m_TEX_TYPE, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-        glTexImage2D( m_TEX_TYPE, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0, GL_RGBA,
-                      GL_UNSIGNED_BYTE, NULL );
-        ( *s_glFramebufferTexture2DEXT )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, m_TEX_TYPE,
-                                          m_cache_tex, 0 );
-
-        if( m_b_useFBOStencil ) {
-            // initialize composite depth/stencil renderbuffer
-            ( *s_glBindRenderbufferEXT )( GL_RENDERBUFFER_EXT, m_depth_rb );
-            ( *s_glRenderbufferStorageEXT )( GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
-                                             m_cache_tex_x, m_cache_tex_y );
-
-            // Can we attach to depth and stencil at once?  Maybe
-            // it would be easier to not check for this extension and
-            // always use 2 calls.
-            if( QueryExtension( "GL_ARB_framebuffer_object" ) ) {
-                ( *s_glFramebufferRenderbufferEXT )( GL_FRAMEBUFFER_EXT,
-                                                     GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER_EXT, m_depth_rb );
-            } else {
-                ( *s_glFramebufferRenderbufferEXT )( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-                                                     GL_RENDERBUFFER_EXT, m_depth_rb );
-
-                ( *s_glFramebufferRenderbufferEXT )( GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
-                                                     GL_RENDERBUFFER_EXT, m_depth_rb );
-            }
-
+    ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
+    
+    // initialize color texture
+    
+    glBindTexture( m_TEX_TYPE, m_cache_tex );
+    glTexParameterf( m_TEX_TYPE, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameteri( m_TEX_TYPE, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexImage2D( m_TEX_TYPE, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0, GL_RGBA,
+                  GL_UNSIGNED_BYTE, NULL );
+    ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, m_TEX_TYPE,
+                                  m_cache_tex, 0 );
+    
+    if( m_b_useFBOStencil ) {
+        // initialize composite depth/stencil renderbuffer
+        ( s_glBindRenderbuffer )( GL_RENDERBUFFER_EXT, m_depth_rb );
+        ( s_glRenderbufferStorage )( GL_RENDERBUFFER_EXT, GL_DEPTH24_STENCIL8_EXT,
+                                     m_cache_tex_x, m_cache_tex_y );
+        
+        // Can we attach to depth and stencil at once?  Maybe
+        // it would be easier to not check for this extension and
+        // always use 2 calls.
+        if( QueryExtension( "GL_ARB_framebuffer_object" ) ) {
+            ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT,
+                                             GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER_EXT, m_depth_rb );
         } else {
-            // initialize depth renderbuffer
-            ( *s_glBindRenderbufferEXT )( GL_RENDERBUFFER_EXT, m_depth_rb );
-            ( *s_glRenderbufferStorageEXT )( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24,
-                                             m_cache_tex_x, m_cache_tex_y );
-            ( *s_glFramebufferRenderbufferEXT )( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
-                                                 GL_RENDERBUFFER_EXT, m_depth_rb );
+            ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+                                             GL_RENDERBUFFER_EXT, m_depth_rb );
+            
+            ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
+                                             GL_RENDERBUFFER_EXT, m_depth_rb );
         }
 
-        ( *s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, 0 );
+    } else {
+        // initialize depth renderbuffer
+        ( s_glBindRenderbuffer )( GL_RENDERBUFFER_EXT, m_depth_rb );
+        ( s_glRenderbufferStorage )( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24,
+                                     m_cache_tex_x, m_cache_tex_y );
+        ( s_glFramebufferRenderbuffer )( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+                                         GL_RENDERBUFFER_EXT, m_depth_rb );
+    }
+    
+    ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
+
+    /* invalidate cache */
+    Invalidate();
+
+    m_b_BuiltFBO = true;
+}
+
+void glChartCanvas::SetupOpenGL()
+{
+    char render_string[80];
+    strncpy( render_string, (char *) glGetString( GL_RENDERER ), 79 );
+    m_renderer = wxString( render_string, wxConvUTF8 );
+
+    wxString msg;
+    msg.Printf( _T("OpenGL-> Renderer String: ") );
+    msg += m_renderer;
+    wxLogMessage( msg );
+
+    if( ps52plib ) ps52plib->SetGLRendererString( m_renderer );
+
+    s_b_useScissorTest = true;
+    // the radeon x600 driver has buggy scissor test
+    if( GetRendererString().Find( _T("RADEON X600") ) != wxNOT_FOUND )
+        s_b_useScissorTest = false;
+
+    //  This little hack fixes a problem seen with some Intel 945 graphics chips
+    //  We need to not do anything that requires (some) complicated stencil operations.
+    // TODO: arrange this to use stencil, but depth for s52plib and eliminate display list
+
+    bool bad_stencil_code = false;
+    if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
+        wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling stencil buffer") );
+        bad_stencil_code = true;
+        wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling FBO") );
+        m_b_DisableFBO = true;
     }
 
+    //      And for the lousy Unichrome drivers, too
+    if( GetRendererString().Find( _T("UniChrome") ) != wxNOT_FOUND ) {
+        bad_stencil_code = true;
+    }
+
+    //      Stencil buffer test
+    glEnable( GL_STENCIL_TEST );
+    GLboolean stencil = glIsEnabled( GL_STENCIL_TEST );
+    int sb;
+    glGetIntegerv( GL_STENCIL_BITS, &sb );
+    //        printf("Stencil Buffer Available: %d\nStencil bits: %d\n", stencil, sb);
+    glDisable( GL_STENCIL_TEST );
+
+    s_b_useStencil = false;
+    if( !bad_stencil_code && stencil && ( sb == 8 ) ) s_b_useStencil = true;
+
+    if( QueryExtension( "GL_ARB_texture_non_power_of_two" ) )
+        g_texture_rectangle_format = GL_TEXTURE_2D;
+    else if( QueryExtension( "GL_OES_texture_npot" ) )
+        g_texture_rectangle_format = GL_TEXTURE_2D;
+    else if( QueryExtension( "GL_ARB_texture_rectangle" ) )
+        g_texture_rectangle_format = GL_TEXTURE_RECTANGLE_ARB;
+    wxLogMessage( wxString::Format(_T("OpenGL-> Texture rectangle format: %x"),
+                                   g_texture_rectangle_format));
+
+    //      We require certain extensions to support FBO rendering
+    if(!g_texture_rectangle_format)
+        m_b_DisableFBO = true;
+    
+    if(!QueryExtension( "GL_EXT_framebuffer_object" ))
+        m_b_DisableFBO = true;
+
+    GetglEntryPoints();
+
+    if( !s_glGenFramebuffers  || !s_glGenRenderbuffers        || !s_glFramebufferTexture2D ||
+        !s_glBindFramebuffer  || !s_glFramebufferRenderbuffer || !s_glRenderbufferStorage  ||
+        !s_glBindRenderbuffer || !s_glCheckFramebufferStatus  || !s_glDeleteFramebuffers   ||
+        !s_glDeleteRenderbuffers )
+        m_b_DisableFBO = true;
+
+    //      Can we use the stencil buffer in a FBO?
+#ifdef ocpnUSE_GLES /* gles requires all levels */
+    m_b_useFBOStencil = QueryExtension( "GL_OES_packed_depth_stencil" );
+#else
+    m_b_useFBOStencil = QueryExtension( "GL_EXT_packed_depth_stencil" );
+#endif
+
+    //      Maybe build FBO(s)
+
+    BuildFBO();
+#if 0   /* this test sometimes failes when the fbo still works */
+    if( m_b_BuiltFBO ) {
+        // Check framebuffer completeness at the end of initialization.
+        ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
+        GLenum fb_status = ( s_glCheckFramebufferStatus )( GL_FRAMEBUFFER_EXT );
+        ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
+
+        if( fb_status != GL_FRAMEBUFFER_COMPLETE_EXT ) {
+            wxString msg;
+            msg.Printf( _T("    OpenGL-> Framebuffer Incomplete:  %08X"), fb_status );
+            wxLogMessage( msg );
+            m_b_DisableFBO = true;
+            BuildFBO();
+        }
+    }
+#endif
+
+    if( m_b_BuiltFBO && !m_b_useFBOStencil )
+        s_b_useStencil = false;
+
+    if( m_b_BuiltFBO ) {
+        wxLogMessage( _T("OpenGL-> Using Framebuffer Objects") );
+
+        if( m_b_useFBOStencil && s_b_useStencil)
+            wxLogMessage( _T("OpenGL-> Using FBO Stencil buffer") );
+        else
+            wxLogMessage( _T("OpenGL-> FBO Stencil buffer unavailable") );
+    } else
+        wxLogMessage( _T("OpenGL-> Framebuffer Objects unavailable") );
+
+    if( s_b_useStencil ) wxLogMessage( _T("OpenGL-> Using Stencil buffer clipping") );
+    else
+        wxLogMessage( _T("OpenGL-> Using Depth buffer clipping") );
+
+    /* we upload non-aligned memory */
+    glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
 }
 
 int s_in_glpaint;
@@ -519,116 +678,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     }
 
     if( !m_bsetup ) {
-
-        char render_string[80];
-        strncpy( render_string, (char *) glGetString( GL_RENDERER ), 79 );
-        m_renderer = wxString( render_string, wxConvUTF8 );
-
-        wxString msg;
-        msg.Printf( _T("OpenGL-> Renderer String: ") );
-        msg += m_renderer;
-        wxLogMessage( msg );
-
-        if( ps52plib ) ps52plib->SetGLRendererString( m_renderer );
-
-        s_b_useScissorTest = true;
-        // the radeon x600 driver has buggy scissor test
-        if( GetRendererString().Find( _T("RADEON X600") ) != wxNOT_FOUND )
-            s_b_useScissorTest = false;
-
-        //  This little hack fixes a problem seen with some Intel 945 graphics chips
-        //  We need to not do anything that requires (some) complicated stencil operations.
-
-        bool bad_stencil_code = false;
-        if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
-            wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling stencil buffer") );
-            bad_stencil_code = true;
-        }
-
-        //      And for the lousy Unichrome drivers, too
-        if( GetRendererString().Find( _T("UniChrome") ) != wxNOT_FOUND ) {
-            bad_stencil_code = true;
-        }
-
-        //      Stencil buffer test
-        glEnable( GL_STENCIL_TEST );
-        GLboolean stencil = glIsEnabled( GL_STENCIL_TEST );
-        int sb;
-        glGetIntegerv( GL_STENCIL_BITS, &sb );
-        //        printf("Stencil Buffer Available: %d\nStencil bits: %d\n", stencil, sb);
-        glDisable( GL_STENCIL_TEST );
-
-        s_b_useStencil = false;
-        if( !bad_stencil_code && stencil && ( sb == 8 ) ) s_b_useStencil = true;
-
-//          GLenum err = glewInit();
-//           if (GLEW_OK != err)
-
-        m_b_useFBO = false;              // default is false
-
-        //      We require certain extensions to support FBO rendering
-        if( QueryExtension( "GL_ARB_texture_rectangle" )
-                && QueryExtension( "GL_EXT_framebuffer_object" ) ) {
-            m_TEX_TYPE = GL_TEXTURE_RECTANGLE_ARB;
-            m_b_useFBO = true;
-        }
-
-        if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
-            wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling FBO") );
-            m_b_useFBO = false;
-        }
-
-        if( !GetglEntryPoints() ) m_b_useFBO = false;              // default is false
-
-        //      Can we use the stencil buffer in a FBO?
-        if( QueryExtension( "GL_EXT_packed_depth_stencil" ) ) m_b_useFBOStencil = true;
-        else
-            m_b_useFBOStencil = false;
-
-        //      Maybe build FBO(s)
-        if( m_b_useFBO ) {
-            BuildFBO();
-// Check framebuffer completeness at the end of initialization.
-            ( s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, m_fb0 );
-            GLenum fb_status = ( *s_glCheckFramebufferStatusEXT )( GL_FRAMEBUFFER_EXT );
-            ( s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, 0 );
-
-            if( fb_status != GL_FRAMEBUFFER_COMPLETE_EXT ) {
-                wxString msg;
-                msg.Printf( _T("    OpenGL-> Framebuffer Incomplete:  %08X"), fb_status );
-                wxLogMessage( msg );
-                m_b_useFBO = false;
-            }
-        }
-
-        if( m_b_useFBO && !m_b_useFBOStencil ) s_b_useStencil = false;
-
-        if( m_b_useFBO ) {
-            wxLogMessage( _T("OpenGL-> Using Framebuffer Objects") );
-
-            if( m_b_useFBOStencil ) wxLogMessage( _T("OpenGL-> Using FBO Stencil buffer") );
-            else
-                wxLogMessage( _T("OpenGL-> FBO Stencil buffer unavailable") );
-        } else
-            wxLogMessage( _T("OpenGL-> Framebuffer Objects unavailable") );
-
-        if( s_b_useStencil ) wxLogMessage( _T("OpenGL-> Using Stencil buffer clipping") );
-        else
-            wxLogMessage( _T("OpenGL-> Using Depth buffer clipping") );
-
-        /* we upload non-aligned memory */
-        glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-
-        int n_tex_size = 512;
-        double n_GPU_Mem = wxMax(64, g_GPU_MemSize) * ( 1 << 20 );
-        m_tex_max_res = n_GPU_Mem / ( n_tex_size * n_tex_size * 4 * 1.3 ); // 1.3 multiplier allows for full mipmaps
-        m_tex_max_res /= 2;
-        m_tex_max_res_initial = m_tex_max_res;
-
-        wxString str;
-        str.Printf( _T("OpenGL-> Estimated Max Resident Textures: %d"), m_tex_max_res );
-        wxLogMessage( str );
-
+        SetupOpenGL();
         m_bsetup = true;
 //          g_bDebugOGL = true;
     }
@@ -643,7 +693,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 
     cc1->DoTimedMovement();
 
-    render();
+    Render();
 
     s_in_glpaint--;
 
@@ -1397,7 +1447,7 @@ void glChartCanvas::ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Reg
      }
 }
 
-void glChartCanvas::render()
+void glChartCanvas::Render()
 {
     if( !m_bsetup ) return;
 
@@ -1541,7 +1591,7 @@ void glChartCanvas::render()
 //              glClear(GL_COLOR_BUFFER_BIT);
 
         // Try to do accelerated pans
-        if( m_b_useFBO ) {
+        if( m_b_BuiltFBO ) {
             if( m_gl_cache_vp.IsValid() && ( m_cache_tex > 0 ) && !g_bCourseUp ) {
                 if( b_newview ) {
 
@@ -1555,7 +1605,7 @@ void glChartCanvas::render()
                     {
                         if( dx || dy ) {
                             //    Render the reuseable portion of the cached texture
-                            ( *s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, m_fb0 );
+                            ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
 
                             //      Make a new temporary texture, and bind to FBO
                             glGenTextures( 1, &m_blit_tex );
@@ -1565,7 +1615,7 @@ void glChartCanvas::render()
                             glTexParameteri( m_TEX_TYPE, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
                             glTexImage2D( m_TEX_TYPE, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0,
                                           GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-                            ( *s_glFramebufferTexture2DEXT )( GL_FRAMEBUFFER_EXT,
+                            ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT,
                                                               GL_COLOR_ATTACHMENT0_EXT, m_TEX_TYPE, m_blit_tex, 0 );
 
                             glBindTexture( m_TEX_TYPE, m_cache_tex );
@@ -1637,7 +1687,7 @@ void glChartCanvas::render()
                             m_cache_tex = m_blit_tex;
 
                             //   Attach the renamed "blit" texture to the FBO
-                            ( *s_glFramebufferTexture2DEXT )( GL_FRAMEBUFFER_EXT,
+                            ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT,
                                                               GL_COLOR_ATTACHMENT0_EXT, m_TEX_TYPE, m_cache_tex, 0 );
 
                             //      Render the chart(s) in update region
@@ -1651,7 +1701,7 @@ void glChartCanvas::render()
 
                     else              // not blitable
                     {
-                        ( *s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, m_fb0 );
+                        ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
 
                         //      Delete the current cached texture
                         glDeleteTextures( 1, &m_cache_tex );
@@ -1664,7 +1714,7 @@ void glChartCanvas::render()
                         glTexParameteri( m_TEX_TYPE, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
                         glTexImage2D( m_TEX_TYPE, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0,
                                       GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-                        ( *s_glFramebufferTexture2DEXT )( GL_FRAMEBUFFER_EXT,
+                        ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT,
                                                           GL_COLOR_ATTACHMENT0_EXT, m_TEX_TYPE, m_cache_tex, 0 );
 
                         //      Render the chart(s)
@@ -1677,7 +1727,7 @@ void glChartCanvas::render()
                 }
             } else      //cached texture is not valid
             {
-                ( *s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, m_fb0 );
+                ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
 
                 //      Delete the current cached texture
                 glDeleteTextures( 1, &m_cache_tex );
@@ -1690,7 +1740,7 @@ void glChartCanvas::render()
                 glTexParameteri( m_TEX_TYPE, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
                 glTexImage2D( m_TEX_TYPE, 0, GL_RGBA, m_cache_tex_x, m_cache_tex_y, 0, GL_RGBA,
                               GL_UNSIGNED_BYTE, NULL );
-                ( *s_glFramebufferTexture2DEXT )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                                   m_TEX_TYPE, m_cache_tex, 0 );
 
                 //      Render the chart(s)
@@ -1699,7 +1749,7 @@ void glChartCanvas::render()
             }
 
             // Disable Render to FBO
-            ( *s_glBindFramebufferEXT )( GL_FRAMEBUFFER_EXT, 0 );
+            ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
             glDisable( GL_DEPTH_TEST );
 
             // Render the cached texture as quad to screen

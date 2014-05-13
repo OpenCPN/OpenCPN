@@ -54,7 +54,7 @@ public:
 
     void OnPaint(wxPaintEvent& event);
     void OnEraseBG(wxEraseEvent& evt);
-    void render();
+    void Render();
     void OnActivate ( wxActivateEvent& event );
     void OnSize ( wxSizeEvent& event );
     void MouseEvent(wxMouseEvent& event);
@@ -71,7 +71,8 @@ public:
 
 protected:
     void RenderQuiltViewGL(ViewPort &vp, OCPNRegion Region, bool b_clear = true);
-    void BuildFBO(void);
+    void BuildFBO();
+    void SetupOpenGL();
     void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Region );
 
     wxGLContext       *m_pcontext;
@@ -107,7 +108,8 @@ protected:
     bool m_b_paint_enable;
 
     //    For FBO(s)
-    bool         m_b_useFBO;
+    bool         m_b_DisableFBO;
+    bool         m_b_BuiltFBO;
     bool         m_b_useFBOStencil;
     GLuint       m_fb0;
     GLuint       m_depth_rb;
