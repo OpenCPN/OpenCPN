@@ -42,6 +42,7 @@
 #include "s57chart.h"
 #include "ChInfoWin.h"
 #include "thumbwin.h"
+#include "TexFont.h"
 #include "cutil.h"
 
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
@@ -65,6 +66,7 @@ extern ChartBase *Current_Ch;
 extern ColorScheme global_color_scheme;
 extern bool g_bquiting;
 extern ThumbWin         *pthumbwin;
+extern bool             g_bDisplayGrid;
 
 extern double           gLat, gLon, gCog, gSog, gHdt;
 
@@ -750,6 +752,182 @@ bool glChartCanvas::PurgeChartTextures( ChartBase *pc )
         return false;
 }
 
+extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing );
+extern void CalcGridText( float latlon, float spacing, bool bPostfix, char *text );
+void glChartCanvas::GridDraw( )
+{
+    if( !g_bDisplayGrid ) return;
+
+    bool b_rotated = fabs( cc1->GetVP().rotation ) > 1e-5 ||
+        ( fabs( cc1->GetVP().skew ) < 1e-9 && !g_bskew_comp );
+
+    double nlat, elon, slat, wlon;
+    float lat, lon;
+    float dlat, dlon;
+    float gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
+    wxCoord w, h;
+    
+    wxColour GridColor = GetGlobalColor( _T ( "SNDG1" ) );        
+
+    static TexFont s_texfont;
+    wxFont *font = wxTheFontList->FindOrCreateFont
+        ( 8, wxFONTFAMILY_SWISS, wxNORMAL,
+          wxFONTWEIGHT_NORMAL, FALSE, wxString( _T ( "Arial" ) ) );
+    s_texfont.Build(*font);
+
+    w = cc1->m_canvas_width;
+    h = cc1->m_canvas_height;
+
+    LLBBox llbbox = cc1->GetVP().GetBBox();
+    nlat = llbbox.GetMaxY();
+    slat = llbbox.GetMinY();
+    elon = llbbox.GetMaxX();
+    wlon = llbbox.GetMinX();
+
+    /* base spacing off unexpanded viewport, so when rotating about a location
+       the grid does not change. */
+    double rotation = cc1->GetVP().rotation;
+    cc1->GetVP().rotation = 0;
+
+    double latp[2], lonp[2];
+    cc1->GetCanvasPixPoint( 0, 0, latp[0], lonp[0] );
+    cc1->GetCanvasPixPoint( w, h, latp[1], lonp[1] );
+    cc1->GetVP().rotation = rotation;
+
+    dlat = latp[0] - latp[1]; // calculate how many degrees of latitude are shown in the window
+    dlon = lonp[1] - lonp[0]; // calculate how many degrees of longitude are shown in the window
+    if( dlon < 0.0 ) // concider datum border at 180 degrees longitude
+    {
+        dlon = dlon + 360.0;
+    }
+
+    // calculate distance between latitude grid lines
+    CalcGridSpacing( dlat, gridlatMajor, gridlatMinor );
+
+    // calculate distance between grid lines
+    CalcGridSpacing( dlon, gridlonMajor, gridlonMinor );
+
+    // Draw Major latitude grid lines and text
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND );
+
+    glColor3ub(GridColor.Red(), GridColor.Green(), GridColor.Blue());
+
+    // Render in two passes, lines then text is much more efficient for opengl
+    for( int pass=0; pass<2; pass++ ) {
+        if(pass == 0) {
+            glLineWidth(1);
+            glBegin(GL_LINES);
+        }
+
+        // calculate position of first major latitude grid line
+        lat = ceil( slat / gridlatMajor ) * gridlatMajor;
+
+        while( lat < nlat ) {
+            wxPoint r, s;
+            cc1->GetCanvasPointPix( lat, elon, &r );
+            cc1->GetCanvasPointPix( lat, wlon, &s );
+            if(pass == 0) {
+                glVertex2i(r.x, r.y);
+                glVertex2i(s.x, s.y);
+            } else {
+                char sbuf[12];
+                CalcGridText( lat, gridlatMajor, true, sbuf ); // get text for grid line
+
+                float x = 0, y = -1;
+                y = (float)(r.y*s.x - s.y*r.x) / (s.x - r.x);
+                if(y < 0 || y > h) {
+                    int iy;
+                    s_texfont.GetTextExtent(sbuf, strlen(sbuf), 0, &iy);
+                    y = h - iy;
+                    x = (float)(r.x*s.y - s.x*r.y + (s.x - r.x)*y) / (s.y - r.y);
+                }
+
+                glEnable(GL_TEXTURE_2D);
+                s_texfont.RenderString(sbuf, x, y);
+                glDisable(GL_TEXTURE_2D);
+            }
+            
+            lat = lat + gridlatMajor;
+            if( fabs( lat - wxRound( lat ) ) < 1e-5 ) lat = wxRound( lat );
+        }
+
+        if(pass == 0 && !b_rotated) {
+            // calculate position of first minor latitude grid line
+            lat = ceil( slat / gridlatMinor ) * gridlatMinor;
+        
+            // Draw minor latitude grid lines
+            while( lat < nlat ) {
+                wxPoint r;
+                cc1->GetCanvasPointPix( lat, ( elon + wlon ) / 2, &r );
+                glVertex2i(0, r.y);
+                glVertex2i(10, r.y);
+                glVertex2i(w - 10, r.y);
+                glVertex2i(w, r.y);
+                lat = lat + gridlatMinor;
+            }
+        }
+
+        // calculate position of first major latitude grid line
+        lon = ceil( wlon / gridlonMajor ) * gridlonMajor;
+        
+        // draw major longitude grid lines
+        for( int i = 0, itermax = (int) ( dlon / gridlonMajor ); i <= itermax; i++ ) {
+            wxPoint r, s;
+            cc1->GetCanvasPointPix( nlat, lon, &r );
+            cc1->GetCanvasPointPix( slat, lon, &s );
+            if(pass == 0) {
+                glVertex2i(r.x, r.y);
+                glVertex2i(s.x, s.y);
+            } else {
+                char sbuf[12];
+                CalcGridText( lon, gridlonMajor, false, sbuf );
+
+                float x = -1, y = 0;
+                x = (float)(r.x*s.y - s.x*r.y) / (s.y - r.y);
+                if(x < 0 || x > w) {
+                    int ix;
+                    s_texfont.GetTextExtent(sbuf, strlen(sbuf), &ix, 0);
+                    x = w - ix;
+                    y = (float)(r.y*s.x - s.y*r.x + (s.y - r.y)*x) / (s.x - r.x);
+                }
+
+                glEnable(GL_TEXTURE_2D);
+                s_texfont.RenderString(sbuf, x, y);
+                glDisable(GL_TEXTURE_2D);
+            }
+
+            lon = lon + gridlonMajor;
+            if( lon > 180.0 )
+                lon = lon - 360.0;
+
+            if( fabs( lon - wxRound( lon ) ) < 1e-5 ) lon = wxRound( lon );
+        }
+
+        if(pass == 0 && !b_rotated) {
+            // calculate position of first minor longitude grid line
+            lon = ceil( wlon / gridlonMinor ) * gridlonMinor;
+            // draw minor longitude grid lines
+            for( int i = 0, itermax = (int) ( dlon / gridlonMinor ); i <= itermax; i++ ) {
+                wxPoint r;
+                cc1->GetCanvasPointPix( ( nlat + slat ) / 2, lon, &r );
+                glVertex2i(r.x, 0);
+                glVertex2i(r.x, 10);
+                glVertex2i(r.x, h-10);
+                glVertex2i(r.x, h);
+                lon = lon + gridlonMinor;
+                if( lon > 180.0 ) {
+                    lon = lon - 360.0;
+                }
+            }
+        }
+
+        if(pass == 0)
+            glEnd();
+    }
+}
+
 void glChartCanvas::ShipDraw(ocpnDC& dc)
 {
     if( !cc1->GetVP().IsValid() ) return;
@@ -1013,7 +1191,7 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
 //    if( g_pActiveTrack ) g_pActiveTrack->Draw( dc, vp );
 //    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp );
 
-    cc1->GridDraw( dc );
+    GridDraw( );
 
     if( g_pi_manager ) {
         g_pi_manager->SendViewPortToRequestingPlugIns( vp );

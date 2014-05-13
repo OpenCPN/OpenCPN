@@ -455,9 +455,14 @@ wxPoint ViewPort::GetPixFromLL( double lat, double lon ) const
     double dyr = npix;
 
     //    Apply VP Rotation
-    if( g_bCourseUp ) {
-        dxr = epix * cos( rotation ) + npix * sin( rotation );
-        dyr = npix * cos( rotation ) - epix * sin( rotation );
+    double angle = rotation;
+
+    if(!g_bskew_comp)
+        angle += skew;
+        
+    if( angle ) {
+        dxr = epix * cos( angle ) + npix * sin( angle );
+        dyr = npix * cos( angle ) - epix * sin( angle );
     }
     wxPoint r;
     //    We definitely need a round() function here
@@ -521,9 +526,13 @@ wxPoint2DDouble ViewPort::GetDoublePixFromLL( double lat, double lon )
     double dyr = npix;
 
     //    Apply VP Rotation
-    if( g_bCourseUp ) {
-        dxr = epix * cos( rotation ) + npix * sin( rotation );
-        dyr = npix * cos( rotation ) - epix * sin( rotation );
+    double angle = rotation;
+    if(!g_bskew_comp)
+        angle += skew;
+
+    if( angle ) {
+        dxr = epix * cos( angle ) + npix * sin( angle );
+        dyr = npix * cos( angle ) - epix * sin( angle );
     }
 
     wxPoint2DDouble r;
@@ -543,9 +552,13 @@ void ViewPort::GetLLFromPix( const wxPoint &p, double *lat, double *lon )
     double ypr = dy;
 
     //    Apply VP Rotation
-    if( g_bCourseUp ) {
-        xpr = ( dx * cos( rotation ) ) - ( dy * sin( rotation ) );
-        ypr = ( dy * cos( rotation ) ) + ( dx * sin( rotation ) );
+    double angle = rotation;
+    if(!g_bskew_comp)
+        angle += skew;
+
+    if( angle ) {
+        xpr = ( dx * cos( angle ) ) - ( dy * sin( angle ) );
+        ypr = ( dy * cos( angle ) ) + ( dx * sin( angle ) );
     }
     double d_east = xpr / view_scale_ppm;
     double d_north = ypr / view_scale_ppm;
@@ -768,7 +781,8 @@ void ViewPort::SetBoxes( void )
     if( ( g_bskew_comp && ( fabs( skew ) > .001 ) ) || ( fabs( rotation ) > .001 ) ) {
 
         double rotator = rotation;
-        rotator -= skew;
+        if(g_bskew_comp)
+            rotator -= skew;
 
         int dy = wxRound(
                      fabs( pix_height * cos( rotator ) ) + fabs( pix_width * sin( rotator ) ) );
@@ -3759,12 +3773,12 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
  **
  ** Calculate the major and minor spacing between the lat/lon grid
  **
- ** @param [r] WindowDegrees [double] displayed number of lat or lan in the window
- ** @param [w] MajorSpacing [double &] Major distance between grid lines
- ** @param [w] MinorSpacing [double &] Minor distance between grid lines
+ ** @param [r] WindowDegrees [float] displayed number of lat or lan in the window
+ ** @param [w] MajorSpacing [float &] Major distance between grid lines
+ ** @param [w] MinorSpacing [float &] Minor distance between grid lines
  ** @return [void]
  */
-void CalcGridSpacing( double WindowDegrees, double& MajorSpacing, double&MinorSpacing )
+void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing )
 {
     int tabi; // iterator for lltab
 
@@ -3805,17 +3819,17 @@ void CalcGridSpacing( double WindowDegrees, double& MajorSpacing, double&MinorSp
  **
  ** Calculates text to display at the major grid lines
  **
- ** @param [r] latlon [double] latitude or longitude of grid line
- ** @param [r] spacing [double] distance between two major grid lines
+ ** @param [r] latlon [float] latitude or longitude of grid line
+ ** @param [r] spacing [float] distance between two major grid lines
  ** @param [r] bPostfix [bool] true for latitudes, false for longitudes
  ** @param [w] text [char*] textbuffer for result, minimum of 12 chars in length
  **
  ** @return [void]
  */
-void CalcGridText( double latlon, double spacing, bool bPostfix, char *text )
+void CalcGridText( float latlon, float spacing, bool bPostfix, char *text )
 {
     int deg = (int) fabs( latlon ); // degrees
-    double min = fabs( ( fabs( latlon ) - deg ) * 60.0 ); // Minutes
+    float min = fabs( ( fabs( latlon ) - deg ) * 60.0 ); // Minutes
     char postfix;
     const unsigned int BufLen = 12;
 
@@ -3865,9 +3879,9 @@ void ChartCanvas::GridDraw( ocpnDC& dc )
             && ( ( fabs( GetVP().skew ) < 1e-9 ) || g_bskew_comp ) ) ) return;
 
     double nlat, elon, slat, wlon;
-    double lat, lon;
-    double dlat, dlon;
-    double gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
+    float lat, lon;
+    float dlat, dlon;
+    float gridlatMajor, gridlatMinor, gridlonMajor, gridlonMinor;
     wxCoord w, h;
     wxPen GridPen( GetGlobalColor( _T ( "SNDG1" ) ), 1, wxSOLID );
     wxFont *font = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_SWISS, wxNORMAL,

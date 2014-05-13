@@ -74,6 +74,8 @@ public:
     void ClearAllRasterTextures(void);
     void DrawGLOverLayObjects(void);
 
+    void GridDraw( );
+
     void ShipDraw(ocpnDC& dc);
 
 protected:
