@@ -2641,10 +2641,6 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
     g_StyleManager->GetCurrentStyle()->SetColorScheme( cs );
     cc1->GetWorldBackgroundChart()->SetColorScheme( cs );
 
-#ifdef USE_S57
-    if( ps52plib ) ps52plib->SetPLIBColorScheme( SchemeName );
-#endif
-
     //Search the user color table array to find the proper hash table
     Usercolortable_index = 0;
     for( unsigned int i = 0; i < UserColorTableArray->GetCount(); i++ ) {

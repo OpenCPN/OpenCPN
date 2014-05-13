@@ -279,7 +279,7 @@ s52plib::~s52plib()
 
     delete[] ledge;
     delete[] redge;
-        
+
     ChartSymbols::DeleteGlobals();
 
     delete HPGL;
@@ -960,6 +960,8 @@ void s52plib::DestroyRules( RuleHash *rh )
 
 void s52plib::FlushSymbolCaches( void )
 {
+    if( !useLegacyRaster ) ChartSymbols::LoadRasterFileForColorTable( m_colortable_index, true );
+
     RuleHash *rh = _symb_sym;
 
     if( !rh ) return;
@@ -1896,7 +1898,6 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                 rzRules->obj->BBObj = bbtext;
                 rzRules->obj->bBBObj_valid = true;
             }
-
         }
     }
 
@@ -2118,132 +2119,138 @@ wxImage s52plib::RuleXBMToImage( Rule *prule )
 //      and re-built on color scheme change
 //
 bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPort *vp,
-        float rot_angle )
+                                  float rot_angle )
 {
-
-    //    Check to see if any cached data is valid
-    bool b_dump_cache = false;
-    if( prule->pixelPtr ) {
-        if( m_pdc ) {
-            if( prule->parm0 != ID_wxBitmap ) b_dump_cache = true;
-        } else {
-            if( prule->parm0 != ID_RGBA ) b_dump_cache = true;
-        }
-    }
-
-    wxBitmap *pbm = NULL;
-    wxImage Image;
 
     int pivot_x = prule->pos.line.pivot_x.SYCL;
     int pivot_y = prule->pos.line.pivot_y.SYRW;
 
-    //Instantiate the symbol if necessary
-    if( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index ) || b_dump_cache ) {
-        Image = useLegacyRaster ?
+    // For opengl, hopefully the symbols are loaded in a texture
+    unsigned int texture;
+    wxRect texrect;
+    if( m_pdc || !(texture = ChartSymbols::GetGLTextureRect(texrect, prule->name.SYNM))) {
+
+        //    Check to see if any cached data is valid
+        bool b_dump_cache = false;
+        if( prule->pixelPtr ) {
+            if( m_pdc ) {
+                if( prule->parm0 != ID_wxBitmap ) b_dump_cache = true;
+            } else {
+                if( prule->parm0 != ID_RGBA ) b_dump_cache = true;
+            }
+        }
+
+        wxBitmap *pbm = NULL;
+        wxImage Image;
+
+        //Instantiate the symbol if necessary
+        if( ( prule->pixelPtr == NULL ) || ( prule->parm1 != m_colortable_index ) || b_dump_cache ) {
+            Image = useLegacyRaster ?
                 RuleXBMToImage( prule ) : ChartSymbols::GetImage( prule->name.SYNM );
 
-        // delete any old private data
-        ClearRulesCache( prule );
+            // delete any old private data
+            ClearRulesCache( prule );
 
-        int w = Image.GetWidth();
-        int h = Image.GetHeight();
+            int w = Image.GetWidth();
+            int h = Image.GetHeight();
 
-        if( !m_pdc )          // opengl
-        {
-            //    Get the glRGBA format data from the wxImage
-            unsigned char *d = Image.GetData();
-            unsigned char *a = Image.GetAlpha();
-
-            Image.SetMaskColour( m_unused_wxColor.Red(), m_unused_wxColor.Green(),
-                    m_unused_wxColor.Blue() );
-            unsigned char mr, mg, mb;
-            if( !Image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ) printf(
-                    "trying to use mask to draw a bitmap without alpha or mask\n" );
-
-            unsigned char *e = (unsigned char *) malloc( w * h * 4 );
-            for( int y = 0; y < h; y++ ) {
-                for( int x = 0; x < w; x++ ) {
-                    unsigned char r, g, b;
-                    int off = ( y * Image.GetWidth() + x );
-                    r = d[off * 3 + 0];
-                    g = d[off * 3 + 1];
-                    b = d[off * 3 + 2];
-
-                    e[off * 4 + 0] = r;
-                    e[off * 4 + 1] = g;
-                    e[off * 4 + 2] = b;
-
-                    e[off * 4 + 3] =
-                            a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
-                }
-            }
-
-            //      Save the bitmap ptr and aux parms in the rule
-            prule->pixelPtr = e;
-            prule->parm0 = ID_RGBA;
-            prule->parm1 = m_colortable_index;
-            prule->parm2 = w;
-            prule->parm3 = h;
-        } else {
-            //      Make the masked Bitmap
-            if( useLegacyRaster ) {
-                pbm = new wxBitmap( Image );
-                wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
-                pbm->SetMask( pmask );
-            }
-
-            bool b_has_trans = false;
-#if (defined(__WXGTK__) || defined(__WXMAC__))
-
-            //    Blitting of wxBitmap with transparency in wxGTK is broken....
-            //    We can do it the hard way, by manually alpha blending the
-            //    symbol with a clip taken from the current screen DC contents.
-
-            //    Inspect the symbol image, to see if it actually has alpha transparency
-            if(Image.HasAlpha())
+            if( !m_pdc )          // opengl
             {
+                //    Get the glRGBA format data from the wxImage
+                unsigned char *d = Image.GetData();
                 unsigned char *a = Image.GetAlpha();
-                for(int i = 0; i < Image.GetHeight(); i++, a++)
-                {
-                    for(int j = 0; j < Image.GetWidth(); j++)
-                    {
-                        if((*a) && (*a != 255)) {
-                            b_has_trans = true;
-                            break;
-                        }
+                
+                Image.SetMaskColour( m_unused_wxColor.Red(), m_unused_wxColor.Green(),
+                                     m_unused_wxColor.Blue() );
+                unsigned char mr, mg, mb;
+                if( !Image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ) printf(
+                    "trying to use mask to draw a bitmap without alpha or mask\n" );
+                
+                unsigned char *e = (unsigned char *) malloc( w * h * 4 );
+                for( int y = 0; y < h; y++ ) {
+                    for( int x = 0; x < w; x++ ) {
+                        unsigned char r, g, b;
+                        int off = ( y * Image.GetWidth() + x );
+                        r = d[off * 3 + 0];
+                        g = d[off * 3 + 1];
+                        b = d[off * 3 + 2];
+                        
+                        e[off * 4 + 0] = r;
+                        e[off * 4 + 1] = g;
+                        e[off * 4 + 2] = b;
+                        
+                        e[off * 4 + 3] =
+                            a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
                     }
-                    if(b_has_trans)
-                    break;
                 }
-            }
+                
+                //      Save the bitmap ptr and aux parms in the rule
+                prule->pixelPtr = e;
+                prule->parm0 = ID_RGBA;
+                prule->parm1 = m_colortable_index;
+                prule->parm2 = w;
+                prule->parm3 = h;
+            } else {
+                //      Make the masked Bitmap
+                if( useLegacyRaster ) {
+                    pbm = new wxBitmap( Image );
+                    wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
+                    pbm->SetMask( pmask );
+                }
+                
+                bool b_has_trans = false;
+#if (defined(__WXGTK__) || defined(__WXMAC__))
+                
+                //    Blitting of wxBitmap with transparency in wxGTK is broken....
+                //    We can do it the hard way, by manually alpha blending the
+                //    symbol with a clip taken from the current screen DC contents.
+                
+                //    Inspect the symbol image, to see if it actually has alpha transparency
+                if(Image.HasAlpha())
+                {
+                    unsigned char *a = Image.GetAlpha();
+                    for(int i = 0; i < Image.GetHeight(); i++, a++)
+                    {
+                        for(int j = 0; j < Image.GetWidth(); j++)
+                        {
+                            if((*a) && (*a != 255)) {
+                                b_has_trans = true;
+                                break;
+                            }
+                        }
+                        if(b_has_trans)
+                            break;
+                    }
+                }
 #ifdef __WXMAC__
-            b_has_trans = true;
+                b_has_trans = true;
 #endif
-
-            //    If the symbol image has no transparency, then a standard wxDC:Blit() will work
-            if(!b_has_trans) {
-                pbm = new wxBitmap( Image, -1 );
-                wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
-                pbm->SetMask( pmask );
-            }
-
+                
+                //    If the symbol image has no transparency, then a standard wxDC:Blit() will work
+                if(!b_has_trans) {
+                    pbm = new wxBitmap( Image, -1 );
+                    wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
+                    pbm->SetMask( pmask );
+                }
+                
 #else
-            if( !useLegacyRaster ) {
-                pbm = new wxBitmap( Image, 32 );                // windows
-                wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
-                pbm->SetMask( pmask );
-            }
+                if( !useLegacyRaster ) {
+                    pbm = new wxBitmap( Image, 32 );                // windows
+                    wxMask *pmask = new wxMask( *pbm, m_unused_wxColor );
+                    pbm->SetMask( pmask );
+                }
 #endif
-
-            //      Save the bitmap ptr and aux parms in the rule
-            prule->pixelPtr = pbm;
-            prule->parm0 = ID_wxBitmap;
-            prule->parm1 = m_colortable_index;
-            prule->parm2 = w;
-            prule->parm3 = h;
-
-        }
-    }               // instantiation
+                
+                //      Save the bitmap ptr and aux parms in the rule
+                prule->pixelPtr = pbm;
+                prule->parm0 = ID_wxBitmap;
+                prule->parm1 = m_colortable_index;
+                prule->parm2 = w;
+                prule->parm3 = h;
+                
+            }
+        }               // instantiation
+    }
 
     //        Get the bounding box for the to-be-drawn symbol
     int b_width, b_height;
@@ -2270,19 +2277,58 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     if( !m_pdc )          // opengl
     {
 #ifdef ocpnUSE_GL
-        double cr = cos( vp->rotation );
-        double sr = sin( vp->rotation );
-        double ddx = pivot_x * cr + pivot_y * sr;
-        double ddy = pivot_y * cr - pivot_x * sr;
-
-        glColor4f( 1, 1, 1, 1 );
-
         glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-        glRasterPos2f( r.x - ddx, r.y - ddy );
-        glPixelZoom( 1, -1 );
-        glDrawPixels( b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr );
-        glPixelZoom( 1, 1 );
+
+        if(texture) {
+            extern GLenum       g_texture_rectangle_format;
+            glPushAttrib( GL_ENABLE_BIT ); //Save
+
+            glEnable(g_texture_rectangle_format);
+            glBindTexture(g_texture_rectangle_format, texture);
+            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+
+            glPushMatrix();
+
+            glTranslatef(r.x, r.y, 0);
+            glRotatef(vp->rotation * 180/PI, 0, 0, -1);
+            glTranslatef(-pivot_x, -pivot_y, 0);
+
+            int w = texrect.width, h = texrect.height;
+
+            float tx1 = texrect.x, ty1 = texrect.y;
+            float tx2 = tx1 + w, ty2 = ty1 + h;
+
+            if(g_texture_rectangle_format == GL_TEXTURE_2D) {
+                wxSize size = ChartSymbols::GLTextureSize();
+                tx1 /= size.x, tx2 /= size.x;
+                ty1 /= size.y, ty2 /= size.y;
+            }
+
+            glBegin(GL_QUADS);
+                glTexCoord2f(tx1, ty1);    glVertex2i( 0, 0);
+                glTexCoord2f(tx2, ty1);    glVertex2i( w, 0);
+                glTexCoord2f(tx2, ty2);    glVertex2i( w, h);
+                glTexCoord2f(tx1, ty2);    glVertex2i( 0, h);
+            glEnd();
+
+            glPopMatrix();
+
+            glPopAttrib();
+        } else { /* this is only for legacy mode, or systems without NPOT textures */
+            float cr = cosf( vp->rotation );
+            float sr = sinf( vp->rotation );
+            float ddx = pivot_x * cr + pivot_y * sr;
+            float ddy = pivot_y * cr - pivot_x * sr;
+
+            glColor4f( 1, 1, 1, 1 );
+
+            glRasterPos2f( r.x - ddx, r.y - ddy );
+            glPixelZoom( 1, -1 );
+            glDrawPixels( b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr );
+            glPixelZoom( 1, 1 );
+        }
+
         glDisable( GL_BLEND );
 #endif
     } else {
