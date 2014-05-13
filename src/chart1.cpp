@@ -632,7 +632,7 @@ int               g_sticky_chart;
 
 extern wxString OpenCPNVersion; //Gunther
 
-double g_GLMinLineWidth;
+float g_GLMinLineWidth;
 
 int n_NavMessageShown;
 wxString g_config_version_string;

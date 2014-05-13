@@ -54,7 +54,7 @@
 
 #include "ocpndc.h"
 
-extern double g_GLMinLineWidth;
+extern float g_GLMinLineWidth;
 wxArrayPtrVoid gTesselatorVertices;
 
 //----------------------------------------------------------------------------
