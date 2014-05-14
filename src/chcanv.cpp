@@ -3795,9 +3795,9 @@ void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpaci
 
     // table for calculating the distance between the grids
     // [0] width or height of the displayed chart in degrees
-    // [1] spacing between major grid liones in degrees
+    // [1] spacing between major grid lines in degrees
     // [2] spacing between minor grid lines in degrees
-    const double lltab[][3] = { { 180.0, 90.0, 30.0 }, { 90.0, 45.0, 15.0 }, { 60.0, 30.0, 10.0 }, {
+    const float lltab[][3] = { { 180.0, 90.0, 30.0 }, { 90.0, 45.0, 15.0 }, { 60.0, 30.0, 10.0 }, {
             20.0, 10.0, 2.0
         }, { 10.0, 5.0, 1.0 }, { 4.0, 2.0, 30.0 / 60.0 }, {
             2.0, 1.0, 20.0
@@ -4192,7 +4192,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     if( td->b_OwnShip ) return;
 
     //    If target's speed is unavailable, use zero for further calculations
-    double target_sog = td->SOG;
+    float target_sog = td->SOG;
     if( (td->SOG > 102.2) && !td->b_SarAircraftPosnReport )
         target_sog = 0.;
 
@@ -4496,9 +4496,8 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             int pixy1 = PredPoint.y;
 
             //  Don't draw the COG line  and predictor point if zoomed far out.... or if target lost/inactive
-            double l = pow(
-                           pow( (double) ( PredPoint.x - TargetPoint.x ), 2 )
-                           + pow( (double) ( PredPoint.y - TargetPoint.y ), 2 ), 0.5 );
+            float l = sqrtf( powf( (float) ( PredPoint.x - TargetPoint.x ), 2 )
+                           + powf( (float) ( PredPoint.y - TargetPoint.y ), 2 ) );
 
             if( l > 24 ) {
                 ClipResult res = cohen_sutherland_line_clip_i( &pixx, &pixy, &pixx1, &pixy1, 0,
