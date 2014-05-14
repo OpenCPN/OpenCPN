@@ -3041,6 +3041,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 {
     bool b_ret = false;
 
+    if(skew > PI) /* so our difference tests work, put in range of +-Pi */
+        skew -= 2*PI;
+
     //  Any sensible change?
     if( ( fabs( VPoint.view_scale_ppm - scale_ppm ) < 1e-9 )
             && ( fabs( VPoint.skew - skew ) < 1e-9 )
@@ -4255,7 +4258,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         //    Of course, if the target reported a valid HDG, then use it for icon
         if( (int) ( td->HDG ) != 511 ) {
             theta = ( ( td->HDG - 90 ) * PI / 180. ) + GetVP().rotation;
-            if( !g_bskew_comp && !g_bCourseUp )
+            if( !g_bskew_comp )
                 theta += GetVP().skew;
         }
 
@@ -8947,9 +8950,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
         b_newview = false;
     }
 
-    //  If in COG UP Mode, we may be able to use the cached rotated bitmap
+    //  If the ViewPort is rotated, we may be able to use the cached rotated bitmap
     bool b_rcache_ok = false;
-    if( g_bCourseUp && ( fabs( VPoint.rotation ) > 0.01 ) ) b_rcache_ok = !b_newview;
+    if( fabs( VPoint.rotation ) > 0.01 ) b_rcache_ok = !b_newview;
 
     //  If in skew compensation mode, with a skewed VP shown, we may be able to use the cached rotated bitmap
     if( g_bskew_comp && ( fabs( VPoint.skew ) > 0.01 ) ) b_rcache_ok = !b_newview;
@@ -8979,7 +8982,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
                 || ( m_working_bm.GetHeight() != svp.pix_height ) ) m_working_bm.Create(
                         svp.pix_width, svp.pix_height, -1 ); // make sure the target is big enoug
 
-        if( !g_bCourseUp ) {
+        if( fabs( VPoint.rotation ) < 0.01 ) {
             bool b_save = true;
 
             //  If the saved wxBitmap from last OnPaint is useable
@@ -9087,7 +9090,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             }
         }
 
-        else            // quilted, course-up
+        else            // quilted, rotated
         {
             temp_dc.SelectObject( m_working_bm );
             OCPNRegion chart_get_all_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
@@ -9177,7 +9180,8 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             //    Especially, on GTK the wxRound and wxRealPoint functions are very expensive.....
             double angle;
             angle = -GetVP().rotation;
-            angle += GetVP().skew;
+            if(g_bskew_comp)
+                angle += GetVP().skew;
 
             wxImage ri;
             bool b_rot_ok = false;
@@ -10402,7 +10406,8 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuild
 
     double skew_angle = GetVPRotation();
 
-    if( !g_bCourseUp && !g_bskew_comp ) skew_angle = GetVPRotation() + GetVPSkew();
+    if( !g_bskew_comp )
+        skew_angle += GetVPSkew();
 
     if( bdraw_mono_for_mask ) {
 #ifdef __WXX11__
