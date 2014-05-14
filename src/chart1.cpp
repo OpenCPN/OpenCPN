@@ -5240,27 +5240,12 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 
     if( cc1 ) {
+#ifndef __WXGTK__
         double cursor_lat, cursor_lon;
         cc1->GetCursorLatLon( &cursor_lat, &cursor_lon );
-
-        wxString s1;
-        s1 += _T(" ");
-        s1 += toSDMM( 1, cursor_lat );
-        s1 += _T("   ");
-        s1 += toSDMM( 2, cursor_lon );
-        if( GetStatusBar() ) SetStatusText( s1, STAT_FIELD_CURSOR_LL );
-
-        double brg, dist;
-        DistanceBearingMercator( cursor_lat, cursor_lon, gLat, gLon, &brg, &dist );
-        wxString s;
-        if( g_bShowMag )
-            s.Printf( wxString("%03d°(M)  ", wxConvUTF8 ), (int)GetTrueOrMag( brg ) );
-        else
-            s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int)GetTrueOrMag( brg ) );
-        s << cc1->FormatDistanceAdaptive( dist );
-        if( GetStatusBar() ) SetStatusText( s, STAT_FIELD_CURSOR_BRGRNG );
+        cc1->SetCursorStatus(cursor_lat, cursor_lon);
+#endif
     }
-
 //      Update the chart database and displayed chart
     bool bnew_view = false;
 

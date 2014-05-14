@@ -2604,7 +2604,8 @@ void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
         ReloadVP( false );
 #endif
 
-//      This is here because GTK status window update is expensive.. Why??
+//      This is here because GTK status window update is expensive..
+//            cairo using pango rebuilds the font every time so is very inefficient
 //      Anyway, only update the status bar when this timer expires
 #ifdef __WXGTK__
     {
@@ -2621,29 +2622,34 @@ void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
             while(cursor_lon > 180.)
                 cursor_lon -= 360.;
 
-            if ( parent_frame->m_pStatusBar )
-            {
-                wxString s1;
-                s1 += _T(" ");
-                s1 += toSDMM(1, cursor_lat);
-                s1 += _T("   ");
-                s1 += toSDMM(2, cursor_lon);
-                parent_frame->SetStatusText ( s1, STAT_FIELD_CURSOR_LL );
-
-                double brg, dist;
-                wxString s;
-                DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
-                if( g_bShowMag )
-                    s.Printf( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
-                else
-                    s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
-
-                s << FormatDistanceAdaptive( dist );
-                parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
-            }
+            SetCursorStatus(cursor_lat, cursor_lon);
         }
     }
 #endif
+}
+
+void ChartCanvas::SetCursorStatus( double cursor_lat, double cursor_lon )
+{
+    if ( !parent_frame->m_pStatusBar )
+        return;
+
+    wxString s1;
+    s1 += _T(" ");
+    s1 += toSDMM(1, cursor_lat);
+    s1 += _T("   ");
+    s1 += toSDMM(2, cursor_lon);
+    parent_frame->SetStatusText ( s1, STAT_FIELD_CURSOR_LL );
+    
+    double brg, dist;
+    wxString s;
+    DistanceBearingMercator(cursor_lat, cursor_lon, gLat, gLon, &brg, &dist);
+    if( g_bShowMag )
+        s.Printf( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+    else
+        s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
+    
+    s << FormatDistanceAdaptive( dist );
+    parent_frame->SetStatusText ( s, STAT_FIELD_CURSOR_BRGRNG );
 }
 
 void ChartCanvas::GetCursorLatLon( double *lat, double *lon )
@@ -5657,37 +5663,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 //      whenever the mouse has stopped moving for specified interval.
 //      See the method OnCursorTrackTimerEvent()
 #ifndef __WXGTK__
-    if( parent_frame->m_pStatusBar ) {
-        double show_cursor_lon = m_cursor_lon;
-        double show_cursor_lat = m_cursor_lat;
-
-        //    Check the absolute range of the cursor position
-        //    There could be a window wherein the chart geoereferencing is not valid....
-        if( ( fabs( show_cursor_lat ) < 90. ) && ( fabs( show_cursor_lon ) < 360. ) ) {
-            while( show_cursor_lon < -180. )
-                show_cursor_lon += 360.;
-
-            while( show_cursor_lon > 180. )
-                show_cursor_lon -= 360.;
-
-            wxString s1 = _T(" ");
-            s1 += toSDMM( 1, show_cursor_lat );
-            s1 += _T("   ");
-            s1 += toSDMM( 2, show_cursor_lon );
-            parent_frame->SetStatusText( s1, STAT_FIELD_CURSOR_LL );
-
-            double brg, dist;
-            DistanceBearingMercator( m_cursor_lat, m_cursor_lon, gLat, gLon, &brg, &dist );
-            wxString s;
-            if( g_bShowMag )
-                s.Printf( wxString("%03d°(M)  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
-            else
-                s.Printf( wxString("%03d°  ", wxConvUTF8 ), (int)gFrame->GetTrueOrMag( brg ) );
-
-            s << FormatDistanceAdaptive( dist );
-            parent_frame->SetStatusText( s, STAT_FIELD_CURSOR_BRGRNG );
-        }
-    }
+    SetCursorStatus(m_cursor_lat, m_cursor_lon);
 #endif
 
     //  Send the current cursor lat/lon to all PlugIns requesting it
