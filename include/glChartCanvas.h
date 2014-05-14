@@ -36,6 +36,19 @@ WX_DECLARE_OBJARRAY(glTextureDescriptor, ArrayOfTexDescriptors);
 WX_DECLARE_HASH_MAP( int, glTextureDescriptor*, wxIntegerHash, wxIntegerEqual, ChartTextureHashType );
 WX_DECLARE_HASH_MAP( void*, ChartTextureHashType*, wxPointerHash, wxPointerEqual, ChartPointerHashType );
 
+
+class ocpnGLOptions
+{
+public:
+    bool m_bUseAcceleratedPanning;
+
+    bool m_bTextureCompression;
+    bool m_bTextureCompressionCaching;
+
+    int m_iTextureDimension;
+    int m_iTextureMemorySize;
+};
+
 class ocpnDC;
 class emboss_data;
 class Route;

@@ -48,6 +48,7 @@
 
 #include "dychart.h"
 #include "chart1.h"
+#include "glChartCanvas.h"
 #include "chartdbs.h"
 #include "options.h"
 #include "styles.h"
@@ -194,6 +195,8 @@ extern wxString         g_Plugin_Dir;
 extern ChartGroupArray  *g_pGroupArray;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
+extern ocpnGLOptions g_GLOptions;
+
 //    Some constants
 #define ID_CHOICE_NMEA  wxID_HIGHEST + 1
 
@@ -264,6 +267,7 @@ BEGIN_EVENT_TABLE( options, wxDialog )
 #ifdef __WXGTK__
     EVT_BUTTON( ID_BUTTONFONTCOLOR, options::OnChooseFontColor )
 #endif
+    EVT_BUTTON( ID_OPENGLOPTIONS, options::OnOpenGLOptions )
     EVT_RADIOBOX(ID_RADARDISTUNIT, options::OnDisplayCategoryRadioButton )
     EVT_BUTTON( ID_CLEARLIST, options::OnButtonClearClick )
     EVT_BUTTON( ID_SELECTLIST, options::OnButtonSelectClick )
@@ -1416,14 +1420,21 @@ void options::CreatePanel_Display( size_t parent, int border_size, int group_ite
     pSDepthUnits = new wxCheckBox( itemPanelUI, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
     itemStaticBoxSizerCDO->Add( pSDepthUnits, 1, wxALL, border_size );
 
-    //  OpenGL Render checkbox
+    //  OpenGL Render checkbox and button
+    wxBoxSizer* OpenGLSizer = new wxBoxSizer( wxHORIZONTAL );
+    itemStaticBoxSizerCDO->Add( OpenGLSizer, 1, wxALL, border_size );
+
     pOpenGL = new wxCheckBox( itemPanelUI, ID_OPENGLBOX, _("Use Accelerated Graphics (OpenGL)") );
-    itemStaticBoxSizerCDO->Add( pOpenGL, 1, wxALL, border_size );
+    OpenGLSizer->Add( pOpenGL, 1, wxALL, border_size );
     pOpenGL->Enable(!g_bdisable_opengl);
 
-    //  Smooth Pan/Zoom checkbox
+    wxButton *bOpenGL = new wxButton( itemPanelUI, ID_OPENGLOPTIONS, _("Options ...") );
+    OpenGLSizer->Add( bOpenGL, 1, wxALL, border_size );
+    bOpenGL->Enable(!g_bdisable_opengl);
+
+    // Smooth Pan/Zoom checkbox
     pSmoothPanZoom = new wxCheckBox( itemPanelUI, ID_SMOOTHPANZOOMBOX,
-            _("Smooth Panning / Zooming") );
+                                     _("Smooth Panning / Zooming") );
     itemStaticBoxSizerCDO->Add( pSmoothPanZoom, 1, wxALL, border_size );
 
     pEnableZoomToCursor = new wxCheckBox( itemPanelUI, ID_ZTCCHECKBOX,
@@ -2315,6 +2326,26 @@ void options::OnRadarringSelect( wxCommandEvent& event )
     event.Skip();
 }
 
+void options::OnOpenGLOptions( wxCommandEvent& event )
+{
+#ifdef ocpnUSE_GL
+    OpenGLOptionsDlg dlg(this);
+
+    if(dlg.ShowModal() == wxID_OK) {
+        g_GLOptions.m_bUseAcceleratedPanning = dlg.m_cbUseAcceleratedPanning->GetValue();
+
+        if(g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
+            cc1->GetglCanvas()->ClearAllRasterTextures(); 
+            g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
+//            cc1->GetglCanvas()->SetupCompression();
+        }
+
+        g_GLOptions.m_bTextureCompressionCaching = dlg.m_cbTextureCompressionCaching->GetValue();
+        g_GLOptions.m_iTextureMemorySize = dlg.m_sTextureMemorySize->GetValue();
+    }
+#endif
+}
+
 void options::OnDisplayCategoryRadioButton( wxCommandEvent& event )
 {
     int select = pDispCat->GetSelection();
@@ -2634,7 +2665,11 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bShowOutlines = pCDOOutlines->GetValue();
     g_bDisplayGrid = pSDisplayGrid->GetValue();
 
-    g_bQuiltEnable = pCDOQuilting->GetValue();
+    bool temp_bquilting = pCDOQuilting->GetValue();
+    if(!g_bQuiltEnable && temp_bquilting)
+        cc1->ReloadVP(); /* compose the quilt */
+    g_bQuiltEnable = temp_bquilting;
+
     g_bFullScreenQuilt = !pFullScreenQuilt->GetValue();
 
     g_bShowDepthUnits = pSDepthUnits->GetValue();
@@ -2642,7 +2677,9 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_btouch = pMobile->GetValue();
     g_bresponsive = pResponsive->GetValue();
     
-    bool temp_bopengl = pOpenGL->GetValue();
+    bool bopengl_changed = g_bopengl != pOpenGL->GetValue();
+    g_bopengl = pOpenGL->GetValue();
+
     g_bsmoothpanzoom = pSmoothPanZoom->GetValue();
 
     g_bfilter_cogsog = m_cbFilterSogCog->GetValue();
@@ -2657,7 +2694,9 @@ void options::OnApplyClick( wxCommandEvent& event )
     pCOGUPUpdateSecs->GetValue().ToLong( &update_val );
     g_COGAvgSec = wxMin((int)update_val, MAX_COG_AVERAGE_SECONDS);
 
-    g_bCourseUp = pCBCourseUp->GetValue();
+    if(g_bCourseUp != pCBCourseUp->GetValue())
+        gFrame->ToggleCourseUp();
+        
     g_bLookAhead = pCBLookAhead->GetValue();
 
     g_bShowMag = pCBMagShow->GetValue();
@@ -2860,14 +2899,13 @@ void options::OnApplyClick( wxCommandEvent& event )
     }
 
     if( ps52plib ) {
-        if( temp_bopengl != g_bopengl ) {
+        if( bopengl_changed ) {
             //    We need to do this now to handle the screen refresh that
             //    is automatically generated on Windows at closure of the options dialog...
             ps52plib->FlushSymbolCaches();
             ps52plib->ClearCNSYLUPArray();      // some CNSY depends on renderer (e.g. CARC)
             ps52plib->GenerateStateHash();
 
-            g_bopengl = temp_bopengl;
             m_returnChanges |= GL_CHANGED;
         }
 
@@ -4642,4 +4680,68 @@ void SentenceListDlg::SetType(int io, ListType type)
 
 void SentenceListDlg::OnCancelClick( wxCommandEvent& event ) { event.Skip(); }
 void SentenceListDlg::OnOkClick( wxCommandEvent& event ) { event.Skip(); }
+ 
+//OpenGLOptionsDlg
 
+OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
+    wxDialog( parent, wxID_ANY, _T("OpenGL Options"), wxDefaultPosition )
+{
+#ifdef ocpnUSE_GL
+    m_bSizer1 = new wxFlexGridSizer( 2 );
+    this->SetSizeHints( wxDefaultSize, wxDefaultSize );
+
+    m_cbUseAcceleratedPanning = new wxCheckBox(this, wxID_ANY, _("Use Accelerated Panning") );
+    m_bSizer1->Add(m_cbUseAcceleratedPanning, 0, wxALL | wxEXPAND, 5);
+    if( 0/*cc1->GetglCanvas()->CanAcceleratePanning()*/ ) {
+        m_cbUseAcceleratedPanning->Enable();
+        m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
+    } else {
+        m_cbUseAcceleratedPanning->SetValue(false);
+        m_cbUseAcceleratedPanning->Disable();
+    }
+
+    m_bSizer1->AddSpacer(1);
+
+    m_cbTextureCompression = new wxCheckBox(this, wxID_ANY, _("Texture Compression") );
+    m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
+    m_bSizer1->Add(m_cbTextureCompression, 0, wxALL | wxEXPAND, 5);
+
+    m_cbTextureCompressionCaching = new wxCheckBox(this, wxID_ANY, _("Texture Compression Caching") );
+    m_cbTextureCompressionCaching->SetValue(g_GLOptions.m_bTextureCompressionCaching);
+
+    /* disable caching if unsupported */
+    extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
+    if(!s_glCompressedTexImage2D) {
+        g_GLOptions.m_bTextureCompressionCaching = false;
+        m_cbTextureCompressionCaching->Disable();
+    }
+
+    m_bSizer1->Add(m_cbTextureCompressionCaching, 0, wxALL | wxEXPAND, 5);
+
+    wxStaticText* stTextureMemorySize =
+        new wxStaticText( this, wxID_STATIC, _("Texture Memory Size (MB)") );
+    m_bSizer1->Add( stTextureMemorySize, 0,
+            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+
+    m_sTextureMemorySize = new wxSpinCtrl( this );
+    m_sTextureMemorySize->SetRange(1, 16384 );
+    m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
+    m_bSizer1->Add(m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5);
+
+    wxStdDialogButtonSizer * m_sdbSizer4 = new wxStdDialogButtonSizer();
+    wxButton *bOK = new wxButton( this, wxID_OK );
+    m_sdbSizer4->AddButton( bOK );
+    wxButton *bCancel = new wxButton( this, wxID_CANCEL );
+    m_sdbSizer4->AddButton( bCancel );
+    m_sdbSizer4->Realize();
+
+    m_bSizer1->Add( m_sdbSizer4, 0, wxALL|wxEXPAND, 5 );
+
+    this->SetSizer( m_bSizer1 );
+    this->Layout();
+
+    this->Centre( wxBOTH );
+
+    Fit();
+#endif
+}

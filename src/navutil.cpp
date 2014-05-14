@@ -322,6 +322,10 @@ extern bool             portaudio_initialized;
 extern bool             g_btouch;
 extern bool             g_bresponsive;
 
+#ifdef ocpnUSE_GL
+extern ocpnGLOptions g_GLOptions;
+#endif
+
 //---------------------------------------------------------------------------------
 //    Track Implementation
 //---------------------------------------------------------------------------------
@@ -1133,8 +1137,16 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "ActiveChartGroup" ), &g_GroupIndex, 0 );
 
-    Read( _T ( "GPUMemorySize" ), &g_GPU_MemSize, 256 );
+    /* opengl options */
+#ifdef ocpnUSE_GL
+    Read( _T ( "UseAcceleratedPanning" ), &g_GLOptions.m_bUseAcceleratedPanning, true );
 
+    Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression, 1);
+    Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching, 1);
+
+    Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension, 512 );
+    Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 64 );
+#endif
     Read( _T ( "SmoothPanZoom" ), &g_bsmoothpanzoom, 0 );
 
     Read( _T ( "ToolbarX"), &g_toolbar_x, 0 );
@@ -2280,6 +2292,16 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
     Write( _T ( "OpenGL" ), g_bopengl );
+
+#ifdef ocpnUSE_GL
+    /* opengl options */
+    Write( _T ( "UseAcceleratedPanning" ), g_GLOptions.m_bUseAcceleratedPanning );
+
+    Write( _T ( "GPUTextureCompression" ), g_GLOptions.m_bTextureCompression);
+    Write( _T ( "GPUTextureCompressionCaching" ), g_GLOptions.m_bTextureCompressionCaching);
+    Write( _T ( "GPUTextureDimension" ), g_GLOptions.m_iTextureDimension );
+    Write( _T ( "GPUTextureMemSize" ), g_GLOptions.m_iTextureMemorySize );
+#endif
     Write( _T ( "SmoothPanZoom" ), g_bsmoothpanzoom );
 
     Write( _T ( "UseRasterCharts" ), g_bUseRaster );

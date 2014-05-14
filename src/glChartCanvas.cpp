@@ -88,6 +88,8 @@ extern ChartDB          *ChartData;
 extern RouteList        *pRouteList;
 extern WayPointman      *pWayPointMan;
 
+ocpnGLOptions g_GLOptions;
+
 PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffers;
 PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffers;
 PFNGLFRAMEBUFFERTEXTURE2DEXTPROC    s_glFramebufferTexture2D;
