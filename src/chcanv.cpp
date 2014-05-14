@@ -2669,10 +2669,11 @@ void ChartCanvas::GetCanvasPointPix( double rlat, double rlon, wxPoint *r )
     bool bUseVP = true;
 
     if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-            && ( ( ( fabs( GetVP().rotation ) < .01 ) && !g_bskew_comp )
-                 || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
-                      && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) ) )
-
+        && ( ( ( fabs( GetVP().rotation ) < .0001 ) &&
+               ( ( !g_bskew_comp || ( fabs( GetVP().skew ) < .0001 ) ) ) )
+             || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
+                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
+                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) ) )
     {
         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
 //                        bool bInside = G_FloatPtInPolygon ( ( MyFlPoint * ) Cur_BSB_Ch->GetCOVRTableHead ( 0 ),
@@ -2716,10 +2717,11 @@ void ChartCanvas::GetCanvasPixPoint( int x, int y, double &lat, double &lon )
     bool bUseVP = true;
 
     if( Current_Ch && ( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER )
-            && ( ( ( fabs( GetVP().rotation ) < .01 ) && !g_bskew_comp )
-                 || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
-                      && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) ) )
-
+        && ( ( ( fabs( GetVP().rotation ) < .0001 ) &&
+               ( ( !g_bskew_comp || ( fabs( GetVP().skew ) < .0001 ) ) ) )
+             || ( ( Current_Ch->GetChartProjectionType() != PROJECTION_MERCATOR )
+                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_TRANSVERSE_MERCATOR )
+                  && ( Current_Ch->GetChartProjectionType() != PROJECTION_POLYCONIC ) ) ) )
     {
         ChartBaseBSB *Cur_BSB_Ch = dynamic_cast<ChartBaseBSB *>( Current_Ch );
 
