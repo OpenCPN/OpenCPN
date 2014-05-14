@@ -2003,14 +2003,9 @@ void cm93chart::GetPointPix ( ObjRazRules *rzRules, float north, float east, wxP
       double valy = ( north * obj->y_rate ) + obj->y_origin;
 
       //    Crossing Greenwich right
-      if ( m_vp_current.GetBBox().GetMaxX() > 360. )
-      {
-            wxBoundingBox bbRight ( 0., m_vp_current.GetBBox().GetMinY(), m_vp_current.GetBBox().GetMaxX() - 360., m_vp_current.GetBBox().GetMaxY() );
-            if ( bbRight.Intersect ( rzRules->obj->BBObj, 0 ) != _OUT )
-            {
-                  valx += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;      //6375586.0;
-            }
-      }
+      if ( m_vp_current.GetBBox().GetMaxX() > 360. &&
+           m_vp_current.GetBBox().GetMaxX() - 360 >= rzRules->obj->BBObj.GetMinX() )
+          valx += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;      //6375586.0;
 
       r->x = ( int ) wxRound ( ( ( valx - m_easting_vp_center ) * m_view_scale_ppm ) + m_pixx_vp_center );
       r->y = ( int ) wxRound ( m_pixy_vp_center - ( ( valy - m_northing_vp_center ) * m_view_scale_ppm ) );
