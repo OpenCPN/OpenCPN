@@ -908,7 +908,6 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 
     glColor3ub(color.Red(), color.Green(), color.Blue());
     glLineWidth(1);
-    glBegin(GL_LINE_STRIP);
 
     //        Are there any aux ply entries?
     int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex ), nPly;
@@ -919,6 +918,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
         else
             nPly = ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
 
+        glBegin(GL_LINE_STRIP);
         for( int i = 0; i < nPly+1; i++ ) {
             if(nAuxPlyEntries)
                 ChartData->GetDBAuxPlyPoint( dbIndex, i%nPly, j, &plylat, &plylon );
@@ -931,9 +931,8 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
             cc1->GetCanvasPointPix( plylat, plylon, &r );
             glVertex2i( r.x, r.y );
         }
+        glEnd();
     } while(++j < nAuxPlyEntries );                 // There are no aux Ply Point entries
-    
-    glEnd();
 }
 
 extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing );
