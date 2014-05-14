@@ -2034,13 +2034,15 @@ void options::SetInitialSettings()
     pMobile->SetValue( g_btouch );
     pResponsive->SetValue( g_bresponsive );
     
+
     pOpenGL->SetValue( g_bopengl );
     pSmoothPanZoom->SetValue( g_bsmoothpanzoom );
+#if 0
     if( g_bEnableZoomToCursor || pEnableZoomToCursor->GetValue() ) {
         pSmoothPanZoom->SetValue( false );
         pSmoothPanZoom->Disable();
     }
-
+#endif
     m_cbAPBMagnetic->SetValue(g_bMagneticAPB);
     pCBMagShow->SetValue( g_bShowMag );
     
@@ -2080,11 +2082,13 @@ void options::SetInitialSettings()
     pConfirmObjectDeletion->SetValue( g_bConfirmObjectDelete );
 
     pEnableZoomToCursor->SetValue( g_bEnableZoomToCursor );
+#if 0
     if( pEnableZoomToCursor->GetValue() ) {
         pSmoothPanZoom->Disable();
     } else {
         pSmoothPanZoom->Enable();
     }
+#endif
 
     pPreserveScale->SetValue( g_bPreserveScaleOnX );
     pPlayShipsBells->SetValue( g_bPlayShipsBells );
@@ -2291,11 +2295,13 @@ void options::OnShowGpsWindowCheckboxClick( wxCommandEvent& event )
 
 void options::OnZTCCheckboxClick( wxCommandEvent& event )
 {
+#if 0
     if( pEnableZoomToCursor->GetValue() ) {
         pSmoothPanZoom->Disable();
     } else {
         pSmoothPanZoom->Enable();
     }
+#endif
 }
 
 void options::OnShipTypeSelect( wxCommandEvent& event )
