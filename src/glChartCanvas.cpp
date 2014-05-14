@@ -47,6 +47,12 @@
 #include "TexFont.h"
 #include "cutil.h"
 
+#ifdef USE_S57
+#include "cm93.h"                   // for chart outline draw
+#include "s57chart.h"               // for ArrayOfS57Obj
+#include "s52plib.h"
+#endif
+
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
 
 #ifndef GL_DEPTH_STENCIL_ATTACHMENT
@@ -76,6 +82,8 @@ extern int              g_OwnShipIconType;
 extern double           g_ownship_predictor_minutes;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
+
+extern ChartDB          *ChartData;
 
 extern RouteList        *pRouteList;
 extern WayPointman      *pWayPointMan;
@@ -753,8 +761,55 @@ bool glChartCanvas::PurgeChartTextures( ChartBase *pc )
         delete pTextureHash;
 
         return true;
-    } else
-        return false;
+    }
+    return false;
+}
+
+/* adjust the opengl transformation matrix so that
+   points plotted using the identity viewport are correct.
+   and all rotation translation and scaling is now done= in opengl */
+
+/*   This is needed for building display lists */
+#define NORM_FACTOR 16.0
+void glChartCanvas::MultMatrixViewPort(const ViewPort &vp)
+{
+    wxPoint point;
+    cc1->GetCanvasPointPix(0, 0, &point);
+    glTranslatef(point.x, point.y, 0);
+    glScalef(vp.view_scale_ppm/NORM_FACTOR, vp.view_scale_ppm/NORM_FACTOR, 1);
+    double angle = vp.rotation;
+//    if(!g_bskew_comp)
+//        angle -= vp.skew;
+
+    glRotatef(angle*180/PI, 0, 0, 1);
+}
+
+ViewPort glChartCanvas::NormalizedViewPort(const ViewPort &vp)
+{
+    ViewPort cvp = vp;
+    cvp.clat = cvp.clon = 0;
+    cvp.view_scale_ppm = NORM_FACTOR;
+    cvp.rotation = cvp.skew = 0;
+    return cvp;
+}
+
+void glChartCanvas::FixRenderIDL(int dl)
+{
+    //  Does current vp cross international dateline?
+    // if so, call the display list again translated
+    // to the other side of it..
+    ViewPort vp = cc1->GetVP();
+    if( vp.GetBBox().GetMinX() < -180. || vp.GetBBox().GetMaxX() > 180. ) {
+        double ts = 40058986*NORM_FACTOR; /* 360 degrees in normalized viewport */
+
+        glPushMatrix();
+        if( vp.GetBBox().GetMinX() < -180. )
+            glTranslated(-ts, 0, 0);
+        else
+            glTranslated(ts, 0, 0);
+        glCallList(dl);
+        glPopMatrix();
+    }
 }
 
 void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
@@ -815,6 +870,68 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
             if( pWP && !pWP->m_bIsInRoute && !pWP->m_bIsInTrack )
                 pWP->DrawGL( vp, region );
         }
+}
+
+void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
+{
+    /* quick bounds check */
+    wxBoundingBox box, vpbox = vp.GetBBox();
+    ChartData->GetDBBoundingBox( dbIndex, &box );
+
+    float lon_bias;
+    if( vpbox.IntersectOut( box ) ) {
+        wxPoint2DDouble p = wxPoint2DDouble(360, 0);
+        box.Translate( p );
+        if( vpbox.IntersectOut( box ) ) {
+            wxPoint2DDouble n = wxPoint2DDouble(-720, 0);
+            box.Translate( n );
+            if( vpbox.IntersectOut( box ) )
+                return;
+            lon_bias = -360;
+        } else
+            lon_bias = 360;
+    } else
+        lon_bias = 0;
+
+    float plylat, plylon;
+
+    wxColour color;
+    switch( ChartData->GetDBChartType( dbIndex ) ) {
+    case CHART_TYPE_S57:  color = GetGlobalColor( _T ( "UINFG" ) ); break;
+    case CHART_TYPE_CM93: color = GetGlobalColor( _T ( "YELO1" ) ); break;
+    default:              color = GetGlobalColor( _T ( "UINFR" ) ); break;
+    }
+
+    ChartTableEntry *entry = ChartData->GetpChartTableEntry(dbIndex);
+
+    glColor3ub(color.Red(), color.Green(), color.Blue());
+    glLineWidth(1);
+    glBegin(GL_LINE_STRIP);
+
+    //        Are there any aux ply entries?
+    int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex ), nPly;
+    int j=0;
+    do {
+        if(nAuxPlyEntries)
+            nPly = ChartData->GetDBAuxPlyPoint( dbIndex, 0, j, 0, 0 );
+        else
+            nPly = ChartData->GetDBPlyPoint( dbIndex, 0, &plylat, &plylon );
+
+        for( int i = 0; i < nPly+1; i++ ) {
+            if(nAuxPlyEntries)
+                ChartData->GetDBAuxPlyPoint( dbIndex, i%nPly, j, &plylat, &plylon );
+            else
+                ChartData->GetDBPlyPoint( dbIndex, i%nPly, &plylat, &plylon );
+
+            plylon += lon_bias;
+
+            wxPoint r;
+            cc1->GetCanvasPointPix( plylat, plylon, &r );
+            glVertex2i( r.x, r.y );
+        }
+    } while(++j < nAuxPlyEntries );                 // There are no aux Ply Point entries
+    
+    glEnd();
 }
 
 extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing );
@@ -2546,8 +2663,7 @@ void glChartCanvas::Render()
 
         cc1->pWorldBackgroundChart->RenderViewOnDC( gldc, VPoint );
 
-        glDisable( GL_STENCIL_TEST );
-        glDisable( GL_DEPTH_TEST );
+        DisableClipRegion();
 
         glPopMatrix();
     }

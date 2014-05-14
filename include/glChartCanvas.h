@@ -44,6 +44,9 @@ class ChartBaseBSB;
 class glChartCanvas : public wxGLCanvas
 {
 public:
+    static void MultMatrixViewPort(const ViewPort &vp);
+    static ViewPort NormalizedViewPort(const ViewPort &vp);
+
     static void RotateToViewPort(const ViewPort &vp);
     static void SetClipRegion(const ViewPort &vp, const OCPNRegion &region,
                               bool apply_rotation=true, bool b_clear=false);
@@ -76,7 +79,11 @@ public:
 
     void GridDraw( );
 
+    static void FixRenderIDL(int dl);
+
     void DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
+    void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
+    void RenderChartOutline( int dbIndex, ViewPort &VP );
 
     void DrawEmboss( emboss_data *emboss );
     void ShipDraw(ocpnDC& dc);

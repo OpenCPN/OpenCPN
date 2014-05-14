@@ -5866,7 +5866,18 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
             //    This will have the effect of bringing in outlines of isolated large scale cells
             //    embedded within small scale cells, like isolated islands in the Pacific.
             bool bdrawn = false;
+
             nss_max = 7;
+
+#if 1 /* only if chart outlines are rendered grounded to the charts */
+            if(g_bopengl) { /* for opengl: lets keep this simple yet also functioning
+                               unlike the unbounded version (which is interesting)
+                               the small update rectangles normally encountered when panning
+                               can cause too many charts to load */
+                if(nss_max > m_cmscale+3)
+                    nss_max = m_cmscale+3;
+            }
+#endif
             while ( nss <= nss_max && ( !bdrawn || ( vp.chart_scale < 3e6 ) ) )
             {
                   cm93chart *psc = m_pcm93chart_array[nss];
@@ -5891,60 +5902,81 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                         psc->Init ( file_dummy, FULL_INIT );
                   }
 
-                  if ( ( psc ) && ( nss != 1 ) )       // skip rendering the A scale outlines
-                  {
-                        bool mcr = psc->UpdateCovrSet ( &vp );
+                  if ( nss != 1 ) {       // skip rendering the A scale outlines
+                      /* test rectangle for entire set to reduce number of tests */
+                      if( !psc->m_covr_bbox.GetValid() ||
+                          !vp_positive.GetBBox().IntersectOut ( psc->m_covr_bbox ) ||
+                          !vp.GetBBox().IntersectOut ( psc->m_covr_bbox ) ) {
+#ifdef ocpnUSE_GL        
+                          ViewPort nvp;
+                          if(g_bopengl) /* opengl */ {
+                              wxPen pen = dc.GetPen();
+                              wxColour col = pen.GetColour();
+                              glColor3ub(col.Red(), col.Green(), col.Blue());
+                              glLineWidth(pen.GetWidth());
+                              glDisable( GL_LINE_STIPPLE );
+                              dc.SetGLStipple();
 
-                        //    Render the chart outlines
-                        if ( mcr )
-                        {
-                              covr_set *pcover = psc->GetCoverSet();
+                              glPushMatrix();
+                              glChartCanvas::MultMatrixViewPort(vp);
+                              nvp = glChartCanvas::NormalizedViewPort(vp);
 
-                              for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ )
-                              {
-                                    M_COVR_Desc *mcd = pcover->GetCover ( im );
+                              if(!psc->m_outline_display_list) {
+                                  psc->m_outline_display_list = glGenLists(1);
+                                  glNewList(psc->m_outline_display_list, GL_COMPILE_AND_EXECUTE);
+                              } else {
+                                  glCallList(psc->m_outline_display_list);
+                                  glChartCanvas::FixRenderIDL(psc->m_outline_display_list);
 
-
-
-                                    //    Case:  vpBBox is completely inside the mcd box
-                                    if ( ! ( _OUT == vp_positive.GetBBox().Intersect ( mcd->m_covr_bbox ) ) || ! ( _OUT == vp.GetBBox().Intersect ( mcd->m_covr_bbox ) ) )
-                                    {
-
-                                          float_2Dpt *p = mcd->pvertices;
-                                          wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
-
-                                          for ( int ip = 0 ; ip < mcd->m_nvertices ; ip++ ,  p++)
-                                          {
-
-                                              pwp[ip] = vp_positive.GetPixFromLL( p->y, p->x );
-
-                                              //    Outlines stored in MCDs are not adjusted for offsets
-                                              pwp[ip].x -= mcd->user_xoff * vp.view_scale_ppm;
-                                              pwp[ip].y -= mcd->user_yoff * vp.view_scale_ppm;
-
-                                          }
-
-                                          //    Scrub the points
-                                          //    looking for segments for which the wrong longitude decision was made
-                                          //    TODO all this mole needs to be rethought, again
-                                          bool btest = true;
-                                          wxPoint p0 = pwp[0];
-                                          for ( int ip = 1 ; ip < mcd->m_nvertices ; ip++ )
-                                          {
-                                                if ( ( ( p0.x > vp.pix_width ) && ( pwp[ip].x < 0 ) ) || ( ( p0.x < 0 ) && ( pwp[ip].x > vp.pix_width ) ) )
-                                                      btest = false;
-
-                                                p0 = pwp[ip];
-                                          }
-
-                                          if ( btest )
-                                          {
-                                                dc.DrawLines ( mcd->m_nvertices, pwp, 0, 0, false );
-                                                bdrawn = true;
-                                          }
-                                    }
+                                  psc = NULL; /* skip rendering */
+                                  bdrawn = true;
                               }
-                        }
+                          }
+#endif
+                          if ( psc ) 
+                          {
+                              bool mcr = psc->UpdateCovrSet ( &vp );
+                              
+                              //    Render the chart outlines
+                              if ( mcr )
+                              {
+                                  covr_set *pcover = psc->GetCoverSet();
+                                  
+                                  for ( unsigned int im=0 ; im < pcover->GetCoverCount() ; im++ )
+                                  {
+                                      M_COVR_Desc *mcd = pcover->GetCover ( im );
+                                      
+                                      /* build rect for quick test in the future */
+                                      psc->m_covr_bbox.Expand(mcd->m_covr_bbox);
+#ifdef ocpnUSE_GL        
+                                      // In opengl it is for the display list so we don't skip
+                                      if (g_bopengl) {
+                                          RenderCellOutlinesOnGL(nvp, mcd); 
+                                          bdrawn = true;
+                                      } else
+#endif
+                                      //    Case:  vpBBox is completely inside the mcd box
+                                      if(! ( vp_positive.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ||
+                                         ! ( vp.GetBBox().IntersectOut ( mcd->m_covr_bbox ) ) ) {
+                                          wxPoint *pwp = psc->GetDrawBuffer ( mcd->m_nvertices );
+                                          bdrawn = RenderCellOutlinesOnDC(dc, vp_positive, pwp, mcd);
+                                      }
+                                  }
+                              }
+#ifdef ocpnUSE_GL        
+                              if(g_bopengl) {
+                                  glEndList();
+                                  glChartCanvas::FixRenderIDL(psc->m_outline_display_list);
+                              }
+#endif
+                          }                          
+#ifdef ocpnUSE_GL        
+                          if(g_bopengl) {
+                              glPopMatrix();
+                              glDisable( GL_LINE_STIPPLE );
+                          }
+#endif
+                      }
                   }
                   nss ++;
             }
@@ -5954,6 +5986,76 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
       return true;
 }
 
+bool cm93compchart::RenderCellOutlinesOnDC( ocpnDC &dc, ViewPort& vp, wxPoint *pwp, M_COVR_Desc *mcd )
+{
+    float_2Dpt *p = mcd->pvertices;
+    int np = mcd->m_nvertices;
+    
+    for ( int ip = 0 ; ip < np ; ip++ ,  p++)
+    {                                         
+        pwp[ip] = vp.GetPixFromLL( p->y, p->x );
+        
+        //    Outlines stored in MCDs are not adjusted for offsets
+        pwp[ip].x -= mcd->user_xoff * vp.view_scale_ppm;
+        pwp[ip].y -= mcd->user_yoff * vp.view_scale_ppm;
+    }
+    //    Scrub the points
+    //    looking for segments for which the wrong longitude decision was made
+    //    TODO all this mole needs to be rethought, again
+    wxPoint p0 = pwp[0];
+    for ( int ip = 1 ; ip < np ; ip++ )
+    {
+        if ( ( ( p0.x > vp.pix_width ) && ( pwp[ip].x < 0 ) ) ||
+             ( ( p0.x < 0 ) && ( pwp[ip].x > vp.pix_width ) ) )
+            return false;
+                                              
+        p0 = pwp[ip];
+    }
+                                          
+    dc.DrawLines ( mcd->m_nvertices, pwp, 0, 0, false );
+    return true;
+}
+
+
+void cm93compchart::RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd )
+{
+#ifdef ocpnUSE_GL        
+    float_2Dpt *p = mcd->pvertices;
+    int np = mcd->m_nvertices;
+    double lastlon = 0;
+    glBegin(GL_LINE_STRIP);
+    for ( int ip = 0 ; ip < np ; ip++ , p++ ) {
+        double lat = p->y;
+        double lon = p->x;
+        if(lon >= 180)
+            lon -= 360;
+
+        /* crosses IDL? if so break up into two segments so display lists work */
+        if(fabs(lon - lastlon) > 180) {
+            wxPoint r = vp.GetPixFromLL(lat, lastlon > 0 ? fabs(lon) : -fabs(lon) );
+    //    Outlines stored in MCDs are not adjusted for offsets
+            r.x -= mcd->user_xoff * vp.view_scale_ppm;
+            r.y -= mcd->user_yoff * vp.view_scale_ppm;
+                                                  
+            glVertex2i(r.x, r.y);
+            glEnd();
+            glBegin(GL_LINE_STRIP);
+        }
+        lastlon = lon;
+                                              
+        wxPoint q = vp.GetPixFromLL( lat, lon );
+
+        //    Outlines stored in MCDs are not adjusted for offsets
+        q.x -= mcd->user_xoff * vp.view_scale_ppm;
+        q.y -= mcd->user_yoff * vp.view_scale_ppm;
+
+        int dir = 0;
+
+        glVertex2i(q.x, q.y);
+    }
+    glEnd();
+#endif
+}
 
 void cm93compchart::GetPointPix ( ObjRazRules *rzRules, float rlat, float rlon, wxPoint *r )
 {

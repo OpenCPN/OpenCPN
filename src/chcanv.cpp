@@ -8506,17 +8506,23 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
         if( b_group_draw ) RenderChartOutline( dc, i, vp );
     }
 
-//      Could render in different color/width if thumbnail is selected
-//    if(NULL !=  pthumbwin->pThumbChart)
-//        int ggl = 4;
-
 #ifdef USE_S57
     //        On CM93 Composite Charts, draw the outlines of the next smaller scale cell
     if( Current_Ch && ( Current_Ch->GetChartType() == CHART_TYPE_CM93COMP ) ) {
         cm93compchart *pch = (cm93compchart *) Current_Ch;
         if( pch ) {
-            wxPen mPen( GetGlobalColor( _T("UINFM") ), 1, wxSOLID );
-            dc.SetPen( mPen );
+            double chart_native_ppm = m_canvas_scale_factor / Current_Ch->GetNativeScale();
+            double zoom_factor = GetVP().view_scale_ppm / chart_native_ppm;
+
+            if( zoom_factor > 8.0 ) {
+                wxPen mPen( GetGlobalColor( _T("UINFM") ), 2, wxSHORT_DASH );
+                dc.SetPen( mPen );
+                pch->RenderNextSmallerCellOutlines( dc, GetVP() );
+            } else {
+                wxPen mPen( GetGlobalColor( _T("UINFM") ), 1, wxSOLID );
+                dc.SetPen( mPen );
+            } 
+
             pch->RenderNextSmallerCellOutlines( dc, vp );
         }
     }
@@ -8525,6 +8531,14 @@ void ChartCanvas::RenderAllChartOutlines( ocpnDC &dc, ViewPort& vp )
 
 void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 {
+#ifdef ocpnUSE_GL
+    if(g_bopengl) {
+        /* opengl version specially optimized */
+        m_glcc->RenderChartOutline(dbIndex, vp);
+        return;
+    }
+#endif
+
     float plylat, plylon;
     float plylat1, plylon1;
 
@@ -8613,9 +8627,8 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 
             if( vp.chart_scale > 5e7 ) {
                 //    calculate projected distance between these two points in meters
-                double dist = sqrt(
-                                  (double) ( ( pixx1 - pixx ) * ( pixx1 - pixx ) )
-                                  + ( ( pixy1 - pixy ) * ( pixy1 - pixy ) ) ) / vp.view_scale_ppm;
+                double dist = sqrt( pow( (double) (pixx1 - pixx), 2 ) +
+                                    pow( (double) (pixy1 - pixy), 2 ) ) / vp.view_scale_ppm;
                 //    calculate GC distance between these two points in meters
                 double distgc = DistGreatCircle( plylat, plylon, plylat1, plylon1 ) * 1852.;
 
