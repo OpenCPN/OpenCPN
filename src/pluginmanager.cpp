@@ -77,7 +77,6 @@ extern PlugInManager   *g_pi_manager;
 extern s52plib         *ps52plib;
 extern wxString        *pChartListFileName;
 extern wxString         gExe_path;
-extern bool             g_b_useStencil;
 extern wxString         g_Plugin_Dir;
 extern bool             g_boptionsactive;
 extern options         *g_options;
@@ -3290,7 +3289,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
         wxRegion r = rg.ConvertTowxRegion();
         PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
         if(ppicb_gl){
-            ppicb_gl->RenderRegionViewOnGL( glc, pivp, r, g_b_useStencil);
+            ppicb_gl->RenderRegionViewOnGL( glc, pivp, r, glChartCanvas::s_b_useStencil);
         }
         return true;
     }

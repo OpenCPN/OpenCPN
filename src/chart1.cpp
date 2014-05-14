@@ -611,7 +611,6 @@ bool                      g_bMagneticAPB;
 
 //                        OpenGL Globals
 int                       g_GPU_MemSize;
-bool                      g_b_useStencil;
 
 bool                      g_bserial_access_checked;
 
