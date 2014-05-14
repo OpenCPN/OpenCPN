@@ -2391,6 +2391,25 @@ bool UpdatePlugInTrack ( PlugIn_Track *ptrack )
     return b_found;
 }
 
+void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp )
+{
+#ifdef ocpnUSE_GL
+    wxPoint point;
+    GetCanvasPixLL(vp, &point, 0, 0);
+    glTranslatef(point.x, point.y, 0);
+    glScalef(vp->view_scale_ppm, vp->view_scale_ppm, 1);
+    glRotatef(vp->rotation, 0, 0, 1);
+#endif
+}
+
+void PlugInNormalizeViewport ( PlugIn_ViewPort *vp )
+{
+#ifdef ocpnUSE_GL
+    vp->clat = vp->clon = 0;
+    vp->view_scale_ppm = 1;
+    vp->rotation = vp->skew = 0;
+#endif
+}
 
 
 //-----------------------------------------------------------------------------------------
