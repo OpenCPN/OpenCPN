@@ -3275,9 +3275,9 @@ void MyFrame::OnMove( wxMoveEvent& event )
 {
     if( g_FloatingToolbarDialog ) g_FloatingToolbarDialog->RePosition();
 
-    if( stats ) stats->RePosition();
+    if( stats && stats->IsVisible()) stats->RePosition();
 
-    UpdateGPSCompassStatusBox( true );
+    UpdateGPSCompassStatusBox( );
 
     if( console && console->IsShown() ) PositionConsole();
 
@@ -3304,7 +3304,7 @@ void MyFrame::ProcessCanvasResize( void )
 
     }
 
-    UpdateGPSCompassStatusBox( true );
+    UpdateGPSCompassStatusBox( );
 
     if( console->IsShown() ) PositionConsole();
 }
@@ -4554,7 +4554,7 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
 
     UpdateControlBar();
 
-    UpdateGPSCompassStatusBox( true );
+    UpdateGPSCompassStatusBox( );
 
     cc1->SetCursor( wxCURSOR_ARROW );
 
@@ -5542,30 +5542,29 @@ void MyFrame::UpdateGPSCompassStatusBox( bool b_force_new )
         
         tentative_rect = wxRect( tentative_pt_in_screen.x, tentative_pt_in_screen.y, size_x, size_y );
 
-    }
-
-    //  If the toolbar location has changed, or the proposed compassDialog location has changed
-    if( (g_FloatingToolbarDialog->GetScreenRect() != g_last_tb_rect) ||
-        (tentative_rect != g_FloatingCompassDialog->GetScreenRect()) ) {
+        //  If the toolbar location has changed, or the proposed compassDialog location has changed
+        if( (g_FloatingToolbarDialog->GetScreenRect() != g_last_tb_rect) ||
+            (tentative_rect != g_FloatingCompassDialog->GetScreenRect()) ) {
     
-        wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
+            wxRect tb_rect = g_FloatingToolbarDialog->GetScreenRect();
     
-        //    if they would not intersect, go ahead and move it to the upper right
-        //      Else it has to be on lower right
-        if( !tb_rect.Intersects( tentative_rect ) ) {
-            g_FloatingCompassDialog->Move( tentative_pt_in_screen );
-        }
-        else {
-            wxPoint posn_in_canvas =
-                wxPoint( cc1->GetSize().x - size_x - x_offset - cc1_edge_comp,
-                    cc1->GetSize().y - ( size_y + y_offset + cc1_edge_comp ) );
-            g_FloatingCompassDialog->Move( cc1->ClientToScreen( posn_in_canvas ) );
-        }
-
-        b_update = true;
+            //    if they would not intersect, go ahead and move it to the upper right
+            //      Else it has to be on lower right
+            if( !tb_rect.Intersects( tentative_rect ) ) {
+                g_FloatingCompassDialog->Move( tentative_pt_in_screen );
+            }
+            else {
+                wxPoint posn_in_canvas =
+                    wxPoint( cc1->GetSize().x - size_x - x_offset - cc1_edge_comp,
+                             cc1->GetSize().y - ( size_y + y_offset + cc1_edge_comp ) );
+                g_FloatingCompassDialog->Move( cc1->ClientToScreen( posn_in_canvas ) );
+            }
+            
+            b_update = true;
         
-        g_last_tb_rect = tb_rect;
+            g_last_tb_rect = tb_rect;
         
+        }
     }
 
     if( g_FloatingCompassDialog && g_FloatingCompassDialog->IsShown()) {
