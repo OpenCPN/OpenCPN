@@ -39,6 +39,9 @@
 
 #include <wx/file.h>
 
+#include <wx/glcanvas.h>
+
+
 #include "gshhs.h"
 
 extern wxString *pWorldMapLocation;
@@ -46,12 +49,10 @@ extern wxString *pWorldMapLocation;
 //-------------------------------------------------------------------------
 
 GSHHSChart::GSHHSChart() {
-    proj = NULL;
     reader = NULL;
 }
 
 GSHHSChart::~GSHHSChart() {
-    if( proj ) delete proj;
     if( reader ) delete reader;
 }
 
@@ -77,49 +78,11 @@ void GSHHSChart::SetColorScheme( ColorScheme scheme ) {
     water.Set( water.Red()*dim, water.Green()*dim, water.Blue()*dim );
 }
 
-void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp ) {
 
-    if( ! proj ) proj = new Projection();
-    proj->SetCenterInMap( vp.clon, vp.clat );
-    proj->SetScreenSize( vp.rv_rect.width, vp.rv_rect.height );
-
-    // Calculate the horizontal extents in degrees for the enlarged rotated ViewPort
-    ViewPort nvp = vp;
-    nvp.SetRotationAngle( 0. );
-    nvp.pix_width = vp.rv_rect.width;
-    nvp.pix_height = vp.rv_rect.height;
-    
-    double lat_ul, lat_ur;
-    double lon_ul, lon_ur;
-    
-    nvp.GetLLFromPix( wxPoint( 0, 0 ), &lat_ul, &lon_ul );
-    nvp.GetLLFromPix( wxPoint( nvp.pix_width, nvp.pix_height ), &lat_ur, &lon_ur );
-    
-    if( nvp.clon < 0. ) {
-        if( ( lon_ul > 0. ) && ( lon_ur < 0. ) ) {
-            lon_ul -= 360.;
-        }
-    } else {
-        if( ( lon_ul > 0. ) && ( lon_ur < 0. ) ) {
-            lon_ur += 360.;
-        }
-    }
-    
-    if( lon_ur < lon_ul ) {
-        lon_ur += 360.;
-    }
-    
-    if( lon_ur > 360. ) {
-        lon_ur -= 360.;
-        lon_ul -= 360.;
-    }
-
-    //  And set the scale for the gshhs renderer
-    proj->SetScale( (float)vp.rv_rect.width / ( fabs(lon_ul - lon_ur ) ));
-        
-
+void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp )
+{
     if( ! reader ) {
-        reader = new GshhsReader( proj );
+        reader = new GshhsReader( );
         if( reader->GetPolyVersion() < 210 || reader->GetPolyVersion() > 220 ) {
             wxLogMessage( _T("GSHHS World chart files have wrong version. Found %ld, expected 210-220."),
                     reader->GetPolyVersion() );
@@ -130,156 +93,27 @@ void GSHHSChart::RenderViewOnDC( ocpnDC& dc, ViewPort& vp ) {
         }
     }
 
-//    dc.SetBackground( wxBrush( water ) );
-//    dc.Clear();
-    dc.SetBrush( wxBrush( water ) );
-    dc.DrawRectangle( 0, 0, vp.rv_rect.width, vp.rv_rect.height );
-    
-    reader->drawContinents( dc, proj, water, land );
-    reader->drawBoundaries( dc, proj );
+    reader->drawContinents( dc, vp, water, land );
+
+    /* this is very inefficient since it draws the entire world*/
+//    reader->drawBoundaries( dc, vp );
 }
 
-//-------------------------------------------------------------------------
-
-Projection::Projection() :
-        W( 0 ), H( 0 ), CX( 0 ), CY( 0 ), xW( -90 ), xE( 90 ), yN( 90 ), yS( -90 ), PX( 0 ), PY( 0 )
+GshhsPolyCell::GshhsPolyCell( FILE *fpoly_, int x0_, int y0_, PolygonFileHeader *header_ )
 {
-    frozen = false;
-    scalemax = 10e20;
-    scale = -1;
-    useTempo = true;
-}
-
-Projection::Projection( int w, int h, double cx, double cy ) :
-        W( 0 ), H( 0 ), CX( 0 ), CY( 0 ), xW( -90 ), xE( 90 ), yN( 90 ), yS( -90 ), PX( 0 ), PY( 0 )
-{
-    frozen = false;
-    scalemax = 10e20;
-    scale = -1;
-    SetScreenSize( w, h );
-    SetCenterInMap( cx, cy );
-    useTempo = true;
-}
-
-double Projection::degToRad( double d ) const { return d * M_PI / 180; }
-double Projection::radToDeg( double r ) const { return r * 180 / M_PI; }
-
-void Projection::SetScale( double sc )
-{
-    scale = sc;
-    if( scale < scaleall ) scale = scaleall;
-    if( scale > scalemax ) scale = scalemax;
-    updateBoundaries();
-}
-
-void Projection::SetCenterInMap( double x, double y )
-{
-    while( x > 180.0 ) {
-        x -= 360.0;
-    }
-    while( x < -180.0 ) {
-        x += 360.0;
-    }
-    CX = x;
-    CY = y;
-
-    /* compute projection */
-    PX = CX;
-    PY = radToDeg( log( tan( degToRad( CY ) / 2 + M_PI_4 ) ) );
-
-    updateBoundaries();
-}
-
-void Projection::SetScreenSize( int w, int h )
-{
-    W = w;
-    H = h;
-
-    /* compute scaleall */
-
-    double sx, sy, sy1, sy2;
-    sx = W / 360.0;
-    sy1 = log( tan( degToRad( 84 ) / 2 + M_PI_4 ) );
-    sy2 = log( tan( degToRad( -80 ) / 2 + M_PI_4 ) );
-    sy = H / fabs( radToDeg( sy1 - sy2 ) );
-    scaleall = ( sy < sx ) ? sy : sx;
-
-    double sX, sY, sYN, sYS;
-    sX = W / fabs( xE - xW );
-    sYN = log( tan( degToRad( yN ) / 2 + M_PI_4 ) );
-    sYS = log( tan( degToRad( yS ) / 2 + M_PI_4 ) );
-    sY = H / fabs( radToDeg( sYN - sYS ) );
-
-    if( scale < scaleall ) {
-        scale = scaleall;
-    }
-
-    updateBoundaries();
-}
-
-void Projection::updateBoundaries()
-{
-    /* lat */
-    yS = radToDeg( 2 * atan( exp( (double) ( degToRad( PY - H / ( 2 * scale ) ) ) ) ) - M_PI_2 );
-    yN = radToDeg( 2 * atan( exp( (double) ( degToRad( PY + H / ( 2 * scale ) ) ) ) ) - M_PI_2 );
-
-    /* lon */
-    xW = PX - W / ( 2 * scale );
-    xE = PX + W / ( 2 * scale );
-
-    /* xW and yN => upper corner */
-
-    if( ( getW() * getH() ) != 0 )
-        coefremp = 10000.0 * fabs( ( ( xE - xW ) * ( yN - yS ) ) / ( getW() * getH() ) );
-    else
-        coefremp = 10000.0;
-}
-
-inline bool Projection::isInBounderies (int x,int y) const
-{
-    return (x>=0 && y>=0 && x<=W && y<=H);
-}
-
-inline void Projection::map2screen( double x, double y, int *i, int *j ) const
-{
-    if( y <= -90 ) y = -89.9;
-    if( y >= 90 ) y = 89.9;
-
-    *i = wxRound( scale * ( x - xW ) );
-    *j = H / 2 + wxRound( scale * ( PY - radToDeg( log( tan( degToRad( y ) / 2 + M_PI_4 ) ) ) ) );
-}
-inline void Projection::map2screenDouble( double x, double y, double *i, double *j ) const
-{
-    if( y <= -90 ) y = -89.9999999999999999999999999999999999999999999999999999999;
-    if( y >= 90 ) y = 89.999999999999999999999999999999999999999999999999999999999;
-    double diff = x - xW;
-    *i = scale * diff;
-    double trick = PY - radToDeg( log( tan( degToRad( y ) / (double) 2.0 + M_PI_4 ) ) );
-    *j = ( (double) H / (double) 2.0 + ( scale * trick ) );
-}
-
-inline bool Projection::intersect(double w,double e,double s,double n) const
-{
-    return ! (w>xE || e<xW || s>yN || n<yS);
-}
-
-//-------------------------------------------------------------------------
-
-GshhsPolyCell::GshhsPolyCell( FILE *fpoly_, int x0_, int y0_, Projection *proj_,
-        PolygonFileHeader *header_ )
-{
-    proj = proj_;
     header = header_;
     fpoly = fpoly_;
     x0cell = x0_;
     y0cell = y0_;
 
+    display_list = 0;
+
     ReadPolygonFile( fpoly, x0cell, y0cell, header->pasx, header->pasy, &poly1, &poly2, &poly3,
             &poly4, &poly5 );
 
-    int cnt = 0;
-    for( unsigned int i = 0; i < poly1.size(); i++ )
-        cnt += poly1.at( i ).size();
+//    int cnt = 0;
+//    for( unsigned int i = 0; i < poly1.size(); i++ )
+//        cnt += poly1.at( i ).size();
 
     //qWarning() << "Cell " << x0cell << "," << y0cell << ": " << poly1.count() << " poly in p1 - total points:"<<cnt;
 
@@ -332,29 +166,41 @@ void GshhsPolyCell::ReadPolygonFile( FILE *polyfile, int x, int y, int pas_x, in
     READ_POLY( p5 )
 }
 
-void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx, Projection *proj,
-        wxColor color )
+wxPoint GetPixFromLL(ViewPort &vp, double lat, double lon)
 {
+    wxPoint p = vp.GetPixFromLL(lat, lon);
+    p.x -= vp.rv_rect.x, p.y -= vp.rv_rect.y;
+    return p;
+}
+
+void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx, ViewPort &vp,  wxColor color )
+{
+    if( !p->size() ) /* size of 0 is very common, and setting the brush is
+                        actually quite slow, so exit early */
+        return;
+
     int x, y;
     unsigned int c, v;
     int pointCount;
-    wxPoint* poly_pt;
-
-    wxPen myPen = wxNullPen;
-    pnt.SetPen( myPen );
-    pnt.SetBrush( color );
 
     int x_old = 0;
     int y_old = 0;
 
+    pnt.SetBrush( color );
+
     for( c = 0; c < p->size(); c++ ) {
         if( !p->at( c ).size() ) continue;
 
-        poly_pt = new wxPoint[ p->at(c).size() ];
+        wxPoint* poly_pt = new wxPoint[ p->at(c).size() ];
+
+        contour &cp = p->at( c );
         pointCount = 0;
 
         for( v = 0; v < p->at( c ).size(); v++ ) {
-            proj->map2screen( p->at( c ).at( v ).x + dx, p->at( c ).at( v ).y, &x, &y );
+            wxRealPoint &ccp = cp.at( v );
+            wxPoint q = GetPixFromLL(vp,  ccp.y, ccp.x + dx );
+
+            x = q.x, y = q.y;
 
             if( v == 0 || x != x_old || y != y_old ) {
                 poly_pt[pointCount].x = x;
@@ -367,14 +213,15 @@ void GshhsPolyCell::DrawPolygonFilled( ocpnDC &pnt, contour_list * p, double dx,
 
         if(pointCount>1)
             pnt.DrawPolygonTessellated( pointCount, poly_pt, 0, 0 );
+
         delete[] poly_pt;
     }
 }
 
-#define DRAW_POLY_FILLED(POLY,COL) if(POLY) DrawPolygonFilled(pnt,POLY,dx,proj,COL);
+#define DRAW_POLY_FILLED(POLY,COL) if(POLY) DrawPolygonFilled(pnt,POLY,dx,vp,COL);
 
-void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, Projection *proj, wxColor seaColor,
-        wxColor landColor )
+void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, ViewPort &vp, wxColor seaColor,
+                                  wxColor landColor, int cellcount )
 {
     DRAW_POLY_FILLED( &poly1, landColor )
     DRAW_POLY_FILLED( &poly2, seaColor )
@@ -383,7 +230,7 @@ void GshhsPolyCell::drawMapPlain( ocpnDC &pnt, double dx, Projection *proj, wxCo
     DRAW_POLY_FILLED( &poly5, landColor )
 }
 
-void GshhsPolyCell::DrawPolygonContour( ocpnDC &pnt, contour_list * p, double dx, Projection *proj )
+void GshhsPolyCell::DrawPolygonContour( ocpnDC &pnt, contour_list * p, double dx, ViewPort &vp )
 {
     double x1, y1, x2, y2;
     double long_max, lat_max, long_min, lat_min;
@@ -397,8 +244,9 @@ void GshhsPolyCell::DrawPolygonContour( ocpnDC &pnt, contour_list * p, double dx
 
     for( unsigned int i = 0; i < p->size(); i++ ) {
         if( !p->at( i ).size() ) continue;
-		unsigned int v;
-		for( v = 0; v < ( p->at( i ).size() - 1 ); v++ ) {
+
+        unsigned int v;
+        for( v = 0; v < ( p->at( i ).size() - 1 ); v++ ) {
             x1 = p->at( i ).at( v ).x;
             y1 = p->at( i ).at( v ).y;
             x2 = p->at( i ).at( v + 1 ).x;
@@ -407,17 +255,9 @@ void GshhsPolyCell::DrawPolygonContour( ocpnDC &pnt, contour_list * p, double dx
             // Elimination des traits verticaux et horizontaux
             if( ( ( ( x1 == x2 ) && ( ( x1 == long_min ) || ( x1 == long_max ) ) )
                     || ( ( y1 == y2 ) && ( ( y1 == lat_min ) || ( y1 == lat_max ) ) ) ) == 0 ) {
-                int a, b, c, d;
-                double A, B, C, D;
-                proj->map2screen( x1 + dx, y1, &a, &b );
-                proj->map2screen( x2 + dx, y2, &c, &d );
-                proj->map2screenDouble( x1 + dx, y1, &A, &B );
-                proj->map2screenDouble( x2 + dx, y2, &C, &D );
-                if( a != c || b != d ) pnt.DrawLine( a, b, c, d );
-                if( A != C || B != D ) {
-                    if( proj->isInBounderies( a, b ) || proj->isInBounderies( c, d ) )
-                        coasts.push_back( QLineF( A, B, C, D ) );
-                }
+                wxPoint AB = GetPixFromLL(vp,  x1 + dx, y1);
+                wxPoint CD = GetPixFromLL(vp,  x2 + dx, y1);
+                pnt.DrawLine(AB.x, AB.y, CD.x, CD.y);
             }
         }
 
@@ -428,24 +268,16 @@ void GshhsPolyCell::DrawPolygonContour( ocpnDC &pnt, contour_list * p, double dx
 
         if( ( ( ( x1 == x2 ) && ( ( x1 == long_min ) || ( x1 == long_max ) ) )
                 || ( ( y1 == y2 ) && ( ( y1 == lat_min ) || ( y1 == lat_max ) ) ) ) == 0 ) {
-            int a, b, c, d;
-            double A, B, C, D;
-            proj->map2screen( x1 + dx, y1, &a, &b );
-            proj->map2screen( x2 + dx, y2, &c, &d );
-            proj->map2screenDouble( x1 + dx, y1, &A, &B );
-            proj->map2screenDouble( x2 + dx, y2, &C, &D );
-            if( a != c || b != d ) pnt.DrawLine( a, b, c, d );
-            if( A != C || B != D ) {
-                if( proj->isInBounderies( a, b ) || proj->isInBounderies( c, d ) )
-                    coasts.push_back( QLineF( A, B, C, D ) );
-            }
+                wxPoint AB = GetPixFromLL(vp,  x1 + dx, y1);
+                wxPoint CD = GetPixFromLL(vp,  x2 + dx, y1);
+                pnt.DrawLine(AB.x, AB.y, CD.x, CD.y);
         }
     }
 }
 
-#define DRAW_POLY_CONTOUR(POLY) if(POLY) DrawPolygonContour(pnt,POLY,dx,proj);
+#define DRAW_POLY_CONTOUR(POLY) if(POLY) DrawPolygonContour(pnt,POLY,dx,vp);
 
-void GshhsPolyCell::drawSeaBorderLines( ocpnDC &pnt, double dx, Projection *proj )
+void GshhsPolyCell::drawSeaBorderLines( ocpnDC &pnt, double dx, ViewPort &vp )
 {
     coasts.clear();
     DRAW_POLY_CONTOUR( &poly1 )
@@ -523,10 +355,18 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
+void GshhsPolyReader::crossing1Init()
+{
+    for(int cxx = 0; cxx<360; cxx++)
+        for(int cy = -90; cy < 90; cy++ ) {
+            GshhsPolyCell *cel = new GshhsPolyCell(fpoly, cxx, cy, &polyHeader);
+            assert( cel );
+            allCells[cxx][cy + 90] = cel;
+        }
+}
+
 bool GshhsPolyReader::crossing1( QLineF trajectWorld )
 {
-    if( !proj || proj == NULL ) return false;
-
     int cxmin, cxmax, cymax, cymin;
     cxmin = (int) floor( wxMin( trajectWorld.p1().x, trajectWorld.p2().x ) );
     cxmax = (int) ceil( wxMax( trajectWorld.p1().x, trajectWorld.p2().x ) );
@@ -544,7 +384,6 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
     cymin = (int) floor( wxMin( trajectWorld.p1().y, trajectWorld.p2().y ) );
     cymax = (int) ceil( wxMax( trajectWorld.p1().y, trajectWorld.p2().y ) );
     int cx, cxx, cy;
-    GshhsPolyCell *cel;
 
     for( cx = cxmin; cx < cxmax; cx++ ) {
         cxx = cx;
@@ -566,16 +405,11 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
 
         for( cy = cymin; cy < cymax; cy++ ) {
             if( cxx >= 0 && cxx <= 359 && cy >= -90 && cy <= 89 ) {
-                if( allCells[cxx][cy + 90] == NULL ) {
-                    cel = new GshhsPolyCell( fpoly, cxx, cy, proj, &polyHeader );
-                    assert( cel );
-                    allCells[cxx][cy + 90] = cel;
-                } else
-                    cel = allCells[cxx][cy + 90];
+                GshhsPolyCell *cel = allCells[cxx][cy + 90];
 
                 contour_list &poly1 = cel->getPoly1();
                 for( unsigned int pi = 0; pi < poly1.size(); pi++ ) {
-                    contour c = poly1[pi];
+                    contour &c = poly1[pi];
                     double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
                     for( unsigned int pj = 0; pj < c.size(); pj++ ) {
                         QLineF l(lx, ly, c[pj].x, c[pj].y);
@@ -599,19 +433,32 @@ void GshhsPolyReader::readPolygonFileHeader( FILE *polyfile, PolygonFileHeader *
 }
 
 //-------------------------------------------------------------------------
-void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, Projection *proj, wxColor seaColor,
-        wxColor landColor )
+void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor seaColor,
+                                             wxColor landColor )
 {
     if( !fpoly ) return;
 
+    pnt.SetPen( wxNullPen );
+
     int cxmin, cxmax, cymax, cymin;  // cellules visibles
+#if 0
     cxmin = (int) floor( proj->getXmin() );
     cxmax = (int) ceil( proj->getXmax() );
     cymin = (int) floor( proj->getYmin() );
     cymax = (int) ceil( proj->getYmax() );
+#else
+    wxBoundingBox bbox = vp.GetBBox();
+    cxmin = bbox.GetMinX(), cxmax = bbox.GetMaxX(), cymin = bbox.GetMinY(), cymax = bbox.GetMaxY();
+    if(cymin <= 0) cymin--;
+    if(cymax >= 0) cymax++;
+    if(cxmin <= 0) cxmin--;
+    if(cxmax >= 0) cxmax++;
+#endif
     int dx, cx, cxx, cy;
     GshhsPolyCell *cel;
 
+    int cellcount = (cxmax - cxmin) * (cymax - cymin);
+//    printf("cellcount: %d\n", cellcount);
     for( cx = cxmin; cx < cxmax; cx++ ) {
         cxx = cx;
         while( cxx < 0 )
@@ -622,29 +469,28 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, Projection *proj, wxCo
         for( cy = cymin; cy < cymax; cy++ ) {
             if( cxx >= 0 && cxx <= 359 && cy >= -90 && cy <= 89 ) {
                 if( allCells[cxx][cy + 90] == NULL ) {
-                    cel = new GshhsPolyCell( fpoly, cxx, cy, proj, &polyHeader );
+                    cel = new GshhsPolyCell( fpoly, cxx, cy, &polyHeader );
                     assert( cel );
                     allCells[cxx][cy + 90] = cel;
                 } else {
                     cel = allCells[cxx][cy + 90];
                 }
                 dx = cx - cxx;
-                cel->drawMapPlain( pnt, dx, proj, seaColor, landColor );
+                cel->drawMapPlain( pnt, dx, vp, seaColor, landColor, cellcount );
             }
         }
     }
 }
 
 //-------------------------------------------------------------------------
-void GshhsPolyReader::drawGshhsPolyMapSeaBorders( ocpnDC &pnt, Projection *proj )
+void GshhsPolyReader::drawGshhsPolyMapSeaBorders( ocpnDC &pnt, ViewPort &vp )
 {
     if( !fpoly ) return;
     this->abortRequested = true;
     int cxmin, cxmax, cymax, cymin;  // cellules visibles
-    cxmin = (int) floor( proj->getXmin() );
-    cxmax = (int) ceil( proj->getXmax() );
-    cymin = (int) floor( proj->getYmin() );
-    cymax = (int) ceil( proj->getYmax() );
+    wxBoundingBox bbox = vp.GetBBox();
+    cxmin = bbox.GetMinX(), cxmax = bbox.GetMaxX(), cymin = bbox.GetMinY(), cymax = bbox.GetMaxY();
+
     int dx, cx, cxx, cy;
     GshhsPolyCell *cel;
 
@@ -658,14 +504,14 @@ void GshhsPolyReader::drawGshhsPolyMapSeaBorders( ocpnDC &pnt, Projection *proj 
         for( cy = cymin; cy < cymax; cy++ ) {
             if( cxx >= 0 && cxx <= 359 && cy >= -90 && cy <= 89 ) {
                 if( allCells[cxx][cy + 90] == NULL ) {
-                    cel = new GshhsPolyCell( fpoly, cxx, cy, proj, &polyHeader );
+                    cel = new GshhsPolyCell( fpoly, cxx, cy, &polyHeader );
                     assert( cel );
                     allCells[cxx][cy + 90] = cel;
                 } else {
                     cel = allCells[cxx][cy + 90];
                 }
                 dx = cx - cxx;
-                cel->drawSeaBorderLines( pnt, dx, proj );
+                cel->drawSeaBorderLines( pnt, dx, vp );
             }
         }
     }
@@ -777,7 +623,7 @@ GshhsPolygon::~GshhsPolygon()
 
 //==========================================================
 
-GshhsReader::GshhsReader( Projection* proj )
+GshhsReader::GshhsReader( )
 {
     int maxQualityAvailable = -1;
     int minQualityAvailable = -1;
@@ -797,13 +643,14 @@ GshhsReader::GshhsReader( Projection* proj )
         wxLogMessage( msg );
     }
 
-    int q = selectBestQuality( proj );
-    if( ! qualityAvailable[q] ) {
-        q = minQualityAvailable;
-    }
+//    int q = selectBestQuality( vp );
+//    if( ! qualityAvailable[q] ) {
+//    int q = maxQualityAvailable;
+//    }
+
+    int q = 0;
 
     gshhsPoly_reader = new GshhsPolyReader( q );
-    setProj( proj );
 
     for( int qual = 0; qual < 5; qual++ ) {
         lsPoly_boundaries[qual] = new std::vector<GshhsPolygon*>;
@@ -921,7 +768,7 @@ void GshhsReader::LoadQuality( int newQuality ) // 5 levels: 0=low ... 4=full
     else if( quality > 4 ) quality = 4;
 
     gshhsPoly_reader->InitializeLoadQuality( quality );
-
+#if 0 /* too slow to load the whole world at once */
     if( lsPoly_boundaries[quality]->size() == 0 ) {
         fname = getFileName_boundaries( quality );
         file = fopen( fname.mb_str(), "rb" );
@@ -958,7 +805,7 @@ void GshhsReader::LoadQuality( int newQuality ) // 5 levels: 0=low ... 4=full
             fclose( file );
         }
     }
-
+#endif
     wxLogMessage( _T("Loading World Chart Q=%d in %ld ms."), quality, perftimer.Time());
 
 }
@@ -976,21 +823,21 @@ std::vector<GshhsPolygon*> & GshhsReader::getList_rivers()
 
 //=====================================================================
 
-int GshhsReader::GSHHS_scaledPoints( GshhsPolygon *pol, wxPoint *pts, double decx, Projection *proj )
+int GshhsReader::GSHHS_scaledPoints( GshhsPolygon *pol, wxPoint *pts, double decx, ViewPort &vp )
 {
-
-    if( !proj->intersect( pol->west + decx, pol->east + decx, pol->south, pol->north ) ) {
+    wxBoundingBox box(pol->west + decx, pol->south, pol->east + decx, pol->north);
+    if(vp.GetBBox().IntersectOut(box) )
         return 0;
-    }
 
     // Remove small polygons.
     int a1, b1;
     int a2, b2;
-    proj->map2screen( pol->west + decx, pol->north, &a1, &b1 );
-    proj->map2screen( pol->east + decx, pol->south, &a2, &b2 );
-    if( a1 == a2 && b1 == b2 ) {
+
+    wxPoint p1 = GetPixFromLL(vp,  pol->west + decx, pol->north );
+    wxPoint p2 = GetPixFromLL(vp,  pol->east + decx, pol->south );
+
+    if( p1.x == p2.x && p1.y == p2.y )
         return 0;
-    }
 
     double x, y;
     std::vector<GshhsPoint *>::iterator itp;
@@ -1000,10 +847,10 @@ int GshhsReader::GSHHS_scaledPoints( GshhsPolygon *pol, wxPoint *pts, double dec
     for( itp = ( pol->lsPoints ).begin(); itp != ( pol->lsPoints ).end(); itp++ ) {
         x = ( *itp )->lon + decx;
         y = ( *itp )->lat;
-        // Adjust scale
-        proj->map2screen( x, y, &xx, &yy );
+                                    {
+        wxPoint p = GetPixFromLL(vp,  y, x );
+        xx = p.x, yy = p.y;
         if( j == 0 || ( oxx != xx || oyy != yy ) )  // Remove close points
-                {
             oxx = xx;
             oyy = yy;
             pts[j].x = xx;
@@ -1016,7 +863,7 @@ int GshhsReader::GSHHS_scaledPoints( GshhsPolygon *pol, wxPoint *pts, double dec
 }
 
 //-----------------------------------------------------------------------
-void GshhsReader::GsshDrawLines( ocpnDC &pnt, std::vector<GshhsPolygon*> &lst, Projection *proj,
+void GshhsReader::GsshDrawLines( ocpnDC &pnt, std::vector<GshhsPolygon*> &lst, ViewPort &vp,
         bool isClosed )
 {
     std::vector<GshhsPolygon*>::iterator iter;
@@ -1039,7 +886,7 @@ void GshhsReader::GsshDrawLines( ocpnDC &pnt, std::vector<GshhsPolygon*> &lst, P
             assert( pts );
         }
 
-        nbp = GSHHS_scaledPoints( pol, pts, 0, proj );
+        nbp = GSHHS_scaledPoints( pol, pts, 0, vp );
         if( nbp > 1 ) {
             if( pol->isAntarctic() ) {
                 pts++;
@@ -1052,7 +899,7 @@ void GshhsReader::GsshDrawLines( ocpnDC &pnt, std::vector<GshhsPolygon*> &lst, P
             }
         }
 
-        nbp = GSHHS_scaledPoints( pol, pts, -360, proj );
+        nbp = GSHHS_scaledPoints( pol, pts, -360, vp );
         if( nbp > 1 ) {
             if( pol->isAntarctic() ) {
                 pts++;
@@ -1069,67 +916,51 @@ void GshhsReader::GsshDrawLines( ocpnDC &pnt, std::vector<GshhsPolygon*> &lst, P
 }
 
 //-----------------------------------------------------------------------
-void GshhsReader::drawBackground( ocpnDC &pnt, Projection *proj, wxColor seaColor,
-        wxColor backgroundColor )
-{
-    pnt.SetBrush( backgroundColor );
-    pnt.SetPen( backgroundColor );
-    pnt.DrawRectangle( 0, 0, proj->getW(), proj->getH() );
-
-    pnt.SetBrush( seaColor );
-    pnt.SetPen( seaColor );
-    int x0, y0, x1, y1;
-    proj->map2screen( 0, 90, &x0, &y0 );
-    proj->map2screen( 0, -90, &x1, &y1 );
-
-    pnt.DrawRectangle( 0, y0, proj->getW(), y1 - y0 );
-
-}
-//-----------------------------------------------------------------------
-void GshhsReader::drawContinents( ocpnDC &pnt, Projection *proj, wxColor seaColor,
+void GshhsReader::drawContinents( ocpnDC &pnt, ViewPort &vp, wxColor seaColor,
         wxColor landColor )
 {
-    LoadQuality( selectBestQuality( proj ) );
-    gshhsPoly_reader->drawGshhsPolyMapPlain( pnt, proj, seaColor, landColor );
+    LoadQuality( selectBestQuality( vp ) );
+    gshhsPoly_reader->drawGshhsPolyMapPlain( pnt, vp, seaColor, landColor );
 }
 
 //-----------------------------------------------------------------------
-void GshhsReader::drawSeaBorders( ocpnDC &pnt, Projection *proj )
+void GshhsReader::drawSeaBorders( ocpnDC &pnt, ViewPort &vp )
 {
     pnt.SetBrush( *wxTRANSPARENT_BRUSH );
-    gshhsPoly_reader->drawGshhsPolyMapSeaBorders( pnt, proj );
+    gshhsPoly_reader->drawGshhsPolyMapSeaBorders( pnt, vp );
 }
 
 //-----------------------------------------------------------------------
-void GshhsReader::drawBoundaries( ocpnDC &pnt, Projection *proj )
+void GshhsReader::drawBoundaries( ocpnDC &pnt, ViewPort &vp )
 {
     pnt.SetBrush( *wxTRANSPARENT_BRUSH );
 
-	if( pnt.GetDC() ) {
+    if( pnt.GetDC() ) {
         wxPen* pen = wxThePenList->FindOrCreatePen( *wxBLACK, 1, wxDOT );
-		pnt.SetPen( *pen );
+        pnt.SetPen( *pen );
     } else {
-        wxPen* pen = wxThePenList->FindOrCreatePen( wxColor( 0, 0, 0, 80 ), 1, wxDOT );
+        wxPen* pen = wxThePenList->FindOrCreatePen( wxColor( 0, 0, 0, 80 ), 2, wxLONG_DASH );
         pnt.SetPen( *pen );
     }
-    GsshDrawLines( pnt, getList_boundaries(), proj, false );
+    GsshDrawLines( pnt, getList_boundaries(), vp, false );
 }
 
 //-----------------------------------------------------------------------
-void GshhsReader::drawRivers( ocpnDC &pnt, Projection *proj )
+void GshhsReader::drawRivers( ocpnDC &pnt, ViewPort &vp )
 {
-    GsshDrawLines( pnt, getList_rivers(), proj, false );
+    GsshDrawLines( pnt, getList_rivers(), vp, false );
 }
 
 //-----------------------------------------------------------------------
-int GshhsReader::selectBestQuality( Projection *proj )
+int GshhsReader::selectBestQuality( ViewPort &vp )
 {
     int bestQuality = 0;
-    if( proj->getCoefremp() > 60 ) bestQuality = 0;
-    else if( proj->getCoefremp() > 1 ) bestQuality = 1;
-    else if( proj->getCoefremp() > 0.05 ) bestQuality = 2;
-    else if( proj->getCoefremp() > 0.005 ) bestQuality = 3;
-    else bestQuality = 4;
+
+         if(vp.chart_scale <   500000) bestQuality = 4;
+    else if(vp.chart_scale <  2000000) bestQuality = 3;
+    else if(vp.chart_scale <  8000000) bestQuality = 2;
+    else if(vp.chart_scale < 20000000) bestQuality = 1;
+    else bestQuality = 0;
 
     while( !qualityAvailable[bestQuality] ) {
         bestQuality--;
@@ -1143,14 +974,24 @@ int GshhsReader::selectBestQuality( Projection *proj )
     return bestQuality;
 }
 
-/* so plugins can determine if a line segment crosses land */
+/* so plugins can determine if a line segment crosses land, must call from main
+   thread once at startup to initialize array */
+static GshhsReader *reader = NULL;
+void gshhsCrossesLandInit()
+{
+    reader = new GshhsReader();
+
+    /* load best possible quality for crossing tests */
+    int bestQuality = 4;
+    while( !reader->qualityAvailable[bestQuality] && bestQuality > 0)
+        bestQuality--;
+    reader->LoadQuality(bestQuality);
+
+    reader->crossing1Init();
+}
+
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2)
 {
-    static GshhsReader *reader;
-    static Projection proj;
-    if(reader == NULL)
-        reader = new GshhsReader(&proj);
-
     if(lon1 < 0)
         lon1 += 360;
     if(lon2 < 0)

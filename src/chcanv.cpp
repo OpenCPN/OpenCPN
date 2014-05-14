@@ -9131,9 +9131,25 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     //    Draw the Background Chart only in the areas NOT covered by the current chart view
 
-    if( ( fabs( GetVP().skew ) < .01 ) && ! backgroundRegion.IsEmpty() ) {
+    if( ( ( fabs( GetVP().skew ) < .01 ) || ! g_bskew_comp )
+        && ! backgroundRegion.IsEmpty() ) {
+        /* unfortunately wxDC::DrawRectangle and wxDC::Clear do not respect
+           clipping regions with more than 1 rectangle so... */
+        wxColour water = cc1->pWorldBackgroundChart->water;
+        temp_dc.SetPen( *wxTRANSPARENT_PEN );
+        temp_dc.SetBrush( wxBrush( water ) );
+        wxRegionIterator upd( backgroundRegion ); // get the update rect list
+        while( upd ) {
+            wxRect rect = upd.GetRect();
+            temp_dc.DrawRectangle(rect);
+            upd++;
+        }
+
         ocpnDC bgdc( temp_dc );
+        double r =         VPoint.rotation;
+        VPoint.rotation = 0;
         pWorldBackgroundChart->RenderViewOnDC( bgdc, VPoint );
+        VPoint.rotation = r;
     }
 
     wxMemoryDC *pChartDC = &temp_dc;

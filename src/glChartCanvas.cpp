@@ -2182,6 +2182,44 @@ void glChartCanvas::ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Reg
      }
 }
 
+// render world chart, only in this region
+void glChartCanvas::RenderWorldChart(ocpnDC &dc, OCPNRegion &region)
+{
+    ViewPort vp = cc1->VPoint;
+  
+    wxColour water = cc1->pWorldBackgroundChart->water;
+    
+    /* we are not going to benefit from multiple passes
+       if we are zoomed in far enough to only have a few cells, or there are
+       many rectangles */
+    int n_rect = 0;
+    for(OCPNRegionIterator clipit( region ); clipit.HaveRects(); clipit.NextRect())
+        n_rect++;
+
+    if(vp.view_scale_ppm > .003 || n_rect > 2)
+    {
+        glColor3ub(water.Red(), water.Green(), water.Blue());
+        SetClipRegion( vp, region, true, true ); /* clear background, no rotation */
+
+        vp.rv_rect.x = vp.rv_rect.y = 0;
+        cc1->pWorldBackgroundChart->RenderViewOnDC( dc, vp );
+    } else /* if there are (skinny) rectangles (common for panning)
+              we can accelerate quite a bit here by doing two rendering passes
+              with correct lat/lon bounding boxes for each, to eliminate
+              most of the data to walk. */
+    for(OCPNRegionIterator upd( region ); upd.HaveRects(); upd.NextRect())
+    {
+        wxRect rect = upd.GetRect();
+        glColor3ub(water.Red(), water.Green(), water.Blue());
+        SetClipRegion( vp, OCPNRegion(rect), true, true);
+        ViewPort cvp = BuildClippedVP(vp, rect);
+        cvp.rv_rect.x = cvp.rv_rect.y = 0;
+        cc1->pWorldBackgroundChart->RenderViewOnDC( dc, cvp );
+    }
+
+    DisableClipRegion( );
+}
+
 ViewPort glChartCanvas::BuildClippedVP(ViewPort &VP, wxRect &rect)
 {
     //  Build synthetic ViewPort on this rectangle so that
@@ -2641,29 +2679,7 @@ void glChartCanvas::Render()
 
         SetClipRegion( nvp, backgroundRegion, true, true );       // clear background
 
-        glPushMatrix();
-        if( fabs( cc1->GetVP().rotation ) > .01 ) {
-            double w2 = cc1->GetVP().rv_rect.width / 2;
-            double h2 = cc1->GetVP().rv_rect.height / 2;
-
-            double angle = cc1->GetVP().rotation;
-
-            //    Rotations occur around 0,0, so calculate a post-rotate translation factor
-            double ddx = ( w2 * cos( -angle ) - h2 * sin( -angle ) - w2 ) ;
-            double ddy = ( h2 * cos( -angle ) + w2 * sin( -angle ) - h2 ) ;
-            glRotatef( angle * 180. / PI, 0, 0, 1 );
-            glTranslatef( ddx, ddy, 0 );                 // post rotate translation
-
-                // WorldBackgroundChart renders in an offset rectangle,
-                // So translate back to standard coordinates
-            double x1 = cc1->GetVP().rv_rect.x;
-            double y1 = cc1->GetVP().rv_rect.y;
-            double x2 =  x1 * cos( angle ) + y1 * sin( angle );
-            double y2 =  y1 * cos( angle ) - x1 * sin( angle );
-            glTranslatef( x2, y2, 0 );
-        }
-
-        cc1->pWorldBackgroundChart->RenderViewOnDC( gldc, VPoint );
+        RenderWorldChart( gldc, backgroundRegion);
 
         DisableClipRegion();
 

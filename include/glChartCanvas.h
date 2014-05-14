@@ -106,6 +106,7 @@ protected:
     void BuildFBO();
     void SetupOpenGL();
     void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Region );
+    void RenderWorldChart(ocpnDC &dc, OCPNRegion &region);
 
     ViewPort BuildClippedVP(ViewPort &VP, wxRect &rect);
 
