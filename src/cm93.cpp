@@ -1920,6 +1920,9 @@ cm93chart::cm93chart()
       m_pDrawBuffer = ( wxPoint * ) malloc ( 4 * sizeof ( wxPoint ) );
       m_nDrawBufferSize = 1;
 
+#ifdef ocpnUSE_GL        
+      m_outline_display_list = 0;
+#endif
 
       //  Set up the chart context
       m_this_chart_context = (chart_context *)calloc( sizeof(chart_context), 1);
