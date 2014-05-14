@@ -42,7 +42,7 @@
 //#include <math.h>
 #include <time.h>
 #include <locale>
-#include <deque>
+#include <list>
 
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
@@ -662,18 +662,26 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
         col = basic_colour;
     } else {
         for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
-                if( m_Colour == ::GpxxColorNames[i] ) {
-                    col = ::GpxxColors[i];
-                    break;
-                }
+            if( m_Colour == ::GpxxColorNames[i] ) {
+                col = ::GpxxColors[i];
+                break;
             }
+        }
     }
     dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
     dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxSOLID ) );
 
+    std::list< std::list<wxPoint> > pointlists;
+    std::list<wxPoint> pointlist;
+
+    //    Get the dc boundary
+    int sx, sy;
+    dc.GetSize( &sx, &sy );
+
     //  Draw the first point
-    wxPoint rpt, rptn;
+    wxPoint rpt;
     DrawPointWhich( dc, 1, &rpt );
+    pointlist.push_back(rpt);
 
     node = node->GetNext();
     while( node ) {
@@ -686,26 +694,61 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
         //  We do inline decomposition of the line segments, in a simple minded way
         //  If the line segment length is less than approximately 2 pixels, then simply don't render it,
         //  but continue on to the next point.
-        if((abs(r.x - rpt.x) > 1) || (abs(r.y- rpt.y) > 1) ){
-            prp->Draw( dc, &rptn );
 
-            if( ToSegNo == FromSegNo )
-                RenderSegment( dc, rpt.x, rpt.y, rptn.x, rptn.y, VP, false, (int) radius ); // no arrows, with hilite
+        int x0 = r.x, y0 = r.y, x1 = rpt.x, y1= rpt.y;
+        if((abs(r.x - rpt.x) > 1) || (abs(r.y - rpt.y) > 1) ||
+            cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, 0, sx, 0, sy ) != Visible ) {
+            prp->Draw( dc, &rpt );
 
-            rpt = rptn;
+            pointlist.push_back(rpt);
+            if( ToSegNo != FromSegNo ) {
+                if(pointlist.size()) {
+                    pointlists.push_back(pointlist);
+                    pointlist.clear();
+                }
+            }
         }
 
         node = node->GetNext();
         FromSegNo = ToSegNo;
-
     }
 
-    //    Draw last segment, dynamically, maybe.....
-
+    //    Add last segment, dynamically, maybe.....
     if( m_bRunning ) {
-        wxPoint r;
-        cc1->GetCanvasPointPix( gLat, gLon, &r );
-        RenderSegment( dc, rpt.x, rpt.y, r.x, r.y, VP, false, (int) radius ); // no arrows, with hilite
+        cc1->GetCanvasPointPix( gLat, gLon, &rpt );
+        pointlist.push_back(rpt);
+    }
+    pointlists.push_back(pointlist);
+
+    for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
+        lines != pointlists.end(); lines++) {
+        wxPoint *points = new wxPoint[lines->size()];
+        int i = 0;
+        for(std::list<wxPoint>::iterator line = lines->begin();
+            line != lines->end(); line++) {
+            points[i] = *line;
+            i++;
+        }
+
+        int hilite_width = radius;
+        if( hilite_width ) {
+            wxPen psave = dc.GetPen();
+
+            dc.StrokeLines( i, points );
+                    
+            wxColour y = GetGlobalColor( _T ( "YELO1" ) );
+            wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
+            
+            wxPen HiPen( hilt, hilite_width, wxSOLID );
+            dc.SetPen( HiPen );
+            
+            dc.StrokeLines( i, points );
+
+            dc.SetPen( psave );
+        } else
+            dc.StrokeLines( i, points );
+
+        delete [] points;
     }
 }
 
