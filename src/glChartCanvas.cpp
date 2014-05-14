@@ -2293,6 +2293,8 @@ void glChartCanvas::Render()
 
     if( ( !cc1->VPoint.b_quilt ) && ( !Current_Ch ) ) return;
 
+    m_last_render_time = wxDateTime::Now().GetTicks();
+
     //    Take a look and see if memory is getting close to exceeding the user specified max
     m_b_mem_crunch = false;
     int mem_total, mem_used;

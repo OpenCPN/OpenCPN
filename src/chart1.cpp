@@ -5281,13 +5281,13 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         }
     }
 
-    if( !bGPSValid ) {
+    if( !bGPSValid )
         cc1->SetOwnShipState( SHIP_INVALID );
-        if( cc1->m_bFollow ) cc1->UpdateShips();
-    }
 
     if( bGPSValid != m_last_bGPSValid ) {
-        cc1->UpdateShips();
+        if(!g_bopengl)
+            cc1->UpdateShips();
+
         bnew_view = true;                  // force a full Refresh()
         m_last_bGPSValid = bGPSValid;
     }
@@ -5306,28 +5306,35 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
                 }
             }
         }
-    }
 
-    if( brq_dynamic ) {
-        cc1->Refresh();
-        bnew_view = true;
+        if( brq_dynamic )
+            bnew_view = true;
     }
 
     FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 
+    if(g_bopengl) {
+        if(m_fixtime - cc1->GetglCanvas()->m_last_render_time > 0)
+            bnew_view = true;
+
+        if(bnew_view) /* full frame in opengl mode */
+            cc1->Refresh(false);
+    } else {
 //  Invalidate the ChartCanvas window appropriately
 //    In non-follow mode, invalidate the rectangles containing the AIS targets and the ownship, etc...
 //    In follow mode, if there has already been a full screen refresh, there is no need to check ownship or AIS,
 //       since they will be always drawn on the full screen paint.
-    if( ( !cc1->m_bFollow ) || g_bCourseUp ) {
-        cc1->UpdateShips();
-        cc1->UpdateAIS();
-        cc1->UpdateAlerts();
-    } else {
-        if( !bnew_view )                    // There has not been a Refresh() yet.....
-        {
+        
+        if( ( !cc1->m_bFollow ) || g_bCourseUp ) {
+            cc1->UpdateShips();
             cc1->UpdateAIS();
             cc1->UpdateAlerts();
+        } else {
+            if( !bnew_view )                    // There has not been a Refresh() yet.....
+            {
+                cc1->UpdateAIS();
+                cc1->UpdateAlerts();
+            }
         }
     }
 

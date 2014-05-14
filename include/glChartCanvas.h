@@ -101,6 +101,8 @@ public:
     void DrawEmboss( emboss_data *emboss );
     void ShipDraw(ocpnDC& dc);
 
+    time_t m_last_render_time;
+
 protected:
     void RenderQuiltViewGL(ViewPort &vp, OCPNRegion Region, bool b_clear = true);
     void BuildFBO();
