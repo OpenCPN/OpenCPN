@@ -32,8 +32,10 @@
 #include <wx/filename.h>
 #include <stdlib.h>
 
+#include "ocpn_types.h"
 #include "chartsymbols.h"
 
+extern ColorScheme               global_color_scheme;
 extern bool g_bopengl;
 
 //--------------------------------------------------------------------------------------
@@ -927,11 +929,19 @@ wxString ChartSymbols::HashKey( const char* symbolName )
 wxImage ChartSymbols::GetImage( const char* symbolName )
 {
     /* in opengl rasterSymbols is normally freed to release ram, so load it if needed
-       (the first time an s57 chart is ever loaded, it renders to memor dc to cache
+       (the first time an s57 chart is ever loaded, it renders to memory dc to cache
        a thumbnail so needs the ram version.  Eventually we can render to video memory
        read it back for this case instead. */
+
+    int colortable_index = rasterSymbolsLoadedColorMapNumber;
+
+    if(colortable_index == -1) {
+        wxString scheme_names[] = {_T("DAY"), _T("DAY"), _T("DUSK"), _T("NIGHT")};
+        colortable_index = ChartSymbols::FindColorTable( scheme_names[global_color_scheme] );
+    }
+
     if(!rasterSymbols.IsOk())
-        LoadRasterFileForColorTable(rasterSymbolsLoadedColorMapNumber, false, true);
+        LoadRasterFileForColorTable(colortable_index, false, true);
 
     wxRect bmArea = ( *symbolGraphicLocations )[HashKey( symbolName )];
     wxBitmap bitmap = rasterSymbols.GetSubBitmap( bmArea );
