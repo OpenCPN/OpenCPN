@@ -149,8 +149,6 @@ opncpnPalette::~opncpnPalette()
 // ============================================================================
 ChartBase::ChartBase()
 {
-      pcached_bitmap = NULL;
-
       m_depth_unit_id = DEPTH_UNIT_UNKNOWN;
 
       pThumbData = new ThumbData;
@@ -182,9 +180,6 @@ ChartBase::ChartBase()
 
 ChartBase::~ChartBase()
 {
-      if(pcached_bitmap)
-             delete pcached_bitmap;
-
       delete pThumbData;
 
       //    Free the COVR tables
