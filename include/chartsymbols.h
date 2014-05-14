@@ -109,7 +109,7 @@ public:
 
 	static void InitializeGlobals( void );
 	static void DeleteGlobals( void );
-	static int LoadRasterFileForColorTable( int tableNo );
+	static int LoadRasterFileForColorTable( int tableNo, bool flush=false, bool dcmode=false );
 	static wxArrayPtrVoid * GetColorTables();
 	static int FindColorTable(const wxString & tableName);
 	static S52color* GetColor( const char *colorName, int fromTable );
@@ -117,7 +117,8 @@ public:
 	static wxColor GetwxColor( const char *colorName, int fromTable );
 	static wxString HashKey( const char* symbolName );
 	static wxImage GetImage( const char* symbolName );
-
+        static unsigned int GetGLTextureRect( wxRect &rect, const char* symbolName );
+        static wxSize GLTextureSize();
 
 private:
       void ProcessVectorTag( TiXmlElement* subNodes, SymbolSizeInfo_t &vectorSize );

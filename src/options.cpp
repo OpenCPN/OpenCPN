@@ -189,6 +189,7 @@ extern wxString         g_locale;
 extern bool             g_bportable;
 extern bool             g_bdisable_opengl;
 extern wxString         *pHome_Locn;
+extern wxString         g_Plugin_Dir;
 
 extern ChartGroupArray  *g_pGroupArray;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -205,6 +206,7 @@ extern AIS_Decoder      *g_pAIS;
 extern bool             g_bserial_access_checked;
 
 options                *g_pOptions;
+bool                    g_bLoadedDisabledPlugins;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
@@ -343,7 +345,8 @@ void options::Init()
 {
     m_pWorkDirList = NULL;
 
-    pDebugShowStat = NULL;
+    pShowStatusBar = NULL;
+    pShowCompassWin = NULL;
     pSelCtl = NULL;
     pActiveChartsList = NULL;
     ps57CtlListBox = NULL;
@@ -1727,9 +1730,13 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
     wxStaticBoxSizer* miscOptions = new wxStaticBoxSizer( miscOptionsBox, wxVERTICAL );
     m_itemBoxSizerFontPanel->Add( miscOptions, 0, wxALL | wxEXPAND, border_size );
 
-    pDebugShowStat = new wxCheckBox( itemPanelFont, ID_DEBUGCHECKBOX1, _("Show Status Bar") );
-    pDebugShowStat->SetValue( FALSE );
-    miscOptions->Add( pDebugShowStat, 0, wxALL, border_size );
+    pShowStatusBar = new wxCheckBox( itemPanelFont, ID_DEBUGCHECKBOX1, _("Show Status Bar") );
+    pShowStatusBar->SetValue( FALSE );
+    miscOptions->Add( pShowStatusBar, 0, wxALL, border_size );
+
+    pShowCompassWin = new wxCheckBox( itemPanelFont, wxID_ANY, _("Show Compass/GPS Status Window") );
+    pShowCompassWin->SetValue( FALSE );
+    miscOptions->Add( pShowCompassWin, 0, wxALL, border_size );
 
     pFullScreenToolbar = new wxCheckBox( itemPanelFont, ID_FSTOOLBARCHECKBOX,
             _("Show Toolbar in Fullscreen Mode") );
@@ -1922,6 +1929,14 @@ void options::CreateControls()
     wxBoxSizer* itemBoxSizerPanelPlugins = new wxBoxSizer( wxVERTICAL );
     itemPanelPlugins->SetSizer( itemBoxSizerPanelPlugins );
 
+    // load the disabled plugins finally because the user might want to enable them
+    // I would prefer to change this so the plugins are only loaded if and when
+    // they select the plugin page
+    if(!g_bLoadedDisabledPlugins) {
+        g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, false );
+        g_bLoadedDisabledPlugins = true;
+    }
+
     //      Build the PlugIn Manager Panel
     m_pPlugInCtrl = new PluginListPanel( itemPanelPlugins, ID_PANELPIM, wxDefaultPosition,
             wxDefaultSize, g_pi_manager->GetPlugInArray() );
@@ -1931,8 +1946,6 @@ void options::CreateControls()
 
     //      PlugIns can add panels, too
     if( g_pi_manager ) g_pi_manager->NotifySetupOptions();
-
-    pSettingsCB1 = pDebugShowStat;
 
     SetColorScheme( (ColorScheme) 0 );
     
@@ -1985,7 +1998,10 @@ void options::SetInitialSettings()
         groupsPanel->SetInitialSettings();
     }
 
-    if( m_pConfig ) pSettingsCB1->SetValue( m_pConfig->m_bShowDebugWindows );
+    if( m_pConfig ) {
+        pShowStatusBar->SetValue( m_pConfig->m_bShowStatusBar );
+        pShowCompassWin->SetValue( m_pConfig->m_bShowCompassWin );
+    }
 
     m_cbNMEADebug->SetValue(NMEALogWindow::Get().Active());
 /*TODO
@@ -2608,7 +2624,10 @@ void options::OnApplyClick( wxCommandEvent& event )
 
     // Handle Settings Tab
 
-    if( m_pConfig ) m_pConfig->m_bShowDebugWindows = pSettingsCB1->GetValue();
+    if( m_pConfig ) {
+        m_pConfig->m_bShowStatusBar = pShowStatusBar->GetValue();
+        m_pConfig->m_bShowCompassWin = pShowCompassWin->GetValue();
+    }
 
 //TODO    g_bGarminHost = pGarminHost->GetValue();
 

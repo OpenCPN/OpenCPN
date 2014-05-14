@@ -632,7 +632,7 @@ int               g_sticky_chart;
 
 extern wxString OpenCPNVersion; //Gunther
 
-double g_GLMinLineWidth;
+float g_GLMinLineWidth;
 
 int n_NavMessageShown;
 wxString g_config_version_string;
@@ -1908,7 +1908,7 @@ if( 0 == g_memCacheLimit )
 
 //      Load and initialize any PlugIns
     g_pi_manager = new PlugInManager( gFrame );
-    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir );
+    g_pi_manager->LoadAllPlugIns( g_Plugin_Dir, true );
 
 // Show the frame
 
@@ -2203,9 +2203,6 @@ if( 0 == g_memCacheLimit )
     }
 
     cc1->ReloadVP();                  // once more, and good to go
-
-    g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-    if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
 
     g_FloatingToolbarDialog->Raise();
     g_FloatingToolbarDialog->Show();
@@ -2640,10 +2637,6 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
 
     g_StyleManager->GetCurrentStyle()->SetColorScheme( cs );
     cc1->GetWorldBackgroundChart()->SetColorScheme( cs );
-
-#ifdef USE_S57
-    if( ps52plib ) ps52plib->SetPLIBColorScheme( SchemeName );
-#endif
 
     //Search the user color table array to find the proper hash table
     Usercolortable_index = 0;
@@ -4112,7 +4105,7 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
     UseNativeStatusBar( false );              // better for MSW, undocumented in frame.cpp
 #endif
 
-    if( pConfig->m_bShowDebugWindows ) {
+    if( pConfig->m_bShowStatusBar ) {
         if( !m_pStatusBar ) {
             m_pStatusBar = CreateStatusBar( m_StatusBarFieldCount, 0 );   // No wxST_SIZEGRIP needed
             ApplyGlobalColorSchemetoStatusBar();
@@ -4129,6 +4122,17 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
             Refresh( false );
         }
     }
+
+    if( pConfig->m_bShowCompassWin ) {
+        if(!g_FloatingCompassDialog) {
+            g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
+            if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
+        }
+    } else if(g_FloatingCompassDialog) {
+        g_FloatingCompassDialog->Destroy();
+        g_FloatingCompassDialog = NULL;
+    }
+
 
     if( bnewtoolbar ) UpdateToolbar( global_color_scheme );
 
@@ -7141,7 +7145,7 @@ void MyFrame::OnEvtOCPN_NMEA( OCPN_DataStreamEvent & event )
 
     if( event.GetStream() )
     {
-        if(!event.GetStream()->ChecksumOK(str_buf) )
+        if(!event.GetStream()->ChecksumOK(event.GetNMEAString()) )
         {
             if( g_nNMEADebug && ( g_total_NMEAerror_messages < g_nNMEADebug ) )
             {
@@ -8259,6 +8263,8 @@ wxArrayString *EnumerateSerialPorts( void )
         preturn->Add( _T("/dev/ttyS1"));
         preturn->Add( _T("/dev/ttyUSB0"));
         preturn->Add( _T("/dev/ttyUSB1"));
+        preturn->Add( _T("/dev/ttyACM0"));
+        preturn->Add( _T("/dev/ttyACM1"));
     }
 
 //    Clean up the temporary files created by helper.
@@ -8542,25 +8548,42 @@ bool CheckSerialAccess( void )
 #endif
 
     //  Who owns /dev/ttyS0?
+    bret = false;
     
     wxArrayString result1;
     wxExecute(_T("stat -c %G /dev/ttyS0"), result1);
-    
-    wxString group = result1[0];
-    
+    if(!result1.size())
+        wxExecute(_T("stat -c %G /dev/ttyUSB0"), result1);
+
+    if(!result1.size())
+        wxExecute(_T("stat -c %G /dev/ttyACM0"), result1);
+
+    wxString msg1 = _("OpenCPN requires access to serial ports to use serial NMEA data.\n");
+    if(!result1.size()) {
+        wxString msg = msg1 + _("No Serial Ports can be found on this system.\n\
+You must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n");
+            
+        OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 30 );
+        return false;
+    }
+
     //  Is the current user in this group?
-    wxString user = wxGetUserId();
+    wxString user = wxGetUserId(), group = result1[0];
+
     wxArrayString result2;
     wxExecute(_T("groups ") + user, result2);
     
-    wxString user_groups = result2[0];
+    if(result2.size()) {
+        wxString user_groups = result2[0];
 
-    if(user_groups.Find(group) == wxNOT_FOUND)
-        bret = false;
+        if(user_groups.Find(group) != wxNOT_FOUND)
+            bret = true;
+    }
  
     if(!bret){
-        wxString msg = _("OpenCPN requires access to serial ports to use serial NMEA data.\n\
-You currently do not have permission to access the serial ports on this system.\n\n\
+
+        wxString msg = msg1 + _("\
+You do currently not have permission to access the serial ports on this system.\n\n\
 It is suggested that you exit OpenCPN now,\n\
 and add yourself to the correct group to enable serial port access.\n\n\
 You may do so by executing the following command from the linux command line:\n\n\

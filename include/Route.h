@@ -62,10 +62,11 @@ public:
       void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
       void DeSelectRoute();
-      void CalculateBBox();
+      void FinalizeForRendering();
       void UpdateSegmentDistances(double planspeed = -1.0);
       void CalculateDCRect(wxDC& dc_route, wxRect *prect, ViewPort &VP);
       int GetnPoints(void){ return m_nPoints; }
+      wxBoundingBox GetBBox();
       void SetnPoints(void){ m_nPoints = pRoutePointList->GetCount(); }
       void Reverse(bool bRenamePoints = false);
       void RebuildGUIDList(void);
@@ -125,12 +126,14 @@ public:
       wxArrayString      RoutePointGUIDList;
       RoutePointList     *pRoutePointList;
 
-      wxBoundingBox     RBBox;
       wxRect      active_pt_rect;
       wxString    m_Colour;
       bool        m_btemp;
 
 private:
+      bool m_bNeedsUpdateBBox;
+      wxBoundingBox     RBBox;
+
       bool        CalculateCrossesIDL();
       int         m_nPoints;
       int         m_nm_sequence;

@@ -2487,7 +2487,7 @@ bool MarkInfoImpl::SaveChanges()
             if( pEditRouteArray ) {
                 for( unsigned int ir = 0; ir < pEditRouteArray->GetCount(); ir++ ) {
                     Route *pr = (Route *) pEditRouteArray->Item( ir );
-                    pr->CalculateBBox();
+                    pr->FinalizeForRendering();
                     pr->UpdateSegmentDistances();
 
                     pConfig->UpdateRoute( pr );

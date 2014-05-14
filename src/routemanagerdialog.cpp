@@ -965,8 +965,9 @@ void RouteManagerDialog::ZoomtoRoute( Route *route )
 {
 
     // Calculate bbox center
-    double clat = route->RBBox.GetMinY() + ( route->RBBox.GetHeight() / 2 );
-    double clon = route->RBBox.GetMinX() + ( route->RBBox.GetWidth() / 2 );
+    wxBoundingBox RBBox = route->GetBBox();
+    double clat = RBBox.GetMinY() + ( RBBox.GetHeight() / 2 );
+    double clon = RBBox.GetMinX() + ( RBBox.GetWidth() / 2 );
 
     if( clon > 180. ) clon -= 360.;
     else
@@ -976,11 +977,11 @@ void RouteManagerDialog::ZoomtoRoute( Route *route )
     double rw, rh, ppm; // route width, height, final ppm scale to use
     int ww, wh; // chart window width, height
     // route bbox width in nm
-    DistanceBearingMercator( route->RBBox.GetMinY(), route->RBBox.GetMinX(), route->RBBox.GetMinY(),
-            route->RBBox.GetMaxX(), NULL, &rw );
+    DistanceBearingMercator( RBBox.GetMinY(), RBBox.GetMinX(), RBBox.GetMinY(),
+            RBBox.GetMaxX(), NULL, &rw );
     // route bbox height in nm
-    DistanceBearingMercator( route->RBBox.GetMinY(), route->RBBox.GetMinX(), route->RBBox.GetMaxY(),
-            route->RBBox.GetMinX(), NULL, &rh );
+    DistanceBearingMercator( RBBox.GetMinY(), RBBox.GetMinX(), RBBox.GetMaxY(),
+            RBBox.GetMinX(), NULL, &rh );
 
     cc1->GetSize( &ww, &wh );
 

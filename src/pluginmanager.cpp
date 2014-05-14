@@ -81,6 +81,7 @@ extern bool             g_b_useStencil;
 extern wxString         g_Plugin_Dir;
 extern bool             g_boptionsactive;
 extern options         *g_options;
+extern ColorScheme      global_color_scheme;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
@@ -205,7 +206,6 @@ PlugInManager::PlugInManager(MyFrame *parent)
         m_plugin_menu_item_id_next = pFrame->GetCanvasWindow()->GetNextContextMenuId();
         m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
     }
-
 }
 
 PlugInManager::~PlugInManager()
@@ -213,7 +213,7 @@ PlugInManager::~PlugInManager()
 }
 
 
-bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
+bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled)
 {
     m_plugin_location = plugin_dir;
 
@@ -240,32 +240,38 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
         return false;
     }
 
-
-
-        wxArrayString file_list;
-        wxString plugin_file;
+    wxArrayString file_list;
         
-        int get_flags =  wxDIR_FILES | wxDIR_DIRS;
+    int get_flags =  wxDIR_FILES | wxDIR_DIRS;
 #ifdef __WXMSW__
 #ifdef _DEBUG
-        get_flags =  wxDIR_FILES;
+    get_flags =  wxDIR_FILES;
 #endif        
 #endif        
+    
+    wxDir::GetAllFiles( m_plugin_location, &file_list, pispec, get_flags );
+    
+    for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
+        wxString file_name = file_list[i];
+        wxString plugin_file = wxFileName(file_name).GetFullName();
         
-        wxDir::GetAllFiles( m_plugin_location, &file_list, pispec, get_flags );
-        
-        for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
-            wxString file_name = file_list[i];
-
+        //    Check the config file to see if this PlugIn is user-enabled
+        wxString config_section = ( _T ( "/PlugIns/" ) );
+        config_section += plugin_file;
+        pConfig->SetPath ( config_section );
+        bool enabled;
+        pConfig->Read ( _T ( "bEnabled" ), &enabled, false );
+        if(enabled  == load_enabled) {
+            
             bool b_compat = CheckPluginCompatibility(file_name);
-
+            
             if(!b_compat)
             {
                 wxString msg(_("    Incompatible PlugIn detected:"));
                 msg += file_name;
                 wxLogMessage(msg);
             }
-
+            
             PlugInContainer *pic = NULL;
             if(b_compat)
                 pic = LoadPlugIn(file_name);
@@ -274,47 +280,46 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
                 if(pic->m_pplugin)
                 {
                     plugin_array.Add(pic);
-
+                    
                     //    The common name is available without initialization and startup of the PlugIn
                     pic->m_common_name = pic->m_pplugin->GetCommonName();
-
-                    //    Check the config file to see if this PlugIn is user-enabled
-                    wxString config_section = ( _T ( "/PlugIns/" ) );
-                    config_section += pic->m_common_name;
-                    pConfig->SetPath ( config_section );
-                    pConfig->Read ( _T ( "bEnabled" ), &pic->m_bEnabled );
-
+                    
+                    pic->m_plugin_filename = plugin_file;
+                    pic->m_bEnabled = enabled;
                     if(pic->m_bEnabled)
                     {
                         pic->m_cap_flag = pic->m_pplugin->Init();
                         pic->m_bInitState = true;
                     }
-
+                    
                     pic->m_short_description = pic->m_pplugin->GetShortDescription();
                     pic->m_long_description = pic->m_pplugin->GetLongDescription();
                     pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
                     pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
                     pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
-
+                    
                 }
                 else        // not loaded
                 {
                     wxString msg;
                     msg.Printf(_T("    PlugInManager: Unloading invalid PlugIn, API version %d "), pic->m_api_version );
                     wxLogMessage(msg);
-
+                    
                     pic->m_destroy_fn(pic->m_pplugin);
-
+                    
                     delete pic->m_plibrary;            // This will unload the PlugIn
                     delete pic;
                 }
             }
-
         }
+    }
+    
+    UpDateChartDataTypes();
 
-        UpDateChartDataTypes();
-
-        return true;
+    // Inform plugins of the current color scheme
+    g_pi_manager->SetColorSchemeForAllPlugIns( global_color_scheme );
+    
+    return true;
 }
 
 bool PlugInManager::CallLateInit(void)
@@ -459,7 +464,7 @@ bool PlugInManager::UpdateConfig()
         PlugInContainer *pic = plugin_array.Item(i);
 
         wxString config_section = ( _T ( "/PlugIns/" ) );
-        config_section += pic->m_common_name;
+        config_section += pic->m_plugin_filename;
         pConfig->SetPath ( config_section );
         pConfig->Write ( _T ( "bEnabled" ), pic->m_bEnabled );
     }
@@ -588,15 +593,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         wxString msg(_T("   PlugInManager: Cannot load library: "));
         msg += plugin_file;
         msg += _T(" ");
-#if !defined(__WXMSW__) && !defined(__WXOSX__)
-        /* give good error reporting on non windows non mac platforms */
-        dlopen(plugin_file.ToAscii(), RTLD_NOW);
-        char *s =  dlerror();
-        wxString c;
-        for(char *t = s; *t; t++)
-            c+=*t;
-        msg += c;
-#endif
         wxLogMessage(msg);
         delete plugin;
         delete pic;

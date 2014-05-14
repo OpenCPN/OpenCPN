@@ -287,7 +287,8 @@ public:
     int                     m_groups_changed;
 
 //    For General Options
-    wxCheckBox              *pDebugShowStat;
+    wxCheckBox              *pShowStatusBar;
+    wxCheckBox              *pShowCompassWin;
     wxCheckBox              *pPrintShowIcon;
     wxCheckBox              *pCDOOutlines;
     wxCheckBox              *pSDepthUnits;
@@ -507,8 +508,6 @@ public:
     wxChoice                *pTrackPrecision;
     wxTextCtrl              *m_pText_TP_Secs;
     wxTextCtrl              *m_pText_TP_Dist;
-
-    wxCheckBox*             pSettingsCB1;
 
     ArrayOfCDI              m_CurrentDirList;
     ArrayOfCDI              *m_pWorkDirList;
