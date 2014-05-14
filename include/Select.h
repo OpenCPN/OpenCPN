@@ -25,7 +25,6 @@
 #define __SELECT_H__
 
 #include "SelectItem.h"
-#include "RoutePoint.h"
 #include "Route.h"
 
 #define SELTYPE_UNKNOWN              0x0001

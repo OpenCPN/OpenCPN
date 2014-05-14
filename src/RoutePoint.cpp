@@ -26,12 +26,13 @@
 #include <wx/dcscreen.h>
 #include <wx/tokenzr.h>
 
-#include "RoutePoint.h"
 #include "routeman.h"
 #include "chcanv.h"
+#include "RoutePoint.h"
 #include "multiplexer.h"
 #include "navutil.h"
 #include "FontMgr.h"
+#include "cutil.h"
 
 extern WayPointman *pWayPointMan;
 extern bool g_bIsNewLayer;
@@ -243,6 +244,12 @@ void RoutePoint::CalculateNameExtents( void )
 void RoutePoint::ReLoadIcon( void )
 {
     m_pbmIcon = pWayPointMan->GetIconBitmap( m_IconName );
+
+#ifdef ocpnUSE_GL
+    m_wpBBox_chart_scale = -1;
+
+    m_iTextTexture = 0;
+#endif
 }
 
 void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
@@ -256,7 +263,7 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
     if( NULL != rpn ) *rpn = r;
 
     if( !m_bIsVisible /*&& !m_bIsInTrack*/)     // pjotrc 2010.02.13, 2011.02.24
-    return;
+        return;
 
     //    Optimization, especially apparent on tracks in normal cases
     if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
@@ -343,6 +350,208 @@ void RoutePoint::Draw( ocpnDC& dc, wxPoint *rpn )
     if( m_bBlink ) g_blink_rect = CurrentRect_in_DC;               // also save for global blinker
 
 }
+
+#ifdef ocpnUSE_GL
+void RoutePoint::DrawGL( ViewPort &vp, OCPNRegion &region )
+{
+    if( !m_bIsVisible )
+    return;
+
+    //    Optimization, especially apparent on tracks in normal cases
+    if( m_IconName == _T("empty") && !m_bShowName && !m_bPtIsSelected ) return;
+
+    if(m_wpBBox.GetValid() &&
+       vp.chart_scale == m_wpBBox_chart_scale &&
+       vp.rotation == m_wpBBox_rotation) {
+        /* see if this waypoint can intersect with bounding box */
+        LLBBox vpBBox = vp.GetBBox();
+        if( vpBBox.IntersectOut( m_wpBBox ) ) {
+            /* try with vp crossing IDL */
+            if(vpBBox.GetMinX() < -180 && vpBBox.GetMaxX() > -180) {
+                wxPoint2DDouble xlate( -360., 0. );
+                wxBoundingBox test_box2 = m_wpBBox;
+                test_box2.Translate( xlate );
+                if( vp.GetBBox().IntersectOut( test_box2 ) )
+                    return;
+            } else 
+            if(vpBBox.GetMinX() < 180 && vpBBox.GetMaxX() > 180) {
+                wxPoint2DDouble xlate( 360., 0. );
+                wxBoundingBox test_box2 = m_wpBBox;
+                test_box2.Translate( xlate );
+                if( vp.GetBBox().IntersectOut( test_box2 ) )
+                    return;
+            } else
+                return;
+        }
+    }
+
+    wxPoint r;
+    wxRect hilitebox;
+    unsigned char transparency = 100;
+
+    cc1->GetCanvasPointPix( m_lat, m_lon, &r );
+
+//    Substitue icon?
+    wxBitmap *pbm;
+    if( ( m_bIsActive ) && ( m_IconName != _T("mob") ) )
+        pbm = pWayPointMan->GetIconBitmap(  _T ( "activepoint" ) );
+    else
+        pbm = m_pbmIcon;
+
+    int sx2 = pbm->GetWidth() / 2;
+    int sy2 = pbm->GetHeight() / 2;
+
+//    Calculate the mark drawing extents
+    wxRect r1( r.x - sx2, r.y - sy2, sx2 * 2, sy2 * 2 );           // the bitmap extents
+
+    wxRect r3 = r1;
+    if( m_bShowName ) {
+        if( !m_pMarkFont ) {
+            m_pMarkFont = FontMgr::Get().GetFont( _( "Marks" ) );
+            m_FontColor = FontMgr::Get().GetFontColor( _( "Marks" ) );
+            CalculateNameExtents();
+        }
+
+        if( m_pMarkFont ) {
+            wxRect r2( r.x + m_NameLocationOffsetX, r.y + m_NameLocationOffsetY,
+                       m_NameExtents.x, m_NameExtents.y );
+            r3.Union( r2 );
+        }
+    }
+
+    hilitebox = r3;
+    hilitebox.x -= r.x;
+    hilitebox.y -= r.y;
+    hilitebox.Inflate( 2 ); /* mouse poop? */
+
+    /* update bounding box */
+    if(!m_wpBBox.GetValid() || vp.chart_scale != m_wpBBox_chart_scale || vp.rotation != m_wpBBox_rotation) {
+        double lat1, lon1, lat2, lon2;
+        cc1->GetCanvasPixPoint(r.x+hilitebox.x, r.y+hilitebox.y+hilitebox.height, lat1, lon1);
+        cc1->GetCanvasPixPoint(r.x+hilitebox.x+hilitebox.width, r.y+hilitebox.y, lat2, lon2);
+
+        m_wpBBox.SetMin(lon1, lat1);
+        m_wpBBox.SetMax(lon2, lat2);
+        m_wpBBox_chart_scale = vp.chart_scale;
+        m_wpBBox_rotation = vp.rotation;
+    }
+
+    if(region.Contains(r3) == wxOutRegion)
+        return;
+
+    ocpnDC dc;
+
+    //  Highlite any selected point
+    if( m_bPtIsSelected ) {
+        wxPen *pen;
+        if( m_bBlink )
+            pen = g_pRouteMan->GetActiveRoutePointPen();
+        else
+            pen = g_pRouteMan->GetRoutePointPen();
+        
+        AlphaBlending( dc, r.x + hilitebox.x, r.y + hilitebox.y, hilitebox.width, hilitebox.height, 0.0,
+                       pen->GetColour(), transparency );
+    }
+    
+    bool bDrawHL = false;
+
+    if( m_bBlink && ( gFrame->nBlinkerTick & 1 ) ) bDrawHL = true;
+
+    if( ( !bDrawHL ) && ( NULL != m_pbmIcon ) ) {
+        int glw, glh;
+        unsigned int IconTexture = pWayPointMan->GetIconTexture( pbm, glw, glh );
+        
+        glBindTexture(GL_TEXTURE_2D, IconTexture);
+        
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+        
+        glColor3f(1, 1, 1);
+        
+        int x = r1.x, y = r1.y, w = r1.width, h = r1.height;
+        float u = (float)w/glw, v = (float)h/glh;
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0); glVertex2f(x, y);
+        glTexCoord2f(u, 0); glVertex2f(x+w, y);
+        glTexCoord2f(u, v); glVertex2f(x+w, y+h);
+        glTexCoord2f(0, v); glVertex2f(x, y+h);
+        glEnd();
+        glDisable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+    }
+
+    if( m_bShowName && m_pMarkFont ) {
+        int w = m_NameExtents.x, h = m_NameExtents.y;
+        if(!m_iTextTexture && w && h) {
+            wxBitmap tbm(w, h); /* render text on dc */
+            wxMemoryDC dc;
+            dc.SelectObject( tbm );               
+            dc.SetBackground( wxBrush( *wxBLACK ) );
+            dc.Clear();
+            dc.SetFont( *m_pMarkFont );
+            dc.SetTextForeground( *wxWHITE );
+            dc.DrawText( m_MarkName, 0, 0);
+            dc.SelectObject( wxNullBitmap );
+            
+            /* make alpha texture for text */
+            wxImage image = tbm.ConvertToImage();
+            unsigned char *d = image.GetData();
+            unsigned char *e = new unsigned char[w * h];
+            for( int p = 0; p < w*h; p++)
+                e[p] = d[3*p + 0];
+            
+            /* create texture for rendered text */
+            glGenTextures(1, &m_iTextTexture);
+            glBindTexture(GL_TEXTURE_2D, m_iTextTexture);
+            
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+
+            m_iTextTextureWidth = NextPow2(w);
+            m_iTextTextureHeight = NextPow2(h);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, m_iTextTextureWidth, m_iTextTextureHeight,
+                         0, GL_ALPHA, GL_UNSIGNED_BYTE, NULL);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h,
+                            GL_ALPHA, GL_UNSIGNED_BYTE, e);
+            delete [] e;
+        }
+
+        if(m_iTextTexture) {
+            /* draw texture with text */
+            glBindTexture(GL_TEXTURE_2D, m_iTextTexture);
+            
+            glEnable(GL_TEXTURE_2D);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+            glColor3ub(m_FontColor.Red(), m_FontColor.Green(), m_FontColor.Blue());
+            
+            int x = r.x + m_NameLocationOffsetX, y = r.y + m_NameLocationOffsetY;
+            float u = (float)w/m_iTextTextureWidth, v = (float)h/m_iTextTextureHeight;
+            glBegin(GL_QUADS);
+            glTexCoord2f(0, 0); glVertex2f(x, y);
+            glTexCoord2f(u, 0); glVertex2f(x+w, y);
+            glTexCoord2f(u, v); glVertex2f(x+w, y+h);
+            glTexCoord2f(0, v); glVertex2f(x, y+h);
+            glEnd();
+            glDisable(GL_BLEND);
+            glDisable(GL_TEXTURE_2D);
+        }
+    }
+    
+    if( m_bBlink ) g_blink_rect = CurrentRect_in_DC;               // also save for global blinker
+    
+    //    This will be useful for fast icon redraws
+    CurrentRect_in_DC.x = r.x + hilitebox.x;
+    CurrentRect_in_DC.y = r.y + hilitebox.y;
+    CurrentRect_in_DC.width = hilitebox.width;
+    CurrentRect_in_DC.height = hilitebox.height;
+
+    if( m_bBlink ) g_blink_rect = CurrentRect_in_DC;               // also save for global blinker
+}
+#endif
 
 void RoutePoint::SetPosition( double lat, double lon )
 {

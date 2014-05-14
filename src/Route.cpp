@@ -363,7 +363,6 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
             bool b_2_on = VP.GetBBox().PointInBox( prp2->m_lon, prp2->m_lat, 0 );
             bool b_1_on = VP.GetBBox().PointInBox( prp1->m_lon, prp1->m_lat, 0 );
 
-            //TODO This logic could be simpliifed
             //Simple case
             if( b_1_on && b_2_on ) RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x, rpt2.y, VP, true, hilite ); // with arrows
 
@@ -388,39 +387,107 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
 
                 RenderSegment( dc, rpt1.x, rpt1.y, rpt2.x + adder, rpt2.y, VP, true, hilite );
             } else
-                if( !b_1_on && b_2_on ) {
+                if( !b_1_on ) {
                     if( rpt1.x < rpt2.x ) adder = (int) pix_full_circle;
                     else
                         adder = -(int) pix_full_circle;
-
-                    dtest = pow( (double) ( rpt2.x - ( rpt1.x + adder ) ), 2 )
-                        + pow( (double) ( rpt1.y - rpt2.y ), 2 );
-
+                    
+                    float rxd = rpt2.x - ( rpt1.x + adder );
+                    float ryd = rpt1.y - rpt2.y;
+                    dtest = rxd*rxd + ryd*ryd;
+                    
                     if( dp < dtest ) adder = 0;
 
                     RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true, hilite );
                 }
-
-                //Both off, need to check shortest distance
-                else
-                    if( !b_1_on && !b_2_on ) {
-                        if( rpt1.x < rpt2.x ) adder = (int) pix_full_circle;
-                        else
-                            adder = -(int) pix_full_circle;
-
-                        dtest = pow( (double) ( rpt2.x - ( rpt1.x + adder ) ), 2 )
-                            + pow( (double) ( rpt1.y - rpt2.y ), 2 );
-
-                        if( dp < dtest ) adder = 0;
-
-                        RenderSegment( dc, rpt1.x + adder, rpt1.y, rpt2.x, rpt2.y, VP, true, hilite );
-                    }
         }
+
         rpt1 = rpt2;
         prp1 = prp2;
 
         node = node->GetNext();
     }
+}
+
+extern ChartCanvas *cc1; /* hopefully can eventually remove? */
+
+void Route::DrawGL( ViewPort &VP )
+{
+#ifdef ocpnUSE_GL
+    if( m_nPoints < 2 || !m_bVisible ) return;
+
+    /* determine color and width */
+    wxColour col;
+    int width;
+    if( m_bRtIsActive )
+    {
+        wxPen &pen = *g_pRouteMan->GetActiveRoutePen();
+        col = pen.GetColour();
+        width = pen.GetWidth();
+    } else if( m_bRtIsSelected ) {
+        wxPen &pen = *g_pRouteMan->GetSelectedRoutePen();
+        col = pen.GetColour();
+        width = pen.GetWidth();
+    } else {
+        width = g_route_line_width;
+        
+        if( m_width != STYLE_UNDEFINED ) width = m_width;
+        if( m_Colour == wxEmptyString ) {
+            col = g_pRouteMan->GetRoutePen()->GetColour();
+        } else {
+            for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
+                if( m_Colour == ::GpxxColorNames[i] ) {
+                    col = ::GpxxColors[i];
+                    break;
+                }
+            }
+        }
+    }
+        
+    glColor3ub(col.Red(), col.Green(), col.Blue());
+    glLineWidth(width);
+
+    glBegin(GL_LINE_STRIP);
+    float lastlon = 0;
+    for(wxRoutePointListNode *node = pRoutePointList->GetFirst();
+        node; node = node->GetNext()) {
+        RoutePoint *prp = node->GetData();
+        
+        /* crosses IDL? if so break up into two segments */
+        int dir = 0;
+        if(prp->m_lon > 150 && lastlon < -150)
+            dir = -1;
+        else if(prp->m_lon < -150 && lastlon > 150)
+            dir = 1;
+        lastlon=prp->m_lon;
+        
+        wxPoint r;
+        if(dir) {
+            cc1->GetCanvasPointPix( prp->m_lat, dir*180, &r);
+            glVertex2i(r.x, r.y);
+            glEnd();
+            glBegin(GL_LINE_STRIP);
+            cc1->GetCanvasPointPix( prp->m_lat, -dir*180, &r);
+            glVertex2i(r.x, r.y);
+        }
+        
+        cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &r);
+        glVertex2i(r.x, r.y);
+    }
+    glEnd();
+
+    /* direction arrows.. could probably be further optimized for opengl */
+    wxRoutePointListNode *node = pRoutePointList->GetFirst();
+    wxPoint rpt1, rpt2;
+    while(node) {
+        RoutePoint *prp = node->GetData();
+        node = node->GetNext();
+        cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
+        if(node != pRoutePointList->GetFirst())
+            RenderSegmentArrowsGL( rpt1.x, rpt1.y, rpt2.x, rpt2.y, cc1->GetVP() );
+        rpt1 = rpt2;
+    }
+#endif
 }
 
 static int s_arrow_icon[] = { 0, 0, 5, 2, 18, 6, 12, 0, 18, -6, 5, -2, 0, 0 };
@@ -508,6 +575,43 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
         dc.StrokePolygon( 6, &icon[0], 0, 0 );
         dc.SetPen( savePen );
     }
+}
+
+void Route::RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP)
+{
+#ifdef ocpnUSE_GL
+    //    Draw a direction arrow        
+    wxPoint icon[10];
+    float icon_scale_factor = 100 * VP.view_scale_ppm;
+    icon_scale_factor = fmin ( icon_scale_factor, 1.5 );              // Sets the max size
+    icon_scale_factor = fmax ( icon_scale_factor, .10 );
+    
+    //    Get the absolute line length
+    //    and constrain the arrow to be no more than xx% of the line length
+    float nom_arrow_size = 20.;
+    float max_arrow_to_leg = .20;
+    float lpp = sqrtf( powf( (float) (xa - xb), 2) + powf( (float) (ya - yb), 2) );
+    
+    float icon_size = icon_scale_factor * nom_arrow_size;
+    if( icon_size > ( lpp * max_arrow_to_leg ) )
+        icon_scale_factor = ( lpp * max_arrow_to_leg )
+            / nom_arrow_size;
+
+    float theta = atan2f( (float)yb - ya, (float)xb - xa );
+    theta -= PI / 2;
+
+    glPushMatrix();
+    glScalef(icon_scale_factor, icon_scale_factor, 1);
+    glRotatef(theta * 180/PI, 0, 0, 1);
+    glTranslatef(xb, yb, 0);
+
+    glBegin(GL_POLYGON);
+    for( int i = 0; i < 14; i+=2 )
+        glVertex2f(s_arrow_icon[i], s_arrow_icon[i+1]);
+    glEnd();
+
+    glPopMatrix();
+#endif
 }
 
 void Route::ClearHighlights( void )

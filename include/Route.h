@@ -27,8 +27,8 @@
 #include <wx/object.h>
 #include <wx/list.h>
 
-#include "RoutePoint.h"
 #include "ocpn_types.h"
+#include "RoutePoint.h"
 
 #define STYLE_UNDEFINED -1
 
@@ -58,6 +58,7 @@ public:
       void DrawPointWhich(ocpnDC& dc, int iPoint, wxPoint *rpn);
       void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow);
       virtual void Draw(ocpnDC& dc, ViewPort &pVP);
+      virtual void DrawGL( ViewPort &VP );
       RoutePoint *GetLastPoint();
       void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);
@@ -81,6 +82,7 @@ public:
       void CloneAddedRoutePoint(RoutePoint *ptargetpoint, RoutePoint *psourcepoint);
       void ClearHighlights(void);
       void RenderSegment(ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort &VP, bool bdraw_arrow, int hilite_width = 0);
+      void RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP);
 
       bool CrossesIDL(){ return m_bcrosses_idl; }
       void SetVisible(bool visible = true, bool includeWpts = true);

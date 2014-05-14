@@ -76,6 +76,8 @@ public:
 
     void GridDraw( );
 
+    void DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
+
     void DrawEmboss( emboss_data *emboss );
     void ShipDraw(ocpnDC& dc);
 

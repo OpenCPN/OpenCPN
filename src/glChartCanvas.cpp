@@ -42,6 +42,8 @@
 #include "s57chart.h"
 #include "ChInfoWin.h"
 #include "thumbwin.h"
+#include "chartdb.h"
+#include "navutil.h"
 #include "TexFont.h"
 #include "cutil.h"
 
@@ -74,6 +76,9 @@ extern int              g_OwnShipIconType;
 extern double           g_ownship_predictor_minutes;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
+
+extern RouteList        *pRouteList;
+extern WayPointman      *pWayPointMan;
 
 PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffers;
 PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffers;
@@ -752,6 +757,66 @@ bool glChartCanvas::PurgeChartTextures( ChartBase *pc )
         return false;
 }
 
+void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region )
+{
+    ocpnDC dc(*this);
+
+    Route *active_route, *m_active_track;
+    for(wxRouteListNode *node = pRouteList->GetFirst();
+        node; node = node->GetNext() ) {
+        Route *pRouteDraw = node->GetData();
+        if( !pRouteDraw )
+            continue;
+
+        /* defer rendering active routes until later */
+        if( pRouteDraw->IsActive() || pRouteDraw->IsSelected() )
+            continue;
+
+        if( pRouteDraw->IsTrack() ) {
+            /* defer rendering active tracks until later */
+            if( dynamic_cast<Track *>(pRouteDraw)->IsRunning() )
+                continue;
+        }
+
+        /* this routine is called very often, so rather than using the
+           wxBoundingBox::Intersect routine, do the comparisons directly
+           to reduce the number of floating point comparisons */
+
+        const wxBoundingBox &vp_box = vp.GetBBox(), &test_box = pRouteDraw->GetBBox();
+
+        if(test_box.GetMaxY() < vp_box.GetMinY())
+            continue;
+
+        if(test_box.GetMinY() > vp_box.GetMaxY())
+            continue;
+
+        double vp_minx = vp_box.GetMinX(), vp_maxx = vp_box.GetMaxX();
+        double test_minx = test_box.GetMinX(), test_maxx = test_box.GetMaxX();
+
+        /* TODO: use DrawGL instead of Draw */
+
+        // Route is not wholly outside viewport
+        if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
+            pRouteDraw->Draw( dc, vp );
+        } else if( vp_maxx > 180. ) {
+            if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
+                pRouteDraw->Draw( dc, vp );
+        } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
+            if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
+                pRouteDraw->Draw( dc, vp );
+        }
+    }
+
+    /* Waypoints */
+    if( vp.GetBBox().GetValid() )
+        for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst();
+            pnode; pnode = pnode->GetNext() ) {
+            RoutePoint *pWP = pnode->GetData();
+            if( pWP && !pWP->m_bIsInRoute && !pWP->m_bIsInTrack )
+                pWP->DrawGL( vp, region );
+        }
+}
+
 extern void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpacing );
 extern void CalcGridText( float latlon, float spacing, bool bPostfix, char *text );
 void glChartCanvas::GridDraw( )
@@ -1250,9 +1315,9 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
     extern Track                     *g_pActiveTrack;
     Route *active_route = g_pRouteMan->GetpActiveRoute();
 
-//    if( active_route ) active_route->DrawGL( vp );
-//    if( g_pActiveTrack ) g_pActiveTrack->Draw( dc, vp );
-//    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp );
+    if( active_route ) active_route->DrawGL( vp );
+    if( g_pActiveTrack ) g_pActiveTrack->Draw( dc, vp );
+    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp );
 
     GridDraw( );
 
@@ -2054,9 +2119,7 @@ void glChartCanvas::DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect)
     ViewPort temp_vp = BuildClippedVP(cc1->GetVP(), rect);
     cc1->RenderAllChartOutlines( dc, temp_vp );
 
-//    DrawAllRoutesAndWaypoints( temp_vp, region );
-    cc1->DrawAllRoutesInBBox( dc, temp_vp.GetBBox(), region );
-    cc1->DrawAllWaypointsInBBox( dc, temp_vp.GetBBox(), region, true ); // true draws only isolated marks
+    DrawAllRoutesAndWaypoints( temp_vp, region );
 
     if( cc1->m_bShowTide )
         cc1->DrawAllTidesInBBox( dc, temp_vp.GetBBox(), true, true );
