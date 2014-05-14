@@ -1685,11 +1685,10 @@ bool ocpnToolBarSimple::GetToolEnabled( int id ) const
 void ocpnToolBarSimple::ToggleTool( int id, bool toggle )
 {
     wxToolBarToolBase *tool = FindById( id );
-    if( tool ) {
-        tool->Toggle( toggle );
+    if( tool && tool->Toggle( toggle ) ) {
         DoToggleTool( tool, toggle );
+        if( g_toolbar ) g_toolbar->Refresh();
     }
-    if( g_toolbar ) g_toolbar->Refresh();
 }
 
 wxObject *ocpnToolBarSimple::GetToolClientData( int id ) const
