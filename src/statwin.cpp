@@ -70,9 +70,6 @@ StatWin::StatWin( wxWindow *win )
 
     wxDialog::Create( win, wxID_ANY, _T(""), wxPoint( 20, 20 ), wxSize( 5, 5 ), wstyle );
 
-    int x, y;
-    GetClientSize( &x, &y );
-
     m_backBrush = wxBrush( GetGlobalColor( _T("UIBDR") ), wxSOLID );
 
     SetBackgroundColour( GetGlobalColor( _T("UIBDR") ) );
