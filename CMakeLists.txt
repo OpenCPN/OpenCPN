@@ -147,6 +147,22 @@ ELSE(OPENGL_GLU_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
 ENDIF(OPENGL_GLU_FOUND)
 
+# Search for opengles, short of running a program to test the speed
+# of acceleration, I simply use gles on arm systems
+IF (ARCH MATCHES "arm*")
+find_path(OPENGLESv2_INCLUDE_DIR GLES2/gl2.h )
+IF (OPENGLESv2_INCLUDE_DIR)
+  MESSAGE (STATUS "Found OpenGLESv2")
+  ADD_DEFINITIONS(-DocpnUSE_GLES)
+ELSE()
+find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
+IF (OPENGLESv1_INCLUDE_DIR)
+  MESSAGE (STATUS "Found OpenGLESv1")
+  ADD_DEFINITIONS(-DocpnUSE_GLES)
+ENDIF()
+ENDIF()
+ENDIF()
+
 # Find wxWidgets here, and the setting get inherited by all plugins.
 # These options can be used to set the linux widgets build type
 SET( wxWidgets_USE_DEBUG OFF)
@@ -185,7 +201,14 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -g -O0 -fno-strict-aliasing")
+
+  # profiling with gprof
+#    ADD_DEFINITIONS( -pg )
+#    SET(CMAKE_EXE_LINKER_FLAGS -pg)
+  # profiling with gcov
+#    ADD_DEFINITIONS( "-fprofile-arcs -ftest-coverage" )
+#    SET(EXTRA_LIBS ${EXTRA_LIBS} "gcov")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF( APPLE )
