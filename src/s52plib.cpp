@@ -306,7 +306,7 @@ void s52plib::DestroyLUP( LUPrec *pLUP )
             
             free( pR->colRef.SCRF );
             
-            s52plib::ClearRulesCache( pR );
+            ClearRulesCache( pR );
             
             free( pR );
         }
@@ -321,6 +321,36 @@ void s52plib::DestroyLUP( LUPrec *pLUP )
 
 
 
+
+void s52plib::DestroyRulesChain( Rules *top )
+{
+    while( top != NULL ) {
+        Rules *Rtmp = top->next;
+        
+        if( top->INST0 )
+            free( top->INST0 ); // free the Instruction string head
+
+        if( top->b_private_razRule ) // need to free razRule?
+        {
+            Rule *pR = top->razRule;
+            if( pR->exposition.LXPO ) delete pR->exposition.LXPO;
+            
+            free( pR->vector.LVCT );
+            
+            if( pR->bitmap.SBTM ) delete pR->bitmap.SBTM;
+            
+            free( pR->colRef.SCRF );
+            
+            ClearRulesCache( pR );
+            
+            free( pR );
+        }
+        
+        free( top );
+        top = Rtmp;
+    }
+    
+}
 
 
 
@@ -3335,6 +3365,110 @@ next_seg:
 // Multipoint Sounding
 int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
+    if( !m_bShowSoundg )
+        return 0;
+    
+    int npt = rzRules->obj->npt;
+
+    //  Build the cached rules list if necessary
+    if( !rzRules->obj->bCS_Added ) {
+
+        ObjRazRules *point_rzRules = new ObjRazRules;
+        *point_rzRules = *rzRules; // take a copy of attributes, etc
+        
+        S57Obj *point_obj = new S57Obj;
+        *point_obj = *( rzRules->obj );
+        point_rzRules->obj = point_obj;
+        
+        Rules *ru_cs = StringToRules( _T ( "CS(SOUNDG03;" ) );
+
+        wxPoint p;
+        double *pd = rzRules->obj->geoPtz; // the SM points
+        double *pdl = rzRules->obj->geoPtMulti; // and corresponding lat/lon
+        
+
+        mps_container *pmps = (mps_container *)calloc( sizeof(mps_container), 1);
+        pmps->cs_rules = new ArrayOfRules;
+        rzRules->mps = pmps;
+        
+        for( int ip = 0; ip < npt; ip++ ) {
+            double east = *pd++;
+            double nort = *pd++;
+            double depth = *pd++;
+            
+            point_obj->x = east;
+            point_obj->y = nort;
+            point_obj->z = depth;
+            
+            double lon = *pdl++;
+            double lat = *pdl++;
+            point_obj->BBObj.SetMin( lon, lat );
+            point_obj->BBObj.SetMax( lon, lat );
+
+            
+            char *rule_str1 = RenderCS( point_rzRules, ru_cs );
+            wxString cs_string( rule_str1, wxConvUTF8 );
+            free( rule_str1 ); 
+    
+            Rules *rule_chain = StringToRules( cs_string );
+            
+            rzRules->mps->cs_rules->Add( rule_chain );
+            
+        }
+
+        DestroyRulesChain( ru_cs );
+        rzRules->obj->bCS_Added = 1; // mark the object
+    }
+   
+    
+    if( m_bUseSCAMIN ) {
+        if( vp->chart_scale > rzRules->obj->Scamin )
+        return 0;
+    }
+    
+    double *pd = rzRules->obj->geoPtz; // the SM points
+    double *pdl = rzRules->obj->geoPtMulti; // and corresponding lat/lon
+
+    ObjRazRules *point_rzRules = new ObjRazRules;
+    *point_rzRules = *rzRules; // take a copy of attributes, etc
+
+    S57Obj *point_obj = new S57Obj;
+    *point_obj = *( rzRules->obj );
+    point_rzRules->obj = point_obj;
+    
+    for( int ip = 0; ip < npt; ip++ ) {
+        double east = *pd++;
+        double nort = *pd++;
+        double depth = *pd++;
+        
+        point_obj->x = east;
+        point_obj->y = nort;
+        point_obj->z = depth;
+        
+        double lon = *pdl++;
+        double lat = *pdl++;
+        point_obj->BBObj.SetMin( lon, lat );
+        point_obj->BBObj.SetMax( lon, lat );
+        
+  
+        if( !ObjectRenderCheckPos( point_rzRules, vp ) )
+            continue;
+        
+        Rules *rules =  rzRules->mps->cs_rules->Item(ip);
+        while( rules ){
+            RenderSY( point_rzRules, rules, vp );
+            
+            rules = rules->next;
+        }
+    }
+    
+    return 1;
+}
+
+#if 0
+// Multipoint Sounding
+int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
+{
     if( !m_bShowSoundg ) return 0;
 
     int npt = rzRules->obj->npt;
@@ -3408,6 +3542,7 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     return 1;
 }
 
+#endif
 int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
     char *str = (char*) rules->INSTstr;
@@ -3916,7 +4051,8 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
                 if( !rzRules->obj->bCS_Added ) {
                     rzRules->obj->CSrules = NULL;
                     GetAndAddCSRules( rzRules, rules );
-                    rzRules->obj->bCS_Added = 1; // mark the object
+                    if(strncmp(rzRules->obj->FeatureName, "SOUNDG", 6))
+                        rzRules->obj->bCS_Added = 1; // mark the object
                 }
 
                 //    The CS procedure may have changed the Display Category of the Object, need to check again for visibility

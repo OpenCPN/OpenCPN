@@ -158,7 +158,8 @@ public:
         
     void DestroyPatternRuleNode( Rule *pR );
     void DestroyRuleNode( Rule *pR );
-
+    void DestroyRulesChain( Rules *top );
+    
 //#ifdef ocpnUSE_GL
     //    For OpenGL
     int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules,

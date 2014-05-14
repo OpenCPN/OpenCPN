@@ -3626,10 +3626,6 @@ bool PI_PLIBSetContext( PI_S57Obj *pObj )
     ctx->BBObj.SetMax( pObj->lon_max, pObj->lat_max );
     
     
-    if(pObj->child){
-        wxASSERT(0);
-    }
-        
         //      This is where Simplified or Paper-Type point features are selected
     switch( cobj.Primitive_type ){
             case GEO_POINT:
@@ -3661,6 +3657,9 @@ bool PI_PLIBSetContext( PI_S57Obj *pObj )
         
         //              Convert LUP to rules set
     ps52plib->_LUP2rules( lup, &cobj );
+    
+    ctx->MPSRulesList = NULL;
+    
     return true;
 }
     
@@ -3695,6 +3694,7 @@ void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj, ObjRazRules *rzRu
     pObj->m_DisplayCat = (PI_DisCat)cobj->m_DisplayCat;
     
     pContext->ChildRazRules = rzRules->child;
+    pContext->MPSRulesList = rzRules->mps;
     
 }
 
@@ -3770,6 +3770,7 @@ void PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio )
     rzRules.sm_transform_parms = 0;
     rzRules.child = NULL;
     rzRules.next = NULL;
+    rzRules.mps = pContext->MPSRulesList;
     
     ps52plib->SetLineFeaturePriority( &rzRules, prio );
 
@@ -3806,6 +3807,19 @@ void PI_PLIBFreeContext( void *pContext )
         }
     }
 
+    if(pctx->MPSRulesList){
+        
+        if( ps52plib && pctx->MPSRulesList->cs_rules ){
+            for(unsigned int i=0 ; i < pctx->MPSRulesList->cs_rules->GetCount() ; i++){
+                Rules *top = pctx->MPSRulesList->cs_rules->Item(i);
+                ps52plib->DestroyRulesChain( top );
+            }
+            delete pctx->MPSRulesList->cs_rules; 
+        }
+        free( pctx->MPSRulesList );
+        
+    }
+    
     delete pctx->FText;
     
     delete pctx;
@@ -3831,6 +3845,7 @@ int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp )
     rzRules.sm_transform_parms = &transform;
     rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
+    rzRules.mps = pContext->MPSRulesList;
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
     
@@ -3883,7 +3898,8 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
     rzRules.sm_transform_parms = &transform;
     rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
-
+    rzRules.mps = pContext->MPSRulesList;
+    
     ViewPort cvp = CreateCompatibleViewport( *vp );
     
     //  Do the render
@@ -3916,6 +3932,7 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
     rzRules.sm_transform_parms = &transform;
     rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
+    rzRules.mps = pContext->MPSRulesList;
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
     
@@ -3952,6 +3969,7 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     rzRules.sm_transform_parms = &transform;
     rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
+    rzRules.mps = pContext->MPSRulesList;
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
     

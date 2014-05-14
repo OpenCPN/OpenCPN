@@ -391,6 +391,11 @@ typedef struct _sm_parms{
 }sm_parms;
 
 
+WX_DEFINE_ARRAY_PTR(Rules*, ArrayOfRules);
+
+typedef struct _mps_container{
+    ArrayOfRules *cs_rules;
+}mps_container;
 
 // object rasterization rules
 typedef struct _ObjRazRules{
@@ -402,6 +407,7 @@ typedef struct _ObjRazRules{
    sm_parms        *sm_transform_parms;
    struct _ObjRazRules *child;            // child list, used only for MultiPoint Soundings
    struct _ObjRazRules *next;
+   struct _mps_container *mps;
 }ObjRazRules;
 
 

@@ -1171,6 +1171,17 @@ void s57chart::FreeObjectsAndRules()
                         ctop = cnxx;
                     }
                 }
+                
+                if( top->mps ){
+                    if( ps52plib && top->mps->cs_rules ){
+                        for(unsigned int i=0 ; i < top->mps->cs_rules->GetCount() ; i++){
+                            Rules *rule_chain_top = top->mps->cs_rules->Item(i);
+                            ps52plib->DestroyRulesChain( rule_chain_top );
+                        }
+                        delete top->mps->cs_rules; 
+                    }
+                    free( top->mps );
+                }
 
                 nxx = top->next;
                 free( top );
@@ -4413,6 +4424,7 @@ int s57chart::_insertRules( S57Obj *obj, LUPrec *LUP, s57chart *pOwner )
 //    rzRules->chart = pOwner;
     rzRules->next = razRules[disPrioIdx][LUPtypeIdx];
     rzRules->child = NULL;
+    rzRules->mps = NULL;
     razRules[disPrioIdx][LUPtypeIdx] = rzRules;
 
     return 1;

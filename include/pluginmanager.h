@@ -358,6 +358,7 @@ public:
         CSrules = NULL;
         FText = NULL;
         ChildRazRules = NULL;
+        MPSRulesList = NULL;
         };
         
     ~S52PLIB_Context(){};
@@ -374,7 +375,7 @@ public:
     
     LUPrec                  *LUP;
     ObjRazRules             *ChildRazRules;
-    
+    mps_container           *MPSRulesList;
 };
 
 
