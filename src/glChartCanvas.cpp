@@ -1476,6 +1476,27 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
     }
 }
 
+void glChartCanvas::DrawQuiting()
+{
+    GLubyte pattern[4 * 32];
+    for( int y = 0; y < 32; y++ ) {
+        GLubyte mask = 1 << y % 8;
+        for( int x = 0; x < 4; x++ )
+            pattern[y * 4 + x] = mask;
+    }
+    
+    glEnable( GL_POLYGON_STIPPLE );
+    glPolygonStipple( pattern );
+    glBegin( GL_QUADS );
+    glColor3f( 0, 0, 0 );
+    glVertex2i( 0, 0 );
+    glVertex2i( 0, GetSize().y );
+    glVertex2i( GetSize().x, GetSize().y );
+    glVertex2i( GetSize().x, 0 );
+    glEnd();
+    glDisable( GL_POLYGON_STIPPLE );
+}
+
 void glChartCanvas::GrowData( int size )
 {
     /* grow the temporary ram buffer used to load charts into textures */
@@ -2692,6 +2713,8 @@ void glChartCanvas::Render()
     wxRect rect = ru.GetBox();
     DrawGroundedOverlayObjectsRect( gldc, rect );
     DrawFloatingOverlayObjects( gldc );
+    //quiting?
+    if( g_bquiting ) DrawQuiting();
 
     SwapBuffers();
     glFinish();
