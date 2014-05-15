@@ -903,6 +903,8 @@ void ocpnToolBarSimple::Init()
     m_pToolTipWin = NULL;
     m_last_ro_tool = NULL;
 
+    m_btoolbar_is_zooming = false;
+
     EnableTooltips();
 }
 
@@ -1364,6 +1366,22 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 
     m_last_ro_tool = tool;
 
+    // allow smooth zooming while toolbutton is held down
+    if(g_bsmoothpanzoom && !g_btouch) {
+        if(event.LeftUp() && m_btoolbar_is_zooming) {
+            cc1->StopMovement();
+            m_btoolbar_is_zooming = false;
+            return;
+        }
+
+        if( event.LeftDown() && tool &&
+            (tool->GetId() == ID_ZOOMIN || tool->GetId() == ID_ZOOMOUT) ) {
+            cc1->ZoomCanvas( tool->GetId() == ID_ZOOMIN ? 2.0 : .5, false, false );
+            m_btoolbar_is_zooming = true;
+            return;
+        }
+    }
+
     if( !tool ) {
         if( m_currentTool > -1 ) {
             if( event.LeftIsDown() ) SpringUpButton( m_currentTool );
@@ -1414,17 +1432,6 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
         if( event.RightDown() ) {
             OnRightClick( tool->GetId(), x, y );
         }
-
-    // allow smooth zooming while toolbutton is held down
-    if((tool->GetId() == ID_ZOOMIN || tool->GetId() == ID_ZOOMOUT)
-       && g_bsmoothpanzoom && !g_btouch) {
-        if(event.LeftDown())
-            cc1->ZoomCanvas( tool->GetId() == ID_ZOOMIN ? 2.0 : .5 );
-        else if(event.LeftUp())
-            cc1->StopMovement();
-
-        return; // do no more processing
-    }
 
     // Left Button Released.  Only this action confirms selection.
     // If the button is enabled and it is not a toggle tool and it is

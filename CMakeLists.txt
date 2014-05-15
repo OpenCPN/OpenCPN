@@ -740,7 +740,7 @@ IF (OPENGL_GLU_FOUND)
   IF ( NOT MSVC AND (ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64"))
       # this makes the compression run about 50% faster
       message (STATUS "Compiling texture compression library with sse support")
-      ADD_DEFINITIONS( " -msse -DSQUISH_USE_SSE=2")
+      ADD_DEFINITIONS( " -msse2 -DSQUISH_USE_SSE=2")
   ENDIF ()
 
   SET(SRC_TEXCMP
