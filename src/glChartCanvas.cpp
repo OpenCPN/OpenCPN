@@ -104,7 +104,6 @@ extern double           g_ownship_predictor_minutes;
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
 
-extern bool             g_bShowOutlines;
 extern int              g_GroupIndex;
 extern ChartDB          *ChartData;
 
@@ -1553,8 +1552,13 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 
     ChartTableEntry *entry = ChartData->GetpChartTableEntry(dbIndex);
 
+    glEnable( GL_LINE_SMOOTH );
+    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
     glColor3ub(color.Red(), color.Green(), color.Blue());
-    glLineWidth(1);
+    glLineWidth(1.3);
 
     //        Are there any aux ply entries?
     int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex ), nPly;
@@ -1576,7 +1580,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
 
             wxPoint r;
             cc1->GetCanvasPointPix( plylat, plylon, &r );
-            glVertex2i( r.x, r.y );
+            glVertex2f( r.x + .5, r.y + .5 );
         }
         glEnd();
     } while(++j < nAuxPlyEntries );                 // There are no aux Ply Point entries

@@ -5911,8 +5911,14 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                           if(g_bopengl) /* opengl */ {
                               wxPen pen = dc.GetPen();
                               wxColour col = pen.GetColour();
+                              
+                              glEnable( GL_LINE_SMOOTH );
+                              glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
+                              glEnable( GL_BLEND );
+                              glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
                               glColor3ub(col.Red(), col.Green(), col.Blue());
-                              glLineWidth(pen.GetWidth());
+                              glLineWidth(pen.GetWidth() + .3 );
                               glDisable( GL_LINE_STIPPLE );
                               dc.SetGLStipple();
 
