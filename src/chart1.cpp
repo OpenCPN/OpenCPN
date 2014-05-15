@@ -6294,7 +6294,7 @@ bool MyFrame::DoChartUpdate( void )
 
 //    If the current viewpoint is invalid, set the default scale to something reasonable.
         double set_scale = cc1->GetVPScale();
-        if( !cc1->GetVP().IsValid() ) set_scale = 1. / 200000.;
+        if( !cc1->GetVP().IsValid() ) set_scale = 1. / 20000.;
 
         bNewView |= cc1->SetViewPoint( tLat, tLon, set_scale, 0, cc1->GetVPRotation() );
 
@@ -6409,7 +6409,7 @@ bool MyFrame::DoChartUpdate( void )
 
 //    If the current viewpoint is invalid, set the default scale to something reasonable.
             if( !cc1->GetVP().IsValid() )
-                set_scale = 1. / 200000.;
+                set_scale = 1. / 20000.;
             else {                                    // otherwise, match scale if elected.
                 double proposed_scale_onscreen;
 
