@@ -326,7 +326,6 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
     m_ref_lon = ref_lon;
 
     if(bUseInternalTess){
-        printf("internal tess\n");
         ErrorCode = PolyTessGeoTri(poly, bSENC_SM, ref_lat, ref_lon);
     }
     else {

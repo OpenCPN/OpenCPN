@@ -216,6 +216,7 @@ public:
       double GetPixPerMM(){ return m_pix_per_mm;}
 
       void SetOwnShipState(ownship_state_t state){ m_ownship_state = state;}
+      void SetCursorStatus( double cursor_lat, double cursor_lon );
       void GetCursorLatLon(double *lat, double *lon);
 
       bool PanCanvas(int dx, int dy);
@@ -454,7 +455,6 @@ private:
       wxTimer     *pMovementStopTimer; // This timer used to stop movement if a keyup event is lost
       wxTimer     *pCurTrackTimer;  // This timer used to update the status window on mouse idle
       wxTimer     *pRotDefTimer;    // This timer used to control rotaion rendering on mouse moves
-      wxTimer     *pPanKeyTimer;    // This timer used to update pan key actions
       wxTimer     *m_DoubleClickTimer;
 
       wxTimer     m_MouseWheelTimer;

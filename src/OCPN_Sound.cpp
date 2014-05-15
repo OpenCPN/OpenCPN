@@ -77,14 +77,6 @@ static void OCPNSoundFinishedCallback( void *userData )
 
 OCPN_Sound::OCPN_Sound()
 {
-    if(!portaudio_initialized) {
-        PaError err = Pa_Initialize();
-        if( err != paNoError ) {
-            printf( "PortAudio CTOR error: %s\n", Pa_GetErrorText( err ) );
-        }
-        portaudio_initialized = true;
-    }
-
     m_osdata = NULL;
     m_OK = false;
     m_stream = NULL;
@@ -107,6 +99,14 @@ bool OCPN_Sound::IsOk() const
 
 bool OCPN_Sound::Create(const wxString& fileName, bool isResource)
 {
+    if(!portaudio_initialized) {
+        PaError err = Pa_Initialize();
+        if( err != paNoError ) {
+            printf( "PortAudio CTOR error: %s\n", Pa_GetErrorText( err ) );
+        }
+        portaudio_initialized = true;
+    }
+
     m_OK = false;
 
     FreeMem();

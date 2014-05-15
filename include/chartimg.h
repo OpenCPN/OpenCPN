@@ -170,6 +170,7 @@ class  ChartBaseBSB     :public ChartBase
 
       void SetVPRasterParms(const ViewPort &vpt);
 
+      void ComputeSourceRectangle(const ViewPort &vp, wxRealPoint *pPos, wxRealPoint *pDim);
       void ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect);
       double GetRasterScaleFactor() { return m_raster_scale_factor; }
       virtual bool GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp );

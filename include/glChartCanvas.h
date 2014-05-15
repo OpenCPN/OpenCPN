@@ -36,6 +36,19 @@ WX_DECLARE_OBJARRAY(glTextureDescriptor, ArrayOfTexDescriptors);
 WX_DECLARE_HASH_MAP( int, glTextureDescriptor*, wxIntegerHash, wxIntegerEqual, ChartTextureHashType );
 WX_DECLARE_HASH_MAP( void*, ChartTextureHashType*, wxPointerHash, wxPointerEqual, ChartPointerHashType );
 
+
+class ocpnGLOptions
+{
+public:
+    bool m_bUseAcceleratedPanning;
+
+    bool m_bTextureCompression;
+    bool m_bTextureCompressionCaching;
+
+    int m_iTextureDimension;
+    int m_iTextureMemorySize;
+};
+
 class ocpnDC;
 class emboss_data;
 class Route;
@@ -44,6 +57,9 @@ class ChartBaseBSB;
 class glChartCanvas : public wxGLCanvas
 {
 public:
+    static void MultMatrixViewPort(const ViewPort &vp);
+    static ViewPort NormalizedViewPort(const ViewPort &vp);
+
     static void RotateToViewPort(const ViewPort &vp);
     static void SetClipRegion(const ViewPort &vp, const OCPNRegion &region,
                               bool apply_rotation=true, bool b_clear=false);
@@ -66,9 +82,8 @@ public:
 
     wxString GetRendererString(){ return m_renderer; }
     void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
-      
 
-    void Invalidate() { m_gl_cache_vp.Invalidate(); }
+    static void Invalidate();
     void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, OCPNRegion &region);
     bool PurgeChartTextures(ChartBase *pc);
     void ClearAllRasterTextures(void);
@@ -76,16 +91,30 @@ public:
 
     void GridDraw( );
 
+    static void FixRenderIDL(int dl);
+
+    void DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
+    void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
+    void RenderChartOutline( int dbIndex, ViewPort &VP );
+
     void DrawEmboss( emboss_data *emboss );
     void ShipDraw(ocpnDC& dc);
 
+    void SetupCompression();
+    bool CanAcceleratePanning() { return m_b_BuiltFBO; }
+
+    time_t m_last_render_time;
+
 protected:
-    void RenderQuiltViewGL(ViewPort &vp, OCPNRegion Region, bool b_clear = true);
+    void RenderQuiltViewGL(ViewPort &vp, const OCPNRegion &Region, bool b_clear = true);
     void BuildFBO();
     void SetupOpenGL();
-    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Region );
 
+    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
+    void RenderCharts(ocpnDC &dc, OCPNRegion &region);
+    void RenderWorldChart(ocpnDC &dc, OCPNRegion &region);
     ViewPort BuildClippedVP(ViewPort &VP, wxRect &rect);
+    void DeleteChartTextures(ChartBaseBSB *pc);
 
     void DrawFloatingOverlayObjects( ocpnDC &dc );
     void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
@@ -94,7 +123,6 @@ protected:
 
     wxGLContext       *m_pcontext;
 
-    int m_cacheinvalid;
     int max_texture_dimension;
 
     unsigned char *m_data;
@@ -113,30 +141,24 @@ protected:
     //    Value is ChartTextureHashType*
     ChartPointerHashType          m_chart_hash;
 
-    ViewPort    m_gl_cache_vp;
+    ViewPort    m_cache_vp;
+    ChartBase   *m_cache_current_ch;
 
-
-    bool m_bGenMM;
-    bool m_bGL_GEN_MM;
-    int  m_ntex;
-    int  m_tex_max_res;
-    int  m_tex_max_res_initial;
-    bool m_b_mem_crunch;
     bool m_b_paint_enable;
+    int m_in_glpaint;
 
     //    For FBO(s)
     bool         m_b_DisableFBO;
     bool         m_b_BuiltFBO;
     bool         m_b_useFBOStencil;
     GLuint       m_fb0;
-    GLuint       m_depth_rb;
+    GLuint       m_renderbuffer;
 
-    GLenum       m_TEX_TYPE;
-    GLuint       m_cache_tex;
-    GLuint       m_blit_tex;
+    GLuint       m_cache_tex[2];
+    GLuint       m_cache_page;
     int          m_cache_tex_x;
     int          m_cache_tex_y;
-    OCPNRegion     m_gl_rendered_region;
+    OCPNRegion   m_gl_rendered_region;
 
     GLuint ownship_tex;
     wxSize ownship_size, ownship_tex_size;
@@ -144,5 +166,7 @@ protected:
 
     DECLARE_EVENT_TABLE()
 };
+
+extern void BuildCompressedCache();
 
 #endif

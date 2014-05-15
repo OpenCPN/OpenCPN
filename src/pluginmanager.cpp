@@ -77,7 +77,6 @@ extern PlugInManager   *g_pi_manager;
 extern s52plib         *ps52plib;
 extern wxString        *pChartListFileName;
 extern wxString         gExe_path;
-extern bool             g_b_useStencil;
 extern wxString         g_Plugin_Dir;
 extern bool             g_boptionsactive;
 extern options         *g_options;
@@ -1974,6 +1973,12 @@ wxString getUsrSpeedUnit_Plugin( int unit )
 
 bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2)
 {
+    static bool loaded = false;
+    if(!loaded) {
+        gshhsCrossesLandInit();
+        loaded = true;
+    }
+
     return gshhsCrossesLand(lat1, lon1, lat2, lon2);
 }
 
@@ -2391,6 +2396,25 @@ bool UpdatePlugInTrack ( PlugIn_Track *ptrack )
     return b_found;
 }
 
+void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp )
+{
+#ifdef ocpnUSE_GL
+    wxPoint point;
+    GetCanvasPixLL(vp, &point, 0, 0);
+    glTranslatef(point.x, point.y, 0);
+    glScalef(vp->view_scale_ppm, vp->view_scale_ppm, 1);
+    glRotatef(vp->rotation, 0, 0, 1);
+#endif
+}
+
+void PlugInNormalizeViewport ( PlugIn_ViewPort *vp )
+{
+#ifdef ocpnUSE_GL
+    vp->clat = vp->clon = 0;
+    vp->view_scale_ppm = 1;
+    vp->rotation = vp->skew = 0;
+#endif
+}
 
 
 //-----------------------------------------------------------------------------------------
@@ -2755,7 +2779,8 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     SetSizer(itemBoxSizer01);
     Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(PluginPanel::OnPluginSelected), NULL, this);
 
-    wxStaticBitmap *itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY, *m_pPlugin->m_bitmap);
+    wxStaticBitmap *itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY,
+                                                           wxBitmap(m_pPlugin->m_bitmap->ConvertToImage().Copy()));
     itemBoxSizer01->Add(itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
     itemStaticBitmap->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
@@ -3271,7 +3296,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
         wxRegion r = rg.ConvertTowxRegion();
         PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
         if(ppicb_gl){
-            ppicb_gl->RenderRegionViewOnGL( glc, pivp, r, g_b_useStencil);
+            ppicb_gl->RenderRegionViewOnGL( glc, pivp, r, glChartCanvas::s_b_useStencil);
         }
         return true;
     }
