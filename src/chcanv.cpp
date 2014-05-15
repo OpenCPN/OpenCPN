@@ -896,6 +896,7 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_TIMER ( CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent )
     EVT_TIMER ( ROT_TIMER, ChartCanvas::RotateTimerEvent )
     EVT_TIMER ( ROPOPUP_TIMER, ChartCanvas::OnRolloverPopupTimerEvent )
+    EVT_TIMER ( MOUSEWHEEL_TIMER, ChartCanvas::OnMouseWheelTimerEvent )
     EVT_KEY_DOWN(ChartCanvas::OnKeyDown )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
     EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
@@ -990,7 +991,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     pCwin = NULL;
     warp_flag = false;
     m_bzooming = false;
-    m_bmouse_key_mod = false;
     m_b_paint_enable = true;
 
     pss_overlay_bmp = NULL;
@@ -1215,7 +1215,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     pCurTrackTimer->Stop();
     m_curtrack_timer_msec = 10;
 
-    m_MouseWheelTimer.SetOwner( this );
+    m_MouseWheelTimer.SetOwner( this, MOUSEWHEEL_TIMER );
 
     m_RolloverPopupTimer.SetOwner( this, ROPOPUP_TIMER );
 
@@ -1740,12 +1740,18 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 {
     m_modkeys = event.GetModifiers();
 
-    if( event.GetKeyCode() == WXK_CONTROL ) m_bmouse_key_mod = true;
-
     int panspeed = m_modkeys == wxMOD_ALT ? 2 : 100;
 
     // HOTKEYS
     switch( event.GetKeyCode() ) {
+    case WXK_ALT:
+        m_modkeys |= wxMOD_ALT;
+        break;
+
+    case WXK_CONTROL:
+        m_modkeys |= wxMOD_CONTROL;
+        break;
+
     case WXK_LEFT:
         if( m_modkeys == wxMOD_CONTROL ) parent_frame->DoStackDown();
         else if(g_bsmoothpanzoom) {
@@ -2174,10 +2180,12 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
         m_zoom_factor = 1;
         break;
 
-    case WXK_CONTROL:
-        m_modkeys = wxMOD_NONE;          //Clear Ctrl key
-        m_bmouse_key_mod = false;
+    case WXK_ALT:
+        m_modkeys &= ~wxMOD_ALT;
+        break;
 
+    case WXK_CONTROL:
+        m_modkeys &= ~wxMOD_CONTROL;
         break;
 
     }
@@ -2219,10 +2227,11 @@ void ChartCanvas::StopMovement( )
    (which do not always get called fast enough)
    we can perform the integration of movement
    at each render frame based on the time change */
-bool ChartCanvas::StartTimedMovement( )
+bool ChartCanvas::StartTimedMovement( bool stoptimer )
 {
     // Start/restart the stop movement timer
-    pMovementStopTimer->Start( 1000, wxTIMER_ONE_SHOT ); 
+    if(stoptimer)
+        pMovementStopTimer->Start( 1000, wxTIMER_ONE_SHOT ); 
 
     if(m_panx || m_pany || m_zoom_factor!=1 || m_rotation_speed) {
         // already moving, gets called again because of key-repeat event
@@ -2777,10 +2786,12 @@ void ChartCanvas::GetCanvasPixPoint( int x, int y, double &lat, double &lon )
     }
 }
 
-void ChartCanvas::ZoomCanvas( double factor )
+void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stoptimer )
 {
+    m_bzooming_to_cursor = can_zoom_to_cursor && g_bEnableZoomToCursor;
+
     if( g_bsmoothpanzoom ) {
-        if(StartTimedMovement()) {
+        if(StartTimedMovement(stoptimer)) {
             m_mustmove += 150; /* for quick presses register as 200 ms duration */
             m_zoom_factor = factor;
         }
@@ -2802,6 +2813,10 @@ void ChartCanvas::DoZoomCanvas( double factor )
     //    Cannot allow Yield() re-entrancy here
     if( m_bzooming ) return;
     m_bzooming = true;
+
+    //  Capture current cursor position for zoom to cursor
+    double zlat = m_cursor_lat;
+    double zlon = m_cursor_lon;
 
     if(factor > 1)
     {
@@ -2904,6 +2919,13 @@ void ChartCanvas::DoZoomCanvas( double factor )
             SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
             Refresh( false );
         }
+    }
+
+    if( m_bzooming_to_cursor ) {
+        wxPoint r;
+        GetCanvasPointPix( zlat, zlon, &r );
+        PanCanvas( r.x - mouse_x, r.y - mouse_y );
+        ClearbFollow();      // update the follow flag
     }
 
     m_bzooming = false;
@@ -5518,6 +5540,11 @@ void ChartCanvas::MouseTimedEvent( wxTimerEvent& event )
     m_DoubleClickTimer->Stop();
 }
 
+void ChartCanvas::OnMouseWheelTimerEvent( wxTimerEvent& event )
+{
+    m_zoom_factor = 1; // Stop zooming
+}
+
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
     int x, y;
@@ -5538,6 +5565,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     lastEventWasDrag = event.Dragging();
 
     event.GetPosition( &x, &y );
+
+    // Update modifiers here; some window managers never send the key event
+    m_modkeys = 0;
+    if(event.ControlDown())
+        m_modkeys |= wxMOD_CONTROL;
+    if(event.AltDown())
+        m_modkeys |= wxMOD_ALT;
 
 #ifdef __WXMSW__
     //TODO Test carefully in other platforms, remove ifdef....
@@ -5689,40 +5723,36 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     if( g_pi_manager ) g_pi_manager->SendCursorLatLonToAllPlugIns( m_cursor_lat, m_cursor_lon );
 
     //        Check for wheel rotation
-    m_mouse_wheel_oneshot = 50;                  //msec
+    m_mouse_wheel_oneshot = 500;                  //msec
     // ideally, should be just longer than the time between
     // processing accumulated mouse events from the event queue
     // as would happen during screen redraws.
     int wheel_dir = event.GetWheelRotation();
 
-    if( m_MouseWheelTimer.IsRunning() ) {
-        if( wheel_dir != m_last_wheel_dir ) m_MouseWheelTimer.Stop();
-        else
-            m_MouseWheelTimer.Start( m_mouse_wheel_oneshot, true );           // restart timer
-    }
-
-    m_last_wheel_dir = wheel_dir;
-
     if( wheel_dir ) {
-        if( !m_MouseWheelTimer.IsRunning() ) {
-            double factor = m_bmouse_key_mod ? 1.05 : 1.3;
-            if(wheel_dir < 0)
-                factor = 1/factor;
+        wxDateTime this_now = wxDateTime::UNow();
+        if( m_MouseWheelTimer.IsRunning() ) {
+            if( wheel_dir != m_last_wheel_dir )
+                StopMovement( );
+            else {
+                // restart running timer to stop later
+                long ms = (this_now - m_MouseWheelTimerTime).GetMilliseconds().ToLong();
 
-            //  Capture current cursor position, as the zoom below may change it.
-            double zlat = m_cursor_lat;
-            double zlon = m_cursor_lon;
-
-            DoZoomCanvas( factor );
-
-            if( g_bEnableZoomToCursor ) {
-                wxPoint r;
-                GetCanvasPointPix( zlat, zlon, &r );
-                PanCanvas( r.x - x, r.y - y );
-                ClearbFollow();      // update the follow flag
+                m_mouse_wheel_oneshot += m_mouse_wheel_oneshot - ms;
+                this_now = m_MouseWheelTimerTime + wxTimeSpan::Milliseconds(500);
             }
-            m_MouseWheelTimer.Start( m_mouse_wheel_oneshot, true );           // start timer
         }
+
+        m_last_wheel_dir = wheel_dir;
+
+        double factor = 2.0;
+        if(wheel_dir < 0)
+            factor = 1/factor;
+        
+        ZoomCanvas( factor, true, false );
+        
+        m_MouseWheelTimer.Start( m_mouse_wheel_oneshot, true );           // start timer
+        m_MouseWheelTimerTime = this_now;
     }
 
     if(!g_btouch ){
@@ -6061,7 +6091,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 // Get the update rectangle for the union of the un-edited routes
                 wxRect pre_rect;
 
-                if( m_pEditRouteArray ) {
+                if( !g_bopengl && m_pEditRouteArray ) {
                     for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                         Route *pr = (Route *) m_pEditRouteArray->Item( ir );
                         //      Need to validate route pointer
@@ -6095,23 +6125,28 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     if( m_pRoutePointEditTarget == pMarkPropDialog->GetRoutePoint() ) pMarkPropDialog->UpdateProperties();
                 }
 
-                // Get the update rectangle for the edited route
-                wxRect post_rect;
+                if(g_bopengl) {
+                    InvalidateGL();
+                    Refresh( false );
+                } else {
+                    // Get the update rectangle for the edited route
+                    wxRect post_rect;
 
-                if( m_pEditRouteArray ) {
-                    for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
-                        Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                        if( g_pRouteMan->IsRouteValid(pr) ) {
-                            wxRect route_rect;
-                            pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
-                            post_rect.Union( route_rect );
+                    if( m_pEditRouteArray ) {
+                        for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                            Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                            if( g_pRouteMan->IsRouteValid(pr) ) {
+                                wxRect route_rect;
+                                pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                post_rect.Union( route_rect );
+                            }
                         }
                     }
-                }
 
-                //    Invalidate the union region
-                pre_rect.Union( post_rect );
-                RefreshRect( pre_rect, false );
+                    //    Invalidate the union region
+                    pre_rect.Union( post_rect );
+                    RefreshRect( pre_rect, false );
+                }
             }
         }     // if Route Editing
 
@@ -6167,17 +6202,24 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         pMarkPropDialog->UpdateProperties( true );
                 }
 
-                // Get the update rectangle for the edited mark
-                wxRect post_rect;
-                m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &post_rect );
-                if( ( lppmax > post_rect.width / 2 ) || ( lppmax > post_rect.height / 2 ) ) post_rect.Inflate(
-                        (int) ( lppmax - ( post_rect.width / 2 ) ),
-                        (int) ( lppmax - ( post_rect.height / 2 ) ) );
-
-//                        post_rect.Inflate(200);
                 //    Invalidate the union region
-                pre_rect.Union( post_rect );
-                RefreshRect( pre_rect, false );
+                if(g_bopengl) {
+                    InvalidateGL();
+                    Refresh( false );
+                } else {
+                    // Get the update rectangle for the edited mark
+                    wxRect post_rect;
+                    m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &post_rect );
+                    if( ( lppmax > post_rect.width / 2 ) || ( lppmax > post_rect.height / 2 ) )
+                        post_rect.Inflate(
+                            (int) ( lppmax - ( post_rect.width / 2 ) ),
+                            (int) ( lppmax - ( post_rect.height / 2 ) ) );
+                    
+//                        post_rect.Inflate(200);
+                    //    Invalidate the union region
+                    pre_rect.Union( post_rect );
+                    RefreshRect( pre_rect, false );
+                }
             }
         }
 
@@ -6444,6 +6486,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 undo->AfterUndoableAction( m_pRoutePointEditTarget );
             }
 
+            InvalidateGL();
             m_bRouteEditing = false;
             m_pRoutePointEditTarget = NULL;
             if( !g_FloatingToolbarDialog->IsShown() ) gFrame->SurfaceToolbar();

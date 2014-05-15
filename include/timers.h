@@ -36,5 +36,6 @@
 #define MOVEMENT_STOP_TIMER      9
 #define DBLCLICK_TIMER   10
 #define POPUP_TIMER      11
+#define MOUSEWHEEL_TIMER 12
 
 #endif

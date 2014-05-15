@@ -182,7 +182,7 @@ public:
 
       int GetNextContextMenuId();
 
-      bool StartTimedMovement( );
+      bool StartTimedMovement( bool stoptimer=true );
       void DoTimedMovement( );
       void DoMovement( long dt );
       void StopMovement( );
@@ -222,7 +222,7 @@ public:
       bool PanCanvas(int dx, int dy);
       void StopAutoPan(void);
 
-      void ZoomCanvas(double factor);
+      void ZoomCanvas(double factor, bool can_zoom_to_cursor=true, bool stoptimer=true );
       void DoZoomCanvas(double factor);
 
       void RotateCanvas( double dir );
@@ -361,6 +361,7 @@ private:
       void OnActivate(wxActivateEvent& event);
       void OnSize(wxSizeEvent& event);
       void MouseTimedEvent(wxTimerEvent& event);
+      void OnMouseWheelTimerEvent ( wxTimerEvent& event );
       void MouseEvent(wxMouseEvent& event);
       void ShipDraw(ocpnDC& dc);
       void DrawArrow(ocpnDC& dc, int x, int y, double rot_angle, double scale);
@@ -458,6 +459,7 @@ private:
       wxTimer     *m_DoubleClickTimer;
 
       wxTimer     m_MouseWheelTimer;
+      wxDateTime  m_MouseWheelTimerTime;
       wxTimer     m_RolloverPopupTimer;
 
       int         m_mouse_wheel_oneshot;
@@ -565,7 +567,7 @@ private:
       bool        m_bbrightdir;
       int         m_brightmod;
 
-      bool        m_bzooming;
+      bool        m_bzooming, m_bzooming_to_cursor;
       IDX_entry   *m_pIDXCandidate;
 
 //#ifdef ocpnUSE_GL
