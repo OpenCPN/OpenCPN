@@ -4079,6 +4079,10 @@ void MyFrame::ToggleChartOutlines( void )
 
     cc1->Refresh( false );
 
+#ifdef ocpnUSE_GL         // opengl renders chart outlines as part of the chart this needs a full refresh
+    if( g_bopengl ) 
+        cc1->GetglCanvas()->Invalidate();
+#endif
 }
 
 void MyFrame::SetToolbarItemState( int tool_id, bool state )
@@ -4399,7 +4403,7 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
         SetChartUpdatePeriod( cc1->GetVP() );              // Pick up changes to skew compensator
 
      if(rr & GL_CHANGED){    
-        //    Refreseh the chart display, after flushing cache.
+        //    Refresh the chart display, after flushing cache.
         //      This will allow all charts to recognise new OpenGL configuration, if any
         int dbii = ChartData->FinddbIndex( chart_file_name );
         ChartsRefresh( dbii, cc1->GetVP(), true );
@@ -4517,6 +4521,7 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
             pTentative_Chart = ChartData->OpenChartFromDB( dbi_hint, FULL_INIT );
 
             if( pTentative_Chart ) {
+                /* Current_Ch is always NULL here, (set above) should this go before that? */
                 if( Current_Ch ) Current_Ch->Deactivate();
 
                 Current_Ch = pTentative_Chart;
@@ -6464,6 +6469,13 @@ bool MyFrame::DoChartUpdate( void )
     //  If we need a Refresh(), do it here...
     //  But don't duplicate a Refresh() done by SetViewPoint()
     if( bNewChart && !bNewView ) cc1->Refresh( false );
+
+#ifdef ocpnUSE_GL
+    // If a new chart, need to invalidate gl viewport for refresh
+    // so the fbo gets flushed
+    if(g_bopengl & bNewChart)
+        cc1->GetglCanvas()->Invalidate();
+#endif
 
     return bNewChart | bNewView;
 }

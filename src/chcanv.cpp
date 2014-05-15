@@ -268,11 +268,8 @@ extern wxProgressDialog *s_ProgDialog;
 
 extern bool             g_bsmoothpanzoom;
 
-extern int              g_GPU_MemSize;
-
 bool                    g_bDebugOGL;
 
-extern int              g_memCacheLimit;
 extern bool             g_b_assume_azerty;
 
 extern int              g_GroupIndex;
@@ -291,6 +288,10 @@ extern OCPN_Sound        g_anchorwatch_sound;
 extern bool              g_bShowMag;
 extern bool              g_btouch;
 extern bool              g_bresponsive;
+
+#ifdef ocpnUSE_GL
+extern ocpnGLOptions g_GLOptions;
+#endif
 
 //  TODO why are these static?
 static int mouse_x;
@@ -870,6 +871,14 @@ void ViewPort::SetBBoxDirect( double latmin, double lonmin, double latmax, doubl
 {
     vpBBox.SetMin( lonmin, latmin );
     vpBBox.SetMax( lonmax, latmax );
+}
+
+static void InvalidateGL()
+{
+#ifdef ocpnUSE_GL
+    if(g_bopengl)
+        glChartCanvas::Invalidate();
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1995,6 +2004,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
             undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
             undo->AfterUndoableAction( NULL );
+            InvalidateGL();
             Refresh( false );
             break;
         }
@@ -2005,6 +2015,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 int indexActive = r->GetIndexOf( r->m_pRouteActivePoint );
                 if( ( indexActive + 1 ) <= r->GetnPoints() ) {
                     g_pRouteMan->ActivateNextPoint( r, true );
+                    InvalidateGL();
                     Refresh( false );
                 }
             }
@@ -2022,6 +2033,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
             undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
             undo->AfterUndoableAction( NULL );
+            InvalidateGL();
             Refresh( false );
             break;
         }
@@ -2051,6 +2063,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         case 25:                       // Ctrl Y
             if( undo->AnythingToRedo() ) {
                 undo->RedoNextAction();
+                InvalidateGL();
                 Refresh( false );
             }
             break;
@@ -2058,6 +2071,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
         case 26:                       // Ctrl Z
             if( undo->AnythingToUndo() ) {
                 undo->UndoLastAction();
+                InvalidateGL();
                 Refresh( false );
             }
             break;
@@ -2069,7 +2083,9 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
                 m_nMeasureState = 0;
                 g_pRouteMan->DeleteRoute( m_pMeasureRoute );
                 m_pMeasureRoute = NULL;
+                SetCursor( *pCursorArrow );
                 gFrame->SurfaceToolbar();
+                InvalidateGL();
                 Refresh( false );
             }
 
@@ -2077,6 +2093,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
             {
                 FinishRoute();
                 gFrame->SurfaceToolbar();
+                InvalidateGL();
                 Refresh( false );
             }
 
@@ -2988,7 +3005,7 @@ void ChartCanvas::LoadVP( ViewPort &vp, bool b_adjust )
 {
 #ifdef ocpnUSE_GL
     if( g_bopengl ) {
-        m_glcc->Invalidate();
+        glChartCanvas::Invalidate();
         if( m_glcc->GetSize().x != VPoint.pix_width || m_glcc->GetSize().y != VPoint.pix_height ) m_glcc->SetSize(
                 VPoint.pix_width, VPoint.pix_height );
     }
@@ -3066,18 +3083,22 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
     if( ( VPoint.pix_width <= 0 ) || ( VPoint.pix_height <= 0 ) )    // Canvas parameters not yet set
         return false;
 
-    //  Has the Viewport scale changed?  If so, invalidate the vp describing the cached bitmap
+    //  Has the Viewport scale changed?  If so, invalidate the vp
     if( last_vp.view_scale_ppm != scale_ppm ) {
         m_cache_vp.Invalidate();
 
 #ifdef ocpnUSE_GL
         if( g_bopengl )
-            m_glcc->Invalidate();
-#endif
+            glChartCanvas::Invalidate();
+#endif        
     }
 
     //  A preliminary value, may be tweaked below
     VPoint.chart_scale = m_canvas_scale_factor / ( scale_ppm );
+
+    // recompute cursor position
+    GetCanvasPixPoint( mouse_x, mouse_y, m_cursor_lat, m_cursor_lon );
+    if(g_pi_manager) g_pi_manager->SendCursorLatLonToAllPlugIns( m_cursor_lat, m_cursor_lon );
 
     if( !VPoint.b_quilt && Current_Ch ) {
 
@@ -3211,13 +3232,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 m_pQuilt->Compose( VPoint );
 
                 //      If the extended chart stack has changed, invalidate any cached render bitmap
-
                 if(m_pQuilt->GetXStackHash() != hash1) {
                     m_bm_cache_vp.Invalidate();
-#ifdef ocpnUSE_GL
-                    if(g_bopengl)
-                        m_glcc->Invalidate();
-#endif
+                    InvalidateGL();
                 }
 
                 ChartData->UnLockCache();
@@ -5880,6 +5897,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
 
                 parent_frame->nRoute_State++;
+                InvalidateGL();
                 Refresh( false );
             }
 
@@ -5911,6 +5929,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 m_nMeasureState++;
 
+                InvalidateGL();
                 Refresh( false );
             }
 
@@ -7473,6 +7492,8 @@ void ChartCanvas::RemovePointFromRoute( RoutePoint* point, Route* route ) {
     if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
         pRoutePropDialog->SetRouteAndUpdate( route, true );
     }
+
+    InvalidateGL();
 }
 
 void ChartCanvas::ShowMarkPropertiesDialog( RoutePoint* markPoint ) {
@@ -7620,6 +7641,7 @@ void pupHandler_PasteWaypoint() {
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
     }
 
+    InvalidateGL();
     cc1->Refresh( false );
     delete kml;
     ::wxEndBusyCursor();
@@ -7737,6 +7759,7 @@ void pupHandler_PasteRoute() {
             pRouteManagerDialog->UpdateRouteListCtrl();
             pRouteManagerDialog->UpdateWptListCtrl();
         }
+        InvalidateGL();
         cc1->Refresh( false );
     }
 
@@ -7790,6 +7813,7 @@ void pupHandler_PasteTrack() {
     pConfig->AddNewRoute( newTrack, -1 );    // use auto next num
     newTrack->RebuildGUIDList(); // ensure the GUID list is intact and good
 
+    InvalidateGL();
     cc1->Refresh( false );
     delete kml;
     ::wxEndBusyCursor();
@@ -7826,11 +7850,13 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
     case ID_UNDO:
         undo->UndoLastAction();
+        InvalidateGL();
         Refresh( false );
         break;
 
     case ID_REDO:
         undo->RedoNextAction();
+        InvalidateGL();
         Refresh( false );
         break;
 
@@ -7881,6 +7907,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
         undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
         undo->AfterUndoableAction( NULL );
+        InvalidateGL();
         Refresh( false );      // Needed for MSW, why not GTK??
         break;
     }
@@ -7972,6 +7999,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
 
             if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
                 pRouteManagerDialog->UpdateWptListCtrl();
+
+            InvalidateGL();
         }
         break;
     }
@@ -8033,6 +8062,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         g_pRouteMan->DeleteRoute( m_pMeasureRoute );
         m_pMeasureRoute = NULL;
         gFrame->SurfaceToolbar();
+        InvalidateGL();
         Refresh( false );
         break;
 
@@ -8153,6 +8183,8 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
             }
 
             undo->InvalidateUndo();
+
+            InvalidateGL();
         }
         break;
     }
@@ -8304,6 +8336,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
                 pRouteManagerDialog->UpdateRouteListCtrl();
             }
 
+            InvalidateGL();
         }
 
         break;
@@ -8312,6 +8345,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         if( m_pSelectedRoute ) {
             if( m_pSelectedRoute->m_bIsInLayer ) break;
             RemovePointFromRoute( m_pFoundRoutePoint, m_pSelectedRoute );
+            InvalidateGL();
         }
         break;
 
@@ -8371,6 +8405,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
                 pRouteManagerDialog->UpdateTrkListCtrl();
                 pRouteManagerDialog->UpdateRouteListCtrl();
             }
+            InvalidateGL();
         }
         break;
     }

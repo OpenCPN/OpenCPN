@@ -4698,7 +4698,7 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
 
     m_cbUseAcceleratedPanning = new wxCheckBox(this, wxID_ANY, _("Use Accelerated Panning") );
     m_bSizer1->Add(m_cbUseAcceleratedPanning, 0, wxALL | wxEXPAND, 5);
-    if( 0/*cc1->GetglCanvas()->CanAcceleratePanning()*/ ) {
+    if( cc1->GetglCanvas()->CanAcceleratePanning() ) {
         m_cbUseAcceleratedPanning->Enable();
         m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
     } else {

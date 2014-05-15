@@ -4622,6 +4622,7 @@ cm93compchart::cm93compchart()
 
       SetSpecialOutlineCellIndex ( 0, 0, 0 );
       m_pOffsetDialog = NULL;
+      m_last_cell_adjustvp = NULL;
 
       m_pcm93mgr = new cm93manager();
 
@@ -6191,6 +6192,16 @@ bool cm93compchart::AdjustVP ( ViewPort &vp_last, ViewPort &vp_proposed )
       int cmscale = GetCMScaleFromVP ( vp_proposed );                   // This is the scale that should be used, based on the vp
 
       int cmscale_actual = PrepareChartScale ( vp_proposed, cmscale );  // this is the scale that will be used, based on cell coverage
+
+#ifdef ocpnUSE_GL
+      if(g_bopengl) {
+          /* need a full refresh if not in quilted mode, and the cell changed */
+          if ( !vp_last.b_quilt && m_last_cell_adjustvp != m_pcm93chart_current )
+              glChartCanvas::Invalidate();
+
+          m_last_cell_adjustvp = m_pcm93chart_current;
+      }
+#endif
 
       if ( g_bDebugCM93 )
             printf ( "  In AdjustVP,  adjustment subchart scale is %c\n", ( char ) ( 'A' + cmscale_actual -1 ) );
