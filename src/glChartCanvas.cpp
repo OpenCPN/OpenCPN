@@ -470,6 +470,9 @@ GenericFunction systemGetProcAddress(const char *procname)
 GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
 {
     char addrbuf[256];
+    if(!extension)
+        return (GenericFunction)NULL;
+
     snprintf(addrbuf, sizeof addrbuf, "%s%s", addr, extension);
     return (GenericFunction)systemGetProcAddress(addr);
 }
@@ -479,10 +482,10 @@ static void GetglEntryPoints( void )
     // the following are all part of framebuffer object,
     // according to opengl spec, we cannot mix EXT and ARB extensions
     // (I don't know that it could ever happen, but if it did, bad things would happen)
-    const char *extensions[] = {"", "ARB", "EXT" };
+    const char *extensions[] = {"", "ARB", "EXT", 0 };
 
     unsigned int i;
-    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++)
+    for(i=0; i<(sizeof extensions) / (sizeof *extensions) - 1; i++)
         if((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)
             ocpnGetProcAddress( "glGenFramebuffers", extensions[i])))
             break;
@@ -509,7 +512,7 @@ static void GetglEntryPoints( void )
         ocpnGetProcAddress( "glGenerateMipmap", extensions[i]);
 
 
-    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++)
+    for(i=0; i<(sizeof extensions) / (sizeof *extensions) - 1; i++)
         if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
             ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
             break;
