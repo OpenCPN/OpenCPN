@@ -929,30 +929,8 @@ typedef void (*GenericFunction)(void);
 #if defined(__WXMSW__)
 #define systemGetProcAddress(ADDR) wglGetProcAddress(ADDR)
 #elif defined(__WXOSX__)
-
-# if 0 /* someone please fix this for macosx, until then, no procs */
-#include <ApplicationServices/ApplicationServices.h>
-#include <CoreFoundation/CoreFoundation.h>
-#include <CoreFoundation/CFBundle.h>
-
-GenericFunction systemGetProcAddress(const char *procname)
-{
-    CFBundle opengl_framework = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
-
-    if(opengl_framework == NULL)
-        return (GenericFunction)NULL;
-    
-    CFStringRef symbolName = CFStringCreateWithCString(kCFAllocatorDefault, procname,
-                                                       kCFStringEncodingASCII);
-
-    GenericFunction symbol = CFBundleGetFunctionPointerForName(opengl_framework, symbolName);
-    CFRelease(symbolName);
-
-    return symbol;
-}
-# else
-#define systemGetProcAddress(ADDR) NULL /* fallback to failure for macosx */
-# endif
+#include <dlfcn.h>
+#define systemGetProcAddress(ADDR) dlsym( RTLD_DEFAULT, ADDR)
 #else
 #define systemGetProcAddress(ADDR) glXGetProcAddress((const GLubyte*)ADDR)
 #endif
@@ -975,40 +953,45 @@ static void GetglEntryPoints( void )
     const char *extensions[] = {"", "ARB", "EXT", 0 };
 
     unsigned int i;
-    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++)
+    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
         if((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)
             ocpnGetProcAddress( "glGenFramebuffers", extensions[i])))
             break;
+    }
 
-    s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)
-        ocpnGetProcAddress( "glGenRenderbuffers", extensions[i]);
-    s_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
-        ocpnGetProcAddress( "glFramebufferTexture2D", extensions[i]);
-    s_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)
-        ocpnGetProcAddress( "glBindFramebuffer", extensions[i]);
-    s_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)
-        ocpnGetProcAddress( "glFramebufferRenderbuffer", extensions[i]);
-    s_glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEEXTPROC)
-        ocpnGetProcAddress( "glRenderbufferStorage", extensions[i]);
-    s_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)
-        ocpnGetProcAddress( "glBindRenderbuffer", extensions[i]);
-    s_glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)
-        ocpnGetProcAddress( "glCheckFramebufferStatus", extensions[i]);
-    s_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)
-        ocpnGetProcAddress( "glDeleteFramebuffers", extensions[i]);
-    s_glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSEXTPROC)
-        ocpnGetProcAddress( "glDeleteRenderbuffers", extensions[i]);
-    s_glGenerateMipmap = (PFNGLGENERATEMIPMAPEXTPROC)
-        ocpnGetProcAddress( "glGenerateMipmap", extensions[i]);
+    if(i<3){
+        s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glGenRenderbuffers", extensions[i]);
+        s_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
+            ocpnGetProcAddress( "glFramebufferTexture2D", extensions[i]);
+        s_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)
+            ocpnGetProcAddress( "glBindFramebuffer", extensions[i]);
+        s_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)
+            ocpnGetProcAddress( "glFramebufferRenderbuffer", extensions[i]);
+        s_glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEEXTPROC)
+            ocpnGetProcAddress( "glRenderbufferStorage", extensions[i]);
+        s_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)
+            ocpnGetProcAddress( "glBindRenderbuffer", extensions[i]);
+        s_glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)
+            ocpnGetProcAddress( "glCheckFramebufferStatus", extensions[i]);
+        s_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glDeleteFramebuffers", extensions[i]);
+        s_glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glDeleteRenderbuffers", extensions[i]);
+        s_glGenerateMipmap = (PFNGLGENERATEMIPMAPEXTPROC)
+            ocpnGetProcAddress( "glGenerateMipmap", extensions[i]);
+    }
 
-
-    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++)
+    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
         if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
             ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
             break;
+    }
 
-    s_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)
-        ocpnGetProcAddress( "glGetCompressedTexImage", extensions[i]);
+    if(i<3){
+        s_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)
+            ocpnGetProcAddress( "glGetCompressedTexImage", extensions[i]);
+    }
 }
 
 // This attribute set works OK with vesa software only OpenGL renderer
