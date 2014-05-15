@@ -5119,7 +5119,8 @@ wxPoint GetPixFromLLVP ( double lat, double lon, const ViewPort& VPoint )
 void cm93compchart::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pValidRegion)
 {
       OCPNRegion screen_region(0, 0, VPoint.pix_width, VPoint.pix_height);
-      OCPNRegion ret = GetValidScreenCanvasRegion ( VPoint, screen_region );
+      OCPNRegion ret = GetValidScreenCanvasRegion ( VPoint, g_bopengl ?
+                                                    VPoint.rv_rect : screen_region );
       *pValidRegion = ret;
 }
 
@@ -5442,7 +5443,6 @@ bool cm93compchart::RenderViewOnDC ( wxMemoryDC& dc, const ViewPort& VPoint )
 
 }
 
-int s_dc1;
 bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region )
 {
 //      g_bDebugCM93 = true;
