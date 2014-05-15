@@ -314,30 +314,8 @@ typedef void (*GenericFunction)(void);
 #if defined(__WXMSW__)
 #define systemGetProcAddress(ADDR) wglGetProcAddress(ADDR)
 #elif defined(__WXOSX__)
-
-# if 0 /* someone please fix this for macosx, until then, no procs */
-#include <ApplicationServices/ApplicationServices.h>
-#include <CoreFoundation/CoreFoundation.h>
-#include <CoreFoundation/CFBundle.h>
-
-GenericFunction systemGetProcAddress(const char *procname)
-{
-    CFBundle opengl_framework = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.opengl"));
-
-    if(opengl_framework == NULL)
-        return (GenericFunction)NULL;
-    
-    CFStringRef symbolName = CFStringCreateWithCString(kCFAllocatorDefault, procname,
-                                                       kCFStringEncodingASCII);
-
-    GenericFunction symbol = CFBundleGetFunctionPointerForName(opengl_framework, symbolName);
-    CFRelease(symbolName);
-
-    return symbol;
-}
-# else
-#define systemGetProcAddress(ADDR) NULL /* fallback to failure for macosx */
-# endif
+#include <dlfcn.h>
+#define systemGetProcAddress(ADDR) dlsym( RTLD_DEFAULT, ADDR)
 #else
 #define systemGetProcAddress(ADDR) glXGetProcAddress((const GLubyte*)ADDR)
 #endif
