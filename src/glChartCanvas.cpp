@@ -357,40 +357,45 @@ static void GetglEntryPoints( void )
     const char *extensions[] = {"", "ARB", "EXT" };
 
     unsigned int i;
-    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++)
+    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
         if((s_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSEXTPROC)
             ocpnGetProcAddress( "glGenFramebuffers", extensions[i])))
             break;
+    }
 
-    s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)
-        ocpnGetProcAddress( "glGenRenderbuffers", extensions[i]);
-    s_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
-        ocpnGetProcAddress( "glFramebufferTexture2D", extensions[i]);
-    s_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)
-        ocpnGetProcAddress( "glBindFramebuffer", extensions[i]);
-    s_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)
-        ocpnGetProcAddress( "glFramebufferRenderbuffer", extensions[i]);
-    s_glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEEXTPROC)
-        ocpnGetProcAddress( "glRenderbufferStorage", extensions[i]);
-    s_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)
-        ocpnGetProcAddress( "glBindRenderbuffer", extensions[i]);
-    s_glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)
-        ocpnGetProcAddress( "glCheckFramebufferStatus", extensions[i]);
-    s_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)
-        ocpnGetProcAddress( "glDeleteFramebuffers", extensions[i]);
-    s_glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSEXTPROC)
-        ocpnGetProcAddress( "glDeleteRenderbuffers", extensions[i]);
-    s_glGenerateMipmap = (PFNGLGENERATEMIPMAPEXTPROC)
-        ocpnGetProcAddress( "glGenerateMipmap", extensions[i]);
+    if(i<3){
+        s_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glGenRenderbuffers", extensions[i]);
+        s_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)
+            ocpnGetProcAddress( "glFramebufferTexture2D", extensions[i]);
+        s_glBindFramebuffer = (PFNGLBINDFRAMEBUFFEREXTPROC)
+            ocpnGetProcAddress( "glBindFramebuffer", extensions[i]);
+        s_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)
+            ocpnGetProcAddress( "glFramebufferRenderbuffer", extensions[i]);
+        s_glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEEXTPROC)
+            ocpnGetProcAddress( "glRenderbufferStorage", extensions[i]);
+        s_glBindRenderbuffer = (PFNGLBINDRENDERBUFFEREXTPROC)
+            ocpnGetProcAddress( "glBindRenderbuffer", extensions[i]);
+        s_glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)
+            ocpnGetProcAddress( "glCheckFramebufferStatus", extensions[i]);
+        s_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glDeleteFramebuffers", extensions[i]);
+        s_glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSEXTPROC)
+            ocpnGetProcAddress( "glDeleteRenderbuffers", extensions[i]);
+        s_glGenerateMipmap = (PFNGLGENERATEMIPMAPEXTPROC)
+            ocpnGetProcAddress( "glGenerateMipmap", extensions[i]);
+    }
 
-
-    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++)
+    for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
         if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
             ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
             break;
+    }
 
-    s_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)
-        ocpnGetProcAddress( "glGetCompressedTexImage", extensions[i]);
+    if(i<3){
+        s_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)
+            ocpnGetProcAddress( "glGetCompressedTexImage", extensions[i]);
+    }
 }
 
 // This attribute set works OK with vesa software only OpenGL renderer
@@ -475,7 +480,7 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
     ViewPort &VP = cc1->GetVP();
     if( GetSize().x != VP.pix_width || GetSize().y != VP.pix_height ) {
         SetSize( VP.pix_width, VP.pix_height );
-        if( m_bsetup && !m_b_BuiltFBO ) {
+        if( m_bsetup && !m_b_BuiltFBO && !m_b_DisableFBO) {
             BuildFBO();
             ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
         }
