@@ -229,7 +229,8 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     m_nBoundaryStyle = PLAIN_BOUNDARIES;
     m_nDisplayCategory = OTHER;
     m_nDepthUnitDisplay = 1; // metres
-
+    SetPLIBColorScheme( _T("DAY") );
+    
     UpdateMarinerParams();
 
     GenerateStateHash();
