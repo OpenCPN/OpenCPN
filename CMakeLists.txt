@@ -734,6 +734,36 @@ ELSE (USE_GARMINHOST)
 	message (STATUS "Garmin Host Mode support: disabled")
 ENDIF (USE_GARMINHOST)
 
+# Compile texcompression support library
+IF (OPENGL_GLU_FOUND)
+  # try to use sse if not using visual studio on x86 based systems
+  IF ( NOT MSVC AND (ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64"))
+      # this makes the compression run about 50% faster
+      message (STATUS "Compiling texture compression library with sse support")
+      ADD_DEFINITIONS( " -msse -DSQUISH_USE_SSE=2")
+  ENDIF ()
+
+  SET(SRC_TEXCMP
+    src/texcmp/lz4/lz4.c
+    src/texcmp/lz4/lz4hc.c
+    src/texcmp/squish/alpha.cpp
+    src/texcmp/squish/clusterfit.cpp
+    src/texcmp/squish/colourblock.cpp
+    src/texcmp/squish/colourfit.cpp
+    src/texcmp/squish/colourset.cpp
+    src/texcmp/squish/maths.cpp
+    src/texcmp/squish/rangefit.cpp
+    src/texcmp/squish/singlecolourfit.cpp
+    src/texcmp/squish/squish.cpp
+    src/texcmp/etcpak.cpp)
+
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/lz4)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/squish)
+
+  ADD_LIBRARY(TEXCMP ${SRC_TEXCMP})
+  SET(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
+ENDIF (OPENGL_GLU_FOUND)
+
 #TODO
 #dnl
 #dnl Use OpenGL tesselator or Internal tesselator

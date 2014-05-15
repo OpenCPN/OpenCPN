@@ -4331,6 +4331,13 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
        UpdateChartDatabaseInplace( *pWorkDirArray, ( ( rr & FORCE_UPDATE ) == FORCE_UPDATE ),
                 true, *pChartListFileName );
 
+#ifdef ocpnUSE_GL
+        extern ocpnGLOptions g_GLOptions;
+
+        if(g_bopengl && g_GLOptions.m_bTextureCompression &&
+           g_GLOptions.m_bTextureCompressionCaching)
+            BuildCompressedCache();
+#endif
         //    Re-open the last open chart
         int dbii = ChartData->FinddbIndex( chart_file_name );
         ChartsRefresh( dbii, cc1->GetVP() );

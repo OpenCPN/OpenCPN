@@ -100,6 +100,7 @@ public:
     void DrawEmboss( emboss_data *emboss );
     void ShipDraw(ocpnDC& dc);
 
+    void SetupCompression();
     bool CanAcceleratePanning() { return m_b_BuiltFBO; }
 
     time_t m_last_render_time;
@@ -165,5 +166,7 @@ protected:
 
     DECLARE_EVENT_TABLE()
 };
+
+extern void BuildCompressedCache();
 
 #endif
