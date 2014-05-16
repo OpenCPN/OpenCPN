@@ -8818,7 +8818,7 @@ wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
     int unit = g_iDistanceFormat;
     double usrDistance = toUsrDistance( distance, unit );
     if( usrDistance < 0.1 &&  ( unit == DISTANCE_KM || unit == DISTANCE_MI || unit == DISTANCE_NMI ) ) {
-	unit = ( unit == DISTANCE_KM ) ? DISTANCE_M : DISTANCE_FT;
+	unit = ( unit == DISTANCE_MI ) ? DISTANCE_FT : DISTANCE_M;
 	usrDistance = toUsrDistance( distance, unit );
     }
     wxString format;
