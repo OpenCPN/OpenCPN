@@ -158,6 +158,7 @@ extern wxString         g_AW1GUID;
 extern wxString         g_AW2GUID;
 extern int              g_nAWDefault;
 extern int              g_nAWMax;
+extern int              g_iDistanceFormat;
 
 extern ocpnFloatingToolbarDialog *g_FloatingToolbarDialog;
 extern RouteManagerDialog *pRouteManagerDialog;
@@ -8814,23 +8815,23 @@ bool ChartCanvas::PurgeGLCanvasChartCache( ChartBase *pc )
 
 wxString ChartCanvas::FormatDistanceAdaptive( double distance ) {
     wxString result;
-    if( distance < 0.1 ) {
-        result << wxString::Format(_T("%3.0f "), distance*1852.0 ) << _T("m");
-        return result;
+    int unit = g_iDistanceFormat;
+    double usrDistance = toUsrDistance( distance, unit );
+    if( usrDistance < 0.1 &&  ( unit == DISTANCE_KM || unit == DISTANCE_MI || unit == DISTANCE_NMI ) ) {
+	unit = ( unit == DISTANCE_KM ) ? DISTANCE_M : DISTANCE_FT;
+	usrDistance = toUsrDistance( distance, unit );
     }
-    if( distance < 5.0 ) {
-        result << wxString::Format(_T("%1.2f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-        return result;
+    wxString format;
+    if( usrDistance < 5.0 ) {
+        format = _T("%1.2f ");
+    } else if( usrDistance < 100.0 ) {
+        format = _T("%2.1f ");
+    } else if( usrDistance < 1000.0 ) {
+        format = _T("%3.0f ");
+    } else {
+        format = _T("%4.0f ");
     }
-    if( distance < 100.0 ) {
-        result << wxString::Format(_T("%2.1f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-        return result;
-    }
-    if( distance < 1000.0 ) {
-        result << wxString::Format(_T("%3.0f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
-        return result;
-    }
-    result << wxString::Format(_T("%4.0f "), toUsrDistance( distance ) ) << getUsrDistanceUnit();
+    result << wxString::Format(format, usrDistance ) << getUsrDistanceUnit( unit );
     return result;
 }
 
