@@ -1505,13 +1505,13 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
 
         // Route is not wholly outside viewport
         if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
-            pRouteDraw->Draw( dc, vp );
+            pRouteDraw->DrawGL( vp );
         } else if( vp_maxx > 180. ) {
             if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
-                pRouteDraw->Draw( dc, vp );
+                pRouteDraw->DrawGL( vp );
         } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
             if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
-                pRouteDraw->Draw( dc, vp );
+                pRouteDraw->DrawGL( vp );
         }
     }
 
@@ -1520,7 +1520,7 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
         for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst();
             pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP && !pWP->m_bIsInRoute && !pWP->m_bIsInTrack )
+            if( pWP )
                 pWP->DrawGL( vp, region );
         }
 }
