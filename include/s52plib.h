@@ -35,6 +35,7 @@ class wxGLContext;
 #include <wx/glcanvas.h>
 #endif
 
+#include "ocpn_types.h"
 
 #include <wx/dcgraph.h>         // supplemental, for Mac
 
@@ -106,6 +107,7 @@ public:
     long GetStateHash() { return m_state_hash;  }
 
     void SetPLIBColorScheme( wxString scheme );
+    void SetPLIBColorScheme( ColorScheme cs );
     wxString GetPLIBColorScheme( void ) { return m_ColorScheme; }
 
     void SetGLRendererString(const wxString &renderer);

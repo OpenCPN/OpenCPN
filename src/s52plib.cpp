@@ -229,7 +229,6 @@ s52plib::s52plib( const wxString& PLib, bool b_forceLegacy )
     m_nBoundaryStyle = PLAIN_BOUNDARIES;
     m_nDisplayCategory = OTHER;
     m_nDepthUnitDisplay = 1; // metres
-    SetPLIBColorScheme( _T("DAY") );
     
     UpdateMarinerParams();
 
@@ -1155,6 +1154,29 @@ LUPrec *s52plib::S52_LUPLookup( LUPname LUP_Name, const char * objectName, S57Ob
     
     return LUP;
 }
+
+
+void  s52plib::SetPLIBColorScheme( ColorScheme cs )
+{
+    wxString SchemeName;
+    switch( cs ){
+        case GLOBAL_COLOR_SCHEME_DAY:
+            SchemeName = _T("DAY");
+            break;
+        case GLOBAL_COLOR_SCHEME_DUSK:
+            SchemeName = _T("DUSK");
+            break;
+        case GLOBAL_COLOR_SCHEME_NIGHT:
+            SchemeName = _T("NIGHT");
+            break;
+        default:
+            SchemeName = _T("DAY");
+            break;
+    }
+    
+    SetPLIBColorScheme( SchemeName );
+}
+    
 
 
 void s52plib::SetPLIBColorScheme( wxString scheme )
