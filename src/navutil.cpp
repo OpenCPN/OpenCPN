@@ -1184,8 +1184,8 @@ int MyConfig::LoadMyConfig( int iteration )
 #ifdef ocpnUSE_GL
     Read( _T ( "UseAcceleratedPanning" ), &g_GLOptions.m_bUseAcceleratedPanning, true );
 
-    Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression, 1);
-    Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching, 1);
+    Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression, 0);
+    Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching, 0);
 
     Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension, 512 );
     Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 64 );
