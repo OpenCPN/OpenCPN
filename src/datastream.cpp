@@ -429,7 +429,7 @@ void DataStream::OnTimerSocket(wxTimerEvent& event)
 {
     //  Attempt a connection
     wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
-    
+
     if(tcp_socket) {
         if(tcp_socket->IsDisconnected() ) {
             m_brx_connect_event = false;
@@ -480,31 +480,38 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
             while(!done){
                 int nmea_tail = 2;
                 size_t nmea_end = m_sock_buffer.find_first_of("*\r\n"); // detect the potential end of a NMEA string by finding the checkum marker or EOL
-                if (nmea_end != wxString::npos && m_sock_buffer[nmea_end] != '*')
+                if (nmea_end == wxString::npos) // No termination characters: continue reading
+                    break;
+                if (m_sock_buffer[nmea_end] != '*')
                     nmea_tail = 0;
 
-                if(nmea_end != wxString::npos && nmea_end < m_sock_buffer.size() - nmea_tail){
+                if( nmea_end >= m_sock_buffer.size() - nmea_tail)
+                    break;
+
+                if (nmea_tail)
                     nmea_end += nmea_tail + 1; // move to the char after the 2 checksum digits, if present
-                    std::string nmea_line = m_sock_buffer.substr(0,nmea_end);
+                std::string nmea_line = m_sock_buffer.substr(0,nmea_end);
+                nmea_end = m_sock_buffer.find_first_not_of("*\r\n",nmea_end);
+                if (nmea_end == wxString::npos) {
+                    m_sock_buffer.clear();
+                    done=true;
+                } else
                     m_sock_buffer = m_sock_buffer.substr(nmea_end);
 
-                    size_t nmea_start = nmea_line.find_last_of("$!"); // detect the potential start of a NMEA string, skipping preceding chars that may look like the start of a string.
-                    if(nmea_start != wxString::npos){
-                        nmea_line = nmea_line.substr(nmea_start);
-                        nmea_line += "\r\n";        // Add cr/lf, possibly superfluous
-                        if( m_consumer && ChecksumOK(nmea_line)){
-                            OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                            if(nmea_line.size()) {
-                                Nevent.SetNMEAString( nmea_line );
-                                Nevent.SetStream( this );
-                            
-                                m_consumer->AddPendingEvent(Nevent);
-                            }
+                size_t nmea_start = nmea_line.find_last_of("$!"); // detect the potential start of a NMEA string, skipping preceding chars that may look like the start of a string.
+                if(nmea_start != wxString::npos){
+                    nmea_line = nmea_line.substr(nmea_start);
+                    nmea_line += "\r\n";        // Add cr/lf, possibly superfluous
+                    if( m_consumer && ChecksumOK(nmea_line)){
+                        OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
+                        if(nmea_line.size()) {
+                            Nevent.SetNMEAString( nmea_line );
+                            Nevent.SetStream( this );
+                        
+                            m_consumer->AddPendingEvent(Nevent);
                         }
                     }
                 }
-                else
-                    done = true;
             }
 
             // Prevent non-nmea junk from consuming to much memory by limiting carry-over buffer size.
