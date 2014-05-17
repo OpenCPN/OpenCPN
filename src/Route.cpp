@@ -481,11 +481,11 @@ void Route::DrawGL( ViewPort &VP )
     wxPoint rpt1, rpt2;
     while(node) {
         RoutePoint *prp = node->GetData();
-        node = node->GetNext();
         cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
         if(node != pRoutePointList->GetFirst())
             RenderSegmentArrowsGL( rpt1.x, rpt1.y, rpt2.x, rpt2.y, cc1->GetVP() );
         rpt1 = rpt2;
+        node = node->GetNext();
     }
 #endif
 }
@@ -598,12 +598,12 @@ void Route::RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP)
             / nom_arrow_size;
 
     float theta = atan2f( (float)yb - ya, (float)xb - xa );
-    theta -= PI / 2;
+    theta -= PI;
 
     glPushMatrix();
+    glTranslatef(xb, yb, 0);
     glScalef(icon_scale_factor, icon_scale_factor, 1);
     glRotatef(theta * 180/PI, 0, 0, 1);
-    glTranslatef(xb, yb, 0);
 
     glBegin(GL_POLYGON);
     for( int i = 0; i < 14; i+=2 )
