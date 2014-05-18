@@ -102,6 +102,7 @@ public:
 
     void SetupCompression();
     bool CanAcceleratePanning() { return m_b_BuiltFBO; }
+    bool UsingFBO() { return m_b_BuiltFBO; }
 
     time_t m_last_render_time;
 

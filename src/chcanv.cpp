@@ -9609,6 +9609,11 @@ void ChartCanvas::Refresh( bool eraseBackground, const wxRect *rect )
 
 #ifdef ocpnUSE_GL
     if( g_bopengl ) {
+        
+        //      We need to invalidate the FBO cache to ensure repaint of "grounded" overlay objects.
+        if( eraseBackground && m_glcc->UsingFBO() )
+            m_glcc->Invalidate();
+        
 
         m_glcc->Refresh( eraseBackground, NULL ); // We always are going to render the entire screen anyway, so make
         // sure that the window managers understand the invalid area
