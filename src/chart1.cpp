@@ -5327,11 +5327,13 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     FrameTimer1.Start( TIMER_GFRAME_1, wxTIMER_CONTINUOUS );
 
     if(g_bopengl) {
+#ifdef ocpnUSE_GL
         if(m_fixtime - cc1->GetglCanvas()->m_last_render_time > 0)
             bnew_view = true;
 
         if(bnew_view) /* full frame in opengl mode */
             cc1->Refresh(false);
+#endif
     } else {
 //  Invalidate the ChartCanvas window appropriately
 //    In non-follow mode, invalidate the rectangles containing the AIS targets and the ownship, etc...

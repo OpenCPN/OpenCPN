@@ -3289,6 +3289,7 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor, int can
 
 bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region)
 {
+#ifdef ocpnUSE_GL
     if(m_ppicb)
     {
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
@@ -3302,7 +3303,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
     }
     else
         return false;
-    
+#endif    
     return true;
 }
 
