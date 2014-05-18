@@ -1505,24 +1505,25 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
 
         // Route is not wholly outside viewport
         if(test_maxx >= vp_minx && test_minx <= vp_maxx) {
-            pRouteDraw->DrawGL( vp );
+            pRouteDraw->DrawGL( vp, region );
         } else if( vp_maxx > 180. ) {
             if(test_minx + 360 <= vp_maxx && test_maxx + 360 >= vp_minx)
-                pRouteDraw->DrawGL( vp );
+                pRouteDraw->DrawGL( vp, region );
         } else if( pRouteDraw->CrossesIDL() || vp_minx < -180. ) {
             if(test_maxx - 360 >= vp_minx && test_minx - 360 <= vp_maxx)
-                pRouteDraw->DrawGL( vp );
+                pRouteDraw->DrawGL( vp, region );
         }
     }
 
-    /* Waypoints */
-    if( vp.GetBBox().GetValid() )
-        for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst();
-            pnode; pnode = pnode->GetNext() ) {
+    /* Waypoints not drawn as part of routes */
+    if( vp.GetBBox().GetValid() ) {
+        for(wxRoutePointListNode *pnode = pWayPointMan->GetWaypointList()->GetFirst(); pnode; pnode = pnode->GetNext() ) {
             RoutePoint *pWP = pnode->GetData();
-            if( pWP )
+            if( pWP && (!pWP->m_bIsInRoute && !pWP->m_bIsInTrack ) )
                 pWP->DrawGL( vp, region );
         }
+    }
+    
 }
 
 void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
@@ -2080,7 +2081,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                             lPredPoint,  b_render_hdt, lShipMidPoint);
 }
 
-void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
+void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
 {
     ViewPort &vp = cc1->GetVP();
 
@@ -2089,9 +2090,9 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc )
     extern Track                     *g_pActiveTrack;
     Route *active_route = g_pRouteMan->GetpActiveRoute();
 
-    if( active_route ) active_route->DrawGL( vp );
+    if( active_route ) active_route->DrawGL( vp, region );
     if( g_pActiveTrack ) g_pActiveTrack->Draw( dc, vp );
-    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp );
+    if( cc1->m_pSelectedRoute ) cc1->m_pSelectedRoute->DrawGL( vp, region );
 
     GridDraw( );
 
@@ -3110,7 +3111,7 @@ void glChartCanvas::Render()
 
     // Now draw all the objects which normally move around and are not
     // cached from the previous frame
-    DrawFloatingOverlayObjects( gldc );
+    DrawFloatingOverlayObjects( gldc, chart_get_region );
 
     //  On some platforms, the opengl context window is always on top of any standard DC windows,
     //  so we need to draw the Chart Info Window and the Thumbnail as overlayed bmps.

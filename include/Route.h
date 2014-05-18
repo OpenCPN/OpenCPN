@@ -58,7 +58,7 @@ public:
       void DrawPointWhich(ocpnDC& dc, int iPoint, wxPoint *rpn);
       void DrawSegment(ocpnDC& dc, wxPoint *rp1, wxPoint *rp2, ViewPort &VP, bool bdraw_arrow);
       virtual void Draw(ocpnDC& dc, ViewPort &pVP);
-      virtual void DrawGL( ViewPort &VP );
+      virtual void DrawGL( ViewPort &VP, OCPNRegion &region );
       RoutePoint *GetLastPoint();
       void DeletePoint(RoutePoint *rp, bool bRenamePoints = false);
       void RemovePoint(RoutePoint *rp, bool bRenamePoints = false);

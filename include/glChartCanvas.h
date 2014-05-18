@@ -116,7 +116,7 @@ protected:
     ViewPort BuildClippedVP(ViewPort &VP, wxRect &rect);
     void DeleteChartTextures(ChartBaseBSB *pc);
 
-    void DrawFloatingOverlayObjects( ocpnDC &dc );
+    void DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region );
     void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
 
     void DrawQuiting();

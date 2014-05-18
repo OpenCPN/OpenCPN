@@ -411,7 +411,7 @@ void Route::Draw( ocpnDC& dc, ViewPort &VP )
 
 extern ChartCanvas *cc1; /* hopefully can eventually remove? */
 
-void Route::DrawGL( ViewPort &VP )
+void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
 {
 #ifdef ocpnUSE_GL
     if( m_nPoints < 2 || !m_bVisible ) return;
@@ -487,6 +487,17 @@ void Route::DrawGL( ViewPort &VP )
         rpt1 = rpt2;
         node = node->GetNext();
     }
+
+    /*  Route points  */
+    for(wxRoutePointListNode *node = pRoutePointList->GetFirst(); node; node = node->GetNext()) {
+        RoutePoint *prp = node->GetData();
+        if ( !m_bVisible && prp->m_bKeepXRoute )
+            prp->DrawGL( VP, region );
+        else if (m_bVisible)
+            prp->DrawGL( VP, region );
+    
+    }
+        
 #endif
 }
 
