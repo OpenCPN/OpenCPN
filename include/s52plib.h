@@ -342,7 +342,9 @@ public:
 
     void SetTargetDC( wxDC* pdc );
     void SetTargetOpenGl();
+#if wxUSE_GRAPHICS_CONTEXT
     void SetTargetGCDC( wxGCDC* gdc );
+#endif
     bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, double rot_angle = 0);
 
 private:
@@ -358,7 +360,9 @@ private:
     int scaleFactor;
 
     wxDC* targetDC;
+#if wxUSE_GRAPHICS_CONTEXT
     wxGCDC* targetGCDC;
+#endif
 
     wxColor penColor;
     wxPen* pen;
