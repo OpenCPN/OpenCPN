@@ -385,4 +385,3 @@ wxString toSDMM ( int NEflag, double a )
       }
       return s;
 }
-
