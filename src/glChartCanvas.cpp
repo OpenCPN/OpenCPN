@@ -226,19 +226,25 @@ static void DeleteTexture(glTextureDescriptor *ptd, int base_level)
    when compressed anyway, and this way the compression algorithm will use
    the exact same color in  adjacent 4x4 tiles and the result is nicer for our purpose.
    the lz4 compressed texture is smaller as well. */
-static void FlattenColorsForCompression(unsigned char *data, int dim)
+static void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=true)
 {
-    for(int i = 0; i<dim*dim; i++) {
-        int off = 3*i;
 #ifdef __WXMSW__ /* undo BGR flip from ocpn_pixel (if ocpnUSE_ocpnBitmap is defined) */
-        unsigned char t = data[off + 0];
-        data[off + 0] = data[off + 2];
-        data[off + 2] = t;
+    if(swap_colors)
+        for(int i = 0; i<dim*dim; i++) {
+            int off = 3*i;
+            unsigned char t = data[off + 0];
+            data[off + 0] = data[off + 2] & 0xfc;
+            data[off + 1] &= 0xf8;
+            data[off + 2] = t & 0xfc;
+        }
+    else
 #endif
-        data[off + 0] &= 0xfc;
-        data[off + 1] &= 0xf8;
-        data[off + 2] &= 0xfc;
-    }
+        for(int i = 0; i<dim*dim; i++) {
+            int off = 3*i;
+            data[off + 0] &= 0xfc;
+            data[off + 1] &= 0xf8;
+            data[off + 2] &= 0xfc;
+        }
 }
 
 /* return malloced data which is the etc compressed texture of the source */
@@ -483,6 +489,7 @@ void UploadTexture( glTextureDescriptor *ptd, int base_level,
     }
 #endif
 
+    bool first = true;
     for(int level = 0; level < ptd->level_min; level++ ) {
         /* build mipmap in ram if needed */
         if(!compressed && !ptd->map_array[level]) {
@@ -517,7 +524,8 @@ void UploadTexture( glTextureDescriptor *ptd, int base_level,
 
                     unsigned char *tex_data = (unsigned char*)malloc(size);
                     if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
-                        FlattenColorsForCompression(ptd->map_array[level], dim);
+                        FlattenColorsForCompression(ptd->map_array[level], dim, first);
+                        first = false;
 
                         // color range fit is worse quality but twice as fast
                         int flags = squish::kDxt1 | squish::kColourRangeFit;
