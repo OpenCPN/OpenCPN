@@ -480,11 +480,17 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
             while(!done){
                 int nmea_tail = 2;
                 size_t nmea_end = m_sock_buffer.find_first_of("*\r\n"); // detect the potential end of a NMEA string by finding the checkum marker or EOL
-                if (nmea_end != wxString::npos && m_sock_buffer[nmea_end] != '*')
-                    nmea_tail = 0;
 
-                if(nmea_end != wxString::npos && nmea_end < m_sock_buffer.size() - nmea_tail){
+                if (nmea_end == wxString::npos) // No termination characters: continue reading
+                    break;
+
+                if (m_sock_buffer[nmea_end] != '*')
+                    nmea_tail = -1;
+
+                if(nmea_end < m_sock_buffer.size() - nmea_tail){
                     nmea_end += nmea_tail + 1; // move to the char after the 2 checksum digits, if present
+                    if ( nmea_end == 0 ) //The first character in the buffer is a terminator, skip it to avoid infinite loop
+                        nmea_end = 1;
                     std::string nmea_line = m_sock_buffer.substr(0,nmea_end);
                     m_sock_buffer = m_sock_buffer.substr(nmea_end);
 
