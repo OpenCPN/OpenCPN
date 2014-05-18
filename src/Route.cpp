@@ -94,6 +94,8 @@ Route::~Route( void )
     pRoutePointList->DeleteContents( false );            // do not delete Marks
     pRoutePointList->Clear();
     delete pRoutePointList;
+    m_HyperlinkList->Clear();
+    delete m_HyperlinkList;
 }
 
 // The following is used only for route splitting, assumes just created, empty route
