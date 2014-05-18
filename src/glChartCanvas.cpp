@@ -1006,6 +1006,8 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
                 wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""), attribs ),
     m_data( NULL ), m_datasize( 0 ), m_bsetup( false )
 {
+    SetBackgroundStyle ( wxBG_STYLE_CUSTOM );  // on WXMSW, this prevents flashing
+    
     m_cache_current_ch = NULL;
 
     m_b_paint_enable = true;
