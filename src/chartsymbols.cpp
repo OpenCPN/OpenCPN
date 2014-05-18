@@ -818,7 +818,7 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcm
 
     wxImage rasterFileImg;
     if( rasterFileImg.LoadFile( filename, wxBITMAP_TYPE_PNG ) ) {
-
+#ifdef ocpnUSE_GL
         /* for opengl mode, load the symbols into a texture */
         extern GLenum       g_texture_rectangle_format;
         if(!dcmode && g_bopengl && g_texture_rectangle_format) {
@@ -843,7 +843,6 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcm
                     e[off * 4 + 3] = a[off];
                 }
 
-#ifdef ocpnUSE_GL
             if(!rasterSymbolsTexture)
                 glGenTextures(1, &rasterSymbolsTexture);
 
@@ -858,14 +857,15 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcm
             glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
             rasterSymbolsTextureSize = wxSize(w, h);
-#endif
+
             free(e);
-        } else {
+        } else
+#endif
+        {
             if(!dcmode && g_bopengl)
                 wxLogMessage(_("Warning: unable to use texture for chart symbols"));
             rasterSymbols = wxBitmap( rasterFileImg, -1/*32*/);
         }
-
 
         rasterSymbolsLoadedColorMapNumber = tableNo;
         return true;

@@ -34,6 +34,10 @@
   #include "wx/wx.h"
 #endif //precompiled headers
 
+#if !wxUSE_GRAPHICS_CONTEXT
+#define wxGCDC wxDC
+#endif
+
 // Required GetGlobalColor
 #include "../../../include/ocpn_plugin.h"
 #include <wx/dcbuffer.h>

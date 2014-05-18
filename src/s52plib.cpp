@@ -2045,9 +2045,13 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
             return false;
         }
         
+#if wxUSE_GRAPHICS_CONTEXT
         wxGCDC gdc( mdc );
-
         HPGL->SetTargetGCDC( &gdc );
+#else
+        wxMemoryDC &gdc( mdc );
+        HPGL->SetTargetDC( &gdc );
+#endif
         HPGL->Render( str, col, r0, pivot, (double) rot_angle );
 
         int bm_width = ( gdc.MaxX() - gdc.MinX() ) + 4;
@@ -2072,16 +2076,16 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
         wxMemoryDC targetDc( targetBm );
         if(!targetDc.IsOk())
             return false;
-        wxGCDC targetGcdc( targetDc );
 
         targetDc.Blit( 0, 0, bm_width, bm_height, m_pdc, screenOriginX, screenOriginY );
 
-#if (( defined(__WXGTK__) || defined(__WXMAC__) ) && !wxCHECK_VERSION(2,9,4))
+#if wxUSE_GRAPHICS_CONTEXT && (( defined(__WXGTK__) || defined(__WXMAC__) ) && !wxCHECK_VERSION(2,9,4))
+        wxGCDC targetGcdc( targetDc );
         r0 -= wxPoint( bm_orgx, bm_orgy );
         HPGL->SetTargetGCDC( &targetGcdc );
         HPGL->Render( str, col, r0, pivot, (double) rot_angle );
 #else
-        targetGcdc.DrawBitmap( *sbm, 0, 0 );
+        targetDc.DrawBitmap( *sbm, 0, 0 );
 #endif
         m_pdc->Blit( screenOriginX, screenOriginY, bm_width, bm_height, &targetDc, 0, 0 );
 
@@ -6676,7 +6680,11 @@ void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, in
 
     mdc.Blit( 0, 0, width, height, pDC, upperLeft.x, upperLeft.y );
 
+#if wxUSE_GRAPHICS_CONTEXT
     wxGCDC gdc( mdc );
+#else
+    wxMemoryDC &gdc( mdc );
+#endif
 
     wxPen pen( clrLine, 1, wxUSER_DASH );
     wxDash dashes[2];
@@ -6718,6 +6726,7 @@ void RenderFromHPGL::SetTargetOpenGl()
     renderToGCDC = false;
 }
 
+#if wxUSE_GRAPHICS_CONTEXT
 void RenderFromHPGL::SetTargetGCDC( wxGCDC* gdc )
 {
     targetGCDC = gdc;
@@ -6725,6 +6734,7 @@ void RenderFromHPGL::SetTargetGCDC( wxGCDC* gdc )
     renderToDC = false;
     renderToOpenGl = false;
 }
+#endif
 
 const char* RenderFromHPGL::findColorNameInRef( char colorCode, char* col )
 {
@@ -6769,12 +6779,14 @@ void RenderFromHPGL::SetPen()
         }
     }
 #endif    
+#if wxUSE_GRAPHICS_CONTEXT
     if( renderToGCDC ) {
         pen = wxThePenList->FindOrCreatePen( penColor, penWidth, wxSOLID );
         brush = wxTheBrushList->FindOrCreateBrush( penColor, wxSOLID );
         targetGCDC->SetPen( *pen );
         targetGCDC->SetBrush( *brush );
     }
+#endif
 }
 
 void RenderFromHPGL::Line( wxPoint from, wxPoint to )
@@ -6789,10 +6801,12 @@ void RenderFromHPGL::Line( wxPoint from, wxPoint to )
         glVertex2i( to.x, to.y );
         glEnd();
     }
-#endif    
+#endif
+#if wxUSE_GRAPHICS_CONTEXT
     if( renderToGCDC ) {
         targetGCDC->DrawLine( from, to );
     }
+#endif
 }
 
 void RenderFromHPGL::Circle( wxPoint center, int radius, bool filled )
@@ -6814,6 +6828,7 @@ void RenderFromHPGL::Circle( wxPoint center, int radius, bool filled )
         glEnd();
     }
 #endif    
+#if wxUSE_GRAPHICS_CONTEXT
     if( renderToGCDC ) {
         if( filled ) targetGCDC->SetBrush( *brush );
         else
@@ -6829,7 +6844,7 @@ void RenderFromHPGL::Circle( wxPoint center, int radius, bool filled )
         targetGCDC->DrawPoint( center.x, center.y + radius );
         targetGCDC->SetPen( *pen );
     }
-
+#endif
 }
 
 void RenderFromHPGL::Polygon()
@@ -6845,9 +6860,11 @@ void RenderFromHPGL::Polygon()
         glEnd();
     }
 #endif    
+#if wxUSE_GRAPHICS_CONTEXT
     if( renderToGCDC ) {
         targetGCDC->DrawPolygon( noPoints, polygon );
     }
+#endif
 }
 
 void RenderFromHPGL::RotatePoint( wxPoint& point, double angle )

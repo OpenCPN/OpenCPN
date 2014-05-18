@@ -3289,6 +3289,7 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor, int can
 
 bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region)
 {
+#ifdef ocpnUSE_GL
     if(m_ppicb)
     {
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
@@ -3302,7 +3303,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
     }
     else
         return false;
-    
+#endif    
     return true;
 }
 
@@ -3339,7 +3340,11 @@ void ChartPlugInWrapper::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion
     if(m_ppicb)
     {
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
-        m_ppicb->GetValidCanvasRegion(pivp, pValidRegion);
+        // currently convert using wxRegion,
+        // this should be changed as wxRegion is proven unstable/buggy on various platforms
+        wxRegion region;
+        m_ppicb->GetValidCanvasRegion(pivp, &region);
+        *pValidRegion = OCPNRegion(region);
     }
 
     return;
