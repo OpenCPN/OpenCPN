@@ -1030,6 +1030,8 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
     if(i == 0)
         im1 = 0;
 
+    if(curtime == time) im1 = i;                            //no interpolation for record boundary
+
     wxDateTime mintime = MinTime();
     double minute2 = (curtime - mintime).GetMinutes();
     curtime = rsa->Item(im1).m_Reference_Time;
