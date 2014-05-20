@@ -2627,8 +2627,18 @@ void ChartCanvas::OnRolloverPopupTimerEvent( wxTimerEvent& event )
 void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
 {
 #ifdef USE_S57
-    if( s57_CheckExtendedLightSectors( mouse_x, mouse_y, VPoint, extendedSectorLegs ) )
-        ReloadVP( false );
+    if( s57_CheckExtendedLightSectors( mouse_x, mouse_y, VPoint, extendedSectorLegs ) ){
+        if(!m_bsectors_shown) {
+            ReloadVP( false );
+            m_bsectors_shown = true;
+        }
+    }
+    else {
+        if( m_bsectors_shown ) {
+            ReloadVP( false );
+            m_bsectors_shown = false;
+        }
+    }
 #endif
 
 //      This is here because GTK status window update is expensive..

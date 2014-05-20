@@ -588,6 +588,7 @@ private:
       bool        m_b_paint_enable;
       
       int         m_AISRollover_MMSI;
+      bool        m_bsectors_shown;
       
 DECLARE_EVENT_TABLE()
 };
