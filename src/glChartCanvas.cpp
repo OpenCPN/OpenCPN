@@ -153,6 +153,7 @@ static int g_mipmap_max_level = 4;
 
 bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
+bool glChartCanvas::s_b_UploadFullCompressedMipmaps;
 //static int s_nquickbind;
 
 long populate_tt_total, mipmap_tt_total, hwmipmap_tt_total, upload_tt_total;
@@ -301,6 +302,10 @@ void UploadTexture( glTextureDescriptor *ptd, int base_level,
     base_level = 0;
 #endif
 
+    /* Also, some non-compliant OpenGL drivers need the complete mipmap set when using compressed textures */
+    if( glChartCanvas::s_b_UploadFullCompressedMipmaps && g_GLOptions.m_bTextureCompression )
+        base_level = 0;
+    
     if(!ramonly) {
         //    If the GPU does not know about this texture, create it
         if( ptd->tex_name == 0 ) {
@@ -1283,6 +1288,12 @@ void glChartCanvas::SetupOpenGL()
 
     SetupCompression();
 
+    s_b_UploadFullCompressedMipmaps = false;
+#ifdef __WXOSX__    
+    if( GetRendererString().Find( _T("Intel GMA 950") ) != wxNOT_FOUND )
+        s_b_UploadFullCompressedMipmaps = true;
+#endif    
+    
     /*  Load initial symbol tables  */
     if( ps52plib && ps52plib->m_bOK )
         ps52plib->SetPLIBColorScheme( global_color_scheme );
