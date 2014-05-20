@@ -155,14 +155,12 @@ public:
 
       void CancelMouseRoute();
 
-      void Do_Pankeys(wxTimerEvent& event);
-      void EnableAutoPan( bool b_enable );
-      
       bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust = true);
       bool SetVPScale(double sc);
       bool SetViewPoint ( double lat, double lon);
       void ReloadVP ( bool b_adjust = true );
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
+
       void SetVPRotation(double angle){ VPoint.rotation = angle; }
       double GetVPRotation(void) { return GetVP().rotation; }
       double GetVPSkew(void) { return GetVP().skew; }
@@ -184,6 +182,11 @@ public:
 
       int GetNextContextMenuId();
 
+      bool StartTimedMovement( bool stoptimer=true );
+      void DoTimedMovement( );
+      void DoMovement( long dt );
+      void StopMovement( );
+
       void SetColorScheme(ColorScheme cs);
       ColorScheme GetColorScheme(){ return m_cs;}
 
@@ -198,6 +201,7 @@ public:
       double GetCanvasTrueScale(){return m_true_scale_ppm;}
       double GetAbsoluteMinScalePpm(){ return m_absolute_min_scale_ppm; }
       ViewPort &GetVP();
+      void SetVP(ViewPort &);
       ChartBase* GetChartAtCursor();
       ChartBase* GetOverlayChartAtCursor();
 
@@ -212,16 +216,18 @@ public:
       double GetPixPerMM(){ return m_pix_per_mm;}
 
       void SetOwnShipState(ownship_state_t state){ m_ownship_state = state;}
+      void SetCursorStatus( double cursor_lat, double cursor_lon );
       void GetCursorLatLon(double *lat, double *lon);
-
-      bool ZoomCanvasIn(double factor);
-      bool ZoomCanvasOut(double factor);
-      bool DoZoomCanvasIn(double factor);
-      bool DoZoomCanvasOut(double factor);
 
       bool PanCanvas(int dx, int dy);
       void StopAutoPan(void);
-      
+
+      void ZoomCanvas(double factor, bool can_zoom_to_cursor=true, bool stoptimer=true );
+      void DoZoomCanvas(double factor);
+
+      void RotateCanvas( double dir );
+      void DoRotateCanvas( double rotation );
+
       void ShowAISTargetList(void);
 
       void ShowGoToPosition(void);
@@ -278,7 +284,22 @@ private:
       void        PositionConsole(void);
       wxString    FindValidUploadPort();
       
+      wxColour PredColor();
+      wxColour ShipColor();
 
+      void ComputeShipScaleFactor(float icon_hdt,
+                                  int ownShipWidth, int ownShipLength, 
+                                  wxPoint lShipMidPoint,
+                                  wxPoint GpsOffsetPixels, wxPoint lGPSPoint,
+                                  float &scale_factor_x, float &scale_factor_y);
+
+      void ShipDrawLargeScale( ocpnDC& dc, wxPoint lShipMidPoint );
+      void ShipIndicatorsDraw( ocpnDC& dc, float lpp,
+                               wxPoint GPSOffsetPixels,
+                               wxPoint lGPSPoint, wxPoint lHeadPoint,
+                                      float img_height, float cog_rad,
+                               wxPoint lPredPoint, bool b_render_hdt,
+          wxPoint lShipMidPoint);
       ChInfoWin   *m_pCIWin;
 
       bool        m_bShowCurrent;
@@ -331,9 +352,6 @@ private:
                                              // also may be considered as the "pixels-per-meter" of the canvas on-screen
       double      m_absolute_min_scale_ppm;
 
-      int m_panx, m_pany, m_panspeed, m_modkeys;
-      bool m_bmouse_key_mod;
-
       bool singleClickEventIsValid;
       wxMouseEvent singleClickEvent;
 
@@ -343,6 +361,7 @@ private:
       void OnActivate(wxActivateEvent& event);
       void OnSize(wxSizeEvent& event);
       void MouseTimedEvent(wxTimerEvent& event);
+      void OnMouseWheelTimerEvent ( wxTimerEvent& event );
       void MouseEvent(wxMouseEvent& event);
       void ShipDraw(ocpnDC& dc);
       void DrawArrow(ocpnDC& dc, int x, int y, double rot_angle, double scale);
@@ -351,12 +370,14 @@ private:
 
       void RotateTimerEvent(wxTimerEvent& event);
       void PanTimerEvent(wxTimerEvent& event);
+      void MovementTimerEvent(wxTimerEvent& );
+      void MovementStopTimerEvent( wxTimerEvent& );
       bool CheckEdgePan(int x, int y, bool bdragging);
       void OnCursorTrackTimerEvent(wxTimerEvent& event);
-      void OnZoomTimerEvent(wxTimerEvent& event);
 
       void DrawAllRoutesInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);
       void DrawAllWaypointsInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion, bool bDrawMarksOnly);
+      void DrawAnchorWatchPoints( ocpnDC& dc );
       double GetAnchorWatchRadiusPixels(RoutePoint *pAnchorWatchPoint);
 
       void DrawAllTidesInBBox(ocpnDC& dc, LLBBox& BBox, bool bRebuildSelList, bool bforce_redraw_tides,
@@ -388,18 +409,18 @@ private:
 
       void DrawOverlayObjects ( ocpnDC &dc, const wxRegion& ru );
 
-      void EmbossDepthScale(ocpnDC &dc );
+      emboss_data *EmbossDepthScale();
       emboss_data *CreateEmbossMapData(wxFont &font, int width, int height, const wxChar *str, ColorScheme cs);
       void CreateDepthUnitEmbossMaps(ColorScheme cs);
       wxBitmap CreateDimBitmap(wxBitmap &Bitmap, double factor);
 
       void CreateOZEmbossMapData(ColorScheme cs);
-      void EmbossOverzoomIndicator ( ocpnDC &dc);
+      emboss_data *EmbossOverzoomIndicator ( ocpnDC &dc);
 
 //      void CreateCM93OffsetEmbossMapData(ColorScheme cs);
 //      void EmbossCM93Offset ( wxMemoryDC *pdc);
 
-      void EmbossCanvas ( ocpnDC &dc, emboss_data *pemboss, int x, int y);
+      void DrawEmboss ( ocpnDC &dc, emboss_data *pemboss );
 
       void JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius);
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
@@ -431,12 +452,14 @@ private:
 
 
       wxTimer     *pPanTimer;       // This timer used for auto panning on route creation and edit
+      wxTimer     *pMovementTimer;       // This timer used for smooth movement in non-opengl mode
+      wxTimer     *pMovementStopTimer; // This timer used to stop movement if a keyup event is lost
       wxTimer     *pCurTrackTimer;  // This timer used to update the status window on mouse idle
       wxTimer     *pRotDefTimer;    // This timer used to control rotaion rendering on mouse moves
-      wxTimer     *pPanKeyTimer;    // This timer used to update pan key actions
       wxTimer     *m_DoubleClickTimer;
 
       wxTimer     m_MouseWheelTimer;
+      wxDateTime  m_MouseWheelTimerTime;
       wxTimer     m_RolloverPopupTimer;
 
       int         m_mouse_wheel_oneshot;
@@ -544,7 +567,7 @@ private:
       bool        m_bbrightdir;
       int         m_brightmod;
 
-      bool        m_bzooming;
+      bool        m_bzooming, m_bzooming_to_cursor;
       IDX_entry   *m_pIDXCandidate;
 
 //#ifdef ocpnUSE_GL
@@ -552,18 +575,20 @@ private:
       wxGLContext   *m_pGLcontext;
 //#endif
 
-      //Smooth zoom member variables
-      wxTimer     m_zoom_timer;
-      bool        m_bzooming_in;
-      bool        m_bzooming_out;
-      int         m_zoomt;                // zoom timer constant, msec
-      double      m_zoom_target_factor;
-      double      m_zoom_current_factor;
+      //Smooth movement member variables
+      int         m_panx, m_pany, m_modkeys;
+      double      m_panspeed;
+      bool        m_bmouse_key_mod;
+      double      m_zoom_factor, m_rotation_speed;
+      int         m_mustmove;
 
-      bool        m_benable_autopan;
+
+      wxDateTime m_last_movement_time;
+
       bool        m_b_paint_enable;
       
       int         m_AISRollover_MMSI;
+      bool        m_bsectors_shown;
       
 DECLARE_EVENT_TABLE()
 };

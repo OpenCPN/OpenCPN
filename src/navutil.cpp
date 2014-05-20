@@ -42,7 +42,7 @@
 //#include <math.h>
 #include <time.h>
 #include <locale>
-#include <deque>
+#include <list>
 
 #include <wx/listimpl.cpp>
 #include <wx/progdlg.h>
@@ -93,7 +93,7 @@ extern MyConfig         *pConfig;
 extern ArrayOfCDI       g_ChartDirArray;
 extern double           vLat, vLon, gLat, gLon;
 extern double           kLat, kLon;
-extern double           initial_scale_ppm;
+extern double           initial_scale_ppm, initial_rotation;
 extern ColorScheme      global_color_scheme;
 extern int              g_nbrightness;
 extern bool             g_bShowMag;
@@ -321,6 +321,10 @@ extern bool             portaudio_initialized;
 
 extern bool             g_btouch;
 extern bool             g_bresponsive;
+
+#ifdef ocpnUSE_GL
+extern ocpnGLOptions g_GLOptions;
+#endif
 
 //---------------------------------------------------------------------------------
 //    Track Implementation
@@ -658,18 +662,26 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
         col = basic_colour;
     } else {
         for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
-                if( m_Colour == ::GpxxColorNames[i] ) {
-                    col = ::GpxxColors[i];
-                    break;
-                }
+            if( m_Colour == ::GpxxColorNames[i] ) {
+                col = ::GpxxColors[i];
+                break;
             }
+        }
     }
     dc.SetPen( *wxThePenList->FindOrCreatePen( col, width, style ) );
     dc.SetBrush( *wxTheBrushList->FindOrCreateBrush( col, wxSOLID ) );
 
+    std::list< std::list<wxPoint> > pointlists;
+    std::list<wxPoint> pointlist;
+
+    //    Get the dc boundary
+    int sx, sy;
+    dc.GetSize( &sx, &sy );
+
     //  Draw the first point
-    wxPoint rpt, rptn;
+    wxPoint rpt;
     DrawPointWhich( dc, 1, &rpt );
+    pointlist.push_back(rpt);
 
     node = node->GetNext();
     while( node ) {
@@ -682,26 +694,61 @@ void Track::Draw( ocpnDC& dc, ViewPort &VP )
         //  We do inline decomposition of the line segments, in a simple minded way
         //  If the line segment length is less than approximately 2 pixels, then simply don't render it,
         //  but continue on to the next point.
-        if((abs(r.x - rpt.x) > 1) || (abs(r.y- rpt.y) > 1) ){
-            prp->Draw( dc, &rptn );
 
-            if( ToSegNo == FromSegNo )
-                RenderSegment( dc, rpt.x, rpt.y, rptn.x, rptn.y, VP, false, (int) radius ); // no arrows, with hilite
+        int x0 = r.x, y0 = r.y, x1 = rpt.x, y1= rpt.y;
+        if((abs(r.x - rpt.x) > 1) || (abs(r.y - rpt.y) > 1) ||
+            cohen_sutherland_line_clip_i( &x0, &y0, &x1, &y1, 0, sx, 0, sy ) != Visible ) {
+            prp->Draw( dc, &rpt );
 
-            rpt = rptn;
+            pointlist.push_back(rpt);
+            if( ToSegNo != FromSegNo ) {
+                if(pointlist.size()) {
+                    pointlists.push_back(pointlist);
+                    pointlist.clear();
+                }
+            }
         }
 
         node = node->GetNext();
         FromSegNo = ToSegNo;
-
     }
 
-    //    Draw last segment, dynamically, maybe.....
-
+    //    Add last segment, dynamically, maybe.....
     if( m_bRunning ) {
-        wxPoint r;
-        cc1->GetCanvasPointPix( gLat, gLon, &r );
-        RenderSegment( dc, rpt.x, rpt.y, r.x, r.y, VP, false, (int) radius ); // no arrows, with hilite
+        cc1->GetCanvasPointPix( gLat, gLon, &rpt );
+        pointlist.push_back(rpt);
+    }
+    pointlists.push_back(pointlist);
+
+    for(std::list< std::list<wxPoint> >::iterator lines = pointlists.begin();
+        lines != pointlists.end(); lines++) {
+        wxPoint *points = new wxPoint[lines->size()];
+        int i = 0;
+        for(std::list<wxPoint>::iterator line = lines->begin();
+            line != lines->end(); line++) {
+            points[i] = *line;
+            i++;
+        }
+
+        int hilite_width = radius;
+        if( hilite_width ) {
+            wxPen psave = dc.GetPen();
+
+            dc.StrokeLines( i, points );
+                    
+            wxColour y = GetGlobalColor( _T ( "YELO1" ) );
+            wxColour hilt( y.Red(), y.Green(), y.Blue(), 128 );
+            
+            wxPen HiPen( hilt, hilite_width, wxSOLID );
+            dc.SetPen( HiPen );
+            
+            dc.StrokeLines( i, points );
+
+            dc.SetPen( psave );
+        } else
+            dc.StrokeLines( i, points );
+
+        delete [] points;
     }
 }
 
@@ -1133,8 +1180,16 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "ActiveChartGroup" ), &g_GroupIndex, 0 );
 
-    Read( _T ( "GPUMemorySize" ), &g_GPU_MemSize, 256 );
+    /* opengl options */
+#ifdef ocpnUSE_GL
+    Read( _T ( "UseAcceleratedPanning" ), &g_GLOptions.m_bUseAcceleratedPanning, true );
 
+    Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression, 0);
+    Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching, 0);
+
+    Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension, 512 );
+    Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 64 );
+#endif
     Read( _T ( "SmoothPanZoom" ), &g_bsmoothpanzoom, 0 );
 
     Read( _T ( "ToolbarX"), &g_toolbar_x, 0 );
@@ -1172,7 +1227,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod, 10 );
 
     Read( _T ( "SetSystemTime" ), &s_bSetSystemTime, 0 );
-    Read( _T ( "ShowDebugWindows" ), &m_bShowDebugWindows, 1 );
+    Read( _T ( "ShowStatusBar" ), &m_bShowStatusBar, 1 );
+    Read( _T ( "ShowCompassWindow" ), &m_bShowCompassWin, 1 );
     Read( _T ( "ShowGrid" ), &g_bDisplayGrid, 0 );
     Read( _T ( "PlayShipsBells" ), &g_bPlayShipsBells, 0 );
     Read( _T ( "FullscreenToolbar" ), &g_bFullscreenToolbar, 1 );
@@ -1614,6 +1670,7 @@ int MyConfig::LoadMyConfig( int iteration )
     gLon = START_LON;
 
     initial_scale_ppm = .0003;        // decent initial value
+    initial_rotation = 0;
 
     SetPath( _T ( "/Settings/GlobalState" ) );
     wxString st;
@@ -1643,6 +1700,14 @@ int MyConfig::LoadMyConfig( int iteration )
         st_view_scale = fmax ( st_view_scale, .001/32 );
         st_view_scale = fmin ( st_view_scale, 4 );
         initial_scale_ppm = st_view_scale;
+    }
+
+    if( Read( wxString( _T ( "VPRotation" ) ), &st ) ) {
+        sscanf( st.mb_str( wxConvUTF8 ), "%lf", &st_rotation );
+//    Sanity check the rotation
+        st_rotation = fmin ( st_rotation, 360 );
+        st_rotation = fmax ( st_rotation, 0 );
+        initial_rotation = st_rotation * PI / 180;
     }
 
     wxString sll;
@@ -2238,7 +2303,8 @@ void MyConfig::UpdateSettings()
     Write( _T ( "UIStyle" ), g_StyleManager->GetStyleNextInvocation() );
     Write( _T ( "ChartNotRenderScaleFactor" ), g_ChartNotRenderScaleFactor );
 
-    Write( _T ( "ShowDebugWindows" ), m_bShowDebugWindows );
+    Write( _T ( "ShowStatusBar" ), m_bShowStatusBar );
+    Write( _T ( "ShowCompassWindow" ), m_bShowCompassWin );
     Write( _T ( "SetSystemTime" ), s_bSetSystemTime );
     Write( _T ( "ShowGrid" ), g_bDisplayGrid );
     Write( _T ( "PlayShipsBells" ), g_bPlayShipsBells );
@@ -2269,6 +2335,16 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "SkewToNorthUp" ), g_bskew_comp );
     Write( _T ( "OpenGL" ), g_bopengl );
+
+#ifdef ocpnUSE_GL
+    /* opengl options */
+    Write( _T ( "UseAcceleratedPanning" ), g_GLOptions.m_bUseAcceleratedPanning );
+
+    Write( _T ( "GPUTextureCompression" ), g_GLOptions.m_bTextureCompression);
+    Write( _T ( "GPUTextureCompressionCaching" ), g_GLOptions.m_bTextureCompressionCaching);
+    Write( _T ( "GPUTextureDimension" ), g_GLOptions.m_iTextureDimension );
+    Write( _T ( "GPUTextureMemSize" ), g_GLOptions.m_iTextureMemorySize );
+#endif
     Write( _T ( "SmoothPanZoom" ), g_bsmoothpanzoom );
 
     Write( _T ( "UseRasterCharts" ), g_bUseRaster );
@@ -2381,6 +2457,8 @@ void MyConfig::UpdateSettings()
             Write( _T ( "VPLatLon" ), st1 );
             st1.Printf( _T ( "%g" ), vp.view_scale_ppm );
             Write( _T ( "VPScale" ), st1 );
+            st1.Printf( _T ( "%g" ), vp.rotation * 180 / PI );
+            Write( _T ( "VPRotation" ), st1 );
         }
     }
 

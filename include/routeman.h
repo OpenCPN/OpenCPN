@@ -163,6 +163,7 @@ public:
       WayPointman();
       ~WayPointman();
       wxBitmap *GetIconBitmap(const wxString& icon_key);
+      unsigned int GetIconTexture( const wxBitmap *pmb, int &glw, int &glh );
       int GetIconIndex(const wxBitmap *pbm);
       int GetXIconIndex(const wxBitmap *pbm);
       int GetNumIcons(void){ return m_pIconArray->Count(); }

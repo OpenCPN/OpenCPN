@@ -403,3 +403,15 @@ extern int mysnprintf( char *buffer, int count, const char *format, ... )
       return ret;
 }
 #endif
+
+int NextPow2(int size)
+{
+    /* compute dimensions needed as next larger power of 2 */
+    int a = size;
+    int p = 0;
+    while( a ) {
+        a = a >> 1;
+        p++;
+    }
+    return 1 << p;
+}

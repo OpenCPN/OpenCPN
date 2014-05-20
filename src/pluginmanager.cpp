@@ -77,10 +77,10 @@ extern PlugInManager   *g_pi_manager;
 extern s52plib         *ps52plib;
 extern wxString        *pChartListFileName;
 extern wxString         gExe_path;
-extern bool             g_b_useStencil;
 extern wxString         g_Plugin_Dir;
 extern bool             g_boptionsactive;
 extern options         *g_options;
+extern ColorScheme      global_color_scheme;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
@@ -205,7 +205,6 @@ PlugInManager::PlugInManager(MyFrame *parent)
         m_plugin_menu_item_id_next = pFrame->GetCanvasWindow()->GetNextContextMenuId();
         m_plugin_tool_id_next = pFrame->GetNextToolbarToolId();
     }
-
 }
 
 PlugInManager::~PlugInManager()
@@ -213,7 +212,7 @@ PlugInManager::~PlugInManager()
 }
 
 
-bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
+bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir, bool load_enabled)
 {
     m_plugin_location = plugin_dir;
 
@@ -240,32 +239,38 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
         return false;
     }
 
-
-
-        wxArrayString file_list;
-        wxString plugin_file;
+    wxArrayString file_list;
         
-        int get_flags =  wxDIR_FILES | wxDIR_DIRS;
+    int get_flags =  wxDIR_FILES | wxDIR_DIRS;
 #ifdef __WXMSW__
 #ifdef _DEBUG
-        get_flags =  wxDIR_FILES;
+    get_flags =  wxDIR_FILES;
 #endif        
 #endif        
+    
+    wxDir::GetAllFiles( m_plugin_location, &file_list, pispec, get_flags );
+    
+    for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
+        wxString file_name = file_list[i];
+        wxString plugin_file = wxFileName(file_name).GetFullName();
         
-        wxDir::GetAllFiles( m_plugin_location, &file_list, pispec, get_flags );
-        
-        for(unsigned int i=0 ; i < file_list.GetCount() ; i++) {
-            wxString file_name = file_list[i];
-
+        //    Check the config file to see if this PlugIn is user-enabled
+        wxString config_section = ( _T ( "/PlugIns/" ) );
+        config_section += plugin_file;
+        pConfig->SetPath ( config_section );
+        bool enabled;
+        pConfig->Read ( _T ( "bEnabled" ), &enabled, false );
+        if(enabled  == load_enabled) {
+            
             bool b_compat = CheckPluginCompatibility(file_name);
-
+            
             if(!b_compat)
             {
                 wxString msg(_("    Incompatible PlugIn detected:"));
                 msg += file_name;
                 wxLogMessage(msg);
             }
-
+            
             PlugInContainer *pic = NULL;
             if(b_compat)
                 pic = LoadPlugIn(file_name);
@@ -274,47 +279,46 @@ bool PlugInManager::LoadAllPlugIns(const wxString &plugin_dir)
                 if(pic->m_pplugin)
                 {
                     plugin_array.Add(pic);
-
+                    
                     //    The common name is available without initialization and startup of the PlugIn
                     pic->m_common_name = pic->m_pplugin->GetCommonName();
-
-                    //    Check the config file to see if this PlugIn is user-enabled
-                    wxString config_section = ( _T ( "/PlugIns/" ) );
-                    config_section += pic->m_common_name;
-                    pConfig->SetPath ( config_section );
-                    pConfig->Read ( _T ( "bEnabled" ), &pic->m_bEnabled );
-
+                    
+                    pic->m_plugin_filename = plugin_file;
+                    pic->m_bEnabled = enabled;
                     if(pic->m_bEnabled)
                     {
                         pic->m_cap_flag = pic->m_pplugin->Init();
                         pic->m_bInitState = true;
                     }
-
+                    
                     pic->m_short_description = pic->m_pplugin->GetShortDescription();
                     pic->m_long_description = pic->m_pplugin->GetLongDescription();
                     pic->m_version_major = pic->m_pplugin->GetPlugInVersionMajor();
                     pic->m_version_minor = pic->m_pplugin->GetPlugInVersionMinor();
                     pic->m_bitmap = pic->m_pplugin->GetPlugInBitmap();
-
+                    
                 }
                 else        // not loaded
                 {
                     wxString msg;
                     msg.Printf(_T("    PlugInManager: Unloading invalid PlugIn, API version %d "), pic->m_api_version );
                     wxLogMessage(msg);
-
+                    
                     pic->m_destroy_fn(pic->m_pplugin);
-
+                    
                     delete pic->m_plibrary;            // This will unload the PlugIn
                     delete pic;
                 }
             }
-
         }
+    }
+    
+    UpDateChartDataTypes();
 
-        UpDateChartDataTypes();
-
-        return true;
+    // Inform plugins of the current color scheme
+    g_pi_manager->SetColorSchemeForAllPlugIns( global_color_scheme );
+    
+    return true;
 }
 
 bool PlugInManager::CallLateInit(void)
@@ -459,7 +463,7 @@ bool PlugInManager::UpdateConfig()
         PlugInContainer *pic = plugin_array.Item(i);
 
         wxString config_section = ( _T ( "/PlugIns/" ) );
-        config_section += pic->m_common_name;
+        config_section += pic->m_plugin_filename;
         pConfig->SetPath ( config_section );
         pConfig->Write ( _T ( "bEnabled" ), pic->m_bEnabled );
     }
@@ -588,15 +592,6 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         wxString msg(_T("   PlugInManager: Cannot load library: "));
         msg += plugin_file;
         msg += _T(" ");
-#if !defined(__WXMSW__) && !defined(__WXOSX__)
-        /* give good error reporting on non windows non mac platforms */
-        dlopen(plugin_file.ToAscii(), RTLD_NOW);
-        char *s =  dlerror();
-        wxString c;
-        for(char *t = s; *t; t++)
-            c+=*t;
-        msg += c;
-#endif
         wxLogMessage(msg);
         delete plugin;
         delete pic;
@@ -1978,6 +1973,12 @@ wxString getUsrSpeedUnit_Plugin( int unit )
 
 bool PlugIn_GSHHS_CrossesLand(double lat1, double lon1, double lat2, double lon2)
 {
+    static bool loaded = false;
+    if(!loaded) {
+        gshhsCrossesLandInit();
+        loaded = true;
+    }
+
     return gshhsCrossesLand(lat1, lon1, lat2, lon2);
 }
 
@@ -2395,6 +2396,25 @@ bool UpdatePlugInTrack ( PlugIn_Track *ptrack )
     return b_found;
 }
 
+void PlugInMultMatrixViewport ( PlugIn_ViewPort *vp )
+{
+#ifdef ocpnUSE_GL
+    wxPoint point;
+    GetCanvasPixLL(vp, &point, 0, 0);
+    glTranslatef(point.x, point.y, 0);
+    glScalef(vp->view_scale_ppm, vp->view_scale_ppm, 1);
+    glRotatef(vp->rotation, 0, 0, 1);
+#endif
+}
+
+void PlugInNormalizeViewport ( PlugIn_ViewPort *vp )
+{
+#ifdef ocpnUSE_GL
+    vp->clat = vp->clon = 0;
+    vp->view_scale_ppm = 1;
+    vp->rotation = vp->skew = 0;
+#endif
+}
 
 
 //-----------------------------------------------------------------------------------------
@@ -2759,7 +2779,8 @@ PluginPanel::PluginPanel(PluginListPanel *parent, wxWindowID id, const wxPoint &
     SetSizer(itemBoxSizer01);
     Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler(PluginPanel::OnPluginSelected), NULL, this);
 
-    wxStaticBitmap *itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY, *m_pPlugin->m_bitmap);
+    wxStaticBitmap *itemStaticBitmap = new wxStaticBitmap( this, wxID_ANY,
+                                                           wxBitmap(m_pPlugin->m_bitmap->ConvertToImage().Copy()));
     itemBoxSizer01->Add(itemStaticBitmap, 0, wxEXPAND|wxALL, 5);
     itemStaticBitmap->Connect(wxEVT_LEFT_DOWN, wxMouseEventHandler( PluginPanel::OnPluginSelected ), NULL, this);
     wxBoxSizer* itemBoxSizer02 = new wxBoxSizer(wxVERTICAL);
@@ -3268,6 +3289,7 @@ double ChartPlugInWrapper::GetNormalScaleMax(double canvas_scale_factor, int can
 
 bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region)
 {
+#ifdef ocpnUSE_GL
     if(m_ppicb)
     {
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
@@ -3275,13 +3297,13 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
         wxRegion r = rg.ConvertTowxRegion();
         PlugInChartBaseGL *ppicb_gl = dynamic_cast<PlugInChartBaseGL*>(m_ppicb);
         if(ppicb_gl){
-            ppicb_gl->RenderRegionViewOnGL( glc, pivp, r, g_b_useStencil);
+            ppicb_gl->RenderRegionViewOnGL( glc, pivp, r, glChartCanvas::s_b_useStencil);
         }
         return true;
     }
     else
         return false;
-    
+#endif    
     return true;
 }
 
@@ -3318,7 +3340,11 @@ void ChartPlugInWrapper::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion
     if(m_ppicb)
     {
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
-        m_ppicb->GetValidCanvasRegion(pivp, pValidRegion);
+        // currently convert using wxRegion,
+        // this should be changed as wxRegion is proven unstable/buggy on various platforms
+        wxRegion region;
+        m_ppicb->GetValidCanvasRegion(pivp, &region);
+        *pValidRegion = OCPNRegion(region);
     }
 
     return;
@@ -3630,10 +3656,6 @@ bool PI_PLIBSetContext( PI_S57Obj *pObj )
     ctx->BBObj.SetMax( pObj->lon_max, pObj->lat_max );
     
     
-    if(pObj->child){
-        wxASSERT(0);
-    }
-        
         //      This is where Simplified or Paper-Type point features are selected
     switch( cobj.Primitive_type ){
             case GEO_POINT:
@@ -3665,6 +3687,9 @@ bool PI_PLIBSetContext( PI_S57Obj *pObj )
         
         //              Convert LUP to rules set
     ps52plib->_LUP2rules( lup, &cobj );
+    
+    ctx->MPSRulesList = NULL;
+    
     return true;
 }
     
@@ -3699,6 +3724,7 @@ void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj, ObjRazRules *rzRu
     pObj->m_DisplayCat = (PI_DisCat)cobj->m_DisplayCat;
     
     pContext->ChildRazRules = rzRules->child;
+    pContext->MPSRulesList = rzRules->mps;
     
 }
 
@@ -3774,6 +3800,7 @@ void PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio )
     rzRules.sm_transform_parms = 0;
     rzRules.child = NULL;
     rzRules.next = NULL;
+    rzRules.mps = pContext->MPSRulesList;
     
     ps52plib->SetLineFeaturePriority( &rzRules, prio );
 
@@ -3810,6 +3837,19 @@ void PI_PLIBFreeContext( void *pContext )
         }
     }
 
+    if(pctx->MPSRulesList){
+        
+        if( ps52plib && pctx->MPSRulesList->cs_rules ){
+            for(unsigned int i=0 ; i < pctx->MPSRulesList->cs_rules->GetCount() ; i++){
+                Rules *top = pctx->MPSRulesList->cs_rules->Item(i);
+                ps52plib->DestroyRulesChain( top );
+            }
+            delete pctx->MPSRulesList->cs_rules; 
+        }
+        free( pctx->MPSRulesList );
+        
+    }
+    
     delete pctx->FText;
     
     delete pctx;
@@ -3835,6 +3875,7 @@ int PI_PLIBRenderObjectToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp )
     rzRules.sm_transform_parms = &transform;
     rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
+    rzRules.mps = pContext->MPSRulesList;
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
     
@@ -3887,7 +3928,8 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
     rzRules.sm_transform_parms = &transform;
     rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
-
+    rzRules.mps = pContext->MPSRulesList;
+    
     ViewPort cvp = CreateCompatibleViewport( *vp );
     
     //  Do the render
@@ -3920,6 +3962,7 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
     rzRules.sm_transform_parms = &transform;
     rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
+    rzRules.mps = pContext->MPSRulesList;
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
     
@@ -3956,6 +3999,7 @@ int PI_PLIBRenderObjectToGL( const wxGLContext &glcc, PI_S57Obj *pObj,
     rzRules.sm_transform_parms = &transform;
     rzRules.child = pContext->ChildRazRules;
     rzRules.next = NULL;
+    rzRules.mps = pContext->MPSRulesList;
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
     

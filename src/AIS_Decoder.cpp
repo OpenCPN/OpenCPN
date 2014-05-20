@@ -786,11 +786,14 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         }
     }
 
-    if( mmsi
-            || ( !string_to_parse.IsEmpty() && ( string_to_parse.Len() < AIS_MAX_MESSAGE_LEN ) ) ) {
+    if( mmsi || ( !string_to_parse.IsEmpty() && ( string_to_parse.Len() < AIS_MAX_MESSAGE_LEN ) ) ) {
 
         //  Create the bit accessible string
-        AIS_Bitstring strbit( string_to_parse.mb_str() );
+        wxCharBuffer abuf = string_to_parse.ToUTF8();
+        if( !abuf.data() )                            // badly formed sentence?
+            return AIS_GENERIC_ERROR;
+        
+        AIS_Bitstring strbit( abuf.data() );
 
         //  Extract the MMSI
         if( !mmsi ) mmsi = strbit.GetInt( 9, 30 );

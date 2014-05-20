@@ -50,7 +50,9 @@ extern PlugInManager*             g_pi_manager;
 extern wxMenu*                    g_FloatingToolbarConfigMenu;
 extern wxString                   g_toolbarConfig;
 extern bool                       g_bPermanentMOBIcon;
+extern bool                       g_btouch;
 extern bool                       g_bresponsive;
+extern bool                       g_bsmoothpanzoom;
 
 //----------------------------------------------------------------------------
 // GrabberWindow Implementation
@@ -901,6 +903,8 @@ void ocpnToolBarSimple::Init()
     m_pToolTipWin = NULL;
     m_last_ro_tool = NULL;
 
+    m_btoolbar_is_zooming = false;
+
     EnableTooltips();
 }
 
@@ -1362,6 +1366,22 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
 
     m_last_ro_tool = tool;
 
+    // allow smooth zooming while toolbutton is held down
+    if(g_bsmoothpanzoom && !g_btouch) {
+        if(event.LeftUp() && m_btoolbar_is_zooming) {
+            cc1->StopMovement();
+            m_btoolbar_is_zooming = false;
+            return;
+        }
+
+        if( event.LeftDown() && tool &&
+            (tool->GetId() == ID_ZOOMIN || tool->GetId() == ID_ZOOMOUT) ) {
+            cc1->ZoomCanvas( tool->GetId() == ID_ZOOMIN ? 2.0 : .5, false, false );
+            m_btoolbar_is_zooming = true;
+            return;
+        }
+    }
+
     if( !tool ) {
         if( m_currentTool > -1 ) {
             if( event.LeftIsDown() ) SpringUpButton( m_currentTool );
@@ -1672,11 +1692,10 @@ bool ocpnToolBarSimple::GetToolEnabled( int id ) const
 void ocpnToolBarSimple::ToggleTool( int id, bool toggle )
 {
     wxToolBarToolBase *tool = FindById( id );
-    if( tool ) {
-        tool->Toggle( toggle );
+    if( tool && tool->Toggle( toggle ) ) {
         DoToggleTool( tool, toggle );
+        if( g_toolbar ) g_toolbar->Refresh();
     }
-    if( g_toolbar ) g_toolbar->Refresh();
 }
 
 wxObject *ocpnToolBarSimple::GetToolClientData( int id ) const

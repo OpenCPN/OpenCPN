@@ -470,7 +470,8 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
                 if(count)
                 {
                     data[count]=0;
-                    m_sock_buffer.Append(wxString::FromAscii(&data.front()));
+//                    m_sock_buffer.Append(data);
+                    m_sock_buffer += (&data.front());
                 }
             }
 
@@ -478,24 +479,29 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
 
             while(!done){
                 int nmea_tail = 2;
-                size_t nmea_end = m_sock_buffer.find_first_of(_T("*\r\n")); // detect the potential end of a NMEA string by finding the checkum marker or EOL
-                if (nmea_end != wxString::npos && m_sock_buffer[nmea_end] != '*')
-                    nmea_tail = 0;
+                size_t nmea_end = m_sock_buffer.find_first_of("*\r\n"); // detect the potential end of a NMEA string by finding the checkum marker or EOL
 
-                if(nmea_end != wxString::npos && nmea_end < m_sock_buffer.size() - nmea_tail){
+                if (nmea_end == wxString::npos) // No termination characters: continue reading
+                    break;
+
+                if (m_sock_buffer[nmea_end] != '*')
+                    nmea_tail = -1;
+
+                if(nmea_end < m_sock_buffer.size() - nmea_tail){
                     nmea_end += nmea_tail + 1; // move to the char after the 2 checksum digits, if present
-                    wxString nmea_line = m_sock_buffer.substr(0,nmea_end);
+                    if ( nmea_end == 0 ) //The first character in the buffer is a terminator, skip it to avoid infinite loop
+                        nmea_end = 1;
+                    std::string nmea_line = m_sock_buffer.substr(0,nmea_end);
                     m_sock_buffer = m_sock_buffer.substr(nmea_end);
 
-                    size_t nmea_start = nmea_line.find_last_of(_T("$!")); // detect the potential start of a NMEA string, skipping preceding chars that may look like the start of a string.
+                    size_t nmea_start = nmea_line.find_last_of("$!"); // detect the potential start of a NMEA string, skipping preceding chars that may look like the start of a string.
                     if(nmea_start != wxString::npos){
                         nmea_line = nmea_line.substr(nmea_start);
-                        nmea_line += _T("\r\n");        // Add cr/lf, possibly superfluous
+                        nmea_line += "\r\n";        // Add cr/lf, possibly superfluous
                         if( m_consumer && ChecksumOK(nmea_line)){
                             OCPN_DataStreamEvent Nevent(wxEVT_OCPN_DATASTREAM, 0);
-                            wxCharBuffer buffer=nmea_line.ToUTF8();
-                            if(buffer.data()) {
-                                Nevent.SetNMEAString( buffer.data() );
+                            if(nmea_line.size()) {
+                                Nevent.SetNMEAString( nmea_line );
                                 Nevent.SetStream( this );
                             
                                 m_consumer->AddPendingEvent(Nevent);
@@ -518,8 +524,8 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
         case wxSOCKET_LOST:
         {
             //          wxSocketError e = m_sock->LastError();          // this produces wxSOCKET_WOULDBLOCK.
-            if(m_net_protocol == TCP) {
-                wxLogMessage( wxString::Format(_T("TCP Datastream connection lost: %s"), m_portstring.c_str()) );
+            if(m_net_protocol == TCP || m_net_protocol == GPSD) {
+                wxLogMessage( wxString::Format(_T("Datastream connection lost: %s"), m_portstring.c_str()) );
                 wxDateTime now = wxDateTime::Now();
                 wxTimeSpan since_connect = now - m_connect_time;
 
@@ -657,7 +663,7 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
     return !listype;
 }
 
-bool DataStream::ChecksumOK( const wxString &sentence )
+bool DataStream::ChecksumOK( const std::string &sentence )
 {
     if (!m_bchecksumCheck)
         return true;
@@ -666,13 +672,14 @@ bool DataStream::ChecksumOK( const wxString &sentence )
     if(check_start == wxString::npos || check_start > sentence.size() - 3)
         return false; // * not found, or it didn't have 2 characters following it.
 
-    wxString check_str = sentence.substr(check_start+1,2);
+    std::string check_str = sentence.substr(check_start+1,2);
     unsigned long checksum;
-    if(!check_str.ToULong(&checksum,16))
+//    if(!check_str.ToULong(&checksum,16))
+    if(!(checksum = strtol(check_str.c_str(), 0, 16)))
         return false;
 
     unsigned char calculated_checksum = 0;
-    for(wxString::const_iterator i = sentence.begin()+1; i != sentence.end() && *i != '*'; ++i)
+    for(std::string::const_iterator i = sentence.begin()+1; i != sentence.end() && *i != '*'; ++i)
         calculated_checksum ^= static_cast<unsigned char> (*i);
 
     return calculated_checksum == checksum;

@@ -163,13 +163,13 @@ wxBitmap ocpnFloatingCompassWindow::CreateBmp( bool newColorScheme )
     if( ( fabs( cc1->GetVPRotation() ) > .01 ) || ( fabs( cc1->GetVPSkew() ) > .01 ) ) {
         rose_angle = -cc1->GetVPRotation();
 
-        if( !g_bCourseUp && !g_bskew_comp ) rose_angle = -cc1->GetVPRotation() - cc1->GetVPSkew();
+        if( !g_bCourseUp && !g_bskew_comp )
+            rose_angle -= cc1->GetVPSkew();
 
-        b_need_refresh = true;
     } else
         rose_angle = 0.;
 
-    if( fabs( m_rose_angle - rose_angle ) > .001 ) b_need_refresh = true;
+    if( fabs( m_rose_angle - rose_angle ) > .1 ) b_need_refresh = true;
 
     if( b_need_refresh ) {
         wxBitmap StatBmp;

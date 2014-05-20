@@ -119,7 +119,7 @@ void doUndoMoveWaypoint( UndoAction* action ) {
     if( routeArray ) {
         for( unsigned int ir = 0; ir < routeArray->GetCount(); ir++ ) {
             Route *pr = (Route *) routeArray->Item( ir );
-            pr->CalculateBBox();
+            pr->FinalizeForRendering();
             pr->UpdateSegmentDistances();
             pConfig->UpdateRoute( pr );
         }

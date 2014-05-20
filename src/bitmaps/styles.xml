@@ -699,9 +699,11 @@
 			</icon>
 			<icon name="CompassRose">
 				<icon-location x="580" y="60"/>
+				<size x="32" y="32"/>
 			</icon>
 			<icon name="CompassRoseBlue">
 				<icon-location x="620" y="60"/>
+				<size x="32" y="32"/>
 			</icon>
 			<icon name="polyprj">
 				<icon-location x="280" y="160"/>
@@ -1175,9 +1177,11 @@
 			</icon>
 			<icon name="CompassRose">
 				<icon-location x="580" y="60"/>
+				<size x="32" y="32"/>
 			</icon>
 			<icon name="CompassRoseBlue">
 				<icon-location x="620" y="60"/>
+				<size x="32" y="32"/>
 			</icon>
 			<icon name="polyprj">
 				<icon-location x="280" y="160"/>

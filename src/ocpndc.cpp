@@ -54,17 +54,18 @@
 
 #include "ocpndc.h"
 
-extern double g_GLMinLineWidth;
+extern float g_GLMinLineWidth;
 wxArrayPtrVoid gTesselatorVertices;
 
 //----------------------------------------------------------------------------
 /* pass the dc to the constructor, or NULL to use opengl */
 ocpnDC::ocpnDC( wxGLCanvas &canvas ) :
-        glcanvas( &canvas ), dc( NULL ), m_pen( wxNullPen ), m_brush( wxNullBrush ), pgc( NULL )
+        glcanvas( &canvas ), dc( NULL ), m_pen( wxNullPen ), m_brush( wxNullBrush )
 {
-#ifdef ocpnUSE_GL
-    
+#if wxUSE_GRAPHICS_CONTEXT
     pgc = NULL;
+#endif
+#ifdef ocpnUSE_GL
     m_textforegroundcolour = wxColour( 0, 0, 0 );
 #endif    
 }
@@ -72,8 +73,8 @@ ocpnDC::ocpnDC( wxGLCanvas &canvas ) :
 ocpnDC::ocpnDC( wxDC &pdc ) :
         glcanvas( NULL ), dc( &pdc ), m_pen( wxNullPen ), m_brush( wxNullBrush )
 {
-    pgc = NULL;
 #if wxUSE_GRAPHICS_CONTEXT
+    pgc = NULL;
     wxMemoryDC *pmdc = wxDynamicCast(dc, wxMemoryDC);
     if( pmdc ) pgc = wxGraphicsContext::Create( *pmdc );
     else {
@@ -85,13 +86,18 @@ ocpnDC::ocpnDC( wxDC &pdc ) :
 }
 
 ocpnDC::ocpnDC() :
-        glcanvas( NULL ), dc( NULL ), m_pen( wxNullPen ), m_brush( wxNullBrush ), pgc( NULL )
+        glcanvas( NULL ), dc( NULL ), m_pen( wxNullPen ), m_brush( wxNullBrush )
 {
+#if wxUSE_GRAPHICS_CONTEXT
+    pgc = NULL;
+#endif
 }
 
 ocpnDC::~ocpnDC()
 {
+#if wxUSE_GRAPHICS_CONTEXT
     if( pgc ) delete pgc;
+#endif
 }
 
 void ocpnDC::Clear()

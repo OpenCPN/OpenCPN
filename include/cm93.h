@@ -341,6 +341,11 @@ class cm93chart : public s57chart
 
             OCPNRegion          m_render_region;
 
+#ifdef ocpnUSE_GL
+            unsigned int m_outline_display_list;
+#endif
+            wxBoundingBox      m_covr_bbox; /* bounding box for entire covr_set */
+
       private:
             InitReturn CreateHeaderDataFromCM93Cell(void);
             int read_header_and_populate_cib(header_struct *ph, Cell_Info_Block *pCIB);
@@ -475,6 +480,8 @@ class cm93compchart : public s57chart
 
             bool DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region );
 
+            bool RenderCellOutlinesOnDC( ocpnDC &dc, ViewPort& vp, wxPoint *pwp, M_COVR_Desc *mcd );
+            void RenderCellOutlinesOnGL( ViewPort& vp, M_COVR_Desc *mcd );
 
             //    Data members
 
@@ -501,6 +508,7 @@ class cm93compchart : public s57chart
 
             CM93OffsetDialog  *m_pOffsetDialog;
 
+            cm93chart *m_last_cell_adjustvp;
 };
 
 

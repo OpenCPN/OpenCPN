@@ -922,7 +922,8 @@ void InsertRouteA( Route *pTentRoute )
         
                  
                 //    Do the (deferred) calculation of BBox
-                    pTentRoute->CalculateBBox();
+                    pTentRoute->FinalizeForRendering();
+
                     
                     //    Add the selectable points and segments
                     
@@ -989,7 +990,7 @@ void InsertTrack( Route *pTentTrack )
         
                
                 //    Do the (deferred) calculation of Track BBox
-                pTentTrack->CalculateBBox();
+                pTentTrack->FinalizeForRendering();
             
             //    Add the selectable points and segments
                 

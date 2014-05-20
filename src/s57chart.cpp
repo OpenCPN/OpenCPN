@@ -86,7 +86,6 @@ extern wxString          g_SENCPrefix;
 extern FILE              *s_fpdebug;
 extern bool              g_bGDAL_Debug;
 extern bool              g_bDebugS57;
-extern bool              g_b_useStencil;
 extern ChartCanvas       *cc1;
 extern ChartBase         *Current_Ch;
 extern MyFrame*          gFrame;
@@ -1172,6 +1171,17 @@ void s57chart::FreeObjectsAndRules()
                         ctop = cnxx;
                     }
                 }
+                
+                if( top->mps ){
+                    if( ps52plib && top->mps->cs_rules ){
+                        for(unsigned int i=0 ; i < top->mps->cs_rules->GetCount() ; i++){
+                            Rules *rule_chain_top = top->mps->cs_rules->Item(i);
+                            ps52plib->DestroyRulesChain( rule_chain_top );
+                        }
+                        delete top->mps->cs_rules; 
+                    }
+                    free( top->mps );
+                }
 
                 nxx = top->next;
                 free( top );
@@ -1228,7 +1238,7 @@ double s57chart::GetNormalScaleMin( double canvas_scale_factor, bool b_allow_ove
 }
 double s57chart::GetNormalScaleMax( double canvas_scale_factor, int canvas_width )
 {
-    return 1.0e7;
+    return 1.0e7; /* TODO: fix this */
 }
 
 //-----------------------------------------------------------------------
@@ -1533,25 +1543,19 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
      }
      */
 
+    wxColour color = GetGlobalColor( _T ( "NODTA" ) );
+    float r, g, b;
+    if( color.IsOk() ) {
+        r = color.Red() / 255.;
+        g = color.Green() / 255.;
+        b = color.Blue() / 255.;
+    } else
+        r = g = b = 0;
+
     //    Adjust for rotation
     glPushMatrix();
 
-    if( fabs( VPoint.rotation ) > 0.01 ) {
-
-        double w = VPoint.pix_width;
-        double h = VPoint.pix_height;
-
-        //    Rotations occur around 0,0, so calculate a post-rotate translation factor
-        double angle = VPoint.rotation;
-        angle -= VPoint.skew;
-
-        double ddx = ( w * cos( -angle ) - h * sin( -angle ) - w ) / 2;
-        double ddy = ( h * cos( -angle ) + w * sin( -angle ) - h ) / 2;
-
-        glRotatef( angle * 180. / PI, 0, 0, 1 );
-
-        glTranslatef( ddx, ddy, 0 );                 // post rotate translation
-    }
+    glChartCanvas::RotateToViewPort(VPoint);
 
     //    Arbitrary optimization....
     //    It is cheaper to draw the entire screen if the rectangle count is large,
@@ -1586,8 +1590,10 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
             if( g_bDebugS57 ) printf( "   S57 Render Box:  %d %d %d %d\n", rect.x, rect.y,
                     rect.width, rect.height );
 
-            SetClipRegionGL( glc, temp_vp, rect, !b_overlay );
+            glColor3f( r, g, b ); /* nodta color */
+            glChartCanvas::SetClipRegion( temp_vp, OCPNRegion(rect), false, true); /* no rotation, clear */
             DoRenderRectOnGL( glc, temp_vp, rect );
+            glChartCanvas::DisableClipRegion();
 
             upd.NextRect();
         }
@@ -1617,7 +1623,8 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
         //            double margin = wxMin(temp_vp.GetBBox().GetWidth(), temp_vp.GetBBox().GetHeight()) * 0.05;
         //            temp_vp.GetBBox().EnLarge(margin);
 
-        SetClipRegionGL( glc, VPoint, Region, !b_overlay );
+        glColor3f( r, g, b ); /* nodta color */
+        glChartCanvas::SetClipRegion( temp_vp, Region, false, true ); /* no rotation */
         DoRenderRectOnGL( glc, temp_vp, rect );
 
     }
@@ -1632,179 +1639,6 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     return true;
 }
 
-void s57chart::SetClipRegionGL( const wxGLContext &glc, const ViewPort& VPoint,
-        const OCPNRegion &Region, bool b_render_nodta )
-{
-#ifdef ocpnUSE_GL
-    
-    if( g_b_useStencil ) {
-        //    Create a stencil buffer for clipping to the region
-        glEnable( GL_STENCIL_TEST );
-        glStencilMask( 0x1 );                 // write only into bit 0 of the stencil buffer
-        glClear( GL_STENCIL_BUFFER_BIT );
-
-        //    We are going to write "1" into the stencil buffer wherever the region is valid
-        glStencilFunc( GL_ALWAYS, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_REPLACE );
-    } else              //  Use depth buffer for clipping
-    {
-        glEnable( GL_DEPTH_TEST ); // to enable writing to the depth buffer
-        glDepthFunc( GL_ALWAYS );  // to ensure everything you draw passes
-        glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
-
-        glClear( GL_DEPTH_BUFFER_BIT ); // for a fresh start
-    }
-
-    //    As a convenience, while we are creating the stencil or depth mask,
-    //    also render the default "NODTA" background if selected
-    if( b_render_nodta ) {
-        wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-        float r, g, b;
-        if( color.IsOk() ) {
-            r = color.Red() / 255.;
-            g = color.Green() / 255.;
-            b = color.Blue() / 255.;
-        } else
-            r = g = b = 0;
-
-        glColor3f( r, g, b );
-        glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // enable color buffer
-
-    } else {
-        glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
-    }
-
-    OCPNRegionIterator upd( Region ); // get the Region rect list
-    while( upd.HaveRects() ) {
-        wxRect rect = upd.GetRect();
-
-        if( g_b_useStencil ) {
-            glBegin( GL_QUADS );
-
-            glVertex2f( rect.x, rect.y );
-            glVertex2f( rect.x + rect.width, rect.y );
-            glVertex2f( rect.x + rect.width, rect.y + rect.height );
-            glVertex2f( rect.x, rect.y + rect.height );
-            glEnd();
-
-        } else              //  Use depth buffer for clipping
-        {
-            if( g_bDebugS57 ) printf( "   Depth buffer Region rect:  %d %d %d %d\n", rect.x, rect.y,
-                    rect.width, rect.height );
-
-            glBegin( GL_QUADS );
-
-            //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
-            //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
-            //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
-            glVertex3f( rect.x, rect.y, 0.5 );
-            glVertex3f( rect.x + rect.width, rect.y, 0.5 );
-            glVertex3f( rect.x + rect.width, rect.y + rect.height, 0.5 );
-            glVertex3f( rect.x, rect.y + rect.height, 0.5 );
-            glEnd();
-
-        }
-
-        upd.NextRect();
-
-    }
-
-    if( g_b_useStencil ) {
-        //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
-        glStencilFunc( GL_EQUAL, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-
-    } else {
-        glDepthFunc( GL_GREATER );                          // Set the test value
-        glDepthMask( GL_FALSE );                            // disable depth buffer
-    }
-
-    glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
-#endif
-}
-
-void s57chart::SetClipRegionGL( const wxGLContext &glc, const ViewPort& VPoint, const wxRect &Rect,
-        bool b_render_nodta )
-{
-#ifdef ocpnUSE_GL
-    
-    if( g_b_useStencil ) {
-        //    Create a stencil buffer for clipping to the region
-        glEnable( GL_STENCIL_TEST );
-        glStencilMask( 0x1 );                 // write only into bit 0 of the stencil buffer
-        glClear( GL_STENCIL_BUFFER_BIT );
-
-        //    We are going to write "1" into the stencil buffer wherever the region is valid
-        glStencilFunc( GL_ALWAYS, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_REPLACE );
-
-    } else              //  Use depth buffer for clipping
-    {
-        glEnable( GL_DEPTH_TEST ); // to enable writing to the depth buffer
-        glDepthFunc( GL_ALWAYS );  // to ensure everything you draw passes
-        glDepthMask( GL_TRUE );    // to allow writes to the depth buffer
-        glClear( GL_DEPTH_BUFFER_BIT ); // for a fresh start
-    }
-
-    //    As a convenience, while we are creating the stencil or depth mask,
-    //    also render the default "NODTA" background if selected
-    if( b_render_nodta ) {
-        wxColour color = GetGlobalColor( _T ( "NODTA" ) );
-        float r, g, b;
-        if( color.IsOk() ) {
-            r = color.Red() / 255.;
-            g = color.Green() / 255.;
-            b = color.Blue() / 255.;
-        } else
-            r = g = b = 0;
-        glColor3f( r, g, b );
-        glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // enable color buffer
-
-    } else {
-        glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );   // disable color buffer
-    }
-
-    if( g_b_useStencil ) {
-        glBegin( GL_QUADS );
-
-        glVertex2f( Rect.x, Rect.y );
-        glVertex2f( Rect.x + Rect.width, Rect.y );
-        glVertex2f( Rect.x + Rect.width, Rect.y + Rect.height );
-        glVertex2f( Rect.x, Rect.y + Rect.height );
-        glEnd();
-
-    } else              //  Use depth buffer for clipping
-    {
-        if( g_bDebugS57 ) printf( "   Depth buffer rect:  %d %d %d %d\n", Rect.x, Rect.y,
-                Rect.width, Rect.height );
-
-        glBegin( GL_QUADS );
-
-        //    Depth buffer runs from 0 at z = 1 to 1 at z = -1
-        //    Draw the clip geometry at z = 0.5, giving a depth buffer value of 0.25
-        //    Subsequent drawing at z=0 (depth = 0.5) will pass if using glDepthFunc(GL_GREATER);
-        glVertex3f( Rect.x, Rect.y, 0.5 );
-        glVertex3f( Rect.x + Rect.width, Rect.y, 0.5 );
-        glVertex3f( Rect.x + Rect.width, Rect.y + Rect.height, 0.5 );
-        glVertex3f( Rect.x, Rect.y + Rect.height, 0.5 );
-        glEnd();
-
-    }
-
-    if( g_b_useStencil ) {
-        //    Now set the stencil ops to subsequently render only where the stencil bit is "1"
-        glStencilFunc( GL_EQUAL, 1, 1 );
-        glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
-
-    } else {
-        glDepthFunc( GL_GREATER );                          // Set the test value
-        glDepthMask( GL_FALSE );                            // disable depth buffer
-    }
-
-    glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );  // re-enable color buffer
-#endif
-}
-
 bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect )
 {
 #ifdef ocpnUSE_GL
@@ -1814,23 +1648,6 @@ bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint,
     ObjRazRules *crnt;
 
     ViewPort tvp = VPoint;                    // undo const  TODO fix this in PLIB
-
-    //    If the ViewPort is unrotated, we can use a simple (fast) scissor test instead
-    //    of a stencil or depth buffer clipping algorithm.....
-    /*
-     if(fabs(VPoint.rotation) < 0.01)
-     {
-
-     glScissor(rect.x, VPoint.pix_height-rect.height-rect.y, rect.width, rect.height);
-     glEnable(GL_SCISSOR_TEST);
-     glDisable (GL_STENCIL_TEST);
-     glDisable (GL_DEPTH_TEST);
-
-     }
-     */
-    if( g_b_useStencil ) glEnable( GL_STENCIL_TEST );
-    else
-        glEnable( GL_DEPTH_TEST );
 
     //      Render the areas quickly
     for( i = 0; i < PRIO_NUM; ++i ) {
@@ -1875,9 +1692,6 @@ bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint,
 
     }
 
-    glDisable( GL_STENCIL_TEST );
-    glDisable( GL_DEPTH_TEST );
-    glDisable( GL_SCISSOR_TEST );
 #endif          //#ifdef ocpnUSE_GL
     
     return true;
@@ -3865,6 +3679,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     wxString Title( _("OpenCPN S57 SENC File Create...") );
     Title.append( SENCfile.GetFullPath() );
 
+    cc1->StopMovement();
     s_ProgDialog = new wxProgressDialog( Title, Message, m_nGeoRecords, NULL,
                                          wxPD_AUTO_HIDE | wxPD_SMOOTH | wxSTAY_ON_TOP | wxPD_APP_MODAL);
 
@@ -4609,6 +4424,7 @@ int s57chart::_insertRules( S57Obj *obj, LUPrec *LUP, s57chart *pOwner )
 //    rzRules->chart = pOwner;
     rzRules->next = razRules[disPrioIdx][LUPtypeIdx];
     rzRules->child = NULL;
+    rzRules->mps = NULL;
     razRules[disPrioIdx][LUPtypeIdx] = rzRules;
 
     return 1;
@@ -4625,36 +4441,25 @@ void s57chart::ResetPointBBoxes( const ViewPort &vp_last, const ViewPort &vp_thi
     box_margin = ( 50. / vp_this.view_scale_ppm ) / ( 1852. * 60. );  //degrees
 
     for( int i = 0; i < PRIO_NUM; ++i ) {
-        top = razRules[i][0];
+        for( int j = 0; j < 2; ++j ) {
+            top = razRules[i][j];
 
-        while( top != NULL ) {
-            if( !top->obj->geoPtMulti )                      // do not reset multipoints
-            {
-                top->obj->bBBObj_valid = false;
-                top->obj->BBObj.SetMin( top->obj->m_lon - box_margin,
-                        top->obj->m_lat - box_margin );
-                top->obj->BBObj.SetMax( top->obj->m_lon + box_margin,
-                        top->obj->m_lat + box_margin );
+            while( top != NULL ) {
+                if( !top->obj->geoPtMulti )                      // do not reset multipoints
+                {
+                    /* this function does not calculate the box as it should, just
+                       invalidate it and it is updated after the first render */
+                    top->obj->bBBObj_valid = false;
+
+                    top->obj->BBObj.SetMin( top->obj->m_lon - box_margin,
+                                            top->obj->m_lat - box_margin );
+                    top->obj->BBObj.SetMax( top->obj->m_lon + box_margin,
+                                            top->obj->m_lat + box_margin );
+                }
+                
+                nxx = top->next;
+                top = nxx;
             }
-
-            nxx = top->next;
-            top = nxx;
-        }
-
-        top = razRules[i][1];
-
-        while( top != NULL ) {
-            if( !top->obj->geoPtMulti )                      // do not reset multipoints
-            {
-                top->obj->bBBObj_valid = false;
-                top->obj->BBObj.SetMin( top->obj->m_lon - box_margin,
-                        top->obj->m_lat - box_margin );
-                top->obj->BBObj.SetMax( top->obj->m_lon + box_margin,
-                        top->obj->m_lat + box_margin );
-            }
-
-            nxx = top->next;
-            top = nxx;
         }
     }
 }
@@ -6812,7 +6617,7 @@ bool s57_GetChartExtent( const wxString& FullPath, Extent *pext )
 }
 
 void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs ) {
-    double rangeScale = 0.0;
+    float rangeScale = 0.0;
 
     if( sectorlegs.size() > 0 ) {
         std::vector<int> sectorangles;
@@ -6836,7 +6641,8 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             wxPoint lightPos = viewport.GetPixFromLL( sectorlegs[i].pos.m_y, sectorlegs[i].pos.m_x );
 
             // Make sure arcs are well inside viewport.
-            double rangePx = sqrt( pow(lightPos.x - end1.x, 2.0) + pow(lightPos.y - end1.y, 2.0) );
+            float rangePx = sqrtf( powf( (float) (lightPos.x - end1.x), 2) +
+                                   powf( (float) (lightPos.y - end1.y), 2) );
             rangePx /= 3.0;
             if( rangeScale == 0.0 ) {
                 rangeScale = 1.0;
@@ -6852,7 +6658,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             arcpen->SetCap( wxCAP_BUTT );
             dc.SetPen( *arcpen );
 
-            double angle1, angle2;
+            float angle1, angle2;
             angle1 = -(sectorlegs[i].sector2 + 90.0) - viewport.rotation * 180.0 / PI;
             angle2 = -(sectorlegs[i].sector1 + 90.0) - viewport.rotation * 180.0 / PI;
             if( angle1 > angle2 ) {
@@ -6860,18 +6666,16 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             }
             int lpx = lightPos.x;
             int lpy = lightPos.y;
-            int npoints = 1;
+            int npoints = 0;
             wxPoint arcpoints[150]; // Size relates to "step" below.
 
-            arcpoints[0].x = lpx + (int) ( rangePx * cos( angle1 * PI / 180. ) );
-            arcpoints[0].y = lpy - (int) ( rangePx * sin( angle1 * PI / 180. ) );
-            double step = 3.0;
+            float step = 3.0;
             while( (step < 15) && ((rangePx * sin(step * PI / 180.)) < 10) ) step += 2.0; // less points on small arcs
 
             // Make sure we start and stop exactly on the leg lines.
             int narc = ( angle2 - angle1 ) / step;
             narc++;
-            step = ( angle2 - angle1 ) / (double)narc;
+            step = ( angle2 - angle1 ) / (float)narc;
 
             if( sectorlegs[i].isleading && (angle2 - angle1 < 60)  ) {
                 wxPoint yellowCone[3];
@@ -6886,7 +6690,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
                 dc.StrokePolygon( 3, yellowCone, 0, 0 );
                 legOpacity = 50;
             } else {
-                for( double a = angle1; a <= angle2 + 0.1; a += step ) {
+                for( float a = angle1; a <= angle2 + 0.1; a += step ) {
                     int x = lpx + (int) ( rangePx * cos( a * PI / 180. ) );
                     int y = lpy - (int) ( rangePx * sin( a * PI / 180. ) );
                     arcpoints[npoints].x = x;
@@ -6930,7 +6734,7 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
 
 bool s57_CheckExtendedLightSectors( int mx, int my, ViewPort& viewport, std::vector<s57Sector_t>& sectorlegs ) {
     double cursor_lat, cursor_lon;
-    static double lastLat, lastLon;
+    static float lastLat, lastLon;
 
     if( !ps52plib || !ps52plib->m_bExtendLightSectors ) 
         return false;

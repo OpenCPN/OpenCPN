@@ -184,7 +184,7 @@ public:
     void SetOutputFilter(wxArrayString filter) { m_output_filter = filter; }
     void SetOutputFilterType(ListType filter_type) { m_output_filter_type = filter_type; }
     bool SentencePassesFilter(const wxString& sentence, FilterDirection direction);
-    bool ChecksumOK(const wxString& sentence);
+    bool ChecksumOK(const std::string& sentence);
     bool GetGarminMode(){ return m_bGarmin_GRMN_mode; }
 
 
@@ -233,7 +233,7 @@ private:
     wxSocketServer      *m_socket_server;                       //  The listening server
     wxSocketBase        *m_socket_server_active;                //  The active connection
     
-    wxString            m_sock_buffer;
+    std::string         m_sock_buffer;
     wxString            m_net_addr;
     wxString            m_net_port;
     NetworkProtocol     m_net_protocol;

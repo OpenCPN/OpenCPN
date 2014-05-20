@@ -76,7 +76,7 @@ IF (NOT WIN32)
     ELSE (CMAKE_SIZEOF_VOID_P MATCHES "8")
       SET (ARCH "i386")
     ENDIF (CMAKE_SIZEOF_VOID_P MATCHES "8")
-    SET(PREFIX "/usr/")
+    SET(TENTATIVE_PREFIX "/usr/")
   ENDIF (EXISTS /etc/debian_version)
   IF (EXISTS /etc/redhat-release)
     SET (PACKAGE_FORMAT "RPM")
@@ -147,6 +147,22 @@ ELSE(OPENGL_GLU_FOUND)
     MESSAGE (STATUS "OpenGL not found..." )
 ENDIF(OPENGL_GLU_FOUND)
 
+# Search for opengles, short of running a program to test the speed
+# of acceleration, I simply use gles on arm systems
+IF (ARCH MATCHES "arm*")
+find_path(OPENGLESv2_INCLUDE_DIR GLES2/gl2.h )
+IF (OPENGLESv2_INCLUDE_DIR)
+  MESSAGE (STATUS "Found OpenGLESv2")
+  ADD_DEFINITIONS(-DocpnUSE_GLES)
+ELSE()
+find_path(OPENGLESv1_INCLUDE_DIR GLES/gl.h )
+IF (OPENGLESv1_INCLUDE_DIR)
+  MESSAGE (STATUS "Found OpenGLESv1")
+  ADD_DEFINITIONS(-DocpnUSE_GLES)
+ENDIF()
+ENDIF()
+ENDIF()
+
 # Find wxWidgets here, and the setting get inherited by all plugins.
 # These options can be used to set the linux widgets build type
 SET( wxWidgets_USE_DEBUG OFF)
@@ -165,8 +181,11 @@ MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME}  ***")
 #SET(CMAKE_BUILD_TYPE Debug)
 
 IF (PREFIX)
-	SET(CMAKE_INSTALL_PREFIX ${PREFIX})
+    SET(CMAKE_INSTALL_PREFIX ${PREFIX})
+ELSE (PREFIX)
+    SET(CMAKE_INSTALL_PREFIX ${TENTATIVE_PREFIX})
 ENDIF (PREFIX)
+
 MESSAGE (STATUS "*** Will install to ${CMAKE_INSTALL_PREFIX}  ***")
 SET(PREFIX_BIN bin)
 SET(PREFIX_INCLUDE include)
@@ -182,7 +201,14 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/src)
 #  IF NOT DEBUGGING CFLAGS="-O2 -march=native"
 IF(NOT WIN32 AND NOT APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -rdynamic" )
-  ADD_DEFINITIONS( " -g -fno-strict-aliasing")
+  ADD_DEFINITIONS( " -g -O0 -fno-strict-aliasing")
+
+  # profiling with gprof
+#    ADD_DEFINITIONS( -pg )
+#    SET(CMAKE_EXE_LINKER_FLAGS -pg)
+  # profiling with gcov
+#    ADD_DEFINITIONS( "-fprofile-arcs -ftest-coverage" )
+#    SET(EXTRA_LIBS ${EXTRA_LIBS} "gcov")
 ENDIF(NOT WIN32 AND NOT APPLE)
 
 IF( APPLE )
@@ -707,6 +733,36 @@ IF (USE_GARMINHOST)
 ELSE (USE_GARMINHOST)
 	message (STATUS "Garmin Host Mode support: disabled")
 ENDIF (USE_GARMINHOST)
+
+# Compile texcompression support library
+IF (OPENGL_GLU_FOUND)
+  # try to use sse if not using visual studio on x86 based systems
+  IF ( NOT MSVC AND (ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64"))
+      # this makes the compression run about 50% faster
+      message (STATUS "Compiling texture compression library with sse support")
+      ADD_DEFINITIONS( " -msse2 -DSQUISH_USE_SSE=2")
+  ENDIF ()
+
+  SET(SRC_TEXCMP
+    src/texcmp/lz4/lz4.c
+    src/texcmp/lz4/lz4hc.c
+    src/texcmp/squish/alpha.cpp
+    src/texcmp/squish/clusterfit.cpp
+    src/texcmp/squish/colourblock.cpp
+    src/texcmp/squish/colourfit.cpp
+    src/texcmp/squish/colourset.cpp
+    src/texcmp/squish/maths.cpp
+    src/texcmp/squish/rangefit.cpp
+    src/texcmp/squish/singlecolourfit.cpp
+    src/texcmp/squish/squish.cpp
+    src/texcmp/etcpak.cpp)
+
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/lz4)
+  INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src/texcmp/squish)
+
+  ADD_LIBRARY(TEXCMP ${SRC_TEXCMP})
+  SET(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
+ENDIF (OPENGL_GLU_FOUND)
 
 #TODO
 #dnl

@@ -34,6 +34,8 @@
 
 #include "chartsymbols.h"
 
+extern bool g_bopengl;
+
 //--------------------------------------------------------------------------------------
 // The below data is global since there will ever only be one ChartSymbols instance,
 // and some methods+data of class S52plib are needed inside ChartSymbol, and s2plib
@@ -41,6 +43,8 @@
 // order to resolve circular include file dependencies.
 
 wxArrayPtrVoid* colorTables;
+unsigned int rasterSymbolsTexture;
+wxSize rasterSymbolsTextureSize;
 wxBitmap rasterSymbols;
 int rasterSymbolsLoadedColorMapNumber;
 wxString configFileDirectory;
@@ -802,10 +806,10 @@ bool ChartSymbols::LoadConfigFile(s52plib* plibArg, const wxString & s52ilePath)
     return true;
 }
 
-int ChartSymbols::LoadRasterFileForColorTable( int tableNo )
+int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcmode )
 {
-
-    if( tableNo == rasterSymbolsLoadedColorMapNumber ) return true;
+    if( tableNo == rasterSymbolsLoadedColorMapNumber && !flush
+        && (!dcmode || rasterSymbols.IsOk())) return true;
 
     colTable* coltab = (colTable *) colorTables->Item( tableNo );
 
@@ -814,7 +818,55 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo )
 
     wxImage rasterFileImg;
     if( rasterFileImg.LoadFile( filename, wxBITMAP_TYPE_PNG ) ) {
-        rasterSymbols = wxBitmap( rasterFileImg, -1/*32*/);
+#ifdef ocpnUSE_GL
+        /* for opengl mode, load the symbols into a texture */
+        extern GLenum       g_texture_rectangle_format;
+        if(!dcmode && g_bopengl && g_texture_rectangle_format) {
+            rasterSymbols = wxNullBitmap; /* free data loaded from non-gl mode */
+
+            int w = rasterFileImg.GetWidth();
+            int h = rasterFileImg.GetHeight();
+
+            //    Get the glRGBA format data from the wxImage
+            unsigned char *d = rasterFileImg.GetData();
+            unsigned char *a = rasterFileImg.GetAlpha();
+
+            /* combine rgb with alpha */
+            unsigned char *e = (unsigned char *) malloc( w * h * 4 );
+            for( int y = 0; y < h; y++ )
+                for( int x = 0; x < w; x++ ) {
+                    int off = ( y * w + x );
+
+                    e[off * 4 + 0] = d[off * 3 + 0];
+                    e[off * 4 + 1] = d[off * 3 + 1];
+                    e[off * 4 + 2] = d[off * 3 + 2];
+                    e[off * 4 + 3] = a[off];
+                }
+
+            if(!rasterSymbolsTexture)
+                glGenTextures(1, &rasterSymbolsTexture);
+
+            glBindTexture(g_texture_rectangle_format, rasterSymbolsTexture);
+
+            /* unfortunately this texture looks terrible with compression */
+            GLuint format = GL_RGBA;
+            glTexImage2D(g_texture_rectangle_format, 0, format, w, h,
+                         0, GL_RGBA, GL_UNSIGNED_BYTE, e);
+
+            glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+            glTexParameteri( g_texture_rectangle_format, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+            rasterSymbolsTextureSize = wxSize(w, h);
+
+            free(e);
+        } else
+#endif
+        {
+            if(!dcmode && g_bopengl)
+                wxLogMessage(_("Warning: unable to use texture for chart symbols"));
+            rasterSymbols = wxBitmap( rasterFileImg, -1/*32*/);
+        }
+
         rasterSymbolsLoadedColorMapNumber = tableNo;
         return true;
     }
@@ -874,7 +926,25 @@ wxString ChartSymbols::HashKey( const char* symbolName )
 
 wxImage ChartSymbols::GetImage( const char* symbolName )
 {
+    /* in opengl rasterSymbols is normally freed to release ram, so load it if needed
+       (the first time an s57 chart is ever loaded, it renders to memor dc to cache
+       a thumbnail so needs the ram version.  Eventually we can render to video memory
+       read it back for this case instead. */
+    if(!rasterSymbols.IsOk())
+        LoadRasterFileForColorTable(rasterSymbolsLoadedColorMapNumber, false, true);
+
     wxRect bmArea = ( *symbolGraphicLocations )[HashKey( symbolName )];
     wxBitmap bitmap = rasterSymbols.GetSubBitmap( bmArea );
     return bitmap.ConvertToImage();
+}
+
+unsigned int ChartSymbols::GetGLTextureRect( wxRect &rect, const char* symbolName )
+{
+    rect = ( *symbolGraphicLocations )[HashKey( symbolName )];
+    return rasterSymbolsTexture;
+}
+
+wxSize ChartSymbols::GLTextureSize()
+{
+    return rasterSymbolsTextureSize;
 }

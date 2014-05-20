@@ -282,6 +282,8 @@ protected:
       int m_one_shot;
       bool m_btooltip_show;
 
+      bool m_btoolbar_is_zooming;
+
       ocpnStyle::Style* m_style;
 
 private:

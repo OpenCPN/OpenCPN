@@ -35,6 +35,7 @@ class wxGLContext;
 #include <wx/glcanvas.h>
 #endif
 
+#include "ocpn_types.h"
 
 #include <wx/dcgraph.h>         // supplemental, for Mac
 
@@ -106,6 +107,7 @@ public:
     long GetStateHash() { return m_state_hash;  }
 
     void SetPLIBColorScheme( wxString scheme );
+    void SetPLIBColorScheme( ColorScheme cs );
     wxString GetPLIBColorScheme( void ) { return m_ColorScheme; }
 
     void SetGLRendererString(const wxString &renderer);
@@ -158,7 +160,8 @@ public:
         
     void DestroyPatternRuleNode( Rule *pR );
     void DestroyRuleNode( Rule *pR );
-
+    void DestroyRulesChain( Rules *top );
+    
 //#ifdef ocpnUSE_GL
     //    For OpenGL
     int RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
@@ -339,7 +342,9 @@ public:
 
     void SetTargetDC( wxDC* pdc );
     void SetTargetOpenGl();
+#if wxUSE_GRAPHICS_CONTEXT
     void SetTargetGCDC( wxGCDC* gdc );
+#endif
     bool Render(char *str, char *col, wxPoint &r, wxPoint &pivot, double rot_angle = 0);
 
 private:
@@ -355,7 +360,9 @@ private:
     int scaleFactor;
 
     wxDC* targetDC;
+#if wxUSE_GRAPHICS_CONTEXT
     wxGCDC* targetGCDC;
+#endif
 
     wxColor penColor;
     wxPen* pen;

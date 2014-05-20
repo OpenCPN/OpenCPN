@@ -65,7 +65,10 @@ wxColour FontMgr::GetFontColor( const wxString &TextElement ) const
     wxNode *node = (wxNode *) ( m_fontlist->GetFirst() );
     while( node ) {
         pmfd = (MyFontDesc *) node->GetData();
-        if( pmfd->m_dialogstring == TextElement ) return pmfd->m_color;
+        if( pmfd->m_dialogstring == TextElement ) {
+            if(pmfd->m_configstring.BeforeFirst('-') == g_locale)
+                return pmfd->m_color;
+        }
         node = node->GetNext();
     }
 
@@ -191,6 +194,8 @@ bool FontMgr::SetFont(const wxString &TextElement, wxFont *pFont, wxColour color
     while( node ) {
         pmfd = (MyFontDesc *) node->GetData();
         if( pmfd->m_dialogstring == TextElement ) {
+            if(pmfd->m_configstring.BeforeFirst('-') == g_locale) {
+                
             // Todo Think about this
             //
 
@@ -199,11 +204,12 @@ bool FontMgr::SetFont(const wxString &TextElement, wxFont *pFont, wxColour color
 
 //              delete pmfd->m_font;                            // purge any old value
 
-            pmfd->m_font = pFont;
-            pmfd->m_nativeInfo = pFont->GetNativeFontInfoDesc();
-            pmfd->m_color = color;
+                pmfd->m_font = pFont;
+                pmfd->m_nativeInfo = pFont->GetNativeFontInfoDesc();
+                pmfd->m_color = color;
 
-            return true;
+                return true;
+            }
         }
         node = node->GetNext();
     }
@@ -267,10 +273,12 @@ void FontMgr::LoadFontNative( wxString *pConfigString, wxString *pNativeDesc )
     while( node ) {
         pmfd = (MyFontDesc *) node->GetData();
         if( pmfd->m_configstring == *pConfigString ) {
-            pmfd->m_nativeInfo = nativefont;
-            wxFont *nf = pmfd->m_font->New( pmfd->m_nativeInfo );
-            pmfd->m_font = nf;
-            break;
+            if(pmfd->m_configstring.BeforeFirst('-') == g_locale) {
+                pmfd->m_nativeInfo = nativefont;
+                wxFont *nf = pmfd->m_font->New( pmfd->m_nativeInfo );
+                pmfd->m_font = nf;
+                break;
+            }
         }
         node = node->GetNext();
     }
@@ -297,6 +305,5 @@ void FontMgr::LoadFontNative( wxString *pConfigString, wxString *pNativeDesc )
         m_fontlist->Append( pnewfd );
 
     }
-
 }
 

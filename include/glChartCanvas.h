@@ -36,84 +36,139 @@ WX_DECLARE_OBJARRAY(glTextureDescriptor, ArrayOfTexDescriptors);
 WX_DECLARE_HASH_MAP( int, glTextureDescriptor*, wxIntegerHash, wxIntegerEqual, ChartTextureHashType );
 WX_DECLARE_HASH_MAP( void*, ChartTextureHashType*, wxPointerHash, wxPointerEqual, ChartPointerHashType );
 
+
+class ocpnGLOptions
+{
+public:
+    bool m_bUseAcceleratedPanning;
+
+    bool m_bTextureCompression;
+    bool m_bTextureCompressionCaching;
+
+    int m_iTextureDimension;
+    int m_iTextureMemorySize;
+};
+
+class ocpnDC;
+class emboss_data;
+class Route;
+class ChartBaseBSB;
+
 class glChartCanvas : public wxGLCanvas
 {
 public:
+    static void MultMatrixViewPort(const ViewPort &vp);
+    static ViewPort NormalizedViewPort(const ViewPort &vp);
 
-      glChartCanvas(wxWindow *parent);
-      ~glChartCanvas();
+    static void RotateToViewPort(const ViewPort &vp);
+    static void SetClipRegion(const ViewPort &vp, const OCPNRegion &region,
+                              bool apply_rotation=true, bool b_clear=false);
+    static void DisableClipRegion();
 
-      void SetContext(wxGLContext *pcontext) { m_pcontext = pcontext; }
+    static bool         s_b_useScissorTest;
+    static bool         s_b_useStencil;
+    static bool         s_b_UploadFullCompressedMipmaps;
+    
+    glChartCanvas(wxWindow *parent);
+    ~glChartCanvas();
 
-      void OnPaint(wxPaintEvent& event);
-      void OnEraseBG(wxEraseEvent& evt);
-      void render();
-      void OnActivate ( wxActivateEvent& event );
-      void OnSize ( wxSizeEvent& event );
-      void MouseEvent(wxMouseEvent& event);
+    void SetContext(wxGLContext *pcontext) { m_pcontext = pcontext; }
 
-      wxString GetRendererString(){ return m_renderer; }
-      void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
-      
+    void OnPaint(wxPaintEvent& event);
+    void OnEraseBG(wxEraseEvent& evt);
+    void Render();
+    void OnActivate ( wxActivateEvent& event );
+    void OnSize ( wxSizeEvent& event );
+    void MouseEvent(wxMouseEvent& event);
 
-      void Invalidate() { m_gl_cache_vp.Invalidate(); }
-      void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, OCPNRegion &region);
-      bool PurgeChartTextures(ChartBase *pc);
-      void ClearAllRasterTextures(void);
-      void DrawGLOverLayObjects(void);
+    wxString GetRendererString(){ return m_renderer; }
+    void EnablePaint(bool b_enable){ m_b_paint_enable = b_enable; }
+
+    static void Invalidate();
+    void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, OCPNRegion &region);
+    bool PurgeChartTextures(ChartBase *pc);
+    void ClearAllRasterTextures(void);
+    void DrawGLOverLayObjects(void);
+
+    void GridDraw( );
+
+    static void FixRenderIDL(int dl);
+
+    void DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );
+    void RenderAllChartOutlines( ocpnDC &dc, ViewPort &VP );
+    void RenderChartOutline( int dbIndex, ViewPort &VP );
+
+    void DrawEmboss( emboss_data *emboss );
+    void ShipDraw(ocpnDC& dc);
+
+    void SetupCompression();
+    bool CanAcceleratePanning() { return m_b_BuiltFBO; }
+    bool UsingFBO() { return m_b_BuiltFBO; }
+
+    time_t m_last_render_time;
 
 protected:
-      void RenderQuiltViewGL(ViewPort &vp, OCPNRegion Region, bool b_clear = true);
-      void BuildFBO(void);
-      void SetClipRegion(ViewPort &vp, OCPNRegion &region, bool b_clear);
-      void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion Region );
+    void RenderQuiltViewGL(ViewPort &vp, const OCPNRegion &Region, bool b_clear = true);
+    void BuildFBO();
+    void SetupOpenGL();
 
-      wxGLContext       *m_pcontext;
+    void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
+    void RenderCharts(ocpnDC &dc, OCPNRegion &region);
+    void RenderWorldChart(ocpnDC &dc, OCPNRegion &region);
+    ViewPort BuildClippedVP(ViewPort &VP, wxRect &rect);
+    void DeleteChartTextures(ChartBaseBSB *pc);
 
-      int m_cacheinvalid;
-      int max_texture_dimension;
+    void DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region );
+    void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
 
-      unsigned char *m_data;
-      int m_datasize;
+    void DrawQuiting();
 
-      bool m_bsetup;
+    wxGLContext       *m_pcontext;
 
-      wxString m_renderer;
+    int max_texture_dimension;
 
-      void GrowData(int size);
+    unsigned char *m_data;
+    int m_datasize;
 
-      ArrayOfTexDescriptors         m_tex_array;
+    bool m_bsetup;
 
-      //    This is a hash table
-      //    key is ChartBaseBSB pointer
-      //    Value is ChartTextureHashType*
-      ChartPointerHashType          m_chart_hash;
+    wxString m_renderer;
 
-      ViewPort    m_gl_cache_vp;
+    void GrowData(int size);
 
+    ArrayOfTexDescriptors         m_tex_array;
 
-      bool m_bGenMM;
-      bool m_bGL_GEN_MM;
-      int  m_ntex;
-      int  m_tex_max_res;
-      int  m_tex_max_res_initial;
-      bool m_b_mem_crunch;
-      bool m_b_paint_enable;
+    //    This is a hash table
+    //    key is ChartBaseBSB pointer
+    //    Value is ChartTextureHashType*
+    ChartPointerHashType          m_chart_hash;
 
-      //    For FBO(s)
-      bool         m_b_useFBO;
-      bool         m_b_useFBOStencil;
-      GLuint       m_fb0;
-      GLuint       m_depth_rb;
+    ViewPort    m_cache_vp;
+    ChartBase   *m_cache_current_ch;
 
-      GLenum       m_TEX_TYPE;
-      GLuint       m_cache_tex;
-      GLuint       m_blit_tex;
-      int          m_cache_tex_x;
-      int          m_cache_tex_y;
-      OCPNRegion     m_gl_rendered_region;
+    bool m_b_paint_enable;
+    int m_in_glpaint;
 
-DECLARE_EVENT_TABLE()
+    //    For FBO(s)
+    bool         m_b_DisableFBO;
+    bool         m_b_BuiltFBO;
+    bool         m_b_useFBOStencil;
+    GLuint       m_fb0;
+    GLuint       m_renderbuffer;
+
+    GLuint       m_cache_tex[2];
+    GLuint       m_cache_page;
+    int          m_cache_tex_x;
+    int          m_cache_tex_y;
+    OCPNRegion   m_gl_rendered_region;
+
+    GLuint ownship_tex;
+    wxSize ownship_size, ownship_tex_size;
+    GLuint ownship_large_scale_display_lists[2];
+
+    DECLARE_EVENT_TABLE()
 };
+
+extern void BuildCompressedCache();
 
 #endif

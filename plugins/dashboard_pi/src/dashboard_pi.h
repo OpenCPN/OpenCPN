@@ -61,6 +61,7 @@
 #include "clock.h"
 #include "wind_history.h"
 #include "baro_history.h"
+#include "from_ownship.h"
 
 class DashboardWindow;
 class DashboardWindowContainer;

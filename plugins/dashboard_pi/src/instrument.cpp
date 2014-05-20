@@ -88,7 +88,11 @@ void DashboardInstrument::OnPaint( wxPaintEvent& WXUNUSED(event) )
     bm.UseAlpha();
 #endif
     wxMemoryDC mdc( bm );
+#if wxUSE_GRAPHICS_CONTEXT
     wxGCDC dc( mdc );
+#else
+    wxMemoryDC &dc( mdc );
+#endif
     wxColour cl;
     GetGlobalColor( _T("DASHB"), &cl );
     dc.SetBackground( cl );
@@ -381,4 +385,3 @@ wxString toSDMM ( int NEflag, double a )
       }
       return s;
 }
-

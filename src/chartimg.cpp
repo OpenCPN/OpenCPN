@@ -149,8 +149,6 @@ opncpnPalette::~opncpnPalette()
 // ============================================================================
 ChartBase::ChartBase()
 {
-      pcached_bitmap = NULL;
-
       m_depth_unit_id = DEPTH_UNIT_UNKNOWN;
 
       pThumbData = new ThumbData;
@@ -182,9 +180,6 @@ ChartBase::ChartBase()
 
 ChartBase::~ChartBase()
 {
-      if(pcached_bitmap)
-             delete pcached_bitmap;
-
       delete pThumbData;
 
       //    Free the COVR tables
@@ -2494,14 +2489,11 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, int &pixx, int &pixy
                 double lonp = (alon < 0) ? alon + m_cph : alon - m_cph;
                 double xd = polytrans( wpx, lonp, alat );
                 double yd = polytrans( wpy, lonp, alat );
-                px = (int)(xd + 0.5);
-                py = (int)(yd + 0.5);
-
 
                 double raster_scale = GetPPM() / vp.view_scale_ppm;
 
-                pixx = (int)(((px - Rsrc.x) / raster_scale) + 0.5);
-                pixy = (int)(((py - Rsrc.y) / raster_scale) + 0.5);
+                pixx = wxRound((xd - Rsrc.x) / raster_scale);
+                pixy = wxRound((yd - Rsrc.y) / raster_scale);
 
             return 0;
           }
@@ -2553,8 +2545,8 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, int &pixx, int &pixy
                 //      Calculate target point relative to vp center
                 double raster_scale = GetPPM() / vp.view_scale_ppm;
 
-                int xs = (int)xc - (int)(vp.pix_width  * raster_scale / 2);
-                int ys = (int)yc - (int)(vp.pix_height * raster_scale / 2);
+                double xs = xc - vp.pix_width  * raster_scale / 2;
+                double ys = yc - vp.pix_height * raster_scale / 2;
 
                 int pixx_p = (int)(((xd - xs) / raster_scale) + 0.5);
                 int pixy_p = (int)(((yd - ys) / raster_scale) + 0.5);
@@ -2600,8 +2592,8 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, int &pixx, int &pixy
                 //      Calculate target point relative to vp center
                 double raster_scale = GetPPM() / vp.view_scale_ppm;
 
-                int xs = (int)xc - (int)(vp.pix_width  * raster_scale / 2);
-                int ys = (int)yc - (int)(vp.pix_height * raster_scale / 2);
+                double xs = xc - vp.pix_width  * raster_scale / 2;
+                double ys = yc - vp.pix_height * raster_scale / 2;
 
                 int pixx_p = (int)(((xd - xs) / raster_scale) + 0.5);
                 int pixy_p = (int)(((yd - ys) / raster_scale) + 0.5);
@@ -2645,8 +2637,8 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, int &pixx, int &pixy
                 //      Calculate target point relative to vp center
                 double raster_scale = GetPPM() / vp.view_scale_ppm;
 
-                int xs = (int)xc - (int)(vp.pix_width  * raster_scale / 2);
-                int ys = (int)yc - (int)(vp.pix_height * raster_scale / 2);
+                double xs = xc - vp.pix_width  * raster_scale / 2;
+                double ys = yc - vp.pix_height * raster_scale / 2;
 
                 int pixx_p = (int)(((xd - xs) / raster_scale) + 0.5);
                 int pixy_p = (int)(((yd - ys) / raster_scale) + 0.5);
@@ -2665,8 +2657,8 @@ int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, int &pixx, int &pixy
                 double dx = epix * cos ( vp.skew ) + npix * sin ( vp.skew );
                 double dy = npix * cos ( vp.skew ) - epix * sin ( vp.skew );
 
-                pixx = ( int ) /*rint*/( ( vp.pix_width  / 2 ) + dx );
-                pixy = ( int ) /*rint*/( ( vp.pix_height / 2 ) - dy );
+                pixx = ( int ) ( ( (double)vp.pix_width  / 2 ) + dx + 0.5 );
+                pixy = ( int ) ( ( (double)vp.pix_height / 2 ) - dy + 0.5 );
           }
                 return 0;
     }
@@ -2845,7 +2837,7 @@ void ChartBaseBSB::chartpix_to_latlong(double pixx, double pixy, double *plat, d
 
 }
 
-void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect)
+void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRealPoint *pPos, wxRealPoint *pSize)
 {
 
     //      This funny contortion is necessary to allow scale factors < 1, i.e. overzoom
@@ -2856,15 +2848,21 @@ void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRec
       double xd, yd;
       latlong_to_chartpix(vp.clat, vp.clon, xd, yd);
 
+      pPos->x = xd - (vp.pix_width  * binary_scale_factor / 2);
+      pPos->y = yd - (vp.pix_height * binary_scale_factor / 2);
 
-      pSourceRect->x = wxRound(xd - (vp.pix_width  * binary_scale_factor / 2));
-      pSourceRect->y = wxRound(yd - (vp.pix_height * binary_scale_factor / 2));
-
-      pSourceRect->width =  (int)wxRound(vp.pix_width  * binary_scale_factor) ;
-      pSourceRect->height = (int)wxRound(vp.pix_height * binary_scale_factor) ;
+      pSize->x = vp.pix_width  * binary_scale_factor;
+      pSize->y = vp.pix_height * binary_scale_factor;
 
 //    printf("Compute Rsrc:  vp.clat:  %g  clon: %g     Rsrc.y: %d  Rsrc.x:  %d\n", vp.clat, vp.clon, pSourceRect->y, pSourceRect->x);
 
+}
+
+void ChartBaseBSB::ComputeSourceRectangle(const ViewPort &vp, wxRect *pSourceRect)
+{
+    wxRealPoint pos, size;
+    ComputeSourceRectangle(vp, &pos, &size);
+    *pSourceRect = wxRect(wxRound(pos.x), wxRound(pos.y), wxRound(size.x), wxRound(size.y));
 }
 
 #if 0
@@ -3086,26 +3084,12 @@ void ChartBaseBSB::GetValidCanvasRegion(const ViewPort& VPoint, OCPNRegion *pVal
       double raster_scale =  VPoint.view_scale_ppm / GetPPM();
 
       int rxl, rxr;
-      if(Rsrc.x < 0)
-            rxl = (int)(-Rsrc.x * raster_scale);
-      else
-            rxl = 0;
-
-      if(((Size_X - Rsrc.x) * raster_scale) < VPoint.pix_width)
-            rxr = (int)((Size_X - Rsrc.x) * raster_scale);
-      else
-            rxr = VPoint.pix_width;
-
       int ryb, ryt;
-      if(Rsrc.y < 0)
-            ryt = (int)(-Rsrc.y * raster_scale);
-      else
-            ryt = 0;
+      rxl = wxMax(-Rsrc.x * raster_scale, VPoint.rv_rect.x);
+      rxr = wxMin((Size_X - Rsrc.x) * raster_scale, VPoint.rv_rect.width + VPoint.rv_rect.x);
 
-      if(((Size_Y - Rsrc.y) * raster_scale) < VPoint.pix_height)
-            ryb = (int)((Size_Y - Rsrc.y) * raster_scale);
-      else
-            ryb = VPoint.pix_height;
+      ryt = wxMax(-Rsrc.y * raster_scale, VPoint.rv_rect.y);
+      ryb = wxMin((Size_Y - Rsrc.y) * raster_scale, VPoint.rv_rect.height + VPoint.rv_rect.y);
 
       pValidRegion->Clear();
       pValidRegion->Union(rxl, ryt, rxr - rxl, ryb - ryt);

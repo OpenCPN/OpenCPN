@@ -109,6 +109,7 @@ enum {
     ID_METACHECKBOX,
     ID_NOTEBOOK,
     ID_OPENGLBOX,
+    ID_OPENGLOPTIONS,
     ID_SHIPICONTYPE,
     ID_OUTLINECHECKBOX1,
     ID_PANEL,
@@ -253,6 +254,7 @@ public:
 #ifdef __WXGTK__
     void OnChooseFontColor( wxCommandEvent& event );
 #endif
+    void OnOpenGLOptions( wxCommandEvent& event );
     void OnDisplayCategoryRadioButton( wxCommandEvent& event );
     void OnButtonClearClick( wxCommandEvent& event );
     void OnButtonSelectClick( wxCommandEvent& event );
@@ -287,7 +289,8 @@ public:
     int                     m_groups_changed;
 
 //    For General Options
-    wxCheckBox              *pDebugShowStat;
+    wxCheckBox              *pShowStatusBar;
+    wxCheckBox              *pShowCompassWin;
     wxCheckBox              *pPrintShowIcon;
     wxCheckBox              *pCDOOutlines;
     wxCheckBox              *pSDepthUnits;
@@ -507,8 +510,6 @@ public:
     wxChoice                *pTrackPrecision;
     wxTextCtrl              *m_pText_TP_Secs;
     wxTextCtrl              *m_pText_TP_Dist;
-
-    wxCheckBox*             pSettingsCB1;
 
     ArrayOfCDI              m_CurrentDirList;
     ArrayOfCDI              *m_pWorkDirList;
@@ -914,5 +915,26 @@ class SentenceListDlg : public wxDialog
     void BuildSentenceArray();
     void SetType(int io, ListType type);
 };
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// Class OpenGLOptionsDlg
+///////////////////////////////////////////////////////////////////////////////
+class OpenGLOptionsDlg : public wxDialog
+{
+public:
+    wxGridSizer *m_bSizer1;
+    wxBoxSizer *m_bSizer2;
+
+    wxCheckBox *m_cbUseAcceleratedPanning;
+
+    wxCheckBox *m_cbTextureCompression, *m_cbTextureCompressionCaching;
+
+    wxSpinCtrl *m_sTextureDimension;
+    wxSpinCtrl *m_sTextureMemorySize;
+
+    OpenGLOptionsDlg( wxWindow* parent );
+};
+
 #endif
     // _OPTIONS_H_
