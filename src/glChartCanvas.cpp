@@ -1294,10 +1294,6 @@ void glChartCanvas::SetupOpenGL()
         s_b_UploadFullCompressedMipmaps = true;
 #endif    
     
-    /*  Load initial symbol tables  */
-    if( ps52plib && ps52plib->m_bOK )
-        ps52plib->SetPLIBColorScheme( global_color_scheme );
-    
 }
 
 void glChartCanvas::SetupCompression()

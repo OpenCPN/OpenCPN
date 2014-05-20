@@ -1892,7 +1892,11 @@ if( 0 == g_memCacheLimit )
     g_FloatingToolbarDialog->LockPosition(true);
 
     gFrame->SetAndApplyColorScheme( global_color_scheme );
-
+    
+    /*  Load initial symbol tables  */
+    if( ps52plib && ps52plib->m_bOK )
+        ps52plib->SetPLIBColorScheme( global_color_scheme );
+    
     //  The position and size of the static frame children (i.e. the canvas, and the status bar) are now set
     //  So now we can establish the AUI panes for them.
     //  It is important to have set the chartcanvas and status bar sizes before this point,
