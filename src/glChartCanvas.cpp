@@ -2749,26 +2749,18 @@ void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
         if(m_gl_rendered_region.IsOk())
             m_gl_rendered_region.Offset(VPoint.rv_rect.x, VPoint.rv_rect.y);
     } else {
-        ChartBaseBSB *Current_Ch_BSB = dynamic_cast<ChartBaseBSB*>( Current_Ch );
-        if( Current_Ch_BSB ) {
+        if( Current_Ch->GetChartFamily() == CHART_FAMILY_RASTER ) {
             RenderRasterChartRegionGL( Current_Ch, VPoint, region );
-        } else {
-            ChartPlugInWrapper *Current_Ch_PlugInWrapper =
-                dynamic_cast<ChartPlugInWrapper*>( Current_Ch );
-            if( Current_Ch_PlugInWrapper ) {
-                if( Current_Ch_PlugInWrapper->GetChartFamily() == CHART_FAMILY_RASTER ) {
-                    RenderRasterChartRegionGL( Current_Ch, VPoint, region );
-                }
-            } else
-                if( !dynamic_cast<ChartDummy*>( Current_Ch ) ) {
-                    OCPNRegion rr = region;
-                    if( Current_Ch->GetChartFamily() == CHART_FAMILY_VECTOR )
-                        rr.Offset( VPoint.rv_rect.x, VPoint.rv_rect.y );
-                    Current_Ch->RenderRegionViewOnGL( *m_pcontext, VPoint, rr );
-                }
+        }
+        else {
+            OCPNRegion rr = region;
+            rr.Offset( VPoint.rv_rect.x, VPoint.rv_rect.y );
+            Current_Ch->RenderRegionViewOnGL( *m_pcontext, VPoint, rr );
         }
         Current_Ch->GetValidCanvasRegion ( VPoint, &m_gl_rendered_region );
     }
+
+
     glPopMatrix();
 
     const int max_rect = 2;
