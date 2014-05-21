@@ -494,7 +494,7 @@ void Routeman::DoAdvance(void)
         Route *pthis_route = pActiveRoute;
         DeactivateRoute( true );                  // this is an arrival
         
-        if( pthis_route->m_bDeleteOnArrival ) {
+        if( pthis_route->m_bDeleteOnArrival && !pthis_route->m_bIsBeingEdited) {
             pConfig->DeleteConfigRoute( pthis_route );
             DeleteRoute( pthis_route );
             if( pRoutePropDialog ) {
