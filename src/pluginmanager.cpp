@@ -134,7 +134,7 @@ ViewPort CreateCompatibleViewport( const PlugIn_ViewPort &pivp)
     vp.b_quilt =                pivp.b_quilt;
     vp.m_projection_type =      pivp.m_projection_type;
  
-    vp.SetBBoxDirect( pivp.lat_min, pivp.lon_min, pivp.lat_max, pivp.lon_max);
+    vp.SetBoxes();
     vp.Validate();                 // This VP is valid
     
     return vp;
