@@ -404,35 +404,25 @@ void ocpnFloatingToolbarDialog::ShowTooltips()
 
 void ocpnFloatingToolbarDialog::ToggleOrientation()
 {
-    wxPoint old_screen_pos = m_pparent->ClientToScreen( m_position );
-
-    if( m_orient == wxTB_HORIZONTAL ) {
+    if( m_orient == wxTB_HORIZONTAL ) 
         m_orient = wxTB_VERTICAL;
-        m_ptoolbar->SetWindowStyleFlag( m_ptoolbar->GetWindowStyleFlag() & ~wxTB_HORIZONTAL );
-        m_ptoolbar->SetWindowStyleFlag( m_ptoolbar->GetWindowStyleFlag() | wxTB_VERTICAL );
-    } else {
+    else
         m_orient = wxTB_HORIZONTAL;
-        m_ptoolbar->SetWindowStyleFlag( m_ptoolbar->GetWindowStyleFlag() & ~wxTB_VERTICAL );
-        m_ptoolbar->SetWindowStyleFlag( m_ptoolbar->GetWindowStyleFlag() | wxTB_HORIZONTAL );
-    }
-
-    wxPoint grabber_point_abs = ClientToScreen( m_pGrabberwin->GetPosition() );
 
     m_style->SetOrientation( m_orient );
-    m_ptoolbar->InvalidateBitmaps();
 
-    SetGeometry();
-    Realize();
-
+    wxPoint old_screen_pos = m_pparent->ClientToScreen( m_position );
+    wxPoint grabber_point_abs = ClientToScreen( m_pGrabberwin->GetPosition() );   
+    
+    gFrame->RequestNewToolbar();  
+    
     wxPoint pos_abs = grabber_point_abs;
     pos_abs.x -= m_pGrabberwin->GetPosition().x;
     MoveDialogInScreenCoords( pos_abs, old_screen_pos );
 
-    RePosition();
 
     Show();   // this seems to be necessary on GTK to kick the sizer into gear...(FS#553)
     Refresh();
-    //GetParent()->Refresh( false );
 }
 
 void ocpnFloatingToolbarDialog::MouseEvent( wxMouseEvent& event )
