@@ -1054,12 +1054,18 @@ void MyConfig::CreateRotatingNavObjBackup()
         wxFile f;
         wxString oldname = m_sNavObjSetFile;
         wxString newname = wxString::Format( _T("%s.1"), m_sNavObjSetFile.c_str() );
-        f.Open(oldname);
-        wxFileOffset s_diff = f.Length();
-        f.Close();
-        f.Open(newname);
-        s_diff -= f.Length();
-        f.Close();
+        
+        wxFileOffset s_diff = 0;
+        if( f.Open(oldname) ){
+            wxFileOffset s_diff = f.Length();
+            f.Close();
+        }
+        
+        if( f.Open(newname) ){
+            s_diff -= f.Length();
+            f.Close();
+        }
+        
         if ( s_diff != 0 )
         {
             for( int i = g_navobjbackups - 1; i >= 1; i-- )
