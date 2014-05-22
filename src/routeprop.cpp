@@ -2247,7 +2247,10 @@ bool MarkInfoImpl::UpdateProperties( bool positionOnly )
                 linknode = linknode->GetNext();
             }
         }
-
+        
+        // Integrate all of the rebuilt hyperlink controls
+        bSizerLinks->Layout();
+        
         //      Iterate on the Icon Descriptions, filling in the control
         int iconToSelect = 0;
         bool fillCombo = m_bcomboBoxIcon->GetCount() == 0;
