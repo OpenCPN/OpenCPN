@@ -28,8 +28,8 @@
 //      Port I/O type
 typedef enum {
     DS_TYPE_INPUT,
-    DS_TYPE_OUTPUT,
-    DS_TYPE_INPUT_OUTPUT
+    DS_TYPE_INPUT_OUTPUT,
+    DS_TYPE_OUTPUT
 } dsPortType;
 
 #endif

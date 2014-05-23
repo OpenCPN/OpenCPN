@@ -329,6 +329,7 @@ options::~options()
     m_rbIIgnore->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbIgnoreInput ), NULL, this );
     m_tcInputStc->Disconnect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnValChange ), NULL, this );
     m_btnInputStcList->Disconnect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnIStcs ), NULL, this );
+    m_cbInput->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCbInput ), NULL, this );
     m_cbOutput->Disconnect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCbOutput ), NULL, this );
     m_rbOAccept->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
     m_rbOIgnore->Disconnect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
@@ -710,6 +711,12 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_cbGarminHost->SetValue(false);
     fgSizer5->Add( m_cbGarminHost, 0, wxALL, 5 );
 
+    m_cbInput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Receive Input on this Port"), wxDefaultPosition, wxDefaultSize, 0 );
+    fgSizer5->Add( m_cbInput, 0, wxALL, 5 );
+
+    m_cbOutput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Output on this port ( as Autopilot or NMEA Repeater)"), wxDefaultPosition, wxDefaultSize, 0 );
+    fgSizer5->Add( m_cbOutput, 0, wxALL, 5 );
+
     sbSizerConnectionProps->Add( gSizerSerProps, 0, wxEXPAND, 5 );
     sbSizerConnectionProps->Add( fgSizer5, 0, wxEXPAND, 5 );
 
@@ -739,10 +746,6 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     sbSizerInFilter->Add( bSizer11, 0, wxEXPAND, 5 );
 
     sbSizerConnectionProps->Add( sbSizerInFilter, 0, wxEXPAND, 5 );
-
-
-    m_cbOutput = new wxCheckBox( m_pNMEAForm, wxID_ANY, _("Output on this port ( as Autopilot or NMEA Repeater)"), wxDefaultPosition, wxDefaultSize, 0 );
-    sbSizerConnectionProps->Add( m_cbOutput, 0, wxALL, 5 );
 
     sbSizerOutFilter = new wxStaticBoxSizer( new wxStaticBox( m_pNMEAForm, wxID_ANY, _("Output filtering") ), wxVERTICAL );
 
@@ -800,6 +803,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
     m_rbIIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbIgnoreInput ), NULL, this );
     m_tcInputStc->Connect( wxEVT_COMMAND_TEXT_UPDATED, wxCommandEventHandler( options::OnConnValChange ), NULL, this );
     m_btnInputStcList->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( options::OnBtnIStcs ), NULL, this );
+    m_cbInput->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCbInput ), NULL, this );
     m_cbOutput->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler( options::OnCbOutput ), NULL, this );
     m_rbOAccept->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
     m_rbOIgnore->Connect( wxEVT_COMMAND_RADIOBUTTON_SELECTED, wxCommandEventHandler( options::OnRbOutput ), NULL, this );
@@ -839,7 +843,7 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
     wxListItem col5;
     col5.SetId(5);
-    col5.SetText( _("Output") );
+    col5.SetText( _("Connection") );
     m_lcSources->InsertColumn(5, col5);
 
     wxListItem col6;
@@ -2503,6 +2507,12 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
     if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == _T("Deleted" ))
         return NULL;
 
+    //  DataStreams should be Input, Output, or Both
+    if (!(m_cbInput->GetValue() || m_cbOutput->GetValue())) {
+        wxMessageBox( _("Data connection must be input, output or both"), _("Error!") );
+        return NULL;
+    }
+
     if ( m_rbTypeSerial->GetValue() && m_comboPort->GetValue() == wxEmptyString )
     {
         wxMessageBox( _("You must select or enter the port..."), _("Error!") );
@@ -2549,7 +2559,15 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
         pConnectionParams->InputSentenceListType = WHITELIST;
     else
         pConnectionParams->InputSentenceListType = BLACKLIST;
-    pConnectionParams->Output = m_cbOutput->GetValue();
+    if (m_cbInput->GetValue()) {
+        if (m_cbOutput->GetValue()) {
+            pConnectionParams->IOSelect = DS_TYPE_INPUT_OUTPUT;
+        } else {
+            pConnectionParams->IOSelect = DS_TYPE_INPUT;
+        }
+    } else
+        pConnectionParams->IOSelect = DS_TYPE_OUTPUT;
+
     pConnectionParams->OutputSentenceList = wxStringTokenize( m_tcOutputStc->GetValue(), _T(",") );
     if ( m_rbOAccept->GetValue() )
         pConnectionParams->OutputSentenceListType = WHITELIST;
@@ -2833,6 +2851,9 @@ void options::OnApplyClick( wxCommandEvent& event )
             m_lcSources->SetItemState(itemIndex, wxLIST_STATE_SELECTED, wxLIST_STATE_SELECTED);
             m_lcSources->Refresh();
             connectionsaved = true;
+        } else {
+            ::wxEndBusyCursor();
+            event.SetInt (wxID_STOP );
         }
     }
 
@@ -2854,11 +2875,7 @@ void options::OnApplyClick( wxCommandEvent& event )
                 g_pMUX->StopAndRemoveStream( pds_existing );
                 
            if( cp->bEnabled ) {
-                dsPortType port_type;
-                if (cp->Output)
-                    port_type = DS_TYPE_INPUT_OUTPUT;
-                else
-                    port_type = DS_TYPE_INPUT;
+           dsPortType port_type = cp->IOSelect;
                 DataStream *dstr = new DataStream( g_pMUX,
                                             cp->GetDSPort(),
                                             wxString::Format(wxT("%i"), cp->Baudrate),
@@ -4073,6 +4090,7 @@ void options::ShowNMEANet(bool visible)
         m_rbNetProtoGPSD->Show();
         m_rbNetProtoTCP->Show();
         m_rbNetProtoUDP->Show();
+        m_cbInput->Show();
     }
     else
     {
@@ -4084,6 +4102,7 @@ void options::ShowNMEANet(bool visible)
         m_rbNetProtoGPSD->Hide();
         m_rbNetProtoTCP->Hide();
         m_rbNetProtoUDP->Hide();
+        m_cbInput->Hide();
     }
 }
 
@@ -4166,6 +4185,8 @@ void options::SetDSFormRWStates()
     {
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("2947"));
+        m_cbInput->SetValue(true);
+        m_cbInput->Enable(false);
         m_cbOutput->SetValue(false);
         m_cbOutput->Enable(false);
         m_rbOAccept->Enable(false);
@@ -4176,6 +4197,8 @@ void options::SetDSFormRWStates()
     {
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("10110"));
+        m_cbInput->SetValue(true);
+        m_cbInput->Enable(false);
         m_cbOutput->Enable(true);
         m_rbOAccept->Enable(true);
         m_rbOIgnore->Enable(true);
@@ -4183,6 +4206,7 @@ void options::SetDSFormRWStates()
     }
     else
     {
+        m_cbInput->Enable(true);
         m_cbOutput->Enable(true);
         m_rbOAccept->Enable(true);
         m_rbOIgnore->Enable(true);
@@ -4196,7 +4220,8 @@ void options::SetConnectionParams(ConnectionParams *cp)
     m_comboPort->SetValue(cp->Port);
     m_cbCheckCRC->SetValue(cp->ChecksumCheck);
     m_cbGarminHost->SetValue(cp->Garmin);
-    m_cbOutput->SetValue(cp->Output);
+    m_cbInput->SetValue(!(cp->IOSelect == DS_TYPE_OUTPUT));
+    m_cbOutput->SetValue(!(cp->IOSelect == DS_TYPE_INPUT));
     if(cp->InputSentenceListType == WHITELIST)
         m_rbIAccept->SetValue(true);
     else
@@ -4245,6 +4270,7 @@ void options::SetDefaultConnectionParams()
     m_comboPort->SetValue(_T(""));
     m_cbCheckCRC->SetValue(true);
     m_cbGarminHost->SetValue(false);
+    m_cbInput->SetValue(true);
     m_cbOutput->SetValue(false);
     m_rbIAccept->SetValue(true);
     m_rbOAccept->SetValue(true);
@@ -4308,7 +4334,7 @@ void options::FillSourceList()
         prio_str.Printf(_T("%d"), g_pConnectionParams->Item(i)->Priority );
         m_lcSources->SetItem(itemIndex, 3, prio_str);
         m_lcSources->SetItem(itemIndex, 4, g_pConnectionParams->Item(i)->GetParametersStr());
-        m_lcSources->SetItem(itemIndex, 5, g_pConnectionParams->Item(i)->GetOutputValueStr());
+        m_lcSources->SetItem(itemIndex, 5, g_pConnectionParams->Item(i)->GetIOTypeValueStr());
         m_lcSources->SetItem(itemIndex, 6, g_pConnectionParams->Item(i)->GetFiltersStr());
     }
 
@@ -4401,6 +4427,11 @@ void options::OnNetProtocolSelected( wxCommandEvent& event )
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("10110"));
     }
+    else if (m_rbNetProtoTCP->GetValue())
+    {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("10110"));
+    }
 
     SetDSFormRWStates();
     OnConnValChange(event);
@@ -4416,6 +4447,16 @@ void options::OnRbIgnoreInput( wxCommandEvent& event )
 }
 
 void options::OnRbOutput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+}
+
+void options::OnCbInput( wxCommandEvent& event )
+{
+    OnConnValChange(event);
+}
+
+void options::OnCbOutput( wxCommandEvent& event )
 {
     OnConnValChange(event);
 }

@@ -48,7 +48,8 @@ void ConnectionParams::Deserialize(const wxString &configStr)
     Port = prms[5];
     Baudrate = wxAtoi(prms[6]);
     ChecksumCheck = !!wxAtoi(prms[7]);
-    Output = !!wxAtoi(prms[8]);
+    int iotval = wxAtoi(prms[8]);
+    IOSelect=((iotval <= 2)?static_cast <dsPortType>(iotval):DS_TYPE_INPUT);
     InputSentenceListType = (ListType)wxAtoi(prms[9]);
     InputSentenceList = wxStringTokenize(prms[10], _T(","));
     OutputSentenceListType = (ListType)wxAtoi(prms[11]);
@@ -88,7 +89,7 @@ wxString ConnectionParams::Serialize()
                                      Port.c_str(),
                                      Baudrate,
                                      ChecksumCheck,
-                                     Output,
+                                     IOSelect,
                                      InputSentenceListType,
                                      istcs.c_str(),
                                      OutputSentenceListType,
@@ -115,7 +116,7 @@ ConnectionParams::ConnectionParams()
     ChecksumCheck = true;
     Garmin = false;
     FurunoGP3X = false;
-    Output = false;
+    IOSelect = DS_TYPE_INPUT;
     InputSentenceListType = WHITELIST;
     OutputSentenceListType = WHITELIST;
     Priority = 0;
@@ -152,12 +153,14 @@ wxString ConnectionParams::GetParametersStr()
             return _("GPSD");
 }
 
-wxString ConnectionParams::GetOutputValueStr()
+wxString ConnectionParams::GetIOTypeValueStr()
 {
-    if ( Output )
-        return _("Yes");
+    if ( IOSelect == DS_TYPE_INPUT )
+        return _("Input");
+    else if ( IOSelect == DS_TYPE_OUTPUT )
+        return _("Output");
     else
-        return _("No");
+        return _("In/Out");
 }
 
 wxString ConnectionParams::FilterTypeToStr(ListType type, FilterDirection dir)

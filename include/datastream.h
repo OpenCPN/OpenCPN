@@ -230,6 +230,9 @@ private:
     //  TCP Server support
     void OnServerSocketEvent(wxSocketEvent& event);             // The listener
     void OnActiveServerEvent(wxSocketEvent& event);             // The open connection
+    // Setting output parameters
+    bool SetOutputSocketOptions(wxSocketBase* tsock);
+
     wxSocketServer      *m_socket_server;                       //  The listening server
     wxSocketBase        *m_socket_server_active;                //  The active connection
     

@@ -10683,7 +10683,7 @@ wxString ChartCanvas::FindValidUploadPort()
             // then use the first available serial connection which has output defined.
             for( size_t i = 0; i < g_pConnectionParams->Count(); i++ ) {
                 ConnectionParams *cp = g_pConnectionParams->Item( i );
-                if( cp->Output && cp->Type == SERIAL )
+                if( (cp->IOSelect != DS_TYPE_INPUT) && cp->Type == SERIAL )
                     port << _T("Serial:") << cp->Port;
             }
     }

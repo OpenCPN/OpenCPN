@@ -73,7 +73,6 @@ BEGIN_EVENT_TABLE(DataStream, wxEvtHandler)
 
     EVT_SOCKET(DS_SOCKET_ID, DataStream::OnSocketEvent)
     EVT_SOCKET(DS_SERVERSOCKET_ID, DataStream::OnServerSocketEvent)
-    EVT_SOCKET(DS_ACTIVESERVERSOCKET_ID, DataStream::OnActiveServerEvent)
     EVT_TIMER(TIMER_SOCKET, DataStream::OnTimerSocket)
     EVT_TIMER(TIMER_SOCKET + 1, DataStream::OnSocketReadWatchdogTimer)
 END_EVENT_TABLE()
@@ -115,7 +114,6 @@ void DataStream::Init(void)
     m_sock = 0;
     m_tsock = 0;
     m_is_multicast = false;
-    m_socket_server_active = 0;
     m_socket_server = 0;
     m_txenter = 0;
     
@@ -129,7 +127,7 @@ void DataStream::Open(void)
     //  Open a port
     wxLogMessage( wxString::Format(_T("Opening NMEA Datastream %s"), m_portstring.c_str()) );
     
-    if( (m_io_select == DS_TYPE_INPUT) || (m_io_select == DS_TYPE_INPUT_OUTPUT) ) {
+//    if( (m_io_select == DS_TYPE_INPUT) || (m_io_select == DS_TYPE_INPUT_OUTPUT) ) {
 
         //    Data Source is specified serial port
         if(m_portstring.Contains(_T("Serial"))) {
@@ -189,14 +187,14 @@ void DataStream::Open(void)
             m_connection_type = NETWORK;
         }
         else if(m_portstring.StartsWith(_T("TCP"))) {
-            m_net_addr = _T("127.0.0.1");              // defaults
-            m_net_port = _T("2947");
+            m_net_addr = _T("0.0.0.0");              // defaults
+            m_net_port = _T("10110");
             m_net_protocol = TCP;
             m_connection_type = NETWORK;
         }
         else if(m_portstring.StartsWith(_T("UDP"))) {
             m_net_addr =  _T("0.0.0.0");              // any address
-            m_net_port = _T("0");                     // any port
+            m_net_port = _T("10110");
             m_net_protocol = UDP;
             m_connection_type = NETWORK;
         }
@@ -220,6 +218,15 @@ void DataStream::Open(void)
             m_addr.Hostname(m_net_addr);
             m_addr.Service(m_net_port);
             
+#ifdef __WXGTK__
+# if wxCHECK_VERSION(3,0,0)
+            in_addr_t addr = ((struct sockaddr_in *) m_addr.GetAddressData())->sin_addr.s_addr;
+# else
+            in_addr_t addr = ((struct sockaddr_in *) m_addr.GetAddress()->m_addr)->sin_addr.s_addr;
+# endif
+#else
+            unsigned int addr = inet_addr(m_addr.IPAddress().mb_str());
+#endif
             // Create the socket
             switch(m_net_protocol){
                 case GPSD: {
@@ -235,46 +242,43 @@ void DataStream::Open(void)
                     
                     break;
                 }
-                case TCP:
-                        //  TCP Datastreams can be either input or output, but not both...
-                    if((m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT)) {
-                        m_socket_server = new wxSocketServer(m_addr, wxSOCKET_REUSEADDR );
-                        // Disable nagle algorithm on outgoing connection
-                        // Doing this here rather than after the accept() is
-                        // pointless  on platforms where TCP_NODELAY is
-                        // not inherited.  However, none of OpenCPN's currently
-                        // supported platforms fall into that category.
+                case TCP: {
+                    int isServer = ((addr == INADDR_ANY)?1:0);
 
-                        int nagleDisable=1;
-                        if(m_socket_server->IsOk())
-                            m_socket_server->SetOption(IPPROTO_TCP,TCP_NODELAY,&nagleDisable, sizeof(nagleDisable));
-                        
-                        //      Drastically reduce the size of the socket output buffer
-                        //      so that when client goes away without properly closing, the stream will
-                        //      quickly fill the output buffer, and thus fail the write() call
-                        //      within a few seconds.    
-                        unsigned long outbuf_size = 512;
-                        if(m_socket_server->IsOk())
-                            m_socket_server->SetOption(SOL_SOCKET,SO_SNDBUF,&outbuf_size, sizeof(outbuf_size));
-                        
+                    wxSocketBase* tsock;
+
+                    if (isServer) {
+                        m_socket_server = new wxSocketServer(m_addr, wxSOCKET_REUSEADDR );
+                        tsock = m_socket_server;
+                    } else {
+                        m_sock = new wxSocketClient();
+                        tsock = m_sock;
+                    }
+
+                    // if((m_io_select != DS_TYPE_INPUT) && (isServer?m_socket_server->IsOk():m_sock->IsOk())) {
+                    if (isServer) {
                         m_socket_server->SetEventHandler(*this, DS_SERVERSOCKET_ID);
                         m_socket_server->SetNotify( wxSOCKET_CONNECTION_FLAG );
                         m_socket_server->Notify(TRUE);
-                        m_socket_server->SetTimeout(1);              // Short timeout
+                        m_socket_server->SetTimeout(1);    // Short timeout
                     }
                     else {
-                        m_sock = new wxSocketClient();
                         m_sock->SetEventHandler(*this, DS_SOCKET_ID);
-                        m_sock->SetNotify(wxSOCKET_CONNECTION_FLAG | wxSOCKET_INPUT_FLAG | wxSOCKET_LOST_FLAG);
+                        int notify_flags=(wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG );
+                        if (m_io_select != DS_TYPE_INPUT)
+                            notify_flags |= wxSOCKET_OUTPUT_FLAG;
+                        if (m_io_select != DS_TYPE_OUTPUT)
+                            notify_flags |= wxSOCKET_INPUT_FLAG;
+                        m_sock->SetNotify(notify_flags);
                         m_sock->Notify(TRUE);
                         m_sock->SetTimeout(1);              // Short timeout
 
                         m_brx_connect_event = false;
                         m_socket_timer.Start(100, wxTIMER_ONE_SHOT);    // schedule a connection
-                        
                     }
                     
                     break;
+                }
                 case UDP:
                     //  We need a local (bindable) address to create the Datagram receive socket
                     // Set up the receive socket
@@ -282,15 +286,6 @@ void DataStream::Open(void)
                     conn_addr.Service(m_net_port);
                     conn_addr.AnyAddress();    
                     m_sock = new wxDatagramSocket(conn_addr, wxSOCKET_NOWAIT | wxSOCKET_REUSEADDR);
-#ifdef __WXGTK__
-# if wxCHECK_VERSION(3,0,0)
-                    in_addr_t addr = ((struct sockaddr_in *) m_addr.GetAddressData())->sin_addr.s_addr;
-# else
-                    in_addr_t addr = ((struct sockaddr_in *) m_addr.GetAddress()->m_addr)->sin_addr.s_addr;
-# endif
-#else
-                    unsigned int addr = inet_addr(m_addr.IPAddress().mb_str());
-#endif
 
                     // Test if address is IPv4 multicast
                     if ((ntohl(addr) & 0xf0000000)  == 0xe0000000) {
@@ -331,7 +326,7 @@ void DataStream::Open(void)
 
             m_bok = true;
         }
-    }
+//    }
     m_connect_time = wxDateTime::Now();
     
 }
@@ -392,12 +387,6 @@ void DataStream::Close()
         m_socket_server->Destroy();
     }
     
-    if(m_socket_server_active)
-    {
-        m_socket_server_active->Notify(FALSE);
-        m_socket_server_active->Destroy();
-    }
-    
     //  Kill off the Garmin handler, if alive
     if(m_GarminHandler) {
         m_GarminHandler->Close();
@@ -413,11 +402,12 @@ void DataStream::OnSocketReadWatchdogTimer(wxTimerEvent& event)
     m_dog_value--;
     if( m_dog_value <= 0 ) {            // No receive in n seconds, assume connection lost
         wxLogMessage( wxString::Format(_T("    TCP Datastream watchdog timeout: %s"), m_portstring.c_str()) );
-            
+
         if(m_net_protocol == TCP ) {
             wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
-            if(tcp_socket) 
+            if(tcp_socket) {
                 tcp_socket->Close();
+            }
 
             m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
             m_socketread_watchdog_timer.Stop();
@@ -429,7 +419,6 @@ void DataStream::OnTimerSocket(wxTimerEvent& event)
 {
     //  Attempt a connection
     wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
-    
     if(tcp_socket) {
         if(tcp_socket->IsDisconnected() ) {
             m_brx_connect_event = false;
@@ -526,6 +515,11 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
             //          wxSocketError e = m_sock->LastError();          // this produces wxSOCKET_WOULDBLOCK.
             if(m_net_protocol == TCP || m_net_protocol == GPSD) {
                 wxLogMessage( wxString::Format(_T("Datastream connection lost: %s"), m_portstring.c_str()) );
+                if (m_socket_server) {
+                    m_sock->Destroy();
+                    m_sock=0;
+                    break;
+                }
                 wxDateTime now = wxDateTime::Now();
                 wxTimeSpan since_connect = now - m_connect_time;
 
@@ -555,11 +549,13 @@ void DataStream::OnSocketEvent(wxSocketEvent& event)
             else if(m_net_protocol == TCP) {
                 wxLogMessage( wxString::Format(_T("TCP Datastream connection established: %s"), m_portstring.c_str()) );
                 m_dog_value = N_DOG_TIMEOUT;                // feed the dog
-                m_socketread_watchdog_timer.Start(1000);
+                if (m_io_select != DS_TYPE_OUTPUT)
+                    m_socketread_watchdog_timer.Start(1000);
+                if (m_io_select != DS_TYPE_INPUT && m_sock->IsOk())
+                    (void) SetOutputSocketOptions(m_sock);
                 m_socket_timer.Stop();
                 m_brx_connect_event = true;
             }
-                
 
             m_connect_time = wxDateTime::Now();
             break;
@@ -579,14 +575,21 @@ void DataStream::OnServerSocketEvent(wxSocketEvent& event)
     {
         case wxSOCKET_CONNECTION :
         {
-            m_socket_server_active = m_socket_server->Accept(false);
+            m_sock= m_socket_server->Accept(false);
  
-            if( m_socket_server_active ) {
-                m_socket_server_active->SetTimeout(2);
-                m_socket_server_active->SetFlags( wxSOCKET_BLOCK );
-                m_socket_server_active->SetEventHandler(*this, DS_ACTIVESERVERSOCKET_ID);
-                m_socket_server_active->SetNotify( wxSOCKET_LOST_FLAG | wxSOCKET_OUTPUT_FLAG);
-                m_socket_server_active->Notify(true);
+            if( m_sock) {
+                m_sock->SetTimeout(2);
+                m_sock->SetFlags( wxSOCKET_BLOCK );
+                m_sock->SetEventHandler(*this, DS_SOCKET_ID);
+                int notify_flags=(wxSOCKET_CONNECTION_FLAG | wxSOCKET_LOST_FLAG );
+                if (m_io_select != DS_TYPE_INPUT) {
+                    notify_flags |= wxSOCKET_OUTPUT_FLAG;
+                    (void) SetOutputSocketOptions(m_sock);
+                }
+                if (m_io_select != DS_TYPE_OUTPUT)
+                    notify_flags |= wxSOCKET_INPUT_FLAG;
+                m_sock->SetNotify(notify_flags);
+                m_sock->Notify(true);
             }
             
             break;
@@ -596,28 +599,6 @@ void DataStream::OnServerSocketEvent(wxSocketEvent& event)
             break;
     }
 }
-
-void DataStream::OnActiveServerEvent(wxSocketEvent& event)
-{
-    wxSocketBase *sock = event.GetSocket();
-    
-    switch(event.GetSocketEvent())
-    {
-         case wxSOCKET_LOST:
-        {
-            sock->Destroy();
-            m_socket_server_active = 0;
-            break;
-        }
-        
-        default :
-            break;
-    }
-}
-
-
-
-
 
 bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection direction)
 {
@@ -636,7 +617,6 @@ bool DataStream::SentencePassesFilter(const wxString& sentence, FilterDirection 
         if (m_output_filter_type == WHITELIST)
             listype = true;
     }
-
     if (filter.Count() == 0) //Empty list means everything passes
         return true;
 
@@ -728,13 +708,21 @@ bool DataStream::SendSentence( const wxString &sentence )
             wxDatagramSocket* udp_socket;
                 switch(m_net_protocol){
                     case TCP:
-                        if( m_socket_server_active && m_socket_server_active->IsOk() ) {
-                            m_socket_server_active->Write( payload.mb_str(), strlen( payload.mb_str() ) );
-                            if(m_socket_server_active->Error()){
-                                m_socket_server_active->Destroy();
-                                m_socket_server_active = 0;
+                        if( m_sock && m_sock->IsOk() ) {
+                            m_sock->Write( payload.mb_str(), strlen( payload.mb_str() ) );
+                            if(m_sock->Error()){
+                                if (m_socket_server) {
+                                    m_sock->Destroy();
+                                    m_sock= 0;
+                                } else {
+                                    wxSocketClient* tcp_socket = dynamic_cast<wxSocketClient*>(m_sock);
+                                    tcp_socket->Close();
+                                    m_socket_timer.Start(5000, wxTIMER_ONE_SHOT);    // schedule a reconnect
+                                    m_socketread_watchdog_timer.Stop();
+                                }
                                 ret = false;
                             }
+
                         }
                         else
                             ret = false;
@@ -1857,4 +1845,23 @@ int GARMIN_USB_Thread::gusb_win_get_bulk(garmin_usb_packet *ibuf, size_t sz)
 }
         
         
+bool DataStream::SetOutputSocketOptions(wxSocketBase* tsock)
+{
+    int ret;
 
+    // Disable nagle algorithm on outgoing connection
+    // Doing this here rather than after the accept() is
+    // pointless  on platforms where TCP_NODELAY is
+    // not inherited.  However, none of OpenCPN's currently
+    // supported platforms fall into that category.
+
+    int nagleDisable=1;
+    ret = tsock->SetOption(IPPROTO_TCP,TCP_NODELAY,&nagleDisable, sizeof(nagleDisable));
+                        
+    //  Drastically reduce the size of the socket output buffer
+    //  so that when client goes away without properly closing, the stream will
+    //  quickly fill the output buffer, and thus fail the write() call
+    //  within a few seconds.    
+    unsigned long outbuf_size = 1024;       // Smallest allowable value on Linux
+    return (tsock->SetOption(SOL_SOCKET,SO_SNDBUF,&outbuf_size, sizeof(outbuf_size)) && ret);
+}

@@ -146,6 +146,7 @@ void Multiplexer::SendNMEAMessage(const wxString &msg)
     for (size_t i = 0; i < m_pdatastreams->Count(); i++)
     {
         DataStream* s = m_pdatastreams->Item(i);
+
         if ( s->IsOk() && (s->GetIoSelect() == DS_TYPE_INPUT_OUTPUT || s->GetIoSelect() == DS_TYPE_OUTPUT) ) {
             bool bout_filter = true;
 
