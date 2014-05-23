@@ -601,6 +601,7 @@ int                       g_toolbar_x;
 int                       g_toolbar_y;
 long                      g_toolbar_orient;
 wxRect                    g_last_tb_rect;
+float                     g_toolbar_scalefactor;
 
 MyDialogPtrArray          g_MacShowDialogArray;
 
@@ -1887,9 +1888,7 @@ if( 0 == g_memCacheLimit )
     g_toolbar_x = wxMin(g_toolbar_x, cw);
     g_toolbar_y = wxMin(g_toolbar_y, ch);
 
-    g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog( cc1,
-            wxPoint( g_toolbar_x, g_toolbar_y ), g_toolbar_orient );
-    g_FloatingToolbarDialog->LockPosition(true);
+    gFrame->SetToolbarScale();
 
     gFrame->SetAndApplyColorScheme( global_color_scheme );
     
@@ -2150,7 +2149,7 @@ if( 0 == g_memCacheLimit )
     
     gFrame->DoChartUpdate();
 
-    g_FloatingToolbarDialog->LockPosition(false);
+//    g_FloatingToolbarDialog->LockPosition(false);
 
     gFrame->RequestNewToolbar();
 
@@ -2647,6 +2646,8 @@ void MyFrame::SetAndApplyColorScheme( ColorScheme cs )
         }
     }
 
+    if( ps52plib ) ps52plib->SetPLIBColorScheme( SchemeName );
+    
     //    Set up a pointer to the proper hash table
     pcurrent_user_color_hash = (wxColorHashMap *) UserColourHashTableArray->Item(
             Usercolortable_index );
@@ -2747,8 +2748,10 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
     ocpnToolBarSimple *tb = NULL;
     wxToolBarToolBase* newtool;
 
-    if( g_FloatingToolbarDialog ) tb = g_FloatingToolbarDialog->GetToolbar();
-    if( !tb ) return 0;
+    if( g_FloatingToolbarDialog )
+        tb = g_FloatingToolbarDialog->GetToolbar();
+    if( !tb )
+        return 0;
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
@@ -3003,9 +3006,26 @@ bool MyFrame::AddDefaultPositionPlugInTools( ocpnToolBarSimple *tb )
 
 void MyFrame::RequestNewToolbar()
 {
+    bool b_reshow = true;
     if( g_FloatingToolbarDialog ) {
-        bool b_reshow = g_FloatingToolbarDialog->IsShown();
-        if( g_FloatingToolbarDialog->IsToolbarShown() ) DestroyMyToolbar();
+        b_reshow = g_FloatingToolbarDialog->IsShown();
+        
+        float ff = fabs(g_FloatingToolbarDialog->GetScaleFactor() - g_toolbar_scalefactor);
+        if(ff > 0.01f){
+            DestroyMyToolbar();
+            delete g_FloatingToolbarDialog;
+            g_FloatingToolbarDialog = NULL;
+        }
+    }
+
+    if( !g_FloatingToolbarDialog ) {
+        g_FloatingToolbarDialog = new ocpnFloatingToolbarDialog( cc1,
+             wxPoint( g_toolbar_x, g_toolbar_y ), g_toolbar_orient, g_toolbar_scalefactor );
+    }
+        
+    if( g_FloatingToolbarDialog ) {
+        if( g_FloatingToolbarDialog->IsToolbarShown() )
+            DestroyMyToolbar();
 
         g_toolbar = CreateAToolbar();
         g_FloatingToolbarDialog->RePosition();
@@ -3058,6 +3078,26 @@ void MyFrame::EnableToolbar( bool newstate )
         g_toolbar->EnableTool( ID_ROUTEMANAGER, newstate );
         g_toolbar->EnableTool( ID_TRACK, newstate );
         g_toolbar->EnableTool( ID_AIS, newstate );
+    }
+}
+
+void MyFrame::SetToolbarScale()
+{
+    //  Get the basic size of a tool icon
+    ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
+    wxSize style_tool_size = style->GetToolSize();
+    
+    g_toolbar_scalefactor = 1.0;
+    if(g_bresponsive ){
+        //      Adjust the scale factor so that the basic tool size is xx millimetres, assumed square
+        float target_size = 9.0;                // mm
+        
+        float basic_tool_size_mm = style_tool_size.x / cc1->GetPixPerMM();
+        g_toolbar_scalefactor =  target_size / basic_tool_size_mm;
+        g_toolbar_scalefactor = wxMax(g_toolbar_scalefactor, 1.0);
+        
+        //  Round to the nearest "quarter", to avoid rendering artifacts
+        g_toolbar_scalefactor = wxRound( g_toolbar_scalefactor * 4.0 )/ 4.0;
     }
 }
 
@@ -4291,6 +4331,9 @@ int MyFrame::DoOptionsDialog()
 
     delete pWorkDirArray;
 
+    SetToolbarScale();
+    RequestNewToolbar();
+    
     bDBUpdateInProgress = false;
     if( g_FloatingToolbarDialog ) {
         if( IsFullScreen() && !g_bFullscreenToolbar )
@@ -9405,8 +9448,13 @@ wxFont *GetOCPNScaledFont( wxString item, int default_size )
     wxFont *dFont = FontMgr::Get().GetFont( item, default_size );
     
     if( g_bresponsive ){
-        if(dFont->GetPointSize() < 20) {
-            wxFont *qFont = wxTheFontList->FindOrCreateFont( 20,
+        //      Adjust font size to be reasonably readable, but no smaller than the default specified
+        double scaled_font_size = (double)default_size;
+        
+        if( cc1) {
+            scaled_font_size = 2.5 * cc1->GetPixPerMM();
+            int nscaled_font_size = wxMax( wxRound(scaled_font_size), default_size );
+            wxFont *qFont = wxTheFontList->FindOrCreateFont( nscaled_font_size,
                                                              dFont->GetFamily(),
                                                              dFont->GetStyle(),
                                                              dFont->GetWeight());

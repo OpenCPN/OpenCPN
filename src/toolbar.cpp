@@ -51,7 +51,6 @@ extern wxMenu*                    g_FloatingToolbarConfigMenu;
 extern wxString                   g_toolbarConfig;
 extern bool                       g_bPermanentMOBIcon;
 extern bool                       g_btouch;
-extern bool                       g_bresponsive;
 extern bool                       g_bsmoothpanzoom;
 
 //----------------------------------------------------------------------------
@@ -243,7 +242,7 @@ BEGIN_EVENT_TABLE(ocpnFloatingToolbarDialog, wxDialog)
 END_EVENT_TABLE()
 
 ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint position,
-        long orient )
+                                                      long orient, float size_factor )
 {
     m_pparent = parent;
     long wstyle = wxNO_BORDER | wxFRAME_NO_TASKBAR;
@@ -270,6 +269,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
 
     m_position = position;
     m_orient = orient;
+    m_sizefactor = size_factor;
 
     m_style = g_StyleManager->GetCurrentStyle();
 
@@ -284,7 +284,7 @@ ocpnFloatingToolbarDialog::ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint 
 
     m_marginsInvisible = m_style->marginsInvisible;
 
-    if(g_bresponsive )
+    if(m_sizefactor > 1.0 )
         m_marginsInvisible = true;
         
     Hide();
@@ -332,10 +332,9 @@ void ocpnFloatingToolbarDialog::SetGeometry()
 
     if( m_ptoolbar ) {
         wxSize style_tool_size = m_style->GetToolSize();
-        if(g_bresponsive ){
-            style_tool_size.x *= 2;
-            style_tool_size.y *= 2;
-        }
+        
+        style_tool_size.x *= m_sizefactor;
+        style_tool_size.y *= m_sizefactor;
         
         m_ptoolbar->SetToolBitmapSize( style_tool_size );
 

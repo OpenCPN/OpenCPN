@@ -300,7 +300,7 @@ class ocpnFloatingToolbarDialog: public wxDialog {
 DECLARE_EVENT_TABLE()
 
 public:
-      ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint position, long orient );
+      ocpnFloatingToolbarDialog( wxWindow *parent, wxPoint position, long orient, float size_factor );
       ~ocpnFloatingToolbarDialog();
 
       void OnClose( wxCloseEvent& event );
@@ -308,9 +308,9 @@ public:
       void OnToolLeftClick( wxCommandEvent& event );
       void MouseEvent( wxMouseEvent& event );
       void FadeTimerEvent( wxTimerEvent& event );
-      bool IsToolbarShown() {
-            return ( m_ptoolbar != 0 );
-      }
+      bool IsToolbarShown() { return ( m_ptoolbar != 0 ); }
+      float GetScaleFactor() { return m_sizefactor; }
+      
       void Realize();
       ocpnToolBarSimple *GetToolbar();
       void Submerge();
@@ -361,6 +361,7 @@ private:
       bool m_block;
       
       bool m_marginsInvisible;
+      float m_sizefactor;
       
 };
 
