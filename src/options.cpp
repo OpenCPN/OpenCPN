@@ -4049,6 +4049,7 @@ void options::ShowNMEACommon(bool visible)
         m_btnInputStcList->Show();
         m_tcOutputStc->Show();
         m_btnOutputStcList->Show();
+        m_cbInput->Show();
         m_cbOutput->Show();
         m_choicePriority->Show();
         m_stPriority->Show();
@@ -4066,6 +4067,7 @@ void options::ShowNMEACommon(bool visible)
         m_btnInputStcList->Hide();
         m_tcOutputStc->Hide();
         m_btnOutputStcList->Hide();
+        m_cbInput->Hide();
         m_cbOutput->Hide();
         m_choicePriority->Hide();
         m_stPriority->Hide();
@@ -4090,7 +4092,6 @@ void options::ShowNMEANet(bool visible)
         m_rbNetProtoGPSD->Show();
         m_rbNetProtoTCP->Show();
         m_rbNetProtoUDP->Show();
-        m_cbInput->Show();
     }
     else
     {
@@ -4102,7 +4103,6 @@ void options::ShowNMEANet(bool visible)
         m_rbNetProtoGPSD->Hide();
         m_rbNetProtoTCP->Hide();
         m_rbNetProtoUDP->Hide();
-        m_cbInput->Hide();
     }
 }
 
