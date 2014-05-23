@@ -10528,8 +10528,8 @@ void ChartCanvas::DrawAllCurrentsInBBox( ocpnDC& dc, LLBBox& BBox, bool bRebuild
         pgray_brush = (wxBrush *) pmono_brush;
     }
 
-    pTCFont = wxTheFontList->FindOrCreateFont( 12, wxDEFAULT, wxNORMAL, wxBOLD, FALSE,
-              wxString( _T ( "Eurostile Extended" ) ) );
+    pTCFont = FontMgr::Get().GetFont( _("CurrentValue"), 12 );
+    
     int now = time( NULL );
 
     if( bRebuildSelList ) pSelectTC->DeleteAllSelectableTypePoints( SELTYPE_CURRENTPOINT );
