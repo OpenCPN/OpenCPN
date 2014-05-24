@@ -4049,6 +4049,7 @@ void options::ShowNMEACommon(bool visible)
         m_btnInputStcList->Show();
         m_tcOutputStc->Show();
         m_btnOutputStcList->Show();
+        m_cbInput->Show();
         m_cbOutput->Show();
         m_choicePriority->Show();
         m_stPriority->Show();
@@ -4066,6 +4067,7 @@ void options::ShowNMEACommon(bool visible)
         m_btnInputStcList->Hide();
         m_tcOutputStc->Hide();
         m_btnOutputStcList->Hide();
+        m_cbInput->Hide();
         m_cbOutput->Hide();
         m_choicePriority->Hide();
         m_stPriority->Hide();
@@ -4090,7 +4092,6 @@ void options::ShowNMEANet(bool visible)
         m_rbNetProtoGPSD->Show();
         m_rbNetProtoTCP->Show();
         m_rbNetProtoUDP->Show();
-        m_cbInput->Show();
     }
     else
     {
@@ -4102,7 +4103,6 @@ void options::ShowNMEANet(bool visible)
         m_rbNetProtoGPSD->Hide();
         m_rbNetProtoTCP->Hide();
         m_rbNetProtoUDP->Hide();
-        m_cbInput->Hide();
     }
 }
 
@@ -4181,7 +4181,15 @@ wxString StringArrayToString(wxArrayString arr)
 
 void options::SetDSFormRWStates()
 {
-    if (m_rbNetProtoGPSD->GetValue() && !m_rbTypeSerial->GetValue())
+    if (m_rbTypeSerial->GetValue())
+    {
+        m_cbInput->Enable(false);
+        m_cbOutput->Enable(true);
+        m_rbOAccept->Enable(true);
+        m_rbOIgnore->Enable(true);
+        m_btnOutputStcList->Enable(true);
+    }
+    else if (m_rbNetProtoGPSD->GetValue())
     {
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("2947"));
@@ -4204,8 +4212,10 @@ void options::SetDSFormRWStates()
         m_rbOIgnore->Enable(true);
         m_btnOutputStcList->Enable(true);
     }
-    else
+    else                                        // TCP
     {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("10110"));
         m_cbInput->Enable(true);
         m_cbOutput->Enable(true);
         m_rbOAccept->Enable(true);
