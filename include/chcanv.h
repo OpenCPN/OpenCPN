@@ -459,7 +459,6 @@ private:
       wxTimer     *m_DoubleClickTimer;
 
       wxTimer     m_MouseWheelTimer;
-      wxDateTime  m_MouseWheelTimerTime;
       wxTimer     m_RolloverPopupTimer;
 
       int         m_mouse_wheel_oneshot;

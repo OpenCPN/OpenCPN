@@ -2913,9 +2913,12 @@ void glChartCanvas::DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect)
 
 void glChartCanvas::Render()
 {
-    if( !m_bsetup ) return;
-
-    if( ( !cc1->VPoint.b_quilt ) && ( !Current_Ch ) ) return;
+    if( !m_bsetup ||
+        ( cc1->VPoint.b_quilt && cc1->m_pQuilt && !cc1->m_pQuilt->IsComposed() ) ||
+        ( !cc1->VPoint.b_quilt && !Current_Ch ) ) {
+            SwapBuffers();
+            return;
+        }
 
     m_last_render_time = wxDateTime::Now().GetTicks();
 
@@ -2969,8 +2972,6 @@ void glChartCanvas::Render()
                 DeleteChartTextures(pc);
         }
     }
-
-    if( VPoint.b_quilt && cc1->m_pQuilt && !cc1->m_pQuilt->IsComposed() ) return;
 
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)
