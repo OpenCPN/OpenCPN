@@ -436,6 +436,21 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         if( m_width != STYLE_UNDEFINED ) width = m_width;
         if( m_Colour == wxEmptyString ) {
             col = g_pRouteMan->GetRoutePen()->GetColour();
+            
+            //  For tracks, establish colour based on first icon name
+            if(m_bIsTrack){
+                wxRoutePointListNode *node = pRoutePointList->GetFirst();
+                RoutePoint *prp = node->GetData();
+                
+                if( prp->m_IconName.StartsWith( _T("xmred") ) ) 
+                    col = GetGlobalColor( _T ( "URED" ) );
+                else if( prp->m_IconName.StartsWith( _T("xmblue") ) ) 
+                    col = GetGlobalColor( _T ( "BLUE3" ) );
+                else if( prp->m_IconName.StartsWith( _T("xmgreen") ) ) 
+                    col = GetGlobalColor( _T ( "UGREN" ) );
+                else 
+                    col = GetGlobalColor( _T ( "CHMGD" ) );
+            }
         } else {
             for( unsigned int i = 0; i < sizeof( ::GpxxColorNames ) / sizeof(wxString); i++ ) {
                 if( m_Colour == ::GpxxColorNames[i] ) {
@@ -479,15 +494,17 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
     glEnd();
 
     /* direction arrows.. could probably be further optimized for opengl */
-    wxRoutePointListNode *node = pRoutePointList->GetFirst();
-    wxPoint rpt1, rpt2;
-    while(node) {
-        RoutePoint *prp = node->GetData();
-        cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
-        if(node != pRoutePointList->GetFirst())
-            RenderSegmentArrowsGL( rpt1.x, rpt1.y, rpt2.x, rpt2.y, cc1->GetVP() );
-        rpt1 = rpt2;
-        node = node->GetNext();
+    if( !m_bIsTrack ) {
+        wxRoutePointListNode *node = pRoutePointList->GetFirst();
+        wxPoint rpt1, rpt2;
+        while(node) {
+            RoutePoint *prp = node->GetData();
+            cc1->GetCanvasPointPix( prp->m_lat, prp->m_lon, &rpt2 );
+            if(node != pRoutePointList->GetFirst())
+                RenderSegmentArrowsGL( rpt1.x, rpt1.y, rpt2.x, rpt2.y, cc1->GetVP() );
+            rpt1 = rpt2;
+            node = node->GetNext();
+        }
     }
 
     /*  Route points  */

@@ -1952,7 +1952,7 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "NavObjectFileName" ), m_sNavObjSetFile );
 
     Read( _T ( "RouteLineWidth" ), &g_route_line_width, 2 );
-    Read( _T ( "TrackLineWidth" ), &g_track_line_width, 3 );
+    Read( _T ( "TrackLineWidth" ), &g_track_line_width, 2 );
     Read( _T ( "CurrentArrowScale" ), &g_current_arrow_scale, 100 );
     Read( _T ( "DefaultWPIcon" ), &g_default_wp_icon, _T("triangle") );
 
