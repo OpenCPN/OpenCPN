@@ -2210,6 +2210,16 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
                 m_rotation_speed = 0;
                 break;
             }
+        } else {
+            switch( key_char ) {
+            case 43:
+            case 54:                     // '-'  alpha/num pad
+            case 56:                     // '_'  alpha/num pad
+                DoMovement(m_mustmove);
+
+                m_zoom_factor = 1;
+                break;
+            }
         }
     }
     event.Skip();
@@ -5553,7 +5563,11 @@ void ChartCanvas::MouseTimedEvent( wxTimerEvent& event )
 
 void ChartCanvas::OnMouseWheelTimerEvent( wxTimerEvent& event )
 {
-    m_zoom_factor = 1; // Stop zooming
+    if(m_mouse_wheel_oneshot) {
+        m_MouseWheelTimer.Start( m_mouse_wheel_oneshot, true );           // restart timer
+        m_mouse_wheel_oneshot = 0;
+    } else
+        m_zoom_factor = 1; // Stop zooming
 }
 
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
@@ -5734,36 +5748,33 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     if( g_pi_manager ) g_pi_manager->SendCursorLatLonToAllPlugIns( m_cursor_lat, m_cursor_lon );
 
     //        Check for wheel rotation
-    m_mouse_wheel_oneshot = 500;                  //msec
     // ideally, should be just longer than the time between
     // processing accumulated mouse events from the event queue
     // as would happen during screen redraws.
     int wheel_dir = event.GetWheelRotation();
 
     if( wheel_dir ) {
+        int mouse_wheel_oneshot = abs(wheel_dir)*4;                  //msec
+        wheel_dir = wheel_dir > 0 ? 1 : -1; // normalize
+
         wxDateTime this_now = wxDateTime::UNow();
-        if( m_MouseWheelTimer.IsRunning() ) {
-            if( wheel_dir != m_last_wheel_dir )
+        if( m_MouseWheelTimer.IsRunning() && wheel_dir == m_last_wheel_dir ) {
+            // make running timer to restart later
+            m_mouse_wheel_oneshot += mouse_wheel_oneshot;
+        } else {
+            if( m_MouseWheelTimer.IsRunning() && wheel_dir != m_last_wheel_dir )
                 StopMovement( );
-            else {
-                // restart running timer to stop later
-                long ms = (this_now - m_MouseWheelTimerTime).GetMilliseconds().ToLong();
 
-                m_mouse_wheel_oneshot += m_mouse_wheel_oneshot - ms;
-                this_now = m_MouseWheelTimerTime + wxTimeSpan::Milliseconds(500);
-            }
+            m_last_wheel_dir = wheel_dir;
+
+            double factor = 2.0;
+            if(wheel_dir < 0)
+                factor = 1/factor;
+        
+            ZoomCanvas( factor, true, false );
+        
+            m_MouseWheelTimer.Start( mouse_wheel_oneshot, true );           // start timer
         }
-
-        m_last_wheel_dir = wheel_dir;
-
-        double factor = 2.0;
-        if(wheel_dir < 0)
-            factor = 1/factor;
-        
-        ZoomCanvas( factor, true, false );
-        
-        m_MouseWheelTimer.Start( m_mouse_wheel_oneshot, true );           // start timer
-        m_MouseWheelTimerTime = this_now;
     }
 
     if(!g_btouch ){
