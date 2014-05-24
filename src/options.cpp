@@ -4181,7 +4181,15 @@ wxString StringArrayToString(wxArrayString arr)
 
 void options::SetDSFormRWStates()
 {
-    if (m_rbNetProtoGPSD->GetValue() && !m_rbTypeSerial->GetValue())
+    if (m_rbTypeSerial->GetValue())
+    {
+        m_cbInput->Enable(false);
+        m_cbOutput->Enable(true);
+        m_rbOAccept->Enable(true);
+        m_rbOIgnore->Enable(true);
+        m_btnOutputStcList->Enable(true);
+    }
+    else if (m_rbNetProtoGPSD->GetValue())
     {
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("2947"));
@@ -4204,8 +4212,10 @@ void options::SetDSFormRWStates()
         m_rbOIgnore->Enable(true);
         m_btnOutputStcList->Enable(true);
     }
-    else
+    else                                        // TCP
     {
+        if (m_tNetPort->GetValue() == wxEmptyString)
+            m_tNetPort->SetValue(_T("10110"));
         m_cbInput->Enable(true);
         m_cbOutput->Enable(true);
         m_rbOAccept->Enable(true);
