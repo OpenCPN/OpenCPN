@@ -21,6 +21,10 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301,  USA.         *
  **************************************************************************/
 
+#ifndef __DSPORTTYPE_H__
+#include <dsPortType.h>
+#endif
+
 #ifndef __CONNECTIONPARAMS_H__
 #define __CONNECTIONPARAMS_H__
 
@@ -80,7 +84,7 @@ public:
     bool            Garmin;
     bool            GarminUpload;
     bool            FurunoGP3X;
-    bool            Output;
+    dsPortType      IOSelect;
     ListType        InputSentenceListType;
     wxArrayString   InputSentenceList;
     ListType        OutputSentenceListType;
@@ -94,7 +98,7 @@ public:
     wxString GetSourceTypeStr();
     wxString GetAddressStr();
     wxString GetParametersStr();
-    wxString GetOutputValueStr();
+    wxString GetIOTypeValueStr();
     wxString GetFiltersStr();
     wxString GetDSPort();
     wxString GetLastDSPort();

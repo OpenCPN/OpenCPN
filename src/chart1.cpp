@@ -2471,11 +2471,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
             }
 #endif    
                 
-            dsPortType port_type;
-            if (cp->Output)
-                port_type = DS_TYPE_INPUT_OUTPUT;
-            else
-                port_type = DS_TYPE_INPUT;
+            dsPortType port_type = cp->IOSelect;
             DataStream *dstr = new DataStream( g_pMUX,
                                            cp->GetDSPort(),
                                            wxString::Format(wxT("%i"),cp->Baudrate),
