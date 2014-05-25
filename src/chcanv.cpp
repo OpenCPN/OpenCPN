@@ -9195,6 +9195,9 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             OCPNRegion chart_get_all_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
             m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_all_region );
         }
+        
+        if( !temp_dc.IsOk() ) return;
+        
     }
 
     else                  // not quilted
@@ -9205,10 +9208,12 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             return;
         }
 
-        Current_Ch->RenderRegionViewOnDC( temp_dc, svp, chart_get_region );
+        if(!chart_get_region.IsEmpty()){
+            Current_Ch->RenderRegionViewOnDC( temp_dc, svp, chart_get_region );
+            if( !temp_dc.IsOk() ) return;
+        }
+            
     }
-
-    if( !temp_dc.IsOk() ) return;
 
 //    Arrange to render the World Chart vector data behind the rendered current chart
 //    so that uncovered canvas areas show at least the world chart.
