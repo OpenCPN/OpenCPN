@@ -5989,103 +5989,6 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 FindRoutePointsAtCursor( SelectRadius, true );    // Not creating Route
             }
         }  // !g_btouch
-
-
-       if( g_btouch ){
-        //      Check to see if there is a route or AIS target under the cursor
-        //      If so, start the rollover timer which creates the popup
-            bool b_start_rollover = false;
-            if( g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS ) {
-                SelectItem *pFind = pSelectAIS->FindSelection( m_cursor_lat, m_cursor_lon,
-                                                           SELTYPE_AISTARGET );
-                if( pFind )
-                    b_start_rollover = true;
-            }
-
-            if(!b_start_rollover){
-                SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
-                                                                     SELTYPE_ROUTESEGMENT );
-                wxSelectableItemListNode *node = SelList.GetFirst();
-                while( node ) {
-                    SelectItem *pFindSel = node->GetData();
-
-                    Route *pr = (Route *) pFindSel->m_pData3;        //candidate
-
-                    if( pr && pr->IsVisible() ){
-                        b_start_rollover = true;
-                        break;
-                    }
-                }       // while
-            }
-
-            if( b_start_rollover ){
-                m_RolloverPopupTimer.Start( m_rollover_popup_timer_msec, wxTIMER_ONE_SHOT );
-            }
-
-            {
-                SelectItem *pFindCurrent = NULL;
-                SelectItem *pFindTide = NULL;
-                double slat, slon;
-                slat = m_cursor_lat;
-                slon = m_cursor_lon;
-
-
-                if( m_bShowCurrent )
-                    pFindCurrent = pSelectTC->FindSelection( slat, slon, SELTYPE_CURRENTPOINT );
-
-                if( m_bShowTide )                                // look for tide stations
-                    pFindTide = pSelectTC->FindSelection( slat, slon, SELTYPE_TIDEPOINT );
-
-                if( pFindCurrent ) {
-                    // There may be multiple current entries at the same point.
-                    // For example, there often is a current substation (with directions specified)
-                    // co-located with its master.  We want to select the substation, so that
-                    // the direction will be properly indicated on the graphic.
-                    // So, we search the select list looking for IDX_type == 'c' (i.e substation)
-                    IDX_entry *pIDX_best_candidate;
-
-                    SelectItem *pFind = NULL;
-                    SelectableItemList SelList = pSelectTC->FindSelectionList( m_cursor_lat,
-                                                                               m_cursor_lon, SELTYPE_CURRENTPOINT );
-
-                    //      Default is first entry
-                    wxSelectableItemListNode *node = SelList.GetFirst();
-                    pFind = node->GetData();
-                    pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
-
-                    if( SelList.GetCount() > 1 ) {
-                        node = node->GetNext();
-                        while( node ) {
-                            pFind = node->GetData();
-                            IDX_entry *pIDX_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                            if( pIDX_candidate->IDX_type == 'c' ) {
-                                pIDX_best_candidate = pIDX_candidate;
-                                break;
-                            }
-
-                            node = node->GetNext();
-                        }       // while (node)
-                    } else {
-                        wxSelectableItemListNode *node = SelList.GetFirst();
-                        pFind = node->GetData();
-                        pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
-                    }
-
-                    m_pIDXCandidate = pIDX_best_candidate;
-
-                    DrawTCWindow( x, y, (void *) pIDX_best_candidate );
-                    Refresh( false );
-                }
-
-                else if( pFindTide ) {
-                    m_pIDXCandidate = (IDX_entry *) pFindTide->m_pData1;
-
-                    DrawTCWindow( x, y, (void *) pFindTide->m_pData1 );
-                    Refresh( false );
-                }
-            }
-       }       // g_btouch
-
     }
 
     if( event.Dragging() ) {
@@ -6262,7 +6165,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         bool b_startedit_mark = false;
 
         if(g_btouch) {
-            if( parent_frame->nRoute_State && !m_bChartDragging)                  // creating route?
+            m_bChartDragging = false;
+            
+            if( parent_frame->nRoute_State /*&& !m_bChartDragging*/)                  // creating route?
             {
                 double rlat, rlon;
 
@@ -6434,9 +6339,15 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 bool b_was_editing_mark = m_bMarkEditing;
                 FindRoutePointsAtCursor( SelectRadius, true );    // Not creating Route
                 if( m_pEditRouteArray ) {
-                    if(!b_was_editing_route)
+                    if(!b_was_editing_route){
                         b_startedit_route = true;
-//                    wxBell();
+                        
+                        //  Hide the route rollover during route point edit, not needed, and may be confusing
+                        if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()  ) {
+                            m_pRouteRolloverWin->IsActive( false );
+                        }
+                    }
+                    
                     wxRect pre_rect;
                     for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                         Route *pr = (Route *) m_pEditRouteArray->Item( ir );
@@ -6462,9 +6373,97 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         m_pRoutePointEditTarget->CalculateDCRect( m_dc_route, &wp_rect );
                         RefreshRect( wp_rect, false );
                     }
+                    
                 }
-
             }
+            
+                //      Check to see if there is a route or AIS target under the cursor
+                //      If so, start the rollover timer which creates the popup
+                bool b_start_rollover = false;
+                if( g_pAIS && g_pAIS->GetNumTargets() && g_bShowAIS ) {
+                    SelectItem *pFind = pSelectAIS->FindSelection( m_cursor_lat, m_cursor_lon,
+                                                                   SELTYPE_AISTARGET );
+                    if( pFind )
+                        b_start_rollover = true;
+                }
+                
+                if(!b_start_rollover && !b_startedit_route){
+                    SelectableItemList SelList = pSelect->FindSelectionList( m_cursor_lat, m_cursor_lon,
+                                                                             SELTYPE_ROUTESEGMENT );
+                    wxSelectableItemListNode *node = SelList.GetFirst();
+                    while( node ) {
+                        SelectItem *pFindSel = node->GetData();
+                        
+                        Route *pr = (Route *) pFindSel->m_pData3;        //candidate
+                        
+                        if( pr && pr->IsVisible() ){
+                            b_start_rollover = true;
+                            break;
+                        }
+                    }       // while
+                }
+                
+                if( b_start_rollover )
+                    m_RolloverPopupTimer.Start( m_rollover_popup_timer_msec, wxTIMER_ONE_SHOT );
+                
+                
+                SelectItem *pFindCurrent = NULL;
+                SelectItem *pFindTide = NULL;
+                    
+                if( m_bShowCurrent )
+                        pFindCurrent = pSelectTC->FindSelection( m_cursor_lat, m_cursor_lon, SELTYPE_CURRENTPOINT );
+                    
+                if( m_bShowTide )                                // look for tide stations
+                        pFindTide = pSelectTC->FindSelection( m_cursor_lat, m_cursor_lon, SELTYPE_TIDEPOINT );
+                    
+                if( pFindCurrent ) {
+                        // There may be multiple current entries at the same point.
+                        // For example, there often is a current substation (with directions specified)
+                        // co-located with its master.  We want to select the substation, so that
+                        // the direction will be properly indicated on the graphic.
+                        // So, we search the select list looking for IDX_type == 'c' (i.e substation)
+                        IDX_entry *pIDX_best_candidate;
+                        
+                        SelectItem *pFind = NULL;
+                        SelectableItemList SelList = pSelectTC->FindSelectionList( m_cursor_lat,
+                                                                                   m_cursor_lon, SELTYPE_CURRENTPOINT );
+                        
+                        //      Default is first entry
+                        wxSelectableItemListNode *node = SelList.GetFirst();
+                        pFind = node->GetData();
+                        pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
+                        
+                        if( SelList.GetCount() > 1 ) {
+                            node = node->GetNext();
+                            while( node ) {
+                                pFind = node->GetData();
+                                IDX_entry *pIDX_candidate = (IDX_entry *) ( pFind->m_pData1 );
+                                if( pIDX_candidate->IDX_type == 'c' ) {
+                                    pIDX_best_candidate = pIDX_candidate;
+                                    break;
+                                }
+                                
+                                node = node->GetNext();
+                            }       // while (node)
+                        } else {
+                            wxSelectableItemListNode *node = SelList.GetFirst();
+                            pFind = node->GetData();
+                            pIDX_best_candidate = (IDX_entry *) ( pFind->m_pData1 );
+                        }
+                        
+                        m_pIDXCandidate = pIDX_best_candidate;
+                        
+                        DrawTCWindow( x, y, (void *) pIDX_best_candidate );
+                        Refresh( false );
+                }
+                    
+                else if( pFindTide ) {
+                        m_pIDXCandidate = (IDX_entry *) pFindTide->m_pData1;
+                        
+                        DrawTCWindow( x, y, (void *) pFindTide->m_pData1 );
+                        Refresh( false );
+                }
+            
         }       // g_btouch
 
 
@@ -8915,7 +8914,7 @@ void ChartCanvas::RenderRouteLegs( ocpnDC &dc )
             route->m_NextLegGreatCircle = true;
         }
 
-        if( !g_bresponsive) {
+        if( !g_btouch) {
             route->DrawPointWhich( dc, route->m_lastMousePointIndex, &lastPoint );
 
             if( route->m_NextLegGreatCircle ) {
