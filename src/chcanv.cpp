@@ -3513,8 +3513,8 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
         ll_gc_ll( gLat, gLon, 0, factor, &tlat, &tlon );
         GetCanvasPointPix( tlat, tlon, &r );
 
-        double lpp = sqrt( pow( (double) (lShipMidPoint.x - r.x), 2) +
-                           pow( (double) (lShipMidPoint.y - r.y), 2 ) );
+        double lpp = sqrt( pow( (double) (lGPSPoint.x - r.x), 2) +
+                           pow( (double) (lGPSPoint.y - r.y), 2 ) );
         int pix_radius = (int) lpp;
 
         wxPen ppPen1( GetGlobalColor( _T ( "URED" ) ), 2 );
@@ -3522,14 +3522,14 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
         dc.SetBrush( wxBrush( GetGlobalColor( _T ( "URED" ) ), wxTRANSPARENT ) );
 
         for( int i = 1; i <= g_iNavAidRadarRingsNumberVisible; i++ )
-            dc.StrokeCircle( lShipMidPoint.x, lShipMidPoint.y, i * pix_radius );
+            dc.StrokeCircle( lGPSPoint.x, lGPSPoint.y, i * pix_radius );
     }
 }
 
 void ChartCanvas::ComputeShipScaleFactor(float icon_hdt,
                                          int ownShipWidth, int ownShipLength, 
-                                         wxPoint lShipMidPoint,
-                                         wxPoint GPSOffsetPixels, wxPoint lGPSPoint,
+                                         wxPoint &lShipMidPoint,
+                                         wxPoint &GPSOffsetPixels, wxPoint lGPSPoint,
                                          float &scale_factor_x, float &scale_factor_y)
 {
     float screenResolution = (float) ::wxGetDisplaySize().y / ::wxGetDisplaySizeMM().y;

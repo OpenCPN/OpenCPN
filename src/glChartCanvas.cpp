@@ -1866,15 +1866,14 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     ll_gc_ll( gLat, gLon, pCog, pSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
 
     cc1->GetCanvasPointPix( gLat, gLon, &lGPSPoint );
-    lShipMidPoint = lGPSPoint;
     cc1->GetCanvasPointPix( pred_lat, pred_lon, &lPredPoint );
 
-    float cog_rad = atan2f( (float) ( lPredPoint.y - lShipMidPoint.y ),
-                            (float) ( lPredPoint.x - lShipMidPoint.x ) );
+    float cog_rad = atan2f( (float) ( lPredPoint.y - lGPSPoint.y ),
+                            (float) ( lPredPoint.x - lGPSPoint.x ) );
     cog_rad += PI;
 
-    float lpp = sqrtf( powf( (float) (lPredPoint.x - lShipMidPoint.x), 2) +
-                       powf( (float) (lPredPoint.y - lShipMidPoint.y), 2) );
+    float lpp = sqrtf( powf( (float) (lPredPoint.x - lGPSPoint.x), 2) +
+                       powf( (float) (lPredPoint.y - lGPSPoint.y), 2) );
 
     //  Draw the icon rotated to the COG
     //  or to the Hdt if available
@@ -1889,12 +1888,11 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
     wxPoint osd_head_point;
 
     ll_gc_ll( gLat, gLon, icon_hdt, pSog * 10. / 60., &osd_head_lat, &osd_head_lon );
-
-    cc1->GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
+    
     cc1->GetCanvasPointPix( osd_head_lat, osd_head_lon, &osd_head_point );
 
-    float icon_rad = atan2( (float) ( osd_head_point.y - lShipMidPoint.y ),
-                            (float) ( osd_head_point.x - lShipMidPoint.x ) );
+    float icon_rad = atan2( (float) ( osd_head_point.y - lGPSPoint.y ),
+                            (float) ( osd_head_point.x - lGPSPoint.x ) );
     icon_rad += PI;
 
     if( pSog < 0.2 ) icon_rad = ( ( icon_hdt + 90. ) * PI / 180. ) + cc1->GetVP().rotation;
@@ -1904,8 +1902,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     ll_gc_ll( gLat, gLon, icon_hdt, pSog * g_ownship_predictor_minutes / 60., &hdg_pred_lat,
               &hdg_pred_lon );
-
-    cc1->GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
+    
     cc1->GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
 
 //    Should we draw the Head vector?
@@ -1929,16 +1926,15 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         int list = cc1->m_ownship_state == SHIP_NORMAL;
 
         glPushMatrix();
-        glTranslatef(lShipMidPoint.x, lShipMidPoint.y, 0);
+        glTranslatef(lGPSPoint.x, lGPSPoint.y, 0);
             
         if(ownship_large_scale_display_lists[list])
             glCallList(ownship_large_scale_display_lists[list]);
         else {
             ownship_large_scale_display_lists[list] = glGenLists(1);
             glNewList(ownship_large_scale_display_lists[list], GL_COMPILE_AND_EXECUTE);
-            lShipMidPoint.x = lShipMidPoint.y = 0;
-                
-            cc1->ShipDrawLargeScale(dc, lShipMidPoint);
+                            
+            cc1->ShipDrawLargeScale(dc, wxPoint(0, 0));
             glEndList();
         }
         glPopMatrix();
@@ -1991,20 +1987,20 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         float scale_factor_y = 1, scale_factor_x = 1;
         int ownShipWidth = 22; // Default values from s_ownship_icon
         int ownShipLength= 84;
+        lShipMidPoint = lGPSPoint;
 
         if( g_n_ownship_beam_meters > 0.0 &&
             g_n_ownship_length_meters > 0.0 &&
-            g_OwnShipIconType > 0 )
+            g_OwnShipIconType == 1 )
         {            
-            if( g_OwnShipIconType == 1 ) {
-                ownShipWidth = ownship_size.x;
-                ownShipLength= ownship_size.y;
-            }
+            ownShipWidth = ownship_size.x;
+            ownShipLength= ownship_size.y;
+        }
 
+        if( g_OwnShipIconType != 0 )
             cc1->ComputeShipScaleFactor
                 (icon_hdt, ownShipWidth, ownShipLength, lShipMidPoint,
                  GPSOffsetPixels, lGPSPoint, scale_factor_x, scale_factor_y);
-        }
 
         glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_HINT_BIT);
         glEnable( GL_LINE_SMOOTH );
@@ -2052,7 +2048,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                 glVertex2f(s_ownship_icon[i], s_ownship_icon[i + 1] );
             glEnd();
             
-            glColor3ub(0, 0, 0);
+            glColor4ub(0, 0, 0, 255);
             glLineWidth(1);
 
             glBegin(GL_LINE_LOOP);
@@ -2076,14 +2072,14 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
                
         float cx = lGPSPoint.x, cy = lGPSPoint.y;
         float r = circle_rad+1;
-        glColor3ub(0, 0, 0);
+        glColor4ub(0, 0, 0, 255);
         glBegin(GL_POLYGON);
         for( float a = 0; a <= 2 * PI; a += 2 * PI / 12 )
             glVertex2f( cx + r * sinf( a ), cy + r * cosf( a ) );
         glEnd();
 
         r = circle_rad;
-        glColor3ub(255, 255, 255);
+        glColor4ub(255, 255, 255, 255);
         
         glBegin(GL_POLYGON);
         for( float a = 0; a <= 2 * M_PI; a += 2 * M_PI / 12 )

@@ -290,8 +290,8 @@ private:
 
       void ComputeShipScaleFactor(float icon_hdt,
                                   int ownShipWidth, int ownShipLength, 
-                                  wxPoint lShipMidPoint,
-                                  wxPoint GpsOffsetPixels, wxPoint lGPSPoint,
+                                  wxPoint &lShipMidPoint,
+                                  wxPoint &GpsOffsetPixels, wxPoint lGPSPoint,
                                   float &scale_factor_x, float &scale_factor_y);
 
       void ShipDrawLargeScale( ocpnDC& dc, wxPoint lShipMidPoint );
