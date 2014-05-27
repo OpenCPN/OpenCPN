@@ -99,6 +99,15 @@ wxString Garmin_GPS_GetSaveString()
       return wxString(gps_save_string,  wxConvUTF8);
 }
 
+void Garmin_GPS_PrepareWptData(GPS_PWay pway, RoutePoint *prp)
+{
+      pway->lat = prp->m_lat;
+      pway->lon = prp->m_lon;
+      pway->alt_is_unknown = 1;
+      pway->alt = 0.0;
+      strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
+}
+
 int Garmin_GPS_SendWaypoints( wxString &port_name, RoutePointList *wplist)
 {
       int ret_val = 0;
@@ -121,10 +130,7 @@ int Garmin_GPS_SendWaypoints( wxString &port_name, RoutePointList *wplist)
             wxRoutePointListNode *node = wplist->Item(i);
             RoutePoint *prp = node->GetData();
 
-            pway->lat = prp->m_lat;
-            pway->lon = prp->m_lon;
-            strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
-
+            Garmin_GPS_PrepareWptData(pway, prp);
       }
 
 
@@ -189,9 +195,7 @@ GPS_SWay **Garmin_GPS_Create_A200_Route(Route *pr, int route_number, int *size)
             wxRoutePointListNode *node = wplist->Item(i-1);
             RoutePoint *prp = node->GetData();
 
-            pway->lat = prp->m_lat;
-            pway->lon = prp->m_lon;
-            strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
+            Garmin_GPS_PrepareWptData(pway, prp);
       }
 
       return ppway;
@@ -251,9 +255,7 @@ GPS_SWay **Garmin_GPS_Create_A201_Route(Route *pr, int route_number, int *size)
                   wxRoutePointListNode *node = wplist->Item((i-1)/2);
                   RoutePoint *prp = node->GetData();
 
-                  pway->lat = prp->m_lat;
-                  pway->lon = prp->m_lon;
-                  strncpy(pway->ident, (prp->GetName().Truncate ( 6 )).mb_str(), 6);
+                  Garmin_GPS_PrepareWptData(pway, prp);
 	    }
 	    else  /* Even */
 	    {
