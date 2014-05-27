@@ -5310,9 +5310,12 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
         m_ChartUpdatePeriod = g_ChartUpdatePeriod;
     }
 
+    nBlinkerTick++;
+    if( cc1 )
+        cc1->DrawBlinkObjects();
+    
 //      Update the active route, if any
     if( g_pRouteMan->UpdateProgress() ) {
-        nBlinkerTick++;
         //    This RefreshRect will cause any active routepoint to blink
         if( g_pRouteMan->GetpActiveRoute() ) cc1->RefreshRect( g_blink_rect, false );
     }

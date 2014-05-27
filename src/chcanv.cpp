@@ -5538,7 +5538,6 @@ void ChartCanvas::FindRoutePointsAtCursor( float selectRadius, bool setBeingEdit
                     pr->m_bIsBeingEdited = setBeingEdited;
                 }
                 m_bRouteEditing = setBeingEdited;
-
             } else                                      // editing Mark
             {
                 frp->m_bIsBeingEdited = setBeingEdited;
@@ -6335,34 +6334,43 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 Refresh( false );
             }
             else {
-                bool b_was_editing_route = m_bRouteEditing;
                 bool b_was_editing_mark = m_bMarkEditing;
-                FindRoutePointsAtCursor( SelectRadius, true );    // Not creating Route
-                if( m_pEditRouteArray ) {
-                    if(!b_was_editing_route){
+                if( !m_bRouteEditing ) {
+                    FindRoutePointsAtCursor( SelectRadius, true );    // Possibly selecting a point in a route for later dragging
+                    if( m_pEditRouteArray ) {
                         b_startedit_route = true;
-                        
+
+                        if( m_pRoutePointEditTarget){
+                            m_pRoutePointEditTarget->m_bIsBeingEdited = true;
+                            m_pRoutePointEditTarget->m_bBlink = true;
+                        }
+                            
                         //  Hide the route rollover during route point edit, not needed, and may be confusing
                         if( m_pRouteRolloverWin && m_pRouteRolloverWin->IsActive()  ) {
                             m_pRouteRolloverWin->IsActive( false );
                         }
-                    }
-                    
-                    wxRect pre_rect;
-                    for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
-                        Route *pr = (Route *) m_pEditRouteArray->Item( ir );
-                        //      Need to validate route pointer
-                        //      Route may be gone due to drgging close to ownship with
-                        //      "Delete On Arrival" state set, as in the case of
-                        //      navigating to an isolated waypoint on a temporary route
-                        if( g_pRouteMan->IsRouteValid(pr) ) {
-                            wxRect route_rect;
-                            pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
-                            pre_rect.Union( route_rect );
+                        
+                        wxRect pre_rect;
+                        for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
+                            Route *pr = (Route *) m_pEditRouteArray->Item( ir );
+                            //      Need to validate route pointer
+                            //      Route may be gone due to drgging close to ownship with
+                            //      "Delete On Arrival" state set, as in the case of
+                            //      navigating to an isolated waypoint on a temporary route
+                            if( g_pRouteMan->IsRouteValid(pr) ) {
+                                pr->SetHiLite(50);
+                                wxRect route_rect;
+                                pr->CalculateDCRect( m_dc_route, &route_rect, VPoint );
+                                pre_rect.Union( route_rect );
+                            }
                         }
+                        RefreshRect( pre_rect, false );
                     }
-                    RefreshRect( pre_rect, false );
                 }
+                else {
+                    b_startedit_route = false;           // Done with drag edit
+                }
+                
 
                 if( m_bMarkEditing ) {
                     if(!b_was_editing_mark)
@@ -6467,10 +6475,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }       // g_btouch
 
 
-        if( m_bRouteEditing && !b_startedit_route) {
+        if( m_bRouteEditing && !b_startedit_route) {            // End of RoutePoint drag
             if( m_pRoutePointEditTarget ) {
                 pSelect->UpdateSelectableRouteSegments( m_pRoutePointEditTarget );
-
+                m_pRoutePointEditTarget->m_bBlink = false;
+                
                 if( m_pEditRouteArray ) {
                     for( unsigned int ir = 0; ir < m_pEditRouteArray->GetCount(); ir++ ) {
                         Route *pr = (Route *) m_pEditRouteArray->Item( ir );
@@ -6480,8 +6489,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             pr->m_bIsBeingEdited = false;
 
                             pConfig->UpdateRoute( pr );
+                            
+                            pr->SetHiLite( 0 );
                         }
                     }
+                    Refresh( false );
                 }
 
                 //    Update the RouteProperties Dialog, if currently shown
@@ -6501,7 +6513,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 }
 
                 m_pRoutePointEditTarget->m_bPtIsSelected = false;
-
+                m_pRoutePointEditTarget->m_bIsBeingEdited = false;
+                
                 delete m_pEditRouteArray;
                 m_pEditRouteArray = NULL;
                 undo->AfterUndoableAction( m_pRoutePointEditTarget );
@@ -6513,7 +6526,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             if( !g_FloatingToolbarDialog->IsShown() ) gFrame->SurfaceToolbar();
         }
 
-        else if( m_bMarkEditing && !b_startedit_mark) {
+        else if( m_bMarkEditing && !b_startedit_mark) {         // end of Waypoint drag
             if( m_pRoutePointEditTarget ) {
                 pConfig->UpdateWayPoint( m_pRoutePointEditTarget );
                 undo->AfterUndoableAction( m_pRoutePointEditTarget );
@@ -10161,6 +10174,30 @@ void ChartCanvas::DrawAllWaypointsInBBox( ocpnDC& dc, LLBBox& BltBBox, const wxR
         node = node->GetNext();
     }
 }
+
+void ChartCanvas::DrawBlinkObjects( void )
+{
+    //  All RoutePoints
+    wxRect update_rect;
+    
+    wxRoutePointListNode *node = pWayPointMan->GetWaypointList()->GetFirst();
+    
+    while( node ) {
+        RoutePoint *pWP = node->GetData();
+        if( pWP ) {
+            if( pWP->m_bBlink ) {
+                update_rect.Union( pWP->CurrentRect_in_DC ) ;
+            }
+        }
+        
+        node = node->GetNext();
+    }
+    
+    RefreshRect(update_rect);
+}
+
+
+
 
 void ChartCanvas::DrawAnchorWatchPoints( ocpnDC& dc )
 {

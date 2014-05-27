@@ -273,7 +273,8 @@ public:
 
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 
-      void        FinishRoute(void);
+      void DrawBlinkObjects( void );
+      void FinishRoute(void);
       
 #ifdef ocpnUSE_GL
       glChartCanvas *GetglCanvas(){ return m_glcc; }

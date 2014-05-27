@@ -69,6 +69,7 @@ public:
       int GetnPoints(void){ return m_nPoints; }
       wxBoundingBox GetBBox();
       void SetnPoints(void){ m_nPoints = pRoutePointList->GetCount(); }
+      void SetHiLite( int width ) {m_hiliteWidth = width; }
       void Reverse(bool bRenamePoints = false);
       void RebuildGUIDList(void);
       void RenameRoutePoints();
@@ -131,6 +132,7 @@ public:
       wxRect      active_pt_rect;
       wxString    m_Colour;
       bool        m_btemp;
+      int         m_hiliteWidth;
 
 private:
       bool m_bNeedsUpdateBBox;
