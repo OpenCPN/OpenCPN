@@ -4453,7 +4453,9 @@ bool ChartBaseBSB::AnalyzeSkew(void)
             }
         }
     }
-    
+ 
+    double apparent_skew =  0;
+ 
     if(m_projection == PROJECTION_MERCATOR)
     {
         double easting0, easting1, northing0, northing1;
@@ -4464,7 +4466,28 @@ bool ChartBaseBSB::AnalyzeSkew(void)
         double skew_proj = atan2( (easting1-easting0), (northing1 - northing0) ) * 180./PI;
         double skew_points = atan2( (pRefTable[jmax].yr - pRefTable[imax].yr), (pRefTable[jmax].xr - pRefTable[imax].xr) ) * 180./PI; 
         
-        double apparent_skew =  skew_points - skew_proj + 90.;
+        apparent_skew =  skew_points - skew_proj + 90.;
+        
+        // normalize to +/- 180.
+        if(fabs(apparent_skew) > 180.){
+            if(apparent_skew < 0.)
+                apparent_skew += 360.;
+            else
+                apparent_skew -= 360.;
+        }
+    }
+    
+    else if(m_projection == PROJECTION_TRANSVERSE_MERCATOR)
+    {
+        double easting0, easting1, northing0, northing1;
+        //  Get the TMerc projection of the two REF points
+        toTM(pRefTable[imax].latr, pRefTable[imax].lonr, m_proj_lat, m_proj_lon, &easting0, &northing0);
+        toTM(pRefTable[jmax].latr, pRefTable[jmax].lonr, m_proj_lat, m_proj_lon, &easting1, &northing1);
+        
+        double skew_proj = atan2( (easting1-easting0), (northing1 - northing0) ) * 180./PI;
+        double skew_points = atan2( (pRefTable[jmax].yr - pRefTable[imax].yr), (pRefTable[jmax].xr - pRefTable[imax].xr) ) * 180./PI; 
+        
+        apparent_skew =  skew_points - skew_proj + 90.;
         
         // normalize to +/- 180.
         if(fabs(apparent_skew) > 180.){
@@ -4474,7 +4497,9 @@ bool ChartBaseBSB::AnalyzeSkew(void)
                 apparent_skew -= 360.;
         }
         
-        if(fabs( apparent_skew - m_Chart_Skew ) > 2) {           // measured skew is more than 2 degrees 
+    }
+    
+    if(fabs( apparent_skew - m_Chart_Skew ) > 2) {           // measured skew is more than 2 degrees 
            m_Chart_Skew = apparent_skew;                         // different from stated skew
            
            wxString msg = _T("   Warning: Skew override on chart ");
@@ -4487,8 +4512,7 @@ bool ChartBaseBSB::AnalyzeSkew(void)
            
            return false;
            
-        }
-    }    
+    }
     
     return true;
 }
