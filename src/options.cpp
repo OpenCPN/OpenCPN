@@ -4201,18 +4201,7 @@ void options::SetDSFormRWStates()
         m_rbOIgnore->Enable(false);
         m_btnOutputStcList->Enable(false);
     }
-    else if (m_rbNetProtoUDP->GetValue() && !m_rbTypeSerial->GetValue())
-    {
-        if (m_tNetPort->GetValue() == wxEmptyString)
-            m_tNetPort->SetValue(_T("10110"));
-        m_cbInput->SetValue(true);
-        m_cbInput->Enable(false);
-        m_cbOutput->Enable(true);
-        m_rbOAccept->Enable(true);
-        m_rbOIgnore->Enable(true);
-        m_btnOutputStcList->Enable(true);
-    }
-    else                                        // TCP
+    else
     {
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("10110"));
