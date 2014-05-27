@@ -3818,10 +3818,9 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             /* to ensure that the final segment lands exactly on sectr2 */
             float step = 12 * (sectr2 - sectr1) * M_PI / 180 / 360; /* 12 degree steps */
-            sectr2++; // avoid rounding issues
 
             glBegin( GL_LINE_STRIP );
-            for( float a = sectr1 * M_PI / 180.0; a <= sectr2 * M_PI / 180.; a += step )
+            for( float a = sectr1 * M_PI / 180.0; a <= (sectr2+1) * M_PI / 180.; a += step )
                 glVertex2f( rad * sinf( a ), -rad * cosf( a ) );
             glEnd();
 
@@ -3831,7 +3830,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glLineWidth( wxMax(g_GLMinLineWidth, (float)arc_width + 0.8) );
 
             glBegin( GL_LINE_STRIP );
-            for( float a = sectr1 * M_PI / 180.0; a <= sectr2 * M_PI / 180.; a += step )
+            for( float a = sectr1 * M_PI / 180.0; a <= (sectr2+1) * M_PI / 180.; a += step )
                 glVertex2f( rad * sinf( a ), -rad * cosf( a ) );
             glEnd();
 
