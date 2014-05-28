@@ -79,6 +79,7 @@ public:
       wxBoxSizer        *m_pboxSizer;
       int               m_nl;
       wxButton          *m_okButton;
+      wxButton          *m_createWptBtn;
 };
 
 #endif

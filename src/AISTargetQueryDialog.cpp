@@ -171,8 +171,8 @@ void AISTargetQueryDialog::CreateControls()
     topSizer->Add( m_pQueryTextCtl, 1, wxALIGN_CENTER_HORIZONTAL | wxALL | wxEXPAND, 5 );
 
     wxSizer* ok = CreateButtonSizer( wxOK );
-    wxButton* createWptBtn = new wxButton( this, xID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );
-    ok->Add( createWptBtn, 0, wxALL|wxEXPAND, 5 );
+    m_createWptBtn = new wxButton( this, xID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );
+    ok->Add( m_createWptBtn, 0, wxALL|wxEXPAND, 5 );
     topSizer->Add( ok, 0, wxALIGN_CENTER_HORIZONTAL | wxBOTTOM, 5 );
 }
 
@@ -221,6 +221,8 @@ void AISTargetQueryDialog::UpdateText()
             Fit();
             sz -= wxSize( 200, 200 );
             m_pQueryTextCtl->SetMinSize( sz );
+            
+            m_createWptBtn->Enable( td->b_positionOnceValid );
         }
   //  }
 }
