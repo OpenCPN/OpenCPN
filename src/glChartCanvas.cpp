@@ -673,8 +673,9 @@ bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString
                     else {
                         /* the graphics driver does the work of compression,
                            just read the compressed data back */
-                        /* uncompressed ram buffer is big enough and already allocated */
-                        tex_data = ptd.map_array[level];
+                        
+//                        tex_data = ptd.map_array[level];
+
                         s_glGetCompressedTexImage(GL_TEXTURE_2D, level, tex_data);
                         g_tex_mem_used -= size;
                     }
