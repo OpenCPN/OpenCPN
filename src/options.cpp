@@ -2526,13 +2526,19 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
             wxMessageBox( _("You must enter a port..."), _("Error!") );
             return NULL;
         }
-        if (((m_rbNetProtoGPSD->GetValue()) ||
+        if (m_rbNetProtoUDP->GetValue() && (!m_cbOutput->GetValue())) {
+            m_tNetAddress->SetValue(_T("0.0.0.0"));
+        }
+        else if (((m_rbNetProtoGPSD->GetValue()) ||
                 (m_rbNetProtoUDP->GetValue() && m_cbOutput->GetValue())) &&
-                wxStrpbrk(m_tNetAddress->GetValue(),_("123456789")) == NULL )
+                wxStrpbrk(m_tNetAddress->GetValue(),_T("123456789")) == NULL )
         {
             wxMessageBox( _("You must enter the address..."), _("Error!") );
             return NULL;
         }
+
+        if (!m_tNetAddress->GetValue())
+            m_tNetAddress->SetValue(_T("0.0.0.0"));
     }
 
     ConnectionParams * pConnectionParams = new ConnectionParams();
@@ -2548,6 +2554,7 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
     pConnectionParams->LastNetworkPort = pConnectionParams->NetworkPort;
         
     pConnectionParams->NetworkAddress = m_tNetAddress->GetValue();
+    pConnectionParams->NetworkPort = wxAtoi(m_tNetPort->GetValue());
     if ( m_rbNetProtoTCP->GetValue() )
         pConnectionParams->NetProtocol = TCP;
     else if ( m_rbNetProtoUDP->GetValue() )
