@@ -871,8 +871,10 @@ void BuildCompressedCache()
                     t = 0;
                 }
             }
-        } else
+        } else {
             CompressChart(pchart, CompressedCacheFilePath, filename, false);
+            ChartData->DeleteCacheChart(pchart);
+        }
     }
 skip:
 
