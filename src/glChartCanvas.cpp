@@ -752,9 +752,33 @@ public:
     wxString filename;
 };
 
+#include <wx/arrimpl.cpp> 
+
+WX_DEFINE_SORTED_ARRAY_INT(int, MySortedArrayInt);
+int CompareInts(int n1, int n2)
+{
+    const ChartTableEntry &cte1 = ChartData->GetChartTableEntry(n1);
+    float clon = (cte1.GetLonMax() + cte1.GetLonMin())/2;
+    float clat = (cte1.GetLatMax() + cte1.GetLatMin())/2;
+    double d1 = DistGreatCircle(clat, clon, gLat, gLon);
+    
+    const ChartTableEntry &cte2 = ChartData->GetChartTableEntry(n2);
+    clon = (cte2.GetLonMax() + cte2.GetLonMin())/2;
+    clat = (cte2.GetLatMax() + cte2.GetLatMin())/2;
+    double d2 = DistGreatCircle(clat, clon, gLat, gLon);
+    
+    return (int)(d1 - d2);
+}
+
+MySortedArrayInt idx_sorted_by_distance(CompareInts);
+
 void BuildCompressedCache()
 {
-    /* determine how many cached charts we will generate so the progress bar has the right count */
+    
+    // Building the cache may take a long time....
+    // Be a little smarter.
+    // Build a sorted array of chart database indices, sorted on distance from the ownship currently.
+    // This way, a user may build a few charts textures for immediate use, then "skip" out on the rest until later.
     int count = 0;
     for(int i = 0; i<ChartData->GetChartTableEntries(); i++) {
         /* skip if not kap */
@@ -767,14 +791,17 @@ void BuildCompressedCache()
         wxFileName fn(CompressedCacheFilePath);
         if(fn.FileExists()) /* skip if file exists */
             continue;
+        
+        idx_sorted_by_distance.Add(i);
+        
         count++;
-    }
+    }  
 
     if( g_bDebugOGL ) wxLogMessage(wxString::Format(_T("BuildCompressedCache() count = %d"), count ));
-
+                                   
     if(count == 0)
         return;
-
+                                   
     wxProgressDialog *pprog = new wxProgressDialog
         (_("OpenCPN Compressed Cache Update"), _T(""), count, GetOCPNCanvasWindow(), wxPD_SMOOTH
          | wxPD_ELAPSED_TIME | wxPD_ESTIMATED_TIME | wxPD_REMAINING_TIME | wxPD_CAN_SKIP);
@@ -822,13 +849,9 @@ void BuildCompressedCache()
 
     // build cached compressed charts
     count = 0;
-    for(int i = 0; i<ChartData->GetChartTableEntries(); i++) {
-        /* skip if not kap */
-        const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
-        ChartTypeEnum chart_type = (ChartTypeEnum)cte.GetChartType();
-        if(chart_type != CHART_TYPE_KAP)
-            continue;
-
+    for(unsigned int j = 0; j<idx_sorted_by_distance.GetCount(); j++) {
+        int i = idx_sorted_by_distance.Item(j);
+        
         wxString filename = ChartData->GetDBChartFileName(i);
         wxString CompressedCacheFilePath = CompressedCachePath(filename);
         wxFileName fn(CompressedCacheFilePath);
@@ -839,6 +862,11 @@ void BuildCompressedCache()
         if(!fn.DirExists())
             fn.Mkdir();
 
+        const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
+        float clon = (cte.GetLonMax() + cte.GetLonMin())/2;
+        float clat = (cte.GetLatMax() + cte.GetLatMin())/2;
+        double distance = DistGreatCircle(clat, clon, gLat, gLon);
+        
         if( g_bDebugOGL ) wxLogMessage(wxString::Format(_T("BuildCompressedCache() File:"
                                                            + CompressedCacheFilePath )));
         count++;
@@ -848,7 +876,11 @@ void BuildCompressedCache()
             continue;
 
         bool skip = false;
-        pprog->Update(count-1, pchart->GetFullPath(), &skip );
+        wxString msg;
+        msg.Printf( _T("%4g NMi  "), distance);
+        msg += pchart->GetFullPath();
+        
+        pprog->Update(count-1, msg, &skip );
         if(skip)
             break;
 
