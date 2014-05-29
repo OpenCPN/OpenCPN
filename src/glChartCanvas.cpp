@@ -1190,7 +1190,7 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
         wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling stencil buffer") );
         bad_stencil_code = true;
-        wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling FBO") );
+//        wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling FBO") );
 //        m_b_DisableFBO = true;
     }
 
