@@ -2518,15 +2518,27 @@ ConnectionParams *options::CreateConnectionParamsFromSelectedItem()
         wxMessageBox( _("You must select or enter the port..."), _("Error!") );
         return NULL;
     }
-    //  TCP (I/O), GPSD (Input) and UDP (Output) ports require address field to be set
-    else if ( m_rbTypeNet->GetValue() && m_tNetAddress->GetValue() == wxEmptyString ) {
-        if( m_rbNetProtoTCP->GetValue() ||
-            m_rbNetProtoGPSD->GetValue() ||
-            ( m_rbNetProtoUDP->GetValue() &&  m_cbOutput->GetValue()) )
+    //  TCP, GPSD and UDP require port field to be set.
+    //  TCP clients, GPSD and UDP output sockets require an address
+    else if ( m_rbTypeNet->GetValue()) {
+        if (wxAtoi(m_tNetPort->GetValue()) == 0)
+        {
+            wxMessageBox( _("You must enter a port..."), _("Error!") );
+            return NULL;
+        }
+        if (m_rbNetProtoUDP->GetValue() && (!m_cbOutput->GetValue())) {
+            m_tNetAddress->SetValue(_T("0.0.0.0"));
+        }
+        else if (((m_rbNetProtoGPSD->GetValue()) ||
+                (m_rbNetProtoUDP->GetValue() && m_cbOutput->GetValue())) &&
+                wxStrpbrk(m_tNetAddress->GetValue(),_T("123456789")) == NULL )
         {
             wxMessageBox( _("You must enter the address..."), _("Error!") );
             return NULL;
         }
+
+        if (!m_tNetAddress->GetValue())
+            m_tNetAddress->SetValue(_T("0.0.0.0"));
     }
 
     ConnectionParams * pConnectionParams = new ConnectionParams();
@@ -4201,18 +4213,7 @@ void options::SetDSFormRWStates()
         m_rbOIgnore->Enable(false);
         m_btnOutputStcList->Enable(false);
     }
-    else if (m_rbNetProtoUDP->GetValue() && !m_rbTypeSerial->GetValue())
-    {
-        if (m_tNetPort->GetValue() == wxEmptyString)
-            m_tNetPort->SetValue(_T("10110"));
-        m_cbInput->SetValue(true);
-        m_cbInput->Enable(false);
-        m_cbOutput->Enable(true);
-        m_rbOAccept->Enable(true);
-        m_rbOIgnore->Enable(true);
-        m_btnOutputStcList->Enable(true);
-    }
-    else                                        // TCP
+    else
     {
         if (m_tNetPort->GetValue() == wxEmptyString)
             m_tNetPort->SetValue(_T("10110"));
