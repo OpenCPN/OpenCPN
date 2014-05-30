@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2014-02-22 16:59+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
@@ -135,6 +135,9 @@ msgstr "Fot"
 #
 msgid "Fonts"
 msgstr "Typsnitt"
+#
+msgid "From Ownship"
+msgstr ""
 #
 #
 msgid "GPS Compass"

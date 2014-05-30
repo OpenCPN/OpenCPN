@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2012-09-01 11:11+0100\n"
 "Last-Translator: tr\n"
 "Language-Team: \n"
@@ -139,6 +139,9 @@ msgstr ""
 #
 msgid "Fonts"
 msgstr "Caratteri"
+#
+msgid "From Ownship"
+msgstr ""
 #
 #
 #, fuzzy
@@ -379,8 +382,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Airtemp"
 #~ msgstr "Temp. Aria"
+#
 #
 #
 #
@@ -395,8 +400,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Edit"
 #~ msgstr "Modifica"
+#
 #
 #
 #
@@ -411,8 +418,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "True wind"
 #~ msgstr "Vento Reale"
+#
 #
 #
 #

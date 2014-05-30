@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2010-03-29 20:29+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -54,7 +54,7 @@ msgstr ""
 msgid "Altitude"
 msgstr ""
 #
-msgid "Altitude(Pressure Altitude)"
+msgid "Altitude(Geopotential)"
 msgstr ""
 #
 msgid "Always visible"
@@ -87,9 +87,6 @@ msgid "Celsius"
 msgstr ""
 #
 msgid "Close"
-msgstr ""
-#
-msgid "Cloud"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -259,6 +256,9 @@ msgstr ""
 msgid "Generic"
 msgstr ""
 #
+msgid "Geopotential Height"
+msgstr ""
+#
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
 #
@@ -384,6 +384,9 @@ msgstr ""
 msgid "OverlayMap"
 msgstr ""
 #
+msgid "Overlays too wide and can't be displayed:"
+msgstr ""
+#
 msgid "Percentage"
 msgstr ""
 #
@@ -407,18 +410,6 @@ msgstr ""
 #, fuzzy
 msgid "Pressure"
 msgstr "Ciśnienie, mBar"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Pressure Altitude"
-msgstr "Ciśnienie, mBar"
-#
-#, c-format
-msgid "Pressure Altitude (in %s) or Standard Height Selection."
-msgstr ""
 #
 msgid "Previous"
 msgstr ""
@@ -451,15 +442,15 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Rotated overlays suppressed in DC mode"
-msgstr ""
-#
 msgid "Save"
 msgstr ""
 #
 msgid ""
 "Sea\n"
 "Temperature"
+msgstr ""
+#
+msgid "Sea Surface Temperature"
 msgstr ""
 #
 msgid "Sea Temp"
@@ -471,7 +462,8 @@ msgstr ""
 msgid "Sea Temperature(surf.)"
 msgstr ""
 #
-msgid "Sea or Air Temperature at Surface Level"
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
 msgstr ""
 #
 # 
@@ -534,6 +526,9 @@ msgid "Surface Current Direction"
 msgstr ""
 #
 msgid "Surface Current Speed"
+msgstr ""
+#
+msgid "Surface level"
 msgstr ""
 #
 msgid "Temperature"
@@ -735,6 +730,9 @@ msgstr ""
 msgid "mph"
 msgstr ""
 #
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+#
 msgid "playback"
 msgstr ""
 #
@@ -743,6 +741,7 @@ msgstr ""
 #
 msgid "zyGrib Login"
 msgstr ""
+#
 #
 #
 #
@@ -774,12 +773,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -824,6 +825,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -833,6 +835,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot."
 #~ "wysokości fali znacznej"
+#
 #
 #
 #
@@ -859,6 +862,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -869,6 +873,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot. "
 #~ "opadów deszczu"
+#
 #
 #
 #
@@ -894,6 +899,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -903,6 +909,16 @@ msgstr ""
 #~ msgstr ""
 #~ "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot. "
 #~ "opadów deszczu"
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+#~ msgid "Pressure Altitude"
+#~ msgstr "Ciśnienie, mBar"
+#
 #
 #
 #
@@ -939,6 +955,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Pokaż ikonę GRIB"
+#
 #
 #
 #
@@ -984,6 +1001,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -991,6 +1009,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Kierunek wiatru"
+#
 #
 #
 #

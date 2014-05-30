@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:43-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2014-02-22 22:43+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
@@ -1243,6 +1243,11 @@ msgid "Confirm deletion of tracks and routes"
 msgstr "Bekräfta borttagning av spår och rutter?"
 #
 #
+#, fuzzy
+msgid "Connection"
+msgstr "Anslutningar"
+#
+#
 msgid "Connections"
 msgstr "Anslutningar"
 #
@@ -1309,6 +1314,18 @@ msgid "Create Waypoint"
 msgstr "Skapa waypoint"
 #
 #
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "CurrentValue"
+msgstr "Strömmar"
+#
+#
 msgid "Cyan"
 msgstr "Cyan"
 #
@@ -1359,6 +1376,9 @@ msgstr "Mörkgul"
 #
 msgid "Data Connections"
 msgstr "Anslutningar"
+#
+msgid "Data connection must be input, output or both"
+msgstr ""
 #
 #
 msgid "DataPort"
@@ -1442,6 +1462,9 @@ msgstr "Beskrivning"
 #
 msgid "Destination"
 msgstr "Destination"
+#
+msgid "Dialog"
+msgstr ""
 #
 #
 msgid "Directories"
@@ -1572,6 +1595,9 @@ msgstr "ETA"
 msgid "ETA          "
 msgstr "ETA          "
 #
+msgid "ETA (UTC)"
+msgstr ""
+#
 #
 msgid "ETE"
 msgstr "ETE"
@@ -1598,11 +1624,14 @@ msgstr "Aktivera"
 msgid "Enable Chart Quilting"
 msgstr "Aktivera sömlös visning"
 #
+msgid "Enable Responsive graphics interface"
+msgstr ""
+#
 #
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Aktivera max tid för kvittens av AIS-larm (min)"
 #
-msgid "Enable Touchscreen/Tablet Interface"
+msgid "Enable Touchscreen/Tablet interface"
 msgstr ""
 #
 #
@@ -2381,6 +2410,12 @@ msgstr ""
 "Du har inga sjökort installerade.\n"
 "Välj mapp för sjökort i menyn under Inställningar > Sjökort"
 #
+msgid ""
+"No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a "
+"usb serial device.\n"
+msgstr ""
+#
 msgid "No, I don't want to hide it."
 msgstr "Nej, jag vill inte dölja den."
 #
@@ -2501,29 +2536,20 @@ msgstr "OpenCPN kan inte starta."
 msgid "OpenCPN info"
 msgstr "OpenCPN Information"
 #
-msgid ""
-"OpenCPN requires access to serial ports to use serial NMEA data.\n"
-"You currently do not have permission to access the serial ports on this "
-"system.\n"
-"\n"
-"It is suggested that you exit OpenCPN now,\n"
-"and add yourself to the correct group to enable serial port access.\n"
-"\n"
-"You may do so by executing the following command from the linux command "
-"line:\n"
-"\n"
-"                sudo usermod -a -G "
+msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr ""
 #
 #
 msgid "Options"
 msgstr "Användarinställningar"
 #
+#
+#, fuzzy
+msgid "Options ..."
+msgstr "Användarinställningar"
+#
 msgid "Other - Define in associated text field"
 msgstr "Övrigt - Ange i tillhörande textfält"
-#
-msgid "Output"
-msgstr "Utdata"
 #
 msgid "Output filtering"
 msgstr "Filtrering av utdata"
@@ -2777,6 +2803,9 @@ msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 "OpenCPN behöver uppdatera databasen med inställningar från "
 "konfigurationsfilen...."
+#
+msgid "Receive Input on this Port"
+msgstr ""
 #
 #
 msgid "Recorded points"
@@ -3154,6 +3183,9 @@ msgstr "Visa larmmeddelande för CPA/TCPA"
 msgid "Show Chart Outlines"
 msgstr "Visa sjökortsramar"
 #
+msgid "Show Compass/GPS Status Window"
+msgstr ""
+#
 #
 msgid "Show Current Information"
 msgstr "Visa ströminformation"
@@ -3434,6 +3466,15 @@ msgstr "Testa ljud"
 #
 msgid "Testing"
 msgstr "Testar"
+#
+msgid "Texture Compression"
+msgstr ""
+#
+msgid "Texture Compression Caching"
+msgstr ""
+#
+msgid "Texture Memory Size (MB)"
+msgstr ""
 #
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
@@ -3720,6 +3761,10 @@ msgstr "Inställning för uppdatering"
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Använd hårdvarugrafik (OpenGL)"
 #
+#, fuzzy
+msgid "Use Accelerated Panning"
+msgstr "Använd hårdvarugrafik (OpenGL)"
+#
 #
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "Använd Garmin GRMN/GRMN (Host) läge vid inläsning."
@@ -3912,6 +3957,23 @@ msgid ""
 "as this would make it inaccessible."
 msgstr "Du kan inte dölja det sista verktyget i verktygslisten."
 #
+msgid ""
+"You do currently not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
+msgstr ""
+#
+#, fuzzy
+msgid "You must enter a port..."
+msgstr "En port måste väljas eller anges manuellt"
+#
 msgid "You must enter the address..."
 msgstr "Det krävs en address."
 #
@@ -4017,6 +4079,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid " </b>in<b> "
 #~ msgstr " </b>om<b> "
 #
@@ -4024,8 +4087,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid " is %5g"
 #~ msgstr "är %5g"
+#
 #
 #
 #
@@ -4046,8 +4111,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "Exportera spår..."
+#
 #
 #
 #
@@ -4068,6 +4135,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "&Silence Alert"
 #~ msgstr "&Tysta Larm"
 #
@@ -4078,8 +4146,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid ", Out: None"
 #~ msgstr ", Ut: Ingen"
+#
 #
 #
 #
@@ -4100,8 +4170,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "AISTargetAlert"
 #~ msgstr "AIS varning"
+#
 #
 #
 #
@@ -4122,6 +4194,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "Bulktransportfartyg"
 #
@@ -4133,8 +4206,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Bunkership"
 #~ msgstr "Bunkerfartyg"
+#
 #
 #
 #
@@ -4164,8 +4239,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Kopiera"
+#
 #
 #
 #
@@ -4186,19 +4263,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
-#~ msgid "Current"
-#~ msgstr "Strömmar"
-#
-#
-#
-#
-#
-#
-#
-#
 #
 #~ msgid "Data Source :"
 #~ msgstr "NMEA datakälla:"
+#
 #
 #
 #
@@ -4223,8 +4291,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "E&xportera alla..."
+#
 #
 #
 #
@@ -4245,8 +4315,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Fast ship"
 #~ msgstr "Snabbgående fartyg"
+#
 #
 #
 #
@@ -4267,8 +4339,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Fishing boat"
 #~ msgstr "Fiskebåt"
+#
 #
 #
 #
@@ -4289,8 +4363,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "Fraktpråm med containers"
+#
 #
 #
 #
@@ -4311,8 +4387,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "Maritimt lastfartyg"
+#
 #
 #
 #
@@ -4333,8 +4411,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Hydrofoil"
 #~ msgstr "Bärplansbåt"
+#
 #
 #
 #
@@ -4355,8 +4435,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "In: None"
 #~ msgstr "In: Ingen"
+#
 #
 #
 #
@@ -4387,8 +4469,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "LW"
 #~ msgstr "LW"
+#
 #
 #
 #
@@ -4409,8 +4493,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Liquified gas tanker"
 #~ msgstr "Tankfartyg, flytande gas"
+#
 #
 #
 #
@@ -4429,8 +4515,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Message filtered and dropped"
 #~ msgstr "Kommandot bortfiltrerat"
+#
 #
 #
 #
@@ -4451,8 +4539,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor freighter pushing at least one tank-ship"
 #~ msgstr "Motordrivet fraktfartyg påskjutande minst en tanker"
+#
 #
 #
 #
@@ -4473,8 +4563,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor freighter with one or more ships alongside"
 #~ msgstr "Motordrivet fraktfartyg med ett eller flera fartyg vid sidan"
+#
 #
 #
 #
@@ -4495,8 +4587,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor freighter, tug"
 #~ msgstr "Motordrivet fraktfartyg, bogserbåt"
+#
 #
 #
 #
@@ -4517,8 +4611,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Motordriven tanker, torrlast som om vätska (t.ex. cement)"
+#
 #
 #
 #
@@ -4539,8 +4635,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "Motordriven tanker, flytande last, typ N"
+#
 #
 #
 #
@@ -4560,8 +4658,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "NMEA Debug Window"
 #~ msgstr "NMEA Datafönster"
+#
 #
 #
 #
@@ -4581,8 +4681,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "No"
 #~ msgstr "Nej"
+#
 #
 #
 #
@@ -4603,8 +4705,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Object, towed, not otherwise specified"
 #~ msgstr "Objekt under bogsering, ej specificerad ytterligare"
+#
 #
 #
 #
@@ -4623,9 +4727,15 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Out"
 #~ msgstr "Utdata"
+#
+#
+#~ msgid "Output"
+#~ msgstr "Utdata"
+#
 #
 #
 #
@@ -4646,8 +4756,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Passenger ship without accomodation"
 #~ msgstr "Passagerarfartyg utan logi"
+#
 #
 #
 #
@@ -4667,8 +4779,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pause"
 #~ msgstr "Pause"
+#
 #
 #
 #
@@ -4689,8 +4803,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "Fritidsfartyg, längd över 20 meter"
+#
 #
 #
 #
@@ -4711,8 +4827,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Prev"
 #~ msgstr "Föregående"
+#
 #
 #
 #
@@ -4733,8 +4851,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "Påskjutande bogserbåt, ensam"
+#
 #
 #
 #
@@ -4756,8 +4876,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "Påskjutande bogserbåt, åtta lastpråmar"
+#
 #
 #
 #
@@ -4778,8 +4900,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "Påskjutande bogserbåt, fem lastpråmar"
+#
 #
 #
 #
@@ -4801,6 +4925,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "Påskjutande bogserbåt, fyra lastpråmar"
 #
@@ -4812,8 +4937,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "Påskjutande bogserbåt, nio eller fler lastpråmar"
+#
 #
 #
 #
@@ -4836,8 +4963,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "Påskjutande bogserbåt, en lastpråm"
+#
 #
 #
 #
@@ -4858,8 +4987,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, seven barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, sju lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -4880,8 +5011,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, six barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, sex lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -4902,8 +5035,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, three barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, tre lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -4924,8 +5059,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, två lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -4946,8 +5083,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Red cross ship"
 #~ msgstr "Röda korset-fartyg"
+#
 #
 #
 #
@@ -4973,8 +5112,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
+#
 #
 #
 #
@@ -4994,8 +5135,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Send"
 #~ msgstr "Skicka"
+#
 #
 #
 #
@@ -5019,9 +5162,11 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "Skicka till GPS"
+#
 #
 #
 #

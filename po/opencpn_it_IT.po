@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:43-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -1578,6 +1578,14 @@ msgstr "Chiedi conferma cancellazione Rotte e Tracce"
 #
 #
 #
+#, fuzzy
+msgid "Connection"
+msgstr "Connessioni"
+#
+#
+#
+#
+#
 msgid "Connections"
 msgstr "Connessioni"
 #
@@ -1670,6 +1678,9 @@ msgstr "Crea Waypoint"
 msgid "Create Waypoint"
 msgstr "Crea Waypoint"
 #
+msgid "CurrentValue"
+msgstr ""
+#
 #
 #
 #
@@ -1733,6 +1744,9 @@ msgstr "Giallo scuro"
 #
 msgid "Data Connections"
 msgstr "Connessione Dati"
+#
+msgid "Data connection must be input, output or both"
+msgstr ""
 #
 #
 #
@@ -1866,6 +1880,9 @@ msgstr "Descrizione"
 #
 msgid "Destination"
 msgstr "Destinazione"
+#
+msgid "Dialog"
+msgstr ""
 #
 #
 #
@@ -2045,6 +2062,9 @@ msgstr "ETA"
 msgid "ETA          "
 msgstr "ETA"
 #
+msgid "ETA (UTC)"
+msgstr ""
+#
 #
 msgid "ETE"
 msgstr "ETE"
@@ -2077,13 +2097,16 @@ msgstr "Abilita"
 msgid "Enable Chart Quilting"
 msgstr "Abilita Mosaico Carte (taglio e sovrapposizione)"
 #
+msgid "Enable Responsive graphics interface"
+msgstr ""
+#
 #
 #
 #
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Abilita il Timeout per riconoscimento allarme (Minuti)"
 #
-msgid "Enable Touchscreen/Tablet Interface"
+msgid "Enable Touchscreen/Tablet interface"
 msgstr ""
 #
 #
@@ -3081,6 +3104,12 @@ msgstr ""
 "Nessuna carta caricata.\n"
 "Selezionare le cartelle contenenti le carte in Strumenti -> Carte"
 #
+msgid ""
+"No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a "
+"usb serial device.\n"
+msgstr ""
+#
 msgid "No, I don't want to hide it."
 msgstr "No, non voglio nasconderlo."
 #
@@ -3270,18 +3299,7 @@ msgstr "OpenCPN non può partire."
 msgid "OpenCPN info"
 msgstr "OpenCPN Info"
 #
-msgid ""
-"OpenCPN requires access to serial ports to use serial NMEA data.\n"
-"You currently do not have permission to access the serial ports on this "
-"system.\n"
-"\n"
-"It is suggested that you exit OpenCPN now,\n"
-"and add yourself to the correct group to enable serial port access.\n"
-"\n"
-"You may do so by executing the following command from the linux command "
-"line:\n"
-"\n"
-"                sudo usermod -a -G "
+msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr ""
 #
 #
@@ -3291,11 +3309,16 @@ msgstr ""
 msgid "Options"
 msgstr "Opzioni"
 #
+#
+#
+#
+#
+#, fuzzy
+msgid "Options ..."
+msgstr "Opzioni"
+#
 msgid "Other - Define in associated text field"
 msgstr ""
-#
-msgid "Output"
-msgstr "Trasmetti"
 #
 msgid "Output filtering"
 msgstr "Filtro stringhe in Uscita"
@@ -3678,6 +3701,9 @@ msgstr "Reale (fuori posizione)"
 #
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Aggiornamento del database delle carte dal file di configurazione..."
+#
+msgid "Receive Input on this Port"
+msgstr ""
 #
 #
 #
@@ -4168,6 +4194,9 @@ msgstr "Mostra la finestra di allerta CPA/TCPA"
 msgid "Show Chart Outlines"
 msgstr "Mostra i bordi delle carte"
 #
+msgid "Show Compass/GPS Status Window"
+msgstr ""
+#
 #
 #
 #
@@ -4617,6 +4646,15 @@ msgstr "Ascolta il suono"
 msgid "Testing"
 msgstr "Verifica"
 #
+msgid "Texture Compression"
+msgstr ""
+#
+msgid "Texture Compression Caching"
+msgstr ""
+#
+msgid "Texture Memory Size (MB)"
+msgstr ""
+#
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
@@ -5017,6 +5055,10 @@ msgstr "Controllo aggiornamenti al Database Carte"
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Usa Accelerazione Grafica (OpenGL)"
 #
+#, fuzzy
+msgid "Use Accelerated Panning"
+msgstr "Usa Accelerazione Grafica (OpenGL)"
+#
 #
 #
 #
@@ -5272,6 +5314,23 @@ msgstr ""
 "Non è possibile nascondere dal tollbar l'ultimo tool\n"
 "in quanto la renderesti inaccessibile."
 #
+msgid ""
+"You do currently not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
+msgstr ""
+#
+#, fuzzy
+msgid "You must enter a port..."
+msgstr "Devi immettere la Porta (0-65535)..."
+#
 msgid "You must enter the address..."
 msgstr "Devi immettere l'indirizzo IP (es. 192.168.1.2)..."
 #
@@ -5387,3 +5446,7 @@ msgstr ""
 #
 msgid "wxFB Website"
 msgstr "wxFB Website"
+#
+#
+#~ msgid "Output"
+#~ msgstr "Trasmetti"

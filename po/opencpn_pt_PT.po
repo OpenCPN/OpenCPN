@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6 (Pt01)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:43-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2010-02-05 16:06+0100\n"
 "Last-Translator: as <as400big@gmail.com>\n"
 "Language-Team: Minhota <zemaria@zemaria.biz>\n"
@@ -1860,6 +1860,15 @@ msgstr ""
 # 
 # 
 #, fuzzy
+msgid "Connection"
+msgstr "Opções Tipo Letra"
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
 msgid "Connections"
 msgstr "Opções Tipo Letra"
 #
@@ -1964,6 +1973,24 @@ msgstr "Eliminar waypoint"
 msgid "Create Waypoint"
 msgstr "Eliminar waypoint"
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "CurrentValue"
+msgstr "Corrente"
+#
 # 
 # 
 # 
@@ -2035,6 +2062,9 @@ msgstr ""
 #, fuzzy
 msgid "Data Connections"
 msgstr "Opções Tipo Letra"
+#
+msgid "Data connection must be input, output or both"
+msgstr ""
 #
 #
 # 
@@ -2192,6 +2222,9 @@ msgstr "Descrição"
 # 
 msgid "Destination"
 msgstr "Destino a:"
+#
+msgid "Dialog"
+msgstr ""
 #
 # 
 # 
@@ -2418,6 +2451,9 @@ msgstr "ETE"
 msgid "ETA          "
 msgstr "ETA          "
 #
+msgid "ETA (UTC)"
+msgstr ""
+#
 # 
 # 
 # 
@@ -2508,10 +2544,13 @@ msgstr ""
 msgid "Enable Chart Quilting"
 msgstr ""
 #
+msgid "Enable Responsive graphics interface"
+msgstr ""
+#
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr ""
 #
-msgid "Enable Touchscreen/Tablet Interface"
+msgid "Enable Touchscreen/Tablet interface"
 msgstr ""
 #
 msgid "Enable Transparent Toolbar"
@@ -3744,6 +3783,12 @@ msgstr ""
 "           Não há cartas instaladas.\n"
 "Por favor seleccione pasta com cartas em Ferramentas->Cartas."
 #
+msgid ""
+"No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a "
+"usb serial device.\n"
+msgstr ""
+#
 msgid "No, I don't want to hide it."
 msgstr ""
 #
@@ -3972,18 +4017,7 @@ msgstr "Actualização Cartas OpenCPN"
 msgid "OpenCPN info"
 msgstr "Informação OpenCPN"
 #
-msgid ""
-"OpenCPN requires access to serial ports to use serial NMEA data.\n"
-"You currently do not have permission to access the serial ports on this "
-"system.\n"
-"\n"
-"It is suggested that you exit OpenCPN now,\n"
-"and add yourself to the correct group to enable serial port access.\n"
-"\n"
-"You may do so by executing the following command from the linux command "
-"line:\n"
-"\n"
-"                sudo usermod -a -G "
+msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr ""
 #
 # 
@@ -3995,10 +4029,16 @@ msgstr ""
 msgid "Options"
 msgstr "Opções de Interface (GUI)"
 #
-msgid "Other - Define in associated text field"
-msgstr ""
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Options ..."
+msgstr "Opções de Interface (GUI)"
 #
-msgid "Output"
+msgid "Other - Define in associated text field"
 msgstr ""
 #
 msgid "Output filtering"
@@ -4443,6 +4483,9 @@ msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 "OpenCPN necessita actualizar a base de dados a partir dos arquivos de "
 "configuração...."
+#
+msgid "Receive Input on this Port"
+msgstr ""
 #
 # 
 # 
@@ -5020,6 +5063,9 @@ msgstr "Mostrar Janela de Alarmes CPA/TCPA"
 msgid "Show Chart Outlines"
 msgstr "Mostrar limites das Cartas"
 #
+msgid "Show Compass/GPS Status Window"
+msgstr ""
+#
 # 
 # 
 # 
@@ -5578,6 +5624,15 @@ msgstr "Testar Alarme Sonoro"
 msgid "Testing"
 msgstr "Ajustes"
 #
+msgid "Texture Compression"
+msgstr ""
+#
+msgid "Texture Compression Caching"
+msgstr ""
+#
+msgid "Texture Memory Size (MB)"
+msgstr ""
+#
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
@@ -6007,6 +6062,9 @@ msgstr "Controlo de Actualização"
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr ""
 #
+msgid "Use Accelerated Panning"
+msgstr ""
+#
 msgid "Use Garmin (GRMN) mode for input"
 msgstr ""
 #
@@ -6279,6 +6337,22 @@ msgid ""
 "as this would make it inaccessible."
 msgstr ""
 #
+msgid ""
+"You do currently not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
+msgstr ""
+#
+msgid "You must enter a port..."
+msgstr ""
+#
 msgid "You must enter the address..."
 msgstr ""
 #
@@ -6449,6 +6523,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6456,6 +6531,7 @@ msgstr ""
 # 
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "      Vector COG Comprimento Previsto[Minutos]:"
+#
 #
 #
 #
@@ -6511,6 +6587,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6518,6 +6595,7 @@ msgstr ""
 # 
 #~ msgid "      Target track length (Minutes):"
 #~ msgstr "      Tamanho Rastro [Minutos]:"
+#
 #
 #
 #
@@ -6571,6 +6649,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6578,6 +6657,7 @@ msgstr ""
 # 
 #~ msgid "  Could not open serial port '"
 #~ msgstr "  Não foi possível abrir porta serie '"
+#
 #
 #
 #
@@ -6652,6 +6732,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Close"
 #~ msgstr "Fechar"
+#
 #
 #
 #
@@ -6771,6 +6852,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6820,6 +6902,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6828,6 +6911,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Export Track..."
 #~ msgstr "Exportar...."
+#
 #
 #
 #
@@ -6856,6 +6940,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6874,6 +6959,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6882,6 +6968,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "&Silence Alert"
 #~ msgstr "Seleccionar Som Alarme"
+#
 #
 #
 #
@@ -6939,6 +7026,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6950,6 +7038,7 @@ msgstr ""
 #~ msgstr ""
 #~ "'\n"
 #~ "Sugestão: Tente fechar outros programas."
+#
 #
 #
 #
@@ -7054,6 +7143,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7062,6 +7152,7 @@ msgstr ""
 #, fuzzy
 #~ msgid ":               "
 #~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
 #
 #
 #
@@ -7108,6 +7199,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7115,6 +7207,7 @@ msgstr ""
 # 
 #~ msgid "AIS Alert"
 #~ msgstr "Alerta AIS"
+#
 #
 #
 #
@@ -7171,6 +7264,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7212,6 +7306,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7219,6 +7314,7 @@ msgstr ""
 # 
 #~ msgid "Activate Route"
 #~ msgstr "Activar Rota"
+#
 #
 #
 #
@@ -7290,6 +7386,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7297,6 +7394,7 @@ msgstr ""
 # 
 #~ msgid "Additional information"
 #~ msgstr "Informação Adicional"
+#
 #
 #
 #
@@ -7351,6 +7449,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7382,6 +7481,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7389,6 +7489,7 @@ msgstr ""
 # 
 #~ msgid "Available Chart Directories"
 #~ msgstr "Pastas de Arquivo de Cartas, Disponíveis"
+#
 #
 #
 #
@@ -7447,6 +7548,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7455,6 +7557,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr "Tipo de Embarcação:            "
+#
 #
 #
 #
@@ -7510,6 +7613,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7517,6 +7621,7 @@ msgstr ""
 # 
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "Detalhe Zoom CM93"
+#
 #
 #
 #
@@ -7574,6 +7679,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7581,6 +7687,7 @@ msgstr ""
 # 
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f NM\n"
+#
 #
 #
 #
@@ -7681,6 +7788,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7689,6 +7797,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "CallSign:             "
 #~ msgstr "Posição:              "
+#
 #
 #
 #
@@ -7759,6 +7868,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7766,6 +7876,7 @@ msgstr ""
 # 
 #~ msgid "Chart Display Filters"
 #~ msgstr "Filtros de visualização das Cartas"
+#
 #
 #
 #
@@ -7797,6 +7908,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Posição"
+#
 #
 #
 #
@@ -7906,6 +8018,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7969,6 +8082,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7977,6 +8091,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Class:                "
 #~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
 #
 #
 #
@@ -8082,6 +8197,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8089,6 +8205,7 @@ msgstr ""
 # 
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "Não encontrou anfitrião TCP/IP"
+#
 #
 #
 #
@@ -8147,6 +8264,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8155,6 +8273,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "Rumo:               %5.0f Deg.\n"
+#
 #
 #
 #
@@ -8198,22 +8317,6 @@ msgstr ""
 #
 #
 #
-# 
-# 
-# 
-# 
-# 
-#~ msgid "Current"
-#~ msgstr "Corrente"
-#
-#
-#
-#
-#
-#
-#
-#
-#
 #
 #
 #
@@ -8246,6 +8349,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8254,6 +8358,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Data Source :"
 #~ msgstr "Origem dos Dados NMEA"
+#
 #
 #
 #
@@ -8330,6 +8435,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8362,6 +8468,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8370,6 +8477,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Deg"
 #~ msgstr "Perna"
+#
 #
 #
 #
@@ -8489,6 +8597,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8496,6 +8605,7 @@ msgstr ""
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Eliminar Marca"
+#
 #
 #
 #
@@ -8551,6 +8661,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8582,6 +8693,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8589,6 +8701,7 @@ msgstr ""
 # 
 #~ msgid "Delete Track"
 #~ msgstr "Apagar Rastro"
+#
 #
 #
 #
@@ -8645,6 +8758,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8652,6 +8766,7 @@ msgstr ""
 # 
 #~ msgid "Destination:          "
 #~ msgstr "Destino:          "
+#
 #
 #
 #
@@ -8693,6 +8808,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8714,6 +8830,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8722,6 +8839,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "E&xport All..."
 #~ msgstr "Exportar...."
+#
 #
 #
 #
@@ -8788,6 +8906,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8795,6 +8914,7 @@ msgstr ""
 # 
 #~ msgid "ETA:                  "
 #~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
 #
 #
 #
@@ -8894,6 +9014,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8925,6 +9046,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8932,6 +9054,7 @@ msgstr ""
 # 
 #~ msgid "Etc."
 #~ msgstr "Etc."
+#
 #
 #
 #
@@ -9021,6 +9144,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9029,6 +9153,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "From Ownship: %03d Deg   "
 #~ msgstr "Desde o Barco: %03d Deg  %6.2f NMi"
+#
 #
 #
 #
@@ -9071,6 +9196,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9101,6 +9227,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9108,6 +9235,7 @@ msgstr ""
 # 
 #~ msgid "GPSD Data Server"
 #~ msgstr "Servidor de Dados GPSD"
+#
 #
 #
 #
@@ -9179,6 +9307,7 @@ msgstr ""
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -9292,6 +9421,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9325,6 +9455,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Display Control"
 #~ msgstr "Controlo Visualização GRIB"
+#
 #
 #
 #
@@ -9408,6 +9539,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9440,6 +9572,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9448,6 +9581,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Go To Here"
 #~ msgstr "Mover Barco Para Aqui"
+#
 #
 #
 #
@@ -9514,6 +9648,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9522,6 +9657,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Proa:              %5.0f Deg.\n"
+#
 #
 #
 #
@@ -9565,6 +9701,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9573,6 +9710,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "In"
 #~ msgstr "Ícone"
+#
 #
 #
 #
@@ -9629,6 +9767,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9637,6 +9776,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Jump To Position"
 #~ msgstr "Posição"
+#
 #
 #
 #
@@ -9706,6 +9846,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9713,6 +9854,7 @@ msgstr ""
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Idioma/Fontes"
+#
 #
 #
 #
@@ -9770,6 +9912,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9778,6 +9921,7 @@ msgstr ""
 # Etapa/Rota
 #~ msgid "Leg/Route"
 #~ msgstr "Pernada/Rota"
+#
 #
 #
 #
@@ -9849,6 +9993,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9857,6 +10002,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "(ETA) Hora de Chegada Estimada:                  "
+#
 #
 #
 #
@@ -9964,6 +10110,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9971,6 +10118,7 @@ msgstr ""
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Ícone"
+#
 #
 #
 #
@@ -10031,6 +10179,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10039,6 +10188,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Mark Properties"
 #~ msgstr "Propriedades de Marca/WP"
+#
 #
 #
 #
@@ -10113,6 +10263,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10120,6 +10271,7 @@ msgstr ""
 # 
 #~ msgid "Measure....."
 #~ msgstr "Medição....."
+#
 #
 #
 #
@@ -10174,6 +10326,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10181,6 +10334,7 @@ msgstr ""
 # 
 #~ msgid "NMEA Data Source"
 #~ msgstr "Origem dos Dados NMEA"
+#
 #
 #
 #
@@ -10237,6 +10391,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10245,6 +10400,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Name:  "
 #~ msgstr "Nome da Embarcação:"
+#
 #
 #
 #
@@ -10317,6 +10473,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10327,6 +10484,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Nova Marca"
+#
 #
 #
 #
@@ -10367,6 +10525,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10375,6 +10534,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Number of Radar Rings"
 #~ msgstr "Numero de Círculos de radar mostrados"
+#
 #
 #
 #
@@ -10401,6 +10561,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10409,6 +10570,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Output Message"
 #~ msgstr "Mensagem OpenCPN"
+#
 #
 #
 #
@@ -10463,6 +10625,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10471,6 +10634,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Place Trackpoints at distance interval (NMi)"
 #~ msgstr "Marcar pontos de Rastro à distancia de[NMi]:"
+#
 #
 #
 #
@@ -10512,6 +10676,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10520,6 +10685,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Plan speed (Kts)"
 #~ msgstr "Velocidade Prevista"
+#
 #
 #
 #
@@ -10633,6 +10799,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10666,6 +10833,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
+#
 #
 #
 #
@@ -10780,6 +10948,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10814,6 +10983,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed SEATEMP GRIB"
 #~ msgstr "Ajuste Zoom ou Escala para ver HTSGW GRIB escondido"
+#
 #
 #
 #
@@ -10889,6 +11059,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10911,6 +11082,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10918,6 +11090,7 @@ msgstr ""
 # 
 #~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 #~ msgstr "Prepare GPS para receber Rota/Waypoint e pulse Enviar..."
+#
 #
 #
 #
@@ -11001,6 +11174,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11008,6 +11182,7 @@ msgstr ""
 # 
 #~ msgid "Prev"
 #~ msgstr "Anterior"
+#
 #
 #
 #
@@ -11048,6 +11223,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11056,6 +11232,7 @@ msgstr ""
 # Aneis de Radar
 #~ msgid "Radar rings"
 #~ msgstr "Círculos de Radar"
+#
 #
 #
 #
@@ -11114,6 +11291,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11121,6 +11299,7 @@ msgstr ""
 # 
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Alcance:                %5.1f NM\n"
+#
 #
 #
 #
@@ -11153,6 +11332,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Raster"
 #~ msgstr "Base"
+#
 #
 #
 #
@@ -11211,6 +11391,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11219,6 +11400,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "última aquisição tem:               %3d Sec.\n"
+#
 #
 #
 #
@@ -11277,6 +11459,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11310,6 +11493,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11318,6 +11502,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 #~ msgstr "última aquisição tem:               %3d Sec.\n"
+#
 #
 #
 #
@@ -11395,6 +11580,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11426,6 +11612,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11434,6 +11621,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Eliminar waypoint da Rota"
+#
 #
 #
 #
@@ -11498,6 +11686,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11505,6 +11694,7 @@ msgstr ""
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Rota Inversa"
+#
 #
 #
 #
@@ -11561,6 +11751,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11569,6 +11760,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Rota"
+#
 #
 #
 #
@@ -11653,6 +11845,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11660,6 +11853,7 @@ msgstr ""
 # 
 #~ msgid "Send"
 #~ msgstr "Enviar"
+#
 #
 #
 #
@@ -11678,6 +11872,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Send Route To GPS"
 #~ msgstr "Enviar para GPS..."
+#
 #
 #
 #
@@ -11770,6 +11965,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11802,6 +11998,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11809,6 +12006,7 @@ msgstr ""
 # 
 #~ msgid "Settings"
 #~ msgstr "Ajustes"
+#
 #
 #
 #
@@ -11900,6 +12098,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11907,6 +12106,7 @@ msgstr ""
 # 
 #~ msgid "Show ATON labels"
 #~ msgstr "Etiquetas ATON"
+#
 #
 #
 #
@@ -12025,6 +12225,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12063,6 +12264,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Mostrar Janela GRIB"
+#
 #
 #
 #
@@ -12170,6 +12372,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12213,6 +12416,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12220,6 +12424,7 @@ msgstr ""
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar Ícone Rastro"
+#
 #
 #
 #
@@ -12318,6 +12523,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12330,6 +12536,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Dimensões:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -12417,6 +12624,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12429,6 +12637,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Dimensões:                %5dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -12491,6 +12700,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12503,6 +12713,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Dimensões:                ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -12565,6 +12776,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12577,6 +12789,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Dimensões:                %5dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -12617,6 +12830,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12625,6 +12839,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Special Position Report"
 #~ msgstr "Hora Última Aquisição:       "
+#
 #
 #
 #
@@ -12683,6 +12898,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12714,6 +12930,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12721,6 +12938,7 @@ msgstr ""
 # 
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "Servidor Dados TCP/IP WiFi"
+#
 #
 #
 #
@@ -12778,6 +12996,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12785,6 +13004,7 @@ msgstr ""
 # 
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -12826,6 +13046,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12833,6 +13054,7 @@ msgstr ""
 # 
 #~ msgid "Tide"
 #~ msgstr "Maré"
+#
 #
 #
 #
@@ -12875,6 +13097,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -12882,6 +13105,7 @@ msgstr ""
 # 
 #~ msgid "Today"
 #~ msgstr "Hoje"
+#
 #
 #
 #
@@ -12984,6 +13208,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -13006,6 +13231,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Rota"
+#
 #
 #
 #
@@ -13047,6 +13273,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -13054,6 +13281,7 @@ msgstr ""
 # 
 #~ msgid "ToolBox"
 #~ msgstr "Configuração"
+#
 #
 #
 #
@@ -13110,6 +13338,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -13118,6 +13347,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Escala Real: %8.0f  Zoom %4.0fx"
+#
 #
 #
 #
@@ -13176,6 +13406,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -13184,6 +13415,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "UN Ship Type:         "
 #~ msgstr "Tipo de Embarcação:            "
+#
 #
 #
 #
@@ -13232,6 +13464,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -13239,6 +13472,7 @@ msgstr ""
 # 
 #~ msgid "Units"
 #~ msgstr "Unidades"
+#
 #
 #
 #
@@ -13334,6 +13568,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -13341,6 +13576,7 @@ msgstr ""
 # 
 #~ msgid "Use SCAMIN"
 #~ msgstr "Usar SCAMIN"
+#
 #
 #
 #
@@ -13438,6 +13674,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -13469,6 +13706,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -13476,6 +13714,7 @@ msgstr ""
 # 
 #~ msgid "WiFi Options"
 #~ msgstr "Ajustes WiFi"
+#
 #
 #
 #
@@ -13549,6 +13788,7 @@ msgstr ""
 # 
 #~ msgid "Wind Speed, Kts."
 #~ msgstr "Velocidade Vento, Kts."
+#
 #
 #
 #

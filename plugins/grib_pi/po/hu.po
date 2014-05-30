@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2012-12-29 13:16+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: \n"
@@ -73,7 +73,7 @@ msgstr ""
 msgid "Altitude"
 msgstr ""
 #
-msgid "Altitude(Pressure Altitude)"
+msgid "Altitude(Geopotential)"
 msgstr ""
 #
 msgid "Always visible"
@@ -106,9 +106,6 @@ msgid "Celsius"
 msgstr ""
 #
 msgid "Close"
-msgstr ""
-#
-msgid "Cloud"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -278,6 +275,9 @@ msgstr ""
 msgid "Generic"
 msgstr ""
 #
+msgid "Geopotential Height"
+msgstr ""
+#
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
 #
@@ -398,6 +398,9 @@ msgstr ""
 msgid "OverlayMap"
 msgstr ""
 #
+msgid "Overlays too wide and can't be displayed:"
+msgstr ""
+#
 msgid "Percentage"
 msgstr ""
 #
@@ -413,14 +416,6 @@ msgstr ""
 #, fuzzy
 msgid "Pressure"
 msgstr "Légnyomás, mBar"
-#
-#, fuzzy
-msgid "Pressure Altitude"
-msgstr "Légnyomás, mBar"
-#
-#, c-format
-msgid "Pressure Altitude (in %s) or Standard Height Selection."
-msgstr ""
 #
 msgid "Previous"
 msgstr ""
@@ -452,9 +447,6 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Rotated overlays suppressed in DC mode"
-msgstr ""
-#
 msgid "Save"
 msgstr ""
 #
@@ -470,6 +462,18 @@ msgstr ""
 msgid ""
 "Sea\n"
 "Temperature"
+msgstr "Tenger felszín hőmérséklete, C"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Sea Surface Temperature"
 msgstr "Tenger felszín hőmérséklete, C"
 #
 #
@@ -499,7 +503,8 @@ msgstr "Tenger felszín hőmérséklete, C"
 msgid "Sea Temperature(surf.)"
 msgstr ""
 #
-msgid "Sea or Air Temperature at Surface Level"
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
 msgstr ""
 #
 #, fuzzy
@@ -554,6 +559,9 @@ msgid "Surface Current Direction"
 msgstr ""
 #
 msgid "Surface Current Speed"
+msgstr ""
+#
+msgid "Surface level"
 msgstr ""
 #
 #
@@ -748,6 +756,9 @@ msgstr ""
 msgid "mph"
 msgstr ""
 #
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+#
 msgid "playback"
 msgstr ""
 #
@@ -773,9 +784,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "GRIB adat"
+#
 #
 #
 #
@@ -819,8 +832,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB fájl könyvtár"
+#
 #
 #
 #
@@ -844,11 +859,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr ""
 #~ "Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
 #~ "megjelenítéséhez"
+#
 #
 #
 #
@@ -872,6 +889,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr ""
@@ -886,11 +904,18 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr ""
 #~ "Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
 #~ "megjelenítéséhez"
+#
+#
+#, fuzzy
+#~ msgid "Pressure Altitude"
+#~ msgstr "Légnyomás, mBar"
+#
 #
 #
 #
@@ -914,6 +939,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "BRIB beállítások"
+#
 #
 #
 #
@@ -978,8 +1004,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Szélsebesség méter/sec-ben mutatása"
+#
 #
 #
 #
@@ -992,6 +1020,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Szél irány"
+#
 #
 #
 #

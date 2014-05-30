@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 3.3.1328\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2014-03-23 13:51+0200\n"
 "Last-Translator: Highlander <highlander.et@gmail.com>\n"
 "Language-Team:  <open_en_et@googlegroups.com>\n"
@@ -119,6 +119,9 @@ msgstr "jalad"
 #
 msgid "Fonts"
 msgstr "Kirjamärgid"
+#
+msgid "From Ownship"
+msgstr ""
 #
 msgid "GPS Compass"
 msgstr "GPS kompass"

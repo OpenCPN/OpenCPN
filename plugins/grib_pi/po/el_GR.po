@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1207\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2010-12-20 18:23+0200\n"
 "Last-Translator: ΓΙΑΝΝΗΣ <ogog1@otenet.gr>\n"
 "Language-Team: \n"
@@ -74,7 +74,7 @@ msgstr ""
 msgid "Altitude"
 msgstr ""
 #
-msgid "Altitude(Pressure Altitude)"
+msgid "Altitude(Geopotential)"
 msgstr ""
 #
 msgid "Always visible"
@@ -107,9 +107,6 @@ msgid "Celsius"
 msgstr ""
 #
 msgid "Close"
-msgstr ""
-#
-msgid "Cloud"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -285,6 +282,9 @@ msgstr ""
 msgid "Generic"
 msgstr ""
 #
+msgid "Geopotential Height"
+msgstr ""
+#
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
 #
@@ -409,6 +409,9 @@ msgstr ""
 msgid "OverlayMap"
 msgstr ""
 #
+msgid "Overlays too wide and can't be displayed:"
+msgstr ""
+#
 msgid "Percentage"
 msgstr ""
 #
@@ -424,15 +427,6 @@ msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δε
 #, fuzzy
 msgid "Pressure"
 msgstr "Ατμ. Πίεση, mBar"
-#
-# 
-#, fuzzy
-msgid "Pressure Altitude"
-msgstr "Ατμ. Πίεση, mBar"
-#
-#, c-format
-msgid "Pressure Altitude (in %s) or Standard Height Selection."
-msgstr ""
 #
 msgid "Previous"
 msgstr ""
@@ -465,9 +459,6 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Rotated overlays suppressed in DC mode"
-msgstr ""
-#
 msgid "Save"
 msgstr ""
 #
@@ -484,6 +475,19 @@ msgstr ""
 msgid ""
 "Sea\n"
 "Temperature"
+msgstr "Θερμοκρασία Επιφανείας, C "
+#
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid "Sea Surface Temperature"
 msgstr "Θερμοκρασία Επιφανείας, C "
 #
 # 
@@ -515,7 +519,8 @@ msgstr "Θερμοκρασία Επιφανείας, C "
 msgid "Sea Temperature(surf.)"
 msgstr ""
 #
-msgid "Sea or Air Temperature at Surface Level"
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
 msgstr ""
 #
 # 
@@ -572,6 +577,9 @@ msgid "Surface Current Direction"
 msgstr ""
 #
 msgid "Surface Current Speed"
+msgstr ""
+#
+msgid "Surface level"
 msgstr ""
 #
 # 
@@ -771,6 +779,9 @@ msgstr ""
 msgid "mph"
 msgstr ""
 #
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+#
 msgid "playback"
 msgstr ""
 #
@@ -779,6 +790,7 @@ msgstr ""
 #
 msgid "zyGrib Login"
 msgstr ""
+#
 #
 #
 #
@@ -808,6 +820,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Data Display Preferences"
@@ -819,9 +832,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -863,10 +878,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα SEATEMP GRIB"
+#
 #
 #
 #
@@ -889,12 +906,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr ""
 #~ "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα OCEAN CURRENT GRIB"
+#
 #
 #
 #
@@ -915,10 +934,18 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Παρακαλώ μεγένθυνε ή σμίκρυνε για να δείς καλυμμένα CRAIN GRIB"
+#
+#
+# 
+#, fuzzy
+#~ msgid "Pressure Altitude"
+#~ msgstr "Ατμ. Πίεση, mBar"
+#
 #
 #
 #
@@ -942,6 +969,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Ιδιότητες GRIB"
+#
 #
 #
 #
@@ -975,6 +1003,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Δείξε εικόνα GRIB"
+#
 #
 #
 #
@@ -1019,10 +1048,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Διεύθυνση Ανέμου"
+#
 #
 #
 #

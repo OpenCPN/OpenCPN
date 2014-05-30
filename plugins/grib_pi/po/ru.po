@@ -2,243 +2,211 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 1.3.6\n"
+"Project-Id-Version: grib_pi 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
-"PO-Revision-Date: 2010-03-31 01:12+0300\n"
-"Last-Translator: \n"
-"Language-Team: Eugene Polyan <epolyan@gmail.com>\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"PO-Revision-Date: 2014-04-23 21:24+0400\n"
+"Last-Translator: Anton Samsonov <epolyan@gmail.com>\n"
+"Language-Team: Agat-Aquarius R&P <epolyan@gmail.com>\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Russian\n"
-"X-Poedit-Country: RUSSIAN FEDERATION\n"
-"X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 #
 msgid " (Max size )"
-msgstr ""
+msgstr " (макс. размер)"
 #
 msgid "300 hPa"
-msgstr ""
+msgstr "300 гПа"
 #
 msgid "500 hPa"
-msgstr ""
+msgstr "500 гПа"
 #
 msgid "700 hPa"
-msgstr ""
+msgstr "700 гПа"
 #
 msgid "850 hPA"
-msgstr ""
+msgstr "850 гПа"
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr ""
+msgstr "Адрес, используемый при отправке (для Linux — обязательно)"
 #
 msgid ""
 "Air\n"
 "Temperature"
 msgstr ""
+"Температура\n"
+"воздуха"
 #
 msgid "Air Temp"
-msgstr ""
+msgstr "Темп. возд."
 #
 msgid "Air Temperature"
-msgstr ""
+msgstr "Температура воздуха"
 #
 msgid "Air Temperature at"
-msgstr ""
+msgstr "Температура воздуха в "
 #
 msgid "Air Temperature(2m)"
-msgstr ""
+msgstr "Температура воздуха (2 м)"
 #
 msgid "Altitude"
-msgstr ""
+msgstr "Высота"
 #
-msgid "Altitude(Pressure Altitude)"
+msgid "Altitude(Geopotential)"
 msgstr ""
 #
 msgid "Always visible"
-msgstr ""
+msgstr "Отображать всегда"
 #
 msgid "Apply"
-msgstr ""
+msgstr "Применить"
 #
 msgid "Authorize Interpolation to start at current time"
-msgstr ""
+msgstr "Разрешить интерполяцию с текущего времени"
 #
 msgid "Barbed Arrows"
-msgstr ""
+msgstr "Стрелки-флюгеры"
 #
 msgid "Beaufort"
-msgstr ""
+msgstr "балл"
 #
 msgid ""
 "Before sending an email to Zygrib you have to enter your Login and Code.\n"
 "Please visit www.zygrib.org/ and follow instructions..."
 msgstr ""
+"Для отправки сообщения в службу zyGRIB вам необходимо ввести учётные данные.\n"
+"Зайдите на сайт www.zygrib.org и следуйте инструкциям для регистрации."
 #
 msgid "Building Isobar map"
-msgstr ""
+msgstr "Построение карты изобар"
 #
 msgid "CAPE"
-msgstr ""
+msgstr "Энергия конвекции"
 #
 msgid "Celsius"
-msgstr ""
+msgstr "°C"
 #
 msgid "Close"
-msgstr ""
-#
-msgid "Cloud"
-msgstr ""
-#
-msgid "Cloud Cover"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Colors"
 msgstr "Закрыть"
 #
+msgid "Cloud Cover"
+msgstr "Облачность"
+#
+msgid "Colors"
+msgstr "Цветовая схема"
+#
 msgid "Continue..."
-msgstr ""
+msgstr "Продолжить…"
 #
 msgid "Controled Colours"
-msgstr ""
+msgstr "Переменный цвет"
 #
 msgid "Convective Available Potential Energy"
-msgstr ""
+msgstr "Потенциальная энергия конвекции"
 #
+#, fuzzy
 msgid "Copy First Cumulative Missing Record"
-msgstr ""
+msgstr "Копировать первую отсутствующую накопительную запись"
 #
+#, fuzzy
 msgid "Copy Missing Wave Records"
-msgstr ""
+msgstr "Копировать отсутствующие данные о волнах"
 #
 msgid "Course"
-msgstr ""
+msgstr "Курс"
 #
 msgid "Cumulative Rainfall per Hour"
-msgstr ""
+msgstr "Объём осадков за час"
 #
 msgid "Current"
-msgstr ""
+msgstr "Течение"
 #
 msgid "Current time forecast"
-msgstr ""
+msgstr "Текущий прогноз"
 #
 msgid "Data"
-msgstr ""
+msgstr "Визуализация данных"
 #
 msgid "Data at Cursor Position:"
-msgstr ""
+msgstr "Данные под курсором:"
 #
 msgid "Data available"
-msgstr ""
+msgstr "Доступные данные"
 #
-# 
 msgid "Days"
-msgstr ""
+msgstr "дн."
 #
 msgid "Default Colour"
-msgstr ""
+msgstr "Стандартный цвет"
 #
 msgid "Default Size"
-msgstr ""
+msgstr "Размер по умолчанию"
 #
 msgid "Deg"
-msgstr ""
+msgstr "°"
 #
 msgid "Direction Arrows"
-msgstr ""
+msgstr "Стрелки направления"
 #
 msgid "Display"
-msgstr ""
+msgstr "Общие параметры отображения"
 #
 msgid "Display Iso CAPE"
-msgstr ""
+msgstr "Изолинии конвекции"
 #
 msgid "Display Isobars"
-msgstr ""
+msgstr "Линии изобар"
 #
 msgid "Display Isotachs"
-msgstr ""
+msgstr "Линии изотах"
 #
 msgid "Display Isotherms"
-msgstr ""
+msgstr "Линии изотерм"
 #
 msgid "Double Arrow"
-msgstr ""
+msgstr "Двойная стрелка"
 #
 msgid "Enter your forecasted Course"
-msgstr ""
+msgstr "Ваш прогнозируемый курс"
 #
 msgid "Enter your forescasted Speed (in Knots)"
-msgstr ""
+msgstr "Ваша прогнозируемая скорость"
 #
-# 
 msgid "Error:  Can't read this File!"
-msgstr ""
+msgstr "Ошибка: не удаётся прочитать этот файл!"
 #
 msgid "Error:  File does not exist!"
-msgstr ""
+msgstr "Ошибка: такого файла не существует!"
 #
 msgid "Error:  No valid data in this file!"
-msgstr ""
+msgstr "Ошибка: файл не содержит корректных данных!"
 #
 msgid "Estimated File Size"
-msgstr ""
+msgstr "Приблизительный размер файла"
 #
 msgid "Fahrenheit"
-msgstr ""
+msgstr "°F"
 #
 msgid "Feet"
-msgstr ""
+msgstr "фут"
 #
 msgid "Forecast Model "
-msgstr ""
+msgstr "Модель прогноза"
 #
 msgid "GRIB Data at Cursor"
-msgstr ""
+msgstr "Данные под курсором"
 #
-# 
-# 
-# 
-# 
 msgid "GRIB Display Control"
-msgstr "Настройки отображения информации GRIB"
+msgstr "GRIB — Управление отображением"
 #
-# 
 msgid "GRIB PlugIn for OpenCPN"
-msgstr ""
+msgstr "Модуль «GRIB» для OpenCPN"
 #
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
@@ -258,437 +226,350 @@ msgid ""
 "- Convective Available Potential Energy (CAPE)\n"
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
 msgstr ""
+"Модуль «GRIB» для OpenCPN\n"
+"Запрашивает прогноз погоды и отображает его поверх карты."
 #
 msgid "Generic"
+msgstr "Типовая"
+#
+msgid "Geopotential Height"
 msgstr ""
 #
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
-msgstr ""
+msgstr "Ваш код (не пароль!), полученный на форуме zyGRIB"
 #
-# 
 msgid "Grib"
-msgstr ""
+msgstr "GRIB"
 #
 msgid "Grib Data Table"
-msgstr ""
+msgstr "Таблица данных GRIB"
 #
 msgid "Grib Data at"
-msgstr ""
+msgstr "Данные в "
 #
 msgid "Grib Preferences"
-msgstr ""
+msgstr "GRID — Предпочтения"
 #
 msgid "Grib Settings"
-msgstr ""
+msgstr "GRIB — Настройки"
 #
 msgid "Hours"
-msgstr ""
+msgstr "ч"
 #
 msgid "Inches"
-msgstr ""
+msgstr "дюйм"
 #
 msgid "Interpolate between gribs"
-msgstr ""
+msgstr "Интерполировать во времени"
 #
-# 
 msgid "Interval"
-msgstr ""
+msgstr "Интервал"
 #
 msgid "IsoBars"
-msgstr ""
+msgstr "Изобары"
 #
+# Overriden by mainline OpenCPN translation.
 msgid "Knots"
-msgstr ""
+msgstr "уз."
 #
 msgid "Kts"
-msgstr ""
+msgstr "уз."
 #
 msgid "Load File Options"
-msgstr ""
+msgstr "Параметры загрузки файла"
 #
 msgid "Load the Last Opened File"
-msgstr ""
+msgstr "Загружать последний открытый файл"
 #
 msgid "Load the More Recent File in Directory"
-msgstr ""
+msgstr "Загружать наиболее свежий файл из папки"
 #
-# 
 msgid "Local Time"
-msgstr ""
+msgstr "Местное время"
 #
 msgid "Loop Mode"
-msgstr ""
+msgstr "Повторять многократно"
 #
 msgid "Loop Start"
-msgstr ""
+msgstr "Начало повтора"
 #
 msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
-msgstr ""
+msgstr "Ошибка: почтовая библиотека MAPI32.DLL не установлена или неисправна."
 #
 msgid "MB"
-msgstr ""
+msgstr "Мбайт"
 #
 msgid "Mail"
-msgstr ""
+msgstr "Почта"
 #
 msgid "Mail To "
-msgstr ""
+msgstr "Поставщик данных"
 #
 msgid "Max"
-msgstr ""
+msgstr "макс."
 #
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "Давление, мБар"
+msgstr "Давление на уровнем моря"
 #
 msgid "Meters"
-msgstr ""
+msgstr "м"
 #
 msgid "MilliBars"
-msgstr ""
+msgstr "мбар"
 #
 msgid "Millimeters"
-msgstr ""
+msgstr "мм"
 #
 msgid "Minimum Spacing"
-msgstr ""
+msgstr "Мин. расстояние"
 #
 msgid "Moving Grib"
-msgstr ""
+msgstr "Данные для рейса"
 #
 msgid "N/A"
-msgstr ""
+msgstr "н/д"
 #
 msgid "Next"
-msgstr ""
+msgstr "Следующий"
 #
 msgid "Now"
-msgstr ""
+msgstr "Сейчас"
 #
 msgid "Numbers"
-msgstr ""
+msgstr "Значения"
 #
 msgid "Open File"
-msgstr ""
+msgstr "Открыть файл"
 #
 msgid "Overlay Transparency"
-msgstr ""
+msgstr "Прозрачность наложения"
 #
 msgid "OverlayMap"
+msgstr "Наложение карты"
+#
+msgid "Overlays too wide and can't be displayed:"
 msgstr ""
 #
 msgid "Percentage"
-msgstr ""
+msgstr "%"
 #
 msgid "Play"
-msgstr ""
+msgstr "Воспроизвести"
 #
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Pressure"
-msgstr "Давление, мБар"
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-msgid "Pressure Altitude"
-msgstr "Давление, мБар"
-#
-#, c-format
-msgid "Pressure Altitude (in %s) or Standard Height Selection."
 msgstr ""
+"Отдалите карту или уменьшите масштаб, чтобы увидеть невидимые наложения:"
+#
+msgid "Pressure"
+msgstr "Давление"
 #
 msgid "Previous"
-msgstr ""
+msgstr "Предыдущий"
 #
 msgid "Profile"
-msgstr ""
+msgstr "Профиль запроса"
 #
 msgid "Proportional Arrow"
-msgstr ""
+msgstr "Пропорциональная стрелка"
 #
 msgid "Rainfall"
-msgstr ""
+msgstr "Осадки"
 #
 msgid "Rel. Humid."
-msgstr ""
+msgstr "Отн. влаж."
 #
 msgid "Relative Humidity"
-msgstr ""
+msgstr "Отн. влажность"
 #
 msgid "Request"
-msgstr ""
+msgstr "Запросить"
 #
 msgid ""
 "Request can't be sent. Please verify your email systeme parameters.\n"
 "You should also have a look at your log file.\n"
 "Save or Cancel to finish..."
 msgstr ""
+"Не удаётся отправить запрос. Проверьте параметры вашей почтовой системы.\n"
+"Записи в журнале работы могут помочь выяснить причину отказа."
 #
-# 
 msgid "Resolution"
-msgstr ""
-#
-msgid "Rotated overlays suppressed in DC mode"
-msgstr ""
+msgstr "Разрешение"
 #
 msgid "Save"
-msgstr ""
+msgstr "Сохранить"
 #
 msgid ""
 "Sea\n"
 "Temperature"
 msgstr ""
+"Температура\n"
+"воды"
+#
+#, fuzzy
+msgid "Sea Surface Temperature"
+msgstr "Температура воды"
 #
 msgid "Sea Temp"
-msgstr ""
+msgstr "Темп. воды"
 #
 msgid "Sea Temperature"
-msgstr ""
+msgstr "Температура воды"
 #
 msgid "Sea Temperature(surf.)"
+msgstr "Температура воды (0 м)"
+#
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
 msgstr ""
 #
-msgid "Sea or Air Temperature at Surface Level"
-msgstr ""
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Select a GRIB file"
-msgstr "Каталог файлов GRIB"
+msgstr "Выберите GRIB-файл"
 #
-# 
 msgid "Send"
-msgstr ""
+msgstr "Отправить"
 #
 msgid "Sender eMail Address"
-msgstr ""
+msgstr "Адрес отправителя"
 #
 msgid "Settings"
-msgstr ""
+msgstr "Настройки"
 #
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Significant Wave Height"
-msgstr "Характерная высота волны, м"
+msgstr "Значительная высота волн"
 #
 msgid "Single Arrow"
-msgstr ""
+msgstr "Одиночная стрелка"
 #
 msgid "Small Size"
-msgstr ""
+msgstr "Малый размер"
 #
 msgid "Spacing"
-msgstr ""
+msgstr "Интервал"
 #
 msgid "Speed"
-msgstr ""
+msgstr "Скорость"
 #
 msgid "Start Options"
-msgstr ""
+msgstr "Параметры инициализации"
 #
 msgid "Start at the first forecast in GRIB file"
-msgstr ""
+msgstr "Начинать с первого прогноза в файле"
 #
 msgid "Start at the nearest forecast to current time"
-msgstr ""
+msgstr "Начинать с наиболее актуального прогноза"
 #
 msgid "Stop"
-msgstr ""
+msgstr "Остановить"
 #
 msgid "Surface Current Direction"
-msgstr ""
+msgstr "Направление поверхностного течения"
 #
 msgid "Surface Current Speed"
+msgstr "Скорость поверхностного течения"
+#
+msgid "Surface level"
 msgstr ""
 #
 msgid "Temperature"
-msgstr ""
+msgstr "Температура"
 #
 msgid ""
 "The Grib file you are opening contains a moving Grib Zone.\n"
 "Interpolation is not supported for this type of file"
 msgstr ""
+"Открываемый файл данных содержит зону движения.\n"
+"Интерполяция данных в движении не поддерживается."
 #
 msgid ""
 "The file size limit is overcome!\n"
 "You can zoom in and/or change parameters..."
 msgstr ""
+"Размер файла выходит за допустимые пределы.\n"
+"Приблизьте карту или измените параметры…"
 #
 msgid ""
 "This file contains data for particular time intervals but you have chosen to "
 "display different intervals.\n"
 "Please consider that the values will be interpolated."
 msgstr ""
+"Файл содержит данные для конкретных временных интервалов,\n"
+"однако вы выбрали отображение других интервалов.\n"
+"Имейте в виду, что значения будут интерполированными."
 #
 msgid "This is your zyGrib's forum access Login"
-msgstr ""
+msgstr "Имя вашей учётной записи на форуме zyGRIB"
 #
 msgid "Time Interval"
-msgstr ""
+msgstr "Временной интервал"
 #
 msgid "Time Options"
-msgstr ""
+msgstr "Параметры отображения времени"
 #
 msgid "Time Range"
-msgstr ""
+msgstr "Диапазон времени"
 #
 msgid "Top of Grib File"
-msgstr ""
+msgstr "Начало файла данных"
 #
-# 
 msgid "UTC"
-msgstr ""
+msgstr "Гринвичское время (UTC)"
 #
-# 
 msgid "Units"
-msgstr ""
+msgstr "Единицы измерения"
 #
 msgid "Updates per Second"
-msgstr ""
+msgstr "Обновлений в секунду"
 #
 msgid "Use Gradual Colors"
-msgstr ""
+msgstr "Рисовать с переливами цветов"
 #
-# 
-# 
-# 
-# 
 msgid "Use High Definition Graphics"
-msgstr "Использовать графику с высоким разрешением"
+msgstr "Рисовать с высоким качеством"
 #
 msgid "WIND data at"
-msgstr ""
+msgstr "Данные о ветре в "
 #
 msgid "Warning!"
-msgstr ""
+msgstr "Внимание!"
 #
 msgid "Warning:  Empty directory!"
-msgstr ""
+msgstr "Предупреждение: папка пуста!"
 #
 msgid "Waves"
-msgstr ""
+msgstr "Волны"
 #
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Waves Direction"
-msgstr "Направление ветра"
+msgstr "Направление волн"
 #
 msgid "Weather table"
-msgstr ""
+msgstr "Таблица погоды"
 #
-# 
 msgid "Wind"
-msgstr ""
+msgstr "Ветер"
 #
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Wind Direction at"
-msgstr "Направление ветра"
+msgstr "Направление ветра в "
 #
 msgid "Wind Gust"
-msgstr ""
+msgstr "Порывы ветра"
 #
 msgid "Wind Gust at"
-msgstr ""
+msgstr "Порывы ветра в "
 #
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
 msgid "Wind Speed at"
-msgstr "Скорость ветра, узл."
+msgstr "Скорость ветра в "
 #
 msgid "Write and send eMail request"
-msgstr ""
+msgstr "Составление запроса для отправки по эл. почте"
 #
 msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "
 "interpolated!"
 msgstr ""
+"Вы активировали интерполяцию данных.\n"
+"Имейте в виду, что отображаемые данные\n"
+"будут интерполированными, а не реальными."
 #
 msgid ""
 "You request a forecast for more than 8 days horizon.\n"
@@ -696,304 +577,77 @@ msgid ""
 "Don't forget that beyond the first 8 days, the resolution will be only "
 "2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
 msgstr ""
+"Вы запрашиваете прогноз на более чем 8 дней.\n"
+"Данные о волнах будут исключены из запроса.\n"
+"Имейте в виду, что после первых 8-ми дней\n"
+"разрешение будет 2,5°×2,5° с интервалом 12 ч."
 #
 msgid ""
 "Your request is ready. An email is prepared in your email environment. \n"
 "You have just to verify and send it...\n"
 "Save or Cancel to finish...or Continue..."
 msgstr ""
+"Ваш запрос сформирован и помещён в почтовую программу.\n"
+"Нужно проверить сообщение и отправить его."
 #
 msgid ""
 "Your request was sent \n"
 "(if your system has an MTA configured and is able to send email).\n"
 "Save or Cancel to finish...or Continue..."
-msgstr ""
+msgstr "Ваш запрос был отправлен (если ваша почтовая система настроена)."
 #
 msgid "Zoom To Center"
-msgstr ""
+msgstr "Центрировать и приблизить"
 #
 msgid "h"
-msgstr ""
+msgstr "ч"
 #
 msgid "inHG"
-msgstr ""
+msgstr "дюйм рт. ст."
 #
 msgid "j/kg"
-msgstr ""
+msgstr "Дж/кг"
 #
 msgid "km/h"
-msgstr ""
+msgstr "км/ч"
 #
 msgid "m/s"
-msgstr ""
+msgstr "м/с"
 #
 msgid "mmHG"
-msgstr ""
+msgstr "мм рт. ст."
 #
 msgid "mn"
-msgstr ""
+msgstr "мин."
 #
 msgid "mph"
-msgstr ""
+msgstr "миль/ч"
+#
+#, fuzzy
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr "Повёрнутые наложения отключены в режиме DC"
 #
 msgid "playback"
-msgstr ""
+msgstr "Воспроизведение"
 #
 msgid "zyGrib Code"
-msgstr ""
+msgstr "Персональный код zyGRIB"
 #
 msgid "zyGrib Login"
-msgstr ""
+msgstr "Учётная запись zyGRIB"
 #
+#~ msgid "Altitude(Pressure Altitude)"
+#~ msgstr "Высота"
 #
+#~ msgid "Cloud"
+#~ msgstr "Облако"
 #
+#~ msgid "Pressure Altitude"
+#~ msgstr "Баром. высота"
 #
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
 #, fuzzy
-#~ msgid " data"
-#~ msgstr "Данные GRIB"
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid "GRIB"
-#~ msgstr "GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "GRIB File Directory"
-#~ msgstr "Каталог файлов GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
-#~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
-#~ msgstr "Уменьшите масштаб для просмотра скртых меток CRAIN GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
-#~ msgstr "Уменьшите масштаб для просмотра скртых меток CRAIN GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
-#~ msgstr "Уменьшите масштаб для просмотра скртых меток HTSGW GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
-#~ msgstr "Уменьшите масштаб для просмотра скртых меток CRAIN GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "Show GRIB icon"
-#~ msgstr "Показать иконку GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-#~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
-#~ msgstr "ВНИМАНИЕ: данные QuickScat GRIB актуальны на %d часов назад"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Wind Speed and Direction(10m)"
-#~ msgstr "Направление ветра"
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#, fuzzy
-#~ msgid "Wind Speed(10m)"
-#~ msgstr "Скорость ветра, узл."
+#~ msgid "Pressure Altitude (in %s) or Standard Height Selection."
+#~ msgstr "Баром. высота (в %s) или обычная высота"
+#
+#~ msgid "Sea or Air Temperature at Surface Level"
+#~ msgstr "Температура воды или воздуха у поверхности воды"

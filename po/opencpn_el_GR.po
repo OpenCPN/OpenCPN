@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1009\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:43-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2013-10-18 13:15+0200\n"
 "Last-Translator: \n"
 "Language-Team: TUC Sailing Team <sailingteam@isc.tuc.gr>\n"
@@ -1002,6 +1002,10 @@ msgstr "Συνδυασμός!"
 msgid "Confirm deletion of tracks and routes"
 msgstr "Επιβεβαίωση για διαγραφή ιχνών πορείας και διαδρομών"
 #
+#, fuzzy
+msgid "Connection"
+msgstr "Συνδέσεις"
+#
 msgid "Connections"
 msgstr "Συνδέσεις"
 #
@@ -1057,6 +1061,9 @@ msgstr "Δημιουργία σημείου πορείας"
 msgid "Create Waypoint"
 msgstr "Δημιουργία σημείου πορείας"
 #
+msgid "CurrentValue"
+msgstr ""
+#
 msgid "Cyan"
 msgstr "Κυανό"
 #
@@ -1097,6 +1104,9 @@ msgstr "Σκούρο κίτρινο"
 #
 msgid "Data Connections"
 msgstr "Σνδέσεις δεδομένων"
+#
+msgid "Data connection must be input, output or both"
+msgstr ""
 #
 msgid "DataPort"
 msgstr "ΘύραΔεδομένων"
@@ -1160,6 +1170,9 @@ msgstr "Περιγραφή"
 #
 msgid "Destination"
 msgstr "Προορισμός"
+#
+msgid "Dialog"
+msgstr ""
 #
 msgid "Directories"
 msgstr "Φάκελοι"
@@ -1273,6 +1286,9 @@ msgstr "Εκτ. Ώρα Άφιξης"
 msgid "ETA          "
 msgstr "Εκτ.Ω.Άφ."
 #
+msgid "ETA (UTC)"
+msgstr ""
+#
 msgid "ETE"
 msgstr "Εκτ. χρόνος εν πλώ"
 #
@@ -1294,10 +1310,13 @@ msgstr "On"
 msgid "Enable Chart Quilting"
 msgstr "Επίτρεψε ψηφιδωτό χαρτών"
 #
+msgid "Enable Responsive graphics interface"
+msgstr ""
+#
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Μέγιστος χρόνος για σίγαση του συναγερμού (min)"
 #
-msgid "Enable Touchscreen/Tablet Interface"
+msgid "Enable Touchscreen/Tablet interface"
 msgstr ""
 #
 msgid "Enable Transparent Toolbar"
@@ -1899,6 +1918,12 @@ msgstr ""
 "Δεν υπάρχουν εγκατεστημένοι χάρτες.\n"
 "Διαλέξτε φακέλους χαρτών στο «Επιλογές -> Χάρτες»."
 #
+msgid ""
+"No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a "
+"usb serial device.\n"
+msgstr ""
+#
 msgid "No, I don't want to hide it."
 msgstr "Όχι, δεν θέλω να κρυφτεί"
 #
@@ -1992,28 +2017,18 @@ msgstr "Το OpenCPN δεν μπορεί να ξεκινήσει. "
 msgid "OpenCPN info"
 msgstr "Πληροφορίες OpenCPN"
 #
-msgid ""
-"OpenCPN requires access to serial ports to use serial NMEA data.\n"
-"You currently do not have permission to access the serial ports on this "
-"system.\n"
-"\n"
-"It is suggested that you exit OpenCPN now,\n"
-"and add yourself to the correct group to enable serial port access.\n"
-"\n"
-"You may do so by executing the following command from the linux command "
-"line:\n"
-"\n"
-"                sudo usermod -a -G "
+msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr ""
 #
 msgid "Options"
 msgstr "Επιλογές"
 #
+#, fuzzy
+msgid "Options ..."
+msgstr "Επιλογές"
+#
 msgid "Other - Define in associated text field"
 msgstr "Άλλο: ορίζεται στο σχετικό πεδίο κειμένου"
-#
-msgid "Output"
-msgstr "Έξοδος"
 #
 msgid "Output filtering"
 msgstr "Φίλτρο εξόδου"
@@ -2210,6 +2225,9 @@ msgstr "Πραγματικό - Off"
 #
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Ανακατασκευή της βάσης δεδομένων χαρτών από τα αρχεία διαμόρφωσης..."
+#
+msgid "Receive Input on this Port"
+msgstr ""
 #
 msgid "Recorded points"
 msgstr "Καταγραμμένα σημεία"
@@ -2503,6 +2521,9 @@ msgstr "Διάλογος για συναγερμούς  CPA/TCPA"
 msgid "Show Chart Outlines"
 msgstr "Δείξε τα όρια των χαρτών"
 #
+msgid "Show Compass/GPS Status Window"
+msgstr ""
+#
 msgid "Show Current Information"
 msgstr "Δείξε πληροφορίες ρευμάτων"
 #
@@ -2722,6 +2743,15 @@ msgstr "Δοκιμή ήχου συναγερμού"
 #, fuzzy
 msgid "Testing"
 msgstr "Ερώτηση"
+#
+msgid "Texture Compression"
+msgstr ""
+#
+msgid "Texture Compression Caching"
+msgstr ""
+#
+msgid "Texture Memory Size (MB)"
+msgstr ""
 #
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
@@ -2963,6 +2993,10 @@ msgstr "Έλεγχος ανανέωσης"
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Χρήση OpenGL"
 #
+#, fuzzy
+msgid "Use Accelerated Panning"
+msgstr "Χρήση OpenGL"
+#
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "Χρήση μεθόδου Garmin (GRMN) για εισαγωγή δεδομένων"
 #
@@ -3118,6 +3152,23 @@ msgstr ""
 "Δεν μπορείς να κρύψεις το τελευταίο εργαλείο από την μπάρα\n"
 "γιατί τότε η μπάρα θα γίνει μη προσβάσιμη."
 #
+msgid ""
+"You do currently not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
+msgstr ""
+#
+#, fuzzy
+msgid "You must enter a port..."
+msgstr "Πρέπει να επιλέξετε θύρα δεδομένων..."
+#
 msgid "You must enter the address..."
 msgstr "Πρέπει να γράψετε τη διεύθυνση..."
 #
@@ -3203,8 +3254,14 @@ msgstr "Ιστοσελίδα wxFB"
 #
 #
 #
+#
 #~ msgid " is %5g"
 #~ msgstr "είναι %5g"
+#
+#
+#~ msgid "Output"
+#~ msgstr "Έξοδος"
+#
 #
 #
 #

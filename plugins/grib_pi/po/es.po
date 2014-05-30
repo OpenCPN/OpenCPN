@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Plugin grib 2.2 OpenCPN 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2014-02-23 10:15+0100\n"
 "Last-Translator: Pepo II <Pepo_II@outlok.es>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com &lt;opencpn.es@gmx.com&gt;\n"
@@ -64,7 +64,7 @@ msgstr "Temperatura Aire(2m)"
 msgid "Altitude"
 msgstr ""
 #
-msgid "Altitude(Pressure Altitude)"
+msgid "Altitude(Geopotential)"
 msgstr ""
 #
 msgid "Always visible"
@@ -101,9 +101,6 @@ msgstr "Celsius"
 #
 msgid "Close"
 msgstr "Cerrar"
-#
-msgid "Cloud"
-msgstr "Nubosidad"
 #
 msgid "Cloud Cover"
 msgstr "Nubosidad"
@@ -278,6 +275,9 @@ msgstr ""
 msgid "Generic"
 msgstr "Genérico"
 #
+msgid "Geopotential Height"
+msgstr ""
+#
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr "Coja este código en el foro de zyGrib (¡no es su pasword!)"
 #
@@ -403,6 +403,9 @@ msgstr "Transparencia superpuesta"
 msgid "OverlayMap"
 msgstr "Mapa superpuesto"
 #
+msgid "Overlays too wide and can't be displayed:"
+msgstr ""
+#
 msgid "Percentage"
 msgstr "Porcentaje"
 #
@@ -418,16 +421,6 @@ msgstr "Por favor ajuste Zoom o Escala para ver capas invisibles:"
 #
 msgid "Pressure"
 msgstr "Presión"
-#
-#
-#
-#, fuzzy
-msgid "Pressure Altitude"
-msgstr "Presión"
-#
-#, c-format
-msgid "Pressure Altitude (in %s) or Standard Height Selection."
-msgstr ""
 #
 msgid "Previous"
 msgstr "Previo"
@@ -464,15 +457,18 @@ msgstr ""
 msgid "Resolution"
 msgstr "Resolución"
 #
-msgid "Rotated overlays suppressed in DC mode"
-msgstr "Capas rotadas suprimidas en modo DC"
-#
 msgid "Save"
 msgstr "Guardar"
 #
 msgid ""
 "Sea\n"
 "Temperature"
+msgstr ""
+"Temperatura\n"
+"mar"
+#
+#, fuzzy
+msgid "Sea Surface Temperature"
 msgstr ""
 "Temperatura\n"
 "mar"
@@ -499,7 +495,8 @@ msgstr ""
 msgid "Sea Temperature(surf.)"
 msgstr "Temperatura mar(sup.)"
 #
-msgid "Sea or Air Temperature at Surface Level"
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
 msgstr ""
 #
 #
@@ -556,6 +553,9 @@ msgid "Surface Current Direction"
 msgstr ""
 #
 msgid "Surface Current Speed"
+msgstr ""
+#
+msgid "Surface level"
 msgstr ""
 #
 #, fuzzy
@@ -746,6 +746,10 @@ msgstr ""
 msgid "mph"
 msgstr "mph"
 #
+#, fuzzy
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr "Capas rotadas suprimidas en modo DC"
+#
 msgid "playback"
 msgstr "Repetición"
 #
@@ -756,8 +760,10 @@ msgid "zyGrib Login"
 msgstr "Login zyGrib"
 #
 #
+#
 #~ msgid " Mo )"
 #~ msgstr " Mo )"
+#
 #
 #
 #
@@ -781,8 +787,14 @@ msgstr "Login zyGrib"
 #~ msgstr "Datos GRIB"
 #
 #
+#
 #~ msgid "00N  00W"
 #~ msgstr "00N  00W"
+#
+#
+#~ msgid "Cloud"
+#~ msgstr "Nubosidad"
+#
 #
 #
 #
@@ -802,8 +814,10 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -848,9 +862,11 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Ajuste Zoom o Escala para ver SEATEMP GRIB eliminado"
+#
 #
 #
 #
@@ -874,9 +890,11 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Ajuste Zoom o Escala para ver CRAIN GRIB eliminado"
+#
 #
 #
 #
@@ -900,9 +918,18 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Ajuste Zoom o Escala para ver CRAIN GRIB eliminado"
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Pressure Altitude"
+#~ msgstr "Presión"
+#
 #
 #
 #
@@ -927,9 +954,11 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Preferencias GRIB"
+#
 #
 #
 #
@@ -994,8 +1023,10 @@ msgstr "Login zyGrib"
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Mostrar metros/seg para Velocidad Viento"
+#
 #
 #
 #
@@ -1003,16 +1034,20 @@ msgstr "Login zyGrib"
 #~ msgstr "Tamaño"
 #
 #
+#
 #~ msgid "Slices per Update"
 #~ msgstr "Trozos por actualización"
+#
 #
 #
 #~ msgid "Slices per hour"
 #~ msgstr "Trozos por hora"
 #
 #
+#
 #~ msgid "WavesModel"
 #~ msgstr "Modelo de olas"
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 1.3.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2012-05-23 07:03+0100\n"
 "Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
 "Language-Team: OpenCPN CZ <LL@li.org>\n"
@@ -78,7 +78,7 @@ msgstr ""
 msgid "Altitude"
 msgstr ""
 #
-msgid "Altitude(Pressure Altitude)"
+msgid "Altitude(Geopotential)"
 msgstr ""
 #
 msgid "Always visible"
@@ -111,9 +111,6 @@ msgid "Celsius"
 msgstr ""
 #
 msgid "Close"
-msgstr ""
-#
-msgid "Cloud"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -289,6 +286,9 @@ msgstr ""
 msgid "Generic"
 msgstr ""
 #
+msgid "Geopotential Height"
+msgstr ""
+#
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
 #
@@ -411,6 +411,9 @@ msgstr ""
 msgid "OverlayMap"
 msgstr ""
 #
+msgid "Overlays too wide and can't be displayed:"
+msgstr ""
+#
 msgid "Percentage"
 msgstr ""
 #
@@ -428,16 +431,6 @@ msgstr "Prosím zmenši měřítko pro zobrazení HTSGW GRIB"
 #, fuzzy
 msgid "Pressure"
 msgstr "Tlak, mBar"
-#
-#
-#
-#, fuzzy
-msgid "Pressure Altitude"
-msgstr "Tlak, mBar"
-#
-#, c-format
-msgid "Pressure Altitude (in %s) or Standard Height Selection."
-msgstr ""
 #
 msgid "Previous"
 msgstr ""
@@ -469,9 +462,6 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Rotated overlays suppressed in DC mode"
-msgstr ""
-#
 msgid "Save"
 msgstr ""
 #
@@ -489,6 +479,20 @@ msgstr ""
 msgid ""
 "Sea\n"
 "Temperature"
+msgstr "Povrchová teplota moře, C"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Sea Surface Temperature"
 msgstr "Povrchová teplota moře, C"
 #
 #
@@ -522,7 +526,8 @@ msgstr "Povrchová teplota moře, C"
 msgid "Sea Temperature(surf.)"
 msgstr ""
 #
-msgid "Sea or Air Temperature at Surface Level"
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
 msgstr ""
 #
 #
@@ -581,6 +586,9 @@ msgid "Surface Current Direction"
 msgstr ""
 #
 msgid "Surface Current Speed"
+msgstr ""
+#
+msgid "Surface level"
 msgstr ""
 #
 #
@@ -785,6 +793,9 @@ msgstr ""
 msgid "mph"
 msgstr ""
 #
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+#
 msgid "playback"
 msgstr ""
 #
@@ -793,6 +804,7 @@ msgstr ""
 #
 msgid "zyGrib Login"
 msgstr ""
+#
 #
 #
 #
@@ -824,6 +836,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "Nastavení GRIBu"
@@ -836,8 +849,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -884,9 +899,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Prosím zmenši měřítko pro zobrazení SEATEMP GRIB"
+#
 #
 #
 #
@@ -912,9 +929,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
+#
 #
 #
 #
@@ -940,9 +959,18 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
+#
+#
+#
+#
+#, fuzzy
+#~ msgid "Pressure Altitude"
+#~ msgstr "Tlak, mBar"
+#
 #
 #
 #
@@ -966,6 +994,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Nastavení GRIBu"
+#
 #
 #
 #
@@ -1032,8 +1061,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Ukaž  m/s pro rychlost větru"
+#
 #
 #
 #
@@ -1048,6 +1079,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Směr větru"
+#
 #
 #
 #

@@ -2,9 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN, Grib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
+"Last-Translator: Gilletarom et  EdelVoilier <contact@gilletarom.fr et  "
+"pascaljouin74@gmail.com>\n"
 "Language-Team: Gilletarom <contact@gilletarom.fr>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
@@ -16,7 +17,7 @@ msgid " (Max size )"
 msgstr "(Taille maximale)"
 #
 msgid "300 hPa"
-msgstr "300"
+msgstr "300 hPa"
 #
 msgid "500 hPa"
 msgstr "500 hPa"
@@ -25,7 +26,7 @@ msgid "700 hPa"
 msgstr "700 hPa"
 #
 msgid "850 hPA"
-msgstr "850 hPA"
+msgstr "850 hPa"
 #
 msgid "Address used to send request eMail. (Mandatory for LINUX)"
 msgstr ""
@@ -53,8 +54,8 @@ msgstr "Temp. de l'air(2m)"
 msgid "Altitude"
 msgstr "Altitude"
 #
-msgid "Altitude(Pressure Altitude)"
-msgstr "Altitude (Pression Altitude)"
+msgid "Altitude(Geopotential)"
+msgstr "Altitude (Géopotentielle)"
 #
 msgid "Always visible"
 msgstr "Toujours visibles"
@@ -90,9 +91,6 @@ msgstr "Celsius"
 #
 msgid "Close"
 msgstr "Fermer"
-#
-msgid "Cloud"
-msgstr "Couv. nuageuse"
 #
 msgid "Cloud Cover"
 msgstr "C. nuag."
@@ -134,7 +132,7 @@ msgid "Data at Cursor Position:"
 msgstr "Valeurs des données sous la souris :"
 #
 msgid "Data available"
-msgstr "Donnée(s) demandée(s)"
+msgstr "Donnée(s) disponible(s)"
 #
 msgid "Days"
 msgstr "Jours"
@@ -243,6 +241,9 @@ msgstr ""
 #
 msgid "Generic"
 msgstr "Générique"
+#
+msgid "Geopotential Height"
+msgstr "Hauteur géopotentielle"
 #
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
@@ -357,6 +358,9 @@ msgstr "Transparence de superposition"
 msgid "OverlayMap"
 msgstr "Superposition de la carte"
 #
+msgid "Overlays too wide and can't be displayed:"
+msgstr "Superpositions trop larges et qui ne peuvent pas être affichées :"
+#
 msgid "Percentage"
 msgstr "Pourcentage"
 #
@@ -365,18 +369,12 @@ msgstr "Jouer"
 #
 msgid "Please Zoom or Scale Out to view invisible overlays:"
 msgstr ""
-"Veuillez diminuer le zoom ou l'échelle pour afficher les données non visibles"
+"Veuillez diminuer le zoom ou l'échelle pour afficher les données non "
+"visibles :"
 #
 #
 msgid "Pressure"
 msgstr "Pression"
-#
-msgid "Pressure Altitude"
-msgstr "Pression Altitude"
-#
-#, c-format
-msgid "Pressure Altitude (in %s) or Standard Height Selection."
-msgstr "Pression Altitude (en% s) ou sélection de la hauteur standard."
 #
 msgid "Previous"
 msgstr "Précédent"
@@ -384,9 +382,8 @@ msgstr "Précédent"
 msgid "Profile"
 msgstr "Profil"
 #
-#, fuzzy
 msgid "Proportional Arrow"
-msgstr "Direction des flèches"
+msgstr "Flèche proportionnelle"
 #
 msgid "Rainfall"
 msgstr "Précipit."
@@ -413,9 +410,6 @@ msgstr ""
 msgid "Resolution"
 msgstr "Résolution"
 #
-msgid "Rotated overlays suppressed in DC mode"
-msgstr "Superposition avec rotation supprimée  avec OpenGL non activé."
-#
 msgid "Save"
 msgstr "Sauvegarder"
 #
@@ -426,6 +420,9 @@ msgstr ""
 "Température\n"
 "de l'eau"
 #
+msgid "Sea Surface Temperature"
+msgstr "Température à la surface de l'eau"
+#
 msgid "Sea Temp"
 msgstr "Temp. eau"
 #
@@ -435,8 +432,11 @@ msgstr "Température de l'eau"
 msgid "Sea Temperature(surf.)"
 msgstr "Temp. de l'eau(Surf.)"
 #
-msgid "Sea or Air Temperature at Surface Level"
-msgstr "Température de l'air ou de la mer au niveau de la mer"
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
+msgstr ""
+"Sélection d'une surface à pression constante, en %s, (géopotentielle), ou de "
+"l'altitude standard"
 #
 msgid "Select a GRIB file"
 msgstr "Sélectionnez un fichier GRIB"
@@ -451,7 +451,7 @@ msgid "Settings"
 msgstr "Préférences"
 #
 msgid "Significant Wave Height"
-msgstr "Hauteur sugnificative des vagues"
+msgstr "Hauteur significative des vagues"
 #
 msgid "Single Arrow"
 msgstr "Flèche simple"
@@ -485,6 +485,9 @@ msgstr "Direction du courant de surface"
 msgid "Surface Current Speed"
 msgstr "Vitesse du courant de surface"
 #
+msgid "Surface level"
+msgstr "Niveau de la surface"
+#
 msgid "Temperature"
 msgstr "Température"
 #
@@ -493,7 +496,7 @@ msgid ""
 "Interpolation is not supported for this type of file"
 msgstr ""
 "Le fichier Grib vous ouvrez contient un zone mobile.\n"
-"Interpolation n'est pas pris en charge pour ce type de fichier."
+"L'interpolation n'est pas pris en charge pour ce type de fichier."
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -509,7 +512,7 @@ msgid ""
 msgstr ""
 "Ce fichier contient des données pour une certaine durée et vous avez choisi "
 "d'afficher les données pour un autre durée.\n"
-"S'il vous plait, considérez que ces valeurs seront interpolées."
+"S'il vous plait, considérez que les valeurs affichées seront interpolées."
 #
 msgid "This is your zyGrib's forum access Login"
 msgstr "Ceci est votre login d'accès au forum de Zygrib"
@@ -646,6 +649,15 @@ msgstr "mn"
 msgid "mph"
 msgstr "mph"
 #
+#, fuzzy
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+"Rotation cap vers le haut : Impossible de mettre en oeuvre la superposition. "
+"Dans les options d'OpenCPN, veuillez :\n"
+"- soit activer la technologie d'affichage OpenGL,\n"
+"- soit  désactiver la case \"Cap vers le haut : Activer"
+"\".                                   "
+#
 msgid "playback"
 msgstr "Mode d'affichage"
 #
@@ -660,6 +672,23 @@ msgstr "Votre login Zygrib"
 #
 #~ msgid "00N  00W"
 #~ msgstr "00N  00W"
+#
+#~ msgid "Altitude(Pressure Altitude)"
+#~ msgstr "Altitude (Pression Altitude)"
+#
+#~ msgid "Cloud"
+#~ msgstr "Couv. nuageuse"
+#
+#~ msgid "Pressure Altitude"
+#~ msgstr "Pression Altitude"
+#
+#~ msgid "Pressure Altitude (in %s) or Standard Height Selection."
+#~ msgstr ""
+#~ "Sélection d'une surface à pression constante, en %s, (géopotentielle), ou "
+#~ "de l'altitude standard"
+#
+#~ msgid "Sea or Air Temperature at Surface Level"
+#~ msgstr "Température de l'air ou de la mer au niveau de la mer"
 #
 #~ msgid "Slices per Update"
 #~ msgstr "Durée : Numérateur du quotient"

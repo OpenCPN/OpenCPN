@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.2.1110\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2010-11-24 22:54-0500\n"
 "Last-Translator:\n"
 "Language-Team: \n"
@@ -126,6 +126,9 @@ msgid "Feet"
 msgstr ""
 #
 msgid "Fonts"
+msgstr ""
+#
+msgid "From Ownship"
 msgstr ""
 #
 msgid "GPS Compass"

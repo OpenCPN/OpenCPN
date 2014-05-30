@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: dashboard_pi 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2013-09-25 15:52+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -121,6 +121,9 @@ msgstr ""
 #
 msgid "Fonts"
 msgstr "字型"
+#
+msgid "From Ownship"
+msgstr ""
 #
 msgid "GPS Compass"
 msgstr "GPS 羅盤"

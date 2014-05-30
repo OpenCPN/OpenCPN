@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.3.1006\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2013-10-15 00:32+0100\n"
 "Last-Translator: Frode Lynum <post@opencpn.kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -120,6 +120,9 @@ msgstr ""
 #
 msgid "Fonts"
 msgstr "Skrift"
+#
+msgid "From Ownship"
+msgstr ""
 #
 msgid "GPS Compass"
 msgstr "GPS Kompass"

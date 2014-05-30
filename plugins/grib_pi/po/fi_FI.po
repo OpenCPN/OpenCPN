@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2010-12-09 22:34+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaite@netti.fi>\n"
@@ -74,7 +74,7 @@ msgstr ""
 msgid "Altitude"
 msgstr ""
 #
-msgid "Altitude(Pressure Altitude)"
+msgid "Altitude(Geopotential)"
 msgstr ""
 #
 msgid "Always visible"
@@ -107,9 +107,6 @@ msgid "Celsius"
 msgstr ""
 #
 msgid "Close"
-msgstr ""
-#
-msgid "Cloud"
 msgstr ""
 #
 msgid "Cloud Cover"
@@ -278,6 +275,9 @@ msgstr ""
 msgid "Generic"
 msgstr ""
 #
+msgid "Geopotential Height"
+msgstr ""
+#
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
 #
@@ -398,6 +398,9 @@ msgstr ""
 msgid "OverlayMap"
 msgstr ""
 #
+msgid "Overlays too wide and can't be displayed:"
+msgstr ""
+#
 msgid "Percentage"
 msgstr ""
 #
@@ -411,14 +414,6 @@ msgstr "Zoomaa ulos nähdäksesi GRIB merkitsevän aallonkorkeuden"
 #, fuzzy
 msgid "Pressure"
 msgstr "Ilampaine, mbar"
-#
-#, fuzzy
-msgid "Pressure Altitude"
-msgstr "Ilampaine, mbar"
-#
-#, c-format
-msgid "Pressure Altitude (in %s) or Standard Height Selection."
-msgstr ""
 #
 msgid "Previous"
 msgstr ""
@@ -450,9 +445,6 @@ msgstr ""
 msgid "Resolution"
 msgstr ""
 #
-msgid "Rotated overlays suppressed in DC mode"
-msgstr ""
-#
 msgid "Save"
 msgstr ""
 #
@@ -468,6 +460,18 @@ msgstr ""
 msgid ""
 "Sea\n"
 "Temperature"
+msgstr "Meriveden pintalämpötila, C"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Sea Surface Temperature"
 msgstr "Meriveden pintalämpötila, C"
 #
 #
@@ -497,7 +501,8 @@ msgstr "Meriveden pintalämpötila, C"
 msgid "Sea Temperature(surf.)"
 msgstr ""
 #
-msgid "Sea or Air Temperature at Surface Level"
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
 msgstr ""
 #
 #, fuzzy
@@ -552,6 +557,9 @@ msgid "Surface Current Direction"
 msgstr ""
 #
 msgid "Surface Current Speed"
+msgstr ""
+#
+msgid "Surface level"
 msgstr ""
 #
 #
@@ -746,6 +754,9 @@ msgstr ""
 msgid "mph"
 msgstr ""
 #
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+#
 msgid "playback"
 msgstr ""
 #
@@ -754,6 +765,7 @@ msgstr ""
 #
 msgid "zyGrib Login"
 msgstr ""
+#
 #
 #
 #
@@ -783,6 +795,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB asetukset"
@@ -793,8 +806,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -837,9 +852,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB pintalämpötilan"
+#
 #
 #
 #
@@ -863,9 +880,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB virtatiedot"
+#
 #
 #
 #
@@ -887,9 +906,16 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB sadetiedon"
+#
+#
+#, fuzzy
+#~ msgid "Pressure Altitude"
+#~ msgstr "Ilampaine, mbar"
+#
 #
 #
 #
@@ -913,6 +939,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB asetukset"
+#
 #
 #
 #
@@ -978,8 +1005,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROITUS:  QuickScat GRIB data on %d tuntia vanhaa."
+#
 #
 #
 #
@@ -992,6 +1021,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Tuulen suunta"
+#
 #
 #
 #

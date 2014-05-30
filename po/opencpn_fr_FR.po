@@ -1,16 +1,16 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn\n"
+"Project-Id-Version: OpenCPN\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:43-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Gilletarom <contact@gilletarom.fr>\n"
-"Language-Team: \n"
+"Language-Team: contact@gilletarom.fr <contact@gilletarom.fr>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.3\n"
+"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 #
 msgid ""
@@ -618,26 +618,27 @@ msgid "Apply"
 msgstr "Appliquer"
 #
 msgid "Are you sure you want to delete <ALL> routes?"
-msgstr "Êtes vous certain de vouloir effacer <TOUTES> les routes ?"
+msgstr "Êtes vous certain de vouloir supprimer <TOUTES> les routes ?"
 #
 msgid "Are you sure you want to delete <ALL> tracks?"
-msgstr "Êtes vous certain de vouloir effacer <TOUTES> les traces ?"
+msgstr "Êtes vous certain de vouloir supprimer <TOUTES> les traces ?"
 #
 msgid "Are you sure you want to delete <ALL> waypoints?"
-msgstr "Êtes vous certain de vouloir effacer <TOUTES> les marques ?"
+msgstr "Êtes vous certain de vouloir supprimer <TOUTES> les marques ?"
 #
 msgid "Are you sure you want to delete the selected object(s)"
-msgstr "Êtes vous certain de vouloir effacer cet objet ?"
+msgstr "Êtes vous certain de vouloir supprimer ce ou ces objet(s) ?"
 #
-#, fuzzy
 msgid "Are you sure you want to delete this layer and <ALL> of its contents?"
-msgstr "Êtes vous certain de vouloir effacer <TOUTES> les routes ?"
+msgstr ""
+"Êtes vous certain de vouloir supprimer la ou les couche(s) sélectionnée(s) "
+"et  <TOUT > le(s) contenu(s) ?"
 #
 msgid "Are you sure you want to delete this route?"
-msgstr "Êtes vous certain de vouloir effacer cette route ?"
+msgstr "Êtes vous certain de vouloir supprimer cette route ?"
 #
 msgid "Are you sure you want to delete this track?"
-msgstr "Êtes vous certain de vouloir effacer cette trace ?"
+msgstr "Êtes vous certain de vouloir supprimer cette trace ?"
 #
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "Voulez-vous vraiment que la route ne passe plus par ce waypoint?"
@@ -1011,6 +1012,10 @@ msgstr "Liste déroulante !"
 msgid "Confirm deletion of tracks and routes"
 msgstr "Confirmer la suppression des routes et des traces"
 #
+#, fuzzy
+msgid "Connection"
+msgstr "Connexions"
+#
 msgid "Connections"
 msgstr "Connexions"
 #
@@ -1066,6 +1071,9 @@ msgstr "Waypoint : Créer"
 msgid "Create Waypoint"
 msgstr "Waypoint : Créer"
 #
+msgid "CurrentValue"
+msgstr ""
+#
 msgid "Cyan"
 msgstr "Cyan"
 #
@@ -1104,6 +1112,9 @@ msgstr "Jaune foncé"
 #
 msgid "Data Connections"
 msgstr "Gestion des ports de connexion "
+#
+msgid "Data connection must be input, output or both"
+msgstr ""
 #
 msgid "DataPort"
 msgstr "Port com"
@@ -1168,6 +1179,9 @@ msgstr "Description"
 #
 msgid "Destination"
 msgstr "Destination"
+#
+msgid "Dialog"
+msgstr ""
 #
 msgid "Directories"
 msgstr "Dossiers actifs des cartes"
@@ -1287,6 +1301,9 @@ msgstr "Date est. d'arrivée :"
 msgid "ETA          "
 msgstr "Arrivée à :                                           "
 #
+msgid "ETA (UTC)"
+msgstr ""
+#
 msgid "ETE"
 msgstr "ETE"
 #
@@ -1311,11 +1328,15 @@ msgstr "Activer"
 msgid "Enable Chart Quilting"
 msgstr "Cartes : Activer l'affichage en mosaïque"
 #
+msgid "Enable Responsive graphics interface"
+msgstr ""
+#
 msgid "Enable Target Alert Acknowledge timeout (min)"
 msgstr "Alerte sur cible : Activer le délai maximum d'acquitement (minutes)"
 #
-msgid "Enable Touchscreen/Tablet Interface"
-msgstr ""
+#, fuzzy
+msgid "Enable Touchscreen/Tablet interface"
+msgstr "Permettre l'interface pour un écran tactile ou une tablette"
 #
 msgid "Enable Transparent Toolbar"
 msgstr "Barre d'icônes : Permettre la transparence"
@@ -1366,11 +1387,8 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Prudence, environnement hostile : Courants forts"
 #
-#, fuzzy
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
-msgstr ""
-"Erreur d'envoi du waypoint. S'il vous plait, regardez dans les fichiers "
-"log ...."
+msgstr "Erreur d'envoi du waypoint.  Le GPS Garmin n'est pas connecté."
 #
 msgid "Error on Waypoint Upload.  Please check logfiles..."
 msgstr ""
@@ -1956,6 +1974,12 @@ msgstr ""
 "\"Cartes chargées\" de l'onglet \"Cartes/données\" dans les \"Options (Boite "
 "à outils)\"."
 #
+msgid ""
+"No Serial Ports can be found on this system.\n"
+"You must install a serial port (modprobe correct kernel module) or plug in a "
+"usb serial device.\n"
+msgstr ""
+#
 msgid "No, I don't want to hide it."
 msgstr "Non, je ne veux pas le cacher"
 #
@@ -2061,28 +2085,18 @@ msgstr "OpenCPN ne peut pas démarrer"
 msgid "OpenCPN info"
 msgstr "Informations OpenCPN "
 #
-msgid ""
-"OpenCPN requires access to serial ports to use serial NMEA data.\n"
-"You currently do not have permission to access the serial ports on this "
-"system.\n"
-"\n"
-"It is suggested that you exit OpenCPN now,\n"
-"and add yourself to the correct group to enable serial port access.\n"
-"\n"
-"You may do so by executing the following command from the linux command "
-"line:\n"
-"\n"
-"                sudo usermod -a -G "
+msgid "OpenCPN requires access to serial ports to use serial NMEA data.\n"
 msgstr ""
 #
 msgid "Options"
 msgstr "Options :"
 #
+#, fuzzy
+msgid "Options ..."
+msgstr "Options :"
+#
 msgid "Other - Define in associated text field"
 msgstr "Autre - à définir dans le texte associé"
-#
-msgid "Output"
-msgstr "Sortie"
 #
 msgid "Output filtering"
 msgstr "Filtrage en sortie"
@@ -2293,6 +2307,9 @@ msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
 "Reconstruction de la base de données des cartes, à partir du fichier de "
 "configuration ...."
+#
+msgid "Receive Input on this Port"
+msgstr ""
 #
 msgid "Recorded points"
 msgstr "Waypoint enregistrés"
@@ -2600,6 +2617,9 @@ msgstr "Afficher la fenêtre de dialogue pour ces alarmes"
 msgid "Show Chart Outlines"
 msgstr "Cartes : Afficher la bordure"
 #
+msgid "Show Compass/GPS Status Window"
+msgstr ""
+#
 # Menu contextuel : WWaypoint/marque
 msgid "Show Current Information"
 msgstr "Courants : Montrer les informations"
@@ -2828,6 +2848,15 @@ msgstr "Tester l'alarme"
 msgid "Testing"
 msgstr "Test"
 #
+msgid "Texture Compression"
+msgstr ""
+#
+msgid "Texture Compression Caching"
+msgstr ""
+#
+msgid "Texture Memory Size (MB)"
+msgstr ""
+#
 msgid ""
 "The Man Over Board button could be an important safety feature.\n"
 "Are you sure you want to hide it?"
@@ -2899,17 +2928,16 @@ msgstr ""
 "Voulez vous seulement recopier leurs caractéristiques dans les nouveaux "
 "waypoint\n"
 #
-#, fuzzy
 msgid ""
 "There are some waypoints used in routes or anchor alarms.\n"
 " Do you want to delete them as well?\n"
 " This will change the routes and disable the anchor alarms.\n"
 " Answering No keeps the waypoints used in routes or alarms."
 msgstr ""
-"Il y a des waypoint utilisés dans des routes ou des alarmes de mouillage. "
-"Voulez-vous les supprimer aussi ? Cela va changer les routes ou désactiver "
-"les alarmes de mouillage. Répondre non maintient les waypoint utilisés dans "
-"les routes ou les alarmes"
+"Il y a des waypoint utilisés dans des routes ou des alarmes de mouillage.\n"
+"Voulez-vous les supprimer aussi ?\n"
+"Cela va changer les routes ou désactiver les alarmes de mouillage.\n"
+"Répondre non maintient les waypoint utilisés dans les routes ou les alarmes."
 #
 # Je souhaite insister et maintenir "en un seul" à l'extrémité de l'item.
 # ----
@@ -3091,6 +3119,10 @@ msgstr "Contrôler la mise à jour"
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "OpenGL : Utiliser cette technologie d'accélération graphique"
 #
+#, fuzzy
+msgid "Use Accelerated Panning"
+msgstr "OpenGL : Utiliser cette technologie d'accélération graphique"
+#
 msgid "Use Garmin (GRMN) mode for input"
 msgstr "Utiliser le mode Garmin GRMN en entrée."
 #
@@ -3259,6 +3291,37 @@ msgstr ""
 "Vous ne pouvez pas cacher toutes les icônes de la barre d'icônes.\n"
 "Ceci rendrait la barre d'icônes inaccessible."
 #
+#, fuzzy
+msgid ""
+"You do currently not have permission to access the serial ports on this "
+"system.\n"
+"\n"
+"It is suggested that you exit OpenCPN now,\n"
+"and add yourself to the correct group to enable serial port access.\n"
+"\n"
+"You may do so by executing the following command from the linux command "
+"line:\n"
+"\n"
+"                sudo usermod -a -G "
+msgstr ""
+"OpenCPN nécessite l'accès aux ports série pour utiliser les données série "
+"NMEA.\n"
+"Vous n'avez pas actuellement autorisé l'accès aux ports série sur ce "
+"système.\n"
+"\n"
+"Sugestion :  Quittez OpenCPN maintenant,\n"
+"et ajoutez-vous au groupe correct pour permettre l'accès du port série.\n"
+"\n"
+"Vous pouvez le faire en exécutant la commande suivante à partir de la ligne "
+"de commande Linux: \n"
+"\n"
+"                 sudo usermod-a-G"
+#
+# Ok
+#, fuzzy
+msgid "You must enter a port..."
+msgstr "Vous devez choisir ou entrer un port d'entrée ..."
+#
 msgid "You must enter the address..."
 msgstr "Vous devez entrer l'adresse ..."
 #
@@ -3299,9 +3362,8 @@ msgstr "ft"
 msgid "in"
 msgstr "Dans"
 #
-#, fuzzy
 msgid "in "
-msgstr "Dans"
+msgstr "dans "
 #
 msgid "km"
 msgstr "km"
@@ -3338,6 +3400,10 @@ msgstr "WGS Y"
 #
 msgid "wxFB Website"
 msgstr "Site web wxFB"
+#
+#
+#~ msgid "Output"
+#~ msgstr "Sortie"
 #
 #~ msgid "Special Position Report"
 #~ msgstr "Rapport spécial de position"

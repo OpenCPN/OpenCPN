@@ -5,324 +5,309 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.2.1110\n"
+"Project-Id-Version: dashboard_pi 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-18 23:59-0500\n"
-"PO-Revision-Date: 2010-11-24 22:57-0500\n"
-"Last-Translator:\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"PO-Revision-Date: 2014-04-23 17:28+0400\n"
+"Last-Translator: Anton Samsonov <epolyan@gmail.com>\n"
+"Language-Team: Agat-Aquarius R&P <epolyan@gmail.com>\n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 #
 msgid " mag"
-msgstr ""
+msgstr " магн."
 #
 msgid " true"
-msgstr ""
-#
+msgstr " ист."
 #
 msgid "Add"
-msgstr ""
-#
+msgstr "Добавить"
 #
 msgid "Add instrument"
-msgstr ""
+msgstr "Добавить инструмент"
 #
 msgid "Air Temp."
-msgstr ""
+msgstr "Температура воздуха"
 #
 msgid "App. Wind Angle"
-msgstr ""
+msgstr "Кажущ. угол ветра"
 #
 msgid "App. Wind Angle & Speed"
-msgstr ""
+msgstr "Кажущ. угол и скор. ветра"
 #
 msgid "App. Wind Speed"
-msgstr ""
+msgstr "Кажущ. скорость ветра"
 #
 msgid "Appearance"
-msgstr ""
+msgstr "Внешний вид"
 #
 msgid "Barometric history"
-msgstr ""
+msgstr "История давления"
 #
 msgid "Barometric pressure"
-msgstr ""
+msgstr "Атмосферное давление"
 #
 msgid "Boat speed units:"
-msgstr ""
-#
+msgstr "Единицы скорости судна:"
 #
 msgid "COG"
-msgstr ""
+msgstr "Курс"
 #
 msgid "Caption:"
-msgstr ""
+msgstr "Название:"
 #
 msgid "Centimeters"
-msgstr ""
+msgstr "см"
 #
 msgid "Clock"
-msgstr ""
+msgstr "Часы"
 #
 msgid "Cursor"
-msgstr ""
-#
+msgstr "Курсор"
 #
 msgid "Dashboard"
-msgstr ""
-#
+msgstr "Приборная панель"
 #
 msgid "Dashboard PlugIn for OpenCPN"
-msgstr ""
-#
+msgstr "Модуль «Приборная панель» для OpenCPN"
 #
 msgid ""
 "Dashboard PlugIn for OpenCPN\n"
 "Provides navigation instrument display from NMEA source."
 msgstr ""
-#
+"Модуль «Приборная панель» для OpenCPN\n"
+"Отображает показания навигационных инструментов NMEA."
 #
 msgid "Dashboard preferences"
-msgstr ""
+msgstr "Настройки приборной панели"
 #
 msgid "Data:"
-msgstr ""
-#
+msgstr "Данные:"
 #
 msgid "Delete"
-msgstr ""
-#
+msgstr "Удалить"
 #
 msgid "Depth"
-msgstr ""
+msgstr "Глубина"
 #
 msgid "Depth units:"
-msgstr ""
+msgstr "Единицы глубины:"
 #
 msgid "Distance units:"
-msgstr ""
-#
+msgstr "Единицы расстояния:"
 #
 msgid "Down"
-msgstr ""
-#
+msgstr "Вниз"
 #
 msgid "E"
-msgstr ""
+msgstr "В"
 #
 msgid "ENE"
-msgstr ""
+msgstr "ВСВ"
 #
 msgid "ESE"
-msgstr ""
+msgstr "ВЮВ"
 #
 msgid "Fathoms"
-msgstr ""
+msgstr "саж."
 #
 msgid "Feet"
-msgstr ""
+msgstr "фут"
 #
 msgid "Fonts"
+msgstr "Шрифты"
+#
+msgid "From Ownship"
 msgstr ""
 #
 msgid "GPS Compass"
-msgstr ""
+msgstr "GPS-компас"
 #
 msgid "GPS Status"
-msgstr ""
+msgstr "Состояние GPS-приёмника"
 #
 msgid "GPS in View"
-msgstr ""
+msgstr "Число видимых спутников"
 #
 msgid "Honor OpenCPN settings"
-msgstr ""
+msgstr "из OpenCPN"
 #
 msgid "Horizontal"
-msgstr ""
+msgstr "горизонтальная"
 #
 msgid "Inches"
-msgstr ""
-#
+msgstr "дюйм"
 #
 msgid "Instruments"
-msgstr ""
+msgstr "Инструменты"
 #
 msgid "Kilometers"
-msgstr ""
+msgstr "км"
 #
 msgid "Kts"
-msgstr ""
+msgstr "уз."
 #
 msgid "Label:"
-msgstr ""
+msgstr "Подпись:"
 #
 msgid "Mag HDG"
-msgstr ""
+msgstr "Магн. путевой угол"
 #
 #, c-format
 msgid "Max %.1f since %02d:%02d  Overall %.1f"
-msgstr ""
+msgstr "Макс. %.1f после %02d:%02d  Абс. макс. %.1f"
 #
 msgid "Meters"
-msgstr ""
+msgstr "м"
 #
 msgid "Moon phase"
-msgstr ""
+msgstr "Фаза луны"
 #
-#
+# !!! src/clock.cpp:126
 msgid "N"
-msgstr ""
-#
+msgstr "С"
 #
 msgid "NE"
-msgstr ""
+msgstr "СВ"
 #
 msgid "NNE"
-msgstr ""
+msgstr "ССВ"
 #
 msgid "NNW"
-msgstr ""
-#
+msgstr "ССЗ"
 #
 msgid "NW"
-msgstr ""
+msgstr "СЗ"
 #
 msgid "Nautical miles"
-msgstr ""
+msgstr "м. м."
 #
 msgid "Orientation:"
-msgstr ""
-#
+msgstr "Ориентация:"
 #
 msgid "Position"
-msgstr ""
+msgstr "Положение"
 #
 msgid "Preferences..."
-msgstr ""
+msgstr "Предпочтения…"
 #
 msgid "Rudder Angle"
-msgstr ""
-#
+msgstr "Угол перекладки руля"
 #
 msgid "S"
-msgstr ""
-#
+msgstr "Ю"
 #
 msgid "SE"
-msgstr ""
-#
+msgstr "ЮВ"
 #
 msgid "SOG"
-msgstr ""
+msgstr "Скорость"
 #
 msgid "SSE"
-msgstr ""
+msgstr "ЮЮВ"
 #
 msgid "SSW"
-msgstr ""
-#
+msgstr "ЮЮЗ"
 #
 msgid "STW"
-msgstr ""
-#
+msgstr "Относ. скорость"
 #
 msgid "SW"
-msgstr ""
-#
+msgstr "ЮЗ"
 #
 msgid "Select instrument to add:"
-msgstr ""
+msgstr "Выберите инструмент для добавления:"
 #
 msgid "Small:"
-msgstr ""
-#
+msgstr "Мелкий текст:"
 #
 msgid "Speedometer"
-msgstr ""
+msgstr "Спидометр"
 #
 msgid "Speedometer max value:"
-msgstr ""
+msgstr "Предел спидометра:"
 #
 msgid "Statute miles"
-msgstr ""
+msgstr "с. м."
 #
 msgid "Sum Log"
-msgstr ""
+msgstr "Итоговый журнал"
 #
 msgid "Sunrise/Sunset"
-msgstr ""
+msgstr "Восход-заход"
 #
 msgid "Title:"
-msgstr ""
+msgstr "Заголовок:"
 #
 msgid "Trip Log"
-msgstr ""
+msgstr "Журнал плавания"
 #
+#, fuzzy
 msgid "True Compass"
-msgstr ""
+msgstr "Истинный компас"
 #
 msgid "True HDG"
-msgstr ""
+msgstr "Ист. путевой угол"
 #
+#, fuzzy
 msgid "True Wind Angle"
-msgstr ""
+msgstr "Ист. угол ветра"
 #
 msgid "True Wind Angle & Speed"
-msgstr ""
+msgstr "Ист. угол и скор. ветра"
 #
 msgid "True Wind Dir. & Speed"
-msgstr ""
+msgstr "Ист. направл. и скор. ветра"
 #
+#, fuzzy
 msgid "True Wind Direction"
-msgstr ""
+msgstr "Ист. направл. ветра"
 #
 msgid "True Wind Speed"
-msgstr ""
+msgstr "Ист. скорость ветра"
 #
 msgid "Units, Ranges, Formats"
-msgstr ""
-#
+msgstr "Единицы измерения, форматы"
 #
 msgid "Up"
-msgstr ""
-#
+msgstr "Вверх"
 #
 msgid "VMG"
-msgstr ""
+msgstr "Эффект. скорость"
 #
 msgid "Vertical"
-msgstr ""
-#
+msgstr "вертикальная"
 #
 msgid "W"
-msgstr ""
+msgstr "З"
 #
 msgid "WNW"
-msgstr ""
+msgstr "ЗСЗ"
 #
 msgid "WSW"
-msgstr ""
+msgstr "ЗЮЗ"
 #
 msgid "Water Temp."
-msgstr ""
+msgstr "Температура воды"
 #
 msgid "Wind history"
-msgstr ""
+msgstr "История ветра"
 #
 msgid "Wind speed units:"
-msgstr ""
+msgstr "Единицы скорости ветра:"
 #
 msgid "km/h"
-msgstr ""
+msgstr "км/ч"
 #
 msgid "m/s"
-msgstr ""
+msgstr "м/с"
 #
 msgid "mph"
-msgstr ""
+msgstr "миль/ч"
 #
 msgid "show this dashboard"
-msgstr ""
+msgstr "Показать эту панель"

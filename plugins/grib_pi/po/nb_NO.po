@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.3.1006\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 11:44-0400\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: 2013-10-14 23:57+0100\n"
 "Last-Translator: Frode Lynum <post@opencpn.kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -59,7 +59,7 @@ msgstr "Luft temperatur"
 msgid "Altitude"
 msgstr ""
 #
-msgid "Altitude(Pressure Altitude)"
+msgid "Altitude(Geopotential)"
 msgstr ""
 #
 msgid "Always visible"
@@ -93,11 +93,6 @@ msgstr ""
 #
 msgid "Close"
 msgstr ""
-#
-#
-#
-msgid "Cloud"
-msgstr "Sky"
 #
 msgid "Cloud Cover"
 msgstr "Skydekke"
@@ -271,6 +266,9 @@ msgstr ""
 msgid "Generic"
 msgstr "Generisk"
 #
+msgid "Geopotential Height"
+msgstr ""
+#
 msgid "Get this Code in zyGrib's forum ( This is not your password! )"
 msgstr ""
 #
@@ -397,6 +395,9 @@ msgstr "Overleggskart"
 msgid "OverlayMap"
 msgstr "Overleggskart"
 #
+msgid "Overlays too wide and can't be displayed:"
+msgstr ""
+#
 msgid "Percentage"
 msgstr "Prosentvis"
 #
@@ -409,14 +410,6 @@ msgstr "Vennligst Zoom ut eller Skaler ut for å vise skjulte "
 #
 msgid "Pressure"
 msgstr "Trykk"
-#
-#, fuzzy
-msgid "Pressure Altitude"
-msgstr "Trykk"
-#
-#, c-format
-msgid "Pressure Altitude (in %s) or Standard Height Selection."
-msgstr ""
 #
 msgid "Previous"
 msgstr "Forrige"
@@ -450,9 +443,6 @@ msgstr ""
 msgid "Resolution"
 msgstr "Oppløsning"
 #
-msgid "Rotated overlays suppressed in DC mode"
-msgstr ""
-#
 msgid "Save"
 msgstr ""
 #
@@ -460,6 +450,10 @@ msgstr ""
 msgid ""
 "Sea\n"
 "Temperature"
+msgstr "Havtemperatur"
+#
+#, fuzzy
+msgid "Sea Surface Temperature"
 msgstr "Havtemperatur"
 #
 #
@@ -481,7 +475,8 @@ msgstr "Havtemperatur"
 msgid "Sea Temperature(surf.)"
 msgstr "Havtemperatur"
 #
-msgid "Sea or Air Temperature at Surface Level"
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
 msgstr ""
 #
 msgid "Select a GRIB file"
@@ -535,6 +530,9 @@ msgid "Surface Current Direction"
 msgstr ""
 #
 msgid "Surface Current Speed"
+msgstr ""
+#
+msgid "Surface level"
 msgstr ""
 #
 #, fuzzy
@@ -708,6 +706,9 @@ msgstr ""
 msgid "mph"
 msgstr ""
 #
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr ""
+#
 msgid "playback"
 msgstr "avspilling"
 #
@@ -716,6 +717,7 @@ msgstr ""
 #
 msgid "zyGrib Login"
 msgstr ""
+#
 #
 #
 #
@@ -741,8 +743,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " data"
 #~ msgstr " data"
+#
 #
 #
 #
@@ -757,8 +761,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Celcius"
 #~ msgstr "Celcius"
+#
+#
+#
+#
+#~ msgid "Cloud"
+#~ msgstr "Sky"
+#
 #
 #
 #
@@ -777,6 +789,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Error"
 #~ msgstr "Feil"
 #
@@ -785,8 +798,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Kunne ikke sende epost melding"
+#
 #
 #
 #
@@ -827,8 +842,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB fil katalog"
+#
 #
 #
 #
@@ -843,8 +860,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "M/S"
+#
 #
 #
 #
@@ -859,8 +878,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "MittMerke"
+#
 #
 #
 #
@@ -875,8 +896,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "Parametre"
+#
 #
 #
 #
@@ -894,9 +917,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØTEMP GRIB"
+#
 #
 #
 #
@@ -920,9 +945,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØSTRØM GRIB"
+#
 #
 #
 #
@@ -944,6 +971,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte CRAIN GRIB"
@@ -953,8 +981,15 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Nedbør"
+#
+#
+#, fuzzy
+#~ msgid "Pressure Altitude"
+#~ msgstr "Trykk"
+#
 #
 #
 #
@@ -966,6 +1001,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Range"
 #~ msgstr "Rekkevidde"
 #
@@ -974,8 +1010,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Ref : "
 #~ msgstr "Ref : "
+#
 #
 #
 #
@@ -1004,9 +1042,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB innstillinger"
+#
 #
 #
 #
@@ -1046,8 +1086,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "Vis GRIB ikon"
+#
 #
 #
 #
@@ -1055,8 +1097,10 @@ msgstr ""
 #~ msgstr "Størrelse"
 #
 #
+#
 #~ msgid "Slices per Update"
 #~ msgstr "Stykker per oppdatering"
+#
 #
 #
 #~ msgid "Slices per hour"
@@ -1093,13 +1137,16 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ADVARSEL:  QuickSCAT GRIB data er %d timer gammel."
+#
 #
 #
 #, fuzzy
 #~ msgid "WavesModel"
 #~ msgstr "Modell"
+#
 #
 #
 #
@@ -1121,6 +1168,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Vindhastighet, Knop"
@@ -1130,8 +1178,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Sone"
+#
 #
 #
 #

@@ -6,12 +6,13 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 3.3.1618\n"
+"Project-Id-Version: grib_pi 3.3.1715\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-05 22:03+0200\n"
+"POT-Creation-Date: 2014-05-30 09:13-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -165,7 +166,7 @@ msgstr ""
 
 #: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:95
 #: src/GribUIDialogBase.cpp:496 src/GribUIDialogBase.cpp:875
-#: src/GribOverlayFactory.cpp:729 src/GribTable.cpp:120
+#: src/GribOverlayFactory.cpp:728 src/GribTable.cpp:120
 msgid "Wind"
 msgstr ""
 
@@ -654,19 +655,19 @@ msgstr ""
 msgid "WIND data at"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:729
+#: src/GribOverlayFactory.cpp:728
 msgid "Building Isobar map"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:904
+#: src/GribOverlayFactory.cpp:903
 msgid "Overlays too wide and can't be displayed:"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:912
-msgid "Rotated overlays suppressed in DC mode"
+#: src/GribOverlayFactory.cpp:911
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:929
+#: src/GribOverlayFactory.cpp:928
 msgid "Please Zoom or Scale Out to view invisible overlays:"
 msgstr ""
 
@@ -753,8 +754,8 @@ msgstr ""
 msgid ""
 "You request a forecast for more than 8 days horizon.\n"
 "This is conflicting with Wave data which will be removed from your request.\n"
-"Don't forget that beyond the first 8 days, the resolution will be only 2.5"
-"\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+"Don't forget that beyond the first 8 days, the resolution will be only "
+"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
 msgstr ""
 
 #: src/GribRequestDialog.cpp:547 src/GribRequestDialog.cpp:550
