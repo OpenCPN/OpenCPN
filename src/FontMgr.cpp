@@ -29,6 +29,7 @@
 #include "FontMgr.h"
 
 extern wxString g_locale;
+wxString s_locale;
 
 FontMgr * FontMgr::instance = NULL;
 
@@ -47,6 +48,8 @@ FontMgr::FontMgr()
     m_fontlist = new FontList;
     m_fontlist->DeleteContents( true );
 
+    s_locale = g_locale;
+    
     //    Get a nice generic font as default
     pDefFont = wxTheFontList->FindOrCreateFont( 12, wxDEFAULT, wxNORMAL, wxBOLD, FALSE,
             wxString( _T ( "" ) ), wxFONTENCODING_SYSTEM );
@@ -66,7 +69,7 @@ wxColour FontMgr::GetFontColor( const wxString &TextElement ) const
     while( node ) {
         pmfd = (MyFontDesc *) node->GetData();
         if( pmfd->m_dialogstring == TextElement ) {
-            if(pmfd->m_configstring.BeforeFirst('-') == g_locale)
+            if(pmfd->m_configstring.BeforeFirst('-') == s_locale)
                 return pmfd->m_color;
         }
         node = node->GetNext();
@@ -82,7 +85,7 @@ wxString FontMgr::GetFontConfigKey( const wxString &description )
     // description can contain characters that mess up the config file.
 
     wxString configkey;
-    configkey = g_locale;
+    configkey = s_locale;
     configkey.Append( _T("-") );
 
     using namespace std;
@@ -107,7 +110,7 @@ wxFont *FontMgr::GetFont( const wxString &TextElement, int default_size )
     while( node ) {
         pmfd = (MyFontDesc *) node->GetData();
         if( pmfd->m_dialogstring == TextElement ) {
-            if(pmfd->m_configstring.BeforeFirst('-') == g_locale)
+            if(pmfd->m_configstring.BeforeFirst('-') == s_locale)
                 return pmfd->m_font;
         }
         node = node->GetNext();
