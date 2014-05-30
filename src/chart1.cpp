@@ -1910,7 +1910,10 @@ if( 0 == g_memCacheLimit )
 
     gFrame->ClearBackground();
     gFrame->Show( TRUE );
- 
+
+    //  Yield to flush event queue, thus ensuring that glChartCanvas is fully initialized by Show().
+    Yield();
+    
     gFrame->SetAndApplyColorScheme( global_color_scheme );
     
     if( g_bframemax ) gFrame->Maximize( true );
@@ -3273,6 +3276,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     SetStatusBar( NULL );
     stats = NULL;
 
+    if( pRouteManagerDialog ) {
+        pRouteManagerDialog->Destroy();
+        pRouteManagerDialog = NULL;
+    }
+        
     cc1->Destroy();
     cc1 = NULL;
 
