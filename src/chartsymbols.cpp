@@ -48,6 +48,7 @@ wxSize rasterSymbolsTextureSize;
 wxBitmap rasterSymbols;
 int rasterSymbolsLoadedColorMapNumber;
 wxString configFileDirectory;
+int ColorTableIndex;
 
 WX_DECLARE_STRING_HASH_MAP( wxRect, symbolGraphicsHashMap );
 
@@ -67,6 +68,7 @@ void ChartSymbols::InitializeGlobals( void )
     if( !colorTables ) colorTables = new wxArrayPtrVoid;
     if( !symbolGraphicLocations ) symbolGraphicLocations = new symbolGraphicsHashMap;
     rasterSymbolsLoadedColorMapNumber = -1;
+    ColorTableIndex = 0;
 }
 
 void ChartSymbols::DeleteGlobals( void )
@@ -805,6 +807,10 @@ bool ChartSymbols::LoadConfigFile(s52plib* plibArg, const wxString & s52ilePath)
 
     return true;
 }
+void ChartSymbols::SetColorTableIndex( int index )
+{
+    ColorTableIndex = index;
+}
 
 int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcmode )
 {
@@ -930,8 +936,8 @@ wxImage ChartSymbols::GetImage( const char* symbolName )
        (the first time an s57 chart is ever loaded, it renders to memor dc to cache
        a thumbnail so needs the ram version.  Eventually we can render to video memory
        read it back for this case instead. */
-    if(!rasterSymbols.IsOk())
-        LoadRasterFileForColorTable(rasterSymbolsLoadedColorMapNumber, false, true);
+    if((!rasterSymbols.IsOk()) || ( ColorTableIndex != rasterSymbolsLoadedColorMapNumber) )
+        LoadRasterFileForColorTable(ColorTableIndex, false, true);
 
     wxRect bmArea = ( *symbolGraphicLocations )[HashKey( symbolName )];
     wxBitmap bitmap = rasterSymbols.GetSubBitmap( bmArea );
@@ -940,11 +946,15 @@ wxImage ChartSymbols::GetImage( const char* symbolName )
 
 unsigned int ChartSymbols::GetGLTextureRect( wxRect &rect, const char* symbolName )
 {
+    if( ColorTableIndex != rasterSymbolsLoadedColorMapNumber)
+        LoadRasterFileForColorTable(ColorTableIndex);
     rect = ( *symbolGraphicLocations )[HashKey( symbolName )];
     return rasterSymbolsTexture;
 }
 
 wxSize ChartSymbols::GLTextureSize()
 {
+    if( ColorTableIndex != rasterSymbolsLoadedColorMapNumber)
+        LoadRasterFileForColorTable(ColorTableIndex);
     return rasterSymbolsTextureSize;
 }

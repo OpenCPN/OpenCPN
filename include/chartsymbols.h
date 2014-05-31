@@ -119,7 +119,7 @@ public:
 	static wxImage GetImage( const char* symbolName );
         static unsigned int GetGLTextureRect( wxRect &rect, const char* symbolName );
         static wxSize GLTextureSize();
-
+        static void SetColorTableIndex( int index );
 private:
       void ProcessVectorTag( TiXmlElement* subNodes, SymbolSizeInfo_t &vectorSize );
       void ProcessColorTables( TiXmlElement* colortableodes );

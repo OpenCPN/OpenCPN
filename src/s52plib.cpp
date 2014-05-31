@@ -1193,8 +1193,10 @@ void s52plib::SetPLIBColorScheme( wxString scheme )
     }
     m_colortable_index = ChartSymbols::FindColorTable( scheme );
 
-    if( !useLegacyRaster ) ChartSymbols::LoadRasterFileForColorTable( m_colortable_index );
+//    if( !useLegacyRaster ) ChartSymbols::LoadRasterFileForColorTable( m_colortable_index );
 
+    if( !useLegacyRaster ) ChartSymbols::SetColorTableIndex( m_colortable_index );
+    
     m_ColorScheme = scheme;
 }
 
