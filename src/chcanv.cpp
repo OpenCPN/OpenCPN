@@ -897,7 +897,6 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_TIMER ( CURTRACK_TIMER, ChartCanvas::OnCursorTrackTimerEvent )
     EVT_TIMER ( ROT_TIMER, ChartCanvas::RotateTimerEvent )
     EVT_TIMER ( ROPOPUP_TIMER, ChartCanvas::OnRolloverPopupTimerEvent )
-    EVT_TIMER ( MOUSEWHEEL_TIMER, ChartCanvas::OnWheelZoomStopTimerEvent )
     EVT_KEY_DOWN(ChartCanvas::OnKeyDown )
     EVT_KEY_UP(ChartCanvas::OnKeyUp )
     EVT_MOUSE_CAPTURE_LOST(ChartCanvas::LostMouseCapture )
@@ -1216,8 +1215,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     pCurTrackTimer->Stop();
     m_curtrack_timer_msec = 10;
 
-    m_WheelZoomStopTimer.SetOwner( this, MOUSEWHEEL_TIMER );
-
+    m_wheelzoom_stop_oneshot = 0;
+    
     m_RolloverPopupTimer.SetOwner( this, ROPOPUP_TIMER );
 
     m_rollover_popup_timer_msec = 20;
@@ -2309,6 +2308,12 @@ void ChartCanvas::DoMovement( long dt )
             zoom_factor = 1/zoom_factor;
             
         DoZoomCanvas( zoom_factor );
+        
+        if(m_wheelstopwatch.Time() > m_wheelzoom_stop_oneshot){
+            m_wheelzoom_stop_oneshot = 0;
+            m_wheelstopwatch.Pause();
+            StopMovement( );
+        }
     }
 
     if( m_rotation_speed ) { /* in degrees per second */
@@ -5560,15 +5565,6 @@ void ChartCanvas::MouseTimedEvent( wxTimerEvent& event )
     m_DoubleClickTimer->Stop();
 }
 
-void ChartCanvas::OnWheelZoomStopTimerEvent( wxTimerEvent& event )
-{
-    if(m_wheelzoom_stop_oneshot) {
-        m_WheelZoomStopTimer.Start( m_wheelzoom_stop_oneshot, wxTIMER_ONE_SHOT );           // restart timer
-        m_wheelzoom_stop_oneshot = 0;
-    } else
-        m_zoom_factor = 1; // Stop zooming
-}
-
 void ChartCanvas::MouseEvent( wxMouseEvent& event )
 {
     int x, y;
@@ -5756,25 +5752,28 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         int mouse_wheel_oneshot = abs(wheel_dir)*4;                  //msec
         wheel_dir = wheel_dir > 0 ? 1 : -1; // normalize
 
-        wxDateTime this_now = wxDateTime::UNow();
-        if( m_WheelZoomStopTimer.IsRunning() && wheel_dir == m_last_wheel_dir ) {
-            // make running timer to restart later
-            m_wheelzoom_stop_oneshot += mouse_wheel_oneshot;
-        } else {
-            if( m_WheelZoomStopTimer.IsRunning() && wheel_dir != m_last_wheel_dir )
-                StopMovement( );
-
-            m_last_wheel_dir = wheel_dir;
-
-            double factor = 2.0;
-            if(wheel_dir < 0)
-                factor = 1/factor;
         
-            ZoomCanvas( factor, true, false );
-        
-            if(g_bsmoothpanzoom)
-                m_WheelZoomStopTimer.Start( mouse_wheel_oneshot, wxTIMER_ONE_SHOT );           // start timer
+        if(g_bsmoothpanzoom){
+            if( (m_wheelstopwatch.Time() < m_wheelzoom_stop_oneshot) ) {
+                if( wheel_dir == m_last_wheel_dir ) 
+                    m_wheelzoom_stop_oneshot += mouse_wheel_oneshot;
+                else 
+                    StopMovement( );
+            }
+            else {    
+                m_wheelzoom_stop_oneshot = mouse_wheel_oneshot;
+                m_wheelstopwatch.Start(0);
+            }
         }
+
+        m_last_wheel_dir = wheel_dir;
+        
+        double factor = 2.0;
+        if(wheel_dir < 0)
+            factor = 1/factor;
+        
+        ZoomCanvas( factor, true, false );
+        
     }
 
     if(!g_btouch ){

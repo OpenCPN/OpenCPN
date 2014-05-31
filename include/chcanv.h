@@ -362,7 +362,6 @@ private:
       void OnActivate(wxActivateEvent& event);
       void OnSize(wxSizeEvent& event);
       void MouseTimedEvent(wxTimerEvent& event);
-      void OnWheelZoomStopTimerEvent ( wxTimerEvent& event );
       void MouseEvent(wxMouseEvent& event);
       void ShipDraw(ocpnDC& dc);
       void DrawArrow(ocpnDC& dc, int x, int y, double rot_angle, double scale);
@@ -459,12 +458,12 @@ private:
       wxTimer     *pRotDefTimer;    // This timer used to control rotaion rendering on mouse moves
       wxTimer     *m_DoubleClickTimer;
 
-      wxTimer     m_WheelZoomStopTimer;
       wxTimer     m_RolloverPopupTimer;
 
       int         m_wheelzoom_stop_oneshot;
       int         m_last_wheel_dir;
-
+      wxStopWatch m_wheelstopwatch;
+      
       int         m_curtrack_timer_msec;
       int         m_rollover_popup_timer_msec;
 
