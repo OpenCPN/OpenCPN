@@ -3214,7 +3214,10 @@ void s57chart::GetChartNameFromTXT( const wxString& FullPath, wxString &Name )
             //  Suppress log messages on bad file reads
             {
                 wxLogNull logNo;
-                if( !text_file.Open() ) file_ok = false;
+                if( !text_file.Open() ) {
+                    if( !text_file.Open(wxConvISO8859_1) )
+                        file_ok = false;
+                }
             }
 
             if( file_ok ) {
