@@ -1880,7 +1880,7 @@ if( 0 == g_memCacheLimit )
 
     pthumbwin = new ThumbWin( cc1 );
 
-    gFrame->ApplyGlobalSettings( 1, false );               // done once on init with resize
+    gFrame->ApplyGlobalSettings( false, false );               // done once on init with resize
     
     g_toolbar_x = wxMax(g_toolbar_x, 0);
     g_toolbar_y = wxMax(g_toolbar_y, 0);
@@ -2205,6 +2205,13 @@ if( 0 == g_memCacheLimit )
 
     cc1->ReloadVP();                  // once more, and good to go
 
+    //  Some window managers get confused about z-order of Compass Window, and other windows not children of gFrame.
+    //  We need to defer their creation until here.
+    if( pConfig->m_bShowCompassWin ) {
+        g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
+        if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
+    }
+    
     g_FloatingToolbarDialog->Raise();
     g_FloatingToolbarDialog->Show();
 
@@ -4170,16 +4177,17 @@ void MyFrame::ApplyGlobalSettings( bool bFlyingUpdate, bool bnewtoolbar )
         }
     }
 
-    if( pConfig->m_bShowCompassWin ) {
-        if(!g_FloatingCompassDialog) {
-            g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
-            if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
+    if( bFlyingUpdate ) {
+        if( pConfig->m_bShowCompassWin ) {
+            if(!g_FloatingCompassDialog) {
+                g_FloatingCompassDialog = new ocpnFloatingCompassWindow( cc1 );
+                if( g_FloatingCompassDialog ) g_FloatingCompassDialog->UpdateStatus( true );
+            }
+        } else if(g_FloatingCompassDialog) {
+            g_FloatingCompassDialog->Destroy();
+            g_FloatingCompassDialog = NULL;
         }
-    } else if(g_FloatingCompassDialog) {
-        g_FloatingCompassDialog->Destroy();
-        g_FloatingCompassDialog = NULL;
     }
-
 
     if( bnewtoolbar ) UpdateToolbar( global_color_scheme );
 
