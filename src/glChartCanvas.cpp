@@ -1700,6 +1700,8 @@ void glChartCanvas::GridDraw( )
     CalcGridSpacing( dlon, gridlonMajor, gridlonMinor );
 
     // Draw Major latitude grid lines and text
+    glEnable( GL_LINE_SMOOTH );
+    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND );
@@ -1709,7 +1711,7 @@ void glChartCanvas::GridDraw( )
     // Render in two passes, lines then text is much more efficient for opengl
     for( int pass=0; pass<2; pass++ ) {
         if(pass == 0) {
-            glLineWidth(1);
+            glLineWidth(1.3);
             glBegin(GL_LINES);
         }
 
