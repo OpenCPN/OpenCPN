@@ -1216,6 +1216,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_curtrack_timer_msec = 10;
 
     m_wheelzoom_stop_oneshot = 0;
+    m_last_wheel_dir = 0;
     
     m_RolloverPopupTimer.SetOwner( this, ROPOPUP_TIMER );
 
@@ -2309,9 +2310,9 @@ void ChartCanvas::DoMovement( long dt )
             
         DoZoomCanvas( zoom_factor );
         
-        if(m_wheelstopwatch.Time() > m_wheelzoom_stop_oneshot){
+        if(m_wheelzoom_stop_oneshot > 0 &&
+           m_wheelstopwatch.Time() > m_wheelzoom_stop_oneshot){
             m_wheelzoom_stop_oneshot = 0;
-            m_wheelstopwatch.Pause();
             StopMovement( );
         }
     }
