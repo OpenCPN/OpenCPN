@@ -216,6 +216,7 @@ IF( APPLE )
   ADD_DEFINITIONS( "-Wall -Wno-unused -fexceptions -Wno-overloaded-virtual" )
   ADD_DEFINITIONS( " -g -fno-strict-aliasing")
   ADD_DEFINITIONS( " -Wno-deprecated -Wno-deprecated-declarations" )
+  ADD_DEFINITIONS( " -D_WCHAR_H_CPLUSPLUS_98_CONFORMANCE_" )
 ENDIF(APPLE)
 
 #Enable CrashReporting for Windows
