@@ -1131,8 +1131,10 @@ bool MyApp::OnInit()
     temp_font.SetDefaultEncoding( wxFONTENCODING_SYSTEM );
 
 //      Establish a "home" location
-    wxStandardPathsBase& std_path = wxApp::GetTraits()->GetStandardPaths();
-    std_path.Get();
+    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
+#ifdef __WXGTK__
+    std_path.SetInstallPrefix(PREFIX);
+#endif
     
     gExe_path = std_path.GetExecutablePath();
 
