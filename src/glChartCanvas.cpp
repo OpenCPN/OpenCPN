@@ -1603,12 +1603,14 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     float plylat, plylon;
 
     wxColour color;
-    switch( ChartData->GetDBChartType( dbIndex ) ) {
-    case CHART_TYPE_S57:  color = GetGlobalColor( _T ( "UINFG" ) ); break;
-    case CHART_TYPE_CM93: color = GetGlobalColor( _T ( "YELO1" ) ); break;
-    default:              color = GetGlobalColor( _T ( "UINFR" ) ); break;
-    }
 
+    if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_CM93 )
+        color = GetGlobalColor( _T ( "YELO1" ) );
+    else if( ChartData->GetDBChartFamily( dbIndex ) == CHART_FAMILY_VECTOR )
+        color = GetGlobalColor( _T ( "GREEN2" ) );
+    else
+        color = GetGlobalColor( _T ( "UINFR" ) );
+    
     ChartTableEntry *entry = ChartData->GetpChartTableEntry(dbIndex);
 
     glEnable( GL_LINE_SMOOTH );
