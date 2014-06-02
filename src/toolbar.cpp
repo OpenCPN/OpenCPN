@@ -634,9 +634,8 @@ void ocpnFloatingToolbarDialog::Realize()
                 }
             }
 
-#ifndef __WXMAC__
-            SetShape( wxRegion( shape, *wxWHITE, 10 ) );
-#endif
+            if(shape.GetWidth() && shape.GetHeight())
+                SetShape( wxRegion( shape, *wxWHITE, 10 ) );
         }
     }
 }

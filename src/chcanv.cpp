@@ -1216,6 +1216,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_curtrack_timer_msec = 10;
 
     m_wheelzoom_stop_oneshot = 0;
+    m_last_wheel_dir = 0;
     
     m_RolloverPopupTimer.SetOwner( this, ROPOPUP_TIMER );
 
@@ -2309,9 +2310,9 @@ void ChartCanvas::DoMovement( long dt )
             
         DoZoomCanvas( zoom_factor );
         
-        if(m_wheelstopwatch.Time() > m_wheelzoom_stop_oneshot){
+        if(m_wheelzoom_stop_oneshot > 0 &&
+           m_wheelstopwatch.Time() > m_wheelzoom_stop_oneshot){
             m_wheelzoom_stop_oneshot = 0;
-            m_wheelstopwatch.Pause();
             StopMovement( );
         }
     }
@@ -9207,9 +9208,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
             OCPNRegion chart_get_all_region( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
             m_pQuilt->RenderQuiltRegionViewOnDC( temp_dc, svp, chart_get_all_region );
         }
-        
-        if( !temp_dc.IsOk() ) return;
-        
     }
 
     else                  // not quilted
@@ -9222,10 +9220,10 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
         if(!chart_get_region.IsEmpty()){
             Current_Ch->RenderRegionViewOnDC( temp_dc, svp, chart_get_region );
-            if( !temp_dc.IsOk() ) return;
-        }
-            
+        }            
     }
+    
+    if( !temp_dc.IsOk() ) return;
 
 //    Arrange to render the World Chart vector data behind the rendered current chart
 //    so that uncovered canvas areas show at least the world chart.
@@ -9469,8 +9467,6 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     PaintCleanup();
 
-    pMovementTimer->Start( 1, wxTIMER_ONE_SHOT ); 
-
 //      CALLGRIND_STOP_INSTRUMENTATION
 
 }
@@ -9495,6 +9491,11 @@ void ChartCanvas::PaintCleanup()
         WarpPointer( warp_x, warp_y );
         warp_flag = false;
     }
+
+    // Start movement timer, this runs nearly immediately.
+    // the reason we cannot simply call it directly is the
+    // refresh events it emits may be blocked from this paint event
+    pMovementTimer->Start( 1, wxTIMER_ONE_SHOT ); 
 }
 
 #if 0

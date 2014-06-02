@@ -589,8 +589,10 @@ void UploadTexture( glTextureDescriptor *ptd, int base_level,
         wxLogMessage( wxString::Format(_T("  -->UploadTexture Setting texture parameters...")));
 
 #ifndef ocpnUSE_GLES
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, base_level );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level );
+    if (!ramonly) {
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, base_level );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level );
+    }
 #endif
     ptd->level_min = base_level;
 
@@ -702,7 +704,8 @@ bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString
                         size = 8;
                 }
 
-                glDeleteTextures(1, &ptd.tex_name);
+                if (!ramonly)
+                    glDeleteTextures(1, &ptd.tex_name);
                 rect.x += rect.width;
             }
             rect.y += rect.height;
@@ -1430,8 +1433,6 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
     if( m_in_glpaint ) return;
     m_in_glpaint++;
 
-    cc1->DoTimedMovement();
-
     Render();
 
     m_in_glpaint--;
@@ -1700,6 +1701,8 @@ void glChartCanvas::GridDraw( )
     CalcGridSpacing( dlon, gridlonMajor, gridlonMinor );
 
     // Draw Major latitude grid lines and text
+    glEnable( GL_LINE_SMOOTH );
+    glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
     glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND );
@@ -1709,7 +1712,7 @@ void glChartCanvas::GridDraw( )
     // Render in two passes, lines then text is much more efficient for opengl
     for( int pass=0; pass<2; pass++ ) {
         if(pass == 0) {
-            glLineWidth(1);
+            glLineWidth(1.3);
             glBegin(GL_LINES);
         }
 
@@ -2947,7 +2950,9 @@ void glChartCanvas::Render()
     if( !m_bsetup ||
         ( cc1->VPoint.b_quilt && cc1->m_pQuilt && !cc1->m_pQuilt->IsComposed() ) ||
         ( !cc1->VPoint.b_quilt && !Current_Ch ) ) {
+#ifdef __WXGTK__  // for some reason in gtk, a swap is needed here to get an initial screen update
             SwapBuffers();
+#endif
             return;
         }
 
