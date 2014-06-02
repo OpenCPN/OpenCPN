@@ -1711,10 +1711,15 @@ void glChartCanvas::GridDraw( )
 
     glColor3ub(GridColor.Red(), GridColor.Green(), GridColor.Blue());
 
+    GLfloat parf;
+    glGetFloatv(  GL_SMOOTH_LINE_WIDTH_GRANULARITY, &parf );
+    
+    float width = wxMax(1.3, 1.0 + parf);
+    
     // Render in two passes, lines then text is much more efficient for opengl
     for( int pass=0; pass<2; pass++ ) {
         if(pass == 0) {
-            glLineWidth(1.3);
+            glLineWidth(width);
             glBegin(GL_LINES);
         }
 
