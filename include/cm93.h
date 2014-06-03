@@ -474,7 +474,7 @@ class cm93compchart : public s57chart
             InitReturn CreateHeaderData();
             cm93_dictionary *FindAndLoadDictFromDir(const wxString &dir);
             void FillScaleArray(double lat, double lon);
-            int PrepareChartScale(const ViewPort &vpt, int cmscale);
+            int PrepareChartScale(const ViewPort &vpt, int cmscale, bool bOZ_protect = true);
             int GetCMScaleFromVP(const ViewPort &vpt);
             bool DoRenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VPoint, const OCPNRegion &Region);
 

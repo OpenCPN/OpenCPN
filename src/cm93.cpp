@@ -4762,7 +4762,8 @@ double scale_breaks[] =
       150000.,                //D
       300000.,                //C
       1000000.,               //B
-      3000000.                //A
+      3000000.,               //A
+      20000000.               //Z
 };
 
 //-----------------------------------------------------------------------
@@ -4806,6 +4807,14 @@ int cm93compchart::GetCMScaleFromVP ( const ViewPort &vpt )
             brk_index++;
       }
 
+      //        Check for overzoom at the theoretically calcuolated chart scale
+      //        If overzoomed possible, switch to larger scale chart if available
+      double zoom_factor = scale_breaks[7 - cmscale_calc] / vpt.chart_scale ;
+      if( zoom_factor > 4.0) {
+          if( cmscale_calc < 7 )
+              cmscale_calc ++;
+      }
+      
       return cmscale_calc;
 }
 
@@ -4825,7 +4834,7 @@ void cm93compchart::SetVPParms ( const ViewPort &vpt )
       }
 }
 
-int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale )
+int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bOZ_protect )
 {
 
       if ( g_bDebugCM93 )
@@ -4876,8 +4885,8 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale )
 
                   else
                   {
-                        cmscale--;                          // revert to larger scale if selected is not present
-                        if ( g_bDebugCM93 )
+                     cmscale--;                          // revert to smaller scale if selected is not present
+                     if ( g_bDebugCM93 )
                               printf ( " no %c scale chart present, adjusting cmscale to %c\n", ( char ) ( 'A' + cmscale ), ( char ) ( 'A' + cmscale -1 ) );
                   }
 
@@ -4979,6 +4988,61 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale )
                               printf ( " VP is not in M_COVR, adjusting cmscale to %c\n", ( char ) ( 'A' + cmscale -1 ) );
                   }
             }
+      }
+
+      //        Final check the zoom factor
+      if( bOZ_protect ){
+        double zoom_factor = scale_breaks[7 - cmscale] / vpt.chart_scale ;
+        
+        if( zoom_factor > 4.0) {
+            // See if there is a larger scale chart present that will avoid overzoom
+            
+            //    Bound the clon to 0-360. degrees
+            float yc = vpt.clat;
+            float xc = vpt.clon;
+            while ( xc < 0 ) xc += 360.;
+            if ( xc > 360. ) xc -= 360.;
+            
+            //    Find out what the smallest available scale is that is not overzoomed
+            FillScaleArray ( vpt.clat,vpt.clon );
+            int new_scale = cmscale;
+            bool b_found = false;
+            while ( new_scale <= 7 ){
+                if ( m_bScale_Array[new_scale] ){
+                    double new_zoom_factor = scale_breaks[7 - new_scale] / vpt.chart_scale ;
+                    if( new_zoom_factor < 4.0) {
+                        if ( NULL == m_pcm93chart_array[new_scale] ) {
+                            m_pcm93chart_array[new_scale] = new cm93chart();
+                            
+                            ext = ( wxChar ) ( 'A' + new_scale - 1 );
+                            if ( new_scale == 0 )
+                                ext = 'Z';
+                            
+                            wxString file_dummy = _T ( "CM93." );
+                            file_dummy << ext;
+                            
+                            m_pcm93chart_array[new_scale]->SetCM93Dict ( m_pDictComposite );
+                            m_pcm93chart_array[new_scale]->SetCM93Prefix ( m_prefixComposite );
+                            m_pcm93chart_array[new_scale]->SetCM93Manager ( m_pcm93mgr );
+                            
+                            m_pcm93chart_array[new_scale]->SetColorScheme ( m_global_color_scheme );
+                            m_pcm93chart_array[new_scale]->Init ( file_dummy, FULL_INIT );
+                        }
+    
+                        m_pcm93chart_array[new_scale]->SetVPParms ( vpt );
+                        if (m_pcm93chart_array[new_scale]->IsPointInLoadedM_COVR ( xc, yc ) ) {
+                            b_found = true;
+                            break;
+                        }
+                    }
+                }
+                new_scale++;
+            }
+            if( b_found ) {
+                cmscale = new_scale;
+                m_pcm93chart_current = m_pcm93chart_array[cmscale];
+            }
+        }
       }
 
       return cmscale;
@@ -5258,7 +5322,7 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                         {
                               //    get the next smaller scale chart
                               cmscale_next--;
-                              m_cmscale = PrepareChartScale ( vp_positive, cmscale_next );
+                              m_cmscale = PrepareChartScale ( vp_positive, cmscale_next, false );
 
                               if ( m_pcm93chart_current )
                               {
@@ -5536,7 +5600,7 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                         {
                               //    get the next smaller scale chart
                               cmscale_next--;
-                              m_cmscale = PrepareChartScale ( vp_positive, cmscale_next );
+                              m_cmscale = PrepareChartScale ( vp_positive, cmscale_next, false );
 #ifdef ocpnUSE_DIBSECTION
                               ocpnMemDC build_dc;
 #else
@@ -5778,7 +5842,7 @@ void cm93compchart::UpdateRenderRegions ( const ViewPort& VPoint )
                         {
                               //    get the next smaller scale chart
                               cmscale_next--;
-                              m_cmscale = PrepareChartScale ( vp_positive, cmscale_next );
+                              m_cmscale = PrepareChartScale ( vp_positive, cmscale_next, false );
 
                               if ( m_pcm93chart_current )
                               {
