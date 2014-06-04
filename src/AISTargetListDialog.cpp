@@ -530,6 +530,8 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
                         BottomDockable( true ).LeftDockable( false ).RightDockable( false ).Show( true );
         m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
 
+        pane.Name( _T("AISTargetList") );
+        
         bool b_reset_pos = false;
 
         if( (pane.floating_size.x != -1) && (pane.floating_size.y != -1)){
@@ -576,6 +578,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
         }
 
         pane.Caption( wxGetTranslation( _("AIS target list") ) );
+        pane.Show();
         m_pAuiManager->AddPane( this, pane );
         m_pAuiManager->Update();
 
@@ -587,12 +590,14 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 AISTargetListDialog::~AISTargetListDialog()
 {
     Disconnect_decoder();
-    g_pAISTargetList = NULL;
 }
 
 void AISTargetListDialog::OnClose( wxCloseEvent &event )
 {
     Disconnect_decoder();
+    Hide();
+    g_pAISTargetList = NULL;
+    
 }
 
 void AISTargetListDialog::Disconnect_decoder()
@@ -607,20 +612,24 @@ void AISTargetListDialog::SetColorScheme()
 
 void AISTargetListDialog::OnPaneClose( wxAuiManagerEvent& event )
 {
+    wxAuiPaneInfo *pane = event.pane;
     if( event.pane->name == _T("AISTargetList") ) {
         g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( *event.pane );
-        //event.Veto();
     }
+    Close();
     event.Skip();
 }
 
 void AISTargetListDialog::OnCloseButton( wxCommandEvent& event )
 {
     if(m_pAuiManager) {
-        wxAuiPaneInfo pane =m_pAuiManager->GetPane(_T("AISTargetList"));
+        wxAuiPaneInfo pane =m_pAuiManager->GetPane(this);
         g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( pane );
         m_pAuiManager->DetachPane(this);
-        Destroy();
+        Disconnect_decoder();
+        pane.Show(false);
+        m_pAuiManager->Update();
+        Close();
     }
 }
 
@@ -738,28 +747,32 @@ void AISTargetListDialog::OnTargetCreateWpt( wxCommandEvent& event )
 
 void AISTargetListDialog::OnShowAllTracks( wxCommandEvent& event )
 {
-    AIS_Target_Hash::iterator it;
-    AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
-    for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
-        AIS_Target_Data *pAISTarget = it->second;
-        if( NULL != pAISTarget ) {
-            pAISTarget->b_show_track = true;
+    if(m_pdecoder){
+        AIS_Target_Hash::iterator it;
+        AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
+        for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
+            AIS_Target_Data *pAISTarget = it->second;
+            if( NULL != pAISTarget ) {
+                pAISTarget->b_show_track = true;
+            }
         }
+        UpdateAISTargetList();
     }
-    UpdateAISTargetList();
 }
 
 void AISTargetListDialog::OnHideAllTracks( wxCommandEvent& event )
 {
-    AIS_Target_Hash::iterator it;
-    AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
-    for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
-        AIS_Target_Data *pAISTarget = it->second;
-        if( NULL != pAISTarget ) {
-            pAISTarget->b_show_track = false;
+    if(m_pdecoder){
+        AIS_Target_Hash::iterator it;
+        AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
+        for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
+            AIS_Target_Data *pAISTarget = it->second;
+            if( NULL != pAISTarget ) {
+                pAISTarget->b_show_track = false;
+            }
         }
-    }
     UpdateAISTargetList();
+    }
 }
 
 void AISTargetListDialog::OnToggleTrack( wxCommandEvent& event )
@@ -787,7 +800,10 @@ void AISTargetListDialog::OnLimitRange( wxCommandEvent& event )
 
 AIS_Target_Data *AISTargetListDialog::GetpTarget( unsigned int list_item )
 {
-    return m_pdecoder->Get_Target_Data_From_MMSI( m_pMMSI_array->Item( list_item ) );
+    if(m_pdecoder)
+        return m_pdecoder->Get_Target_Data_From_MMSI( m_pMMSI_array->Item( list_item ) );
+    else
+        return NULL;
 }
 
 void AISTargetListDialog::UpdateAISTargetList( void )
