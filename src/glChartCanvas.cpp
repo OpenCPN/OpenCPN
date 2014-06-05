@@ -1608,12 +1608,14 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     float plylat, plylon;
 
     wxColour color;
-    switch( ChartData->GetDBChartType( dbIndex ) ) {
-    case CHART_TYPE_S57:  color = GetGlobalColor( _T ( "UINFG" ) ); break;
-    case CHART_TYPE_CM93: color = GetGlobalColor( _T ( "YELO1" ) ); break;
-    default:              color = GetGlobalColor( _T ( "UINFR" ) ); break;
-    }
 
+    if( ChartData->GetDBChartType( dbIndex ) == CHART_TYPE_CM93 )
+        color = GetGlobalColor( _T ( "YELO1" ) );
+    else if( ChartData->GetDBChartFamily( dbIndex ) == CHART_FAMILY_VECTOR )
+        color = GetGlobalColor( _T ( "GREEN2" ) );
+    else
+        color = GetGlobalColor( _T ( "UINFR" ) );
+    
     ChartTableEntry *entry = ChartData->GetpChartTableEntry(dbIndex);
 
     glEnable( GL_LINE_SMOOTH );
@@ -1714,10 +1716,15 @@ void glChartCanvas::GridDraw( )
 
     glColor3ub(GridColor.Red(), GridColor.Green(), GridColor.Blue());
 
+    GLfloat parf;
+    glGetFloatv(  GL_SMOOTH_LINE_WIDTH_GRANULARITY, &parf );
+    
+    float width = wxMax(1.3, 1.0 + parf);
+    
     // Render in two passes, lines then text is much more efficient for opengl
     for( int pass=0; pass<2; pass++ ) {
         if(pass == 0) {
-            glLineWidth(1.3);
+            glLineWidth(width);
             glBegin(GL_LINES);
         }
 

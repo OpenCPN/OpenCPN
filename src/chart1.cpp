@@ -1133,7 +1133,7 @@ bool MyApp::OnInit()
 //      Establish a "home" location
     wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
 #ifdef __WXGTK__
-    std_path.SetInstallPrefix(PREFIX);
+    std_path.SetInstallPrefix(wxString(PREFIX, wxConvUTF8));
 #endif
     
     gExe_path = std_path.GetExecutablePath();
