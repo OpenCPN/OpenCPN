@@ -505,7 +505,7 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
     case SEATEMP_GRAPHIC_INDEX:
         map = SeaTempMap;
         maplen = (sizeof SeaTempMap) / (sizeof *SeaTempMap);
-    break;
+        break;
     case PRECIPITATION_GRAPHIC_INDEX:
         map = PrecipitationMap;
         maplen = (sizeof PrecipitationMap) / (sizeof *PrecipitationMap);
@@ -514,6 +514,8 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
         map = CloudMap;
         maplen = (sizeof CloudMap) / (sizeof *CloudMap);
         break;
+    default:
+        return *wxBLACK;
     }
 
     /* normalize map from 0 to 1 */

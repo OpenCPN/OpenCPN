@@ -1302,7 +1302,7 @@ int GarminProtocolHandler::gusb_cmd_send(const garmin_usb_packet *opkt, size_t s
 
 int GarminProtocolHandler::gusb_cmd_get(garmin_usb_packet *ibuf, size_t sz)
 {
-    int rv;
+    int rv = 0;
     unsigned char *buf = (unsigned char *) &ibuf->dbuf[0];
     int orig_receive_state;
     top:

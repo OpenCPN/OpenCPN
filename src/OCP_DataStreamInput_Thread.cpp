@@ -107,7 +107,7 @@ void *OCP_DataStreamInput_Thread::Entry()
 {
 
     bool not_done = true;
-    bool nl_found;
+    bool nl_found = false;
     wxString msg;
 
 
@@ -331,6 +331,8 @@ void *OCP_DataStreamInput_Thread::Entry()
     int max_timeout = 5;
     int loop_timeout = 2000;
     int n_reopen_wait = 2000;
+    bool nl_found = false;
+
     if( (m_io_select == DS_TYPE_INPUT_OUTPUT) || (m_io_select == DS_TYPE_OUTPUT) ) {
         loop_timeout = 2;
         max_timeout = 5000;
@@ -348,7 +350,6 @@ void *OCP_DataStreamInput_Thread::Entry()
         goto thread_exit;
 
     not_done = true;
-    bool nl_found;
 
 #define READ_BUF_SIZE 200
     char szBuf[READ_BUF_SIZE];
@@ -398,7 +399,7 @@ void *OCP_DataStreamInput_Thread::Entry()
             }
             else
             {
-                m_gps_fd = NULL;
+                m_gps_fd = 0;
                 wxThread::Sleep(2000);                        // stall for a bit
             }
         }
@@ -495,7 +496,7 @@ void *OCP_DataStreamInput_Thread::Entry()
                         if( b_need_reset ) {
                             b_inner = false;
                             CloseComPortPhysical(m_gps_fd);
-                            m_gps_fd = NULL;
+                            m_gps_fd = 0;
                             dwRead = 0;
                             nl_found = false;
                             n_reopen_wait = 2000;
@@ -509,7 +510,7 @@ void *OCP_DataStreamInput_Thread::Entry()
             else {                     //      ReadFile Erorr
                 b_inner = false;
                 CloseComPortPhysical(m_gps_fd);
-                m_gps_fd = NULL;
+                m_gps_fd = 0;
                 dwRead = 0;
                 nl_found = false;
                 n_reopen_wait = 2000;
