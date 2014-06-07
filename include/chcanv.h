@@ -463,6 +463,7 @@ private:
       int         m_wheelzoom_stop_oneshot;
       int         m_last_wheel_dir;
       wxStopWatch m_wheelstopwatch;
+      double      m_zoom_target;
       
       int         m_curtrack_timer_msec;
       int         m_rollover_popup_timer_msec;
