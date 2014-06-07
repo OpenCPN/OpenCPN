@@ -1071,6 +1071,8 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     m_b_DisableFBO = false;
 
     ownship_tex = 0;
+    ownship_color = -1;
+    
     ownship_large_scale_display_lists[0] = 0;
     ownship_large_scale_display_lists[1] = 0;
 }
@@ -1985,16 +1987,39 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         glPopMatrix();
         img_height = 20; /* is this needed? */
     } else {
-        if(!ownship_tex) { /* initial run, create texture for ownship,
+        int draw_color = SHIP_INVALID;
+        if( SHIP_NORMAL == cc1->m_ownship_state )
+            draw_color = SHIP_NORMAL;
+        else if( SHIP_LOWACCURACY == cc1->m_ownship_state )
+            draw_color = SHIP_LOWACCURACY;
+       
+        if(!ownship_tex || (draw_color != ownship_color)) { /* initial run, create texture for ownship,
                               also needed at colorscheme changes (not implemented) */
+            if(ownship_tex)
+                glDeleteTextures(1, &ownship_tex);
+            
             glGenTextures( 1, &ownship_tex );
             glBindTexture(GL_TEXTURE_2D, ownship_tex);
 
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
             glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
-            wxImage &image = cc1->m_pos_image_user ? *cc1->m_pos_image_user : *cc1->m_pos_image_grey;
-            
+            wxImage image;
+            if(cc1->m_pos_image_user) {
+                switch (draw_color) {
+                    case SHIP_INVALID: image = *cc1->m_pos_image_user_grey; break;
+                    case SHIP_NORMAL: image = *cc1->m_pos_image_user; break;
+                    case SHIP_LOWACCURACY: image = *cc1->m_pos_image_user_yellow; break;
+                }
+            }
+            else {
+                switch (draw_color) {
+                    case SHIP_INVALID: image = *cc1->m_pos_image_grey; break;
+                    case SHIP_NORMAL: image = *cc1->m_pos_image_red; break;
+                    case SHIP_LOWACCURACY: image = *cc1->m_pos_image_yellow; break;
+                }
+            }
+                
             int w = image.GetWidth(), h = image.GetHeight();
             int glw = NextPow2(w), glh = NextPow2(h);
             ownship_size = wxSize(w, h);
@@ -2069,8 +2094,8 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
             glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, ownship_tex);
-            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-                        
+            glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+            
             float glw = ownship_tex_size.x, glh = ownship_tex_size.y;
             float u = ownship_size.x/glw, v = ownship_size.y/glh;
             float w = ownship_size.x, h = ownship_size.y;
