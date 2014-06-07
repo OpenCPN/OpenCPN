@@ -1626,7 +1626,8 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
         glColor3f( r, g, b ); /* nodta color */
         glChartCanvas::SetClipRegion( temp_vp, Region, false, true ); /* no rotation */
         DoRenderRectOnGL( glc, temp_vp, rect );
-
+        glChartCanvas::DisableClipRegion();
+        
     }
 //      Update last_vp to reflect current state
     m_last_vp = VPoint;
