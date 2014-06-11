@@ -1703,8 +1703,14 @@ void AIS_Decoder::UpdateAllAlarms( void )
                     wxTimeSpan delta = wxDateTime::Now() - td->m_ack_time;
                     if( delta.GetMinutes() > g_AckTimeout_Mins ) td->b_in_ack_timeout = false;
                 }
-            } else
-                td->b_in_ack_timeout = false;
+            } else {
+                //  Not using ack timeouts.
+                //  If a target has been acknowledged, leave it ack'ed until it goes out of AIS_ALARM_SET state
+                if( td->b_in_ack_timeout ){
+                    if( this_alarm == AIS_NO_ALARM )
+                        td->b_in_ack_timeout = false;
+                }
+            }
 
             td->n_alarm_state = this_alarm;
 
