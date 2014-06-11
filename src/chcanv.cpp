@@ -10228,8 +10228,8 @@ void ChartCanvas::DrawBlinkObjects( void )
         
         node = node->GetNext();
     }
-    
-    RefreshRect(update_rect);
+    if( !update_rect.IsEmpty() )
+        RefreshRect(update_rect);
 }
 
 
