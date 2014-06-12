@@ -38,6 +38,10 @@
 #include "CrashRpt.h"
 #endif
 
+#ifdef LINUX_CRASHRPT
+#include "crashprint.h"
+#endif
+
 #include "wx/print.h"
 #include "wx/printdlg.h"
 #include "wx/artprov.h"
@@ -640,6 +644,10 @@ wxString g_config_version_string;
 bool             g_btouch;
 bool             g_bresponsive;
 
+#ifdef LINUX_CRASHRPT
+wxCrashPrint g_crashprint;
+#endif
+
 #ifndef __WXMSW__
 sigjmp_buf env;                    // the context saved by sigsetjmp();
 #endif
@@ -995,6 +1003,11 @@ bool MyApp::OnInit()
     crAddFile2( log_crash.c_str(), NULL, NULL, CR_AF_MISSING_FILE_OK | CR_AF_ALLOW_DELETE );
 
 #endif
+#endif
+
+#ifdef LINUX_CRASHRPT
+    // fatal exceptions handling
+    wxHandleFatalExceptions (true);
 #endif
 
     //  Seed the random number generator
@@ -2241,7 +2254,7 @@ if( 0 == g_memCacheLimit )
     
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
-    
+
     return TRUE;
 }
 
@@ -2371,6 +2384,12 @@ int MyApp::OnExit()
 
     return TRUE;
 }
+
+#ifdef LINUX_CRASHRPT
+void MyApp::OnFatalException () {
+    g_crashprint.Report();
+}
+#endif
 
 void MyApp::TrackOff( void )
 {
