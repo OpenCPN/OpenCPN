@@ -2232,6 +2232,8 @@ void ChartCanvas::StopMovement( )
     m_zoom_factor = 1;
     m_rotation_speed = 0;
     m_mustmove = 0;
+    SetFocus();
+    gFrame->Raise();
 }
 
 /* instead of integrating in timer callbacks
