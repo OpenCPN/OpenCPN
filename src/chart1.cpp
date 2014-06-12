@@ -3237,7 +3237,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
 
     FrameTimer1.Stop();
-
+    FrameCOGTimer.Stop();
+    
     g_bframemax = IsMaximized();
 
     //    Record the current state of tracking
@@ -5573,15 +5574,19 @@ void MyFrame::DoCOGSet( void )
     if( !g_bCourseUp )
         return;
  
+    if(!cc1)
+        return;
+    
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
     if(!g_bskew_comp)
         g_VPRotate += cc1->GetVPSkew();
 
-    if( cc1 ) cc1->SetVPRotation( g_VPRotate );
+    cc1->SetVPRotation( g_VPRotate );
     bool bnew_chart = DoChartUpdate();
 
-    if( ( bnew_chart ) || ( old_VPRotate != g_VPRotate ) ) if( cc1 ) cc1->ReloadVP();
+    if( ( bnew_chart ) || ( old_VPRotate != g_VPRotate ) )
+        cc1->ReloadVP();
 }
 
 void RenderShadowText( wxDC *pdc, wxFont *pFont, wxString& str, int x, int y )
