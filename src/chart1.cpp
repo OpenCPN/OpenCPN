@@ -1750,18 +1750,32 @@ if( 0 == g_memCacheLimit )
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
+    wxString default_tcdata =  ( g_SData_Locn + _T("tcdata") +
+             wxFileName::GetPathSeparator() + _T("HARMONIC.IDX"));
+    wxFileName fdefault( default_tcdata );
+    
     if(!TideCurrentDataSet.GetCount()) {
-        wxString default_tcdata =  ( g_SData_Locn + _T("tcdata") +
-            wxFileName::GetPathSeparator() +
-            _T("HARMONIC.IDX"));
-
         if( g_bportable ) {
-            wxFileName f( default_tcdata );
-            f.MakeRelativeTo( g_PrivateDataDir );
-            TideCurrentDataSet.Add( f.GetFullPath() );
+            fdefault.MakeRelativeTo( g_PrivateDataDir );
+            TideCurrentDataSet.Add( fdefault.GetFullPath() );
         }
         else
             TideCurrentDataSet.Add( default_tcdata );
+    }
+    else {
+        wxString first_tide = TideCurrentDataSet.Item(0);
+        wxFileName ft(first_tide);
+        if(!ft.FileExists()){
+            TideCurrentDataSet.RemoveAt(0);
+            TideCurrentDataSet.Insert( default_tcdata, 0 );
+        }
+        else {
+            wxString first_path(ft.GetPath());
+            if(fdefault.GetPath() != first_path){
+                TideCurrentDataSet.RemoveAt(0);
+                TideCurrentDataSet.Insert( default_tcdata, 0 );
+            }
+        }
     }
 
 
