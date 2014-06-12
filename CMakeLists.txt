@@ -468,7 +468,6 @@ SET(HDRS
                 include/OCPNRegion.h
                 include/TrackPropDlg.h
                 include/LinkPropDlg.h
-        include/crashprint.h
 )
 
 SET(SRCS
@@ -556,8 +555,12 @@ SET(SRCS
                 src/OCPNRegion.cpp
                 src/TrackPropDlg.cpp
                 src/LinkPropDlg.cpp
-        src/crashprint.cpp
     )
+
+IF(NOT WIN32 AND NOT APPLE)
+  SET(HDRS ${HDRS} include/crashprint.h )
+  SET(SRCS ${SRCS} src/crashprint.cpp)
+ENDIF(NOT WIN32 AND NOT APPLE)
 
 #  Search for wxWidgets 2.9 or newer
 STRING(REGEX MATCHALL "-2.9|-3." wx_Version_2.9+ "${wxWidgets_INCLUDE_DIRS}")
