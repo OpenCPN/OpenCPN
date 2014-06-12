@@ -582,6 +582,7 @@ int                       g_AisTargetList_sortColumn;
 bool                      g_bAisTargetList_sortReverse;
 wxString                  g_AisTargetList_column_spec;
 int                       g_AisTargetList_count;
+bool                      g_bAisTargetList_autosort;
 
 bool                      g_bGarminHostUpload;
 
