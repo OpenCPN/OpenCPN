@@ -2232,6 +2232,8 @@ void ChartCanvas::StopMovement( )
     m_zoom_factor = 1;
     m_rotation_speed = 0;
     m_mustmove = 0;
+    SetFocus();
+    gFrame->Raise();
 }
 
 /* instead of integrating in timer callbacks
@@ -2307,7 +2309,18 @@ void ChartCanvas::DoMovement( long dt )
 
         if(m_zoom_factor < 1)
             zoom_factor = 1/zoom_factor;
-            
+        
+        //  Try to hit the zoom target exactly.
+        if(zoom_factor > 1){
+            if(  VPoint.chart_scale / zoom_factor <= m_zoom_target)
+                zoom_factor = VPoint.chart_scale / m_zoom_target;
+        }
+
+        else if(zoom_factor < 1){
+            if(  VPoint.chart_scale / zoom_factor >= m_zoom_target)
+                zoom_factor = VPoint.chart_scale / m_zoom_target;
+        }
+        
         DoZoomCanvas( zoom_factor );
         
         if(m_wheelzoom_stop_oneshot > 0 &&
@@ -2315,6 +2328,22 @@ void ChartCanvas::DoMovement( long dt )
             m_wheelzoom_stop_oneshot = 0;
             StopMovement( );
         }
+        
+        //      Don't overshoot the zoom target.
+        if(zoom_factor > 1){
+            if(  VPoint.chart_scale <= m_zoom_target){
+                m_wheelzoom_stop_oneshot = 0;
+                StopMovement( );
+            }
+        }
+        else if(zoom_factor < 1){
+            if(  VPoint.chart_scale >= m_zoom_target){
+                m_wheelzoom_stop_oneshot = 0;
+                StopMovement( );
+            }
+        }
+        
+                
     }
 
     if( m_rotation_speed ) { /* in degrees per second */
@@ -2821,7 +2850,9 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
         if(StartTimedMovement(stoptimer)) {
             m_mustmove += 150; /* for quick presses register as 200 ms duration */
             m_zoom_factor = factor;
+//            m_zoom_target =  VPoint.chart_scale / factor;
         }
+        m_zoom_target =  VPoint.chart_scale / factor;
     } else {
         if( m_modkeys == wxMOD_ALT )
             factor = pow(factor, .15);
@@ -2845,6 +2876,8 @@ void ChartCanvas::DoZoomCanvas( double factor )
     double zlat = m_cursor_lat;
     double zlon = m_cursor_lon;
 
+    double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() * factor );
+    
     if(factor > 1)
     {
         bool b_do_zoom = true;
@@ -2853,7 +2886,7 @@ void ChartCanvas::DoZoomCanvas( double factor )
 
         double min_allowed_scale = 50.0;                // meters per meter
 
-        double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() * zoom_factor );
+//        double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() * zoom_factor );
         ChartBase *pc = NULL;
 
         if( !VPoint.b_quilt ) {
@@ -2894,7 +2927,7 @@ void ChartCanvas::DoZoomCanvas( double factor )
 
         bool b_do_zoom = true;
 
-        double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() / zoom_factor );
+//        double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() / zoom_factor );
         ChartBase *pc = NULL;
 
         bool b_smallest = false;
@@ -2956,6 +2989,7 @@ void ChartCanvas::DoZoomCanvas( double factor )
     }
 
     m_bzooming = false;
+    
 }
 
 void ChartCanvas::RotateCanvas( double dir )
@@ -5753,25 +5787,28 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         int mouse_wheel_oneshot = abs(wheel_dir)*4;                  //msec
         wheel_dir = wheel_dir > 0 ? 1 : -1; // normalize
 
+        double factor = 2.0;
+        if(wheel_dir < 0)
+            factor = 1/factor;
         
         if(g_bsmoothpanzoom){
             if( (m_wheelstopwatch.Time() < m_wheelzoom_stop_oneshot) ) {
-                if( wheel_dir == m_last_wheel_dir ) 
+                if( wheel_dir == m_last_wheel_dir ) {
                     m_wheelzoom_stop_oneshot += mouse_wheel_oneshot;
+//                    m_zoom_target /= factor;
+                }
                 else 
                     StopMovement( );
             }
             else {    
                 m_wheelzoom_stop_oneshot = mouse_wheel_oneshot;
                 m_wheelstopwatch.Start(0);
+//                m_zoom_target =  VPoint.chart_scale / factor;
             }
         }
 
         m_last_wheel_dir = wheel_dir;
         
-        double factor = 2.0;
-        if(wheel_dir < 0)
-            factor = 1/factor;
         
         ZoomCanvas( factor, true, false );
         
@@ -10193,8 +10230,8 @@ void ChartCanvas::DrawBlinkObjects( void )
         
         node = node->GetNext();
     }
-    
-    RefreshRect(update_rect);
+    if( !update_rect.IsEmpty() )
+        RefreshRect(update_rect);
 }
 
 

@@ -39,6 +39,7 @@ static AIS_Decoder *s_p_sort_decoder;
 
 extern int g_AisTargetList_count;
 extern bool g_bAisTargetList_sortReverse;
+extern bool g_bAisTargetList_autosort;
 extern int g_AisTargetList_sortColumn;
 extern wxString g_AisTargetList_column_spec;
 extern ocpnStyle::StyleManager* g_StyleManager;
@@ -59,6 +60,8 @@ BEGIN_EVENT_TABLE(AISTargetListDialog, wxPanel)
     EVT_CLOSE(AISTargetListDialog::OnClose)
 END_EVENT_TABLE()
 
+static bool g_bsort_once;
+
 static int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarget2 )
 {
     wxString s1, s2;
@@ -66,8 +69,9 @@ static int ItemCompare( AIS_Target_Data *pAISTarget1, AIS_Target_Data *pAISTarge
     double n2 = 0.;
     bool b_cmptype_num = false;
 
-    //    Don't sort if target list count is too large
-    if( g_AisTargetList_count > 1000 ) return 0;
+    //    Don't sort unless requested
+    if( !g_bAisTargetList_autosort && !g_bsort_once )
+        return 0;
 
     AIS_Target_Data *t1 = pAISTarget1;
     AIS_Target_Data *t2 = pAISTarget2;
@@ -287,7 +291,9 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     m_pparent = parent;
     m_pAuiManager = auimgr;
     m_pdecoder = pdecoder;
-
+    g_bsort_once = false;
+    m_bautosort_force = false;
+    
     wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
     SetFont( *qFont );
 
@@ -481,6 +487,14 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
     m_pButtonToggleTrack->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
             wxCommandEventHandler( AISTargetListDialog::OnToggleTrack ), NULL, this );
     boxSizer02->Add( m_pButtonToggleTrack, 0, wxEXPAND | wxALL, 0 );
+
+    m_pCBAutosort = new wxCheckBox( this, wxID_ANY, _("AutoSort"), wxDefaultPosition,
+                                                           wxDefaultSize, wxBU_AUTODRAW );
+    m_pCBAutosort->Connect( wxEVT_COMMAND_CHECKBOX_CLICKED,
+                                   wxCommandEventHandler( AISTargetListDialog::OnAutosortCB ), NULL, this );
+    boxSizer02->Add( m_pCBAutosort, 0, wxEXPAND | wxALL, 0 );
+    g_bAisTargetList_autosort = true;
+    m_pCBAutosort->SetValue(g_bAisTargetList_autosort);
     
     boxSizer02->AddSpacer( 10 );
 
@@ -530,6 +544,8 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
                         BottomDockable( true ).LeftDockable( false ).RightDockable( false ).Show( true );
         m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
 
+        pane.Name( _T("AISTargetList") );
+        
         bool b_reset_pos = false;
 
         if( (pane.floating_size.x != -1) && (pane.floating_size.y != -1)){
@@ -576,6 +592,7 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
         }
 
         pane.Caption( wxGetTranslation( _("AIS target list") ) );
+        pane.Show();
         m_pAuiManager->AddPane( this, pane );
         m_pAuiManager->Update();
 
@@ -587,12 +604,14 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 AISTargetListDialog::~AISTargetListDialog()
 {
     Disconnect_decoder();
-    g_pAISTargetList = NULL;
 }
 
 void AISTargetListDialog::OnClose( wxCloseEvent &event )
 {
     Disconnect_decoder();
+    Hide();
+    g_pAISTargetList = NULL;
+    
 }
 
 void AISTargetListDialog::Disconnect_decoder()
@@ -607,20 +626,24 @@ void AISTargetListDialog::SetColorScheme()
 
 void AISTargetListDialog::OnPaneClose( wxAuiManagerEvent& event )
 {
+    wxAuiPaneInfo *pane = event.pane;
     if( event.pane->name == _T("AISTargetList") ) {
         g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( *event.pane );
-        //event.Veto();
     }
+    Close();
     event.Skip();
 }
 
 void AISTargetListDialog::OnCloseButton( wxCommandEvent& event )
 {
     if(m_pAuiManager) {
-        wxAuiPaneInfo pane =m_pAuiManager->GetPane(_T("AISTargetList"));
+        wxAuiPaneInfo pane =m_pAuiManager->GetPane(this);
         g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( pane );
         m_pAuiManager->DetachPane(this);
-        Destroy();
+        Disconnect_decoder();
+        pane.Show(false);
+        m_pAuiManager->Update();
+        Close();
     }
 }
 
@@ -677,13 +700,38 @@ void AISTargetListDialog::OnTargetQuery( wxCommandEvent& event )
     }
 }
 
+void AISTargetListDialog::OnAutosortCB( wxCommandEvent &event )
+{
+    g_bAisTargetList_autosort = m_pCBAutosort->GetValue();
+    
+    m_bautosort_force = g_bAisTargetList_autosort;
+    
+    if( !g_bAisTargetList_autosort ) {
+        wxListItem item;
+        item.SetMask( wxLIST_MASK_IMAGE );
+        item.SetImage( -1 );
+        g_AisTargetList_sortColumn = wxMax(g_AisTargetList_sortColumn, 0);
+        m_pListCtrlAISTargets->SetColumn( g_AisTargetList_sortColumn, item );
+    }
+    else {
+        wxListItem item;
+        item.SetMask( wxLIST_MASK_IMAGE );
+        item.SetImage( g_bAisTargetList_sortReverse ? 1 : 0 );
+        
+        if( g_AisTargetList_sortColumn >= 0 ) {
+            m_pListCtrlAISTargets->SetColumn( g_AisTargetList_sortColumn, item );
+            UpdateAISTargetList();
+        }
+    }
+}
+
 void AISTargetListDialog::OnTargetListColumnClicked( wxListEvent &event )
 {
     int key = event.GetColumn();
     wxListItem item;
     item.SetMask( wxLIST_MASK_IMAGE );
-    if( key == g_AisTargetList_sortColumn ) g_bAisTargetList_sortReverse =
-            !g_bAisTargetList_sortReverse;
+    if( key == g_AisTargetList_sortColumn ) 
+        g_bAisTargetList_sortReverse = !g_bAisTargetList_sortReverse;
     else {
         item.SetImage( -1 );
         m_pListCtrlAISTargets->SetColumn( g_AisTargetList_sortColumn, item );
@@ -691,6 +739,10 @@ void AISTargetListDialog::OnTargetListColumnClicked( wxListEvent &event )
         g_AisTargetList_sortColumn = key;
     }
     item.SetImage( g_bAisTargetList_sortReverse ? 1 : 0 );
+    
+    if(!g_bAisTargetList_autosort )
+        g_bsort_once = true;
+    
     if( g_AisTargetList_sortColumn >= 0 ) {
         m_pListCtrlAISTargets->SetColumn( g_AisTargetList_sortColumn, item );
         UpdateAISTargetList();
@@ -738,28 +790,32 @@ void AISTargetListDialog::OnTargetCreateWpt( wxCommandEvent& event )
 
 void AISTargetListDialog::OnShowAllTracks( wxCommandEvent& event )
 {
-    AIS_Target_Hash::iterator it;
-    AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
-    for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
-        AIS_Target_Data *pAISTarget = it->second;
-        if( NULL != pAISTarget ) {
-            pAISTarget->b_show_track = true;
+    if(m_pdecoder){
+        AIS_Target_Hash::iterator it;
+        AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
+        for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
+            AIS_Target_Data *pAISTarget = it->second;
+            if( NULL != pAISTarget ) {
+                pAISTarget->b_show_track = true;
+            }
         }
+        UpdateAISTargetList();
     }
-    UpdateAISTargetList();
 }
 
 void AISTargetListDialog::OnHideAllTracks( wxCommandEvent& event )
 {
-    AIS_Target_Hash::iterator it;
-    AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
-    for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
-        AIS_Target_Data *pAISTarget = it->second;
-        if( NULL != pAISTarget ) {
-            pAISTarget->b_show_track = false;
+    if(m_pdecoder){
+        AIS_Target_Hash::iterator it;
+        AIS_Target_Hash *current_targets = m_pdecoder->GetTargetList();
+        for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it ) {
+            AIS_Target_Data *pAISTarget = it->second;
+            if( NULL != pAISTarget ) {
+                pAISTarget->b_show_track = false;
+            }
         }
-    }
     UpdateAISTargetList();
+    }
 }
 
 void AISTargetListDialog::OnToggleTrack( wxCommandEvent& event )
@@ -787,7 +843,10 @@ void AISTargetListDialog::OnLimitRange( wxCommandEvent& event )
 
 AIS_Target_Data *AISTargetListDialog::GetpTarget( unsigned int list_item )
 {
-    return m_pdecoder->Get_Target_Data_From_MMSI( m_pMMSI_array->Item( list_item ) );
+    if(m_pdecoder)
+        return m_pdecoder->Get_Target_Data_From_MMSI( m_pMMSI_array->Item( list_item ) );
+    else
+        return NULL;
 }
 
 void AISTargetListDialog::UpdateAISTargetList( void )
@@ -808,23 +867,48 @@ void AISTargetListDialog::UpdateAISTargetList( void )
         wxListItem item;
 
         int index = 0;
-        m_pMMSI_array->Clear();
+        if( g_bAisTargetList_autosort || g_bsort_once )
+            m_pMMSI_array->Clear();
 
         for( it = ( *current_targets ).begin(); it != ( *current_targets ).end(); ++it, ++index ) {
             AIS_Target_Data *pAISTarget = it->second;
             item.SetId( index );
 
             if( NULL != pAISTarget ) {
-                if( ( pAISTarget->b_positionOnceValid )
-                        && ( pAISTarget->Range_NM <= g_AisTargetList_range ) ) m_pMMSI_array->Add(
-                        pAISTarget->MMSI );
-                else if( !pAISTarget->b_positionOnceValid ) m_pMMSI_array->Add( pAISTarget->MMSI );
+                bool b_add = false;
+                if( ( pAISTarget->b_positionOnceValid ) && ( pAISTarget->Range_NM <= g_AisTargetList_range ) )
+                    b_add = true;
+                else if( !pAISTarget->b_positionOnceValid )
+                    b_add = true;
+                
+                if(b_add){
+                    if( !g_bAisTargetList_autosort && !g_bsort_once ){
+                        bool b_found = false;
+                        for(unsigned int j=0 ; j < m_pMMSI_array->GetCount() ; j++){
+                            if( m_pMMSI_array->Item(j) == pAISTarget->MMSI ) {
+                                b_found = true;
+                                break;
+                            }
+                        }
+                        if(!b_found)    
+                            m_pMMSI_array->Add( pAISTarget->MMSI );
+                    }
+                    else
+                        m_pMMSI_array->Add( pAISTarget->MMSI );
+                }
             }
         }
 
+        g_bsort_once = false;
+        
         m_pListCtrlAISTargets->SetItemCount( m_pMMSI_array->GetCount() );
 
         g_AisTargetList_count = m_pMMSI_array->GetCount();
+        
+        if( (g_AisTargetList_count > 1000) && !m_bautosort_force )
+            g_bAisTargetList_autosort = false;
+        
+        m_pCBAutosort->SetValue( g_bAisTargetList_autosort );
 
         m_pListCtrlAISTargets->SetScrollPos( wxVERTICAL, sb_position, false );
 

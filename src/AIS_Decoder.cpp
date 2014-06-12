@@ -1018,7 +1018,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     n_msgs++;
 #ifdef AIS_DEBUG
     if((n_msgs % 10000) == 0)
-    printf("n_msgs %10d m_n_targets: %6d  n_msg1: %10d  n_msg5+24: %10d  n_new5: %10d \n", n_msgs, n_targets, n_msg1, n_msg5 + n_msg24, n_newname);
+    printf("n_msgs %10d m_n_targets: %6d  n_msg1: %10d  n_msg5+24: %10d  n_new5: %10d \n", n_msgs, m_n_targets, n_msg1, n_msg5 + n_msg24, n_newname);
 #endif
 
     return ret;
@@ -1703,8 +1703,14 @@ void AIS_Decoder::UpdateAllAlarms( void )
                     wxTimeSpan delta = wxDateTime::Now() - td->m_ack_time;
                     if( delta.GetMinutes() > g_AckTimeout_Mins ) td->b_in_ack_timeout = false;
                 }
-            } else
-                td->b_in_ack_timeout = false;
+            } else {
+                //  Not using ack timeouts.
+                //  If a target has been acknowledged, leave it ack'ed until it goes out of AIS_ALARM_SET state
+                if( td->b_in_ack_timeout ){
+                    if( this_alarm == AIS_NO_ALARM )
+                        td->b_in_ack_timeout = false;
+                }
+            }
 
             td->n_alarm_state = this_alarm;
 

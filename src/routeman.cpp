@@ -1376,25 +1376,35 @@ unsigned int WayPointman::GetIconTexture( const wxBitmap *pbm, int &glw, int &gl
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
+        
         wxImage image = pbm->ConvertToImage();
         int w = image.GetWidth(), h = image.GetHeight();
-
+        
         pmi->tex_w = NextPow2(w);
         pmi->tex_h = NextPow2(h);
-
+        
         unsigned char *d = image.GetData();
         unsigned char *a = image.GetAlpha();
+            
+        unsigned char mr, mg, mb;
+        image.GetOrFindMaskColour( &mr, &mg, &mb );
+    
         unsigned char *e = new unsigned char[4 * w * h];
-        for( int p = 0; p < w*h; p++) {
-            for( int c =0; c<3; c++)
-                e[4*p + c] = d[3*p + c];
-
-            if(a)
-                e[4*p + 3] = a[p];
-            else
-                e[4*p + 3] = 255;
-        }
-
+        for( int y = 0; y < h; y++ )
+            for( int x = 0; x < w; x++ ) {
+                unsigned char r, g, b;
+                int off = ( y * image.GetWidth() + x );
+                r = d[off * 3 + 0];
+                g = d[off * 3 + 1];
+                b = d[off * 3 + 2];
+                
+                e[off * 4 + 0] = r;
+                e[off * 4 + 1] = g;
+                e[off * 4 + 2] = b;
+                
+                e[off * 4 + 3] =  a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
+            }
+    
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pmi->tex_w, pmi->tex_h,
                      0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
         glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h,
