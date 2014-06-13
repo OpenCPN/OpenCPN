@@ -2321,7 +2321,7 @@ void ChartCanvas::DoMovement( long dt )
                 zoom_factor = VPoint.chart_scale / m_zoom_target;
         }
         
-        DoZoomCanvas( zoom_factor );
+        DoZoomCanvas( zoom_factor, m_bzooming_to_cursor );
         
         if(m_wheelzoom_stop_oneshot > 0 &&
            m_wheelstopwatch.Time() > m_wheelzoom_stop_oneshot){
@@ -2863,7 +2863,7 @@ void ChartCanvas::ZoomCanvas( double factor, bool can_zoom_to_cursor, bool stopt
     extendedSectorLegs.clear();
 }
 
-void ChartCanvas::DoZoomCanvas( double factor )
+void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 {
     /* TODO: queue the quilted loading code to a background thread
        so yield is never called from here, and also rendering is not delayed */
@@ -2877,16 +2877,16 @@ void ChartCanvas::DoZoomCanvas( double factor )
     double zlon = m_cursor_lon;
 
     double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() * factor );
+    bool b_do_zoom = false;
     
     if(factor > 1)
     {
-        bool b_do_zoom = true;
+        b_do_zoom = true;
 
         double zoom_factor = factor;
 
         double min_allowed_scale = 50.0;                // meters per meter
 
-//        double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() * zoom_factor );
         ChartBase *pc = NULL;
 
         if( !VPoint.b_quilt ) {
@@ -2917,17 +2917,11 @@ void ChartCanvas::DoZoomCanvas( double factor )
             }
         }
 
-        if( b_do_zoom ) {
-            SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
-            Refresh( false );
-        }
-
     } else if(factor < 1) {
         double zoom_factor = 1/factor;
 
-        bool b_do_zoom = true;
+        b_do_zoom = true;
 
-//        double proposed_scale_onscreen = GetCanvasScaleFactor() / ( GetVPScale() / zoom_factor );
         ChartBase *pc = NULL;
 
         bool b_smallest = false;
@@ -2974,20 +2968,22 @@ void ChartCanvas::DoZoomCanvas( double factor )
             if( ( GetCanvasScaleFactor() / proposed_scale_onscreen ) < m_absolute_min_scale_ppm )
                 b_do_zoom = false;
         }
+    }
 
-        if( b_do_zoom ) {
-            SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
-            Refresh( false );
+    if( b_do_zoom ) {
+        if( can_zoom_to_cursor && g_bEnableZoomToCursor) {
+            //  Arrange to combine the zoom and pan into one operation for smoother appearance
+            SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen, false );   // adjust, but deferred refresh
+            wxPoint r;
+            GetCanvasPointPix( zlat, zlon, &r );
+            PanCanvas( r.x - mouse_x, r.y - mouse_y );  // this will give the Refresh()
+            ClearbFollow();      // update the follow flag
         }
+        else
+            SetVPScale( GetCanvasScaleFactor() / proposed_scale_onscreen );
+        
     }
-
-    if( m_bzooming_to_cursor ) {
-        wxPoint r;
-        GetCanvasPointPix( zlat, zlon, &r );
-        PanCanvas( r.x - mouse_x, r.y - mouse_y );
-        ClearbFollow();      // update the follow flag
-    }
-
+    
     m_bzooming = false;
     
 }
@@ -3126,9 +3122,9 @@ void ChartCanvas::UpdateCanvasOnGroupChange( void )
     }
 }
 
-bool ChartCanvas::SetVPScale( double scale )
+bool ChartCanvas::SetVPScale( double scale, bool refresh )
 {
-    return SetViewPoint( VPoint.clat, VPoint.clon, scale, VPoint.skew, VPoint.rotation );
+    return SetViewPoint( VPoint.clat, VPoint.clon, scale, VPoint.skew, VPoint.rotation, true, refresh );
 }
 
 bool ChartCanvas::SetViewPoint( double lat, double lon )
@@ -3137,7 +3133,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon )
 }
 
 bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double skew,
-                                double rotation, bool b_adjust )
+                                double rotation, bool b_adjust, bool b_refresh )
 {
     bool b_ret = false;
 
@@ -3324,7 +3320,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                 ChartData->PurgeCacheUnusedCharts( false );
                 ChartData->LockCache();
 
-                Refresh( false );
+                if(b_refresh)
+                    Refresh( false );
+                
                 b_ret = true;
             }
             parent_frame->UpdateControlBar();
