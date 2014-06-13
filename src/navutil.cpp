@@ -1825,7 +1825,11 @@ int MyConfig::LoadMyConfig( int iteration )
                 str = FontMgr::GetFontConfigKey( oldKey );
             }
 
-            FontMgr::Get().LoadFontNative( &str, pval );
+            if( pval->IsEmpty() || pval->StartsWith(_T(":")) ) {
+                deleteList.Add( str );
+            }
+            else
+                FontMgr::Get().LoadFontNative( &str, pval );
 
             bCont = GetNextEntry( str, dummy );
         }
@@ -1837,6 +1841,9 @@ int MyConfig::LoadMyConfig( int iteration )
         delete pval;
     }
 
+    if( 0 == iteration ) 
+        FontMgr::Get().ScrubList();
+    
 //  Tide/Current Data Sources
     SetPath( _T ( "/TideCurrentDataSources" ) );
     TideCurrentDataSet.Clear();

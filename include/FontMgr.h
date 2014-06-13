@@ -53,13 +53,14 @@ class FontMgr
     
         void LoadFontNative(wxString *pConfigString, wxString *pNativeDesc);
         bool SetFont(const wxString &TextElement, wxFont *pFont, wxColour color);
-    
+        void ScrubList( );
+        
     private: // private for singleton
         FontMgr();
         ~FontMgr();
         FontMgr(const FontMgr &) {}
         FontMgr & operator=(const FontMgr &) { return *this; }
-
+        
     private:
         wxString GetSimpleNativeFont(int size);
     
