@@ -50,7 +50,7 @@ void TexFont::Build( wxFont &font, bool blur )
         wxCoord gw, gh;
         wxString text;
         if(i == DEGREE_GLYPH)
-            text = _T("°");
+            text = wxString::Format(_T("%c"), 0x00B0); //_T("°");
         else
             text = wxString::Format(_T("%c"), i);
         wxCoord descent, exlead;
@@ -101,7 +101,7 @@ void TexFont::Build( wxFont &font, bool blur )
 
         wxString text;
         if(i == DEGREE_GLYPH)
-            text = _T("°");
+            text = wxString::Format(_T("%c"), 0x00B0); //_T("°");
         else
             text = wxString::Format(_T("%c"), i);
 
