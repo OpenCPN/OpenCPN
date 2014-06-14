@@ -103,12 +103,13 @@ GribTimelineRecordSet::GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet 
         GribRecord *GR1 = GRS1.m_GribRecordPtrArray[i];
         GribRecord *GR2 = GRS2.m_GribRecordPtrArray[i];
 
-        if(GR1 && GR2 && GR1->isOk() && GR2->isOk() &&
-           GR1->getDi() == GR2->getDi() && GR1->getDj() == GR2->getDj() &&
-           GR1->getLatMin() == GR2->getLatMin() && GR1->getLonMin() == GR2->getLonMin() &&
-           GR1->getLatMax() == GR2->getLatMax() && GR1->getLonMax() == GR2->getLonMax())
+        if(GR1 && GR2) {
             m_GribRecordPtrArray[i] = new GribRecord(*GR1, *GR2, interp_const);
-        else
+            if(!m_GribRecordPtrArray[i]->isOk()) {
+                delete m_GribRecordPtrArray[i];
+                m_GribRecordPtrArray[i] = NULL;
+            }
+        } else
             m_GribRecordPtrArray[i] = NULL;
         m_IsobarArray[i] = NULL;
     }
@@ -139,7 +140,6 @@ void GRIBUIDialog::OpenFile(bool newestFile)
     m_TimeLineHours = 0;
     m_InterpolateMode = false;
     m_pNowMode = false;
-    m_pMovingGrib = false;
 
     //get more recent file in default directory if necessary
     wxFileName f( m_file_name );
@@ -183,7 +183,7 @@ void GRIBUIDialog::OpenFile(bool newestFile)
                     double wmin1,wmax1,hmin1,hmax1,wmin2,wmax2,hmin2,hmax2;
                     GetGribZoneLimits(new GribTimelineRecordSet(first, first, 0), &wmin1, &wmax1, &hmin1, &hmax1 );
                     GetGribZoneLimits(new GribTimelineRecordSet(second, second, 0), &wmin2, &wmax2, &hmin2, &hmax2 );
-                    if( wmin1 != wmin2 || wmax1 != wmax2 || hmin1 != hmin2 || hmax1 != hmax2 ) m_pMovingGrib = true;
+//                    if( wmin1 != wmin2 || wmax1 != wmax2 || hmin1 != hmin2 || hmax1 != hmax2 ) m_pMovingGrib = true;
                     //
                 }
             }
@@ -204,11 +204,6 @@ void GRIBUIDialog::OpenFile(bool newestFile)
         PopulateTrackingControls();
     }
     SetCanvasContextMenuItemViz( pPlugIn->m_MenuItem, m_TimeLineHours != 0);
-    if(m_pMovingGrib) {
-        wxMessageDialog mes(this, _("The Grib file you are opening contains a moving Grib Zone.\nInterpolation is not supported for this type of file"),
-            _("Warning!"), wxOK);
-        mes.ShowModal();
-    }
 }
 
 bool GRIBUIDialog::GetGribZoneLimits(GribTimelineRecordSet *timelineSet, double *latmin, double *latmax, double *lonmin, double *lonmax)
@@ -886,7 +881,7 @@ void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
     } else
         m_bpPlay->SetBitmap(*m_bPlay );
 
-    m_InterpolateMode = m_OverlaySettings.m_bInterpolate && !m_pMovingGrib;
+    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
 }
 
 void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
@@ -907,7 +902,7 @@ void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
         } else
             m_bpPlay->SetBitmap(*m_bPlay );                                             //will stop playback
     } else {
-        int value = m_pNowMode ? m_OverlaySettings.m_bInterpolate && !m_pMovingGrib ?
+        int value = m_pNowMode ? m_OverlaySettings.m_bInterpolate ?
             GetNearestValue(GetNow(), 1) : GetNearestIndex(GetNow(), 2) : m_sTimeline->GetValue();
         m_sTimeline->SetValue(value + 1);
     }
@@ -931,7 +926,7 @@ void GRIBUIDialog::TimelineChanged()
     /* get closest value to update timeline */
         double sel = (m_cRecordForecast->GetCurrentSelection());
         m_sTimeline->SetValue(
-            (int) m_OverlaySettings.m_bInterpolate && !m_pMovingGrib ?
+            (int) m_OverlaySettings.m_bInterpolate ?
                 sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
             );
     } else
@@ -1053,7 +1048,7 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
 
 void GRIBUIDialog::OnTimeline( wxScrollEvent& event )
 {
-    m_InterpolateMode = m_OverlaySettings.m_bInterpolate && !m_pMovingGrib;
+    m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
     if(!m_InterpolateMode) m_cRecordForecast->SetSelection(m_sTimeline->GetValue());
     m_pNowMode = false;
     TimelineChanged();
@@ -1245,15 +1240,15 @@ void GRIBUIDialog::ComputeBestForecastForNow()
 
     wxDateTime now = GetNow();
 
-    if( m_OverlaySettings.m_bInterpolate && !m_pMovingGrib )
+    if( m_OverlaySettings.m_bInterpolate )
         m_sTimeline->SetValue(GetNearestValue(now, 0));
     else{
         m_cRecordForecast->SetSelection(GetNearestIndex(now, 0));
         m_sTimeline->SetValue(m_cRecordForecast->GetCurrentSelection());
     }
 
-    if( pPlugIn->GetStartOptions() != 2 || m_pMovingGrib ) {         //no interpolation at start : take the nearest forecast
-        m_OverlaySettings.m_bInterpolate && !m_pMovingGrib? m_InterpolateMode = true : m_InterpolateMode = false;
+    if( pPlugIn->GetStartOptions() != 2 ) {         //no interpolation at start : take the nearest forecast
+        m_OverlaySettings.m_bInterpolate ? m_InterpolateMode = true : m_InterpolateMode = false;
         TimelineChanged();
         return;
     }
@@ -1285,7 +1280,7 @@ void GRIBUIDialog::SetFactoryOptions( bool set_val )
 {
     int max = wxMax(m_sTimeline->GetMax(), 1), val = m_sTimeline->GetValue();             //memorize the old range and value
 
-    if(m_OverlaySettings.m_bInterpolate && !m_pMovingGrib){
+    if(m_OverlaySettings.m_bInterpolate){
         int stepmin = m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate);
         m_sTimeline->SetMax(m_TimeLineHours * 60 / stepmin );
     }

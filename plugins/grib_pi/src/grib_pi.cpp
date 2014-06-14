@@ -447,6 +447,8 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
         char ptr[64];
         snprintf(ptr, sizeof ptr, "%p", set);
 
+        v[_T("GribVersionMajor")] = PLUGIN_VERSION_MAJOR;
+        v[_T("GribVersionMinor")] = PLUGIN_VERSION_MINOR;
         v[_T("TimelineSetPtr")] = wxString::From8BitData(ptr);
 
         wxJSONWriter w;
