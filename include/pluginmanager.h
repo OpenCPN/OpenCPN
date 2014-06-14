@@ -82,6 +82,7 @@ typedef struct {
 const BlackListedPlugin PluginBlacklist[] = {
     { _T("aisradar_pi"), 0, 95, true, true },
     { _T("radar_pi"), 0, 95, true, true },             // GCC alias for aisradar_pi
+    { _T("watchdog_pi"), 1, 00, false, true }
 };
 
 //----------------------------------------------------------------------------
