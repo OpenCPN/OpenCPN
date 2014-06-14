@@ -2026,7 +2026,7 @@ bool MyConfig::LoadLayers(wxString &path)
                         l->m_NoOfItems += nItems;
 
                         wxString objmsg;
-                        objmsg.Printf( wxT("Loaded GPX file %s with %d items."), file_path.c_str(), nItems );
+                        objmsg.Printf( wxT("Loaded GPX file %s with %ld items."), file_path.c_str(), nItems );
                         wxLogMessage( objmsg );
 
                         delete pSet;
