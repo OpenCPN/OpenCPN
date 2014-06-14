@@ -207,7 +207,8 @@ public:
     void Init();
 
     wxWindow* GetContentWindow() const;
-
+    void OnClose( wxCloseEvent& event );
+    
     void CreateControls();
     size_t CreatePanel(const wxString & title);
     wxScrolledWindow *AddPage(size_t parent, const wxString & title);
