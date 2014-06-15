@@ -442,6 +442,9 @@ void grib_pi::SetPluginMessage(wxString &message_id, wxString &message_body)
                         v[_T("Minute")].AsInt(),
                         v[_T("Second")].AsInt());
 
+        if(!m_pGribDialog)
+            OnToolbarToolCallback(0);
+
         GribTimelineRecordSet *set = m_pGribDialog ? m_pGribDialog->GetTimeLineRecordSet(time) : NULL;
 
         char ptr[64];

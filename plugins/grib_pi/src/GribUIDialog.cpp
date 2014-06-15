@@ -100,18 +100,43 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
 GribTimelineRecordSet::GribTimelineRecordSet(GribRecordSet &GRS1, GribRecordSet &GRS2, double interp_const)
 {
     for(int i=0; i<Idx_COUNT; i++) {
+        m_GribRecordPtrArray[i] = NULL;
+        m_IsobarArray[i] = NULL;
+    }
+
+    for(int i=0; i<Idx_COUNT; i++) {
+        if(m_GribRecordPtrArray[i])
+            continue;
+
         GribRecord *GR1 = GRS1.m_GribRecordPtrArray[i];
         GribRecord *GR2 = GRS2.m_GribRecordPtrArray[i];
 
-        if(GR1 && GR2) {
-            m_GribRecordPtrArray[i] = new GribRecord(*GR1, *GR2, interp_const);
-            if(!m_GribRecordPtrArray[i]->isOk()) {
-                delete m_GribRecordPtrArray[i];
-                m_GribRecordPtrArray[i] = NULL;
+        if(!GR1 || !GR2)
+            continue;
+
+        /* if this is a vector interpolation use the 2d method */
+        if(i < Idx_WIND_VY) {
+            GribRecord *GR1y = GRS1.m_GribRecordPtrArray[i + Idx_WIND_VY];
+            GribRecord *GR2y = GRS2.m_GribRecordPtrArray[i + Idx_WIND_VY];
+            if(GR1y && GR2y) {
+                m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
+                    (m_GribRecordPtrArray[i + Idx_WIND_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
+                continue;
             }
-        } else
-            m_GribRecordPtrArray[i] = NULL;
-        m_IsobarArray[i] = NULL;
+        } else if(i <= Idx_WIND_VY300)
+            continue;
+        else if(i == Idx_SEACURRENT_VX) {
+            GribRecord *GR1y = GRS1.m_GribRecordPtrArray[Idx_SEACURRENT_VY];
+            GribRecord *GR2y = GRS2.m_GribRecordPtrArray[Idx_SEACURRENT_VY];
+            if(GR1y && GR2y) {
+                m_GribRecordPtrArray[i] = GribRecord::Interpolated2DRecord
+                    (m_GribRecordPtrArray[Idx_SEACURRENT_VY], *GR1, *GR1y, *GR2, *GR2y, interp_const);
+                continue;
+            }
+        } else if(i == Idx_SEACURRENT_VY)
+            continue;
+
+        m_GribRecordPtrArray[i] = GribRecord::InterpolatedRecord(*GR1, *GR2, interp_const);
     }
 
     m_Reference_Time = (1-interp_const)*GRS1.m_Reference_Time
@@ -606,34 +631,26 @@ void GRIBUIDialog::UpdateTrackingControls( void )
     GribRecord **RecordArray = m_pTimelineSet->m_GribRecordPtrArray;
     //    Update the wind control
     int altitude = pPlugIn->GetGRIBOverlayFactory()->m_Altitude;
-    if( RecordArray[Idx_WIND_VX + altitude] && RecordArray[Idx_WIND_VY + altitude] ) {
-        double vx = RecordArray[Idx_WIND_VX + altitude]->
-            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-        double vy = RecordArray[Idx_WIND_VY + altitude]->
-            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+    double vkn, ang;
+    if(GribRecord::getInterpolatedValues(vkn, ang,
+                                         RecordArray[Idx_WIND_VX + altitude],
+                                         RecordArray[Idx_WIND_VY + altitude],
+                                         m_cursor_lon, m_cursor_lat)) {
+        double vk = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vkn);
+        m_tcWindSpeed->SetValue( wxString::Format( _T("%3d ") + m_OverlaySettings.GetUnitSymbol
+                                                   (GribOverlaySettings::WIND) , (int)round( vk )) );
 
-        if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-            /*in case of beaufort scale unit, it's better to calculate vkn before calibrate value to maintain precision*/
-            double vkn = sqrt( vx * vx + vy * vy ),vk;
-            vk = m_OverlaySettings.CalibrateValue(GribOverlaySettings::WIND, vkn);
-            m_tcWindSpeed->SetValue( wxString::Format( _T("%3d ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::WIND) , (int)round( vk )) );
-
-            //wind is a special case: if current unit is not bf ==> double speed display (current unit + bf)
-            if(m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units != GribOverlaySettings::BFS) {
-                vk = m_OverlaySettings.GetmstobfFactor(vkn)* vkn;
-                m_tcWindSpeed->SetValue(m_tcWindSpeed->GetValue().Append(_T(" - ")).
-                    Append(wxString::Format( _T("%2d bf"), (int)round( vk ))));
-            }
-            //
-
-            double ang = 90. + ( atan2( vy, -vx ) * 180. / PI );
-            if( ang > 360. ) ang -= 360.;
-            if( ang < 0. ) ang += 360.;
-            m_tcWindDirection->SetValue( wxString::Format( _T("%03d\u00B0"), (int) ( ang ) ));
-        } else {
-            m_tcWindSpeed->SetValue( _("N/A") );
-            m_tcWindDirection->SetValue(  _("N/A") );
+        //wind is a special case: if current unit is not bf ==> double speed display (current unit + bf)
+        if(m_OverlaySettings.Settings[GribOverlaySettings::WIND].m_Units != GribOverlaySettings::BFS) {
+            vk = m_OverlaySettings.GetmstobfFactor(vkn)* vkn;
+            m_tcWindSpeed->SetValue(m_tcWindSpeed->GetValue().Append(_T(" - ")).
+                                    Append(wxString::Format( _T("%2d bf"), (int)round( vk ))));
         }
+
+        m_tcWindDirection->SetValue( wxString::Format( _T("%03d\u00B0"), (int) ( ang ) ));
+    } else {
+        m_tcWindSpeed->SetValue( _("N/A") );
+        m_tcWindDirection->SetValue(  _("N/A") );
     }
 
     //    Update the Wind gusts control
@@ -691,27 +708,18 @@ void GRIBUIDialog::UpdateTrackingControls( void )
 
 
     //    Update the Current control
-    if( RecordArray[Idx_SEACURRENT_VX] && RecordArray[Idx_SEACURRENT_VY] ) {
-        double vx = RecordArray[Idx_SEACURRENT_VX]->
-            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
-        double vy = RecordArray[Idx_SEACURRENT_VY]->
-            getInterpolatedValue(m_cursor_lon, m_cursor_lat, true );
+    if(GribRecord::getInterpolatedValues(vkn, ang,
+                                         RecordArray[Idx_SEACURRENT_VX],
+                                         RecordArray[Idx_SEACURRENT_VY],
+                                         m_cursor_lon, m_cursor_lat)) {
+        vkn = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vkn);
 
-        if( ( vx != GRIB_NOTDEF ) && ( vy != GRIB_NOTDEF ) ) {
-            vx = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vx);
-            vy = m_OverlaySettings.CalibrateValue(GribOverlaySettings::CURRENT, vy);
+        m_tcCurrentVelocity->SetValue( wxString::Format( _T("%4.1f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );
 
-            double vkn = sqrt( vx * vx + vy * vy );
-            m_tcCurrentVelocity->SetValue( wxString::Format( _T("%4.1f ") + m_OverlaySettings.GetUnitSymbol(GribOverlaySettings::CURRENT), vkn ) );
-
-            double ang = 90. + ( atan2( -vy, vx ) * 180. / PI );
-            if( ang > 360. ) ang -= 360.;
-            if( ang < 0. ) ang += 360.;
-            m_tcCurrentDirection->SetValue( wxString::Format( _T("%03d\u00B0"), (int) ( ang ) ) );
-        } else {
-            m_tcCurrentVelocity->SetValue( _("N/A") );
-            m_tcCurrentDirection->SetValue( _("N/A") );
-        }
+        m_tcCurrentDirection->SetValue( wxString::Format( _T("%03d\u00B0"), (int) ( ang ) ) );
+    } else {
+        m_tcCurrentVelocity->SetValue( _("N/A") );
+        m_tcCurrentDirection->SetValue( _("N/A") );
     }
 
     //    Update total rainfall control
