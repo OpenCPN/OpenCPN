@@ -2830,7 +2830,7 @@ void options::OnApplyClick( wxCommandEvent& event )
     //  If the stream selected exists, capture some of its existing parameters
     //  to facility identification and allow stop and restart of the stream
     wxString lastAddr;
-    int lastPort;
+    int lastPort = 0;
     if(itemIndex >=0){
         int params_index = m_lcSources->GetItemData( itemIndex );
         ConnectionParams *cpo = g_pConnectionParams->Item(params_index);

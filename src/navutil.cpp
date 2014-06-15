@@ -3943,7 +3943,7 @@ bool LogMessageOnce(const wxString &msg)
 /**************************************************************************/
 double toUsrDistance( double nm_distance, int unit  )
 {
-    double ret;
+    double ret = NAN;
     if ( unit == -1 )
         unit = g_iDistanceFormat;
     switch( unit ){
@@ -3980,7 +3980,7 @@ double toUsrDistance( double nm_distance, int unit  )
 /**************************************************************************/
 double fromUsrDistance( double usr_distance, int unit )
 {
-    double ret;
+    double ret = NAN;
     if ( unit == -1 )
         unit = g_iDistanceFormat;
     switch( unit ){
@@ -4042,7 +4042,7 @@ wxString getUsrDistanceUnit( int unit )
 /**************************************************************************/
 double toUsrSpeed( double kts_speed, int unit )
 {
-    double ret;
+    double ret = NAN;
     if ( unit == -1 )
         unit = g_iSpeedFormat;
     switch( unit )
@@ -4068,7 +4068,7 @@ double toUsrSpeed( double kts_speed, int unit )
 /**************************************************************************/
 double fromUsrSpeed( double usr_speed, int unit )
 {
-    double ret;
+    double ret = NAN;
     if ( unit == -1 )
         unit = g_iSpeedFormat;
     switch( unit )
