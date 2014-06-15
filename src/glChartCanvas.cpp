@@ -1414,17 +1414,17 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 {
     wxPaintDC dc( this );
 
-#if wxCHECK_VERSION(2, 9, 0)
-    SetCurrent(*m_pcontext);
-#else
-    SetCurrent();
-#endif
-
     Show( g_bopengl );
     if( !g_bopengl ) {
         event.Skip();
         return;
     }
+
+#if wxCHECK_VERSION(2, 9, 0)
+    SetCurrent(*m_pcontext);
+#else
+    SetCurrent();
+#endif
 
     if( !m_bsetup ) {
         SetupOpenGL();
