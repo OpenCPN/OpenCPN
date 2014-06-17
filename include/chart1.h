@@ -192,6 +192,11 @@ class MyApp: public wxApp
     bool OnCmdLineParsed(wxCmdLineParser& parser);
     void OnActivateApp(wxActivateEvent& event);
 
+#ifdef LINUX_CRASHRPT
+    //! fatal exeption handling
+    void OnFatalException();
+#endif
+
     void TrackOff(void);
     
     wxSingleInstanceChecker *m_checker;

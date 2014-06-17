@@ -152,7 +152,11 @@ void Route::CloneTrack( Route *psourceroute, int start_nPoint, int end_nPoint, c
                 psourcepoint->m_IconName, psourcepoint->GetName(), GPX_EMPTY_STRING, false );
 
         AddPoint( ptargetpoint, false );
-
+        
+        //    This is a hack, need to undo the action of Route::AddPoint
+        ptargetpoint->m_bIsInRoute = false;
+        ptargetpoint->m_bIsInTrack = true;
+        
         CloneAddedTrackPoint( m_pLastAddedPoint, psourcepoint );
 
         int segment_shift = psourcepoint->m_GPXTrkSegNo;

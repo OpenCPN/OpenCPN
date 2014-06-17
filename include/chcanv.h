@@ -155,8 +155,9 @@ public:
 
       void CancelMouseRoute();
 
-      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation, bool b_adjust = true);
-      bool SetVPScale(double sc);
+      bool SetViewPoint(double lat, double lon, double scale_ppm, double skew, double rotation,
+                        bool b_adjust = true, bool b_refresh = true);
+      bool SetVPScale(double sc, bool b_refresh = true);
       bool SetViewPoint ( double lat, double lon);
       void ReloadVP ( bool b_adjust = true );
       void LoadVP ( ViewPort &vp, bool b_adjust = true );
@@ -223,7 +224,7 @@ public:
       void StopAutoPan(void);
 
       void ZoomCanvas(double factor, bool can_zoom_to_cursor=true, bool stoptimer=true );
-      void DoZoomCanvas(double factor);
+      void DoZoomCanvas(double factor,  bool can_zoom_to_cursor = true);
 
       void RotateCanvas( double dir );
       void DoRotateCanvas( double rotation );

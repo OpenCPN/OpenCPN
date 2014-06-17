@@ -38,6 +38,10 @@
 #include "CrashRpt.h"
 #endif
 
+#ifdef LINUX_CRASHRPT
+#include "crashprint.h"
+#endif
+
 #include "wx/print.h"
 #include "wx/printdlg.h"
 #include "wx/artprov.h"
@@ -641,6 +645,10 @@ wxString g_config_version_string;
 bool             g_btouch;
 bool             g_bresponsive;
 
+#ifdef LINUX_CRASHRPT
+wxCrashPrint g_crashprint;
+#endif
+
 #ifndef __WXMSW__
 sigjmp_buf env;                    // the context saved by sigsetjmp();
 #endif
@@ -998,6 +1006,11 @@ bool MyApp::OnInit()
 #endif
 #endif
 
+#ifdef LINUX_CRASHRPT
+    // fatal exceptions handling
+    wxHandleFatalExceptions (true);
+#endif
+
     //  Seed the random number generator
     wxDateTime x = wxDateTime::UNow();
     long seed = x.GetMillisecond();
@@ -1132,7 +1145,11 @@ bool MyApp::OnInit()
     temp_font.SetDefaultEncoding( wxFONTENCODING_SYSTEM );
 
 //      Establish a "home" location
-    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
+    wxStandardPaths& std_path = *dynamic_cast<wxStandardPaths*>(&wxApp::GetTraits()->GetStandardPaths());
+    
+    //TODO  Why is the following preferred?  Will not compile with gcc...
+//    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
+    
 #ifdef __WXGTK__
     std_path.SetInstallPrefix(wxString(PREFIX, wxConvUTF8));
 #endif
@@ -1750,18 +1767,32 @@ if( 0 == g_memCacheLimit )
 
     //  Check the global Tide/Current data source array
     //  If empty, preset one default (US) Ascii data source
+    wxString default_tcdata =  ( g_SData_Locn + _T("tcdata") +
+             wxFileName::GetPathSeparator() + _T("HARMONIC.IDX"));
+    wxFileName fdefault( default_tcdata );
+    
     if(!TideCurrentDataSet.GetCount()) {
-        wxString default_tcdata =  ( g_SData_Locn + _T("tcdata") +
-            wxFileName::GetPathSeparator() +
-            _T("HARMONIC.IDX"));
-
         if( g_bportable ) {
-            wxFileName f( default_tcdata );
-            f.MakeRelativeTo( g_PrivateDataDir );
-            TideCurrentDataSet.Add( f.GetFullPath() );
+            fdefault.MakeRelativeTo( g_PrivateDataDir );
+            TideCurrentDataSet.Add( fdefault.GetFullPath() );
         }
         else
             TideCurrentDataSet.Add( default_tcdata );
+    }
+    else {
+        wxString first_tide = TideCurrentDataSet.Item(0);
+        wxFileName ft(first_tide);
+        if(!ft.FileExists()){
+            TideCurrentDataSet.RemoveAt(0);
+            TideCurrentDataSet.Insert( default_tcdata, 0 );
+        }
+        else {
+            wxString first_path(ft.GetPath());
+            if(fdefault.GetPath() != first_path){
+                TideCurrentDataSet.RemoveAt(0);
+                TideCurrentDataSet.Insert( default_tcdata, 0 );
+            }
+        }
     }
 
 
@@ -2237,7 +2268,7 @@ if( 0 == g_memCacheLimit )
     
     if ( g_start_fullscreen )
         gFrame->ToggleFullScreen();
-    
+
     return TRUE;
 }
 
@@ -2367,6 +2398,12 @@ int MyApp::OnExit()
 
     return TRUE;
 }
+
+#ifdef LINUX_CRASHRPT
+void MyApp::OnFatalException () {
+    g_crashprint.Report();
+}
+#endif
 
 void MyApp::TrackOff( void )
 {
@@ -3218,7 +3255,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     }
 
     FrameTimer1.Stop();
-
+    FrameCOGTimer.Stop();
+    
     g_bframemax = IsMaximized();
 
     //    Record the current state of tracking
@@ -3551,13 +3589,13 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
             break;
 
         case ID_ZOOMIN: {
-            cc1->DoZoomCanvas( 2.0 );
+            cc1->DoZoomCanvas( 2.0, false );
             DoChartUpdate();
             break;
         }
 
         case ID_ZOOMOUT: {
-            cc1->DoZoomCanvas( 0.5 );
+            cc1->DoZoomCanvas( 0.5, false );
             DoChartUpdate();
             break;
         }
@@ -5554,15 +5592,19 @@ void MyFrame::DoCOGSet( void )
     if( !g_bCourseUp )
         return;
  
+    if(!cc1)
+        return;
+    
     double old_VPRotate = g_VPRotate;
     g_VPRotate = -g_COGAvg * PI / 180.;
     if(!g_bskew_comp)
         g_VPRotate += cc1->GetVPSkew();
 
-    if( cc1 ) cc1->SetVPRotation( g_VPRotate );
+    cc1->SetVPRotation( g_VPRotate );
     bool bnew_chart = DoChartUpdate();
 
-    if( ( bnew_chart ) || ( old_VPRotate != g_VPRotate ) ) if( cc1 ) cc1->ReloadVP();
+    if( ( bnew_chart ) || ( old_VPRotate != g_VPRotate ) )
+        cc1->ReloadVP();
 }
 
 void RenderShadowText( wxDC *pdc, wxFont *pFont, wxString& str, int x, int y )

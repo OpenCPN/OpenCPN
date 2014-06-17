@@ -310,3 +310,103 @@ void FontMgr::LoadFontNative( wxString *pConfigString, wxString *pNativeDesc )
     }
 }
 
+wxString FontCandidates[] = {
+    _T("AISTargetAlert"), 
+    _T("AISTargetQuery"),
+    _T("StatusBar"),
+    _T("AIS Target Name" ),
+    _T("ObjectQuery"),
+    _T("RouteLegInfoRollover"),
+    _T("ExtendedTideIcon"),
+    _T("CurrentValue"),
+    _T("Console Legend"),
+    _T("Console Value"),
+    _T("AISRollover"),
+    _T("TideCurrentGraphRollover"),
+    _T("RouteLegInfoRollover"),
+    _T("AISRollover"),
+    _T("Marks" ),
+    _T("ChartTexts"),
+    _T("ToolTips"),
+    _T("Dialog"),
+    _T("Menu"),
+    _T("END_OF_LIST")
+};
+
+void FontMgr::ScrubList( )
+{
+    //  Logic:
+    //  For each element entry in the candidate list, 
+    //          Look through the font list
+    //          If the the element appears and the locale prefix on the element is NOT en_US, fix it
+    
+    bool done = false;
+    unsigned int i = 0;
+    while( ! done ){
+        wxString candidate = FontCandidates[i];
+        if(candidate == _T("END_OF_LIST") ) {
+            done = true;
+            break;
+        }
+        
+        MyFontDesc *pmfd;
+        wxNode *node = (wxNode *) ( m_fontlist->GetFirst() );
+        while( node ) {
+            pmfd = (MyFontDesc *) node->GetData();
+            if( pmfd->m_dialogstring == candidate ) {
+                wxString tlocale = pmfd->m_configstring.BeforeFirst('-');
+                if( tlocale != _T("en_US") ) {
+                    // Here is a potential bad entry, seems to NOT be en_US, but is in the list of english candidates
+                    // Try to get a translation
+                    wxString trans = wxGetTranslation(pmfd->m_dialogstring);
+                    if( trans == pmfd->m_dialogstring ){   //no translation. so keep it
+                    }
+                    //  Translated into something.
+                    //  If the something is in the list already, with the correct locale prefix, then
+                    //  the item under consideration is bogus
+                    //  Search the list for exact match
+                    else {
+                        MyFontDesc *plmfd;
+                        wxNode *lnode = (wxNode *) ( m_fontlist->GetFirst() );
+                        while( lnode ) {
+                            plmfd = (MyFontDesc *) lnode->GetData();
+                            wxString tllocale = plmfd->m_configstring.BeforeFirst('-');
+                            if( (tlocale == tllocale) && (plmfd->m_dialogstring == trans) ){
+                                //  found a usable translation, so drop the bad one
+                                pmfd->m_dialogstring = _T("");
+                                pmfd->m_configstring = _T("");
+                                break;
+                            }
+                            
+                            lnode = lnode->GetNext();
+                        }
+                            
+                            
+                    }
+                    
+                }
+            }
+            node = node->GetNext();
+        }
+        
+        i++;
+    }
+
+    //  Remove the marked list items
+    MyFontDesc *pmfd;
+    wxNode *node = (wxNode *) ( m_fontlist->GetFirst() );
+    while( node ) {
+        pmfd = (MyFontDesc *) node->GetData();
+        if( pmfd->m_dialogstring == _T("") ) {
+            bool bd = m_fontlist->DeleteObject(pmfd);
+            if(bd)
+                node = (wxNode *) ( m_fontlist->GetFirst() );
+        }
+        else
+            node = node->GetNext();
+        
+    }
+            
+            
+}
+

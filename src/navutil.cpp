@@ -326,6 +326,11 @@ extern bool             g_bresponsive;
 extern ocpnGLOptions g_GLOptions;
 #endif
 
+#if !defined(NAN)
+static const long long lNaN = 0xfff8000000000000;
+#define NAN (*(double*)&lNaN)
+#endif
+
 //---------------------------------------------------------------------------------
 //    Track Implementation
 //---------------------------------------------------------------------------------
@@ -1825,7 +1830,11 @@ int MyConfig::LoadMyConfig( int iteration )
                 str = FontMgr::GetFontConfigKey( oldKey );
             }
 
-            FontMgr::Get().LoadFontNative( &str, pval );
+            if( pval->IsEmpty() || pval->StartsWith(_T(":")) ) {
+                deleteList.Add( str );
+            }
+            else
+                FontMgr::Get().LoadFontNative( &str, pval );
 
             bCont = GetNextEntry( str, dummy );
         }
@@ -1837,6 +1846,9 @@ int MyConfig::LoadMyConfig( int iteration )
         delete pval;
     }
 
+    if( 0 == iteration ) 
+        FontMgr::Get().ScrubList();
+    
 //  Tide/Current Data Sources
     SetPath( _T ( "/TideCurrentDataSources" ) );
     TideCurrentDataSet.Clear();
@@ -2019,7 +2031,7 @@ bool MyConfig::LoadLayers(wxString &path)
                         l->m_NoOfItems += nItems;
 
                         wxString objmsg;
-                        objmsg.Printf( wxT("Loaded GPX file %s with %d items."), file_path.c_str(), nItems );
+                        objmsg.Printf( wxT("Loaded GPX file %s with %ld items."), file_path.c_str(), nItems );
                         wxLogMessage( objmsg );
 
                         delete pSet;
