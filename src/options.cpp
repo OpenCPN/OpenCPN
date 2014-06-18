@@ -297,6 +297,9 @@ options::options( MyFrame* parent, wxWindowID id, const wxString& caption, const
     long wstyle = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
     SetExtraStyle( wxWS_EX_BLOCK_EVENTS );
 
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    SetFont( *qFont );
+    
     wxDialog::Create( parent, id, caption, pos, size, wstyle );
 
     CreateControls();
@@ -1384,116 +1387,116 @@ void ChartGroupsUI::CompletePanel( void )
 void options::CreatePanel_Display( size_t parent, int border_size, int group_item_spacing,
         wxSize small_button_size )
 {
-    wxScrolledWindow *itemPanelUI = AddPage( parent, _("Display") );
+    pDisplayPanel = AddPage( parent, _("Display") );
 
     wxBoxSizer* itemBoxSizerUI = new wxBoxSizer( wxVERTICAL );
-    itemPanelUI->SetSizer( itemBoxSizerUI );
+    pDisplayPanel->SetSizer( itemBoxSizerUI );
 
     // Chart Display Options Box
-    wxStaticBox* itemStaticBoxSizerCDOStatic = new wxStaticBox( itemPanelUI, wxID_ANY,
+    wxStaticBox* itemStaticBoxSizerCDOStatic = new wxStaticBox( pDisplayPanel, wxID_ANY,
             _("Chart Display Options") );
     wxStaticBoxSizer* itemStaticBoxSizerCDO = new wxStaticBoxSizer( itemStaticBoxSizerCDOStatic,
             wxVERTICAL );
     itemBoxSizerUI->Add( itemStaticBoxSizerCDO, 0, wxEXPAND | wxALL, border_size );
 
     //  "Course Up" checkbox
-    pCBCourseUp = new wxCheckBox( itemPanelUI, ID_COURSEUPCHECKBOX, _("Course UP Mode") );
-    itemStaticBoxSizerCDO->Add( pCBCourseUp, 0, wxALL, border_size );
+    pCBCourseUp = new wxCheckBox( pDisplayPanel, ID_COURSEUPCHECKBOX, _("Course UP Mode") );
+    itemStaticBoxSizerCDO->Add( pCBCourseUp, 0, wxALL, group_item_spacing );
 
     //  Course Up display update period
     wxFlexGridSizer *pCOGUPFilterGrid = new wxFlexGridSizer( 2 );
     pCOGUPFilterGrid->AddGrowableCol( 1 );
-    itemStaticBoxSizerCDO->Add( pCOGUPFilterGrid, 0, wxALL | wxEXPAND, border_size );
+    itemStaticBoxSizerCDO->Add( pCOGUPFilterGrid, 0, wxALL | wxEXPAND, group_item_spacing );
 
-    wxStaticText* itemStaticTextCOGUPFilterSecs = new wxStaticText( itemPanelUI, wxID_STATIC,
+    wxStaticText* itemStaticTextCOGUPFilterSecs = new wxStaticText( pDisplayPanel, wxID_STATIC,
             _("Course-Up Mode Display Update Period (sec)") );
     pCOGUPFilterGrid->Add( itemStaticTextCOGUPFilterSecs, 0, wxADJUST_MINSIZE,
-            border_size );
+                           group_item_spacing );
 
-    pCOGUPUpdateSecs = new wxTextCtrl( itemPanelUI, ID_TEXTCTRL, _T(""), wxDefaultPosition,
+    pCOGUPUpdateSecs = new wxTextCtrl( pDisplayPanel, ID_TEXTCTRL, _T(""), wxDefaultPosition,
             wxDefaultSize );
-    pCOGUPFilterGrid->Add( pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, border_size );
+    pCOGUPFilterGrid->Add( pCOGUPUpdateSecs, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
 
     //  "LookAhead" checkbox
-    pCBLookAhead = new wxCheckBox( itemPanelUI, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
-    itemStaticBoxSizerCDO->Add( pCBLookAhead, 0, wxALL, border_size );
+    pCBLookAhead = new wxCheckBox( pDisplayPanel, ID_CHECK_LOOKAHEAD, _("Look Ahead Mode") );
+    itemStaticBoxSizerCDO->Add( pCBLookAhead, 0, wxALL, group_item_spacing );
 
     //  Grid display  checkbox
-    pSDisplayGrid = new wxCheckBox( itemPanelUI, ID_CHECK_DISPLAYGRID, _("Show Grid") );
-    itemStaticBoxSizerCDO->Add( pSDisplayGrid, 1, wxALL, border_size );
+    pSDisplayGrid = new wxCheckBox( pDisplayPanel, ID_CHECK_DISPLAYGRID, _("Show Grid") );
+    itemStaticBoxSizerCDO->Add( pSDisplayGrid, 1, wxALL, group_item_spacing );
 
     //  Depth Unit checkbox
-    pSDepthUnits = new wxCheckBox( itemPanelUI, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
-    itemStaticBoxSizerCDO->Add( pSDepthUnits, 1, wxALL, border_size );
+    pSDepthUnits = new wxCheckBox( pDisplayPanel, ID_SHOWDEPTHUNITSBOX1, _("Show Depth Units") );
+    itemStaticBoxSizerCDO->Add( pSDepthUnits, 1, wxALL, group_item_spacing );
 
     //  OpenGL Render checkbox and button
     wxBoxSizer* OpenGLSizer = new wxBoxSizer( wxHORIZONTAL );
-    itemStaticBoxSizerCDO->Add( OpenGLSizer, 1, wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( OpenGLSizer, 1, wxALL, group_item_spacing );
 
-    pOpenGL = new wxCheckBox( itemPanelUI, ID_OPENGLBOX, _("Use Accelerated Graphics (OpenGL)") );
-    OpenGLSizer->Add( pOpenGL, 1, wxALL, border_size );
+    pOpenGL = new wxCheckBox( pDisplayPanel, ID_OPENGLBOX, _("Use Accelerated Graphics (OpenGL)") );
+    OpenGLSizer->Add( pOpenGL, 1, wxALL, group_item_spacing );
     pOpenGL->Enable(!g_bdisable_opengl);
 
-    wxButton *bOpenGL = new wxButton( itemPanelUI, ID_OPENGLOPTIONS, _("Options ...") );
-    OpenGLSizer->Add( bOpenGL, 1, wxALL, border_size );
+    wxButton *bOpenGL = new wxButton( pDisplayPanel, ID_OPENGLOPTIONS, _("Options ...") );
+    OpenGLSizer->Add( bOpenGL, 1, wxALL, group_item_spacing );
     bOpenGL->Enable(!g_bdisable_opengl);
 
     // Smooth Pan/Zoom checkbox
-    pSmoothPanZoom = new wxCheckBox( itemPanelUI, ID_SMOOTHPANZOOMBOX,
+    pSmoothPanZoom = new wxCheckBox( pDisplayPanel, ID_SMOOTHPANZOOMBOX,
                                      _("Smooth Panning / Zooming") );
-    itemStaticBoxSizerCDO->Add( pSmoothPanZoom, 1, wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pSmoothPanZoom, 1, wxALL, group_item_spacing );
 
-    pEnableZoomToCursor = new wxCheckBox( itemPanelUI, ID_ZTCCHECKBOX,
+    pEnableZoomToCursor = new wxCheckBox( pDisplayPanel, ID_ZTCCHECKBOX,
             _("Zoom to Cursor") );
     pEnableZoomToCursor->SetValue( FALSE );
-    itemStaticBoxSizerCDO->Add( pEnableZoomToCursor, 1, wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pEnableZoomToCursor, 1, wxALL, group_item_spacing );
 
-    pPreserveScale = new wxCheckBox( itemPanelUI, ID_PRESERVECHECKBOX,
+    pPreserveScale = new wxCheckBox( pDisplayPanel, ID_PRESERVECHECKBOX,
             _("Preserve Scale when Switching Charts") );
-    itemStaticBoxSizerCDO->Add( pPreserveScale, 1, wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pPreserveScale, 1, wxALL, group_item_spacing );
 
     //  Quilting checkbox
-    pCDOQuilting = new wxCheckBox( itemPanelUI, ID_QUILTCHECKBOX1, _("Enable Chart Quilting") );
-    itemStaticBoxSizerCDO->Add( pCDOQuilting, 1, wxALL, border_size );
+    pCDOQuilting = new wxCheckBox( pDisplayPanel, ID_QUILTCHECKBOX1, _("Enable Chart Quilting") );
+    itemStaticBoxSizerCDO->Add( pCDOQuilting, 1, wxALL, group_item_spacing );
 
     //  Full Screen Quilting Disable checkbox
-    pFullScreenQuilt = new wxCheckBox( itemPanelUI, ID_FULLSCREENQUILT,
+    pFullScreenQuilt = new wxCheckBox( pDisplayPanel, ID_FULLSCREENQUILT,
             _("Disable Full Screen Quilting") );
-    itemStaticBoxSizerCDO->Add( pFullScreenQuilt, 1, wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pFullScreenQuilt, 1, wxALL, group_item_spacing );
 
     //  Chart Outlines checkbox
-    pCDOOutlines = new wxCheckBox( itemPanelUI, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
-    itemStaticBoxSizerCDO->Add( pCDOOutlines, 1, wxALL, border_size );
+    pCDOOutlines = new wxCheckBox( pDisplayPanel, ID_OUTLINECHECKBOX1, _("Show Chart Outlines") );
+    itemStaticBoxSizerCDO->Add( pCDOOutlines, 1, wxALL, group_item_spacing );
 
     //  Skewed Raster compenstation checkbox
-    pSkewComp = new wxCheckBox( itemPanelUI, ID_SKEWCOMPBOX,
+    pSkewComp = new wxCheckBox( pDisplayPanel, ID_SKEWCOMPBOX,
             _("Show Skewed Raster Charts as North-Up") );
-    itemStaticBoxSizerCDO->Add( pSkewComp, 1, wxALL, border_size );
+    itemStaticBoxSizerCDO->Add( pSkewComp, 1, wxALL, group_item_spacing );
     
     //  Mobile/Tochscreen checkboxes
-    pMobile = new wxCheckBox( itemPanelUI, ID_MOBILEBOX, _("Enable Touchscreen/Tablet interface") );
-    itemStaticBoxSizerCDO->Add( pMobile, 1, wxALL, border_size );
+    pMobile = new wxCheckBox( pDisplayPanel, ID_MOBILEBOX, _("Enable Touchscreen/Tablet interface") );
+    itemStaticBoxSizerCDO->Add( pMobile, 1, wxALL, group_item_spacing );
                                 
-    pResponsive = new wxCheckBox( itemPanelUI, ID_REPONSIVEBOX, _("Enable Responsive graphics interface") );
-    itemStaticBoxSizerCDO->Add( pResponsive, 1, wxALL, border_size );
+    pResponsive = new wxCheckBox( pDisplayPanel, ID_REPONSIVEBOX, _("Enable Responsive graphics interface") );
+    itemStaticBoxSizerCDO->Add( pResponsive, 1, wxALL, group_item_spacing );
     
     //  "Mag Heading" checkbox
-    pCBMagShow = new wxCheckBox( itemPanelUI, ID_MAGSHOWCHECKBOX, _("Show Magnetic bearings and headings") );
-    itemStaticBoxSizerCDO->Add( pCBMagShow, 0, wxALL, border_size );
+    pCBMagShow = new wxCheckBox( pDisplayPanel, ID_MAGSHOWCHECKBOX, _("Show Magnetic bearings and headings") );
+    itemStaticBoxSizerCDO->Add( pCBMagShow, 0, wxALL, group_item_spacing );
     
     //  Mag Heading user variation
     wxFlexGridSizer *pUserVarGrid = new wxFlexGridSizer( 2 );
     pUserVarGrid->AddGrowableCol( 1 );
-    itemStaticBoxSizerCDO->Add( pUserVarGrid, 0, wxALL | wxEXPAND, border_size );
+    itemStaticBoxSizerCDO->Add( pUserVarGrid, 0, wxALL | wxEXPAND, group_item_spacing );
     
-    wxStaticText* itemStaticTextUserVar = new wxStaticText( itemPanelUI, wxID_STATIC,
+    wxStaticText* itemStaticTextUserVar = new wxStaticText( pDisplayPanel, wxID_STATIC,
                                                                     _("Assumed Magnetic Variation, deg.") );
     pUserVarGrid->Add( itemStaticTextUserVar, 0, wxADJUST_MINSIZE,
-                           border_size );
+                       group_item_spacing );
     
-    pMagVar = new wxTextCtrl( itemPanelUI, ID_TEXTCTRL, _T(""), wxDefaultPosition,
+    pMagVar = new wxTextCtrl( pDisplayPanel, ID_TEXTCTRL, _T(""), wxDefaultPosition,
                                        wxDefaultSize );
-    pUserVarGrid->Add( pMagVar, 0, wxALIGN_RIGHT | wxALL, border_size );
+    pUserVarGrid->Add( pMagVar, 0, wxALIGN_RIGHT | wxALL, group_item_spacing );
     
 }
 
@@ -1823,11 +1826,8 @@ void options::CreatePanel_UI( size_t parent, int border_size, int group_item_spa
 void options::CreateControls()
 {
     int border_size = 4;
-    int check_spacing = 4;
+    int check_spacing = 2;
     int group_item_spacing = 2;           // use for items within one group, with Add(...wxALL)
-
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
-    SetFont( *qFont );
 
     int font_size_y, font_descent, font_lead;
     GetTextExtent( _T("0"), NULL, &font_size_y, &font_descent, &font_lead );
@@ -1847,15 +1847,6 @@ void options::CreateControls()
             border_size = 2;
             check_spacing = 2;
             group_item_spacing = 1;
-
-            wxFont *sFont = wxTheFontList->FindOrCreateFont( 8, wxFONTFAMILY_DEFAULT,
-                    wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
-            SetFont( *sFont );
-
-            int font_size_y, font_descent, font_lead;
-            GetTextExtent( _T("0"), NULL, &font_size_y, &font_descent, &font_lead );
-            small_button_size = wxSize( -1,
-                    (int) ( 1.5 * ( font_size_y + font_descent + font_lead ) ) );
         }
     }
 
@@ -1969,12 +1960,12 @@ void options::CreateControls()
     //  Update the PlugIn page to reflect the state of individual selections
     m_pPlugInCtrl->UpdateSelections();
 
-    if( height < 768 ) {
-        SetSizeHints( width-200, height-200, -1, -1 );
-    } else {
-        vectorPanel->SetSizeHints( ps57Ctl );
-    }
+    //Set the maximum size of the entire settings dialog
+    SetSizeHints( -1, -1, width-100, height-100 );
 
+    //  The s57 chart panel is the one which controls the minimum width required to avoid horizontal scroll bars
+    vectorPanel->SetSizeHints( ps57Ctl );
+    
     m_pListbook->Connect( wxEVT_COMMAND_LISTBOOK_PAGE_CHANGED, wxListbookEventHandler( options::OnPageChange ), NULL, this );
 }
 

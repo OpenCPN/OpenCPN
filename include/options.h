@@ -290,6 +290,7 @@ public:
     int                     m_groups_changed;
 
 //    For General Options
+    wxScrolledWindow        *pDisplayPanel;
     wxCheckBox              *pShowStatusBar;
     wxCheckBox              *pShowCompassWin;
     wxCheckBox              *pPrintShowIcon;
