@@ -516,6 +516,7 @@ void UploadTexture( glTextureDescriptor *ptd, int base_level,
                                           dim, dim, 0, size, ptd->map_array[level] );
                 uploadcomp_tt_total += sw.Time();
 
+                free(ptd->map_array[level]);
                 ptd->map_array[level] = NULL;
 
                 g_tex_mem_used += size;
