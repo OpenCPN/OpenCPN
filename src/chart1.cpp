@@ -4653,9 +4653,7 @@ void MyFrame::ChartsRefresh( int dbi_hint, ViewPort &vp, bool b_purge )
     //    Validate the correct single chart, or set the quilt mode as appropriate
     SetupQuiltMode();
 
-    if( vp.IsValid() ) cc1->LoadVP( vp );
-    else
-        cc1->ReloadVP();
+    cc1->ReloadVP();
 
     UpdateControlBar();
 
@@ -4803,14 +4801,17 @@ void MyFrame::SetupQuiltMode( void )
 #endif
         }
 
-        if( cc1->IsChartQuiltableRef( target_new_dbindex ) ) SelectQuiltRefdbChart(
-                target_new_dbindex );
+        if( cc1->IsChartQuiltableRef( target_new_dbindex ) )
+            SelectQuiltRefdbChart( target_new_dbindex, false );        // Try not to allow a scale change
         else
             SelectQuiltRefdbChart( -1 );
 
         Current_Ch = NULL;                  // Bye....
-        cc1->ReloadVP();
-
+        
+        //  Re-qualify the quilt reference chart selection
+//        cc1->ReloadVP();
+        cc1->AdjustQuiltRefChart(  );
+        
     } else                                                  // going to SC Mode
     {
         ArrayOfInts empty_array;
@@ -5903,7 +5904,7 @@ void MyFrame::SelectQuiltRefChart( int selected_index )
     SelectQuiltRefdbChart( current_db_index );
 }
 
-void MyFrame::SelectQuiltRefdbChart( int db_index )
+void MyFrame::SelectQuiltRefdbChart( int db_index, bool b_autoscale )
 {
     if( pCurrentStack ) pCurrentStack->SetCurrentEntryFromdbIndex( db_index );
 
@@ -5911,8 +5912,10 @@ void MyFrame::SelectQuiltRefdbChart( int db_index )
 
     ChartBase *pc = ChartData->OpenChartFromDB( db_index, FULL_INIT );
     if( pc ) {
-        double best_scale = GetBestVPScale( pc );
-        cc1->SetVPScale( best_scale );
+        if(b_autoscale) {
+            double best_scale = GetBestVPScale( pc );
+            cc1->SetVPScale( best_scale );
+        }
     }
     else
         cc1->SetQuiltRefChart( -1 );
