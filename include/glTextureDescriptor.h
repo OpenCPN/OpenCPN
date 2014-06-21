@@ -35,8 +35,11 @@ public:
 
     GLuint tex_name;
     int level_min;
+    int x;
+    int y;
 
     unsigned char *map_array[10];
+    unsigned char *comp_array[10];
 };
 
 

@@ -50,6 +50,10 @@
 
 #include <stdio.h>
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+#endif
+
 
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC

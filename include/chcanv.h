@@ -52,9 +52,6 @@
 
 class wxGLContext;
 
-#ifdef ocpnUSE_GL
-#include "glChartCanvas.h"
-#endif
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);
