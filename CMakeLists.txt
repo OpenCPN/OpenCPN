@@ -756,12 +756,6 @@ ENDIF (USE_GARMINHOST)
 
 # Compile texcompression support library
 IF (OPENGL_GLU_FOUND)
-  # try to use sse if not using visual studio on x86 based systems
-  IF ( NOT MSVC AND (ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64"))
-      # this makes the compression run about 50% faster
-      message (STATUS "Compiling texture compression library with sse support")
-      ADD_DEFINITIONS( " -msse2 -DSQUISH_USE_SSE=2")
-  ENDIF ()
 
   SET(SRC_TEXCMP
     src/texcmp/lz4/lz4.c
@@ -782,6 +776,20 @@ IF (OPENGL_GLU_FOUND)
 
   ADD_LIBRARY(TEXCMP ${SRC_TEXCMP})
   SET(EXTRA_LIBS ${EXTRA_LIBS} TEXCMP)
+
+  # always use optimizations for the texture compression which is much faster
+  # not sure what to use for visual studio, but optimizations should be enabled here
+  IF ( NOT MSVC )
+      # try to use sse on x86 based systems
+      IF ( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64")
+        # using sse which makes the compression run about 50% faster
+        message (STATUS "Compiling texture compression library with sse support")
+        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3 -msse2 -DSQUISH_USE_SSE=2")
+      ELSE ()
+        # use standard optimizations for other architectures
+        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "-O3")
+      ENDIF ()
+  ENDIF ()
 ENDIF (OPENGL_GLU_FOUND)
 
 #TODO

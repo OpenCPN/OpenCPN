@@ -81,6 +81,7 @@ StatWin::StatWin( wxWindow *win )
     //   Create the Children
 
     pPiano = new PianoWin( (wxFrame *) this );
+    Raise();
 
 }
 

@@ -133,7 +133,13 @@ class GribRecord
     public:
         GribRecord(ZUFILE* file, int id_);
         GribRecord(const GribRecord &rec);
-        GribRecord(const GribRecord &rec1, const GribRecord &rec2, double d);
+        GribRecord() {}
+
+        static GribRecord *InterpolatedRecord(const GribRecord &rec1, const GribRecord &rec2, double d);
+        static GribRecord *Interpolated2DRecord(GribRecord *&rety,
+                                                const GribRecord &rec1x, const GribRecord &rec1y,
+                                                const GribRecord &rec2x, const GribRecord &rec2y, double d);
+
         static GribRecord *MagnitudeRecord(const GribRecord &rec1, const GribRecord &rec2);
         ~GribRecord();
 
@@ -180,6 +186,11 @@ class GribRecord
         // Value for one point interpolated
         double  getInterpolatedValue(double px, double py, bool numericalInterpolation=true) const;
 
+        // Value for polar interpolation of vectors
+        static bool getInterpolatedValues(double &M, double &A,
+                                          const GribRecord *GRX, const GribRecord *GRY,
+                                          double px, double py, bool numericalInterpolation=true);
+        
         // coordiantes of grid point
         inline double  getX(int i) const   { return ok ? Lo1+i*Di : GRIB_NOTDEF;}
         inline double  getY(int j) const   { return ok ? La1+j*Dj : GRIB_NOTDEF;}
@@ -205,6 +216,11 @@ class GribRecord
         const char* getStrRecordCurDate () const { return strCurDate; }
         void  setRecordCurrentDate (time_t t);
     private:
+        static bool GetInterpolatedParameters
+            (const GribRecord &rec1, const GribRecord &rec2,
+             double &La1, double &Lo1, double &La2, double &Lo2,
+             int &Ni, int &Nj, int &rec1offi, int &rec1offj, int &rec2offi, int &rec2offj );
+
         int    id;    // unique identifiant
         bool   ok;    // valid?
         bool   knownData;     // type de donnée connu
