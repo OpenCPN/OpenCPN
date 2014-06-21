@@ -71,10 +71,6 @@ public:
     wxRealPoint m_p1, m_p2;
 };
 
-#define GSHHS_SCL    1.0e-6    /* Convert micro-degrees to degrees */
-#  define INTER_MAX_LIMIT 1.0000001
-#  define INTER_MIN_LIMIT -0.0000001
-
 struct PolygonFileHeader {
     int version;
     int pasx;
@@ -92,6 +88,7 @@ struct PolygonFileHeader {
 
 typedef std::vector<wxRealPoint> contour;
 typedef std::vector<contour> contour_list;
+#define GSSH_SUBM 16 // divide each cell to 16x16 sub cells
 
 //==========================================================================
 
@@ -107,6 +104,10 @@ public:
     void drawSeaBorderLines( ocpnDC &pnt, double dx, ViewPort &vp );
     std::vector<QLineF> * getCoasts() { return &coasts; }
     contour_list &getPoly1() { return poly1; }
+
+    /* we remap the segments into a high resolution map to
+       greatly reduce intersection testing time */
+    std::vector<QLineF> *high_res_map[GSSH_SUBM*GSSH_SUBM];
 
 private:
     int nbpoints;
@@ -148,31 +149,10 @@ private:
     GshhsPolyCell * allCells[360][180];
 
     PolygonFileHeader polyHeader;
-
-    bool my_intersects( QLineF line1, QLineF line2 ) const;
     void readPolygonFileHeader( FILE *polyfile, PolygonFileHeader *header );
+
+    wxMutex mutex1, mutex2;
 };
-
-inline bool GshhsPolyReader::my_intersects( QLineF line1, QLineF line2 ) const
-{
-    // implementation is based on Graphics Gems III's "Faster Line Segment Intersection"
-    wxRealPoint a = line1.p2() - line1.p1();
-    wxRealPoint b = line2.p1() - line2.p2();
-    wxRealPoint c = line1.p1() - line2.p1();
-
-    const double denominator = a.y * b.x - a.x * b.y;
-    if( denominator == 0 ) return false;
-
-    const double reciprocal = 1 / denominator;
-    const double na = ( b.y * c.x - b.x * c.y ) * reciprocal;
-
-    if( na < INTER_MIN_LIMIT || na > INTER_MAX_LIMIT ) return false;
-
-    const double nb = ( a.x * c.y - a.y * c.x ) * reciprocal;
-    if( nb < INTER_MIN_LIMIT || nb > INTER_MAX_LIMIT ) return false;
-
-    return true;
-}
 
 // GSHHS file format:
 //
@@ -292,6 +272,7 @@ inline bool GshhsReader::crossing1(QLineF trajectWorld )
 {
     return this->gshhsPoly_reader->crossing1(trajectWorld );
 }
+#define GSHHS_SCL    1.0e-6    /* Convert micro-degrees to degrees */
 
 //-------------------------------------------------------------------------------
 

@@ -107,11 +107,15 @@ GshhsPolyCell::GshhsPolyCell( FILE *fpoly_, int x0_, int y0_, PolygonFileHeader 
     y0cell = y0_;
 
     ReadPolygonFile( );
+
+    for(int i=0; i<GSSH_SUBM*GSSH_SUBM; i++)
+        high_res_map[i] = NULL;
 }
 
 GshhsPolyCell::~GshhsPolyCell()
 {
-
+    for(int i=0; i<GSSH_SUBM*GSSH_SUBM; i++)
+        delete high_res_map[i];
 }
 
 void GshhsPolyCell::ReadPoly(contour_list &poly)
@@ -346,71 +350,132 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
-void GshhsPolyReader::crossing1Init()
+inline bool my_intersects( const QLineF &line1, const QLineF &line2 )
 {
-    for(int cxx = 0; cxx<360; cxx++)
-        for(int cy = -90; cy < 90; cy++ ) {
-            GshhsPolyCell *cel = new GshhsPolyCell(fpoly, cxx, cy, &polyHeader);
-            assert( cel );
-            allCells[cxx][cy + 90] = cel;
-        }
+    double x1 = line1.m_p1.x, y1 = line1.m_p1.y, x2 = line1.m_p2.x, y2 = line1.m_p2.y;
+    double x3 = line2.m_p1.x, y3 = line2.m_p1.y, x4 = line2.m_p2.x, y4 = line2.m_p2.y;
+
+    // implementation is based on Graphics Gems III's "Faster Line Segment Intersection"
+    double ax = x2 - x1, ay = y2 - y1;
+    double bx = x3 - x4, by = y3 - y4;
+    double cx = x1 - x3, cy = y1 - y3;
+
+    double denominator = ay * bx - ax * by;
+    if( denominator < 1e-10 ) {
+        if(fabs((y1*ax - ay*x1)*bx - (y3*bx - by*x3)*ax) > 1e-5)
+            return false; /* different intercepts, no intersection */
+
+        return true;
+    }
+
+#  define INTER_LIMIT 1e-7
+
+    const double reciprocal = 1 / denominator;
+    const double na = ( by * cx - bx * cy ) * reciprocal;
+
+    if( na < -INTER_LIMIT || na > 1 + INTER_LIMIT ) return false;
+
+    const double nb = ( ax * cy - ay * cx ) * reciprocal;
+    if( nb < -INTER_LIMIT || nb > 1 + INTER_LIMIT ) return false;
+
+    return true;
 }
 
 bool GshhsPolyReader::crossing1( QLineF trajectWorld )
 {
+    double x1 = trajectWorld.p1().x, y1 = trajectWorld.p1().y;
+    double x2 = trajectWorld.p2().x, y2 = trajectWorld.p2().y;
+
     int cxmin, cxmax, cymax, cymin;
-    cxmin = (int) floor( wxMin( trajectWorld.p1().x, trajectWorld.p2().x ) );
-    cxmax = (int) ceil( wxMax( trajectWorld.p1().x, trajectWorld.p2().x ) );
+    cxmin = (int) floor( GSSH_SUBM*wxMin( x1, x2 ) );
+    cxmax = (int) ceil( GSSH_SUBM*wxMax( x1, x2 ) );
 
     if(cxmin < 0) {
-        cxmin += 360;
-        cxmax += 360;
+        cxmin += GSSH_SUBM*360;
+        cxmax += GSSH_SUBM*360;
     }
 
-    if(cxmax - cxmin > 180) { /* dont go long way around world */
-        cxmin = (int) floor( wxMax( trajectWorld.p1().x, trajectWorld.p2().x ) ) - 360;
-        cxmax = (int) ceil( wxMin( trajectWorld.p1().x, trajectWorld.p2().x ) );
+    if(cxmax - cxmin > GSSH_SUBM*180) { /* dont go long way around world */
+        cxmin = (int) floor( GSSH_SUBM*wxMax( x1, x2 ) ) - GSSH_SUBM*360;
+        cxmax = (int) ceil( GSSH_SUBM*wxMin( x1, x2 ) );
     }
 
-    cymin = (int) floor( wxMin( trajectWorld.p1().y, trajectWorld.p2().y ) );
-    cymax = (int) ceil( wxMax( trajectWorld.p1().y, trajectWorld.p2().y ) );
-    assert(cymin >= -90 && cymax <= 89);
+    cymin = (int) floor( GSSH_SUBM*wxMin( y1, y2 ));
+    cymax = (int) ceil( GSSH_SUBM*wxMax( y1, y2 ));
+    assert(cymin >= -GSSH_SUBM*90 && cymax <= GSSH_SUBM*89);
 
+    // TODO: optimize by traversing only the cells the segment passes through,
+    //       rather than all of the cells which fit in the bounding box,
+    //       this may make a worthwhile difference for longer segments in some cases.
     int cx, cxx, cy;
-
     for( cx = cxmin; cx < cxmax; cx++ ) {
         cxx = cx;
         while( cxx < 0 )
-            cxx += 360;
-        while( cxx >= 360 )
-            cxx -= 360;
+            cxx += GSSH_SUBM*360;
+        while( cxx >= GSSH_SUBM*360 )
+            cxx -= GSSH_SUBM*360;
 
-        assert( cxx >= 0 && cxx <= 359 );
+        assert( cxx >= 0 && cxx < GSSH_SUBM*360 );
 
-        double p1x=trajectWorld.p1().x, p2x = trajectWorld.p2().x;
-        if(cxx < 180) {
-            if(p1x > 180) p1x -= 360;
-            if(p2x > 180) p2x -= 360;
+        if(cxx < GSSH_SUBM*180) {
+            if(x1 > 180) x1 -= 360;
+            if(x2 > 180) x2 -= 360;
         } else {
-            if(p1x < 180) p1x += 360;
-            if(p2x < 180) p2x += 360;
+            if(x1 < 180) x1 += 360;
+            if(x2 < 180) x2 += 360;
         }
 
-        QLineF rtrajectWorld(p1x, trajectWorld.p1().y, p2x, trajectWorld.p2().y);                
+        QLineF rtrajectWorld(x1, y1, x2, y2);
 
         for( cy = cymin; cy < cymax; cy++ ) {
-            GshhsPolyCell *cel = allCells[cxx][cy + 90];
-            contour_list &poly1 = cel->getPoly1();
-            for( unsigned int pi = 0; pi < poly1.size(); pi++ ) {
-                contour &c = poly1[pi];
-                double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
-                for( unsigned int pj = 0; pj < c.size(); pj++ ) {
-                    QLineF l(lx, ly, c[pj].x, c[pj].y);
-                    if( my_intersects( rtrajectWorld, l ) )
-                        return true;
-                    lx = c[pj].x, ly = c[pj].y;
-                }
+            int cxi = cxx/GSSH_SUBM, cyi = (GSSH_SUBM*90+cy)/GSSH_SUBM;
+            GshhsPolyCell *&cel = allCells[cxi][cyi];
+            if(!cel && (mutex1.Lock(), !cel)) {
+                /* load the needed cell from disk */
+                cel = new GshhsPolyCell(fpoly, cxi, cyi-90, &polyHeader);
+                assert( cel );
+                mutex1.Unlock();
             }
+
+            int hash = GSSH_SUBM*(GSSH_SUBM*(90-cyi) + cy - cxi) + cxx;
+            std::vector<QLineF> *&high_res_map = cel->high_res_map[hash];
+            assert(hash >= 0 && hash < GSSH_SUBM*GSSH_SUBM);
+            if(!high_res_map && (mutex2.Lock(), !high_res_map)) {
+                /* build the needed sub cell of line segments from the cell */
+                contour_list &poly1 = cel->getPoly1();
+
+                double minlat = (double)cy/GSSH_SUBM, maxlat = (double)(cy+1)/GSSH_SUBM;
+                double minlon = (double)cxx/GSSH_SUBM, maxlon = (double)(cxx+1)/GSSH_SUBM;
+                high_res_map = new std::vector<QLineF>;
+                for( unsigned int pi = 0; pi < poly1.size(); pi++ ) {
+                    contour &c = poly1[pi];
+                    double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
+                    /* must compute states because sometimes a
+                       segment starts and ends outside our cell, but passes
+                       through it so must be included */
+                    int lstatex = lx < minlon ? -1 : lx > maxlon ? 1 : 0;
+                    int lstatey = ly < minlat ? -1 : ly > maxlat ? 1 : 0;
+                    
+                    for( unsigned int pj = 0; pj < c.size(); pj++ ) {
+                        double cx = c[pj].x, cy = c[pj].y;
+                        int statex = cx < minlon ? -1 : cx > maxlon ? 1 : 0;
+                        int statey = cy < minlat ? -1 : cy > maxlat ? 1 : 0;
+
+                        if((!statex || lstatex != statex) &&
+                           (!statey || lstatey != statey))
+                            high_res_map->push_back(QLineF(lx, ly, cx, cy));
+
+                        lx = cx, ly = cy;
+                        lstatex = statex, lstatey = statey;
+                    }
+                }
+                mutex2.Unlock();
+            }
+
+            for(std::vector<QLineF>::iterator it2 = high_res_map->begin();
+                it2 != high_res_map->end(); it2++)
+                if( my_intersects( rtrajectWorld, *it2 ) )
+                    return true;
         }
     }
 
@@ -968,8 +1033,6 @@ void gshhsCrossesLandInit()
     while( !reader->qualityAvailable[bestQuality] && bestQuality > 0)
         bestQuality--;
     reader->LoadQuality(bestQuality);
-
-    reader->crossing1Init();
 }
 
 bool gshhsCrossesLand(double lat1, double lon1, double lat2, double lon2)
