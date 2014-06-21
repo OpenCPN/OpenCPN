@@ -26,14 +26,18 @@
 
 glTextureDescriptor::glTextureDescriptor()
 {
-    for( int i = 0; i < 10; i++ )
+    for( int i = 0; i < 10; i++ ){
         map_array[i] = NULL;
+        comp_array[i] = NULL;
+    }
 
     tex_name = 0;
 }
 
 glTextureDescriptor::~glTextureDescriptor()
 {
-    for( int i = 0; i < 10; i++ )
+    for( int i = 0; i < 10; i++ ){
         free( map_array[i] );
+        free( comp_array[i] );
+    }
 }

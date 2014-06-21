@@ -78,6 +78,10 @@
 #include "compasswin.h"
 #include "OCPNRegion.h"
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+#endif
+
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
 #include "s57chart.h"               // for ArrayOfS57Obj

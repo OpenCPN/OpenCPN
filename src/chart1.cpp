@@ -101,6 +101,10 @@
 #include "routemanagerdialog.h"
 #include "pluginmanager.h"
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+#endif
+
 #include <wx/image.h>
 #include "wx/apptrait.h"
 
@@ -154,6 +158,7 @@ wxString                  gExe_path;
 
 int                       g_unit_test_1;
 bool                      g_start_fullscreen;
+bool                      g_rebuild_gl_cache;
 
 MyFrame                   *gFrame;
 
@@ -784,6 +789,7 @@ void MyApp::OnInitCmdLine( wxCmdLineParser& parser )
     parser.AddSwitch( _T("p") );
     parser.AddSwitch( _T("no_opengl") );
     parser.AddSwitch( _T("fullscreen") );
+    parser.AddSwitch( _T("rebuild_gl_raster_cache") );
 }
 
 bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
@@ -792,7 +798,8 @@ bool MyApp::OnCmdLineParsed( wxCmdLineParser& parser )
     g_bportable = parser.Found( _T("p") );
     g_bdisable_opengl = parser.Found( _T("no_opengl") );
     g_start_fullscreen = parser.Found( _T("fullscreen") );
-
+    g_rebuild_gl_cache = parser.Found( _T("rebuild_gl_raster_cache") );
+    
     return true;
 }
 
@@ -2107,6 +2114,22 @@ if( 0 == g_memCacheLimit )
     }
 
 //      All set to go.....
+
+    // Process command line option to rebuild cache
+#ifdef ocpnUSE_GL
+extern ocpnGLOptions g_GLOptions;
+
+    if(g_rebuild_gl_cache && g_bopengl &&
+        g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching ) {
+    
+        if( g_FloatingToolbarDialog ) 
+            g_FloatingToolbarDialog->Hide();
+            
+        BuildCompressedCache();
+    
+        }
+#endif
+    
 
 //      establish GPS timeout value as multiple of frame timer
 //      This will override any nonsense or unset value from the config file
@@ -4385,13 +4408,6 @@ int MyFrame::ProcessOptionsDialog( int rr, options* dialog )
        UpdateChartDatabaseInplace( *pWorkDirArray, ( ( rr & FORCE_UPDATE ) == FORCE_UPDATE ),
                 true, *pChartListFileName );
 
-#ifdef ocpnUSE_GL
-        extern ocpnGLOptions g_GLOptions;
-
-        if(g_bopengl && g_GLOptions.m_bTextureCompression &&
-           g_GLOptions.m_bTextureCompressionCaching)
-            BuildCompressedCache();
-#endif
         //    Re-open the last open chart
         int dbii = ChartData->FinddbIndex( chart_file_name );
         ChartsRefresh( dbii, cc1->GetVP() );

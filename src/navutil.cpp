@@ -77,6 +77,10 @@
 #include "cm93.h"
 #endif
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+#endif
+
 //    Statics
 
 extern ChartCanvas      *cc1;
