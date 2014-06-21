@@ -458,6 +458,13 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
                     
                     for( unsigned int pj = 0; pj < c.size(); pj++ ) {
                         double cx = c[pj].x, cy = c[pj].y;
+                        // gshhs data shouldn't, but sometimes contains zero segments
+                        // which enlarges our table, but
+                        // more importantly, the fast segment intersection test
+                        // and doesn't correctly account for it
+                        if(lx == cx && ly == cy)
+                            continue;
+
                         int statex = cx < minlon ? -1 : cx > maxlon ? 1 : 0;
                         int statey = cy < minlat ? -1 : cy > maxlat ? 1 : 0;
 
