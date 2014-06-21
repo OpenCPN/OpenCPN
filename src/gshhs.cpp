@@ -106,17 +106,7 @@ GshhsPolyCell::GshhsPolyCell( FILE *fpoly_, int x0_, int y0_, PolygonFileHeader 
     x0cell = x0_;
     y0cell = y0_;
 
-    display_list = 0;
-
-    ReadPolygonFile( fpoly, x0cell, y0cell, header->pasx, header->pasy, &poly1, &poly2, &poly3,
-            &poly4, &poly5 );
-
-//    int cnt = 0;
-//    for( unsigned int i = 0; i < poly1.size(); i++ )
-//        cnt += poly1.at( i ).size();
-
-    //qWarning() << "Cell " << x0cell << "," << y0cell << ": " << poly1.count() << " poly in p1 - total points:"<<cnt;
-
+    ReadPolygonFile( );
 }
 
 GshhsPolyCell::~GshhsPolyCell()
@@ -124,46 +114,48 @@ GshhsPolyCell::~GshhsPolyCell()
 
 }
 
-#define READ_POLY(POLY) { \
-double X,Y; \
-contour tmp_contour; \
-int num_vertices,num_contours; \
-int value; \
-POLY->clear(); \
-fread(&(num_contours), sizeof(int), 1, polyfile); \
-for (int c= 0; c < num_contours; c++) \
-{ \
-    fread(&(value), sizeof(int), 1, polyfile); /* discarding hole value */ \
-    fread(&(value), sizeof(int), 1, polyfile); \
-    num_vertices=value; \
-    tmp_contour.clear(); \
-    for (int v= 0; v < num_vertices; v++) \
-    { \
-        fread(&(X), sizeof(double), 1, polyfile); \
-        fread(&(Y), sizeof(double), 1, polyfile); \
-        tmp_contour.push_back(wxRealPoint(X*GSHHS_SCL,Y*GSHHS_SCL)); \
-    } \
-    POLY->push_back(tmp_contour); \
-} \
+void GshhsPolyCell::ReadPoly(contour_list &poly)
+{
+    double X,Y;
+    contour tmp_contour;
+    int32_t num_vertices, num_contours;
+    poly.clear();
+    fread(&num_contours, sizeof num_contours, 1, fpoly);
+    for (int c= 0; c < num_contours; c++)
+    {
+        int32_t value;
+        fread(&value, sizeof value, 1, fpoly); /* discarding hole value */
+        fread(&value, sizeof value, 1, fpoly);
+        num_vertices=value;
+
+        tmp_contour.clear();
+        for (int v= 0; v < num_vertices; v++)
+        {
+            fread(&X, sizeof X, 1, fpoly);
+            fread(&Y, sizeof Y, 1, fpoly);
+            tmp_contour.push_back(wxRealPoint(X*GSHHS_SCL,Y*GSHHS_SCL));
+        }
+        poly.push_back(tmp_contour);
+    }
 }
 
-void GshhsPolyCell::ReadPolygonFile( FILE *polyfile, int x, int y, int pas_x, int pas_y,
-        contour_list *p1, contour_list *p2, contour_list *p3, contour_list *p4, contour_list *p5 )
+void GshhsPolyCell::ReadPolygonFile()
 {
     int pos_data;
     int tab_data;
 
-    tab_data = ( x / pas_x ) * ( 180 / pas_y ) + ( y + 90 ) / pas_y;
-    fseek( polyfile, sizeof(PolygonFileHeader) + tab_data * sizeof(int), SEEK_SET );
-    fread( &pos_data, sizeof(int), 1, polyfile );
+    tab_data = ( x0cell / header->pasx ) * ( 180 / header->pasy )
+        + ( y0cell + 90 ) / header->pasy;
+    fseek( fpoly, sizeof(PolygonFileHeader) + tab_data * sizeof(int), SEEK_SET );
+    fread( &pos_data, sizeof(int), 1, fpoly );
 
-    fseek( polyfile, pos_data, SEEK_SET );
+    fseek( fpoly, pos_data, SEEK_SET );
 
-    READ_POLY( p1 )
-    READ_POLY( p2 )
-    READ_POLY( p3 )
-    READ_POLY( p4 )
-    READ_POLY( p5 )
+    ReadPoly( poly1 );
+    ReadPoly( poly2 );
+    ReadPoly( poly3 );
+    ReadPoly( poly4 );
+    ReadPoly( poly5 );
 }
 
 wxPoint GetPixFromLL(ViewPort &vp, double lat, double lon)
@@ -300,7 +292,6 @@ GshhsPolyReader::GshhsPolyReader( int quality )
     }
     currentQuality = -1;
     InitializeLoadQuality( quality );
-    this->abortRequested = false;
 }
 
 //-------------------------------------------------------------------------
@@ -383,6 +374,8 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
 
     cymin = (int) floor( wxMin( trajectWorld.p1().y, trajectWorld.p2().y ) );
     cymax = (int) ceil( wxMax( trajectWorld.p1().y, trajectWorld.p2().y ) );
+    assert(cymin >= -90 && cymax <= 89);
+
     int cx, cxx, cy;
 
     for( cx = cxmin; cx < cxmax; cx++ ) {
@@ -391,6 +384,8 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
             cxx += 360;
         while( cxx >= 360 )
             cxx -= 360;
+
+        assert( cxx >= 0 && cxx <= 359 );
 
         double p1x=trajectWorld.p1().x, p2x = trajectWorld.p2().x;
         if(cxx < 180) {
@@ -404,30 +399,26 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
         QLineF rtrajectWorld(p1x, trajectWorld.p1().y, p2x, trajectWorld.p2().y);                
 
         for( cy = cymin; cy < cymax; cy++ ) {
-            if( cxx >= 0 && cxx <= 359 && cy >= -90 && cy <= 89 ) {
-                GshhsPolyCell *cel = allCells[cxx][cy + 90];
-
-                contour_list &poly1 = cel->getPoly1();
-                for( unsigned int pi = 0; pi < poly1.size(); pi++ ) {
-                    contour &c = poly1[pi];
-                    double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
-                    for( unsigned int pj = 0; pj < c.size(); pj++ ) {
-                        QLineF l(lx, ly, c[pj].x, c[pj].y);
-                        if( my_intersects( rtrajectWorld, l ) )
-                            return true;
-                        lx = c[pj].x, ly = c[pj].y;
-                    }
+            GshhsPolyCell *cel = allCells[cxx][cy + 90];
+            contour_list &poly1 = cel->getPoly1();
+            for( unsigned int pi = 0; pi < poly1.size(); pi++ ) {
+                contour &c = poly1[pi];
+                double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
+                for( unsigned int pj = 0; pj < c.size(); pj++ ) {
+                    QLineF l(lx, ly, c[pj].x, c[pj].y);
+                    if( my_intersects( rtrajectWorld, l ) )
+                        return true;
+                    lx = c[pj].x, ly = c[pj].y;
                 }
             }
         }
     }
+
     return false;
 }
 
 void GshhsPolyReader::readPolygonFileHeader( FILE *polyfile, PolygonFileHeader *header )
 {
-//    int FReadResult = 0;
-
     fseek( polyfile, 0, SEEK_SET );
     fread( header, sizeof(PolygonFileHeader), 1, polyfile );
 }
@@ -441,19 +432,12 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
     pnt.SetPen( wxNullPen );
 
     int cxmin, cxmax, cymax, cymin;  // cellules visibles
-#if 0
-    cxmin = (int) floor( proj->getXmin() );
-    cxmax = (int) ceil( proj->getXmax() );
-    cymin = (int) floor( proj->getYmin() );
-    cymax = (int) ceil( proj->getYmax() );
-#else
     wxBoundingBox bbox = vp.GetBBox();
     cxmin = bbox.GetMinX(), cxmax = bbox.GetMaxX(), cymin = bbox.GetMinY(), cymax = bbox.GetMaxY();
     if(cymin <= 0) cymin--;
     if(cymax >= 0) cymax++;
     if(cxmin <= 0) cxmin--;
     if(cxmax >= 0) cxmax++;
-#endif
     int dx, cx, cxx, cy;
     GshhsPolyCell *cel;
 
@@ -486,7 +470,6 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
 void GshhsPolyReader::drawGshhsPolyMapSeaBorders( ocpnDC &pnt, ViewPort &vp )
 {
     if( !fpoly ) return;
-    this->abortRequested = true;
     int cxmin, cxmax, cymax, cymin;  // cellules visibles
     wxBoundingBox bbox = vp.GetBBox();
     cxmin = bbox.GetMinX(), cxmax = bbox.GetMaxX(), cymin = bbox.GetMinY(), cymax = bbox.GetMaxY();
@@ -515,7 +498,6 @@ void GshhsPolyReader::drawGshhsPolyMapSeaBorders( ocpnDC &pnt, ViewPort &vp )
             }
         }
     }
-    this->abortRequested = false;
 }
 
 int GshhsPolygon::readInt4()
