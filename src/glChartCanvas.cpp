@@ -141,9 +141,9 @@ long g_tex_mem_used;
 
 int g_tile_size;
 
-#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't support vla */
-const
-#endif
+//#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't support vla */
+//const
+//#endif
 int g_mipmap_max_level = 4;
 
 bool glChartCanvas::s_b_useScissorTest;
