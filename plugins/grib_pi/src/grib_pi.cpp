@@ -403,7 +403,7 @@ bool grib_pi::RenderGLOverlay(wxGLContext *pcontext, PlugIn_ViewPort *vp)
 
 void grib_pi::SetCursorLatLon(double lat, double lon)
 {
-    if(m_pGribDialog)
+    if(m_pGribDialog && m_pGribDialog->IsShown())
         m_pGribDialog->SetCursorLatLon(lat, lon);
 }
 
