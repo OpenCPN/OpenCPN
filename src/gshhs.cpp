@@ -350,6 +350,16 @@ void GshhsPolyReader::InitializeLoadQuality( int quality )  // 5 levels: 0=low .
     }
 }
 
+void GshhsPolyReader::crossing1Init()
+{
+    for(int cxx = 0; cxx<360; cxx++)
+        for(int cy = -90; cy < 90; cy++ ) {
+            GshhsPolyCell *cel = new GshhsPolyCell(fpoly, cxx, cy, &polyHeader);
+            assert( cel );
+            allCells[cxx][cy + 90] = cel;
+        }
+}
+
 inline bool my_intersects( const QLineF &line1, const QLineF &line2 )
 {
     double x1 = line1.m_p1.x, y1 = line1.m_p1.y, x2 = line1.m_p2.x, y2 = line1.m_p2.y;
