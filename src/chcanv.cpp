@@ -3110,6 +3110,76 @@ void ChartCanvas::SetQuiltRefChart( int dbIndex )
     m_pQuilt->Invalidate();
 }
 
+//      Verify and adjust the current reference chart,
+//      so that it will not lead to excessive overzoom or underzoom onscreen
+int ChartCanvas::AdjustQuiltRefChart( void )
+{
+    int ret = -1;
+    if(m_pQuilt){
+        ChartBase *pc = ChartData->OpenChartFromDB( m_pQuilt->GetRefChartdbIndex(), FULL_INIT );
+        if( pc ) {
+            double min_ref_scale = pc->GetNormalScaleMin( m_canvas_scale_factor, false );
+            double max_ref_scale = pc->GetNormalScaleMax( m_canvas_scale_factor, m_canvas_width );
+            
+            if( VPoint.chart_scale < min_ref_scale )  {
+                ret = m_pQuilt->AdjustRefOnZoomIn( VPoint.chart_scale );
+            }
+            else if( VPoint.chart_scale > max_ref_scale )  {
+                ret = m_pQuilt->AdjustRefOnZoomOut( VPoint.chart_scale );
+            }
+            else {
+                bool brender_ok = IsChartLargeEnoughToRender( pc, VPoint );
+                
+                int ref_family = pc->GetChartFamily();
+                
+                if( !brender_ok ) {
+                    unsigned int target_stack_index = 0;
+                    int target_stack_index_check = m_pQuilt->GetExtendedStackIndexArray().Index(  m_pQuilt->GetRefChartdbIndex() ); // Lookup
+                    
+                    if( wxNOT_FOUND != target_stack_index_check )
+                        target_stack_index = target_stack_index_check;
+                    
+                    int extended_array_count = m_pQuilt->GetExtendedStackIndexArray().GetCount();
+                    while( ( !brender_ok )  && ( target_stack_index < ( extended_array_count - 1 ) ) ) {
+                        target_stack_index++;
+                        int test_db_index = m_pQuilt->GetExtendedStackIndexArray().Item( target_stack_index );
+                    
+                        if( ( ref_family == ChartData->GetDBChartFamily( test_db_index ) )
+                            && IsChartQuiltableRef( test_db_index ) ) {
+                        //    open the target, and check the min_scale
+                            ChartBase *ptest_chart = ChartData->OpenChartFromDB( test_db_index, FULL_INIT );
+                            if( ptest_chart ){
+                                brender_ok = IsChartLargeEnoughToRender( ptest_chart, VPoint );
+                            }
+                        }
+                    }
+                    
+                    if(brender_ok){             // found a better reference chart
+                        int new_db_index = m_pQuilt->GetExtendedStackIndexArray().Item( target_stack_index );
+                        if( ( ref_family == ChartData->GetDBChartFamily( new_db_index ) )
+                            && IsChartQuiltableRef( new_db_index ) ) {
+                            m_pQuilt->SetReferenceChart( new_db_index );
+                            ret = new_db_index;
+                        }
+                        else
+                            ret =m_pQuilt->GetRefChartdbIndex();
+                    }
+                    else
+                        ret = m_pQuilt->GetRefChartdbIndex();
+                    
+                }
+                else
+                    ret = m_pQuilt->GetRefChartdbIndex();
+            }
+        }
+        else
+            ret = -1;
+    }
+    
+    return ret;
+}
+
+
 void ChartCanvas::UpdateCanvasOnGroupChange( void )
 {
     delete pCurrentStack;

@@ -37,6 +37,7 @@ extern bool g_bIsNewLayer;
 extern int g_LayerIdx;
 extern Routeman *g_pRouteMan;
 extern int g_route_line_width;
+extern int g_track_line_width;
 extern Select *pSelect;
 extern MyConfig *pConfig;
 extern Multiplexer *g_pMUX;
@@ -461,7 +462,10 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         col = pen.GetColour();
         width = pen.GetWidth();
     } else {
-        width = g_route_line_width;
+        if(m_bIsTrack)
+            width = g_track_line_width;
+        else
+            width = g_route_line_width;
         
         if( m_width != STYLE_UNDEFINED ) width = m_width;
         if( m_Colour == wxEmptyString ) {

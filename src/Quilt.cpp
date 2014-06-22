@@ -798,10 +798,9 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
         ChartBase *pc = ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
         if( pc ) {
             int current_db_index = m_refchart_dbIndex;
-            int current_family = m_reference_family;
+            int ref_family = pc->GetChartFamily();
 
             double max_ref_scale = pc->GetNormalScaleMax( m_canvas_scale_factor, m_canvas_width );
-
             if( proposed_scale_onscreen > max_ref_scale ) {
                 m_zout_dbindex = -1;
                 unsigned int target_stack_index = 0;
@@ -815,7 +814,7 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
                     target_stack_index++;
                     int test_db_index = m_extended_stack_array.Item( target_stack_index );
 
-                    if( ( current_family == ChartData->GetDBChartFamily( test_db_index ) )
+                    if( ( ref_family == ChartData->GetDBChartFamily( test_db_index ) )
                             && IsChartQuiltableRef( test_db_index ) ) {
                         //    open the target, and check the min_scale
                         ChartBase *ptest_chart = ChartData->OpenChartFromDB( test_db_index,
@@ -846,7 +845,7 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
 
                 if( !b_ref_set && (target_stack_index < extended_array_count) ) {
                     new_db_index = m_extended_stack_array.Item( target_stack_index );
-                    if( ( current_family == ChartData->GetDBChartFamily( new_db_index ) )
+                    if( ( ref_family == ChartData->GetDBChartFamily( new_db_index ) )
                             && IsChartQuiltableRef( new_db_index ) )
                         SetReferenceChart( new_db_index );
                 }

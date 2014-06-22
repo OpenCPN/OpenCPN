@@ -117,6 +117,7 @@ public:
     int GetnCharts() {
         return m_PatchList.GetCount();
     }
+    
 
     void ComputeRenderRegion( ViewPort &vp, OCPNRegion &chart_region );
     bool RenderQuiltRegionViewOnDC( wxMemoryDC &dc, ViewPort &vp, OCPNRegion &chart_region );

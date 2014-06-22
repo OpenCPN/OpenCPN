@@ -134,7 +134,7 @@ TCWin::TCWin( ChartCanvas *parent, int x, int y, void *pvIDX )
     wxString* TClist = NULL;
     m_tList = new wxListBox( this, -1, wxPoint( sx * 65 / 100, 11 ),
                              wxSize( ( sx * 32 / 100 ), ( sy * 20 / 100 ) ), 0, TClist,
-                             wxLB_SINGLE | wxLB_NEEDED_SB );
+                             wxLB_SINGLE | wxLB_NEEDED_SB | wxLB_HSCROLL  );
 
     //  Measure the size of a generic button, with label
     wxButton *test_button = new wxButton( this, wxID_OK, _( "OK" ), wxPoint( -1, -1), wxDefaultSize );
