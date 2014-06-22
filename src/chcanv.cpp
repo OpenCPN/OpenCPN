@@ -7013,25 +7013,29 @@ wxString _menuText( wxString name, wxString shortcut ) {
 void MenuPrepend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
-    wxFont *qFont = GetOCPNScaledFont(_T("Menu"), 10);
-    if(g_bresponsive){
 #ifdef __WXMSW__
-        item->SetFont(*qFont);
+    wxFont *qFont = GetOCPNScaledFont(_T("Menu"), 10);
+    item->SetFont(*qFont);
 #endif
-    }
     menu->Prepend(item);
 }
 
 void MenuAppend( wxMenu *menu, int id, wxString label)
 {
     wxMenuItem *item = new wxMenuItem(menu, id, label);
-    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
-    if(g_bresponsive){
 #ifdef __WXMSW__
-        item->SetFont(*qFont);
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
+    item->SetFont(*qFont);
 #endif
-    }
     menu->Append(item);
+}
+
+void SetMenuItemFont(wxMenuItem *item)
+{
+#ifdef __WXMSW__
+    wxFont *qFont = GetOCPNScaledFont(_("Menu"), 10);
+    item->SetFont(*qFont);
+#endif
 }
 
 void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
@@ -7228,9 +7232,12 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
 
     //  ChartGroup SubMenu
     wxMenuItem* subItemChart = contextMenu->AppendSubMenu( subMenuChart, _("Chart Groups") );
+    SetMenuItemFont(subItemChart);
+    
     if( g_pGroupArray->GetCount() ) {
-        subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE, _("All Active Charts") );
-
+        wxMenuItem* subItem0 = subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE, _("All Active Charts") );
+        SetMenuItemFont(subItem0);
+        
         for( unsigned int i = 0; i < g_pGroupArray->GetCount(); i++ ) {
             subMenuChart->AppendRadioItem( ID_DEF_MENU_GROUPBASE + i + 1,
                                          g_pGroupArray->Item( i )->m_group_name );
