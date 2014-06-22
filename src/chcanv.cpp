@@ -7624,8 +7624,24 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
                         bg.Green(), fg.Red(), fg.Blue(), fg.Green() );
         objText += _T("\"");
         objText += face;
-        objText += _T("\">");
+        objText += _T("\" ");
 
+        int points = dFont->GetPointSize();
+        wxString ss;
+        switch (points){
+            case 8:  ss = _T("size=\"2\""); break;
+            case 10: ss = _T("size=\"3\""); break;
+            case 12: ss = _T("size=\"3\""); break;
+            case 14: ss = _T("size=\"4\""); break;
+            case 16: ss = _T("size=\"4\""); break;
+            case 18: ss = _T("size=\"5\""); break;
+            case 20: ss = _T("size=\"6\""); break;
+            default: ss = _T(" "); break;
+        }
+        
+        objText += ss;
+        objText += _T(">");
+        
         if( overlay_rule_list && CHs57_Overlay) {
             objText << CHs57_Overlay->CreateObjDescriptions( overlay_rule_list );
             objText << _T("<hr noshade>");
