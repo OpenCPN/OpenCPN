@@ -597,7 +597,6 @@ RouteProp::~RouteProp()
     delete m_RouteDestCtl;
 
     delete m_StartTimeCtl;
-    //    delete pDispTz;
 
     delete m_wpList;
 
@@ -729,11 +728,21 @@ void RouteProp::CreateControls()
     wxString pDispTimeZone[] = { _("UTC"), _("Local @ PC"), _("LMT @ Location") };
     wxBoxSizer* bSizer2;
     bSizer2 = new wxBoxSizer( wxHORIZONTAL );
-    pDispTz = new wxRadioBox( itemDialog1, ID_TIMEZONESEL, _("Times shown as"), wxDefaultPosition,
-            wxDefaultSize, 3, pDispTimeZone, 3, wxRA_SPECIFY_COLS );
-    bSizer2->Add( pDispTz, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM,
-            5 );
 
+    wxStaticBox* itemStaticBoxTZ = new wxStaticBox( itemDialog1, wxID_ANY,  _("Times shown as") );
+    wxStaticBoxSizer* itemStaticBoxSizerTZ = new wxStaticBoxSizer( itemStaticBoxTZ, wxHORIZONTAL );
+    bSizer2->Add( itemStaticBoxSizerTZ, 0, wxEXPAND | wxALL, 5 );
+    
+    
+    m_prb_tzUTC = new wxRadioButton(itemDialog1, ID_TIMEZONESEL_UTC, _("UTC"), wxDefaultPosition, wxDefaultSize, wxRB_GROUP);
+    itemStaticBoxSizerTZ->Add( m_prb_tzUTC, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM,5 );
+ 
+    m_prb_tzLocal = new wxRadioButton(itemDialog1, ID_TIMEZONESEL_LOCAL, _("Local @ PC"));
+    itemStaticBoxSizerTZ->Add( m_prb_tzLocal, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM,5 );
+
+    m_prb_tzLMT = new wxRadioButton(itemDialog1, ID_TIMEZONESEL_LMT, _("LMT @ Location"));
+    itemStaticBoxSizerTZ->Add( m_prb_tzLMT, 0, wxALIGN_LEFT | wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT | wxBOTTOM,5 );
+    
     m_staticText1 = new wxStaticText( itemDialog1, wxID_ANY, _("Color:"), wxDefaultPosition, wxDefaultSize,
             0 );
     m_staticText1->Wrap( -1 );
@@ -849,6 +858,11 @@ void RouteProp::CreateControls()
 
     m_pListSizer->Add( m_wpList, 2, wxEXPAND | wxALL, 5 );
 
+    //Set the maximum size of the entire  dialog
+    int width, height;
+    ::wxDisplaySize( &width, &height );
+    SetSizeHints( -1, -1, width-100, height-100 );
+    
     Connect( wxEVT_COMMAND_LIST_ITEM_RIGHT_CLICK,
             wxListEventHandler(RouteProp::OnRoutePropRightClick), NULL, this );
     Connect( wxEVT_COMMAND_MENU_SELECTED,
@@ -857,13 +871,33 @@ void RouteProp::CreateControls()
     //  Fetch any config file values
     m_planspeed = g_PlanSpeed;
 
-    pDispTz->SetSelection( g_StartTimeTZ );
+    if( g_StartTimeTZ == 0 )
+        m_prb_tzUTC->SetValue( true);
+    else if( g_StartTimeTZ == 1 )
+        m_prb_tzLocal->SetValue( true);
+    else if( g_StartTimeTZ == 2 )
+        m_prb_tzLMT->SetValue( true);
+    
 
     SetColorScheme( (ColorScheme) 0 );
 
+    
 }
 
+int RouteProp::GetTZSelection(void)
+{
+    if(m_prb_tzUTC && m_prb_tzUTC->GetValue())
+        return 0;
 
+    else if(m_prb_tzLocal && m_prb_tzLocal->GetValue())
+        return 1;
+    
+    else if(m_prb_tzLMT && m_prb_tzLMT->GetValue())
+        return 2;
+    
+    else
+        return 0;
+}
 void RouteProp::OnRoutepropListClick( wxListEvent& event )
 {
     long itemno = 0;
@@ -997,8 +1031,14 @@ void RouteProp::SetRouteAndUpdate( Route *pR, bool only_points )
         }
 
         m_pRoute = pR;
-
-        pDispTz->SetSelection( m_tz_selection );
+        
+        if( g_StartTimeTZ == 0 )
+            m_prb_tzUTC->SetValue( true);
+        else if( g_StartTimeTZ == 1 )
+            m_prb_tzLocal->SetValue( true);
+        else if( g_StartTimeTZ == 2 )
+            m_prb_tzLMT->SetValue( true);
+        
 
         if( m_pRoute ) {
             //    Calculate  LMT offset from the first point in the route
@@ -1113,7 +1153,7 @@ bool RouteProp::UpdateProperties()
 
     m_TotalDistCtl->SetValue( _T("") );
     m_TimeEnrouteCtl->SetValue( _T("") );
-    int tz_selection = pDispTz->GetSelection();
+    int tz_selection = GetTZSelection();
     long LMT_Offset = 0;         // offset in seconds from UTC for given location (-1 hr / 15 deg W)
 
     m_SplitButton->Enable( false );
@@ -1571,7 +1611,7 @@ bool RouteProp::SaveChanges( void )
     //  Save the current planning speed
     g_PlanSpeed = m_planspeed;
     g_StartTime = m_starttime;    // both always UTC
-    g_StartTimeTZ = pDispTz->GetSelection();
+    g_StartTimeTZ = GetTZSelection();
     m_StartTimeCtl->Clear();
 
     if( m_pRoute && !m_pRoute->m_bIsInLayer ) {
@@ -1632,7 +1672,7 @@ void RouteProp::OnStartTimeCtlUpdated( wxCommandEvent& event )
 {
     //  Fetch the value, and see if it is a "reasonable" time
     wxString stime = m_StartTimeCtl->GetValue();
-    int tz_selection = pDispTz->GetSelection();
+    int tz_selection = GetTZSelection();
 
     wxDateTime d;
     if( stime.StartsWith( _T(">") ) ) {
