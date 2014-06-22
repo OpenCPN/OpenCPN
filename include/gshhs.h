@@ -45,7 +45,7 @@
 #include "ocpn_types.h"
 #include "ocpndc.h"
 
-#ifdef __WXMSW__
+#ifdef __MSVC__
 #pragma warning(disable: 4251)   // relates to std::string fpath
 #endif
 
@@ -71,10 +71,6 @@ public:
     wxRealPoint m_p1, m_p2;
 };
 
-#define GSHHS_SCL    1.0e-6    /* Convert micro-degrees to degrees */
-#  define INTER_MAX_LIMIT 1.0000001
-#  define INTER_MIN_LIMIT -0.0000001
-
 struct PolygonFileHeader {
     int version;
     int pasx;
@@ -92,6 +88,7 @@ struct PolygonFileHeader {
 
 typedef std::vector<wxRealPoint> contour;
 typedef std::vector<contour> contour_list;
+#define GSSH_SUBM 16 // divide each cell to 16x16 sub cells
 
 //==========================================================================
 
@@ -108,6 +105,10 @@ public:
     std::vector<QLineF> * getCoasts() { return &coasts; }
     contour_list &getPoly1() { return poly1; }
 
+    /* we remap the segments into a high resolution map to
+       greatly reduce intersection testing time */
+    std::vector<QLineF> *high_res_map[GSSH_SUBM*GSSH_SUBM];
+
 private:
     int nbpoints;
     int x0cell, y0cell;
@@ -118,15 +119,12 @@ private:
     PolygonFileHeader *header;
     contour_list poly1, poly2, poly3, poly4, poly5;
 
-    unsigned int display_list;
-
     void DrawPolygonFilled( ocpnDC &pnt, contour_list * poly, double dx, ViewPort &vp,
             wxColor color );
     void DrawPolygonContour( ocpnDC &pnt, contour_list * poly, double dx, ViewPort &vp );
 
-    void ReadPolygonFile( FILE *polyfile, int x, int y, int pas_x, int pas_y, contour_list *p1,
-            contour_list *p2, contour_list *p3, contour_list *p4, contour_list *p5 );
-
+    void ReadPoly( contour_list &poly );
+    void ReadPolygonFile( );
 };
 
 class GshhsPolyReader {
@@ -140,7 +138,6 @@ public:
     void drawGshhsPolyMapSeaBorders( ocpnDC &pnt, ViewPort &vp );
 
     void InitializeLoadQuality( int quality ); // 5 levels: 0=low ... 4=full
-    bool crossing( QLineF traject, QLineF trajectWorld ) const;
     void crossing1Init();
     bool crossing1( QLineF trajectWorld );
     int currentQuality;
@@ -152,75 +149,10 @@ private:
     GshhsPolyCell * allCells[360][180];
 
     PolygonFileHeader polyHeader;
-
-    bool my_intersects( QLineF line1, QLineF line2 ) const;
     void readPolygonFileHeader( FILE *polyfile, PolygonFileHeader *header );
-    bool abortRequested;
+
+    wxMutex mutex1, mutex2;
 };
-
-inline bool GshhsPolyReader::crossing( QLineF traject, QLineF trajectWorld ) const
-{
-#if 0
-    if( !proj->isInBounderies( traject.p1().x, traject.p1().y )
-            && !proj->isInBounderies( traject.p2().x, traject.p2().y ) ) return false;
-#endif
-    //wxRealPoint dummy;
-    int cxmin, cxmax, cymax, cymin;
-    cxmin = (int) floor( wxMin( trajectWorld.p1().x, trajectWorld.p2().x ) );
-    cxmax = (int) ceil( wxMax( trajectWorld.p1().x, trajectWorld.p2().x ) );
-    cymin = (int) floor( wxMin( trajectWorld.p1().y, trajectWorld.p2().y ) );
-    cymax = (int) ceil( wxMax( trajectWorld.p1().y, trajectWorld.p2().y ) );
-    int cx, cxx, cy;
-    GshhsPolyCell *cel;
-
-    for( cx = cxmin; cx < cxmax; cx++ ) {
-        cxx = cx;
-        while( cxx < 0 )
-            cxx += 360;
-        while( cxx >= 360 )
-            cxx -= 360;
-
-        for( cy = cymin; cy < cymax; cy++ ) {
-            if( this->abortRequested ) return false;
-            if( cxx >= 0 && cxx <= 359 && cy >= -90 && cy <= 89 ) {
-                if( this->abortRequested ) return false;
-                if( allCells[cxx][cy + 90] == NULL ) continue;
-                cel = allCells[cxx][cy + 90];
-                std::vector < QLineF > *coasts = cel->getCoasts();
-                if( coasts->empty() ) continue;
-                for( unsigned int cs = 0; cs < coasts->size(); cs++ ) {
-                    if( this->abortRequested ) {
-                        return false;
-                    }
-                    if( my_intersects( traject, coasts->at( cs ) ) )
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
-}
-
-inline bool GshhsPolyReader::my_intersects( QLineF line1, QLineF line2 ) const
-{
-    // implementation is based on Graphics Gems III's "Faster Line Segment Intersection"
-    wxRealPoint a = line1.p2() - line1.p1();
-    wxRealPoint b = line2.p1() - line2.p2();
-    wxRealPoint c = line1.p1() - line2.p1();
-
-    const double denominator = a.y * b.x - a.x * b.y;
-    if( denominator == 0 ) return false;
-
-    const double reciprocal = 1 / denominator;
-    const double na = ( b.y * c.x - b.x * c.y ) * reciprocal;
-
-    if( na < INTER_MIN_LIMIT || na > INTER_MAX_LIMIT ) return false;
-
-    const double nb = ( a.x * c.y - a.y * c.x ) * reciprocal;
-    if( nb < INTER_MIN_LIMIT || nb > INTER_MAX_LIMIT ) return false;
-
-    return true;
-}
 
 // GSHHS file format:
 //
@@ -300,7 +232,7 @@ public:
 
     int getQuality() { return quality; }
 
-    bool crossing( QLineF traject, QLineF trajectWorld ) const;
+//    bool crossing( QLineF traject, QLineF trajectWorld ) const;
     void crossing1Init();
     bool crossing1( QLineF trajectWorld );
     int ReadPolyVersion();
@@ -331,11 +263,6 @@ private:
     void clearLists();
 };
 
-inline bool GshhsReader::crossing( QLineF traject, QLineF trajectWorld ) const
-{
-    return this->gshhsPoly_reader->crossing( traject, trajectWorld );
-}
-
 inline void GshhsReader::crossing1Init()
 {
     return this->gshhsPoly_reader->crossing1Init();
@@ -345,6 +272,7 @@ inline bool GshhsReader::crossing1(QLineF trajectWorld )
 {
     return this->gshhsPoly_reader->crossing1(trajectWorld );
 }
+#define GSHHS_SCL    1.0e-6    /* Convert micro-degrees to degrees */
 
 //-------------------------------------------------------------------------------
 

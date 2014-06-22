@@ -147,7 +147,6 @@ private:
     int m_FileIntervalIndex;
     bool m_InterpolateMode;
     bool m_pNowMode;
-    bool m_pMovingGrib;
 
     wxString         m_file_name;   /* selected file */
     wxString         m_grib_dir;
