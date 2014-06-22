@@ -3545,11 +3545,33 @@ void MyFrame::UpdateAllFonts()
         PositionConsole();
     }
 
+    //  Close and destroy any persistent dialogs, so that new fonts will be utilized
     if( g_pais_query_dialog_active ) {
         g_pais_query_dialog_active->Destroy();
         g_pais_query_dialog_active = NULL;
     }
 
+    if( pRoutePropDialog ) {
+        pRoutePropDialog->Destroy();
+        pRoutePropDialog = NULL;
+    }
+    
+    if( pTrackPropDialog ) {
+        pTrackPropDialog->Destroy();
+        pTrackPropDialog = NULL;
+    }
+    
+    if( pMarkInfoDialog ) {
+        pMarkInfoDialog->Destroy();
+        pMarkInfoDialog = NULL;
+    }
+
+    if( g_pObjectQueryDialog ) {
+        g_pObjectQueryDialog->Destroy();
+        g_pObjectQueryDialog = NULL;
+    }
+    
+       
     if( pWayPointMan ) pWayPointMan->ClearRoutePointFonts();
 
     cc1->Refresh();
