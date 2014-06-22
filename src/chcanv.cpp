@@ -77,6 +77,7 @@
 #include "SendToGpsDlg.h"
 #include "compasswin.h"
 #include "OCPNRegion.h"
+#include "gshhs.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"

@@ -37,7 +37,7 @@
 
 #include "chart1.h"                 // for enum types
 #include "ocpndc.h"
-#include "gshhs.h"
+//#include "gshhs.h"
 #include "undo.h"
 
 #include "ocpCursor.h"
@@ -51,7 +51,7 @@
 #include "emboss_data.h"
 
 class wxGLContext;
-
+class GSHHSChart;
 
 //    Useful static routines
 void ShowAISTargetQueryDialog(wxWindow *parent, int mmsi);

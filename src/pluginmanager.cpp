@@ -55,6 +55,7 @@
 #include "s52plib.h"
 #include "ocpn_pixel.h"
 #include "s52utils.h"
+#include "gshhs.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"

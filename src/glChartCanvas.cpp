@@ -47,6 +47,7 @@
 #include "navutil.h"
 #include "TexFont.h"
 #include "glTexCache.h"
+#include "gshhs.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
