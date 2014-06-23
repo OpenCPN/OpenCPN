@@ -11436,11 +11436,14 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
                   wxColour text_color, wxColour uitext, wxColour udkrd, wxColour gridline )
 {
     ColorScheme cs = cc1->GetColorScheme();
-    if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB ) ctrl->SetBackgroundColour(
-            back_color );
-    else
-        ctrl->SetBackgroundColour( wxNullColour );
+    
+    //  If the color scheme is DAY or RGB, use the default platform native colour for backgrounds
+    wxColour window_back_color = wxNullColour;
+    if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
+        window_back_color = back_color;
 
+    ctrl->SetBackgroundColour( window_back_color );
+    
 #ifdef __WXMAC__
 #if wxCHECK_VERSION(2,9,0)
     if( cs != GLOBAL_COLOR_SCHEME_DAY && cs != GLOBAL_COLOR_SCHEME_RGB )
@@ -11483,7 +11486,7 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
             ( (wxComboBox*) win )->SetBackgroundColour( col );
 
         else if( win->IsKindOf( CLASSINFO(wxScrolledWindow) ) )
-            ( (wxScrolledWindow*) win )->SetBackgroundColour( col1 );
+            ( (wxScrolledWindow*) win )->SetBackgroundColour( window_back_color );
 
         else if( win->IsKindOf( CLASSINFO(wxGenericDirCtrl) ) )
             ( (wxGenericDirCtrl*) win )->SetBackgroundColour( col1 );
@@ -11495,7 +11498,7 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
             ( (wxTreeCtrl*) win )->SetBackgroundColour( col );
 
         else if( win->IsKindOf( CLASSINFO(wxRadioButton) ) )
-            ( (wxRadioButton*) win )->SetBackgroundColour( col1 );
+            ( (wxRadioButton*) win )->SetBackgroundColour( window_back_color );
 
         else if( win->IsKindOf( CLASSINFO(wxNotebook) ) ) {
             ( (wxNotebook*) win )->SetBackgroundColour( col1 );
@@ -11507,7 +11510,7 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
         }
 
         else if( win->IsKindOf( CLASSINFO(wxToggleButton) ) ) {
-            ( (wxToggleButton*) win )->SetBackgroundColour( col1 );
+            ( (wxToggleButton*) win )->SetBackgroundColour( window_back_color );
         }
 
         else if( win->IsKindOf( CLASSINFO(wxPanel) ) ) {
