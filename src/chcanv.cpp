@@ -3145,7 +3145,7 @@ int ChartCanvas::AdjustQuiltRefChart( void )
                         target_stack_index = target_stack_index_check;
                     
                     int extended_array_count = m_pQuilt->GetExtendedStackIndexArray().GetCount();
-                    while( ( !brender_ok )  && ( target_stack_index < ( extended_array_count - 1 ) ) ) {
+                    while( ( !brender_ok )  && ( (int)target_stack_index < ( extended_array_count - 1 ) ) ) {
                         target_stack_index++;
                         int test_db_index = m_pQuilt->GetExtendedStackIndexArray().Item( target_stack_index );
                     
@@ -3734,7 +3734,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
     float cog_rad = atan2f( (float) ( lPredPoint.y - lShipMidPoint.y ),
                             (float) ( lPredPoint.x - lShipMidPoint.x ) );
-    cog_rad += PI;
+    cog_rad += (float)PI;
 
     float lpp = sqrtf( powf( (float) (lPredPoint.x - lShipMidPoint.x), 2) +
                        powf( (float) (lPredPoint.y - lShipMidPoint.y), 2) );
@@ -3761,7 +3761,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 
     float icon_rad = atan2f( (float) ( osd_head_point.y - lShipMidPoint.y ),
                              (float) ( osd_head_point.x - lShipMidPoint.x ) );
-    icon_rad += PI;
+    icon_rad += (float)PI;
 
     if( pSog < 0.2 ) icon_rad = ( ( icon_hdt + 90. ) * PI / 180. ) + GetVP().rotation;
 
@@ -3970,23 +3970,23 @@ void CalcGridSpacing( float WindowDegrees, float& MajorSpacing, float&MinorSpaci
     // [0] width or height of the displayed chart in degrees
     // [1] spacing between major grid lines in degrees
     // [2] spacing between minor grid lines in degrees
-    const float lltab[][3] = { { 180.0, 90.0, 30.0 }, { 90.0, 45.0, 15.0 }, { 60.0, 30.0, 10.0 }, {
-            20.0, 10.0, 2.0
-        }, { 10.0, 5.0, 1.0 }, { 4.0, 2.0, 30.0 / 60.0 }, {
-            2.0, 1.0, 20.0
-            / 60.0
-        }, { 1.0, 0.5, 10.0 / 60.0 }, { 30.0 / 60.0, 15.0 / 60.0, 5.0 / 60.0 }, {
-            20.0
-            / 60.0, 10.0 / 60.0, 2.0 / 60.0
-        }, { 10.0 / 60.0, 5.0 / 60.0, 1.0 / 60.0 }, {
-            4.0
-            / 60.0, 2.0 / 60.0, 0.5 / 60.0
-        }, { 2.0 / 60.0, 1.0 / 60.0, 0.2 / 60.0 }, {
-            1.0 / 60.0,
-            0.5 / 60.0, 0.1 / 60.0
-        }, { 0.4 / 60.0, 0.2 / 60.0, 0.05 / 60.0 }, {
-            0.0, 0.1 / 60.0,
-            0.02 / 60.0
+    const float lltab[][3] = { { 180.0f, 90.0f, 30.0f }, { 90.0f, 45.0f, 15.0f }, { 60.0f, 30.0f, 10.0f }, {
+            20.0f, 10.0f, 2.0f
+        }, { 10.0f, 5.0f, 1.0f }, { 4.0f, 2.0f, 30.0f / 60.0f }, {
+            2.0f, 1.0f, 20.0f
+            / 60.0f
+        }, { 1.0f, 0.5f, 10.0f / 60.0f }, { 30.0f / 60.0f, 15.0f / 60.0f, 5.0f / 60.0f }, {
+            20.0f
+            / 60.0f, 10.0f / 60.0f, 2.0f / 60.0f
+        }, { 10.0f / 60.0f, 5.0f / 60.0f, 1.0f / 60.0f }, {
+            4.0f
+            / 60.0f, 2.0f / 60.0f, 0.5f / 60.0f
+        }, { 2.0f / 60.0f, 1.0f / 60.0f, 0.2f / 60.0f }, {
+            1.0f / 60.0f,
+            0.5f / 60.0f, 0.1f / 60.0f
+        }, { 0.4f / 60.0f, 0.2f / 60.0f, 0.05f / 60.0f }, {
+            0.0f, 0.1f / 60.0f,
+            0.02f / 60.0f
         } // indicates last entry
     };
 

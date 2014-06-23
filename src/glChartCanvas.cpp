@@ -384,7 +384,6 @@ void BuildCompressedCache()
             ChartData->DeleteCacheChart(pchart);
         }
     }
-skip:
 
     /* wait for workers to finish, and clean up after then */
     if(ramonly) {
@@ -736,7 +735,7 @@ void glChartCanvas::SetupOpenGL()
 #ifdef ocpnUSE_GLES /* gles requires all levels */
     m_b_useFBOStencil = QueryExtension( "GL_OES_packed_depth_stencil" );
 #else
-    m_b_useFBOStencil = QueryExtension( "GL_EXT_packed_depth_stencil" );
+    m_b_useFBOStencil = QueryExtension( "GL_EXT_packed_depth_stencil" ) == GL_TRUE;
 #endif
 
     //      Maybe build FBO(s)
@@ -975,7 +974,6 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
 {
     ocpnDC dc(*this);
 
-    Route *active_route, *m_active_track;
     for(wxRouteListNode *node = pRouteList->GetFirst();
         node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
@@ -1362,7 +1360,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     float cog_rad = atan2f( (float) ( lPredPoint.y - lGPSPoint.y ),
                             (float) ( lPredPoint.x - lGPSPoint.x ) );
-    cog_rad += PI;
+    cog_rad += (float)PI;
 
     float lpp = sqrtf( powf( (float) (lPredPoint.x - lGPSPoint.x), 2) +
                        powf( (float) (lPredPoint.y - lGPSPoint.y), 2) );
@@ -1385,7 +1383,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     float icon_rad = atan2( (float) ( osd_head_point.y - lGPSPoint.y ),
                             (float) ( osd_head_point.x - lGPSPoint.x ) );
-    icon_rad += PI;
+    icon_rad += (float)PI;
 
     if( pSog < 0.2 ) icon_rad = ( ( icon_hdt + 90. ) * PI / 180. ) + cc1->GetVP().rotation;
 
@@ -1589,7 +1587,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         float r = circle_rad+1;
         glColor4ub(0, 0, 0, 255);
         glBegin(GL_POLYGON);
-        for( float a = 0; a <= 2 * PI; a += 2 * PI / 12 )
+        for( float a = 0; a <= 2 * (float)PI; a += 2 * (float)PI / 12 )
             glVertex2f( cx + r * sinf( a ), cy + r * cosf( a ) );
         glEnd();
 
@@ -1597,7 +1595,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         glColor4ub(255, 255, 255, 255);
         
         glBegin(GL_POLYGON);
-        for( float a = 0; a <= 2 * M_PI; a += 2 * M_PI / 12 )
+        for( float a = 0; a <= 2 * (float)M_PI; a += 2 * (float)M_PI / 12 )
             glVertex2f( cx + r * sinf( a ), cy + r * cosf( a ) );
         glEnd();       
         glPopAttrib();            // restore state
@@ -1966,8 +1964,6 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
 
     //    Using a 2D loop, iterate thru the texture tiles of the chart
     //    For each tile, is it (1) needed and (2) present?
-
-    int key;
 
     rect.y = 0;
     for( int i = 0; i < ny_tex; i++ ) {
