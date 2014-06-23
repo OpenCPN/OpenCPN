@@ -3202,8 +3202,9 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( cc1 ) {
         cc1->SetCursor( wxCURSOR_WAIT );
 
-        cc1->Refresh( false );
+        cc1->Refresh( true );
         cc1->Update();
+        wxYield();
     }
 
     //   Save the saved Screen Brightness
