@@ -903,10 +903,10 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 
 bool glChartCanvas::PurgeChartTextures( ChartBase *pc )
 {
-    //    Look for the chart texture factory for this chart
+    //    Look for the texture factory for this chart
     ChartPointerHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( pc );
     
-    //    Not Found ?
+    //    Found ?
     if( ittf != m_chart_texfactory_hash.end() ) {
         glTexFactory *pTexFact = m_chart_texfactory_hash[pc];
         
@@ -914,10 +914,13 @@ bool glChartCanvas::PurgeChartTextures( ChartBase *pc )
             pTexFact->DeleteAllTextures();
             pTexFact->DeleteAllDescriptors();
             
+            m_chart_texfactory_hash.erase(ittf);                // This chart pointer index is becoming invalid
             return true;
         }
-        else
+        else {
+            m_chart_texfactory_hash.erase(ittf);
             return false;
+        }
     }
     else
         return false;
