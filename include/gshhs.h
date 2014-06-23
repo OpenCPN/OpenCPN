@@ -233,7 +233,6 @@ public:
     int getQuality() { return quality; }
 
 //    bool crossing( QLineF traject, QLineF trajectWorld ) const;
-    void crossing1Init();
     bool crossing1( QLineF trajectWorld );
     int ReadPolyVersion();
     bool qualityAvailable[6];
@@ -262,11 +261,6 @@ private:
             bool isClosed );
     void clearLists();
 };
-
-inline void GshhsReader::crossing1Init()
-{
-    return this->gshhsPoly_reader->crossing1Init();
-}
 
 inline bool GshhsReader::crossing1(QLineF trajectWorld )
 {
