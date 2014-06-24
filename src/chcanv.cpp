@@ -1486,6 +1486,12 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_pBrightPopup = NULL;
     m_pQuilt = new Quilt();
+    
+#ifdef ocpnUSE_GL
+    if ( !g_bdisable_opengl )
+        m_pQuilt->EnableHighDefinitionZoom( true );
+#endif    
+        
 }
 
 ChartCanvas::~ChartCanvas()
