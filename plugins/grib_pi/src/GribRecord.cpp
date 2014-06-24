@@ -324,28 +324,31 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
     // recopie les champs de bits
     int size = Ni*Nj;
     double *data = new double[size];
+
+    zuchar *BMSbits = NULL;
+    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL)
+        BMSbits = new zuchar[Ni*Nj/8];
+
     for (int i=0; i<Ni; i++)
         for (int j=0; j<Nj; j++) {
-            double data1 = rec1.data[(j+rec1offj)*rec1.Ni + i+rec1offi];
-            double data2 = rec2.data[(j+rec2offj)*rec2.Ni + i+rec2offi];
+            int in=j*Ni+i;
+            int i1 = (j+rec1offj)*rec1.Ni + i+rec1offi;
+            int i2 = (j+rec2offj)*rec2.Ni + i+rec2offi;
+            double data1 = rec1.data[i1], data2 = rec2.data[i2];
             if(data1 == GRIB_NOTDEF || data2 == GRIB_NOTDEF)
-                data[j*Ni+i] = GRIB_NOTDEF;
+                data[in] = GRIB_NOTDEF;
             else
-                data[j*Ni+i] = (1-d)*data1 + d*data2;
+                data[in] = (1-d)*data1 + d*data2;
+
+            if(BMSbits) {
+                int b1 = rec1.BMSbits[i1>>3] & (1<<i1&7);
+                int b2 = rec2.BMSbits[i2>>3] & (1<<i2&7);
+                if(b1 && b2)
+                    BMSbits[in>>3] |= (1<<in)&7;
+                else
+                    BMSbits[in>>3] &= ~(1<<in)&7;
+            }
         }
-
-
-// TODO fix this
-#if 0
-    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) {
-//            int size1 = rec1.sectionSize3-6, size2 = rec2.sectionSize3-6;
-        int size = Ni*Nj;
-        zuchar *BMSbits = new zuchar[size];
-        for (int i=0; i<size; i++)
-            BMSbits[i] = 0;// todo: fix this rec1.BMSbits[i+rec1off] & rec2.BMSbits[i+rec2off];
-    } else
-        BMSbits = NULL;
-#endif
 
     /* should maybe update strCurDate ? */
 
@@ -358,6 +361,7 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
     ret->Lo1 = Lo1, ret->Lo2 = Lo2;
 
     ret->data = data;
+    ret->BMSbits = BMSbits;
 
     ret->latMin = wxMin(La1, La2), ret->latMax = wxMax(La1, La2);
     ret->lonMin = Lo1, ret->lonMax = Lo2;
@@ -387,7 +391,6 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
         // could also make sure lat and lon min/max are the same...
         return NULL;
  
-    /* TODO: for wave direction we need to do something else because 360 wraps will mess it up */
     // recopie les champs de bits
     int size = Ni*Nj;
     double *datax = new double[size], *datay = new double[size];
@@ -418,16 +421,6 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
         }
     }
 
-#if 0
-    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) {
-//            int size1 = rec1.sectionSize3-6, size2 = rec2.sectionSize3-6;
-        int size = Ni*Nj;
-        BMSbits = new zuchar[size];
-        for (int i=0; i<size; i++)
-            BMSbits[i] = 0;// todo: fix this rec1.BMSbits[i+rec1off] & rec2.BMSbits[i+rec2off];
-    } else
-        BMSbits = NULL;
-#endif
     /* should maybe update strCurDate ? */
 
     GribRecord *ret = new GribRecord;
@@ -440,6 +433,9 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
     ret->Lo1 = Lo1, ret->Lo2 = Lo2;
     
     ret->data = datax;
+    ret->BMSbits = NULL;
+    ret->hasBMS = false; // I don't think wind or current ever use BMS correct?
+
 
     ret->latMin = wxMin(La1, La2), ret->latMax = wxMax(La1, La2);
     ret->lonMin = Lo1, ret->lonMax = Lo2;
@@ -447,6 +443,8 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
     rety = new GribRecord;
     *rety = *ret;
     rety->data = datay;
+    rety->BMSbits = NULL;
+    rety->hasBMS = false;
 
     return ret;
 }
