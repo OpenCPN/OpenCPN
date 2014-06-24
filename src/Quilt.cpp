@@ -189,6 +189,7 @@ Quilt::Quilt()
     m_pBM = NULL;
     m_bcomposed = false;
     m_bbusy = false;
+    m_b_hidef = false;
 
     m_pcandidate_array = new ArrayOfSortedQuiltCandidates( CompareScales );
     m_nHiLiteIndex = -1;
@@ -865,6 +866,24 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
 
     //  Reset "lost" chart logic
     m_lost_refchart_dbIndex = -1;
+   
+    //  In high definition zoom mode, if all charts in the quilt are rasters, we switch to a larger scale chart sooner.
+    //  Presumably, we can do this if underzoomed quilt patches render quickly, as they do in OpenGL.
+    double zoom_def = 1.0;
+    if( m_b_hidef ) {
+        bool no_hidef = false;
+        ChartBase *pch = GetFirstChart();
+        while( pch ) {
+            if( pch->GetChartFamily() != CHART_FAMILY_RASTER ) {
+                no_hidef = true;
+                break;
+            }
+            pch = GetNextChart();
+        }
+        
+        if( !no_hidef )
+            zoom_def = 3.0;
+    }
     
     int new_db_index = m_refchart_dbIndex;
     int current_db_index = m_refchart_dbIndex;
@@ -884,7 +903,7 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
                 current_family = ChartData->GetDBChartFamily( m_zout_dbindex );
             }
 
-            if( proposed_scale_onscreen < min_ref_scale )  {
+            if( proposed_scale_onscreen < zoom_def *min_ref_scale )  {
 
                 unsigned int target_stack_index = 0;
                 int target_stack_index_check = m_extended_stack_array.Index( current_db_index ); // Lookup
@@ -893,7 +912,7 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
                     target_stack_index = target_stack_index_check;
 
                 if(pCurrentStack) {
-                    while( ( proposed_scale_onscreen < min_ref_scale ) && ( target_stack_index > 0 ) ) {
+                    while( ( proposed_scale_onscreen < zoom_def *min_ref_scale ) && ( target_stack_index > 0 ) ) {
                         target_stack_index--;
                         int test_db_index = m_extended_stack_array.Item( target_stack_index );
 
@@ -918,7 +937,7 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
                 double test_max_ref_scale = 1e8;
                 double test_min_ref_scale = 0;
                 if(pcandidate) {
-                    test_max_ref_scale = 1.01 * pcandidate->GetNormalScaleMax( m_canvas_scale_factor, cc1->GetCanvasWidth() );
+                    test_max_ref_scale = zoom_def * 1.01 * pcandidate->GetNormalScaleMax( m_canvas_scale_factor, cc1->GetCanvasWidth() );
                     test_min_ref_scale = 0.99 * pcandidate->GetNormalScaleMin( m_canvas_scale_factor, false );
                 }
 

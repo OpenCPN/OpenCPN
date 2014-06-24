@@ -52,6 +52,10 @@
 #include <wx/image.h>
 #include <wx/tokenzr.h>
 
+#ifdef ocpnUSE_GL
+#include "glChartCanvas.h"
+#endif
+
 #ifdef __MSVC__
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>

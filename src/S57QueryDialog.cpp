@@ -82,9 +82,8 @@ bool S57QueryDialog::Create( wxWindow* parent, wxWindowID id, const wxString& ca
 
     if( !wxDialog::Create( parent, id, caption, pos, size, wstyle ) ) return false;
 
-    wxFont *dFont = wxTheFontList->FindOrCreateFont( 10, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL,
-                    wxFONTWEIGHT_NORMAL );
-
+    wxFont *dFont = GetOCPNScaledFont(_("Dialog"), 10);
+    
     SetFont( *dFont );
     CreateControls();
 

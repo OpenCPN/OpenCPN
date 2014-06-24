@@ -138,7 +138,6 @@ public:
     void drawGshhsPolyMapSeaBorders( ocpnDC &pnt, ViewPort &vp );
 
     void InitializeLoadQuality( int quality ); // 5 levels: 0=low ... 4=full
-    void crossing1Init();
     bool crossing1( QLineF trajectWorld );
     int currentQuality;
     int ReadPolyVersion();
@@ -262,6 +261,10 @@ private:
     void clearLists();
 };
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 991b41f20bb0441c391a65ece7446cff9d1b9ab8
 inline bool GshhsReader::crossing1(QLineF trajectWorld )
 {
     return this->gshhsPoly_reader->crossing1(trajectWorld );
