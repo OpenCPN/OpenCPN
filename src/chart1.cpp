@@ -1974,6 +1974,9 @@ if( 0 == g_memCacheLimit )
     stats->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
     stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
+    //  Yield to pick up the OnSize() calls that result from Maximize()
+    Yield();
+    
     wxString perspective;
     pConfig->SetPath( _T ( "/AUI" ) );
     pConfig->Read( _T ( "AUIPerspective" ), &perspective );
@@ -2150,10 +2153,14 @@ extern ocpnGLOptions g_GLOptions;
 
     if(g_rebuild_gl_cache && g_bopengl &&
         g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching ) {
+
+        cc1->ReloadVP();                  //  Get a nice chart background loaded
     
+        //      Turn off the toolbar as a clear signal that the system is busy right now.
         if( g_FloatingToolbarDialog ) 
             g_FloatingToolbarDialog->Hide();
-            
+         
+    
         BuildCompressedCache();
     
         }
@@ -2195,6 +2202,8 @@ extern ocpnGLOptions g_GLOptions;
 
     stats->Show( true );
 
+    Yield();
+    
     gFrame->DoChartUpdate();
 
 //    g_FloatingToolbarDialog->LockPosition(false);

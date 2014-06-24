@@ -180,8 +180,10 @@ void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned 
 
 
         
-bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString filename)
+bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString filename,
+                   wxProgressDialog *pprog, const wxString &msg, int count)
 {
+    bool ret = true;
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
     int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
     char *compressed_data = new char[max_compressed_size];
@@ -198,6 +200,9 @@ bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString
         int nx_tex = ( size_X / tex_dim ) + 1;
         int ny_tex = ( size_Y / tex_dim ) + 1;
         
+        int nd = 0;
+        int nt = ny_tex * nx_tex;
+        
         wxRect rect;
         rect.y = 0;
         for( int y = 0; y < ny_tex; y++ ) {
@@ -209,16 +214,31 @@ bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString
                 for(int level = 0; level < g_mipmap_max_level + 1; level++ ) {
                         unsigned char *tex_data = tex_fact->GetTextureLevel( rect, level, global_color_scheme );
                 }
+                nd++;
+                
                 
                 rect.x += rect.width;
             }
+            
+            if(pprog){
+                bool bskip = false;
+                wxString m1;
+                m1.Printf(_T("%04d/%04d \n"), nd, nt);
+                pprog->Update(count-1, m1 + msg, &bskip );
+                if(bskip){
+                    ret = false;
+                    goto skipout;
+                }
+                
+            }
+            
             rect.y += rect.height;
         }
-        
+skipout:        
         tex_fact->DeleteAllTextures();
         delete tex_fact;
     }
-    return true;
+    return ret;
 }    
                         
 
@@ -229,7 +249,7 @@ public:
         : wxThread(wxTHREAD_JOINABLE), pchart(pc), CompressedCacheFilePath(CCFP), filename(fn)
         { Create(); }
     void *Entry() {
-        CompressChart(pchart, CompressedCacheFilePath, filename);
+        CompressChart(pchart, CompressedCacheFilePath, filename, NULL, wxEmptyString, 0);
         return 0;
     }
 
@@ -353,10 +373,10 @@ void BuildCompressedCache()
 
         bool skip = false;
         wxString msg;
-        msg.Printf( _T("%4g NMi  "), distance);
+        msg.Printf( _("Distance from Ownship:  %4.0f NMi      Chart: "), distance);
         msg += pchart->GetFullPath();
         
-        pprog->Update(count-1, msg, &skip );
+        pprog->Update(count-1, _T("0000/0000 \n") + msg, &skip );
         if(skip)
             break;
 
@@ -380,8 +400,10 @@ void BuildCompressedCache()
                 }
             }
         } else {
-            CompressChart(pchart, CompressedCacheFilePath, filename);
+            bool bcontinue = CompressChart(pchart, CompressedCacheFilePath, filename, pprog, msg, count);
             ChartData->DeleteCacheChart(pchart);
+            if(!bcontinue)
+                break;
         }
     }
 
