@@ -315,14 +315,13 @@ void BuildCompressedCache()
 
     bool ramonly = false;
     
-/*    
     if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
         ramonly = true;
 #ifdef ocpnUSE_GLES
     if(g_raster_format == GL_ETC1_RGB8_OES)
         ramonly = true;
 #endif
-*/
+
     int thread_count = 0;
     CompressedCacheWorkerThread **workers = NULL;
     if(ramonly) {
