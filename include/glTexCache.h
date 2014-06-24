@@ -102,6 +102,11 @@ private:
     int         m_stride;
     int         m_ntex;
     int         m_tex_dim;
+    int         m_size_X;
+    int         m_size_Y;
+    int         m_nx_tex;
+    int         m_ny_tex;
+    
     glTextureDescriptor  **m_td_array;
     
 };

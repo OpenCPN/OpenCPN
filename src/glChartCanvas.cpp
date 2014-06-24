@@ -564,6 +564,8 @@ void glChartCanvas::ClearAllRasterTextures( void )
         
         glTexFactory *ptf = m_chart_texfactory_hash[pc];
         
+        if( ptf)
+            ptf->DeleteAllTextures();
         delete ptf;
     }
     m_chart_texfactory_hash.clear();

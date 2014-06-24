@@ -38,6 +38,7 @@
 #include "glChartCanvas.h"
 #include "chartbase.h"
 #include "chartimg.h"
+#include "chartdb.h"
 
 
 #ifndef GL_ETC1_RGB8_OES
@@ -58,6 +59,9 @@ extern bool g_bDebugOGL;
 extern long g_tex_mem_used;
 extern int g_mipmap_max_level;
 extern GLuint g_raster_format;
+extern int          g_nCacheLimit;
+extern int          g_memCacheLimit;
+extern ChartDB      *ChartData;
 
 
 
@@ -70,6 +74,7 @@ void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned 
 extern PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
 extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 extern PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
+extern bool GetMemoryStatus( int *mem_total, int *mem_used );
 
 
 #include <wx/arrimpl.cpp> 
@@ -217,16 +222,16 @@ glTexFactory::glTexFactory(ChartBase *chart, GLuint raster_format)
     //  Initialize the TextureDescriptor array
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( m_pchart );
     
-    int size_X = pBSBChart->GetSize_X();
-    int size_Y = pBSBChart->GetSize_Y();
+    m_size_X = pBSBChart->GetSize_X();
+    m_size_Y = pBSBChart->GetSize_Y();
     
     //  Calculate the number of textures needed
     m_tex_dim = g_GLOptions.m_iTextureDimension;
-    int nx_tex = ( size_X / m_tex_dim ) + 1;
-    int ny_tex = ( size_Y / m_tex_dim ) + 1;
+    m_nx_tex = ( m_size_X / m_tex_dim ) + 1;
+    m_ny_tex = ( m_size_Y / m_tex_dim ) + 1;
     
-    m_stride = nx_tex;
-    m_ntex = nx_tex * ny_tex;
+    m_stride = m_nx_tex;
+    m_ntex = m_nx_tex * m_ny_tex;
     m_td_array = (glTextureDescriptor **)calloc(m_ntex, sizeof(glTextureDescriptor *));
     
     
@@ -416,6 +421,32 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 #endif
     ptd->level_min = base_level;
 
+    //   If global memory is getting short, we can crunch here.
+    //   All mipmaps >= ptd->level_min have been uploaded to the GPU,
+    //   so there is no reason to save the bits forever.
+    //   Of course, this means that if the texture is deleted elsewhere, then the bits will need to be
+    //   regenerated.  The price to pay for memory limits....
+    
+    int mem_total, mem_used;
+    GetMemoryStatus(&mem_total, &mem_used);
+    unsigned int nCache = 0;
+    unsigned int lcache_limit = (unsigned int)g_nCacheLimit * 8 / 10;
+    if(ChartData)
+        nCache = ChartData->GetChartCache()->GetCount();
+#if 0    
+    if( ((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 8 / 10)) ||
+        (g_nCacheLimit && (nCache > lcache_limit)) )
+#endif        
+    {        
+        for( int i = 0; i < 10; i++ ){
+            free( ptd->map_array[i] );
+            free( ptd->comp_array[i] );
+        
+            ptd->map_array[i] = 0;
+            ptd->comp_array[i] = 0;
+        }
+    }
+    
 }
 
 
@@ -610,9 +641,22 @@ unsigned char *glTexFactory::GetTextureLevel( const wxRect &rect, int level, Col
         }
         else {
             //      We are using the OpenGL driver to do the compression
-             
-                //      Upload the texture
-            glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
+            //      Use a temporary texture to do the work so that it can be safely deleted and memory recovered 
+            
+            GLuint temp_tex_name;
+            glGenTextures( 1, &temp_tex_name );
+            glBindTexture( GL_TEXTURE_2D, temp_tex_name );
+                    
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+                    
+#ifdef ocpnUSE_GLES /* this is slightly faster */
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
+#else /* looks nicer */
+            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+#endif
+                    
             glTexImage2D( GL_TEXTURE_2D, level, m_raster_format,
                               dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
                 
@@ -620,6 +664,11 @@ unsigned char *glTexFactory::GetTextureLevel( const wxRect &rect, int level, Col
             ptd->comp_array[ level ] = (unsigned char*)malloc(size);
             s_glGetCompressedTexImage(GL_TEXTURE_2D, level, ptd->comp_array[ level ]);
 
+            glDeleteTextures( 1, &temp_tex_name );
+
+            //  Re-Bind the method target texture
+            glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
+            
         }
             
         if( g_GLOptions.m_bTextureCompressionCaching)
