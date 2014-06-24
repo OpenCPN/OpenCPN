@@ -284,11 +284,11 @@ bool GribRecord::GetInterpolatedParameters
     La2 = wxMin(rec1.La2, rec2.La2), Lo2 = wxMin(rec1.Lo2, rec2.Lo2);
 
     /* no overlap */
-    if(La1 > La2 || Lo1 > Lo2)
+    double Di = rec1.getDi(), Dj = rec1.getDj();
+    if(La1*Dj > La2*Dj || Lo1 > Lo2)
         return false;
 
     /* compute integer sizes for data array */
-    double Di = rec1.getDi(), Dj = rec1.getDj();
     Ni = (Lo2-Lo1)/Di + 1, Nj = (La2-La1)/Dj + 1;
     
     /* compute offsets into data arrays */
@@ -359,8 +359,7 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
 
     ret->data = data;
 
-    /* maybe this is wrong? */
-    ret->latMin = La1, ret->latMax = La2;
+    ret->latMin = wxMin(La1, La2), ret->latMax = wxMax(La1, La2);
     ret->lonMin = Lo1, ret->lonMax = Lo2;
 
     return ret;
@@ -442,10 +441,8 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
     
     ret->data = datax;
 
-    /* maybe this is wrong? */
-    ret->latMin = La1, ret->latMax = La2;
+    ret->latMin = wxMin(La1, La2), ret->latMax = wxMax(La1, La2);
     ret->lonMin = Lo1, ret->lonMax = Lo2;
-
 
     rety = new GribRecord;
     *rety = *ret;
