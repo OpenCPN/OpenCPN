@@ -1430,8 +1430,6 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
     glEnable(GL_TEXTURE_RECTANGLE_ARB);
     glBindTexture(GL_TEXTURE_RECTANGLE_ARB, texture);
 
-    glDisable( GL_MULTISAMPLE );
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
