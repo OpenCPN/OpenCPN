@@ -582,9 +582,11 @@ SET(SRC_TINYXML
 IF(OPENGL_GLU_FOUND)
   SET(HDRS ${HDRS} include/glChartCanvas.h
                    include/glTextureDescriptor.h
+                   include/glTexCache.h
         )
   SET(SRCS ${SRCS} src/glChartCanvas.cpp
                    src/glTextureDescriptor.cpp
+                   src/glTexCache.cpp
         )
 ENDIF(OPENGL_GLU_FOUND)
 

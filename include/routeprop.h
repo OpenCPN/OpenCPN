@@ -90,6 +90,9 @@ class   HyperlinkList;
 #define ID_RCLK_MENU_COPY_LL   7018
 #define ID_RCLK_MENU_PASTE     7019
 #define ID_RCLK_MENU_PASTE_LL  7020
+#define ID_TIMEZONESEL_UTC     7021
+#define ID_TIMEZONESEL_LOCAL   7022
+#define ID_TIMEZONESEL_LMT     7023
 
 #define ID_MARKPROP 8000
 #define SYMBOL_MARKPROP_STYLE wxCAPTION|wxRESIZE_BORDER|wxSYSTEM_MENU|wxCLOSE_BOX
@@ -211,7 +214,7 @@ public:
     int         m_tz_selection;
 
     wxDateTime	 m_starttime; // kept as UTC
-    wxRadioBox	*pDispTz;
+//    wxRadioBox	*pDispTz;
     wxStaticText  *m_staticText1;
     wxStaticText  *m_staticText2;
     wxStaticText  *m_staticText3;
@@ -221,6 +224,13 @@ public:
 
     wxStaticBoxSizer* m_pListSizer;
     wxScrolledWindow *itemDialog1;
+    
+private:
+    int GetTZSelection(void);
+    wxRadioButton  *m_prb_tzUTC;
+    wxRadioButton  *m_prb_tzLocal;
+    wxRadioButton  *m_prb_tzLMT;
+    
 };
 
 //    LatLonTextCtrl Specification

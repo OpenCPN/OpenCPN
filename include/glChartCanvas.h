@@ -29,13 +29,17 @@
 #include "ocpn_types.h"
 #include "OCPNRegion.h"
 
-class glTextureDescriptor;          // Defined/implemented in chcanv.cpp
+#ifdef __WXMSW__
+#define FORMAT_BITS           GL_BGR
+#else
+#define FORMAT_BITS           GL_RGB
+#endif
 
-WX_DECLARE_OBJARRAY(glTextureDescriptor, ArrayOfTexDescriptors);
 
-WX_DECLARE_HASH_MAP( int, glTextureDescriptor*, wxIntegerHash, wxIntegerEqual, ChartTextureHashType );
-WX_DECLARE_HASH_MAP( void*, ChartTextureHashType*, wxPointerHash, wxPointerEqual, ChartPointerHashType );
 
+class glTexFactory;
+//      This is a hashmap with Chartbase* as key, and glTexFactory as value
+WX_DECLARE_HASH_MAP( void*, glTexFactory*, wxPointerHash, wxPointerEqual, ChartPointerHashTexfactType );
 
 class ocpnGLOptions
 {
@@ -118,7 +122,7 @@ protected:
     void RenderCharts(ocpnDC &dc, OCPNRegion &region);
     void RenderWorldChart(ocpnDC &dc, OCPNRegion &region);
     ViewPort BuildClippedVP(ViewPort &VP, wxRect &rect);
-    void DeleteChartTextures(ChartBaseBSB *pc);
+//    void DeleteChartTextures(ChartBase *pc);
 
     void DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region );
     void DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect);
@@ -138,18 +142,17 @@ protected:
 
     void GrowData(int size);
 
-    ArrayOfTexDescriptors         m_tex_array;
-
     //    This is a hash table
     //    key is ChartBaseBSB pointer
-    //    Value is ChartTextureHashType*
-    ChartPointerHashType          m_chart_hash;
-
+    //    Value is glTexFactory*
+    ChartPointerHashTexfactType   m_chart_texfactory_hash;
+    
+    
     ViewPort    m_cache_vp;
     ChartBase   *m_cache_current_ch;
 
-    bool m_b_paint_enable;
-    int m_in_glpaint;
+    bool        m_b_paint_enable;
+    int         m_in_glpaint;
 
     //    For FBO(s)
     bool         m_b_DisableFBO;
@@ -164,10 +167,10 @@ protected:
     int          m_cache_tex_y;
     OCPNRegion   m_gl_rendered_region;
 
-    GLuint ownship_tex;
-    int ownship_color;
-    wxSize ownship_size, ownship_tex_size;
-    GLuint ownship_large_scale_display_lists[2];
+    GLuint      ownship_tex;
+    int         ownship_color;
+    wxSize      ownship_size, ownship_tex_size;
+    GLuint      ownship_large_scale_display_lists[2];
 
     DECLARE_EVENT_TABLE()
 };

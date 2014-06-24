@@ -402,7 +402,7 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
 
     cymin = (int) floor( GSSH_SUBM*wxMin( y1, y2 ));
     cymax = (int) ceil( GSSH_SUBM*wxMax( y1, y2 ));
-    assert(cymin >= -GSSH_SUBM*90 && cymax <= GSSH_SUBM*89);
+    wxASSERT(cymin >= -GSSH_SUBM*90 && cymax <= GSSH_SUBM*89);
 
     // TODO: optimize by traversing only the cells the segment passes through,
     //       rather than all of the cells which fit in the bounding box,
@@ -415,7 +415,7 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
         while( cxx >= GSSH_SUBM*360 )
             cxx -= GSSH_SUBM*360;
 
-        assert( cxx >= 0 && cxx < GSSH_SUBM*360 );
+        wxASSERT( cxx >= 0 && cxx < GSSH_SUBM*360 );
 
         if(cxx < GSSH_SUBM*180) {
             if(x1 > 180) x1 -= 360;
@@ -433,13 +433,13 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
             if(!cel && (mutex1.Lock(), !cel)) {
                 /* load the needed cell from disk */
                 cel = new GshhsPolyCell(fpoly, cxi, cyi-90, &polyHeader);
-                assert( cel );
+                wxASSERT( cel );
                 mutex1.Unlock();
             }
 
             int hash = GSSH_SUBM*(GSSH_SUBM*(90-cyi) + cy - cxi) + cxx;
             std::vector<QLineF> *&high_res_map = cel->high_res_map[hash];
-            assert(hash >= 0 && hash < GSSH_SUBM*GSSH_SUBM);
+            wxASSERT(hash >= 0 && hash < GSSH_SUBM*GSSH_SUBM);
             if(!high_res_map && (mutex2.Lock(), !high_res_map)) {
                 /* build the needed sub cell of line segments from the cell */
                 contour_list &poly1 = cel->getPoly1();
@@ -458,6 +458,13 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
                     
                     for( unsigned int pj = 0; pj < c.size(); pj++ ) {
                         double cx = c[pj].x, cy = c[pj].y;
+                        // gshhs data shouldn't, but sometimes contains zero segments
+                        // which enlarges our table, but
+                        // more importantly, the fast segment intersection test
+                        // and doesn't correctly account for it
+                        if(lx == cx && ly == cy)
+                            continue;
+                        
                         int statex = cx < minlon ? -1 : cx > maxlon ? 1 : 0;
                         int statey = cy < minlat ? -1 : cy > maxlat ? 1 : 0;
 
@@ -519,7 +526,7 @@ void GshhsPolyReader::drawGshhsPolyMapPlain( ocpnDC &pnt, ViewPort &vp, wxColor 
             if( cxx >= 0 && cxx <= 359 && cy >= -90 && cy <= 89 ) {
                 if( allCells[cxx][cy + 90] == NULL ) {
                     cel = new GshhsPolyCell( fpoly, cxx, cy, &polyHeader );
-                    assert( cel );
+                    wxASSERT( cel );
                     allCells[cxx][cy + 90] = cel;
                 } else {
                     cel = allCells[cxx][cy + 90];
@@ -553,7 +560,7 @@ void GshhsPolyReader::drawGshhsPolyMapSeaBorders( ocpnDC &pnt, ViewPort &vp )
             if( cxx >= 0 && cxx <= 359 && cy >= -90 && cy <= 89 ) {
                 if( allCells[cxx][cy + 90] == NULL ) {
                     cel = new GshhsPolyCell( fpoly, cxx, cy, &polyHeader );
-                    assert( cel );
+                    wxASSERT( cel );
                     allCells[cxx][cy + 90] = cel;
                 } else {
                     cel = allCells[cxx][cy + 90];
@@ -921,7 +928,7 @@ void GshhsReader::GsshDrawLines( ocpnDC &pnt, std::vector<GshhsPolygon*> &lst, V
 
     int nbmax = 10000;
     pts = new wxPoint[nbmax];
-    assert( pts );
+    wxASSERT( pts );
 
     for( i = 0, iter = lst.begin(); iter != lst.end(); iter++, i++ ) {
         pol = *iter;
@@ -930,7 +937,7 @@ void GshhsReader::GsshDrawLines( ocpnDC &pnt, std::vector<GshhsPolygon*> &lst, V
             nbmax = pol->n + 2;
             delete[] pts;
             pts = new wxPoint[nbmax];
-            assert( pts );
+            wxASSERT( pts );
         }
 
         nbp = GSHHS_scaledPoints( pol, pts, 0, vp );

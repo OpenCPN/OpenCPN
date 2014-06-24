@@ -32,7 +32,6 @@
 #include "GL/gl.h"
 
 #include "glChartCanvas.h"
-#include "glTextureDescriptor.h"
 #include "chcanv.h"
 #include "dychart.h"
 #include "s52plib.h"
@@ -47,6 +46,8 @@
 #include "chartdb.h"
 #include "navutil.h"
 #include "TexFont.h"
+#include "glTexCache.h"
+#include "gshhs.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -58,9 +59,7 @@
 #include "s52plib.h"
 #endif
 
-#include "squish.h"
 #include "lz4.h"
-#include "lz4hc.h"
 
 #ifdef USE_S57
 #include "cm93.h"                   // for chart outline draw
@@ -69,6 +68,7 @@
 #endif
 
 extern bool GetMemoryStatus(int *mem_total, int *mem_used);
+extern wxString CompressedCachePath(wxString path);
 
 #ifndef GL_DEPTH_STENCIL_ATTACHMENT
 #define GL_DEPTH_STENCIL_ATTACHMENT       0x821A
@@ -132,24 +132,19 @@ PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
 
 #include <wx/arrimpl.cpp>
-WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
+//WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
 GLuint g_raster_format = GL_RGB;
 
-#ifdef __WXMSW__
-#define FORMAT_BITS           GL_BGR
-#else
-#define FORMAT_BITS           GL_RGB
-#endif
 
-static       long g_tex_mem_used;
+long g_tex_mem_used;
 
-static int g_tile_size;
+int g_tile_size;
 
-#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't support vla */
-const
-#endif
-static int g_mipmap_max_level = 4;
+//#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't support vla */
+//const
+//#endif
+int g_mipmap_max_level = 4;
 
 bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
@@ -160,7 +155,7 @@ long populate_tt_total, mipmap_tt_total, hwmipmap_tt_total, upload_tt_total;
 long uploadcomp_tt_total, downloadcomp_tt_total, decompcomp_tt_total, readcomp_tt_total, writecomp_tt_total;
 
 /* generate mipmap in software */
-static void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target )
+void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned char *target )
 {
     int newwidth = width / 2;
     int newheight = height / 2;
@@ -183,465 +178,26 @@ static void HalfScaleChartBits( int width, int height, unsigned char *source, un
     }
 }
 
-/* delete mipmaps less than base_level.  Delete the texture if all
-   mipmaps are deleted, and return true if the texture descriptor is also deleted */
-static void DeleteTexture(glTextureDescriptor *ptd, int base_level)
-{
-    wxASSERT(base_level >= 0 && base_level <= g_mipmap_max_level + 1);
-    if( ptd->tex_name > 0 ) {
-        /* compute space saved */
-        int dim = g_GLOptions.m_iTextureDimension;
-        int size = g_tile_size, orig_min = ptd->level_min;
+
         
-        for(int level = 0; level < base_level; level++) {
-            if(level == ptd->level_min) {
-                g_tex_mem_used -= size;
-                ptd->level_min++;
-            }
-            size /= 4;
-
-            if(g_GLOptions.m_bTextureCompression && size < 8)
-                size = 8;
-        }
-        
-        if(ptd->level_min > g_mipmap_max_level) {
-            if( g_bDebugOGL )
-                wxLogMessage(wxString::Format(_T("glDeleteTextures entire tile %d"), ptd->tex_name ));
-            glDeleteTextures( 1, &ptd->tex_name );
-            ptd->tex_name = 0;
-        } else {
-            if( g_bDebugOGL ) wxLogMessage(wxString::Format(_T("glDeleteTextures up to %d level" ), base_level));
-
-            /* free only unused mipmaps */
-            for(int level = orig_min; level < ptd->level_min; level++) {
-                glTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
-                              0, 0, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, NULL );
-            }
-
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, ptd->level_min );
-        }
-    }
-}
-
-/* reduce pixel values to 5/6/5, because this is the format they are stored
-   when compressed anyway, and this way the compression algorithm will use
-   the exact same color in  adjacent 4x4 tiles and the result is nicer for our purpose.
-   the lz4 compressed texture is smaller as well. */
-static void FlattenColorsForCompression(unsigned char *data, int dim, bool swap_colors=true)
-{
-#ifdef __WXMSW__ /* undo BGR flip from ocpn_pixel (if ocpnUSE_ocpnBitmap is defined) */
-    if(swap_colors)
-        for(int i = 0; i<dim*dim; i++) {
-            int off = 3*i;
-            unsigned char t = data[off + 0];
-            data[off + 0] = data[off + 2] & 0xfc;
-            data[off + 1] &= 0xf8;
-            data[off + 2] = t & 0xfc;
-        }
-    else
-#endif
-        for(int i = 0; i<dim*dim; i++) {
-            int off = 3*i;
-            data[off + 0] &= 0xfc;
-            data[off + 1] &= 0xf8;
-            data[off + 2] &= 0xfc;
-        }
-}
-
-/* return malloced data which is the etc compressed texture of the source */
-static void CompressDataETC(const unsigned char *data, int dim, int size,
-                            unsigned char *tex_data)
-{
-    wxASSERT(dim*dim == 2*size); // must be 4bpp
-    uint64_t *tex_data64 = (uint64_t*)tex_data;
-
-    int mbrow = wxMin(4, dim), mbcol = wxMin(4, dim);
-    uint8_t block[48] = {};
-    for(int row=0; row<dim; row+=4)
-        for(int col=0; col<dim; col+=4) {
-            for(int brow=0; brow<mbrow; brow++)
-                for(int bcol=0; bcol<mbcol; bcol++)
-                    memcpy(block + (bcol*4+brow)*3,
-                           data + ((row+brow)*dim + col+bcol)*3, 3);
-
-            extern uint64_t ProcessRGB( const uint8_t* src );
-            *tex_data64++ = ProcessRGB( block );
-        }
-}
-
-extern wxString         g_PrivateDataDir;
-
-wxString CompressedCachePath(wxString path)
-{
-#if defined(__WXMSW__)
-    int colon = path.find(':', 0);
-    path.Remove(colon, 1);
-#endif
-
-    /* replace path separators with ! */
-    wxChar separator = wxFileName::GetPathSeparator();
-    for(unsigned int pos = 0; pos < path.size();
-        pos = path.find(separator, pos))
-        path.replace(pos, 1, _T("!"));
-
-    return g_PrivateDataDir + separator + _T("raster_texture_cache") + separator + path 
-        + _T(".compressed_chart");
-}
-
-#define COMPRESSED_CACHE_MAGIC 0xf00f  // change this when the format changes
-struct CompressedCacheHeader
-{
-    uint32_t magic, format, tiles;
-};
-
-/* load from base_level to needed levels of the texture */
-void UploadTexture( glTextureDescriptor *ptd, int base_level,
-                    const wxRect &rect, ChartBase *pchart, bool ramonly=false )
-{
-#ifdef ocpnUSE_GLES /* gles requires a complete set of mipmaps starting at 0 */
-    base_level = 0;
-#endif
-
-    /* Also, some non-compliant OpenGL drivers need the complete mipmap set when using compressed textures */
-    if( glChartCanvas::s_b_UploadFullCompressedMipmaps && g_GLOptions.m_bTextureCompression )
-        base_level = 0;
-    
-    if(!ramonly) {
-        //    If the GPU does not know about this texture, create it
-        if( ptd->tex_name == 0 ) {
-            glGenTextures( 1, &ptd->tex_name );
-
-            if( g_bDebugOGL )
-                wxLogMessage(wxString::Format( _T("  -->UploadTexture %d base_level %d"), ptd->tex_name, base_level ));
-
-            glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
-
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
-#ifdef ocpnUSE_GLES /* this is slightly faster */
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
-#else /* looks nicer */
-            glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-#endif
-            ptd->level_min = (g_mipmap_max_level+1);
-        } else {
-            wxStopWatch sw;
-            glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
-            sw.Pause();
-            long tt = sw.Time();
-            if( tt > 10 && g_GLOptions.m_iTextureMemorySize > 16 )
-                g_GLOptions.m_iTextureMemorySize *= .8;
-        }
-
-#if 0
-    if( n_longbind ) m_tex_max_res--;
-    else {
-        if( s_nquickbind++ > 100 ) {
-            s_nquickbind = 0;
-            m_tex_max_res++;
-        }
-    }
-#endif
-
-
-        /* this test is not required, but is a shortcut if everything is already loaded */
-        if(base_level >= ptd->level_min)
-            return;
-
-    } else
-        ptd->level_min = (g_mipmap_max_level+1);
-
-    ChartPlugInWrapper *pPlugInWrapper = dynamic_cast<ChartPlugInWrapper*>( pchart );
-    ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
-
-    if( !pPlugInWrapper && !pBSBChart ) return;
-
-    bool b_plugin = pPlugInWrapper != NULL;
-    int size;
-
-    bool compressed = false;
-
-    if(g_GLOptions.m_bTextureCompression &&
-       g_GLOptions.m_bTextureCompressionCaching) {
-
-        wxString CompressedCacheFilePath = CompressedCachePath(pchart->GetFullPath());
-
-        if( g_bDebugOGL )
-            wxLogMessage( wxString::Format(_T("  -->UploadTexture, compressedcachedpath: ")
-                                           + CompressedCacheFilePath));
-
-        if(wxFileName::FileExists(CompressedCacheFilePath)) {
-            /* load needed levels into map_array */
-            size = g_tile_size;
-
-            ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
-
-            if(!pBSBChart) /* chart type not supported */
-                goto load_base_level;
-
-            wxStopWatch sw;
-            wxFileInputStream fs(CompressedCacheFilePath);
-
-            CompressedCacheHeader hdr;
-            fs.Read(&hdr, sizeof hdr);
-
-            int size_X = pBSBChart->GetSize_X();
-            int size_Y = pBSBChart->GetSize_Y();
-            int tex_dim = g_GLOptions.m_iTextureDimension;
-
-            int nx_tex = ( size_X / tex_dim ) + 1;
-            int ny_tex = ( size_Y / tex_dim ) + 1;
-
-            /* test if cache is valid */
-            if(hdr.magic != COMPRESSED_CACHE_MAGIC || hdr.format != g_raster_format ||
-               hdr.tiles != (unsigned int)nx_tex*ny_tex*(g_mipmap_max_level+1)) {
-                wxLogMessage(wxString::Format(_T("compressed cache miss, removing:\
- %s, suggest rebuild chart database"), (const char*)CompressedCacheFilePath.ToUTF8()));
-                wxRemoveFile(CompressedCacheFilePath);
-
-                /* should rebuild the file here instead  of skipping */
-                goto load_base_level;
-            }
-
-            int offset_table = sizeof hdr;
-
-            int j = rect.x / tex_dim, i = rect.y / tex_dim;
-
-            int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-            char *compressed_data = new char[max_compressed_size];
-
-            int offset_table_offset = ((i * nx_tex) + j) * (g_mipmap_max_level+1) + base_level;
-            if(fs.SeekI(offset_table + offset_table_offset * 4, wxFromStart) == wxInvalidOffset) {
-            corrupted:
-                wxLogMessage(wxString::Format(_T("compressed cache file corrupted, removing:\
- %s, suggest rebuild chart database"), (const char*)CompressedCacheFilePath.ToUTF8()));
-                wxRemoveFile(CompressedCacheFilePath);
-                delete [] compressed_data;
-                goto load_base_level;
-            }
-
-            uint32_t offsets[(g_mipmap_max_level+1) + 1];
-            uint32_t offset_table_size = 4 * (ptd->level_min + 1 - base_level);
-            fs.Read(offsets + base_level, offset_table_size );
-            if(fs.LastRead() != offset_table_size)
-                goto corrupted;
-            if(fs.SeekI(offsets[base_level], wxFromStart) == wxInvalidOffset)
-                goto corrupted;
-            readcomp_tt_total += sw.Time();
-
-            for(int level = base_level; level < ptd->level_min; level++) {
-                uint32_t compressed_size = offsets[level+1] - offsets[level];
-                wxStopWatch sw;
-                fs.Read(compressed_data, compressed_size);
-                if(fs.LastRead() != compressed_size)
-                    goto corrupted;
-                readcomp_tt_total += sw.Time();
-
-                ptd->map_array[level] = (unsigned char *) malloc( size );
-                wxStopWatch sw2;
-                LZ4_decompress_fast(compressed_data, (char*)ptd->map_array[level], size);
-                decompcomp_tt_total += sw2.Time();
-
-                size /= 4;
-                if(size < 8)
-                   size = 8;
-            }
-
-            delete [] compressed_data;
-            compressed = true;          
-        } else /* need to build the cache */
-            goto load_base_level;
-    } else if(!ptd->map_array[0]) {
-    load_base_level:
-
-        if( g_bDebugOGL )
-            wxLogMessage( wxString::Format(_T("  -->UploadTexture loading uncompressed base level")));
-
-        // Load level 0 uncompressed data
-        unsigned char *t_buf = (unsigned char *) malloc( rect.width * rect.height * 4 );
-        
-        wxRect nc_rect = rect;
-
-        wxStopWatch sw;
-        //    Prime the pump with the "zero" level bits, ie. 1x native chart bits
-        if( b_plugin ) pPlugInWrapper->GetChartBits( nc_rect, t_buf, 1 );
-        else
-            pBSBChart->GetChartBits( nc_rect, t_buf, 1 );
-        populate_tt_total += sw.Time();
-        
-        //    and cache them here
-        ptd->map_array[0] = t_buf;
-    }
-
-    /* upload needed textures */
-    int dim = g_GLOptions.m_iTextureDimension;
-
-    size = g_tile_size;
-
-    /* optimization: when supported generate mipmaps
-       with hardware acceleration if _not_ using texture compression.
-       It may be faster on some hardware to use this with compression,
-       but for my computers it is much slower. */
-    bool hw_mipmap = false;
-#ifndef ocpnUSE_GLES /* glGenerateMipmaps is incredibly slow with mali drivers */
-    if(!g_GLOptions.m_bTextureCompression && s_glGenerateMipmap) {
-        if( g_bDebugOGL )
-            wxLogMessage( wxString::Format(_T("  -->UploadTexture Using hardware mipmaps")));
-        base_level = 0;
-        hw_mipmap = true;
-    }
-#endif
-
-    bool first = true;
-    for(int level = 0; level < ptd->level_min; level++ ) {
-        /* build mipmap in ram if needed */
-        if(!compressed && !ptd->map_array[level]) {
-            ptd->map_array[level] = (unsigned char *) malloc( dim * dim * 3 );
-
-            wxStopWatch sw;
-            HalfScaleChartBits( 2*dim, 2*dim, ptd->map_array[level - 1], ptd->map_array[level] );
-            mipmap_tt_total += sw.Time();
-        }
-        
-        //    Upload to GPU?
-        if( level >= base_level && !ramonly) {
-            if(compressed) { /* data is already compressed */
-                if(size < 8)
-                    size = 8;
-
-                wxStopWatch sw;
-                s_glCompressedTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
-                                          dim, dim, 0, size, ptd->map_array[level] );
-                uploadcomp_tt_total += sw.Time();
-
-                free(ptd->map_array[level]);
-                ptd->map_array[level] = NULL;
-
-                g_tex_mem_used += size;
-            } else {
-                wxStopWatch sw;
-                if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
-                   g_raster_format == GL_ETC1_RGB8_OES)
-                {
-                    if(size < 8)
-                        size = 8;
-
-                    unsigned char *tex_data = (unsigned char*)malloc(size);
-                    if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
-                        FlattenColorsForCompression(ptd->map_array[level], dim, first);
-                        first = false;
-
-                        // color range fit is worse quality but twice as fast
-                        int flags = squish::kDxt1 | squish::kColourRangeFit;
-                        squish::CompressImageRGB(ptd->map_array[level], dim, dim,
-                                                 tex_data, flags);
-                    } else if(g_raster_format == GL_ETC1_RGB8_OES)
-                        CompressDataETC(ptd->map_array[level], dim, size, tex_data);
-                    s_glCompressedTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
-                                              dim, dim, 0, size, tex_data );
-                    free(tex_data);
-                } else /* use driver to do compression, or not compressed */
-                    glTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
-                                  dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
-                upload_tt_total += sw.Time();
-
-                g_tex_mem_used += size;
-
-                if(hw_mipmap) {
-                    /* compute memory used for mipmaps */
-                    int level;
-                    dim /= 2;
-                    size /= 4;
-
-                    for(level = 1; level < ptd->level_min; level++ ) {
-                        g_tex_mem_used += size;
-                        dim /= 2;
-                        size /= 4;
-                    }
-                    ptd->level_min = level;
-        
-#ifndef ocpnUSE_GLES
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, base_level );
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, ptd->level_min-1 );
-#endif
-                    /* some ATI drivers require this, so to be safe... */
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-
-                    wxStopWatch sw;
-                    if( g_bDebugOGL )
-                        wxLogMessage( wxString::Format(_T("  -->UploadTexture Generate hw mipmaps")));
-
-                    s_glGenerateMipmap( GL_TEXTURE_2D );
-                    hwmipmap_tt_total += sw.Time();
-
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-                    break;
-                }
-            }
-        }
-
-        dim /= 2;
-        size /= 4;
-    }
-
-    if( g_bDebugOGL )
-        wxLogMessage( wxString::Format(_T("  -->UploadTexture Setting texture parameters...")));
-
-#ifndef ocpnUSE_GLES
-    if (!ramonly) {
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, base_level );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, g_mipmap_max_level );
-    }
-#endif
-    ptd->level_min = base_level;
-
-    if( g_bDebugOGL ) {
-        wxString msg;
-        msg.Printf( _T("  -->tex_mem_used %.3f MB"), g_tex_mem_used / 1024.0 / 1024.0);
-        wxLogMessage( msg );
-    }
-}
-
-bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString filename, bool ramonly)
+bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString filename)
 {
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
     int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
     char *compressed_data = new char[max_compressed_size];
-        
+    
     if(pBSBChart) {
-
+        
+        glTexFactory *tex_fact = new glTexFactory(pchart, g_raster_format);
+        
         int size_X = pBSBChart->GetSize_X();
         int size_Y = pBSBChart->GetSize_Y();
-
+        
         int tex_dim = g_GLOptions.m_iTextureDimension;
-            
+        
         int nx_tex = ( size_X / tex_dim ) + 1;
         int ny_tex = ( size_Y / tex_dim ) + 1;
-
-        /* save the compressed data */
-        wxFileOutputStream fs(CompressedCacheFilePath);
-
-        if(!fs.IsOk()) {
-            wxLogMessage( _T("BuildCompressedCache() Failed to write to: ") + CompressedCacheFilePath );
-            goto fail;
-        }
-
-        CompressedCacheHeader hdr;
-        hdr.magic = COMPRESSED_CACHE_MAGIC;
-        hdr.format = g_raster_format;
-        hdr.tiles = nx_tex * ny_tex * (g_mipmap_max_level+1);
-
-        /* skip past where the header will go (write it last) */
-        fs.SeekO(sizeof hdr, wxFromCurrent);
-
-        int offset_table = fs.TellO();
-
-        /* give offset after last tile to make computing size simple */
-        int offset_table_count = hdr.tiles + 1;
-        fs.SeekO(offset_table_count * 4, wxFromCurrent);
-
+        
         wxRect rect;
         rect.y = 0;
         for( int y = 0; y < ny_tex; y++ ) {
@@ -649,96 +205,22 @@ bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString
             rect.x = 0;
             for( int x = 0; x < nx_tex; x++ ) {
                 rect.width = tex_dim;
-
-                glTextureDescriptor ptd;
-
-                UploadTexture( &ptd, 0, rect, pchart,
-                               g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT ||
-                               g_raster_format == GL_ETC1_RGB8_OES);
-
-                int size = g_tile_size;
-                for(int level = 0; level <= g_mipmap_max_level; level++ ) {
-                    unsigned char *tex_data = (unsigned char*)malloc(size);
-                    int dim = tex_dim >> level;
-
-                    wxStopWatch sw;
-                    /* now compress map_array into tex_data */
-                    if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) {
-                        /* use slower cluster fit since we are building the cache for
-                           better quality, this takes roughly 25% longer and uses about
-                           10% more disk space (result doesn't compress as well with lz4) */
-                        int flags = squish::kDxt1 | squish::kColourClusterFit;
-                        FlattenColorsForCompression(ptd.map_array[level], dim);
-                        squish::CompressImageRGB(ptd.map_array[level], dim, dim, tex_data,
-                                                 flags);
-                    } else if(g_raster_format == GL_ETC1_RGB8_OES)
-                        CompressDataETC(ptd.map_array[level], dim, size, tex_data);
-                    else {
-                        /* the graphics driver does the work of compression,
-                           just read the compressed data back */
-                        
-//                        tex_data = ptd.map_array[level];
-
-                        s_glGetCompressedTexImage(GL_TEXTURE_2D, level, tex_data);
-                        g_tex_mem_used -= size;
-                    }
-                    downloadcomp_tt_total += sw.Time();
-
-                    wxStopWatch sw2;
-                    uint32_t offset = fs.TellO();
-
-                    int compressed_size = LZ4_compressHC2((char*)tex_data, compressed_data, size, 4);
-                    free(tex_data);
-
-                    fs.Write(compressed_data, compressed_size);
-
-                    /* update the offset table */
-                    int offset_table_offset = ((y * nx_tex) + x) * (g_mipmap_max_level+1) + level;
-                    fs.SeekO(offset_table + offset_table_offset * 4, wxFromStart);
-                    fs.Write(&offset, 4);
-                    fs.SeekO(0, wxFromEnd);
-
-                    writecomp_tt_total += sw2.Time();
-
-                    size /= 4;
-                    if(size < 8)
-                        size = 8;
+                
+                for(int level = 0; level < g_mipmap_max_level + 1; level++ ) {
+                        unsigned char *tex_data = tex_fact->GetTextureLevel( rect, level, global_color_scheme );
                 }
-
-                if (!ramonly)
-                    glDeleteTextures(1, &ptd.tex_name);
+                
                 rect.x += rect.width;
             }
             rect.y += rect.height;
         }
-
-        /* update final offset */
-        uint32_t offset = fs.TellO();
-
-        int offset_table_offset = ny_tex * nx_tex * (g_mipmap_max_level+1);
-        fs.SeekO(offset_table + offset_table_offset * 4, wxFromStart);
-        fs.Write(&offset, 4);
-
-        /* write header now that all the data in the file is valid */
-        fs.SeekO(0, wxFromStart);
-        fs.Write(&hdr, sizeof hdr);
-
-        if( g_bDebugOGL )
-        {
-            wxFileName fn = filename;
-            printf("%s: %f -> %f  ratio:%4.2fx\n",
-                   (const char*)fn.GetName().ToUTF8(),
-                   (double)fn.GetSize().ToULong() / 1024.0 / 1024.0,
-                   (double)offset / 1024.0 / 1024.0,
-                   (double) offset / fn.GetSize().ToULong());
-        }
+        
+        tex_fact->DeleteAllTextures();
+        delete tex_fact;
     }
-
-fail:
-    delete [] compressed_data;
-
     return true;
-}
+}    
+                        
 
 class CompressedCacheWorkerThread : public wxThread
 {
@@ -747,7 +229,7 @@ public:
         : wxThread(wxTHREAD_JOINABLE), pchart(pc), CompressedCacheFilePath(CCFP), filename(fn)
         { Create(); }
     void *Entry() {
-        CompressChart(pchart, CompressedCacheFilePath, filename, true);
+        CompressChart(pchart, CompressedCacheFilePath, filename);
         return 0;
     }
 
@@ -793,8 +275,8 @@ void BuildCompressedCache()
 
         wxString CompressedCacheFilePath = CompressedCachePath(ChartData->GetDBChartFileName(i));
         wxFileName fn(CompressedCacheFilePath);
-        if(fn.FileExists()) /* skip if file exists */
-            continue;
+//        if(fn.FileExists()) /* skip if file exists */
+//            continue;
         
         idx_sorted_by_distance.Add(i);
         
@@ -821,9 +303,6 @@ void BuildCompressedCache()
     pprog->Show();
     pprog->Raise();
 
-    /* disable caching so we don't use the cache when we upload the texture */
-    g_GLOptions.m_bTextureCompressionCaching = false;
-
     /* do we compress in ram using builtin libraries, or do we
        upload to the gpu and use the driver to perform compression?
        we have builtin libraries for DXT1 (squish) and ETC1 (etcpak)
@@ -835,13 +314,15 @@ void BuildCompressedCache()
     we can use multiple threads to take advantage of multiple cores */
 
     bool ramonly = false;
+    
+/*    
     if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
         ramonly = true;
 #ifdef ocpnUSE_GLES
     if(g_raster_format == GL_ETC1_RGB8_OES)
         ramonly = true;
 #endif
-
+*/
     int thread_count = 0;
     CompressedCacheWorkerThread **workers = NULL;
     if(ramonly) {
@@ -856,23 +337,14 @@ void BuildCompressedCache()
     for(unsigned int j = 0; j<idx_sorted_by_distance.GetCount(); j++) {
         int i = idx_sorted_by_distance.Item(j);
         
-        wxString filename = ChartData->GetDBChartFileName(i);
-        wxString CompressedCacheFilePath = CompressedCachePath(filename);
-        wxFileName fn(CompressedCacheFilePath);
-
-        if(fn.FileExists()) /* skip if file exists */
-            continue;
-
-        if(!fn.DirExists())
-            fn.Mkdir();
-
         const ChartTableEntry &cte = ChartData->GetChartTableEntry(i);
         float clon = (cte.GetLonMax() + cte.GetLonMin())/2;
         float clat = (cte.GetLatMax() + cte.GetLatMin())/2;
         double distance = DistGreatCircle(clat, clon, gLat, gLon);
+     
+        wxString filename(cte.GetpFullPath(), wxConvUTF8);
+        wxString CompressedCacheFilePath = CompressedCachePath(filename);
         
-        if( g_bDebugOGL ) wxLogMessage(wxString::Format(_T("BuildCompressedCache() File:"
-                                                           + CompressedCacheFilePath )));
         count++;
 
         ChartBase *pchart = ChartData->OpenChartFromDB( i, FULL_INIT );
@@ -908,11 +380,10 @@ void BuildCompressedCache()
                 }
             }
         } else {
-            CompressChart(pchart, CompressedCacheFilePath, filename, false);
+            CompressChart(pchart, CompressedCacheFilePath, filename);
             ChartData->DeleteCacheChart(pchart);
         }
     }
-skip:
 
     /* wait for workers to finish, and clean up after then */
     if(ramonly) {
@@ -926,8 +397,6 @@ skip:
         }
         delete [] workers;
     }
-
-    g_GLOptions.m_bTextureCompressionCaching = true;    // reenable
 
     delete pprog;
 }
@@ -1054,13 +523,8 @@ BEGIN_EVENT_TABLE ( glChartCanvas, wxGLCanvas ) EVT_PAINT ( glChartCanvas::OnPai
 END_EVENT_TABLE()
 
 glChartCanvas::glChartCanvas( wxWindow *parent ) :
-#if wxCHECK_VERSION(3, 0, 0)
-    wxGLCanvas( parent, wxID_ANY, attribs, wxDefaultPosition, wxSize( 256, 256 ),
-                wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T("") ),
-#else
     wxGLCanvas( parent, wxID_ANY, wxDefaultPosition, wxSize( 256, 256 ),
                 wxFULL_REPAINT_ON_RESIZE | wxBG_STYLE_CUSTOM, _T(""), attribs ),
-#endif
     m_data( NULL ), m_datasize( 0 ), m_bsetup( false )
 {
     SetBackgroundStyle ( wxBG_STYLE_CUSTOM );  // on WXMSW, this prevents flashing
@@ -1092,28 +556,22 @@ glChartCanvas::~glChartCanvas()
 
 void glChartCanvas::ClearAllRasterTextures( void )
 {
-    //     Clear and delete all the GPU textures presently loaded
-    ChartPointerHashType::iterator it;
-    for( it = m_chart_hash.begin(); it != m_chart_hash.end(); ++it ) {
-        ChartBase *pc = (ChartBase *) it->first;
-
-        ChartTextureHashType *pTextureHash = m_chart_hash[pc];
-
-        // iterate over all the textures presently loaded
-        // and delete the OpenGL texture and the private descriptor
-
-        ChartTextureHashType::iterator it;
-        for( it = pTextureHash->begin(); it != pTextureHash->end(); ++it ) {
-            glTextureDescriptor *ptd = it->second;
-            glDeleteTextures( 1, &ptd->tex_name );
-            delete ptd;
-        }
-
-        pTextureHash->clear();
-        delete pTextureHash;
+    
+    //     Delete all the TexFactory instances
+    ChartPointerHashTexfactType::iterator itt;
+    for( itt = m_chart_texfactory_hash.begin(); itt != m_chart_texfactory_hash.end(); ++itt ) {
+        ChartBase *pc = (ChartBase *) itt->first;
+        
+        glTexFactory *ptf = m_chart_texfactory_hash[pc];
+        
+        if( ptf)
+            ptf->DeleteAllTextures();
+        delete ptf;
     }
-    m_chart_hash.clear();
+    m_chart_texfactory_hash.clear();
+    
     g_tex_mem_used = 0;
+    
 }
 
 void glChartCanvas::OnActivate( wxActivateEvent& event )
@@ -1233,8 +691,6 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
         wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling stencil buffer") );
         bad_stencil_code = true;
-//        wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling FBO") );
-//        m_b_DisableFBO = true;
     }
 
     //      And for the lousy Unichrome drivers, too
@@ -1281,7 +737,7 @@ void glChartCanvas::SetupOpenGL()
 #ifdef ocpnUSE_GLES /* gles requires all levels */
     m_b_useFBOStencil = QueryExtension( "GL_OES_packed_depth_stencil" );
 #else
-    m_b_useFBOStencil = QueryExtension( "GL_EXT_packed_depth_stencil" );
+    m_b_useFBOStencil = QueryExtension( "GL_EXT_packed_depth_stencil" ) == GL_TRUE;
 #endif
 
     //      Maybe build FBO(s)
@@ -1426,7 +882,7 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 #else
     SetCurrent();
 #endif
-
+    
     if( !m_bsetup ) {
         SetupOpenGL();
         m_bsetup = true;
@@ -1449,34 +905,27 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 
 bool glChartCanvas::PurgeChartTextures( ChartBase *pc )
 {
-    //    Look for the chart texture hashmap in the member chart hashmap
-    ChartPointerHashType::iterator it0 = m_chart_hash.find( pc );
-
-    ChartTextureHashType *pTextureHash;
-
+    //    Look for the texture factory for this chart
+    ChartPointerHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( pc );
+    
     //    Found ?
-    if( it0 != m_chart_hash.end() ) {
-        pTextureHash = m_chart_hash[pc];
-
-        // iterate over all the textures presently loaded
-        // and delete the OpenGL texture and the private descriptor
-
-        ChartTextureHashType::iterator it;
-        for( it = pTextureHash->begin(); it != pTextureHash->end(); ++it ) {
-            glTextureDescriptor *ptd = it->second;
-            DeleteTexture(ptd, g_mipmap_max_level+1);
-            delete ptd;
+    if( ittf != m_chart_texfactory_hash.end() ) {
+        glTexFactory *pTexFact = m_chart_texfactory_hash[pc];
+        
+        if(pTexFact){
+            pTexFact->DeleteAllTextures();
+            pTexFact->DeleteAllDescriptors();
+            
+            m_chart_texfactory_hash.erase(ittf);                // This chart pointer index is becoming invalid
+            return true;
         }
-
-        pTextureHash->clear();
-
-        m_chart_hash.erase( it0 );            // erase the texture hash map for this chart
-
-        delete pTextureHash;
-
-        return true;
+        else {
+            m_chart_texfactory_hash.erase(ittf);
+            return false;
+        }
     }
-    return false;
+    else
+        return false;
 }
 
 /* adjust the opengl transformation matrix so that
@@ -1530,7 +979,6 @@ void glChartCanvas::DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region 
 {
     ocpnDC dc(*this);
 
-    Route *active_route, *m_active_track;
     for(wxRouteListNode *node = pRouteList->GetFirst();
         node; node = node->GetNext() ) {
         Route *pRouteDraw = node->GetData();
@@ -1719,10 +1167,10 @@ void glChartCanvas::GridDraw( )
     glColor3ub(GridColor.Red(), GridColor.Green(), GridColor.Blue());
 
     SetSmoothLineWidth();
-
+    
     // Render in two passes, lines then text is much more efficient for opengl
     for( int pass=0; pass<2; pass++ ) {
-        if(pass == 0)
+        if(pass == 0) 
             glBegin(GL_LINES);
 
         // calculate position of first major latitude grid line
@@ -1917,7 +1365,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     float cog_rad = atan2f( (float) ( lPredPoint.y - lGPSPoint.y ),
                             (float) ( lPredPoint.x - lGPSPoint.x ) );
-    cog_rad += PI;
+    cog_rad += (float)PI;
 
     float lpp = sqrtf( powf( (float) (lPredPoint.x - lGPSPoint.x), 2) +
                        powf( (float) (lPredPoint.y - lGPSPoint.y), 2) );
@@ -1940,7 +1388,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     float icon_rad = atan2( (float) ( osd_head_point.y - lGPSPoint.y ),
                             (float) ( osd_head_point.x - lGPSPoint.x ) );
-    icon_rad += PI;
+    icon_rad += (float)PI;
 
     if( pSog < 0.2 ) icon_rad = ( ( icon_hdt + 90. ) * PI / 180. ) + cc1->GetVP().rotation;
 
@@ -2144,7 +1592,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         float r = circle_rad+1;
         glColor4ub(0, 0, 0, 255);
         glBegin(GL_POLYGON);
-        for( float a = 0; a <= 2 * PI; a += 2 * PI / 12 )
+        for( float a = 0; a <= 2 * (float)PI; a += 2 * (float)PI / 12 )
             glVertex2f( cx + r * sinf( a ), cy + r * cosf( a ) );
         glEnd();
 
@@ -2152,7 +1600,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         glColor4ub(255, 255, 255, 255);
         
         glBegin(GL_POLYGON);
-        for( float a = 0; a <= 2 * M_PI; a += 2 * M_PI / 12 )
+        for( float a = 0; a <= 2 * (float)M_PI; a += 2 * (float)M_PI / 12 )
             glVertex2f( cx + r * sinf( a ), cy + r * cosf( a ) );
         glEnd();       
         glPopAttrib();            // restore state
@@ -2403,6 +1851,7 @@ void glChartCanvas::SetSmoothLineWidth()
     glLineWidth(width);
 }
 
+
 void glChartCanvas::Invalidate()
 {
     /* should probably use a different flag for this */
@@ -2459,18 +1908,18 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     clipregion.Offset(vp.rv_rect.x, vp.rv_rect.y);
     SetClipRegion( vp, clipregion );
 
-    //    Look for the chart texture hashmap in the member chart hashmap
-    ChartPointerHashType::iterator it = m_chart_hash.find( chart );
-
-    ChartTextureHashType *pTextureHash;
-
+    //    Look for the texture factory for this chart
+    glTexFactory *pTexFact;
+    ChartPointerHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( chart );
+    
     //    Not Found ?
-    if( it == m_chart_hash.end() ) {
-        ChartTextureHashType *p = new ChartTextureHashType;
-        m_chart_hash[chart] = p;
+    if( ittf == m_chart_texfactory_hash.end() ) {
+        glTexFactory *p = new glTexFactory(chart, g_raster_format);
+        m_chart_texfactory_hash[chart] = p;
     }
-
-    pTextureHash = m_chart_hash[chart];
+    
+    pTexFact = m_chart_texfactory_hash[chart];
+    
 
     //    For underzoom cases, we will define the textures as having their base levels
     //    equivalent to a level "n" mipmap, where n is calculated, and is always binary
@@ -2487,7 +1936,6 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     int nx_tex = ( size_X / tex_dim ) + 1;
     int ny_tex = ( size_Y / tex_dim ) + 1;
 
-    glTextureDescriptor *ptd;
     wxRect rect( 0, 0, 1, 1 );
 
     glPushMatrix();
@@ -2522,8 +1970,6 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     //    Using a 2D loop, iterate thru the texture tiles of the chart
     //    For each tile, is it (1) needed and (2) present?
 
-    int key;
-
     rect.y = 0;
     for( int i = 0; i < ny_tex; i++ ) {
         rect.height = tex_dim;
@@ -2531,10 +1977,6 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
         for( int j = 0; j < nx_tex; j++ ) {
             rect.width = tex_dim;
 
-            //    Is this texture tile already defined?
-            key = ( ( rect.x << 18 ) + ( rect.y << 4 ) );
-            ChartTextureHashType::iterator it = pTextureHash->find( key );
-            
             // compute position, end, and size
             wxRealPoint rip(wxMax(Rp.x, rect.x), wxMax(Rp.y, rect.y));
             wxRealPoint rie(wxMin(Rp.x+Rs.x, rect.x+rect.width), wxMin(Rp.y+Rs.y, rect.y+rect.height));
@@ -2544,11 +1986,8 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
             if( ris.x <= 0 || ris.y <= 0 ) {
                 /*   user setting is in MB while we count exact bytes */
                 bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
-                if( it != pTextureHash->end() && bGLMemCrunch) {
-                    ptd = ( *pTextureHash )[key];
-                    /* delete this unneeded tile if we need to free up memory */
-                    DeleteTexture(ptd, g_mipmap_max_level+1);
-                }
+                if( bGLMemCrunch)
+                    pTexFact->DeleteTexture( rect );
             } else {
                 // calculate the on-screen rectangle coordinates for this tile
                 double w = ris.x, h = ris.y;
@@ -2564,30 +2003,22 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
                            ceil(h / scalefactor));
                 rt.Offset( -vp.rv_rect.x, -vp.rv_rect.y ); // compensate for the adjustment made in quilt composition
 
-                // if not found in the hash map, then get the bits as a texture descriptor
-                if( it == pTextureHash->end() )
-                    ( *pTextureHash )[key] = new glTextureDescriptor;
-                
-                ptd = ( *pTextureHash )[key];
 
                 //    And does this tile intersect the desired render region?
                 if( region.Contains( rt ) == wxOutRegion ) {
                     /*   user setting is in MB while we count exact bytes */
                     bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
-
                     /* delete this unneeded tile if we need to free up memory */
                     if( bGLMemCrunch )
-                        DeleteTexture(ptd, g_mipmap_max_level+1);
+                        pTexFact->DeleteTexture( rect );
                 } else { // this tile is needed
-
-                    //    The texture is known to be available to the GPU
-                    UploadTexture( ptd, base_level, rect, chart ); 
-
+                    pTexFact->PrepareTexture( base_level, rect, global_color_scheme ); 
+                    
                     /*   user setting is in MB while we count exact bytes,
                          recompute here because we may free some of the
                          mipmaps just created.    It could be useful to also
                          delete unused mipmaps from previous tiles in this frame... */
-                    bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
+//                    bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
 
 #if 0
                     /* delete unneeded mipmap levels when this tile is used */
@@ -2905,19 +2336,6 @@ void glChartCanvas::RenderWorldChart(ocpnDC &dc, OCPNRegion &region)
     DisableClipRegion( );
 }
 
-void glChartCanvas::DeleteChartTextures(ChartBaseBSB *pc)
-{
-    ChartTextureHashType *pTextureHash = m_chart_hash[pc];
-    
-    // iterate over all the textures presently loaded
-    // and delete the OpenGL texture from the GPU
-    // but keep the private texture descriptor for now
-    
-    for(ChartTextureHashType::iterator it = pTextureHash->begin(), prev = it;
-        it != pTextureHash->end(); prev = it++ )
-        DeleteTexture(it->second, g_mipmap_max_level+1);
-}
-
 ViewPort glChartCanvas::BuildClippedVP(ViewPort &VP, wxRect &rect)
 {
     //  Build synthetic ViewPort on this rectangle so that
@@ -3028,10 +2446,13 @@ void glChartCanvas::Render()
     //  This is done chart-by-chart...later we will scrub for unused textures
     //  that belong to charts which ARE used in this render, if we need to....
 
-    ChartPointerHashType::iterator it0;
-    for( it0 = m_chart_hash.begin(); it0 != m_chart_hash.end(); ++it0 ) {
-        ChartBaseBSB *pc = (ChartBaseBSB *) it0->first;
-
+    ChartPointerHashTexfactType::iterator it0;
+    for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
+        ChartBase *pc = (ChartBase *) it0->first;
+        glTexFactory *ptf = it0->second;
+        if(!ptf)
+            continue;
+        
         bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
         if(!bGLMemCrunch)
             break;
@@ -3039,13 +2460,15 @@ void glChartCanvas::Render()
         if( VPoint.b_quilt )          // quilted
         {
             if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                !cc1->m_pQuilt->IsChartInQuilt( pc ) )
-                DeleteChartTextures(pc);
+                !cc1->m_pQuilt->IsChartInQuilt( pc ) ) {
+                 ptf->DeleteAllTextures();
+            }
         }
         else      // not quilted
         {
-            if( Current_Ch != pc )
-                DeleteChartTextures(pc);
+            if( Current_Ch != pc ) {
+                ptf->DeleteAllTextures();
+            }
         }
     }
 
