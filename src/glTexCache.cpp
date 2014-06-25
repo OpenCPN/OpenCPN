@@ -316,7 +316,7 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         glTextureDescriptor *p = new glTextureDescriptor;
         p->x = rect.x;
         p->y = rect.y;
-        p->level_min = 100;  // default, crazy high
+        p->level_min = g_mipmap_max_level + 1;  // default, nothing loaded
         m_td_array[array_index] = p;
         
     }
@@ -326,6 +326,12 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     base_level = 0;
 #endif
 
+    //  On Windows, we need a color flip, so it should start at the base level
+#ifdef __WXMSW__    
+    if(g_GLOptions.m_bTextureCompression && (m_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT) )
+        base_level = 0;
+#endif    
+        
     /* Also, some non-compliant OpenGL drivers need the complete mipmap set when using compressed textures */
     if( glChartCanvas::s_b_UploadFullCompressedMipmaps && g_GLOptions.m_bTextureCompression )
         base_level = 0;
@@ -433,10 +439,10 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     unsigned int lcache_limit = (unsigned int)g_nCacheLimit * 8 / 10;
     if(ChartData)
         nCache = ChartData->GetChartCache()->GetCount();
-#if 0    
+    
     if( ((g_memCacheLimit > 0) && (mem_used > g_memCacheLimit * 8 / 10)) ||
         (g_nCacheLimit && (nCache > lcache_limit)) )
-#endif        
+      
     {        
         for( int i = 0; i < 10; i++ ){
             free( ptd->map_array[i] );
@@ -462,7 +468,7 @@ unsigned char *glTexFactory::GetTextureLevel( const wxRect &rect, int level, Col
         glTextureDescriptor *p = new glTextureDescriptor;
         p->x = rect.x;
         p->y = rect.y;
-        p->level_min = 100;  // default, crazy high
+        p->level_min = g_mipmap_max_level + 1;  // default, nothing loaded
         m_td_array[array_index] = p;
         
     }
@@ -628,9 +634,17 @@ unsigned char *glTexFactory::GetTextureLevel( const wxRect &rect, int level, Col
                     }
                 }
                 FlattenColorsForCompression(ptd->map_array[level], dim, first);
-                
+ 
                 // color range fit is worse quality but twice as fast
                 int flags = squish::kDxt1 | squish::kColourRangeFit;
+                
+                if( g_GLOptions.m_bTextureCompressionCaching) {
+                /* use slower cluster fit since we are building the cache for
+                 * better quality, this takes roughly 25% longer and uses about
+                 * 10% more disk space (result doesn't compress as well with lz4) */
+                    flags = squish::kDxt1 | squish::kColourClusterFit;
+                }
+                
                 squish::CompressImageRGB(ptd->map_array[level], dim, dim, tex_data, flags);
             } else if(m_raster_format == GL_ETC1_RGB8_OES) 
                 CompressDataETC(ptd->map_array[level], dim, size, tex_data);
