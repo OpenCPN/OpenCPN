@@ -2337,12 +2337,13 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
     if(dlg.ShowModal() == wxID_OK) {
         g_GLOptions.m_bUseAcceleratedPanning = dlg.m_cbUseAcceleratedPanning->GetValue();
 
-        if(g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
+        if(g_bopengl &&
+           g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
             cc1->GetglCanvas()->ClearAllRasterTextures(); 
-            g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
             cc1->GetglCanvas()->SetupCompression();
         }
 
+        g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
         g_GLOptions.m_bTextureCompressionCaching = dlg.m_cbTextureCompressionCaching->GetValue();
         g_GLOptions.m_iTextureMemorySize = dlg.m_sTextureMemorySize->GetValue();
     }
