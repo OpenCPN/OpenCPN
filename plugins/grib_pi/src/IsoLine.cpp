@@ -605,7 +605,7 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
                     wxImage img(w, h, imageLabel.GetData(), true);
                     dc->DrawBitmap(img, xd, yd, false);
                 } else { /* opengl */
-#ifdef ocpnUSE_GL                    
+#if defined(ocpnUSE_GL) && !defined(ocpnUSE_GLES)
                     glRasterPos2i(xd, yd);
                     glPixelZoom(1, -1); /* draw data from top to bottom */
                     glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, imageLabel.GetData());

@@ -267,6 +267,13 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 }
 
 #ifdef ocpnUSE_GL
+
+#ifdef ocpnUSE_GLES
+static const GLuint format = GL_TEXTURE_2D; // we have npot textures
+#else
+static const GLuint format = GL_TEXTURE_RECTANGLE_ARB;
+#endif
+
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR,
                                               PlugIn_ViewPort *vp, int grib_pixel_size )
 {
@@ -323,12 +330,12 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
 
     GLuint texture;
     glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, texture);
+    glBindTexture(format, texture);
 
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( format, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( format, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    glTexParameteri( format, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( format, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
     glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
 
@@ -337,7 +344,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     glPixelStorei( GL_UNPACK_SKIP_ROWS, 0 );
     glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
 
-    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA, width, height,
+    glTexImage2D(format, 0, GL_RGBA, width, height,
                  0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
     glPopClientAttrib();
@@ -1022,18 +1029,21 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
                                 glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
                                 glColor4f(0, 0, 0, 0);
                                 glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-                                glBindTexture(GL_TEXTURE_RECTANGLE_ARB, 0);
-                                glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA,
+                                glEnable(format);
+                                glBindTexture(format, 0);
+                                glTexImage2D(format, 0, GL_RGBA,
                                              w, h, 0,
                                              GL_RGBA, GL_UNSIGNED_BYTE, e);
-                                glEnable(GL_TEXTURE_RECTANGLE_ARB);
+#ifdef ocpnUSE_GLES
+                                w = h = 1;
+#endif
                                 glBegin(GL_QUADS);
                                 glTexCoord2i(0, 0), glVertex2i(p.x,   p.y);
                                 glTexCoord2i(w, 0), glVertex2i(p.x+w, p.y);
                                 glTexCoord2i(w, h), glVertex2i(p.x+w, p.y+h);
                                 glTexCoord2i(0, h), glVertex2i(p.x,   p.y+h);
                                 glEnd();
-                                glDisable(GL_TEXTURE_RECTANGLE_ARB);
+                                glDisable(format);
                                 delete [] e;
 #endif
                             }
@@ -1336,7 +1346,7 @@ void GRIBOverlayFactory::DrawOLBitmap( const wxBitmap &bitmap, wxCoord x, wxCoor
     if( m_pdc )
         m_pdc->DrawBitmap( bmp, x, y, usemask );
     else {
-#ifdef ocpnUSE_GL
+#if defined(ocpnUSE_GL) && !defined(ocpnUSE_GLES)
         wxImage image = bmp.ConvertToImage();
         int w = image.GetWidth(), h = image.GetHeight();
 
@@ -1416,7 +1426,7 @@ void GRIBOverlayFactory::DrawGLImage( wxImage *pimage, wxCoord xd, wxCoord yd, b
             }
     }
 
-#ifdef ocpnUSE_GL
+#if defined(ocpnUSE_GL) && !defined(ocpnUSE_GLES)
     DrawGLRGBA( e, w, h, xd, yd );
 #endif
     delete[] e;
@@ -1427,8 +1437,8 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
                                         int xd, int yd, double dwidth, double dheight,
                                         PlugIn_ViewPort *vp )
 {
-    glEnable(GL_TEXTURE_RECTANGLE_ARB);
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, texture);
+    glEnable(format);
+    glBindTexture(format, texture);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1456,6 +1466,10 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
     double w = dwidth * vp->view_scale_ppm;
     double h = dheight * vp->view_scale_ppm;
 
+#ifdef ocpnUSE_GLES
+    width = height = 1;
+#endif
+
     glBegin(GL_QUADS);
     glTexCoord2i(0, 0),          glVertex2i(x, y);
     glTexCoord2i(width, 0),      glVertex2i(x+w, y);
@@ -1464,7 +1478,7 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
     glEnd();
 
     glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+    glDisable(format);
 
     glPopMatrix();
 }
