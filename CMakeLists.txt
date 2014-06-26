@@ -798,10 +798,10 @@ IF (OPENGL_GLU_FOUND)
       IF ( ARCH MATCHES "i386" OR ARCH MATCHES "amd64" OR ARCH MATCHES "x86_64")
         # using sse which makes the compression run about 50% faster
         message (STATUS "Compiling texture compression library with sse support")
-        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "/O2 /arch:SSE2 -DSQUISH_USE_SSE=2")
+        set_property(TARGET TEXCMP PROPERTY COMPILE_FLAGS "/arch:SSE2 -DSQUISH_USE_SSE=2")
       ENDIF ()
   ENDIF (NOT MSVC)
-  
+
 ENDIF (OPENGL_GLU_FOUND)
 
 #TODO
