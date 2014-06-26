@@ -90,6 +90,8 @@ SET(SRC_GRIB
             src/msg.h
             src/email.h
             src/email.cpp
+            src/TexFont.h
+            src/TexFont.cpp
             src/GribTable.h
             src/GribTable.cpp
             src/icons.cpp
