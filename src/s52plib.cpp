@@ -2463,11 +2463,11 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
         }
 // Debug
-if(m_pdc){
-m_pdc->SetPen(wxPen(*wxGREEN, 1));
-m_pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
-m_pdc->DrawRectangle(r.x - pivot_x, r.y - pivot_y, b_width, b_height);
-}
+//if(m_pdc){
+//m_pdc->SetPen(wxPen(*wxGREEN, 1));
+//m_pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
+//m_pdc->DrawRectangle(r.x - pivot_x, r.y - pivot_y, b_width, b_height);
+//}
 
     }
 
