@@ -3465,11 +3465,6 @@ void MyFrame::ODoSetSize( void )
     int ccch = y;
 
     if( cc1 ) {
-        cccw = x * 10 / 10;               // constrain to mod 4
-        int wr = cccw / 4;
-        cccw = wr * 4;
-        cccw += 2;                              // account for simple border
-
         int cur_width, cur_height;
         cc1->GetSize( &cur_width, &cur_height );
         if( ( cur_width != cccw ) || ( cur_height != ccch ) ) {
