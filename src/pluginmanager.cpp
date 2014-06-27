@@ -1224,7 +1224,7 @@ int PlugInManager::AddToolbarTool(wxString label, wxBitmap *bitmap, wxBitmap *bm
 
     m_plugin_tool_id_next++;
 
-    pParent->RequestNewToolbar();
+//    pParent->RequestNewToolbar();
 
     return pttc->id;
 }
