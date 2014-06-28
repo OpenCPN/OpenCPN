@@ -232,7 +232,6 @@ public:
     int getQuality() { return quality; }
 
 //    bool crossing( QLineF traject, QLineF trajectWorld ) const;
-    void crossing1Init();
     bool crossing1( QLineF trajectWorld );
     int ReadPolyVersion();
     bool qualityAvailable[6];

@@ -2157,12 +2157,13 @@ extern ocpnGLOptions g_GLOptions;
         cc1->ReloadVP();                  //  Get a nice chart background loaded
     
         //      Turn off the toolbar as a clear signal that the system is busy right now.
-        if( g_FloatingToolbarDialog ) 
-            g_FloatingToolbarDialog->Hide();
-         
-    
+        // Note: I commented this out because the toolbar never comes back for me
+        // and is unusable until I restart opencpn without generating the cache
+//        if( g_FloatingToolbarDialog ) 
+//            g_FloatingToolbarDialog->Hide();
+            
         BuildCompressedCache();
-    
+
         }
 #endif
     

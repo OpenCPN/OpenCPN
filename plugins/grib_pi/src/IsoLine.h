@@ -102,6 +102,7 @@ class Segment
 };
 
 class GRIBOverlayFactory;
+class TexFont;
 
 //===============================================================
 class IsoLine
@@ -116,6 +117,9 @@ class IsoLine
         void drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
                                PlugIn_ViewPort *vp, int density, int first,
                                wxImage &imageLabel);
+        void drawIsoLineLabelsGL(GRIBOverlayFactory *pof, PlugIn_ViewPort *vp,
+                                 int density, int first,
+                                 wxString label, wxColour &color, TexFont &texfont);
 
         int getNbSegments()     {return trace.size();}
 

@@ -271,34 +271,82 @@ GribRecord::GribRecord(const GribRecord &rec)
 
 bool GribRecord::GetInterpolatedParameters
 (const GribRecord &rec1, const GribRecord &rec2,
- double &La1, double &Lo1, double &La2, double &Lo2,
+ double &La1, double &Lo1, double &La2, double &Lo2, double &Di, double &Dj,
+ int &im1, int &jm1, int &im2, int &jm2,
  int &Ni, int &Nj, int &rec1offi, int &rec1offj, int &rec2offi, int &rec2offj )
 {
-    // for now, both records must have same Di/Dj
-    if(!rec1.isOk() || !rec2.isOk() ||
-       rec1.getDi() != rec2.getDi() || rec1.getDj() != rec2.getDj())
+    if(!rec1.isOk() || !rec2.isOk())
         return false;
+
+    /* make sure Dj both have same sign */
+    if(rec1.getDj() * rec2.getDj() < 0)
+        return false;
+
+    Di = wxMax(rec1.getDi(), rec2.getDi());
+    Dj = rec1.getDj() > 0 ?
+        wxMax(rec1.getDj(), rec2.getDj()):
+        wxMin(rec1.getDj(), rec2.getDj());
 
     /* get overlapping region */
-    La1 = wxMax(rec1.La1, rec2.La1), Lo1 = wxMax(rec1.Lo1, rec2.Lo1);
-    La2 = wxMin(rec1.La2, rec2.La2), Lo2 = wxMin(rec1.Lo2, rec2.Lo2);
+    if(Dj > 0)
+        La1 = wxMax(rec1.La1, rec2.La1), La2 = wxMin(rec1.La2, rec2.La2);
+    else
+        La1 = wxMin(rec1.La1, rec2.La1), La2 = wxMax(rec1.La2, rec2.La2);
+
+    Lo1 = wxMax(rec1.Lo1, rec2.Lo1), Lo2 = wxMin(rec1.Lo2, rec2.Lo2);
+    
+    // align gribs on integer boundaries
+    int i, j;
+    double rec1offdi, rec2offdi;
+    double rec1offdj, rec2offdj;
+
+    double iiters = rec2.Di / rec1.Di;
+    if(iiters < 1) {
+        iiters = 1/iiters;
+        im1 = 1, im2 = iiters;
+    } else
+        im1 = iiters, im2 = 1;
+
+    for(i=0; i<iiters; i++) {
+        rec1offdi = (Lo1 - rec1.Lo1)/rec1.Di;
+        rec2offdi = (Lo1 - rec2.Lo1)/rec2.Di;
+        if(rec1offdi == floor(rec1offdi) && rec2offdi == floor(rec2offdi))
+            break;
+
+        Lo1 += wxMin(rec1.Di, rec2.Di);
+    }
+    if(i == iiters) // failed to align, would need spacial interpolation to work
+        return false;
+
+    double jiters = rec2.Dj /rec1.Dj;
+    if(jiters < 1) {
+        jiters = 1/jiters;
+        jm1 = 1, jm2 = iiters;
+    } else
+        jm1 = iiters, jm2 = 1;
+
+    for(j=0; j<jiters; j++) {
+        rec1offdj = (La1 - rec1.La1)/rec1.Dj;
+        rec2offdj = (La1 - rec2.La1)/rec2.Dj;
+        if(rec1offdj == floor(rec1offdj) && rec2offdj == floor(rec2offdj))
+            break;
+
+        La1 += Dj < 0 ?
+            wxMax(rec1.getDj(), rec2.getDj()):
+            wxMin(rec1.getDj(), rec2.getDj());
+    }
+    if(j == jiters) // failed to align
+        return false;
 
     /* no overlap */
-    double Di = rec1.getDi(), Dj = rec1.getDj();
     if(La1*Dj > La2*Dj || Lo1 > Lo2)
         return false;
-
+    
     /* compute integer sizes for data array */
     Ni = (Lo2-Lo1)/Di + 1, Nj = (La2-La1)/Dj + 1;
-    
-    /* compute offsets into data arrays */
-    double rec1offdi = (Lo1 - rec1.Lo1)/Di, rec1offdj = (La1 - rec1.La1)/Dj;
-    double rec2offdi = (Lo1 - rec2.Lo1)/Di, rec2offdj = (La1 - rec2.La1)/Dj;
 
-    /* currently only work if we overlap so spatial interpolation is not needed */
-    if(floor(rec1offdi) != rec1offdi || floor(rec2offdi) != rec2offdi ||
-       floor(rec1offdj) != rec1offdj || floor(rec2offdj) != rec2offdj)
-        return false;
+    /* back-compute final La2 and Lo2 to fit this integer boundary */
+    Lo2 = Lo1 + (Ni-1)*Di, La2 = La1 + (Nj-1)*Dj;
 
     rec1offi = rec1offdi, rec2offi = rec2offdi;
     rec1offj = rec1offdj, rec2offj = rec2offdj;
@@ -314,9 +362,11 @@ bool GribRecord::GetInterpolatedParameters
 //-------------------------------------------------------------------------------
 GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRecord &rec2, double d)
 {
-    double La1, Lo1, La2, Lo2;
+    double La1, Lo1, La2, Lo2, Di, Dj;
+    int im1, jm1, im2, jm2;
     int Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj;
-    if(!GetInterpolatedParameters(rec1, rec2, La1, Lo1, La2, Lo2,
+    if(!GetInterpolatedParameters(rec1, rec2, La1, Lo1, La2, Lo2, Di, Dj,
+                                  im1, jm1, im2, jm2,
                                   Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj))
         return NULL;
 
@@ -324,40 +374,45 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
     // recopie les champs de bits
     int size = Ni*Nj;
     double *data = new double[size];
+
+    zuchar *BMSbits = NULL;
+    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL)
+        BMSbits = new zuchar[Ni*Nj/8];
+
     for (int i=0; i<Ni; i++)
         for (int j=0; j<Nj; j++) {
-            double data1 = rec1.data[(j+rec1offj)*rec1.Ni + i+rec1offi];
-            double data2 = rec2.data[(j+rec2offj)*rec2.Ni + i+rec2offi];
+            int in=j*Ni+i;
+            int i1 = (j*jm1+rec1offj)*rec1.Ni + i*im1+rec1offi;
+            int i2 = (j*jm2+rec2offj)*rec2.Ni + i*im2+rec2offi;
+            double data1 = rec1.data[i1], data2 = rec2.data[i2];
             if(data1 == GRIB_NOTDEF || data2 == GRIB_NOTDEF)
-                data[j*Ni+i] = GRIB_NOTDEF;
+                data[in] = GRIB_NOTDEF;
             else
-                data[j*Ni+i] = (1-d)*data1 + d*data2;
+                data[in] = (1-d)*data1 + d*data2;
+
+            if(BMSbits) {
+                int b1 = rec1.BMSbits[i1>>3] & (1<<i1&7);
+                int b2 = rec2.BMSbits[i2>>3] & (1<<i2&7);
+                if(b1 && b2)
+                    BMSbits[in>>3] |= (1<<in)&7;
+                else
+                    BMSbits[in>>3] &= ~(1<<in)&7;
+            }
         }
-
-
-// TODO fix this
-#if 0
-    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) {
-//            int size1 = rec1.sectionSize3-6, size2 = rec2.sectionSize3-6;
-        int size = Ni*Nj;
-        zuchar *BMSbits = new zuchar[size];
-        for (int i=0; i<size; i++)
-            BMSbits[i] = 0;// todo: fix this rec1.BMSbits[i+rec1off] & rec2.BMSbits[i+rec2off];
-    } else
-        BMSbits = NULL;
-#endif
 
     /* should maybe update strCurDate ? */
 
     GribRecord *ret = new GribRecord;
     *ret = rec1;
 
+    ret->Di = Di, ret->Dj = Dj;
     ret->Ni = Ni, ret->Nj = Nj;
 
     ret->La1 = La1, ret->La2 = La2;
     ret->Lo1 = Lo1, ret->Lo2 = Lo2;
 
     ret->data = data;
+    ret->BMSbits = BMSbits;
 
     ret->latMin = wxMin(La1, La2), ret->latMax = wxMax(La1, La2);
     ret->lonMin = Lo1, ret->lonMax = Lo2;
@@ -372,9 +427,11 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
                                              const GribRecord &rec1x, const GribRecord &rec1y,
                                              const GribRecord &rec2x, const GribRecord &rec2y, double d)
 {
-    double La1, Lo1, La2, Lo2;
+    double La1, Lo1, La2, Lo2, Di, Dj;
+    int im1, jm1, im2, jm2;
     int Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj;
-    if(!GetInterpolatedParameters(rec1x, rec2x, La1, Lo1, La2, Lo2,
+    if(!GetInterpolatedParameters(rec1x, rec2x, La1, Lo1, La2, Lo2, Di, Dj,
+                                  im1, jm1, im2, jm2,
                                   Ni, Nj, rec1offi, rec1offj, rec2offi, rec2offj))
         return NULL;
 
@@ -387,20 +444,20 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
         // could also make sure lat and lon min/max are the same...
         return NULL;
  
-    /* TODO: for wave direction we need to do something else because 360 wraps will mess it up */
     // recopie les champs de bits
     int size = Ni*Nj;
     double *datax = new double[size], *datay = new double[size];
     for (int i=0; i<Ni; i++) {
         for (int j=0; j<Nj; j++) {
-            double data1x = rec1x.data[(j+rec1offj)*rec1x.Ni + i+rec1offi];
-            double data1y = rec1y.data[(j+rec1offj)*rec1x.Ni + i+rec1offi];
-            double data2x = rec2x.data[(j+rec2offj)*rec2x.Ni + i+rec2offi];
-            double data2y = rec2y.data[(j+rec2offj)*rec2x.Ni + i+rec2offi];
+            int in=j*Ni+i;
+            int i1 = (j*jm1+rec1offj)*rec1x.Ni + i*im1+rec1offi;
+            int i2 = (j*jm2+rec2offj)*rec2x.Ni + i*im2+rec2offi;
+            double data1x = rec1x.data[i1], data1y = rec1y.data[i1];
+            double data2x = rec2x.data[i2], data2y = rec2y.data[i2];
             if(data1x == GRIB_NOTDEF || data1y == GRIB_NOTDEF ||
                data2x == GRIB_NOTDEF || data2y == GRIB_NOTDEF) {
-                datax[j*Ni+i] = GRIB_NOTDEF;
-                datay[j*Ni+i] = GRIB_NOTDEF;
+                datax[in] = GRIB_NOTDEF;
+                datay[in] = GRIB_NOTDEF;
             } else {
                 double data1m = sqrt(pow(data1x, 2) + pow(data1y, 2));
                 double data2m = sqrt(pow(data2x, 2) + pow(data2y, 2));
@@ -412,34 +469,27 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
                 else if(data2a - data1a > M_PI) data2a -= 2*M_PI;
                 double dataa = (1-d)*data1a + d*data2a;
 
-                datax[j*Ni+i] = datam*cos(dataa);
-                datay[j*Ni+i] = datam*sin(dataa);
+                datax[in] = datam*cos(dataa);
+                datay[in] = datam*sin(dataa);
             }
         }
     }
 
-#if 0
-    if (rec1.BMSbits != NULL && rec2.BMSbits != NULL) {
-//            int size1 = rec1.sectionSize3-6, size2 = rec2.sectionSize3-6;
-        int size = Ni*Nj;
-        BMSbits = new zuchar[size];
-        for (int i=0; i<size; i++)
-            BMSbits[i] = 0;// todo: fix this rec1.BMSbits[i+rec1off] & rec2.BMSbits[i+rec2off];
-    } else
-        BMSbits = NULL;
-#endif
     /* should maybe update strCurDate ? */
 
     GribRecord *ret = new GribRecord;
     rety = new GribRecord;
     *ret = rec1x;
 
+    ret->Di = Di, ret->Dj = Dj;
     ret->Ni = Ni, ret->Nj = Nj;
 
     ret->La1 = La1, ret->La2 = La2;
     ret->Lo1 = Lo1, ret->Lo2 = Lo2;
     
     ret->data = datax;
+    ret->BMSbits = NULL;
+    ret->hasBMS = false; // I don't think wind or current ever use BMS correct?
 
     ret->latMin = wxMin(La1, La2), ret->latMax = wxMax(La1, La2);
     ret->lonMin = Lo1, ret->lonMax = Lo2;
@@ -447,6 +497,8 @@ GribRecord *GribRecord::Interpolated2DRecord(GribRecord *&rety,
     rety = new GribRecord;
     *rety = *ret;
     rety->data = datay;
+    rety->BMSbits = NULL;
+    rety->hasBMS = false;
 
     return ret;
 }

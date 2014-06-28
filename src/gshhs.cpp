@@ -430,50 +430,56 @@ bool GshhsPolyReader::crossing1( QLineF trajectWorld )
         for( cy = cymin; cy < cymax; cy++ ) {
             int cxi = cxx/GSSH_SUBM, cyi = (GSSH_SUBM*90+cy)/GSSH_SUBM;
             GshhsPolyCell *&cel = allCells[cxi][cyi];
-            if(!cel && (mutex1.Lock(), !cel)) {
-                /* load the needed cell from disk */
-                cel = new GshhsPolyCell(fpoly, cxi, cyi-90, &polyHeader);
-                wxASSERT( cel );
+            if(!cel) {
+                mutex1.Lock();
+                if(!cel) {
+                    /* load the needed cell from disk */
+                    cel = new GshhsPolyCell(fpoly, cxi, cyi-90, &polyHeader);
+                    wxASSERT( cel );
+                }
                 mutex1.Unlock();
             }
 
             int hash = GSSH_SUBM*(GSSH_SUBM*(90-cyi) + cy - cxi) + cxx;
             std::vector<QLineF> *&high_res_map = cel->high_res_map[hash];
             wxASSERT(hash >= 0 && hash < GSSH_SUBM*GSSH_SUBM);
-            if(!high_res_map && (mutex2.Lock(), !high_res_map)) {
-                /* build the needed sub cell of line segments from the cell */
-                contour_list &poly1 = cel->getPoly1();
+            if(!high_res_map) {
+                mutex2.Lock();
+                if(!high_res_map) {
+                    /* Build the needed sub cell of line segments from the cell */
+                    contour_list &poly1 = cel->getPoly1();
 
-                double minlat = (double)cy/GSSH_SUBM, maxlat = (double)(cy+1)/GSSH_SUBM;
-                double minlon = (double)cxx/GSSH_SUBM, maxlon = (double)(cxx+1)/GSSH_SUBM;
-                high_res_map = new std::vector<QLineF>;
-                for( unsigned int pi = 0; pi < poly1.size(); pi++ ) {
-                    contour &c = poly1[pi];
-                    double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
-                    /* must compute states because sometimes a
-                       segment starts and ends outside our cell, but passes
-                       through it so must be included */
-                    int lstatex = lx < minlon ? -1 : lx > maxlon ? 1 : 0;
-                    int lstatey = ly < minlat ? -1 : ly > maxlat ? 1 : 0;
+                    double minlat = (double)cy/GSSH_SUBM, maxlat = (double)(cy+1)/GSSH_SUBM;
+                    double minlon = (double)cxx/GSSH_SUBM, maxlon = (double)(cxx+1)/GSSH_SUBM;
+                    high_res_map = new std::vector<QLineF>;
+                    for( unsigned int pi = 0; pi < poly1.size(); pi++ ) {
+                        contour &c = poly1[pi];
+                        double lx = c[c.size()-1].x, ly = c[c.size()-1].y;
+                        /* must compute states because sometimes a
+                           segment starts and ends outside our cell, but passes
+                           through it so must be included */
+                        int lstatex = lx < minlon ? -1 : lx > maxlon ? 1 : 0;
+                        int lstatey = ly < minlat ? -1 : ly > maxlat ? 1 : 0;
                     
-                    for( unsigned int pj = 0; pj < c.size(); pj++ ) {
-                        double cx = c[pj].x, cy = c[pj].y;
-                        // gshhs data shouldn't, but sometimes contains zero segments
-                        // which enlarges our table, but
-                        // more importantly, the fast segment intersection test
-                        // and doesn't correctly account for it
-                        if(lx == cx && ly == cy)
-                            continue;
-                        
-                        int statex = cx < minlon ? -1 : cx > maxlon ? 1 : 0;
-                        int statey = cy < minlat ? -1 : cy > maxlat ? 1 : 0;
+                        for( unsigned int pj = 0; pj < c.size(); pj++ ) {
+                            double cx = c[pj].x, cy = c[pj].y;
+                            // gshhs data shouldn't, but sometimes contains zero segments
+                            // which enlarges our table, but
+                            // more importantly, the fast segment intersection test
+                            // and doesn't correctly account for it
+                            if(lx == cx && ly == cy)
+                                continue;
 
-                        if((!statex || lstatex != statex) &&
-                           (!statey || lstatey != statey))
-                            high_res_map->push_back(QLineF(lx, ly, cx, cy));
+                            int statex = cx < minlon ? -1 : cx > maxlon ? 1 : 0;
+                            int statey = cy < minlat ? -1 : cy > maxlat ? 1 : 0;
 
-                        lx = cx, ly = cy;
-                        lstatex = statex, lstatey = statey;
+                            if((!statex || lstatex != statex) &&
+                               (!statey || lstatey != statey))
+                                high_res_map->push_back(QLineF(lx, ly, cx, cy));
+
+                            lx = cx, ly = cy;
+                            lstatex = statex, lstatey = statey;
+                        }
                     }
                 }
                 mutex2.Unlock();

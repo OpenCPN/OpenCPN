@@ -551,7 +551,6 @@ unsigned char *glTexFactory::GetTextureLevel( const wxRect &rect, int level, Col
         if( b_found ) {
  
             if(m_fs->IsOpened()){
-                uint32_t off = m_fs->Tell();
                 m_fs->Seek(p->texture_offset);
                 ptd->comp_array[level] = (unsigned char*)malloc(size);
                 
