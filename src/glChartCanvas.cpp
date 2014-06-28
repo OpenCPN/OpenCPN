@@ -335,14 +335,13 @@ void BuildCompressedCache()
 
     bool ramonly = false;
     
-/*    
     if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
         ramonly = true;
 #ifdef ocpnUSE_GLES
     if(g_raster_format == GL_ETC1_RGB8_OES)
         ramonly = true;
 #endif
-*/
+
     int thread_count = 0;
     CompressedCacheWorkerThread **workers = NULL;
     if(ramonly) {
@@ -2518,25 +2517,28 @@ void glChartCanvas::Render()
             // enable rendering to texture in framebuffer object
             ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
 
-            wxPoint c_old = VPoint.GetPixFromLL( VPoint.clat, VPoint.clon );
-            wxPoint c_new = m_cache_vp.GetPixFromLL( VPoint.clat, VPoint.clon );
+            wxPoint c_old, c_new;
+            int dx, dy;
+            bool accelerated_pan = false;
+            if(g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
+               // only works for mercator without rotation
+                && VPoint.m_projection_type == PROJECTION_MERCATOR &&
+               (fabs( VPoint.rotation ) != 0.0 ||
+                (g_bskew_comp && fabs( VPoint.skew ) != 0.0 ))) {
+                    wxPoint c_old = VPoint.GetPixFromLL( VPoint.clat, VPoint.clon );
+                    wxPoint c_new = m_cache_vp.GetPixFromLL( VPoint.clat, VPoint.clon );
 
-            int dy = c_new.y - c_old.y;
-            int dx = c_new.x - c_old.x;
+                    dy = c_new.y - c_old.y;
+                    dx = c_new.x - c_old.x;
 
-            bool rotation = fabs( VPoint.rotation ) != 0.0 ||
-                (g_bskew_comp && fabs( VPoint.skew ) != 0.0 );
+                    accelerated_pan = (!VPoint.b_quilt ||
+                                       cc1->m_pQuilt->IsVPBlittable( VPoint, dx, dy, true )) &&
+                        // there must be some overlap
+                        abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
+            }
 
             // do we allow accelerated panning?  can we perform it here?
-            if(g_GLOptions.m_bUseAcceleratedPanning &&
-               (!VPoint.b_quilt ||
-                cc1->m_pQuilt->IsVPBlittable( VPoint, dx, dy, true )) &&
-               // only works for mercator without rotation
-               VPoint.m_projection_type == PROJECTION_MERCATOR && !rotation &&
-               m_cache_vp.IsValid() &&
-               // there must be some overlap
-               abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y ) {
-
+            if(accelerated_pan) {
                 m_cache_page = !m_cache_page; /* page flip */
 
                 /* perform accelerated pan rendering to the new framebuffer */
@@ -2603,6 +2605,7 @@ void glChartCanvas::Render()
 
                 RenderCharts(gldc, update_region);
             } else { // must redraw the entire screen
+            draw_entire_screen:
                 ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                               g_texture_rectangle_format,
                                               m_cache_tex[m_cache_page], 0 );

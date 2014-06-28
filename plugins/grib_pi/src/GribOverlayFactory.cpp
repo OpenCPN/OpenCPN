@@ -198,6 +198,12 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
         return false;
     }
 
+    // setup numbers texture if needed
+    if(!m_pdc) {
+        wxFont font( 9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL );
+        m_TexFontNumbers.Build(font);
+    }
+
     m_Message_Hiden.Empty();
 
     //    If the scale has changed, clear out the cached bitmaps in DC mode
@@ -267,6 +273,13 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 }
 
 #ifdef ocpnUSE_GL
+
+#ifdef ocpnUSE_GLES
+static const GLuint format = GL_TEXTURE_2D; // we have npot textures
+#else
+static const GLuint format = GL_TEXTURE_RECTANGLE_ARB;
+#endif
+
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR,
                                               PlugIn_ViewPort *vp, int grib_pixel_size )
 {
@@ -323,12 +336,12 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
 
     GLuint texture;
     glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, texture);
+    glBindTexture(format, texture);
 
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( format, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( format, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    glTexParameteri( format, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( format, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
     glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
 
@@ -337,7 +350,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     glPixelStorei( GL_UNPACK_SKIP_ROWS, 0 );
     glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
 
-    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA, width, height,
+    glTexImage2D(format, 0, GL_RGBA, width, height,
                  0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
     glPopClientAttrib();
@@ -540,6 +553,30 @@ wxColour GRIBOverlayFactory::GetGraphicColor(int settings, double val_in)
     return wxColour(0, 0, 0); /* unreachable */
 }
 
+wxString GRIBOverlayFactory::getLabelString(double value, int settings)
+{
+    int p;
+    switch(settings) {
+    case 2:
+        p = m_Settings.Settings[2].m_Units == 2 ? 2 : 0;
+        break;
+    case 3:
+    case 4:
+    case 7:
+    case 8:
+        p = 1;
+        break;
+    case 5:
+        p = value < 100. ? 2 : value < 10. ? 1 : 0;
+        p += m_Settings.Settings[5].m_Units == 1 ? 1 : 0;
+            break;
+
+    default :
+        p = 0;
+    }
+    return wxString::Format( _T("%.*f"), p, value );
+}
+
 /* return cached wxImage for a given number, or create it if not in the cache */
 wxImage &GRIBOverlayFactory::getLabel(double value, int settings, wxColour back_color )
 {
@@ -548,27 +585,7 @@ wxImage &GRIBOverlayFactory::getLabel(double value, int settings, wxColour back_
     if (it != m_labelCache.end())
         return m_labelCache[value];
 
-    wxString labels;
-    int p;
-    switch(settings) {
-        case 2:
-            p = m_Settings.Settings[2].m_Units == 2 ? 2 : 0;
-            break;
-        case 3:
-        case 4:
-        case 7:
-        case 8:
-            p = 1;
-            break;
-        case 5:
-            p = value < 100. ? 2 : value < 10. ? 1 : 0;
-            p += m_Settings.Settings[5].m_Units == 1 ? 1 : 0;
-            break;
-
-        default :
-            p = 0;
-    }
-    labels.Printf( _T("%.*f"), p, value );
+    wxString labels = getLabelString(value, settings);
 
     wxColour text_color;
     GetGlobalColor( _T ( "UBLCK" ), &text_color );
@@ -751,8 +768,13 @@ void GRIBOverlayFactory::RenderGribIsobar( int settings, GribRecord **pGR,
         int density = 40;
         int first = 0;
 
-        piso->drawIsoLineLabels( this, m_pdc, vp, density,
-                                 first, getLabel(piso->getValue(), settings, back_color) );
+        if(m_pdc)
+            piso->drawIsoLineLabels( this, m_pdc, vp, density,
+                                     first, getLabel(piso->getValue(), settings, back_color) );
+        else
+            piso->drawIsoLineLabelsGL( this, vp, density,
+                                       first, getLabelString(piso->getValue(), settings),
+                                       back_color, m_TexFontNumbers );
     }
 
     delete pGRM;
@@ -992,49 +1014,52 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
 
                         if( mag != GRIB_NOTDEF ) {
                             double value = m_Settings.CalibrateValue(settings, mag);
-                            wxImage &label = getLabel(value, settings, GetGraphicColor(settings, value));
-
-                            //set alpha chanel
-                            int w = label.GetWidth(), h = label.GetHeight();
-                            for( int y = 0; y < h; y++ ) {
-                                for( int x = 0; x < w; x++ ) {
-                                    label.SetAlpha( x, y, m_Settings.m_iOverlayTransparency );
-                                }
-                            }
+                            wxColour back_color = GetGraphicColor(settings, value);
 
                             if( m_pdc ) {
+                                wxImage &label = getLabel(value, settings, back_color);
+                                //set alpha chanel
+                                int w = label.GetWidth(), h = label.GetHeight();
+                                for( int y = 0; y < h; y++ )
+                                    for( int x = 0; x < w; x++ )
+                                    label.SetAlpha( x, y, m_Settings.m_iOverlayTransparency );
+
                                 m_pdc->DrawBitmap(label, p.x, p.y, true);
                             } else {
 #ifdef ocpnUSE_GL
-                                int w = label.GetWidth(), h = label.GetHeight();
-                                unsigned char *d = label.GetData(), *a = label.GetAlpha();
-                                unsigned char *e = new unsigned char[4*w*h];
-                                for( int y = 0; y < h; y++ ) {
-                                    for( int x = 0; x < w; x++ ) {
-                                        int ioff = (y * w + x);
-                                        e[ioff* 4 + 0] = d[ioff* 3 + 0];
-                                        e[ioff* 4 + 1] = d[ioff* 3 + 1];
-                                        e[ioff* 4 + 2] = d[ioff* 3 + 2];
-                                        e[ioff* 4 + 3] = m_Settings.m_iOverlayTransparency;
-                                    }
-                                }
                                 glEnable( GL_BLEND );
                                 glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-                                glColor4f(0, 0, 0, 0);
-                                glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-                                glBindTexture(GL_TEXTURE_RECTANGLE_ARB, 0);
-                                glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA,
-                                             w, h, 0,
-                                             GL_RGBA, GL_UNSIGNED_BYTE, e);
-                                glEnable(GL_TEXTURE_RECTANGLE_ARB);
+                                glColor4ub(back_color.Red(), back_color.Green(),
+                                           back_color.Blue(), m_Settings.m_iOverlayTransparency);
+
+                                wxString label = getLabelString(value, settings);
+                                int w, h;
+                                m_TexFontNumbers.GetTextExtent( label, &w, &h );
+
+                                int label_offsetx = 5, label_offsety = 1;
+                                int x = p.x - label_offsetx, y = p.y - label_offsety;
+                                w += 2*label_offsetx, h += 2*label_offsety;
+
+                                /* draw bounding rectangle */
                                 glBegin(GL_QUADS);
-                                glTexCoord2i(0, 0), glVertex2i(p.x,   p.y);
-                                glTexCoord2i(w, 0), glVertex2i(p.x+w, p.y);
-                                glTexCoord2i(w, h), glVertex2i(p.x+w, p.y+h);
-                                glTexCoord2i(0, h), glVertex2i(p.x,   p.y+h);
+                                glVertex2i(x,   y);
+                                glVertex2i(x+w, y);
+                                glVertex2i(x+w, y+h);
+                                glVertex2i(x,   y+h);
                                 glEnd();
-                                glDisable(GL_TEXTURE_RECTANGLE_ARB);
-                                delete [] e;
+
+                                glColor4ub( 0, 0, 0, m_Settings.m_iOverlayTransparency );
+
+                                glBegin(GL_LINE_LOOP);
+                                glVertex2i(x,   y);
+                                glVertex2i(x+w, y);
+                                glVertex2i(x+w, y+h);
+                                glVertex2i(x,   y+h);
+                                glEnd();
+
+                                glEnable(GL_TEXTURE_2D);
+                                m_TexFontNumbers.RenderString( label, p.x, p.y );
+                                glDisable(GL_TEXTURE_2D);
 #endif
                             }
                         }
@@ -1052,29 +1077,43 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
     if(msg.empty())
         return;
 
-    wxMemoryDC mdc;
-    wxBitmap bm( 1000, 1000 );
-    mdc.SelectObject( bm );
-    mdc.Clear();
+    if(m_pdc) {
+        wxDC &dc = *m_pdc;
+        dc.SetFont( *mfont );
+        dc.SetPen( *wxTRANSPARENT_PEN);
 
-    //wxFont mfont( 15, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_ITALIC, wxFONTWEIGHT_NORMAL );
-    mdc.SetFont( *mfont );
-    mdc.SetPen( *wxTRANSPARENT_PEN);
-   // mdc.SetBrush( *wxLIGHT_GREY_BRUSH );
-    mdc.SetBrush( wxColour(243, 229, 47 ) );
-    int w, h;
-    mdc.GetMultiLineTextExtent( msg, &w, &h );
-    h += 2;
-    int label_offset = 10;
-    int wdraw = w + ( label_offset * 2 );
-    mdc.DrawRectangle( 0, 0, wdraw, h );
+        dc.SetBrush( wxColour(243, 229, 47 ) );
+        int w, h;
+        dc.GetMultiLineTextExtent( msg, &w, &h );
+        h += 2;
+        int yp = y - ( GetChartbarHeight() + h );
 
-    mdc.DrawLabel( msg, wxRect( label_offset, 0, wdraw, h ), wxALIGN_LEFT| wxALIGN_CENTRE_VERTICAL);
-    mdc.SelectObject( wxNullBitmap );
+        int label_offset = 10;
+        int wdraw = w + ( label_offset * 2 );
+        dc.DrawRectangle( 0, yp, wdraw, h );
+        dc.DrawLabel( msg, wxRect( label_offset, yp, wdraw, h ),
+                      wxALIGN_LEFT | wxALIGN_CENTRE_VERTICAL);
+    } else {
+        m_TexFontMessage.Build(*mfont);
+        int w, h;
+        m_TexFontMessage.GetTextExtent( msg, &w, &h);
+        h += 2;
+        int yp = y - ( GetChartbarHeight() + h );
 
-    wxBitmap sbm = bm.GetSubBitmap( wxRect( 0, 0, wdraw, h ) );
+        glColor3ub( 243, 229, 47 );
 
-    DrawOLBitmap( sbm, 0, y - ( GetChartbarHeight() + h ), false );
+        glBegin(GL_QUADS);
+        glVertex2i(0, yp);
+        glVertex2i(w, yp);
+        glVertex2i(w, yp+h);
+        glVertex2i(0, yp+h);
+        glEnd();
+
+        glColor3ub( 0, 0, 0 );
+        glEnable(GL_TEXTURE_2D);
+        m_TexFontMessage.RenderString( msg, 0, yp);
+        glDisable(GL_TEXTURE_2D);
+    }
 }
 
 void GRIBOverlayFactory::drawDoubleArrow( int i, int j, double ang, wxColour arrowColor, int arrowWidth, int arrowSize )
@@ -1316,119 +1355,13 @@ void GRIBOverlayFactory::DrawGLLine( double x1, double y1, double x2, double y2,
 }
 #endif
 
-void GRIBOverlayFactory::DrawOLBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask )
-{
-    wxBitmap bmp;
-    if( x < 0 || y < 0 ) {
-        int dx = ( x < 0 ? -x : 0 );
-        int dy = ( y < 0 ? -y : 0 );
-        int w = bitmap.GetWidth() - dx;
-        int h = bitmap.GetHeight() - dy;
-        /* picture is out of viewport */
-        if( w <= 0 || h <= 0 ) return;
-        wxBitmap newBitmap = bitmap.GetSubBitmap( wxRect( dx, dy, w, h ) );
-        x += dx;
-        y += dy;
-        bmp = newBitmap;
-    } else {
-        bmp = bitmap;
-    }
-    if( m_pdc )
-        m_pdc->DrawBitmap( bmp, x, y, usemask );
-    else {
-#ifdef ocpnUSE_GL
-        wxImage image = bmp.ConvertToImage();
-        int w = image.GetWidth(), h = image.GetHeight();
-
-        if( usemask ) {
-            unsigned char *d = image.GetData();
-            unsigned char *a = image.GetAlpha();
-
-            unsigned char mr, mg, mb;
-            if( !image.GetOrFindMaskColour( &mr, &mg, &mb ) && !a ) printf(
-                    "trying to use mask to draw a bitmap without alpha or mask\n" );
-
-            unsigned char *e = new unsigned char[4 * w * h];
-            {
-                for( int y = 0; y < h; y++ )
-                    for( int x = 0; x < w; x++ ) {
-                        unsigned char r, g, b;
-                        int off = ( y * image.GetWidth() + x );
-                        r = d[off * 3 + 0];
-                        g = d[off * 3 + 1];
-                        b = d[off * 3 + 2];
-
-                        e[off * 4 + 0] = r;
-                        e[off * 4 + 1] = g;
-                        e[off * 4 + 2] = b;
-
-                        e[off * 4 + 3] =
-                                a ? a[off] : ( ( r == mr ) && ( g == mg ) && ( b == mb ) ? 0 : 255 );
-                    }
-            }
-
-            glColor4f( 1, 1, 1, 1 );
-
-            glEnable( GL_BLEND );
-            glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-            glRasterPos2i( x, y );
-            glPixelZoom( 1, -1 );
-            glDrawPixels( w, h, GL_RGBA, GL_UNSIGNED_BYTE, e );
-            glPixelZoom( 1, 1 );
-            glDisable( GL_BLEND );
-
-            delete[] ( e );
-        } else {
-            glRasterPos2i( x, y );
-            glPixelZoom( 1, -1 ); /* draw data from top to bottom */
-            glDrawPixels( w, h, GL_RGB, GL_UNSIGNED_BYTE, image.GetData() );
-            glPixelZoom( 1, 1 );
-        }
-#endif
-    }
-}
-
-void GRIBOverlayFactory::DrawGLImage( wxImage *pimage, wxCoord xd, wxCoord yd, bool usemask )
-{
-    int w = pimage->GetWidth(), h = pimage->GetHeight();
-    int x_offset = 0;
-    int y_offset = 0;
-
-    unsigned char *d = pimage->GetData();
-    unsigned char *a = pimage->GetAlpha();
-
-    unsigned char *e = new unsigned char[4 * w * h];
-    {
-        for( int y = 0; y < h; y++ )
-            for( int x = 0; x < w; x++ ) {
-                unsigned char r, g, b;
-                int off = ( ( y + y_offset ) * pimage->GetWidth() + x + x_offset );
-                r = d[off * 3 + 0];
-                g = d[off * 3 + 1];
-                b = d[off * 3 + 2];
-
-                int doff = ( y * w + x );
-                e[doff * 4 + 0] = r;
-                e[doff * 4 + 1] = g;
-                e[doff * 4 + 2] = b;
-
-                e[doff * 4 + 3] = a ? a[off] : 255;
-            }
-    }
-
-#ifdef ocpnUSE_GL
-    DrawGLRGBA( e, w, h, xd, yd );
-#endif
-    delete[] e;
-}
-
 #ifdef ocpnUSE_GL
 void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
                                         int xd, int yd, double dwidth, double dheight,
                                         PlugIn_ViewPort *vp )
 {
-    glEnable(GL_TEXTURE_RECTANGLE_ARB);
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, texture);
+    glEnable(format);
+    glBindTexture(format, texture);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1456,6 +1389,10 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
     double w = dwidth * vp->view_scale_ppm;
     double h = dheight * vp->view_scale_ppm;
 
+#ifdef ocpnUSE_GLES
+    width = height = 1;
+#endif
+
     glBegin(GL_QUADS);
     glTexCoord2i(0, 0),          glVertex2i(x, y);
     glTexCoord2i(width, 0),      glVertex2i(x+w, y);
@@ -1464,47 +1401,9 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
     glEnd();
 
     glDisable(GL_BLEND);
-    glDisable(GL_TEXTURE_RECTANGLE_ARB);
+    glDisable(format);
 
     glPopMatrix();
 }
 
-void GRIBOverlayFactory::DrawGLRGBA( unsigned char *pRGBA, int width, int height, int xd,
-        int yd )
-{
-    int x_offset = 0;
-    int y_offset = 0;
-    int draw_width = width;
-    int draw_height = height;
-
-    glColor4f( 1, 1, 1, 1 );
-
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    glPixelZoom( 1, -1 );
-
-    glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
-
-    glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
-    if( xd < 0 ) {
-        x_offset = -xd;
-        draw_width += xd;
-    }
-    if( yd < 0 ) {
-        y_offset = -yd;
-        draw_height += yd;
-    }
-
-    glRasterPos2i( xd + x_offset, yd + y_offset );
-
-    glPixelStorei( GL_UNPACK_SKIP_PIXELS, x_offset );
-    glPixelStorei( GL_UNPACK_SKIP_ROWS, y_offset );
-
-    glDrawPixels( draw_width, draw_height, GL_RGBA, GL_UNSIGNED_BYTE, pRGBA );
-    glPixelZoom( 1, 1 );
-    glDisable( GL_BLEND );
-
-    glPopClientAttrib();
-
-}
 #endif
