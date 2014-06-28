@@ -5432,11 +5432,6 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
 
     GetClientSize( &m_canvas_width, &m_canvas_height );
 
-//        Constrain the active width to be mod 4
-
-    int wr = m_canvas_width / 4;
-    m_canvas_width = wr * 4;
-
 //    Get some canvas metrics
 
 //          Rescale to current value, in order to rebuild VPoint data structures

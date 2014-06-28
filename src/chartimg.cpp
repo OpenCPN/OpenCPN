@@ -3565,7 +3565,14 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
       int target_width = (int)wxRound((double)source.width  / factor) ;
       int target_height = (int)wxRound((double)source.height / factor);
 
-
+      int dest_line_length = dest_stride * BPP/8;
+      
+      //  On MSW, if using DibSections, each scan line starts on a DWORD boundary.
+      //  The DibSection has been allocated to conform with this requirement.
+#ifdef __PIX_CACHE_DIBSECTION__      
+      dest_line_length = (((dest.width * 24) + 31) & ~31) >> 3;
+#endif      
+      
       if((target_height == 0) || (target_width == 0))
             return false;
 
@@ -3595,7 +3602,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
                         s1.height = blur_factor;
                         GetChartBits(s1, s_data, 1);
 
-                        target_data = data + (y * dest_stride * BPP/8);
+                        target_data = data + (y * dest_line_length/*dest_stride * BPP/8*/);
 
                         for (int x = 0; x < target_width; x++)
                         {
@@ -3673,7 +3680,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
                               s1.height = 1;
                               GetChartBits(s1, s_data, get_bits_submap);
 
-                              target_data = data + (y * dest_stride * BPP/8) + (dest.x * BPP / 8);
+                              target_data = data + (y * dest_line_length/*dest_stride * BPP/8*/) + (dest.x * BPP / 8);
 
                               long x = (source.x << scaler) + (dest.x * x_delta);
                               long sizex16 = Size_X << scaler;
@@ -3801,7 +3808,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
                   {
                         y_offset = (int)((j - y_vernier_i) * m_raster_scale_factor) * vsource.width;        // into the source data
 
-                        target_line_start = target_data + (j * dest_stride * BPP / 8);
+                        target_line_start = target_data + (j * dest_line_length /*dest_stride * BPP / 8*/);
                         target_data_x = target_line_start + ((dest.x) * BPP / 8);
 
                         i = dest.x;
