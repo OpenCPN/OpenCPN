@@ -46,6 +46,8 @@ public:
     wxString GetFullName( void );
     void Toggle_AIS_CPA(void);
     void ToggleShowTrack(void);
+    void CloneFrom( AIS_Target_Data* q );
+    
 
     int                       MID;
     int                       MMSI;

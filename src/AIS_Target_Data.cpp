@@ -131,6 +131,8 @@ AIS_Target_Data::AIS_Target_Data()
     b_in_ack_timeout = false;
 
     m_ptrack = new AISTargetTrackList;
+    m_ptrack->DeleteContents(true);
+    
     b_active = false;
     blue_paddle = 0;
     bCPA_Valid = false;
@@ -140,9 +142,101 @@ AIS_Target_Data::AIS_Target_Data()
     altitude = 0;
 }
 
+void AIS_Target_Data::CloneFrom( AIS_Target_Data* q )
+{
+    strncpy(ShipName, q->ShipName, 21);
+    strncpy(CallSign, q->CallSign, 8);
+    strncpy(Destination, q->Destination, 21);
+    ShipNameExtension[0] = 0;
+    b_show_AIS_CPA = q->b_show_AIS_CPA;;
+    
+    SOG = q->SOG;
+    COG = q->COG;
+    HDG = q->HDG;
+    ROTAIS = q->ROTAIS;
+    Lat = q->Lat;
+    Lon = q->Lon;
+    
+    PositionReportTicks = q->PositionReportTicks;
+    StaticReportTicks = q->StaticReportTicks;
+    b_lost = q->b_lost;
+    
+    IMO = q->IMO;
+    MID = q->MID;
+    MMSI = q->MMSI;
+    NavStatus = q->NavStatus;
+    SyncState = q->SyncState;
+    SlotTO = q->SlotTO;
+    ShipType = q->ShipType;    
+    
+    CPA = q->CPA;
+    TCPA = q->TCPA;
+    
+    Range_NM = q->Range_NM;
+    Brg = q->Brg;
+    
+    DimA = q->DimA;
+    DimB = q->DimB;
+    DimC = q->DimC;
+    DimD = q->DimD;
+    
+    ETA_Mo = q->ETA_Mo;
+    ETA_Day = q->ETA_Day;
+    ETA_Hr = q->ETA_Hr;
+    ETA_Min = q->ETA_Min;
+    
+    Draft = q->Draft;
+    
+    RecentPeriod = q->RecentPeriod;
+    
+    m_utc_hour = q->m_utc_hour;
+    m_utc_min = q->m_utc_min;
+    m_utc_sec = q->m_utc_sec;
+    
+    Class = q->Class;
+    n_alert_state = q->n_alert_state;
+    b_suppress_audio = q->b_suppress_audio;
+    b_positionDoubtful = q->b_positionDoubtful;
+    b_positionOnceValid = q->b_positionOnceValid;
+    b_nameValid = q->b_nameValid;
+    
+    Euro_Length = q->Euro_Length;            // Extensions for European Inland AIS
+    Euro_Beam = q->Euro_Beam;
+    Euro_Draft = q->Euro_Draft;
+    strncpy(Euro_VIN, q->Euro_VIN, 8);
+    UN_shiptype = q->UN_shiptype;
+    
+    b_isEuroInland = q->b_isEuroInland;
+    b_blue_paddle = q->b_blue_paddle;
+    
+    b_OwnShip = q->b_OwnShip;
+    b_in_ack_timeout = q->b_in_ack_timeout;
+    
+    m_ptrack = new AISTargetTrackList;
+    m_ptrack->DeleteContents(true);
+    
+    wxAISTargetTrackListNode *node = q->m_ptrack->GetFirst();
+    while( node ) {
+        AISTargetTrackPoint *ptrack_point = node->GetData();
+        m_ptrack->Append( ptrack_point );
+        node = node->GetNext();
+    }
+    
+    
+    b_active = q->b_active;
+    blue_paddle = q->blue_paddle;
+    bCPA_Valid = q->bCPA_Valid;
+    ROTIND = q->ROTIND;
+    b_show_track = q->b_show_track;
+    b_SarAircraftPosnReport = q->b_SarAircraftPosnReport;
+    altitude = q->altitude;
+}
+
+
 AIS_Target_Data::~AIS_Target_Data()
 {
-      delete m_ptrack;
+    m_ptrack->Clear();
+    delete m_ptrack;
 }
 
 wxString AIS_Target_Data::GetFullName( void )
