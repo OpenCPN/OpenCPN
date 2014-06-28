@@ -112,7 +112,7 @@ AIS_Target_Data::AIS_Target_Data()
     m_utc_sec = 0;
 
     Class = AIS_CLASS_A;      // default
-    n_alarm_state = AIS_NO_ALARM;
+    n_alert_state = AIS_NO_ALERT;
     b_suppress_audio = false;
     b_positionDoubtful = false;
     b_positionOnceValid = false;

@@ -62,11 +62,6 @@
 #define TIMER_AIS_MSEC      998
 #define TIMER_AIS_AUDIO_MSEC 2000
 
-#define ID_ACKNOWLEDGE        10001
-#define ID_SILENCE            10002
-#define ID_AIS_TARGET_LIST    10003
-#define ID_JUMPTO             10004
-
 enum {
     tlTRK = 0,
     tlNAME,
@@ -140,12 +135,11 @@ typedef enum ais_transponder_class
     AIS_APRS    // APRS position report
 }_ais_transponder_class;
 
-//    Describe AIS Alarm state
-typedef enum ais_alarm_type
+//    Describe AIS Alert state
+typedef enum ais_alert_type
 {
-      AIS_NO_ALARM = 0,
-      AIS_ALARM_SET,
-//      AIS_ALARM_ACKNOWLEDGED
+      AIS_NO_ALERT = 0,
+      AIS_ALERT_SET,
 
 }_ais_alarm_type;
 
