@@ -2340,7 +2340,7 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     //  Special case for GEO_AREA objects with centred symbols
     if( rzRules->obj->Primitive_type == GEO_AREA ) {
         if( rzRules->obj->BBObj.Intersect( symbox, 0 ) != _IN ) // Symbol is wholly outside base object
-        return true;
+            return true;
     }
 
     //      Now render the symbol
@@ -3447,7 +3447,7 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             double lat = *pdl++;
             point_obj->BBObj.SetMin( lon, lat );
             point_obj->BBObj.SetMax( lon, lat );
-
+            point_obj->bBBObj_valid = false;
             
             char *rule_str1 = RenderCS( point_rzRules, ru_cs );
             wxString cs_string( rule_str1, wxConvUTF8 );
@@ -3490,10 +3490,30 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         
         double lon = *pdl++;
         double lat = *pdl++;
+
+#if 1
+        // I would much rather just mark as invalid, but for some
+        // reason multi-point soundings are implemented to rebuild
+        // on every frame (not very efficient)
+        // marking invalid cannot work for hardware acclerated panning as we
+        // need exact bounding boxes
+        // Once this is corrected (no more "new S57Obj" in render)
+        // we can simply invalidate on the initial frame and delete this mess,
+        // and the result will be a lot faster to render as well.
+        const int b_width = 29, b_height = 29;
+        double plat[2], plon[2];
+        GetPixPointSingle( 0, 0, &plat[0], &plon[0], vp );
+        GetPixPointSingle( b_width, b_height, &plat[1], &plon[1], vp );
+        double wll = plon[1] - plon[0], hll = plat[0] - plat[1];
+        point_obj->BBObj.SetMin( lon - wll/2, lat - hll/2 );
+        point_obj->BBObj.SetMax( lon + wll/2, lat + hll/2 );
+        point_obj->bBBObj_valid = true;
+#else
         point_obj->BBObj.SetMin( lon, lat );
         point_obj->BBObj.SetMax( lon, lat );
-        
-  
+        point_obj->bBBObj_valid = false;
+#endif
+
         if( !ObjectRenderCheckPos( point_rzRules, vp ) )
             continue;
         
@@ -3562,6 +3582,7 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             double lat = *pdl++;
             point_obj->BBObj.SetMin( lon, lat );
             point_obj->BBObj.SetMax( lon, lat );
+            point_obj->bBBObj_valid = false;
 
             previous_rzRules = point_rzRules;
         }
@@ -6496,18 +6517,6 @@ bool s52plib::ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp )
 
 //    if(rzRules->obj->Index == 0)
 //        return false;
-
-    /* invalid, so we must render once to update the bounding box..
-       so in this case we must render to get the correct data onscreen
-       the fbo is corrupted.  Without the fbo.. the text "pops" into view
-       at the wrong time when panning over it without this.
-
-       TODO:  calculate the bouding box correctly in s57chart::ResetPointBBoxes,
-       or else, after rendering the first time, set a dirty region to avoid corruption
-    so remove this test and the other cases that compute the box, otherwise
-    the first frame rendered after scale/rotation change may be very slow. */
-//    if(!rzRules->obj->bBBObj_valid)
-//        return true;
 
     // Of course, the object must be at least partly visible in the viewport
     const wxBoundingBox &vpBox = vp->GetBBox(), &testBox = rzRules->obj->BBObj;
