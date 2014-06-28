@@ -95,7 +95,7 @@ public:
     int                       RecentPeriod;
     bool                      b_active;
     bool                      b_lost;
-    ais_alarm_type            n_alarm_state;
+    ais_alert_type            n_alert_state;
     bool                      b_suppress_audio;
     bool                      b_positionDoubtful;
     bool                      b_positionOnceValid;

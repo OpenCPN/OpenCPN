@@ -879,14 +879,6 @@ void ViewPort::SetBBoxDirect( double latmin, double lonmin, double latmax, doubl
     vpBBox.SetMax( lonmax, latmax );
 }
 
-static void InvalidateGL()
-{
-#ifdef ocpnUSE_GL
-    if(g_bopengl)
-        glChartCanvas::Invalidate();
-#endif
-}
-
 //------------------------------------------------------------------------------
 //    ChartCanvas Implementation
 //------------------------------------------------------------------------------
@@ -1556,6 +1548,14 @@ ChartCanvas::~ChartCanvas()
         delete m_glcc;
 #endif
 
+}
+
+void ChartCanvas::InvalidateGL()
+{
+#ifdef ocpnUSE_GL
+        if(g_bopengl)
+            glChartCanvas::Invalidate();
+#endif
 }
 
 int ChartCanvas::GetCanvasChartNativeScale()
@@ -4382,7 +4382,7 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
     if( GetVP().GetBBox().PointInBox( td->Lon, td->Lat, 0 ) ) drawit++;                       // yep
 
     //   Always draw alert targets, even if they are off the screen
-    if( td->n_alarm_state == AIS_ALARM_SET ) drawit++;
+    if( td->n_alert_state == AIS_ALERT_SET ) drawit++;
 
     //  If AIS tracks are shown, is the first point of the track on-screen?
     if( 1/*g_bAISShowTracks*/ && td->b_show_track ) {
@@ -4560,13 +4560,13 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( td->b_SarAircraftPosnReport )
             target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
 
-        if( ( td->n_alarm_state == AIS_ALARM_SET ) && ( td->bCPA_Valid ) ) target_brush = wxBrush(
+        if( ( td->n_alert_state == AIS_ALERT_SET ) && ( td->bCPA_Valid ) ) target_brush = wxBrush(
                         GetGlobalColor( _T ( "URED" ) ) );
 
         if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
         //    Check for alarms here, maintained by AIS class timer tick
-        if( ((td->n_alarm_state == AIS_ALARM_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
+        if( ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
             //  Calculate the point of CPA for target
             double tcpa_lat, tcpa_lon;
             ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat,
@@ -7277,7 +7277,7 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         if( seltype & SELTYPE_AISTARGET ) {
             MenuAppend( menuAIS, ID_DEF_MENU_AIS_QUERY, _( "Target Query..." ) );
             AIS_Target_Data *myptarget = g_pAIS->Get_Target_Data_From_MMSI( m_FoundAIS_MMSI );
-            if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alarm_state != AIS_ALARM_SET) ) {
+            if( myptarget && myptarget->bCPA_Valid && (myptarget->n_alert_state != AIS_ALERT_SET) ) {
                 if( myptarget->b_show_AIS_CPA )
                     MenuAppend( menuAIS, ID_DEF_MENU_AIS_CPA, _( "Hide Target CPA" ) );
                 else
@@ -7853,7 +7853,7 @@ void pupHandler_PasteWaypoint() {
         if( pRouteManagerDialog && pRouteManagerDialog->IsShown() ) pRouteManagerDialog->UpdateWptListCtrl();
     }
 
-    InvalidateGL();
+    cc1->InvalidateGL();
     cc1->Refresh( false );
     delete kml;
     ::wxEndBusyCursor();
@@ -7971,7 +7971,7 @@ void pupHandler_PasteRoute() {
             pRouteManagerDialog->UpdateRouteListCtrl();
             pRouteManagerDialog->UpdateWptListCtrl();
         }
-        InvalidateGL();
+        cc1->InvalidateGL();
         cc1->Refresh( false );
     }
 
@@ -8025,7 +8025,7 @@ void pupHandler_PasteTrack() {
     pConfig->AddNewRoute( newTrack, -1 );    // use auto next num
     newTrack->RebuildGUIDList(); // ensure the GUID list is intact and good
 
-    InvalidateGL();
+    cc1->InvalidateGL();
     cc1->Refresh( false );
     delete kml;
     ::wxEndBusyCursor();

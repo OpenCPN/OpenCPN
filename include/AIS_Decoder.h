@@ -58,7 +58,8 @@ private:
     void UpdateAllTracks(void);
     void UpdateOneTrack(AIS_Target_Data *ptarget);
     void BuildERIShipTypeHash(void);
-
+    AIS_Target_Data *ProcessDSx( const wxString& str );
+    
     AIS_Target_Hash *AISTargetList;
     AIS_Target_Hash *AIS_AreaNotice_Sources;
 
