@@ -1899,7 +1899,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     if( event.GetKeyCode() < 128 )            //ascii
     {
-        char key_char = (char) event.GetKeyCode();
+        int key_char = event.GetKeyCode();
 
         //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
         if( !g_b_assume_azerty ) {
@@ -2204,7 +2204,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 
     if( event.GetKeyCode() < 128 )            //ascii
     {
-        char key_char = (char) event.GetKeyCode();
+        int key_char = event.GetKeyCode();
 
         //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
         if( !g_b_assume_azerty ) {
