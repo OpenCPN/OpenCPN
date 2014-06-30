@@ -381,6 +381,8 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     int gpsg_utc_min = 0;
     int gpsg_utc_sec = 0;
     char gpsg_name_str[21];
+    wxString gpsg_date;
+    
     bool bdecode_result = false; 
     
     bool  b_dsx = false;
@@ -633,7 +635,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         gpsg_lat = gpsg_degs + gpsg_mins / 60.0;
 
         token = tkz.GetNextToken();            //  hemisphere N or S
-        if( token.Mid( 1, 1 ).Contains( _T("Ss") ) ) gpsg_lat = 0. - gpsg_lat;
+        if( token.Mid( 1, 1 ).Contains( _T("S") ) ) gpsg_lat = 0. - gpsg_lat;
 
         token = tkz.GetNextToken();            // longitude DDDMM.MMMM
         token.ToDouble( &gpsg_lon );
@@ -642,7 +644,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         gpsg_lon = gpsg_degs + gpsg_mins / 60.0;
 
         token = tkz.GetNextToken();            // hemisphere E or W
-        if( token.Mid( 1, 1 ).Contains( _T("Ww") ) ) gpsg_lon = 0. - gpsg_lon;
+        if( token.Mid( 1, 1 ).Contains( _T("W") ) ) gpsg_lon = 0. - gpsg_lon;
 
         token = tkz.GetNextToken();            //    altitude AA.a
         //    token.toDouble(&gpsg_alt);
@@ -654,7 +656,8 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         token.ToDouble( &gpsg_cog );
 
         token = tkz.GetNextToken();            // date DDMMYY
-
+        gpsg_date = token;
+        
         token = tkz.GetNextToken();            // time UTC hhmmss.dd
         token.ToDouble( &gpsg_utc_time );
         gpsg_utc_hour = (int) ( gpsg_utc_time / 10000.0 );
@@ -774,6 +777,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pTargetData->m_utc_hour = gpsg_utc_hour;
                 pTargetData->m_utc_min = gpsg_utc_min;
                 pTargetData->m_utc_sec = gpsg_utc_sec;
+                pTargetData->m_date_string = gpsg_date;
                 pTargetData->MMSI = gpsg_mmsi;
                 pTargetData->NavStatus = 0; // underway
                 pTargetData->Lat = gpsg_lat;

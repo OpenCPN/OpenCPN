@@ -470,8 +470,21 @@ wxString AIS_Target_Data::BuildQueryResult( void )
     wxString courseStr, sogStr, hdgStr, rotStr, rngStr, brgStr, destStr, etaStr;
 
     if( Class == AIS_GPSG_BUDDY ) {
+        long month, year, day;
+        m_date_string.Mid(0,2).ToLong(&day);
+        m_date_string.Mid(2,2).ToLong(&month);
+        m_date_string.Mid(4,2).ToLong(&year);
+        wxDateTime date;
+        date.SetDay(day);
+        date.SetMonth((wxDateTime::Month)(month-1));
+        date.SetYear(year + 2000);
+        
+        wxString f_date = date.FormatISODate();
+        
         html << vertSpacer << rowStart << _("Report as of") << rowEnd
-             << rowStartH << wxString::Format( _T("<b>%d:%d UTC "), m_utc_hour, m_utc_min )
+             << rowStartH << _T("<b>")
+             << f_date + _T("</b> at <b>")
+             << wxString::Format( _T("%d:%d UTC "), m_utc_hour, m_utc_min )
              << rowEnd;
     } else {
         if( Class == AIS_CLASS_A && !b_SarAircraftPosnReport ) {

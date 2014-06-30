@@ -107,6 +107,8 @@ public:
     int                       m_utc_hour;
     int                       m_utc_min;
     int                       m_utc_sec;
+    wxString                  m_date_string;
+    
     wxDateTime                m_ack_time;
     bool                      b_in_ack_timeout;
 
