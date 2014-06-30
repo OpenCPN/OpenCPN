@@ -1905,6 +1905,18 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
         wxPoint r;
         GetPointPixSingle( rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp );
 
+        // if object is east of greenwich
+        if(r.x < -text->rText.width) {
+            double x = rzRules->obj->x + (mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI)
+                / rzRules->obj->x_rate;
+            GetPointPixSingle( rzRules, rzRules->obj->y, x, &r, vp );
+        } else
+        // if object crosses greenwich
+        if(r.x > vp->pix_width) {
+            double x = rzRules->obj->x - (mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI)
+                / rzRules->obj->x_rate;
+            GetPointPixSingle( rzRules, rzRules->obj->y, x, &r, vp );
+        }
 
         wxRect rect;
 
@@ -1943,13 +1955,15 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
 //            if ( rzRules->obj->Primitive_type == GEO_POINT )
         {
             wxBoundingBox bbtext;
-            double plat, plon;
+            double plat, plon, extent = 0;
 
             GetPixPointSingle( rect.GetX(), rect.GetY() + rect.GetHeight(), &plat, &plon, vp );
-            bbtext.SetMin( plon, plat );
+            if(plon >= 360)
+                extent = 360;
+            bbtext.SetMin( plon - extent, plat );
 
             GetPixPointSingle( rect.GetX() + rect.GetWidth(), rect.GetY(), &plat, &plon, vp );
-            bbtext.SetMax( plon, plat );
+            bbtext.SetMax( plon - extent, plat );
 
             if( rzRules->obj->bBBObj_valid )
                 rzRules->obj->BBObj.Expand( bbtext );
@@ -6529,7 +6543,11 @@ bool s52plib::ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp )
 
     //  Do a secondary test if the viewport crosses Greenwich
     //  This will pick up objects east of Greenwich
-    if( vpBox.GetMaxX() > 360. && vpBox.GetMaxX() - 360 >= testBox.GetMinX())
+    if( vpBox.GetMaxX() >= 360. && vpBox.GetMaxX() - 360 >= testBox.GetMinX())
+        return true;
+
+    // Tertiary test for objects which cross Greenwich
+    if( testBox.GetMaxX() >= 360. && vpBox.GetMinX() <= testBox.GetMaxX() - 360)
         return true;
 
     return false;

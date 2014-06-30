@@ -4460,13 +4460,27 @@ void s57chart::ResetPointBBoxes( const ViewPort &vp_last, const ViewPort &vp_thi
 
                         double lat1 = (lat - top->obj->BBObj.GetMinY()) * d;
                         double lat2 = (lat - top->obj->BBObj.GetMaxY()) * d;
-                        double lon1 = (lon - top->obj->BBObj.GetMinX()) * d;
-                        double lon2 = (lon - top->obj->BBObj.GetMaxX()) * d;
+
+                        double minx = top->obj->BBObj.GetMinX();
+                        double maxx = top->obj->BBObj.GetMaxX();
+
+                        if(lon - minx > 180) {
+                            minx += 360;
+                            maxx += 360;
+                        }
+
+                        double lon1 = (lon - minx) * d;
+                        double lon2 = (lon - maxx) * d;
+                        
+                        if(lon - lon1 < 0) {
+                            lon1 -= 360;
+                            lon2 -= 360;
+                        }
 
                         top->obj->BBObj.SetMin( lon - lon1, lat - lat1 );
                         top->obj->BBObj.SetMax( lon - lon2, lat - lat2 );
 
-                        // this method is very close,  but errors accumulate
+                        // this method is very close, but errors accumulate
                         top->obj->bBBObj_valid = false;
                     }
                 }
