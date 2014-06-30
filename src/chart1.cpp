@@ -1685,8 +1685,13 @@ bool MyApp::OnInit()
 if( 0 == g_memCacheLimit )
     g_memCacheLimit = (int) ( g_mem_total * 0.5 );
     g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // math in kBytes
-#endif
+#else
+    g_memCacheLimit = (int) ( (g_mem_total - g_mem_initial) * 0.5 );
+#endif    
 
+    
+    
+    
 //      Establish location and name of chart database
 #ifdef __WXMSW__
     pChartListFileName = new wxString( _T("CHRTLIST.DAT") );

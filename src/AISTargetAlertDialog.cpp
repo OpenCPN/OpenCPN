@@ -29,6 +29,8 @@
 #include "AIS_Target_Data.h"
 #include "FontMgr.h"
 #include "ocpn_types.h"
+#include "Select.h"
+#include "routemanagerdialog.h"
 
 extern ColorScheme global_color_scheme;
 extern bool g_bopengl;
@@ -39,6 +41,12 @@ extern int g_ais_alert_dialog_x;
 extern int g_ais_alert_dialog_y;
 extern int g_ais_alert_dialog_sx;
 extern int g_ais_alert_dialog_sy;
+extern bool g_bAIS_CPA_Alert_Audio;
+extern wxString g_default_wp_icon;
+extern Select *pSelect;
+extern MyConfig *pConfig;
+extern RouteManagerDialog *pRouteManagerDialog;
+extern ChartCanvas *cc1;
 
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -106,6 +114,7 @@ BEGIN_EVENT_TABLE ( AISTargetAlertDialog, wxDialog )
     EVT_BUTTON( ID_ACKNOWLEDGE, AISTargetAlertDialog::OnIdAckClick )
     EVT_BUTTON( ID_SILENCE, AISTargetAlertDialog::OnIdSilenceClick )
     EVT_BUTTON( ID_JUMPTO, AISTargetAlertDialog::OnIdJumptoClick )
+    EVT_BUTTON( ID_WPT_CREATE, AISTargetAlertDialog::OnIdCreateWPClick )
     EVT_MOVE( AISTargetAlertDialog::OnMove )
     EVT_SIZE( AISTargetAlertDialog::OnSize )
 END_EVENT_TABLE()
@@ -125,14 +134,18 @@ void AISTargetAlertDialog::Init()
 }
 
 
-bool AISTargetAlertDialog::Create( int target_mmsi, wxWindow *parent, AIS_Decoder *pdecoder, bool b_jumpto,
-             wxWindowID id,  const wxString& caption,  const wxPoint& pos,const wxSize& size, long style )
+bool AISTargetAlertDialog::Create( int target_mmsi, wxWindow *parent, AIS_Decoder *pdecoder,
+                                   bool b_jumpto, bool b_createWP, bool b_ack,
+                                   wxWindowID id,  const wxString& caption,
+                                   const wxPoint& pos,const wxSize& size, long style )
                      
 {
     
     OCPN_AlertDialog::Create(parent, id, caption, pos, size, style);
     m_bjumpto = b_jumpto;
-
+    m_back = b_ack;
+    m_bcreateWP = b_createWP;
+    
     m_target_mmsi = target_mmsi;
     m_pdecoder = pdecoder;
 
@@ -170,20 +183,30 @@ void AISTargetAlertDialog::CreateControls()
     topSizer->Add( AckBox, 0, wxALIGN_CENTER_HORIZONTAL | wxALL, 5 );
 
     // The Silence button
-    wxButton* silence = new wxButton( this, ID_SILENCE, _( "&Silence Alert" ), wxDefaultPosition,
+    if( g_bAIS_CPA_Alert_Audio ){
+        wxButton* silence = new wxButton( this, ID_SILENCE, _( "&Silence Alert" ), wxDefaultPosition,
             wxDefaultSize, 0 );
-    AckBox->Add( silence, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+        AckBox->Add( silence, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    }
 
     // The Ack button
-    wxButton* ack = new wxButton( this, ID_ACKNOWLEDGE, _( "&Acknowledge" ), wxDefaultPosition,
+    if( m_back ) {
+        wxButton* ack = new wxButton( this, ID_ACKNOWLEDGE, _( "&Acknowledge" ), wxDefaultPosition,
             wxDefaultSize, 0 );
-    AckBox->Add( ack, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+        AckBox->Add( ack, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    }
 
     if( m_bjumpto ) {
         wxButton* jumpto = new wxButton( this, ID_JUMPTO, _( "&Jump To" ), wxDefaultPosition,
                 wxDefaultSize, 0 );
         AckBox->Add( jumpto, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
     }
+    
+    if( m_bcreateWP ) {
+        wxButton *createWptBtn = new wxButton( this, ID_WPT_CREATE, _("Create Waypoint"), wxDefaultPosition, wxDefaultSize, 0 );
+        AckBox->Add( createWptBtn, 0, wxALIGN_CENTER_VERTICAL | wxALL, 5 );
+    }
+    
 
     UpdateText();
 }
@@ -254,7 +277,7 @@ void AISTargetAlertDialog::OnClose( wxCloseEvent& event )
     if( m_pdecoder ) {
         AIS_Target_Data *td = m_pdecoder->Get_Target_Data_From_MMSI( Get_Dialog_MMSI() );
         if( td ) {
-            if( AIS_ALARM_SET == td->n_alarm_state ) {
+            if( AIS_ALERT_SET == td->n_alert_state ) {
                 td->m_ack_time = wxDateTime::Now();
                 td->b_in_ack_timeout = true;
             }
@@ -271,7 +294,7 @@ void AISTargetAlertDialog::OnIdAckClick( wxCommandEvent& event )
     if( m_pdecoder ) {
         AIS_Target_Data *td = m_pdecoder->Get_Target_Data_From_MMSI( Get_Dialog_MMSI() );
         if( td ) {
-            if( AIS_ALARM_SET == td->n_alarm_state ) {
+            if( AIS_ALERT_SET == td->n_alert_state ) {
                 td->m_ack_time = wxDateTime::Now();
                 td->b_in_ack_timeout = true;
             }
@@ -280,6 +303,29 @@ void AISTargetAlertDialog::OnIdAckClick( wxCommandEvent& event )
     Destroy();
     g_pais_alert_dialog_active = NULL;
 }
+void AISTargetAlertDialog::OnIdCreateWPClick( wxCommandEvent& event )
+{
+    if( m_pdecoder ) { 
+        AIS_Target_Data *td =  m_pdecoder->Get_Target_Data_From_MMSI( Get_Dialog_MMSI() );
+        if( td ) {
+            RoutePoint *pWP = new RoutePoint( td->Lat, td->Lon, g_default_wp_icon, wxEmptyString, GPX_EMPTY_STRING );
+            pWP->m_bIsolatedMark = true;                      // This is an isolated mark
+            pSelect->AddSelectableRoutePoint( td->Lat, td->Lon, pWP );
+            pConfig->AddNewWayPoint( pWP, -1 );    // use auto next num
+            
+            if( pRouteManagerDialog && pRouteManagerDialog->IsShown() )
+                pRouteManagerDialog->UpdateWptListCtrl();
+            if(cc1){
+                cc1->undo->BeforeUndoableAction( Undo_CreateWaypoint, pWP, Undo_HasParent, NULL );
+                cc1->undo->AfterUndoableAction( NULL );
+                cc1->InvalidateGL();
+            }
+            Refresh( false );
+        }
+    }
+    
+}
+
 
 void AISTargetAlertDialog::OnIdSilenceClick( wxCommandEvent& event )
 {
