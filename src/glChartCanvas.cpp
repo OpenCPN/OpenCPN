@@ -1062,6 +1062,11 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     wxBoundingBox box, vpbox = vp.GetBBox();
     ChartData->GetDBBoundingBox( dbIndex, &box );
 
+    // Don't draw an outline in the case where the chart covers the entire world */
+    double lon_diff = box.GetMaxX() - box.GetMinX();
+    if(lon_diff == 360)
+        return;
+
     float lon_bias;
     if( vpbox.IntersectOut( box ) ) {
         wxPoint2DDouble p = wxPoint2DDouble(360, 0);
