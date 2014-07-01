@@ -180,8 +180,10 @@ void HalfScaleChartBits( int width, int height, unsigned char *source, unsigned 
 
 
         
-bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString filename)
+bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString filename,
+                   wxProgressDialog *pprog, const wxString &msg, int count)
 {
+    bool ret = true;
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
     int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
     char *compressed_data = new char[max_compressed_size];
@@ -198,6 +200,9 @@ bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString
         int nx_tex = ( size_X / tex_dim ) + 1;
         int ny_tex = ( size_Y / tex_dim ) + 1;
         
+        int nd = 0;
+        int nt = ny_tex * nx_tex;
+        
         wxRect rect;
         rect.y = 0;
         for( int y = 0; y < ny_tex; y++ ) {
@@ -209,16 +214,31 @@ bool CompressChart(ChartBase *pchart, wxString CompressedCacheFilePath, wxString
                 for(int level = 0; level < g_mipmap_max_level + 1; level++ ) {
                         unsigned char *tex_data = tex_fact->GetTextureLevel( rect, level, global_color_scheme );
                 }
+                nd++;
+                
                 
                 rect.x += rect.width;
             }
+            
+            if(pprog){
+                bool bskip = false;
+                wxString m1;
+                m1.Printf(_T("%04d/%04d \n"), nd, nt);
+                pprog->Update(count-1, m1 + msg, &bskip );
+                if(bskip){
+                    ret = false;
+                    goto skipout;
+                }
+                
+            }
+            
             rect.y += rect.height;
         }
-        
+skipout:        
         tex_fact->DeleteAllTextures();
         delete tex_fact;
     }
-    return true;
+    return ret;
 }    
                         
 
@@ -229,7 +249,7 @@ public:
         : wxThread(wxTHREAD_JOINABLE), pchart(pc), CompressedCacheFilePath(CCFP), filename(fn)
         { Create(); }
     void *Entry() {
-        CompressChart(pchart, CompressedCacheFilePath, filename);
+        CompressChart(pchart, CompressedCacheFilePath, filename, NULL, wxEmptyString, 0);
         return 0;
     }
 
@@ -315,14 +335,13 @@ void BuildCompressedCache()
 
     bool ramonly = false;
     
-/*    
     if(g_raster_format == GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
         ramonly = true;
 #ifdef ocpnUSE_GLES
     if(g_raster_format == GL_ETC1_RGB8_OES)
         ramonly = true;
 #endif
-*/
+
     int thread_count = 0;
     CompressedCacheWorkerThread **workers = NULL;
     if(ramonly) {
@@ -353,10 +372,10 @@ void BuildCompressedCache()
 
         bool skip = false;
         wxString msg;
-        msg.Printf( _T("%4g NMi  "), distance);
+        msg.Printf( _("Distance from Ownship:  %4.0f NMi      Chart: "), distance);
         msg += pchart->GetFullPath();
         
-        pprog->Update(count-1, msg, &skip );
+        pprog->Update(count-1, _T("0000/0000 \n") + msg, &skip );
         if(skip)
             break;
 
@@ -380,8 +399,10 @@ void BuildCompressedCache()
                 }
             }
         } else {
-            CompressChart(pchart, CompressedCacheFilePath, filename);
+            bool bcontinue = CompressChart(pchart, CompressedCacheFilePath, filename, pprog, msg, count);
             ChartData->DeleteCacheChart(pchart);
+            if(!bcontinue)
+                break;
         }
     }
 
@@ -2496,25 +2517,28 @@ void glChartCanvas::Render()
             // enable rendering to texture in framebuffer object
             ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
 
-            wxPoint c_old = VPoint.GetPixFromLL( VPoint.clat, VPoint.clon );
-            wxPoint c_new = m_cache_vp.GetPixFromLL( VPoint.clat, VPoint.clon );
+            wxPoint c_old, c_new;
+            int dx, dy;
+            bool accelerated_pan = false;
+            if(g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
+               // only works for mercator without rotation
+                && VPoint.m_projection_type == PROJECTION_MERCATOR &&
+               (fabs( VPoint.rotation ) != 0.0 ||
+                (g_bskew_comp && fabs( VPoint.skew ) != 0.0 ))) {
+                    wxPoint c_old = VPoint.GetPixFromLL( VPoint.clat, VPoint.clon );
+                    wxPoint c_new = m_cache_vp.GetPixFromLL( VPoint.clat, VPoint.clon );
 
-            int dy = c_new.y - c_old.y;
-            int dx = c_new.x - c_old.x;
+                    dy = c_new.y - c_old.y;
+                    dx = c_new.x - c_old.x;
 
-            bool rotation = fabs( VPoint.rotation ) != 0.0 ||
-                (g_bskew_comp && fabs( VPoint.skew ) != 0.0 );
+                    accelerated_pan = (!VPoint.b_quilt ||
+                                       cc1->m_pQuilt->IsVPBlittable( VPoint, dx, dy, true )) &&
+                        // there must be some overlap
+                        abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y;
+            }
 
             // do we allow accelerated panning?  can we perform it here?
-            if(g_GLOptions.m_bUseAcceleratedPanning &&
-               (!VPoint.b_quilt ||
-                cc1->m_pQuilt->IsVPBlittable( VPoint, dx, dy, true )) &&
-               // only works for mercator without rotation
-               VPoint.m_projection_type == PROJECTION_MERCATOR && !rotation &&
-               m_cache_vp.IsValid() &&
-               // there must be some overlap
-               abs(dx) < m_cache_tex_x && abs(dy) < m_cache_tex_y ) {
-
+            if(accelerated_pan) {
                 m_cache_page = !m_cache_page; /* page flip */
 
                 /* perform accelerated pan rendering to the new framebuffer */
@@ -2581,6 +2605,7 @@ void glChartCanvas::Render()
 
                 RenderCharts(gldc, update_region);
             } else { // must redraw the entire screen
+            draw_entire_screen:
                 ( s_glFramebufferTexture2D )( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
                                               g_texture_rectangle_format,
                                               m_cache_tex[m_cache_page], 0 );

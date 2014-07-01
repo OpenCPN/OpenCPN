@@ -1685,8 +1685,13 @@ bool MyApp::OnInit()
 if( 0 == g_memCacheLimit )
     g_memCacheLimit = (int) ( g_mem_total * 0.5 );
     g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // math in kBytes
-#endif
+#else
+    g_memCacheLimit = (int) ( (g_mem_total - g_mem_initial) * 0.5 );
+#endif    
 
+    
+    
+    
 //      Establish location and name of chart database
 #ifdef __WXMSW__
     pChartListFileName = new wxString( _T("CHRTLIST.DAT") );
@@ -1974,6 +1979,9 @@ if( 0 == g_memCacheLimit )
     stats->pPiano->SetPolyIcon( new wxBitmap( style->GetIcon( _T("polyprj") ) ) );
     stats->pPiano->SetSkewIcon( new wxBitmap( style->GetIcon( _T("skewprj") ) ) );
 
+    //  Yield to pick up the OnSize() calls that result from Maximize()
+    Yield();
+    
     wxString perspective;
     pConfig->SetPath( _T ( "/AUI" ) );
     pConfig->Read( _T ( "AUIPerspective" ), &perspective );
@@ -2150,12 +2158,17 @@ extern ocpnGLOptions g_GLOptions;
 
     if(g_rebuild_gl_cache && g_bopengl &&
         g_GLOptions.m_bTextureCompression && g_GLOptions.m_bTextureCompressionCaching ) {
+
+        cc1->ReloadVP();                  //  Get a nice chart background loaded
     
-        if( g_FloatingToolbarDialog ) 
-            g_FloatingToolbarDialog->Hide();
+        //      Turn off the toolbar as a clear signal that the system is busy right now.
+        // Note: I commented this out because the toolbar never comes back for me
+        // and is unusable until I restart opencpn without generating the cache
+//        if( g_FloatingToolbarDialog ) 
+//            g_FloatingToolbarDialog->Hide();
             
         BuildCompressedCache();
-    
+
         }
 #endif
     
@@ -2195,6 +2208,8 @@ extern ocpnGLOptions g_GLOptions;
 
     stats->Show( true );
 
+    Yield();
+    
     gFrame->DoChartUpdate();
 
 //    g_FloatingToolbarDialog->LockPosition(false);
@@ -3456,11 +3471,6 @@ void MyFrame::ODoSetSize( void )
     int ccch = y;
 
     if( cc1 ) {
-        cccw = x * 10 / 10;               // constrain to mod 4
-        int wr = cccw / 4;
-        cccw = wr * 4;
-        cccw += 2;                              // account for simple border
-
         int cur_width, cur_height;
         cc1->GetSize( &cur_width, &cur_height );
         if( ( cur_width != cccw ) || ( cur_height != ccch ) ) {

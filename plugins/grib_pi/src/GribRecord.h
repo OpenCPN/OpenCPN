@@ -218,7 +218,8 @@ class GribRecord
     private:
         static bool GetInterpolatedParameters
             (const GribRecord &rec1, const GribRecord &rec2,
-             double &La1, double &Lo1, double &La2, double &Lo2,
+             double &La1, double &Lo1, double &La2, double &Lo2, double &Di, double &Dj,
+             int &im1, int &jm1, int &im2, int &jm2,
              int &Ni, int &Nj, int &rec1offi, int &rec1offj, int &rec2offi, int &rec2offj );
 
         int    id;    // unique identifiant
@@ -266,7 +267,7 @@ class GribRecord
         zuchar gridType;
         zuint  Ni, Nj;
         double La1, Lo1, La2, Lo2;
-		double latMin, lonMin, latMax, lonMax;
+        double latMin, lonMin, latMax, lonMax;
         double Di, Dj;
         zuchar resolFlags, scanFlags;
         bool  hasDiDj;

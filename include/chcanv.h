@@ -275,6 +275,8 @@ public:
       void DrawBlinkObjects( void );
       void FinishRoute(void);
       
+      void InvalidateGL();
+      
 #ifdef ocpnUSE_GL
       glChartCanvas *GetglCanvas(){ return m_glcc; }
 #endif      

@@ -25,7 +25,7 @@
  */
 
 #include <map>
-
+#include "TexFont.h"
 
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Specification
@@ -95,8 +95,6 @@ public:
     GribTimelineRecordSet *m_pGribTimelineRecordSet;
 
     void DrawGLLine( double x1, double y1, double x2, double y2, double width );
-    void DrawOLBitmap( const wxBitmap &bitmap, wxCoord x, wxCoord y, bool usemask );
-    void DrawGLImage( wxImage *pimage, wxCoord x, wxCoord y, bool usemask );
     void DrawMessageZoomOut( PlugIn_ViewPort *vp );
     wxColour GetGraphicColor(int config, double val);
 
@@ -126,6 +124,7 @@ private:
     void drawGrandeBarbule( wxPen pen, bool south, double si, double co, int di, int dj, int b );
     void drawTriangle( wxPen pen, bool south, double si, double co, int di, int dj, int b );
 
+    wxString getLabelString(double value, int settings);
     wxImage &getLabel(double value, int settings, wxColour back_colour);
 
 
@@ -133,7 +132,6 @@ private:
     void DrawGLTexture( GLuint texture, int width, int height,
                         int xd, int yd, double dwidth, double dheight,
                         PlugIn_ViewPort *vp );
-    void DrawGLRGBA( unsigned char *pRGBA, int RGBA_width, int RGBA_height, int xd, int yd );
     bool CreateGribGLTexture( GribOverlay *pGO, int config, GribRecord *pGR,
                               PlugIn_ViewPort *vp, int grib_pixel_size );
 #endif
@@ -160,6 +158,8 @@ private:
     bool m_bGradualColors;
 
     std::map < double , wxImage > m_labelCache;
+
+    TexFont m_TexFontMessage, m_TexFontNumbers;
 
     GRIBUIDialog &m_dlg;
     GribOverlaySettings &m_Settings;

@@ -2189,9 +2189,17 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
     int pivot_y = prule->pos.line.pivot_y.SYRW;
 
     // For opengl, hopefully the symbols are loaded in a texture
-    unsigned int texture;
+    unsigned int texture = 0;
     wxRect texrect;
-    if( m_pdc || !(texture = ChartSymbols::GetGLTextureRect(texrect, prule->name.SYNM))) {
+    if(!m_pdc) {
+      texture = ChartSymbols::GetGLTextureRect(texrect, prule->name.SYNM);
+      if(texture) {
+          prule->parm2 = texrect.width;
+          prule->parm3 = texrect.height;
+      }
+    }
+    
+    if( m_pdc || !texture ) {
 
         //    Check to see if any cached data is valid
         bool b_dump_cache = false;
@@ -2455,9 +2463,11 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
         }
 // Debug
-//    pdc->SetPen(wxPen(*wxGREEN, 1));
-//    pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
-//    pdc->DrawRectangle(r.x - pivot_x, r.y - pivot_y, b_width, b_height);
+//if(m_pdc){
+//m_pdc->SetPen(wxPen(*wxGREEN, 1));
+//m_pdc->SetBrush(wxBrush(*wxGREEN, wxTRANSPARENT));
+//m_pdc->DrawRectangle(r.x - pivot_x, r.y - pivot_y, b_width, b_height);
+//}
 
     }
 

@@ -28,6 +28,8 @@
 #include <wx/panel.h>
 #include <wx/checkbox.h>
 
+#define ID_AIS_TARGET_LIST    10003
+
 class OCPNListCtrl;
 class AIS_Decoder;
 class AIS_Target_Data;

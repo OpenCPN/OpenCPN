@@ -599,22 +599,80 @@ void IsoLine::drawIsoLineLabels(GRIBOverlayFactory *pof, wxDC *dc,
                 int xd = (ab.x + cd.x-(w+label_offset * 2))/2;
                 int yd = (ab.y + cd.y - h)/2;
 
-                if(dc) {
-                    /* don't use alpha for isobars, for some reason draw bitmap ignores
-                       the 4th argument (true or false has same result) */
-                    wxImage img(w, h, imageLabel.GetData(), true);
-                    dc->DrawBitmap(img, xd, yd, false);
-                } else { /* opengl */
-#ifdef ocpnUSE_GL                    
-                    glRasterPos2i(xd, yd);
-                    glPixelZoom(1, -1); /* draw data from top to bottom */
-                    glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, imageLabel.GetData());
-                    glPixelZoom(1, 1);
-#endif                    
-                }
+                /* don't use alpha for isobars, for some reason draw bitmap ignores
+                   the 4th argument (true or false has same result) */
+                wxImage img(w, h, imageLabel.GetData(), true);
+                dc->DrawBitmap(img, xd, yd, false);
             }
         }
     }
+}
+
+void IsoLine::drawIsoLineLabelsGL(GRIBOverlayFactory *pof,
+                                  PlugIn_ViewPort *vp, int density, int first,
+                                  wxString label, wxColour &color, TexFont &texfont)
+
+{
+    std::list<Segment *>::iterator it;
+    int nb = first;
+
+#ifdef ocpnUSE_GL
+    glEnable( GL_BLEND );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+
+    //---------------------------------------------------------
+    // Ecrit les labels
+    //---------------------------------------------------------
+    for (it=trace.begin(); it!=trace.end(); it++,nb++)
+    {
+        if (nb % density == 0)
+        {
+            Segment *seg = *it;
+
+//            if(vp->vpBBox.PointInBox((seg->px1 + seg->px2)/2., (seg->py1 + seg->py2)/2., 0.))
+            {
+                wxPoint ab;
+                GetCanvasPixLL(vp, &ab, seg->py1, seg->px1);
+                wxPoint cd;
+                GetCanvasPixLL(vp, &cd, seg->py1, seg->px1);
+
+                int w, h;
+                texfont.GetTextExtent(label, &w, &h);
+
+                int label_offsetx = 6, label_offsety = 1;
+                int xd = (ab.x + cd.x-(w+label_offsetx * 2))/2;
+                int yd = (ab.y + cd.y - h)/2;
+                int x = xd - label_offsetx, y = yd - label_offsety;
+                w += 2*label_offsetx, h += 2*label_offsety;
+
+                glColor4ub(color.Red(), color.Green(), color.Blue(), color.Alpha());
+
+                /* draw bounding rectangle */
+                glBegin(GL_QUADS);
+                glVertex2i(x,   y);
+                glVertex2i(x+w, y);
+                glVertex2i(x+w, y+h);
+                glVertex2i(x,   y+h);
+                glEnd();
+
+                glColor3ub(0, 0, 0);
+
+                glBegin(GL_LINE_LOOP);
+                glVertex2i(x,   y);
+                glVertex2i(x+w, y);
+                glVertex2i(x+w, y+h);
+                glVertex2i(x,   y+h);
+                glEnd();
+
+                glEnable(GL_TEXTURE_2D);
+                texfont.RenderString(label, xd, yd);
+                glDisable(GL_TEXTURE_2D);
+            }
+        }
+    }
+    glDisable( GL_BLEND );
+#endif
 }
 
 
