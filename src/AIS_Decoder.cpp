@@ -1721,7 +1721,6 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
 
         if( ptrack_point->m_time < test_time ) {
             if( ptarget->m_ptrack->DeleteObject( ptrack_point ) ) {
-                delete ptrack_point;
                 node = ptarget->m_ptrack->GetFirst();                // restart the list
             }
         } else
