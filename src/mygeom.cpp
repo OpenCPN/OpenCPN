@@ -411,6 +411,7 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
     int nvert;
     int nvert_max = 0;
     bool not_finished = true;
+    int total_byte_size = 0;
     while(not_finished)
     {
         if((m_buf_ptr - m_buf_head) != m_nrecl)
@@ -440,7 +441,8 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
                   nvert_max = nvert;
 
             int byte_size = nvert * 2 * sizeof(double);
-
+            total_byte_size += byte_size;
+            
             tp->p_vertex = (double *)malloc(byte_size);
             memmove(tp->p_vertex, m_buf_ptr, byte_size);
             m_buf_ptr += byte_size;
@@ -470,7 +472,21 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
     }                   // while
 
 
-
+    //  Convert the vertex arrays into a single memory allocation to enable efficient access later
+    unsigned char *vbuf = (unsigned char *)malloc(total_byte_size);
+    TriPrim *p_tp = ppg->tri_prim_head;
+    unsigned char *p_run = vbuf;
+    while( p_tp ) {
+        memcpy(p_run, p_tp->p_vertex, p_tp->nVert * 2 * sizeof(double));
+        free(p_tp->p_vertex);
+        p_tp->p_vertex = (double *)p_run;
+        p_run += p_tp->nVert * 2 * sizeof(double);
+        p_tp = p_tp->p_next; // pick up the next in chain
+    }
+    ppg->bsingle_alloc = true;
+    ppg->single_buffer = vbuf;
+    ppg->single_buffer_size = total_byte_size;
+        
     m_ppg_head = ppg;
     m_nvertex_max = nvert_max;
 
@@ -2744,6 +2760,7 @@ PolyTriGroup::PolyTriGroup()
     pgroup_geom = NULL;           // pointer to Raw geometry, used for contour line drawing
     tri_prim_head = NULL;         // head of linked list of TriPrims
     m_bSMSENC = false;
+    bsingle_alloc = false;
 
 }
 
@@ -2754,9 +2771,18 @@ PolyTriGroup::~PolyTriGroup()
     //Walk the list of TriPrims, deleting as we go
     TriPrim *tp_next;
     TriPrim *tp = tri_prim_head;
+    
+    if(bsingle_alloc){
+        if(tri_prim_head)
+            free(tri_prim_head->p_vertex);
+    }
+    
     while(tp)
     {
         tp_next = tp->p_next;
+            
+        if(!bsingle_alloc)
+            tp->FreeMem();
         delete tp;
         tp = tp_next;
     }
@@ -2771,7 +2797,10 @@ TriPrim::TriPrim()
 
 TriPrim::~TriPrim()
 {
+}
 
+void TriPrim::FreeMem()
+{
     free(p_vertex);
 }
 

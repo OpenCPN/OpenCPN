@@ -381,7 +381,8 @@ public:
       double                  y_origin;
       
       chart_context           *m_chart_context;       // per-chart constants, carried in each object for convenience
-
+      int Parm0;                                      // a per-object auxiliary parameter, used for OpenGL
+      
 };
 
 

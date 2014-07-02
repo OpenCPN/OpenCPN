@@ -3630,7 +3630,8 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj )
  
     cobj->pPolyTessGeo = ( PolyTessGeo* )pObj->pPolyTessGeo;
     cobj->m_chart_context = (chart_context *)pObj->m_chart_context;
-
+    cobj->Parm0 = 0;
+    
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
     
     cobj->bBBObj_valid = pContext->bBBObj_valid;

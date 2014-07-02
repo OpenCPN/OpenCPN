@@ -67,6 +67,11 @@ extern s52plib *ps52plib;
 extern wxString g_csv_locn;
 extern float g_GLMinLineWidth;
 
+extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
+extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
+extern PFNGLBUFFERDATAPROC                 s_glBufferData;
+extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+
 void DrawAALine( wxDC *pDC, int x0, int y0, int x1, int y1, wxColour clrLine, int dash, int space );
 extern bool GetDoubleAttr( S57Obj *obj, const char *AttrName, double &val );
 
@@ -5614,12 +5619,50 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     wxBoundingBox BBView = vp->GetBBox();
     if( rzRules->obj->pPolyTessGeo ) {
+        
+        glPushMatrix();
+
+        //      Get the transfoem parameters from the chart, and set up the OpenGL transform 
+        //      matrix for this object
+        glTranslatef( vp->pix_width / 2, vp->pix_height/2, 0 );
+        glScalef( vp->view_scale_ppm, -vp->view_scale_ppm, 0 );
+        glTranslatef( -rzRules->sm_transform_parms->easting_vp_center, -rzRules->sm_transform_parms->northing_vp_center, 0 );
+        
+        
         if( !rzRules->obj->pPolyTessGeo->IsOk() ) // perform deferred tesselation
         rzRules->obj->pPolyTessGeo->BuildDeferredTess();
 
-        wxPoint *ptp = (wxPoint *) malloc(
-                ( rzRules->obj->pPolyTessGeo->GetnVertexMax() + 1 ) * sizeof(wxPoint) );
 
+        if(1){
+        //  Has a VBO been built for this object?
+            if( 1 ) {
+                 
+                 if(!rzRules->obj->Parm0) { 
+                    GLuint vboId;
+                    // generate a new VBO and get the associated ID
+                    (s_glGenBuffers)(1, &vboId);
+                    
+                    rzRules->obj->Parm0 = vboId;
+                    
+                    // bind VBO in order to use
+                    (s_glBindBuffer)(GL_ARRAY_BUFFER, vboId);
+                    
+                    // upload data to VBO
+                    PolyTriGroup *ppg_vbo = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
+                    
+                    glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+                    (s_glBufferData)(GL_ARRAY_BUFFER,
+                                    ppg_vbo->single_buffer_size, ppg_vbo->single_buffer, GL_STATIC_DRAW);
+                    
+                    (s_glBindBuffer)(GL_ARRAY_BUFFER, 0);
+                }
+                
+                //      Bind the target VBO
+                (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->Parm0);
+                glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+             }
+        }
+        
         //  Allow a little slop in calculating whether a triangle
         //  is within the requested Viewport
         double margin = BBView.GetWidth() * .05;
@@ -5628,6 +5671,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         wxBoundingBox tp_box;
         TriPrim *p_tp = ppg->tri_prim_head;
+        int vbo_offset = 0;
+        
         while( p_tp ) {
             
             tp_box.SetMin(p_tp->minx, p_tp->miny);
@@ -5644,87 +5689,27 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
 
             if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
-                //      Get and convert the points
-                /*
-                 wxPoint *pr = ptp;
-                 double *pvert_list = p_tp->p_vertex;
+ 
+                glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
-                 for ( int iv =0 ; iv < p_tp->nVert ; iv++ )
-                 {
-                 double lon = *pvert_list++;
-                 double lat = *pvert_list++;
-                 rzRules->chart->GetPointPix ( rzRules, lat, lon, pr );
-
-                 pr++;
-                 }
-                 */
-//                rzRules->chart->GetPointPix( rzRules, (wxPoint2DDouble*) p_tp->p_vertex, ptp,
-//                        p_tp->nVert );
-
-                GetPointPixArray( rzRules, (wxPoint2DDouble*) p_tp->p_vertex, ptp, p_tp->nVert, vp );
+//                glVertexPointer(2, GL_DOUBLE, 16, p_tp->p_vertex);
+//                glDrawArrays(p_tp->type, 0, p_tp->nVert);
+                glVertexPointer(2, GL_DOUBLE, 16, (void *)(vbo_offset));
+                glDrawArrays(p_tp->type, 0, p_tp->nVert);
                 
-                switch( p_tp->type ){
-                    case PTG_TRIANGLE_FAN: {
-                        glBegin( GL_TRIANGLE_FAN );
-                        for( int it = 0; it < p_tp->nVert; it++ )
-                            glVertex2f( ptp[it].x, ptp[it].y );
-                        glEnd();
-                        break;
-                    }
-
-                    case PTG_TRIANGLE_STRIP: {
-                        glBegin( GL_TRIANGLE_STRIP );
-                        for( int it = 0; it < p_tp->nVert; it++ )
-                            glVertex2f( ptp[it].x, ptp[it].y );
-                        glEnd();
-                        break;
-                    }
-                    case PTG_TRIANGLES: {
-                        for( int it = 0; it < p_tp->nVert; it += 3 ) {
-                            int xmin = wxMin(ptp[it].x, wxMin(ptp[it+1].x, ptp[it+2].x));
-                            int xmax = wxMax(ptp[it].x, wxMax(ptp[it+1].x, ptp[it+2].x));
-                            int ymin = wxMin(ptp[it].y, wxMin(ptp[it+1].y, ptp[it+2].y));
-                            int ymax = wxMax(ptp[it].y, wxMax(ptp[it+1].y, ptp[it+2].y));
-
-                            wxRect rect( xmin, ymin, xmax - xmin, ymax - ymin );
-                            if( rect.Intersects( m_render_rect ) ) {
-                                glBegin( GL_TRIANGLES );
-                                glVertex2f( ptp[it].x, ptp[it].y );
-                                glVertex2f( ptp[it + 1].x, ptp[it + 1].y );
-                                glVertex2f( ptp[it + 2].x, ptp[it + 2].y );
-                                glEnd();
-                            }
-                        }
-                        break;
-                    }
-                }
+                glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
+                
+                 
             } // if bbox
+            vbo_offset += p_tp->nVert * 2 * sizeof(double);;
             p_tp = p_tp->p_next; // pick up the next in chain
+            
         } // while
-        free( ptp );
+        (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
+
+        glPopMatrix();
     } // if pPolyTessGeo
 
-#if 0
-    //    At very small scales, the object could be visible on both the left and right sides of the screen.
-    //    Identify this case......
-    if(vp->chart_scale > 5e7)
-    {
-        //    Does the object hang out over the left side of the VP?
-        if((rzRules->obj->BBObj.GetMaxX() > vp->GetBBox().GetMinX()) && (rzRules->obj->BBObj.GetMinX() < vp->GetBBox().GetMinX()))
-        {
-            //    If we add 360 to the objects lons, does it intersect the the right side of the VP?
-            if(((rzRules->obj->BBObj.GetMaxX() + 360.) > vp->GetBBox().GetMaxX()) && ((rzRules->obj->BBObj.GetMinX() + 360.) < vp->GetBBox().GetMaxX()))
-            {
-                //  If so, this area oject should be drawn again, this time for the left side
-                //    Do this by temporarily adjusting the objects rendering offset
-                rzRules->obj->x_origin -= mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-                RenderToBufferFilledPolygon ( rzRules, rzRules->obj, c, vp->GetBBox(), pb_spec, NULL );
-                rzRules->obj->x_origin += mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI;
-
-            }
-        }
-    }
-#endif
 
 #endif          //#ifdef ocpnUSE_GL
 

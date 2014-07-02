@@ -96,6 +96,7 @@ class TriPrim
 public:
         TriPrim();
         ~TriPrim();
+        void FreeMem(void);
 
         unsigned int type;                  // Type of triangle primitive
                                             //  May be PTG_TRIANGLES
@@ -125,7 +126,10 @@ public:
 
         TriPrim         *tri_prim_head;         // head of linked list of TriPrims
         bool            m_bSMSENC;
-
+        bool            bsingle_alloc;
+        unsigned char   *single_buffer;
+        int             single_buffer_size;
+        
     private:
         int my_bufgets( char *buf, int buf_len_max );
 

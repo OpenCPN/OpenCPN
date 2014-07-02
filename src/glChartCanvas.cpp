@@ -132,6 +132,12 @@ PFNGLGENERATEMIPMAPEXTPROC          s_glGenerateMipmap;
 PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
 PFNGLGETCOMPRESSEDTEXIMAGEPROC s_glGetCompressedTexImage;
 
+//      Vertex Buffer Object (VBO) support
+PFNGLGENBUFFERSPROC                 s_glGenBuffers;
+PFNGLBINDBUFFERPROC                 s_glBindBuffer;
+PFNGLBUFFERDATAPROC                 s_glBufferData;
+PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+
 #include <wx/arrimpl.cpp>
 //WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
@@ -579,6 +585,17 @@ static void GetglEntryPoints( void )
             ocpnGetProcAddress( "glDeleteRenderbuffers", extensions[i]);
         s_glGenerateMipmap = (PFNGLGENERATEMIPMAPEXTPROC)
             ocpnGetProcAddress( "glGenerateMipmap", extensions[i]);
+            
+        //VBO
+        s_glGenBuffers = (PFNGLGENBUFFERSPROC)
+            ocpnGetProcAddress( "glGenBuffers", extensions[i]);
+        s_glBindBuffer = (PFNGLBINDBUFFERPROC)
+            ocpnGetProcAddress( "glBindBuffer", extensions[i]);
+        s_glBufferData = (PFNGLBUFFERDATAPROC)
+            ocpnGetProcAddress( "glBufferData", extensions[i]);
+        s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)
+            ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
+            
     }
 
     for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
@@ -814,6 +831,10 @@ void glChartCanvas::SetupOpenGL()
         !s_glDeleteRenderbuffers )
         m_b_DisableFBO = true;
 
+    m_b_EnableVBO = true;
+    if( !s_glBindBuffer || !s_glBufferData || !s_glGenBuffers || !s_glDeleteBuffers )
+        m_b_EnableVBO = false;
+    
     //      Can we use the stencil buffer in a FBO?
 #ifdef ocpnUSE_GLES /* gles requires all levels */
     m_b_useFBOStencil = QueryExtension( "GL_OES_packed_depth_stencil" );
