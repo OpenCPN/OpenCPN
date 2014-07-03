@@ -433,7 +433,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             return AIS_NMEAVDX_CHECKSUM_BAD;
     }
     if( str.Mid( 1, 2 ).IsSameAs( _T("CD") ) ) {
-        pTargetData = ProcessDSx( str );
+        ProcessDSx( str );
         return AIS_NoError;
     }
     else if( str.Mid( 3, 3 ).IsSameAs( _T("TTM") ) ) {
@@ -951,7 +951,7 @@ AIS_Target_Data *AIS_Decoder::ProcessDSx( const wxString& str, bool b_take_dsc )
     int dse_mmsi = 0;
     int mmsi = 0;
     
-    AIS_Target_Data *pTargetData;
+    AIS_Target_Data *pTargetData = NULL;
     AIS_Target_Data *pStaleTarget = NULL;
     
     // parse a DSC Position message            $CDDSx,.....
@@ -1721,7 +1721,6 @@ void AIS_Decoder::UpdateOneTrack( AIS_Target_Data *ptarget )
 
         if( ptrack_point->m_time < test_time ) {
             if( ptarget->m_ptrack->DeleteObject( ptrack_point ) ) {
-                delete ptrack_point;
                 node = ptarget->m_ptrack->GetFirst();                // restart the list
             }
         } else
