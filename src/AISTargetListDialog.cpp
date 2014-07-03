@@ -539,12 +539,14 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 
     if( m_pAuiManager ) {
         wxAuiPaneInfo pane =
-                wxAuiPaneInfo().Name( _T("AISTargetList") ).CaptionVisible( true ).
-                        DestroyOnClose( true ).Float().FloatingPosition( 50, 50 ).TopDockable( false ).
-                        BottomDockable( true ).LeftDockable( false ).RightDockable( false ).Show( true );
+                wxAuiPaneInfo().Name( _T("AISTargetList") ).CaptionVisible( true ).Float().FloatingPosition( 50, 50 );
         m_pAuiManager->LoadPaneInfo( g_AisTargetList_perspective, pane );
 
+        //      Force and/or override any perspective information that is not applicable
         pane.Name( _T("AISTargetList") );
+        pane.DestroyOnClose( true );
+        pane.TopDockable( false ).BottomDockable( true ).LeftDockable( false ).RightDockable( false );
+        pane.Show( true );
         
         bool b_reset_pos = false;
 
@@ -604,6 +606,8 @@ AISTargetListDialog::AISTargetListDialog( wxWindow *parent, wxAuiManager *auimgr
 AISTargetListDialog::~AISTargetListDialog()
 {
     Disconnect_decoder();
+    g_pAISTargetList = NULL;
+    
 }
 
 void AISTargetListDialog::OnClose( wxCloseEvent &event )
@@ -630,7 +634,6 @@ void AISTargetListDialog::OnPaneClose( wxAuiManagerEvent& event )
     if( event.pane->name == _T("AISTargetList") ) {
         g_AisTargetList_perspective = m_pAuiManager->SavePaneInfo( *event.pane );
     }
-    Close();
     event.Skip();
 }
 
@@ -643,7 +646,7 @@ void AISTargetListDialog::OnCloseButton( wxCommandEvent& event )
         Disconnect_decoder();
         pane.Show(false);
         m_pAuiManager->Update();
-        Close();
+        Destroy();
     }
 }
 
