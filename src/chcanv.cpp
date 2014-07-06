@@ -5484,7 +5484,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
     SetVPScale( GetVPScale() );
 
 #ifdef ocpnUSE_GL
-    if( g_bopengl && m_glcc ) {
+    if( /*g_bopengl &&*/ m_glcc ) {
         m_glcc->OnSize( event );
     }
 #endif
