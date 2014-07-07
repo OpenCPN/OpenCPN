@@ -218,6 +218,12 @@ void CompressImage( u8 const* rgba, int width, int height, void* blocks, int fla
 
 void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int flags );
 
+/*  For OpenCPN
+ *
+ */
+void CompressImageRGB_Flatten_Flip_Throttle( u8 const* rgb, int width, int height, void* blocks, int flags,
+                                             bool b_flatten, bool b_flip, bool b_throttle );
+
 // -----------------------------------------------------------------------------
 
 /*! @brief Decompresses an image in memory.

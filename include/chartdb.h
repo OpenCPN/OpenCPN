@@ -94,6 +94,7 @@ public:
       int         RecentTime;
       int         dbIndex;
       bool        b_in_use;
+      int         n_lock;
 };
 
 
@@ -130,11 +131,13 @@ public:
 
       int GetStackEntry(ChartStack *ps, wxString fp);
       bool IsChartInCache(int dbindex);
+      bool IsChartInCache(wxString path);
       bool IsChartInGroup(const int db_index, const int group);
 
       ChartBase *OpenChartFromStack(ChartStack *pStack, int StackEntry, ChartInitFlag iflag = FULL_INIT);
       ChartBase *OpenChartFromDB(int index, ChartInitFlag init_flag);
-
+      ChartBase *OpenChartFromDBAndLock(int index, ChartInitFlag init_flag );
+      
       void ApplyColorSchemeToCachedCharts(ColorScheme cs);
       void PurgeCache();
       bool DeleteCacheChart(ChartBase *pChart);
@@ -145,6 +148,10 @@ public:
       bool IsCacheLocked(){ return m_b_locked; }
       wxXmlDocument GetXMLDescription(int dbIndex, bool b_getGeom);
 
+      void LockCacheChart( int index );
+      void UnLockCacheChart( int index );
+      void UnLockAllCacheCharts();
+      
       void ClearCacheInUseFlags(void);
       void PurgeCacheUnusedCharts(bool b_force = false);
 
@@ -159,13 +166,15 @@ private:
       bool CreateS57SENCChartTableEntry(wxString full_name, ChartTableEntry *pEntry, Extent *pext);
       bool CheckPositionWithinChart(int index, float lat, float lon);
       ChartBase *OpenChartUsingCache(int dbindex, ChartInitFlag init_flag);
-
+      CacheEntry *FindOldestDeleteCandidate();
+      
       wxArrayPtrVoid    *pChartCache;
 
       MyFrame           *pParent;
       bool              m_b_locked;
       bool              m_b_busy;
 
+      wxCriticalSection m_critSect;
 };
 
 

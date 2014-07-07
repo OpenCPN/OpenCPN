@@ -3409,6 +3409,8 @@ double ChartPlugInWrapper::GetRasterScaleFactor()
 
 bool ChartPlugInWrapper::GetChartBits( wxRect& source, unsigned char *pPix, int sub_samp )
 {
+    wxCriticalSectionLocker locker(m_critSect);
+    
     if(m_ppicb)
 
         return m_ppicb->GetChartBits( source, pPix, sub_samp );
