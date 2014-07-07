@@ -359,6 +359,8 @@ class ChartPlugInWrapper : public ChartBase
       private:
             PlugInChartBase *m_ppicb;
             wxObject          *m_ppo;
+            wxCriticalSection m_critSect;
+            
 };
 
 

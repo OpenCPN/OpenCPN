@@ -23,6 +23,9 @@
  */
 
 #include "glTextureDescriptor.h"
+#include <wx/thread.h>
+
+wxCriticalSection gs_critSect;
 
 glTextureDescriptor::glTextureDescriptor()
 {
@@ -32,6 +35,8 @@ glTextureDescriptor::glTextureDescriptor()
     }
 
     tex_name = 0;
+    nGPU_compressed = GPU_TEXTURE_UNKNOWN;
+    nCache_Color = -1;          // default, unknown
 }
 
 glTextureDescriptor::~glTextureDescriptor()
@@ -40,4 +45,33 @@ glTextureDescriptor::~glTextureDescriptor()
         free( map_array[i] );
         free( comp_array[i] );
     }
+}
+
+void glTextureDescriptor::FreeAll()
+{
+    for( int i = 0; i < 10; i++ ){
+        free( map_array[i] );
+        free( comp_array[i] );
+    
+        map_array[i] = 0;
+        comp_array[i] = 0;
+    }
+}
+
+void glTextureDescriptor::FreeMap()
+{
+    for( int i = 0; i < 10; i++ ){
+        free( map_array[i] );
+        map_array[i] = 0;
+    }
+}
+
+unsigned char *glTextureDescriptor::CompressedArrayAccess( int mode, unsigned char *write_data, int level)
+{
+    wxCriticalSectionLocker locker(gs_critSect);
+    
+    if(mode == CA_WRITE)
+        comp_array[level] = write_data;
+
+    return comp_array[level];
 }

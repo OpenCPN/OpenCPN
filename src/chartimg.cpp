@@ -2466,8 +2466,6 @@ int ChartBaseBSB::vp_pix_to_latlong(ViewPort& vp, int pixx, int pixy, double *pl
 
 int ChartBaseBSB::latlong_to_pix_vp(double lat, double lon, int &pixx, int &pixy, ViewPort& vp)
 {
-    int px, py;
-
     double alat, alon;
 
     if(bHaveEmbeddedGeoref)
@@ -3841,6 +3839,8 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
 
 bool ChartBaseBSB::GetChartBits(wxRect& source, unsigned char *pPix, int sub_samp)
 {
+    wxCriticalSectionLocker locker(m_critSect);
+    
       int iy;
 #define FILL_BYTE 0
 
