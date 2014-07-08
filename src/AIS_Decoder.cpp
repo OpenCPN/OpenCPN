@@ -2124,7 +2124,7 @@ void AIS_Decoder::OnTimerAIS( wxTimerEvent& event )
 
             bool b_jumpto = (palert_target->Class == AIS_SART) || (palert_target->Class == AIS_DSC);
             bool b_createWP = palert_target->Class == AIS_DSC;
-            bool b_ack = palert_target->Class == !AIS_DSC;
+            bool b_ack = palert_target->Class != AIS_DSC;
             
         //    Show the Alert dialog
             
