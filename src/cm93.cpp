@@ -2172,7 +2172,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                   if ( loadcell_in_sequence ( cell_index, '0' ) ) // Base cell
                   {
                         ProcessVectorEdges();
-                        CreateObjChain ( cell_index, ( int ) '0' );
+                        CreateObjChain ( cell_index, ( int ) '0', vpt.view_scale_ppm );
 
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
 
@@ -2190,7 +2190,7 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
                   while ( loadcell_in_sequence ( cell_index, loadcell_key ) )
                   {
                         ProcessVectorEdges();
-                        CreateObjChain ( cell_index, ( int ) loadcell_key );
+                        CreateObjChain ( cell_index, ( int ) loadcell_key, vpt.view_scale_ppm );
 
                         ForceEdgePriorityEvaluate();              // need to re-evaluate priorities
 
@@ -2319,7 +2319,7 @@ void cm93chart::ProcessVectorEdges ( void )
 
 
 
-int cm93chart::CreateObjChain ( int cell_index, int subcell )
+int cm93chart::CreateObjChain ( int cell_index, int subcell, double view_scale_ppm )
 {
       LUPrec           *LUP;
       LUPname          LUP_Name = PAPER_CHART;
@@ -2345,7 +2345,8 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell )
 
                   obj = NULL;
                   if ( NULL != xgeom )
-                        obj = CreateS57Obj ( cell_index, iObj, subcell, pobjectDef, m_pDict, xgeom, ref_lat, ref_lon, GetNativeScale() );
+                      obj = CreateS57Obj ( cell_index, iObj, subcell, pobjectDef, m_pDict, xgeom,
+                                           ref_lat, ref_lon, GetNativeScale(), view_scale_ppm );
 
                   if ( obj )
                   {
@@ -3221,7 +3222,7 @@ void cm93chart::translate_colmar(const wxString &sclass, S57attVal *pattValTmp)
 
 
 S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Object *pobject, cm93_dictionary *pDict, Extended_Geometry *xgeom,
-                                  double ref_lat, double ref_lon, double scale )
+                                  double ref_lat, double ref_lon, double scale, double view_scale_ppm )
 {
 
 #define MAX_HDR_LINE    4000
@@ -3751,9 +3752,15 @@ S57Obj *cm93chart::CreateS57Obj ( int cell_index, int iobject, int subcell, Obje
                   pobj->m_lat = lat;
                   pobj->m_lon = lon;
 
-                  pobj->BBObj.SetMin ( lon-.25, lat-.25 );
-                  pobj->BBObj.SetMax ( lon+.25, lat+.25 );
+                  // make initial bounding box large enough for worst possible case
+                  // it's not possible to know unless we knew the font, but this works
+                  // except for huge font sizes
+                  // this is not very good or accurate or efficient and hopefully we can
+                  // replace the current bounding box logic with calculating logic
+                  double llsize = 1e-3 / view_scale_ppm;
 
+                  pobj->BBObj.SetMin ( lon-llsize, lat-llsize );
+                  pobj->BBObj.SetMax ( lon+llsize, lat+llsize );
 
                   break;
             }

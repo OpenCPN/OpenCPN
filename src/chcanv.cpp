@@ -1899,7 +1899,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     if( event.GetKeyCode() < 128 )            //ascii
     {
-        char key_char = (char) event.GetKeyCode();
+        int key_char = event.GetKeyCode();
 
         //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
         if( !g_b_assume_azerty ) {
@@ -2204,7 +2204,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 
     if( event.GetKeyCode() < 128 )            //ascii
     {
-        char key_char = (char) event.GetKeyCode();
+        int key_char = event.GetKeyCode();
 
         //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
         if( !g_b_assume_azerty ) {
@@ -8797,6 +8797,11 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 
     wxBoundingBox box;
     ChartData->GetDBBoundingBox( dbIndex, &box );
+
+    // Don't draw an outline in the case where the chart covers the entire world */
+    double lon_diff = box.GetMaxX() - box.GetMinX();
+    if(lon_diff == 360)
+        return;
 
     if( !vp.GetBBox().IntersectOut( box ) )              // chart is not outside of viewport
         b_draw = true;

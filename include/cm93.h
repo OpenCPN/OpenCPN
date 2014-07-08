@@ -352,13 +352,14 @@ class cm93chart : public s57chart
             Extended_Geometry *BuildGeom(Object *pobject, wxFileOutputStream *postream, int iobject);
 
             S57Obj *CreateS57Obj( int cell_index, int iobject, int subcell, Object *pobject, cm93_dictionary *pDict,
-                                  Extended_Geometry *xgeom, double ref_lat, double ref_lon, double scale);
+                                  Extended_Geometry *xgeom, double ref_lat, double ref_lon, double scale,
+                                  double view_scale_ppm);
 
             void ProcessMCOVRObjects(int cell_index, char subcell);
 
             void translate_colmar(const wxString &sclass, S57attVal *pattValTmp);
 
-            int CreateObjChain(int cell_index, int subcell);
+            int CreateObjChain(int cell_index, int subcell, double view_scale_ppm);
 
             void Unload_CM93_Cell(void);
 
