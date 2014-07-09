@@ -375,7 +375,7 @@ void BuildCompressedCache()
         msg.Printf( _("Distance from Ownship:  %4.0f NMi      Chart: "), distance);
         msg += pchart->GetFullPath();
         
-        pprog->Update(count-1, _T("0000/0000 \n") + msg, &skip );
+        pprog->Update(count-1, /*_T("0000/0000 \n") +*/ msg, &skip );
         if(skip)
             break;
 
