@@ -281,6 +281,10 @@ void grib_pi::OnToolbarToolCallback(int id)
         m_pGribDialog->Move(p);
         wxMenu* dummy = new wxMenu(_T("Plugin"));
         wxMenuItem* table = new wxMenuItem( dummy, wxID_ANY, wxString( _("Weather table") ), wxEmptyString, wxITEM_NORMAL );
+#ifdef __WXMSW__
+        wxFont *qFont = OCPNGetFont(_("Menu"), 10);
+        table->SetFont(*qFont);
+#endif
         m_MenuItem = AddCanvasContextMenuItem(table, this);
         SetCanvasContextMenuItemViz(m_MenuItem, false);
 

@@ -7259,6 +7259,9 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
                                                   pimis->pmenu_item->GetLabel(), pimis->pmenu_item->GetHelp(),
                                                   pimis->pmenu_item->GetKind(), pimis->pmenu_item->GetSubMenu() );
+#ifdef __WXMSW__
+                pmi->SetFont(pimis->pmenu_item->GetFont());
+#endif
                 contextMenu->Append( pmi );
                 contextMenu->Enable( pimis->id, !pimis->b_grey );
 
