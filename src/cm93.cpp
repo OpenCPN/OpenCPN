@@ -5661,6 +5661,9 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                         // restore the base chart pointer
                         m_pcm93chart_current = m_pcm93chart_save;
 
+                        //  We can unselect the target from the dummy DC, to avoid having to copy it.
+                        dumm_dc.SelectObject( wxNullBitmap );
+                        
                         //    And the return dc is the quilt
                         dc.SelectObject ( *m_pDummyBM );
 
