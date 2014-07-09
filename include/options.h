@@ -934,10 +934,13 @@ public:
 
     wxCheckBox *m_cbTextureCompression, *m_cbTextureCompressionCaching;
 
+    wxButton *m_btnRebuildTexCache;
+    
     wxSpinCtrl *m_sTextureDimension;
     wxSpinCtrl *m_sTextureMemorySize;
 
     OpenGLOptionsDlg( wxWindow* parent );
+    void OnRebuildTexCache( wxCommandEvent& event );
 };
 
 #endif

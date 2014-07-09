@@ -4770,8 +4770,6 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
         m_cbUseAcceleratedPanning->Disable();
     }
 
-    m_bSizer1->AddSpacer(1);
-
     m_cbTextureCompression = new wxCheckBox(this, wxID_ANY, _("Texture Compression") );
     m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
     m_bSizer1->Add(m_cbTextureCompression, 0, wxALL | wxEXPAND, 5);
@@ -4787,6 +4785,11 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
     }
 
     m_bSizer1->Add(m_cbTextureCompressionCaching, 0, wxALL | wxEXPAND, 5);
+
+    m_btnRebuildTexCache = new wxButton(this, wxID_ANY, _("Rebuild Compressed Cache"));
+    m_btnRebuildTexCache->Connect( wxEVT_COMMAND_BUTTON_CLICKED,
+                                     wxCommandEventHandler( OpenGLOptionsDlg::OnRebuildTexCache ), NULL, this );
+    m_bSizer1->Add(m_btnRebuildTexCache, 0, wxALL | wxEXPAND, 5);
 
     wxStaticText* stTextureMemorySize =
         new wxStaticText( this, wxID_STATIC, _("Texture Memory Size (MB)") );
@@ -4813,5 +4816,13 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
     this->Centre( wxBOTH );
 
     Fit();
+#endif
+}
+
+void OpenGLOptionsDlg::OnRebuildTexCache( wxCommandEvent& event )
+{
+#ifdef ocpnUSE_GL
+    cc1->ReloadVP();                  //  Get a nice chart background loaded
+    BuildCompressedCache();
 #endif
 }
