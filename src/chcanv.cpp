@@ -2323,13 +2323,13 @@ void ChartCanvas::DoMovement( long dt )
         
         //  Try to hit the zoom target exactly.
         if(zoom_factor > 1){
-//            if(  VPoint.chart_scale / zoom_factor <= m_zoom_target)
-//                zoom_factor = VPoint.chart_scale / m_zoom_target;
+            if(  VPoint.chart_scale / zoom_factor <= m_zoom_target)
+                zoom_factor = VPoint.chart_scale / m_zoom_target;
         }
 
         else if(zoom_factor < 1){
-//            if(  VPoint.chart_scale / zoom_factor >= m_zoom_target)
-//                zoom_factor = VPoint.chart_scale / m_zoom_target;
+            if(  VPoint.chart_scale / zoom_factor >= m_zoom_target)
+                zoom_factor = VPoint.chart_scale / m_zoom_target;
         }
         
         DoZoomCanvas( zoom_factor, m_bzooming_to_cursor );
@@ -2344,13 +2344,13 @@ void ChartCanvas::DoMovement( long dt )
         if(zoom_factor > 1){
             if(  VPoint.chart_scale <= m_zoom_target){
                 m_wheelzoom_stop_oneshot = 0;
-//                StopMovement( );
+                StopMovement( );
             }
         }
         else if(zoom_factor < 1){
             if(  VPoint.chart_scale >= m_zoom_target){
                 m_wheelzoom_stop_oneshot = 0;
-//                StopMovement( );
+                StopMovement( );
             }
         }
         
