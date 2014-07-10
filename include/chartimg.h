@@ -323,9 +323,6 @@ protected:
       double    m_proj_lat, m_proj_lon;
 
       ViewPort  m_vp_render_last;
-      
-      wxCriticalSection m_critSect;
-      
 };
 
 

@@ -299,11 +299,6 @@ extern bool              g_bresponsive;
 extern ocpnGLOptions g_GLOptions;
 #endif
 
-extern wxProgressDialog *pprog;
-extern bool b_skipout;
-wxArrayString compress_msg_array;
-extern wxSize pprog_size;
-
 //  TODO why are these static?
 static int mouse_x;
 static int mouse_y;
@@ -1553,26 +1548,6 @@ ChartCanvas::~ChartCanvas()
         delete m_glcc;
 #endif
 
-}
-
-void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
-{
-    wxString msg(event.m_string.c_str(), wxConvUTF8);
-    compress_msg_array.RemoveAt(event.thread);
-    compress_msg_array.Insert( msg, event.thread);
-    
-    wxString combined_msg;
-    for(unsigned int i=0 ; i < compress_msg_array.GetCount() ; i++) {
-        combined_msg += compress_msg_array[i];
-        combined_msg += _T("\n");
-    }
-    
-    bool skip = false;
-    pprog->Update(event.count-1, combined_msg, &skip );
-    pprog->SetSize(pprog_size);
-    if(skip)
-        b_skipout = skip;
-    
 }
 
 void ChartCanvas::InvalidateGL()
@@ -3422,9 +3397,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                     InvalidateGL();
                 }
 
-//                ChartData->UnLockCache();
-//                ChartData->PurgeCacheUnusedCharts( false );
-//                ChartData->LockCache();
+                ChartData->UnLockCache();
+                ChartData->PurgeCacheUnusedCharts( false );
+                ChartData->LockCache();
 
                 if(b_refresh)
                     Refresh( false );

@@ -650,8 +650,6 @@ wxString g_config_version_string;
 bool             g_btouch;
 bool             g_bresponsive;
 
-bool             b_inCompressAllCharts;
-
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
 #endif
@@ -3197,11 +3195,6 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         return;
     }
 
-    //  If the multithread chart compressor engine is running, cancel the close command
-    if( b_inCompressAllCharts ) {
-        return;
-    }
-    
     b_inCloseWindow = true;
 
     ::wxSetCursor( wxCURSOR_WAIT );
@@ -3346,8 +3339,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( g_pCM93OffsetDialog ) g_pCM93OffsetDialog->Destroy();
 #endif
 
-    if(g_FloatingToolbarDialog)
-        g_FloatingToolbarDialog->Destroy();
+    g_FloatingToolbarDialog->Destroy();
 
     if( g_pAISTargetList ) {
         g_pAISTargetList->Disconnect_decoder();
@@ -4886,8 +4878,7 @@ void MyFrame::SetupQuiltMode( void )
     if( !cc1->GetQuiltMode() ) {
         if( ChartData && ChartData->IsValid() ) {
             ChartData->UnLockCache();
-            ChartData->UnLockAllCacheCharts();
-            
+
             double tLat, tLon;
             if( cc1->m_bFollow == true ) {
                 tLat = gLat;

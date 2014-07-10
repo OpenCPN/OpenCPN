@@ -933,9 +933,7 @@ public:
     wxCheckBox *m_cbUseAcceleratedPanning;
 
     wxCheckBox *m_cbTextureCompression, *m_cbTextureCompressionCaching;
-    wxCheckBox *m_cbRebuildTextureCache;
-    wxCheckBox *m_cbClearTextureCache;
-    
+
     wxSpinCtrl *m_sTextureDimension;
     wxSpinCtrl *m_sTextureMemorySize;
 
