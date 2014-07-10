@@ -2527,9 +2527,14 @@ void glChartCanvas::Render()
             bool accelerated_pan = false;
             if(g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
                // only works for mercator without rotation
-                && VPoint.m_projection_type == PROJECTION_MERCATOR &&
-               (fabs( VPoint.rotation ) == 0.0 &&
-                (!g_bskew_comp || fabs( VPoint.skew ) == 0.0 ))) {
+               && VPoint.m_projection_type == PROJECTION_MERCATOR
+               && fabs( VPoint.rotation ) == 0.0
+               // since single chart mode for raster charts uses the chart coordinates,
+               // we can't use the viewport to compute then panning offsets.
+               // For now, just don't do hardware accelerated panning,
+               // (fortunately this case is least in need of it)
+               && (!Current_Ch || ( Current_Ch->GetChartFamily() != CHART_FAMILY_RASTER))
+               /* && (!g_bskew_comp || fabs( VPoint.skew ) == 0.0 )*/) {
                     wxPoint c_old = VPoint.GetPixFromLL( VPoint.clat, VPoint.clon );
                     wxPoint c_new = m_cache_vp.GetPixFromLL( VPoint.clat, VPoint.clon );
 
