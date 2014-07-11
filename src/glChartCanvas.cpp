@@ -1062,6 +1062,11 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     wxBoundingBox box, vpbox = vp.GetBBox();
     ChartData->GetDBBoundingBox( dbIndex, &box );
 
+    // Don't draw an outline in the case where the chart covers the entire world */
+    double lon_diff = box.GetMaxX() - box.GetMinX();
+    if(lon_diff == 360)
+        return;
+
     float lon_bias;
     if( vpbox.IntersectOut( box ) ) {
         wxPoint2DDouble p = wxPoint2DDouble(360, 0);
@@ -2523,8 +2528,8 @@ void glChartCanvas::Render()
             if(g_GLOptions.m_bUseAcceleratedPanning && m_cache_vp.IsValid()
                // only works for mercator without rotation
                 && VPoint.m_projection_type == PROJECTION_MERCATOR &&
-               (fabs( VPoint.rotation ) != 0.0 ||
-                (g_bskew_comp && fabs( VPoint.skew ) != 0.0 ))) {
+               (fabs( VPoint.rotation ) == 0.0 &&
+                (!g_bskew_comp || fabs( VPoint.skew ) == 0.0 ))) {
                     wxPoint c_old = VPoint.GetPixFromLL( VPoint.clat, VPoint.clon );
                     wxPoint c_new = m_cache_vp.GetPixFromLL( VPoint.clat, VPoint.clon );
 

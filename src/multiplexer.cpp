@@ -459,13 +459,23 @@ ret_point:
                                                DS_TYPE_INPUT_OUTPUT,
                                                0 );
 
-            //  Wait up to 1 seconds for Datastream secondary thread to come up
+            //  Wait up to 5 seconds for Datastream secondary thread to come up
             int timeout = 0;
-            while( !dstr-> IsSecThreadActive()  && (timeout < 10)) {
+            while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
                 wxMilliSleep(100);
                 timeout++;
             }
 
+            if( !dstr-> IsSecThreadActive() ){
+                wxString msg(_T("-->GPS Port:"));
+                msg += com_name;
+                msg += _T(" ...Could not be opened for writing");
+                wxLogMessage(msg);
+                
+                dstr->Close();
+                goto ret_point_1;
+            }
+                
             SENTENCE snt;
             NMEA0183 oNMEA0183;
             oNMEA0183.TalkerID = _T ( "EC" );
@@ -557,6 +567,9 @@ ret_point:
 
             // Create the NMEA Rte sentence
             // Try to create a single sentence, and then check the length to see if too long
+            unsigned int max_length = 76;
+            unsigned int max_wp = 2;                     // seems to be required for garmin...
+            
             oNMEA0183.Rte.Empty();
             oNMEA0183.Rte.TypeOfRoute = CompleteRoute;
 
@@ -595,9 +608,8 @@ ret_point:
 
             oNMEA0183.Rte.Write ( snt );
 
-            unsigned int max_length = 76;
-
-            if(snt.Sentence.Len() > max_length)         // Do we need split sentences?
+            if( (snt.Sentence.Len() > max_length) 
+                || (pr->pRoutePointList->GetCount() > max_wp) )        // Do we need split sentences?
             {
                 // Make a route with zero waypoints to get tare load.
                 NMEA0183 tNMEA0183;
@@ -631,6 +643,7 @@ ret_point:
                 int n_total = 1;
                 bool bnew_sentence = true;
                 int sent_len=0;
+                unsigned int wp_count = 0;
 
                 wxRoutePointListNode *node = pr->pRoutePointList->GetFirst();
                 while ( node )
@@ -647,11 +660,12 @@ ret_point:
                         sent_len += name_len + 1;        // with comma
                         bnew_sentence = false;
                         node = node->GetNext();
+                        wp_count = 1;
 
                     }
                     else
                     {
-                        if(sent_len + name_len > max_length)
+                        if( (sent_len + name_len > max_length) || (wp_count >= max_wp) )
                         {
                             n_total ++;
                             bnew_sentence = true;
@@ -659,6 +673,7 @@ ret_point:
                         else
                         {
                             sent_len += name_len + 1;   // with comma
+                            wp_count++;
                             node = node->GetNext();
                         }
                     }
@@ -708,13 +723,14 @@ ret_point:
                         oNMEA0183.Rte.total_number_of_messages = final_total;
                         oNMEA0183.Rte.message_number = n_run;
                         snt.Sentence.Clear();
+                        wp_count = 1;
 
                         oNMEA0183.Rte.AddWaypoint ( name );
                         node = node->GetNext();
                     }
                     else
                     {
-                        if(sent_len + name_len > max_length)
+                        if( (sent_len + name_len > max_length) || (wp_count >= max_wp) )
                         {
                             n_run ++;
                             bnew_sentence = true;
@@ -727,6 +743,7 @@ ret_point:
                         {
                             sent_len += name_len + 1;   // comma
                             oNMEA0183.Rte.AddWaypoint ( name );
+                            wp_count ++;
                             node = node->GetNext();
                         }
                     }
@@ -959,11 +976,23 @@ int Multiplexer::SendWaypointToGPS(RoutePoint *prp, const wxString &com_name, wx
 
     //  Wait up to 1 seconds for Datastream secondary thread to come up
     int timeout = 0;
-    while( !dstr-> IsSecThreadActive()  && (timeout < 10)) {
+    while( !dstr-> IsSecThreadActive()  && (timeout < 50)) {
         wxMilliSleep(100);
         timeout++;
     }
 
+    if( !dstr-> IsSecThreadActive() ){
+        wxString msg(_T("-->GPS Port:"));
+        msg += com_name;
+        msg += _T(" ...Could not be opened for writing");
+        wxLogMessage(msg);
+        
+        dstr->Close();
+        goto ret_point;
+    }
+    
+    
+    
         SENTENCE snt;
         NMEA0183 oNMEA0183;
         oNMEA0183.TalkerID = _T ( "EC" );

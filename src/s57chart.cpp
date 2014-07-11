@@ -482,8 +482,10 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
                         m_lon = xll;
                         m_lat = yll;
+
                         BBObj.SetMin( m_lon - .25, m_lat - .25 );
                         BBObj.SetMax( m_lon + .25, m_lat + .25 );
+                        bBBObj_valid = false;
 
                     } else {
                         Primitive_type = GEO_POINT;
@@ -543,6 +545,7 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
 
                         BBObj.SetMin( xmin, ymin );
                         BBObj.SetMax( xmax, ymax );
+                        bBBObj_valid = true;
 
                     }
                     break;
@@ -4443,10 +4446,7 @@ void s57chart::ResetPointBBoxes( const ViewPort &vp_last, const ViewPort &vp_thi
     ObjRazRules *top;
     ObjRazRules *nxx;
 
-    double box_margin = 0.25;
-
-    //    Assume a 50x50 pixel box
-    box_margin = ( 50. / vp_this.view_scale_ppm ) / ( 1852. * 60. );  //degrees
+    double d = vp_last.view_scale_ppm / vp_this.view_scale_ppm;
 
     for( int i = 0; i < PRIO_NUM; ++i ) {
         for( int j = 0; j < 2; ++j ) {
@@ -4455,14 +4455,34 @@ void s57chart::ResetPointBBoxes( const ViewPort &vp_last, const ViewPort &vp_thi
             while( top != NULL ) {
                 if( !top->obj->geoPtMulti )                      // do not reset multipoints
                 {
-                    /* this function does not calculate the box as it should, just
-                       invalidate it and it is updated after the first render */
-                    top->obj->bBBObj_valid = false;
+                    if(top->obj->bBBObj_valid) { // scale bbobj
+                        double lat = top->obj->m_lat, lon = top->obj->m_lon;
 
-                    top->obj->BBObj.SetMin( top->obj->m_lon - box_margin,
-                                            top->obj->m_lat - box_margin );
-                    top->obj->BBObj.SetMax( top->obj->m_lon + box_margin,
-                                            top->obj->m_lat + box_margin );
+                        double lat1 = (lat - top->obj->BBObj.GetMinY()) * d;
+                        double lat2 = (lat - top->obj->BBObj.GetMaxY()) * d;
+
+                        double minx = top->obj->BBObj.GetMinX();
+                        double maxx = top->obj->BBObj.GetMaxX();
+
+                        if(lon - minx > 180) {
+                            minx += 360;
+                            maxx += 360;
+                        }
+
+                        double lon1 = (lon - minx) * d;
+                        double lon2 = (lon - maxx) * d;
+                        
+                        if(lon - lon1 < 0) {
+                            lon1 -= 360;
+                            lon2 -= 360;
+                        }
+
+                        top->obj->BBObj.SetMin( lon - lon1, lat - lat1 );
+                        top->obj->BBObj.SetMax( lon - lon2, lat - lat2 );
+
+                        // this method is very close, but errors accumulate
+                        top->obj->bBBObj_valid = false;
+                    }
                 }
                 
                 nxx = top->next;

@@ -344,6 +344,7 @@ enum
     ID_TK_MENU_COPY,
     ID_WPT_MENU_COPY,
     ID_WPT_MENU_SENDTOGPS,
+    ID_WPT_MENU_SENDTONEWGPS,
     ID_PASTE_WAYPOINT,
     ID_PASTE_ROUTE,
     ID_PASTE_TRACK,
@@ -356,6 +357,7 @@ enum
     ID_RT_MENU_REMPOINT,
     ID_RT_MENU_PROPERTIES,
     ID_RT_MENU_SENDTOGPS,
+    ID_RT_MENU_SENDTONEWGPS,
     ID_WP_MENU_SET_ANCHORWATCH,
     ID_WP_MENU_CLEAR_ANCHORWATCH,
     ID_DEF_MENU_AISTARGETLIST,
@@ -916,8 +918,10 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_RT_MENU_COPY,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_TK_MENU_COPY,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_SENDTOGPS,    ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_RT_MENU_SENDTONEWGPS, ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WPT_MENU_COPY,        ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WPT_MENU_SENDTOGPS,   ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_WPT_MENU_SENDTONEWGPS,ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_WAYPOINT,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_ROUTE,          ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_TRACK,          ChartCanvas::PopupMenuHandler )
@@ -1899,7 +1903,7 @@ void ChartCanvas::OnKeyDown( wxKeyEvent &event )
 
     if( event.GetKeyCode() < 128 )            //ascii
     {
-        char key_char = (char) event.GetKeyCode();
+        int key_char = event.GetKeyCode();
 
         //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
         if( !g_b_assume_azerty ) {
@@ -2204,7 +2208,7 @@ void ChartCanvas::OnKeyUp( wxKeyEvent &event )
 
     if( event.GetKeyCode() < 128 )            //ascii
     {
-        char key_char = (char) event.GetKeyCode();
+        int key_char = event.GetKeyCode();
 
         //      Handle both QWERTY and AZERTY keyboard separately for a few control codes
         if( !g_b_assume_azerty ) {
@@ -7348,6 +7352,12 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             }
             MenuAppend( menuRoute, ID_RT_MENU_SENDTOGPS, item );
 
+            if( !port.IsEmpty() ) {
+                wxString item = _( "Send to new GPS" );
+                MenuAppend( menuRoute, ID_RT_MENU_SENDTONEWGPS, item );
+            }
+                
+                
         }
         //      Set this menu as the "focused context menu"
         menuFocus = menuRoute;
@@ -7417,6 +7427,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 item.Append(_T(" )") );
             }
             MenuAppend( menuWaypoint, ID_WPT_MENU_SENDTOGPS, item );
+            
+            if( !port.IsEmpty() ) {
+                wxString item = _( "Send to new GPS" );
+                MenuAppend( menuWaypoint, ID_WPT_MENU_SENDTONEWGPS, item );
+            }
+            
+            
         }
         //      Set this menu as the "focused context menu"
         menuFocus = menuWaypoint;
@@ -8489,7 +8506,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_WPT_MENU_SENDTOGPS:
         if( m_pFoundRoutePoint ) {
              if( m_active_upload_port.Length() )
-                 m_pFoundRoutePoint->SendToGPS( m_active_upload_port, NULL );
+                 m_pFoundRoutePoint->SendToGPS( m_active_upload_port.BeforeFirst(' '), NULL );
              else {
                  SendToGpsDlg dlg;
                  dlg.SetWaypoint( m_pFoundRoutePoint );
@@ -8500,10 +8517,20 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
         break;
 
+    case ID_WPT_MENU_SENDTONEWGPS:
+        if( m_pFoundRoutePoint ) {
+            SendToGpsDlg dlg;
+            dlg.SetWaypoint( m_pFoundRoutePoint );
+                
+            dlg.Create( NULL, -1, _( "Send To GPS..." ), _T("") );
+            dlg.ShowModal();
+        }
+        break;
+        
     case ID_RT_MENU_SENDTOGPS:
         if( m_pSelectedRoute ) {
             if( m_active_upload_port.Length() )
-                m_pSelectedRoute->SendToGPS( m_active_upload_port, true, NULL );
+                m_pSelectedRoute->SendToGPS( m_active_upload_port.BeforeFirst(' '), true, NULL );
             else {
                 SendToGpsDlg dlg;
                 dlg.SetRoute( m_pSelectedRoute );
@@ -8515,6 +8542,16 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
         break;
 
+    case ID_RT_MENU_SENDTONEWGPS:
+        if( m_pSelectedRoute ) {
+            SendToGpsDlg dlg;
+            dlg.SetRoute( m_pSelectedRoute );
+                
+            dlg.Create( NULL, -1, _( "Send To GPS..." ), _T("") );
+            dlg.ShowModal();
+        }
+        break;
+        
     case ID_PASTE_WAYPOINT:
         pupHandler_PasteWaypoint();
         break;
@@ -8800,6 +8837,11 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 
     wxBoundingBox box;
     ChartData->GetDBBoundingBox( dbIndex, &box );
+
+    // Don't draw an outline in the case where the chart covers the entire world */
+    double lon_diff = box.GetMaxX() - box.GetMinX();
+    if(lon_diff == 360)
+        return;
 
     if( !vp.GetBBox().IntersectOut( box ) )              // chart is not outside of viewport
         b_draw = true;
