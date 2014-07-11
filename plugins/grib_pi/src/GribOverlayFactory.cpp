@@ -316,7 +316,8 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
                 r = c.Red();
                 g = c.Green();
                 b = c.Blue();
-                a = m_Settings.m_iOverlayTransparency;
+                //set full transparency if no rain or no clouds at all
+                a = ( ( settings == GribOverlaySettings::PRECIPITATION || GribOverlaySettings::CLOUD ) && v < 0.01 ) ? 0 : m_Settings.m_iOverlayTransparency;
             } else {
                 r = 255;
                 g = 255;
@@ -401,6 +402,10 @@ wxImage GRIBOverlayFactory::CreateGribImage( int settings, GribRecord *pGR,
                 v = m_Settings.CalibrateValue(settings, v);
                 wxColour c = GetGraphicColor(settings, v);
 
+                //set full transparency if no rain or no clouds at all
+                unsigned char a = ( ( settings == GribOverlaySettings::PRECIPITATION || GribOverlaySettings::CLOUD ) && v < 0.01 ) ? 0 :
+                            m_Settings.m_iOverlayTransparency;
+
                 unsigned char r = c.Red();
                 unsigned char g = c.Green();
                 unsigned char b = c.Blue();
@@ -408,7 +413,7 @@ wxImage GRIBOverlayFactory::CreateGribImage( int settings, GribRecord *pGR,
                 for( int xp = 0; xp < grib_pixel_size; xp++ )
                     for( int yp = 0; yp < grib_pixel_size; yp++ ) {
                         gr_image.SetRGB( ipix + xp, jpix + yp, r, g, b );
-                        gr_image.SetAlpha( ipix + xp, jpix + yp, m_Settings.m_iOverlayTransparency);
+                        gr_image.SetAlpha( ipix + xp, jpix + yp, a );
                     }
             } else {
                 for( int xp = 0; xp < grib_pixel_size; xp++ )
