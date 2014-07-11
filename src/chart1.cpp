@@ -1014,8 +1014,10 @@ bool MyApp::OnInit()
 #endif
 
 #ifdef LINUX_CRASHRPT
+#if wxUSE_ON_FATAL_EXCEPTION
     // fatal exceptions handling
     wxHandleFatalExceptions (true);
+#endif
 #endif
 
     //  Seed the random number generator
