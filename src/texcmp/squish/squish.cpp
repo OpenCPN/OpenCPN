@@ -322,8 +322,13 @@ void CompressImageRGB_Flatten_Flip_Throttle( u8 const* rgb, int width, int heigh
             // advance
             targetBlock += bytesPerBlock;
         }
-        if( b_throttle && !wxThread::IsMain() )
-            wxThread::Sleep(1);
+        if( b_throttle && !wxThread::IsMain() ) {
+            //  Sleep a random time, 0-5 msec.
+            //  This gives most of the processing to the main GUI thread
+            long u = (long)floor(((double)rand() / ((double)(RAND_MAX) + 1) * 5) + 0.5);
+            
+            wxThread::Sleep((int)u);
+        }
     }
 }
 

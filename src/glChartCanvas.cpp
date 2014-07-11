@@ -141,6 +141,7 @@ GLuint g_raster_format = GL_RGB;
 long g_tex_mem_used;
 
 int g_tile_size;
+int g_uncompressed_tile_size;
 
 wxProgressDialog *pprog;
 bool b_skipout;
@@ -879,7 +880,7 @@ void glChartCanvas::SetupOpenGL()
 void glChartCanvas::SetupCompression()
 {
     int dim = g_GLOptions.m_iTextureDimension;
-    int uncompressed_tile_size = dim*dim*3;
+    g_uncompressed_tile_size = dim*dim*3;
     if(g_GLOptions.m_bTextureCompression) {
         /* because s3tc is patented, many foss drivers disable
            support by default, however the extension dxt1 allows
@@ -935,11 +936,11 @@ void glChartCanvas::SetupCompression()
 
         wxLogMessage( wxString::Format( _T("OpenGL-> Compressed tile size: %dkb (%d:1)"),
                                         g_tile_size / 1024,
-                                        uncompressed_tile_size / g_tile_size));
+                                        g_uncompressed_tile_size / g_tile_size));
     } else
     if(!g_GLOptions.m_bTextureCompression) {
     no_compression:
-        g_tile_size = uncompressed_tile_size;
+        g_tile_size = g_uncompressed_tile_size;
         g_raster_format = GL_RGB;
         wxLogMessage( wxString::Format( _T("OpenGL-> Not Using compression")));
     }
@@ -2197,9 +2198,15 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
         ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
 
         while( chart ) {
-            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
-                chart = cc1->m_pQuilt->GetNextChart();
-                continue;
+            
+            //  This test does not need to be done for raster charts, since
+            //  we can assume that texture binding is acceptably fast regardless of the render region,
+            //  and that the quilt zoom methods choose a reasonable reference chart.
+            if(chart->GetChartFamily() != CHART_FAMILY_RASTER){
+                if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
+                    chart = cc1->m_pQuilt->GetNextChart();
+                    continue;
+                }
             }
 
             QuiltPatch *pqp = cc1->m_pQuilt->GetCurrentPatch();
@@ -2545,13 +2552,13 @@ void glChartCanvas::Render()
         {
             if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
                 !cc1->m_pQuilt->IsChartInQuilt( pc ) ) {
-                 ptf->DeleteAllTextures();
+                ptf->DeleteSomeTextures( (g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * 8) / 10);
             }
         }
         else      // not quilted
         {
             if( Current_Ch != pc ) {
-                ptf->DeleteAllTextures();
+                ptf->DeleteSomeTextures( (g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * 8) / 10 );
             }
         }
     }

@@ -82,6 +82,7 @@ public:
     wxString GetChartPath(){ return m_ChartPath; }
     void DeleteTexture(const wxRect &rect);
     void DeleteAllTextures( void );
+    void DeleteSomeTextures( long target );
     void DeleteAllDescriptors( void );
     void PurgeBackgroundCompressionPool();
     

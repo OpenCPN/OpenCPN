@@ -1032,6 +1032,7 @@ bool MyApp::OnInit()
 
     //    On MSW, force the entire process to run on one CPU core only
     //    This resolves some difficulty with wxThread syncronization
+#if 0    
 #ifdef __WXMSW__
     //Gets the current process handle
     HANDLE hProc = GetCurrentProcess();
@@ -1059,6 +1060,7 @@ bool MyApp::OnInit()
     if( res == 0 ) {
         //Error setting affinity mask!!
     }
+#endif
 #endif
 
 //Fulup: force floating point to use dot as separation.
@@ -1221,7 +1223,7 @@ bool MyApp::OnInit()
     wxString large_log_message;
     if( ::wxFileExists( glog_file ) ) {
         if( wxFileName::GetSize( glog_file ) > 1000000 ) {
-            wxString oldlog = glog_file;                      // pjotrc 2010.02.09
+            wxString oldlog = glog_file;                      
             oldlog.Append( _T(".log") );
             //  Defer the showing of this messagebox until the system locale is established.
             large_log_message = ( _("Old log will be moved to opencpn.log.log") );

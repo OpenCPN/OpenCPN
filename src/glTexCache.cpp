@@ -69,6 +69,7 @@ extern ocpnGLOptions    g_GLOptions;
 extern wxString         g_PrivateDataDir;
 
 extern int              g_tile_size;
+extern int              g_uncompressed_tile_size;
 
 class CompressionWorkerPool;
 CompressionWorkerPool   *g_CompressorPool;
@@ -639,21 +640,14 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
     pt->m_raster_format = client->GetRasterFormat();
     pt->m_ChartPath = client->GetChartPath();
 
-/*    
-    //  Grab a copy of the level0 chart bits
-    unsigned char *t_buf = (unsigned char *) malloc( rect.width * rect.height * 4 );
-    wxRect ncrect(rect);
-    memcpy(t_buf, client->GetpTD( ncrect )->map_array[0], rect.width * rect.height * 4);
-    pt->level0_bits = t_buf;
-*/    
-
     if(!b_immediate){
         todo_list.Append(pt);
         if(bthread_debug){
             int mem_total, mem_used;
             GetMemoryStatus(&mem_total, &mem_used);
             
-            printf( "Adding job: %08X  Job Count: %d  mem_used %d\n", pt->ident, todo_list.GetCount(), mem_used);
+            if(bthread_debug)
+                printf( "Adding job: %08X  Job Count: %d  mem_used %d\n", pt->ident, todo_list.GetCount(), mem_used);
         }
         
         StartTopJob();
@@ -889,14 +883,37 @@ void glTexFactory::DeleteAllTextures( void )
         glTextureDescriptor *ptd = m_td_array[i] ;
         
         if( ptd ) {
-            if(bthread_debug)
-                printf("Delete Texture %d   resulting g_tex_mem_used, mb:  %ld\n", ptd->tex_name, g_tex_mem_used/(1024 * 1024));
+            if(ptd->tex_name && bthread_debug)
+                printf("DAT::Delete Texture %d   resulting g_tex_mem_used, mb:  %ld\n", ptd->tex_name, g_tex_mem_used/(1024 * 1024));
             
             DeleteSingleTexture( ptd);
         }
     }
-    
 }
+
+
+void glTexFactory::DeleteSomeTextures( long target )
+{
+    // iterate over all the textures presently loaded
+    // and delete the OpenGL texture from the GPU
+    // until the target g_tex_mem_used is reached
+    // but keep the private texture descriptor for now
+    
+    for(int i=0 ; i < m_ntex ; i++){
+        glTextureDescriptor *ptd = m_td_array[i] ;
+        
+        if( ptd ) {
+            if(ptd->tex_name && bthread_debug)
+                printf("DST::Delete Texture %d   resulting g_tex_mem_used, mb:  %ld\n", ptd->tex_name, g_tex_mem_used/(1024 * 1024));
+            
+            DeleteSingleTexture( ptd);
+        }
+        
+        if(g_tex_mem_used <= target)
+            break;
+    }
+}
+
 void glTexFactory::DeleteAllDescriptors( void )
 {
     // iterate over all the texture descriptors
@@ -924,7 +941,9 @@ void glTexFactory::DeleteSingleTexture( glTextureDescriptor *ptd )
 {
     /* compute space saved */
     int dim = g_GLOptions.m_iTextureDimension;
-    int size = g_tile_size, orig_min = ptd->level_min;
+    int size = g_tile_size;
+    if( ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED)
+        size = g_uncompressed_tile_size;
     
     for(int level = 0; level < g_mipmap_max_level + 1; level++) {
         if(level == ptd->level_min) {
@@ -1039,23 +1058,7 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         ptd = p;
     }
 
-    //    If the GPU does not know about this texture, create it
-    if( ptd->tex_name == 0 ) {
-        glGenTextures( 1, &ptd->tex_name );
-        
-        glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
-        
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-        
-#ifdef ocpnUSE_GLES /* this is slightly faster */
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
-#else /* looks nicer */
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-#endif
-    }
-        
+         
 #ifdef ocpnUSE_GLES /* gles requires a complete set of mipmaps starting at 0 */
     base_level = 0;
 #endif
@@ -1104,9 +1107,11 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                 // So, free some unneeded uncompressed mipmaps, and prepare the TD for compressed use.
                 if(b_all_cmm_built){
                     if(bthread_debug)
-                        printf("Convert Texture %X   resulting g_tex_mem_used, mb:  %ld\n", ptd->tex_name, g_tex_mem_used/(1024 * 1024));
+                        printf("Convert Texture %04X   resulting g_tex_mem_used, mb:  %ld\n", ptd->tex_name, g_tex_mem_used/(1024 * 1024));
                     
                     ptd->FreeMap();
+                    
+                    //  Delete and rebuild the actual GPU texture
                     DeleteSingleTexture(ptd);
                     
                     //  We know that the compressed mipmaps are now available, so...
@@ -1132,7 +1137,23 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     }
     
             
+    //    If the GPU does not know about this texture, create it
+    if( ptd->tex_name == 0 ) {
+        glGenTextures( 1, &ptd->tex_name );
         
+        glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
+        
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        
+#ifdef ocpnUSE_GLES /* this is slightly faster */
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
+#else /* looks nicer */
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+#endif
+    }
+       
         
         
         
@@ -1149,7 +1170,8 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 
     int dim = g_GLOptions.m_iTextureDimension;
     int size = g_tile_size;
-
+    int uncompressed_size = g_uncompressed_tile_size;
+    
     
     /* optimization: when supported generate uncompressed mipmaps
        with hardware acceleration */
@@ -1182,11 +1204,17 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                     s_glCompressedTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
                                           dim, dim, 0, size,
                                           ptd->CompressedArrayAccess( CA_READ, NULL, level));
+                    g_tex_mem_used += size;
+                    
                 }                      
                 else {
+                    if(bthread_debug)
+                        printf("Upload Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
                     ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
                     glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
                                   dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
+                    
+                    g_tex_mem_used += uncompressed_size;
                     
                     //  his level has not been compressed yet, and is not in the cache
                     //  So, need to start a compression job 
@@ -1195,12 +1223,15 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                     
             }
             else {
+                if(bthread_debug)
+                    printf("Upload Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
                 ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
                 glTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
                               dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
+                g_tex_mem_used += uncompressed_size;
+                
             }
                 
-            g_tex_mem_used += size;
         }
    
         if( hw_mipmap &&  (ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED) ) {
@@ -1209,12 +1240,12 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
             //  Use OGL driver to generate the rest of the mipmaps, and then break the loop
             /* compute memory used for mipmaps */
             dim /= 2;
-            size /= 4;
+            uncompressed_size /= 4;
        
             for(int slevel = base_level + 1; slevel < g_mipmap_max_level+1; slevel++ ) {
-                g_tex_mem_used += size;
+                g_tex_mem_used += uncompressed_size;
                 dim /= 2;
-                size /= 4;
+                uncompressed_size /= 4;
             }
             
        
@@ -1233,8 +1264,9 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
 
         dim /= 2;
         size /= 4;
-        if(size < 8)
-            size = 8;
+        if(size < 8) size = 8;
+        uncompressed_size /= 4;
+        
     }
 
  
@@ -1423,41 +1455,6 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
                     else
                         return COMPRESSED_BUFFER_PENDING;
                     
-                    
-                }
-                else {
-#if 0                    
-                    //      We are using the OpenGL driver to do the compression
-                    //      Use a temporary texture to do the work so that it can be safely deleted and memory recovered 
-                    
-                    GLuint temp_tex_name;
-                    glGenTextures( 1, &temp_tex_name );
-                    glBindTexture( GL_TEXTURE_2D, temp_tex_name );
-                    
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-                    
-                    #ifdef ocpnUSE_GLES /* this is slightly faster */
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
-                    #else /* looks nicer */
-                    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-                    #endif
-                    
-                    glTexImage2D( GL_TEXTURE_2D, level, m_raster_format,
-                                  dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
-                    
-                    //      Now read it back
-                    unsigned char *cb = (unsigned char*)malloc(size);
-                    ptd->CompressedArrayAccess( CA_WRITE, cb, level);
-                    //            ptd->comp_array[ level ] = (unsigned char*)malloc(size);
-                    s_glGetCompressedTexImage(GL_TEXTURE_2D, level, cb);
-                    
-                    glDeleteTextures( 1, &temp_tex_name );
-                    
-                    //  Re-Bind the method target texture
-                    glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
-#endif                
                     
                 }
                 
