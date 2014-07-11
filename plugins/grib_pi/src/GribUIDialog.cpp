@@ -925,10 +925,13 @@ void GRIBUIDialog::TimelineChanged()
 
     if( !m_InterpolateMode ){
     /* get closest value to update timeline */
-        double sel = (m_cRecordForecast->GetCurrentSelection());
+        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+        GribRecordSet &sel=rsa->Item(m_cRecordForecast->GetCurrentSelection());
+        wxDateTime t = sel.m_Reference_Time;
         m_sTimeline->SetValue(
-            (int) m_OverlaySettings.m_bInterpolate ?
-                sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
+            m_OverlaySettings.m_bInterpolate ?
+                wxTimeSpan(t - MinTime()).GetMinutes() / m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate)
+                : m_cRecordForecast->GetCurrentSelection()
             );
     } else
         m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );
