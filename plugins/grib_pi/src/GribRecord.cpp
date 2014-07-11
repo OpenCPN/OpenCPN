@@ -391,12 +391,12 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
                 data[in] = (1-d)*data1 + d*data2;
 
             if(BMSbits) {
-                int b1 = rec1.BMSbits[i1>>3] & (1<<i1&7);
-                int b2 = rec2.BMSbits[i2>>3] & (1<<i2&7);
+                int b1 = rec1.BMSbits[i1>>3] & 1<<(i1&7);
+                int b2 = rec2.BMSbits[i2>>3] & 1<<(i2&7);
                 if(b1 && b2)
-                    BMSbits[in>>3] |= (1<<in)&7;
+                    BMSbits[in>>3] |= 1<<(in&7);
                 else
-                    BMSbits[in>>3] &= ~(1<<in)&7;
+                    BMSbits[in>>3] &= ~(1<<(in&7));
             }
         }
 
