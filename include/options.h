@@ -933,6 +933,7 @@ public:
     wxCheckBox *m_cbUseAcceleratedPanning;
 
     wxCheckBox *m_cbTextureCompression, *m_cbTextureCompressionCaching;
+
     wxCheckBox *m_cbRebuildTextureCache;
     wxCheckBox *m_cbClearTextureCache;
     
@@ -940,7 +941,6 @@ public:
     wxSpinCtrl *m_sTextureMemorySize;
 
     OpenGLOptionsDlg( wxWindow* parent );
-    void OnRebuildTexCache( wxCommandEvent& event );
 };
 
 #endif
