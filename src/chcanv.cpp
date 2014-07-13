@@ -299,6 +299,11 @@ extern bool              g_bresponsive;
 extern ocpnGLOptions g_GLOptions;
 #endif
 
+extern wxProgressDialog *pprog;
+extern bool b_skipout;
+wxArrayString compress_msg_array;
+extern wxSize pprog_size;
+
 //  TODO why are these static?
 static int mouse_x;
 static int mouse_y;
@@ -344,6 +349,7 @@ enum
     ID_TK_MENU_COPY,
     ID_WPT_MENU_COPY,
     ID_WPT_MENU_SENDTOGPS,
+    ID_WPT_MENU_SENDTONEWGPS,
     ID_PASTE_WAYPOINT,
     ID_PASTE_ROUTE,
     ID_PASTE_TRACK,
@@ -356,6 +362,7 @@ enum
     ID_RT_MENU_REMPOINT,
     ID_RT_MENU_PROPERTIES,
     ID_RT_MENU_SENDTOGPS,
+    ID_RT_MENU_SENDTONEWGPS,
     ID_WP_MENU_SET_ANCHORWATCH,
     ID_WP_MENU_CLEAR_ANCHORWATCH,
     ID_DEF_MENU_AISTARGETLIST,
@@ -916,8 +923,10 @@ BEGIN_EVENT_TABLE ( ChartCanvas, wxWindow )
     EVT_MENU ( ID_RT_MENU_COPY,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_TK_MENU_COPY,         ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_RT_MENU_SENDTOGPS,    ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_RT_MENU_SENDTONEWGPS, ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WPT_MENU_COPY,        ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_WPT_MENU_SENDTOGPS,   ChartCanvas::PopupMenuHandler )
+    EVT_MENU ( ID_WPT_MENU_SENDTONEWGPS,ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_WAYPOINT,       ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_ROUTE,          ChartCanvas::PopupMenuHandler )
     EVT_MENU ( ID_PASTE_TRACK,          ChartCanvas::PopupMenuHandler )
@@ -1548,6 +1557,26 @@ ChartCanvas::~ChartCanvas()
         delete m_glcc;
 #endif
 
+}
+
+void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
+{
+    wxString msg(event.m_string.c_str(), wxConvUTF8);
+    compress_msg_array.RemoveAt(event.thread);
+    compress_msg_array.Insert( msg, event.thread);
+    
+    wxString combined_msg;
+    for(unsigned int i=0 ; i < compress_msg_array.GetCount() ; i++) {
+        combined_msg += compress_msg_array[i];
+        combined_msg += _T("\n");
+    }
+    
+    bool skip = false;
+    pprog->Update(event.count-1, combined_msg, &skip );
+    pprog->SetSize(pprog_size);
+    if(skip)
+        b_skipout = skip;
+    
 }
 
 void ChartCanvas::InvalidateGL()
@@ -3397,9 +3426,9 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                     InvalidateGL();
                 }
 
-                ChartData->UnLockCache();
-                ChartData->PurgeCacheUnusedCharts( false );
-                ChartData->LockCache();
+//                ChartData->UnLockCache();
+//                ChartData->PurgeCacheUnusedCharts( false );
+//                ChartData->LockCache();
 
                 if(b_refresh)
                     Refresh( false );
@@ -7348,6 +7377,12 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
             }
             MenuAppend( menuRoute, ID_RT_MENU_SENDTOGPS, item );
 
+            if( !port.IsEmpty() ) {
+                wxString item = _( "Send to new GPS" );
+                MenuAppend( menuRoute, ID_RT_MENU_SENDTONEWGPS, item );
+            }
+                
+                
         }
         //      Set this menu as the "focused context menu"
         menuFocus = menuRoute;
@@ -7417,6 +7452,13 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                 item.Append(_T(" )") );
             }
             MenuAppend( menuWaypoint, ID_WPT_MENU_SENDTOGPS, item );
+            
+            if( !port.IsEmpty() ) {
+                wxString item = _( "Send to new GPS" );
+                MenuAppend( menuWaypoint, ID_WPT_MENU_SENDTONEWGPS, item );
+            }
+            
+            
         }
         //      Set this menu as the "focused context menu"
         menuFocus = menuWaypoint;
@@ -8489,7 +8531,7 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_WPT_MENU_SENDTOGPS:
         if( m_pFoundRoutePoint ) {
              if( m_active_upload_port.Length() )
-                 m_pFoundRoutePoint->SendToGPS( m_active_upload_port, NULL );
+                 m_pFoundRoutePoint->SendToGPS( m_active_upload_port.BeforeFirst(' '), NULL );
              else {
                  SendToGpsDlg dlg;
                  dlg.SetWaypoint( m_pFoundRoutePoint );
@@ -8500,10 +8542,20 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
         break;
 
+    case ID_WPT_MENU_SENDTONEWGPS:
+        if( m_pFoundRoutePoint ) {
+            SendToGpsDlg dlg;
+            dlg.SetWaypoint( m_pFoundRoutePoint );
+                
+            dlg.Create( NULL, -1, _( "Send To GPS..." ), _T("") );
+            dlg.ShowModal();
+        }
+        break;
+        
     case ID_RT_MENU_SENDTOGPS:
         if( m_pSelectedRoute ) {
             if( m_active_upload_port.Length() )
-                m_pSelectedRoute->SendToGPS( m_active_upload_port, true, NULL );
+                m_pSelectedRoute->SendToGPS( m_active_upload_port.BeforeFirst(' '), true, NULL );
             else {
                 SendToGpsDlg dlg;
                 dlg.SetRoute( m_pSelectedRoute );
@@ -8515,6 +8567,16 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
         }
         break;
 
+    case ID_RT_MENU_SENDTONEWGPS:
+        if( m_pSelectedRoute ) {
+            SendToGpsDlg dlg;
+            dlg.SetRoute( m_pSelectedRoute );
+                
+            dlg.Create( NULL, -1, _( "Send To GPS..." ), _T("") );
+            dlg.ShowModal();
+        }
+        break;
+        
     case ID_PASTE_WAYPOINT:
         pupHandler_PasteWaypoint();
         break;

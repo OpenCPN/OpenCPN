@@ -650,6 +650,8 @@ wxString g_config_version_string;
 bool             g_btouch;
 bool             g_bresponsive;
 
+bool             b_inCompressAllCharts;
+
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
 #endif
@@ -1014,8 +1016,10 @@ bool MyApp::OnInit()
 #endif
 
 #ifdef LINUX_CRASHRPT
+#if wxUSE_ON_FATAL_EXCEPTION
     // fatal exceptions handling
     wxHandleFatalExceptions (true);
+#endif
 #endif
 
     //  Seed the random number generator
@@ -1028,6 +1032,7 @@ bool MyApp::OnInit()
 
     //    On MSW, force the entire process to run on one CPU core only
     //    This resolves some difficulty with wxThread syncronization
+#if 0    
 #ifdef __WXMSW__
     //Gets the current process handle
     HANDLE hProc = GetCurrentProcess();
@@ -1055,6 +1060,7 @@ bool MyApp::OnInit()
     if( res == 0 ) {
         //Error setting affinity mask!!
     }
+#endif
 #endif
 
 //Fulup: force floating point to use dot as separation.
@@ -1217,7 +1223,7 @@ bool MyApp::OnInit()
     wxString large_log_message;
     if( ::wxFileExists( glog_file ) ) {
         if( wxFileName::GetSize( glog_file ) > 1000000 ) {
-            wxString oldlog = glog_file;                      // pjotrc 2010.02.09
+            wxString oldlog = glog_file;                      
             oldlog.Append( _T(".log") );
             //  Defer the showing of this messagebox until the system locale is established.
             large_log_message = ( _("Old log will be moved to opencpn.log.log") );
@@ -3195,6 +3201,11 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
         return;
     }
 
+    //  If the multithread chart compressor engine is running, cancel the close command
+    if( b_inCompressAllCharts ) {
+        return;
+    }
+    
     b_inCloseWindow = true;
 
     ::wxSetCursor( wxCURSOR_WAIT );
@@ -3339,7 +3350,8 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     if( g_pCM93OffsetDialog ) g_pCM93OffsetDialog->Destroy();
 #endif
 
-    g_FloatingToolbarDialog->Destroy();
+    if(g_FloatingToolbarDialog)
+        g_FloatingToolbarDialog->Destroy();
 
     if( g_pAISTargetList ) {
         g_pAISTargetList->Disconnect_decoder();
@@ -4878,7 +4890,8 @@ void MyFrame::SetupQuiltMode( void )
     if( !cc1->GetQuiltMode() ) {
         if( ChartData && ChartData->IsValid() ) {
             ChartData->UnLockCache();
-
+            ChartData->UnLockAllCacheCharts();
+            
             double tLat, tLon;
             if( cc1->m_bFollow == true ) {
                 tLat = gLat;

@@ -203,13 +203,6 @@ void GRIBUIDialog::OpenFile(bool newestFile)
                     }
                     m_FileIntervalIndex--;
                     if(m_OverlaySettings.m_SlicesPerUpdate > m_FileIntervalIndex) m_OverlaySettings.m_SlicesPerUpdate = m_FileIntervalIndex;
-
-                    //search for a moving grib file
-                    double wmin1,wmax1,hmin1,hmax1,wmin2,wmax2,hmin2,hmax2;
-                    GetGribZoneLimits(new GribTimelineRecordSet(first, first, 0), &wmin1, &wmax1, &hmin1, &hmax1 );
-                    GetGribZoneLimits(new GribTimelineRecordSet(second, second, 0), &wmin2, &wmax2, &hmin2, &hmax2 );
-//                    if( wmin1 != wmin2 || wmax1 != wmax2 || hmin1 != hmin2 || hmax1 != hmax2 ) m_pMovingGrib = true;
-                    //
                 }
             }
         } else {
@@ -932,10 +925,13 @@ void GRIBUIDialog::TimelineChanged()
 
     if( !m_InterpolateMode ){
     /* get closest value to update timeline */
-        double sel = (m_cRecordForecast->GetCurrentSelection());
+        ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
+        GribRecordSet &sel=rsa->Item(m_cRecordForecast->GetCurrentSelection());
+        wxDateTime t = sel.m_Reference_Time;
         m_sTimeline->SetValue(
-            (int) m_OverlaySettings.m_bInterpolate ?
-                sel / (m_cRecordForecast->GetCount()-1) * m_sTimeline->GetMax() : sel
+            m_OverlaySettings.m_bInterpolate ?
+                wxTimeSpan(t - MinTime()).GetMinutes() / m_OverlaySettings.GetMinFromIndex(m_OverlaySettings.m_SlicesPerUpdate)
+                : m_cRecordForecast->GetCurrentSelection()
             );
     } else
         m_cRecordForecast->SetValue( TToString( time, pPlugIn->GetTimeZone() ) );

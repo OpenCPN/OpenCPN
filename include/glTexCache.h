@@ -33,6 +33,10 @@
 
 #define COMPRESSED_CACHE_MAGIC 0xf010  // change this when the format changes
 
+#define COMPRESSED_BUFFER_OK            0
+#define COMPRESSED_BUFFER_PENDING       1
+#define MAP_BUFFER_OK                   4
+
 struct CompressedCacheHeader
 {
     uint32_t magic;
@@ -69,12 +73,22 @@ public:
     glTexFactory(ChartBase *chart, GLuint raster_format);
     ~glTexFactory();
 
-    void PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme );
-    unsigned char *GetTextureLevel( const wxRect &rect, int level,  ColorScheme color_scheme );
-    
+    void PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread = true );
+    int GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level,  ColorScheme color_scheme, bool b_throttle_thread );
+    void UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme );
+    bool IsCompressedArrayComplete( int base_level, const wxRect &rect);
+    bool IsLevelInCache( int level, const wxRect &rect, ColorScheme color_scheme );
+    void DoImmediateFullCompress(const wxRect &rect);
+    wxString GetChartPath(){ return m_ChartPath; }
     void DeleteTexture(const wxRect &rect);
     void DeleteAllTextures( void );
+    void DeleteSomeTextures( long target );
     void DeleteAllDescriptors( void );
+    void PurgeBackgroundCompressionPool();
+    
+    glTextureDescriptor *GetpTD( wxRect & rect );
+    ChartBase *GetpChart() { return m_pchart; }
+    GLuint GetRasterFormat() { return m_raster_format; }
     
     
 private:
@@ -90,6 +104,7 @@ private:
     int         n_catalog_entries;
     ArrayOfCatalogEntries       m_catalog;
     ChartBase   *m_pchart;
+    wxString    m_ChartPath;
     GLuint      m_raster_format;
     wxString    m_CompressedCacheFilePath;
     

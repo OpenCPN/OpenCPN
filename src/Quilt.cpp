@@ -1271,7 +1271,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
     m_bbusy = true;
     
     ChartData->UnLockCache();
-
+    ChartData->UnLockAllCacheCharts();
+    
     ViewPort vp_local = vp_in;                   // need a non-const copy
 
     //    Get Reference Chart parameters
@@ -1283,7 +1284,7 @@ bool Quilt::Compose( const ViewPort &vp_in )
         m_reference_family = cte_ref.GetChartFamily();
     }
 
-    //    Set up the vieport projection type
+    //    Set up the viewport projection type
     vp_local.SetProjectionType( m_quilt_proj );
 
     //    As ChartdB data is always in rectilinear space, region calculations need to be done with no VP rotation
@@ -1753,7 +1754,8 @@ bool Quilt::Compose( const ViewPort &vp_in )
 //            if( !ChartData->IsChartInCache( pqc->dbIndex ) )
 //                b_stop_movement = true;
 
-            ChartData->OpenChartFromDB( pqc->dbIndex, FULL_INIT );
+            ChartData->OpenChartFromDBAndLock( pqc->dbIndex, FULL_INIT );
+//              ChartData->OpenChartFromDB( pqc->dbIndex, FULL_INIT );
         }
 
     cc1->EnablePaint(true);

@@ -31,6 +31,9 @@
 #include "colourblock.h"
 #include "alpha.h"
 #include "singlecolourfit.h"
+#include <wx/thread.h>
+
+extern bool g_throttle_squish;
 
 namespace squish {
 
@@ -219,7 +222,7 @@ void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int f
 						// copy the rgba value
 						u8 const* sourcePixel = rgb + 3*( width*sy + sx );
 						for( int i = 0; i < 3; ++i )
-							*targetPixel++ = *sourcePixel++;
+                                                   *targetPixel++ = *sourcePixel++;
                                                 *targetPixel++ = 255;
 							
 						// enable this pixel
@@ -239,8 +242,96 @@ void CompressImageRGB( u8 const* rgb, int width, int height, void* blocks, int f
 			// advance
 			targetBlock += bytesPerBlock;
 		}
-	}
+        }
 }
+
+void CompressImageRGB_Flatten_Flip_Throttle( u8 const* rgb, int width, int height, void* blocks, int flags,
+                                            bool b_flatten, bool b_flip, bool b_throttle )
+{
+    // fix any bad flags
+    flags = FixFlags( flags );
+    
+    // initialise the block output
+    u8* targetBlock = reinterpret_cast< u8* >( blocks );
+    int bytesPerBlock = ( ( flags & kDxt1 ) != 0 ) ? 8 : 16;
+    
+    u8 r_flat_mask = 0xff;
+    u8 g_flat_mask = 0xff;
+    u8 b_flat_mask = 0xff;
+ 
+    if(b_flatten){
+        r_flat_mask = 0xfc;
+        g_flat_mask = 0xf8;
+        b_flat_mask = 0xfc;
+    }
+    
+    
+    // loop over blocks
+    for( int y = 0; y < height; y += 4 )
+    {
+        for( int x = 0; x < width; x += 4 )
+        {
+            // build the 4x4 block of pixels
+            u8 sourceRgba[16*4];
+            u8* targetPixel = sourceRgba;
+            int mask = 0;
+            for( int py = 0; py < 4; ++py )
+            {
+                for( int px = 0; px < 4; ++px )
+                {
+                    // get the source pixel in the image
+                    int sx = x + px;
+                    int sy = y + py;
+                    
+                    // enable if we're in the image
+                    if( sx < width && sy < height )
+                    {
+                        // copy the rgba value
+                        u8 const* sourcePixel = rgb + 3*( width*sy + sx );
+
+                        if(b_flip) {
+                            *targetPixel++ = sourcePixel[2] & r_flat_mask;
+                            *targetPixel++ = sourcePixel[1] & g_flat_mask;
+                            *targetPixel++ = sourcePixel[0] & b_flat_mask;
+                            sourcePixel += 3;
+                        }
+                        else {
+                            *targetPixel++ = sourcePixel[0] & r_flat_mask;
+                            *targetPixel++ = sourcePixel[1] & g_flat_mask;
+                            *targetPixel++ = sourcePixel[2] & b_flat_mask;
+                            sourcePixel += 3;
+                        }
+                        
+                        
+                        *targetPixel++ = 255;
+                        
+                        // enable this pixel
+                        mask |= ( 1 << ( 4*py + px ) );
+                    }
+                    else
+                    {
+                        // skip this pixel as its outside the image
+                        targetPixel += 4;
+                    }
+                }
+            }
+            
+            // compress it into the output
+            CompressMasked( sourceRgba, mask, targetBlock, flags );
+            
+            // advance
+            targetBlock += bytesPerBlock;
+        }
+        if( b_throttle && !wxThread::IsMain() ) {
+            //  Sleep a random time, 0-5 msec.
+            //  This gives most of the processing to the main GUI thread
+            long u = (long)floor(((double)rand() / ((double)(RAND_MAX) + 1) * 5) + 0.5);
+            
+            wxThread::Sleep((int)u);
+        }
+    }
+}
+
 
 void DecompressImage( u8* rgba, int width, int height, void const* blocks, int flags )
 {

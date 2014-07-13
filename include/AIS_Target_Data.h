@@ -44,6 +44,7 @@ public:
     wxString Get_vessel_type_string(bool b_short = false);
     wxString Get_class_string(bool b_short = false);
     wxString GetFullName( void );
+    wxString GetCountryCode(bool b_CntryLongStr);
     void Toggle_AIS_CPA(void);
     void ToggleShowTrack(void);
     void CloneFrom( AIS_Target_Data* q );
