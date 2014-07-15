@@ -305,6 +305,7 @@ public:
 #endif      
 
       void OnEvtCompressProgress( OCPN_CompressProgressEvent & event );
+      void JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius);
 
 private:
       ViewPort    VPoint;
@@ -418,17 +419,7 @@ private:
 
       wxBitmap *DrawTCCBitmap( wxDC *pbackground_dc, bool bAddNewSelpoints = true);
 
-      void AISDraw(ocpnDC& dc);
-      void AISDrawAreaNotices (ocpnDC& dc );
-      void AISDrawTarget (AIS_Target_Data *td, ocpnDC& dc );
-
-
       void AlertDraw(ocpnDC& dc);                // pjotrc 2010.02.22
-
-      void TargetFrame(ocpnDC &dc, wxPen pen, int x, int y, int radius);   // pjotrc 2010.02.01
-      void AtoN_Diamond(ocpnDC &dc, wxPen pen, int x, int y, int radius, bool b_virtual);  // pjotrc 2010.02.01
-      void Base_Square(ocpnDC &dc, wxPen pen, int x, int y, int radius);
-      void SART_Render(ocpnDC &dc, wxPen pen, int x, int y, int radius);
 
       void GridDraw(ocpnDC& dc); // Display lat/lon Grid in chart display
       void ScaleBarDraw( ocpnDC& dc );
@@ -448,7 +439,6 @@ private:
 
       void DrawEmboss ( ocpnDC &dc, emboss_data *pemboss );
 
-      void JaggyCircle(ocpnDC &dc, wxPen pen, int x, int y, int radius);
       void ShowObjectQueryWindow( int x, int y, float zlat, float zlon);
       void ShowMarkPropertiesDialog( RoutePoint* markPoint );
       void ShowRoutePropertiesDialog(wxString title, Route* selected);

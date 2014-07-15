@@ -48,6 +48,7 @@
 #include "TexFont.h"
 #include "glTexCache.h"
 #include "gshhs.h"
+#include "ais.h"
 
 #ifndef GL_ETC1_RGB8_OES
 #define GL_ETC1_RGB8_OES                                        0x8D64
@@ -1721,12 +1722,12 @@ void glChartCanvas::DrawFloatingOverlayObjects( ocpnDC &dc, OCPNRegion &region )
     }
 
     // all functions called with cc1-> are still slow because they go through ocpndc
-    cc1->AISDrawAreaNotices( dc );
+    AISDrawAreaNotices( dc );
     DrawEmboss(cc1->EmbossDepthScale() );
     DrawEmboss(cc1->EmbossOverzoomIndicator( dc ) );
 
     cc1->DrawAnchorWatchPoints( dc );
-    cc1->AISDraw( dc );
+    AISDraw( dc );
     ShipDraw( dc );
     cc1->AlertDraw( dc );
 
