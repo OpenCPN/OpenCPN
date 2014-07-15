@@ -4441,33 +4441,34 @@ void ChartCanvas::AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         GetCanvasPointPix( td->Lat, td->Lon, &TargetPoint );
         GetCanvasPointPix( pred_lat, pred_lon, &PredPoint );
 
-        //  Calculate the relative angle for this chart orientation
-        //    Use a 100 pixel vector to calculate angle
-        double angle_distance_nm = ( 100. / GetVP().view_scale_ppm ) / 1852.;
-        double angle_lat, angle_lon;
-        wxPoint AnglePoint;
-        ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
-        GetCanvasPointPix( angle_lat, angle_lon, &AnglePoint );
-
         double theta;
-
-        if( abs( AnglePoint.x - TargetPoint.x ) > 0 ) {
-            if( target_sog > g_ShowMoored_Kts ) theta = atan2(
-                            (double) ( AnglePoint.y - TargetPoint.y ),
-                            (double) ( AnglePoint.x - TargetPoint.x ) );
-            else
-                theta = -PI / 2;
-        } else {
-            if( AnglePoint.y > TargetPoint.y ) theta = PI / 2.;             // valid COG 180
-            else
-                theta = -PI / 2.;            //  valid COG 000 or speed is too low to resolve course
-        }
-
-        //    Of course, if the target reported a valid HDG, then use it for icon
+        //    If the target reported a valid HDG, then use it for icon
         if( (int) ( td->HDG ) != 511 ) {
             theta = ( ( td->HDG - 90 ) * PI / 180. ) + GetVP().rotation;
             if( !g_bskew_comp )
                 theta += GetVP().skew;
+        } else {
+            // question: why can we not compute similar to above using COG instead of HDG?
+            //  Calculate the relative angle for this chart orientation
+            //    Use a 100 pixel vector to calculate angle
+            double angle_distance_nm = ( 100. / GetVP().view_scale_ppm ) / 1852.;
+            double angle_lat, angle_lon;
+            wxPoint AnglePoint;
+            ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
+            GetCanvasPointPix( angle_lat, angle_lon, &AnglePoint );
+
+
+            if( abs( AnglePoint.x - TargetPoint.x ) > 0 ) {
+                if( target_sog > g_ShowMoored_Kts ) theta = atan2(
+                    (double) ( AnglePoint.y - TargetPoint.y ),
+                    (double) ( AnglePoint.x - TargetPoint.x ) );
+                else
+                    theta = -PI / 2;
+            } else {
+                if( AnglePoint.y > TargetPoint.y ) theta = PI / 2.;             // valid COG 180
+                else
+                    theta = -PI / 2.;            //  valid COG 000 or speed is too low to resolve course
+            }
         }
 
         wxDash dash_long[2];
