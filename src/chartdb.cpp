@@ -863,6 +863,9 @@ void ChartDB::UnLockAllCacheCharts()
 //-------------------------------------------------------------------
 ChartBase *ChartDB::OpenChartFromDB(int index, ChartInitFlag init_flag)
 {
+    if((index < 0) || (index > GetChartTableEntries()-1))
+        return NULL;
+    
     wxCriticalSectionLocker locker(m_critSect);
     
     return OpenChartUsingCache(index, init_flag);

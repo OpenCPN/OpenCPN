@@ -2130,7 +2130,9 @@ void cm93chart::SetVPParms ( const ViewPort &vpt )
 
       toSM ( vpt.clat, vpt.clon, ref_lat, ref_lon, &m_easting_vp_center, &m_northing_vp_center );
 
-
+      vp_transform.easting_vp_center = m_easting_vp_center;
+      vp_transform.northing_vp_center = m_northing_vp_center;
+      
       if ( g_bDebugCM93 )
       {
             //    Fetch the lat/lon of the screen corner points

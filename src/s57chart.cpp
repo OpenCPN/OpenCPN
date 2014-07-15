@@ -1591,8 +1591,14 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
                     (ViewPort *) &VPoint );
 
             if( temp_lon_right < temp_lon_left )        // presumably crossing Greenwich
-            temp_lon_right += 360.;
-
+                temp_lon_right += 360.;
+            else if(temp_vp.GetBBox().GetMaxX() > 360){
+                if(temp_lon_left < 180.) {
+                    temp_lon_left += 360.;
+                    temp_lon_right += 360.;
+                }
+            }
+            
             temp_vp.GetBBox().SetMin( temp_lon_left, temp_lat_bot );
             temp_vp.GetBBox().SetMax( temp_lon_right, temp_lat_top );
 
@@ -1627,8 +1633,14 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
                 (ViewPort *) &VPoint );
 
         if( temp_lon_right < temp_lon_left )        // presumably crossing Greenwich
-        temp_lon_right += 360.;
-
+            temp_lon_right += 360.;
+        else if(temp_vp.GetBBox().GetMaxX() > 360){
+            if(temp_lon_left < 180.) {
+                temp_lon_left += 360.;
+                temp_lon_right += 360.;
+            }
+        }
+        
         temp_vp.GetBBox().SetMin( temp_lon_left, temp_lat_bot );
         temp_vp.GetBBox().SetMax( temp_lon_right, temp_lat_top );
 

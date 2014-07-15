@@ -56,6 +56,7 @@
 #include "ocpn_pixel.h"
 #include "s52utils.h"
 #include "gshhs.h"
+#include "mygeom.h"
 
 #ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
@@ -3974,6 +3975,26 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
     S57Obj cobj;
     
     CreateCompatibleS57Object( pObj, &cobj );
+
+    //  For vbo support
+    //  Build a new style PTG
+    if(!pObj->geoPtMulti){
+        PolyTessGeo *tess = (PolyTessGeo *)pObj->pPolyTessGeo;
+        
+        PolyTriGroup *ptgo = tess->Get_PolyTriGroup_head();
+        TriPrim *tph = ptgo->tri_prim_head;
+        
+        PolyTriGroup *ptg = new PolyTriGroup;
+        ptg->tri_prim_head = tph;
+        ptg->bsingle_alloc = false;
+        ptg->data_type = DATA_TYPE_DOUBLE;
+        tess->Set_PolyTriGroup_head(ptg);
+
+        double *pd = (double *)malloc(sizeof(double));
+        pObj->geoPtMulti = pd;  //Hack hack
+        
+    }
+    cobj.Parm0 = -5;         // signal that this render is to use a temporary VBO
     
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
     
