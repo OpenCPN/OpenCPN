@@ -4490,17 +4490,19 @@ void s57chart::ResetPointBBoxes( const ViewPort &vp_last, const ViewPort &vp_thi
                         double minx = top->obj->BBObj.GetMinX();
                         double maxx = top->obj->BBObj.GetMaxX();
 
+                        //      Not sure what problems these longitude adjustments are trying to fix
+                        //      but certainly breaks point object display in western hemisphere S57 ENCs
                         if(lon - minx > 180) {
-                            minx += 360;
-                            maxx += 360;
+//                            minx += 360;
+//                            maxx += 360;
                         }
 
                         double lon1 = (lon - minx) * d;
                         double lon2 = (lon - maxx) * d;
                         
                         if(lon - lon1 < 0) {
-                            lon1 -= 360;
-                            lon2 -= 360;
+//                            lon1 -= 360;
+//                            lon2 -= 360;
                         }
 
                         top->obj->BBObj.SetMin( lon - lon1, lat - lat1 );
