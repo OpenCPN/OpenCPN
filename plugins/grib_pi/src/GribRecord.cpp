@@ -377,7 +377,7 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
 
     zuchar *BMSbits = NULL;
     if (rec1.BMSbits != NULL && rec2.BMSbits != NULL)
-        BMSbits = new zuchar[Ni*Nj/8];
+        BMSbits = new zuchar[(Ni*Nj-1)/8+1];
 
     for (int i=0; i<Ni; i++)
         for (int j=0; j<Nj; j++) {
