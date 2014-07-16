@@ -279,7 +279,7 @@ bool GribRecord::GetInterpolatedParameters
         return false;
 
     /* make sure Dj both have same sign */
-    if(rec1.getDj() * rec2.getDj() < 0)
+    if(rec1.getDj() * rec2.getDj() <= 0)
         return false;
 
     Di = wxMax(rec1.getDi(), rec2.getDi());
@@ -318,12 +318,12 @@ bool GribRecord::GetInterpolatedParameters
     if(i == iiters) // failed to align, would need spacial interpolation to work
         return false;
 
-    double jiters = rec2.Dj /rec1.Dj;
+    double jiters = rec2.Dj / rec1.Dj;
     if(jiters < 1) {
         jiters = 1/jiters;
         jm1 = 1, jm2 = iiters;
     } else
-        jm1 = iiters, jm2 = 1;
+        jm1 = jiters, jm2 = 1;
 
     for(j=0; j<jiters; j++) {
         rec1offdj = (La1 - rec1.La1)/rec1.Dj;
