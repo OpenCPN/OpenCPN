@@ -99,6 +99,7 @@ public:
     int         m_raster_format;
     unsigned char **comp_bits_array;
     wxString    m_ChartPath;
+    bool        b_abort;
 };
 
 WX_DECLARE_LIST(JobTicket, JobList);
@@ -568,16 +569,21 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
 {
     JobTicket *ticket = event.GetTicket();
     
+    if(ticket->b_abort){
+        running_list.DeleteObject(ticket);
+        m_njobs_running--;
+        
+        if(bthread_debug)
+            printf( "    Abort job: %08X  Jobs running: %d             Job count: %d   \n",
+                        ticket->ident, m_njobs_running, todo_list.GetCount());
+        return;
+    }
     
     glTextureDescriptor *ptd = ticket->pFact->GetpTD( ticket->rect );
 
     if(ptd){
         for(int i=0 ; i < 5 ; i++){
-            if(ptd->CompressedArrayAccess( CA_READ, 0, i) )
-                int yyp = 0;
-            
             ptd->CompressedArrayAccess( CA_WRITE, ticket->comp_bits_array[i], i);
-            
         }
         
         free( ticket->comp_bits_array );
@@ -639,6 +645,7 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
     pt->b_throttle = b_throttle_thread;
     pt->m_raster_format = client->GetRasterFormat();
     pt->m_ChartPath = client->GetChartPath();
+    pt->b_abort = false;
 
     if(!b_immediate){
         todo_list.Append(pt);
@@ -727,6 +734,7 @@ void CompressionWorkerPool::PurgeJobList()
     wxJobListNode *node = running_list.GetFirst();
     while(node){
         JobTicket *ticket = node->GetData();
+        ticket->b_abort = true;
         node = node->GetNext();
     }
     
