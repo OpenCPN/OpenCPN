@@ -1436,6 +1436,19 @@ S52_TextC *S52_PL_parseTX( ObjRazRules *rzRules, Rules *rules, char *cmd )
         }
     }
 
+    //  We check to see if the formatted text has any "special" characters
+    wxCharBuffer buf = text->frmtd.ToUTF8();
+    
+    unsigned int n = text->frmtd.Length();
+    for(unsigned int i=0 ; i < n ; ++i){
+        unsigned char c =buf.data()[i];
+        if(c > 127){
+            text->bspecial_char = true;
+            break;
+        }
+    }
+    
+    
     return text;
 }
 
@@ -1527,7 +1540,9 @@ bool s52plib::RenderText( wxDC *pdc, S52_TextC *ptext, int x, int y, wxRect *pRe
 
         // We render National text the old, hard way, since the text will probably have full UTF-8 codepage elements
         // and we don't necessarily have the glyphs in our font, or if we do we would need a hashmap to cache and extract them
-        if(ptext->bnat) {       
+        
+        // We also do this if the string has been detected to contain "special" characters
+        if( (ptext->bnat) || (ptext->bspecial_char) ) {       
             if( !ptext->m_pRGBA ) // is RGBA bitmap ready?
             {
                 wxScreenDC sdc;
@@ -4067,7 +4082,7 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
 
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
-
+  
     if( !ObjectRenderCheckPos( rzRules, vp ) ) return 0;
 
     if( !ObjectRenderCheckCat( rzRules, vp ) ) {
