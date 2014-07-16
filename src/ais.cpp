@@ -429,17 +429,23 @@ wxString trimAISField( char *data )
     return field;
 }
 
-static wxPoint transrot( wxPoint pt, double theta, wxPoint offset )
+static wxPoint transrot( wxPoint pt, float sin_theta, float cos_theta, wxPoint offset=wxPoint(0,0) )
 {
     wxPoint ret;
-    double px = (double) ( pt.x * sin( theta ) ) + (double) ( pt.y * cos( theta ) );
-    double py = (double) ( pt.y * sin( theta ) ) - (double) ( pt.x * cos( theta ) );
+    float px = (float) ( pt.x * sin_theta ) + (float) ( pt.y * cos_theta );
+    float py = (float) ( pt.y * sin_theta ) - (float) ( pt.x * cos_theta );
     ret.x = (int) wxRound( px );
     ret.y = (int) wxRound( py );
     ret.x += offset.x;
     ret.y += offset.y;
 
     return ret;
+}
+
+static void transrot_pts( int n, wxPoint *pt, float sin_theta, float cos_theta, wxPoint offset=wxPoint(0,0) )
+{
+    for(int i=0; i<n; i++)
+        pt[i] = transrot(pt[i], sin_theta, cos_theta, offset);
 }
 
 void AISDrawAreaNotices( ocpnDC& dc )
@@ -721,7 +727,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         cc1->GetCanvasPointPix( td->Lat, td->Lon, &TargetPoint );
         cc1->GetCanvasPointPix( pred_lat, pred_lon, &PredPoint );
 
-        double theta;
+        float theta;
         //    If the target reported a valid HDG, then use it for icon
         if( (int) ( td->HDG ) != 511 ) {
             theta = ( ( td->HDG - 90 ) * PI / 180. ) + cc1->GetVP().rotation;
@@ -737,11 +743,11 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             ll_gc_ll( td->Lat, td->Lon, td->COG, angle_distance_nm, &angle_lat, &angle_lon );
             cc1->GetCanvasPointPix( angle_lat, angle_lon, &AnglePoint );
 
-
             if( abs( AnglePoint.x - TargetPoint.x ) > 0 ) {
-                if( target_sog > g_ShowMoored_Kts ) theta = atan2(
-                    (double) ( AnglePoint.y - TargetPoint.y ),
-                    (double) ( AnglePoint.x - TargetPoint.x ) );
+                if( target_sog > g_ShowMoored_Kts )
+                    theta = atan2f(
+                        (double) ( AnglePoint.y - TargetPoint.y ),
+                        (double) ( AnglePoint.x - TargetPoint.x ) );
                 else
                     theta = -PI / 2;
             } else {
@@ -751,21 +757,14 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             }
         }
 
+        // only need to compute this once;
+        float sin_theta = sinf( theta ), cos_theta = cosf( theta );
+
         wxDash dash_long[2];
         dash_long[0] = (int) ( 1.0 * cc1->GetPixPerMM() );  // Long dash  <---------+
         dash_long[1] = (int) ( 0.5 * cc1->GetPixPerMM() );  // Short gap            |
 
         //  Draw the icon rotated to the COG
-        wxPoint ais_quad_icon[4];
-        ais_quad_icon[0].x = -8;
-        ais_quad_icon[0].y = -6;
-        ais_quad_icon[1].x = 0;
-        ais_quad_icon[1].y = 24;
-        ais_quad_icon[2].x = 8;
-        ais_quad_icon[2].y = -6;
-        ais_quad_icon[3].x = 0;
-        ais_quad_icon[3].y = -6;
-
         wxPoint ais_real_size[6];
         bool bcan_draw_size = true;
         if (g_bDrawAISSize)
@@ -777,8 +776,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             else
             {
                 double ref_lat, ref_lon;
-                ll_gc_ll( td->Lat, td->Lon, 0, 100. / 1852., &ref_lat,
-                          &ref_lon );
+                ll_gc_ll( td->Lat, td->Lon, 0, 100. / 1852., &ref_lat, &ref_lon );
                 wxPoint2DDouble b_point = cc1->GetVP().GetDoublePixFromLL( td->Lat, td->Lon );
                 wxPoint2DDouble r_point = cc1->GetVP().GetDoublePixFromLL( ref_lat, ref_lon );
                 double ppm = r_point.GetDistance(b_point) / 100.;
@@ -796,24 +794,30 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 ais_real_size[4].y = td->DimA * ppm - offlen;
                 ais_real_size[5].x = td->DimC * ppm;
                 ais_real_size[5].y = -td->DimB * ppm;
+
                 if (ais_real_size[4].x - ais_real_size[0].x < 16 || ais_real_size[2].y - ais_real_size[0].y < 30)
                     bcan_draw_size = false; //drawing too small does not make sense
-                else
+                else {
                     bcan_draw_size = true;
+                    transrot_pts(6, ais_real_size, sin_theta, cos_theta);
+                }
             }
         }
+
+
+        wxPoint ais_quad_icon[4];
+        ais_quad_icon[0] = wxPoint(-8, -6);
+        ais_quad_icon[1] = wxPoint( 0, 24);
+        ais_quad_icon[2] = wxPoint( 8, -6);
+        ais_quad_icon[3] = wxPoint( 0, -6);
 
         //   If this is an AIS Class B target, so symbolize it differently
         if( td->Class == AIS_CLASS_B ) ais_quad_icon[3].y = 0;
         else if( td->Class == AIS_GPSG_BUDDY ) {
-            ais_quad_icon[0].x = -5;
-            ais_quad_icon[0].y = -12;
-            ais_quad_icon[1].x = -3;
-            ais_quad_icon[1].y = 12;
-            ais_quad_icon[2].x = 3;
-            ais_quad_icon[2].y = 12;
-            ais_quad_icon[3].x = 5;
-            ais_quad_icon[3].y = -12;
+            ais_quad_icon[0] = wxPoint(-5, -12);
+            ais_quad_icon[1] = wxPoint(-3,  12);
+            ais_quad_icon[2] = wxPoint( 3,  12);
+            ais_quad_icon[3] = wxPoint( 5, -12);
         }
         else if( td->Class == AIS_DSC ) {
             ais_quad_icon[0].y = 0;
@@ -822,36 +826,13 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             ais_quad_icon[3].y = -8;
         }
         else if( td->Class == AIS_APRS ) {
-            ais_quad_icon[0].x = -8;
-            ais_quad_icon[0].y = -8;
-            ais_quad_icon[1].x = -8;
-            ais_quad_icon[1].y = 8;
-            ais_quad_icon[2].x = 8;
-            ais_quad_icon[2].y = 8;
-            ais_quad_icon[3].x = 8;
-            ais_quad_icon[3].y = -8;
+            ais_quad_icon[0] = wxPoint(-8, -8);
+            ais_quad_icon[1] = wxPoint(-8,  8);
+            ais_quad_icon[2] = wxPoint( 8,  8);
+            ais_quad_icon[3] = wxPoint( 8, -8);
         }
 
-        for( int i = 0; i < 4; i++ )
-        {
-            double px = ( (double) ais_quad_icon[i].x ) * sin( theta )
-                        + ( (double) ais_quad_icon[i].y ) * cos( theta );
-            double py = ( (double) ais_quad_icon[i].y ) * sin( theta )
-                        - ( (double) ais_quad_icon[i].x ) * cos( theta );
-            ais_quad_icon[i].x = (int) round( px );
-            ais_quad_icon[i].y = (int) round( py );
-        }
-
-        if (g_bDrawAISSize && bcan_draw_size)
-            for( int i = 0; i < 6; i++ )
-            {
-                double px = ( (double) ais_real_size[i].x ) * sin( theta )
-                            + ( (double) ais_real_size[i].y ) * cos( theta );
-                double py = ( (double) ais_real_size[i].y ) * sin( theta )
-                            - ( (double) ais_real_size[i].x ) * cos( theta );
-                ais_real_size[i].x = (int) round( px );
-                ais_real_size[i].y = (int) round( py );
-            }
+        transrot_pts(4, ais_quad_icon, sin_theta, cos_theta);
 
         dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ) ) );
 
@@ -870,8 +851,8 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( td->b_SarAircraftPosnReport )
             target_brush = wxBrush( GetGlobalColor( _T ( "UINFG" ) ) );
 
-        if( ( td->n_alert_state == AIS_ALERT_SET ) && ( td->bCPA_Valid ) ) target_brush = wxBrush(
-                        GetGlobalColor( _T ( "URED" ) ) );
+        if( ( td->n_alert_state == AIS_ALERT_SET ) && ( td->bCPA_Valid ) )
+            target_brush = wxBrush( GetGlobalColor( _T ( "URED" ) ) );
 
         if( td->b_positionDoubtful ) target_brush = wxBrush( GetGlobalColor( _T ( "UINFF" ) ) );
 
@@ -879,8 +860,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
         if( ((td->n_alert_state == AIS_ALERT_SET) && (td->bCPA_Valid)) || (td->b_show_AIS_CPA && (td->bCPA_Valid))) {
             //  Calculate the point of CPA for target
             double tcpa_lat, tcpa_lon;
-            ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat,
-                      &tcpa_lon );
+            ll_gc_ll( td->Lat, td->Lon, td->COG, target_sog * td->TCPA / 60., &tcpa_lat, &tcpa_lon );
             wxPoint tCPAPoint;
             wxPoint TPoint = TargetPoint;
             cc1->GetCanvasPointPix( tcpa_lat, tcpa_lon, &tCPAPoint );
@@ -965,16 +945,16 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
         //  Highlight the AIS target symbol if an alert dialog is currently open for it
         if( g_pais_alert_dialog_active && g_pais_alert_dialog_active->IsShown() ) {
-            if( g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI ) cc1->JaggyCircle( dc,
-                        wxPen( GetGlobalColor( _T ( "URED" ) ), 2 ), TargetPoint.x, TargetPoint.y,
-                        100 );
+            if( g_pais_alert_dialog_active->Get_Dialog_MMSI() == td->MMSI )
+                cc1->JaggyCircle( dc, wxPen( GetGlobalColor( _T ( "URED" ) ), 2 ),
+                                  TargetPoint.x, TargetPoint.y, 100 );
         }
 
         //  Highlight the AIS target symbol if a query dialog is currently open for it
         if( g_pais_query_dialog_active && g_pais_query_dialog_active->IsShown() ) {
-            if( g_pais_query_dialog_active->GetMMSI() == td->MMSI ) TargetFrame( dc,
-                        wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ), TargetPoint.x, TargetPoint.y,
-                        25 );
+            if( g_pais_query_dialog_active->GetMMSI() == td->MMSI )
+                TargetFrame( dc, wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ),
+                             TargetPoint.x, TargetPoint.y, 25 );
         }
 
         //       Render the COG line if the speed is greater than moored speed defined by ais options dialog
@@ -1011,17 +991,15 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
                 //      Draw RateOfTurn Vector
                 if( ( td->ROTAIS != 0 ) && ( td->ROTAIS != -128 ) && td->b_active ) {
-                    double nv = 10;
-                    double theta2 = theta;
+                    float nv = 10;
+                    float theta2 = theta;
                     if( td->ROTAIS > 0 ) theta2 += PI / 2.;
                     else
                         theta2 -= PI / 2.;
 
-                    int xrot = (int) round ( pixx1 + ( nv * cos ( theta2 ) ) );
-                    int yrot = (int) round ( pixy1 + ( nv * sin ( theta2 ) ) );
+                    int xrot = (int) round ( pixx1 + ( nv * cosf ( theta2 ) ) );
+                    int yrot = (int) round ( pixy1 + ( nv * sinf ( theta2 ) ) );
                     dc.StrokeLine( pixx1, pixy1, xrot, yrot );
-                    dc.CalcBoundingBox( xrot, yrot );
-
                 }
             }
         }
@@ -1039,8 +1017,6 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             if( !td->b_active ) {
                 dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ) );
                 dc.StrokeLine( TargetPoint.x - 14, TargetPoint.y, TargetPoint.x + 14, TargetPoint.y );
-                dc.CalcBoundingBox( TargetPoint.x - 14, TargetPoint.y );
-                dc.CalcBoundingBox( TargetPoint.x + 14, TargetPoint.y );
                 dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
             }
         } else if( td->Class == AIS_ATON ) {                   // Aid to Navigation
@@ -1086,34 +1062,20 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
             //  First half
 
             for( int i = 0; i < 9; i++ )
-            {
-                double px = ( (double) SarIcon[i].x ) * sin( theta )
-                + ( (double) SarIcon[i].y ) * cos( theta );
-                double py = ( (double) SarIcon[i].y ) * sin( theta )
-                - ( (double) SarIcon[i].x ) * cos( theta );
-                SarRot[i].x = (int) round( px );
-                SarRot[i].y = (int) round( py );
-            }
-            wxPoint ais_tri_icon[3];
+                SarRot[i] = SarIcon[i];
+            transrot_pts(9, SarRot, sin_theta, cos_theta);
 
             wxPen tri_pen( target_brush.GetColour(), 1 );
             dc.SetPen( tri_pen );
             dc.SetBrush( target_brush );
 
-            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[1]; ais_tri_icon[2] = SarRot[4];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[1]; ais_tri_icon[1] = SarRot[2]; ais_tri_icon[2] = SarRot[3];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[1]; ais_tri_icon[1] = SarRot[3]; ais_tri_icon[2] = SarRot[4];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[4]; ais_tri_icon[2] = SarRot[5];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[5]; ais_tri_icon[2] = SarRot[8];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[5]; ais_tri_icon[1] = SarRot[6]; ais_tri_icon[2] = SarRot[7];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[5]; ais_tri_icon[1] = SarRot[7]; ais_tri_icon[2] = SarRot[8];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            int mappings[7][3] = {{0, 1, 4}, {1, 2, 3}, {1, 3, 4}, {0, 4, 5}, {0, 5, 8}, {5, 6, 7}, {5, 7, 8}};
+            for(int i=0; i<7; i++) {
+                wxPoint ais_tri_icon[3];
+                for(int j=0; j<3; j++)
+                    ais_tri_icon[j] = SarRot[mappings[i][j]];
+                dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            }
 
             wxPen target_outline_pen( GetGlobalColor( _T ( "UBLCK" ) ), 2 );
             dc.SetPen( target_outline_pen );
@@ -1122,33 +1084,20 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
             // second half
 
-            for( int i = 0; i < 9; i++ )                // mirror the icon (x -> -x)
-            {
-                double px = (-(double) SarIcon[i].x ) * sin( theta )
-                + ( (double) SarIcon[i].y ) * cos( theta );
-                double py = ( (double) SarIcon[i].y ) * sin( theta )
-                - (-(double) SarIcon[i].x ) * cos( theta );
-                SarRot[i].x = (int) round( px );
-                SarRot[i].y = (int) round( py );
-            }
+            for( int i = 0; i < 9; i++ )
+                SarRot[i] = wxPoint(-SarIcon[i].x, SarIcon[i].y); // mirror the icon (x -> -x)
+
+            transrot_pts(9, SarRot, sin_theta, cos_theta);
 
             dc.SetPen( tri_pen );
             dc.SetBrush( target_brush );
 
-            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[1]; ais_tri_icon[2] = SarRot[4];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[1]; ais_tri_icon[1] = SarRot[2]; ais_tri_icon[2] = SarRot[3];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[1]; ais_tri_icon[1] = SarRot[3]; ais_tri_icon[2] = SarRot[4];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[4]; ais_tri_icon[2] = SarRot[5];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[0]; ais_tri_icon[1] = SarRot[5]; ais_tri_icon[2] = SarRot[8];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[5]; ais_tri_icon[1] = SarRot[6]; ais_tri_icon[2] = SarRot[7];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
-            ais_tri_icon[0] = SarRot[5]; ais_tri_icon[1] = SarRot[7]; ais_tri_icon[2] = SarRot[8];
-            dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            for(int i=0; i<7; i++) {
+                wxPoint ais_tri_icon[3];
+                for(int j=0; j<3; j++)
+                    ais_tri_icon[j] = SarRot[mappings[i][j]];
+                dc.StrokePolygon( 3, ais_tri_icon, TargetPoint.x, TargetPoint.y );
+            }
 
             dc.SetPen( target_outline_pen );
             dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
@@ -1179,10 +1128,9 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
 
                 dc.SetPen( target_pen );
                 dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UBLCK" ) ), wxTRANSPARENT ) );
-                dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y );
+            }
 
-            } else
-                dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y );
+            dc.StrokePolygon( 4, ais_quad_icon, TargetPoint.x, TargetPoint.y );
 
             if (g_bDrawAISSize && bcan_draw_size)
             {
@@ -1249,74 +1197,46 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 }
                 case HSC:
                 case WIG: {
+                    dc.SetBrush( target_brush );
+
                     wxPoint arrow[3];
                     arrow[0] = wxPoint( -4, 20 );
                     arrow[1] = wxPoint(  0, 27 );
                     arrow[2] = wxPoint(  4, 20 );
-                    for( int i = 0; i < 3; i++ ) {
-                        double px = ( (double) arrow[i].x ) * sin( theta )
-                                    + ( (double) arrow[i].y ) * cos( theta );
-                        double py = ( (double) arrow[i].y ) * sin( theta )
-                                    - ( (double) arrow[i].x ) * cos( theta );
-                        arrow[i].x = (int) round( px );
-                        arrow[i].y = (int) round( py );
-                    }
-                    dc.SetBrush( target_brush );
+                    transrot_pts(3, arrow, sin_theta, cos_theta, TargetPoint);
                     dc.StrokePolygon( 3, arrow, TargetPoint.x, TargetPoint.y );
+
                     arrow[0] = wxPoint( -4, 27 );
                     arrow[1] = wxPoint(  0, 34 );
                     arrow[2] = wxPoint(  4, 27 );
-                    for( int i = 0; i < 3; i++ ) {
-                        double px = ( (double) arrow[i].x ) * sin( theta )
-                                    + ( (double) arrow[i].y ) * cos( theta );
-                        double py = ( (double) arrow[i].y ) * sin( theta )
-                                    - ( (double) arrow[i].x ) * cos( theta );
-                        arrow[i].x = (int) round( px );
-                        arrow[i].y = (int) round( py );
-                    }
-                    dc.StrokePolygon( 3, arrow, TargetPoint.x, TargetPoint.y );
+                    transrot_pts(3, arrow, sin_theta, cos_theta, TargetPoint);
+                    dc.StrokePolygon( 3, arrow );
                     break;
                 }
             }
 
             //        Draw the inactive cross-out line
             if( !td->b_active ) {
+                wxPoint p1 = transrot( wxPoint( -14, 0 ), sin_theta, cos_theta, TargetPoint );
+                wxPoint p2 = transrot( wxPoint( 14, 0 ), sin_theta, cos_theta, TargetPoint );
+
                 dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 2 ) );
-
-                wxPoint p1 = transrot( wxPoint( -14, 0 ), theta, TargetPoint );
-                wxPoint p2 = transrot( wxPoint( 14, 0 ), theta, TargetPoint );
                 dc.StrokeLine( p1.x, p1.y, p2.x, p2.y );
-                dc.CalcBoundingBox( p1.x, p1.y );
-                dc.CalcBoundingBox( p2.x, p2.y );
-
-                dc.SetPen( wxPen( GetGlobalColor( _T ( "UBLCK" ) ), 1 ) );
             }
 
             //    European Inland AIS define a "stbd-stbd" meeting sign, a blue paddle.
             //    Symbolize it if set by most recent message
             if( td->b_blue_paddle ) {
                 wxPoint ais_flag_icon[4];
-                ais_flag_icon[0].x = -8;
-                ais_flag_icon[0].y = -6;
-                ais_flag_icon[1].x = -2;
-                ais_flag_icon[1].y = 18;
-                ais_flag_icon[2].x = -2;
-                ais_flag_icon[2].y = 0;
-                ais_flag_icon[3].x = -2;
-                ais_flag_icon[3].y = -6;
-
-                for( int i = 0; i < 4; i++ ) {
-                    double px = ( (double) ais_flag_icon[i].x ) * sin( theta )
-                                + ( (double) ais_flag_icon[i].y ) * cos( theta );
-                    double py = ( (double) ais_flag_icon[i].y ) * sin( theta )
-                                - ( (double) ais_flag_icon[i].x ) * cos( theta );
-                    ais_flag_icon[i].x = (int) round( px );
-                    ais_flag_icon[i].y = (int) round( py );
-                }
+                ais_flag_icon[0] = wxPoint(-8, -6);
+                ais_flag_icon[1] = wxPoint(-2, 18);
+                ais_flag_icon[2] = wxPoint(-2, 0);
+                ais_flag_icon[3] = wxPoint(-2, -6);
+                transrot_pts(4, ais_flag_icon, sin_theta, cos_theta, TargetPoint);
 
                 dc.SetBrush( wxBrush( GetGlobalColor( _T ( "UINFB" ) ) ) );
                 dc.SetPen( wxPen( GetGlobalColor( _T ( "CHWHT" ) ), 2 ) );
-                dc.StrokePolygon( 4, ais_flag_icon, TargetPoint.x, TargetPoint.y );
+                dc.StrokePolygon( 4, ais_flag_icon);
             }
         }
 
