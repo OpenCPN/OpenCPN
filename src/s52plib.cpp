@@ -1925,6 +1925,9 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
         wxPoint r;
         GetPointPixSingle( rzRules, rzRules->obj->y, rzRules->obj->x, &r, vp );
 
+        //      Once more I don't understand these adjustments
+        //      They are very broken for west longitude objects.
+#if 0        
         // if object is east of greenwich
         if(r.x < -text->rText.width) {
             double x = rzRules->obj->x + (mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI)
@@ -1937,7 +1940,7 @@ int s52plib::RenderT_All( ObjRazRules *rzRules, Rules *rules, ViewPort *vp, bool
                 / rzRules->obj->x_rate;
             GetPointPixSingle( rzRules, rzRules->obj->y, x, &r, vp );
         }
-
+#endif
         wxRect rect;
 
         bool bwas_drawn = RenderText( m_pdc, text, r.x, r.y, &rect, rzRules->obj, m_bDeClutterText,

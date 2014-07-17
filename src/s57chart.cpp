@@ -5395,6 +5395,8 @@ bool s57chart::DoesLatLonSelectObject( float lat, float lon, float select_radius
         //  For single Point objects, the integral object bounding box contains the lat/lon of the object,
         //  possibly expanded by text or symbol rendering
         case GEO_POINT: {
+            if( !obj->bBBObj_valid ) return false;
+            
             if( 1 == obj->npt ) {
                 //  Special case for LIGHTS
                 //  Sector lights have had their BBObj expanded to include the entire drawn sector
