@@ -115,6 +115,9 @@ extern bool             b_inCompressAllCharts;
 
 ocpnGLOptions g_GLOptions;
 
+//    For VBO(s)
+bool         g_b_EnableVBO;
+
 
 PFNGLGENFRAMEBUFFERSEXTPROC         s_glGenFramebuffers;
 PFNGLGENRENDERBUFFERSEXTPROC        s_glGenRenderbuffers;
@@ -831,9 +834,15 @@ void glChartCanvas::SetupOpenGL()
         !s_glDeleteRenderbuffers )
         m_b_DisableFBO = true;
 
-    m_b_EnableVBO = true;
+    g_b_EnableVBO = true;
     if( !s_glBindBuffer || !s_glBufferData || !s_glGenBuffers || !s_glDeleteBuffers )
-        m_b_EnableVBO = false;
+        g_b_EnableVBO = false;
+
+    if(g_b_EnableVBO)
+        wxLogMessage( _T("OpenGL-> Using Vetexbuffer Objects") );
+    else
+        wxLogMessage( _T("OpenGL-> Vertexbuffer Objects unavailable") );
+    
     
     //      Can we use the stencil buffer in a FBO?
 #ifdef ocpnUSE_GLES /* gles requires all levels */

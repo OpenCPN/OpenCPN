@@ -161,9 +161,6 @@ protected:
     GLuint       m_fb0;
     GLuint       m_renderbuffer;
 
-    //    For VBO(s)
-    bool         m_b_EnableVBO;
-    
     GLuint       m_cache_tex[2];
     GLuint       m_cache_page;
     int          m_cache_tex_x;

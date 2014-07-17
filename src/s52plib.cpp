@@ -66,6 +66,7 @@
 extern s52plib *ps52plib;
 extern wxString g_csv_locn;
 extern float g_GLMinLineWidth;
+extern bool  g_b_EnableVBO;
 
 extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
 extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
@@ -5679,8 +5680,66 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         if( !rzRules->obj->pPolyTessGeo->IsOk() ) 
             rzRules->obj->pPolyTessGeo->BuildDeferredTess();
 
+        //  Get the vertex data
+        PolyTriGroup *ppg_vbo = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
+            
+            //  Has the input vertex buffer been converted to "single_alloc" model?
+        if(!ppg_vbo->bsingle_alloc){
+                
+                int data_size = sizeof(float);
+                if( ppg_vbo->data_type == DATA_TYPE_DOUBLE)
+                    data_size = sizeof(double);
+                
+                //  First calculate the required total byte size
+                    int total_byte_size = 0;
+                    TriPrim *p_tp = ppg_vbo->tri_prim_head;
+                    while( p_tp ) {
+                        total_byte_size += p_tp->nVert * 2 * data_size;
+                        p_tp = p_tp->p_next; // pick up the next in chain
+                    }
+                    
+                    float *vbuf = (float *)malloc(total_byte_size);
+                    p_tp = ppg_vbo->tri_prim_head;
+                    
+                    if( ppg_vbo->data_type == DATA_TYPE_DOUBLE){  //DOUBLE to FLOAT
+                            float *p_run = vbuf;
+                            while( p_tp ) {
+                                float *pfbuf = p_run;
+                                for( int i=0 ; i < p_tp->nVert * 2 ; ++i){
+                                    float x = (float)(p_tp->p_vertex[i]);
+                                    *p_run++ = x;
+                                }
+                                
+                                free(p_tp->p_vertex);
+                                p_tp->p_vertex = (double *)pfbuf;
+                                
+                                p_tp = p_tp->p_next; // pick up the next in chain
+                            }
+                    }
+                    else {          // FLOAT to FLOAT
+                            float *p_run = vbuf;
+                            while( p_tp ) {
+                                memcpy( p_run, p_tp->p_vertex, p_tp->nVert * 2 * sizeof(float) );
+                                
+                                free(p_tp->p_vertex);
+                                p_tp->p_vertex = (double *)p_run;
+                                
+                                p_run += p_tp->nVert * 2 * sizeof(float);
+                                
+                                p_tp = p_tp->p_next; // pick up the next in chain
+                            }
+                    }
+                    
+                    
+                    ppg_vbo->bsingle_alloc = true;
+                    ppg_vbo->single_buffer = (unsigned char *)vbuf;
+                    ppg_vbo->single_buffer_size = total_byte_size;
+                    ppg_vbo->data_type = DATA_TYPE_FLOAT;
+                    
+        }
+            
 
-        if(1){
+        if( g_b_EnableVBO ){
         //  Has a VBO been built for this object?
             if( 1 ) {
                  
@@ -5697,63 +5756,6 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     (s_glBindBuffer)(GL_ARRAY_BUFFER, vboId);
                     
                     // upload data to VBO
-                    PolyTriGroup *ppg_vbo = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
-                    
-                    //  Has the input vertex buffer been converted to "single_alloc" model?
-                    if(!ppg_vbo->bsingle_alloc){
-                        
-                        int data_size = sizeof(float);
-                        if( ppg_vbo->data_type == DATA_TYPE_DOUBLE)
-                            data_size = sizeof(double);
-                        
-                        //  First calculate the required total byte size
-                        int total_byte_size = 0;
-                        TriPrim *p_tp = ppg_vbo->tri_prim_head;
-                        while( p_tp ) {
-                            total_byte_size += p_tp->nVert * 2 * data_size;
-                            p_tp = p_tp->p_next; // pick up the next in chain
-                        }
-                        
-                        float *vbuf = (float *)malloc(total_byte_size);
-                        p_tp = ppg_vbo->tri_prim_head;
-                        
-                        if( ppg_vbo->data_type == DATA_TYPE_DOUBLE){  //DOUBLE to FLOAT
-                            float *p_run = vbuf;
-                            while( p_tp ) {
-                                float *pfbuf = p_run;
-                                for( int i=0 ; i < p_tp->nVert * 2 ; ++i){
-                                    float x = (float)(p_tp->p_vertex[i]);
-                                    *p_run++ = x;
-                                }
-                                
-                                free(p_tp->p_vertex);
-                                p_tp->p_vertex = (double *)pfbuf;
-
-                                p_tp = p_tp->p_next; // pick up the next in chain
-                            }
-                        }
-                        else {          // FLOAT to FLOAT
-                            float *p_run = vbuf;
-                            while( p_tp ) {
-                                memcpy( p_run, p_tp->p_vertex, p_tp->nVert * 2 * sizeof(float) );
-
-                                free(p_tp->p_vertex);
-                                p_tp->p_vertex = (double *)p_run;
-                                
-                                p_run += p_tp->nVert * 2 * sizeof(float);
-                                
-                                p_tp = p_tp->p_next; // pick up the next in chain
-                            }
-                        }
-                        
-                        
-                        ppg_vbo->bsingle_alloc = true;
-                        ppg_vbo->single_buffer = (unsigned char *)vbuf;
-                        ppg_vbo->single_buffer_size = total_byte_size;
-                        ppg_vbo->data_type = DATA_TYPE_FLOAT;
-                        
-                    }
-                    
                     glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
                     (s_glBufferData)(GL_ARRAY_BUFFER,
                                     ppg_vbo->single_buffer_size, ppg_vbo->single_buffer, GL_STATIC_DRAW);
@@ -5774,6 +5776,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         TriPrim *p_tp = ppg->tri_prim_head;
         int vbo_offset = 0;
         
+        glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+        
         while( p_tp ) {
             
             tp_box.SetMin(p_tp->minx, p_tp->miny);
@@ -5790,8 +5794,15 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
 
             if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
-                glVertexPointer(2, GL_FLOAT, 8, (void *)(vbo_offset));
-                glDrawArrays(p_tp->type, 0, p_tp->nVert);
+                
+                if(g_b_EnableVBO){
+                    glVertexPointer(2, GL_FLOAT, 8, (void *)(vbo_offset));
+                    glDrawArrays(p_tp->type, 0, p_tp->nVert);
+                }
+                else{
+                    glVertexPointer(2, GL_FLOAT, 8, p_tp->p_vertex);
+                    glDrawArrays(p_tp->type, 0, p_tp->nVert);
+                }
             }
             
             vbo_offset += p_tp->nVert * 2 * sizeof(float);
@@ -5799,12 +5810,14 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             
         } // while
         
-        (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
+        if(g_b_EnableVBO)
+            (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
+        
         glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
         
         glPopMatrix();
         
-        if(b_temp_vbo){
+        if( g_b_EnableVBO && b_temp_vbo){
             (s_glBufferData)(GL_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW);
             s_glDeleteBuffers(1, (unsigned int *)&rzRules->obj->Parm0);
             rzRules->obj->Parm0 = 0;
