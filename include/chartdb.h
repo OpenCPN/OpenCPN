@@ -175,6 +175,7 @@ private:
       bool              m_b_busy;
 
       wxCriticalSection m_critSect;
+      wxMutex           m_cache_mutex;
 };
 
 
