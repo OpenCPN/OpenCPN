@@ -279,7 +279,7 @@ bool GribRecord::GetInterpolatedParameters
         return false;
 
     /* make sure Dj both have same sign */
-    if(rec1.getDj() * rec2.getDj() < 0)
+    if(rec1.getDj() * rec2.getDj() <= 0)
         return false;
 
     Di = wxMax(rec1.getDi(), rec2.getDi());
@@ -318,12 +318,12 @@ bool GribRecord::GetInterpolatedParameters
     if(i == iiters) // failed to align, would need spacial interpolation to work
         return false;
 
-    double jiters = rec2.Dj /rec1.Dj;
+    double jiters = rec2.Dj / rec1.Dj;
     if(jiters < 1) {
         jiters = 1/jiters;
         jm1 = 1, jm2 = iiters;
     } else
-        jm1 = iiters, jm2 = 1;
+        jm1 = jiters, jm2 = 1;
 
     for(j=0; j<jiters; j++) {
         rec1offdj = (La1 - rec1.La1)/rec1.Dj;
@@ -377,7 +377,7 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
 
     zuchar *BMSbits = NULL;
     if (rec1.BMSbits != NULL && rec2.BMSbits != NULL)
-        BMSbits = new zuchar[Ni*Nj/8];
+        BMSbits = new zuchar[(Ni*Nj-1)/8+1];
 
     for (int i=0; i<Ni; i++)
         for (int j=0; j<Nj; j++) {
@@ -391,12 +391,12 @@ GribRecord * GribRecord::InterpolatedRecord(const GribRecord &rec1, const GribRe
                 data[in] = (1-d)*data1 + d*data2;
 
             if(BMSbits) {
-                int b1 = rec1.BMSbits[i1>>3] & (1<<i1&7);
-                int b2 = rec2.BMSbits[i2>>3] & (1<<i2&7);
+                int b1 = rec1.BMSbits[i1>>3] & 1<<(i1&7);
+                int b2 = rec2.BMSbits[i2>>3] & 1<<(i2&7);
                 if(b1 && b2)
-                    BMSbits[in>>3] |= (1<<in)&7;
+                    BMSbits[in>>3] |= 1<<(in&7);
                 else
-                    BMSbits[in>>3] &= ~(1<<in)&7;
+                    BMSbits[in>>3] &= ~(1<<(in&7));
             }
         }
 

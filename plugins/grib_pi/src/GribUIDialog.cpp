@@ -1018,6 +1018,9 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
     unsigned int i, im1;
     ArrayOfGribRecordSets *rsa = m_bGRIBActiveFile->GetRecordSetArrayPtr();
 
+    if(rsa->GetCount() == 0)
+        return NULL;
+
     wxDateTime curtime;
     for(i=0; i<rsa->GetCount(); i++) {
         GribRecordSet &cur=rsa->Item(i);
@@ -1025,9 +1028,10 @@ GribTimelineRecordSet* GRIBUIDialog::GetTimeLineRecordSet(wxDateTime time)
         if(curtime >= time)
             break;
     }
-    im1 = i-1;
     if(i == 0)
         im1 = 0;
+    else
+        im1 = i-1;
 
     if(curtime == time) im1 = i;                            //no interpolation for record boundary
 

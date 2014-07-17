@@ -99,6 +99,51 @@ static wxString TToString( const wxDateTime date_time, const int time_zone )
     }
 }
 #endif
+
+#ifdef ocpnUSE_GL
+static GLuint texture_format = 0;
+#endif
+
+static GLboolean QueryExtension( const char *extName )
+{
+    /*
+     ** Search for extName in the extensions string. Use of strstr()
+     ** is not sufficient because extension names can be prefixes of
+     ** other extension names. Could use strtok() but the constant
+     ** string returned by glGetString might be in read-only memory.
+     */
+    char *p;
+    char *end;
+    int extNameLen;
+
+    extNameLen = strlen( extName );
+
+    p = (char *) glGetString( GL_EXTENSIONS );
+    if( NULL == p ) {
+        return GL_FALSE;
+    }
+
+    end = p + strlen( p );
+
+    while( p < end ) {
+        int n = strcspn( p, " " );
+        if( ( extNameLen == n ) && ( strncmp( extName, p, n ) == 0 ) ) {
+            return GL_TRUE;
+        }
+        p += ( n + 1 );
+    }
+    return GL_FALSE;
+}
+
+#if defined(__WXMSW__)
+#define systemGetProcAddress(ADDR) wglGetProcAddress(ADDR)
+#elif defined(__WXOSX__)
+#include <dlfcn.h>
+#define systemGetProcAddress(ADDR) dlsym( RTLD_DEFAULT, ADDR)
+#else
+#define systemGetProcAddress(ADDR) glXGetProcAddress((const GLubyte*)ADDR)
+#endif
+
 //----------------------------------------------------------------------------------------------------------
 //    Grib Overlay Factory Implementation
 //----------------------------------------------------------------------------------------------------------
@@ -273,13 +318,6 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
 }
 
 #ifdef ocpnUSE_GL
-
-#ifdef ocpnUSE_GLES
-static const GLuint format = GL_TEXTURE_2D; // we have npot textures
-#else
-static const GLuint format = GL_TEXTURE_RECTANGLE_ARB;
-#endif
-
 bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, GribRecord *pGR,
                                               PlugIn_ViewPort *vp, int grib_pixel_size )
 {
@@ -337,12 +375,12 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
 
     GLuint texture;
     glGenTextures(1, &texture);
-    glBindTexture(format, texture);
+    glBindTexture(texture_format, texture);
 
-    glTexParameteri( format, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( format, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-    glTexParameteri( format, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( format, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( texture_format, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( texture_format, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    glTexParameteri( texture_format, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( texture_format, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
     glPushClientAttrib( GL_CLIENT_PIXEL_STORE_BIT );
 
@@ -351,7 +389,7 @@ bool GRIBOverlayFactory::CreateGribGLTexture( GribOverlay *pGO, int settings, Gr
     glPixelStorei( GL_UNPACK_SKIP_ROWS, 0 );
     glPixelStorei( GL_UNPACK_ROW_LENGTH, width );
 
-    glTexImage2D(format, 0, GL_RGBA, width, height,
+    glTexImage2D(texture_format, 0, GL_RGBA, width, height,
                  0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
     glPopClientAttrib();
@@ -921,17 +959,31 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
         if( !m_pdc )       //OpenGL mode
         {
 #ifdef ocpnUSE_GL
-            if( !pGO->m_iTexture )
-                CreateGribGLTexture( pGO, settings, pGRA, vp, 1 );
 
-            if( pGO->m_iTexture )
-                DrawGLTexture( pGO->m_iTexture, pGO->m_width, pGO->m_height,
+            if(!texture_format) {
+                // prefer npot over texture rectangles
+                if( QueryExtension( "GL_ARB_texture_non_power_of_two" ) ||
+                    QueryExtension( "GL_OES_texture_npot" ) )
+                    texture_format = GL_TEXTURE_2D;
+                else if( QueryExtension( "GL_ARB_texture_rectangle" ) )
+                    texture_format = GL_TEXTURE_RECTANGLE_ARB;
+            }
+
+            if(!texture_format) // it's very unlikely to not have any of the above extensions
+                m_Message_Hiden.Append(_("Overlays not supported by this graphics hardware (Disable OpenGL)"));
+            else {
+                if( !pGO->m_iTexture )
+                    CreateGribGLTexture( pGO, settings, pGRA, vp, 1 );
+
+                if( pGO->m_iTexture )
+                    DrawGLTexture( pGO->m_iTexture, pGO->m_width, pGO->m_height,
                                porg.x, porg.y, pGO->m_dwidth, pGO->m_dheight, vp );
-            else
-                m_Message_Hiden.IsEmpty()?
-                    m_Message_Hiden.Append(_("Overlays too wide and can't be displayed:"))
-                    .Append(_T(" ")).Append(GribOverlaySettings::NameFromIndex(settings))
-                    : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
+                else
+                    m_Message_Hiden.IsEmpty()?
+                        m_Message_Hiden.Append(_("Overlays too wide and can't be displayed:"))
+                        .Append(_T(" ")).Append(GribOverlaySettings::NameFromIndex(settings))
+                        : m_Message_Hiden.Append(_T(",")).Append(GribOverlaySettings::NameFromIndex(settings));
+            }
 #endif
         }
         else        //DC mode
@@ -1113,6 +1165,9 @@ void GRIBOverlayFactory::DrawMessageWindow( wxString msg, int x, int y , wxFont 
         glVertex2i(w, yp+h);
         glVertex2i(0, yp+h);
         glEnd();
+
+        glEnable(GL_BLEND);
+        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
         glColor3ub( 0, 0, 0 );
         glEnable(GL_TEXTURE_2D);
@@ -1365,8 +1420,8 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
                                         int xd, int yd, double dwidth, double dheight,
                                         PlugIn_ViewPort *vp )
 {
-    glEnable(format);
-    glBindTexture(format, texture);
+    glEnable(texture_format);
+    glBindTexture(texture_format, texture);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1388,15 +1443,13 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
         glTranslatef( -xd, -yd, 0 );
     }
 
-
     double x = xd, y = yd;
 
     double w = dwidth * vp->view_scale_ppm;
     double h = dheight * vp->view_scale_ppm;
 
-#ifdef ocpnUSE_GLES
-    width = height = 1;
-#endif
+    if(texture_format == GL_TEXTURE_2D)
+        width = height = 1;
 
     glBegin(GL_QUADS);
     glTexCoord2i(0, 0),          glVertex2i(x, y);
@@ -1406,9 +1459,8 @@ void GRIBOverlayFactory::DrawGLTexture( GLuint texture, int width, int height,
     glEnd();
 
     glDisable(GL_BLEND);
-    glDisable(format);
+    glDisable(texture_format);
 
     glPopMatrix();
 }
-
 #endif

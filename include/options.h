@@ -933,6 +933,7 @@ public:
     wxCheckBox *m_cbUseAcceleratedPanning;
 
     wxCheckBox *m_cbTextureCompression, *m_cbTextureCompressionCaching;
+
     wxCheckBox *m_cbRebuildTextureCache;
     wxCheckBox *m_cbClearTextureCache;
     
