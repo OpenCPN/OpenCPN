@@ -574,7 +574,7 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
         m_njobs_running--;
         
         if(bthread_debug)
-            printf( "    Abort job: %08X  Jobs running: %d             Job count: %d   \n",
+            printf( "    Abort job: %08X  Jobs running: %d             Job count: %lu   \n",
                         ticket->ident, m_njobs_running, todo_list.GetCount());
         return;
     }
@@ -593,7 +593,7 @@ void CompressionWorkerPool::OnEvtThread( OCPN_CompressionThreadEvent & event )
     m_njobs_running--;
     
     if(bthread_debug)
-        printf( "    Finished job: %08X  Jobs running: %d             Job count: %d   \n",
+        printf( "    Finished job: %08X  Jobs running: %d             Job count: %lu   \n",
             ticket->ident, m_njobs_running, todo_list.GetCount());
 
     StartTopJob();
@@ -654,7 +654,7 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
             GetMemoryStatus(&mem_total, &mem_used);
             
             if(bthread_debug)
-                printf( "Adding job: %08X  Job Count: %d  mem_used %d\n", pt->ident, todo_list.GetCount(), mem_used);
+                printf( "Adding job: %08X  Job Count: %lu  mem_used %d\n", pt->ident, todo_list.GetCount(), mem_used);
         }
         
         StartTopJob();
@@ -690,7 +690,7 @@ bool CompressionWorkerPool::StartTopJob()
 bool CompressionWorkerPool::DoThreadJob(JobTicket* pticket)
 {
     if(bthread_debug)
-        printf( "  Starting job: %08X  Jobs running: %d Jobs left: %d\n", pticket->ident, m_njobs_running, todo_list.GetCount());
+        printf( "  Starting job: %08X  Jobs running: %d Jobs left: %lu\n", pticket->ident, m_njobs_running, todo_list.GetCount());
     
     CompressionPoolThread *t = new CompressionPoolThread( pticket, this);
     pticket->pthread = t;
