@@ -653,6 +653,13 @@ glChartCanvas::~glChartCanvas()
     ClearAllRasterTextures();
 }
 
+void glChartCanvas::FlushFBO( void ) 
+{
+    if(m_bsetup)
+        BuildFBO();
+}
+
+
 void glChartCanvas::ClearAllRasterTextures( void )
 {
     

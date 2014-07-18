@@ -95,9 +95,9 @@ public:
     bool PurgeChartTextures(ChartBase *pc);
     void ClearAllRasterTextures(void);
     void DrawGLOverLayObjects(void);
-
     void GridDraw( );
-
+    void FlushFBO( void );
+    
     static void FixRenderIDL(int dl);
 
     void DrawAllRoutesAndWaypoints( ViewPort &vp, OCPNRegion &region );

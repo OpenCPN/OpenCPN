@@ -2436,8 +2436,10 @@ void ChartCanvas::SetColorScheme( ColorScheme cs )
     CreateOZEmbossMapData( cs );
 
 #ifdef ocpnUSE_GL
-    if( g_bopengl && m_glcc )
+    if( g_bopengl && m_glcc ){
         m_glcc->ClearAllRasterTextures();
+        m_glcc->FlushFBO(); 
+    }
 #endif
     SetbTCUpdate( true );                        // force re-render of tide/current locators
 
