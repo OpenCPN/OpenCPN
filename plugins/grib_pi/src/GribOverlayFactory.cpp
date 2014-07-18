@@ -264,26 +264,28 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     for(int overlay = 1; overlay >= 0; overlay--)
         for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++) {
             if(i == GribOverlaySettings::WIND ) {
-                if(m_dlg.m_cbWind->GetValue()) {
-                    if(overlay) /* render overlays first */
-                        RenderGribOverlayMap( i, pGR, vp );
-                    else {
+                if(overlay) {   /* render overlays first */
+                    if(m_dlg.m_cbWind->GetValue()) RenderGribOverlayMap( i, pGR, vp );
+                } else {
+                    if(m_dlg.m_cbWind->GetValue()){
                         RenderGribBarbedArrows( i, pGR, vp );
                         RenderGribIsobar( i, pGR, pIA, vp );
                         RenderGribNumbers( i, pGR, vp );
+                    }else {
+                        if(m_Settings.Settings[i].m_iBarbedVisibility) RenderGribBarbedArrows( i, pGR, vp );
                     }
-                }else
-                    if(m_Settings.Settings[i].m_iBarbedVisibility) RenderGribBarbedArrows( i, pGR, vp );
-
+                }
                 continue;
             }
             if(i == GribOverlaySettings::PRESSURE ) {
-                if(m_dlg.m_cbPressure->GetValue()) {
+                if(!overlay) {   /*no overalay for pressure*/
+                    if( m_dlg.m_cbPressure->GetValue() ) {
                         RenderGribIsobar( i, pGR, pIA, vp );
                         RenderGribNumbers( i, pGR, vp );
-                }else
-                    if(m_Settings.Settings[i].m_iIsoBarVisibility) RenderGribIsobar( i, pGR, pIA, vp );
-
+                    } else {
+                        if(m_Settings.Settings[i].m_iIsoBarVisibility) RenderGribIsobar( i, pGR, pIA, vp );
+                    }
+                }
                 continue;
             }
         if((i == GribOverlaySettings::WIND_GUST       && !m_dlg.m_cbWindGust->GetValue()) ||
