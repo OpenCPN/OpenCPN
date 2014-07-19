@@ -48,7 +48,11 @@
 
 #include "dychart.h"
 #include "chart1.h"
+
+#ifdef ocpnUSE_GL
 #include "glChartCanvas.h"
+#endif
+
 #include "chartdbs.h"
 #include "options.h"
 #include "styles.h"
@@ -196,7 +200,9 @@ extern wxString         g_Plugin_Dir;
 extern ChartGroupArray  *g_pGroupArray;
 extern ocpnStyle::StyleManager* g_StyleManager;
 
+#ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
+#endif
 
 //    Some constants
 #define ID_CHOICE_NMEA  wxID_HIGHEST + 1

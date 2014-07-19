@@ -299,8 +299,10 @@ extern bool              g_bresponsive;
 extern ocpnGLOptions g_GLOptions;
 #endif
 
-extern wxProgressDialog *pprog;
-extern bool b_skipout;
+wxProgressDialog *pprog;
+bool b_skipout;
+wxSize pprog_size;
+
 wxArrayString compress_msg_array;
 extern wxSize pprog_size;
 

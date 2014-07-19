@@ -152,9 +152,9 @@ long g_tex_mem_used;
 int g_tile_size;
 int g_uncompressed_tile_size;
 
-wxProgressDialog *pprog;
-bool b_skipout;
-wxSize pprog_size;
+extern wxProgressDialog *pprog;
+extern bool b_skipout;
+extern wxSize pprog_size;
 
 //#if defined(__MSVC__) && !defined(ocpnUSE_GLES) /* this compiler doesn't support vla */
 //const

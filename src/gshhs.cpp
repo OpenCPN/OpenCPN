@@ -39,8 +39,9 @@
 
 #include <wx/file.h>
 
+#ifdef ocpnUSE_GL
 #include <wx/glcanvas.h>
-
+#endif
 
 #include "gshhs.h"
 

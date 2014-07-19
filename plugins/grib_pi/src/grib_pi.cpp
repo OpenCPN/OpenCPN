@@ -29,7 +29,9 @@
 
 #ifndef  WX_PRECOMP
   #include "wx/wx.h"
-  #include <wx/glcanvas.h>
+  #ifdef ocpnUSE_GL
+      #include <wx/glcanvas.h>
+  #endif
 #endif //precompiled headers
 
 #include <wx/fileconf.h>
