@@ -3448,6 +3448,12 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
     if( !m_bShowSoundg )
         return 0;
+
+    if( m_bUseSCAMIN ) {
+        if( vp->chart_scale > rzRules->obj->Scamin )
+            return 0;
+    }
+    
     
     int npt = rzRules->obj->npt;
 
@@ -3502,62 +3508,53 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     }
    
     
-    if( m_bUseSCAMIN ) {
-        if( vp->chart_scale > rzRules->obj->Scamin )
-        return 0;
-    }
+
+    //  I don't think we ever need to adjust the MPS bounding box more precisely than
+    //  was recorded in the SENC processing.
+    //  But if we do, here is one way to estimate it
+#if 0    
+    double *pdlbb = rzRules->obj->geoPtMulti; // and corresponding lat/lon
     
-    double *pd = rzRules->obj->geoPtz; // the SM points
+    if(!point_obj->bBBObj_valid) {
+        for( int ip = 0; ip < npt; ip++ ) {
+            double lon = *pdlbb++;
+            double lat = *pdlbb++;
+            
+            point_obj->BBObj.Expand(lon, lat);
+            
+            const int b_width = 29, b_height = 29;
+            double plat, plon;
+            GetPixPointSingle( b_width, b_height, &plat, &plon, vp );
+            point_obj->BBObj.Expand(lon + plon, lat + plat);
+        }
+        point_obj->bBBObj_valid = true;
+    }
+#endif
+
     double *pdl = rzRules->obj->geoPtMulti; // and corresponding lat/lon
 
-    ObjRazRules *point_rzRules = new ObjRazRules;
-    *point_rzRules = *rzRules; // take a copy of attributes, etc
-
-    S57Obj *point_obj = new S57Obj;
-    *point_obj = *( rzRules->obj );
-    point_rzRules->obj = point_obj;
-    
     for( int ip = 0; ip < npt; ip++ ) {
-        double east = *pd++;
-        double nort = *pd++;
-        double depth = *pd++;
-        
-        point_obj->x = east;
-        point_obj->y = nort;
-        point_obj->z = depth;
         
         double lon = *pdl++;
         double lat = *pdl++;
 
-#if 1
-        // I would much rather just mark as invalid, but for some
-        // reason multi-point soundings are implemented to rebuild
-        // on every frame (not very efficient)
-        // marking invalid cannot work for hardware acclerated panning as we
-        // need exact bounding boxes
-        // Once this is corrected (no more "new S57Obj" in render)
-        // we can simply invalidate on the initial frame and delete this mess,
-        // and the result will be a lot faster to render as well.
-        const int b_width = 29, b_height = 29;
-        double plat[2], plon[2];
-        GetPixPointSingle( 0, 0, &plat[0], &plon[0], vp );
-        GetPixPointSingle( b_width, b_height, &plat[1], &plon[1], vp );
-        double wll = plon[1] - plon[0], hll = plat[0] - plat[1];
-        point_obj->BBObj.SetMin( lon - wll/2, lat - hll/2 );
-        point_obj->BBObj.SetMax( lon + wll/2, lat + hll/2 );
-        point_obj->bBBObj_valid = true;
-#else
-        point_obj->BBObj.SetMin( lon, lat );
-        point_obj->BBObj.SetMax( lon, lat );
-        point_obj->bBBObj_valid = false;
-#endif
-
-        if( !ObjectRenderCheckPos( point_rzRules, vp ) )
+        wxPoint r = vp->GetPixFromLL( lat, lon );
+ 
+        //      The render inclusion test is trivial....
+        if(!vp->rv_rect.Contains(r))
             continue;
+        
+        double angle = 0;
         
         Rules *rules =  rzRules->mps->cs_rules->Item(ip);
         while( rules ){
-            RenderSY( point_rzRules, rules, vp );
+            
+            //  Render a raster or vector symbol, as specified by LUP rules
+            if( rules->razRule->definition.SYDF == 'V' )
+                RenderHPGL( rzRules, rules->razRule, r, vp, angle );
+            
+            else if( rules->razRule->definition.SYDF == 'R' )
+                RenderRasterSymbol( rzRules, rules->razRule, r, vp, angle );
             
             rules = rules->next;
         }
@@ -3566,85 +3563,7 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     return 1;
 }
 
-#if 0
-// Multipoint Sounding
-int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
-{
-    if( !m_bShowSoundg ) return 0;
 
-    int npt = rzRules->obj->npt;
-
-    wxPoint p;
-    double *pd = rzRules->obj->geoPtz; // the SM points
-    double *pdl = rzRules->obj->geoPtMulti; // and corresponding lat/lon
-    if( NULL == rzRules->child ) {
-        ObjRazRules *previous_rzRules = NULL;
-
-        for( int ip = 0; ip < npt; ip++ ) {
-            double east = *pd++;
-            double nort = *pd++;
-            ;
-            double depth = *pd++;
-
-            ObjRazRules *point_rzRules = new ObjRazRules;
-            *point_rzRules = *rzRules; // take a copy of attributes, etc
-
-            //  Need a new LUP
-            LUPrec *NewLUP = new LUPrec;
-
-            *NewLUP = *( rzRules->LUP ); // copy the parent's LUP
-            NewLUP->ATTCArray = NULL; //
-            NewLUP->INST = NULL;
-
-            point_rzRules->LUP = NewLUP;
-
-            //  Need a new S57Obj
-            S57Obj *point_obj = new S57Obj;
-            *point_obj = *( rzRules->obj );
-            point_rzRules->obj = point_obj;
-
-            //  Touchup the new items
-            point_rzRules->obj->bCS_Added = false;
-            point_rzRules->obj->bIsClone = true;
-            point_rzRules->obj->npt = 1;
-
-            point_rzRules->next = previous_rzRules;
-            Rules *ru = StringToRules( _T ( "CS(SOUNDG03;" ) );
-            point_rzRules->LUP->ruleList = ru;
-
-            point_obj->x = east;
-            point_obj->y = nort;
-            point_obj->z = depth;
-
-            double lon = *pdl++;
-            double lat = *pdl++;
-            point_obj->BBObj.SetMin( lon, lat );
-            point_obj->BBObj.SetMax( lon, lat );
-            point_obj->bBBObj_valid = false;
-
-            previous_rzRules = point_rzRules;
-        }
-
-        //   Top of the chain is previous_rzRules
-        rzRules->child = previous_rzRules;
-    }
-
-    //   Walk the chain, drawing..
-    ObjRazRules *current = rzRules->child;
-    while( current ) {
-        if( m_pdc ) RenderObjectToDC( m_pdc, current, vp );
-        else {
-            wxRect NullRect;
-            RenderObjectToGL( *m_glcc, current, vp, NullRect );
-        }
-
-        current = current->next;
-    }
-
-    return 1;
-}
-
-#endif
 int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
     char *str = (char*) rules->INSTstr;
@@ -6640,13 +6559,6 @@ bool s52plib::ObjectRenderCheckCS( ObjRazRules *rzRules, ViewPort *vp )
 bool s52plib::ObjectRenderCheckPos( ObjRazRules *rzRules, ViewPort *vp )
 {
     if( rzRules->obj == NULL ) return false;
-
-    // Debug for testing US5FL51.000 slcons
-//    if((rzRules->obj->Index == 3868) || (rzRules->obj->Index == 3870))
-//        return false;
-
-//    if(rzRules->obj->Index == 0)
-//        return false;
 
     // Of course, the object must be at least partly visible in the viewport
     const wxBoundingBox &vpBox = vp->GetBBox(), &testBox = rzRules->obj->BBObj;
