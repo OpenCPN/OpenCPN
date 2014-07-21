@@ -4824,8 +4824,8 @@ int cm93compchart::GetCMScaleFromVP ( const ViewPort &vpt )
       //        If overzoomed possible, switch to larger scale chart if available
       double zoom_factor = scale_breaks[7 - cmscale_calc] / vpt.chart_scale ;
       if( zoom_factor > 4.0) {
-          if( cmscale_calc < 7 )
-              cmscale_calc ++;
+//          if( cmscale_calc < 7 )
+//              cmscale_calc ++;
       }
       
       return cmscale_calc;
@@ -5023,6 +5023,14 @@ int cm93compchart::PrepareChartScale ( const ViewPort &vpt, int cmscale, bool bO
             while ( new_scale <= 7 ){
                 if ( m_bScale_Array[new_scale] ){
                     double new_zoom_factor = scale_breaks[7 - new_scale] / vpt.chart_scale ;
+                    
+                    //  Do not allow excessive "under-zoom", for performance reasons
+                    if( new_zoom_factor  < 1.0 ){
+                        b_found = true;
+                        new_scale = cmscale;
+                        break;
+                    }
+                        
                     if( new_zoom_factor < 4.0) {
                         if ( NULL == m_pcm93chart_array[new_scale] ) {
                             m_pcm93chart_array[new_scale] = new cm93chart();
