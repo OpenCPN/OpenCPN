@@ -264,26 +264,28 @@ bool GRIBOverlayFactory::DoRenderGribOverlay( PlugIn_ViewPort *vp )
     for(int overlay = 1; overlay >= 0; overlay--)
         for(int i=0; i<GribOverlaySettings::SETTINGS_COUNT; i++) {
             if(i == GribOverlaySettings::WIND ) {
-                if(m_dlg.m_cbWind->GetValue()) {
-                    if(overlay) /* render overlays first */
-                        RenderGribOverlayMap( i, pGR, vp );
-                    else {
+                if(overlay) {   /* render overlays first */
+                    if(m_dlg.m_cbWind->GetValue()) RenderGribOverlayMap( i, pGR, vp );
+                } else {
+                    if(m_dlg.m_cbWind->GetValue()){
                         RenderGribBarbedArrows( i, pGR, vp );
                         RenderGribIsobar( i, pGR, pIA, vp );
                         RenderGribNumbers( i, pGR, vp );
+                    }else {
+                        if(m_Settings.Settings[i].m_iBarbedVisibility) RenderGribBarbedArrows( i, pGR, vp );
                     }
-                }else
-                    if(m_Settings.Settings[i].m_iBarbedVisibility) RenderGribBarbedArrows( i, pGR, vp );
-
+                }
                 continue;
             }
             if(i == GribOverlaySettings::PRESSURE ) {
-                if(m_dlg.m_cbPressure->GetValue()) {
+                if(!overlay) {   /*no overalay for pressure*/
+                    if( m_dlg.m_cbPressure->GetValue() ) {
                         RenderGribIsobar( i, pGR, pIA, vp );
                         RenderGribNumbers( i, pGR, vp );
-                }else
-                    if(m_Settings.Settings[i].m_iIsoBarVisibility) RenderGribIsobar( i, pGR, pIA, vp );
-
+                    } else {
+                        if(m_Settings.Settings[i].m_iIsoBarVisibility) RenderGribIsobar( i, pGR, pIA, vp );
+                    }
+                }
                 continue;
             }
         if((i == GribOverlaySettings::WIND_GUST       && !m_dlg.m_cbWindGust->GetValue()) ||
@@ -856,10 +858,10 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
 
     //    Set minimum spacing between arrows
     double space;
-    space = fabs((arrowSize * 1.1) * cos(vp->rotation));
+    space = arrowSize * 1.1;
 
-    int oldx = -1000;
-    int oldy = -1000;
+    wxPoint oldpx(-1000, -1000);
+    wxPoint oldpy(-1000, -1000);
 
     wxColour colour;
     GetGlobalColor( _T ( "DILG3" ), &colour );
@@ -870,16 +872,16 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
         wxPoint pl;
         GetCanvasPixLL( vp, &pl, latl, lonl );
 
-        if( abs( pl.x - oldx ) >= (int)space ) {
-            oldx = pl.x;
+        if( hypot( pl.x - oldpx.x, pl.y - oldpx.y ) >= space ) {
+            oldpx = pl;
             for( int j = 0; j < jmax; j++ ) {
                 double lon = pGRX->getX( i );
                 double lat = pGRX->getY( j );
                 wxPoint p;
                 GetCanvasPixLL( vp, &p, lat, lon );
 
-                if( abs( p.y - oldy ) >= (int)space ) {
-                    oldy = p.y;
+                if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
+                    oldpy = p;
 
                     if( PointInLLBox( vp, lon, lat ) || PointInLLBox( vp, lon - 360., lat ) ) {
                         if(polar) {
@@ -1043,11 +1045,11 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
     int imax = pGRA->getNi();                  // Longitude
     int jmax = pGRA->getNj();                  // Latitude
 
-    //    Set minimum spacing between arrows
+    //    Set minimum spacing between numbers
     int space = m_Settings.Settings[settings].m_iNumbersSpacing;
 
-    int oldx = -1000;
-    int oldy = -1000;
+    wxPoint oldpx(-1000, -1000);
+    wxPoint oldpy(-1000, -1000);
 
     for( int i = 0; i < imax; i++ ) {
         double lonl = pGRA->getX( i );
@@ -1055,16 +1057,16 @@ void GRIBOverlayFactory::RenderGribNumbers( int settings, GribRecord **pGR, Plug
         wxPoint pl;
         GetCanvasPixLL( vp, &pl, latl, lonl );
 
-        if( abs( pl.x - oldx ) >= space ) {
-            oldx = pl.x;
+        if( hypot( pl.x - oldpx.x, pl.y - oldpx.y ) >= space ) {
+            oldpx = pl;
             for( int j = 0; j < jmax; j++ ) {
                 double lon = pGRA->getX( i );
                 double lat = pGRA->getY( j );
                 wxPoint p;
                 GetCanvasPixLL( vp, &p, lat, lon );
 
-                if( abs( p.y - oldy ) >= space ) {
-                    oldy = p.y;
+                if( hypot( p.x - oldpy.x, p.y - oldpy.y ) >= space ) {
+                    oldpy = p;
 
                     if( PointInLLBox( vp, lon, lat ) || PointInLLBox( vp, lon - 360., lat ) ) {
                         double mag = pGRA->getValue( i, j );
