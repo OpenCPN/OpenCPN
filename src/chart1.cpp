@@ -3965,8 +3965,11 @@ void MyFrame::TrackOn( void )
     g_pActiveTrack = new Track();
 
     pRouteList->Append( g_pActiveTrack );
+    if(pConfig)
+        pConfig->AddNewRoute( g_pActiveTrack, 0 );
+    
     g_pActiveTrack->Start();
-
+    
     if( g_toolbar )
         g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
 

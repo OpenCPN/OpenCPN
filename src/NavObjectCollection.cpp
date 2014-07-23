@@ -367,6 +367,7 @@ Track *GPXLoadTrack1( pugi::xml_node &trk_node, bool b_fullviz,
             pTentTrack->SetListed( false );
         }
                 
+        pTentTrack->SetCurrentTrackSeg( GPXSeg );
                 
     }
     
@@ -619,7 +620,7 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
     }
     
     if( (flags & OUT_GUID) || (flags & OUT_VIZ) || (flags & OUT_VIZ_NAME) || (flags & OUT_SHARED)
-            || (flags & OUT_AUTO_NAME) ) {
+            || (flags & OUT_AUTO_NAME)  || (flags & OUT_EXTENSION) ) {
         
         pugi::xml_node child_ext = node.append_child("extensions");
         
@@ -652,7 +653,7 @@ bool GPXCreateWpt( pugi::xml_node node, RoutePoint *pr, unsigned int flags )
 }
 
 
-bool GPXCreateTrk( pugi::xml_node node, Route *pRoute )
+bool GPXCreateTrk( pugi::xml_node node, Route *pRoute, unsigned int flags )
 {
     pugi::xml_node child;
 
@@ -739,7 +740,10 @@ bool GPXCreateTrk( pugi::xml_node node, Route *pRoute )
         child.append_child(pugi::node_pcdata).set_value(pRoute->m_Colour.mb_str());
     }
         
-        
+    
+    if(flags & RT_OUT_NO_RTPTS)
+        return true;
+    
     RoutePointList *pRoutePointList = pRoute->pRoutePointList;
     wxRoutePointListNode *node2 = pRoutePointList->GetFirst();
     RoutePoint *prp;
@@ -900,8 +904,10 @@ void InsertRouteA( Route *pTentRoute )
     
     bool bAddroute = true;
     //    If the route has only 1 point, don't load it.
-    if( pTentRoute->GetnPoints() < 2 )
-        bAddroute = false;
+    if(!pTentRoute->IsTrack()) {
+        if( pTentRoute->GetnPoints() < 2 )
+            bAddroute = false;
+    }
     
     //    TODO  All this trouble for a tentative route.......Should make some Route methods????
     if( bAddroute ) {
@@ -1114,7 +1120,7 @@ bool NavObjectCollection1::CreateNavObjGPXTracks( void )
         
         if( pRoutePointList->GetCount() ) {
             if( pTrack->m_bIsTrack && (!pTrack->m_bIsInLayer ) && (!pTrack->m_btemp) ) 
-                GPXCreateTrk(m_gpx_root.append_child("trk"), pTrack);
+                GPXCreateTrk(m_gpx_root.append_child("trk"), pTrack, 0);
         }
         node1 = node1->GetNext();
     }
@@ -1144,7 +1150,7 @@ bool NavObjectCollection1::AddGPXRoute(Route *pRoute)
 bool NavObjectCollection1::AddGPXTrack(Track *pTrk)
 {
     SetRootGPXNode();
-    GPXCreateTrk(m_gpx_root.append_child("trk"), pTrk );
+    GPXCreateTrk(m_gpx_root.append_child("trk"), pTrk, 0 );
     return true;
 }
 
@@ -1328,7 +1334,7 @@ bool NavObjectChanges::AddTrack( Track *pr, const char *action )
     SetRootGPXNode();
     
     pugi::xml_node object = m_gpx_root.append_child("trk");
-    GPXCreateTrk(object, pr );
+    GPXCreateTrk(object, pr, RT_OUT_NO_RTPTS );         // emit a void track, no waypoints
     
     pugi::xml_node xchild = object.child("extensions");
     pugi::xml_node child = xchild.append_child("opencpn:action");
@@ -1348,6 +1354,24 @@ bool NavObjectChanges::AddWP( RoutePoint *pWP, const char *action )
     pugi::xml_node child = xchild.append_child("opencpn:action");
     child.append_child(pugi::node_pcdata).set_value(action);
     
+    return true;
+}
+
+bool NavObjectChanges::AddTrackPoint( RoutePoint *pWP, const char *action, const wxString& parent_GUID )
+{
+    SetRootGPXNode();
+    
+    pugi::xml_node object = m_gpx_root.append_child("tkpt");
+    GPXCreateWpt(object, pWP, (OUT_TIME) + (OUT_EXTENSION));
+    
+    pugi::xml_node xchild = object.child("extensions");
+    
+    pugi::xml_node child = xchild.append_child("opencpn:action");
+    child.append_child(pugi::node_pcdata).set_value(action);
+    
+    pugi::xml_node gchild = xchild.append_child("opencpn:track_GUID");
+    gchild.append_child(pugi::node_pcdata).set_value(parent_GUID.mb_str());
+
     return true;
 }
 
@@ -1414,6 +1438,11 @@ bool NavObjectChanges::ApplyChanges(void)
                             g_pRouteMan->DeleteTrack( pExisting );
                     }
             
+                    else if(!strcmp(child.first_child().value(), "add") ){
+                        if( !pExisting )
+                            ::InsertRouteA( pTrack );
+                    }
+                
                     else
                         delete pTrack;
                 }
@@ -1445,6 +1474,38 @@ bool NavObjectChanges::ApplyChanges(void)
                             delete pRoute;
                     }
                 }
+            else
+                if( !strcmp(object.name(), "tkpt") ) {
+                    RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("empty"), _T("noGUID"), false, false, false, 0 );
+                    
+                    if(pWp && pWayPointMan) {
+//                        RoutePoint *pExisting = WaypointExists( pWp->GetName(), pWp->m_lat, pWp->m_lon );
+                        
+                        pugi::xml_node xchild = object.child("extensions");
+                        pugi::xml_node child = xchild.child("opencpn:action");
+
+                        pugi::xml_node guid_child = xchild.child("opencpn:track_GUID");
+                        wxString track_GUID(guid_child.first_child().value(), wxConvUTF8);
+
+                        Track *pExistingTrack = (Track *)RouteExists( track_GUID );
+                        
+                        if(!strcmp(child.first_child().value(), "add") ){
+                            if( pExistingTrack ) {
+                                pWp->m_bIsolatedMark = false;
+                                pExistingTrack->AddPoint( pWp, false, true );          // defer BBox calculation
+                                pWp->m_bIsInRoute = false;                      
+                                pWp->m_bIsInTrack = true;
+                                pWp->m_GPXTrkSegNo = pExistingTrack->GetCurrentTrackSeg() + 1;
+                                
+                                pWayPointMan->AddRoutePoint( pWp );
+                            }                                
+                        }                    
+                        
+                        else
+                            delete pWp;
+                    }
+    }
+    
                 
                 
     }

@@ -367,6 +367,7 @@ Track::Track( void )
     m_removeTP = NULL;
     m_fixedTP = NULL;
     m_track_run = 0;
+    m_CurrentTrackSeg = 0;
 }
 
 Track::~Track()
@@ -518,6 +519,8 @@ RoutePoint* Track::AddNewPoint( vector2D point, wxDateTime time ) {
     rPoint->SetCreateTime(time);
     AddPoint( rPoint );
 
+    pConfig->AddNewTrackPoint( rPoint, m_GUID );        // This will update the "changes" file only
+    
     //    This is a hack, need to undo the action of Route::AddPoint
     rPoint->m_bIsInRoute = false;
     rPoint->m_bIsInTrack = true;
@@ -1915,7 +1918,7 @@ int MyConfig::LoadMyConfig( int iteration )
             //  Remove the file before applying the changes,
             //  just in case the changes file itself causes a fault.
             //  If it does fault, at least the next restart will proceed without fault.
-            if( ::wxFileExists( m_sNavObjSetChangesFile ) )
+           if( ::wxFileExists( m_sNavObjSetChangesFile ) )
                 ::wxRemoveFile( m_sNavObjSetChangesFile );
 
             wxLogMessage( _T("Applying NavObjChanges") );
@@ -2123,7 +2126,10 @@ bool MyConfig::AddNewRoute( Route *pr, int crm )
 
 
     if( !m_bSkipChangeSetUpdate ) {
-        m_pNavObjectChangesSet->AddRoute( pr, "add" );
+        if( pr->m_bIsTrack )
+            m_pNavObjectChangesSet->AddTrack( (Track *)pr, "add" );
+        else
+            m_pNavObjectChangesSet->AddRoute( pr, "add" );
         StoreNavObjChanges();
     }
 
@@ -2199,6 +2205,16 @@ bool MyConfig::DeleteWayPoint( RoutePoint *pWP )
         StoreNavObjChanges();
     }
 
+    return true;
+}
+
+bool MyConfig::AddNewTrackPoint( RoutePoint *pWP, const wxString& parent_GUID )
+{
+    if( !m_bSkipChangeSetUpdate ) {
+        m_pNavObjectChangesSet->AddTrackPoint( pWP, "add", parent_GUID );
+        StoreNavObjChanges();
+    }
+    
     return true;
 }
 
@@ -4326,6 +4342,9 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         //    Create destination image
         wxBitmap olbm( size_x, size_y );
         wxMemoryDC oldc( olbm );
+        if(!oldc.Ok())
+            return;
+            
         oldc.SetBackground( *wxBLACK_BRUSH );
         oldc.SetBrush( *wxWHITE_BRUSH );
         oldc.Clear();
@@ -4340,6 +4359,10 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         unsigned char *box = dest.GetData();
         unsigned char *d = dest_data;
 
+        //  Sometimes, on Windows, the destination image is corrupt...
+        if(NULL == box)
+            return;
+        
         float alpha = 1.0 - (float)transparency / 255.0;
         int sb = size_x * size_y;
         for( int i = 0; i < sb; i++ ) {
