@@ -3533,12 +3533,16 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     double *pdl = rzRules->obj->geoPtMulti; // and corresponding lat/lon
 
+    //  We need a private unrotated copy of the Viewport
+    ViewPort vp_local = *vp;
+    vp_local.SetRotationAngle( 0. );
+    
     for( int ip = 0; ip < npt; ip++ ) {
         
         double lon = *pdl++;
         double lat = *pdl++;
 
-        wxPoint r = vp->GetPixFromLL( lat, lon );
+        wxPoint r = vp_local.GetPixFromLL( lat, lon );
  
         //      The render inclusion test is trivial....
         if(!vp->rv_rect.Contains(r))
