@@ -6835,6 +6835,9 @@ void s57_DrawExtendedLightSectors( ocpnDC& dc, ViewPort& viewport, std::vector<s
             if(sec1 > 360) sec1 -= 360;
             if(sec2 > 360) sec2 -= 360;
             
+            if((sec2 == 360) && (sec1 == 0))  //FS#1437
+                continue;
+                
             for( unsigned int j=0; j<sectorangles.size(); j++ ) {
                 
                 if( sectorangles[j] == sec1 ) haveAngle1 = true;
