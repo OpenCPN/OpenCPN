@@ -2397,14 +2397,8 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
             glBindTexture(g_texture_rectangle_format, texture);
             glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 
-            glPushMatrix();
-
-            glTranslatef(r.x, r.y, 0);
-            glRotatef(vp->rotation * 180/PI, 0, 0, -1);
-            glTranslatef(-pivot_x, -pivot_y, 0);
-
             int w = texrect.width, h = texrect.height;
-
+            
             float tx1 = texrect.x, ty1 = texrect.y;
             float tx2 = tx1 + w, ty2 = ty1 + h;
 
@@ -2413,15 +2407,33 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 tx1 /= size.x, tx2 /= size.x;
                 ty1 /= size.y, ty2 /= size.y;
             }
+            
+            if(fabs( vp->rotation ) > .01){
+                glPushMatrix();
 
-            glBegin(GL_QUADS);
-                glTexCoord2f(tx1, ty1);    glVertex2i( 0, 0);
-                glTexCoord2f(tx2, ty1);    glVertex2i( w, 0);
-                glTexCoord2f(tx2, ty2);    glVertex2i( w, h);
-                glTexCoord2f(tx1, ty2);    glVertex2i( 0, h);
-            glEnd();
+                glTranslatef(r.x, r.y, 0);
+                glRotatef(vp->rotation * 180/PI, 0, 0, -1);
+                glTranslatef(-pivot_x, -pivot_y, 0);
 
-            glPopMatrix();
+                glBegin(GL_QUADS);
+                    glTexCoord2f(tx1, ty1);    glVertex2i( 0, 0);
+                    glTexCoord2f(tx2, ty1);    glVertex2i( w, 0);
+                    glTexCoord2f(tx2, ty2);    glVertex2i( w, h);
+                    glTexCoord2f(tx1, ty2);    glVertex2i( 0, h);
+                glEnd();
+                
+                glPopMatrix();
+            }
+            else {
+                float ddx = pivot_x;
+                float ddy = pivot_y;
+                glBegin(GL_QUADS);
+                    glTexCoord2f(tx1, ty1);    glVertex2i(  r.x - ddx, r.y - ddy );
+                    glTexCoord2f(tx2, ty1);    glVertex2i(  r.x - ddx + w, r.y - ddy );
+                    glTexCoord2f(tx2, ty2);    glVertex2i(  r.x - ddx + w, r.y - ddy + h );
+                    glTexCoord2f(tx1, ty2);    glVertex2i(  r.x - ddx, r.y - ddy + h);
+                glEnd();
+            }
 
             glPopAttrib();
         } else { /* this is only for legacy mode, or systems without NPOT textures */
