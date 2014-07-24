@@ -2603,7 +2603,7 @@ void MyConfig::UpdateSettings()
     }
     SetPath( _T ( "/Directories" ) );
     Write( _T ( "S57DataLocation" ), _T("") );
-    Write( _T ( "SENCFileLocation" ), _T("") );
+//    Write( _T ( "SENCFileLocation" ), _T("") );
 
 #endif
 
