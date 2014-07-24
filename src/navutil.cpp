@@ -367,6 +367,7 @@ Track::Track( void )
     m_removeTP = NULL;
     m_fixedTP = NULL;
     m_track_run = 0;
+    m_CurrentTrackSeg = 0;
 }
 
 Track::~Track()
@@ -489,7 +490,7 @@ void Track::OnTimerTrack( wxTimerEvent& event )
 
     bool b_addpoint = false;
 
-    if( bGPSValid && ( m_TrackTimerSec > 0. ) && ( (double) m_track_run >= m_TrackTimerSec )
+    if( ( m_TrackTimerSec > 0. ) && ( (double) m_track_run >= m_TrackTimerSec )
             && ( m_prev_dist > m_minTrackpoint_delta ) ) {
         b_addpoint = true;
         m_track_run = 0;
@@ -518,6 +519,8 @@ RoutePoint* Track::AddNewPoint( vector2D point, wxDateTime time ) {
     rPoint->SetCreateTime(time);
     AddPoint( rPoint );
 
+    pConfig->AddNewTrackPoint( rPoint, m_GUID );        // This will update the "changes" file only
+    
     //    This is a hack, need to undo the action of Route::AddPoint
     rPoint->m_bIsInRoute = false;
     rPoint->m_bIsInTrack = true;
@@ -526,9 +529,6 @@ RoutePoint* Track::AddNewPoint( vector2D point, wxDateTime time ) {
 
 void Track::AddPointNow( bool do_add_point )
 {
-    if( !bGPSValid )
-        return;
-    
     static std::vector<RoutePoint> skippedPoints;
 
     wxDateTime now = wxDateTime::Now();
@@ -1057,8 +1057,8 @@ MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
     m_sNavObjSetChangesFile = m_sNavObjSetFile + _T ( ".changes" );
 
     m_pNavObjectInputSet = NULL;
-    m_pNavObjectChangesSet = new NavObjectChanges();
-
+    m_pNavObjectChangesSet = NULL;
+    
     m_bSkipChangeSetUpdate = false;
 
     g_pConnectionParams = new wxArrayOfConnPrm();
@@ -1915,7 +1915,7 @@ int MyConfig::LoadMyConfig( int iteration )
             //  Remove the file before applying the changes,
             //  just in case the changes file itself causes a fault.
             //  If it does fault, at least the next restart will proceed without fault.
-            if( ::wxFileExists( m_sNavObjSetChangesFile ) )
+           if( ::wxFileExists( m_sNavObjSetChangesFile ) )
                 ::wxRemoveFile( m_sNavObjSetChangesFile );
 
             wxLogMessage( _T("Applying NavObjChanges") );
@@ -1924,6 +1924,9 @@ int MyConfig::LoadMyConfig( int iteration )
 
             UpdateNavObj();
         }
+        
+        m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+        
     }
 
     SetPath( _T ( "/Settings/Others" ) );
@@ -2123,8 +2126,10 @@ bool MyConfig::AddNewRoute( Route *pr, int crm )
 
 
     if( !m_bSkipChangeSetUpdate ) {
-        m_pNavObjectChangesSet->AddRoute( pr, "add" );
-        StoreNavObjChanges();
+        if( pr->m_bIsTrack )
+            m_pNavObjectChangesSet->AddTrack( (Track *)pr, "add" );
+        else
+            m_pNavObjectChangesSet->AddRoute( pr, "add" );
     }
 
     return true;
@@ -2141,7 +2146,6 @@ bool MyConfig::UpdateRoute( Route *pr )
         else
             m_pNavObjectChangesSet->AddRoute( pr, "update" );
 
-        StoreNavObjChanges();
     }
 
     return true;
@@ -2158,7 +2162,6 @@ bool MyConfig::DeleteConfigRoute( Route *pr )
         else
             m_pNavObjectChangesSet->AddTrack( (Track *)pr, "delete" );
 
-        StoreNavObjChanges();
     }
     return true;
 }
@@ -2170,7 +2173,6 @@ bool MyConfig::AddNewWayPoint( RoutePoint *pWP, int crm )
 
     if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddWP( pWP, "add" );
-        StoreNavObjChanges();
     }
 
     return true;
@@ -2183,7 +2185,6 @@ bool MyConfig::UpdateWayPoint( RoutePoint *pWP )
 
     if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddWP( pWP, "update" );
-        StoreNavObjChanges();
     }
 
     return true;
@@ -2196,9 +2197,17 @@ bool MyConfig::DeleteWayPoint( RoutePoint *pWP )
 
     if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddWP( pWP, "delete" );
-        StoreNavObjChanges();
     }
 
+    return true;
+}
+
+bool MyConfig::AddNewTrackPoint( RoutePoint *pWP, const wxString& parent_GUID )
+{
+    if( !m_bSkipChangeSetUpdate ) {
+        m_pNavObjectChangesSet->AddTrackPoint( pWP, "add", parent_GUID );
+    }
+    
     return true;
 }
 
@@ -2594,7 +2603,7 @@ void MyConfig::UpdateSettings()
     }
     SetPath( _T ( "/Directories" ) );
     Write( _T ( "S57DataLocation" ), _T("") );
-    Write( _T ( "SENCFileLocation" ), _T("") );
+//    Write( _T ( "SENCFileLocation" ), _T("") );
 
 #endif
 
@@ -2693,13 +2702,8 @@ void MyConfig::UpdateNavObj( void )
         wxRemoveFile( m_sNavObjSetChangesFile );
     
     delete m_pNavObjectChangesSet;
-    m_pNavObjectChangesSet = new NavObjectChanges();
+    m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
 
-}
-
-void MyConfig::StoreNavObjChanges( void )
-{
-    m_pNavObjectChangesSet->SaveFile( m_sNavObjSetChangesFile );
 }
 
 bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
@@ -4326,6 +4330,9 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         //    Create destination image
         wxBitmap olbm( size_x, size_y );
         wxMemoryDC oldc( olbm );
+        if(!oldc.Ok())
+            return;
+            
         oldc.SetBackground( *wxBLACK_BRUSH );
         oldc.SetBrush( *wxWHITE_BRUSH );
         oldc.Clear();
@@ -4340,6 +4347,10 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         unsigned char *box = dest.GetData();
         unsigned char *d = dest_data;
 
+        //  Sometimes, on Windows, the destination image is corrupt...
+        if(NULL == box)
+            return;
+        
         float alpha = 1.0 - (float)transparency / 255.0;
         int sb = size_x * size_y;
         for( int i = 0; i < sb; i++ ) {

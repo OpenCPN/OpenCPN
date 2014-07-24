@@ -522,6 +522,7 @@ bool                      g_bEnableZoomToCursor;
 
 bool                      g_bTrackActive;
 bool                      g_bTrackCarryOver;
+bool                      g_bDeferredStartTrack;
 bool                      g_bTrackDaily;
 bool                      g_bHighliteTracks;
 int                       g_route_line_width;
@@ -2196,8 +2197,8 @@ extern ocpnGLOptions g_GLOptions;
     g_bVAR_Rx = false;
 
 //  Start up a new track if enabled in config file
-//        test this
-    if( g_bTrackCarryOver ) gFrame->TrackOn();
+    if( g_bTrackCarryOver )
+        g_bDeferredStartTrack = true;
 
 //    Re-enable anchor watches if set in config file
     if( !g_AW1GUID.IsEmpty() ) {
@@ -3964,8 +3965,11 @@ void MyFrame::TrackOn( void )
     g_pActiveTrack = new Track();
 
     pRouteList->Append( g_pActiveTrack );
+    if(pConfig)
+        pConfig->AddNewRoute( g_pActiveTrack, 0 );
+    
     g_pActiveTrack->Start();
-
+    
     if( g_toolbar )
         g_toolbar->ToggleTool( ID_TRACK, g_bTrackActive );
 
@@ -5249,6 +5253,20 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
 
     FrameTimer1.Stop();
 
+    //  If tracking carryover was found in config file, enable tracking as soon as
+    //  GPS become valid
+    if(g_bDeferredStartTrack){
+        if(!g_bTrackActive){
+            if(bGPSValid){
+                gFrame->TrackOn();
+                g_bDeferredStartTrack = false;
+            }
+        }
+        else {                                  // tracking has been manually activated
+            g_bDeferredStartTrack = false;
+        }            
+    }
+        
 //  Update and check watchdog timer for GPS data source
     gGPS_Watchdog--;
     if( gGPS_Watchdog <= 0 ) {

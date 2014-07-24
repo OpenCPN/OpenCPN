@@ -3631,7 +3631,8 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj )
  
     cobj->pPolyTessGeo = ( PolyTessGeo* )pObj->pPolyTessGeo;
     cobj->m_chart_context = (chart_context *)pObj->m_chart_context;
-    cobj->Parm0 = 0;
+    cobj->auxParm0 = 0;
+    cobj->auxParm1 = 0;
     
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
     
@@ -3994,7 +3995,17 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
         pObj->geoPtMulti = pd;  //Hack hack
         
     }
-    cobj.Parm0 = -5;         // signal that this render is to use a temporary VBO
+    
+    //  Try to detect if the PlugIn version is too early to use single-buffer VBOs 
+    //  Please note that this cast is a little scary, since the chart context in the PI_S57Obj
+    //  is assumed to be the same layout as "chart_context", defined in the core....
+    if( ((chart_context *)pObj->m_chart_context)->chart == NULL){
+        cobj.auxParm0 = -6;         // signal that this render cannot use VBO
+        cobj.auxParm1 = -1;         // signal that this render cannot use single buffer conversion
+    }
+    else {
+    //    cobj.auxParm0 = -5;         // signal that this render is to use a temporary VBO
+    }
     
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
     

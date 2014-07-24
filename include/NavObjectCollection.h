@@ -48,6 +48,7 @@ class Track;
 #define         OUT_ACTION_ADD  1 << 14         //  opencpn:action node support
 #define         OUT_ACTION_DEL  1 << 15
 #define         OUT_ACTION_UPD  1 << 16
+#define         OUT_EXTENSION   1 << 17
 
 #define  OPT_TRACKPT    OUT_TIME
 #define  OPT_WPT        (OUT_TYPE) +\
@@ -67,6 +68,7 @@ class Track;
 #define         RT_OUT_ACTION_ADD         1 << 1          //  opencpn:action node support
 #define         RT_OUT_ACTION_DEL         1 << 2
 #define         RT_OUT_ACTION_UPD         1 << 3
+#define         RT_OUT_NO_RTPTS           1 << 4
 
 
 class NavObjectCollection1 : public pugi::xml_document
@@ -101,13 +103,18 @@ class NavObjectChanges : public NavObjectCollection1
 {
 public:
     NavObjectChanges();
+    NavObjectChanges( wxString file_name );
     ~NavObjectChanges();
     
     bool AddRoute( Route *pr, const char *action );           // support "changes" file set
     bool AddTrack( Track *pr, const char *action );
     bool AddWP( RoutePoint *pr, const char *action );
+    bool AddTrackPoint( RoutePoint *pWP, const char *action, const wxString& parent_GUID );
     
     bool ApplyChanges(void);
+    
+    wxString    m_filename;
+    FILE *      m_changes_file;
     
 };
 

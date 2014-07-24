@@ -115,7 +115,9 @@ class Track : public wxEvtHandler, public Route
             int Simplify( double maxDelta );
             double GetXTE(RoutePoint *fm1, RoutePoint *fm2, RoutePoint *to);
             double GetXTE( double fm1Lat, double fm1Lon, double fm2Lat, double fm2Lon, double toLat, double toLon  );
-
+            int GetCurrentTrackSeg(){ return m_CurrentTrackSeg; }
+            void SetCurrentTrackSeg(int seg){ m_CurrentTrackSeg = seg; }
+            
             void AdjustCurrentTrackPoint( RoutePoint *prototype );
             
       private:
@@ -140,7 +142,8 @@ class Track : public wxEvtHandler, public Route
             RoutePoint        *m_fixedTP;
             int               m_track_run;
             double            m_minTrackpoint_delta;
-
+            int               m_CurrentTrackSeg;
+            
             enum eTrackPointState {
                 firstPoint,
                 secondPoint,
@@ -194,7 +197,8 @@ public:
       virtual bool AddNewWayPoint(RoutePoint *pWP, int ConfigRouteNum = -1);
       virtual bool UpdateWayPoint(RoutePoint *pWP);
       virtual bool DeleteWayPoint(RoutePoint *pWP);
-
+      virtual bool AddNewTrackPoint( RoutePoint *pWP, const wxString& parent_GUID );
+      
       virtual void CreateConfigGroups ( ChartGroupArray *pGroupArray );
       virtual void DestroyConfigGroups ( void );
       virtual void LoadConfigGroups ( ChartGroupArray *pGroupArray );
@@ -204,7 +208,6 @@ public:
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();
       virtual void UpdateNavObj();
-      virtual void StoreNavObjChanges();
 
       bool LoadLayers(wxString &path);
 
