@@ -490,7 +490,7 @@ void Track::OnTimerTrack( wxTimerEvent& event )
 
     bool b_addpoint = false;
 
-    if( bGPSValid && ( m_TrackTimerSec > 0. ) && ( (double) m_track_run >= m_TrackTimerSec )
+    if( ( m_TrackTimerSec > 0. ) && ( (double) m_track_run >= m_TrackTimerSec )
             && ( m_prev_dist > m_minTrackpoint_delta ) ) {
         b_addpoint = true;
         m_track_run = 0;
@@ -529,9 +529,6 @@ RoutePoint* Track::AddNewPoint( vector2D point, wxDateTime time ) {
 
 void Track::AddPointNow( bool do_add_point )
 {
-    if( !bGPSValid )
-        return;
-    
     static std::vector<RoutePoint> skippedPoints;
 
     wxDateTime now = wxDateTime::Now();
