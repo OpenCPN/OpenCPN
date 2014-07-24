@@ -5612,65 +5612,127 @@ bool s57chart::IsPointInObjArea( float lat, float lon, float select_radius, S57O
             tp_box.SetMax(pTP->maxx, pTP->maxy);
 
             if( tp_box.PointInBox( lon, lat, 0 ) ) {
-                double *p_vertex = pTP->p_vertex;
+                
+                if(ppg->data_type == DATA_TYPE_DOUBLE) {
+                    double *p_vertex = pTP->p_vertex;
 
-                switch( pTP->type ){
-                    case PTG_TRIANGLE_FAN: {
-                        for( int it = 0; it < pTP->nVert - 2; it++ ) {
-                            pvert_list[0].x = p_vertex[0];
-                            pvert_list[0].y = p_vertex[1];
+                    switch( pTP->type ){
+                        case PTG_TRIANGLE_FAN: {
+                            for( int it = 0; it < pTP->nVert - 2; it++ ) {
+                                pvert_list[0].x = p_vertex[0];
+                                pvert_list[0].y = p_vertex[1];
 
-                            pvert_list[1].x = p_vertex[( it * 2 ) + 2];
-                            pvert_list[1].y = p_vertex[( it * 2 ) + 3];
+                                pvert_list[1].x = p_vertex[( it * 2 ) + 2];
+                                pvert_list[1].y = p_vertex[( it * 2 ) + 3];
 
-                            pvert_list[2].x = p_vertex[( it * 2 ) + 4];
-                            pvert_list[2].y = p_vertex[( it * 2 ) + 5];
+                                pvert_list[2].x = p_vertex[( it * 2 ) + 4];
+                                pvert_list[2].y = p_vertex[( it * 2 ) + 5];
 
-                            if( G_PtInPolygon( (MyPoint *) pvert_list, 3, easting, northing ) ) {
-                                ret = true;
-                                break;
+                                if( G_PtInPolygon( (MyPoint *) pvert_list, 3, easting, northing ) ) {
+                                    ret = true;
+                                    break;
+                                }
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case PTG_TRIANGLE_STRIP: {
-                        for( int it = 0; it < pTP->nVert - 2; it++ ) {
-                            pvert_list[0].x = p_vertex[( it * 2 )];
-                            pvert_list[0].y = p_vertex[( it * 2 ) + 1];
+                        case PTG_TRIANGLE_STRIP: {
+                            for( int it = 0; it < pTP->nVert - 2; it++ ) {
+                                pvert_list[0].x = p_vertex[( it * 2 )];
+                                pvert_list[0].y = p_vertex[( it * 2 ) + 1];
 
-                            pvert_list[1].x = p_vertex[( it * 2 ) + 2];
-                            pvert_list[1].y = p_vertex[( it * 2 ) + 3];
+                                pvert_list[1].x = p_vertex[( it * 2 ) + 2];
+                                pvert_list[1].y = p_vertex[( it * 2 ) + 3];
 
-                            pvert_list[2].x = p_vertex[( it * 2 ) + 4];
-                            pvert_list[2].y = p_vertex[( it * 2 ) + 5];
+                                pvert_list[2].x = p_vertex[( it * 2 ) + 4];
+                                pvert_list[2].y = p_vertex[( it * 2 ) + 5];
 
-                            if( G_PtInPolygon( (MyPoint *) pvert_list, 3, easting, northing ) ) {
-                                ret = true;
-                                break;
+                                if( G_PtInPolygon( (MyPoint *) pvert_list, 3, easting, northing ) ) {
+                                    ret = true;
+                                    break;
+                                }
                             }
+                            break;
                         }
-                        break;
-                    }
-                    case PTG_TRIANGLES: {
-                        for( int it = 0; it < pTP->nVert; it += 3 ) {
-                            pvert_list[0].x = p_vertex[( it * 2 )];
-                            pvert_list[0].y = p_vertex[( it * 2 ) + 1];
+                        case PTG_TRIANGLES: {
+                            for( int it = 0; it < pTP->nVert; it += 3 ) {
+                                pvert_list[0].x = p_vertex[( it * 2 )];
+                                pvert_list[0].y = p_vertex[( it * 2 ) + 1];
 
-                            pvert_list[1].x = p_vertex[( it * 2 ) + 2];
-                            pvert_list[1].y = p_vertex[( it * 2 ) + 3];
+                                pvert_list[1].x = p_vertex[( it * 2 ) + 2];
+                                pvert_list[1].y = p_vertex[( it * 2 ) + 3];
 
-                            pvert_list[2].x = p_vertex[( it * 2 ) + 4];
-                            pvert_list[2].y = p_vertex[( it * 2 ) + 5];
+                                pvert_list[2].x = p_vertex[( it * 2 ) + 4];
+                                pvert_list[2].y = p_vertex[( it * 2 ) + 5];
 
-                            if( G_PtInPolygon( (MyPoint *) pvert_list, 3, easting, northing ) ) {
-                                ret = true;
-                                break;
+                                if( G_PtInPolygon( (MyPoint *) pvert_list, 3, easting, northing ) ) {
+                                    ret = true;
+                                    break;
+                                }
                             }
+                            break;
                         }
-                        break;
                     }
                 }
-
+                else {
+                    float *p_vertex = (float *)pTP->p_vertex;
+                                        
+                    switch( pTP->type ){
+                        case PTG_TRIANGLE_FAN: {
+                            for( int it = 0; it < pTP->nVert - 2; it++ ) {
+                                pvert_list[0].x = p_vertex[0];
+                                pvert_list[0].y = p_vertex[1];
+                                
+                                pvert_list[1].x = p_vertex[( it * 2 ) + 2];
+                                pvert_list[1].y = p_vertex[( it * 2 ) + 3];
+                                
+                                pvert_list[2].x = p_vertex[( it * 2 ) + 4];
+                                pvert_list[2].y = p_vertex[( it * 2 ) + 5];
+                                
+                                if( G_PtInPolygon( (MyPoint *) pvert_list, 3, easting, northing ) ) {
+                                    ret = true;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                        case PTG_TRIANGLE_STRIP: {
+                            for( int it = 0; it < pTP->nVert - 2; it++ ) {
+                                pvert_list[0].x = p_vertex[( it * 2 )];
+                                pvert_list[0].y = p_vertex[( it * 2 ) + 1];
+                                
+                                pvert_list[1].x = p_vertex[( it * 2 ) + 2];
+                                pvert_list[1].y = p_vertex[( it * 2 ) + 3];
+                                
+                                pvert_list[2].x = p_vertex[( it * 2 ) + 4];
+                                pvert_list[2].y = p_vertex[( it * 2 ) + 5];
+                                
+                                if( G_PtInPolygon( (MyPoint *) pvert_list, 3, easting, northing ) ) {
+                                    ret = true;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                        case PTG_TRIANGLES: {
+                            for( int it = 0; it < pTP->nVert; it += 3 ) {
+                                pvert_list[0].x = p_vertex[( it * 2 )];
+                                pvert_list[0].y = p_vertex[( it * 2 ) + 1];
+                                
+                                pvert_list[1].x = p_vertex[( it * 2 ) + 2];
+                                pvert_list[1].y = p_vertex[( it * 2 ) + 3];
+                                
+                                pvert_list[2].x = p_vertex[( it * 2 ) + 4];
+                                pvert_list[2].y = p_vertex[( it * 2 ) + 5];
+                                
+                                if( G_PtInPolygon( (MyPoint *) pvert_list, 3, easting, northing ) ) {
+                                    ret = true;
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
             }
             pTP = pTP->p_next;
         }
