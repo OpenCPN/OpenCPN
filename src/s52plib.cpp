@@ -5603,7 +5603,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         PolyTriGroup *ppg_vbo = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
             
             //  Has the input vertex buffer been converted to "single_alloc" model?
-        if(!ppg_vbo->bsingle_alloc){
+            //  and is it allowed?
+        if(!ppg_vbo->bsingle_alloc && (rzRules->obj->auxParm1 >= 0) ){
                 
                 int data_size = sizeof(float);
                 if( ppg_vbo->data_type == DATA_TYPE_DOUBLE)
@@ -5657,19 +5658,20 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     
         }
             
+        bool b_useVBO = g_b_EnableVBO  && !rzRules->obj->auxParm1;    // VBO allowed?
 
-        if( g_b_EnableVBO ){
+        if( b_useVBO ){        
         //  Has a VBO been built for this object?
             if( 1 ) {
                  
-                 if(rzRules->obj->Parm0 <= 0) {
-                    b_temp_vbo = (rzRules->obj->Parm0 == -5);
+                 if(rzRules->obj->auxParm0 <= 0) {
+                    b_temp_vbo = (rzRules->obj->auxParm0 == -5);
                    
                     GLuint vboId;
                     // generate a new VBO and get the associated ID
                     (s_glGenBuffers)(1, &vboId);
                     
-                    rzRules->obj->Parm0 = vboId;
+                    rzRules->obj->auxParm0 = vboId;
                     
                     // bind VBO in order to use
                     (s_glBindBuffer)(GL_ARRAY_BUFFER, vboId);
@@ -5681,7 +5683,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     
                 }
                 else {
-                    (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->Parm0);
+                    (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->auxParm0);
                     glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
                 }                    
              }
@@ -5696,7 +5698,16 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         int vbo_offset = 0;
         
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+
+        //      Set up the stride sizes for the array
+        int array_data_size = sizeof(float);
+        GLint array_gl_type = GL_FLOAT;
         
+        if(ppg->data_type == DATA_TYPE_DOUBLE){
+            array_data_size = sizeof(double);
+            array_gl_type = GL_DOUBLE;
+        }
+            
         while( p_tp ) {
             
             tp_box.SetMin(p_tp->minx, p_tp->miny);
@@ -5714,32 +5725,32 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
                 
-                if(g_b_EnableVBO){
-                    glVertexPointer(2, GL_FLOAT, 8, (void *)(vbo_offset));
+                if(b_useVBO){
+                    glVertexPointer(2, array_gl_type, 2 * array_data_size, (void *)(vbo_offset));
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
                 }
                 else{
-                    glVertexPointer(2, GL_FLOAT, 8, p_tp->p_vertex);
+                    glVertexPointer(2, array_gl_type, 2 * array_data_size, p_tp->p_vertex);
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
                 }
             }
             
-            vbo_offset += p_tp->nVert * 2 * sizeof(float);
+            vbo_offset += p_tp->nVert * 2 * array_data_size;
             p_tp = p_tp->p_next; // pick up the next in chain
             
         } // while
         
-        if(g_b_EnableVBO)
+        if(b_useVBO)
             (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
         
         glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
         
         glPopMatrix();
         
-        if( g_b_EnableVBO && b_temp_vbo){
+        if( b_useVBO && b_temp_vbo){
             (s_glBufferData)(GL_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW);
-            s_glDeleteBuffers(1, (unsigned int *)&rzRules->obj->Parm0);
-            rzRules->obj->Parm0 = 0;
+            s_glDeleteBuffers(1, (unsigned int *)&rzRules->obj->auxParm0);
+            rzRules->obj->auxParm0 = 0;
         }
     } // if pPolyTessGeo
 

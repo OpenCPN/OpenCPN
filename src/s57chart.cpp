@@ -165,7 +165,8 @@ S57Obj::S57Obj()
     x_origin = 0.0;
     y_origin = 0.0;
     
-    Parm0 = 0;
+    auxParm0 = 0;
+    auxParm1 = 0;
 }
 
 //----------------------------------------------------------------------------------
@@ -210,7 +211,8 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     att_array = NULL;
     attVal = NULL;
     n_attr = 0;
-    Parm0 = 0;
+    auxParm0 = 0;
+    auxParm1 = 0;
     
     pPolyTessGeo = NULL;
     pPolyTrapGeo = NULL;
