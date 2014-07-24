@@ -8394,21 +8394,20 @@ void ChartCanvas::PopupMenuHandler( wxCommandEvent& event )
     case ID_RT_MENU_REVERSE: {
         if( m_pSelectedRoute->m_bIsInLayer ) break;
 
-        pSelect->DeleteAllSelectableRouteSegments( m_pSelectedRoute );
-
         int ask_return = OCPNMessageBox( this, g_pRouteMan->GetRouteReverseMessage(),
-                               _("Rename Waypoints?"), wxYES_NO );
+                               _("Rename Waypoints?"), wxYES_NO | wxCANCEL );
 
-        if( ask_return != wxID_CANCEL )
+        if( ask_return != wxID_CANCEL ) {
+            pSelect->DeleteAllSelectableRouteSegments( m_pSelectedRoute );
             m_pSelectedRoute->Reverse( ask_return == wxID_YES );
+            pSelect->AddAllSelectableRouteSegments( m_pSelectedRoute );
 
-        pSelect->AddAllSelectableRouteSegments( m_pSelectedRoute );
+            pConfig->UpdateRoute( m_pSelectedRoute );
 
-        pConfig->UpdateRoute( m_pSelectedRoute );
-
-        if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
-            pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
-            pRoutePropDialog->UpdateProperties();
+            if( pRoutePropDialog && ( pRoutePropDialog->IsShown() ) ) {
+                pRoutePropDialog->SetRouteAndUpdate( m_pSelectedRoute );
+                pRoutePropDialog->UpdateProperties();
+            }
         }
         break;
     }

@@ -1150,21 +1150,22 @@ void RouteManagerDialog::OnRteReverseClick( wxCommandEvent &event )
     if( route->m_bIsInLayer ) return;
 
     int ask_return = OCPNMessageBox( this, g_pRouteMan->GetRouteReverseMessage(), _("Rename Waypoints?"),
-            wxYES_NO );
-    bool rename = ( ask_return == wxID_YES );
+            wxYES_NO | wxCANCEL );
+    if( ask_return != wxID_CANCEL ) {
+        bool rename = ( ask_return == wxID_YES );
 
-    pSelect->DeleteAllSelectableRouteSegments( route );
-    route->Reverse( rename );
-    pSelect->AddAllSelectableRouteSegments( route );
+        pSelect->DeleteAllSelectableRouteSegments( route );
+        route->Reverse( rename );
+        pSelect->AddAllSelectableRouteSegments( route );
 
     // update column 2 - create a UpdateRouteItem(index) instead?
-    wxString startend = route->m_RouteStartString;
-    if( !route->m_RouteEndString.IsEmpty() ) startend.append( _(" - ") + route->m_RouteEndString );
-    m_pRouteListCtrl->SetItem( item, 2, startend );
+        wxString startend = route->m_RouteStartString;
+        if( !route->m_RouteEndString.IsEmpty() ) startend.append( _(" - ") + route->m_RouteEndString );
+        m_pRouteListCtrl->SetItem( item, 2, startend );
 
-    pConfig->UpdateRoute( route );
-//       pConfig->UpdateSettings(); // NOTE done once in destructor
-    cc1->Refresh();
+        pConfig->UpdateRoute( route );
+        cc1->Refresh();
+    }
 
     m_bNeedConfigFlush = true;
 }
