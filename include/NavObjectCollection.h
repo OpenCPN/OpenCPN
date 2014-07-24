@@ -103,6 +103,7 @@ class NavObjectChanges : public NavObjectCollection1
 {
 public:
     NavObjectChanges();
+    NavObjectChanges( wxString file_name );
     ~NavObjectChanges();
     
     bool AddRoute( Route *pr, const char *action );           // support "changes" file set
@@ -111,6 +112,9 @@ public:
     bool AddTrackPoint( RoutePoint *pWP, const char *action, const wxString& parent_GUID );
     
     bool ApplyChanges(void);
+    
+    wxString    m_filename;
+    FILE *      m_changes_file;
     
 };
 

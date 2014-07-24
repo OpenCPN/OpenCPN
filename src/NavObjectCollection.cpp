@@ -1033,7 +1033,9 @@ void InsertTrack( Route *pTentTrack )
                  if( pcontainer_route == NULL ) {
                      prp->m_bIsInRoute = false; // Take this point out of this (and only) track/route
                      if( !prp->m_bKeepXRoute ) {
+                         pConfig->m_bSkipChangeSetUpdate = true;
                          pConfig->DeleteWayPoint( prp );
+                         pConfig->m_bSkipChangeSetUpdate = false;
                          delete prp;
                      }
                  }
@@ -1301,17 +1303,32 @@ int NavObjectCollection1::LoadAllGPXObjectsAsLayer(int layer_id, bool b_layerviz
 
 
 
-
-
-
 NavObjectChanges::NavObjectChanges()
+: NavObjectCollection1()
+{
+    m_changes_file = 0;
+}
+
+
+
+NavObjectChanges::NavObjectChanges(wxString file_name)
     : NavObjectCollection1()
 {
+    m_filename = file_name;
+    
+    m_changes_file = fopen(m_filename.mb_str(), "a");
+    
     
 }
 
 NavObjectChanges::~NavObjectChanges()
 {
+    if(m_changes_file)
+        fclose(m_changes_file);
+
+    if( ::wxFileExists( m_filename ) )
+        ::wxRemoveFile( m_filename );
+        
 }
 
 bool NavObjectChanges::AddRoute( Route *pr, const char *action )
@@ -1325,6 +1342,10 @@ bool NavObjectChanges::AddRoute( Route *pr, const char *action )
     //FIXME  What if extensions do not exist?
     pugi::xml_node child = xchild.append_child("opencpn:action");
     child.append_child(pugi::node_pcdata).set_value(action);
+
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
     
     return true;
 }
@@ -1339,6 +1360,10 @@ bool NavObjectChanges::AddTrack( Track *pr, const char *action )
     pugi::xml_node xchild = object.child("extensions");
     pugi::xml_node child = xchild.append_child("opencpn:action");
     child.append_child(pugi::node_pcdata).set_value(action);
+
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
     
     return true;
 }
@@ -1353,6 +1378,10 @@ bool NavObjectChanges::AddWP( RoutePoint *pWP, const char *action )
     pugi::xml_node xchild = object.child("extensions");
     pugi::xml_node child = xchild.append_child("opencpn:action");
     child.append_child(pugi::node_pcdata).set_value(action);
+
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
     
     return true;
 }
@@ -1372,6 +1401,10 @@ bool NavObjectChanges::AddTrackPoint( RoutePoint *pWP, const char *action, const
     pugi::xml_node gchild = xchild.append_child("opencpn:track_GUID");
     gchild.append_child(pugi::node_pcdata).set_value(parent_GUID.mb_str());
 
+    pugi::xml_writer_file writer(m_changes_file);
+    object.print(writer, " ");
+    fflush(m_changes_file);
+    
     return true;
 }
 
@@ -1380,9 +1413,9 @@ bool NavObjectChanges::ApplyChanges(void)
 {
     //Let's reconstruct the unsaved changes
     
-    pugi::xml_node objects = this->child("gpx");
+    pugi::xml_node object = this->first_child();
     
-    for (pugi::xml_node object = objects.first_child(); object; object = object.next_sibling())
+    while(strlen(object.name()))
     {
         if( !strcmp(object.name(), "wpt") ) {
             RoutePoint *pWp = ::GPXLoadWaypoint1( object, _T("circle"), _T(""), false, false, false, 0 );
@@ -1504,9 +1537,9 @@ bool NavObjectChanges::ApplyChanges(void)
                         else
                             delete pWp;
                     }
-    }
+        }
     
-                
+        object = object.next_sibling();
                 
     }
 

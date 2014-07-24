@@ -208,7 +208,6 @@ public:
       virtual bool LoadChartDirArray(ArrayOfCDI &ChartDirArray);
       virtual void UpdateSettings();
       virtual void UpdateNavObj();
-      virtual void StoreNavObjChanges();
 
       bool LoadLayers(wxString &path);
 

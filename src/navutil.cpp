@@ -1060,8 +1060,8 @@ MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
     m_sNavObjSetChangesFile = m_sNavObjSetFile + _T ( ".changes" );
 
     m_pNavObjectInputSet = NULL;
-    m_pNavObjectChangesSet = new NavObjectChanges();
-
+    m_pNavObjectChangesSet = NULL;
+    
     m_bSkipChangeSetUpdate = false;
 
     g_pConnectionParams = new wxArrayOfConnPrm();
@@ -1927,6 +1927,9 @@ int MyConfig::LoadMyConfig( int iteration )
 
             UpdateNavObj();
         }
+        
+        m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
+        
     }
 
     SetPath( _T ( "/Settings/Others" ) );
@@ -2130,7 +2133,6 @@ bool MyConfig::AddNewRoute( Route *pr, int crm )
             m_pNavObjectChangesSet->AddTrack( (Track *)pr, "add" );
         else
             m_pNavObjectChangesSet->AddRoute( pr, "add" );
-        StoreNavObjChanges();
     }
 
     return true;
@@ -2147,7 +2149,6 @@ bool MyConfig::UpdateRoute( Route *pr )
         else
             m_pNavObjectChangesSet->AddRoute( pr, "update" );
 
-        StoreNavObjChanges();
     }
 
     return true;
@@ -2164,7 +2165,6 @@ bool MyConfig::DeleteConfigRoute( Route *pr )
         else
             m_pNavObjectChangesSet->AddTrack( (Track *)pr, "delete" );
 
-        StoreNavObjChanges();
     }
     return true;
 }
@@ -2176,7 +2176,6 @@ bool MyConfig::AddNewWayPoint( RoutePoint *pWP, int crm )
 
     if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddWP( pWP, "add" );
-        StoreNavObjChanges();
     }
 
     return true;
@@ -2189,7 +2188,6 @@ bool MyConfig::UpdateWayPoint( RoutePoint *pWP )
 
     if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddWP( pWP, "update" );
-        StoreNavObjChanges();
     }
 
     return true;
@@ -2202,7 +2200,6 @@ bool MyConfig::DeleteWayPoint( RoutePoint *pWP )
 
     if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddWP( pWP, "delete" );
-        StoreNavObjChanges();
     }
 
     return true;
@@ -2212,7 +2209,6 @@ bool MyConfig::AddNewTrackPoint( RoutePoint *pWP, const wxString& parent_GUID )
 {
     if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddTrackPoint( pWP, "add", parent_GUID );
-        StoreNavObjChanges();
     }
     
     return true;
@@ -2709,13 +2705,8 @@ void MyConfig::UpdateNavObj( void )
         wxRemoveFile( m_sNavObjSetChangesFile );
     
     delete m_pNavObjectChangesSet;
-    m_pNavObjectChangesSet = new NavObjectChanges();
+    m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
 
-}
-
-void MyConfig::StoreNavObjChanges( void )
-{
-    m_pNavObjectChangesSet->SaveFile( m_sNavObjSetChangesFile );
 }
 
 bool MyConfig::ExportGPXRoutes( wxWindow* parent, RouteList *pRoutes, const wxString suggestedName )
