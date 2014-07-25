@@ -227,6 +227,7 @@ class MyFrame: public wxFrame
     void OnEvtOCPN_NMEA(OCPN_DataStreamEvent & event);
     void OnEvtPlugInMessage( OCPN_MsgEvent & event );
     void OnMemFootTimer(wxTimerEvent& event);
+    void OnBellsTimer(wxTimerEvent& event);
 
     void UpdateAllFonts(void);
     void PositionConsole(void);
@@ -323,6 +324,9 @@ class MyFrame: public wxFrame
     wxTimer             FrameTimer1;
     wxTimer             FrameCOGTimer;
     wxTimer             MemFootTimer;
+
+    int                 m_BellsToPlay;
+    wxTimer             BellsTimer;
 
     //      PlugIn support
     int GetNextToolbarToolId(){return m_next_available_plugin_tool_id;}
@@ -446,6 +450,7 @@ enum {
     FRAME_TC_TIMER,
     FRAME_COG_TIMER,
     MEMORY_FOOTPRINT_TIMER,
+    BELLS_TIMER,
     ID_NMEA_THREADMSG
 
 };
