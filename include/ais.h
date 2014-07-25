@@ -229,4 +229,7 @@ wxString ais_get_status(int index);
 wxString ais_get_type(int index);
 wxString ais_get_short_type(int index);
 
+void AISDrawAreaNotices (ocpnDC& dc );
+void AISDraw(ocpnDC& dc);
+
 #endif
