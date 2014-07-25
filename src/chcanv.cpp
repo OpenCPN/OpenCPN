@@ -6553,6 +6553,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                             b_start_rollover = true;
                             break;
                         }
+                        node = node->GetNext();
                     }       // while
                 }
                 
