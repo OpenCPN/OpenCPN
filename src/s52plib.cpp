@@ -3555,9 +3555,11 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         double lat = *pdl++;
 
         wxPoint r = vp_local.GetPixFromLL( lat, lon );
- 
+        //      Use estimated symbol size
+        wxRect rr(r.x-16, r.y-16, 32, 32);
+        
         //      The render inclusion test is trivial....
-        if(!vp->rv_rect.Contains(r))
+        if(!vp->rv_rect.Intersects(rr))
             continue;
         
         double angle = 0;
