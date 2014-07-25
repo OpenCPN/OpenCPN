@@ -4330,7 +4330,7 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         //    Create destination image
         wxBitmap olbm( size_x, size_y );
         wxMemoryDC oldc( olbm );
-        if(!oldc.Ok())
+        if(!oldc.IsOk())
             return;
             
         oldc.SetBackground( *wxBLACK_BRUSH );

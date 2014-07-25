@@ -5713,7 +5713,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         wxBoundingBox tp_box;
         TriPrim *p_tp = ppg->tri_prim_head;
-        int vbo_offset = 0;
+        GLintptr vbo_offset = 0;
         
         glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
@@ -5744,7 +5744,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
                 
                 if(b_useVBO){
-                    glVertexPointer(2, array_gl_type, 2 * array_data_size, (void *)(vbo_offset));
+                    glVertexPointer(2, array_gl_type, 2 * array_data_size, (GLvoid *)(vbo_offset));
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
                 }
                 else{
