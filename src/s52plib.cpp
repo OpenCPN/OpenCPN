@@ -377,7 +377,7 @@ void s52plib::SetGLRendererString(const wxString &renderer)
     //    Some GL renderers do a poor job of Anti-aliasing very narrow line widths.
     //    Detect this case, and adjust the render parameters.
 
-    if( renderer.Upper().Find( _T("MESA") ) != wxNOT_FOUND ) g_GLMinLineWidth = 1.2;
+    if( renderer.Upper().Find( _T("MESA") ) != wxNOT_FOUND ) g_GLMinLineWidth = 1.2f;
 }
 
 /*
@@ -2444,10 +2444,14 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
 
             glColor4f( 1, 1, 1, 1 );
 
-            glRasterPos2f( r.x - ddx, r.y - ddy );
-            glPixelZoom( 1, -1 );
-            glDrawPixels( b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr );
-            glPixelZoom( 1, 1 );
+            //  Since draw pixels is so slow, lets not draw anything we don't have to
+            wxRect sym_rect(r.x - ddx, r.y - ddy, b_width, b_height);
+            if(vp->rv_rect.Intersects(sym_rect) ) {
+                glRasterPos2f( r.x - ddx, r.y - ddy );
+                glPixelZoom( 1, -1 );
+                glDrawPixels( b_width, b_height, GL_RGBA, GL_UNSIGNED_BYTE, prule->pixelPtr );
+                glPixelZoom( 1, 1 );
+            }
         }
 
         glDisable( GL_BLEND );
