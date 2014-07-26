@@ -814,8 +814,10 @@ void ChartSymbols::SetColorTableIndex( int index )
 
 int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcmode )
 {
-    if( tableNo == rasterSymbolsLoadedColorMapNumber && !flush
-        && (!dcmode || rasterSymbols.IsOk())) return true;
+    if( tableNo == rasterSymbolsLoadedColorMapNumber && !flush && (!dcmode || rasterSymbols.IsOk())){
+        if(!dcmode && g_bopengl && rasterSymbolsTexture)
+            return true;
+    }
 
     colTable* coltab = (colTable *) colorTables->Item( tableNo );
 
@@ -936,7 +938,7 @@ wxImage ChartSymbols::GetImage( const char* symbolName )
        (the first time an s57 chart is ever loaded, it renders to memor dc to cache
        a thumbnail so needs the ram version.  Eventually we can render to video memory
        read it back for this case instead. */
-    if((!rasterSymbols.IsOk()) || ( ColorTableIndex != rasterSymbolsLoadedColorMapNumber) )
+//    if((!rasterSymbols.IsOk()) || ( ColorTableIndex != rasterSymbolsLoadedColorMapNumber) )
         LoadRasterFileForColorTable(ColorTableIndex, false, true);
 
     wxRect bmArea = ( *symbolGraphicLocations )[HashKey( symbolName )];
@@ -946,7 +948,7 @@ wxImage ChartSymbols::GetImage( const char* symbolName )
 
 unsigned int ChartSymbols::GetGLTextureRect( wxRect &rect, const char* symbolName )
 {
-    if( ColorTableIndex != rasterSymbolsLoadedColorMapNumber)
+//    if( ColorTableIndex != rasterSymbolsLoadedColorMapNumber)
         LoadRasterFileForColorTable(ColorTableIndex);
     rect = ( *symbolGraphicLocations )[HashKey( symbolName )];
     return rasterSymbolsTexture;
