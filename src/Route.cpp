@@ -418,9 +418,10 @@ extern ChartCanvas *cc1; /* hopefully can eventually remove? */
 void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
 {
 #ifdef ocpnUSE_GL
-    if( m_nPoints < 2 || !m_bVisible ) return;
-
+    if( m_nPoints < 1 || !m_bVisible ) return;
+    
     //  Hiliting first
+    //  Being special case to draw something for a 1 point route....
     if(m_hiliteWidth){
         ocpnDC dc;
         wxColour y = GetGlobalColor( _T ( "YELO1" ) );
@@ -433,6 +434,12 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         wxPoint r0;
         cc1->GetCanvasPointPix( prp0->m_lat, prp0->m_lon, &r0);
 
+        if( m_nPoints == 1 ) {
+            dc.StrokeLine( r0.x, r0.y, r0.x + 2, r0.y + 2 );
+            return;
+        }
+            
+        
         node = node->GetNext();
         while( node ){
             
@@ -448,6 +455,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         }
     }
     
+    if( m_nPoints < 2  )
+        return;
     
     /* determine color and width */
     wxColour col;
