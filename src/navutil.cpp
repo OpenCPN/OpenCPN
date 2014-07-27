@@ -4383,15 +4383,20 @@ void AlphaBlending( ocpnDC &dc, int x, int y, int size_x, int size_y, float radi
         glEnable( GL_BLEND );
         glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
-        glColor4ub( color.Red(), color.Green(), color.Blue(), transparency );
-
-        glBegin( GL_QUADS );
-        glVertex2i( x, y );
-        glVertex2i( x + size_x, y );
-        glVertex2i( x + size_x, y + size_y );
-        glVertex2i( x, y + size_y );
-        glEnd();
-
+        if(radius > 1.0f){
+            wxColour c(color.Red(), color.Green(), color.Blue(), transparency);
+            dc.SetBrush(wxBrush(c));
+            dc.DrawRoundedRectangle( x, y, size_x, size_y, radius );
+        }
+        else {
+            glColor4ub( color.Red(), color.Green(), color.Blue(), transparency );
+            glBegin( GL_QUADS );
+            glVertex2i( x, y );
+            glVertex2i( x + size_x, y );
+            glVertex2i( x + size_x, y + size_y );
+            glVertex2i( x, y + size_y );
+            glEnd();
+        }
         glDisable( GL_BLEND );
 #endif
     }

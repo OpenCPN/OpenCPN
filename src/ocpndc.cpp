@@ -653,7 +653,7 @@ static void drawrrhelper( wxCoord x, wxCoord y, wxCoord r, float st, float et )
 #ifdef ocpnUSE_GL
     const int slices = 10;
     float dt = ( et - st ) / slices;
-    for( float t = st; t <= et; t += dt )
+    for( float t = st; t <= et + dt; t += dt )
         glVertex2f( x + r * cos( t ), y + r * sin( t ) );
 #endif        
 }
@@ -664,9 +664,10 @@ void ocpnDC::DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, w
         dc->DrawRoundedRectangle( x, y, w, h, r );
 #ifdef ocpnUSE_GL
     else {
-        wxCoord x0 = x, x1 = x + r, x2 = x + w - r, x3 = x + h;
+        wxCoord x0 = x, x1 = x + r, x2 = x + w - r, x3 = x + w;
         wxCoord y0 = y, y1 = y + r, y2 = y + h - r, y3 = y + h;
         if( ConfigureBrush() ) {
+            
             glBegin( GL_QUADS );
             glVertex2i( x0, y1 );
             glVertex2i( x1, y1 );
@@ -676,7 +677,7 @@ void ocpnDC::DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, w
             glVertex2i( x1, y0 );
             glVertex2i( x2, y0 );
             glVertex2i( x2, y3 );
-            glVertex2i( x0, y3 );
+            glVertex2i( x1, y3 );
 
             glVertex2i( x2, y1 );
             glVertex2i( x3, y1 );
@@ -686,23 +687,24 @@ void ocpnDC::DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, w
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x1, y2 );
-            drawrrhelper( x1, y2, r, -M_PI, -M_PI / 2 );
+            drawrrhelper( x1, y2, r, M_PI/2, M_PI );
             glEnd();
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x2, y2 );
-            drawrrhelper( x2, y2, r, -M_PI / 2, 0 );
+            drawrrhelper( x2, y2, r, 0, M_PI / 2 );
             glEnd();
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x2, y1 );
-            drawrrhelper( x2, y1, r, 0, M_PI / 2 );
+            drawrrhelper( x2, y1, r, -M_PI / 2, 0 );
             glEnd();
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x1, y1 );
-            drawrrhelper( x1, y1, r, M_PI / 2, M_PI );
+            drawrrhelper( x1, y1, r, -M_PI, -M_PI/2 );
             glEnd();
+            
         }
 
         if( ConfigurePen() ) {
@@ -713,6 +715,7 @@ void ocpnDC::DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, w
             drawrrhelper( x1, y1, r, M_PI / 2, M_PI );
             glEnd();
         }
+        
     }
 #endif    
 }
