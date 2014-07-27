@@ -343,6 +343,7 @@ private:
       bool        m_bRouteEditing;
       bool        m_bMarkEditing;
       RoutePoint  *m_pRoutePointEditTarget;
+      RoutePoint  *m_lastRoutePointEditTarget;
       SelectItem  *m_pFoundPoint;
       bool        m_bChartDragging;
       wxString    m_active_upload_port;
@@ -399,7 +400,7 @@ private:
       void PanTimerEvent(wxTimerEvent& event);
       void MovementTimerEvent(wxTimerEvent& );
       void MovementStopTimerEvent( wxTimerEvent& );
-      bool CheckEdgePan(int x, int y, bool bdragging);
+      bool CheckEdgePan( int x, int y, bool bdragging, int margin, int delta );
       void OnCursorTrackTimerEvent(wxTimerEvent& event);
 
       void DrawAllRoutesInBBox(ocpnDC& dc, LLBBox& BltBBox, const wxRegion& clipregion);
