@@ -2171,6 +2171,9 @@ bool MyConfig::AddNewWayPoint( RoutePoint *pWP, int crm )
     if( pWP->m_bIsInLayer )
         return true;
 
+    if(!pWP->m_bIsolatedMark)
+        return true;
+    
     if( !m_bSkipChangeSetUpdate ) {
         m_pNavObjectChangesSet->AddWP( pWP, "add" );
     }
