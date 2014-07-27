@@ -5575,11 +5575,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 
 
                 //  Mark editing
-                if( m_pRoutePointEditTarget/*m_bMarkEditing*/ ) {
-//                    if(!b_was_editing_mark)
-//                        b_startedit_mark = true;
+                if( m_pRoutePointEditTarget ) {
 
-                    if(b_was_editing_mark) {            // kill previous hilight
+                    if(b_was_editing_mark || b_was_editing_route) {            // kill previous hilight
                         if( m_lastRoutePointEditTarget) {
                             m_lastRoutePointEditTarget->m_bIsBeingEdited = false;
                             m_lastRoutePointEditTarget->m_bPtIsSelected = false;
