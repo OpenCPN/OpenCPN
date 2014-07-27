@@ -99,19 +99,20 @@ public:
     GribOverlaySettings m_OverlaySettings;
 
     wxTimer m_tPlayStop;
+    wxTimer m_tCursorTrackTimer;
 
     grib_pi             *pPlugIn;
     GribRequestSetting  *pReq_Dialog;
     GRIBFile        *m_bGRIBActiveFile;
     double m_cursor_lat, m_cursor_lon;
-
 private:
     void OnClose( wxCloseEvent& event );
     void OnMove( wxMoveEvent& event );
     void OnSize( wxSizeEvent& event );
     void OnSettings( wxCommandEvent& event );
     void OnPlayStop( wxCommandEvent& event );
-    void OnPlayStopTimer( wxTimerEvent & );
+    void OnPlayStopTimer( wxTimerEvent & event);
+    void OnCursorTrackTimer( wxTimerEvent & event);
 
     void AddTrackingControl( wxControl *ctrl1,  wxControl *ctrl2,  wxControl *ctrl3, bool show, bool altitude = false );
     void UpdateTrackingControls( void );
