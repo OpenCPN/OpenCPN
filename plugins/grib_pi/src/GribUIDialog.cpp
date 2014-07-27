@@ -345,6 +345,7 @@ GRIBUIDialog::GRIBUIDialog(wxWindow *parent, grib_pi *ppi)
     //connect events have not been done in dialog base
     this->Connect( wxEVT_MOVE, wxMoveEventHandler( GRIBUIDialog::OnMove ) );
     m_tPlayStop.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBUIDialog::OnPlayStopTimer ), NULL, this);
+    m_tCursorTrackTimer.Connect(wxEVT_TIMER, wxTimerEventHandler( GRIBUIDialog::OnCursorTrackTimer ), NULL, this);
 
     m_OverlaySettings.Read();
 
@@ -391,9 +392,13 @@ GRIBUIDialog::~GRIBUIDialog()
 
 void GRIBUIDialog::SetCursorLatLon( double lat, double lon )
 {
+    if(!m_tCursorTrackTimer.IsRunning()) m_tCursorTrackTimer.Start(50, wxTIMER_ONE_SHOT );
     m_cursor_lon = lon;
     m_cursor_lat = lat;
+}
 
+void GRIBUIDialog::OnCursorTrackTimer( wxTimerEvent & event)
+{
     UpdateTrackingControls();
 }
 
@@ -885,7 +890,7 @@ void GRIBUIDialog::OnPlayStop( wxCommandEvent& event )
     m_InterpolateMode = m_OverlaySettings.m_bInterpolate;
 }
 
-void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & )
+void GRIBUIDialog::OnPlayStopTimer( wxTimerEvent & event )
 {
     if( m_bPlay->IsSameAs( m_bpPlay->GetBitmapLabel()) ) {
         m_bpPlay->SetToolTip( _("Play") );
