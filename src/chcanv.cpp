@@ -5872,6 +5872,12 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     if( event.RightDown() ) {
         last_drag.x = mx;
         last_drag.y = my;
+        
+        if(g_btouch ){
+            if( m_pRoutePointEditTarget )
+                return;
+        }
+            
 
         if( parent_frame->nRoute_State )                     // creating route?
             CanvasPopupMenu( x, y, SELTYPE_ROUTECREATE );
