@@ -4061,7 +4061,7 @@ void options::OnConnValChange( wxCommandEvent& event )
 
 void options::OnTypeSerialSelected( wxCommandEvent& event )
 {
-#ifdef __WXGTK__
+#ifdef __UNIX__
     if( ! g_bserial_access_checked ){
         if( !CheckSerialAccess() ){
         }
@@ -4333,7 +4333,7 @@ void options::SetDefaultConnectionParams()
     m_choicePriority->Select(m_choicePriority->FindString(_T("1")));
 
     bool bserial = true;
-#ifdef __WXGTK__
+#ifdef __UNIX__
     if(!g_bserial_access_checked)
         bserial = false;
 #endif

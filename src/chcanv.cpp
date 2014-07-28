@@ -694,7 +694,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
         pfp += 2;
     }
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
     sigaction(SIGSEGV, NULL, &sa_all_old);             // save existing action for this signal
 
     struct sigaction temp;
@@ -1051,7 +1051,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-#if defined( __WXGTK__) || defined(__WXOSX__)
+#ifndef __WXMSW__
 
     wxImage ICursorLeft = style->GetIcon( _T("left") ).ConvertToImage();
     wxImage ICursorRight = style->GetIcon( _T("right") ).ConvertToImage();
@@ -10173,7 +10173,7 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
     g_pais_query_dialog_active->Show();
 }
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
 #define BRIGHT_XCALIB
 #define __OPCPN_USEICC__
 #endif

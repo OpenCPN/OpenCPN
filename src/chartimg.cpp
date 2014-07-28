@@ -3735,7 +3735,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
             int y_offset = 0;
 
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
             sigaction(SIGSEGV, NULL, &sa_all_previous);             // save existing action for this signal
 
             struct sigaction temp;
@@ -3823,7 +3823,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
                         j++;
                   }
             }
-#ifdef __WXGTK__
+#ifdef __UNIX__
             sigaction(SIGSEGV, &sa_all_previous, NULL);        // reset signal handler
 #endif
 

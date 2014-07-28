@@ -2073,7 +2073,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
 
     } else {
 
-#if (( defined(__WXGTK__) || defined(__WXMAC__) ) && !wxCHECK_VERSION(2,9,4))
+#if !defined(__WXMSW__) && !wxCHECK_VERSION(2,9,4)
         wxBitmap *pbm = new wxBitmap( width, height );
 #else
         wxBitmap *pbm = new wxBitmap( width, height, 32 );
@@ -2123,7 +2123,7 @@ bool s52plib::RenderHPGL( ObjRazRules *rzRules, Rule *prule, wxPoint &r, ViewPor
 
         targetDc.Blit( 0, 0, bm_width, bm_height, m_pdc, screenOriginX, screenOriginY );
 
-#if wxUSE_GRAPHICS_CONTEXT && (( defined(__WXGTK__) || defined(__WXMAC__) ) && !wxCHECK_VERSION(2,9,4))
+#if wxUSE_GRAPHICS_CONTEXT && !defined(__WXMSW__) && !wxCHECK_VERSION(2,9,4)
         wxGCDC targetGcdc( targetDc );
         r0 -= wxPoint( bm_orgx, bm_orgy );
         HPGL->SetTargetGCDC( &targetGcdc );
@@ -7099,5 +7099,3 @@ bool RenderFromHPGL::Render( char *str, char *col, wxPoint &r, wxPoint &pivot, d
 #endif    
     return true;
 }
-
-

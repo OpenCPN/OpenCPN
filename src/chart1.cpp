@@ -688,7 +688,7 @@ DEFINE_EVENT_TYPE(EVT_THREADMSG)
 //    PNG Icon resources
 //------------------------------------------------------------------------------
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
 #include "bitmaps/opencpn.xpm"
 #endif
 
@@ -1159,14 +1159,14 @@ bool MyApp::OnInit()
     //TODO  Why is the following preferred?  Will not compile with gcc...
 //    wxStandardPaths& std_path = wxApp::GetTraits()->GetStandardPaths();
     
-#ifdef __WXGTK__
+#ifdef __unix__
     std_path.SetInstallPrefix(wxString(PREFIX, wxConvUTF8));
 #endif
     
     gExe_path = std_path.GetExecutablePath();
 
     pHome_Locn = new wxString;
-#ifdef __WXMSW__
+#ifdef __unix__
     pHome_Locn->Append( std_path.GetConfigDir() );   // on w98, produces "/windows/Application Data"
 #else
             pHome_Locn->Append(std_path.GetUserConfigDir());
@@ -1416,12 +1416,6 @@ bool MyApp::OnInit()
         exit( EXIT_FAILURE );
     }
 
-#ifdef __WXGTK__    
-//    if( !CheckSerialAccess() ){
-//    }
-        
-#endif    
-    
     //      Init the WayPoint Manager (Must be after UI Style init).
     pWayPointMan = new WayPointman();
     pWayPointMan->ProcessIcons( g_StyleManager->GetCurrentStyle() );
@@ -2542,7 +2536,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
         ConnectionParams *cp = g_pConnectionParams->Item(i);
         if( cp->bEnabled ) {
             
-#ifdef __WXGTK__
+#ifdef __unix__
             if( cp->GetDSPort().Contains(_T("Serial"))) {
                 if( ! g_bserial_access_checked ){
                     if( !CheckSerialAccess() ){
@@ -2590,7 +2584,7 @@ MyFrame::MyFrame( wxFrame *frame, const wxString& title, const wxPoint& pos, con
     SetIcon( wxICON(0) );           // this grabs the first icon in the integrated MSW resource file
 #endif
 
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     wxIcon app_icon(opencpn);          // This comes from opencpn.xpm inclusion above
     SetIcon(app_icon);
 #endif
@@ -8182,7 +8176,7 @@ void MyPrintout::DrawPageOne( wxDC *dc )
  *     Very system specific, unavoidably.
  */
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
 extern "C" int wait(int *);                     // POSIX wait() for process
 
 #include <termios.h>
@@ -8219,7 +8213,7 @@ int paternAdd (const char* patern) {
 }
 
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
 // This filter verify is device is withing searched patern and verify it is openable
 // -----------------------------------------------------------------------------------
 int paternFilter (const struct dirent * dir) {
@@ -8278,7 +8272,7 @@ wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
 
     //Initialize the pattern table
     if( devPatern[0] == NULL ) {
@@ -8493,7 +8487,7 @@ wxArrayString *EnumerateSerialPorts( void )
         _exit(0);// If exec fails then exit forked process.
     }
 
-#endif      // __WXGTK__
+#endif      // __UNIX__
 #ifdef __WXOSX__
 #include "macutils.h"
     char* paPortNames[MAX_SERIAL_PORTS];
@@ -8693,7 +8687,7 @@ wxArrayString *EnumerateSerialPorts( void )
 bool CheckSerialAccess( void )
 {
     bool bret = true;
-#ifdef __WXGTK__
+#ifdef __UNIX__
  
 #if 0    
     termios ttyset_old;

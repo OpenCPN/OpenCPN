@@ -1816,6 +1816,10 @@ int MyConfig::LoadMyConfig( int iteration )
     SetPath ( _T ( "/Settings/GTKFonts" ) );
 #endif
 
+#ifdef __WXQT__
+    SetPath ( _T ( "/Settings/QTFonts" ) );
+#endif
+
 #ifdef __WXMSW__
     SetPath( _T ( "/Settings/MSWFonts" ) );
 #endif
@@ -2633,6 +2637,10 @@ void MyConfig::UpdateSettings()
 
 #ifdef __WXGTK__
     font_path = ( _T ( "/Settings/GTKFonts" ) );
+#endif
+
+#ifdef __WXQT__
+    font_path = ( _T ( "/Settings/QTFonts" ) );
 #endif
 
 #ifdef __WXMSW__
