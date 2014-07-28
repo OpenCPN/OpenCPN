@@ -595,6 +595,44 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
 
     if(!plugin->IsLoaded())
     {
+        //  Look in the Blacklist, try to match a filename, to give some kind of message
+        //  extract the probable plugin name
+        wxFileName fn( plugin_file );
+        wxString prob_pi_name;
+        wxString name = fn.GetName();
+        prob_pi_name = name;
+        
+#ifdef __WXGTK__
+        prob_pi_name = name.Mid(3);     // lop off "lib"
+#endif        
+#ifdef __WXOSX__
+        prob_pi_name = name.Mid(3);     // lop off "lib"
+#endif        
+        
+        int len = sizeof(PluginBlacklist) / sizeof(BlackListedPlugin);
+        for (int i = 0; i < len; i++) {
+            wxString candidate = PluginBlacklist[i].name.Lower();
+            if( prob_pi_name.Lower().EndsWith(candidate)){
+                wxString msg = _("Incompatible PlugIn detected:\n");
+                msg += plugin_file;
+                msg += _("\n\n");
+                
+                wxString msg1;
+                msg1 = wxString::Format(_("PlugIn [ %s ] version %i.%i"),
+                                        PluginBlacklist[i].name.c_str(),
+                                        PluginBlacklist[i].version_major, PluginBlacklist[i].version_minor);
+                msg += msg1;
+                if(PluginBlacklist[i].all_lower)
+                    msg += _(", and all previous versions,");
+                msg += _(" is incompatible with this version of OpenCPN."),
+                                        
+                OCPNMessageBox ( NULL, msg, wxString( _("OpenCPN Info") ), wxICON_INFORMATION | wxOK, 20 );  // 5 second timeout
+                break;
+            }
+        }
+        
+        
+        
         wxString msg(_T("   PlugInManager: Cannot load library: "));
         msg += plugin_file;
         msg += _T(" ");
