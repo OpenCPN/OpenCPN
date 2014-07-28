@@ -8278,7 +8278,7 @@ void MyPrintout::DrawPageOne( wxDC *dc )
  *     Very system specific, unavoidably.
  */
 
-#ifdef __WXGTK__
+#if defined(__UNIX__) && !defined(__ANDROID__)
 extern "C" int wait(int *);                     // POSIX wait() for process
 
 #include <termios.h>
@@ -8315,7 +8315,7 @@ int paternAdd (const char* patern) {
 }
 
 
-#ifdef __WXGTK__
+#if defined(__UNIX__) && !defined(__ANDROID__)
 // This filter verify is device is withing searched patern and verify it is openable
 // -----------------------------------------------------------------------------------
 int paternFilter (const struct dirent * dir) {
@@ -8374,7 +8374,7 @@ wxArrayString *EnumerateSerialPorts( void )
 {
     wxArrayString *preturn = new wxArrayString;
 
-#ifdef __WXGTK__
+#if defined(__UNIX__) && !defined(__ANDROID__)
 
     //Initialize the pattern table
     if( devPatern[0] == NULL ) {
@@ -8790,7 +8790,7 @@ bool CheckSerialAccess( void )
 {
     bool bret = true;
 #ifdef __UNIX__
-#ifndef __WXQT__    
+#ifndef __ANDROID__    
  
 #if 0    
     termios ttyset_old;
