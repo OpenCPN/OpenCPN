@@ -6830,7 +6830,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         int points = dFont->GetPointSize();
         wxString ss;
-        switch (points){
+        switch (points & 0xFE){
             case 8:  ss = _T("size=\"2\""); break;
             case 10: ss = _T("size=\"3\""); break;
             case 12: ss = _T("size=\"3\""); break;
@@ -6841,8 +6841,14 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
             default: ss = _T(" "); break;
         }
         
+        if(points > 20)
+            ss = _T("size=\"6\"");
+        
         objText += ss;
         objText += _T(">");
+
+        if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
+            objText += _T("<i>");
         
         if( overlay_rule_list && CHs57_Overlay) {
             objText << CHs57_Overlay->CreateObjDescriptions( overlay_rule_list );
@@ -6864,8 +6870,12 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         else if( target_plugin_chart )
             objText << g_pi_manager->CreateObjDescriptions( target_plugin_chart, pi_rule_list );
 
-        objText << _T("</font></body></html>");
-
+        objText << _T("</font>");
+        if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
+            objText << _T("</i>");
+        
+        objText << _T("</body></html>");
+        
         g_pObjectQueryDialog->SetHTMLPage( objText );
 
         g_pObjectQueryDialog->Show();
