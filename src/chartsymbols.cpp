@@ -817,6 +817,8 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcm
     if( tableNo == rasterSymbolsLoadedColorMapNumber && !flush && (!dcmode || rasterSymbols.IsOk())){
         if(!dcmode && g_bopengl && rasterSymbolsTexture)
             return true;
+        if(dcmode && rasterSymbols.IsOk())
+            return true;
     }
 
     colTable* coltab = (colTable *) colorTables->Item( tableNo );
