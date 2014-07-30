@@ -330,7 +330,13 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path)
     source_ident = wxString( hdr.version, wxConvUTF8 );
 
     num_csts = hdr.constituents;
+    if(0 == num_csts)
+        return TC_GENERIC_ERROR;
 
+    num_nodes = hdr.number_of_years;
+    if(0 == num_nodes)
+        return TC_GENERIC_ERROR;
+    
     //  Allocate a working buffer
     m_work_buffer = (double *) malloc (num_csts * sizeof (double));
 
@@ -360,7 +366,6 @@ TC_Error_Code TCDS_Binary_Harmonic::LoadData(const wxString &data_file_path)
     }
 
     //  Node factors
-    num_nodes = hdr.number_of_years;
 
     m_cst_nodes = (double **) malloc (num_csts * sizeof (double *));
     for (int a=0; a<num_csts; a++)

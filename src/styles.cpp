@@ -151,7 +151,9 @@ wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front ) {
     for( int i = 0; i < result.GetWidth(); i++ ) {
         for( int j = 0; j < result.GetHeight(); j++ ) {
 
-            double alphaF = (double) ( *afront++ ) / 256.0;
+            double alphaF = 1.0;
+            if(afront)
+                alphaF = (double) ( *afront++ ) / 256.0;
             unsigned char r = *pfront++ * alphaF + bgColor.Red() * ( 1.0 - alphaF );
             *presult++ = r;
             unsigned char g = *pfront++ * alphaF + bgColor.Green() * ( 1.0 - alphaF );

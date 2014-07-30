@@ -4219,8 +4219,8 @@ void ChartCanvas::JaggyCircle( ocpnDC &dc, wxPen pen, int x, int y, int radius )
 
     int x0, y0, x1, y1;
 
-    x0 = x + radius;                    // Start point
-    y0 = y;
+    x0 = x1 = x + radius;                    // Start point
+    y0 = y1 = y;
     double angle = 0.;
     int i = 0;
 
@@ -6299,14 +6299,10 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                     Ais8_001_22& area_notice = ani->second;
 
                     wxBoundingBox bbox;
-                    double lat, lon;
 
                     for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) {
                         switch( sa->shape ) {
                             case AIS8_001_22_SHAPE_CIRCLE: {
-                                lat = sa->latitude;
-                                lon = sa->longitude;
-
                                 wxPoint target_point;
                                 GetCanvasPointPix( sa->latitude, sa->longitude, &target_point );
                                 bbox.Expand( target_point );
@@ -6316,6 +6312,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                             }
                             case AIS8_001_22_SHAPE_POLYGON:
                             case AIS8_001_22_SHAPE_POLYLINE: {
+                                double lat = sa->latitude;
+                                double lon = sa->longitude;
                                 for( int i = 0; i < 4; ++i ) {
                                     ll_gc_ll( lat, lon, sa->angles[i], sa->dists_m[i] / 1852.0,
                                               &lat, &lon );
@@ -6740,14 +6738,10 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
                     Ais8_001_22& area_notice = ani->second;
 
                     wxBoundingBox bbox;
-                    double lat, lon;
 
                     for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) {
                         switch( sa->shape ) {
                             case AIS8_001_22_SHAPE_CIRCLE: {
-                                lat = sa->latitude;
-                                lon = sa->longitude;
-
                                 wxPoint target_point;
                                 GetCanvasPointPix( sa->latitude, sa->longitude, &target_point );
                                 bbox.Expand( target_point );
@@ -6758,6 +6752,8 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
                             case AIS8_001_22_SHAPE_POLYGON:
                             case AIS8_001_22_SHAPE_POLYLINE: {
                                 for( int i = 0; i < 4; ++i ) {
+                                    double lat = sa->latitude;
+                                    double lon = sa->longitude;
                                     ll_gc_ll( lat, lon, sa->angles[i], sa->dists_m[i] / 1852.0,
                                               &lat, &lon );
                                     wxPoint target_point;

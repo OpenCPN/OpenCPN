@@ -2772,6 +2772,8 @@ Extended_Geometry *cm93chart::BuildGeom ( Object *pobject, wxFileOutputStream *p
 
                   ret_ptr->n_contours = ncontours;                          // parameters passed to trapezoid tesselator
 
+                  if(0 == ncontours)
+                      ncontours = 1;            // avoid 0 alloc
                   ret_ptr->contour_array = ( int * ) malloc ( ncontours * sizeof ( int ) );
                   memcpy ( ret_ptr->contour_array, m_pcontour_array, ncontours * sizeof ( int ) );
 

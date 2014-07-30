@@ -787,7 +787,8 @@ Route *Track::RouteFromTrack( wxProgressDialog *pprog )
     int back_ic = 0;
     int nPoints = pRoutePointList->GetCount();
     bool isProminent = true;
-    double delta_dist, delta_hdg, xte;
+    double delta_dist = 0.;
+    double delta_hdg, xte;
     double leg_speed = 0.1;
 
     if( pRoutePropDialog ) leg_speed = pRoutePropDialog->m_planspeed;

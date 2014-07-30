@@ -2971,7 +2971,8 @@ ocpnToolBarSimple *MyFrame::CreateAToolbar()
         tb->ToggleTool( ID_TIDE, cc1->GetbShowTide() );
     }
 
-    if( pConfig ) tb->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
+    if( pConfig && cc1 )
+        tb->ToggleTool( ID_FOLLOW, cc1->m_bFollow );
 
 #ifdef USE_S57
     if( ( pConfig ) && ( ps52plib ) ) if( ps52plib->m_bOK ) tb->ToggleTool( ID_TEXT,

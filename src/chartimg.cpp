@@ -1664,22 +1664,31 @@ void ChartBaseBSB::CreatePaletteEntry(char *buffer, int palette_index)
 InitReturn ChartBaseBSB::PostInit(void)
 {
      //    Validate the palette array, substituting DEFAULT for missing entries
+     int nfwd_def = 1;
+     int nrev_def = 1;
+     if(pPalettes[COLOR_RGB_DEFAULT]){
+         nrev_def = pPalettes[COLOR_RGB_DEFAULT]->nRev;
+         nfwd_def = pPalettes[COLOR_RGB_DEFAULT]->nFwd;
+     }
+         
       for(int i = 0 ; i < N_BSB_COLORS ; i++)
       {
             if(pPalettes[i] == NULL)
             {
                 opncpnPalette *pNullSubPal = new opncpnPalette;
 
-                pNullSubPal->nFwd = pPalettes[COLOR_RGB_DEFAULT]->nFwd;        // copy the palette count
-                pNullSubPal->nRev = pPalettes[COLOR_RGB_DEFAULT]->nRev;        // copy the palette count
+                pNullSubPal->nFwd = nfwd_def;        // copy the palette count
+                pNullSubPal->nRev = nrev_def;        // copy the palette count
                 //  Deep copy the palette rgb tables
                 free( pNullSubPal->FwdPalette );
                 pNullSubPal->FwdPalette = (int *)malloc(pNullSubPal->nFwd * sizeof(int));
-                memcpy(pNullSubPal->FwdPalette, pPalettes[COLOR_RGB_DEFAULT]->FwdPalette, pNullSubPal->nFwd * sizeof(int));
+                if( pPalettes[COLOR_RGB_DEFAULT] )
+                    memcpy(pNullSubPal->FwdPalette, pPalettes[COLOR_RGB_DEFAULT]->FwdPalette, pNullSubPal->nFwd * sizeof(int));
 
                 free( pNullSubPal->RevPalette );
                 pNullSubPal->RevPalette = (int *)malloc(pNullSubPal->nRev * sizeof(int));
-                memcpy(pNullSubPal->RevPalette, pPalettes[COLOR_RGB_DEFAULT]->RevPalette, pNullSubPal->nRev * sizeof(int));
+                if( pPalettes[COLOR_RGB_DEFAULT] )
+                    memcpy(pNullSubPal->RevPalette, pPalettes[COLOR_RGB_DEFAULT]->RevPalette, pNullSubPal->nRev * sizeof(int));
 
                 pPalettes[i] = pNullSubPal;
             }
@@ -3630,6 +3639,9 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
                                         y_offset += source.width ;
                                     }
 
+                                    if(0 == pixel_count)                // Protect
+                                        pixel_count = 1;
+                                    
                                     target_data[0] = avgRed / pixel_count;     // >> scounter;
                                     target_data[1] = avgGreen / pixel_count;   // >> scounter;
                                     target_data[2] = avgBlue / pixel_count;    // >> scounter;

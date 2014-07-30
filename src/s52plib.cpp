@@ -2479,13 +2479,16 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 unsigned char *psym = im_sym.GetData();
 
                 unsigned char *asym = NULL;
-                if( im_sym.HasAlpha() ) asym = im_sym.GetAlpha();
+                if( im_sym.HasAlpha() )
+                    asym = im_sym.GetAlpha();
 
                 //    Do alpha blending, the hard way
 
                 for( int i = 0; i < b_height; i++ ) {
                     for( int j = 0; j < b_width; j++ ) {
-                        double alpha = (double) ( *asym++ ) / 256.0;
+                        double alpha = 1.0;
+                        if(asym)
+                            alpha = ( *asym++ ) / 256.0;
                         unsigned char r = ( *psym++ * alpha ) + ( *pback++ * ( 1.0 - alpha ) );
                         *pdest++ = r;
                         unsigned char g = ( *psym++ * alpha ) + ( *pback++ * ( 1.0 - alpha ) );
