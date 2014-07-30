@@ -6,9 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 3.3.1715\n"
+"Project-Id-Version: grib_pi 3.3.1911\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,86 +17,75 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/GribUIDialog.cpp:130 src/GribUIDialog.cpp:895
+#: src/GribUIDialog.cpp:156 src/GribUIDialog.cpp:896
 #: src/GribUIDialogBase.cpp:52
 msgid "Play"
 msgstr ""
 
-#: src/GribUIDialog.cpp:161
+#: src/GribUIDialog.cpp:186
 msgid "Error:  No valid data in this file!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:192
+#: src/GribUIDialog.cpp:210
 msgid "Warning:  Empty directory!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:208
-msgid ""
-"The Grib file you are opening contains a moving Grib Zone.\n"
-"Interpolation is not supported for this type of file"
-msgstr ""
-
-#: src/GribUIDialog.cpp:209 src/GribSettingsDialog.cpp:416 src/grib_pi.cpp:550
-#: src/GribRequestDialog.cpp:281
-msgid "Warning!"
-msgstr ""
-
-#: src/GribUIDialog.cpp:408
+#: src/GribUIDialog.cpp:426
 msgid "Close"
 msgstr ""
 
-#: src/GribUIDialog.cpp:537 src/GribUIDialog.cpp:538 src/GribUIDialog.cpp:539
-#: src/GribUIDialog.cpp:639 src/GribUIDialog.cpp:640 src/GribUIDialog.cpp:653
-#: src/GribUIDialog.cpp:666 src/GribUIDialog.cpp:684 src/GribUIDialog.cpp:694
-#: src/GribUIDialog.cpp:717 src/GribUIDialog.cpp:718 src/GribUIDialog.cpp:733
-#: src/GribUIDialog.cpp:746 src/GribUIDialog.cpp:758 src/GribUIDialog.cpp:770
-#: src/GribUIDialog.cpp:782 src/GribUIDialog.cpp:794 src/GribUIDialog.cpp:806
-#: src/GribUIDialog.cpp:817
+#: src/GribUIDialog.cpp:555 src/GribUIDialog.cpp:556 src/GribUIDialog.cpp:557
+#: src/GribUIDialog.cpp:650 src/GribUIDialog.cpp:651 src/GribUIDialog.cpp:663
+#: src/GribUIDialog.cpp:676 src/GribUIDialog.cpp:694 src/GribUIDialog.cpp:704
+#: src/GribUIDialog.cpp:719 src/GribUIDialog.cpp:720 src/GribUIDialog.cpp:734
+#: src/GribUIDialog.cpp:747 src/GribUIDialog.cpp:759 src/GribUIDialog.cpp:771
+#: src/GribUIDialog.cpp:783 src/GribUIDialog.cpp:795 src/GribUIDialog.cpp:807
+#: src/GribUIDialog.cpp:818
 msgid "N/A"
 msgstr ""
 
-#: src/GribUIDialog.cpp:569
+#: src/GribUIDialog.cpp:587
 msgid "Wind Speed at"
 msgstr ""
 
-#: src/GribUIDialog.cpp:570
+#: src/GribUIDialog.cpp:588
 msgid "Wind Direction at"
 msgstr ""
 
-#: src/GribUIDialog.cpp:573
+#: src/GribUIDialog.cpp:591
 msgid "Wind Gust at"
 msgstr ""
 
-#: src/GribUIDialog.cpp:576
+#: src/GribUIDialog.cpp:594
 msgid "Air Temperature at"
 msgstr ""
 
-#: src/GribUIDialog.cpp:576
+#: src/GribUIDialog.cpp:594
 msgid "Surface level"
 msgstr ""
 
-#: src/GribUIDialog.cpp:576
+#: src/GribUIDialog.cpp:594
 msgid "Sea Surface Temperature"
 msgstr ""
 
-#: src/GribUIDialog.cpp:586
+#: src/GribUIDialog.cpp:604
 #, c-format
 msgid "Select Geopotential Height (in %s) or Standard Altitude."
 msgstr ""
 
-#: src/GribUIDialog.cpp:884
+#: src/GribUIDialog.cpp:885
 msgid "Stop"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1109
+#: src/GribUIDialog.cpp:1117
 msgid "Select a GRIB file"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1322
+#: src/GribUIDialog.cpp:1330
 msgid "Error:  File does not exist!"
 msgstr ""
 
-#: src/GribUIDialog.cpp:1335
+#: src/GribUIDialog.cpp:1343
 msgid "Error:  Can't read this File!"
 msgstr ""
 
@@ -166,7 +155,7 @@ msgstr ""
 
 #: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:95
 #: src/GribUIDialogBase.cpp:496 src/GribUIDialogBase.cpp:875
-#: src/GribOverlayFactory.cpp:728 src/GribTable.cpp:120
+#: src/GribOverlayFactory.cpp:792 src/GribTable.cpp:120
 msgid "Wind"
 msgstr ""
 
@@ -224,38 +213,43 @@ msgstr ""
 msgid "Relative Humidity"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:382
+#: src/GribSettingsDialog.cpp:386
 msgid "h"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:382
+#: src/GribSettingsDialog.cpp:386
 msgid "mn"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:402
+#: src/GribSettingsDialog.cpp:406
 msgid "Apply"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:415
+#: src/GribSettingsDialog.cpp:419
 msgid ""
 "This file contains data for particular time intervals but you have chosen to "
 "display different intervals.\n"
 "Please consider that the values will be interpolated."
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:490 src/GribSettingsDialog.cpp:498
+#: src/GribSettingsDialog.cpp:420 src/grib_pi.cpp:561
+#: src/GribRequestDialog.cpp:281
+msgid "Warning!"
+msgstr ""
+
+#: src/GribSettingsDialog.cpp:494 src/GribSettingsDialog.cpp:502
 msgid "Display Isotachs"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:505
+#: src/GribSettingsDialog.cpp:509
 msgid "Display Isobars"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:523
+#: src/GribSettingsDialog.cpp:527
 msgid "Display Isotherms"
 msgstr ""
 
-#: src/GribSettingsDialog.cpp:530
+#: src/GribSettingsDialog.cpp:534
 msgid "Display Iso CAPE"
 msgstr ""
 
@@ -651,35 +645,39 @@ msgstr ""
 msgid "Grib Data Table"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:259
+#: src/GribOverlayFactory.cpp:312
 msgid "WIND data at"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:728
+#: src/GribOverlayFactory.cpp:792
 msgid "Building Isobar map"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:903
+#: src/GribOverlayFactory.cpp:975
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr ""
+
+#: src/GribOverlayFactory.cpp:985
 msgid "Overlays too wide and can't be displayed:"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:911
+#: src/GribOverlayFactory.cpp:994
 msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
 msgstr ""
 
-#: src/GribOverlayFactory.cpp:928
+#: src/GribOverlayFactory.cpp:1011
 msgid "Please Zoom or Scale Out to view invisible overlays:"
 msgstr ""
 
-#: src/grib_pi.cpp:110
+#: src/grib_pi.cpp:112
 msgid "Grib"
 msgstr ""
 
-#: src/grib_pi.cpp:171
+#: src/grib_pi.cpp:173
 msgid "GRIB PlugIn for OpenCPN"
 msgstr ""
 
-#: src/grib_pi.cpp:177
+#: src/grib_pi.cpp:179
 msgid ""
 "GRIB PlugIn for OpenCPN\n"
 "Provides basic GRIB file overlay capabilities for several GRIB file types\n"
@@ -699,11 +697,15 @@ msgid ""
 "- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
 msgstr ""
 
-#: src/grib_pi.cpp:283
+#: src/grib_pi.cpp:285
 msgid "Weather table"
 msgstr ""
 
-#: src/grib_pi.cpp:549
+#: src/grib_pi.cpp:287
+msgid "Menu"
+msgstr ""
+
+#: src/grib_pi.cpp:560
 msgid ""
 "You have chosen to authorize interpolation.\n"
 "Don't forget that data displayed at current time will not be real but "

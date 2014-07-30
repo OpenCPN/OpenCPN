@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Marco Certelli <marco_certelli@yahoo.it>\n"
 "Language-Team: \n"
@@ -370,6 +370,9 @@ msgstr ""
 msgid "Mean Sea Level Pressure (MSLP)"
 msgstr "Pressione (hPa)"
 #
+msgid "Menu"
+msgstr ""
+#
 msgid "Meters"
 msgstr ""
 #
@@ -404,6 +407,9 @@ msgid "Overlay Transparency"
 msgstr ""
 #
 msgid "OverlayMap"
+msgstr ""
+#
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
 msgstr ""
 #
 msgid "Overlays too wide and can't be displayed:"
@@ -599,11 +605,6 @@ msgstr ""
 #, fuzzy
 msgid "Temperature"
 msgstr "Temperatura Acqua (°C)"
-#
-msgid ""
-"The Grib file you are opening contains a moving Grib Zone.\n"
-"Interpolation is not supported for this type of file"
-msgstr ""
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -819,9 +820,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "Dati GRIB"
+#
 #
 #
 #
@@ -845,8 +848,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -895,9 +900,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Zoom out o riduci scala per vedere SEATEMP soppressi"
+#
 #
 #
 #
@@ -927,9 +934,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Zoom out o riduci scala per vedere OCEAN CURRENT soppressi"
+#
 #
 #
 #
@@ -957,9 +966,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Zoom out o riduci scala per vedere CRAIN GRIB soppressi"
+#
 #
 #
 #
@@ -988,9 +999,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "Preferenze GRIB"
+#
 #
 #
 #
@@ -1062,8 +1075,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "Attenzione:  Dati QuickScat GRIB sono vecchi di %d ore."
+#
 #
 #
 #
@@ -1079,6 +1094,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Direzione Vento (gradi)"
+#
 #
 #
 #

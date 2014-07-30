@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2014-02-22 22:43+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
@@ -15,6 +15,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.6.4\n"
+#
+msgid ""
+"\n"
+"\n"
+msgstr ""
 #
 msgid ""
 "\n"
@@ -224,6 +229,9 @@ msgstr " Uppdaterad:  "
 msgid " for details."
 msgstr " för ytterligare information."
 #
+msgid " is incompatible with this version of OpenCPN."
+msgstr ""
+#
 msgid ""
 " shorter than rhumbline.\n"
 "\n"
@@ -363,6 +371,9 @@ msgstr "(reserverad)"
 #
 msgid "(unnamed)"
 msgstr "(namnlös)"
+#
+msgid ", and all previous versions,"
+msgstr ""
 #
 #
 #
@@ -647,8 +658,14 @@ msgstr "Lägg till ny"
 msgid "Address"
 msgstr "Address"
 #
+msgid "Adelie Land"
+msgstr ""
+#
 msgid "Advanced"
 msgstr "Avancerad"
+#
+msgid "Afghanistan"
+msgstr ""
 #
 #
 msgid "Aground"
@@ -661,6 +678,16 @@ msgstr "Står på grund"
 #
 msgid "Aid to Navigation"
 msgstr "Navigationshjälp"
+#
+msgid "Alaska"
+msgstr ""
+#
+msgid "Albania"
+msgstr ""
+#
+#, fuzzy
+msgid "Algeria"
+msgstr "Seriell"
 #
 #
 #
@@ -692,6 +719,9 @@ msgstr "Alla sjökort"
 #
 msgid "Altitude"
 msgstr "Altitud"
+#
+msgid "American Samoa"
+msgstr ""
 #
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -727,6 +757,15 @@ msgstr "Ankringsområde: Överföringar mellan fartyg"
 msgid "Anchorage created "
 msgstr "Ankring skapad"
 #
+msgid "Andorra"
+msgstr ""
+#
+msgid "Angola"
+msgstr ""
+#
+msgid "Anguilla"
+msgstr ""
+#
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "Om du svarar \"Nej\" kommer en ny waypoint att skapas i samma position."
 #
@@ -734,6 +773,12 @@ msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 "Om du svarar \"Nej\" kommer helt nya waypoint:er att skapas för den här "
 "rutten."
+#
+msgid "Antigua and Barbuda"
+msgstr ""
+#
+msgid "Antilles"
+msgstr ""
 #
 #
 msgid "Append Waypoint"
@@ -775,6 +820,18 @@ msgstr "Säker på att du vill du radera spåret?"
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "Vill du radera den här waypointen?"
 #
+msgid "Argentine Republic"
+msgstr ""
+#
+msgid "Armenia"
+msgstr ""
+#
+msgid "Aruba"
+msgstr ""
+#
+msgid "Ascension Island"
+msgstr ""
+#
 #
 msgid "Assumed 1 Mile Point"
 msgstr "Beräknad 1 NM Punkt"
@@ -790,6 +847,12 @@ msgstr "För ankar"
 msgid "AtoN"
 msgstr "AtoN"
 #
+msgid "Australia"
+msgstr ""
+#
+msgid "Austria"
+msgstr ""
+#
 #
 msgid "Authors"
 msgstr "Upphovsmän"
@@ -797,6 +860,9 @@ msgstr "Upphovsmän"
 #
 msgid "Auto Follow"
 msgstr "Följ båt automatiskt"
+#
+msgid "AutoSort"
+msgstr ""
 #
 #
 msgid "Automatic Daily Tracks"
@@ -806,6 +872,12 @@ msgstr "Automatisk dagligt spår"
 msgid "Avg. speed"
 msgstr "Medelhastighet"
 #
+msgid "Azerbaijani Republic"
+msgstr ""
+#
+msgid "Azores"
+msgstr ""
+#
 #
 #
 #
@@ -813,6 +885,18 @@ msgstr "Medelhastighet"
 #
 msgid "B"
 msgstr "B"
+#
+msgid "Bahamas"
+msgstr ""
+#
+msgid "Bahrain"
+msgstr ""
+#
+msgid "Bangladesh"
+msgstr ""
+#
+msgid "Barbados"
+msgstr ""
 #
 #
 msgid "Base"
@@ -870,6 +954,24 @@ msgstr "Bäring"
 msgid "Bearing (M)"
 msgstr "Bäring (M)"
 #
+msgid "Belarus"
+msgstr ""
+#
+msgid "Belgium"
+msgstr ""
+#
+msgid "Belize"
+msgstr ""
+#
+msgid "Benin"
+msgstr ""
+#
+msgid "Bermuda"
+msgstr ""
+#
+msgid "Bhutan"
+msgstr ""
+#
 #
 msgid "Black"
 msgstr "Svart"
@@ -881,9 +983,21 @@ msgstr "Svartlistad modul upptäckt..."
 msgid "Blue"
 msgstr "Blå"
 #
+msgid "Bolivia"
+msgstr ""
+#
+msgid "Bosnia and Herzegovina"
+msgstr ""
+#
+msgid "Botswana"
+msgstr ""
+#
 #
 msgid "Boundaries"
 msgstr "Gränser"
+#
+msgid "Brazil"
+msgstr ""
 #
 #
 #
@@ -892,11 +1006,26 @@ msgstr "Gränser"
 msgid "Brg"
 msgstr "Brg"
 #
+msgid "British Virgin Islands"
+msgstr ""
+#
+msgid "Brunei Darussalam"
+msgstr ""
+#
 msgid "Buddy"
 msgstr "Kompis"
 #
+msgid "Bulgaria"
+msgstr ""
+#
 msgid "Buoy/Light Labels"
 msgstr "Namn på bojar och fyrar"
+#
+msgid "Burkina Faso"
+msgstr ""
+#
+msgid "Burundi"
+msgstr ""
 #
 #
 msgid "C&olour:"
@@ -940,12 +1069,24 @@ msgstr "CPA/TCPA-larm"
 msgid "Call"
 msgstr "Anrop"
 #
+msgid "Cambodia"
+msgstr ""
+#
+msgid "Cameroon"
+msgstr ""
+#
+msgid "Canada"
+msgstr ""
+#
 #
 msgid "Cancel"
 msgstr "Avbryt"
 #
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
 msgstr "Annullering - annullering av område som anges av meddelandets ID"
+#
+msgid "Cape Verde"
+msgstr ""
 #
 #
 msgid "Card. E"
@@ -1067,6 +1208,9 @@ msgstr "Varningsområde: Undervattensverksamhet"
 msgid "Caution Area: Underwater vehicle operation"
 msgstr "Varningsområde: Undervattensfartyg"
 #
+msgid "Cayman Islands"
+msgstr ""
+#
 #
 msgid "Cell"
 msgstr "Cell"
@@ -1082,6 +1226,12 @@ msgstr "Visa centrerad"
 #
 msgid "Center View..."
 msgstr "Centrera vy..."
+#
+msgid "Central African Republic"
+msgstr ""
+#
+msgid "Chad"
+msgstr ""
 #
 #
 msgid "Change Color Scheme"
@@ -1162,6 +1312,12 @@ msgstr "Text på vektorsjökort"
 msgid "Charts"
 msgstr "Sjökort"
 #
+msgid "Chile"
+msgstr ""
+#
+msgid "China"
+msgstr ""
+#
 #
 msgid "Choose Font Color..."
 msgstr "Välj Teckenfärg..."
@@ -1178,6 +1334,9 @@ msgstr "Välj vilket format du vill kopiera i"
 #
 msgid "Choose a file"
 msgstr "Välj en fil"
+#
+msgid "Christmas Island"
+msgstr ""
 #
 #
 #
@@ -1202,6 +1361,9 @@ msgstr "Rensa alla"
 msgid "Clear Anchor Watch"
 msgstr "Deaktivera ankarvakt"
 #
+msgid "Clear Texture Cache"
+msgstr ""
+#
 msgid "Clearance granted - proceed to berth"
 msgstr "Tillstånd beviljat - fortsätt till kajplats"
 #
@@ -1224,6 +1386,14 @@ msgstr "Avsluta"
 msgid "CoG"
 msgstr "CoG"
 #
+msgid "Cocos"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Colombia"
+msgstr "Färg"
+#
 #
 msgid "Color"
 msgstr "Färg"
@@ -1239,8 +1409,17 @@ msgstr "Färger"
 msgid "Combo!"
 msgstr "Kombo!"
 #
+msgid "Comoros"
+msgstr ""
+#
+msgid "Comoros (Union of the)"
+msgstr ""
+#
 msgid "Confirm deletion of tracks and routes"
 msgstr "Bekräfta borttagning av spår och rutter?"
+#
+msgid "Congo"
+msgstr ""
 #
 #
 #, fuzzy
@@ -1266,6 +1445,9 @@ msgstr "Hämmad av sitt djupgående"
 msgid "Control checksum"
 msgstr "Använd kontrollsumma"
 #
+msgid "Cook Islands"
+msgstr ""
+#
 msgid "Copy As KML"
 msgstr "Kopiera som KML"
 #
@@ -1280,6 +1462,9 @@ msgstr "Kopiera som KML"
 #
 msgid "Copy as KML..."
 msgstr "Kopiera som KML"
+#
+msgid "Costa Rica"
+msgstr ""
 #
 #
 msgid "Course"
@@ -1313,6 +1498,15 @@ msgstr "Skapa WPT"
 msgid "Create Waypoint"
 msgstr "Skapa waypoint"
 #
+msgid "Croatia"
+msgstr ""
+#
+msgid "Crozet Archipelago"
+msgstr ""
+#
+msgid "Cuba"
+msgstr ""
+#
 #
 #
 #
@@ -1328,6 +1522,15 @@ msgstr "Strömmar"
 #
 msgid "Cyan"
 msgstr "Cyan"
+#
+msgid "Cyprus"
+msgstr ""
+#
+msgid "Czech Republic"
+msgstr ""
+#
+msgid "CÃ´te d'Ivoire"
+msgstr ""
 #
 #
 msgid "D/V"
@@ -1438,6 +1641,12 @@ msgstr "Radera waypoint"
 #
 msgid "Delete..."
 msgstr "Radera..."
+#
+msgid "Dem Rep.of the Congo"
+msgstr ""
+#
+msgid "Denmark"
+msgstr ""
 #
 #
 msgid "Depart From"
@@ -1553,11 +1762,22 @@ msgstr "Nödlägesområde: Sjunkande fartyg"
 msgid "Distress Area: Vessel under assault"
 msgstr "Nödlägesområde: Fartyg under attack"
 #
+#
+#, fuzzy
+msgid "Djibouti"
+msgstr "Om"
+#
 msgid ""
 "Do you also want to make the shared waypoints being part of this route "
 "invisible?"
 msgstr ""
 "Vill du också dölja de waypoints som den här rutten delar med andra rutter?"
+#
+msgid "Dominica"
+msgstr ""
+#
+msgid "Dominican Republic"
+msgstr ""
 #
 #
 msgid "Done."
@@ -1606,8 +1826,17 @@ msgstr "ETE"
 msgid "ETE/ETD"
 msgstr "ETD"
 #
+msgid "Ecuador"
+msgstr ""
+#
 msgid "Edit"
 msgstr "Ändra"
+#
+msgid "Egypt"
+msgstr ""
+#
+msgid "El Salvador"
+msgstr ""
 #
 #
 msgid "Elapsed time : "
@@ -1679,6 +1908,12 @@ msgstr "Varningsområde: Stormvarning (Storm eller stormfronter)"
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Varningsområde: Kraftig ström"
 #
+msgid "Equatorial Guinea"
+msgstr ""
+#
+msgid "Eritrea"
+msgstr ""
+#
 #
 #
 #
@@ -1706,6 +1941,12 @@ msgstr "Fel!"
 #
 msgid "Estimated time : "
 msgstr "Beräknad tid :"
+#
+msgid "Estonia"
+msgstr ""
+#
+msgid "Ethiopia"
+msgstr ""
 #
 msgid "EvTwilight"
 msgstr "Skymning"
@@ -1755,6 +1996,12 @@ msgstr "F/V"
 msgid "Failed to initialize the user interface. "
 msgstr "Det saknas information för att bygga upp användargränssnittet."
 #
+msgid "Falkland Islands"
+msgstr ""
+#
+msgid "Faroe Islands"
+msgstr ""
+#
 #
 msgid "Fathoms"
 msgstr "Famnar"
@@ -1762,6 +2009,9 @@ msgstr "Famnar"
 #
 msgid "Feet"
 msgstr "Fot"
+#
+msgid "Fiji"
+msgstr ""
 #
 #
 msgid "Filter NMEA Course and Speed data"
@@ -1775,6 +2025,9 @@ msgstr "Filterperiod (sek)"
 msgid "Filters"
 msgstr "Filter"
 #
+msgid "Finland"
+msgstr ""
+#
 #
 msgid "Fix.Struct."
 msgstr "Fix.Strukt."
@@ -1782,6 +2035,9 @@ msgstr "Fix.Strukt."
 #
 msgid "Fixed Structure"
 msgstr "Fast struktur"
+#
+msgid "Flag"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Typsnitt"
@@ -1795,6 +2051,14 @@ msgstr "Läs in alla sjökort på nytt"
 #
 msgid "Format uploads for Furuno GP3X"
 msgstr "Formatera för överföring till Furuno GP3X"
+#
+#
+#, fuzzy
+msgid "France"
+msgstr "Avbryt"
+#
+msgid "French Polynesia"
+msgstr ""
 #
 msgid "From"
 msgstr "Från"
@@ -1826,6 +2090,12 @@ msgstr "GPX"
 msgid "GUID"
 msgstr "GUID"
 #
+msgid "Gabonese Republic"
+msgstr ""
+#
+msgid "Gambia"
+msgstr ""
+#
 #
 msgid "General"
 msgstr "Allmänna inställningar"
@@ -1834,6 +2104,18 @@ msgstr "Allmänna inställningar"
 msgid "General Options"
 msgstr "Allmänna inställningar"
 #
+msgid "Georgia"
+msgstr ""
+#
+msgid "Germany"
+msgstr ""
+#
+msgid "Ghana"
+msgstr ""
+#
+msgid "Gibraltar"
+msgstr ""
+#
 #
 msgid "Go to "
 msgstr "Gå till "
@@ -1841,16 +2123,53 @@ msgstr "Gå till "
 msgid "GpsGate Buddy"
 msgstr "GpsGate Buddy"
 #
+msgid "Great Britain"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Greece"
+msgstr "Grön"
+#
 #
 msgid "Green"
 msgstr "Grön"
 #
+#
+#, fuzzy
+msgid "Greenland"
+msgstr "Grön"
+#
+msgid "Grenada"
+msgstr ""
+#
 msgid "Group \""
 msgstr "Bunten \""
+#
+msgid "Guadeloupe"
+msgstr ""
+#
+msgid "Guatemala"
+msgstr ""
+#
+msgid "Guiana"
+msgstr ""
+#
+msgid "Guinea"
+msgstr ""
+#
+msgid "Guinea-Bissau"
+msgstr ""
+#
+msgid "Guyana"
+msgstr ""
 #
 #
 msgid "HSC"
 msgstr "HSC"
+#
+msgid "Haiti"
+msgstr ""
 #
 #
 #
@@ -1910,6 +2229,15 @@ msgstr "Höghastighetsfartyg"
 msgid "Highlight Tracks"
 msgstr "Visa spår"
 #
+msgid "Honduras"
+msgstr ""
+#
+msgid "Hong Kong"
+msgstr ""
+#
+msgid "Hungary"
+msgstr ""
+#
 #
 msgid "I&mport GPX..."
 msgstr "&Importera GPX..."
@@ -1921,6 +2249,9 @@ msgstr "&Importera GPX..."
 #
 msgid "IMO"
 msgstr "IMO"
+#
+msgid "Iceland"
+msgstr ""
 #
 #
 msgid "Icon"
@@ -1943,6 +2274,16 @@ msgstr "Importera GPX-fil"
 #
 msgid "Important Text Only"
 msgstr "Enbart viktiga text"
+#
+#, fuzzy
+msgid "Incompatible PlugIn detected:\n"
+msgstr "    En modul som inte fungerar i den här programversionen hittades:"
+#
+msgid "India"
+msgstr ""
+#
+msgid "Indonesia"
+msgstr ""
 #
 msgid "Information: Icebreaker waiting area"
 msgstr "Information: Isbrytare på redden"
@@ -1988,6 +2329,15 @@ msgstr "Instruktion: Kontakta VTS vid denna punkt/gränslinje"
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr "Instruktion: Fortsätt inte förbi denna punkt/gränslinje"
 #
+msgid "Iran"
+msgstr ""
+#
+msgid "Iraq"
+msgstr ""
+#
+msgid "Ireland"
+msgstr ""
+#
 #
 msgid "Isol. Dngr"
 msgstr "Isolerad fara"
@@ -1996,18 +2346,54 @@ msgstr "Isolerad fara"
 msgid "Isolated Danger"
 msgstr "Isolerad fara"
 #
+msgid "Israel"
+msgstr ""
+#
+msgid "Italy"
+msgstr ""
+#
+msgid "Jamaica"
+msgstr ""
+#
+msgid "Japan"
+msgstr ""
+#
+msgid "Jordan"
+msgstr ""
+#
 msgid "KML Standard (Google Earth and others)"
 msgstr "Standard KML (för t ex Google Earth)"
 #
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "Utökad KML med extra waypoint-data (för QtVlm)"
 #
+msgid "Kazakhstan"
+msgstr ""
+#
+msgid "Kenya"
+msgstr ""
+#
+msgid "Kerguelen Islands"
+msgstr ""
+#
 #
 msgid "Kilometers"
 msgstr "Kilometer"
 #
+msgid "Kiribati"
+msgstr ""
+#
 msgid "Knots"
 msgstr "Knop"
+#
+msgid "Korea"
+msgstr ""
+#
+msgid "Kuwait"
+msgstr ""
+#
+msgid "Kyrgyz Republic"
+msgstr ""
 #
 #
 msgid "LE/V"
@@ -2024,9 +2410,15 @@ msgstr "LMT & Starta spår"
 msgid "Language"
 msgstr "Språk"
 #
+msgid "Lao People's Dem. Rep."
+msgstr ""
+#
 #
 msgid "Latitude"
 msgstr "Latitud"
+#
+msgid "Latvia"
+msgstr ""
 #
 #
 msgid "Law Enforcement Vessel"
@@ -2075,6 +2467,9 @@ msgstr "Främre ledfyr"
 msgid "Leading Light Rear"
 msgstr "Bakre ledfyr"
 #
+msgid "Lebanon"
+msgstr ""
+#
 #
 #
 #
@@ -2097,9 +2492,22 @@ msgstr "Längd"
 msgid "Length Over All (m)"
 msgstr "Längd över allt (m)"
 #
+msgid "Lesotho"
+msgstr ""
+#
+#, fuzzy
+msgid "Liberia"
+msgstr "Seriell"
+#
+msgid "Libyan Arab Jamahiriya"
+msgstr ""
+#
 #
 msgid "License"
 msgstr "Licens"
+#
+msgid "Liechtenstein"
+msgstr ""
 #
 #
 msgid "Light"
@@ -2165,6 +2573,9 @@ msgstr "Länkar öppnas i datorns webbläsare."
 msgid "List contents"
 msgstr "Visa innehåll"
 #
+msgid "Lithuania"
+msgstr ""
+#
 #
 msgid "Loaded Charts"
 msgstr "Inlästa sjökortsmappar"
@@ -2217,6 +2628,9 @@ msgstr "Lt sect."
 msgid "LtV/Rig"
 msgstr "LtV/Rig"
 #
+msgid "Luxembourg"
+msgstr ""
+#
 #
 msgid "M/T"
 msgstr "M/T"
@@ -2240,9 +2654,36 @@ msgstr "MMSI"
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
 #
+msgid "Macao"
+msgstr ""
+#
+msgid "Macedonia"
+msgstr ""
+#
+msgid "Madagascar"
+msgstr ""
+#
+msgid "Madeira"
+msgstr ""
+#
 #
 msgid "Magenta"
 msgstr "Magenta"
+#
+msgid "Malawi"
+msgstr ""
+#
+msgid "Malaysia"
+msgstr ""
+#
+msgid "Maldives"
+msgstr ""
+#
+msgid "Mali"
+msgstr ""
+#
+msgid "Malta"
+msgstr ""
 #
 #
 msgid "Mariner's Standard"
@@ -2265,6 +2706,18 @@ msgstr "Markera AIS-fartyg som borttappade efter (min)"
 #
 msgid "Marks"
 msgstr "Waypoints"
+#
+msgid "Marshall Islands"
+msgstr ""
+#
+msgid "Martinique"
+msgstr ""
+#
+msgid "Mauritania"
+msgstr ""
+#
+msgid "Mauritius"
+msgstr ""
 #
 #
 msgid "Max Detail Here"
@@ -2289,6 +2742,9 @@ msgstr "Sjuktransport"
 msgid "Medium"
 msgstr "Medium"
 #
+msgid "Menu"
+msgstr ""
+#
 #
 msgid "Mercator"
 msgstr "Mercator"
@@ -2304,6 +2760,12 @@ msgstr "Slå samman waypoints?"
 #
 msgid "Meters"
 msgstr "Meter"
+#
+msgid "Mexico"
+msgstr ""
+#
+msgid "Micronesia"
+msgstr ""
 #
 #
 msgid "Mil/V"
@@ -2322,9 +2784,27 @@ msgstr "Övriga inställningar"
 msgid "MoTwilight"
 msgstr "Gryning"
 #
+msgid "Moldova"
+msgstr ""
+#
+msgid "Monaco"
+msgstr ""
+#
+msgid "Mongolia"
+msgstr ""
+#
+msgid "Montenegro"
+msgstr ""
+#
+msgid "Montserrat"
+msgstr ""
+#
 #
 msgid "Moored"
 msgstr "Förtöjd"
+#
+msgid "Morocco"
+msgstr ""
 #
 #
 msgid "Move Boat Here"
@@ -2334,8 +2814,14 @@ msgstr "Flytta båten hit"
 msgid "Move Waypoint"
 msgstr "Flytta waypoint"
 #
+msgid "Mozambique"
+msgstr ""
+#
 msgid "Mph"
 msgstr "Mph"
+#
+msgid "Myanmar"
+msgstr ""
 #
 msgid "NMEA"
 msgstr "NMEA"
@@ -2353,8 +2839,14 @@ msgstr "NM"
 msgid "Name"
 msgstr "Namn"
 #
+msgid "Namibia"
+msgstr ""
+#
 msgid "National text on chart"
 msgstr "Nationell text på sjökort"
+#
+msgid "Nauru"
+msgstr ""
 #
 #
 msgid "Nautical Miles"
@@ -2377,8 +2869,17 @@ msgstr "Starta navigering hit"
 msgid "Navigate To This"
 msgstr "Navigera till denna"
 #
+msgid "Nepal"
+msgstr ""
+#
+msgid "Netherlands"
+msgstr ""
+#
 msgid "Network"
 msgstr "Nätverk"
+#
+msgid "New Caledonia"
+msgstr ""
 #
 #
 msgid "New Chart Group"
@@ -2387,12 +2888,28 @@ msgstr "Ny sjökortsbunt"
 msgid "New Group..."
 msgstr "Ny bunt..."
 #
+msgid "New Zealand"
+msgstr ""
+#
 #
 msgid "Next tide event"
 msgstr "Nästa tidvatten"
 #
+msgid "Nicaragua"
+msgstr ""
+#
+msgid "Niger"
+msgstr ""
+#
+#, fuzzy
+msgid "Nigeria"
+msgstr "Seriell"
+#
 msgid "Nighttime"
 msgstr "Nattetid"
+#
+msgid "Niue"
+msgstr ""
 #
 #
 msgid "No CPA Calculation if target range is greater than (NMi)"
@@ -2433,6 +2950,12 @@ msgstr "Ingen"
 msgid "North Up Mode"
 msgstr "Visa Norr uppåt"
 #
+msgid "Northern Mariana Islands"
+msgstr ""
+#
+msgid "Norway"
+msgstr ""
+#
 #
 msgid "Not Under Command"
 msgstr "Ej manöverfärdig"
@@ -2459,6 +2982,9 @@ msgstr "Ok"
 #
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "Gammal loggfil kommer att namnändras till opencpn.log.log"
+#
+msgid "Oman"
+msgstr ""
 #
 #
 msgid "OpenCPN Alert"
@@ -2578,8 +3104,30 @@ msgid "PC/V"
 msgstr "PC/V"
 #
 #
+#, fuzzy
+msgid "Pakistan"
+msgstr "Distans"
+#
+msgid "Palau"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Palestine"
+msgstr "Testar"
+#
+msgid "Panama"
+msgstr ""
+#
+#
 msgid "Paper Chart"
 msgstr "Tryckt sjökort"
+#
+msgid "Papua New Guinea"
+msgstr ""
+#
+msgid "Paraguay"
+msgstr ""
 #
 #
 msgid "Parameters"
@@ -2605,9 +3153,21 @@ msgstr "Klistra in spår"
 msgid "Paste Waypoint"
 msgstr "Klistra in waypoint"
 #
+msgid "People's Rep. of Korea"
+msgstr ""
+#
+msgid "Peru"
+msgstr ""
+#
+msgid "Philippines"
+msgstr ""
+#
 #
 msgid "Pilot Vessel"
 msgstr "Lots"
+#
+msgid "Pitcairn Island"
+msgstr ""
 #
 #
 msgid "Plain"
@@ -2659,6 +3219,10 @@ msgstr ""
 " Denna version kan vara instabil och kommer inte att laddas.\n"
 " Vänligen uppgradera modulen på webbplatsen opencpn.org."
 #
+#, c-format
+msgid "PlugIn [ %s ] version %i.%i"
+msgstr ""
+#
 #
 msgid "Plugins"
 msgstr "Moduler"
@@ -2666,6 +3230,9 @@ msgstr "Moduler"
 #
 msgid "Points"
 msgstr "Utseende"
+#
+msgid "Poland"
+msgstr ""
 #
 #
 msgid "Pollution Control Vessel"
@@ -2690,6 +3257,11 @@ msgstr "Märke, babords hand"
 #
 msgid "Port Tender"
 msgstr "Hamnuppsyn"
+#
+#
+#, fuzzy
+msgid "Portugal"
+msgstr "Hamn"
 #
 #
 msgid "Position"
@@ -2765,6 +3337,12 @@ msgstr "&Egenskaper..."
 msgid "Protocol"
 msgstr "Protokoll"
 #
+msgid "Puerto Rico"
+msgstr ""
+#
+msgid "Qatar"
+msgstr ""
+#
 #
 msgid "Question"
 msgstr "Fråga"
@@ -2797,6 +3375,9 @@ msgstr "Skalenlig vektorbild"
 #
 msgid "Real(Off Position)"
 msgstr "Faktisk (utanför position)"
+#
+msgid "Rebuild Texture Cache"
+msgstr ""
 #
 #
 msgid "Rebuilding chart database from configuration file entries..."
@@ -2935,6 +3516,9 @@ msgstr "Hämtar inställning för sjökortsmappar från Windows Registry"
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Hämtar språkinställning från Windows Registry"
 #
+msgid "Reunion"
+msgstr ""
+#
 #
 msgid "Reverse..."
 msgstr "Reversera rutt..."
@@ -2953,6 +3537,9 @@ msgstr "Falskt eller misstänkt fartyg"
 #
 msgid "Rollover"
 msgstr "\"Rulla över\""
+#
+msgid "Romania"
+msgstr ""
 #
 #
 msgid "Route"
@@ -2999,6 +3586,12 @@ msgstr "Rutt/Beninformation \"Rulla över\""
 msgid "Routes"
 msgstr "Rutter"
 #
+msgid "Russian"
+msgstr ""
+#
+msgid "Rwanda"
+msgstr ""
+#
 #
 msgid "S/V"
 msgstr "S/V"
@@ -3040,6 +3633,36 @@ msgstr "Säkert djup"
 #
 msgid "Sailing Vessel"
 msgstr "Segelbåt"
+#
+msgid "Saint Helena"
+msgstr ""
+#
+msgid "Saint Kitts and Nevis"
+msgstr ""
+#
+msgid "Saint Lucia"
+msgstr ""
+#
+msgid "Saint Paul"
+msgstr ""
+#
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+#
+msgid "Saint Vincent and the Grenadines"
+msgstr ""
+#
+msgid "Samoa"
+msgstr ""
+#
+msgid "San Marino"
+msgstr ""
+#
+msgid "Sao Tome and Principe"
+msgstr ""
+#
+msgid "Saudi Arabia"
+msgstr ""
 #
 #
 #, c-format
@@ -3118,8 +3741,19 @@ msgid "Send to GPS"
 msgstr "Skicka till GPS"
 #
 #
+#, fuzzy
+msgid "Send to new GPS"
+msgstr "Skicka till GPS"
+#
+msgid "Senegal"
+msgstr ""
+#
+#
 msgid "Sentence Filter"
 msgstr "Kommandofilter"
+#
+msgid "Serbia"
+msgstr ""
 #
 msgid "Serial"
 msgstr "Seriell"
@@ -3135,6 +3769,9 @@ msgstr "Aktivera"
 #
 msgid "Set Anchor Watch"
 msgstr "Aktivera ankarvakt"
+#
+msgid "Seychelles"
+msgstr ""
 #
 #
 msgid "Shallow Depth"
@@ -3312,9 +3949,21 @@ msgstr "Visa fartygsspår, med längd (min):"
 msgid "Shows the font preview."
 msgstr "Förhandsgranska teckensnitt."
 #
+msgid "Sierra Leone"
+msgstr ""
+#
 #
 msgid "Simplified"
 msgstr "Förenklat"
+#
+msgid "Singapore"
+msgstr ""
+#
+msgid "Slovak Republic"
+msgstr ""
+#
+msgid "Slovenia"
+msgstr ""
 #
 #
 msgid "Smooth Panning / Zooming"
@@ -3330,6 +3979,21 @@ msgstr "SoG"
 #
 msgid "Solid"
 msgstr "Fylld"
+#
+msgid "Solomon Islands"
+msgstr ""
+#
+msgid "Somali Democratic Republic"
+msgstr ""
+#
+msgid "South Africa"
+msgstr ""
+#
+msgid "South Sudan (Republic of)"
+msgstr ""
+#
+msgid "Spain"
+msgstr ""
 #
 #
 msgid "Spare"
@@ -3362,6 +4026,9 @@ msgstr "Dela rutt"
 #
 msgid "Split Track"
 msgstr "Dela spår"
+#
+msgid "Sri Lanka"
+msgstr ""
 #
 #
 msgid "Standard"
@@ -3401,6 +4068,9 @@ msgstr "Textstil"
 msgid "Style:"
 msgstr "Textstil:"
 #
+msgid "Sudan"
+msgstr ""
+#
 msgid "Sunrise"
 msgstr "Soluppgång"
 #
@@ -3411,9 +4081,24 @@ msgstr "Solnedgång"
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Larma inte för ankrade/förtöjda fartyg"
 #
+msgid "Suriname"
+msgstr ""
+#
+msgid "Swaziland"
+msgstr ""
+#
+msgid "Sweden"
+msgstr ""
+#
+msgid "Switzerland"
+msgstr ""
+#
 #
 msgid "Symbolized"
 msgstr "Med symboler"
+#
+msgid "Syrian Arab Republic"
+msgstr ""
 #
 #
 msgid "TCP"
@@ -3423,9 +4108,15 @@ msgstr "TCP"
 msgid "TCPA"
 msgstr "TCPA"
 #
+msgid "Taiwan"
+msgstr ""
+#
 #
 msgid "Tanker"
 msgstr "Tanker"
+#
+msgid "Tanzania"
+msgstr ""
 #
 #
 msgid "Target Count"
@@ -3474,6 +4165,9 @@ msgid "Texture Compression Caching"
 msgstr ""
 #
 msgid "Texture Memory Size (MB)"
+msgstr ""
+#
+msgid "Thailand"
 msgstr ""
 #
 msgid ""
@@ -3628,6 +4322,12 @@ msgstr "Visa båtens spår"
 msgid "Toggle track"
 msgstr "Visa/dölj spår"
 #
+msgid "Togolese Republic"
+msgstr ""
+#
+msgid "Tonga"
+msgstr ""
+#
 #
 msgid "ToolTips"
 msgstr "Verktygstips"
@@ -3694,6 +4394,9 @@ msgstr "Transverse Mercator"
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "Behandla WPL-meningar som APRS positionsrapporter"
 #
+msgid "Trinidad and Tobago"
+msgstr ""
+#
 #
 msgid "Trk"
 msgstr "Spår"
@@ -3702,8 +4405,23 @@ msgstr "Spår"
 msgid "Tug"
 msgstr "Bogserbåt"
 #
+msgid "Tunisia"
+msgstr ""
+#
+msgid "Turkey"
+msgstr ""
+#
+msgid "Turkmenistan"
+msgstr ""
+#
+msgid "Turks and Caicos Islands"
+msgstr ""
+#
 msgid "Turn Rate"
 msgstr "Girhastighet"
+#
+msgid "Tuvalu"
+msgstr ""
 #
 #
 msgid "Type"
@@ -3718,6 +4436,12 @@ msgstr "URL"
 #
 msgid "UTC"
 msgstr "UTC"
+#
+msgid "Uganda"
+msgstr ""
+#
+msgid "Ukraine"
+msgstr ""
 #
 #
 msgid "Undefined"
@@ -3738,6 +4462,15 @@ msgstr "Under gång"
 msgid "Undo"
 msgstr "Ångra"
 #
+msgid "United Arab Emirates"
+msgstr ""
+#
+msgid "United States Virgin Islands"
+msgstr ""
+#
+msgid "United States of America"
+msgstr ""
+#
 #
 msgid "Unk"
 msgstr "Okänd"
@@ -3757,6 +4490,9 @@ msgstr "Odefinierad"
 #
 msgid "Update Control"
 msgstr "Inställning för uppdatering"
+#
+msgid "Uruguay"
+msgstr ""
 #
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Använd hårdvarugrafik (OpenGL)"
@@ -3799,13 +4535,25 @@ msgstr "Anpassad Y-korrektion"
 msgid "User Y Offset (Metres)"
 msgstr "Anpassad Y-korrektion (Meter)"
 #
+msgid "Uzbekistan"
+msgstr ""
+#
 #
 msgid "VTS active target"
 msgstr "VTS aktivt mål"
 #
+msgid "Vanuatu"
+msgstr ""
+#
+msgid "Vatican City State"
+msgstr ""
+#
 #
 msgid "Vector Charts"
 msgstr "Vektorsjökort"
+#
+msgid "Venezuela"
+msgstr ""
 #
 #
 msgid "Vessel Diving"
@@ -3830,6 +4578,9 @@ msgstr "Bogserbåt, lång"
 msgid "Vessel requesting non-distress assistance"
 msgstr "Fartyg som begär assistans (ej nöd)"
 #
+msgid "Viet Nam"
+msgstr ""
+#
 #
 msgid "Virtual"
 msgstr "Virtuell"
@@ -3848,6 +4599,9 @@ msgstr "Synliga verktyg"
 #
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV filer (*.wav)|*.wav|Alla filer (*.*)|*.*"
+#
+msgid "Wallis and Futuna Islands"
+msgstr ""
 #
 #
 msgid "Warn if CPA less than (NMi)"
@@ -3949,6 +4703,9 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Gul"
 #
+msgid "Yemen"
+msgstr ""
+#
 msgid "Yes, hide it."
 msgstr "Ja, dölj den."
 #
@@ -3979,6 +4736,12 @@ msgstr "Det krävs en address."
 #
 msgid "You must select or enter the port..."
 msgstr "En port måste väljas eller anges manuellt"
+#
+msgid "Zambia"
+msgstr ""
+#
+msgid "Zimbabwe"
+msgstr ""
 #
 #
 msgid "Zoom In"
@@ -4080,6 +4843,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid " </b>in<b> "
 #~ msgstr " </b>om<b> "
 #
@@ -4088,8 +4852,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid " is %5g"
 #~ msgstr "är %5g"
+#
 #
 #
 #
@@ -4112,8 +4878,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "Exportera spår..."
+#
 #
 #
 #
@@ -4136,6 +4904,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "&Silence Alert"
 #~ msgstr "&Tysta Larm"
 #
@@ -4147,8 +4916,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid ", Out: None"
 #~ msgstr ", Ut: Ingen"
+#
 #
 #
 #
@@ -4171,8 +4942,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "AISTargetAlert"
 #~ msgstr "AIS varning"
+#
 #
 #
 #
@@ -4195,6 +4968,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "Bulktransportfartyg"
 #
@@ -4207,8 +4981,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Bunkership"
 #~ msgstr "Bunkerfartyg"
+#
 #
 #
 #
@@ -4240,8 +5016,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Copy"
 #~ msgstr "Kopiera"
+#
 #
 #
 #
@@ -4264,8 +5042,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Data Source :"
 #~ msgstr "NMEA datakälla:"
+#
 #
 #
 #
@@ -4292,8 +5072,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "E&xportera alla..."
+#
 #
 #
 #
@@ -4316,8 +5098,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Fast ship"
 #~ msgstr "Snabbgående fartyg"
+#
 #
 #
 #
@@ -4340,8 +5124,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Fishing boat"
 #~ msgstr "Fiskebåt"
+#
 #
 #
 #
@@ -4364,8 +5150,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "Fraktpråm med containers"
+#
 #
 #
 #
@@ -4388,8 +5176,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "Maritimt lastfartyg"
+#
 #
 #
 #
@@ -4412,8 +5202,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Hydrofoil"
 #~ msgstr "Bärplansbåt"
+#
 #
 #
 #
@@ -4436,8 +5228,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "In: None"
 #~ msgstr "In: Ingen"
+#
 #
 #
 #
@@ -4470,8 +5264,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "LW"
 #~ msgstr "LW"
+#
 #
 #
 #
@@ -4494,8 +5290,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Liquified gas tanker"
 #~ msgstr "Tankfartyg, flytande gas"
+#
 #
 #
 #
@@ -4516,8 +5314,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Message filtered and dropped"
 #~ msgstr "Kommandot bortfiltrerat"
+#
 #
 #
 #
@@ -4540,8 +5340,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor freighter pushing at least one tank-ship"
 #~ msgstr "Motordrivet fraktfartyg påskjutande minst en tanker"
+#
 #
 #
 #
@@ -4564,8 +5366,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor freighter with one or more ships alongside"
 #~ msgstr "Motordrivet fraktfartyg med ett eller flera fartyg vid sidan"
+#
 #
 #
 #
@@ -4588,8 +5392,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor freighter, tug"
 #~ msgstr "Motordrivet fraktfartyg, bogserbåt"
+#
 #
 #
 #
@@ -4612,8 +5418,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Motordriven tanker, torrlast som om vätska (t.ex. cement)"
+#
 #
 #
 #
@@ -4636,8 +5444,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "Motordriven tanker, flytande last, typ N"
+#
 #
 #
 #
@@ -4659,8 +5469,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "NMEA Debug Window"
 #~ msgstr "NMEA Datafönster"
+#
 #
 #
 #
@@ -4682,8 +5494,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "No"
 #~ msgstr "Nej"
+#
 #
 #
 #
@@ -4706,8 +5520,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Object, towed, not otherwise specified"
 #~ msgstr "Objekt under bogsering, ej specificerad ytterligare"
+#
 #
 #
 #
@@ -4728,13 +5544,16 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Out"
 #~ msgstr "Utdata"
 #
 #
+#
 #~ msgid "Output"
 #~ msgstr "Utdata"
+#
 #
 #
 #
@@ -4757,8 +5576,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Passenger ship without accomodation"
 #~ msgstr "Passagerarfartyg utan logi"
+#
 #
 #
 #
@@ -4780,8 +5601,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pause"
 #~ msgstr "Pause"
+#
 #
 #
 #
@@ -4804,8 +5627,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "Fritidsfartyg, längd över 20 meter"
+#
 #
 #
 #
@@ -4828,8 +5653,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Prev"
 #~ msgstr "Föregående"
+#
 #
 #
 #
@@ -4852,8 +5679,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "Påskjutande bogserbåt, ensam"
+#
 #
 #
 #
@@ -4877,8 +5706,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "Påskjutande bogserbåt, åtta lastpråmar"
+#
 #
 #
 #
@@ -4901,8 +5732,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "Påskjutande bogserbåt, fem lastpråmar"
+#
 #
 #
 #
@@ -4926,6 +5759,7 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "Påskjutande bogserbåt, fyra lastpråmar"
 #
@@ -4938,8 +5772,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "Påskjutande bogserbåt, nio eller fler lastpråmar"
+#
 #
 #
 #
@@ -4964,8 +5800,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "Påskjutande bogserbåt, en lastpråm"
+#
 #
 #
 #
@@ -4988,8 +5826,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, seven barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, sju lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -5012,8 +5852,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, six barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, sex lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -5036,8 +5878,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, three barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, tre lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -5060,8 +5904,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr "Påskjutande bogserbåt, två lastpråmar varav minst en tanker-/gaspråm"
+#
 #
 #
 #
@@ -5084,8 +5930,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Red cross ship"
 #~ msgstr "Röda korset-fartyg"
+#
 #
 #
 #
@@ -5113,8 +5961,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "RenderHPGL: The '%s' instruction is not implemented."
 #~ msgstr "RenderHPGL: Instruktionen '%s' stödjs inte och har hoppats över."
+#
 #
 #
 #
@@ -5136,8 +5986,10 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #~ msgid "Send"
 #~ msgstr "Skicka"
+#
 #
 #
 #
@@ -5163,9 +6015,11 @@ msgstr "Webbsida för wxFB"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "Skicka till GPS"
+#
 #
 #
 #

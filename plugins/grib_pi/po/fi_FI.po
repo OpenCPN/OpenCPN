@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.2.1111\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2010-12-09 22:34+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaite@netti.fi>\n"
@@ -362,6 +362,9 @@ msgstr ""
 msgid "Mean Sea Level Pressure (MSLP)"
 msgstr "Ilampaine, mbar"
 #
+msgid "Menu"
+msgstr ""
+#
 msgid "Meters"
 msgstr ""
 #
@@ -396,6 +399,9 @@ msgid "Overlay Transparency"
 msgstr ""
 #
 msgid "OverlayMap"
+msgstr ""
+#
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
 msgstr ""
 #
 msgid "Overlays too wide and can't be displayed:"
@@ -573,11 +579,6 @@ msgstr ""
 #, fuzzy
 msgid "Temperature"
 msgstr "Meriveden pintalämpötila, C"
-#
-msgid ""
-"The Grib file you are opening contains a moving Grib Zone.\n"
-"Interpolation is not supported for this type of file"
-msgstr ""
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -783,9 +784,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "GRIB Data"
+#
 #
 #
 #
@@ -807,8 +810,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -853,9 +858,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB pintalämpötilan"
+#
 #
 #
 #
@@ -881,9 +888,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB virtatiedot"
+#
 #
 #
 #
@@ -907,9 +916,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi GRIB sadetiedon"
+#
 #
 #
 #, fuzzy
@@ -936,9 +947,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB asetukset"
+#
 #
 #
 #
@@ -1006,8 +1019,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "VAROITUS:  QuickScat GRIB data on %d tuntia vanhaa."
+#
 #
 #
 #
@@ -1021,6 +1036,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Tuulen suunta"
+#
 #
 #
 #

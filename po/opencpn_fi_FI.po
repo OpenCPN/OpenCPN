@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.622\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2010-12-09 22:35+0200\n"
 "Last-Translator: Asko Laite <alaite@netti.fi>\n"
 "Language-Team: Asko Laite <alaiet@netti.fi>\n"
@@ -17,6 +17,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Finnish\n"
 "X-Poedit-Country: FINLAND\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+#, fuzzy
+msgid ""
+"\n"
+"\n"
+msgstr "\n"
 #
 msgid ""
 "\n"
@@ -223,6 +255,9 @@ msgstr "Päivitetty:"
 msgid " for details."
 msgstr ""
 #
+msgid " is incompatible with this version of OpenCPN."
+msgstr ""
+#
 msgid ""
 " shorter than rhumbline.\n"
 "\n"
@@ -398,6 +433,9 @@ msgstr ""
 #, fuzzy
 msgid "(unnamed)"
 msgstr "(Nimeämätön reitti)"
+#
+msgid ", and all previous versions,"
+msgstr ""
 #
 #
 #
@@ -767,7 +805,13 @@ msgstr ""
 msgid "Address"
 msgstr ""
 #
+msgid "Adelie Land"
+msgstr ""
+#
 msgid "Advanced"
+msgstr ""
+#
+msgid "Afghanistan"
 msgstr ""
 #
 # 
@@ -787,6 +831,15 @@ msgid "Aid to Navigation"
 msgstr ""
 "Aid to Navigation\n"
 "\n"
+#
+msgid "Alaska"
+msgstr ""
+#
+msgid "Albania"
+msgstr ""
+#
+msgid "Algeria"
+msgstr ""
 #
 msgid "All"
 msgstr ""
@@ -814,6 +867,9 @@ msgstr "Kartat"
 #, fuzzy
 msgid "Altitude"
 msgstr "Leveyspiiri"
+#
+msgid "American Samoa"
+msgstr ""
 #
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -844,10 +900,25 @@ msgstr ""
 msgid "Anchorage created "
 msgstr ""
 #
+msgid "Andorra"
+msgstr ""
+#
+msgid "Angola"
+msgstr ""
+#
+msgid "Anguilla"
+msgstr ""
+#
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr ""
 #
 msgid "Answering 'No' will create all new waypoints for this route."
+msgstr ""
+#
+msgid "Antigua and Barbuda"
+msgstr ""
+#
+msgid "Antilles"
 msgstr ""
 #
 # 
@@ -903,6 +974,18 @@ msgstr "Haluatko varmasti poistaa KAIKKI jäljet?"
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "Haluatko varmasti poistaa KAIKKI kiintopisteet?"
 #
+msgid "Argentine Republic"
+msgstr ""
+#
+msgid "Armenia"
+msgstr ""
+#
+msgid "Aruba"
+msgstr ""
+#
+msgid "Ascension Island"
+msgstr ""
+#
 # 
 # 
 msgid "Assumed 1 Mile Point"
@@ -922,6 +1005,12 @@ msgstr "Aseta ankkurivahti"
 msgid "AtoN"
 msgstr "AToN"
 #
+msgid "Australia"
+msgstr ""
+#
+msgid "Austria"
+msgstr ""
+#
 # 
 # 
 msgid "Authors"
@@ -932,12 +1021,21 @@ msgstr "Tekijät"
 msgid "Auto Follow"
 msgstr "Automaattiseuranta"
 #
+msgid "AutoSort"
+msgstr ""
+#
 # 
 # 
 msgid "Automatic Daily Tracks"
 msgstr ""
 #
 msgid "Avg. speed"
+msgstr ""
+#
+msgid "Azerbaijani Republic"
+msgstr ""
+#
+msgid "Azores"
 msgstr ""
 #
 #
@@ -949,6 +1047,18 @@ msgstr ""
 # 
 msgid "B"
 msgstr "B"
+#
+msgid "Bahamas"
+msgstr ""
+#
+msgid "Bahrain"
+msgstr ""
+#
+msgid "Bangladesh"
+msgstr ""
+#
+msgid "Barbados"
+msgstr ""
 #
 # 
 # 
@@ -1024,6 +1134,24 @@ msgstr "Suuntima"
 msgid "Bearing (M)"
 msgstr "Suuntima"
 #
+msgid "Belarus"
+msgstr ""
+#
+msgid "Belgium"
+msgstr ""
+#
+msgid "Belize"
+msgstr ""
+#
+msgid "Benin"
+msgstr ""
+#
+msgid "Bermuda"
+msgstr ""
+#
+msgid "Bhutan"
+msgstr ""
+#
 # 
 msgid "Black"
 msgstr ""
@@ -1035,10 +1163,22 @@ msgstr ""
 msgid "Blue"
 msgstr ""
 #
+msgid "Bolivia"
+msgstr ""
+#
+msgid "Bosnia and Herzegovina"
+msgstr ""
+#
+msgid "Botswana"
+msgstr ""
+#
 # 
 # 
 msgid "Boundaries"
 msgstr "Rajat"
+#
+msgid "Brazil"
+msgstr ""
 #
 #
 #
@@ -1049,10 +1189,25 @@ msgstr "Rajat"
 msgid "Brg"
 msgstr "Suuntima"
 #
+msgid "British Virgin Islands"
+msgstr ""
+#
+msgid "Brunei Darussalam"
+msgstr ""
+#
 msgid "Buddy"
 msgstr ""
 #
+msgid "Bulgaria"
+msgstr ""
+#
 msgid "Buoy/Light Labels"
+msgstr ""
+#
+msgid "Burkina Faso"
+msgstr ""
+#
+msgid "Burundi"
 msgstr ""
 #
 # 
@@ -1110,12 +1265,24 @@ msgstr "CPA/TCPA-hälytykset"
 msgid "Call"
 msgstr "Kutsu"
 #
+msgid "Cambodia"
+msgstr ""
+#
+msgid "Cameroon"
+msgstr ""
+#
+msgid "Canada"
+msgstr ""
+#
 # 
 # 
 msgid "Cancel"
 msgstr "Peruuta"
 #
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
+msgstr ""
+#
+msgid "Cape Verde"
 msgstr ""
 #
 # 
@@ -1249,6 +1416,9 @@ msgstr ""
 msgid "Caution Area: Underwater vehicle operation"
 msgstr ""
 #
+msgid "Cayman Islands"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -1264,6 +1434,12 @@ msgid "Center View"
 msgstr ""
 #
 msgid "Center View..."
+msgstr ""
+#
+msgid "Central African Republic"
+msgstr ""
+#
+msgid "Chad"
 msgstr ""
 #
 # 
@@ -1359,6 +1535,12 @@ msgstr "Kartat"
 msgid "Charts"
 msgstr "Kartat"
 #
+msgid "Chile"
+msgstr ""
+#
+msgid "China"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -1374,6 +1556,9 @@ msgid "Choose Format for Copy"
 msgstr ""
 #
 msgid "Choose a file"
+msgstr ""
+#
+msgid "Christmas Island"
 msgstr ""
 #
 #
@@ -1406,6 +1591,9 @@ msgstr "Poista kaikki"
 msgid "Clear Anchor Watch"
 msgstr "Poista ankkurivahti"
 #
+msgid "Clear Texture Cache"
+msgstr ""
+#
 msgid "Clearance granted - proceed to berth"
 msgstr ""
 #
@@ -1433,6 +1621,15 @@ msgstr "Sulje"
 msgid "CoG"
 msgstr "COG"
 #
+msgid "Cocos"
+msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "Colombia"
+msgstr "&Väri:"
+#
 # 
 # 
 #, fuzzy
@@ -1453,7 +1650,29 @@ msgstr "Värit"
 msgid "Combo!"
 msgstr ""
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+#, fuzzy
+msgid "Comoros"
+msgstr "Huomenna"
+#
+msgid "Comoros (Union of the)"
+msgstr ""
+#
 msgid "Confirm deletion of tracks and routes"
+msgstr ""
+#
+msgid "Congo"
 msgstr ""
 #
 # 
@@ -1486,6 +1705,9 @@ msgstr ""
 msgid "Control checksum"
 msgstr ""
 #
+msgid "Cook Islands"
+msgstr ""
+#
 msgid "Copy As KML"
 msgstr ""
 #
@@ -1499,6 +1721,9 @@ msgid "Copy as KML"
 msgstr ""
 #
 msgid "Copy as KML..."
+msgstr ""
+#
+msgid "Costa Rica"
 msgstr ""
 #
 # 
@@ -1544,6 +1769,15 @@ msgstr "Poista kiintopiste"
 msgid "Create Waypoint"
 msgstr "Poista kiintopiste"
 #
+msgid "Croatia"
+msgstr ""
+#
+msgid "Crozet Archipelago"
+msgstr ""
+#
+msgid "Cuba"
+msgstr ""
+#
 #
 #
 #
@@ -1564,6 +1798,15 @@ msgstr "Virta"
 #, fuzzy
 msgid "Cyan"
 msgstr "Peruuta"
+#
+msgid "Cyprus"
+msgstr ""
+#
+msgid "Czech Republic"
+msgstr ""
+#
+msgid "CÃ´te d'Ivoire"
+msgstr ""
 #
 # 
 # 
@@ -1698,6 +1941,12 @@ msgstr "Poista kiintopiste"
 #, fuzzy
 msgid "Delete..."
 msgstr "&Poista"
+#
+msgid "Dem Rep.of the Congo"
+msgstr ""
+#
+msgid "Denmark"
+msgstr ""
 #
 # 
 # 
@@ -1841,9 +2090,21 @@ msgstr ""
 msgid "Distress Area: Vessel under assault"
 msgstr ""
 #
+# 
+# 
+#, fuzzy
+msgid "Djibouti"
+msgstr "Ohjelmatietoja"
+#
 msgid ""
 "Do you also want to make the shared waypoints being part of this route "
 "invisible?"
+msgstr ""
+#
+msgid "Dominica"
+msgstr ""
+#
+msgid "Dominican Republic"
 msgstr ""
 #
 # 
@@ -1901,7 +2162,16 @@ msgstr ""
 msgid "ETE/ETD"
 msgstr ""
 #
+msgid "Ecuador"
+msgstr ""
+#
 msgid "Edit"
+msgstr ""
+#
+msgid "Egypt"
+msgstr ""
+#
+msgid "El Salvador"
 msgstr ""
 #
 # 
@@ -1977,6 +2247,12 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr ""
 #
+msgid "Equatorial Guinea"
+msgstr ""
+#
+msgid "Eritrea"
+msgstr ""
+#
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr ""
 #
@@ -1989,6 +2265,12 @@ msgstr ""
 # 
 # 
 msgid "Estimated time : "
+msgstr ""
+#
+msgid "Estonia"
+msgstr ""
+#
+msgid "Ethiopia"
 msgstr ""
 #
 msgid "EvTwilight"
@@ -2053,6 +2335,12 @@ msgstr ""
 msgid "Failed to initialize the user interface. "
 msgstr ""
 #
+msgid "Falkland Islands"
+msgstr ""
+#
+msgid "Faroe Islands"
+msgstr ""
+#
 # 
 # 
 msgid "Fathoms"
@@ -2062,6 +2350,9 @@ msgstr "Sylit"
 # 
 msgid "Feet"
 msgstr "Jalat"
+#
+msgid "Fiji"
+msgstr ""
 #
 # 
 # 
@@ -2077,6 +2368,9 @@ msgstr ""
 msgid "Filters"
 msgstr "&kilometriä"
 #
+msgid "Finland"
+msgstr ""
+#
 # 
 # 
 msgid "Fix.Struct."
@@ -2085,6 +2379,9 @@ msgstr ""
 # 
 # 
 msgid "Fixed Structure"
+msgstr ""
+#
+msgid "Flag"
 msgstr ""
 #
 msgid "Fonts"
@@ -2099,6 +2396,15 @@ msgid "Force Full Database Rebuild"
 msgstr "Pakota tietokannan päivitys"
 #
 msgid "Format uploads for Furuno GP3X"
+msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "France"
+msgstr "Peruuta"
+#
+msgid "French Polynesia"
 msgstr ""
 #
 msgid "From"
@@ -2153,6 +2459,12 @@ msgstr "GPX"
 msgid "GUID"
 msgstr ""
 #
+msgid "Gabonese Republic"
+msgstr ""
+#
+msgid "Gambia"
+msgstr ""
+#
 #
 # 
 # 
@@ -2166,6 +2478,18 @@ msgstr "AIS yleiset"
 msgid "General Options"
 msgstr "Käyttöliittymäasetukset"
 #
+msgid "Georgia"
+msgstr ""
+#
+msgid "Germany"
+msgstr ""
+#
+msgid "Ghana"
+msgstr ""
+#
+msgid "Gibraltar"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -2175,16 +2499,49 @@ msgstr "Mene tänne"
 msgid "GpsGate Buddy"
 msgstr ""
 #
+msgid "Great Britain"
+msgstr ""
+#
+msgid "Greece"
+msgstr ""
+#
 # 
 msgid "Green"
+msgstr ""
+#
+msgid "Greenland"
+msgstr ""
+#
+msgid "Grenada"
 msgstr ""
 #
 msgid "Group \""
 msgstr ""
 #
+msgid "Guadeloupe"
+msgstr ""
+#
+msgid "Guatemala"
+msgstr ""
+#
+msgid "Guiana"
+msgstr ""
+#
+msgid "Guinea"
+msgstr ""
+#
+msgid "Guinea-Bissau"
+msgstr ""
+#
+msgid "Guyana"
+msgstr ""
+#
 # 
 # 
 msgid "HSC"
+msgstr ""
+#
+msgid "Haiti"
 msgstr ""
 #
 msgid "Heading"
@@ -2257,6 +2614,15 @@ msgstr ""
 msgid "Highlight Tracks"
 msgstr "Näytä maalijälki"
 #
+msgid "Honduras"
+msgstr ""
+#
+msgid "Hong Kong"
+msgstr ""
+#
+msgid "Hungary"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -2264,6 +2630,9 @@ msgid "I&mport GPX..."
 msgstr "&Tuo..."
 #
 msgid "IMO"
+msgstr ""
+#
+msgid "Iceland"
 msgstr ""
 #
 # 
@@ -2290,6 +2659,15 @@ msgstr "Tuo GPX-tiedosto"
 #, fuzzy
 msgid "Important Text Only"
 msgstr "Näytä vain tärkeät tekstit"
+#
+msgid "Incompatible PlugIn detected:\n"
+msgstr ""
+#
+msgid "India"
+msgstr ""
+#
+msgid "Indonesia"
+msgstr ""
 #
 msgid "Information: Icebreaker waiting area"
 msgstr ""
@@ -2330,6 +2708,15 @@ msgstr ""
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr ""
 #
+msgid "Iran"
+msgstr ""
+#
+msgid "Iraq"
+msgstr ""
+#
+msgid "Ireland"
+msgstr ""
+#
 # 
 # 
 msgid "Isol. Dngr"
@@ -2341,10 +2728,34 @@ msgstr ""
 msgid "Isolated Danger"
 msgstr "Reitinkäsittely"
 #
+msgid "Israel"
+msgstr ""
+#
+msgid "Italy"
+msgstr ""
+#
+msgid "Jamaica"
+msgstr ""
+#
+msgid "Japan"
+msgstr ""
+#
+msgid "Jordan"
+msgstr ""
+#
 msgid "KML Standard (Google Earth and others)"
 msgstr ""
 #
 msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
+#
+msgid "Kazakhstan"
+msgstr ""
+#
+msgid "Kenya"
+msgstr ""
+#
+msgid "Kerguelen Islands"
 msgstr ""
 #
 # 
@@ -2353,7 +2764,19 @@ msgstr ""
 msgid "Kilometers"
 msgstr "&kilometriä"
 #
+msgid "Kiribati"
+msgstr ""
+#
 msgid "Knots"
+msgstr ""
+#
+msgid "Korea"
+msgstr ""
+#
+msgid "Kuwait"
+msgstr ""
+#
+msgid "Kyrgyz Republic"
 msgstr ""
 #
 # 
@@ -2374,10 +2797,16 @@ msgstr ""
 msgid "Language"
 msgstr "Kieli"
 #
+msgid "Lao People's Dem. Rep."
+msgstr ""
+#
 # 
 # 
 msgid "Latitude"
 msgstr "Leveyspiiri"
+#
+msgid "Latvia"
+msgstr ""
 #
 # 
 # 
@@ -2442,6 +2871,9 @@ msgstr ""
 msgid "Leading Light Rear"
 msgstr ""
 #
+msgid "Lebanon"
+msgstr ""
+#
 msgid "Left"
 msgstr ""
 #
@@ -2465,10 +2897,22 @@ msgstr "Reittiväli"
 msgid "Length Over All (m)"
 msgstr ""
 #
+msgid "Lesotho"
+msgstr ""
+#
+msgid "Liberia"
+msgstr ""
+#
+msgid "Libyan Arab Jamahiriya"
+msgstr ""
+#
 # 
 # 
 msgid "License"
 msgstr "Lisenssi"
+#
+msgid "Liechtenstein"
+msgstr ""
 #
 # 
 # 
@@ -2548,6 +2992,9 @@ msgstr ""
 msgid "List contents"
 msgstr "Lisenssi"
 #
+msgid "Lithuania"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -2612,6 +3059,9 @@ msgstr ""
 msgid "LtV/Rig"
 msgstr ""
 #
+msgid "Luxembourg"
+msgstr ""
+#
 # 
 # 
 msgid "M/T"
@@ -2641,8 +3091,35 @@ msgstr "MMSI"
 msgid "M_COVR ID"
 msgstr ""
 #
+msgid "Macao"
+msgstr ""
+#
+msgid "Macedonia"
+msgstr ""
+#
+msgid "Madagascar"
+msgstr ""
+#
+msgid "Madeira"
+msgstr ""
+#
 # 
 msgid "Magenta"
+msgstr ""
+#
+msgid "Malawi"
+msgstr ""
+#
+msgid "Malaysia"
+msgstr ""
+#
+msgid "Maldives"
+msgstr ""
+#
+msgid "Mali"
+msgstr ""
+#
+msgid "Malta"
 msgstr ""
 #
 # 
@@ -2675,6 +3152,18 @@ msgstr "Merkitse maali kadotetuksi (minuutin) jälkeen:"
 msgid "Marks"
 msgstr "Uusi merkintä"
 #
+msgid "Marshall Islands"
+msgstr ""
+#
+msgid "Martinique"
+msgstr ""
+#
+msgid "Mauritania"
+msgstr ""
+#
+msgid "Mauritius"
+msgstr ""
+#
 # 
 # 
 msgid "Max Detail Here"
@@ -2704,6 +3193,9 @@ msgstr ""
 msgid "Medium"
 msgstr ""
 #
+msgid "Menu"
+msgstr ""
+#
 # 
 # 
 msgid "Mercator"
@@ -2726,6 +3218,12 @@ msgstr "Uudelleennimeä kiintopisteet?"
 msgid "Meters"
 msgstr "Metrit"
 #
+msgid "Mexico"
+msgstr ""
+#
+msgid "Micronesia"
+msgstr ""
+#
 # 
 # 
 msgid "Mil/V"
@@ -2745,9 +3243,27 @@ msgstr ""
 msgid "MoTwilight"
 msgstr ""
 #
+msgid "Moldova"
+msgstr ""
+#
+msgid "Monaco"
+msgstr ""
+#
+msgid "Mongolia"
+msgstr ""
+#
+msgid "Montenegro"
+msgstr ""
+#
+msgid "Montserrat"
+msgstr ""
+#
 # 
 # 
 msgid "Moored"
+msgstr ""
+#
+msgid "Morocco"
 msgstr ""
 #
 # 
@@ -2762,7 +3278,13 @@ msgstr "Siirrä alus tähän"
 msgid "Move Waypoint"
 msgstr "Kiintopisteelle"
 #
+msgid "Mozambique"
+msgstr ""
+#
 msgid "Mph"
+msgstr ""
+#
+msgid "Myanmar"
 msgstr ""
 #
 msgid "NMEA"
@@ -2782,7 +3304,13 @@ msgstr ""
 msgid "Name"
 msgstr "Nimi"
 #
+msgid "Namibia"
+msgstr ""
+#
 msgid "National text on chart"
+msgstr ""
+#
+msgid "Nauru"
 msgstr ""
 #
 # 
@@ -2815,7 +3343,16 @@ msgstr "Navigointitiedot"
 msgid "Navigate To This"
 msgstr ""
 #
+msgid "Nepal"
+msgstr ""
+#
+msgid "Netherlands"
+msgstr ""
+#
 msgid "Network"
+msgstr ""
+#
+msgid "New Caledonia"
 msgstr ""
 #
 # 
@@ -2827,12 +3364,27 @@ msgstr "Kartat"
 msgid "New Group..."
 msgstr ""
 #
+msgid "New Zealand"
+msgstr ""
+#
 # 
 # 
 msgid "Next tide event"
 msgstr ""
 #
+msgid "Nicaragua"
+msgstr ""
+#
+msgid "Niger"
+msgstr ""
+#
+msgid "Nigeria"
+msgstr ""
+#
 msgid "Nighttime"
+msgstr ""
+#
+msgid "Niue"
 msgstr ""
 #
 # 
@@ -2882,6 +3434,12 @@ msgstr ""
 msgid "North Up Mode"
 msgstr "Kurssi-ylhäällä moodi"
 #
+msgid "Northern Mariana Islands"
+msgstr ""
+#
+msgid "Norway"
+msgstr ""
+#
 # 
 # 
 msgid "Not Under Command"
@@ -2915,6 +3473,9 @@ msgid "Ok"
 msgstr "Ok"
 #
 msgid "Old log will be moved to opencpn.log.log"
+msgstr ""
+#
+msgid "Oman"
 msgstr ""
 #
 # 
@@ -3075,8 +3636,36 @@ msgstr ""
 #
 # 
 # 
+#, fuzzy
+msgid "Pakistan"
+msgstr "Etäisyys"
+#
+msgid "Palau"
+msgstr ""
+#
+#
+#
+#
+#
+# 
+# 
+#, fuzzy
+msgid "Palestine"
+msgstr "Asetukset"
+#
+msgid "Panama"
+msgstr ""
+#
+# 
+# 
 msgid "Paper Chart"
 msgstr "Paperikartta"
+#
+msgid "Papua New Guinea"
+msgstr ""
+#
+msgid "Paraguay"
+msgstr ""
 #
 # 
 # 
@@ -3112,9 +3701,21 @@ msgstr "Vie jälki..."
 msgid "Paste Waypoint"
 msgstr "Aktivoi kiintopiste"
 #
+msgid "People's Rep. of Korea"
+msgstr ""
+#
+msgid "Peru"
+msgstr ""
+#
+msgid "Philippines"
+msgstr ""
+#
 # 
 # 
 msgid "Pilot Vessel"
+msgstr ""
+#
+msgid "Pitcairn Island"
 msgstr ""
 #
 # 
@@ -3171,6 +3772,10 @@ msgid ""
 " Please update this PlugIn at the opencpn.org website."
 msgstr ""
 #
+#, c-format
+msgid "PlugIn [ %s ] version %i.%i"
+msgstr ""
+#
 msgid "Plugins"
 msgstr ""
 #
@@ -3178,6 +3783,9 @@ msgstr ""
 # 
 msgid "Points"
 msgstr "Pisteet"
+#
+msgid "Poland"
+msgstr ""
 #
 # 
 # 
@@ -3209,6 +3817,12 @@ msgstr ""
 # 
 msgid "Port Tender"
 msgstr ""
+#
+# 
+# 
+#, fuzzy
+msgid "Portugal"
+msgstr "Pisteet"
 #
 # 
 # 
@@ -3332,6 +3946,12 @@ msgstr "&Ominaisuudet"
 msgid "Protocol"
 msgstr ""
 #
+msgid "Puerto Rico"
+msgstr ""
+#
+msgid "Qatar"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -3374,6 +3994,9 @@ msgstr ""
 #, fuzzy
 msgid "Real(Off Position)"
 msgstr "Sijainti"
+#
+msgid "Rebuild Texture Cache"
+msgstr ""
 #
 # 
 # 
@@ -3524,6 +4147,9 @@ msgstr ""
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr ""
 #
+msgid "Reunion"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -3547,6 +4173,9 @@ msgstr ""
 # 
 # 
 msgid "Rollover"
+msgstr ""
+#
+msgid "Romania"
 msgstr ""
 #
 # 
@@ -3606,6 +4235,12 @@ msgstr ""
 msgid "Routes"
 msgstr "Reitti"
 #
+msgid "Russian"
+msgstr ""
+#
+msgid "Rwanda"
+msgstr ""
+#
 # 
 # 
 msgid "S/V"
@@ -3643,6 +4278,36 @@ msgstr "Turvasyvyys"
 # 
 # 
 msgid "Sailing Vessel"
+msgstr ""
+#
+msgid "Saint Helena"
+msgstr ""
+#
+msgid "Saint Kitts and Nevis"
+msgstr ""
+#
+msgid "Saint Lucia"
+msgstr ""
+#
+msgid "Saint Paul"
+msgstr ""
+#
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+#
+msgid "Saint Vincent and the Grenadines"
+msgstr ""
+#
+msgid "Samoa"
+msgstr ""
+#
+msgid "San Marino"
+msgstr ""
+#
+msgid "Sao Tome and Principe"
+msgstr ""
+#
+msgid "Saudi Arabia"
 msgstr ""
 #
 # 
@@ -3734,8 +4399,20 @@ msgstr "Lähetä GPS:lle..."
 # 
 # 
 #, fuzzy
+msgid "Send to new GPS"
+msgstr "Lähetä GPS:lle..."
+#
+msgid "Senegal"
+msgstr ""
+#
+# 
+# 
+#, fuzzy
 msgid "Sentence Filter"
 msgstr "&Sammuta hälytys"
+#
+msgid "Serbia"
+msgstr ""
 #
 msgid "Serial"
 msgstr ""
@@ -3755,6 +4432,9 @@ msgstr "Seuraava"
 # 
 msgid "Set Anchor Watch"
 msgstr "Aseta ankkurivahti"
+#
+msgid "Seychelles"
+msgstr ""
 #
 # 
 # 
@@ -4014,10 +4694,22 @@ msgstr "Näytä maalijälki"
 msgid "Shows the font preview."
 msgstr "Näyttää kirjasimet."
 #
+msgid "Sierra Leone"
+msgstr ""
+#
 # 
 # 
 msgid "Simplified"
 msgstr "Yksinkertaistettu"
+#
+msgid "Singapore"
+msgstr ""
+#
+msgid "Slovak Republic"
+msgstr ""
+#
+msgid "Slovenia"
+msgstr ""
 #
 msgid "Smooth Panning / Zooming"
 msgstr ""
@@ -4036,6 +4728,21 @@ msgstr "SOG"
 #, fuzzy
 msgid "Solid"
 msgstr "Symboolinen"
+#
+msgid "Solomon Islands"
+msgstr ""
+#
+msgid "Somali Democratic Republic"
+msgstr ""
+#
+msgid "South Africa"
+msgstr ""
+#
+msgid "South Sudan (Republic of)"
+msgstr ""
+#
+msgid "Spain"
+msgstr ""
 #
 # 
 # 
@@ -4083,6 +4790,9 @@ msgstr "Poista reitti"
 #, fuzzy
 msgid "Split Track"
 msgstr "Näytä maalijälki"
+#
+msgid "Sri Lanka"
+msgstr ""
 #
 # 
 # 
@@ -4133,6 +4843,9 @@ msgstr "&Tyyli:"
 msgid "Style:"
 msgstr "&Tyyli:"
 #
+msgid "Sudan"
+msgstr ""
+#
 msgid "Sunrise"
 msgstr ""
 #
@@ -4144,10 +4857,25 @@ msgstr ""
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Vaimenna ankkuri/laituri-maalien hälytys"
 #
+msgid "Suriname"
+msgstr ""
+#
+msgid "Swaziland"
+msgstr ""
+#
+msgid "Sweden"
+msgstr ""
+#
+msgid "Switzerland"
+msgstr ""
+#
 # 
 # 
 msgid "Symbolized"
 msgstr "Symboolinen"
+#
+msgid "Syrian Arab Republic"
+msgstr ""
 #
 # 
 # 
@@ -4165,9 +4893,15 @@ msgstr "CPA/TCPA-hälytykset"
 msgid "TCPA"
 msgstr "CPA/TCPA-hälytykset"
 #
+msgid "Taiwan"
+msgstr ""
+#
 # 
 # 
 msgid "Tanker"
+msgstr ""
+#
+msgid "Tanzania"
 msgstr ""
 #
 # 
@@ -4239,6 +4973,9 @@ msgid "Texture Compression Caching"
 msgstr ""
 #
 msgid "Texture Memory Size (MB)"
+msgstr ""
+#
+msgid "Thailand"
 msgstr ""
 #
 msgid ""
@@ -4405,6 +5142,12 @@ msgstr "Kytke jälki"
 msgid "Toggle track"
 msgstr "Kytke jälki"
 #
+msgid "Togolese Republic"
+msgstr ""
+#
+msgid "Tonga"
+msgstr ""
+#
 # 
 # 
 msgid "ToolTips"
@@ -4486,6 +5229,9 @@ msgstr "Transverse Mercator"
 msgid "Treat WPL sentences as APRS position reports"
 msgstr ""
 #
+msgid "Trinidad and Tobago"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
@@ -4497,7 +5243,22 @@ msgstr "Jäljet"
 msgid "Tug"
 msgstr ""
 #
+msgid "Tunisia"
+msgstr ""
+#
+msgid "Turkey"
+msgstr ""
+#
+msgid "Turkmenistan"
+msgstr ""
+#
+msgid "Turks and Caicos Islands"
+msgstr ""
+#
 msgid "Turn Rate"
+msgstr ""
+#
+msgid "Tuvalu"
 msgstr ""
 #
 # 
@@ -4515,6 +5276,12 @@ msgstr ""
 # 
 msgid "UTC"
 msgstr "UTC"
+#
+msgid "Uganda"
+msgstr ""
+#
+msgid "Ukraine"
+msgstr ""
 #
 # 
 # 
@@ -4539,6 +5306,15 @@ msgid "Underway"
 msgstr ""
 #
 msgid "Undo"
+msgstr ""
+#
+msgid "United Arab Emirates"
+msgstr ""
+#
+msgid "United States Virgin Islands"
+msgstr ""
+#
+msgid "United States of America"
 msgstr ""
 #
 #
@@ -4571,6 +5347,9 @@ msgstr "&Alleviivaus"
 # 
 msgid "Update Control"
 msgstr "Päivitys"
+#
+msgid "Uruguay"
+msgstr ""
 #
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr ""
@@ -4615,16 +5394,28 @@ msgstr ""
 msgid "User Y Offset (Metres)"
 msgstr ""
 #
+msgid "Uzbekistan"
+msgstr ""
+#
 # 
 # 
 #, fuzzy
 msgid "VTS active target"
 msgstr "Aktiiviset karttahakemistot"
 #
+msgid "Vanuatu"
+msgstr ""
+#
+msgid "Vatican City State"
+msgstr ""
+#
 # 
 # 
 msgid "Vector Charts"
 msgstr "Vektorikartat"
+#
+msgid "Venezuela"
+msgstr ""
 #
 # 
 # 
@@ -4654,6 +5445,9 @@ msgstr ""
 msgid "Vessel requesting non-distress assistance"
 msgstr ""
 #
+msgid "Viet Nam"
+msgstr ""
+#
 # 
 # 
 msgid "Virtual"
@@ -4676,6 +5470,9 @@ msgstr ""
 # 
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV tiedostot (*.wav)|*.wav|Kaikki tiedostot (*.*)|*.*"
+#
+msgid "Wallis and Futuna Islands"
+msgstr ""
 #
 # 
 # 
@@ -4793,6 +5590,9 @@ msgstr ""
 msgid "Yellow"
 msgstr "Kutsu"
 #
+msgid "Yemen"
+msgstr ""
+#
 msgid "Yes, hide it."
 msgstr ""
 #
@@ -4821,6 +5621,12 @@ msgid "You must enter the address..."
 msgstr ""
 #
 msgid "You must select or enter the port..."
+msgstr ""
+#
+msgid "Zambia"
+msgstr ""
+#
+msgid "Zimbabwe"
 msgstr ""
 #
 # 
@@ -4967,34 +5773,6 @@ msgstr ""
 #
 #
 #
-# 
-# 
-#~ msgid "\n"
-#~ msgstr "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 #
 # 
 # 
@@ -5025,10 +5803,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "  Kiinteän maalin max nopeus (solmua):"
+#
 #
 #
 #
@@ -5096,10 +5876,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "  Karttaprojektio on TUNTEMATON, oletus Mercator:"
+#
 #
 #
 #
@@ -5152,10 +5934,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "  Could not open serial port '"
 #~ msgstr "  Ssarjaporttia ei pysty avaamaan'"
+#
 #
 #
 #
@@ -5177,10 +5961,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "&Acknowledge"
 #~ msgstr "&Kuittaus"
+#
 #
 #
 #
@@ -5290,6 +6076,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -5317,6 +6104,7 @@ msgstr ""
 # 
 #~ msgid "&Delete All Routes..."
 #~ msgstr "&Poista kaikki reitit"
+#
 #
 #
 #
@@ -5396,6 +6184,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -5412,10 +6201,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "&Silence Alert"
 #~ msgstr "&Sammuta hälytys"
+#
 #
 #
 #
@@ -5472,6 +6263,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid ""
@@ -5480,6 +6272,7 @@ msgstr ""
 #~ msgstr ""
 #~ "'\n"
 #~ "Ehdotus: Yritä sulkea muut sovellukset."
+#
 #
 #
 #
@@ -5574,11 +6367,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid ":               "
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -5624,10 +6419,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "AIS Alert"
 #~ msgstr "AIS hälytysluettelo"
+#
 #
 #
 #
@@ -5683,11 +6480,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "AISTargetAlert"
 #~ msgstr "AIS-maalikysely?"
+#
 #
 #
 #
@@ -5751,6 +6550,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Add Selection"
@@ -5779,10 +6579,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Lisää tämä kartta tilkkutäkkiin."
+#
 #
 #
 #
@@ -5853,10 +6655,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "All files (*.*)|*.*"
 #~ msgstr "Kaikki tiedostot (*.*)|*.*"
+#
 #
 #
 #
@@ -5910,10 +6714,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Available Chart Directories"
 #~ msgstr "Käytettävät karttahakemistot"
+#
 #
 #
 #
@@ -5971,6 +6777,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6001,10 +6808,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -6059,10 +6868,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 zoom-detaljit"
+#
 #
 #
 #
@@ -6119,10 +6930,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f NM\n"
+#
 #
 #
 #
@@ -6159,6 +6972,7 @@ msgstr ""
 #~ "Onko gpsd käynnissä?\n"
 #~ "\n"
 #~ "gpsd isäntä on: "
+#
 #
 #
 #
@@ -6253,11 +7067,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "CallSign:             "
 #~ msgstr "Sijainti:"
+#
 #
 #
 #
@@ -6327,10 +7143,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Chart Display Filters"
 #~ msgstr "Karttanäyttösuodin"
+#
 #
 #
 #
@@ -6360,6 +7178,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Chart Position"
 #~ msgstr "Sijainti"
+#
 #
 #
 #
@@ -6468,6 +7287,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6525,11 +7345,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Class:                "
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -6643,6 +7465,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6698,10 +7521,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "TCP/IP-hostia ei löydy '"
+#
 #
 #
 #
@@ -6759,6 +7584,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -6790,11 +7616,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Course:                 Unavailable\n"
 #~ msgstr "Nopeus:            Tuntematon\n"
+#
 #
 #
 #
@@ -6888,10 +7716,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Cursor: "
 #~ msgstr "Osoitin:"
+#
 #
 #
 #
@@ -6908,6 +7738,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Data Source :"
 #~ msgstr "NMEA lähde"
+#
 #
 #
 #
@@ -6983,11 +7814,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Kirjasinväri."
+#
 #
 #
 #
@@ -7052,10 +7885,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Poista merkintä"
+#
 #
 #
 #
@@ -7110,6 +7945,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Selection"
@@ -7139,10 +7975,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Delete Track"
 #~ msgstr "Poista jälki"
+#
 #
 #
 #
@@ -7198,10 +8036,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Destination:          "
 #~ msgstr "Päämäärä:"
+#
 #
 #
 #
@@ -7242,11 +8082,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Drop"
 #~ msgstr "Aseta merkintä tähän"
+#
 #
 #
 #
@@ -7291,10 +8133,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ENC/Vector"
 #~ msgstr "ENC/Vektori"
+#
 #
 #
 #
@@ -7352,10 +8196,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "ETA:                  "
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -7465,6 +8311,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7474,6 +8321,7 @@ msgstr ""
 # 
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/Aikaleima"
+#
 #
 #
 #
@@ -7528,10 +8376,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Etc."
 #~ msgstr "jne."
+#
 #
 #
 #
@@ -7636,6 +8486,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7652,6 +8503,7 @@ msgstr ""
 #~ "libgps:ää ei pysty avaamaan.\n"
 #~ "\n"
 #~ "gpsd-isäntä on: "
+#
 #
 #
 #
@@ -7734,11 +8586,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "From Ownship: %03d Deg   "
 #~ msgstr "Omasta aluksesta: %03d ast  %6.2f mpk"
+#
 #
 #
 #
@@ -7780,6 +8634,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GPS/Plotter Port"
@@ -7808,10 +8663,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD Data Server"
+#
 #
 #
 #
@@ -7921,6 +8778,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7948,6 +8806,7 @@ msgstr ""
 # 
 #~ msgid "GRIB Data"
 #~ msgstr "GRIB data"
+#
 #
 #
 #
@@ -8057,6 +8916,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8084,6 +8944,7 @@ msgstr ""
 # 
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB-tiedostojen hakemisto"
+#
 #
 #
 #
@@ -8125,10 +8986,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Go To Here"
 #~ msgstr "Mene tänne"
+#
 #
 #
 #
@@ -8194,11 +9057,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Suuntima:              %5.0f Deg.\n"
+#
 #
 #
 #
@@ -8271,6 +9136,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8301,11 +9167,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "In"
 #~ msgstr "Ikoni"
+#
 #
 #
 #
@@ -8374,10 +9242,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Language/Fonts"
 #~ msgstr "Kielet/kirjasimet"
+#
 #
 #
 #
@@ -8434,10 +9304,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Leg/Route"
 #~ msgstr "Reittiosuus/reitti"
+#
 #
 #
 #
@@ -8508,11 +9380,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "MMSI:                 %09d\n"
 #~ msgstr "ETA:      "
+#
 #
 #
 #
@@ -8619,10 +9493,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Merkitse ikoni"
+#
 #
 #
 #
@@ -8682,10 +9558,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Mark Properties"
 #~ msgstr "Merkitse ominaisuudet"
+#
 #
 #
 #
@@ -8759,10 +9637,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Measure....."
 #~ msgstr "Mittaa..."
+#
 #
 #
 #
@@ -8816,10 +9696,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA lähde"
+#
 #
 #
 #
@@ -8875,11 +9757,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Name:  "
 #~ msgstr "Nimi:"
+#
 #
 #
 #
@@ -8951,6 +9835,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8958,6 +9843,7 @@ msgstr ""
 # 
 #~ msgid "New Mark"
 #~ msgstr "Uusi merkintä"
+#
 #
 #
 #
@@ -8997,11 +9883,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Number of Radar Rings"
 #~ msgstr "Tutkarenkaiden määrä"
+#
 #
 #
 #
@@ -9027,11 +9915,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Output Message"
 #~ msgstr "OpenCPN viesti"
+#
 #
 #
 #
@@ -9085,11 +9975,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Place Trackpoints at distance interval (NMi)"
 #~ msgstr "Jälkipisteiden etäisyysväli (mpk):"
+#
 #
 #
 #
@@ -9130,11 +10022,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Plan speed (Kts)"
 #~ msgstr "Suunniteltu nopeus"
+#
 #
 #
 #
@@ -9244,6 +10138,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9271,6 +10166,7 @@ msgstr ""
 # 
 #~ msgid "Please Zoom or Scale Out to view suppressed HTSGW GRIB"
 #~ msgstr "Zoomaa ulos nähdäksesi peitetyt HTSGW GRIB tiedot"
+#
 #
 #
 #
@@ -9380,6 +10276,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9433,6 +10330,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -9440,6 +10338,7 @@ msgstr ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Raportin ikä:               %3d Sec.\n"
+#
 #
 #
 #
@@ -9528,6 +10427,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -9550,11 +10450,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 #~ msgstr ""
 #~ "Aseta GPS vastaanottamaan reitti/kiintopiste-tietoja ja paina lähetä..."
+#
 #
 #
 #
@@ -9634,10 +10536,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Prev"
 #~ msgstr "Edellinen"
+#
 #
 #
 #
@@ -9677,10 +10581,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Radar rings"
 #~ msgstr "Tutkarenkaat"
+#
 #
 #
 #
@@ -9738,6 +10644,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Range:                %5.1f NM\n"
@@ -9767,10 +10674,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Raster"
 #~ msgstr "Rasteri"
+#
 #
 #
 #
@@ -9828,11 +10737,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Raportin ikä:               %3d Sec.\n"
+#
 #
 #
 #
@@ -9890,6 +10801,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -9921,11 +10833,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Right\n"
 #~ msgstr "Raportin ikä:               %3d Sec.\n"
+#
 #
 #
 #
@@ -10002,6 +10916,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -10031,11 +10946,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Remove this chart from quilt"
 #~ msgstr "Poista tämä kartta tilkkutäkistä."
+#
 #
 #
 #
@@ -10098,10 +11015,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Reverse Route"
 #~ msgstr "Käännä reitti"
+#
 #
 #
 #
@@ -10195,6 +11114,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -10225,11 +11145,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Route/Track"
 #~ msgstr "Reitti"
+#
 #
 #
 #
@@ -10323,10 +11245,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "Valitse tilkkutäkin karttatyypit"
+#
 #
 #
 #
@@ -10406,6 +11330,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Send"
@@ -10421,10 +11346,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Send Route To GPS"
 #~ msgstr "Lähetä reitti GPSään"
+#
 #
 #
 #
@@ -10507,11 +11434,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "Lähetä GPS:lle..."
+#
 #
 #
 #
@@ -10576,10 +11505,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Settings"
 #~ msgstr "Asetukset"
+#
 #
 #
 #
@@ -10670,10 +11601,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show ATON labels"
 #~ msgstr "Näytä ATON-leimat"
+#
 #
 #
 #
@@ -10783,6 +11716,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -10810,6 +11744,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB dialog"
 #~ msgstr "Näytä GRIB-ruutu"
+#
 #
 #
 #
@@ -10915,6 +11850,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Printing Icon"
@@ -10956,10 +11892,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Näytä jälki-ikoni"
+#
 #
 #
 #
@@ -11054,6 +11992,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -11063,6 +12002,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -11149,6 +12089,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -11158,6 +12099,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -11219,6 +12161,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -11228,6 +12171,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -11289,6 +12233,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -11298,6 +12243,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Koko:                %5dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -11337,11 +12283,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "Special Position Report"
 #~ msgstr "Viime raporttiaika:"
+#
 #
 #
 #
@@ -11399,10 +12347,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "Nopeus:                %5.2f Kts.\n"
+#
 #
 #
 #
@@ -11442,10 +12392,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi Data Server"
+#
 #
 #
 #
@@ -11502,10 +12454,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -11546,10 +12500,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Tide"
 #~ msgstr "Vuorovesi"
+#
 #
 #
 #
@@ -11591,10 +12547,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Today"
 #~ msgstr "Tänään"
+#
 #
 #
 #
@@ -11696,6 +12654,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -11726,20 +12685,6 @@ msgstr ""
 #
 #
 #
-# 
-# 
-#~ msgid "Tomorrow"
-#~ msgstr "Huomenna"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 #
 #
 #
@@ -11759,6 +12704,7 @@ msgstr ""
 # 
 #~ msgid "ToolBox"
 #~ msgstr "Työkalut"
+#
 #
 #
 #
@@ -11814,10 +12760,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "Mittakaava: %8.0f       "
+#
 #
 #
 #
@@ -11875,11 +12823,13 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
 #~ msgid "UN Ship Type:         "
 #~ msgstr "Alustyyppi:"
+#
 #
 #
 #
@@ -11938,6 +12888,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #, fuzzy
@@ -11946,6 +12897,7 @@ msgstr ""
 #~ "libgps:ää ei pysty avaamaan.\n"
 #~ "\n"
 #~ "gpsd-isäntä on: "
+#
 #
 #
 #
@@ -11993,10 +12945,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Units"
 #~ msgstr "Yksiköt"
+#
 #
 #
 #
@@ -12090,10 +13044,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Use SCAMIN"
 #~ msgstr "Käytä SCAMIN-asetusta"
+#
 #
 #
 #
@@ -12187,10 +13143,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "Waypoint Locking"
 #~ msgstr "Kiintopisteiden lukitus"
+#
 #
 #
 #
@@ -12245,10 +13203,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 #~ msgid "cm93 Detail"
 #~ msgstr "CM93 detaljit"
+#
 #
 #
 #

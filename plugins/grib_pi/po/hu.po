@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 2.6.1718\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2012-12-29 13:16+0100\n"
 "Last-Translator: Szabolcs SZIGETI <szigi@ik.bme.hu>\n"
 "Language-Team: \n"
@@ -362,6 +362,9 @@ msgstr ""
 msgid "Mean Sea Level Pressure (MSLP)"
 msgstr "Légnyomás, mBar"
 #
+msgid "Menu"
+msgstr ""
+#
 msgid "Meters"
 msgstr ""
 #
@@ -396,6 +399,9 @@ msgid "Overlay Transparency"
 msgstr ""
 #
 msgid "OverlayMap"
+msgstr ""
+#
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
 msgstr ""
 #
 msgid "Overlays too wide and can't be displayed:"
@@ -575,11 +581,6 @@ msgstr ""
 #, fuzzy
 msgid "Temperature"
 msgstr "Tenger felszín hőmérséklete, C"
-#
-msgid ""
-"The Grib file you are opening contains a moving Grib Zone.\n"
-"Interpolation is not supported for this type of file"
-msgstr ""
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -785,9 +786,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid " data"
 #~ msgstr "GRIB adat"
+#
 #
 #
 #
@@ -833,8 +836,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB fájl könyvtár"
+#
 #
 #
 #
@@ -860,11 +865,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr ""
 #~ "Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
 #~ "megjelenítéséhez"
+#
 #
 #
 #
@@ -890,6 +897,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr ""
@@ -905,11 +913,13 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr ""
 #~ "Zoomolj, vagy válts nagyobb méretarányra az elnyomott CRAIN GRIB "
 #~ "megjelenítéséhez"
+#
 #
 #
 #, fuzzy
@@ -936,9 +946,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "BRIB beállítások"
+#
 #
 #
 #
@@ -1005,8 +1017,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Szélsebesség méter/sec-ben mutatása"
+#
 #
 #
 #
@@ -1020,6 +1034,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Szél irány"
+#
 #
 #
 #

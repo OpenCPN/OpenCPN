@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2014-04-23 21:24+0400\n"
 "Last-Translator: Anton Samsonov <epolyan@gmail.com>\n"
 "Language-Team: Agat-Aquarius R&P <epolyan@gmail.com>\n"
@@ -311,6 +311,9 @@ msgstr "макс."
 msgid "Mean Sea Level Pressure (MSLP)"
 msgstr "Давление на уровнем моря"
 #
+msgid "Menu"
+msgstr ""
+#
 msgid "Meters"
 msgstr "м"
 #
@@ -346,6 +349,10 @@ msgstr "Прозрачность наложения"
 #
 msgid "OverlayMap"
 msgstr "Наложение карты"
+#
+#, fuzzy
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Повёрнутые наложения отключены в режиме DC"
 #
 msgid "Overlays too wide and can't be displayed:"
 msgstr ""
@@ -472,13 +479,6 @@ msgstr ""
 #
 msgid "Temperature"
 msgstr "Температура"
-#
-msgid ""
-"The Grib file you are opening contains a moving Grib Zone.\n"
-"Interpolation is not supported for this type of file"
-msgstr ""
-"Открываемый файл данных содержит зону движения.\n"
-"Интерполяция данных в движении не поддерживается."
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -636,18 +636,31 @@ msgstr "Персональный код zyGRIB"
 msgid "zyGrib Login"
 msgstr "Учётная запись zyGRIB"
 #
+#
 #~ msgid "Altitude(Pressure Altitude)"
 #~ msgstr "Высота"
+#
 #
 #~ msgid "Cloud"
 #~ msgstr "Облако"
 #
+#
 #~ msgid "Pressure Altitude"
 #~ msgstr "Баром. высота"
+#
 #
 #, fuzzy
 #~ msgid "Pressure Altitude (in %s) or Standard Height Selection."
 #~ msgstr "Баром. высота (в %s) или обычная высота"
 #
+#
 #~ msgid "Sea or Air Temperature at Surface Level"
 #~ msgstr "Температура воды или воздуха у поверхности воды"
+#
+#
+#~ msgid ""
+#~ "The Grib file you are opening contains a moving Grib Zone.\n"
+#~ "Interpolation is not supported for this type of file"
+#~ msgstr ""
+#~ "Открываемый файл данных содержит зону движения.\n"
+#~ "Интерполяция данных в движении не поддерживается."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN Version 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2014-02-22 10:36+0100\n"
 "Last-Translator: Pepo II <Pepo_II@outlok.es>\n"
 "Language-Team: SpanishTeam LaTabernadelPuerto.com <opencpn.es@gmx.com>\n"
@@ -16,6 +16,48 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.6.4\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid ""
+"\n"
+"\n"
+msgstr ""
+"\n"
+"\n"
+"\n"
 #
 msgid ""
 "\n"
@@ -282,6 +324,9 @@ msgstr " Actualizado:  "
 msgid " for details."
 msgstr " para detalles."
 #
+msgid " is incompatible with this version of OpenCPN."
+msgstr ""
+#
 msgid ""
 " shorter than rhumbline.\n"
 "\n"
@@ -530,6 +575,9 @@ msgstr "(reservado para uso futuro)"
 #
 msgid "(unnamed)"
 msgstr "(sin nombre)"
+#
+msgid ", and all previous versions,"
+msgstr ""
 #
 #
 #
@@ -873,8 +921,14 @@ msgstr "Añadir nuevo"
 msgid "Address"
 msgstr "Dirección"
 #
+msgid "Adelie Land"
+msgstr ""
+#
 msgid "Advanced"
 msgstr "Avanzado"
+#
+msgid "Afghanistan"
+msgstr ""
 #
 #
 #
@@ -888,6 +942,16 @@ msgstr "Varado"
 #
 msgid "Aid to Navigation"
 msgstr "Ayuda a la Navegación"
+#
+msgid "Alaska"
+msgstr ""
+#
+msgid "Albania"
+msgstr ""
+#
+#, fuzzy
+msgid "Algeria"
+msgstr "Serie"
 #
 #
 #
@@ -931,6 +995,9 @@ msgstr "Todas las Cartas"
 msgid "Altitude"
 msgstr "Altitud"
 #
+msgid "American Samoa"
+msgstr ""
+#
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
 "also have a two letter prefix identifying the source, or TALKER, of the "
@@ -965,11 +1032,26 @@ msgstr "Area Fondeo: Operaciones de desplazamiento de buques"
 msgid "Anchorage created "
 msgstr "Fondeadero creado"
 #
+msgid "Andorra"
+msgstr ""
+#
+msgid "Angola"
+msgstr ""
+#
+msgid "Anguilla"
+msgstr ""
+#
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "Contestar \"No\" creará un nuevo waipoint en el mismo sitio."
 #
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "Contestar \"No\" creará todos los waipoint nuevos para esta ruta."
+#
+msgid "Antigua and Barbuda"
+msgstr ""
+#
+msgid "Antilles"
+msgstr ""
 #
 #
 #
@@ -1047,6 +1129,18 @@ msgstr "¿Seguro que desea borrar esta derrota?"
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "¿Seguro que desea borrar este waypoint?"
 #
+msgid "Argentine Republic"
+msgstr ""
+#
+msgid "Armenia"
+msgstr ""
+#
+msgid "Aruba"
+msgstr ""
+#
+msgid "Ascension Island"
+msgstr ""
+#
 #
 #
 msgid "Assumed 1 Mile Point"
@@ -1070,6 +1164,12 @@ msgstr "Anclado"
 msgid "AtoN"
 msgstr "AtoN"
 #
+msgid "Australia"
+msgstr ""
+#
+msgid "Austria"
+msgstr ""
+#
 #
 #
 #
@@ -1086,6 +1186,9 @@ msgstr "Autores"
 msgid "Auto Follow"
 msgstr "Autoseguimiento"
 #
+msgid "AutoSort"
+msgstr ""
+#
 #
 #
 msgid "Automatic Daily Tracks"
@@ -1096,12 +1199,30 @@ msgstr "Derrotas diarias automat."
 msgid "Avg. speed"
 msgstr "Vel. media"
 #
+msgid "Azerbaijani Republic"
+msgstr ""
+#
+msgid "Azores"
+msgstr ""
+#
 #
 #
 #
 #
 msgid "B"
 msgstr "B"
+#
+msgid "Bahamas"
+msgstr ""
+#
+msgid "Bahrain"
+msgstr ""
+#
+msgid "Bangladesh"
+msgstr ""
+#
+msgid "Barbados"
+msgstr ""
 #
 #
 #
@@ -1180,6 +1301,24 @@ msgstr "Demora"
 msgid "Bearing (M)"
 msgstr "Demora (M)"
 #
+msgid "Belarus"
+msgstr ""
+#
+msgid "Belgium"
+msgstr ""
+#
+msgid "Belize"
+msgstr ""
+#
+msgid "Benin"
+msgstr ""
+#
+msgid "Bermuda"
+msgstr ""
+#
+msgid "Bhutan"
+msgstr ""
+#
 #
 msgid "Black"
 msgstr "Negro"
@@ -1192,6 +1331,15 @@ msgstr "Detectado plugin en lista negra..."
 msgid "Blue"
 msgstr "Azul"
 #
+msgid "Bolivia"
+msgstr ""
+#
+msgid "Bosnia and Herzegovina"
+msgstr ""
+#
+msgid "Botswana"
+msgstr ""
+#
 #
 #
 #
@@ -1199,6 +1347,9 @@ msgstr "Azul"
 #
 msgid "Boundaries"
 msgstr "Límites"
+#
+msgid "Brazil"
+msgstr ""
 #
 #
 #
@@ -1208,11 +1359,26 @@ msgstr "Límites"
 msgid "Brg"
 msgstr "Demora"
 #
+msgid "British Virgin Islands"
+msgstr ""
+#
+msgid "Brunei Darussalam"
+msgstr ""
+#
 msgid "Buddy"
 msgstr "Buddy"
 #
+msgid "Bulgaria"
+msgstr ""
+#
 msgid "Buoy/Light Labels"
 msgstr "Etiquetas Boyas/Luces"
+#
+msgid "Burkina Faso"
+msgstr ""
+#
+msgid "Burundi"
+msgstr ""
 #
 #
 #
@@ -1282,6 +1448,15 @@ msgstr "Alarmas CPA/TCPA"
 msgid "Call"
 msgstr "Llamar"
 #
+msgid "Cambodia"
+msgstr ""
+#
+msgid "Cameroon"
+msgstr ""
+#
+msgid "Canada"
+msgstr ""
+#
 #
 #
 #
@@ -1292,6 +1467,9 @@ msgstr "Cancelar"
 #
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
 msgstr "Anulación - de áreaa cancelada siguiendo el Identificador de mensaje"
+#
+msgid "Cape Verde"
+msgstr ""
 #
 #
 #
@@ -1430,6 +1608,9 @@ msgstr "Area de Precaución: Operaciones subacuáticas"
 msgid "Caution Area: Underwater vehicle operation"
 msgstr "Area de Precaución: Operaciones con vehículo subacuático"
 #
+msgid "Cayman Islands"
+msgstr ""
+#
 #
 #
 #
@@ -1448,6 +1629,12 @@ msgstr "Centrar Vista"
 #
 msgid "Center View..."
 msgstr "Centrar Vista..."
+#
+msgid "Central African Republic"
+msgstr ""
+#
+msgid "Chad"
+msgstr ""
 #
 #
 #
@@ -1565,6 +1752,12 @@ msgstr "Textos Carta"
 msgid "Charts"
 msgstr "Cartas"
 #
+msgid "Chile"
+msgstr ""
+#
+msgid "China"
+msgstr ""
+#
 #
 #
 #
@@ -1590,6 +1783,9 @@ msgstr "Elegir formato de copia"
 #
 msgid "Choose a file"
 msgstr "Selecciona un archivo"
+#
+msgid "Christmas Island"
+msgstr ""
 #
 #
 #
@@ -1622,6 +1818,9 @@ msgstr "Borrar Todo"
 #
 msgid "Clear Anchor Watch"
 msgstr "Quitar alarma de fondeo"
+#
+msgid "Clear Texture Cache"
+msgstr ""
 #
 msgid "Clearance granted - proceed to berth"
 msgstr "Permiso concedido - proceda a atracar"
@@ -1657,6 +1856,18 @@ msgstr "Cerrar"
 msgid "CoG"
 msgstr "CoG"
 #
+msgid "Cocos"
+msgstr ""
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Colombia"
+msgstr "Color"
+#
 #
 #
 #
@@ -1684,8 +1895,26 @@ msgstr "Colores"
 msgid "Combo!"
 msgstr "Combo!"
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Comoros"
+msgstr "Mañana"
+#
+msgid "Comoros (Union of the)"
+msgstr ""
+#
 msgid "Confirm deletion of tracks and routes"
 msgstr "Confirmar borrado de derrotas y rutas"
+#
+msgid "Congo"
+msgstr ""
 #
 #
 #
@@ -1720,6 +1949,9 @@ msgstr "Limitación por calado"
 msgid "Control checksum"
 msgstr "Control de checksum"
 #
+msgid "Cook Islands"
+msgstr ""
+#
 msgid "Copy As KML"
 msgstr "Copiar Como KML"
 #
@@ -1734,6 +1966,9 @@ msgstr "Copiar como KML"
 #
 msgid "Copy as KML..."
 msgstr "Copiar como KML..."
+#
+msgid "Costa Rica"
+msgstr ""
 #
 # Rumbo efectivo
 msgid "Course"
@@ -1787,6 +2022,15 @@ msgstr "Crear WPT"
 msgid "Create Waypoint"
 msgstr "Crear Waypoint"
 #
+msgid "Croatia"
+msgstr ""
+#
+msgid "Crozet Archipelago"
+msgstr ""
+#
+msgid "Cuba"
+msgstr ""
+#
 #
 #
 #
@@ -1805,6 +2049,15 @@ msgstr "Corriente"
 #
 msgid "Cyan"
 msgstr "Cian"
+#
+msgid "Cyprus"
+msgstr ""
+#
+msgid "Czech Republic"
+msgstr ""
+#
+msgid "CÃ´te d'Ivoire"
+msgstr ""
 #
 #
 #
@@ -1968,6 +2221,12 @@ msgstr "Eliminar Waypoint"
 #
 msgid "Delete..."
 msgstr "Eliminar..."
+#
+msgid "Dem Rep.of the Congo"
+msgstr ""
+#
+msgid "Denmark"
+msgstr ""
 #
 #
 #
@@ -2149,12 +2408,27 @@ msgstr "Distress Area: Buque hundiéndose"
 msgid "Distress Area: Vessel under assault"
 msgstr "Distress Area: Buque bajo asalto"
 #
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Djibouti"
+msgstr "Acerca de"
+#
 msgid ""
 "Do you also want to make the shared waypoints being part of this route "
 "invisible?"
 msgstr ""
 "¿Quieres hacer invisibles los waypoints compartidos que son parte de esta "
 "ruta?"
+#
+msgid "Dominica"
+msgstr ""
+#
+msgid "Dominican Republic"
+msgstr ""
 #
 #
 #
@@ -2216,8 +2490,17 @@ msgstr "ETE"
 msgid "ETE/ETD"
 msgstr "ETE/ETD"
 #
+msgid "Ecuador"
+msgstr ""
+#
 msgid "Edit"
 msgstr "Editar"
+#
+msgid "Egypt"
+msgstr ""
+#
+msgid "El Salvador"
+msgstr ""
 #
 #
 #
@@ -2309,6 +2592,12 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Area de Precaución Medioambiental: Corrientes fuertes"
 #
+msgid "Equatorial Guinea"
+msgstr ""
+#
+msgid "Eritrea"
+msgstr ""
+#
 #
 #
 #
@@ -2331,6 +2620,12 @@ msgstr "¡Error!"
 #
 msgid "Estimated time : "
 msgstr "Tiempo estimado : "
+#
+msgid "Estonia"
+msgstr ""
+#
+msgid "Ethiopia"
+msgstr ""
 #
 # Evening twilight
 msgid "EvTwilight"
@@ -2405,6 +2700,12 @@ msgstr "Pesquero"
 msgid "Failed to initialize the user interface. "
 msgstr "Fallo al iniciar la interfaz de usuario."
 #
+msgid "Falkland Islands"
+msgstr ""
+#
+msgid "Faroe Islands"
+msgstr ""
+#
 #
 #
 #
@@ -2420,6 +2721,9 @@ msgstr "Brazas"
 #
 msgid "Feet"
 msgstr "Pies"
+#
+msgid "Fiji"
+msgstr ""
 #
 #
 #
@@ -2439,6 +2743,9 @@ msgstr "Filtrar Periodo (seg.)"
 msgid "Filters"
 msgstr "Filtros"
 #
+msgid "Finland"
+msgstr ""
+#
 #
 #
 msgid "Fix.Struct."
@@ -2448,6 +2755,9 @@ msgstr "Estruct.Fija"
 #
 msgid "Fixed Structure"
 msgstr "Estructura Fija"
+#
+msgid "Flag"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Fuentes"
@@ -2465,6 +2775,18 @@ msgstr "Forzar Reparación de Toda la Base de Datos"
 #
 msgid "Format uploads for Furuno GP3X"
 msgstr "Formato subida para Furuno GP3X"
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "France"
+msgstr "Cancelar"
+#
+msgid "French Polynesia"
+msgstr ""
 #
 # No se donde va, hay eque ver el contexto pero en principio quedaría así,  ¿no?
 msgid "From"
@@ -2497,6 +2819,12 @@ msgstr "GPX"
 msgid "GUID"
 msgstr "GUID"
 #
+msgid "Gabonese Republic"
+msgstr ""
+#
+msgid "Gambia"
+msgstr ""
+#
 #
 #
 #
@@ -2514,6 +2842,18 @@ msgstr "General"
 msgid "General Options"
 msgstr "Opciones Generales"
 #
+msgid "Georgia"
+msgstr ""
+#
+msgid "Germany"
+msgstr ""
+#
+msgid "Ghana"
+msgstr ""
+#
+msgid "Gibraltar"
+msgstr ""
+#
 #
 #
 #
@@ -2525,17 +2865,54 @@ msgstr "Ir A "
 msgid "GpsGate Buddy"
 msgstr "GpsGate Buddy"
 #
+msgid "Great Britain"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Greece"
+msgstr "Verde"
+#
 #
 msgid "Green"
 msgstr "Verde"
 #
+#
+#, fuzzy
+msgid "Greenland"
+msgstr "Verde"
+#
+msgid "Grenada"
+msgstr ""
+#
 msgid "Group \""
 msgstr "Grupo \""
+#
+msgid "Guadeloupe"
+msgstr ""
+#
+msgid "Guatemala"
+msgstr ""
+#
+msgid "Guiana"
+msgstr ""
+#
+msgid "Guinea"
+msgstr ""
+#
+msgid "Guinea-Bissau"
+msgstr ""
+#
+msgid "Guyana"
+msgstr ""
 #
 #
 #
 msgid "HSC"
 msgstr "HSC"
+#
+msgid "Haiti"
+msgstr ""
 #
 msgid "Heading"
 msgstr "Rumbo ver."
@@ -2627,6 +3004,15 @@ msgstr "Nave de alta velocidad"
 msgid "Highlight Tracks"
 msgstr "Resaltar Derrotas"
 #
+msgid "Honduras"
+msgstr ""
+#
+msgid "Hong Kong"
+msgstr ""
+#
+msgid "Hungary"
+msgstr ""
+#
 #
 #
 #
@@ -2638,6 +3024,9 @@ msgstr "I&mportar GPX..."
 #
 msgid "IMO"
 msgstr "IMO"
+#
+msgid "Iceland"
+msgstr ""
 #
 #
 #
@@ -2671,6 +3060,16 @@ msgstr "Importar Fichero GPX"
 #
 msgid "Important Text Only"
 msgstr "Solo Texto Importante"
+#
+#, fuzzy
+msgid "Incompatible PlugIn detected:\n"
+msgstr "    Detectado PlugIn Incompatible:"
+#
+msgid "India"
+msgstr ""
+#
+msgid "Indonesia"
+msgstr ""
 #
 msgid "Information: Icebreaker waiting area"
 msgstr "Información: Area espera rompehielos"
@@ -2721,6 +3120,15 @@ msgstr "Instrucción: Contacte con Estación Costera en este punto/intersección
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr "Instrucción: No rebase este punto/intersección"
 #
+msgid "Iran"
+msgstr ""
+#
+msgid "Iraq"
+msgstr ""
+#
+msgid "Ireland"
+msgstr ""
+#
 #
 #
 msgid "Isol. Dngr"
@@ -2734,11 +3142,35 @@ msgstr "Pelig. Aisl."
 msgid "Isolated Danger"
 msgstr "Peligro Aislado"
 #
+msgid "Israel"
+msgstr ""
+#
+msgid "Italy"
+msgstr ""
+#
+msgid "Jamaica"
+msgstr ""
+#
+msgid "Japan"
+msgstr ""
+#
+msgid "Jordan"
+msgstr ""
+#
 msgid "KML Standard (Google Earth and others)"
 msgstr "KML Standard (Google Earth y otros)"
 #
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "KML con datos adicionales del waypoint (QtVlm)"
+#
+msgid "Kazakhstan"
+msgstr ""
+#
+msgid "Kenya"
+msgstr ""
+#
+msgid "Kerguelen Islands"
+msgstr ""
 #
 #
 #
@@ -2748,8 +3180,20 @@ msgstr "KML con datos adicionales del waypoint (QtVlm)"
 msgid "Kilometers"
 msgstr "Kilómetros"
 #
+msgid "Kiribati"
+msgstr ""
+#
 msgid "Knots"
 msgstr "Nudos"
+#
+msgid "Korea"
+msgstr ""
+#
+msgid "Kuwait"
+msgstr ""
+#
+msgid "Kyrgyz Republic"
+msgstr ""
 #
 #
 #
@@ -2772,6 +3216,9 @@ msgstr "LMT @ Inicio Derrota"
 msgid "Language"
 msgstr "Idioma"
 #
+msgid "Lao People's Dem. Rep."
+msgstr ""
+#
 #
 #
 #
@@ -2779,6 +3226,9 @@ msgstr "Idioma"
 #
 msgid "Latitude"
 msgstr "Latitud"
+#
+msgid "Latvia"
+msgstr ""
 #
 #
 #
@@ -2838,6 +3288,9 @@ msgstr "Luz frontal princ."
 msgid "Leading Light Rear"
 msgstr "Luz trasera princ."
 #
+msgid "Lebanon"
+msgstr ""
+#
 msgid "Left"
 msgstr "Izquierda"
 #
@@ -2868,6 +3321,16 @@ msgstr "Longitud"
 msgid "Length Over All (m)"
 msgstr "Eslora total (m)"
 #
+msgid "Lesotho"
+msgstr ""
+#
+#, fuzzy
+msgid "Liberia"
+msgstr "Serie"
+#
+msgid "Libyan Arab Jamahiriya"
+msgstr ""
+#
 #
 #
 #
@@ -2875,6 +3338,9 @@ msgstr "Eslora total (m)"
 #
 msgid "License"
 msgstr "Licencia"
+#
+msgid "Liechtenstein"
+msgstr ""
 #
 #
 #
@@ -2964,6 +3430,9 @@ msgstr "Los enlaces se abren en el navegador por defecto."
 msgid "List contents"
 msgstr "Lista contenidos"
 #
+msgid "Lithuania"
+msgstr ""
+#
 #
 #
 #
@@ -3042,6 +3511,9 @@ msgstr "Sec. luz"
 msgid "LtV/Rig"
 msgstr "Barco faro/plataforma"
 #
+msgid "Luxembourg"
+msgstr ""
+#
 #
 #
 msgid "M/T"
@@ -3072,9 +3544,36 @@ msgstr "MMSI"
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
 #
+msgid "Macao"
+msgstr ""
+#
+msgid "Macedonia"
+msgstr ""
+#
+msgid "Madagascar"
+msgstr ""
+#
+msgid "Madeira"
+msgstr ""
+#
 #
 msgid "Magenta"
 msgstr "Magenta"
+#
+msgid "Malawi"
+msgstr ""
+#
+msgid "Malaysia"
+msgstr ""
+#
+msgid "Maldives"
+msgstr ""
+#
+msgid "Mali"
+msgstr ""
+#
+msgid "Malta"
+msgstr ""
 #
 #
 #
@@ -3103,6 +3602,18 @@ msgstr "Marcar blancos como perdidos tras (min)"
 # Lista desplegable del selector de fuentes del Interface de Usuario
 msgid "Marks"
 msgstr "Marcas"
+#
+msgid "Marshall Islands"
+msgstr ""
+#
+msgid "Martinique"
+msgstr ""
+#
+msgid "Mauritania"
+msgstr ""
+#
+msgid "Mauritius"
+msgstr ""
 #
 #
 #
@@ -3141,6 +3652,9 @@ msgstr "Transporte Médico"
 msgid "Medium"
 msgstr "Medio"
 #
+msgid "Menu"
+msgstr ""
+#
 #
 #
 #
@@ -3173,6 +3687,12 @@ msgstr "¿Unir waypoints?"
 msgid "Meters"
 msgstr "Metros"
 #
+msgid "Mexico"
+msgstr ""
+#
+msgid "Micronesia"
+msgstr ""
+#
 #
 #
 msgid "Mil/V"
@@ -3192,10 +3712,28 @@ msgstr "Opciones Variadas"
 msgid "MoTwilight"
 msgstr "MoCrepúsculo"
 #
+msgid "Moldova"
+msgstr ""
+#
+msgid "Monaco"
+msgstr ""
+#
+msgid "Mongolia"
+msgstr ""
+#
+msgid "Montenegro"
+msgstr ""
+#
+msgid "Montserrat"
+msgstr ""
+#
 #
 #
 msgid "Moored"
 msgstr "Amarrado"
+#
+msgid "Morocco"
+msgstr ""
 #
 #
 #
@@ -3213,8 +3751,14 @@ msgstr "Mover Barco Aquí"
 msgid "Move Waypoint"
 msgstr "Mover Waypoint"
 #
+msgid "Mozambique"
+msgstr ""
+#
 msgid "Mph"
 msgstr "Mph"
+#
+msgid "Myanmar"
+msgstr ""
 #
 msgid "NMEA"
 msgstr "NMEA"
@@ -3246,9 +3790,15 @@ msgstr "NMi"
 msgid "Name"
 msgstr "Nombre"
 #
+msgid "Namibia"
+msgstr ""
+#
 # incluye los mensajes de la carta en su lengua original
 msgid "National text on chart"
 msgstr "Incluir mensajes en idioma nacional"
+#
+msgid "Nauru"
+msgstr ""
 #
 #
 #
@@ -3286,8 +3836,17 @@ msgstr "Navegar hasta Aquí"
 msgid "Navigate To This"
 msgstr "Navegar hasta Esta"
 #
+msgid "Nepal"
+msgstr ""
+#
+msgid "Netherlands"
+msgstr ""
+#
 msgid "Network"
 msgstr "Red"
+#
+msgid "New Caledonia"
+msgstr ""
 #
 #
 #
@@ -3300,14 +3859,30 @@ msgstr "Nuevo Grupo Cartas"
 msgid "New Group..."
 msgstr "Nuevo Grupo..."
 #
+msgid "New Zealand"
+msgstr ""
+#
 #
 #
 msgid "Next tide event"
 msgstr "Próximo evento de marea"
 #
+msgid "Nicaragua"
+msgstr ""
+#
+msgid "Niger"
+msgstr ""
+#
+#, fuzzy
+msgid "Nigeria"
+msgstr "Serie"
+#
 # Podría ser "De noche"?: Nocturno
 msgid "Nighttime"
 msgstr "Nocturno"
+#
+msgid "Niue"
+msgstr ""
 #
 #
 #
@@ -3362,6 +3937,12 @@ msgstr "Ninguno"
 msgid "North Up Mode"
 msgstr "Modo Norte Arriba"
 #
+msgid "Northern Mariana Islands"
+msgstr ""
+#
+msgid "Norway"
+msgstr ""
+#
 #
 #
 msgid "Not Under Command"
@@ -3400,6 +3981,9 @@ msgstr "Aceptar"
 #
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "El log antiguo se moverá a opencpn.log.log"
+#
+msgid "Oman"
+msgstr ""
 #
 #
 #
@@ -3596,8 +4180,38 @@ msgstr "PC/V"
 #
 #
 #
+#, fuzzy
+msgid "Pakistan"
+msgstr "Distancia"
+#
+msgid "Palau"
+msgstr ""
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Palestine"
+msgstr "Probando"
+#
+msgid "Panama"
+msgstr ""
+#
+#
+#
+#
+#
+#
 msgid "Paper Chart"
 msgstr "Carta en Papel"
+#
+msgid "Papua New Guinea"
+msgstr ""
+#
+msgid "Paraguay"
+msgstr ""
 #
 #
 #
@@ -3641,10 +4255,22 @@ msgstr "Pegar Derrota"
 msgid "Paste Waypoint"
 msgstr "Pegar Waypoint"
 #
+msgid "People's Rep. of Korea"
+msgstr ""
+#
+msgid "Peru"
+msgstr ""
+#
+msgid "Philippines"
+msgstr ""
+#
 #
 #
 msgid "Pilot Vessel"
 msgstr "Práctico"
+#
+msgid "Pitcairn Island"
+msgstr ""
 #
 #
 #
@@ -3718,6 +4344,10 @@ msgstr ""
 " Se sabe que esta versión es inestable.\n"
 " Por favor actualice el PlugIn desde opencpn.org."
 #
+#, c-format
+msgid "PlugIn [ %s ] version %i.%i"
+msgstr ""
+#
 #
 #
 #
@@ -3732,6 +4362,9 @@ msgstr "Plugins"
 #
 msgid "Points"
 msgstr "Puntos"
+#
+msgid "Poland"
+msgstr ""
 #
 #
 #
@@ -3763,6 +4396,11 @@ msgstr "Marca Babor"
 #
 msgid "Port Tender"
 msgstr "Port Tender"
+#
+# Desde diferentes partes del programa hacen referencia a esta llamada y en unos casos es babor y en otros es puerto (de ordenador)
+#, fuzzy
+msgid "Portugal"
+msgstr "Babor"
 #
 #
 #
@@ -3907,6 +4545,12 @@ msgstr "Propiedades..."
 msgid "Protocol"
 msgstr "Protocolo"
 #
+msgid "Puerto Rico"
+msgstr ""
+#
+msgid "Qatar"
+msgstr ""
+#
 #
 #
 #
@@ -3954,6 +4598,9 @@ msgstr "Vectorial a Escala Real"
 #
 msgid "Real(Off Position)"
 msgstr "Real (Posición Off)"
+#
+msgid "Rebuild Texture Cache"
+msgstr ""
 #
 #
 #
@@ -4124,6 +4771,9 @@ msgstr "Recuperando ajuste inicial Directorio Cartas desde Registro de Windows"
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Recuperando selección inicial de idioma desde Registro de Windows"
 #
+msgid "Reunion"
+msgstr ""
+#
 #
 #
 #
@@ -4149,6 +4799,9 @@ msgstr "Buque \"rojo\" o sospechoso"
 #
 msgid "Rollover"
 msgstr "Cartel"
+#
+msgid "Romania"
+msgstr ""
 #
 #
 #
@@ -4226,6 +4879,12 @@ msgstr "Cartel de info Ruta/Etapa"
 msgid "Routes"
 msgstr "Rutas"
 #
+msgid "Russian"
+msgstr ""
+#
+msgid "Rwanda"
+msgstr ""
+#
 # Es abreviatura de velero
 msgid "S/V"
 msgstr "S/V"
@@ -4272,6 +4931,36 @@ msgstr "Profundidad Seguridad"
 #
 msgid "Sailing Vessel"
 msgstr "Velero"
+#
+msgid "Saint Helena"
+msgstr ""
+#
+msgid "Saint Kitts and Nevis"
+msgstr ""
+#
+msgid "Saint Lucia"
+msgstr ""
+#
+msgid "Saint Paul"
+msgstr ""
+#
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+#
+msgid "Saint Vincent and the Grenadines"
+msgstr ""
+#
+msgid "Samoa"
+msgstr ""
+#
+msgid "San Marino"
+msgstr ""
+#
+msgid "Sao Tome and Principe"
+msgstr ""
+#
+msgid "Saudi Arabia"
+msgstr ""
 #
 #
 #
@@ -4395,8 +5084,23 @@ msgstr "Enviar a GPS"
 #
 #
 #
+#, fuzzy
+msgid "Send to new GPS"
+msgstr "Enviar a GPS"
+#
+msgid "Senegal"
+msgstr ""
+#
+#
+#
+#
+#
+#
 msgid "Sentence Filter"
 msgstr "Filtro Sentencia"
+#
+msgid "Serbia"
+msgstr ""
 #
 msgid "Serial"
 msgstr "Serie"
@@ -4411,6 +5115,9 @@ msgstr "Ajustar"
 #
 msgid "Set Anchor Watch"
 msgstr "Establecer Alarma Fondeo "
+#
+msgid "Seychelles"
+msgstr ""
 #
 #
 #
@@ -4748,6 +5455,9 @@ msgstr "Mostrar derrotas blanco, longitud (min)"
 msgid "Shows the font preview."
 msgstr "Muestra vista previa de fuente."
 #
+msgid "Sierra Leone"
+msgstr ""
+#
 #
 #
 #
@@ -4755,6 +5465,15 @@ msgstr "Muestra vista previa de fuente."
 #
 msgid "Simplified"
 msgstr "Simplificado"
+#
+msgid "Singapore"
+msgstr ""
+#
+msgid "Slovak Republic"
+msgstr ""
+#
+msgid "Slovenia"
+msgstr ""
 #
 #
 msgid "Smooth Panning / Zooming"
@@ -4774,6 +5493,21 @@ msgstr "SoG"
 #
 msgid "Solid"
 msgstr "Sólido"
+#
+msgid "Solomon Islands"
+msgstr ""
+#
+msgid "Somali Democratic Republic"
+msgstr ""
+#
+msgid "South Africa"
+msgstr ""
+#
+msgid "South Sudan (Republic of)"
+msgstr ""
+#
+msgid "Spain"
+msgstr ""
 #
 #
 #
@@ -4836,6 +5570,9 @@ msgstr "Cortar Ruta"
 msgid "Split Track"
 msgstr "Cortar Derrota"
 #
+msgid "Sri Lanka"
+msgstr ""
+#
 #
 #
 #
@@ -4893,6 +5630,9 @@ msgstr "Estilo"
 msgid "Style:"
 msgstr "Estilo:"
 #
+msgid "Sudan"
+msgstr ""
+#
 msgid "Sunrise"
 msgstr "Salida del sol"
 #
@@ -4907,6 +5647,18 @@ msgstr "Ocaso"
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Suprimir Alarmas para blancos amarrados/anclados"
 #
+msgid "Suriname"
+msgstr ""
+#
+msgid "Swaziland"
+msgstr ""
+#
+msgid "Sweden"
+msgstr ""
+#
+msgid "Switzerland"
+msgstr ""
+#
 #
 #
 #
@@ -4914,6 +5666,9 @@ msgstr "Suprimir Alarmas para blancos amarrados/anclados"
 #
 msgid "Symbolized"
 msgstr "Con símbolos"
+#
+msgid "Syrian Arab Republic"
+msgstr ""
 #
 #
 #
@@ -4931,10 +5686,16 @@ msgstr "TCP"
 msgid "TCPA"
 msgstr "TCPA"
 #
+msgid "Taiwan"
+msgstr ""
+#
 #
 #
 msgid "Tanker"
 msgstr "Petrolero"
+#
+msgid "Tanzania"
+msgstr ""
 #
 #
 #
@@ -5014,6 +5775,9 @@ msgid "Texture Compression Caching"
 msgstr ""
 #
 msgid "Texture Memory Size (MB)"
+msgstr ""
+#
+msgid "Thailand"
 msgstr ""
 #
 msgid ""
@@ -5232,6 +5996,12 @@ msgstr "Dejar Derrota"
 msgid "Toggle track"
 msgstr "Dejar Derrota"
 #
+msgid "Togolese Republic"
+msgstr ""
+#
+msgid "Tonga"
+msgstr ""
+#
 # Lista desplegable del selector de fuentes del Interface de Usuario
 msgid "ToolTips"
 msgstr "Info herramienta"
@@ -5333,6 +6103,9 @@ msgstr "Mercator Transversal"
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "Tratar sentencias WPL como informes de posición APRS"
 #
+msgid "Trinidad and Tobago"
+msgstr ""
+#
 #
 #
 #
@@ -5346,8 +6119,23 @@ msgstr "Derr"
 msgid "Tug"
 msgstr "Remolcador"
 #
+msgid "Tunisia"
+msgstr ""
+#
+msgid "Turkey"
+msgstr ""
+#
+msgid "Turkmenistan"
+msgstr ""
+#
+msgid "Turks and Caicos Islands"
+msgstr ""
+#
 msgid "Turn Rate"
 msgstr "Velocidad de giro"
+#
+msgid "Tuvalu"
+msgstr ""
 #
 #
 #
@@ -5369,6 +6157,12 @@ msgstr "URL"
 #
 msgid "UTC"
 msgstr "UTC"
+#
+msgid "Uganda"
+msgstr ""
+#
+msgid "Ukraine"
+msgstr ""
 #
 #
 #
@@ -5398,6 +6192,15 @@ msgstr "Navegando"
 #
 msgid "Undo"
 msgstr "Deshacer"
+#
+msgid "United Arab Emirates"
+msgstr ""
+#
+msgid "United States Virgin Islands"
+msgstr ""
+#
+msgid "United States of America"
+msgstr ""
 #
 #
 #
@@ -5435,6 +6238,9 @@ msgstr "Sin especificar"
 #
 msgid "Update Control"
 msgstr "Control de Actualizaciones"
+#
+msgid "Uruguay"
+msgstr ""
 #
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Usar aceleración gráfica (OpenGL)"
@@ -5491,6 +6297,9 @@ msgstr "Compensación Usuario Y"
 msgid "User Y Offset (Metres)"
 msgstr "Compensación Usuario Y (Metros)"
 #
+msgid "Uzbekistan"
+msgstr ""
+#
 #
 #
 #
@@ -5499,6 +6308,12 @@ msgstr "Compensación Usuario Y (Metros)"
 msgid "VTS active target"
 msgstr "Blanco activo E. Costera"
 #
+msgid "Vanuatu"
+msgstr ""
+#
+msgid "Vatican City State"
+msgstr ""
+#
 #
 #
 #
@@ -5506,6 +6321,9 @@ msgstr "Blanco activo E. Costera"
 #
 msgid "Vector Charts"
 msgstr "Cartas Vectoriales"
+#
+msgid "Venezuela"
+msgstr ""
 #
 #
 #
@@ -5535,6 +6353,9 @@ msgstr "Remolcador largo"
 msgid "Vessel requesting non-distress assistance"
 msgstr "Buque solicitando asistencia sin peligro"
 #
+msgid "Viet Nam"
+msgstr ""
+#
 #
 #
 msgid "Virtual"
@@ -5560,6 +6381,9 @@ msgstr "Botones visibles"
 #
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Archivos WAV (*.wav)|*.wav|Todos los archivos (*.*)|*.*"
+#
+msgid "Wallis and Futuna Islands"
+msgstr ""
 #
 #
 #
@@ -5701,6 +6525,9 @@ msgstr "Yate"
 msgid "Yellow"
 msgstr "Amarillo"
 #
+msgid "Yemen"
+msgstr ""
+#
 msgid "Yes, hide it."
 msgstr "Si, ocúltalo."
 #
@@ -5733,6 +6560,12 @@ msgstr "Debes introducir la dirección..."
 #
 msgid "You must select or enter the port..."
 msgstr "Debes seleccionar o introducir el puerto..."
+#
+msgid "Zambia"
+msgstr ""
+#
+msgid "Zimbabwe"
+msgstr ""
 #
 #
 #
@@ -5870,50 +6703,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid ""
-#~ "\n"
-#~ "\n"
-#~ "\n"
-#~ msgstr ""
-#~ "\n"
-#~ "\n"
-#~ "\n"
 #
 #
 #
@@ -5946,6 +6739,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "      COG arrow predictor length (Minutes):"
 #~ msgstr "     Predicción longitud flecha COG (Minutos):"
 #
@@ -5963,8 +6757,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "     Velocidad Max objetivo amarrado (Kts.):"
+#
 #
 #
 #
@@ -6009,8 +6805,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Proyección DESCONOCIDA, se asume Mercator: "
+#
 #
 #
 #
@@ -6083,8 +6881,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de PlugIns: No se puede cargar símbolo create_pi: "
+#
 #
 #
 #
@@ -6136,8 +6936,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr "  No se pudo abrir puerto serie AIS '"
+#
 #
 #
 #
@@ -6158,8 +6960,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid " </b>in<b> "
 #~ msgstr " </b>en<b> "
+#
 #
 #
 #
@@ -6184,6 +6988,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG: 000 Deg."
 #
@@ -6195,8 +7000,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid " is %5g"
 #~ msgstr " es %5g"
+#
 #
 #
 #
@@ -6265,8 +7072,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "&Close"
 #~ msgstr "&Cerrar"
+#
 #
 #
 #
@@ -6393,8 +7202,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "&Delete All Tracks..."
 #~ msgstr "&Borrar Todas Las Derrotas..."
+#
 #
 #
 #
@@ -6415,6 +7226,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "&Jump To"
 #~ msgstr "&Saltar A"
 #
@@ -6426,8 +7238,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "&Silence Alert"
 #~ msgstr "&Silenciar Alerta"
+#
 #
 #
 #
@@ -6462,12 +7276,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ "Suggestion: Try closing other applications."
 #~ msgstr ""
 #~ "'\n"
 #~ "Sugerencia: Pruebe a cerrar otros programas."
+#
 #
 #
 #
@@ -6552,14 +7368,17 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
 #
 #
 #
 #
+#
 #~ msgid ", Out: None"
 #~ msgstr ", Salida: Ninguno"
+#
 #
 #
 #
@@ -6594,6 +7413,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ ":               Unavailable\n"
 #~ "\n"
@@ -6602,6 +7422,7 @@ msgstr "wxFB Website"
 #~ ":               No disponible\n"
 #~ "\n"
 #~ "\n"
+#
 #
 #
 #
@@ -6622,8 +7443,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "AIS Alert"
 #~ msgstr "Alerta AIS"
+#
 #
 #
 #
@@ -6665,8 +7488,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "AISTargetAlert"
 #~ msgstr "Alerta blanco AIS"
+#
 #
 #
 #
@@ -6685,8 +7510,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Activate CM93 Offset"
 #~ msgstr "Activar Compensación CM93"
+#
 #
 #
 #
@@ -6727,8 +7554,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Active Charts"
 #~ msgstr "Cartas Activas"
+#
 #
 #
 #
@@ -6760,8 +7589,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Añadir esta carta a continuidad"
+#
 #
 #
 #
@@ -6804,8 +7635,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "Información adicional"
+#
 #
 #
 #
@@ -6861,8 +7694,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "Intentando cargar libgps.so"
+#
 #
 #
 #
@@ -6894,6 +7729,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Carpetas de Cartas disponibles"
 #
@@ -6902,8 +7738,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Barge, tanker, chemical"
 #~ msgstr "Barcaza, buque cisterna, quimiquero"
+#
 #
 #
 #
@@ -6957,8 +7795,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Demora:                %03d Deg.\n"
+#
 #
 #
 #
@@ -6983,6 +7823,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "Transp. marit. de grano"
 #
@@ -6991,8 +7832,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Bunkership"
 #~ msgstr "Carbonero"
+#
 #
 #
 #
@@ -7024,6 +7867,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "CM93 Detail Slider..."
 #~ msgstr "Habilitar Control de Detalle CM93"
@@ -7039,8 +7883,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "Mostrar Compensación CM93"
+#
 #
 #
 #
@@ -7143,8 +7989,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "Compensación CM93 On"
+#
 #
 #
 #
@@ -7247,6 +8095,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "Herramienta Compensación CM93....."
 #
@@ -7261,8 +8110,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Offsets"
 #~ msgstr "Compensación CM93"
+#
 #
 #
 #
@@ -7330,8 +8181,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "Detalle Zoom CM93"
+#
 #
 #
 #
@@ -7366,8 +8219,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f NM\n"
+#
 #
 #
 #
@@ -7450,8 +8305,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "Señal Llamada:  "
+#
 #
 #
 #
@@ -7474,10 +8331,12 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Can't send waypoint. Found no serial data port with output defined."
 #~ msgstr ""
 #~ "No se puede enviar waypoint. No se encontró puerto serie con salida "
 #~ "definida."
+#
 #
 #
 #
@@ -7577,9 +8436,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "Ajustar Compensación CM93"
+#
 #
 #
 #
@@ -7627,8 +8488,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "Filtros Visualización Cartas"
+#
 #
 #
 #
@@ -7649,8 +8512,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Chart Groups...New Group"
 #~ msgstr "Grupos Cartas...Nuevo Grupo"
+#
 #
 #
 #
@@ -7721,8 +8586,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Chart file corrupt.. disabling this chart \n"
 #~ msgstr "Fichero de carta corrupto.. desactivando carta \n"
+#
 #
 #
 #
@@ -7850,11 +8717,13 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Class:     "
 #~ msgstr ""
 #~ "Clase:     A\n"
 #~ "\n"
+#
 #
 #
 #
@@ -7879,8 +8748,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Container vessel"
 #~ msgstr "Portacontenedores"
+#
 #
 #
 #
@@ -7904,14 +8775,17 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "No se pudo resolver anfitrión TCP/IP"
+#
 #
 #
 #
 # No se si se refiere a sonar o a profundidad
 #~ msgid "Couldn't load sound data from '%s'."
 #~ msgstr "No se ha podido cargar los datos de sonido de '% s'."
+#
 #
 #
 #
@@ -7946,8 +8820,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "Rumbo:                 000 Deg.\n"
+#
 #
 #
 #
@@ -7972,8 +8848,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Cruise ship"
 #~ msgstr "Crucero"
+#
 #
 #
 #
@@ -8000,8 +8878,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Data Source :"
 #~ msgstr "Origen Datos :"
+#
 #
 #
 #
@@ -8055,9 +8935,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "Datos por defecto"
+#
 #
 #
 #
@@ -8099,8 +8981,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "Eliminar Marca"
+#
 #
 #
 #
@@ -8133,6 +9017,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "Eliminar Selección"
 #
@@ -8150,8 +9035,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Delete Track"
 #~ msgstr "Borrar Derrota"
+#
 #
 #
 #
@@ -8185,8 +9072,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Destino:          "
+#
 #
 #
 #
@@ -8207,6 +9096,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 # Cartel en mensajes de parametros de conexion de datos
 #~ msgid "Drop"
 #~ msgstr "Dejar"
@@ -8219,8 +9109,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "&Exportar Todo..."
+#
 #
 #
 #
@@ -8253,8 +9145,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "ETA:"
 #~ msgstr "ETA:"
+#
 #
 #
 #
@@ -8309,8 +9203,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "Tiempo estimado"
+#
 #
 #
 #
@@ -8340,8 +9236,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "Habilitar Zoom con rueda de ratón"
+#
 #
 #
 #
@@ -8367,8 +9265,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Etc."
+#
 #
 #
 #
@@ -8458,8 +9358,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Error al cargar libgps.so"
+#
 #
 #
 #
@@ -8506,8 +9408,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Fast ship"
 #~ msgstr "Barco rápido"
+#
 #
 #
 #
@@ -8522,8 +9426,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Fishing boat"
 #~ msgstr "Pesquero"
+#
 #
 #
 #
@@ -8538,8 +9444,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "Barcaza de carga con contenedores"
+#
 #
 #
 #
@@ -8573,8 +9481,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
 #
 #
 #
@@ -8601,8 +9511,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "Servidor Datos GPSD"
+#
 #
 #
 #
@@ -8620,8 +9532,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "Buque de carga general"
+#
 #
 #
 #
@@ -8663,8 +9577,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Ir a Marca/WP"
+#
 #
 #
 #
@@ -8682,8 +9598,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "HW"
 #~ msgstr "HW"
+#
 #
 #
 #
@@ -8725,6 +9643,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Demora:                %03d Deg.\n"
 #
@@ -8733,8 +9652,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Hydrofoil"
 #~ msgstr "Hidroala"
+#
 #
 #
 #
@@ -8798,9 +9719,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Import new layer"
 #~ msgstr "Importar Fichero GPX"
+#
 #
 #
 #
@@ -8816,8 +9739,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "In: None"
 #~ msgstr "Entrada: Ninguno"
+#
 #
 #
 #
@@ -8850,8 +9775,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Saltar A"
+#
 #
 #
 #
@@ -8890,8 +9817,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Saltar A Posición..."
+#
 #
 #
 #
@@ -8917,6 +9846,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #  if ( type == BLACKLIST )
 #         return _("All but");
 #     else
@@ -8929,8 +9859,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "LW"
 #~ msgstr "LW"
+#
 #
 #
 #
@@ -8977,8 +9909,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Hora Último Informe Posición:       "
+#
 #
 #
 #
@@ -9000,9 +9934,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 # Lista desplegable del selector de fuentes del Interface de Usuario
 #~ msgid "Legend"
 #~ msgstr "Leyenda"
+#
 #
 #
 #
@@ -9026,8 +9962,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "META Objetos"
+#
 #
 #
 #
@@ -9113,8 +10051,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "MarinersStandard"
 #~ msgstr "Estándar Marino"
+#
 #
 #
 #
@@ -9179,6 +10119,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Mark Name"
 #~ msgstr "Nombre Marca"
 #
@@ -9190,8 +10131,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Mark Properties"
 #~ msgstr "Propiedades Marca"
+#
 #
 #
 #
@@ -9242,8 +10185,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Medir....."
+#
 #
 #
 #
@@ -9254,8 +10199,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Message filtered and dropped"
 #~ msgstr "Mensaje filtrado y descartado"
+#
 #
 #
 #
@@ -9279,8 +10226,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Motor freighter"
 #~ msgstr "Buque de carga a motor"
+#
 #
 #
 #
@@ -9295,8 +10244,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Motor freighter pushing one or more freighters"
 #~ msgstr "Buque de carga a motor tirando de uno o más cargueros"
+#
 #
 #
 #
@@ -9311,8 +10262,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Motor freighter with tanker"
 #~ msgstr "Buque de carga a motor con cisterna"
+#
 #
 #
 #
@@ -9327,8 +10280,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Motor tanker"
 #~ msgstr "Barco cisterna a motor"
+#
 #
 #
 #
@@ -9343,6 +10298,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type C"
 #~ msgstr "Barco cisterna a motor, carga líquida, tipo C"
 #
@@ -9351,8 +10307,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "Barco cisterna a motor, carga liquida, tipo N"
+#
 #
 #
 #
@@ -9375,8 +10333,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "Origen Datos NMEA"
+#
 #
 #
 #
@@ -9398,8 +10358,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "NMEA Options"
 #~ msgstr "Opciones NMEA"
+#
 #
 #
 #
@@ -9434,8 +10396,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "Estado Navegación:  "
+#
 #
 #
 #
@@ -9481,8 +10445,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "New Mark"
 #~ msgstr "Nueva Marca"
+#
 #
 #
 #
@@ -9498,8 +10464,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "No"
 #~ msgstr "No"
+#
 #
 #
 #
@@ -9523,8 +10491,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "Objeto, mientras no se especifique otra cosa"
+#
 #
 #
 #
@@ -9568,8 +10538,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Plugin OpenCPN Clase de base"
+#
 #
 #
 #
@@ -9654,8 +10626,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "OpenCPN Carga Archivo S57 SENC"
+#
 #
 #
 #
@@ -9671,12 +10645,15 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Out"
 #~ msgstr "Salida"
 #
 #
+#
 #~ msgid "Output"
 #~ msgstr "Salida"
+#
 #
 #
 #
@@ -9702,9 +10679,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "Opciones Visualización Embarcación"
+#
 #
 #
 #
@@ -9719,14 +10698,17 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "Barco pasajeros, ferry, crucero, barco Cruz Roja"
 #
 #
 #
 #
+#
 #~ msgid "Pause"
 #~ msgstr "Pausa"
+#
 #
 #
 #
@@ -9758,6 +10740,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Marcar Puntos de Derrota a intervalo de tiempo (Segundos):"
@@ -9770,8 +10753,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Plan speed (Kts)"
 #~ msgstr "Velocidad Estimada (Kts)"
+#
 #
 #
 #
@@ -9814,8 +10799,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager searching for PlugIns in location "
 #~ msgstr "Gestor de PlugIns buscando PlugIns en ubicación"
+#
 #
 #
 #
@@ -9888,8 +10875,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Initializing PlugIn: "
 #~ msgstr "Gestor de PlugIns: Iniciando PlugIn: "
+#
 #
 #
 #
@@ -9962,8 +10951,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "PlugInManager: UnLoading PlugIn: "
 #~ msgstr "Gestor de PlugIns: Cerrando PlugIn: "
+#
 #
 #
 #
@@ -10018,10 +11009,12 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Antiguedad Informe Posición:               %3d Sec.\n"
+#
 #
 #
 #
@@ -10086,6 +11079,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Possible libgps API version mismatch.\n"
 #~ "libgps did not reasonably respond to version request\n"
@@ -10096,6 +11090,7 @@ msgstr "wxFB Website"
 #~ "libgps no respondió correctamente a la petición de esta versión\n"
 #~ "\n"
 #~ "¿Desea usar igualmente esta versión de libgps?"
+#
 #
 #
 #
@@ -10116,8 +11111,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Prev"
 #~ msgstr "Anterior"
+#
 #
 #
 #
@@ -10135,8 +11132,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "Remolcador empuje, solo"
+#
 #
 #
 #
@@ -10152,8 +11151,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "Remolcador de empuje, ocho barcazas de carga"
+#
 #
 #
 #
@@ -10169,8 +11170,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "Remolcador de empuje, cinco barcazas de carga"
+#
 #
 #
 #
@@ -10186,6 +11189,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "Remolcador de empuje, cuatro barcazas de carga"
 #
@@ -10193,8 +11197,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "Remolcador de empuje, nueve o más barcazas de carga"
+#
 #
 #
 #
@@ -10211,6 +11217,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "Remolcador de empuje, una barcaza de carga"
 #
@@ -10219,8 +11226,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Pushtow, one tank/gas barge"
 #~ msgstr "Remolcador de empuje, una barcaza depósito/gas"
+#
 #
 #
 #
@@ -10236,8 +11245,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Pushtow, seven cargo barges"
 #~ msgstr "Remolcador de empuje, siete barcazas de carga"
+#
 #
 #
 #
@@ -10253,8 +11264,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Pushtow, six cargo barges"
 #~ msgstr "Remolcador de empuje, seis barcazas de carga"
+#
 #
 #
 #
@@ -10270,8 +11283,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Pushtow, three cargo barges"
 #~ msgstr "Remolcador de empuje, tres barcazas de carga"
+#
 #
 #
 #
@@ -10281,6 +11296,7 @@ msgstr "wxFB Website"
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr ""
 #~ "Remolcador de empuje, dos barcazas al menos una barcaza depósito o gas"
+#
 #
 #
 #
@@ -10303,8 +11319,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Radar rings"
 #~ msgstr "Marcas de Radar"
+#
 #
 #
 #
@@ -10339,6 +11357,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Alcance:                %5.1f NM\n"
 #
@@ -10356,8 +11375,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Raster"
+#
 #
 #
 #
@@ -10392,8 +11413,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Tasa De Giro            %3d Deg./Min. Der.\n"
+#
 #
 #
 #
@@ -10428,8 +11451,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Tasa De Giro:       > 5 Deg./30 s. Left\n"
+#
 #
 #
 #
@@ -10494,12 +11519,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Recent Report Period:   %3d Sec.\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Plazo Informe Reciente:   %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -10517,14 +11544,17 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Reference Station :"
 #~ msgstr "Estación de Referencia :"
 #
 #
 #
 #
+#
 #~ msgid "Reject"
 #~ msgstr "Rechazar"
+#
 #
 #
 #
@@ -10556,8 +11586,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Eliminar esta carta de continuidad."
+#
 #
 #
 #
@@ -10568,8 +11600,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Resume"
 #~ msgstr "Reanudar"
+#
 #
 #
 #
@@ -10611,6 +11645,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Route Properties..."
 #~ msgstr "Propiedades Ruta"
@@ -10622,8 +11657,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "Ruta Cargada correctamente."
+#
 #
 #
 #
@@ -10656,8 +11693,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "Seleccionar Tipo de Cartas para Continuidad"
+#
 #
 #
 #
@@ -10678,6 +11717,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Send Route To GPS"
 #~ msgstr "Enviar Ruta a GPS"
 #
@@ -10689,8 +11729,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Send to GPS ( "
 #~ msgstr "Enviar a GPS ( "
+#
 #
 #
 #
@@ -10723,8 +11765,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Set Course Up Mode"
 #~ msgstr "Fijar modo rumbo hacia arriba"
+#
 #
 #
 #
@@ -10793,6 +11837,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "ShipName:  "
 #~ msgstr "Nombre Barco:"
 #
@@ -10810,8 +11855,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "Mostrar Etiquetas ATON"
+#
 #
 #
 #
@@ -10868,8 +11915,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar Icono Derrotas"
+#
 #
 #
 #
@@ -10899,12 +11948,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Tamaño:                 %dm x %dm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -10969,12 +12020,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Tamaño:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -11013,12 +12066,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Tamaño:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -11057,12 +12112,14 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Tamaño:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -11089,6 +12146,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Sound file '%s' is in unsupported format."
 #~ msgstr "Fichero de sonido '%s' está en formato no soportado."
 #
@@ -11100,8 +12158,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Special Position Report"
 #~ msgstr "Informe Especial Posición"
+#
 #
 #
 #
@@ -11136,8 +12196,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "Velocidad:                %5.2f Kts.\n"
+#
 #
 #
 #
@@ -11164,8 +12226,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "Servidor Datos TCP/IP WiFi"
+#
 #
 #
 #
@@ -11200,8 +12264,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -11216,8 +12282,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Barcaza tanque, carga seca similar a líquida (p.ej. cemento)"
+#
 #
 #
 #
@@ -11232,6 +12300,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type C"
 #~ msgstr "Barcaza tanque, carga líquida, tipo C"
 #
@@ -11240,8 +12309,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type N"
 #~ msgstr "Barcaza tanque, carga líquida, tipo N"
+#
 #
 #
 #
@@ -11268,8 +12339,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Tide"
 #~ msgstr "Marea"
+#
 #
 #
 #
@@ -11300,6 +12373,7 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "TideCurrentGraphRollover"
@@ -11312,8 +12386,10 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #~ msgid "Today"
 #~ msgstr "Hoy"
+#
 #
 #
 #
@@ -11407,20 +12483,11 @@ msgstr "wxFB Website"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Toggle Names"
 #~ msgstr "Nombre Ruta"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Tomorrow"
-#~ msgstr "Mañana"
 #
 #
 #
@@ -11438,6 +12505,7 @@ msgstr "wxFB Website"
 #
 #~ msgid "ToolBox"
 #~ msgstr "Herramientas"
+#
 #
 #
 #

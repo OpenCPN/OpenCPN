@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.3.1006\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2013-10-14 23:57+0100\n"
 "Last-Translator: Frode Lynum <post@opencpn.kb-h.com>\n"
 "Language-Team: OpenCPN Norge <post@opencpn.kb-h.com>\n"
@@ -357,6 +357,9 @@ msgstr ""
 msgid "Mean Sea Level Pressure (MSLP)"
 msgstr "Lufttrykk, mb"
 #
+msgid "Menu"
+msgstr ""
+#
 msgid "Meters"
 msgstr "Meter"
 #
@@ -394,6 +397,9 @@ msgstr "Overleggskart"
 #
 msgid "OverlayMap"
 msgstr "Overleggskart"
+#
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr ""
 #
 msgid "Overlays too wide and can't be displayed:"
 msgstr ""
@@ -538,11 +544,6 @@ msgstr ""
 #, fuzzy
 msgid "Temperature"
 msgstr "Luft temperatur"
-#
-msgid ""
-"The Grib file you are opening contains a moving Grib Zone.\n"
-"Interpolation is not supported for this type of file"
-msgstr ""
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -724,8 +725,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (Dup)"
+#
 #
 #
 #
@@ -753,8 +756,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Action"
 #~ msgstr "Utfør"
+#
 #
 #
 #
@@ -768,8 +773,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Cloud"
 #~ msgstr "Sky"
+#
 #
 #
 #
@@ -790,6 +797,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Error"
 #~ msgstr "Feil"
 #
@@ -799,8 +807,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Kunne ikke sende epost melding"
+#
 #
 #
 #
@@ -843,8 +853,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB fil katalog"
+#
 #
 #
 #
@@ -861,8 +873,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "M/S"
+#
 #
 #
 #
@@ -879,8 +893,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "MittMerke"
+#
 #
 #
 #
@@ -897,8 +913,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "Parametre"
+#
 #
 #
 #
@@ -918,9 +936,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØTEMP GRIB"
+#
 #
 #
 #
@@ -946,9 +966,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte SJØSTRØM GRIB"
+#
 #
 #
 #
@@ -972,9 +994,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
 #~ msgstr "Vennligst Zoom eller Skaler ut for å vise skjulte CRAIN GRIB"
+#
 #
 #
 #
@@ -986,9 +1010,11 @@ msgstr ""
 #~ msgstr "Nedbør"
 #
 #
+#
 #, fuzzy
 #~ msgid "Pressure Altitude"
 #~ msgstr "Trykk"
+#
 #
 #
 #
@@ -1002,6 +1028,7 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Range"
 #~ msgstr "Rekkevidde"
 #
@@ -1011,8 +1038,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Ref : "
 #~ msgstr "Ref : "
+#
 #
 #
 #
@@ -1043,9 +1072,11 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB innstillinger"
+#
 #
 #
 #
@@ -1087,8 +1118,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "Vis GRIB ikon"
+#
 #
 #
 #
@@ -1098,8 +1131,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Slices per Update"
 #~ msgstr "Stykker per oppdatering"
+#
 #
 #
 #
@@ -1138,14 +1173,17 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "WARNING:  QuickScat GRIB data is %d hours old."
 #~ msgstr "ADVARSEL:  QuickSCAT GRIB data er %d timer gammel."
+#
 #
 #
 #
 #, fuzzy
 #~ msgid "WavesModel"
 #~ msgstr "Modell"
+#
 #
 #
 #
@@ -1169,6 +1207,7 @@ msgstr ""
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Vindhastighet, Knop"
@@ -1179,8 +1218,10 @@ msgstr ""
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Sone"
+#
 #
 #
 #

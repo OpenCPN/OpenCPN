@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.4.423\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2011-12-13 23:10+0100\n"
 "Last-Translator: \n"
 "Language-Team: SMN\n"
@@ -17,6 +17,59 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: Catalan\n"
 "X-Poedit-Country: SPAIN\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+# 
+# 
+# 
+#, fuzzy
+msgid ""
+"\n"
+"\n"
+msgstr ""
+"\n"
+"\n"
+"\n"
 #
 msgid ""
 "\n"
@@ -216,6 +269,9 @@ msgstr " Actualitzat:  "
 msgid " for details."
 msgstr ""
 #
+msgid " is incompatible with this version of OpenCPN."
+msgstr ""
+#
 msgid ""
 " shorter than rhumbline.\n"
 "\n"
@@ -359,6 +415,9 @@ msgstr ""
 #, fuzzy
 msgid "(unnamed)"
 msgstr "(Ruta Sense Nom)"
+#
+msgid ", and all previous versions,"
+msgstr ""
 #
 #
 #
@@ -659,7 +718,13 @@ msgstr ""
 msgid "Address"
 msgstr ""
 #
+msgid "Adelie Land"
+msgstr ""
+#
 msgid "Advanced"
+msgstr ""
+#
+msgid "Afghanistan"
 msgstr ""
 #
 # 
@@ -674,6 +739,15 @@ msgstr "Embarrancat"
 # 
 msgid "Aid to Navigation"
 msgstr "Ajut a la Navegació"
+#
+msgid "Alaska"
+msgstr ""
+#
+msgid "Albania"
+msgstr ""
+#
+msgid "Algeria"
+msgstr ""
 #
 msgid "All"
 msgstr ""
@@ -697,6 +771,9 @@ msgstr "Cartes"
 #, fuzzy
 msgid "Altitude"
 msgstr "Latitud"
+#
+msgid "American Samoa"
+msgstr ""
 #
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -727,10 +804,25 @@ msgstr ""
 msgid "Anchorage created "
 msgstr ""
 #
+msgid "Andorra"
+msgstr ""
+#
+msgid "Angola"
+msgstr ""
+#
+msgid "Anguilla"
+msgstr ""
+#
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr ""
 #
 msgid "Answering 'No' will create all new waypoints for this route."
+msgstr ""
+#
+msgid "Antigua and Barbuda"
+msgstr ""
+#
+msgid "Antilles"
 msgstr ""
 #
 # 
@@ -776,6 +868,18 @@ msgstr "N'està segur de voler esborrar aquesta derrota?"
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "N'està segur de voler esborrar <TOTS> els waypoints?"
 #
+msgid "Argentine Republic"
+msgstr ""
+#
+msgid "Armenia"
+msgstr ""
+#
+msgid "Aruba"
+msgstr ""
+#
+msgid "Ascension Island"
+msgstr ""
+#
 # 
 msgid "Assumed 1 Mile Point"
 msgstr "Assumint 1 punt x Milla"
@@ -791,6 +895,12 @@ msgstr "Ancorat "
 msgid "AtoN"
 msgstr "AtoN"
 #
+msgid "Australia"
+msgstr ""
+#
+msgid "Austria"
+msgstr ""
+#
 # 
 msgid "Authors"
 msgstr "Autors"
@@ -798,6 +908,9 @@ msgstr "Autors"
 # 
 msgid "Auto Follow"
 msgstr "Seguiment de la Navegació"
+#
+msgid "AutoSort"
+msgstr ""
 #
 # 
 msgid "Automatic Daily Tracks"
@@ -808,6 +921,12 @@ msgstr "Les Derrotes Diàries, Automàtiques"
 msgid "Avg. speed"
 msgstr "Velocitat mitja (Kts)"
 #
+msgid "Azerbaijani Republic"
+msgstr ""
+#
+msgid "Azores"
+msgstr ""
+#
 #
 #
 #
@@ -816,6 +935,18 @@ msgstr "Velocitat mitja (Kts)"
 # 
 msgid "B"
 msgstr "B"
+#
+msgid "Bahamas"
+msgstr ""
+#
+msgid "Bahrain"
+msgstr ""
+#
+msgid "Bangladesh"
+msgstr ""
+#
+msgid "Barbados"
+msgstr ""
 #
 # 
 msgid "Base"
@@ -877,6 +1008,24 @@ msgstr "Demora"
 msgid "Bearing (M)"
 msgstr "Demora"
 #
+msgid "Belarus"
+msgstr ""
+#
+msgid "Belgium"
+msgstr ""
+#
+msgid "Belize"
+msgstr ""
+#
+msgid "Benin"
+msgstr ""
+#
+msgid "Bermuda"
+msgstr ""
+#
+msgid "Bhutan"
+msgstr ""
+#
 # 
 msgid "Black"
 msgstr ""
@@ -888,9 +1037,21 @@ msgstr ""
 msgid "Blue"
 msgstr ""
 #
+msgid "Bolivia"
+msgstr ""
+#
+msgid "Bosnia and Herzegovina"
+msgstr ""
+#
+msgid "Botswana"
+msgstr ""
+#
 # 
 msgid "Boundaries"
 msgstr "Fronteres"
+#
+msgid "Brazil"
+msgstr ""
 #
 #
 #
@@ -900,10 +1061,25 @@ msgstr "Fronteres"
 msgid "Brg"
 msgstr "Demora"
 #
+msgid "British Virgin Islands"
+msgstr ""
+#
+msgid "Brunei Darussalam"
+msgstr ""
+#
 msgid "Buddy"
 msgstr ""
 #
+msgid "Bulgaria"
+msgstr ""
+#
 msgid "Buoy/Light Labels"
+msgstr ""
+#
+msgid "Burkina Faso"
+msgstr ""
+#
+msgid "Burundi"
 msgstr ""
 #
 # 
@@ -953,11 +1129,23 @@ msgstr "Alertes de CPA/TCPA"
 msgid "Call"
 msgstr "ID Trucada"
 #
+msgid "Cambodia"
+msgstr ""
+#
+msgid "Cameroon"
+msgstr ""
+#
+msgid "Canada"
+msgstr ""
+#
 # 
 msgid "Cancel"
 msgstr "Cancel·lar"
 #
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
+msgstr ""
+#
+msgid "Cape Verde"
 msgstr ""
 #
 # 
@@ -1078,6 +1266,9 @@ msgstr ""
 msgid "Caution Area: Underwater vehicle operation"
 msgstr ""
 #
+msgid "Cayman Islands"
+msgstr ""
+#
 # 
 msgid "Cell"
 msgstr "Cel·la"
@@ -1090,6 +1281,12 @@ msgid "Center View"
 msgstr ""
 #
 msgid "Center View..."
+msgstr ""
+#
+msgid "Central African Republic"
+msgstr ""
+#
+msgid "Chad"
 msgstr ""
 #
 # 
@@ -1175,6 +1372,12 @@ msgstr "Cartes"
 msgid "Charts"
 msgstr "Cartes"
 #
+msgid "Chile"
+msgstr ""
+#
+msgid "China"
+msgstr ""
+#
 # 
 #, fuzzy
 msgid "Choose Font Color..."
@@ -1194,6 +1397,9 @@ msgstr ""
 #, fuzzy
 msgid "Choose a file"
 msgstr "Valors a Consola"
+#
+msgid "Christmas Island"
+msgstr ""
 #
 #
 #
@@ -1221,6 +1427,9 @@ msgstr "Desmarca-ho tot"
 msgid "Clear Anchor Watch"
 msgstr "Treure la Vigilància d'Ancora"
 #
+msgid "Clear Texture Cache"
+msgstr ""
+#
 msgid "Clearance granted - proceed to berth"
 msgstr ""
 #
@@ -1244,6 +1453,14 @@ msgstr "Tanca"
 msgid "CoG"
 msgstr "CoG"
 #
+msgid "Cocos"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "Colombia"
+msgstr "C&olor:"
+#
 # 
 #, fuzzy
 msgid "Color"
@@ -1261,7 +1478,28 @@ msgstr "Colors"
 msgid "Combo!"
 msgstr ""
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+msgid "Comoros"
+msgstr "Demà"
+#
+msgid "Comoros (Union of the)"
+msgstr ""
+#
 msgid "Confirm deletion of tracks and routes"
+msgstr ""
+#
+msgid "Congo"
 msgstr ""
 #
 # 
@@ -1289,6 +1527,9 @@ msgstr "Constret pel corrent"
 msgid "Control checksum"
 msgstr ""
 #
+msgid "Cook Islands"
+msgstr ""
+#
 msgid "Copy As KML"
 msgstr ""
 #
@@ -1302,6 +1543,9 @@ msgid "Copy as KML"
 msgstr ""
 #
 msgid "Copy as KML..."
+msgstr ""
+#
+msgid "Costa Rica"
 msgstr ""
 #
 # 
@@ -1340,6 +1584,15 @@ msgstr "Esborrar el Waypoint"
 msgid "Create Waypoint"
 msgstr "Esborrar el Waypoint"
 #
+msgid "Croatia"
+msgstr ""
+#
+msgid "Crozet Archipelago"
+msgstr ""
+#
+msgid "Cuba"
+msgstr ""
+#
 #
 #
 #
@@ -1358,6 +1611,15 @@ msgstr "Corrents"
 #, fuzzy
 msgid "Cyan"
 msgstr "Cancel·lar"
+#
+msgid "Cyprus"
+msgstr ""
+#
+msgid "Czech Republic"
+msgstr ""
+#
+msgid "CÃ´te d'Ivoire"
+msgstr ""
 #
 # 
 msgid "D/V"
@@ -1478,6 +1740,12 @@ msgstr "Esborrar el Waypoint"
 #, fuzzy
 msgid "Delete..."
 msgstr " [&D] Esborrar"
+#
+msgid "Dem Rep.of the Congo"
+msgstr ""
+#
+msgid "Denmark"
+msgstr ""
 #
 # 
 msgid "Depart From"
@@ -1601,9 +1869,20 @@ msgstr ""
 msgid "Distress Area: Vessel under assault"
 msgstr ""
 #
+# 
+#, fuzzy
+msgid "Djibouti"
+msgstr "Quant a"
+#
 msgid ""
 "Do you also want to make the shared waypoints being part of this route "
 "invisible?"
+msgstr ""
+#
+msgid "Dominica"
+msgstr ""
+#
+msgid "Dominican Republic"
 msgstr ""
 #
 # 
@@ -1655,7 +1934,16 @@ msgstr ""
 msgid "ETE/ETD"
 msgstr ""
 #
+msgid "Ecuador"
+msgstr ""
+#
 msgid "Edit"
+msgstr ""
+#
+msgid "Egypt"
+msgstr ""
+#
+msgid "El Salvador"
 msgstr ""
 #
 # 
@@ -1728,6 +2016,12 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr ""
 #
+msgid "Equatorial Guinea"
+msgstr ""
+#
+msgid "Eritrea"
+msgstr ""
+#
 #
 #
 #
@@ -1757,6 +2051,12 @@ msgstr ""
 # 
 msgid "Estimated time : "
 msgstr "Temps Previst:"
+#
+msgid "Estonia"
+msgstr ""
+#
+msgid "Ethiopia"
+msgstr ""
 #
 msgid "EvTwilight"
 msgstr ""
@@ -1812,6 +2112,12 @@ msgstr "F/V"
 msgid "Failed to initialize the user interface. "
 msgstr ""
 #
+msgid "Falkland Islands"
+msgstr ""
+#
+msgid "Faroe Islands"
+msgstr ""
+#
 # 
 msgid "Fathoms"
 msgstr "Braces"
@@ -1819,6 +2125,9 @@ msgstr "Braces"
 # 
 msgid "Feet"
 msgstr "Peus"
+#
+msgid "Fiji"
+msgstr ""
 #
 # 
 msgid "Filter NMEA Course and Speed data"
@@ -1834,6 +2143,9 @@ msgstr "Període del qual es fa la mitja (Seg.)"
 msgid "Filters"
 msgstr "&Kilómetres"
 #
+msgid "Finland"
+msgstr ""
+#
 # 
 msgid "Fix.Struct."
 msgstr "Estruct.Fixa"
@@ -1841,6 +2153,9 @@ msgstr "Estruct.Fixa"
 # 
 msgid "Fixed Structure"
 msgstr "Estructura Estàtica"
+#
+msgid "Flag"
+msgstr ""
 #
 msgid "Fonts"
 msgstr ""
@@ -1853,6 +2168,14 @@ msgid "Force Full Database Rebuild"
 msgstr "Forçar la Reconstrucció de la Base de Dades Complerta"
 #
 msgid "Format uploads for Furuno GP3X"
+msgstr ""
+#
+# 
+#, fuzzy
+msgid "France"
+msgstr "Cancel·lar"
+#
+msgid "French Polynesia"
 msgstr ""
 #
 msgid "From"
@@ -1883,6 +2206,12 @@ msgstr "GPS"
 msgid "GUID"
 msgstr ""
 #
+msgid "Gabonese Republic"
+msgstr ""
+#
+msgid "Gambia"
+msgstr ""
+#
 #
 # 
 #, fuzzy
@@ -1894,6 +2223,18 @@ msgstr "General d'AIS"
 msgid "General Options"
 msgstr "Funcionalitats d'Interfícies Opcionals"
 #
+msgid "Georgia"
+msgstr ""
+#
+msgid "Germany"
+msgstr ""
+#
+msgid "Ghana"
+msgstr ""
+#
+msgid "Gibraltar"
+msgstr ""
+#
 # 
 msgid "Go to "
 msgstr "Anant a  "
@@ -1901,16 +2242,49 @@ msgstr "Anant a  "
 msgid "GpsGate Buddy"
 msgstr ""
 #
+msgid "Great Britain"
+msgstr ""
+#
+msgid "Greece"
+msgstr ""
+#
 # 
 msgid "Green"
+msgstr ""
+#
+msgid "Greenland"
+msgstr ""
+#
+msgid "Grenada"
 msgstr ""
 #
 msgid "Group \""
 msgstr ""
 #
+msgid "Guadeloupe"
+msgstr ""
+#
+msgid "Guatemala"
+msgstr ""
+#
+msgid "Guiana"
+msgstr ""
+#
+msgid "Guinea"
+msgstr ""
+#
+msgid "Guinea-Bissau"
+msgstr ""
+#
+msgid "Guyana"
+msgstr ""
+#
 # 
 msgid "HSC"
 msgstr "HSC"
+#
+msgid "Haiti"
+msgstr ""
 #
 msgid "Heading"
 msgstr ""
@@ -1972,11 +2346,23 @@ msgstr "Llanxa Ràpida"
 msgid "Highlight Tracks"
 msgstr ""
 #
+msgid "Honduras"
+msgstr ""
+#
+msgid "Hong Kong"
+msgstr ""
+#
+msgid "Hungary"
+msgstr ""
+#
 # 
 msgid "I&mport GPX..."
 msgstr "I&mportar GPX..."
 #
 msgid "IMO"
+msgstr ""
+#
+msgid "Iceland"
 msgstr ""
 #
 # 
@@ -2000,6 +2386,15 @@ msgstr "Importar arxius GPX"
 #, fuzzy
 msgid "Important Text Only"
 msgstr "Mostra només el Text Important"
+#
+msgid "Incompatible PlugIn detected:\n"
+msgstr ""
+#
+msgid "India"
+msgstr ""
+#
+msgid "Indonesia"
+msgstr ""
 #
 msgid "Information: Icebreaker waiting area"
 msgstr ""
@@ -2046,6 +2441,15 @@ msgstr ""
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr ""
 #
+msgid "Iran"
+msgstr ""
+#
+msgid "Iraq"
+msgstr ""
+#
+msgid "Ireland"
+msgstr ""
+#
 # 
 msgid "Isol. Dngr"
 msgstr "Perill Aïllat"
@@ -2054,10 +2458,34 @@ msgstr "Perill Aïllat"
 msgid "Isolated Danger"
 msgstr "Perill Aïllat"
 #
+msgid "Israel"
+msgstr ""
+#
+msgid "Italy"
+msgstr ""
+#
+msgid "Jamaica"
+msgstr ""
+#
+msgid "Japan"
+msgstr ""
+#
+msgid "Jordan"
+msgstr ""
+#
 msgid "KML Standard (Google Earth and others)"
 msgstr ""
 #
 msgid "KML with extended waypoint data (QtVlm)"
+msgstr ""
+#
+msgid "Kazakhstan"
+msgstr ""
+#
+msgid "Kenya"
+msgstr ""
+#
+msgid "Kerguelen Islands"
 msgstr ""
 #
 # 
@@ -2065,7 +2493,19 @@ msgstr ""
 msgid "Kilometers"
 msgstr "&Kilómetres"
 #
+msgid "Kiribati"
+msgstr ""
+#
 msgid "Knots"
+msgstr ""
+#
+msgid "Korea"
+msgstr ""
+#
+msgid "Kuwait"
+msgstr ""
+#
+msgid "Kyrgyz Republic"
 msgstr ""
 #
 # 
@@ -2083,9 +2523,15 @@ msgstr ""
 msgid "Language"
 msgstr "Idioma"
 #
+msgid "Lao People's Dem. Rep."
+msgstr ""
+#
 # 
 msgid "Latitude"
 msgstr "Latitud"
+#
+msgid "Latvia"
+msgstr ""
 #
 # 
 msgid "Law Enforcement Vessel"
@@ -2138,6 +2584,9 @@ msgstr "Llum Frontal Principal "
 msgid "Leading Light Rear"
 msgstr "Llum Trassera Principal"
 #
+msgid "Lebanon"
+msgstr ""
+#
 msgid "Left"
 msgstr ""
 #
@@ -2156,9 +2605,21 @@ msgstr "Distància"
 msgid "Length Over All (m)"
 msgstr ""
 #
+msgid "Lesotho"
+msgstr ""
+#
+msgid "Liberia"
+msgstr ""
+#
+msgid "Libyan Arab Jamahiriya"
+msgstr ""
+#
 # 
 msgid "License"
 msgstr "Llicència"
+#
+msgid "Liechtenstein"
+msgstr ""
 #
 # 
 msgid "Light"
@@ -2231,6 +2692,9 @@ msgstr ""
 msgid "List contents"
 msgstr "Llista contingut"
 #
+msgid "Lithuania"
+msgstr ""
+#
 # 
 #, fuzzy
 msgid "Loaded Charts"
@@ -2286,6 +2750,9 @@ msgstr "Far sect."
 msgid "LtV/Rig"
 msgstr "LtV/Semirígida"
 #
+msgid "Luxembourg"
+msgstr ""
+#
 # 
 msgid "M/T"
 msgstr "M/T"
@@ -2310,8 +2777,35 @@ msgstr "MMSI"
 msgid "M_COVR ID"
 msgstr "ID M_COVR"
 #
+msgid "Macao"
+msgstr ""
+#
+msgid "Macedonia"
+msgstr ""
+#
+msgid "Madagascar"
+msgstr ""
+#
+msgid "Madeira"
+msgstr ""
+#
 # 
 msgid "Magenta"
+msgstr ""
+#
+msgid "Malawi"
+msgstr ""
+#
+msgid "Malaysia"
+msgstr ""
+#
+msgid "Maldives"
+msgstr ""
+#
+msgid "Mali"
+msgstr ""
+#
+msgid "Malta"
 msgstr ""
 #
 # 
@@ -2338,6 +2832,18 @@ msgstr "Marcar els objectes com a perduts després de (Minuts):"
 msgid "Marks"
 msgstr "Marques"
 #
+msgid "Marshall Islands"
+msgstr ""
+#
+msgid "Martinique"
+msgstr ""
+#
+msgid "Mauritania"
+msgstr ""
+#
+msgid "Mauritius"
+msgstr ""
+#
 # 
 msgid "Max Detail Here"
 msgstr "Aquí el Màx. Detall"
@@ -2362,6 +2868,9 @@ msgstr "Transport Mèdic"
 msgid "Medium"
 msgstr ""
 #
+msgid "Menu"
+msgstr ""
+#
 # 
 msgid "Mercator"
 msgstr "Mercator"
@@ -2380,6 +2889,12 @@ msgstr "Reanomenar Waypoints?"
 msgid "Meters"
 msgstr "Metres"
 #
+msgid "Mexico"
+msgstr ""
+#
+msgid "Micronesia"
+msgstr ""
+#
 # 
 msgid "Mil/V"
 msgstr "Mil/V"
@@ -2397,9 +2912,27 @@ msgstr ""
 msgid "MoTwilight"
 msgstr ""
 #
+msgid "Moldova"
+msgstr ""
+#
+msgid "Monaco"
+msgstr ""
+#
+msgid "Mongolia"
+msgstr ""
+#
+msgid "Montenegro"
+msgstr ""
+#
+msgid "Montserrat"
+msgstr ""
+#
 # 
 msgid "Moored"
 msgstr "Amarrat"
+#
+msgid "Morocco"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -2411,7 +2944,13 @@ msgstr "Moure el Vaixell Ací"
 msgid "Move Waypoint"
 msgstr "Al Waypoint"
 #
+msgid "Mozambique"
+msgstr ""
+#
 msgid "Mph"
+msgstr ""
+#
+msgid "Myanmar"
 msgstr ""
 #
 msgid "NMEA"
@@ -2430,7 +2969,13 @@ msgstr ""
 msgid "Name"
 msgstr "Nom"
 #
+msgid "Namibia"
+msgstr ""
+#
 msgid "National text on chart"
+msgstr ""
+#
+msgid "Nauru"
 msgstr ""
 #
 # 
@@ -2459,7 +3004,16 @@ msgstr "Dades de Navegació"
 msgid "Navigate To This"
 msgstr ""
 #
+msgid "Nepal"
+msgstr ""
+#
+msgid "Netherlands"
+msgstr ""
+#
 msgid "Network"
+msgstr ""
+#
+msgid "New Caledonia"
 msgstr ""
 #
 # 
@@ -2470,11 +3024,26 @@ msgstr "Cartes"
 msgid "New Group..."
 msgstr ""
 #
+msgid "New Zealand"
+msgstr ""
+#
 # 
 msgid "Next tide event"
 msgstr "Marea Següent"
 #
+msgid "Nicaragua"
+msgstr ""
+#
+msgid "Niger"
+msgstr ""
+#
+msgid "Nigeria"
+msgstr ""
+#
 msgid "Nighttime"
+msgstr ""
+#
+msgid "Niue"
 msgstr ""
 #
 # 
@@ -2519,6 +3088,12 @@ msgstr ""
 msgid "North Up Mode"
 msgstr "Actualització de Cartes d'OpenCPN"
 #
+msgid "Northern Mariana Islands"
+msgstr ""
+#
+msgid "Norway"
+msgstr ""
+#
 # 
 msgid "Not Under Command"
 msgstr "Fora de Control"
@@ -2546,6 +3121,9 @@ msgid "Ok"
 msgstr "d'Acord"
 #
 msgid "Old log will be moved to opencpn.log.log"
+msgstr ""
+#
+msgid "Oman"
 msgstr ""
 #
 # 
@@ -2676,8 +3254,34 @@ msgid "PC/V"
 msgstr "PC/V"
 #
 # 
+#, fuzzy
+msgid "Pakistan"
+msgstr "Distància"
+#
+msgid "Palau"
+msgstr ""
+#
+#
+#
+#
+#
+# 
+#, fuzzy
+msgid "Palestine"
+msgstr "Configuracions"
+#
+msgid "Panama"
+msgstr ""
+#
+# 
 msgid "Paper Chart"
 msgstr "Carta de Paper"
+#
+msgid "Papua New Guinea"
+msgstr ""
+#
+msgid "Paraguay"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -2707,9 +3311,21 @@ msgstr "&Exportar Derrota..."
 msgid "Paste Waypoint"
 msgstr "Activació d'un Waypoint"
 #
+msgid "People's Rep. of Korea"
+msgstr ""
+#
+msgid "Peru"
+msgstr ""
+#
+msgid "Philippines"
+msgstr ""
+#
 # 
 msgid "Pilot Vessel"
 msgstr "Vaixell dels Pràctics"
+#
+msgid "Pitcairn Island"
+msgstr ""
 #
 # 
 msgid "Plain"
@@ -2757,6 +3373,10 @@ msgid ""
 " Please update this PlugIn at the opencpn.org website."
 msgstr ""
 #
+#, c-format
+msgid "PlugIn [ %s ] version %i.%i"
+msgstr ""
+#
 # 
 #, fuzzy
 msgid "Plugins"
@@ -2765,6 +3385,9 @@ msgstr "Mòduls de Programari"
 # 
 msgid "Points"
 msgstr "Punts"
+#
+msgid "Poland"
+msgstr ""
 #
 # 
 msgid "Pollution Control Vessel"
@@ -2789,6 +3412,11 @@ msgstr "Marca de Mà a Babord"
 # 
 msgid "Port Tender"
 msgstr "Llanxa del Port"
+#
+# 
+#, fuzzy
+msgid "Portugal"
+msgstr "Port"
 #
 # 
 msgid "Position"
@@ -2896,6 +3524,12 @@ msgstr "&Propietats..."
 msgid "Protocol"
 msgstr ""
 #
+msgid "Puerto Rico"
+msgstr ""
+#
+msgid "Qatar"
+msgstr ""
+#
 # 
 #, fuzzy
 msgid "Question"
@@ -2930,6 +3564,9 @@ msgstr ""
 # 
 msgid "Real(Off Position)"
 msgstr "Real (No Posicionat)"
+#
+msgid "Rebuild Texture Cache"
+msgstr ""
 #
 # 
 msgid "Rebuilding chart database from configuration file entries..."
@@ -3064,6 +3701,9 @@ msgstr "Recuperació del Directori de Cartes inicial del Registre de Windows"
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Recuperació de la llengua inicial del Registre de Windows "
 #
+msgid "Reunion"
+msgstr ""
+#
 # 
 #, fuzzy
 msgid "Reverse..."
@@ -3085,6 +3725,9 @@ msgstr ""
 # 
 msgid "Rollover"
 msgstr "Aportació d'Informació"
+#
+msgid "Romania"
+msgstr ""
 #
 # 
 msgid "Route"
@@ -3133,6 +3776,12 @@ msgstr "Avenç Info, Trajecte/Ruta "
 msgid "Routes"
 msgstr "Rutes"
 #
+msgid "Russian"
+msgstr ""
+#
+msgid "Rwanda"
+msgstr ""
+#
 # 
 msgid "S/V"
 msgstr "S/V"
@@ -3172,6 +3821,36 @@ msgstr "Fons de Seguretat"
 # 
 msgid "Sailing Vessel"
 msgstr "Vaixell Veler"
+#
+msgid "Saint Helena"
+msgstr ""
+#
+msgid "Saint Kitts and Nevis"
+msgstr ""
+#
+msgid "Saint Lucia"
+msgstr ""
+#
+msgid "Saint Paul"
+msgstr ""
+#
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+#
+msgid "Saint Vincent and the Grenadines"
+msgstr ""
+#
+msgid "Samoa"
+msgstr ""
+#
+msgid "San Marino"
+msgstr ""
+#
+msgid "Sao Tome and Principe"
+msgstr ""
+#
+msgid "Saudi Arabia"
+msgstr ""
 #
 # 
 #, fuzzy, c-format
@@ -3250,8 +3929,19 @@ msgstr "Enviar al GP&S"
 #
 # 
 #, fuzzy
+msgid "Send to new GPS"
+msgstr "Enviar al GP&S"
+#
+msgid "Senegal"
+msgstr ""
+#
+# 
+#, fuzzy
 msgid "Sentence Filter"
 msgstr "Apagar &So d'Alerta"
+#
+msgid "Serbia"
+msgstr ""
 #
 msgid "Serial"
 msgstr ""
@@ -3269,6 +3959,9 @@ msgstr "Proper"
 # 
 msgid "Set Anchor Watch"
 msgstr "Configurar la Vigilància d'Àncora"
+#
+msgid "Seychelles"
+msgstr ""
 #
 # 
 msgid "Shallow Depth"
@@ -3492,9 +4185,21 @@ msgstr "Mostrar esteles dels objectes"
 msgid "Shows the font preview."
 msgstr "Mostra la vista previa de les lletres"
 #
+msgid "Sierra Leone"
+msgstr ""
+#
 # 
 msgid "Simplified"
 msgstr "Simplificat"
+#
+msgid "Singapore"
+msgstr ""
+#
+msgid "Slovak Republic"
+msgstr ""
+#
+msgid "Slovenia"
+msgstr ""
 #
 msgid "Smooth Panning / Zooming"
 msgstr ""
@@ -3511,6 +4216,21 @@ msgstr "SoG"
 #, fuzzy
 msgid "Solid"
 msgstr "Amb símbols"
+#
+msgid "Solomon Islands"
+msgstr ""
+#
+msgid "Somali Democratic Republic"
+msgstr ""
+#
+msgid "South Africa"
+msgstr ""
+#
+msgid "South Sudan (Republic of)"
+msgstr ""
+#
+msgid "Spain"
+msgstr ""
 #
 # 
 msgid "Spare"
@@ -3546,6 +4266,9 @@ msgstr "Dividir la Ruta"
 #, fuzzy
 msgid "Split Track"
 msgstr "Esborrar la Derrota"
+#
+msgid "Sri Lanka"
+msgstr ""
 #
 # 
 msgid "Standard"
@@ -3588,6 +4311,9 @@ msgstr "E&stil"
 msgid "Style:"
 msgstr "E&stil"
 #
+msgid "Sudan"
+msgstr ""
+#
 msgid "Sunrise"
 msgstr ""
 #
@@ -3598,9 +4324,24 @@ msgstr ""
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Prescindir d'Alertes d'objectes ancorats/amarrats"
 #
+msgid "Suriname"
+msgstr ""
+#
+msgid "Swaziland"
+msgstr ""
+#
+msgid "Sweden"
+msgstr ""
+#
+msgid "Switzerland"
+msgstr ""
+#
 # 
 msgid "Symbolized"
 msgstr "Amb símbols"
+#
+msgid "Syrian Arab Republic"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -3616,9 +4357,15 @@ msgstr "CPA TCPA"
 msgid "TCPA"
 msgstr "CPA TCPA"
 #
+msgid "Taiwan"
+msgstr ""
+#
 # 
 msgid "Tanker"
 msgstr "Vaixell Cisterna"
+#
+msgid "Tanzania"
+msgstr ""
 #
 #
 #
@@ -3684,6 +4431,9 @@ msgid "Texture Compression Caching"
 msgstr ""
 #
 msgid "Texture Memory Size (MB)"
+msgstr ""
+#
+msgid "Thailand"
 msgstr ""
 #
 msgid ""
@@ -3842,6 +4592,12 @@ msgstr "Activa/Desact. la Derrota"
 msgid "Toggle track"
 msgstr "Activa/Desact. la Derrota"
 #
+msgid "Togolese Republic"
+msgstr ""
+#
+msgid "Tonga"
+msgstr ""
+#
 # 
 msgid "ToolTips"
 msgstr "Aclaracions"
@@ -3909,6 +4665,9 @@ msgstr "Transverse Mercator"
 msgid "Treat WPL sentences as APRS position reports"
 msgstr ""
 #
+msgid "Trinidad and Tobago"
+msgstr ""
+#
 # 
 #, fuzzy
 msgid "Trk"
@@ -3918,7 +4677,22 @@ msgstr "Derrotes"
 msgid "Tug"
 msgstr "Remolcador"
 #
+msgid "Tunisia"
+msgstr ""
+#
+msgid "Turkey"
+msgstr ""
+#
+msgid "Turkmenistan"
+msgstr ""
+#
+msgid "Turks and Caicos Islands"
+msgstr ""
+#
 msgid "Turn Rate"
+msgstr ""
+#
+msgid "Tuvalu"
 msgstr ""
 #
 # 
@@ -3934,6 +4708,12 @@ msgstr ""
 # 
 msgid "UTC"
 msgstr "UTC"
+#
+msgid "Uganda"
+msgstr ""
+#
+msgid "Ukraine"
+msgstr ""
 #
 # 
 msgid "Undefined"
@@ -3953,6 +4733,15 @@ msgid "Underway"
 msgstr "En curs"
 #
 msgid "Undo"
+msgstr ""
+#
+msgid "United Arab Emirates"
+msgstr ""
+#
+msgid "United States Virgin Islands"
+msgstr ""
+#
+msgid "United States of America"
 msgstr ""
 #
 #
@@ -3980,6 +4769,9 @@ msgstr "Indefinit"
 # 
 msgid "Update Control"
 msgstr "Actualitzar el Control"
+#
+msgid "Uruguay"
+msgstr ""
 #
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr ""
@@ -4023,14 +4815,26 @@ msgstr "Centrat Y d'Usuari"
 msgid "User Y Offset (Metres)"
 msgstr "Centrat Y d'usuari (Metres)"
 #
+msgid "Uzbekistan"
+msgstr ""
+#
 # 
 #, fuzzy
 msgid "VTS active target"
 msgstr "Directoris Actius de Cartes"
 #
+msgid "Vanuatu"
+msgstr ""
+#
+msgid "Vatican City State"
+msgstr ""
+#
 # 
 msgid "Vector Charts"
 msgstr "Cartes Vectorials"
+#
+msgid "Venezuela"
+msgstr ""
 #
 # 
 msgid "Vessel Diving"
@@ -4055,6 +4859,9 @@ msgstr "Vaixell Llarg Remolcant"
 msgid "Vessel requesting non-distress assistance"
 msgstr ""
 #
+msgid "Viet Nam"
+msgstr ""
+#
 # 
 msgid "Virtual"
 msgstr "Virtual"
@@ -4073,6 +4880,9 @@ msgstr ""
 # 
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Arxius WAV (*.wav)|*.wav|Tots els arxius (*.*)|*.*"
+#
+msgid "Wallis and Futuna Islands"
+msgstr ""
 #
 # 
 #, fuzzy
@@ -4181,6 +4991,9 @@ msgstr "Iot"
 msgid "Yellow"
 msgstr "Cel·la"
 #
+msgid "Yemen"
+msgstr ""
+#
 msgid "Yes, hide it."
 msgstr ""
 #
@@ -4209,6 +5022,12 @@ msgid "You must enter the address..."
 msgstr ""
 #
 msgid "You must select or enter the port..."
+msgstr ""
+#
+msgid "Zambia"
+msgstr ""
+#
+msgid "Zimbabwe"
 msgstr ""
 #
 # 
@@ -4340,62 +5159,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "\n"
 #~ msgstr "\n"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-# 
-# 
-# 
-#~ msgid ""
-#~ "\n"
-#~ "\n"
-#~ "\n"
-#~ msgstr ""
-#~ "\n"
-#~ "\n"
-#~ "\n"
 #
 #
 #
@@ -4449,9 +5217,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "    Velocitat màx. d'objectes amarrats (Nusos):"
+#
 #
 #
 #
@@ -4518,9 +5288,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   Projecció de la carta DESCONEGUDA, s'assumeix Mercator: "
+#
 #
 #
 #
@@ -4609,12 +5381,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   Gestor de Mòduls: No es pot carregar el símbol creat_pi: "
+#
 #
 #
 #
@@ -4686,9 +5460,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr "  No es pot obrir el port sèrie d'AIS '"
+#
 #
 #
 #
@@ -4722,9 +5498,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid " is %5g"
 #~ msgstr "és %5g"
+#
 #
 #
 #
@@ -4750,9 +5528,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "&Export Track..."
 #~ msgstr "&Exportar Derrota..."
+#
 #
 #
 #
@@ -4779,9 +5559,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "&Silence Alert"
 #~ msgstr "Apagar &So d'Alerta"
+#
 #
 #
 #
@@ -4853,6 +5635,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid ""
 #~ "'\n"
@@ -4860,6 +5643,7 @@ msgstr ""
 #~ msgstr ""
 #~ "'\n"
 #~ " Consell: Proveu la notació: 'xxx.xxx.xxx.xxx'"
+#
 #
 #
 #
@@ -4917,10 +5701,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid ":               "
 #~ msgstr "Classe:               "
+#
 #
 #
 #
@@ -4965,9 +5751,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "AIS Alert"
 #~ msgstr "Alerta d'AIS"
+#
 #
 #
 #
@@ -5022,9 +5810,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "AISTargetAlert"
 #~ msgstr "Alerta d'Objecte AIS"
+#
 #
 #
 #
@@ -5087,9 +5877,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Activate Route"
 #~ msgstr "Activació de la Ruta"
+#
 #
 #
 #
@@ -5142,9 +5934,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Afegiu aquesta carta al visor"
+#
 #
 #
 #
@@ -5214,9 +6008,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "All files (*.*)|*.*"
 #~ msgstr "Tots els arxius (*.*)|*.*"
+#
 #
 #
 #
@@ -5288,6 +6084,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Autopilot Output Port"
 #~ msgstr "Port de Sortida pel Pilot Automàtic"
@@ -5316,9 +6113,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Available Chart Directories"
 #~ msgstr "Directoris Disponibles de Cartes "
+#
 #
 #
 #
@@ -5392,9 +6191,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "Demora:                 %03d Graus.\n"
+#
 #
 #
 #
@@ -5449,9 +6250,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -5505,9 +6308,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "CM93 Offset Display"
 #~ msgstr "Pantalla de Correcció CM93"
+#
 #
 #
 #
@@ -5561,9 +6366,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "Detall en Ampliació CM93"
+#
 #
 #
 #
@@ -5619,9 +6426,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                %6.1f  MN\n"
+#
 #
 #
 #
@@ -5657,6 +6466,7 @@ msgstr ""
 #~ "Està funcionant el gpsd?\n"
 #~ "\n"
 #~ "el host gpsd és: "
+#
 #
 #
 #
@@ -5726,6 +6536,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Chart"
 #~ msgstr "Carta"
@@ -5754,9 +6565,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Chart Display Filters"
 #~ msgstr "Filtres pel Visor de Cartes"
+#
 #
 #
 #
@@ -5811,9 +6624,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Class:                "
 #~ msgstr "Classe:               "
+#
 #
 #
 #
@@ -5829,6 +6644,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Container vessel"
 #~ msgstr "Vaixell Veler"
+#
 #
 #
 #
@@ -5882,9 +6698,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Course:                 %03d Deg.\n"
 #~ msgstr "Rumb:                   %03d º.\n"
+#
 #
 #
 #
@@ -5941,9 +6759,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Course:                 Unavailable\n"
 #~ msgstr "Rumb:                   No Disponible\n"
+#
 #
 #
 #
@@ -5983,10 +6803,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Data Source :"
 #~ msgstr "Font de les Dades NMEA"
+#
 #
 #
 #
@@ -6061,10 +6883,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "El color de la lletra"
+#
 #
 #
 #
@@ -6128,9 +6952,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Delete Mark"
 #~ msgstr "Esborrar la Marca"
+#
 #
 #
 #
@@ -6184,6 +7010,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Delete Selection"
 #~ msgstr "Esborrar la Selecció"
@@ -6212,9 +7039,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Delete Track"
 #~ msgstr "Esborrar la Derrota"
+#
 #
 #
 #
@@ -6269,9 +7098,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Destination:          "
 #~ msgstr "Destí:"
+#
 #
 #
 #
@@ -6311,10 +7142,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Drop"
 #~ msgstr "Posa una Marca Aquí"
+#
 #
 #
 #
@@ -6357,9 +7190,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "ENC/Vector"
 #~ msgstr "ENC/Vectorials"
+#
 #
 #
 #
@@ -6415,9 +7250,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "ETA:                  "
 #~ msgstr "ETA:                  "
+#
 #
 #
 #
@@ -6471,9 +7308,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "Habilitar la roda del ratolí com a eina de Zoom"
+#
 #
 #
 #
@@ -6513,9 +7352,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Etc."
 #~ msgstr "Etc."
+#
 #
 #
 #
@@ -6604,12 +7445,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "Failed to load libgps.so"
 #~ msgstr "Fracàs en carregar libgps.so"
+#
 #
 #
 #
@@ -6682,10 +7525,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "From Ownship: %03d Deg   "
 #~ msgstr "DesDelVaixellPropi: %03d º  %6.2f  MNi"
+#
 #
 #
 #
@@ -6726,9 +7571,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "GPS/Plotter Port"
 #~ msgstr "Port del GPS/Ploter"
+#
 #
 #
 #
@@ -6767,10 +7614,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Gas tanker"
 #~ msgstr "Vaixell Cisterna"
+#
 #
 #
 #
@@ -6833,9 +7682,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Cap a la Marca/Wpt"
+#
 #
 #
 #
@@ -6876,10 +7727,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Demora:                 %03d Graus.\n"
+#
 #
 #
 #
@@ -6951,6 +7804,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -6968,10 +7822,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "In"
 #~ msgstr "Icona"
+#
 #
 #
 #
@@ -7026,9 +7882,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Jump To"
 #~ msgstr "Centrar-s'hi"
+#
 #
 #
 #
@@ -7091,9 +7949,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Jump To Position..."
 #~ msgstr "Saltar a la Posició..."
+#
 #
 #
 #
@@ -7134,9 +7994,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "LW"
 #~ msgstr "M.Baixa"
+#
 #
 #
 #
@@ -7204,6 +8066,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Last Position Report Time:  "
@@ -7233,9 +8096,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Leg/Route"
 #~ msgstr "Trajecte/Ruta"
+#
 #
 #
 #
@@ -7276,9 +8141,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "META Objects"
 #~ msgstr "Mostra Objectes META"
+#
 #
 #
 #
@@ -7365,9 +8232,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Icon"
 #~ msgstr "Icona de la Marca"
+#
 #
 #
 #
@@ -7426,9 +8295,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Mark Properties"
 #~ msgstr "Propietats de la Marca"
+#
 #
 #
 #
@@ -7501,9 +8372,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Measure....."
 #~ msgstr "Mesurar....."
+#
 #
 #
 #
@@ -7556,9 +8429,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "NMEA Data Source"
 #~ msgstr "Font de les Dades NMEA"
+#
 #
 #
 #
@@ -7613,9 +8488,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Name:  "
 #~ msgstr "Nom:   "
+#
 #
 #
 #
@@ -7686,6 +8563,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -7703,9 +8581,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Next"
 #~ msgstr "Proper"
+#
 #
 #
 #
@@ -7775,12 +8655,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN PlugIn Base Class"
 #~ msgstr "Mòdul de l'OpenCPN de Classe Bàsica"
+#
 #
 #
 #
@@ -7873,12 +8755,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "OpenCPN S57 SENC File Load"
 #~ msgstr "Càrrega de l'Arxiu S57 SENC de l'OpenCPN"
+#
 #
 #
 #
@@ -7903,10 +8787,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Output Message"
 #~ msgstr "Missatge de l'OpenCPN"
+#
 #
 #
 #
@@ -7959,10 +8845,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Place Trackpoints at distance interval (NMi)"
 #~ msgstr "Intèrval de navegació en inserir punts de Derrota (MNi)"
+#
 #
 #
 #
@@ -8002,9 +8890,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Plan speed (Kts)"
 #~ msgstr "Velocitat de Ruta(Kts)"
+#
 #
 #
 #
@@ -8093,12 +8983,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Desactiva el Mòdul:"
+#
 #
 #
 #
@@ -8187,12 +9079,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "Gestor de Mòduls: Es Carrega el Mòdul: "
+#
 #
 #
 #
@@ -8281,6 +9175,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8314,12 +9209,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid ""
 #~ "Position Report Age:       %3d Sec.\n"
 #~ "\n"
 #~ msgstr "Temps del Informe:   %3d Seg.\n"
+#
 #
 #
 #
@@ -8405,6 +9302,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid ""
@@ -8418,6 +9316,7 @@ msgstr ""
 #~ "\n"
 #~ "                       Voldríeu fer servir aquesta versió de libgps de "
 #~ "totes maneres?"
+#
 #
 #
 #
@@ -8443,9 +9342,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Prev"
 #~ msgstr "Previ"
+#
 #
 #
 #
@@ -8484,9 +9385,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Radar rings"
 #~ msgstr "Anells de Radar"
+#
 #
 #
 #
@@ -8542,6 +9445,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Distància:             %5.1f MN\n"
@@ -8570,9 +9474,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Raster"
 #~ msgstr "Escanejades"
+#
 #
 #
 #
@@ -8628,9 +9534,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Maniobra de Gir:        %3d Graus/Min. Dreta\n"
+#
 #
 #
 #
@@ -8686,9 +9594,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Maniobra de Gir:    >5º /30seg. Esquerra\n"
+#
 #
 #
 #
@@ -8759,6 +9669,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -8780,9 +9691,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Reference Station :"
 #~ msgstr "Estació de Referència:"
+#
 #
 #
 #
@@ -8835,9 +9748,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Treure aquesta carta del visor"
+#
 #
 #
 #
@@ -8900,6 +9815,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Route Properties..."
@@ -8915,9 +9831,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "La Ruta s'ha carregat bé."
+#
 #
 #
 #
@@ -8972,6 +9890,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "Triar els Tipus de Cartes a Presentar"
@@ -8986,9 +9905,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Send"
 #~ msgstr "Enviar"
+#
 #
 #
 #
@@ -9017,10 +9938,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Send to GPS ( "
 #~ msgstr "Enviar al GP&S"
+#
 #
 #
 #
@@ -9084,6 +10007,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Settings"
 #~ msgstr "Configuracions"
@@ -9112,9 +10036,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Show ATON labels"
 #~ msgstr "Mostra les etiquetes ATON"
+#
 #
 #
 #
@@ -9192,9 +10118,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Show Track icon"
 #~ msgstr "Mostrar la icona de derrota"
+#
 #
 #
 #
@@ -9255,6 +10183,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
@@ -9262,6 +10191,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Mida:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -9321,6 +10251,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
@@ -9328,6 +10259,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Mida:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -9387,6 +10319,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
@@ -9394,6 +10327,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Mida:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -9431,10 +10365,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Special Position Report"
 #~ msgstr "Hora del Darrer Informe:"
+#
 #
 #
 #
@@ -9490,9 +10426,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "Velocitat:             %5.2f Kts.\n"
+#
 #
 #
 #
@@ -9531,9 +10469,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "Servidor de Dades WiFi TCP/IP"
+#
 #
 #
 #
@@ -9589,9 +10529,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -9632,6 +10574,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Text Element"
 #~ msgstr "Element de Text"
@@ -9646,9 +10589,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Tide"
 #~ msgstr "Marea "
+#
 #
 #
 #
@@ -9703,6 +10648,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
@@ -9718,9 +10664,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Today"
 #~ msgstr "Avui"
+#
 #
 #
 #
@@ -9809,6 +10757,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -9816,19 +10765,6 @@ msgstr ""
 #~ msgid "Toggle Names"
 #~ msgstr "Bescanvia Noms"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-# 
-#~ msgid "Tomorrow"
-#~ msgstr "Demà"
 #
 #
 #
@@ -9857,6 +10793,7 @@ msgstr ""
 # 
 #~ msgid "ToolBox"
 #~ msgstr "Eines i Configuracions"
+#
 #
 #
 #
@@ -9911,9 +10848,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "EscalaVerd.: %8.0f             "
+#
 #
 #
 #
@@ -9929,6 +10868,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Tug, tanker"
 #~ msgstr "Vaixell Cisterna"
+#
 #
 #
 #
@@ -9984,9 +10924,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "UN Ship Type:         "
 #~ msgstr "Tipus ONU de Vaixell: "
+#
 #
 #
 #
@@ -10044,6 +10986,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Unable to load libgps"
@@ -10066,10 +11009,12 @@ msgstr ""
 #
 #
 #
+#
 # 
 #, fuzzy
 #~ msgid "Unavailable"
 #~ msgstr "Cap Carta Disponible"
+#
 #
 #
 #
@@ -10122,9 +11067,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Use SCAMIN"
 #~ msgstr "Emprar SCAMIN"
+#
 #
 #
 #
@@ -10140,6 +11087,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Vessel, type unknown"
 #~ msgstr "Vaixell Remolcant"
+#
 #
 #
 #
@@ -10193,9 +11141,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "WiFi Options"
 #~ msgstr "Opcions WiFi"
+#
 #
 #
 #
@@ -10249,6 +11199,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
 #~ msgstr "Correcció Y (Positiu mou el mapa cap el Nord) (Projectat en MNi) :"
@@ -10277,9 +11228,11 @@ msgstr ""
 #
 #
 #
+#
 # 
 #~ msgid "cm93 Detail"
 #~ msgstr "Detall CM93"
+#
 #
 #
 #

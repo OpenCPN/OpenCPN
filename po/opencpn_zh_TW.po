@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN 3.3.814\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2013-09-25 15:27+0800\n"
 "Last-Translator: Eddie Pai <eddie.pai@gmail.com>\n"
 "Language-Team: Eddie Pai <eddie.pai@gmail.com>\n"
@@ -18,6 +18,59 @@ msgstr ""
 "X-Poedit-Bookmarks: -1,-1,-1,214,-1,-1,-1,-1,-1,-1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Generator: Poedit 1.5.7\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid ""
+"\n"
+"\n"
+msgstr ""
+"\n"
+"\n"
+"\n"
 #
 msgid ""
 "\n"
@@ -242,6 +295,9 @@ msgstr " 更新: "
 msgid " for details."
 msgstr " for details."
 #
+msgid " is incompatible with this version of OpenCPN."
+msgstr ""
+#
 msgid ""
 " shorter than rhumbline.\n"
 "\n"
@@ -409,6 +465,9 @@ msgstr "(保留供未來使用)"
 #
 msgid "(unnamed)"
 msgstr "(未命名)"
+#
+msgid ", and all previous versions,"
+msgstr ""
 #
 #
 #
@@ -711,8 +770,14 @@ msgstr "新增"
 msgid "Address"
 msgstr "位址"
 #
+msgid "Adelie Land"
+msgstr ""
+#
 msgid "Advanced"
 msgstr "進階"
+#
+msgid "Afghanistan"
+msgstr ""
 #
 #
 #
@@ -726,6 +791,16 @@ msgstr "擱淺"
 #
 msgid "Aid to Navigation"
 msgstr "導航協助"
+#
+msgid "Alaska"
+msgstr ""
+#
+msgid "Albania"
+msgstr ""
+#
+#, fuzzy
+msgid "Algeria"
+msgstr "序列傳輸"
 #
 msgid "All"
 msgstr "全部"
@@ -750,6 +825,9 @@ msgstr "所有海圖"
 #, fuzzy
 msgid "Altitude"
 msgstr "緯度"
+#
+msgid "American Samoa"
+msgstr ""
 #
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -783,11 +861,26 @@ msgstr "錨區: 船舶移動操作"
 msgid "Anchorage created "
 msgstr "Anchorage created "
 #
+msgid "Andorra"
+msgstr ""
+#
+msgid "Angola"
+msgstr ""
+#
+msgid "Anguilla"
+msgstr ""
+#
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "回答 'No' 將會在相同位置處建立一個新的轉向點."
 #
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "回答 'No' 將會為此航路建立全新的轉向點."
+#
+msgid "Antigua and Barbuda"
+msgstr ""
+#
+msgid "Antilles"
+msgstr ""
 #
 #
 #
@@ -838,6 +931,18 @@ msgstr "確定要刪除這條航跡?"
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "確定刪除這個轉向點?"
 #
+msgid "Argentine Republic"
+msgstr ""
+#
+msgid "Armenia"
+msgstr ""
+#
+msgid "Aruba"
+msgstr ""
+#
+msgid "Ascension Island"
+msgstr ""
+#
 #
 #
 msgid "Assumed 1 Mile Point"
@@ -856,6 +961,12 @@ msgstr "錨泊中"
 msgid "AtoN"
 msgstr "AtoN"
 #
+msgid "Australia"
+msgstr ""
+#
+msgid "Austria"
+msgstr ""
+#
 #
 #
 msgid "Authors"
@@ -865,6 +976,9 @@ msgstr "作者"
 #
 msgid "Auto Follow"
 msgstr "自動定位"
+#
+msgid "AutoSort"
+msgstr ""
 #
 #
 #
@@ -876,6 +990,12 @@ msgstr "每日自動追跡"
 msgid "Avg. speed"
 msgstr "平均速度"
 #
+msgid "Azerbaijani Republic"
+msgstr ""
+#
+msgid "Azores"
+msgstr ""
+#
 #
 #
 #
@@ -883,6 +1003,18 @@ msgstr "平均速度"
 #
 msgid "B"
 msgstr "B"
+#
+msgid "Bahamas"
+msgstr ""
+#
+msgid "Bahrain"
+msgstr ""
+#
+msgid "Bangladesh"
+msgstr ""
+#
+msgid "Barbados"
+msgstr ""
 #
 #
 #
@@ -952,6 +1084,24 @@ msgstr "方位"
 msgid "Bearing (M)"
 msgstr "方位 (M)"
 #
+msgid "Belarus"
+msgstr ""
+#
+msgid "Belgium"
+msgstr ""
+#
+msgid "Belize"
+msgstr ""
+#
+msgid "Benin"
+msgstr ""
+#
+msgid "Bermuda"
+msgstr ""
+#
+msgid "Bhutan"
+msgstr ""
+#
 #
 msgid "Black"
 msgstr "黑"
@@ -964,10 +1114,22 @@ msgstr "偵測到錯誤的插件..."
 msgid "Blue"
 msgstr "藍"
 #
+msgid "Bolivia"
+msgstr ""
+#
+msgid "Bosnia and Herzegovina"
+msgstr ""
+#
+msgid "Botswana"
+msgstr ""
+#
 #
 #
 msgid "Boundaries"
 msgstr "邊界"
+#
+msgid "Brazil"
+msgstr ""
 #
 #
 #
@@ -976,11 +1138,26 @@ msgstr "邊界"
 msgid "Brg"
 msgstr "船艏向"
 #
+msgid "British Virgin Islands"
+msgstr ""
+#
+msgid "Brunei Darussalam"
+msgstr ""
+#
 msgid "Buddy"
 msgstr "Buddy"
 #
+msgid "Bulgaria"
+msgstr ""
+#
 msgid "Buoy/Light Labels"
 msgstr "浮標/燈光 標註"
+#
+msgid "Burkina Faso"
+msgstr ""
+#
+msgid "Burundi"
+msgstr ""
 #
 #
 #
@@ -1031,6 +1208,15 @@ msgstr "CPA/TCPA 警示"
 msgid "Call"
 msgstr "呼號"
 #
+msgid "Cambodia"
+msgstr ""
+#
+msgid "Cameroon"
+msgstr ""
+#
+msgid "Canada"
+msgstr ""
+#
 #
 #
 msgid "Cancel"
@@ -1038,6 +1224,9 @@ msgstr "取消"
 #
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
 msgstr "刪除 - 刪除定義於訊息連結ID區域"
+#
+msgid "Cape Verde"
+msgstr ""
 #
 #
 #
@@ -1170,6 +1359,9 @@ msgstr "警戒區域: 水下作業"
 msgid "Caution Area: Underwater vehicle operation"
 msgstr "警戒區域: 水下艦艇作業"
 #
+msgid "Cayman Islands"
+msgstr ""
+#
 #
 #
 msgid "Cell"
@@ -1186,6 +1378,12 @@ msgstr "Center View"
 #
 msgid "Center View..."
 msgstr "移至經緯度…"
+#
+msgid "Central African Republic"
+msgstr ""
+#
+msgid "Chad"
+msgstr ""
 #
 #
 #
@@ -1276,6 +1474,12 @@ msgstr "海圖文字"
 msgid "Charts"
 msgstr "海圖"
 #
+msgid "Chile"
+msgstr ""
+#
+msgid "China"
+msgstr ""
+#
 #
 #
 msgid "Choose Font Color..."
@@ -1294,6 +1498,9 @@ msgstr "選擇複製格式"
 #
 msgid "Choose a file"
 msgstr "選擇一個檔案"
+#
+msgid "Christmas Island"
+msgstr ""
 #
 #
 #
@@ -1320,6 +1527,9 @@ msgstr "清除全部"
 msgid "Clear Anchor Watch"
 msgstr "清除流錨警報"
 #
+msgid "Clear Texture Cache"
+msgstr ""
+#
 msgid "Clearance granted - proceed to berth"
 msgstr "淨空許可 - 進行泊靠"
 #
@@ -1345,6 +1555,15 @@ msgstr "關閉"
 msgid "CoG"
 msgstr "CoG"
 #
+msgid "Cocos"
+msgstr ""
+#
+#
+#
+#, fuzzy
+msgid "Colombia"
+msgstr "顏色"
+#
 #
 #
 msgid "Color"
@@ -1363,8 +1582,28 @@ msgstr "色彩"
 msgid "Combo!"
 msgstr "Combo!"
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Comoros"
+msgstr "明天"
+#
+msgid "Comoros (Union of the)"
+msgstr ""
+#
 msgid "Confirm deletion of tracks and routes"
 msgstr "重複確認刪除航跡與航路"
+#
+msgid "Congo"
+msgstr ""
 #
 #
 #
@@ -1395,6 +1634,9 @@ msgstr "吃水受限"
 msgid "Control checksum"
 msgstr "Control checksum"
 #
+msgid "Cook Islands"
+msgstr ""
+#
 msgid "Copy As KML"
 msgstr "複製為 KML"
 #
@@ -1409,6 +1651,9 @@ msgstr "複製為 KML"
 #
 msgid "Copy as KML..."
 msgstr "複製為 KML..."
+#
+msgid "Costa Rica"
+msgstr ""
 #
 #
 #
@@ -1450,6 +1695,15 @@ msgstr "建立航路點"
 msgid "Create Waypoint"
 msgstr "建立航路點"
 #
+msgid "Croatia"
+msgstr ""
+#
+msgid "Crozet Archipelago"
+msgstr ""
+#
+msgid "Cuba"
+msgstr ""
+#
 #
 #
 #
@@ -1467,6 +1721,15 @@ msgstr "海流"
 #
 msgid "Cyan"
 msgstr "青"
+#
+msgid "Cyprus"
+msgstr ""
+#
+msgid "Czech Republic"
+msgstr ""
+#
+msgid "CÃ´te d'Ivoire"
+msgstr ""
 #
 #
 #
@@ -1596,6 +1859,12 @@ msgstr "刪除航路點"
 #
 msgid "Delete..."
 msgstr "刪除..."
+#
+msgid "Dem Rep.of the Congo"
+msgstr ""
+#
+msgid "Denmark"
+msgstr ""
 #
 #
 #
@@ -1729,10 +1998,22 @@ msgstr "事故區域: 船舶沈沒"
 msgid "Distress Area: Vessel under assault"
 msgstr "事故區域: 船舶遭受攻擊"
 #
+#
+#
+#, fuzzy
+msgid "Djibouti"
+msgstr "關於"
+#
 msgid ""
 "Do you also want to make the shared waypoints being part of this route "
 "invisible?"
 msgstr "也要令航路中的共用航點成為不可見?"
+#
+msgid "Dominica"
+msgstr ""
+#
+msgid "Dominican Republic"
+msgstr ""
 #
 #
 #
@@ -1787,8 +2068,17 @@ msgstr "ETE"
 msgid "ETE/ETD"
 msgstr "ETE/ETD"
 #
+msgid "Ecuador"
+msgstr ""
+#
 msgid "Edit"
 msgstr "編輯"
+#
+msgid "Egypt"
+msgstr ""
+#
+msgid "El Salvador"
+msgstr ""
 #
 #
 #
@@ -1866,6 +2156,12 @@ msgstr "環境警戒區域: 暴風雨警告"
 msgid "Environmental Caution Area: Strong currents"
 msgstr "環境警戒區域: 強勁海流"
 #
+msgid "Equatorial Guinea"
+msgstr ""
+#
+msgid "Eritrea"
+msgstr ""
+#
 #
 #
 #
@@ -1894,6 +2190,12 @@ msgstr "錯誤!"
 #
 msgid "Estimated time : "
 msgstr "估計時間 : "
+#
+msgid "Estonia"
+msgstr ""
+#
+msgid "Ethiopia"
+msgstr ""
 #
 msgid "EvTwilight"
 msgstr "暮光"
@@ -1951,6 +2253,12 @@ msgstr "漁船"
 msgid "Failed to initialize the user interface. "
 msgstr "使用者介面啓用失敗"
 #
+msgid "Falkland Islands"
+msgstr ""
+#
+msgid "Faroe Islands"
+msgstr ""
+#
 #
 #
 msgid "Fathoms"
@@ -1960,6 +2268,9 @@ msgstr "噚"
 #
 msgid "Feet"
 msgstr "英呎"
+#
+msgid "Fiji"
+msgstr ""
 #
 #
 #
@@ -1976,6 +2287,9 @@ msgstr "篩選週期 (秒)"
 msgid "Filters"
 msgstr "篩選"
 #
+msgid "Finland"
+msgstr ""
+#
 #
 #
 msgid "Fix.Struct."
@@ -1985,6 +2299,9 @@ msgstr "固定結構體"
 #
 msgid "Fixed Structure"
 msgstr "固定結構體"
+#
+msgid "Flag"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "字型"
@@ -1999,6 +2316,15 @@ msgstr "強制重建索引資料庫"
 #
 msgid "Format uploads for Furuno GP3X"
 msgstr "上傳 Furuno GP3X 格式"
+#
+#
+#
+#, fuzzy
+msgid "France"
+msgstr "取消"
+#
+msgid "French Polynesia"
+msgstr ""
 #
 msgid "From"
 msgstr "從"
@@ -2031,6 +2357,12 @@ msgstr "GPX"
 msgid "GUID"
 msgstr "GUID"
 #
+msgid "Gabonese Republic"
+msgstr ""
+#
+msgid "Gambia"
+msgstr ""
+#
 #
 #
 #
@@ -2042,6 +2374,18 @@ msgstr "一般"
 msgid "General Options"
 msgstr "一般選項"
 #
+msgid "Georgia"
+msgstr ""
+#
+msgid "Germany"
+msgstr ""
+#
+msgid "Ghana"
+msgstr ""
+#
+msgid "Gibraltar"
+msgstr ""
+#
 #
 #
 msgid "Go to "
@@ -2050,17 +2394,54 @@ msgstr "前往"
 msgid "GpsGate Buddy"
 msgstr "GpsGate Buddy"
 #
+msgid "Great Britain"
+msgstr ""
+#
+#
+#, fuzzy
+msgid "Greece"
+msgstr "綠"
+#
 #
 msgid "Green"
 msgstr "綠"
 #
+#
+#, fuzzy
+msgid "Greenland"
+msgstr "綠"
+#
+msgid "Grenada"
+msgstr ""
+#
 msgid "Group \""
 msgstr "Group \""
+#
+msgid "Guadeloupe"
+msgstr ""
+#
+msgid "Guatemala"
+msgstr ""
+#
+msgid "Guiana"
+msgstr ""
+#
+msgid "Guinea"
+msgstr ""
+#
+msgid "Guinea-Bissau"
+msgstr ""
+#
+msgid "Guyana"
+msgstr ""
 #
 #
 #
 msgid "HSC"
 msgstr "高速船"
+#
+msgid "Haiti"
+msgstr ""
 #
 #
 #
@@ -2132,6 +2513,15 @@ msgstr "高速船"
 msgid "Highlight Tracks"
 msgstr "航跡強調顯示"
 #
+msgid "Honduras"
+msgstr ""
+#
+msgid "Hong Kong"
+msgstr ""
+#
+msgid "Hungary"
+msgstr ""
+#
 #
 #
 msgid "I&mport GPX..."
@@ -2144,6 +2534,9 @@ msgstr "匯入(&m)..."
 #, fuzzy
 msgid "IMO"
 msgstr "IMO:\n"
+#
+msgid "Iceland"
+msgstr ""
 #
 #
 #
@@ -2168,6 +2561,16 @@ msgstr "匯入 GPX 檔案"
 #
 msgid "Important Text Only"
 msgstr "僅顯示重要文字"
+#
+#, fuzzy
+msgid "Incompatible PlugIn detected:\n"
+msgstr "    偵測到不相容的插件:"
+#
+msgid "India"
+msgstr ""
+#
+msgid "Indonesia"
+msgstr ""
 #
 msgid "Information: Icebreaker waiting area"
 msgstr "資訊: 破冰等候區域"
@@ -2214,6 +2617,15 @@ msgstr "指示: 在此處聯絡VTS"
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr "指示: 在此處後勿繼續前進"
 #
+msgid "Iran"
+msgstr ""
+#
+msgid "Iraq"
+msgstr ""
+#
+msgid "Ireland"
+msgstr ""
+#
 #
 #
 msgid "Isol. Dngr"
@@ -2224,19 +2636,55 @@ msgstr "Isol. Dngr"
 msgid "Isolated Danger"
 msgstr "孤立危險物"
 #
+msgid "Israel"
+msgstr ""
+#
+msgid "Italy"
+msgstr ""
+#
+msgid "Jamaica"
+msgstr ""
+#
+msgid "Japan"
+msgstr ""
+#
+msgid "Jordan"
+msgstr ""
+#
 msgid "KML Standard (Google Earth and others)"
 msgstr "KML 標準(Google Earth 與其他)"
 #
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "KML 具延伸轉向點資料(QtVlm)"
 #
+msgid "Kazakhstan"
+msgstr ""
+#
+msgid "Kenya"
+msgstr ""
+#
+msgid "Kerguelen Islands"
+msgstr ""
+#
 #
 #
 msgid "Kilometers"
 msgstr "公里"
 #
+msgid "Kiribati"
+msgstr ""
+#
 msgid "Knots"
 msgstr "Knots"
+#
+msgid "Korea"
+msgstr ""
+#
+msgid "Kuwait"
+msgstr ""
+#
+msgid "Kyrgyz Republic"
+msgstr ""
 #
 #
 #
@@ -2256,10 +2704,16 @@ msgstr ""
 msgid "Language"
 msgstr "語系"
 #
+msgid "Lao People's Dem. Rep."
+msgstr ""
+#
 #
 #
 msgid "Latitude"
 msgstr "緯度"
+#
+msgid "Latvia"
+msgstr ""
 #
 #
 #
@@ -2319,6 +2773,9 @@ msgstr "前引導燈"
 msgid "Leading Light Rear"
 msgstr "後引導燈"
 #
+msgid "Lebanon"
+msgstr ""
+#
 #
 #
 #
@@ -2343,10 +2800,23 @@ msgstr "長度"
 msgid "Length Over All (m)"
 msgstr "總長LOA(m)"
 #
+msgid "Lesotho"
+msgstr ""
+#
+#, fuzzy
+msgid "Liberia"
+msgstr "序列傳輸"
+#
+msgid "Libyan Arab Jamahiriya"
+msgstr ""
+#
 #
 #
 msgid "License"
 msgstr "版權"
+#
+msgid "Liechtenstein"
+msgstr ""
 #
 #
 #
@@ -2421,6 +2891,9 @@ msgstr "連結已在預設瀏覽器中開啓"
 msgid "List contents"
 msgstr "內容列表"
 #
+msgid "Lithuania"
+msgstr ""
+#
 #
 #
 msgid "Loaded Charts"
@@ -2483,6 +2956,9 @@ msgstr "Lt sect."
 msgid "LtV/Rig"
 msgstr "LtV/Rig"
 #
+msgid "Luxembourg"
+msgstr ""
+#
 #
 #
 msgid "M/T"
@@ -2510,9 +2986,36 @@ msgstr "MMSI"
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
 #
+msgid "Macao"
+msgstr ""
+#
+msgid "Macedonia"
+msgstr ""
+#
+msgid "Madagascar"
+msgstr ""
+#
+msgid "Madeira"
+msgstr ""
+#
 #
 msgid "Magenta"
 msgstr "洋紅"
+#
+msgid "Malawi"
+msgstr ""
+#
+msgid "Malaysia"
+msgstr ""
+#
+msgid "Maldives"
+msgstr ""
+#
+msgid "Mali"
+msgstr ""
+#
+msgid "Malta"
+msgstr ""
 #
 #
 #
@@ -2538,6 +3041,18 @@ msgstr "信號消失多久後標記為目標遺失(分鐘)"
 #
 msgid "Marks"
 msgstr "標記"
+#
+msgid "Marshall Islands"
+msgstr ""
+#
+msgid "Martinique"
+msgstr ""
+#
+msgid "Mauritania"
+msgstr ""
+#
+msgid "Mauritius"
+msgstr ""
 #
 #
 #
@@ -2567,6 +3082,9 @@ msgstr "醫療交通船"
 msgid "Medium"
 msgstr "中"
 #
+msgid "Menu"
+msgstr ""
+#
 #
 #
 msgid "Mercator"
@@ -2587,6 +3105,12 @@ msgstr "合併轉向點?"
 msgid "Meters"
 msgstr "公尺"
 #
+msgid "Mexico"
+msgstr ""
+#
+msgid "Micronesia"
+msgstr ""
+#
 #
 #
 msgid "Mil/V"
@@ -2606,10 +3130,28 @@ msgstr "雜項選項"
 msgid "MoTwilight"
 msgstr "曙光"
 #
+msgid "Moldova"
+msgstr ""
+#
+msgid "Monaco"
+msgstr ""
+#
+msgid "Mongolia"
+msgstr ""
+#
+msgid "Montenegro"
+msgstr ""
+#
+msgid "Montserrat"
+msgstr ""
+#
 #
 #
 msgid "Moored"
 msgstr "繫泊中"
+#
+msgid "Morocco"
+msgstr ""
 #
 #
 #
@@ -2621,8 +3163,14 @@ msgstr "移動船舶至此處"
 msgid "Move Waypoint"
 msgstr "移動航路點"
 #
+msgid "Mozambique"
+msgstr ""
+#
 msgid "Mph"
 msgstr "Mph"
+#
+msgid "Myanmar"
+msgstr ""
 #
 msgid "NMEA"
 msgstr "NMEA"
@@ -2641,8 +3189,14 @@ msgstr "NMi"
 msgid "Name"
 msgstr "名稱"
 #
+msgid "Namibia"
+msgstr ""
+#
 msgid "National text on chart"
 msgstr "當地文字"
+#
+msgid "Nauru"
+msgstr ""
 #
 #
 #
@@ -2669,8 +3223,17 @@ msgstr "導航至此處"
 msgid "Navigate To This"
 msgstr "導航至此處"
 #
+msgid "Nepal"
+msgstr ""
+#
+msgid "Netherlands"
+msgstr ""
+#
 msgid "Network"
 msgstr "網路通訊"
+#
+msgid "New Caledonia"
+msgstr ""
 #
 #
 #
@@ -2680,13 +3243,29 @@ msgstr "新海圖群組"
 msgid "New Group..."
 msgstr "新群組..."
 #
+msgid "New Zealand"
+msgstr ""
+#
 #
 #
 msgid "Next tide event"
 msgstr "下一個潮汐事件"
 #
+msgid "Nicaragua"
+msgstr ""
+#
+msgid "Niger"
+msgstr ""
+#
+#, fuzzy
+msgid "Nigeria"
+msgstr "序列傳輸"
+#
 msgid "Nighttime"
 msgstr "夜晚"
+#
+msgid "Niue"
+msgstr ""
 #
 #
 #
@@ -2732,6 +3311,12 @@ msgstr "無"
 msgid "North Up Mode"
 msgstr "北方朝上模式"
 #
+msgid "Northern Mariana Islands"
+msgstr ""
+#
+msgid "Norway"
+msgstr ""
+#
 #
 #
 msgid "Not Under Command"
@@ -2764,6 +3349,9 @@ msgstr "Ok"
 #
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "舊的記錄檔會移至opencpn.log.log"
+#
+msgid "Oman"
+msgstr ""
 #
 #
 #
@@ -2910,8 +3498,34 @@ msgstr "污染控制船"
 #
 #
 #
+#, fuzzy
+msgid "Pakistan"
+msgstr "距離"
+#
+msgid "Palau"
+msgstr ""
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Palestine"
+msgstr "測試"
+#
+msgid "Panama"
+msgstr ""
+#
+#
+#
 msgid "Paper Chart"
 msgstr "紙海圖"
+#
+msgid "Papua New Guinea"
+msgstr ""
+#
+msgid "Paraguay"
+msgstr ""
 #
 #
 #
@@ -2943,10 +3557,22 @@ msgstr "貼上航跡"
 msgid "Paste Waypoint"
 msgstr "貼上轉向點"
 #
+msgid "People's Rep. of Korea"
+msgstr ""
+#
+msgid "Peru"
+msgstr ""
+#
+msgid "Philippines"
+msgstr ""
+#
 #
 #
 msgid "Pilot Vessel"
 msgstr "領港船"
+#
+msgid "Pitcairn Island"
+msgstr ""
 #
 #
 #
@@ -3002,6 +3628,10 @@ msgstr ""
 "偵測到插件 %s (%s), 版本 %i.%i . 此版本尚不穩定, 請至 opencpn.org 查詢是否已有"
 "最新版本."
 #
+#, c-format
+msgid "PlugIn [ %s ] version %i.%i"
+msgstr ""
+#
 #
 #
 msgid "Plugins"
@@ -3011,6 +3641,9 @@ msgstr "插件"
 #
 msgid "Points"
 msgstr "點"
+#
+msgid "Poland"
+msgstr ""
 #
 #
 #
@@ -3041,6 +3674,12 @@ msgstr "左舷側航標"
 #
 msgid "Port Tender"
 msgstr "港勤工作船"
+#
+#
+#
+#, fuzzy
+msgid "Portugal"
+msgstr "左舷"
 #
 #
 #
@@ -3156,6 +3795,12 @@ msgstr "屬性..."
 msgid "Protocol"
 msgstr "協定"
 #
+msgid "Puerto Rico"
+msgstr ""
+#
+msgid "Qatar"
+msgstr ""
+#
 #
 #
 msgid "Question"
@@ -3193,6 +3838,9 @@ msgstr "實際比例向量圖"
 #
 msgid "Real(Off Position)"
 msgstr "Real(Off Position)"
+#
+msgid "Rebuild Texture Cache"
+msgstr ""
 #
 #
 #
@@ -3343,6 +3991,9 @@ msgstr "從Windows Registry 取得啟始海圖目錄"
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "從Windows Registry 取得啟始語言"
 #
+msgid "Reunion"
+msgstr ""
+#
 #
 #
 msgid "Reverse..."
@@ -3363,6 +4014,9 @@ msgstr "惡意或可疑船舶"
 #
 msgid "Rollover"
 msgstr "滑鼠移至物件上方時顯示"
+#
+msgid "Romania"
+msgstr ""
 #
 #
 #
@@ -3418,6 +4072,12 @@ msgstr "航程資訊浮動顯示"
 msgid "Routes"
 msgstr "航路 "
 #
+msgid "Russian"
+msgstr ""
+#
+msgid "Rwanda"
+msgstr ""
+#
 #
 #
 msgid "S/V"
@@ -3464,6 +4124,36 @@ msgstr "安全水深"
 #
 msgid "Sailing Vessel"
 msgstr "帆船"
+#
+msgid "Saint Helena"
+msgstr ""
+#
+msgid "Saint Kitts and Nevis"
+msgstr ""
+#
+msgid "Saint Lucia"
+msgstr ""
+#
+msgid "Saint Paul"
+msgstr ""
+#
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+#
+msgid "Saint Vincent and the Grenadines"
+msgstr ""
+#
+msgid "Samoa"
+msgstr ""
+#
+msgid "San Marino"
+msgstr ""
+#
+msgid "Sao Tome and Principe"
+msgstr ""
+#
+msgid "Saudi Arabia"
+msgstr ""
 #
 #
 #
@@ -3554,8 +4244,20 @@ msgstr "傳送至GPS"
 #
 #
 #
+#, fuzzy
+msgid "Send to new GPS"
+msgstr "傳送至GPS"
+#
+msgid "Senegal"
+msgstr ""
+#
+#
+#
 msgid "Sentence Filter"
 msgstr "字串篩選"
+#
+msgid "Serbia"
+msgstr ""
 #
 msgid "Serial"
 msgstr "序列傳輸"
@@ -3570,6 +4272,9 @@ msgstr "Set"
 #
 msgid "Set Anchor Watch"
 msgstr "設定流錨警報"
+#
+msgid "Seychelles"
+msgstr ""
 #
 #
 #
@@ -3810,10 +4515,22 @@ msgstr "顯示目標軌跡, 長度(分鐘)"
 msgid "Shows the font preview."
 msgstr "顯示字型預覽"
 #
+msgid "Sierra Leone"
+msgstr ""
+#
 #
 #
 msgid "Simplified"
 msgstr "簡化"
+#
+msgid "Singapore"
+msgstr ""
+#
+msgid "Slovak Republic"
+msgstr ""
+#
+msgid "Slovenia"
+msgstr ""
 #
 msgid "Smooth Panning / Zooming"
 msgstr "平滑 移動 / 縮放"
@@ -3829,6 +4546,21 @@ msgstr "SoG"
 #
 msgid "Solid"
 msgstr "實線"
+#
+msgid "Solomon Islands"
+msgstr ""
+#
+msgid "Somali Democratic Republic"
+msgstr ""
+#
+msgid "South Africa"
+msgstr ""
+#
+msgid "South Sudan (Republic of)"
+msgstr ""
+#
+msgid "Spain"
+msgstr ""
 #
 #
 #
@@ -3869,6 +4601,9 @@ msgstr "分離航路"
 #
 msgid "Split Track"
 msgstr "分離航跡"
+#
+msgid "Sri Lanka"
+msgstr ""
 #
 #
 #
@@ -3916,6 +4651,9 @@ msgstr "樣式"
 msgid "Style:"
 msgstr "樣式:"
 #
+msgid "Sudan"
+msgstr ""
+#
 msgid "Sunrise"
 msgstr "日出"
 #
@@ -3927,10 +4665,25 @@ msgstr "日落"
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "不顯示錨泊/繫泊中之目標"
 #
+msgid "Suriname"
+msgstr ""
+#
+msgid "Swaziland"
+msgstr ""
+#
+msgid "Sweden"
+msgstr ""
+#
+msgid "Switzerland"
+msgstr ""
+#
 #
 #
 msgid "Symbolized"
 msgstr "符號化"
+#
+msgid "Syrian Arab Republic"
+msgstr ""
 #
 #
 #
@@ -3944,10 +4697,16 @@ msgstr "TCP"
 msgid "TCPA"
 msgstr "TCPA"
 #
+msgid "Taiwan"
+msgstr ""
+#
 #
 #
 msgid "Tanker"
 msgstr "油輪"
+#
+msgid "Tanzania"
+msgstr ""
 #
 #
 #
@@ -4012,6 +4771,9 @@ msgid "Texture Compression Caching"
 msgstr ""
 #
 msgid "Texture Memory Size (MB)"
+msgstr ""
+#
+msgid "Thailand"
 msgstr ""
 #
 msgid ""
@@ -4191,6 +4953,12 @@ msgstr "切換航跡顯示"
 msgid "Toggle track"
 msgstr "切換航跡顯示"
 #
+msgid "Togolese Republic"
+msgstr ""
+#
+msgid "Tonga"
+msgstr ""
+#
 #
 #
 msgid "ToolTips"
@@ -4264,6 +5032,9 @@ msgstr "橫向麥卡托"
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "將 WPL 字串視為 APRS 位置報告"
 #
+msgid "Trinidad and Tobago"
+msgstr ""
+#
 #
 #
 #, fuzzy
@@ -4275,7 +5046,22 @@ msgstr "Track"
 msgid "Tug"
 msgstr "拖船"
 #
+msgid "Tunisia"
+msgstr ""
+#
+msgid "Turkey"
+msgstr ""
+#
+msgid "Turkmenistan"
+msgstr ""
+#
+msgid "Turks and Caicos Islands"
+msgstr ""
+#
 msgid "Turn Rate"
+msgstr ""
+#
+msgid "Tuvalu"
 msgstr ""
 #
 #
@@ -4293,6 +5079,12 @@ msgstr ""
 #
 msgid "UTC"
 msgstr "UTC"
+#
+msgid "Uganda"
+msgstr ""
+#
+msgid "Ukraine"
+msgstr ""
 #
 #
 #
@@ -4316,6 +5108,15 @@ msgstr "航行中"
 #
 msgid "Undo"
 msgstr "復原"
+#
+msgid "United Arab Emirates"
+msgstr ""
+#
+msgid "United States Virgin Islands"
+msgstr ""
+#
+msgid "United States of America"
+msgstr ""
 #
 #
 #
@@ -4344,6 +5145,9 @@ msgstr "未指定"
 #
 msgid "Update Control"
 msgstr "更新控制"
+#
+msgid "Uruguay"
+msgstr ""
 #
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "使用圖形顯示加速功能(OpenGL)"
@@ -4393,15 +5197,27 @@ msgstr "User Y Offset"
 msgid "User Y Offset (Metres)"
 msgstr "User Y Offset (Metres)"
 #
+msgid "Uzbekistan"
+msgstr ""
+#
 #
 #
 msgid "VTS active target"
 msgstr "VTS 作用中目標"
 #
+msgid "Vanuatu"
+msgstr ""
+#
+msgid "Vatican City State"
+msgstr ""
+#
 #
 #
 msgid "Vector Charts"
 msgstr "向量圖"
+#
+msgid "Venezuela"
+msgstr ""
 #
 #
 #
@@ -4431,6 +5247,9 @@ msgstr "船舶長距拖曳中"
 msgid "Vessel requesting non-distress assistance"
 msgstr "船舶請求非船難協助"
 #
+msgid "Viet Nam"
+msgstr ""
+#
 #
 #
 msgid "Virtual"
@@ -4453,6 +5272,9 @@ msgstr "可見按鈕"
 #
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV檔 (*.wav)|*.wav|所有檔案 (*.*)|*.*"
+#
+msgid "Wallis and Futuna Islands"
+msgstr ""
 #
 #
 #
@@ -4568,6 +5390,9 @@ msgstr "遊艇"
 msgid "Yellow"
 msgstr "黃"
 #
+msgid "Yemen"
+msgstr ""
+#
 msgid "Yes, hide it."
 msgstr "是, 隱藏它."
 #
@@ -4600,6 +5425,12 @@ msgstr "必須輸入位址..."
 #
 msgid "You must select or enter the port..."
 msgstr "必須選取或輸入埠號…"
+#
+msgid "Zambia"
+msgstr ""
+#
+msgid "Zimbabwe"
+msgstr ""
 #
 #
 #
@@ -4734,61 +5565,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "\n"
 #~ msgstr "\n"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid ""
-#~ "\n"
-#~ "\n"
-#~ "\n"
-#~ msgstr ""
-#~ "\n"
-#~ "\n"
-#~ "\n"
 #
 #
 #
@@ -4841,8 +5621,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "   目標最大移動速度(節)"
+#
 #
 #
 #
@@ -4908,8 +5690,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr "   未知的球體投影方法, 假設使用麥卡托投影法: "
+#
 #
 #
 #
@@ -5004,8 +5788,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "   PlugInManager: Cannot load symbol create_pi: "
 #~ msgstr "   插件管理員: 無法載入 symbol create_pi: "
+#
 #
 #
 #
@@ -5078,8 +5864,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "  Could not open AIS serial port '"
 #~ msgstr "  無法開啟 AIS 連接埠 '"
+#
 #
 #
 #
@@ -5115,8 +5903,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid " </b>in<b> "
 #~ msgstr " </b>in<b> "
+#
 #
 #
 #
@@ -5167,8 +5957,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG: 000 度."
+#
 #
 #
 #
@@ -5190,8 +5982,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "&Acknowledge"
 #~ msgstr "警報確認(&A)"
+#
 #
 #
 #
@@ -5306,8 +6100,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "&Delete All Routes..."
 #~ msgstr "刪除所有航路(&D)..."
+#
 #
 #
 #
@@ -5377,8 +6173,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "匯出航跡(&E)..."
+#
 #
 #
 #
@@ -5403,8 +6201,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "&Silence Alert"
 #~ msgstr "警報靜音(&S)"
+#
 #
 #
 #
@@ -5486,12 +6286,14 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
 #~ msgstr ""
 #~ "'\n"
 #~ " 建議: 試著用 'xxx.xxx.xxx.xxx' 標示法"
+#
 #
 #
 #
@@ -5578,6 +6380,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "(Active Track)"
 #~ msgstr "(使用中航跡)"
 #
@@ -5589,8 +6392,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ", Out: None"
 #~ msgstr ", Out: None"
+#
 #
 #
 #
@@ -5646,6 +6451,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid ""
 #~ ":               Unavailable\n"
@@ -5663,8 +6469,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "AIS Alert"
 #~ msgstr "AIS 警告"
+#
 #
 #
 #
@@ -5718,6 +6526,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "AISTargetAlert"
 #~ msgstr "AIS 目標警告"
 #
@@ -5729,8 +6538,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Accept"
 #~ msgstr "接受"
+#
 #
 #
 #
@@ -5792,6 +6603,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Activate Route"
 #~ msgstr "啟動導航"
 #
@@ -5819,8 +6631,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Add Selection"
 #~ msgstr "增加選擇項目"
+#
 #
 #
 #
@@ -5888,8 +6702,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Additional information"
 #~ msgstr "其他資訊"
+#
 #
 #
 #
@@ -5966,8 +6782,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Attempting to load libgps.so"
 #~ msgstr "嘗試載入 libgps.so"
+#
 #
 #
 #
@@ -6019,6 +6837,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "擁有的海圖目錄"
 #
@@ -6032,8 +6851,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Barge, tanker, chemical"
 #~ msgstr "駁船, 油船, 化學品"
+#
 #
 #
 #
@@ -6108,8 +6929,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Bearing:                %03d Deg.\n"
 #~ msgstr "方位:                %03d Deg.\n"
+#
 #
 #
 #
@@ -6149,8 +6972,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "海洋散貨船"
+#
 #
 #
 #
@@ -6189,8 +7014,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93"
 #~ msgstr "CM93"
+#
 #
 #
 #
@@ -6243,8 +7070,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Display"
 #~ msgstr "CM93 Offset 顯示"
+#
 #
 #
 #
@@ -6359,8 +7188,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93 Offset On"
 #~ msgstr "CM93 Offset On"
+#
 #
 #
 #
@@ -6475,8 +7306,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93 Offset Tool....."
 #~ msgstr "CM93 Offset Tool....."
+#
 #
 #
 #
@@ -6560,6 +7393,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93 Offsets On"
 #~ msgstr "CM93 Offsets On"
 #
@@ -6587,8 +7421,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CM93 Zoom Detail"
 #~ msgstr "CM93 縮放詳細度"
+#
 #
 #
 #
@@ -6643,8 +7479,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA:                 %6.1f NM\n"
+#
 #
 #
 #
@@ -6735,6 +7573,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CallSign:  "
 #~ msgstr "CallSign:  "
 #
@@ -6763,8 +7602,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "呼號:              "
+#
 #
 #
 #
@@ -6880,9 +7721,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Cell Y Offset"
 #~ msgstr "設定 CM93 Offset"
+#
 #
 #
 #
@@ -6950,8 +7793,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Chart Display Filters"
 #~ msgstr "海圖顯示項目過濾條件"
+#
 #
 #
 #
@@ -7005,8 +7850,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Class:                "
 #~ msgstr "船級:                  "
+#
 #
 #
 #
@@ -7044,6 +7891,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "無法解析 TCP/IP 主機 '"
 #
@@ -7055,8 +7903,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Couldn't load sound data from '%s'."
 #~ msgstr "無法從 '%s' 載入聲音檔."
+#
 #
 #
 #
@@ -7111,8 +7961,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "航向:                 000 度.\n"
+#
 #
 #
 #
@@ -7152,8 +8004,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Cruise ship"
 #~ msgstr "遊輪"
+#
 #
 #
 #
@@ -7192,8 +8046,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Data Source :"
 #~ msgstr "資料來源 :"
+#
 #
 #
 #
@@ -7267,9 +8123,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Default dataset"
 #~ msgstr "預設顏色"
+#
 #
 #
 #
@@ -7332,8 +8190,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "刪除標記"
+#
 #
 #
 #
@@ -7386,6 +8246,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "刪除選擇項目"
 #
@@ -7413,8 +8274,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Delete Track"
 #~ msgstr "刪除航跡"
+#
 #
 #
 #
@@ -7468,8 +8331,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "目的地:          "
+#
 #
 #
 #
@@ -7508,6 +8373,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Drop"
 #~ msgstr "在此放置標記"
@@ -7525,8 +8391,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "匯出全部(&x)..."
+#
 #
 #
 #
@@ -7580,8 +8448,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "ETA:"
 #~ msgstr "ETA:"
+#
 #
 #
 #
@@ -7656,8 +8526,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "ETE/Timestamp"
 #~ msgstr "ETE/時間戳記"
+#
 #
 #
 #
@@ -7710,8 +8582,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "啟用滑鼠滾輪放大縮小游標所在位置功能"
+#
 #
 #
 #
@@ -7750,8 +8624,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "其他"
+#
 #
 #
 #
@@ -7776,8 +8652,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Ferry"
 #~ msgstr "渡輪"
+#
 #
 #
 #
@@ -7802,6 +8680,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Freightbarge"
 #~ msgstr "貨運駁船"
 #
@@ -7815,8 +8694,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "載有貨櫃之貨運駁船"
+#
 #
 #
 #
@@ -7870,8 +8751,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
 #
 #
 #
@@ -7910,8 +8793,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPSD 伺服器"
+#
 #
 #
 #
@@ -7936,8 +8821,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "一般海洋貨物船"
+#
 #
 #
 #
@@ -7999,8 +8886,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "前往標記/轉向點"
+#
 #
 #
 #
@@ -8040,8 +8929,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "方位:                %03d 度.\n"
+#
 #
 #
 #
@@ -8081,8 +8972,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "IMO:                 %8d\n"
 #~ msgstr "IMO:                 %8d\n"
+#
 #
 #
 #
@@ -8106,8 +8999,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "In: None"
 #~ msgstr "In: None"
+#
 #
 #
 #
@@ -8161,8 +9056,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "跳至"
+#
 #
 #
 #
@@ -8224,8 +9121,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "跳至位置..."
+#
 #
 #
 #
@@ -8265,8 +9164,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "LW"
 #~ msgstr "LW"
+#
 #
 #
 #
@@ -8333,8 +9234,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "最近位置發報時間:  "
+#
 #
 #
 #
@@ -8373,9 +9276,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Legend"
 #~ msgstr "Console 圖例"
+#
 #
 #
 #
@@ -8414,8 +9319,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "中繼物件"
+#
 #
 #
 #
@@ -8500,8 +9407,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Mark Icon"
 #~ msgstr "標記圖示"
+#
 #
 #
 #
@@ -8559,8 +9468,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Mark Properties"
 #~ msgstr "標記屬性"
+#
 #
 #
 #
@@ -8632,8 +9543,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "測量....."
+#
 #
 #
 #
@@ -8654,8 +9567,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Message filtered and dropped"
 #~ msgstr "訊息已過濾並丟棄"
+#
 #
 #
 #
@@ -8694,8 +9609,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor freighter"
 #~ msgstr "動力貨船"
+#
 #
 #
 #
@@ -8720,8 +9637,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor freighter pushing one or more freighters"
 #~ msgstr "動力貨船頂推一或多艘貨船"
+#
 #
 #
 #
@@ -8746,8 +9665,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor freighter with tanker"
 #~ msgstr "具液態儲槽之動力貨船"
+#
 #
 #
 #
@@ -8772,8 +9693,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor tanker"
 #~ msgstr "動力液貨船"
+#
 #
 #
 #
@@ -8798,6 +9721,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type C"
 #~ msgstr "動力液貨船, 液態貨物, 型式 C"
 #
@@ -8811,8 +9735,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "動力液貨船, 液態貨物, 型式 N"
+#
 #
 #
 #
@@ -8850,8 +9776,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr "NMEA 資料來源"
+#
 #
 #
 #
@@ -8888,8 +9816,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "NMEA Options"
 #~ msgstr "NMEA 選項"
+#
 #
 #
 #
@@ -8944,8 +9874,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "導航狀態:  "
+#
 #
 #
 #
@@ -9004,8 +9936,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "New Mark"
 #~ msgstr "新標記"
+#
 #
 #
 #
@@ -9028,8 +9962,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "No"
 #~ msgstr "No"
+#
 #
 #
 #
@@ -9068,6 +10004,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "物件, 未定義"
 #
@@ -9081,8 +10018,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Object, towed, not otherwise specified"
 #~ msgstr "物件, 拖曳, 未定義"
+#
 #
 #
 #
@@ -9177,12 +10116,14 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "OpenCPN PlugIn Base Class\n"
 #~ "PlugInManager created this base class"
 #~ msgstr ""
 #~ "OpenCPN 插件基礎Class\n"
 #~ "插件管理員建立基礎class"
+#
 #
 #
 #
@@ -9205,12 +10146,15 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Out"
 #~ msgstr "Out"
 #
 #
+#
 #~ msgid "Output"
 #~ msgstr "輸出"
+#
 #
 #
 #
@@ -9249,9 +10193,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "本船顯示選項"
+#
 #
 #
 #
@@ -9276,6 +10222,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "客船, 渡輪, 遊輪, 紅十字船(醫療服務船)"
 #
@@ -9287,8 +10234,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pause"
 #~ msgstr "暫停"
+#
 #
 #
 #
@@ -9340,9 +10289,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "以時間間隔(秒)標記航跡"
+#
 #
 #
 #
@@ -9367,8 +10318,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "遊艇, 長度超過20公尺"
+#
 #
 #
 #
@@ -9463,8 +10416,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Deactivating PlugIn: "
 #~ msgstr "插件管理員: 停止插件: "
+#
 #
 #
 #
@@ -9559,8 +10514,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Loading PlugIn: "
 #~ msgstr "插件管理員: 載入插件: "
+#
 #
 #
 #
@@ -9655,8 +10612,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "PlugInManager: Unloading PlugIn with invalid API version %d.%d: "
 #~ msgstr "插件管理員: 卸載插件 with invalid API version %d.%d: "
+#
 #
 #
 #
@@ -9689,6 +10648,7 @@ msgstr "wxFB 網站"
 #~ msgstr ""
 #~ "位置發報經過時間:       %3d Sec.\n"
 #~ "\n"
+#
 #
 #
 #
@@ -9774,6 +10734,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Possible libgps API version mismatch.\n"
 #~ "libgps did not reasonably respond to version request\n"
@@ -9784,6 +10745,7 @@ msgstr "wxFB 網站"
 #~ "libgps 無法正確回應版本請求\n"
 #~ "\n"
 #~ "仍要繼續使用這一版的libgps?"
+#
 #
 #
 #
@@ -9808,8 +10770,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Prev"
 #~ msgstr "前一個"
+#
 #
 #
 #
@@ -9834,8 +10798,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "推式駁船, 單一艘"
+#
 #
 #
 #
@@ -9860,8 +10826,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "頂推船, 八艘貨物駁船"
+#
 #
 #
 #
@@ -9886,8 +10854,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "頂推船, 五艘貨物駁船"
+#
 #
 #
 #
@@ -9912,8 +10882,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "頂推船, 四艘貨物駁船"
+#
 #
 #
 #
@@ -9938,8 +10910,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 九艘駁船其中至少一艘為液態貨或氣體駁船"
+#
 #
 #
 #
@@ -9964,8 +10938,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, one tank/gas barge"
 #~ msgstr "頂推船, 一艘 tank/gas 駁船"
+#
 #
 #
 #
@@ -9990,8 +10966,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, seven cargo barges"
 #~ msgstr "頂推船, 七艘貨物駁船"
+#
 #
 #
 #
@@ -10016,8 +10994,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, six cargo barges"
 #~ msgstr "頂推船, 六艘貨物駁船"
+#
 #
 #
 #
@@ -10042,6 +11022,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, three cargo barges"
 #~ msgstr "頂推船, 三艘貨物駁船"
 #
@@ -10055,8 +11036,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr "頂推船, 兩艘駁船其中至少一艘為液態貨或氣體駁船"
+#
 #
 #
 #
@@ -10094,8 +11077,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Radar rings"
 #~ msgstr "雷達距離圈"
+#
 #
 #
 #
@@ -10150,6 +11135,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "範圍:                %5.1f NM\n"
 #
@@ -10177,8 +11163,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "影像掃描式海圖"
+#
 #
 #
 #
@@ -10233,8 +11221,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "迴轉率            %3d Deg./Min. 向右\n"
+#
 #
 #
 #
@@ -10289,8 +11279,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "迴轉率            %3d Deg./Min. 向左\n"
+#
 #
 #
 #
@@ -10330,8 +11322,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Red cross ship"
 #~ msgstr "紅十字船(醫療服務船)"
+#
 #
 #
 #
@@ -10354,8 +11348,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Reject"
 #~ msgstr "Reject"
+#
 #
 #
 #
@@ -10407,6 +11403,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "從接圖中移除本圖"
 #
@@ -10418,8 +11415,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Resume"
 #~ msgstr "恢復"
+#
 #
 #
 #
@@ -10481,6 +11480,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Route Properties..."
 #~ msgstr "航路屬性"
@@ -10495,8 +11495,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "航路上傳成功."
+#
 #
 #
 #
@@ -10550,8 +11552,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "選擇自動接圖使用之海圖格式"
+#
 #
 #
 #
@@ -10576,8 +11580,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Send Route To GPS"
 #~ msgstr "傳送航路至GPS"
+#
 #
 #
 #
@@ -10606,8 +11612,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Service vessel, police patrol, port service"
 #~ msgstr "服務船舶, 水警巡邏, 港勤服務"
+#
 #
 #
 #
@@ -10669,6 +11677,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Settings"
 #~ msgstr "設定"
 #
@@ -10696,8 +11705,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "顯示 ATON 標籤"
+#
 #
 #
 #
@@ -10774,6 +11785,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "顯示航跡圖示"
 #
@@ -10800,8 +11812,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Show layers initially"
 #~ msgstr "啟始時顯示圖層"
+#
 #
 #
 #
@@ -10860,12 +11874,14 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Size:                 %dm x %dm x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -10924,12 +11940,14 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Size:                 ---m x ---m x %4.1fm\n"
 #~ "\n"
+#
 #
 #
 #
@@ -10988,6 +12006,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x %4.1fm\n"
 #~ "\n"
@@ -11020,12 +12039,14 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x ---m\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Size:               %5.1fm x %4.1fm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -11043,9 +12064,11 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Special Position Report"
 #~ msgstr "APRS 位置報告"
+#
 #
 #
 #
@@ -11100,8 +12123,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "速度:                %5.2f 節.\n"
+#
 #
 #
 #
@@ -11140,8 +12165,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP WiFi 資料伺服器"
+#
 #
 #
 #
@@ -11196,8 +12223,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA:                 %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -11222,8 +12251,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "儲槽駁船, 視同液體的乾貨(例如:水泥)"
+#
 #
 #
 #
@@ -11248,8 +12279,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type C"
 #~ msgstr "液態貨駁船, 液態貨物, 型式 C"
+#
 #
 #
 #
@@ -11288,6 +12321,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Text Element"
 #~ msgstr "文字項目"
 #
@@ -11301,8 +12335,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tide"
 #~ msgstr "潮汐"
+#
 #
 #
 #
@@ -11356,6 +12392,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
 #~ msgstr "潮流圖表Rollover"
@@ -11370,21 +12407,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Today"
 #~ msgstr "今天"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Tomorrow"
-#~ msgstr "明天"
 #
 #
 #
@@ -11412,6 +12438,7 @@ msgstr "wxFB 網站"
 #
 #~ msgid "ToolBox"
 #~ msgstr "工具箱"
+#
 #
 #
 #
@@ -11465,8 +12492,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "TrueScale: %8.0f             "
 #~ msgstr "真實比例: %8.0f             "
+#
 #
 #
 #
@@ -11491,8 +12520,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tug, assisting a vessel or linked combination"
 #~ msgstr "拖船, 協助他船或與他船連結"
+#
 #
 #
 #
@@ -11517,8 +12548,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tug, freighter/tanker, coupled"
 #~ msgstr "貨運/液態貨運拖船, 成對"
+#
 #
 #
 #
@@ -11543,6 +12576,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tug, single"
 #~ msgstr "拖船, 單一艘"
 #
@@ -11556,8 +12590,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Tug, tanker"
 #~ msgstr "拖船, 油輪"
+#
 #
 #
 #
@@ -11612,8 +12648,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "UN Ship Type:         "
 #~ msgstr "UN Ship Type:         "
+#
 #
 #
 #
@@ -11670,8 +12708,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Unable to load libgps"
 #~ msgstr "無法載入 libgps"
+#
 #
 #
 #
@@ -11704,8 +12744,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Unit carrier maritime"
 #~ msgstr "Unit carrier maritime"
+#
 #
 #
 #
@@ -11757,8 +12799,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Use SCAMIN"
 #~ msgstr "使用 SCAMIN"
+#
 #
 #
 #
@@ -11783,10 +12827,12 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Vessel, work maintainance craft, floating derrick, cable-ship, buoy-ship, "
 #~ "dredge"
 #~ msgstr "工作船, 水上起重船, 佈電纜船, 浮標船, 浚挖船"
+#
 #
 #
 #
@@ -11839,8 +12885,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "WiFi Options"
 #~ msgstr "WiFi 選項"
+#
 #
 #
 #
@@ -11893,6 +12941,7 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "Y Offset (Positive moves map to North) (NMi Projected) :"
 #~ msgstr "Y Offset (向北為正值) (NMi Projected) :"
 #
@@ -11920,8 +12969,10 @@ msgstr "wxFB 網站"
 #
 #
 #
+#
 #~ msgid "cm93 Detail"
 #~ msgstr "cm93 詳細度"
+#
 #
 #
 #

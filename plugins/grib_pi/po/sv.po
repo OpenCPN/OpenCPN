@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OpenCPN version 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2014-02-22 22:32+0100\n"
 "Last-Translator: Anders Arnell <anders.arnell@bredband.net>\n"
 "Language-Team: AB Torsk & Bäver <anders.arnell@bredband.net>\n"
@@ -345,6 +345,9 @@ msgstr "( Max "
 msgid "Mean Sea Level Pressure (MSLP)"
 msgstr "Lufttryck, mBar"
 #
+msgid "Menu"
+msgstr ""
+#
 msgid "Meters"
 msgstr "Meter"
 #
@@ -381,6 +384,10 @@ msgstr "Transparent väderinformation"
 #
 msgid "OverlayMap"
 msgstr "Överlagrad karta"
+#
+#, fuzzy
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Överlagrad data som är roterad döljs i DC-läge"
 #
 msgid "Overlays too wide and can't be displayed:"
 msgstr ""
@@ -523,11 +530,6 @@ msgid "Temperature"
 msgstr ""
 "Luft\n"
 "Temperatur"
-#
-msgid ""
-"The Grib file you are opening contains a moving Grib Zone.\n"
-"Interpolation is not supported for this type of file"
-msgstr ""
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -703,8 +705,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (Dup)"
+#
 #
 #
 #~ msgid " Mo )"
@@ -723,68 +727,85 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid " data"
 #~ msgstr "data"
+#
 #
 #
 #~ msgid "0.2"
 #~ msgstr "0.2"
 #
 #
+#
 #~ msgid "0.5"
 #~ msgstr "0.5"
+#
 #
 #
 #~ msgid "0.8"
 #~ msgstr "0.8"
 #
 #
+#
 #~ msgid "00N  00W"
 #~ msgstr "00N  00W"
+#
 #
 #
 #~ msgid "1"
 #~ msgstr "1"
 #
 #
+#
 #~ msgid "1.6"
 #~ msgstr "1.6"
+#
 #
 #
 #~ msgid "12"
 #~ msgstr "12"
 #
 #
+#
 #~ msgid "2"
 #~ msgstr "2"
+#
 #
 #
 #~ msgid "24"
 #~ msgstr "24"
 #
 #
+#
 #~ msgid "3"
 #~ msgstr "3"
+#
 #
 #
 #~ msgid "4"
 #~ msgstr "4"
 #
 #
+#
 #~ msgid "5"
 #~ msgstr "5"
+#
 #
 #
 #~ msgid "6"
 #~ msgstr "6"
 #
 #
+#
 #~ msgid "7"
 #~ msgstr "7"
 #
 #
+#
 #~ msgid "8"
 #~ msgstr "8"
+#
 #
 #
 #
@@ -793,8 +814,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "AirTemp"
 #~ msgstr "Lufttemp"
+#
 #
 #
 #~ msgid "COAMPS"
@@ -802,12 +825,15 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Celcius"
 #~ msgstr "Celcius"
 #
 #
+#
 #~ msgid "Cloud"
 #~ msgstr "Moln"
+#
 #
 #
 #
@@ -816,8 +842,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Clouds Cover"
 #~ msgstr "Molntäcke"
+#
 #
 #
 #
@@ -829,17 +857,21 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Data Display Preferences"
 #~ msgstr "GRIB Inställningar"
+#
 #
 #
 #~ msgid "Data available in the selected forecast model"
 #~ msgstr "Tillgängliga data i den valda prognosmodellen"
 #
 #
+#
 #~ msgid "Display Iso Temp. Lines"
 #~ msgstr "Visa Iso templinjer"
+#
 #
 #
 #
@@ -848,12 +880,15 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Mislyckades att skicka epost"
 #
 #
+#
 #~ msgid "GFS"
 #~ msgstr "GFS"
+#
 #
 #
 #
@@ -888,8 +923,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "GRIB Filkatalog"
+#
 #
 #
 #
@@ -897,8 +934,10 @@ msgstr "ZyGrib användarnamn"
 #~ msgstr "km/t"
 #
 #
+#
 #~ msgid "Login you use to connect to Zygrib's forum"
 #~ msgstr "Inloggning som du använder för att ansluta till Zygrib's forum"
+#
 #
 #
 #
@@ -907,8 +946,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "MPH"
 #~ msgstr "mph"
+#
 #
 #
 #
@@ -917,8 +958,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
 #~ msgstr "OpenCpn kunde inte logga in! Kontrollera din epostinställning"
+#
 #
 #
 #
@@ -927,8 +970,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Period"
 #~ msgstr "Period"
+#
 #
 #
 #
@@ -944,9 +989,11 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB regninformation"
+#
 #
 #
 #
@@ -962,9 +1009,11 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr "Zooma ut eller öka skalan för att visa GRIB yttemperatur"
+#
 #
 #
 #
@@ -977,8 +1026,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Nederbörd"
+#
 #
 #
 #, fuzzy
@@ -987,12 +1038,15 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
 #
 #
+#
 #~ msgid "RTOFS"
 #~ msgstr "RTOFS"
+#
 #
 #
 #
@@ -1001,13 +1055,16 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Range"
 #~ msgstr "Avstånd"
 #
 #
 #
+#
 #~ msgid "Ref : "
 #~ msgstr "Ref : "
+#
 #
 #
 #
@@ -1030,9 +1087,11 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Request Preferences"
 #~ msgstr "GRIB Inställningar"
+#
 #
 #
 #~ msgid "Saildocs"
@@ -1040,8 +1099,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "SeaTemp"
 #~ msgstr "Vattentemp"
+#
 #
 #
 #
@@ -1100,8 +1161,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Visa m/s för vindstyrka"
+#
 #
 #
 #
@@ -1110,8 +1173,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Slices per Update"
 #~ msgstr "Antal delar/uppdatering"
+#
 #
 #
 #
@@ -1119,12 +1184,15 @@ msgstr "ZyGrib användarnamn"
 #~ msgstr "Antal delar/timme"
 #
 #
+#
 #~ msgid "WW3-GLOBAL"
 #~ msgstr "WW3-GLOBAL"
 #
 #
+#
 #~ msgid "WW3-MEDIT"
 #~ msgstr "WW3-MEDIT"
+#
 #
 #
 #
@@ -1133,8 +1201,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "WavesModel"
 #~ msgstr "Vågmodell"
+#
 #
 #
 #
@@ -1150,9 +1220,11 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "Vindstyrka, m/s."
+#
 #
 #
 #
@@ -1161,8 +1233,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Zone"
+#
 #
 #
 #
@@ -1171,8 +1245,10 @@ msgstr "ZyGrib användarnamn"
 #
 #
 #
+#
 #~ msgid "eMail error"
 #~ msgstr "epostfel"
+#
 #
 #
 #~ msgid "size"

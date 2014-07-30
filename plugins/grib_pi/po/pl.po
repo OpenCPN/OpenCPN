@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 2.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2010-03-29 20:29+0100\n"
 "Last-Translator: Piotr Carlson <pjotrc@interia.pl>\n"
 "Language-Team: Wladyslaw Stolle <stollew@poczta.onet.pl>\n"
@@ -348,6 +348,9 @@ msgstr ""
 msgid "Mean Sea Level Pressure (MSLP)"
 msgstr "Ciśnienie, mBar"
 #
+msgid "Menu"
+msgstr ""
+#
 msgid "Meters"
 msgstr ""
 #
@@ -382,6 +385,9 @@ msgid "Overlay Transparency"
 msgstr ""
 #
 msgid "OverlayMap"
+msgstr ""
+#
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
 msgstr ""
 #
 msgid "Overlays too wide and can't be displayed:"
@@ -532,11 +538,6 @@ msgid "Surface level"
 msgstr ""
 #
 msgid "Temperature"
-msgstr ""
-#
-msgid ""
-"The Grib file you are opening contains a moving Grib Zone.\n"
-"Interpolation is not supported for this type of file"
 msgstr ""
 #
 msgid ""
@@ -748,6 +749,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -774,12 +776,14 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
 # 
 #~ msgid "GRIB"
 #~ msgstr "GRIB"
+#
 #
 #
 #
@@ -826,6 +830,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -835,6 +840,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot."
 #~ "wysokości fali znacznej"
+#
 #
 #
 #
@@ -863,6 +869,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -873,6 +880,7 @@ msgstr ""
 #~ msgstr ""
 #~ "Proszę zmniejszyć powiększenie lub skalę aby wyświetlić dane GRIB dot. "
 #~ "opadów deszczu"
+#
 #
 #
 #
@@ -900,6 +908,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -911,6 +920,7 @@ msgstr ""
 #~ "opadów deszczu"
 #
 #
+#
 # 
 # 
 # 
@@ -918,6 +928,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Pressure Altitude"
 #~ msgstr "Ciśnienie, mBar"
+#
 #
 #
 #
@@ -955,6 +966,7 @@ msgstr ""
 # 
 #~ msgid "Show GRIB icon"
 #~ msgstr "Pokaż ikonę GRIB"
+#
 #
 #
 #
@@ -1002,6 +1014,7 @@ msgstr ""
 #
 #
 #
+#
 # 
 # 
 # 
@@ -1009,6 +1022,7 @@ msgstr ""
 #, fuzzy
 #~ msgid "Wind Speed and Direction(10m)"
 #~ msgstr "Kierunek wiatru"
+#
 #
 #
 #

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2014-04-05 23:23+0100\n"
 "Last-Translator: CarCode <carcode@me.com>\n"
 "Language-Team: Gerhard Mueller <carcode@me.com>\n"
@@ -325,6 +325,9 @@ msgstr "Max"
 msgid "Mean Sea Level Pressure (MSLP)"
 msgstr "Miitl. Druck Meereshöhe (MSLP)"
 #
+msgid "Menu"
+msgstr ""
+#
 msgid "Meters"
 msgstr "Meter"
 #
@@ -360,6 +363,10 @@ msgstr "Überlagerte Tranparenz"
 #
 msgid "OverlayMap"
 msgstr "Überlagerte Karte"
+#
+#, fuzzy
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Gedrehte Überlagerungen im DC Modus unterdrückt"
 #
 msgid "Overlays too wide and can't be displayed:"
 msgstr ""
@@ -488,13 +495,6 @@ msgstr ""
 #
 msgid "Temperature"
 msgstr "Temperatur"
-#
-msgid ""
-"The Grib file you are opening contains a moving Grib Zone.\n"
-"Interpolation is not supported for this type of file"
-msgstr ""
-"Diese Grib Datei enthält eine bewegliche Grib Zone.\n"
-"Interpolation wird von diesem Datentyp nicht unterstützt."
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -660,12 +660,15 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (Doppl)"
 #
 #
+#
 #~ msgid " Mo )"
 #~ msgstr " MB )"
+#
 #
 #
 #
@@ -678,8 +681,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "0.2"
 #~ msgstr "0.2"
+#
 #
 #
 #
@@ -692,12 +697,15 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "0.8"
 #~ msgstr "0.8"
 #
 #
+#
 #~ msgid "00N  00W"
 #~ msgstr "00N  00W"
+#
 #
 #
 #
@@ -710,8 +718,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "1.6"
 #~ msgstr "1.6"
+#
 #
 #
 #
@@ -724,8 +734,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "2"
 #~ msgstr "2"
+#
 #
 #
 #
@@ -738,8 +750,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "3"
 #~ msgstr "3"
+#
 #
 #
 #
@@ -752,8 +766,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "5"
 #~ msgstr "5"
+#
 #
 #
 #
@@ -766,8 +782,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "7"
 #~ msgstr "7"
+#
 #
 #
 #
@@ -780,11 +798,14 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "AirTemp"
 #~ msgstr "Luft-Temp."
 #
+#
 #~ msgid "Altitude(Pressure Altitude)"
 #~ msgstr "Höhe (Luftdruck)"
+#
 #
 #
 #
@@ -797,11 +818,14 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Celcius"
 #~ msgstr "Celsius"
 #
+#
 #~ msgid "Cloud"
 #~ msgstr "Wolken"
+#
 #
 #
 #
@@ -814,6 +838,7 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Clouds Cover"
 #~ msgstr "Bewölkung"
 #
@@ -821,8 +846,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Current(Surf.)"
 #~ msgstr "Strömung(Oberfl.)"
+#
 #
 #
 #
@@ -841,8 +868,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Data available in the selected forecast model"
 #~ msgstr "Daten verfügbar im gewählten Vorhersage-Modell"
+#
 #
 #
 #
@@ -855,8 +884,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "GFS"
 #~ msgstr "GFS"
+#
 #
 #
 #
@@ -899,6 +930,7 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Verzeichnis GRIB-Dateien"
 #
@@ -906,8 +938,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Login you use to connect to Zygrib's forum"
 #~ msgstr "Ihr Login für das zyGrib-Forum"
+#
 #
 #
 #
@@ -933,11 +967,13 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Ozean-Strömung bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -963,11 +999,13 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr ""
 #~ "Zur Anzeige der ausgeblendeten GRIB Wassertemperatur bitte herauszoom oder "
 #~ "Maßstab verkleinern."
+#
 #
 #
 #
@@ -988,14 +1026,18 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Niederschlag"
+#
 #
 #~ msgid "Pressure Altitude"
 #~ msgstr "Druck Höhe"
 #
+#
 #~ msgid "Pressure Altitude (in %s) or Standard Height Selection."
 #~ msgstr "Druck Höhe (in %s) oder Standard Höhe."
+#
 #
 #
 #
@@ -1008,8 +1050,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Rain"
 #~ msgstr "Regen"
+#
 #
 #
 #
@@ -1020,8 +1064,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Ref : "
 #~ msgstr "Ref : "
+#
 #
 #
 #
@@ -1051,11 +1097,14 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Saildocs"
 #~ msgstr "Saildocs"
 #
+#
 #~ msgid "Sea or Air Temperature at Surface Level"
 #~ msgstr "See- o. Luft-Temperatur an Oberfläche"
+#
 #
 #
 #
@@ -1095,8 +1144,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Show GRIB icon"
 #~ msgstr "GRIB-Symbol anzeigen"
+#
 #
 #
 #
@@ -1104,12 +1155,23 @@ msgstr "zyGrib Login"
 #~ msgstr "Größe"
 #
 #
+#
 #~ msgid "Slices per Update"
 #~ msgstr "Scheiben je Update"
 #
 #
+#
 #~ msgid "Slices per hour"
 #~ msgstr "Scheiben pro Stunde"
+#
+#
+#~ msgid ""
+#~ "The Grib file you are opening contains a moving Grib Zone.\n"
+#~ "Interpolation is not supported for this type of file"
+#~ msgstr ""
+#~ "Diese Grib Datei enthält eine bewegliche Grib Zone.\n"
+#~ "Interpolation wird von diesem Datentyp nicht unterstützt."
+#
 #
 #
 #
@@ -1149,8 +1211,10 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "WW3-GLOBAL"
 #~ msgstr "WW3-GLOBAL"
+#
 #
 #
 #
@@ -1163,12 +1227,15 @@ msgstr "zyGrib Login"
 #
 #
 #
+#
 #~ msgid "Wave"
 #~ msgstr "Wellen"
 #
 #
+#
 #~ msgid "WavesModel"
 #~ msgstr "Wellen-Modell"
+#
 #
 #
 #

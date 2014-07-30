@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2014-04-24 15:47+0400\n"
 "Last-Translator: Anton Samsonov <epolyan@gmail.com>\n"
 "Language-Team: Agat-Aquarius R&P <epolyan@gmail.com>\n"
@@ -17,6 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SourceCharset: UTF-8\n"
+#
+msgid ""
+"\n"
+"\n"
+msgstr ""
 #
 msgid ""
 "\n"
@@ -196,6 +201,9 @@ msgstr " Обновлено:  "
 msgid " for details."
 msgstr " для уточнения деталей."
 #
+msgid " is incompatible with this version of OpenCPN."
+msgstr ""
+#
 msgid ""
 " shorter than rhumbline.\n"
 "\n"
@@ -307,6 +315,9 @@ msgstr "(зарезервированный тип)"
 #
 msgid "(unnamed)"
 msgstr "(безымянный)"
+#
+msgid ", and all previous versions,"
+msgstr ""
 #
 msgid "-"
 msgstr "—"
@@ -535,14 +546,30 @@ msgstr "Добавить новое"
 msgid "Address"
 msgstr "Адрес"
 #
+msgid "Adelie Land"
+msgstr ""
+#
 msgid "Advanced"
 msgstr "Дополнительно"
+#
+msgid "Afghanistan"
+msgstr ""
 #
 msgid "Aground"
 msgstr "сидит на мели"
 #
 msgid "Aid to Navigation"
 msgstr "Навигационные сооружения"
+#
+msgid "Alaska"
+msgstr ""
+#
+msgid "Albania"
+msgstr ""
+#
+#, fuzzy
+msgid "Algeria"
+msgstr "Последовательный порт"
 #
 msgid "All"
 msgstr "Все объекты"
@@ -558,6 +585,9 @@ msgstr "Все карты"
 #
 msgid "Altitude"
 msgstr "Высота:"
+#
+msgid "American Samoa"
+msgstr ""
 #
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -593,6 +623,15 @@ msgstr "Зона якорной стоянки: Передача грузов м
 msgid "Anchorage created "
 msgstr "Якорная стоянка "
 #
+msgid "Andorra"
+msgstr ""
+#
+msgid "Angola"
+msgstr ""
+#
+msgid "Anguilla"
+msgstr ""
+#
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr ""
 "При ответе «Нет» будет создана новая путевая точка в том же самом месте."
@@ -600,6 +639,12 @@ msgstr ""
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr ""
 "При ответе «Нет» будут созданы все новые путевые точки для этого маршрута."
+#
+msgid "Antigua and Barbuda"
+msgstr ""
+#
+msgid "Antilles"
+msgstr ""
 #
 msgid "Append Waypoint"
 msgstr "Добавить путевые точки"
@@ -631,6 +676,18 @@ msgstr "Уверены, что хотите удалить эту траекто
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "Вы уверены, что хотите удалить эту путевую точку?"
 #
+msgid "Argentine Republic"
+msgstr ""
+#
+msgid "Armenia"
+msgstr ""
+#
+msgid "Aruba"
+msgstr ""
+#
+msgid "Ascension Island"
+msgstr ""
+#
 msgid "Assumed 1 Mile Point"
 msgstr "Предполагаемая 1-мильная точка"
 #
@@ -643,11 +700,20 @@ msgstr "стоит на якоре"
 msgid "AtoN"
 msgstr "Навиг. сооруж."
 #
+msgid "Australia"
+msgstr ""
+#
+msgid "Austria"
+msgstr ""
+#
 msgid "Authors"
 msgstr "Авторы"
 #
 msgid "Auto Follow"
 msgstr "Автоматически центрировать"
+#
+msgid "AutoSort"
+msgstr ""
 #
 msgid "Automatic Daily Tracks"
 msgstr "Разбивать траектории по суткам"
@@ -655,8 +721,26 @@ msgstr "Разбивать траектории по суткам"
 msgid "Avg. speed"
 msgstr "Средняя скорость"
 #
+msgid "Azerbaijani Republic"
+msgstr ""
+#
+msgid "Azores"
+msgstr ""
+#
 msgid "B"
 msgstr "Класс B"
+#
+msgid "Bahamas"
+msgstr ""
+#
+msgid "Bahrain"
+msgstr ""
+#
+msgid "Bangladesh"
+msgstr ""
+#
+msgid "Barbados"
+msgstr ""
 #
 #, fuzzy
 msgid "Base"
@@ -705,6 +789,24 @@ msgstr "Пеленг"
 msgid "Bearing (M)"
 msgstr "Пеленг магн."
 #
+msgid "Belarus"
+msgstr ""
+#
+msgid "Belgium"
+msgstr ""
+#
+msgid "Belize"
+msgstr ""
+#
+msgid "Benin"
+msgstr ""
+#
+msgid "Bermuda"
+msgstr ""
+#
+msgid "Bhutan"
+msgstr ""
+#
 msgid "Black"
 msgstr "Чёрный"
 #
@@ -714,17 +816,44 @@ msgstr "Обнаружен подключаемый модуль из чёрн�
 msgid "Blue"
 msgstr "Синий"
 #
+msgid "Bolivia"
+msgstr ""
+#
+msgid "Bosnia and Herzegovina"
+msgstr ""
+#
+msgid "Botswana"
+msgstr ""
+#
 msgid "Boundaries"
 msgstr "Границы"
+#
+msgid "Brazil"
+msgstr ""
 #
 msgid "Brg"
 msgstr "Пеленг"
 #
+msgid "British Virgin Islands"
+msgstr ""
+#
+msgid "Brunei Darussalam"
+msgstr ""
+#
 msgid "Buddy"
 msgstr "GpsGate"
 #
+msgid "Bulgaria"
+msgstr ""
+#
 msgid "Buoy/Light Labels"
 msgstr "Подписи к буям / маякам"
+#
+msgid "Burkina Faso"
+msgstr ""
+#
+msgid "Burundi"
+msgstr ""
 #
 msgid "C&olour:"
 msgstr "&Цвет:"
@@ -753,12 +882,24 @@ msgstr "Предупреждение об опасном сближении"
 msgid "Call"
 msgstr "Позывной"
 #
+msgid "Cambodia"
+msgstr ""
+#
+msgid "Cameroon"
+msgstr ""
+#
+msgid "Canada"
+msgstr ""
+#
 msgid "Cancel"
 msgstr "Отменить"
 #
 #, fuzzy
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
 msgstr "Отмена ограничений(?) согласно AIS Message Linkage ID"
+#
+msgid "Cape Verde"
+msgstr ""
 #
 msgid "Card. E"
 msgstr "Знак кард. В"
@@ -879,6 +1020,9 @@ msgstr "Зона осторожного плавания: Подводные р�
 msgid "Caution Area: Underwater vehicle operation"
 msgstr "Зона осторожного плавания: Подводные суда"
 #
+msgid "Cayman Islands"
+msgstr ""
+#
 msgid "Cell"
 msgstr "Карта"
 #
@@ -890,6 +1034,12 @@ msgstr "Центрировать вид"
 #
 msgid "Center View..."
 msgstr "Центрировать вид…"
+#
+msgid "Central African Republic"
+msgstr ""
+#
+msgid "Chad"
+msgstr ""
 #
 msgid "Change Color Scheme"
 msgstr "Сменить цветовую схему"
@@ -961,6 +1111,12 @@ msgstr "Подписи карты (font)"
 msgid "Charts"
 msgstr "Карты"
 #
+msgid "Chile"
+msgstr ""
+#
+msgid "China"
+msgstr ""
+#
 msgid "Choose Font Color..."
 msgstr "Выбрать цвет шрифта…"
 #
@@ -973,6 +1129,9 @@ msgstr "Выберите формат для копируемых данных"
 msgid "Choose a file"
 msgstr "Выберите файл"
 #
+msgid "Christmas Island"
+msgstr ""
+#
 msgid "Class"
 msgstr "Класс"
 #
@@ -984,6 +1143,9 @@ msgstr "Снять выделение"
 #
 msgid "Clear Anchor Watch"
 msgstr "Отменить слежение за якорем"
+#
+msgid "Clear Texture Cache"
+msgstr ""
 #
 msgid "Clearance granted - proceed to berth"
 msgstr "Предписание: Разрешение получено — проследуйте к причалу"
@@ -1000,6 +1162,13 @@ msgstr "Закрыть"
 msgid "CoG"
 msgstr "Курс"
 #
+msgid "Cocos"
+msgstr ""
+#
+#, fuzzy
+msgid "Colombia"
+msgstr "Цвет:"
+#
 msgid "Color"
 msgstr "Цвет:"
 #
@@ -1012,8 +1181,18 @@ msgstr "Окраска глубин"
 msgid "Combo!"
 msgstr "Комбинация! (Фаталити?)"
 #
+#, fuzzy
+msgid "Comoros"
+msgstr "Завтра"
+#
+msgid "Comoros (Union of the)"
+msgstr ""
+#
 msgid "Confirm deletion of tracks and routes"
 msgstr "Подтверждать удаление траекторий и маршрутов"
+#
+msgid "Congo"
+msgstr ""
 #
 #, fuzzy
 msgid "Connection"
@@ -1034,6 +1213,9 @@ msgstr "ограничение из-за осадки"
 msgid "Control checksum"
 msgstr "Контрольная сумма"
 #
+msgid "Cook Islands"
+msgstr ""
+#
 msgid "Copy As KML"
 msgstr "Скопировать в буфер в формате KML"
 #
@@ -1048,6 +1230,9 @@ msgstr "Скопировать в буфер в формате KML"
 #
 msgid "Copy as KML..."
 msgstr "Скопировать в буфер в формате KML…"
+#
+msgid "Costa Rica"
+msgstr ""
 #
 msgid "Course"
 msgstr "Курс"
@@ -1073,12 +1258,30 @@ msgstr "Создать путевую точку"
 msgid "Create Waypoint"
 msgstr "Создать путевую точку"
 #
+msgid "Croatia"
+msgstr ""
+#
+msgid "Crozet Archipelago"
+msgstr ""
+#
+msgid "Cuba"
+msgstr ""
+#
 #, fuzzy
 msgid "CurrentValue"
 msgstr "Течение"
 #
 msgid "Cyan"
 msgstr "Голубой"
+#
+msgid "Cyprus"
+msgstr ""
+#
+msgid "Czech Republic"
+msgstr ""
+#
+msgid "CÃ´te d'Ivoire"
+msgstr ""
 #
 msgid "D/V"
 msgstr "Водолаз."
@@ -1164,6 +1367,12 @@ msgstr "Удалить путевую точку"
 #
 msgid "Delete..."
 msgstr "Удалить…"
+#
+msgid "Dem Rep.of the Congo"
+msgstr ""
+#
+msgid "Denmark"
+msgstr ""
 #
 msgid "Depart From"
 msgstr "Пункт отправления"
@@ -1262,12 +1471,22 @@ msgstr "Зона бедствия: Тонущее судно"
 msgid "Distress Area: Vessel under assault"
 msgstr "Зона бедствия: Вооружённое нападение на судно"
 #
+#, fuzzy
+msgid "Djibouti"
+msgstr "О программе"
+#
 msgid ""
 "Do you also want to make the shared waypoints being part of this route "
 "invisible?"
 msgstr ""
 "Хотите также переключить видимость общих путевых точек,\n"
 "входящих в данный маршрут?"
+#
+msgid "Dominica"
+msgstr ""
+#
+msgid "Dominican Republic"
+msgstr ""
 #
 msgid "Done."
 msgstr "Готово."
@@ -1308,8 +1527,17 @@ msgstr "Ожидаемое время в пути"
 msgid "ETE/ETD"
 msgstr "Ожидаемое время в пути / время отбытия"
 #
+msgid "Ecuador"
+msgstr ""
+#
 msgid "Edit"
 msgstr "Править"
+#
+msgid "Egypt"
+msgstr ""
+#
+msgid "El Salvador"
+msgstr ""
 #
 msgid "Elapsed time : "
 msgstr "Прошло времени : "
@@ -1378,6 +1606,12 @@ msgstr ""
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Зона сложных метеоусловий: Сильные течения"
 #
+msgid "Equatorial Guinea"
+msgstr ""
+#
+msgid "Eritrea"
+msgstr ""
+#
 msgid "Error on Waypoint Upload.  Garmin GPS not connected"
 msgstr "Ошибка при загрузке путевых точек. Устройство Garmin не подключено."
 #
@@ -1389,6 +1623,12 @@ msgstr "Ошибка!"
 #
 msgid "Estimated time : "
 msgstr "Предполагаемое время : "
+#
+msgid "Estonia"
+msgstr ""
+#
+msgid "Ethiopia"
+msgstr ""
 #
 msgid "EvTwilight"
 msgstr "веч. сумерки"
@@ -1426,11 +1666,20 @@ msgstr "Рыбол."
 msgid "Failed to initialize the user interface. "
 msgstr "Не удалось инициализировать пользовательский интерфейс."
 #
+msgid "Falkland Islands"
+msgstr ""
+#
+msgid "Faroe Islands"
+msgstr ""
+#
 msgid "Fathoms"
 msgstr "мор. саж"
 #
 msgid "Feet"
 msgstr "фт"
+#
+msgid "Fiji"
+msgstr ""
 #
 msgid "Filter NMEA Course and Speed data"
 msgstr "Фильтровать данные NMEA о курсе и скорости"
@@ -1441,11 +1690,17 @@ msgstr "Периодичность обработки фильтра, сек."
 msgid "Filters"
 msgstr "Фильтры"
 #
+msgid "Finland"
+msgstr ""
+#
 msgid "Fix.Struct."
 msgstr "Неподвиж."
 #
 msgid "Fixed Structure"
 msgstr "Неподвижное сооружение"
+#
+msgid "Flag"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Шрифты"
@@ -1458,6 +1713,13 @@ msgstr "Принудительно выполнить полное перест�
 #
 msgid "Format uploads for Furuno GP3X"
 msgstr "Использовать протокол устройства Furuno GP3x при загрузке данных"
+#
+#, fuzzy
+msgid "France"
+msgstr "Отменить"
+#
+msgid "French Polynesia"
+msgstr ""
 #
 msgid "From"
 msgstr "Отправная точка"
@@ -1483,11 +1745,29 @@ msgstr "GPX"
 msgid "GUID"
 msgstr "GUID"
 #
+msgid "Gabonese Republic"
+msgstr ""
+#
+msgid "Gambia"
+msgstr ""
+#
 msgid "General"
 msgstr "Общие параметры"
 #
 msgid "General Options"
 msgstr "Общие параметры"
+#
+msgid "Georgia"
+msgstr ""
+#
+msgid "Germany"
+msgstr ""
+#
+msgid "Ghana"
+msgstr ""
+#
+msgid "Gibraltar"
+msgstr ""
 #
 msgid "Go to "
 msgstr "Двигаться к "
@@ -1495,14 +1775,49 @@ msgstr "Двигаться к "
 msgid "GpsGate Buddy"
 msgstr "Участник системы GpsGate BuddyTracker"
 #
+msgid "Great Britain"
+msgstr ""
+#
+#, fuzzy
+msgid "Greece"
+msgstr "Зелёный"
+#
 msgid "Green"
 msgstr "Зелёный"
+#
+#, fuzzy
+msgid "Greenland"
+msgstr "Зелёный"
+#
+msgid "Grenada"
+msgstr ""
 #
 msgid "Group \""
 msgstr "Группа «"
 #
+msgid "Guadeloupe"
+msgstr ""
+#
+msgid "Guatemala"
+msgstr ""
+#
+msgid "Guiana"
+msgstr ""
+#
+msgid "Guinea"
+msgstr ""
+#
+msgid "Guinea-Bissau"
+msgstr ""
+#
+msgid "Guyana"
+msgstr ""
+#
 msgid "HSC"
 msgstr "Скорост."
+#
+msgid "Haiti"
+msgstr ""
 #
 msgid "Heading"
 msgstr "Путевой угол"
@@ -1546,12 +1861,24 @@ msgstr "Высокоскоростное судно"
 msgid "Highlight Tracks"
 msgstr "Подсвечивать траектории"
 #
+msgid "Honduras"
+msgstr ""
+#
+msgid "Hong Kong"
+msgstr ""
+#
+msgid "Hungary"
+msgstr ""
+#
 msgid "I&mport GPX..."
 msgstr "&Импортировать…"
 #
 #, fuzzy
 msgid "IMO"
 msgstr "Судовой идентификатор Международной морской организации"
+#
+msgid "Iceland"
+msgstr ""
 #
 msgid "Icon"
 msgstr "Значок"
@@ -1572,6 +1899,16 @@ msgstr "Импортировать файл в формате GPX"
 #
 msgid "Important Text Only"
 msgstr "Только важные надписи"
+#
+#, fuzzy
+msgid "Incompatible PlugIn detected:\n"
+msgstr "    Обнаружен несовместимый плагин:"
+#
+msgid "India"
+msgstr ""
+#
+msgid "Indonesia"
+msgstr ""
 #
 msgid "Information: Icebreaker waiting area"
 msgstr "Примите к сведению: Место ожидания ледокола"
@@ -1612,11 +1949,35 @@ msgstr "Предписание: Свяжитесь со службой упра
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr "Предписание: Не продолжайте движение далее этой точки"
 #
+msgid "Iran"
+msgstr ""
+#
+msgid "Iraq"
+msgstr ""
+#
+msgid "Ireland"
+msgstr ""
+#
 msgid "Isol. Dngr"
 msgstr "Изол. опас."
 #
 msgid "Isolated Danger"
 msgstr "Обособленная опасность"
+#
+msgid "Israel"
+msgstr ""
+#
+msgid "Italy"
+msgstr ""
+#
+msgid "Jamaica"
+msgstr ""
+#
+msgid "Japan"
+msgstr ""
+#
+msgid "Jordan"
+msgstr ""
 #
 msgid "KML Standard (Google Earth and others)"
 msgstr "KML стандартный (для программы Google Earth и прочих)"
@@ -1624,11 +1985,32 @@ msgstr "KML стандартный (для программы Google Earth и 
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "KML с расширенными данными о путевых точках (для QtVlm)"
 #
+msgid "Kazakhstan"
+msgstr ""
+#
+msgid "Kenya"
+msgstr ""
+#
+msgid "Kerguelen Islands"
+msgstr ""
+#
 msgid "Kilometers"
 msgstr "км"
 #
+msgid "Kiribati"
+msgstr ""
+#
 msgid "Knots"
 msgstr "уз."
+#
+msgid "Korea"
+msgstr ""
+#
+msgid "Kuwait"
+msgstr ""
+#
+msgid "Kyrgyz Republic"
+msgstr ""
 #
 msgid "LE/V"
 msgstr "Полиц."
@@ -1642,8 +2024,14 @@ msgstr "Ср. астр. время в точке старта"
 msgid "Language"
 msgstr "Язык"
 #
+msgid "Lao People's Dem. Rep."
+msgstr ""
+#
 msgid "Latitude"
 msgstr "Широта"
+#
+msgid "Latvia"
+msgstr ""
 #
 msgid "Law Enforcement Vessel"
 msgstr "Судно правоохранительных органов"
@@ -1681,6 +2069,9 @@ msgstr "Маяк створный передний"
 msgid "Leading Light Rear"
 msgstr "Маяк створный задний"
 #
+msgid "Lebanon"
+msgstr ""
+#
 msgid "Left"
 msgstr "Влево"
 #
@@ -1696,8 +2087,21 @@ msgstr "Протяжённость"
 msgid "Length Over All (m)"
 msgstr "Общая длина, м"
 #
+msgid "Lesotho"
+msgstr ""
+#
+#, fuzzy
+msgid "Liberia"
+msgstr "Последовательный порт"
+#
+msgid "Libyan Arab Jamahiriya"
+msgstr ""
+#
 msgid "License"
 msgstr "Лицензия"
+#
+msgid "Liechtenstein"
+msgstr ""
 #
 msgid "Light"
 msgstr "Маяк световой"
@@ -1741,6 +2145,9 @@ msgstr "Гиперссылки открываются в веб-браузер�
 msgid "List contents"
 msgstr "Раскрыть содержимое"
 #
+msgid "Lithuania"
+msgstr ""
+#
 msgid "Loaded Charts"
 msgstr "Загруженные карты"
 #
@@ -1781,6 +2188,9 @@ msgstr "Маяк сект."
 msgid "LtV/Rig"
 msgstr "Лёгк./Парус/Платформа"
 #
+msgid "Luxembourg"
+msgstr ""
+#
 msgid "M/T"
 msgstr "Танкер"
 #
@@ -1796,8 +2206,35 @@ msgstr "Идентификатор морской передвижной слу�
 msgid "M_COVR ID"
 msgstr "Участок"
 #
+msgid "Macao"
+msgstr ""
+#
+msgid "Macedonia"
+msgstr ""
+#
+msgid "Madagascar"
+msgstr ""
+#
+msgid "Madeira"
+msgstr ""
+#
 msgid "Magenta"
 msgstr "Малиновый"
+#
+msgid "Malawi"
+msgstr ""
+#
+msgid "Malaysia"
+msgstr ""
+#
+msgid "Maldives"
+msgstr ""
+#
+msgid "Mali"
+msgstr ""
+#
+msgid "Malta"
+msgstr ""
 #
 msgid "Mariner's Standard"
 msgstr "Объекты по выбору"
@@ -1810,6 +2247,18 @@ msgstr "Считать цели потерянными по прошестви�
 #
 msgid "Marks"
 msgstr "Метки (font)"
+#
+msgid "Marshall Islands"
+msgstr ""
+#
+msgid "Martinique"
+msgstr ""
+#
+msgid "Mauritania"
+msgstr ""
+#
+msgid "Mauritius"
+msgstr ""
 #
 msgid "Max Detail Here"
 msgstr "Максимальная детализация в этой точке"
@@ -1829,6 +2278,9 @@ msgstr "Медицинский транспорт"
 msgid "Medium"
 msgstr "Средняя"
 #
+msgid "Menu"
+msgstr ""
+#
 msgid "Mercator"
 msgstr "равноугольная цилиндрическая Меркатора"
 #
@@ -1840,6 +2292,12 @@ msgstr "Объединить путевые точки?"
 #
 msgid "Meters"
 msgstr "м"
+#
+msgid "Mexico"
+msgstr ""
+#
+msgid "Micronesia"
+msgstr ""
 #
 msgid "Mil/V"
 msgstr "Воен."
@@ -1856,8 +2314,26 @@ msgstr "Прочие параметры"
 msgid "MoTwilight"
 msgstr "утр. сумерки"
 #
+msgid "Moldova"
+msgstr ""
+#
+msgid "Monaco"
+msgstr ""
+#
+msgid "Mongolia"
+msgstr ""
+#
+msgid "Montenegro"
+msgstr ""
+#
+msgid "Montserrat"
+msgstr ""
+#
 msgid "Moored"
 msgstr "стоит у причала"
+#
+msgid "Morocco"
+msgstr ""
 #
 msgid "Move Boat Here"
 msgstr "Поместить судно в эту точку"
@@ -1865,8 +2341,14 @@ msgstr "Поместить судно в эту точку"
 msgid "Move Waypoint"
 msgstr "Передвинуть путевую точку"
 #
+msgid "Mozambique"
+msgstr ""
+#
 msgid "Mph"
 msgstr "с. м./ч"
+#
+msgid "Myanmar"
+msgstr ""
 #
 msgid "NMEA"
 msgstr "NMEA"
@@ -1883,8 +2365,14 @@ msgstr "м. м."
 msgid "Name"
 msgstr "Название"
 #
+msgid "Namibia"
+msgstr ""
+#
 msgid "National text on chart"
 msgstr "Надписи на местном языке"
+#
+msgid "Nauru"
+msgstr ""
 #
 msgid "Nautical Miles"
 msgstr "м. м."
@@ -1901,8 +2389,17 @@ msgstr "Плыть в эту точку"
 msgid "Navigate To This"
 msgstr "Активировать маршрут в это место"
 #
+msgid "Nepal"
+msgstr ""
+#
+msgid "Netherlands"
+msgstr ""
+#
 msgid "Network"
 msgstr "Сеть"
+#
+msgid "New Caledonia"
+msgstr ""
 #
 msgid "New Chart Group"
 msgstr "Новая группа карт"
@@ -1910,11 +2407,27 @@ msgstr "Новая группа карт"
 msgid "New Group..."
 msgstr "Новая группа…"
 #
+msgid "New Zealand"
+msgstr ""
+#
 msgid "Next tide event"
 msgstr "Ближайший прилив-отлив"
 #
+msgid "Nicaragua"
+msgstr ""
+#
+msgid "Niger"
+msgstr ""
+#
+#, fuzzy
+msgid "Nigeria"
+msgstr "Последовательный порт"
+#
 msgid "Nighttime"
 msgstr "ночь"
+#
+msgid "Niue"
+msgstr ""
 #
 msgid "No CPA Calculation if target range is greater than (NMi)"
 msgstr "Не вычислять, если дальность больше заданной (м. м.)"
@@ -1950,6 +2463,12 @@ msgstr "Нет"
 msgid "North Up Mode"
 msgstr "Ориентация экрана по северу"
 #
+msgid "Northern Mariana Islands"
+msgstr ""
+#
+msgid "Norway"
+msgstr ""
+#
 msgid "Not Under Command"
 msgstr "не управляется"
 #
@@ -1970,6 +2489,9 @@ msgstr "OK"
 #
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "Старый журнал работы будет переименован в «opencpn.log.log»."
+#
+msgid "Oman"
+msgstr ""
 #
 msgid "OpenCPN Alert"
 msgstr "OpenCPN — Предупреждение"
@@ -2062,8 +2584,28 @@ msgstr "Лоцман."
 msgid "PC/V"
 msgstr "Эколог."
 #
+#, fuzzy
+msgid "Pakistan"
+msgstr "Расстояние"
+#
+msgid "Palau"
+msgstr ""
+#
+#, fuzzy
+msgid "Palestine"
+msgstr "На испытаниях"
+#
+msgid "Panama"
+msgstr ""
+#
 msgid "Paper Chart"
 msgstr "Бумажная карта"
+#
+msgid "Papua New Guinea"
+msgstr ""
+#
+msgid "Paraguay"
+msgstr ""
 #
 msgid "Parameters"
 msgstr "Параметры"
@@ -2083,8 +2625,20 @@ msgstr "Вставить траекторию из буфера"
 msgid "Paste Waypoint"
 msgstr "Вставить путевую точку из буфера"
 #
+msgid "People's Rep. of Korea"
+msgstr ""
+#
+msgid "Peru"
+msgstr ""
+#
+msgid "Philippines"
+msgstr ""
+#
 msgid "Pilot Vessel"
 msgstr "Лоцманское судно"
+#
+msgid "Pitcairn Island"
+msgstr ""
 #
 msgid "Plain"
 msgstr "Простые"
@@ -2129,11 +2683,18 @@ msgstr ""
 " Эта версия известна своей нестабильностью.\n"
 " Получите обновлённую версию этого модуля на сайте opencpn.org."
 #
+#, c-format
+msgid "PlugIn [ %s ] version %i.%i"
+msgstr ""
+#
 msgid "Plugins"
 msgstr "Плагины"
 #
 msgid "Points"
 msgstr "Точки"
+#
+msgid "Poland"
+msgstr ""
 #
 msgid "Pollution Control Vessel"
 msgstr "Судно экологического контроля"
@@ -2152,6 +2713,10 @@ msgstr "Знак латеральный левый"
 #
 msgid "Port Tender"
 msgstr "Портовая плавбаза / судно обеспечения"
+#
+#, fuzzy
+msgid "Portugal"
+msgstr "Бакен лат. лев."
 #
 msgid "Position"
 msgstr "Местоположение"
@@ -2213,6 +2778,12 @@ msgstr "Параметры…"
 msgid "Protocol"
 msgstr "Протокол"
 #
+msgid "Puerto Rico"
+msgstr ""
+#
+msgid "Qatar"
+msgstr ""
+#
 msgid "Question"
 msgstr "Вопрос"
 #
@@ -2236,6 +2807,9 @@ msgstr "Векторный в масштабе"
 #
 msgid "Real(Off Position)"
 msgstr "Реальный (вне позиции)"
+#
+msgid "Rebuild Texture Cache"
+msgstr ""
 #
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr "Построение картографической базы данных согласно настройкам…"
@@ -2343,6 +2917,9 @@ msgstr "Чтение местоположения папки с картами 
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Чтение языка по умолчанию из реестра Windows"
 #
+msgid "Reunion"
+msgstr ""
+#
 msgid "Reverse..."
 msgstr "Развернуть…"
 #
@@ -2355,6 +2932,9 @@ msgstr "Примите к сведению: Пиратское(?) или по�
 #
 msgid "Rollover"
 msgstr "Всплывающая подсказка о цели"
+#
+msgid "Romania"
+msgstr ""
 #
 msgid "Route"
 msgstr "Маршрут"
@@ -2392,6 +2972,12 @@ msgstr "Участок маршрута (font)"
 msgid "Routes"
 msgstr "Маршруты"
 #
+msgid "Russian"
+msgstr ""
+#
+msgid "Rwanda"
+msgstr ""
+#
 msgid "S/V"
 msgstr "Парус."
 #
@@ -2419,6 +3005,36 @@ msgstr "Безопасная глубина"
 #
 msgid "Sailing Vessel"
 msgstr "Парусное судно"
+#
+msgid "Saint Helena"
+msgstr ""
+#
+msgid "Saint Kitts and Nevis"
+msgstr ""
+#
+msgid "Saint Lucia"
+msgstr ""
+#
+msgid "Saint Paul"
+msgstr ""
+#
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+#
+msgid "Saint Vincent and the Grenadines"
+msgstr ""
+#
+msgid "Samoa"
+msgstr ""
+#
+msgid "San Marino"
+msgstr ""
+#
+msgid "Sao Tome and Principe"
+msgstr ""
+#
+msgid "Saudi Arabia"
+msgstr ""
 #
 #, c-format
 msgid "Scale %4.0f"
@@ -2487,8 +3103,18 @@ msgstr "Загрузить в GPS…"
 msgid "Send to GPS"
 msgstr "Загрузить в GPS"
 #
+#, fuzzy
+msgid "Send to new GPS"
+msgstr "Загрузить в GPS"
+#
+msgid "Senegal"
+msgstr ""
+#
 msgid "Sentence Filter"
 msgstr "Фильтр сообщений"
+#
+msgid "Serbia"
+msgstr ""
 #
 msgid "Serial"
 msgstr "Последовательный порт"
@@ -2498,6 +3124,9 @@ msgstr "установлен"
 #
 msgid "Set Anchor Watch"
 msgstr "Следить за якорной стоянкой"
+#
+msgid "Seychelles"
+msgstr ""
 #
 msgid "Shallow Depth"
 msgstr "Мелководье"
@@ -2637,8 +3266,20 @@ msgstr "Показывать траекторию цели, длина (мин.)
 msgid "Shows the font preview."
 msgstr "Демонстрация шрифта."
 #
+msgid "Sierra Leone"
+msgstr ""
+#
 msgid "Simplified"
 msgstr "Упрощённо"
+#
+msgid "Singapore"
+msgstr ""
+#
+msgid "Slovak Republic"
+msgstr ""
+#
+msgid "Slovenia"
+msgstr ""
 #
 msgid "Smooth Panning / Zooming"
 msgstr "Плавное панорамирование и приближение"
@@ -2648,6 +3289,21 @@ msgstr "Скорость"
 #
 msgid "Solid"
 msgstr "Сплошной узор"
+#
+msgid "Solomon Islands"
+msgstr ""
+#
+msgid "Somali Democratic Republic"
+msgstr ""
+#
+msgid "South Africa"
+msgstr ""
+#
+msgid "South Sudan (Republic of)"
+msgstr ""
+#
+msgid "Spain"
+msgstr ""
 #
 #, fuzzy
 msgid "Spare"
@@ -2673,6 +3329,9 @@ msgstr "Разделить маршрут"
 #
 msgid "Split Track"
 msgstr "Разделить траекторию"
+#
+msgid "Sri Lanka"
+msgstr ""
 #
 msgid "Standard"
 msgstr "Стандартные"
@@ -2704,6 +3363,9 @@ msgstr "Стиль:"
 msgid "Style:"
 msgstr "Стиль:"
 #
+msgid "Sudan"
+msgstr ""
+#
 msgid "Sunrise"
 msgstr "восход"
 #
@@ -2713,8 +3375,23 @@ msgstr "закат"
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Подавлять сигналы о сближении с неподвижными целями"
 #
+msgid "Suriname"
+msgstr ""
+#
+msgid "Swaziland"
+msgstr ""
+#
+msgid "Sweden"
+msgstr ""
+#
+msgid "Switzerland"
+msgstr ""
+#
 msgid "Symbolized"
 msgstr "Символьные"
+#
+msgid "Syrian Arab Republic"
+msgstr ""
 #
 msgid "TCP"
 msgstr "TCP"
@@ -2722,8 +3399,14 @@ msgstr "TCP"
 msgid "TCPA"
 msgstr "Время до минимального подхода"
 #
+msgid "Taiwan"
+msgstr ""
+#
 msgid "Tanker"
 msgstr "Танкер"
+#
+msgid "Tanzania"
+msgstr ""
 #
 msgid "Target Count"
 msgstr "Количество целей"
@@ -2762,6 +3445,9 @@ msgid "Texture Compression Caching"
 msgstr ""
 #
 msgid "Texture Memory Size (MB)"
+msgstr ""
+#
+msgid "Thailand"
 msgstr ""
 #
 msgid ""
@@ -2899,6 +3585,12 @@ msgstr "Переключить отслеживание"
 msgid "Toggle track"
 msgstr "Переключить отслеживание"
 #
+msgid "Togolese Republic"
+msgstr ""
+#
+msgid "Tonga"
+msgstr ""
+#
 msgid "ToolTips"
 msgstr "Всплывающие подсказки (font)"
 #
@@ -2948,14 +3640,32 @@ msgstr "поперечно-цилиндрическая Меркатора (Га
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "Воспринимать посылки WPL как радиодоклады о позиции APRS"
 #
+msgid "Trinidad and Tobago"
+msgstr ""
+#
 msgid "Trk"
 msgstr "Траектория"
 #
 msgid "Tug"
 msgstr "Буксирное судно"
 #
+msgid "Tunisia"
+msgstr ""
+#
+msgid "Turkey"
+msgstr ""
+#
+msgid "Turkmenistan"
+msgstr ""
+#
+msgid "Turks and Caicos Islands"
+msgstr ""
+#
 msgid "Turn Rate"
 msgstr "Скорость поворота"
+#
+msgid "Tuvalu"
+msgstr ""
 #
 msgid "Type"
 msgstr "Тип"
@@ -2968,6 +3678,12 @@ msgstr "Адрес URL"
 #
 msgid "UTC"
 msgstr "гринвичское (UTC)"
+#
+msgid "Uganda"
+msgstr ""
+#
+msgid "Ukraine"
+msgstr ""
 #
 msgid "Undefined"
 msgstr "неопределённое состояние"
@@ -2985,6 +3701,15 @@ msgstr "движется"
 msgid "Undo"
 msgstr "Отменить действие"
 #
+msgid "United Arab Emirates"
+msgstr ""
+#
+msgid "United States Virgin Islands"
+msgstr ""
+#
+msgid "United States of America"
+msgstr ""
+#
 msgid "Unk"
 msgstr "Неизв."
 #
@@ -2999,6 +3724,9 @@ msgstr "Неуказанный тип"
 #
 msgid "Update Control"
 msgstr "Управление обновлением"
+#
+msgid "Uruguay"
+msgstr ""
 #
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Использовать видеоускорение OpenGL"
@@ -3034,11 +3762,23 @@ msgstr "Поправка по Y"
 msgid "User Y Offset (Metres)"
 msgstr "Поправка по Y (метры)"
 #
+msgid "Uzbekistan"
+msgstr ""
+#
 msgid "VTS active target"
 msgstr "Примите к сведению: Активная цель(?) системы управления движением"
 #
+msgid "Vanuatu"
+msgstr ""
+#
+msgid "Vatican City State"
+msgstr ""
+#
 msgid "Vector Charts"
 msgstr "Векторные карты"
+#
+msgid "Venezuela"
+msgstr ""
 #
 msgid "Vessel Diving"
 msgstr "Водолазное судно"
@@ -3058,6 +3798,9 @@ msgstr "Буксирное судно (длинный тягач)"
 msgid "Vessel requesting non-distress assistance"
 msgstr "Примите к сведению: Судну требуется несрочная помощь"
 #
+msgid "Viet Nam"
+msgstr ""
+#
 msgid "Virtual"
 msgstr "Виртуальный"
 #
@@ -3072,6 +3815,9 @@ msgstr "Видимые кнопки"
 #
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "Файл WAV (*.wav)|*.wav|Все файлы (*.*)|*.*"
+#
+msgid "Wallis and Futuna Islands"
+msgstr ""
 #
 msgid "Warn if CPA less than (NMi)"
 msgstr "Предупредить, если точка подхода ближе заданной (м. м.)"
@@ -3150,6 +3896,9 @@ msgstr "Прогул."
 msgid "Yellow"
 msgstr "Жёлтый"
 #
+msgid "Yemen"
+msgstr ""
+#
 msgid "Yes, hide it."
 msgstr "Да, спрятать её."
 #
@@ -3195,6 +3944,12 @@ msgstr "Вы должны ввести адрес…"
 #
 msgid "You must select or enter the port..."
 msgstr "Вы должны указать порт связи…"
+#
+msgid "Zambia"
+msgstr ""
+#
+msgid "Zimbabwe"
+msgstr ""
 #
 msgid "Zoom In"
 msgstr "Приблизить"
@@ -3268,193 +4023,251 @@ msgstr "Сдвиг по Y"
 msgid "wxFB Website"
 msgstr "Веб-сайт инструментария wxFormBuilder"
 #
+#
 #~ msgid " </b>in<b> "
 #~ msgstr " </b> через <b> "
+#
 #
 #~ msgid " is %5g"
 #~ msgstr " составляет %5g"
 #
+#
 #~ msgid "&Acknowledge"
 #~ msgstr "&Подтвердить принятие сигнала"
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "&Экспортировать…"
+#
 #
 #, fuzzy
 #~ msgid "&Jump To"
 #~ msgstr "&Перейти к {чему?}"
 #
+#
 #~ msgid "&Silence Alert"
 #~ msgstr "&Выключить сигнал тревоги"
 #
+#
 #~ msgid ", Out: None"
 #~ msgstr ", Отправка: Нет фильтров"
+#
 #
 #, fuzzy
 #~ msgid "AIS Alert"
 #~ msgstr "Предупреждение АИС"
 #
+#
 #~ msgid "AISTargetAlert"
 #~ msgstr "Предупреждение о цели АИС (font)"
 #
+#
 #~ msgid "Accept"
 #~ msgstr "Принять"
+#
 #
 #, fuzzy
 #~ msgid "Barge, tanker, chemical"
 #~ msgstr "Баржа, танкер с химическими материалами"
 #
+#
 #~ msgid "Bulk carrier maritime"
 #~ msgstr "Навалочник (балкер)"
+#
 #
 #, fuzzy
 #~ msgid "Bunkership"
 #~ msgstr "Топливозаправщик"
 #
+#
 #~ msgid "Container vessel"
 #~ msgstr "Контейнеровоз"
 #
+#
 #~ msgid "Couldn't load sound data from '%s'."
 #~ msgstr "Не удалось загрузить звуковые данные из файла «%s»."
+#
 #
 #, fuzzy
 #~ msgid "Cruise ship"
 #~ msgstr "Прогулочное судно (круизный лайнер?)"
 #
+#
 #~ msgid "Data Source :"
 #~ msgstr "Источник данных :"
+#
 #
 #~ msgid "Drop"
 #~ msgstr "Отбросить"
 #
+#
 #~ msgid "Error on Route Upload.  Please check logfiles..."
 #~ msgstr "Ошибка при загрузке маршрута.  Проверьте журналы работы…"
+#
 #
 #~ msgid "Fast ship"
 #~ msgstr "Быстроходное судно"
 #
+#
 #~ msgid "Ferry"
 #~ msgstr "Паром"
+#
 #
 #, fuzzy
 #~ msgid "Fishing boat"
 #~ msgstr "Рыбацкая лодка (рыболовное судно?)"
 #
+#
 #~ msgid "Freightbarge"
 #~ msgstr "Грузовая баржа"
+#
 #
 #~ msgid "Freightbarge with containers"
 #~ msgstr "Грузовая баржа с контейнерами"
 #
+#
 #~ msgid "GPS/Plotter Port"
 #~ msgstr "Порт связи GPS / картографической системы"
 #
+#
 #~ msgid "Gas tanker"
 #~ msgstr "Газовоз"
+#
 #
 #, fuzzy
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "Морское судно общего назначения"
 #
+#
 #~ msgid "HW"
 #~ msgstr "Полная вода"
+#
 #
 #~ msgid "Hydrofoil"
 #~ msgstr "Судно на подводных крыльях"
 #
+#
 #~ msgid "In"
 #~ msgstr "Приём"
+#
 #
 #~ msgid "In: None"
 #~ msgstr "Приём: Нет фильтров"
 #
+#
 #~ msgid "LW"
 #~ msgstr "Малая вода"
+#
 #
 #~ msgid "Legend"
 #~ msgstr "Легенда"
 #
+#
 #~ msgid "Liquified gas tanker"
 #~ msgstr "Газовоз (СПГ)"
+#
 #
 #~ msgid "Message accepted"
 #~ msgstr "Принятое сообщение"
 #
+#
 #~ msgid "Message filtered and dropped"
 #~ msgstr "Сообщение, отброшенное фильтром"
+#
 #
 #, fuzzy
 #~ msgid "Motor freighter"
 #~ msgstr "Грузовой теплоход"
 #
+#
 #, fuzzy
 #~ msgid "Motor freighter pushing at least one tank-ship"
 #~ msgstr "Грузовой теплоход, толкающий не менее одного танкера"
+#
 #
 #, fuzzy
 #~ msgid "Motor freighter pushing one or more freighters"
 #~ msgstr "Грузовой теплоход, толкающий одно и более грузовое судно"
 #
+#
 #, fuzzy
 #~ msgid "Motor freighter with one or more ships alongside"
 #~ msgstr "Грузовой теплоход с одним и более судном сбоку"
+#
 #
 #, fuzzy
 #~ msgid "Motor freighter with tanker"
 #~ msgstr "Грузовой теплоход вместе с танкером"
 #
+#
 #, fuzzy
 #~ msgid "Motor freighter, tug"
 #~ msgstr "Грузовой теплоход на буксире (или толкаемый?)"
 #
+#
 #~ msgid "Motor tanker"
 #~ msgstr "Танкер"
 #
+#
 #~ msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Танкер, сыпучий груз"
+#
 #
 #, fuzzy
 #~ msgid "Motor tanker, liquid cargo, type C"
 #~ msgstr "Танкер, жидкий груз C-типа"
 #
+#
 #, fuzzy
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "Танкер, жидкий груз N-типа"
+#
 #
 #, fuzzy
 #~ msgid "Motor tanker, tug"
 #~ msgstr "Танкер на буксире"
 #
+#
 #~ msgid "NMEA Debug Window"
 #~ msgstr "Окно отладки NMEA"
+#
 #
 #~ msgid "Net"
 #~ msgstr "Сетевой порт"
 #
+#
 #~ msgid "Next"
 #~ msgstr "След"
+#
 #
 #~ msgid "No"
 #~ msgstr "Нет"
 #
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "Прочий объект"
 #
+#
 #~ msgid "Object, towed, not otherwise specified"
 #~ msgstr "Прочий буксируемый объект"
+#
 #
 #, fuzzy
 #~ msgid "Other"
 #~ msgstr "Все [прочие?] объекты"
 #
+#
 #~ msgid "Out"
 #~ msgstr "Отправка"
+#
 #
 #~ msgid "Output"
 #~ msgstr "Отправка"
 #
+#
 #~ msgid "Output Message"
 #~ msgstr "Отправленное сообщение"
+#
 #
 #, fuzzy
 #~ msgid "Passenger ship without accomodation"
@@ -3462,178 +4275,228 @@ msgstr "Веб-сайт инструментария wxFormBuilder"
 #~ "Пассажирское судно без кают (прогулочное судно?) — опечатка в оригинале "
 #~ "(accommodation)"
 #
+#
 #, fuzzy
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr ""
 #~ "Пассажирское судно, паром, круизный лайнер (прогулочное судно?), плавучий "
 #~ "госпиталь"
 #
+#
 #~ msgid "Pause"
 #~ msgstr "Пауза"
+#
 #
 #~ msgid "Plan speed (Kts)"
 #~ msgstr "Планируемая скорость (уз.)"
 #
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "Прогулочное судно длиной более 20 метров"
+#
 #
 #~ msgid "Prepare GPS for Route/Waypoint upload and press Send..."
 #~ msgstr "Подготовьте GPS к загрузке данных и нажмите «Отправить»…"
 #
+#
 #~ msgid "Prev"
 #~ msgstr "Пред"
+#
 #
 #~ msgid "Progress..."
 #~ msgstr "Прогресс загрузки…"
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "Толкач"
+#
 #
 #~ msgid "Pushtow, eight barges at least one tanker or gas barge"
 #~ msgstr "Тяни-толкай и восемь барж, минимум одна из которых — наливная"
 #
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "Тяни-толкай и восемь грузовых барж"
+#
 #
 #~ msgid "Pushtow, five barges at least one tanker or gas barge"
 #~ msgstr "Тяни-толкай и пять барж, минимум одна из которых — наливная"
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "Тяни-толкай и пять грузовых барж"
+#
 #
 #~ msgid "Pushtow, four barges at least one tanker or gas barge"
 #~ msgstr "Тяни-толкай и четыре баржи, минимум одна из которых — наливная"
 #
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "Тяни-толкай и четыре грузовых баржи"
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "Тяни-толкай и девять или более барж"
+#
 #
 #~ msgid "Pushtow, nine or more barges at least one tanker or gas barge"
 #~ msgstr ""
 #~ "Тяни-толкай и девять или более барж, минимум одна из которых — наливная"
 #
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "Тяни-толкай и одна грузовая баржа"
+#
 #
 #, fuzzy
 #~ msgid "Pushtow, one tank/gas barge"
 #~ msgstr "Тяни-толкай и одна наливная баржа"
 #
+#
 #~ msgid "Pushtow, seven barges at least one tanker or gas barge"
 #~ msgstr "Тяни-толкай и семь барж, минимум одна из которых — наливная"
+#
 #
 #~ msgid "Pushtow, seven cargo barges"
 #~ msgstr "Тяни-толкай и семь грузовых барж"
 #
+#
 #~ msgid "Pushtow, six barges at least one tanker or gas barge"
 #~ msgstr "Тяни-толкай и шесть барж, минимум одна из которых — наливная"
+#
 #
 #~ msgid "Pushtow, six cargo barges"
 #~ msgstr "Тяни-толкай и шесть грузовых барж"
 #
+#
 #~ msgid "Pushtow, three barges at least one tanker or gas barge"
 #~ msgstr "Тяни-толкай и три баржи, минимум одна из которых — наливная"
 #
+#
 #~ msgid "Pushtow, three cargo barges"
 #~ msgstr "Тяни-толкай и три грузовых баржи"
+#
 #
 #, fuzzy
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr "Тяни-толкай и две баржи, минимум одна из которых — наливная"
 #
+#
 #~ msgid "Pushtow, two cargo barges"
 #~ msgstr "Тяни-толкай и две грузовых баржи"
+#
 #
 #~ msgid "Red cross ship"
 #~ msgstr "Плавучий госпиталь"
 #
+#
 #~ msgid "Reference Station :"
 #~ msgstr "Отправная точка :"
+#
 #
 #~ msgid "Reject"
 #~ msgstr "Отклонить"
 #
+#
 #~ msgid "Resume"
 #~ msgstr "Возобновить"
+#
 #
 #~ msgid "Route Uploaded successfully."
 #~ msgstr "Маршрут успешно загружен."
 #
+#
 #~ msgid "Send"
 #~ msgstr "Отправить"
+#
 #
 #~ msgid "Send Route To GPS"
 #~ msgstr "Загрузить маршрут в GPS"
 #
+#
 #~ msgid "Service vessel, police patrol, port service"
 #~ msgstr "Служебное, патрульное судно"
+#
 #
 #~ msgid "Sound file '%s' is in unsupported format."
 #~ msgstr "Звуковой файл «%s» имеет неподдерживаемый формат."
 #
+#
 #~ msgid "T"
 #~ msgstr "{untranslatable} T (NMEA-0183: единица измерения)"
+#
 #
 #~ msgid "Tankbarge"
 #~ msgstr "Наливная баржа"
 #
+#
 #~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Наливная баржа, сыпучий груз"
+#
 #
 #, fuzzy
 #~ msgid "Tankbarge, gas"
 #~ msgstr "Наливная баржа, газ"
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type C"
 #~ msgstr "Наливная баржа, жидкий груз C-типа"
+#
 #
 #~ msgid "Tankbarge, liquid cargo, type N"
 #~ msgstr "Наливная баржа, жидкий груз N-типа"
 #
+#
 #~ msgid "Tide"
 #~ msgstr "Прилив-отлив"
+#
 #
 #~ msgid "Today"
 #~ msgstr "Сегодня"
 #
-#~ msgid "Tomorrow"
-#~ msgstr "Завтра"
 #
 #, fuzzy
 #~ msgid "Tug freighter, coupled"
 #~ msgstr "Буксир, тянущий грузовой теплоход на сцепке"
 #
+#
 #, fuzzy
 #~ msgid "Tug, assisting a vessel or linked combination"
 #~ msgstr "Тягач, буксирующий судно или сцепку"
+#
 #
 #, fuzzy
 #~ msgid "Tug, freighter"
 #~ msgstr "Буксир, тянущий грузовой теплоход"
 #
+#
 #, fuzzy
 #~ msgid "Tug, freighter/tanker, coupled"
 #~ msgstr "Буксир, тянущий грузовой теплоход / танкер на сцепке"
+#
 #
 #, fuzzy
 #~ msgid "Tug, one or more tows"
 #~ msgstr "Тягач и один или более буксируемых объектов"
 #
+#
 #~ msgid "Tug, single"
 #~ msgstr "Буксир одиночный"
+#
 #
 #, fuzzy
 #~ msgid "Tug, tanker"
 #~ msgstr "Буксир, тянущий танкер"
 #
+#
 #, fuzzy
 #~ msgid "Unit carrier maritime"
 #~ msgstr "Контейнеровоз?"
 #
+#
 #~ msgid "Vessel, type unknown"
 #~ msgstr "Судно неизвестного типа"
+#
 #
 #, fuzzy
 #~ msgid ""
@@ -3642,6 +4505,7 @@ msgstr "Веб-сайт инструментария wxFormBuilder"
 #~ msgstr ""
 #~ "Судно технического обслуживания, плавучий кран, кабелеукладчик, "
 #~ "буеукладчик, землечерпальщик — опечатка в оригинале (maintenance)"
+#
 #
 #~ msgid "Yes"
 #~ msgstr "Да"

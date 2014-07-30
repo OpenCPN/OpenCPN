@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: grib_pi 3.3.1419\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: 2014-02-23 13:35+0100\n"
 "Last-Translator: NAV <rider2@kpnmail.nl>\n"
 "Language-Team: rider2@kpnmail.nl\n"
@@ -355,6 +355,9 @@ msgstr "( Max "
 msgid "Mean Sea Level Pressure (MSLP)"
 msgstr "luchtdruk (hPa)"
 #
+msgid "Menu"
+msgstr ""
+#
 msgid "Meters"
 msgstr "meter"
 #
@@ -391,6 +394,11 @@ msgstr "Overlay-transparantie"
 #
 msgid "OverlayMap"
 msgstr "Overlay op kaart"
+#
+#, fuzzy
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr ""
+"Gedraaide overlays worden onderdrukt als u niet van OpenGL gebruik maakt"
 #
 msgid "Overlays too wide and can't be displayed:"
 msgstr ""
@@ -543,11 +551,6 @@ msgid "Temperature"
 msgstr ""
 "Lucht-\n"
 "temperatuur"
-#
-msgid ""
-"The Grib file you are opening contains a moving Grib Zone.\n"
-"Interpolation is not supported for this type of file"
-msgstr ""
 #
 msgid ""
 "The file size limit is overcome!\n"
@@ -728,8 +731,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid " (Dup)"
 #~ msgstr " (dup)"
+#
 #
 #
 #~ msgid " Mo )"
@@ -749,12 +754,15 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid " data"
 #~ msgstr "gegevens"
 #
 #
+#
 #~ msgid "00N  00W"
 #~ msgstr "00N  00W"
+#
 #
 #
 #
@@ -763,12 +771,15 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Celcius"
 #~ msgstr "Celsius"
 #
 #
+#
 #~ msgid "Cloud"
 #~ msgstr "Bewolking"
+#
 #
 #
 #
@@ -780,8 +791,10 @@ msgstr "zyGrib login"
 #~ msgstr "GRIB voorkeuren"
 #
 #
+#
 #~ msgid "Display Iso Temp. Lines"
 #~ msgstr "Toon isothermen"
+#
 #
 #
 #
@@ -790,8 +803,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Failed to send mail message"
 #~ msgstr "Kon mailbericht niet versturen"
+#
 #
 #
 #
@@ -828,8 +843,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "GRIB File Directory"
 #~ msgstr "Map voor GRIB bestand"
+#
 #
 #
 #
@@ -838,8 +855,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "M/S"
 #~ msgstr "m/sec"
+#
 #
 #
 #
@@ -848,8 +867,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "MyLabel"
 #~ msgstr "MijnLabel"
+#
 #
 #
 #
@@ -858,13 +879,16 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Parameters"
 #~ msgstr "Parameters"
 #
 #
 #
+#
 #~ msgid "Period"
 #~ msgstr "Periode"
+#
 #
 #
 #
@@ -882,9 +906,11 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
+#
 #
 #
 #
@@ -902,9 +928,11 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
 #~ msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
+#
 #
 #
 #
@@ -918,8 +946,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Precipitation"
 #~ msgstr "Neerslag"
+#
 #
 #
 #
@@ -929,8 +959,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Quickscat"
 #~ msgstr "Quickscat"
+#
 #
 #
 #
@@ -939,13 +971,16 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Ref : "
 #~ msgstr "Ref:"
 #
 #
 #
+#
 #~ msgid "Request Pofile"
 #~ msgstr "Verzoekprofiel"
+#
 #
 #
 #
@@ -969,8 +1004,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "SeaTemp"
 #~ msgstr "ZeeTemp"
+#
 #
 #
 #
@@ -1030,8 +1067,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Show metres/sec for Wind Speed"
 #~ msgstr "Toon windsnelheid in m/sec"
+#
 #
 #
 #
@@ -1040,8 +1079,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "Slices per Update"
 #~ msgstr "delen per update"
+#
 #
 #
 #
@@ -1050,8 +1091,10 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #~ msgid "WavesModel"
 #~ msgstr "Golfmodel"
+#
 #
 #
 #
@@ -1069,14 +1112,17 @@ msgstr "zyGrib login"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Wind Speed(10m)"
 #~ msgstr "windsnelheid (m/sec)"
 #
 #
 #
+#
 #~ msgid "Zone"
 #~ msgstr "Zone"
+#
 #
 #
 #

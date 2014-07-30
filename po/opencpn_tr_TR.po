@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-30 09:13-0400\n"
+"POT-Creation-Date: 2014-07-29 21:40-0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Hasan Çetin <boraxtr@yahoo.com>\n"
 "Language-Team: \n"
@@ -12,6 +12,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Country: FRANCE\n"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid ""
+"\n"
+"\n"
+msgstr "\n"
 #
 msgid ""
 "\n"
@@ -213,6 +241,9 @@ msgstr " Güncellendi: "
 msgid " for details."
 msgstr "ayrıntılar için."
 #
+msgid " is incompatible with this version of OpenCPN."
+msgstr ""
+#
 msgid ""
 " shorter than rhumbline.\n"
 "\n"
@@ -349,6 +380,9 @@ msgstr "(sonraki kullanım için bırakıldı)"
 # Couche
 msgid "(unnamed)"
 msgstr "(Adsız)"
+#
+msgid ", and all previous versions,"
+msgstr ""
 #
 #
 #
@@ -623,8 +657,14 @@ msgstr "Yenisini ekle"
 msgid "Address"
 msgstr "Adres"
 #
+msgid "Adelie Land"
+msgstr ""
+#
 msgid "Advanced"
 msgstr "İleri"
+#
+msgid "Afghanistan"
+msgstr ""
 #
 # AIS
 msgid "Aground"
@@ -638,6 +678,16 @@ msgstr "Karaya oturmuş"
 #
 msgid "Aid to Navigation"
 msgstr "Seyir Yardımcısı"
+#
+msgid "Alaska"
+msgstr ""
+#
+msgid "Albania"
+msgstr ""
+#
+#, fuzzy
+msgid "Algeria"
+msgstr "Seri"
 #
 #
 #
@@ -668,6 +718,9 @@ msgstr "Tüm Haritalar"
 #, fuzzy
 msgid "Altitude"
 msgstr "Enlem"
+#
+msgid "American Samoa"
+msgstr ""
 #
 msgid ""
 "An NMEA sentence is generally 3 characters long (like RMC, GGA etc.) It can "
@@ -702,11 +755,26 @@ msgstr "Demirleme Bölgesi: Tekne transfer işlemleri"
 msgid "Anchorage created "
 msgstr "Demiryeri oluşturuldu."
 #
+msgid "Andorra"
+msgstr ""
+#
+msgid "Angola"
+msgstr ""
+#
+msgid "Anguilla"
+msgstr ""
+#
 msgid "Answering 'No' will create a new waypoint at the same location."
 msgstr "'Hayır' yanıtı, aynı yerde yeni bir seyir noktası oluşturacaktır."
 #
 msgid "Answering 'No' will create all new waypoints for this route."
 msgstr "'Hayır' yanıtı bu rotada tümüyle yeni seyir noktaları oluşturacaktır."
+#
+msgid "Antigua and Barbuda"
+msgstr ""
+#
+msgid "Antilles"
+msgstr ""
 #
 # Menu contextuel : Route
 msgid "Append Waypoint"
@@ -746,6 +814,18 @@ msgstr "Bu seyirizini silmek istediğinizden emin misiniz?"
 msgid "Are you sure you want to remove this waypoint?"
 msgstr "Bu seyirnoktasını silmek istediğinizden emin misiniz?"
 #
+msgid "Argentine Republic"
+msgstr ""
+#
+msgid "Armenia"
+msgstr ""
+#
+msgid "Aruba"
+msgstr ""
+#
+msgid "Ascension Island"
+msgstr ""
+#
 # Traduction à confirmer (2010-11-25)
 msgid "Assumed 1 Mile Point"
 msgstr "1 Millik nokta olduğu varsayıldı"
@@ -760,6 +840,12 @@ msgstr "Demirde"
 msgid "AtoN"
 msgstr "A'danN'ye"
 #
+msgid "Australia"
+msgstr ""
+#
+msgid "Austria"
+msgstr ""
+#
 #
 msgid "Authors"
 msgstr "Yazarlar"
@@ -768,11 +854,20 @@ msgstr "Yazarlar"
 msgid "Auto Follow"
 msgstr "Otomatik İzle"
 #
+msgid "AutoSort"
+msgstr ""
+#
 msgid "Automatic Daily Tracks"
 msgstr "Otomatik Günlük Seyirizleri"
 #
 msgid "Avg. speed"
 msgstr "Ortalama hız"
+#
+msgid "Azerbaijani Republic"
+msgstr ""
+#
+msgid "Azores"
+msgstr ""
 #
 #
 #
@@ -781,6 +876,18 @@ msgstr "Ortalama hız"
 #
 msgid "B"
 msgstr "B"
+#
+msgid "Bahamas"
+msgstr ""
+#
+msgid "Bahrain"
+msgstr ""
+#
+msgid "Bangladesh"
+msgstr ""
+#
+msgid "Barbados"
+msgstr ""
 #
 msgid "Base"
 msgstr "Üs"
@@ -826,6 +933,24 @@ msgstr "Kerteriz"
 msgid "Bearing (M)"
 msgstr "Kerteriz (D)"
 #
+msgid "Belarus"
+msgstr ""
+#
+msgid "Belgium"
+msgstr ""
+#
+msgid "Belize"
+msgstr ""
+#
+msgid "Benin"
+msgstr ""
+#
+msgid "Bermuda"
+msgstr ""
+#
+msgid "Bhutan"
+msgstr ""
+#
 msgid "Black"
 msgstr "Siyah"
 #
@@ -835,9 +960,21 @@ msgstr "Karalisyeye alınmış eklenti belirlendi..."
 msgid "Blue"
 msgstr "Mavi"
 #
+msgid "Bolivia"
+msgstr ""
+#
+msgid "Bosnia and Herzegovina"
+msgstr ""
+#
+msgid "Botswana"
+msgstr ""
+#
 #
 msgid "Boundaries"
 msgstr "Sınırlar"
+#
+msgid "Brazil"
+msgstr ""
 #
 #
 #
@@ -846,11 +983,26 @@ msgstr "Sınırlar"
 msgid "Brg"
 msgstr "Kerteriz"
 #
+msgid "British Virgin Islands"
+msgstr ""
+#
+msgid "Brunei Darussalam"
+msgstr ""
+#
 msgid "Buddy"
 msgstr "Ad"
 #
+msgid "Bulgaria"
+msgstr ""
+#
 msgid "Buoy/Light Labels"
 msgstr "Şamandıra/Fener Etiketleri"
+#
+msgid "Burkina Faso"
+msgstr ""
+#
+msgid "Burundi"
+msgstr ""
 #
 # Toolbox/Langue
 msgid "C&olour:"
@@ -894,12 +1046,24 @@ msgstr "CPA/TCPA Alarmları"
 msgid "Call"
 msgstr "Çağrı"
 #
+msgid "Cambodia"
+msgstr ""
+#
+msgid "Cameroon"
+msgstr ""
+#
+msgid "Canada"
+msgstr ""
+#
 #
 msgid "Cancel"
 msgstr "İptal"
 #
 msgid "Cancellation - cancel area as identified by Message Linkage ID"
 msgstr "İptal işlemi- ID Bağlantılı Mesaj olarak tanımlanmış iptal alanı"
+#
+msgid "Cape Verde"
+msgstr ""
 #
 msgid "Card. E"
 msgstr "Kardinal D"
@@ -1007,6 +1171,9 @@ msgstr "Bölgesel Uyarı: Sualtı manevrası"
 msgid "Caution Area: Underwater vehicle operation"
 msgstr "Bölgesel Uyarı: Sualtı aracı manevrası"
 #
+msgid "Cayman Islands"
+msgstr ""
+#
 #
 msgid "Cell"
 msgstr "Hücre"
@@ -1022,6 +1189,12 @@ msgstr "Merkez Görünüm"
 #
 msgid "Center View..."
 msgstr "Merkez Görünüm"
+#
+msgid "Central African Republic"
+msgstr ""
+#
+msgid "Chad"
+msgstr ""
 #
 #
 msgid "Change Color Scheme"
@@ -1099,6 +1272,12 @@ msgstr "Harita Metinleri"
 msgid "Charts"
 msgstr "Haritalar"
 #
+msgid "Chile"
+msgstr ""
+#
+msgid "China"
+msgstr ""
+#
 #
 msgid "Choose Font Color..."
 msgstr "Yazı Rengini Seçin"
@@ -1115,6 +1294,9 @@ msgstr "Kopyalamak İçin Yazı Şekillendirmesini Seçiniz"
 #
 msgid "Choose a file"
 msgstr "Dosya seçin"
+#
+msgid "Christmas Island"
+msgstr ""
 #
 #
 #
@@ -1141,6 +1323,9 @@ msgstr "Tümünü Sil"
 msgid "Clear Anchor Watch"
 msgstr "Demir Nöbetçisini Sil"
 #
+msgid "Clear Texture Cache"
+msgstr ""
+#
 msgid "Clearance granted - proceed to berth"
 msgstr "Görüş sağlandı - manevraya  devam"
 #
@@ -1163,6 +1348,14 @@ msgstr "Kapat"
 msgid "CoG"
 msgstr "COG"
 #
+msgid "Cocos"
+msgstr ""
+#
+# Toolbox/Langue
+#, fuzzy
+msgid "Colombia"
+msgstr "Renk"
+#
 # Toolbox/Langue
 msgid "Color"
 msgstr "Renk"
@@ -1178,8 +1371,26 @@ msgstr "Renkler"
 msgid "Combo!"
 msgstr "Açılır menü!"
 #
+#
+#
+#
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Comoros"
+msgstr "Yarın"
+#
+msgid "Comoros (Union of the)"
+msgstr ""
+#
 msgid "Confirm deletion of tracks and routes"
 msgstr "Rota ve Seyirizlerinin İptalini Onaylat"
+#
+msgid "Congo"
+msgstr ""
 #
 #
 #, fuzzy
@@ -1203,6 +1414,9 @@ msgstr "Su kesimiyle sınırlı"
 msgid "Control checksum"
 msgstr "Toplu denetim "
 #
+msgid "Cook Islands"
+msgstr ""
+#
 msgid "Copy As KML"
 msgstr "KML Olarak Kopyala"
 #
@@ -1217,6 +1431,9 @@ msgstr "KML Olarak Kopyala"
 #
 msgid "Copy as KML..."
 msgstr "KML Olarak Kopyala"
+#
+msgid "Costa Rica"
+msgstr ""
 #
 #
 msgid "Course"
@@ -1249,6 +1466,15 @@ msgstr "Seyirnoktası Oluştur"
 msgid "Create Waypoint"
 msgstr "Seyirnoktaso Oluştur"
 #
+msgid "Croatia"
+msgstr ""
+#
+msgid "Crozet Archipelago"
+msgstr ""
+#
+msgid "Cuba"
+msgstr ""
+#
 #
 #
 #
@@ -1263,6 +1489,15 @@ msgstr "Akıntı"
 #
 msgid "Cyan"
 msgstr "Cyan"
+#
+msgid "Cyprus"
+msgstr ""
+#
+msgid "Czech Republic"
+msgstr ""
+#
+msgid "CÃ´te d'Ivoire"
+msgstr ""
 #
 msgid "D/V"
 msgstr "D/V"
@@ -1358,6 +1593,12 @@ msgstr "Seyirnoktasını Sil"
 #
 msgid "Delete..."
 msgstr "Sil"
+#
+msgid "Dem Rep.of the Congo"
+msgstr ""
+#
+msgid "Denmark"
+msgstr ""
 #
 #
 msgid "Depart From"
@@ -1470,12 +1711,23 @@ msgstr "Sıkıntılı Bölge: Batan tekne"
 msgid "Distress Area: Vessel under assault"
 msgstr "Sıkıntılı Bölge: Saldırıya uğrayan tekne"
 #
+#
+#, fuzzy
+msgid "Djibouti"
+msgstr "Hakkında"
+#
 msgid ""
 "Do you also want to make the shared waypoints being part of this route "
 "invisible?"
 msgstr ""
 "Paylaşılmış seyirnoktalarının da bu rotanın bir parçası olarak görünmemesini "
 "istiyor musunuz?"
+#
+msgid "Dominica"
+msgstr ""
+#
+msgid "Dominican Republic"
+msgstr ""
 #
 msgid "Done."
 msgstr "İşlem tamam."
@@ -1517,8 +1769,17 @@ msgstr "ETE, Hesaplanan Yol Süresi"
 msgid "ETE/ETD"
 msgstr "ETE/ETD Hesaplanan YolSüresi/KalkışZamanı"
 #
+msgid "Ecuador"
+msgstr ""
+#
 msgid "Edit"
 msgstr "Değiştir"
+#
+msgid "Egypt"
+msgstr ""
+#
+msgid "El Salvador"
+msgstr ""
 #
 msgid "Elapsed time : "
 msgstr "Geçen süre:"
@@ -1586,6 +1847,12 @@ msgstr "Çevresel Uyarı Bölgesi: Fırtına uyarısı (fırtına hattı ya da a
 msgid "Environmental Caution Area: Strong currents"
 msgstr "Çevresel Uyarı Bölgesi: Güçlü akıntılar"
 #
+msgid "Equatorial Guinea"
+msgstr ""
+#
+msgid "Eritrea"
+msgstr ""
+#
 #
 #
 #
@@ -1612,6 +1879,12 @@ msgstr "Hata!"
 #
 msgid "Estimated time : "
 msgstr "Hesaplanan zaman :"
+#
+msgid "Estonia"
+msgstr ""
+#
+msgid "Ethiopia"
+msgstr ""
 #
 msgid "EvTwilight"
 msgstr "GeceYarısı"
@@ -1654,6 +1927,12 @@ msgstr "F/V"
 msgid "Failed to initialize the user interface. "
 msgstr "Kullanıcı seçenekleri başlatılamadı."
 #
+msgid "Falkland Islands"
+msgstr ""
+#
+msgid "Faroe Islands"
+msgstr ""
+#
 #
 msgid "Fathoms"
 msgstr "Kulaç"
@@ -1661,6 +1940,9 @@ msgstr "Kulaç"
 #
 msgid "Feet"
 msgstr "Ayak"
+#
+msgid "Fiji"
+msgstr ""
 #
 msgid "Filter NMEA Course and Speed data"
 msgstr "NMEA Yön ve Hız Verisini Süz."
@@ -1672,11 +1954,17 @@ msgstr "Süzme Sıklığı (dakika ) "
 msgid "Filters"
 msgstr "Filtreler"
 #
+msgid "Finland"
+msgstr ""
+#
 msgid "Fix.Struct."
 msgstr "Sabit Yapı"
 #
 msgid "Fixed Structure"
 msgstr "Sabit Yapı"
+#
+msgid "Flag"
+msgstr ""
 #
 msgid "Fonts"
 msgstr "Yazım Şekli Değiştirilebilir Birimler"
@@ -1689,6 +1977,14 @@ msgstr "Tüm Veritabanını Yeniden Yapılandırmaya Zorla"
 #
 msgid "Format uploads for Furuno GP3X"
 msgstr "Furuno GP3X'e Göre Formatla"
+#
+#
+#, fuzzy
+msgid "France"
+msgstr "İptal"
+#
+msgid "French Polynesia"
+msgstr ""
 #
 msgid "From"
 msgstr "Kalkış Limanı"
@@ -1719,6 +2015,12 @@ msgstr "GPX"
 msgid "GUID"
 msgstr "REHBER"
 #
+msgid "Gabonese Republic"
+msgstr ""
+#
+msgid "Gambia"
+msgstr ""
+#
 #
 #
 msgid "General"
@@ -1728,6 +2030,18 @@ msgstr "Genel"
 msgid "General Options"
 msgstr "Genel Seçenekler"
 #
+msgid "Georgia"
+msgstr ""
+#
+msgid "Germany"
+msgstr ""
+#
+msgid "Ghana"
+msgstr ""
+#
+msgid "Gibraltar"
+msgstr ""
+#
 #
 msgid "Go to "
 msgstr "Oraya git"
@@ -1735,14 +2049,49 @@ msgstr "Oraya git"
 msgid "GpsGate Buddy"
 msgstr "GPS Bağlantı Noktası"
 #
+msgid "Great Britain"
+msgstr ""
+#
+#, fuzzy
+msgid "Greece"
+msgstr "Yeşil"
+#
 msgid "Green"
 msgstr "Yeşil"
+#
+#, fuzzy
+msgid "Greenland"
+msgstr "Yeşil"
+#
+msgid "Grenada"
+msgstr ""
 #
 msgid "Group \""
 msgstr "Grup \""
 #
+msgid "Guadeloupe"
+msgstr ""
+#
+msgid "Guatemala"
+msgstr ""
+#
+msgid "Guiana"
+msgstr ""
+#
+msgid "Guinea"
+msgstr ""
+#
+msgid "Guinea-Bissau"
+msgstr ""
+#
+msgid "Guyana"
+msgstr ""
+#
 msgid "HSC"
 msgstr "HSC"
+#
+msgid "Haiti"
+msgstr ""
 #
 #
 #
@@ -1804,6 +2153,15 @@ msgstr "Yüksek Hızlı Tekne"
 msgid "Highlight Tracks"
 msgstr "Seyirizlerini Aydınlat"
 #
+msgid "Honduras"
+msgstr ""
+#
+msgid "Hong Kong"
+msgstr ""
+#
+msgid "Hungary"
+msgstr ""
+#
 #
 msgid "I&mport GPX..."
 msgstr "&Dosya Aç (.gpx)"
@@ -1815,6 +2173,9 @@ msgstr "&Dosya Aç (.gpx)"
 #
 msgid "IMO"
 msgstr "IMO"
+#
+msgid "Iceland"
+msgstr ""
 #
 #
 msgid "Icon"
@@ -1835,6 +2196,16 @@ msgstr "Dosya Aç  (.gpx)"
 #
 msgid "Important Text Only"
 msgstr "Sadece Önemli Metinler"
+#
+#, fuzzy
+msgid "Incompatible PlugIn detected:\n"
+msgstr "  Uyumsuz Uzantı algılandı:"
+#
+msgid "India"
+msgstr ""
+#
+msgid "Indonesia"
+msgstr ""
 #
 msgid "Information: Icebreaker waiting area"
 msgstr "Bilgi: Buzkıran bekleme sahası"
@@ -1879,6 +2250,15 @@ msgstr "Talimat: Bu noktada VTS ile bağlantı kurun"
 msgid "Instruction: Do not proceed beyond this point/juncture"
 msgstr "Talimat: Bu noktadan öteye geçmeyin"
 #
+msgid "Iran"
+msgstr ""
+#
+msgid "Iraq"
+msgstr ""
+#
+msgid "Ireland"
+msgstr ""
+#
 msgid "Isol. Dngr"
 msgstr "Denetim altına alınmış tehlike"
 #
@@ -1886,18 +2266,54 @@ msgstr "Denetim altına alınmış tehlike"
 msgid "Isolated Danger"
 msgstr "Denetim altına alınmış tehlike"
 #
+msgid "Israel"
+msgstr ""
+#
+msgid "Italy"
+msgstr ""
+#
+msgid "Jamaica"
+msgstr ""
+#
+msgid "Japan"
+msgstr ""
+#
+msgid "Jordan"
+msgstr ""
+#
 msgid "KML Standard (Google Earth and others)"
 msgstr "KML Standardı(Google Earth ve diğer)"
 #
 msgid "KML with extended waypoint data (QtVlm)"
 msgstr "Uzatılmış Seyirnoktası verili KML (QtVlm)"
 #
+msgid "Kazakhstan"
+msgstr ""
+#
+msgid "Kenya"
+msgstr ""
+#
+msgid "Kerguelen Islands"
+msgstr ""
+#
 #
 msgid "Kilometers"
 msgstr "Kilometre"
 #
+msgid "Kiribati"
+msgstr ""
+#
 msgid "Knots"
 msgstr "Knot"
+#
+msgid "Korea"
+msgstr ""
+#
+msgid "Kuwait"
+msgstr ""
+#
+msgid "Kyrgyz Republic"
+msgstr ""
 #
 msgid "LE/V"
 msgstr "LE/V"
@@ -1912,9 +2328,15 @@ msgstr ""
 msgid "Language"
 msgstr "Dil"
 #
+msgid "Lao People's Dem. Rep."
+msgstr ""
+#
 #
 msgid "Latitude"
 msgstr "Enlem"
+#
+msgid "Latvia"
+msgstr ""
 #
 # AIS
 msgid "Law Enforcement Vessel"
@@ -1959,6 +2381,9 @@ msgstr "Yönlendirici Işık (Ön)"
 msgid "Leading Light Rear"
 msgstr "Yönlendirici Işık (Arka)"
 #
+msgid "Lebanon"
+msgstr ""
+#
 #
 #
 #
@@ -1982,9 +2407,22 @@ msgstr "Uzunluk"
 msgid "Length Over All (m)"
 msgstr "Tüm Uzunluk (m)"
 #
+msgid "Lesotho"
+msgstr ""
+#
+#, fuzzy
+msgid "Liberia"
+msgstr "Seri"
+#
+msgid "Libyan Arab Jamahiriya"
+msgstr ""
+#
 #
 msgid "License"
 msgstr "Lisans"
+#
+msgid "Liechtenstein"
+msgstr ""
 #
 #
 msgid "Light"
@@ -2050,6 +2488,9 @@ msgstr "Bağlantılar varsayılan tarayıcıda açılır."
 msgid "List contents"
 msgstr "İçeriği listele"
 #
+msgid "Lithuania"
+msgstr ""
+#
 #
 msgid "Loaded Charts"
 msgstr "Yüklü Haritalar"
@@ -2097,6 +2538,9 @@ msgstr "Fener alanı"
 msgid "LtV/Rig"
 msgstr "LtV/Rig"
 #
+msgid "Luxembourg"
+msgstr ""
+#
 msgid "M/T"
 msgstr "M/T"
 #
@@ -2117,8 +2561,35 @@ msgstr "MMSI"
 msgid "M_COVR ID"
 msgstr "M_COVR ID"
 #
+msgid "Macao"
+msgstr ""
+#
+msgid "Macedonia"
+msgstr ""
+#
+msgid "Madagascar"
+msgstr ""
+#
+msgid "Madeira"
+msgstr ""
+#
 msgid "Magenta"
 msgstr "Magenta"
+#
+msgid "Malawi"
+msgstr ""
+#
+msgid "Malaysia"
+msgstr ""
+#
+msgid "Maldives"
+msgstr ""
+#
+msgid "Mali"
+msgstr ""
+#
+msgid "Malta"
+msgstr ""
 #
 #
 msgid "Mariner's Standard"
@@ -2141,6 +2612,18 @@ msgstr "Hedefleri Kayıp Olarak İşaretleme Süresi (dakika) :"
 msgid "Marks"
 msgstr "İşaretler"
 #
+msgid "Marshall Islands"
+msgstr ""
+#
+msgid "Martinique"
+msgstr ""
+#
+msgid "Mauritania"
+msgstr ""
+#
+msgid "Mauritius"
+msgstr ""
+#
 #
 msgid "Max Detail Here"
 msgstr "Daha Fazla Açıklama Burada"
@@ -2161,6 +2644,9 @@ msgstr "Sağlıkhizmeti Taşıması"
 msgid "Medium"
 msgstr "Ortalama"
 #
+msgid "Menu"
+msgstr ""
+#
 #
 msgid "Mercator"
 msgstr "Mercator"
@@ -2176,6 +2662,12 @@ msgstr "Seyirnoktaları birleştirilsin mi?"
 #
 msgid "Meters"
 msgstr "Metre"
+#
+msgid "Mexico"
+msgstr ""
+#
+msgid "Micronesia"
+msgstr ""
 #
 msgid "Mil/V"
 msgstr "Askeril/Tekne"
@@ -2193,9 +2685,27 @@ msgstr "Diğer Seçenekler"
 msgid "MoTwilight"
 msgstr "GünOrtası"
 #
+msgid "Moldova"
+msgstr ""
+#
+msgid "Monaco"
+msgstr ""
+#
+msgid "Mongolia"
+msgstr ""
+#
+msgid "Montenegro"
+msgstr ""
+#
+msgid "Montserrat"
+msgstr ""
+#
 # AIS
 msgid "Moored"
 msgstr "Tonozda"
+#
+msgid "Morocco"
+msgstr ""
 #
 msgid "Move Boat Here"
 msgstr "Tekneyi Buraya Taşı"
@@ -2204,8 +2714,14 @@ msgstr "Tekneyi Buraya Taşı"
 msgid "Move Waypoint"
 msgstr "Seyirnoktasını Taşı"
 #
+msgid "Mozambique"
+msgstr ""
+#
 msgid "Mph"
 msgstr "Mph"
+#
+msgid "Myanmar"
+msgstr ""
 #
 msgid "NMEA"
 msgstr "NMEA"
@@ -2233,8 +2749,14 @@ msgstr "NMi"
 msgid "Name"
 msgstr "Adı"
 #
+msgid "Namibia"
+msgstr ""
+#
 msgid "National text on chart"
 msgstr "Haritadaki Ulusal Metin"
+#
+msgid "Nauru"
+msgstr ""
 #
 #
 msgid "Nautical Miles"
@@ -2259,8 +2781,17 @@ msgstr "Buraya Doğru Seyret"
 msgid "Navigate To This"
 msgstr "Buna Doğru Seyret"
 #
+msgid "Nepal"
+msgstr ""
+#
+msgid "Netherlands"
+msgstr ""
+#
 msgid "Network"
 msgstr "Ağ"
+#
+msgid "New Caledonia"
+msgstr ""
 #
 msgid "New Chart Group"
 msgstr "Yeni Harita Grubu"
@@ -2268,11 +2799,27 @@ msgstr "Yeni Harita Grubu"
 msgid "New Group..."
 msgstr "Yeni Grup"
 #
+msgid "New Zealand"
+msgstr ""
+#
 msgid "Next tide event"
 msgstr "Soraki gelgit olayı"
 #
+msgid "Nicaragua"
+msgstr ""
+#
+msgid "Niger"
+msgstr ""
+#
+#, fuzzy
+msgid "Nigeria"
+msgstr "Seri"
+#
 msgid "Nighttime"
 msgstr "Gece"
+#
+msgid "Niue"
+msgstr ""
 #
 #
 msgid "No CPA Calculation if target range is greater than (NMi)"
@@ -2312,6 +2859,12 @@ msgstr "Yok"
 msgid "North Up Mode"
 msgstr "Kuzey Yukarı Durumu"
 #
+msgid "Northern Mariana Islands"
+msgstr ""
+#
+msgid "Norway"
+msgstr ""
+#
 # AIS
 msgid "Not Under Command"
 msgstr "Kumanda Altında Değil"
@@ -2337,6 +2890,9 @@ msgstr "Tamam"
 #
 msgid "Old log will be moved to opencpn.log.log"
 msgstr "Eski kütük opencpn.log.log dosyasına aktarılacak"
+#
+msgid "Oman"
+msgstr ""
 #
 #
 msgid "OpenCPN Alert"
@@ -2449,8 +3005,33 @@ msgid "PC/V"
 msgstr "PC/V"
 #
 #
+#, fuzzy
+msgid "Pakistan"
+msgstr "Tekneden Uzaklık"
+#
+msgid "Palau"
+msgstr ""
+#
+#
+#
+#
+#
+#, fuzzy
+msgid "Palestine"
+msgstr "Deneniyor"
+#
+msgid "Panama"
+msgstr ""
+#
+#
 msgid "Paper Chart"
 msgstr "Kağıt harita"
+#
+msgid "Papua New Guinea"
+msgstr ""
+#
+msgid "Paraguay"
+msgstr ""
 #
 #
 msgid "Parameters"
@@ -2475,9 +3056,21 @@ msgstr "Seyirizini Yapıştır"
 msgid "Paste Waypoint"
 msgstr "Seyirnoktasını Yapıştır"
 #
+msgid "People's Rep. of Korea"
+msgstr ""
+#
+msgid "Peru"
+msgstr ""
+#
+msgid "Philippines"
+msgstr ""
+#
 # AIS
 msgid "Pilot Vessel"
 msgstr "Pilot Teknesi"
+#
+msgid "Pitcairn Island"
+msgstr ""
 #
 msgid "Plain"
 msgstr "Düz"
@@ -2529,12 +3122,19 @@ msgstr ""
 "Bu eklentinin son dengeli sürümünü lüfen opencpn.org/plugin/downloads "
 "sayfasından indirin."
 #
+#, c-format
+msgid "PlugIn [ %s ] version %i.%i"
+msgstr ""
+#
 msgid "Plugins"
 msgstr "Eklentiler"
 #
 #
 msgid "Points"
 msgstr "Noktalar"
+#
+msgid "Poland"
+msgstr ""
 #
 # AIS
 msgid "Pollution Control Vessel"
@@ -2556,6 +3156,11 @@ msgstr "İskele Geçişli İşareti"
 # AIS
 msgid "Port Tender"
 msgstr "Liman Servis Botu"
+#
+#
+#, fuzzy
+msgid "Portugal"
+msgstr "BağlantıNoktası"
 #
 msgid "Position"
 msgstr "Mevki"
@@ -2651,6 +3256,12 @@ msgstr "Özellikler"
 msgid "Protocol"
 msgstr "Protokol"
 #
+msgid "Puerto Rico"
+msgstr ""
+#
+msgid "Qatar"
+msgstr ""
+#
 msgid "Question"
 msgstr "Soru"
 #
@@ -2682,6 +3293,9 @@ msgstr "Gerçek Ölçekli Vektör"
 # AIS
 msgid "Real(Off Position)"
 msgstr "Gerçek (Mevki Dışında)"
+#
+msgid "Rebuild Texture Cache"
+msgstr ""
 #
 msgid "Rebuilding chart database from configuration file entries..."
 msgstr ""
@@ -2812,6 +3426,9 @@ msgstr "Başlangıçtaki Harita Klasörü, Windows Kaydından alınıyor."
 msgid "Retrieving initial language selection from Windows Registry"
 msgstr "Başlangıçta seçilen dil, Windows kaydından alınıyor."
 #
+msgid "Reunion"
+msgstr ""
+#
 #
 msgid "Reverse..."
 msgstr "Ters döndür"
@@ -2830,6 +3447,9 @@ msgstr "Yasa dışı ya da süpheli tekne "
 #
 msgid "Rollover"
 msgstr "Uzatmalar"
+#
+msgid "Romania"
+msgstr ""
 #
 #
 msgid "Route"
@@ -2873,6 +3493,12 @@ msgstr "Rota Bacağı Bilgisi"
 msgid "Routes"
 msgstr "Rotalar"
 #
+msgid "Russian"
+msgstr ""
+#
+msgid "Rwanda"
+msgstr ""
+#
 msgid "S/V"
 msgstr "S/V"
 #
@@ -2911,6 +3537,36 @@ msgstr "Güvenli Derinlik"
 # AIS
 msgid "Sailing Vessel"
 msgstr "Yelkenli Tekne"
+#
+msgid "Saint Helena"
+msgstr ""
+#
+msgid "Saint Kitts and Nevis"
+msgstr ""
+#
+msgid "Saint Lucia"
+msgstr ""
+#
+msgid "Saint Paul"
+msgstr ""
+#
+msgid "Saint Pierre and Miquelon"
+msgstr ""
+#
+msgid "Saint Vincent and the Grenadines"
+msgstr ""
+#
+msgid "Samoa"
+msgstr ""
+#
+msgid "San Marino"
+msgstr ""
+#
+msgid "Sao Tome and Principe"
+msgstr ""
+#
+msgid "Saudi Arabia"
+msgstr ""
 #
 #, c-format
 msgid "Scale %4.0f"
@@ -2985,8 +3641,19 @@ msgid "Send to GPS"
 msgstr "GPS'e Gönder"
 #
 #
+#, fuzzy
+msgid "Send to new GPS"
+msgstr "GPS'e Gönder"
+#
+msgid "Senegal"
+msgstr ""
+#
+#
 msgid "Sentence Filter"
 msgstr "Cümle Filtresi"
+#
+msgid "Serbia"
+msgstr ""
 #
 msgid "Serial"
 msgstr "Seri"
@@ -3002,6 +3669,9 @@ msgstr "Belirle"
 #
 msgid "Set Anchor Watch"
 msgstr "Demir Nöbetçisi Yap"
+#
+msgid "Seychelles"
+msgstr ""
 #
 #
 msgid "Shallow Depth"
@@ -3196,9 +3866,21 @@ msgstr "Hedef İzsürümünü Göster, Uzunluk (dakika)"
 msgid "Shows the font preview."
 msgstr "Harf önizlenmeyi gösterir"
 #
+msgid "Sierra Leone"
+msgstr ""
+#
 #
 msgid "Simplified"
 msgstr "Basitleştirilmiş"
+#
+msgid "Singapore"
+msgstr ""
+#
+msgid "Slovak Republic"
+msgstr ""
+#
+msgid "Slovenia"
+msgstr ""
 #
 msgid "Smooth Panning / Zooming"
 msgstr "Tıklamayla Düzgün Yakınlaştırma"
@@ -3212,6 +3894,21 @@ msgstr "SoG"
 #
 msgid "Solid"
 msgstr "Kalın"
+#
+msgid "Solomon Islands"
+msgstr ""
+#
+msgid "Somali Democratic Republic"
+msgstr ""
+#
+msgid "South Africa"
+msgstr ""
+#
+msgid "South Sudan (Republic of)"
+msgstr ""
+#
+msgid "Spain"
+msgstr ""
 #
 #
 msgid "Spare"
@@ -3241,6 +3938,9 @@ msgstr "Rotayı Böl"
 # Menu contextuel : Trace
 msgid "Split Track"
 msgstr "Seyirizini Böl"
+#
+msgid "Sri Lanka"
+msgstr ""
 #
 #
 msgid "Standard"
@@ -3277,6 +3977,9 @@ msgstr "Tür"
 msgid "Style:"
 msgstr "Türü:"
 #
+msgid "Sudan"
+msgstr ""
+#
 msgid "Sunrise"
 msgstr "Gündoğumu"
 #
@@ -3287,8 +3990,23 @@ msgstr "Günbatımı"
 msgid "Supress Alerts for anchored/moored targets"
 msgstr "Demirdeki/Tonozdaki Hedefler İçin Alarm Verme. "
 #
+msgid "Suriname"
+msgstr ""
+#
+msgid "Swaziland"
+msgstr ""
+#
+msgid "Sweden"
+msgstr ""
+#
+msgid "Switzerland"
+msgstr ""
+#
 msgid "Symbolized"
 msgstr "Simgeleştirilmiş"
+#
+msgid "Syrian Arab Republic"
+msgstr ""
 #
 #
 msgid "TCP"
@@ -3302,9 +4020,15 @@ msgstr "TCP"
 msgid "TCPA"
 msgstr "TCPA"
 #
+msgid "Taiwan"
+msgstr ""
+#
 # AIS
 msgid "Tanker"
 msgstr "Tanker"
+#
+msgid "Tanzania"
+msgstr ""
 #
 #
 #
@@ -3359,6 +4083,9 @@ msgid "Texture Compression Caching"
 msgstr ""
 #
 msgid "Texture Memory Size (MB)"
+msgstr ""
+#
+msgid "Thailand"
 msgstr ""
 #
 msgid ""
@@ -3519,6 +4246,12 @@ msgstr "Seyirizi Ayarı"
 msgid "Toggle track"
 msgstr "Seyirizi Ayarı"
 #
+msgid "Togolese Republic"
+msgstr ""
+#
+msgid "Tonga"
+msgstr ""
+#
 msgid "ToolTips"
 msgstr "Araç Çubuğu"
 #
@@ -3580,6 +4313,9 @@ msgstr "Transverse Mercator"
 msgid "Treat WPL sentences as APRS position reports"
 msgstr "WPL Cümlelerini APRS Mevkileri Olarak Değerlendir"
 #
+msgid "Trinidad and Tobago"
+msgstr ""
+#
 #
 #, fuzzy
 msgid "Trk"
@@ -3589,7 +4325,22 @@ msgstr "Seyirizi"
 msgid "Tug"
 msgstr "Römork"
 #
+msgid "Tunisia"
+msgstr ""
+#
+msgid "Turkey"
+msgstr ""
+#
+msgid "Turkmenistan"
+msgstr ""
+#
+msgid "Turks and Caicos Islands"
+msgstr ""
+#
 msgid "Turn Rate"
+msgstr ""
+#
+msgid "Tuvalu"
 msgstr ""
 #
 msgid "Type"
@@ -3604,6 +4355,12 @@ msgstr "URL"
 #
 msgid "UTC"
 msgstr "UTC"
+#
+msgid "Uganda"
+msgstr ""
+#
+msgid "Ukraine"
+msgstr ""
 #
 # AIS
 msgid "Undefined"
@@ -3623,6 +4380,15 @@ msgstr "Üzerinde yol var"
 #
 msgid "Undo"
 msgstr "Gerial"
+#
+msgid "United Arab Emirates"
+msgstr ""
+#
+msgid "United States Virgin Islands"
+msgstr ""
+#
+msgid "United States of America"
+msgstr ""
 #
 #
 #, fuzzy
@@ -3644,6 +4410,9 @@ msgstr "Belirlenmemiş"
 #
 msgid "Update Control"
 msgstr "Denetlemeyi Güncelle"
+#
+msgid "Uruguay"
+msgstr ""
 #
 msgid "Use Accelerated Graphics (OpenGL)"
 msgstr "Hızlandırılmış Grafikleri Kullan (OpenGL)"
@@ -3680,12 +4449,24 @@ msgstr "Kullanıcı Y Ayarı"
 msgid "User Y Offset (Metres)"
 msgstr "Kullanıcı Y Ayarı (metre)"
 #
+msgid "Uzbekistan"
+msgstr ""
+#
 msgid "VTS active target"
 msgstr "VTS etkin hedefi"
+#
+msgid "Vanuatu"
+msgstr ""
+#
+msgid "Vatican City State"
+msgstr ""
 #
 #
 msgid "Vector Charts"
 msgstr "Vektör Haritaları"
+#
+msgid "Venezuela"
+msgstr ""
 #
 # AIS
 msgid "Vessel Diving"
@@ -3710,6 +4491,9 @@ msgstr "Yedeklenen Tekne, Uzun"
 msgid "Vessel requesting non-distress assistance"
 msgstr "Tehlikesiz yardım isteyen takne"
 #
+msgid "Viet Nam"
+msgstr ""
+#
 # AIS
 msgid "Virtual"
 msgstr "Sanal"
@@ -3727,6 +4511,9 @@ msgstr "Görünür düğmeler"
 #
 msgid "WAV files (*.wav)|*.wav|All files (*.*)|*.*"
 msgstr "WAV dosyaları (*.wav)|*.wav|Tüm dosyalar (*.*)|*.*"
+#
+msgid "Wallis and Futuna Islands"
+msgstr ""
 #
 #
 msgid "Warn if CPA less than (NMi)"
@@ -3824,6 +4611,9 @@ msgstr "Yat"
 msgid "Yellow"
 msgstr "Sarı"
 #
+msgid "Yemen"
+msgstr ""
+#
 msgid "Yes, hide it."
 msgstr "Evet, gizle."
 #
@@ -3856,6 +4646,12 @@ msgstr "Adres girmelisiniz"
 #
 msgid "You must select or enter the port..."
 msgstr "Seçin ya da bir bağlantı noktası girin..."
+#
+msgid "Zambia"
+msgstr ""
+#
+msgid "Zimbabwe"
+msgstr ""
 #
 #
 msgid "Zoom In"
@@ -3966,30 +4762,6 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
-#
-#~ msgid "\n"
-#~ msgstr "\n"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 #~ msgid ""
 #~ "\n"
 #~ "\n"
@@ -3998,6 +4770,7 @@ msgstr "wxFB veb sayfası"
 #~ "\n"
 #~ "\n"
 #~ "LibGPS kurulumu sürüyor..."
+#
 #
 #
 #
@@ -4046,8 +4819,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "      Max moored target speed (Kts.):"
 #~ msgstr "      Tonozdaki hedefler için enyüksek hız (Kts) :"
+#
 #
 #
 #
@@ -4108,9 +4883,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "   Chart projection is UNKNOWN, assuming Mercator: "
 #~ msgstr ""
 #~ "  Harita projeksionu bilinemediği için, merkator olarak kabul edildi."
+#
 #
 #
 #
@@ -4155,6 +4932,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "  Could not open serial port '"
 #~ msgstr "      Bağlantı noktası açılamadı "
 #
@@ -4165,8 +4943,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid " </b>in<b> "
 #~ msgstr " </b>içinde<b> "
+#
 #
 #
 #
@@ -4213,14 +4993,17 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid " COG: 000 Deg."
 #~ msgstr " COG : 000 Deg."
 #
 #
 #
 #
+#
 #~ msgid " is %5g"
 #~ msgstr " %5g"
+#
 #
 #
 #
@@ -4241,6 +5024,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "&Export Track..."
 #~ msgstr "&Seyirizini Kaydet"
 #
@@ -4251,8 +5035,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "&Jump To"
 #~ msgstr "&Oraya Sıçra"
+#
 #
 #
 #
@@ -4286,12 +5072,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "'\n"
 #~ " Suggestion: Try 'xxx.xxx.xxx.xxx' notation"
 #~ msgstr ""
 #~ "'\n"
 #~ "Önerilen : Şu notasyonu deneyin 'xxx.xxx.xxx.xxx'"
+#
 #
 #
 #
@@ -4351,8 +5139,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "(m)"
 #~ msgstr "(m)"
+#
 #
 #
 #
@@ -4386,8 +5176,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ":               "
 #~ msgstr ":               "
+#
 #
 #
 #
@@ -4440,8 +5232,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "<--Remove"
 #~ msgstr "<-- Kaldır"
+#
 #
 #
 #
@@ -4462,6 +5256,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "AISTargetAlert"
 #~ msgstr "AISHedefAlarmı"
 #
@@ -4472,8 +5267,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Accept"
 #~ msgstr "Kabul"
+#
 #
 #
 #
@@ -4529,6 +5326,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Route
 #~ msgid "Activate Route"
 #~ msgstr "Rotayı etkinleştir"
@@ -4553,8 +5351,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Active Charts"
 #~ msgstr "Etkin harita"
+#
 #
 #
 #
@@ -4602,8 +5402,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Add this chart to quilt."
 #~ msgstr "Bu haritayı diğer haritalara ekle"
+#
 #
 #
 #
@@ -4650,8 +5452,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "All files (*.*)|*.*"
 #~ msgstr "Tüm dosyalar (*.*)|*.*"
+#
 #
 #
 #
@@ -4698,6 +5502,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Available Chart Directories"
 #~ msgstr "Kullanılabilir Harita Dosyaları"
 #
@@ -4708,8 +5513,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Barge, tanker, chemical"
 #~ msgstr "Barj, tanker, kimyasal taşıyan gemi"
+#
 #
 #
 #
@@ -4758,8 +5565,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Bearing:                Unavailable\n"
 #~ msgstr "Kerteriz  : Indisponible\n"
+#
 #
 #
 #
@@ -4778,8 +5587,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Bunkership"
 #~ msgstr "Kuruyük gemisi"
+#
 #
 #
 #
@@ -4826,9 +5637,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "CM93 Detail Slider..."
 #~ msgstr "CM93 Ayrıntı Sürgüsünü etkinleştir"
+#
 #
 #
 #
@@ -4875,8 +5688,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CM93 Offsets"
 #~ msgstr "CM93 Dengeleri"
+#
 #
 #
 #
@@ -4926,6 +5741,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CPA:       \n"
 #~ msgstr "CPA  : \n"
 #
@@ -4951,8 +5767,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CPA:                 %6.1f NM\n"
 #~ msgstr "CPA  :               %6.1f NM\n"
+#
 #
 #
 #
@@ -5008,8 +5826,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "CallSign:             "
 #~ msgstr "Çağrıİşareti: "
+#
 #
 #
 #
@@ -5029,6 +5849,7 @@ msgstr "wxFB veb sayfası"
 #~ msgstr ""
 #~ "Seyir noktası gönderilemiyor. Çıkışı tanımlanmış seri bağlantı noktası "
 #~ "bulunamıyor."
+#
 #
 #
 #
@@ -5074,6 +5895,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Chart Groups..."
 #~ msgstr "Harita grupları"
 #
@@ -5097,8 +5919,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Chart Groups...New Group"
 #~ msgstr "Hrita grupları... Yeni grup"
+#
 #
 #
 #
@@ -5147,6 +5971,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Class:                "
 #~ msgstr "Sınıfı: "
 #
@@ -5157,8 +5982,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Container vessel"
 #~ msgstr "Conteyner gemisi"
+#
 #
 #
 #
@@ -5201,6 +6028,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Could not resolve TCP/IP host '"
 #~ msgstr "TCP/IP servis sağlayıcısı bulunamadı"
 #
@@ -5211,8 +6039,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Couldn't load sound data from '%s'."
 #~ msgstr "'%s' dan ses verisi yüklenemedi."
+#
 #
 #
 #
@@ -5261,8 +6091,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Course:                 000 Deg.\n"
 #~ msgstr "COG                 : 000   Deg.\n"
+#
 #
 #
 #
@@ -5296,8 +6128,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Cruise ship"
 #~ msgstr "Yolcu gemisi"
+#
 #
 #
 #
@@ -5332,8 +6166,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Data Source :"
 #~ msgstr "Veri Kaynağı:"
+#
 #
 #
 #
@@ -5402,9 +6238,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Toolbox/Langue
 #~ msgid "Default dataset"
 #~ msgstr "Varsayılan veri bileşeni"
+#
 #
 #
 #
@@ -5460,8 +6298,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Delete Mark"
 #~ msgstr "İşareti sil"
+#
 #
 #
 #
@@ -5510,8 +6350,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Delete Selection"
 #~ msgstr "Seçimi sil"
+#
 #
 #
 #
@@ -5537,6 +6379,7 @@ msgstr "wxFB veb sayfası"
 # Menu contextuel : Trace
 #~ msgid "Delete Track"
 #~ msgstr "Seyirizini sil"
+#
 #
 #
 #
@@ -5586,8 +6429,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Destination:          "
 #~ msgstr "Varış :"
+#
 #
 #
 #
@@ -5621,6 +6466,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Drop"
 #~ msgstr "İşaret Bırak"
 #
@@ -5635,8 +6481,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "E&xport All..."
 #~ msgstr "&Tümünü Kaydet"
+#
 #
 #
 #
@@ -5685,8 +6533,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "ETA:"
 #~ msgstr "Yaklaşık Varış Zamanı:"
+#
 #
 #
 #
@@ -5734,6 +6584,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Enable Manual CM93 Offsets"
 #~ msgstr "CM93 dengelemesini elle yapılandırmaya izin ver"
 #
@@ -5759,8 +6610,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Enable Wheel-Zoom-to-Cursor"
 #~ msgstr "Fareyle yakınlaştırmayı etkinleştir."
+#
 #
 #
 #
@@ -5795,8 +6648,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Etc."
 #~ msgstr "Diğer"
+#
 #
 #
 #
@@ -5815,8 +6670,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Ferry"
 #~ msgstr "Arabalı Vapur"
+#
 #
 #
 #
@@ -5835,6 +6692,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Freightbarge"
 #~ msgstr "Yük Barjı"
 #
@@ -5845,8 +6703,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Freightbarge with containers"
 #~ msgstr "Konteynirli yük barjı"
+#
 #
 #
 #
@@ -5896,8 +6756,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "GPS"
 #~ msgstr "GPS"
+#
 #
 #
 #
@@ -5931,8 +6793,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "GPSD Data Server"
 #~ msgstr "GPS Veri sağlayıcı"
+#
 #
 #
 #
@@ -5951,8 +6815,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "General cargo Vessel maritime"
 #~ msgstr "Açıkdeniz Yük Gemisi"
+#
 #
 #
 #
@@ -6009,8 +6875,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Go To Mark/WP"
 #~ msgstr "Seyirnoktasına/İşarete git"
+#
 #
 #
 #
@@ -6042,8 +6910,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "HW"
 #~ msgstr "HW"
+#
 #
 #
 #
@@ -6103,6 +6973,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Heading:                %03d Deg.\n"
 #~ msgstr "Pruva   : %03d   Deg.\n"
 #
@@ -6113,8 +6984,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Hydrofoil"
 #~ msgstr "Hydrofoil"
+#
 #
 #
 #
@@ -6149,6 +7022,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "In"
 #~ msgstr "Giriş"
 #
@@ -6159,8 +7033,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "In: None"
 #~ msgstr "İçerde: Yok"
+#
 #
 #
 #
@@ -6208,8 +7084,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Jump To"
 #~ msgstr "Oraya git"
+#
 #
 #
 #
@@ -6265,8 +7143,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Jump To Position..."
 #~ msgstr "Pozisyona git..."
+#
 #
 #
 #
@@ -6311,6 +7191,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Just "
 #~ msgstr "Tam"
 #
@@ -6321,8 +7202,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "LW"
 #~ msgstr "LW"
+#
 #
 #
 #
@@ -6384,8 +7267,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Last Position Report Time:  "
 #~ msgstr "Son mevki rapor zamanı   : "
+#
 #
 #
 #
@@ -6419,6 +7304,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Legend"
 #~ msgstr "Yazıt"
 #
@@ -6429,8 +7315,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Liquified gas tanker"
 #~ msgstr "Sıvılaştırılmış gaz tankeri"
+#
 #
 #
 #
@@ -6489,8 +7377,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "META Objects"
 #~ msgstr "META nesneleri"
+#
 #
 #
 #
@@ -6505,6 +7395,7 @@ msgstr "wxFB veb sayfası"
 # Menu contextuel : Waypoint/marque
 #~ msgid "Mark Properties"
 #~ msgstr "Seyirnoktası/İşaret Özellikleri"
+#
 #
 #
 #
@@ -6570,6 +7461,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Measure....."
 #~ msgstr "Uzaklığıi ölç"
 #
@@ -6580,8 +7472,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Message accepted"
 #~ msgstr "Mesaj alındı"
+#
 #
 #
 #
@@ -6615,8 +7509,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Metres"
 #~ msgstr "Metre"
+#
 #
 #
 #
@@ -6635,8 +7531,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Motor freighter pushing at least one tank-ship"
 #~ msgstr "En az bir tanker çeken, motorla çalışan mavna"
+#
 #
 #
 #
@@ -6655,8 +7553,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Motor freighter with one or more ships alongside"
 #~ msgstr "Yanında bir ya da iki gemi olan, motorla çalışan mavna"
+#
 #
 #
 #
@@ -6675,8 +7575,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Motor freighter, tug"
 #~ msgstr "Motorla çalışan mavna, römorkör"
+#
 #
 #
 #
@@ -6695,8 +7597,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Motor tanker, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "Tanker, sıvı görünümlü kuruyük (ör. çimento)"
+#
 #
 #
 #
@@ -6715,8 +7619,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Motor tanker, liquid cargo, type N"
 #~ msgstr "Tanker, sıvı yük, tip N"
+#
 #
 #
 #
@@ -6749,8 +7655,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "NMEA Data Source"
 #~ msgstr " NMEA Veri kaynağı"
+#
 #
 #
 #
@@ -6784,8 +7692,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "NMEA Options"
 #~ msgstr "NMEA Seçenekleri"
+#
 #
 #
 #
@@ -6836,8 +7746,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Navigational Status:  "
 #~ msgstr "Seyir durumu: "
+#
 #
 #
 #
@@ -6858,6 +7770,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Next"
 #~ msgstr "Sonraki"
 #
@@ -6868,8 +7781,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "No"
 #~ msgstr "Hayır"
+#
 #
 #
 #
@@ -6902,8 +7817,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Object, not otherwise specified"
 #~ msgstr "Nesne (başka türlü belirtilmedikçe)"
+#
 #
 #
 #
@@ -6922,8 +7839,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Other"
 #~ msgstr "Diğer"
+#
 #
 #
 #
@@ -6936,8 +7855,10 @@ msgstr "wxFB veb sayfası"
 #~ msgstr "Çıkış"
 #
 #
+#
 #~ msgid "Output"
 #~ msgstr "Çıktı"
+#
 #
 #
 #
@@ -6971,9 +7892,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Own Ship Display Options"
 #~ msgstr "KendiTeknenizin görünüm seçenekleri"
+#
 #
 #
 #
@@ -6992,6 +7915,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Passenger ship, ferry, cruise ship, red cross ship"
 #~ msgstr "Yolcu gemisi, arabalı vapur, gezinti gemisi, sağlık gemisi"
 #
@@ -7002,8 +7926,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pause"
 #~ msgstr "Ara"
+#
 #
 #
 #
@@ -7049,9 +7975,11 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #, fuzzy
 #~ msgid "Place Trackpoints at time interval (sec)"
 #~ msgstr "Her ( ) dakikada bir seyirizinoktası koy:"
+#
 #
 #
 #
@@ -7071,8 +7999,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pleasure craft, longer than 20 metres"
 #~ msgstr "Spor amaçlı tekne, 20 metreden uzun"
+#
 #
 #
 #
@@ -7135,6 +8065,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Possible libgps API version mismatch.\n"
 #~ "libgps did not reasonably respond to version request\n"
@@ -7145,6 +8076,7 @@ msgstr "wxFB veb sayfası"
 #~ "libGPS istenen sürüme neden yanıt vermediği anlaşılamadı\n"
 #~ "\n"
 #~ "Gene de libGPS'in bu sürümünü kullanmak ister misiniz ?"
+#
 #
 #
 #
@@ -7167,8 +8099,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Prev"
 #~ msgstr "Önceki"
+#
 #
 #
 #
@@ -7188,8 +8122,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushboat, single"
 #~ msgstr "İten tekne, tek"
+#
 #
 #
 #
@@ -7210,8 +8146,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, eight cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, sekiz kargo barjı"
+#
 #
 #
 #
@@ -7231,8 +8169,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, five cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, beş kargo barjı"
+#
 #
 #
 #
@@ -7252,6 +8192,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, four cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, dört kargo barjı"
 #
@@ -7262,8 +8203,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, nine or more barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, dokuz yada daha fazla kargo barjı"
+#
 #
 #
 #
@@ -7284,6 +8227,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, one cargo barge"
 #~ msgstr "İtilerek/çekilerek hareket eden, tek kargo barjı"
 #
@@ -7294,8 +8238,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, one tank/gas barge"
 #~ msgstr "İtilerek/çekilerek hareket eden, tank/gaz barjı"
+#
 #
 #
 #
@@ -7315,8 +8261,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, seven cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, yedi kargo barjı"
+#
 #
 #
 #
@@ -7336,8 +8284,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, six cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, altı kargo barjı"
+#
 #
 #
 #
@@ -7357,8 +8307,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Pushtow, three cargo barges"
 #~ msgstr "İtilerek/çekilerek hareket eden, üç kargo barjı"
+#
 #
 #
 #
@@ -7370,6 +8322,7 @@ msgstr "wxFB veb sayfası"
 #~ msgid "Pushtow, two barges at least one tanker or gas barge"
 #~ msgstr ""
 #~ "İtilerek/çekilerek hareket eden, en az biri tanker ya da gaz olan iki barj"
+#
 #
 #
 #
@@ -7401,8 +8354,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Radar rings"
 #~ msgstr "Radar halkaları"
+#
 #
 #
 #
@@ -7453,6 +8408,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Range:                %5.1f NM\n"
 #~ msgstr "Menzil           :%5.1f  NM\n"
 #
@@ -7478,8 +8434,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Raster"
 #~ msgstr "Raster"
+#
 #
 #
 #
@@ -7530,8 +8488,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn            %3d Deg./Min. Right\n"
 #~ msgstr "Dönüş hızı: %3d Deg./Min. Droite\n"
+#
 #
 #
 #
@@ -7582,8 +8542,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Rate Of Turn:       > 5 Deg./30 s. Left\n"
 #~ msgstr "Dönüş hızı : >5d Deg./Min. Gauche\n"
+#
 #
 #
 #
@@ -7618,8 +8580,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Red cross ship"
 #~ msgstr "Hastane gemisi"
+#
 #
 #
 #
@@ -7639,8 +8603,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Reject"
 #~ msgstr "Red"
+#
 #
 #
 #
@@ -7688,8 +8654,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Remove this chart from quilt."
 #~ msgstr "Bu haritaları ekli diğer haritalardan çıkar"
+#
 #
 #
 #
@@ -7714,8 +8682,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Resume"
 #~ msgstr "Devam"
+#
 #
 #
 #
@@ -7772,10 +8742,12 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Route
 #, fuzzy
 #~ msgid "Route Properties..."
 #~ msgstr "Rota Özellikleri"
+#
 #
 #
 #
@@ -7824,6 +8796,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Select Chart Types for Quilting"
 #~ msgstr "Birbirine eklenecek harita tiplerini seç"
 #
@@ -7835,8 +8808,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Send"
 #~ msgstr "Gönder"
+#
 #
 #
 #
@@ -7860,6 +8835,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Send to GPS ( "
 #~ msgstr "GPS'e Gönder "
 #
@@ -7870,8 +8846,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Service vessel, police patrol, port service"
 #~ msgstr "Servis teknesi, polis devriyesi, liman servisi"
+#
 #
 #
 #
@@ -7928,6 +8906,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Settings"
 #~ msgstr "Yapılandırma"
 #
@@ -7953,8 +8932,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Show ATON labels"
 #~ msgstr "ATON etiketlerini göster"
+#
 #
 #
 #
@@ -8026,8 +9007,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Show Track icon"
 #~ msgstr "Seyirizi simgesini göster"
+#
 #
 #
 #
@@ -8075,12 +9058,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Büyüklük               : %dm x %dm \n"
 #~ "\n"
+#
 #
 #
 #
@@ -8135,12 +9120,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 %dm x %dm x ---m\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Büyüklük           : %dm x %dm x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8195,12 +9182,14 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:                 ---m x ---m x ---m\n"
 #~ "\n"
 #~ msgstr ""
 #~ "Büyüklük             : ---m x ---m x ---m\n"
 #~ "\n"
+#
 #
 #
 #
@@ -8255,6 +9244,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid ""
 #~ "Size:               %5.1fm x %4.1fm x ---m\n"
 #~ "\n"
@@ -8269,8 +9259,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Sound file '%s' is in unsupported format."
 #~ msgstr "'%s' ses dosyası biçimi desteklenmiyor."
+#
 #
 #
 #
@@ -8321,8 +9313,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Speed:                %5.2f Kts.\n"
 #~ msgstr "Hız            : %5.2f noeuds.\n"
+#
 #
 #
 #
@@ -8355,8 +9349,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "TCP/IP WiFi Data Server"
 #~ msgstr "TCP/IP, Wifi Veri sağlayıcısı "
+#
 #
 #
 #
@@ -8407,8 +9403,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "TCPA:                 %02d:%02d Hr:Min\n"
 #~ msgstr "TCPA :  %02d:%02d Hr:Min\n"
+#
 #
 #
 #
@@ -8427,8 +9425,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Tankbarge, dry cargo as if liquid (e.g. cement)"
 #~ msgstr "TankerBarjı, sıvı görünümlü kuruyük (ör. çimento)"
+#
 #
 #
 #
@@ -8447,6 +9447,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type C"
 #~ msgstr "Tank barjı, sıvı yük, tip C"
 #
@@ -8457,8 +9458,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Tankbarge, liquid cargo, type N"
 #~ msgstr "Tank barjı, sıvı yük, tip N"
+#
 #
 #
 #
@@ -8493,8 +9496,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Tide"
 #~ msgstr "Gelgit"
+#
 #
 #
 #
@@ -8542,6 +9547,7 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Toolbox/Langue
 #, fuzzy
 #~ msgid "Tide/Current Data Selector"
@@ -8555,19 +9561,10 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 #~ msgid "Today"
 #~ msgstr "Bugün"
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Tomorrow"
-#~ msgstr "Yarın"
 #
 #
 #
@@ -8615,10 +9612,12 @@ msgstr "wxFB veb sayfası"
 #
 #
 #
+#
 # Menu contextuel : Trace
 #, fuzzy
 #~ msgid "Track Properties..."
 #~ msgstr "Seyirizi özellikleri"
+#
 #
 #
 #
