@@ -5431,16 +5431,29 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
                 //      Get and convert the points
                 wxPoint *pr = ptp;
 
-                double *pvert_list = p_tp->p_vertex;
+                if(ppg->data_type == DATA_TYPE_DOUBLE){
+                    double *pvert_list = p_tp->p_vertex;
 
-                for( int iv = 0; iv < p_tp->nVert; iv++ ) {
-                    double lon = *pvert_list++;
-                    double lat = *pvert_list++;
-                    GetPointPixSingle( rzRules, lat, lon, pr, vp );
+                    for( int iv = 0; iv < p_tp->nVert; iv++ ) {
+                        double lon = *pvert_list++;
+                        double lat = *pvert_list++;
+                        GetPointPixSingle( rzRules, lat, lon, pr, vp );
 
-                    pr++;
+                        pr++;
+                    }
                 }
-
+                else {
+                    float *pvert_list = (float *)p_tp->p_vertex;
+                    
+                    for( int iv = 0; iv < p_tp->nVert; iv++ ) {
+                        double lon = *pvert_list++;
+                        double lat = *pvert_list++;
+                        GetPointPixSingle( rzRules, lat, lon, pr, vp );
+                        
+                        pr++;
+                    }
+                }
+                
                 switch( p_tp->type ){
                     case PTG_TRIANGLE_FAN: {
                         for( int it = 0; it < p_tp->nVert - 2; it++ ) {
