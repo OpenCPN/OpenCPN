@@ -1,1130 +1,761 @@
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR &amp;lt;EMAIL@ADDRESS&amp;gt;, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: grib_pi 3.3.1419\n"
+"Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-29 21:40-0400\n"
-"PO-Revision-Date: 2014-02-23 13:35+0100\n"
-"Last-Translator: NAV <rider2@kpnmail.nl>\n"
-"Language-Team: rider2@kpnmail.nl\n"
+"PO-Revision-Date: 2014-07-30 19:06-0400\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Dutch\n"
 "Language: nl_NL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-Bookmarks: -1,-1,-1,-1,-1,182,-1,-1,-1,-1\n"
-"X-Generator: Poedit 1.5.4\n"
-#
-msgid " (Max size )"
-msgstr " (max. grootte)"
-#
-msgid "300 hPa"
-msgstr ""
-#
-msgid "500 hPa"
-msgstr ""
-#
-msgid "700 hPa"
-msgstr ""
-#
-msgid "850 hPA"
-msgstr ""
-#
-msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr "Adres voor verzenden e-mailverzoek (verplicht voor LINUX)"
-#
-msgid ""
-"Air\n"
-"Temperature"
-msgstr ""
-"Lucht-\n"
-"temperatuur"
-#
-msgid "Air Temp"
-msgstr "Luchttemp."
-#
-#, fuzzy
-msgid "Air Temperature"
-msgstr ""
-"Lucht-\n"
-"temperatuur"
-#
-#, fuzzy
-msgid "Air Temperature at"
-msgstr ""
-"Lucht-\n"
-"temperatuur"
-#
-msgid "Air Temperature(2m)"
-msgstr "Luchttemp. (2 m)"
-#
-msgid "Altitude"
-msgstr ""
-#
-msgid "Altitude(Geopotential)"
-msgstr ""
-#
-msgid "Always visible"
-msgstr "Altijd zichtbaar"
-#
-msgid "Apply"
-msgstr "Toepassen"
-#
-msgid "Authorize Interpolation to start at current time"
-msgstr "Laat interpolatie starten op huidige tijd"
-#
-msgid "Barbed Arrows"
-msgstr "Windpijlen"
-#
-msgid "Beaufort"
-msgstr "Beaufort"
-#
-msgid ""
-"Before sending an email to Zygrib you have to enter your Login and Code.\n"
-"Please visit www.zygrib.org/ and follow instructions..."
-msgstr ""
-"Voor het zenden van een e-mail naar zyGrib uw login en code invoeren.\n"
-" Ga naar www.zyGrib.org/ en volg de instructies op ..."
-#
-msgid "Building Isobar map"
-msgstr "Maken van  isobarenkaart ..."
-#
-msgid "CAPE"
-msgstr "CAPE"
-#
-msgid "Celsius"
-msgstr "Celsius"
-#
-msgid "Close"
-msgstr "Sluiten"
-#
-msgid "Cloud Cover"
-msgstr "Bewolking"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-msgid "Colors"
-msgstr "kleuren"
-#
-msgid "Continue..."
-msgstr "Doorgaan ..."
-#
-msgid "Controled Colours"
-msgstr "Kleuren"
-#
-msgid "Convective Available Potential Energy"
-msgstr ""
-#
-msgid "Copy First Cumulative Missing Record"
-msgstr "Kopieer 'First Cumulative Missing Record' "
-#
-msgid "Copy Missing Wave Records"
-msgstr "Kopieer ontbrekende golfgegevens"
-#
-#, fuzzy
-msgid "Course"
-msgstr "uren"
-#
-msgid "Cumulative Rainfall per Hour"
-msgstr ""
-#
-#
-msgid "Current"
-msgstr "Stroomsnelheid"
-#
-msgid "Current time forecast"
-msgstr ""
-#
-msgid "Data"
-msgstr ""
-#
-msgid "Data at Cursor Position:"
-msgstr "GRIB-gegevens op cursorpositie:"
-#
-msgid "Data available"
-msgstr "Gegevens beschikbaar"
-#
-msgid "Days"
-msgstr "dagen"
-#
-msgid "Default Colour"
-msgstr "Standaard kleur"
-#
-msgid "Default Size"
-msgstr "Standaard grootte"
-#
-msgid "Deg"
-msgstr "°"
-#
-msgid "Direction Arrows"
-msgstr "Richtingpijlen"
-#
-msgid "Display"
-msgstr "Toon op scherm"
-#
-msgid "Display Iso CAPE"
-msgstr "Toon iso CAPE"
-#
-msgid "Display Isobars"
-msgstr "Toon isobaren"
-#
-msgid "Display Isotachs"
-msgstr "Toon isotachen"
-#
-msgid "Display Isotherms"
-msgstr "Toon isothermen"
-#
-msgid "Double Arrow"
-msgstr "Dubbele pijl"
-#
-msgid "Enter your forecasted Course"
-msgstr ""
-#
-msgid "Enter your forescasted Speed (in Knots)"
-msgstr ""
-#
-msgid "Error:  Can't read this File!"
-msgstr "Fout: kan bestand niet lezen!"
-#
-msgid "Error:  File does not exist!"
-msgstr "Fout: bestand bestaat niet!"
-#
-msgid "Error:  No valid data in this file!"
-msgstr "Fout: geen valide gegevens in dit bestand!"
-#
-msgid "Estimated File Size"
-msgstr "Geschatte bestandsgrootte"
-#
-msgid "Fahrenheit"
-msgstr "Fahrenheit"
-#
-msgid "Feet"
-msgstr "voet"
-#
-msgid "Forecast Model "
-msgstr "Verwachtingsmodel"
-#
-msgid "GRIB Data at Cursor"
-msgstr "GRIB-gegevens bij cursor"
-#
-#
-msgid "GRIB Display Control"
-msgstr "GRIB-weergaveopties"
-#
-msgid "GRIB PlugIn for OpenCPN"
-msgstr "GRIB-plugIn voor OpenCPN"
-#
-#, fuzzy
-msgid ""
-"GRIB PlugIn for OpenCPN\n"
-"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
-"and a request function to get GRIB files by eMail.\n"
 "\n"
-"Supported GRIB data include:\n"
-"- wind direction and speed (at 10 m)\n"
-"- wind gust\n"
-"- surface pressure\n"
-"- rainfall\n"
-"- cloud cover\n"
-"- significant wave height and direction\n"
-"- air surface temperature (at 2 m)\n"
-"- sea surface temperature\n"
-"- surface current direction and speed\n"
-"- Convective Available Potential Energy (CAPE)\n"
-"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr ""
-"GRIB-plugIn voor OpenCPN\n"
-"Geeft kaartoverlay van GRIB-gegevens voor verschillende bestandtypes.\n"
-"\n"
-"Ondersteunde GRIB-bestandtypes zijn:\n"
-"- windrichting en snelheid\n"
-"- significante golfhoogte\n"
-"- oppervlaktetemperatuur zeewater\n"
-"- stroomrichting en -snelheid."
-#
-msgid "Generic"
-msgstr "Generiek"
-#
-msgid "Geopotential Height"
-msgstr ""
-#
-msgid "Get this Code in zyGrib's forum ( This is not your password! )"
-msgstr "Zet deze code in het zyGrib-forum (dit is niet uw wachtwoord!)"
-#
-msgid "Grib"
-msgstr "GRIB"
-#
-msgid "Grib Data Table"
-msgstr "GRIB-gegevenstabel"
-#
-#, fuzzy
-msgid "Grib Data at"
-msgstr "GRIB-gegevenstabel"
-#
-msgid "Grib Preferences"
-msgstr "GRIB-voorkeuren"
-#
-msgid "Grib Settings"
-msgstr "GRIB-instellingen"
-#
-msgid "Hours"
-msgstr "uren"
-#
-msgid "Inches"
-msgstr "inch"
-#
-msgid "Interpolate between gribs"
-msgstr "Interpoleer tussen GRIB-bestanden"
-#
-msgid "Interval"
-msgstr "Interval"
-#
-msgid "IsoBars"
-msgstr "Isobaren"
-#
-msgid "Knots"
-msgstr "knopen"
-#
-#, fuzzy
-msgid "Kts"
-msgstr "knopen"
-#
-msgid "Load File Options"
-msgstr "Opties voor laden bestand"
-#
-msgid "Load the Last Opened File"
-msgstr "Laad het laatst geopende bestand"
-#
-msgid "Load the More Recent File in Directory"
-msgstr "Laad het meest recente bestand uit de map"
-#
-msgid "Local Time"
-msgstr "Lokale tijd"
-#
-msgid "Loop Mode"
-msgstr "'Loop'-modus"
-#
-msgid "Loop Start"
-msgstr ""
-#
-msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
-msgstr ""
-"Mail-fout: MAPI32.DLL is niet geinstalleerd of ongeldig op deze computer!"
-#
-msgid "MB"
-msgstr ""
-#
-msgid "Mail"
-msgstr "E-mail"
-#
-msgid "Mail To "
-msgstr "E-mail aan"
-#
-#, fuzzy
-msgid "Max"
-msgstr "( Max "
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "luchtdruk (hPa)"
-#
-msgid "Menu"
-msgstr ""
-#
-msgid "Meters"
-msgstr "meter"
-#
-msgid "MilliBars"
-msgstr "millibar"
-#
-msgid "Millimeters"
-msgstr "millimeter"
-#
-#, fuzzy
-msgid "Minimum Spacing"
-msgstr "tussenafstand"
-#
-msgid "Moving Grib"
-msgstr ""
-#
-msgid "N/A"
-msgstr "nvt"
-#
-msgid "Next"
-msgstr "Volgende"
-#
-msgid "Now"
-msgstr "Nu"
-#
-msgid "Numbers"
-msgstr "Getallen"
-#
-msgid "Open File"
-msgstr "Open bestand"
-#
-msgid "Overlay Transparency"
-msgstr "Overlay-transparantie"
-#
-msgid "OverlayMap"
-msgstr "Overlay op kaart"
-#
-#, fuzzy
-msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr ""
-"Gedraaide overlays worden onderdrukt als u niet van OpenGL gebruik maakt"
-#
-msgid "Overlays too wide and can't be displayed:"
-msgstr ""
-#
-msgid "Percentage"
-msgstr "Percentage"
-#
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: crowdin.net\n"
+
+#: src/GribUIDialog.cpp:156 src/GribUIDialog.cpp:896
+#: src/GribUIDialogBase.cpp:52
 msgid "Play"
 msgstr "Afspelen"
-#
-#
-msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr "Zoom uit of verklein schaal om niet-zichtbare overlay te zien:"
-#
-#
-msgid "Pressure"
-msgstr "Luchtdruk"
-#
-msgid "Previous"
-msgstr "Vorige"
-#
-msgid "Profile"
-msgstr "Profiel"
-#
-#, fuzzy
-msgid "Proportional Arrow"
-msgstr "Richtingpijlen"
-#
-msgid "Rainfall"
-msgstr "Neerslag"
-#
-msgid "Rel. Humid."
-msgstr ""
-#
-msgid "Relative Humidity"
-msgstr ""
-#
-msgid "Request"
-msgstr "Verzoek"
-#
-msgid ""
-"Request can't be sent. Please verify your email systeme parameters.\n"
-"You should also have a look at your log file.\n"
-"Save or Cancel to finish..."
-msgstr ""
-"Het verzoek kan niet verzonden worden. Controleer uw\n"
-"e-mail parameters en uw logbestand.\n"
-"Opslaan of Afbreken om te beeindigen ..."
-#
-msgid "Resolution"
-msgstr "Resolutie"
-#
-msgid "Save"
-msgstr "Opslaan"
-#
-msgid ""
-"Sea\n"
-"Temperature"
-msgstr ""
-"Zeewater-\n"
-"temperatuur"
-#
-#, fuzzy
-msgid "Sea Surface Temperature"
-msgstr ""
-"Zeewater-\n"
-"temperatuur"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-msgid "Sea Temp"
-msgstr "Zeetemp."
-#
-#, fuzzy
-msgid "Sea Temperature"
-msgstr ""
-"Zeewater-\n"
-"temperatuur"
-#
-msgid "Sea Temperature(surf.)"
-msgstr "Zeewateroppervl.temp."
-#
-#, c-format
-msgid "Select Geopotential Height (in %s) or Standard Altitude."
-msgstr ""
-#
-#
-msgid "Select a GRIB file"
-msgstr "Selecteer een GRIB-bestand"
-#
-msgid "Send"
-msgstr "Verzenden"
-#
-msgid "Sender eMail Address"
-msgstr "E-mailadres verzender"
-#
-msgid "Settings"
-msgstr "Instellingen"
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Significant Wave Height"
-msgstr "significante golfhoogte (m)"
-#
-msgid "Single Arrow"
-msgstr "Enkele pijl"
-#
-msgid "Small Size"
-msgstr "Klein"
-#
-msgid "Spacing"
-msgstr "tussenafstand"
-#
-msgid "Speed"
-msgstr ""
-#
-msgid "Start Options"
-msgstr "Startopties"
-#
-msgid "Start at the first forecast in GRIB file"
-msgstr "Start met de 1ste verwachting in het GRIB-bestand"
-#
-msgid "Start at the nearest forecast to current time"
-msgstr "Start met de verwachting die het dichtst bij de huidige tijd is"
-#
-msgid "Stop"
-msgstr "Stop"
-#
-msgid "Surface Current Direction"
-msgstr ""
-#
-msgid "Surface Current Speed"
-msgstr ""
-#
-msgid "Surface level"
-msgstr ""
-#
-#, fuzzy
-msgid "Temperature"
-msgstr ""
-"Lucht-\n"
-"temperatuur"
-#
-msgid ""
-"The file size limit is overcome!\n"
-"You can zoom in and/or change parameters..."
-msgstr ""
-"De limiet voor bestandsgrootte is bereikt!\n"
-"U kunt inzoomen en/of parameters aanpassen ..."
-#
-msgid ""
-"This file contains data for particular time intervals but you have chosen to "
-"display different intervals.\n"
-"Please consider that the values will be interpolated."
-msgstr ""
-"Dit bestand bevat gegevens met een specifiek tijdinterval. U heeft echter "
-"gekozen om de gegevens met\n"
-"een ander tijdinterval te tonen. Besef dat de waardes zullen worden "
-"geinterpoleerd."
-#
-msgid "This is your zyGrib's forum access Login"
-msgstr "Dit is uw login voor het zyGrib-forum"
-#
-#, fuzzy
-msgid "Time Interval"
-msgstr "Interval"
-#
-msgid "Time Options"
-msgstr "Tijdopties"
-#
-msgid "Time Range"
-msgstr "Periode"
-#
-msgid "Top of Grib File"
-msgstr ""
-#
-msgid "UTC"
-msgstr "UTC"
-#
-msgid "Units"
-msgstr "eenheid"
-#
-msgid "Updates per Second"
-msgstr "updates per sec"
-#
-msgid "Use Gradual Colors"
-msgstr "Gebruik graduele kleuren"
-#
-#
-msgid "Use High Definition Graphics"
-msgstr "Gebruik hoge grafische resolutie"
-#
-msgid "WIND data at"
-msgstr ""
-#
-msgid "Warning!"
-msgstr "Waarschuwing!"
-#
+
+#: src/GribUIDialog.cpp:186
+msgid "Error:  No valid data in this file!"
+msgstr "Fout: geen valide gegevens in dit bestand!"
+
+#: src/GribUIDialog.cpp:210
 msgid "Warning:  Empty directory!"
 msgstr "Waarschuwing: lege map!"
-#
-msgid "Waves"
-msgstr "Golfhoogte"
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Waves Direction"
-msgstr "windrichting"
-#
-msgid "Weather table"
-msgstr "Weertabel"
-#
-msgid "Wind"
-msgstr "Wind"
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Wind Direction at"
-msgstr "windrichting"
-#
-msgid "Wind Gust"
-msgstr "Windvlagen"
-#
-#, fuzzy
-msgid "Wind Gust at"
-msgstr "Windvlagen"
-#
-#, fuzzy
+
+#: src/GribUIDialog.cpp:426
+msgid "Close"
+msgstr "Sluiten"
+
+#: src/GribUIDialog.cpp:555 src/GribUIDialog.cpp:556 src/GribUIDialog.cpp:557
+#: src/GribUIDialog.cpp:650 src/GribUIDialog.cpp:651 src/GribUIDialog.cpp:663
+#: src/GribUIDialog.cpp:676 src/GribUIDialog.cpp:694 src/GribUIDialog.cpp:704
+#: src/GribUIDialog.cpp:719 src/GribUIDialog.cpp:720 src/GribUIDialog.cpp:734
+#: src/GribUIDialog.cpp:747 src/GribUIDialog.cpp:759 src/GribUIDialog.cpp:771
+#: src/GribUIDialog.cpp:783 src/GribUIDialog.cpp:795 src/GribUIDialog.cpp:807
+#: src/GribUIDialog.cpp:818
+msgid "N/A"
+msgstr "nvt"
+
+#: src/GribUIDialog.cpp:587
 msgid "Wind Speed at"
-msgstr "Windscat"
-#
-msgid "Write and send eMail request"
-msgstr "Schrijf en verzend e-mail verzoek"
-#
-msgid ""
-"You have chosen to authorize interpolation.\n"
-"Don't forget that data displayed at current time will not be real but "
-"interpolated!"
-msgstr ""
-"U heeft gegevensinterpolatie toegestaan.\n"
-"Vergeet niet dat de voor de huidige tijd getoonde gegevens geïnterpoleerd "
-"zijn!"
-#
-msgid ""
-"You request a forecast for more than 8 days horizon.\n"
-"This is conflicting with Wave data which will be removed from your request.\n"
-"Don't forget that beyond the first 8 days, the resolution will be only "
-"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
-msgstr ""
-"U vraagt om een verwachting langer dan 8 dagen vooruit.\n"
-"Dit conflicteert met de Golfgegevens, die daarom uit uw verzoek worden "
-"verwijderd.\n"
-"Vergeet niet dat na de eerste 8 dagen de resolutie slechts "
-"2.5\\u00B0x2.5\\u00B0 zal zijn met een interval van 12 uur."
-#
-msgid ""
-"Your request is ready. An email is prepared in your email environment. \n"
-"You have just to verify and send it...\n"
-"Save or Cancel to finish...or Continue..."
-msgstr ""
-"Uw aanvraag staat gereed. Een e-mail is voorbereid.\n"
-"Controleer en verzend deze ...\n"
-"Opslaan of Afbreken om te beeindigen ... of Doorgaan ..."
-#
-msgid ""
-"Your request was sent \n"
-"(if your system has an MTA configured and is able to send email).\n"
-"Save or Cancel to finish...or Continue..."
-msgstr ""
-"Uw verzoek is verzonden (mits uw systeem hiervoor\n"
-"geconfigureerd is en mail kan verzenden).\n"
-"Opslaan of Afbreken om te beeindigen... of Doorgaan ..."
-#
-msgid "Zoom To Center"
-msgstr "Zoom op centrum"
-#
-msgid "h"
-msgstr ""
-#
-msgid "inHG"
-msgstr "inch kwik"
-#
-msgid "j/kg"
-msgstr "j/kg"
-#
-msgid "km/h"
-msgstr "km/u"
-#
+msgstr "windsnelheid op"
+
+#: src/GribUIDialog.cpp:588
+msgid "Wind Direction at"
+msgstr "windrichting op"
+
+#: src/GribUIDialog.cpp:591
+msgid "Wind Gust at"
+msgstr "windvlagen op"
+
+#: src/GribUIDialog.cpp:594
+msgid "Air Temperature at"
+msgstr "luchttemperatuur op"
+
+#: src/GribUIDialog.cpp:594
+msgid "Surface level"
+msgstr "Oppervlakteniveau"
+
+#: src/GribUIDialog.cpp:594
+msgid "Sea Surface Temperature"
+msgstr "temperatuur zeewateroppervlakte"
+
+#: src/GribUIDialog.cpp:604
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
+msgstr "Selecteer Geopotentiële Hoogte  (in %s) of Standaard Hoogte."
+
+#: src/GribUIDialog.cpp:885
+msgid "Stop"
+msgstr "Stop"
+
+#: src/GribUIDialog.cpp:1117
+msgid "Select a GRIB file"
+msgstr "Selecteer een GRIB-bestand"
+
+#: src/GribUIDialog.cpp:1330
+msgid "Error:  File does not exist!"
+msgstr "Fout: bestand bestaat niet!"
+
+#: src/GribUIDialog.cpp:1343
+msgid "Error:  Can't read this File!"
+msgstr "Fout: kan bestand niet lezen!"
+
+#: src/GribSettingsDialog.cpp:30
+msgid "Knots"
+msgstr "knopen"
+
+#: src/GribSettingsDialog.cpp:30
 msgid "m/s"
 msgstr "m/s"
-#
-msgid "mmHG"
-msgstr "mm kwik"
-#
-msgid "mn"
-msgstr ""
-#
+
+#: src/GribSettingsDialog.cpp:30
 msgid "mph"
 msgstr "mph"
-#
-#, fuzzy
-msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
-msgstr ""
-"Gedraaide overlays worden onderdrukt als u niet van OpenGL gebruik maakt"
-#
+
+#: src/GribSettingsDialog.cpp:30
+msgid "km/h"
+msgstr "km/u"
+
+#: src/GribSettingsDialog.cpp:30
+msgid "Beaufort"
+msgstr "Beaufort"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "MilliBars"
+msgstr "millibar"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "mmHG"
+msgstr "mm kwik"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "inHG"
+msgstr "inch kwik"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "Meters"
+msgstr "meter"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "Feet"
+msgstr "voet"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Celsius"
+msgstr "Celsius"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Fahrenheit"
+msgstr "Fahrenheit"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Millimeters"
+msgstr "millimeter"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Inches"
+msgstr "inch"
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Percentage"
+msgstr "Percentage"
+
+#: src/GribSettingsDialog.cpp:36
+msgid "j/kg"
+msgstr "j/kg"
+
+#: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:95
+#: src/GribUIDialogBase.cpp:496 src/GribUIDialogBase.cpp:875
+#: src/GribOverlayFactory.cpp:792 src/GribTable.cpp:120
+msgid "Wind"
+msgstr "Wind"
+
+#: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:133
+#: src/GribUIDialogBase.cpp:881 src/GribTable.cpp:138
+msgid "Wind Gust"
+msgstr "Windvlagen"
+
+#: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:142
+#: src/GribUIDialogBase.cpp:878 src/GribTable.cpp:132
+msgid "Pressure"
+msgstr "Luchtdruk"
+
+#: src/GribSettingsDialog.cpp:46 src/GribUIDialogBase.cpp:107
+#: src/GribUIDialogBase.cpp:907 src/GribTable.cpp:146
+msgid "Waves"
+msgstr "Golfhoogte"
+
+#: src/GribSettingsDialog.cpp:46 src/GribUIDialogBase.cpp:120
+#: src/GribUIDialogBase.cpp:496 src/GribUIDialogBase.cpp:896
+#: src/GribTable.cpp:189
+msgid "Current"
+msgstr "Stroomsnelheid"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:153
+#: src/GribUIDialogBase.cpp:496 src/GribUIDialogBase.cpp:884
+#: src/GribTable.cpp:153
+msgid "Rainfall"
+msgstr "Neerslag"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:164
+#: src/GribUIDialogBase.cpp:168 src/GribUIDialogBase.cpp:496
+#: src/GribUIDialogBase.cpp:887 src/GribTable.cpp:160
+msgid "Cloud Cover"
+msgstr "Bewolking"
+
+#: src/GribSettingsDialog.cpp:48
+msgid "Air Temperature"
+msgstr "Luchttemperatuur"
+
+#: src/GribSettingsDialog.cpp:48
+msgid "Sea Temperature"
+msgstr "Zeewatertemperatuur"
+
+#: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:193
+#: src/GribUIDialogBase.cpp:899 src/GribTable.cpp:181
+msgid "CAPE"
+msgstr "CAPE"
+
+#: src/GribSettingsDialog.cpp:49
+msgid "Altitude(Geopotential)"
+msgstr "Hoogte (geopotentieel)"
+
+#: src/GribSettingsDialog.cpp:49
+msgid "Relative Humidity"
+msgstr "Relatieve vochtigheid"
+
+#: src/GribSettingsDialog.cpp:386
+msgid "h"
+msgstr "u"
+
+#: src/GribSettingsDialog.cpp:386
+msgid "mn"
+msgstr "mn"
+
+#: src/GribSettingsDialog.cpp:406
+msgid "Apply"
+msgstr "Toepassen"
+
+#: src/GribSettingsDialog.cpp:419
+msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\nPlease consider that the values will be interpolated."
+msgstr "Dit bestand bevat gegevens met een specifiek tijdinterval. U heeft echter gekozen om de gegevens met\neen ander tijdinterval te tonen. Besef dat de waardes zullen worden geinterpoleerd."
+
+#: src/GribSettingsDialog.cpp:420 src/grib_pi.cpp:561
+#: src/GribRequestDialog.cpp:281
+msgid "Warning!"
+msgstr "Waarschuwing!"
+
+#: src/GribSettingsDialog.cpp:494 src/GribSettingsDialog.cpp:502
+msgid "Display Isotachs"
+msgstr "Toon isotachen"
+
+#: src/GribSettingsDialog.cpp:509
+msgid "Display Isobars"
+msgstr "Toon isobaren"
+
+#: src/GribSettingsDialog.cpp:527
+msgid "Display Isotherms"
+msgstr "Toon isothermen"
+
+#: src/GribSettingsDialog.cpp:534
+msgid "Display Iso CAPE"
+msgstr "Toon iso CAPE"
+
+#: src/GribUIDialogBase.cpp:29
+msgid "Previous"
+msgstr "Vorige"
+
+#: src/GribUIDialogBase.cpp:37
+msgid "Next"
+msgstr "Volgende"
+
+#: src/GribUIDialogBase.cpp:42
+msgid "Now"
+msgstr "Nu"
+
+#: src/GribUIDialogBase.cpp:47
+msgid "Zoom To Center"
+msgstr "Zoom op centrum"
+
+#: src/GribUIDialogBase.cpp:60
+msgid "Open File"
+msgstr "Open bestand"
+
+#: src/GribUIDialogBase.cpp:65
+msgid "Settings"
+msgstr "Instellingen"
+
+#: src/GribUIDialogBase.cpp:70
+msgid "Request"
+msgstr "Verzoek"
+
+#: src/GribUIDialogBase.cpp:78
+msgid "GRIB Data at Cursor"
+msgstr "GRIB-gegevens bij cursor"
+
+#: src/GribUIDialogBase.cpp:111
+msgid "Significant Wave Height"
+msgstr "significante golfhoogte"
+
+#: src/GribUIDialogBase.cpp:116
+msgid "Waves Direction"
+msgstr "Golfrichting"
+
+#: src/GribUIDialogBase.cpp:124
+msgid "Surface Current Speed"
+msgstr "Snelheid oppervlaktestroom"
+
+#: src/GribUIDialogBase.cpp:129
+msgid "Surface Current Direction"
+msgstr "Richting oppervlaktestroom"
+
+#: src/GribUIDialogBase.cpp:146
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "gemiddelde luchtdruk op zeeniveau (MSLP)"
+
+#: src/GribUIDialogBase.cpp:157
+msgid "Cumulative Rainfall per Hour"
+msgstr "Cumulatieve neerslaghoeveelheid per uur"
+
+#: src/GribUIDialogBase.cpp:175 src/GribUIDialogBase.cpp:496
+msgid "Air Temp"
+msgstr "Luchttemp."
+
+#: src/GribUIDialogBase.cpp:184 src/GribUIDialogBase.cpp:496
+msgid "Sea Temp"
+msgstr "Zeetemp."
+
+#: src/GribUIDialogBase.cpp:197
+msgid "Convective Available Potential Energy"
+msgstr "Convectief beschikbare potentiële energie"
+
+#: src/GribUIDialogBase.cpp:218
+msgid "Grib Data at"
+msgstr "GRIB-gegevens op"
+
+#: src/GribUIDialogBase.cpp:235
+msgid "Altitude"
+msgstr "Hoogte"
+
+#: src/GribUIDialogBase.cpp:245
+msgid "Temperature"
+msgstr "Temperatuur"
+
+#: src/GribUIDialogBase.cpp:255
+msgid "Rel. Humid."
+msgstr "Re. vocht."
+
+#: src/GribUIDialogBase.cpp:358
 msgid "playback"
 msgstr "Terugspelen"
-#
-msgid "zyGrib Code"
-msgstr "zyGrib code"
-#
+
+#: src/GribUIDialogBase.cpp:365
+msgid "Loop Mode"
+msgstr "'Loop'-modus"
+
+#: src/GribUIDialogBase.cpp:368
+msgid "Loop Start"
+msgstr "'loop' start"
+
+#: src/GribUIDialogBase.cpp:372
+msgid "Top of Grib File"
+msgstr "begin van GRIB-bestand"
+
+#: src/GribUIDialogBase.cpp:372
+msgid "Current time forecast"
+msgstr "voorspelling huidige tijd"
+
+#: src/GribUIDialogBase.cpp:382
+msgid "Updates per Second"
+msgstr "updates per sec"
+
+#: src/GribUIDialogBase.cpp:389
+msgid "Interpolate between gribs"
+msgstr "Interpoleer tussen GRIB-bestanden"
+
+#: src/GribUIDialogBase.cpp:392
+msgid "Time Interval"
+msgstr "tijdinterval"
+
+#: src/GribUIDialogBase.cpp:408
+msgid "Data"
+msgstr "Gegevens"
+
+#: src/GribUIDialogBase.cpp:421
+msgid "Units"
+msgstr "eenheid"
+
+#: src/GribUIDialogBase.cpp:434
+msgid "Barbed Arrows"
+msgstr "Windpijlen"
+
+#: src/GribUIDialogBase.cpp:437
+msgid "Default Colour"
+msgstr "Standaard kleur"
+
+#: src/GribUIDialogBase.cpp:437
+msgid "Controled Colours"
+msgstr "Kleuren"
+
+#: src/GribUIDialogBase.cpp:443 src/GribUIDialogBase.cpp:468
+msgid "Always visible"
+msgstr "Altijd zichtbaar"
+
+#: src/GribUIDialogBase.cpp:446
+msgid "IsoBars"
+msgstr "Isobaren"
+
+#: src/GribUIDialogBase.cpp:454
+msgid "Spacing"
+msgstr "tussenafstand"
+
+#: src/GribUIDialogBase.cpp:474
+msgid "Direction Arrows"
+msgstr "Richtingpijlen"
+
+#: src/GribUIDialogBase.cpp:477
+msgid "Single Arrow"
+msgstr "Enkele pijl"
+
+#: src/GribUIDialogBase.cpp:477
+msgid "Double Arrow"
+msgstr "Dubbele pijl"
+
+#: src/GribUIDialogBase.cpp:477
+msgid "Proportional Arrow"
+msgstr "Richtingpijlen"
+
+#: src/GribUIDialogBase.cpp:483
+msgid "Default Size"
+msgstr "Standaard grootte"
+
+#: src/GribUIDialogBase.cpp:483
+msgid "Small Size"
+msgstr "Klein"
+
+#: src/GribUIDialogBase.cpp:489
+msgid "OverlayMap"
+msgstr "Overlay op kaart"
+
+#: src/GribUIDialogBase.cpp:492
+msgid "Colors"
+msgstr "kleuren"
+
+#: src/GribUIDialogBase.cpp:496
+msgid "Generic"
+msgstr "Generiek"
+
+#: src/GribUIDialogBase.cpp:502
+msgid "Numbers"
+msgstr "Getallen"
+
+#: src/GribUIDialogBase.cpp:505
+msgid "Minimum Spacing"
+msgstr "minimale tussenafstand"
+
+#: src/GribUIDialogBase.cpp:519
+msgid "Display"
+msgstr "Toon op scherm"
+
+#: src/GribUIDialogBase.cpp:526
+msgid "Overlay Transparency"
+msgstr "Overlay-transparantie"
+
+#: src/GribUIDialogBase.cpp:604
+msgid "Use High Definition Graphics"
+msgstr "Gebruik hoge grafische resolutie"
+
+#: src/GribUIDialogBase.cpp:607
+msgid "Use Gradual Colors"
+msgstr "Gebruik graduele kleuren"
+
+#: src/GribUIDialogBase.cpp:610
+msgid "Copy First Cumulative Missing Record"
+msgstr "Kopieer 'First Cumulative Missing Record' "
+
+#: src/GribUIDialogBase.cpp:613
+msgid "Copy Missing Wave Records"
+msgstr "Kopieer ontbrekende golfgegevens"
+
+#: src/GribUIDialogBase.cpp:616
+msgid "Load the More Recent File in Directory"
+msgstr "Laad het meest recente bestand uit de map"
+
+#: src/GribUIDialogBase.cpp:616
+msgid "Load the Last Opened File"
+msgstr "Laad het laatst geopende bestand"
+
+#: src/GribUIDialogBase.cpp:618
+msgid "Load File Options"
+msgstr "Opties voor laden bestand"
+
+#: src/GribUIDialogBase.cpp:622
+msgid "Start at the first forecast in GRIB file"
+msgstr "Start met de 1ste verwachting in het GRIB-bestand"
+
+#: src/GribUIDialogBase.cpp:622
+msgid "Start at the nearest forecast to current time"
+msgstr "Start met de verwachting die het dichtst bij de huidige tijd is"
+
+#: src/GribUIDialogBase.cpp:622
+msgid "Authorize Interpolation to start at current time"
+msgstr "Laat interpolatie starten op huidige tijd"
+
+#: src/GribUIDialogBase.cpp:624
+msgid "Start Options"
+msgstr "Startopties"
+
+#: src/GribUIDialogBase.cpp:628
+msgid "Local Time"
+msgstr "Lokale tijd"
+
+#: src/GribUIDialogBase.cpp:628
+msgid "UTC"
+msgstr "UTC"
+
+#: src/GribUIDialogBase.cpp:630
+msgid "Time Options"
+msgstr "Tijdopties"
+
+#: src/GribUIDialogBase.cpp:677
+msgid "Profile"
+msgstr "Profiel"
+
+#: src/GribUIDialogBase.cpp:690
+msgid "Sender eMail Address"
+msgstr "E-mailadres verzender"
+
+#: src/GribUIDialogBase.cpp:719
+msgid "Mail To "
+msgstr "E-mail aan"
+
+#: src/GribUIDialogBase.cpp:729
+msgid "Forecast Model "
+msgstr "Verwachtingsmodel"
+
+#: src/GribUIDialogBase.cpp:746
+msgid "Moving Grib"
+msgstr "'Moving' GRIB"
+
+#: src/GribUIDialogBase.cpp:754
+msgid "Speed"
+msgstr "Snelheid"
+
+#: src/GribUIDialogBase.cpp:762
+msgid "Kts"
+msgstr "knopen"
+
+#: src/GribUIDialogBase.cpp:767
+msgid "Course"
+msgstr "koers"
+
+#: src/GribUIDialogBase.cpp:774 src/GribUIDialogBase.cpp:825
+msgid "Deg"
+msgstr "°"
+
+#: src/GribUIDialogBase.cpp:789
 msgid "zyGrib Login"
 msgstr "zyGrib login"
-#
-#
-#
-#
-#~ msgid " (Dup)"
-#~ msgstr " (dup)"
-#
-#
-#
-#~ msgid " Mo )"
-#~ msgstr " Mo )"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid " data"
-#~ msgstr "gegevens"
-#
-#
-#
-#~ msgid "00N  00W"
-#~ msgstr "00N  00W"
-#
-#
-#
-#
-#~ msgid "Action"
-#~ msgstr "Actie"
-#
-#
-#
-#
-#~ msgid "Celcius"
-#~ msgstr "Celsius"
-#
-#
-#
-#~ msgid "Cloud"
-#~ msgstr "Bewolking"
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Data Display Preferences"
-#~ msgstr "GRIB voorkeuren"
-#
-#
-#
-#~ msgid "Display Iso Temp. Lines"
-#~ msgstr "Toon isothermen"
-#
-#
-#
-#
-#~ msgid "Error"
-#~ msgstr "Fout"
-#
-#
-#
-#
-#~ msgid "Failed to send mail message"
-#~ msgstr "Kon mailbericht niet versturen"
-#
-#
-#
-#
-#
-#
-#~ msgid "GRIB"
-#~ msgstr "GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "GRIB File Directory"
-#~ msgstr "Map voor GRIB bestand"
-#
-#
-#
-#
-#~ msgid "KPH"
-#~ msgstr "km/u"
-#
-#
-#
-#
-#~ msgid "M/S"
-#~ msgstr "m/sec"
-#
-#
-#
-#
-#~ msgid "MPH"
-#~ msgstr "mijl/u"
-#
-#
-#
-#
-#~ msgid "MyLabel"
-#~ msgstr "MijnLabel"
-#
-#
-#
-#
-#~ msgid "OpenCpn failed to logon! Please verify your eMail environment"
-#~ msgstr "OpenCPN logon mislukt! Controleer uw e-mail instellingen."
-#
-#
-#
-#
-#~ msgid "Parameters"
-#~ msgstr "Parameters"
-#
-#
-#
-#
-#~ msgid "Period"
-#~ msgstr "Periode"
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
-#~ msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
-#~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
-#~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
-#~ msgstr "Zoom uit of verklein schaal om onderdrukte SEATEMP GRIB te zien."
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
-#~ msgstr "Zoom uit of verklein schaal om onderdrukte CRAIN GRIB te zien."
-#
-#
-#
-#
-#~ msgid "Precipitation"
-#~ msgstr "Neerslag"
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Pressure Altitude"
-#~ msgstr "Luchtdruk"
-#
-#
-#
-#
-#~ msgid "Quickscat"
-#~ msgstr "Quickscat"
-#
-#
-#
-#
-#~ msgid "Range"
-#~ msgstr "bereik"
-#
-#
-#
-#
-#~ msgid "Ref : "
-#~ msgstr "Ref:"
-#
-#
-#
-#
-#~ msgid "Request Pofile"
-#~ msgstr "Verzoekprofiel"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Request Preferences"
-#~ msgstr "GRIB voorkeuren"
-#
-#
-#
-#
-#~ msgid "SeaTemp"
-#~ msgstr "ZeeTemp"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Show GRIB icon"
-#~ msgstr "Toon GRIB-icoon"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Show metres/sec for Wind Speed"
-#~ msgstr "Toon windsnelheid in m/sec"
-#
-#
-#
-#
-#~ msgid "Size"
-#~ msgstr "grootte"
-#
-#
-#
-#
-#~ msgid "Slices per Update"
-#~ msgstr "delen per update"
-#
-#
-#
-#
-#~ msgid "Slices per hour"
-#~ msgstr "delen per uur"
-#
-#
-#
-#
-#~ msgid "WavesModel"
-#~ msgstr "Golfmodel"
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Wind Speed and Direction(10m)"
-#~ msgstr "windrichting"
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Wind Speed(10m)"
-#~ msgstr "windsnelheid (m/sec)"
-#
-#
-#
-#
-#~ msgid "Zone"
-#~ msgstr "Zone"
-#
-#
-#
-#
-#~ msgid "eMail error"
-#~ msgstr "e-mail fout"
+
+#: src/GribUIDialogBase.cpp:797
+msgid "zyGrib Code"
+msgstr "zyGrib code"
+
+#: src/GribUIDialogBase.cpp:816
+msgid "Resolution"
+msgstr "Resolutie"
+
+#: src/GribUIDialogBase.cpp:830
+msgid "Interval"
+msgstr "Interval"
+
+#: src/GribUIDialogBase.cpp:840
+msgid "Hours"
+msgstr "uren"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Time Range"
+msgstr "Periode"
+
+#: src/GribUIDialogBase.cpp:854
+msgid "Days"
+msgstr "dagen"
+
+#: src/GribUIDialogBase.cpp:868
+msgid "Data available"
+msgstr "Gegevens beschikbaar"
+
+#: src/GribUIDialogBase.cpp:890
+msgid "Air Temperature(2m)"
+msgstr "Luchttemp. (2 m)"
+
+#: src/GribUIDialogBase.cpp:893
+msgid "Sea Temperature(surf.)"
+msgstr "Zeewateroppervl.temp."
+
+#: src/GribUIDialogBase.cpp:923
+msgid "Geopotential Height"
+msgstr "Geopotentiële hoogte"
+
+#: src/GribUIDialogBase.cpp:933
+msgid "850 hPA"
+msgstr "850 hPa"
+
+#: src/GribUIDialogBase.cpp:936
+msgid "700 hPa"
+msgstr "700 hPa"
+
+#: src/GribUIDialogBase.cpp:939
+msgid "500 hPa"
+msgstr "500 hPa"
+
+#: src/GribUIDialogBase.cpp:942
+msgid "300 hPa"
+msgstr "300 hPa"
+
+#: src/GribUIDialogBase.cpp:955
+msgid "Mail"
+msgstr "E-mail"
+
+#: src/GribUIDialogBase.cpp:980
+msgid "Estimated File Size"
+msgstr "Geschatte bestandsgrootte"
+
+#: src/GribUIDialogBase.cpp:988
+msgid " (Max size )"
+msgstr " (max. grootte)"
+
+#: src/GribUIDialogBase.cpp:1096
+msgid "Data at Cursor Position:"
+msgstr "GRIB-gegevens op cursorpositie:"
+
+#: src/smapi.cpp:119
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr "Mail-fout: MAPI32.DLL is niet geinstalleerd of ongeldig op deze computer!"
+
+#: src/GribUIDialogBase.h:121
+msgid "GRIB Display Control"
+msgstr "GRIB-weergaveopties"
+
+#: src/GribUIDialogBase.h:176
+msgid "Grib Settings"
+msgstr "GRIB-instellingen"
+
+#: src/GribUIDialogBase.h:203
+msgid "Grib Preferences"
+msgstr "GRIB-voorkeuren"
+
+#: src/GribUIDialogBase.h:269
+msgid "Write and send eMail request"
+msgstr "Schrijf en verzend e-mail verzoek"
+
+#: src/GribUIDialogBase.h:297
+msgid "Grib Data Table"
+msgstr "GRIB-gegevenstabel"
+
+#: src/GribOverlayFactory.cpp:312
+msgid "WIND data at"
+msgstr "Windgegevens op"
+
+#: src/GribOverlayFactory.cpp:792
+msgid "Building Isobar map"
+msgstr "Maken van  isobarenkaart ..."
+
+#: src/GribOverlayFactory.cpp:975
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Overlays not supported by this graphics hardware (Disable OpenGL)"
+
+#: src/GribOverlayFactory.cpp:985
+msgid "Overlays too wide and can't be displayed:"
+msgstr "'Overlays' te breed, tonen is niet mogelijk:"
+
+#: src/GribOverlayFactory.cpp:994
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr "'overlays' worden onderdrukt bij niet-NoordBoven (gebruik OpenGL)"
+
+#: src/GribOverlayFactory.cpp:1011
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "Zoom uit of verklein schaal om niet-zichtbare overlay te zien:"
+
+#: src/grib_pi.cpp:112
+msgid "Grib"
+msgstr "GRIB"
+
+#: src/grib_pi.cpp:173
+msgid "GRIB PlugIn for OpenCPN"
+msgstr "GRIB-PlugIn voor OpenCPN"
+
+#: src/grib_pi.cpp:179
+msgid "GRIB PlugIn for OpenCPN\nProvides basic GRIB file overlay capabilities for several GRIB file types\nand a request function to get GRIB files by eMail.\n\nSupported GRIB data include:\n- wind direction and speed (at 10 m)\n- wind gust\n- surface pressure\n- rainfall\n- cloud cover\n- significant wave height and direction\n- air surface temperature (at 2 m)\n- sea surface temperature\n- surface current direction and speed\n- Convective Available Potential Energy (CAPE)\n- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr "GRIB-PlugIn voor OpenCPN\nGeeft kaartoverlay van GRIB-gegevens voor verschillende bestandtypes.\n\nOndersteunde GRIB-bestandtypes zijn:\n- windrichting en snelheid (op 10 m)\n- windvlagen\n- luchtdruk op zeeniveau\n- neerslaghoeveelheid\n- wolkendek\n- significante golfhoogte en -richting\n- luchttemperatuur op zeeniveau (2 m)\n- oppervlaktetemperatuur zeewater\n- richting en snelheid oppervlaktestroom\n- convectief beschikbare potentiële energie\n- wind, hoogte, temperatuur en relatieve vochtigheid op 300, 500, 700 en 850 hPa."
+
+#: src/grib_pi.cpp:285
+msgid "Weather table"
+msgstr "Weertabel"
+
+#: src/grib_pi.cpp:287
+msgid "Menu"
+msgstr "Menu"
+
+#: src/grib_pi.cpp:560
+msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"
+msgstr "U heeft gegevensinterpolatie toegestaan.\nVergeet niet dat de voor de huidige tijd getoonde gegevens geïnterpoleerd zijn!"
+
+#: src/GribTable.cpp:167
+msgid "Air\nTemperature"
+msgstr "Lucht-\ntemperatuur"
+
+#: src/GribTable.cpp:174
+msgid "Sea\nTemperature"
+msgstr "Zeewater-\ntemperatuur"
+
+#: src/GribRequestDialog.cpp:86 src/GribRequestDialog.cpp:563
+msgid "Send"
+msgstr "Verzenden"
+
+#: src/GribRequestDialog.cpp:87
+msgid "Save"
+msgstr "Opslaan"
+
+#: src/GribRequestDialog.cpp:92
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr "Adres voor verzenden e-mailverzoek (verplicht voor LINUX)"
+
+#: src/GribRequestDialog.cpp:93
+msgid "This is your zyGrib's forum access Login"
+msgstr "Dit is uw login voor het zyGrib-forum"
+
+#: src/GribRequestDialog.cpp:94
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr "Zet deze code in het zyGrib-forum (dit is niet uw wachtwoord!)"
+
+#: src/GribRequestDialog.cpp:95
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr "Voer uw verwachte snelheid in (in knopen)"
+
+#: src/GribRequestDialog.cpp:96
+msgid "Enter your forecasted Course"
+msgstr "Voer uw verwachte koers in"
+
+#: src/GribRequestDialog.cpp:280
+msgid "You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+msgstr "U vraagt om een verwachting langer dan 8 dagen vooruit.\nDit conflicteert met de Golfgegevens, die daarom uit uw verzoek worden verwijderd.\nVergeet niet dat na de eerste 8 dagen de resolutie slechts 2.5\\u00B0x2.5\\u00B0 zal zijn met een interval van 12 uur."
+
+#: src/GribRequestDialog.cpp:547 src/GribRequestDialog.cpp:550
+msgid "MB"
+msgstr "MB"
+
+#: src/GribRequestDialog.cpp:550
+msgid "Max"
+msgstr "( Max "
+
+#: src/GribRequestDialog.cpp:573
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
+msgstr "Voor het zenden van een e-mail naar zyGrib uw login en code invoeren.\n Ga naar www.zyGrib.org/ en volg de instructies op ..."
+
+#: src/GribRequestDialog.cpp:574
+msgid "The file size limit is overcome!\nYou can zoom in and/or change parameters..."
+msgstr "De limiet voor bestandsgrootte is bereikt!\nU kunt inzoomen en/of parameters aanpassen ..."
+
+#: src/GribRequestDialog.cpp:587 src/GribRequestDialog.cpp:619
+msgid "Continue..."
+msgstr "Doorgaan ..."
+
+#: src/GribRequestDialog.cpp:604 src/GribRequestDialog.cpp:608
+msgid "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
+msgstr "Uw aanvraag staat gereed. Een e-mail is voorbereid.\nControleer en verzend deze ...\nOpslaan of Afbreken om te beeindigen ... of Doorgaan ..."
+
+#: src/GribRequestDialog.cpp:611
+msgid "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
+msgstr "Uw verzoek is verzonden (mits uw systeem hiervoor\ngeconfigureerd is en mail kan verzenden).\nOpslaan of Afbreken om te beeindigen... of Doorgaan ..."
+
+#: src/GribRequestDialog.cpp:616
+msgid "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
+msgstr "Het verzoek kan niet verzonden worden. Controleer uw\ne-mail parameters en uw logbestand.\nOpslaan of Afbreken om te beeindigen ..."
+

@@ -1,1112 +1,761 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 1.3.6\n"
+"Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-29 21:40-0400\n"
-"PO-Revision-Date: 2012-05-23 07:03+0100\n"
-"Last-Translator: Pavel Kalian <pavel@kalian.cz>\n"
-"Language-Team: OpenCPN CZ <LL@li.org>\n"
+"PO-Revision-Date: 2014-07-30 19:06-0400\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Czech\n"
 "Language: cs_CZ\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Czech\n"
-"X-Poedit-Country: CZECH REPUBLIC\n"
-#
-msgid " (Max size )"
-msgstr ""
-#
-msgid "300 hPa"
-msgstr ""
-#
-msgid "500 hPa"
-msgstr ""
-#
-msgid "700 hPa"
-msgstr ""
-#
-msgid "850 hPA"
-msgstr ""
-#
-msgid "Address used to send request eMail. (Mandatory for LINUX)"
-msgstr ""
-#
-msgid ""
-"Air\n"
-"Temperature"
-msgstr ""
-#
-msgid "Air Temp"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Air Temperature"
-msgstr "Povrchová teplota moře, C"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Air Temperature at"
-msgstr "Povrchová teplota moře, C"
-#
-msgid "Air Temperature(2m)"
-msgstr ""
-#
-msgid "Altitude"
-msgstr ""
-#
-msgid "Altitude(Geopotential)"
-msgstr ""
-#
-msgid "Always visible"
-msgstr ""
-#
-msgid "Apply"
-msgstr ""
-#
-msgid "Authorize Interpolation to start at current time"
-msgstr ""
-#
-msgid "Barbed Arrows"
-msgstr ""
-#
-msgid "Beaufort"
-msgstr ""
-#
-msgid ""
-"Before sending an email to Zygrib you have to enter your Login and Code.\n"
-"Please visit www.zygrib.org/ and follow instructions..."
-msgstr ""
-#
-msgid "Building Isobar map"
-msgstr ""
-#
-msgid "CAPE"
-msgstr ""
-#
-msgid "Celsius"
-msgstr ""
-#
-msgid "Close"
-msgstr ""
-#
-msgid "Cloud Cover"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Colors"
-msgstr "&Zavřít"
-#
-msgid "Continue..."
-msgstr ""
-#
-msgid "Controled Colours"
-msgstr ""
-#
-msgid "Convective Available Potential Energy"
-msgstr ""
-#
-msgid "Copy First Cumulative Missing Record"
-msgstr ""
-#
-msgid "Copy Missing Wave Records"
-msgstr ""
-#
-msgid "Course"
-msgstr ""
-#
-msgid "Cumulative Rainfall per Hour"
-msgstr ""
-#
-#
-#
-#, fuzzy
-msgid "Current"
-msgstr "Rychlost proudu, Kts."
-#
-msgid "Current time forecast"
-msgstr ""
-#
-msgid "Data"
-msgstr ""
-#
-msgid "Data at Cursor Position:"
-msgstr ""
-#
-msgid "Data available"
-msgstr ""
-#
-msgid "Days"
-msgstr ""
-#
-msgid "Default Colour"
-msgstr ""
-#
-msgid "Default Size"
-msgstr ""
-#
-msgid "Deg"
-msgstr ""
-#
-msgid "Direction Arrows"
-msgstr ""
-#
-msgid "Display"
-msgstr ""
-#
-msgid "Display Iso CAPE"
-msgstr ""
-#
-msgid "Display Isobars"
-msgstr ""
-#
-msgid "Display Isotachs"
-msgstr ""
-#
-msgid "Display Isotherms"
-msgstr ""
-#
-msgid "Double Arrow"
-msgstr ""
-#
-msgid "Enter your forecasted Course"
-msgstr ""
-#
-msgid "Enter your forescasted Speed (in Knots)"
-msgstr ""
-#
-msgid "Error:  Can't read this File!"
-msgstr ""
-#
-msgid "Error:  File does not exist!"
-msgstr ""
-#
-msgid "Error:  No valid data in this file!"
-msgstr ""
-#
-msgid "Estimated File Size"
-msgstr ""
-#
-msgid "Fahrenheit"
-msgstr ""
-#
-msgid "Feet"
-msgstr ""
-#
-msgid "Forecast Model "
-msgstr ""
-#
-msgid "GRIB Data at Cursor"
-msgstr ""
-#
-#
-#
-msgid "GRIB Display Control"
-msgstr "Ovládání zobrazení GRIB"
-#
-msgid "GRIB PlugIn for OpenCPN"
-msgstr "Doplněk GRIB pro OpenCPN"
-#
-#, fuzzy
-msgid ""
-"GRIB PlugIn for OpenCPN\n"
-"Provides basic GRIB file overlay capabilities for several GRIB file types\n"
-"and a request function to get GRIB files by eMail.\n"
 "\n"
-"Supported GRIB data include:\n"
-"- wind direction and speed (at 10 m)\n"
-"- wind gust\n"
-"- surface pressure\n"
-"- rainfall\n"
-"- cloud cover\n"
-"- significant wave height and direction\n"
-"- air surface temperature (at 2 m)\n"
-"- sea surface temperature\n"
-"- surface current direction and speed\n"
-"- Convective Available Potential Energy (CAPE)\n"
-"- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
-msgstr ""
-"Doplněk GRIB pro OpenCPN\n"
-"Poskytuje základní možnosti překryvného zobrazení GRIB souborů několika "
-"typů.\n"
-"\n"
-"Podporované typy GRIB souborů obsahují:\n"
-"- rychlost a sílu větru\n"
-"- signifikantní výšku vlny\n"
-"- teplotu povrchu moře\n"
-"- rychlost a směr povrchových proudů."
-#
-msgid "Generic"
-msgstr ""
-#
-msgid "Geopotential Height"
-msgstr ""
-#
-msgid "Get this Code in zyGrib's forum ( This is not your password! )"
-msgstr ""
-#
-msgid "Grib"
-msgstr ""
-#
-msgid "Grib Data Table"
-msgstr ""
-#
-msgid "Grib Data at"
-msgstr ""
-#
-#, fuzzy
-msgid "Grib Preferences"
-msgstr "Nastavení GRIBu"
-#
-msgid "Grib Settings"
-msgstr ""
-#
-msgid "Hours"
-msgstr ""
-#
-msgid "Inches"
-msgstr ""
-#
-msgid "Interpolate between gribs"
-msgstr ""
-#
-msgid "Interval"
-msgstr ""
-#
-msgid "IsoBars"
-msgstr ""
-#
-msgid "Knots"
-msgstr ""
-#
-msgid "Kts"
-msgstr ""
-#
-msgid "Load File Options"
-msgstr ""
-#
-msgid "Load the Last Opened File"
-msgstr ""
-#
-msgid "Load the More Recent File in Directory"
-msgstr ""
-#
-msgid "Local Time"
-msgstr ""
-#
-msgid "Loop Mode"
-msgstr ""
-#
-msgid "Loop Start"
-msgstr ""
-#
-msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
-msgstr ""
-#
-msgid "MB"
-msgstr ""
-#
-msgid "Mail"
-msgstr ""
-#
-msgid "Mail To "
-msgstr ""
-#
-msgid "Max"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Mean Sea Level Pressure (MSLP)"
-msgstr "Tlak, mBar"
-#
-msgid "Menu"
-msgstr ""
-#
-msgid "Meters"
-msgstr ""
-#
-msgid "MilliBars"
-msgstr ""
-#
-msgid "Millimeters"
-msgstr ""
-#
-msgid "Minimum Spacing"
-msgstr ""
-#
-msgid "Moving Grib"
-msgstr ""
-#
-msgid "N/A"
-msgstr ""
-#
-msgid "Next"
-msgstr ""
-#
-msgid "Now"
-msgstr ""
-#
-msgid "Numbers"
-msgstr ""
-#
-msgid "Open File"
-msgstr ""
-#
-msgid "Overlay Transparency"
-msgstr ""
-#
-msgid "OverlayMap"
-msgstr ""
-#
-msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr ""
-#
-msgid "Overlays too wide and can't be displayed:"
-msgstr ""
-#
-msgid "Percentage"
-msgstr ""
-#
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"X-Generator: crowdin.net\n"
+
+#: src/GribUIDialog.cpp:156 src/GribUIDialog.cpp:896
+#: src/GribUIDialogBase.cpp:52
 msgid "Play"
-msgstr ""
-#
-#
-#
-#, fuzzy
-msgid "Please Zoom or Scale Out to view invisible overlays:"
-msgstr "Prosím zmenši měřítko pro zobrazení HTSGW GRIB"
-#
-#
-#
-#, fuzzy
-msgid "Pressure"
-msgstr "Tlak, mBar"
-#
-msgid "Previous"
-msgstr ""
-#
-msgid "Profile"
-msgstr ""
-#
-msgid "Proportional Arrow"
-msgstr ""
-#
-msgid "Rainfall"
-msgstr ""
-#
-msgid "Rel. Humid."
-msgstr ""
-#
-msgid "Relative Humidity"
-msgstr ""
-#
-msgid "Request"
-msgstr ""
-#
-msgid ""
-"Request can't be sent. Please verify your email systeme parameters.\n"
-"You should also have a look at your log file.\n"
-"Save or Cancel to finish..."
-msgstr ""
-#
-msgid "Resolution"
-msgstr ""
-#
-msgid "Save"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid ""
-"Sea\n"
-"Temperature"
-msgstr "Povrchová teplota moře, C"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Sea Surface Temperature"
-msgstr "Povrchová teplota moře, C"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Sea Temp"
-msgstr "Povrchová teplota moře, C"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Sea Temperature"
-msgstr "Povrchová teplota moře, C"
-#
-msgid "Sea Temperature(surf.)"
-msgstr ""
-#
-#, c-format
-msgid "Select Geopotential Height (in %s) or Standard Altitude."
-msgstr ""
-#
-#
-#
-#, fuzzy
-msgid "Select a GRIB file"
-msgstr "Složka souborů GRIB"
-#
-msgid "Send"
-msgstr ""
-#
-msgid "Sender eMail Address"
-msgstr ""
-#
-msgid "Settings"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Significant Wave Height"
-msgstr "Signifikantní výška vln, m"
-#
-msgid "Single Arrow"
-msgstr ""
-#
-msgid "Small Size"
-msgstr ""
-#
-msgid "Spacing"
-msgstr ""
-#
-msgid "Speed"
-msgstr ""
-#
-msgid "Start Options"
-msgstr ""
-#
-msgid "Start at the first forecast in GRIB file"
-msgstr ""
-#
-msgid "Start at the nearest forecast to current time"
-msgstr ""
-#
-msgid "Stop"
-msgstr ""
-#
-msgid "Surface Current Direction"
-msgstr ""
-#
-msgid "Surface Current Speed"
-msgstr ""
-#
-msgid "Surface level"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Temperature"
-msgstr "Povrchová teplota moře, C"
-#
-msgid ""
-"The file size limit is overcome!\n"
-"You can zoom in and/or change parameters..."
-msgstr ""
-#
-msgid ""
-"This file contains data for particular time intervals but you have chosen to "
-"display different intervals.\n"
-"Please consider that the values will be interpolated."
-msgstr ""
-#
-msgid "This is your zyGrib's forum access Login"
-msgstr ""
-#
-msgid "Time Interval"
-msgstr ""
-#
-msgid "Time Options"
-msgstr ""
-#
-msgid "Time Range"
-msgstr ""
-#
-msgid "Top of Grib File"
-msgstr ""
-#
-msgid "UTC"
-msgstr ""
-#
-msgid "Units"
-msgstr ""
-#
-msgid "Updates per Second"
-msgstr ""
-#
-msgid "Use Gradual Colors"
-msgstr ""
-#
-#
-#
-msgid "Use High Definition Graphics"
-msgstr "Použít grafiku ve velkém rozlišení"
-#
-msgid "WIND data at"
-msgstr ""
-#
-msgid "Warning!"
-msgstr ""
-#
+msgstr "Přehrát"
+
+#: src/GribUIDialog.cpp:186
+msgid "Error:  No valid data in this file!"
+msgstr "Chyba: Žádná platná data v tomto souboru!"
+
+#: src/GribUIDialog.cpp:210
 msgid "Warning:  Empty directory!"
-msgstr ""
-#
-msgid "Waves"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Waves Direction"
-msgstr "Směr větru"
-#
-msgid "Weather table"
-msgstr ""
-#
-msgid "Wind"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-msgid "Wind Direction at"
-msgstr "Směr větru"
-#
-msgid "Wind Gust"
-msgstr ""
-#
-msgid "Wind Gust at"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
+msgstr "Varování: Prázdný adresář!"
+
+#: src/GribUIDialog.cpp:426
+msgid "Close"
+msgstr "Zavřít"
+
+#: src/GribUIDialog.cpp:555 src/GribUIDialog.cpp:556 src/GribUIDialog.cpp:557
+#: src/GribUIDialog.cpp:650 src/GribUIDialog.cpp:651 src/GribUIDialog.cpp:663
+#: src/GribUIDialog.cpp:676 src/GribUIDialog.cpp:694 src/GribUIDialog.cpp:704
+#: src/GribUIDialog.cpp:719 src/GribUIDialog.cpp:720 src/GribUIDialog.cpp:734
+#: src/GribUIDialog.cpp:747 src/GribUIDialog.cpp:759 src/GribUIDialog.cpp:771
+#: src/GribUIDialog.cpp:783 src/GribUIDialog.cpp:795 src/GribUIDialog.cpp:807
+#: src/GribUIDialog.cpp:818
+msgid "N/A"
+msgstr "N/A"
+
+#: src/GribUIDialog.cpp:587
 msgid "Wind Speed at"
 msgstr "Rychlost větru, Uzly"
-#
-msgid "Write and send eMail request"
-msgstr ""
-#
-msgid ""
-"You have chosen to authorize interpolation.\n"
-"Don't forget that data displayed at current time will not be real but "
-"interpolated!"
-msgstr ""
-#
-msgid ""
-"You request a forecast for more than 8 days horizon.\n"
-"This is conflicting with Wave data which will be removed from your request.\n"
-"Don't forget that beyond the first 8 days, the resolution will be only "
-"2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
-msgstr ""
-#
-msgid ""
-"Your request is ready. An email is prepared in your email environment. \n"
-"You have just to verify and send it...\n"
-"Save or Cancel to finish...or Continue..."
-msgstr ""
-#
-msgid ""
-"Your request was sent \n"
-"(if your system has an MTA configured and is able to send email).\n"
-"Save or Cancel to finish...or Continue..."
-msgstr ""
-#
-msgid "Zoom To Center"
-msgstr ""
-#
-msgid "h"
-msgstr ""
-#
-msgid "inHG"
-msgstr ""
-#
-msgid "j/kg"
-msgstr ""
-#
-msgid "km/h"
-msgstr ""
-#
+
+#: src/GribUIDialog.cpp:588
+msgid "Wind Direction at"
+msgstr "Směr větru"
+
+#: src/GribUIDialog.cpp:591
+msgid "Wind Gust at"
+msgstr "Poryv větru na"
+
+#: src/GribUIDialog.cpp:594
+msgid "Air Temperature at"
+msgstr "Povrchová teplota moře, C"
+
+#: src/GribUIDialog.cpp:594
+msgid "Surface level"
+msgstr "Na hladině"
+
+#: src/GribUIDialog.cpp:594
+msgid "Sea Surface Temperature"
+msgstr "Povrchová teplota moře, C"
+
+#: src/GribUIDialog.cpp:604
+#, c-format
+msgid "Select Geopotential Height (in %s) or Standard Altitude."
+msgstr "Vybert geopotenciálná výšku (v %s) nebo standardní výšku."
+
+#: src/GribUIDialog.cpp:885
+msgid "Stop"
+msgstr "Stop"
+
+#: src/GribUIDialog.cpp:1117
+msgid "Select a GRIB file"
+msgstr "Složka souborů GRIB"
+
+#: src/GribUIDialog.cpp:1330
+msgid "Error:  File does not exist!"
+msgstr "Chyba: Soubor neexistuje!"
+
+#: src/GribUIDialog.cpp:1343
+msgid "Error:  Can't read this File!"
+msgstr "Chyba: Nelze přečíst tento soubor!"
+
+#: src/GribSettingsDialog.cpp:30
+msgid "Knots"
+msgstr "Uzly"
+
+#: src/GribSettingsDialog.cpp:30
 msgid "m/s"
-msgstr ""
-#
-msgid "mmHG"
-msgstr ""
-#
-msgid "mn"
-msgstr ""
-#
+msgstr "m/s"
+
+#: src/GribSettingsDialog.cpp:30
 msgid "mph"
-msgstr ""
-#
-msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
-msgstr ""
-#
+msgstr "mph"
+
+#: src/GribSettingsDialog.cpp:30
+msgid "km/h"
+msgstr "km/h"
+
+#: src/GribSettingsDialog.cpp:30
+msgid "Beaufort"
+msgstr "Beaufort"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "MilliBars"
+msgstr "Milibary"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "mmHG"
+msgstr "mmHG"
+
+#: src/GribSettingsDialog.cpp:31
+msgid "inHG"
+msgstr "inHG"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "Meters"
+msgstr "Metry"
+
+#: src/GribSettingsDialog.cpp:32
+msgid "Feet"
+msgstr "Stopy"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Celsius"
+msgstr "Celsia"
+
+#: src/GribSettingsDialog.cpp:33
+msgid "Fahrenheit"
+msgstr "Fahrenheita"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Millimeters"
+msgstr "Milimetry"
+
+#: src/GribSettingsDialog.cpp:34
+msgid "Inches"
+msgstr "Palce"
+
+#: src/GribSettingsDialog.cpp:35
+msgid "Percentage"
+msgstr "Procenta"
+
+#: src/GribSettingsDialog.cpp:36
+msgid "j/kg"
+msgstr "j/kg"
+
+#: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:95
+#: src/GribUIDialogBase.cpp:496 src/GribUIDialogBase.cpp:875
+#: src/GribOverlayFactory.cpp:792 src/GribTable.cpp:120
+msgid "Wind"
+msgstr "Vítr"
+
+#: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:133
+#: src/GribUIDialogBase.cpp:881 src/GribTable.cpp:138
+msgid "Wind Gust"
+msgstr "Poryv větru"
+
+#: src/GribSettingsDialog.cpp:45 src/GribUIDialogBase.cpp:142
+#: src/GribUIDialogBase.cpp:878 src/GribTable.cpp:132
+msgid "Pressure"
+msgstr "Tlak, mBar"
+
+#: src/GribSettingsDialog.cpp:46 src/GribUIDialogBase.cpp:107
+#: src/GribUIDialogBase.cpp:907 src/GribTable.cpp:146
+msgid "Waves"
+msgstr "Vlny"
+
+#: src/GribSettingsDialog.cpp:46 src/GribUIDialogBase.cpp:120
+#: src/GribUIDialogBase.cpp:496 src/GribUIDialogBase.cpp:896
+#: src/GribTable.cpp:189
+msgid "Current"
+msgstr "Rychlost proudu, Kts."
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:153
+#: src/GribUIDialogBase.cpp:496 src/GribUIDialogBase.cpp:884
+#: src/GribTable.cpp:153
+msgid "Rainfall"
+msgstr "Srážky"
+
+#: src/GribSettingsDialog.cpp:47 src/GribUIDialogBase.cpp:164
+#: src/GribUIDialogBase.cpp:168 src/GribUIDialogBase.cpp:496
+#: src/GribUIDialogBase.cpp:887 src/GribTable.cpp:160
+msgid "Cloud Cover"
+msgstr "Oblačnost"
+
+#: src/GribSettingsDialog.cpp:48
+msgid "Air Temperature"
+msgstr "Povrchová teplota moře, C"
+
+#: src/GribSettingsDialog.cpp:48
+msgid "Sea Temperature"
+msgstr "Povrchová teplota moře, C"
+
+#: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:193
+#: src/GribUIDialogBase.cpp:899 src/GribTable.cpp:181
+msgid "CAPE"
+msgstr "CAPE"
+
+#: src/GribSettingsDialog.cpp:49
+msgid "Altitude(Geopotential)"
+msgstr "Výška (geopotenciální)"
+
+#: src/GribSettingsDialog.cpp:49
+msgid "Relative Humidity"
+msgstr "Relativní vlhkost"
+
+#: src/GribSettingsDialog.cpp:386
+msgid "h"
+msgstr "h"
+
+#: src/GribSettingsDialog.cpp:386
+msgid "mn"
+msgstr "mn"
+
+#: src/GribSettingsDialog.cpp:406
+msgid "Apply"
+msgstr "Použít"
+
+#: src/GribSettingsDialog.cpp:419
+msgid "This file contains data for particular time intervals but you have chosen to display different intervals.\nPlease consider that the values will be interpolated."
+msgstr "Tento soubor obsahuje data pro konkrétní časové intervaly, ale vybrals zobrazení jiných intervalů. \nNezapomeň, že hodnoty budou interpolované."
+
+#: src/GribSettingsDialog.cpp:420 src/grib_pi.cpp:561
+#: src/GribRequestDialog.cpp:281
+msgid "Warning!"
+msgstr "Varování!"
+
+#: src/GribSettingsDialog.cpp:494 src/GribSettingsDialog.cpp:502
+msgid "Display Isotachs"
+msgstr "Zobrazit Isotachy"
+
+#: src/GribSettingsDialog.cpp:509
+msgid "Display Isobars"
+msgstr "Zobrazit Izobary"
+
+#: src/GribSettingsDialog.cpp:527
+msgid "Display Isotherms"
+msgstr "Zobrazit Izotermy"
+
+#: src/GribSettingsDialog.cpp:534
+msgid "Display Iso CAPE"
+msgstr "Zobrazit Iso CAPE"
+
+#: src/GribUIDialogBase.cpp:29
+msgid "Previous"
+msgstr "Předchozí"
+
+#: src/GribUIDialogBase.cpp:37
+msgid "Next"
+msgstr "Další"
+
+#: src/GribUIDialogBase.cpp:42
+msgid "Now"
+msgstr "Nyní"
+
+#: src/GribUIDialogBase.cpp:47
+msgid "Zoom To Center"
+msgstr "Zvětšení na střed"
+
+#: src/GribUIDialogBase.cpp:60
+msgid "Open File"
+msgstr "Otevřít soubor"
+
+#: src/GribUIDialogBase.cpp:65
+msgid "Settings"
+msgstr "Settings"
+
+#: src/GribUIDialogBase.cpp:70
+msgid "Request"
+msgstr "Request"
+
+#: src/GribUIDialogBase.cpp:78
+msgid "GRIB Data at Cursor"
+msgstr "GRIB Data at Cursor"
+
+#: src/GribUIDialogBase.cpp:111
+msgid "Significant Wave Height"
+msgstr "Signifikantní výška vln, m"
+
+#: src/GribUIDialogBase.cpp:116
+msgid "Waves Direction"
+msgstr "Směr větru"
+
+#: src/GribUIDialogBase.cpp:124
+msgid "Surface Current Speed"
+msgstr "Surface Current Speed"
+
+#: src/GribUIDialogBase.cpp:129
+msgid "Surface Current Direction"
+msgstr "Surface Current Direction"
+
+#: src/GribUIDialogBase.cpp:146
+msgid "Mean Sea Level Pressure (MSLP)"
+msgstr "Tlak, mBar"
+
+#: src/GribUIDialogBase.cpp:157
+msgid "Cumulative Rainfall per Hour"
+msgstr "Cumulative Rainfall per Hour"
+
+#: src/GribUIDialogBase.cpp:175 src/GribUIDialogBase.cpp:496
+msgid "Air Temp"
+msgstr "Air Temp"
+
+#: src/GribUIDialogBase.cpp:184 src/GribUIDialogBase.cpp:496
+msgid "Sea Temp"
+msgstr "Povrchová teplota moře, C"
+
+#: src/GribUIDialogBase.cpp:197
+msgid "Convective Available Potential Energy"
+msgstr "Convective Available Potential Energy"
+
+#: src/GribUIDialogBase.cpp:218
+msgid "Grib Data at"
+msgstr "Grib Data at"
+
+#: src/GribUIDialogBase.cpp:235
+msgid "Altitude"
+msgstr "Altitude"
+
+#: src/GribUIDialogBase.cpp:245
+msgid "Temperature"
+msgstr "Povrchová teplota moře, C"
+
+#: src/GribUIDialogBase.cpp:255
+msgid "Rel. Humid."
+msgstr "Rel. Humid."
+
+#: src/GribUIDialogBase.cpp:358
 msgid "playback"
-msgstr ""
-#
-msgid "zyGrib Code"
-msgstr ""
-#
+msgstr "playback"
+
+#: src/GribUIDialogBase.cpp:365
+msgid "Loop Mode"
+msgstr "Loop Mode"
+
+#: src/GribUIDialogBase.cpp:368
+msgid "Loop Start"
+msgstr "Loop Start"
+
+#: src/GribUIDialogBase.cpp:372
+msgid "Top of Grib File"
+msgstr "Top of Grib File"
+
+#: src/GribUIDialogBase.cpp:372
+msgid "Current time forecast"
+msgstr "Current time forecast"
+
+#: src/GribUIDialogBase.cpp:382
+msgid "Updates per Second"
+msgstr "Updates per Second"
+
+#: src/GribUIDialogBase.cpp:389
+msgid "Interpolate between gribs"
+msgstr "Interpolate between gribs"
+
+#: src/GribUIDialogBase.cpp:392
+msgid "Time Interval"
+msgstr "Time Interval"
+
+#: src/GribUIDialogBase.cpp:408
+msgid "Data"
+msgstr "Data"
+
+#: src/GribUIDialogBase.cpp:421
+msgid "Units"
+msgstr "Units"
+
+#: src/GribUIDialogBase.cpp:434
+msgid "Barbed Arrows"
+msgstr "Barbed Arrows"
+
+#: src/GribUIDialogBase.cpp:437
+msgid "Default Colour"
+msgstr "Default Colour"
+
+#: src/GribUIDialogBase.cpp:437
+msgid "Controled Colours"
+msgstr "Controled Colours"
+
+#: src/GribUIDialogBase.cpp:443 src/GribUIDialogBase.cpp:468
+msgid "Always visible"
+msgstr "Always visible"
+
+#: src/GribUIDialogBase.cpp:446
+msgid "IsoBars"
+msgstr "IsoBars"
+
+#: src/GribUIDialogBase.cpp:454
+msgid "Spacing"
+msgstr "Spacing"
+
+#: src/GribUIDialogBase.cpp:474
+msgid "Direction Arrows"
+msgstr "Direction Arrows"
+
+#: src/GribUIDialogBase.cpp:477
+msgid "Single Arrow"
+msgstr "Single Arrow"
+
+#: src/GribUIDialogBase.cpp:477
+msgid "Double Arrow"
+msgstr "Double Arrow"
+
+#: src/GribUIDialogBase.cpp:477
+msgid "Proportional Arrow"
+msgstr "Proportional Arrow"
+
+#: src/GribUIDialogBase.cpp:483
+msgid "Default Size"
+msgstr "Default Size"
+
+#: src/GribUIDialogBase.cpp:483
+msgid "Small Size"
+msgstr "Small Size"
+
+#: src/GribUIDialogBase.cpp:489
+msgid "OverlayMap"
+msgstr "OverlayMap"
+
+#: src/GribUIDialogBase.cpp:492
+msgid "Colors"
+msgstr "&Zavřít"
+
+#: src/GribUIDialogBase.cpp:496
+msgid "Generic"
+msgstr "Generic"
+
+#: src/GribUIDialogBase.cpp:502
+msgid "Numbers"
+msgstr "Numbers"
+
+#: src/GribUIDialogBase.cpp:505
+msgid "Minimum Spacing"
+msgstr "Minimum Spacing"
+
+#: src/GribUIDialogBase.cpp:519
+msgid "Display"
+msgstr "Display"
+
+#: src/GribUIDialogBase.cpp:526
+msgid "Overlay Transparency"
+msgstr "Overlay Transparency"
+
+#: src/GribUIDialogBase.cpp:604
+msgid "Use High Definition Graphics"
+msgstr "Použít grafiku ve velkém rozlišení"
+
+#: src/GribUIDialogBase.cpp:607
+msgid "Use Gradual Colors"
+msgstr "Use Gradual Colors"
+
+#: src/GribUIDialogBase.cpp:610
+msgid "Copy First Cumulative Missing Record"
+msgstr "Copy First Cumulative Missing Record"
+
+#: src/GribUIDialogBase.cpp:613
+msgid "Copy Missing Wave Records"
+msgstr "Copy Missing Wave Records"
+
+#: src/GribUIDialogBase.cpp:616
+msgid "Load the More Recent File in Directory"
+msgstr "Load the More Recent File in Directory"
+
+#: src/GribUIDialogBase.cpp:616
+msgid "Load the Last Opened File"
+msgstr "Load the Last Opened File"
+
+#: src/GribUIDialogBase.cpp:618
+msgid "Load File Options"
+msgstr "Load File Options"
+
+#: src/GribUIDialogBase.cpp:622
+msgid "Start at the first forecast in GRIB file"
+msgstr "Start at the first forecast in GRIB file"
+
+#: src/GribUIDialogBase.cpp:622
+msgid "Start at the nearest forecast to current time"
+msgstr "Start at the nearest forecast to current time"
+
+#: src/GribUIDialogBase.cpp:622
+msgid "Authorize Interpolation to start at current time"
+msgstr "Authorize Interpolation to start at current time"
+
+#: src/GribUIDialogBase.cpp:624
+msgid "Start Options"
+msgstr "Start Options"
+
+#: src/GribUIDialogBase.cpp:628
+msgid "Local Time"
+msgstr "Local Time"
+
+#: src/GribUIDialogBase.cpp:628
+msgid "UTC"
+msgstr "UTC"
+
+#: src/GribUIDialogBase.cpp:630
+msgid "Time Options"
+msgstr "Možnosti času"
+
+#: src/GribUIDialogBase.cpp:677
+msgid "Profile"
+msgstr "Profil"
+
+#: src/GribUIDialogBase.cpp:690
+msgid "Sender eMail Address"
+msgstr "E-mail odesílatele"
+
+#: src/GribUIDialogBase.cpp:719
+msgid "Mail To "
+msgstr "Mail na "
+
+#: src/GribUIDialogBase.cpp:729
+msgid "Forecast Model "
+msgstr "Model prognózy "
+
+#: src/GribUIDialogBase.cpp:746
+msgid "Moving Grib"
+msgstr "Pohyblivý Grib"
+
+#: src/GribUIDialogBase.cpp:754
+msgid "Speed"
+msgstr "Rychlost"
+
+#: src/GribUIDialogBase.cpp:762
+msgid "Kts"
+msgstr "Kts"
+
+#: src/GribUIDialogBase.cpp:767
+msgid "Course"
+msgstr "Kurs"
+
+#: src/GribUIDialogBase.cpp:774 src/GribUIDialogBase.cpp:825
+msgid "Deg"
+msgstr "Deg"
+
+#: src/GribUIDialogBase.cpp:789
 msgid "zyGrib Login"
-msgstr ""
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid " data"
-#~ msgstr "Data GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Data Display Preferences"
-#~ msgstr "Nastavení GRIBu"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "GRIB"
-#~ msgstr "GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "GRIB File Directory"
-#~ msgstr "Složka souborů GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Air Temp.(2m) GRIB"
-#~ msgstr "Prosím zmenši měřítko pro zobrazení SEATEMP GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed CURRENT GRIB"
-#~ msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Clouds Cover GRIB"
-#~ msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Sea Surf.Temp. GRIB"
-#~ msgstr "Prosím zmenši měřítko pro zobrazení SEATEMP GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Please Zoom or Scale Out to view suppressed Total Rainfall GRIB"
-#~ msgstr "Prosím zmenši měřítko pro zobrazení CRAIN GRIB"
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Pressure Altitude"
-#~ msgstr "Tlak, mBar"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Request Preferences"
-#~ msgstr "Nastavení GRIBu"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Show GRIB icon"
-#~ msgstr "Zobrazit ikonu GRIB"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#~ msgid "Show metres/sec for Wind Speed"
-#~ msgstr "Ukaž  m/s pro rychlost větru"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Wind Speed and Direction(10m)"
-#~ msgstr "Směr větru"
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#, fuzzy
-#~ msgid "Wind Speed(10m)"
-#~ msgstr "Rychlost větru, m/s"
+msgstr "zyGrib uživatelské jméno"
+
+#: src/GribUIDialogBase.cpp:797
+msgid "zyGrib Code"
+msgstr "zyGrib kód"
+
+#: src/GribUIDialogBase.cpp:816
+msgid "Resolution"
+msgstr "Rozlišení"
+
+#: src/GribUIDialogBase.cpp:830
+msgid "Interval"
+msgstr "Interval"
+
+#: src/GribUIDialogBase.cpp:840
+msgid "Hours"
+msgstr "Hodin"
+
+#: src/GribUIDialogBase.cpp:845
+msgid "Time Range"
+msgstr "Časový rozsah"
+
+#: src/GribUIDialogBase.cpp:854
+msgid "Days"
+msgstr "Dny"
+
+#: src/GribUIDialogBase.cpp:868
+msgid "Data available"
+msgstr "Dostupné údaje"
+
+#: src/GribUIDialogBase.cpp:890
+msgid "Air Temperature(2m)"
+msgstr "Teplota vzduchu (2m)"
+
+#: src/GribUIDialogBase.cpp:893
+msgid "Sea Temperature(surf.)"
+msgstr "Teplota povrchu moře"
+
+#: src/GribUIDialogBase.cpp:923
+msgid "Geopotential Height"
+msgstr "Geopotenciální výška"
+
+#: src/GribUIDialogBase.cpp:933
+msgid "850 hPA"
+msgstr "850 hPA"
+
+#: src/GribUIDialogBase.cpp:936
+msgid "700 hPa"
+msgstr "700 hPa"
+
+#: src/GribUIDialogBase.cpp:939
+msgid "500 hPa"
+msgstr "500 hPa"
+
+#: src/GribUIDialogBase.cpp:942
+msgid "300 hPa"
+msgstr "300 hPa"
+
+#: src/GribUIDialogBase.cpp:955
+msgid "Mail"
+msgstr "Pošta"
+
+#: src/GribUIDialogBase.cpp:980
+msgid "Estimated File Size"
+msgstr "Předpokládaná velikost souboru"
+
+#: src/GribUIDialogBase.cpp:988
+msgid " (Max size )"
+msgstr " (Maximální velikost)"
+
+#: src/GribUIDialogBase.cpp:1096
+msgid "Data at Cursor Position:"
+msgstr "Údaje na pozici kurzoru:"
+
+#: src/smapi.cpp:119
+msgid "MAIL Error: MAPI32.DLL is not installed or invalid on this computer!"
+msgstr "Chyba MAIL: MAPI32.DLL není nainstalována nebo nefunguje v tomto počítači."
+
+#: src/GribUIDialogBase.h:121
+msgid "GRIB Display Control"
+msgstr "Ovládání zobrazení GRIB"
+
+#: src/GribUIDialogBase.h:176
+msgid "Grib Settings"
+msgstr "Nastavení gribu"
+
+#: src/GribUIDialogBase.h:203
+msgid "Grib Preferences"
+msgstr "Nastavení GRIBu"
+
+#: src/GribUIDialogBase.h:269
+msgid "Write and send eMail request"
+msgstr "Napsat a poslat požadavek e-mailem"
+
+#: src/GribUIDialogBase.h:297
+msgid "Grib Data Table"
+msgstr "Tabulka dat GRIB"
+
+#: src/GribOverlayFactory.cpp:312
+msgid "WIND data at"
+msgstr "VÍTR, údaje na"
+
+#: src/GribOverlayFactory.cpp:792
+msgid "Building Isobar map"
+msgstr "Vytváří se mapa izobar"
+
+#: src/GribOverlayFactory.cpp:975
+msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Overlays not supported by this graphics hardware (Disable OpenGL)"
+
+#: src/GribOverlayFactory.cpp:985
+msgid "Overlays too wide and can't be displayed:"
+msgstr "Překryv je příliš široký a nelze zobrazit:"
+
+#: src/GribOverlayFactory.cpp:994
+msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
+msgstr "překryvy v DC módu potlačeny pokud není sever nahoře (Povolit OpenGL)"
+
+#: src/GribOverlayFactory.cpp:1011
+msgid "Please Zoom or Scale Out to view invisible overlays:"
+msgstr "Prosím zmenši měřítko pro zobrazení HTSGW GRIB"
+
+#: src/grib_pi.cpp:112
+msgid "Grib"
+msgstr "Grib"
+
+#: src/grib_pi.cpp:173
+msgid "GRIB PlugIn for OpenCPN"
+msgstr "Doplněk GRIB pro OpenCPN"
+
+#: src/grib_pi.cpp:179
+msgid "GRIB PlugIn for OpenCPN\nProvides basic GRIB file overlay capabilities for several GRIB file types\nand a request function to get GRIB files by eMail.\n\nSupported GRIB data include:\n- wind direction and speed (at 10 m)\n- wind gust\n- surface pressure\n- rainfall\n- cloud cover\n- significant wave height and direction\n- air surface temperature (at 2 m)\n- sea surface temperature\n- surface current direction and speed\n- Convective Available Potential Energy (CAPE)\n- wind, altitude, temperature and relative humidity at 300, 500, 700, 850 hPa."
+msgstr "Doplněk GRIB pro OpenCPN\nPoskytuje základní možnosti překryvného zobrazení GRIB souborů několika typů.\n\nPodporované typy GRIB souborů obsahují:\n- rychlost a sílu větru\n- signifikantní výšku vlny\n- teplotu povrchu moře\n- rychlost a směr povrchových proudů."
+
+#: src/grib_pi.cpp:285
+msgid "Weather table"
+msgstr "Tabulka počasí"
+
+#: src/grib_pi.cpp:287
+msgid "Menu"
+msgstr "Menu"
+
+#: src/grib_pi.cpp:560
+msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"
+msgstr "Rozhodl ses povolit interpolace. \nNezpomeň, že zobrazená data nebudou reálná z modelu, ale interpolovaná!"
+
+#: src/GribTable.cpp:167
+msgid "Air\nTemperature"
+msgstr "Vzduch\nTeplota"
+
+#: src/GribTable.cpp:174
+msgid "Sea\nTemperature"
+msgstr "Povrchová teplota moře, C"
+
+#: src/GribRequestDialog.cpp:86 src/GribRequestDialog.cpp:563
+msgid "Send"
+msgstr "Odeslat"
+
+#: src/GribRequestDialog.cpp:87
+msgid "Save"
+msgstr "Uložit"
+
+#: src/GribRequestDialog.cpp:92
+msgid "Address used to send request eMail. (Mandatory for LINUX)"
+msgstr "Adresa sloužící k odesílání požadavku e-mailem. (Povinné pro LINUX)"
+
+#: src/GribRequestDialog.cpp:93
+msgid "This is your zyGrib's forum access Login"
+msgstr "Tohle je vaše uživatelské jméno pro přístup na zyGrib Fórum"
+
+#: src/GribRequestDialog.cpp:94
+msgid "Get this Code in zyGrib's forum ( This is not your password! )"
+msgstr "Tento kód získáš ze zyGrib fóra (není to tvé heslo!)"
+
+#: src/GribRequestDialog.cpp:95
+msgid "Enter your forescasted Speed (in Knots)"
+msgstr "Zadej svou předpokládanou rychlost (uzly)"
+
+#: src/GribRequestDialog.cpp:96
+msgid "Enter your forecasted Course"
+msgstr "Zadej předpokládaný kurs"
+
+#: src/GribRequestDialog.cpp:280
+msgid "You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."
+msgstr "Požaduješ předpověď na víc než 8 dní.\nData vlnění nejsou pro tak dlouho k dispozici, proto budou z požadavku odstraněna.\nNezapoměň, že po prvnéch 8 dnech bude rozlišení jen 2.5\\u00B0x2.5\\u00B0 a časový interval 12 hodin."
+
+#: src/GribRequestDialog.cpp:547 src/GribRequestDialog.cpp:550
+msgid "MB"
+msgstr "MB"
+
+#: src/GribRequestDialog.cpp:550
+msgid "Max"
+msgstr "Max"
+
+#: src/GribRequestDialog.cpp:573
+msgid "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
+msgstr "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."
+
+#: src/GribRequestDialog.cpp:574
+msgid "The file size limit is overcome!\nYou can zoom in and/or change parameters..."
+msgstr "The file size limit is overcome!\nYou can zoom in and/or change parameters..."
+
+#: src/GribRequestDialog.cpp:587 src/GribRequestDialog.cpp:619
+msgid "Continue..."
+msgstr "Continue..."
+
+#: src/GribRequestDialog.cpp:604 src/GribRequestDialog.cpp:608
+msgid "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
+msgstr "Your request is ready. An email is prepared in your email environment. \nYou have just to verify and send it...\nSave or Cancel to finish...or Continue..."
+
+#: src/GribRequestDialog.cpp:611
+msgid "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
+msgstr "Your request was sent \n(if your system has an MTA configured and is able to send email).\nSave or Cancel to finish...or Continue..."
+
+#: src/GribRequestDialog.cpp:616
+msgid "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
+msgstr "Request can't be sent. Please verify your email systeme parameters.\nYou should also have a look at your log file.\nSave or Cancel to finish..."
+

@@ -1,331 +1,401 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: opencpn 2.2.1110\n"
+"Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-05-30 09:13-0400\n"
-"PO-Revision-Date: 2010-11-24 22:57-0500\n"
-"Last-Translator:\n"
-"Language-Team: \n"
+"PO-Revision-Date: 2014-07-30 19:07-0400\n"
+"Last-Translator: nohal <pavel@kalian.cz>\n"
+"Language-Team: Polish\n"
 "Language: pl_PL\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-#
-msgid " mag"
-msgstr ""
-#
-msgid " true"
-msgstr ""
-#
-#
-msgid "Add"
-msgstr ""
-#
-#
-msgid "Add instrument"
-msgstr ""
-#
-msgid "Air Temp."
-msgstr ""
-#
-msgid "App. Wind Angle"
-msgstr ""
-#
-msgid "App. Wind Angle & Speed"
-msgstr ""
-#
-msgid "App. Wind Speed"
-msgstr ""
-#
-msgid "Appearance"
-msgstr ""
-#
-msgid "Barometric history"
-msgstr ""
-#
-msgid "Barometric pressure"
-msgstr ""
-#
-msgid "Boat speed units:"
-msgstr ""
-#
-#
+"\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: crowdin.net\n"
+
+#: src/clock.cpp:126 src/dial.cpp:504 src/gps.cpp:141 src/wind.cpp:64
+#: src/wind_history.cpp:401
+msgid "N"
+msgstr "N"
+
+#: src/dashboard_pi.cpp:96
+msgid "Position"
+msgstr "Position"
+
+#: src/dashboard_pi.cpp:98
+msgid "SOG"
+msgstr "SOG"
+
+#: src/dashboard_pi.cpp:100
+msgid "Speedometer"
+msgstr "Speedometer"
+
+#: src/dashboard_pi.cpp:102
 msgid "COG"
-msgstr ""
-#
-msgid "Caption:"
-msgstr ""
-#
-msgid "Centimeters"
-msgstr ""
-#
-msgid "Clock"
-msgstr ""
-#
-msgid "Cursor"
-msgstr ""
-#
-#
-msgid "Dashboard"
-msgstr ""
-#
-#
-msgid "Dashboard PlugIn for OpenCPN"
-msgstr ""
-#
-#
-msgid ""
-"Dashboard PlugIn for OpenCPN\n"
-"Provides navigation instrument display from NMEA source."
-msgstr ""
-#
-#
-msgid "Dashboard preferences"
-msgstr ""
-#
-msgid "Data:"
-msgstr ""
-#
-#
-msgid "Delete"
-msgstr ""
-#
-#
-msgid "Depth"
-msgstr ""
-#
-msgid "Depth units:"
-msgstr ""
-#
-msgid "Distance units:"
-msgstr ""
-#
-#
-msgid "Down"
-msgstr ""
-#
-#
-msgid "E"
-msgstr ""
-#
-msgid "ENE"
-msgstr ""
-#
-msgid "ESE"
-msgstr ""
-#
-msgid "Fathoms"
-msgstr ""
-#
-msgid "Feet"
-msgstr ""
-#
-msgid "Fonts"
-msgstr ""
-#
-msgid "From Ownship"
-msgstr ""
-#
+msgstr "COG"
+
+#: src/dashboard_pi.cpp:104
 msgid "GPS Compass"
-msgstr ""
-#
-msgid "GPS Status"
-msgstr ""
-#
-msgid "GPS in View"
-msgstr ""
-#
-msgid "Honor OpenCPN settings"
-msgstr ""
-#
-msgid "Horizontal"
-msgstr ""
-#
-msgid "Inches"
-msgstr ""
-#
-#
-msgid "Instruments"
-msgstr ""
-#
-msgid "Kilometers"
-msgstr ""
-#
-msgid "Kts"
-msgstr ""
-#
-msgid "Label:"
-msgstr ""
-#
+msgstr "GPS Compass"
+
+#: src/dashboard_pi.cpp:106
+msgid "True Compass"
+msgstr "True Compass"
+
+#: src/dashboard_pi.cpp:108
+msgid "STW"
+msgstr "STW"
+
+#: src/dashboard_pi.cpp:110
+msgid "True HDG"
+msgstr "True HDG"
+
+#: src/dashboard_pi.cpp:112
 msgid "Mag HDG"
-msgstr ""
-#
+msgstr "Mag HDG"
+
+#: src/dashboard_pi.cpp:115
+msgid "App. Wind Angle & Speed"
+msgstr "App. Wind Angle & Speed"
+
+#: src/dashboard_pi.cpp:117 src/dashboard_pi.cpp:119
+msgid "App. Wind Speed"
+msgstr "App. Wind Speed"
+
+#: src/dashboard_pi.cpp:121
+msgid "True Wind Angle & Speed"
+msgstr "True Wind Angle & Speed"
+
+#: src/dashboard_pi.cpp:123 src/dashboard_pi.cpp:125
+msgid "Depth"
+msgstr "Depth"
+
+#: src/dashboard_pi.cpp:127 src/dashboard_pi.cpp:129
+msgid "Barometric pressure"
+msgstr "Barometric pressure"
+
+#: src/dashboard_pi.cpp:131
+msgid "Water Temp."
+msgstr "Water Temp."
+
+#: src/dashboard_pi.cpp:133
+msgid "Air Temp."
+msgstr "Air Temp."
+
+#: src/dashboard_pi.cpp:135
+msgid "App. Wind Angle"
+msgstr "App. Wind Angle"
+
+#: src/dashboard_pi.cpp:137
+msgid "True Wind Angle"
+msgstr "True Wind Angle"
+
+#: src/dashboard_pi.cpp:139
+msgid "True Wind Direction"
+msgstr "True Wind Direction"
+
+#: src/dashboard_pi.cpp:141
+msgid "True Wind Speed"
+msgstr "True Wind Speed"
+
+#: src/dashboard_pi.cpp:143
+msgid "True Wind Dir. & Speed"
+msgstr "True Wind Dir. & Speed"
+
+#: src/dashboard_pi.cpp:145 src/dashboard_pi.cpp:147
+msgid "VMG"
+msgstr "VMG"
+
+#: src/dashboard_pi.cpp:149 src/dashboard_pi.cpp:151
+msgid "Rudder Angle"
+msgstr "Rudder Angle"
+
+#: src/dashboard_pi.cpp:153
+msgid "GPS in View"
+msgstr "GPS in View"
+
+#: src/dashboard_pi.cpp:155
+msgid "GPS Status"
+msgstr "GPS Status"
+
+#: src/dashboard_pi.cpp:157
+msgid "Cursor"
+msgstr "Cursor"
+
+#: src/dashboard_pi.cpp:159
+msgid "Clock"
+msgstr "Clock"
+
+#: src/dashboard_pi.cpp:161
+msgid "Sunrise/Sunset"
+msgstr "Sunrise/Sunset"
+
+#: src/dashboard_pi.cpp:163
+msgid "Moon phase"
+msgstr "Moon phase"
+
+#: src/dashboard_pi.cpp:165
+msgid "Wind history"
+msgstr "Wind history"
+
+#: src/dashboard_pi.cpp:167
+msgid "Barometric history"
+msgstr "Barometric history"
+
+#: src/dashboard_pi.cpp:169
+msgid "Trip Log"
+msgstr "Trip Log"
+
+#: src/dashboard_pi.cpp:171
+msgid "Sum Log"
+msgstr "Sum Log"
+
+#: src/dashboard_pi.cpp:173
+msgid "From Ownship"
+msgstr "From Ownship"
+
+#: src/dashboard_pi.cpp:339 src/dashboard_pi.cpp:452 src/dashboard_pi.cpp:1293
+#: src/dashboard_pi.cpp:1302 src/dashboard_pi.cpp:1460
+#: src/dashboard_pi.cpp:1499 src/dashboard_pi.cpp:1763
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: src/dashboard_pi.cpp:457
+msgid "Dashboard PlugIn for OpenCPN"
+msgstr "Dashboard PlugIn for OpenCPN"
+
+#: src/dashboard_pi.cpp:462
+msgid "Dashboard PlugIn for OpenCPN\nProvides navigation instrument display from NMEA source."
+msgstr "Dashboard PlugIn for OpenCPN\nProvides navigation instrument display from NMEA source."
+
+#: src/dashboard_pi.cpp:1436
+msgid "Dashboard preferences"
+msgstr "Dashboard preferences"
+
+#: src/dashboard_pi.cpp:1506
+msgid "show this dashboard"
+msgstr "show this dashboard"
+
+#: src/dashboard_pi.cpp:1512
+msgid "Caption:"
+msgstr "Caption:"
+
+#: src/dashboard_pi.cpp:1520
+msgid "Orientation:"
+msgstr "Orientation:"
+
+#: src/dashboard_pi.cpp:1524 src/dashboard_pi.cpp:1956
+msgid "Vertical"
+msgstr "Vertical"
+
+#: src/dashboard_pi.cpp:1525 src/dashboard_pi.cpp:1958
+msgid "Horizontal"
+msgstr "Horizontal"
+
+#: src/dashboard_pi.cpp:1532 src/dashboard_pi.cpp:1540
+#: src/dashboard_pi.cpp:1882
+msgid "Instruments"
+msgstr "Instruments"
+
+#: src/dashboard_pi.cpp:1548
+msgid "Add"
+msgstr "Add"
+
+#: src/dashboard_pi.cpp:1561
+msgid "Delete"
+msgstr "Delete"
+
+#: src/dashboard_pi.cpp:1567
+msgid "Up"
+msgstr "Up"
+
+#: src/dashboard_pi.cpp:1572
+msgid "Down"
+msgstr "Down"
+
+#: src/dashboard_pi.cpp:1582
+msgid "Appearance"
+msgstr "Appearance"
+
+#: src/dashboard_pi.cpp:1584
+msgid "Fonts"
+msgstr "Fonts"
+
+#: src/dashboard_pi.cpp:1590
+msgid "Title:"
+msgstr "Title:"
+
+#: src/dashboard_pi.cpp:1596
+msgid "Data:"
+msgstr "Data:"
+
+#: src/dashboard_pi.cpp:1602
+msgid "Label:"
+msgstr "Label:"
+
+#: src/dashboard_pi.cpp:1608
+msgid "Small:"
+msgstr "Small:"
+
+#: src/dashboard_pi.cpp:1616
+msgid "Units, Ranges, Formats"
+msgstr "Units, Ranges, Formats"
+
+#: src/dashboard_pi.cpp:1622
+msgid "Speedometer max value:"
+msgstr "Speedometer max value:"
+
+#: src/dashboard_pi.cpp:1627
+msgid "Boat speed units:"
+msgstr "Boat speed units:"
+
+#: src/dashboard_pi.cpp:1630 src/dashboard_pi.cpp:1648
+msgid "Honor OpenCPN settings"
+msgstr "Honor OpenCPN settings"
+
+#: src/dashboard_pi.cpp:1630 src/dashboard_pi.cpp:1657
+msgid "Kts"
+msgstr "Kts"
+
+#: src/dashboard_pi.cpp:1630 src/dashboard_pi.cpp:1657
+msgid "mph"
+msgstr "mph"
+
+#: src/dashboard_pi.cpp:1630 src/dashboard_pi.cpp:1657
+msgid "km/h"
+msgstr "km/h"
+
+#: src/dashboard_pi.cpp:1630 src/dashboard_pi.cpp:1657
+msgid "m/s"
+msgstr "m/s"
+
+#: src/dashboard_pi.cpp:1636
+msgid "Depth units:"
+msgstr "Depth units:"
+
+#: src/dashboard_pi.cpp:1639 src/dashboard_pi.cpp:1648
+msgid "Meters"
+msgstr "Meters"
+
+#: src/dashboard_pi.cpp:1639
+msgid "Feet"
+msgstr "Feet"
+
+#: src/dashboard_pi.cpp:1639
+msgid "Fathoms"
+msgstr "Fathoms"
+
+#: src/dashboard_pi.cpp:1639
+msgid "Centimeters"
+msgstr "Centimeters"
+
+#: src/dashboard_pi.cpp:1639
+msgid "Inches"
+msgstr "Inches"
+
+#: src/dashboard_pi.cpp:1645
+msgid "Distance units:"
+msgstr "Distance units:"
+
+#: src/dashboard_pi.cpp:1648
+msgid "Nautical miles"
+msgstr "Nautical miles"
+
+#: src/dashboard_pi.cpp:1648
+msgid "Statute miles"
+msgstr "Statute miles"
+
+#: src/dashboard_pi.cpp:1648
+msgid "Kilometers"
+msgstr "Kilometers"
+
+#: src/dashboard_pi.cpp:1654
+msgid "Wind speed units:"
+msgstr "Wind speed units:"
+
+#: src/dashboard_pi.cpp:1865
+msgid "Add instrument"
+msgstr "Add instrument"
+
+#: src/dashboard_pi.cpp:1871
+msgid "Select instrument to add:"
+msgstr "Select instrument to add:"
+
+#: src/dashboard_pi.cpp:1965
+msgid "Preferences..."
+msgstr "Preferences..."
+
+#: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:407
+msgid "NE"
+msgstr "NE"
+
+#: src/dial.cpp:504 src/gps.cpp:145 src/wind.cpp:64 src/wind_history.cpp:413
+msgid "E"
+msgstr "E"
+
+#: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:419
+msgid "SE"
+msgstr "SE"
+
+#: src/dial.cpp:504 src/gps.cpp:149 src/wind.cpp:64 src/wind_history.cpp:425
+msgid "S"
+msgstr "S"
+
+#: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:431
+msgid "SW"
+msgstr "SW"
+
+#: src/dial.cpp:504 src/gps.cpp:153 src/wind.cpp:64 src/wind_history.cpp:437
+msgid "W"
+msgstr "W"
+
+#: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:443
+msgid "NW"
+msgstr "NW"
+
+#: src/instrument.cpp:232
+msgid " true"
+msgstr " true"
+
+#: src/instrument.cpp:234
+msgid " mag"
+msgstr " mag"
+
+#: src/wind_history.cpp:404
+msgid "NNE"
+msgstr "NNE"
+
+#: src/wind_history.cpp:410
+msgid "ENE"
+msgstr "ENE"
+
+#: src/wind_history.cpp:416
+msgid "ESE"
+msgstr "ESE"
+
+#: src/wind_history.cpp:422
+msgid "SSE"
+msgstr "SSE"
+
+#: src/wind_history.cpp:428
+msgid "SSW"
+msgstr "SSW"
+
+#: src/wind_history.cpp:434
+msgid "WSW"
+msgstr "WSW"
+
+#: src/wind_history.cpp:440
+msgid "WNW"
+msgstr "WNW"
+
+#: src/wind_history.cpp:446
+msgid "NNW"
+msgstr "NNW"
+
+#: src/wind_history.cpp:543
 #, c-format
 msgid "Max %.1f since %02d:%02d  Overall %.1f"
-msgstr ""
-#
-msgid "Meters"
-msgstr ""
-#
-msgid "Moon phase"
-msgstr ""
-#
-#
-msgid "N"
-msgstr ""
-#
-#
-msgid "NE"
-msgstr ""
-#
-msgid "NNE"
-msgstr ""
-#
-msgid "NNW"
-msgstr ""
-#
-#
-msgid "NW"
-msgstr ""
-#
-msgid "Nautical miles"
-msgstr ""
-#
-msgid "Orientation:"
-msgstr ""
-#
-#
-msgid "Position"
-msgstr ""
-#
-msgid "Preferences..."
-msgstr ""
-#
-msgid "Rudder Angle"
-msgstr ""
-#
-#
-msgid "S"
-msgstr ""
-#
-#
-msgid "SE"
-msgstr ""
-#
-#
-msgid "SOG"
-msgstr ""
-#
-msgid "SSE"
-msgstr ""
-#
-msgid "SSW"
-msgstr ""
-#
-#
-msgid "STW"
-msgstr ""
-#
-#
-msgid "SW"
-msgstr ""
-#
-#
-msgid "Select instrument to add:"
-msgstr ""
-#
-msgid "Small:"
-msgstr ""
-#
-#
-msgid "Speedometer"
-msgstr ""
-#
-msgid "Speedometer max value:"
-msgstr ""
-#
-msgid "Statute miles"
-msgstr ""
-#
-msgid "Sum Log"
-msgstr ""
-#
-msgid "Sunrise/Sunset"
-msgstr ""
-#
-msgid "Title:"
-msgstr ""
-#
-msgid "Trip Log"
-msgstr ""
-#
-msgid "True Compass"
-msgstr ""
-#
-msgid "True HDG"
-msgstr ""
-#
-msgid "True Wind Angle"
-msgstr ""
-#
-msgid "True Wind Angle & Speed"
-msgstr ""
-#
-msgid "True Wind Dir. & Speed"
-msgstr ""
-#
-msgid "True Wind Direction"
-msgstr ""
-#
-msgid "True Wind Speed"
-msgstr ""
-#
-msgid "Units, Ranges, Formats"
-msgstr ""
-#
-#
-msgid "Up"
-msgstr ""
-#
-#
-msgid "VMG"
-msgstr ""
-#
-msgid "Vertical"
-msgstr ""
-#
-#
-msgid "W"
-msgstr ""
-#
-msgid "WNW"
-msgstr ""
-#
-msgid "WSW"
-msgstr ""
-#
-msgid "Water Temp."
-msgstr ""
-#
-msgid "Wind history"
-msgstr ""
-#
-msgid "Wind speed units:"
-msgstr ""
-#
-msgid "km/h"
-msgstr ""
-#
-msgid "m/s"
-msgstr ""
-#
-msgid "mph"
-msgstr ""
-#
-msgid "show this dashboard"
-msgstr ""
+msgstr "Max %.1f since %02d:%02d  Overall %.1f"
+
