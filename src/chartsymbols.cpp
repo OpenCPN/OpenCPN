@@ -824,17 +824,20 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcm
         if(!dcmode && g_bopengl) {
             if(rasterSymbolsTexture)
                 return true;
+#ifdef ocpnUSE_GL            
             else if( !g_texture_rectangle_format && rasterSymbols.IsOk()) 
                 return true;
+#endif            
         }
         if(dcmode && rasterSymbols.IsOk())
             return true;
     }
         
     
+#ifdef ocpnUSE_GL            
     if(g_bopengl && !g_texture_rectangle_format)
         wxLogMessage(_("Warning: unable to use NPOT texture for chart symbols"));
-    
+#endif    
     
     colTable* coltab = (colTable *) colorTables->Item( tableNo );
 
