@@ -3997,6 +3997,24 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
     rzRules.mps = pContext->MPSRulesList;
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
+
+    //  Build a new style PTG
+    if(!pObj->geoPtMulti){
+        PolyTessGeo *tess = (PolyTessGeo *)pObj->pPolyTessGeo;
+        
+        PolyTriGroup *ptgo = tess->Get_PolyTriGroup_head();
+        TriPrim *tph = ptgo->tri_prim_head;
+        
+        PolyTriGroup *ptg = new PolyTriGroup;
+        ptg->tri_prim_head = tph;
+        ptg->bsingle_alloc = false;
+        ptg->data_type = DATA_TYPE_DOUBLE;
+        tess->Set_PolyTriGroup_head(ptg);
+        
+        double *pd = (double *)malloc(sizeof(double));
+        pObj->geoPtMulti = pd;  //Hack hack
+        
+    }
     
     //  Do the render
     ps52plib->RenderAreaToDC( pdc, &rzRules, &cvp, &pb_spec );
