@@ -1067,7 +1067,9 @@ MyConfig::MyConfig( const wxString &appName, const wxString &vendorName,
 
 void MyConfig::CreateRotatingNavObjBackup()
 {
-    //Rotate navobj backups, but just in case there are some changes in the current version to prevent the user trying to "fix" the problem by continuously starting the application to overwrite all of his good backups...
+    //Rotate navobj backups, but just in case there are some changes in the current version
+    //to prevent the user trying to "fix" the problem by continuously starting the
+    //application to overwrite all of his good backups...
     if( g_navobjbackups > 0 ) {
         wxFile f;
         wxString oldname = m_sNavObjSetFile;
@@ -1907,6 +1909,9 @@ int MyConfig::LoadMyConfig( int iteration )
 
 
         if( ::wxFileExists( m_sNavObjSetChangesFile ) ) {
+            
+            wxULongLong size = wxFileName::GetSize(m_sNavObjSetChangesFile);
+            
             //We crashed last time :(
             //That's why this file still exists...
             //Let's reconstruct the unsaved changes
@@ -1919,11 +1924,14 @@ int MyConfig::LoadMyConfig( int iteration )
            if( ::wxFileExists( m_sNavObjSetChangesFile ) )
                 ::wxRemoveFile( m_sNavObjSetChangesFile );
 
-            wxLogMessage( _T("Applying NavObjChanges") );
-            pNavObjectChangesSet->ApplyChanges();
-            delete pNavObjectChangesSet;
+           if(size != 0){
+                wxLogMessage( _T("Applying NavObjChanges") );
+                pNavObjectChangesSet->ApplyChanges();
+                delete pNavObjectChangesSet;
+                
 
-            UpdateNavObj();
+                UpdateNavObj();
+           }
         }
         
         m_pNavObjectChangesSet = new NavObjectChanges(m_sNavObjSetChangesFile);
