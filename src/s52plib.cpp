@@ -5640,13 +5640,11 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         //  Get the vertex data
         PolyTriGroup *ppg_vbo = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
             
-            //  Has the input vertex buffer been converted to "single_alloc" model?
+            //  Has the input vertex buffer been converted to "single_alloc float" model?
             //  and is it allowed?
         if(!ppg_vbo->bsingle_alloc && (rzRules->obj->auxParm1 >= 0) ){
                 
                 int data_size = sizeof(float);
-                if( ppg_vbo->data_type == DATA_TYPE_DOUBLE)
-                    data_size = sizeof(double);
                 
                 //  First calculate the required total byte size
                     int total_byte_size = 0;
