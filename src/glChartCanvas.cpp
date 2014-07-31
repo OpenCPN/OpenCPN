@@ -336,6 +336,8 @@ WX_DEFINE_OBJARRAY(ArrayOfCompressTargets);
 void BuildCompressedCache()
 {
     b_inCompressAllCharts = true;
+
+    idx_sorted_by_distance.Clear();
     
     // Building the cache may take a long time....
     // Be a little smarter.
