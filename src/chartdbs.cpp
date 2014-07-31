@@ -2056,7 +2056,11 @@ bool ChartDatabase::AddSingleChart( wxString &ChartFullPath, bool b_force_full_s
     //    Update the Entry index fields
     for(unsigned int i=0 ; i<chartTable.GetCount() ; i++)
         chartTable[i].SetEntryOffset( i );
-    
+ 
+    //  Get a new magic number
+    wxString new_magic;
+    DetectDirChange(dir_name, _T(""), new_magic, 0);
+        
     
     //    Update (clone) the CDI array
     bool bcfound = false;
@@ -2071,7 +2075,7 @@ bool ChartDatabase::AddSingleChart( wxString &ChartFullPath, bool b_force_full_s
         
         //      If entry is found that matches this cell, clear the magic number.
         if( newcdi.fullpath == dir_name ){
-            newcdi.magic_number = _T("");
+            newcdi.magic_number = new_magic;
             bcfound = true;
         }
         
@@ -2081,7 +2085,7 @@ bool ChartDatabase::AddSingleChart( wxString &ChartFullPath, bool b_force_full_s
     if( !bcfound ){
         ChartDirInfo cdi;
         cdi.fullpath = dir_name;
-        cdi.magic_number = _T("");
+        cdi.magic_number = new_magic;
         NewChartDirArray.Add ( cdi );
     }
     
