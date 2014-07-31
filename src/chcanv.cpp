@@ -1543,8 +1543,14 @@ ChartCanvas::~ChartCanvas()
 void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
 {
     wxString msg(event.m_string.c_str(), wxConvUTF8);
-    compress_msg_array.RemoveAt(event.thread);
-    compress_msg_array.Insert( msg, event.thread);
+    if(compress_msg_array.GetCount() > (unsigned int)event.thread )
+    {
+        compress_msg_array.RemoveAt(event.thread);
+        compress_msg_array.Insert( msg, event.thread);
+    }
+    else
+        compress_msg_array.Add(msg);
+    
     
     wxString combined_msg;
     for(unsigned int i=0 ; i < compress_msg_array.GetCount() ; i++) {
