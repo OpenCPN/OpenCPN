@@ -384,7 +384,7 @@ public:
 
 
 
-void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj );
+void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pctx );
 void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj );
 
 #endif            // _PLUGINMGR_H_
