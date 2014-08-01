@@ -734,7 +734,7 @@ void glChartCanvas::OnSize( wxSizeEvent& event )
         return;
     }
 
-#ifndef __WXQT__
+#if !wxCHECK_VERSION(3,0,0)
     // this is also necessary to update the context on some platforms
     wxGLCanvas::OnSize( event );
 #endif

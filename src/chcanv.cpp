@@ -4634,10 +4634,12 @@ bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int de
     if( bdragging ) {
         if( !g_btouch ){
             wxMouseState state = ::wxGetMouseState();
-#ifndef __WXQT__            
+#if  wxCHECK_VERSION(3,0,0)
+            if( !state.LeftIsDown() )
+#else
             if( !state.LeftDown() )
-                bft = false;
 #endif
+                bft = false;
         }
     }
 
