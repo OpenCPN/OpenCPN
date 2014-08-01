@@ -219,7 +219,8 @@ struct ChartTableEntry
     void SetEntryOffset(int n) { EntryOffset = n;}
     ArrayOfInts &GetGroupArray(void){ return m_GroupArray; }
     wxString *GetpFileName(void){ return m_pfilename; }
-
+    wxString *GetpsFullPath(void){ return m_psFullPath; }
+    
   private:
     int         EntryOffset;
     int         ChartType;
@@ -246,6 +247,7 @@ struct ChartTableEntry
     
     ArrayOfInts m_GroupArray;
     wxString    *m_pfilename;             // a helper member, not on disk
+    wxString    *m_psFullPath;
 };
 
 enum
@@ -288,7 +290,7 @@ public:
     bool Read(const wxString &filePath);
     bool Write(const wxString &filePath);
 
-    bool AddSingleChart( wxString &fullpath );
+    bool AddSingleChart( wxString &fullpath, bool b_force_full_search = true );
     bool RemoveSingleChart( wxString &ChartFullPath );
     
     const wxString & GetDBFileName() const { return m_DBFileName; }

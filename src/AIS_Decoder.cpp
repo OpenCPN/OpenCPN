@@ -771,7 +771,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
             bool bhad_name = false;
             if( pStaleTarget ) bhad_name = pStaleTarget->b_nameValid;
 
-            if( gpsg_mmsi ) {
+            if( gpsg_mmsi && pTargetData ) {
                 pTargetData->PositionReportTicks = now.GetTicks();
                 pTargetData->StaticReportTicks = now.GetTicks();
                 pTargetData->m_utc_hour = gpsg_utc_hour;
@@ -793,7 +793,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pTargetData->b_lost = false;
 
                 bdecode_result = true;
-            } else if( arpa_mmsi ) {
+            } else if( arpa_mmsi && pTargetData ) {
                 pTargetData->m_utc_hour = arpa_utc_hour;
                 pTargetData->m_utc_min = arpa_utc_min;
                 pTargetData->m_utc_sec = arpa_utc_sec;
@@ -832,7 +832,7 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 pTargetData->b_lost = arpa_nottracked;
 
                 bdecode_result = true;
-            } else if( aprs_mmsi ) {
+            } else if( aprs_mmsi && pTargetData ) {
                 pTargetData->m_utc_hour = now.GetHour();
                 pTargetData->m_utc_min = now.GetMinute();
                 pTargetData->m_utc_sec = now.GetSecond();
@@ -862,7 +862,8 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
                 bdecode_result = Parse_VDXBitstring( &strbit, pTargetData );       // Parse the new data
 
                 //     Update the most recent report period
-            pTargetData->RecentPeriod = pTargetData->PositionReportTicks - last_report_ticks;
+            if( pTargetData )    
+                pTargetData->RecentPeriod = pTargetData->PositionReportTicks - last_report_ticks;
             ret = AIS_NoError;
             
         } else{

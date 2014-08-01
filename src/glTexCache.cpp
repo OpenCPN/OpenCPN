@@ -964,8 +964,10 @@ void glTexFactory::DeleteSingleTexture( glTextureDescriptor *ptd )
             size = 8;
     }
     
-    glDeleteTextures( 1, &ptd->tex_name );
-    ptd->tex_name = 0;
+    if(ptd->tex_name) {
+        glDeleteTextures( 1, &ptd->tex_name );
+        ptd->tex_name = 0;
+    }
     ptd->nGPU_compressed = GPU_TEXTURE_UNKNOWN;
     
 }

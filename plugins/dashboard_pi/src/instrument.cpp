@@ -226,15 +226,15 @@ void DashboardInstrument_Single::SetData(int st, double data, wxString unit)
             if(!wxIsNaN(data)){
                 if (unit == _T("C"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("C");
-                else if (unit == _T("Deg"))
+                else if (unit == _T("\u00B0"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN;
-                else if (unit == _T("DegT"))
+                else if (unit == _T("\u00B0T"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_(" true");
-                else if (unit == _T("DegM"))
+                else if (unit == _T("\u00B0M"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_(" mag");
-                else if (unit == _T("DegL"))
+                else if (unit == _T("\u00B0L"))
                   m_data = _T(">")+ wxString::Format(m_format, data)+DEGREE_SIGN;
-                else if (unit == _T("DegR"))
+                else if (unit == _T("\u00B0R"))
                   m_data = wxString::Format(m_format, data)+DEGREE_SIGN+_T("<");
                 else if (unit == _T("N")) //Knots
                   m_data = wxString::Format(m_format, data)+_T(" Kts");

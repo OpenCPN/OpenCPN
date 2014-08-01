@@ -715,9 +715,7 @@ void TrackPropDlg::OnSplitBtnClick( wxCommandEvent& event )
         pSelect->DeleteAllSelectableRouteSegments( m_pRoute );
         g_pRouteMan->DeleteRoute( m_pRoute );
         pSelect->AddAllSelectableTrackSegments( m_pTail );
-        pSelect->AddAllSelectableRoutePoints( m_pTail );
         pSelect->AddAllSelectableTrackSegments( m_pHead );
-        pSelect->AddAllSelectableRoutePoints( m_pHead );
 
         SetTrackAndUpdate( m_pTail );
         UpdateProperties();

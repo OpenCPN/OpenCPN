@@ -82,8 +82,8 @@ bool S57QueryDialog::Create( wxWindow* parent, wxWindowID id, const wxString& ca
 
     if( !wxDialog::Create( parent, id, caption, pos, size, wstyle ) ) return false;
 
-    wxFont *dFont = GetOCPNScaledFont(_("Dialog"), 10);
-    
+    wxFont *dFont = GetOCPNScaledFont(_("ObjectQuery"), 10);
+
     SetFont( *dFont );
     CreateControls();
 
@@ -109,6 +109,7 @@ void S57QueryDialog::CreateControls()
 
     m_phtml = new wxHtmlWindow( this, wxID_ANY, wxDefaultPosition, wxDefaultSize,
                                 wxHW_SCROLLBAR_AUTO );
+    
     m_phtml->SetBorders( 5 );
 
     m_phtml->SetMinSize( wxSize( 100, 100 ) );            // this will constrain the dialog, too

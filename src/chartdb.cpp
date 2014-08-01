@@ -895,6 +895,12 @@ ChartBase *ChartDB::OpenChartFromDB(int index, ChartInitFlag init_flag)
     return OpenChartUsingCache(index, init_flag);
 }
 
+ChartBase *ChartDB::OpenChartFromDB(wxString chart_path, ChartInitFlag init_flag)
+{
+    int dbii = FinddbIndex( chart_path );
+    return OpenChartUsingCache(dbii, init_flag);
+}
+
 
 ChartBase *ChartDB::OpenChartFromStack(ChartStack *pStack, int StackEntry, ChartInitFlag init_flag)
 {

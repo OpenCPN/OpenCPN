@@ -6430,7 +6430,7 @@ wxString s57chart::CreateObjDescriptions( ListOfObjRazRules* rule_list )
                 lightsHtml << _T("<b>Light</b> <font size=-2>(LIGHTS)</font><br>");
                 lightsHtml << _T("<font size=-2>") << thisLight->position << _T("</font><br>\n");
 
-                if( curLight->hasSectors ) lightsHtml
+                if( curLight && curLight->hasSectors ) lightsHtml
                         <<_("<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>");
 
                 lightsHtml << _T("<table>");

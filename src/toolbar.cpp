@@ -846,6 +846,7 @@ EVT_PAINT(ocpnToolBarSimple::OnPaint)
 EVT_KILL_FOCUS(ocpnToolBarSimple::OnKillFocus)
 EVT_MOUSE_EVENTS(ocpnToolBarSimple::OnMouseEvent)
 EVT_TIMER(TOOLTIPON_TIMER, ocpnToolBarSimple::OnToolTipTimerEvent)
+EVT_TIMER(TOOLTIPOFF_TIMER, ocpnToolBarSimple::OnToolTipOffTimerEvent)
 
 END_EVENT_TABLE()
 
@@ -1036,7 +1037,9 @@ bool ocpnToolBarSimple::Create( wxWindow *parent, wxWindowID id, const wxPoint& 
     SetCursor( *wxSTANDARD_CURSOR );
 
     m_tooltip_timer.SetOwner( this, TOOLTIPON_TIMER );
-
+    m_tooltipoff_timer.SetOwner( this, TOOLTIPOFF_TIMER );
+    m_tooltip_off = 3000;
+    
     return true;
 }
 
@@ -1196,7 +1199,8 @@ bool ocpnToolBarSimple::Realize()
         lastTool = tool;
         node = node->GetNext();
     }
-    if( m_LineCount > 1 || IsVertical() ) lastTool->lastInLine = true;
+    if( lastTool && (m_LineCount > 1 || IsVertical()) )
+        lastTool->lastInLine = true;
 
     if( GetWindowStyleFlag() & wxTB_HORIZONTAL ) m_maxHeight += toolSize.y;
     else
@@ -1287,11 +1291,19 @@ void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
                 m_pToolTipWin->SetBitmap();
                 m_pToolTipWin->Show();
                 gFrame->Raise();
+                if( g_btouch )
+                    m_tooltipoff_timer.Start(m_tooltip_off, wxTIMER_ONE_SHOT);
             }
         }
     }
 }
 
+void ocpnToolBarSimple::OnToolTipOffTimerEvent( wxTimerEvent& event )
+{
+    HideTooltip();    
+}
+
+    
 int s_dragx, s_dragy;
 
 void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )

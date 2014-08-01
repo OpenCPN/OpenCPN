@@ -1355,9 +1355,10 @@ wxBitmap *WayPointman::GetIconBitmap( const wxString& icon_key )
     }
 
     if( i == m_pIconArray->GetCount() )              // not found again
-    pmi = (MarkIcon *) m_pIconArray->Item( 0 );       // use item 0
+        pmi = (MarkIcon *) m_pIconArray->Item( 0 );       // use item 0
 
-    pret = pmi->picon_bitmap;
+    if( pmi )
+        pret = pmi->picon_bitmap;
 
     return pret;
 }

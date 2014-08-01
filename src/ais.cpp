@@ -500,7 +500,6 @@ void AISDrawAreaNotices( ocpnDC& dc )
                 if( area_notice.expiry_time > now ) {
                     std::vector<wxPoint> points;
                     bool draw_polygon = false;
-                    double lat, lon;
 
                     switch( area_notice.notice_type ) {
                     case 0:
@@ -522,19 +521,18 @@ void AISDrawAreaNotices( ocpnDC& dc )
                             sa != area_notice.sub_areas.end(); ++sa ) {
                         switch( sa->shape ) {
                         case AIS8_001_22_SHAPE_CIRCLE: {
-                            lat = sa->latitude;
-                            lon = sa->longitude;
-
                             wxPoint target_point;
                             cc1->GetCanvasPointPix( sa->latitude, sa->longitude, &target_point );
                             points.push_back( target_point );
-                            if( sa->radius_m > 0.0 ) dc.DrawCircle( target_point,
-                                                                        sa->radius_m * vp_scale );
+                            if( sa->radius_m > 0.0 )
+                                dc.DrawCircle( target_point, sa->radius_m * vp_scale );
                             break;
                         }
                         case AIS8_001_22_SHAPE_POLYGON:
                             draw_polygon = true;
                         case AIS8_001_22_SHAPE_POLYLINE: {
+                            double lat = sa->latitude;
+                            double lon = sa->longitude;
                             for( int i = 0; i < 4; ++i ) {
                                 ll_gc_ll( lat, lon, sa->angles[i], sa->dists_m[i] / 1852.0,
                                           &lat, &lon );
@@ -545,7 +543,8 @@ void AISDrawAreaNotices( ocpnDC& dc )
                         }
                         }
                     }
-                    if( draw_polygon ) dc.DrawPolygon( points.size(), &points.front() );
+                    if( draw_polygon )
+                        dc.DrawPolygon( points.size(), &points.front() );
                 }
             }
         }

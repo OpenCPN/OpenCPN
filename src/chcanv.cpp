@@ -1544,8 +1544,14 @@ ChartCanvas::~ChartCanvas()
 void ChartCanvas::OnEvtCompressProgress( OCPN_CompressProgressEvent & event )
 {
     wxString msg(event.m_string.c_str(), wxConvUTF8);
-    compress_msg_array.RemoveAt(event.thread);
-    compress_msg_array.Insert( msg, event.thread);
+    if(compress_msg_array.GetCount() > (unsigned int)event.thread )
+    {
+        compress_msg_array.RemoveAt(event.thread);
+        compress_msg_array.Insert( msg, event.thread);
+    }
+    else
+        compress_msg_array.Add(msg);
+    
     
     wxString combined_msg;
     for(unsigned int i=0 ; i < compress_msg_array.GetCount() ; i++) {
@@ -4221,8 +4227,8 @@ void ChartCanvas::JaggyCircle( ocpnDC &dc, wxPen pen, int x, int y, int radius )
 
     int x0, y0, x1, y1;
 
-    x0 = x + radius;                    // Start point
-    y0 = y;
+    x0 = x1 = x + radius;                    // Start point
+    y0 = y1 = y;
     double angle = 0.;
     int i = 0;
 
@@ -6303,14 +6309,10 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                     Ais8_001_22& area_notice = ani->second;
 
                     wxBoundingBox bbox;
-                    double lat, lon;
 
                     for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) {
                         switch( sa->shape ) {
                             case AIS8_001_22_SHAPE_CIRCLE: {
-                                lat = sa->latitude;
-                                lon = sa->longitude;
-
                                 wxPoint target_point;
                                 GetCanvasPointPix( sa->latitude, sa->longitude, &target_point );
                                 bbox.Expand( target_point );
@@ -6320,6 +6322,8 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
                             }
                             case AIS8_001_22_SHAPE_POLYGON:
                             case AIS8_001_22_SHAPE_POLYLINE: {
+                                double lat = sa->latitude;
+                                double lon = sa->longitude;
                                 for( int i = 0; i < 4; ++i ) {
                                     ll_gc_ll( lat, lon, sa->angles[i], sa->dists_m[i] / 1852.0,
                                               &lat, &lon );
@@ -6749,14 +6753,10 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
                     Ais8_001_22& area_notice = ani->second;
 
                     wxBoundingBox bbox;
-                    double lat, lon;
 
                     for( Ais8_001_22_SubAreaList::iterator sa = area_notice.sub_areas.begin(); sa != area_notice.sub_areas.end(); ++sa ) {
                         switch( sa->shape ) {
                             case AIS8_001_22_SHAPE_CIRCLE: {
-                                lat = sa->latitude;
-                                lon = sa->longitude;
-
                                 wxPoint target_point;
                                 GetCanvasPointPix( sa->latitude, sa->longitude, &target_point );
                                 bbox.Expand( target_point );
@@ -6767,6 +6767,8 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
                             case AIS8_001_22_SHAPE_POLYGON:
                             case AIS8_001_22_SHAPE_POLYLINE: {
                                 for( int i = 0; i < 4; ++i ) {
+                                    double lat = sa->latitude;
+                                    double lon = sa->longitude;
                                     ll_gc_ll( lat, lon, sa->angles[i], sa->dists_m[i] / 1852.0,
                                               &lat, &lon );
                                     wxPoint target_point;
@@ -6839,7 +6841,7 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
 
         int points = dFont->GetPointSize();
         wxString ss;
-        switch (points){
+        switch (points & 0xFE){
             case 8:  ss = _T("size=\"2\""); break;
             case 10: ss = _T("size=\"3\""); break;
             case 12: ss = _T("size=\"3\""); break;
@@ -6850,8 +6852,14 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
             default: ss = _T(" "); break;
         }
         
+        if(points > 20)
+            ss = _T("size=\"6\"");
+        
         objText += ss;
         objText += _T(">");
+
+        if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
+            objText += _T("<i>");
         
         if( overlay_rule_list && CHs57_Overlay) {
             objText << CHs57_Overlay->CreateObjDescriptions( overlay_rule_list );
@@ -6873,8 +6881,12 @@ void ChartCanvas::ShowObjectQueryWindow( int x, int y, float zlat, float zlon )
         else if( target_plugin_chart )
             objText << g_pi_manager->CreateObjDescriptions( target_plugin_chart, pi_rule_list );
 
-        objText << _T("</font></body></html>");
-
+        objText << _T("</font>");
+        if(wxFONTSTYLE_ITALIC == dFont->GetStyle())
+            objText << _T("</i>");
+        
+        objText << _T("</body></html>");
+        
         g_pObjectQueryDialog->SetHTMLPage( objText );
 
         g_pObjectQueryDialog->Show();

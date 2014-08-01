@@ -531,7 +531,7 @@ DDFSubfieldDefn::ExtractFloatData( const char * pachSourceData,
       case 'B':
       case 'b':
       {
-          unsigned char   abyData[8];
+          unsigned char   abyData[8] = {0,0,0,0,0,0,0,0};
 
           CPLAssert( nFormatWidth <= nMaxBytes );
           if( pnConsumedBytes != NULL )
@@ -658,7 +658,7 @@ DDFSubfieldDefn::ExtractIntData( const char * pachSourceData,
       case 'B':
       case 'b':
       {
-          unsigned char   abyData[8];
+          unsigned char   abyData[8] = {0,0,0,0,0,0,0,0};
 
           if( nFormatWidth > nMaxBytes )
           {

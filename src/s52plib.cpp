@@ -2479,13 +2479,16 @@ bool s52plib::RenderRasterSymbol( ObjRazRules *rzRules, Rule *prule, wxPoint &r,
                 unsigned char *psym = im_sym.GetData();
 
                 unsigned char *asym = NULL;
-                if( im_sym.HasAlpha() ) asym = im_sym.GetAlpha();
+                if( im_sym.HasAlpha() )
+                    asym = im_sym.GetAlpha();
 
                 //    Do alpha blending, the hard way
 
                 for( int i = 0; i < b_height; i++ ) {
                     for( int j = 0; j < b_width; j++ ) {
-                        double alpha = (double) ( *asym++ ) / 256.0;
+                        double alpha = 1.0;
+                        if(asym)
+                            alpha = ( *asym++ ) / 256.0;
                         unsigned char r = ( *psym++ * alpha ) + ( *pback++ * ( 1.0 - alpha ) );
                         *pdest++ = r;
                         unsigned char g = ( *psym++ * alpha ) + ( *pback++ * ( 1.0 - alpha ) );
@@ -5428,16 +5431,29 @@ void s52plib::RenderToBufferFilledPolygon( ObjRazRules *rzRules, S57Obj *obj, S5
                 //      Get and convert the points
                 wxPoint *pr = ptp;
 
-                double *pvert_list = p_tp->p_vertex;
+                if(ppg->data_type == DATA_TYPE_DOUBLE){
+                    double *pvert_list = p_tp->p_vertex;
 
-                for( int iv = 0; iv < p_tp->nVert; iv++ ) {
-                    double lon = *pvert_list++;
-                    double lat = *pvert_list++;
-                    GetPointPixSingle( rzRules, lat, lon, pr, vp );
+                    for( int iv = 0; iv < p_tp->nVert; iv++ ) {
+                        double lon = *pvert_list++;
+                        double lat = *pvert_list++;
+                        GetPointPixSingle( rzRules, lat, lon, pr, vp );
 
-                    pr++;
+                        pr++;
+                    }
                 }
-
+                else {
+                    float *pvert_list = (float *)p_tp->p_vertex;
+                    
+                    for( int iv = 0; iv < p_tp->nVert; iv++ ) {
+                        double lon = *pvert_list++;
+                        double lat = *pvert_list++;
+                        GetPointPixSingle( rzRules, lat, lon, pr, vp );
+                        
+                        pr++;
+                    }
+                }
+                
                 switch( p_tp->type ){
                     case PTG_TRIANGLE_FAN: {
                         for( int it = 0; it < p_tp->nVert - 2; it++ ) {
@@ -5624,13 +5640,11 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         //  Get the vertex data
         PolyTriGroup *ppg_vbo = rzRules->obj->pPolyTessGeo->Get_PolyTriGroup_head();
             
-            //  Has the input vertex buffer been converted to "single_alloc" model?
+            //  Has the input vertex buffer been converted to "single_alloc float" model?
             //  and is it allowed?
         if(!ppg_vbo->bsingle_alloc && (rzRules->obj->auxParm1 >= 0) ){
                 
                 int data_size = sizeof(float);
-                if( ppg_vbo->data_type == DATA_TYPE_DOUBLE)
-                    data_size = sizeof(double);
                 
                 //  First calculate the required total byte size
                     int total_byte_size = 0;
