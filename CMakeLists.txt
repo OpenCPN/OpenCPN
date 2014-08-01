@@ -948,18 +948,20 @@ FOREACH (_currentSoundFile ${SOUND_FILES})
            ${_currentSoundFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/sounds )
 ENDFOREACH (_currentSoundFile )
 
-SET_SOURCE_FILES_PROPERTIES(
+IF(BUNDLE_DOCS)
+  SET_SOURCE_FILES_PROPERTIES(
            data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
-SET_SOURCE_FILES_PROPERTIES(
+  SET_SOURCE_FILES_PROPERTIES(
            data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
-FILE(GLOB DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/images/*")
-FOREACH (_currentDocFile ${DOC_FILES})
-  SET_SOURCE_FILES_PROPERTIES(
+  FILE(GLOB DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/images/*")
+  FOREACH (_currentDocFile ${DOC_FILES})
+    SET_SOURCE_FILES_PROPERTIES(
            ${_currentDocFile}
            PROPERTIES MACOSX_PACKAGE_LOCATION "SharedSupport/doc/images" )
-ENDFOREACH (_currentDocFile )
+  ENDFOREACH (_currentDocFile )
+ENDIF(BUNDLE_DOCS)
 
 SET_SOURCE_FILES_PROPERTIES(
            buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
@@ -982,13 +984,17 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${tcData}
       data/license.txt
       ${SOUND_FILES}
-      data/doc/help_web.html
-      data/doc/help_en_US.html
-      ${DOC_FILES}
       buildosx/opencpn.icns
       buildosx/MainMenu.xib
       )
 
+IF(BUNDLE_DOCS)
+  ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
+      data/doc/help_web.html
+      data/doc/help_en_US.html
+      ${DOC_FILES}
+  )
+ENDIF(BUNDLE_DOCS)
 
   INSTALL(TARGETS
     ${PACKAGE_NAME}
@@ -1087,7 +1093,9 @@ INSTALL(FILES data/changelog.Debian.gz DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_
 
 INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds )
 
-INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
+IF(BUNDLE_DOCS)
+  INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
+ENDIF(BUNDLE_DOCS)
 
 IF(UNIX)
   INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
