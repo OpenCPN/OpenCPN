@@ -1166,7 +1166,7 @@ bool MyApp::OnInit()
     gExe_path = std_path.GetExecutablePath();
 
     pHome_Locn = new wxString;
-#ifdef __unix__
+#ifdef __WXMSW__
     pHome_Locn->Append( std_path.GetConfigDir() );   // on w98, produces "/windows/Application Data"
 #else
             pHome_Locn->Append(std_path.GetUserConfigDir());
@@ -1264,6 +1264,13 @@ bool MyApp::OnInit()
     wxString wxver(wxVERSION_STRING);
     wxver.Prepend( _T("wxWidgets version: ") );
     wxLogMessage( wxver );
+
+    wxPlatformInfo platforminfo = wxPlatformInfo::Get();
+
+    wxString platform = platforminfo.GetOperatingSystemIdName() + _T(" ") +
+                        platforminfo.GetArchName()+ _T(" ") +
+                        platforminfo.GetPortIdName();
+    wxLogMessage( platform );
 
     wxLogMessage( _T("MemoryStatus:  mem_total: %d mb,  mem_initial: %d mb"), g_mem_total / 1024,
             g_mem_initial / 1024 );
@@ -1550,10 +1557,7 @@ bool MyApp::OnInit()
     
 #else
     g_bdisable_opengl = true;;
-#endif
-
-
-    
+#endif    
     
  #ifdef USE_S57
 
@@ -1683,9 +1687,7 @@ if( 0 == g_memCacheLimit )
     g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // math in kBytes
 #else
     g_memCacheLimit = (int) ( (g_mem_total - g_mem_initial) * 0.5 );
-#endif    
-
-    
+#endif
     
     
 //      Establish location and name of chart database
@@ -1977,6 +1979,21 @@ if( 0 == g_memCacheLimit )
 
     //  Yield to pick up the OnSize() calls that result from Maximize()
     Yield();
+#if 0
+    wxMessageBox(wxString::Format
+                 (
+                    "Welcome to %s!\n"
+                    "\n"
+                    "This is the minimal wxWidgets sample\n"
+                    "running under %s.",
+                    wxVERSION_STRING,
+                    wxGetOsDescription()
+                     ),
+                 "About wxWidgets minimal sample",
+                 wxOK | wxICON_INFORMATION,
+                 NULL);
+    exit(0);
+#endif
     
     wxString perspective;
     pConfig->SetPath( _T ( "/AUI" ) );
