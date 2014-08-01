@@ -1051,7 +1051,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-#ifndef __WXMSW__
+#if !defined(__WXMSW__) && !defined(__WXQT__)
 
     wxImage ICursorLeft = style->GetIcon( _T("left") ).ConvertToImage();
     wxImage ICursorRight = style->GetIcon( _T("right") ).ConvertToImage();
@@ -1125,6 +1125,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         pCursorCross = new wxCursor ( wxCURSOR_ARROW );
 
 #else
+#ifndef __WXQT__
 
     wxImage ICursorLeft = style->GetIcon( _T("left") ).ConvertToImage();
     wxImage ICursorRight = style->GetIcon( _T("right") ).ConvertToImage();
@@ -1174,7 +1175,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         pCursorCross = new wxCursor( ICursorCross );
     } else
         pCursorCross = new wxCursor( wxCURSOR_ARROW );
-
+#endif
 #endif      // MSW, X11
     pCursorArrow = new wxCursor( wxCURSOR_ARROW );
 
@@ -2455,7 +2456,8 @@ wxBitmap ChartCanvas::CreateDimBitmap( wxBitmap &Bitmap, double factor )
 
 void ChartCanvas::ShowBrightnessLevelTimedPopup( int brightness, int min, int max )
 {
-    wxFont *pfont = wxTheFontList->FindOrCreateFont( 40, wxDEFAULT, wxNORMAL, wxBOLD );
+    wxFont *pfont = wxTheFontList->FindOrCreateFont( 40, wxFONTFAMILY_DEFAULT,
+                                                     wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
 
     if( !m_pBrightPopup ) {
         //    Calculate size
@@ -4626,8 +4628,10 @@ bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int de
     if( bdragging ) {
         if( !g_btouch ){
             wxMouseState state = ::wxGetMouseState();
+#ifndef __WXQT__            
             if( !state.LeftDown() )
                 bft = false;
+#endif
         }
     }
 
@@ -6442,7 +6446,12 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         {
             if( pimis->b_viz ) {
                 wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
-                                                  pimis->pmenu_item->GetLabel(), pimis->pmenu_item->GetHelp(),
+#if  wxCHECK_VERSION(3,0,0)
+                                                  pimis->pmenu_item->GetItemLabelText(),
+#else
+                                                  pimis->pmenu_item->GetLabel(),
+#endif
+                                                  pimis->pmenu_item->GetHelp(),
                                                   pimis->pmenu_item->GetKind(), pimis->pmenu_item->GetSubMenu() );
 #ifdef __WXMSW__
                 pmi->SetFont(pimis->pmenu_item->GetFont());
@@ -10776,8 +10785,10 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
                 col );
             ( (wxGrid*) win )->SetLabelTextColour(
                 uitext );
+#if !wxCHECK_VERSION(3,0,0)
             ( (wxGrid*) win )->SetDividerPen(
                 wxPen( col ) );
+#endif
             ( (wxGrid*) win )->SetGridLineColour(
                 gridline );
         }
