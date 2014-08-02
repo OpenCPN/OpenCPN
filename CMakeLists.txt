@@ -134,6 +134,13 @@ IF(BUNDLE_DOCS)
 ELSE(BUNDLE_DOCS)
   MESSAGE (STATUS "*** Package will NOT include documentation ***")
 ENDIF(BUNDLE_DOCS)
+IF(BUNDLE_GSHHS)
+  # Possible values: NONE, MIN (=Only crude polygons, no borders/rivers, default), CRUDE, LOW, INTERMEDIATE, HIGH, FULL
+  MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
+ELSE(BUNDLE_GSHHS)
+  SET(BUNDLE_GSHHS "MIN")
+  MESSAGE (STATUS "*** Package will include only crude level GSHHS polygons ***")
+ENDIF(BUNDLE_GSHHS)
 
 IF(BUNDLE_TCDATA)
   MESSAGE (STATUS "*** Package will include tide and current data ***")
@@ -847,18 +854,63 @@ IF(WIN32)
   SET(SRCS ${SRCS} src/opencpn.rc)
 ENDIF(WIN32)
 
-# Various data files
-SET(gshhs
+SET(gshhs_MIN
         data/gshhs/poly-c-1.dat
-        data/gshhs/poly-i-1.dat
-        data/gshhs/poly-l-1.dat
+  )
+
+SET(gshhs_CRUDE ${gshhs_MIN}
         data/gshhs/wdb_borders_c.b
-        data/gshhs/wdb_borders_i.b
-        data/gshhs/wdb_borders_l.b
         data/gshhs/wdb_rivers_c.b
-        data/gshhs/wdb_rivers_i.b
+  )
+
+SET(gshhs_LOW ${gshhs_CRUDE}
+        data/gshhs/poly-l-1.dat
+        data/gshhs/wdb_borders_l.b
         data/gshhs/wdb_rivers_l.b
-   )
+  )
+
+SET(gshhs_INTERMEDIATE ${gshhs_LOW}
+        data/gshhs/poly-i-1.dat
+        data/gshhs/wdb_borders_i.b
+        data/gshhs/wdb_rivers_i.b
+  )
+
+SET(gshhs_HIGH ${gshhs_INTERMEDIATE}
+        data/gshhs/poly-h-1.dat
+        data/gshhs/wdb_borders_h.b
+        data/gshhs/wdb_rivers_h.b
+  )
+
+SET(gshhs_FULL ${gshhs_HIGH}
+        data/gshhs/poly-f-1.dat
+        data/gshhs/wdb_borders_f.b
+        data/gshhs/wdb_rivers_f.b
+  )
+
+# Various data files
+IF(BUNDLE_GSHHS MATCHES "MIN")
+  SET(gshhs ${gshhs_MIN})
+ENDIF(BUNDLE_GSHHS MATCHES "MIN")
+
+IF(BUNDLE_GSHHS MATCHES "CRUDE")
+  SET(gshhs ${gshhs_CRUDE})
+ENDIF(BUNDLE_GSHHS MATCHES "CRUDE")
+
+IF(BUNDLE_GSHHS MATCHES "LOW")
+  SET(gshhs ${gshhs_LOW})
+ENDIF(BUNDLE_GSHHS MATCHES "LOW")
+
+IF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+  SET(gshhs ${gshhs_INTERMEDIATE})
+ENDIF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+
+IF(BUNDLE_GSHHS MATCHES "HIGH")
+  SET(gshhs ${gshhs_HIGH})
+ENDIF(BUNDLE_GSHHS MATCHES "HIGH")
+
+IF(BUNDLE_GSHHS MATCHES "FULL")
+  SET(gshhs ${gshhs_FULL})
+ENDIF(BUNDLE_GSHHS MATCHES "FULL")
 
 SET(uiData
 	src/bitmaps/styles.xml
@@ -944,8 +996,11 @@ ENDIF(WIN32)
 
 IF(APPLE)
 
-SET_SOURCE_FILES_PROPERTIES(
+IF(NOT BUNDLE_GSHHS MATCHES "NONE")
+  SET_SOURCE_FILES_PROPERTIES(
            ${gshhs} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs  )
+ENDIF(NOT BUNDLE_GSHHS MATCHES "NONE")
+
 SET_SOURCE_FILES_PROPERTIES(
            ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata  )
 SET_SOURCE_FILES_PROPERTIES(
@@ -1093,7 +1148,9 @@ IF(WIN32)
 SET(PREFIX_PKGDATA ".")
 ENDIF(WIN32)
 
-INSTALL(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+IF(NOT BUNDLE_GSHHS MATCHES "NONE")
+  INSTALL(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+ENDIF(NOT BUNDLE_GSHHS MATCHES "NONE")
 
 INSTALL(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
 
