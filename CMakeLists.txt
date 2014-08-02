@@ -1402,7 +1402,7 @@ IF(UNIX AND NOT APPLE)
 #        RPMTools_ADD_RPM_TARGETS(packagename ${CMAKE_SOURCE_DIR}/package.spec)
 #    ENDIF(RPMTools_FOUND)
 
-
+    SET(CPACK_STRIP_FILES ON)
     SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
     SET(CPACK_PACKAGE_CONTACT "David S. Register ")
     SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
@@ -1422,7 +1422,6 @@ IF(UNIX AND NOT APPLE)
     SET(CPACK_PACKAGE_DESCRIPTION "OpenCPN is a concise ChartPlotter/Navigator. The application supports: GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart Display, AIS Input Decoding, Waypoint Autopilot Navigation .")
     SET(CPACK_SET_DESTDIR ON)
     SET(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-
 ENDIF(UNIX AND NOT APPLE)
 
 IF(WIN32 AND NOT UNIX)
