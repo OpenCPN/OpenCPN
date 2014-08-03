@@ -230,8 +230,16 @@ void *OCP_DataStreamInput_Thread::Entry()
                     tak_ptr = tptr;
 
                 //    Message is ready to parse and send out
-                    wxString str_temp_buf(temp_buf, wxConvUTF8);
-                    Parse_And_Send_Posn(temp_buf);
+                //    Messages may be coming in as <blah blah><lf><cr>.
+                //    One example device is KVH1000 heading sensor.    
+                //    If that happens, the first character of a new captured message will the <cr>,
+                //    and we need to discard it.    
+                //    This is out of spec, but we should handle it anyway   
+                    if(temp_buf[0] == '\r')
+                        Parse_And_Send_Posn(&temp_buf[1]);
+                    else
+                        Parse_And_Send_Posn(temp_buf);
+                    
                 }
 
             }                   //if nl
@@ -594,8 +602,11 @@ HandleASuccessfulRead:
                     tak_ptr = tptr;
 
                     // parse and send the message
-                    wxString str_temp_buf(temp_buf, wxConvUTF8);
-                    Parse_And_Send_Posn(temp_buf);
+//                    wxString str_temp_buf(temp_buf, wxConvUTF8);
+                    if(temp_buf[0] == '\r')
+                        Parse_And_Send_Posn(&temp_buf[1]);
+                    else
+                        Parse_And_Send_Posn(temp_buf);
                 }
                 else
                 {

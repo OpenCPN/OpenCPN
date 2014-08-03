@@ -232,7 +232,8 @@ bool NMEA0183::IsGood( void ) const
    /*
    ** Next to last character must be a CR
    */
-
+   /*  This seems too harsh for cross platform work
+    * 
    if ( sentence.Sentence.Mid( sentence.Sentence.Len() - 2, 1 ) != wxString(_T("\r")) )
    {
       return( FALSE );
@@ -242,7 +243,8 @@ bool NMEA0183::IsGood( void ) const
    {
       return( FALSE );
    }
-
+   */
+   
    return( TRUE );
 }
 
