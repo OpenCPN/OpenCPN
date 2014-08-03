@@ -1019,10 +1019,9 @@ FOREACH (_currentSoundFile ${SOUND_FILES})
            ${_currentSoundFile} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/sounds )
 ENDFOREACH (_currentSoundFile )
 
-IF(BUNDLE_DOCS)
-  SET_SOURCE_FILES_PROPERTIES(
+SET_SOURCE_FILES_PROPERTIES(
            data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
-
+IF(BUNDLE_DOCS)
   SET_SOURCE_FILES_PROPERTIES(
            data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
@@ -1064,6 +1063,10 @@ IF(BUNDLE_DOCS)
       data/doc/help_web.html
       data/doc/help_en_US.html
       ${DOC_FILES}
+  )
+ELSE(BUNDLE_DOCS)
+  ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
+      data/doc/help_web.html
   )
 ENDIF(BUNDLE_DOCS)
 
@@ -1170,6 +1173,8 @@ INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds )
 
 IF(BUNDLE_DOCS)
   INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
+ELSE(BUNDLE_DOCS)
+  INSTALL(FILES data/doc/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc )
 ENDIF(BUNDLE_DOCS)
 
 IF(UNIX)
