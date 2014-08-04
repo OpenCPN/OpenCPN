@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-29 21:40-0400\n"
-"PO-Revision-Date: 2014-07-30 19:07-0400\n"
+"PO-Revision-Date: 2014-08-04 11:17-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Portuguese, Brazilian\n"
 "Language: pt_BR\n"
@@ -584,7 +584,7 @@ msgstr "AIS"
 
 #: src/chcanv.cpp:6258 src/chcanv.cpp:6260
 msgid "End Route"
-msgstr "Fim da Derrota"
+msgstr "Fim da Rota"
 
 #: src/chcanv.cpp:6267 src/chcanv.cpp:6269
 msgid "Measure Off"
@@ -748,7 +748,7 @@ msgstr "Enviar para o GPS"
 
 #: src/chcanv.cpp:6535 src/chcanv.cpp:6611
 msgid "Send to new GPS"
-msgstr "Send to new GPS"
+msgstr "Enviar para o GPS novo"
 
 #: src/chcanv.cpp:6552
 msgid "Layer Track"
@@ -2864,11 +2864,11 @@ msgstr "Opções de Apresentação da Carta"
 
 #: src/options.cpp:950
 msgid "COG Predictor Length (min)"
-msgstr "Tamanho do preditor da seta de Rfundo (Minutos):"
+msgstr "Tamanho do preditor da seta de fundo (Minutos)"
 
 #: src/options.cpp:956
 msgid "Ship Icon Type"
-msgstr "Tipo de ícone de navios"
+msgstr "Tipos de ícones de navios"
 
 #: src/options.cpp:959
 msgid "Real Scale Bitmap"
@@ -2924,11 +2924,11 @@ msgstr "&Kilômetros"
 
 #: src/options.cpp:1023
 msgid "Automatic Daily Tracks"
-msgstr "Marca de Fundeio Automática"
+msgstr "Faixas diárias automáticas"
 
 #: src/options.cpp:1026
 msgid "Highlight Tracks"
-msgstr "Mostrar acompanhamentos dos alvos"
+msgstr "Faixas de destaque"
 
 #: src/options.cpp:1033
 msgid "Tracking Precision"
@@ -2936,7 +2936,7 @@ msgstr "Propriedades do Acompanhamento..."
 
 #: src/options.cpp:1036
 msgid "Low"
-msgstr "De Para"
+msgstr "Baixa"
 
 #: src/options.cpp:1036
 msgid "Medium"
@@ -2948,11 +2948,11 @@ msgstr "Alta"
 
 #: src/options.cpp:1049
 msgid "Waypoint Arrival Circle Radius (NMi)"
-msgstr "Raio do círculo de chegada waypoint (INM)"
+msgstr "Raio do círculo de chegada waypoint (NM)"
 
 #: src/options.cpp:1061
 msgid "Loaded Charts"
-msgstr "Carta em Papel"
+msgstr "Cartas carregadas"
 
 #: src/options.cpp:1066
 msgid "Directories"
@@ -2960,11 +2960,11 @@ msgstr "Diretórios de Cartas Ativos"
 
 #: src/options.cpp:1090
 msgid "Add Directory..."
-msgstr "Direção do Vento"
+msgstr "Adicionar Diretório..."
 
 #: src/options.cpp:1093 src/options.cpp:1278
 msgid "Remove Selected"
-msgstr "Excluir Acompanhamento"
+msgstr "Remover selecionados"
 
 #: src/options.cpp:1097
 msgid "Update Control"
@@ -3008,7 +3008,7 @@ msgstr "Todos"
 
 #: src/options.cpp:1144
 msgid "Mariners Standard"
-msgstr "Mariner's Standard"
+msgstr "Padrão Marítimo"
 
 #: src/options.cpp:1145
 msgid "Display Category"
@@ -3016,7 +3016,7 @@ msgstr "Categoria da Apresentação"
 
 #: src/options.cpp:1149
 msgid "Depth Soundings"
-msgstr "Mostrar Sondagens"
+msgstr "Sondagens de profundidade"
 
 #: src/options.cpp:1153
 msgid "Chart Information Objects"
@@ -3024,7 +3024,7 @@ msgstr "Informação da Marca"
 
 #: src/options.cpp:1158
 msgid "Important Text Only"
-msgstr "Mostrar Somente Texto Importante"
+msgstr "Somente Texto Importante"
 
 #: src/options.cpp:1162
 msgid "Reduced Detail at Small Scale"
@@ -3108,11 +3108,11 @@ msgstr "Unidade de Profundidade na Carta"
 
 #: src/options.cpp:1257
 msgid "Tides && Currents"
-msgstr "Mostrar Correntes"
+msgstr "Marés && correntes"
 
 #: src/options.cpp:1262
 msgid "Active Datasets"
-msgstr "Diretórios de Cartas Ativos"
+msgstr "Conjuntos de dados ativos"
 
 #: src/options.cpp:1277
 msgid "Add Dataset..."
@@ -3120,7 +3120,7 @@ msgstr "Adicione o Dataset..."
 
 #: src/options.cpp:1323
 msgid "All Available Charts"
-msgstr "Diretórios de Cartas Ativos"
+msgstr "Todas as cartas disponíveis"
 
 #: src/options.cpp:1337
 msgid "Remove Chart"
@@ -3128,7 +3128,7 @@ msgstr "Diretórios de Cartas Ativos"
 
 #: src/options.cpp:1358
 msgid "All Charts"
-msgstr "Cartas"
+msgstr "Todas as cartas"
 
 #: src/options.cpp:1374
 msgid "New Group..."
@@ -3136,15 +3136,15 @@ msgstr "Grupo Novo..."
 
 #: src/options.cpp:1375
 msgid "Delete Group"
-msgstr "Excluir Derrota"
+msgstr "Excluir grupo"
 
 #: src/options.cpp:1397 src/options.cpp:1574 src/options.cpp:1921
 msgid "Display"
-msgstr "Apresentação"
+msgstr "Exposição"
 
 #: src/options.cpp:1404
 msgid "Chart Display Options"
-msgstr "Opções de Apresentação da Carta"
+msgstr "Opções de Exibição da Carta"
 
 #: src/options.cpp:1410
 msgid "Course UP Mode"
@@ -3152,7 +3152,7 @@ msgstr "Modo Rumo Acima"
 
 #: src/options.cpp:1419
 msgid "Course-Up Mode Display Update Period (sec)"
-msgstr "Modo de exibição Curso-a cima  Período de atualização(seg)"
+msgstr "Modo de exibição Rumo-A cima  Período de atualização(seg)"
 
 #: src/options.cpp:1428
 msgid "Look Ahead Mode"
@@ -3160,7 +3160,7 @@ msgstr "Modo Olhar adiante"
 
 #: src/options.cpp:1432
 msgid "Show Grid"
-msgstr "Mostrar Marés"
+msgstr "Mostrar grade"
 
 #: src/options.cpp:1436
 msgid "Show Depth Units"
@@ -3180,7 +3180,7 @@ msgstr "Suave Visão panorâmica / zoom"
 
 #: src/options.cpp:1457
 msgid "Zoom to Cursor"
-msgstr "Ampliar para &Caber"
+msgstr "Zoom para Cursor"
 
 #: src/options.cpp:1462
 msgid "Preserve Scale when Switching Charts"
@@ -3192,7 +3192,7 @@ msgstr "Habilitar Emenda de Cartas"
 
 #: src/options.cpp:1471
 msgid "Disable Full Screen Quilting"
-msgstr "Habilitar Emenda de Cartas"
+msgstr "Desabilitar Emenda de Cartas"
 
 #: src/options.cpp:1475
 msgid "Show Chart Outlines"
@@ -3268,7 +3268,7 @@ msgstr "Mostrar avisos de área (a partir de mensagens binárias de AIS)"
 
 #: src/options.cpp:1607
 msgid "Show AIS targets real size"
-msgstr "Mostrar Alvos AIS"
+msgstr "Mostrar tamanho real de alvos AIS"
 
 #: src/options.cpp:1613
 msgid "Show names with AIS targets at scale greater than 1:"
@@ -3288,7 +3288,7 @@ msgstr "\"Nome do Navio\" MMSI (indicativo)"
 
 #: src/options.cpp:1636
 msgid "[Class] Type (Status)"
-msgstr "[Classe] Tipo (Status)"
+msgstr "[Classe] Tipo (Estatus)"
 
 #: src/options.cpp:1639
 msgid "SOG COG"
@@ -3344,7 +3344,7 @@ msgstr "Escolher Fonte..."
 
 #: src/options.cpp:1737
 msgid "Choose Font Color..."
-msgstr "Escolher Fonte..."
+msgstr "Escolha a cor da fonte..."
 
 #: src/options.cpp:1741
 msgid "Toolbar and Window Style"
@@ -3372,7 +3372,7 @@ msgstr "Ativar a barra de ferramentas transparente"
 
 #: src/options.cpp:1782
 msgid "Show Lat/Long as"
-msgstr "Mostrar Alvos AIS"
+msgstr "Mostrar Lat/Long como"
 
 #: src/options.cpp:1786
 msgid "Degrees, Decimal Minutes"
@@ -3388,11 +3388,11 @@ msgstr "Graus, minutos, segundos"
 
 #: src/options.cpp:1794
 msgid "Show distance as"
-msgstr "Distância Total"
+msgstr "Mostrar distância como"
 
 #: src/options.cpp:1798
 msgid "Nautical miles"
-msgstr "Milhas &Náuticas"
+msgstr "Milhas náuticas"
 
 #: src/options.cpp:1798
 msgid "Statute miles"
@@ -3400,7 +3400,7 @@ msgstr "Estatuto milhas"
 
 #: src/options.cpp:1806
 msgid "Show speed as"
-msgstr "Mostrar Marés"
+msgstr "Mostrar a velocidade como"
 
 #: src/options.cpp:1810
 msgid "Knots"
@@ -3432,7 +3432,7 @@ msgstr "Aplicar"
 
 #: src/options.cpp:1924
 msgid "Connections"
-msgstr "Opções de Fonte"
+msgstr "Conexões"
 
 #: src/options.cpp:1927
 msgid "Charts"
@@ -3513,7 +3513,7 @@ msgstr "Digite o nome do grupo"
 
 #: src/options.cpp:3852
 msgid "New Chart Group"
-msgstr "Cartas"
+msgstr "Novo grupo de cartas"
 
 #: src/options.cpp:4009
 msgid "Select Tide/Current Data"
@@ -3569,11 +3569,11 @@ msgstr "Tamanho de memória de textura (MB)"
 
 #: src/options.cpp:4831
 msgid "Rebuild Texture Cache"
-msgstr "Rebuild Texture Cache"
+msgstr "Reconstruir o Cache de texturas"
 
 #: src/options.cpp:4834
 msgid "Clear Texture Cache"
-msgstr "Clear Texture Cache"
+msgstr "Limpar o Cache de textura"
 
 #: src/about.cpp:261
 msgid "The Open Source Chart Plotter/Navigator"
@@ -3609,7 +3609,7 @@ msgstr "Fechar"
 
 #: src/s57chart.cpp:3718
 msgid "OpenCPN S57 SENC File Create..."
-msgstr "OpenCPN Criar Derrota"
+msgstr "OpenCPN S57 SENC  criar arquivo..."
 
 #: src/s57chart.cpp:6434
 msgid "<font size=-2>(Sector angles are True Bearings from Seaward)</font><br>"
@@ -3639,7 +3639,7 @@ msgstr "PlugIn %s (%s), versão %i.%i foi detectado. \n esta versão é conhecid
 
 #: src/pluginmanager.cpp:616
 msgid "Incompatible PlugIn detected:\n"
-msgstr "Incompatible PlugIn detected:\n"
+msgstr "PlugIn incompatível detectado: \n"
 
 #: src/pluginmanager.cpp:618
 msgid "\n\n"
@@ -3648,15 +3648,15 @@ msgstr "\n\n"
 #: src/pluginmanager.cpp:621
 #, c-format
 msgid "PlugIn [ %s ] version %i.%i"
-msgstr "PlugIn [ %s ] version %i.%i"
+msgstr "PlugIn [%s] versão %i.%i"
 
 #: src/pluginmanager.cpp:626
 msgid ", and all previous versions,"
-msgstr ", and all previous versions,"
+msgstr "e todas as versões anteriores,"
 
 #: src/pluginmanager.cpp:627
 msgid " is incompatible with this version of OpenCPN."
-msgstr " is incompatible with this version of OpenCPN."
+msgstr " é incompatível com esta versão do OpenCPN."
 
 #: src/pluginmanager.cpp:2871
 msgid "Preferences"
@@ -3664,7 +3664,7 @@ msgstr "Preferências"
 
 #: src/pluginmanager.cpp:2949
 msgid "Disable"
-msgstr "Distância"
+msgstr "Desabilitar"
 
 #: src/toolbar.cpp:675
 msgid "You can't hide the last tool from the toolbar\nas this would make it inaccessible."
@@ -3700,11 +3700,11 @@ msgstr "OpenCPN Criar Derrota"
 
 #: src/kml.cpp:489
 msgid "OpenCPN Track"
-msgstr "OpenCPN Alerta"
+msgstr "OpenCPN faixa"
 
 #: src/kml.cpp:546
 msgid "OpenCPN Waypoint"
-msgstr "OpenCPN Criar Derrota"
+msgstr "OpenCPN Waypoint"
 
 #: src/kml.cpp:622
 msgid "Choose Format for Copy"
@@ -3720,7 +3720,7 @@ msgstr "KML com dados de waypoint estendido (QtVlm)"
 
 #: src/undo.cpp:82 src/AISTargetQueryDialog.cpp:174
 msgid "Create Waypoint"
-msgstr "Excluir Ponto da Derrota"
+msgstr "Criar  Waypoint"
 
 #: src/undo.cpp:85
 msgid "Delete Waypoint"
@@ -3728,7 +3728,7 @@ msgstr "Excluir Ponto da Derrota"
 
 #: src/undo.cpp:88
 msgid "Move Waypoint"
-msgstr "Para o Ponto"
+msgstr "Mover o Waypoint"
 
 #: src/routeprintout.cpp:106 src/routeprintout.cpp:369
 #: src/GoToPositionDialog.cpp:116 src/AIS_Target_Data.cpp:468
@@ -3737,7 +3737,7 @@ msgstr "Posição"
 
 #: src/routeprintout.cpp:336
 msgid "Print Route Selection"
-msgstr "Excluir Derrota"
+msgstr "Imprimir seleção de rota"
 
 #: src/routeprintout.cpp:353
 msgid "Elements to print..."
@@ -3745,11 +3745,11 @@ msgstr "Elementos para imprimir..."
 
 #: src/routeprintout.cpp:366
 msgid "Show Waypoint name."
-msgstr "Pontos da Derrota"
+msgstr "Mostre nome do Waypoint."
 
 #: src/routeprintout.cpp:373
 msgid "Show Waypoint position."
-msgstr "Informação da Marca"
+msgstr "Mostre posição do Waypoint."
 
 #: src/routeprintout.cpp:380
 msgid "Show course from each Waypoint to the next one. "
@@ -3761,11 +3761,11 @@ msgstr "Mostre distância de cada Waypoint para o próximo."
 
 #: src/routeprintout.cpp:394
 msgid "Show Waypoint description."
-msgstr "Descrição"
+msgstr "Mostre descrição do Waypoint."
 
 #: src/routeprintout.cpp:459
 msgid "Route Print"
-msgstr "Propriedades da Derrota..."
+msgstr "Imprimir a Rota"
 
 #: src/TrackPropDlg.cpp:127
 msgid "From"
@@ -3773,15 +3773,15 @@ msgstr "De"
 
 #: src/TrackPropDlg.cpp:145
 msgid "Display parameters"
-msgstr "Categoria da Apresentação"
+msgstr "Exibir parâmetros"
 
 #: src/TrackPropDlg.cpp:150
 msgid "Color"
-msgstr "c&or:"
+msgstr "Cor"
 
 #: src/TrackPropDlg.cpp:163
 msgid "Style"
-msgstr "E&stilo:"
+msgstr "Estilo"
 
 #: src/TrackPropDlg.cpp:173
 msgid "Width"
@@ -3801,7 +3801,7 @@ msgstr "Tempo de Viagem"
 
 #: src/TrackPropDlg.cpp:221
 msgid "Recorded points"
-msgstr "Renomear Pontos da Derrota?"
+msgstr "Pontos gravados"
 
 #: src/TrackPropDlg.cpp:226
 msgid "Time shown as"
@@ -3813,7 +3813,7 @@ msgstr "LMT @ Iniciar Faixa"
 
 #: src/TrackPropDlg.cpp:252
 msgid "Timestamp"
-msgstr "TED/Marca Temporal"
+msgstr "Carimbo de tempo"
 
 #: src/TrackPropDlg.cpp:327
 msgid "Advanced"
@@ -3825,15 +3825,15 @@ msgstr "Imprimir"
 
 #: src/TrackPropDlg.cpp:338
 msgid "Split"
-msgstr "Excluir Derrota"
+msgstr "Separar"
 
 #: src/TrackPropDlg.cpp:340
 msgid "Extend"
-msgstr "Fim da Derrota"
+msgstr "Estender"
 
 #: src/TrackPropDlg.cpp:342
 msgid "To route"
-msgstr "Tempo de Viagem"
+msgstr "A rota"
 
 #: src/TrackPropDlg.cpp:344
 msgid "Export"
@@ -3850,19 +3850,19 @@ msgstr "%H %M"
 #: src/TrackPropDlg.cpp:617
 #, c-format
 msgid "Track Properties, Layer: %d"
-msgstr "Propriedades do Acompanhamento, Layer: %d"
+msgstr "Propriedades da faixa, camada: %d"
 
 #: src/TrackPropDlg.cpp:630
 msgid "Track Properties"
-msgstr "Propriedades do Acompanhamento..."
+msgstr "Propriedades da Faixa"
 
 #: src/TrackPropDlg.cpp:845
 msgid "track"
-msgstr "Acompanhamentos"
+msgstr "faixa"
 
 #: src/TrackPropDlg.cpp:1279
 msgid "--"
-msgstr "-"
+msgstr "--"
 
 #: src/LinkPropDlg.cpp:41
 msgid "Link"
@@ -3870,7 +3870,7 @@ msgstr "Atalhos"
 
 #: src/LinkPropDlg.cpp:44
 msgid "Link description"
-msgstr "Descrição"
+msgstr "Descrição do atalho"
 
 #: src/LinkPropDlg.cpp:53
 msgid "URL"
@@ -3895,12 +3895,12 @@ msgstr "Problema descoberto"
 #: src/AISTargetListDialog.cpp:137 src/AISTargetListDialog.cpp:149
 #: src/AIS_Target_Data.cpp:341 src/AIS_Target_Data.cpp:715
 msgid "Active"
-msgstr "Ativar"
+msgstr "Ativo"
 
 #: src/AISTargetListDialog.cpp:138 src/AISTargetListDialog.cpp:150
 #: src/AIS_Target_Data.cpp:342 src/AIS_Target_Data.cpp:716
 msgid "Testing"
-msgstr "Configurações"
+msgstr "teste"
 
 #: src/AISTargetListDialog.cpp:142 src/AISTargetListDialog.cpp:154
 msgid "-"
@@ -3908,7 +3908,7 @@ msgstr "-"
 
 #: src/AISTargetListDialog.cpp:348
 msgid "Trk"
-msgstr "Acompanhamentos"
+msgstr "TRK"
 
 #: src/AISTargetListDialog.cpp:364
 msgid "Call"
@@ -3934,11 +3934,11 @@ msgstr "Marc."
 
 #: src/AISTargetListDialog.cpp:412 src/AIS_Target_Data.cpp:603
 msgid "Range"
-msgstr "Distância"
+msgstr "Gama"
 
 #: src/AISTargetListDialog.cpp:420
 msgid "CoG"
-msgstr "R fd"
+msgstr "CoG"
 
 #: src/AISTargetListDialog.cpp:428
 msgid "SoG"
@@ -3947,11 +3947,11 @@ msgstr "V fd"
 #: src/AISTargetListDialog.cpp:435 src/AIS_Target_Data.cpp:617
 #: src/AIS_Target_Data.cpp:755
 msgid "CPA"
-msgstr "Alerta PMA/TPMA"
+msgstr "CPA"
 
 #: src/AISTargetListDialog.cpp:442
 msgid "TCPA"
-msgstr "Alerta PMA/TPMA"
+msgstr "TCPA"
 
 #: src/AISTargetListDialog.cpp:454
 msgid "Target info"
@@ -3959,23 +3959,23 @@ msgstr "Lista dos Alvos AIS"
 
 #: src/AISTargetListDialog.cpp:467
 msgid "Create WPT"
-msgstr "Excluir Ponto da Derrota"
+msgstr "Criar WPT"
 
 #: src/AISTargetListDialog.cpp:473
 msgid "Hide All Tracks"
-msgstr "Interrogar Alvo AIS"
+msgstr "Esconder todas as faixas"
 
 #: src/AISTargetListDialog.cpp:479
 msgid "Show All Tracks"
-msgstr "Mostrar Alvos AIS"
+msgstr "Mostrar todas as faixas"
 
 #: src/AISTargetListDialog.cpp:485
 msgid "Toggle track"
-msgstr "Ligar Acompanhamento"
+msgstr "Faixa de alternância"
 
 #: src/AISTargetListDialog.cpp:491
 msgid "AutoSort"
-msgstr "AutoSort"
+msgstr "Auto Classificação"
 
 #: src/AISTargetListDialog.cpp:501
 msgid "Limit range: NM"
@@ -3983,7 +3983,7 @@ msgstr "Alcance Limitado: NM"
 
 #: src/AISTargetListDialog.cpp:515
 msgid "Target Count"
-msgstr "Lista dos Alvos AIS"
+msgstr "Contagem de alvos"
 
 #: src/AISTargetListDialog.cpp:596
 msgid "AIS target list"
@@ -3999,7 +3999,7 @@ msgstr "IMO"
 
 #: src/AIS_Target_Data.cpp:331
 msgid "Flag"
-msgstr "Flag"
+msgstr "Sinalizador"
 
 #: src/AIS_Target_Data.cpp:389
 msgid "Safety Broadcast Message"
@@ -4025,11 +4025,11 @@ msgstr "ETA (UTC)"
 #: src/AIS_Target_Data.cpp:544 src/AIS_Target_Data.cpp:562
 #: src/AIS_Target_Data.cpp:569 src/AIS_Target_Data.cpp:581
 msgid "---"
-msgstr "-"
+msgstr "---"
 
 #: src/AIS_Target_Data.cpp:553 src/AIS_Target_Data.cpp:556
 msgid "Right"
-msgstr "Tamanho:"
+msgstr "Direita"
 
 #: src/AIS_Target_Data.cpp:554 src/AIS_Target_Data.cpp:557
 msgid "Left"
@@ -4045,7 +4045,7 @@ msgstr "Taxa de volta"
 
 #: src/AIS_Target_Data.cpp:614
 msgid "in "
-msgstr "Atalhos"
+msgstr "em "
 
 #: src/AIS_Target_Data.cpp:624 src/AIS_Target_Data.cpp:627
 msgid "Inland Blue Flag"
@@ -4061,15 +4061,15 @@ msgstr "Próximo"
 
 #: src/AIS_Target_Data.cpp:639
 msgid "Altitude"
-msgstr "Latitude"
+msgstr "Altitude"
 
 #: src/AIS_Target_Data.cpp:746 src/AIS_Target_Data.cpp:750
 msgid " COG Unavailable"
-msgstr "Nenhuma Carta Disponível"
+msgstr " COG indisponível"
 
 #: src/AIS_Target_Data.cpp:757
 msgid "min"
-msgstr "Atalhos"
+msgstr "min"
 
 #: src/AIS_Target_Data.cpp:846
 msgid "A"
@@ -4085,7 +4085,7 @@ msgstr "Auxílio a Navegação"
 
 #: src/AIS_Target_Data.cpp:852
 msgid "Base Station"
-msgstr "Destino"
+msgstr "Estação base"
 
 #: src/AIS_Target_Data.cpp:854
 msgid "GPSGate Buddy"
@@ -4093,11 +4093,11 @@ msgstr "GPSGate Buddy"
 
 #: src/AIS_Target_Data.cpp:857
 msgid "DSC Distress"
-msgstr "Distância"
+msgstr "Socorro DSC"
 
 #: src/AIS_Target_Data.cpp:859
 msgid "DSC Position Report"
-msgstr "Hora do Último Relatório:"
+msgstr "Relatório de posição de DSC"
 
 #: src/AIS_Target_Data.cpp:861
 msgid "SART"
@@ -4109,7 +4109,7 @@ msgstr "Desc."
 
 #: src/AIS_Target_Data.cpp:891
 msgid "Albania"
-msgstr "Albania"
+msgstr "Albânia"
 
 #: src/AIS_Target_Data.cpp:892
 msgid "Andorra"
@@ -4117,7 +4117,7 @@ msgstr "Andorra"
 
 #: src/AIS_Target_Data.cpp:893
 msgid "Austria"
-msgstr "Austria"
+msgstr "Áustria"
 
 #: src/AIS_Target_Data.cpp:894
 msgid "Azores"
@@ -4125,36 +4125,36 @@ msgstr "Azores"
 
 #: src/AIS_Target_Data.cpp:895
 msgid "Belgium"
-msgstr "Belgium"
+msgstr "Bélgica"
 
 #: src/AIS_Target_Data.cpp:896
 msgid "Belarus"
-msgstr "Belarus"
+msgstr "Bielorrússia"
 
 #: src/AIS_Target_Data.cpp:897
 msgid "Bulgaria"
-msgstr "Bulgaria"
+msgstr "Bulgária"
 
 #: src/AIS_Target_Data.cpp:898
 msgid "Vatican City State"
-msgstr "Vatican City State"
+msgstr "Estado Cidade do Vaticano"
 
 #: src/AIS_Target_Data.cpp:899 src/AIS_Target_Data.cpp:900
 #: src/AIS_Target_Data.cpp:902
 msgid "Cyprus"
-msgstr "Cyprus"
+msgstr "Chipre"
 
 #: src/AIS_Target_Data.cpp:901 src/AIS_Target_Data.cpp:907
 msgid "Germany"
-msgstr "Germany"
+msgstr "Alemanha"
 
 #: src/AIS_Target_Data.cpp:903
 msgid "Georgia"
-msgstr "Georgia"
+msgstr "Geórgia"
 
 #: src/AIS_Target_Data.cpp:904
 msgid "Moldova"
-msgstr "Moldova"
+msgstr "Moldávia"
 
 #: src/AIS_Target_Data.cpp:905 src/AIS_Target_Data.cpp:915
 #: src/AIS_Target_Data.cpp:934 src/AIS_Target_Data.cpp:935
@@ -4164,32 +4164,32 @@ msgstr "Malta"
 
 #: src/AIS_Target_Data.cpp:906
 msgid "Armenia"
-msgstr "Armenia"
+msgstr "Armênia"
 
 #: src/AIS_Target_Data.cpp:908 src/AIS_Target_Data.cpp:909
 msgid "Denmark"
-msgstr "Denmark"
+msgstr "Dinamarca"
 
 #: src/AIS_Target_Data.cpp:910 src/AIS_Target_Data.cpp:911
 msgid "Spain"
-msgstr "Spain"
+msgstr "Espanha"
 
 #: src/AIS_Target_Data.cpp:912 src/AIS_Target_Data.cpp:913
 #: src/AIS_Target_Data.cpp:914
 msgid "France"
-msgstr "France"
+msgstr "França"
 
 #: src/AIS_Target_Data.cpp:916
 msgid "Finland"
-msgstr "Finland"
+msgstr "Finlândia"
 
 #: src/AIS_Target_Data.cpp:917
 msgid "Faroe Islands"
-msgstr "Faroe Islands"
+msgstr "Ilhas Faroe"
 
 #: src/AIS_Target_Data.cpp:921
 msgid "Great Britain"
-msgstr "Great Britain"
+msgstr "Grã-Bretanha"
 
 #: src/AIS_Target_Data.cpp:922
 msgid "Gibraltar"
@@ -4198,36 +4198,36 @@ msgstr "Gibraltar"
 #: src/AIS_Target_Data.cpp:923 src/AIS_Target_Data.cpp:925
 #: src/AIS_Target_Data.cpp:926 src/AIS_Target_Data.cpp:927
 msgid "Greece"
-msgstr "Greece"
+msgstr "Grécia"
 
 #: src/AIS_Target_Data.cpp:924
 msgid "Croatia"
-msgstr "Croatia"
+msgstr "Croácia"
 
 #: src/AIS_Target_Data.cpp:928
 msgid "Morocco"
-msgstr "Morocco"
+msgstr "Marrocos"
 
 #: src/AIS_Target_Data.cpp:929
 msgid "Hungary"
-msgstr "Hungary"
+msgstr "Hungria"
 
 #: src/AIS_Target_Data.cpp:930 src/AIS_Target_Data.cpp:931
 #: src/AIS_Target_Data.cpp:932
 msgid "Netherlands"
-msgstr "Netherlands"
+msgstr "Holanda"
 
 #: src/AIS_Target_Data.cpp:933
 msgid "Italy"
-msgstr "Italy"
+msgstr "Itália"
 
 #: src/AIS_Target_Data.cpp:936
 msgid "Ireland"
-msgstr "Ireland"
+msgstr "Irlanda"
 
 #: src/AIS_Target_Data.cpp:937
 msgid "Iceland"
-msgstr "Iceland"
+msgstr "Islândia"
 
 #: src/AIS_Target_Data.cpp:938
 msgid "Liechtenstein"
@@ -4235,11 +4235,11 @@ msgstr "Liechtenstein"
 
 #: src/AIS_Target_Data.cpp:939
 msgid "Luxembourg"
-msgstr "Luxembourg"
+msgstr "Luxemburgo"
 
 #: src/AIS_Target_Data.cpp:940
 msgid "Monaco"
-msgstr "Monaco"
+msgstr "Mônaco"
 
 #: src/AIS_Target_Data.cpp:941
 msgid "Madeira"
@@ -4247,11 +4247,11 @@ msgstr "Madeira"
 
 #: src/AIS_Target_Data.cpp:945
 msgid "Norway"
-msgstr "Norway"
+msgstr "Noruega"
 
 #: src/AIS_Target_Data.cpp:946
 msgid "Poland"
-msgstr "Poland"
+msgstr "Polônia"
 
 #: src/AIS_Target_Data.cpp:947
 msgid "Montenegro"
@@ -4263,11 +4263,11 @@ msgstr "Portugal"
 
 #: src/AIS_Target_Data.cpp:949
 msgid "Romania"
-msgstr "Romania"
+msgstr "Romênia"
 
 #: src/AIS_Target_Data.cpp:950 src/AIS_Target_Data.cpp:951
 msgid "Sweden"
-msgstr "Sweden"
+msgstr "Suécia"
 
 #: src/AIS_Target_Data.cpp:952
 msgid "Slovak Republic"
@@ -4476,11 +4476,11 @@ msgstr "United States Virgin Islands"
 
 #: src/AIS_Target_Data.cpp:1022
 msgid "Afghanistan"
-msgstr "Afghanistan"
+msgstr "Afeganistão"
 
 #: src/AIS_Target_Data.cpp:1023
 msgid "Saudi Arabia"
-msgstr "Saudi Arabia"
+msgstr "Arábia Saudita"
 
 #: src/AIS_Target_Data.cpp:1024
 msgid "Bangladesh"
@@ -4488,11 +4488,11 @@ msgstr "Bangladesh"
 
 #: src/AIS_Target_Data.cpp:1025
 msgid "Bahrain"
-msgstr "Bahrain"
+msgstr "Bahrein"
 
 #: src/AIS_Target_Data.cpp:1026
 msgid "Bhutan"
-msgstr "Bhutan"
+msgstr "Butão"
 
 #: src/AIS_Target_Data.cpp:1029
 msgid "China"
@@ -4508,19 +4508,19 @@ msgstr "Sri Lanka"
 
 #: src/AIS_Target_Data.cpp:1032
 msgid "India"
-msgstr "India"
+msgstr "Índia"
 
 #: src/AIS_Target_Data.cpp:1033
 msgid "Iran"
-msgstr "Iran"
+msgstr "Irã"
 
 #: src/AIS_Target_Data.cpp:1034
 msgid "Azerbaijani Republic"
-msgstr "Azerbaijani Republic"
+msgstr "República do Azerbaijão"
 
 #: src/AIS_Target_Data.cpp:1035
 msgid "Iraq"
-msgstr "Iraq"
+msgstr "Iraque"
 
 #: src/AIS_Target_Data.cpp:1036
 msgid "Israel"
@@ -4528,59 +4528,59 @@ msgstr "Israel"
 
 #: src/AIS_Target_Data.cpp:1037 src/AIS_Target_Data.cpp:1038
 msgid "Japan"
-msgstr "Japan"
+msgstr "Japão"
 
 #: src/AIS_Target_Data.cpp:1039
 msgid "Turkmenistan"
-msgstr "Turkmenistan"
+msgstr "Turcomenistão"
 
 #: src/AIS_Target_Data.cpp:1040
 msgid "Kazakhstan"
-msgstr "Kazakhstan"
+msgstr "Cazaquistão"
 
 #: src/AIS_Target_Data.cpp:1041
 msgid "Uzbekistan"
-msgstr "Uzbekistan"
+msgstr "Uzbequistão"
 
 #: src/AIS_Target_Data.cpp:1042
 msgid "Jordan"
-msgstr "Jordan"
+msgstr "Jordânia"
 
 #: src/AIS_Target_Data.cpp:1043 src/AIS_Target_Data.cpp:1044
 msgid "Korea"
-msgstr "Korea"
+msgstr "Coréia"
 
 #: src/AIS_Target_Data.cpp:1045
 msgid "Palestine"
-msgstr "Palestine"
+msgstr "Palestina"
 
 #: src/AIS_Target_Data.cpp:1046
 msgid "People's Rep. of Korea"
-msgstr "People's Rep. of Korea"
+msgstr "Rep. popular da Coreia"
 
 #: src/AIS_Target_Data.cpp:1047
 msgid "Kuwait"
-msgstr "Kuwait"
+msgstr "Kuaite"
 
 #: src/AIS_Target_Data.cpp:1048
 msgid "Lebanon"
-msgstr "Lebanon"
+msgstr "Líbano"
 
 #: src/AIS_Target_Data.cpp:1049
 msgid "Kyrgyz Republic"
-msgstr "Kyrgyz Republic"
+msgstr "República do Quirguizistão"
 
 #: src/AIS_Target_Data.cpp:1050
 msgid "Macao"
-msgstr "Macao"
+msgstr "Macau"
 
 #: src/AIS_Target_Data.cpp:1051
 msgid "Maldives"
-msgstr "Maldives"
+msgstr "Maldivas"
 
 #: src/AIS_Target_Data.cpp:1052
 msgid "Mongolia"
-msgstr "Mongolia"
+msgstr "Mongólia"
 
 #: src/AIS_Target_Data.cpp:1053
 msgid "Nepal"
@@ -4588,27 +4588,27 @@ msgstr "Nepal"
 
 #: src/AIS_Target_Data.cpp:1054
 msgid "Oman"
-msgstr "Oman"
+msgstr "Omã"
 
 #: src/AIS_Target_Data.cpp:1055
 msgid "Pakistan"
-msgstr "Pakistan"
+msgstr "Paquistão"
 
 #: src/AIS_Target_Data.cpp:1056
 msgid "Qatar"
-msgstr "Qatar"
+msgstr "Catar"
 
 #: src/AIS_Target_Data.cpp:1057
 msgid "Syrian Arab Republic"
-msgstr "Syrian Arab Republic"
+msgstr "República Árabe da Síria"
 
 #: src/AIS_Target_Data.cpp:1058
 msgid "United Arab Emirates"
-msgstr "United Arab Emirates"
+msgstr "Emirados Árabes Unidos"
 
 #: src/AIS_Target_Data.cpp:1059 src/AIS_Target_Data.cpp:1060
 msgid "Yemen"
-msgstr "Yemen"
+msgstr "Iêmen"
 
 #: src/AIS_Target_Data.cpp:1061
 msgid "Hong Kong"
@@ -4616,15 +4616,15 @@ msgstr "Hong Kong"
 
 #: src/AIS_Target_Data.cpp:1062
 msgid "Bosnia and Herzegovina"
-msgstr "Bosnia and Herzegovina"
+msgstr "Bósnia e Herzegovina"
 
 #: src/AIS_Target_Data.cpp:1063
 msgid "Adelie Land"
-msgstr "Adelie Land"
+msgstr "Terra Adélia"
 
 #: src/AIS_Target_Data.cpp:1064
 msgid "Australia"
-msgstr "Australia"
+msgstr "Austrália"
 
 #: src/AIS_Target_Data.cpp:1065
 msgid "Myanmar"
@@ -4636,7 +4636,7 @@ msgstr "Brunei Darussalam"
 
 #: src/AIS_Target_Data.cpp:1067
 msgid "Micronesia"
-msgstr "Micronesia"
+msgstr "Micronésia"
 
 #: src/AIS_Target_Data.cpp:1068
 msgid "Palau"
@@ -4644,19 +4644,19 @@ msgstr "Palau"
 
 #: src/AIS_Target_Data.cpp:1069
 msgid "New Zealand"
-msgstr "New Zealand"
+msgstr "Nova Zelândia"
 
 #: src/AIS_Target_Data.cpp:1070 src/AIS_Target_Data.cpp:1071
 msgid "Cambodia"
-msgstr "Cambodia"
+msgstr "Camboja"
 
 #: src/AIS_Target_Data.cpp:1072
 msgid "Christmas Island"
-msgstr "Christmas Island"
+msgstr "Ilha Christmas"
 
 #: src/AIS_Target_Data.cpp:1073
 msgid "Cook Islands"
-msgstr "Cook Islands"
+msgstr "Ilhas Cook"
 
 #: src/AIS_Target_Data.cpp:1074
 msgid "Fiji"
@@ -4664,11 +4664,11 @@ msgstr "Fiji"
 
 #: src/AIS_Target_Data.cpp:1075
 msgid "Cocos"
-msgstr "Cocos"
+msgstr "Ilhas Cocos"
 
 #: src/AIS_Target_Data.cpp:1076
 msgid "Indonesia"
-msgstr "Indonesia"
+msgstr "Indonésia"
 
 #: src/AIS_Target_Data.cpp:1077
 msgid "Kiribati"
@@ -4868,19 +4868,19 @@ msgstr "Burkina Faso"
 
 #: src/AIS_Target_Data.cpp:1130
 msgid "Kenya"
-msgstr "Kenya"
+msgstr "Quênia"
 
 #: src/AIS_Target_Data.cpp:1131
 msgid "Kerguelen Islands"
-msgstr "Kerguelen Islands"
+msgstr "Ilhas Kerguelen"
 
 #: src/AIS_Target_Data.cpp:1132 src/AIS_Target_Data.cpp:1133
 msgid "Liberia"
-msgstr "Liberia"
+msgstr "Libéria"
 
 #: src/AIS_Target_Data.cpp:1134
 msgid "South Sudan (Republic of)"
-msgstr "South Sudan (Republic of)"
+msgstr "Sudão do Sul (República da)"
 
 #: src/AIS_Target_Data.cpp:1135
 msgid "Libyan Arab Jamahiriya"
@@ -4888,11 +4888,11 @@ msgstr "Libyan Arab Jamahiriya"
 
 #: src/AIS_Target_Data.cpp:1136
 msgid "Lesotho"
-msgstr "Lesotho"
+msgstr "Lesoto"
 
 #: src/AIS_Target_Data.cpp:1137
 msgid "Mauritius"
-msgstr "Mauritius"
+msgstr "Maurício"
 
 #: src/AIS_Target_Data.cpp:1138
 msgid "Madagascar"
@@ -4904,11 +4904,11 @@ msgstr "Mali"
 
 #: src/AIS_Target_Data.cpp:1140
 msgid "Mozambique"
-msgstr "Mozambique"
+msgstr "Moçambique"
 
 #: src/AIS_Target_Data.cpp:1141
 msgid "Mauritania"
-msgstr "Mauritania"
+msgstr "Mauritânia"
 
 #: src/AIS_Target_Data.cpp:1142
 msgid "Malawi"
@@ -4916,27 +4916,27 @@ msgstr "Malawi"
 
 #: src/AIS_Target_Data.cpp:1143
 msgid "Niger"
-msgstr "Niger"
+msgstr "Níger"
 
 #: src/AIS_Target_Data.cpp:1144
 msgid "Nigeria"
-msgstr "Nigeria"
+msgstr "Nigéria"
 
 #: src/AIS_Target_Data.cpp:1145
 msgid "Namibia"
-msgstr "Namibia"
+msgstr "Namíbia"
 
 #: src/AIS_Target_Data.cpp:1146
 msgid "Reunion"
-msgstr "Reunion"
+msgstr "Reunião"
 
 #: src/AIS_Target_Data.cpp:1147
 msgid "Rwanda"
-msgstr "Rwanda"
+msgstr "Ruanda"
 
 #: src/AIS_Target_Data.cpp:1148
 msgid "Sudan"
-msgstr "Sudan"
+msgstr "Sudão"
 
 #: src/AIS_Target_Data.cpp:1149
 msgid "Senegal"
@@ -4948,23 +4948,23 @@ msgstr "Seychelles"
 
 #: src/AIS_Target_Data.cpp:1151
 msgid "Saint Helena"
-msgstr "Saint Helena"
+msgstr "Santa Helena"
 
 #: src/AIS_Target_Data.cpp:1152
 msgid "Somali Democratic Republic"
-msgstr "Somali Democratic Republic"
+msgstr "República Democrática da Somália"
 
 #: src/AIS_Target_Data.cpp:1153
 msgid "Sierra Leone"
-msgstr "Sierra Leone"
+msgstr "Serra Leoa"
 
 #: src/AIS_Target_Data.cpp:1154
 msgid "Sao Tome and Principe"
-msgstr "Sao Tome and Principe"
+msgstr "São Tomé e Príncipe"
 
 #: src/AIS_Target_Data.cpp:1155
 msgid "Swaziland"
-msgstr "Swaziland"
+msgstr "Suazilândia"
 
 #: src/AIS_Target_Data.cpp:1156
 msgid "Chad"
@@ -4972,15 +4972,15 @@ msgstr "Chad"
 
 #: src/AIS_Target_Data.cpp:1157
 msgid "Togolese Republic"
-msgstr "Togolese Republic"
+msgstr "República Togolesa"
 
 #: src/AIS_Target_Data.cpp:1158
 msgid "Tunisia"
-msgstr "Tunisia"
+msgstr "Tunísia"
 
 #: src/AIS_Target_Data.cpp:1159 src/AIS_Target_Data.cpp:1162
 msgid "Tanzania"
-msgstr "Tanzania"
+msgstr "Tanzânia"
 
 #: src/AIS_Target_Data.cpp:1160
 msgid "Uganda"
@@ -4988,27 +4988,27 @@ msgstr "Uganda"
 
 #: src/AIS_Target_Data.cpp:1161
 msgid "Dem Rep.of the Congo"
-msgstr "Dem Rep.of the Congo"
+msgstr "Republica Democratica do Congo"
 
 #: src/AIS_Target_Data.cpp:1163
 msgid "Zambia"
-msgstr "Zambia"
+msgstr "Zâmbia"
 
 #: src/AIS_Target_Data.cpp:1164
 msgid "Zimbabwe"
-msgstr "Zimbabwe"
+msgstr "Zimbabué"
 
 #: src/AIS_Target_Data.cpp:1165
 msgid "Argentine Republic"
-msgstr "Argentine Republic"
+msgstr "República Argentina"
 
 #: src/AIS_Target_Data.cpp:1166
 msgid "Brazil"
-msgstr "Brazil"
+msgstr "Brasil"
 
 #: src/AIS_Target_Data.cpp:1167
 msgid "Bolivia"
-msgstr "Bolivia"
+msgstr "Bolívia"
 
 #: src/AIS_Target_Data.cpp:1168
 msgid "Chile"
@@ -5016,15 +5016,15 @@ msgstr "Chile"
 
 #: src/AIS_Target_Data.cpp:1169
 msgid "Colombia"
-msgstr "Colombia"
+msgstr "Colômbia"
 
 #: src/AIS_Target_Data.cpp:1170
 msgid "Ecuador"
-msgstr "Ecuador"
+msgstr "Equador"
 
 #: src/AIS_Target_Data.cpp:1171
 msgid "Falkland Islands"
-msgstr "Falkland Islands"
+msgstr "Ilhas Malvinas"
 
 #: src/AIS_Target_Data.cpp:1172
 msgid "Guiana"
@@ -5036,7 +5036,7 @@ msgstr "Guyana"
 
 #: src/AIS_Target_Data.cpp:1174
 msgid "Paraguay"
-msgstr "Paraguay"
+msgstr "Paraguai"
 
 #: src/AIS_Target_Data.cpp:1175
 msgid "Peru"
@@ -5048,7 +5048,7 @@ msgstr "Suriname"
 
 #: src/AIS_Target_Data.cpp:1177
 msgid "Uruguay"
-msgstr "Uruguay"
+msgstr "Uruguai"
 
 #: src/AIS_Target_Data.cpp:1178
 msgid "Venezuela"

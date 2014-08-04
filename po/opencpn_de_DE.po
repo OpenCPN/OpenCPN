@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-29 21:40-0400\n"
-"PO-Revision-Date: 2014-07-30 19:06-0400\n"
+"PO-Revision-Date: 2014-08-04 11:16-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: German\n"
 "Language: de_DE\n"
@@ -344,7 +344,7 @@ msgstr "OpenCPN erfordert Zugriff auf serielle Anschlüsse mit seriellen NMEA Da
 
 #: src/chart1.cpp:8774
 msgid "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
-msgstr "No Serial Ports can be found on this system.\nYou must install a serial port (modprobe correct kernel module) or plug in a usb serial device.\n"
+msgstr "Auf diesem System wurden keine seriellen Schnittstellen gefunden. \n Sie müssen die Treiber für eine serielle Schnittstelle installieren oder einen Serial zu USB Konverter einstecken.\n"
 
 #: src/chart1.cpp:8796
 msgid "You do currently not have permission to access the serial ports on this system.\n\nIt is suggested that you exit OpenCPN now,\nand add yourself to the correct group to enable serial port access.\n\nYou may do so by executing the following command from the linux command line:\n\n                sudo usermod -a -G "
@@ -568,7 +568,7 @@ msgstr "Sollen Großkreis-Wegpunkte zu diesem Abschnitt zugefügt werden?"
 
 #: src/chcanv.cpp:6213 src/chcanv.cpp:6222
 msgid "Menu"
-msgstr "Menu"
+msgstr "Menü"
 
 #: src/chcanv.cpp:6230
 msgid "Waypoint"
@@ -596,11 +596,11 @@ msgstr "Meß-Werkzeug"
 
 #: src/chcanv.cpp:6278
 msgid "Undo"
-msgstr "Undo"
+msgstr "Rückgängig"
 
 #: src/chcanv.cpp:6284
 msgid "Redo"
-msgstr "Redo"
+msgstr "Wiederholen"
 
 #: src/chcanv.cpp:6338
 msgid "Max Detail Here"
