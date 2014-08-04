@@ -4081,7 +4081,7 @@ msgstr "B"
 
 #: src/AIS_Target_Data.cpp:850
 msgid "Aid to Navigation"
-msgstr "Aid to Navigation\n\n"
+msgstr "Aid to Navigation"
 
 #: src/AIS_Target_Data.cpp:852
 msgid "Base Station"

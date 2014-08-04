@@ -3995,7 +3995,7 @@ msgstr "搜救飛機"
 
 #: src/AIS_Target_Data.cpp:317
 msgid "IMO"
-msgstr "IMO:\n"
+msgstr "IMO:"
 
 #: src/AIS_Target_Data.cpp:331
 msgid "Flag"
