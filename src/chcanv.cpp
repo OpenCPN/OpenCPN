@@ -8612,33 +8612,34 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
     else
         chartValidRegion = m_pQuilt->GetFullQuiltRenderedRegion();
 
-    //    Copy current chart region
-    wxRegion backgroundRegion( wxRect( 0, 0, svp.pix_width, svp.pix_height ) );
-
-    wxRegion clip_region;
-    if( chartValidRegion.IsOk() ){
-        clip_region = chartValidRegion.ConvertTowxRegion();
-        backgroundRegion.Subtract( clip_region );
-    }
-
-    //    Associate with temp_dc
     temp_dc.DestroyClippingRegion();
-    temp_dc.SetClippingRegion( backgroundRegion );
+    
+    //    Copy current chart region
+    OCPNRegion backgroundRegion(  0, 0, svp.pix_width, svp.pix_height  );
 
-    //    Draw the Background Chart only in the areas NOT covered by the current chart view
+    if( chartValidRegion.IsOk() )
+        backgroundRegion.Subtract( chartValidRegion );
 
     if( ( ( fabs( GetVP().skew ) < .01 ) || ! g_bskew_comp )
         && ! backgroundRegion.IsEmpty() ) {
+        
+        //    Associate with temp_dc
+        wxRegion *clip_region = backgroundRegion.GetNew_wxRegion();
+        temp_dc.SetClippingRegion( *clip_region );
+        delete clip_region;
+
+    //    Draw the Background Chart only in the areas NOT covered by the current chart view
+
         /* unfortunately wxDC::DrawRectangle and wxDC::Clear do not respect
            clipping regions with more than 1 rectangle so... */
         wxColour water = cc1->pWorldBackgroundChart->water;
         temp_dc.SetPen( *wxTRANSPARENT_PEN );
         temp_dc.SetBrush( wxBrush( water ) );
-        wxRegionIterator upd( backgroundRegion ); // get the update rect list
-        while( upd ) {
+        OCPNRegionIterator upd( backgroundRegion ); // get the update rect list
+        while( upd.HaveRects() ) {
             wxRect rect = upd.GetRect();
             temp_dc.DrawRectangle(rect);
-            upd++;
+            upd.NextRect();
         }
 
         ocpnDC bgdc( temp_dc );

@@ -482,6 +482,10 @@ wxRegion &OCPNRegion::ConvertTowxRegion()
     return *(wxRegion *)this;
 }
 
+wxRegion *OCPNRegion::GetNew_wxRegion()
+{
+    return (wxRegion *)this;
+}
 
 #endif    
 
@@ -816,6 +820,36 @@ wxRegion &OCPNRegion::ConvertTowxRegion()
     free( gdkrects );
     
     return *r;
+}
+
+
+wxRegion *OCPNRegion::GetNew_wxRegion()
+{
+    wxRegion *r = new wxRegion;
+    r->Clear();
+    
+    OGdkRectangle *gdkrects = NULL;
+    int numRects = 0;
+    gdk_region_get_rectangles( (OGdkRegion *)GetRegion(), &gdkrects, &numRects );
+    
+    if (numRects)
+    {
+        for (int i=0; i < numRects; ++i)
+        {
+            OGdkRectangle &gr = gdkrects[i];
+            
+            wxRect wr;
+            wr.x = gr.x;
+            wr.y = gr.y;
+            wr.width = gr.width;
+            wr.height = gr.height;
+            
+            r->Union(wr);
+        }
+    }
+    free( gdkrects );
+    
+    return r;
 }
 
 
