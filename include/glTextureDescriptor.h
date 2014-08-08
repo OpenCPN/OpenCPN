@@ -51,6 +51,7 @@ public:
     int nCache_Color;
     
     unsigned char *map_array[10];
+    int miplevel_upload[10];
     
 private:    
     unsigned char *comp_array[10];

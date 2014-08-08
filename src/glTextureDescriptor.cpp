@@ -32,6 +32,7 @@ glTextureDescriptor::glTextureDescriptor()
     for( int i = 0; i < 10; i++ ){
         map_array[i] = NULL;
         comp_array[i] = NULL;
+        miplevel_upload[i] = 0;
     }
 
     tex_name = 0;
