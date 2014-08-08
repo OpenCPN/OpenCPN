@@ -86,7 +86,7 @@ class       wxScrolledWindow;
 #define     WANTS_DYNAMIC_OPENGL_OVERLAY_CALLBACK     0x00010000
 #define     WANTS_LATE_INIT                           0x00020000
 #define     INSTALLS_PLUGIN_CHART_GL                  0x00040000
-#define     WANTS_MOUSE_HOOK                          0x00080000
+#define     WANTS_MOUSE_EVENTS                        0x00080000
 #define     WANTS_VECTOR_CHART_OBJECT_INFO            0x00100000
 
 //----------------------------------------------------------------------------------------------------------

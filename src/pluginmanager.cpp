@@ -745,6 +745,10 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         pic->m_pplugin = dynamic_cast<opencpn_plugin_111*>(plug_in);
         break;
         
+    case 112:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_112*>(plug_in);
+        break;
+    
     default:
         break;
     }
@@ -806,6 +810,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 109:
                     case 110:
                     case 111:
+                    case 112:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -856,6 +861,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 109:
                     case 110:
                     case 111:
+                    case 112:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -931,6 +937,37 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
 
     return true;
 }
+
+bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
+{
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    {
+        PlugInContainer *pic = plugin_array.Item(i);
+        if(pic->m_bEnabled && pic->m_bInitState)
+        {
+            if(pic->m_cap_flag & WANTS_MOUSE_EVENTS){
+            {
+                switch(pic->m_api_version)
+                {
+                    case 112:
+                    {
+                        opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
+                            if(ppi)
+                                ppi->MouseEventHook( event );   
+                            break;
+                        }
+                        
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    
+    return true;
+}
+
 
 void PlugInManager::SendViewPortToRequestingPlugIns( ViewPort &vp )
 {

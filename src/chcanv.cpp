@@ -4750,6 +4750,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     if( event.ButtonUp() && HasCapture() ) ReleaseMouse();
 #endif
 
+    if(g_pi_manager)
+        g_pi_manager->SendMouseEventToPlugins( event );
+    
     // We start with Double Click processing. The first left click just starts a timer and
     // is remembered, then we actually do something if there is a LeftDClick.
     // If there is, the two single clicks are ignored.
