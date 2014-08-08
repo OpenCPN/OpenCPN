@@ -1051,7 +1051,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-#if !defined(__WXMSW__) && !defined(__WXQT__)
+#if !defined(__WXMSW__)
 
     wxImage ICursorLeft = style->GetIcon( _T("left") ).ConvertToImage();
     wxImage ICursorRight = style->GetIcon( _T("right") ).ConvertToImage();
@@ -1125,7 +1125,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         pCursorCross = new wxCursor ( wxCURSOR_ARROW );
 
 #else
-#ifndef __WXQT__
 
     wxImage ICursorLeft = style->GetIcon( _T("left") ).ConvertToImage();
     wxImage ICursorRight = style->GetIcon( _T("right") ).ConvertToImage();
@@ -1175,7 +1174,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         pCursorCross = new wxCursor( ICursorCross );
     } else
         pCursorCross = new wxCursor( wxCURSOR_ARROW );
-#endif
 #endif      // MSW, X11
     pCursorArrow = new wxCursor( wxCURSOR_ARROW );
 
