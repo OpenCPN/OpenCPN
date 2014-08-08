@@ -704,9 +704,10 @@ void glChartCanvas::ClearAllRasterTextures( void )
     //     Delete all the TexFactory instances
     ChartPointerHashTexfactType::iterator itt;
     for( itt = m_chart_texfactory_hash.begin(); itt != m_chart_texfactory_hash.end(); ++itt ) {
-        ChartBase *pc = (ChartBase *) itt->first;
+//        ChartBase *pc = (ChartBase *) itt->first;
+        wxString key = itt->first;
         
-        glTexFactory *ptf = m_chart_texfactory_hash[pc];
+        glTexFactory *ptf = m_chart_texfactory_hash[key];
         
         if( ptf){
             ptf->PurgeBackgroundCompressionPool();
@@ -882,6 +883,8 @@ void glChartCanvas::SetupOpenGL()
         !s_glDeleteRenderbuffers )
         m_b_DisableFBO = true;
 
+    m_b_DisableFBO = true;
+    
     g_b_EnableVBO = true;
     if( !s_glBindBuffer || !s_glBufferData || !s_glGenBuffers || !s_glDeleteBuffers )
         g_b_EnableVBO = false;
@@ -1069,11 +1072,11 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 bool glChartCanvas::PurgeChartTextures( ChartBase *pc )
 {
     //    Look for the texture factory for this chart
-    ChartPointerHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( pc );
+    ChartPointerHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( pc->GetFullPath() );
     
     //    Found ?
     if( ittf != m_chart_texfactory_hash.end() ) {
-        glTexFactory *pTexFact = m_chart_texfactory_hash[pc];
+        glTexFactory *pTexFact = m_chart_texfactory_hash[pc->GetFullPath()];
         
         if(pTexFact){
             pTexFact->PurgeBackgroundCompressionPool();
@@ -2078,16 +2081,17 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     SetClipRegion( vp, clipregion );
 
     //    Look for the texture factory for this chart
+    wxString key = chart->GetFullPath();
     glTexFactory *pTexFact;
-    ChartPointerHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( chart );
+    ChartPointerHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( key );
     
     //    Not Found ?
     if( ittf == m_chart_texfactory_hash.end() ) {
         glTexFactory *p = new glTexFactory(chart, g_raster_format);
-        m_chart_texfactory_hash[chart] = p;
+        m_chart_texfactory_hash[key] = p;
     }
     
-    pTexFact = m_chart_texfactory_hash[chart];
+    pTexFact = m_chart_texfactory_hash[key];
     
 
     //    For underzoom cases, we will define the textures as having their base levels
@@ -2621,31 +2625,37 @@ void glChartCanvas::Render()
     //  This is done chart-by-chart...later we will scrub for unused textures
     //  that belong to charts which ARE used in this render, if we need to....
 
-    ChartPointerHashTexfactType::iterator it0;
-    for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
-        ChartBase *pc = (ChartBase *) it0->first;
-        glTexFactory *ptf = it0->second;
-        if(!ptf)
-            continue;
+#if 1    
+    bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
+    if(bGLMemCrunch){
+        ChartPointerHashTexfactType::iterator it0;
+        for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
+            wxString chart_full_path = it0->first;
+            glTexFactory *ptf = it0->second;
+            if(!ptf)
+                continue;
         
-        bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
-        if(!bGLMemCrunch)
-            break;
+            bool bGLMemCrunchC = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
+            if(!bGLMemCrunchC)
+                break;
         
-        if( VPoint.b_quilt )          // quilted
-        {
-            if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                !cc1->m_pQuilt->IsChartInQuilt( pc ) ) {
-                ptf->DeleteSomeTextures( (g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * 8) / 10);
+            if( VPoint.b_quilt )          // quilted
+            {
+                if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
+                    !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+                    ptf->DeleteSomeTextures( (g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * 8) / 10);
+                }
             }
-        }
-        else      // not quilted
-        {
-            if( Current_Ch != pc ) {
-                ptf->DeleteSomeTextures( (g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * 8) / 10 );
+            else      // not quilted
+            {
+                if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+                {
+                      ptf->DeleteSomeTextures( (g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * 8) / 10 );
+                }
             }
         }
     }
+#endif
 
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)

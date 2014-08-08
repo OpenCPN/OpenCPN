@@ -39,7 +39,7 @@
 
 class glTexFactory;
 //      This is a hashmap with Chartbase* as key, and glTexFactory as value
-WX_DECLARE_HASH_MAP( void*, glTexFactory*, wxPointerHash, wxPointerEqual, ChartPointerHashTexfactType );
+WX_DECLARE_STRING_HASH_MAP( glTexFactory*, ChartPointerHashTexfactType );
 
 class ocpnGLOptions
 {

@@ -190,6 +190,8 @@ public:
     }
     QuiltPatch *GetCurrentPatch();
     bool IsChartInQuilt( ChartBase *pc );
+    bool IsChartInQuilt( wxString &full_path);
+    
     bool IsQuiltVector( void );
     OCPNRegion GetHiliteRegion( ViewPort &vp );
 

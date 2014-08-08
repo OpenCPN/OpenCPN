@@ -284,6 +284,21 @@ bool Quilt::IsChartInQuilt( ChartBase *pc )
     return false;
 }
 
+bool Quilt::IsChartInQuilt( wxString &full_path)
+{
+    //    Iterate thru the quilt
+    for( unsigned int ir = 0; ir < m_pcandidate_array->GetCount(); ir++ ) {
+        QuiltCandidate *pqc = m_pcandidate_array->Item( ir );
+        if( ( pqc->b_include ) && ( !pqc->b_eclipsed ) ) {
+            ChartTableEntry *pcte = ChartData->GetpChartTableEntry(pqc->dbIndex);
+            if(pcte->GetpsFullPath()->IsSameAs(full_path))
+                return true;
+        }
+    }
+    return false;
+}
+
+
 ArrayOfInts Quilt::GetCandidatedbIndexArray( bool from_ref_chart, bool exclude_user_hidden )
 {
     ArrayOfInts ret;

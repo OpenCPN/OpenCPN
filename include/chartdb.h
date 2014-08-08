@@ -154,7 +154,7 @@ public:
       void UnLockAllCacheCharts();
       
       void ClearCacheInUseFlags(void);
-      void PurgeCacheUnusedCharts(bool b_force = false);
+      void PurgeCacheUnusedCharts( double factor );
 
       bool IsBusy(){ return m_b_busy; }
 protected:

@@ -3415,9 +3415,7 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
                     InvalidateGL();
                 }
 
-//                ChartData->UnLockCache();
-//                ChartData->PurgeCacheUnusedCharts( false );
-//                ChartData->LockCache();
+                ChartData->PurgeCacheUnusedCharts( 0.5 );
 
                 if(b_refresh)
                     Refresh( false );

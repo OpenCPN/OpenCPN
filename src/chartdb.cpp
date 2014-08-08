@@ -296,7 +296,11 @@ void ChartDB::ClearCacheInUseFlags(void)
     }
 }
 
-void ChartDB::PurgeCacheUnusedCharts(bool b_force)
+
+//      Try to purge and delete charts from the cache until the application memory used is
+//      until the application memory used is less than {factor * Limit}
+//      Purge charts on LRU policy
+void ChartDB::PurgeCacheUnusedCharts( double factor)
 {
       //    Use memory limited cache policy, if defined....
       if(g_memCacheLimit)
@@ -306,37 +310,37 @@ void ChartDB::PurgeCacheUnusedCharts(bool b_force)
             //    Check memory status to see if above limit
                 int mem_total, mem_used;
                 GetMemoryStatus(&mem_total, &mem_used);
-                int mem_limit = g_memCacheLimit * 8 / 10;
+                int mem_limit = g_memCacheLimit * factor;
 
-                if(((mem_used > mem_limit) || b_force) && !m_b_locked)
+                int nl = pChartCache->GetCount();       // max loop count, by definition
+                    
+                while( (mem_used > mem_limit) && (nl>0) )
                 {
-    //                  printf(" ChartdB::PurgeCacheUnusedCharts Before--- Mem_total: %d  mem_used: %d\n", mem_total, mem_used);
-                    unsigned int i = 0;
-                    while( i<pChartCache->GetCount())
-                    {
-                            CacheEntry *pce = (CacheEntry *)(pChartCache->Item(i));
-                            if(!pce->b_in_use)
-                            {
-                                ChartBase *Ch = (ChartBase *)pce->pChart;
-
+                    if( pChartCache->GetCount() < 2 )
+                        break;
+                    
+                    CacheEntry *pce = FindOldestDeleteCandidate();
+                    if(pce){
+                        ChartBase *Ch =  (ChartBase *)(pce->pChart);
+                        wxString msg(_T("Purging unused chart from cache: "));
+                        msg += Ch->GetFullPath();
+                        wxLogMessage(msg);
+                                
                                 //    The glCanvas may be cacheing some information (i.e. texture tiles) for this chart
-                                if(g_bopengl && cc1)
-                                        cc1->PurgeGLCanvasChartCache(Ch);
+                        if(g_bopengl && cc1)
+                              cc1->PurgeGLCanvasChartCache(Ch);
 
                                 //    And delete the chart
-                                delete Ch;
+                        delete Ch;
 
                                 //remove the cache entry
-                                pChartCache->Remove(pce);
+                        pChartCache->Remove(pce);
 
-                                i=0;
-
-                            }
-                            else
-                                i++;
                     }
-    //                  GetMemoryStatus(&mem_total, &mem_used);
-    //                  printf(" ChartdB::PurgeCacheUnusedCharts After--- Mem_total: %d  mem_used: %d\n", mem_total, mem_used);
+                    
+                    GetMemoryStatus(&mem_total, &mem_used);
+                    
+                    nl--;
                 }
         }
         m_cache_mutex.Unlock();
