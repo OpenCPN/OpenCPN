@@ -135,10 +135,10 @@ ELSE(BUNDLE_DOCS)
   MESSAGE (STATUS "*** Package will NOT include documentation ***")
 ENDIF(BUNDLE_DOCS)
 IF(BUNDLE_GSHHS)
-  # Possible values: NONE, MIN (=Only crude polygons, no borders/rivers, default), CRUDE, LOW, INTERMEDIATE, HIGH, FULL
+  # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers), CRUDE, LOW, INTERMEDIATE, HIGH, FULL
   MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
 ELSE(BUNDLE_GSHHS)
-  SET(BUNDLE_GSHHS "MIN")
+  SET(BUNDLE_GSHHS "NONE")
   MESSAGE (STATUS "*** Package will include only crude level GSHHS polygons ***")
 ENDIF(BUNDLE_GSHHS)
 
