@@ -319,7 +319,7 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
                     if( pChartCache->GetCount() < 2 )
                         break;
                     
-                    CacheEntry *pce = FindOldestDeleteCandidate();
+                    CacheEntry *pce = FindOldestDeleteCandidate( false );
                     if(pce){
                         ChartBase *Ch =  (ChartBase *)(pce->pChart);
                         wxString msg(_T("Purging unused chart from cache: "));
@@ -919,7 +919,7 @@ ChartBase *ChartDB::OpenChartFromDBAndLock( int index, ChartInitFlag init_flag )
     return pret;
 }
 
-CacheEntry *ChartDB::FindOldestDeleteCandidate()
+CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
 {
     CacheEntry *pret = 0;
     
@@ -929,7 +929,8 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate()
         {
             wxDateTime now = wxDateTime::Now();                   // get time for LRU use
             
-            wxLogMessage(_T("Searching chart cache for oldest entry"));
+            if(blog)
+                wxLogMessage(_T("Searching chart cache for oldest entry"));
             int LRUTime = now.GetTicks();
             int iOldest = 0;
             for(unsigned int i=0 ; i<nCache ; i++)
@@ -945,13 +946,16 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate()
                 }
             }
             int dt = now.GetTicks() - LRUTime;
-            wxLogMessage(_T("Oldest cache index is %d, delta t is %d"), iOldest, dt);
 
             CacheEntry *pce = (CacheEntry *)(pChartCache->Item(iOldest));
             ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
                 
-            if( (!pce->n_lock) && (Current_Ch != pDeleteCandidate) )
+            if( (!pce->n_lock) && (Current_Ch != pDeleteCandidate) ){
+                if(blog)
+                    wxLogMessage(_T("Oldest unlocaked cache index is %d, delta t is %d"), iOldest, dt);
+                
                 pret = pce;
+            }
         }
         
     
@@ -1042,7 +1046,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                     
                     if((mem_used > g_memCacheLimit * 8 / 10) && !m_b_locked && (pChartCache->GetCount() > 2)) {
                         while (1){
-                            CacheEntry *pce = FindOldestDeleteCandidate();
+                            CacheEntry *pce = FindOldestDeleteCandidate(true);
                             if(pce){
                             ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
                             wxString msg(_T("Removing oldest chart from cache: "));
@@ -1086,7 +1090,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                     
                     if((nCache > (unsigned int)g_nCacheLimit) && !m_b_locked){
                         while (1){
-                            CacheEntry *pce = FindOldestDeleteCandidate();
+                            CacheEntry *pce = FindOldestDeleteCandidate( true );
                             if(pce){
                                 ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
                                 wxString msg(_T("Removing oldest chart from cache: "));

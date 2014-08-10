@@ -167,7 +167,7 @@ private:
       bool CreateS57SENCChartTableEntry(wxString full_name, ChartTableEntry *pEntry, Extent *pext);
       bool CheckPositionWithinChart(int index, float lat, float lon);
       ChartBase *OpenChartUsingCache(int dbindex, ChartInitFlag init_flag);
-      CacheEntry *FindOldestDeleteCandidate();
+      CacheEntry *FindOldestDeleteCandidate( bool blog );
       
       wxArrayPtrVoid    *pChartCache;
 
