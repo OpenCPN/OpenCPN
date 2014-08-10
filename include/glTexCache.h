@@ -37,6 +37,8 @@
 #define COMPRESSED_BUFFER_PENDING       1
 #define MAP_BUFFER_OK                   4
 
+#define FACTORY_TIMER                   10000
+
 struct CompressedCacheHeader
 {
     uint32_t magic;
@@ -67,7 +69,7 @@ public:
 WX_DECLARE_OBJARRAY(CatalogEntry*, ArrayOfCatalogEntries);
 
 
-class glTexFactory
+class glTexFactory : public wxEvtHandler
 {
 public:
     glTexFactory(ChartBase *chart, GLuint raster_format);
@@ -77,6 +79,7 @@ public:
     int GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level,  ColorScheme color_scheme, bool b_throttle_thread );
     void UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme );
     bool IsCompressedArrayComplete( int base_level, const wxRect &rect);
+    bool IsCompressedArrayComplete( int base_level, glTextureDescriptor *ptd);
     bool IsLevelInCache( int level, const wxRect &rect, ColorScheme color_scheme );
     void DoImmediateFullCompress(const wxRect &rect);
     wxString GetChartPath(){ return m_ChartPath; }
@@ -85,6 +88,7 @@ public:
     void DeleteSomeTextures( long target );
     void DeleteAllDescriptors( void );
     void PurgeBackgroundCompressionPool();
+    void OnTimer(wxTimerEvent &event);
     
     glTextureDescriptor *GetpTD( wxRect & rect );
     ChartBase *GetpChart() { return m_pchart; }
@@ -98,6 +102,8 @@ private:
     
     bool UpdateCache(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
                                    ColorScheme color_scheme);
+    bool UpdateCachePrecomp(unsigned char *data, int data_size, glTextureDescriptor *ptd, int level,
+                                          ColorScheme color_scheme);
     
     void DeleteSingleTexture( glTextureDescriptor *ptd );
     
@@ -122,7 +128,12 @@ private:
     int         m_nx_tex;
     int         m_ny_tex;
     
+    ColorScheme m_colorscheme;
+    wxTimer     m_timer;
+    
     glTextureDescriptor  **m_td_array;
+    
+    DECLARE_EVENT_TABLE()
     
 };
 
