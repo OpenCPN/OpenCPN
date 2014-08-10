@@ -4072,8 +4072,27 @@ int   ChartBaseBSB::BSBScanScanline(wxInputStream *pinStream )
 
       return nLineMarker;
 }
+//      MSVC compiler makes a bad decision about when to inline (or not) some intrinsics, like memset().
+//      So,...
+//      Here is a little hand-crafted memset() substitue for known short strings.
+//      It will be inlined by MSVC compiler using /02 settings 
 
-
+void memset_short(unsigned char *dst, unsigned char cbyte, int count)
+{
+#ifdef __MSVC__
+    __asm {
+        pushf                           // save Direction flag
+        cld                             // set direction "up"
+        mov edi, dst
+        mov ecx, count
+        mov al, cbyte
+        rep stosb
+        popf
+    }
+#else    
+    memset(dst, cbyte, count);
+#endif    
+}
 
 //-----------------------------------------------------------------------
 //    Get a BSB Scan Line Using Cache and scan line index if available
@@ -4186,7 +4205,7 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
                       nRunCount = 0;
 
 //          Store nPixValue in the destination
-                  memset(pCL, nPixValue, nRunCount+1);
+                  memset_short(pCL, nPixValue, nRunCount+1);
                   pCL += nRunCount+1;
                   iPixel += nRunCount+1;
 
@@ -4317,10 +4336,6 @@ int   ChartBaseBSB::BSBGetScanline( unsigned char *pLineBuf, int y, int xs, int 
 
       return 1;
 }
-
-
-
-
 
 
 
