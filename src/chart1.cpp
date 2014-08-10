@@ -3363,6 +3363,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_FloatingCompassDialog = NULL;
 
     //      Delete all open charts in the cache
+    cc1->EnablePaint(false);
     if( ChartData ) ChartData->PurgeCache();
 
     SetStatusBar( NULL );
