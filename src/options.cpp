@@ -2346,7 +2346,10 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
 
         if(g_bopengl &&
            g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
-            cc1->GetglCanvas()->ClearAllRasterTextures(); 
+            ::wxBeginBusyCursor();
+            cc1->GetglCanvas()->ClearAllRasterTextures();
+            ::wxEndBusyCursor();
+            
             g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
             cc1->GetglCanvas()->SetupCompression();
         }
