@@ -327,7 +327,7 @@ extern bool             g_btouch;
 extern bool             g_bresponsive;
 
 extern bool             bGPSValid;              // for track recording
-
+extern bool             g_bexpert;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1212,13 +1212,19 @@ int MyConfig::LoadMyConfig( int iteration )
 
     /* opengl options */
 #ifdef ocpnUSE_GL
+    Read( _T ( "OpenGLExpert" ), &g_bexpert, false );
     Read( _T ( "UseAcceleratedPanning" ), &g_GLOptions.m_bUseAcceleratedPanning, true );
 
     Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression, 0);
     Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching, 0);
 
     Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension, 512 );
-    Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 64 );
+    Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 128 );
+    if(!g_bexpert){
+        g_GLOptions.m_iTextureMemorySize = wxMax(128, g_GLOptions.m_iTextureMemorySize);
+        g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
+    }
+        
 #endif
     Read( _T ( "SmoothPanZoom" ), &g_bsmoothpanzoom, 0 );
 

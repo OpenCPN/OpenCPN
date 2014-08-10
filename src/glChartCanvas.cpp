@@ -113,6 +113,7 @@ extern PlugInManager* g_pi_manager;
 extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
 extern bool             b_inCompressAllCharts;
+extern bool             g_bexpert;
 
 ocpnGLOptions g_GLOptions;
 
@@ -588,7 +589,7 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
         return (GenericFunction)NULL;
 
     snprintf(addrbuf, sizeof addrbuf, "%s%s", addr, extension);
-    return (GenericFunction)systemGetProcAddress(addr);
+    return (GenericFunction)systemGetProcAddress(addrbuf);
 }
 
 static void GetglEntryPoints( void )
@@ -883,8 +884,6 @@ void glChartCanvas::SetupOpenGL()
         !s_glDeleteRenderbuffers )
         m_b_DisableFBO = true;
 
-    m_b_DisableFBO = true;
-    
     g_b_EnableVBO = true;
     if( !s_glBindBuffer || !s_glBufferData || !s_glGenBuffers || !s_glDeleteBuffers )
         g_b_EnableVBO = false;
@@ -904,7 +903,6 @@ void glChartCanvas::SetupOpenGL()
 
     //      Maybe build FBO(s)
 
-//    m_b_DisableFBO = true;
     BuildFBO();
 #if 0   /* this test sometimes failes when the fbo still works */
     if( m_b_BuiltFBO ) {
@@ -961,7 +959,9 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("Intel GMA 950") ) != wxNOT_FOUND )
         s_b_UploadFullCompressedMipmaps = true;
 #endif    
-    
+
+    if(!g_bexpert)
+        g_GLOptions.m_bUseAcceleratedPanning = m_b_BuiltFBO;
 }
 
 void glChartCanvas::SetupCompression()

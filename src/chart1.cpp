@@ -647,6 +647,7 @@ bool             g_btouch;
 bool             g_bresponsive;
 
 bool             b_inCompressAllCharts;
+bool             g_bexpert;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;

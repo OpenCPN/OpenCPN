@@ -204,6 +204,7 @@ extern ocpnStyle::StyleManager* g_StyleManager;
 extern ocpnGLOptions g_GLOptions;
 #endif
 
+extern bool             g_bexpert;
 //    Some constants
 #define ID_CHOICE_NMEA  wxID_HIGHEST + 1
 
@@ -2342,7 +2343,10 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
     OpenGLOptionsDlg dlg(this);
 
     if(dlg.ShowModal() == wxID_OK) {
-        g_GLOptions.m_bUseAcceleratedPanning = dlg.m_cbUseAcceleratedPanning->GetValue();
+        if(g_bexpert)
+            g_GLOptions.m_bUseAcceleratedPanning = dlg.m_cbUseAcceleratedPanning->GetValue();
+        else
+            g_GLOptions.m_bUseAcceleratedPanning = cc1->GetglCanvas()->CanAcceleratePanning();
 
         if(g_bopengl &&
            g_GLOptions.m_bTextureCompression != dlg.m_cbTextureCompression->GetValue()) {
@@ -2355,9 +2359,17 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         }
 
         g_GLOptions.m_bTextureCompression = dlg.m_cbTextureCompression->GetValue();
-        g_GLOptions.m_bTextureCompressionCaching = dlg.m_cbTextureCompressionCaching->GetValue();
-        g_GLOptions.m_iTextureMemorySize = dlg.m_sTextureMemorySize->GetValue();
-
+        
+        if(g_bexpert){
+            g_GLOptions.m_bTextureCompressionCaching = dlg.m_cbTextureCompressionCaching->GetValue();
+            g_GLOptions.m_iTextureMemorySize = dlg.m_sTextureMemorySize->GetValue();
+        }
+        else{
+            g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
+        }
+        
+        
+        
         if(g_GLOptions.m_bTextureCompressionCaching && dlg.m_cbClearTextureCache->GetValue()){
             wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
             if(::wxDirExists( path )){
@@ -4792,45 +4804,59 @@ OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
     m_bSizer1 = new wxFlexGridSizer( 2 );
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 
-    m_cbUseAcceleratedPanning = new wxCheckBox(this, wxID_ANY, _("Use Accelerated Panning") );
-    m_bSizer1->Add(m_cbUseAcceleratedPanning, 0, wxALL | wxEXPAND, 5);
-    if( cc1->GetglCanvas()->CanAcceleratePanning() ) {
-        m_cbUseAcceleratedPanning->Enable();
-        m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
-    } else {
-        m_cbUseAcceleratedPanning->SetValue(false);
-        m_cbUseAcceleratedPanning->Disable();
+    if(g_bexpert) {
+        m_cbUseAcceleratedPanning = new wxCheckBox(this, wxID_ANY, _("Use Accelerated Panning") );
+        m_bSizer1->Add(m_cbUseAcceleratedPanning, 0, wxALL | wxEXPAND, 5);
+        if( cc1->GetglCanvas()->CanAcceleratePanning() ) {
+            m_cbUseAcceleratedPanning->Enable();
+            m_cbUseAcceleratedPanning->SetValue(g_GLOptions.m_bUseAcceleratedPanning);
+        } else {
+            m_cbUseAcceleratedPanning->SetValue(false);
+            m_cbUseAcceleratedPanning->Disable();
+        }
+
+        m_bSizer1->AddSpacer(1);
     }
 
-    m_bSizer1->AddSpacer(1);
+    if(g_bexpert){
+        m_cbTextureCompression = new wxCheckBox(this, wxID_ANY, _("Texture Compression") );
+        m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
+        m_bSizer1->Add(m_cbTextureCompression, 0, wxALL | wxEXPAND, 5);
 
-    m_cbTextureCompression = new wxCheckBox(this, wxID_ANY, _("Texture Compression") );
-    m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
-    m_bSizer1->Add(m_cbTextureCompression, 0, wxALL | wxEXPAND, 5);
-
-    m_cbTextureCompressionCaching = new wxCheckBox(this, wxID_ANY, _("Texture Compression Caching") );
-    m_cbTextureCompressionCaching->SetValue(g_GLOptions.m_bTextureCompressionCaching);
+        m_cbTextureCompressionCaching = new wxCheckBox(this, wxID_ANY, _("Texture Compression Caching") );
+        m_cbTextureCompressionCaching->SetValue(g_GLOptions.m_bTextureCompressionCaching);
+    
+        /* disable caching if unsupported */
+        extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
+        if(!s_glCompressedTexImage2D) {
+            g_GLOptions.m_bTextureCompressionCaching = false;
+            m_cbTextureCompressionCaching->Disable();
+        }
+        
+        m_bSizer1->Add(m_cbTextureCompressionCaching, 0, wxALL | wxEXPAND, 5);
+    }
+    else {
+        m_cbTextureCompression = new wxCheckBox(this, wxID_ANY, _("Texture Compression with Caching") );
+        m_cbTextureCompression->SetValue(g_GLOptions.m_bTextureCompression);
+        m_bSizer1->Add(m_cbTextureCompression, 0, wxALL | wxEXPAND, 5);
+    }
+        
 
     
-    /* disable caching if unsupported */
-    extern PFNGLCOMPRESSEDTEXIMAGE2DPROC s_glCompressedTexImage2D;
-    if(!s_glCompressedTexImage2D) {
-        g_GLOptions.m_bTextureCompressionCaching = false;
-        m_cbTextureCompressionCaching->Disable();
+ 
+    if(g_bexpert){
+        wxStaticText* stTextureMemorySize =
+            new wxStaticText( this, wxID_STATIC, _("Texture Memory Size (MB)") );
+        m_bSizer1->Add( stTextureMemorySize, 0,
+                wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
+
+        m_sTextureMemorySize = new wxSpinCtrl( this );
+        m_sTextureMemorySize->SetRange(1, 16384 );
+        m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
+        m_bSizer1->Add(m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5);
+
     }
-
-    m_bSizer1->Add(m_cbTextureCompressionCaching, 0, wxALL | wxEXPAND, 5);
-
-    wxStaticText* stTextureMemorySize =
-        new wxStaticText( this, wxID_STATIC, _("Texture Memory Size (MB)") );
-    m_bSizer1->Add( stTextureMemorySize, 0,
-            wxLEFT | wxRIGHT | wxTOP | wxADJUST_MINSIZE, 5 );
-
-    m_sTextureMemorySize = new wxSpinCtrl( this );
-    m_sTextureMemorySize->SetRange(1, 16384 );
-    m_sTextureMemorySize->SetValue(g_GLOptions.m_iTextureMemorySize);
-    m_bSizer1->Add(m_sTextureMemorySize, 0, wxALL | wxEXPAND, 5);
-
+    
     m_cbRebuildTextureCache = new wxCheckBox(this, wxID_ANY, _("Rebuild Texture Cache") );
     m_bSizer1->Add(m_cbRebuildTextureCache, 0, wxALL | wxEXPAND, 5);
     
