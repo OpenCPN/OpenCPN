@@ -4753,7 +4753,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 #endif
 
     if(g_pi_manager)
-        g_pi_manager->SendMouseEventToPlugins( event );
+        if(g_pi_manager->SendMouseEventToPlugins( event ))
+            return;                     // PlugIn did something, and does not want the canvas to do anything else
     
     // We start with Double Click processing. The first left click just starts a timer and
     // is remembered, then we actually do something if there is a LeftDClick.

@@ -940,6 +940,7 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
 
 bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
 {
+    bool bret = false;
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
     {
         PlugInContainer *pic = plugin_array.Item(i);
@@ -953,7 +954,8 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
                     {
                         opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
                             if(ppi)
-                                ppi->MouseEventHook( event );   
+                                if(ppi->MouseEventHook( event ))
+                                    bret = true;
                             break;
                         }
                         
@@ -965,7 +967,7 @@ bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
         }
     }
     
-    return true;
+    return bret;;
 }
 
 
@@ -2789,8 +2791,10 @@ opencpn_plugin_112::~opencpn_plugin_112(void)
 {
 }
 
-void opencpn_plugin_112::MouseEventHook( wxMouseEvent &event )
-{}
+bool opencpn_plugin_112::MouseEventHook( wxMouseEvent &event )
+{
+    return false;
+}
 
 void opencpn_plugin_112::SendVectorChartObjectInfo(wxString &chart, wxString &feature, wxString &objname, double lat, double lon, double scale, int nativescale)
 {
