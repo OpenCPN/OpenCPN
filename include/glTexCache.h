@@ -76,7 +76,7 @@ public:
     ~glTexFactory();
 
     void PrepareTexture( int base_level, const wxRect &rect, ColorScheme color_scheme, bool b_throttle_thread = true );
-    int GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level,  ColorScheme color_scheme, bool b_throttle_thread );
+    int GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level,  ColorScheme color_scheme );
     void UpdateCacheLevel( const wxRect &rect, int level, ColorScheme color_scheme );
     bool IsCompressedArrayComplete( int base_level, const wxRect &rect);
     bool IsCompressedArrayComplete( int base_level, glTextureDescriptor *ptd);

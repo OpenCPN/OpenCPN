@@ -507,6 +507,11 @@ void * CompressionPoolThread::Entry()
             ssize /= 4;
             if(ssize < 8)
                 ssize = 8;
+
+            if(m_pticket->b_abort){
+                m_pticket->b_isaborted = true;
+                return 0;
+            }
             
         }
 
@@ -555,10 +560,8 @@ void * CompressionPoolThread::Entry()
         
         m_pMessageTarget->AddPendingEvent(Nevent);
     }
-    else
-        m_pticket->b_isaborted = true;
-    
-    
+
+    m_pticket->b_isaborted = true;
     
     return 0;
 }
@@ -801,22 +804,45 @@ bool CompressionWorkerPool::DoJob(JobTicket* pticket)
 void CompressionWorkerPool::PurgeJobList()
 {
     todo_list.Clear();
-    
-    //  Check the running list
+
+    int dt;
+
+    //  Start by marking all running tasks for "abort"
     wxJobListNode *node = running_list.GetFirst();
     while(node){
         JobTicket *ticket = node->GetData();
         ticket->b_isaborted = false;
         ticket->b_abort = true;
-        int dt = 100;
-        
+        node = node->GetNext();
+    }
+    
+    //  Check the running list
+    node = running_list.GetFirst();
+    while(node){
+        JobTicket *ticket = node->GetData();
+        dt = 100;
         while(!ticket->b_isaborted && dt){
             ::wxMilliSleep(10);
             dt--;
         }
-        
+    
         node = node->GetNext();
     }
+    
+    //  Check the list for full closure
+    bool b_clear = true;
+    node = running_list.GetFirst();
+    while(node){
+        JobTicket *ticket = node->GetData();
+        if(!ticket->b_isaborted)
+            b_clear = false;
+        node = node->GetNext();
+    }
+    
+    
+    if(b_clear)
+        running_list.Clear();
+    
 }
 
 
@@ -1315,12 +1341,11 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     /* optimization: when supported generate uncompressed mipmaps
        with hardware acceleration */
     bool hw_mipmap = false;
-#if 0    
-    if(g_GLOptions.m_bTextureCompression && s_glGenerateMipmap) {
+    if(/*!g_GLOptions.m_bTextureCompression &&*/ s_glGenerateMipmap) {
         base_level = 0;
         hw_mipmap = true;
     }
-#endif
+
 #ifdef ocpnUSE_GLES /* glGenerateMipmaps is incredibly slow with mali drivers */
     hw_mipmap = false;
 #endif
@@ -1332,7 +1357,7 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     for(int level = 0; level < g_mipmap_max_level+1; level++ ) {
         //    Upload to GPU?
         if( level >= base_level ) {
-            int status = GetTextureLevel( ptd, rect, level, color_scheme, b_throttle_thread );
+            int status = GetTextureLevel( ptd, rect, level, color_scheme );
  
             if(g_GLOptions.m_bTextureCompression) {
                 if( (COMPRESSED_BUFFER_OK == status) && (ptd->nGPU_compressed != GPU_TEXTURE_UNCOMPRESSED ) ){
@@ -1518,7 +1543,7 @@ void glTexFactory::UpdateCacheLevel( const wxRect &rect, int level, ColorScheme 
     
 }
 
-int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level, ColorScheme color_scheme, bool b_throttle_thread )
+int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect, int level, ColorScheme color_scheme )
 {
     
     //  Already available in the texture descriptor?
