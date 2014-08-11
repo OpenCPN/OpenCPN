@@ -43,6 +43,15 @@ extern ChartCanvas *cc1;
 extern int g_GroupIndex;
 extern ColorScheme global_color_scheme;
 
+//      We define and use this one Macro in this module
+//      Reason:  some compilers refuse to inline "GetChartTableEntry()"
+//      and so this leads to a push/call sequence for this heavily utilized but short function
+//      Note also that in the macor expansion there is no bounds checking on the parameter (i),
+//      So it is probably better to confine the macro use to one module, and scrub carefully.
+//      Anyway, makes a significant difference with Windows MSVC compiler builds.
+
+#define GetChartTableEntry(i) GetChartTable()[i]
+
 static int CompareScales( QuiltCandidate *qc1, QuiltCandidate *qc2 )
 {
     if( !ChartData ) return 0;
@@ -1069,19 +1078,24 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
         for( int ics = 0; ics < n_charts; ics++ ) {
             int i = pCurrentStack->GetDBIndex( ics );
             m_extended_stack_array.Add( i );
+
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
+
+            // const ChartTableEntry &cte = ChartData->GetChartTable()[i];
+            
             //  A viable candidate?
-            double chart_skew = ChartData->GetDBChartSkew( i );
+            double chart_skew = cte.GetChartSkew();
             if( chart_skew > 180. ) chart_skew -= 360.;
 
             // only unskewed charts of the proper projection and type may be quilted....
             // and we avoid adding CM93 Composite until later
-            if( ( reference_type == ChartData->GetDBChartType( i ) )
+            if( ( reference_type == cte.GetChartType() )
             && ( fabs( chart_skew ) < 1.0 )
-            && ( ChartData->GetDBChartProj( i ) == quilt_proj )
-            && ( ChartData->GetDBChartType( i ) != CHART_TYPE_CM93COMP ) ) {
+            && ( cte.GetChartProjectionType() == quilt_proj )
+            && ( cte.GetChartType() != CHART_TYPE_CM93COMP ) ) {
                 QuiltCandidate *qcnew = new QuiltCandidate;
                 qcnew->dbIndex = i;
-                qcnew->ChartScale = ChartData->GetDBChartScale( i );
+                qcnew->ChartScale = cte.GetScale();
 
                 //      Calculate and store the quilt region on-screen with the candidate
                 //const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
@@ -1109,40 +1123,43 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
             //    We can eliminate some charts immediately
             //    Try to make these tests in some sensible order....
 
-            if( reference_type != ChartData->GetDBChartType( i ) ) continue;
+            const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
+            
+            int type = cte.GetChartType();
+            
+            if( reference_type != type ) continue;
 
-            if( ChartData->GetDBChartType( i ) == CHART_TYPE_CM93COMP ) continue;
+            if( type == CHART_TYPE_CM93COMP ) continue;
 
-            if( ( g_GroupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, g_GroupIndex ) ) ) continue;
-
-            wxBoundingBox chart_box;
-            ChartData->GetDBBoundingBox( i, &chart_box );
+            const wxBoundingBox &chart_box = cte.GetBBox();
             if( ( viewbox.IntersectOut( chart_box ) ) ) continue;
 
-            if( quilt_proj != ChartData->GetDBChartProj( i ) ) continue;
+            if( ( g_GroupIndex > 0 ) && ( !ChartData->IsChartInGroup( i, g_GroupIndex ) ) ) continue;
+            
+            if( quilt_proj != cte.GetChartProjectionType() ) continue;
 
-            double chart_skew = ChartData->GetDBChartSkew( i );
+            double chart_skew = cte.GetChartSkew();
             if( chart_skew > 180. ) chart_skew -= 360.;
             if( fabs( chart_skew ) > 1.0 ) continue;
 
             //    Calculate zoom factor for this chart
-            double chart_native_ppm;
-            chart_native_ppm = m_canvas_scale_factor / ChartData->GetDBChartScale( i );
+            double candidate_chart_scale = cte.GetScale();
+            double chart_native_ppm = m_canvas_scale_factor / candidate_chart_scale;
             double zoom_factor = vp_in.view_scale_ppm / chart_native_ppm;
 
             //  Try to guarantee that there is one chart added with scale larger than reference scale
             //    Take note here, and keep track of the smallest scale chart that is larger scale than reference....
-            if( ChartData->GetDBChartScale( i ) < reference_scale ) {
-                if( ChartData->GetDBChartScale( i ) > sure_index_scale ) {
+            if( candidate_chart_scale < reference_scale ) {
+                if( candidate_chart_scale > sure_index_scale ) {
                     sure_index = i;
-                    sure_index_scale = ChartData->GetDBChartScale( i );
+                    sure_index_scale = candidate_chart_scale;
                 }
             }
 
             //    At this point, the candidate is the right type, skew, and projection, and is on-screen somewhere....
             //    Now  add the candidate if its scale is smaller than the reference scale, or is not excessively underzoomed.
 
-            if( ( ChartData->GetDBChartScale( i ) >= reference_scale ) || ( zoom_factor > .2 ) ) {
+            if( ( candidate_chart_scale >= reference_scale ) || ( zoom_factor > .2 ) ) {
                 bool b_add = true;
 
                 //    Special case for S57 ENC
@@ -1152,7 +1169,6 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
                     double chart_fractional_area = 0.;
                     double quilt_area = vp_local.pix_width * vp_local.pix_height;
                     
-                    const ChartTableEntry &cte = ChartData->GetChartTableEntry( i );
                     wxRect cell_rect = GetChartQuiltBoundingRect( cte, vp_local );
 
                     if( !cell_rect.IsEmpty() ) {
@@ -1211,7 +1227,7 @@ bool Quilt::BuildExtendedChartStackAndCandidateArray(bool b_fullscreen, int ref_
 
                             QuiltCandidate *qcnew = new QuiltCandidate;
                             qcnew->dbIndex = i;
-                            qcnew->ChartScale = ChartData->GetDBChartScale( i );
+                            qcnew->ChartScale = candidate_chart_scale; //ChartData->GetDBChartScale( i );
 
                             m_pcandidate_array->Add( qcnew );               // auto-sorted on scale
 

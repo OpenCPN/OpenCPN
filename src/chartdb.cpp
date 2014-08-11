@@ -435,15 +435,16 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
       for(int db_index=0 ; db_index<nEntry ; db_index++)
       {
 
-            ChartTableEntry *pt = (ChartTableEntry *)&GetChartTableEntry(db_index);
-
+            const ChartTableEntry &cte = GetChartTableEntry(db_index);
+            
             //    Check to see if the candidate chart is in the currently active group
             bool b_group_add = false;
             if(g_GroupIndex > 0)
             {
-                  for(unsigned int ig=0 ; ig < pt->GetGroupArray().GetCount(); ig++)
+                  const int ng = cte.GetGroupArray().GetCount();
+                  for(int ig=0 ; ig < ng; ig++)
                   {
-                        if(g_GroupIndex == pt->GetGroupArray().Item(ig))
+                        if(g_GroupIndex == cte.GetGroupArray().Item(ig))
                         {
                               b_group_add = true;
                               break;
@@ -463,7 +464,7 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
                   }
 
                   //    Check the special case where chart spans the international dateline
-                  else if( (pt->GetLonMax() > 180.) && (pt->GetLonMin() < 180.) )
+                  else if( (cte.GetLonMax() > 180.) && (cte.GetLonMin() < 180.) )
                   {
                         if(CheckPositionWithinChart(db_index, lat, lon + 360.)  &&  (j < MAXSTACK) )
                         {
@@ -473,7 +474,7 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
                         }
                   }
                   //    Western hemisphere, some type of charts
-                  else if( (pt->GetLonMax() > 180.) && (pt->GetLonMin() > 180.) )       
+                  else if( (cte.GetLonMax() > 180.) && (cte.GetLonMin() > 180.) )       
                   {
                       if(CheckPositionWithinChart(db_index, lat, lon + 360.)  &&  (j < MAXSTACK) )
                       {
@@ -497,16 +498,16 @@ int ChartDB::BuildChartStack(ChartStack * cstk, float lat, float lon)
       {
             if(cstk->GetDBIndex(id) != -1)
             {
-                  ChartTableEntry *pm = GetpChartTableEntry(cstk->GetDBIndex(id));
-
+                  const ChartTableEntry &ctem = GetChartTableEntry(cstk->GetDBIndex(id));
+                  
                   for(int jd = id+1; jd < j; jd++)
                   {
                         if(cstk->GetDBIndex(jd) != -1)
                         {
-                              ChartTableEntry *pn = GetpChartTableEntry(cstk->GetDBIndex(jd));
-                              if( pm->GetFileTime() && pn->GetFileTime()) {
-                                    if( abs(pm->GetFileTime() - pn->GetFileTime()) < 60 ) {           // simple test
-                                        if(pn->GetpFileName()->IsSameAs(*(pm->GetpFileName())))
+                              const ChartTableEntry &cten = GetChartTableEntry(cstk->GetDBIndex(jd));
+                              if( ctem.GetFileTime() && cten.GetFileTime()) {
+                                    if( abs(ctem.GetFileTime() - cten.GetFileTime()) < 60 ) {           // simple test
+                                        if(cten.GetpFileName()->IsSameAs(*(ctem.GetpFileName())))
                                            cstk->SetDBIndex(jd, -1);           // mark to remove
                                     }
                               }
