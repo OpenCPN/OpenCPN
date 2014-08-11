@@ -334,6 +334,8 @@ InitReturn ChartGEO::Init( const wxString& name, ChartInitFlag init_flags)
 
       ifs_hdr = new wxFileInputStream(name);          // open the file as a read-only stream
 
+      m_filesize = wxFileName::GetSize( name );
+      
       if(!ifs_hdr->Ok())
             return INIT_FAIL_REMOVE;
 
@@ -784,6 +786,8 @@ InitReturn ChartKAP::Init( const wxString& name, ChartInitFlag init_flags )
 
       ifs_hdr = new wxFileInputStream(name);          // open the Header file as a read-only stream
 
+      m_filesize = wxFileName::GetSize( name );
+      
       if(!ifs_hdr->Ok())
 	  {
             free(pPlyTable);
@@ -1736,8 +1740,9 @@ InitReturn ChartBaseBSB::PostInit(void)
       bool bline_index_ok = true;
       m_nLineOffset = 0;
 
-      for(int iplt=0 ; iplt<Size_Y - 1 ; iplt++)
+      for(int iplt=0 ; iplt< Size_Y - 1 ; iplt++)
       {
+#if 0          
             if( wxInvalidOffset == ifs_bitmap->SeekI(pline_table[iplt], wxFromStart))
             {
                   wxString msg(_("   Chart File corrupt in PostInit() on chart "));
@@ -1746,9 +1751,17 @@ InitReturn ChartBaseBSB::PostInit(void)
 
                   return INIT_FAIL_REMOVE;
             }
-
+#endif
+            if( pline_table[iplt] > m_filesize )
+            {
+                wxString msg(_("   Chart File corrupt in PostInit() on chart "));
+                msg.Append(m_FullPath);
+                wxLogMessage(msg);
+                
+                return INIT_FAIL_REMOVE;
+            }
+            
             int thisline_size = pline_table[iplt+1] - pline_table[iplt] ;
-
             if(thisline_size < 0)
             {
                   wxString msg(_("   Chart File corrupt in PostInit() on chart "));
@@ -1758,6 +1771,8 @@ InitReturn ChartBaseBSB::PostInit(void)
                   return INIT_FAIL_REMOVE;
             }
 
+#if 0  
+        // this is not really a corrupt chart, and will be fixed up on read later            
             if(thisline_size > ifs_bufsize)
             {
                   wxString msg(_T("   ifs_bufsize too small PostInit() on chart "));
@@ -1766,7 +1781,10 @@ InitReturn ChartBaseBSB::PostInit(void)
 
                   return INIT_FAIL_REMOVE;
             }
+#endif
 
+#if 0
+        //  No need to validate line numbers, we don't care about them
             ifs_bitmap->Read(ifs_buf, thisline_size);
 
             unsigned char *lp = ifs_buf;
@@ -1793,7 +1811,7 @@ InitReturn ChartBaseBSB::PostInit(void)
                 bline_index_ok = false;
                 break;
             }
-
+#endif
       }
 /*
       if(!bline_index_ok)
