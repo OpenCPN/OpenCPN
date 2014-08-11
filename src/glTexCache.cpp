@@ -843,6 +843,8 @@ void CompressionWorkerPool::PurgeJobList()
     if(b_clear)
         running_list.Clear();
     
+    m_njobs_running = 0;
+    
 }
 
 

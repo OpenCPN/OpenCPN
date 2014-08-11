@@ -2373,11 +2373,16 @@ void options::OnOpenGLOptions( wxCommandEvent& event )
         if(g_GLOptions.m_bTextureCompressionCaching && dlg.m_cbClearTextureCache->GetValue()){
             wxString path =  g_PrivateDataDir + wxFileName::GetPathSeparator() + _T("raster_texture_cache");
             if(::wxDirExists( path )){
+                ::wxBeginBusyCursor();
+                cc1->GetglCanvas()->ClearAllRasterTextures();
+                
                 wxArrayString files;
                 size_t nfiles = wxDir::GetAllFiles(path, &files);
                 for(unsigned int i=0 ; i < files.GetCount() ; i++){
                     ::wxRemoveFile(files[i]);
                 }
+                ::wxEndBusyCursor();
+                
             }
         }
             
