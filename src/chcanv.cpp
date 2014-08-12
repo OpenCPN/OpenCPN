@@ -9156,8 +9156,10 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
         }
     }
 
-    m_pEM_OverZoom->x = 0;
-    m_pEM_OverZoom->y = 40;
+    if(m_pEM_OverZoom){
+        m_pEM_OverZoom->x = 0;
+        m_pEM_OverZoom->y = 40;
+    }
     return m_pEM_OverZoom;
 }
 
@@ -9287,7 +9289,8 @@ void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
     dc.SetFont( font );
     dc.GetTextExtent( _("OverZoom"), &w, &h );
 
-    m_pEM_OverZoom = CreateEmbossMapData( font, w + 10, h + 10, _("OverZoom"), cs );
+    if((w > 0) && (w < 500) && (h > 0) && (h < 100))
+        m_pEM_OverZoom = CreateEmbossMapData( font, w + 10, h + 10, _("OverZoom"), cs );
 }
 
 emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int height,

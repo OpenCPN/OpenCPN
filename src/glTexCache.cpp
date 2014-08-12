@@ -722,6 +722,9 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
     pt->b_abort = false;
     pt->bpost_zip_compress = b_postZip;
 
+    if(!m_njobs_running)
+        running_list.Clear();
+    
     if(!b_immediate){
         todo_list.Append(pt);
         if(bthread_debug){

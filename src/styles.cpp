@@ -144,6 +144,9 @@ wxBitmap ConvertTo24Bit( wxColor bgColor, wxBitmap front ) {
     unsigned char *presult = im_result.GetData();
     unsigned char *pfront = im_front.GetData();
 
+    if(!presult || !pfront)
+        return wxNullBitmap;
+    
     unsigned char *afront = NULL;
     if( im_front.HasAlpha() )
     afront = im_front.GetAlpha();
