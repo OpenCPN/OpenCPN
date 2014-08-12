@@ -5007,6 +5007,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 break;
             }
 
+            case wkbMultiPoint:
             case wkbMultiPoint25D:
                 ps = pwkb_buffer;
                 ps += 5;
