@@ -4031,24 +4031,36 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
   
-    if( !ObjectRenderCheckPos( rzRules, vp ) ) return 0;
+    if( !ObjectRenderCheckPos( rzRules, vp ) )
+        return 0;
 
     if( !ObjectRenderCheckCat( rzRules, vp ) ) {
-#if 0
-        //  This is an "out-of-spec" optimization
-        //    Conditional symbology for rocks and wrecks is expensive
-        //    because we have to find the DEPARE or DRGARE that it is in,
-        //    and compare the depths to establish safety limits,
-        //    and then potentially move the hazard to DISPLAYBASE category.
-        //
-        //    Lets only consider and allow this case for large scale chart views....
 
-        if( ( !strncmp( rzRules->LUP->OBCL, "UWTROC", 6 ) )
-                || ( !strncmp( rzRules->LUP->OBCL, "WRECKS", 6 ) ) ) {
-            if( vp->chart_scale > 20000. ) return 0;
+        //  If this object cannot be moved to a higher category by CS procedures,
+        //  then we are done here
+        if(!rzRules->obj->m_bcategory_mutable)
+            return 0;
+
+        //  Otherwise, make sure the CS, if present, has been evaluated,
+        //  and then check the category again    
+        if( ObjectRenderCheckCS( rzRules, vp ) ){
+            if(!rzRules->obj->bCS_Added ) {
+                rzRules->obj->CSrules = NULL;
+                Rules *rules = rzRules->LUP->ruleList;
+                while( rules != NULL ) {
+                    if( RUL_CND_SY ==  rules->ruleType ){
+                        GetAndAddCSRules( rzRules, rules );
+                        break;
+                    }
+                    rules = rules->next;
+                }
+            }
+            
+            if( !ObjectRenderCheckCat( rzRules, vp ) ) 
+                return 0;
         }
-#endif
-        if( !ObjectRenderCheckCS( rzRules, vp ) ) return 0;
+        else
+            return 0;
     }
 
     m_pdc = pdcin; // use this DC
@@ -4057,39 +4069,25 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
     while( rules != NULL ) {
         switch( rules->ruleType ){
             case RUL_TXT_TX:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderTX( rzRules, rules, vp );
-                }
+                RenderTX( rzRules, rules, vp );
                 break; // TX
             case RUL_TXT_TE:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderTE( rzRules, rules, vp );
-                }
+                RenderTE( rzRules, rules, vp );
                 break; // TE
             case RUL_SYM_PT:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderSY( rzRules, rules, vp );
-                }
+                RenderSY( rzRules, rules, vp );
                 break; // SY
             case RUL_SIM_LN:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderLS( rzRules, rules, vp );
-                }
+                RenderLS( rzRules, rules, vp );
                 break; // LS
             case RUL_COM_LN:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderLC( rzRules, rules, vp );
-                }
+                RenderLC( rzRules, rules, vp );
                 break; // LC
             case RUL_MUL_SG:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderMPS( rzRules, rules, vp );
-                }
+                RenderMPS( rzRules, rules, vp );
                 break; // MultiPoint Sounding
             case RUL_ARC_2C:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderCARC( rzRules, rules, vp );
-                }
+                RenderCARC( rzRules, rules, vp );
                 break; // Circular Arc, 2 colors
 
             case RUL_CND_SY: {
@@ -4100,25 +4098,11 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
                         rzRules->obj->bCS_Added = 1; // mark the object
                 }
 
-                //    The CS procedure may have changed the Display Category of the Object, need to check again for visibility
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
+                Rules *rules_last = rules;
+                rules = rzRules->obj->CSrules;
 
-                    Rules *rules_last = rules;
-                    rules = rzRules->obj->CSrules;
-
-                    while( NULL != rules ) {
+                while( NULL != rules ) {
                         switch( rules->ruleType ){
-                            case RUL_SIM_LN:
-                            case RUL_COM_LN: {
-                                PrioritizeLineFeature( rzRules, rzRules->LUP->DPRI - '0' );
-                                break;
-                            }
-                            default:
-                                break;
-                        }
-
-                        switch( rules->ruleType ){
-                            //                                        case RUL_ARE_CO:       RenderAC(rzRules,rules, vp);break;
                             case RUL_TXT_TX:
                                 RenderTX( rzRules, rules, vp );
                                 break;
@@ -4146,11 +4130,9 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
                         }
                         rules_last = rules;
                         rules = rules->next;
-                    }
-
-                    rules = rules_last;
-                    break;
                 }
+
+                rules = rules_last;
                 break;
             }
 
@@ -4292,8 +4274,6 @@ int s52plib::SetLineFeaturePriority( ObjRazRules *rzRules, int npriority )
         switch( rules->ruleType ){
 
             case RUL_SIM_LN:
-                PrioritizeLineFeature( rzRules, priority_set );
-                break; // LS
             case RUL_COM_LN:
                 PrioritizeLineFeature( rzRules, priority_set );
                 break; // LC
@@ -4310,8 +4290,6 @@ int s52plib::SetLineFeaturePriority( ObjRazRules *rzRules, int npriority )
                 while( NULL != rules ) {
                     switch( rules->ruleType ){
                         case RUL_SIM_LN:
-                            PrioritizeLineFeature( rzRules, priority_set );
-                            break;
                         case RUL_COM_LN:
                             PrioritizeLineFeature( rzRules, priority_set );
                             break;
@@ -4364,8 +4342,9 @@ int s52plib::PrioritizeLineFeature( ObjRazRules *rzRules, int npriority )
                 pedge = (*edge_hash)[enode];
 
             //    Set priority
-            if(pedge)
+            if(pedge){
                 pedge->max_priority = npriority;
+            }
 
             //  Get last connected node
             inode = *index_run++;
@@ -5597,6 +5576,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     //  Allow a little slop in calculating whether a triangle
     //  is within the requested Viewport
     double margin = BBView.GetWidth() * .05;
+    BBView.EnLarge( margin );
 //    if(rzRules->obj->Index != 2666)
 //        return 0;
     
@@ -5745,7 +5725,6 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
             
         while( p_tp ) {
-            
             tp_box.SetMin(p_tp->minx, p_tp->miny);
             tp_box.SetMax(p_tp->maxx, p_tp->maxy);
             
@@ -5759,8 +5738,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     b_greenwich = true;
             }
 
-            if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
-                
+            if( b_greenwich || !BBView.IntersectOut( tp_box ) ) {
+
                 if(b_useVBO){
                     glVertexPointer(2, array_gl_type, 2 * array_data_size, (GLvoid *)(vbo_offset));
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
@@ -6112,10 +6091,36 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
         wxRect &render_rect )
 {
 
-    if( !ObjectRenderCheckPos( rzRules, vp ) ) return 0;
+    if( !ObjectRenderCheckPos( rzRules, vp ) )
+        return 0;
 
     if( !ObjectRenderCheckCat( rzRules, vp ) ) {
-        if( !ObjectRenderCheckCS( rzRules, vp ) ) return 0;
+
+        //  If this object cannot be moved to a higher category by CS procedures,
+        //  then we are done here
+        if(!rzRules->obj->m_bcategory_mutable)
+            return 0;
+
+        //  Otherwise, make sure the CS, if present, has been evaluated,
+        //  and then check the category again    
+        if( ObjectRenderCheckCS( rzRules, vp ) ){
+            if(!rzRules->obj->bCS_Added ) {
+                rzRules->obj->CSrules = NULL;
+                Rules *rules = rzRules->LUP->ruleList;
+                while( rules != NULL ) {
+                    if( RUL_CND_SY ==  rules->ruleType ){
+                        GetAndAddCSRules( rzRules, rules );
+                        break;
+                    }
+                    rules = rules->next;
+                }
+            }
+            
+            if( !ObjectRenderCheckCat( rzRules, vp ) ) 
+                return 0;
+        }
+        else
+            return 0;
     }
 
     m_render_rect = render_rect; // We only render into this (screen coordinate) rectangle
@@ -6145,12 +6150,7 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
                 Rules *rules_last = rules;
                 rules = rzRules->obj->CSrules;
 
-                //    The CS procedure may have changed the Display Category of the Object, need to check again for visibility
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    while( NULL != rules ) {
-                        //Hve seen drgare fault here, need to code area query to debug
-                        //possible that RENDERtoBUFFERAP/AC is blowing obj->CSRules
-                        //    When it faults here, look at new debug field obj->CSLUP
+                while( NULL != rules ) {
                         switch( rules->ruleType ){
                             case RUL_ARE_CO:
                                 RenderToGLAC( rzRules, rules, vp );
@@ -6164,7 +6164,6 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
                         }
                         rules_last = rules;
                         rules = rules->next;
-                    }
                 }
 
                 rules = rules_last;
@@ -6444,10 +6443,36 @@ int s52plib::RenderAreaToDC( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp,
         render_canvas_parms *pb_spec )
 {
 
-    if( !ObjectRenderCheckPos( rzRules, vp ) ) return 0;
+    if( !ObjectRenderCheckPos( rzRules, vp ) )
+        return 0;
 
     if( !ObjectRenderCheckCat( rzRules, vp ) ) {
-        if( !ObjectRenderCheckCS( rzRules, vp ) ) return 0;
+
+        //  If this object cannot be moved to a higher category by CS procedures,
+        //  then we are done here
+        if(!rzRules->obj->m_bcategory_mutable)
+            return 0;
+
+        //  Otherwise, make sure the CS, if present, has been evaluated,
+        //  and then check the category again    
+        if( ObjectRenderCheckCS( rzRules, vp ) ){
+            if(!rzRules->obj->bCS_Added ) {
+                rzRules->obj->CSrules = NULL;
+                Rules *rules = rzRules->LUP->ruleList;
+                while( rules != NULL ) {
+                    if( RUL_CND_SY ==  rules->ruleType ){
+                        GetAndAddCSRules( rzRules, rules );
+                        break;
+                    }
+                    rules = rules->next;
+                }
+            }
+            
+            if( !ObjectRenderCheckCat( rzRules, vp ) ) 
+                return 0;
+        }
+        else
+            return 0;
     }
 
     m_pdc = pdcin; // use this DC
@@ -6702,7 +6727,6 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender()
 {
-
 }
 
 void s52plib::ClearTextList( void )

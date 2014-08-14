@@ -543,7 +543,7 @@ static double   _DEPVAL01(S57Obj *obj, double least_depth)
     return least_depth;
 }
 
-static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules)
+static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules, bool *promote_return)
 // Remarks: Obstructions or isolated underwater dangers of depths less than the safety
 // contour which lie within the safe waters defined by the safety contour are
 // to be presented by a specific isolated danger symbol as hazardous objects
@@ -553,7 +553,8 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
     wxString udwhaz03str;
     int      danger         = FALSE;
     double   safety_contour = S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
-
+    bool     b_promote = false;
+    
     if(depth_value == UNKNOWN)
           danger = TRUE;
 
@@ -596,6 +597,9 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
                     double drval1 = 0.0;
                     GetDoubleAttr(ptest_obj, "DRVAL1", drval1);
 
+                    if(depth_value < drval1)
+                        b_promote = true;
+                    
                     if(drval1 >= safety_contour)
                     {
                           danger = TRUE;
@@ -637,13 +641,11 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
             }
 */
     }
-    // This is an enhancement to the original PLIB spec
-    //  It forces all obstructions (rocks/wrecks) to be in category "Standard", at least
-    else{
-        rzRules->obj->m_DisplayCat = STANDARD;
-    }
+       
 
-
+    if(promote_return)
+        *promote_return = b_promote;
+    
     wxString *ret_str = new wxString(udwhaz03str);
     return ret_str;
 
@@ -1531,7 +1533,8 @@ static void *OBSTRN04 (void *param)
 //      GString *sndfrm02str = NULL;
       wxString *udwhaz03str = NULL;
 //      GString *valsoustr   = S57_getAttVal(geo, "VALSOU");
-
+      bool b_promote;
+      
       ObjRazRules *rzRules = (ObjRazRules *)param;
       S57Obj *obj = rzRules->obj;
 
@@ -1597,7 +1600,7 @@ static void *OBSTRN04 (void *param)
                   depth_value = least_depth;
       }
 
-      udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules);
+      udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules, &b_promote);
 
 
       if (GEO_POINT == obj->Primitive_type)
@@ -1618,9 +1621,6 @@ static void *OBSTRN04 (void *param)
             {
                    if (valsou <= 20.0)
                   {
-//                        GString *objlstr   = S57_getAttVal(geo, "OBJL");
-//                        int      objl      = (NULL == objlstr)? 0 : atoi(objlstr->str);
-//                        GString *watlevstr = S57_getAttVal(geo, "WATLEV");
                         int watlev = -9;
                         GetIntAttr(obj, "WATLEV", watlev);
 
@@ -1636,6 +1636,10 @@ static void *OBSTRN04 (void *param)
                                           case 5: obstrn04str.Append(_T(";SY(UWTROC04)")); sounding = FALSE; break;
                                           default : obstrn04str.Append(_T(";SY(DANGER51)")); sounding = TRUE ; break;
                                     }
+                              }
+                              if(b_promote){
+                                  //  Move this UWTROC object to DisplayBase category
+                                  rzRules->obj->m_DisplayCat = DISPLAYBASE;
                               }
                         }
                         else
@@ -2964,7 +2968,8 @@ static void *WRECKS02 (void *param)
     double   depth_value = UNKNOWN;
 //    GString *valsoustr   = S57_getAttVal(geo, "VALSOU");
     double   valsou      = UNKNOWN;
-
+    bool b_promote = false;
+    
     ObjRazRules *rzRules = (ObjRazRules *)param;
     S57Obj *obj = rzRules->obj;
 
@@ -3058,7 +3063,7 @@ static void *WRECKS02 (void *param)
 
     }
 	if (7 != quasou) //Fixes FS 165
-		udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules);
+		udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules, &b_promote);
 	else
 		udwhaz03str = new wxString();
     quapnt01str = CSQUAPNT01(obj);

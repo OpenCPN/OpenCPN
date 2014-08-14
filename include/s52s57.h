@@ -372,7 +372,8 @@ public:
       int                     m_n_edge_max_points;
 
       DisCat                  m_DisplayCat;
-
+      bool                    m_bcategory_mutable;    //  CS procedure may move this object to a higher catagory.
+                                                      //  Used as a hint to rendering filter logic
 
                                                       // This transform converts from object geometry
                                                       // to SM coordinates.

@@ -72,7 +72,6 @@
 
 extern bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);      // found in s52cnsy
 
-
 void OpenCPN_OGRErrorHandler( CPLErr eErrClass, int nError,
                               const char * pszErrorMsg );               // installed GDAL OGR library error handler
 
@@ -228,6 +227,7 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     Scamin = 10000000;                              // ten million enough?
     nRef = 0;
     bIsAton = false;
+    bIsAssociable = false;
     m_n_lsindex = 0;
     m_lsindex_array = NULL;
 
@@ -1236,21 +1236,15 @@ void s57chart::ClearRenderedTextCache()
 
 double s57chart::GetNormalScaleMin( double canvas_scale_factor, bool b_allow_overzoom )
 {
-    double ppm = canvas_scale_factor / m_Chart_Scale; // true_chart_scale_on_display   = m_canvas_scale_factor / pixels_per_meter of displayed chart
-
-    //Adjust overzoom factor based on  b_allow_overzoom option setting
-    double oz_factor;
-    if( b_allow_overzoom ) oz_factor = 256.;
+    if( b_allow_overzoom )
+        return m_Chart_Scale * 0.125;
     else
-        oz_factor = 4.;
-
-    ppm *= oz_factor;
-
-    return canvas_scale_factor / ppm;
+        return m_Chart_Scale * 0.5;
 }
 double s57chart::GetNormalScaleMax( double canvas_scale_factor, int canvas_width )
 {
-    return 1.0e7; /* TODO: fix this */
+    return m_Chart_Scale * 2.0;
+    
 }
 
 //-----------------------------------------------------------------------
@@ -1498,7 +1492,6 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
         const OCPNRegion &Region, bool b_overlay )
 {
 #ifdef ocpnUSE_GL
-    
 //     CALLGRIND_START_INSTRUMENTATION
 //      g_bDebugS57 = true;
 
@@ -1663,6 +1656,7 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     glPopMatrix();
 
 //      CALLGRIND_STOP_INSTRUMENTATION
+    
 #endif
     return true;
 }
@@ -1674,7 +1668,6 @@ bool s57chart::DoRenderRectOnGL( const wxGLContext &glc, const ViewPort& VPoint,
     int i;
     ObjRazRules *top;
     ObjRazRules *crnt;
-
     ViewPort tvp = VPoint;                    // undo const  TODO fix this in PLIB
 
     //      Render the areas quickly
@@ -4080,6 +4073,19 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
 //              Establish Object's Display Category
                     obj->m_DisplayCat = LUP->DISC;
+                    
+                    //  Is this a catagory-movable object?
+                    if( !strncmp(obj->FeatureName, "OBSTRN", 6) ||
+                        !strncmp(obj->FeatureName, "WRECKS", 6) ||
+                        !strncmp(obj->FeatureName, "DEPCNT", 6) ||
+                        !strncmp(obj->FeatureName, "UWTROC", 6) )
+                        {
+                            obj->m_bcategory_mutable = true;
+                        }
+                    else{
+                        obj->m_bcategory_mutable = false;
+                    }
+                        
                 }
             }
 
@@ -4120,7 +4126,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                 vee.index = index;
                 vee.nCount = count;
                 vee.pPoints = pPoints;
-                vee.max_priority = -99;            // Default
+                vee.max_priority = 0;//-99;            // Default
 
                 ve_array.Add( vee );
 
@@ -4139,8 +4145,8 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                 vep->index = ve_from_array.index;
                 vep->nCount = ve_from_array.nCount;
                 vep->pPoints = ve_from_array.pPoints;
-
-//                        m_pve_array[vep->index] = vep;
+                vep->max_priority = 0;            // Default
+                
                 m_ve_hash[vep->index] = vep;
 
             }
