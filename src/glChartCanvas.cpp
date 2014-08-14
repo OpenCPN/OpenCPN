@@ -640,6 +640,21 @@ static void GetglEntryPoints( void )
             
     }
 
+    //  Retry VBO entry points with all extensions
+    if(0 == s_glGenBuffers){
+        for( i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
+            if((s_glGenBuffers = (PFNGLGENBUFFERSPROC)ocpnGetProcAddress( "glGenBuffers", extensions[i])) )
+                break;
+        }
+        
+        if( i < 3 ){
+            s_glBindBuffer = (PFNGLBINDBUFFERPROC) ocpnGetProcAddress( "glBindBuffer", extensions[i]);
+            s_glBufferData = (PFNGLBUFFERDATAPROC) ocpnGetProcAddress( "glBufferData", extensions[i]);
+            s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
+        }
+    }
+            
+            
     for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
         if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
             ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
@@ -2421,13 +2436,14 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
     else if( !cc1->m_pQuilt->GetnCharts() && b_clear ) {
 //        glClear(GL_COLOR_BUFFER_BIT);
     }
+    
 }
 
 void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
 {
     ViewPort VPoint = cc1->VPoint;
     m_gl_rendered_region.Clear();
-
+ 
     glPushMatrix();
     if(VPoint.b_quilt) {
         RenderQuiltViewGL( VPoint, region );
