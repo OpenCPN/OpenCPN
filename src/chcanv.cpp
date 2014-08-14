@@ -1001,7 +1001,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pFoundRoutePointSecond      = NULL;
 
     m_pRolloverRouteSeg           = NULL;
-
+    m_bsectors_shown              = false;
+    
     m_bbrightdir = false;
     r_gamma_mult = 1;
     g_gamma_mult = 1;
@@ -3413,8 +3414,8 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
                 //      If the extended chart stack has changed, invalidate any cached render bitmap
                 if(m_pQuilt->GetXStackHash() != hash1) {
-                    m_bm_cache_vp.Invalidate();
-                    InvalidateGL();
+//                    m_bm_cache_vp.Invalidate();
+//                    InvalidateGL();
                 }
 
                 ChartData->PurgeCacheUnusedCharts( 0.7 );
