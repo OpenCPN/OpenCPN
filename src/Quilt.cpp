@@ -99,12 +99,12 @@ OCPNRegion &QuiltCandidate::GetCandidateVPRegion( ViewPort &vp )
     //    If the chart has an aux ply table, use it for finer region precision
     int nAuxPlyEntries = cte.GetnAuxPlyEntries();
     if( nAuxPlyEntries >= 1 ) {
+        candidate_region.Clear();
         for( int ip = 0; ip < nAuxPlyEntries; ip++ ) {
             float *pfp = cte.GetpAuxPlyTableEntry( ip );
             int nAuxPly = cte.GetAuxCntTableEntry( ip );
             
-            candidate_region = vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp,
-                                                           cte.GetScale() );
+            candidate_region.Union(vp.GetVPRegionIntersect( screen_region, nAuxPly, pfp, cte.GetScale() ));
         }
     }
     
