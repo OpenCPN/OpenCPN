@@ -93,8 +93,11 @@ extern ChartCanvas       *cc1;
 extern ChartBase         *Current_Ch;
 extern MyFrame*          gFrame;
 extern PlugInManager     *g_pi_manager;
+extern bool              g_b_overzoom_x;
 
 extern wxProgressDialog *s_ProgDialog;
+
+int                      g_SENC_LOD_pixels;
 
 static jmp_buf env_ogrf;                    // the context saved by setjmp();
 
@@ -3627,6 +3630,12 @@ bool s57chart::GetBaseFileAttr( wxFileName fn )
 
 int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFileName )
 {
+    //  LOD calculation
+    double display_ppm = 1 / .00025;     // nominal for most LCD displays
+//    double meters_per_pixel = m_Chart_Scale/display_ppm;  // meters per pixel at nominal chart scale
+    double meters_per_pixel_max_scale = GetNormalScaleMin(0,g_b_overzoom_x)/display_ppm;
+    m_LOD_meters = meters_per_pixel_max_scale * g_SENC_LOD_pixels;
+    
     OGRFeature *objectDef;
     OGRFeature *pEdgeVectorRecordFeature;
     S57Reader *poReader;
@@ -3774,31 +3783,7 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
     poReader = poS57DS->GetModule( 0 );
 
 //        Prepare Vector Edge Helper table
-
-    /*
-     //        First, find the max RCID field by looking at each element in the index in turn
-
-     pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
-
-     while(NULL != pEdgeVectorRecordFeature)
-     {
-     //          pEdgeVectorRecordFeature->DumpReadable( stdout );
-
-     //          int record_id = pEdgeVectorRecordFeature-> GetFieldAsInteger( "RCID" );
-     //          if(record_id > rcid_max)
-     //                rcid_max = record_id;
-     feid++;
-     pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
-
-     }
-
-     //    m_nvector_table_size = feid + 1;
-
-     //        Allocate a table
-     //    m_pVectorEdgeHelperTable = (int *)calloc((m_nvector_table_size) * sizeof(int), 1);
-
-     */
-    //        And fill in the table
+//        And fill in the table
     feid = 0;
     pEdgeVectorRecordFeature = poReader->ReadVector( feid, RCNM_VE );
     while( NULL != pEdgeVectorRecordFeature ) {
@@ -5103,11 +5088,12 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
                 //      Special case, polygons are handled separately
             case wkbPolygon: {
                 int error_code;
+                
                 PolyTessGeo *ppg = NULL;
 
                 OGRPolygon *poly = (OGRPolygon *) ( pGeo );
 
-                ppg = new PolyTessGeo( poly, true, ref_lat, ref_lon, 0 );   //try to use glu library
+                ppg = new PolyTessGeo( poly, true, ref_lat, ref_lon, false, m_LOD_meters );   //try to use glu library
 
                 error_code = ppg->ErrorCode;
                 if( error_code == ERROR_NO_DLL ) {
@@ -5118,7 +5104,7 @@ void s57chart::CreateSENCRecord( OGRFeature *pFeature, FILE * fpOut, int mode, S
 
                     delete ppg;
                     //  Try with internal tesselator
-                    ppg = new PolyTessGeo( poly, true, ref_lat, ref_lon, 1 );
+                    ppg = new PolyTessGeo( poly, true, ref_lat, ref_lon, true, m_LOD_meters );
                     error_code = ppg->ErrorCode;
                 }
 
@@ -5242,8 +5228,75 @@ void s57chart::CreateSENCVectorEdgeTable( FILE * fpOut, S57Reader *poReader )
                 nPoints = 0;
         }
 
-        fwrite( &nPoints, 1, sizeof(int), fpOut );
+        //  Transcribe points to a buffer
+        
+        if(nPoints){
+            double *ppd = (double *)malloc(nPoints * sizeof(MyPoint));
+            double *ppr = ppd;
 
+            for( int i = 0; i < nPoints; i++ ) {
+                OGRPoint p;
+                pLS->getPoint( i, &p );
+            
+            //  Calculate SM from chart common reference point
+                double easting, northing;
+                toSM( p.getY(), p.getX(), ref_lat, ref_lon, &easting, &northing );
+            
+                *ppr++ = easting;
+                *ppr++ = northing;
+            }
+        
+        //      Reduce the LOD of this linestring
+            wxArrayInt index_keep;
+            if(nPoints > 5 && (m_LOD_meters > .01)){
+                index_keep.Clear();
+                index_keep.Add(0);
+                index_keep.Add(nPoints-1);
+            
+                DouglasPeucker(ppd, 0, nPoints-1, m_LOD_meters, &index_keep);
+ //               printf("DP Reduction: %d/%d\n", index_keep.GetCount(), nPoints);
+            
+            }
+            else {
+                index_keep.Clear();
+                for(int i = 0 ; i < nPoints ; i++)
+                    index_keep.Add(i);
+            }
+        
+            int nPointReduced = index_keep.GetCount();
+        
+        //  And make a new array
+            double *npp = (double *)malloc(nPoints * 2 * sizeof(double));
+            double *npp_run = npp;
+            ppr = ppd;
+            for(int ip = 0 ; ip < nPoints ; ip++)
+            {
+                double x = *ppr++;
+                double y = *ppr++;
+ 
+                for(unsigned int j=0 ; j < index_keep.GetCount() ; j++){
+                    if(index_keep.Item(j) == ip){
+                        *npp_run++ = x;
+                        *npp_run++ = y;
+                        break;
+                    }
+                }
+            }
+        
+            fwrite( &nPointReduced, 1, sizeof(int), fpOut );
+
+            fwrite( npp, nPointReduced, sizeof(MyPoint), fpOut );
+
+            free( ppd );
+            free( npp );
+        }
+        else{
+            fwrite( &nPoints, 1, sizeof(int), fpOut );
+        }
+        
+#if 0            
+        fwrite( &nPoints, 1, sizeof(int), fpOut );
+         
         for( int i = 0; i < nPoints; i++ ) {
             OGRPoint p;
             pLS->getPoint( i, &p );
@@ -5257,6 +5310,7 @@ void s57chart::CreateSENCVectorEdgeTable( FILE * fpOut, S57Reader *poReader )
             pd.y = northing;
             fwrite( &pd, 1, sizeof(MyPoint), fpOut );
         }
+#endif
 
         //    Next vector record
         feid++;

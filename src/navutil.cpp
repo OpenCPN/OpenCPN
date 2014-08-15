@@ -329,6 +329,8 @@ extern bool             g_bresponsive;
 extern bool             bGPSValid;              // for track recording
 extern bool             g_bexpert;
 
+extern int              g_SENC_LOD_pixels;
+
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
 #endif
@@ -1159,7 +1161,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD, 0 );
 
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
-    Read( _T ( "AllowExtremeOverzoom" ), &g_b_overzoom_x, 1 );
+//    Read( _T ( "AllowExtremeOverzoom" ), &g_b_overzoom_x, 1 );
+    g_b_overzoom_x = true;
     Read( _T ( "ShowOverzoomEmbossWarning" ), &g_bshow_overzoom_emboss, 1 );
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
 
@@ -1258,6 +1261,9 @@ int MyConfig::LoadMyConfig( int iteration )
             5;
 
     Read( _T ( "ShowCM93DetailSlider" ), &g_bShowCM93DetailSlider, 0 );
+
+    Read( _T ( "SENC_LOD_Pixels" ), &g_SENC_LOD_pixels, 2 );
+    
 #endif
 
     Read( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod, 10 );

@@ -321,6 +321,7 @@ private:
       char        m_usage_char;
       
       double      m_next_safe_cnt;
+      double      m_LOD_meters;
 
 protected:      
       sm_parms    vp_transform;
