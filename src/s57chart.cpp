@@ -208,7 +208,7 @@ S57Obj::~S57Obj()
 //      S57Obj CTOR from SENC file
 //----------------------------------------------------------------------------------
 
-S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dummy2 )
+S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dummy2, int senc_file_version )
 {
     att_array = NULL;
     attVal = NULL;
@@ -678,7 +678,7 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
                             unsigned char *polybuf = (unsigned char *) malloc( nrecl + 1 );
                             pfpx->Read( polybuf, nrecl );
                             polybuf[nrecl] = 0;                     // endit
-                            PolyTessGeo *ppg = new PolyTessGeo( polybuf, nrecl, FEIndex );
+                            PolyTessGeo *ppg = new PolyTessGeo( polybuf, nrecl, FEIndex, senc_file_version );
                             free( polybuf );
 
                             pPolyTessGeo = ppg;
@@ -3924,7 +3924,8 @@ int s57chart::BuildSENCFile( const wxString& FullPath000, const wxString& SENCFi
 int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 {
     int ret_val = 0;                    // default is OK
-
+    int senc_file_version = 0;
+    
     //    Sanity check for existence of file
     wxFileName SENCFileName( FullPath );
     if( !SENCFileName.FileExists() ) {
@@ -3975,7 +3976,7 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
         if( !strncmp( buf, "OGRF", 4 ) ) {
 
-            S57Obj *obj = new S57Obj( buf, &fpx, 0, 0 );
+            S57Obj *obj = new S57Obj( buf, &fpx, 0, 0, senc_file_version );
             if( obj ) {
                 wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
                 wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
@@ -4180,7 +4181,6 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
         }
 
         else if( !strncmp( buf, "SENC", 4 ) ) {
-            int senc_file_version;
             sscanf( buf, "SENC Version=%i", &senc_file_version );
             if( senc_file_version != CURRENT_SENC_FORMAT_VERSION ) {
                 wxString msg( _T("   Wrong version on SENC file ") );

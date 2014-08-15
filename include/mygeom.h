@@ -182,7 +182,7 @@ class PolyTessGeo
         PolyTessGeo();
         ~PolyTessGeo();
 
-        PolyTessGeo(unsigned char *polybuf, int nrecl, int index);      // Build this from SENC file record
+        PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_file_version);      // Build this from SENC file record
 
         PolyTessGeo(OGRPolygon *poly, bool bSENC_SM,
             double ref_lat, double ref_lon,  bool bUseInternalTess, double LOD_meters);  // Build this from OGRPolygon
@@ -194,7 +194,6 @@ class PolyTessGeo
         int BuildDeferredTess(void);
 
         int Write_PolyTriGroup( FILE *ofs);
-        int Write_PolyTriGroup( wxOutputStream &ostream);
 
         double Get_xmin(){ return xmin;}
         double Get_xmax(){ return xmax;}
