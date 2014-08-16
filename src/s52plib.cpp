@@ -4030,7 +4030,6 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
 
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
-  
     if( !ObjectRenderCheckPos( rzRules, vp ) )
         return 0;
 
@@ -4050,6 +4049,7 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
                 while( rules != NULL ) {
                     if( RUL_CND_SY ==  rules->ruleType ){
                         GetAndAddCSRules( rzRules, rules );
+                        rzRules->obj->bCS_Added = 1; // mark the object
                         break;
                     }
                     rules = rules->next;
@@ -6110,6 +6110,7 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
                 while( rules != NULL ) {
                     if( RUL_CND_SY ==  rules->ruleType ){
                         GetAndAddCSRules( rzRules, rules );
+                        rzRules->obj->bCS_Added = 1; // mark the object
                         break;
                     }
                     rules = rules->next;
@@ -6462,6 +6463,7 @@ int s52plib::RenderAreaToDC( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp,
                 while( rules != NULL ) {
                     if( RUL_CND_SY ==  rules->ruleType ){
                         GetAndAddCSRules( rzRules, rules );
+                        rzRules->obj->bCS_Added = 1; // mark the object
                         break;
                     }
                     rules = rules->next;
