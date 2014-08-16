@@ -3435,7 +3435,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     cc1->EnablePaint(false);
     if( ChartData ) ChartData->PurgeCache();
 
-    SetStatusBar( NULL );
+//    SetStatusBar( NULL );
     stats = NULL;
 
     if( pRouteManagerDialog ) {
