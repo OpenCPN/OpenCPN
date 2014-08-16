@@ -3376,7 +3376,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     //      Delete all open charts in the cache
     if( ChartData ) ChartData->PurgeCache();
 
-    SetStatusBar( NULL );
+//    SetStatusBar( NULL );
     stats = NULL;
 
     if( pRouteManagerDialog ) {
