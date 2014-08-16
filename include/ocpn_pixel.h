@@ -60,6 +60,10 @@ wxImage Image_Rotate(wxImage &base_image, double angle, const wxPoint & centre_o
 //#define __PIX_CACHE_PIXBUF__
 #endif
 
+#ifdef __WXQT__
+#define __PIX_CACHE_WXIMAGE__
+#endif
+
 #ifdef __WXMSW__
 #define __PIX_CACHE_DIBSECTION__
 #define     ocpnUSE_DIBSECTION
