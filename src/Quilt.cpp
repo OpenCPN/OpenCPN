@@ -817,6 +817,8 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
     
     int new_db_index = m_refchart_dbIndex;
 
+    double zoom_def = 2.0;
+    
     unsigned int extended_array_count = m_extended_stack_array.GetCount();
 
     if( m_refchart_dbIndex >= 0 && ( extended_array_count > 0 ) ) {
@@ -826,7 +828,7 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
             int ref_family = pc->GetChartFamily();
 
             double max_ref_scale = pc->GetNormalScaleMax( m_canvas_scale_factor, m_canvas_width );
-            if( proposed_scale_onscreen > max_ref_scale ) {
+            if( proposed_scale_onscreen > max_ref_scale * zoom_def ) {
                 m_zout_dbindex = -1;
                 unsigned int target_stack_index = 0;
                 int target_stack_index_check = m_extended_stack_array.Index( current_db_index ); // Lookup
@@ -834,7 +836,7 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
                 if( wxNOT_FOUND != target_stack_index_check ) target_stack_index =
                         target_stack_index_check;
 
-                while( ( proposed_scale_onscreen > max_ref_scale )
+                while( ( proposed_scale_onscreen > max_ref_scale * zoom_def )
                         && ( target_stack_index < ( extended_array_count - 1 ) ) ) {
                     target_stack_index++;
                     int test_db_index = m_extended_stack_array.Item( target_stack_index );
@@ -850,7 +852,7 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
                 }
 
                 bool b_ref_set = false;
-                if( proposed_scale_onscreen > max_ref_scale) {          // could not find a useful chart
+                if( proposed_scale_onscreen > max_ref_scale * zoom_def ) {  // could not find a useful chart
 
                     //  If cm93 is available, allow a one-time switch of chart family
                     //  and leave a bread crumb (m_zout_dbindex) to allow selecting this chart
@@ -890,7 +892,9 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
 
     //  Reset "lost" chart logic
     m_lost_refchart_dbIndex = -1;
-   
+
+    ChartFamilyEnum family = (ChartFamilyEnum)ChartData->GetDBChartFamily( m_refchart_dbIndex );
+            
     //  In high definition zoom mode, if all charts in the quilt are rasters, we switch to a larger scale chart sooner.
     //  Presumably, we can do this if underzoomed quilt patches render quickly, as they do in OpenGL.
     double zoom_def = 1.0;
@@ -908,6 +912,14 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
         if( !no_hidef )
             zoom_def = 3.0;
     }
+
+    //  For Vector charts, we want to switch to a larger scale chart sooner on zoom.
+    //  Not only does this make a nicer picture,.....
+    //  It turns out that it is cheaper to render a small piece of a large scale
+    //  chart than it is to render the same small piece of a small scale chart.
+    //  This is simply due to the number of objects typically found in small scale ENCs.
+    if( CHART_FAMILY_VECTOR == family )
+        zoom_def = 4.0;
     
     int new_db_index = m_refchart_dbIndex;
     int current_db_index = m_refchart_dbIndex;
@@ -1702,7 +1714,12 @@ bool Quilt::Compose( const ViewPort &vp_in )
 ///     until the canvas is zoomed sufficiently.
 
 /// Above logic does not apply to cm93 composites
-            if( ( CHART_TYPE_S57 != ctei.GetChartType() )/* && (CHART_TYPE_CM93COMP != ctei.GetChartType())*/) {
+                
+/// However, we now find that if we have an OpenGL FBO rendering surface, it pays to calculate the exact render
+/// region for each patch.  Cannot do this with overlays present, though.                
+            //if( ( CHART_TYPE_S57 != ctei.GetChartType() ))
+            if(!b_has_overlays)    
+            {
 
                 if( !vpr_region.Empty() ) {
                     const ChartTableEntry &cte = ChartData->GetChartTableEntry( pqp->dbIndex );
