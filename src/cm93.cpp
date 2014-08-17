@@ -5382,7 +5382,8 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                           }
                                     }
 
-                                    render_return |= m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
+                                    if(!sscale_region.IsEmpty())
+                                        render_return |= m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
 
                                     //    Update the remaining empty region
                                     if ( !sscale_region.IsEmpty() )
@@ -5590,7 +5591,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                   if ( !chart_region.IsEmpty() )
                         vpr_empty.Subtract ( chart_region );
 
-
                   if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
                   {
                         //    Render the target scale chart on a temp dc for safekeeping
@@ -5599,7 +5599,10 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 #else
                         wxMemoryDC temp_dc;
 #endif
-                        render_return = m_pcm93chart_current->RenderRegionViewOnDC ( temp_dc, vp_positive, chart_region );
+                        if(!chart_region.IsEmpty())
+                            render_return = m_pcm93chart_current->RenderRegionViewOnDC ( temp_dc, vp_positive, chart_region );
+                        else
+                            render_return = false;
 
                         //    Save the current cm93 chart pointer for restoration later
                         cm93chart *m_pcm93chart_save = m_pcm93chart_current;

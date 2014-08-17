@@ -1506,6 +1506,9 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
 
     bool force_new_view = false;
 
+    if(!Region.Ok())
+        return false;
+    
     if( Region != m_last_Region ) force_new_view = true;
 
     ps52plib->PrepareForRender();

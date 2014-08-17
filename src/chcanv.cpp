@@ -584,7 +584,7 @@ void ViewPort::GetLLFromPix( const wxPoint &p, double *lat, double *lon )
     *lon = slon;
 }
 
-OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, float *llpoints,
+OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoints, float *llpoints,
         int chart_native_scale, wxPoint *ppoints )
 {
     //  Calculate the intersection between a given OCPNRegion (Region) and a polygon specified by lat/lon points.
@@ -609,7 +609,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
         float lat_max = -10000.;
         float lat_min = 10000.;
 
-        for( unsigned int ip = 0; ip < n; ip++ ) {
+        for( unsigned int ip = 0; ip < nPoints; ip++ ) {
             lon_max = wxMax(lon_max, pfp[1]);
             lon_min = wxMin(lon_min, pfp[1]);
             lat_max = wxMax(lat_max, pfp[0]);
@@ -682,18 +682,110 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
     wxPoint *pp;
 
     //    Use the passed point buffer if available
-    if( ppoints == NULL ) pp = new wxPoint[n];
+    if( ppoints == NULL ) pp = new wxPoint[nPoints];
     else
         pp = ppoints;
 
     float *pfp = llpoints;
 
-    for( unsigned int ip = 0; ip < n; ip++ ) {
+    
+    wxPoint p = GetPixFromLL( pfp[0], pfp[1] );
+    int poly_x_max = p.x;
+    int poly_y_max = p.y;
+    int poly_x_min = p.x;
+    int poly_y_min = p.y;
+    
+    for( unsigned int ip = 0; ip < nPoints; ip++ ) {
         wxPoint p = GetPixFromLL( pfp[0], pfp[1] );
         pp[ip] = p;
+        poly_x_max = wxMax(poly_x_max, p.x);
+        poly_y_max = wxMax(poly_y_max, p.y);
+        poly_x_min = wxMin(poly_x_min, p.x);
+        poly_y_min = wxMin(poly_y_min, p.y);
         pfp += 2;
     }
+ 
+    //  We want to avoid processing regions with very large rectangle counts,
+    //  so make some tests for special cases
 
+    
+    //  First, calculate whether any segment of the input polygon intersects the specified Region
+    bool b_intersect = false;
+    OCPNRegionIterator screen_region_it1( Region );
+    while( screen_region_it1.HaveRects() ) {
+        wxRect rect = screen_region_it1.GetRect();
+        
+        for(size_t i=0 ; i < nPoints-1 ; i++){
+            int x0 = pp[i].x;  int y0 = pp[i].y; int x1 = pp[i+1].x; int y1 = pp[i+1].y;
+            if( ((x0 < rect.x) && (x1 < rect.x)) ||
+                ((x0 > rect.x+rect.width) && (x1 > rect.x+rect.width)) )
+                continue;
+            
+            if( ((y0 < rect.y) && (y1 < rect.y)) ||
+                ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) )
+                continue;
+            
+            b_intersect = true;
+            break;
+        }
+        screen_region_it1.NextRect();
+    }
+
+    //  If there is no itersection, we need to consider the case where
+    //  the subject polygon is entirely within the Region
+    bool b_contained = false;
+    if(!b_intersect){
+        OCPNRegionIterator screen_region_it2( Region );
+        while( screen_region_it2.HaveRects() ) {
+            wxRect rect = screen_region_it2.GetRect();
+ 
+            for(size_t i=0 ; i < nPoints-1 ; i++){
+                int x0 = pp[i].x;  int y0 = pp[i].y;
+                if((x0 < rect.x) || (x0 > rect.x+rect.width))
+                    continue;
+                
+                if((y0 < rect.y) || (y0 > rect.y+rect.height))
+                    continue;
+                
+                b_contained = true;
+                break;
+            }
+            screen_region_it2.NextRect();
+        }
+    }
+
+    // and here is the payoff
+    if(!b_contained && !b_intersect){
+        //  Two cases to consider
+        wxRect rpoly( poly_x_min, poly_y_min, poly_x_max - poly_x_min , poly_y_max - poly_y_min);
+        wxRect rRegion = Region.GetBox();
+        if(rpoly.Contains(rRegion)){
+        //  subject poygon must be large enough to fully encompass the target Region,
+        //  so the intersection is simply the Region
+            if( NULL == ppoints ) delete[] pp;
+            return Region;
+        }
+        else{
+        //  Subject polygon is entirely outside of target Region
+        //  so the intersection must be empty.
+            if( NULL == ppoints ) delete[] pp;
+            wxRegion r;
+            return r;
+        }
+    }
+    else if(b_contained && !b_intersect){
+        //  subject polygon is entirely withing the target Region,
+        //  so the intersection is the subject polygon
+        OCPNRegion r = OCPNRegion( nPoints, pp );
+        if( NULL == ppoints ) delete[] pp;
+        return r;
+    }
+        
+        
+    
+        
+        
+    
 #ifdef __WXGTK__
     sigaction(SIGSEGV, NULL, &sa_all_old);             // save existing action for this signal
 
@@ -719,7 +811,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
     else
     {
 
-        OCPNRegion r = OCPNRegion(n, pp);
+        OCPNRegion r = OCPNRegion(nPoints, pp);
         if(NULL == ppoints)
             delete[] pp;
 
@@ -729,7 +821,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
     }
 
 #else
-    OCPNRegion r = OCPNRegion( n, pp );
+    OCPNRegion r = OCPNRegion( nPoints, pp );
 
     if( NULL == ppoints ) delete[] pp;
 
@@ -1031,7 +1123,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_glcc = NULL;
     m_pGLcontext = NULL;
     
-    g_ChartNotRenderScaleFactor = 2.0;
+    g_ChartNotRenderScaleFactor = 4.0;
 
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
