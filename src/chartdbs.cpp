@@ -37,7 +37,7 @@
 #include "chartdbs.h"
 #include "chartbase.h"
 #include "pluginmanager.h"
-
+#include "mygeom.h"                     // For DouglasPeucker();
 #ifndef UINT32
 #define UINT32 unsigned int
 #endif
@@ -184,19 +184,67 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
     m_bbox.SetMin(LonMin, LatMin);
     
     // Fill in the PLY information
-
+    double LOD_meters = 5;
+    
     // If  COVR table has only one entry, us it for the primary Ply Table
     if (theChart.GetCOVREntries() == 1) {
           nPlyEntries = theChart.GetCOVRTablePoints(0);
-          float *pf = (float *)malloc(2 * nPlyEntries * sizeof(float));
-          pPlyTable = pf;
-          float *pfe = pf;
-          Plypoint *ppp = (Plypoint *)theChart.GetCOVRTableHead(0);
+          
+          if(nPlyEntries > 5 && (LOD_meters > .01)){
+              wxArrayInt index_keep;
+              
+              index_keep.Clear();
+              index_keep.Add(0);
+              index_keep.Add(nPlyEntries-1);
+              index_keep.Add(1);
+              index_keep.Add(nPlyEntries-2);
 
-          for (int i = 0; i < nPlyEntries; i++) {
+              double *DPbuffer = (double *)malloc(2 * nPlyEntries * sizeof(double));
+              
+              double *pfed = DPbuffer;
+              Plypoint *ppp = (Plypoint *)theChart.GetCOVRTableHead(0);
+              
+              for (int i = 0; i < nPlyEntries; i++) {
+                  *pfed++ = ppp->ltp;
+                  *pfed++ = ppp->lnp;
+                  ppp++;
+              }
+              
+              DouglasPeucker(DPbuffer, 1, nPlyEntries-2, LOD_meters/(1852 * 60), &index_keep);
+//              printf("DB DP Reduction: %d/%d\n", index_keep.GetCount(), nPlyEntries);
+
+              // Mark the keepers by adding a simple constant to ltp
+              for(unsigned int i=0 ; i < index_keep.GetCount() ; i++){
+                  int k = index_keep.Item(i);
+                  DPbuffer[2*k] += 2000.;
+              }
+              
+              
+              float *pf = (float *)malloc(2 * index_keep.GetCount() * sizeof(float));
+              float *pfe = pf;
+              
+              for (int i = 0; i < nPlyEntries; i++) {
+                  if(DPbuffer[2 * i] > 1000.){
+                      *pfe++ = DPbuffer[2*i] - 2000.;
+                      *pfe++ = DPbuffer[(2*i) + 1];
+                  }
+              }
+
+              pPlyTable = pf;
+              nPlyEntries = index_keep.GetCount();
+              free( DPbuffer );
+          }
+          else {
+            float *pf = (float *)malloc(2 * nPlyEntries * sizeof(float));
+            pPlyTable = pf;
+            float *pfe = pf;
+            Plypoint *ppp = (Plypoint *)theChart.GetCOVRTableHead(0);
+
+            for (int i = 0; i < nPlyEntries; i++) {
                 *pfe++ = ppp->ltp;
                 *pfe++ = ppp->lnp;
                 ppp++;
+            }
           }
     }
     // Else create a rectangular primary Ply Table from the chart extents
@@ -231,10 +279,58 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
           int *pip = (int *)malloc(nAuxPlyEntries * sizeof(int));
 
           for (int j = 0 ; j < nAuxPlyEntries; j++) {
+              int nPE = theChart.GetCOVRTablePoints(j);
+              
+              if(nPE > 5 && (LOD_meters > .01)){
+                  wxArrayInt index_keep;
+                  
+                  index_keep.Clear();
+                  index_keep.Add(0);
+                  index_keep.Add(nPE-1);
+                  index_keep.Add(1);
+                  index_keep.Add(nPE-2);
+                  
+                  double *DPbuffer = (double *)malloc(2 * nPE * sizeof(double));
+                  
+                  double *pfed = DPbuffer;
+                  Plypoint *ppp = (Plypoint *)theChart.GetCOVRTableHead(j);
+                  
+                  for (int i = 0; i < nPE; i++) {
+                      *pfed++ = ppp->ltp;
+                      *pfed++ = ppp->lnp;
+                      ppp++;
+                  }
+                  
+                  DouglasPeucker(DPbuffer, 1, nPE-2, LOD_meters/(1852 * 60), &index_keep);
+ //                 printf("DBa DP Reduction: %d/%d\n", index_keep.GetCount(), nPE);
+                  
+                  // Mark the keepers by adding a simple constant to ltp
+                  for(unsigned int i=0 ; i < index_keep.GetCount() ; i++){
+                      int k = index_keep.Item(i);
+                      DPbuffer[2*k] += 2000.;
+                  }
+                  
+                  
+                  float *pf = (float *)malloc(2 * index_keep.GetCount() * sizeof(float));
+                  float *pfe = pf;
+                  
+                  for (int i = 0; i < nPE; i++) {
+                      if(DPbuffer[2 * i] > 1000.){
+                          *pfe++ = DPbuffer[2*i] - 2000.;
+                          *pfe++ = DPbuffer[(2*i) + 1];
+                      }
+                  }
+                  
+                  pft0[j] = pf;
+                  pip[j] = index_keep.GetCount();
+                  free( DPbuffer );
+              }
+              else {
                 float *pf_entry = (float *)malloc(theChart.GetCOVRTablePoints(j) * 2 * sizeof(float));
                 memcpy(pf_entry, theChart.GetCOVRTableHead(j), theChart.GetCOVRTablePoints(j) * 2 * sizeof(float));
                 pft0[j] = pf_entry;
                 pip[j] = theChart.GetCOVRTablePoints(j);
+              }
           }
 
           pAuxPlyTable = pfp;
