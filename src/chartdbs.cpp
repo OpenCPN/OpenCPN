@@ -184,7 +184,15 @@ ChartTableEntry::ChartTableEntry(ChartBase &theChart)
     m_bbox.SetMin(LonMin, LatMin);
     
     // Fill in the PLY information
-    double LOD_meters = 5;
+    //  LOD calculation
+    int LOD_pixels = 1;
+    double scale_max_zoom = Scale / 4;
+    
+    double display_ppm = 1 / .00025;     // nominal for most LCD displays
+    double meters_per_pixel_max_scale = scale_max_zoom / display_ppm;
+    double LOD_meters = meters_per_pixel_max_scale * LOD_pixels;
+    
+//    double LOD_meters = 5;
     
     // If  COVR table has only one entry, us it for the primary Ply Table
     if (theChart.GetCOVREntries() == 1) {
