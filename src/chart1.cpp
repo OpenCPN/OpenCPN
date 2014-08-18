@@ -2133,6 +2133,12 @@ if( 0 == g_memCacheLimit )
 
     }
 
+    //  Verify any saved chart database startup index
+    if(g_restore_dbindex >= 0){
+        if(g_restore_dbindex > (ChartData->GetChartTableEntries()-1))
+            g_restore_dbindex = 0;
+    }
+    
     //  Apply the inital Group Array structure to the chart data base
     ChartData->ApplyGroupArray( g_pGroupArray );
 
