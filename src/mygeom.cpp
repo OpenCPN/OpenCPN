@@ -380,9 +380,10 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_
     ppg->pn_vertex = (int *)malloc(nctr * sizeof(int));
     int *pctr = ppg->pn_vertex;
 
-    char *buf = (char *)malloc(twkb_len + 2);        // allocate a buffer guaranteed big enough
+    size_t buf_len = wxMax(twkb_len + 2, 20 + (nctr * 4));
+    char *buf = (char *)malloc(buf_len);        // allocate a buffer guaranteed big enough
 
-    my_bufgets( buf, twkb_len + 2 );                       // contour nVert, plus geometry
+    my_bufgets( buf, buf_len );                 // contour nVert, as a char line
 
     wxString ivc_str(buf + 10,  wxConvUTF8);
     wxStringTokenizer tkc(ivc_str, wxT(" ,\n"));
@@ -790,12 +791,17 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
 //  Converting to float as we go, and
 //  allowing for tess_orient
 
-    m_nwkb = (npta +1) * 2 * sizeof(float);
+    int nptfinal = npta;
+    
+    //  No longer need the full geometry in the SENC,
+    nptfinal = 1;
+    
+    m_nwkb = (nptfinal +1) * 2 * sizeof(float);
     m_ppg_head->pgroup_geom = (float *)malloc(m_nwkb);
     float *vro = m_ppg_head->pgroup_geom;
     float tx,ty;
 
-    for(ip = 1 ; ip < npta + 1 ; ip++)
+    for(ip = 1 ; ip < nptfinal + 1 ; ip++)
     {
         if(TESS_HORZ == tess_orient)
         {
@@ -1215,13 +1221,18 @@ int PolyTessGeo::BuildTessTri(void)
     //  Transcribe the raw geometry buffer
     //  Converting to float as we go, and
     //  allowing for tess_orient
+
+    int nptfinal = npta;
     
-    m_nwkb = (npta +1) * 2 * sizeof(float);
+    //  No longer need the full geometry in the SENC,
+    nptfinal = 1;
+    
+    m_nwkb = (nptfinal +1) * 2 * sizeof(float);
     m_ppg_head->pgroup_geom = (float *)malloc(m_nwkb);
     float *vro = m_ppg_head->pgroup_geom;
     float tx,ty;
     
-    for(ip = 1 ; ip < npta + 1 ; ip++)
+    for(ip = 1 ; ip < nptfinal + 1 ; ip++)
     {
         if(TESS_HORZ == tess_orient)
         {
@@ -1952,6 +1963,9 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
     for(int i=0 ; i < nint ; i++)
         nptfinal += cntr[i+1] + 2;
     
+    //  No longer need the full geometry in the SENC,
+    nptfinal = 1;
+    
     m_nwkb = (nptfinal + 1) * 2 * sizeof(float);
     m_ppg_head->pgroup_geom = (float *)malloc(m_nwkb);
     float *vro = m_ppg_head->pgroup_geom;
@@ -2365,13 +2379,18 @@ int PolyTessGeo::BuildTessGL(void)
 //  allowing for tess_orient
 //  Also, convert to SM if requested
 
-      m_nwkb = (npta +1) * 2 * sizeof(float);
+      int nptfinal = npta;
+      
+      //  No longer need the full geometry in the SENC,
+      nptfinal = 1;
+      
+      m_nwkb = (nptfinal +1) * 2 * sizeof(float);
       m_ppg_head->pgroup_geom = (float *)malloc(m_nwkb);
       float *vro = m_ppg_head->pgroup_geom;
       ppt = geoPt;
       float tx,ty;
 
-      for(ip = 0 ; ip < npta ; ip++)
+      for(ip = 0 ; ip < nptfinal ; ip++)
       {
             if(TESS_HORZ == tess_orient)
             {
