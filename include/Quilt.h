@@ -203,6 +203,9 @@ private:
     void SubstituteClearDC( wxMemoryDC &dc, ViewPort &vp );
     int GetNewRefChart( void );
 
+    int GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family);
+    int GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family);
+    
     OCPNRegion m_covered_region;
     OCPNRegion m_rendered_region;
 

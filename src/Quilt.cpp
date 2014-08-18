@@ -882,6 +882,108 @@ int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
     return m_refchart_dbIndex;
 }
 
+int Quilt::GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family)
+{
+    switch(family){
+        case CHART_FAMILY_RASTER:{
+            return scale / 4;
+        }
+        
+        case CHART_FAMILY_VECTOR:{
+            return scale / 4;
+        }
+        
+        default:{
+            return scale / 2;
+        }
+    }
+}
+
+int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
+{
+    switch(family){
+        case CHART_FAMILY_RASTER:{
+            return scale * 2;
+        }
+        
+        case CHART_FAMILY_VECTOR:{
+            return scale * 3;
+        }
+        
+        default:{
+            return scale * 2;
+        }
+    }
+}
+
+#if 1
+int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
+{
+    //    If the reference chart is undefined, we really need to select one now.
+    if( m_refchart_dbIndex < 0 ) {
+        int new_ref_dbIndex = GetNewRefChart();
+        SetReferenceChart( new_ref_dbIndex );
+    }
+    
+    //  Reset "lost" chart logic
+    m_lost_refchart_dbIndex = -1;
+
+    int current_db_index = m_refchart_dbIndex;
+    int current_family = m_reference_family;
+    int current_type = m_reference_type;
+    
+    //  Make 3 lists
+    wxArrayInt nom_scale;
+    wxArrayInt max_scale;
+    wxArrayInt min_scale;
+    wxArrayInt index_array;
+    
+    //  Walk the extended chart array, capturing data
+    for(size_t i=0 ; i < m_extended_stack_array.GetCount() ; i++){
+        int test_db_index = m_extended_stack_array.Item( i );
+
+        if( 1/*pCurrentStack->DoesStackContaindbIndex( test_db_index )*/ ) {
+            if( ( current_family == ChartData->GetDBChartFamily( test_db_index ) )
+                && IsChartQuiltableRef( test_db_index ) ) {
+                
+                index_array.Add(test_db_index);
+                int nscale = ChartData->GetDBChartScale(test_db_index);
+                nom_scale.Add(nscale);
+                    
+                int nmax_scale = GetNomScaleMax(nscale, (ChartTypeEnum)current_type, (ChartFamilyEnum)current_family);
+                max_scale.Add(nmax_scale);
+
+                int nmin_scale = GetNomScaleMin(nscale, (ChartTypeEnum)current_type, (ChartFamilyEnum)current_family);
+                min_scale.Add(nmin_scale);
+            }
+        }
+    }
+    
+    // Search for the largest scale chart whose scale limits contain the requested scale.
+    int new_ref_dbIndex = -1;
+    for(size_t i=0 ; i < index_array.GetCount() ; i++){
+        int a = min_scale.Item(i);
+        int b = max_scale.Item(i);
+        
+        
+        if( ( proposed_scale_onscreen < min_scale.Item(i)) &&
+            (proposed_scale_onscreen > max_scale.Item(i)) ) {
+            new_ref_dbIndex = index_array.Item(i);
+            break;
+        }
+    }
+    
+    if( ( new_ref_dbIndex >= 0) && (m_refchart_dbIndex != new_ref_dbIndex) ){
+        SetReferenceChart( new_ref_dbIndex );
+    }
+                    
+    return m_refchart_dbIndex;
+    
+}
+#endif
+
+
+#if 0
 int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
 {
     //    If the reference chart is undefined, we really need to select one now.
@@ -910,7 +1012,7 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
         }
         
         if( !no_hidef )
-            zoom_def = 3.0;
+            zoom_def = 2.0;
     }
 
     //  For Vector charts, we want to switch to a larger scale chart sooner on zoom.
@@ -919,7 +1021,7 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
     //  chart than it is to render the same small piece of a small scale chart.
     //  This is simply due to the number of objects typically found in small scale ENCs.
     if( CHART_FAMILY_VECTOR == family )
-        zoom_def = 4.0;
+        zoom_def = 2.0;
     
     int new_db_index = m_refchart_dbIndex;
     int current_db_index = m_refchart_dbIndex;
@@ -988,6 +1090,7 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
     }
     return m_refchart_dbIndex;
 }
+#endif
 
 bool Quilt::IsChartSmallestScale( int dbIndex )
 {
