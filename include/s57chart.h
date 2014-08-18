@@ -271,7 +271,8 @@ private:
       bool DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect);
       bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region, bool b_overlay);
 
-
+      void BuildLineVBO( void );
+      
  // Private Data
       char        *hdr_buf;
       char        *mybuf_ptr;
@@ -323,6 +324,7 @@ private:
       double      m_next_safe_cnt;
       double      m_LOD_meters;
 
+      int         m_LineVBO_name;
 protected:      
       sm_parms    vp_transform;
       

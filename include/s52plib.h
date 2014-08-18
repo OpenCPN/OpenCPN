@@ -239,7 +239,9 @@ private:
     int RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     char *RenderCS( ObjRazRules *rzRules, Rules *rules );
-
+    int RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderGLLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    
     void UpdateOBJLArray( S57Obj *obj );
 
     render_canvas_parms* CreatePatternBufferSpec( ObjRazRules *rzRules,

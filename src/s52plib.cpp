@@ -2590,10 +2590,271 @@ int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 }
 
+// Line Simple Style, OpenGL
+int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
+{
+    //return 0;
+    //return RenderLS(rzRules, rules, vp);
+ 
+//    if(rzRules->obj->Index != 1570) return 0;
+#ifdef ocpnUSE_GL
+// OpenGL mode
+
+    //  Try to determine if the feature needs to be drawn in the most efficient way
+    int bdraw = 0;
+    VE_Hash *ve_hash; 
+    VC_Hash *vc_hash; 
+    
+    if( rzRules->obj->m_chart_context->chart ){
+        ve_hash = &rzRules->obj->m_chart_context->chart->Get_ve_hash(); 
+        vc_hash = &rzRules->obj->m_chart_context->chart->Get_vc_hash(); 
+    }
+    else {
+        ve_hash = (VE_Hash *)rzRules->obj->m_chart_context->m_pve_hash; 
+        vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash; 
+    }
+    int priority_current = rzRules->LUP->DPRI - '0'; //TODO fix this hack by putting priority into object during _insertRules
+    wxBoundingBox BBViewT = vp->GetBBox();
+    
+        for( int iseg = 0; iseg < rzRules->obj->m_n_lsindex; iseg++ ) {
+            int seg_index = iseg * 3;
+            int *index_run = &rzRules->obj->m_lsindex_array[seg_index];
+ 
+            index_run++;
+            
+            //  Get the edge
+            unsigned int venode = *index_run;
+            VE_Element *pedge = 0;
+            pedge = (*ve_hash)[venode];
+ 
+            //  Here we decide to draw or not based on the highest priority seen for this segment
+            //  That is, if this segment is going to be drawn at a higher priority later, then "continue", and don't draw it here.
+            if( pedge && (pedge->max_priority == priority_current ) ) {
+                bdraw++;
+                break;
+            }
+            
+            if(pedge && pedge->nCount){
+            
+            //  Check visibility on the edge
+                bool b_greenwich = false;
+                if( BBViewT.GetMaxX() > 360. ) {
+                    wxBoundingBox bbRight( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
+                                           vp->GetBBox().GetMaxY() );
+                    
+                   
+                    if( bbRight.Intersect( pedge->BBox, 0 ) != _OUT )
+                        b_greenwich = true;
+                }
+                
+                if( b_greenwich || !BBViewT.IntersectOut( pedge->BBox ) ){
+                    bdraw++;
+                    break;
+                }
+            }
+        }
+        
+    if(!bdraw)
+        return 0;
+        
+    char *str = (char*) rules->INSTstr;
+    S52color *c = getColor( str + 7 ); // Colour
+    int w = atoi( str + 5 ); // Width
+    
+        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT ); //Save state
+        
+        glColor3ub( c->R, c->G, c->B );
+        
+        glDisable( GL_LINE_SMOOTH );
+        glDisable( GL_BLEND );
+        
+        //    Set drawing width
+        if( w > 1 ) {
+            GLint parms[2];
+            glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
+            if( w > parms[1] ) glLineWidth( wxMax(g_GLMinLineWidth, parms[1]) );
+            else
+                glLineWidth( wxMax(g_GLMinLineWidth, w) );
+        } else
+            glLineWidth( wxMax(g_GLMinLineWidth, 1) );
+
+ #ifndef ocpnUSE_GLES // linestipple is emulated poorly
+            if( !strncmp( str, "DASH", 4 ) ) {
+                glLineStipple( 1, 0x3F3F );
+                glEnable( GL_LINE_STIPPLE );
+            }
+            else if( !strncmp( str, "DOTT", 4 ) ) {
+                glLineStipple( 1, 0x3333 );
+                glEnable( GL_LINE_STIPPLE );
+            }
+            else
+                glDisable( GL_LINE_STIPPLE );
+#endif
+                
+ 
+    wxBoundingBox BBView = vp->GetBBox();
+    //  Allow a little slop in calculating whether a segment
+    //  is within the requested Viewport
+    double margin = BBView.GetWidth() * .05;
+    BBView.EnLarge( margin );
+    
+    
+    glPushMatrix();
+    
+    // Set up the OpenGL transform matrix for this object
+    //  Transform from Simple Mercator (relative to chart reference point) to screen coordinates.
+    
+    //  First, the VP transform
+    glTranslatef( vp->pix_width / 2, vp->pix_height/2, 0 );
+    glScalef( vp->view_scale_ppm, -vp->view_scale_ppm, 0 );
+    glTranslatef( -rzRules->sm_transform_parms->easting_vp_center, -rzRules->sm_transform_parms->northing_vp_center, 0 );
+    
+    //  Next, the per-object transform
+    
+    //      For some chart types (e.g. cm93), the viewport bounding box is constructed
+    //      so as to be positive semi-definite. That is, the right hand side may have a longitude > 360.
+    //      In this case, we may need to translate object coordinates by 360 degrees to conform.
+    if( BBView.GetMaxX() > 360. ) {
+        
+        wxBoundingBox bbRight ( 0., vp->GetBBox().GetMinY(),
+                                vp->GetBBox().GetMaxX() - 360., vp->GetBBox().GetMaxY() );
+        if(  (rzRules->obj->BBObj.GetMinX() >= 0) &&
+            (rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.) ){
+            glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0);
+            }
+    }
+    
+    glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
+    glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
+    
+    bool b_useVBO = true;
+
+    
+    //   Has line segment PBO been allocated for this chart?
+    if(rzRules->obj->auxParm2 > 0){
+        (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->auxParm2);
+        b_useVBO = true;
+    }
+    else{
+        b_useVBO = false;
+    }
+
+    glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+    
+       
+        // Render all the segments
+        for( int iseg = 0; iseg < rzRules->obj->m_n_lsindex; iseg++ ) {
+            int seg_index = iseg * 3;
+            int *index_run = &rzRules->obj->m_lsindex_array[seg_index];
+ 
+            //  Get first connected node
+            unsigned int inode = *index_run++;
+            
+            //  Get the edge
+            unsigned int venode = *index_run++;
+            VE_Element *pedge = 0;
+            pedge = (*ve_hash)[venode];
+            
+            //  Get end connected node
+            unsigned int enode = *index_run++;
+ 
+            //  Here we decide to draw or not based on the highest priority seen for this segment
+            //  That is, if this segment is going to be drawn at a higher priority later, then "continue", and don't draw it here.
+            if( pedge && (pedge->max_priority != priority_current ) )
+                continue;
+            
+
+            if(pedge && pedge->nCount){
+            
+            //  Check visibility on the edge
+                bool b_greenwich = false;
+                if( BBView.GetMaxX() > 360. ) {
+                    wxBoundingBox bbRight( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
+                                           vp->GetBBox().GetMaxY() );
+                    
+                   
+                    if( bbRight.Intersect( pedge->BBox, margin ) != _OUT )
+                        b_greenwich = true;
+                }
+                
+                if( !b_greenwich && BBView.IntersectOut( pedge->BBox ) )
+                    continue;
+            }
+ 
+            //  Get first connected node
+            VC_Element *ipnode = 0;
+            ipnode = (*vc_hash)[inode];
+ 
+            //  Get end connected node
+            VC_Element *epnode = 0;
+            epnode = (*vc_hash)[enode];
+ 
+            double e0, n0, e1, n1;
+            
+                if( ipnode ) {
+                    double *ppt = ipnode->pPoint;
+                    e0 = *ppt++;
+                    n0 = *ppt;
+                    if(pedge && pedge->nCount)
+                    {
+                        e1 = pedge->pPoints[0];
+                        n1 = pedge->pPoints[1];
+                
+                        glBegin( GL_LINES );
+                        glVertex2f( e0, n0 );
+                        glVertex2f( e1, n1 );
+                        glEnd();
+                    }
+                }
+
+            if(pedge && pedge->nCount){
+                if(b_useVBO){
+                    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), (GLvoid *)(pedge->vbo_offset));
+                    glDrawArrays(GL_LINE_STRIP, 0, pedge->nCount);
+                }
+                else{
+                    glVertexPointer(2, GL_DOUBLE, 2 * sizeof(double), pedge->pPoints);
+                    glDrawArrays(GL_LINE_STRIP, 0, pedge->nCount);
+                }
+ 
+                e0 = pedge->pPoints[ (2 * (pedge->nCount - 1))];
+                n0 = pedge->pPoints[ (2 * (pedge->nCount - 1)) + 1];
+ 
+            }   //pedge
+ 
+                // end node
+                if( epnode ) {
+                    double *ppt = epnode->pPoint;
+                    e1 = *ppt++;
+                    n1 = *ppt;
+                        
+                    glBegin( GL_LINES );
+                    glVertex2f( e0, n0 );
+                    glVertex2f( e1, n1 );
+                    glEnd();
+                        
+                }
+        }  // for
+
+    if(b_useVBO)
+        (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
+    
+    glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
+
+    glPopMatrix();
+    glPopAttrib();
+
+#endif                  // OpenGL
+    
+    return 1;
+}
+    
+    
 // Line Simple Style
 int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-// return 0;
+//    if(rzRules->obj->Index != 1570) return 0;
+    
     wxPoint *ptp;
     int npt;
     S52color *c;
@@ -3001,6 +3262,8 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Complex
 int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
+//    return 0;
+    
     wxPoint *ptp;
     int npt;
     wxPoint r;
@@ -4078,7 +4341,10 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
                 RenderSY( rzRules, rules, vp );
                 break; // SY
             case RUL_SIM_LN:
-                RenderLS( rzRules, rules, vp );
+                if(m_pdc)
+                    RenderLS( rzRules, rules, vp );
+                else
+                    RenderGLLS( rzRules, rules, vp );
                 break; // LS
             case RUL_COM_LN:
                 RenderLC( rzRules, rules, vp );
@@ -4113,8 +4379,11 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
                                 RenderSY( rzRules, rules, vp );
                                 break;
                             case RUL_SIM_LN:
-                                RenderLS( rzRules, rules, vp );
-                                break;
+                                if(m_pdc)
+                                    RenderLS( rzRules, rules, vp );
+                                else
+                                    RenderGLLS( rzRules, rules, vp );
+                                break; // LS
                             case RUL_COM_LN:
                                 RenderLC( rzRules, rules, vp );
                                 break;
@@ -5587,6 +5856,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glPushMatrix();
 
         // Set up the OpenGL transform matrix for this object
+        // We transform from SENC SM vertex data to screen.
         
         //  First, the VP transform
         glTranslatef( vp->pix_width / 2, vp->pix_height/2, 0 );

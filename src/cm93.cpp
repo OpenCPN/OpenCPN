@@ -2302,14 +2302,40 @@ void cm93chart::ProcessVectorEdges ( void )
                   vep->pPoints = pPoints;
 
                   cm93_point *ppt = pgd->p_points;
+                  
+                  //  Get a bounding box for the edge
+                  double east_max = -1e7; double east_min = 1e7;
+                  double north_max = -1e7; double north_min = 1e7;
+                  
                   for ( int ip = 0 ; ip < pgd->n_points ; ip++ )
                   {
                         *pPoints++ = ppt->x;
                         *pPoints++ = ppt->y;
+ 
+                        east_max = wxMax(east_max, ppt->x);
+                        east_min = wxMin(east_min, ppt->x);
+                        north_max = wxMax(north_max, ppt->y);
+                        north_min = wxMin(north_min, ppt->y);
+                        
                         ppt++;
                   }
+                  
+                  cm93_point p;
+                  double lat, lon;
+                  
+                  //TODO  Not precisely correct, transform should account for "trans_WGS84_offset_x"
+                  p.x = east_min;
+                  p.y = north_min;
+                  Transform ( &p, 0, 0, &lat, &lon );
+                  vep->BBox.SetMin( lon, lat);
+                  
+                  p.x = east_max;
+                  p.y = north_max;
+                  Transform ( &p, 0, 0, &lat, &lon );
+                  vep->BBox.SetMax( lon, lat);
+                  
             }
-
+            
             vehash[vep->index] = vep;
 
             pgd++;                              // next geometry descriptor

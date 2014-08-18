@@ -385,6 +385,8 @@ public:
       chart_context           *m_chart_context;       // per-chart constants, carried in each object for convenience
       int auxParm0;                                   // some per-object auxiliary parameters, used for OpenGL
       int auxParm1;
+      int auxParm2;
+      int auxParm3;
 };
 
 
@@ -454,6 +456,8 @@ public:
       unsigned int nCount;
       double      *pPoints;
       int         max_priority;
+      size_t      vbo_offset;
+      wxBoundingBox BBox;
 };
 
 class VC_Element

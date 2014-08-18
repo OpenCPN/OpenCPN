@@ -81,6 +81,13 @@ const char *MyCSVGetField( const char * pszFilename,
                          CSVCompareCriteria eCriteria,
                          const char * pszTargetField ) ;
 
+#ifdef ocpnUSE_GL                         
+extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
+extern PFNGLBINDBUFFERPROC                 s_glBindBuffer;
+extern PFNGLBUFFERDATAPROC                 s_glBufferData;
+extern PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
+#endif
+
 
 extern s52plib           *ps52plib;
 extern S57ClassRegistrar *g_poRegistrar;
@@ -169,6 +176,8 @@ S57Obj::S57Obj()
     
     auxParm0 = 0;
     auxParm1 = 0;
+    auxParm2 = 0;
+    auxParm3 = 0;
 }
 
 //----------------------------------------------------------------------------------
@@ -215,6 +224,8 @@ S57Obj::S57Obj( char *first_line, wxInputStream *pfpx, double dummy, double dumm
     n_attr = 0;
     auxParm0 = 0;
     auxParm1 = 0;
+    auxParm2 = 0;
+    auxParm3 = 0;
     
     pPolyTessGeo = NULL;
     pPolyTrapGeo = NULL;
@@ -1011,6 +1022,7 @@ s57chart::s57chart()
     m_b2lineLUPS = false;
 
     m_next_safe_cnt = 1e6;
+    m_LineVBO_name = -1;
 }
 
 s57chart::~s57chart()
@@ -1052,6 +1064,10 @@ s57chart::~s57chart()
     }
     m_vc_hash.clear();
 
+#ifdef ocpnUSE_GL    
+    s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
+#endif
+    
 }
 
 void s57chart::GetValidCanvasRegion( const ViewPort& VPoint, OCPNRegion *pValidRegion )
@@ -1479,6 +1495,84 @@ void s57chart::SetLinePriorities( void )
     m_bLinePrioritySet = true;
 }
 
+void s57chart::BuildLineVBO( void )
+{
+#ifdef ocpnUSE_GL
+    // cm93 cannot efficiently use VBO, since the edge list is discovered incrementally,
+    // and this would require rebuilding the VBO for each new cell that is loaded.
+    
+    if(CHART_TYPE_CM93 == GetChartType())
+        return;
+    if(m_LineVBO_name == -1){
+        
+        // Walk the Edge hash table to get the required buffer size
+        size_t nPoints = 0;
+        VE_Hash::iterator it;
+        for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+            VE_Element *pedge = it->second;
+            if( pedge ) {
+                nPoints += pedge->nCount;
+            }
+        }
+        
+        float *lvbo= (float *)malloc( 2 * nPoints * sizeof(float));
+        float *lvr = lvbo;
+        size_t offset = 0;
+        
+        //      Copy and convert the points from doubles to floats,
+        //      and recording each segment's offset in the array
+        for( it = m_ve_hash.begin(); it != m_ve_hash.end(); ++it ) {
+            VE_Element *pedge = it->second;
+            if( pedge ) {
+                double *pp = pedge->pPoints;
+                for(size_t i = 0 ; i < pedge->nCount ; i++){
+                    double x = *pp++;
+                    double y = *pp++;
+                    
+                    *lvr++ = (float)x;
+                    *lvr++ = (float)y;
+                }
+                
+                pedge->vbo_offset = offset;
+                offset += pedge->nCount * 2 * sizeof(float);
+                
+            }
+        }
+        
+        //      Create the VBO
+        GLuint vboId;
+        (s_glGenBuffers)(1, &vboId);
+        
+         // bind VBO in order to use
+        (s_glBindBuffer)(GL_ARRAY_BUFFER, vboId);
+        
+        // upload data to VBO
+        glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+        (s_glBufferData)(GL_ARRAY_BUFFER, 2 * nPoints * sizeof(float), lvbo, GL_STATIC_DRAW);
+        
+        glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
+        (s_glBindBuffer)(GL_ARRAY_BUFFER, 0);
+        
+        free( lvbo);
+       
+        //  Loop and populate all the objects
+        for( int i = 0; i < PRIO_NUM; ++i ) {
+            for( int j = 0; j < LUPNAME_NUM; j++ ) {
+                ObjRazRules *top = razRules[i][j];
+                while( top != NULL ) {
+                    S57Obj *obj = top->obj;
+                    obj->auxParm2 = vboId;
+                    top = top->next;
+                }
+            }
+        }
+        
+        m_LineVBO_name = vboId;
+        
+    }
+#endif    
+}
+
 bool s57chart::RenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& VPoint,
         const OCPNRegion &Region )
 {
@@ -1530,7 +1624,8 @@ bool s57chart::DoRenderRegionViewOnGL( const wxGLContext &glc, const ViewPort& V
     }
 
     SetLinePriorities();
-
+    BuildLineVBO();
+    
     //        Clear the text declutter list
     ps52plib->ClearTextList();
 
@@ -4135,7 +4230,31 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                 vep->nCount = ve_from_array.nCount;
                 vep->pPoints = ve_from_array.pPoints;
                 vep->max_priority = 0;            // Default
+        
+                if(vep->nCount){
+                //  Get a bounding box for the edge
+                    double east_max = -1e7; double east_min = 1e7;
+                    double north_max = -1e7; double north_min = 1e7;
                 
+                    double *vrun = vep->pPoints;
+                    for(size_t i=0 ; i < vep->nCount; i++){
+                        east_max = wxMax(east_max, *vrun);
+                        east_min = wxMin(east_min, *vrun);
+                        vrun++;
+                    
+                        north_max = wxMax(north_max, *vrun);
+                        north_min = wxMin(north_min, *vrun);
+                        vrun++;
+                    }
+                
+                    double lat, lon;
+                    fromSM( east_min, north_min, ref_lat, ref_lon, &lat, &lon );
+                    vep->BBox.SetMin( lon, lat);
+                    fromSM( east_max, north_max, ref_lat, ref_lon, &lat, &lon );
+                    vep->BBox.SetMax( lon, lat);
+                }
+                
+                    
                 m_ve_hash[vep->index] = vep;
 
             }
