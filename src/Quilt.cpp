@@ -903,7 +903,7 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 {
     switch(family){
         case CHART_FAMILY_RASTER:{
-            return scale * 2;
+            return scale * 3;
         }
         
         case CHART_FAMILY_VECTOR:{
@@ -931,6 +931,12 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
     int current_db_index = m_refchart_dbIndex;
     int current_family = m_reference_family;
     int current_type = m_reference_type;
+
+    //  If the current reference chart is cm93, and it became so due to a zout from another family,
+    //  detect this case and allow switch to save chart index family
+    if( ( current_type == CHART_TYPE_CM93COMP ) && (m_zout_dbindex >= 0) ) {
+        current_family = ChartData->GetDBChartFamily( m_zout_dbindex );
+    }
     
     //  Make 3 lists
     wxArrayInt nom_scale;
@@ -938,11 +944,15 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
     wxArrayInt min_scale;
     wxArrayInt index_array;
     
+    //  For Vector charts, we can switch to any chart that is on screen.
+    //  Otherwise, we can only switch to charts contining the VP center point
+    bool b_allow_fullscreen_ref = (current_family == CHART_FAMILY_VECTOR);
+    
     //  Walk the extended chart array, capturing data
     for(size_t i=0 ; i < m_extended_stack_array.GetCount() ; i++){
         int test_db_index = m_extended_stack_array.Item( i );
 
-        if( 1/*pCurrentStack->DoesStackContaindbIndex( test_db_index )*/ ) {
+        if( b_allow_fullscreen_ref || pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
             if( ( current_family == ChartData->GetDBChartFamily( test_db_index ) )
                 && IsChartQuiltableRef( test_db_index ) ) {
                 

@@ -150,6 +150,7 @@ extern TrackPropDlg     *pTrackPropDialog;
 extern MarkInfoImpl     *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
+extern bool             g_bPreserveScaleOnX;
 
 extern IDX_entry        *gpIDX;
 extern int               gpIDXn;
@@ -753,7 +754,6 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             screen_region_it2.NextRect();
         }
     }
-
     // and here is the payoff
     if(!b_contained && !b_intersect){
         //  Two cases to consider
@@ -780,7 +780,6 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         if( NULL == ppoints ) delete[] pp;
         return r;
     }
-        
         
     
         
@@ -3023,6 +3022,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
                 pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
         }
 
+        if( !g_bPreserveScaleOnX ){
         if( pc ) {
             min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), g_b_overzoom_x );
 
@@ -3039,6 +3039,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
                 } else
                     proposed_scale_onscreen = min_allowed_scale;
             }
+        }
         }
 
     } else if(factor < 1) {
@@ -3083,7 +3084,7 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             
             b_smallest = m_pQuilt->IsChartSmallestScale( new_db_index );
 
-            if( b_smallest || (0 == m_pQuilt->GetExtendedStackCount()))
+            if( ( !g_bPreserveScaleOnX ) &&  (b_smallest || (0 == m_pQuilt->GetExtendedStackCount())))
                 proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
                                                 GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
         }
