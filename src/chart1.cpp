@@ -1685,11 +1685,12 @@ bool MyApp::OnInit()
     // Note that this logic implies that Windows platforms always use
     // the memCacheLimit policy, and never use the fallback nCacheLimit policy
 #ifdef __WXMSW__
-if( 0 == g_memCacheLimit )
-    g_memCacheLimit = (int) ( g_mem_total * 0.5 );
-    g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // math in kBytes
+    if( 0 == g_memCacheLimit )
+        g_memCacheLimit = (int) ( g_mem_total * 0.5 );
+    g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // math in kBytes, Max is 1 GB
 #else
-    g_memCacheLimit = (int) ( (g_mem_total - g_mem_initial) * 0.5 );
+    if( 0 == g_memCacheLimit )
+        g_memCacheLimit = (int) ( (g_mem_total - g_mem_initial) * 0.5 );
 #endif    
 
     
