@@ -80,6 +80,7 @@ extern s52plib *ps52plib;
 extern bool g_bopengl;
 extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
+
 GLenum       g_texture_rectangle_format;
 
 extern bool g_bskew_comp;
@@ -147,9 +148,11 @@ PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 //WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
 GLuint g_raster_format = GL_RGB;
-
-
 long g_tex_mem_used;
+
+bool            b_timeGL;
+wxStopWatch     g_glstopwatch;
+double          g_gl_ms_per_frame;
 
 int g_tile_size;
 int g_uncompressed_tile_size;
@@ -698,6 +701,8 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     
     ownship_large_scale_display_lists[0] = 0;
     ownship_large_scale_display_lists[1] = 0;
+    
+    b_timeGL = false; true;
 }
 
 glChartCanvas::~glChartCanvas()
@@ -891,6 +896,9 @@ void glChartCanvas::SetupOpenGL()
     if(!QueryExtension( "GL_EXT_framebuffer_object" ))
         m_b_DisableFBO = true;
 
+//    if(b_timeGL)
+//        m_b_DisableFBO = true;
+    
     GetglEntryPoints();
 
     if( !s_glGenFramebuffers  || !s_glGenRenderbuffers        || !s_glFramebufferTexture2D ||
@@ -2267,7 +2275,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
             
             ChartBase *cchart = cc1->m_pQuilt->GetFirstChart();
             while( cchart ) {
-                if( ! cc1->IsChartLargeEnoughToRender( cchart, vp ) ) {
+                if( ! cc1->IsChartEnoughToRender( cchart, vp ) ) {
                     cchart = cc1->m_pQuilt->GetNextChart();
                     continue;
                 }
@@ -2599,6 +2607,7 @@ void glChartCanvas::DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect)
     DisableClipRegion();
 }
 
+
 void glChartCanvas::Render()
 {
     if( !m_bsetup ||
@@ -2612,6 +2621,11 @@ void glChartCanvas::Render()
 
     m_last_render_time = wxDateTime::Now().GetTicks();
 
+    if(b_timeGL){
+        glFinish();   
+        g_glstopwatch.Start();
+    }
+    
     wxPaintDC( this );
 
     ViewPort VPoint = cc1->VPoint;
@@ -2882,7 +2896,15 @@ void glChartCanvas::Render()
 
     SwapBuffers();
 
-    // glFinish();   Should not be needed, and forces cpu to block which is slow
+    if(b_timeGL){
+        glFinish();
+        
+        double filter = .05;
+        
+        // Simple low pass filter
+        g_gl_ms_per_frame = g_gl_ms_per_frame * (1. - filter) + ((double)(g_glstopwatch.Time()) * filter);
+        printf(" OpenGL frame time: %3.0f\n", g_gl_ms_per_frame );
+    }
 
     cc1->PaintCleanup();
 }
