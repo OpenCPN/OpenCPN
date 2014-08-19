@@ -316,8 +316,10 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
                     
                 while( (mem_used > mem_limit) && (nl>0) )
                 {
-                    if( pChartCache->GetCount() < 2 )
+                    if( pChartCache->GetCount() < 2 ){
+                        nl = 0;
                         break;
+                    }
                     
                     CacheEntry *pce = FindOldestDeleteCandidate( false );
                     if(pce){
@@ -926,7 +928,7 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
     
          
         unsigned int nCache = pChartCache->GetCount();
-        if(nCache > 2)
+        if(nCache > 1)
         {
             wxDateTime now = wxDateTime::Now();                   // get time for LRU use
             
@@ -953,7 +955,7 @@ CacheEntry *ChartDB::FindOldestDeleteCandidate( bool blog)
                 
             if( (!pce->n_lock) && (Current_Ch != pDeleteCandidate) ){
                 if(blog)
-                    wxLogMessage(_T("Oldest unlocaked cache index is %d, delta t is %d"), iOldest, dt);
+                    wxLogMessage(_T("Oldest unlocked cache index is %d, delta t is %d"), iOldest, dt);
                 
                 pret = pce;
             }
@@ -1047,8 +1049,8 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                     
                     if((mem_used > g_memCacheLimit * 8 / 10) && !m_b_locked && (pChartCache->GetCount() > 2)) {
                         while (1){
-                            CacheEntry *pce = FindOldestDeleteCandidate(true);
-                            if(pce){
+                          CacheEntry *pce = FindOldestDeleteCandidate(true);
+                          if(pce){
                             ChartBase *pDeleteCandidate =  (ChartBase *)(pce->pChart);
                             wxString msg(_T("Removing oldest chart from cache: "));
                             msg += pDeleteCandidate->GetFullPath();
@@ -1077,9 +1079,9 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
                             if((mem_used < g_memCacheLimit * 8 / 10) || (pChartCache->GetCount() <= 2)) 
                                 break;
                                 
-                            }
-                            else
-                                break;                      // no possible delete candidate
+                          }
+                          else
+                              break;                      // no possible delete candidate
                         }  // while
                     }
                 }
