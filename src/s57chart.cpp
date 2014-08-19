@@ -1064,8 +1064,9 @@ s57chart::~s57chart()
     }
     m_vc_hash.clear();
 
-#ifdef ocpnUSE_GL    
-    s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
+#ifdef ocpnUSE_GL 
+    if(s_glDeleteBuffers && (m_LineVBO_name > 0))
+        s_glDeleteBuffers(1, (GLuint *)&m_LineVBO_name);
 #endif
     
 }

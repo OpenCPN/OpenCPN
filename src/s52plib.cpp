@@ -2594,12 +2594,10 @@ int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
     //return 0;
-    //return RenderLS(rzRules, rules, vp);
+    if( !m_benableGLLS )                        // root chart cannot support VBO model, for whatever reason
+        return RenderLS(rzRules, rules, vp);
  
-//    if(rzRules->obj->Index != 1570) return 0;
 #ifdef ocpnUSE_GL
-// OpenGL mode
-
     //  Try to determine if the feature needs to be drawn in the most efficient way
     int bdraw = 0;
     VE_Hash *ve_hash; 
@@ -2614,6 +2612,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash; 
     }
     int priority_current = rzRules->LUP->DPRI - '0'; //TODO fix this hack by putting priority into object during _insertRules
+    
     wxBoundingBox BBViewT = vp->GetBBox();
     
         for( int iseg = 0; iseg < rzRules->obj->m_n_lsindex; iseg++ ) {
@@ -2626,16 +2625,56 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             unsigned int venode = *index_run;
             VE_Element *pedge = 0;
             pedge = (*ve_hash)[venode];
+            
  
+            if(pedge && pedge->nCount && !pedge->BBox.GetValid()){
+                bdraw++;
+                break;
+            }
+                    
             //  Here we decide to draw or not based on the highest priority seen for this segment
             //  That is, if this segment is going to be drawn at a higher priority later, then "continue", and don't draw it here.
             if( pedge && (pedge->max_priority == priority_current ) ) {
                 bdraw++;
                 break;
             }
+
             
             if(pedge && pedge->nCount){
-            
+
+#if 0
+                //  If the edge bounding box is invalid, we build it here.
+                //  This will happen for PlugIn Vector charts, most likely.
+                if(!pedge->BBox.GetValid()){
+                    //  Get a bounding box for the edge
+                    double east_max = -1e7; double east_min = 1e7;
+                    double north_max = -1e7; double north_min = 1e7;
+                    
+                    double *vrun = pedge->pPoints;
+                    for(size_t i=0 ; i < pedge->nCount; i++){
+                        east_max = wxMax(east_max, *vrun);
+                        east_min = wxMin(east_min, *vrun);
+                        vrun++;
+                        
+                        north_max = wxMax(north_max, *vrun);
+                        north_min = wxMin(north_min, *vrun);
+                        vrun++;
+                    }
+                    
+                    if( rzRules->obj->m_chart_context ){
+                        double ref_lat = rzRules->obj->m_chart_context->ref_lat;
+                        double ref_lon = rzRules->obj->m_chart_context->ref_lon;
+                        
+                        double lat, lon;
+                        fromSM( east_min, north_min, ref_lat, ref_lon, &lat, &lon );
+                        pedge->BBox.SetMin( lon, lat);
+                        fromSM( east_max, north_max, ref_lat, ref_lon, &lat, &lon );
+                        pedge->BBox.SetMax( lon, lat);
+                    }
+                }
+#endif
+
+                
             //  Check visibility on the edge
                 bool b_greenwich = false;
                 if( BBViewT.GetMaxX() > 360. ) {
@@ -6999,6 +7038,7 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender()
 {
+    m_benableGLLS = true;               // default is to always use RenderToGLLS (VBO support)
 }
 
 void s52plib::ClearTextList( void )
@@ -7008,6 +7048,13 @@ void s52plib::ClearTextList( void )
 
 }
 
+bool s52plib::EnableGLLS(bool b_enable)
+{
+    bool return_val = m_benableGLLS;
+    m_benableGLLS = b_enable;
+    return return_val;
+}
+    
 void s52plib::AdjustTextList( int dx, int dy, int screenw, int screenh )
 {
     wxRect rScreen( 0, 0, screenw, screenh );

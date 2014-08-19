@@ -3982,6 +3982,7 @@ void PI_PLIBPrepareForNewRender( void )
     if(ps52plib){
         ps52plib->PrepareForRender();
         ps52plib->ClearTextList();
+        ps52plib->EnableGLLS(false);    // Older PlugIns cannot use GLLS
     }
 }
 
