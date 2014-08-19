@@ -586,7 +586,7 @@ public:
                       bool b_throttle_thread, bool b_immediate, bool b_postZip);
     void OnEvtThread( OCPN_CompressionThreadEvent & event );
     int GetRunningJobCount(){ return m_njobs_running; }
-    void PurgeJobList();
+    void PurgeJobList( wxString &chart_path );
     bool FindTextureDescriptorInJoblist(glTextureDescriptor *ptd);
     
     
@@ -611,10 +611,10 @@ private:
 CompressionWorkerPool::CompressionWorkerPool()
 {
     m_njobs_running = 0;
-    int nCPU =  wxMax(1, wxThread::GetCPUCount());
+    int nCPU =  2;//wxMax(1, wxThread::GetCPUCount());
     m_max_jobs =  nCPU;
 
-    bthread_debug = false;
+    bthread_debug = true;
 
     if(bthread_debug)
         printf(" nCPU: %d    m_max_jobs :%d\n", nCPU, m_max_jobs);
@@ -804,9 +804,29 @@ bool CompressionWorkerPool::DoJob(JobTicket* pticket)
     return ret;
 }
 
-void CompressionWorkerPool::PurgeJobList()
+void CompressionWorkerPool::PurgeJobList( wxString &chart_path )
 {
+#if 0    
+    //  Remove all pending jobs relating to the passed chart path
+    wxJobListNode *tnode = todo_list.GetFirst();
+    while(tnode){
+        JobTicket *ticket = tnode->GetData();
+        if(ticket->m_ChartPath.IsSameAs(chart_path)){
+            if(bthread_debug)
+                printf("Pool:  Purge pending job for purged chart\n");
+            todo_list.DeleteNode(tnode);
+            tnode = todo_list.GetFirst();  // restart the list
+        }
+        else{
+            tnode = tnode->GetNext();
+        }
+    }
+    
+    if(bthread_debug)
+        printf("Pool:  Purge, todo count: %d\n", todo_list.GetCount());
+#else    
     todo_list.Clear();
+#endif
 
     int dt;
 
@@ -1053,7 +1073,7 @@ void glTexFactory::PurgeBackgroundCompressionPool()
 {
     //  Purge the "todo" list, and allow any running jobs to complete normally
     if(g_CompressorPool) {
-        g_CompressorPool->PurgeJobList();
+        g_CompressorPool->PurgeJobList( m_ChartPath );
     }
 }
 
