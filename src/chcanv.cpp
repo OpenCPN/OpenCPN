@@ -10689,6 +10689,10 @@ void DimeControl( wxWindow* ctrl )
 void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,
                   wxColour text_color, wxColour uitext, wxColour udkrd, wxColour gridline )
 {
+#ifdef __WXQT__
+    return; // this is seriously broken on wxqt
+#endif
+
     ColorScheme cs = cc1->GetColorScheme();
     
     //  If the color scheme is DAY or RGB, use the default platform native colour for backgrounds
