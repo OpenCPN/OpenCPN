@@ -3489,6 +3489,10 @@ void MyFrame::ODoSetSize( void )
               templateFont->GetFaceName() );
 
         m_pStatusBar->SetFont( *pstat_font );
+
+#ifdef __WXQT__
+        m_pStatusBar->SetMinHeight( pstat_font->GetPointSize() + 10 );
+#endif
     }
 
     int cccw = x;
@@ -5452,7 +5456,7 @@ void MyFrame::OnFrameTimer1( wxTimerEvent& event )
     }
 
     if( cc1 ) {
-#ifndef __WXGTK__
+#if !defined(__WXGTK__) && !defined(__WXQT__)
         double cursor_lat, cursor_lon;
         cc1->GetCursorLatLon( &cursor_lat, &cursor_lon );
         cc1->SetCursorStatus(cursor_lat, cursor_lon);

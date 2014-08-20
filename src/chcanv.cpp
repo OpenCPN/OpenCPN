@@ -2715,10 +2715,9 @@ void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
     }
 #endif
 
-//      This is here because GTK status window update is expensive..
-//            cairo using pango rebuilds the font every time so is very inefficient
+//      This is here because on these platforms, status window update is expensive.
 //      Anyway, only update the status bar when this timer expires
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     {
         //    Check the absolute range of the cursor position
         //    There could be a window wherein the chart geoereferencing is not valid....
@@ -4927,13 +4926,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
 
 //      Show cursor position on Status Bar, if present
-//      except for GTK, under which status bar updates are very slow
+//      except for GTK and QT, under which status bar updates are very slow
 //      due to Update() call.
 //      In this case, as a workaround, update the status window
 //      after an interval timer (pCurTrackTimer) pops, which will happen
 //      whenever the mouse has stopped moving for specified interval.
 //      See the method OnCursorTrackTimerEvent()
-#ifndef __WXGTK__
+#if !defined(__WXGTK__) && !defined(__WXQT__)
     SetCursorStatus(m_cursor_lat, m_cursor_lon);
 #endif
 
