@@ -202,7 +202,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
             if(i == rsa->GetCount() - 1 && ncols != 1) ncols++;         ////if end of time range don't forgett the last col
 
             m_pGribTable->SetCellSize(0, dcol, 1, ncols);
-            m_pGribTable->SetCellValue(0, dcol, GetTimeRowsStrings(day.GetDateOnly() , zone, 1));
+            m_pGribTable->SetCellValue(0, dcol, GetTimeRowsStrings(day, zone, 1));
 
             day = rsa->Item(i).m_Reference_Time;
             dcol = i;
@@ -210,7 +210,7 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
             if( ncols == 1){                                            //if only one item per day
                 m_pGribTable->AutoSizeColumn(i-1, false);
                 if(i == rsa->GetCount() - 1 ) {                         //if end of time range
-                    m_pGribTable->SetCellValue(0, i, GetTimeRowsStrings(day.GetDateOnly() , zone, 1));
+                    m_pGribTable->SetCellValue(0, i, GetTimeRowsStrings(day, zone, 1));
                     m_pGribTable->AutoSizeColumn(i, false);
                 }
             }  
