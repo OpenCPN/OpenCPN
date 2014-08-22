@@ -3778,6 +3778,12 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
     int npt = rzRules->obj->npt;
 
+    // this should never happen
+    // But it seems that some PlugIns clear the mps rules without resetting the CS state machine
+    // So fix it
+    if( rzRules->obj->bCS_Added  && !rzRules->mps)
+        rzRules->obj->bCS_Added = false;
+        
     //  Build the cached rules list if necessary
     if( !rzRules->obj->bCS_Added ) {
 
