@@ -146,7 +146,8 @@ public:
 
     int AdjustRefOnZoomOut( double proposed_scale_onscreen );
     int AdjustRefOnZoomIn( double proposed_scale_onscreen );
-
+    int AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen );
+    
     void SetHiliteIndex( int index ) {
         m_nHiLiteIndex = index;
     }

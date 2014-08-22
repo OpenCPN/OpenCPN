@@ -806,6 +806,8 @@ int Quilt::GetNewRefChart( void )
 
 int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
 {
+    return AdjustRefOnZoom( false, proposed_scale_onscreen);
+    
     //    If the reference chart is undefined, we really need to select one now.
     if( m_refchart_dbIndex < 0 ) {
         int new_ref_dbIndex = GetNewRefChart();
@@ -903,7 +905,7 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 {
     switch(family){
         case CHART_FAMILY_RASTER:{
-            return scale * 3;
+            return scale * 2;
         }
         
         case CHART_FAMILY_VECTOR:{
@@ -916,8 +918,7 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
     }
 }
 
-#if 1
-int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
+int Quilt::AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen )
 {
     //    If the reference chart is undefined, we really need to select one now.
     if( m_refchart_dbIndex < 0 ) {
@@ -946,7 +947,7 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
     
     //  For Vector charts, we can switch to any chart that is on screen.
     //  Otherwise, we can only switch to charts contining the VP center point
-    bool b_allow_fullscreen_ref = (current_family == CHART_FAMILY_VECTOR);
+    bool b_allow_fullscreen_ref = (current_family == CHART_FAMILY_VECTOR) || (!b_zin);
     
     //  Walk the extended chart array, capturing data
     for(size_t i=0 ; i < m_extended_stack_array.GetCount() ; i++){
@@ -982,6 +983,13 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
             break;
         }
     }
+
+    if(new_ref_dbIndex == -1){          // no good candidate found
+        if(!b_zin){             // zout
+            if(index_array.GetCount())
+                new_ref_dbIndex = index_array.Last();
+        }
+    }
     
     if( ( new_ref_dbIndex >= 0) && (m_refchart_dbIndex != new_ref_dbIndex) ){
         SetReferenceChart( new_ref_dbIndex );
@@ -990,12 +998,12 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
     return m_refchart_dbIndex;
     
 }
-#endif
 
 
-#if 0
 int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
 {
+    return AdjustRefOnZoom( true, proposed_scale_onscreen);
+    
     //    If the reference chart is undefined, we really need to select one now.
     if( m_refchart_dbIndex < 0 ) {
         int new_ref_dbIndex = GetNewRefChart();
@@ -1100,7 +1108,6 @@ int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
     }
     return m_refchart_dbIndex;
 }
-#endif
 
 bool Quilt::IsChartSmallestScale( int dbIndex )
 {
