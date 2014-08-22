@@ -60,6 +60,7 @@ void glTextureDescriptor::FreeAll()
         map_array[i] = NULL;
         comp_array[i] = NULL;
         compcomp_array[i] = NULL;
+        compcomp_size[i] = 0;
         
         map_array[i] = 0;
         comp_array[i] = 0;
@@ -99,4 +100,45 @@ unsigned char *glTextureDescriptor::CompCompArrayAccess( int mode, unsigned char
         compcomp_array[level] = write_data;
     
     return compcomp_array[level];
+}
+
+size_t glTextureDescriptor::GetMapArrayAlloc(void)
+{
+    
+    size_t size = 512 * 512 * 3;
+    size_t ret = 0;
+    for( int i = 0; i < 10; i++ ){
+        if( map_array[i] ){
+            ret += size;
+        }
+        size /= 4;
+    }
+    
+    return ret;
+}
+
+size_t glTextureDescriptor::GetCompArrayAlloc(void)
+{
+    size_t size = (512 * 512 * 3) / 6;
+    size_t ret = 0;
+    for( int i = 0; i < 10; i++ ){
+        if( comp_array[i] ){
+            ret += size;
+        }
+        size /= 4;
+    }
+    
+    return ret;
+}
+
+size_t glTextureDescriptor::GetCompCompArrayAlloc(void)
+{
+    size_t ret = 0;
+    for( int i = 0; i < 10; i++ ){
+        if( compcomp_size[i] ){
+            ret += compcomp_size[i];
+        }
+    }
+    
+    return ret;
 }
