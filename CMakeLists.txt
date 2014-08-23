@@ -257,7 +257,8 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 IF (NOT WIN32 AND NOT APPLE)
 
-#FIND_PACKAGE(GTK2 2.6)
+# comment out this line for qt (TODO fix this to make it not manual)
+FIND_PACKAGE(GTK2 2.6)
 IF (GTK2_FOUND)
     MESSAGE (STATUS "Found GTK2")
     ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
