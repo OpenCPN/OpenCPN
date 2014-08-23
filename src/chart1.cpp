@@ -4400,7 +4400,7 @@ int MyFrame::DoOptionsDialog()
         if( b_sub ) g_FloatingToolbarDialog->Submerge();
     }
 
-#ifdef __WXOSX__
+#if defined(__WXOSX__) || defined(__WXQT__)
     if(stats) stats->Hide();
 #endif
 
@@ -4472,7 +4472,7 @@ int MyFrame::DoOptionsDialog()
             g_FloatingToolbarDialog->Submerge();
     }
 
-#ifdef __WXMAC__
+#if defined(__WXOSX__) || defined(__WXQT__)
     if(stats)
         stats->Show();
 #endif
