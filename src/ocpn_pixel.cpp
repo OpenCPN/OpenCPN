@@ -333,8 +333,7 @@ PixelCache::PixelCache(int width, int height, int depth)
     m_rgbo = RGB;                        // default value;
     pData = NULL;
 
-    line_pitch_bytes =
-            bytes_per_pixel = BPP / 8;
+    bytes_per_pixel = BPP / 8;
     line_pitch_bytes = bytes_per_pixel * width;
 
 
@@ -349,6 +348,9 @@ PixelCache::PixelCache(int width, int height, int depth)
 #ifdef __PIX_CACHE_DIBSECTION__
       m_pDS = new wxDIB(width, -height, BPP);
       pData = m_pDS->GetData();
+      //        For DIBsections, each scan line is DWORD aligned, padded on the right
+      line_pitch_bytes = (((m_width * 24) + 31) & ~31) >> 3;
+      
 #endif
 
 

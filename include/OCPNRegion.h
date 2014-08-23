@@ -63,9 +63,9 @@ public:
     OCPNRegion( size_t n, const wxPoint *points, int fillStyle = wxODDEVEN_RULE );
     
     virtual ~OCPNRegion(){}
-//    void InitRect(wxCoord x, wxCoord y, wxCoord w, wxCoord h);
     
     wxRegion &ConvertTowxRegion();
+    wxRegion *GetNew_wxRegion();
     
     
 #ifdef USE_NEW_REGION    

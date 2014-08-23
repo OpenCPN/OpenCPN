@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-29 21:40-0400\n"
-"PO-Revision-Date: 2014-07-30 19:07-0400\n"
+"PO-Revision-Date: 2014-08-04 11:17-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Spanish\n"
 "Language: es_ES\n"
@@ -43,32 +43,32 @@ msgstr "N/A"
 
 #: src/GribUIDialog.cpp:587
 msgid "Wind Speed at"
-msgstr "Velocidad Viento, m/seg."
+msgstr "Velocidad del viento en"
 
 #: src/GribUIDialog.cpp:588
 msgid "Wind Direction at"
-msgstr "Dirección Viento"
+msgstr "Dirección Viento en"
 
 #: src/GribUIDialog.cpp:591
 msgid "Wind Gust at"
-msgstr "Rachas Viento"
+msgstr "Rachas Viento en"
 
 #: src/GribUIDialog.cpp:594
 msgid "Air Temperature at"
-msgstr "Temperatura\nAire"
+msgstr "Temperatura del aire en"
 
 #: src/GribUIDialog.cpp:594
 msgid "Surface level"
-msgstr "Surface level"
+msgstr "Nivel de superficie"
 
 #: src/GribUIDialog.cpp:594
 msgid "Sea Surface Temperature"
-msgstr "Temperatura\nmar"
+msgstr "Temperatura superficie mar"
 
 #: src/GribUIDialog.cpp:604
 #, c-format
 msgid "Select Geopotential Height (in %s) or Standard Altitude."
-msgstr "Select Geopotential Height (in %s) or Standard Altitude."
+msgstr "Seleccione altitud Geopotencial (en %s) o altitud estándar."
 
 #: src/GribUIDialog.cpp:885
 msgid "Stop"
@@ -191,11 +191,11 @@ msgstr "Nubosidad"
 
 #: src/GribSettingsDialog.cpp:48
 msgid "Air Temperature"
-msgstr "Temperatura\nAire"
+msgstr "Temperatura Aire"
 
 #: src/GribSettingsDialog.cpp:48
 msgid "Sea Temperature"
-msgstr "Temperatura\nmar"
+msgstr "Temperatura mar"
 
 #: src/GribSettingsDialog.cpp:48 src/GribUIDialogBase.cpp:193
 #: src/GribUIDialogBase.cpp:899 src/GribTable.cpp:181
@@ -216,7 +216,7 @@ msgstr "h"
 
 #: src/GribSettingsDialog.cpp:386
 msgid "mn"
-msgstr "MN"
+msgstr "min"
 
 #: src/GribSettingsDialog.cpp:406
 msgid "Apply"
@@ -289,11 +289,11 @@ msgstr "Dirección Viento"
 
 #: src/GribUIDialogBase.cpp:124
 msgid "Surface Current Speed"
-msgstr "Surface Current Speed"
+msgstr "Velocidad de la corriente en superficie"
 
 #: src/GribUIDialogBase.cpp:129
 msgid "Surface Current Direction"
-msgstr "Surface Current Direction"
+msgstr "Dirección de la corriente en superficie"
 
 #: src/GribUIDialogBase.cpp:146
 msgid "Mean Sea Level Pressure (MSLP)"
@@ -301,7 +301,7 @@ msgstr "Presión, mBar"
 
 #: src/GribUIDialogBase.cpp:157
 msgid "Cumulative Rainfall per Hour"
-msgstr "Cumulative Rainfall per Hour"
+msgstr "Precipitación acumulada por hora"
 
 #: src/GribUIDialogBase.cpp:175 src/GribUIDialogBase.cpp:496
 msgid "Air Temp"
@@ -313,7 +313,7 @@ msgstr "Temp mar"
 
 #: src/GribUIDialogBase.cpp:197
 msgid "Convective Available Potential Energy"
-msgstr "Convective Available Potential Energy"
+msgstr "Energía potencial de convección disponible"
 
 #: src/GribUIDialogBase.cpp:218
 msgid "Grib Data at"
@@ -321,7 +321,7 @@ msgstr "Tabla de Datos Grib"
 
 #: src/GribUIDialogBase.cpp:235
 msgid "Altitude"
-msgstr "Altitude"
+msgstr "Altitud"
 
 #: src/GribUIDialogBase.cpp:245
 msgid "Temperature"
@@ -329,7 +329,7 @@ msgstr "Temperatura\nAire"
 
 #: src/GribUIDialogBase.cpp:255
 msgid "Rel. Humid."
-msgstr "Rel. Humid."
+msgstr "Humed. Rel."
 
 #: src/GribUIDialogBase.cpp:358
 msgid "playback"
@@ -341,15 +341,15 @@ msgstr "Modo continuo"
 
 #: src/GribUIDialogBase.cpp:368
 msgid "Loop Start"
-msgstr "Loop Start"
+msgstr "Comiénzo del bucle"
 
 #: src/GribUIDialogBase.cpp:372
 msgid "Top of Grib File"
-msgstr "Top of Grib File"
+msgstr "Parte superior del archivo Grib"
 
 #: src/GribUIDialogBase.cpp:372
 msgid "Current time forecast"
-msgstr "Current time forecast"
+msgstr "Hora actual del pronóstico"
 
 #: src/GribUIDialogBase.cpp:382
 msgid "Updates per Second"
@@ -365,7 +365,7 @@ msgstr "Intervalo"
 
 #: src/GribUIDialogBase.cpp:408
 msgid "Data"
-msgstr "Data"
+msgstr "Datos"
 
 #: src/GribUIDialogBase.cpp:421
 msgid "Units"
@@ -521,11 +521,11 @@ msgstr "Modelo de previsión"
 
 #: src/GribUIDialogBase.cpp:746
 msgid "Moving Grib"
-msgstr "Moving Grib"
+msgstr "Grib móvil"
 
 #: src/GribUIDialogBase.cpp:754
 msgid "Speed"
-msgstr "Speed"
+msgstr "Velocidad"
 
 #: src/GribUIDialogBase.cpp:762
 msgid "Kts"
@@ -581,7 +581,7 @@ msgstr "Temperatura mar(sup.)"
 
 #: src/GribUIDialogBase.cpp:923
 msgid "Geopotential Height"
-msgstr "Geopotential Height"
+msgstr "Altitud geopotencial"
 
 #: src/GribUIDialogBase.cpp:933
 msgid "850 hPA"
@@ -641,7 +641,7 @@ msgstr "Tabla de Datos Grib"
 
 #: src/GribOverlayFactory.cpp:312
 msgid "WIND data at"
-msgstr "WIND data at"
+msgstr "Datos de viento en"
 
 #: src/GribOverlayFactory.cpp:792
 msgid "Building Isobar map"
@@ -649,11 +649,11 @@ msgstr "Construyendo mapa isobaras"
 
 #: src/GribOverlayFactory.cpp:975
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Superposición no soportada por hardware gráfico (desactive OpenGL)"
 
 #: src/GribOverlayFactory.cpp:985
 msgid "Overlays too wide and can't be displayed:"
-msgstr "Overlays too wide and can't be displayed:"
+msgstr "Demasiadas superposiciones para poder ser mostradas:"
 
 #: src/GribOverlayFactory.cpp:994
 msgid "overlays suppressed if not north-up in DC mode (enable OpenGL)"
@@ -681,7 +681,7 @@ msgstr "Tabla del tiempo"
 
 #: src/grib_pi.cpp:287
 msgid "Menu"
-msgstr "Menu"
+msgstr "Menú"
 
 #: src/grib_pi.cpp:560
 msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"
@@ -717,11 +717,11 @@ msgstr "Coja este código en el foro de zyGrib (¡no es su pasword!)"
 
 #: src/GribRequestDialog.cpp:95
 msgid "Enter your forescasted Speed (in Knots)"
-msgstr "Enter your forescasted Speed (in Knots)"
+msgstr "Entre su velocidad prevista (en nudos)"
 
 #: src/GribRequestDialog.cpp:96
 msgid "Enter your forecasted Course"
-msgstr "Enter your forecasted Course"
+msgstr "Entre su rumbo previsto"
 
 #: src/GribRequestDialog.cpp:280
 msgid "You request a forecast for more than 8 days horizon.\nThis is conflicting with Wave data which will be removed from your request.\nDon't forget that beyond the first 8 days, the resolution will be only 2.5\\u00B0x2.5\\u00B0 and the time intervall 12 hours."

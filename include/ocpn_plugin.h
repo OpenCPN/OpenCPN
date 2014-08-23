@@ -86,6 +86,7 @@ class       wxScrolledWindow;
 #define     WANTS_DYNAMIC_OPENGL_OVERLAY_CALLBACK     0x00010000
 #define     WANTS_LATE_INIT                           0x00020000
 #define     INSTALLS_PLUGIN_CHART_GL                  0x00040000
+#define     WANTS_MOUSE_HOOK                          0x00080000
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -485,6 +486,17 @@ public:
     virtual ~opencpn_plugin_111();
 
 };
+
+class DECL_EXP opencpn_plugin_112 : public opencpn_plugin_111
+{
+public:
+    opencpn_plugin_112(void *pmgr);
+    virtual ~opencpn_plugin_112();
+    
+    virtual void MouseEventHook( wxMouseEvent &event );   
+    
+};
+
 
 //------------------------------------------------------------------
 //      Route and Waypoint PlugIn support

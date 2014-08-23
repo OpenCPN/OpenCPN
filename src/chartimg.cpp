@@ -3204,14 +3204,14 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const OCPNRe
       //    "Blit" the valid pixels out of the way
       int height = pPixCache->GetHeight();
       int width = pPixCache->GetWidth();
-      int stride = pPixCache->GetLinePitch();
-
+      int buffer_stride_bytes = pPixCache->GetLinePitch();
+      
       unsigned char *ps;
       unsigned char *pd;
 
       if(stride_rows > 0)                             // pan down
       {
-           ps = pPixCache->GetpData() +  (abs(scaled_stride_rows) * stride);
+          ps = pPixCache->GetpData() +  (abs(scaled_stride_rows) * buffer_stride_bytes);
            if(stride_pixels > 0)
                  ps += scaled_stride_pixels * BPP/8;
 
@@ -3223,18 +3223,18 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const OCPNRe
            {
                  memmove(pd, ps, (width - abs(scaled_stride_pixels)) *BPP/8);
 
-                 ps += width * BPP/8;
-                 pd += width * BPP/8;
+                 ps += buffer_stride_bytes;
+                 pd += buffer_stride_bytes;
            }
 
       }
       else
       {
-            ps = pPixCache->GetpData() + ((height - abs(scaled_stride_rows)-1) * stride);
+          ps = pPixCache->GetpData() + ((height - abs(scaled_stride_rows)-1) * buffer_stride_bytes);
             if(stride_pixels > 0)               // make a hole on right
                   ps += scaled_stride_pixels * BPP/8;
 
-            pd = pPixCache->GetpData() +  ((height -1) * stride);
+            pd = pPixCache->GetpData() +  ((height -1) * buffer_stride_bytes);
             if(stride_pixels <= 0)              // make a hole on the left
                   pd += abs(scaled_stride_pixels) * BPP/8;
 
@@ -3243,8 +3243,8 @@ bool ChartBaseBSB::GetViewUsingCache( wxRect& source, wxRect& dest, const OCPNRe
             {
                   memmove(pd, ps, (width - abs(scaled_stride_pixels)) *BPP/8);
 
-                  ps -= width * BPP/8;
-                  pd -= width * BPP/8;
+                  ps -= buffer_stride_bytes;
+                  pd -= buffer_stride_bytes;
             }
       }
 
@@ -3577,7 +3577,7 @@ bool ChartBaseBSB::GetAndScaleData(unsigned char *ppn, wxRect& source, int sourc
       //  On MSW, if using DibSections, each scan line starts on a DWORD boundary.
       //  The DibSection has been allocated to conform with this requirement.
 #ifdef __PIX_CACHE_DIBSECTION__      
-      dest_line_length = (((dest.width * 24) + 31) & ~31) >> 3;
+      dest_line_length = (((dest_stride * 24) + 31) & ~31) >> 3;
 #endif      
       
       if((target_height == 0) || (target_width == 0))

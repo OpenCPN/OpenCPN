@@ -967,7 +967,9 @@ void InsertRouteA( Route *pTentRoute )
             if( pcontainer_route == NULL ) {
                 prp->m_bIsInRoute = false; // Take this point out of this (and only) track/route
                 if( !prp->m_bKeepXRoute ) {
+                    pConfig->m_bSkipChangeSetUpdate = true;
                     pConfig->DeleteWayPoint( prp );
+                    pConfig->m_bSkipChangeSetUpdate = false;
                     delete prp;
                 }
             }

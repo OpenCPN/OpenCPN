@@ -2709,6 +2709,20 @@ opencpn_plugin_111::~opencpn_plugin_111(void)
 }
 
 
+//    Opencpn_Plugin_112 Implementation
+opencpn_plugin_112::opencpn_plugin_112(void *pmgr)
+: opencpn_plugin_111(pmgr)
+{
+}
+
+opencpn_plugin_112::~opencpn_plugin_112(void)
+{
+}
+
+void opencpn_plugin_112::MouseEventHook( wxMouseEvent &event )
+{}
+
+
 
 
 //          Helper and interface classes
