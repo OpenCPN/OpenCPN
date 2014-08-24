@@ -694,7 +694,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
         pfp += 2;
     }
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
     sigaction(SIGSEGV, NULL, &sa_all_old);             // save existing action for this signal
 
     struct sigaction temp;
@@ -1051,7 +1051,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     ocpnStyle::Style* style = g_StyleManager->GetCurrentStyle();
 
-#if defined( __WXGTK__) || defined(__WXOSX__)
+#if !defined(__WXMSW__)
 
     wxImage ICursorLeft = style->GetIcon( _T("left") ).ConvertToImage();
     wxImage ICursorRight = style->GetIcon( _T("right") ).ConvertToImage();
@@ -1174,7 +1174,6 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
         pCursorCross = new wxCursor( ICursorCross );
     } else
         pCursorCross = new wxCursor( wxCURSOR_ARROW );
-
 #endif      // MSW, X11
     pCursorArrow = new wxCursor( wxCURSOR_ARROW );
 
@@ -2461,7 +2460,8 @@ wxBitmap ChartCanvas::CreateDimBitmap( wxBitmap &Bitmap, double factor )
 
 void ChartCanvas::ShowBrightnessLevelTimedPopup( int brightness, int min, int max )
 {
-    wxFont *pfont = wxTheFontList->FindOrCreateFont( 40, wxDEFAULT, wxNORMAL, wxBOLD );
+    wxFont *pfont = wxTheFontList->FindOrCreateFont( 40, wxFONTFAMILY_DEFAULT,
+                                                     wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD );
 
     if( !m_pBrightPopup ) {
         //    Calculate size
@@ -2715,10 +2715,9 @@ void ChartCanvas::OnCursorTrackTimerEvent( wxTimerEvent& event )
     }
 #endif
 
-//      This is here because GTK status window update is expensive..
-//            cairo using pango rebuilds the font every time so is very inefficient
+//      This is here because on these platforms, status window update is expensive.
 //      Anyway, only update the status bar when this timer expires
-#ifdef __WXGTK__
+#if defined(__WXGTK__) || defined(__WXQT__)
     {
         //    Check the absolute range of the cursor position
         //    There could be a window wherein the chart geoereferencing is not valid....
@@ -4632,7 +4631,11 @@ bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int de
     if( bdragging ) {
         if( !g_btouch ){
             wxMouseState state = ::wxGetMouseState();
+#if  wxCHECK_VERSION(3,0,0)
+            if( !state.LeftIsDown() )
+#else
             if( !state.LeftDown() )
+#endif
                 bft = false;
         }
     }
@@ -4923,13 +4926,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     SelectRadius = sel_rad_pix / ( m_true_scale_ppm * 1852 * 60 );  // Degrees, approximately
 
 //      Show cursor position on Status Bar, if present
-//      except for GTK, under which status bar updates are very slow
+//      except for GTK and QT, under which status bar updates are very slow
 //      due to Update() call.
 //      In this case, as a workaround, update the status window
 //      after an interval timer (pCurTrackTimer) pops, which will happen
 //      whenever the mouse has stopped moving for specified interval.
 //      See the method OnCursorTrackTimerEvent()
-#ifndef __WXGTK__
+#if !defined(__WXGTK__) && !defined(__WXQT__)
     SetCursorStatus(m_cursor_lat, m_cursor_lon);
 #endif
 
@@ -6446,7 +6449,12 @@ void ChartCanvas::CanvasPopupMenu( int x, int y, int seltype )
         {
             if( pimis->b_viz ) {
                 wxMenuItem *pmi = new wxMenuItem( contextMenu, pimis->id,
-                                                  pimis->pmenu_item->GetLabel(), pimis->pmenu_item->GetHelp(),
+#if  wxCHECK_VERSION(3,0,0)
+                                                  pimis->pmenu_item->GetItemLabelText(),
+#else
+                                                  pimis->pmenu_item->GetLabel(),
+#endif
+                                                  pimis->pmenu_item->GetHelp(),
                                                   pimis->pmenu_item->GetKind(), pimis->pmenu_item->GetSubMenu() );
 #ifdef __WXMSW__
                 pmi->SetFont(pimis->pmenu_item->GetFont());
@@ -10186,7 +10194,7 @@ void ShowAISTargetQueryDialog( wxWindow *win, int mmsi )
     g_pais_query_dialog_active->Show();
 }
 
-#ifdef __WXGTK__
+#ifdef __UNIX__
 #define BRIGHT_XCALIB
 #define __OPCPN_USEICC__
 #endif
@@ -10682,6 +10690,10 @@ void DimeControl( wxWindow* ctrl )
 void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_color,
                   wxColour text_color, wxColour uitext, wxColour udkrd, wxColour gridline )
 {
+#ifdef __WXQT__
+    return; // this is seriously broken on wxqt
+#endif
+
     ColorScheme cs = cc1->GetColorScheme();
     
     //  If the color scheme is DAY or RGB, use the default platform native colour for backgrounds
@@ -10789,8 +10801,10 @@ void DimeControl( wxWindow* ctrl, wxColour col, wxColour col1, wxColour back_col
                 col );
             ( (wxGrid*) win )->SetLabelTextColour(
                 uitext );
+#if !wxCHECK_VERSION(3,0,0)
             ( (wxGrid*) win )->SetDividerPen(
                 wxPen( col ) );
+#endif
             ( (wxGrid*) win )->SetGridLineColour(
                 gridline );
         }

@@ -107,7 +107,9 @@ void GRIBTable::InitGribTable( int zone, ArrayOfGribRecordSets *rsa )
         time = rsa->Item(i).m_Reference_Time;
    
         //populate 'time' row
+#if !wxCHECK_VERSION(3,0,0)  // how to do this in wx 3?
         m_pGribTable->SetCellValue(GetTimeRowsStrings( rsa->Item(i).m_Reference_Time, zone , 0), 1, i );
+#endif
         
         nrows = 2;
 
@@ -280,7 +282,12 @@ void GRIBTable::AutoSizeDataRows()
         m_pGribTable->AutoSizeRow(i, false);
         int h = m_pGribTable->GetRowHeight(i);
         h += 10;
+
+#if wxCHECK_VERSION(3,0,0)
+        m_pGribTable->SetRowSize(i, h);
+#else
         m_pGribTable->SetRowHeight(i, h);
+#endif
     }
 }
 

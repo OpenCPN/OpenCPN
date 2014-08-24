@@ -144,6 +144,11 @@ wxString FontMgr::GetSimpleNativeFont( int size )
     //    Now create a benign, always present native string
     wxString nativefont;
 
+    // this should work for all platforms
+    nativefont = wxFont(size, wxFONTFAMILY_DEFAULT, (int) wxFONTSTYLE_NORMAL, (int) wxFONTWEIGHT_NORMAL)
+        .GetNativeFontInfoDesc();
+
+#if 0
 //    For those platforms which have no native font description string format
     nativefont.Printf( _T ( "%d;%d;%d;%d;%d;%d;%s;%d" ),
             0,                                 // version
@@ -184,6 +189,7 @@ wxString FontMgr::GetSimpleNativeFont( int size )
             0 );                    //lf.lfPitchAndFamily,
 
     nativefont.Append( _T("Verdana") );
+#endif
 #endif
 
     return nativefont;

@@ -302,6 +302,9 @@ void ocpnFloatingToolbarDialog::OnWindowCreate( wxWindowCreateEvent& event )
 
 void ocpnFloatingToolbarDialog::SetColorScheme( ColorScheme cs )
 {
+#ifdef __WXQT__
+    return; // broken on wxqt
+#endif
     m_cs = cs;
 
     wxColour back_color = GetGlobalColor( _T("GREY2") );
@@ -1348,7 +1351,8 @@ void ocpnToolBarSimple::OnMouseEvent( wxMouseEvent & event )
                 }
             }
             m_last_ro_tool = tool;
-            g_toolbar->Refresh( false );
+            if(g_toolbar)
+                g_toolbar->Refresh( false );
         }
     } else {
         //    Tooltips
