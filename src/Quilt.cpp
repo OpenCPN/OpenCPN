@@ -947,9 +947,10 @@ int Quilt::AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen )
     
     //  For Vector charts, we can switch to any chart that is on screen.
     //  Otherwise, we can only switch to charts contining the VP center point
-    bool b_allow_fullscreen_ref = (current_family == CHART_FAMILY_VECTOR) || (!b_zin);
+    bool b_allow_fullscreen_ref = (current_family == CHART_FAMILY_VECTOR) /*|| (!b_zin)*/;
     
     //  Walk the extended chart array, capturing data
+    int i_first = 0;
     for(size_t i=0 ; i < m_extended_stack_array.GetCount() ; i++){
         int test_db_index = m_extended_stack_array.Item( i );
 
@@ -962,21 +963,26 @@ int Quilt::AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen )
                 nom_scale.Add(nscale);
                     
                 int nmax_scale = GetNomScaleMax(nscale, (ChartTypeEnum)current_type, (ChartFamilyEnum)current_family);
+            
+                //  For the largest scale chart, allow a bit more zoom in range
+                if(0 == i_first)
+                    nmax_scale /= 2;
                 max_scale.Add(nmax_scale);
 
                 int nmin_scale = GetNomScaleMin(nscale, (ChartTypeEnum)current_type, (ChartFamilyEnum)current_family);
                 min_scale.Add(nmin_scale);
+                
+                i_first ++;
             }
         }
     }
-    
+
     // Search for the largest scale chart whose scale limits contain the requested scale.
     int new_ref_dbIndex = -1;
     for(size_t i=0 ; i < index_array.GetCount() ; i++){
         int a = min_scale.Item(i);
         int b = max_scale.Item(i);
-        
-        
+
         if( ( proposed_scale_onscreen < min_scale.Item(i)) &&
             (proposed_scale_onscreen > max_scale.Item(i)) ) {
             new_ref_dbIndex = index_array.Item(i);
@@ -984,19 +990,9 @@ int Quilt::AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen )
         }
     }
 
-    if(new_ref_dbIndex == -1){          // no good candidate found
-        if(!b_zin){             // zout
-            if(index_array.GetCount())
-                new_ref_dbIndex = index_array.Last();
-        }
-    }
-    
-    if( ( new_ref_dbIndex >= 0) && (m_refchart_dbIndex != new_ref_dbIndex) ){
-        SetReferenceChart( new_ref_dbIndex );
-    }
+    SetReferenceChart( new_ref_dbIndex );
                     
-    return m_refchart_dbIndex;
-    
+    return new_ref_dbIndex;
 }
 
 
