@@ -257,27 +257,30 @@ SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/")
 
 IF (NOT WIN32 AND NOT APPLE)
 
-# comment out this line for qt (TODO fix this to make it not manual)
-FIND_PACKAGE(GTK2 2.6)
-IF (GTK2_FOUND)
-    MESSAGE (STATUS "Found GTK2")
-    ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
-    ADD_DEFINITIONS(-DocpnHAS_GTK)
-    INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
-    SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK2_LIBRARIES})
+IF(DEFINED _wx_selected_config)
+  IF(_wx_selected_config MATCHES "gtk2")
+    FIND_PACKAGE(GTK2 2.6)
+    IF (GTK2_FOUND)
+      MESSAGE (STATUS "Found GTK2")
+      ADD_DEFINITIONS(-DocpnUSE_GTK_OPTIMIZE)
+      ADD_DEFINITIONS(-DocpnHAS_GTK)
+      INCLUDE_DIRECTORIES(${GTK2_INCLUDE_DIRS})
+      SET(EXTRA_LIBS ${EXTRA_LIBS} ${GTK2_LIBRARIES})
+      
+      # Add a definition to satisfy some linux system builds, avoiding Apple builds
+      IF (NOT WIN32 AND NOT APPLE)
+        ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
+      ENDIF (NOT WIN32 AND NOT APPLE)
+      
+    ELSE(GTK2_FOUND)
+      MESSAGE (STATUS "GTK2 Not found...")
+    ENDIF (GTK2_FOUND)
+  ENDIF()
 
-    # Add a definition to satisfy some linux system builds, avoiding Apple builds
-    IF (NOT WIN32 AND NOT APPLE)
-       ADD_DEFINITIONS("`pkg-config --cflags --libs gtk+-2.0`")
-    ENDIF (NOT WIN32 AND NOT APPLE)
-
-ELSE(GTK2_FOUND)
-    MESSAGE (STATUS "GTK2 Not found...")
-
+  IF(_wx_selected_config MATCHES "qt")
     SET(CMAKE_EXE_LINKER_FLAGS "-fPIE")
-
-ENDIF (GTK2_FOUND)
-
+  ENDIF()
+ENDIF()
 
 IF(UNIX)
 INCLUDE("FindPortaudio.cmake")
@@ -1057,10 +1060,12 @@ TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} dl )
 ENDIF(UNIX)
 
 IF(GTK2_FOUND)
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
-ELSE(GTK2_FOUND)
-TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} gobject-2.0 )
 ENDIF(GTK2_FOUND)
+
+IF(_wx_selected_config MATCHES "qt")
+  TARGET_LINK_LIBRARIES( ${PACKAGE_NAME} Qt5Widgets Qt5OpenGL Qt5Gui Qt5Test Qt5Core )
+ENDIF()
 
 IF(NOT APPLE)
 
