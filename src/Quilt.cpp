@@ -935,8 +935,12 @@ int Quilt::AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen )
 
     //  If the current reference chart is cm93, and it became so due to a zout from another family,
     //  detect this case and allow switch to save chart index family
-    if( ( current_type == CHART_TYPE_CM93COMP ) && (m_zout_dbindex >= 0) ) {
-        current_family = ChartData->GetDBChartFamily( m_zout_dbindex );
+    if( current_type == CHART_TYPE_CM93COMP ){
+        if(m_zout_dbindex >= 0 ) {
+            current_family = ChartData->GetDBChartFamily( m_zout_dbindex );
+        }
+        else                            // cm93 (selected) does not shift charts
+            return current_db_index;
     }
     
     //  Make 3 lists
