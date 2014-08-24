@@ -754,6 +754,8 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
             screen_region_it2.NextRect();
         }
     }
+    
+#if 1    
     // and here is the payoff
     if(!b_contained && !b_intersect){
         //  Two cases to consider
@@ -781,7 +783,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoi
         return r;
     }
         
-    
+#endif    
         
         
     
@@ -1122,7 +1124,7 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_glcc = NULL;
     m_pGLcontext = NULL;
     
-    g_ChartNotRenderScaleFactor = 4.0;
+    g_ChartNotRenderScaleFactor = 2.0;
 
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
@@ -3704,7 +3706,7 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
         dash_short[0] = (int) ( 1.5 * m_pix_per_mm );  // Short dash  <---------+
         dash_short[1] = (int) ( 1.8 * m_pix_per_mm );  // Short gap            |
 
-        wxPen ppPen2( PredColor(), 1, wxUSER_DASH );
+        wxPen ppPen2( PredColor(), 2, wxUSER_DASH );
         ppPen2.SetDashes( 2, dash_short );
 
         dc.SetPen( ppPen2 );
@@ -8315,11 +8317,11 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 
 }
 
-bool ChartCanvas::PurgeGLCanvasChartCache( ChartBase *pc )
+bool ChartCanvas::PurgeGLCanvasChartCache( ChartBase *pc, bool b_purge_full )
 {
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc )
-        m_glcc->PurgeChartTextures( pc );
+        m_glcc->PurgeChartTextures( pc, b_purge_full );
 #endif
     return true;
 }

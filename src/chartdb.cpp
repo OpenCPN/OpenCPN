@@ -271,7 +271,7 @@ void ChartDB::PurgeCache()
 
                 //    The glCanvas may be cacheing some information for this chart
                 if(g_bopengl && cc1)
-                    cc1->PurgeGLCanvasChartCache(Ch);
+                    cc1->PurgeGLCanvasChartCache(Ch, true);
 
                 delete Ch;
                 
@@ -327,7 +327,14 @@ void ChartDB::PurgeCacheUnusedCharts( double factor)
                         wxString msg(_T("Purging unused chart from cache: "));
                         msg += Ch->GetFullPath();
                         wxLogMessage(msg);
-                                
+                                        
+                        //  If this chart should happen to be in the thumbnail window....
+                        if(pthumbwin)
+                        {
+                            if(pthumbwin->pThumbChart == Ch)
+                                pthumbwin->pThumbChart = NULL;
+                        }
+                    
                                 //    The glCanvas may be cacheing some information (i.e. texture tiles) for this chart
                         if(g_bopengl && cc1)
                               cc1->PurgeGLCanvasChartCache(Ch);
@@ -1001,6 +1008,7 @@ ChartBase *ChartDB::OpenChartUsingCache(int dbindex, ChartInitFlag init_flag)
         }
         m_cache_mutex.Unlock();
       }
+      
 
       if(bInCache)
       {

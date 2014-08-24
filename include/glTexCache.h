@@ -89,9 +89,11 @@ public:
     void DeleteAllDescriptors( void );
     void PurgeBackgroundCompressionPool();
     void OnTimer(wxTimerEvent &event);
+    void SetLRUTime(wxDateTime time) { m_LRUtime = time; }
+    wxDateTime &GetLRUTime() { return m_LRUtime; }
+    void FreeSome( long target );
     
     glTextureDescriptor *GetpTD( wxRect & rect );
-    ChartBase *GetpChart() { return m_pchart; }
     GLuint GetRasterFormat() { return m_raster_format; }
     
     
@@ -109,7 +111,6 @@ private:
     
     int         n_catalog_entries;
     ArrayOfCatalogEntries       m_catalog;
-    ChartBase   *m_pchart;
     wxString    m_ChartPath;
     GLuint      m_raster_format;
     wxString    m_CompressedCacheFilePath;
@@ -130,6 +131,8 @@ private:
     
     ColorScheme m_colorscheme;
     wxTimer     m_timer;
+    size_t      m_ticks;
+    wxDateTime  m_LRUtime;
     
     glTextureDescriptor  **m_td_array;
     

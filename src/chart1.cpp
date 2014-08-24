@@ -1689,8 +1689,10 @@ bool MyApp::OnInit()
         g_memCacheLimit = (int) ( g_mem_total * 0.5 );
     g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // math in kBytes, Max is 1 GB
 #else
-    if( 0 == g_memCacheLimit )
+    if( 0 == g_memCacheLimit ){
         g_memCacheLimit = (int) ( (g_mem_total - g_mem_initial) * 0.5 );
+        g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // Max is 1 GB if unspecified
+    }
 #endif    
 
     
@@ -3639,7 +3641,7 @@ void MyFrame::SetGroupIndex( int index )
 
     //    Refresh the canvas, selecting the "best" chart,
     //    applying the prior ViewPort exactly
-    ChartsRefresh( dbi_hint, vp, false );
+    ChartsRefresh( dbi_hint, vp, true );
 
     //    Message box is deferred so that canvas refresh occurs properly before dialog
     if( bgroup_override ) {
@@ -4744,7 +4746,8 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
 
     cc1->InvalidateQuilt();
     cc1->SetQuiltRefChart( -1 );
-
+    ChartData->PurgeCache();
+    
     Current_Ch = NULL;
 
     delete pCurrentStack;
@@ -5896,8 +5899,11 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
             g_sticky_chart = selected_dbIndex;
         }
     } else {
-        if( cc1->IsChartQuiltableRef( selected_dbIndex ) ) SelectQuiltRefdbChart(
-                selected_dbIndex );
+        if( cc1->IsChartQuiltableRef( selected_dbIndex ) ){
+            if( ChartData ) ChartData->PurgeCache();
+            
+            SelectQuiltRefdbChart( selected_dbIndex );
+        }
         else {
             ToggleQuiltMode();
             SelectdbChart( selected_dbIndex );
@@ -5981,7 +5987,7 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
         double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
 
         if( ( g_bPreserveScaleOnX ) || ( CHART_TYPE_CM93COMP == pchart->GetChartType() ) ) {
-            double new_scale_ppm = pchart->GetNearestPreferredScalePPM( cc1->GetVPScale() );
+            double new_scale_ppm = cc1->GetVPScale(); //pchart->GetNearestPreferredScalePPM( cc1->GetVPScale() );
             proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / new_scale_ppm;
         } else {
             //  This logic will bring the new chart onscreen at roughly twice the true paper scale equivalent.
@@ -6855,7 +6861,7 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
                 while ( tk.HasMoreTokens() )
                 {
                     wxString token = tk.GetNextToken();
-                    if(token == _T("VmSize"))
+                    if(token == _T("VmRSS"))
                     {
                         wxStringTokenizer tkm(str, _T(" "));
                         wxString mem = tkm.GetNextToken();

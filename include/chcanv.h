@@ -291,7 +291,7 @@ public:
       double      m_prev_rlon;
       RoutePoint  *m_prev_pMousePoint;
 
-      bool PurgeGLCanvasChartCache(ChartBase *pc);
+      bool PurgeGLCanvasChartCache(ChartBase *pc, bool b_purge_full = false);
 
       void RemovePointFromRoute( RoutePoint* point, Route* route );
 
