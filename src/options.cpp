@@ -168,6 +168,7 @@ extern bool             g_bCourseUp;
 extern bool             g_bLookAhead;
 
 extern double           g_ownship_predictor_minutes;
+extern double           g_ownship_HDTpredictor_miles;
 
 extern bool             g_bAISRolloverShowClass;
 extern bool             g_bAISRolloverShowCOG;
@@ -954,6 +955,12 @@ void options::CreatePanel_Ownship( size_t parent, int border_size, int group_ite
     m_pText_OSCOG_Predictor = new wxTextCtrl( itemPanelShip, wxID_ANY );
     dispOptionsGrid->Add( m_pText_OSCOG_Predictor, 0, wxALIGN_RIGHT );
 
+    wxStaticText *pStatic_OSHDT_Predictor = new wxStaticText( itemPanelShip, wxID_ANY, _("Heading Predictor Length (NMi)") );
+    dispOptionsGrid->Add( pStatic_OSHDT_Predictor, 0 );
+    
+    m_pText_OSHDT_Predictor = new wxTextCtrl( itemPanelShip, wxID_ANY );
+    dispOptionsGrid->Add( m_pText_OSHDT_Predictor, 0, wxALIGN_RIGHT );
+    
     wxStaticText *iconTypeTxt = new wxStaticText( itemPanelShip, wxID_ANY, _("Ship Icon Type") );
     dispOptionsGrid->Add( iconTypeTxt, 0 );
 
@@ -2059,12 +2066,18 @@ void options::SetInitialSettings()
     pCBCourseUp->SetValue( g_bCourseUp );
     pCBLookAhead->SetValue( g_bLookAhead );
 
-    if( fabs( wxRound( g_ownship_predictor_minutes ) - g_ownship_predictor_minutes ) > 1e-4 ) s.Printf(
-            _T("%6.2f"), g_ownship_predictor_minutes );
+    if( fabs( wxRound( g_ownship_predictor_minutes ) - g_ownship_predictor_minutes ) > 1e-4 )
+        s.Printf( _T("%6.2f"), g_ownship_predictor_minutes );
     else
         s.Printf( _T("%4.0f"), g_ownship_predictor_minutes );
     m_pText_OSCOG_Predictor->SetValue( s );
 
+    if( fabs( wxRound( g_ownship_HDTpredictor_miles ) - g_ownship_HDTpredictor_miles ) > 1e-4 )
+        s.Printf( _T("%6.2f"), g_ownship_HDTpredictor_miles );
+    else
+        s.Printf( _T("%4.0f"), g_ownship_HDTpredictor_miles );
+    m_pText_OSHDT_Predictor->SetValue( s );
+    
     m_pShipIconType->SetSelection( g_OwnShipIconType );
     wxCommandEvent eDummy;
     OnShipTypeSelect( eDummy );
@@ -2779,7 +2792,8 @@ void options::OnApplyClick( wxCommandEvent& event )
     g_bMagneticAPB = m_cbAPBMagnetic->GetValue();
     
     m_pText_OSCOG_Predictor->GetValue().ToDouble( &g_ownship_predictor_minutes );
-
+    m_pText_OSHDT_Predictor->GetValue().ToDouble( &g_ownship_HDTpredictor_miles );
+    
     g_iNavAidRadarRingsNumberVisible = pNavAidRadarRingsNumberVisible->GetSelection();
     g_fNavAidRadarRingsStep = atof( pNavAidRadarRingsStep->GetValue().mb_str() );
     g_pNavAidRadarRingsStepUnits = m_itemRadarRingsUnits->GetSelection();

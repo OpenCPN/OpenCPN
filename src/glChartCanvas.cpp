@@ -96,6 +96,8 @@ extern double           gLat, gLon, gCog, gSog, gHdt;
 
 extern int              g_OwnShipIconType;
 extern double           g_ownship_predictor_minutes;
+extern double           g_ownship_HDTpredictor_miles;
+
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
 
@@ -1596,7 +1598,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 //    Calculate ownship Heading pointer as a predictor
     double hdg_pred_lat, hdg_pred_lon;
 
-    ll_gc_ll( gLat, gLon, icon_hdt, pSog * g_ownship_predictor_minutes / 60., &hdg_pred_lat,
+    ll_gc_ll( gLat, gLon, icon_hdt, g_ownship_HDTpredictor_miles, &hdg_pred_lat,
               &hdg_pred_lon );
     
     cc1->GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );

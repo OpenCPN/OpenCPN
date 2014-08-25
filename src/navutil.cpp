@@ -218,6 +218,7 @@ extern bool             g_bDebugCM93;
 extern bool             g_bDebugS57;
 
 extern double           g_ownship_predictor_minutes;
+extern double           g_ownship_HDTpredictor_miles;
 
 #ifdef USE_S57
 extern s52plib          *ps52plib;
@@ -1289,6 +1290,8 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
     Read( _T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width, 3 );
+    Read( _T ( "OwnshipHDTPredictorMinutes" ), &g_ownship_HDTpredictor_miles, 1 );
+    
     Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType, 0 );
     Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0 );
     Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0 );
@@ -2430,6 +2433,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
     Write( _T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width );
+    Write( _T ( "OwnshipHDTPredictorMiles" ), g_ownship_HDTpredictor_miles );
     Write( _T ( "OwnShipIconType" ), g_OwnShipIconType );
     Write( _T ( "OwnShipLength" ), g_n_ownship_length_meters );
     Write( _T ( "OwnShipWidth" ), g_n_ownship_beam_meters );

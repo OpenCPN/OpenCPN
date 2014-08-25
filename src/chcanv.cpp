@@ -235,6 +235,7 @@ extern double           g_COGAvg;               // only needed for debug....
 
 extern int              g_click_stop;
 extern double           g_ownship_predictor_minutes;
+extern double           g_ownship_HDTpredictor_miles;
 
 extern ArrayOfInts      g_quilt_noshow_index_array;
 extern ChartStack       *pCurrentStack;
@@ -3010,29 +3011,29 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
         double zoom_factor = factor;
 
-        double min_allowed_scale = 50.0;                // meters per meter
-
+        double min_allowed_scale = 500.0;                // meters per meter
+        
         ChartBase *pc = NULL;
 
         if( !VPoint.b_quilt ) {
             pc = Current_Ch;
         } else {
             int new_db_index = m_pQuilt->AdjustRefOnZoomIn( proposed_scale_onscreen );
-            if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
+            if( new_db_index >= 0 )
+                pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
 
             if(pCurrentStack)
                 pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
         }
 
-        if( !g_bPreserveScaleOnX ){
         if( pc ) {
-            min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), g_b_overzoom_x );
-
+            min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), false/*g_b_overzoom_x*/ );
+            
             double target_scale_ppm = GetVPScale() * zoom_factor;
             double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
-
+            
             proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
-
+            
             //  Query the chart to determine the appropriate zoom range
             if( proposed_scale_onscreen < min_allowed_scale ) {
                 if( min_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) ) {
@@ -3041,9 +3042,15 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
                 } else
                     proposed_scale_onscreen = min_allowed_scale;
             }
+            
+            m_last_max_scale = min_allowed_scale;
         }
+        else {
+            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, m_last_max_scale);
+            
         }
-
+            
+        
     } else if(factor < 1) {
         double zoom_factor = 1/factor;
 
@@ -3091,10 +3098,9 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
                                                 GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
         }
 
-        if( !pc ) {                         // no chart, so set a minimum scale
-            if( ( GetCanvasScaleFactor() / proposed_scale_onscreen ) < m_absolute_min_scale_ppm )
-                b_do_zoom = false;
-        }
+        //set a minimum scale
+        if( ( GetCanvasScaleFactor() / proposed_scale_onscreen ) < m_absolute_min_scale_ppm )
+            b_do_zoom = false;
     }
 
     if( b_do_zoom ) {
@@ -3875,7 +3881,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 //    Calculate ownship Heading pointer as a predictor
     double hdg_pred_lat, hdg_pred_lon;
 
-    ll_gc_ll( gLat, gLon, icon_hdt, pSog * g_ownship_predictor_minutes / 60., &hdg_pred_lat,
+    ll_gc_ll( gLat, gLon, icon_hdt, g_ownship_HDTpredictor_miles, &hdg_pred_lat,
               &hdg_pred_lon );
 
     GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
@@ -4578,7 +4584,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
 //        m_canvas_scale_factor = m_canvas_width / display_size_meters;
     m_canvas_scale_factor = wxGetDisplaySize().GetWidth() / display_size_meters;
 
-    m_absolute_min_scale_ppm = m_canvas_width / ( .95 * WGS84_semimajor_axis_meters * PI ); // something like 180 degrees
+    m_absolute_min_scale_ppm = m_canvas_width / ( 1.5 * WGS84_semimajor_axis_meters * PI ); // something like 180 degrees
 
 #ifdef USE_S57
     if( ps52plib ) ps52plib->SetPPMM( m_canvas_scale_factor / 1000. );

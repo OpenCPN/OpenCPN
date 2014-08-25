@@ -359,6 +359,8 @@ extern HINSTANCE          s_hGLU_DLL; // Handle to DLL
 #endif
 
 double                    g_ownship_predictor_minutes;
+double                    g_ownship_HDTpredictor_miles;
+
 int                       g_current_arrow_scale;
 
 Multiplexer               *g_pMUX;

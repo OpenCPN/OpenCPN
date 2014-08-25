@@ -606,6 +606,7 @@ private:
       
       int         m_AISRollover_MMSI;
       bool        m_bsectors_shown;
+      double      m_last_max_scale;
       
 DECLARE_EVENT_TABLE()
 };
