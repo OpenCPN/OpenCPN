@@ -203,6 +203,9 @@ Quilt::Quilt()
     m_pcandidate_array = new ArrayOfSortedQuiltCandidates( CompareScales );
     m_nHiLiteIndex = -1;
 
+    m_zout_family = -1;
+    m_zout_type = -1;
+    
 }
 
 Quilt::~Quilt()
@@ -804,85 +807,6 @@ int Quilt::GetNewRefChart( void )
     return new_ref_dbIndex;
 }
 
-int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
-{
-    return AdjustRefOnZoom( false, proposed_scale_onscreen);
-    
-    //    If the reference chart is undefined, we really need to select one now.
-    if( m_refchart_dbIndex < 0 ) {
-        int new_ref_dbIndex = GetNewRefChart();
-        SetReferenceChart( new_ref_dbIndex );
-    }
-
-    //  Reset "lost" chart logic
-    m_lost_refchart_dbIndex = -1;
-    
-    int new_db_index = m_refchart_dbIndex;
-
-    double zoom_def = 2.0;
-    
-    unsigned int extended_array_count = m_extended_stack_array.GetCount();
-
-    if( m_refchart_dbIndex >= 0 && ( extended_array_count > 0 ) ) {
-        ChartBase *pc = ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
-        if( pc ) {
-            int current_db_index = m_refchart_dbIndex;
-            int ref_family = pc->GetChartFamily();
-
-            double max_ref_scale = pc->GetNormalScaleMax( m_canvas_scale_factor, m_canvas_width );
-            if( proposed_scale_onscreen > max_ref_scale * zoom_def ) {
-                m_zout_dbindex = -1;
-                unsigned int target_stack_index = 0;
-                int target_stack_index_check = m_extended_stack_array.Index( current_db_index ); // Lookup
-
-                if( wxNOT_FOUND != target_stack_index_check ) target_stack_index =
-                        target_stack_index_check;
-
-                while( ( proposed_scale_onscreen > max_ref_scale * zoom_def )
-                        && ( target_stack_index < ( extended_array_count - 1 ) ) ) {
-                    target_stack_index++;
-                    int test_db_index = m_extended_stack_array.Item( target_stack_index );
-
-                    if( ( ref_family == ChartData->GetDBChartFamily( test_db_index ) )
-                            && IsChartQuiltableRef( test_db_index ) ) {
-                        //    open the target, and check the min_scale
-                        ChartBase *ptest_chart = ChartData->OpenChartFromDB( test_db_index,
-                                                 FULL_INIT );
-                        if( ptest_chart ) max_ref_scale = ptest_chart->GetNormalScaleMax(
-                                                                  m_canvas_scale_factor, m_canvas_width );
-                    }
-                }
-
-                bool b_ref_set = false;
-                if( proposed_scale_onscreen > max_ref_scale * zoom_def ) {  // could not find a useful chart
-
-                    //  If cm93 is available, allow a one-time switch of chart family
-                    //  and leave a bread crumb (m_zout_dbindex) to allow selecting this chart
-                    //  and family on subsequent zoomin.
-                    for( unsigned int ir = 0; ir < m_extended_stack_array.GetCount(); ir++ ) {
-                        int i = m_extended_stack_array.Item(ir);        // chart index
-
-                        if( ChartData->GetDBChartType( i ) == CHART_TYPE_CM93COMP )  {
-                            target_stack_index = ir;
-                            m_zout_dbindex = m_refchart_dbIndex;  //save for later
-                            SetReferenceChart( i );
-                            b_ref_set = true;
-                            break;
-                        }
-                    }
-                }
-
-                if( !b_ref_set && (target_stack_index < extended_array_count) ) {
-                    new_db_index = m_extended_stack_array.Item( target_stack_index );
-                    if( ( ref_family == ChartData->GetDBChartFamily( new_db_index ) )
-                            && IsChartQuiltableRef( new_db_index ) )
-                        SetReferenceChart( new_db_index );
-                }
-            }
-        }
-    }
-    return m_refchart_dbIndex;
-}
 
 int Quilt::GetNomScaleMax(int scale, ChartTypeEnum type, ChartFamilyEnum family)
 {
@@ -918,31 +842,8 @@ int Quilt::GetNomScaleMin(int scale, ChartTypeEnum type, ChartFamilyEnum family)
     }
 }
 
-int Quilt::AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen )
+int Quilt::AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family,  ChartTypeEnum type, double proposed_scale_onscreen )
 {
-    //    If the reference chart is undefined, we really need to select one now.
-    if( m_refchart_dbIndex < 0 ) {
-        int new_ref_dbIndex = GetNewRefChart();
-        SetReferenceChart( new_ref_dbIndex );
-    }
-    
-    //  Reset "lost" chart logic
-    m_lost_refchart_dbIndex = -1;
-
-    int current_db_index = m_refchart_dbIndex;
-    int current_family = m_reference_family;
-    int current_type = m_reference_type;
-
-    //  If the current reference chart is cm93, and it became so due to a zout from another family,
-    //  detect this case and allow switch to save chart index family
-    if( current_type == CHART_TYPE_CM93COMP ){
-        if(m_zout_dbindex >= 0 ) {
-            current_family = ChartData->GetDBChartFamily( m_zout_dbindex );
-        }
-        else                            // cm93 (selected) does not shift charts
-            return current_db_index;
-    }
-    
     //  Make 3 lists
     wxArrayInt nom_scale;
     wxArrayInt max_scale;
@@ -951,7 +852,7 @@ int Quilt::AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen )
     
     //  For Vector charts, we can switch to any chart that is on screen.
     //  Otherwise, we can only switch to charts contining the VP center point
-    bool b_allow_fullscreen_ref = (current_family == CHART_FAMILY_VECTOR) /*|| (!b_zin)*/;
+    bool b_allow_fullscreen_ref = (family == CHART_FAMILY_VECTOR);
     
     //  Walk the extended chart array, capturing data
     int i_first = 0;
@@ -959,21 +860,21 @@ int Quilt::AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen )
         int test_db_index = m_extended_stack_array.Item( i );
 
         if( b_allow_fullscreen_ref || pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
-            if( ( current_family == ChartData->GetDBChartFamily( test_db_index ) )
+            if( ( family == ChartData->GetDBChartFamily( test_db_index ) )
                 && IsChartQuiltableRef( test_db_index ) ) {
                 
                 index_array.Add(test_db_index);
                 int nscale = ChartData->GetDBChartScale(test_db_index);
                 nom_scale.Add(nscale);
                     
-                int nmax_scale = GetNomScaleMax(nscale, (ChartTypeEnum)current_type, (ChartFamilyEnum)current_family);
+                int nmax_scale = GetNomScaleMax(nscale, type, family);
             
                 //  For the largest scale chart, allow a bit more zoom in range
                 if(0 == i_first)
-                    nmax_scale /= 2;
+                    nmax_scale /= 4;
                 max_scale.Add(nmax_scale);
 
-                int nmin_scale = GetNomScaleMin(nscale, (ChartTypeEnum)current_type, (ChartFamilyEnum)current_family);
+                int nmin_scale = GetNomScaleMin(nscale, type, family);
                 min_scale.Add(nmin_scale);
                 
                 i_first ++;
@@ -994,119 +895,66 @@ int Quilt::AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen )
         }
     }
 
-    SetReferenceChart( new_ref_dbIndex );
                     
     return new_ref_dbIndex;
 }
 
-
-int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
+int Quilt::AdjustRefOnZoomOut( double proposed_scale_onscreen )
 {
-    return AdjustRefOnZoom( true, proposed_scale_onscreen);
-    
-    //    If the reference chart is undefined, we really need to select one now.
-    if( m_refchart_dbIndex < 0 ) {
-        int new_ref_dbIndex = GetNewRefChart();
-        SetReferenceChart( new_ref_dbIndex );
-    }
-
     //  Reset "lost" chart logic
     m_lost_refchart_dbIndex = -1;
-
-    ChartFamilyEnum family = (ChartFamilyEnum)ChartData->GetDBChartFamily( m_refchart_dbIndex );
-            
-    //  In high definition zoom mode, if all charts in the quilt are rasters, we switch to a larger scale chart sooner.
-    //  Presumably, we can do this if underzoomed quilt patches render quickly, as they do in OpenGL.
-    double zoom_def = 1.0;
-    if( m_b_hidef ) {
-        bool no_hidef = false;
-        ChartBase *pch = GetFirstChart();
-        while( pch ) {
-            if( pch->GetChartFamily() != CHART_FAMILY_RASTER ) {
-                no_hidef = true;
-                break;
-            }
-            pch = GetNextChart();
-        }
-        
-        if( !no_hidef )
-            zoom_def = 2.0;
-    }
-
-    //  For Vector charts, we want to switch to a larger scale chart sooner on zoom.
-    //  Not only does this make a nicer picture,.....
-    //  It turns out that it is cheaper to render a small piece of a large scale
-    //  chart than it is to render the same small piece of a small scale chart.
-    //  This is simply due to the number of objects typically found in small scale ENCs.
-    if( CHART_FAMILY_VECTOR == family )
-        zoom_def = 2.0;
     
-    int new_db_index = m_refchart_dbIndex;
     int current_db_index = m_refchart_dbIndex;
     int current_family = m_reference_family;
+    ChartTypeEnum current_type = (ChartTypeEnum) m_reference_type;
+ 
+    if( current_type == CHART_TYPE_CM93COMP )
+            return current_db_index;
+    
+    int proposed_ref_index = AdjustRefOnZoom( true, (ChartFamilyEnum)current_family, current_type, proposed_scale_onscreen );
 
-    unsigned int extended_array_count = m_extended_stack_array.GetCount();
+    m_zout_family = -1;
+    if(proposed_ref_index < 0){
+        m_zout_family = current_family;      // save it
+        m_zout_type = current_type;
+    }
+        
 
-    if( m_refchart_dbIndex >= 0 && ( extended_array_count > 0 ) ) {
-        ChartBase *pc = ChartData->OpenChartFromDB( m_refchart_dbIndex, FULL_INIT );
-        if( pc ) {
-            double min_ref_scale = pc->GetNormalScaleMin( m_canvas_scale_factor, false );
+    SetReferenceChart( proposed_ref_index );
 
-            //  If the current chart is cm93, and it became so due to a zout from another family,
-            //  detect this case and allow switch to save chart index if the min/max scales comply
-            if( ( pc->GetChartType() == CHART_TYPE_CM93COMP ) && (m_zout_dbindex >= 0) ) {
-                min_ref_scale = proposed_scale_onscreen + 1;  // just to force the test below to pass
+    return proposed_ref_index;
+
+}    
+    
+int Quilt::AdjustRefOnZoomIn( double proposed_scale_onscreen )
+{
+        //  Reset "lost" chart logic
+    m_lost_refchart_dbIndex = -1;
+        
+    int current_db_index = m_refchart_dbIndex;
+    int current_family = m_reference_family;
+    ChartTypeEnum current_type = (ChartTypeEnum) m_reference_type;
+ 
+    if(m_zout_family >= 0){
+        current_type = (ChartTypeEnum)m_zout_type;
+        current_family = m_zout_family;
+    }
+        
+        //  If the current reference chart is cm93, and it became so due to a zout from another family,
+        //  detect this case and allow switch to save chart index family
+        if( current_type == CHART_TYPE_CM93COMP ){
+            if( m_zout_family >= 0) {
                 current_family = ChartData->GetDBChartFamily( m_zout_dbindex );
             }
-
-            if( proposed_scale_onscreen < zoom_def *min_ref_scale )  {
-
-                unsigned int target_stack_index = 0;
-                int target_stack_index_check = m_extended_stack_array.Index( current_db_index ); // Lookup
-
-                if( wxNOT_FOUND != target_stack_index_check )
-                    target_stack_index = target_stack_index_check;
-
-                if(pCurrentStack) {
-                    while( ( proposed_scale_onscreen < zoom_def *min_ref_scale ) && ( target_stack_index > 0 ) ) {
-                        target_stack_index--;
-                        int test_db_index = m_extended_stack_array.Item( target_stack_index );
-
-                        if( pCurrentStack->DoesStackContaindbIndex( test_db_index ) ) {
-                            if( ( current_family == ChartData->GetDBChartFamily( test_db_index ) )
-                                    && IsChartQuiltableRef( test_db_index ) ) {
-
-                                //    open the target, and check the min_scale
-                                ChartBase *ptest_chart = ChartData->OpenChartFromDB( test_db_index,
-                                                        FULL_INIT );
-                                if( ptest_chart ) min_ref_scale = ptest_chart->GetNormalScaleMin(
-                                                                        m_canvas_scale_factor, false );
-                            }
-                        }
-                    }
-                }
-                
-                new_db_index = m_extended_stack_array.Item( target_stack_index );
-
-                //  The target chart min/max scales must comply with propsed chart scale on-screen
-                ChartBase *pcandidate = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
-                double test_max_ref_scale = 1e8;
-                double test_min_ref_scale = 0;
-                if(pcandidate) {
-                    test_max_ref_scale = zoom_def * 1.01 * pcandidate->GetNormalScaleMax( m_canvas_scale_factor, cc1->GetCanvasWidth() );
-                    test_min_ref_scale = 0.99 * pcandidate->GetNormalScaleMin( m_canvas_scale_factor, false );
-                }
-
-                if( ( current_family == ChartData->GetDBChartFamily( new_db_index ) )
-                            && IsChartQuiltableRef( new_db_index )
-                            && (proposed_scale_onscreen >= test_min_ref_scale)
-                            && (proposed_scale_onscreen <= test_max_ref_scale) )
-
-                            SetReferenceChart( new_db_index );
-            }
+            else                            // cm93 (selected) does not shift charts
+                return current_db_index;
         }
-    }
-    return m_refchart_dbIndex;
+
+    int proposed_ref_index = AdjustRefOnZoom( true, (ChartFamilyEnum)current_family, current_type, proposed_scale_onscreen );
+
+    SetReferenceChart( proposed_ref_index );
+    
+    return proposed_ref_index;
 }
 
 bool Quilt::IsChartSmallestScale( int dbIndex )

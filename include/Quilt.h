@@ -146,7 +146,7 @@ public:
 
     int AdjustRefOnZoomOut( double proposed_scale_onscreen );
     int AdjustRefOnZoomIn( double proposed_scale_onscreen );
-    int AdjustRefOnZoom( bool b_zin, double proposed_scale_onscreen );
+    int AdjustRefOnZoom( bool b_zin, ChartFamilyEnum family, ChartTypeEnum type, double proposed_scale_onscreen );
     
     void SetHiliteIndex( int index ) {
         m_nHiLiteIndex = index;
@@ -241,6 +241,9 @@ private:
     bool m_bquilt_has_overlays;
     unsigned long m_xa_hash;
     int m_zout_dbindex;
+    int m_zout_family;
+    int m_zout_type;
+    
     int m_lost_refchart_dbIndex;
     bool m_b_hidef;
 };
