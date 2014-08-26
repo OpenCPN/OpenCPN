@@ -310,7 +310,6 @@ bool DoCompress(JobTicket *pticket, glTextureDescriptor *ptd, int level)
         if(size < 8)
             size = 8;
     }
-    
         GLuint raster_format = pticket->pFact->GetRasterFormat();
     
         unsigned char *tex_data = (unsigned char*)malloc(size);
@@ -1031,7 +1030,8 @@ void glTexFactory::DeleteSomeTextures( long target )
 //            if(ptd->tex_name && bthread_debug)
 //                printf("DST::Delete Texture %d   resulting g_tex_mem_used, mb:  %ld\n", ptd->tex_name, g_tex_mem_used/(1024 * 1024));
             
-            DeleteSingleTexture( ptd);
+            if(ptd->tex_name)
+                DeleteSingleTexture( ptd);
         }
         
         if(g_tex_mem_used <= target)
@@ -1356,8 +1356,6 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
         glBindTexture( GL_TEXTURE_2D, ptd->tex_name );
     
        
-//    printf("g_tex_mem_used %ld\n", g_tex_mem_used / (1024 * 1024));       
-        
         
     //  Texture requested has already been physically uploaded to the GPU
     //  so we are done
@@ -1377,10 +1375,14 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     
     /* optimization: when supported generate uncompressed mipmaps
        with hardware acceleration */
+    //  I have never seen a case where GPU mipmap generation is faster than CPU generation.
+    //  Also, HW generation uses a lot more texture memory in average cases, because we always need to upload 
+    //  the level 0 bitmap.
+    
     bool hw_mipmap = false;
     if(/*!g_GLOptions.m_bTextureCompression &&*/ s_glGenerateMipmap) {
-        base_level = 0;
-        hw_mipmap = true;
+//        base_level = 0;
+//        hw_mipmap = true;
     }
 
 #ifdef ocpnUSE_GLES /* glGenerateMipmaps is incredibly slow with mali drivers */
@@ -1584,14 +1586,22 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
 {
     
     //  Already available in the texture descriptor?
-    if(g_GLOptions.m_bTextureCompression) {
+    if(g_GLOptions.m_bTextureCompression && !g_GLOptions.m_bTextureCompressionCaching) {
         if( ptd->nGPU_compressed == GPU_TEXTURE_COMPRESSED){
             if( ptd->CompressedArrayAccess( CA_READ, NULL, level))
                 return COMPRESSED_BUFFER_OK;
+            else{
+                if(g_CompressorPool){
+                    g_CompressorPool->ScheduleJob( this, rect, level, false, true, false);  // immediate, no postZip
+                    return COMPRESSED_BUFFER_OK;
+                }
+            }
         }
-        else {
-            if( ptd->map_array[ level ] )
-                return MAP_BUFFER_OK;
+        else{
+            if(g_CompressorPool){
+                g_CompressorPool->ScheduleJob( this, rect, level, false, true, false);  // immediate, no postZip
+                return COMPRESSED_BUFFER_OK;
+            }
         }
     }
     else {
@@ -1653,8 +1663,9 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
         
         //  Requested Texture level is not in cache, and not already built
         //  So go build it
-    if( !ptd->map_array[level] )
+    if( !ptd->map_array[level] ){
         GetFullMap( ptd, rect, m_ChartPath, level );
+    }
         
     return MAP_BUFFER_OK;
         
