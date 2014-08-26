@@ -2593,106 +2593,74 @@ int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Simple Style, OpenGL
 int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-    //return 0;
     if( !m_benableGLLS )                        // root chart cannot support VBO model, for whatever reason
         return RenderLS(rzRules, rules, vp);
- 
-#ifdef ocpnUSE_GL
-    //  Try to determine if the feature needs to be drawn in the most efficient way
-    int bdraw = 0;
-    VE_Hash *ve_hash; 
-    VC_Hash *vc_hash; 
+
     
-    if( rzRules->obj->m_chart_context->chart ){
-        ve_hash = &rzRules->obj->m_chart_context->chart->Get_ve_hash(); 
-        vc_hash = &rzRules->obj->m_chart_context->chart->Get_vc_hash(); 
+    bool b_useVBO = false;
+    float *vertex_buffer = 0;
+    
+    if(rzRules->obj->auxParm2 > 0){
+        b_useVBO = true;
     }
-    else {
-        ve_hash = (VE_Hash *)rzRules->obj->m_chart_context->m_pve_hash; 
-        vc_hash = (VC_Hash *)rzRules->obj->m_chart_context->m_pvc_hash; 
+    else{
+        if( rzRules->obj->m_chart_context->chart ){
+            vertex_buffer = rzRules->obj->m_chart_context->chart->GetLineVertexBuffer(); 
+        }
+        
+        if(!vertex_buffer)
+            return RenderLS(rzRules, rules, vp);    // this is where cm93 gets caught
     }
+
+    
+#ifdef ocpnUSE_GL
+
+    wxBoundingBox BBView = vp->GetBBox();
+    //  Allow a little slop in calculating whether a segment
+    //  is within the requested Viewport
+    double margin = BBView.GetWidth() * .05;
+    BBView.EnLarge( margin );
+
+    wxBoundingBox bbRight;
+    bool b_vp_cross_greenwich = false;
+
+    if( BBView.GetMaxX() > 360. ) {
+        bbRight = wxBoundingBox ( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
+                              vp->GetBBox().GetMaxY() );
+        b_vp_cross_greenwich = true;
+    }       
+
+    //  Try to determine if the feature needs to be drawn in the most efficient way
+    //  We need to look at priority and visibility of each segment
+    int bdraw = 0;
+    
+    //  Get the current display priority from the LUP
     int priority_current = rzRules->LUP->DPRI - '0'; //TODO fix this hack by putting priority into object during _insertRules
     
-    wxBoundingBox BBViewT = vp->GetBBox();
-    
-        for( int iseg = 0; iseg < rzRules->obj->m_n_lsindex; iseg++ ) {
-            int seg_index = iseg * 3;
-            int *index_run = &rzRules->obj->m_lsindex_array[seg_index];
- 
-            index_run++;
+    line_segment_element *ls_list = rzRules->obj->m_ls_list;
+    while( ls_list){
+        
+        if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
+        {
             
-            //  Get the edge
-            unsigned int venode = *index_run;
-            VE_Element *pedge = 0;
-            pedge = (*ve_hash)[venode];
+            //  Check visibility of the segment
+            bool b_greenwich = false;
+            if( b_vp_cross_greenwich ) {
+                if( bbRight.Intersect( ls_list->bbox, margin ) != _OUT )
+                    b_greenwich = true;
+            }
             
- 
-            if(pedge && pedge->nCount && !pedge->BBox.GetValid()){
+            if( b_greenwich || !BBView.IntersectOut( ls_list->bbox ) )
+            {
+                // render the segment
                 bdraw++;
                 break;
-            }
-                    
-            //  Here we decide to draw or not based on the highest priority seen for this segment
-            //  That is, if this segment is going to be drawn at a higher priority later, then "continue", and don't draw it here.
-            if( pedge && (pedge->max_priority == priority_current ) ) {
-                bdraw++;
-                break;
-            }
-
-            
-            if(pedge && pedge->nCount){
-
-#if 0
-                //  If the edge bounding box is invalid, we build it here.
-                //  This will happen for PlugIn Vector charts, most likely.
-                if(!pedge->BBox.GetValid()){
-                    //  Get a bounding box for the edge
-                    double east_max = -1e7; double east_min = 1e7;
-                    double north_max = -1e7; double north_min = 1e7;
-                    
-                    double *vrun = pedge->pPoints;
-                    for(size_t i=0 ; i < pedge->nCount; i++){
-                        east_max = wxMax(east_max, *vrun);
-                        east_min = wxMin(east_min, *vrun);
-                        vrun++;
-                        
-                        north_max = wxMax(north_max, *vrun);
-                        north_min = wxMin(north_min, *vrun);
-                        vrun++;
-                    }
-                    
-                    if( rzRules->obj->m_chart_context ){
-                        double ref_lat = rzRules->obj->m_chart_context->ref_lat;
-                        double ref_lon = rzRules->obj->m_chart_context->ref_lon;
-                        
-                        double lat, lon;
-                        fromSM( east_min, north_min, ref_lat, ref_lon, &lat, &lon );
-                        pedge->BBox.SetMin( lon, lat);
-                        fromSM( east_max, north_max, ref_lat, ref_lon, &lat, &lon );
-                        pedge->BBox.SetMax( lon, lat);
-                    }
-                }
-#endif
-
-                
-            //  Check visibility on the edge
-                bool b_greenwich = false;
-                if( BBViewT.GetMaxX() > 360. ) {
-                    wxBoundingBox bbRight( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
-                                           vp->GetBBox().GetMaxY() );
-                    
-                   
-                    if( bbRight.Intersect( pedge->BBox, 0 ) != _OUT )
-                        b_greenwich = true;
-                }
-                
-                if( b_greenwich || !BBViewT.IntersectOut( pedge->BBox ) ){
-                    bdraw++;
-                    break;
-                }
             }
         }
         
+        ls_list = ls_list->next;
+    }
+    
     if(!bdraw)
         return 0;
         
@@ -2731,13 +2699,7 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 #endif
                 
  
-    wxBoundingBox BBView = vp->GetBBox();
-    //  Allow a little slop in calculating whether a segment
-    //  is within the requested Viewport
-    double margin = BBView.GetWidth() * .05;
-    BBView.EnLarge( margin );
-    
-    
+        
     glPushMatrix();
     
     // Set up the OpenGL transform matrix for this object
@@ -2762,119 +2724,53 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0);
             }
     }
-    
+  
+  
     glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
     glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
     
-    bool b_useVBO = true;
 
     
     //   Has line segment PBO been allocated for this chart?
-    if(rzRules->obj->auxParm2 > 0){
+    if(b_useVBO){
         (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->auxParm2);
-        b_useVBO = true;
-    }
-    else{
-        b_useVBO = false;
     }
 
-    glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
     
-       
-        // Render all the segments
-        for( int iseg = 0; iseg < rzRules->obj->m_n_lsindex; iseg++ ) {
-            int seg_index = iseg * 3;
-            int *index_run = &rzRules->obj->m_lsindex_array[seg_index];
- 
-            //  Get first connected node
-            unsigned int inode = *index_run++;
-            
-            //  Get the edge
-            unsigned int venode = *index_run++;
-            VE_Element *pedge = 0;
-            pedge = (*ve_hash)[venode];
-            
-            //  Get end connected node
-            unsigned int enode = *index_run++;
- 
-            //  Here we decide to draw or not based on the highest priority seen for this segment
-            //  That is, if this segment is going to be drawn at a higher priority later, then "continue", and don't draw it here.
-            if( pedge && (pedge->max_priority != priority_current ) )
-                continue;
-            
+    glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
 
-            if(pedge && pedge->nCount){
-            
-            //  Check visibility on the edge
-                bool b_greenwich = false;
-                if( BBView.GetMaxX() > 360. ) {
-                    wxBoundingBox bbRight( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
-                                           vp->GetBBox().GetMaxY() );
-                    
-                   
-                    if( bbRight.Intersect( pedge->BBox, margin ) != _OUT )
-                        b_greenwich = true;
-                }
-                
-                if( !b_greenwich && BBView.IntersectOut( pedge->BBox ) )
-                    continue;
+  
+    ls_list = rzRules->obj->m_ls_list;
+    while( ls_list){
+        
+        if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
+        {
+          
+            //  Check visibility of the segment
+            bool b_greenwich = false;
+            if( b_vp_cross_greenwich ) {
+                if( bbRight.Intersect( ls_list->bbox, margin ) != _OUT )
+                    b_greenwich = true;
             }
- 
-            //  Get first connected node
-            VC_Element *ipnode = 0;
-            ipnode = (*vc_hash)[inode];
- 
-            //  Get end connected node
-            VC_Element *epnode = 0;
-            epnode = (*vc_hash)[enode];
- 
-            double e0, n0, e1, n1;
             
-                if( ipnode ) {
-                    double *ppt = ipnode->pPoint;
-                    e0 = *ppt++;
-                    n0 = *ppt;
-                    if(pedge && pedge->nCount)
-                    {
-                        e1 = pedge->pPoints[0];
-                        n1 = pedge->pPoints[1];
+            if( b_greenwich || !BBView.IntersectOut( ls_list->bbox ) )
+            {
+                // render the segment
                 
-                        glBegin( GL_LINES );
-                        glVertex2f( e0, n0 );
-                        glVertex2f( e1, n1 );
-                        glEnd();
-                    }
-                }
-
-            if(pedge && pedge->nCount){
                 if(b_useVBO){
-                    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), (GLvoid *)(pedge->vbo_offset));
-                    glDrawArrays(GL_LINE_STRIP, 0, pedge->nCount);
+                    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), (GLvoid *)(ls_list->vbo_offset));
+                    glDrawArrays(GL_LINE_STRIP, 0, ls_list->n_points);
                 }
                 else{
-                    glVertexPointer(2, GL_DOUBLE, 2 * sizeof(double), pedge->pPoints);
-                    glDrawArrays(GL_LINE_STRIP, 0, pedge->nCount);
+                    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), (unsigned char *)vertex_buffer + ls_list->vbo_offset);
+                    glDrawArrays(GL_LINE_STRIP, 0, ls_list->n_points);
                 }
- 
-                e0 = pedge->pPoints[ (2 * (pedge->nCount - 1))];
-                n0 = pedge->pPoints[ (2 * (pedge->nCount - 1)) + 1];
- 
-            }   //pedge
- 
-                // end node
-                if( epnode ) {
-                    double *ppt = epnode->pPoint;
-                    e1 = *ppt++;
-                    n1 = *ppt;
-                        
-                    glBegin( GL_LINES );
-                    glVertex2f( e0, n0 );
-                    glVertex2f( e1, n1 );
-                    glEnd();
-                        
-                }
-        }  // for
-
+            }
+        }
+        
+        ls_list = ls_list->next;
+    }
+    
     if(b_useVBO)
         (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
     
@@ -4632,8 +4528,34 @@ int s52plib::SetLineFeaturePriority( ObjRazRules *rzRules, int npriority )
 
 int s52plib::PrioritizeLineFeature( ObjRazRules *rzRules, int npriority )
 {
-
-    if( rzRules->obj->m_n_lsindex ) {
+    if(rzRules->obj->m_ls_list){
+        
+        VE_Element *pedge;
+        connector_segment *pcs;
+        line_segment_element *ls = rzRules->obj->m_ls_list;
+        while( ls ){
+            switch (ls->type){
+                case TYPE_EE:
+                    
+                    pedge = (VE_Element *)ls->private0;
+                    if(pedge)
+                        pedge->max_priority = npriority;// wxMax(pedge->max_priority, npriority);
+                    break;
+                    
+                default:
+                    pcs = (connector_segment *)ls->private0;
+                    if(pcs)
+                        pcs->max_priority = npriority; //wxMax(pcs->max_priority, npriority);
+                    break;
+            }
+            
+            ls = ls->next;
+        }
+    }
+    
+    
+    
+    else if( rzRules->obj->m_n_lsindex ) {
         VE_Hash *edge_hash; 
         
         if( rzRules->obj->m_chart_context->chart ){
@@ -4666,6 +4588,7 @@ int s52plib::PrioritizeLineFeature( ObjRazRules *rzRules, int npriority )
         }
     }
 
+        
     return 1;
 }
 

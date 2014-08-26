@@ -294,6 +294,7 @@ class S57Obj;
 class OGRFeature;
 class PolyTessGeo;
 class PolyTessGeoTrap;
+class line_segment_element;
 
 typedef struct _chart_context{
     void                    *m_pvc_hash;
@@ -370,7 +371,8 @@ public:
       int                     m_n_lsindex;
       int                     *m_lsindex_array;
       int                     m_n_edge_max_points;
-
+      line_segment_element    *m_ls_list;
+      
       DisCat                  m_DisplayCat;
       bool                    m_bcategory_mutable;    //  CS procedure may move this object to a higher catagory.
                                                       //  Used as a hint to rendering filter logic
@@ -465,6 +467,19 @@ class VC_Element
 public:
       unsigned int index;
       double      *pPoint;
+};
+
+class line_segment_element
+{
+public:
+    size_t              vbo_offset;
+    size_t              n_points;
+    int                 priority;
+    wxBoundingBox       bbox;
+    void                *private0;
+    int                 type;
+    
+    line_segment_element *next;
 };
 
 
