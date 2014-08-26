@@ -436,7 +436,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
 
         if( m_nPoints == 1 ) {
             dc.StrokeLine( r0.x, r0.y, r0.x + 2, r0.y + 2 );
-            return;
+//            return;
         }
             
         
@@ -455,8 +455,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         }
     }
     
-    if( m_nPoints < 2  )
-        return;
+//    if( m_nPoints < 2  )
+//        return;
     
     /* determine color and width */
     wxColour col;

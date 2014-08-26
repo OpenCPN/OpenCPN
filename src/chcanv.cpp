@@ -1081,7 +1081,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pMeasureRoute = NULL;
     m_pRouteRolloverWin = NULL;
     m_pAISRolloverWin = NULL;
-
+    m_bedge_pan = false;
+    
     m_pCIWin = NULL;
 
     m_pSelectedRoute              = NULL;
@@ -4732,16 +4733,15 @@ bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int de
 
     //    Of course, if dragging, and the mouse left button is not down, we must stop the event injection
     if( bdragging ) {
-        if( !g_btouch ){
+        if( !g_btouch )
+        {
             wxMouseState state = ::wxGetMouseState();
             if( !state.LeftDown() )
                 bft = false;
         }
     }
-
     if( ( bft ) && !pPanTimer->IsRunning() ) {
         PanCanvas( pan_x, pan_y );
-
         pPanTimer->Start( pan_timer_set, wxTIMER_ONE_SHOT );
         return true;
     }
@@ -4831,6 +4831,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
     // Protect from very small cursor slips during double click, which produce a
     // single Drag event.
+    
+    // This code is nonsense...
+#if 0    
     static bool lastEventWasDrag = false;
 
     if( event.Dragging() && !lastEventWasDrag ) {
@@ -4838,6 +4841,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         return;
     }
     lastEventWasDrag = event.Dragging();
+#endif
 
     event.GetPosition( &x, &y );
 
@@ -5104,6 +5108,18 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
 //          Mouse Clicks
 
+    if(event.LeftIsDown()){
+        if( g_btouch ){
+            if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
+                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
+                    m_bedge_pan = true;
+                    return;
+                }
+            }
+        }
+    }
+    
+    
     if( event.LeftDown() ) {
         //  This really should not be needed, but....
         //  on Windows, when using wxAUIManager, sometimes the focus is lost
@@ -5291,6 +5307,17 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 FindRoutePointsAtCursor( SelectRadius, true );    // Not creating Route
             }
         }  // !g_btouch
+        else {                  // g_btouch
+
+           if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
+
+               // if near screen edge, pan with injection
+                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
+                    return;
+                }
+                
+           }
+        }
     }
 
     if( event.Dragging() ) {
@@ -5471,6 +5498,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             
             if( parent_frame->nRoute_State )                  // creating route?
             {
+                if(m_bedge_pan){
+                    m_bedge_pan = false;
+                    return;
+                }
+                
                 double rlat, rlon;
 
                 rlat = m_cursor_lat;
@@ -5621,9 +5653,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             }
             else if( m_bMeasure_Active && m_nMeasureState )   // measure tool?
             {
+                if(m_bedge_pan){
+                    m_bedge_pan = false;
+                    return;
+                }
+                    
                 double rlat, rlon;
 
-                SetCursor( *pCursorPencil );
                 rlat = m_cursor_lat;
                 rlon = m_cursor_lon;
 
@@ -5634,6 +5670,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     r_rband.y = y;
                 }
 
+                // if near screen edge, pan but do not add a point
+                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
+                    return;
+                }
+                
                 RoutePoint *pMousePoint = new RoutePoint( m_cursor_lat, m_cursor_lon,
                                                         wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
                 pMousePoint->m_bShowName = false;
@@ -5647,7 +5688,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 m_nMeasureState++;
 
-                Refresh( false );
+                Refresh( true );
             }
             else {
                 bool b_was_editing_mark = m_bMarkEditing;
@@ -5847,6 +5888,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }
         
         if(!m_pRoutePointEditTarget){
+            delete m_pEditRouteArray;
+            m_pEditRouteArray = NULL;
             m_bRouteEditing = false;
         }
             
