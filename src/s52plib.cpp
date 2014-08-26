@@ -6045,7 +6045,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     } else
         return 0;
 
-    if( glChartCanvas::s_b_useStencil ) {
+    if( glChartCanvas::s_b_useStencilAP ) {
         glPushAttrib( GL_STENCIL_BUFFER_BIT );
 
         //    Use masked bit "1" of the stencil buffer to create a stencil for the area of interest
@@ -6069,19 +6069,26 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         glColor3f( 1, 1, 0 );
 
-        //    Overall chart clip buffer was set at z=0.5
+        //  If we are using stencil for overall clipping, then we are only
+        //  using depth buffer for AreaPattern rendering
+        //  So, each AP render can start with a clear depth buffer
+        
+        if(glChartCanvas::s_b_useStencil){
+             glClearDepth(.26);
+             glClear( GL_DEPTH_BUFFER_BIT ); // for a fresh start
+        }
+            //    Overall chart clip buffer was set at z=0.5
         //    Draw this clip geometry at z = .25, so still respecting the previously established clip region
         //    Subsequent drawing to this area at z=.25  will pass only this area if using glDepthFunc(GL_EQUAL);
 
-        //    TODO  If this fails, consider the uncertainty of GL_EQUAL on floating point comparison
         z_clip_geom = .25;
         z_tex_geom = .25;
     }
 
     //  Render the geometry
     {
-        // Generate a Display list if using Depth Buffer clipping, for use later
-        if( !glChartCanvas::s_b_useStencil ) {
+        // Generate a Display list if using overall Depth Buffer clipping, for use later
+        if( !glChartCanvas::s_b_useStencilAP && !glChartCanvas::s_b_useStencil ) {
             clip_list = glGenLists( 1 );
             glNewList( clip_list, GL_COMPILE );
         }
@@ -6183,12 +6190,15 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             p_tp = p_tp->p_next; // pick up the next in chain
         } // while
 
-        if( !glChartCanvas::s_b_useStencil ) {
+//        obj_xmin = 0;
+//        obj_xmax = 2000;
+        
+        if( !glChartCanvas::s_b_useStencilAP &&  !glChartCanvas::s_b_useStencil ) {
             glEndList();
             glCallList( clip_list );
         }
 
-        if( glChartCanvas::s_b_useStencil ) {
+        if( glChartCanvas::s_b_useStencilAP ) {
             //    Now set the stencil ops to subsequently render only where the stencil bit is "2"
             glStencilFunc( GL_EQUAL, 2, 2 );
             glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
@@ -6281,7 +6291,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glDisable( GL_TEXTURE_2D );
         glDisable( GL_BLEND );
 
-        //    If using DepthBuffer clipping, we need to
+        //    If using overall DepthBuffer clipping, we need to
         //    undo the sub-clip area for this feature render.
         //    Otherwise, subsequent AP renders with also honor this sub-clip region.
 
@@ -6292,8 +6302,10 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         //    Note that this is not required for stencil buffer clipping,
         //    since the relevent bit (2) is cleared on any subsequent AP renders.
-
-        if( !glChartCanvas::s_b_useStencil ) {
+        
+        //    And if we are using depth buffer just for AP rendering, we simply
+        //    clear the depth buffer when done here
+        if( !glChartCanvas::s_b_useStencilAP && !glChartCanvas::s_b_useStencil ) {
 
             glEnable( GL_DEPTH_TEST ); // to use the depth test
             glDepthFunc( GL_LEQUAL ); // Respect global render mask in depth buffer
@@ -6311,7 +6323,11 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             glDeleteLists( clip_list, 1 );
         }
-
+        else if( !glChartCanvas::s_b_useStencil ){
+            glClearDepth(1);
+            glClear( GL_DEPTH_BUFFER_BIT ); // back to default
+        }
+    
         //    Restore the previous state
         glPopAttrib();
 

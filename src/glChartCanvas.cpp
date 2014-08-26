@@ -170,6 +170,7 @@ int g_mipmap_max_level = 4;
 
 bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
+bool glChartCanvas::s_b_useStencilAP;
 bool glChartCanvas::s_b_UploadFullCompressedMipmaps;
 //static int s_nquickbind;
 
@@ -858,19 +859,20 @@ void glChartCanvas::SetupOpenGL()
     
     //  This little hack fixes a problem seen with some Intel 945 graphics chips
     //  We need to not do anything that requires (some) complicated stencil operations.
-    // TODO: arrange this to use stencil, but depth for s52plib and eliminate display list
 
     bool bad_stencil_code = false;
     if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
-        wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling stencil buffer") );
+#ifdef __WXMSW__
+        wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling complex stencil buffer") );
         bad_stencil_code = true;
+#endif        
     }
 
     //      And for the lousy Unichrome drivers, too
-    if( GetRendererString().Find( _T("UniChrome") ) != wxNOT_FOUND ) {
+    if( GetRendererString().Find( _T("UniChrome") ) != wxNOT_FOUND )
         bad_stencil_code = true;
-    }
 
+    
     //      Stencil buffer test
     glEnable( GL_STENCIL_TEST );
     GLboolean stencil = glIsEnabled( GL_STENCIL_TEST );
@@ -880,8 +882,10 @@ void glChartCanvas::SetupOpenGL()
     glDisable( GL_STENCIL_TEST );
 
     s_b_useStencil = false;
-    if( !bad_stencil_code && stencil && ( sb == 8 ) ) s_b_useStencil = true;
+    if( stencil && ( sb == 8 ) )
+        s_b_useStencil = true;
 
+     
     if( QueryExtension( "GL_ARB_texture_non_power_of_two" ) )
         g_texture_rectangle_format = GL_TEXTURE_2D;
     else if( QueryExtension( "GL_OES_texture_npot" ) )
@@ -948,6 +952,9 @@ void glChartCanvas::SetupOpenGL()
 
     if( m_b_BuiltFBO && !m_b_useFBOStencil )
         s_b_useStencil = false;
+
+    //  If stencil seems to be a problem, force use of depth buffer clipping for Area Patterns
+    s_b_useStencilAP = s_b_useStencil & !bad_stencil_code;
 
     if( m_b_BuiltFBO ) {
         wxLogMessage( _T("OpenGL-> Using Framebuffer Objects") );
