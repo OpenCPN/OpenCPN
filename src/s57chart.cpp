@@ -101,6 +101,7 @@ extern ChartBase         *Current_Ch;
 extern MyFrame*          gFrame;
 extern PlugInManager     *g_pi_manager;
 extern bool              g_b_overzoom_x;
+extern bool              g_b_EnableVBO;
 
 extern wxProgressDialog *s_ProgDialog;
 
@@ -1957,6 +1958,10 @@ void s57chart::BuildLineVBO( void )
     
     if(CHART_TYPE_CM93 == GetChartType())
         return;
+    
+    if(!g_b_EnableVBO)
+        return;
+    
     if(m_LineVBO_name == -1){
         
         //      Create the VBO
