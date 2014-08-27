@@ -1179,7 +1179,7 @@ int Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *p
 
     wxString msg;
     if( 0 == result )
-        msg = _("Route Uploaded successfully.");
+        msg = _("Route Transmitted.");
     else{
         if( result == ERR_GARMIN_INITIALIZE )
             msg = _("Error on Route Upload.  Garmin GPS not connected");
