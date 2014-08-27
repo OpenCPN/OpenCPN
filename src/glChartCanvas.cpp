@@ -204,7 +204,6 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
     bool ret = true;
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
     int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-    char *compressed_data = new char[max_compressed_size];
     
     if(pBSBChart) {
         

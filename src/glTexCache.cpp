@@ -751,6 +751,7 @@ bool CompressionWorkerPool::ScheduleJob(glTexFactory* client, const wxRect &rect
     }
     else{
         DoJob(pt);
+        delete pt;
         return true;
     }
 }
@@ -973,6 +974,13 @@ glTexFactory::~glTexFactory()
         m_fs->Close();
     }
 
+    while(!m_catalog.IsEmpty()){
+        CatalogEntry **t = m_catalog.Detach(0);
+        delete *t;
+    }
+    
+    m_catalog.Clear();
+    
     DeleteAllDescriptors();
  
     free( m_td_array );         // array is empty

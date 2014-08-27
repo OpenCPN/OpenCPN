@@ -212,6 +212,15 @@ S57Obj::~S57Obj()
         if( geoPtMulti ) free( geoPtMulti );
 
         if( m_lsindex_array ) free( m_lsindex_array );
+        
+        if(m_ls_list){
+            line_segment_element *element = m_ls_list;
+            while(element){
+                line_segment_element *next = element->next;
+                delete element;
+                element = next;
+            }
+        }
     }
 }
 
@@ -1230,7 +1239,7 @@ void s57chart::FreeObjectsAndRules()
                     free( top->mps );
                 }
 
-                nxx = top->next;
+                 nxx = top->next;
                 free( top );
                 top = nxx;
             }

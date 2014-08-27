@@ -1803,11 +1803,11 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
         index_keep.Add(nPoints-2);
         
         DouglasPeucker(DPbuffer, 1, nPoints-2, m_LOD_meters/(1852 * 60), &index_keep);
-        printf("DP Reduction: %d/%d\n", index_keep.GetCount(), nPoints);
+//        printf("DP Reduction: %d/%d\n", index_keep.GetCount(), nPoints);
         
         g_keep += index_keep.GetCount();
         g_orig += nPoints;
-        printf("...................Running: %g\n", (double)g_keep/g_orig);
+//        printf("...................Running: %g\n", (double)g_keep/g_orig);
     }
     else {
         index_keep.Clear();
@@ -2849,6 +2849,11 @@ PolyTriGroup::~PolyTriGroup()
     
     if(bsingle_alloc){
         free(single_buffer);
+        while(tp) {
+            tp_next = tp->p_next;
+            delete tp;
+            tp = tp_next;
+        }
     }
     else {
         while(tp) {
