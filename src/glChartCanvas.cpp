@@ -1560,6 +1560,10 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     double pred_lat, pred_lon;
 
+    int drawit = 0;
+    //    Is ship in Vpoint?
+    if( cc1->GetVP().GetBBox().PointInBox( gLon, gLat, 0 ) ) drawit++;                             // yep
+
     //  COG/SOG may be undefined in NMEA data stream
     float pCog = gCog;
     if( wxIsNaN(pCog) )
@@ -1569,6 +1573,9 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         pSog = 0.0;
 
     ll_gc_ll( gLat, gLon, pCog, pSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
+
+    //    Is predicted point in the VPoint?
+    if( cc1->GetVP().GetBBox().PointInBox( pred_lon, pred_lat, 0 ) ) drawit++;                     // yep
 
     cc1->GetCanvasPointPix( gLat, gLon, &lGPSPoint );
     cc1->GetCanvasPointPix( pred_lat, pred_lon, &lPredPoint );
@@ -1623,6 +1630,15 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             b_render_hdt = true;
     }
 
+    //    Another draw test ,based on pixels, assuming the ship icon is a fixed nominal size
+    //    and is just barely outside the viewport        ....
+    wxBoundingBox bb_screen( 0, 0, cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+    if( bb_screen.PointInBox( lShipMidPoint, 20 ) ) drawit++;
+    
+    //    Do the draw if either the ship or prediction is within the current VPoint
+    if( !drawit )
+        return;
+    
     int img_height;
 
     if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
