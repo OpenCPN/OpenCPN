@@ -38,27 +38,27 @@
 #include "GribUIDialog.h"
 #include "GribOverlayFactory.h"
 
-enum OVERLAP { _IN, _ON, _OUT };
+enum GRIB_OVERLAP { _GIN, _GON, _GOUT };
 
 // Calculates if two boxes intersect. If so, the function returns _ON.
 // If they do not intersect, two scenario's are possible:
 // other is outside this -> return _OUT
 // other is inside this -> return _IN
-OVERLAP Intersect( PlugIn_ViewPort *vp, double lat_min, double lat_max, double lon_min,
+GRIB_OVERLAP Intersect( PlugIn_ViewPort *vp, double lat_min, double lat_max, double lon_min,
                    double lon_max, double Marge )
 {
 
     if( ( ( vp->lon_min - Marge ) > ( lon_max + Marge ) )
             || ( ( vp->lon_max + Marge ) < ( lon_min - Marge ) )
             || ( ( vp->lat_max + Marge ) < ( lat_min - Marge ) )
-            || ( ( vp->lat_min - Marge ) > ( lat_max + Marge ) ) ) return _OUT;
+            || ( ( vp->lat_min - Marge ) > ( lat_max + Marge ) ) ) return _GOUT;
 
     // Check if other.bbox is inside this bbox
     if( ( vp->lon_min <= lon_min ) && ( vp->lon_max >= lon_max ) && ( vp->lat_max >= lat_max )
-            && ( vp->lat_min <= lat_min ) ) return _IN;
+            && ( vp->lat_min <= lat_min ) ) return _GIN;
 
     // Boundingboxes intersect
-    return _ON;
+    return _GON;
 }
 
 // Is the given point in the vp ??
@@ -946,10 +946,10 @@ void GRIBOverlayFactory::RenderGribOverlayMap( int settings, GribRecord **pGR, P
     bool bdraw = false;
     if( Intersect( vp, pGRA->getLatMin(), pGRA->getLatMax(),
                    pGRA->getLonMin(), pGRA->getLonMax(),
-                   0. ) != _OUT ) bdraw = true;
+                   0. ) != _GOUT ) bdraw = true;
     if( Intersect( vp, pGRA->getLatMin(), pGRA->getLatMax(),
                    pGRA->getLonMin() - 360., pGRA->getLonMax() - 360.,
-                   0. ) != _OUT ) bdraw = true;
+                   0. ) != _GOUT ) bdraw = true;
 
     if( bdraw ) {
         // If needed, create the overlay
