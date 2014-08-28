@@ -494,7 +494,7 @@ public:
     opencpn_plugin_112(void *pmgr);
     virtual ~opencpn_plugin_112();
     
-    virtual void MouseEventHook( wxMouseEvent &event );
+    virtual bool MouseEventHook( wxMouseEvent &event );
     virtual void SendVectorChartObjectInfo(wxString &chart, wxString &feature, wxString &objname, double lat, double lon, double scale, int nativescale);
     
 };
