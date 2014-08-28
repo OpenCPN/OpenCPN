@@ -4816,9 +4816,19 @@ void SentenceListDlg::OnOkClick( wxCommandEvent& event ) { event.Skip(); }
  
 //OpenGLOptionsDlg
 
-OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent ) :
-    wxDialog( parent, wxID_ANY, _T("OpenGL Options"), wxDefaultPosition )
+OpenGLOptionsDlg::OpenGLOptionsDlg( wxWindow* parent )
 {
+    long style = wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER;
+#ifdef __WXOSX__
+    style |= wxSTAY_ON_TOP;
+#endif
+    
+    wxDialog::Create( parent, wxID_ANY, _T("OpenGL Options"), wxDefaultPosition, wxDefaultSize,
+                      style );
+    
+    wxFont *qFont = GetOCPNScaledFont(_("Dialog"), 10);
+    SetFont( *qFont );
+    
 #ifdef ocpnUSE_GL
     m_bSizer1 = new wxFlexGridSizer( 2 );
     this->SetSizeHints( wxDefaultSize, wxDefaultSize );
