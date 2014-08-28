@@ -582,13 +582,13 @@ void options::CreatePanel_NMEA( size_t parent, int border_size, int group_item_s
 
 
     wxBoxSizer* bSizer17;
-    bSizer17 = new wxBoxSizer( wxHORIZONTAL );
+    bSizer17 = new wxBoxSizer( wxVERTICAL );
 
     m_lcSources = new wxListCtrl( m_pNMEAForm, wxID_ANY, wxDefaultPosition, wxSize(-1, 150), wxLC_REPORT|wxLC_SINGLE_SEL);
     bSizer17->Add( m_lcSources, 1, wxALL|wxEXPAND, 5 );
 
     wxBoxSizer* bSizer18;
-    bSizer18 = new wxBoxSizer( wxVERTICAL );
+    bSizer18 = new wxBoxSizer( wxHORIZONTAL );
 
     m_buttonAdd = new wxButton( m_pNMEAForm, wxID_ANY, _("Add Connection"), wxDefaultPosition, wxDefaultSize, 0 );
     bSizer18->Add( m_buttonAdd, 0, wxALL, 5 );
