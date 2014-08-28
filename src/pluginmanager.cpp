@@ -353,6 +353,36 @@ bool PlugInManager::CallLateInit(void)
     return bret;
 }
 
+void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxString &feature, const wxString &objname, double &lat, double &lon, double &scale, int &nativescale)
+{
+    wxString decouple_chart(chart);
+    wxString decouple_feature(feature);
+    wxString decouple_objname(objname);
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    {
+        PlugInContainer *pic = plugin_array.Item(i);
+        if(pic->m_bEnabled && pic->m_bInitState)
+        {
+            if(pic->m_cap_flag & WANTS_VECTOR_CHART_OBJECT_INFO)
+            {
+                switch(pic->m_api_version)
+                {
+                case 112:
+                {
+                    opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
+                    if(ppi)
+                        ppi->SendVectorChartObjectInfo(decouple_chart, decouple_feature, decouple_objname, lat, lon, scale, nativescale);
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+        }
+    }
+}
+
+
 bool PlugInManager::UpdatePlugIns()
 {
     bool bret = false;
@@ -917,7 +947,6 @@ void PlugInManager::SendViewPortToRequestingPlugIns( ViewPort &vp )
         }
     }
 }
-
 
 void PlugInManager::SendCursorLatLonToAllPlugIns( double lat, double lon)
 {
@@ -2726,7 +2755,9 @@ opencpn_plugin_112::~opencpn_plugin_112(void)
 void opencpn_plugin_112::MouseEventHook( wxMouseEvent &event )
 {}
 
-
+void opencpn_plugin_112::SendVectorChartObjectInfo(wxString &chart, wxString &feature, wxString &objname, double lat, double lon, double scale, int nativescale)
+{
+}
 
 
 //          Helper and interface classes

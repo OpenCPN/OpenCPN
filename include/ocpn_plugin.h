@@ -87,6 +87,7 @@ class       wxScrolledWindow;
 #define     WANTS_LATE_INIT                           0x00020000
 #define     INSTALLS_PLUGIN_CHART_GL                  0x00040000
 #define     WANTS_MOUSE_HOOK                          0x00080000
+#define     WANTS_VECTOR_CHART_OBJECT_INFO            0x00100000
 
 //----------------------------------------------------------------------------------------------------------
 //    Some PlugIn API interface object class definitions
@@ -484,7 +485,7 @@ class DECL_EXP opencpn_plugin_111 : public opencpn_plugin_110
 public:
     opencpn_plugin_111(void *pmgr);
     virtual ~opencpn_plugin_111();
-
+    
 };
 
 class DECL_EXP opencpn_plugin_112 : public opencpn_plugin_111
@@ -493,7 +494,8 @@ public:
     opencpn_plugin_112(void *pmgr);
     virtual ~opencpn_plugin_112();
     
-    virtual void MouseEventHook( wxMouseEvent &event );   
+    virtual void MouseEventHook( wxMouseEvent &event );
+    virtual void SendVectorChartObjectInfo(wxString &chart, wxString &feature, wxString &objname, double lat, double lon, double scale, int nativescale);
     
 };
 

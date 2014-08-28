@@ -901,7 +901,7 @@ int S57Obj::GetAttributeIndex( const char *AttrSeek ) {
 }
     
     
-wxString S57Obj::GetAttrValueAsString( char *AttrName )
+wxString S57Obj::GetAttrValueAsString( const char *AttrName )
 {
     wxString str;
     
@@ -3985,7 +3985,9 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
 //        if(my_fgets(buf, MAX_LINE, fpx) == 0)
 //           dun = 1;
-
+    double scale = gFrame->GetBestVPScale(this);
+    int nativescale = GetNativeScale();
+    
     while( !dun ) {
 
         if( my_fgets( buf, MAX_LINE, fpx ) == 0 ) {
@@ -3997,7 +3999,11 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
             S57Obj *obj = new S57Obj( buf, &fpx, 0, 0 );
             if( obj ) {
-
+                wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
+                wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
+                if (objnam.Len() > 0)
+                    g_pi_manager->SendVectorChartObjectInfo( FullPath, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
+                
 //      Build/Maintain the ATON floating/rigid arrays
                 if( GEO_POINT == obj->Primitive_type ) {
 
