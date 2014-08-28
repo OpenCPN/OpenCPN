@@ -2607,6 +2607,10 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         if( rzRules->obj->m_chart_context->chart ){
             vertex_buffer = rzRules->obj->m_chart_context->chart->GetLineVertexBuffer(); 
         }
+        else {
+            vertex_buffer = rzRules->obj->m_chart_context->vertex_buffer; 
+        }
+        
         
         if(!vertex_buffer)
             return RenderLS(rzRules, rules, vp);    // this is where cm93 gets caught
@@ -2646,11 +2650,17 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             //  Check visibility of the segment
             bool b_greenwich = false;
             if( b_vp_cross_greenwich ) {
-                if( bbRight.Intersect( ls_list->bbox, margin ) != _OUT )
+                bool bbri = (bbRight.GetMinX() > ls_list->lon_max) || (bbRight.GetMaxX() < ls_list->lon_min) ||
+                             (bbRight.GetMinY() > ls_list->lat_max) || (bbRight.GetMaxY() < ls_list->lat_min);
+                
+                if( !bbri )
                     b_greenwich = true;
             }
             
-            if( b_greenwich || !BBView.IntersectOut( ls_list->bbox ) )
+            bool bbi = (BBView.GetMinX() > ls_list->lon_max) || (BBView.GetMaxX() < ls_list->lon_min) ||
+            (BBView.GetMinY() > ls_list->lat_max) || (BBView.GetMaxY() < ls_list->lat_min);
+            
+            if( b_greenwich || !bbi )
             {
                 // render the segment
                 bdraw++;
@@ -2725,11 +2735,10 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             }
     }
   
-  
-    glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
-    glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
-    
-
+    if( rzRules->obj->m_chart_context->chart ){
+        glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
+        glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
+    }
     
     //   Has line segment PBO been allocated for this chart?
     if(b_useVBO){
@@ -2749,11 +2758,17 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             //  Check visibility of the segment
             bool b_greenwich = false;
             if( b_vp_cross_greenwich ) {
-                if( bbRight.Intersect( ls_list->bbox, margin ) != _OUT )
+                bool bbri = (bbRight.GetMinX() > ls_list->lon_max) || (bbRight.GetMaxX() < ls_list->lon_min) ||
+                (bbRight.GetMinY() > ls_list->lat_max) || (bbRight.GetMaxY() < ls_list->lat_min);
+                
+                if( !bbri )
                     b_greenwich = true;
             }
+
+            bool bbi = (BBView.GetMinX() > ls_list->lon_max) || (BBView.GetMaxX() < ls_list->lon_min) ||
+            (BBView.GetMinY() > ls_list->lat_max) || (BBView.GetMaxY() < ls_list->lat_min);
             
-            if( b_greenwich || !BBView.IntersectOut( ls_list->bbox ) )
+            if( b_greenwich || !bbi )
             {
                 // render the segment
                 
@@ -2767,7 +2782,6 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                 }
             }
         }
-        
         ls_list = ls_list->next;
     }
     

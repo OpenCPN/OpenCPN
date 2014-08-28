@@ -304,7 +304,8 @@ typedef struct _chart_context{
     wxArrayPtrVoid          *pFloatingATONArray;
     wxArrayPtrVoid          *pRigidATONArray;
     s57chart                *chart;
-    double                  safety_contour;                  
+    double                  safety_contour; 
+    float                   *vertex_buffer;
     
 }chart_context;
 
@@ -475,7 +476,10 @@ public:
     size_t              vbo_offset;
     size_t              n_points;
     int                 priority;
-    wxBoundingBox       bbox;
+    float               lat_max;                // segment bounding box
+    float               lat_min;
+    float               lon_max;
+    float               lon_min;
     void                *private0;
     int                 type;
     

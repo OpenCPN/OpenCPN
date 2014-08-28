@@ -861,10 +861,8 @@ void glChartCanvas::SetupOpenGL()
 
     bool bad_stencil_code = false;
     if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
-#ifdef __WXMSW__
         wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling complex stencil buffer") );
         bad_stencil_code = true;
-#endif        
     }
 
     //      And for the lousy Unichrome drivers, too

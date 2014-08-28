@@ -721,6 +721,15 @@ extern "C"  DECL_EXP int RemoveChartFromDBInPlace( wxString &full_path );
 //  API 1.11 adds access to S52 Presentation library
 //Types
 
+//      A flag field that defines the object capabilities passed by a chart to the S52 PLIB
+
+#define PLIB_CAPS_LINE_VBO              1
+#define PLIB_CAPS_LINE_BUFFER           1 << 1
+#define PLIB_CAPS_SINGLEGEO_BUFFER      1 << 2
+#define PLIB_CAPS_OBJSEGLIST            1 << 3
+#define PLIB_CAPS_OBJCATMUTATE          1 << 4
+
+
 class PI_S57Obj;
 
 WX_DECLARE_LIST(PI_S57Obj, ListOfPI_S57Obj);
@@ -801,6 +810,22 @@ typedef enum PI_InitReturn
     PI_INIT_FAIL_NOERROR       // Init failed, request no explicit error message
 }_PI_InitReturn;
 
+class PI_line_segment_element
+{
+public:
+    size_t              vbo_offset;
+    size_t              n_points;
+    int                 priority;
+    float               lat_max;                // segment bounding box
+    float               lat_min;
+    float               lon_max;
+    float               lon_min;
+    void                *private0;
+    int                 type;
+    
+    PI_line_segment_element *next;
+};
+
 
 class DECL_EXP PI_S57Obj
 {
@@ -864,13 +889,21 @@ public:
 
       PI_S57Obj               *next;            //  List linkage
 
-
                                                       // This transform converts from object geometry
                                                       // to SM coordinates.
       double                  x_rate;                 // These auxiliary transform coefficients are
       double                  y_rate;                 // to be used in GetPointPix() and friends
       double                  x_origin;               // on a per-object basis if necessary
       double                  y_origin;
+      
+      int auxParm0;                                   // some per-object auxiliary parameters, used for OpenGL
+      int auxParm1;
+      int auxParm2;
+      int auxParm3;
+
+      PI_line_segment_element *m_ls_list;
+      bool                    m_bcategory_mutable;
+      
 };
 
 
@@ -891,7 +924,7 @@ PI_DisCat DECL_EXP PI_GetObjectDisplayCategory( PI_S57Obj *pObj );
 void DECL_EXP PI_PLIBSetLineFeaturePriority( PI_S57Obj *pObj, int prio );
 void DECL_EXP PI_PLIBPrepareForNewRender(void);
 void DECL_EXP PI_PLIBFreeContext( void *pContext );
-
+void DECL_EXP PI_PLIBSetRenderCaps( unsigned int flags );
 
 bool DECL_EXP PI_PLIBSetContext( PI_S57Obj *pObj );
 

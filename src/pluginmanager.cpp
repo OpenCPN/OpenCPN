@@ -87,6 +87,9 @@ extern wxString         g_Plugin_Dir;
 extern bool             g_boptionsactive;
 extern options         *g_options;
 extern ColorScheme      global_color_scheme;
+extern ChartCanvas     *cc1;
+
+unsigned int      gs_plib_flags;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
@@ -1845,7 +1848,7 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
             }
             
             
-            if(b_RefreshCanvas) {
+            if(b_RefreshCanvas || !cc1->GetQuiltMode()) {
                 ViewPort vp;
                 gFrame->ChartsRefresh(-1, vp);
             }
@@ -3136,7 +3139,7 @@ void PlugInChartBase::latlong_to_chartpix(double lat, double lon, double &pixx, 
 
 
 // ----------------------------------------------------------------------------
-// PlugInChartBaseGL Implmentation
+// PlugInChartBaseGL Implementation
 //  
 // ----------------------------------------------------------------------------
 
@@ -3440,6 +3443,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
 #ifdef ocpnUSE_GL
     if(m_ppicb)
     {
+        gs_plib_flags = 0;               // reset the CAPs flag
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
         OCPNRegion rg = Region;
         wxRegion r = rg.ConvertTowxRegion();
@@ -3461,6 +3465,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VP
 {
     if(m_ppicb)
     {
+        gs_plib_flags = 0;               // reset the CAPs flag
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
         OCPNRegion rg = Region;
         wxRegion r = rg.ConvertTowxRegion();
@@ -3753,11 +3758,24 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
     cobj->m_n_lsindex = pObj->m_n_lsindex;
     cobj->m_lsindex_array = pObj->m_lsindex_array;
     cobj->m_n_edge_max_points = pObj->m_n_edge_max_points;
+    
+    if(gs_plib_flags & PLIB_CAPS_OBJSEGLIST)
+        cobj->m_ls_list = (line_segment_element *)pObj->m_ls_list;          // note the cast, assumes in-sync layout
+    else   
+        cobj->m_ls_list = 0;
+        
+    if(gs_plib_flags & PLIB_CAPS_OBJCATMUTATE)
+        cobj->m_bcategory_mutable = pObj->m_bcategory_mutable;
+    else
+        cobj->m_bcategory_mutable = true;                       // assume all objects are mutable
+    
  
     cobj->pPolyTessGeo = ( PolyTessGeo* )pObj->pPolyTessGeo;
     cobj->m_chart_context = (chart_context *)pObj->m_chart_context;
     cobj->auxParm0 = 0;
     cobj->auxParm1 = 0;
+    cobj->auxParm2 = 0;
+    cobj->auxParm3 = 0;
     
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
     
@@ -3786,8 +3804,9 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
             cobj->m_chart_context->pFloatingATONArray = ppctx->pFloatingATONArray;
             cobj->m_chart_context->pRigidATONArray = ppctx->pRigidATONArray;
             cobj->m_chart_context->safety_contour = ppctx->safety_contour;
+            cobj->m_chart_context->vertex_buffer = ppctx->vertex_buffer;
         }
-        cobj->m_chart_context->chart = 0;           // note bene
+        cobj->m_chart_context->chart = 0;           // note bene, this is always NULL for a PlugIn chart
     }
 }
 
@@ -3982,8 +4001,17 @@ void PI_PLIBPrepareForNewRender( void )
     if(ps52plib){
         ps52plib->PrepareForRender();
         ps52plib->ClearTextList();
-        ps52plib->EnableGLLS(false);    // Older PlugIns cannot use GLLS
+        
+        if(gs_plib_flags & PLIB_CAPS_LINE_BUFFER)
+            ps52plib->EnableGLLS(true);    // Newer PlugIns can use GLLS
+        else
+            ps52plib->EnableGLLS(false);   // Older cannot
     }
+}
+
+void PI_PLIBSetRenderCaps( unsigned int flags )
+{
+    gs_plib_flags = flags;
 }
 
 void PI_PLIBFreeContext( void *pContext )
@@ -4101,9 +4129,8 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
 
-    //  Build a new style PTG
-    //  Try to detect if the PlugIn version is too early to use single-buffer geometry description
-    if( ((chart_context *)pObj->m_chart_context)->chart == NULL){
+    //  If the PlugIn does not support it nativiely, build a fully described Geomoetry
+    if( !(gs_plib_flags & PLIB_CAPS_SINGLEGEO_BUFFER) ){
         if(!pObj->geoPtMulti){          // do this only once
             PolyTessGeo *tess = (PolyTessGeo *)pObj->pPolyTessGeo;
         
@@ -4136,15 +4163,11 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
     chart_context ctx;
     CreateCompatibleS57Object( pObj, &cobj, &ctx );
 
-    //  For vbo support
-    //  Build a new style PTG
+//    chart_context *pct = (chart_context *)pObj->m_chart_context;
+
+    //  If the PlugIn does not support it nativiely, build a fully described Geomoetry
     
-    //  Try to detect if the PlugIn version is too early to use single-buffer VBOs 
-    //  Please note that this cast is a little scary, since the chart context in the PI_S57Obj
-    //  is assumed to be the same layout as "chart_context", defined in the core....
-    chart_context *pct = (chart_context *)pObj->m_chart_context;
-    
-    if( ((chart_context *)pObj->m_chart_context)->chart == NULL ){
+    if( !(gs_plib_flags & PLIB_CAPS_SINGLEGEO_BUFFER) ){
        if(!pObj->geoPtMulti ){                          // only do this once
             PolyTessGeo *tess = (PolyTessGeo *)pObj->pPolyTessGeo;
         

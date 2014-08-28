@@ -1853,11 +1853,18 @@ void s57chart::AssembleLineGeometry( void )
                                                 e1 = pedge->pPoints[0];
                                                 n1 = pedge->pPoints[1];
                                                 
+                                                wxBoundingBox box;
                                                 double lat, lon;
                                                 fromSM( e0, n0, ref_lat, ref_lon, &lat, &lon );
-                                                pls->bbox.Expand(lon, lat);
+                                                box.Expand(lon, lat);
                                                 fromSM( e1, n1, ref_lat, ref_lon, &lat, &lon );
-                                                pls->bbox.Expand(lon, lat);
+                                                box.Expand(lon, lat);
+                                                
+                                                pls->lat_max = box.GetMaxY();
+                                                pls->lat_min = box.GetMinY();
+                                                pls->lon_max = box.GetMaxX();
+                                                pls->lon_min = box.GetMinX();
+                                                
                                                 
                                                 le_current->next = pls;             // hook it up
                                                 le_current = pls;
@@ -1871,7 +1878,10 @@ void s57chart::AssembleLineGeometry( void )
                                         pls->vbo_offset = pedge->vbo_offset;
                                         pls->n_points = pedge->nCount;
                                         pls->priority = 0;
-                                        pls->bbox = pedge->BBox;
+                                        pls->lat_max = pedge->BBox.GetMaxY();
+                                        pls->lat_min = pedge->BBox.GetMinY();
+                                        pls->lon_max = pedge->BBox.GetMaxX();
+                                        pls->lon_min = pedge->BBox.GetMinX();
                                         pls->private0 = pedge;
                                         pls->type = TYPE_EE;
                                         
@@ -1907,11 +1917,17 @@ void s57chart::AssembleLineGeometry( void )
                                                     pls->private0 = pcs;
                                                     pls->type = TYPE_EC;
                                                     
+                                                    wxBoundingBox box;
                                                     double lat, lon;
                                                     fromSM( e0, n0, ref_lat, ref_lon, &lat, &lon );
-                                                    pls->bbox.Expand(lon, lat);
+                                                    box.Expand(lon, lat);
                                                     fromSM( e1, n1, ref_lat, ref_lon, &lat, &lon );
-                                                    pls->bbox.Expand(lon, lat);
+                                                    box.Expand(lon, lat);
+
+                                                    pls->lat_max = box.GetMaxY();
+                                                    pls->lat_min = box.GetMinY();
+                                                    pls->lon_max = box.GetMaxX();
+                                                    pls->lon_min = box.GetMinX();
                                                     
                                                     le_current->next = pls;             // hook it up
                                                     le_current = pls;
@@ -1931,12 +1947,18 @@ void s57chart::AssembleLineGeometry( void )
                                                     pls->priority = 0;
                                                     pls->private0 = pcs;
                                                     pls->type = TYPE_CC;
-                                                    
+
+                                                    wxBoundingBox box;
                                                     double lat, lon;
                                                     fromSM( e0, n0, ref_lat, ref_lon, &lat, &lon );
-                                                    pls->bbox.Expand(lon, lat);
+                                                    box.Expand(lon, lat);
                                                     fromSM( e1, n1, ref_lat, ref_lon, &lat, &lon );
-                                                    pls->bbox.Expand(lon, lat);
+                                                    box.Expand(lon, lat);
+
+                                                    pls->lat_max = box.GetMaxY();
+                                                    pls->lat_min = box.GetMinY();
+                                                    pls->lon_max = box.GetMaxX();
+                                                    pls->lon_min = box.GetMinX();
                                                     
                                                     le_current->next = pls;             // hook it up
                                                     le_current = pls;
