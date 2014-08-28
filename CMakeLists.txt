@@ -129,6 +129,39 @@ SET(PACKAGE_RELEASE "1" CACHE STRING "Package release number")
 
 MESSAGE (STATUS "*** Staging to build ${PACKAGE_NAME} ${PACKAGE_VERSION} ***")
 
+#If on Windows or Apple, build the monolithic package, to override use a non-sense values from the commandline (due to cmake inability to distinguish between not set and set to FALSE):
+#cmake -DBUNDLE_DOCS=BLAH -DBUNDLE_TCDATA=BLAH -DBUNDLE_GSHHS=BLAH ..
+IF(APPLE OR WIN32)
+  IF(NOT BUNDLE_DOCS)
+    SET (BUNDLE_DOCS "ON")
+  ENDIF(NOT BUNDLE_DOCS)
+  IF(NOT BUNDLE_GSHHS)
+    SET (BUNDLE_GSHHS "CRUDE")
+  ENDIF(NOT BUNDLE_GSHHS)
+  IF(NOT BUNDLE_TCDATA)
+    SET (BUNDLE_TCDATA "ON")
+  ENDIF(NOT BUNDLE_TCDATA)
+ENDIF(APPLE OR WIN32)
+
+IF(BUNDLE_DOCS MATCHES "ON")
+  MESSAGE (STATUS "*** Package will include documentation ***")
+ELSE(BUNDLE_DOCS MATCHES "ON")
+  MESSAGE (STATUS "*** Package will NOT include documentation ***")
+ENDIF(BUNDLE_DOCS MATCHES "ON")
+IF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+  # Possible values: NONE (default), MIN (=Only crude polygons, no borders/rivers), CRUDE, LOW, INTERMEDIATE, HIGH, FULL
+  MESSAGE (STATUS "*** Package will include GSHHS basechart level: ${BUNDLE_GSHHS} ***")
+ELSE(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+  SET(BUNDLE_GSHHS "NONE")
+  MESSAGE (STATUS "*** Package will NOT include GSHHS data ***")
+ENDIF(BUNDLE_GSHHS MATCHES "NONE|MIN|CRUDE|LOW|INTERMEDIATE|HIGH|FULL")
+
+IF(BUNDLE_TCDATA MATCHES "ON")
+  MESSAGE (STATUS "*** Package will include tide and current data ***")
+ELSE(BUNDLE_TCDATA MATCHES "ON")
+  MESSAGE (STATUS "*** Package will NOT include tide and current data ***")
+ENDIF(BUNDLE_TCDATA MATCHES "ON")
+
 SET(wxWidgets_USE_LIBS base core net xml html adv aui)
 
 FIND_PACKAGE(OpenGL)
@@ -835,18 +868,63 @@ IF(WIN32)
   SET(SRCS ${SRCS} src/opencpn.rc)
 ENDIF(WIN32)
 
-# Various data files
-SET(gshhs
+SET(gshhs_MIN
         data/gshhs/poly-c-1.dat
-        data/gshhs/poly-i-1.dat
-        data/gshhs/poly-l-1.dat
+  )
+
+SET(gshhs_CRUDE ${gshhs_MIN}
         data/gshhs/wdb_borders_c.b
-        data/gshhs/wdb_borders_i.b
-        data/gshhs/wdb_borders_l.b
         data/gshhs/wdb_rivers_c.b
-        data/gshhs/wdb_rivers_i.b
+  )
+
+SET(gshhs_LOW ${gshhs_CRUDE}
+        data/gshhs/poly-l-1.dat
+        data/gshhs/wdb_borders_l.b
         data/gshhs/wdb_rivers_l.b
-   )
+  )
+
+SET(gshhs_INTERMEDIATE ${gshhs_LOW}
+        data/gshhs/poly-i-1.dat
+        data/gshhs/wdb_borders_i.b
+        data/gshhs/wdb_rivers_i.b
+  )
+
+SET(gshhs_HIGH ${gshhs_INTERMEDIATE}
+        data/gshhs/poly-h-1.dat
+        data/gshhs/wdb_borders_h.b
+        data/gshhs/wdb_rivers_h.b
+  )
+
+SET(gshhs_FULL ${gshhs_HIGH}
+        data/gshhs/poly-f-1.dat
+        data/gshhs/wdb_borders_f.b
+        data/gshhs/wdb_rivers_f.b
+  )
+
+# Various data files
+IF(BUNDLE_GSHHS MATCHES "MIN")
+  SET(gshhs ${gshhs_MIN})
+ENDIF(BUNDLE_GSHHS MATCHES "MIN")
+
+IF(BUNDLE_GSHHS MATCHES "CRUDE")
+  SET(gshhs ${gshhs_CRUDE})
+ENDIF(BUNDLE_GSHHS MATCHES "CRUDE")
+
+IF(BUNDLE_GSHHS MATCHES "LOW")
+  SET(gshhs ${gshhs_LOW})
+ENDIF(BUNDLE_GSHHS MATCHES "LOW")
+
+IF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+  SET(gshhs ${gshhs_INTERMEDIATE})
+ENDIF(BUNDLE_GSHHS MATCHES "INTERMEDIATE")
+
+IF(BUNDLE_GSHHS MATCHES "HIGH")
+  SET(gshhs ${gshhs_HIGH})
+ENDIF(BUNDLE_GSHHS MATCHES "HIGH")
+
+IF(BUNDLE_GSHHS MATCHES "FULL")
+  SET(gshhs ${gshhs_FULL})
+ENDIF(BUNDLE_GSHHS MATCHES "FULL")
 
 SET(uiData
 	src/bitmaps/styles.xml
@@ -869,12 +947,13 @@ IF (USE_S57)
              )
 ENDIF (USE_S57)
 
+IF(BUNDLE_TCDATA MATCHES "ON")
 SET(tcData
         data/tcdata/HARMONIC
         data/tcdata/HARMONIC.IDX
         data/tcdata/README.harmonics
    )
-
+ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 
 IF(APPLE)
@@ -931,14 +1010,20 @@ ENDIF(WIN32)
 
 IF(APPLE)
 
-SET_SOURCE_FILES_PROPERTIES(
+IF(NOT BUNDLE_GSHHS MATCHES "NONE")
+  SET_SOURCE_FILES_PROPERTIES(
            ${gshhs} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/gshhs  )
+ENDIF(NOT BUNDLE_GSHHS MATCHES "NONE")
+
 SET_SOURCE_FILES_PROPERTIES(
            ${uiData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/uidata  )
 SET_SOURCE_FILES_PROPERTIES(
            ${s57data} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/s57data  )
+IF(BUNDLE_TCDATA MATCHES "ON")
 SET_SOURCE_FILES_PROPERTIES(
            ${tcData} PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/tcdata  )
+ENDIF(BUNDLE_TCDATA MATCHES "ON")
+
 SET_SOURCE_FILES_PROPERTIES(
            data/license.txt PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport )
 
@@ -950,16 +1035,17 @@ ENDFOREACH (_currentSoundFile )
 
 SET_SOURCE_FILES_PROPERTIES(
            data/doc/help_web.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
-
-SET_SOURCE_FILES_PROPERTIES(
+IF(BUNDLE_DOCS MATCHES "ON")
+  SET_SOURCE_FILES_PROPERTIES(
            data/doc/help_en_US.html PROPERTIES MACOSX_PACKAGE_LOCATION SharedSupport/doc )
 
-FILE(GLOB DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/images/*")
-FOREACH (_currentDocFile ${DOC_FILES})
-  SET_SOURCE_FILES_PROPERTIES(
+  FILE(GLOB DOC_FILES "${CMAKE_SOURCE_DIR}/data/doc/images/*")
+  FOREACH (_currentDocFile ${DOC_FILES})
+    SET_SOURCE_FILES_PROPERTIES(
            ${_currentDocFile}
            PROPERTIES MACOSX_PACKAGE_LOCATION "SharedSupport/doc/images" )
-ENDFOREACH (_currentDocFile )
+  ENDFOREACH (_currentDocFile )
+ENDIF(BUNDLE_DOCS MATCHES "ON")
 
 SET_SOURCE_FILES_PROPERTIES(
            buildosx/opencpn.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources )
@@ -982,13 +1068,21 @@ ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
       ${tcData}
       data/license.txt
       ${SOUND_FILES}
-      data/doc/help_web.html
-      data/doc/help_en_US.html
-      ${DOC_FILES}
       buildosx/opencpn.icns
       buildosx/MainMenu.xib
       )
 
+IF(BUNDLE_DOCS MATCHES "ON")
+  ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
+      data/doc/help_web.html
+      data/doc/help_en_US.html
+      ${DOC_FILES}
+  )
+ELSE(BUNDLE_DOCS MATCHES "ON")
+  ADD_EXECUTABLE(${PACKAGE_NAME} MACOSX_BUNDLE
+      data/doc/help_web.html
+  )
+ENDIF(BUNDLE_DOCS MATCHES "ON")
 
   INSTALL(TARGETS
     ${PACKAGE_NAME}
@@ -1071,7 +1165,9 @@ IF(WIN32)
 SET(PREFIX_PKGDATA ".")
 ENDIF(WIN32)
 
-INSTALL(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+IF(NOT BUNDLE_GSHHS MATCHES "NONE")
+  INSTALL(FILES ${gshhs} DESTINATION ${PREFIX_PKGDATA}/gshhs PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
+ENDIF(NOT BUNDLE_GSHHS MATCHES "NONE")
 
 INSTALL(FILES ${uiData} DESTINATION ${PREFIX_PKGDATA}/uidata PERMISSIONS OWNER_READ  OWNER_WRITE GROUP_READ WORLD_READ)
 
@@ -1079,7 +1175,9 @@ IF (USE_S57)
 	INSTALL(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 ENDIF (USE_S57)
 
-INSTALL(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+IF(BUNDLE_TCDATA MATCHES "ON")
+  INSTALL(FILES ${tcData} DESTINATION ${PREFIX_PKGDATA}/tcdata PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
+ENDIF(BUNDLE_TCDATA MATCHES "ON")
 
 INSTALL(FILES data/license.txt DESTINATION ${PREFIX_PKGDATA} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 INSTALL(FILES data/copyright DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_NAME} PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
@@ -1087,7 +1185,11 @@ INSTALL(FILES data/changelog.Debian.gz DESTINATION ${PREFIX_DATA}/doc/${PACKAGE_
 
 INSTALL(DIRECTORY data/sounds/ DESTINATION ${PREFIX_PKGDATA}/sounds )
 
-INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
+IF(BUNDLE_DOCS MATCHES "ON")
+  INSTALL(DIRECTORY data/doc/ DESTINATION ${PREFIX_PKGDATA}/doc )
+ELSE(BUNDLE_DOCS MATCHES "ON")
+  INSTALL(FILES data/doc/help_web.html DESTINATION ${PREFIX_PKGDATA}/doc )
+ENDIF(BUNDLE_DOCS MATCHES "ON")
 
 IF(UNIX)
   INSTALL(FILES data/opencpn.png DESTINATION ${PREFIX_DATA}/icons/hicolor/48x48/apps PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
@@ -1319,7 +1421,7 @@ IF(UNIX AND NOT APPLE)
 #        RPMTools_ADD_RPM_TARGETS(packagename ${CMAKE_SOURCE_DIR}/package.spec)
 #    ENDIF(RPMTools_FOUND)
 
-
+    SET(CPACK_STRIP_FILES ON)
     SET(CPACK_GENERATOR ${PACKAGE_FORMAT})
     SET(CPACK_PACKAGE_CONTACT "David S. Register ")
     SET(CPACK_DEBIAN_PACKAGE_DEPENDS ${PACKAGE_DEPS})
@@ -1339,7 +1441,6 @@ IF(UNIX AND NOT APPLE)
     SET(CPACK_PACKAGE_DESCRIPTION "OpenCPN is a concise ChartPlotter/Navigator. The application supports: GPS/GPDS Position Input, BSB Raster Chart Display, S57 Vector ENChart Display, AIS Input Decoding, Waypoint Autopilot Navigation .")
     SET(CPACK_SET_DESTDIR ON)
     SET(CPACK_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
-
 ENDIF(UNIX AND NOT APPLE)
 
 IF(WIN32 AND NOT UNIX)

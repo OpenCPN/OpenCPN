@@ -755,6 +755,9 @@ TC_Error_Code TCMgr::LoadDataSources(wxArrayString &sources)
     }
 
     bTCMReady = true;
+    
+    if (m_Combined_IDX_array.Count() <= 1)
+        wxMessageBox(_("It seems you have no tide/current harmonic data installed."));
 
     return  TC_NO_ERROR ;
 }
