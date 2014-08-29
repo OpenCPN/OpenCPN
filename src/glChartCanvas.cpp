@@ -927,6 +927,11 @@ void glChartCanvas::SetupOpenGL()
     m_b_useFBOStencil = QueryExtension( "GL_EXT_packed_depth_stencil" ) == GL_TRUE;
 #endif
 
+    //  On Intel Graphics platforms, don't use stencil buffer at all
+    if( bad_stencil_code)    
+        s_b_useStencil = false;
+    
+    
     //      Maybe build FBO(s)
 
     BuildFBO();
@@ -950,16 +955,13 @@ void glChartCanvas::SetupOpenGL()
     if( m_b_BuiltFBO && !m_b_useFBOStencil )
         s_b_useStencil = false;
 
-    //  On Intel Graphics platforms, don't use stencil buffer at all
-    s_b_useStencil = !bad_stencil_code;
-    
     //  If stencil seems to be a problem, force use of depth buffer clipping for Area Patterns
     s_b_useStencilAP = s_b_useStencil & !bad_stencil_code;
 
     if( m_b_BuiltFBO ) {
         wxLogMessage( _T("OpenGL-> Using Framebuffer Objects") );
 
-        if( m_b_useFBOStencil && s_b_useStencil)
+        if( m_b_useFBOStencil )
             wxLogMessage( _T("OpenGL-> Using FBO Stencil buffer") );
         else
             wxLogMessage( _T("OpenGL-> FBO Stencil buffer unavailable") );
