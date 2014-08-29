@@ -2436,6 +2436,8 @@ int MyApp::OnExit()
     delete g_pauimgr;
 
     delete plocale_def_lang;
+    
+    FontMgr::Shutdown();
 
 #ifdef __WXMSW__
     delete m_checker;

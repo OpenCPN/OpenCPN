@@ -40,6 +40,15 @@ FontMgr & FontMgr::Get()
     return *instance;
 }
 
+void FontMgr::Shutdown()
+{
+    if (instance)
+    {
+        delete instance;
+        instance = NULL;
+    }
+}
+
 FontMgr::FontMgr()
     : m_fontlist(NULL)
     , pDefFont(NULL)

@@ -55,6 +55,8 @@ class FontMgr
         bool SetFont(const wxString &TextElement, wxFont *pFont, wxColour color);
         void ScrubList( );
         
+        static void Shutdown();
+        
     private: // private for singleton
         FontMgr();
         ~FontMgr();
