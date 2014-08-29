@@ -8384,8 +8384,6 @@ int spaint;
 int s_in_update;
 void ChartCanvas::OnPaint( wxPaintEvent& event )
 {
-    wxPaintDC dc( this );
-
     //  Paint updates may have been externally disabled (temporarily, to avoid Yield() recursion performance loss)
     //  It is important that the wxPaintDC is built, even if we elect to not process this paint message.
     //  Otherwise, the paint message may not be removed from the message queue, esp on Windows. (FS#1213)
@@ -8411,6 +8409,7 @@ void ChartCanvas::OnPaint( wxPaintEvent& event )
 
     if( ( GetVP().pix_width == 0 ) || ( GetVP().pix_height == 0 ) ) return;
 
+    wxPaintDC dc( this );
     wxRegion ru = GetUpdateRegion();
 
     int rx, ry, rwidth, rheight;
