@@ -3769,10 +3769,16 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
     else
         cobj->m_bcategory_mutable = true;                       // assume all objects are mutable
 
-    if(gs_plib_flags & PLIB_CAPS_OBJCATMUTATE)
-        cobj->m_DPRI = pObj->m_DPRI;
-    else
-        cobj->m_DPRI = -1;                              // unassigned, fixed at render time
+    cobj->m_DPRI = -1;                              // default is unassigned, fixed at render time
+    if(gs_plib_flags & PLIB_CAPS_OBJCATMUTATE){
+        if(pObj->m_DPRI == -1){
+            S52PLIB_Context *pCtx = (S52PLIB_Context *)pObj->S52_Context;
+            if(pCtx->LUP)
+                cobj->m_DPRI = pCtx->LUP->DPRI - '0';
+        }
+        else
+            cobj->m_DPRI = pObj->m_DPRI;
+    }
     
         
  
