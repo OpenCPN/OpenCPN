@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-29 21:40-0400\n"
-"PO-Revision-Date: 2014-08-04 11:16-0400\n"
+"PO-Revision-Date: 2014-08-24 04:41-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Dutch\n"
 "Language: nl_NL\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: crowdin.net\n"
+"X-Generator: crowdin.com\n"
 
 #: include/routeprop.h:64 src/chcanv.cpp:4824 src/chcanv.cpp:7810
 #: src/routemanagerdialog.cpp:1100
@@ -3380,7 +3380,7 @@ msgstr "graden, decimale minuten"
 
 #: src/options.cpp:1786
 msgid "Decimal Degrees"
-msgstr "decimale graden"
+msgstr "graden en decimalen"
 
 #: src/options.cpp:1787
 msgid "Degrees, Minutes, Seconds"
