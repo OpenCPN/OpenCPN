@@ -359,6 +359,8 @@ extern HINSTANCE          s_hGLU_DLL; // Handle to DLL
 #endif
 
 double                    g_ownship_predictor_minutes;
+double                    g_ownship_HDTpredictor_miles;
+
 int                       g_current_arrow_scale;
 
 Multiplexer               *g_pMUX;
@@ -647,6 +649,7 @@ bool             g_btouch;
 bool             g_bresponsive;
 
 bool             b_inCompressAllCharts;
+bool             g_bexpert;
 
 #ifdef LINUX_CRASHRPT
 wxCrashPrint g_crashprint;
@@ -1682,12 +1685,17 @@ bool MyApp::OnInit()
     // Note that this logic implies that Windows platforms always use
     // the memCacheLimit policy, and never use the fallback nCacheLimit policy
 #ifdef __WXMSW__
-if( 0 == g_memCacheLimit )
-    g_memCacheLimit = (int) ( g_mem_total * 0.5 );
-    g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // math in kBytes
+    if( 0 == g_memCacheLimit )
+        g_memCacheLimit = (int) ( g_mem_total * 0.5 );
+    g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // math in kBytes, Max is 1 GB
 #else
-    g_memCacheLimit = (int) ( (g_mem_total - g_mem_initial) * 0.5 );
-#endif
+    if( 0 == g_memCacheLimit ){
+        g_memCacheLimit = (int) ( (g_mem_total - g_mem_initial) * 0.5 );
+        g_memCacheLimit = wxMin(g_memCacheLimit, 1024 * 1024); // Max is 1 GB if unspecified
+    }
+#endif    
+
+    
     
     
 //      Establish location and name of chart database
@@ -2143,6 +2151,12 @@ if( 0 == g_memCacheLimit )
 
     }
 
+    //  Verify any saved chart database startup index
+    if(g_restore_dbindex >= 0){
+        if(g_restore_dbindex > (ChartData->GetChartTableEntries()-1))
+            g_restore_dbindex = 0;
+    }
+    
     //  Apply the inital Group Array structure to the chart data base
     ChartData->ApplyGroupArray( g_pGroupArray );
 
@@ -3374,9 +3388,10 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_FloatingCompassDialog = NULL;
 
     //      Delete all open charts in the cache
+    cc1->EnablePaint(false);
     if( ChartData ) ChartData->PurgeCache();
 
-//    SetStatusBar( NULL );
+    SetStatusBar( NULL );
     stats = NULL;
 
     if( pRouteManagerDialog ) {
@@ -3645,7 +3660,7 @@ void MyFrame::SetGroupIndex( int index )
 
     //    Refresh the canvas, selecting the "best" chart,
     //    applying the prior ViewPort exactly
-    ChartsRefresh( dbi_hint, vp, false );
+    ChartsRefresh( dbi_hint, vp, true );
 
     //    Message box is deferred so that canvas refresh occurs properly before dialog
     if( bgroup_override ) {
@@ -4750,7 +4765,8 @@ bool MyFrame::UpdateChartDatabaseInplace( ArrayOfCDI &DirArray, bool b_force, bo
 
     cc1->InvalidateQuilt();
     cc1->SetQuiltRefChart( -1 );
-
+    ChartData->PurgeCache();
+    
     Current_Ch = NULL;
 
     delete pCurrentStack;
@@ -5902,8 +5918,11 @@ void MyFrame::HandlePianoClick( int selected_index, int selected_dbIndex )
             g_sticky_chart = selected_dbIndex;
         }
     } else {
-        if( cc1->IsChartQuiltableRef( selected_dbIndex ) ) SelectQuiltRefdbChart(
-                selected_dbIndex );
+        if( cc1->IsChartQuiltableRef( selected_dbIndex ) ){
+            if( ChartData ) ChartData->PurgeCache();
+            
+            SelectQuiltRefdbChart( selected_dbIndex );
+        }
         else {
             ToggleQuiltMode();
             SelectdbChart( selected_dbIndex );
@@ -5987,7 +6006,7 @@ double MyFrame::GetBestVPScale( ChartBase *pchart )
         double proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / cc1->GetVPScale();
 
         if( ( g_bPreserveScaleOnX ) || ( CHART_TYPE_CM93COMP == pchart->GetChartType() ) ) {
-            double new_scale_ppm = pchart->GetNearestPreferredScalePPM( cc1->GetVPScale() );
+            double new_scale_ppm = cc1->GetVPScale(); //pchart->GetNearestPreferredScalePPM( cc1->GetVPScale() );
             proposed_scale_onscreen = cc1->GetCanvasScaleFactor() / new_scale_ppm;
         } else {
             //  This logic will bring the new chart onscreen at roughly twice the true paper scale equivalent.
@@ -6861,7 +6880,7 @@ bool GetMemoryStatus( int *mem_total, int *mem_used )
                 while ( tk.HasMoreTokens() )
                 {
                     wxString token = tk.GetNextToken();
-                    if(token == _T("VmSize"))
+                    if(token == _T("VmRSS"))
                     {
                         wxStringTokenizer tkm(str, _T(" "));
                         wxString mem = tkm.GetNextToken();

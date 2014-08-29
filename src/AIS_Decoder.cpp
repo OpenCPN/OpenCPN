@@ -524,11 +524,12 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
     } else if( str.Mid( 3, 3 ).IsSameAs( _T("TLL") ) ) {
     //$--TLL,xx,llll.lll,a,yyyyy.yyy,a,c--c,hhmmss.ss,a,a*hh<CR><LF>
     //"$RATLL,01,5603.370,N,01859.976,E,ALPHA,015200.36,T,*75\r\n"
+        wxString aprs_tll_str;
         wxString string( str );
         wxStringTokenizer tkz( string, _T(",*") );
 
         wxString token;
-        token = tkz.GetNextToken(); //Sentence (xxTLL)
+        aprs_tll_str = tkz.GetNextToken(); //Sentence (xxTLL)
         token = tkz.GetNextToken(); //1) Target number 00 - 99
         token.ToLong( &arpa_tgt_num );
         token = tkz.GetNextToken(); //2) Latitude, N/S
@@ -536,16 +537,16 @@ AIS_Error AIS_Decoder::Decode( const wxString& str )
         arpa_degs = (int) ( arpa_lat / 100.0 );
         arpa_mins = arpa_lat - arpa_degs * 100.0;
         arpa_lat = arpa_degs + arpa_mins / 60.0;
-        token = tkz.GetNextToken();            //  hemisphere N or S
-        if( token.Mid( 1, 1 ).Contains( _T("Ss") ) )
+        token = tkz.GetNextToken(); // hemisphere N or S
+        if( token.Mid( 0, 1 ).Contains( _T("S") ) == true || token.Mid( 0, 1 ).Contains(  _T("s") ) == true )
             arpa_lat = 0. - arpa_lat;
         token = tkz.GetNextToken(); //3) Longitude, E/W
         token.ToDouble( &arpa_lon );
         arpa_degs = (int) ( arpa_lon / 100.0 );
         arpa_mins = arpa_lon - arpa_degs * 100.0;
         arpa_lon = arpa_degs + arpa_mins / 60.0;
-        token = tkz.GetNextToken();            //  hemisphere E or W
-        if( token.Mid( 1, 1 ).Contains( _T("Ww") ) )
+        token = tkz.GetNextToken(); // hemisphere E or W
+        if( token.Mid( 0, 1 ).Contains(  _T("W") ) == true || token.Mid( 0, 1 ).Contains(  _T("w") ) == true )
             arpa_lon = 0. - arpa_lon;
         token = tkz.GetNextToken(); //4) Target name
         if ( token == wxEmptyString )

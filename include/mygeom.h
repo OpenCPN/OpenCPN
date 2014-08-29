@@ -59,6 +59,7 @@
 #define DATA_TYPE_FLOAT         0
 #define DATA_TYPE_DOUBLE        1
 
+void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, wxArrayInt *keep);
 
 //--------------------------------------------------------------------------------------------------
 //
@@ -181,10 +182,10 @@ class PolyTessGeo
         PolyTessGeo();
         ~PolyTessGeo();
 
-        PolyTessGeo(unsigned char *polybuf, int nrecl, int index);      // Build this from SENC file record
+        PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_file_version);      // Build this from SENC file record
 
         PolyTessGeo(OGRPolygon *poly, bool bSENC_SM,
-            double ref_lat, double ref_lon,  bool bUseInternalTess);  // Build this from OGRPolygon
+            double ref_lat, double ref_lon,  bool bUseInternalTess, double LOD_meters);  // Build this from OGRPolygon
 
         PolyTessGeo(Extended_Geometry *pxGeom);
 
@@ -193,7 +194,6 @@ class PolyTessGeo
         int BuildDeferredTess(void);
 
         int Write_PolyTriGroup( FILE *ofs);
-        int Write_PolyTriGroup( wxOutputStream &ostream);
 
         double Get_xmin(){ return xmin;}
         double Get_xmax(){ return xmax;}
@@ -227,14 +227,15 @@ class PolyTessGeo
                                                       // used by drawing primitives as
                                                       // optimization
 
-        int             ncnt;
-        int             nwkb;
+        int             m_ncnt;
+        int             m_nwkb;
 
         char           *m_buf_head;
         char           *m_buf_ptr;                   // used to read passed SENC record
         int            m_nrecl;
 
         double         m_ref_lat, m_ref_lon;
+        double         m_LOD_meters;
 
 };
 

@@ -2590,10 +2590,220 @@ int s52plib::RenderSY( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
 }
 
+// Line Simple Style, OpenGL
+int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
+{
+    if( !m_benableGLLS )                        // root chart cannot support VBO model, for whatever reason
+        return RenderLS(rzRules, rules, vp);
+
+    
+    bool b_useVBO = false;
+    float *vertex_buffer = 0;
+    
+    if(rzRules->obj->auxParm2 > 0){
+        b_useVBO = true;
+    }
+    else{
+        if( rzRules->obj->m_chart_context->chart ){
+            vertex_buffer = rzRules->obj->m_chart_context->chart->GetLineVertexBuffer(); 
+        }
+        else {
+            vertex_buffer = rzRules->obj->m_chart_context->vertex_buffer; 
+        }
+        
+        
+        if(!vertex_buffer)
+            return RenderLS(rzRules, rules, vp);    // this is where cm93 gets caught
+    }
+
+    
+#ifdef ocpnUSE_GL
+
+    wxBoundingBox BBView = vp->GetBBox();
+    //  Allow a little slop in calculating whether a segment
+    //  is within the requested Viewport
+    double margin = BBView.GetWidth() * .05;
+    BBView.EnLarge( margin );
+
+    wxBoundingBox bbRight;
+    bool b_vp_cross_greenwich = false;
+
+    if( BBView.GetMaxX() > 360. ) {
+        bbRight = wxBoundingBox ( 0., vp->GetBBox().GetMinY(), vp->GetBBox().GetMaxX() - 360.,
+                              vp->GetBBox().GetMaxY() );
+        b_vp_cross_greenwich = true;
+    }       
+
+    //  Try to determine if the feature needs to be drawn in the most efficient way
+    //  We need to look at priority and visibility of each segment
+    int bdraw = 0;
+    
+    //  Get the current display priority from the LUP
+    int priority_current = rzRules->LUP->DPRI - '0'; //TODO fix this hack by putting priority into object during _insertRules
+    
+    line_segment_element *ls_list = rzRules->obj->m_ls_list;
+    while( ls_list){
+        
+        if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
+        {
+            
+            //  Check visibility of the segment
+            bool b_greenwich = false;
+            if( b_vp_cross_greenwich ) {
+                bool bbri = (bbRight.GetMinX() > ls_list->lon_max) || (bbRight.GetMaxX() < ls_list->lon_min) ||
+                             (bbRight.GetMinY() > ls_list->lat_max) || (bbRight.GetMaxY() < ls_list->lat_min);
+                
+                if( !bbri )
+                    b_greenwich = true;
+            }
+            
+            bool bbi = (BBView.GetMinX() > ls_list->lon_max) || (BBView.GetMaxX() < ls_list->lon_min) ||
+            (BBView.GetMinY() > ls_list->lat_max) || (BBView.GetMaxY() < ls_list->lat_min);
+            
+            if( b_greenwich || !bbi )
+            {
+                // render the segment
+                bdraw++;
+                break;
+            }
+        }
+        
+        ls_list = ls_list->next;
+    }
+    
+    if(!bdraw)
+        return 0;
+        
+    char *str = (char*) rules->INSTstr;
+    S52color *c = getColor( str + 7 ); // Colour
+    int w = atoi( str + 5 ); // Width
+    
+        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_ENABLE_BIT ); //Save state
+        
+        glColor3ub( c->R, c->G, c->B );
+        
+        glDisable( GL_LINE_SMOOTH );
+        glDisable( GL_BLEND );
+        
+        //    Set drawing width
+        if( w > 1 ) {
+            GLint parms[2];
+            glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
+            if( w > parms[1] ) glLineWidth( wxMax(g_GLMinLineWidth, parms[1]) );
+            else
+                glLineWidth( wxMax(g_GLMinLineWidth, w) );
+        } else
+            glLineWidth( wxMax(g_GLMinLineWidth, 1) );
+
+ #ifndef ocpnUSE_GLES // linestipple is emulated poorly
+            if( !strncmp( str, "DASH", 4 ) ) {
+                glLineStipple( 1, 0x3F3F );
+                glEnable( GL_LINE_STIPPLE );
+            }
+            else if( !strncmp( str, "DOTT", 4 ) ) {
+                glLineStipple( 1, 0x3333 );
+                glEnable( GL_LINE_STIPPLE );
+            }
+            else
+                glDisable( GL_LINE_STIPPLE );
+#endif
+                
+ 
+        
+    glPushMatrix();
+    
+    // Set up the OpenGL transform matrix for this object
+    //  Transform from Simple Mercator (relative to chart reference point) to screen coordinates.
+    
+    //  First, the VP transform
+    glTranslatef( vp->pix_width / 2, vp->pix_height/2, 0 );
+    glScalef( vp->view_scale_ppm, -vp->view_scale_ppm, 0 );
+    glTranslatef( -rzRules->sm_transform_parms->easting_vp_center, -rzRules->sm_transform_parms->northing_vp_center, 0 );
+    
+    //  Next, the per-object transform
+    
+    //      For some chart types (e.g. cm93), the viewport bounding box is constructed
+    //      so as to be positive semi-definite. That is, the right hand side may have a longitude > 360.
+    //      In this case, we may need to translate object coordinates by 360 degrees to conform.
+    if( BBView.GetMaxX() > 360. ) {
+        
+        wxBoundingBox bbRight ( 0., vp->GetBBox().GetMinY(),
+                                vp->GetBBox().GetMaxX() - 360., vp->GetBBox().GetMaxY() );
+        if(  (rzRules->obj->BBObj.GetMinX() >= 0) &&
+            (rzRules->obj->BBObj.GetMinX() < BBView.GetMaxX() - 360.) ){
+            glTranslatef( mercator_k0 * WGS84_semimajor_axis_meters * 2.0 * PI, 0, 0);
+            }
+    }
+  
+    if( rzRules->obj->m_chart_context->chart ){
+        glTranslatef( rzRules->obj->x_origin, rzRules->obj->y_origin, 0);
+        glScalef( rzRules->obj->x_rate, rzRules->obj->y_rate, 0 );
+    }
+    
+    //   Has line segment PBO been allocated for this chart?
+    if(b_useVBO){
+        (s_glBindBuffer)(GL_ARRAY_BUFFER, rzRules->obj->auxParm2);
+    }
+
+    
+    glEnableClientState(GL_VERTEX_ARRAY);             // activate vertex coords array
+
+  
+    ls_list = rzRules->obj->m_ls_list;
+    while( ls_list){
+        
+        if( (ls_list->priority == priority_current) && (ls_list->n_points > 1) )   
+        {
+          
+            //  Check visibility of the segment
+            bool b_greenwich = false;
+            if( b_vp_cross_greenwich ) {
+                bool bbri = (bbRight.GetMinX() > ls_list->lon_max) || (bbRight.GetMaxX() < ls_list->lon_min) ||
+                (bbRight.GetMinY() > ls_list->lat_max) || (bbRight.GetMaxY() < ls_list->lat_min);
+                
+                if( !bbri )
+                    b_greenwich = true;
+            }
+
+            bool bbi = (BBView.GetMinX() > ls_list->lon_max) || (BBView.GetMaxX() < ls_list->lon_min) ||
+            (BBView.GetMinY() > ls_list->lat_max) || (BBView.GetMaxY() < ls_list->lat_min);
+            
+            if( b_greenwich || !bbi )
+            {
+                // render the segment
+                
+                if(b_useVBO){
+                    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), (GLvoid *)(ls_list->vbo_offset));
+                    glDrawArrays(GL_LINE_STRIP, 0, ls_list->n_points);
+                }
+                else{
+                    glVertexPointer(2, GL_FLOAT, 2 * sizeof(float), (unsigned char *)vertex_buffer + ls_list->vbo_offset);
+                    glDrawArrays(GL_LINE_STRIP, 0, ls_list->n_points);
+                }
+            }
+        }
+        ls_list = ls_list->next;
+    }
+    
+    if(b_useVBO)
+        (s_glBindBuffer)(GL_ARRAY_BUFFER_ARB, 0);
+    
+    glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
+
+    glPopMatrix();
+    glPopAttrib();
+
+#endif                  // OpenGL
+    
+    return 1;
+}
+    
+    
 // Line Simple Style
 int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
-// return 0;
+//    if(rzRules->obj->Index != 1570) return 0;
+    
     wxPoint *ptp;
     int npt;
     S52color *c;
@@ -3001,6 +3211,8 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 // Line Complex
 int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 {
+//    return 0;
+    
     wxPoint *ptp;
     int npt;
     wxPoint r;
@@ -3476,6 +3688,12 @@ int s52plib::RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     
     int npt = rzRules->obj->npt;
 
+    // this should never happen
+    // But it seems that some PlugIns clear the mps rules without resetting the CS state machine
+    // So fix it
+    if( rzRules->obj->bCS_Added  && !rzRules->mps)
+        rzRules->obj->bCS_Added = false;
+        
     //  Build the cached rules list if necessary
     if( !rzRules->obj->bCS_Added ) {
 
@@ -4030,25 +4248,37 @@ int s52plib::RenderObjectToGL( const wxGLContext &glcc, ObjRazRules *rzRules, Vi
 
 int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
 {
-  
-    if( !ObjectRenderCheckPos( rzRules, vp ) ) return 0;
+    if( !ObjectRenderCheckPos( rzRules, vp ) )
+        return 0;
 
     if( !ObjectRenderCheckCat( rzRules, vp ) ) {
-#if 0
-        //  This is an "out-of-spec" optimization
-        //    Conditional symbology for rocks and wrecks is expensive
-        //    because we have to find the DEPARE or DRGARE that it is in,
-        //    and compare the depths to establish safety limits,
-        //    and then potentially move the hazard to DISPLAYBASE category.
-        //
-        //    Lets only consider and allow this case for large scale chart views....
 
-        if( ( !strncmp( rzRules->LUP->OBCL, "UWTROC", 6 ) )
-                || ( !strncmp( rzRules->LUP->OBCL, "WRECKS", 6 ) ) ) {
-            if( vp->chart_scale > 20000. ) return 0;
+        //  If this object cannot be moved to a higher category by CS procedures,
+        //  then we are done here
+        if(!rzRules->obj->m_bcategory_mutable)
+            return 0;
+
+        //  Otherwise, make sure the CS, if present, has been evaluated,
+        //  and then check the category again    
+        if( ObjectRenderCheckCS( rzRules, vp ) ){
+            if(!rzRules->obj->bCS_Added ) {
+                rzRules->obj->CSrules = NULL;
+                Rules *rules = rzRules->LUP->ruleList;
+                while( rules != NULL ) {
+                    if( RUL_CND_SY ==  rules->ruleType ){
+                        GetAndAddCSRules( rzRules, rules );
+                        rzRules->obj->bCS_Added = 1; // mark the object
+                        break;
+                    }
+                    rules = rules->next;
+                }
+            }
+            
+            if( !ObjectRenderCheckCat( rzRules, vp ) ) 
+                return 0;
         }
-#endif
-        if( !ObjectRenderCheckCS( rzRules, vp ) ) return 0;
+        else
+            return 0;
     }
 
     m_pdc = pdcin; // use this DC
@@ -4057,39 +4287,28 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
     while( rules != NULL ) {
         switch( rules->ruleType ){
             case RUL_TXT_TX:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderTX( rzRules, rules, vp );
-                }
+                RenderTX( rzRules, rules, vp );
                 break; // TX
             case RUL_TXT_TE:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderTE( rzRules, rules, vp );
-                }
+                RenderTE( rzRules, rules, vp );
                 break; // TE
             case RUL_SYM_PT:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderSY( rzRules, rules, vp );
-                }
+                RenderSY( rzRules, rules, vp );
                 break; // SY
             case RUL_SIM_LN:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
+                if(m_pdc)
                     RenderLS( rzRules, rules, vp );
-                }
+                else
+                    RenderGLLS( rzRules, rules, vp );
                 break; // LS
             case RUL_COM_LN:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderLC( rzRules, rules, vp );
-                }
+                RenderLC( rzRules, rules, vp );
                 break; // LC
             case RUL_MUL_SG:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderMPS( rzRules, rules, vp );
-                }
+                RenderMPS( rzRules, rules, vp );
                 break; // MultiPoint Sounding
             case RUL_ARC_2C:
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    RenderCARC( rzRules, rules, vp );
-                }
+                RenderCARC( rzRules, rules, vp );
                 break; // Circular Arc, 2 colors
 
             case RUL_CND_SY: {
@@ -4100,25 +4319,11 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
                         rzRules->obj->bCS_Added = 1; // mark the object
                 }
 
-                //    The CS procedure may have changed the Display Category of the Object, need to check again for visibility
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
+                Rules *rules_last = rules;
+                rules = rzRules->obj->CSrules;
 
-                    Rules *rules_last = rules;
-                    rules = rzRules->obj->CSrules;
-
-                    while( NULL != rules ) {
+                while( NULL != rules ) {
                         switch( rules->ruleType ){
-                            case RUL_SIM_LN:
-                            case RUL_COM_LN: {
-                                PrioritizeLineFeature( rzRules, rzRules->LUP->DPRI - '0' );
-                                break;
-                            }
-                            default:
-                                break;
-                        }
-
-                        switch( rules->ruleType ){
-                            //                                        case RUL_ARE_CO:       RenderAC(rzRules,rules, vp);break;
                             case RUL_TXT_TX:
                                 RenderTX( rzRules, rules, vp );
                                 break;
@@ -4129,8 +4334,11 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
                                 RenderSY( rzRules, rules, vp );
                                 break;
                             case RUL_SIM_LN:
-                                RenderLS( rzRules, rules, vp );
-                                break;
+                                if(m_pdc)
+                                    RenderLS( rzRules, rules, vp );
+                                else
+                                    RenderGLLS( rzRules, rules, vp );
+                                break; // LS
                             case RUL_COM_LN:
                                 RenderLC( rzRules, rules, vp );
                                 break;
@@ -4146,11 +4354,9 @@ int s52plib::DoRenderObject( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp )
                         }
                         rules_last = rules;
                         rules = rules->next;
-                    }
-
-                    rules = rules_last;
-                    break;
                 }
+
+                rules = rules_last;
                 break;
             }
 
@@ -4292,8 +4498,6 @@ int s52plib::SetLineFeaturePriority( ObjRazRules *rzRules, int npriority )
         switch( rules->ruleType ){
 
             case RUL_SIM_LN:
-                PrioritizeLineFeature( rzRules, priority_set );
-                break; // LS
             case RUL_COM_LN:
                 PrioritizeLineFeature( rzRules, priority_set );
                 break; // LC
@@ -4310,8 +4514,6 @@ int s52plib::SetLineFeaturePriority( ObjRazRules *rzRules, int npriority )
                 while( NULL != rules ) {
                     switch( rules->ruleType ){
                         case RUL_SIM_LN:
-                            PrioritizeLineFeature( rzRules, priority_set );
-                            break;
                         case RUL_COM_LN:
                             PrioritizeLineFeature( rzRules, priority_set );
                             break;
@@ -4340,8 +4542,34 @@ int s52plib::SetLineFeaturePriority( ObjRazRules *rzRules, int npriority )
 
 int s52plib::PrioritizeLineFeature( ObjRazRules *rzRules, int npriority )
 {
-
-    if( rzRules->obj->m_n_lsindex ) {
+    if(rzRules->obj->m_ls_list){
+        
+        VE_Element *pedge;
+        connector_segment *pcs;
+        line_segment_element *ls = rzRules->obj->m_ls_list;
+        while( ls ){
+            switch (ls->type){
+                case TYPE_EE:
+                    
+                    pedge = (VE_Element *)ls->private0;
+                    if(pedge)
+                        pedge->max_priority = npriority;// wxMax(pedge->max_priority, npriority);
+                    break;
+                    
+                default:
+                    pcs = (connector_segment *)ls->private0;
+                    if(pcs)
+                        pcs->max_priority = npriority; //wxMax(pcs->max_priority, npriority);
+                    break;
+            }
+            
+            ls = ls->next;
+        }
+    }
+    
+    
+    
+    else if( rzRules->obj->m_n_lsindex ) {
         VE_Hash *edge_hash; 
         
         if( rzRules->obj->m_chart_context->chart ){
@@ -4364,8 +4592,9 @@ int s52plib::PrioritizeLineFeature( ObjRazRules *rzRules, int npriority )
                 pedge = (*edge_hash)[enode];
 
             //    Set priority
-            if(pedge)
+            if(pedge){
                 pedge->max_priority = npriority;
+            }
 
             //  Get last connected node
             inode = *index_run++;
@@ -4373,6 +4602,7 @@ int s52plib::PrioritizeLineFeature( ObjRazRules *rzRules, int npriority )
         }
     }
 
+        
     return 1;
 }
 
@@ -5597,6 +5827,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     //  Allow a little slop in calculating whether a triangle
     //  is within the requested Viewport
     double margin = BBView.GetWidth() * .05;
+    BBView.EnLarge( margin );
 //    if(rzRules->obj->Index != 2666)
 //        return 0;
     
@@ -5607,6 +5838,7 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glPushMatrix();
 
         // Set up the OpenGL transform matrix for this object
+        // We transform from SENC SM vertex data to screen.
         
         //  First, the VP transform
         glTranslatef( vp->pix_width / 2, vp->pix_height/2, 0 );
@@ -5745,7 +5977,6 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         }
             
         while( p_tp ) {
-            
             tp_box.SetMin(p_tp->minx, p_tp->miny);
             tp_box.SetMax(p_tp->maxx, p_tp->maxy);
             
@@ -5759,8 +5990,8 @@ int s52plib::RenderToGLAC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
                     b_greenwich = true;
             }
 
-            if( b_greenwich || ( BBView.Intersect( tp_box, margin ) != _OUT ) ) {
-                
+            if( b_greenwich || !BBView.IntersectOut( tp_box ) ) {
+
                 if(b_useVBO){
                     glVertexPointer(2, array_gl_type, 2 * array_data_size, (GLvoid *)(vbo_offset));
                     glDrawArrays(p_tp->type, 0, p_tp->nVert);
@@ -5828,7 +6059,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     } else
         return 0;
 
-    if( glChartCanvas::s_b_useStencil ) {
+    if( glChartCanvas::s_b_useStencilAP ) {
         glPushAttrib( GL_STENCIL_BUFFER_BIT );
 
         //    Use masked bit "1" of the stencil buffer to create a stencil for the area of interest
@@ -5852,19 +6083,26 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         glColor3f( 1, 1, 0 );
 
-        //    Overall chart clip buffer was set at z=0.5
+        //  If we are using stencil for overall clipping, then we are only
+        //  using depth buffer for AreaPattern rendering
+        //  So, each AP render can start with a clear depth buffer
+        
+        if(glChartCanvas::s_b_useStencil){
+             glClearDepth(.26);
+             glClear( GL_DEPTH_BUFFER_BIT ); // for a fresh start
+        }
+            //    Overall chart clip buffer was set at z=0.5
         //    Draw this clip geometry at z = .25, so still respecting the previously established clip region
         //    Subsequent drawing to this area at z=.25  will pass only this area if using glDepthFunc(GL_EQUAL);
 
-        //    TODO  If this fails, consider the uncertainty of GL_EQUAL on floating point comparison
         z_clip_geom = .25;
         z_tex_geom = .25;
     }
 
     //  Render the geometry
     {
-        // Generate a Display list if using Depth Buffer clipping, for use later
-        if( !glChartCanvas::s_b_useStencil ) {
+        // Generate a Display list if using overall Depth Buffer clipping, for use later
+        if( !glChartCanvas::s_b_useStencilAP && !glChartCanvas::s_b_useStencil ) {
             clip_list = glGenLists( 1 );
             glNewList( clip_list, GL_COMPILE );
         }
@@ -5966,12 +6204,15 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             p_tp = p_tp->p_next; // pick up the next in chain
         } // while
 
-        if( !glChartCanvas::s_b_useStencil ) {
+//        obj_xmin = 0;
+//        obj_xmax = 2000;
+        
+        if( !glChartCanvas::s_b_useStencilAP &&  !glChartCanvas::s_b_useStencil ) {
             glEndList();
             glCallList( clip_list );
         }
 
-        if( glChartCanvas::s_b_useStencil ) {
+        if( glChartCanvas::s_b_useStencilAP ) {
             //    Now set the stencil ops to subsequently render only where the stencil bit is "2"
             glStencilFunc( GL_EQUAL, 2, 2 );
             glStencilOp( GL_KEEP, GL_KEEP, GL_KEEP );
@@ -6064,7 +6305,7 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
         glDisable( GL_TEXTURE_2D );
         glDisable( GL_BLEND );
 
-        //    If using DepthBuffer clipping, we need to
+        //    If using overall DepthBuffer clipping, we need to
         //    undo the sub-clip area for this feature render.
         //    Otherwise, subsequent AP renders with also honor this sub-clip region.
 
@@ -6075,8 +6316,10 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
         //    Note that this is not required for stencil buffer clipping,
         //    since the relevent bit (2) is cleared on any subsequent AP renders.
-
-        if( !glChartCanvas::s_b_useStencil ) {
+        
+        //    And if we are using depth buffer just for AP rendering, we simply
+        //    clear the depth buffer when done here
+        if( !glChartCanvas::s_b_useStencilAP && !glChartCanvas::s_b_useStencil ) {
 
             glEnable( GL_DEPTH_TEST ); // to use the depth test
             glDepthFunc( GL_LEQUAL ); // Respect global render mask in depth buffer
@@ -6094,7 +6337,11 @@ int s52plib::RenderToGLAP( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
             glDeleteLists( clip_list, 1 );
         }
-
+        else if( !glChartCanvas::s_b_useStencil ){
+            glClearDepth(1);
+            glClear( GL_DEPTH_BUFFER_BIT ); // back to default
+        }
+    
         //    Restore the previous state
         glPopAttrib();
 
@@ -6112,10 +6359,37 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
         wxRect &render_rect )
 {
 
-    if( !ObjectRenderCheckPos( rzRules, vp ) ) return 0;
+    if( !ObjectRenderCheckPos( rzRules, vp ) )
+        return 0;
 
     if( !ObjectRenderCheckCat( rzRules, vp ) ) {
-        if( !ObjectRenderCheckCS( rzRules, vp ) ) return 0;
+
+        //  If this object cannot be moved to a higher category by CS procedures,
+        //  then we are done here
+        if(!rzRules->obj->m_bcategory_mutable)
+            return 0;
+
+        //  Otherwise, make sure the CS, if present, has been evaluated,
+        //  and then check the category again    
+        if( ObjectRenderCheckCS( rzRules, vp ) ){
+            if(!rzRules->obj->bCS_Added ) {
+                rzRules->obj->CSrules = NULL;
+                Rules *rules = rzRules->LUP->ruleList;
+                while( rules != NULL ) {
+                    if( RUL_CND_SY ==  rules->ruleType ){
+                        GetAndAddCSRules( rzRules, rules );
+                        rzRules->obj->bCS_Added = 1; // mark the object
+                        break;
+                    }
+                    rules = rules->next;
+                }
+            }
+            
+            if( !ObjectRenderCheckCat( rzRules, vp ) ) 
+                return 0;
+        }
+        else
+            return 0;
     }
 
     m_render_rect = render_rect; // We only render into this (screen coordinate) rectangle
@@ -6145,12 +6419,7 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
                 Rules *rules_last = rules;
                 rules = rzRules->obj->CSrules;
 
-                //    The CS procedure may have changed the Display Category of the Object, need to check again for visibility
-                if( ObjectRenderCheckCat( rzRules, vp ) ) {
-                    while( NULL != rules ) {
-                        //Hve seen drgare fault here, need to code area query to debug
-                        //possible that RENDERtoBUFFERAP/AC is blowing obj->CSRules
-                        //    When it faults here, look at new debug field obj->CSLUP
+                while( NULL != rules ) {
                         switch( rules->ruleType ){
                             case RUL_ARE_CO:
                                 RenderToGLAC( rzRules, rules, vp );
@@ -6164,7 +6433,6 @@ int s52plib::RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules, View
                         }
                         rules_last = rules;
                         rules = rules->next;
-                    }
                 }
 
                 rules = rules_last;
@@ -6444,10 +6712,37 @@ int s52plib::RenderAreaToDC( wxDC *pdcin, ObjRazRules *rzRules, ViewPort *vp,
         render_canvas_parms *pb_spec )
 {
 
-    if( !ObjectRenderCheckPos( rzRules, vp ) ) return 0;
+    if( !ObjectRenderCheckPos( rzRules, vp ) )
+        return 0;
 
     if( !ObjectRenderCheckCat( rzRules, vp ) ) {
-        if( !ObjectRenderCheckCS( rzRules, vp ) ) return 0;
+
+        //  If this object cannot be moved to a higher category by CS procedures,
+        //  then we are done here
+        if(!rzRules->obj->m_bcategory_mutable)
+            return 0;
+
+        //  Otherwise, make sure the CS, if present, has been evaluated,
+        //  and then check the category again    
+        if( ObjectRenderCheckCS( rzRules, vp ) ){
+            if(!rzRules->obj->bCS_Added ) {
+                rzRules->obj->CSrules = NULL;
+                Rules *rules = rzRules->LUP->ruleList;
+                while( rules != NULL ) {
+                    if( RUL_CND_SY ==  rules->ruleType ){
+                        GetAndAddCSRules( rzRules, rules );
+                        rzRules->obj->bCS_Added = 1; // mark the object
+                        break;
+                    }
+                    rules = rules->next;
+                }
+            }
+            
+            if( !ObjectRenderCheckCat( rzRules, vp ) ) 
+                return 0;
+        }
+        else
+            return 0;
     }
 
     m_pdc = pdcin; // use this DC
@@ -6702,7 +6997,7 @@ bool s52plib::ObjectRenderCheckCat( ObjRazRules *rzRules, ViewPort *vp )
 //    Do all those things necessary to prepare for a new rendering
 void s52plib::PrepareForRender()
 {
-
+    m_benableGLLS = true;               // default is to always use RenderToGLLS (VBO support)
 }
 
 void s52plib::ClearTextList( void )
@@ -6712,6 +7007,13 @@ void s52plib::ClearTextList( void )
 
 }
 
+bool s52plib::EnableGLLS(bool b_enable)
+{
+    bool return_val = m_benableGLLS;
+    m_benableGLLS = b_enable;
+    return return_val;
+}
+    
 void s52plib::AdjustTextList( int dx, int dy, int screenw, int screenh )
 {
     wxRect rScreen( 0, 0, screenw, screenh );

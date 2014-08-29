@@ -202,7 +202,7 @@ struct ChartTableEntry
     float *GetpNoCovrPlyTableEntry(int index) const { return pNoCovrPlyTable[index];}
     int GetNoCovrCntTableEntry(int index) const { return pNoCovrCntTable[index];}
     
-    
+    const wxBoundingBox &GetBBox() const { return m_bbox; } 
     
     char *GetpFullPath() const { return pFullPath; }
     float GetLonMax() const { return LonMax; }
@@ -217,9 +217,12 @@ struct ChartTableEntry
 
     bool GetbValid(){ return bValid;}
     void SetEntryOffset(int n) { EntryOffset = n;}
-    ArrayOfInts &GetGroupArray(void){ return m_GroupArray; }
-    wxString *GetpFileName(void){ return m_pfilename; }
+    const wxString *GetpFileName(void) const { return m_pfilename; }
     wxString *GetpsFullPath(void){ return m_psFullPath; }
+    
+    const ArrayOfInts &GetGroupArray(void) const { return m_GroupArray; }
+    void ClearGroupArray(void) { m_GroupArray.Clear(); }
+    void AddIntToGroupArray( int val ) { m_GroupArray.Add( val ); }
     
   private:
     int         EntryOffset;
@@ -248,6 +251,7 @@ struct ChartTableEntry
     ArrayOfInts m_GroupArray;
     wxString    *m_pfilename;             // a helper member, not on disk
     wxString    *m_psFullPath;
+    wxBoundingBox m_bbox;
 };
 
 enum
@@ -300,10 +304,11 @@ public:
     
     void UpdateChartClassDescriptorArray(void);
 
-    int GetChartTableEntries() const { return chartTable.size(); }
+    int GetChartTableEntries() const { return active_chartTable.size(); }
     const ChartTableEntry &GetChartTableEntry(int index) const;
     ChartTableEntry *GetpChartTableEntry(int index) const;
-
+    inline ChartTable &GetChartTable(){ return active_chartTable; }
+    
     bool IsValid() const { return bValid; }
     int DisableChart(wxString& PathToDisable);
     bool GetCentroidOfLargestScaleChart(double *clat, double *clon, ChartFamilyEnum family);
@@ -314,6 +319,8 @@ public:
     int GetDBChartScale(int dbIndex);
 
     bool GetDBBoundingBox(int dbindex, wxBoundingBox *box);
+    const wxBoundingBox &GetDBBoundingBox(int dbIndex);
+    
     int  GetnAuxPlyEntries(int dbIndex);
     int  GetDBPlyPoint(int dbIndex, int plyindex, float *lat, float *lon);
     int  GetDBAuxPlyPoint(int dbIndex, int plyindex, int iAuxPly, float *lat, float *lon);
@@ -322,7 +329,8 @@ public:
     int FinddbIndex(wxString PathToFind);
     wxString GetDBChartFileName(int dbIndex);
     void ApplyGroupArray(ChartGroupArray *pGroupArray);
-
+    ChartTable    active_chartTable;
+    
 protected:
     virtual ChartBase *GetChart(const wxChar *theFilePath, ChartClassDescriptor &chart_desc) const;
     int AddChartDirectory(const wxString &theDir, bool bshow_prog);
@@ -348,14 +356,16 @@ private:
     bool          bValid;
     wxArrayString m_chartDirs;
     int           m_dbversion;
-    ChartTable    chartTable;
 
     ChartTableEntry           m_ChartTableEntryDummy;   // used for return value if database is not valid
     wxString      m_DBFileName;
     
     int           m_pdifile;
     int           m_pdnFile;
+    
+    int         m_nentries;
 
+    wxBoundingBox m_dummy_bbox;
 };
 
 

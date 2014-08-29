@@ -87,6 +87,7 @@ class S57ClassRegistrar;
 class S57Obj;
 class VE_Element;
 class VC_Element;
+class connector_segment;
 
 #include <wx/dynarray.h>
 
@@ -105,6 +106,7 @@ WX_DECLARE_HASH_MAP( int, int, wxIntegerHash, wxIntegerEqual, VectorHelperHash )
 
 WX_DECLARE_HASH_MAP( unsigned int, VE_Element *, wxIntegerHash, wxIntegerEqual, VE_Hash );
 WX_DECLARE_HASH_MAP( unsigned int, VC_Element *, wxIntegerHash, wxIntegerEqual, VC_Hash );
+WX_DECLARE_STRING_HASH_MAP( connector_segment *, connected_segment_hash );
 
 //----------------------------------------------------------------------------
 // s57 Chart object class
@@ -182,6 +184,8 @@ public:
 
       virtual void ForceEdgePriorityEvaluate(void);
 
+      float *GetLineVertexBuffer( void ){ return m_line_vertex_buffer; }
+      
       void ClearRenderedTextCache();
       
       double GetCalculatedSafetyContour(void){ return m_next_safe_cnt; }
@@ -271,7 +275,9 @@ private:
       bool DoRenderRectOnGL(const wxGLContext &glc, const ViewPort& VPoint, wxRect &rect);
       bool DoRenderRegionViewOnGL(const wxGLContext &glc, const ViewPort& VPoint, const OCPNRegion &Region, bool b_overlay);
 
-
+      void AssembleLineGeometry( void );
+      void BuildLineVBO( void );
+      
  // Private Data
       char        *hdr_buf;
       char        *mybuf_ptr;
@@ -312,7 +318,13 @@ private:
 
       VE_Hash     m_ve_hash;
       VC_Hash     m_vc_hash;
-
+      unsigned int m_ve_index_max;
+      
+      connected_segment_hash m_connector_hash;
+      
+      float      *m_line_vertex_buffer;
+      size_t      m_vbo_byte_length;
+      
       bool        m_blastS57TextRender;
       wxString    m_lastColorScheme;
       wxRect      m_last_vprect;
@@ -321,10 +333,30 @@ private:
       char        m_usage_char;
       
       double      m_next_safe_cnt;
+      double      m_LOD_meters;
 
+      int         m_LineVBO_name;
 protected:      
       sm_parms    vp_transform;
       
+};
+
+typedef enum
+{
+    TYPE_CE = 0,
+    TYPE_CC,
+    TYPE_EC,
+    TYPE_EE
+} SegmentType;
+
+class connector_segment
+{
+public:
+    void *start;
+    void *end;
+    SegmentType type;
+    int vbo_offset;
+    int max_priority;
 };
 
 #endif

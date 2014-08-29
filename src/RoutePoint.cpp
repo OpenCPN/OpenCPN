@@ -616,7 +616,7 @@ bool RoutePoint::SendToGPS(const wxString & com_name, wxGauge *pProgress)
 
     wxString msg;
     if( 0 == result )
-        msg = _("Waypoint(s) Uploaded successfully.");
+        msg = _("Waypoint(s) Transmitted.");
     else{
         if( result == ERR_GARMIN_INITIALIZE )
             msg = _("Error on Waypoint Upload.  Garmin GPS not connected");

@@ -436,7 +436,7 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
 
         if( m_nPoints == 1 ) {
             dc.StrokeLine( r0.x, r0.y, r0.x + 2, r0.y + 2 );
-            return;
+//            return;
         }
             
         
@@ -455,8 +455,8 @@ void Route::DrawGL( ViewPort &VP, OCPNRegion &region )
         }
     }
     
-    if( m_nPoints < 2  )
-        return;
+//    if( m_nPoints < 2  )
+//        return;
     
     /* determine color and width */
     wxColour col;
@@ -1179,7 +1179,7 @@ int Route::SendToGPS(const wxString & com_name, bool bsend_waypoints, wxGauge *p
 
     wxString msg;
     if( 0 == result )
-        msg = _("Route Uploaded successfully.");
+        msg = _("Route Transmitted.");
     else{
         if( result == ERR_GARMIN_INITIALIZE )
             msg = _("Error on Route Upload.  Garmin GPS not connected");

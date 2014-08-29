@@ -36,6 +36,7 @@
 #include <wx/mstream.h>
 
 #include "dychart.h"
+#include "navutil.h"
 
 #include "s52s57.h"
 
@@ -173,6 +174,8 @@ static int            tess_orient;
 static wxMemoryOutputStream *ostream1;
 static wxMemoryOutputStream *ostream2;
 
+int g_keep;
+int g_orig;
 
 
 //  For __WXMSW__ builds using GLU_TESS and glu32.dll
@@ -226,6 +229,7 @@ HINSTANCE      s_hGLU_DLL;                   // Handle to DLL
 #endif
 
 
+wxArrayInt index_keep;
 
 bool ispolysame(polyout *p1, polyout *p2)
 {
@@ -316,7 +320,8 @@ PolyTessGeo::PolyTessGeo(Extended_Geometry *pxGeom)
 }
 
 //      Build PolyTessGeo Object from OGR Polygon
-PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon, bool bUseInternalTess)
+PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double ref_lon,
+                         bool bUseInternalTess, double LOD_meters)
 {
     ErrorCode = 0;
     m_ppg_head = NULL;
@@ -324,6 +329,7 @@ PolyTessGeo::PolyTessGeo(OGRPolygon *poly, bool bSENC_SM, double ref_lat, double
 
     m_ref_lat = ref_lat;
     m_ref_lon = ref_lon;
+    m_LOD_meters = LOD_meters;
 
     if(bUseInternalTess){
         ErrorCode = PolyTessGeoTri(poly, bSENC_SM, ref_lat, ref_lon);
@@ -342,7 +348,7 @@ ErrorCode = PolyTessGeoTri(poly, bSENC_SM, ref_lat, ref_lon);
 
 
 //      Build PolyGeo Object from SENC file record
-PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
+PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index, int senc_file_version)
 {
 #define POLY_LINE_HDR_MAX 1000
 //      Todo Add a try/catch set here, in case SENC file is corrupted??
@@ -374,9 +380,10 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
     ppg->pn_vertex = (int *)malloc(nctr * sizeof(int));
     int *pctr = ppg->pn_vertex;
 
-    char *buf = (char *)malloc(twkb_len + 2);        // allocate a buffer guaranteed big enough
+    size_t buf_len = wxMax(twkb_len + 2, 20 + (nctr * 4));
+    char *buf = (char *)malloc(buf_len);        // allocate a buffer guaranteed big enough
 
-    my_bufgets( buf, twkb_len + 2 );                       // contour nVert, plus geometry
+    my_bufgets( buf, buf_len );                 // contour nVert, as a char line
 
     wxString ivc_str(buf + 10,  wxConvUTF8);
     wxStringTokenizer tkc(ivc_str, wxT(" ,\n"));
@@ -441,12 +448,23 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
             if(nvert > nvert_max )                          // Keep a running tab of largest vertex count
                   nvert_max = nvert;
 
-            int byte_size = nvert * 2 * sizeof(double);
-            total_byte_size += byte_size;
+            if(senc_file_version > 122){
+                int byte_size = nvert * 2 * sizeof(float);
+                total_byte_size += byte_size;
             
-            tp->p_vertex = (double *)malloc(byte_size);
-            memmove(tp->p_vertex, m_buf_ptr, byte_size);
-            m_buf_ptr += byte_size;
+                tp->p_vertex = (double *)malloc(byte_size);
+                memmove(tp->p_vertex, m_buf_ptr, byte_size);
+                m_buf_ptr += byte_size;
+            }
+            else{
+                int byte_size = nvert * 2 * sizeof(double);
+                total_byte_size += byte_size;
+                
+                tp->p_vertex = (double *)malloc(byte_size);
+                memmove(tp->p_vertex, m_buf_ptr, byte_size);
+                m_buf_ptr += byte_size;
+            }
+                
 
             //  Read the triangle primitive bounding box as lat/lon
             double *pbb = (double *)m_buf_ptr;
@@ -472,22 +490,23 @@ PolyTessGeo::PolyTessGeo(unsigned char *polybuf, int nrecl, int index)
             not_finished = false;
     }                   // while
 
-#if 0
-    //  Convert the vertex arrays into a single memory allocation to enable efficient access later
-    unsigned char *vbuf = (unsigned char *)malloc(total_byte_size);
-    TriPrim *p_tp = ppg->tri_prim_head;
-    unsigned char *p_run = vbuf;
-    while( p_tp ) {
-        memcpy(p_run, p_tp->p_vertex, p_tp->nVert * 2 * sizeof(double));
-        free(p_tp->p_vertex);
-        p_tp->p_vertex = (double *)p_run;
-        p_run += p_tp->nVert * 2 * sizeof(double);
-        p_tp = p_tp->p_next; // pick up the next in chain
+    //  Convert the vertex arrays into a single float memory allocation to enable efficient access later
+    if(senc_file_version > 122){
+        unsigned char *vbuf = (unsigned char *)malloc(total_byte_size);
+        TriPrim *p_tp = ppg->tri_prim_head;
+        unsigned char *p_run = vbuf;
+        while( p_tp ) {
+            memcpy(p_run, p_tp->p_vertex, p_tp->nVert * 2 * sizeof(float));
+            free(p_tp->p_vertex);
+            p_tp->p_vertex = (double  *)p_run;
+            p_run += p_tp->nVert * 2 * sizeof(float);
+            p_tp = p_tp->p_next; // pick up the next in chain
+        }
+        ppg->bsingle_alloc = true;
+        ppg->single_buffer = vbuf;
+        ppg->single_buffer_size = total_byte_size;
+        ppg->data_type = DATA_TYPE_FLOAT;
     }
-    ppg->bsingle_alloc = true;
-    ppg->single_buffer = vbuf;
-    ppg->single_buffer_size = total_byte_size;
-#endif
     
     m_ppg_head = ppg;
     m_nvertex_max = nvert_max;
@@ -543,12 +562,12 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
 
 
 //      Get total number of contours
-    ncnt = 1;                         // always exterior ring
+    m_ncnt = 1;                         // always exterior ring
     int nint = poly->getNumInteriorRings();  // interior rings
-    ncnt += nint;
+    m_ncnt += nint;
 
 //      Allocate cntr array
-    int *cntr = (int *)malloc(ncnt * sizeof(int));
+    int *cntr = (int *)malloc(m_ncnt * sizeof(int));
 
 //      Get total number of points(vertices)
     int npta  = poly->getExteriorRing()->getNumPoints();
@@ -675,7 +694,7 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
         }
     }
 
-    polyout *polys = triangulate_polygon(ncnt, cntr, (double (*)[2])geoPt);
+    polyout *polys = triangulate_polygon(m_ncnt, cntr, (double (*)[2])geoPt);
 
 
 //  Check the triangles
@@ -762,7 +781,7 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
     m_ppg_head = new PolyTriGroup;
     m_ppg_head->m_bSMSENC = s_bSENC_SM;
 
-    m_ppg_head->nContours = ncnt;
+    m_ppg_head->nContours = m_ncnt;
 
     m_ppg_head->pn_vertex = cntr;             // pointer to array of poly vertex counts
     m_ppg_head->data_type = DATA_TYPE_DOUBLE;
@@ -772,12 +791,17 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
 //  Converting to float as we go, and
 //  allowing for tess_orient
 
-    nwkb = (npta +1) * 2 * sizeof(float);
-    m_ppg_head->pgroup_geom = (float *)malloc(nwkb);
+    int nptfinal = npta;
+    
+    //  No longer need the full geometry in the SENC,
+    nptfinal = 1;
+    
+    m_nwkb = (nptfinal +1) * 2 * sizeof(float);
+    m_ppg_head->pgroup_geom = (float *)malloc(m_nwkb);
     float *vro = m_ppg_head->pgroup_geom;
     float tx,ty;
 
-    for(ip = 1 ; ip < npta + 1 ; ip++)
+    for(ip = 1 ; ip < nptfinal + 1 ; ip++)
     {
         if(TESS_HORZ == tess_orient)
         {
@@ -897,7 +921,38 @@ int PolyTessGeo::PolyTessGeoTri(OGRPolygon *poly, bool bSENC_SM, double ref_lat,
     }
 
     m_ppg_head->tri_prim_head = pTP_Head;         // head of linked list of TriPrims
-
+    
+    
+    //  Convert the Triangle vertex arrays into a single memory allocation of floats
+    //  to reduce SENC size and enable efficient access later
+    
+    //  First calculate the total byte size
+    int total_byte_size = 0;
+    TriPrim *p_tp = m_ppg_head->tri_prim_head;
+    while( p_tp ) {
+        total_byte_size += p_tp->nVert * 2 * sizeof(float);
+        p_tp = p_tp->p_next; // pick up the next in chain
+    }
+    
+    float *vbuf = (float *)malloc(total_byte_size);
+    p_tp = m_ppg_head->tri_prim_head;
+    float *p_run = vbuf;
+    while( p_tp ) {
+        float *pfbuf = p_run;
+        for( int i=0 ; i < p_tp->nVert * 2 ; ++i){
+            float x = (float)(p_tp->p_vertex[i]);
+            *p_run++ = x;
+        }
+        
+        free(p_tp->p_vertex);
+        p_tp->p_vertex = (double *)pfbuf;
+        p_tp = p_tp->p_next; // pick up the next in chain
+    }
+    m_ppg_head->bsingle_alloc = true;
+    m_ppg_head->single_buffer = (unsigned char *)vbuf;
+    m_ppg_head->single_buffer_size = total_byte_size;
+    m_ppg_head->data_type = DATA_TYPE_FLOAT;
+    
 
 //  Free the polyout structure
     pr = polys;
@@ -929,18 +984,18 @@ int PolyTessGeo::BuildTessTri(void)
     
      
     //      Get total number of contours
-    ncnt = m_pxgeom->n_contours;
-    int nint = ncnt-1;
+    m_ncnt = m_pxgeom->n_contours;
+    int nint = m_ncnt-1;
     
     //      Allocate cntr array
-    int *cntr = (int *)malloc(ncnt * sizeof(int));
+    int *cntr = (int *)malloc(m_ncnt * sizeof(int));
     
     //      Get total number of points(vertices)
     int npta  = m_pxgeom->contour_array[0];
     cntr[0] = npta;
     npta += 2;                            // fluff
     
-    for( iir=0 ; iir < ncnt-1 ; iir++)
+    for( iir=0 ; iir < m_ncnt-1 ; iir++)
     {
         int nptr = m_pxgeom->contour_array[iir+1];
         cntr[iir+1] = nptr;
@@ -1066,7 +1121,7 @@ int PolyTessGeo::BuildTessTri(void)
         
     }
     
-    polyout *polys = triangulate_polygon(ncnt, cntr, (double (*)[2])geoPt);
+    polyout *polys = triangulate_polygon(m_ncnt, cntr, (double (*)[2])geoPt);
     
     
     //  Check the triangles
@@ -1153,7 +1208,7 @@ int PolyTessGeo::BuildTessTri(void)
     m_ppg_head = new PolyTriGroup;
     m_ppg_head->m_bSMSENC = s_bSENC_SM;
     
-    m_ppg_head->nContours = ncnt;
+    m_ppg_head->nContours = m_ncnt;
     
     m_ppg_head->pn_vertex = cntr;             // pointer to array of poly vertex counts
     m_ppg_head->data_type = DATA_TYPE_DOUBLE;
@@ -1166,13 +1221,18 @@ int PolyTessGeo::BuildTessTri(void)
     //  Transcribe the raw geometry buffer
     //  Converting to float as we go, and
     //  allowing for tess_orient
+
+    int nptfinal = npta;
     
-    nwkb = (npta +1) * 2 * sizeof(float);
-    m_ppg_head->pgroup_geom = (float *)malloc(nwkb);
+    //  No longer need the full geometry in the SENC,
+    nptfinal = 1;
+    
+    m_nwkb = (nptfinal +1) * 2 * sizeof(float);
+    m_ppg_head->pgroup_geom = (float *)malloc(m_nwkb);
     float *vro = m_ppg_head->pgroup_geom;
     float tx,ty;
     
-    for(ip = 1 ; ip < npta + 1 ; ip++)
+    for(ip = 1 ; ip < nptfinal + 1 ; ip++)
     {
         if(TESS_HORZ == tess_orient)
         {
@@ -1295,32 +1355,6 @@ int PolyTessGeo::BuildTessTri(void)
 
 
 
-
-
-
-
-
-
-
-#if 0
-            float sxmax = -179;                   // this poly BBox
-            float sxmin = 170;
-            float symax = -90;
-            float symin = 90;
-            
-            for(int iv=0 ; iv < pr->nvert ; iv++)
-            {
-                int *ivr = pr->vertex_index_list;
-                int ivp = ivr[iv];
-                double xd = geoPt[ivp].x;
-                double yd = geoPt[ivp].y;
-                
-                sxmax = fmax(xd, sxmax);
-                sxmin = fmin(xd, sxmin);
-                symax = fmax(yd, symax);
-                symin = fmin(yd, symin);
-            }
-#endif            
             pTP->minx = sxmin;
             pTP->miny = symin;
             pTP->maxx = sxmax;
@@ -1378,14 +1412,14 @@ int PolyTessGeo::Write_PolyTriGroup( FILE *ofs)
     sout += stemp;
 
 //  Transcribe the true number of  contours, and the raw geometry wkb size
-    stemp.sprintf( _T("Contours/nWKB %d %d\n"),  ncnt, nwkb);
+    stemp.sprintf( _T("Contours/nWKB %d %d\n"),  m_ncnt, m_nwkb);
     sout += stemp;
 
 
 //  Transcribe the contour counts
     stemp.sprintf(_T("Contour nV"));
     sout += stemp;
-    for(int i=0 ; i<ncnt ; i++)
+    for(int i=0 ; i<m_ncnt ; i++)
     {
         stemp.sprintf( _T(" %d"), pPTG->pn_vertex[i]);
         sout += stemp;
@@ -1395,7 +1429,7 @@ int PolyTessGeo::Write_PolyTriGroup( FILE *ofs)
     ostream1->Write(sout.mb_str(), sout.Len());
 
 //  Transcribe the raw geometry buffer
-    ostream1->Write(pPTG->pgroup_geom,nwkb);
+    ostream1->Write(pPTG->pgroup_geom,m_nwkb);
     stemp.sprintf( _T("\n"));
     ostream1->Write(stemp.mb_str(), stemp.Len());
 
@@ -1410,7 +1444,11 @@ int PolyTessGeo::Write_PolyTriGroup( FILE *ofs)
         ostream2->Write(&pTP->type, sizeof(int));
         ostream2->Write(&pTP->nVert, sizeof(int));
 
-        ostream2->Write( pTP->p_vertex, pTP->nVert * 2 * sizeof(double));
+        if(pPTG->data_type == DATA_TYPE_DOUBLE)
+            ostream2->Write( pTP->p_vertex, pTP->nVert * 2 * sizeof(double));
+        else
+            ostream2->Write( pTP->p_vertex, pTP->nVert * 2 * sizeof(float));
+        
 
         //  Write out the object bounding box as lat/lon
         ostream2->Write(&pTP->minx, sizeof(double));
@@ -1446,106 +1484,6 @@ int PolyTessGeo::Write_PolyTriGroup( FILE *ofs)
 
     return 0;
 }
-
-int PolyTessGeo::Write_PolyTriGroup( wxOutputStream &out_stream)
-{
-      wxString    sout;
-      wxString    sout1;
-      wxString    stemp;
-
-      PolyTriGroup *pPTG = m_ppg_head;
-
-
-//  Begin creating the output record
-//      Use a wxMemoryStream for temporary record output.
-//      When all finished, we'll touch up a few items before
-//      committing to disk.
-
-
-      ostream1 = new wxMemoryOutputStream(NULL, 0);                      // auto buffer creation
-      ostream2 = new wxMemoryOutputStream(NULL, 0);                      // auto buffer creation
-
-//  Create initial known part of the output record
-
-
-      stemp.sprintf( _T("  POLYTESSGEOPROP %f %f %f %f\n"),
-                     xmin, ymin, xmax, ymax);            // PolyTessGeo Properties
-      sout += stemp;
-
-//  Transcribe the true number of  contours, and the raw geometry wkb size
-      stemp.sprintf( _T("Contours/nWKB %d %d\n"),  ncnt, nwkb);
-      sout += stemp;
-
-
-//  Transcribe the contour counts
-      stemp.sprintf(_T("Contour nV"));
-      sout += stemp;
-      for(int i=0 ; i<ncnt ; i++)
-      {
-            stemp.sprintf( _T(" %d"), pPTG->pn_vertex[i]);
-            sout += stemp;
-      }
-      stemp.sprintf( _T("\n"));
-      sout += stemp;
-      ostream1->Write(sout.mb_str(), sout.Len());
-
-//  Transcribe the raw geometry buffer
-      ostream1->Write(pPTG->pgroup_geom,nwkb);
-      stemp.sprintf( _T("\n"));
-      ostream1->Write(stemp.mb_str(), stemp.Len());
-
-
-//  Transcribe the TriPrim chain
-
-      TriPrim *pTP = pPTG->tri_prim_head;         // head of linked list of TriPrims
-
-
-      while(pTP)
-      {
-            ostream2->Write(&pTP->type, sizeof(int));
-            ostream2->Write(&pTP->nVert, sizeof(int));
-
-            ostream2->Write( pTP->p_vertex, pTP->nVert * 2 * sizeof(double));
-
-        //  Write out the object bounding box as lat/lon
-            ostream2->Write(&pTP->minx, sizeof(double));
-            ostream2->Write(&pTP->maxx, sizeof(double));
-            ostream2->Write(&pTP->miny, sizeof(double));
-            ostream2->Write(&pTP->maxy, sizeof(double));
-
-
-            pTP = pTP->p_next;
-      }
-
-
-      stemp.sprintf( _T("POLYEND\n"));
-      ostream2->Write(stemp.mb_str(), stemp.Len());
-
-      int nrecl = ostream1->GetSize() + ostream2->GetSize();
-      stemp.sprintf( _T("  POLYTESSGEO  %08d %g %g\n"), nrecl, m_ref_lat, m_ref_lon);
-
-      out_stream.Write(stemp.mb_str(), stemp.Len());                 // Header, + record length
-
-      char *tb = (char *)malloc(ostream1->GetSize());
-      ostream1->CopyTo(tb, ostream1->GetSize());
-
-      out_stream.Write(tb, ostream1->GetSize());
-      free(tb);
-
-      tb = (char *)malloc(ostream2->GetSize());
-      ostream2->CopyTo(tb, ostream2->GetSize());
-      out_stream.Write(tb, ostream2->GetSize());
-
-      free(tb);
-
-
-      delete ostream1;
-      delete ostream2;
-
-      return 0;
-}
-
-
 
 
 int PolyTessGeo::my_bufgets( char *buf, int buf_len_max )
@@ -1747,13 +1685,13 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
 
 
 //      Get total number of contours
-    ncnt = 1;                         // always exterior ring
+    m_ncnt = 1;                         // always exterior ring
     int nint = poly->getNumInteriorRings();  // interior rings
-    ncnt += nint;
+    m_ncnt += nint;
 
 
 //      Allocate cntr array
-    cntr = (int *)malloc(ncnt * sizeof(int));
+    cntr = (int *)malloc(m_ncnt * sizeof(int));
 
 
 //      Get total number of points(vertices)
@@ -1816,57 +1754,103 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
         y0 = p.getY();
     }
 
-
-    gluTessBeginContour(GLUtessobj);
-
-//  Transcribe points to vertex array, in proper order with no duplicates
-//   also, accounting for tess_orient
+    //  Transcribe contour to an array of doubles, with duplicates eliminated
+    double *DPbuffer = (double *)malloc(npte * 2 * sizeof(double));
+    double *DPrun = DPbuffer;
+    int nPoints = npte;
+    
     for(ip = 0 ; ip < npte ; ip++)
     {
         int pidx;
         if(cw)
             pidx = npte - ip - 1;
-
+    
         else
             pidx = ip;
-
+    
         poly->getExteriorRing()->getPoint(pidx, &p);
         x = p.getX();
         y = p.getY();
-
-        if((fabs(x-x0) > EQUAL_EPS) || (fabs(y-y0) > EQUAL_EPS))
+    
+        if(  ((fabs(x-x0) > EQUAL_EPS) || (fabs(y-y0) > EQUAL_EPS)))
         {
             GLdouble *ppt_temp = ppt;
             if(tess_orient == TESS_VERT)
             {
-                *ppt++ = x;
-                *ppt++ = y;
+                *DPrun++ = x;
+                *DPrun++ = y;
             }
             else
             {
-                *ppt++ = y;
-                *ppt++ = x;
+                *DPrun++ = y;
+                *DPrun++ = x;
             }
-
-            *ppt++ = 0.0;
-
-            gluTessVertex( GLUtessobj, ppt_temp, ppt_temp ) ;
-  //printf("tess from pPoly, external vertex %g %g\n", x, y);
-
-
+        
+            x0 = x;
+            y0 = y;
         }
         else
-            cntr[0]--;
-
-        x0 = x;
-        y0 = y;
+            nPoints--;
+    
     }
 
+ 
+    if(nPoints > 5 && (m_LOD_meters > .01)){
+        index_keep.Clear();
+        index_keep.Add(0);
+        index_keep.Add(nPoints-1);
+        index_keep.Add(1);
+        index_keep.Add(nPoints-2);
+        
+        DouglasPeucker(DPbuffer, 1, nPoints-2, m_LOD_meters/(1852 * 60), &index_keep);
+//        printf("DP Reduction: %d/%d\n", index_keep.GetCount(), nPoints);
+        
+        g_keep += index_keep.GetCount();
+        g_orig += nPoints;
+//        printf("...................Running: %g\n", (double)g_keep/g_orig);
+    }
+    else {
+        index_keep.Clear();
+        for(int i = 0 ; i < nPoints ; i++)
+            index_keep.Add(i);
+    }
+    
+    cntr[0] = index_keep.GetCount();
+ 
+    
+    // Mark the keepers by adding a simple constant to X
+    for(unsigned int i=0 ; i < index_keep.GetCount() ; i++){
+        int k = index_keep.Item(i);
+        DPbuffer[2*k] += 2000.;
+    }
+
+    
+
+    //  Declare the gluContour and copy the points
+    gluTessBeginContour(GLUtessobj);
+    
+    DPrun = DPbuffer;
+    for(ip = 0 ; ip < nPoints ; ip++)
+    {
+        x = *DPrun++;
+        y = *DPrun++;
+        
+        if(x > 1000.){
+            
+            GLdouble *ppt_top = ppt;
+            *ppt++ = x-2000;
+            *ppt++ = y;
+            *ppt++ = 0;
+            
+            gluTessVertex( GLUtessobj, ppt_top, ppt_top ) ;
+        }
+    }
+    
     gluTessEndContour(GLUtessobj);
-
-
-
-
+    
+    free(DPbuffer);    
+    
+  
 //  Now the interior contours
     for(iir=0 ; iir < nint ; iir++)
     {
@@ -1963,7 +1947,7 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
     m_ppg_head = new PolyTriGroup;
     m_ppg_head->m_bSMSENC = s_bSENC_SM;
 
-    m_ppg_head->nContours = ncnt;
+    m_ppg_head->nContours = m_ncnt;
 
     m_ppg_head->pn_vertex = cntr;             // pointer to array of poly vertex counts
     m_ppg_head->data_type = DATA_TYPE_DOUBLE;
@@ -1974,13 +1958,21 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
 //  allowing for tess_orient
 //  Also, convert to SM if requested
 
-    nwkb = (npta +1) * 2 * sizeof(float);
-    m_ppg_head->pgroup_geom = (float *)malloc(nwkb);
+// Recalculate the size of the geometry buffer
+    int nptfinal = cntr[0] + 2;
+    for(int i=0 ; i < nint ; i++)
+        nptfinal += cntr[i+1] + 2;
+    
+    //  No longer need the full geometry in the SENC,
+    nptfinal = 1;
+    
+    m_nwkb = (nptfinal + 1) * 2 * sizeof(float);
+    m_ppg_head->pgroup_geom = (float *)malloc(m_nwkb);
     float *vro = m_ppg_head->pgroup_geom;
     ppt = geoPt;
     float tx,ty;
 
-    for(ip = 0 ; ip < npta ; ip++)
+    for(ip = 0 ; ip < nptfinal ; ip++)
     {
         if(TESS_HORZ == tess_orient)
         {
@@ -2012,31 +2004,37 @@ int PolyTessGeo::PolyTessGeoGL(OGRPolygon *poly, bool bSENC_SM, double ref_lat, 
 
     m_ppg_head->tri_prim_head = s_pTPG_Head;         // head of linked list of TriPrims
 
-#if 0
-    //  Convert the vertex arrays into a single memory allocation to enable efficient access later
+
+    //  Convert the Triangle vertex arrays into a single memory allocation of floats
+    //  to reduce SENC size and enable efficient access later
     
     //  First calculate the total byte size
     int total_byte_size = 0;
     TriPrim *p_tp = m_ppg_head->tri_prim_head;
     while( p_tp ) {
-        total_byte_size += p_tp->nVert * 2 * sizeof(double);
+        total_byte_size += p_tp->nVert * 2 * sizeof(float);
         p_tp = p_tp->p_next; // pick up the next in chain
     }
     
-    unsigned char *vbuf = (unsigned char *)malloc(total_byte_size);
+    float *vbuf = (float *)malloc(total_byte_size);
     p_tp = m_ppg_head->tri_prim_head;
-    unsigned char *p_run = vbuf;
+    float *p_run = vbuf;
     while( p_tp ) {
-        memcpy(p_run, p_tp->p_vertex, p_tp->nVert * 2 * sizeof(double));
+        float *pfbuf = p_run;
+        for( int i=0 ; i < p_tp->nVert * 2 ; ++i){
+            float x = (float)(p_tp->p_vertex[i]);
+            *p_run++ = x;
+        }
+        
         free(p_tp->p_vertex);
-        p_tp->p_vertex = (double *)p_run;
-        p_run += p_tp->nVert * 2 * sizeof(double);
+        p_tp->p_vertex = (double *)pfbuf;
         p_tp = p_tp->p_next; // pick up the next in chain
     }
     m_ppg_head->bsingle_alloc = true;
-    m_ppg_head->single_buffer = vbuf;
+    m_ppg_head->single_buffer = (unsigned char *)vbuf;
     m_ppg_head->single_buffer_size = total_byte_size;
-#endif    
+    m_ppg_head->data_type = DATA_TYPE_FLOAT;
+    
     
     
     
@@ -2147,17 +2145,17 @@ int PolyTessGeo::BuildTessGL(void)
 
 
 //      Get total number of contours
-      ncnt  = m_pxgeom->n_contours;
+      m_ncnt  = m_pxgeom->n_contours;
 
 //      Allocate cntr array
-      cntr = (int *)malloc(ncnt * sizeof(int));
+      cntr = (int *)malloc(m_ncnt * sizeof(int));
 
 //      Get total number of points(vertices)
       int npta  = m_pxgeom->contour_array[0];
       cntr[0] = npta;
       npta += 2;                            // fluff
 
-      for( iir=0 ; iir < ncnt-1 ; iir++)
+      for( iir=0 ; iir < m_ncnt-1 ; iir++)
       {
             int nptr = m_pxgeom->contour_array[iir+1];
             cntr[iir+1] = nptr;
@@ -2272,7 +2270,7 @@ int PolyTessGeo::BuildTessGL(void)
       int index_offset = npte;
 #if 1
 //  Now the interior contours
-      for(iir=0; iir < ncnt-1; iir++)
+      for(iir=0; iir < m_ncnt-1; iir++)
       {
             gluTessBeginContour(GLUtessobj);
 
@@ -2371,7 +2369,7 @@ int PolyTessGeo::BuildTessGL(void)
       m_ppg_head = new PolyTriGroup;
       m_ppg_head->m_bSMSENC = s_bSENC_SM;
 
-      m_ppg_head->nContours = ncnt;
+      m_ppg_head->nContours = m_ncnt;
       m_ppg_head->pn_vertex = cntr;             // pointer to array of poly vertex counts
       m_ppg_head->data_type = DATA_TYPE_DOUBLE;
       
@@ -2381,13 +2379,18 @@ int PolyTessGeo::BuildTessGL(void)
 //  allowing for tess_orient
 //  Also, convert to SM if requested
 
-      nwkb = (npta +1) * 2 * sizeof(float);
-      m_ppg_head->pgroup_geom = (float *)malloc(nwkb);
+      int nptfinal = npta;
+      
+      //  No longer need the full geometry in the SENC,
+      nptfinal = 1;
+      
+      m_nwkb = (nptfinal +1) * 2 * sizeof(float);
+      m_ppg_head->pgroup_geom = (float *)malloc(m_nwkb);
       float *vro = m_ppg_head->pgroup_geom;
       ppt = geoPt;
       float tx,ty;
 
-      for(ip = 0 ; ip < npta ; ip++)
+      for(ip = 0 ; ip < nptfinal ; ip++)
       {
             if(TESS_HORZ == tess_orient)
             {
@@ -2419,31 +2422,36 @@ int PolyTessGeo::BuildTessGL(void)
 
       m_ppg_head->tri_prim_head = s_pTPG_Head;         // head of linked list of TriPrims
 
-      //  Convert the vertex arrays into a single memory allocation to enable efficient access later
-#if 0      
+      //  Convert the Triangle vertex arrays into a single memory allocation of floats
+      //  to reduce SENC size and enable efficient access later
+      
       //  First calculate the total byte size
       int total_byte_size = 0;
       TriPrim *p_tp = m_ppg_head->tri_prim_head;
       while( p_tp ) {
-          total_byte_size += p_tp->nVert * 2 * sizeof(double);
+          total_byte_size += p_tp->nVert * 2 * sizeof(float);
           p_tp = p_tp->p_next; // pick up the next in chain
       }
       
-      unsigned char *vbuf = (unsigned char *)malloc(total_byte_size);
+      float *vbuf = (float *)malloc(total_byte_size);
       p_tp = m_ppg_head->tri_prim_head;
-      unsigned char *p_run = vbuf;
+      float *p_run = vbuf;
       while( p_tp ) {
-          memcpy(p_run, p_tp->p_vertex, p_tp->nVert * 2 * sizeof(double));
+          float *pfbuf = p_run;
+          for( int i=0 ; i < p_tp->nVert * 2 ; ++i){
+              float x = (float)(p_tp->p_vertex[i]);
+              *p_run++ = x;
+          }
+          
           free(p_tp->p_vertex);
-          p_tp->p_vertex = (double *)p_run;
-          p_run += p_tp->nVert * 2 * sizeof(double);
+          p_tp->p_vertex = (double *)pfbuf;
           p_tp = p_tp->p_next; // pick up the next in chain
       }
       m_ppg_head->bsingle_alloc = true;
-      m_ppg_head->single_buffer = vbuf;
+      m_ppg_head->single_buffer = (unsigned char *)vbuf;
       m_ppg_head->single_buffer_size = total_byte_size;
+      m_ppg_head->data_type = DATA_TYPE_FLOAT;
       
-#endif      
       gluDeleteTess(GLUtessobj);
 
       free( s_pwork_buf );
@@ -2841,6 +2849,11 @@ PolyTriGroup::~PolyTriGroup()
     
     if(bsingle_alloc){
         free(single_buffer);
+        while(tp) {
+            tp_next = tp->p_next;
+            delete tp;
+            tp = tp_next;
+        }
     }
     else {
         while(tp) {
@@ -2906,7 +2919,41 @@ PolyTrapGroup::~PolyTrapGroup()
 
 
 
+void DouglasPeucker(double *PointList, int fp, int lp, double epsilon, wxArrayInt *keep)
+{
+    
+// Find the point with the maximum distance
+    double dmax = 0;
+    int index = 0;
+    {
+        for(int i = fp+1 ; i < lp ; ++i) {
+            
+            vector2D va(PointList[2*fp] - PointList[2*lp],
+                        PointList[2*fp+1] - PointList[2*lp+1]);
+            vector2D vb(PointList[2*i] - PointList[2*fp],
+                        PointList[2*i + 1] - PointList[2*fp+1]);
+            vector2D vn;
+            
+            double d = vGetLengthOfNormal( &va, &vb, &vn );
+            
+            if ( d > dmax ) {
+                index = i;
+                dmax = d;
+            }
+        }
+    }
+// If max distance is greater than epsilon, recursively simplify
+    if ( dmax > epsilon ) {
+        keep->Add(index);
+        
+    // Recursive call
+        DouglasPeucker(PointList, fp, index, epsilon, keep);
+        DouglasPeucker(PointList, index, lp, epsilon, keep);
 
+    }
+
+    return;
+}
 
 
 

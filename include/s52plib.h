@@ -169,6 +169,8 @@ public:
     int RenderAreaToGL( const wxGLContext &glcc, ObjRazRules *rzRules,
                         ViewPort *vp, wxRect &render_rect );
 //#endif
+
+    bool EnableGLLS(bool benable);
     
     //Todo accessors
     DisCat m_nDisplayCategory;
@@ -215,7 +217,7 @@ public:
     MyNatsurHash m_natsur_hash;     // hash table for cacheing NATSUR string values from int attributes
     
 private:
-      int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
+    int S52_load_Plib( const wxString& PLib, bool b_forceLegacy );
     bool S52_flush_Plib();
 
     bool PreloadOBJLFromCSV(const wxString &csv_file);
@@ -239,7 +241,9 @@ private:
     int RenderMPS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     int RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
     char *RenderCS( ObjRazRules *rzRules, Rules *rules );
-
+    int RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    int RenderGLLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp );
+    
     void UpdateOBJLArray( S57Obj *obj );
 
     render_canvas_parms* CreatePatternBufferSpec( ObjRazRules *rzRules,
@@ -329,7 +333,7 @@ private:
 
     TexFont *m_txf;
     
-    
+    bool m_benableGLLS;
     
 };
 

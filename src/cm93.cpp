@@ -47,6 +47,7 @@
 #include "navutil.h"                            // for LogMessageOnce
 #include "ocpn_pixel.h"                         // for ocpnUSE_DIBSECTION
 #include "ocpndc.h"
+#include "pluginmanager.h"  // for PlugInManager
 
 #include <stdio.h>
 
@@ -78,7 +79,7 @@ extern double           g_CM93Maps_Offset_x;
 extern double           g_CM93Maps_Offset_y;
 extern bool             g_CM93Maps_Offset_on;
 extern bool             g_bopengl;
-
+extern PlugInManager    *g_pi_manager;
 
 
 // TODO  These should be gotten from the ctor
@@ -2301,14 +2302,40 @@ void cm93chart::ProcessVectorEdges ( void )
                   vep->pPoints = pPoints;
 
                   cm93_point *ppt = pgd->p_points;
+                  
+                  //  Get a bounding box for the edge
+                  double east_max = -1e7; double east_min = 1e7;
+                  double north_max = -1e7; double north_min = 1e7;
+                  
                   for ( int ip = 0 ; ip < pgd->n_points ; ip++ )
                   {
                         *pPoints++ = ppt->x;
                         *pPoints++ = ppt->y;
+ 
+                        east_max = wxMax(east_max, ppt->x);
+                        east_min = wxMin(east_min, ppt->x);
+                        north_max = wxMax(north_max, ppt->y);
+                        north_min = wxMin(north_min, ppt->y);
+                        
                         ppt++;
                   }
+                  
+                  cm93_point p;
+                  double lat, lon;
+                  
+                  //TODO  Not precisely correct, transform should account for "trans_WGS84_offset_x"
+                  p.x = east_min;
+                  p.y = north_min;
+                  Transform ( &p, 0, 0, &lat, &lon );
+                  vep->BBox.SetMin( lon, lat);
+                  
+                  p.x = east_max;
+                  p.y = north_max;
+                  Transform ( &p, 0, 0, &lat, &lon );
+                  vep->BBox.SetMax( lon, lat);
+                  
             }
-
+            
             vehash[vep->index] = vep;
 
             pgd++;                              // next geometry descriptor
@@ -2338,6 +2365,9 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell, double view_scale_p
 
       int iObj = 0;
       S57Obj *obj;
+      
+      double scale = gFrame->GetBestVPScale(this);
+      int nativescale = GetNativeScale();
 
       while ( iObj < m_CIB.m_nfeature_records )
       {
@@ -2352,6 +2382,13 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell, double view_scale_p
 
                   if ( obj )
                   {
+                        wxString objnam  = obj->GetAttrValueAsString("OBJNAM");
+                        wxString fe_name = wxString(obj->FeatureName, wxConvUTF8);
+                        wxString cellname = wxString::Format(_T("%i_%i"), cell_index, subcell);
+                        if ( fe_name == _T("_texto") )
+                            objnam  = obj->GetAttrValueAsString("_texta");
+                        if (objnam.Len() > 0)
+                            g_pi_manager->SendVectorChartObjectInfo( cellname, fe_name, objnam, obj->m_lat, obj->m_lon, scale, nativescale );
 
 //      Build/Maintain the ATON floating/rigid arrays
                         if ( GEO_POINT == obj->Primitive_type )
@@ -5371,7 +5408,8 @@ bool cm93compchart::DoRenderRegionViewOnGL (const wxGLContext &glc, const ViewPo
                                           }
                                     }
 
-                                    render_return |= m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
+                                    if(!sscale_region.IsEmpty())
+                                        render_return |= m_pcm93chart_current->RenderRegionViewOnGL ( glc, vp_positive, sscale_region );
 
                                     //    Update the remaining empty region
                                     if ( !sscale_region.IsEmpty() )
@@ -5579,7 +5617,6 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
                   if ( !chart_region.IsEmpty() )
                         vpr_empty.Subtract ( chart_region );
 
-
                   if ( !vpr_empty.Empty() && m_cmscale )        // This chart scale does not fully cover the region
                   {
                         //    Render the target scale chart on a temp dc for safekeeping
@@ -5588,7 +5625,10 @@ bool cm93compchart::DoRenderRegionViewOnDC ( wxMemoryDC& dc, const ViewPort& VPo
 #else
                         wxMemoryDC temp_dc;
 #endif
-                        render_return = m_pcm93chart_current->RenderRegionViewOnDC ( temp_dc, vp_positive, chart_region );
+                        if(!chart_region.IsEmpty())
+                            render_return = m_pcm93chart_current->RenderRegionViewOnDC ( temp_dc, vp_positive, chart_region );
+                        else
+                            render_return = false;
 
                         //    Save the current cm93 chart pointer for restoration later
                         cm93chart *m_pcm93chart_save = m_pcm93chart_current;

@@ -40,6 +40,7 @@
 #include "s52plib.h"
 #include "s52utils.h"
 #include "dychart.h"
+#include "cutil.h"
 
 bool GetDoubleAttr(S57Obj *obj, const char *AttrName, double &val);
 
@@ -49,7 +50,7 @@ WX_DEFINE_ARRAY_DOUBLE(double, ArrayOfSortedDoubles);
 
 
 // size of attributes value list buffer
-#define LISTSIZE   16   // list size
+#define LISTSIZE   32   // list size
 
 extern s52plib  *ps52plib;
 
@@ -542,7 +543,7 @@ static double   _DEPVAL01(S57Obj *obj, double least_depth)
     return least_depth;
 }
 
-static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules)
+static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules, bool *promote_return)
 // Remarks: Obstructions or isolated underwater dangers of depths less than the safety
 // contour which lie within the safe waters defined by the safety contour are
 // to be presented by a specific isolated danger symbol as hazardous objects
@@ -552,7 +553,8 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
     wxString udwhaz03str;
     int      danger         = FALSE;
     double   safety_contour = S52_getMarinerParam(S52_MAR_SAFETY_CONTOUR);
-
+    bool     b_promote = false;
+    
     if(depth_value == UNKNOWN)
           danger = TRUE;
 
@@ -595,6 +597,9 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
                     double drval1 = 0.0;
                     GetDoubleAttr(ptest_obj, "DRVAL1", drval1);
 
+                    if(depth_value < drval1)
+                        b_promote = true;
+                    
                     if(drval1 >= safety_contour)
                     {
                           danger = TRUE;
@@ -636,13 +641,11 @@ static wxString *_UDWHAZ03(S57Obj *obj, double depth_value, ObjRazRules *rzRules
             }
 */
     }
-    // This is an enhancement to the original PLIB spec
-    //  It forces all obstructions (rocks/wrecks) to be in category "Standard", at least
-    else{
-        rzRules->obj->m_DisplayCat = STANDARD;
-    }
+       
 
-
+    if(promote_return)
+        *promote_return = b_promote;
+    
     wxString *ret_str = new wxString(udwhaz03str);
     return ret_str;
 
@@ -1530,7 +1533,8 @@ static void *OBSTRN04 (void *param)
 //      GString *sndfrm02str = NULL;
       wxString *udwhaz03str = NULL;
 //      GString *valsoustr   = S57_getAttVal(geo, "VALSOU");
-
+      bool b_promote;
+      
       ObjRazRules *rzRules = (ObjRazRules *)param;
       S57Obj *obj = rzRules->obj;
 
@@ -1596,7 +1600,7 @@ static void *OBSTRN04 (void *param)
                   depth_value = least_depth;
       }
 
-      udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules);
+      udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules, &b_promote);
 
 
       if (GEO_POINT == obj->Primitive_type)
@@ -1617,9 +1621,6 @@ static void *OBSTRN04 (void *param)
             {
                    if (valsou <= 20.0)
                   {
-//                        GString *objlstr   = S57_getAttVal(geo, "OBJL");
-//                        int      objl      = (NULL == objlstr)? 0 : atoi(objlstr->str);
-//                        GString *watlevstr = S57_getAttVal(geo, "WATLEV");
                         int watlev = -9;
                         GetIntAttr(obj, "WATLEV", watlev);
 
@@ -1635,6 +1636,10 @@ static void *OBSTRN04 (void *param)
                                           case 5: obstrn04str.Append(_T(";SY(UWTROC04)")); sounding = FALSE; break;
                                           default : obstrn04str.Append(_T(";SY(DANGER51)")); sounding = TRUE ; break;
                                     }
+                              }
+                              if(b_promote){
+                                  //  Move this UWTROC object to DisplayBase category
+                                  rzRules->obj->m_DisplayCat = DISPLAYBASE;
                               }
                         }
                         else
@@ -2555,9 +2560,11 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
     //      Do the math to convert soundings to ft/metres/fathoms on request
     double depth_value = depth_value_in;
 
-    //      If the sounding value from the ENC is bogus, so state
+    //      If the sounding value from the ENC (or SENC) is bogus, so state
     if(depth_value_in > 40000.)
-      depth_value = 99999.;
+        depth_value = 99999.;
+    if(depth_value_in < -1000.)
+        depth_value = 0.;
 
     switch(ps52plib->m_nDepthUnitDisplay)
     {
@@ -2590,7 +2597,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
           _parseList(tecsoustr->mb_str(), tecsou, sizeof(tecsou));
         if (strpbrk(tecsou, "\006"))
         {
-            sprintf(temp_str, ";SY(%sB1)", symbol_prefix_a);
+            snprintf(temp_str, LISTSIZE, ";SY(%sB1)", symbol_prefix_a);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
         }
     }
@@ -2600,7 +2607,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
 
     if (strpbrk(quasou, "\003\004\005\010\011") || strpbrk(status, "\022"))
     {
-        sprintf(temp_str, ";SY(%sC2)", symbol_prefix_a);
+        snprintf(temp_str, LISTSIZE, ";SY(%sC2)", symbol_prefix_a);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
 
     }
@@ -2613,7 +2620,7 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         {
             if (2 <= quapos && quapos < 10)
             {
-                sprintf(temp_str, ";SY(%sC2)", symbol_prefix_a);
+                snprintf(temp_str, LISTSIZE, ";SY(%sC2)", symbol_prefix_a);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
         }
@@ -2635,17 +2642,17 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
             int fraction = (int)ABS((depth_value - leading_digit)*10);
 
 
-            sprintf(temp_str, ";SY(%s1%1i)", symbol_prefix_a, (int)ABS(leading_digit));
+            snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)ABS(leading_digit));
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             if(fraction > 0) {
-                sprintf(temp_str, ";SY(%s5%1i)", symbol_prefix_a, fraction);
+                snprintf(temp_str, LISTSIZE, ";SY(%s5%1i)", symbol_prefix_a, fraction);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
 
         // above sea level (negative)
             if (depth_value < 0.0)
             {
-                sprintf(temp_str, ";SY(%sA1)", symbol_prefix_a);
+                snprintf(temp_str, LISTSIZE, ";SY(%sA1)", symbol_prefix_a);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
             goto return_point;
@@ -2668,16 +2675,16 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
             fraction = fraction * 10;
             if (leading_digit >= 10.0)
             {
-                sprintf(temp_str, ";SY(%s2%1i)", symbol_prefix_a, (int)leading_digit/10);
+                snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)leading_digit/10);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
 
             double first_digit = floor(leading_digit / 10);
             int secnd_digit = (int)(floor(leading_digit - (first_digit * 10)));
-            sprintf(temp_str, ";SY(%s1%1i)", symbol_prefix_a, secnd_digit/*(int)leading_digit*/);
+            snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, secnd_digit/*(int)leading_digit*/);
             sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             if((int)fraction > 0) {
-                sprintf(temp_str, ";SY(%s5%1i)", symbol_prefix_a, (int)fraction);
+                snprintf(temp_str, LISTSIZE, ";SY(%s5%1i)", symbol_prefix_a, (int)fraction);
                 sndfrm02.Append(wxString(temp_str, wxConvUTF8));
             }
 
@@ -2692,9 +2699,9 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         double first_digit = floor(leading_digit / 10);
         double secnd_digit = floor(leading_digit - (first_digit * 10));
 
-        sprintf(temp_str, ";SY(%s1%1i)", symbol_prefix_a, (int)first_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s0%1i)", symbol_prefix_a, (int)secnd_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)secnd_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
 
         goto return_point;
@@ -2706,11 +2713,11 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         double secnd_digit = floor((leading_digit - (first_digit * 100)) / 10);
         double third_digit = floor(leading_digit - (first_digit * 100) - (secnd_digit * 10));
 
-        sprintf(temp_str, ";SY(%s2%1i)", symbol_prefix_a, (int)first_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s1%1i)", symbol_prefix_a, (int)secnd_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)secnd_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s0%1i)", symbol_prefix_a, (int)third_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)third_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
 
         goto return_point;
@@ -2723,13 +2730,13 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         double third_digit = floor((leading_digit - (first_digit * 1000) - (secnd_digit * 100)) / 10);
         double last_digit  = floor(leading_digit - (first_digit * 1000) - (secnd_digit * 100) - (third_digit * 10)) ;
 
-        sprintf(temp_str, ";SY(%s2%1i)", symbol_prefix_a, (int)first_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s1%1i)", symbol_prefix_a, (int)secnd_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)secnd_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s0%1i)", symbol_prefix_a, (int)third_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)third_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s4%1i)", symbol_prefix_a, (int)last_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s4%1i)", symbol_prefix_a, (int)last_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
 
         goto return_point;
@@ -2743,15 +2750,15 @@ wxString SNDFRM02(S57Obj *obj, double depth_value_in)
         double fourth_digit = floor((leading_digit - (first_digit * 10000) - (secnd_digit * 1000) - (third_digit * 100)) / 10 ) ;
         double last_digit   = floor(leading_digit - (first_digit * 10000) - (secnd_digit * 1000) - (third_digit * 100) - (fourth_digit * 10)) ;
 
-        sprintf(temp_str, ";SY(%s3%1i)", symbol_prefix_a, (int)first_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s3%1i)", symbol_prefix_a, (int)first_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s2%1i)", symbol_prefix_a, (int)secnd_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s2%1i)", symbol_prefix_a, (int)secnd_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s1%1i)", symbol_prefix_a, (int)third_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s1%1i)", symbol_prefix_a, (int)third_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s0%1i)", symbol_prefix_a, (int)fourth_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s0%1i)", symbol_prefix_a, (int)fourth_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
-        sprintf(temp_str, ";SY(%s4%1i)", symbol_prefix_a, (int)last_digit);
+        snprintf(temp_str, LISTSIZE, ";SY(%s4%1i)", symbol_prefix_a, (int)last_digit);
         sndfrm02.Append(wxString(temp_str, wxConvUTF8));
 
         goto return_point;
@@ -2961,7 +2968,8 @@ static void *WRECKS02 (void *param)
     double   depth_value = UNKNOWN;
 //    GString *valsoustr   = S57_getAttVal(geo, "VALSOU");
     double   valsou      = UNKNOWN;
-
+    bool b_promote = false;
+    
     ObjRazRules *rzRules = (ObjRazRules *)param;
     S57Obj *obj = rzRules->obj;
 
@@ -3055,7 +3063,7 @@ static void *WRECKS02 (void *param)
 
     }
 	if (7 != quasou) //Fixes FS 165
-		udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules);
+		udwhaz03str = _UDWHAZ03(obj, depth_value, rzRules, &b_promote);
 	else
 		udwhaz03str = new wxString();
     quapnt01str = CSQUAPNT01(obj);

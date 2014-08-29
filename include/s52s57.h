@@ -31,7 +31,7 @@
 
 #include "bbox.h"
 
-#define CURRENT_SENC_FORMAT_VERSION  122
+#define CURRENT_SENC_FORMAT_VERSION  123
 
 //    Fwd Defns
 class wxArrayOfS57attVal;
@@ -294,6 +294,7 @@ class S57Obj;
 class OGRFeature;
 class PolyTessGeo;
 class PolyTessGeoTrap;
+class line_segment_element;
 
 typedef struct _chart_context{
     void                    *m_pvc_hash;
@@ -303,7 +304,8 @@ typedef struct _chart_context{
     wxArrayPtrVoid          *pFloatingATONArray;
     wxArrayPtrVoid          *pRigidATONArray;
     s57chart                *chart;
-    double                  safety_contour;                  
+    double                  safety_contour; 
+    float                   *vertex_buffer;
     
 }chart_context;
 
@@ -315,9 +317,9 @@ public:
       //  Public Methods
       S57Obj();
       ~S57Obj();
-      S57Obj(char *first_line, wxInputStream *fpx, double ref_lat, double ref_lon);
+      S57Obj(char *first_line, wxInputStream *fpx, double ref_lat, double ref_lon, int senc_file_version);
 
-      wxString GetAttrValueAsString ( char *attr );
+      wxString GetAttrValueAsString ( const char *attr );
       int GetAttributeIndex( const char *AttrSeek );
           
       // Private Methods
@@ -370,9 +372,11 @@ public:
       int                     m_n_lsindex;
       int                     *m_lsindex_array;
       int                     m_n_edge_max_points;
-
+      line_segment_element    *m_ls_list;
+      
       DisCat                  m_DisplayCat;
-
+      bool                    m_bcategory_mutable;    //  CS procedure may move this object to a higher catagory.
+                                                      //  Used as a hint to rendering filter logic
 
                                                       // This transform converts from object geometry
                                                       // to SM coordinates.
@@ -384,6 +388,8 @@ public:
       chart_context           *m_chart_context;       // per-chart constants, carried in each object for convenience
       int auxParm0;                                   // some per-object auxiliary parameters, used for OpenGL
       int auxParm1;
+      int auxParm2;
+      int auxParm3;
 };
 
 
@@ -453,6 +459,8 @@ public:
       unsigned int nCount;
       double      *pPoints;
       int         max_priority;
+      size_t      vbo_offset;
+      wxBoundingBox BBox;
 };
 
 class VC_Element
@@ -460,6 +468,22 @@ class VC_Element
 public:
       unsigned int index;
       double      *pPoint;
+};
+
+class line_segment_element
+{
+public:
+    size_t              vbo_offset;
+    size_t              n_points;
+    int                 priority;
+    float               lat_max;                // segment bounding box
+    float               lat_min;
+    float               lon_max;
+    float               lon_min;
+    void                *private0;
+    int                 type;
+    
+    line_segment_element *next;
 };
 
 
