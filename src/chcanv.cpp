@@ -5194,77 +5194,80 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_IsOrphanded, NULL );
                 }
 
-                if( parent_frame->nRoute_State == 1 ) {
-                    // First point in the route.
-                    m_pMouseRoute->AddPoint( pMousePoint );
-                } else {
-                    if( m_pMouseRoute->m_NextLegGreatCircle ) {
-                        double rhumbBearing, rhumbDist, gcBearing, gcDist;
-                        DistanceBearingMercator( rlat, rlon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
-                        Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, rlon, rlat, &gcDist, &gcBearing, NULL );
-                        double gcDistNM = gcDist / 1852.0;
+                if(m_pMouseRoute){
+                    if( parent_frame->nRoute_State == 1 ) {
+                        // First point in the route.
+                        m_pMouseRoute->AddPoint( pMousePoint );
+                    } else {
+                        if( m_pMouseRoute->m_NextLegGreatCircle ) {
+                            double rhumbBearing, rhumbDist, gcBearing, gcDist;
+                            DistanceBearingMercator( rlat, rlon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
+                            Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, rlon, rlat, &gcDist, &gcBearing, NULL );
+                            double gcDistNM = gcDist / 1852.0;
 
-                        // Empirically found expression to get reasonable route segments.
-                        int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
+                            // Empirically found expression to get reasonable route segments.
+                            int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
 
-                        wxString msg;
-                        msg << _("For this leg the Great Circle route is ")
-                            << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
-                            << _("Would you like include the Great Circle routing points for this leg?");
+                            wxString msg;
+                            msg << _("For this leg the Great Circle route is ")
+                                << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
+                                << _("Would you like include the Great Circle routing points for this leg?");
 
-    #ifndef __WXOSX__
-                        int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
-    #else
-                        int answer = wxID_NO;
-    #endif
+        #ifndef __WXOSX__
+                            int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+        #else
+                            int answer = wxID_NO;
+        #endif
 
-                        if( answer == wxID_YES ) {
-                            RoutePoint* gcPoint;
-                            RoutePoint* prevGcPoint = m_prev_pMousePoint;
-                            wxRealPoint gcCoord;
+                            if( answer == wxID_YES ) {
+                                RoutePoint* gcPoint;
+                                RoutePoint* prevGcPoint = m_prev_pMousePoint;
+                                wxRealPoint gcCoord;
 
-                            for( int i = 1; i <= segmentCount; i++ ) {
-                                double fraction = (double) i * ( 1.0 / (double) segmentCount );
-                                Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist * fraction,
-                                        gcBearing, &gcCoord.x, &gcCoord.y, NULL );
+                                for( int i = 1; i <= segmentCount; i++ ) {
+                                    double fraction = (double) i * ( 1.0 / (double) segmentCount );
+                                    Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist * fraction,
+                                            gcBearing, &gcCoord.x, &gcCoord.y, NULL );
 
-                                if( i < segmentCount ) {
-                                    gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
-                                            GPX_EMPTY_STRING );
-                                    gcPoint->SetNameShown( false );
-                                    pConfig->AddNewWayPoint( gcPoint, -1 );
-                                    pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
-                                } else {
-                                    gcPoint = pMousePoint; // Last point, previously exsisting!
+                                    if( i < segmentCount ) {
+                                        gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
+                                                GPX_EMPTY_STRING );
+                                        gcPoint->SetNameShown( false );
+                                        pConfig->AddNewWayPoint( gcPoint, -1 );
+                                        pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
+                                    } else {
+                                        gcPoint = pMousePoint; // Last point, previously exsisting!
+                                    }
+
+                                    m_pMouseRoute->AddPoint( gcPoint );
+                                    pSelect->AddSelectableRouteSegment( prevGcPoint->m_lat, prevGcPoint->m_lon,
+                                            gcPoint->m_lat, gcPoint->m_lon, prevGcPoint, gcPoint, m_pMouseRoute );
+                                    prevGcPoint = gcPoint;
                                 }
 
-                                m_pMouseRoute->AddPoint( gcPoint );
-                                pSelect->AddSelectableRouteSegment( prevGcPoint->m_lat, prevGcPoint->m_lon,
-                                        gcPoint->m_lat, gcPoint->m_lon, prevGcPoint, gcPoint, m_pMouseRoute );
-                                prevGcPoint = gcPoint;
+                                undo->CancelUndoableAction( true );
+
+                            } else {
+                                m_pMouseRoute->AddPoint( pMousePoint );
+                                pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
+                                        rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+                                undo->AfterUndoableAction( m_pMouseRoute );
                             }
-
-                            undo->CancelUndoableAction( true );
-
                         } else {
+                            // Ordinary rhumblinesegment.
                             m_pMouseRoute->AddPoint( pMousePoint );
                             pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
                                     rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
                             undo->AfterUndoableAction( m_pMouseRoute );
                         }
-                    } else {
-                        // Ordinary rhumblinesegment.
-                        m_pMouseRoute->AddPoint( pMousePoint );
-                        pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
-                                rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
-                        undo->AfterUndoableAction( m_pMouseRoute );
                     }
                 }
 
                 m_prev_rlat = rlat;
                 m_prev_rlon = rlon;
                 m_prev_pMousePoint = pMousePoint;
-                m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
+                if(m_pMouseRoute)
+                    m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
 
                 parent_frame->nRoute_State++;
                 InvalidateGL();
