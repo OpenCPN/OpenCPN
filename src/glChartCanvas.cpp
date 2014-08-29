@@ -861,7 +861,7 @@ void glChartCanvas::SetupOpenGL()
 
     bool bad_stencil_code = false;
     if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
-        wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling complex stencil buffer") );
+        wxLogMessage( _T("OpenGL-> Detected Intel renderer, disabling stencil buffer") );
         bad_stencil_code = true;
     }
 
@@ -950,6 +950,9 @@ void glChartCanvas::SetupOpenGL()
     if( m_b_BuiltFBO && !m_b_useFBOStencil )
         s_b_useStencil = false;
 
+    //  On Intel Graphics platforms, don't use stencil buffer at all
+    s_b_useStencil = !bad_stencil_code;
+    
     //  If stencil seems to be a problem, force use of depth buffer clipping for Area Patterns
     s_b_useStencilAP = s_b_useStencil & !bad_stencil_code;
 
@@ -1056,6 +1059,8 @@ void glChartCanvas::SetupCompression()
     } else
     if(!g_GLOptions.m_bTextureCompression) {
     no_compression:
+        g_GLOptions.m_bTextureCompression = false;
+        
         g_tile_size = g_uncompressed_tile_size;
         g_raster_format = GL_RGB;
         wxLogMessage( wxString::Format( _T("OpenGL-> Not Using compression")));
