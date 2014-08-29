@@ -4613,6 +4613,9 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
 
 //              Establish Object's Display Category
                     obj->m_DisplayCat = LUP->DISC;
+ 
+//              Establish objects base display priority         
+                    obj->m_DPRI = LUP->DPRI - '0';
                     
                     //  Is this a catagory-movable object?
                     if( !strncmp(obj->FeatureName, "OBSTRN", 6) ||

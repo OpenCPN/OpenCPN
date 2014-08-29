@@ -3768,7 +3768,13 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
         cobj->m_bcategory_mutable = pObj->m_bcategory_mutable;
     else
         cobj->m_bcategory_mutable = true;                       // assume all objects are mutable
+
+    if(gs_plib_flags & PLIB_CAPS_OBJCATMUTATE)
+        cobj->m_DPRI = pObj->m_DPRI;
+    else
+        cobj->m_DPRI = -1;                              // unassigned, fixed at render time
     
+        
  
     cobj->pPolyTessGeo = ( PolyTessGeo* )pObj->pPolyTessGeo;
     cobj->m_chart_context = (chart_context *)pObj->m_chart_context;
@@ -3909,6 +3915,9 @@ void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj, ObjRazRules *rzRu
 
     //  Render operation may have promoted the object's display category (e.g.WRECKS)
     pObj->m_DisplayCat = (PI_DisCat)cobj->m_DisplayCat;
+    
+    if(gs_plib_flags & PLIB_CAPS_OBJCATMUTATE)
+        pObj->m_DPRI = cobj->m_DPRI;
     
     pContext->ChildRazRules = rzRules->child;
     pContext->MPSRulesList = rzRules->mps;

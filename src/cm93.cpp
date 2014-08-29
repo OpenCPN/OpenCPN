@@ -2514,6 +2514,9 @@ int cm93chart::CreateObjChain ( int cell_index, int subcell, double view_scale_p
 //              Establish Object's Display Category
                               obj->m_DisplayCat = LUP->DISC;
                               
+//              Establish objects base display priority         
+                              obj->m_DPRI = LUP->DPRI - '0';
+                              
  //              Populate the chart context
                                obj->m_chart_context = m_this_chart_context;
                                           

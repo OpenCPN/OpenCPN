@@ -903,7 +903,7 @@ public:
 
       PI_line_segment_element *m_ls_list;
       bool                    m_bcategory_mutable;
-      
+      int                     m_DPRI;
 };
 
 

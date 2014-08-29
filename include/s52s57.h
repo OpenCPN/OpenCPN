@@ -375,7 +375,9 @@ public:
       line_segment_element    *m_ls_list;
       
       DisCat                  m_DisplayCat;
-      bool                    m_bcategory_mutable;    //  CS procedure may move this object to a higher catagory.
+      int                     m_DPRI;                 // display priority, assigned from initial LUP
+                                                      // May be adjusted by CS
+      bool                    m_bcategory_mutable;    //  CS procedure may move this object to a higher category.
                                                       //  Used as a hint to rendering filter logic
 
                                                       // This transform converts from object geometry

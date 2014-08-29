@@ -977,7 +977,7 @@ static void *DEPCNT02 (void *param)
 //            rule_str.Prepend(_T(";OP(8OD13010)"));       //depcnt02 = g_string_prepend(depcnt02, ";OP(8OD13010)");
            //  Move this object to DisplayBase category
             rzRules->obj->m_DisplayCat = DISPLAYBASE;
-            rzRules->LUP->DPRI = PRIO_HAZARDS;
+//            rzRules->LUP->DPRI = PRIO_HAZARDS;
 
       } else {
 //            rule_str.Prepend(_T(";OP(---33020)"));       //depcnt02 = g_string_prepend(depcnt02, ";OP(---33020)");

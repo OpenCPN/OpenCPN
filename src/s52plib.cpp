@@ -2638,8 +2638,11 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     //  We need to look at priority and visibility of each segment
     int bdraw = 0;
     
-    //  Get the current display priority from the LUP
-    int priority_current = rzRules->LUP->DPRI - '0'; //TODO fix this hack by putting priority into object during _insertRules
+    //  Get the current display priority
+    //  Default comes from the LUP, unless overridden
+    int priority_current = rzRules->LUP->DPRI - '0';
+    if(rzRules->obj->m_DPRI >= 0)
+        priority_current = rzRules->obj->m_DPRI;
     
     line_segment_element *ls_list = rzRules->obj->m_ls_list;
     while( ls_list){
@@ -2885,9 +2888,12 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
     int x0, y0, x1, y1;
 
-    //  Get the current display priority from the LUP
-    int priority_current = rzRules->LUP->DPRI - '0'; //TODO fix this hack by putting priority into object during _insertRules
-
+    //  Get the current display priority
+    //  Default comes from the LUP, unless overridden
+    int priority_current = rzRules->LUP->DPRI - '0';
+    if(rzRules->obj->m_DPRI >= 0)
+        priority_current = rzRules->obj->m_DPRI;
+    
     if( rzRules->obj->m_n_lsindex ) {
         VE_Hash *ve_hash; 
         VC_Hash *vc_hash; 
@@ -3227,8 +3233,11 @@ int s52plib::RenderLC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
     int w = 1; // arbitrary width
     wxColour color( c->R, c->G, c->B );
 
-    //  Get the current display priority from the LUP
-    int priority_current = rzRules->LUP->DPRI - '0'; //TODO fix this hack by putting priority into object during _insertRules
+    //  Get the current display priority
+    //  Default comes from the LUP, unless overridden
+    int priority_current = rzRules->LUP->DPRI - '0';
+    if(rzRules->obj->m_DPRI >= 0)
+        priority_current = rzRules->obj->m_DPRI;
 
     if( rzRules->obj->m_n_lsindex ) {
         VE_Hash *ve_hash; 
