@@ -87,6 +87,9 @@ extern wxString         g_Plugin_Dir;
 extern bool             g_boptionsactive;
 extern options         *g_options;
 extern ColorScheme      global_color_scheme;
+extern ChartCanvas     *cc1;
+
+unsigned int      gs_plib_flags;
 
 #include <wx/listimpl.cpp>
 WX_DEFINE_LIST(Plugin_WaypointList);
@@ -352,6 +355,36 @@ bool PlugInManager::CallLateInit(void)
 
     return bret;
 }
+
+void PlugInManager::SendVectorChartObjectInfo(const wxString &chart, const wxString &feature, const wxString &objname, double &lat, double &lon, double &scale, int &nativescale)
+{
+    wxString decouple_chart(chart);
+    wxString decouple_feature(feature);
+    wxString decouple_objname(objname);
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    {
+        PlugInContainer *pic = plugin_array.Item(i);
+        if(pic->m_bEnabled && pic->m_bInitState)
+        {
+            if(pic->m_cap_flag & WANTS_VECTOR_CHART_OBJECT_INFO)
+            {
+                switch(pic->m_api_version)
+                {
+                case 112:
+                {
+                    opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112 *>(pic->m_pplugin);
+                    if(ppi)
+                        ppi->SendVectorChartObjectInfo(decouple_chart, decouple_feature, decouple_objname, lat, lon, scale, nativescale);
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+        }
+    }
+}
+
 
 bool PlugInManager::UpdatePlugIns()
 {
@@ -715,6 +748,10 @@ PlugInContainer *PlugInManager::LoadPlugIn(wxString plugin_file)
         pic->m_pplugin = dynamic_cast<opencpn_plugin_111*>(plug_in);
         break;
         
+    case 112:
+        pic->m_pplugin = dynamic_cast<opencpn_plugin_112*>(plug_in);
+        break;
+    
     default:
         break;
     }
@@ -776,6 +813,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 109:
                     case 110:
                     case 111:
+                    case 112:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -826,6 +864,7 @@ bool PlugInManager::RenderAllCanvasOverlayPlugIns( ocpnDC &dc, const ViewPort &v
                     case 109:
                     case 110:
                     case 111:
+                    case 112:
                     {
                         opencpn_plugin_18 *ppi = dynamic_cast<opencpn_plugin_18 *>(pic->m_pplugin);
                         if(ppi)
@@ -902,6 +941,39 @@ bool PlugInManager::RenderAllGLCanvasOverlayPlugIns( wxGLContext *pcontext, cons
     return true;
 }
 
+bool PlugInManager::SendMouseEventToPlugins( wxMouseEvent &event)
+{
+    bool bret = false;
+    for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
+    {
+        PlugInContainer *pic = plugin_array.Item(i);
+        if(pic->m_bEnabled && pic->m_bInitState)
+        {
+            if(pic->m_cap_flag & WANTS_MOUSE_EVENTS){
+            {
+                switch(pic->m_api_version)
+                {
+                    case 112:
+                    {
+                        opencpn_plugin_112 *ppi = dynamic_cast<opencpn_plugin_112*>(pic->m_pplugin);
+                            if(ppi)
+                                if(ppi->MouseEventHook( event ))
+                                    bret = true;
+                            break;
+                        }
+                        
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+    }
+    
+    return bret;;
+}
+
+
 void PlugInManager::SendViewPortToRequestingPlugIns( ViewPort &vp )
 {
     for(unsigned int i = 0 ; i < plugin_array.GetCount() ; i++)
@@ -917,7 +989,6 @@ void PlugInManager::SendViewPortToRequestingPlugIns( ViewPort &vp )
         }
     }
 }
-
 
 void PlugInManager::SendCursorLatLonToAllPlugIns( double lat, double lon)
 {
@@ -1777,7 +1848,7 @@ int AddChartToDBInPlace( wxString &full_path, bool b_RefreshCanvas )
             }
             
             
-            if(b_RefreshCanvas) {
+            if(b_RefreshCanvas || !cc1->GetQuiltMode()) {
                 ViewPort vp;
                 gFrame->ChartsRefresh(-1, vp);
             }
@@ -2723,10 +2794,14 @@ opencpn_plugin_112::~opencpn_plugin_112(void)
 {
 }
 
-void opencpn_plugin_112::MouseEventHook( wxMouseEvent &event )
-{}
+bool opencpn_plugin_112::MouseEventHook( wxMouseEvent &event )
+{
+    return false;
+}
 
-
+void opencpn_plugin_112::SendVectorChartObjectInfo(wxString &chart, wxString &feature, wxString &objname, double lat, double lon, double scale, int nativescale)
+{
+}
 
 
 //          Helper and interface classes
@@ -3064,7 +3139,7 @@ void PlugInChartBase::latlong_to_chartpix(double lat, double lon, double &pixx, 
 
 
 // ----------------------------------------------------------------------------
-// PlugInChartBaseGL Implmentation
+// PlugInChartBaseGL Implementation
 //  
 // ----------------------------------------------------------------------------
 
@@ -3368,6 +3443,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnGL(const wxGLContext &glc, const View
 #ifdef ocpnUSE_GL
     if(m_ppicb)
     {
+        gs_plib_flags = 0;               // reset the CAPs flag
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
         OCPNRegion rg = Region;
         wxRegion r = rg.ConvertTowxRegion();
@@ -3389,6 +3465,7 @@ bool ChartPlugInWrapper::RenderRegionViewOnDC(wxMemoryDC& dc, const ViewPort& VP
 {
     if(m_ppicb)
     {
+        gs_plib_flags = 0;               // reset the CAPs flag
         PlugIn_ViewPort pivp = CreatePlugInViewport( VPoint);
         OCPNRegion rg = Region;
         wxRegion r = rg.ConvertTowxRegion();
@@ -3681,11 +3758,36 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
     cobj->m_n_lsindex = pObj->m_n_lsindex;
     cobj->m_lsindex_array = pObj->m_lsindex_array;
     cobj->m_n_edge_max_points = pObj->m_n_edge_max_points;
+    
+    if(gs_plib_flags & PLIB_CAPS_OBJSEGLIST)
+        cobj->m_ls_list = (line_segment_element *)pObj->m_ls_list;          // note the cast, assumes in-sync layout
+    else   
+        cobj->m_ls_list = 0;
+        
+    if(gs_plib_flags & PLIB_CAPS_OBJCATMUTATE)
+        cobj->m_bcategory_mutable = pObj->m_bcategory_mutable;
+    else
+        cobj->m_bcategory_mutable = true;                       // assume all objects are mutable
+
+    cobj->m_DPRI = -1;                              // default is unassigned, fixed at render time
+    if(gs_plib_flags & PLIB_CAPS_OBJCATMUTATE){
+        if(pObj->m_DPRI == -1){
+            S52PLIB_Context *pCtx = (S52PLIB_Context *)pObj->S52_Context;
+            if(pCtx->LUP)
+                cobj->m_DPRI = pCtx->LUP->DPRI - '0';
+        }
+        else
+            cobj->m_DPRI = pObj->m_DPRI;
+    }
+    
+        
  
     cobj->pPolyTessGeo = ( PolyTessGeo* )pObj->pPolyTessGeo;
     cobj->m_chart_context = (chart_context *)pObj->m_chart_context;
     cobj->auxParm0 = 0;
     cobj->auxParm1 = 0;
+    cobj->auxParm2 = 0;
+    cobj->auxParm3 = 0;
     
     S52PLIB_Context *pContext = (S52PLIB_Context *)pObj->S52_Context;
     
@@ -3714,8 +3816,9 @@ void CreateCompatibleS57Object( PI_S57Obj *pObj, S57Obj *cobj, chart_context *pc
             cobj->m_chart_context->pFloatingATONArray = ppctx->pFloatingATONArray;
             cobj->m_chart_context->pRigidATONArray = ppctx->pRigidATONArray;
             cobj->m_chart_context->safety_contour = ppctx->safety_contour;
+            cobj->m_chart_context->vertex_buffer = ppctx->vertex_buffer;
         }
-        cobj->m_chart_context->chart = 0;           // note bene
+        cobj->m_chart_context->chart = 0;           // note bene, this is always NULL for a PlugIn chart
     }
 }
 
@@ -3819,6 +3922,9 @@ void UpdatePIObjectPlibContext( PI_S57Obj *pObj, S57Obj *cobj, ObjRazRules *rzRu
     //  Render operation may have promoted the object's display category (e.g.WRECKS)
     pObj->m_DisplayCat = (PI_DisCat)cobj->m_DisplayCat;
     
+    if(gs_plib_flags & PLIB_CAPS_OBJCATMUTATE)
+        pObj->m_DPRI = cobj->m_DPRI;
+    
     pContext->ChildRazRules = rzRules->child;
     pContext->MPSRulesList = rzRules->mps;
     
@@ -3910,7 +4016,17 @@ void PI_PLIBPrepareForNewRender( void )
     if(ps52plib){
         ps52plib->PrepareForRender();
         ps52plib->ClearTextList();
+        
+        if(gs_plib_flags & PLIB_CAPS_LINE_BUFFER)
+            ps52plib->EnableGLLS(true);    // Newer PlugIns can use GLLS
+        else
+            ps52plib->EnableGLLS(false);   // Older cannot
     }
+}
+
+void PI_PLIBSetRenderCaps( unsigned int flags )
+{
+    gs_plib_flags = flags;
 }
 
 void PI_PLIBFreeContext( void *pContext )
@@ -4028,9 +4144,8 @@ int PI_PLIBRenderAreaToDC( wxDC *pdc, PI_S57Obj *pObj, PlugIn_ViewPort *vp, wxRe
     
     ViewPort cvp = CreateCompatibleViewport( *vp );
 
-    //  Build a new style PTG
-    //  Try to detect if the PlugIn version is too early to use single-buffer geometry description
-    if( ((chart_context *)pObj->m_chart_context)->chart == NULL){
+    //  If the PlugIn does not support it nativiely, build a fully described Geomoetry
+    if( !(gs_plib_flags & PLIB_CAPS_SINGLEGEO_BUFFER) ){
         if(!pObj->geoPtMulti){          // do this only once
             PolyTessGeo *tess = (PolyTessGeo *)pObj->pPolyTessGeo;
         
@@ -4063,15 +4178,11 @@ int PI_PLIBRenderAreaToGL( const wxGLContext &glcc, PI_S57Obj *pObj, PlugIn_View
     chart_context ctx;
     CreateCompatibleS57Object( pObj, &cobj, &ctx );
 
-    //  For vbo support
-    //  Build a new style PTG
+//    chart_context *pct = (chart_context *)pObj->m_chart_context;
+
+    //  If the PlugIn does not support it nativiely, build a fully described Geomoetry
     
-    //  Try to detect if the PlugIn version is too early to use single-buffer VBOs 
-    //  Please note that this cast is a little scary, since the chart context in the PI_S57Obj
-    //  is assumed to be the same layout as "chart_context", defined in the core....
-    chart_context *pct = (chart_context *)pObj->m_chart_context;
-    
-    if( ((chart_context *)pObj->m_chart_context)->chart == NULL ){
+    if( !(gs_plib_flags & PLIB_CAPS_SINGLEGEO_BUFFER) ){
        if(!pObj->geoPtMulti ){                          // only do this once
             PolyTessGeo *tess = (PolyTessGeo *)pObj->pPolyTessGeo;
         

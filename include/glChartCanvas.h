@@ -38,8 +38,8 @@
 
 
 class glTexFactory;
-//      This is a hashmap with Chartbase* as key, and glTexFactory as value
-WX_DECLARE_HASH_MAP( void*, glTexFactory*, wxPointerHash, wxPointerEqual, ChartPointerHashTexfactType );
+//      This is a hashmap with Chart full path as key, and glTexFactory as value
+WX_DECLARE_STRING_HASH_MAP( glTexFactory*, ChartPathHashTexfactType );
 
 class ocpnGLOptions
 {
@@ -73,6 +73,7 @@ public:
 
     static bool         s_b_useScissorTest;
     static bool         s_b_useStencil;
+    static bool         s_b_useStencilAP;
     static bool         s_b_UploadFullCompressedMipmaps;
     
     glChartCanvas(wxWindow *parent);
@@ -92,7 +93,7 @@ public:
 
     static void Invalidate();
     void RenderRasterChartRegionGL(ChartBase *chart, ViewPort &vp, OCPNRegion &region);
-    bool PurgeChartTextures(ChartBase *pc);
+    bool PurgeChartTextures(ChartBase *pc, bool b_purge_factory = false);
     void ClearAllRasterTextures(void);
     void DrawGLOverLayObjects(void);
     void GridDraw( );
@@ -117,7 +118,9 @@ protected:
     void RenderQuiltViewGL(ViewPort &vp, const OCPNRegion &Region, bool b_clear = true);
     void BuildFBO();
     void SetupOpenGL();
-
+    bool TextureCrunch(double factor);
+    bool FactoryCrunch(double factor);
+    
     void ComputeRenderQuiltViewGLRegion( ViewPort &vp, OCPNRegion &Region );
     void RenderCharts(ocpnDC &dc, OCPNRegion &region);
     void RenderWorldChart(ocpnDC &dc, OCPNRegion &region);
@@ -143,9 +146,9 @@ protected:
     void GrowData(int size);
 
     //    This is a hash table
-    //    key is ChartBaseBSB pointer
+    //    key is Chart full path
     //    Value is glTexFactory*
-    ChartPointerHashTexfactType   m_chart_texfactory_hash;
+    ChartPathHashTexfactType   m_chart_texfactory_hash;
     
     
     ViewPort    m_cache_vp;

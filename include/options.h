@@ -306,6 +306,7 @@ public:
     wxTextCtrl              *pCOGUPUpdateSecs;
     wxCheckBox              *pCBLookAhead;
     wxTextCtrl              *m_pText_OSCOG_Predictor;
+    wxTextCtrl              *m_pText_OSHDT_Predictor;
     wxChoice                *m_pShipIconType;
     wxCheckBox              *pSkewComp;
     wxCheckBox              *pOpenGL;

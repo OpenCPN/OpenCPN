@@ -340,11 +340,17 @@ void ocpnFloatingToolbarDialog::SetGeometry()
 
         wxSize tool_size = m_ptoolbar->GetToolBitmapSize();
 
-        if( m_orient == wxTB_VERTICAL ) m_ptoolbar->SetMaxRowsCols(
-                ( cc1->GetSize().y / ( tool_size.y + m_style->GetToolSeparation() ) ) - 1, 100 );
+        int max_rows = 10;
+        int max_cols = 100;
+        if(cc1){
+            max_rows = (cc1->GetSize().y / ( tool_size.y + m_style->GetToolSeparation())) - 2;
+            max_cols = (cc1->GetSize().x / ( tool_size.x + m_style->GetToolSeparation())) - 3;
+        }
+            
+        if( m_orient == wxTB_VERTICAL )
+            m_ptoolbar->SetMaxRowsCols(max_rows, 100);
         else
-            m_ptoolbar->SetMaxRowsCols( 100,
-                    ( cc1->GetSize().x / ( tool_size.x + m_style->GetToolSeparation() ) ) - 1 );
+            m_ptoolbar->SetMaxRowsCols( 100, max_cols);
     }
 }
 

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-29 21:40-0400\n"
-"PO-Revision-Date: 2014-08-04 11:16-0400\n"
+"PO-Revision-Date: 2014-08-24 04:41-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -12,12 +12,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: crowdin.net\n"
+"X-Generator: crowdin.com\n"
 
 #: src/GribUIDialog.cpp:156 src/GribUIDialog.cpp:896
 #: src/GribUIDialogBase.cpp:52
 msgid "Play"
-msgstr "Mängi"
+msgstr "Esita"
 
 #: src/GribUIDialog.cpp:186
 msgid "Error:  No valid data in this file!"
@@ -465,11 +465,11 @@ msgstr "Kopeeri puuduvad lainekirjed"
 
 #: src/GribUIDialogBase.cpp:616
 msgid "Load the More Recent File in Directory"
-msgstr "Lae kõige uuem fail kaustas"
+msgstr "lae kõige uuem fail kaustas"
 
 #: src/GribUIDialogBase.cpp:616
 msgid "Load the Last Opened File"
-msgstr "Lae viimati avatud fail"
+msgstr "lae viimati avatud fail"
 
 #: src/GribUIDialogBase.cpp:618
 msgid "Load File Options"
@@ -477,15 +477,15 @@ msgstr "Faili laadimise valikud"
 
 #: src/GribUIDialogBase.cpp:622
 msgid "Start at the first forecast in GRIB file"
-msgstr "Käivita GRIB-faili esimese ennustuse juures"
+msgstr "käivita GRIB-faili esimese ennustuse juures"
 
 #: src/GribUIDialogBase.cpp:622
 msgid "Start at the nearest forecast to current time"
-msgstr "Käivita praegusele ajale lähima ennustuse juures"
+msgstr "käivita praegusele ajale lähima ennustuse juures"
 
 #: src/GribUIDialogBase.cpp:622
 msgid "Authorize Interpolation to start at current time"
-msgstr "Kinnita interpolatsioon alustamisek praegusest ajahektest"
+msgstr "kinnita interpolatsioon alustamisek praegusest ajahektest"
 
 #: src/GribUIDialogBase.cpp:624
 msgid "Start Options"
@@ -493,7 +493,7 @@ msgstr "Käivitamise valikud"
 
 #: src/GribUIDialogBase.cpp:628
 msgid "Local Time"
-msgstr "Kohalik aeg"
+msgstr "kohalik aeg"
 
 #: src/GribUIDialogBase.cpp:628
 msgid "UTC"
@@ -629,7 +629,7 @@ msgstr "Grib seaded"
 
 #: src/GribUIDialogBase.h:203
 msgid "Grib Preferences"
-msgstr "GRIP eelistused"
+msgstr "GRIB eelistused"
 
 #: src/GribUIDialogBase.h:269
 msgid "Write and send eMail request"
@@ -649,7 +649,7 @@ msgstr "Loon isobaaride kaarti"
 
 #: src/GribOverlayFactory.cpp:975
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Ülekatted ei ole selle graafilise riistvaraga toetatud (keela OpenGL)"
 
 #: src/GribOverlayFactory.cpp:985
 msgid "Overlays too wide and can't be displayed:"
@@ -681,7 +681,7 @@ msgstr "Ilmatabel"
 
 #: src/grib_pi.cpp:287
 msgid "Menu"
-msgstr "Menu"
+msgstr "Menuu"
 
 #: src/grib_pi.cpp:560
 msgid "You have chosen to authorize interpolation.\nDon't forget that data displayed at current time will not be real but interpolated!"
@@ -733,7 +733,7 @@ msgstr "MB"
 
 #: src/GribRequestDialog.cpp:550
 msgid "Max"
-msgstr "Max"
+msgstr "max"
 
 #: src/GribRequestDialog.cpp:573
 msgid "Before sending an email to Zygrib you have to enter your Login and Code.\nPlease visit www.zygrib.org/ and follow instructions..."

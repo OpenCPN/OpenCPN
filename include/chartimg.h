@@ -325,6 +325,8 @@ protected:
       ViewPort  m_vp_render_last;
       
       wxCriticalSection m_critSect;
+      wxULongLong m_filesize;
+      
       
 };
 

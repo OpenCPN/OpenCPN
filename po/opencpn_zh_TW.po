@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-29 21:40-0400\n"
-"PO-Revision-Date: 2014-08-04 11:16-0400\n"
+"PO-Revision-Date: 2014-08-09 13:23-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Chinese Traditional\n"
 "Language: zh_TW\n"
@@ -1776,19 +1776,19 @@ msgstr "翼地效應"
 
 #: src/ais.cpp:144
 msgid "Reserved 11"
-msgstr "Reserved 11"
+msgstr "保留 11"
 
 #: src/ais.cpp:145
 msgid "Reserved 12"
-msgstr "Reserved 12"
+msgstr "保留 12"
 
 #: src/ais.cpp:146
 msgid "Reserved 13"
-msgstr "Reserved 13"
+msgstr "保留 13"
 
 #: src/ais.cpp:147
 msgid "Reserved 14"
-msgstr "Reserved 14"
+msgstr "保留 14"
 
 #: src/ais.cpp:148 src/AIS_Target_Data.cpp:373
 msgid "Undefined"
@@ -1796,27 +1796,27 @@ msgstr "未定義"
 
 #: src/ais.cpp:149
 msgid "Virtual"
-msgstr "Virtual"
+msgstr "虛擬"
 
 #: src/ais.cpp:150
 msgid "Virtual (On Position)"
-msgstr "Virtual (On Position)"
+msgstr "虛擬(在位置上)"
 
 #: src/ais.cpp:151
 msgid "Virtual (Off Position)"
-msgstr "Virtual (Off Position)"
+msgstr "虛擬(不在位置上)"
 
 #: src/ais.cpp:152
 msgid "Real"
-msgstr "Real"
+msgstr "真實"
 
 #: src/ais.cpp:153
 msgid "Real (On Position)"
-msgstr "Real (On Position)"
+msgstr "真實(在位置上)"
 
 #: src/ais.cpp:154
 msgid "Real(Off Position)"
-msgstr "Real(Off Position)"
+msgstr "真實(不在位置上)"
 
 #: src/ais.cpp:163
 msgid "Vessel Fishing"
@@ -2136,11 +2136,11 @@ msgstr "Lt sect."
 
 #: src/ais.cpp:256
 msgid "Ldg Lt Front"
-msgstr "Ldg Lt Front"
+msgstr "Ldg Lt 前面"
 
 #: src/ais.cpp:257
 msgid "Ldg Lt Rear"
-msgstr "Ldg Lt Rear"
+msgstr "Ldg Lt 後方"
 
 #: src/ais.cpp:258 src/ais.cpp:269
 msgid "Card. N"
@@ -2172,7 +2172,7 @@ msgstr "偏好航道"
 
 #: src/ais.cpp:266 src/ais.cpp:277
 msgid "Isol. Dngr"
-msgstr "Isol. Dngr"
+msgstr "孤立危險區域"
 
 #: src/ais.cpp:268 src/ais.cpp:279
 msgid "Special"
@@ -2628,7 +2628,7 @@ msgstr "使用 Garmin GRMN (Host) 模式上傳"
 
 #: src/options.cpp:569
 msgid "Use magnetic bearings in output sentence ECAPB"
-msgstr "Use magnetic bearings in output sentence ECAPB"
+msgstr "在輸出字串 ECAPB 中使用磁方位"
 
 #: src/options.cpp:579
 msgid "Data Connections"
@@ -4456,203 +4456,203 @@ msgstr "聖皮耶與密克隆群島"
 
 #: src/AIS_Target_Data.cpp:1007
 msgid "Trinidad and Tobago"
-msgstr "Trinidad and Tobago"
+msgstr "千里達及托巴哥"
 
 #: src/AIS_Target_Data.cpp:1008
 msgid "Turks and Caicos Islands"
-msgstr "Turks and Caicos Islands"
+msgstr "特克斯和凱科斯群島"
 
 #: src/AIS_Target_Data.cpp:1019
 msgid "Saint Vincent and the Grenadines"
-msgstr "Saint Vincent and the Grenadines"
+msgstr "聖文森及格瑞那丁"
 
 #: src/AIS_Target_Data.cpp:1020
 msgid "British Virgin Islands"
-msgstr "British Virgin Islands"
+msgstr "英屬維京群島"
 
 #: src/AIS_Target_Data.cpp:1021
 msgid "United States Virgin Islands"
-msgstr "United States Virgin Islands"
+msgstr "美屬維京群島"
 
 #: src/AIS_Target_Data.cpp:1022
 msgid "Afghanistan"
-msgstr "Afghanistan"
+msgstr "阿富汗"
 
 #: src/AIS_Target_Data.cpp:1023
 msgid "Saudi Arabia"
-msgstr "Saudi Arabia"
+msgstr "沙烏地阿拉伯"
 
 #: src/AIS_Target_Data.cpp:1024
 msgid "Bangladesh"
-msgstr "Bangladesh"
+msgstr "孟加拉"
 
 #: src/AIS_Target_Data.cpp:1025
 msgid "Bahrain"
-msgstr "Bahrain"
+msgstr "巴林"
 
 #: src/AIS_Target_Data.cpp:1026
 msgid "Bhutan"
-msgstr "Bhutan"
+msgstr "不丹"
 
 #: src/AIS_Target_Data.cpp:1029
 msgid "China"
-msgstr "China"
+msgstr "中國"
 
 #: src/AIS_Target_Data.cpp:1030
 msgid "Taiwan"
-msgstr "Taiwan"
+msgstr "台灣"
 
 #: src/AIS_Target_Data.cpp:1031
 msgid "Sri Lanka"
-msgstr "Sri Lanka"
+msgstr "斯里蘭卡"
 
 #: src/AIS_Target_Data.cpp:1032
 msgid "India"
-msgstr "India"
+msgstr "印度"
 
 #: src/AIS_Target_Data.cpp:1033
 msgid "Iran"
-msgstr "Iran"
+msgstr "伊朗"
 
 #: src/AIS_Target_Data.cpp:1034
 msgid "Azerbaijani Republic"
-msgstr "Azerbaijani Republic"
+msgstr "亞塞拜然共和國"
 
 #: src/AIS_Target_Data.cpp:1035
 msgid "Iraq"
-msgstr "Iraq"
+msgstr "伊拉克"
 
 #: src/AIS_Target_Data.cpp:1036
 msgid "Israel"
-msgstr "Israel"
+msgstr "以色列"
 
 #: src/AIS_Target_Data.cpp:1037 src/AIS_Target_Data.cpp:1038
 msgid "Japan"
-msgstr "Japan"
+msgstr "日本"
 
 #: src/AIS_Target_Data.cpp:1039
 msgid "Turkmenistan"
-msgstr "Turkmenistan"
+msgstr "土庫曼"
 
 #: src/AIS_Target_Data.cpp:1040
 msgid "Kazakhstan"
-msgstr "Kazakhstan"
+msgstr "哈薩克"
 
 #: src/AIS_Target_Data.cpp:1041
 msgid "Uzbekistan"
-msgstr "Uzbekistan"
+msgstr "烏茲別克"
 
 #: src/AIS_Target_Data.cpp:1042
 msgid "Jordan"
-msgstr "Jordan"
+msgstr "約旦"
 
 #: src/AIS_Target_Data.cpp:1043 src/AIS_Target_Data.cpp:1044
 msgid "Korea"
-msgstr "Korea"
+msgstr "韓國"
 
 #: src/AIS_Target_Data.cpp:1045
 msgid "Palestine"
-msgstr "Palestine"
+msgstr "巴勒斯坦"
 
 #: src/AIS_Target_Data.cpp:1046
 msgid "People's Rep. of Korea"
-msgstr "People's Rep. of Korea"
+msgstr "朝鮮人民共和國"
 
 #: src/AIS_Target_Data.cpp:1047
 msgid "Kuwait"
-msgstr "Kuwait"
+msgstr "科威特"
 
 #: src/AIS_Target_Data.cpp:1048
 msgid "Lebanon"
-msgstr "Lebanon"
+msgstr "黎巴嫩"
 
 #: src/AIS_Target_Data.cpp:1049
 msgid "Kyrgyz Republic"
-msgstr "Kyrgyz Republic"
+msgstr "吉爾吉斯共和國"
 
 #: src/AIS_Target_Data.cpp:1050
 msgid "Macao"
-msgstr "Macao"
+msgstr "澳門"
 
 #: src/AIS_Target_Data.cpp:1051
 msgid "Maldives"
-msgstr "Maldives"
+msgstr "馬爾地夫"
 
 #: src/AIS_Target_Data.cpp:1052
 msgid "Mongolia"
-msgstr "Mongolia"
+msgstr "蒙古"
 
 #: src/AIS_Target_Data.cpp:1053
 msgid "Nepal"
-msgstr "Nepal"
+msgstr "尼泊爾"
 
 #: src/AIS_Target_Data.cpp:1054
 msgid "Oman"
-msgstr "Oman"
+msgstr "阿曼"
 
 #: src/AIS_Target_Data.cpp:1055
 msgid "Pakistan"
-msgstr "Pakistan"
+msgstr "巴基斯坦"
 
 #: src/AIS_Target_Data.cpp:1056
 msgid "Qatar"
-msgstr "Qatar"
+msgstr "卡達"
 
 #: src/AIS_Target_Data.cpp:1057
 msgid "Syrian Arab Republic"
-msgstr "Syrian Arab Republic"
+msgstr "敘利亞"
 
 #: src/AIS_Target_Data.cpp:1058
 msgid "United Arab Emirates"
-msgstr "United Arab Emirates"
+msgstr "阿拉伯聯合大公國"
 
 #: src/AIS_Target_Data.cpp:1059 src/AIS_Target_Data.cpp:1060
 msgid "Yemen"
-msgstr "Yemen"
+msgstr "葉門"
 
 #: src/AIS_Target_Data.cpp:1061
 msgid "Hong Kong"
-msgstr "Hong Kong"
+msgstr "香港"
 
 #: src/AIS_Target_Data.cpp:1062
 msgid "Bosnia and Herzegovina"
-msgstr "Bosnia and Herzegovina"
+msgstr "波士尼亞和赫塞哥維納"
 
 #: src/AIS_Target_Data.cpp:1063
 msgid "Adelie Land"
-msgstr "Adelie Land"
+msgstr "阿德利地"
 
 #: src/AIS_Target_Data.cpp:1064
 msgid "Australia"
-msgstr "Australia"
+msgstr "澳洲"
 
 #: src/AIS_Target_Data.cpp:1065
 msgid "Myanmar"
-msgstr "Myanmar"
+msgstr "緬甸"
 
 #: src/AIS_Target_Data.cpp:1066
 msgid "Brunei Darussalam"
-msgstr "Brunei Darussalam"
+msgstr "汶萊"
 
 #: src/AIS_Target_Data.cpp:1067
 msgid "Micronesia"
-msgstr "Micronesia"
+msgstr "密克羅尼西亞"
 
 #: src/AIS_Target_Data.cpp:1068
 msgid "Palau"
-msgstr "Palau"
+msgstr "帛琉"
 
 #: src/AIS_Target_Data.cpp:1069
 msgid "New Zealand"
-msgstr "New Zealand"
+msgstr "紐西蘭"
 
 #: src/AIS_Target_Data.cpp:1070 src/AIS_Target_Data.cpp:1071
 msgid "Cambodia"
-msgstr "Cambodia"
+msgstr "柬埔寨"
 
 #: src/AIS_Target_Data.cpp:1072
 msgid "Christmas Island"
-msgstr "Christmas Island"
+msgstr "聖誕島"
 
 #: src/AIS_Target_Data.cpp:1073
 msgid "Cook Islands"

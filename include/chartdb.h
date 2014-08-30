@@ -154,7 +154,7 @@ public:
       void UnLockAllCacheCharts();
       
       void ClearCacheInUseFlags(void);
-      void PurgeCacheUnusedCharts(bool b_force = false);
+      void PurgeCacheUnusedCharts( double factor );
 
       bool IsBusy(){ return m_b_busy; }
 protected:
@@ -167,7 +167,7 @@ private:
       bool CreateS57SENCChartTableEntry(wxString full_name, ChartTableEntry *pEntry, Extent *pext);
       bool CheckPositionWithinChart(int index, float lat, float lon);
       ChartBase *OpenChartUsingCache(int dbindex, ChartInitFlag init_flag);
-      CacheEntry *FindOldestDeleteCandidate();
+      CacheEntry *FindOldestDeleteCandidate( bool blog );
       
       wxArrayPtrVoid    *pChartCache;
 

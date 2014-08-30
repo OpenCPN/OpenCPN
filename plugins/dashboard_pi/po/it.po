@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-05-30 09:13-0400\n"
-"PO-Revision-Date: 2014-07-30 19:06-0400\n"
+"PO-Revision-Date: 2014-08-25 12:26-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Italian\n"
 "Language: it_IT\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: crowdin.net\n"
+"X-Generator: crowdin.com\n"
 
 #: src/clock.cpp:126 src/dial.cpp:504 src/gps.cpp:141 src/wind.cpp:64
 #: src/wind_history.cpp:401
@@ -25,7 +25,7 @@ msgstr "Posizione"
 
 #: src/dashboard_pi.cpp:98
 msgid "SOG"
-msgstr "SOG"
+msgstr "Kilometri"
 
 #: src/dashboard_pi.cpp:100
 msgid "Speedometer"
@@ -57,7 +57,7 @@ msgstr "Mag HDG"
 
 #: src/dashboard_pi.cpp:115
 msgid "App. Wind Angle & Speed"
-msgstr "Angolo & Veocità Vento reale"
+msgstr "Angolo & Veocità Vento apparente"
 
 #: src/dashboard_pi.cpp:117 src/dashboard_pi.cpp:119
 msgid "App. Wind Speed"
@@ -73,7 +73,7 @@ msgstr "Profondità"
 
 #: src/dashboard_pi.cpp:127 src/dashboard_pi.cpp:129
 msgid "Barometric pressure"
-msgstr "Barometric pressure"
+msgstr "Pressione barometrica"
 
 #: src/dashboard_pi.cpp:131
 msgid "Water Temp."
@@ -81,7 +81,7 @@ msgstr "Temp. Aqua"
 
 #: src/dashboard_pi.cpp:133
 msgid "Air Temp."
-msgstr "Air Temp."
+msgstr "Temp. d'aria"
 
 #: src/dashboard_pi.cpp:135
 msgid "App. Wind Angle"
@@ -101,7 +101,7 @@ msgstr "Velocità Vento reale"
 
 #: src/dashboard_pi.cpp:143
 msgid "True Wind Dir. & Speed"
-msgstr "Velocità Vento reale"
+msgstr "Dir. & Velocità Vento reale"
 
 #: src/dashboard_pi.cpp:145 src/dashboard_pi.cpp:147
 msgid "VMG"
@@ -125,23 +125,23 @@ msgstr "Cursor"
 
 #: src/dashboard_pi.cpp:159
 msgid "Clock"
-msgstr "Clock"
+msgstr "Orologio"
 
 #: src/dashboard_pi.cpp:161
 msgid "Sunrise/Sunset"
-msgstr "Sunrise/Sunset"
+msgstr "alba/tramonto"
 
 #: src/dashboard_pi.cpp:163
 msgid "Moon phase"
-msgstr "Moon phase"
+msgstr "Fase lunare"
 
 #: src/dashboard_pi.cpp:165
 msgid "Wind history"
-msgstr "Wind history"
+msgstr "Storia del vento"
 
 #: src/dashboard_pi.cpp:167
 msgid "Barometric history"
-msgstr "Barometric history"
+msgstr "Storia barometrica"
 
 #: src/dashboard_pi.cpp:169
 msgid "Trip Log"
@@ -256,7 +256,7 @@ msgstr "Honor OpenCPN settings"
 
 #: src/dashboard_pi.cpp:1630 src/dashboard_pi.cpp:1657
 msgid "Kts"
-msgstr "Kts"
+msgstr "Nodi"
 
 #: src/dashboard_pi.cpp:1630 src/dashboard_pi.cpp:1657
 msgid "mph"
@@ -276,7 +276,7 @@ msgstr "Depth units:"
 
 #: src/dashboard_pi.cpp:1639 src/dashboard_pi.cpp:1648
 msgid "Meters"
-msgstr "Meters"
+msgstr "Metri"
 
 #: src/dashboard_pi.cpp:1639
 msgid "Feet"
@@ -288,7 +288,7 @@ msgstr "Fathoms"
 
 #: src/dashboard_pi.cpp:1639
 msgid "Centimeters"
-msgstr "Centimeters"
+msgstr "Centimetri"
 
 #: src/dashboard_pi.cpp:1639
 msgid "Inches"
@@ -308,7 +308,7 @@ msgstr "Statute miles"
 
 #: src/dashboard_pi.cpp:1648
 msgid "Kilometers"
-msgstr "Kilometers"
+msgstr "Chilometri"
 
 #: src/dashboard_pi.cpp:1654
 msgid "Wind speed units:"
@@ -324,7 +324,7 @@ msgstr "Seleziona strumenti:"
 
 #: src/dashboard_pi.cpp:1965
 msgid "Preferences..."
-msgstr "Preferences..."
+msgstr "Preferenze..."
 
 #: src/dial.cpp:504 src/wind.cpp:64 src/wind_history.cpp:407
 msgid "NE"
@@ -364,38 +364,38 @@ msgstr " mag"
 
 #: src/wind_history.cpp:404
 msgid "NNE"
-msgstr "NE"
+msgstr "NNE"
 
 #: src/wind_history.cpp:410
 msgid "ENE"
-msgstr "NE"
+msgstr "ENE"
 
 #: src/wind_history.cpp:416
 msgid "ESE"
-msgstr "SE"
+msgstr "ESE"
 
 #: src/wind_history.cpp:422
 msgid "SSE"
-msgstr "SE"
+msgstr "SSE"
 
 #: src/wind_history.cpp:428
 msgid "SSW"
-msgstr "SO"
+msgstr "SSO"
 
 #: src/wind_history.cpp:434
 msgid "WSW"
-msgstr "SO"
+msgstr "OSO"
 
 #: src/wind_history.cpp:440
 msgid "WNW"
-msgstr "NO"
+msgstr "ONO"
 
 #: src/wind_history.cpp:446
 msgid "NNW"
-msgstr "NO"
+msgstr "NNO"
 
 #: src/wind_history.cpp:543
 #, c-format
 msgid "Max %.1f since %02d:%02d  Overall %.1f"
-msgstr "Max %.1f since %02d:%02d  Overall %.1f"
+msgstr "Max %.1f da %02d:%02d totale %.1f"
 

@@ -2177,7 +2177,7 @@ MarkInfoImpl::MarkInfoImpl( wxWindow* parent, wxWindowID id, const wxString& tit
         const wxPoint& pos, const wxSize& size, long style ) :
         MarkInfoDef( parent, id, title, pos, size, style )
 {
-    m_pLinkProp = new LinkPropImpl( this );
+    m_pLinkProp = new LinkPropImpl( NULL );
     m_pMyLinkList = NULL;
     m_staticTextGpx->Show( false );
     m_textCtrlGpx->Show( false );
@@ -2347,7 +2347,7 @@ void MarkInfoImpl::m_hyperlinkContextMenu( wxMouseEvent &event )
     m_scrolledWindowLinks->PopupMenu( m_menuLink,
             m_pEditedLink->GetPosition().x + event.GetPosition().x,
             m_pEditedLink->GetPosition().y + event.GetPosition().y );
-
+   
 }
 
 void MarkInfoImpl::OnDeleteLink( wxCommandEvent& event )
@@ -2355,7 +2355,15 @@ void MarkInfoImpl::OnDeleteLink( wxCommandEvent& event )
     wxHyperlinkListNode* nodeToDelete = NULL;
     wxString findurl = m_pEditedLink->GetURL();
     wxString findlabel = m_pEditedLink->GetLabel();
-    m_scrolledWindowLinks->DestroyChildren();
+    
+    wxWindowList kids = m_scrolledWindowLinks->GetChildren();
+    for( unsigned int i = 0; i < kids.GetCount(); i++ ) {
+        wxWindowListNode *node = kids.Item( i );
+        wxWindow *win = node->GetData();
+        win->Hide();    
+    }
+    
+//    m_scrolledWindowLinks->DestroyChildren();
     int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
     HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
 //      int len = 0;
@@ -2394,6 +2402,11 @@ void MarkInfoImpl::OnEditLink( wxCommandEvent& event )
     wxString findlabel = m_pEditedLink->GetLabel();
     m_pLinkProp->m_textCtrlLinkDescription->SetValue( findlabel );
     m_pLinkProp->m_textCtrlLinkUrl->SetValue( findurl );
+    
+#ifdef __WXOSX__
+    HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
     if( m_pLinkProp->ShowModal() == wxID_OK ) {
         int NbrOfLinks = m_pRoutePoint->m_HyperlinkList->GetCount();
         HyperlinkList *hyperlinklist = m_pRoutePoint->m_HyperlinkList;
@@ -2425,6 +2438,11 @@ void MarkInfoImpl::OnEditLink( wxCommandEvent& event )
         sbSizerLinks->Layout();
         event.Skip();
     }
+    
+#ifdef __WXOSX__
+    ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
     event.Skip();
 }
 
@@ -2432,6 +2450,11 @@ void MarkInfoImpl::OnAddLink( wxCommandEvent& event )
 {
     m_pLinkProp->m_textCtrlLinkDescription->SetValue( wxEmptyString );
     m_pLinkProp->m_textCtrlLinkUrl->SetValue( wxEmptyString );
+
+#ifdef __WXOSX__
+    HideWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
     if( m_pLinkProp->ShowModal() == wxID_OK ) {
         wxString desc = m_pLinkProp->m_textCtrlLinkDescription->GetValue();
         if( desc == wxEmptyString ) desc = m_pLinkProp->m_textCtrlLinkUrl->GetValue();
@@ -2453,6 +2476,10 @@ void MarkInfoImpl::OnAddLink( wxCommandEvent& event )
         m_pRoutePoint->m_HyperlinkList->Append( h );
     }
 
+#ifdef __WXOSX__
+    ShowWithEffect(wxSHOW_EFFECT_BLEND );
+#endif
+    
     sbSizerLinks->Layout();
 
     event.Skip();

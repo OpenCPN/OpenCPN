@@ -41,8 +41,14 @@ public:
     ~glTextureDescriptor();
     void FreeAll();
     void FreeMap();
+    void FreeCompLevel(int level);
     
+    size_t GetMapArrayAlloc(void);
+    size_t GetCompArrayAlloc(void);
+    size_t GetCompCompArrayAlloc(void);
+
     unsigned char *CompressedArrayAccess( int mode, unsigned char *write_data, int level);
+    unsigned char *CompCompArrayAccess( int mode, unsigned char *write_data, int level);
     GLuint tex_name;
     int level_min;
     int x;
@@ -50,10 +56,13 @@ public:
     int nGPU_compressed;
     int nCache_Color;
     
-    unsigned char *map_array[10];
+    unsigned char       *map_array[10];
+    int                 miplevel_upload[10];
+    int                 compcomp_size[10];
     
 private:    
     unsigned char *comp_array[10];
+    unsigned char *compcomp_array[10];
 };
 
 

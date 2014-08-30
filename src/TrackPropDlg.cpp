@@ -471,7 +471,14 @@ void TrackPropDlg::InitializeList()
         return;
 
     m_lcPoints->m_pRoute = m_pRoute;
-    m_lcPoints->m_LMT_Offset = long( ( m_pRoute->pRoutePointList->GetFirst()->GetData()->m_lon ) * 3600. / 15. );
+    wxRoutePointListNode *first_point_node = m_pRoute->pRoutePointList->GetFirst();
+    if(first_point_node){
+        RoutePoint *prp = first_point_node->GetData();
+        if(prp)
+            m_lcPoints->m_LMT_Offset = long(( prp->m_lon ) * 3600. / 15. );  // estimated
+        else
+            m_lcPoints->m_LMT_Offset = 0;
+    }
     
     m_lcPoints->SetItemCount( m_pRoute->GetnPoints() );
 }

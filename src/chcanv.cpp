@@ -150,6 +150,7 @@ extern TrackPropDlg     *pTrackPropDialog;
 extern MarkInfoImpl     *pMarkInfoDialog;
 extern Track            *g_pActiveTrack;
 extern bool             g_bConfirmObjectDelete;
+extern bool             g_bPreserveScaleOnX;
 
 extern IDX_entry        *gpIDX;
 extern int               gpIDXn;
@@ -234,6 +235,7 @@ extern double           g_COGAvg;               // only needed for debug....
 
 extern int              g_click_stop;
 extern double           g_ownship_predictor_minutes;
+extern double           g_ownship_HDTpredictor_miles;
 
 extern ArrayOfInts      g_quilt_noshow_index_array;
 extern ChartStack       *pCurrentStack;
@@ -584,7 +586,7 @@ void ViewPort::GetLLFromPix( const wxPoint &p, double *lat, double *lon )
     *lon = slon;
 }
 
-OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, float *llpoints,
+OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t nPoints, float *llpoints,
         int chart_native_scale, wxPoint *ppoints )
 {
     //  Calculate the intersection between a given OCPNRegion (Region) and a polygon specified by lat/lon points.
@@ -609,7 +611,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
         float lat_max = -10000.;
         float lat_min = 10000.;
 
-        for( unsigned int ip = 0; ip < n; ip++ ) {
+        for( unsigned int ip = 0; ip < nPoints; ip++ ) {
             lon_max = wxMax(lon_max, pfp[1]);
             lon_min = wxMin(lon_min, pfp[1]);
             lat_max = wxMax(lat_max, pfp[0]);
@@ -682,18 +684,110 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
     wxPoint *pp;
 
     //    Use the passed point buffer if available
-    if( ppoints == NULL ) pp = new wxPoint[n];
+    if( ppoints == NULL ) pp = new wxPoint[nPoints];
     else
         pp = ppoints;
 
     float *pfp = llpoints;
 
-    for( unsigned int ip = 0; ip < n; ip++ ) {
+    
+    wxPoint p = GetPixFromLL( pfp[0], pfp[1] );
+    int poly_x_max = p.x;
+    int poly_y_max = p.y;
+    int poly_x_min = p.x;
+    int poly_y_min = p.y;
+    
+    for( unsigned int ip = 0; ip < nPoints; ip++ ) {
         wxPoint p = GetPixFromLL( pfp[0], pfp[1] );
         pp[ip] = p;
+        poly_x_max = wxMax(poly_x_max, p.x);
+        poly_y_max = wxMax(poly_y_max, p.y);
+        poly_x_min = wxMin(poly_x_min, p.x);
+        poly_y_min = wxMin(poly_y_min, p.y);
         pfp += 2;
     }
+ 
+    //  We want to avoid processing regions with very large rectangle counts,
+    //  so make some tests for special cases
 
+    
+    //  First, calculate whether any segment of the input polygon intersects the specified Region
+    bool b_intersect = false;
+    OCPNRegionIterator screen_region_it1( Region );
+    while( screen_region_it1.HaveRects() ) {
+        wxRect rect = screen_region_it1.GetRect();
+        
+        for(size_t i=0 ; i < nPoints-1 ; i++){
+            int x0 = pp[i].x;  int y0 = pp[i].y; int x1 = pp[i+1].x; int y1 = pp[i+1].y;
+            if( ((x0 < rect.x) && (x1 < rect.x)) ||
+                ((x0 > rect.x+rect.width) && (x1 > rect.x+rect.width)) )
+                continue;
+            
+            if( ((y0 < rect.y) && (y1 < rect.y)) ||
+                ((y0 > rect.y+rect.height) && (y1 > rect.y+rect.height)) )
+                continue;
+            
+            b_intersect = true;
+            break;
+        }
+        screen_region_it1.NextRect();
+    }
+
+    //  If there is no itersection, we need to consider the case where
+    //  the subject polygon is entirely within the Region
+    bool b_contained = false;
+    if(!b_intersect){
+        OCPNRegionIterator screen_region_it2( Region );
+        while( screen_region_it2.HaveRects() ) {
+            wxRect rect = screen_region_it2.GetRect();
+ 
+            for(size_t i=0 ; i < nPoints-1 ; i++){
+                int x0 = pp[i].x;  int y0 = pp[i].y;
+                if((x0 < rect.x) || (x0 > rect.x+rect.width))
+                    continue;
+                
+                if((y0 < rect.y) || (y0 > rect.y+rect.height))
+                    continue;
+                
+                b_contained = true;
+                break;
+            }
+            screen_region_it2.NextRect();
+        }
+    }
+    
+#if 1    
+    // and here is the payoff
+    if(!b_contained && !b_intersect){
+        //  Two cases to consider
+        wxRect rpoly( poly_x_min, poly_y_min, poly_x_max - poly_x_min , poly_y_max - poly_y_min);
+        wxRect rRegion = Region.GetBox();
+        if(rpoly.Contains(rRegion)){
+        //  subject poygon must be large enough to fully encompass the target Region,
+        //  so the intersection is simply the Region
+            if( NULL == ppoints ) delete[] pp;
+            return Region;
+        }
+        else{
+        //  Subject polygon is entirely outside of target Region
+        //  so the intersection must be empty.
+            if( NULL == ppoints ) delete[] pp;
+            wxRegion r;
+            return r;
+        }
+    }
+    else if(b_contained && !b_intersect){
+        //  subject polygon is entirely withing the target Region,
+        //  so the intersection is the subject polygon
+        OCPNRegion r = OCPNRegion( nPoints, pp );
+        if( NULL == ppoints ) delete[] pp;
+        return r;
+    }
+        
+#endif    
+        
+        
+    
 #ifdef __WXGTK__
     sigaction(SIGSEGV, NULL, &sa_all_old);             // save existing action for this signal
 
@@ -719,7 +813,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
     else
     {
 
-        OCPNRegion r = OCPNRegion(n, pp);
+        OCPNRegion r = OCPNRegion(nPoints, pp);
         if(NULL == ppoints)
             delete[] pp;
 
@@ -729,7 +823,7 @@ OCPNRegion ViewPort::GetVPRegionIntersect( const OCPNRegion &Region, size_t n, f
     }
 
 #else
-    OCPNRegion r = OCPNRegion( n, pp );
+    OCPNRegion r = OCPNRegion( nPoints, pp );
 
     if( NULL == ppoints ) delete[] pp;
 
@@ -987,7 +1081,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pMeasureRoute = NULL;
     m_pRouteRolloverWin = NULL;
     m_pAISRolloverWin = NULL;
-
+    m_bedge_pan = false;
+    
     m_pCIWin = NULL;
 
     m_pSelectedRoute              = NULL;
@@ -1001,7 +1096,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
     m_pFoundRoutePointSecond      = NULL;
 
     m_pRolloverRouteSeg           = NULL;
-
+    m_bsectors_shown              = false;
+    
     m_bbrightdir = false;
     r_gamma_mult = 1;
     g_gamma_mult = 1;
@@ -1029,6 +1125,8 @@ ChartCanvas::ChartCanvas ( wxFrame *frame ) :
 
     m_glcc = NULL;
     m_pGLcontext = NULL;
+    
+    g_ChartNotRenderScaleFactor = 2.0;
 
 #ifdef ocpnUSE_GL
     if ( !g_bdisable_opengl )
@@ -2914,28 +3012,29 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
 
         double zoom_factor = factor;
 
-        double min_allowed_scale = 50.0;                // meters per meter
-
+        double min_allowed_scale = 500.0;                // meters per meter
+        
         ChartBase *pc = NULL;
 
         if( !VPoint.b_quilt ) {
             pc = Current_Ch;
         } else {
             int new_db_index = m_pQuilt->AdjustRefOnZoomIn( proposed_scale_onscreen );
-            if( new_db_index >= 0 ) pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
+            if( new_db_index >= 0 )
+                pc = ChartData->OpenChartFromDB( new_db_index, FULL_INIT );
 
             if(pCurrentStack)
                 pCurrentStack->SetCurrentEntryFromdbIndex( new_db_index ); // highlite the correct bar entry
         }
 
         if( pc ) {
-            min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), g_b_overzoom_x );
-
+            min_allowed_scale = pc->GetNormalScaleMin( GetCanvasScaleFactor(), false/*g_b_overzoom_x*/ );
+            
             double target_scale_ppm = GetVPScale() * zoom_factor;
             double new_scale_ppm = target_scale_ppm; //pc->GetNearestPreferredScalePPM(target_scale_ppm);
-
+            
             proposed_scale_onscreen = GetCanvasScaleFactor() / new_scale_ppm;
-
+            
             //  Query the chart to determine the appropriate zoom range
             if( proposed_scale_onscreen < min_allowed_scale ) {
                 if( min_allowed_scale == GetCanvasScaleFactor() / ( GetVPScale() ) ) {
@@ -2944,8 +3043,15 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
                 } else
                     proposed_scale_onscreen = min_allowed_scale;
             }
+            
+            m_last_max_scale = min_allowed_scale;
         }
-
+        else {
+            proposed_scale_onscreen = wxMax( proposed_scale_onscreen, m_last_max_scale);
+            
+        }
+            
+        
     } else if(factor < 1) {
         double zoom_factor = 1/factor;
 
@@ -2988,15 +3094,14 @@ void ChartCanvas::DoZoomCanvas( double factor,  bool can_zoom_to_cursor )
             
             b_smallest = m_pQuilt->IsChartSmallestScale( new_db_index );
 
-            if( b_smallest || (0 == m_pQuilt->GetExtendedStackCount()))
+            if( ( !g_bPreserveScaleOnX ) &&  (b_smallest || (0 == m_pQuilt->GetExtendedStackCount())))
                 proposed_scale_onscreen = wxMin(proposed_scale_onscreen,
                                                 GetCanvasScaleFactor() / m_absolute_min_scale_ppm);
         }
 
-        if( !pc ) {                         // no chart, so set a minimum scale
-            if( ( GetCanvasScaleFactor() / proposed_scale_onscreen ) < m_absolute_min_scale_ppm )
-                b_do_zoom = false;
-        }
+        //set a minimum scale
+        if( ( GetCanvasScaleFactor() / proposed_scale_onscreen ) < m_absolute_min_scale_ppm )
+            b_do_zoom = false;
     }
 
     if( b_do_zoom ) {
@@ -3411,13 +3516,11 @@ bool ChartCanvas::SetViewPoint( double lat, double lon, double scale_ppm, double
 
                 //      If the extended chart stack has changed, invalidate any cached render bitmap
                 if(m_pQuilt->GetXStackHash() != hash1) {
-                    m_bm_cache_vp.Invalidate();
-                    InvalidateGL();
+//                    m_bm_cache_vp.Invalidate();
+//                    InvalidateGL();
                 }
 
-//                ChartData->UnLockCache();
-//                ChartData->PurgeCacheUnusedCharts( false );
-//                ChartData->LockCache();
+                ChartData->PurgeCacheUnusedCharts( 0.7 );
 
                 if(b_refresh)
                     Refresh( false );
@@ -3610,7 +3713,7 @@ void ChartCanvas::ShipIndicatorsDraw( ocpnDC& dc, float lpp,
         dash_short[0] = (int) ( 1.5 * m_pix_per_mm );  // Short dash  <---------+
         dash_short[1] = (int) ( 1.8 * m_pix_per_mm );  // Short gap            |
 
-        wxPen ppPen2( PredColor(), 1, wxUSER_DASH );
+        wxPen ppPen2( PredColor(), 2, wxUSER_DASH );
         ppPen2.SetDashes( 2, dash_short );
 
         dc.SetPen( ppPen2 );
@@ -3779,7 +3882,7 @@ void ChartCanvas::ShipDraw( ocpnDC& dc )
 //    Calculate ownship Heading pointer as a predictor
     double hdg_pred_lat, hdg_pred_lon;
 
-    ll_gc_ll( gLat, gLon, icon_hdt, pSog * g_ownship_predictor_minutes / 60., &hdg_pred_lat,
+    ll_gc_ll( gLat, gLon, icon_hdt, g_ownship_HDTpredictor_miles, &hdg_pred_lat,
               &hdg_pred_lon );
 
     GetCanvasPointPix( gLat, gLon, &lShipMidPoint );
@@ -4482,7 +4585,7 @@ void ChartCanvas::OnSize( wxSizeEvent& event )
 //        m_canvas_scale_factor = m_canvas_width / display_size_meters;
     m_canvas_scale_factor = wxGetDisplaySize().GetWidth() / display_size_meters;
 
-    m_absolute_min_scale_ppm = m_canvas_width / ( .95 * WGS84_semimajor_axis_meters * PI ); // something like 180 degrees
+    m_absolute_min_scale_ppm = m_canvas_width / ( 1.5 * WGS84_semimajor_axis_meters * PI ); // something like 180 degrees
 
 #ifdef USE_S57
     if( ps52plib ) ps52plib->SetPPMM( m_canvas_scale_factor / 1000. );
@@ -4630,16 +4733,15 @@ bool ChartCanvas::CheckEdgePan( int x, int y, bool bdragging, int margin, int de
 
     //    Of course, if dragging, and the mouse left button is not down, we must stop the event injection
     if( bdragging ) {
-        if( !g_btouch ){
+        if( !g_btouch )
+        {
             wxMouseState state = ::wxGetMouseState();
             if( !state.LeftDown() )
                 bft = false;
         }
     }
-
     if( ( bft ) && !pPanTimer->IsRunning() ) {
         PanCanvas( pan_x, pan_y );
-
         pPanTimer->Start( pan_timer_set, wxTIMER_ONE_SHOT );
         return true;
     }
@@ -4729,6 +4831,9 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
     // Protect from very small cursor slips during double click, which produce a
     // single Drag event.
+    
+    // This code is nonsense...
+#if 0    
     static bool lastEventWasDrag = false;
 
     if( event.Dragging() && !lastEventWasDrag ) {
@@ -4736,6 +4841,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         return;
     }
     lastEventWasDrag = event.Dragging();
+#endif
 
     event.GetPosition( &x, &y );
 
@@ -4752,6 +4858,10 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
     if( event.ButtonUp() && HasCapture() ) ReleaseMouse();
 #endif
 
+    if(g_pi_manager)
+        if(g_pi_manager->SendMouseEventToPlugins( event ))
+            return;                     // PlugIn did something, and does not want the canvas to do anything else
+    
     // We start with Double Click processing. The first left click just starts a timer and
     // is remembered, then we actually do something if there is a LeftDClick.
     // If there is, the two single clicks are ignored.
@@ -4998,6 +5108,18 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
 //          Mouse Clicks
 
+    if(event.LeftIsDown()){
+        if( g_btouch ){
+            if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
+                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
+                    m_bedge_pan = true;
+                    return;
+                }
+            }
+        }
+    }
+    
+    
     if( event.LeftDown() ) {
         //  This really should not be needed, but....
         //  on Windows, when using wxAUIManager, sometimes the focus is lost
@@ -5072,77 +5194,80 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                         undo->BeforeUndoableAction( Undo_AppendWaypoint, pMousePoint, Undo_IsOrphanded, NULL );
                 }
 
-                if( parent_frame->nRoute_State == 1 ) {
-                    // First point in the route.
-                    m_pMouseRoute->AddPoint( pMousePoint );
-                } else {
-                    if( m_pMouseRoute->m_NextLegGreatCircle ) {
-                        double rhumbBearing, rhumbDist, gcBearing, gcDist;
-                        DistanceBearingMercator( rlat, rlon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
-                        Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, rlon, rlat, &gcDist, &gcBearing, NULL );
-                        double gcDistNM = gcDist / 1852.0;
+                if(m_pMouseRoute){
+                    if( parent_frame->nRoute_State == 1 ) {
+                        // First point in the route.
+                        m_pMouseRoute->AddPoint( pMousePoint );
+                    } else {
+                        if( m_pMouseRoute->m_NextLegGreatCircle ) {
+                            double rhumbBearing, rhumbDist, gcBearing, gcDist;
+                            DistanceBearingMercator( rlat, rlon, m_prev_rlat, m_prev_rlon, &rhumbBearing, &rhumbDist );
+                            Geodesic::GreatCircleDistBear( m_prev_rlon, m_prev_rlat, rlon, rlat, &gcDist, &gcBearing, NULL );
+                            double gcDistNM = gcDist / 1852.0;
 
-                        // Empirically found expression to get reasonable route segments.
-                        int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
+                            // Empirically found expression to get reasonable route segments.
+                            int segmentCount = (3.0 + (rhumbDist - gcDistNM)) / pow(rhumbDist-gcDistNM-1, 0.5 );
 
-                        wxString msg;
-                        msg << _("For this leg the Great Circle route is ")
-                            << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
-                            << _("Would you like include the Great Circle routing points for this leg?");
+                            wxString msg;
+                            msg << _("For this leg the Great Circle route is ")
+                                << FormatDistanceAdaptive( rhumbDist - gcDistNM ) << _(" shorter than rhumbline.\n\n")
+                                << _("Would you like include the Great Circle routing points for this leg?");
 
-    #ifndef __WXOSX__
-                        int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
-    #else
-                        int answer = wxID_NO;
-    #endif
+        #ifndef __WXOSX__
+                            int answer = OCPNMessageBox( this, msg, _("OpenCPN Route Create"), wxYES_NO | wxNO_DEFAULT );
+        #else
+                            int answer = wxID_NO;
+        #endif
 
-                        if( answer == wxID_YES ) {
-                            RoutePoint* gcPoint;
-                            RoutePoint* prevGcPoint = m_prev_pMousePoint;
-                            wxRealPoint gcCoord;
+                            if( answer == wxID_YES ) {
+                                RoutePoint* gcPoint;
+                                RoutePoint* prevGcPoint = m_prev_pMousePoint;
+                                wxRealPoint gcCoord;
 
-                            for( int i = 1; i <= segmentCount; i++ ) {
-                                double fraction = (double) i * ( 1.0 / (double) segmentCount );
-                                Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist * fraction,
-                                        gcBearing, &gcCoord.x, &gcCoord.y, NULL );
+                                for( int i = 1; i <= segmentCount; i++ ) {
+                                    double fraction = (double) i * ( 1.0 / (double) segmentCount );
+                                    Geodesic::GreatCircleTravel( m_prev_rlon, m_prev_rlat, gcDist * fraction,
+                                            gcBearing, &gcCoord.x, &gcCoord.y, NULL );
 
-                                if( i < segmentCount ) {
-                                    gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
-                                            GPX_EMPTY_STRING );
-                                    gcPoint->SetNameShown( false );
-                                    pConfig->AddNewWayPoint( gcPoint, -1 );
-                                    pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
-                                } else {
-                                    gcPoint = pMousePoint; // Last point, previously exsisting!
+                                    if( i < segmentCount ) {
+                                        gcPoint = new RoutePoint( gcCoord.y, gcCoord.x, _T("xmblue"), _T(""),
+                                                GPX_EMPTY_STRING );
+                                        gcPoint->SetNameShown( false );
+                                        pConfig->AddNewWayPoint( gcPoint, -1 );
+                                        pSelect->AddSelectableRoutePoint( gcCoord.y, gcCoord.x, gcPoint );
+                                    } else {
+                                        gcPoint = pMousePoint; // Last point, previously exsisting!
+                                    }
+
+                                    m_pMouseRoute->AddPoint( gcPoint );
+                                    pSelect->AddSelectableRouteSegment( prevGcPoint->m_lat, prevGcPoint->m_lon,
+                                            gcPoint->m_lat, gcPoint->m_lon, prevGcPoint, gcPoint, m_pMouseRoute );
+                                    prevGcPoint = gcPoint;
                                 }
 
-                                m_pMouseRoute->AddPoint( gcPoint );
-                                pSelect->AddSelectableRouteSegment( prevGcPoint->m_lat, prevGcPoint->m_lon,
-                                        gcPoint->m_lat, gcPoint->m_lon, prevGcPoint, gcPoint, m_pMouseRoute );
-                                prevGcPoint = gcPoint;
+                                undo->CancelUndoableAction( true );
+
+                            } else {
+                                m_pMouseRoute->AddPoint( pMousePoint );
+                                pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
+                                        rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
+                                undo->AfterUndoableAction( m_pMouseRoute );
                             }
-
-                            undo->CancelUndoableAction( true );
-
                         } else {
+                            // Ordinary rhumblinesegment.
                             m_pMouseRoute->AddPoint( pMousePoint );
                             pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
                                     rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
                             undo->AfterUndoableAction( m_pMouseRoute );
                         }
-                    } else {
-                        // Ordinary rhumblinesegment.
-                        m_pMouseRoute->AddPoint( pMousePoint );
-                        pSelect->AddSelectableRouteSegment( m_prev_rlat, m_prev_rlon,
-                                rlat, rlon, m_prev_pMousePoint, pMousePoint, m_pMouseRoute );
-                        undo->AfterUndoableAction( m_pMouseRoute );
                     }
                 }
 
                 m_prev_rlat = rlat;
                 m_prev_rlon = rlon;
                 m_prev_pMousePoint = pMousePoint;
-                m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
+                if(m_pMouseRoute)
+                    m_pMouseRoute->m_lastMousePointIndex = m_pMouseRoute->GetnPoints();
 
                 parent_frame->nRoute_State++;
                 InvalidateGL();
@@ -5185,6 +5310,17 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                 FindRoutePointsAtCursor( SelectRadius, true );    // Not creating Route
             }
         }  // !g_btouch
+        else {                  // g_btouch
+
+           if(( m_bMeasure_Active && m_nMeasureState ) || ( parent_frame->nRoute_State )){
+
+               // if near screen edge, pan with injection
+                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
+                    return;
+                }
+                
+           }
+        }
     }
 
     if( event.Dragging() ) {
@@ -5365,6 +5501,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             
             if( parent_frame->nRoute_State )                  // creating route?
             {
+                if(m_bedge_pan){
+                    m_bedge_pan = false;
+                    return;
+                }
+                
                 double rlat, rlon;
 
                 rlat = m_cursor_lat;
@@ -5515,9 +5656,13 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
             }
             else if( m_bMeasure_Active && m_nMeasureState )   // measure tool?
             {
+                if(m_bedge_pan){
+                    m_bedge_pan = false;
+                    return;
+                }
+                    
                 double rlat, rlon;
 
-                SetCursor( *pCursorPencil );
                 rlat = m_cursor_lat;
                 rlon = m_cursor_lon;
 
@@ -5528,6 +5673,11 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
                     r_rband.y = y;
                 }
 
+                // if near screen edge, pan but do not add a point
+                if( CheckEdgePan( x, y, true, 5, 10 ) ) {
+                    return;
+                }
+                
                 RoutePoint *pMousePoint = new RoutePoint( m_cursor_lat, m_cursor_lon,
                                                         wxString( _T ( "circle" ) ), wxEmptyString, GPX_EMPTY_STRING );
                 pMousePoint->m_bShowName = false;
@@ -5541,7 +5691,7 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
 
                 m_nMeasureState++;
 
-                Refresh( false );
+                Refresh( true );
             }
             else {
                 bool b_was_editing_mark = m_bMarkEditing;
@@ -5741,6 +5891,8 @@ void ChartCanvas::MouseEvent( wxMouseEvent& event )
         }
         
         if(!m_pRoutePointEditTarget){
+            delete m_pEditRouteArray;
+            m_pEditRouteArray = NULL;
             m_bRouteEditing = false;
         }
             
@@ -8217,11 +8369,11 @@ void ChartCanvas::RenderChartOutline( ocpnDC &dc, int dbIndex, ViewPort& vp )
 
 }
 
-bool ChartCanvas::PurgeGLCanvasChartCache( ChartBase *pc )
+bool ChartCanvas::PurgeGLCanvasChartCache( ChartBase *pc, bool b_purge_full )
 {
 #ifdef ocpnUSE_GL
     if( g_bopengl && m_glcc )
-        m_glcc->PurgeChartTextures( pc );
+        m_glcc->PurgeChartTextures( pc, b_purge_full );
 #endif
     return true;
 }
@@ -9152,8 +9304,10 @@ emboss_data *ChartCanvas::EmbossOverzoomIndicator( ocpnDC &dc )
         }
     }
 
-    m_pEM_OverZoom->x = 0;
-    m_pEM_OverZoom->y = 40;
+    if(m_pEM_OverZoom){
+        m_pEM_OverZoom->x = 0;
+        m_pEM_OverZoom->y = 40;
+    }
     return m_pEM_OverZoom;
 }
 
@@ -9283,7 +9437,8 @@ void ChartCanvas::CreateOZEmbossMapData( ColorScheme cs )
     dc.SetFont( font );
     dc.GetTextExtent( _("OverZoom"), &w, &h );
 
-    m_pEM_OverZoom = CreateEmbossMapData( font, w + 10, h + 10, _("OverZoom"), cs );
+    if((w > 0) && (w < 500) && (h > 0) && (h < 100))
+        m_pEM_OverZoom = CreateEmbossMapData( font, w + 10, h + 10, _("OverZoom"), cs );
 }
 
 emboss_data *ChartCanvas::CreateEmbossMapData( wxFont &font, int width, int height,

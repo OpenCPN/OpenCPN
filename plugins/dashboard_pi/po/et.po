@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-05-30 09:13-0400\n"
-"PO-Revision-Date: 2014-08-04 11:16-0400\n"
+"PO-Revision-Date: 2014-08-24 04:41-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: Estonian\n"
 "Language: et_EE\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: crowdin.net\n"
+"X-Generator: crowdin.com\n"
 
 #: src/clock.cpp:126 src/dial.cpp:504 src/gps.cpp:141 src/wind.cpp:64
 #: src/wind_history.cpp:401
@@ -37,7 +37,7 @@ msgstr "COG"
 
 #: src/dashboard_pi.cpp:104
 msgid "GPS Compass"
-msgstr "GPS kompass"
+msgstr "GPS-kompass"
 
 #: src/dashboard_pi.cpp:106
 msgid "True Compass"
@@ -256,7 +256,7 @@ msgstr "Austa OpenCPN väärtusi"
 
 #: src/dashboard_pi.cpp:1630 src/dashboard_pi.cpp:1657
 msgid "Kts"
-msgstr "sõlmed"
+msgstr "slm"
 
 #: src/dashboard_pi.cpp:1630 src/dashboard_pi.cpp:1657
 msgid "mph"
@@ -276,11 +276,11 @@ msgstr "sügavuse ühikud:"
 
 #: src/dashboard_pi.cpp:1639 src/dashboard_pi.cpp:1648
 msgid "Meters"
-msgstr "meetrid"
+msgstr "Meetrid"
 
 #: src/dashboard_pi.cpp:1639
 msgid "Feet"
-msgstr "jalad"
+msgstr "Jalad"
 
 #: src/dashboard_pi.cpp:1639
 msgid "Fathoms"
@@ -292,7 +292,7 @@ msgstr "sentimeetrid"
 
 #: src/dashboard_pi.cpp:1639
 msgid "Inches"
-msgstr "tollid"
+msgstr "Tollid"
 
 #: src/dashboard_pi.cpp:1645
 msgid "Distance units:"

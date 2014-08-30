@@ -218,6 +218,7 @@ extern bool             g_bDebugCM93;
 extern bool             g_bDebugS57;
 
 extern double           g_ownship_predictor_minutes;
+extern double           g_ownship_HDTpredictor_miles;
 
 #ifdef USE_S57
 extern s52plib          *ps52plib;
@@ -327,7 +328,9 @@ extern bool             g_btouch;
 extern bool             g_bresponsive;
 
 extern bool             bGPSValid;              // for track recording
+extern bool             g_bexpert;
 
+extern int              g_SENC_LOD_pixels;
 
 #ifdef ocpnUSE_GL
 extern ocpnGLOptions g_GLOptions;
@@ -1159,7 +1162,8 @@ int MyConfig::LoadMyConfig( int iteration )
     Read( _T ( "DebugGPSD" ), &g_bDebugGPSD, 0 );
 
     Read( _T ( "UseGreenShipIcon" ), &g_bUseGreenShip, 0 );
-    Read( _T ( "AllowExtremeOverzoom" ), &g_b_overzoom_x, 1 );
+//    Read( _T ( "AllowExtremeOverzoom" ), &g_b_overzoom_x, 1 );
+    g_b_overzoom_x = true;
     Read( _T ( "ShowOverzoomEmbossWarning" ), &g_bshow_overzoom_emboss, 1 );
     Read( _T ( "AutosaveIntervalSeconds" ), &g_nautosave_interval_seconds, 300 );
 
@@ -1212,13 +1216,19 @@ int MyConfig::LoadMyConfig( int iteration )
 
     /* opengl options */
 #ifdef ocpnUSE_GL
+    Read( _T ( "OpenGLExpert" ), &g_bexpert, false );
     Read( _T ( "UseAcceleratedPanning" ), &g_GLOptions.m_bUseAcceleratedPanning, true );
 
     Read( _T ( "GPUTextureCompression" ), &g_GLOptions.m_bTextureCompression, 0);
     Read( _T ( "GPUTextureCompressionCaching" ), &g_GLOptions.m_bTextureCompressionCaching, 0);
 
     Read( _T ( "GPUTextureDimension" ), &g_GLOptions.m_iTextureDimension, 512 );
-    Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 64 );
+    Read( _T ( "GPUTextureMemSize" ), &g_GLOptions.m_iTextureMemorySize, 128 );
+    if(!g_bexpert){
+        g_GLOptions.m_iTextureMemorySize = wxMax(128, g_GLOptions.m_iTextureMemorySize);
+        g_GLOptions.m_bTextureCompressionCaching = g_GLOptions.m_bTextureCompression;
+    }
+        
 #endif
     Read( _T ( "SmoothPanZoom" ), &g_bsmoothpanzoom, 0 );
 
@@ -1252,6 +1262,9 @@ int MyConfig::LoadMyConfig( int iteration )
             5;
 
     Read( _T ( "ShowCM93DetailSlider" ), &g_bShowCM93DetailSlider, 0 );
+
+    Read( _T ( "SENC_LOD_Pixels" ), &g_SENC_LOD_pixels, 2 );
+    
 #endif
 
     Read( _T ( "SkewCompUpdatePeriod" ), &g_SkewCompUpdatePeriod, 10 );
@@ -1277,6 +1290,8 @@ int MyConfig::LoadMyConfig( int iteration )
 
     Read( _T ( "OwnshipCOGPredictorMinutes" ), &g_ownship_predictor_minutes, 5 );
     Read( _T ( "OwnshipCOGPredictorWidth" ), &g_cog_predictor_width, 3 );
+    Read( _T ( "OwnshipHDTPredictorMinutes" ), &g_ownship_HDTpredictor_miles, 1 );
+    
     Read( _T ( "OwnShipIconType" ), &g_OwnShipIconType, 0 );
     Read( _T ( "OwnShipLength" ), &g_n_ownship_length_meters, 0 );
     Read( _T ( "OwnShipWidth" ), &g_n_ownship_beam_meters, 0 );
@@ -2418,6 +2433,7 @@ void MyConfig::UpdateSettings()
 
     Write( _T ( "OwnshipCOGPredictorMinutes" ), g_ownship_predictor_minutes );
     Write( _T ( "OwnshipCOGPredictorWidth" ), g_cog_predictor_width );
+    Write( _T ( "OwnshipHDTPredictorMiles" ), g_ownship_HDTpredictor_miles );
     Write( _T ( "OwnShipIconType" ), g_OwnShipIconType );
     Write( _T ( "OwnShipLength" ), g_n_ownship_length_meters );
     Write( _T ( "OwnShipWidth" ), g_n_ownship_beam_meters );

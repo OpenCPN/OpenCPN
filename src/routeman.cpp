@@ -1602,6 +1602,9 @@ void WayPointman::DeleteAllWaypoints( bool b_delete_used )
 
 void WayPointman::DestroyWaypoint( RoutePoint *pRp, bool b_update_changeset )
 {
+    if( ! b_update_changeset )
+        pConfig->m_bSkipChangeSetUpdate = true;             // turn OFF change-set updating if requested
+        
     if( pRp ) {
         // Get a list of all routes containing this point
         // and remove the point from them all
@@ -1633,8 +1636,6 @@ void WayPointman::DestroyWaypoint( RoutePoint *pRp, bool b_update_changeset )
         }
 
         // Now it is safe to delete the point
-        if( ! b_update_changeset )
-            pConfig->m_bSkipChangeSetUpdate = true;             // turn OFF change-set updating if requested
         pConfig->DeleteWayPoint( pRp );
         pConfig->m_bSkipChangeSetUpdate = false;
         

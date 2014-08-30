@@ -82,7 +82,7 @@ typedef struct {
 const BlackListedPlugin PluginBlacklist[] = {
     { _T("aisradar_pi"), 0, 95, true, true },
     { _T("radar_pi"), 0, 95, true, true },             // GCC alias for aisradar_pi
-    { _T("watchdog_pi"), 1, 00, false, true },
+    { _T("watchdog_pi"), 1, 00, true, true },
 #ifdef __WXOSX__
     { _T("s63_pi"), 0, 6, true, true },
 #endif    
@@ -266,7 +266,11 @@ public:
       void SetColorSchemeForAllPlugIns(ColorScheme cs);
       void NotifyAuiPlugIns(void);
       bool CallLateInit(void);
+      
+      void SendVectorChartObjectInfo(const wxString &chart, const wxString &feature, const wxString &objname, double &lat, double &lon, double &scale, int &nativescale);
 
+      bool SendMouseEventToPlugins( wxMouseEvent &event);
+      
       wxArrayString GetPlugInChartClassNameArray(void);
 
       ListOfPI_S57Obj *GetPlugInObjRuleListAtLatLon( ChartPlugInWrapper *target, float zlat, float zlon,
@@ -363,6 +367,7 @@ public:
         FText = NULL;
         ChildRazRules = NULL;
         MPSRulesList = NULL;
+        LUP = NULL;
         };
         
     ~S52PLIB_Context(){};

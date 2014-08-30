@@ -80,6 +80,7 @@ extern s52plib *ps52plib;
 extern bool g_bopengl;
 extern int g_GPU_MemSize;
 extern bool g_bDebugOGL;
+
 GLenum       g_texture_rectangle_format;
 
 extern bool g_bskew_comp;
@@ -95,6 +96,8 @@ extern double           gLat, gLon, gCog, gSog, gHdt;
 
 extern int              g_OwnShipIconType;
 extern double           g_ownship_predictor_minutes;
+extern double           g_ownship_HDTpredictor_miles;
+
 extern double           g_n_ownship_length_meters;
 extern double           g_n_ownship_beam_meters;
 
@@ -113,6 +116,7 @@ extern PlugInManager* g_pi_manager;
 extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
 extern bool             b_inCompressAllCharts;
+extern bool             g_bexpert;
 
 ocpnGLOptions g_GLOptions;
 
@@ -146,9 +150,11 @@ PFNGLDELETEBUFFERSPROC              s_glDeleteBuffers;
 //WX_DEFINE_OBJARRAY( ArrayOfTexDescriptors );
 
 GLuint g_raster_format = GL_RGB;
-
-
 long g_tex_mem_used;
+
+bool            b_timeGL;
+wxStopWatch     g_glstopwatch;
+double          g_gl_ms_per_frame;
 
 int g_tile_size;
 int g_uncompressed_tile_size;
@@ -164,6 +170,7 @@ int g_mipmap_max_level = 4;
 
 bool glChartCanvas::s_b_useScissorTest;
 bool glChartCanvas::s_b_useStencil;
+bool glChartCanvas::s_b_useStencilAP;
 bool glChartCanvas::s_b_UploadFullCompressedMipmaps;
 //static int s_nquickbind;
 
@@ -197,7 +204,6 @@ bool CompressChart(wxThread *pThread, ChartBase *pchart, wxString CompressedCach
     bool ret = true;
     ChartBaseBSB *pBSBChart = dynamic_cast<ChartBaseBSB*>( pchart );
     int max_compressed_size = LZ4_COMPRESSBOUND(g_tile_size);
-    char *compressed_data = new char[max_compressed_size];
     
     if(pBSBChart) {
         
@@ -588,7 +594,7 @@ GenericFunction ocpnGetProcAddress(const char *addr, const char *extension)
         return (GenericFunction)NULL;
 
     snprintf(addrbuf, sizeof addrbuf, "%s%s", addr, extension);
-    return (GenericFunction)systemGetProcAddress(addr);
+    return (GenericFunction)systemGetProcAddress(addrbuf);
 }
 
 static void GetglEntryPoints( void )
@@ -639,6 +645,21 @@ static void GetglEntryPoints( void )
             
     }
 
+    //  Retry VBO entry points with all extensions
+    if(0 == s_glGenBuffers){
+        for( i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
+            if((s_glGenBuffers = (PFNGLGENBUFFERSPROC)ocpnGetProcAddress( "glGenBuffers", extensions[i])) )
+                break;
+        }
+        
+        if( i < 3 ){
+            s_glBindBuffer = (PFNGLBINDBUFFERPROC) ocpnGetProcAddress( "glBindBuffer", extensions[i]);
+            s_glBufferData = (PFNGLBUFFERDATAPROC) ocpnGetProcAddress( "glBufferData", extensions[i]);
+            s_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) ocpnGetProcAddress( "glDeleteBuffers", extensions[i]);
+        }
+    }
+            
+            
     for(i=0; i<(sizeof extensions) / (sizeof *extensions); i++) {
         if((s_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
             ocpnGetProcAddress( "glCompressedTexImage2D", extensions[i])))
@@ -682,6 +703,8 @@ glChartCanvas::glChartCanvas( wxWindow *parent ) :
     
     ownship_large_scale_display_lists[0] = 0;
     ownship_large_scale_display_lists[1] = 0;
+    
+    b_timeGL = false; true;
 }
 
 glChartCanvas::~glChartCanvas()
@@ -702,11 +725,12 @@ void glChartCanvas::ClearAllRasterTextures( void )
 {
     
     //     Delete all the TexFactory instances
-    ChartPointerHashTexfactType::iterator itt;
+    ChartPathHashTexfactType::iterator itt;
     for( itt = m_chart_texfactory_hash.begin(); itt != m_chart_texfactory_hash.end(); ++itt ) {
-        ChartBase *pc = (ChartBase *) itt->first;
+//        ChartBase *pc = (ChartBase *) itt->first;
+        wxString key = itt->first;
         
-        glTexFactory *ptf = m_chart_texfactory_hash[pc];
+        glTexFactory *ptf = m_chart_texfactory_hash[key];
         
         if( ptf){
             ptf->PurgeBackgroundCompressionPool();
@@ -834,7 +858,6 @@ void glChartCanvas::SetupOpenGL()
     
     //  This little hack fixes a problem seen with some Intel 945 graphics chips
     //  We need to not do anything that requires (some) complicated stencil operations.
-    // TODO: arrange this to use stencil, but depth for s52plib and eliminate display list
 
     bool bad_stencil_code = false;
     if( GetRendererString().Find( _T("Intel") ) != wxNOT_FOUND ) {
@@ -843,10 +866,10 @@ void glChartCanvas::SetupOpenGL()
     }
 
     //      And for the lousy Unichrome drivers, too
-    if( GetRendererString().Find( _T("UniChrome") ) != wxNOT_FOUND ) {
+    if( GetRendererString().Find( _T("UniChrome") ) != wxNOT_FOUND )
         bad_stencil_code = true;
-    }
 
+    
     //      Stencil buffer test
     glEnable( GL_STENCIL_TEST );
     GLboolean stencil = glIsEnabled( GL_STENCIL_TEST );
@@ -856,8 +879,10 @@ void glChartCanvas::SetupOpenGL()
     glDisable( GL_STENCIL_TEST );
 
     s_b_useStencil = false;
-    if( !bad_stencil_code && stencil && ( sb == 8 ) ) s_b_useStencil = true;
+    if( stencil && ( sb == 8 ) )
+        s_b_useStencil = true;
 
+     
     if( QueryExtension( "GL_ARB_texture_non_power_of_two" ) )
         g_texture_rectangle_format = GL_TEXTURE_2D;
     else if( QueryExtension( "GL_OES_texture_npot" ) )
@@ -874,6 +899,9 @@ void glChartCanvas::SetupOpenGL()
     if(!QueryExtension( "GL_EXT_framebuffer_object" ))
         m_b_DisableFBO = true;
 
+//    if(b_timeGL)
+//        m_b_DisableFBO = true;
+    
     GetglEntryPoints();
 
     if( !s_glGenFramebuffers  || !s_glGenRenderbuffers        || !s_glFramebufferTexture2D ||
@@ -899,9 +927,13 @@ void glChartCanvas::SetupOpenGL()
     m_b_useFBOStencil = QueryExtension( "GL_EXT_packed_depth_stencil" ) == GL_TRUE;
 #endif
 
+    //  On Intel Graphics platforms, don't use stencil buffer at all
+    if( bad_stencil_code)    
+        s_b_useStencil = false;
+    
+    
     //      Maybe build FBO(s)
 
-//    m_b_DisableFBO = true;
     BuildFBO();
 #if 0   /* this test sometimes failes when the fbo still works */
     if( m_b_BuiltFBO ) {
@@ -923,10 +955,13 @@ void glChartCanvas::SetupOpenGL()
     if( m_b_BuiltFBO && !m_b_useFBOStencil )
         s_b_useStencil = false;
 
+    //  If stencil seems to be a problem, force use of depth buffer clipping for Area Patterns
+    s_b_useStencilAP = s_b_useStencil & !bad_stencil_code;
+
     if( m_b_BuiltFBO ) {
         wxLogMessage( _T("OpenGL-> Using Framebuffer Objects") );
 
-        if( m_b_useFBOStencil && s_b_useStencil)
+        if( m_b_useFBOStencil )
             wxLogMessage( _T("OpenGL-> Using FBO Stencil buffer") );
         else
             wxLogMessage( _T("OpenGL-> FBO Stencil buffer unavailable") );
@@ -958,7 +993,9 @@ void glChartCanvas::SetupOpenGL()
     if( GetRendererString().Find( _T("Intel GMA 950") ) != wxNOT_FOUND )
         s_b_UploadFullCompressedMipmaps = true;
 #endif    
-    
+
+    if(!g_bexpert)
+        g_GLOptions.m_bUseAcceleratedPanning = m_b_BuiltFBO;
 }
 
 void glChartCanvas::SetupCompression()
@@ -1024,6 +1061,8 @@ void glChartCanvas::SetupCompression()
     } else
     if(!g_GLOptions.m_bTextureCompression) {
     no_compression:
+        g_GLOptions.m_bTextureCompression = false;
+        
         g_tile_size = g_uncompressed_tile_size;
         g_raster_format = GL_RGB;
         wxLogMessage( wxString::Format( _T("OpenGL-> Not Using compression")));
@@ -1066,21 +1105,27 @@ void glChartCanvas::OnPaint( wxPaintEvent &event )
 
 }
 
-bool glChartCanvas::PurgeChartTextures( ChartBase *pc )
+bool glChartCanvas::PurgeChartTextures( ChartBase *pc, bool b_purge_factory )
 {
     //    Look for the texture factory for this chart
-    ChartPointerHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( pc );
+    ChartPathHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( pc->GetFullPath() );
     
     //    Found ?
     if( ittf != m_chart_texfactory_hash.end() ) {
-        glTexFactory *pTexFact = m_chart_texfactory_hash[pc];
+        glTexFactory *pTexFact = m_chart_texfactory_hash[pc->GetFullPath()];
         
         if(pTexFact){
-            pTexFact->PurgeBackgroundCompressionPool();
-            pTexFact->DeleteAllTextures();
-            pTexFact->DeleteAllDescriptors();
+
+            if( b_purge_factory){
+                pTexFact->PurgeBackgroundCompressionPool();
+                pTexFact->DeleteAllTextures();
+                pTexFact->DeleteAllDescriptors();
             
-            m_chart_texfactory_hash.erase(ittf);                // This chart pointer index is becoming invalid
+                m_chart_texfactory_hash.erase(ittf);                // This chart  becoming invalid
+            
+                delete pTexFact;
+            }      
+            
             return true;
         }
         else {
@@ -1519,6 +1564,10 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 
     double pred_lat, pred_lon;
 
+    int drawit = 0;
+    //    Is ship in Vpoint?
+    if( cc1->GetVP().GetBBox().PointInBox( gLon, gLat, 0 ) ) drawit++;                             // yep
+
     //  COG/SOG may be undefined in NMEA data stream
     float pCog = gCog;
     if( wxIsNaN(pCog) )
@@ -1528,6 +1577,9 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         pSog = 0.0;
 
     ll_gc_ll( gLat, gLon, pCog, pSog * g_ownship_predictor_minutes / 60., &pred_lat, &pred_lon );
+
+    //    Is predicted point in the VPoint?
+    if( cc1->GetVP().GetBBox().PointInBox( pred_lon, pred_lat, 0 ) ) drawit++;                     // yep
 
     cc1->GetCanvasPointPix( gLat, gLon, &lGPSPoint );
     cc1->GetCanvasPointPix( pred_lat, pred_lon, &lPredPoint );
@@ -1564,7 +1616,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
 //    Calculate ownship Heading pointer as a predictor
     double hdg_pred_lat, hdg_pred_lon;
 
-    ll_gc_ll( gLat, gLon, icon_hdt, pSog * g_ownship_predictor_minutes / 60., &hdg_pred_lat,
+    ll_gc_ll( gLat, gLon, icon_hdt, g_ownship_HDTpredictor_miles, &hdg_pred_lat,
               &hdg_pred_lon );
     
     cc1->GetCanvasPointPix( hdg_pred_lat, hdg_pred_lon, &lHeadPoint );
@@ -1582,6 +1634,15 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
             b_render_hdt = true;
     }
 
+    //    Another draw test ,based on pixels, assuming the ship icon is a fixed nominal size
+    //    and is just barely outside the viewport        ....
+    wxBoundingBox bb_screen( 0, 0, cc1->GetVP().pix_width, cc1->GetVP().pix_height );
+    if( bb_screen.PointInBox( lShipMidPoint, 20 ) ) drawit++;
+    
+    //    Do the draw if either the ship or prediction is within the current VPoint
+    if( !drawit )
+        return;
+    
     int img_height;
 
     if( cc1->GetVP().chart_scale > 300000 )             // According to S52, this should be 50,000
@@ -2078,17 +2139,18 @@ void glChartCanvas::RenderRasterChartRegionGL( ChartBase *chart, ViewPort &vp, O
     SetClipRegion( vp, clipregion );
 
     //    Look for the texture factory for this chart
+    wxString key = chart->GetFullPath();
     glTexFactory *pTexFact;
-    ChartPointerHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( chart );
+    ChartPathHashTexfactType::iterator ittf = m_chart_texfactory_hash.find( key );
     
     //    Not Found ?
     if( ittf == m_chart_texfactory_hash.end() ) {
         glTexFactory *p = new glTexFactory(chart, g_raster_format);
-        m_chart_texfactory_hash[chart] = p;
+        m_chart_texfactory_hash[key] = p;
     }
     
-    pTexFact = m_chart_texfactory_hash[chart];
-    
+    pTexFact = m_chart_texfactory_hash[key];
+    pTexFact->SetLRUTime(wxDateTime::Now());
 
     //    For underzoom cases, we will define the textures as having their base levels
     //    equivalent to a level "n" mipmap, where n is calculated, and is always binary
@@ -2248,7 +2310,7 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
             
             ChartBase *cchart = cc1->m_pQuilt->GetFirstChart();
             while( cchart ) {
-                if( ! cc1->IsChartLargeEnoughToRender( cchart, vp ) ) {
+                if( ! cc1->IsChartEnoughToRender( cchart, vp ) ) {
                     cchart = cc1->m_pQuilt->GetNextChart();
                     continue;
                 }
@@ -2280,13 +2342,20 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
 
         //  Now render the quilt
         ChartBase *chart = cc1->m_pQuilt->GetFirstChart();
-
+        
+        //  Check the first, smallest scale chart
+        if(chart) {
+            if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) )
+            chart = NULL;
+        }
+            
         while( chart ) {
             
             //  This test does not need to be done for raster charts, since
             //  we can assume that texture binding is acceptably fast regardless of the render region,
             //  and that the quilt zoom methods choose a reasonable reference chart.
-            if(chart->GetChartFamily() != CHART_FAMILY_RASTER){
+            if(chart->GetChartFamily() != CHART_FAMILY_RASTER)
+            {
                 if( ! cc1->IsChartLargeEnoughToRender( chart, vp ) ) {
                     chart = cc1->m_pQuilt->GetNextChart();
                     continue;
@@ -2416,13 +2485,14 @@ void glChartCanvas::RenderQuiltViewGL( ViewPort &vp, const OCPNRegion &Region, b
     else if( !cc1->m_pQuilt->GetnCharts() && b_clear ) {
 //        glClear(GL_COLOR_BUFFER_BIT);
     }
+    
 }
 
 void glChartCanvas::RenderCharts(ocpnDC &dc, OCPNRegion &region)
 {
     ViewPort VPoint = cc1->VPoint;
     m_gl_rendered_region.Clear();
-
+ 
     glPushMatrix();
     if(VPoint.b_quilt) {
         RenderQuiltViewGL( VPoint, region );
@@ -2578,6 +2648,137 @@ void glChartCanvas::DrawGroundedOverlayObjectsRect(ocpnDC &dc, wxRect &rect)
     DisableClipRegion();
 }
 
+bool glChartCanvas::TextureCrunch(double factor)
+{
+    
+    bool bGLMemCrunch = g_tex_mem_used > (double)(g_GLOptions.m_iTextureMemorySize * 1024 * 1024) * factor;
+    if( ! bGLMemCrunch )
+        return false;
+    
+    
+    ChartPathHashTexfactType::iterator it0;
+    for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
+        wxString chart_full_path = it0->first;
+        glTexFactory *ptf = it0->second;
+        if(!ptf)
+            continue;
+        
+        bGLMemCrunch = g_tex_mem_used > (double)(g_GLOptions.m_iTextureMemorySize * 1024 * 1024) * factor;
+        if(!bGLMemCrunch)
+            break;
+        
+        if( cc1->VPoint.b_quilt )          // quilted
+        {
+                if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
+                    !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor);
+                    }
+        }
+        else      // not quilted
+        {
+                if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+                {
+                    ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor );
+                }
+        }
+    }
+    
+    return true;
+}
+
+bool glChartCanvas::FactoryCrunch(double factor)
+{
+    int mem_used, mem_start;
+    GetMemoryStatus(0, &mem_used);
+    mem_start = mem_used;
+    
+    bool bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
+    if( ! bGLMemCrunch )
+        return false;
+    
+
+    ChartPathHashTexfactType::iterator it0;
+    for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
+        wxString chart_full_path = it0->first;
+        glTexFactory *ptf = it0->second;
+        if(!ptf)
+            continue;
+        
+        GetMemoryStatus(0, &mem_used);
+        bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
+        if(!bGLMemCrunch)
+            break;
+        
+        if( cc1->VPoint.b_quilt )          // quilted
+        {
+            if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
+                !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+                ptf->FreeSome( g_memCacheLimit * factor );
+                }
+        }
+        else      // not quilted
+        {
+            if( !Current_Ch->GetFullPath().IsSameAs(chart_full_path))
+            {
+                ptf->DeleteSomeTextures( g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * factor );
+            }
+        }
+    }
+
+    bGLMemCrunch = mem_used > (double)(g_memCacheLimit) * factor;
+    //  Need more, so delete the oldest factory
+    if(bGLMemCrunch){
+        
+        //      Find the oldest unused factory
+        wxDateTime lru_oldest = wxDateTime::Now();
+        glTexFactory *ptf_oldest = NULL;
+        
+        for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
+            wxString chart_full_path = it0->first;
+            glTexFactory *ptf = it0->second;
+            if(!ptf)
+                continue;
+            
+            if( cc1->VPoint.b_quilt )          // quilted
+            {
+                if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
+                    !cc1->m_pQuilt->IsChartInQuilt( chart_full_path ) ) {
+                    
+                    wxDateTime lru = ptf->GetLRUTime();
+                    if(lru.IsEarlierThan(lru_oldest)){
+                        lru_oldest = lru;
+                        ptf_oldest = ptf;
+                    }
+                }
+            }
+        }
+                    
+        //      Found one?
+        if(ptf_oldest){
+            ptf_oldest->PurgeBackgroundCompressionPool();
+            ptf_oldest->DeleteAllTextures();
+            ptf_oldest->DeleteAllDescriptors();
+                
+            m_chart_texfactory_hash.erase(ptf_oldest->GetChartPath());                // This chart  becoming invalid
+                
+            delete ptf_oldest;
+                
+//            int mem_now;
+//            GetMemoryStatus(0, &mem_now);
+//            printf("-------------FactoryDelete\n");
+                
+       }                
+    }
+    
+    int mem_now;
+//    GetMemoryStatus(0, &mem_now);
+//    printf(">>>>FactoryCrunch  was: %d  is:%d \n", mem_start, mem_now);
+    
+    return true;
+}
+
+
+
 void glChartCanvas::Render()
 {
     if( !m_bsetup ||
@@ -2591,6 +2792,11 @@ void glChartCanvas::Render()
 
     m_last_render_time = wxDateTime::Now().GetTicks();
 
+    if(b_timeGL){
+        glFinish();   
+        g_glstopwatch.Start();
+    }
+    
     wxPaintDC( this );
 
     ViewPort VPoint = cc1->VPoint;
@@ -2621,31 +2827,7 @@ void glChartCanvas::Render()
     //  This is done chart-by-chart...later we will scrub for unused textures
     //  that belong to charts which ARE used in this render, if we need to....
 
-    ChartPointerHashTexfactType::iterator it0;
-    for( it0 = m_chart_texfactory_hash.begin(); it0 != m_chart_texfactory_hash.end(); ++it0 ) {
-        ChartBase *pc = (ChartBase *) it0->first;
-        glTexFactory *ptf = it0->second;
-        if(!ptf)
-            continue;
-        
-        bool bGLMemCrunch = g_tex_mem_used > g_GLOptions.m_iTextureMemorySize * 1024 * 1024;
-        if(!bGLMemCrunch)
-            break;
-        
-        if( VPoint.b_quilt )          // quilted
-        {
-            if( cc1->m_pQuilt && cc1->m_pQuilt->IsComposed() &&
-                !cc1->m_pQuilt->IsChartInQuilt( pc ) ) {
-                ptf->DeleteSomeTextures( (g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * 8) / 10);
-            }
-        }
-        else      // not quilted
-        {
-            if( Current_Ch != pc ) {
-                ptf->DeleteSomeTextures( (g_GLOptions.m_iTextureMemorySize * 1024 * 1024 * 8) / 10 );
-            }
-        }
-    }
+    TextureCrunch(0.8);
 
     // Try to use the framebuffer object's cache of the last frame
     // to accelerate drawing this frame (if overlapping)
@@ -2855,7 +3037,18 @@ void glChartCanvas::Render()
 
     SwapBuffers();
 
-    // glFinish();   Should not be needed, and forces cpu to block which is slow
+    if(b_timeGL){
+        glFinish();
+        
+        double filter = .05;
+        
+        // Simple low pass filter
+        g_gl_ms_per_frame = g_gl_ms_per_frame * (1. - filter) + ((double)(g_glstopwatch.Time()) * filter);
+        printf(" OpenGL frame time: %3.0f\n", g_gl_ms_per_frame );
+    }
 
+    TextureCrunch(0.8);
+    FactoryCrunch(0.6);
+    
     cc1->PaintCleanup();
 }

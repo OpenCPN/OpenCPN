@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: opencpn\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-07-29 21:40-0400\n"
-"PO-Revision-Date: 2014-08-04 11:16-0400\n"
+"PO-Revision-Date: 2014-08-24 04:41-0400\n"
 "Last-Translator: nohal <pavel@kalian.cz>\n"
 "Language-Team: French\n"
 "Language: fr_FR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: crowdin.net\n"
+"X-Generator: crowdin.com\n"
 
 #: src/GribUIDialog.cpp:156 src/GribUIDialog.cpp:896
 #: src/GribUIDialogBase.cpp:52
@@ -649,7 +649,7 @@ msgstr "Construction de la carte des isobares"
 
 #: src/GribOverlayFactory.cpp:975
 msgid "Overlays not supported by this graphics hardware (Disable OpenGL)"
-msgstr "Overlays not supported by this graphics hardware (Disable OpenGL)"
+msgstr "Superposition non supportée par la carte graphique. (Désactiver OpenGL)"
 
 #: src/GribOverlayFactory.cpp:985
 msgid "Overlays too wide and can't be displayed:"
@@ -729,7 +729,7 @@ msgstr "Vous faites une requête de prévisions pour plus de 8 jours.\nCeci entr
 
 #: src/GribRequestDialog.cpp:547 src/GribRequestDialog.cpp:550
 msgid "MB"
-msgstr "MB"
+msgstr "Mo"
 
 #: src/GribRequestDialog.cpp:550
 msgid "Max"
