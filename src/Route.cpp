@@ -612,7 +612,7 @@ void Route::RenderSegment( ocpnDC& dc, int xa, int ya, int xb, int yb, ViewPort 
         //    Draw a direction arrow
 
         double theta = atan2( (double) ( yb - ya ), (double) ( xb - xa ) );
-        theta -= PI / 2;
+        theta -= PI / 2.;
 
         wxPoint icon[10];
         double icon_scale_factor = 100 * VP.view_scale_ppm;

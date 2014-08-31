@@ -1822,7 +1822,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         float r = circle_rad+1;
         glColor4ub(0, 0, 0, 255);
         glBegin(GL_POLYGON);
-        for( float a = 0; a <= 2 * (float)PI; a += 2 * (float)PI / 12 )
+        for( float a = 0; a <= 2 * (float)PI; a += 2 * (float)PI / 12. )
             glVertex2f( cx + r * sinf( a ), cy + r * cosf( a ) );
         glEnd();
 
@@ -1830,7 +1830,7 @@ void glChartCanvas::ShipDraw(ocpnDC& dc)
         glColor4ub(255, 255, 255, 255);
         
         glBegin(GL_POLYGON);
-        for( float a = 0; a <= 2 * (float)M_PI; a += 2 * (float)M_PI / 12 )
+        for( float a = 0; a <= 2 * (float)M_PI; a += 2 * (float)M_PI / 12. )
             glVertex2f( cx + r * sinf( a ), cy + r * cosf( a ) );
         glEnd();       
         glPopAttrib();            // restore state

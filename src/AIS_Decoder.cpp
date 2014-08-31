@@ -1911,8 +1911,8 @@ void AIS_Decoder::UpdateOneCPA( AIS_Target_Data *ptarget )
         double east1 = ( ptarget->Lon - gLon ) * 60 * 1852;
         double north1 = ( ptarget->Lat - gLat ) * 60 * 1852;
 
-        double east = east1 * ( cos( gLat * PI / 180 ) );
-        ;
+        double east = east1 * ( cos( gLat * PI / 180. ) );
+        
         double north = north1;
 
         //    Convert COGs trigonometry to standard unit circle

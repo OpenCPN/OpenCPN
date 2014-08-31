@@ -748,7 +748,7 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                         (double) ( AnglePoint.y - TargetPoint.y ),
                         (double) ( AnglePoint.x - TargetPoint.x ) );
                 else
-                    theta = (float)-PI / 2;
+                    theta = (float)-PI / 2.;
             } else {
                 if( AnglePoint.y > TargetPoint.y )
                     theta = (float)PI / 2.;             // valid COG 180

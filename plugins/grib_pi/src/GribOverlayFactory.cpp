@@ -889,11 +889,11 @@ void GRIBOverlayFactory::RenderGribDirectionArrows( int settings, GribRecord **p
                             double sh = pGRX->getValue( i, j );
                             if( dir != GRIB_NOTDEF && sh != GRIB_NOTDEF ){
                                 if(m_Settings.Settings[settings].m_iDirectionArrowForm == 0)
-                                    drawSingleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour, arrowWidth, arrowSize );
+                                    drawSingleArrow( p.x, p.y, ((dir - 90) * M_PI / 180.) + vp->rotation, colour, arrowWidth, arrowSize );
                                 else if( m_Settings.Settings[settings].m_iDirectionArrowForm == 1 )
-                                    drawDoubleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour, arrowWidth, arrowSize );
+                                    drawDoubleArrow( p.x, p.y, ((dir - 90) * M_PI / 180.) + vp->rotation, colour, arrowWidth, arrowSize );
                                 else
-                                    drawSingleArrow( p.x, p.y, ((dir - 90) * M_PI / 180) + vp->rotation, colour,
+                                    drawSingleArrow( p.x, p.y, ((dir - 90) * M_PI / 180.) + vp->rotation, colour,
                                         wxMax( 1, wxMin( 8, (int)(sh+0.5)) ), arrowSize );
                             }
                         } else {
@@ -1254,7 +1254,7 @@ void GRIBOverlayFactory::drawWindArrowWithBarbs( int settings, int i, int j, dou
             m_pdc->DrawCircle( i, j, r );
         else {
 #ifdef ocpnUSE_GL
-            double w = pen.GetWidth(), s = 2 * M_PI / 10;
+            double w = pen.GetWidth(), s = 2 * M_PI / 10.;
             if( m_hiDefGraphics ) w *= 0.75;
             wxColour c = pen.GetColour();
             glColor4ub( c.Red(), c.Green(), c.Blue(), 255);

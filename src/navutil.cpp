@@ -1757,7 +1757,7 @@ int MyConfig::LoadMyConfig( int iteration )
 //    Sanity check the rotation
         st_rotation = fmin ( st_rotation, 360 );
         st_rotation = fmax ( st_rotation, 0 );
-        initial_rotation = st_rotation * PI / 180;
+        initial_rotation = st_rotation * PI / 180.;
     }
 
     wxString sll;

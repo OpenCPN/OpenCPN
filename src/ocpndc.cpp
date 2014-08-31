@@ -687,32 +687,32 @@ void ocpnDC::DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, w
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x1, y2 );
-            drawrrhelper( x1, y2, r, (float)M_PI / 2, (float)M_PI );
+            drawrrhelper( x1, y2, r, (float)M_PI / 2., (float)M_PI );
             glEnd();
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x2, y2 );
-            drawrrhelper( x2, y2, r, 0, (float)M_PI / 2 );
+            drawrrhelper( x2, y2, r, 0, (float)M_PI / 2. );
             glEnd();
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x2, y1 );
-            drawrrhelper( x2, y1, r, (float)-M_PI / 2, 0 );
+            drawrrhelper( x2, y1, r, (float)-M_PI / 2., 0 );
             glEnd();
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x1, y1 );
-            drawrrhelper( x1, y1, r, (float)-M_PI, (float)-M_PI / 2 );
+            drawrrhelper( x1, y1, r, (float)-M_PI, (float)-M_PI / 2. );
             glEnd();
             
         }
 
         if( ConfigurePen() ) {
             glBegin( GL_LINE_LOOP );
-            drawrrhelper( x1, y2, r, (float)-M_PI, (float)-M_PI / 2 );
-            drawrrhelper( x2, y2, r, (float)-M_PI / 2, 0 );
-            drawrrhelper( x2, y1, r, 0, (float)M_PI / 2 );
-            drawrrhelper( x1, y1, r, (float)M_PI / 2, (float)M_PI );
+            drawrrhelper( x1, y2, r, (float)-M_PI, (float)-M_PI / 2. );
+            drawrrhelper( x2, y2, r, (float)-M_PI / 2., 0 );
+            drawrrhelper( x2, y1, r, 0, (float)M_PI / 2. );
+            drawrrhelper( x1, y1, r, (float)M_PI / 2., (float)M_PI );
             glEnd();
         }
         
