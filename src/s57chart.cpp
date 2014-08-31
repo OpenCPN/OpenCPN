@@ -4651,7 +4651,6 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
             ArrayOfVE_Elements ve_array;
 
             int index = -1;
-            m_ve_index_max = -1;
             int count;
 
             fpx.Read( &index, sizeof(int) );
@@ -4672,8 +4671,6 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                 vee.max_priority = 0;//-99;            // Default
 
                 ve_array.Add( vee );
-
-                m_ve_index_max = wxMax(m_ve_index_max, index);
 
                 //    Next element
                 fpx.Read( &index, sizeof(int) );
@@ -4713,7 +4710,6 @@ int s57chart::BuildRAZFromSENCFile( const wxString& FullPath )
                     vep->BBox.SetMax( lon, lat);
                 }
                 
-                    
                 m_ve_hash[vep->index] = vep;
 
             }

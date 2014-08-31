@@ -318,7 +318,6 @@ private:
 
       VE_Hash     m_ve_hash;
       VC_Hash     m_vc_hash;
-      unsigned int m_ve_index_max;
       
       connected_segment_hash m_connector_hash;
       

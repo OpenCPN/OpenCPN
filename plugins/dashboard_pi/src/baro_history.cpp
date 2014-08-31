@@ -152,8 +152,6 @@ void  DashboardInstrument_BaroHistory::DrawWindSpeedScale(wxGCDC* dc)
   wxString label1,label2,label3,label4,label5;
   wxColour cl;
   int width, height;
-  double val1;
-  double WindSpdScale;
   cl=wxColour(61,61,204,255);
   dc->SetTextForeground(cl);
   dc->SetFont(*g_pFontSmall);
@@ -256,7 +254,6 @@ void DashboardInstrument_BaroHistory::DrawForeground(wxGCDC* dc)
   double ratioH;
   int degw,degh;
   int width,height,min,hour;
-  double dir;
   wxString WindAngle,WindSpeed;
   wxPen pen;
   wxString label;

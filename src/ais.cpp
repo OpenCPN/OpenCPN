@@ -748,11 +748,12 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                         (double) ( AnglePoint.y - TargetPoint.y ),
                         (double) ( AnglePoint.x - TargetPoint.x ) );
                 else
-                    theta = -PI / 2;
+                    theta = (float)-PI / 2;
             } else {
-                if( AnglePoint.y > TargetPoint.y ) theta = PI / 2.;             // valid COG 180
+                if( AnglePoint.y > TargetPoint.y )
+                    theta = (float)PI / 2.;             // valid COG 180
                 else
-                    theta = -PI / 2.;            //  valid COG 000 or speed is too low to resolve course
+                    theta = (float)-PI / 2.;            //  valid COG 000 or speed is too low to resolve course
             }
         }
 
@@ -992,9 +993,9 @@ static void AISDrawTarget( AIS_Target_Data *td, ocpnDC& dc )
                 if( ( td->ROTAIS != 0 ) && ( td->ROTAIS != -128 ) && td->b_active ) {
                     float nv = 10;
                     float theta2 = theta;
-                    if( td->ROTAIS > 0 ) theta2 += PI / 2.;
+                    if( td->ROTAIS > 0 ) theta2 += (float)PI / 2.;
                     else
-                        theta2 -= PI / 2.;
+                        theta2 -= (float)PI / 2.;
 
                     int xrot = (int) round ( pixx1 + ( nv * cosf ( theta2 ) ) );
                     int yrot = (int) round ( pixy1 + ( nv * sinf ( theta2 ) ) );

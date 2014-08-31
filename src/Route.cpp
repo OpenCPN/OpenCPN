@@ -662,7 +662,7 @@ void Route::RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP)
     //    Get the absolute line length
     //    and constrain the arrow to be no more than xx% of the line length
     float nom_arrow_size = 20.;
-    float max_arrow_to_leg = .20;
+    float max_arrow_to_leg = (float).20;
     float lpp = sqrtf( powf( (float) (xa - xb), 2) + powf( (float) (ya - yb), 2) );
     
     float icon_size = icon_scale_factor * nom_arrow_size;
@@ -671,7 +671,7 @@ void Route::RenderSegmentArrowsGL( int xa, int ya, int xb, int yb, ViewPort &VP)
             / nom_arrow_size;
 
     float theta = atan2f( (float)yb - ya, (float)xb - xa );
-    theta -= PI;
+    theta -= (float)PI;
 
     glPushMatrix();
     glTranslatef(xb, yb, 0);

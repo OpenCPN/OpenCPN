@@ -499,7 +499,7 @@ void DrawGLThickLines( int n, wxPoint points[],wxCoord xoffset,
         float aa = (a0 + a1) / 2;
         float diff = fabsf(a0 - a1);
         if(diff > M_PI)
-            diff -= 2*M_PI;
+            diff -= 2 * (float)M_PI;
         float rad = t1 / 2 / wxMax(cosf(diff / 2), .4);
 
         float t2sina1 = rad * sinf( aa );
@@ -687,32 +687,32 @@ void ocpnDC::DrawRoundedRectangle( wxCoord x, wxCoord y, wxCoord w, wxCoord h, w
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x1, y2 );
-            drawrrhelper( x1, y2, r, M_PI/2, M_PI );
+            drawrrhelper( x1, y2, r, (float)M_PI / 2, (float)M_PI );
             glEnd();
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x2, y2 );
-            drawrrhelper( x2, y2, r, 0, M_PI / 2 );
+            drawrrhelper( x2, y2, r, 0, (float)M_PI / 2 );
             glEnd();
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x2, y1 );
-            drawrrhelper( x2, y1, r, -M_PI / 2, 0 );
+            drawrrhelper( x2, y1, r, (float)-M_PI / 2, 0 );
             glEnd();
 
             glBegin( GL_TRIANGLE_FAN );
             glVertex2i( x1, y1 );
-            drawrrhelper( x1, y1, r, -M_PI, -M_PI/2 );
+            drawrrhelper( x1, y1, r, (float)-M_PI, (float)-M_PI / 2 );
             glEnd();
             
         }
 
         if( ConfigurePen() ) {
             glBegin( GL_LINE_LOOP );
-            drawrrhelper( x1, y2, r, -M_PI, -M_PI / 2 );
-            drawrrhelper( x2, y2, r, -M_PI / 2, 0 );
-            drawrrhelper( x2, y1, r, 0, M_PI / 2 );
-            drawrrhelper( x1, y1, r, M_PI / 2, M_PI );
+            drawrrhelper( x1, y2, r, (float)-M_PI, (float)-M_PI / 2 );
+            drawrrhelper( x2, y2, r, (float)-M_PI / 2, 0 );
+            drawrrhelper( x2, y1, r, 0, (float)M_PI / 2 );
+            drawrrhelper( x1, y1, r, (float)M_PI / 2, (float)M_PI );
             glEnd();
         }
         

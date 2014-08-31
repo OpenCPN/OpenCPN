@@ -2770,7 +2770,7 @@ bool glChartCanvas::FactoryCrunch(double factor)
        }                
     }
     
-    int mem_now;
+//    int mem_now;
 //    GetMemoryStatus(0, &mem_now);
 //    printf(">>>>FactoryCrunch  was: %d  is:%d \n", mem_start, mem_now);
     
