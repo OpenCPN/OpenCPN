@@ -1740,19 +1740,39 @@ InitReturn ChartBaseBSB::PostInit(void)
       bool bline_index_ok = true;
       m_nLineOffset = 0;
 
+      //  look logically at the line offset table 
       for(int iplt=0 ; iplt< Size_Y - 1 ; iplt++)
       {
-#if 0          
-            if( wxInvalidOffset == ifs_bitmap->SeekI(pline_table[iplt], wxFromStart))
-            {
-                  wxString msg(_("   Chart File corrupt in PostInit() on chart "));
-                  msg.Append(m_FullPath);
-                  wxLogMessage(msg);
+          if( pline_table[iplt] > m_filesize )
+          {
+              wxString msg(_("   Chart File corrupt in PostInit() on chart "));
+              msg.Append(m_FullPath);
+              wxLogMessage(msg);
+              
+              return INIT_FAIL_REMOVE;
+          }
+          
+          int thisline_size = pline_table[iplt+1] - pline_table[iplt] ;
+          if(thisline_size < 0)
+          {
+              wxString msg(_("   Chart File corrupt in PostInit() on chart "));
+              msg.Append(m_FullPath);
+              wxLogMessage(msg);
+              
+              return INIT_FAIL_REMOVE;
+          }
+      }
 
-                  return INIT_FAIL_REMOVE;
-            }
-#endif
-            if( pline_table[iplt] > m_filesize )
+      
+      //  For older charts, say Version 1.x, we will try to read the chart and check the lines for coherence
+      //  These older charts are more likely to have index troubles....
+      //  We only need to check a few lines.  Errors are quickly apparent.
+      double ver;
+      m_bsb_ver.ToDouble(&ver);
+      if( ver < 2.0){
+        for(int iplt=0 ; iplt< 10 ; iplt++)
+        {
+            if( wxInvalidOffset == ifs_bitmap->SeekI(pline_table[iplt], wxFromStart))
             {
                 wxString msg(_("   Chart File corrupt in PostInit() on chart "));
                 msg.Append(m_FullPath);
@@ -1762,68 +1782,35 @@ InitReturn ChartBaseBSB::PostInit(void)
             }
             
             int thisline_size = pline_table[iplt+1] - pline_table[iplt] ;
-            if(thisline_size < 0)
-            {
-                  wxString msg(_("   Chart File corrupt in PostInit() on chart "));
-                  msg.Append(m_FullPath);
-                  wxLogMessage(msg);
-
-                  return INIT_FAIL_REMOVE;
-            }
-
-#if 0  
-        // this is not really a corrupt chart, and will be fixed up on read later            
-            if(thisline_size > ifs_bufsize)
-            {
-                  wxString msg(_T("   ifs_bufsize too small PostInit() on chart "));
-                  msg.Append(m_FullPath);
-                  wxLogMessage(msg);
-
-                  return INIT_FAIL_REMOVE;
-            }
-#endif
-
-#if 0
-        //  No need to validate line numbers, we don't care about them
             ifs_bitmap->Read(ifs_buf, thisline_size);
-
+                
             unsigned char *lp = ifs_buf;
-
+                
             unsigned char byNext;
             int nLineMarker = 0;
             do
             {
-                  byNext = *lp++;
-                  nLineMarker = nLineMarker * 128 + (byNext & 0x7f);
+                byNext = *lp++;
+                nLineMarker = nLineMarker * 128 + (byNext & 0x7f);
             } while( (byNext & 0x80) != 0 );
-
-
+                
+                
             //  Linemarker Correction factor needed here
             //  Some charts start with LineMarker = 0, some with LineMarker = 1
             //  Assume the first LineMarker found is the index base, and use
             //  as a correction offset
-
+                
             if(iplt == 0)
                 m_nLineOffset = nLineMarker;
-
+                
             if(nLineMarker != iplt + m_nLineOffset)
             {
                 bline_index_ok = false;
                 break;
             }
-#endif
+        }
       }
-/*
-      if(!bline_index_ok)
-      {
-            wxString msg(_T("   Line Index corrupt on chart "));
-            msg.Append(m_FullPath);
-            wxLogMessage(msg);
-
-            wxLogMessage(_T("   Assuming chart data is otherwise OK."));
-            bline_index_ok = true;
-      }
-*/
+      
         // Recreate the scan line index if the embedded version seems corrupt
       if(!bline_index_ok)
       {
