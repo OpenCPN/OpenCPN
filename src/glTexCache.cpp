@@ -1400,7 +1400,6 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
     
     bool b_need_compress = false;
 
-    
     for(int level = 0; level < g_mipmap_max_level+1; level++ ) {
         //    Upload to GPU?
         if( level >= base_level ) {
@@ -1408,12 +1407,10 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
  
             if(g_GLOptions.m_bTextureCompression) {
                 if( (COMPRESSED_BUFFER_OK == status) && (ptd->nGPU_compressed != GPU_TEXTURE_UNCOMPRESSED ) ){
-                    
-//                    if(bthread_debug)
-//                        printf("Upload Compressed Texture %d  level: %d \n", ptd->tex_name, level);
-                    
                     ptd->nGPU_compressed = GPU_TEXTURE_COMPRESSED;
                     if(!ptd->miplevel_upload[level]){
+                        //if(bthread_debug)
+//                             printf("Upload Compressed Texture %d  level: %d \n", ptd->tex_name, level);
                         s_glCompressedTexImage2D( GL_TEXTURE_2D, level, g_raster_format,
                                           dim, dim, 0, size,
                                           ptd->CompressedArrayAccess( CA_READ, NULL, level));
@@ -1428,8 +1425,9 @@ void glTexFactory::PrepareTexture( int base_level, const wxRect &rect, ColorSche
                 }                      
                 else {
                     if(!ptd->miplevel_upload[level]){
+                        
  //                       if(bthread_debug)
- //                           printf("Upload Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
+//                            printf("Upload Un-Compressed Texture %d  level: %d g_tex_mem_used: %ld\n", ptd->tex_name, level, g_tex_mem_used/(1024*1024));
                         ptd->nGPU_compressed = GPU_TEXTURE_UNCOMPRESSED;
                         glTexImage2D( GL_TEXTURE_2D, level, GL_RGB,
                                   dim, dim, 0, FORMAT_BITS, GL_UNSIGNED_BYTE, ptd->map_array[level] );
@@ -1613,8 +1611,12 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
         }
     }
     else {
-        if( ptd->map_array[ level ] )
+        if(ptd->nGPU_compressed == GPU_TEXTURE_UNCOMPRESSED){
+            if( !ptd->map_array[ level ] ){
+                GetFullMap( ptd, rect, m_ChartPath, level );
+            }
             return MAP_BUFFER_OK;
+        }
     }
 
     //  If cacheing compressed textures, look in the cache
@@ -1664,7 +1666,6 @@ int glTexFactory::GetTextureLevel( glTextureDescriptor *ptd, const wxRect &rect,
                 delete [] compressed_data;    
             }
             
-            ptd->level_min = wxMin(ptd->level_min, level);
             return COMPRESSED_BUFFER_OK;
         }
     }
