@@ -117,6 +117,7 @@ extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
 extern bool             b_inCompressAllCharts;
 extern bool             g_bexpert;
+extern float            g_GLMinLineWidth;
 
 ocpnGLOptions g_GLOptions;
 
@@ -848,6 +849,22 @@ void glChartCanvas::SetupOpenGL()
 
     if( ps52plib ) ps52plib->SetGLRendererString( m_renderer );
 
+    //  Set the minimum line width
+    GLint parms[2];
+    glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
+    g_GLMinLineWidth = parms[0];
+    
+    
+    //    Some GL renderers do a poor job of Anti-aliasing very narrow line widths.
+    //    Detect this case, and adjust the render parameters.
+    
+    if( m_renderer.Upper().Find( _T("MESA") ) != wxNOT_FOUND ){
+        GLfloat parf;
+        glGetFloatv(  GL_SMOOTH_LINE_WIDTH_GRANULARITY, &parf );
+        
+        g_GLMinLineWidth = (float)parms[0] + parf;
+    }
+    
     s_b_useScissorTest = true;
     // the radeon x600 driver has buggy scissor test
     if( GetRendererString().Find( _T("RADEON X600") ) != wxNOT_FOUND )
@@ -1067,6 +1084,10 @@ void glChartCanvas::SetupCompression()
         g_raster_format = GL_RGB;
         wxLogMessage( wxString::Format( _T("OpenGL-> Not Using compression")));
     }
+    
+    wxString lwmsg;
+    lwmsg.Printf(_T("OpenGL-> Minimum useable line width: %4.1f"), g_GLMinLineWidth);
+    wxLogMessage(lwmsg);
 }
 
 void glChartCanvas::OnPaint( wxPaintEvent &event )
@@ -2075,10 +2096,7 @@ void glChartCanvas::DisableClipRegion()
 
 void glChartCanvas::SetSmoothLineWidth()
 {
-    GLfloat parf;
-    glGetFloatv(  GL_SMOOTH_LINE_WIDTH_GRANULARITY, &parf );
-    float width = wxMax(1.5, 1.0 + parf);
-    glLineWidth(width);
+    glLineWidth(g_GLMinLineWidth);
 }
 
 
