@@ -117,7 +117,10 @@ extern WayPointman      *pWayPointMan;
 extern RouteList        *pRouteList;
 extern bool             b_inCompressAllCharts;
 extern bool             g_bexpert;
-extern float            g_GLMinLineWidth;
+
+
+float            g_GLMinSymbolLineWidth;
+float            g_GLMinCartographicLineWidth;
 
 ocpnGLOptions g_GLOptions;
 
@@ -852,17 +855,18 @@ void glChartCanvas::SetupOpenGL()
     //  Set the minimum line width
     GLint parms[2];
     glGetIntegerv( GL_SMOOTH_LINE_WIDTH_RANGE, &parms[0] );
-    g_GLMinLineWidth = parms[0];
-    
+    g_GLMinSymbolLineWidth = parms[0];
+    g_GLMinCartographicLineWidth = parms[0];
     
     //    Some GL renderers do a poor job of Anti-aliasing very narrow line widths.
+    //    This is most evident on rendered symbols which have horizontal or vertical line segments
     //    Detect this case, and adjust the render parameters.
     
     if( m_renderer.Upper().Find( _T("MESA") ) != wxNOT_FOUND ){
         GLfloat parf;
         glGetFloatv(  GL_SMOOTH_LINE_WIDTH_GRANULARITY, &parf );
         
-        g_GLMinLineWidth = (float)parms[0] + parf;
+        g_GLMinSymbolLineWidth = (float)parms[0] + parf;
     }
     
     s_b_useScissorTest = true;
@@ -1086,7 +1090,9 @@ void glChartCanvas::SetupCompression()
     }
     
     wxString lwmsg;
-    lwmsg.Printf(_T("OpenGL-> Minimum useable line width: %4.1f"), g_GLMinLineWidth);
+    lwmsg.Printf(_T("OpenGL-> Minimum cartographic line width: %4.1f"), g_GLMinCartographicLineWidth);
+    wxLogMessage(lwmsg);
+    lwmsg.Printf(_T("OpenGL-> Minimum symbol line width: %4.1f"), g_GLMinSymbolLineWidth);
     wxLogMessage(lwmsg);
 }
 
@@ -1310,7 +1316,7 @@ void glChartCanvas::RenderChartOutline( int dbIndex, ViewPort &vp )
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
     glColor3ub(color.Red(), color.Green(), color.Blue());
-    SetSmoothLineWidth();
+    glLineWidth( g_GLMinSymbolLineWidth );
 
     //        Are there any aux ply entries?
     int nAuxPlyEntries = ChartData->GetnAuxPlyEntries( dbIndex ), nPly;
@@ -1401,7 +1407,7 @@ void glChartCanvas::GridDraw( )
 
     glColor3ub(GridColor.Red(), GridColor.Green(), GridColor.Blue());
 
-    SetSmoothLineWidth();
+    glLineWidth( g_GLMinSymbolLineWidth );
     
     // Render in two passes, lines then text is much more efficient for opengl
     for( int pass=0; pass<2; pass++ ) {
@@ -2093,12 +2099,6 @@ void glChartCanvas::DisableClipRegion()
     glDisable( GL_STENCIL_TEST );
     glDisable( GL_DEPTH_TEST );
 }
-
-void glChartCanvas::SetSmoothLineWidth()
-{
-    glLineWidth(g_GLMinLineWidth);
-}
-
 
 void glChartCanvas::Invalidate()
 {

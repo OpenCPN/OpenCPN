@@ -80,7 +80,7 @@ extern double           g_CM93Maps_Offset_y;
 extern bool             g_CM93Maps_Offset_on;
 extern bool             g_bopengl;
 extern PlugInManager    *g_pi_manager;
-
+extern float            g_GLMinSymbolLineWidth;
 
 // TODO  These should be gotten from the ctor
 extern MyFrame          *gFrame;
@@ -6051,7 +6051,7 @@ bool cm93compchart::RenderNextSmallerCellOutlines ( ocpnDC &dc, ViewPort& vp )
                               glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
                               glColor3ub(col.Red(), col.Green(), col.Blue());
-                              glChartCanvas::SetSmoothLineWidth();
+                              glLineWidth( g_GLMinSymbolLineWidth );
                               glDisable( GL_LINE_STIPPLE );
                               dc.SetGLStipple();
 

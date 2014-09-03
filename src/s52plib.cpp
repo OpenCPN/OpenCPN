@@ -65,7 +65,8 @@
 
 extern s52plib *ps52plib;
 extern wxString g_csv_locn;
-extern float g_GLMinLineWidth;
+extern float g_GLMinCartographicLineWidth;
+extern float g_GLMinSymbolLineWidth;
 extern bool  g_b_EnableVBO;
 
 extern PFNGLGENBUFFERSPROC                 s_glGenBuffers;
@@ -2688,11 +2689,11 @@ int s52plib::RenderGLLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             GLint parms[2];
             glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
             if( w > parms[1] )
-                glLineWidth( wxMax(g_GLMinLineWidth, parms[1]) );
+                glLineWidth( wxMax(g_GLMinCartographicLineWidth, parms[1]) );
             else
-                glLineWidth( wxMax(g_GLMinLineWidth, w) );
+                glLineWidth( wxMax(g_GLMinCartographicLineWidth, w) );
         } else
-            glLineWidth( wxMax(g_GLMinLineWidth, 1) );
+            glLineWidth( wxMax(g_GLMinCartographicLineWidth, 1) );
 
  #ifndef ocpnUSE_GLES // linestipple is emulated poorly
             if( !strncmp( str, "DASH", 4 ) ) {
@@ -2854,11 +2855,11 @@ int s52plib::RenderLS( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             GLint parms[2];
             glGetIntegerv( GL_ALIASED_LINE_WIDTH_RANGE, &parms[0] );
             if( w > parms[1] )
-                glLineWidth( wxMax(g_GLMinLineWidth, parms[1]) );
+                glLineWidth( wxMax(g_GLMinCartographicLineWidth, parms[1]) );
             else
-                glLineWidth( wxMax(g_GLMinLineWidth, w) );
+                glLineWidth( wxMax(g_GLMinCartographicLineWidth, w) );
         } else
-            glLineWidth( wxMax(g_GLMinLineWidth, 1) );
+            glLineWidth( wxMax(g_GLMinCartographicLineWidth, 1) );
 
 #ifndef ocpnUSE_GLES // linestipple is emulated poorly
         if( !strncmp( str, "DASH", 4 ) ) {
@@ -3558,7 +3559,7 @@ next_seg_dc:
     {
         //    Set up the color
         glColor4ub( color.Red(), color.Green(), color.Blue(), color.Alpha() );
-        glLineWidth( wxMax(g_GLMinLineWidth, (float)width * 0.7) );
+        glLineWidth( wxMax(g_GLMinCartographicLineWidth, (float)width * 0.7) );
 
         int start_seg = 0;
         int end_seg = npt - 1;
@@ -4051,11 +4052,11 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             //    Render the symbology as a zero based Display List
 
             //    Draw wide outline arc
-            glLineWidth( wxMax(g_GLMinLineWidth, 0.5) );
+            glLineWidth( wxMax(g_GLMinSymbolLineWidth, 0.5) );
             wxColour colorb = getwxColour( outline_color );
 //                  glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
             glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 150 );
-            glLineWidth( wxMax(g_GLMinLineWidth, outline_width) );
+            glLineWidth( wxMax(g_GLMinSymbolLineWidth, outline_width) );
 
             if( sectr1 > sectr2 ) sectr2 += 360;
 
@@ -4070,7 +4071,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
             //    Draw narrower color arc, overlaying the drawn outline.
             colorb = getwxColour( arc_color );
             glColor4ub( colorb.Red(), colorb.Green(), colorb.Blue(), 255 );
-            glLineWidth( wxMax(g_GLMinLineWidth, (float)arc_width + 0.8) );
+            glLineWidth( wxMax(g_GLMinSymbolLineWidth, (float)arc_width + 0.8) );
 
             glBegin( GL_LINE_STRIP );
             for( float a = sectr1 * M_PI / 180.0; a <= (sectr2+1) * M_PI / 180.; a += step )
@@ -4083,7 +4084,7 @@ int s52plib::RenderCARC( ObjRazRules *rzRules, Rules *rules, ViewPort *vp )
 
                 wxColour c = GetGlobalColor( _T ( "CHBLK" ) );
                 glColor4ub( c.Red(), c.Green(), c.Blue(), c.Alpha() );
-                glLineWidth( wxMax(g_GLMinLineWidth, (float)0.7) );
+                glLineWidth( wxMax(g_GLMinSymbolLineWidth, (float)0.7) );
 
 #ifndef ocpnUSE_GLES // linestipple is emulated poorly
                 glLineStipple( 1, 0x3F3F );
@@ -7195,7 +7196,7 @@ void RenderFromHPGL::SetPen()
         if( !havePushedOpenGlAttrib ) {
             glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT | GL_HINT_BIT );
             glColor4ub( penColor.Red(), penColor.Green(), penColor.Blue(), penColor.Alpha() );
-            glLineWidth( wxMax(g_GLMinLineWidth, (float) penWidth * 0.7) );
+            glLineWidth( wxMax(g_GLMinSymbolLineWidth, (float) penWidth * 0.7) );
             glEnable( GL_LINE_SMOOTH );
             glEnable( GL_BLEND );
             glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );

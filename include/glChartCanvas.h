@@ -69,8 +69,6 @@ public:
                               bool apply_rotation=true, bool b_clear=false);
     static void DisableClipRegion();
 
-    static void SetSmoothLineWidth();
-
     static bool         s_b_useScissorTest;
     static bool         s_b_useStencil;
     static bool         s_b_useStencilAP;
