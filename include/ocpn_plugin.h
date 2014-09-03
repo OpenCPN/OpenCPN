@@ -53,7 +53,7 @@ class wxGLContext;
 //    PlugIns conforming to API Version less then the most modern will also
 //    be correctly supported.
 #define API_VERSION_MAJOR           1
-#define API_VERSION_MINOR           11
+#define API_VERSION_MINOR           12
 
 //    Fwd Definitions
 class       wxFileConfig;
