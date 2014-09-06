@@ -178,6 +178,8 @@ public:
       virtual void SetToolLongHelp( int toolid, const wxString& helpString );
       virtual wxString GetToolLongHelp( int toolid ) const;
 
+      virtual void SetToolTooltipHiViz( int id, bool b_hiviz );
+      
       // toolbar geometry
       // ----------------
 

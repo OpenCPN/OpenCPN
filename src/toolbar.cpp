@@ -171,6 +171,7 @@ public:
         m_toggled = false;
         rollover = false;
         bitmapOK = false;
+        m_btooltip_hiviz = false;
 
         toolname = g_pi_manager->GetToolOwnerCommonName( id );
         if( toolname == _T("") ) {
@@ -214,6 +215,8 @@ public:
         return iconName;
     }
 
+    void SetTooltipHiviz( bool enable){ m_btooltip_hiviz = enable; }
+    
     wxCoord m_x;
     wxCoord m_y;
     wxCoord m_width;
@@ -229,6 +232,7 @@ public:
     bool bitmapOK;
     bool isPluginTool;
     bool b_hilite;
+    bool m_btooltip_hiviz;
 };
 
 //---------------------------------------------------------------------------------------
@@ -747,6 +751,8 @@ public:
         m_position = pt;
     }
     void SetBitmap( void );
+    
+    void SetHiviz( bool hiviz){ m_hiviz = hiviz; }
 
 private:
 
@@ -756,7 +762,9 @@ private:
     wxBitmap *m_pbm;
     wxColour m_back_color;
     wxColour m_text_color;
-
+    ColorScheme m_cs ;
+    bool m_hiviz;
+    
 DECLARE_EVENT_TABLE()
 };
 //-----------------------------------------------------------------------
@@ -780,6 +788,8 @@ ToolTipWin::ToolTipWin( wxWindow *parent ) :
 
     SetBackgroundStyle( wxBG_STYLE_CUSTOM );
     SetBackgroundColour( m_back_color );
+    m_cs = GLOBAL_COLOR_SCHEME_RGB;
+    
     Hide();
 }
 
@@ -792,6 +802,8 @@ void ToolTipWin::SetColorScheme( ColorScheme cs )
 {
     m_back_color = GetGlobalColor( _T ( "UIBCK" ) );
     m_text_color = FontMgr::Get().GetFontColor( _("ToolTips") );
+    
+    m_cs = cs;
 }
 
 void ToolTipWin::SetBitmap()
@@ -817,6 +829,12 @@ void ToolTipWin::SetBitmap()
     mdc.SetPen( pborder );
     mdc.SetBrush( bback );
 
+    if(m_hiviz){
+        if((m_cs == GLOBAL_COLOR_SCHEME_DUSK) || (m_cs == GLOBAL_COLOR_SCHEME_NIGHT)){
+            wxBrush hv_back( wxColour(200,200,200));
+            mdc.SetBrush( hv_back );
+        }
+    }
     mdc.DrawRectangle( 0, 0, m_size.x, m_size.y );
 
     //    Draw the text
@@ -825,7 +843,8 @@ void ToolTipWin::SetBitmap()
     mdc.SetTextBackground( m_back_color );
 
     mdc.DrawText( m_string, 4, 2 );
-
+//    mdc.SelectObject( wxNullBitmap );
+    
     int parent_width;
     cdc.GetSize( &parent_width, NULL );
     SetSize( m_position.x, m_position.y, m_size.x, m_size.y );
@@ -1282,6 +1301,7 @@ void ocpnToolBarSimple::OnToolTipTimerEvent( wxTimerEvent& event )
 
             if( s.Len() ) {
                 m_pToolTipWin->SetString( s );
+                m_pToolTipWin->SetHiviz(m_last_ro_tool->m_btooltip_hiviz);
 
                 wxPoint pos_in_toolbar( m_last_ro_tool->m_x, m_last_ro_tool->m_y );
                 pos_in_toolbar.x += m_last_ro_tool->m_width + 2;
@@ -1740,6 +1760,15 @@ void ocpnToolBarSimple::SetToolBitmaps( int id, wxBitmap *bmp, wxBitmap *bmpRoll
         tool->bitmapOK = false;
     }
 }
+
+void ocpnToolBarSimple::SetToolTooltipHiViz( int id, bool b_hiviz )
+{
+    ocpnToolBarTool *tool = (ocpnToolBarTool*)FindById( id );
+    if( tool ) {
+        tool->SetTooltipHiviz( b_hiviz );
+    }
+}
+
 
 void ocpnToolBarSimple::ClearTools()
 {
