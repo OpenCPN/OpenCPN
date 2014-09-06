@@ -814,14 +814,15 @@ bool ChartSymbols::LoadConfigFile(s52plib* plibArg, const wxString & s52ilePath)
 void ChartSymbols::SetColorTableIndex( int index )
 {
     ColorTableIndex = index;
+    LoadRasterFileForColorTable(ColorTableIndex);
 }
 
 
-int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcmode )
+int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush )
 {
 
     if( tableNo == rasterSymbolsLoadedColorMapNumber && !flush ){
-        if(!dcmode && g_bopengl) {
+        if( g_bopengl) {
             if(rasterSymbolsTexture)
                 return true;
 #ifdef ocpnUSE_GL            
@@ -829,7 +830,7 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcm
                 return true;
 #endif            
         }
-        if(dcmode && rasterSymbols.IsOk())
+        if( rasterSymbols.IsOk())
             return true;
     }
         
@@ -848,8 +849,7 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcm
     if( rasterFileImg.LoadFile( filename, wxBITMAP_TYPE_PNG ) ) {
 #ifdef ocpnUSE_GL
         /* for opengl mode, load the symbols into a texture */
-        if(!dcmode && g_bopengl && g_texture_rectangle_format) {
-            rasterSymbols = wxNullBitmap; /* free data loaded from non-gl mode */
+        if( g_bopengl && g_texture_rectangle_format) {
 
             int w = rasterFileImg.GetWidth();
             int h = rasterFileImg.GetHeight();
@@ -886,7 +886,7 @@ int ChartSymbols::LoadRasterFileForColorTable( int tableNo, bool flush, bool dcm
             rasterSymbolsTextureSize = wxSize(w, h);
 
             free(e);
-        } else
+        } 
 #endif
         {
             rasterSymbols = wxBitmap( rasterFileImg, -1/*32*/);
@@ -951,12 +951,6 @@ wxString ChartSymbols::HashKey( const char* symbolName )
 
 wxImage ChartSymbols::GetImage( const char* symbolName )
 {
-    /* in opengl rasterSymbols is normally freed to release ram, so load it if needed
-       (the first time an s57 chart is ever loaded, it renders to memor dc to cache
-       a thumbnail so needs the ram version.  Eventually we can render to video memory
-       read it back for this case instead. */
-    LoadRasterFileForColorTable(ColorTableIndex, false, true);
-
     wxRect bmArea = ( *symbolGraphicLocations )[HashKey( symbolName )];
     wxBitmap bitmap = rasterSymbols.GetSubBitmap( bmArea );
     return bitmap.ConvertToImage();
@@ -964,14 +958,11 @@ wxImage ChartSymbols::GetImage( const char* symbolName )
 
 unsigned int ChartSymbols::GetGLTextureRect( wxRect &rect, const char* symbolName )
 {
-    LoadRasterFileForColorTable(ColorTableIndex);
     rect = ( *symbolGraphicLocations )[HashKey( symbolName )];
     return rasterSymbolsTexture;
 }
 
 wxSize ChartSymbols::GLTextureSize()
 {
-    if( ColorTableIndex != rasterSymbolsLoadedColorMapNumber)
-        LoadRasterFileForColorTable(ColorTableIndex);
     return rasterSymbolsTextureSize;
 }

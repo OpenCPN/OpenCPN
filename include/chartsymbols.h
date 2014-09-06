@@ -109,7 +109,7 @@ public:
 
 	static void InitializeGlobals( void );
 	static void DeleteGlobals( void );
-	static int LoadRasterFileForColorTable( int tableNo, bool flush=false, bool dcmode=false );
+	static int LoadRasterFileForColorTable( int tableNo, bool flush=false );
 	static wxArrayPtrVoid * GetColorTables();
 	static int FindColorTable(const wxString & tableName);
 	static S52color* GetColor( const char *colorName, int fromTable );
