@@ -3327,7 +3327,7 @@ void MyFrame::OnCloseWindow( wxCloseEvent& event )
     g_bframemax = IsMaximized();
 
     //    Record the current state of tracking
-    g_bTrackCarryOver = g_bTrackActive;
+//    g_bTrackCarryOver = g_bTrackActive;
 
     TrackOff();
 
@@ -3850,12 +3850,16 @@ void MyFrame::OnToolLeftClick( wxCommandEvent& event )
         }
 
         case ID_TRACK: {
-            if( !g_bTrackActive ) TrackOn();
-            else
+            if( !g_bTrackActive ) {
+                TrackOn();
+                g_bTrackCarryOver = true;
+            } else {
                 TrackOff( true );
+                g_bTrackCarryOver = false;
+            }
             break;
         }
-
+        
         case ID_TBSTATBOX: {
             ToggleCourseUp();
             break;
