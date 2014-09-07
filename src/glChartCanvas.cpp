@@ -956,10 +956,16 @@ void glChartCanvas::SetupOpenGL()
     //      Maybe build FBO(s)
 
     BuildFBO();
-#if 0   /* this test sometimes failes when the fbo still works */
+#if 1   /* this test sometimes fails when the fbo still works */
+        //  But we need to be ultra-conservative here, so run all the tests we can think of
     if( m_b_BuiltFBO ) {
         // Check framebuffer completeness at the end of initialization.
         ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, m_fb0 );
+        
+        ( s_glFramebufferTexture2D )
+        ( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+          g_texture_rectangle_format, m_cache_tex[0], 0 );
+        
         GLenum fb_status = ( s_glCheckFramebufferStatus )( GL_FRAMEBUFFER_EXT );
         ( s_glBindFramebuffer )( GL_FRAMEBUFFER_EXT, 0 );
 
@@ -1016,7 +1022,7 @@ void glChartCanvas::SetupOpenGL()
 #endif    
 
     if(!g_bexpert)
-        g_GLOptions.m_bUseAcceleratedPanning = m_b_BuiltFBO;
+        g_GLOptions.m_bUseAcceleratedPanning =  !m_b_DisableFBO && m_b_BuiltFBO;
 }
 
 void glChartCanvas::SetupCompression()
