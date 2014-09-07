@@ -657,39 +657,44 @@ void ocpnFloatingToolbarDialog::OnToolLeftClick( wxCommandEvent& event )
     if( event.GetId() >= ID_PLUGIN_BASE + 100 ) {
 
         int itemId = event.GetId() - ID_PLUGIN_BASE - 100;
-        bool toolIsChecked = g_FloatingToolbarConfigMenu->FindItem( event.GetId() )->IsChecked();
+        wxMenuItem *item = g_FloatingToolbarConfigMenu->FindItem( event.GetId() );
+        
+        if(item){
+            bool toolIsChecked = item->IsChecked();
 
-        if( toolIsChecked ) {
-            g_toolbarConfig.SetChar( itemId, _T('X') );
-        } else {
+            if( toolIsChecked ) {
+                g_toolbarConfig.SetChar( itemId, _T('X') );
+            } else {
 
-            if( itemId + ID_ZOOMIN == ID_MOB ) {
-                ToolbarMOBDialog mdlg( this );
-                int dialog_ret = mdlg.ShowModal();
-                int answer = mdlg.GetSelection();
+                if( itemId + ID_ZOOMIN == ID_MOB ) {
+                    ToolbarMOBDialog mdlg( this );
+                    int dialog_ret = mdlg.ShowModal();
+                    int answer = mdlg.GetSelection();
 
-                if( answer == 0 || answer == 1 || dialog_ret == wxID_CANCEL ) {
-                    g_FloatingToolbarConfigMenu->FindItem( event.GetId() )->Check( true );
-                    if( answer == 1 && dialog_ret == wxID_OK ) {
-                        g_bPermanentMOBIcon = true;
-                        delete g_FloatingToolbarConfigMenu;
-                        g_FloatingToolbarConfigMenu = new wxMenu();
-                        toolbarConfigChanged = true;
+                    if( answer == 0 || answer == 1 || dialog_ret == wxID_CANCEL ) {
+                        g_FloatingToolbarConfigMenu->FindItem( event.GetId() )->Check( true );
+                        if( answer == 1 && dialog_ret == wxID_OK ) {
+                            g_bPermanentMOBIcon = true;
+                            delete g_FloatingToolbarConfigMenu;
+                            g_FloatingToolbarConfigMenu = new wxMenu();
+                            toolbarConfigChanged = true;
+                        }
+                        return;
                     }
+                }
+
+                if( m_ptoolbar->GetVisibleToolCount() == 1 ) {
+                    OCPNMessageBox( this,
+                            _("You can't hide the last tool from the toolbar\nas this would make it inaccessible."),
+                            _("OpenCPN Alert"), wxOK );
+                    g_FloatingToolbarConfigMenu->FindItem( event.GetId() )->Check( true );
                     return;
                 }
-            }
 
-            if( m_ptoolbar->GetVisibleToolCount() == 1 ) {
-                OCPNMessageBox( this,
-                        _("You can't hide the last tool from the toolbar\nas this would make it inaccessible."),
-                        _("OpenCPN Alert"), wxOK );
-                g_FloatingToolbarConfigMenu->FindItem( event.GetId() )->Check( true );
-                return;
+                g_toolbarConfig.SetChar( itemId, _T('.') );
             }
-
-            g_toolbarConfig.SetChar( itemId, _T('.') );
         }
+        
         toolbarConfigChanged = true;
         return;
     }
